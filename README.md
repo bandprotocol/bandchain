@@ -17,9 +17,11 @@ This repository is a [monorepo] containing the reference implementation of D3N a
 | [`spec`](spec)         | 📖 D3N research and specification knowledge base          |
 | [`studio`](studio)     | 🎬 In-browser IDE for testing and deploying owasm scripts |
 
-## Contributing
+## License & Contributing
 
-We highly encourage participation from the community to help with D3N development. If you are interested in developing with D3N or have suggestion for protocol improvement, please open an issue, submit a pull request, or [drop as a line].
+All modules are licensed under the terms of the Apache 2.0 License unless otherwise specified in the LICENSE file at module's root.
+
+We highly encourage participation from the community to help with D3N development. If you are interested in developing with D3N or have suggestion for protocol improvements, please open an issue, submit a pull request, or [drop as a line].
 
 [monorepo]: https://en.wikipedia.org/wiki/Monorepo
 [drop as a line]: mailto:connect@bandprotocol.com
