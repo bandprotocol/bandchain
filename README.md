@@ -12,7 +12,7 @@ This repository is a [monorepo] containing the reference implementation of D3N a
 | ---------------------- | --------------------------------------------------------- |
 | [`chain`](chain)       | 🔗 D3N blockchain reference implementation                |
 | [`explorer`](explorer) | 🔍 Web interface to explore D3N network                   |
-| [`lite`](lite)         | 📡 Lite client on other smart contract platforms          |
+| [`bridges`](bridges)   | 📡 Lite client bridges on other smart contract platforms  |
 | [`owasm`](owasm)       | 🔮 WebAssembly library for writing oracle scripts         |
 | [`spec`](spec)         | 📖 D3N research and specification knowledge base          |
 | [`studio`](studio)     | 🎬 In-browser IDE for testing and deploying owasm scripts |
