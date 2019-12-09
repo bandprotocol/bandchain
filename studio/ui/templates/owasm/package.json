@@ -1,0 +1,19 @@
+{
+  "name": "@owasm/boilerplate",
+  "description": "",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "gulp --gulpfile ./build.ts"
+  },
+  "devDependencies": {
+    "@wasm/studio-utils": "*",
+    "gulp": "~3.9.1",
+    "ts-node": "~5.0.0",
+    "typescript": "~2.7.2"
+  },
+  "wasmStudio": {
+    "name": "Example Price Query",
+    "description": "# Example Crypto Price Query\n## Purpose\nThis example project will get you up to speed on developing OWASM script. Explore `src/logic.rs` file to learn how **Data** is defined and aggregated.\n## Endpoints\n- CoinGecko\n- CryptoCompare",
+    "icon": "wasm-lang-file-icon"
+  }
+}

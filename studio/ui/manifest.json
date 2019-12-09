@@ -1,0 +1,15 @@
+{
+  "short_name": "OWASM Studio",
+  "name": "OWASM Studio",
+  "icons": [
+    {
+      "src": "img/logo.png",
+      "sizes": "400x400",
+      "type": "image/png"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}

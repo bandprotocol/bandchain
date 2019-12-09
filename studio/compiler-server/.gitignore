@@ -1,0 +1,8 @@
+tmp/
+downloads/
+slug.tgz
+Cargo.lock
+.DS_Store
+
+/target
+**/*.rs.bk

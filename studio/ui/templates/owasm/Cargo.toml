@@ -1,0 +1,13 @@
+[package]
+name = "awesome-oracle"
+version = "0.1.0"
+authors = ["John <john@example.com>"]
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+bincode = "1.2.0"
+wasm-bindgen = "*"
+owasm = "*"

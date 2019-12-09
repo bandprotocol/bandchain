@@ -1,0 +1,13 @@
+{
+  "serviceUrl": "//wasmexplorer-service.herokuapp.com/service.php",
+  "clang": "//webassembly-studio-clang.herokuapp.com/build",
+  "rustc": "http://localhost:8082/rustc",
+  "cargo": "http://localhost:8082/cargo",
+  "cargoTest": "http://localhost:8082/cargo-test",
+  "wasmRun": "http://localhost:8082/wasm-run",
+  "templates": {
+    "default": "/dist/templates/index.js",
+    "arc": "/dist/arc-templates/index.js"
+  },
+  "sentryDNS": "https://756ae32005ed49cf9d4dd2aa106ccd4a@sentry.io/1229949"
+}

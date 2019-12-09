@@ -1,0 +1,8 @@
+dist
+node_modules
+src/components/Test*.tsx
+coverage
+mutation
+.stryker-tmp
+stats
+.DS_Store
