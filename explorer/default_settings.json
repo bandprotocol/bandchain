@@ -1,0 +1,44 @@
+{
+    "public":{
+        "chainName": "Cosmos Testnet",
+        "chainId": "{Chain ID}",
+        "gtm": "{Add your Google Tag Manager ID here}",
+        "slashingWindow": 10000,
+        "uptimeWindow": 250,
+        "initialPageSize": 30,
+        "bech32PrefixAccAddr": "cosmos",
+        "bech32PrefixAccPub": "cosmospub",
+        "bech32PrefixValAddr": "cosmosvaloper",
+        "bech32PrefixValPub": "cosmosvaloperpub",
+        "bech32PrefixConsAddr": "cosmosvalcons",
+        "bech32PrefixConsPub": "cosmosvalconspub",
+        "stakingDenom": "ATOM",
+        "stakingDenomPlural": null,
+        "mintingDenom": "uatom",
+        "stakingFraction": 1000000,
+        "powerReduction": null,
+        "gasPrice": 0.02,
+        "coingeckoId": "cosmos"
+    },
+    "genesisFile": "{Replace the address of the genesis file of the chain}",
+    "remote":{
+        "rpc":"https://gaia-seeds.interblock.io",
+        "lcd":"https://gaia-seeds.interblock.io:1317"
+    },
+    "debug": {
+        "startTimer": true,
+        "readGenesis": true
+    },
+    "params":{
+        "startHeight": 0,
+        "defaultBlockTime": 5000,
+        "blockInterval": 15000,
+        "consensusInterval": 1000,
+        "statusInterval":7500,
+        "signingInfoInterval": 1800000,
+        "proposalInterval": 5000,
+        "missedBlocksInterval": 60000,
+        "delegationInterval": 900000
+    }
+}
+

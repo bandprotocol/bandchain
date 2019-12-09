@@ -1,0 +1,885 @@
+body {
+    font-size: inherit !important;
+}
+
+.no-select {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.not-found{
+    position: absolute;
+    text-align: center;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 0;
+    width: 100%;
+}
+
+.not-found i{
+    font-size: 6em;
+    margin-top:0.5em;
+}
+
+i.material-icons + span {
+    transform: translateY(-7px);
+    display: inline-block !important;
+}
+
+.copy-button{
+    cursor: pointer;
+}
+
+.more.dropdown .btn, .more.dropdown.btn:focus{
+    box-shadow: none;
+}
+
+.more.dropdown .btn{
+    position: absolute;
+    right: -1.74em;
+    top: -0.35em;
+}
+
+span#network-nav{
+    font-size: 1rem;
+    color: #fff;
+    font-weight: bold;
+}
+
+#header .dropdown-header{
+    font-size: 1rem !important;
+}
+
+.dropdown-item.disabled a,
+.dropdown-item:disabled a{
+    color: #666;
+}
+
+#header .dropdown-header img{
+    height: 2em;
+    margin-right: 0.25em;
+}
+
+#header .dropdown-item a span.badge{
+    transform: translateY(-1px);
+}
+#header #user-acconut-icon a, #header #user-acconut-icon i, #header #user-acconut-icon .btn-link, #header .sign-in-btn {
+    color: rgba(255,255,255,0.75);
+}
+
+.ledger-sign-in .error-message, .ledger-modal .error-message{
+    color: red;
+}
+
+#header .sign-in-btn {
+    margin-top: 5px;
+}
+#header #user-acconut-icon a {
+    position: relative;
+    bottom: 7px;
+}
+
+#header #user-acconut-icon i {
+    cursor: pointer;
+}
+
+#header #user-acconut-icon .d-lg-block {
+    height: 100%;
+}
+
+#header #user-acconut-icon .d-lg-block i{
+    align-items: center;
+    display: flex;
+    height: 100%;
+    margin-left: 10px;
+}
+
+div#loadmore {
+    margin: 0.5rem auto;
+}
+
+a.navbar-brand .logo {
+    max-height: 40px;
+    max-width: 40px;
+}
+
+#header-search{
+    margin-left: 1rem;
+    margin-right: 0.5rem;
+}
+
+#header-search .form-control,
+#mobile-searchbar .form-control{
+    height: auto;
+    padding: 0.5rem 0;
+}
+
+#mobile-searchbar {
+    margin-bottom: 0.5em;
+}
+
+#footer{
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    line-height: 1;
+}
+
+div#main, div#transaction, div#block{
+    padding-top: 6rem;
+    padding-bottom: 3.85rem;
+}
+
+div#transaction .card.card-body{
+    overflow-x: auto;
+}
+
+div#transaction .card.card-body p {
+    margin-bottom: 0;
+}
+
+img.moniker-avatar-list{
+    height: 24px;
+    margin-right: 5px;
+    border: 1px solid rgba(0,0,0,0.3);
+}
+
+div.validator-list div.header div:not(.status){
+    cursor: pointer;
+}
+
+div.validator-list div.validator-info div.data{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+div.validator-list div.validator-info div.data span.moniker{
+    line-height: 1.5;
+}
+
+div.validator-list div.validator-info div.data.proposer-priority{
+    padding-right: 15px;
+}
+
+div.header span{
+    font-weight: bold;
+}
+
+div.validator-list div.header div.last-seen span.d-md-none{
+    transform: translateY(-1px);;
+}
+
+div#block-table,
+#transactions div.transactions-list{
+    margin-top: 0.5em;
+}
+
+table#block-table,
+table.random-validators,
+table.validator-list,
+table.proposal-list {
+    table-layout: fixed;
+    width: 100%;
+    white-space: nowrap;
+}
+
+table#block-table td,
+table.random-validators td,
+table.validator-list td,
+table.proposal-list td{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+table th.voting-power,
+table td.voting-power{
+    text-align:right;
+}
+
+table.random-validators th.moniker{
+    width: 35%;
+}
+
+table.random-validators th.voting-power{
+    width: 35%
+}
+
+table.random-validators th.uptime{
+    width: 30%;
+}
+
+table.validator-list th{
+    border-bottom: none !important;
+}
+
+table.validator-list th:not(.status){
+    cursor:pointer;
+}
+
+table.validator-list th.moniker{
+    width: 15%;
+}
+
+table.validator-list th.voting-power{
+    width: 25%
+}
+
+table.validator-list th.status{
+    width: 10%;
+}
+
+table.validator-list th.uptime{
+    width: 30%;
+}
+
+table.validator-list th.proposer-priority{
+    width: 15%;
+}
+
+table.validator-list th.last-seen{
+    width: 35%;
+}
+
+table.proposal-list th.status{
+    width: 15%;
+}
+
+.status .value{
+    display: block;
+    font-weight: 100;
+    -webkit-transition: all 2s ease-out;
+    -moz-transition: all 2s ease-out;
+    -o-transition: all 2s ease-out;
+    transition: all 2s ease-out;
+}
+
+div#countdown {
+    display: inline-block;
+    width: auto;
+    font: inherit;
+    margin-top: 2em;
+}
+
+#countdown.flip-clock-wrapper ul li a div div.inn,
+#countdown .flip-clock-dot{
+    background-color: #bd081c;
+}
+
+.consensus-state.status .card-subtitle{
+    margin-top: 0;
+    font-size: 1em;
+    line-height: inherit;
+}
+
+.consensus-state.status .value{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#home .card,
+#transaction .card,
+#block .card,
+#account .card{
+    /* margin: 0 0 0.75em 0; */
+    margin-bottom: 0.75em;
+}
+
+.progress{
+    height: inherit !important;
+    font-size: inherit !important;
+    border: 1px solid #ddd !important;
+}
+
+.tally-result .progress-bar {
+    height: 4em;
+}
+
+.proposal{
+    padding: 1em;
+    margin-bottom: 1em;
+}
+
+.proposal .label,
+.proposal .value {
+    padding: 0.3em;
+    word-wrap: break-word;
+}
+
+.proposal .value .tally-result-value{
+    white-space: nowrap;
+}
+
+.proposal .tally-result-detail{
+    overflow: hidden;
+    width: 100%;
+}
+
+
+.proposal .tally-result-table .moniker.data{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.proposal .tally-info{
+    margin-top: 0.5em;
+}
+
+.proposal .label{
+    font-weight: bold;
+}
+
+.proposal .tally-result i.fas{
+    min-width: 1.5em;
+}
+
+.proposal .card-header-tabs .nav-link {
+    margin: -0.5em 0.5em 0 0.5em;
+    padding: 0.5rem 1.5rem;
+    box-shadow: initial;
+    color: #bd081c;
+    cursor: pointer;
+}
+
+.proposal .card-header-tabs .nav-link.active:not(:hover), .proposal .card-header-tabs .nav-link.active:focus:not(:hover) {
+    border: none;
+    -webkit-box-shadow: initial;
+    box-shadow: initial;
+    color: #bd081c;
+}
+.proposal .card-header-tabs .nav-link.active:hover {
+    border: none;
+    background: #fff;
+    color: #bd081c;
+}
+
+.proposal .plottable .label-area text {
+    font-size: 1.5em;
+}
+
+.validator-details .moniker{
+    font-size: 180%;
+    margin: 0.25em 0;
+}
+
+.validator-details .validator-avatar{
+    max-width: 150px;
+    margin: 0 auto;
+}
+
+.validator-details .card{
+    margin-bottom: 1em;
+}
+
+.validator-details .card-body h3 .badge.badge-danger{
+    margin-right: 0.5em;
+}
+
+.validator-details  ul.nav{
+    margin-bottom: 0.8em;
+}
+
+.address.copy{
+    max-width: calc(100% - 1.2em);
+}
+
+.account-distributions .progress {
+    height: 1.5em !important;
+    border-radius: 0.2em;
+    margin-bottom: 0.8em;
+}
+
+.account-distributions .progress .row{
+    padding-bottom: 0.2em;
+}
+
+#account .infinity{
+    display: inline-block;
+    margin-right: 0.5em;
+    height: 1em;
+    width: 1em;
+    transform: translateY(2px);
+    border-radius: 0.2em;
+}
+
+#account .available{
+    background-color: #9C27B0
+}
+
+#account .delegated{
+    background-color: #6610f2
+}
+
+#account .unbonding{
+    background-color: #2196F3
+}
+
+#account .rewards{
+    background-color: #20c997
+}
+
+#account .commission{
+    background-color: #ff9800
+}
+
+#account .total .value{
+    font-size: 1.5em;
+    transform: translateY(3px);
+}
+
+.vp-diff{
+    display:inline-block;
+    transform: translateY(-5px);
+}
+
+div.block-info,
+div.tx-info,
+div.delegation-info{
+    padding-top: 0.4rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.tx-info.invalid {
+    background-color: rgba(237, 20, 61, 0.2) !important;
+}
+
+#transaction .error .alert-danger {
+    margin-bottom: 0.5em;
+}
+
+.error .alert-danger {
+    margin-bottom: 0;
+}
+
+div#block-table div.block-info:nth-child(2n),
+div.transactions-list div.tx-info:nth-child(2n),
+div.delegation-info:nth-child(2n){
+    background-color: rgba(0,0,0,0.05);
+}
+
+div.transactions-list div.tx-info .activity{
+    overflow-x: auto;
+}
+
+div.transactions-list div.tx-info .activity .card-body{
+    overflow-x: auto;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.activity .card-body p{
+    margin-bottom: 0;
+}
+
+div.transactions-list div.tx-info .activity .card-body ul {
+    list-style: none;
+    padding-left: 1em;
+}
+
+.error .alert .badge {
+    white-space: inherit;
+    text-align: left;
+}
+
+div.transactions-list div.tx-info .badge:not(:last-child) {
+    margin-bottom: 0.2rem;
+}
+
+div#block-table div.header,
+div.transactions-list div.header{
+    padding-top: 0.3rem;
+    border-top: 1px solid #dee2e6;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.blocks-list{
+    margin-top: 0.2em;
+}
+
+.blocks-list .block{
+    width: 1.5em;
+    height: 1.5em;
+    display: inline-block;
+    margin-right: 0.2em;
+    border: 0.1em solid #bd081c;
+    -webkit-box-shadow: 1px 1px 3px 0px rgba(163,163,163,1);
+    -moz-box-shadow: 1px 1px 3px 0px rgba(163,163,163,1);
+    box-shadow: 1px 1px 3px 0px rgba(163,163,163,1);
+    border-radius: 3px;
+}
+
+.blocks-list .block .full{
+    background-color: #bd081c;
+}
+
+.blocks-list .block .full,
+.blocks-list .block .empty{
+    height: 100%;
+    width: 100%;
+}
+
+.power-history .voting-power {
+    font-size: 160%;
+    position: relative;
+    top: -4px;
+    transform: initial !important;
+}
+
+.power-history .card .card-footer{
+    font-size: 85%;
+}
+
+.label {
+    font-weight: bold;
+}
+
+.voting-power-card h1{
+    display: inline-block;
+    margin-right: 0.3em;
+}
+
+.missed-table{
+    margin-top: 0.5em;
+}
+
+div#voting-power-dist .card{
+    margin-top: 0.5em;
+}
+
+#block ul.tx-types{
+    height: 3.5em;
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+#block ul.tx-types li {
+    display: inline-block;
+    margin: 0 0.75em 0.5em 0 !important;
+}
+
+#block ul.tx-types .nav-link{
+    cursor: pointer;
+}
+
+@media only screen and (max-width: 767px){
+    div#main, div#transaction, div#block{
+        padding-bottom: 4.85rem;
+    }
+
+    .flip-clock-wrapper ul{
+        width: 37px;
+        height: 50%;
+        line-height: 50%;
+    }
+
+    .validator-list .card.card-body{
+        margin-bottom: 0.8rem;
+    }
+
+
+    .proposal .tally-result-table .card.card-body{
+        margin: 0.4rem 0.8rem;
+    }
+
+    .mobile-menu li{
+        width: 16.66%;
+    }
+
+    .mobile-menu li a{
+        text-align: center;
+    }
+
+    div.validator-list div.validator-info img.moniker-avatar-list{
+        height: 48px;
+        float: left;
+    }
+
+    div.validator-list div.validator-info div.data span.moniker{
+        float: left;
+        margin-left: 3px;
+        max-width:80%;
+    }
+
+    div.validator-list div.validator-info div.data.voting-power,
+    div.validator-list div.validator-info div.data.status{
+        margin-top: -25px;
+    }
+
+    #block ul.tx-types .nav-link{
+        padding: 0.5em 0;
+    }
+}
+
+@media only screen and (min-width: 768px){
+    #validator-list div.validator-list {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    #validator-list div.validator-list .data.proposer-priority,
+    #validator-list div.validator-list .data.voting-power,
+    #validator-list div.validator-list .header .voting-power{
+        text-align: right;
+    }
+
+    #validator-list div.validator-list .card.card-body,
+    .proposal .tally-result-table .card.card-body{
+        padding: 0;
+    }
+
+    #validator-list div.validator-list .card,
+    .proposal .tally-result-table .card{
+        -webkit-box-shadow: none;
+        box-shadow: none;
+    }
+
+    #validator-list div.validator-list div.header,
+    .proposal .tally-result-table div.header{
+        padding-top: 0.3rem;
+        border-top: 1px solid #dee2e6;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    div.validator-list div.header div,
+    div.validator-list div.validator-info div.data:not(.counter){
+        padding-left: 0;
+        padding-right: 5px;
+    }
+
+    div.validator-list div.validator-info,
+    .tally-result-table .voter-info{
+        padding-top: 0.4rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .voter-info .data.counter{
+        padding-left: 1.5em;
+    }
+
+    div.validator-list div.card-body:nth-child(2n) div.validator-info,
+    .proposal .tally-result-table div.card-body:nth-child(2n) .voter-info{
+        background-color: rgba(0,0,0,0.05);
+    }
+
+    div.transactions-list div.header,
+    div.transactions-list div.tx-info{
+        margin-left:0;
+        margin-right:0;
+    }
+
+    .validator-info.row i.material-icons + span{
+        transform: inherit;
+    }
+
+    #account .card-body.list{
+        height: 15em;
+    }
+}
+
+@media only screen and (max-width: 1023px){
+    .navbar.fixed-top{
+        padding: 0 1rem;
+    }
+
+    div#main, div#transaction, div#block {
+        padding-top: 3.5rem;
+        /* padding-bottom: 4.8rem; */
+    }
+
+    #validator-list ul.status-switch{
+        margin-top: 0.5em;
+    }
+    .card-body.list{
+        padding: 0;
+    }
+}
+
+@media only screen and (min-width: 1024px){
+    .validator-info.row i.material-icons + span,
+    .tx-info .fee i.material-icons + span {
+        transform: inherit;
+    }
+
+    span#network-nav{
+        margin-left: 2.5em;
+    }
+
+}
+
+.plottable .tooltip {
+  opacity: 0.9;
+}
+
+.plottable .tooltip .tooltip-inner p{
+  margin: 0;
+}
+
+.tooltip .tooltip-arrow {
+  position: absolute;
+  display: block;
+  width: 0.8rem;
+  height: 0.4rem;
+}
+
+.tooltip .tooltip-arrow::before {
+  position: absolute;
+  content: "";
+  border-color: transparent;
+  border-style: solid;
+}
+
+.bs-tooltip-top, .bs-tooltip-auto[x-placement^="top"] {
+  padding: 0.4rem 0;
+}
+
+.bs-tooltip-top .tooltip-arrow, .bs-tooltip-auto[x-placement^="top"] .tooltip-arrow {
+  bottom: 0;
+}
+
+.bs-tooltip-top .tooltip-arrow::before, .bs-tooltip-auto[x-placement^="top"] .tooltip-arrow::before {
+  top: 0;
+  border-width: 0.4rem 0.4rem 0;
+  border-top-color: #444;
+}
+
+.bs-tooltip-right, .bs-tooltip-auto[x-placement^="right"] {
+  padding: 0 0.4rem;
+}
+
+.bs-tooltip-right .tooltip-arrow, .bs-tooltip-auto[x-placement^="right"] .tooltip-arrow {
+  left: 0;
+  width: 0.4rem;
+  height: 0.8rem;
+}
+
+.bs-tooltip-right .tooltip-arrow::before, .bs-tooltip-auto[x-placement^="right"] .tooltip-arrow::before {
+  right: 0;
+  border-width: 0.4rem 0.4rem 0.4rem 0;
+  border-right-color: #444;
+}
+
+.bs-tooltip-bottom, .bs-tooltip-auto[x-placement^="bottom"] {
+  padding: 0.4rem 0;
+}
+
+.bs-tooltip-bottom .tooltip-arrow, .bs-tooltip-auto[x-placement^="bottom"] .tooltip-arrow {
+  top: 0;
+}
+
+.bs-tooltip-bottom .tooltip-arrow::before, .bs-tooltip-auto[x-placement^="bottom"] .tooltip-arrow::before {
+  bottom: 0;
+  border-width: 0 0.4rem 0.4rem;
+  border-bottom-color: #444;
+}
+
+.bs-tooltip-left, .bs-tooltip-auto[x-placement^="left"] {
+  padding: 0 0.4rem;
+}
+
+.bs-tooltip-left .tooltip-arrow, .bs-tooltip-auto[x-placement^="left"] .tooltip-arrow {
+  right: 0;
+  width: 0.4rem;
+  height: 0.8rem;
+}
+
+.bs-tooltip-left .tooltip-arrow::before, .bs-tooltip-auto[x-placement^="left"] .tooltip-arrow::before {
+  left: 0;
+  border-width: 0.4rem 0 0.4rem 0.4rem;
+  border-left-color: #444;
+}
+
+.validator-tooltip .tooltip-inner {
+    color: #444;
+    min-width: 200px;
+}
+
+.validator-tooltip-card .avatar img {
+    max-width: 100px;
+    padding-bottom: 10px;
+}
+
+.redelegate-validators {
+  display: inline-block;
+}
+.redelegate-validators .validator:nth-child(even) {
+  background-color: rgba(100,100,100,0.2);
+}
+.redelegate-validators .validator .moniker {
+  font-weight: 500;
+  display: inline-block;
+  font-size: 1.2em;
+}
+.ledger-buttons-group button {
+  display: block;
+  margin: 5px 0;
+  width: 100%;
+}
+
+.redelegate-validators .ellipsis {
+    display: inline-block;
+    max-width: 100%;
+}
+
+.material-icons.account-icon {
+    vertical-align: bottom;
+}
+
+.ledger-modal-tab .tab-pane .amount {
+    color: orangered;
+    font-weight: 500;
+}
+.ledger-modal-tab .tab-pane .gas {
+    color: darkslategray;
+    font-weight: 500;
+}
+.ledger-modal-tab .tab-pane .action {
+    color: green;
+    font-weight: 500;
+}
+
+.disabled-btn-wrapper > [disabled] {
+    pointer-events: none;
+}
+.disabled-btn-wrapper.disabled {
+    cursor: not-allowed;
+}
+
+.missed-records-table tbody tr.main-row:nth-of-type(odd) {
+    background-color: rgba(0,0,0,0.05);
+}
+
+.missed-records-table tbody tr.sub-row:nth-of-type(odd) {
+    background-color: rgba(0,0,0,0.05);
+}
+
+.missed-records-table td.caret {
+  width: 10px;
+  padding: 0.75rem 0;
+}
+
+.missed-records-grouped-table .validator-row.sub-row > td,
+.missed-records-grouped-table .sub-row th {
+    border-top: none;
+}
+
+.missed-records-grouped-table .validator-row.expanded {
+    background-color: rgba(200,200,200,0.2);
+}
+
+.missed-records-table-card {
+    margin-top: 10px;
+}
+
+.material-icons.info-icon {
+    font-size: 18px;
+    cursor: help;
+    opacity: 0.7;
+}
