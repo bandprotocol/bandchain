@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"encoding/base64"
@@ -15,16 +16,15 @@ import (
 
 	"github.com/bandprotocol/bandx/oracle/cmtx"
 	"github.com/bandprotocol/bandx/oracle/x/oracle"
-	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 )
 
 var (
-	port    string
-	nodeURI string
+	port     string
+	nodeURI  string
+	queryURI string
+	priv     secp256k1.PrivKeySecp256k1
 )
-
-const URL = "http://localhost"
 
 type requestData struct {
 	Code  string `json:"code"`
@@ -76,7 +76,7 @@ func has0xPrefix(str string) bool {
 }
 
 func GetTx(txHash string) (map[string]interface{}, error) {
-	_resp, err := http.Get(fmt.Sprintf(URL+`:26657/tx?hash=0x%s`, txHash))
+	_resp, err := http.Get(fmt.Sprintf("%s/tx?hash=0x%s", strings.Replace(nodeURI, "tcp", "http", 1), txHash))
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +123,7 @@ func handleStatus(w http.ResponseWriter, r *http.Request) {
 		} `json:"result"`
 	}
 
-	_resp, err := http.Get(URL + `:1317/zoracle/request/` + fmt.Sprintf("%d", reqID))
+	_resp, err := http.Get(fmt.Sprintf("%s/zoracle/request/%d", queryURI, reqID))
 	responseBytes, err := ioutil.ReadAll(_resp.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -156,21 +156,6 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-
-	// Get environment variable
-	privS, ok := os.LookupEnv("PRIVATE_KEY")
-	if !ok {
-		log.Fatal("Missing private key")
-	}
-	nodeURI, ok := os.LookupEnv("NODE_URI")
-	if !ok {
-		log.Fatal("Missing node uri")
-	}
-	viper.Set("nodeURI", nodeURI)
-
-	privB, _ := hex.DecodeString(privS)
-	var priv secp256k1.PrivKeySecp256k1
-	copy(priv[:], privB)
 
 	tx := cmtx.NewTxSender(priv)
 
@@ -218,6 +203,7 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 		if txData, ok := tr["result"]; ok {
 			byteData, _ := json.Marshal(txData)
 			json.Unmarshal(byteData, &txResponse)
+			break
 		}
 		time.Sleep(time.Second / 2)
 	}
@@ -277,6 +263,7 @@ func handleGetProof(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(ap)
 }
 
+
 func main() {
 	var ok bool
 	port, ok = os.LookupEnv("PORT")
@@ -287,6 +274,18 @@ func main() {
 	if !ok {
 		nodeURI = "tcp://localhost:26657"
 	}
+	queryURI, ok = os.LookupEnv("QUERY_URI")
+	if !ok {
+		queryURI = "http://localhost:1317"
+	}
+	privS, ok := os.LookupEnv("PRIVATE_KEY")
+	if !ok {
+		log.Fatal("Missing private key")
+	}
+
+	privB, _ := hex.DecodeString(privS)
+	copy(priv[:], privB)
+
 	http.HandleFunc("/request", handleRequest)
 	http.HandleFunc("/status", handleStatus)
 	http.HandleFunc("/proof", handleGetProof)

@@ -58,6 +58,22 @@ services:
       - 1317:1317
     command: bandcli rest-server --laddr tcp://0.0.0.0:1317 --node tcp://172.18.0.14:26657 --chain-id bandchain
 
+  web-server:
+    image: band-validator:latest
+    environment:
+      - PRIVATE_KEY=947f1715251d43de45232fc072e3ca4d823e876cf9f4ef74ad9a5f4ef440937e
+      - NODE_URI=tcp://172.18.0.14:26657
+      - QUERY_URI=http://172.18.0.15:1317
+    networks:
+      bandchain:
+        ipv4_address: 172.18.0.16
+    ports:
+      - 5000:5000
+    restart: always
+    depends_on:
+      - light-client
+    command: sh -c "cd ./server && go run *"
+
 networks:
   bandchain:
     ipam:

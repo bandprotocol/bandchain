@@ -211,7 +211,12 @@ func (pin proofInnerNode) Prefix() *big.Int {
 }
 
 func _getAppHashProof(reqId uint64) (LeafAndProof, error) {
-	_resp, err := http.Get(fmt.Sprintf(URL+`:26657/abci_query?path="/store/zoracle/key"&data=0x01%s&prove=true`, fmt.Sprintf("%016x", reqId)))
+	_resp, err := http.Get(
+		fmt.Sprintf(
+			`%s/abci_query?path="/store/zoracle/key"&data=0x01%016x&prove=true`,
+			strings.Replace(nodeURI, "tcp", "http", 1),
+			reqId,
+		))
 	if err != nil {
 		return LeafAndProof{}, err
 	}

@@ -42,7 +42,7 @@ func i2b(i int64) []byte {
 }
 
 func GetBlock(blockId uint64) (types.SignedHeader, error) {
-	_resp, err := http.Get(fmt.Sprintf(URL+`:26657/commit?height=%d`, blockId))
+	_resp, err := http.Get(fmt.Sprintf("%s/commit?height=%d", strings.Replace(nodeURI, "tcp", "http", 1), blockId))
 	if err != nil {
 		return types.SignedHeader{}, err
 	}
