@@ -4,9 +4,6 @@ import { ValidatorsManager } from "./ValidatorsManager.sol";
 contract Bridge is ValidatorsManager {
   mapping(uint256 => bytes32) public appHashes;
 
-  uint256 public numberOfValidators;
-  mapping(address => bool) validators;
-
   struct localVar {
     bytes blockHash;
     bytes32 signBytes;
@@ -82,13 +79,15 @@ contract Bridge is ValidatorsManager {
   }
 
   function verifyAppHash(
-    uint256[] memory prefixes,
+    uint64 blockHeight,
+    bytes memory value,
+    bytes memory storeProof
+  ) public view returns(bool) {
+    (uint256[] memory prefixes,
     bytes32[] memory path,
     bytes32 otherMSHashes,
-    uint64 blockHeight,
-    uint64 key,
-    bytes memory value
-  ) public view returns(bool) {
+    uint64 key) = abi.decode(storeProof, (uint256[], bytes32[], bytes32, uint64));
+
     return appHashes[blockHeight] == getAppHash(prefixes, path, otherMSHashes, key, value);
   }
 
@@ -163,50 +162,27 @@ contract Bridge is ValidatorsManager {
     return true;
   }
 
-  function submitAppHash(
-    bytes32 _appHash,
+  function submitAppHash(bytes memory appProof) public returns (uint256) {
+    (bytes32 _appHash,
     bytes memory _encodedHeight,
     bytes32[] memory _others,
     bytes memory _leftMsg,
     bytes memory _rightMsg,
-    bytes memory _signatures
-  ) public {
+    bytes memory _signatures) = abi.decode(appProof, (bytes32, bytes, bytes32[], bytes, bytes, bytes));
+
     require(verifyValidatorSignatures(_appHash,_encodedHeight,_others,_leftMsg,_rightMsg,_signatures));
-    appHashes[decodeVarint(_encodedHeight)] = _appHash;
+    uint256 height = decodeVarint(_encodedHeight);
+    appHashes[height] = _appHash;
+    return height;
   }
 
   function submitAndVerify (
-    bytes32 _appHash,
-    bytes memory _encodedHeight,
-    bytes32[] memory _others,
-    bytes memory _leftMsg,
-    bytes memory _rightMsg,
-    bytes memory _signatures,
-    uint256[] memory prefixes,
-    bytes32[] memory path,
-    bytes32 otherMSHashes,
-    uint64 key,
-    bytes memory value
-  ) public returns(bool) {
-    submitAppHash(
-      _appHash,
-      _encodedHeight,
-      _others,
-      _leftMsg,
-      _rightMsg,
-      _signatures
-    );
-    require(
-      verifyAppHash(
-        prefixes,
-        path,
-        otherMSHashes,
-        uint64(decodeVarint(_encodedHeight)),
-        key,
-        value
-      ),
-      "FAIL_TO_VERIFY_APP_HASH"
-    );
+    bytes calldata data, bytes calldata proof
+  ) external returns(bool) {
+    (bytes memory appProof, bytes memory storeProof) = abi.decode(proof, (bytes, bytes));
+
+    uint256 height = submitAppHash(appProof);
+    require(verifyAppHash(uint64(height), data, storeProof), "FAIL_TO_VERIFY_APP_HASH");
 
     return true;
   }
