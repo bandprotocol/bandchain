@@ -55,10 +55,10 @@ bandcli keys add validator1
 # Copy the `Address` output here and save it for later use
 bandcli keys add validator2
 
-# Add both accounts, with stake to the genesis file
-bandd add-genesis-account $(bandcli keys show owner -a) 100000000stake,1000000native
-bandd add-genesis-account $(bandcli keys show validator1 -a) 100000000stake,1000000native
-bandd add-genesis-account $(bandcli keys show validator2 -a) 100000000stake,1000000native
+# Add both accounts, with band to the genesis file
+bandd add-genesis-account $(bandcli keys show owner -a) 100000000band
+bandd add-genesis-account $(bandcli keys show validator1 -a) 100000000band
+bandd add-genesis-account $(bandcli keys show validator2 -a) 100000000band
 
 # Configure your CLI to eliminate need for chain-id flag
 bandcli config chain-id bandchain

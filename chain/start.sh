@@ -11,8 +11,8 @@ bandcli keys add owner
 bandcli keys add user
 # bandcli keys add bob --no-backup
 
-bandd add-genesis-account $(bandcli keys show owner -a) 99000000000000stake
-bandd add-genesis-account $(bandcli keys show user -a) 1000000000000stake
+bandd add-genesis-account $(bandcli keys show owner -a) 99000000000000band
+bandd add-genesis-account $(bandcli keys show user -a) 1000000000000band
 
 bandcli config chain-id bandchain
 bandcli config output json
