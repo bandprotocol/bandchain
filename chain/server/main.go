@@ -14,6 +14,8 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 
+	"github.com/spf13/viper"
+
 	"github.com/bandprotocol/d3n/chain/cmtx"
 	"github.com/bandprotocol/d3n/chain/x/zoracle"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
@@ -278,6 +280,7 @@ func main() {
 	if !ok {
 		nodeURI = "tcp://localhost:26657"
 	}
+	viper.Set("nodeURI", nodeURI)
 	queryURI, ok = os.LookupEnv("QUERY_URI")
 	if !ok {
 		queryURI = "http://localhost:1317"

@@ -1,5 +1,5 @@
 {
-  "genesis_time": "2019-12-12T11:04:34.557501Z",
+  "genesis_time": "2019-12-12T14:53:05.457397Z",
   "chain_id": "bandchain",
   "consensus_params": {
     "block": {
@@ -16,7 +16,6 @@
   },
   "app_hash": "",
   "app_state": {
-    "params": null,
     "slashing": {
       "params": {
         "max_evidence_age": "120000000000",
@@ -29,12 +28,24 @@
       "signing_infos": {},
       "missed_blocks": {}
     },
-    "supply": {
-      "supply": []
+    "distribution": {
+      "fee_pool": {
+        "community_pool": []
+      },
+      "community_tax": "0.020000000000000000",
+      "base_proposer_reward": "0.010000000000000000",
+      "bonus_proposer_reward": "0.040000000000000000",
+      "withdraw_addr_enabled": true,
+      "delegator_withdraw_infos": [],
+      "previous_proposer": "",
+      "outstanding_rewards": [],
+      "validator_accumulated_commissions": [],
+      "validator_historical_rewards": [],
+      "validator_current_rewards": [],
+      "delegator_starting_infos": [],
+      "validator_slash_events": []
     },
-    "bank": {
-      "send_enabled": true
-    },
+    "zoracle": {},
     "gov": {
       "starting_proposal_id": "1",
       "deposits": null,
@@ -58,7 +69,28 @@
         "veto": "0.334000000000000000"
       }
     },
-    "zoracle": {},
+    "auth": {
+      "params": {
+        "max_memo_characters": "256",
+        "tx_sig_limit": "7",
+        "tx_size_cost_per_byte": "10",
+        "sig_verify_cost_ed25519": "590",
+        "sig_verify_cost_secp256k1": "1000"
+      }
+    },
+    "bank": {
+      "send_enabled": true
+    },
+    "crisis": {
+      "constant_fee": {
+        "denom": "stake",
+        "amount": "1000"
+      }
+    },
+    "supply": {
+      "supply": []
+    },
+    "params": null,
     "genutil": {
       "gentxs": [
         {
@@ -243,53 +275,6 @@
         }
       ]
     },
-    "distribution": {
-      "fee_pool": {
-        "community_pool": []
-      },
-      "community_tax": "0.020000000000000000",
-      "base_proposer_reward": "0.010000000000000000",
-      "bonus_proposer_reward": "0.040000000000000000",
-      "withdraw_addr_enabled": true,
-      "delegator_withdraw_infos": [],
-      "previous_proposer": "",
-      "outstanding_rewards": [],
-      "validator_accumulated_commissions": [],
-      "validator_historical_rewards": [],
-      "validator_current_rewards": [],
-      "delegator_starting_infos": [],
-      "validator_slash_events": []
-    },
-    "crisis": {
-      "constant_fee": {
-        "denom": "stake",
-        "amount": "1000"
-      }
-    },
-    "auth": {
-      "params": {
-        "max_memo_characters": "256",
-        "tx_sig_limit": "7",
-        "tx_size_cost_per_byte": "10",
-        "sig_verify_cost_ed25519": "590",
-        "sig_verify_cost_secp256k1": "1000"
-      }
-    },
-    "staking": {
-      "params": {
-        "unbonding_time": "1814400000000000",
-        "max_validators": 100,
-        "max_entries": 7,
-        "bond_denom": "stake"
-      },
-      "last_total_power": "0",
-      "last_validator_powers": null,
-      "validators": null,
-      "delegations": null,
-      "unbonding_delegations": null,
-      "redelegations": null,
-      "exported": false
-    },
     "accounts": [
       {
         "address": "band1r8u4m0wefrdyp7sdde7drtrt94qczggkv38jrk",
@@ -362,7 +347,40 @@
         "end_time": "0",
         "module_name": "",
         "module_permissions": [""]
+      },
+      {
+        "address": "band17geerdwmlxpwxlahmt02vj4wy89wfstjhn085z",
+        "coins": [
+          {
+            "denom": "stake",
+            "amount": "10000000000000"
+          }
+        ],
+        "sequence_number": "0",
+        "account_number": "0",
+        "original_vesting": [],
+        "delegated_free": [],
+        "delegated_vesting": [],
+        "start_time": "0",
+        "end_time": "0",
+        "module_name": "",
+        "module_permissions": [""]
       }
-    ]
+    ],
+    "staking": {
+      "params": {
+        "unbonding_time": "1814400000000000",
+        "max_validators": 100,
+        "max_entries": 7,
+        "bond_denom": "stake"
+      },
+      "last_total_power": "0",
+      "last_validator_powers": null,
+      "validators": null,
+      "delegations": null,
+      "unbonding_delegations": null,
+      "redelegations": null,
+      "exported": false
+    }
   }
 }

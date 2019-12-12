@@ -35,6 +35,8 @@ bandd add-genesis-account $(bandcli keys show validator2 -a) 10000000000000stake
 bandd add-genesis-account $(bandcli keys show validator3 -a) 10000000000000stake
 bandd add-genesis-account $(bandcli keys show validator4 -a) 10000000000000stake
 
+bandd add-genesis-account band17geerdwmlxpwxlahmt02vj4wy89wfstjhn085z 10000000000000stake
+
 # genesis configurations
 bandcli config chain-id bandchain
 bandcli config output json
