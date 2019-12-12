@@ -124,6 +124,11 @@ func handleStatus(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_resp, err := http.Get(fmt.Sprintf("%s/zoracle/request/%d", queryURI, reqID))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	responseBytes, err := ioutil.ReadAll(_resp.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -262,7 +267,6 @@ func handleGetProof(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(ap)
 }
-
 
 func main() {
 	var ok bool
