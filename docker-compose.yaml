@@ -74,6 +74,23 @@ services:
       - light-client
     command: sh -c "cd ./server && go run *"
 
+  explorer:
+    build:
+      context: explorer
+      dockerfile: Dockerfile
+    image: band-explorer:latest
+    environment:
+      - METEOR_ALLOW_SUPERUSER=true
+    depends_on:
+      - validator4-node
+      - light-client
+    restart: always
+    ports:
+      - 12000:12000
+    networks:
+      - bandchain
+    command: sh -c "meteor run -p 0.0.0.0:12000 --settings default_settings.json --no-release-check"
+
 networks:
   bandchain:
     ipam:
