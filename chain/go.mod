@@ -1,4 +1,4 @@
-module github.com/bandprotocol/bandx/oracle
+module github.com/bandprotocol/d3n/chain
 
 go 1.13
 

@@ -2,7 +2,7 @@ PACKAGES=$(shell go list ./... | grep -v '/simulation')
 
 COMMIT := $(shell git log -1 --format='%H')
 
-ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=oracle \
+ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=zoracle \
 	-X github.com/cosmos/cosmos-sdk/version.ServerName=bandd \
 	-X github.com/cosmos/cosmos-sdk/version.ClientName=bandcli \
 	-X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \

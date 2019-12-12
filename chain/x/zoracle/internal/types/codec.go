@@ -13,6 +13,6 @@ func init() {
 
 // RegisterCodec registers concrete types on the Amino codec
 func RegisterCodec(cdc *codec.Codec) {
-	cdc.RegisterConcrete(MsgRequest{}, "oracle/Request", nil)
-	cdc.RegisterConcrete(MsgReport{}, "oracle/Report", nil)
+	cdc.RegisterConcrete(MsgRequest{}, "zoracle/Request", nil)
+	cdc.RegisterConcrete(MsgReport{}, "zoracle/Report", nil)
 }

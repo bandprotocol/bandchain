@@ -7,8 +7,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/bandprotocol/bandx/oracle/cmtx"
-	"github.com/bandprotocol/bandx/oracle/x/oracle"
+	"github.com/bandprotocol/d3n/chain/cmtx"
+	"github.com/bandprotocol/d3n/chain/x/zoracle"
 	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 )
@@ -53,5 +53,5 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println(tx.SendTransaction(oracle.NewMsgRequest(bytes, 4, tx.Sender())))
+	fmt.Println(tx.SendTransaction(zoracle.NewMsgRequest(bytes, 4, tx.Sender())))
 }

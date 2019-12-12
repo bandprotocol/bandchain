@@ -1,4 +1,4 @@
-package oracle
+package zoracle
 
 import (
 	"encoding/hex"
@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/bandprotocol/bandx/oracle/wasm"
-	keep "github.com/bandprotocol/bandx/oracle/x/oracle/internal/keeper"
-	"github.com/bandprotocol/bandx/oracle/x/oracle/internal/types"
+	"github.com/bandprotocol/d3n/chain/wasm"
+	keep "github.com/bandprotocol/d3n/chain/x/zoracle/internal/keeper"
+	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	staking "github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/ethereum/go-ethereum/crypto"

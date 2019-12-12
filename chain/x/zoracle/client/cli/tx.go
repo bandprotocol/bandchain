@@ -4,7 +4,7 @@ import (
 	"encoding/hex"
 	"strconv"
 
-	"github.com/bandprotocol/bandx/oracle/x/oracle/internal/types"
+	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -16,19 +16,19 @@ import (
 
 // GetTxCmd returns the transaction commands for this module
 func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
-	oracleCmd := &cobra.Command{
+	zoracleCmd := &cobra.Command{
 		Use:                        types.ModuleName,
-		Short:                      "Data request transaction subcommands",
+		Short:                      "zoracle transaction subcommands",
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
 	}
-	oracleCmd.AddCommand(client.PostCommands(
+	zoracleCmd.AddCommand(client.PostCommands(
 		GetCmdRequest(cdc),
 		GetCmdReport(cdc),
 	)...)
 
-	return oracleCmd
+	return zoracleCmd
 }
 
 // GetCmdRequest implements the request command handler

@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bandprotocol/bandx/oracle/x/oracle/internal/types"
+	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 	"github.com/stretchr/testify/require"
 	crypto "github.com/tendermint/tendermint/crypto"
 

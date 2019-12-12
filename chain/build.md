@@ -1,8 +1,8 @@
 # Building and running the application
 
-## Building the `oracle` application
+## Building the `band` application
 
-If you want to build the `oracle` application in this repo to see the functionalities, **Go 1.13.0+** is required .
+If you want to build the `band` application in this repo to see the functionalities, **Go 1.13.0+** is required .
 
 Add some parameters to environment is necessary if you have never used the `go mod` before.
 
@@ -19,8 +19,8 @@ Now, you can install and run the application.
 
 ```
 # Clone the source of the tutorial repository
-git clone git@github.com:bandprotocol/bandx.git
-cd bandx/oracle/
+git clone git@github.com:bandprotocol/d3n.git
+cd d3n/chain/
 ```
 
 ```bash
@@ -91,16 +91,16 @@ bandcli query account $(bandcli keys show validator1 -a)
 
 ```bash
  # send request
- bandcli tx oracle request 30 $(xxd -p -c100000000000 ./wasm/res/test.wasm) --from owner --gas 10000000
+ bandcli tx zoracle request 30 $(xxd -p -c100000000000 ./wasm/res/test.wasm) --from owner --gas 10000000
 
  # get request by id
- bandcli query oracle request <reqID>
+ bandcli query zoracle request <reqID>
 
  # get pending request
- bandcli query oracle pending_request
+ bandcli query zoracle pending_request
 
  # send report
- bandcli tx oracle report <reqID> <data> --from <validator>
+ bandcli tx zoracle report <reqID> <data> --from <validator>
 
- bandcli tx oracle report <reqID> 02000000000000001b000000000000007b22626974636f696e223a7b22757364223a373436392e34397d7d0f000000000000007b22555344223a373531302e32317d --from owner
+ bandcli tx zoracle report <reqID> 02000000000000001b000000000000007b22626974636f696e223a7b22757364223a373436392e34397d7d0f000000000000007b22555344223a373531302e32317d --from owner
 ```

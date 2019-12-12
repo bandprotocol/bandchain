@@ -1,8 +1,8 @@
-package oracle
+package zoracle
 
 import (
-	"github.com/bandprotocol/bandx/oracle/x/oracle/internal/keeper"
-	"github.com/bandprotocol/bandx/oracle/x/oracle/internal/types"
+	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/keeper"
+	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 )
 
 const (

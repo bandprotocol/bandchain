@@ -14,8 +14,8 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 
-	"github.com/bandprotocol/bandx/oracle/cmtx"
-	"github.com/bandprotocol/bandx/oracle/x/oracle"
+	"github.com/bandprotocol/d3n/chain/cmtx"
+	"github.com/bandprotocol/d3n/chain/x/zoracle"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 )
 
@@ -187,7 +187,7 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	txHash, err := tx.SendTransaction(oracle.NewMsgRequest(code, delay, tx.Sender()))
+	txHash, err := tx.SendTransaction(zoracle.NewMsgRequest(code, delay, tx.Sender()))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

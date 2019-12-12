@@ -28,10 +28,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/supply"
 
-	"github.com/bandprotocol/bandx/oracle/x/oracle"
+	"github.com/bandprotocol/d3n/chain/x/zoracle"
 )
 
-const appName = "oracle"
+const appName = "band"
 
 var (
 	// default home directories for the application CLI
@@ -54,7 +54,7 @@ var (
 		slashing.AppModuleBasic{},
 		supply.AppModuleBasic{},
 
-		oracle.AppModuleBasic{},
+		zoracle.AppModuleBasic{},
 	)
 	// account permissions
 	maccPerms = map[string][]string{
@@ -75,7 +75,7 @@ func MakeCodec() *codec.Codec {
 	return cdc
 }
 
-type oracleApp struct {
+type bandApp struct {
 	*bam.BaseApp
 	cdc *codec.Codec
 
@@ -95,16 +95,16 @@ type oracleApp struct {
 	govKeeper      gov.Keeper
 	crisisKeeper   crisis.Keeper
 	paramsKeeper   params.Keeper
-	oracleKeeper   oracle.Keeper
+	zoracleKeeper   zoracle.Keeper
 
 	// Module Manager
 	mm *module.Manager
 }
 
-// NewOracleApp is a constructor function for oracleApp
-func NewOracleApp(
+// NewBandApp is a constructor function for bandApp
+func NewBandApp(
 	logger log.Logger, db dbm.DB, invCheckPeriod uint, baseAppOptions ...func(*bam.BaseApp),
-) *oracleApp {
+) *bandApp {
 
 	// First define the top level codec that will be shared by the different modules
 	cdc := MakeCodec()
@@ -115,12 +115,12 @@ func NewOracleApp(
 	bApp.SetAppVersion(version.Version)
 
 	keys := sdk.NewKVStoreKeys(bam.MainStoreKey, auth.StoreKey, staking.StoreKey,
-		supply.StoreKey, distr.StoreKey, slashing.StoreKey, gov.StoreKey, params.StoreKey, oracle.StoreKey)
+		supply.StoreKey, distr.StoreKey, slashing.StoreKey, gov.StoreKey, params.StoreKey, zoracle.StoreKey)
 
 	tkeys := sdk.NewTransientStoreKeys(staking.TStoreKey, params.TStoreKey)
 
 	// Here you initialize your application with the store keys it requires
-	var app = &oracleApp{
+	var app = &bandApp{
 		BaseApp:        bApp,
 		cdc:            cdc,
 		invCheckPeriod: invCheckPeriod,
@@ -213,9 +213,9 @@ func NewOracleApp(
 			app.slashingKeeper.Hooks()),
 	)
 
-	app.oracleKeeper = oracle.NewKeeper(
+	app.zoracleKeeper = zoracle.NewKeeper(
 		app.cdc,
-		keys[oracle.StoreKey],
+		keys[zoracle.StoreKey],
 		app.bankKeeper,
 		app.stakingKeeper,
 	)
@@ -226,7 +226,7 @@ func NewOracleApp(
 		auth.NewAppModule(app.accountKeeper),
 		bank.NewAppModule(app.bankKeeper, app.accountKeeper),
 		crisis.NewAppModule(&app.crisisKeeper),
-		oracle.NewAppModule(app.oracleKeeper),
+		zoracle.NewAppModule(app.zoracleKeeper),
 		supply.NewAppModule(app.supplyKeeper, app.accountKeeper),
 		distr.NewAppModule(app.distrKeeper, app.supplyKeeper),
 		gov.NewAppModule(app.govKeeper, app.supplyKeeper),
@@ -235,7 +235,7 @@ func NewOracleApp(
 	)
 
 	app.mm.SetOrderBeginBlockers(distr.ModuleName, slashing.ModuleName)
-	app.mm.SetOrderEndBlockers(oracle.ModuleName, gov.ModuleName, staking.ModuleName)
+	app.mm.SetOrderEndBlockers(zoracle.ModuleName, gov.ModuleName, staking.ModuleName)
 
 	// Sets the order of Genesis - Order matters, genutil is to always come last
 	// NOTE: The genutils moodule must occur after staking so that pools are
@@ -248,7 +248,7 @@ func NewOracleApp(
 		bank.ModuleName,
 		slashing.ModuleName,
 		gov.ModuleName,
-		oracle.ModuleName,
+		zoracle.ModuleName,
 		supply.ModuleName,
 		crisis.ModuleName,
 		genutil.ModuleName,
@@ -290,7 +290,7 @@ func NewDefaultGenesisState() GenesisState {
 	return ModuleBasics.DefaultGenesis()
 }
 
-func (app *oracleApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
+func (app *bandApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	var genesisState GenesisState
 
 	err := app.cdc.UnmarshalJSON(req.AppStateBytes, &genesisState)
@@ -301,18 +301,18 @@ func (app *oracleApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) ab
 	return app.mm.InitGenesis(ctx, genesisState)
 }
 
-func (app *oracleApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
+func (app *bandApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	return app.mm.BeginBlock(ctx, req)
 }
-func (app *oracleApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
+func (app *bandApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
 	return app.mm.EndBlock(ctx, req)
 }
-func (app *oracleApp) LoadHeight(height int64) error {
+func (app *bandApp) LoadHeight(height int64) error {
 	return app.LoadVersion(height, app.keys[bam.MainStoreKey])
 }
 
 // ModuleAccountAddrs returns all the app's module account addresses.
-func (app *oracleApp) ModuleAccountAddrs() map[string]bool {
+func (app *bandApp) ModuleAccountAddrs() map[string]bool {
 	modAccAddrs := make(map[string]bool)
 	for acc := range maccPerms {
 		modAccAddrs[supply.NewModuleAddress(acc).String()] = true
@@ -323,7 +323,7 @@ func (app *oracleApp) ModuleAccountAddrs() map[string]bool {
 
 //_________________________________________________________
 
-func (app *oracleApp) ExportAppStateAndValidators(forZeroHeight bool, jailWhiteList []string,
+func (app *bandApp) ExportAppStateAndValidators(forZeroHeight bool, jailWhiteList []string,
 ) (appState json.RawMessage, validators []tmtypes.GenesisValidator, err error) {
 
 	// as if they could withdraw from the start of the next block
