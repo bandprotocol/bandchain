@@ -39,12 +39,15 @@ func TestMsgRequestValidation(t *testing.T) {
 }
 
 func TestMsgRequestGetSignBytes(t *testing.T) {
+	config := sdk.GetConfig()
+	config.SetBech32PrefixForAccount("band", "band"+sdk.PrefixPublic)
+
 	code := []byte("Code")
 	sender := sdk.AccAddress([]byte("sender"))
 	msg := NewMsgRequest(code, uint64(10), sender)
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"zoracle/Request","value":{"code":"Q29kZQ==","reportPeriod":"10","sender":"cosmos1wdjkuer9wgh76ts6"}}`
+	expected := `{"type":"zoracle/Request","value":{"code":"Q29kZQ==","reportPeriod":"10","sender":"band1wdjkuer9wgvz7c4y"}}`
 
 	require.Equal(t, expected, string(res))
 }
@@ -85,13 +88,16 @@ func TestMsgReportValidation(t *testing.T) {
 }
 
 func TestMsgReportGetSignBytes(t *testing.T) {
+	config := sdk.GetConfig()
+	config.SetBech32PrefixForValidator("band"+sdk.PrefixValidator+sdk.PrefixOperator, "band"+sdk.PrefixValidator+sdk.PrefixOperator+sdk.PrefixPublic)
+
 	requestID := uint64(3)
 	data := []byte("Data")
 	validator, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
 	msg := NewMsgReport(requestID, data, validator)
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"zoracle/Report","value":{"data":"RGF0YQ==","requestID":"3","validator":"cosmosvaloper1hq8j5h0h64csk9tz95df783cxr0dt0dgdf6z45"}}`
+	expected := `{"type":"zoracle/Report","value":{"data":"RGF0YQ==","requestID":"3","validator":"bandvaloper1hq8j5h0h64csk9tz95df783cxr0dt0dgay2kyy"}}`
 
 	require.Equal(t, expected, string(res))
 }

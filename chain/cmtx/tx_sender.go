@@ -14,10 +14,24 @@ type TxSender struct {
 	privKey crypto.PrivKey
 }
 
+const Bech32MainPrefix = "band"
+
+func SetBech32AddressPrefixes(config *sdk.Config) {
+	config.SetBech32PrefixForAccount(Bech32MainPrefix, Bech32MainPrefix+sdk.PrefixPublic)
+	config.SetBech32PrefixForValidator(Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator, Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator+sdk.PrefixPublic)
+	config.SetBech32PrefixForConsensusNode(Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus, Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus+sdk.PrefixPublic)
+}
+
+func privKeyToBandAccAddress(privKey crypto.PrivKey) sdk.AccAddress {
+	config := sdk.GetConfig()
+	SetBech32AddressPrefixes(config)
+	return sdk.AccAddress(privKey.PubKey().Address().Bytes())
+}
+
 func NewTxSender(privKey crypto.PrivKey) TxSender {
 	return TxSender{
 		cdc:     NewCodec(),
-		addr:    sdk.AccAddress(privKey.PubKey().Address().Bytes()),
+		addr:    privKeyToBandAccAddress(privKey),
 		privKey: privKey,
 	}
 }

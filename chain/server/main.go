@@ -14,6 +14,8 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 
+	"github.com/spf13/viper"
+
 	"github.com/bandprotocol/d3n/chain/cmtx"
 	"github.com/bandprotocol/d3n/chain/x/zoracle"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
@@ -124,6 +126,11 @@ func handleStatus(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_resp, err := http.Get(fmt.Sprintf("%s/zoracle/request/%d", queryURI, reqID))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	responseBytes, err := ioutil.ReadAll(_resp.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -263,7 +270,6 @@ func handleGetProof(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(ap)
 }
 
-
 func main() {
 	var ok bool
 	port, ok = os.LookupEnv("PORT")
@@ -274,6 +280,7 @@ func main() {
 	if !ok {
 		nodeURI = "tcp://localhost:26657"
 	}
+	viper.Set("nodeURI", nodeURI)
 	queryURI, ok = os.LookupEnv("QUERY_URI")
 	if !ok {
 		queryURI = "http://localhost:1317"

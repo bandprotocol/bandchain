@@ -24,12 +24,20 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/supply"
 )
 
+const Bech32MainPrefix = "band"
+
 func createTestCodec() *codec.Codec {
 	var cdc = codec.New()
 	supply.RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)
 	auth.RegisterCodec(cdc)
 	return cdc
+}
+
+func SetBech32AddressPrefixes(config *sdk.Config) {
+	config.SetBech32PrefixForAccount(Bech32MainPrefix, Bech32MainPrefix+sdk.PrefixPublic)
+	config.SetBech32PrefixForValidator(Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator, Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator+sdk.PrefixPublic)
+	config.SetBech32PrefixForConsensusNode(Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus, Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus+sdk.PrefixPublic)
 }
 
 func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
@@ -39,6 +47,9 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 	keyParams := sdk.NewKVStoreKey(params.StoreKey)
 	tkeyParams := sdk.NewTransientStoreKey(params.TStoreKey)
 	keySupply := sdk.NewKVStoreKey(supply.StoreKey)
+
+	config := sdk.GetConfig()
+	SetBech32AddressPrefixes(config)
 
 	db := dbm.NewMemDB()
 
@@ -67,7 +78,7 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 		auth.ProtoBaseAccount, // prototype
 	)
 
-	addr, _ := sdk.AccAddressFromBech32("cosmos1q8ysvjkslxdkhap2zqd2n5shhay606ru3cdjwr")
+	addr, _ := sdk.AccAddressFromBech32("band1q8ysvjkslxdkhap2zqd2n5shhay606ru3cdjwr")
 
 	account := accountKeeper.NewAccountWithAddress(
 		ctx,
