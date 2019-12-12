@@ -1,11 +1,11 @@
-package oracle
+package zoracle
 
 import (
 	"encoding/hex"
 	"fmt"
 
-	"github.com/bandprotocol/bandx/oracle/wasm"
-	"github.com/bandprotocol/bandx/oracle/x/oracle/internal/types"
+	"github.com/bandprotocol/d3n/chain/wasm"
+	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -19,7 +19,7 @@ func NewHandler(keeper Keeper) sdk.Handler {
 		case MsgReport:
 			return handleMsgReport(ctx, keeper, msg)
 		default:
-			errMsg := fmt.Sprintf("unrecognized oracle message type: %T", msg)
+			errMsg := fmt.Sprintf("unrecognized zoracle message type: %T", msg)
 			return sdk.ErrUnknownRequest(errMsg).Result()
 		}
 	}

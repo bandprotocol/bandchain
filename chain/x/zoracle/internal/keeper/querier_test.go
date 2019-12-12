@@ -3,7 +3,7 @@ package keeper
 import (
 	"testing"
 
-	"github.com/bandprotocol/bandx/oracle/x/oracle/internal/types"
+	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -25,7 +25,7 @@ func TestQueryRequestById(t *testing.T) {
 
 	// It must be requestID = 0
 	request := types.DataPoint{RequestID: 0, CodeHash: []byte(nil), ReportEndAt: 0, Result: []byte(nil)}
-	acs, errJSON := codec.MarshalJSONIndent(keeper.cdc, request)
+	acs, errJSON := codec.MarshalJSONIndent(keeper.cdc, types.NewRequestWithReport(request, []types.ValidatorReport{}))
 	require.Nil(t, errJSON)
 	require.Equal(t, acs, acsBytes)
 
@@ -47,7 +47,7 @@ func TestQueryRequestById(t *testing.T) {
 
 	// Use bytes format for comparison
 	request = types.DataPoint{RequestID: 1, CodeHash: codeHash, ReportEndAt: 3, Result: []byte(nil)}
-	acs, errJSON = codec.MarshalJSONIndent(keeper.cdc, request)
+	acs, errJSON = codec.MarshalJSONIndent(keeper.cdc, types.NewRequestWithReport(request, []types.ValidatorReport{}))
 	require.Nil(t, errJSON)
 	require.Equal(t, acs, acsBytes)
 }

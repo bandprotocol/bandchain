@@ -4,7 +4,7 @@ import (
 	"os"
 	"path"
 
-	app "github.com/bandprotocol/bandx/oracle"
+	app "github.com/bandprotocol/d3n/chain"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/lcd"
@@ -34,7 +34,7 @@ func main() {
 
 	rootCmd := &cobra.Command{
 		Use:   "bandcli",
-		Short: "oracle Client",
+		Short: "band Client",
 	}
 
 	// Add --chain-id to persistent flags and mark it required

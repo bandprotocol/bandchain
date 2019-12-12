@@ -13,7 +13,7 @@ import (
 	"github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/log"
 
-	app "github.com/bandprotocol/bandx/oracle"
+	app "github.com/bandprotocol/d3n/chain"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -36,7 +36,7 @@ func main() {
 
 	rootCmd := &cobra.Command{
 		Use:               "bandd",
-		Short:             "oracle App Daemon (server)",
+		Short:             "band App Daemon (server)",
 		PersistentPreRunE: server.PersistentPreRunEFn(ctx),
 	}
 	// CLI commands to initialize the chain
@@ -63,7 +63,7 @@ func main() {
 }
 
 func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application {
-	return app.NewOracleApp(logger, db, 0)
+	return app.NewBandApp(logger, db, 0)
 }
 
 func exportAppStateAndTMValidators(
@@ -71,15 +71,15 @@ func exportAppStateAndTMValidators(
 ) (json.RawMessage, []tmtypes.GenesisValidator, error) {
 
 	if height != -1 {
-		requestApp := app.NewOracleApp(logger, db, 0)
-		err := requestApp.LoadHeight(height)
+		bandApp := app.NewBandApp(logger, db, 0)
+		err := bandApp.LoadHeight(height)
 		if err != nil {
 			return nil, nil, err
 		}
-		return requestApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
+		return bandApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 	}
 
-	requestApp := app.NewOracleApp(logger, db, 0)
+	bandApp := app.NewBandApp(logger, db, 0)
 
-	return requestApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
+	return bandApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 }

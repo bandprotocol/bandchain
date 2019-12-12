@@ -1,4 +1,4 @@
-package oracle
+package zoracle
 
 import (
 	"encoding/json"
@@ -6,8 +6,8 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
 
-	"github.com/bandprotocol/bandx/oracle/x/oracle/client/cli"
-	"github.com/bandprotocol/bandx/oracle/x/oracle/client/rest"
+	"github.com/bandprotocol/d3n/chain/x/zoracle/client/cli"
+	"github.com/bandprotocol/d3n/chain/x/zoracle/client/rest"
 	"github.com/cosmos/cosmos-sdk/codec"
 
 	"github.com/cosmos/cosmos-sdk/client/context"

@@ -3,7 +3,7 @@ package cli
 import (
 	"fmt"
 
-	"github.com/bandprotocol/bandx/oracle/x/oracle/internal/types"
+	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -12,19 +12,19 @@ import (
 
 // GetQueryCmd returns
 func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
-	oracleCmd := &cobra.Command{
+	zoracleCmd := &cobra.Command{
 		Use:                        types.ModuleName,
-		Short:                      "Querying commands for the oracle module",
+		Short:                      "Querying commands for the zoracle module",
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
 	}
-	oracleCmd.AddCommand(client.GetCommands(
+	zoracleCmd.AddCommand(client.GetCommands(
 		GetCmdReadRequest(storeKey, cdc),
 		GetCmdPendingRequest(storeKey, cdc),
 	)...)
 
-	return oracleCmd
+	return zoracleCmd
 }
 
 // GetCmdReadRequest queries request by reqID

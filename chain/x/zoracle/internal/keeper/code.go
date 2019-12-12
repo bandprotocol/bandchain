@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/crypto"
 
-	"github.com/bandprotocol/bandx/oracle/x/oracle/internal/types"
+	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 )
 
 // SetCode is a function to save codeHash as key and code as value

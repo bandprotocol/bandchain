@@ -44,7 +44,7 @@ func TestMsgRequestGetSignBytes(t *testing.T) {
 	msg := NewMsgRequest(code, uint64(10), sender)
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"oracle/Request","value":{"code":"Q29kZQ==","reportPeriod":"10","sender":"cosmos1wdjkuer9wgh76ts6"}}`
+	expected := `{"type":"zoracle/Request","value":{"code":"Q29kZQ==","reportPeriod":"10","sender":"cosmos1wdjkuer9wgh76ts6"}}`
 
 	require.Equal(t, expected, string(res))
 }
@@ -91,7 +91,7 @@ func TestMsgReportGetSignBytes(t *testing.T) {
 	msg := NewMsgReport(requestID, data, validator)
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"oracle/Report","value":{"data":"RGF0YQ==","requestID":"3","validator":"cosmosvaloper1hq8j5h0h64csk9tz95df783cxr0dt0dgdf6z45"}}`
+	expected := `{"type":"zoracle/Report","value":{"data":"RGF0YQ==","requestID":"3","validator":"cosmosvaloper1hq8j5h0h64csk9tz95df783cxr0dt0dgdf6z45"}}`
 
 	require.Equal(t, expected, string(res))
 }

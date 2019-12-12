@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	"github.com/bandprotocol/bandx/oracle/x/oracle/internal/types"
+	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -32,7 +32,7 @@ func (k Keeper) GetDataReports(ctx sdk.Context, requestID uint64) []types.Report
 
 func (k Keeper) GetValidatorReports(ctx sdk.Context, requestID uint64) []types.ValidatorReport {
 	iterator := k.GetReportsIterator(ctx, requestID)
-	var data []types.ValidatorReport
+	data := make([]types.ValidatorReport, 0)
 	for ; iterator.Valid(); iterator.Next() {
 		var report types.Report
 		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &report)

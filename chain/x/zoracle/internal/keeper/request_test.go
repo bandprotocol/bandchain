@@ -3,7 +3,7 @@ package keeper
 import (
 	"testing"
 
-	"github.com/bandprotocol/bandx/oracle/x/oracle/internal/types"
+	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 	"github.com/stretchr/testify/require"
 )
 

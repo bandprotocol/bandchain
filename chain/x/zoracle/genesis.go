@@ -1,4 +1,4 @@
-package oracle
+package zoracle
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"

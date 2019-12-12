@@ -14,9 +14,9 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 
-	"github.com/bandprotocol/bandx/oracle/cmtx"
-	sub "github.com/bandprotocol/bandx/oracle/subscriber"
-	"github.com/bandprotocol/bandx/oracle/x/oracle"
+	"github.com/bandprotocol/d3n/chain/cmtx"
+	sub "github.com/bandprotocol/d3n/chain/subscriber"
+	"github.com/bandprotocol/d3n/chain/x/zoracle"
 )
 
 var txSender cmtx.TxSender
@@ -41,7 +41,7 @@ func main() {
 	s := sub.NewSubscriber(viper.GetString("nodeURI"), "/websocket")
 
 	// Tx events
-	s.AddHandler(oracle.EventTypeRequest, handleRequest)
+	s.AddHandler(zoracle.EventTypeRequest, handleRequest)
 
 	// start subscription
 	s.Run()
@@ -58,14 +58,14 @@ func handleRequest(event *abci.Event) {
 
 	for _, kv := range event.GetAttributes() {
 		switch string(kv.Key) {
-		case oracle.AttributeKeyRequestID:
+		case zoracle.AttributeKeyRequestID:
 			var err error
 			requestID, err = strconv.ParseUint(string(kv.Value), 10, 64)
 			if err != nil {
 				fmt.Printf("handleRequest %s", err)
 				return
 			}
-		case oracle.AttributeKeyPrepare:
+		case zoracle.AttributeKeyPrepare:
 			byteValue, err := hex.DecodeString(string(kv.Value))
 			if err != nil {
 				fmt.Printf("handleRequest %s", err)
@@ -94,7 +94,7 @@ func handleRequest(event *abci.Event) {
 	}
 	b, _ := json.Marshal(answer)
 
-	tx, err := txSender.SendTransaction(oracle.NewMsgReport(requestID, b, sdk.ValAddress(txSender.Sender())))
+	tx, err := txSender.SendTransaction(zoracle.NewMsgReport(requestID, b, sdk.ValAddress(txSender.Sender())))
 	if err != nil {
 		fmt.Printf("handleRequest %s", err)
 		return
