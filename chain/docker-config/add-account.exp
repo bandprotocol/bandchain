@@ -1,0 +1,12 @@
+set user [lindex $argv 0]
+set pw [lindex $argv 1]
+set mnemonic [lindex $argv 2]
+
+spawn bandcli keys add $user --recover
+expect "Enter a passphrase to encrypt your key to disk:"
+send "$pw\r"
+expect "Repeat the passphrase:"
+send "$pw\r"
+expect "Enter your bip39 mnemonic"
+send "$mnemonic\r"
+interact
