@@ -31,7 +31,10 @@ import (
 	"github.com/bandprotocol/d3n/chain/x/zoracle"
 )
 
-const appName = "band"
+const (
+	appName          = "band"
+	Bech32MainPrefix = "band"
+)
 
 var (
 	// default home directories for the application CLI
@@ -75,6 +78,12 @@ func MakeCodec() *codec.Codec {
 	return cdc
 }
 
+func SetBech32AddressPrefixes(config *sdk.Config) {
+	config.SetBech32PrefixForAccount(Bech32MainPrefix, Bech32MainPrefix+sdk.PrefixPublic)
+	config.SetBech32PrefixForValidator(Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator, Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator+sdk.PrefixPublic)
+	config.SetBech32PrefixForConsensusNode(Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus, Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus+sdk.PrefixPublic)
+}
+
 type bandApp struct {
 	*bam.BaseApp
 	cdc *codec.Codec
@@ -95,7 +104,7 @@ type bandApp struct {
 	govKeeper      gov.Keeper
 	crisisKeeper   crisis.Keeper
 	paramsKeeper   params.Keeper
-	zoracleKeeper   zoracle.Keeper
+	zoracleKeeper  zoracle.Keeper
 
 	// Module Manager
 	mm *module.Manager
