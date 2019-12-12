@@ -3,7 +3,7 @@ version: "3.7"
 services:
   validator1-node:
     build:
-      context: .
+      context: chain
       dockerfile: Dockerfile
     image: band-validator:latest
     environment:
