@@ -422,7 +422,7 @@ func GetProof(reqId uint64, pk string) (AllProof, error) {
 
 	// params is height and privateKey
 	bp, err := GetBlockProof(height+1, pk)
-	for i := 0; i < 10 && err != nil; i++ {
+	for i := 0; i < 50 && err != nil; i++ {
 		time.Sleep(time.Second / 2)
 		bp, err = GetBlockProof(height+1, pk)
 	}
