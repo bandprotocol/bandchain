@@ -178,10 +178,6 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "delay should be positive integer", http.StatusBadRequest)
 		return
 	}
-	if delay < 5 {
-		http.Error(w, "delay should be at least 5 blocks", http.StatusBadRequest)
-		return
-	}
 
 	var code []byte
 	if has0xPrefix(rd.Code) {
