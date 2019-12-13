@@ -73,7 +73,7 @@ const Step: React.SFC<{
             {getLink().label}
           </a>
         ) : (
-          ""
+          " "
         )}
       </div>
       <div
