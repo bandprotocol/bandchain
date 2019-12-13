@@ -14,6 +14,8 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 
+	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 	"github.com/spf13/viper"
 
 	"github.com/bandprotocol/d3n/chain/cmtx"
@@ -30,7 +32,7 @@ var (
 
 type requestData struct {
 	Code  string `json:"code"`
-	Delay string `json:"delay"`
+	Delay uint64 `json:"delay"`
 }
 
 type Tx struct {
@@ -57,13 +59,13 @@ type Tx struct {
 }
 
 func handleTestReq(w http.ResponseWriter, r *http.Request) {
-	params := r.URL.Query()
+	params := mux.Vars(r)
 	if _, ok := params["id"]; !ok {
 		w.Write([]byte("404 page not found"))
 		return
 	}
 	fmt.Println(params)
-	a := []string{"0xaa", "0xbb", "0xcc", params["id"][0]}
+	a := []string{"0xaa", "0xbb", "0xcc", params["id"]}
 	type x struct {
 		TTT []string `json:"ttt"`
 	}
@@ -98,10 +100,10 @@ func GetTx(txHash string) (map[string]interface{}, error) {
 }
 
 func handleStatus(w http.ResponseWriter, r *http.Request) {
-	params := r.URL.Query()
+	params := mux.Vars(r)
 	var sreqID string
 	if val, ok := params["reqID"]; ok {
-		sreqID = val[0]
+		sreqID = val
 	} else {
 		w.Write([]byte("404 page not found"))
 		return
@@ -120,7 +122,7 @@ func handleStatus(w http.ResponseWriter, r *http.Request) {
 			CodeHash  string      `json:"codeHash"`
 			ReportEnd int         `json:"reportEnd"`
 			Reports   interface{} `json:"reports"`
-			RequestID int         `json:"requestID"`
+			RequestID int         `json:"reqID"`
 			Result    string      `json:"result"`
 		} `json:"result"`
 	}
@@ -157,25 +159,12 @@ func handleStatus(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleRequest(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
-		json.NewEncoder(w).Encode(map[string]string{"status": "400", "message": "Only POST method is supported."})
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-
 	tx := cmtx.NewTxSender(priv)
 
 	rd := requestData{}
 	err := json.NewDecoder(r.Body).Decode(&rd)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	delay, err := strconv.ParseUint(rd.Delay, 10, 64)
-	if err != nil {
-		http.Error(w, "delay should be positive integer", http.StatusBadRequest)
 		return
 	}
 
@@ -190,7 +179,7 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	txHash, err := tx.SendTransaction(zoracle.NewMsgRequest(code, delay, tx.Sender()))
+	txHash, err := tx.SendTransaction(zoracle.NewMsgRequest(code, rd.Delay, tx.Sender()))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -225,7 +214,7 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 	m := map[string]string{}
 	m["txHash"] = txResponse.Hash
 	m["startHeight"] = txResponse.Height
-	m["endHeight"] = fmt.Sprintf("%d", height+delay)
+	m["endHeight"] = fmt.Sprintf("%d", height+rd.Delay)
 
 	events := txResponse.TxResult.Events
 	for _, event := range events {
@@ -244,13 +233,13 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleGetProof(w http.ResponseWriter, r *http.Request) {
-	params := r.URL.Query()
+	params := mux.Vars(r)
 	if _, ok := params["reqID"]; !ok {
 		w.Write([]byte("404 page not found"))
 		return
 	}
 
-	u, err := strconv.ParseUint(params["reqID"][0], 10, 64)
+	u, err := strconv.ParseUint(params["reqID"], 10, 64)
 	if err != nil {
 		json.NewEncoder(w).Encode(err)
 		return
@@ -289,10 +278,15 @@ func main() {
 	privB, _ := hex.DecodeString(privS)
 	copy(priv[:], privB)
 
-	http.HandleFunc("/request", handleRequest)
-	http.HandleFunc("/status", handleStatus)
-	http.HandleFunc("/proof", handleGetProof)
-	http.HandleFunc("/test", handleTestReq)
+	r := mux.NewRouter()
+
+	r.HandleFunc("/request", handleRequest).Methods("POST")
+	r.HandleFunc("/status", handleStatus).Methods("GET")
+	r.HandleFunc("/proof", handleGetProof).Methods("GET")
+	r.HandleFunc("/test", handleTestReq).Methods("GET")
+
 	fmt.Println("live!")
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+
+	handler := cors.Default().Handler(r)
+	log.Fatal(http.ListenAndServe(":"+port, handler))
 }
