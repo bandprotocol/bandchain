@@ -30,7 +30,7 @@ var (
 
 type requestData struct {
 	Code  string `json:"code"`
-	Delay string `json:"delay"`
+	Delay uint64 `json:"delay"`
 }
 
 type Tx struct {
@@ -173,12 +173,6 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	delay, err := strconv.ParseUint(rd.Delay, 10, 64)
-	if err != nil {
-		http.Error(w, "delay should be positive integer", http.StatusBadRequest)
-		return
-	}
-
 	var code []byte
 	if has0xPrefix(rd.Code) {
 		code, err = hex.DecodeString(rd.Code[2:])
@@ -190,7 +184,7 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	txHash, err := tx.SendTransaction(zoracle.NewMsgRequest(code, delay, tx.Sender()))
+	txHash, err := tx.SendTransaction(zoracle.NewMsgRequest(code, rd.Delay, tx.Sender()))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -225,7 +219,7 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 	m := map[string]string{}
 	m["txHash"] = txResponse.Hash
 	m["startHeight"] = txResponse.Height
-	m["endHeight"] = fmt.Sprintf("%d", height+delay)
+	m["endHeight"] = fmt.Sprintf("%d", height+rd.Delay)
 
 	events := txResponse.TxResult.Events
 	for _, event := range events {
