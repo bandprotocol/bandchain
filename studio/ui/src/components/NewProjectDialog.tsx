@@ -103,7 +103,7 @@ export class NewProjectDialog extends React.Component<
           <div className="modal-title-bar">
             Create new OWASM project from template
           </div>
-          <div style={{ flex: 1 }}>
+          <div style={{ height: 400 }}>
             <div
               style={{ display: "flex", background: "#1f1f1f", height: "100%" }}
             >

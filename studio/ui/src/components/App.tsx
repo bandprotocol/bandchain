@@ -97,6 +97,7 @@ import { ShareDialog } from "./ShareDialog";
 import { NewProjectDialog, Template } from "./NewProjectDialog";
 import { NewDirectoryDialog } from "./NewDirectoryDialog";
 import { Errors } from "../errors";
+import { DeploymentDialog } from "./DeploymentDialog";
 import { ControlCenter } from "./ControlCenter";
 import Group from "../utils/group";
 import { StatusBar } from "./StatusBar";
@@ -128,6 +129,11 @@ export interface AppState {
    * If true, the new project dialog is open.
    */
   newProjectDialog: boolean;
+
+  /**
+   * If true, the deployment dialog is open.
+   */
+  deploymentDialog: boolean;
 
   /**
    * Primary workspace split state.
@@ -197,6 +203,7 @@ export class App extends React.Component<AppProps, AppState> {
       newFileDialogDirectory: null,
       editFileDialogFile: null,
       newProjectDialog: !props.fiddle,
+      deploymentDialog: false,
       shareDialog: false,
       workspaceSplits: [
         {
@@ -574,13 +581,27 @@ export class App extends React.Component<AppProps, AppState> {
     if (this.props.embeddingParams.type !== EmbeddingType.Arc) {
       toolbarButtons.push(
         <Button
-          key="Run"
+          key="Run (Local)"
           icon={<GoPlay />}
-          label="Run"
+          label="Run (Local)"
           title="Run Project: CtrlCmd + Enter"
           isDisabled={this.toolbarButtonsAreDisabled()}
           onClick={() => {
             run();
+          }}
+        />
+      );
+    }
+    if (this.props.embeddingParams.type !== EmbeddingType.Arc) {
+      toolbarButtons.push(
+        <Button
+          key="Deploy on D3N"
+          icon={<GoPlay />}
+          label="Deploy on D3N"
+          title="Run Project: CtrlCmd + Enter"
+          isDisabled={this.toolbarButtonsAreDisabled()}
+          onClick={() => {
+            this.showDeploymentDialog();
           }}
         />
       );
@@ -626,6 +647,11 @@ export class App extends React.Component<AppProps, AppState> {
       );
     }
     return toolbarButtons;
+  }
+  showDeploymentDialog() {
+    this.setState({
+      deploymentDialog: true
+    });
   }
   render() {
     const self = this;
@@ -704,6 +730,16 @@ export class App extends React.Component<AppProps, AppState> {
               await openProjectFiles(template);
               this.setState({ newProjectDialog: false });
             }}
+          />
+        )}
+        {this.state.deploymentDialog && (
+          <DeploymentDialog
+            isOpen={true}
+            templatesName={this.props.embeddingParams.templatesName}
+            onCancel={() => {
+              this.setState({ deploymentDialog: null });
+            }}
+            project={this.state.project}
           />
         )}
         {this.state.newFileDialogDirectory && (

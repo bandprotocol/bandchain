@@ -1,5 +1,5 @@
 use owasm::decl_data;
-use owasm::x::{coingecko, cryptocompare};
+use owasm::ext::{coingecko, cryptocompare};
 
 decl_data! {
     pub struct Data {
@@ -30,9 +30,15 @@ mod tests {
     #[test]
     fn test_execute() {
         // Average is 125.00
-        let data1 = Data { coin_gecko: 100.0, crypto_compare: 150.0 };
+        let data1 = Data {
+            coin_gecko: 100.0,
+            crypto_compare: 150.0,
+        };
         // Average is 225.00
-        let data2 = Data { coin_gecko: 200.0, crypto_compare: 250.0 };
+        let data2 = Data {
+            coin_gecko: 200.0,
+            crypto_compare: 250.0,
+        };
         // Average among the two data points is 175.00
         assert_eq!(execute(vec![data1, data2]), 17500);
     }
