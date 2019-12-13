@@ -59,13 +59,14 @@ type Tx struct {
 }
 
 func handleTestReq(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
+	params := r.URL.Query()
+	fmt.Println(params)
 	if _, ok := params["id"]; !ok {
 		w.Write([]byte("404 page not found"))
 		return
 	}
 	fmt.Println(params)
-	a := []string{"0xaa", "0xbb", "0xcc", params["id"]}
+	a := []string{"0xaa", "0xbb", "0xcc", params["id"][0]}
 	type x struct {
 		TTT []string `json:"ttt"`
 	}
@@ -100,10 +101,10 @@ func GetTx(txHash string) (map[string]interface{}, error) {
 }
 
 func handleStatus(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
+	params := r.URL.Query()
 	var sreqID string
 	if val, ok := params["reqID"]; ok {
-		sreqID = val
+		sreqID = val[0]
 	} else {
 		w.Write([]byte("404 page not found"))
 		return
@@ -233,13 +234,13 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleGetProof(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
+	params := r.URL.Query()
 	if _, ok := params["reqID"]; !ok {
 		w.Write([]byte("404 page not found"))
 		return
 	}
 
-	u, err := strconv.ParseUint(params["reqID"], 10, 64)
+	u, err := strconv.ParseUint(params["reqID"][0], 10, 64)
 	if err != nil {
 		json.NewEncoder(w).Encode(err)
 		return
