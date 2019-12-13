@@ -122,7 +122,7 @@ func handleStatus(w http.ResponseWriter, r *http.Request) {
 			CodeHash  string      `json:"codeHash"`
 			ReportEnd int         `json:"reportEnd"`
 			Reports   interface{} `json:"reports"`
-			RequestID int         `json:"reqID"`
+			RequestID int         `json:"requestID"`
 			Result    string      `json:"result"`
 		} `json:"result"`
 	}
@@ -223,7 +223,7 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 				k, _ := base64.StdEncoding.DecodeString(attr.Key)
 				if string(k) == "id" {
 					v, _ := base64.StdEncoding.DecodeString(attr.Value)
-					m["requestId"] = string(v)
+					m["reqID"] = string(v)
 				}
 			}
 		}

@@ -7,6 +7,7 @@ require (
 	github.com/ethereum/go-ethereum v1.9.7
 	github.com/gorilla/mux v1.7.0
 	github.com/libp2p/go-libp2p-crypto v0.1.0
+	github.com/rs/cors v1.7.0
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/viper v1.5.0
 	github.com/stretchr/testify v1.4.0
