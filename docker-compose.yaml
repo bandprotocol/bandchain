@@ -74,6 +74,19 @@ services:
       - light-client
     command: sh -c "cd ./server && go run *"
 
+  explorer:
+    build:
+      context: explorer
+      dockerfile: Dockerfile
+    image: band-explorer:latest
+    depends_on:
+      - validator4-node
+      - light-client
+    ports:
+      - 12000:12000
+    networks:
+      - bandchain
+
 networks:
   bandchain:
     ipam:
