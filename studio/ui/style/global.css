@@ -624,10 +624,10 @@ a {
 
 .modal {
   position: absolute;
-  top: calc(50% - 240px);
+  top: 50%;
   left: calc(50% - 400px);
+  transform: translateY(-50%);
   width: 800px;
-  height: 480px;
   background-color: rgb(48, 48, 48);
   outline: none;
   box-shadow: 1px 1px 4px black;
@@ -1190,4 +1190,21 @@ a {
   font-size: 8px;
   display: block;
   background-color: #484848;
+}
+
+@keyframes blinker {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.5;
+  }
+}
+
+.blink {
+  animation-name: blinker;
+  animation-duration: 0.8s;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+  animation-direction: alternate;
 }
