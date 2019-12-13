@@ -160,6 +160,8 @@ func handleStatus(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleRequest(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
 	tx := cmtx.NewTxSender(priv)
 
 	rd := requestData{}
