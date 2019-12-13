@@ -1,5 +1,5 @@
 {
-  "genesis_time": "2019-12-12T14:53:05.457397Z",
+  "genesis_time": "2019-12-12T16:51:00.533744Z",
   "chain_id": "bandchain",
   "consensus_params": {
     "block": {
@@ -11,11 +11,130 @@
       "max_age": "100000"
     },
     "validator": {
-      "pub_key_types": ["secp256k1"]
+      "pub_key_types": [
+        "secp256k1"
+      ]
     }
   },
   "app_hash": "",
   "app_state": {
+    "accounts": [
+      {
+        "address": "band1r8u4m0wefrdyp7sdde7drtrt94qczggkv38jrk",
+        "coins": [
+          {
+            "denom": "uband",
+            "amount": "10000000000000"
+          }
+        ],
+        "sequence_number": "0",
+        "account_number": "0",
+        "original_vesting": [],
+        "delegated_free": [],
+        "delegated_vesting": [],
+        "start_time": "0",
+        "end_time": "0",
+        "module_name": "",
+        "module_permissions": [
+          ""
+        ]
+      },
+      {
+        "address": "band13zmknvkq2sj920spz90g4r9zjan8g584x8qalj",
+        "coins": [
+          {
+            "denom": "uband",
+            "amount": "10000000000000"
+          }
+        ],
+        "sequence_number": "0",
+        "account_number": "0",
+        "original_vesting": [],
+        "delegated_free": [],
+        "delegated_vesting": [],
+        "start_time": "0",
+        "end_time": "0",
+        "module_name": "",
+        "module_permissions": [
+          ""
+        ]
+      },
+      {
+        "address": "band1fwffdxysc5a0hu0falsq4lyneucj05cw0jx2yy",
+        "coins": [
+          {
+            "denom": "uband",
+            "amount": "10000000000000"
+          }
+        ],
+        "sequence_number": "0",
+        "account_number": "0",
+        "original_vesting": [],
+        "delegated_free": [],
+        "delegated_vesting": [],
+        "start_time": "0",
+        "end_time": "0",
+        "module_name": "",
+        "module_permissions": [
+          ""
+        ]
+      },
+      {
+        "address": "band1zpmsn2vg2zcrx4jlg49t2f2y2cwjykr679l8r8",
+        "coins": [
+          {
+            "denom": "uband",
+            "amount": "10000000000000"
+          }
+        ],
+        "sequence_number": "0",
+        "account_number": "0",
+        "original_vesting": [],
+        "delegated_free": [],
+        "delegated_vesting": [],
+        "start_time": "0",
+        "end_time": "0",
+        "module_name": "",
+        "module_permissions": [
+          ""
+        ]
+      },
+      {
+        "address": "band17geerdwmlxpwxlahmt02vj4wy89wfstjhn085z",
+        "coins": [
+          {
+            "denom": "uband",
+            "amount": "10000000000000"
+          }
+        ],
+        "sequence_number": "0",
+        "account_number": "0",
+        "original_vesting": [],
+        "delegated_free": [],
+        "delegated_vesting": [],
+        "start_time": "0",
+        "end_time": "0",
+        "module_name": "",
+        "module_permissions": [
+          ""
+        ]
+      }
+    ],
+    "staking": {
+      "params": {
+        "unbonding_time": "1814400000000000",
+        "max_validators": 100,
+        "max_entries": 7,
+        "bond_denom": "uband"
+      },
+      "last_total_power": "0",
+      "last_validator_powers": null,
+      "validators": null,
+      "delegations": null,
+      "unbonding_delegations": null,
+      "redelegations": null,
+      "exported": false
+    },
     "slashing": {
       "params": {
         "max_evidence_age": "120000000000",
@@ -45,52 +164,6 @@
       "delegator_starting_infos": [],
       "validator_slash_events": []
     },
-    "zoracle": {},
-    "gov": {
-      "starting_proposal_id": "1",
-      "deposits": null,
-      "votes": null,
-      "proposals": null,
-      "deposit_params": {
-        "min_deposit": [
-          {
-            "denom": "stake",
-            "amount": "10000000"
-          }
-        ],
-        "max_deposit_period": "172800000000000"
-      },
-      "voting_params": {
-        "voting_period": "172800000000000"
-      },
-      "tally_params": {
-        "quorum": "0.334000000000000000",
-        "threshold": "0.500000000000000000",
-        "veto": "0.334000000000000000"
-      }
-    },
-    "auth": {
-      "params": {
-        "max_memo_characters": "256",
-        "tx_sig_limit": "7",
-        "tx_size_cost_per_byte": "10",
-        "sig_verify_cost_ed25519": "590",
-        "sig_verify_cost_secp256k1": "1000"
-      }
-    },
-    "bank": {
-      "send_enabled": true
-    },
-    "crisis": {
-      "constant_fee": {
-        "denom": "stake",
-        "amount": "1000"
-      }
-    },
-    "supply": {
-      "supply": []
-    },
-    "params": null,
     "genutil": {
       "gentxs": [
         {
@@ -116,7 +189,7 @@
                   "validator_address": "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e",
                   "pubkey": "bandvalconspub1addwnpepqfey4c5ul6m5juz36z0dlk8gyg6jcnyrvxm4werkgkmcerx8fn5g2gj9q6w",
                   "value": {
-                    "denom": "stake",
+                    "denom": "uband",
                     "amount": "100000000"
                   }
                 }
@@ -132,7 +205,7 @@
                   "type": "tendermint/PubKeySecp256k1",
                   "value": "AjW2GKsPDp9Isa8y9Wt42VXEMieYk3FHN6k3A1AkuDxY"
                 },
-                "signature": "YaOSZ/XBPHPYOun/rcFBJiQesjtrtHcBvhBerY3EN/QHoN22g0D1bQ4DkedjMBnpe7J052CGnOx9G9pE04YNcA=="
+                "signature": "j078XExDrfjMN0O3ul7V18LVftXNiU7xGu36zV8AA+kmHSnBZOkJHg0rSnQM94saDoGx9dOcJ/cs0VHmdtJJIw=="
               }
             ],
             "memo": "0851086afcd835d5a6fb0ffbf96fcdf74fec742e@172.18.0.12:26656"
@@ -161,7 +234,7 @@
                   "validator_address": "bandvaloper1r8u4m0wefrdyp7sdde7drtrt94qczggkq8r3xa",
                   "pubkey": "bandvalconspub1addwnpepq06h7wvh5n5pmrejr6t3pyn7ytpwd5c0kmv0wjdfujs847em8dusjl96sxg",
                   "value": {
-                    "denom": "stake",
+                    "denom": "uband",
                     "amount": "100000000"
                   }
                 }
@@ -177,7 +250,7 @@
                   "type": "tendermint/PubKeySecp256k1",
                   "value": "A7oCgVpleYqAv151VjJTE5A7fpVecrAtH+fz6Xc+Qqjm"
                 },
-                "signature": "2+WKsnUIjsJFGZuard+V3358XnCgXv4vANjzF6IwVvVPXwoEajXklfbIYM/Zlry/AhSEnaFllTllYxK4bB93Jw=="
+                "signature": "dElivyqblGqlmruxoAOcOEvoNM+HJFIcaMPgS0T8M5EkOvl+mUihsHRttbD7f6QYs8ka3Bxk5NClHh4MXqvcJA=="
               }
             ],
             "memo": "11392b605378063b1c505c0ab123f04bd710d7d7@172.18.0.11:26656"
@@ -206,7 +279,7 @@
                   "validator_address": "bandvaloper1zpmsn2vg2zcrx4jlg49t2f2y2cwjykr6jnmyxv",
                   "pubkey": "bandvalconspub1addwnpepq0grwz83v8g4s06fusnq5s4jkzxnhgvx67qr5g7v8tx39ur5m8tk7rg2nxj",
                   "value": {
-                    "denom": "stake",
+                    "denom": "uband",
                     "amount": "100000000"
                   }
                 }
@@ -222,7 +295,7 @@
                   "type": "tendermint/PubKeySecp256k1",
                   "value": "AtoA0OjpSJr6dzeDUGL2H80YTmR66PlBBGUhomoGTHIF"
                 },
-                "signature": "1ZHIpx7vRDGSfWMa4d3IUJbqRgguQrcLHvAdn1wkGKhVMk7hP2QNpM/HY6tmjbdwX1zzAzgGO+/pMlJELw4/XQ=="
+                "signature": "UYOeC7mZiHfiAh8AyD8AxXZaMocSNtkrcVs0zgOEG0pNhc+4qcqCPnTBqgV2b9V5PPO1AENle62wT1rb7oiCCw=="
               }
             ],
             "memo": "63808bd64f2ec19acb2a494c8ce8467c595f6fba@172.18.0.14:26656"
@@ -251,7 +324,7 @@
                   "validator_address": "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0",
                   "pubkey": "bandvalconspub1addwnpepqwj5l74gfj8j77v8st0gh932s3uyu2yys7n50qf6pptjgwnqu2arxkkn82m",
                   "value": {
-                    "denom": "stake",
+                    "denom": "uband",
                     "amount": "100000000"
                   }
                 }
@@ -267,7 +340,7 @@
                   "type": "tendermint/PubKeySecp256k1",
                   "value": "AupJR1NqB6pTA+sUrqv4HxcR3U6SjLp3gGCngA+KhB+H"
                 },
-                "signature": "i34rDWNuFscngVkP3RKTajbMe5Y4+11t414qnj31M80LTJDR2H5hOxo68aodYhF93NXZ6s0WXCNl1apyDPbsJg=="
+                "signature": "uCyxkmeGrjp1duRIA+MXE3lFo5Ak4PoiMQNd+orb/ZtYUINgS3zLlHL+TaCEPdsf77smZU2XlXZ1vxS4cBN74A=="
               }
             ],
             "memo": "7b58b086dd915a79836eb8bfa956aeb9488d13b0@172.18.0.13:26656"
@@ -275,112 +348,51 @@
         }
       ]
     },
-    "accounts": [
-      {
-        "address": "band1r8u4m0wefrdyp7sdde7drtrt94qczggkv38jrk",
-        "coins": [
+    "gov": {
+      "starting_proposal_id": "1",
+      "deposits": null,
+      "votes": null,
+      "proposals": null,
+      "deposit_params": {
+        "min_deposit": [
           {
-            "denom": "stake",
-            "amount": "10000000000000"
+            "denom": "uband",
+            "amount": "10000000"
           }
         ],
-        "sequence_number": "0",
-        "account_number": "0",
-        "original_vesting": [],
-        "delegated_free": [],
-        "delegated_vesting": [],
-        "start_time": "0",
-        "end_time": "0",
-        "module_name": "",
-        "module_permissions": [""]
+        "max_deposit_period": "172800000000000"
       },
-      {
-        "address": "band13zmknvkq2sj920spz90g4r9zjan8g584x8qalj",
-        "coins": [
-          {
-            "denom": "stake",
-            "amount": "10000000000000"
-          }
-        ],
-        "sequence_number": "0",
-        "account_number": "0",
-        "original_vesting": [],
-        "delegated_free": [],
-        "delegated_vesting": [],
-        "start_time": "0",
-        "end_time": "0",
-        "module_name": "",
-        "module_permissions": [""]
+      "voting_params": {
+        "voting_period": "172800000000000"
       },
-      {
-        "address": "band1fwffdxysc5a0hu0falsq4lyneucj05cw0jx2yy",
-        "coins": [
-          {
-            "denom": "stake",
-            "amount": "10000000000000"
-          }
-        ],
-        "sequence_number": "0",
-        "account_number": "0",
-        "original_vesting": [],
-        "delegated_free": [],
-        "delegated_vesting": [],
-        "start_time": "0",
-        "end_time": "0",
-        "module_name": "",
-        "module_permissions": [""]
-      },
-      {
-        "address": "band1zpmsn2vg2zcrx4jlg49t2f2y2cwjykr679l8r8",
-        "coins": [
-          {
-            "denom": "stake",
-            "amount": "10000000000000"
-          }
-        ],
-        "sequence_number": "0",
-        "account_number": "0",
-        "original_vesting": [],
-        "delegated_free": [],
-        "delegated_vesting": [],
-        "start_time": "0",
-        "end_time": "0",
-        "module_name": "",
-        "module_permissions": [""]
-      },
-      {
-        "address": "band17geerdwmlxpwxlahmt02vj4wy89wfstjhn085z",
-        "coins": [
-          {
-            "denom": "stake",
-            "amount": "10000000000000"
-          }
-        ],
-        "sequence_number": "0",
-        "account_number": "0",
-        "original_vesting": [],
-        "delegated_free": [],
-        "delegated_vesting": [],
-        "start_time": "0",
-        "end_time": "0",
-        "module_name": "",
-        "module_permissions": [""]
+      "tally_params": {
+        "quorum": "0.334000000000000000",
+        "threshold": "0.500000000000000000",
+        "veto": "0.334000000000000000"
       }
-    ],
-    "staking": {
+    },
+    "auth": {
       "params": {
-        "unbonding_time": "1814400000000000",
-        "max_validators": 100,
-        "max_entries": 7,
-        "bond_denom": "stake"
-      },
-      "last_total_power": "0",
-      "last_validator_powers": null,
-      "validators": null,
-      "delegations": null,
-      "unbonding_delegations": null,
-      "redelegations": null,
-      "exported": false
+        "max_memo_characters": "256",
+        "tx_sig_limit": "7",
+        "tx_size_cost_per_byte": "10",
+        "sig_verify_cost_ed25519": "590",
+        "sig_verify_cost_secp256k1": "1000"
+      }
+    },
+    "crisis": {
+      "constant_fee": {
+        "denom": "uband",
+        "amount": "1000"
+      }
+    },
+    "params": null,
+    "zoracle": {},
+    "bank": {
+      "send_enabled": true
+    },
+    "supply": {
+      "supply": []
     }
   }
 }
