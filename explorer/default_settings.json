@@ -1,6 +1,6 @@
 {
   "public": {
-    "chainName": "Cosmos Testnet",
+    "chainName": "Band Testnet",
     "chainId": "bandchain",
     "gtm": "{Add your Google Tag Manager ID here}",
     "slashingWindow": 10000,
