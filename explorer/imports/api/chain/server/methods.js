@@ -4,7 +4,6 @@ import { getAddress } from "tendermint/lib/pubkey.js";
 import { Chain, ChainStates } from "../chain.js";
 import { Validators } from "../../validators/validators.js";
 import { VotingPowerHistory } from "../../voting-power/history.js";
-import genesis from "../../../../../chain/docker-config/genesis.json";
 
 findVotingPower = (validator, genValidators) => {
   for (let v in genValidators) {
@@ -173,8 +172,9 @@ Meteor.methods({
       console.log("Genesis file has been processed");
     } else if (Meteor.settings.debug.readGenesis) {
       console.log("=== Start processing genesis file ===");
-      // let response = HTTP.get(Meteor.settings.genesisFile);
-      // let genesis = JSON.parse(response.content);
+      let response = HTTP.get(Meteor.absoluteUrl(Meteor.settings.genesisFile))
+        .data;
+      let genesis = JSON.parse(response);
       let distr = genesis.app_state.distr || genesis.app_state.distribution;
       let chainParams = {
         chainId: genesis.chain_id,
