@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright 2019 Band Protocol
+=======
+/* Copyright 2018 Mozilla Foundation
+>>>>>>> Add deployment code
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -138,9 +142,15 @@ export class DeploymentDialog extends React.Component<
 
   async deploy() {
     try {
+<<<<<<< HEAD
       const bot1URL = "http://d3n.bandprotocol.com:5000";
       const explorerURL = "http://d3n.bandprotocol.com:12000";
       const abciURL = "http://d3n.bandprotocol.com:26657";
+=======
+      const bot1URL = "http://134.209.106.94:5000";
+      const explorerURL = "http://134.209.106.94:12000";
+      const abciURL = "http://134.209.106.94:26657";
+>>>>>>> Add deployment code
 
       this.setState({
         deploying: true,
@@ -252,7 +262,11 @@ export class DeploymentDialog extends React.Component<
         getLink: this.state.txHash
           ? () => ({
               label: "Explorer",
+<<<<<<< HEAD
               href: `http://d3n.bandprotocol.com:12000/transactions/${this.state.txHash}`
+=======
+              href: `http://134.209.106.94:12000/transactions/${this.state.txHash}`
+>>>>>>> Add deployment code
             })
           : undefined
       },
@@ -275,7 +289,11 @@ export class DeploymentDialog extends React.Component<
           this.state.step === 5
             ? () => ({
                 label: "Data & Proof",
+<<<<<<< HEAD
                 href: `http://d3n.bandprotocol.com:5000/proof?reqID=${this.state.requestId}`
+=======
+                href: `http://134.209.106.94:5000/proof?reqID=${this.state.requestId}`
+>>>>>>> Add deployment code
               })
             : undefined
       }

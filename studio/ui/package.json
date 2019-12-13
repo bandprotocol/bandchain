@@ -6,7 +6,11 @@
   "scripts": {
     "build": "webpack --mode production && npm run templates",
     "build-watch": "webpack --watch --mode development",
+<<<<<<< HEAD
     "dev-server": "npm run templates && webpack-dev-server -d --host 0.0.0.0 --port 28443",
+=======
+    "dev-server": "npm run templates && webpack-dev-server -d --port 28443",
+>>>>>>> Add deployment code
     "test": "webpack --mode production && node bin/check-bundle-size.js && npm run jest && npm run tslint",
     "test:ci": "node bin/check-bundle-size.js && npm run tslint && npm run coverage && npm run e2e && npm run coveralls",
     "jest": "jest --maxWorkers=2",
