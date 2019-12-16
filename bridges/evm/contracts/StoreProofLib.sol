@@ -2,9 +2,15 @@ pragma solidity 0.5.14;
 
 import { BytesLib } from "./BytesLib.sol";
 
+/**
+ * @dev Helper library for calculating Merkle proof
+ */
 library StoreProofLib {
   using BytesLib for uint256;
 
+  /**
+   * @dev A group of data that necessary for computing appHash
+   */
   struct Data {
     uint256[] prefixes;
     bytes32[] path;
@@ -13,6 +19,9 @@ library StoreProofLib {
     bytes value;
   }
 
+  /**
+   * @dev Returns the hash of a Merkle leaf node in a store
+   */
   function getLeafHash(Data memory sp) internal pure returns(bytes32) {
     require(sp.prefixes.length > 0);
     return sha256(abi.encodePacked(
@@ -25,6 +34,9 @@ library StoreProofLib {
     ));
   }
 
+  /**
+   * @dev Returns a computed store hash
+   */
   function getAVLHash(Data memory sp) internal pure returns(bytes32) {
     require(sp.prefixes.length == sp.path.length + 1);
     bytes32 h = getLeafHash(sp);
@@ -37,22 +49,17 @@ library StoreProofLib {
       }
     }
 
-    return h;
+    return sha256(abi.encodePacked(sha256(abi.encodePacked(h))));
   }
 
+  /**
+   * @dev Returns an app hash
+   */
   function getAppHash(Data memory sp) internal pure returns(bytes32) {
-    bytes32 zoracle = sha256(
-      abi.encodePacked(
-        sha256(
-          abi.encodePacked(getAVLHash(sp))
-        )
-      )
-    );
-
     return sha256(abi.encodePacked(
       uint8(1),
       sp.otherMSHashes,
-      sha256(abi.encodePacked(uint8(0), uint8(7), "zoracle", uint8(32), zoracle))
+      sha256(abi.encodePacked(uint8(0), uint8(7), "zoracle", uint8(32), getAVLHash(sp)))
     ));
   }
 }
