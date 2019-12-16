@@ -166,8 +166,9 @@ Meteor.methods({
         }
         else if (Meteor.settings.debug.readGenesis) {
             console.log('=== Start processing genesis file ===');
-            let response = HTTP.get(Meteor.settings.genesisFile);
-            let genesis = JSON.parse(response.content);
+	      let fs = Npm.require("fs");
+	      var data = fs.readFileSync(Meteor.settings.genesisFile, "utf8");
+	      let genesis = JSON.parse(data);
             let distr = genesis.app_state.distr || genesis.app_state.distribution
             let chainParams = {
                 chainId: genesis.chain_id,

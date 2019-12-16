@@ -20,7 +20,7 @@
     "gasPrice": 0.02,
     "coingeckoId": "band-protocol"
   },
-  "genesisFile": "http://165.22.98.66:8080/genesis.json",
+  "genesisFile": "/root/config/genesis.json",
   "remote": {
     "rpc": "http://172.18.0.14:26657",
     "lcd": "http://172.18.0.15:1317"
