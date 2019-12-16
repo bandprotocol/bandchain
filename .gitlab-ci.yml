@@ -16,7 +16,7 @@ build_bridge_evm:
   cache:
     key: build-bridge-evm-cache
     paths:
-    - ./bridges/evm/node_modules
+    - ./bridges/evm/node_modules/
 
 test_bridge_evm:
   stage: test
