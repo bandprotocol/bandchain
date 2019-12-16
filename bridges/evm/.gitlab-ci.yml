@@ -2,7 +2,7 @@ image: node:latest
 
 cache:
   paths:
-    - node_modules/
+    - ./bridges/evm/node_modules/
 
 bridge-evm-build:
   stage: build
