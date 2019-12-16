@@ -8,14 +8,14 @@ cache:
   paths:
     - node_modules/
 
-install_dependencies:
+build_bridge_evm:
   stage: build
   script:
-    - cd bridges/evm && yarn
+    - cd ./bridges/evm && yarn
   # artifacts:
   #   paths:
   #     - node_modules/
 
-testing_testing:
+test_bridge_evm:
   stage: test
-  script: cd bridges/evm && yarn truffle test
+  script: cd ./bridges/evm && yarn truffle test
