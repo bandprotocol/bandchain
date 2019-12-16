@@ -1,9 +1,5 @@
 image: node:latest
 
-cache:
-  paths:
-    - bridges/evm/node_modules/
-
 bridge-evm-build:
   stage: build
   script:
@@ -12,6 +8,10 @@ bridge-evm-build:
   only:
     changes:
       - "bridges/evm/**/*"
+
+cache:
+  paths:
+    - bridges/evm/node_modules/
 
 bridge-evm-test:
   stage: test
