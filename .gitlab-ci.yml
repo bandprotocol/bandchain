@@ -11,11 +11,11 @@ cache:
 build_bridge_evm:
   stage: build
   script:
-    - cd ./bridges/evm && yarn
+    - cd ./bridges/evm && pwd && yarn
   # artifacts:
   #   paths:
   #     - node_modules/
 
 test_bridge_evm:
   stage: test
-  script: cd ./bridges/evm && yarn truffle test
+  script: cd ./bridges/evm && pwd && yarn truffle test
