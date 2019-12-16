@@ -1,7 +1,6 @@
-image: golang:1.13
-
 chain-test:
   stage: test
+  image: golang:1.13
   script: 
   - cd chain
   - go test ./...
