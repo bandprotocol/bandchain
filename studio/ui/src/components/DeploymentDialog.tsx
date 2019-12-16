@@ -73,7 +73,7 @@ const Step: React.SFC<{
             {getLink().label}
           </a>
         ) : (
-          " "
+          ""
         )}
       </div>
       <div
@@ -138,14 +138,16 @@ export class DeploymentDialog extends React.Component<
 
   async deploy() {
     try {
-      const bot1URL = "http://134.209.106.94:5000";
-      const explorerURL = "http://134.209.106.94:12000";
-      const abciURL = "http://134.209.106.94:26657";
+      const bot1URL = "http://d3n.bandprotocol.com:5000";
+      const explorerURL = "http://d3n.bandprotocol.com:12000";
+      const abciURL = "http://d3n.bandprotocol.com:26657";
 
       this.setState({
+        deploying: true,
         step: 0,
         done: true,
-        deploying: true
+        requestId: null,
+        txHash: null
       });
       await new Promise(r => setTimeout(r, 500));
 
@@ -250,11 +252,21 @@ export class DeploymentDialog extends React.Component<
         getLink: this.state.txHash
           ? () => ({
               label: "Explorer",
-              href: `http://134.209.106.94:12000/transactions/${this.state.txHash}`
+              href: `http://d3n.bandprotocol.com:12000/transactions/${this.state.txHash}`
             })
           : undefined
       },
-      { svg: "/svg/deployment/step4.svg", label: "Waiting for\ndata queries" },
+      {
+        svg: "/svg/deployment/step4.svg",
+        label: "Waiting for\ndata queries",
+        getLink:
+          this.state.step >= 3 && this.state.txHash
+            ? () => ({
+                label: "Status",
+                href: `http://d3n.bandprotocol.com:5000/status?reqID=${this.state.requestId}`
+              })
+            : undefined
+      },
       { svg: "/svg/deployment/step5.svg", label: "Executing\nOWASM script" },
       {
         svg: "/svg/deployment/step6.svg",
@@ -263,7 +275,7 @@ export class DeploymentDialog extends React.Component<
           this.state.step === 5
             ? () => ({
                 label: "Data & Proof",
-                href: `http://134.209.106.94:5000/proof?reqID=${this.state.requestId}`
+                href: `http://d3n.bandprotocol.com:5000/proof?reqID=${this.state.requestId}`
               })
             : undefined
       }
