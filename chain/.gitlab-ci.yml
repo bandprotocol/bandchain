@@ -6,4 +6,4 @@ chain-test:
   - go test ./...
   only:
     changes:
-      - "chain/**/*"
+      - chain/**/*
