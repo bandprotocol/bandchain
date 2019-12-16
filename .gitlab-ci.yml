@@ -1,27 +1,6 @@
-image: node:latest
-
 stages:
-  - build
-  - test
+  - bridge-evm-build
+  - bridge-evm-test
 
-cache:
-  paths:
-    - ./bridges/evm/node_modules/
-
-build_bridge_evm:
-  stage: build
-  script:
-  - cd ./bridges/evm
-  - yarn
-  # cache:
-  #   key: build-bridge-evm-cache
-  #   paths:
-  #   - ./bridges/evm/node_modules/
-
-test_bridge_evm:
-  stage: test
-  script: 
-  - cd ./bridges/evm
-  - yarn truffle test
-  # cache:
-  #   key: build-bridge-evm-cache
+include:
+  - '/bridges/evm/.gitlab-ci.yml'
