@@ -11,7 +11,7 @@ bridge-evm-build:
   - yarn
   only:
     changes:
-      - "bridges/evm"
+      - "bridges/evm/**/*"
 
 bridge-evm-test:
   stage: test
@@ -20,4 +20,4 @@ bridge-evm-test:
   - yarn truffle test
   only:
     changes:
-      - "bridges/evm"
+      - "bridges/evm/**/*"
