@@ -2,16 +2,22 @@ image: node:latest
 
 cache:
   paths:
-    - ./bridges/evm/node_modules/
+    - bridges/evm/node_modules/
 
 bridge-evm-build:
   stage: build
   script:
-  - cd ./bridges/evm
+  - cd bridges/evm
   - yarn
+  only:
+    changes:
+      - "bridges/evm"
 
 bridge-evm-test:
   stage: test
   script: 
-  - cd ./bridges/evm
+  - cd bridges/evm
   - yarn truffle test
+  only:
+    changes:
+      - "bridges/evm"
