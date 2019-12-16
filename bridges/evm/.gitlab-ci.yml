@@ -1,23 +1,15 @@
 image: node:latest
 
-# stages:
-#   - build
-#   - test
-
-# cache:
-#   paths:
-#     - node_modules/
+cache:
+  paths:
+    - node_modules/
 
 bridge-evm-build:
-  image: node:latest
   stage: build
   script:
   - yarn
 
 bridge-evm-test:
-  image: node:latest
   stage: test
   script: 
   - yarn truffle test
-  needs:
-    - bridge-evm-build
