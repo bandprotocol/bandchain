@@ -5,3 +5,6 @@ chain-test:
   script: 
   - cd chain
   - go test ./...
+  only:
+    changes:
+      - "chain/**/*"
