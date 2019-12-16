@@ -31,16 +31,16 @@ library BytesLib {
 
   /**
    * @dev Returns data part from input prefix (from tendermint), prefix is represented in the following format
-   * +--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+   * +---------------------------------------+
    * | L/R | Length |     ...     |   Data   | -> Data is the output of this function
-   * +--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+   * +---------------------------------------+
    * |  1  |    7   | 248-Length  | 8*Length | -> Represent size (bit)
-   * +--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+   * +---------------------------------------+
    * The first bit not relevant here (used to specify whether a node is left or right child on other contexts).
    * The next 7 bits encode the size of the data in bytes, using big-endian.
    * The last size bytes of the given input are the actual data.
    */
-  function getBytes(uint _prefix) internal pure returns(bytes memory) {
+  function getBytes(uint _prefix) internal pure returns (bytes memory) {
     uint prefix = _prefix;
     uint length = (prefix >> 248) & 127;
     bytes memory arr = new bytes(length);
