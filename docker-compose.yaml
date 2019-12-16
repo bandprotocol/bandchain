@@ -79,6 +79,8 @@ services:
       context: explorer
       dockerfile: Dockerfile
     image: band-explorer:latest
+    volumes:
+      - ./chain/docker-config:/root/config
     depends_on:
       - validator4-node
       - light-client
