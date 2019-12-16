@@ -1,0 +1,10 @@
+image: golang:1.13
+
+chain-test:
+  stage: test
+  script: 
+  - cd chain
+  - go test ./...
+  # only:
+  #   changes:
+  #     - "bridges/evm/**/*"
