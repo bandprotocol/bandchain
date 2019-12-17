@@ -20,7 +20,7 @@ library BlockProofLib {
     bytes32 left = bp.encodedHeight.leafHash().innerHash(bp.others[1]);
     left = bp.others[0].innerHash(left);
     left = left.innerHash(bp.others[2]);
-    bytes32 right = (abi.encodePacked(hex"20", bp.appHash)).leafHash().innerHash(bp.others[4]);
+    bytes32 right = (abi.encodePacked(uint8(32), bp.appHash)).leafHash().innerHash(bp.others[4]);
     right = right.innerHash(bp.others[5]);
     right = bp.others[3].innerHash(right);
     return left.innerHash(right);
