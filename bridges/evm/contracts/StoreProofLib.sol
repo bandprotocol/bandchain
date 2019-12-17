@@ -55,7 +55,7 @@ library StoreProofLib {
       uint8(1),
       uint64(sp.key),
       uint8(32),
-      sha256(abi.encodePacked(sp.value))
+      sha256(sp.value)
     ));
   }
 
