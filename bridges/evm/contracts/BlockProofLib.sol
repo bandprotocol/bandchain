@@ -42,7 +42,7 @@ library BlockProofLib {
 
     address[] memory signers = new address[](noSig);
 
-    for (uint i = 0; i < noSig; i++) {
+    for (uint256 i = 0; i < noSig; i++) {
       assembly {
         r := mload(add(signatures, add(mul(65, i), 32)))
         s := mload(add(signatures, add(mul(65, i), 64)))
