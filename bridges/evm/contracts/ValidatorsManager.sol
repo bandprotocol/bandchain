@@ -18,7 +18,7 @@ contract ValidatorsManager is Ownable {
   }
 
   function addValidators(address[] memory _validators) public onlyOwner {
-    for (uint i = 0; i < _validators.length; i++) {
+    for (uint256 i = 0; i < _validators.length; i++) {
       require(!validators[_validators[i]], "ALREADY_BE_VALIDATOR");
       validators[_validators[i]] = true;
     }
@@ -26,7 +26,7 @@ contract ValidatorsManager is Ownable {
   }
 
   function removeValidators(address[] memory _validators) public onlyOwner {
-    for (uint i = 0; i < _validators.length; i++) {
+    for (uint256 i = 0; i < _validators.length; i++) {
       require(validators[_validators[i]], "UNKNOWN_VALIDATOR");
       validators[_validators[i]] = false;
     }
