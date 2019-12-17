@@ -7,24 +7,24 @@ library BytesLib {
   /**
    * @dev Returns the hash of a Merkle leaf node
    */
-  function leafHash(bytes memory value) internal pure returns (bytes memory) {
-    return abi.encodePacked(sha256(abi.encodePacked(uint8(0), value)));
+  function leafHash(bytes memory value) internal pure returns (bytes32) {
+    return sha256(abi.encodePacked(uint8(0), value));
   }
 
   /**
    * @dev Returns the hash of internal node, calculated from child nodes
    */
-  function innerHash(bytes memory left, bytes memory right) internal pure returns (bytes memory) {
-    return abi.encodePacked(sha256(abi.encodePacked(uint8(1), left, right)));
+  function innerHash(bytes32 left, bytes32 right) internal pure returns (bytes32) {
+    return sha256(abi.encodePacked(uint8(1), left, right));
   }
 
   /**
-   * @dev Returns the decoded uint from input bytes without checking valid varint format
+   * @dev Returns the decoded uint256 from input bytes without checking valid varint format
    */
-  function decodeVarint(bytes memory _encodeByte) internal pure returns (uint) {
-    uint v = 0;
-    for (uint i = 0; i < _encodeByte.length; i++) {
-      v = v | uint((uint8(_encodeByte[i]) & 127)) << (i*7);
+  function decodeVarint(bytes memory _encodeByte) internal pure returns (uint256) {
+    uint256 v = 0;
+    for (uint256 i = 0; i < _encodeByte.length; i++) {
+      v = v | uint256((uint8(_encodeByte[i]) & 127)) << (i*7);
     }
     return v;
   }
@@ -40,11 +40,11 @@ library BytesLib {
    * The next 7 bits encode the size of the data in bytes, using big-endian.
    * The last size bytes of the given input are the actual data.
    */
-  function getBytes(uint _prefix) internal pure returns (bytes memory) {
-    uint prefix = _prefix;
-    uint length = (prefix >> 248) & 127;
+  function getBytes(uint256 _prefix) internal pure returns (bytes memory) {
+    uint256 prefix = _prefix;
+    uint256 length = (prefix >> 248) & 127;
     bytes memory arr = new bytes(length);
-    for (uint i = length; i > 0; i--) {
+    for (uint256 i = length; i > 0; i--) {
       arr[i - 1] = byte(uint8(prefix & 255));
       prefix >>= 8;
     }
