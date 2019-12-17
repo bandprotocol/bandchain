@@ -1,14 +1,18 @@
 image: node:latest
 
-cache:
-  paths:
-    - bridges/evm/node_modules/
+# cache:
+#   paths:
+#     - bridges/evm/node_modules/
 
 bridge-evm-build:
   stage: build
   script:
   - cd bridges/evm
   - yarn
+  cache:
+    key: ${CI_BUILD_REF_NAME}
+    paths:
+      - bridges/evm/node_modules/
   only:
     changes:
       - bridges/evm/**/*
