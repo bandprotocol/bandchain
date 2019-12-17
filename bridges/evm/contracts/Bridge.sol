@@ -21,7 +21,7 @@ contract Bridge is ValidatorsManager {
   ) public view returns(bool) {
     StoreProofLib.Data memory sp;
     sp.value = value;
-    (sp.prefixes,sp.path,sp.otherMSHashes,sp.key) = abi.decode(storeProof, (uint256[], bytes32[], bytes32, uint64));
+    (sp.prefixes,sp.paths,sp.otherMSHashes,sp.key) = abi.decode(storeProof, (uint256[], bytes32[], bytes32, uint64));
 
     return appHashes[blockHeight] == sp.getAppHash();
   }

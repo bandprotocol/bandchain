@@ -7,14 +7,14 @@ contract StoreProofLibMock{
 
   function getLeafHash(
     uint256[] memory prefixes,
-    bytes32[] memory path,
+    bytes32[] memory paths,
     bytes32 otherMSHashes,
     uint64 key,
     bytes memory value
   ) public pure returns(bytes32) {
     StoreProofLib.Data memory sp;
     sp.prefixes = prefixes;
-    sp.path = path;
+    sp.paths = paths;
     sp.otherMSHashes = otherMSHashes;
     sp.key = key;
     sp.value = value;
@@ -23,14 +23,14 @@ contract StoreProofLibMock{
 
   function getAVLHash(
     uint256[] memory prefixes,
-    bytes32[] memory path,
+    bytes32[] memory paths,
     bytes32 otherMSHashes,
     uint64 key,
     bytes memory value
   ) public pure returns(bytes32) {
     StoreProofLib.Data memory sp;
     sp.prefixes = prefixes;
-    sp.path = path;
+    sp.paths = paths;
     sp.otherMSHashes = otherMSHashes;
     sp.key = key;
     sp.value = value;
@@ -39,14 +39,14 @@ contract StoreProofLibMock{
 
   function getAppHash(
     uint256[] memory prefixes,
-    bytes32[] memory path,
+    bytes32[] memory paths,
     bytes32 otherMSHashes,
     uint64 key,
     bytes memory value
   ) public pure returns(bytes32) {
     StoreProofLib.Data memory sp;
     sp.prefixes = prefixes;
-    sp.path = path;
+    sp.paths = paths;
     sp.otherMSHashes = otherMSHashes;
     sp.key = key;
     sp.value = value;

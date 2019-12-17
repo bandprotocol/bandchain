@@ -1,3 +1,4 @@
+const { BN, expectRevert } = require("openzeppelin-test-helpers");
 const StoreProofLibMock = artifacts.require("StoreProofLibMock");
 
 contract("StoreProofLib", () => {
@@ -19,7 +20,7 @@ contract("StoreProofLib", () => {
         "59252983164407896876905464984914515346790499965620757379566185566549297072162",
         "1356938545749799165119972480570561420155507632800475359837393562592732385314"
       ],
-      path: [
+      paths: [
         "0xc3f1960b397caec50db04da19e1d674ccf9dd4b2af5dac010de6b143d5368693",
         "0xc07cba57d6a2df08444c68500177a57837a8be3f9dd59e0885d7cf497ecf3c99",
         "0xda058f8d239a1261661552f5bc0801acfca8a90d08c834df845d6ea1e34e2cfc"
@@ -34,7 +35,7 @@ contract("StoreProofLib", () => {
       (
         await this.storeProofLib.getLeafHash(
           this.data.prefixes,
-          this.data.path,
+          this.data.paths,
           this.data.otherMSHashes,
           this.data.key,
           this.data.value
@@ -43,6 +44,19 @@ contract("StoreProofLib", () => {
         .toString()
         .should.eq(this.leafHash);
     });
+
+    it("should revert if there is no prefix", async () => {
+      await expectRevert(
+        this.storeProofLib.getLeafHash(
+          [],
+          this.data.paths,
+          this.data.otherMSHashes,
+          this.data.key,
+          this.data.value
+        ),
+        "FIRST_PREFIX_IS_NEEDED"
+      );
+    });
   });
 
   context("getAVLHash", () => {
@@ -50,7 +64,7 @@ contract("StoreProofLib", () => {
       (
         await this.storeProofLib.getAVLHash(
           this.data.prefixes,
-          this.data.path,
+          this.data.paths,
           this.data.otherMSHashes,
           this.data.key,
           this.data.value
@@ -59,6 +73,19 @@ contract("StoreProofLib", () => {
         .toString()
         .should.eq(this.storeHash);
     });
+
+    it("should revert if prefixs's length != path's length + 1", async () => {
+      await expectRevert(
+        this.storeProofLib.getAVLHash(
+          [],
+          this.data.paths.filter((_, i) => i > 0),
+          this.data.otherMSHashes,
+          this.data.key,
+          this.data.value
+        ),
+        "LENGTH_OF_PREFIXS_AND_PATHS_ARE_INCOMPATIBLE"
+      );
+    });
   });
 
   context("getAppHash", () => {
@@ -66,7 +93,7 @@ contract("StoreProofLib", () => {
       (
         await this.storeProofLib.getAppHash(
           this.data.prefixes,
-          this.data.path,
+          this.data.paths,
           this.data.otherMSHashes,
           this.data.key,
           this.data.value
