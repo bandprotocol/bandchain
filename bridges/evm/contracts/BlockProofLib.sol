@@ -4,6 +4,7 @@ import { BytesLib } from "./BytesLib.sol";
 
 library BlockProofLib {
   using BytesLib for bytes;
+  using BytesLib for bytes32;
 
   struct Data {
     bytes32 appHash;
@@ -14,25 +15,25 @@ library BlockProofLib {
     bytes signatures;
   }
 
-  function calculateBlockHash(Data memory bp) internal pure returns(bytes memory) {
+  function calculateBlockHash(Data memory bp) internal pure returns(bytes32) {
     require(bp.others.length == 6, "PROOF_SIZE_MUST_BE_6");
-    bytes memory left = bp.encodedHeight.leafHash().innerHash(abi.encodePacked(bp.others[1]));
-    left = (abi.encodePacked(bp.others[0])).innerHash(left);
-    left = left.innerHash(abi.encodePacked(bp.others[2]));
-    bytes memory right = (abi.encodePacked(hex"20", bp.appHash)).leafHash().innerHash(abi.encodePacked(bp.others[4]));
-    right = right.innerHash(abi.encodePacked(bp.others[5]));
-    right = (abi.encodePacked(bp.others[3])).innerHash(right);
+    bytes32 left = bp.encodedHeight.leafHash().innerHash(bp.others[1]);
+    left = bp.others[0].innerHash(left);
+    left = left.innerHash(bp.others[2]);
+    bytes32 right = (abi.encodePacked(hex"20", bp.appHash)).leafHash().innerHash(bp.others[4]);
+    right = right.innerHash(bp.others[5]);
+    right = bp.others[3].innerHash(right);
     return left.innerHash(right);
   }
 
   function getSignersFromSignatures(Data memory bp) internal pure returns(address[] memory) {
-    bytes memory blockHash = calculateBlockHash(bp);
+    bytes32 blockHash = calculateBlockHash(bp);
     bytes32 signBytes = sha256(abi.encodePacked(bp.leftMsg, blockHash, bp.rightMsg));
     address lastSigner = address(0);
     bytes32 r;
     bytes32 s;
     uint8 v;
-    
+
     bytes memory signatures = bp.signatures;
 
     // Verify signature with signBytes

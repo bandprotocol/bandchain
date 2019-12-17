@@ -7,6 +7,7 @@ import { BytesLib } from "./BytesLib.sol";
  */
 library StoreProofLib {
   using BytesLib for uint256;
+  using BytesLib for bytes32;
 
   /**
    * @dev A group of data that necessary for computing appHash
@@ -22,17 +23,19 @@ library StoreProofLib {
    * @param paths is an array of bytes32 (path) that represented an associated hash which is needed to compute root hash
    * @param otherMSHashes (other multistore hashes) is a hashing of 8 difference multistore hashes
    * The hashing schemes is definded as the following ascii
-   *
-   *                   _________ otherMSHashes _________
-   *                 /                                  \
-   *         _____ h5 ______                      ______ h6 _______
-   *       /                \                   /                  \
-   *     h1                  h2               h3                    h4
-   *     /\                  /\               /\                    /\
-   *  acc  distribution   gov  main     params  slashing     staking  supply
+   *                                            ____________appHash____________
+   *                                          /                                \
+   *                   _________ otherMSHashes _________                        \
+   *                 /                                  \                        \
+   *         _____ h5 ______                      ______ h6 _______               \
+   *       /                \                   /                  \               \
+   *     h1                  h2               h3                    h4              \
+   *     /\                  /\               /\                    /\               \
+   *  acc  distribution   gov  main     params  slashing     staking  supply          zoracle
    *
    * Notice that all mutistore names are sorted lexically
-   * @param key is a requestID in zoracle mutistore
+   * @param key is a request storage prefix (1 bytes) + requestID (8 bytes) in zoracle mutistore
+   * So the size of key is 9 bytes
    * @param value is a data that stored in Tendermint storage
    */
   struct Data {
@@ -46,6 +49,9 @@ library StoreProofLib {
   /**
    * @dev Returns the hash of a Merkle leaf node in a store
    * This function will be reverted if there is no prefix, because the first prefix is always a prefix of leaf hash
+   * The "uint8(1)" is the prefix of request storage within zoracle store which is "0x01"
+   * The "uint8(9)" is represented the length of its posfix which in this case is key and its prefix ( sp.key and request storage prefix )
+   * The "uint8(32)" is represented the length of its posfix which in this case is "sha256(sp.value)"
    */
   function getLeafHash(Data memory sp) internal pure returns(bytes32) {
     require(sp.prefixes.length > 0, "FIRST_PREFIX_IS_NEEDED");
@@ -83,10 +89,8 @@ library StoreProofLib {
    * @dev Returns an app hash
    */
   function getAppHash(Data memory sp) internal pure returns(bytes32) {
-    return sha256(abi.encodePacked(
-      uint8(1),
-      sp.otherMSHashes,
+    return sp.otherMSHashes.innerHash(
       sha256(abi.encodePacked(uint8(0), uint8(7), "zoracle", uint8(32), getAVLHash(sp)))
-    ));
+    );
   }
 }

@@ -7,15 +7,15 @@ library BytesLib {
   /**
    * @dev Returns the hash of a Merkle leaf node
    */
-  function leafHash(bytes memory value) internal pure returns (bytes memory) {
-    return abi.encodePacked(sha256(abi.encodePacked(uint8(0), value)));
+  function leafHash(bytes memory value) internal pure returns (bytes32) {
+    return sha256(abi.encodePacked(uint8(0), value));
   }
 
   /**
    * @dev Returns the hash of internal node, calculated from child nodes
    */
-  function innerHash(bytes memory left, bytes memory right) internal pure returns (bytes memory) {
-    return abi.encodePacked(sha256(abi.encodePacked(uint8(1), left, right)));
+  function innerHash(bytes32 left, bytes32 right) internal pure returns (bytes32) {
+    return sha256(abi.encodePacked(uint8(1), left, right));
   }
 
   /**
