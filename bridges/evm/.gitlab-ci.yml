@@ -1,16 +1,12 @@
-image: node:latest
-
-# cache:
-#   paths:
-#     - bridges/evm/node_modules/
-
 bridge-evm-build:
+  image: node:8-alpine
   stage: build
   script:
   - cd bridges/evm
   - yarn
   cache:
-    key: ${CI_BUILD_REF_NAME}
+    key: bridges-evm-cache
+    policy: push
     paths:
       - bridges/evm/node_modules/
   only:
@@ -18,10 +14,16 @@ bridge-evm-build:
       - bridges/evm/**/*
 
 bridge-evm-test:
+  image: node:8-alpine
   stage: test
   script: 
   - cd bridges/evm
   - yarn truffle test
+  cache:
+    key: bridges-evm-cache
+    policy: pull
+    paths:
+      - bridges/evm/node_modules/
   only:
     changes:
       - bridges/evm/**/*
