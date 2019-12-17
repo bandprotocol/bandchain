@@ -1,8 +1,7 @@
----
 stages:
   - build
   - test
 
 include:
-  - '/bridges/evm/.gitlab-ci.yml'
-  - '/chain/.gitlab-ci.yml'
+  - "/bridges/evm/.gitlab-ci.yml"
+  - "/chain/.gitlab-ci.yml"

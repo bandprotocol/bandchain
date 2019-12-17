@@ -2,8 +2,8 @@ bridge-evm-build:
   image: node:8-alpine
   stage: build
   script:
-  - cd bridges/evm
-  - yarn
+    - cd bridges/evm
+    - yarn
   cache:
     key: bridges-evm-cache
     policy: push
@@ -16,9 +16,9 @@ bridge-evm-build:
 bridge-evm-test:
   image: node:8-alpine
   stage: test
-  script: 
-  - cd bridges/evm
-  - yarn truffle test
+  script:
+    - cd bridges/evm
+    - yarn truffle test
   cache:
     key: bridges-evm-cache
     policy: pull
