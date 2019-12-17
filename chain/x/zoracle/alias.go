@@ -21,16 +21,20 @@ const (
 )
 
 var (
-	NewKeeper     = keeper.NewKeeper
-	NewQuerier    = keeper.NewQuerier
-	ModuleCdc     = types.ModuleCdc
-	RegisterCodec = types.RegisterCodec
-	NewMsgRequest = types.NewMsgRequest
-	NewMsgReport  = types.NewMsgReport
+	NewKeeper        = keeper.NewKeeper
+	NewQuerier       = keeper.NewQuerier
+	ModuleCdc        = types.ModuleCdc
+	RegisterCodec    = types.RegisterCodec
+	NewMsgRequest    = types.NewMsgRequest
+	NewMsgReport     = types.NewMsgReport
+	NewMsgStoreCode  = types.NewMsgStoreCode
+	NewMsgDeleteCode = types.NewMsgDeleteCode
 )
 
 type (
-	Keeper     = keeper.Keeper
-	MsgRequest = types.MsgRequest
-	MsgReport  = types.MsgReport
+	Keeper        = keeper.Keeper
+	MsgRequest    = types.MsgRequest
+	MsgReport     = types.MsgReport
+	MsgStoreCode  = types.MsgStoreCode
+	MsgDeleteCode = types.MsgDeleteCode
 )
