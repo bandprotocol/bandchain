@@ -23,13 +23,13 @@ library StoreProofLib {
    * @param otherMSHashes (other multistore hashes) is a hashing of 8 difference multistore hashes
    * The hashing schemes is definded as the following ascii
    *
-   *                   _______ otherMSHashes _______
-   *                 /                              \
-   *         _____ h5 ______                   _____ h6 ______
-   *       /                \                /                \
-   *     h1                 h2             h3                  h4
-   *    /\                 /\             /\                  /\
-   * acc  distribution  gov  main   params  slashing  staking   supply
+   *                   _________ otherMSHashes _________
+   *                 /                                  \
+   *         _____ h5 ______                      ______ h6 _______
+   *       /                \                   /                  \
+   *     h1                  h2               h3                    h4
+   *     /\                  /\               /\                    /\
+   *  acc  distribution   gov  main     params  slashing     staking  supply
    *
    * Notice that all mutistore names are sorted lexically
    * @param key is a requestID in zoracle mutistore
