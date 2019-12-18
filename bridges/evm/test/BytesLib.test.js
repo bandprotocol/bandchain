@@ -84,4 +84,27 @@ contract("BytesLib", () => {
         .should.eq("0x896e51");
     });
   });
+
+  context("getSegment", () => {
+    const bytes =
+      "0x12240a204369248f6ca1f8caa75acdb98560c7c9f015ab5c85283480984e901af6019b5310012a0b0892cce6ef0510c4a29209320962616e64636861696e12240a204369248f6ca1f8caa75acdb98560c7c9f015ab5c85283480984e901af6019b5310012a0c0891cce6ef051084e3e5d603320962616e64636861696e12240a204369248f6ca1f8caa75acdb98560c7c9f015ab5c85283480984e901af6019b5310012a0c0891cce6ef051094f598d503320962616e64636861696e";
+    it("should getSegment correctly (len = 33)", async () => {
+      (await this.bytesLib.getSegment(bytes, 0, 33))
+        .toString()
+        .should.eq(bytes.slice(0, 2 + 33 * 2));
+    });
+    it("should getSegment correctly (len = 96)", async () => {
+      (await this.bytesLib.getSegment(bytes, 0, 95))
+        .toString()
+        .should.eq(bytes.slice(0, 2 + 95 * 2));
+    });
+    it("should getSegment correctly for in between", async () => {
+      (await this.bytesLib.getSegment(bytes, 0, 62))
+        .toString()
+        .should.eq(bytes.slice(0, 2 + 62 * 2));
+      (await this.bytesLib.getSegment(bytes, 62, 62 + 63))
+        .toString()
+        .should.eq("0x" + bytes.slice(2 + 62 * 2, 2 + (62 + 63) * 2));
+    });
+  });
 });
