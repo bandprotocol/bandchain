@@ -1,0 +1,67 @@
+version: "3.7"
+
+services:
+  validator-node:
+    build:
+      context: chain
+      dockerfile: Dockerfile
+    image: band-validator:latest
+    environment:
+      - PRIVATE_KEY=06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b
+      - NODE_URI=tcp://localhost:26657
+    networks:
+      single_bandchain:
+        ipv4_address: 172.19.0.11
+    ports:
+      - 26657:26657
+    command: sh -c "chmod +x ./docker-config/single-validator/run.sh && ./docker-config/single-validator/run.sh"
+
+  light-client:
+    image: band-validator:latest
+    networks:
+      single_bandchain:
+        ipv4_address: 172.19.0.12
+    depends_on:
+      - validator-node
+    restart: always
+    ports:
+      - 1317:1317
+    command: bandcli rest-server --laddr tcp://0.0.0.0:1317 --node tcp://172.19.0.11:26657 --chain-id bandchain
+
+  web-server:
+    image: band-validator:latest
+    environment:
+      - PRIVATE_KEY=06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b
+      - NODE_URI=tcp://172.19.0.11:26657
+      - QUERY_URI=http://172.19.0.12:1317
+    networks:
+      single_bandchain:
+    ports:
+      - 5000:5000
+    restart: always
+    depends_on:
+      - light-client
+    command: sh -c "cd ./server && go run *"
+
+#   # Cannot run explorer on local used too much ram
+#   explorer:
+#     build:
+#       context: explorer
+#       dockerfile: Dockerfile
+#     image: band-explorer:latest
+#     volumes:
+#       - ./chain/docker-config/single-validator:/root/config
+#     depends_on:
+#       - validator-node
+#       - light-client
+#     ports:
+#       - 12000:12000
+#     networks:
+#       - single_bandchain
+
+networks:
+  single_bandchain:
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.19.0.0/16"
