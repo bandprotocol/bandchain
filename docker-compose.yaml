@@ -12,11 +12,25 @@ services:
     networks:
       bandchain:
         ipv4_address: 172.18.0.11
+    depends_on:
+      - web-server
     ports:
       - 26657:26657
     command: sh -c "chmod +x ./docker-config/single-validator/run.sh && ./docker-config/single-validator/run.sh"
 
-  validator1-node:
+  multi-validator:
+    image: tianon/true
+    restart: "no"
+    networks:
+      bandchain:
+    depends_on:
+      - multi-validator1-node
+      - multi-validator2-node
+      - multi-validator3-node
+      - multi-validator4-node
+      - web-server
+
+  multi-validator1-node:
     build:
       context: chain
       dockerfile: Dockerfile
@@ -31,7 +45,7 @@ services:
         ipv4_address: 172.18.0.11
     command: sh -c "chmod +x ./docker-config/run.sh && ./docker-config/run.sh validator1"
 
-  validator2-node:
+  multi-validator2-node:
     image: band-validator:latest
     environment:
       - PRIVATE_KEY=6abc8ab25298fb4af6adcb9d5831db0ad7c959388f0d947abd2b4c4457ef52ec
@@ -41,7 +55,7 @@ services:
         ipv4_address: 172.18.0.12
     command: sh -c "chmod +x ./docker-config/run.sh && ./docker-config/run.sh validator2"
 
-  validator3-node:
+  multi-validator3-node:
     image: band-validator:latest
     environment:
       - PRIVATE_KEY=894fc1c7e7666c722ae5f30ba4cb18c546e08f0b2634718c27b80b9d39416dbe
@@ -51,7 +65,7 @@ services:
         ipv4_address: 172.18.0.13
     command: sh -c "chmod +x ./docker-config/run.sh && ./docker-config/run.sh validator3"
 
-  validator4-node:
+  multi-validator4-node:
     image: band-validator:latest
     environment:
       - PRIVATE_KEY=947f1715251d43de45232fc072e3ca4d823e876cf9f4ef74ad9a5f4ef440937e
