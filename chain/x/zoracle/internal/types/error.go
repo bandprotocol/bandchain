@@ -9,17 +9,12 @@ const (
 	DefaultCodespace sdk.CodespaceType = ModuleName
 
 	CodeInvalidInput     sdk.CodeType = 101
-	CodeInvalidProvider  sdk.CodeType = 102
+	CodeInvalidValidator sdk.CodeType = 102
 	CodeRequestNotFound  sdk.CodeType = 103
-	CodeInvalidValidator sdk.CodeType = 104
+	CodeInvalidOwner     sdk.CodeType = 104
 
 	WasmError sdk.CodeType = 105
 )
-
-// ErrKeyProvidersInvalid is the error for invalid providers
-func ErrKeyProvidersInvalid(codespace sdk.CodespaceType) sdk.Error {
-	return sdk.NewError(codespace, CodeInvalidProvider, "providers invalid format")
-}
 
 // ErrRequestNotFound is the error for invalid request id
 func ErrRequestNotFound(codespace sdk.CodespaceType) sdk.Error {
@@ -37,4 +32,12 @@ func ErrCodeValidatorNotFound(codespace sdk.CodespaceType) sdk.Error {
 
 func ErrReportNotFound(codespace sdk.CodespaceType) sdk.Error {
 	return sdk.NewError(codespace, CodeRequestNotFound, "report not found")
+}
+
+func ErrCodeAlreadyExisted(codespace sdk.CodespaceType) sdk.Error {
+	return sdk.NewError(codespace, CodeInvalidInput, "code hash already existed")
+}
+
+func ErrInvalidOwner(codespace sdk.CodespaceType) sdk.Error {
+	return sdk.NewError(codespace, CodeInvalidOwner, "invalid owner")
 }
