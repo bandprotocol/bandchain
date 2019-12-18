@@ -11,9 +11,7 @@
       "max_age": "100000"
     },
     "validator": {
-      "pub_key_types": [
-        "secp256k1"
-      ]
+      "pub_key_types": ["secp256k1"]
     }
   },
   "app_hash": "",
@@ -143,9 +141,7 @@
         "start_time": "0",
         "end_time": "0",
         "module_name": "",
-        "module_permissions": [
-          ""
-        ]
+        "module_permissions": [""]
       }
     ],
     "zoracle": {},
