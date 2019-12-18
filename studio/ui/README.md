@@ -7,6 +7,13 @@ This repository contains the [D3N OWASM Studio](https://owasm.bandprotocol.com) 
 Running your own local copy of the website
 ===
 
+## Prerequisite
+
+Install
+
+- Rust and Cargo - https://doc.rust-lang.org/cargo/getting-started/installation.html
+- Wasm-pack - https://rustwasm.github.io/wasm-pack/installer/
+
 To run a local copy, you will need to install node.js and webpack on your computer, then run the following commands:
 
 ```
