@@ -50,4 +50,30 @@ library BytesLib {
     }
     return arr;
   }
+
+  /**
+   * @dev Returns a segment of bytes
+   * This function is used for specific purposes, so it only support segmentation size in between 32 to 96
+   */
+  function getSegment(bytes memory bs, uint256 start, uint256 end) internal pure returns(bytes memory) {
+    require(end > start && end <= bs.length, "INVALID_START_OR_END");
+
+    bytes memory data = new bytes(end - start);
+    uint256 dl = data.length;
+
+    require(dl > 32 && dl < 96, "NOT_SUPPORT_RANGE");
+    if (dl <= 64) {
+      assembly {
+        mstore( add(data, 32), mload(add(bs, add(start, 32))))
+        mstore( add(data, dl), mload(add(bs, add(start, dl))))
+      }
+    } else {
+      assembly {
+        mstore( add(data, 32), mload(add(bs, add(start, 32))))
+        mstore( add(data, 64), mload(add(bs, add(start, 64))))
+        mstore( add(data, dl), mload(add(bs, dl)))
+      }
+    }
+    return data;
+  }
 }

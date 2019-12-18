@@ -11,8 +11,14 @@ library BlockProofLib {
     bytes encodedHeight;
     bytes32[] others;
     bytes leftMsg;
+    uint256 rightMsgSeperator;
     bytes rightMsg;
     bytes signatures;
+  }
+
+  struct SignaturesTracker {
+    uint256 noSig;
+    address lastSigner;
   }
 
   function calculateBlockHash(Data memory bp) internal pure returns(bytes32) {
@@ -26,23 +32,30 @@ library BlockProofLib {
     return left.innerHash(right);
   }
 
-  function getSignersFromSignatures(Data memory bp) internal pure returns(address[] memory) {
+  function getSignBytes(Data memory bp, uint256 start, uint256 end) internal pure returns(bytes32) {
     bytes32 blockHash = calculateBlockHash(bp);
-    bytes32 signBytes = sha256(abi.encodePacked(bp.leftMsg, blockHash, bp.rightMsg));
-    address lastSigner = address(0);
+    return sha256(abi.encodePacked(bp.leftMsg, blockHash, bp.rightMsg.getSegment(start,end)));
+  }
+
+  function getSignersFromSignatures(Data memory bp) internal pure returns(address[] memory) {
+    SignaturesTracker memory st;
     bytes32 r;
     bytes32 s;
     uint8 v;
 
+    st.lastSigner = address(0);
     bytes memory signatures = bp.signatures;
+    uint256 seperator = bp.rightMsgSeperator;
 
     // Verify signature with signBytes
     require(signatures.length % 65 == 0, "INVALID_SIGNATURE_LENGTH");
-    uint256 noSig = signatures.length / 65;
+    st.noSig = signatures.length / 65;
 
-    address[] memory signers = new address[](noSig);
+    require(st.noSig == seperator >> 248, "INCOMPATIBLE_SEPERATOR_AND_SIGS");
 
-    for (uint256 i = 0; i < noSig; i++) {
+    address[] memory signers = new address[](st.noSig);
+    uint256 accl = 0;
+    for (uint256 i = 0; i < st.noSig; i++) {
       assembly {
         r := mload(add(signatures, add(mul(65, i), 32)))
         s := mload(add(signatures, add(mul(65, i), 64)))
@@ -52,9 +65,13 @@ library BlockProofLib {
         v += 27;
       }
       require(v == 27 || v == 28, "INVALID_SIGNATURE");
-      signers[i] = ecrecover(signBytes, v, r, s);
-      require(lastSigner < signers[i], "SIG_ORDER_INVALID");
-      lastSigner = signers[i];
+
+      signers[i] = ecrecover(getSignBytes(bp, accl, accl + (seperator & 255)), v, r, s);
+      require(st.lastSigner < signers[i], "SIG_ORDER_INVALID");
+
+      st.lastSigner = signers[i];
+      accl += seperator & 255;
+      seperator >>= 8;
     }
     return signers;
   }
