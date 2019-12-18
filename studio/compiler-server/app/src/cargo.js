@@ -61,7 +61,7 @@ async function cargo(tar, options = {}) {
 
   try {
     await mkdir(crateDir);
-  } catch {}
+  } catch (err) {}
 
   let rustTar = crateDir + "/" + "lib.tar";
   let wasmFile = crateDir + "/" + "pkg/main_bg.wasm";

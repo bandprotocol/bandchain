@@ -138,9 +138,9 @@ export class DeploymentDialog extends React.Component<
 
   async deploy() {
     try {
-      const bot1URL = "http://134.209.106.94:5000";
-      const explorerURL = "http://134.209.106.94:12000";
-      const abciURL = "http://134.209.106.94:26657";
+      const bot1URL = "http://d3n.bandprotocol.com:5000";
+      const explorerURL = "http://d3n.bandprotocol.com:12000";
+      const abciURL = "http://d3n.bandprotocol.com:26657";
 
       this.setState({
         step: 0,
@@ -250,7 +250,7 @@ export class DeploymentDialog extends React.Component<
         getLink: this.state.txHash
           ? () => ({
               label: "Explorer",
-              href: `http://134.209.106.94:12000/transactions/${this.state.txHash}`
+              href: `http://d3n.bandprotocol.com:12000/transactions/${this.state.txHash}`
             })
           : undefined
       },
@@ -263,7 +263,7 @@ export class DeploymentDialog extends React.Component<
           this.state.step === 5
             ? () => ({
                 label: "Data & Proof",
-                href: `http://134.209.106.94:5000/proof?reqID=${this.state.requestId}`
+                href: `http://d3n.bandprotocol.com:5000/proof?reqID=${this.state.requestId}`
               })
             : undefined
       }
