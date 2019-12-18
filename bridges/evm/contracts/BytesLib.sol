@@ -5,21 +5,21 @@ pragma solidity 0.5.14;
  */
 library BytesLib {
   /**
-   * @dev Returns the hash of a Merkle leaf node
+   * @dev Returns the hash of a Merkle leaf node.
    */
-  function leafHash(bytes memory value) internal pure returns (bytes32) {
-    return sha256(abi.encodePacked(uint8(0), value));
+  function leafHash(bytes memory _value) internal pure returns (bytes32) {
+    return sha256(abi.encodePacked(uint8(0), _value));
   }
 
   /**
    * @dev Returns the hash of internal node, calculated from child nodes
    */
-  function innerHash(bytes32 left, bytes32 right) internal pure returns (bytes32) {
-    return sha256(abi.encodePacked(uint8(1), left, right));
+  function innerHash(bytes32 _left, bytes32 _right) internal pure returns (bytes32) {
+    return sha256(abi.encodePacked(uint8(1), _left, _right));
   }
 
   /**
-   * @dev Returns the decoded uint256 from input bytes without checking valid varint format
+   * @dev Returns the decoded uint256 from input bytes without checking valid varint format.
    */
   function decodeVarint(bytes memory _encodeByte) internal pure returns (uint256) {
     uint256 v = 0;
