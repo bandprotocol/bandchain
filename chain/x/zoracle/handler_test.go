@@ -11,7 +11,6 @@ import (
 	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	staking "github.com/cosmos/cosmos-sdk/x/staking"
-	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/common"
 )
@@ -23,8 +22,8 @@ func TestRequestSuccess(t *testing.T) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	codeHash := crypto.Keccak256(code)
 	sender := sdk.AccAddress([]byte("sender"))
+	codeHash := types.NewStoredCode(code, sender).GetCodeHash()
 
 	msg := types.NewMsgRequest(code, 5, sender)
 	got := handleMsgRequest(ctx, keeper, msg)
@@ -98,6 +97,94 @@ func TestReportInvalidValidator(t *testing.T) {
 	require.Equal(t, types.CodeInvalidValidator, got.Code)
 }
 
+func TestStoreCodeSuccess(t *testing.T) {
+	ctx, keeper := keep.CreateTestInput(t, false)
+	absPath, _ := filepath.Abs("../../wasm/res/test.wasm")
+	code, err := wasm.ReadBytes(absPath)
+	if err != nil {
+		fmt.Println(err)
+	}
+	owner := sdk.AccAddress([]byte("owner"))
+	codeHash := types.NewStoredCode(code, owner).GetCodeHash()
+
+	msg := types.NewMsgStoreCode(code, owner)
+	got := handleMsgStoreCode(ctx, keeper, msg)
+	require.True(t, got.IsOK(), "expected store code to be ok, got %v", got)
+
+	// Check codehash from event
+	require.Equal(t, types.EventTypeStoreCode, got.Events.ToABCIEvents()[0].Type)
+	require.Equal(t, hex.EncodeToString(codeHash), string(got.Events.ToABCIEvents()[0].Attributes[0].Value))
+
+	// Check value in store
+	sc, err := keeper.GetCode(ctx, codeHash)
+	require.Nil(t, err)
+
+	require.Equal(t, owner, sc.Owner)
+	require.Equal(t, code, sc.Code)
+}
+
+func TestStoreCodeFailed(t *testing.T) {
+	ctx, keeper := keep.CreateTestInput(t, false)
+	code := []byte("Code")
+
+	owner := sdk.AccAddress([]byte("owner"))
+
+	keeper.SetCode(ctx, code, owner)
+
+	msg := types.NewMsgStoreCode(code, owner)
+	got := handleMsgStoreCode(ctx, keeper, msg)
+
+	require.False(t, got.IsOK())
+
+	require.Equal(t, types.CodeInvalidInput, got.Code)
+}
+
+func TestDeleteCodeSuccess(t *testing.T) {
+	ctx, keeper := keep.CreateTestInput(t, false)
+	code := []byte("Code")
+
+	owner := sdk.AccAddress([]byte("owner"))
+	codeHash := keeper.SetCode(ctx, code, owner)
+
+	msg := types.NewMsgDeleteCode(codeHash, owner)
+	got := handleMsgDeleteCode(ctx, keeper, msg)
+
+	require.Equal(t, types.EventTypeDeleteCode, got.Events.ToABCIEvents()[0].Type)
+	require.Equal(t, hex.EncodeToString(codeHash), string(got.Events.ToABCIEvents()[0].Attributes[0].Value))
+}
+
+func TestDeleteCodeInvalidHash(t *testing.T) {
+	ctx, keeper := keep.CreateTestInput(t, false)
+	code := []byte("Code")
+
+	owner := sdk.AccAddress([]byte("owner"))
+	codeHash := keeper.SetCode(ctx, code, owner)
+	invalidCodeHash := append(codeHash[:31], byte('b'))
+
+	msg := types.NewMsgDeleteCode(invalidCodeHash, owner)
+	got := handleMsgDeleteCode(ctx, keeper, msg)
+
+	require.False(t, got.IsOK())
+
+	require.Equal(t, types.CodeInvalidInput, got.Code)
+}
+
+func TestDeleteCodeInvalidOwner(t *testing.T) {
+	ctx, keeper := keep.CreateTestInput(t, false)
+	code := []byte("Code")
+
+	owner := sdk.AccAddress([]byte("owner"))
+	codeHash := keeper.SetCode(ctx, code, owner)
+
+	other := sdk.AccAddress([]byte("other"))
+	msg := types.NewMsgDeleteCode(codeHash, other)
+	got := handleMsgDeleteCode(ctx, keeper, msg)
+
+	require.False(t, got.IsOK())
+
+	require.Equal(t, types.CodeInvalidOwner, got.Code)
+}
+
 func TestEndBlock(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
 	ctx = ctx.WithBlockHeight(0)
@@ -106,7 +193,8 @@ func TestEndBlock(t *testing.T) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	codeHash := keeper.SetCode(ctx, code)
+	sender := sdk.AccAddress([]byte("sender"))
+	codeHash := keeper.SetCode(ctx, code, sender)
 
 	// set request
 	datapoint := types.NewDataPoint(1, codeHash, 3)

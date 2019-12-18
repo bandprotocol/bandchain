@@ -138,7 +138,7 @@ func (msg MsgStoreCode) ValidateBasic() sdk.Error {
 	}
 
 	if msg.Code == nil || len(msg.Code) == 0 {
-		return sdk.ErrUnknownRequest("Code must not be empty bytes")
+		return sdk.ErrUnknownRequest("Code must not be empty")
 	}
 
 	return nil

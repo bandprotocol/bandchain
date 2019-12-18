@@ -5,6 +5,7 @@ import (
 
 	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 	"github.com/cosmos/cosmos-sdk/codec"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
@@ -31,7 +32,8 @@ func TestQueryRequestById(t *testing.T) {
 
 	// set code
 	code := []byte("code")
-	codeHash := keeper.SetCode(ctx, code)
+	owner := sdk.AccAddress([]byte("owner"))
+	codeHash := keeper.SetCode(ctx, code, owner)
 
 	// set request
 	datapoint := types.NewDataPoint(1, codeHash, 3)
@@ -70,8 +72,9 @@ func TestQueryPendingRequest(t *testing.T) {
 	require.Equal(t, acs, acsBytes)
 
 	// set request
+	owner := sdk.AccAddress([]byte("owner"))
 	code := []byte("code")
-	codeHash := keeper.SetCode(ctx, code)
+	codeHash := keeper.SetCode(ctx, code, owner)
 	datapoint := types.NewDataPoint(2, codeHash, 3)
 	keeper.SetRequest(ctx, 2, datapoint)
 

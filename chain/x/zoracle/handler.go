@@ -18,6 +18,10 @@ func NewHandler(keeper Keeper) sdk.Handler {
 			return handleMsgRequest(ctx, keeper, msg)
 		case MsgReport:
 			return handleMsgReport(ctx, keeper, msg)
+		case MsgStoreCode:
+			return handleMsgStoreCode(ctx, keeper, msg)
+		case MsgDeleteCode:
+			return handleMsgDeleteCode(ctx, keeper, msg)
 		default:
 			errMsg := fmt.Sprintf("unrecognized zoracle message type: %T", msg)
 			return sdk.ErrUnknownRequest(errMsg).Result()
@@ -27,7 +31,7 @@ func NewHandler(keeper Keeper) sdk.Handler {
 
 func handleMsgRequest(ctx sdk.Context, keeper Keeper, msg MsgRequest) sdk.Result {
 	newRequestID := keeper.GetNextRequestID(ctx)
-	codeHash := keeper.SetCode(ctx, msg.Code)
+	codeHash := keeper.SetCode(ctx, msg.Code, msg.Sender)
 	newRequest := types.NewDataPoint(
 		newRequestID,
 		codeHash,
@@ -63,7 +67,6 @@ func handleMsgReport(ctx sdk.Context, keeper Keeper, msg MsgReport) sdk.Result {
 
 	isFound := false
 	for _, validator := range validators {
-		// TODO: Verify that the validator is msg sender
 		if msg.Validator.Equals(validator.GetOperator()) {
 			isFound = true
 			break
@@ -80,6 +83,41 @@ func handleMsgReport(ctx sdk.Context, keeper Keeper, msg MsgReport) sdk.Result {
 			types.EventTypeReport,
 			sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", msg.RequestID)),
 			sdk.NewAttribute(types.AttributeKeyValidator, msg.Validator.String()),
+		),
+	})
+	return sdk.Result{Events: ctx.EventManager().Events()}
+}
+
+func handleMsgStoreCode(ctx sdk.Context, keeper Keeper, msg MsgStoreCode) sdk.Result {
+	sc := types.NewStoredCode(msg.Code, msg.Owner)
+	codeHash := sc.GetCodeHash()
+	if keeper.CheckCodeHashExists(ctx, codeHash) {
+		return types.ErrCodeAlreadyExisted(types.DefaultCodespace).Result()
+	}
+	keeper.SetCode(ctx, msg.Code, msg.Owner)
+	// Emit store code event
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeStoreCode,
+			sdk.NewAttribute(types.AttributeKeyCodeHash, hex.EncodeToString(codeHash)),
+		),
+	})
+	return sdk.Result{Events: ctx.EventManager().Events()}
+}
+
+func handleMsgDeleteCode(ctx sdk.Context, keeper Keeper, msg MsgDeleteCode) sdk.Result {
+	storedCode, err := keeper.GetCode(ctx, msg.CodeHash)
+	if err != nil {
+		return types.ErrCodeHashNotFound(types.DefaultCodespace).Result()
+	}
+	if !storedCode.Owner.Equals(msg.Owner) {
+		return types.ErrInvalidOwner(types.DefaultCodespace).Result()
+	}
+	keeper.DeleteCode(ctx, msg.CodeHash)
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeDeleteCode,
+			sdk.NewAttribute(types.AttributeKeyCodeHash, hex.EncodeToString(msg.CodeHash)),
 		),
 	})
 	return sdk.Result{Events: ctx.EventManager().Events()}
@@ -107,14 +145,14 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 			packedData = append(packedData, report.Data)
 		}
 
-		code, err := keeper.GetCode(ctx, request.CodeHash)
+		storedCode, err := keeper.GetCode(ctx, request.CodeHash)
 		if err != nil {
 			// remove reqID if can't get code
 			remainingReqIDs = remove(remainingReqIDs, reqID)
 			continue
 		}
 
-		result, errWasm := wasm.Execute(code, packedData)
+		result, errWasm := wasm.Execute(storedCode.Code, packedData)
 		if errWasm == nil {
 			request.Result = result
 			keeper.SetRequest(ctx, reqID, request)
