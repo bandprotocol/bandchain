@@ -18,4 +18,8 @@ contract BytesLibMock{
   function getBytes(uint256 _prefix) public pure returns(bytes memory) {
     return BytesLib.getBytes(_prefix);
   }
+
+  function getSegment(bytes memory bs, uint256 start, uint256 end) public pure returns(bytes memory) {
+    return BytesLib.getSegment(bs, start, end);
+  }
 }
