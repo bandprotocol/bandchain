@@ -5,11 +5,11 @@ There are 2 ways to run bandchian
 ### Run on 4 validators
 
 ```
-docker-compose up
+(coming soon)
 ```
 
 ### Run 1 validator (for development)
 
 ```
-docker-compose -f docker-compose.single.yaml up
+docker-compose up single-validator web-server
 ```
