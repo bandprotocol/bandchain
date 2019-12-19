@@ -41,41 +41,6 @@ contract("OracleBridge", () => {
           ]
         ]
       );
-      // Another relay should just pass if it contains the same _oracleIAVLStateHash
-      await this.bridge.relayOracleState(
-        "55", // _blockHeight,
-        "0x7148d7db351b9b4624449801053d45fcf6a90edd64deeb3159ffe813c182f013", // _oracleIAVLStateHash
-        "0x406cfc22544f4c74049983f871d44a3cf2be94bbde3961cab7ed4773d2e57ee0", // _otherStoresMerkleHash
-        [
-          "0x32fa694879095840619f5e49380612bd296ff7e950eafb66ff654d99ca70869e", // subtreeVersionAndChainIdHash
-          "0xd82f0576c09d2dfe5783eea26b3f834c4ce4866b330670dec7b6b97d53ce9687", // timeHash
-          "0xa468e310ffeda3113422e774f1fe7785b53e2bab9eaf231a0e85c3eda4338ecf", // txCountAndLastBlockInfoHash
-          "0xdef482cda986470c27374601ec716e9853de47d72828ae0131cf8ef98e2972c5", // consensusDataHash
-          "0x6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d", // lastResultsHash
-          "0xd991da4d4e69473cc75a4b819f9e07d4956671a6f4a74df4cc16596fcbe68137" // evidenceAndProposerHash
-        ],
-        "0x6e080211370000000000000022480a20", // _signedDataPrefix
-        []
-      );
-      // Another relay should fail if it contains a different _oracleIAVLStateHash
-      await expectRevert(
-        this.bridge.relayOracleState(
-          "55", // _blockHeight,
-          "0x7148d7db351b9b4624449801053d45fcf6a90edd64deeb3159ffe813c182f014", // _oracleIAVLStateHash INVALID HERE
-          "0x406cfc22544f4c74049983f871d44a3cf2be94bbde3961cab7ed4773d2e57ee0", // _otherStoresMerkleHash
-          [
-            "0x32fa694879095840619f5e49380612bd296ff7e950eafb66ff654d99ca70869e", // subtreeVersionAndChainIdHash
-            "0xd82f0576c09d2dfe5783eea26b3f834c4ce4866b330670dec7b6b97d53ce9687", // timeHash
-            "0xa468e310ffeda3113422e774f1fe7785b53e2bab9eaf231a0e85c3eda4338ecf", // txCountAndLastBlockInfoHash
-            "0xdef482cda986470c27374601ec716e9853de47d72828ae0131cf8ef98e2972c5", // consensusDataHash
-            "0x6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d", // lastResultsHash
-            "0xd991da4d4e69473cc75a4b819f9e07d4956671a6f4a74df4cc16596fcbe68137" // evidenceAndProposerHash
-          ],
-          "0x6e080211370000000000000022480a20", // _signedDataPrefix
-          []
-        ),
-        "INCONSISTENT_ORACLE_IAVL_STATE"
-      );
     });
 
     it("should accept out-of-order signatures", async () => {

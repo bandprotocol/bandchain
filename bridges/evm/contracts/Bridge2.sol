@@ -140,11 +140,21 @@ library TMSignature {
 }
 
 
-// TODO: FANCY COMMENT (:
+/// @dev Library for computing iAVL Merkle root from (1) data leaf and (2) a list of "MerklePath"
+/// from such leaf to the root of the tree. Each Merkle path (i.e. proof component) consists of:
+///
+/// - isDataOnRight: whether the data is on the right subtree of this internal node.
+/// - subtreeHeight: well, it is the height of this subtree.
+/// - subtreeVersion: the latest block height that this subtree has been updated.
+/// - siblingHash: 32-byte hash of the other child subtree
+///
+/// To construct a hash of an internal Merkle node, the hashes of the two subtrees are combined
+/// with extra data of this internal node. See implementation below. Repeatedly doing this from
+/// the leaf node until you get to the root node to get the final iAVL Merkle hash.
 library OracleStateMerklePath {
   struct Data {
     bool isDataOnRight;
-    uint subtreeHeight;
+    uint256 subtreeHeight;
     uint256 subtreeSize;
     uint256 subtreeVersion;
     bytes32 siblingHash;
@@ -172,7 +182,8 @@ library OracleStateMerklePath {
 }
 
 
-// TODO: FANCY COMMENT (:
+/// @title OralceBridge <3 BandChain D3N
+/// @author Band Protocol Team
 contract OracleBridge {
   using OracleStateMerklePath for OracleStateMerklePath.Data;
   using BlockHeaderMerkleParts for BlockHeaderMerkleParts.Data;
@@ -213,12 +224,6 @@ contract OracleBridge {
   )
     public
   {
-    bytes32 existingOracleState = oracleStates[_blockHeight];
-    if (existingOracleState != bytes32(uint256(0))) {
-      // If the state already exists at the given height, we simply perform comparison check.
-      require(existingOracleState == _oracleIAVLStateHash, "INCONSISTENT_ORACLE_IAVL_STATE");
-      return;
-    }
     // Computes Tendermint's application state hash at this given block.
     bytes32 appHash = Utils.merkleInnerHash(
       _otherStoresMerkleHash,
