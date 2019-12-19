@@ -43,7 +43,7 @@ contract("OracleBridge", () => {
       );
     });
 
-    it("should accept out-of-order signatures", async () => {
+    it("should not accept out-of-order signatures", async () => {
       await expectRevert(
         this.bridge.relayOracleState(
           "55", // _blockHeight,
