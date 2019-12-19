@@ -76,4 +76,29 @@ library BytesLib {
     }
     return data;
   }
+
+  /// @dev Returns the encoded bytes using signed varint encoding of the given input.
+  function encodeVarintSigned(uint256 _value) internal pure returns (bytes memory) {
+    return encodeVarintUnsigned(_value*2);
+  }
+
+  /// @dev Returns the encoded bytes using unsigned varint encoding of the given input.
+  function encodeVarintUnsigned(uint256 _value) internal pure returns (bytes memory) {
+    // Computes the size of the encoded value.
+    uint256 tempValue = _value;
+    uint256 size = 0;
+    while (tempValue > 0) {
+      ++size;
+      tempValue >>= 7;
+    }
+    // Allocates the memory buffer and fills in the encoded value.
+    bytes memory result = new bytes(size);
+    tempValue = _value;
+    for (uint256 idx = 0; idx < size; ++idx) {
+      result[idx] = byte(uint8(128) | uint8(tempValue & 127));
+      tempValue >>= 7;
+    }
+    result[size-1] &= byte(uint8(127));  // Drop the first bit of the last byte.
+    return result;
+  }
 }

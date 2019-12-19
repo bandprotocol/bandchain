@@ -22,4 +22,12 @@ contract BytesLibMock{
   function getSegment(bytes memory bs, uint256 start, uint256 end) public pure returns(bytes memory) {
     return BytesLib.getSegment(bs, start, end);
   }
+
+  function encodeVarintSigned(uint256 _value) public pure returns (bytes memory) {
+    return BytesLib.encodeVarintSigned(_value);
+  }
+
+  function encodeVarintUnsigned(uint256 _value) public pure returns (bytes memory) {
+    return BytesLib.encodeVarintUnsigned(_value);
+  }
 }
