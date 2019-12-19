@@ -18,7 +18,7 @@ contract("OracleBridge", () => {
         "0x7148d7db351b9b4624449801053d45fcf6a90edd64deeb3159ffe813c182f013", // _oracleIAVLStateHash
         "0x406cfc22544f4c74049983f871d44a3cf2be94bbde3961cab7ed4773d2e57ee0", // _otherStoresMerkleHash
         [
-          "0x32fa694879095840619f5e49380612bd296ff7e950eafb66ff654d99ca70869e", // versionAndChainIdHash
+          "0x32fa694879095840619f5e49380612bd296ff7e950eafb66ff654d99ca70869e", // subtreeVersionAndChainIdHash
           "0xd82f0576c09d2dfe5783eea26b3f834c4ce4866b330670dec7b6b97d53ce9687", // timeHash
           "0xa468e310ffeda3113422e774f1fe7785b53e2bab9eaf231a0e85c3eda4338ecf", // txCountAndLastBlockInfoHash
           "0xdef482cda986470c27374601ec716e9853de47d72828ae0131cf8ef98e2972c5", // consensusDataHash
@@ -47,7 +47,7 @@ contract("OracleBridge", () => {
         "0x7148d7db351b9b4624449801053d45fcf6a90edd64deeb3159ffe813c182f013", // _oracleIAVLStateHash
         "0x406cfc22544f4c74049983f871d44a3cf2be94bbde3961cab7ed4773d2e57ee0", // _otherStoresMerkleHash
         [
-          "0x32fa694879095840619f5e49380612bd296ff7e950eafb66ff654d99ca70869e", // versionAndChainIdHash
+          "0x32fa694879095840619f5e49380612bd296ff7e950eafb66ff654d99ca70869e", // subtreeVersionAndChainIdHash
           "0xd82f0576c09d2dfe5783eea26b3f834c4ce4866b330670dec7b6b97d53ce9687", // timeHash
           "0xa468e310ffeda3113422e774f1fe7785b53e2bab9eaf231a0e85c3eda4338ecf", // txCountAndLastBlockInfoHash
           "0xdef482cda986470c27374601ec716e9853de47d72828ae0131cf8ef98e2972c5", // consensusDataHash
@@ -64,7 +64,7 @@ contract("OracleBridge", () => {
           "0x7148d7db351b9b4624449801053d45fcf6a90edd64deeb3159ffe813c182f014", // _oracleIAVLStateHash INVALID HERE
           "0x406cfc22544f4c74049983f871d44a3cf2be94bbde3961cab7ed4773d2e57ee0", // _otherStoresMerkleHash
           [
-            "0x32fa694879095840619f5e49380612bd296ff7e950eafb66ff654d99ca70869e", // versionAndChainIdHash
+            "0x32fa694879095840619f5e49380612bd296ff7e950eafb66ff654d99ca70869e", // subtreeVersionAndChainIdHash
             "0xd82f0576c09d2dfe5783eea26b3f834c4ce4866b330670dec7b6b97d53ce9687", // timeHash
             "0xa468e310ffeda3113422e774f1fe7785b53e2bab9eaf231a0e85c3eda4338ecf", // txCountAndLastBlockInfoHash
             "0xdef482cda986470c27374601ec716e9853de47d72828ae0131cf8ef98e2972c5", // consensusDataHash
@@ -85,7 +85,7 @@ contract("OracleBridge", () => {
           "0x7148d7db351b9b4624449801053d45fcf6a90edd64deeb3159ffe813c182f013", // _oracleIAVLStateHash
           "0x406cfc22544f4c74049983f871d44a3cf2be94bbde3961cab7ed4773d2e57ee0", // _otherStoresMerkleHash
           [
-            "0x32fa694879095840619f5e49380612bd296ff7e950eafb66ff654d99ca70869e", // versionAndChainIdHash
+            "0x32fa694879095840619f5e49380612bd296ff7e950eafb66ff654d99ca70869e", // subtreeVersionAndChainIdHash
             "0xd82f0576c09d2dfe5783eea26b3f834c4ce4866b330670dec7b6b97d53ce9687", // timeHash
             "0xa468e310ffeda3113422e774f1fe7785b53e2bab9eaf231a0e85c3eda4338ecf", // txCountAndLastBlockInfoHash
             "0xdef482cda986470c27374601ec716e9853de47d72828ae0131cf8ef98e2972c5", // consensusDataHash
@@ -119,7 +119,7 @@ contract("OracleBridge", () => {
           "0x7148d7db351b9b4624449801053d45fcf6a90edd64deeb3159ffe813c182f013", // _oracleIAVLStateHash
           "0x406cfc22544f4c74049983f871d44a3cf2be94bbde3961cab7ed4773d2e57ee0", // _otherStoresMerkleHash
           [
-            "0x32fa694879095840619f5e49380612bd296ff7e950eafb66ff654d99ca70869e", // versionAndChainIdHash
+            "0x32fa694879095840619f5e49380612bd296ff7e950eafb66ff654d99ca70869e", // subtreeVersionAndChainIdHash
             "0xd82f0576c09d2dfe5783eea26b3f834c4ce4866b330670dec7b6b97d53ce9687", // timeHash
             "0xa468e310ffeda3113422e774f1fe7785b53e2bab9eaf231a0e85c3eda4338ecf", // txCountAndLastBlockInfoHash
             "0xdef482cda986470c27374601ec716e9853de47d72828ae0131cf8ef98e2972c5", // consensusDataHash
@@ -166,20 +166,23 @@ contract("OracleBridge", () => {
           [
             [
               false, // isDataOnRight
-              "2", // size
-              "15", // version
+              "1", // subtreeHeight
+              "2", // subtreeSize
+              "15", // subtreeVersion
               "0xc3f1960b397caec50db04da19e1d674ccf9dd4b2af5dac010de6b143d5368693" // siblingHash
             ],
             [
               true, // isDataOnRight
-              "4", // size
-              "17", // version
+              "2", // subtreeHeight
+              "4", // subtreeSize
+              "17", // subtreeVersion
               "0xc07cba57d6a2df08444c68500177a57837a8be3f9dd59e0885d7cf497ecf3c99" // siblingHash
             ],
             [
               false, // isDataOnRight
-              "8", // size
-              "17", // version
+              "3", // subtreeHeight
+              "8", // subtreeSize
+              "17", // subtreeVersion
               "0xda058f8d239a1261661552f5bc0801acfca8a90d08c834df845d6ea1e34e2cfc" // siblingHash
             ]
           ]
@@ -198,20 +201,23 @@ contract("OracleBridge", () => {
           [
             [
               false, // isDataOnRight
-              "2", // size
-              "15", // version
+              "1", // subtreeHeight
+              "2", // subtreeSize
+              "15", // subtreeVersion
               "0xc3f1960b397caec50db04da19e1d674ccf9dd4b2af5dac010de6b143d5368693" // siblingHash
             ],
             [
               true, // isDataOnRight
-              "4", // size
-              "17", // version
+              "2", // subtreeHeight
+              "4", // subtreeSize
+              "17", // subtreeVersion
               "0xc07cba57d6a2df08444c68500177a57837a8be3f9dd59e0885d7cf497ecf3c99" // siblingHash
             ],
             [
               false, // isDataOnRight
-              "8", // size
-              "17", // version
+              "3", // subtreeHeight
+              "8", // subtreeSize
+              "17", // subtreeVersion
               "0xda058f8d239a1261661552f5bc0801acfca8a90d08c834df845d6ea1e34e2cfc" // siblingHash
             ]
           ]
@@ -229,20 +235,23 @@ contract("OracleBridge", () => {
           [
             [
               false, // isDataOnRight
-              "2", // size
-              "15", // version
+              "1", // subtreeHeight
+              "2", // subtreeSize
+              "15", // subtreeVersion
               "0xc3f1960b397caec50db04da19e1d674ccf9dd4b2af5dac010de6b143d5368693" // siblingHash
             ],
             [
               true, // isDataOnRight
-              "4", // size
-              "17", // version
+              "2", // subtreeHeight
+              "4", // subtreeSize
+              "17", // subtreeVersion
               "0xc07cba57d6a2df08444c68500177a57837a8be3f9dd59e0885d7cf497ecf3c99" // siblingHash
             ],
             [
               false, // isDataOnRight
-              "8", // size
-              "17", // version
+              "3", // subtreeHeight
+              "8", // subtreeSize
+              "17", // subtreeVersion
               "0xda058f8d239a1261661552f5bc0801acfca8a90d08c834df845d6ea1e34e2cfc" // siblingHash
             ]
           ]
@@ -261,14 +270,16 @@ contract("OracleBridge", () => {
           [
             [
               false, // isDataOnRight
-              "2", // size
-              "15", // version
+              "1", // subtreeHeight
+              "2", // subtreeSize
+              "15", // subtreeVersion
               "0xc3f1960b397caec50db04da19e1d674ccf9dd4b2af5dac010de6b143d5368693" // siblingHash
             ],
             [
               true, // isDataOnRight
-              "4", // size
-              "17", // version
+              "2", // subtreeHeight
+              "4", // subtreeSize
+              "17", // subtreeVersion
               "0xc07cba57d6a2df08444c68500177a57837a8be3f9dd59e0885d7cf497ecf3c99" // siblingHash
             ]
           ]

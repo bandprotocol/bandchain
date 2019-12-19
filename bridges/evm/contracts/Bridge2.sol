@@ -144,14 +144,15 @@ library TMSignature {
 library OracleStateMerklePath {
   struct Data {
     bool isDataOnRight;
-    uint256 size;
-    uint256 version;
+    uint subtreeHeight;
+    uint256 subtreeSize;
+    uint256 subtreeVersion;
     bytes32 siblingHash;
   }
 
   /// @dev Returns the upper Merkle hash given a proof component and hash of data subtree.
   /// @param _dataSubtreeHash The hash of data subtree up until this point.
-  function getParentHash(Data memory _self, bytes32 _dataSubtreeHash, uint256 _step)
+  function getParentHash(Data memory _self, bytes32 _dataSubtreeHash)
     internal
     pure
     returns (bytes32)
@@ -159,9 +160,9 @@ library OracleStateMerklePath {
     bytes32 leftSubtree = _self.isDataOnRight ? _self.siblingHash : _dataSubtreeHash;
     bytes32 rightSubtree = _self.isDataOnRight ? _dataSubtreeHash : _self.siblingHash;
     return sha256(abi.encodePacked(
-      Utils.encodeVarintSigned(_step),
-      Utils.encodeVarintSigned(_self.size),
-      Utils.encodeVarintSigned(_self.version),
+      Utils.encodeVarintSigned(_self.subtreeHeight),
+      Utils.encodeVarintSigned(_self.subtreeSize),
+      Utils.encodeVarintSigned(_self.subtreeVersion),
       uint8(32),  // Size of left subtree hash
       leftSubtree,
       uint8(32),  // Size of right subtree hash
@@ -281,7 +282,7 @@ contract OracleBridge {
     ));
     // Goes step-by-step computing hash of parent nodes until reaching root node.
     for (uint256 idx = 0; idx < _merklePaths.length; ++idx) {
-      currentMerkleHash = _merklePaths[idx].getParentHash(currentMerkleHash, idx+1);
+      currentMerkleHash = _merklePaths[idx].getParentHash(currentMerkleHash);
     }
     // Verifies that the computed Merkle root matches what currently exists.
     require(currentMerkleHash == oracleStateRoot, "INVALID_ORACLE_DATA_PROOF");
