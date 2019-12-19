@@ -19,3 +19,9 @@ docker-compose up single-validator
 ```
 docker-compose up <single or multi> explorer owasm-studio
 ```
+
+### Tear down
+
+```
+docker-compose down -v
+```
