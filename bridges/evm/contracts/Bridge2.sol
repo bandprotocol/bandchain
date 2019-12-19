@@ -14,15 +14,6 @@ library Utils {
     return sha256(abi.encodePacked(uint8(1), _left, _right));
   }
 
-  /// @dev Returns the decoded uint256 from input bytes without checking valid varint format.
-  function decodeVarint(bytes memory _encoded) internal pure returns (uint256) {
-    uint256 v = 0;
-    for (uint256 i = 0; i < _encoded.length; i++) {
-      v = v | uint256((uint8(_encoded[i]) & 127)) << (i*7);
-    }
-    return v;
-  }
-
   /// @dev Returns the encoded bytes using signed varint encoding of the given input.
   function encodeVarintSigned(uint256 _value) internal pure returns (bytes memory) {
     return encodeVarintUnsigned(_value*2);
