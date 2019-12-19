@@ -13,3 +13,15 @@ docker-compose up multi-validator
 ```
 docker-compose up single-validator
 ```
+
+### (Optional) Run Explorer or Owasm Studio
+
+```
+docker-compose up <single or multi> explorer owasm-studio
+```
+
+### Tear down
+
+```
+docker-compose down -v
+```
