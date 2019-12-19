@@ -224,7 +224,19 @@ contract OracleBridge {
   )
     public
   {
-    // Computes Tendermint's application state hash at this given block.
+    // Computes Tendermint's application state hash at this given block. AppHash is actually a
+    // Merkle hash on muliple stores. Luckily, we only care about "zoracle" tree and all other
+    // stores can just be combined into one bytes32 hash off-chain.
+    //
+    //                                            ____________appHash_________
+    //                                          /                              \
+    //                   ____otherStoresMerkleHash ____                         \
+    //                 /                                \                        \
+    //         _____ h5 ______                    ______ h6 _______               \
+    //       /                \                 /                  \               \
+    //     h1                  h2             h3                    h4              \
+    //     /\                  /\             /\                    /\               \
+    //  acc  distribution   gov  main   params  slashing     staking  supply       zoracle
     bytes32 appHash = Utils.merkleInnerHash(
       _otherStoresMerkleHash,
       Utils.merkleLeafHash(
