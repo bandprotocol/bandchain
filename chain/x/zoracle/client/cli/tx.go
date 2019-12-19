@@ -36,7 +36,7 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 // GetCmdRequest implements the request command handler
 func GetCmdRequest(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "request [report period] [code]",
+		Use:   "request [report period] [code hash]",
 		Short: "request open api data",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -44,19 +44,17 @@ func GetCmdRequest(cdc *codec.Codec) *cobra.Command {
 
 			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 
-			var code []byte
-
 			reportPeriod, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			code, err = hex.DecodeString(args[1])
+			codeHash, err := hex.DecodeString(args[1])
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgRequest(code, reportPeriod, cliCtx.GetFromAddress())
+			msg := types.NewMsgRequest(codeHash, reportPeriod, cliCtx.GetFromAddress())
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
@@ -111,7 +109,7 @@ func GetCmdStoreCode(cdc *codec.Codec) *cobra.Command {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 
-			code, err := hex.DecodeString(args[1])
+			code, err := hex.DecodeString(args[0])
 			if err != nil {
 				return err
 			}
@@ -137,7 +135,7 @@ func GetCmdDeleteCode(cdc *codec.Codec) *cobra.Command {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 
-			codeHash, err := hex.DecodeString(args[1])
+			codeHash, err := hex.DecodeString(args[0])
 			if err != nil {
 				return err
 			}
