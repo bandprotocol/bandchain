@@ -2,8 +2,6 @@ version: "3.7"
 
 volumes:
   chain-config:
-    external:
-      name: ~/chain-config
 
 services:
   single-validator:
