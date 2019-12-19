@@ -1,7 +1,7 @@
 version: "3.7"
 
 services:
-  validator1-node:
+  single-validator:
     build:
       context: chain
       dockerfile: Dockerfile
@@ -12,9 +12,40 @@ services:
     networks:
       bandchain:
         ipv4_address: 172.18.0.11
+    depends_on:
+      - web-server
+    ports:
+      - 26657:26657
+    command: sh -c "chmod +x ./docker-config/single-validator/run.sh && ./docker-config/single-validator/run.sh"
+
+  multi-validator:
+    image: tianon/true
+    restart: "no"
+    networks:
+      bandchain:
+    depends_on:
+      - multi-validator1-node
+      - multi-validator2-node
+      - multi-validator3-node
+      - multi-validator4-node
+      - web-server
+
+  multi-validator1-node:
+    build:
+      context: chain
+      dockerfile: Dockerfile
+    image: band-validator:latest
+    environment:
+      - PRIVATE_KEY=06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b
+      - NODE_URI=tcp://localhost:26657
+    ports:
+      - 26657:26657
+    networks:
+      bandchain:
+        ipv4_address: 172.18.0.11
     command: sh -c "chmod +x ./docker-config/run.sh && ./docker-config/run.sh validator1"
 
-  validator2-node:
+  multi-validator2-node:
     image: band-validator:latest
     environment:
       - PRIVATE_KEY=6abc8ab25298fb4af6adcb9d5831db0ad7c959388f0d947abd2b4c4457ef52ec
@@ -24,7 +55,7 @@ services:
         ipv4_address: 172.18.0.12
     command: sh -c "chmod +x ./docker-config/run.sh && ./docker-config/run.sh validator2"
 
-  validator3-node:
+  multi-validator3-node:
     image: band-validator:latest
     environment:
       - PRIVATE_KEY=894fc1c7e7666c722ae5f30ba4cb18c546e08f0b2634718c27b80b9d39416dbe
@@ -34,7 +65,7 @@ services:
         ipv4_address: 172.18.0.13
     command: sh -c "chmod +x ./docker-config/run.sh && ./docker-config/run.sh validator3"
 
-  validator4-node:
+  multi-validator4-node:
     image: band-validator:latest
     environment:
       - PRIVATE_KEY=947f1715251d43de45232fc072e3ca4d823e876cf9f4ef74ad9a5f4ef440937e
@@ -42,27 +73,23 @@ services:
     networks:
       bandchain:
         ipv4_address: 172.18.0.14
-    ports:
-      - 26657:26657
     command: sh -c "chmod +x ./docker-config/run.sh && ./docker-config/run.sh validator4"
 
-  light-client:
+  rest-server:
     image: band-validator:latest
     networks:
       bandchain:
         ipv4_address: 172.18.0.15
-    depends_on:
-      - validator4-node
     restart: always
     ports:
       - 1317:1317
-    command: bandcli rest-server --laddr tcp://0.0.0.0:1317 --node tcp://172.18.0.14:26657 --chain-id bandchain
+    command: bandcli rest-server --laddr tcp://0.0.0.0:1317 --node tcp://172.18.0.11:26657 --chain-id bandchain
 
   web-server:
     image: band-validator:latest
     environment:
-      - PRIVATE_KEY=947f1715251d43de45232fc072e3ca4d823e876cf9f4ef74ad9a5f4ef440937e
-      - NODE_URI=tcp://172.18.0.14:26657
+      - PRIVATE_KEY=06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b
+      - NODE_URI=tcp://172.18.0.11:26657
       - QUERY_URI=http://172.18.0.15:1317
     networks:
       bandchain:
@@ -71,7 +98,7 @@ services:
       - 5000:5000
     restart: always
     depends_on:
-      - light-client
+      - rest-server
     command: sh -c "cd ./server && go run *"
 
   explorer:
@@ -82,8 +109,7 @@ services:
     volumes:
       - ./chain/docker-config:/root/config
     depends_on:
-      - validator4-node
-      - light-client
+      - rest-server
     ports:
       - 12000:12000
     networks:
