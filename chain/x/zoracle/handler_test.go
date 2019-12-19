@@ -23,9 +23,9 @@ func TestRequestSuccess(t *testing.T) {
 		fmt.Println(err)
 	}
 	sender := sdk.AccAddress([]byte("sender"))
-	codeHash := types.NewStoredCode(code, sender).GetCodeHash()
+	codeHash := keeper.SetCode(ctx, code, sender)
 
-	msg := types.NewMsgRequest(code, 5, sender)
+	msg := types.NewMsgRequest(codeHash, 5, sender)
 	got := handleMsgRequest(ctx, keeper, msg)
 	require.True(t, got.IsOK(), "expected set request(datapoint) to be ok, got %v", got)
 
@@ -60,6 +60,29 @@ func TestRequestSuccess(t *testing.T) {
 	}
 	require.Equal(t, codeHashPair, ctx.EventManager().Events()[0].Attributes[1])
 	require.Equal(t, preparePair, ctx.EventManager().Events()[0].Attributes[2])
+}
+
+func TestRequestInvalidCodeHash(t *testing.T) {
+	ctx, keeper := keep.CreateTestInput(t, false)
+	sender := sdk.AccAddress([]byte("sender"))
+
+	codeHash, _ := hex.DecodeString("c0dec0dec0dec0dec0dec0dec0dec0dec0dec0dec0dec0dec0dec0dec0dec0de")
+
+	msg := types.NewMsgRequest(codeHash, 5, sender)
+	got := handleMsgRequest(ctx, keeper, msg)
+	require.False(t, got.IsOK(), "expected request is an invalid tx")
+	require.Equal(t, types.CodeInvalidInput, got.Code)
+}
+
+func TestRequestInvalidWasmCode(t *testing.T) {
+	ctx, keeper := keep.CreateTestInput(t, false)
+	sender := sdk.AccAddress([]byte("sender"))
+	codeHash := keeper.SetCode(ctx, []byte("Fake code"), sender)
+
+	msg := types.NewMsgRequest(codeHash, 5, sender)
+	got := handleMsgRequest(ctx, keeper, msg)
+	require.False(t, got.IsOK(), "expected request is an invalid tx")
+	require.Equal(t, types.WasmError, got.Code)
 }
 
 func TestReportSuccess(t *testing.T) {
@@ -215,15 +238,29 @@ func TestEndBlock(t *testing.T) {
 	keeper.SetReport(ctx, 1, validatorAddress1, data1)
 	keeper.SetReport(ctx, 1, validatorAddress2, data2)
 
+	// blockheight update to 2
+	ctx = ctx.WithBlockHeight(2)
+
+	gotEndBlock := handleEndBlock(ctx, keeper)
+	require.True(t, gotEndBlock.IsOK(), "expected end block to be ok, got %v", gotEndBlock)
+
+	request, _ := keeper.GetRequest(ctx, 1)
+	require.Equal(t, uint64(1), request.RequestID)
+	// Result must not set
+	require.Equal(t, []byte(nil), request.Result)
+
+	pendingRequests = keeper.GetPending(ctx)
+	require.Equal(t, []uint64{1}, pendingRequests)
+
 	// blockheight update to 4
 	ctx = ctx.WithBlockHeight(4)
 	resultAfter, _ := hex.DecodeString("00000000000b6edb")
 
 	// handle end block
-	gotEndBlock := handleEndBlock(ctx, keeper)
+	gotEndBlock = handleEndBlock(ctx, keeper)
 	require.True(t, gotEndBlock.IsOK(), "expected end block to be ok, got %v", gotEndBlock)
 
-	request, _ := keeper.GetRequest(ctx, 1)
+	request, _ = keeper.GetRequest(ctx, 1)
 	require.Equal(t, uint64(1), request.RequestID)
 	require.Equal(t, resultAfter, request.Result)
 

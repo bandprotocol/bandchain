@@ -53,5 +53,10 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println(tx.SendTransaction(zoracle.NewMsgRequest(bytes, 4, tx.Sender())))
+	// Send transaction to store code first (commend it if already stored code)
+	fmt.Println(tx.SendTransaction(zoracle.NewMsgStoreCode(bytes, tx.Sender())))
+
+	codeHash, _ := hex.DecodeString("0874ee3e5aba7ae0eb8cb43bfebed358826d111cece0ef0f804e99eea9264060")
+	// Send request by code hash
+	fmt.Println(tx.SendTransaction(zoracle.NewMsgRequest(codeHash, 4, tx.Sender())))
 }

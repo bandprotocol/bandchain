@@ -9,19 +9,19 @@ const RouterKey = ModuleName
 
 // MsgRequest defines a Request message
 type MsgRequest struct {
-	Code         []byte         `json:"code"`
+	CodeHash     []byte         `json:"codeHash"`
 	ReportPeriod uint64         `json:"reportPeriod"`
 	Sender       sdk.AccAddress `json:"sender"`
 }
 
 // NewMsgRequest is a constructor function for MsgRequest
 func NewMsgRequest(
-	code []byte,
+	codeHash []byte,
 	reportPeriod uint64,
 	sender sdk.AccAddress,
 ) MsgRequest {
 	return MsgRequest{
-		Code:         code,
+		CodeHash:     codeHash,
 		ReportPeriod: reportPeriod,
 		Sender:       sender,
 	}
@@ -38,8 +38,8 @@ func (msg MsgRequest) ValidateBasic() sdk.Error {
 	if msg.Sender.Empty() {
 		return sdk.ErrInvalidAddress(msg.Sender.String())
 	}
-	if msg.Code == nil || len(msg.Code) == 0 {
-		return sdk.ErrUnknownRequest("Code must not be empty")
+	if msg.CodeHash == nil || len(msg.CodeHash) != 32 {
+		return sdk.ErrUnknownRequest("CodeHash must contain 32 bytes")
 	}
 	if msg.ReportPeriod <= 0 {
 		return sdk.ErrInternal("Report period must be greater than zero")
@@ -183,7 +183,7 @@ func (msg MsgDeleteCode) ValidateBasic() sdk.Error {
 		return sdk.ErrInvalidAddress(msg.Owner.String())
 	}
 
-	if len(msg.CodeHash) != 32 {
+	if msg.CodeHash == nil || len(msg.CodeHash) != 32 {
 		return sdk.ErrUnknownRequest("CodeHash must contain 32 bytes")
 	}
 
