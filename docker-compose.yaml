@@ -115,6 +115,20 @@ services:
     networks:
       - bandchain
 
+  owasm-server:
+    build: ./studio/compiler-server
+    image: owasm-server:latest
+    ports:
+      - 8082:8082
+
+  owasm-studio:
+    build: ./studio/ui
+    image: owasm-studio:latest
+    depends_on:
+      - owasm-server
+    ports:
+      - 28443:28443
+
 networks:
   bandchain:
     ipam:
