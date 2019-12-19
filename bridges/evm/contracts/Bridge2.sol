@@ -26,14 +26,14 @@ library Utils {
     uint256 size = 0;
     while (tempValue > 0) {
       ++size;
-      tempValue >>= 127;
+      tempValue >>= 7;
     }
     // Allocates the memory buffer and fills in the encoded value.
     bytes memory result = new bytes(size);
     tempValue = _value;
     for (uint256 idx = 0; idx < size; ++idx) {
       result[idx] = byte(uint8(128) | uint8(tempValue & 127));
-      tempValue >>= 127;
+      tempValue >>= 7;
     }
     result[size-1] &= byte(uint8(127));  // Drop the first bit of the last byte.
     return result;
@@ -270,7 +270,7 @@ contract OracleBridge {
     require(oracleStateRoot != bytes32(uint256(0)), "NO_ORACLE_ROOT_STATE_DATA");
     // Computes the hash of leaf node for iAVL oracle tree.
     bytes32 currentMerkleHash = sha256(abi.encodePacked(
-      uint8(0),  // Step 0 of Merkle tree (signed-varint encode)
+      uint8(0),  // Height of tree (only leaf node) is 0 (signed-varint encode)
       uint8(2),  // Size of subtree is 1 (signed-varint encode)
       Utils.encodeVarintSigned(_version),
       uint8(9),  // Size of data key (1-byte constant 0x01 + 8-byte request ID)

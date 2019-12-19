@@ -1,5 +1,7 @@
 const BytesLibMock = artifacts.require("BytesLibMock");
 
+require("chai").should();
+
 contract("BytesLib", () => {
   beforeEach(async () => {
     this.bytesLib = await BytesLibMock.new();
@@ -47,6 +49,42 @@ contract("BytesLib", () => {
       (await this.bytesLib.decodeVarint("0xa3f2e574"))
         .toString()
         .should.eq("244939043");
+    });
+  });
+
+  context("encodeVarintUnsigned", () => {
+    it("should encode 1 byte varint correctly", async () => {
+      (await this.bytesLib.encodeVarintUnsigned("116"))
+        .toString()
+        .should.eq("0x74");
+    });
+    it("should encode 2 bytes varint correctly", async () => {
+      (await this.bytesLib.encodeVarintUnsigned("14947"))
+        .toString()
+        .should.eq("0xe374");
+    });
+    it("should encode >2 bytes varint correctly", async () => {
+      (await this.bytesLib.encodeVarintUnsigned("244939043"))
+        .toString()
+        .should.eq("0xa3f2e574");
+    });
+  });
+
+  context("encodeVarintSigned", () => {
+    it("should encode 1 byte varint correctly", async () => {
+      (await this.bytesLib.encodeVarintSigned("58"))
+        .toString()
+        .should.eq("0x74");
+    });
+    it("should encode 2 bytes varint correctly", async () => {
+      (await this.bytesLib.encodeVarintSigned("7473"))
+        .toString()
+        .should.eq("0xe274");
+    });
+    it("should encode >2 bytes varint correctly", async () => {
+      (await this.bytesLib.encodeVarintSigned("122469521"))
+        .toString()
+        .should.eq("0xa2f2e574");
     });
   });
 
