@@ -1,7 +1,7 @@
 version: "3.7"
 
 volumes:
-  chain-config:
+  chain_config:
 
 services:
   single-validator:
@@ -13,7 +13,7 @@ services:
       - PRIVATE_KEY=06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b
       - NODE_URI=tcp://localhost:26657
     volumes:
-      - chain-config:/root/.bandd/config/
+      - chain_config:/root/.bandd/config/
     networks:
       bandchain:
         ipv4_address: 172.18.0.11
@@ -46,7 +46,7 @@ services:
     ports:
       - 26657:26657
     volumes:
-      - chain-config:/root/.bandd/config/
+      - chain_config:/root/.bandd/config/
     networks:
       bandchain:
         ipv4_address: 172.18.0.11
@@ -114,7 +114,7 @@ services:
       dockerfile: Dockerfile
     image: band-explorer:latest
     volumes:
-      - chain-config:/root/config
+      - chain_config:/root/config
     depends_on:
       - rest-server
     ports:
