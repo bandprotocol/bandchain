@@ -22,7 +22,7 @@
   },
   "genesisFile": "/root/config/genesis.json",
   "remote": {
-    "rpc": "http://172.18.0.14:26657",
+    "rpc": "http://172.18.0.11:26657",
     "lcd": "http://172.18.0.15:1317"
   },
   "debug": {
