@@ -26,3 +26,19 @@ func TestGetterSetterCode(t *testing.T) {
 	require.Equal(t, owner, storedCode.Owner)
 	require.Equal(t, codeHash, actualCodeHash)
 }
+
+func TestDeleteCode(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	owner := sdk.AccAddress([]byte("owner"))
+
+	code := []byte("This is code")
+	codeHash := types.NewStoredCode(code, owner).GetCodeHash()
+
+	keeper.SetCode(ctx, code, owner)
+
+	keeper.DeleteCode(ctx, codeHash)
+	_, err := keeper.GetCode(ctx, codeHash)
+	require.NotNil(t, err)
+	require.Equal(t, err.Code(), types.CodeInvalidInput)
+}
