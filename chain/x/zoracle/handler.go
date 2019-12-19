@@ -30,15 +30,20 @@ func NewHandler(keeper Keeper) sdk.Handler {
 }
 
 func handleMsgRequest(ctx sdk.Context, keeper Keeper, msg MsgRequest) sdk.Result {
+	// Get Code from code hash
+	storedCode, sdkError := keeper.GetCode(ctx, msg.CodeHash)
+	if sdkError != nil {
+		return sdkError.Result()
+	}
+
 	newRequestID := keeper.GetNextRequestID(ctx)
-	codeHash := keeper.SetCode(ctx, msg.Code, msg.Sender)
 	newRequest := types.NewDataPoint(
 		newRequestID,
-		codeHash,
+		msg.CodeHash,
 		uint64(ctx.BlockHeight())+msg.ReportPeriod,
 	)
 
-	prepare, err := wasm.Prepare(msg.Code)
+	prepare, err := wasm.Prepare(storedCode.Code)
 	if err != nil {
 		return sdk.NewError(types.DefaultCodespace, types.WasmError, err.Error()).Result()
 	}
@@ -54,7 +59,7 @@ func handleMsgRequest(ctx sdk.Context, keeper Keeper, msg MsgRequest) sdk.Result
 		sdk.NewEvent(
 			types.EventTypeRequest,
 			sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", newRequestID)),
-			sdk.NewAttribute(types.AttributeKeyCodeHash, hex.EncodeToString(codeHash)),
+			sdk.NewAttribute(types.AttributeKeyCodeHash, hex.EncodeToString(msg.CodeHash)),
 			sdk.NewAttribute(types.AttributeKeyPrepare, hex.EncodeToString(prepare)),
 		),
 	})

@@ -10,23 +10,24 @@ import (
 
 func TestMsgRequest(t *testing.T) {
 	sender := sdk.AccAddress([]byte("sender"))
-	msg := NewMsgRequest([]byte("code"), uint64(10), sender)
+	codeHash, _ := hex.DecodeString("5694d08a2e53ffcae0c3103e5ad6f6076abd960eb1f8a56577040bc1028f702b")
+	msg := NewMsgRequest(codeHash, uint64(10), sender)
 	require.Equal(t, RouterKey, msg.Route())
 	require.Equal(t, "request", msg.Type())
 }
 
 func TestMsgRequestValidation(t *testing.T) {
-	code := []byte("Code")
+	codeHash, _ := hex.DecodeString("5694d08a2e53ffcae0c3103e5ad6f6076abd960eb1f8a56577040bc1028f702b")
 	sender := sdk.AccAddress([]byte("sender"))
 	reportPeriod := uint64(10)
 	cases := []struct {
 		valid bool
 		tx    MsgRequest
 	}{
-		{true, NewMsgRequest(code, reportPeriod, sender)},
+		{true, NewMsgRequest(codeHash, reportPeriod, sender)},
 		{false, NewMsgRequest([]byte{}, reportPeriod, sender)},
 		{false, NewMsgRequest(nil, reportPeriod, sender)},
-		{false, NewMsgRequest(code, reportPeriod, sdk.AccAddress([]byte("")))},
+		{false, NewMsgRequest(codeHash, reportPeriod, sdk.AccAddress([]byte("")))},
 	}
 
 	for _, tc := range cases {
@@ -43,12 +44,12 @@ func TestMsgRequestGetSignBytes(t *testing.T) {
 	config := sdk.GetConfig()
 	config.SetBech32PrefixForAccount("band", "band"+sdk.PrefixPublic)
 
-	code := []byte("Code")
+	codeHash, _ := hex.DecodeString("5694d08a2e53ffcae0c3103e5ad6f6076abd960eb1f8a56577040bc1028f702b")
 	sender := sdk.AccAddress([]byte("sender"))
-	msg := NewMsgRequest(code, uint64(10), sender)
+	msg := NewMsgRequest(codeHash, uint64(10), sender)
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"zoracle/Request","value":{"code":"Q29kZQ==","reportPeriod":"10","sender":"band1wdjkuer9wgvz7c4y"}}`
+	expected := `{"type":"zoracle/Request","value":{"codeHash":"VpTQii5T/8rgwxA+Wtb2B2q9lg6x+KVldwQLwQKPcCs=","reportPeriod":"10","sender":"band1wdjkuer9wgvz7c4y"}}`
 
 	require.Equal(t, expected, string(res))
 }
