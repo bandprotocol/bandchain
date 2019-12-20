@@ -5,13 +5,13 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// SetRequest is a function to save datapoint to specific id
+// SetRequest is a function to save datapoint to the given ID.
 func (k Keeper) SetRequest(ctx sdk.Context, id uint64, datapoint types.DataPoint) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.DataPointStoreKey(id), k.cdc.MustMarshalBinaryBare(datapoint))
 }
 
-// GetRequest returns the entire Datapoint metadata struct
+// GetRequest returns the entire Datapoint metadata struct.
 func (k Keeper) GetRequest(ctx sdk.Context, id uint64) (types.DataPoint, sdk.Error) {
 	store := ctx.KVStore(k.storeKey)
 	if !k.CheckRequestExists(ctx, id) {
@@ -24,13 +24,13 @@ func (k Keeper) GetRequest(ctx sdk.Context, id uint64) (types.DataPoint, sdk.Err
 	return datapoint, nil
 }
 
-// CheckRequestExists checks if the request at this id is present in the store or not
+// CheckRequestExists checks if the request at this id is present in the store or not.
 func (k Keeper) CheckRequestExists(ctx sdk.Context, id uint64) bool {
 	store := ctx.KVStore(k.storeKey)
 	return store.Has(types.DataPointStoreKey(id))
 }
 
-// uniqueReqIDs is used to create array which all elements are unique
+// uniqueReqIDs is used to create array with all elements being unique (deduplicated).
 func uniqueReqIDs(intSlice []uint64) []uint64 {
 	keys := make(map[uint64]bool)
 	list := []uint64{}
@@ -43,7 +43,7 @@ func uniqueReqIDs(intSlice []uint64) []uint64 {
 	return list
 }
 
-// SetPending saves list of request in pending period
+// SetPending saves the list of request in pending period.
 func (k Keeper) SetPending(ctx sdk.Context, reqIDs []uint64) {
 	store := ctx.KVStore(k.storeKey)
 	urIDs := uniqueReqIDs(reqIDs)
@@ -54,7 +54,7 @@ func (k Keeper) SetPending(ctx sdk.Context, reqIDs []uint64) {
 	store.Set(types.PendingListStoreKey, encoded)
 }
 
-// GetPending use to get request list in pending period
+// GetPending returns the list of request IDs in pending period.
 func (k Keeper) GetPending(ctx sdk.Context) []uint64 {
 	store := ctx.KVStore(k.storeKey)
 	reqIDsBytes := store.Get(types.PendingListStoreKey)
