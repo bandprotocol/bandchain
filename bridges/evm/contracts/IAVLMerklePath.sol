@@ -15,7 +15,7 @@ import { Utils } from "./Utils.sol";
 library IAVLMerklePath {
   struct Data {
     bool isDataOnRight;
-    uint256 subtreeHeight;
+    uint8 subtreeHeight;
     uint256 subtreeSize;
     uint256 subtreeVersion;
     bytes32 siblingHash;
@@ -31,7 +31,7 @@ library IAVLMerklePath {
     bytes32 leftSubtree = _self.isDataOnRight ? _self.siblingHash : _dataSubtreeHash;
     bytes32 rightSubtree = _self.isDataOnRight ? _dataSubtreeHash : _self.siblingHash;
     return sha256(abi.encodePacked(
-      Utils.encodeVarintSigned(_self.subtreeHeight),
+      _self.subtreeHeight << 1,  // Tendermint signed-int8 encoding requires multiplying by 2
       Utils.encodeVarintSigned(_self.subtreeSize),
       Utils.encodeVarintSigned(_self.subtreeVersion),
       uint8(32),  // Size of left subtree hash
