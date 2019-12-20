@@ -25,45 +25,51 @@ type GetRequestResp struct {
 }
 
 type IAVLPath struct {
-	Height        uint64 `json:"height"`
-	Size          uint64 `json:"size"`
-	Version       uint64 `json:"version"`
-	IsDataOnRight bool   `json:"isRight"`
-	SiblingHash   []byte `json:"siblingHash"`
+	SubtreeHeight  uint64 `json:"subtreeHeight"`
+	SubtreeSize    uint64 `json:"subtreeSize"`
+	SubtreeVersion uint64 `json:"subtreeVersion"`
+	IsDataOnRight  bool   `json:"isDataOnRight"`
+	SiblingHash    []byte `json:"siblingHash"`
 }
 
+type LeafNode struct {
+	Version   uint64 `json:"version"`
+	RequestId uint64 `json:"requestId"`
+	CodeHash  []byte `json:"codeHash"`
+	Params    []byte `json:"params"`
+	Value     []byte `json:"value"`
+}
+
+type BlockHashProof struct {
+	ZoracleRootHash []byte `json:"zoracleRootHash"`
+	OtherStoreHash  []byte `json:"otherStoreHash"`
+	MerklePaths     struct {
+		VersionAndChainIdHash       []byte `json:"versionAndChainIdHash"`
+		TimeHash                    []byte `json:"timeHash"`
+		TxCountAndLastBlockInfoHash []byte `json:"txCountAndLastBlockInfoHash"`
+		ConsensusDataHash           []byte `json:"consensusDataHash"`
+		LastResultsHash             []byte `json:"lastResultsHash"`
+		EvidenceAndProposerHash     []byte `json:"evidenceAndProposerHash"`
+	}
+	SignedDataPrefix []byte        `json:"signedDataPrefix"`
+	Signatures       []TMSignature `json:"signatures"`
+}
+
+type ZoracleTreeProof struct {
+	LeafNode LeafNode   `json:"valueNode"`
+	Paths    []IAVLPath `json:"paths"`
+}
 type TMSignature struct {
 	R                []byte `json:"r"`
 	S                []byte `json:"s"`
-	V                uint   `json:"v"`
-	SignedDataSuffix []byte `json:"suffix"`
+	V                uint8  `json:"v"`
+	SignedDataSuffix []byte `json:"signedDataSuffix"`
 }
+
 type Proof struct {
-	BlockHeight      uint64 `json:"blockHeight"`
-	ZoracleTreeProof struct {
-		LeafNode struct {
-			Version   uint64 `json:"version"`
-			RequestID uint64 `json:"requestID"`
-			CodeHash  []byte `json:"codeHash"`
-			Params    []byte `json:"params"`
-			Value     []byte `json:"value"`
-		} `json:"valueNode"`
-		Paths []IAVLPath `json:"paths"`
-	} `json:"zoracleTreeProof"`
-	BlockHashProof struct {
-		ZoracleRootHash []byte `json:"zoracleRootHash"`
-		OtherStoreHash  []byte `json:"otherStoreHash"`
-		MerklePaths     struct {
-			VersionAndChainIdHash       []byte `json:"versionAndChainIdHash"`
-			TimeHash                    []byte `json:"timeHash"`
-			TxCountAndLastBlockInfoHash []byte `json:"txCountAndLastBlockInfoHash"`
-			ConsensusDataHash           []byte `json:"consensusDataHash"`
-			LastResultsHash             []byte `json:"lastResultsHash"`
-			EvidenceAndProposerHash     []byte `json:"evidenceAndProposerHash"`
-		}
-		SignedDataPrefix []byte        `json:"signedDataPrefix"`
-		Signatures       []TMSignature `json:"signatures"`
-	} `json:"blockHashProof"`
+	BlockHeight      uint64           `json:"blockHeight"`
+	ZoracleTreeProof ZoracleTreeProof `json:"zoracleTreeProof"`
+	BlockHashProof   BlockHashProof   `json:"blockHashProof"`
 }
 
 func main() {
