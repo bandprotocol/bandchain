@@ -70,8 +70,6 @@ contract Bridge {
       )
     );
     // Computes Tendermint's block header hash at this given block.
-    // TODO: Remove this and update test case
-    appHash = hex"6fec355d8a3ce024eed694d19f1e41ae2815c6c9609c5ef59d715935d2e76712";
     bytes32 blockHeader = _merkleParts.getBlockHeader(appHash, _blockHeight);
     // Counts the total number of valid signatures signed by active validators.
     address lastSigner = address(0);

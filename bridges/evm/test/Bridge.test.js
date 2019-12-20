@@ -4,40 +4,91 @@ const Bridge = artifacts.require("BridgeMock");
 require("chai").should();
 
 contract("Bridge", () => {
-  context("Checking oracle state relay (2 validators)", () => {
+  context("Checking oracle state relay (4 validators)", () => {
     beforeEach(async () => {
       this.bridge = await Bridge.new([
+        "0x652D89a66Eb4eA55366c45b1f9ACfc8e2179E1c5",
+        "0x88e1cd00710495EEB93D4f522d16bC8B87Cb00FE",
         "0xaAA22E077492CbaD414098EBD98AA8dc1C7AE8D9",
         "0xB956589b6fC5523eeD0d9eEcfF06262Ce84ff260"
       ]);
     });
 
-    it("should accept correct state relay", async () => {
+    it("should accept correct state relay (4 signatures)", async () => {
       await this.bridge.relayOracleState(
-        "55", // _blockHeight,
-        "0x7148d7db351b9b4624449801053d45fcf6a90edd64deeb3159ffe813c182f013", // _oracleIAVLStateHash
-        "0x406cfc22544f4c74049983f871d44a3cf2be94bbde3961cab7ed4773d2e57ee0", // _otherStoresMerkleHash
+        "3210", // _blockHeight,
+        "0xac0b4d71daabb289e21514b004628c7236fb351cd950f67c93c449c5d06b35d1", // _oracleIAVLStateHash
+        "0xcf27679618b88c2adad50ed008d40bf5fe631a7b3718e766e547d203253bec6a", // _otherStoresMerkleHash
         [
           "0x32fa694879095840619f5e49380612bd296ff7e950eafb66ff654d99ca70869e", // subtreeVersionAndChainIdHash
-          "0xd82f0576c09d2dfe5783eea26b3f834c4ce4866b330670dec7b6b97d53ce9687", // timeHash
-          "0xa468e310ffeda3113422e774f1fe7785b53e2bab9eaf231a0e85c3eda4338ecf", // txCountAndLastBlockInfoHash
+          "0x3dddc70f2fb58681b19a6e7bb5d2361ef0a50370940d249d6290da9f086b99e8", // timeHash
+          "0x942fc7a26da18816b277812839ac4f413654ac70fbfb64f27baab7f88fa6ec25", // txCountAndLastBlockInfoHash
           "0xdef482cda986470c27374601ec716e9853de47d72828ae0131cf8ef98e2972c5", // consensusDataHash
           "0x6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d", // lastResultsHash
-          "0xd991da4d4e69473cc75a4b819f9e07d4956671a6f4a74df4cc16596fcbe68137" // evidenceAndProposerHash
+          "0x7f4be7e5a1eb872ad44103360ddc190410331280c42a54d829a5d752c796685d" // evidenceAndProposerHash
         ],
-        "0x6e080211370000000000000022480a20", // _signedDataPrefix
+        "0x6e0802118a0c00000000000022480a20", // _signedDataPrefix
         [
           [
-            "0xe57f9399c976b4aacc2b7ce923edfd1802da637a0aec5eae2e5cce272e893e2c", // r
-            "0x7ec5209a1cc5cec0e57c1849cc2b62816d09c3e95860fd2f10e29dd1afe76d2e", // s
-            "27", // v
-            "0x12240a204369248f6ca1f8caa75acdb98560c7c9f015ab5c85283480984e901af6019b5310012a0c0891cce6ef051094f598d503320962616e64636861696e" // signedDataSuffix
+            "0x1581824b505ee5977c87d3d1a5279544bb68d29e06aa541c068054383d7acffd", // r
+            "0x34251b479113d5359e2bcc49055336bd5dfc1c02a0865c822414ff96c5cd3b19", // s
+            28, // v
+            "0x12240a20e8a6f45e19dd488df492c7b82f476d3691e46ff176ad4a13ff03a61e60eddfff10012a0c08abcdf2ef0510c8cb9c8a01320962616e64636861696e" // _signedDataSuffix
           ],
           [
-            "0xaea1120a7e539fb98d2fb94ce59cfb2ab84435bd3847dba6b0a846be73998179", // r
-            "0x38fe77c8b788933e8ec9ee7bf3c6d41feba6f12ab7b9607ea2662c6c0ea10ef3", // s
-            "27", // v
-            "0x12240a204369248f6ca1f8caa75acdb98560c7c9f015ab5c85283480984e901af6019b5310012a0c0891cce6ef051084e3e5d603320962616e64636861696e" // signedDataSuffix
+            "0xbcf871c64d1f92d92c712535c3b15e3d8ed1dfe79c28090360d687a9e019952b", // r
+            "0x5032abeb19ad210a93bff410efd2944762487dc49a3ef1682ac59007cd7b21dd", // s
+            28, // v
+            "0x12240a20e8a6f45e19dd488df492c7b82f476d3691e46ff176ad4a13ff03a61e60eddfff10012a0c08abcdf2ef0510c8afb68a01320962616e64636861696e" // _signedDataSuffix
+          ],
+          [
+            "0xa50af0e18b03076d6f070d9b9321278c668a8d2e247fc54abc1dc8c777b98369", // r
+            "0x25ea236f9d0dd2270fe8d9b6b6499de05e7e4a6b12b8a0e6849653cec64c3e61", // s
+            28, // v
+            "0x12240a20e8a6f45e19dd488df492c7b82f476d3691e46ff176ad4a13ff03a61e60eddfff10012a0c08abcdf2ef051080fafa8f01320962616e64636861696e" // _signedDataSuffix
+          ],
+          [
+            "0xddeea6cf5643a100e8004590296c56ebd1231c774313699b8bc774ea86b59b96", // r
+            "0x09779c784dc684d08f328bde36b91bd827dc86bfc47b68c45121089b3c1f6d89", // s
+            27, // v
+            "0x12240a20e8a6f45e19dd488df492c7b82f476d3691e46ff176ad4a13ff03a61e60eddfff10012a0c08abcdf2ef0510a0dfd68e01320962616e64636861696e" // _signedDataSuffix
+          ]
+        ]
+      );
+    });
+
+    it("should accept correct state relay (3 signatures)", async () => {
+      await this.bridge.relayOracleState(
+        "3210", // _blockHeight,
+        "0xac0b4d71daabb289e21514b004628c7236fb351cd950f67c93c449c5d06b35d1", // _oracleIAVLStateHash
+        "0xcf27679618b88c2adad50ed008d40bf5fe631a7b3718e766e547d203253bec6a", // _otherStoresMerkleHash
+        [
+          "0x32fa694879095840619f5e49380612bd296ff7e950eafb66ff654d99ca70869e", // subtreeVersionAndChainIdHash
+          "0x3dddc70f2fb58681b19a6e7bb5d2361ef0a50370940d249d6290da9f086b99e8", // timeHash
+          "0x942fc7a26da18816b277812839ac4f413654ac70fbfb64f27baab7f88fa6ec25", // txCountAndLastBlockInfoHash
+          "0xdef482cda986470c27374601ec716e9853de47d72828ae0131cf8ef98e2972c5", // consensusDataHash
+          "0x6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d", // lastResultsHash
+          "0x7f4be7e5a1eb872ad44103360ddc190410331280c42a54d829a5d752c796685d" // evidenceAndProposerHash
+        ],
+        "0x6e0802118a0c00000000000022480a20", // _signedDataPrefix
+        [
+          [
+            "0xbcf871c64d1f92d92c712535c3b15e3d8ed1dfe79c28090360d687a9e019952b", // r
+            "0x5032abeb19ad210a93bff410efd2944762487dc49a3ef1682ac59007cd7b21dd", // s
+            28, // v
+            "0x12240a20e8a6f45e19dd488df492c7b82f476d3691e46ff176ad4a13ff03a61e60eddfff10012a0c08abcdf2ef0510c8afb68a01320962616e64636861696e" // _signedDataSuffix
+          ],
+          [
+            "0xa50af0e18b03076d6f070d9b9321278c668a8d2e247fc54abc1dc8c777b98369", // r
+            "0x25ea236f9d0dd2270fe8d9b6b6499de05e7e4a6b12b8a0e6849653cec64c3e61", // s
+            28, // v
+            "0x12240a20e8a6f45e19dd488df492c7b82f476d3691e46ff176ad4a13ff03a61e60eddfff10012a0c08abcdf2ef051080fafa8f01320962616e64636861696e" // _signedDataSuffix
+          ],
+          [
+            "0xddeea6cf5643a100e8004590296c56ebd1231c774313699b8bc774ea86b59b96", // r
+            "0x09779c784dc684d08f328bde36b91bd827dc86bfc47b68c45121089b3c1f6d89", // s
+            27, // v
+            "0x12240a20e8a6f45e19dd488df492c7b82f476d3691e46ff176ad4a13ff03a61e60eddfff10012a0c08abcdf2ef0510a0dfd68e01320962616e64636861696e" // _signedDataSuffix
           ]
         ]
       );
@@ -46,30 +97,42 @@ contract("Bridge", () => {
     it("should not accept out-of-order signatures", async () => {
       await expectRevert(
         this.bridge.relayOracleState(
-          "55", // _blockHeight,
-          "0x7148d7db351b9b4624449801053d45fcf6a90edd64deeb3159ffe813c182f013", // _oracleIAVLStateHash
-          "0x406cfc22544f4c74049983f871d44a3cf2be94bbde3961cab7ed4773d2e57ee0", // _otherStoresMerkleHash
+          "3210", // _blockHeight,
+          "0xac0b4d71daabb289e21514b004628c7236fb351cd950f67c93c449c5d06b35d1", // _oracleIAVLStateHash
+          "0xcf27679618b88c2adad50ed008d40bf5fe631a7b3718e766e547d203253bec6a", // _otherStoresMerkleHash
           [
             "0x32fa694879095840619f5e49380612bd296ff7e950eafb66ff654d99ca70869e", // subtreeVersionAndChainIdHash
-            "0xd82f0576c09d2dfe5783eea26b3f834c4ce4866b330670dec7b6b97d53ce9687", // timeHash
-            "0xa468e310ffeda3113422e774f1fe7785b53e2bab9eaf231a0e85c3eda4338ecf", // txCountAndLastBlockInfoHash
+            "0x3dddc70f2fb58681b19a6e7bb5d2361ef0a50370940d249d6290da9f086b99e8", // timeHash
+            "0x942fc7a26da18816b277812839ac4f413654ac70fbfb64f27baab7f88fa6ec25", // txCountAndLastBlockInfoHash
             "0xdef482cda986470c27374601ec716e9853de47d72828ae0131cf8ef98e2972c5", // consensusDataHash
             "0x6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d", // lastResultsHash
-            "0xd991da4d4e69473cc75a4b819f9e07d4956671a6f4a74df4cc16596fcbe68137" // evidenceAndProposerHash
+            "0x7f4be7e5a1eb872ad44103360ddc190410331280c42a54d829a5d752c796685d" // evidenceAndProposerHash
           ],
-          "0x6e080211370000000000000022480a20", // _signedDataPrefix
+          "0x6e0802118a0c00000000000022480a20", // _signedDataPrefix
           [
             [
-              "0xaea1120a7e539fb98d2fb94ce59cfb2ab84435bd3847dba6b0a846be73998179", // r
-              "0x38fe77c8b788933e8ec9ee7bf3c6d41feba6f12ab7b9607ea2662c6c0ea10ef3", // s
-              "27", // v
-              "0x12240a204369248f6ca1f8caa75acdb98560c7c9f015ab5c85283480984e901af6019b5310012a0c0891cce6ef051084e3e5d603320962616e64636861696e" // signedDataSuffix
+              "0xbcf871c64d1f92d92c712535c3b15e3d8ed1dfe79c28090360d687a9e019952b", // r
+              "0x5032abeb19ad210a93bff410efd2944762487dc49a3ef1682ac59007cd7b21dd", // s
+              28, // v
+              "0x12240a20e8a6f45e19dd488df492c7b82f476d3691e46ff176ad4a13ff03a61e60eddfff10012a0c08abcdf2ef0510c8afb68a01320962616e64636861696e" // _signedDataSuffix
             ],
             [
-              "0xe57f9399c976b4aacc2b7ce923edfd1802da637a0aec5eae2e5cce272e893e2c", // r
-              "0x7ec5209a1cc5cec0e57c1849cc2b62816d09c3e95860fd2f10e29dd1afe76d2e", // s
-              "27", // v
-              "0x12240a204369248f6ca1f8caa75acdb98560c7c9f015ab5c85283480984e901af6019b5310012a0c0891cce6ef051094f598d503320962616e64636861696e" // signedDataSuffix
+              "0x1581824b505ee5977c87d3d1a5279544bb68d29e06aa541c068054383d7acffd", // r
+              "0x34251b479113d5359e2bcc49055336bd5dfc1c02a0865c822414ff96c5cd3b19", // s
+              28, // v
+              "0x12240a20e8a6f45e19dd488df492c7b82f476d3691e46ff176ad4a13ff03a61e60eddfff10012a0c08abcdf2ef0510c8cb9c8a01320962616e64636861696e" // _signedDataSuffix
+            ],
+            [
+              "0xa50af0e18b03076d6f070d9b9321278c668a8d2e247fc54abc1dc8c777b98369", // r
+              "0x25ea236f9d0dd2270fe8d9b6b6499de05e7e4a6b12b8a0e6849653cec64c3e61", // s
+              28, // v
+              "0x12240a20e8a6f45e19dd488df492c7b82f476d3691e46ff176ad4a13ff03a61e60eddfff10012a0c08abcdf2ef051080fafa8f01320962616e64636861696e" // _signedDataSuffix
+            ],
+            [
+              "0xddeea6cf5643a100e8004590296c56ebd1231c774313699b8bc774ea86b59b96", // r
+              "0x09779c784dc684d08f328bde36b91bd827dc86bfc47b68c45121089b3c1f6d89", // s
+              27, // v
+              "0x12240a20e8a6f45e19dd488df492c7b82f476d3691e46ff176ad4a13ff03a61e60eddfff10012a0c08abcdf2ef0510a0dfd68e01320962616e64636861696e" // _signedDataSuffix
             ]
           ]
         ),
@@ -80,30 +143,36 @@ contract("Bridge", () => {
     it("should not accept invalid signature", async () => {
       await expectRevert(
         this.bridge.relayOracleState(
-          "55", // _blockHeight,
-          "0x7148d7db351b9b4624449801053d45fcf6a90edd64deeb3159ffe813c182f013", // _oracleIAVLStateHash
-          "0x406cfc22544f4c74049983f871d44a3cf2be94bbde3961cab7ed4773d2e57ee0", // _otherStoresMerkleHash
+          "3210", // _blockHeight,
+          "0xac0b4d71daabb289e21514b004628c7236fb351cd950f67c93c449c5d06b35d1", // _oracleIAVLStateHash
+          "0xcf27679618b88c2adad50ed008d40bf5fe631a7b3718e766e547d203253bec6a", // _otherStoresMerkleHash
           [
             "0x32fa694879095840619f5e49380612bd296ff7e950eafb66ff654d99ca70869e", // subtreeVersionAndChainIdHash
-            "0xd82f0576c09d2dfe5783eea26b3f834c4ce4866b330670dec7b6b97d53ce9687", // timeHash
-            "0xa468e310ffeda3113422e774f1fe7785b53e2bab9eaf231a0e85c3eda4338ecf", // txCountAndLastBlockInfoHash
+            "0x3dddc70f2fb58681b19a6e7bb5d2361ef0a50370940d249d6290da9f086b99e8", // timeHash
+            "0x942fc7a26da18816b277812839ac4f413654ac70fbfb64f27baab7f88fa6ec25", // txCountAndLastBlockInfoHash
             "0xdef482cda986470c27374601ec716e9853de47d72828ae0131cf8ef98e2972c5", // consensusDataHash
             "0x6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d", // lastResultsHash
-            "0xd991da4d4e69473cc75a4b819f9e07d4956671a6f4a74df4cc16596fcbe68137" // evidenceAndProposerHash
+            "0x7f4be7e5a1eb872ad44103360ddc190410331280c42a54d829a5d752c796685d" // evidenceAndProposerHash
           ],
-          "0x6e080211370000000000000022480a20", // _signedDataPrefix
+          "0x6e0802118a0c00000000000022480a20", // _signedDataPrefix
           [
             [
-              "0xaea1120a7e539fb98d2fb94ce59cfb2ab84435bd3847dba6b0a846be73998178", // r INVALID HERE!
-              "0x38fe77c8b788933e8ec9ee7bf3c6d41feba6f12ab7b9607ea2662c6c0ea10ef3", // s
-              "27", // v
-              "0x12240a204369248f6ca1f8caa75acdb98560c7c9f015ab5c85283480984e901af6019b5310012a0c0891cce6ef051084e3e5d603320962616e64636861696e" // signedDataSuffix
+              "0x1581824b505ee5977c87d3d1a5279544bb68d29e06aa541c068054383d7acffe", // r INVALID HERE
+              "0x34251b479113d5359e2bcc49055336bd5dfc1c02a0865c822414ff96c5cd3b19", // s
+              28, // v
+              "0x12240a20e8a6f45e19dd488df492c7b82f476d3691e46ff176ad4a13ff03a61e60eddfff10012a0c08abcdf2ef0510c8cb9c8a01320962616e64636861696e" // _signedDataSuffix
             ],
             [
-              "0xe57f9399c976b4aacc2b7ce923edfd1802da637a0aec5eae2e5cce272e893e2c", // r
-              "0x7ec5209a1cc5cec0e57c1849cc2b62816d09c3e95860fd2f10e29dd1afe76d2e", // s
-              "27", // v
-              "0x12240a204369248f6ca1f8caa75acdb98560c7c9f015ab5c85283480984e901af6019b5310012a0c0891cce6ef051094f598d503320962616e64636861696e" // signedDataSuffix
+              "0xa50af0e18b03076d6f070d9b9321278c668a8d2e247fc54abc1dc8c777b98369", // r
+              "0x25ea236f9d0dd2270fe8d9b6b6499de05e7e4a6b12b8a0e6849653cec64c3e61", // s
+              28, // v
+              "0x12240a20e8a6f45e19dd488df492c7b82f476d3691e46ff176ad4a13ff03a61e60eddfff10012a0c08abcdf2ef051080fafa8f01320962616e64636861696e" // _signedDataSuffix
+            ],
+            [
+              "0xddeea6cf5643a100e8004590296c56ebd1231c774313699b8bc774ea86b59b96", // r
+              "0x09779c784dc684d08f328bde36b91bd827dc86bfc47b68c45121089b3c1f6d89", // s
+              27, // v
+              "0x12240a20e8a6f45e19dd488df492c7b82f476d3691e46ff176ad4a13ff03a61e60eddfff10012a0c08abcdf2ef0510a0dfd68e01320962616e64636861696e" // _signedDataSuffix
             ]
           ]
         ),
