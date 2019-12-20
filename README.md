@@ -17,6 +17,34 @@ This repository is a [monorepo] containing the reference implementation of D3N a
 | [`spec`](spec)         | 📖 D3N research and specification knowledge base          |
 | [`studio`](studio)     | 🎬 In-browser IDE for testing and deploying owasm scripts |
 
+## Running with Docker
+
+There are 2 ways to run bandchian
+
+#### Run on 4 validators
+
+```
+docker-compose up multi-validator
+```
+
+#### Run 1 validator (for development)
+
+```
+docker-compose up single-validator
+```
+
+#### (Optional) Run Explorer or Owasm Studio
+
+```
+docker-compose up <single or multi> explorer owasm-studio
+```
+
+#### Tear down
+
+```
+docker-compose down -v
+```
+
 ## License & Contributing
 
 All modules are licensed under the terms of the Apache 2.0 License unless otherwise specified in the LICENSE file at module's root.
