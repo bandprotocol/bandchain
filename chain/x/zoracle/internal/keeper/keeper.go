@@ -15,7 +15,7 @@ type Keeper struct {
 	StakingKeeper staking.Keeper
 }
 
-// NewKeeper creates a new Keeper instance
+// NewKeeper creates a new zoracle Keeper instance.
 func NewKeeper(cdc *codec.Codec, key sdk.StoreKey, coinKeeper bank.Keeper, stakingKeeper staking.Keeper) Keeper {
 	return Keeper{
 		storeKey:      key,
@@ -25,7 +25,7 @@ func NewKeeper(cdc *codec.Codec, key sdk.StoreKey, coinKeeper bank.Keeper, staki
 	}
 }
 
-// GetRequestCount returns current count of requests
+// GetRequestCount returns the current number of all requests ever exist.
 func (k Keeper) GetRequestCount(ctx sdk.Context) uint64 {
 	var requestNumber uint64
 	store := ctx.KVStore(k.storeKey)
@@ -40,7 +40,7 @@ func (k Keeper) GetRequestCount(ctx sdk.Context) uint64 {
 	return requestNumber
 }
 
-// GetNextRequestID returns and increments the current requests.
+// GetNextRequestID increments and returns the current number of requests.
 // If the global request count is not set, it initializes it with value 0.
 func (k Keeper) GetNextRequestID(ctx sdk.Context) uint64 {
 	requestNumber := k.GetRequestCount(ctx)
