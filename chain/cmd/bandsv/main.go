@@ -40,19 +40,21 @@ type LeafNode struct {
 	Value     []byte `json:"value"`
 }
 
+type BlockHeaderMerkleParts struct {
+	VersionAndChainIdHash       []byte `json:"versionAndChainIdHash"`
+	TimeHash                    []byte `json:"timeHash"`
+	TxCountAndLastBlockInfoHash []byte `json:"txCountAndLastBlockInfoHash"`
+	ConsensusDataHash           []byte `json:"consensusDataHash"`
+	LastResultsHash             []byte `json:"lastResultsHash"`
+	EvidenceAndProposerHash     []byte `json:"evidenceAndProposerHash"`
+}
+
 type BlockHashProof struct {
-	ZoracleRootHash []byte `json:"zoracleRootHash"`
-	OtherStoreHash  []byte `json:"otherStoreHash"`
-	MerklePaths     struct {
-		VersionAndChainIdHash       []byte `json:"versionAndChainIdHash"`
-		TimeHash                    []byte `json:"timeHash"`
-		TxCountAndLastBlockInfoHash []byte `json:"txCountAndLastBlockInfoHash"`
-		ConsensusDataHash           []byte `json:"consensusDataHash"`
-		LastResultsHash             []byte `json:"lastResultsHash"`
-		EvidenceAndProposerHash     []byte `json:"evidenceAndProposerHash"`
-	}
-	SignedDataPrefix []byte        `json:"signedDataPrefix"`
-	Signatures       []TMSignature `json:"signatures"`
+	ZoracleRootHash        []byte                 `json:"zoracleRootHash"`
+	OtherStoreHash         []byte                 `json:"otherStoreHash"`
+	BlockHeaderMerkleParts BlockHeaderMerkleParts `json:"blockHeaderMerkleParts"`
+	SignedDataPrefix       []byte                 `json:"signedDataPrefix"`
+	Signatures             []TMSignature          `json:"signatures"`
 }
 
 type ZoracleTreeProof struct {
