@@ -12,7 +12,7 @@ import { Utils } from "./Utils.sol";
 /// To construct a hash of an internal Merkle node, the hashes of the two subtrees are combined
 /// with extra data of this internal node. See implementation below. Repeatedly doing this from
 /// the leaf node until you get to the root node to get the final iAVL Merkle hash.
-library OracleStateMerklePath {
+library IAVLMerklePath {
   struct Data {
     bool isDataOnRight;
     uint256 subtreeHeight;

@@ -1,7 +1,7 @@
 pragma solidity 0.5.14;
 pragma experimental ABIEncoderV2;
 import { BlockHeaderMerkleParts } from "./BlockHeaderMerkleParts.sol";
-import { OracleStateMerklePath } from "./OracleStateMerklePath.sol";
+import { IAVLMerklePath } from "./IAVLMerklePath.sol";
 import { TMSignature } from "./TMSignature.sol";
 import { Utils } from "./Utils.sol";
 
@@ -9,7 +9,7 @@ import { Utils } from "./Utils.sol";
 /// @author Band Protocol Team
 contract Bridge {
   using BlockHeaderMerkleParts for BlockHeaderMerkleParts.Data;
-  using OracleStateMerklePath for OracleStateMerklePath.Data;
+  using IAVLMerklePath for IAVLMerklePath.Data;
   using TMSignature for TMSignature.Data;
 
   /// Mapping from block height to the hash of "zoracle" iAVL Merkle tree.
@@ -101,7 +101,7 @@ contract Bridge {
     bytes memory _data,
     uint64 _requestId,
     uint256 _version,
-    OracleStateMerklePath.Data[] memory _merklePaths
+    IAVLMerklePath.Data[] memory _merklePaths
   )
     public
     view
