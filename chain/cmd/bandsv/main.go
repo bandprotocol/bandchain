@@ -4,6 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+
+	"github.com/bandprotocol/d3n/chain/x/zoracle"
 )
 
 type OracleRequest struct {
@@ -15,7 +17,53 @@ type OracleRequest struct {
 type OracleRequestResp struct {
 	RequestId uint64 `json:"id"`
 	CodeHash  []byte `json:"codeHash"`
-	Params    []byte `json:"params"`
+}
+
+type GetRequestResp struct {
+	Request zoracle.RequestWithReport `json:"request"`
+	Proof   Proof                     `json:"proof"`
+}
+
+type IAVLPath struct {
+	Height        uint64 `json:"height"`
+	Size          uint64 `json:"size"`
+	Version       uint64 `json:"version"`
+	IsDataOnRight bool   `json:"isRight"`
+	SiblingHash   []byte `json:"siblingHash"`
+}
+
+type TMSignature struct {
+	R                []byte `json:"r"`
+	S                []byte `json:"s"`
+	V                uint   `json:"v"`
+	SignedDataSuffix []byte `json:"suffix"`
+}
+type Proof struct {
+	BlockHeight      uint64 `json:"blockHeight"`
+	ZoracleTreeProof struct {
+		LeafNode struct {
+			Version   uint64 `json:"version"`
+			RequestID uint64 `json:"requestID"`
+			CodeHash  []byte `json:"codeHash"`
+			Params    []byte `json:"params"`
+			Value     []byte `json:"value"`
+		} `json:"valueNode"`
+		Paths []IAVLPath `json:"paths"`
+	} `json:"zoracleTreeProof"`
+	BlockHashProof struct {
+		ZoracleRootHash []byte `json:"zoracleRootHash"`
+		OtherStoreHash  []byte `json:"otherStoreHash"`
+		MerklePaths     struct {
+			VersionAndChainIdHash       []byte `json:"versionAndChainIdHash"`
+			TimeHash                    []byte `json:"timeHash"`
+			TxCountAndLastBlockInfoHash []byte `json:"txCountAndLastBlockInfoHash"`
+			ConsensusDataHash           []byte `json:"consensusDataHash"`
+			LastResultsHash             []byte `json:"lastResultsHash"`
+			EvidenceAndProposerHash     []byte `json:"evidenceAndProposerHash"`
+		}
+		SignedDataPrefix []byte        `json:"signedDataPrefix"`
+		Signatures       []TMSignature `json:"signatures"`
+	} `json:"blockHashProof"`
 }
 
 func main() {
@@ -47,7 +95,6 @@ func main() {
 		c.JSON(200, OracleRequestResp{
 			RequestId: 10,
 			CodeHash:  nil,
-			Params:    nil,
 		})
 	})
 
