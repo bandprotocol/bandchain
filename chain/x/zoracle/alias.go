@@ -29,6 +29,8 @@ var (
 	NewMsgReport     = types.NewMsgReport
 	NewMsgStoreCode  = types.NewMsgStoreCode
 	NewMsgDeleteCode = types.NewMsgDeleteCode
+
+	CodeHashStoreKey = types.CodeHashStoreKey
 )
 
 type (
