@@ -75,7 +75,7 @@ func handleMsgReport(ctx sdk.Context, keeper Keeper, msg MsgReport) sdk.Result {
 
 	// check request is in period of reporting
 	if uint64(ctx.BlockHeight()) > request.ReportEndAt {
-		return types.ErrOutofReportPeriod(types.DefaultCodespace).Result()
+		return types.ErrOutOfReportPeriod(types.DefaultCodespace).Result()
 	}
 
 	// Validate sender

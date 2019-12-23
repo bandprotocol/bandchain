@@ -12,6 +12,7 @@ const (
 	CodeInvalidValidator sdk.CodeType = 102
 	CodeRequestNotFound  sdk.CodeType = 103
 	CodeInvalidOwner     sdk.CodeType = 104
+	CodeOutOf						 sdk.CodeType = 105
 
 	WasmError sdk.CodeType = 105
 )
@@ -42,6 +43,6 @@ func ErrInvalidOwner(codespace sdk.CodespaceType) sdk.Error {
 	return sdk.NewError(codespace, CodeInvalidOwner, "invalid owner")
 }
 
-func ErrOutofReportPeriod(codespace sdk.CodespaceType) sdk.Error {
-	return sdk.NewError(codespace, CodeInvalidInput, "report period already ended.")
+func ErrOutOfReportPeriod(codespace sdk.CodespaceType) sdk.Error {
+	return sdk.NewError(codespace, CodeOutOf, "report period already ended.")
 }
