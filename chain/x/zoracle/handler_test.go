@@ -102,7 +102,22 @@ func TestReportSuccess(t *testing.T) {
 	updates := keeper.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
 	require.Equal(t, 1, len(updates))
 
-	msg := types.NewMsgReport(1, []byte("data"), validatorAddress)
+	// set request = 2
+	sender := sdk.AccAddress([]byte("sender"))
+	codeHash := keeper.SetCode(ctx, []byte("Code"), sender)
+	datapoint := types.NewDataPoint(2, codeHash, 3)
+	keeper.SetRequest(ctx, 2, datapoint)
+
+	// set pending
+	pendingRequests := keeper.GetPending(ctx)
+	pendingRequests = append(pendingRequests, 2)
+	keeper.SetPending(ctx, pendingRequests)
+
+	// set blockheight
+	ctx = ctx.WithBlockHeight(3)
+
+	// report data
+	msg := types.NewMsgReport(2, []byte("data"), validatorAddress)
 	got := handleMsgReport(ctx, keeper, msg)
 	require.True(t, got.IsOK(), "expected set report to be ok, got %v", got)
 

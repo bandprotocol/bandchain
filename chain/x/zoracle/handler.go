@@ -67,8 +67,19 @@ func handleMsgRequest(ctx sdk.Context, keeper Keeper, msg MsgRequest) sdk.Result
 }
 
 func handleMsgReport(ctx sdk.Context, keeper Keeper, msg MsgReport) sdk.Result {
-	// TODO: Check that requestID exists AND is in reporting period
+	// Validate sender
 	validators := keeper.StakingKeeper.GetLastValidators(ctx)
+
+	// check request id is valid.
+	request, err := keeper.GetRequest(ctx, msg.RequestID)
+	if err != nil {
+		return err.Result()
+	}
+
+	// check request is in period of reporting
+	if uint64(ctx.BlockHeight()) > request.ReportEndAt {
+		return types.ErrOutofReportPeriod(types.DefaultCodespace).Result()
+	}
 
 	isFound := false
 	for _, validator := range validators {
