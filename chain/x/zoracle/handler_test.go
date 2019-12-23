@@ -25,7 +25,7 @@ func TestRequestSuccess(t *testing.T) {
 	sender := sdk.AccAddress([]byte("sender"))
 	codeHash := keeper.SetCode(ctx, code, sender)
 
-	msg := types.NewMsgRequest(codeHash, 5, sender)
+	msg := types.NewMsgRequest(codeHash, []byte("params"), 5, sender)
 	got := handleMsgRequest(ctx, keeper, msg)
 	require.True(t, got.IsOK(), "expected set request(datapoint) to be ok, got %v", got)
 
@@ -68,7 +68,7 @@ func TestRequestInvalidCodeHash(t *testing.T) {
 
 	codeHash, _ := hex.DecodeString("c0dec0dec0dec0dec0dec0dec0dec0dec0dec0dec0dec0dec0dec0dec0dec0de")
 
-	msg := types.NewMsgRequest(codeHash, 5, sender)
+	msg := types.NewMsgRequest(codeHash, []byte("params"), 5, sender)
 	got := handleMsgRequest(ctx, keeper, msg)
 	require.False(t, got.IsOK(), "expected request is an invalid tx")
 	require.Equal(t, types.CodeInvalidInput, got.Code)
@@ -79,7 +79,7 @@ func TestRequestInvalidWasmCode(t *testing.T) {
 	sender := sdk.AccAddress([]byte("sender"))
 	codeHash := keeper.SetCode(ctx, []byte("Fake code"), sender)
 
-	msg := types.NewMsgRequest(codeHash, 5, sender)
+	msg := types.NewMsgRequest(codeHash, []byte("params"), 5, sender)
 	got := handleMsgRequest(ctx, keeper, msg)
 	require.False(t, got.IsOK(), "expected request is an invalid tx")
 	require.Equal(t, types.WasmError, got.Code)

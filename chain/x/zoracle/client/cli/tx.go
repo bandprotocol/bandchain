@@ -54,7 +54,7 @@ func GetCmdRequest(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgRequest(codeHash, reportPeriod, cliCtx.GetFromAddress())
+			msg := types.NewMsgRequest(codeHash, []byte("params"), reportPeriod, cliCtx.GetFromAddress())
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err

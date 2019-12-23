@@ -11,7 +11,7 @@ import (
 func TestMsgRequest(t *testing.T) {
 	sender := sdk.AccAddress([]byte("sender"))
 	codeHash, _ := hex.DecodeString("5694d08a2e53ffcae0c3103e5ad6f6076abd960eb1f8a56577040bc1028f702b")
-	msg := NewMsgRequest(codeHash, uint64(10), sender)
+	msg := NewMsgRequest(codeHash, []byte("params"), uint64(10), sender)
 	require.Equal(t, RouterKey, msg.Route())
 	require.Equal(t, "request", msg.Type())
 }
@@ -24,10 +24,10 @@ func TestMsgRequestValidation(t *testing.T) {
 		valid bool
 		tx    MsgRequest
 	}{
-		{true, NewMsgRequest(codeHash, reportPeriod, sender)},
-		{false, NewMsgRequest([]byte{}, reportPeriod, sender)},
-		{false, NewMsgRequest(nil, reportPeriod, sender)},
-		{false, NewMsgRequest(codeHash, reportPeriod, sdk.AccAddress([]byte("")))},
+		{true, NewMsgRequest(codeHash, []byte("params"), reportPeriod, sender)},
+		{false, NewMsgRequest([]byte{}, []byte("params"), reportPeriod, sender)},
+		{false, NewMsgRequest(nil, []byte("params"), reportPeriod, sender)},
+		{false, NewMsgRequest(codeHash, []byte("params"), reportPeriod, sdk.AccAddress([]byte("")))},
 	}
 
 	for _, tc := range cases {
@@ -46,10 +46,10 @@ func TestMsgRequestGetSignBytes(t *testing.T) {
 
 	codeHash, _ := hex.DecodeString("5694d08a2e53ffcae0c3103e5ad6f6076abd960eb1f8a56577040bc1028f702b")
 	sender := sdk.AccAddress([]byte("sender"))
-	msg := NewMsgRequest(codeHash, uint64(10), sender)
+	msg := NewMsgRequest(codeHash, []byte("params"), uint64(10), sender)
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"zoracle/Request","value":{"codeHash":"VpTQii5T/8rgwxA+Wtb2B2q9lg6x+KVldwQLwQKPcCs=","reportPeriod":"10","sender":"band1wdjkuer9wgvz7c4y"}}`
+	expected := `{"type":"zoracle/Request","value":{"codeHash":"VpTQii5T/8rgwxA+Wtb2B2q9lg6x+KVldwQLwQKPcCs=","params":"cGFyYW1z","reportPeriod":"10","sender":"band1wdjkuer9wgvz7c4y"}}`
 
 	require.Equal(t, expected, string(res))
 }
