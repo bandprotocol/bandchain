@@ -130,6 +130,17 @@ func TestReportInvalidValidator(t *testing.T) {
 	pubKey := keep.NewPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB50")
 	validatorAddress := sdk.ValAddress(pubKey.Address())
 
+	// set request = 2
+	sender := sdk.AccAddress([]byte("sender"))
+	codeHash := keeper.SetCode(ctx, []byte("Code"), sender)
+	datapoint := types.NewDataPoint(1, codeHash, 3)
+	keeper.SetRequest(ctx, 1, datapoint)
+
+	// set pending
+	pendingRequests := keeper.GetPending(ctx)
+	pendingRequests = append(pendingRequests, 1)
+	keeper.SetPending(ctx, pendingRequests)
+
 	msg := types.NewMsgReport(1, []byte("data"), validatorAddress)
 	got := handleMsgReport(ctx, keeper, msg)
 	require.Equal(t, types.CodeInvalidValidator, got.Code)
