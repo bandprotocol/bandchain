@@ -4,6 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+
+	"github.com/bandprotocol/d3n/chain/x/zoracle"
 )
 
 type OracleRequest struct {
@@ -15,7 +17,57 @@ type OracleRequest struct {
 type OracleRequestResp struct {
 	RequestId uint64 `json:"id"`
 	CodeHash  []byte `json:"codeHash"`
-	Params    []byte `json:"params"`
+}
+
+type OracleInfoResp struct {
+	Request zoracle.RequestWithReport `json:"request"`
+	Proof   Proof                     `json:"proof"`
+}
+
+type IAVLMerklePath struct {
+	SubtreeHeight  uint8  `json:"subtreeHeight"`
+	SubtreeSize    uint64 `json:"subtreeSize"`
+	SubtreeVersion uint64 `json:"subtreeVersion"`
+	IsDataOnRight  bool   `json:"isDataOnRight"`
+	SiblingHash    []byte `json:"siblingHash"`
+}
+
+type BlockHeaderMerkleParts struct {
+	VersionAndChainIdHash       []byte `json:"versionAndChainIdHash"`
+	TimeHash                    []byte `json:"timeHash"`
+	TxCountAndLastBlockInfoHash []byte `json:"txCountAndLastBlockInfoHash"`
+	ConsensusDataHash           []byte `json:"consensusDataHash"`
+	LastResultsHash             []byte `json:"lastResultsHash"`
+	EvidenceAndProposerHash     []byte `json:"evidenceAndProposerHash"`
+}
+
+type BlockRelayProof struct {
+	OracleIAVLStateHash    []byte                 `json:"oracleIAVLStateHash"`
+	OtherStoresMerkleHash  []byte                 `json:"otherStoresMerkleHash"`
+	BlockHeaderMerkleParts BlockHeaderMerkleParts `json:"blockHeaderMerkleParts"`
+	SignedDataPrefix       []byte                 `json:"signedDataPrefix"`
+	Signatures             []TMSignature          `json:"signatures"`
+}
+
+type OracleDataProof struct {
+	Version     uint64           `json:"version"`
+	RequestId   uint64           `json:"requestId"`
+	CodeHash    []byte           `json:"codeHash"`
+	Params      []byte           `json:"params"`
+	Data        []byte           `json:"data"`
+	MerklePaths []IAVLMerklePath `json:"merklePaths"`
+}
+type TMSignature struct {
+	R                []byte `json:"r"`
+	S                []byte `json:"s"`
+	V                uint8  `json:"v"`
+	SignedDataSuffix []byte `json:"signedDataSuffix"`
+}
+
+type Proof struct {
+	BlockHeight     uint64          `json:"blockHeight"`
+	OracleDataProof OracleDataProof `json:"oracleDataProof"`
+	BlockRelayProof BlockRelayProof `json:"blockRelayProof"`
 }
 
 func main() {
@@ -47,7 +99,6 @@ func main() {
 		c.JSON(200, OracleRequestResp{
 			RequestId: 10,
 			CodeHash:  nil,
-			Params:    nil,
 		})
 	})
 
