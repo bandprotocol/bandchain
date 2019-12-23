@@ -8,11 +8,11 @@ import (
 const (
 	DefaultCodespace sdk.CodespaceType = ModuleName
 
-	CodeInvalidInput     sdk.CodeType = 101
-	CodeInvalidValidator sdk.CodeType = 102
-	CodeRequestNotFound  sdk.CodeType = 103
-	CodeInvalidOwner     sdk.CodeType = 104
-	CodeOutOf						 sdk.CodeType = 105
+	CodeInvalidInput     				sdk.CodeType = 101
+	CodeInvalidValidator 				sdk.CodeType = 102
+	CodeRequestNotFound  				sdk.CodeType = 103
+	CodeInvalidOwner     				sdk.CodeType = 104
+	CodeOutOfReportPeriod				sdk.CodeType = 105
 
 	WasmError sdk.CodeType = 105
 )
@@ -44,5 +44,5 @@ func ErrInvalidOwner(codespace sdk.CodespaceType) sdk.Error {
 }
 
 func ErrOutOfReportPeriod(codespace sdk.CodespaceType) sdk.Error {
-	return sdk.NewError(codespace, CodeOutOf, "report period already ended.")
+	return sdk.NewError(codespace, CodeOutOfReportPeriod, "report period already ended.")
 }
