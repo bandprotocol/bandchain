@@ -24,7 +24,7 @@ type OracleInfoResp struct {
 	Proof   Proof                     `json:"proof"`
 }
 
-type IAVLPath struct {
+type IAVLMerklePath struct {
 	SubtreeHeight  uint8  `json:"subtreeHeight"`
 	SubtreeSize    uint64 `json:"subtreeSize"`
 	SubtreeVersion uint64 `json:"subtreeVersion"`
@@ -50,12 +50,12 @@ type BlockRelayProof struct {
 }
 
 type OracleDataProof struct {
-	Version     uint64     `json:"version"`
-	RequestId   uint64     `json:"requestId"`
-	CodeHash    []byte     `json:"codeHash"`
-	Params      []byte     `json:"params"`
-	Value       []byte     `json:"value"`
-	MerklePaths []IAVLPath `json:"merklePaths"`
+	Version     uint64           `json:"version"`
+	RequestId   uint64           `json:"requestId"`
+	CodeHash    []byte           `json:"codeHash"`
+	Params      []byte           `json:"params"`
+	Data        []byte           `json:"data"`
+	MerklePaths []IAVLMerklePath `json:"merklePaths"`
 }
 type TMSignature struct {
 	R                []byte `json:"r"`
