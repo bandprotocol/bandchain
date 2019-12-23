@@ -19,25 +19,17 @@ type OracleRequestResp struct {
 	CodeHash  []byte `json:"codeHash"`
 }
 
-type GetRequestResp struct {
+type OracleInfoResp struct {
 	Request zoracle.RequestWithReport `json:"request"`
 	Proof   Proof                     `json:"proof"`
 }
 
 type IAVLPath struct {
-	SubtreeHeight  uint64 `json:"subtreeHeight"`
+	SubtreeHeight  uint8  `json:"subtreeHeight"`
 	SubtreeSize    uint64 `json:"subtreeSize"`
 	SubtreeVersion uint64 `json:"subtreeVersion"`
 	IsDataOnRight  bool   `json:"isDataOnRight"`
 	SiblingHash    []byte `json:"siblingHash"`
-}
-
-type LeafNode struct {
-	Version   uint64 `json:"version"`
-	RequestId uint64 `json:"requestId"`
-	CodeHash  []byte `json:"codeHash"`
-	Params    []byte `json:"params"`
-	Value     []byte `json:"value"`
 }
 
 type BlockHeaderMerkleParts struct {
@@ -49,17 +41,21 @@ type BlockHeaderMerkleParts struct {
 	EvidenceAndProposerHash     []byte `json:"evidenceAndProposerHash"`
 }
 
-type BlockHashProof struct {
-	ZoracleRootHash        []byte                 `json:"zoracleRootHash"`
-	OtherStoreHash         []byte                 `json:"otherStoreHash"`
+type BlockRelayProof struct {
+	OracleIAVLStateHash    []byte                 `json:"oracleIAVLStateHash"`
+	OtherStoresMerkleHash  []byte                 `json:"otherStoresMerkleHash"`
 	BlockHeaderMerkleParts BlockHeaderMerkleParts `json:"blockHeaderMerkleParts"`
 	SignedDataPrefix       []byte                 `json:"signedDataPrefix"`
 	Signatures             []TMSignature          `json:"signatures"`
 }
 
-type ZoracleTreeProof struct {
-	LeafNode LeafNode   `json:"valueNode"`
-	Paths    []IAVLPath `json:"paths"`
+type OracleDataProof struct {
+	Version     uint64     `json:"version"`
+	RequestId   uint64     `json:"requestId"`
+	CodeHash    []byte     `json:"codeHash"`
+	Params      []byte     `json:"params"`
+	Value       []byte     `json:"value"`
+	MerklePaths []IAVLPath `json:"merklePaths"`
 }
 type TMSignature struct {
 	R                []byte `json:"r"`
@@ -69,9 +65,9 @@ type TMSignature struct {
 }
 
 type Proof struct {
-	BlockHeight      uint64           `json:"blockHeight"`
-	ZoracleTreeProof ZoracleTreeProof `json:"zoracleTreeProof"`
-	BlockHashProof   BlockHashProof   `json:"blockHashProof"`
+	BlockHeight     uint64          `json:"blockHeight"`
+	OracleDataProof OracleDataProof `json:"oracleDataProof"`
+	BlockRelayProof BlockRelayProof `json:"blockRelayProof"`
 }
 
 func main() {
