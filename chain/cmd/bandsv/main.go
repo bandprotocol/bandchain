@@ -8,6 +8,7 @@ import (
 	"github.com/bandprotocol/d3n/chain/cmtx"
 	"github.com/bandprotocol/d3n/chain/x/zoracle"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/crypto"
@@ -27,7 +28,7 @@ type OracleRequestResp struct {
 	Params    []byte `json:"params"`
 }
 
-const priv = "a96e62ed3955e65be3aaa3f12d87b6b5cf26039ecfa948dc5107a495418e5430"
+const priv = "06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b"
 const port = "5001"
 const nodeURI = "http://localhost:26657"
 const queryURI = "http://localhost:1317"
@@ -84,6 +85,7 @@ func handleRequestData(c *gin.Context) {
 
 	txSender := cmtx.NewTxSender(pk)
 	txr, err := txSender.SendTransaction(zoracle.NewMsgRequest(requestData.CodeHash, requestData.Params, 5, txSender.Sender()), flags.BroadcastBlock)
+	spew.Dump(txr)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
