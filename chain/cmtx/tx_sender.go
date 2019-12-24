@@ -40,8 +40,8 @@ func (tx TxSender) Sender() sdk.AccAddress {
 	return tx.addr
 }
 
-func (tx TxSender) SendTransaction(msg sdk.Msg) (string, error) {
-	cliCtx := NewCLIContext(tx.addr).WithCodec(tx.cdc)
+func (tx TxSender) SendTransaction(msg sdk.Msg, broadcastMode string) (sdk.TxResponse, error) {
+	cliCtx := NewCLIContext(tx.addr).WithCodec(tx.cdc).WithBroadcastMode(broadcastMode)
 	txBldr := NewTxBuilder(utils.GetTxEncoder(tx.cdc))
 
 	return completeAndBroadcastTxCLI(cliCtx, txBldr, []sdk.Msg{msg}, tx.privKey)

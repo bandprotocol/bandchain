@@ -47,21 +47,21 @@ func completeAndBroadcastTxCLI(
 	txBldr authtypes.TxBuilder,
 	msgs []sdk.Msg,
 	privKey crypto.PrivKey,
-) (string, error) {
+) (sdk.TxResponse, error) {
 	txBldr, err := utils.PrepareTxBuilder(txBldr, cliCtx)
 	if err != nil {
-		return "", err
+		return sdk.TxResponse{}, err
 	}
 
 	// build and sign the transaction
 	signMsg, err := txBldr.BuildSignMsg(msgs)
 	if err != nil {
-		return "", err
+		return sdk.TxResponse{}, err
 	}
 
 	sigBytes, err := privKey.Sign(signMsg.Bytes())
 	if err != nil {
-		return "", err
+		return sdk.TxResponse{}, err
 	}
 	sig := authtypes.StdSignature{
 		PubKey:    privKey.PubKey(),
@@ -73,12 +73,13 @@ func completeAndBroadcastTxCLI(
 	)
 
 	if err != nil {
-		return "", err
+		return sdk.TxResponse{}, err
 	}
 	// broadcast to a Tendermint node
 	res, err := cliCtx.BroadcastTx(txBytes)
 	if err != nil {
-		return "", err
+		return sdk.TxResponse{}, err
 	}
-	return res.TxHash, nil
+
+	return res, nil
 }
