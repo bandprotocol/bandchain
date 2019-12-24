@@ -8,7 +8,6 @@ import (
 	"github.com/bandprotocol/d3n/chain/cmtx"
 	"github.com/bandprotocol/d3n/chain/x/zoracle"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/crypto"
@@ -25,7 +24,57 @@ type OracleRequest struct {
 type OracleRequestResp struct {
 	RequestId uint64 `json:"id"`
 	CodeHash  []byte `json:"codeHash"`
-	Params    []byte `json:"params"`
+}
+
+type OracleInfoResp struct {
+	Request zoracle.RequestWithReport `json:"request"`
+	Proof   Proof                     `json:"proof"`
+}
+
+type IAVLMerklePath struct {
+	SubtreeHeight  uint8  `json:"subtreeHeight"`
+	SubtreeSize    uint64 `json:"subtreeSize"`
+	SubtreeVersion uint64 `json:"subtreeVersion"`
+	IsDataOnRight  bool   `json:"isDataOnRight"`
+	SiblingHash    []byte `json:"siblingHash"`
+}
+
+type BlockHeaderMerkleParts struct {
+	VersionAndChainIdHash       []byte `json:"versionAndChainIdHash"`
+	TimeHash                    []byte `json:"timeHash"`
+	TxCountAndLastBlockInfoHash []byte `json:"txCountAndLastBlockInfoHash"`
+	ConsensusDataHash           []byte `json:"consensusDataHash"`
+	LastResultsHash             []byte `json:"lastResultsHash"`
+	EvidenceAndProposerHash     []byte `json:"evidenceAndProposerHash"`
+}
+
+type BlockRelayProof struct {
+	OracleIAVLStateHash    []byte                 `json:"oracleIAVLStateHash"`
+	OtherStoresMerkleHash  []byte                 `json:"otherStoresMerkleHash"`
+	BlockHeaderMerkleParts BlockHeaderMerkleParts `json:"blockHeaderMerkleParts"`
+	SignedDataPrefix       []byte                 `json:"signedDataPrefix"`
+	Signatures             []TMSignature          `json:"signatures"`
+}
+
+type OracleDataProof struct {
+	Version     uint64           `json:"version"`
+	RequestId   uint64           `json:"requestId"`
+	CodeHash    []byte           `json:"codeHash"`
+	Params      []byte           `json:"params"`
+	Data        []byte           `json:"data"`
+	MerklePaths []IAVLMerklePath `json:"merklePaths"`
+}
+type TMSignature struct {
+	R                []byte `json:"r"`
+	S                []byte `json:"s"`
+	V                uint8  `json:"v"`
+	SignedDataSuffix []byte `json:"signedDataSuffix"`
+}
+
+type Proof struct {
+	BlockHeight     uint64          `json:"blockHeight"`
+	OracleDataProof OracleDataProof `json:"oracleDataProof"`
+	BlockRelayProof BlockRelayProof `json:"blockRelayProof"`
 }
 
 const priv = "06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b"
@@ -63,6 +112,13 @@ func handleRequestData(c *gin.Context) {
 		return
 	}
 
+	// TODO
+	// Need some work around to make params can be empty bytes
+	if len(requestData.Params) <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Params should not be empty bytes"})
+		return
+	}
+
 	if len(requestData.Code) > 0 {
 		requestData.CodeHash = crypto.Sha256(requestData.Code)
 		hasCode := HasCode(requestData.CodeHash)
@@ -84,8 +140,7 @@ func handleRequestData(c *gin.Context) {
 	}
 
 	txSender := cmtx.NewTxSender(pk)
-	txr, err := txSender.SendTransaction(zoracle.NewMsgRequest(requestData.CodeHash, requestData.Params, 5, txSender.Sender()), flags.BroadcastBlock)
-	spew.Dump(txr)
+	txr, err := txSender.SendTransaction(zoracle.NewMsgRequest(requestData.CodeHash, requestData.Params, 4, txSender.Sender()), flags.BroadcastBlock)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -110,7 +165,6 @@ func handleRequestData(c *gin.Context) {
 	c.JSON(200, OracleRequestResp{
 		RequestId: requestId,
 		CodeHash:  requestData.CodeHash,
-		Params:    requestData.Params,
 	})
 }
 
