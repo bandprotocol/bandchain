@@ -9,6 +9,7 @@ import (
 
 	"github.com/bandprotocol/d3n/chain/cmtx"
 	"github.com/bandprotocol/d3n/chain/x/zoracle"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 )
@@ -54,9 +55,9 @@ func main() {
 	}
 
 	// Send transaction to store code first (commend it if already stored code)
-	fmt.Println(tx.SendTransaction(zoracle.NewMsgStoreCode(bytes, tx.Sender())))
+	fmt.Println(tx.SendTransaction(zoracle.NewMsgStoreCode(bytes, tx.Sender()), flags.BroadcastSync))
 
 	codeHash, _ := hex.DecodeString("0874ee3e5aba7ae0eb8cb43bfebed358826d111cece0ef0f804e99eea9264060")
 	// Send request by code hash
-	fmt.Println(tx.SendTransaction(zoracle.NewMsgRequest(codeHash, []byte("params"), 4, tx.Sender())))
+	fmt.Println(tx.SendTransaction(zoracle.NewMsgRequest(codeHash, []byte{}, 4, tx.Sender()), flags.BroadcastSync))
 }
