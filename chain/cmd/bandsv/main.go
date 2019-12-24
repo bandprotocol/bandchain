@@ -87,14 +87,14 @@ var pk secp256k1.PrivKeySecp256k1
 
 // TODO
 // - Add query from rest client and ask via that endpoint
-func HasCode(codeHash []byte) bool {
+func HasCode(codeHash []byte) (bool, error) {
 	key := zoracle.CodeHashStoreKey(codeHash)
 	resp, err := rpcClient.ABCIQuery("/store/zoracle/key", key)
 	if err != nil {
-		return false
+		return false, err
 	}
 
-	return len(resp.Response.Value) > 0
+	return len(resp.Response.Value) > 0, nil
 }
 
 func handleRequestData(c *gin.Context) {
@@ -121,18 +121,26 @@ func handleRequestData(c *gin.Context) {
 
 	if len(requestData.Code) > 0 {
 		requestData.CodeHash = crypto.Sha256(requestData.Code)
-		hasCode := HasCode(requestData.CodeHash)
+		hasCode, err := HasCode(requestData.CodeHash)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 		// If codeHash not found then store the code
 		if !hasCode {
 			txSender := cmtx.NewTxSender(pk)
 			_, err := txSender.SendTransaction(zoracle.NewMsgStoreCode(requestData.Code, txSender.Sender()), flags.BroadcastBlock)
 			if err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 				return
 			}
 		}
 	} else if len(requestData.CodeHash) > 0 {
-		hasCode := HasCode(requestData.CodeHash)
+		hasCode, err := HasCode(requestData.CodeHash)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 		if !hasCode {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "codeHash not found"})
 			return
@@ -142,7 +150,7 @@ func handleRequestData(c *gin.Context) {
 	txSender := cmtx.NewTxSender(pk)
 	txr, err := txSender.SendTransaction(zoracle.NewMsgRequest(requestData.CodeHash, requestData.Params, 4, txSender.Sender()), flags.BroadcastBlock)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
