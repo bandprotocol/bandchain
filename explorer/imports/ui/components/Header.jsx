@@ -3,14 +3,12 @@ import PageContainer from './PageContainer'
 import { Flex, Image, Text } from 'rebass'
 import Search from './Search'
 
-const linkAlert = input => alert(input)
-
-const LinkPage = ({ text, to }) => (
+const Navlink = ({ text, to }) => (
   /* TODO: add NavLink */
   <Text
     fontSize="14px"
     marginLeft="0.5em"
-    onClick={() => linkAlert(to)}
+    onClick={() => alert(to)}
     style={{ cursor: 'pointer' }}
   >
     {text}
@@ -56,12 +54,12 @@ export default () => (
             DATA REQUEST EXPLORER
           </Text>
           <Flex>
-            <LinkPage text="Validators" to="/validators" />
-            <LinkPage text="Blocks" to="/blocks" />
-            <LinkPage text="Transactions" to="/transactions" />
-            <LinkPage text="Request Scripts" to="/request-scripts" />
-            <LinkPage text="Data Providers" to="/dataproviders" />
-            <LinkPage text="OWASM Studio" to="/owasm-studio" />
+            <Navlink text="Validators" to="/validators" />
+            <Navlink text="Blocks" to="/blocks" />
+            <Navlink text="Transactions" to="/transactions" />
+            <Navlink text="Request Scripts" to="/request-scripts" />
+            <Navlink text="Data Providers" to="/dataproviders" />
+            <Navlink text="OWASM Studio" to="/owasm-studio" />
           </Flex>
         </Flex>
       </Flex>
