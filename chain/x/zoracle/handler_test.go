@@ -15,6 +15,23 @@ import (
 	"github.com/tendermint/tendermint/libs/common"
 )
 
+func setupTestValidator(ctx sdk.Context, keeper Keeper) sdk.ValAddress {
+	pubKey := keep.NewPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB50")
+	validatorAddress := sdk.ValAddress(pubKey.Address())
+	initTokens := sdk.TokensFromConsensusPower(10)
+	initCoins := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, initTokens))
+	keeper.CoinKeeper.AddCoins(ctx, sdk.AccAddress(pubKey.Address()), initCoins)
+
+	msgCreateValidator := staking.NewTestMsgCreateValidator(
+		validatorAddress, pubKey, sdk.TokensFromConsensusPower(10),
+	)
+	stakingHandler := staking.NewHandler(keeper.StakingKeeper)
+	stakingHandler(ctx, msgCreateValidator)
+
+	keeper.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
+	return validatorAddress
+}
+
 func TestRequestSuccess(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
 	absPath, _ := filepath.Abs("../../wasm/res/test.wasm")
@@ -87,22 +104,24 @@ func TestRequestInvalidWasmCode(t *testing.T) {
 
 func TestReportSuccess(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
-	pubKey := keep.NewPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB50")
-	validatorAddress := sdk.ValAddress(pubKey.Address())
-	initTokens := sdk.TokensFromConsensusPower(10)
-	initCoins := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, initTokens))
-	keeper.CoinKeeper.AddCoins(ctx, sdk.AccAddress(pubKey.Address()), initCoins)
+	validatorAddress := setupTestValidator(ctx, keeper)
 
-	msgCreateValidator := staking.NewTestMsgCreateValidator(
-		validatorAddress, pubKey, sdk.TokensFromConsensusPower(10),
-	)
-	stakingHandler := staking.NewHandler(keeper.StakingKeeper)
-	stakingHandler(ctx, msgCreateValidator)
+	// set request = 2
+	sender := sdk.AccAddress([]byte("sender"))
+	codeHash := keeper.SetCode(ctx, []byte("Code"), sender)
+	datapoint := types.NewDataPoint(2, codeHash, 3)
+	keeper.SetRequest(ctx, 2, datapoint)
 
-	updates := keeper.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
-	require.Equal(t, 1, len(updates))
+	// set pending
+	pendingRequests := keeper.GetPending(ctx)
+	pendingRequests = append(pendingRequests, 2)
+	keeper.SetPending(ctx, pendingRequests)
 
-	msg := types.NewMsgReport(1, []byte("data"), validatorAddress)
+	// set blockheight
+	ctx = ctx.WithBlockHeight(3)
+
+	// report data
+	msg := types.NewMsgReport(2, []byte("data"), validatorAddress)
 	got := handleMsgReport(ctx, keeper, msg)
 	require.True(t, got.IsOK(), "expected set report to be ok, got %v", got)
 
@@ -115,9 +134,44 @@ func TestReportInvalidValidator(t *testing.T) {
 	pubKey := keep.NewPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB50")
 	validatorAddress := sdk.ValAddress(pubKey.Address())
 
+	// set request = 2
+	sender := sdk.AccAddress([]byte("sender"))
+	codeHash := keeper.SetCode(ctx, []byte("Code"), sender)
+	datapoint := types.NewDataPoint(1, codeHash, 3)
+	keeper.SetRequest(ctx, 1, datapoint)
+
+	// set pending
+	pendingRequests := keeper.GetPending(ctx)
+	pendingRequests = append(pendingRequests, 1)
+	keeper.SetPending(ctx, pendingRequests)
+
 	msg := types.NewMsgReport(1, []byte("data"), validatorAddress)
 	got := handleMsgReport(ctx, keeper, msg)
 	require.Equal(t, types.CodeInvalidValidator, got.Code)
+}
+
+func TestOutOfReportPeriod(t *testing.T) {
+	ctx, keeper := keep.CreateTestInput(t, false)
+	validatorAddress := setupTestValidator(ctx, keeper)
+
+	// set request = 2
+	sender := sdk.AccAddress([]byte("sender"))
+	codeHash := keeper.SetCode(ctx, []byte("Code"), sender)
+	datapoint := types.NewDataPoint(2, codeHash, 3)
+	keeper.SetRequest(ctx, 2, datapoint)
+
+	// set pending
+	pendingRequests := keeper.GetPending(ctx)
+	pendingRequests = append(pendingRequests, 2)
+	keeper.SetPending(ctx, pendingRequests)
+
+	// set blockheight
+	ctx = ctx.WithBlockHeight(10)
+
+	// report data
+	msg := types.NewMsgReport(2, []byte("data"), validatorAddress)
+	got := handleMsgReport(ctx, keeper, msg)
+	require.Equal(t, types.CodeOutOfReportPeriod, got.Code)
 }
 
 func TestStoreCodeSuccess(t *testing.T) {
