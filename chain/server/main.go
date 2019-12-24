@@ -9,11 +9,11 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
 
 	"encoding/base64"
 	"encoding/hex"
 
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 	"github.com/spf13/viper"
@@ -182,44 +182,20 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	txHash, err := tx.SendTransaction(zoracle.NewMsgRequest(code, []byte("params"), rd.Delay, tx.Sender()))
+	txr, err := tx.SendTransaction(zoracle.NewMsgRequest(code, []byte("params"), rd.Delay, tx.Sender()), flags.BroadcastBlock)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	var txResponse Tx
-	for i := 0; i < 30; i++ {
-		tr, err := GetTx(txHash)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		if txData, ok := tr["result"]; ok {
-			byteData, _ := json.Marshal(txData)
-			json.Unmarshal(byteData, &txResponse)
-			break
-		}
-		time.Sleep(time.Second / 2)
-	}
-
-	if txResponse.Hash != txHash {
-		http.Error(w, "tx was corrupted"+fmt.Sprintf("%v", txResponse), http.StatusInternalServerError)
-		return
-	}
-
-	height, err := strconv.ParseUint(txResponse.Height, 10, 64)
-	if err != nil {
-		http.Error(w, "tx was corrupted"+fmt.Sprintf("%v", txResponse), http.StatusInternalServerError)
-		return
-	}
+	height := uint64(txr.Height)
 
 	m := map[string]string{}
-	m["txHash"] = txResponse.Hash
-	m["startHeight"] = txResponse.Height
+	m["txHash"] = txr.TxHash
+	m["startHeight"] = fmt.Sprintf("%d", height)
 	m["endHeight"] = fmt.Sprintf("%d", height+rd.Delay)
 
-	events := txResponse.TxResult.Events
+	events := txr.Events
 	for _, event := range events {
 		if event.Type == "request" {
 			for _, attr := range event.Attributes {
