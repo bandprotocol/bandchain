@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/hex"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -154,13 +155,13 @@ func handleRequestData(c *gin.Context) {
 		return
 	}
 
-	var requestId uint64
+	requestId := uint64(0)
 	events := txr.Events
 	for _, event := range events {
 		if event.Type == "request" {
 			for _, attr := range event.Attributes {
 				if string(attr.Key) == "id" {
-					requestId, err = strconv.ParseUint(string(attr.Value), 10, 64)
+					requestId, err = strconv.ParseUint(attr.Value, 10, 64)
 					if err != nil {
 						c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 						return
@@ -168,6 +169,10 @@ func handleRequestData(c *gin.Context) {
 				}
 			}
 		}
+	}
+	if requestId == 0 {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("cannot find requestId: %v", txr)})
+		return
 	}
 
 	c.JSON(200, OracleRequestResp{
