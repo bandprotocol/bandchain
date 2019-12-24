@@ -15,7 +15,7 @@ import (
 	"github.com/tendermint/tendermint/libs/common"
 )
 
-func SetupTestValidator(ctx sdk.Context, keeper Keeper) sdk.ValAddress {
+func setupTestValidator(ctx sdk.Context, keeper Keeper) sdk.ValAddress {
 	pubKey := keep.NewPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB50")
 	validatorAddress := sdk.ValAddress(pubKey.Address())
 	initTokens := sdk.TokensFromConsensusPower(10)
@@ -104,7 +104,7 @@ func TestRequestInvalidWasmCode(t *testing.T) {
 
 func TestReportSuccess(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
-	validatorAddress := SetupTestValidator(ctx, keeper)
+	validatorAddress := setupTestValidator(ctx, keeper)
 
 	// set request = 2
 	sender := sdk.AccAddress([]byte("sender"))
@@ -152,7 +152,7 @@ func TestReportInvalidValidator(t *testing.T) {
 
 func TestOutOfReportPeriod(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
-	validatorAddress := SetupTestValidator(ctx, keeper)
+	validatorAddress := setupTestValidator(ctx, keeper)
 
 	// set request = 2
 	sender := sdk.AccAddress([]byte("sender"))
