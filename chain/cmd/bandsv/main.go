@@ -181,9 +181,36 @@ func handleRequestData(c *gin.Context) {
 }
 
 func handleGetRequest(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"message": c.Param("id"),
-	})
+	requestId, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	key, err := hex.DecodeString(fmt.Sprintf("01%016x", requestId))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	resp, err := rpcClient.ABCIQueryWithOptions(
+		"/store/zoracle/key",
+		key,
+		rpc.ABCIQueryOptions{Height: 0, Prove: true},
+	)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// spew.Dump(resp)
+
+	c.JSON(200, resp)
+
+	// c.JSON(200, Proof{
+	// 	BlockHeight:     0,
+	// 	OracleDataProof: OracleDataProof{},
+	// 	BlockRelayProof: BlockRelayProof{},
+	// })
 }
 
 func main() {
