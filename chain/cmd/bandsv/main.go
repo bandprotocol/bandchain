@@ -1,11 +1,18 @@
 package main
 
 import (
+	"encoding/hex"
+	"fmt"
 	"net/http"
+	"strconv"
 
-	"github.com/gin-gonic/gin"
-
+	"github.com/bandprotocol/d3n/chain/cmtx"
 	"github.com/bandprotocol/d3n/chain/x/zoracle"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
+	"github.com/tendermint/tendermint/crypto/secp256k1"
+	rpc "github.com/tendermint/tendermint/rpc/client"
 )
 
 type OracleRequest struct {
@@ -70,42 +77,127 @@ type Proof struct {
 	BlockRelayProof BlockRelayProof `json:"blockRelayProof"`
 }
 
+const priv = "06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b"
+const port = "5001"
+const nodeURI = "http://localhost:26657"
+const queryURI = "http://localhost:1317"
+
+var rpcClient *rpc.HTTP
+var pk secp256k1.PrivKeySecp256k1
+var txSender cmtx.TxSender
+
+// TODO
+// - Add query from rest client and ask via that endpoint
+func HasCode(codeHash []byte) (bool, error) {
+	key := zoracle.CodeHashStoreKey(codeHash)
+	resp, err := rpcClient.ABCIQuery("/store/zoracle/key", key)
+	if err != nil {
+		return false, err
+	}
+
+	return len(resp.Response.Value) > 0, nil
+}
+
+func handleRequestData(c *gin.Context) {
+	var requestData OracleRequest
+	if err := c.ShouldBindJSON(&requestData); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if len(requestData.CodeHash) == 0 && len(requestData.Code) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing code/codeHash"})
+		return
+	}
+	if len(requestData.CodeHash) > 0 && len(requestData.Code) > 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Only one of code/codeHash can be sent"})
+		return
+	}
+
+	// TODO
+	// Need some work around to make params can be empty bytes
+	if len(requestData.Params) <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Params should not be empty bytes"})
+		return
+	}
+
+	if len(requestData.Code) > 0 {
+		requestData.CodeHash = zoracle.NewStoredCode(requestData.Code, txSender.Sender()).GetCodeHash()
+		hasCode, err := HasCode(requestData.CodeHash)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		// If codeHash not found then store the code
+		if !hasCode {
+			_, err := txSender.SendTransaction(zoracle.NewMsgStoreCode(requestData.Code, txSender.Sender()), flags.BroadcastBlock)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+		}
+	} else if len(requestData.CodeHash) > 0 {
+		hasCode, err := HasCode(requestData.CodeHash)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		if !hasCode {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "codeHash not found"})
+			return
+		}
+	}
+
+	txr, err := txSender.SendTransaction(zoracle.NewMsgRequest(requestData.CodeHash, requestData.Params, 4, txSender.Sender()), flags.BroadcastBlock)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	requestId := uint64(0)
+	events := txr.Events
+	for _, event := range events {
+		if event.Type == "request" {
+			for _, attr := range event.Attributes {
+				if string(attr.Key) == "id" {
+					requestId, err = strconv.ParseUint(attr.Value, 10, 64)
+					if err != nil {
+						c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+						return
+					}
+					break
+				}
+			}
+		}
+	}
+	if requestId == 0 {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("cannot find requestId: %v", txr)})
+		return
+	}
+
+	c.JSON(200, OracleRequestResp{
+		RequestId: requestId,
+		CodeHash:  requestData.CodeHash,
+	})
+}
+
+func handleGetRequest(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"message": c.Param("id"),
+	})
+}
+
 func main() {
+	viper.Set("nodeURI", nodeURI)
+	privBytes, _ := hex.DecodeString(priv)
+	copy(pk[:], privBytes)
+
+	txSender = cmtx.NewTxSender(pk)
+	rpcClient = rpc.NewHTTP(nodeURI, "/websocket")
+
 	r := gin.Default()
 
-	r.POST("/request", func(c *gin.Context) {
-		var json OracleRequest
-		if err := c.ShouldBindJSON(&json); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-		if len(json.CodeHash) == 0 && len(json.Code) == 0 {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Missing code/codeHash"})
-			return
-		}
-		if len(json.CodeHash) > 0 && len(json.Code) > 0 {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Only one of code/codeHash can be sent"})
-			return
-		}
-		if len(json.Code) > 0 {
-			// TODO:
-			//   1. Compute code hash.
-			//   2. Check if code hash already exist on chain. If not deploy it.
-			//   3. Save code hash to `json`
-		}
-		// TODO:
-		//   1. Send the request to the blockchain
-		//   2. Wait for the tx to confirm and get back the request ID
-		c.JSON(200, OracleRequestResp{
-			RequestId: 10,
-			CodeHash:  nil,
-		})
-	})
+	r.POST("/request", handleRequestData)
+	r.GET("/request/:id", handleGetRequest)
 
-	r.GET("/request/:id", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": c.Param("id"),
-		})
-	})
-	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	r.Run("0.0.0.0:" + port) // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
