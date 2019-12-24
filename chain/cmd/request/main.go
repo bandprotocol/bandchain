@@ -58,5 +58,5 @@ func main() {
 
 	codeHash, _ := hex.DecodeString("0874ee3e5aba7ae0eb8cb43bfebed358826d111cece0ef0f804e99eea9264060")
 	// Send request by code hash
-	fmt.Println(tx.SendTransaction(zoracle.NewMsgRequest(codeHash, 4, tx.Sender())))
+	fmt.Println(tx.SendTransaction(zoracle.NewMsgRequest(codeHash, []byte("params"), 4, tx.Sender())))
 }

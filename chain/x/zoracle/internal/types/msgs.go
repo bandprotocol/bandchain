@@ -10,6 +10,7 @@ const RouterKey = ModuleName
 // MsgRequest defines a Request message
 type MsgRequest struct {
 	CodeHash     []byte         `json:"codeHash"`
+	Params       []byte         `json:"params"`
 	ReportPeriod uint64         `json:"reportPeriod"`
 	Sender       sdk.AccAddress `json:"sender"`
 }
@@ -17,11 +18,13 @@ type MsgRequest struct {
 // NewMsgRequest is a constructor function for MsgRequest
 func NewMsgRequest(
 	codeHash []byte,
+	params []byte,
 	reportPeriod uint64,
 	sender sdk.AccAddress,
 ) MsgRequest {
 	return MsgRequest{
 		CodeHash:     codeHash,
+		Params:       params,
 		ReportPeriod: reportPeriod,
 		Sender:       sender,
 	}

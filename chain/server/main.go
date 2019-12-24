@@ -182,7 +182,7 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	txHash, err := tx.SendTransaction(zoracle.NewMsgRequest(code, rd.Delay, tx.Sender()))
+	txHash, err := tx.SendTransaction(zoracle.NewMsgRequest(code, []byte("params"), rd.Delay, tx.Sender()))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
