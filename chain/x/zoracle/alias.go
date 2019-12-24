@@ -31,6 +31,7 @@ var (
 	NewMsgDeleteCode = types.NewMsgDeleteCode
 
 	CodeHashStoreKey = types.CodeHashStoreKey
+	NewStoredCode    = types.NewStoredCode
 )
 
 type (

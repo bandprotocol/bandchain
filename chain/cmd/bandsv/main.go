@@ -11,7 +11,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
-	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 	rpc "github.com/tendermint/tendermint/rpc/client"
 )
@@ -85,6 +84,7 @@ const queryURI = "http://localhost:1317"
 
 var rpcClient *rpc.HTTP
 var pk secp256k1.PrivKeySecp256k1
+var txSender cmtx.TxSender
 
 // TODO
 // - Add query from rest client and ask via that endpoint
@@ -121,7 +121,7 @@ func handleRequestData(c *gin.Context) {
 	}
 
 	if len(requestData.Code) > 0 {
-		requestData.CodeHash = crypto.Sha256(requestData.Code)
+		requestData.CodeHash = zoracle.NewStoredCode(requestData.Code, txSender.Sender()).GetCodeHash()
 		hasCode, err := HasCode(requestData.CodeHash)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -129,7 +129,6 @@ func handleRequestData(c *gin.Context) {
 		}
 		// If codeHash not found then store the code
 		if !hasCode {
-			txSender := cmtx.NewTxSender(pk)
 			_, err := txSender.SendTransaction(zoracle.NewMsgStoreCode(requestData.Code, txSender.Sender()), flags.BroadcastBlock)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -148,7 +147,6 @@ func handleRequestData(c *gin.Context) {
 		}
 	}
 
-	txSender := cmtx.NewTxSender(pk)
 	txr, err := txSender.SendTransaction(zoracle.NewMsgRequest(requestData.CodeHash, requestData.Params, 4, txSender.Sender()), flags.BroadcastBlock)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -166,6 +164,7 @@ func handleRequestData(c *gin.Context) {
 						c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 						return
 					}
+					break
 				}
 			}
 		}
@@ -192,6 +191,7 @@ func main() {
 	privBytes, _ := hex.DecodeString(priv)
 	copy(pk[:], privBytes)
 
+	txSender = cmtx.NewTxSender(pk)
 	rpcClient = rpc.NewHTTP(nodeURI, "/websocket")
 
 	r := gin.Default()
