@@ -37,9 +37,9 @@ func handleMsgRequest(ctx sdk.Context, keeper Keeper, msg MsgRequest) sdk.Result
 	}
 
 	newRequestID := keeper.GetNextRequestID(ctx)
-	newRequest := types.NewDataPoint(
-		newRequestID,
+	newRequest := types.NewRequest(
 		msg.CodeHash,
+		msg.Params,
 		uint64(ctx.BlockHeight())+msg.ReportPeriod,
 	)
 
@@ -170,8 +170,7 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 
 		result, errWasm := wasm.Execute(storedCode.Code, packedData)
 		if errWasm == nil {
-			request.Result = result
-			keeper.SetRequest(ctx, reqID, request)
+			keeper.SetResult(ctx, reqID, request.CodeHash, request.Params, result)
 		}
 
 		// remove reqID when set result

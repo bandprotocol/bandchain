@@ -8,11 +8,20 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestDataPointStoreKey(t *testing.T) {
+func TestRequestStoreKey(t *testing.T) {
 	requestID := uint64(20)
 	expectKeyByte, _ := hex.DecodeString("010000000000000014")
 
-	require.Equal(t, expectKeyByte, DataPointStoreKey(requestID))
+	require.Equal(t, expectKeyByte, RequestStoreKey(requestID))
+}
+
+func TestResultStoreKey(t *testing.T) {
+	requestID := uint64(20)
+	codeHash := []byte("code")
+	params := []byte("params")
+
+	expectKeyByte, _ := hex.DecodeString("ff0000000000000014636f6465706172616d73")
+	require.Equal(t, expectKeyByte, ResultStoreKey(requestID, codeHash, params))
 }
 
 func TestCodeHashStoreKey(t *testing.T) {

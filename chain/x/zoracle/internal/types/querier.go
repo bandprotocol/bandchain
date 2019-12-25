@@ -18,19 +18,21 @@ func (u64a U64Array) String() string {
 }
 
 type RequestWithReport struct {
-	DataPoint
+	Request
+	Result  []byte            `json:"result"`
 	Reports []ValidatorReport `json:"reports"`
 }
 
-func NewRequestWithReport(dataPoint DataPoint, reports []ValidatorReport) RequestWithReport {
+func NewRequestWithReport(request Request, result []byte, reports []ValidatorReport) RequestWithReport {
 	return RequestWithReport{
-		DataPoint: dataPoint,
-		Reports:   reports,
+		Request: request,
+		Result:  result,
+		Reports: reports,
 	}
 }
 
 func (re RequestWithReport) MarshalJSON() ([]byte, error) {
-	d, err := json.Marshal(re.DataPoint)
+	d, err := json.Marshal(re.Request)
 	if err != nil {
 		return nil, err
 	}
@@ -40,6 +42,7 @@ func (re RequestWithReport) MarshalJSON() ([]byte, error) {
 		return nil, err
 	}
 
+	data["result"] = re.Result
 	data["reports"] = re.Reports
 
 	return json.Marshal(data)
