@@ -22,6 +22,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genaccounts"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/gov"
+	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
@@ -50,6 +51,7 @@ var (
 		auth.AppModuleBasic{},
 		bank.AppModuleBasic{},
 		staking.AppModuleBasic{},
+		mint.AppModuleBasic{},
 		distr.AppModuleBasic{},
 		gov.NewAppModuleBasic(paramsclient.ProposalHandler, distr.ProposalHandler),
 		params.AppModuleBasic{},
@@ -63,6 +65,7 @@ var (
 	maccPerms = map[string][]string{
 		auth.FeeCollectorName:     nil,
 		distr.ModuleName:          nil,
+		mint.ModuleName:           {supply.Minter},
 		staking.BondedPoolName:    {supply.Burner, supply.Staking},
 		staking.NotBondedPoolName: {supply.Burner, supply.Staking},
 		gov.ModuleName:            {supply.Burner},
@@ -100,6 +103,7 @@ type bandApp struct {
 	supplyKeeper   supply.Keeper
 	stakingKeeper  staking.Keeper
 	slashingKeeper slashing.Keeper
+	mintKeeper     mint.Keeper
 	distrKeeper    distr.Keeper
 	govKeeper      gov.Keeper
 	crisisKeeper   crisis.Keeper
@@ -124,7 +128,7 @@ func NewBandApp(
 	bApp.SetAppVersion(version.Version)
 
 	keys := sdk.NewKVStoreKeys(bam.MainStoreKey, auth.StoreKey, staking.StoreKey,
-		supply.StoreKey, distr.StoreKey, slashing.StoreKey, gov.StoreKey, params.StoreKey, zoracle.StoreKey)
+		supply.StoreKey, mint.StoreKey, distr.StoreKey, slashing.StoreKey, gov.StoreKey, params.StoreKey, zoracle.StoreKey)
 
 	tkeys := sdk.NewTransientStoreKeys(staking.TStoreKey, params.TStoreKey)
 
@@ -143,6 +147,7 @@ func NewBandApp(
 	authSubspace := app.paramsKeeper.Subspace(auth.DefaultParamspace)
 	bankSupspace := app.paramsKeeper.Subspace(bank.DefaultParamspace)
 	stakingSubspace := app.paramsKeeper.Subspace(staking.DefaultParamspace)
+	mintSubspace := app.paramsKeeper.Subspace(mint.DefaultParamspace)
 	distrSubspace := app.paramsKeeper.Subspace(distr.DefaultParamspace)
 	slashingSubspace := app.paramsKeeper.Subspace(slashing.DefaultParamspace)
 	govSubspace := app.paramsKeeper.Subspace(gov.DefaultParamspace)
@@ -181,6 +186,15 @@ func NewBandApp(
 		app.supplyKeeper,
 		stakingSubspace,
 		staking.DefaultCodespace,
+	)
+
+	app.mintKeeper = mint.NewKeeper(
+		app.cdc,
+		keys[mint.StoreKey],
+		mintSubspace,
+		&stakingKeeper,
+		app.supplyKeeper,
+		auth.FeeCollectorName,
 	)
 
 	app.distrKeeper = distr.NewKeeper(
@@ -239,11 +253,12 @@ func NewBandApp(
 		supply.NewAppModule(app.supplyKeeper, app.accountKeeper),
 		distr.NewAppModule(app.distrKeeper, app.supplyKeeper),
 		gov.NewAppModule(app.govKeeper, app.supplyKeeper),
+		mint.NewAppModule(app.mintKeeper),
 		slashing.NewAppModule(app.slashingKeeper, app.stakingKeeper),
 		staking.NewAppModule(app.stakingKeeper, app.distrKeeper, app.accountKeeper, app.supplyKeeper),
 	)
 
-	app.mm.SetOrderBeginBlockers(distr.ModuleName, slashing.ModuleName)
+	app.mm.SetOrderBeginBlockers(mint.ModuleName, distr.ModuleName, slashing.ModuleName)
 	app.mm.SetOrderEndBlockers(zoracle.ModuleName, gov.ModuleName, staking.ModuleName)
 
 	// Sets the order of Genesis - Order matters, genutil is to always come last
@@ -257,6 +272,7 @@ func NewBandApp(
 		bank.ModuleName,
 		slashing.ModuleName,
 		gov.ModuleName,
+		mint.ModuleName,
 		zoracle.ModuleName,
 		supply.ModuleName,
 		crisis.ModuleName,
