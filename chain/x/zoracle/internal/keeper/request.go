@@ -5,29 +5,29 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// SetRequest is a function to save datapoint to the given ID.
-func (k Keeper) SetRequest(ctx sdk.Context, id uint64, datapoint types.DataPoint) {
+// SetRequest is a function to save request to the given ID.
+func (k Keeper) SetRequest(ctx sdk.Context, id uint64, request types.Request) {
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.DataPointStoreKey(id), k.cdc.MustMarshalBinaryBare(datapoint))
+	store.Set(types.RequestStoreKey(id), k.cdc.MustMarshalBinaryBare(request))
 }
 
-// GetRequest returns the entire Datapoint metadata struct.
-func (k Keeper) GetRequest(ctx sdk.Context, id uint64) (types.DataPoint, sdk.Error) {
+// GetRequest returns the entire Request metadata struct.
+func (k Keeper) GetRequest(ctx sdk.Context, id uint64) (types.Request, sdk.Error) {
 	store := ctx.KVStore(k.storeKey)
 	if !k.CheckRequestExists(ctx, id) {
-		return types.DataPoint{}, types.ErrRequestNotFound(types.DefaultCodespace)
+		return types.Request{}, types.ErrRequestNotFound(types.DefaultCodespace)
 	}
 
-	bz := store.Get(types.DataPointStoreKey(id))
-	var datapoint types.DataPoint
-	k.cdc.MustUnmarshalBinaryBare(bz, &datapoint)
-	return datapoint, nil
+	bz := store.Get(types.RequestStoreKey(id))
+	var request types.Request
+	k.cdc.MustUnmarshalBinaryBare(bz, &request)
+	return request, nil
 }
 
 // CheckRequestExists checks if the request at this id is present in the store or not.
 func (k Keeper) CheckRequestExists(ctx sdk.Context, id uint64) bool {
 	store := ctx.KVStore(k.storeKey)
-	return store.Has(types.DataPointStoreKey(id))
+	return store.Has(types.RequestStoreKey(id))
 }
 
 // uniqueReqIDs is used to create array with all elements being unique (deduplicated).

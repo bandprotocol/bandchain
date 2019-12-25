@@ -39,8 +39,12 @@ func queryRequest(ctx sdk.Context, path []string, req abci.RequestQuery, keeper 
 		return nil, sdkErr
 	}
 	reports := keeper.GetValidatorReports(ctx, reqID)
+	result, sdkErr := keeper.GetResult(ctx, reqID, requestFromState.CodeHash, requestFromState.Params)
+	if sdkErr != nil {
+		result = []byte{}
+	}
 
-	res, err := codec.MarshalJSONIndent(keeper.cdc, types.NewRequestWithReport(requestFromState, reports))
+	res, err := codec.MarshalJSONIndent(keeper.cdc, types.NewRequestWithReport(requestFromState, result, reports))
 	if err != nil {
 		panic("could not marshal result to JSON")
 	}

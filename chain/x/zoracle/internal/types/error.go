@@ -8,11 +8,12 @@ import (
 const (
 	DefaultCodespace sdk.CodespaceType = ModuleName
 
-	CodeInvalidInput     				sdk.CodeType = 101
-	CodeInvalidValidator 				sdk.CodeType = 102
-	CodeRequestNotFound  				sdk.CodeType = 103
-	CodeInvalidOwner     				sdk.CodeType = 104
-	CodeOutOfReportPeriod				sdk.CodeType = 105
+	CodeInvalidInput      sdk.CodeType = 101
+	CodeInvalidValidator  sdk.CodeType = 102
+	CodeRequestNotFound   sdk.CodeType = 103
+	CodeResultNotFound    sdk.CodeType = 104
+	CodeInvalidOwner      sdk.CodeType = 105
+	CodeOutOfReportPeriod sdk.CodeType = 106
 
 	WasmError sdk.CodeType = 105
 )
@@ -20,6 +21,10 @@ const (
 // ErrRequestNotFound is the error for invalid request id
 func ErrRequestNotFound(codespace sdk.CodespaceType) sdk.Error {
 	return sdk.NewError(codespace, CodeRequestNotFound, "request not found")
+}
+
+func ErrResultNotFound(codespace sdk.CodespaceType) sdk.Error {
+	return sdk.NewError(codespace, CodeResultNotFound, "request not found")
 }
 
 // ErrCodeHashNotFound is the error for invalid code hash

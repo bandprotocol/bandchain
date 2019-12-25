@@ -22,8 +22,11 @@ var (
 
 	// ========================================================================
 
-	// DataPointStoreKeyPrefix is a prefix for datapoint store
-	DataPointStoreKeyPrefix = []byte{0x01}
+	// RequestStoreKeyPrefix is a prefix for request store
+	RequestStoreKeyPrefix = []byte{0x01}
+
+	// ResultStoreKeyPrefix is a prefix for storing result
+	ResultStoreKeyPrefix = []byte{0xff}
 
 	// CodeHashKeyPrefix is a prefix for code store
 	CodeHashKeyPrefix = []byte{0x02}
@@ -32,10 +35,19 @@ var (
 	ReportKeyPrefix = []byte{0x03}
 )
 
-// DataPointStoreKey is a function to generate key for each datapoint in store
-func DataPointStoreKey(requestID uint64) []byte {
+// RequestStoreKey is a function to generate key for each request in store
+func RequestStoreKey(requestID uint64) []byte {
 	buf := uint64ToBytes(requestID)
-	return append(DataPointStoreKeyPrefix, buf...)
+	return append(RequestStoreKeyPrefix, buf...)
+}
+
+// ResultStoreKey is a function to generate key for each result in store
+func ResultStoreKey(requestID uint64, codeHash []byte, params []byte) []byte {
+	buf := uint64ToBytes(requestID)
+	buf = append(ResultStoreKeyPrefix, buf...)
+	buf = append(buf, codeHash...)
+	buf = append(buf, params...)
+	return buf
 }
 
 // CodeHashStoreKey is a function to generate key for codehash to actual code in store

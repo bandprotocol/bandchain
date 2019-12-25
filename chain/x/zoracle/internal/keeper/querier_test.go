@@ -25,8 +25,8 @@ func TestQueryRequestById(t *testing.T) {
 	require.Nil(t, err)
 
 	// It must be requestID = 0
-	request := types.DataPoint{RequestID: 0, CodeHash: []byte(nil), ReportEndAt: 0, Result: []byte(nil)}
-	acs, errJSON := codec.MarshalJSONIndent(keeper.cdc, types.NewRequestWithReport(request, []types.ValidatorReport{}))
+	request := types.NewRequest([]byte(nil), []byte(nil), 0)
+	acs, errJSON := codec.MarshalJSONIndent(keeper.cdc, types.NewRequestWithReport(request, []byte{}, []types.ValidatorReport{}))
 	require.Nil(t, errJSON)
 	require.Equal(t, acs, acsBytes)
 
@@ -36,8 +36,10 @@ func TestQueryRequestById(t *testing.T) {
 	codeHash := keeper.SetCode(ctx, code, owner)
 
 	// set request
-	datapoint := types.NewDataPoint(1, codeHash, 3)
-	keeper.SetRequest(ctx, 1, datapoint)
+	request = types.NewRequest(codeHash, []byte("params"), 3)
+	keeper.SetRequest(ctx, 1, request)
+	result := []byte("result")
+	keeper.SetResult(ctx, 1, codeHash, []byte("params"), result)
 
 	// create query
 	acsBytes, err = querier(
@@ -48,8 +50,11 @@ func TestQueryRequestById(t *testing.T) {
 	require.Nil(t, err)
 
 	// Use bytes format for comparison
-	request = types.DataPoint{RequestID: 1, CodeHash: codeHash, ReportEndAt: 3, Result: []byte(nil)}
-	acs, errJSON = codec.MarshalJSONIndent(keeper.cdc, types.NewRequestWithReport(request, []types.ValidatorReport{}))
+	request = types.NewRequest(codeHash, []byte("params"), 3)
+	acs, errJSON = codec.MarshalJSONIndent(
+		keeper.cdc,
+		types.NewRequestWithReport(request, result, []types.ValidatorReport{}),
+	)
 	require.Nil(t, errJSON)
 	require.Equal(t, acs, acsBytes)
 }
@@ -75,8 +80,8 @@ func TestQueryPendingRequest(t *testing.T) {
 	owner := sdk.AccAddress([]byte("owner"))
 	code := []byte("code")
 	codeHash := keeper.SetCode(ctx, code, owner)
-	datapoint := types.NewDataPoint(2, codeHash, 3)
-	keeper.SetRequest(ctx, 2, datapoint)
+	request := types.NewRequest(codeHash, []byte("params"), 3)
+	keeper.SetRequest(ctx, 2, request)
 
 	// set pending
 	pendingRequests := keeper.GetPending(ctx)
