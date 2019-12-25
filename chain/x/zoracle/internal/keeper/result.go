@@ -17,7 +17,7 @@ func (k Keeper) SetResult(ctx sdk.Context, requestID uint64, codeHash []byte, pa
 
 func (k Keeper) GetResult(ctx sdk.Context, requestID uint64, codeHash []byte, params []byte) ([]byte, sdk.Error) {
 	if !k.HasResult(ctx, requestID, codeHash, params) {
-		return []byte(nil), types.ErrResultNotFound(types.DefaultCodespace)
+		return nil, types.ErrResultNotFound(types.DefaultCodespace)
 	}
 	store := ctx.KVStore(k.storeKey)
 	return store.Get(types.ResultStoreKey(requestID, codeHash, params)), nil

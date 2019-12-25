@@ -24,7 +24,7 @@ func ErrRequestNotFound(codespace sdk.CodespaceType) sdk.Error {
 }
 
 func ErrResultNotFound(codespace sdk.CodespaceType) sdk.Error {
-	return sdk.NewError(codespace, CodeResultNotFound, "request not found")
+	return sdk.NewError(codespace, CodeResultNotFound, "result not found")
 }
 
 // ErrCodeHashNotFound is the error for invalid code hash
