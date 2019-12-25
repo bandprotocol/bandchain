@@ -9,7 +9,7 @@ import Footer from './components/Footer'
 /* Pages */
 import HomePage from './pages/Home'
 import ScriptPage from './pages/ReqScript'
-import TxDetailPage from './pages/Transaction'
+import TransactionPage from './pages/Transaction'
 
 export default () => (
   <>
@@ -19,7 +19,7 @@ export default () => (
         <Switch>
           <Route exact path="/" component={HomePage} />
           <Route exact path="/script/:codeHash" component={ScriptPage} />
-          <Route exact path="/tx/:txHash" component={TxDetailPage} />
+          <Route exact path="/tx/:txHash" component={TransactionPage} />
         </Switch>
       </Router>
     </PageContainer>
