@@ -4,14 +4,20 @@ import (
 	"encoding/hex"
 	"fmt"
 	"net/http"
+	"sort"
 	"strconv"
 
 	"github.com/bandprotocol/d3n/chain/cmtx"
 	"github.com/bandprotocol/d3n/chain/x/zoracle"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/store/rootmulti"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
+	"github.com/tendermint/iavl"
+	"github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
+	"github.com/tendermint/tendermint/crypto/tmhash"
 	rpc "github.com/tendermint/tendermint/rpc/client"
 )
 
@@ -85,6 +91,75 @@ const queryURI = "http://localhost:1317"
 var rpcClient *rpc.HTTP
 var pk secp256k1.PrivKeySecp256k1
 var txSender cmtx.TxSender
+var cdc = codec.New()
+
+func MakeOtherStoresMerkleHash(mspo rootmulti.MultiStoreProofOp) []byte {
+	m := map[string][]byte{}
+	for _, si := range mspo.Proof.StoreInfos {
+		m[si.Name] = tmhash.Sum(tmhash.Sum(si.Core.CommitID.Hash))
+	}
+
+	keys := []string{}
+	for k := range m {
+		if k != "zoracle" {
+			keys = append(keys, k)
+		}
+	}
+	sort.Strings(keys)
+
+	bs := [][]byte{}
+	for _, k := range keys {
+		bs = append(bs, m[k])
+	}
+
+	h1 := tmhash.Sum(
+		append(
+			[]byte{1},
+			append(
+				tmhash.Sum(append([]byte{0}, append(append([]byte{3}, []byte("acc")...), append([]byte{32}, bs[0]...)...)...)),
+				tmhash.Sum(append([]byte{0}, append(append([]byte{12}, []byte("distribution")...), append([]byte{32}, bs[1]...)...)...))...,
+			)...,
+		),
+	)
+
+	h2 := tmhash.Sum(
+		append(
+			[]byte{1},
+			append(
+				tmhash.Sum(append([]byte{0}, append(append([]byte{3}, []byte("gov")...), append([]byte{32}, bs[2]...)...)...)),
+				tmhash.Sum(append([]byte{0}, append(append([]byte{4}, []byte("main")...), append([]byte{32}, bs[3]...)...)...))...,
+			)...,
+		),
+	)
+
+	h3 := tmhash.Sum(
+		append(
+			[]byte{1},
+			append(
+				tmhash.Sum(append([]byte{0}, append(append([]byte{6}, []byte("params")...), append([]byte{32}, bs[4]...)...)...)),
+				tmhash.Sum(append([]byte{0}, append(append([]byte{8}, []byte("slashing")...), append([]byte{32}, bs[5]...)...)...))...,
+			)...,
+		),
+	)
+
+	h4 := tmhash.Sum(
+		append(
+			[]byte{1},
+			append(
+				tmhash.Sum(append([]byte{0}, append(append([]byte{7}, []byte("staking")...), append([]byte{32}, bs[6]...)...)...)),
+				tmhash.Sum(append([]byte{0}, append(append([]byte{6}, []byte("supply")...), append([]byte{32}, bs[7]...)...)...))...,
+			)...,
+		),
+	)
+
+	h5 := tmhash.Sum(append([]byte{1}, append(h1, h2...)...))
+
+	h6 := tmhash.Sum(append([]byte{1}, append(h3, h4...)...))
+
+	h7 := tmhash.Sum(append([]byte{1}, append(h5, h6...)...))
+
+	return h7
+}
 
 // TODO
 // - Add query from rest client and ask via that endpoint
@@ -198,19 +273,92 @@ func handleGetRequest(c *gin.Context) {
 		rpc.ABCIQueryOptions{Height: 0, Prove: true},
 	)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	// spew.Dump(resp)
+	proof := resp.Response.GetProof()
+	if proof == nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "proof not found"})
+		return
+	}
 
-	c.JSON(200, resp)
+	ops := proof.GetOps()
+	if ops == nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "proof ops not found"})
+		return
+	}
 
-	// c.JSON(200, Proof{
-	// 	BlockHeight:     0,
-	// 	OracleDataProof: OracleDataProof{},
-	// 	BlockRelayProof: BlockRelayProof{},
-	// })
+	var iavlOpData []byte
+	var multistoreOpData []byte
+	for _, op := range ops {
+		opType := op.GetType()
+		if opType == "iavl:v" {
+			iavlOpData = op.GetData()
+		} else if opType == "multistore" {
+			multistoreOpData = op.GetData()
+		}
+	}
+	if iavlOpData == nil || multistoreOpData == nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "proof was corrupted"})
+		return
+	}
+
+	var opiavl iavl.IAVLValueOp
+	if iavlOpData == nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "proof was corrupted"})
+		return
+	}
+	err = cdc.UnmarshalBinaryLengthPrefixed(iavlOpData, &opiavl)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	odp := OracleDataProof{}
+	odp.RequestId = requestId
+	odp.Data = resp.Response.GetValue()
+
+	for i := len(opiavl.Proof.LeftPath) - 1; i >= 0; i-- {
+		path := opiavl.Proof.LeftPath[i]
+		imp := IAVLMerklePath{}
+		imp.SubtreeHeight = uint8(path.Height)
+		imp.SubtreeSize = uint64(path.Size)
+		imp.SubtreeVersion = uint64(path.Version)
+		if len(path.Right) == 0 {
+			imp.SiblingHash = path.Left
+			imp.IsDataOnRight = true
+		} else {
+			imp.SiblingHash = path.Right
+			imp.IsDataOnRight = false
+		}
+		odp.MerklePaths = append(odp.MerklePaths, imp)
+	}
+
+	var opms rootmulti.MultiStoreProofOp
+	err = cdc.UnmarshalBinaryLengthPrefixed(multistoreOpData, &opms)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	osmh := MakeOtherStoresMerkleHash(opms)
+	brp := BlockRelayProof{}
+	brp.OtherStoresMerkleHash = osmh
+
+	type T struct {
+		types.ResponseQuery
+		Proof
+	}
+
+	c.JSON(200, T{
+		resp.Response,
+		Proof{
+			BlockHeight:     0,
+			OracleDataProof: odp,
+			BlockRelayProof: brp,
+		},
+	})
 }
 
 func main() {

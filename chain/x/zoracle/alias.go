@@ -41,4 +41,5 @@ type (
 	MsgStoreCode      = types.MsgStoreCode
 	MsgDeleteCode     = types.MsgDeleteCode
 	RequestWithReport = types.RequestWithReport
+	DataPoint         = types.DataPoint
 )
