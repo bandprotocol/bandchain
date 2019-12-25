@@ -44,15 +44,12 @@ func TestRequestSuccess(t *testing.T) {
 
 	msg := types.NewMsgRequest(codeHash, []byte("params"), 5, sender)
 	got := handleMsgRequest(ctx, keeper, msg)
-	require.True(t, got.IsOK(), "expected set request(datapoint) to be ok, got %v", got)
+	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
 
 	// Check global request count
 	require.Equal(t, uint64(1), keeper.GetRequestCount(ctx))
 	request, err := keeper.GetRequest(ctx, 1)
 	require.Nil(t, err)
-
-	// Check request id must be 1
-	require.Equal(t, uint64(1), request.RequestID)
 
 	// Check codeHash must match
 	require.Equal(t, codeHash, request.CodeHash)
@@ -109,8 +106,8 @@ func TestReportSuccess(t *testing.T) {
 	// set request = 2
 	sender := sdk.AccAddress([]byte("sender"))
 	codeHash := keeper.SetCode(ctx, []byte("Code"), sender)
-	datapoint := types.NewDataPoint(2, codeHash, 3)
-	keeper.SetRequest(ctx, 2, datapoint)
+	request := types.NewRequest(codeHash, []byte("params"), 3)
+	keeper.SetRequest(ctx, 2, request)
 
 	// set pending
 	pendingRequests := keeper.GetPending(ctx)
@@ -137,8 +134,8 @@ func TestReportInvalidValidator(t *testing.T) {
 	// set request = 2
 	sender := sdk.AccAddress([]byte("sender"))
 	codeHash := keeper.SetCode(ctx, []byte("Code"), sender)
-	datapoint := types.NewDataPoint(1, codeHash, 3)
-	keeper.SetRequest(ctx, 1, datapoint)
+	request := types.NewRequest(codeHash, []byte("params"), 3)
+	keeper.SetRequest(ctx, 1, request)
 
 	// set pending
 	pendingRequests := keeper.GetPending(ctx)
@@ -157,8 +154,8 @@ func TestOutOfReportPeriod(t *testing.T) {
 	// set request = 2
 	sender := sdk.AccAddress([]byte("sender"))
 	codeHash := keeper.SetCode(ctx, []byte("Code"), sender)
-	datapoint := types.NewDataPoint(2, codeHash, 3)
-	keeper.SetRequest(ctx, 2, datapoint)
+	request := types.NewRequest(codeHash, []byte("params"), 3)
+	keeper.SetRequest(ctx, 2, request)
 
 	// set pending
 	pendingRequests := keeper.GetPending(ctx)
@@ -274,8 +271,8 @@ func TestEndBlock(t *testing.T) {
 	codeHash := keeper.SetCode(ctx, code, sender)
 
 	// set request
-	datapoint := types.NewDataPoint(1, codeHash, 3)
-	keeper.SetRequest(ctx, 1, datapoint)
+	request := types.NewRequest(codeHash, []byte("params"), 3)
+	keeper.SetRequest(ctx, 1, request)
 
 	// set pending
 	pendingRequests := keeper.GetPending(ctx)
@@ -298,10 +295,9 @@ func TestEndBlock(t *testing.T) {
 	gotEndBlock := handleEndBlock(ctx, keeper)
 	require.True(t, gotEndBlock.IsOK(), "expected end block to be ok, got %v", gotEndBlock)
 
-	request, _ := keeper.GetRequest(ctx, 1)
-	require.Equal(t, uint64(1), request.RequestID)
-	// Result must not set
-	require.Equal(t, []byte(nil), request.Result)
+	_, err = keeper.GetResult(ctx, 1, codeHash, []byte("params"))
+	// Result must not found
+	require.NotNil(t, err)
 
 	pendingRequests = keeper.GetPending(ctx)
 	require.Equal(t, []uint64{1}, pendingRequests)
@@ -315,8 +311,10 @@ func TestEndBlock(t *testing.T) {
 	require.True(t, gotEndBlock.IsOK(), "expected end block to be ok, got %v", gotEndBlock)
 
 	request, _ = keeper.GetRequest(ctx, 1)
-	require.Equal(t, uint64(1), request.RequestID)
-	require.Equal(t, resultAfter, request.Result)
+
+	result, err := keeper.GetResult(ctx, 1, codeHash, []byte("params"))
+	require.Nil(t, err)
+	require.Equal(t, resultAfter, result)
 
 	pendingRequests = keeper.GetPending(ctx)
 	require.Equal(t, []uint64{}, pendingRequests)

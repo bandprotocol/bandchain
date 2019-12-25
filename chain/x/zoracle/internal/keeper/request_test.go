@@ -13,7 +13,7 @@ func TestGetterSetterRequest(t *testing.T) {
 	_, err := keeper.GetRequest(ctx, 1)
 	require.NotNil(t, err)
 
-	request := types.NewDataPoint(1, []byte("CodeHash"), 10)
+	request := types.NewRequest([]byte("CodeHash"), []byte("params"), 10)
 
 	keeper.SetRequest(ctx, 1, request)
 	actualRequest, err := keeper.GetRequest(ctx, 1)
