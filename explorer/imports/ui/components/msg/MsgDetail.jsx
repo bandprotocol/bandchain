@@ -23,8 +23,8 @@ const mockData = [
   {
     action: 'REQUEST',
     reqID: '32',
-    status: 'pending',
-    ts: '1,329',
+    status: 'Success',
+    ts: '12',
     from: '0x1348421874384384383484383483',
     script: '0x1348421874384384383484383483',
     result: '0x0000008332',

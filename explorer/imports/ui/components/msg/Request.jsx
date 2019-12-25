@@ -53,14 +53,14 @@ export default ({ msg }) => {
             alignItems="center"
             width="100%"
           >
-            Create Data Request Script
+            Data Request #{reqID}
           </Flex>
         </Title>
         <Tab active={tabId == 0} onClick={() => setTabId(0)}>
           Overview
         </Tab>
         <Tab active={tabId == 1} onClick={() => setTabId(1)}>
-          Code
+          Data Report Status
         </Tab>
       </Flex>
       <TBody>
@@ -90,15 +90,26 @@ export default ({ msg }) => {
               <Title>Request Script:</Title>
               <Text fontSize="0.8em">{script}</Text>
             </Flex>
+            <SeperatorLine color="#dadada" height="1px" my="0px" />
+            <Flex flexDirection="row" mx="10px" my="13px">
+              <Title>Result:</Title>
+              <Text fontSize="0.8em">{result}</Text>
+            </Flex>
+            <SeperatorLine color="#dadada" height="1px" my="0px" />
+            <Flex flexDirection="row" mx="10px" my="13px">
+              <Title>Proof of validity:</Title>
+              <Text fontSize="0.8em">{proof}</Text>
+            </Flex>
           </>
         ) : (
-          <Flex
-            justifyContent="center"
-            alignItems="center"
-            style={{ height: '220px' }}
-          >
-            {JSON.stringify(reports)}
-          </Flex>
+          <>
+            <Flex flexDirection="row" mx="10px" my="13px">
+              <Text fontSize="0.8em">
+                Data Reports from 4 validators (Completed 3/4)
+              </Text>
+            </Flex>
+            <Flex>Table</Flex>
+          </>
         )}
       </TBody>
     </Table>
