@@ -1,6 +1,7 @@
 import React from 'react'
 import { Image, Text, Flex, Box } from 'rebass'
 import PageContainer from './PageContainer'
+import SeperatorLine from './SeperatorLine'
 
 export default () => (
   <Flex bg="#444444" justifyContent="center" style={{ height: '260px' }}>
@@ -35,7 +36,7 @@ export default () => (
           {/* Second Column */}
           <Flex flexDirection="column" flex={1}>
             <Text>D3N Project</Text>
-            <Box width="100%" bg="white" height="1px" my="11px" />
+            <SeperatorLine color="white" height="1px" my="11px" />
             <Text mb="10px">Band Protocol Website</Text>
             <Text mb="10px">D3N Blockchain</Text>
             <Text mb="10px">D3N Wallet</Text>
@@ -44,7 +45,7 @@ export default () => (
           {/* Third Column */}
           <Flex flexDirection="column" flex={1} mx="20px">
             <Text>Community</Text>
-            <Box width="100%" bg="white" height="1px" my="11px" />
+            <SeperatorLine color="white" height="1px" my="11px" />
             <Text mb="10px">Open Source Repositories</Text>
             <Text mb="10px">Developer Docs</Text>
             <Text mb="10px">Network Status</Text>
@@ -53,7 +54,7 @@ export default () => (
           {/* Fourth Column */}
           <Flex flexDirection="column" flex={1}>
             <Text>Social Links</Text>
-            <Box width="100%" bg="white" height="1px" my="11px" />
+            <SeperatorLine color="white" height="1px" my="11px" />
             <Text mb="10px">Twitter</Text>
             <Text mb="10px">Telegram</Text>
             <Text mb="10px">Medium</Text>
