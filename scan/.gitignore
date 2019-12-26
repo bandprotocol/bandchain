@@ -1,0 +1,8 @@
+*.bs.js
+/.cache/
+/dist/
+/.merlin
+/.bsb.lock
+/node_modules/
+/.graphql_ppx_cache/
+/lib/bs/
