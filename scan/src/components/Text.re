@@ -50,24 +50,15 @@ module Styles = {
 };
 
 [@react.component]
-let make =
-    (
-      ~size=?,
-      ~weight=?,
-      ~nowrap=?,
-      ~color=?,
-      ~block=?,
-      ~code=?,
-      ~value: string,
-    ) => {
+let make = (~size=?, ~weight=?, ~nowrap=false, ~color=?, ~block=false, ~code=false, ~value) => {
   <span
-    className={Cn.make([
+    className={Css.merge([
       Styles.fontSize(size),
       Styles.fontWeight(weight),
-      Styles.noWrap->Cn.ifTrue(nowrap->Belt.Option.getWithDefault(false)),
-      Styles.block->Cn.ifTrue(block->Belt.Option.getWithDefault(false)),
-      Styles.code->Cn.ifTrue(code->Belt.Option.getWithDefault(false)),
-      color->Cn.mapSome(c => Css.style([Css.color(c)])),
+      nowrap ? Styles.noWrap : "",
+      block ? Styles.block : "",
+      code ? Styles.code : "",
+      color->Belt.Option.mapWithDefault("", c => Css.style([Css.color(c)])),
     ])}>
     {React.string(value)}
   </span>;

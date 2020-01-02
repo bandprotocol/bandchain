@@ -19,14 +19,7 @@ module Styles = {
       padding(Spacing.md),
       paddingTop(`px(9)),
       paddingBottom(`px(15)),
-      boxShadow(
-        Shadow.box(
-          ~x=`px(0),
-          ~y=`px(2),
-          ~blur=`px(2),
-          Css.rgba(0, 0, 0, 0.05),
-        ),
-      ),
+      boxShadow(Shadow.box(~x=`px(0), ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, 0.05))),
       backgroundColor(white),
       marginBottom(`px(1)),
       cursor(`pointer),
@@ -92,27 +85,16 @@ let renderDataType = txType =>
       <Text value={txType->txLabel} size=Text.Xs block=true />
     </div>
     <VSpacing size=Spacing.xs />
-    <Text
-      value={txType->txSource}
-      size=Text.Lg
-      weight=Text.Semibold
-      block=true
-    />
+    <Text value={txType->txSource} size=Text.Lg weight=Text.Semibold block=true />
   </>;
 
 let renderHeader = () =>
-  <div className={Cn.make([Styles.container, Styles.header])}>
+  <div className={Css.merge([Styles.container, Styles.header])}>
     <Row>
       <Col> <div className=Styles.txIcon /> </Col>
       <Col>
         <div className=Styles.hashCol>
-          <Text
-            block=true
-            value="TX HASH"
-            size=Text.Sm
-            weight=Text.Bold
-            color=Colors.grayText
-          />
+          <Text block=true value="TX HASH" size=Text.Sm weight=Text.Bold color=Colors.grayText />
         </div>
       </Col>
       <Col size=2.>
@@ -126,13 +108,7 @@ let renderHeader = () =>
       </Col>
       <Col>
         <div className=Styles.feeCol>
-          <Text
-            block=true
-            value="FEE"
-            size=Text.Sm
-            weight=Text.Bold
-            color=Colors.grayText
-          />
+          <Text block=true value="FEE" size=Text.Sm weight=Text.Bold color=Colors.grayText />
         </div>
       </Col>
     </Row>
@@ -148,13 +124,7 @@ let make = (~type_, ~hash, ~timestamp, ~fee) => {
           <VSpacing size={`px(9)} />
           <Text block=true value=timestamp size=Text.Sm />
           <VSpacing size={`px(6)} />
-          <Text
-            block=true
-            code=true
-            value=hash
-            size=Text.Lg
-            weight=Text.Bold
-          />
+          <Text block=true code=true value=hash size=Text.Lg weight=Text.Bold />
         </div>
       </Col>
       <Col size=2.> {renderDataType(type_)} </Col>

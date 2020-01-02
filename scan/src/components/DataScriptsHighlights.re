@@ -4,14 +4,7 @@ module Styles = {
     style([
       backgroundColor(color),
       borderRadius(`px(8)),
-      boxShadow(
-        Shadow.box(
-          ~x=`px(0),
-          ~y=`px(4),
-          ~blur=`px(20),
-          Css.rgba(0, 0, 0, 0.1),
-        ),
-      ),
+      boxShadow(Shadow.box(~x=`px(0), ~y=`px(4), ~blur=`px(20), Css.rgba(0, 0, 0, 0.1))),
       padding(Spacing.lg),
       paddingRight(Spacing.xl),
       marginTop(Spacing.md),
@@ -32,14 +25,7 @@ module Styles = {
       height(`px(115)),
       width(`px(200)),
       borderRadius(`px(8)),
-      boxShadow(
-        Shadow.box(
-          ~x=`px(0),
-          ~y=`px(2),
-          ~blur=`px(2),
-          Css.rgba(0, 0, 0, 0.05),
-        ),
-      ),
+      boxShadow(Shadow.box(~x=`px(0), ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, 0.05))),
       cursor(`pointer),
       transition(~duration=100, "margin-top"),
       hover([marginTop(`px(14))]),
@@ -104,12 +90,7 @@ let make = () => {
     </Col>
     <HSpacing size=Spacing.xl />
     <Col size=5.>
-      <Text
-        value="Recent Data Scripts"
-        size=Text.Xl
-        weight=Text.Bold
-        block=true
-      />
+      <Text value="Recent Data Scripts" size=Text.Xl weight=Text.Bold block=true />
       <Row wrap=true alignItems=`initial>
         <Col>
           <Recent
@@ -119,18 +100,10 @@ let make = () => {
           />
         </Col>
         <Col>
-          <Recent
-            title="Powerball Lottery"
-            hash="0xe122543771888011"
-            createdAt="2 days ago"
-          />
+          <Recent title="Powerball Lottery" hash="0xe122543771888011" createdAt="2 days ago" />
         </Col>
         <Col>
-          <Recent
-            title="Identity Verification"
-            hash="0xe122543771888011"
-            createdAt="2 days ago"
-          />
+          <Recent title="Identity Verification" hash="0xe122543771888011" createdAt="2 days ago" />
         </Col>
         <Col>
           <Recent
@@ -165,12 +138,7 @@ let make = () => {
       <VSpacing size=Spacing.xl />
       <Text block=true value="48" size=Text.Xxl weight=Text.Bold />
       <VSpacing size=Spacing.sm />
-      <Text
-        block=true
-        value="DATA PROVIDERS"
-        size=Text.Sm
-        color=Colors.purple
-      />
+      <Text block=true value="DATA PROVIDERS" size=Text.Sm color=Colors.purple />
     </Col>
   </Row>;
 };
