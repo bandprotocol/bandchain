@@ -11,11 +11,13 @@ module Block = {
       height: json |> at(["block_meta", "header", "height"], intstr),
       timestamp: json |> at(["block_meta", "header", "time"], moment),
     };
+
+  let decode_blocks = json => JsonUtils.Decode.(json |> list(decode_block));
 };
 
-let latest = (~pollInterval=?, ()) => {
-  let json = Axios.use({j|blocks/latest|j}, ~pollInterval?, ());
-  json |> Belt.Option.map(_, Block.decode_block);
+let latest = (~page=1, ~limit=10, ~pollInterval=?, ()) => {
+  let json = Axios.use({j|d3n/blocks/latest?page=$page&limit=$limit|j}, ~pollInterval?, ());
+  json |> Belt.Option.map(_, Block.decode_blocks);
 };
 
 let at_height = (height, ~pollInterval=?, ()) => {
