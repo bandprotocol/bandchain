@@ -1,5 +1,5 @@
 {
-  "genesis_time": "2019-12-24T09:58:30.892658Z",
+  "genesis_time": "2019-12-25T13:38:02.76102Z",
   "chain_id": "bandchain",
   "consensus_params": {
     "block": {
@@ -11,24 +11,13 @@
       "max_age": "100000"
     },
     "validator": {
-      "pub_key_types": ["secp256k1"]
+      "pub_key_types": [
+        "secp256k1"
+      ]
     }
   },
   "app_hash": "",
   "app_state": {
-    "auth": {
-      "params": {
-        "max_memo_characters": "256",
-        "tx_sig_limit": "7",
-        "tx_size_cost_per_byte": "10",
-        "sig_verify_cost_ed25519": "590",
-        "sig_verify_cost_secp256k1": "1000"
-      }
-    },
-    "supply": {
-      "supply": []
-    },
-    "params": null,
     "genutil": {
       "gentxs": [
         {
@@ -213,98 +202,24 @@
         }
       ]
     },
-    "accounts": [
-      {
-        "address": "band1r8u4m0wefrdyp7sdde7drtrt94qczggkv38jrk",
-        "coins": [
-          {
-            "denom": "uband",
-            "amount": "10000000000000"
-          }
-        ],
-        "sequence_number": "0",
-        "account_number": "0",
-        "original_vesting": [],
-        "delegated_free": [],
-        "delegated_vesting": [],
-        "start_time": "0",
-        "end_time": "0",
-        "module_name": "",
-        "module_permissions": [""]
+    "distribution": {
+      "fee_pool": {
+        "community_pool": []
       },
-      {
-        "address": "band13zmknvkq2sj920spz90g4r9zjan8g584x8qalj",
-        "coins": [
-          {
-            "denom": "uband",
-            "amount": "10000000000000"
-          }
-        ],
-        "sequence_number": "0",
-        "account_number": "0",
-        "original_vesting": [],
-        "delegated_free": [],
-        "delegated_vesting": [],
-        "start_time": "0",
-        "end_time": "0",
-        "module_name": "",
-        "module_permissions": [""]
-      },
-      {
-        "address": "band1fwffdxysc5a0hu0falsq4lyneucj05cw0jx2yy",
-        "coins": [
-          {
-            "denom": "uband",
-            "amount": "10000000000000"
-          }
-        ],
-        "sequence_number": "0",
-        "account_number": "0",
-        "original_vesting": [],
-        "delegated_free": [],
-        "delegated_vesting": [],
-        "start_time": "0",
-        "end_time": "0",
-        "module_name": "",
-        "module_permissions": [""]
-      },
-      {
-        "address": "band1zpmsn2vg2zcrx4jlg49t2f2y2cwjykr679l8r8",
-        "coins": [
-          {
-            "denom": "uband",
-            "amount": "10000000000000"
-          }
-        ],
-        "sequence_number": "0",
-        "account_number": "0",
-        "original_vesting": [],
-        "delegated_free": [],
-        "delegated_vesting": [],
-        "start_time": "0",
-        "end_time": "0",
-        "module_name": "",
-        "module_permissions": [""]
-      },
-      {
-        "address": "band17geerdwmlxpwxlahmt02vj4wy89wfstjhn085z",
-        "coins": [
-          {
-            "denom": "uband",
-            "amount": "10000000000000"
-          }
-        ],
-        "sequence_number": "0",
-        "account_number": "0",
-        "original_vesting": [],
-        "delegated_free": [],
-        "delegated_vesting": [],
-        "start_time": "0",
-        "end_time": "0",
-        "module_name": "",
-        "module_permissions": [""]
-      }
-    ],
+      "community_tax": "0.020000000000000000",
+      "base_proposer_reward": "0.010000000000000000",
+      "bonus_proposer_reward": "0.040000000000000000",
+      "withdraw_addr_enabled": true,
+      "delegator_withdraw_infos": [],
+      "previous_proposer": "",
+      "outstanding_rewards": [],
+      "validator_accumulated_commissions": [],
+      "validator_historical_rewards": [],
+      "validator_current_rewards": [],
+      "delegator_starting_infos": [],
+      "validator_slash_events": []
+    },
+    "params": null,
     "gov": {
       "starting_proposal_id": "1",
       "deposits": null,
@@ -328,9 +243,120 @@
         "veto": "0.334000000000000000"
       }
     },
-    "bank": {
-      "send_enabled": true
+    "supply": {
+      "supply": []
     },
+    "auth": {
+      "params": {
+        "max_memo_characters": "256",
+        "tx_sig_limit": "7",
+        "tx_size_cost_per_byte": "10",
+        "sig_verify_cost_ed25519": "590",
+        "sig_verify_cost_secp256k1": "1000"
+      }
+    },
+    "accounts": [
+      {
+        "address": "band1r8u4m0wefrdyp7sdde7drtrt94qczggkv38jrk",
+        "coins": [
+          {
+            "denom": "uband",
+            "amount": "10000000000000"
+          }
+        ],
+        "sequence_number": "0",
+        "account_number": "0",
+        "original_vesting": [],
+        "delegated_free": [],
+        "delegated_vesting": [],
+        "start_time": "0",
+        "end_time": "0",
+        "module_name": "",
+        "module_permissions": [
+          ""
+        ]
+      },
+      {
+        "address": "band13zmknvkq2sj920spz90g4r9zjan8g584x8qalj",
+        "coins": [
+          {
+            "denom": "uband",
+            "amount": "10000000000000"
+          }
+        ],
+        "sequence_number": "0",
+        "account_number": "0",
+        "original_vesting": [],
+        "delegated_free": [],
+        "delegated_vesting": [],
+        "start_time": "0",
+        "end_time": "0",
+        "module_name": "",
+        "module_permissions": [
+          ""
+        ]
+      },
+      {
+        "address": "band1fwffdxysc5a0hu0falsq4lyneucj05cw0jx2yy",
+        "coins": [
+          {
+            "denom": "uband",
+            "amount": "10000000000000"
+          }
+        ],
+        "sequence_number": "0",
+        "account_number": "0",
+        "original_vesting": [],
+        "delegated_free": [],
+        "delegated_vesting": [],
+        "start_time": "0",
+        "end_time": "0",
+        "module_name": "",
+        "module_permissions": [
+          ""
+        ]
+      },
+      {
+        "address": "band1zpmsn2vg2zcrx4jlg49t2f2y2cwjykr679l8r8",
+        "coins": [
+          {
+            "denom": "uband",
+            "amount": "10000000000000"
+          }
+        ],
+        "sequence_number": "0",
+        "account_number": "0",
+        "original_vesting": [],
+        "delegated_free": [],
+        "delegated_vesting": [],
+        "start_time": "0",
+        "end_time": "0",
+        "module_name": "",
+        "module_permissions": [
+          ""
+        ]
+      },
+      {
+        "address": "band17geerdwmlxpwxlahmt02vj4wy89wfstjhn085z",
+        "coins": [
+          {
+            "denom": "uband",
+            "amount": "10000000000000"
+          }
+        ],
+        "sequence_number": "0",
+        "account_number": "0",
+        "original_vesting": [],
+        "delegated_free": [],
+        "delegated_vesting": [],
+        "start_time": "0",
+        "end_time": "0",
+        "module_name": "",
+        "module_permissions": [
+          ""
+        ]
+      }
+    ],
     "staking": {
       "params": {
         "unbonding_time": "1814400000000000",
@@ -346,29 +372,8 @@
       "redelegations": null,
       "exported": false
     },
-    "zoracle": {},
-    "distribution": {
-      "fee_pool": {
-        "community_pool": []
-      },
-      "community_tax": "0.020000000000000000",
-      "base_proposer_reward": "0.010000000000000000",
-      "bonus_proposer_reward": "0.040000000000000000",
-      "withdraw_addr_enabled": true,
-      "delegator_withdraw_infos": [],
-      "previous_proposer": "",
-      "outstanding_rewards": [],
-      "validator_accumulated_commissions": [],
-      "validator_historical_rewards": [],
-      "validator_current_rewards": [],
-      "delegator_starting_infos": [],
-      "validator_slash_events": []
-    },
-    "crisis": {
-      "constant_fee": {
-        "denom": "uband",
-        "amount": "1000"
-      }
+    "bank": {
+      "send_enabled": true
     },
     "slashing": {
       "params": {
@@ -382,19 +387,12 @@
       "signing_infos": {},
       "missed_blocks": {}
     },
-    "mint": {
-      "minter": {
-        "inflation": "0.130000000000000000",
-        "annual_provisions": "0.000000000000000000"
-      },
-      "params": {
-        "mint_denom": "stake",
-        "inflation_rate_change": "0.130000000000000000",
-        "inflation_max": "0.200000000000000000",
-        "inflation_min": "0.070000000000000000",
-        "goal_bonded": "0.670000000000000000",
-        "blocks_per_year": "6311520"
+    "crisis": {
+      "constant_fee": {
+        "denom": "uband",
+        "amount": "1000"
       }
-    }
+    },
+    "zoracle": {}
   }
 }

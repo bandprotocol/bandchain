@@ -30,8 +30,10 @@ var (
 	NewMsgStoreCode  = types.NewMsgStoreCode
 	NewMsgDeleteCode = types.NewMsgDeleteCode
 
+	RequestStoreKey  = types.RequestStoreKey
 	CodeHashStoreKey = types.CodeHashStoreKey
 	NewStoredCode    = types.NewStoredCode
+	ResultStoreKey   = types.ResultStoreKey
 )
 
 type (
