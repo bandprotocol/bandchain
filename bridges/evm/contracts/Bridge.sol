@@ -41,6 +41,7 @@ contract Bridge {
     uint256 _blockHeight,
     bytes32 _oracleIAVLStateHash,
     bytes32 _otherStoresMerkleHash,
+    bytes32 _supplyStoresMerkleHash,
     BlockHeaderMerkleParts.Data memory _merkleParts,
     bytes memory _signedDataPrefix,
     TMSignature.Data[] memory _signatures
@@ -53,19 +54,22 @@ contract Bridge {
     //
     //                                            ____________appHash_________
     //                                          /                              \
-    //                   ____otherStoresMerkleHash ____                         \
-    //                 /                                \                        \
-    //         _____ h5 ______                    ______ h6 _______               \
-    //       /                \                 /                  \               \
-    //     h1                  h2             h3                    h4              \
-    //     /\                  /\             /\                    /\               \
-    //  acc  distribution   gov  main   params  slashing     staking  supply       zoracle
+    //                   ____otherStoresMerkleHash ____                         ___innnerHash___
+    //                 /                                \                     /                  \
+    //         _____ h5 ______                    ______ h6 _______        supply              zoracle
+    //       /                \                 /                  \
+    //     h1                  h2             h3                    h4
+    //     /\                  /\             /\                    /\
+    //  acc  distribution   gov  main     mint  params     slashing   staking
     bytes32 appHash = Utils.merkleInnerHash(
       _otherStoresMerkleHash,
-      Utils.merkleLeafHash(
-        abi.encodePacked(
-          hex"077a6f7261636c6520", // uint8(7) + "zoracle" + uint8(32)
-          sha256(abi.encodePacked(sha256(abi.encodePacked(_oracleIAVLStateHash))))
+      Utils.merkleInnerHash(
+        _supplyStoresMerkleHash,
+        Utils.merkleLeafHash(
+          abi.encodePacked(
+            hex"077a6f7261636c6520", // uint8(7) + "zoracle" + uint8(32)
+            sha256(abi.encodePacked(sha256(abi.encodePacked(_oracleIAVLStateHash))))
+          )
         )
       )
     );
@@ -87,6 +91,10 @@ contract Bridge {
     require(validSignatureCount*3 > validatorCount*2, "INSUFFICIENT_VALIDATOR_SIGNATURES");
     oracleStates[_blockHeight] = _oracleIAVLStateHash;
   }
+  struct h {
+    bytes encodedVarint;
+    bytes32 dataHash;
+  }
 
   /// Verify that the given data is a valid data on BandChain as of the given block height.
   /// @param _blockHeight The block height. Someone must already relay this block.
@@ -98,6 +106,8 @@ contract Bridge {
     uint256 _blockHeight,
     bytes memory _data,
     uint64 _requestId,
+    bytes32 _codeHash,
+    bytes memory _params,
     uint256 _version,
     IAVLMerklePath.Data[] memory _merklePaths
   )
@@ -108,15 +118,20 @@ contract Bridge {
     bytes32 oracleStateRoot = oracleStates[_blockHeight];
     require(oracleStateRoot != bytes32(uint256(0)), "NO_ORACLE_ROOT_STATE_DATA");
     // Computes the hash of leaf node for iAVL oracle tree.
+    h memory H;
+    H.encodedVarint = Utils.encodeVarintSigned(_version);
+    H.dataHash = sha256(_data);
     bytes32 currentMerkleHash = sha256(abi.encodePacked(
       uint8(0),  // Height of tree (only leaf node) is 0 (signed-varint encode)
       uint8(2),  // Size of subtree is 1 (signed-varint encode)
-      Utils.encodeVarintSigned(_version),
-      uint8(9),  // Size of data key (1-byte constant 0x01 + 8-byte request ID)
-      uint8(1),  // Constant 0x01 prefix data request info storage key
+      H.encodedVarint,
+      uint8(41 + _params.length),  // Size of data key (1-byte constant 0x01 + 8-byte request ID + 32-byte codeHash + lenght of params)
+      uint8(255),  // Constant 0xff prefix data request info storage key
       _requestId,
+      _codeHash,
+      _params,
       uint8(32),  // Size of data hash
-      sha256(_data)
+      H.dataHash
     ));
     // Goes step-by-step computing hash of parent nodes until reaching root node.
     for (uint256 idx = 0; idx < _merklePaths.length; ++idx) {

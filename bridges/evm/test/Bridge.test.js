@@ -19,6 +19,7 @@ contract("Bridge", () => {
         "3210", // _blockHeight,
         "0xac0b4d71daabb289e21514b004628c7236fb351cd950f67c93c449c5d06b35d1", // _oracleIAVLStateHash
         "0xcf27679618b88c2adad50ed008d40bf5fe631a7b3718e766e547d203253bec6a", // _otherStoresMerkleHash
+        "0xcf27679618b88c2adad50ed008d40bf5fe631a7b3718e766e547d203253bec6a", // _supplyStoresMerkleHash
         [
           "0x32fa694879095840619f5e49380612bd296ff7e950eafb66ff654d99ca70869e", // subtreeVersionAndChainIdHash
           "0x3dddc70f2fb58681b19a6e7bb5d2361ef0a50370940d249d6290da9f086b99e8", // timeHash
@@ -62,6 +63,7 @@ contract("Bridge", () => {
         "3210", // _blockHeight,
         "0xac0b4d71daabb289e21514b004628c7236fb351cd950f67c93c449c5d06b35d1", // _oracleIAVLStateHash
         "0xcf27679618b88c2adad50ed008d40bf5fe631a7b3718e766e547d203253bec6a", // _otherStoresMerkleHash
+        "0xcf27679618b88c2adad50ed008d40bf5fe631a7b3718e766e547d203253bec6a", // _supplyStoresMerkleHash
         [
           "0x32fa694879095840619f5e49380612bd296ff7e950eafb66ff654d99ca70869e", // subtreeVersionAndChainIdHash
           "0x3dddc70f2fb58681b19a6e7bb5d2361ef0a50370940d249d6290da9f086b99e8", // timeHash
@@ -100,6 +102,7 @@ contract("Bridge", () => {
           "3210", // _blockHeight,
           "0xac0b4d71daabb289e21514b004628c7236fb351cd950f67c93c449c5d06b35d1", // _oracleIAVLStateHash
           "0xcf27679618b88c2adad50ed008d40bf5fe631a7b3718e766e547d203253bec6a", // _otherStoresMerkleHash
+          "0xcf27679618b88c2adad50ed008d40bf5fe631a7b3718e766e547d203253bec6a", // _supplyStoresMerkleHash
           [
             "0x32fa694879095840619f5e49380612bd296ff7e950eafb66ff654d99ca70869e", // subtreeVersionAndChainIdHash
             "0x3dddc70f2fb58681b19a6e7bb5d2361ef0a50370940d249d6290da9f086b99e8", // timeHash
@@ -146,6 +149,7 @@ contract("Bridge", () => {
           "3210", // _blockHeight,
           "0xac0b4d71daabb289e21514b004628c7236fb351cd950f67c93c449c5d06b35d1", // _oracleIAVLStateHash
           "0xcf27679618b88c2adad50ed008d40bf5fe631a7b3718e766e547d203253bec6a", // _otherStoresMerkleHash
+          "0xcf27679618b88c2adad50ed008d40bf5fe631a7b3718e766e547d203253bec6a", // _supplyStoresMerkleHash
           [
             "0x32fa694879095840619f5e49380612bd296ff7e950eafb66ff654d99ca70869e", // subtreeVersionAndChainIdHash
             "0x3dddc70f2fb58681b19a6e7bb5d2361ef0a50370940d249d6290da9f086b99e8", // timeHash
@@ -196,6 +200,8 @@ contract("Bridge", () => {
           "49", // _blockHeight
           "0x08011220bd86d5649a5b9218d5b96e009463dc91f7cf9d974f6227eb3a5b6d684db70361180f220800000000000add88", // _data
           "1", // _requestId
+          "0x25ea236f9d0dd2270fe8d9b6b6499de05e7e4a6b12b8a0e6849653cec64c3e61", // _codeHash
+          "0x", // _params
           "15", // _version
           [
             [
@@ -231,6 +237,8 @@ contract("Bridge", () => {
           "55", // _blockHeight
           "0x08011220bd86d5649a5b9218d5b96e009463dc91f7cf9d974f6227eb3a5b6d684db70361180f220800000000000add88", // _data
           "1", // _requestId
+          "0x25ea236f9d0dd2270fe8d9b6b6499de05e7e4a6b12b8a0e6849653cec64c3e61", // _codeHash
+          "0x", // _params
           "15", // _version
           [
             [
@@ -265,6 +273,8 @@ contract("Bridge", () => {
           "55", // _blockHeight
           "0x08011220bd86d5649a5b9218d5b96e009463dc91f7cf9d974f6227eb3a5b6d684db70361180f220800000000000add89", // _data INVALID HERE
           "1", // _requestId
+          "0x25ea236f9d0dd2270fe8d9b6b6499de05e7e4a6b12b8a0e6849653cec64c3e61", // _codeHash
+          "0x", // _params
           "15", // _version
           [
             [
@@ -300,6 +310,8 @@ contract("Bridge", () => {
           "55", // _blockHeight
           "0x08011220bd86d5649a5b9218d5b96e009463dc91f7cf9d974f6227eb3a5b6d684db70361180f220800000000000add88", // _data
           "1", // _requestId
+          "0x25ea236f9d0dd2270fe8d9b6b6499de05e7e4a6b12b8a0e6849653cec64c3e61", // _codeHash
+          "0x", // _params
           "15", // _version
           [
             [
