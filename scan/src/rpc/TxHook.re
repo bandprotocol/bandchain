@@ -37,7 +37,7 @@ module Tx = {
     messages: list(Msg.t),
   };
 
-  let decode_tx = json =>
+  let decodeTx = json =>
     JsonUtils.Decode.{
       blockHeight: json |> field("height", intstr),
       hash: json |> field("txhash", string),
@@ -47,15 +47,15 @@ module Tx = {
       messages: json |> at(["tx", "value", "msg"], list(Msg.decode)),
     };
 
-  let decode_txs = json => JsonUtils.Decode.(json |> field("txs", list(decode_tx)));
+  let decodeTxs = json => JsonUtils.Decode.(json |> field("txs", list(decodeTx)));
 };
 
 let at_hash = tx_hash => {
   let json = Axios.use({j|txs/$tx_hash|j}, ());
-  json |> Belt.Option.map(_, Tx.decode_tx);
+  json |> Belt.Option.map(_, Tx.decodeTx);
 };
 
 let at_height = (height, ~page=1, ~limit=25, ~pollInterval=?, ()) => {
   let json = Axios.use({j|txs?tx.height=$height&page=$page&limit=$limit|j}, ~pollInterval?, ());
-  json |> Belt.Option.map(_, Tx.decode_txs);
+  json |> Belt.Option.map(_, Tx.decodeTxs);
 };
