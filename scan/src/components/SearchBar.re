@@ -28,18 +28,8 @@ module Styles = {
       padding(Spacing.md),
       paddingLeft(`px(36)),
       boxShadows([
-        Shadow.box(
-          ~x=`px(0),
-          ~y=`px(1),
-          ~blur=`px(4),
-          Css.rgba(0, 0, 0, 0.07),
-        ),
-        Shadow.box(
-          ~x=`px(0),
-          ~y=`px(4),
-          ~blur=`px(12),
-          Css.rgba(0, 0, 0, 0.02),
-        ),
+        Shadow.box(~x=`px(0), ~y=`px(1), ~blur=`px(4), Css.rgba(0, 0, 0, 0.07)),
+        Shadow.box(~x=`px(0), ~y=`px(4), ~blur=`px(12), Css.rgba(0, 0, 0, 0.02)),
       ]),
       fontSize(`px(14)),
       outline(`px(1), `none, white),
@@ -77,27 +67,12 @@ module SearchResults = {
         backgroundColor(white),
         borderRadius(`px(4)),
         boxShadows([
-          Shadow.box(
-            ~x=`px(0),
-            ~y=`px(2),
-            ~blur=`px(4),
-            Css.rgba(0, 0, 0, 0.07),
-          ),
-          Shadow.box(
-            ~x=`px(0),
-            ~y=`px(4),
-            ~blur=`px(12),
-            Css.rgba(0, 0, 0, 0.02),
-          ),
+          Shadow.box(~x=`px(0), ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.07)),
+          Shadow.box(~x=`px(0), ~y=`px(4), ~blur=`px(12), Css.rgba(0, 0, 0, 0.02)),
         ]),
       ]);
 
-    let result =
-      style([
-        padding(Spacing.sm),
-        paddingLeft(`px(38)),
-        cursor(`pointer),
-      ]);
+    let result = style([padding(Spacing.sm), paddingLeft(`px(38)), cursor(`pointer)]);
 
     let lastResult =
       style([
@@ -111,8 +86,7 @@ module SearchResults = {
   };
 
   let isValidAddress = a =>
-    a->String.sub(0, min(a->String.length, 2)) == "0x"
-    && a->String.length > 2;
+    a->String.sub(0, min(a->String.length, 2)) == "0x" && a->String.length > 2;
 
   let isValidTx = isValidAddress;
 
@@ -123,45 +97,22 @@ module SearchResults = {
         searchTerm->isValidAddress
           ? <>
               <VSpacing size={`px(-2)} />
-              <Text
-                value="ADDRESS"
-                size=Text.Xs
-                color=Colors.grayText
-                weight=Text.Semibold
-              />
+              <Text value="ADDRESS" size=Text.Xs color=Colors.grayText weight=Text.Semibold />
               <VSpacing size=Spacing.xs />
-              <Text
-                value={searchTerm ++ "1f2bce"}
-                weight=Text.Bold
-                size=Text.Lg
-                block=true
-              />
+              <Text value={searchTerm ++ "1f2bce"} weight=Text.Bold size=Text.Lg block=true />
               <VSpacing size=Spacing.sm />
             </>
           : React.null,
         searchTerm->isValidTx
           ? <>
               <VSpacing size={`px(-2)} />
-              <Text
-                value="TRANSACTION"
-                size=Text.Xs
-                color=Colors.grayText
-                weight=Text.Semibold
-              />
+              <Text value="TRANSACTION" size=Text.Xs color=Colors.grayText weight=Text.Semibold />
               <VSpacing size=Spacing.xs />
-              <Text
-                value={searchTerm ++ "dd92b"}
-                weight=Text.Bold
-                size=Text.Lg
-                block=true
-              />
+              <Text value={searchTerm ++ "dd92b"} weight=Text.Bold size=Text.Lg block=true />
               <VSpacing size=Spacing.sm />
             </>
           : React.null,
-        <>
-          <Text value="Show all results for " />
-          <Text value=searchTerm weight=Text.Bold />
-        </>,
+        <> <Text value="Show all results for " /> <Text value=searchTerm weight=Text.Bold /> </>,
       |]
       ->Belt.Array.keep(r => r != React.null);
 
@@ -171,12 +122,10 @@ module SearchResults = {
            <div
              onMouseOver={_evt => onHover(i)}
              key={string_of_int(i)}
-             className={Cn.make([
+             className={Css.merge([
                Styles.result,
-               Styles.lastResult->Cn.ifTrue(i == results->Array.length - 1),
-               Styles.resultFocused->Cn.ifTrue(
-                 i == focusIndex mod results->Array.length,
-               ),
+               i == results->Array.length - 1 ? Styles.lastResult : "",
+               i == focusIndex mod results->Array.length ? Styles.resultFocused : "",
              ])}>
              result
            </div>
@@ -225,10 +174,7 @@ let reducer = state =>
     }
   | StartTyping => {...state, resultState: ShowAndFocus(0)}
   | StopTyping => {...state, resultState: Hidden}
-  | HoverResultAt(resultIndex) => {
-      ...state,
-      resultState: ShowAndFocus(resultIndex),
-    };
+  | HoverResultAt(resultIndex) => {...state, resultState: ShowAndFocus(resultIndex)};
 
 [@react.component]
 let make = () => {
@@ -240,9 +186,7 @@ let make = () => {
     <input
       onFocus={_evt => dispatch(StartTyping)}
       onBlur={_evt => dispatch(StopTyping)}
-      onChange={evt =>
-        dispatch(ChangeSearchTerm(ReactEvent.Form.target(evt)##value))
-      }
+      onChange={evt => dispatch(ChangeSearchTerm(ReactEvent.Form.target(evt)##value))}
       onKeyDown={event =>
         switch (ReactEvent.Keyboard.key(event)) {
         | "ArrowUp" =>
@@ -260,11 +204,7 @@ let make = () => {
     />
     {switch (resultState) {
      | ShowAndFocus(focusIndex) when searchTerm->String.length > 0 =>
-       <SearchResults
-         searchTerm
-         focusIndex
-         onHover={idx => dispatch(HoverResultAt(idx))}
-       />
+       <SearchResults searchTerm focusIndex onHover={idx => dispatch(HoverResultAt(idx))} />
      | ShowAndFocus(_)
      | Hidden => React.null
      }}
