@@ -1,6 +1,3 @@
-[@bs.val] external require: string => string = "";
-let searchIconSrc = require("../searchIcon.png");
-
 module Styles = {
   open Css;
 
@@ -182,7 +179,7 @@ let make = () => {
     React.useReducer(reducer, {searchTerm: "", resultState: Hidden});
 
   <div className=Styles.container>
-    <img src=searchIconSrc className=Styles.searchIcon />
+    <img src=Images.searchIcon className=Styles.searchIcon />
     <input
       onFocus={_evt => dispatch(StartTyping)}
       onBlur={_evt => dispatch(StopTyping)}

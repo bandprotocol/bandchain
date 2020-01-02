@@ -1,7 +1,3 @@
-[@bs.val] external require: string => string = "";
-let dataRequestSrc = require("../dataRequest.png");
-let newScriptSrc = require("../newScript.png");
-
 type txType =
   | DataRequest(string)
   | NewScript(string);
@@ -76,8 +72,8 @@ let txSource =
 
 let txIcon =
   fun
-  | DataRequest(_) => dataRequestSrc
-  | NewScript(_) => newScriptSrc;
+  | DataRequest(_) => Images.dataRequest
+  | NewScript(_) => Images.newScript;
 
 let renderDataType = txType =>
   <>
