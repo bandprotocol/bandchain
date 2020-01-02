@@ -1,14 +1,14 @@
 module Msg = {
   module OracleReport = {
     type t = {
-      request_id: int,
+      requestId: int,
       data: string,
       validator: string,
     };
 
     let decode = json =>
       JsonUtils.Decode.{
-        request_id: json |> field("requestID", intstr),
+        requestId: json |> field("requestID", intstr),
         data: json |> field("data", string),
         validator: json |> field("validator", string),
       };
@@ -29,21 +29,21 @@ module Msg = {
 
 module Tx = {
   type t = {
-    block_height: int,
+    blockHeight: int,
     hash: string,
     timestamp: MomentRe.Moment.t,
-    gas_wanted: int,
-    gas_used: int,
+    gasWanted: int,
+    gasUsed: int,
     messages: list(Msg.t),
   };
 
   let decode_tx = json =>
     JsonUtils.Decode.{
-      block_height: json |> field("height", intstr),
+      blockHeight: json |> field("height", intstr),
       hash: json |> field("txhash", string),
       timestamp: json |> field("timestamp", moment),
-      gas_wanted: json |> field("gas_wanted", intstr),
-      gas_used: json |> field("gas_used", intstr),
+      gasWanted: json |> field("gas_wanted", intstr),
+      gasUsed: json |> field("gas_used", intstr),
       messages: json |> at(["tx", "value", "msg"], list(Msg.decode)),
     };
 
