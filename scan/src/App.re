@@ -1,15 +1,8 @@
-[@bs.val] external require: string => string = "";
-let logoSrc = require("./bandlogo.png");
-
 module Styles = {
   open Css;
 
   let container =
-    style([
-      width(`percent(100.)),
-      height(`percent(100.)),
-      position(`relative),
-    ]);
+    style([width(`percent(100.)), height(`percent(100.)), position(`relative)]);
 
   let innerContainer =
     style([
@@ -41,12 +34,7 @@ module Styles = {
       display(`flex),
       borderRadius(`px(10)),
       backgroundColor(Colors.pinkLight),
-      padding4(
-        ~top=`px(0),
-        ~bottom=`px(0),
-        ~left=Spacing.sm,
-        ~right=Spacing.sm,
-      ),
+      padding4(~top=`px(0), ~bottom=`px(0), ~left=Spacing.sm, ~right=Spacing.sm),
       height(`px(20)),
       justifyContent(`center),
       alignItems(`center),
@@ -57,11 +45,7 @@ module Styles = {
   let uFlex = style([display(`flex), flexDirection(`row)]);
 
   let highlightsContainer =
-    style([
-      width(`percent(100.)),
-      paddingTop(`px(40)),
-      paddingBottom(Spacing.xl),
-    ]);
+    style([width(`percent(100.)), paddingTop(`px(40)), paddingBottom(Spacing.xl)]);
 
   let section = style([paddingTop(`px(48)), width(`percent(100.))]);
 
@@ -100,9 +84,7 @@ module Highlights = {
   [@react.component]
   let make = (~label, ~value, ~valuePrefixFunc=?, ~extra, ~extraSuffixFunc=?) => {
     <div className=Styles.highlights>
-      <div>
-        <Text value=label size=Text.Sm weight=Text.Bold color=Colors.purple />
-      </div>
+      <div> <Text value=label size=Text.Sm weight=Text.Bold color=Colors.purple /> </div>
       <div className={Css.style([Css.marginTop(Spacing.sm)])}>
         {valuePrefixFunc->map(v => v())->getWithDefault(React.string(""))}
         <Text value size=Text.Xxl weight=Text.Bold />
@@ -120,9 +102,7 @@ let make = () => {
   <div className=Styles.container>
     <div className=Styles.navContainer>
       <Row>
-        <Col size=1.>
-          <Text color=Colors.grayText value="Made with <3 by Band Protocol" />
-        </Col>
+        <Col size=1.> <Text color=Colors.grayText value="Made with <3 by Band Protocol" /> </Col>
         <Col>
           <Row justify=Row.Right>
             {[
@@ -153,12 +133,7 @@ let make = () => {
             <div className=Styles.uFlex>
               <Text value="D3N" size=Text.Xxl weight=Text.Bold nowrap=true />
               <div className=Styles.version>
-                <Text
-                  value="v1.0 TESTNET"
-                  size=Text.Sm
-                  color=Colors.pink
-                  nowrap=true
-                />
+                <Text value="v1.0 TESTNET" size=Text.Sm color=Colors.pink nowrap=true />
               </div>
             </div>
             <Text value="Data Request Explorer" nowrap=true />
@@ -173,41 +148,26 @@ let make = () => {
               label="BAND PRICE"
               value="$0.642"
               extra="@0.012 BTC"
-              extraSuffixFunc={() =>
-                <Text value="(+1.23%)" size=Text.Sm color=Colors.green />
-              }
+              extraSuffixFunc={() => <Text value="(+1.23%)" size=Text.Sm color=Colors.green />}
             />
           </Col>
           <Col size=3.>
-            <Highlights
-              label="MARKET CAP"
-              value="$8,428,380.55"
-              extra="12,356.012 BTC"
-            />
+            <Highlights label="MARKET CAP" value="$8,428,380.55" extra="12,356.012 BTC" />
           </Col>
           <HSpacing size=Spacing.xl />
-          <Col> <img src=logoSrc className=Styles.logo /> </Col>
+          <Col> <img src=Images.bandLogo className=Styles.logo /> </Col>
           <Col size=3.>
             <Highlights
               label="LATEST BLOCK"
               valuePrefixFunc={() =>
-                <Text
-                  value="# "
-                  size=Text.Xxl
-                  weight=Text.Bold
-                  color=Colors.pink
-                />
+                <Text value="# " size=Text.Xxl weight=Text.Bold color=Colors.pink />
               }
               value="472,395"
               extra="7 seconds ago"
             />
           </Col>
           <Col>
-            <Highlights
-              label="ACTIVE VALIDATORS"
-              value="4 Nodes"
-              extra="431,324.98 BAND Bonded"
-            />
+            <Highlights label="ACTIVE VALIDATORS" value="4 Nodes" extra="431,324.98 BAND Bonded" />
           </Col>
         </Row>
         <VSpacing size=Spacing.xl />
@@ -217,12 +177,7 @@ let make = () => {
           <Row alignItems=`initial>
             <Col size=1.>
               <VSpacing size=Spacing.md />
-              <Text
-                value="Latest Transactions"
-                size=Text.Xl
-                weight=Text.Bold
-                block=true
-              />
+              <Text value="Latest Transactions" size=Text.Xl weight=Text.Bold block=true />
               <VSpacing size=Spacing.lg />
               {Transaction.renderHeader()}
               <Transaction
@@ -232,11 +187,7 @@ let make = () => {
                 timestamp="2 days ago"
               />
               <Transaction
-                type_={
-                  Transaction.NewScript(
-                    "Anime Episodes Ranking - WINTER 2020",
-                  )
-                }
+                type_={Transaction.NewScript("Anime Episodes Ranking - WINTER 2020")}
                 hash="0xd83ab82c9f838391283"
                 fee="0.10 BAND"
                 timestamp="3 days ago"
@@ -270,12 +221,7 @@ let make = () => {
             <HSpacing size=Spacing.lg />
             <Col>
               <VSpacing size=Spacing.md />
-              <Text
-                value="Latest Blocks"
-                size=Text.Xl
-                weight=Text.Bold
-                block=true
-              />
+              <Text value="Latest Blocks" size=Text.Xl weight=Text.Bold block=true />
               <VSpacing size=Spacing.md />
               <LatestBlocks
                 blocks=[
