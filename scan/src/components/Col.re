@@ -6,7 +6,7 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~size=?, ~nogrow=?, ~children) => {
+let make = (~size=?, ~children) => {
   <div className={Css.merge([Styles.col, size->Belt.Option.mapWithDefault("", Styles.colSize)])}>
     children
   </div>;

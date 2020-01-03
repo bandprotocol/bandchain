@@ -5,7 +5,6 @@ type justify =
 
 module Styles = {
   open Css;
-  open Belt.Option;
 
   let row =
     style([
@@ -21,7 +20,7 @@ module Styles = {
     ]);
 
   let justify =
-    mapWithDefault(
+    Belt.Option.mapWithDefault(
       _,
       style([justifyContent(`normal)]),
       fun
