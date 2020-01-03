@@ -1,3 +1,5 @@
+let red = Css.hex("D13838");
+
 let pink = Css.hex("D087B2");
 let pinkLight = Css.hex("FAE8F2");
 
