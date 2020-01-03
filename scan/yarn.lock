@@ -1274,6 +1274,11 @@ bs-css@^11.0.0:
   dependencies:
     emotion "^10.0.7"
 
+bs-let@^0.1.11:
+  version "0.1.11"
+  resolved "https://registry.yarnpkg.com/bs-let/-/bs-let-0.1.11.tgz#159d0194c890be29d47d54db6f015c881e3269db"
+  integrity sha512-Zp5wMGEmdTyabiLhNvt1rUQQ5zL2T5z6uj4v6WEIU+K+tseljqrpEz9Dlp5YbF1uePVsXeatmkkhb5xKtvEOPw==
+
 bs-moment@^0.4.5:
   version "0.4.5"
   resolved "https://registry.yarnpkg.com/bs-moment/-/bs-moment-0.4.5.tgz#3f84fed55c2a70d25b0b6025e4e8d821fcdd4dc8"

@@ -23,5 +23,5 @@
     "bs-css"
   ],
   "refmt": 3,
-  "ppx-flags": []
+  "ppx-flags": ["bs-let/ppx"]
 }

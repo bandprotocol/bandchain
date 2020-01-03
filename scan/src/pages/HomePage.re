@@ -67,7 +67,7 @@ let make = () => {
     </Row>
     <VSpacing size=Spacing.xl />
     <VSpacing size=Spacing.lg />
-    <DataScriptsHighlights />
+    // <DataScriptsHighlights />
     <div className=Styles.section>
       <Row alignItems=`initial>
         <Col size=1.>
