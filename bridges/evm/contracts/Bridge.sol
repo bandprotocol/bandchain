@@ -91,7 +91,7 @@ contract Bridge {
     require(validSignatureCount*3 > validatorCount*2, "INSUFFICIENT_VALIDATOR_SIGNATURES");
     oracleStates[_blockHeight] = _oracleIAVLStateHash;
   }
-  struct VerifyOracleDataLocalVariable {
+  struct VerifyOracleDataLocalVariables {
     bytes encodedVarint;
     bytes32 dataHash;
   }
@@ -118,20 +118,20 @@ contract Bridge {
     bytes32 oracleStateRoot = oracleStates[_blockHeight];
     require(oracleStateRoot != bytes32(uint256(0)), "NO_ORACLE_ROOT_STATE_DATA");
     // Computes the hash of leaf node for iAVL oracle tree.
-    VerifyOracleDataLocalVariable memory _var;
-    _var.encodedVarint = Utils.encodeVarintSigned(_version);
-    _var.dataHash = sha256(_data);
+    VerifyOracleDataLocalVariables memory vars;
+    vars.encodedVarint = Utils.encodeVarintSigned(_version);
+    vars.dataHash = sha256(_data);
     bytes32 currentMerkleHash = sha256(abi.encodePacked(
       uint8(0),  // Height of tree (only leaf node) is 0 (signed-varint encode)
       uint8(2),  // Size of subtree is 1 (signed-varint encode)
-      _var.encodedVarint,
-      uint8(41 + _params.length),  // Size of data key (1-byte constant 0x01 + 8-byte request ID + 32-byte codeHash + lenght of params)
+      vars.encodedVarint,
+      uint8(41 + _params.length),  // Size of data key (1-byte constant 0x01 + 8-byte request ID + 32-byte codeHash + length of params)
       uint8(255),  // Constant 0xff prefix data request info storage key
       _requestId,
       _codeHash,
       _params,
       uint8(32),  // Size of data hash
-      _var.dataHash
+      vars.dataHash
     ));
     // Goes step-by-step computing hash of parent nodes until reaching root node.
     for (uint256 idx = 0; idx < _merklePaths.length; ++idx) {
