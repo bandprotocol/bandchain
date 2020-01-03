@@ -10,6 +10,7 @@
     "axios-hook": "^0.0.5",
     "axios-hooks": "^1.9.0",
     "bs-css": "^11.0.0",
+    "bs-let": "^0.1.11",
     "bs-moment": "^0.4.5",
     "moment": "^2.24.0",
     "react": "^16.8.0-0",
