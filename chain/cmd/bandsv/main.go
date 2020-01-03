@@ -36,8 +36,8 @@ type OracleRequest struct {
 }
 
 type OracleRequestResp struct {
-	RequestId uint64 `json:"id"`
-	CodeHash  []byte `json:"codeHash"`
+	RequestId uint64       `json:"id"`
+	CodeHash  cmn.HexBytes `json:"codeHash"`
 }
 
 type OracleInfoResp struct {
@@ -46,43 +46,44 @@ type OracleInfoResp struct {
 }
 
 type IAVLMerklePath struct {
-	SubtreeHeight  uint8  `json:"subtreeHeight"`
-	SubtreeSize    uint64 `json:"subtreeSize"`
-	SubtreeVersion uint64 `json:"subtreeVersion"`
-	IsDataOnRight  bool   `json:"isDataOnRight"`
-	SiblingHash    []byte `json:"siblingHash"`
+	SubtreeHeight  uint8        `json:"subtreeHeight"`
+	SubtreeSize    uint64       `json:"subtreeSize"`
+	SubtreeVersion uint64       `json:"subtreeVersion"`
+	IsDataOnRight  bool         `json:"isDataOnRight"`
+	SiblingHash    cmn.HexBytes `json:"siblingHash"`
 }
 
 type BlockHeaderMerkleParts struct {
-	VersionAndChainIdHash       []byte `json:"versionAndChainIdHash"`
-	TimeHash                    []byte `json:"timeHash"`
-	TxCountAndLastBlockInfoHash []byte `json:"txCountAndLastBlockInfoHash"`
-	ConsensusDataHash           []byte `json:"consensusDataHash"`
-	LastResultsHash             []byte `json:"lastResultsHash"`
-	EvidenceAndProposerHash     []byte `json:"evidenceAndProposerHash"`
+	VersionAndChainIdHash       cmn.HexBytes `json:"versionAndChainIdHash"`
+	TimeHash                    cmn.HexBytes `json:"timeHash"`
+	TxCountAndLastBlockInfoHash cmn.HexBytes `json:"txCountAndLastBlockInfoHash"`
+	ConsensusDataHash           cmn.HexBytes `json:"consensusDataHash"`
+	LastResultsHash             cmn.HexBytes `json:"lastResultsHash"`
+	EvidenceAndProposerHash     cmn.HexBytes `json:"evidenceAndProposerHash"`
 }
 
 type BlockRelayProof struct {
-	OracleIAVLStateHash    []byte                 `json:"oracleIAVLStateHash"`
-	OtherStoresMerkleHash  [][]byte               `json:"otherStoresMerkleHash"`
+	OracleIAVLStateHash    cmn.HexBytes           `json:"oracleIAVLStateHash"`
+	OtherStoresMerkleHash  cmn.HexBytes           `json:"otherStoresMerkleHash"`
+	SupplyStoresMerkleHash cmn.HexBytes           `json:"supplyStoresMerkleHash"`
 	BlockHeaderMerkleParts BlockHeaderMerkleParts `json:"blockHeaderMerkleParts"`
-	SignedDataPrefix       []byte                 `json:"signedDataPrefix"`
+	SignedDataPrefix       cmn.HexBytes           `json:"signedDataPrefix"`
 	Signatures             []TMSignature          `json:"signatures"`
 }
 
 type OracleDataProof struct {
 	Version     uint64           `json:"version"`
 	RequestId   uint64           `json:"requestId"`
-	CodeHash    []byte           `json:"codeHash"`
-	Params      []byte           `json:"params"`
-	Data        []byte           `json:"data"`
+	CodeHash    cmn.HexBytes     `json:"codeHash"`
+	Params      cmn.HexBytes     `json:"params"`
+	Data        cmn.HexBytes     `json:"data"`
 	MerklePaths []IAVLMerklePath `json:"merklePaths"`
 }
 type TMSignature struct {
-	R                []byte `json:"r"`
-	S                []byte `json:"s"`
-	V                uint8  `json:"v"`
-	SignedDataSuffix []byte `json:"signedDataSuffix"`
+	R                cmn.HexBytes `json:"r"`
+	S                cmn.HexBytes `json:"s"`
+	V                uint8        `json:"v"`
+	SignedDataSuffix cmn.HexBytes `json:"signedDataSuffix"`
 }
 
 type Proof struct {
@@ -240,7 +241,7 @@ func GetBlockRelayProof(blockId uint64) (BlockRelayProof, error) {
 	return bp, nil
 }
 
-func MakeOtherStoresMerkleHash(mspo rootmulti.MultiStoreProofOp) ([][]byte, []byte) {
+func MakeOtherStoresMerkleHash(mspo rootmulti.MultiStoreProofOp) (cmn.HexBytes, cmn.HexBytes, cmn.HexBytes) {
 	var zoracleHash []byte
 	m := map[string][]byte{}
 	for _, si := range mspo.Proof.StoreInfos {
@@ -311,7 +312,7 @@ func MakeOtherStoresMerkleHash(mspo rootmulti.MultiStoreProofOp) ([][]byte, []by
 
 	h8 := tmhash.Sum(append([]byte{1}, append(h6, h7...)...))
 
-	return [][]byte{h5, h8}, zoracleHash
+	return h5, h8, zoracleHash
 }
 
 // TODO
@@ -427,8 +428,7 @@ func handleGetRequest(c *gin.Context) {
 		return
 	}
 
-	key := zoracle.RequestStoreKey(requestId)
-	// key := zoracle.ResultStoreKey(requestId, rwr.CodeHash, rwr.Params)
+	key := zoracle.ResultStoreKey(requestId, rwr.CodeHash, rwr.Params)
 
 	resp, err := rpcClient.ABCIQueryWithOptions(
 		"/store/zoracle/key",
@@ -509,7 +509,7 @@ func handleGetRequest(c *gin.Context) {
 		return
 	}
 
-	osmh, oiavlsh := MakeOtherStoresMerkleHash(opms)
+	ssmh, osmh, oiavlsh := MakeOtherStoresMerkleHash(opms)
 	var brp BlockRelayProof
 	for i := 0; i < 50; i++ {
 		brp, err = GetBlockRelayProof(height)
@@ -520,6 +520,7 @@ func handleGetRequest(c *gin.Context) {
 		}
 	}
 	brp.OtherStoresMerkleHash = osmh
+	brp.SupplyStoresMerkleHash = ssmh
 	brp.OracleIAVLStateHash = oiavlsh
 
 	c.JSON(200, Proof{
