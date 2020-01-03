@@ -59,3 +59,8 @@ let at_height = (height, ~page=1, ~limit=25, ~pollInterval=?, ()) => {
   let json = Axios.use({j|txs?tx.height=$height&page=$page&limit=$limit|j}, ~pollInterval?, ());
   json |> Belt.Option.map(_, Tx.decodeTxs);
 };
+
+let latest = (~page=1, ~limit=10, ~pollInterval=?, ()) => {
+  let json = Axios.use({j|d3n/txs/latest?page=$page&limit=$limit|j}, ~pollInterval?, ());
+  json |> Belt.Option.map(_, Tx.decodeTxs);
+};
