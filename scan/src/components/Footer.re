@@ -119,8 +119,7 @@ let make = () => {
         {footerData->Belt_Array.map(((header, size, links)) =>
            <Col size>
              {renderSubHeader(header)}
-             {links->Belt.Array.map(((url, text)) => {renderCommonLink(url, text)})
-              |> React.array}
+             {links->Belt.Array.map(((url, text)) => renderCommonLink(url, text)) |> React.array}
            </Col>
          )
          |> React.array}
