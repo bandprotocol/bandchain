@@ -30,26 +30,6 @@ module Styles = {
 
   let uFlex = style([display(`flex), flexDirection(`row)]);
 
-  let bg =
-    style([
-      width(`percent(100.)),
-      height(`px(300)),
-      left(`px(0)),
-      bottom(`px(0)),
-      position(`relative),
-      background(hex("F6F3FA")),
-      before([
-        position(`absolute),
-        contentRule(""),
-        background(hex("F6F3FA")),
-        width(`percent(100.)),
-        height(`px(300)),
-        transform(`skewY(`deg(6.))),
-        zIndex(-1),
-        top(`px(-150)),
-      ]),
-    ]);
-
   let logo = style([width(`px(35))]);
 };
 
@@ -75,6 +55,6 @@ let make = () => {
       </div>
       <HomePage />
     </div>
-    <div className=Styles.bg />
+    <Footer />
   </div>;
 };
