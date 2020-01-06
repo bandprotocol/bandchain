@@ -7,16 +7,16 @@ module Highlights = {
   };
 
   [@react.component]
-  let make = (~label, ~value, ~valuePrefixFunc=?, ~extra, ~extraSuffixFunc=?) => {
+  let make = (~label, ~value, ~valuePrefix=?, ~extra, ~extraSuffix=?) => {
     <div className=Styles.highlights>
       <div> <Text value=label size=Text.Sm weight=Text.Bold color=Colors.purple /> </div>
       <div className={Css.style([Css.marginTop(Spacing.sm)])}>
-        {valuePrefixFunc->map(v => v())->getWithDefault(React.string(""))}
+        {valuePrefix->getWithDefault(React.string(""))}
         <Text value size=Text.Xxl weight=Text.Bold />
       </div>
       <div>
         <Text value=extra size=Text.Sm />
-        {extraSuffixFunc->map(v => v())->getWithDefault(React.string(""))}
+        {extraSuffix->getWithDefault(React.string(""))}
       </div>
     </div>;
   };
@@ -34,7 +34,7 @@ let make = () => {
             label="BAND PRICE"
             value={"$" ++ info.financial.usdPrice->Format.fPretty}
             extra={"@" ++ info.financial.btcPrice->Format.fPretty ++ " BTC "}
-            extraSuffixFunc={() =>
+            extraSuffix={
               <Text
                 value={"(" ++ info.financial.usd24HrChange->Format.fPercent ++ ")"}
                 size=Text.Sm
@@ -53,9 +53,7 @@ let make = () => {
         <Col size=1.>
           <Highlights
             label="LATEST BLOCK"
-            valuePrefixFunc={() =>
-              <Text value="# " size=Text.Xxl weight=Text.Bold color=Colors.pink />
-            }
+            valuePrefix={<Text value="# " size=Text.Xxl weight=Text.Bold color=Colors.pink />}
             value={info.latestBlock.height->Format.iPretty}
             extra="7 seconds ago"
           />
