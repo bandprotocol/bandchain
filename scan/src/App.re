@@ -60,8 +60,8 @@ let make = () => {
     <div className=Styles.innerContainer>
       <div className=Styles.mainBar>
         <Row>
-          <Col size=1.0> <img src=Images.bandLogo className=Styles.logo /> </Col>
-          <Col size=4.0>
+          <Col size=1.> <img src=Images.bandLogo className=Styles.logo /> </Col>
+          <Col size=4.>
             <div className=Styles.uFlex>
               <Text value="D3N" size=Text.Xxl weight=Text.Bold nowrap=true />
               <div className=Styles.version>
