@@ -67,9 +67,9 @@ let footerData = [|
     "SOCIAL LINKS",
     0.5,
     [|
-      ("https://twitter.com", "Twitter"),
-      ("https://telegram.org", "Telegram"),
-      ("https://medium.com", "Medium"),
+      ("https://twitter.com/bandprotocol", "Twitter"),
+      ("https://t.me/bandprotocol", "Telegram"),
+      ("https://medium.com/bandprotocol", "Medium"),
     |],
   ),
 |];
