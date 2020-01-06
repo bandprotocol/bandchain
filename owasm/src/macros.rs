@@ -14,10 +14,13 @@
 /// use owasm::decl_data;
 /// use owasm::ext::crypto::{coingecko, cryptocompare};
 ///
+/// pub struct Parameter {
+///     symbol: String
+/// }
 /// decl_data! {
 ///     pub struct Data {
-///         pub cgk: f32 = coingecko::Price::new("bitcoin"),
-///         pub ccc: f32 = cryptocompare::Price::new(),
+///         pub coin_gecko: f32 = |params: &Parameter| coingecko::Price::new(params.symbol.clone()),
+///         pub crypto_compare: f32 = |params: &Parameter| cryptocompare::Price::new(),
 ///     }
 /// }
 /// ```
@@ -34,18 +37,18 @@ macro_rules! decl_data {
         }
 
         impl $data_name {
-            pub fn __input() -> Vec<ShellCmd> {
-                vec![ $($field_howto.as_cmd(),)* ]
+            pub fn __input(params: &Parameter) -> Vec<ShellCmd> {
+                vec![ $($field_howto(&params).as_cmd(),)* ]
             }
 
-            pub fn __output(mut output: Vec<String>) -> Option<$data_name> {
+            pub fn __output(params: &Parameter, mut output: Vec<String>) -> Option<$data_name> {
                 Some($data_name {
-                    $($field_name : $field_howto.from_cmd_output(output.remove(0))?,)*
+                    $($field_name : $field_howto(&params).from_cmd_output(output.remove(0))?,)*
                 })
             }
 
-            pub fn build_from_local_env() -> Option< $data_name > {
-                Self::__output(execute_with_local_env(Self::__input()))
+            pub fn build_from_local_env(params: &Parameter) -> Option<$data_name> {
+                Self::__output(params, execute_with_local_env(Self::__input(params)))
             }
         }
 

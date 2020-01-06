@@ -33,7 +33,7 @@ func main() {
 
 	tx := cmtx.NewTxSender(priv)
 
-	file, err := os.Open("../../wasm/res/awesome_oracle_bg.wasm")
+	file, err := os.Open("../../wasm/res/bin_bg.wasm")
 	if err != nil {
 		panic(err)
 	}
@@ -57,7 +57,15 @@ func main() {
 	// Send transaction to store code first (commend it if already stored code)
 	fmt.Println(tx.SendTransaction(zoracle.NewMsgStoreCode(bytes, tx.Sender()), flags.BroadcastBlock))
 
-	codeHash, _ := hex.DecodeString("0874ee3e5aba7ae0eb8cb43bfebed358826d111cece0ef0f804e99eea9264060")
+	codeHash, _ := hex.DecodeString("bf541d5067d63f4d3a89ff4d56f15b8266e264e28e55d8b49761116473b51d47")
+
+	// BTC parameter
+	params, _ := hex.DecodeString("0000000000000007626974636f696e0000000000000003425443")
 	// Send request by code hash
-	fmt.Println(tx.SendTransaction(zoracle.NewMsgRequest(codeHash, []byte("params"), 4, tx.Sender()), flags.BroadcastSync))
+	fmt.Println(tx.SendTransaction(zoracle.NewMsgRequest(codeHash, params, 4, tx.Sender()), flags.BroadcastBlock))
+
+	// ETH parameter
+	params, _ = hex.DecodeString("0000000000000008657468657265756d0000000000000003455448")
+	// Send request by same code hash with new parameter
+	fmt.Println(tx.SendTransaction(zoracle.NewMsgRequest(codeHash, params, 4, tx.Sender()), flags.BroadcastBlock))
 }

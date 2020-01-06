@@ -75,29 +75,41 @@ func parseOutput(instance wasm.Instance, ptr int32) ([]byte, error) {
 	return res, nil
 }
 
-func Prepare(code []byte) ([]byte, error) {
+func storeParams(instance wasm.Instance, params []byte) (int32, error) {
+	return allocateInner(instance, params)
+}
+
+func Prepare(code []byte, params []byte) ([]byte, error) {
 	instance, err := wasm.NewInstance(code)
 	if err != nil {
 		return nil, err
 	}
 	defer instance.Close()
+	paramsInput, err := storeParams(instance, params)
+	if err != nil {
+		return nil, err
+	}
 	fn := instance.Exports["__prepare"]
 	if fn == nil {
 		return nil, errors.New("__prepare not implemented")
 	}
-	ptr, err := fn()
+	ptr, err := fn(paramsInput)
 	if err != nil {
 		return nil, err
 	}
 	return parseOutput(instance, ptr.ToI32())
 }
 
-func Execute(code []byte, inputs [][]byte) ([]byte, error) {
+func Execute(code []byte, params []byte, inputs [][]byte) ([]byte, error) {
 	instance, err := wasm.NewInstance(code)
 	if err != nil {
 		return nil, err
 	}
 	defer instance.Close()
+	paramsInput, err := storeParams(instance, params)
+	if err != nil {
+		return nil, err
+	}
 	wasmInput, err := allocate(instance, inputs)
 	if err != nil {
 		return nil, err
@@ -106,7 +118,7 @@ func Execute(code []byte, inputs [][]byte) ([]byte, error) {
 	if fn == nil {
 		return nil, errors.New("__execute not implemented")
 	}
-	ptr, err := fn(wasmInput)
+	ptr, err := fn(paramsInput, wasmInput)
 	if err != nil {
 		return nil, err
 	}

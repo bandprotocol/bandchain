@@ -43,7 +43,7 @@ func handleMsgRequest(ctx sdk.Context, keeper Keeper, msg MsgRequest) sdk.Result
 		uint64(ctx.BlockHeight())+msg.ReportPeriod,
 	)
 
-	prepare, err := wasm.Prepare(storedCode.Code)
+	prepare, err := wasm.Prepare(storedCode.Code, msg.Params)
 	if err != nil {
 		return sdk.NewError(types.DefaultCodespace, types.WasmError, err.Error()).Result()
 	}
@@ -168,7 +168,7 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 			continue
 		}
 
-		result, errWasm := wasm.Execute(storedCode.Code, packedData)
+		result, errWasm := wasm.Execute(storedCode.Code, request.Params, packedData)
 		if errWasm == nil {
 			keeper.SetResult(ctx, reqID, request.CodeHash, request.Params, result)
 		}

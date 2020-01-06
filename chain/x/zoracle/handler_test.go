@@ -34,15 +34,15 @@ func setupTestValidator(ctx sdk.Context, keeper Keeper) sdk.ValAddress {
 
 func TestRequestSuccess(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
-	absPath, _ := filepath.Abs("../../wasm/res/test.wasm")
+	absPath, _ := filepath.Abs("../../wasm/res/bin_bg.wasm")
 	code, err := wasm.ReadBytes(absPath)
 	if err != nil {
 		fmt.Println(err)
 	}
 	sender := sdk.AccAddress([]byte("sender"))
 	codeHash := keeper.SetCode(ctx, code, sender)
-
-	msg := types.NewMsgRequest(codeHash, []byte("params"), 5, sender)
+	params, _ := hex.DecodeString("0000000000000007626974636f696e0000000000000003425443")
+	msg := types.NewMsgRequest(codeHash, params, 5, sender)
 	got := handleMsgRequest(ctx, keeper, msg)
 	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
 
@@ -70,7 +70,7 @@ func TestRequestSuccess(t *testing.T) {
 	}
 	preparePair := common.KVPair{
 		Key:   []byte(types.AttributeKeyPrepare),
-		Value: []byte("020000000000000004000000000000006375726c01000000000000004b0000000000000068747470733a2f2f6170692e636f696e6765636b6f2e636f6d2f6170692f76332f73696d706c652f70726963653f6964733d626974636f696e2676735f63757272656e636965733d75736404000000000000006375726c01000000000000003f0000000000000068747470733a2f2f6d696e2d6170692e63727970746f636f6d706172652e636f6d2f646174612f70726963653f6673796d3d425443267473796d733d555344"),
+		Value: []byte("5b7b22636d64223a226375726c222c2261726773223a5b2268747470733a2f2f6170692e636f696e6765636b6f2e636f6d2f6170692f76332f73696d706c652f70726963653f6964733d626974636f696e2676735f63757272656e636965733d757364225d7d2c7b22636d64223a226375726c222c2261726773223a5b2268747470733a2f2f6d696e2d6170692e63727970746f636f6d706172652e636f6d2f646174612f70726963653f6673796d3d425443267473796d733d555344225d7d5d"),
 	}
 	require.Equal(t, codeHashPair, ctx.EventManager().Events()[0].Attributes[1])
 	require.Equal(t, preparePair, ctx.EventManager().Events()[0].Attributes[2])
@@ -81,8 +81,8 @@ func TestRequestInvalidCodeHash(t *testing.T) {
 	sender := sdk.AccAddress([]byte("sender"))
 
 	codeHash, _ := hex.DecodeString("c0dec0dec0dec0dec0dec0dec0dec0dec0dec0dec0dec0dec0dec0dec0dec0de")
-
-	msg := types.NewMsgRequest(codeHash, []byte("params"), 5, sender)
+	params, _ := hex.DecodeString("0000000000000007626974636f696e0000000000000003425443")
+	msg := types.NewMsgRequest(codeHash, params, 5, sender)
 	got := handleMsgRequest(ctx, keeper, msg)
 	require.False(t, got.IsOK(), "expected request is an invalid tx")
 	require.Equal(t, types.CodeInvalidInput, got.Code)
@@ -92,8 +92,8 @@ func TestRequestInvalidWasmCode(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
 	sender := sdk.AccAddress([]byte("sender"))
 	codeHash := keeper.SetCode(ctx, []byte("Fake code"), sender)
-
-	msg := types.NewMsgRequest(codeHash, []byte("params"), 5, sender)
+	params, _ := hex.DecodeString("0000000000000007626974636f696e0000000000000003425443")
+	msg := types.NewMsgRequest(codeHash, params, 5, sender)
 	got := handleMsgRequest(ctx, keeper, msg)
 	require.False(t, got.IsOK(), "expected request is an invalid tx")
 	require.Equal(t, types.WasmError, got.Code)
@@ -173,7 +173,7 @@ func TestOutOfReportPeriod(t *testing.T) {
 
 func TestStoreCodeSuccess(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
-	absPath, _ := filepath.Abs("../../wasm/res/test.wasm")
+	absPath, _ := filepath.Abs("../../wasm/res/bin_bg.wasm")
 	code, err := wasm.ReadBytes(absPath)
 	if err != nil {
 		fmt.Println(err)
@@ -262,7 +262,7 @@ func TestDeleteCodeInvalidOwner(t *testing.T) {
 func TestEndBlock(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
 	ctx = ctx.WithBlockHeight(0)
-	absPath, _ := filepath.Abs("../../wasm/res/test.wasm")
+	absPath, _ := filepath.Abs("../../wasm/res/bin_bg.wasm")
 	code, err := wasm.ReadBytes(absPath)
 	if err != nil {
 		fmt.Println(err)
@@ -270,8 +270,9 @@ func TestEndBlock(t *testing.T) {
 	sender := sdk.AccAddress([]byte("sender"))
 	codeHash := keeper.SetCode(ctx, code, sender)
 
+	params, _ := hex.DecodeString("0000000000000007626974636f696e0000000000000003425443")
 	// set request
-	request := types.NewRequest(codeHash, []byte("params"), 3)
+	request := types.NewRequest(codeHash, params, 3)
 	keeper.SetRequest(ctx, 1, request)
 
 	// set pending
@@ -283,8 +284,8 @@ func TestEndBlock(t *testing.T) {
 	validatorAddress1, _ := sdk.ValAddressFromHex("4aea6cfc5bd14f2308954d544e1dc905268357db")
 	validatorAddress2, _ := sdk.ValAddressFromHex("4bca6cfc5bd14f2308954d544e1dc905268357db")
 
-	data1, _ := hex.DecodeString("02000000000000001b000000000000007b22626974636f696e223a7b22757364223a373436392e34397d7d0f000000000000007b22555344223a373531302e32317d")
-	data2, _ := hex.DecodeString("02000000000000001b000000000000007b22626974636f696e223a7b22757364223a373436392e34397d7d0f000000000000007b22555344223a373532312e38317d")
+	data1, _ := hex.DecodeString("5b227b5c22626974636f696e5c223a7b5c227573645c223a373139342e32357d7d222c227b5c225553445c223a373231342e31327d225d")
+	data2, _ := hex.DecodeString("5b227b5c22626974636f696e5c223a7b5c227573645c223a373139342e32357d7d222c227b5c225553445c223a373231342e31327d225d")
 
 	keeper.SetReport(ctx, 1, validatorAddress1, data1)
 	keeper.SetReport(ctx, 1, validatorAddress2, data2)
@@ -295,7 +296,7 @@ func TestEndBlock(t *testing.T) {
 	gotEndBlock := handleEndBlock(ctx, keeper)
 	require.True(t, gotEndBlock.IsOK(), "expected end block to be ok, got %v", gotEndBlock)
 
-	_, err = keeper.GetResult(ctx, 1, codeHash, []byte("params"))
+	_, err = keeper.GetResult(ctx, 1, codeHash, params)
 	// Result must not found
 	require.NotNil(t, err)
 
@@ -304,7 +305,7 @@ func TestEndBlock(t *testing.T) {
 
 	// blockheight update to 4
 	ctx = ctx.WithBlockHeight(4)
-	resultAfter, _ := hex.DecodeString("00000000000b6edb")
+	resultAfter, _ := hex.DecodeString("00000000000afe22")
 
 	// handle end block
 	gotEndBlock = handleEndBlock(ctx, keeper)
@@ -312,7 +313,7 @@ func TestEndBlock(t *testing.T) {
 
 	request, _ = keeper.GetRequest(ctx, 1)
 
-	result, err := keeper.GetResult(ctx, 1, codeHash, []byte("params"))
+	result, err := keeper.GetResult(ctx, 1, codeHash, params)
 	require.Nil(t, err)
 	require.Equal(t, resultAfter, result)
 
