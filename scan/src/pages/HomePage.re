@@ -5,7 +5,26 @@ module Styles = {
     style([width(`percent(100.)), paddingTop(`px(40)), paddingBottom(Spacing.xl)]);
 
   let section = style([paddingTop(`px(48)), width(`percent(100.))]);
+
+  let topicBar =
+    style([
+      width(`percent(100.)),
+      display(`flex),
+      flexDirection(`row),
+      justifyContent(`spaceBetween),
+    ]);
+
+  let seeAllContainer = style([alignItems(`center), justifyContent(`center), display(`flex)]);
+
+  let rightArrow = style([width(`px(13)), marginLeft(`px(5))]);
 };
+
+/* SEE ALL btn */
+let renderSeeAll = () =>
+  <div className=Styles.seeAllContainer>
+    <Text block=true value="SEE ALL" size=Text.Sm weight=Text.Bold color=Colors.grayText />
+    <img src=Images.rightArrow className=Styles.rightArrow />
+  </div>;
 
 [@react.component]
 let make = () => {
@@ -18,7 +37,10 @@ let make = () => {
       <Row alignItems=`initial>
         <Col size=1.>
           <VSpacing size=Spacing.md />
-          <Text value="Latest Transactions" size=Text.Xl weight=Text.Bold block=true />
+          <div className=Styles.topicBar>
+            <Text value="Latest Transactions" size=Text.Xl weight=Text.Bold block=true />
+            {renderSeeAll()}
+          </div>
           <VSpacing size=Spacing.lg />
           {Transaction.renderHeader()}
           <Transaction
@@ -62,7 +84,10 @@ let make = () => {
         <HSpacing size=Spacing.lg />
         <Col>
           <VSpacing size=Spacing.md />
-          <Text value="Latest Blocks" size=Text.Xl weight=Text.Bold block=true />
+          <div className=Styles.topicBar>
+            <Text value="Latest Blocks" size=Text.Xl weight=Text.Bold block=true />
+            {renderSeeAll()}
+          </div>
           <VSpacing size=Spacing.md />
           <LatestBlocks
             blocks=[
