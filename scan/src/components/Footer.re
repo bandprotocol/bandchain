@@ -5,8 +5,8 @@ module Styles = {
     style([
       width(`percent(100.)),
       height(`px(300)),
-      left(`px(0)),
-      bottom(`px(0)),
+      left(`zero),
+      bottom(`zero),
       position(`relative),
       background(hex("F6F3FA")),
       before([
