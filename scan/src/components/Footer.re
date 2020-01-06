@@ -70,7 +70,7 @@ let make = () => {
               </div>
               <Col size=4.>
                 <div className=Styles.vFlex>
-                  <Text value="POWERED BY" size=Text.Md weight=Text.Regular nowrap=true />
+                  <Text value="POWERED BY" size=Text.Sm weight=Text.Semibold nowrap=true />
                   <Text value="Band Protocol" size=Text.Xxl weight=Text.Bold nowrap=true />
                 </div>
               </Col>
