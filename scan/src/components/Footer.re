@@ -49,7 +49,7 @@ let renderSubHeader = text =>
     <div className=Styles.subHeader>
       <Text value=text size=Text.Md weight=Text.Bold color=Colors.grayText />
     </div>
-    <VSpacing size=Spacing.xl />
+    <VSpacing size=Spacing.lg />
   </>;
 
 let renderCommonLink = (url, text) =>
@@ -76,7 +76,7 @@ let make = () => {
               </Col>
             </Row>
           </div>
-          <VSpacing size=Spacing.xl />
+          <VSpacing size=Spacing.lg />
           <div className=Styles.messageBlock>
             <Text
               value="D3N is a block explorer and an analytic platform for Band Protocol, a decentralized platform for reliable and provably-secure data on blockchain."
