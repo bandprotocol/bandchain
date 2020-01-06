@@ -4,7 +4,7 @@ module Styles = {
   let bg =
     style([
       width(`percent(100.)),
-      height(`px(300)),
+      height(`px(200)),
       left(`zero),
       bottom(`zero),
       position(`relative),
@@ -17,7 +17,7 @@ module Styles = {
         height(`px(300)),
         transform(`skewY(`deg(6.))),
         zIndex(-1),
-        top(`px(-150)),
+        top(`px(-200)),
       ]),
     ]);
 
@@ -43,6 +43,36 @@ module Styles = {
 
   let commonLink = style([marginBottom(Spacing.md), textDecoration(`none), display(`block)]);
 };
+
+let footerData = [|
+  (
+    "D3N Project",
+    1.0, // flex size
+    [|
+      ("https://bandprotocol.com", "Band Protocol Website"),
+      ("https://google.com", "D3N Blockchain"),
+      ("https://metamask.io", "D3N Wallet"),
+    |],
+  ),
+  (
+    "COMMUNITY",
+    1.0,
+    [|
+      ("https://github.com", "Open Source Repositories"),
+      ("https://google.com", "Developer Docs"),
+      ("https://etherscan.com", "Network Status"),
+    |],
+  ),
+  (
+    "SOCIAL LINKS",
+    0.5,
+    [|
+      ("https://twitter.com", "Twitter"),
+      ("https://telegram.org", "Telegram"),
+      ("https://medium.com", "Medium"),
+    |],
+  ),
+|];
 
 let renderSubHeader = text =>
   <>
@@ -86,36 +116,14 @@ let make = () => {
             />
           </div>
         </Col>
-        <Col size=1.>
-          {renderSubHeader("D3N PROJECT")}
-          {[|
-             ("https://bandprotocol.com", "Band Protocol Website"),
-             ("https://google.com", "D3N Blockchain"),
-             ("https://metamask.com", "D3N Wallet"),
-           |]
-           ->Belt.Array.map(((url, text)) => {renderCommonLink(url, text)})
-           |> React.array}
-        </Col>
-        <Col size=1.>
-          {renderSubHeader("COMMUNITY")}
-          {[|
-             ("https://github.com", "Open Source Repositories"),
-             ("https://google.com", "Developer Docs"),
-             ("https://etherscan.com", "Network Status"),
-           |]
-           ->Belt.Array.map(((url, text)) => {renderCommonLink(url, text)})
-           |> React.array}
-        </Col>
-        <Col size=0.5>
-          {renderSubHeader("SOCIAL LINKS")}
-          {[|
-             ("https://twitter.com", "Twitter"),
-             ("https://telegram.org", "Telegram"),
-             ("https://medium.com", "Medium"),
-           |]
-           ->Belt.Array.map(((url, text)) => {renderCommonLink(url, text)})
-           |> React.array}
-        </Col>
+        {footerData->Belt_Array.map(((header, size, links)) =>
+           <Col size>
+             {renderSubHeader(header)}
+             {links->Belt.Array.map(((url, text)) => {renderCommonLink(url, text)})
+              |> React.array}
+           </Col>
+         )
+         |> React.array}
       </Row>
     </div>
   </div>;
