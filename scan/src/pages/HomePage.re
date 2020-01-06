@@ -12,8 +12,8 @@ let make = () => {
   <div className=Styles.highlightsContainer>
     <ChainInfoHighlights />
     <VSpacing size=Spacing.xl />
-    // <VSpacing size=Spacing.lg />
-    // <DataScriptsHighlights />
+    <VSpacing size=Spacing.lg />
+    <DataScriptsHighlights />
     <div className=Styles.section>
       <Row alignItems=`initial>
         <Col size=1.>
