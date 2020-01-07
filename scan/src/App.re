@@ -53,7 +53,17 @@ let make = () => {
         </Row>
         <SearchBar />
       </div>
-      <HomePage />
+      /* route handle */
+      {switch (ReasonReactRouter.useUrl() |> Route.fromUrl) {
+       | HomePage => <HomePage />
+       | ScriptHomePage => <ScriptHomePage />
+       | ScriptIndexPage(codeHash, hashtag) => <ScriptIndexPage codeHash hashtag />
+       | TxHomePage => <TxHomePage />
+       | TxIndexPage(txHash, hashtag) => <TxIndexPage txHash hashtag />
+       | BlockHomePage => <BlockHomePage />
+       | BlockIndexPage(height, hashtag) => <BlockIndexPage height hashtag />
+       | _ => <NotFound />
+       }}
     </div>
     <Footer />
   </div>;
