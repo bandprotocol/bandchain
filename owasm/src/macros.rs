@@ -14,14 +14,16 @@
 /// use owasm::decl_data;
 /// use owasm::ext::crypto::{coingecko, cryptocompare};
 ///
-/// pub struct __Params {
-///     pub symbol_cg: String,
-///     pub symbol_cc: String,
+/// decl_params! {
+///     pub struct Parameter {
+///         pub symbol_cg: String,
+///         pub symbol_cc: String,
+///     }
 /// }
 /// decl_data! {
 ///     pub struct Data {
-///         pub coin_gecko: f32 = |params: &__Params| coingecko::Price::new(&params.symbol_cg),
-///         pub crypto_compare: f32 = |params: &__Params| cryptocompare::Price::new(&params.symbol_cc),
+///         pub coin_gecko: f32 = |params: &Parameter| coingecko::Price::new(&params.symbol_cg),
+///         pub crypto_compare: f32 = |params: &Parameter| cryptocompare::Price::new(&params.symbol_cc),
 ///     }
 /// }
 /// ```
@@ -32,7 +34,7 @@ macro_rules! decl_data {
     }) => {
         use $crate::core::{Oracle, ShellCmd, execute_with_local_env};
 
-        #[derive(Debug)]
+        #[derive(Debug,Serialize)]
         pub struct $data_name {
             $(pub $field_name : $field_type,)*
         }
@@ -52,8 +54,8 @@ macro_rules! decl_data {
                 Self::__output(params, execute_with_local_env(Self::__input(params)))
             }
 
-            pub fn fields() -> Vec<String> {
-                vec![ $(String::from(stringify!($field_name)),)*]
+            pub fn __fields() -> Vec<(String,String)> {
+                vec![ $((String::from(stringify!($field_name)),String::from(stringify!($field_type))),)*]
             }
         }
 
@@ -63,18 +65,22 @@ macro_rules! decl_data {
 
 #[macro_export]
 macro_rules! decl_params {
-    ($(pub $field_name:ident : $field_type:ty,)*) => {
+    (pub struct $struct_name:ident {
+        $(pub $field_name:ident : $field_type:ty,)*
+    }) => {
         use serde::{Deserialize, Serialize};
 
         #[derive(Debug, Serialize, Deserialize)]
-        pub struct __Params {
+        pub struct $struct_name {
             $(pub $field_name : $field_type,)*
         }
 
-        impl __Params {
-            pub fn fields() -> Vec<String> {
-                vec![ $(String::from(stringify!($field_name)),)*]
+        impl $struct_name {
+            pub fn __fields() -> Vec<(String,String)> {
+                vec![ $((String::from(stringify!($field_name)),String::from(stringify!($field_type))),)*]
             }
         }
+
+        pub type __Params = $struct_name;
     };
 }
