@@ -23,7 +23,7 @@ module Highlights = {
 };
 
 [@react.component]
-let make = () => {
+let make = () =>
   {
     let%Opt info = React.useContext(GlobalContext.context);
 
@@ -65,4 +65,3 @@ let make = () => {
     );
   }
   ->Belt.Option.getWithDefault(React.null);
-};

@@ -40,6 +40,7 @@ module Styles = {
 
   let noWrap = style([whiteSpace(`nowrap)]);
   let block = style([display(`block)]);
+  let ellipsis = style([overflow(`hidden), textOverflow(`ellipsis), whiteSpace(`nowrap)]);
 
   let code =
     style([
@@ -50,7 +51,17 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~size=?, ~weight=?, ~nowrap=false, ~color=?, ~block=false, ~code=false, ~value) => {
+let make =
+    (
+      ~size=?,
+      ~weight=?,
+      ~nowrap=false,
+      ~color=?,
+      ~block=false,
+      ~code=false,
+      ~ellipsis=false,
+      ~value,
+    ) => {
   <span
     className={Css.merge([
       Styles.fontSize(size),
@@ -59,6 +70,7 @@ let make = (~size=?, ~weight=?, ~nowrap=false, ~color=?, ~block=false, ~code=fal
       block ? Styles.block : "",
       code ? Styles.code : "",
       color->Belt.Option.mapWithDefault("", c => Css.style([Css.color(c)])),
+      ellipsis ? Styles.ellipsis : "",
     ])}>
     {React.string(value)}
   </span>;
