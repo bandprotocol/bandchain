@@ -1,7 +1,7 @@
 module Styles = {
   open Css;
 
-  let nav = style([paddingLeft(Spacing.md)]);
+  let nav = style([paddingLeft(Spacing.md), cursor(`pointer)]);
 
   let navContainer =
     style([
@@ -23,16 +23,18 @@ let make = () => {
       <Col>
         <Row justify=Row.Right>
           {[
-             "Validators",
-             "Blocks",
-             "Transactions",
-             "Request Scripts",
-             "Data Providers",
-             "OWASM Studio",
+             ("Validators", Route.HomePage),
+             ("Blocks", Route.BlockHomePage),
+             ("Transactions", Route.TxHomePage),
+             ("Request Scripts", Route.ScriptHomePage),
+             ("Data Providers", Route.HomePage),
+             ("OWASM Studio", Route.HomePage),
            ]
-           ->Belt.List.map(v =>
+           ->Belt.List.map(((v, route)) =>
                <Col key=v>
-                 <div className=Styles.nav>
+                 <div
+                   className=Styles.nav
+                   onClick={_ => route |> Route.toString |> ReasonReactRouter.push}>
                    <Text color=Colors.grayText value=v nowrap=true />
                  </div>
                </Col>
