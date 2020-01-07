@@ -10,14 +10,13 @@ type t =
 
 let fromUrl = (url: ReasonReactRouter.url) =>
   switch (url.path, url.hash) {
-  | ([], _) => HomePage
   | (["scripts"], _) => ScriptHomePage
   | (["script", codeHash], hashtag) => ScriptIndexPage(codeHash, hashtag)
   | (["txs"], _) => TxHomePage
   | (["tx", txHash], hashtag) => TxIndexPage(txHash, hashtag)
   | (["blocks"], _) => BlockHomePage
   | (["block", blockHeight], hashtag) => BlockIndexPage(blockHeight, hashtag)
-  | (_, _) => NotFound
+  | (_, _) => HomePage
   };
 
 let toString =
@@ -31,4 +30,5 @@ let toString =
   | BlockHomePage => "/blocks"
   | BlockIndexPage(height, "") => {j|/block/$height|j}
   | BlockIndexPage(height, hashtag) => {j|/block/$height#$hashtag|j}
-  | _ => "/";
+  | HomePage
+  | NotFound => "/";
