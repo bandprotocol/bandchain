@@ -17,6 +17,18 @@ module Styles = {
   let seeAllContainer = style([alignItems(`center), justifyContent(`center), display(`flex)]);
 
   let rightArrow = style([width(`px(13)), marginLeft(`px(5))]);
+
+  let seeMoreContainer =
+    style([
+      width(`percent(100.)),
+      boxShadow(Shadow.box(~x=`px(0), ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
+      backgroundColor(white),
+      display(`flex),
+      justifyContent(`center),
+      alignItems(`center),
+      height(`px(30)),
+      cursor(`pointer),
+    ]);
 };
 
 /* SEE ALL btn */
@@ -79,6 +91,15 @@ let make = () => {
             fee="0.10 BAND"
             timestamp="2 days ago"
           />
+          <div className=Styles.seeMoreContainer>
+            <Text
+              value="SEE MORE"
+              size=Text.Sm
+              weight=Text.Bold
+              block=true
+              color=Colors.grayText
+            />
+          </div>
         </Col>
         <HSpacing size=Spacing.xl />
         <HSpacing size=Spacing.lg />
