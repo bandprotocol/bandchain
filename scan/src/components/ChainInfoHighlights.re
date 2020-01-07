@@ -27,6 +27,9 @@ let make = () => {
   {
     let%Opt info = React.useContext(GlobalContext.context);
 
+    let validators = info.validators;
+    let bandBonded = validators->Belt_List.map(x => x.tokens)->Belt_List.reduce(0.0, (+.));
+
     Some(
       <Row>
         <Col size=1.>
@@ -59,7 +62,11 @@ let make = () => {
           />
         </Col>
         <Col size=1.>
-          <Highlights label="ACTIVE VALIDATORS" value="4 Nodes" extra="431,324.98 BAND Bonded" />
+          <Highlights
+            label="ACTIVE VALIDATORS"
+            value={Belt_List.size(validators)->Format.iPretty ++ " Nodes"}
+            extra={bandBonded->Format.fPretty ++ " BAND Bonded"}
+          />
         </Col>
       </Row>,
     );
