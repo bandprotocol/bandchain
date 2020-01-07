@@ -98,37 +98,37 @@ let make = () => {
             type_={Transaction.DataRequest("ETH/USD Price Feed")}
             hash="0x128f12db1a99dce2937"
             fee="0.10 BAND"
-            timestamp="2 days ago"
+            timestamp={<TimeAgos time={MomentRe.momentWithUnix(1578348371)} />}
           />
           <Transaction
             type_={Transaction.NewScript("Anime Episodes Ranking - WINTER 2020")}
             hash="0xd83ab82c9f838391283"
             fee="0.10 BAND"
-            timestamp="3 days ago"
+            timestamp={<TimeAgos time={MomentRe.momentWithUnix(1578338371)} />}
           />
           <Transaction
             type_={Transaction.DataRequest("ETH/BTC Price Feed")}
             hash="0xc83128273823dce2937"
             fee="0.10 BAND"
-            timestamp="2 days ago"
+            timestamp={<TimeAgos time={MomentRe.momentWithUnix(1578328371)} />}
           />
           <Transaction
             type_={Transaction.DataRequest("ETH/USD Price Feed")}
             hash="0xd293f12db1a99dceabb"
             fee="0.10 BAND"
-            timestamp="2 days ago"
+            timestamp={<TimeAgos time={MomentRe.momentWithUnix(1578318371)} />}
           />
           <Transaction
             type_={Transaction.DataRequest("BTC/USD Price Feed")}
             hash="0x128f12db1a99dce2937"
             fee="0.10 BAND"
-            timestamp="2 days ago"
+            timestamp={<TimeAgos time={MomentRe.momentWithUnix(1578308371)} />}
           />
           <Transaction
             type_={Transaction.NewScript("BTC/USD Price Feed")}
             hash="0xabcdef1234deadbeef2"
             fee="0.10 BAND"
-            timestamp="2 days ago"
+            timestamp={<TimeAgos time={MomentRe.momentWithUnix(1578218371)} />}
           />
           <div className=Styles.seeMoreContainer>
             <Text
