@@ -29,6 +29,38 @@ module Styles = {
       height(`px(30)),
       cursor(`pointer),
     ]);
+
+  let skip = style([marginTop(`px(380))]);
+
+  let bg =
+    style([
+      width(`percent(100.)),
+      zIndex(0),
+      position(`absolute),
+      top(`px(-30)),
+      display(`flex),
+      flexDirection(`row),
+    ]);
+
+  let imgRight = style([marginLeft(`auto), transform(`scaleX(-1.0))]);
+
+  let grayArea =
+    style([
+      display(`flex),
+      alignItems(`center),
+      justifyContent(`center),
+      overflow(`hidden),
+      backgroundColor(`hex("fafafa")),
+      borderBottom(`px(1), `solid, `hex("eeeeee")),
+      borderTop(`px(1), `solid, `hex("eeeeee")),
+      position(`absolute),
+      left(`zero),
+      minHeight(`px(380)),
+      width(`percent(100.)),
+    ]);
+
+  let grayAreaInner =
+    style([position(`absolute), maxWidth(`px(1100)), marginLeft(`auto), marginRight(`auto)]);
 };
 
 /* SEE ALL btn */
@@ -44,7 +76,14 @@ let make = () => {
     <ChainInfoHighlights />
     <VSpacing size=Spacing.xl />
     <VSpacing size=Spacing.lg />
-    <DataScriptsHighlights />
+    <div className=Styles.grayArea>
+      <div className=Styles.bg>
+        <img src=Images.bg />
+        <img src=Images.bg className=Styles.imgRight />
+      </div>
+      <div className=Styles.grayAreaInner> <DataScriptsHighlights /> </div>
+    </div>
+    <div className=Styles.skip />
     <div className=Styles.section>
       <Row alignItems=`initial>
         <Col size=1.>
