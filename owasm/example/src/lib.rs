@@ -68,8 +68,7 @@ pub fn __parameter_fields() -> *const u8 {
 
 #[no_mangle]
 pub fn __parameter_details(params: *const u8) -> *const u8 {
-    let p = __decode_params(params).unwrap();
-    __return(&serde_json::to_string(&p).ok().unwrap().into_bytes())
+    __return(&serde_json::to_string(&__decode_params(params).unwrap()).ok().unwrap().into_bytes())
 }
 
 #[no_mangle]
