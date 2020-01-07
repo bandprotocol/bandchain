@@ -2,11 +2,7 @@ module Styles = {
   open Css;
 
   let container =
-    style([
-      width(`percent(100.)),
-      height(`percent(100.)),
-      position(`relative),
-    ]);
+    style([width(`percent(100.)), height(`percent(100.)), position(`relative)]);
 
   let innerContainer =
     style([
@@ -24,12 +20,7 @@ module Styles = {
       display(`flex),
       borderRadius(`px(10)),
       backgroundColor(Colors.pinkLight),
-      padding4(
-        ~top=`px(0),
-        ~bottom=`px(0),
-        ~left=Spacing.sm,
-        ~right=Spacing.sm,
-      ),
+      padding4(~top=`px(0), ~bottom=`px(0), ~left=Spacing.sm, ~right=Spacing.sm),
       height(`px(20)),
       justifyContent(`center),
       alignItems(`center),
@@ -45,12 +36,7 @@ module Styles = {
   let skipRight = style([marginLeft(`px(30))]);
 
   let socialLink =
-    style([
-      display(`flex),
-      justifyContent(`center),
-      alignItems(`center),
-      width(`px(50)),
-    ]);
+    style([display(`flex), justifyContent(`center), alignItems(`center), width(`px(50))]);
 };
 
 [@react.component]
@@ -60,19 +46,12 @@ let make = () => {
     <div className=Styles.innerContainer>
       <div className=Styles.mainBar>
         <Row>
-          <Col size=1.>
-            <img src=Images.bandLogo className=Styles.logo35 />
-          </Col>
+          <Col size=1.> <img src=Images.bandLogo className=Styles.logo35 /> </Col>
           <Col size=4.>
             <div className=Styles.uFlex>
               <Text value="D3N" size=Text.Xxl weight=Text.Bold nowrap=true />
               <div className=Styles.version>
-                <Text
-                  value="v1.0 TESTNET"
-                  size=Text.Sm
-                  color=Colors.pink
-                  nowrap=true
-                />
+                <Text value="v1.0 TESTNET" size=Text.Sm color=Colors.pink nowrap=true />
               </div>
             </div>
             <Text value="Data Request Explorer" nowrap=true />
@@ -81,10 +60,7 @@ let make = () => {
         <SearchBar />
         <div className=Styles.skipRight />
         <div className=Styles.socialLink>
-          <a
-            href="https://twitter.com/bandprotocol"
-            target="_blank"
-            rel="noopener">
+          <a href="https://twitter.com/bandprotocol" target="_blank" rel="noopener">
             <img src=Images.twitterLogo className=Styles.logo20 />
           </a>
         </div>
