@@ -71,7 +71,19 @@ let make = () => {
           </a>
         </div>
       </div>
-      <HomePage />
+      /* route handle */
+      {switch (ReasonReactRouter.useUrl() |> Route.fromUrl) {
+       | HomePage => <HomePage />
+       | ScriptHomePage => <ScriptHomePage />
+       | ScriptIndexPage(codeHash, hashtag) => <ScriptIndexPage codeHash hashtag />
+       | TxHomePage => <TxHomePage />
+       | TxIndexPage(txHash, hashtag) => <TxIndexPage txHash hashtag />
+       | BlockHomePage => <BlockHomePage />
+       | BlockIndexPage(height, hashtag) => <BlockIndexPage height hashtag />
+       | NotFound =>
+         ReasonReactRouter.replace("/");
+         React.null;
+       }}
     </div>
     <Footer />
   </div>;
