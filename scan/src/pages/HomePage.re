@@ -2,11 +2,7 @@ module Styles = {
   open Css;
 
   let highlightsContainer =
-    style([
-      width(`percent(100.)),
-      paddingTop(`px(40)),
-      paddingBottom(Spacing.xl),
-    ]);
+    style([width(`percent(100.)), paddingTop(`px(40)), paddingBottom(Spacing.xl)]);
 
   let section = style([paddingTop(`px(48)), width(`percent(100.))]);
 
@@ -18,22 +14,14 @@ module Styles = {
       justifyContent(`spaceBetween),
     ]);
 
-  let seeAllContainer =
-    style([alignItems(`center), justifyContent(`center), display(`flex)]);
+  let seeAllContainer = style([alignItems(`center), justifyContent(`center), display(`flex)]);
 
   let rightArrow = style([width(`px(13)), marginLeft(`px(5))]);
 
   let seeMoreContainer =
     style([
       width(`percent(100.)),
-      boxShadow(
-        Shadow.box(
-          ~x=`px(0),
-          ~y=`px(2),
-          ~blur=`px(4),
-          Css.rgba(0, 0, 0, 0.08),
-        ),
-      ),
+      boxShadow(Shadow.box(~x=`px(0), ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
       backgroundColor(white),
       display(`flex),
       justifyContent(`center),
@@ -66,30 +54,19 @@ module Styles = {
       borderBottom(`px(1), `solid, `hex("eeeeee")),
       borderTop(`px(1), `solid, `hex("eeeeee")),
       position(`absolute),
-      left(`px(0)),
+      left(`zero),
       minHeight(`px(380)),
       width(`percent(100.)),
     ]);
 
   let grayAreaInner =
-    style([
-      position(`absolute),
-      maxWidth(`px(1100)),
-      marginLeft(`auto),
-      marginRight(`auto),
-    ]);
+    style([position(`absolute), maxWidth(`px(1100)), marginLeft(`auto), marginRight(`auto)]);
 };
 
 /* SEE ALL btn */
 let renderSeeAll = () =>
   <div className=Styles.seeAllContainer>
-    <Text
-      block=true
-      value="SEE ALL"
-      size=Text.Sm
-      weight=Text.Bold
-      color=Colors.grayText
-    />
+    <Text block=true value="SEE ALL" size=Text.Sm weight=Text.Bold color=Colors.grayText />
     <img src=Images.rightArrow className=Styles.rightArrow />
   </div>;
 
@@ -112,12 +89,7 @@ let make = () => {
         <Col size=1.>
           <VSpacing size=Spacing.md />
           <div className=Styles.topicBar>
-            <Text
-              value="Latest Transactions"
-              size=Text.Xl
-              weight=Text.Bold
-              block=true
-            />
+            <Text value="Latest Transactions" size=Text.Xl weight=Text.Bold block=true />
             {renderSeeAll()}
           </div>
           <VSpacing size=Spacing.lg />
@@ -129,9 +101,7 @@ let make = () => {
             timestamp="2 days ago"
           />
           <Transaction
-            type_={
-              Transaction.NewScript("Anime Episodes Ranking - WINTER 2020")
-            }
+            type_={Transaction.NewScript("Anime Episodes Ranking - WINTER 2020")}
             hash="0xd83ab82c9f838391283"
             fee="0.10 BAND"
             timestamp="3 days ago"
@@ -175,12 +145,7 @@ let make = () => {
         <Col>
           <VSpacing size=Spacing.md />
           <div className=Styles.topicBar>
-            <Text
-              value="Latest Blocks"
-              size=Text.Xl
-              weight=Text.Bold
-              block=true
-            />
+            <Text value="Latest Blocks" size=Text.Xl weight=Text.Bold block=true />
             {renderSeeAll()}
           </div>
           <VSpacing size=Spacing.md />

@@ -58,7 +58,7 @@ module SearchResults = {
     let container =
       style([
         position(`absolute),
-        left(`px(0)),
+        left(`zero),
         right(`px(110)),
         top(`percent(90.)),
         backgroundColor(white),
