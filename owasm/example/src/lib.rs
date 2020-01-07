@@ -14,15 +14,25 @@ fn __return(output: &[u8]) -> *const u8 {
 }
 
 /// Encodes parameter struct to `Vec<u8>` for testing only.
-fn __encode_params(params: logic::Parameter) -> Option<Vec<u8>> {
+fn __encode_params(params: logic::__Params) -> Option<Vec<u8>> {
     bincode::config().big_endian().serialize(&params).ok()
 }
 
-fn __decode_params(input: *const u8) -> Option<logic::Parameter> {
+fn __decode_params(input: *const u8) -> Option<logic::__Params> {
     // Get raw params from memory
     let data =
         unsafe { std::slice::from_raw_parts(input.offset(4), *(input as *const u32) as usize) };
     bincode::config().big_endian().deserialize(data).ok()
+}
+
+fn __decode_data(params: &logic::__Params, input: *const u8) -> Option<logic::__Data> {
+    unsafe {
+        let each_size = *(input as *const u32);
+        logic::__Data::__output(
+            &params,
+            decode_outputs(std::slice::from_raw_parts(input.offset(4), each_size as usize))?,
+        )
+    }
 }
 
 #[no_mangle]
@@ -40,20 +50,45 @@ pub fn __prepare(params: *const u8) -> *const u8 {
 
 #[no_mangle]
 pub fn __execute(params: *const u8, input: *const *const u8) -> *const u8 {
+    let p = __decode_params(params).unwrap();
     let outputs: Vec<_> = unsafe {
         std::slice::from_raw_parts(input.offset(1), *(input as *const u32) as usize)
             .to_vec()
             .into_iter()
-            .filter_map(|each| {
-                let each_size = *(each as *const u32);
-                logic::__Data::__output(
-                    &__decode_params(params).unwrap(),
-                    decode_outputs(std::slice::from_raw_parts(each.offset(4), each_size as usize))?,
-                )
-            })
+            .filter_map(|each| __decode_data(&p, each))
             .collect()
     };
     __return(&bincode::config().big_endian().serialize(&logic::execute(outputs)).unwrap())
+}
+
+#[no_mangle]
+pub fn __name() -> *const u8 {
+    __return(&logic::name().into_bytes())
+}
+
+#[no_mangle]
+pub fn __params_info() -> *const u8 {
+    __return(&serde_json::to_string(&logic::__Params::__fields()).ok().unwrap().into_bytes())
+}
+
+#[no_mangle]
+pub fn __parse_params(params: *const u8) -> *const u8 {
+    __return(&serde_json::to_string(&__decode_params(params).unwrap()).ok().unwrap().into_bytes())
+}
+
+#[no_mangle]
+pub fn __raw_data_info() -> *const u8 {
+    __return(&serde_json::to_string(&logic::__Data::__fields()).ok().unwrap().into_bytes())
+}
+
+#[no_mangle]
+pub fn __parse_raw_data(params: *const u8, input: *const u8) -> *const u8 {
+    __return(
+        &serde_json::to_string(&__decode_data(&__decode_params(params).unwrap(), input).unwrap())
+            .ok()
+            .unwrap()
+            .into_bytes(),
+    )
 }
 
 #[cfg(test)]
@@ -62,10 +97,8 @@ mod tests {
 
     #[test]
     fn test_encode_decode_parameter() {
-        let params = logic::Parameter {
-            symbol_cg: String::from("ethereum"),
-            symbol_cc: String::from("ETH"),
-        };
+        let params =
+            logic::__Params { symbol_cg: String::from("ethereum"), symbol_cc: String::from("ETH") };
 
         let encoded_params = __encode_params(params).unwrap();
         let ptr = __return(&encoded_params);
@@ -77,10 +110,8 @@ mod tests {
 
     #[test]
     fn test_prepare() {
-        let params = logic::Parameter {
-            symbol_cg: String::from("ethereum"),
-            symbol_cc: String::from("ETH"),
-        };
+        let params =
+            logic::__Params { symbol_cg: String::from("ethereum"), symbol_cc: String::from("ETH") };
         let ptr = __return(&__encode_params(params).unwrap());
 
         let prepare_ptr = __prepare(ptr);
@@ -96,5 +127,54 @@ mod tests {
             serde_json::to_string(&cmds[1]).unwrap(),
             r#"{"cmd":"curl","args":["https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD"]}"#
         );
+    }
+
+    #[test]
+    fn test_name() {
+        let ptr_output = __name();
+        let data = unsafe {
+            std::slice::from_raw_parts(ptr_output.offset(4), *(ptr_output as *const u32) as usize)
+        };
+
+        let result = std::str::from_utf8(data).unwrap();
+        assert_eq!(result, "Crypto price");
+    }
+
+    #[test]
+    fn test_parse_params() {
+        let params =
+            logic::__Params { symbol_cg: String::from("ethereum"), symbol_cc: String::from("ETH") };
+        let encoded_params = __encode_params(params).unwrap();
+        let ptr = __return(&encoded_params);
+
+        let ptr_output = __parse_params(ptr);
+        let data = unsafe {
+            std::slice::from_raw_parts(ptr_output.offset(4), *(ptr_output as *const u32) as usize)
+        };
+
+        let result = std::str::from_utf8(data).unwrap();
+        assert_eq!(result, r#"{"symbol_cg":"ethereum","symbol_cc":"ETH"}"#);
+    }
+
+    #[test]
+    fn test_raw_data_info() {
+        let ptr_output = __raw_data_info();
+        let data = unsafe {
+            std::slice::from_raw_parts(ptr_output.offset(4), *(ptr_output as *const u32) as usize)
+        };
+
+        let result = std::str::from_utf8(data).unwrap();
+        assert_eq!(result, r#"[["coin_gecko","f32"],["crypto_compare","f32"]]"#);
+    }
+
+    #[test]
+    fn test_params_info() {
+        let ptr_output = __params_info();
+        let data = unsafe {
+            std::slice::from_raw_parts(ptr_output.offset(4), *(ptr_output as *const u32) as usize)
+        };
+
+        let result = std::str::from_utf8(data).unwrap();
+        assert_eq!(result, r#"[["symbol_cg","String"],["symbol_cc","String"]]"#);
     }
 }
