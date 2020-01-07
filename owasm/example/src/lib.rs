@@ -14,11 +14,11 @@ fn __return(output: &[u8]) -> *const u8 {
 }
 
 /// Encodes parameter struct to `Vec<u8>` for testing only.
-fn __encode_params(params: logic::Parameter) -> Option<Vec<u8>> {
+fn __encode_params(params: logic::__Params) -> Option<Vec<u8>> {
     bincode::config().big_endian().serialize(&params).ok()
 }
 
-fn __decode_params(input: *const u8) -> Option<logic::Parameter> {
+fn __decode_params(input: *const u8) -> Option<logic::__Params> {
     // Get raw params from memory
     let data =
         unsafe { std::slice::from_raw_parts(input.offset(4), *(input as *const u32) as usize) };
@@ -56,13 +56,34 @@ pub fn __execute(params: *const u8, input: *const *const u8) -> *const u8 {
     __return(&bincode::config().big_endian().serialize(&logic::execute(outputs)).unwrap())
 }
 
+#[no_mangle]
+pub fn __name() -> *const u8 {
+    __return(&logic::name().into_bytes())
+}
+
+#[no_mangle]
+pub fn __parameter_fields() -> *const u8 {
+    __return(&serde_json::to_string(&logic::__Params::fields()).ok().unwrap().into_bytes())
+}
+
+#[no_mangle]
+pub fn __parameter_details(params: *const u8) -> *const u8 {
+    let p = __decode_params(params).unwrap();
+    __return(&serde_json::to_string(&p).ok().unwrap().into_bytes())
+}
+
+#[no_mangle]
+pub fn __data_sources() -> *const u8 {
+    __return(&serde_json::to_string(&logic::__Data::fields()).ok().unwrap().into_bytes())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test_encode_decode_parameter() {
-        let params = logic::Parameter {
+        let params = logic::__Params {
             symbol_cg: String::from("ethereum"),
             symbol_cc: String::from("ETH"),
         };
@@ -77,7 +98,7 @@ mod tests {
 
     #[test]
     fn test_prepare() {
-        let params = logic::Parameter {
+        let params = logic::__Params {
             symbol_cg: String::from("ethereum"),
             symbol_cc: String::from("ETH"),
         };
@@ -95,6 +116,69 @@ mod tests {
         assert_eq!(
             serde_json::to_string(&cmds[1]).unwrap(),
             r#"{"cmd":"curl","args":["https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD"]}"#
+        );
+    }
+
+    #[test]
+    fn test_name() {
+        let ptr_output = __name();
+        let data = unsafe {
+            std::slice::from_raw_parts(ptr_output.offset(4), *(ptr_output as *const u32) as usize)
+        };
+
+        let result = std::str::from_utf8(data).unwrap();
+        assert_eq!(
+            result,
+            "Crypto price"
+        );
+    }
+
+    #[test]
+    fn test_parameter_details() {
+        let params = logic::__Params {
+            symbol_cg: String::from("ethereum"),
+            symbol_cc: String::from("ETH"),
+        };
+        let encoded_params = __encode_params(params).unwrap();
+        let ptr = __return(&encoded_params);
+
+        let ptr_output = __parameter_details(ptr);
+        let data = unsafe {
+            std::slice::from_raw_parts(ptr_output.offset(4), *(ptr_output as *const u32) as usize)
+        };
+
+        let result = std::str::from_utf8(data).unwrap();
+        assert_eq!(
+            result,
+            r#"{"symbol_cg":"ethereum","symbol_cc":"ETH"}"#
+        );
+    }
+
+    #[test]
+    fn test_data_sources() {
+        let ptr_output = __data_sources();
+        let data = unsafe {
+            std::slice::from_raw_parts(ptr_output.offset(4), *(ptr_output as *const u32) as usize)
+        };
+
+        let result = std::str::from_utf8(data).unwrap();
+        assert_eq!(
+            result,
+            r#"["coin_gecko","crypto_compare"]"#
+        );
+    }
+
+    #[test]
+    fn test_parameter_fields() {
+        let ptr_output = __parameter_fields();
+        let data = unsafe {
+            std::slice::from_raw_parts(ptr_output.offset(4), *(ptr_output as *const u32) as usize)
+        };
+
+        let result = std::str::from_utf8(data).unwrap();
+        assert_eq!(
+            result,
+            r#"["symbol_cg","symbol_cc"]"#
         );
     }
 }
