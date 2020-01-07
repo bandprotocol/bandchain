@@ -16,7 +16,8 @@ let fromUrl = (url: ReasonReactRouter.url) =>
   | (["tx", txHash], hashtag) => TxIndexPage(txHash, hashtag)
   | (["blocks"], _) => BlockHomePage
   | (["block", blockHeight], hashtag) => BlockIndexPage(blockHeight, hashtag)
-  | (_, _) => HomePage
+  | ([], "") => HomePage
+  | (_, _) => NotFound
   };
 
 let toString =

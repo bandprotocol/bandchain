@@ -62,7 +62,9 @@ let make = () => {
        | TxIndexPage(txHash, hashtag) => <TxIndexPage txHash hashtag />
        | BlockHomePage => <BlockHomePage />
        | BlockIndexPage(height, hashtag) => <BlockIndexPage height hashtag />
-       | _ => <HomePage />
+       | NotFound =>
+         ReasonReactRouter.replace("/");
+         React.null;
        }}
     </div>
     <Footer />
