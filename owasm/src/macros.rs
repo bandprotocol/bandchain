@@ -15,12 +15,13 @@
 /// use owasm::ext::crypto::{coingecko, cryptocompare};
 ///
 /// pub struct Parameter {
-///     symbol: String
+///     pub symbol_cg: String,
+///     pub symbol_cc: String,
 /// }
 /// decl_data! {
 ///     pub struct Data {
-///         pub coin_gecko: f32 = |params: &Parameter| coingecko::Price::new(params.symbol.clone()),
-///         pub crypto_compare: f32 = |params: &Parameter| cryptocompare::Price::new(),
+///         pub coin_gecko: f32 = |params: &Parameter| coingecko::Price::new(&params.symbol_cg),
+///         pub crypto_compare: f32 = |params: &Parameter| cryptocompare::Price::new(&params.symbol_cc),
 ///     }
 /// }
 /// ```

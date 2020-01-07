@@ -1,7 +1,7 @@
 [package]
-name = "example"
+name = "owasm-example"
 version = "0.1.0"
-authors = ["taobun <taobunoi@gmail.com>"]
+authors = ["Band Protocol <connect@bandprotocol.com>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

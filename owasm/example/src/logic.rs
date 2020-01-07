@@ -10,8 +10,8 @@ pub struct Parameter {
 
 decl_data! {
     pub struct Data {
-        pub coin_gecko: f32 = |params: &Parameter| coingecko::Price::new(params.symbol_cg.clone()),
-        pub crypto_compare: f32 = |params: &Parameter| cryptocompare::Price::new(params.symbol_cc.clone()),
+        pub coin_gecko: f32 = |params: &Parameter| coingecko::Price::new(&params.symbol_cg),
+        pub crypto_compare: f32 = |params: &Parameter| cryptocompare::Price::new(&params.symbol_cc),
     }
 }
 

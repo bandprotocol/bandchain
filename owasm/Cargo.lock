@@ -25,17 +25,6 @@ version = "0.1.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
-name = "example"
-version = "0.1.0"
-dependencies = [
- "bincode 1.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "owasm 0.1.2",
- "serde 1.0.103 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde_json 1.0.42 (registry+https://github.com/rust-lang/crates.io-index)",
- "wasm-bindgen 0.2.56 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
 name = "itoa"
 version = "0.4.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -65,6 +54,17 @@ dependencies = [
  "json 0.12.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.103 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_json 1.0.42 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "owasm-example"
+version = "0.1.0"
+dependencies = [
+ "bincode 1.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "owasm 0.1.2",
+ "serde 1.0.103 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde_json 1.0.42 (registry+https://github.com/rust-lang/crates.io-index)",
+ "wasm-bindgen 0.2.56 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

@@ -68,7 +68,6 @@ mod tests {
         };
 
         let encoded_params = __encode_params(params).unwrap();
-        println!("Parameter bytes is {:x?}", encoded_params);
         let ptr = __return(&encoded_params);
 
         let new_params = __decode_params(ptr).unwrap();

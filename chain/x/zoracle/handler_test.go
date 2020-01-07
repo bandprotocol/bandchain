@@ -34,7 +34,7 @@ func setupTestValidator(ctx sdk.Context, keeper Keeper) sdk.ValAddress {
 
 func TestRequestSuccess(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
-	absPath, _ := filepath.Abs("../../wasm/res/bin_bg.wasm")
+	absPath, _ := filepath.Abs("../../wasm/res/owasm_example_bg.wasm")
 	code, err := wasm.ReadBytes(absPath)
 	if err != nil {
 		fmt.Println(err)
@@ -173,7 +173,7 @@ func TestOutOfReportPeriod(t *testing.T) {
 
 func TestStoreCodeSuccess(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
-	absPath, _ := filepath.Abs("../../wasm/res/bin_bg.wasm")
+	absPath, _ := filepath.Abs("../../wasm/res/owasm_example_bg.wasm")
 	code, err := wasm.ReadBytes(absPath)
 	if err != nil {
 		fmt.Println(err)
@@ -262,7 +262,7 @@ func TestDeleteCodeInvalidOwner(t *testing.T) {
 func TestEndBlock(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
 	ctx = ctx.WithBlockHeight(0)
-	absPath, _ := filepath.Abs("../../wasm/res/bin_bg.wasm")
+	absPath, _ := filepath.Abs("../../wasm/res/owasm_example_bg.wasm")
 	code, err := wasm.ReadBytes(absPath)
 	if err != nil {
 		fmt.Println(err)
