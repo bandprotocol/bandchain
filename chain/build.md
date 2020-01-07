@@ -91,7 +91,7 @@ bandcli query account $(bandcli keys show validator1 -a)
 
 ```bash
  # send request
- bandcli tx zoracle request 30 $(xxd -p -c100000000000 ./wasm/res/test.wasm) --from owner --gas 10000000
+ bandcli tx zoracle request 30 $(xxd -p -c100000000000 ./wasm/res/owasm_example_bg.wasm) --from owner --gas 10000000
 
  # get request by id
  bandcli query zoracle request <reqID>
