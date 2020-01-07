@@ -32,9 +32,7 @@ let make = () => {
            ]
            ->Belt.List.map(((v, route)) =>
                <Col key=v>
-                 <div
-                   className=Styles.nav
-                   onClick={_ => route |> Route.toString |> ReasonReactRouter.push}>
+                 <div className=Styles.nav onClick={_ => route |> Route.redirect}>
                    <Text color=Colors.grayText value=v nowrap=true />
                  </div>
                </Col>

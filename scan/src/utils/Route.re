@@ -32,3 +32,5 @@ let toString =
   | BlockIndexPage(height, hashtag) => {j|/block/$height#$hashtag|j}
   | HomePage
   | NotFound => "/";
+
+let redirect = (route: t) => ReasonReactRouter.push(route |> toString);
