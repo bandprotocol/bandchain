@@ -30,7 +30,14 @@ module Styles = {
 
   let uFlex = style([display(`flex), flexDirection(`row)]);
 
-  let logo = style([width(`px(35))]);
+  let bandLogo = style([width(`px(35))]);
+  let twitterLogo = style([width(`px(20))]);
+  let telegramLogo = style([width(`px(20))]);
+
+  let skipRight = style([marginLeft(Spacing.xl)]);
+
+  let socialLink =
+    style([display(`flex), justifyContent(`center), alignItems(`center), width(`px(50))]);
 };
 
 [@react.component]
@@ -40,7 +47,7 @@ let make = () => {
     <div className=Styles.innerContainer>
       <div className=Styles.mainBar>
         <Row>
-          <Col size=1.> <img src=Images.bandLogo className=Styles.logo /> </Col>
+          <Col size=1.> <img src=Images.bandLogo className=Styles.bandLogo /> </Col>
           <Col size=4.>
             <div className=Styles.uFlex>
               <Text value="D3N" size=Text.Xxl weight=Text.Bold nowrap=true />
@@ -52,6 +59,17 @@ let make = () => {
           </Col>
         </Row>
         <SearchBar />
+        <div className=Styles.skipRight />
+        <div className=Styles.socialLink>
+          <a href="https://twitter.com/bandprotocol" target="_blank" rel="noopener">
+            <img src=Images.twitterLogo className=Styles.twitterLogo />
+          </a>
+        </div>
+        <div className=Styles.socialLink>
+          <a href="https://t.me/bandprotocol" target="_blank" rel="noopener">
+            <img src=Images.telegramLogo className=Styles.telegramLogo />
+          </a>
+        </div>
       </div>
       <HomePage />
     </div>
