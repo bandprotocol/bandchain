@@ -1,11 +1,11 @@
-use owasm::decl_data;
 use owasm::ext::crypto::{coingecko, cryptocompare};
-use serde::{Deserialize, Serialize};
+use owasm::{decl_data, decl_params};
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Parameter {
-    pub symbol_cg: String,
-    pub symbol_cc: String,
+decl_params! {
+    pub struct Parameter {
+        pub symbol_cg: String,
+        pub symbol_cc: String,
+    }
 }
 
 decl_data! {
@@ -19,6 +19,10 @@ impl Data {
     pub fn avg_px(&self) -> f32 {
         (self.coin_gecko + self.crypto_compare) / 2.0
     }
+}
+
+pub fn name() -> String {
+    String::from("Crypto price")
 }
 
 pub fn execute(data: Vec<Data>) -> u64 {
