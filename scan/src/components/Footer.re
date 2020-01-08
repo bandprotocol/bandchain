@@ -116,8 +116,8 @@ let make = () => {
             />
           </div>
         </Col>
-        {footerData->Belt_Array.map(((header, size, links)) =>
-           <Col size>
+        {footerData->Belt.Array.map(((header, size, links)) =>
+           <Col key=header size>
              {renderSubHeader(header)}
              {links->Belt.Array.map(((url, text)) => renderCommonLink(url, text)) |> React.array}
            </Col>
