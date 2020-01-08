@@ -1,26 +1,100 @@
 module Styles = {
   open Css;
 
-  let vFlex =
+  let pageContainer = style([marginTop(`px(60))]);
+
+  let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
+
+  let txTypeBadge =
     style([
+      paddingLeft(`px(12)),
+      paddingRight(`px(12)),
+      paddingTop(`px(5)),
+      paddingBottom(`px(5)),
+      backgroundColor(`hex("E2F0FF")),
+      borderRadius(`px(15)),
+    ]);
+
+  let msgAmount =
+    style([borderRadius(`percent(50.)), padding(`px(3)), backgroundColor(`hex("ececec"))]);
+
+  let seperatedLine =
+    style([
+      width(`px(13)),
+      height(`px(1)),
+      marginLeft(`px(10)),
+      marginRight(`px(10)),
+      backgroundColor(`hex("555555")),
+    ]);
+
+  let addressContainer = style([marginTop(`px(20)), marginBottom(`px(15))]);
+
+  let successBadge =
+    style([
+      backgroundColor(`hex("D7FFEC")),
+      borderRadius(`px(6)),
       display(`flex),
-      flexDirection(`column),
-      alignItems(`center),
       justifyContent(`center),
-      height(`px(600)),
+      alignItems(`center),
+      width(`px(120)),
+      height(`px(40)),
+    ]);
+
+  let checkLogo = style([marginRight(`px(10))]);
+
+  let seperatorLine =
+    style([
+      width(`percent(100.)),
+      height(`pxFloat(1.4)),
+      backgroundColor(`hex("EEEEEE")),
+      display(`flex),
     ]);
 };
 
 [@react.component]
 let make = (~txHash, ~hashtag) => {
-  <div className=Styles.vFlex>
-    <Text value="Tx Index Page" size=Text.Xxl weight=Text.Bold nowrap=true />
-    <Text value=txHash size=Text.Lg weight=Text.Bold nowrap=true />
-    <Text
-      value={hashtag != "" ? {j|Hashtag is $hashtag|j} : "No Hashtag"}
-      size=Text.Xl
-      weight=Text.Bold
-      nowrap=true
-    />
+  <div className=Styles.pageContainer>
+    <Row justify=Row.Between>
+      <Col>
+        <div className=Styles.vFlex>
+          <Text
+            value="TRANSACTION"
+            weight=Text.Semibold
+            nowrap=true
+            color={Css.hex("555555")}
+            block=true
+          />
+          <HSpacing size=Spacing.sm />
+          <div className=Styles.txTypeBadge>
+            <Text value="DATA REQUEST" block=true size=Text.Sm />
+          </div>
+          <HSpacing size=Spacing.sm />
+          <div className=Styles.msgAmount> <Text value="+1" block=true size=Text.Sm /> </div>
+          <div className=Styles.seperatedLine />
+          <Text value="51 MINUTES AGO" />
+        </div>
+      </Col>
+      <Col>
+        <div className=Styles.successBadge>
+          <img src=Images.checkIcon className=Styles.checkLogo />
+          <Text value="Success" size=Text.Lg weight=Text.Semibold />
+        </div>
+      </Col>
+    </Row>
+    <div className=Styles.addressContainer>
+      <Text value=txHash size=Text.Xxl weight=Text.Bold nowrap=true />
+    </div>
+    <VSpacing size=Spacing.xl />
+    <Row>
+      <Col size=1.> <InfoHL info={InfoHL.Height(472395)} /> </Col>
+      <Col size=1.> <InfoHL info={InfoHL.MsgCount(1)} /> </Col>
+      <Col size=2.>
+        <InfoHL info={InfoHL.Timestamp(MomentRe.momentWithUnix(1578308371))} />
+      </Col>
+      <Col size=2.5> <InfoHL info={InfoHL.Fee(0.0)} /> </Col>
+    </Row>
+    <VSpacing size=Spacing.xl />
+    <div className=Styles.seperatorLine />
+    <VSpacing size={Css.px(300)} />
   </div>;
 };
