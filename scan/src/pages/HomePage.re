@@ -149,19 +149,7 @@ let make = () => {
             {renderSeeAll()}
           </div>
           <VSpacing size=Spacing.md />
-          <LatestBlocks
-            blocks=[
-              LatestBlocks.{id: 472395, proposer: "Stake.us"},
-              LatestBlocks.{id: 472394, proposer: "Stake.us"},
-              LatestBlocks.{id: 472393, proposer: "Stake.us"},
-              LatestBlocks.{id: 472392, proposer: "Stake.us"},
-              LatestBlocks.{id: 472391, proposer: "Stake.us"},
-              LatestBlocks.{id: 472390, proposer: "Stake.us"},
-              LatestBlocks.{id: 472389, proposer: "Stake.us"},
-              LatestBlocks.{id: 472388, proposer: "Stake.us"},
-              LatestBlocks.{id: 472387, proposer: "Stake.us"},
-            ]
-          />
+          <LatestBlocks />
         </Col>
       </Row>
     </div>
