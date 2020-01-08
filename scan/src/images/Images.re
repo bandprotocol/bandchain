@@ -6,3 +6,4 @@
 [@bs.module] external telegramLogo: string = "./telegram-logo.svg";
 [@bs.module] external twitterLogo: string = "./twitter-logo.svg";
 [@bs.module] external bg: string = "./bg.png";
+[@bs.module] external checkIcon: string = "./check-icon.svg";
