@@ -1,12 +1,14 @@
-let setMomentLocale: unit => unit = [%bs.raw
+let setMomentRelativeTimeThreshold: unit => unit = [%bs.raw
   {|
 function() {
   const moment = require("moment");
-  moment.updateLocale('en', {
-    relativeTime: {
-      s: x => x == 1 ? '1 second' : x + ' seconds',
-    }
-  });
+  moment.relativeTimeRounding(Math.floor);
+  moment.relativeTimeThreshold('s', 60);
+  moment.relativeTimeThreshold('ss', 0);
+  moment.relativeTimeThreshold('m', 60);
+  moment.relativeTimeThreshold('h', 24);
+  moment.relativeTimeThreshold('d', 30);
+  moment.relativeTimeThreshold('M', 12);
 }
   |}
 ];
