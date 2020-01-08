@@ -11,7 +11,7 @@
 /// getting Bitcoin price from CoinGecko, and `crypto_compare` for getting Bitcoin price from CryptoCompare.
 ///
 /// ```
-/// use owasm::decl_data;
+/// use owasm::{decl_data, decl_params};
 /// use owasm::ext::crypto::{coingecko, cryptocompare};
 ///
 /// decl_params! {
