@@ -146,7 +146,7 @@ func TestMsgStoreCodeGetSignBytes(t *testing.T) {
 	msg := NewMsgStoreCode(code, owner)
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"zoracle/Store","value":{"Code":"Q29kZQ==","Owner":"band1hq8j5h0h64csk9tz95df783cxr0dt0dg3jw4p0"}}`
+	expected := `{"type":"zoracle/Store","value":{"code":"Q29kZQ==","owner":"band1hq8j5h0h64csk9tz95df783cxr0dt0dg3jw4p0"}}`
 
 	require.Equal(t, expected, string(res))
 }
@@ -196,7 +196,7 @@ func TestMsgDeleteCodeGetSignBytes(t *testing.T) {
 	msg := NewMsgDeleteCode(codeHash, owner)
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"zoracle/Delete","value":{"CodeHash":"VpTQii5T/8rgwxA+Wtb2B2q9lg6x+KVldwQLwQKPcCs=","Owner":"band1hq8j5h0h64csk9tz95df783cxr0dt0dg3jw4p0"}}`
+	expected := `{"type":"zoracle/Delete","value":{"codeHash":"VpTQii5T/8rgwxA+Wtb2B2q9lg6x+KVldwQLwQKPcCs=","owner":"band1hq8j5h0h64csk9tz95df783cxr0dt0dg3jw4p0"}}`
 
 	require.Equal(t, expected, string(res))
 }
