@@ -118,7 +118,7 @@ let make = (~type_, ~hash, ~timestamp, ~fee) => {
       <Col>
         <div className=Styles.hashCol>
           <VSpacing size={`px(9)} />
-          <Text block=true value=timestamp size=Text.Sm />
+          timestamp
           <VSpacing size={`px(6)} />
           <Text block=true code=true value=hash size=Text.Lg weight=Text.Bold />
         </div>

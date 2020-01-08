@@ -7,7 +7,7 @@ module Highlights = {
   };
 
   [@react.component]
-  let make = (~label, ~value, ~valuePrefix=?, ~extra, ~extraSuffix=?) => {
+  let make = (~label, ~value, ~valuePrefix=?, ~extraText=?, ~extraComponent=?, ~extraSuffix=?) => {
     <div className=Styles.highlights>
       <div> <Text value=label size=Text.Sm weight=Text.Bold color=Colors.purple /> </div>
       <div className={Css.style([Css.marginTop(Spacing.sm)])}>
@@ -15,7 +15,8 @@ module Highlights = {
         <Text value size=Text.Xxl weight=Text.Bold />
       </div>
       <div>
-        <Text value=extra size=Text.Sm />
+        {<Text value={extraText->Belt_Option.getWithDefault("")} size=Text.Sm />}
+        {extraComponent->Belt_Option.getWithDefault(React.null)}
         {extraSuffix->getWithDefault(React.string(""))}
       </div>
     </div>;
@@ -36,7 +37,7 @@ let make = () =>
           <Highlights
             label="BAND PRICE"
             value={"$" ++ info.financial.usdPrice->Format.fPretty}
-            extra={"@" ++ info.financial.btcPrice->Format.fPretty ++ " BTC "}
+            extraText={"@" ++ info.financial.btcPrice->Format.fPretty ++ " BTC "}
             extraSuffix={
               <Text
                 value={"(" ++ info.financial.usd24HrChange->Format.fPercent ++ ")"}
@@ -50,7 +51,7 @@ let make = () =>
           <Highlights
             label="MARKET CAP"
             value={"$" ++ info.financial.usdMarketCap->Format.fPretty}
-            extra={info.financial.btcMarketCap->Format.fPretty ++ " BTC "}
+            extraText={info.financial.btcMarketCap->Format.fPretty ++ " BTC "}
           />
         </Col>
         <Col size=1.>
@@ -58,14 +59,14 @@ let make = () =>
             label="LATEST BLOCK"
             valuePrefix={<Text value="# " size=Text.Xxl weight=Text.Bold color=Colors.pink />}
             value={info.latestBlock.height->Format.iPretty}
-            extra="7 seconds ago"
+            extraComponent={<TimeAgos time={info.latestBlock.timestamp} />}
           />
         </Col>
         <Col size=1.>
           <Highlights
             label="ACTIVE VALIDATORS"
             value={validators->Belt_List.size->Format.iPretty ++ " Nodes"}
-            extra={bandBonded->Format.fPretty ++ " BAND Bonded"}
+            extraText={bandBonded->Format.fPretty ++ " BAND Bonded"}
           />
         </Col>
       </Row>,
