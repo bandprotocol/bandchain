@@ -1,19 +1,158 @@
 module Styles = {
   open Css;
 
-  let vFlex =
+  let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
+
+  let pageContainer = style([paddingTop(`px(50)), minHeight(`px(600))]);
+
+  let seperatedLine =
     style([
-      display(`flex),
-      flexDirection(`row),
-      alignItems(`center),
-      justifyContent(`center),
-      height(`px(600)),
+      width(`px(13)),
+      height(`px(1)),
+      marginLeft(`px(10)),
+      marginRight(`px(10)),
+      backgroundColor(`hex("555555")),
     ]);
+
+  let textContainer = style([paddingLeft(Spacing.lg), display(`flex)]);
+
+  let proposerBox = style([maxWidth(`px(270)), display(`flex), flexDirection(`column)]);
+};
+
+let renderBody = ((height, timestamp, proposer, totalTx, totalFee, blockReward)) => {
+  <TBody>
+    <Row>
+      <Col size=1.0>
+        <div className=Styles.textContainer>
+          <Text value="#" size=Text.Md weight=Text.Bold color=Colors.purple />
+          <HSpacing size=Spacing.xs />
+          <Text block=true value={height->string_of_int} size=Text.Md weight=Text.Bold />
+        </div>
+      </Col>
+      <Col size=1.0>
+        <div className=Styles.textContainer>
+          <TimeAgos time=timestamp size=Text.Md weight=Text.Semibold />
+        </div>
+      </Col>
+      <Col size=1.5>
+        <div className={Css.merge([Styles.textContainer, Styles.proposerBox])}>
+          <Text
+            block=true
+            value="Staked.us"
+            size=Text.Sm
+            weight=Text.Regular
+            color={Css.hex("555555")}
+          />
+          <VSpacing size=Spacing.sm />
+          <Text block=true value=proposer size=Text.Md weight=Text.Bold code=true ellipsis=true color=Css.hex("000000") />
+        </div>
+      </Col>
+      <Col size=0.8>
+        <div className=Styles.textContainer>
+          <Text block=true value={totalTx->string_of_int} size=Text.Md weight=Text.Semibold />
+        </div>
+      </Col>
+      <Col size=0.7>
+        <div className=Styles.textContainer>
+          <Text
+            block=true
+            value={totalFee->Js.Float.toString ++ " BAND"}
+            size=Text.Md
+            weight=Text.Semibold
+          />
+        </div>
+      </Col>
+      <Col size=0.7>
+        <div className=Styles.textContainer>
+          <Text block=true value=blockReward size=Text.Md weight=Text.Semibold />
+        </div>
+      </Col>
+    </Row>
+  </TBody>;
 };
 
 [@react.component]
 let make = () => {
-  <div className=Styles.vFlex>
-    <Text value="Block Home Page" size=Text.Xxl weight=Text.Bold nowrap=true />
+  <div className=Styles.pageContainer>
+    <Row>
+      <Col>
+        <div className=Styles.vFlex>
+          <Text
+            value="ALL BLOCKS"
+            weight=Text.Bold
+            size=Text.Xl
+            nowrap=true
+            color={Css.hex("555555")}
+          />
+          <div className=Styles.seperatedLine />
+          <Text value="86,230 in total" />
+        </div>
+      </Col>
+    </Row>
+    <VSpacing size=Spacing.xl />
+    <THead>
+      <Row>
+        {[
+           ("BLOCK", 1.0),
+           ("AGE", 1.0),
+           ("PROPOSER", 1.5),
+           ("TXN", 0.8),
+           ("TOTAL FEE", 0.7),
+           ("BLOCK REWARD", 0.7),
+         ]
+         ->Belt.List.map(((title, size)) => {
+             <Col size key=title>
+               <div className=Styles.textContainer>
+                 <Text
+                   block=true
+                   value=title
+                   size=Text.Sm
+                   weight=Text.Bold
+                   color=Colors.grayText
+                 />
+               </div>
+             </Col>
+           })
+         ->Array.of_list
+         ->React.array}
+      </Row>
+    </THead>
+    {[
+       (
+         100,
+         MomentRe.momentWithUnix(1578348371),
+         "bandvaloper1zpmsn2vg2zcrx4jlg49t2f2y2cwjykr6jnmyxv",
+         3,
+         0.0,
+         "N/A",
+       ),
+       (
+         99,
+         MomentRe.momentWithUnix(1578346271),
+         "bandvaloper1zpmsn2vg2zcrx4jlg49t2f2y2cwjykr6jnmyxv",
+         3,
+         0.0,
+         "N/A",
+       ),
+       (
+         98,
+         MomentRe.momentWithUnix(1578343271),
+         "bandvaloper1zpmsn2vg2zcrx4jlg49t2f2y2cwjykr6jnmyxv",
+         1,
+         0.0,
+         "N/A",
+       ),
+       (
+         97,
+         MomentRe.momentWithUnix(1578341271),
+         "bandvaloper1zpmsn2vg2zcrx4jlg49t2f2y2cwjykr6jnmyxv",
+         2,
+         0.0,
+         "N/A",
+       ),
+     ]
+     ->Belt.List.map(renderBody)
+     ->Array.of_list
+     ->React.array}
   </div>;
 };

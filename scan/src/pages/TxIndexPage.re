@@ -1,7 +1,7 @@
 module Styles = {
   open Css;
 
-  let pageContainer = style([marginTop(`px(60))]);
+  let pageContainer = style([paddingTop(`px(50))]);
 
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
