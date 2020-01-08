@@ -15,7 +15,7 @@ module Styles = {
 [@react.component]
 let make = (~info, ~header) => {
   <div className=Styles.hFlex>
-    <div className=Styles.headerContainer> <Text value=header color=Colors.darkerGrayText /> </div>
+    <div className=Styles.headerContainer> <Text value=header color=Colors.grayHeader /> </div>
     {switch (info) {
      | Height(height) =>
        <div className=Styles.vFlex>
