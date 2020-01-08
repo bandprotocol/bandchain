@@ -33,7 +33,7 @@ func main() {
 
 	tx := cmtx.NewTxSender(priv)
 
-	file, err := os.Open("../../wasm/res/owasm_example_bg.wasm")
+	file, err := os.Open("../../wasm/res/test_u64.wasm")
 	if err != nil {
 		panic(err)
 	}
@@ -57,7 +57,7 @@ func main() {
 	// Send transaction to store code first (commend it if already stored code)
 	fmt.Println(tx.SendTransaction(zoracle.NewMsgStoreCode(bytes, tx.Sender()), flags.BroadcastBlock))
 
-	codeHash, _ := hex.DecodeString("1fb2667d2d5610d9b1f19bcfaa0e5dd850a97265b8d199d9062ee496ea39284e")
+	codeHash, _ := hex.DecodeString("33cefd052eb9b0cda3d38d4d87313295e45fda5c5b0d6ab9e54870866f62fc80")
 
 	// BTC parameter
 	params, _ := hex.DecodeString("0000000000000007626974636f696e0000000000000003425443")
