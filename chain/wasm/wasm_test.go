@@ -42,7 +42,42 @@ func TestName(t *testing.T) {
 	code, _ := loadWasmFile()
 	name, err := Name(code)
 	require.Nil(t, err)
-	require.Equal(t, "Crypto price", string(name))
+	require.Equal(t, "Crypto price", name)
+}
+
+func TestParamsInfo(t *testing.T) {
+	code, _ := loadWasmFile()
+	info, err := ParamsInfo(code)
+	require.Nil(t, err)
+	expect := `[["symbol_cg","String"],["symbol_cc","String"]]`
+	require.Equal(t, expect, string(info))
+}
+
+func TestParseParams(t *testing.T) {
+	code, _ := loadWasmFile()
+	params, _ := hex.DecodeString("0000000000000007626974636f696e0000000000000003425443")
+	paramsByte, err := ParseParams(code, params)
+	require.Nil(t, err)
+	expect := `{"symbol_cg":"bitcoin","symbol_cc":"BTC"}`
+	require.Equal(t, expect, string(paramsByte))
+}
+
+func TestRawDataInfo(t *testing.T) {
+	code, _ := loadWasmFile()
+	info, err := RawDataInfo(code)
+	require.Nil(t, err)
+	expect := `[["coin_gecko","f32"],["crypto_compare","f32"]]`
+	require.Equal(t, expect, string(info))
+}
+
+func TestParseRawData(t *testing.T) {
+	code, _ := loadWasmFile()
+	params, _ := hex.DecodeString("0000000000000007626974636f696e0000000000000003425443")
+	data, _ := hex.DecodeString("5b227b5c22626974636f696e5c223a7b5c227573645c223a373139342e32357d7d222c227b5c225553445c223a373231342e31327d225d")
+	dataByte, err := ParseRawData(code, params, data)
+	require.Nil(t, err)
+	expect := `{"coin_gecko":7194.25,"crypto_compare":7214.12}`
+	require.Equal(t, expect, string(dataByte))
 }
 
 func TestAllocateInner(t *testing.T) {

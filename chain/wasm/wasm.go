@@ -3,6 +3,7 @@ package wasm
 import (
 	"encoding/binary"
 	"errors"
+	"unicode"
 
 	wasm "github.com/wasmerio/go-ext-wasm/wasmer"
 )
@@ -60,17 +61,103 @@ func storeParams(instance wasm.Instance, params []byte) (int64, error) {
 	return allocateInner(instance, params)
 }
 
-func Name(code []byte) ([]byte, error) {
+func Name(code []byte) (string, error) {
+	instance, err := wasm.NewInstance(code)
+	if err != nil {
+		return "", err
+	}
+	defer instance.Close()
+	fn := instance.Exports["__name"]
+	if fn == nil {
+		return "", errors.New("__name not implemented")
+	}
+	ptr, err := fn()
+	if err != nil {
+		return "", err
+	}
+	rawResult, err := parseOutput(instance, ptr.ToI64())
+	if err != nil {
+		return "", err
+	}
+	for _, ch := range string(rawResult) {
+		if !unicode.IsPrint(ch) {
+			return "", errors.New("Invalid name character")
+		}
+	}
+	return string(rawResult), nil
+}
+
+func ParamsInfo(code []byte) ([]byte, error) {
 	instance, err := wasm.NewInstance(code)
 	if err != nil {
 		return nil, err
 	}
 	defer instance.Close()
-	fn := instance.Exports["__name"]
+	fn := instance.Exports["__params_info"]
 	if fn == nil {
-		return nil, errors.New("__name not implemented")
+		return nil, errors.New("__params_info not implemented")
 	}
 	ptr, err := fn()
+	if err != nil {
+		return nil, err
+	}
+	return parseOutput(instance, ptr.ToI64())
+}
+
+func ParseParams(code []byte, params []byte) ([]byte, error) {
+	instance, err := wasm.NewInstance(code)
+	if err != nil {
+		return nil, err
+	}
+	defer instance.Close()
+	paramsInput, err := storeParams(instance, params)
+	if err != nil {
+		return nil, err
+	}
+	fn := instance.Exports["__parse_params"]
+	if fn == nil {
+		return nil, errors.New("__parse_params not implemented")
+	}
+	ptr, err := fn(paramsInput)
+	if err != nil {
+		return nil, err
+	}
+	return parseOutput(instance, ptr.ToI64())
+}
+
+func RawDataInfo(code []byte) ([]byte, error) {
+	instance, err := wasm.NewInstance(code)
+	if err != nil {
+		return nil, err
+	}
+	defer instance.Close()
+	fn := instance.Exports["__raw_data_info"]
+	if fn == nil {
+		return nil, errors.New("__raw_data_info not implemented")
+	}
+	ptr, err := fn()
+	if err != nil {
+		return nil, err
+	}
+	return parseOutput(instance, ptr.ToI64())
+}
+
+func ParseRawData(code []byte, params []byte, data []byte) ([]byte, error) {
+	instance, err := wasm.NewInstance(code)
+	if err != nil {
+		return nil, err
+	}
+	defer instance.Close()
+	paramsInput, err := storeParams(instance, params)
+	dataInput, err := allocateInner(instance, data)
+	if err != nil {
+		return nil, err
+	}
+	fn := instance.Exports["__parse_raw_data"]
+	if fn == nil {
+		return nil, errors.New("__parse_raw_data not implemented")
+	}
+	ptr, err := fn(paramsInput, dataInput)
 	if err != nil {
 		return nil, err
 	}
