@@ -28,10 +28,10 @@ let make = (~info, ~header) => {
        <Text
          value={time |> MomentRe.Moment.format("MMM-DD-YYYY hh:mm:ss A [GMT]Z")}
          size=Text.Lg
-         weight=Text.Semibold
+         weight=Text.Bold
        />
      | Fee(fee) =>
-       <Text value={(fee |> Format.fPretty) ++ " BAND"} size=Text.Lg weight=Text.Semibold />
+       <Text value={(fee |> Format.fPretty) ++ " BAND"} size=Text.Lg weight=Text.Bold />
      }}
   </div>;
 };
