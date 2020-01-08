@@ -64,7 +64,7 @@ let make = () => {
         <Col size=1.>
           <Highlights
             label="ACTIVE VALIDATORS"
-            value={Belt_List.size(validators)->Format.iPretty ++ " Nodes"}
+            value={validators->Belt_List.size->Format.iPretty ++ " Nodes"}
             extra={bandBonded->Format.fPretty ++ " BAND Bonded"}
           />
         </Col>
