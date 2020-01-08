@@ -20,7 +20,7 @@ let make = (~time) => {
     () => {
       let intervalId =
         Js.Global.setInterval(
-          () => {setDisplayTime(_ => time->MomentRe.Moment.fromNow(~withoutSuffix=None))},
+          () => setDisplayTime(_ => time->MomentRe.Moment.fromNow(~withoutSuffix=None)),
           100,
         );
       Some(() => Js.Global.clearInterval(intervalId));
