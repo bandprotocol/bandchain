@@ -36,7 +36,7 @@ let make = (~info) => {
        <Text value={count |> Format.iPretty} size=Text.Lg weight=Text.Semibold />
      | Timestamp(time) =>
        <Text
-         value={time |> MomentRe.Moment.format("MMM-DD-YYYY hh:mm:ss a +UTC")}
+         value={time |> MomentRe.Moment.format("MMM-DD-YYYY hh:mm:ss A [GMT]Z")}
          size=Text.Lg
          weight=Text.Semibold
        />
