@@ -1,82 +1,167 @@
 package wasm
 
 import (
+	"encoding/binary"
 	"errors"
+	"unicode"
 
 	wasm "github.com/wasmerio/go-ext-wasm/wasmer"
 )
 
-func allocateInner(instance wasm.Instance, data []byte) (int32, error) {
+func allocateInner(instance wasm.Instance, data []byte) (int64, error) {
 	sz := len(data)
-	res, err := instance.Exports["__allocate"](4 + sz)
+	res, err := instance.Exports["__allocate"](sz)
 	if err != nil {
 		return 0, err
 	}
 	ptr := res.ToI32()
 	mem := instance.Memory.Data()[ptr:]
-	if len(mem) < 4+sz {
+	if len(mem) < sz {
 		return 0, errors.New("allocateInner: invalid memory size")
 	}
-	mem[0] = byte(sz % 256)
-	mem[1] = byte(sz / 256 % 256)
-	mem[2] = byte(sz / 256 / 256 % 256)
-	mem[3] = byte(sz / 256 / 256 / 256 % 256)
-	for idx, each := range data {
-		mem[4+idx] = each
-	}
-	return ptr, nil
+	copy(mem, data)
+	return int64(sz<<32) | int64(ptr), nil
 }
 
-func allocate(instance wasm.Instance, data [][]byte) (int32, error) {
+func allocate(instance wasm.Instance, data [][]byte) (int64, error) {
 	sz := len(data)
-	res, err := instance.Exports["__allocate"](4 + 4*sz)
+	res, err := instance.Exports["__allocate"](8 * sz)
 	if err != nil {
 		return 0, err
 	}
 	ptr := res.ToI32()
 	mem := instance.Memory.Data()[ptr:]
-	if len(mem) < 4+4*sz {
+	if len(mem) < 8*sz {
 		return 0, errors.New("allocate: invalid memory size")
 	}
-	mem[0] = byte(sz % 256)
-	mem[1] = byte(sz / 256 % 256)
-	mem[2] = byte(sz / 256 / 256 % 256)
-	mem[3] = byte(sz / 256 / 256 / 256 % 256)
 	for idx, each := range data {
 		loc, err := allocateInner(instance, each)
 		if err != nil {
 			return 0, err
 		}
-		mem[4+4*idx] = byte(loc % 256)
-		mem[4+4*idx+1] = byte(loc / 256 % 256)
-		mem[4+4*idx+2] = byte(loc / 256 / 256 % 256)
-		mem[4+4*idx+3] = byte(loc / 256 / 256 / 256 % 256)
+		binary.LittleEndian.PutUint64(mem[8*idx:8*idx+8], uint64(loc))
 	}
-	return ptr, nil
+	return int64(sz<<32) | int64(ptr), nil
 }
 
-func parseOutput(instance wasm.Instance, ptr int32) ([]byte, error) {
-	mem := instance.Memory.Data()[ptr:]
-	if len(mem) < 4 {
-		return nil, errors.New("parseOutput: cannot decode output size")
-	}
-	sz := 0
-	sz += int(mem[0])
-	sz += int(mem[1]) * 256
-	sz += int(mem[2]) * 256 * 256
-	sz += int(mem[3]) * 256 * 256
-	if len(mem) < 4+sz {
+func parseOutput(instance wasm.Instance, ptr int64) ([]byte, error) {
+	sz, pointer := int(ptr>>32), (ptr & ((1 << 32) - 1))
+	mem := instance.Memory.Data()[pointer:]
+	if len(mem) < sz {
 		return nil, errors.New("parseOutput: invalid memory size")
 	}
 	res := make([]byte, sz)
 	for idx := 0; idx < sz; idx++ {
-		res[idx] = mem[4+idx]
+		res[idx] = mem[idx]
 	}
 	return res, nil
 }
 
-func storeParams(instance wasm.Instance, params []byte) (int32, error) {
+func storeParams(instance wasm.Instance, params []byte) (int64, error) {
 	return allocateInner(instance, params)
+}
+
+func Name(code []byte) (string, error) {
+	instance, err := wasm.NewInstance(code)
+	if err != nil {
+		return "", err
+	}
+	defer instance.Close()
+	fn := instance.Exports["__name"]
+	if fn == nil {
+		return "", errors.New("__name not implemented")
+	}
+	ptr, err := fn()
+	if err != nil {
+		return "", err
+	}
+	rawResult, err := parseOutput(instance, ptr.ToI64())
+	if err != nil {
+		return "", err
+	}
+	for _, ch := range string(rawResult) {
+		if !unicode.IsPrint(ch) {
+			return "", errors.New("Invalid name character")
+		}
+	}
+	return string(rawResult), nil
+}
+
+func ParamsInfo(code []byte) ([]byte, error) {
+	instance, err := wasm.NewInstance(code)
+	if err != nil {
+		return nil, err
+	}
+	defer instance.Close()
+	fn := instance.Exports["__params_info"]
+	if fn == nil {
+		return nil, errors.New("__params_info not implemented")
+	}
+	ptr, err := fn()
+	if err != nil {
+		return nil, err
+	}
+	return parseOutput(instance, ptr.ToI64())
+}
+
+func ParseParams(code []byte, params []byte) ([]byte, error) {
+	instance, err := wasm.NewInstance(code)
+	if err != nil {
+		return nil, err
+	}
+	defer instance.Close()
+	paramsInput, err := storeParams(instance, params)
+	if err != nil {
+		return nil, err
+	}
+	fn := instance.Exports["__parse_params"]
+	if fn == nil {
+		return nil, errors.New("__parse_params not implemented")
+	}
+	ptr, err := fn(paramsInput)
+	if err != nil {
+		return nil, err
+	}
+	return parseOutput(instance, ptr.ToI64())
+}
+
+func RawDataInfo(code []byte) ([]byte, error) {
+	instance, err := wasm.NewInstance(code)
+	if err != nil {
+		return nil, err
+	}
+	defer instance.Close()
+	fn := instance.Exports["__raw_data_info"]
+	if fn == nil {
+		return nil, errors.New("__raw_data_info not implemented")
+	}
+	ptr, err := fn()
+	if err != nil {
+		return nil, err
+	}
+	return parseOutput(instance, ptr.ToI64())
+}
+
+func ParseRawData(code []byte, params []byte, data []byte) ([]byte, error) {
+	instance, err := wasm.NewInstance(code)
+	if err != nil {
+		return nil, err
+	}
+	defer instance.Close()
+	paramsInput, err := storeParams(instance, params)
+	dataInput, err := allocateInner(instance, data)
+	if err != nil {
+		return nil, err
+	}
+	fn := instance.Exports["__parse_raw_data"]
+	if fn == nil {
+		return nil, errors.New("__parse_raw_data not implemented")
+	}
+	ptr, err := fn(paramsInput, dataInput)
+	if err != nil {
+		return nil, err
+	}
+	return parseOutput(instance, ptr.ToI64())
 }
 
 func Prepare(code []byte, params []byte) ([]byte, error) {
@@ -97,7 +182,7 @@ func Prepare(code []byte, params []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return parseOutput(instance, ptr.ToI32())
+	return parseOutput(instance, ptr.ToI64())
 }
 
 func Execute(code []byte, params []byte, inputs [][]byte) ([]byte, error) {
@@ -122,7 +207,7 @@ func Execute(code []byte, params []byte, inputs [][]byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return parseOutput(instance, ptr.ToI32())
+	return parseOutput(instance, ptr.ToI64())
 }
 
 func ReadBytes(filename string) ([]byte, error) {
