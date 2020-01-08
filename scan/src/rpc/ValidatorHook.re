@@ -6,6 +6,7 @@ module Validator = {
     identity: string,
     website: string,
     details: string,
+    tokens: float,
   };
 
   let decodeValidator = json =>
@@ -16,6 +17,7 @@ module Validator = {
       identity: json |> at(["description", "identity"], string),
       website: json |> at(["description", "website"], string),
       details: json |> at(["description", "details"], string),
+      tokens: json |> at(["tokens"], uamount),
     };
 
   let decodeValidators = json =>
