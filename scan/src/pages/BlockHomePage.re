@@ -22,19 +22,19 @@ module Styles = {
 let renderBody = ((height, timestamp, proposer, totalTx, totalFee, blockReward)) => {
   <TBody>
     <Row>
-      <Col size=1.0>
+      <Col size=0.6>
         <div className=Styles.textContainer>
           <Text value="#" size=Text.Md weight=Text.Bold color=Colors.purple />
           <HSpacing size=Spacing.xs />
           <Text block=true value={height->string_of_int} size=Text.Md weight=Text.Bold />
         </div>
       </Col>
-      <Col size=1.0>
+      <Col size=0.8>
         <div className=Styles.textContainer>
           <TimeAgos time=timestamp size=Text.Md weight=Text.Semibold />
         </div>
       </Col>
-      <Col size=1.5>
+      <Col size=2.0>
         <div className={Css.merge([Styles.textContainer, Styles.proposerBox])}>
           <Text
             block=true
@@ -44,10 +44,18 @@ let renderBody = ((height, timestamp, proposer, totalTx, totalFee, blockReward))
             color={Css.hex("555555")}
           />
           <VSpacing size=Spacing.sm />
-          <Text block=true value=proposer size=Text.Md weight=Text.Bold code=true ellipsis=true color=Css.hex("000000") />
+          <Text
+            block=true
+            value=proposer
+            size=Text.Md
+            weight=Text.Bold
+            code=true
+            ellipsis=true
+            color={Css.hex("000000")}
+          />
         </div>
       </Col>
-      <Col size=0.8>
+      <Col size=0.7>
         <div className=Styles.textContainer>
           <Text block=true value={totalTx->string_of_int} size=Text.Md weight=Text.Semibold />
         </div>
@@ -93,10 +101,10 @@ let make = () => {
     <THead>
       <Row>
         {[
-           ("BLOCK", 1.0),
-           ("AGE", 1.0),
-           ("PROPOSER", 1.5),
-           ("TXN", 0.8),
+           ("BLOCK", 0.6),
+           ("AGE", 0.8),
+           ("PROPOSER", 2.0),
+           ("TXN", 0.7),
            ("TOTAL FEE", 0.7),
            ("BLOCK REWARD", 0.7),
          ]
