@@ -1,15 +1,8 @@
 type t =
   | Height(int)
-  | MsgCount(int)
+  | Count(int)
   | Timestamp(MomentRe.Moment.t)
   | Fee(float);
-
-let header =
-  fun
-  | Height(_) => "HEIGHT"
-  | MsgCount(_) => "MESSAGES"
-  | Timestamp(_) => "TIMESTAMP"
-  | Fee(_) => "FEE";
 
 module Styles = {
   open Css;
@@ -20,11 +13,9 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~info) => {
+let make = (~info, ~header) => {
   <div className=Styles.hFlex>
-    <div className=Styles.headerContainer>
-      <Text value={info |> header} color={Css.hex("555555")} />
-    </div>
+    <div className=Styles.headerContainer> <Text value=header color={Css.hex("555555")} /> </div>
     {switch (info) {
      | Height(height) =>
        <div className=Styles.vFlex>
@@ -32,8 +23,7 @@ let make = (~info) => {
          <HSpacing size=Spacing.xs />
          <Text value={height |> Format.iPretty} size=Text.Lg weight=Text.Semibold />
        </div>
-     | MsgCount(count) =>
-       <Text value={count |> Format.iPretty} size=Text.Lg weight=Text.Semibold />
+     | Count(count) => <Text value={count |> Format.iPretty} size=Text.Lg weight=Text.Semibold />
      | Timestamp(time) =>
        <Text
          value={time |> MomentRe.Moment.format("MMM-DD-YYYY hh:mm:ss A [GMT]Z")}

@@ -86,12 +86,15 @@ let make = (~txHash, ~hashtag) => {
     </div>
     <VSpacing size=Spacing.xl />
     <Row>
-      <Col size=1.> <InfoHL info={InfoHL.Height(472395)} /> </Col>
-      <Col size=1.> <InfoHL info={InfoHL.MsgCount(1)} /> </Col>
+      <Col size=1.> <InfoHL info={InfoHL.Height(472395)} header="HEIGHT" /> </Col>
+      <Col size=1.> <InfoHL info={InfoHL.Count(1)} header="MESSAGES" /> </Col>
       <Col size=2.>
-        <InfoHL info={InfoHL.Timestamp(MomentRe.momentWithUnix(1578052800))} />
+        <InfoHL
+          info={InfoHL.Timestamp(MomentRe.momentWithUnix(1578052800))}
+          header="TIMESTAMP"
+        />
       </Col>
-      <Col size=2.5> <InfoHL info={InfoHL.Fee(0.0)} /> </Col>
+      <Col size=2.5> <InfoHL info={InfoHL.Fee(0.0)} header="FEE" /> </Col>
     </Row>
     <VSpacing size=Spacing.xl />
     <div className=Styles.seperatorLine />
