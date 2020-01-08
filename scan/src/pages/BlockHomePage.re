@@ -70,7 +70,7 @@ let renderBody = ((height, timestamp, proposer, totalTx, totalFee, blockReward))
           />
         </div>
       </Col>
-      <Col size=0.7>
+      <Col size=0.8>
         <div className=Styles.textContainer>
           <Text block=true value=blockReward size=Text.Md weight=Text.Semibold />
         </div>
@@ -106,7 +106,7 @@ let make = () => {
            ("PROPOSER", 2.0),
            ("TXN", 0.7),
            ("TOTAL FEE", 0.7),
-           ("BLOCK REWARD", 0.7),
+           ("BLOCK REWARD", 0.8),
          ]
          ->Belt.List.map(((title, size)) => {
              <Col size key=title>
