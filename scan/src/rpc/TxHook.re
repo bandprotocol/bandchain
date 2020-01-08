@@ -1,5 +1,17 @@
 module Msg = {
-  module OracleReport = {
+  module Send = {
+    // TODO
+  };
+
+  module Store = {
+    // TODO
+  };
+
+  module Request = {
+    // TODO
+  };
+
+  module Report = {
     type t = {
       requestId: int,
       data: string,
@@ -16,12 +28,12 @@ module Msg = {
 
   type t =
     | Unknown
-    | OracleReport(OracleReport.t);
+    | Report(Report.t);
 
   let decode = json =>
     JsonUtils.Decode.(
       switch (json |> field("type", string)) {
-      | "zoracle/Report" => OracleReport(json |> field("value", OracleReport.decode))
+      | "zoracle/Report" => Report(json |> field("value", Report.decode))
       | _ => Unknown
       }
     );
