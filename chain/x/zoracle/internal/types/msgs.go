@@ -113,8 +113,8 @@ func (msg MsgReport) GetSignBytes() []byte {
 
 // MsgStoreCode defines a Code and owner of this
 type MsgStoreCode struct {
-	Code  []byte
-	Owner sdk.AccAddress
+	Code  []byte         `json:"code"`
+	Owner sdk.AccAddress `json:"owner"`
 }
 
 // NewMsgStoreCode is a constructor function for MsgReport
@@ -159,8 +159,8 @@ func (msg MsgStoreCode) GetSignBytes() []byte {
 }
 
 type MsgDeleteCode struct {
-	CodeHash []byte
-	Owner    sdk.AccAddress
+	CodeHash []byte         `json:"codeHash"`
+	Owner    sdk.AccAddress `json:"owner"`
 }
 
 // NewMsgDeleteCode is a constructor function for MsgReport
