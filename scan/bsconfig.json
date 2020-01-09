@@ -3,10 +3,17 @@
   "reason": {
     "react-jsx": 3
   },
-  "sources": {
-    "dir": "src",
-    "subdirs": true
-  },
+  "sources": [
+    {
+      "dir": "src",
+      "subdirs": true
+    },
+    {
+      "dir": "__tests__",
+      "subdirs": true,
+      "type": "dev"
+    }
+  ],
   "bsc-flags": ["-bs-super-errors", "-bs-no-version-header"],
   "package-specs": [
     {
@@ -22,6 +29,7 @@
     "bs-moment",
     "bs-css"
   ],
+  "bs-dev-dependencies": ["@glennsl/bs-jest"],
   "refmt": 3,
   "ppx-flags": ["bs-let/ppx"]
 }
