@@ -26,13 +26,7 @@ let make = () => {
           </div>
         </Col>
         <Col size=1.3>
-          <Text
-            block=true
-            value="SOURCE & TYPE"
-            size=Text.Sm
-            weight=Text.Bold
-            color=Colors.grayText
-          />
+          <Text block=true value="TYPE" size=Text.Sm weight=Text.Bold color=Colors.grayText />
         </Col>
         <Col size=0.5>
           <div className=Transaction.Styles.feeCol>

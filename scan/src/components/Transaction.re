@@ -25,7 +25,7 @@ let txIcon =
 module Styles = {
   open Css;
 
-  let typeContainer = style([marginRight(`px(20))]);
+  let typeContainer = style([marginRight(`px(20)), maxWidth(`px(210))]);
 
   let txTypeOval = txType =>
     style([
@@ -55,6 +55,8 @@ module Styles = {
 
   let hashCol = style([maxWidth(`px(250))]);
   let feeCol = style([maxWidth(`px(80))]);
+
+  let textContainer = style([display(`flex)]);
 };
 
 let renderDataType = txType =>
@@ -63,14 +65,19 @@ let renderDataType = txType =>
       <Text value={txType->txLabel} size=Text.Xs block=true />
     </div>
     <VSpacing size=Spacing.xs />
-    <Text value={txType->txSource} size=Text.Lg weight=Text.Semibold block=true />
+    <Text value={txType->txSource} size=Text.Lg weight=Text.Semibold block=true ellipsis=true />
   </div>;
 
 let renderTxHash = (hash, time) => {
   <div className=Styles.hashCol>
-    <VSpacing size={`px(9)} />
     <TimeAgos time />
     <VSpacing size={`px(6)} />
+    <Text block=true code=true value=hash size=Text.Lg weight=Text.Bold ellipsis=true />
+  </div>;
+};
+
+let renderHash = hash => {
+  <div className=Styles.hashCol>
     <Text block=true code=true value=hash size=Text.Lg weight=Text.Bold ellipsis=true />
   </div>;
 };
@@ -81,5 +88,13 @@ let renderFee = fee => {
     <Text size=Text.Sm block=true value="$0.002" color=Colors.grayText />
     <VSpacing size={`px(4)} />
     <Text value={fee->Js.Float.toString ++ " BAND"} color=Colors.grayHeader weight=Text.Semibold />
+  </div>;
+};
+
+let renderHeight = height => {
+  <div className=Styles.textContainer>
+    <Text value="#" size=Text.Md weight=Text.Bold color=Colors.purple />
+    <HSpacing size=Spacing.xs />
+    <Text block=true value={height->string_of_int} size=Text.Md weight=Text.Bold />
   </div>;
 };

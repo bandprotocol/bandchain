@@ -19,66 +19,6 @@ module Styles = {
   let proposerBox = style([maxWidth(`px(270)), display(`flex), flexDirection(`column)]);
 };
 
-let renderBody = ((height, timestamp, proposer, totalTx, totalFee, blockReward)) => {
-  <TBody>
-    <Row>
-      <Col size=0.6>
-        <div className=Styles.textContainer>
-          <Text value="#" size=Text.Md weight=Text.Bold color=Colors.purple />
-          <HSpacing size=Spacing.xs />
-          <Text block=true value={height->string_of_int} size=Text.Md weight=Text.Bold />
-        </div>
-      </Col>
-      <Col size=0.8>
-        <div className=Styles.textContainer>
-          <TimeAgos time=timestamp size=Text.Md weight=Text.Semibold />
-        </div>
-      </Col>
-      <Col size=2.0>
-        <div className={Css.merge([Styles.textContainer, Styles.proposerBox])}>
-          <Text
-            block=true
-            value="Staked.us"
-            size=Text.Sm
-            weight=Text.Regular
-            color=Colors.grayHeader
-          />
-          <VSpacing size=Spacing.sm />
-          <Text
-            block=true
-            value=proposer
-            size=Text.Md
-            weight=Text.Bold
-            code=true
-            ellipsis=true
-            color=Colors.black
-          />
-        </div>
-      </Col>
-      <Col size=0.7>
-        <div className=Styles.textContainer>
-          <Text block=true value={totalTx->string_of_int} size=Text.Md weight=Text.Semibold />
-        </div>
-      </Col>
-      <Col size=0.7>
-        <div className=Styles.textContainer>
-          <Text
-            block=true
-            value={totalFee->Js.Float.toString ++ " BAND"}
-            size=Text.Md
-            weight=Text.Semibold
-          />
-        </div>
-      </Col>
-      <Col size=0.8>
-        <div className=Styles.textContainer>
-          <Text block=true value=blockReward size=Text.Md weight=Text.Semibold />
-        </div>
-      </Col>
-    </Row>
-  </TBody>;
-};
-
 [@react.component]
 let make = () => {
   <div className=Styles.pageContainer>
@@ -100,69 +40,97 @@ let make = () => {
     <VSpacing size=Spacing.xl />
     <THead>
       <Row>
-        {[
-           ("BLOCK", 0.6),
-           ("AGE", 0.8),
-           ("PROPOSER", 2.0),
-           ("TXN", 0.7),
-           ("TOTAL FEE", 0.7),
-           ("BLOCK REWARD", 0.8),
-         ]
-         ->Belt.List.map(((title, size)) => {
-             <Col size key=title>
-               <div className=Styles.textContainer>
-                 <Text
-                   block=true
-                   value=title
-                   size=Text.Sm
-                   weight=Text.Bold
-                   color=Colors.grayText
-                 />
-               </div>
-             </Col>
-           })
-         ->Array.of_list
-         ->React.array}
+        <Col> <div className=Transaction.Styles.txIcon /> </Col>
+        <Col size=1.0>
+          <div className=Transaction.Styles.hashCol>
+            <Text block=true value="TX HASH" size=Text.Sm weight=Text.Bold color=Colors.grayText />
+          </div>
+        </Col>
+        <Col size=1.1>
+          <Text block=true value="TYPE" size=Text.Sm weight=Text.Bold color=Colors.grayText />
+        </Col>
+        <Col size=0.65>
+          <Text block=true value="BLOCK" size=Text.Sm weight=Text.Bold color=Colors.grayText />
+        </Col>
+        <Col size=1.1>
+          <Text block=true value="SENDER" size=Text.Sm weight=Text.Bold color=Colors.grayText />
+        </Col>
+        <Col size=0.5>
+          <div className=Transaction.Styles.feeCol>
+            <Text block=true value="FEE" size=Text.Sm weight=Text.Bold color=Colors.grayText />
+          </div>
+        </Col>
       </Row>
     </THead>
     {[
        (
-         100,
+         Transaction.DataRequest("ETH/USD Price Feed"),
+         "0x123343020302302",
+         503000,
+         "0x1934838538483848348384",
+         MomentRe.momentWithUnix(1578548371),
+         0.13,
+       ),
+       (
+         DataRequest("ETH/BTC Price Feed"),
+         "0x123343020302302",
+         503000,
+         "0x1934838538483848348384",
+         MomentRe.momentWithUnix(1578448371),
+         0.13,
+       ),
+       (
+         NewScript("Anime Episodes Ranking - WINTER 2020"),
+         "0xd83ab82c9f838391283",
+         503000,
+         "0x1934838538483848348384",
          MomentRe.momentWithUnix(1578348371),
-         "bandvaloper1zpmsn2vg2zcrx4jlg49t2f2y2cwjykr6jnmyxv",
-         3,
-         0.0,
-         "N/A",
+         0.1,
        ),
        (
-         99,
-         MomentRe.momentWithUnix(1578346271),
-         "bandvaloper1zpmsn2vg2zcrx4jlg49t2f2y2cwjykr6jnmyxv",
-         3,
-         0.0,
-         "N/A",
+         DataRequest("ETH/BTC Price Feed"),
+         "0x123343020302302",
+         503000,
+         "0x1934838538483848348384",
+         MomentRe.momentWithUnix(1578348371),
+         0.13,
        ),
        (
-         98,
-         MomentRe.momentWithUnix(1578343271),
-         "bandvaloper1zpmsn2vg2zcrx4jlg49t2f2y2cwjykr6jnmyxv",
-         1,
-         0.0,
-         "N/A",
+         DataRequest("ETH/BTC Price Feed"),
+         "0x123343020302302",
+         503000,
+         "0x1934838538483848348384",
+         MomentRe.momentWithUnix(1578348371),
+         0.13,
        ),
        (
-         97,
-         MomentRe.momentWithUnix(1578341271),
-         "bandvaloper1zpmsn2vg2zcrx4jlg49t2f2y2cwjykr6jnmyxv",
-         2,
-         0.0,
-         "N/A",
+         NewScript("Anime Episodes Ranking - WINTER 2020"),
+         "0xd83ab82c9f838391283",
+         503000,
+         "0x1934838538483848348384",
+         MomentRe.momentWithUnix(1568548371),
+         0.1,
        ),
      ]
-     ->Belt.List.map(renderBody)
+     ->Belt.List.map(((type_, hash, height, sender, timestamp, fee)) => {
+         <TBody>
+           <Row>
+             <Col>
+               <img src={type_->Transaction.txIcon} className=Transaction.Styles.txIcon />
+             </Col>
+             <Col size=1.0> {Transaction.renderTxHash(hash, timestamp)} </Col>
+             <Col size=1.1> {type_ |> Transaction.renderDataType} </Col>
+             <Col size=0.65> {height |> Transaction.renderHeight} </Col>
+             <Col size=1.1> {sender |> Transaction.renderHash} </Col>
+             <Col size=0.5> {fee |> Transaction.renderFee} </Col>
+           </Row>
+         </TBody>
+       })
      ->Array.of_list
      ->React.array}
     <VSpacing size=Spacing.lg />
     <LoadMore />
+    <VSpacing size=Spacing.xl />
+    <VSpacing size=Spacing.xl />
   </div>;
 };
