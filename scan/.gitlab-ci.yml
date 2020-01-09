@@ -1,0 +1,10 @@
+scan-build:
+  image: node:8-alpine
+  stage: build
+  script:
+    - cd scan
+    - yarn
+    - yarn bsb -make-world
+  only:
+    changes:
+      - scan/**/*
