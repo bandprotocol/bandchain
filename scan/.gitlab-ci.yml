@@ -2,7 +2,7 @@ scan-build:
   image: node:8-alpine
   stage: build
   script:
-    - apk --no-cache add python
+    - apk --no-cache add python g++ gcc make
     - cd scan
     - yarn
     - yarn bsb -make-world
