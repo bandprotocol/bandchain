@@ -15,7 +15,7 @@ module Styles = {
 [@react.component]
 let make = (~info, ~header) => {
   <div className=Styles.hFlex>
-    <div className=Styles.headerContainer> <Text value=header color=Colors.darkerGrayText /> </div>
+    <div className=Styles.headerContainer> <Text value=header color=Colors.grayHeader /> </div>
     {switch (info) {
      | Height(height) =>
        <div className=Styles.vFlex>
@@ -28,10 +28,10 @@ let make = (~info, ~header) => {
        <Text
          value={time |> MomentRe.Moment.format("MMM-DD-YYYY hh:mm:ss A [GMT]Z")}
          size=Text.Lg
-         weight=Text.Semibold
+         weight=Text.Bold
        />
      | Fee(fee) =>
-       <Text value={(fee |> Format.fPretty) ++ " BAND"} size=Text.Lg weight=Text.Semibold />
+       <Text value={(fee |> Format.fPretty) ++ " BAND"} size=Text.Lg weight=Text.Bold />
      }}
   </div>;
 };

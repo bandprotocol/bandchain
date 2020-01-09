@@ -24,10 +24,10 @@ module Styles = {
       height(`px(1)),
       marginLeft(`px(10)),
       marginRight(`px(10)),
-      backgroundColor(Colors.darkerGrayText),
+      backgroundColor(Colors.grayHeader),
     ]);
 
-  let addressContainer = style([marginTop(`px(20)), marginBottom(`px(15))]);
+  let addressContainer = style([marginTop(`px(15))]);
 
   let successBadge =
     style([
@@ -60,8 +60,9 @@ let make = (~txHash, ~hashtag) => {
           <Text
             value="TRANSACTION"
             weight=Text.Semibold
+            size=Text.Lg
             nowrap=true
-            color=Colors.darkerGrayText
+            color=Colors.grayHeader
             block=true
           />
           <HSpacing size=Spacing.sm />
@@ -77,7 +78,7 @@ let make = (~txHash, ~hashtag) => {
       <Col>
         <div className=Styles.successBadge>
           <img src=Images.checkIcon className=Styles.checkLogo />
-          <Text value="Success" size=Text.Lg weight=Text.Semibold />
+          <Text value="Success" size=Text.Lg weight=Text.Semibold color=Colors.darkGreen />
         </div>
       </Col>
     </Row>
