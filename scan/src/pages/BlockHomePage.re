@@ -3,7 +3,7 @@ module Styles = {
 
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
-  let pageContainer = style([paddingTop(`px(50)), minHeight(`px(600))]);
+  let pageContainer = style([paddingTop(`px(50)), minHeight(`px(500))]);
 
   let seperatedLine =
     style([
@@ -162,5 +162,7 @@ let make = () => {
      ->Belt.List.map(renderBody)
      ->Array.of_list
      ->React.array}
+    <VSpacing size=Spacing.lg />
+    <LoadMore />
   </div>;
 };
