@@ -1,7 +1,7 @@
 module Styles = {
   open Css;
 
-  let pageContainer = style([marginTop(`px(60))]);
+  let pageContainer = style([paddingTop(`px(50))]);
 
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
@@ -24,7 +24,7 @@ module Styles = {
       height(`px(1)),
       marginLeft(`px(10)),
       marginRight(`px(10)),
-      backgroundColor(`hex("555555")),
+      backgroundColor(Colors.darkerGrayText),
     ]);
 
   let addressContainer = style([marginTop(`px(20)), marginBottom(`px(15))]);
@@ -61,7 +61,7 @@ let make = (~txHash, ~hashtag) => {
             value="TRANSACTION"
             weight=Text.Semibold
             nowrap=true
-            color={Css.hex("555555")}
+            color=Colors.darkerGrayText
             block=true
           />
           <HSpacing size=Spacing.sm />
