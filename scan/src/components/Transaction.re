@@ -129,7 +129,7 @@ let make = (~type_, ~hash, ~timestamp, ~fee) => {
           <VSpacing size={`px(4)} />
           <Text size=Text.Sm block=true value="$0.002" color=Colors.grayText />
           <VSpacing size={`px(4)} />
-          <Text value=fee color=Colors.darkerGrayText weight=Text.Semibold />
+          <Text value=fee color=Colors.grayHeader weight=Text.Semibold />
         </div>
       </Col>
     </Row>
