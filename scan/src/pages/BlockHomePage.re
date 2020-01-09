@@ -11,7 +11,7 @@ module Styles = {
       height(`px(1)),
       marginLeft(`px(10)),
       marginRight(`px(10)),
-      backgroundColor(Colors.darkerGrayText),
+      backgroundColor(Colors.grayHeader),
     ]);
 
   let textContainer = style([paddingLeft(Spacing.lg), display(`flex)]);
@@ -41,7 +41,7 @@ let renderBody = ((height, timestamp, proposer, totalTx, totalFee, blockReward))
             value="Staked.us"
             size=Text.Sm
             weight=Text.Regular
-            color=Colors.darkerGrayText
+            color=Colors.grayHeader
           />
           <VSpacing size=Spacing.sm />
           <Text
@@ -90,7 +90,7 @@ let make = () => {
             weight=Text.Bold
             size=Text.Xl
             nowrap=true
-            color=Colors.darkerGrayText
+            color=Colors.grayHeader
           />
           <div className=Styles.seperatedLine />
           <Text value="86,230 in total" />
