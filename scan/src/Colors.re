@@ -13,7 +13,7 @@ let orange = Css.hex("FF9C9C");
 
 let green = Css.hex("6BCA4A");
 
-let greenDark = Css.hex("127658");
+let darkGreen = Css.hex("127658");
 
 let grayText = Css.hex("A4A4A4");
 let grayHeader = Css.hex("555555");

@@ -78,7 +78,7 @@ let make = (~txHash, ~hashtag) => {
       <Col>
         <div className=Styles.successBadge>
           <img src=Images.checkIcon className=Styles.checkLogo />
-          <Text value="Success" size=Text.Lg weight=Text.Semibold color=Colors.greenDark />
+          <Text value="Success" size=Text.Lg weight=Text.Semibold color=Colors.darkGreen />
         </div>
       </Col>
     </Row>
