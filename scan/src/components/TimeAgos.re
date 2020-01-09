@@ -14,7 +14,7 @@ function() {
 ];
 
 [@react.component]
-let make = (~time) => {
+let make = (~time, ~size=Text.Sm, ~weight=Text.Regular) => {
   let (displayTime, setDisplayTime) =
     React.useState(_ => time->MomentRe.Moment.fromNow(~withoutSuffix=None));
 
@@ -30,5 +30,5 @@ let make = (~time) => {
     [|time|],
   );
 
-  <Text value=displayTime size=Text.Sm />;
+  <Text value=displayTime size weight/>;
 };
