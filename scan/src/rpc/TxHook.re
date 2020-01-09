@@ -1,16 +1,29 @@
+module Coin = {
+  type t = {
+    denom: string,
+    amount: float,
+  };
+
+  let decodeCoin = json =>
+    JsonUtils.Decode.{
+      denom: json |> field("denom", string),
+      amount: json |> field("amount", uamount),
+    };
+};
+
 module Msg = {
   module Send = {
     type t = {
       fromAddress: string,
       toAddress: string,
-      amount: string,
+      amount: list(Coin.t),
     };
 
     let decode = json =>
       JsonUtils.Decode.{
         fromAddress: json |> field("from_address", string),
         toAddress: json |> field("to_address", string),
-        amount: json |> field("amount", string),
+        amount: json |> field("amount", list(Coin.decodeCoin)),
       };
   };
 
@@ -22,9 +35,8 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
-        // TODO: change to `code` and `owner` after update node
-        code: json |> field("Code", string),
-        owner: json |> field("Owner", string),
+        code: json |> field("code", string),
+        owner: json |> field("owner", string),
       };
   };
 
@@ -99,8 +111,7 @@ module Tx = {
       messages: json |> at(["tx", "value", "msg"], list(Msg.decode)),
     };
 
-  let decodeTxs = json =>
-    JsonUtils.Decode.(json |> field("txs", list(decodeTx)));
+  let decodeTxs = json => JsonUtils.Decode.(json |> field("txs", list(decodeTx)));
 };
 
 let at_hash = tx_hash => {
@@ -109,21 +120,11 @@ let at_hash = tx_hash => {
 };
 
 let at_height = (height, ~page=1, ~limit=25, ~pollInterval=?, ()) => {
-  let json =
-    Axios.use(
-      {j|txs?tx.height=$height&page=$page&limit=$limit|j},
-      ~pollInterval?,
-      (),
-    );
+  let json = Axios.use({j|txs?tx.height=$height&page=$page&limit=$limit|j}, ~pollInterval?, ());
   json |> Belt.Option.map(_, Tx.decodeTxs);
 };
 
 let latest = (~page=1, ~limit=10, ~pollInterval=?, ()) => {
-  let json =
-    Axios.use(
-      {j|d3n/txs/latest?page=$page&limit=$limit|j},
-      ~pollInterval?,
-      (),
-    );
+  let json = Axios.use({j|d3n/txs/latest?page=$page&limit=$limit|j}, ~pollInterval?, ());
   json |> Belt.Option.map(_, Tx.decodeTxs);
 };
