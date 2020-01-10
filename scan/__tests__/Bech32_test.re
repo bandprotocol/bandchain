@@ -131,7 +131,7 @@ describe("Expect Bech32 to work correctly", () => {
   );
 
   Expect.(
-    test("should be able encode correctly", () =>
+    test("should be able to encode correctly", () =>
       expect(
         [|
           9,
@@ -174,7 +174,7 @@ describe("Expect Bech32 to work correctly", () => {
   );
 
   Expect.(
-    test("should be able decode correctly", () =>
+    test("should be able to decode correctly", () =>
       expect("bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0"->decode)
       |> toEqual(
            Bech32.decoded_t(

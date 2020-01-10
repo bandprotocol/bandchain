@@ -3,7 +3,7 @@ open PubKey;
 
 describe("Expect PubKey to work correctly", () => {
   Expect.(
-    test("should be able create PubKey from hex", () =>
+    test("should be able to create PubKey from hex", () =>
       expect(
         "eb5ae9872103a54ffaa84c8f2f798782de8b962a84784e288487a747813a0857243a60e2ba33"->fromHex,
       )
@@ -14,7 +14,7 @@ describe("Expect PubKey to work correctly", () => {
   );
 
   Expect.(
-    test("should be able create PubKey from hex with 0x prefix", () =>
+    test("should be able to create PubKey from hex with 0x prefix", () =>
       expect(
         "0xeb5ae9872103a54ffaa84c8f2f798782de8b962a84784e288487a747813a0857243a60e2ba33"->fromHex,
       )
@@ -25,7 +25,7 @@ describe("Expect PubKey to work correctly", () => {
   );
 
   Expect.(
-    test("should be able create PubKey from fromBech32", () =>
+    test("should be able to create PubKey from fromBech32", () =>
       expect(
         "bandvalconspub1addwnpepq0grwz83v8g4s06fusnq5s4jkzxnhgvx67qr5g7v8tx39ur5m8tk7rg2nxj"
         ->fromBech32,
