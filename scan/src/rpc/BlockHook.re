@@ -23,7 +23,7 @@ let latest = (~page=1, ~limit=10, ~pollInterval=?, ()) => {
   json |> Belt.Option.map(_, Block.decodeBlocks);
 };
 
-let at_height = (height, ~pollInterval=?, ()) => {
+let atHeight = (height, ~pollInterval=?, ()) => {
   let json = Axios.use({j|blocks/$height|j}, ~pollInterval?, ());
   json |> Belt.Option.map(_, Block.decodeBlock);
 };
