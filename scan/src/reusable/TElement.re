@@ -3,7 +3,7 @@ module Styles = {
 
   let typeContainer = style([marginRight(`px(20)), maxWidth(`px(210))]);
 
-  let txTypeOval = () =>
+  let txTypeOval =
     style([
       marginLeft(`px(-2)),
       display(`inlineFlex),
@@ -32,9 +32,7 @@ module Styles = {
 
 let renderTxType = txType =>
   <div className=Styles.typeContainer>
-    <div className={Styles.txTypeOval()}>
-      <Text value="DATA REQUEST" size=Text.Xs block=true />
-    </div>
+    <div className=Styles.txTypeOval> <Text value="DATA REQUEST" size=Text.Xs block=true /> </div>
     <VSpacing size=Spacing.xs />
     <Text value="ETH/USD Price Feed" size=Text.Lg weight=Text.Semibold block=true ellipsis=true />
   </div>;
@@ -73,7 +71,9 @@ let renderHeight = height => {
 let msgIcon =
   fun
   | TxHook.Msg.Store(_) => Images.newScript
+  | Send(_) => Images.sendCoin
   | Request(_) => Images.dataRequest
+  | Report(_) => Images.report
   | _ => Images.checkIcon;
 
 type t =
