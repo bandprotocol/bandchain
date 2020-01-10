@@ -54,6 +54,14 @@ func main() {
 		panic(err)
 	}
 
+	// Send token
+	// to, _ := sdk.AccAddressFromBech32("band13zmknvkq2sj920spz90g4r9zjan8g584x8qalj")
+	// fmt.Println(tx.SendTransaction(bank.MsgSend{
+	// 	FromAddress: tx.Sender(),
+	// 	ToAddress:   to,
+	// 	Amount:      sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(10))),
+	// }, flags.BroadcastBlock))
+
 	// Send transaction to store code first (commend it if already stored code)
 	fmt.Println(tx.SendTransaction(zoracle.NewMsgStoreCode(bytes, tx.Sender()), flags.BroadcastBlock))
 
