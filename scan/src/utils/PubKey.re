@@ -18,14 +18,15 @@ let toAddress =
     ->RIPEMD160.hexDigest
     ->Address.fromHex;
 
-let toHex =
+let toHex = (~with0x=false) =>
   fun
-  | PubKey(hexstr) => hexstr;
+  | PubKey(hexstr) => (with0x ? "0x" : "") ++ hexstr;
 
-let toPubKeyHexOnly =
+let toPubKeyHexOnly = (~with0x=false) =>
   fun
   | PubKey(hexstr) =>
-    hexstr->JsBuffer.hexToArray->Belt_Array.sliceToEnd(-33)->JsBuffer.arrayToHex;
+    (with0x ? "0x" : "")
+    ++ hexstr->JsBuffer.hexToArray->Belt_Array.sliceToEnd(-33)->JsBuffer.arrayToHex;
 
 let toBech32 =
   fun

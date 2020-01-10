@@ -8,7 +8,8 @@ let fromHex = hexstr => hexstr->HexUtils.normalizeHexString->_from("hex");
 let fromBase64 = hexstr => _from(hexstr, "base64");
 
 [@bs.send] external _toString: (t, string) => string = "toString";
-let toHex = buf => buf->_toString("hex");
+let toHex = (~with0x=false, buf) => (with0x ? "0x" : "") ++ buf->_toString("hex");
+
 let toBase64 = buf => buf->_toString("base64");
 
 [@bs.val] external toArray: t => array(int) = "Array.from";

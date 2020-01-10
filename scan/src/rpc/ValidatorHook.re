@@ -1,7 +1,7 @@
 module Validator = {
   type t = {
-    operatorAddress: string,
-    consensusPubkey: string,
+    operatorAddress: Address.t,
+    consensusPubkey: PubKey.t,
     moniker: string,
     identity: string,
     website: string,
@@ -11,8 +11,8 @@ module Validator = {
 
   let decodeValidator = json =>
     JsonUtils.Decode.{
-      operatorAddress: json |> field("operator_address", string),
-      consensusPubkey: json |> field("consensus_pubkey", string),
+      operatorAddress: json |> field("operator_address", string) |> Address.fromBech32,
+      consensusPubkey: json |> field("consensus_pubkey", string) |> PubKey.fromBech32,
       moniker: json |> at(["description", "moniker"], string),
       identity: json |> at(["description", "identity"], string),
       website: json |> at(["description", "website"], string),
