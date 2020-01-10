@@ -9,8 +9,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	"github.com/gorilla/mux"
-
-	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 )
 
 func getRequestHandler(cliCtx context.CLIContext, storeName string) http.HandlerFunc {
@@ -39,8 +37,8 @@ func getScriptHandler(cliCtx context.CLIContext, storeName string) http.HandlerF
 			return
 		}
 
-		var scriptInfo types.ScriptInfo
-		err = cliCtx.Codec.UnmarshalJSON(res, &scriptInfo)
+		var scriptInfo ScriptInfoWithTx
+		err = cliCtx.Codec.UnmarshalJSON(res, &scriptInfo.Info)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusNotFound, err.Error())
 			return

@@ -71,6 +71,9 @@ func ParseFields(raw []byte) ([]Field, error) {
 	}
 	fields := make([]Field, len(data))
 	for idx, row := range data {
+		if len(row) != 2 {
+			return nil, fmt.Errorf("Invalid field format")
+		}
 		fields[idx] = Field{
 			Name: row[0],
 			Type: row[1],
@@ -92,8 +95,6 @@ type ScriptInfo struct {
 	Params      []Field        `json:"params"`
 	DataSources []Field        `json:"dataSources"`
 	Creator     sdk.AccAddress `json:"creator"`
-	TxHash      string         `json:"txhash"`
-	CreatedAt   int64          `json:"createdAt"`
 }
 
 func NewScriptInfo(name string, rawParams, rawDataSources []Field, creator sdk.AccAddress) ScriptInfo {

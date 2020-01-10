@@ -64,10 +64,10 @@ func queryPending(ctx sdk.Context, path []string, req abci.RequestQuery, keeper 
 	return res, nil
 }
 
-// queryPending is a query function to get the list of request IDs that are still on pending status.
+// queryScript is a query function to get infomation of stored wasm code
 func queryScript(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
 	if len(path) == 0 {
-		return nil, sdk.ErrInternal("must specify the requestid")
+		return nil, sdk.ErrInternal("must specify the codehash")
 	}
 	codeHash, err := hex.DecodeString(path[0])
 	if err != nil {
@@ -91,22 +91,24 @@ func queryScript(ctx sdk.Context, path []string, req abci.RequestQuery, keeper K
 	rawParamsInfo, err := wasm.ParamsInfo(code.Code)
 	var paramsInfo []types.Field
 	if err != nil {
-		paramsInfo = []types.Field{}
-	}
-	paramsInfo, err = types.ParseFields(rawParamsInfo)
-	if err != nil {
-		paramsInfo = []types.Field{}
+		paramsInfo = nil
+	} else {
+		paramsInfo, err = types.ParseFields(rawParamsInfo)
+		if err != nil {
+			paramsInfo = nil
+		}
 	}
 
 	// Get raw data sources info
 	rawDataInfo, err := wasm.RawDataInfo(code.Code)
 	var dataInfo []types.Field
 	if err != nil {
-		dataInfo = []types.Field{}
-	}
-	dataInfo, err = types.ParseFields(rawDataInfo)
-	if err != nil {
-		dataInfo = []types.Field{}
+		dataInfo = nil
+	} else {
+		dataInfo, err = types.ParseFields(rawDataInfo)
+		if err != nil {
+			dataInfo = nil
+		}
 	}
 
 	return codec.MustMarshalJSONIndent(keeper.cdc, types.NewScriptInfo(name, paramsInfo, dataInfo, code.Owner)), nil
