@@ -29,13 +29,13 @@ module Msg = {
 
   module Store = {
     type t = {
-      code: string,
+      code: JsBuffer.t,
       owner: Address.t,
     };
 
     let decode = json =>
       JsonUtils.Decode.{
-        code: json |> field("code", string),
+        code: json |> field("code", string) |> JsBuffer.fromBase64,
         owner: json |> field("owner", string) |> Address.fromBech32,
       };
   };
@@ -43,7 +43,7 @@ module Msg = {
   module Request = {
     type t = {
       codeHash: Hash.t,
-      params: string,
+      params: JsBuffer.t,
       reportPeriod: int,
       sender: Address.t,
     };
@@ -51,7 +51,7 @@ module Msg = {
     let decode = json =>
       JsonUtils.Decode.{
         codeHash: json |> field("codeHash", string) |> Hash.fromBase64,
-        params: json |> field("params", string),
+        params: json |> field("params", string) |> JsBuffer.fromBase64,
         reportPeriod: json |> field("reportPeriod", intstr),
         sender: json |> field("sender", string) |> Address.fromBech32,
       };
@@ -60,14 +60,14 @@ module Msg = {
   module Report = {
     type t = {
       requestId: int,
-      data: string,
+      data: JsBuffer.t,
       validator: Address.t,
     };
 
     let decode = json =>
       JsonUtils.Decode.{
         requestId: json |> field("requestID", intstr),
-        data: json |> field("data", string),
+        data: json |> field("data", string) |> JsBuffer.fromBase64,
         validator: json |> field("validator", string) |> Address.fromBech32,
       };
   };
