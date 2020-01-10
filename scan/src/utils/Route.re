@@ -6,7 +6,8 @@ type t =
   | TxHomePage
   | TxIndexPage(string, string)
   | BlockHomePage
-  | BlockIndexPage(string, string);
+  | BlockIndexPage(string, string)
+  | RequestIndexPage(string, string);
 
 let fromUrl = (url: ReasonReactRouter.url) =>
   switch (url.path, url.hash) {
@@ -16,6 +17,7 @@ let fromUrl = (url: ReasonReactRouter.url) =>
   | (["tx", txHash], hashtag) => TxIndexPage(txHash, hashtag)
   | (["blocks"], _) => BlockHomePage
   | (["block", blockHeight], hashtag) => BlockIndexPage(blockHeight, hashtag)
+  | (["request", reqID], hashtag) => RequestIndexPage(reqID, hashtag)
   | ([], "") => HomePage
   | (_, _) => NotFound
   };
@@ -31,6 +33,8 @@ let toString =
   | BlockHomePage => "/blocks"
   | BlockIndexPage(height, "") => {j|/block/$height|j}
   | BlockIndexPage(height, hashtag) => {j|/block/$height#$hashtag|j}
+  | RequestIndexPage(reqID, "") => {j|/request/$reqID|j}
+  | RequestIndexPage(reqID, hashtag) => {j|/request/$reqID#$hashtag|j}
   | HomePage
   | NotFound => "/";
 

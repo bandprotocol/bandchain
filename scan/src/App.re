@@ -80,6 +80,7 @@ let make = () => {
        | TxIndexPage(txHash, hashtag) => <TxIndexPage txHash hashtag />
        | BlockHomePage => <BlockHomePage />
        | BlockIndexPage(height, hashtag) => <BlockIndexPage height hashtag />
+       | RequestIndexPage(reqID, hashtag) => <RequestIndexPage reqID hashtag />
        | NotFound =>
          ReasonReactRouter.replace("/");
          React.null;
