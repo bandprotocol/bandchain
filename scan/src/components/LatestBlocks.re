@@ -26,7 +26,12 @@ let renderBlock = (b: BlockHook.Block.t) =>
     <VSpacing size=Spacing.md />
     <Text value="PROPOSED BY" block=true size=Text.Xs color=Colors.grayText />
     <VSpacing size=Spacing.xs />
-    <Text block=true value={b.proposer} weight=Text.Semibold ellipsis=true/>
+    <Text
+      block=true
+      value={b.proposer |> Address.toHex(~with0x=true)}
+      weight=Text.Semibold
+      ellipsis=true
+    />
   </div>;
 
 [@react.component]

@@ -9,6 +9,6 @@ let toBase64 =
   fun
   | Hash(hash) => hash->JsBuffer.hexToBase64;
 
-let toHex =
+let toHex = (~with0x=false) =>
   fun
-  | Hash(hash) => hash;
+  | Hash(hexstr) => (with0x ? "0x" : "") ++ hexstr;

@@ -5,7 +5,7 @@ open Expect;
 describe("Expect PubKey to work correctly", () => {
   test("should be able to create PubKey from hex", () =>
     expect(
-      "eb5ae9872103a54ffaa84c8f2f798782de8b962a84784e288487a747813a0857243a60e2ba33"->fromHex,
+      "eb5ae9872103a54ffaa84c8f2f798782de8b962a84784e288487a747813a0857243a60e2ba33" |> fromHex,
     )
     |> toEqual(
          PubKey("eb5ae9872103a54ffaa84c8f2f798782de8b962a84784e288487a747813a0857243a60e2ba33"),
@@ -14,17 +14,25 @@ describe("Expect PubKey to work correctly", () => {
 
   test("should be able to create PubKey from hex with 0x prefix", () =>
     expect(
-      "0xeb5ae9872103a54ffaa84c8f2f798782de8b962a84784e288487a747813a0857243a60e2ba33"->fromHex,
+      "0xeb5ae9872103a54ffaa84c8f2f798782de8b962a84784e288487a747813a0857243a60e2ba33" |> fromHex,
     )
     |> toEqual(
          PubKey("eb5ae9872103a54ffaa84c8f2f798782de8b962a84784e288487a747813a0857243a60e2ba33"),
        )
   );
 
+  test("should be able to get hexString with 0x prefix", () =>
+    expect(
+      fromHex("eb5ae9872103a54ffaa84c8f2f798782de8b962a84784e288487a747813a0857243a60e2ba33")
+      |> toHex(~with0x=true),
+    )
+    |> toBe("0xeb5ae9872103a54ffaa84c8f2f798782de8b962a84784e288487a747813a0857243a60e2ba33")
+  );
+
   test("should be able to create PubKey from fromBech32", () =>
     expect(
       "bandvalconspub1addwnpepq0grwz83v8g4s06fusnq5s4jkzxnhgvx67qr5g7v8tx39ur5m8tk7rg2nxj"
-      ->fromBech32,
+      |> fromBech32,
     )
     |> toEqual(
          PubKey("eb5ae9872103d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f"),
@@ -32,7 +40,7 @@ describe("Expect PubKey to work correctly", () => {
   );
 
   test("should be able to convert self to hex", () =>
-    expect("AjW2GKsPDp9Isa8y9Wt42VXEMieYk3FHN6k3A1AkuDxY"->fromBase64)
+    expect("AjW2GKsPDp9Isa8y9Wt42VXEMieYk3FHN6k3A1AkuDxY" |> fromBase64)
     |> toEqual(PubKey("0235b618ab0f0e9f48b1af32f56b78d955c432279893714737a937035024b83c58"))
   );
 
@@ -65,7 +73,7 @@ describe("Expect PubKey to work correctly", () => {
   test("should be able to convert self to hex", () =>
     expect(
       PubKey("eb5ae9872103d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f")
-      ->toHex,
+      |> toHex,
     )
     |> toEqual("eb5ae9872103d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f")
   );
@@ -73,15 +81,23 @@ describe("Expect PubKey to work correctly", () => {
   test("should be able to convert self to hex", () =>
     expect(
       PubKey("eb5ae9872103d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f")
-      ->toPubKeyHexOnly,
+      |> toPubKeyHexOnly,
     )
     |> toEqual("03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f")
+  );
+
+  test("should be able to convert self to hex with 0x", () =>
+    expect(
+      PubKey("eb5ae9872103d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f")
+      |> toPubKeyHexOnly(~with0x=true),
+    )
+    |> toEqual("0x03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f")
   );
 
   test("should be able to convert self to bech32", () =>
     expect(
       PubKey("eb5ae9872103d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f")
-      ->toBech32,
+      |> toBech32,
     )
     |> toEqual(
          "bandvalconspub1addwnpepq0grwz83v8g4s06fusnq5s4jkzxnhgvx67qr5g7v8tx39ur5m8tk7rg2nxj",
