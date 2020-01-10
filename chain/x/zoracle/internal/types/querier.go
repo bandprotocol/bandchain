@@ -20,10 +20,22 @@ func (u64a U64Array) String() string {
 	return fmt.Sprintf("%v", []uint64(u64a))
 }
 
+type ReportDetail struct {
+	Reporter sdk.AccAddress `json:"reporter"`
+	TxHash   string         `json:"txhash"`
+	ReportAt uint64         `json:"reportAt"`
+	Value    interface{}    `json:"value"`
+}
+
 type RequestWithReport struct {
-	Request
-	Result  []byte            `json:"result"`
-	Reports []ValidatorReport `json:"reports"`
+	// Script
+	CodeHash    []byte         `json:"codeHash"`
+	Params      interface{}    `json:"params"`
+	TargetBlock uint64         `json:"targetBlock"`
+	Requester   sdk.AccAddress `json:"requester"`
+	RequestAt   uint64         `json:"requestAt"`
+	Reports     []ReportDetail `json:"reports"`
+	Result      []byte         `json:"result"`
 }
 
 func NewRequestWithReport(request Request, result []byte, reports []ValidatorReport) RequestWithReport {
