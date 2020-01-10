@@ -29,9 +29,9 @@ func getRequestHandler(cliCtx context.CLIContext, storeName string) http.Handler
 func getScriptHandler(cliCtx context.CLIContext, storeName string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		codeHash := vars[codeHash]
+		hash := vars[codeHash]
 
-		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/script/%s", storeName, codeHash), nil)
+		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/script/%s", storeName, hash), nil)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusNotFound, err.Error())
 			return
