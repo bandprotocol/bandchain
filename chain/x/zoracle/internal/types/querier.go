@@ -92,6 +92,8 @@ type ScriptInfo struct {
 	Params      []Field        `json:"params"`
 	DataSources []Field        `json:"dataSources"`
 	Creator     sdk.AccAddress `json:"creator"`
+	TxHash      string         `json:"txhash"`
+	CreatedAt   int64          `json:"createdAt"`
 }
 
 func NewScriptInfo(name string, rawParams, rawDataSources []Field, creator sdk.AccAddress) ScriptInfo {
