@@ -109,9 +109,5 @@ func queryScript(ctx sdk.Context, path []string, req abci.RequestQuery, keeper K
 		dataInfo = []types.Field{}
 	}
 
-	res, err := codec.MarshalJSONIndent(keeper.cdc, types.NewScriptInfo(name, paramsInfo, dataInfo, code.Owner))
-	if err != nil {
-		panic("could not marshal result to JSON")
-	}
-	return res, nil
+	return codec.MustMarshalJSONIndent(keeper.cdc, types.NewScriptInfo(name, paramsInfo, dataInfo, code.Owner)), nil
 }
