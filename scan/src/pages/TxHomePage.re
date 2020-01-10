@@ -130,7 +130,7 @@ let make = () => {
              <Col size=1.1> <TElement elementType={messages->TElement.TxType} /> </Col>
              <Col size=0.65> <TElement elementType={TElement.Height(blockHeight)} /> </Col>
              <Col size=1.1> <TElement elementType={hash->TElement.Hash} /> </Col>
-             <Col size=0.5> <TElement elementType={TElement.Fee(gasUsed, true)} /> </Col>
+             <Col size=0.5> <TElement elementType={gasUsed->TElement.Fee} /> </Col>
            </Row>
          </TBody>
        })

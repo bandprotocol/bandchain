@@ -78,14 +78,10 @@ let renderAddress = address => {
   </div>;
 };
 
-let renderFee = (fee, hasUsd) => {
+let renderFee = fee => {
   <div className=Styles.feeContainer>
-    {hasUsd
-       ? <>
-           <VSpacing size={`px(4)} />
-           <Text size=Text.Sm block=true value="$0.002" color=Colors.grayText />
-         </>
-       : React.null}
+    <VSpacing size={`px(4)} />
+    <Text size=Text.Sm block=true value="$0.002" color=Colors.grayText />
     <VSpacing size={`px(4)} />
     <Text value={fee->Format.iPretty ++ " BAND"} color=Colors.grayHeader weight=Text.Semibold />
   </div>;
@@ -124,7 +120,7 @@ type t =
   | Timestamp(MomentRe.Moment.t)
   | TxHash(Hash.t, MomentRe.Moment.t)
   | TxType(list(TxHook.Msg.t))
-  | Fee(int, bool)
+  | Fee(int)
   | Hash(Hash.t)
   | Address(Address.t);
 
@@ -137,7 +133,7 @@ let make = (~elementType) => {
   | Timestamp(time) => renderTime(time)
   | TxHash(hash, timestamp) => renderTxHash(hash, timestamp)
   | TxType(msg) => renderTxType(msg)
-  | Fee(fee, hasUsd) => renderFee(fee, hasUsd)
+  | Fee(fee) => renderFee(fee)
   | Hash(hash) => renderHash(hash)
   | Address(address) => renderAddress(address)
   };

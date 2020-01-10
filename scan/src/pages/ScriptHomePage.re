@@ -111,7 +111,7 @@ let make = () => {
              <Col size=1.1> <TElement elementType={scriptHash->TElement.Hash} /> </Col>
              <Col size=0.65> <TElement elementType={timestamp->TElement.Timestamp} /> </Col>
              <Col size=1.1> <TElement elementType={creator->TElement.Address} /> </Col>
-             <Col size=0.5> <TElement elementType={TElement.Fee(fee, false)} /> </Col>
+             <Col size=0.5> <TElement elementType={fee->TElement.Fee} /> </Col>
            </Row>
          </TBody>
        })

@@ -102,7 +102,7 @@ let make = () => {
              <Col> <TElement elementType={messages->Belt.List.getExn(0)->TElement.Icon} /> </Col>
              <Col size=1.3> <TElement elementType={TElement.TxHash(hash, timestamp)} /> </Col>
              <Col size=1.3> <TElement elementType={messages->TElement.TxType} /> </Col>
-             <Col size=0.5> <TElement elementType={TElement.Fee(gasUsed, true)} /> </Col>
+             <Col size=0.5> <TElement elementType={gasUsed->TElement.Fee} /> </Col>
            </Row>
          </TBody>
        })
