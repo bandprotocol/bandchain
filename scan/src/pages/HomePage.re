@@ -18,18 +18,6 @@ module Styles = {
 
   let rightArrow = style([width(`px(13)), marginLeft(`px(5))]);
 
-  let seeMoreContainer =
-    style([
-      width(`percent(100.)),
-      boxShadow(Shadow.box(~x=`px(0), ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
-      backgroundColor(white),
-      display(`flex),
-      justifyContent(`center),
-      alignItems(`center),
-      height(`px(30)),
-      cursor(`pointer),
-    ]);
-
   let skip = style([marginTop(`px(380))]);
 
   let bg =
@@ -93,52 +81,7 @@ let make = () => {
             {renderSeeAll()}
           </div>
           <VSpacing size=Spacing.lg />
-          {Transaction.renderHeader()}
-          <Transaction
-            type_={Transaction.DataRequest("ETH/USD Price Feed")}
-            hash="0x128f12db1a99dce2937"
-            fee="0.10 BAND"
-            timestamp={<TimeAgos time={MomentRe.momentWithUnix(1578348371)} />}
-          />
-          <Transaction
-            type_={Transaction.NewScript("Anime Episodes Ranking - WINTER 2020")}
-            hash="0xd83ab82c9f838391283"
-            fee="0.10 BAND"
-            timestamp={<TimeAgos time={MomentRe.momentWithUnix(1578338371)} />}
-          />
-          <Transaction
-            type_={Transaction.DataRequest("ETH/BTC Price Feed")}
-            hash="0xc83128273823dce2937"
-            fee="0.10 BAND"
-            timestamp={<TimeAgos time={MomentRe.momentWithUnix(1578328371)} />}
-          />
-          <Transaction
-            type_={Transaction.DataRequest("ETH/USD Price Feed")}
-            hash="0xd293f12db1a99dceabb"
-            fee="0.10 BAND"
-            timestamp={<TimeAgos time={MomentRe.momentWithUnix(1578318371)} />}
-          />
-          <Transaction
-            type_={Transaction.DataRequest("BTC/USD Price Feed")}
-            hash="0x128f12db1a99dce2937"
-            fee="0.10 BAND"
-            timestamp={<TimeAgos time={MomentRe.momentWithUnix(1578308371)} />}
-          />
-          <Transaction
-            type_={Transaction.NewScript("BTC/USD Price Feed")}
-            hash="0xabcdef1234deadbeef2"
-            fee="0.10 BAND"
-            timestamp={<TimeAgos time={MomentRe.momentWithUnix(1578218371)} />}
-          />
-          <div className=Styles.seeMoreContainer>
-            <Text
-              value="SEE MORE"
-              size=Text.Sm
-              weight=Text.Bold
-              block=true
-              color=Colors.grayText
-            />
-          </div>
+          <LatestTxTable />
         </Col>
         <HSpacing size=Spacing.xl />
         <HSpacing size=Spacing.lg />

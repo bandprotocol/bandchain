@@ -8,3 +8,6 @@
 [@bs.module] external bg: string = "./bg.png";
 [@bs.module] external checkIcon: string = "./check-icon.svg";
 [@bs.module] external source: string = "./source.svg";
+[@bs.module] external sendCoin: string = "./send-coin.png";
+[@bs.module] external sendCoin: string = "./send-coin.png";
+[@bs.module] external report: string = "./report.png";
