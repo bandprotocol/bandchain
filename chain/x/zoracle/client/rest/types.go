@@ -5,7 +5,8 @@ import (
 )
 
 type ScriptInfoWithTx struct {
-	Info      types.ScriptInfo `json:"info"`
-	TxHash    string           `json:"txhash"`
-	CreatedAt int64            `json:"createdAt"`
+	Info            types.ScriptInfo `json:"info"`
+	TxHash          string           `json:"txhash"`
+	CreatedAtHeight int64            `json:"createdAtHeight"`
+	CreatedAtTime   string           `json:"createdAtTime"`
 }
