@@ -91,9 +91,9 @@ let make = () => {
     <VSpacing size=Spacing.xl />
     <THead>
       <Row>
-        <Col> <div className=Transaction.Styles.txIcon /> </Col>
+        <Col> <div className=TElement.Styles.msgIcon /> </Col>
         <Col size=1.1>
-          <div className=Transaction.Styles.hashCol>
+          <div className=TElement.Styles.hashCol>
             <Text block=true value="TX HASH" size=Text.Sm weight=Text.Bold color=Colors.grayText />
           </div>
         </Col>
@@ -107,7 +107,7 @@ let make = () => {
           <Text block=true value="SENDER" size=Text.Sm weight=Text.Bold color=Colors.grayText />
         </Col>
         <Col size=0.5>
-          <div className=Transaction.Styles.feeCol>
+          <div className=TElement.Styles.feeCol>
             <Text block=true value="FEE" size=Text.Sm weight=Text.Bold color=Colors.grayText />
           </div>
         </Col>
