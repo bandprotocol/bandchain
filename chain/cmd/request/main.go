@@ -10,8 +10,6 @@ import (
 	"github.com/bandprotocol/d3n/chain/cmtx"
 	"github.com/bandprotocol/d3n/chain/x/zoracle"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 )
@@ -57,12 +55,12 @@ func main() {
 	}
 
 	// Send token
-	to, _ := sdk.AccAddressFromBech32("band13zmknvkq2sj920spz90g4r9zjan8g584x8qalj")
-	fmt.Println(tx.SendTransaction(bank.MsgSend{
-		FromAddress: tx.Sender(),
-		ToAddress:   to,
-		Amount:      sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(10))),
-	}, flags.BroadcastBlock))
+	// to, _ := sdk.AccAddressFromBech32("band13zmknvkq2sj920spz90g4r9zjan8g584x8qalj")
+	// fmt.Println(tx.SendTransaction(bank.MsgSend{
+	// 	FromAddress: tx.Sender(),
+	// 	ToAddress:   to,
+	// 	Amount:      sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(10))),
+	// }, flags.BroadcastBlock))
 
 	// Send transaction to store code first (commend it if already stored code)
 	fmt.Println(tx.SendTransaction(zoracle.NewMsgStoreCode(bytes, tx.Sender()), flags.BroadcastBlock))
