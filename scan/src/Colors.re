@@ -7,6 +7,8 @@ let purple = Css.hex("8D59B8");
 let purpleLight = Css.hex("E6DDF4");
 let purpleLighter = Css.hex("FCFAFC");
 
+let purpleBright = Css.hex("806BFF");
+
 let yellow = Css.hex("FFC99F");
 
 let orange = Css.hex("FF9C9C");

@@ -7,3 +7,4 @@
 [@bs.module] external twitterLogo: string = "./twitter-logo.svg";
 [@bs.module] external bg: string = "./bg.png";
 [@bs.module] external checkIcon: string = "./check-icon.svg";
+[@bs.module] external source: string = "./source.svg";
