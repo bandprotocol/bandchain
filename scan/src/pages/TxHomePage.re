@@ -21,6 +21,57 @@ module Styles = {
 
 [@react.component]
 let make = () => {
+  /* mock tx */
+  let txs: list(TxHook.Tx.t) = [
+    {
+      blockHeight: 120339,
+      hash: "0x12391291239123921392139",
+      timestamp: MomentRe.momentWithUnix(1293912392),
+      gasWanted: 0,
+      gasUsed: 0,
+      messages: [
+        Report({requestId: 2, data: "0x8812381238823182318", validator: "CoinMarketCap"}),
+      ],
+    },
+    {
+      blockHeight: 120338,
+      hash: "0x12391291239123921392139",
+      timestamp: MomentRe.momentWithUnix(1293912392),
+      gasWanted: 0,
+      gasUsed: 0,
+      messages: [
+        Send({
+          fromAddress: "0x923239239923923923",
+          toAddress: "0x233262363262363263",
+          amount: [{denom: "BAND", amount: 12.4}, {denom: "UATOM", amount: 10000.3}],
+        }),
+      ],
+    },
+    {
+      blockHeight: 120337,
+      hash: "0x12391291239123921392139",
+      timestamp: MomentRe.momentWithUnix(1293912392),
+      gasWanted: 0,
+      gasUsed: 0,
+      messages: [Store({code: "0x1923912912391293219", owner: "0x949494949499494949494"})],
+    },
+    {
+      blockHeight: 120337,
+      hash: "0x12391291239123921392139",
+      timestamp: MomentRe.momentWithUnix(1293912392),
+      gasWanted: 0,
+      gasUsed: 0,
+      messages: [
+        Request({
+          codeHash: "0x91238123812838123",
+          params: "0x8238233288238238",
+          reportPeriod: 23,
+          sender: "0x99329329239239923923",
+        }),
+      ],
+    },
+  ];
+
   <div className=Styles.pageContainer>
     <Row>
       <Col>
@@ -41,7 +92,7 @@ let make = () => {
     <THead>
       <Row>
         <Col> <div className=Transaction.Styles.txIcon /> </Col>
-        <Col size=1.0>
+        <Col size=1.1>
           <div className=Transaction.Styles.hashCol>
             <Text block=true value="TX HASH" size=Text.Sm weight=Text.Bold color=Colors.grayText />
           </div>
@@ -62,67 +113,16 @@ let make = () => {
         </Col>
       </Row>
     </THead>
-    {[
-       (
-         Transaction.DataRequest("ETH/USD Price Feed"),
-         "0x123343020302302",
-         503000,
-         "0x1934838538483848348384",
-         MomentRe.momentWithUnix(1578548371),
-         0.13,
-       ),
-       (
-         DataRequest("ETH/BTC Price Feed"),
-         "0x123343020302302",
-         503000,
-         "0x1934838538483848348384",
-         MomentRe.momentWithUnix(1578448371),
-         0.13,
-       ),
-       (
-         NewScript("Anime Episodes Ranking - WINTER 2020"),
-         "0xd83ab82c9f838391283",
-         503000,
-         "0x1934838538483848348384",
-         MomentRe.momentWithUnix(1578348371),
-         0.1,
-       ),
-       (
-         DataRequest("ETH/BTC Price Feed"),
-         "0x123343020302302",
-         503000,
-         "0x1934838538483848348384",
-         MomentRe.momentWithUnix(1578348371),
-         0.13,
-       ),
-       (
-         DataRequest("ETH/BTC Price Feed"),
-         "0x123343020302302",
-         503000,
-         "0x1934838538483848348384",
-         MomentRe.momentWithUnix(1578348371),
-         0.13,
-       ),
-       (
-         NewScript("Anime Episodes Ranking - WINTER 2020"),
-         "0xd83ab82c9f838391283",
-         503000,
-         "0x1934838538483848348384",
-         MomentRe.momentWithUnix(1568548371),
-         0.1,
-       ),
-     ]
-     ->Belt.List.map(((type_, hash, height, sender, timestamp, fee)) => {
+    {txs
+     ->Belt.List.map(({blockHeight, hash, timestamp, gasWanted, gasUsed, messages}) => {
          <TBody>
            <Row>
-             <Col>
-               <img src={type_->Transaction.txIcon} className=Transaction.Styles.txIcon />
-             </Col>
-             <Col size=1.0> {Transaction.renderTxHash(hash, timestamp)} </Col>
-             <Col size=1.1> {type_ |> Transaction.renderDataType} </Col>
-             <Col size=0.65> {height |> Transaction.renderHeight} </Col>
-             <Col size=1.1> {sender |> Transaction.renderHash} </Col>
-             <Col size=0.5> {fee |> Transaction.renderFee} </Col>
+             <Col> <TElement elementType={messages->Belt.List.getExn(0)->TElement.Icon} /> </Col>
+             <Col size=1.1> <TElement elementType={TElement.TxHash(hash, timestamp)} /> </Col>
+             <Col size=1.1> <TElement elementType={messages->TElement.TxType} /></Col>
+             <Col size=0.65> <TElement elementType={TElement.Height(blockHeight)} /> </Col>
+             <Col size=1.1> <TElement elementType={hash->TElement.Hash} /> </Col>
+             <Col size=0.5> <TElement elementType={gasUsed->TElement.Fee} /> </Col>
            </Row>
          </TBody>
        })
