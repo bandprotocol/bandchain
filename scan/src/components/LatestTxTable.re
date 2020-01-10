@@ -1,30 +1,26 @@
 module Styles = {
   open Css;
 
-  let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
-
-  let pageContainer = style([paddingTop(`px(50)), minHeight(`px(500))]);
-
-  let seperatedLine =
+  let seeMoreContainer =
     style([
-      width(`px(13)),
-      height(`px(1)),
-      marginLeft(`px(10)),
-      marginRight(`px(10)),
-      backgroundColor(Colors.grayHeader),
+      width(`percent(100.)),
+      boxShadow(Shadow.box(~x=`px(0), ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
+      backgroundColor(white),
+      display(`flex),
+      justifyContent(`center),
+      alignItems(`center),
+      height(`px(30)),
+      cursor(`pointer),
     ]);
-
-  let textContainer = style([paddingLeft(Spacing.lg), display(`flex)]);
-
-  let proposerBox = style([maxWidth(`px(270)), display(`flex), flexDirection(`column)]);
 };
 
 [@react.component]
 let make = () => {
+  /* mock tx */
   let txs: list(TxHook.Tx.t) = [
     {
       blockHeight: 120339,
-      hash: "0x10302032123901239101230" |> Hash.fromHex,
+      hash: "0x103020321239012392139023101230" |> Hash.fromHex,
       timestamp: MomentRe.momentWithUnix(1293912392),
       gasWanted: 0,
       gasUsed: 0,
@@ -80,39 +76,17 @@ let make = () => {
     },
   ];
 
-  <div className=Styles.pageContainer>
-    <Row>
-      <Col>
-        <div className=Styles.vFlex>
-          <Text
-            value="ALL TRANSACTIONS"
-            weight=Text.Bold
-            size=Text.Xl
-            nowrap=true
-            color=Colors.grayHeader
-          />
-          <div className=Styles.seperatedLine />
-          <Text value="99,999 in total" />
-        </div>
-      </Col>
-    </Row>
-    <VSpacing size=Spacing.xl />
+  <>
     <THead>
       <Row>
         <Col> <div className=TElement.Styles.msgIcon /> </Col>
-        <Col size=1.1>
+        <Col size=1.3>
           <div className=TElement.Styles.hashCol>
             <Text block=true value="TX HASH" size=Text.Sm weight=Text.Bold color=Colors.grayText />
           </div>
         </Col>
-        <Col size=1.1>
+        <Col size=1.3>
           <Text block=true value="TYPE" size=Text.Sm weight=Text.Bold color=Colors.grayText />
-        </Col>
-        <Col size=0.65>
-          <Text block=true value="BLOCK" size=Text.Sm weight=Text.Bold color=Colors.grayText />
-        </Col>
-        <Col size=1.1>
-          <Text block=true value="SENDER" size=Text.Sm weight=Text.Bold color=Colors.grayText />
         </Col>
         <Col size=0.5>
           <div className=TElement.Styles.feeCol>
@@ -122,23 +96,20 @@ let make = () => {
       </Row>
     </THead>
     {txs
-     ->Belt.List.map(({blockHeight, hash, timestamp, gasUsed, messages}) => {
+     ->Belt.List.map(({hash, timestamp, gasUsed, messages}) => {
          <TBody>
            <Row>
              <Col> <TElement elementType={messages->Belt.List.getExn(0)->TElement.Icon} /> </Col>
-             <Col size=1.1> <TElement elementType={TElement.TxHash(hash, timestamp)} /> </Col>
-             <Col size=1.1> <TElement elementType={messages->TElement.TxType} /> </Col>
-             <Col size=0.65> <TElement elementType={TElement.Height(blockHeight)} /> </Col>
-             <Col size=1.1> <TElement elementType={hash->TElement.Hash} /> </Col>
+             <Col size=1.3> <TElement elementType={TElement.TxHash(hash, timestamp)} /> </Col>
+             <Col size=1.3> <TElement elementType={messages->TElement.TxType} /> </Col>
              <Col size=0.5> <TElement elementType={gasUsed->TElement.Fee} /> </Col>
            </Row>
          </TBody>
        })
      ->Array.of_list
      ->React.array}
-    <VSpacing size=Spacing.lg />
-    <LoadMore />
-    <VSpacing size=Spacing.xl />
-    <VSpacing size=Spacing.xl />
-  </div>;
+    <div className=Styles.seeMoreContainer>
+      <Text value="SEE MORE" size=Text.Sm weight=Text.Bold block=true color=Colors.grayText />
+    </div>
+  </>;
 };
