@@ -7,9 +7,9 @@ let fromBech32 = bech32str => {
 
 let fromHex = hexstr => Address(hexstr->HexUtils.normalizeHexString);
 
-let toHex =
+let toHex = (~with0x=false) =>
   fun
-  | Address(hexstr) => hexstr;
+  | Address(hexstr) => (with0x ? "0x" : "") ++ hexstr;
 
 let bech32ToHex = bech32str => bech32str->fromBech32->toHex;
 

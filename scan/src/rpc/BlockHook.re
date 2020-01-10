@@ -1,17 +1,18 @@
 module Block = {
   type t = {
-    hash: string,
+    hash: Hash.t,
     height: int,
     timestamp: MomentRe.Moment.t,
-    proposer: string,
+    proposer: Address.t,
   };
 
   let decodeBlock = json =>
     JsonUtils.Decode.{
-      hash: json |> at(["block_meta", "block_id", "hash"], string),
+      hash: json |> at(["block_meta", "block_id", "hash"], string) |> Hash.fromHex,
       height: json |> at(["block_meta", "header", "height"], intstr),
       timestamp: json |> at(["block_meta", "header", "time"], moment),
-      proposer: json |> at(["block_meta", "header", "proposer_address"], string),
+      proposer:
+        json |> at(["block_meta", "header", "proposer_address"], string) |> Address.fromHex,
     };
 
   let decodeBlocks = json => JsonUtils.Decode.(json |> list(decodeBlock));
