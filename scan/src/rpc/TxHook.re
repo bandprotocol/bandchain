@@ -1,14 +1,60 @@
+module Coin = {
+  type t = {
+    denom: string,
+    amount: float,
+  };
+
+  let decodeCoin = json =>
+    JsonUtils.Decode.{
+      denom: json |> field("denom", string),
+      amount: json |> field("amount", uamount),
+    };
+};
+
 module Msg = {
   module Send = {
-    // TODO
+    type t = {
+      fromAddress: string,
+      toAddress: string,
+      amount: list(Coin.t),
+    };
+
+    let decode = json =>
+      JsonUtils.Decode.{
+        fromAddress: json |> field("from_address", string),
+        toAddress: json |> field("to_address", string),
+        amount: json |> field("amount", list(Coin.decodeCoin)),
+      };
   };
 
   module Store = {
-    // TODO
+    type t = {
+      code: string,
+      owner: string,
+    };
+
+    let decode = json =>
+      JsonUtils.Decode.{
+        code: json |> field("code", string),
+        owner: json |> field("owner", string),
+      };
   };
 
   module Request = {
-    // TODO
+    type t = {
+      codeHash: string,
+      params: string,
+      reportPeriod: int,
+      sender: string,
+    };
+
+    let decode = json =>
+      JsonUtils.Decode.{
+        codeHash: json |> field("codeHash", string),
+        params: json |> field("params", string),
+        reportPeriod: json |> field("reportPeriod", intstr),
+        sender: json |> field("sender", string),
+      };
   };
 
   module Report = {
@@ -28,11 +74,17 @@ module Msg = {
 
   type t =
     | Unknown
+    | Send(Send.t)
+    | Store(Store.t)
+    | Request(Request.t)
     | Report(Report.t);
 
   let decode = json =>
     JsonUtils.Decode.(
       switch (json |> field("type", string)) {
+      | "cosmos-sdk/MsgSend" => Send(json |> field("value", Send.decode))
+      | "zoracle/Store" => Store(json |> field("value", Store.decode))
+      | "zoracle/Request" => Request(json |> field("value", Request.decode))
       | "zoracle/Report" => Report(json |> field("value", Report.decode))
       | _ => Unknown
       }
