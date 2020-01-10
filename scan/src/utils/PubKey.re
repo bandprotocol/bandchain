@@ -1,12 +1,7 @@
 type t =
   | PubKey(string); // string is hex (without 0x)
 
-let fromHex = hexstr =>
-  if (hexstr->String.sub(0, 2) == "0x") {
-    PubKey(hexstr->String.lowercase_ascii->String.sub(2, hexstr->String.length - 2));
-  } else {
-    PubKey(hexstr->String.lowercase_ascii);
-  };
+let fromHex = hexstr => PubKey(hexstr->HexUtils.normalizeHexString);
 
 let fromBech32 = bech32str =>
   PubKey(bech32str->Bech32.decode->Bech32.wordsGet->Bech32.fromWords->JsBuffer.arrayToHex);

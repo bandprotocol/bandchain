@@ -3,12 +3,7 @@ type t;
 [@bs.val] external from: array(int) => t = "Buffer.from";
 
 [@bs.val] external _from: (string, string) => t = "Buffer.from";
-let fromHex = hexstr =>
-  if (hexstr->String.sub(0, 2) == "0x") {
-    hexstr->String.lowercase_ascii->String.sub(2, hexstr->String.length - 2)->_from("hex");
-  } else {
-    _from(hexstr->String.lowercase_ascii, "hex");
-  };
+let fromHex = hexstr => hexstr->HexUtils.normalizeHexString->_from("hex");
 
 let fromBase64 = hexstr => _from(hexstr, "base64");
 

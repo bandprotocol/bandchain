@@ -5,12 +5,7 @@ let fromBech32 = bech32str => {
   Address(bech32str->Bech32.decode->Bech32.wordsGet->Bech32.fromWords->JsBuffer.arrayToHex);
 };
 
-let fromHex = hexstr =>
-  if (hexstr->String.sub(0, 2) == "0x") {
-    Address(hexstr->String.lowercase_ascii->String.sub(2, 40));
-  } else {
-    Address(hexstr->String.lowercase_ascii);
-  };
+let fromHex = hexstr => Address(hexstr->HexUtils.normalizeHexString);
 
 let toHex =
   fun
