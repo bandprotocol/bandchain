@@ -117,17 +117,13 @@ module Tx = {
     messages: list(Msg.t),
   };
 
-  let getFirstSignerAddress = (sigsList: list(Signature.t)) => {
-    let sigsArr = sigsList |> Belt_List.toArray;
-    sigsArr[0].pubKey;
-  };
-
   let decodeTx = json =>
     JsonUtils.Decode.{
       sender:
         json
         |> at(["tx", "value", "signatures"], list(Signature.decode))
-        |> getFirstSignerAddress
+        |> Belt_List.getExn(_, 0)
+        |> ((firstSignature: Signature.t) => firstSignature.pubKey)
         |> PubKey.toAddress,
       blockHeight: json |> field("height", intstr),
       hash: json |> field("txhash", string) |> Hash.fromHex,
