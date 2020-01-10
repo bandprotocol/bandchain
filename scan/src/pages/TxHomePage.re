@@ -21,52 +21,60 @@ module Styles = {
 
 [@react.component]
 let make = () => {
-  /* mock tx */
   let txs: list(TxHook.Tx.t) = [
     {
       blockHeight: 120339,
-      hash: "0x12391291239123921392139",
+      hash: "0x10302032123901239101230" |> Hash.fromHex,
       timestamp: MomentRe.momentWithUnix(1293912392),
       gasWanted: 0,
       gasUsed: 0,
       messages: [
-        Report({requestId: 2, data: "0x8812381238823182318", validator: "CoinMarketCap"}),
+        Report({
+          requestId: 2,
+          data: "0x8812381238823182318",
+          validator: "0x913932993219329319213" |> Address.fromHex,
+        }),
       ],
     },
     {
       blockHeight: 120338,
-      hash: "0x12391291239123921392139",
+      hash: "0x12391291239123921392139" |> Hash.fromHex,
       timestamp: MomentRe.momentWithUnix(1293912392),
       gasWanted: 0,
       gasUsed: 0,
       messages: [
         Send({
-          fromAddress: "0x923239239923923923",
-          toAddress: "0x233262363262363263",
+          fromAddress: "0x923239239923923923" |> Address.fromHex,
+          toAddress: "0x233262363262363263" |> Address.fromHex,
           amount: [{denom: "BAND", amount: 12.4}, {denom: "UATOM", amount: 10000.3}],
         }),
       ],
     },
     {
       blockHeight: 120337,
-      hash: "0x12391291239123921392139",
+      hash: "0x12391291239123921392139" |> Hash.fromHex,
       timestamp: MomentRe.momentWithUnix(1293912392),
       gasWanted: 0,
       gasUsed: 0,
-      messages: [Store({code: "0x1923912912391293219", owner: "0x949494949499494949494"})],
+      messages: [
+        Store({
+          code: "0x1923912912391293219",
+          owner: "0x949494949499494949494" |> Address.fromHex,
+        }),
+      ],
     },
     {
       blockHeight: 120337,
-      hash: "0x12391291239123921392139",
+      hash: "0x12391291239123921392139" |> Hash.fromHex,
       timestamp: MomentRe.momentWithUnix(1293912392),
       gasWanted: 0,
       gasUsed: 0,
       messages: [
         Request({
-          codeHash: "0x91238123812838123",
+          codeHash: "0x91238123812838123" |> Hash.fromHex,
           params: "0x8238233288238238",
           reportPeriod: 23,
-          sender: "0x99329329239239923923",
+          sender: "0x99329329239239923923" |> Address.fromHex,
         }),
       ],
     },

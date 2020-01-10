@@ -41,13 +41,27 @@ let renderTxHash = (hash, time) => {
   <div className=Styles.hashCol>
     <TimeAgos time />
     <VSpacing size={`px(6)} />
-    <Text block=true code=true value=hash size=Text.Lg weight=Text.Bold ellipsis=true />
+    <Text
+      block=true
+      code=true
+      value={hash |> Hash.toHex}
+      size=Text.Lg
+      weight=Text.Bold
+      ellipsis=true
+    />
   </div>;
 };
 
 let renderHash = hash => {
   <div className=Styles.hashCol>
-    <Text block=true code=true value=hash size=Text.Lg weight=Text.Bold ellipsis=true />
+    <Text
+      block=true
+      code=true
+      value={hash |> Hash.toHex}
+      size=Text.Lg
+      weight=Text.Bold
+      ellipsis=true
+    />
   </div>;
 };
 
@@ -80,10 +94,10 @@ type t =
   | Icon(TxHook.Msg.t)
   | Height(int)
   | Timestamp(MomentRe.Moment.t)
-  | TxHash(string, MomentRe.Moment.t)
+  | TxHash(Hash.t, MomentRe.Moment.t)
   | TxType(list(TxHook.Msg.t))
   | Fee(int)
-  | Hash(string);
+  | Hash(Hash.t);
 
 [@react.component]
 let make = (~elementType) => {
