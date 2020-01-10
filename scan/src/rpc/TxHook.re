@@ -76,3 +76,9 @@ let latest = (~page=1, ~limit=10, ~pollInterval=?, ()) => {
   let json = Axios.use({j|d3n/txs/latest?page=$page&limit=$limit|j}, ~pollInterval?, ());
   json |> Belt.Option.map(_, Tx.decodeTxs);
 };
+
+let with_codehash = (~codehash, ~page=1, ~limit=10, ~pollInterval=?, ()) => {
+  let json =
+    Axios.use({j|txs?request.codehash=$codehash&page=$page&limit=$limit|j}, ~pollInterval?, ());
+  json |> Belt.Option.map(_, Tx.decodeTxs);
+};
