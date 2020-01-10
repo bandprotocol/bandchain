@@ -91,8 +91,24 @@ module Msg = {
     );
 };
 
+module Signature = {
+  type t = {
+    pubKey: PubKey.t,
+    pubKeyType: string,
+    signature: JsBuffer.t,
+  };
+
+  let decode = json =>
+    JsonUtils.Decode.{
+      pubKey: json |> at(["pub_key", "value"], string) |> PubKey.fromBase64,
+      pubKeyType: json |> at(["pub_key", "type"], string),
+      signature: json |> field("signature", string) |> JsBuffer.fromBase64,
+    };
+};
+
 module Tx = {
   type t = {
+    sender: Address.t,
     blockHeight: int,
     hash: Hash.t,
     timestamp: MomentRe.Moment.t,
@@ -103,6 +119,12 @@ module Tx = {
 
   let decodeTx = json =>
     JsonUtils.Decode.{
+      sender:
+        json
+        |> at(["tx", "value", "signatures"], list(Signature.decode))
+        |> Belt_List.getExn(_, 0)
+        |> ((firstSignature: Signature.t) => firstSignature.pubKey)
+        |> PubKey.toAddress,
       blockHeight: json |> field("height", intstr),
       hash: json |> field("txhash", string) |> Hash.fromHex,
       timestamp: json |> field("timestamp", moment),
