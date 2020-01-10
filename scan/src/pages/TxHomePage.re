@@ -114,12 +114,12 @@ let make = () => {
       </Row>
     </THead>
     {txs
-     ->Belt.List.map(({blockHeight, hash, timestamp, gasWanted, gasUsed, messages}) => {
+     ->Belt.List.map(({blockHeight, hash, timestamp, gasUsed, messages}) => {
          <TBody>
            <Row>
              <Col> <TElement elementType={messages->Belt.List.getExn(0)->TElement.Icon} /> </Col>
              <Col size=1.1> <TElement elementType={TElement.TxHash(hash, timestamp)} /> </Col>
-             <Col size=1.1> <TElement elementType={messages->TElement.TxType} /></Col>
+             <Col size=1.1> <TElement elementType={messages->TElement.TxType} /> </Col>
              <Col size=0.65> <TElement elementType={TElement.Height(blockHeight)} /> </Col>
              <Col size=1.1> <TElement elementType={hash->TElement.Hash} /> </Col>
              <Col size=0.5> <TElement elementType={gasUsed->TElement.Fee} /> </Col>
