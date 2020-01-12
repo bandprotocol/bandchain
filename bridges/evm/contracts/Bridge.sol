@@ -54,7 +54,7 @@ contract Bridge {
     //
     //                                            ____________appHash_________
     //                                          /                              \
-    //                   ____otherStoresMerkleHash ____                         ___innnerHash___
+    //                   ____otherStoresMerkleHash ____                         ___innerHash___
     //                 /                                \                     /                  \
     //         _____ h5 ______                    ______ h6 _______        supply              zoracle
     //       /                \                 /                  \
@@ -91,6 +91,7 @@ contract Bridge {
     require(validSignatureCount*3 > validatorCount*2, "INSUFFICIENT_VALIDATOR_SIGNATURES");
     oracleStates[_blockHeight] = _oracleIAVLStateHash;
   }
+
   struct VerifyOracleDataLocalVariables {
     bytes encodedVarint;
     bytes32 dataHash;
