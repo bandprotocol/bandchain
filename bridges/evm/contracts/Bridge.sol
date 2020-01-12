@@ -98,6 +98,13 @@ contract Bridge {
     bytes32 dataHash;
   }
 
+  /// Helper struct to help the function caller to decode oracle data.
+  struct VerifyOracleDataResult {
+    bytes data;
+    bytes32 codeHash;
+    bytes params;
+  }
+
   /// Verify that the given data is a valid data on BandChain as of the given block height.
   /// @param _blockHeight The block height. Someone must already relay this block.
   /// @param _data The data to verify, with the format similar to what on the blockchain store.
@@ -115,7 +122,7 @@ contract Bridge {
   )
     public
     view
-    returns (bool)
+    returns (VerifyOracleDataResult memory)
   {
     bytes32 oracleStateRoot = oracleStates[_blockHeight];
     require(oracleStateRoot != bytes32(uint256(0)), "NO_ORACLE_ROOT_STATE_DATA");
@@ -141,6 +148,6 @@ contract Bridge {
     }
     // Verifies that the computed Merkle root matches what currently exists.
     require(currentMerkleHash == oracleStateRoot, "INVALID_ORACLE_DATA_PROOF");
-    return true;
+    return VerifyOracleDataResult(_data, _codeHash, _params);
   }
 }
