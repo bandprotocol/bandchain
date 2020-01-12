@@ -92,6 +92,7 @@ contract Bridge {
     oracleStates[_blockHeight] = _oracleIAVLStateHash;
   }
 
+  /// Helper struct to workaround Solidity's "stack too deep" problem.
   struct VerifyOracleDataLocalVariables {
     bytes encodedVarint;
     bytes32 dataHash;
