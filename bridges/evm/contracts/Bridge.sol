@@ -105,7 +105,7 @@ contract Bridge {
     bytes params;
   }
 
-  /// Verify that the given data is a valid data on BandChain as of the given block height.
+  /// Verifies that the given data is a valid data on BandChain as of the given block height.
   /// @param _blockHeight The block height. Someone must already relay this block.
   /// @param _data The data to verify, with the format similar to what on the blockchain store.
   /// @param _requestId The ID of request for this data piece.
@@ -149,5 +149,22 @@ contract Bridge {
     // Verifies that the computed Merkle root matches what currently exists.
     require(currentMerkleHash == oracleStateRoot, "INVALID_ORACLE_DATA_PROOF");
     return VerifyOracleDataResult(_data, _codeHash, _params);
+  }
+
+  /// Performs oracle state relay and oracle data verification in one go. The caller submits
+  /// the encoded proof and receives back the decoded data, ready to be validated and used.
+  /// @param data The encoded data for oracle state relay and data verification.
+  function relayAndVerify(bytes calldata data)
+    external
+    returns (VerifyOracleDataResult memory result)
+  {
+    (bytes memory relayData, bytes memory verifyData) = abi.decode(data, (bytes, bytes));
+    (bool relayOk,) =
+      address(this).call(abi.encodeWithSelector(this.relayOracleState.selector, relayData));
+    require(relayOk, "RELAY_ORACLE_STATE_FAILED");
+    (bool verifyOk, bytes memory verifyResult) =
+      address(this).staticcall(abi.encodeWithSelector(this.verifyOracleData.selector, verifyData));
+    require(verifyOk, "VERIFY_ORACLE_DATA_FAILED");
+    return abi.decode(verifyResult, (VerifyOracleDataResult));
   }
 }
