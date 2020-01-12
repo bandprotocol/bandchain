@@ -1,5 +1,5 @@
 module Script = {
-  type field = {
+  type field_t = {
     name: string,
     dataType: string,
   };
@@ -12,8 +12,8 @@ module Script = {
 
   type t = {
     name: string,
-    params: list(field),
-    dataSources: list(field),
+    params: list(field_t),
+    dataSources: list(field_t),
     creator: Address.t,
     txHash: Hash.t,
     createdAtHeight: int,
