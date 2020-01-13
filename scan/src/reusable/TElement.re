@@ -173,7 +173,6 @@ let make = (~elementType) => {
   | Status(status) => renderText(status)
   | Fee(fee) => renderFee(fee)
   | Hash(hash) => renderHash(hash)
-  | Timestamp(_) => React.null
   | Address(address) => renderAddress(address)
   };
 };
