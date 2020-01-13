@@ -82,7 +82,7 @@ let make = (~height, ~hashtag) => {
     </Row>
     <VSpacing size=Spacing.xl />
     <div className=Styles.seperatorLine />
-    <TxTable />
+    <TxsTable />
     <VSpacing size=Spacing.lg />
     <LoadMore />
   </div>;
