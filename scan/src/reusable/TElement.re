@@ -24,9 +24,9 @@ module Styles = {
       marginRight(Spacing.xl),
     ]);
 
-  let hashCol = style([maxWidth(`px(250))]);
-  let feeCol = style([maxWidth(`px(80))]);
-
+  let hashContainer = style([maxWidth(`px(250))]);
+  let feeContainer = style([maxWidth(`px(80))]);
+  let timeContainer = style([display(`flex), alignItems(`center), maxWidth(`px(150))]);
   let textContainer = style([display(`flex)]);
 };
 
@@ -38,7 +38,7 @@ let renderTxType = txType =>
   </div>;
 
 let renderTxHash = (hash, time) => {
-  <div className=Styles.hashCol>
+  <div className=Styles.hashContainer>
     <TimeAgos time />
     <VSpacing size={`px(6)} />
     <Text
@@ -53,7 +53,7 @@ let renderTxHash = (hash, time) => {
 };
 
 let renderHash = hash => {
-  <div className=Styles.hashCol>
+  <div className=Styles.hashContainer>
     <Text
       block=true
       code=true
@@ -65,8 +65,21 @@ let renderHash = hash => {
   </div>;
 };
 
+let renderAddress = address => {
+  <div className=Styles.hashContainer>
+    <Text
+      block=true
+      code=true
+      value={address |> Address.toHex}
+      size=Text.Lg
+      weight=Text.Bold
+      ellipsis=true
+    />
+  </div>;
+};
+
 let renderFee = fee => {
-  <div className=Styles.feeCol>
+  <div className=Styles.feeContainer>
     <VSpacing size={`px(4)} />
     <Text size=Text.Sm block=true value="$0.002" color=Colors.grayText />
     <VSpacing size={`px(4)} />
@@ -82,6 +95,16 @@ let renderHeight = height => {
   </div>;
 };
 
+let renderName = name => {
+  <div className=Styles.hashContainer>
+    <Text block=true code=true value=name size=Text.Lg weight=Text.Bold ellipsis=true />
+  </div>;
+};
+
+let renderTime = time => {
+  <div className=Styles.timeContainer> <TimeAgos time size=Text.Md /> </div>;
+};
+
 let msgIcon =
   fun
   | TxHook.Msg.Store(_) => Images.newScript
@@ -93,21 +116,25 @@ let msgIcon =
 type t =
   | Icon(TxHook.Msg.t)
   | Height(int)
+  | Name(string)
   | Timestamp(MomentRe.Moment.t)
   | TxHash(Hash.t, MomentRe.Moment.t)
   | TxType(list(TxHook.Msg.t))
   | Fee(int)
-  | Hash(Hash.t);
+  | Hash(Hash.t)
+  | Address(Address.t);
 
 [@react.component]
 let make = (~elementType) => {
   switch (elementType) {
   | Icon(msg) => <img src={msg->msgIcon} className=Styles.msgIcon />
   | Height(height) => renderHeight(height)
+  | Name(name) => renderName(name)
+  | Timestamp(time) => renderTime(time)
   | TxHash(hash, timestamp) => renderTxHash(hash, timestamp)
   | TxType(msg) => renderTxType(msg)
   | Fee(fee) => renderFee(fee)
   | Hash(hash) => renderHash(hash)
-  | _ => <div />
+  | Address(address) => renderAddress(address)
   };
 };
