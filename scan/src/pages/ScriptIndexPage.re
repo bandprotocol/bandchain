@@ -69,11 +69,19 @@ let make = (~codeHash, ~hashtag) => {
     <VSpacing size=Spacing.xl />
     <Row>
       <Col>
-        <InfoHL info={InfoHL.Hash("0x012030123901923912391293")} header="SCRIPT HASH" />
+        <InfoHL
+          info={InfoHL.Hash("0x012030123901923912391293", Colors.lightPurple)}
+          header="SCRIPT HASH"
+        />
       </Col>
       <HSpacing size=Spacing.xl />
       <HSpacing size=Spacing.xl />
-      <Col> <InfoHL info={InfoHL.Hash("0x92392392392939239293293923")} header="CREATOR" /> </Col>
+      <Col>
+        <InfoHL
+          info={InfoHL.Hash("0x92392392392939239293293923", Colors.lightPurple)}
+          header="CREATOR"
+        />
+      </Col>
     </Row>
     <VSpacing size={Css.px(400)} />
   </div>;

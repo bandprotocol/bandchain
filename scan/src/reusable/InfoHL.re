@@ -4,7 +4,7 @@ type t =
   | Timestamp(MomentRe.Moment.t)
   | Fee(float)
   | DataSources(list(string))
-  | Hash(string);
+  | Hash(string, Css.Types.Color.t);
 
 module Styles = {
   open Css;
@@ -43,14 +43,14 @@ let make = (~info, ~header) => {
           ->Belt.List.map(source =>
               <div className=Styles.sourceContainer>
                 <img src=Images.source className=Styles.sourceIcon />
-                <Text value=source weight=Text.Bold size=Text.Lg/>
+                <Text value=source weight=Text.Bold size=Text.Lg />
               </div>
             )
           ->Array.of_list
           ->React.array}
        </div>
-     | Hash(hash) =>
-       <Text value=hash size=Text.Lg weight=Text.Semibold color=Colors.purpleBright />
+     | Hash(hash, textColor) =>
+       <Text value=hash size=Text.Lg weight=Text.Semibold color=textColor />
      }}
   </div>;
 };
