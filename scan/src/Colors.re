@@ -24,6 +24,7 @@ let green = Css.hex("6BCA4A");
 let lightGreen = Css.hex("C7FCEC");
 
 let grayText = Css.hex("A4A4A4");
+let lightGray = Css.hex("EEEEEE");
 let grayHeader = Css.hex("555555");
 
 let darkGrayText = Css.hex("777F8E");
