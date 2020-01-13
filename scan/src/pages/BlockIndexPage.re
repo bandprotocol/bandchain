@@ -59,12 +59,13 @@ let make = (~height, ~hashtag) => {
         </div>
       </Col>
     </Row>
+    <VSpacing size=Spacing.lg />
     <div className=Styles.vFlex>
       <Text value="#" size=Text.Xxl weight=Text.Semibold color={Css.hex("806BFF")} />
       <HSpacing size=Spacing.xs />
       <Text value=height size=Text.Xxl weight=Text.Semibold />
     </div>
-    <VSpacing size=Spacing.xl />
+    <VSpacing size=Spacing.lg />
     <Row>
       <Col size=1.> <InfoHL info={InfoHL.Count(1)} header="TRANSACTIONS" /> </Col>
       <Col size=2.5>
@@ -85,5 +86,6 @@ let make = (~height, ~hashtag) => {
     <TxsTable />
     <VSpacing size=Spacing.lg />
     <LoadMore />
+    <VSpacing size=Spacing.xl />
   </div>;
 };
