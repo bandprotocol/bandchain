@@ -47,7 +47,7 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~codeHash, ~hashtag) => {
+let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
   <div className=Styles.pageContainer>
     <Row justify=Row.Between>
       <Col>
@@ -102,18 +102,37 @@ let make = (~codeHash, ~hashtag) => {
     <div className=Styles.tableContainer>
       <div className=Styles.tableHeader>
         <Row>
-          <TabButton active=true text="Transactions" />
+          <TabButton
+            active={hashtag == ScriptTransactions}
+            text="Transactions"
+            route={Route.ScriptIndexPage(codeHash, ScriptTransactions)}
+          />
           <HSpacing size=Spacing.lg />
-          <TabButton active=false text="Code" />
+          <TabButton
+            active={hashtag == ScriptCode}
+            text="Code"
+            route={Route.ScriptIndexPage(codeHash, ScriptCode)}
+          />
           <HSpacing size=Spacing.lg />
-          <TabButton active=false text="Integration" />
+          <TabButton
+            active={hashtag == ScriptIntegration}
+            text="Integration"
+            route={Route.ScriptIndexPage(codeHash, ScriptIntegration)}
+          />
         </Row>
       </div>
-      <div className=Styles.tableLowerContainer>
-        <Text value="196 Request Transactions" color=Colors.grayHeader size=Text.Lg />
-        <VSpacing size=Spacing.lg />
-        <TxsTable />
-      </div>
+      {switch (hashtag) {
+       | ScriptTransactions =>
+         <div className=Styles.tableLowerContainer>
+           <Text value="196 Request Transactions" color=Colors.grayHeader size=Text.Lg />
+           <VSpacing size=Spacing.lg />
+           <TxsTable />
+           <VSpacing size=Spacing.lg />
+           <LoadMore />
+         </div>
+       | ScriptCode => <div> {"TODO1" |> React.string} </div>
+       | ScriptIntegration => <div> {"TODO2" |> React.string} </div>
+       }}
     </div>
     <VSpacing size=Spacing.xxl />
   </div>;

@@ -11,13 +11,13 @@ module Styles = {
       justifyContent(`center),
       alignItems(`center),
       padding2(~v=Spacing.xs, ~h=Spacing.sm),
+      cursor(`pointer),
     ]);
-  // let buttonInner = style([position(`absolute)]);
 };
 
 [@react.component]
-let make = (~active, ~text) => {
-  <div className={Styles.buttonContainer(active)}>
+let make = (~active, ~text, ~route) => {
+  <div className={Styles.buttonContainer(active)} onClick={_ => route |> Route.redirect}>
     <Text
       value=text
       weight=Text.Semibold
