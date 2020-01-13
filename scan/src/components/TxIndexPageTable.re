@@ -88,7 +88,7 @@ let make = () => {
       <Row>
         <Col> <div className=TElement.Styles.msgIcon /> </Col>
         <Col size=0.5>
-          <div className=TElement.Styles.hashCol>
+          <div className=TElement.Styles.hashContainer>
             <Text
               block=true
               value="MESSAGE TYPE"
@@ -102,7 +102,7 @@ let make = () => {
           <Text block=true value="DETAIL" size=Text.Sm weight=Text.Bold color=Colors.grayText />
         </Col>
         <Col size=1.3>
-          <div className=TElement.Styles.feeCol>
+          <div className=TElement.Styles.feeContainer>
             <Text block=true value="CREATOR" size=Text.Sm weight=Text.Bold color=Colors.grayText />
           </div>
         </Col>
@@ -112,7 +112,7 @@ let make = () => {
         //   </div>
         // </Col>
         <Col size=0.5>
-          <div className=TElement.Styles.feeCol>
+          <div className=TElement.Styles.feeContainer>
             <Text block=true value="FEE" size=Text.Sm weight=Text.Bold color=Colors.grayText />
           </div>
         </Col>
