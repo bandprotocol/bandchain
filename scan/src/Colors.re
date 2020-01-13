@@ -7,7 +7,7 @@ let purple = Css.hex("8D59B8");
 let lightPurple = Css.hex("E6DDF4");
 let lighterPurple = Css.hex("FCFAFC");
 
-let purpleBright = Css.hex("806BFF");
+let brightPurple = Css.hex("806BFF");
 
 let yellow = Css.hex("FFC99F");
 
@@ -26,6 +26,8 @@ let lightGreen = Css.hex("C7FCEC");
 let grayText = Css.hex("A4A4A4");
 let lightGray = Css.hex("EEEEEE");
 let grayHeader = Css.hex("555555");
+let lightGray = Css.hex("EEEEEE");
+let lighterGray = Css.hex("F9F9F9");
 
 let darkGrayText = Css.hex("777F8E");
 
