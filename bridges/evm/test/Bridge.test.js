@@ -278,7 +278,15 @@ contract("Bridge", () => {
             ]
           ]
         )
-      ).should.eq(true);
+      )
+        .toString()
+        .should.eq(
+          [
+            "0x00000000000aead8",
+            "0x0874ee3e5aba7ae0eb8cb43bfebed358826d111cece0ef0f804e99eea9264060",
+            "0x706172616d73"
+          ].toString()
+        );
     });
 
     it("should not accept invalid data verification", async () => {
