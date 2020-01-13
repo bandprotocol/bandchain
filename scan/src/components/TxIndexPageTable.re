@@ -32,7 +32,6 @@ let make = () => {
           validator: "0x913932993219329319213" |> Address.fromHex,
         }),
       ],
-      events: []
     },
     {
       sender: "0xF4F9994D5E59aEf6281739b046f0E28c33b3A847" |> Address.fromHex,
@@ -48,7 +47,6 @@ let make = () => {
           amount: [{denom: "BAND", amount: 12.4}, {denom: "UATOM", amount: 10000.3}],
         }),
       ],
-      events: []
     },
     {
       sender: "0xe38475F47166d30A6e4E2E2C37e4B75E88Aa8b5B" |> Address.fromHex,
@@ -63,7 +61,6 @@ let make = () => {
           owner: "0x949494949499494949494" |> Address.fromHex,
         }),
       ],
-      events: []
     },
     {
       sender: "0x498968C2B945Ac37b78414f66167b0786E522636" |> Address.fromHex,
@@ -80,46 +77,61 @@ let make = () => {
           sender: "0x99329329239239923923" |> Address.fromHex,
         }),
       ],
-      events: []
     },
   ];
-
   <>
     <THead>
       <Row>
         <Col> <div className=TElement.Styles.msgIcon /> </Col>
-        <Col size=1.3>
-          <div className=TElement.Styles.hashContainer>
-            <Text block=true value="TX HASH" size=Text.Sm weight=Text.Bold color=Colors.grayText />
+        <Col size=0.5>
+          <div className=TElement.Styles.hashCol>
+            <Text
+              block=true
+              value="MESSAGE TYPE"
+              size=Text.Sm
+              weight=Text.Bold
+              color=Colors.grayText
+            />
           </div>
         </Col>
-        <Col size=1.3>
-          <Text block=true value="TYPE" size=Text.Sm weight=Text.Bold color=Colors.grayText />
+        <Col size=1.0>
+          <Text block=true value="DETAIL" size=Text.Sm weight=Text.Bold color=Colors.grayText />
         </Col>
+        <Col size=1.3>
+          <div className=TElement.Styles.feeCol>
+            <Text block=true value="CREATOR" size=Text.Sm weight=Text.Bold color=Colors.grayText />
+          </div>
+        </Col>
+        // <Col size=0.5>
+        //   <div className=TElement.Styles.feeCol>
+        //     <Text block=true value="STATUS" size=Text.Sm weight=Text.Bold color=Colors.grayText />
+        //   </div>
+        // </Col>
         <Col size=0.5>
-          <div className=TElement.Styles.feeContainer>
+          <div className=TElement.Styles.feeCol>
             <Text block=true value="FEE" size=Text.Sm weight=Text.Bold color=Colors.grayText />
           </div>
         </Col>
       </Row>
     </THead>
     {txs
-     ->Belt.List.mapWithIndex((idx, {hash, timestamp, gasUsed, messages}) => {
-         <TBody key={idx |> string_of_int}>
+     ->Belt.List.map(({hash, timestamp, gasUsed, messages}) => {
+         <TBody>
            <Row>
-             <Col> <TElement elementType={messages->Belt.List.getExn(0)->TElement.Icon} /> </Col>
-             <Col size=1.3> <TElement elementType={TElement.TxHash(hash, timestamp)} /> </Col>
-             <Col size=1.3>
-               <TElement elementType={messages->Belt.List.getExn(0)->TElement.TxTypeWithDetail} />
+             <Col size=0.3>
+               <TElement elementType={messages->Belt.List.getExn(0)->TElement.Icon} />
              </Col>
+             <Col size=0.5>
+               <TElement elementType={messages->Belt.List.getExn(0)->TElement.TxType} />
+             </Col>
+             <Col size=1.0> <TElement elementType={"NFL Running Yards"->TElement.Detail} /> </Col>
+             <Col size=1.3> <TElement elementType={hash->TElement.Hash} /> </Col>
+             // <Col size=0.5> <TElement elementType={"PENDING DATA"->TElement.Status} /> </Col>
              <Col size=0.5> <TElement elementType={gasUsed->TElement.Fee} /> </Col>
            </Row>
          </TBody>
        })
      ->Array.of_list
      ->React.array}
-    <div className=Styles.seeMoreContainer>
-      <Text value="SEE MORE" size=Text.Sm weight=Text.Bold block=true color=Colors.grayText />
-    </div>
   </>;
 };

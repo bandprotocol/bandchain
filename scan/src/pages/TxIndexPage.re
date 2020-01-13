@@ -99,6 +99,6 @@ let make = (~txHash, ~hashtag) => {
     </Row>
     <VSpacing size=Spacing.xl />
     <div className=Styles.seperatorLine />
-    <VSpacing size={Css.px(300)} />
+    <TxIndexPageTable />
   </div>;
 };
