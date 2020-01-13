@@ -41,8 +41,8 @@ type OracleRequestResp struct {
 }
 
 type OracleInfoResp struct {
-	Request zoracle.RequestWithReport `json:"request"`
-	Proof   Proof                     `json:"proof"`
+	Request zoracle.RequestInfo `json:"request"`
+	Proof   Proof               `json:"proof"`
 }
 
 type IAVLMerklePath struct {
@@ -416,7 +416,7 @@ func handleGetRequest(c *gin.Context) {
 		return
 	}
 
-	rwr := zoracle.RequestWithReport{}
+	var rwr zoracle.RequestInfo
 	res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/zoracle/request/%d", requestId), nil)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

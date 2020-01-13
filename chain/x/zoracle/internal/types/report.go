@@ -20,14 +20,16 @@ func NewReport(data []byte, reportAt uint64) Report {
 
 // ValidatorReport is a report that contain operator address in struct
 type ValidatorReport struct {
-	Report
-	Validator string `json:"validator"`
+	Value     RawJson        `json:"value"`
+	ReportAt  uint64         `json:"reportAt"`
+	Validator sdk.ValAddress `json:"validator"`
 }
 
 // NewValidatorReport is a contructor of ValidatorReport
-func NewValidatorReport(report Report, valAddress sdk.ValAddress) ValidatorReport {
+func NewValidatorReport(value RawJson, reportAt uint64, valAddress sdk.ValAddress) ValidatorReport {
 	return ValidatorReport{
-		Report:    report,
-		Validator: valAddress.String(),
+		Value:     value,
+		ReportAt:  reportAt,
+		Validator: valAddress,
 	}
 }

@@ -1,8 +1,10 @@
 package keeper
 
 import (
-	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/bandprotocol/d3n/chain/wasm"
+	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 )
 
 // SetReport is a function that saves a data report to storeage.
@@ -33,17 +35,34 @@ func (k Keeper) GetDataReports(ctx sdk.Context, requestID uint64) []types.Report
 }
 
 // GetDataReports returns all the reports (each including its reporter) for a specific request ID.
-func (k Keeper) GetValidatorReports(ctx sdk.Context, requestID uint64) []types.ValidatorReport {
+func (k Keeper) GetValidatorReports(ctx sdk.Context, requestID uint64) ([]types.ValidatorReport, sdk.Error) {
 	iterator := k.GetReportsIterator(ctx, requestID)
 	data := make([]types.ValidatorReport, 0)
+
+	// Get code and params from request id
+	request, err := k.GetRequest(ctx, requestID)
+	if err != nil {
+		return nil, err
+	}
+
+	code, err := k.GetCode(ctx, request.CodeHash)
+	if err != nil {
+		return nil, err
+	}
 	for ; iterator.Valid(); iterator.Next() {
 		var report types.Report
 		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &report)
+
+		rawValue, err := wasm.ParseRawData(code.Code, request.Params, report.Data)
+		if err != nil {
+			rawValue = []byte{}
+		}
 		vReport := types.NewValidatorReport(
-			report,
+			rawValue,
+			report.ReportAt,
 			types.GetValidatorAddress(iterator.Key(), types.ReportKeyPrefix, requestID),
 		)
 		data = append(data, vReport)
 	}
-	return data
+	return data, nil
 }

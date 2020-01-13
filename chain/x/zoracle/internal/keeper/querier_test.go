@@ -1,8 +1,11 @@
 package keeper
 
 import (
+	"encoding/hex"
+	"path/filepath"
 	"testing"
 
+	"github.com/bandprotocol/d3n/chain/wasm"
 	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -22,24 +25,21 @@ func TestQueryRequestById(t *testing.T) {
 		[]string{"request", "1"},
 		abci.RequestQuery{},
 	)
-	require.Nil(t, err)
-
-	// It must be requestID = 0
-	request := types.NewRequest([]byte(nil), []byte(nil), 0)
-	acs, errJSON := codec.MarshalJSONIndent(keeper.cdc, types.NewRequestWithReport(request, []byte{}, []types.ValidatorReport{}))
-	require.Nil(t, errJSON)
-	require.Equal(t, acs, acsBytes)
+	// It must return error request not found
+	require.Equal(t, types.CodeRequestNotFound, err.Code())
 
 	// set code
-	code := []byte("code")
+	absPath, _ := filepath.Abs("../../../../wasm/res/test_u64.wasm")
+	code, _ := wasm.ReadBytes(absPath)
 	owner := sdk.AccAddress([]byte("owner"))
 	codeHash := keeper.SetCode(ctx, code, owner)
+	params, _ := hex.DecodeString("0000000000000007626974636f696e0000000000000003425443")
 
 	// set request
-	request = types.NewRequest(codeHash, []byte("params"), 3)
+	request := types.NewRequest(codeHash, params, 3)
 	keeper.SetRequest(ctx, 1, request)
 	result := []byte("result")
-	keeper.SetResult(ctx, 1, codeHash, []byte("params"), result)
+	keeper.SetResult(ctx, 1, codeHash, params, result)
 
 	// create query
 	acsBytes, err = querier(
@@ -49,11 +49,19 @@ func TestQueryRequestById(t *testing.T) {
 	)
 	require.Nil(t, err)
 
+	paramsMap := []byte(`{"symbol_cg":"bitcoin","symbol_cc":"BTC"}`)
+
 	// Use bytes format for comparison
-	request = types.NewRequest(codeHash, []byte("params"), 3)
-	acs, errJSON = codec.MarshalJSONIndent(
+	request = types.NewRequest(codeHash, params, 3)
+	acs, errJSON := codec.MarshalJSONIndent(
 		keeper.cdc,
-		types.NewRequestWithReport(request, result, []types.ValidatorReport{}),
+		types.NewRequestInfo(
+			request.CodeHash,
+			paramsMap,
+			request.ReportEndAt,
+			[]types.ValidatorReport{},
+			result,
+		),
 	)
 	require.Nil(t, errJSON)
 	require.Equal(t, acs, acsBytes)
