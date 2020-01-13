@@ -21,15 +21,15 @@ type t =
 let fromUrl = (url: ReasonReactRouter.url) =>
   switch (url.path, url.hash) {
   | (["scripts"], _) => ScriptHomePage
-  | (["script", codeHash], "") => ScriptIndexPage(codeHash, ScriptTransactions)
   | (["script", codeHash], "code") => ScriptIndexPage(codeHash, ScriptCode)
   | (["script", codeHash], "integration") => ScriptIndexPage(codeHash, ScriptIntegration)
+  | (["script", codeHash], _) => ScriptIndexPage(codeHash, ScriptTransactions)
   | (["txs"], _) => TxHomePage
   | (["tx", txHash], _) => TxIndexPage(txHash)
   | (["blocks"], _) => BlockHomePage
   | (["block", blockHeight], _) => BlockIndexPage(blockHeight)
-  | (["request", reqID], "") => RequestIndexPage(reqID, RequestReportStatus)
   | (["request", reqID], "proof") => RequestIndexPage(reqID, RequestProof)
+  | (["request", reqID], _) => RequestIndexPage(reqID, RequestReportStatus)
   | ([], "") => HomePage
   | (_, _) => NotFound
   };
