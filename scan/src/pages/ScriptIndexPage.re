@@ -32,7 +32,7 @@ module Styles = {
 
   let tableContainer = style([border(`px(1), `solid, Colors.lightGray)]);
 
-  let tableHeader = style([backgroundColor(Colors.white)]);
+  let tableHeader = style([backgroundColor(Colors.white), padding(`px(20))]);
 
   let tableLowerContainer =
     style([
@@ -98,10 +98,23 @@ let make = (~codeHash, ~hashtag) => {
         />
       </Col>
     </Row>
-    <VSpacing size={Css.px(25)} />
+    <VSpacing size=Spacing.xl />
     <div className=Styles.tableContainer>
-      <div className=Styles.tableHeader> {"test" |> React.string} </div>
-      <div className=Styles.tableLowerContainer> <TxsTable /> </div>
+      <div className=Styles.tableHeader>
+        <Row>
+          <TabButton active=true text="Transactions" />
+          <HSpacing size=Spacing.lg />
+          <TabButton active=false text="Code" />
+          <HSpacing size=Spacing.lg />
+          <TabButton active=false text="Integration" />
+        </Row>
+      </div>
+      <div className=Styles.tableLowerContainer>
+        <Text value="196 Request Transactions" color=Colors.grayHeader size=Text.Lg />
+        <VSpacing size=Spacing.lg />
+        <TxsTable />
+      </div>
     </div>
+    <VSpacing size=Spacing.xxl />
   </div>;
 };
