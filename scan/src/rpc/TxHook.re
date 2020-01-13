@@ -1,3 +1,27 @@
+module Event = {
+  type t = {
+    key: string,
+    value: string,
+  };
+
+  let decode = (prefix, json) =>
+    JsonUtils.Decode.{
+      key: prefix ++ "." ++ (json |> field("key", string)),
+      value: json |> field("value", string),
+    };
+
+  let decodeEvent = json =>
+    JsonUtils.Decode.(
+      {
+        let prefix = json |> field("type", string);
+        json |> field("attributes", list(decode(prefix)));
+      }
+    );
+
+  let decodeEvents = json =>
+    List.flatten(JsonUtils.Decode.(json |> field("events", list(decodeEvent))));
+};
+
 module Coin = {
   type t = {
     denom: string,
@@ -115,6 +139,7 @@ module Tx = {
     gasWanted: int,
     gasUsed: int,
     messages: list(Msg.t),
+    events: list(list(Event.t)),
   };
 
   let decodeTx = json =>
@@ -131,6 +156,7 @@ module Tx = {
       gasWanted: json |> field("gas_wanted", intstr),
       gasUsed: json |> field("gas_used", intstr),
       messages: json |> at(["tx", "value", "msg"], list(Msg.decode)),
+      events: json |> field("logs", list(Event.decodeEvents)),
     };
 
   let decodeTxs = json => JsonUtils.Decode.(json |> field("txs", list(decodeTx)));
