@@ -20,35 +20,28 @@ func (u64a U64Array) String() string {
 	return fmt.Sprintf("%v", []uint64(u64a))
 }
 
-type RequestWithReport struct {
-	Request
-	Result  []byte            `json:"result"`
-	Reports []ValidatorReport `json:"reports"`
+type RequestInfo struct {
+	CodeHash    []byte            `json:"codeHash"`
+	Params      RawJson           `json:"params"`
+	TargetBlock uint64            `json:"targetBlock"`
+	Reports     []ValidatorReport `json:"reports"`
+	Result      []byte            `json:"result"`
 }
 
-func NewRequestWithReport(request Request, result []byte, reports []ValidatorReport) RequestWithReport {
-	return RequestWithReport{
-		Request: request,
-		Result:  result,
-		Reports: reports,
+func NewRequestInfo(
+	codeHash []byte,
+	params RawJson,
+	targetBlock uint64,
+	reports []ValidatorReport,
+	result []byte,
+) RequestInfo {
+	return RequestInfo{
+		CodeHash:    codeHash,
+		Params:      params,
+		TargetBlock: targetBlock,
+		Reports:     reports,
+		Result:      result,
 	}
-}
-
-func (re RequestWithReport) MarshalJSON() ([]byte, error) {
-	d, err := json.Marshal(re.Request)
-	if err != nil {
-		return nil, err
-	}
-
-	var data map[string]interface{}
-	if err := json.Unmarshal(d, &data); err != nil {
-		return nil, err
-	}
-
-	data["result"] = re.Result
-	data["reports"] = re.Reports
-
-	return json.Marshal(data)
 }
 
 type RawBytes []byte
