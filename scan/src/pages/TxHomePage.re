@@ -36,6 +36,7 @@ let make = () => {
           validator: "0x9139329932193293192130" |> Address.fromHex,
         }),
       ],
+      events: [],
     },
     {
       sender: "0x498968C2B945Ac37b78414f66167b0786E522636" |> Address.fromHex,
@@ -51,6 +52,7 @@ let make = () => {
           amount: [{denom: "BAND", amount: 12.4}, {denom: "UATOM", amount: 10000.3}],
         }),
       ],
+      events: [],
     },
     {
       sender: "0x498968C2B945Ac37b78414f66167b0786E522636" |> Address.fromHex,
@@ -65,6 +67,7 @@ let make = () => {
           owner: "0x949494949499494949494" |> Address.fromHex,
         }),
       ],
+      events: [],
     },
     {
       sender: "0x498968C2B945Ac37b78414f66167b0786E522636" |> Address.fromHex,
@@ -81,6 +84,7 @@ let make = () => {
           sender: "0x99329329239239923923" |> Address.fromHex,
         }),
       ],
+      events: [],
     },
   ];
 
@@ -105,7 +109,7 @@ let make = () => {
       <Row>
         <Col> <div className=TElement.Styles.msgIcon /> </Col>
         <Col size=1.1>
-          <div className=TElement.Styles.hashCol>
+          <div className=TElement.Styles.hashContainer>
             <Text block=true value="TX HASH" size=Text.Sm weight=Text.Bold color=Colors.grayText />
           </div>
         </Col>
@@ -119,15 +123,15 @@ let make = () => {
           <Text block=true value="SENDER" size=Text.Sm weight=Text.Bold color=Colors.grayText />
         </Col>
         <Col size=0.5>
-          <div className=TElement.Styles.feeCol>
+          <div className=TElement.Styles.feeContainer>
             <Text block=true value="FEE" size=Text.Sm weight=Text.Bold color=Colors.grayText />
           </div>
         </Col>
       </Row>
     </THead>
     {txs
-     ->Belt.List.map(({blockHeight, hash, timestamp, gasUsed, messages}) => {
-         <TBody>
+     ->Belt.List.mapWithIndex((idx, {blockHeight, hash, timestamp, gasUsed, messages}) => {
+         <TBody key={idx |> string_of_int}>
            <Row>
              <Col> <TElement elementType={messages->Belt.List.getExn(0)->TElement.Icon} /> </Col>
              <Col size=1.1> <TElement elementType={TElement.TxHash(hash, timestamp)} /> </Col>

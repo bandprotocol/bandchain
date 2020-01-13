@@ -19,8 +19,8 @@ module Styles = {
   let proposerBox = style([maxWidth(`px(270)), display(`flex), flexDirection(`column)]);
 };
 
-let renderBody = ((height, timestamp, proposer, totalTx, totalFee, blockReward)) => {
-  <TBody>
+let renderBody = (idx, (height, timestamp, proposer, totalTx, totalFee, blockReward)) => {
+  <TBody key={idx |> string_of_int}>
     <Row>
       <Col size=0.6>
         <div className=Styles.textContainer>
@@ -159,7 +159,7 @@ let make = () => {
          "N/A",
        ),
      ]
-     ->Belt.List.map(renderBody)
+     ->Belt.List.mapWithIndex(renderBody)
      ->Array.of_list
      ->React.array}
     <VSpacing size=Spacing.lg />
