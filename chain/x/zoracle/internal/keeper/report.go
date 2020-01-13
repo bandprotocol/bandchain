@@ -59,7 +59,7 @@ func (k Keeper) GetValidatorReports(ctx sdk.Context, requestID uint64) ([]types.
 		}
 		vReport := types.NewValidatorReport(
 			rawValue,
-			report.ReportAt,
+			report.ReportedAt,
 			types.GetValidatorAddress(iterator.Key(), types.ReportKeyPrefix, requestID),
 		)
 		data = append(data, vReport)

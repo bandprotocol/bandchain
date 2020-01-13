@@ -42,8 +42,9 @@ func getRequestHandler(cliCtx context.CLIContext, storeName string) http.Handler
 		)
 
 		request.TxHash = searchRequest.Txs[0].TxHash
-		request.RequestAtHeight = searchRequest.Txs[0].Height
-		request.RequestAtTime = searchRequest.Txs[0].Timestamp
+		request.RequestedAtHeight = searchRequest.Txs[0].Height
+		request.RequestedAtTime = searchRequest.Txs[0].Timestamp
+		// TODO: Find the correct message and not assume the first message is the one
 		request.Requester = searchRequest.Txs[0].Tx.GetMsgs()[0].(types.MsgRequest).Sender
 		// Script detail
 		scriptInfoRaw, _, err := cliCtx.QueryWithData(
@@ -70,13 +71,14 @@ func getRequestHandler(cliCtx context.CLIContext, storeName string) http.Handler
 			cliCtx,
 			[]string{fmt.Sprintf("%s.%s='%s'", types.EventTypeReport, types.AttributeKeyRequestID, reqID)},
 			1,
-			30, // Estimated validator reports
+			10000, // Estimated validator reports
 		)
 
 		for _, report := range searchReports.Txs {
+			// TODO: Find validator address from tx not assume in first log of tx
 			reportTxs[report.Logs[0].Events[1].Attributes[1].Value] = ReportDetail{
-				TxHash:       report.TxHash,
-				ReportAtTime: report.Timestamp,
+				TxHash:         report.TxHash,
+				ReportedAtTime: report.Timestamp,
 			}
 		}
 
@@ -88,11 +90,11 @@ func getRequestHandler(cliCtx context.CLIContext, storeName string) http.Handler
 				return
 			}
 			request.Reports[i] = ReportDetail{
-				Reporter:       report.Validator,
-				ReportAtHeight: int64(report.ReportAt),
-				TxHash:         reportTx.TxHash,
-				ReportAtTime:   reportTx.ReportAtTime,
-				Value:          report.Value,
+				Reporter:         report.Validator,
+				TxHash:           reportTx.TxHash,
+				ReportedAtHeight: int64(report.ReportedAt),
+				ReportedAtTime:   reportTx.ReportedAtTime,
+				Value:            report.Value,
 			}
 		}
 

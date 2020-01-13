@@ -15,22 +15,22 @@ type ScriptInfoWithTx struct {
 }
 
 type ReportDetail struct {
-	Reporter       sdk.ValAddress `json:"reporter"`
-	TxHash         string         `json:"txhash"`
-	ReportAtHeight int64          `json:"reportAtHeight"`
-	ReportAtTime   string         `json:"reportAtTime"`
-	Value          types.RawJson  `json:"value"`
+	Reporter         sdk.ValAddress `json:"reporter"`
+	TxHash           string         `json:"txhash"`
+	ReportedAtHeight int64          `json:"reportedAtHeight"`
+	ReportedAtTime   string         `json:"reportedAtTime"`
+	Value            types.RawJson  `json:"value"`
 }
 
 type RequestQueryInfo struct {
-	ScriptInfo      types.ScriptInfo `json:"scriptInfo"`
-	CodeHash        cmn.HexBytes     `json:"codeHash"`
-	Params          types.RawJson    `json:"params"`
-	TargetBlock     int64            `json:"targetBlock"`
-	Requester       sdk.AccAddress   `json:"requester"`
-	TxHash          string           `json:"txhash"`
-	RequestAtHeight int64            `json:"requestAtHeight"`
-	RequestAtTime   string           `json:"requestAtTime"`
-	Reports         []ReportDetail   `json:"reports"`
-	Result          []byte           `json:"result"`
+	ScriptInfo        types.ScriptInfo `json:"scriptInfo"`
+	CodeHash          cmn.HexBytes     `json:"codeHash"`
+	Params            types.RawJson    `json:"params"`
+	TargetBlock       int64            `json:"targetBlock"`
+	Requester         sdk.AccAddress   `json:"requester"`
+	TxHash            string           `json:"txhash"`
+	RequestedAtHeight int64            `json:"requestedAtHeight"`
+	RequestedAtTime   string           `json:"requestedAtTime"`
+	Reports           []ReportDetail   `json:"reports"`
+	Result            []byte           `json:"result"`
 }
