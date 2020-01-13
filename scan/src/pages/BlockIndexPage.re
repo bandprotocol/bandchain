@@ -1,26 +1,89 @@
 module Styles = {
   open Css;
 
-  let vFlex =
+  let pageContainer = style([paddingTop(`px(50))]);
+
+  let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
+
+  let txTypeBadge =
     style([
+      paddingLeft(`px(12)),
+      paddingRight(`px(12)),
+      paddingTop(`px(5)),
+      paddingBottom(`px(5)),
+      backgroundColor(`hex("E2F0FF")),
+      borderRadius(`px(15)),
+    ]);
+
+  let msgAmount =
+    style([borderRadius(`percent(50.)), padding(`px(3)), backgroundColor(`hex("ececec"))]);
+
+  let seperatedLine =
+    style([
+      width(`px(13)),
+      height(`px(1)),
+      marginLeft(`px(10)),
+      marginRight(`px(10)),
+      backgroundColor(Colors.grayHeader),
+    ]);
+
+  let addressContainer = style([marginTop(`px(15))]);
+
+  let checkLogo = style([marginRight(`px(10))]);
+
+  let seperatorLine =
+    style([
+      width(`percent(100.)),
+      height(`pxFloat(1.4)),
+      backgroundColor(`hex("EEEEEE")),
       display(`flex),
-      flexDirection(`column),
-      alignItems(`center),
-      justifyContent(`center),
-      height(`px(600)),
     ]);
 };
 
 [@react.component]
 let make = (~height, ~hashtag) => {
-  <div className=Styles.vFlex>
-    <Text value="Block Index Page" size=Text.Xxl weight=Text.Bold nowrap=true />
-    <Text value={j|block height is $height|j} size=Text.Lg weight=Text.Bold nowrap=true />
-    <Text
-      value={hashtag != "" ? {j|Hashtag is $hashtag|j} : "No Hashtag"}
-      size=Text.Xl
-      weight=Text.Bold
-      nowrap=true
-    />
+  <div className=Styles.pageContainer>
+    <Row justify=Row.Between>
+      <Col>
+        <div className=Styles.vFlex>
+          <Text
+            value="BLOCK"
+            weight=Text.Semibold
+            size=Text.Lg
+            nowrap=true
+            color=Colors.grayHeader
+            block=true
+          />
+          <div className=Styles.seperatedLine />
+          <Text value="51 MINUTES AGO" />
+        </div>
+      </Col>
+    </Row>
+    <div className=Styles.vFlex>
+      <Text value="#" size=Text.Xxl weight=Text.Semibold color={Css.hex("806BFF")} />
+      <HSpacing size=Spacing.xs />
+      <Text value=height size=Text.Xxl weight=Text.Semibold />
+    </div>
+    <VSpacing size=Spacing.xl />
+    <Row>
+      <Col size=1.> <InfoHL info={InfoHL.Count(1)} header="TRANSACTIONS" /> </Col>
+      <Col size=2.5>
+        <InfoHL
+          info={InfoHL.Hash("0xe38475F47166d30A6e4E2E2C37e4B75E88Aa8b5B", Colors.grayHeader)}
+          header="PROPOSED BY"
+        />
+      </Col>
+      <Col size=2.>
+        <InfoHL
+          info={InfoHL.Timestamp(MomentRe.momentWithUnix(1578052800))}
+          header="TIMESTAMP"
+        />
+      </Col>
+    </Row>
+    <VSpacing size=Spacing.xl />
+    <div className=Styles.seperatorLine />
+    <TxTable />
+    <VSpacing size=Spacing.lg />
+    <LoadMore />
   </div>;
 };
