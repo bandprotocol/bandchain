@@ -52,7 +52,7 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~txHash, ~hashtag) => {
+let make = (~txHash) => {
   <div className=Styles.pageContainer>
     <Row justify=Row.Between>
       <Col>

@@ -41,7 +41,7 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~height, ~hashtag) => {
+let make = (~height) => {
   <div className=Styles.pageContainer>
     <Row justify=Row.Between>
       <Col>

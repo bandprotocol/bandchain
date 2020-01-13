@@ -77,9 +77,9 @@ let make = () => {
        | ScriptHomePage => <ScriptHomePage />
        | ScriptIndexPage(codeHash, hashtag) => <ScriptIndexPage codeHash hashtag />
        | TxHomePage => <TxHomePage />
-       | TxIndexPage(txHash, hashtag) => <TxIndexPage txHash hashtag />
+       | TxIndexPage(txHash) => <TxIndexPage txHash />
        | BlockHomePage => <BlockHomePage />
-       | BlockIndexPage(height, hashtag) => <BlockIndexPage height hashtag />
+       | BlockIndexPage(height) => <BlockIndexPage height />
        | RequestIndexPage(reqID, hashtag) => <RequestIndexPage reqID hashtag />
        | NotFound =>
          ReasonReactRouter.replace("/");
