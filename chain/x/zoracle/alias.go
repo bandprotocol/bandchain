@@ -37,10 +37,10 @@ var (
 )
 
 type (
-	Keeper            = keeper.Keeper
-	MsgRequest        = types.MsgRequest
-	MsgReport         = types.MsgReport
-	MsgStoreCode      = types.MsgStoreCode
-	MsgDeleteCode     = types.MsgDeleteCode
-	RequestWithReport = types.RequestWithReport
+	Keeper        = keeper.Keeper
+	MsgRequest    = types.MsgRequest
+	MsgReport     = types.MsgReport
+	MsgStoreCode  = types.MsgStoreCode
+	MsgDeleteCode = types.MsgDeleteCode
+	RequestInfo   = types.RequestInfo
 )

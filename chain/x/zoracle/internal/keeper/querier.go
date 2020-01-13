@@ -38,17 +38,31 @@ func queryRequest(ctx sdk.Context, path []string, req abci.RequestQuery, keeper 
 	if err != nil {
 		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for requestid %s", err.Error()))
 	}
-	requestFromState, sdkErr := keeper.GetRequest(ctx, reqID)
-	if err != nil {
+	request, sdkErr := keeper.GetRequest(ctx, reqID)
+	if sdkErr != nil {
 		return nil, sdkErr
 	}
-	reports := keeper.GetValidatorReports(ctx, reqID)
-	result, sdkErr := keeper.GetResult(ctx, reqID, requestFromState.CodeHash, requestFromState.Params)
+	reports, sdkErr := keeper.GetValidatorReports(ctx, reqID)
+	if sdkErr != nil {
+		return nil, sdkErr
+	}
+	result, sdkErr := keeper.GetResult(ctx, reqID, request.CodeHash, request.Params)
 	if sdkErr != nil {
 		result = []byte{}
 	}
 
-	res, err := codec.MarshalJSONIndent(keeper.cdc, types.NewRequestWithReport(requestFromState, result, reports))
+	code, sdkErr := keeper.GetCode(ctx, request.CodeHash)
+	if sdkErr != nil {
+		return nil, sdkErr
+	}
+
+	rawParams, err := wasm.ParseParams(code.Code, request.Params)
+	if err != nil {
+		rawParams = []byte{}
+	}
+	res, err := codec.MarshalJSONIndent(
+		keeper.cdc,
+		types.NewRequestInfo(request.CodeHash, rawParams, request.ReportEndAt, reports, result))
 	if err != nil {
 		panic("could not marshal result to JSON")
 	}
