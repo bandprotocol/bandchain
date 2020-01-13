@@ -53,6 +53,8 @@ module Styles = {
     ]);
 
   let mediumText = style([fontSize(`px(14)), lineHeight(`px(20))]);
+
+  let maxHeight20 = style([maxHeight(`px(20))]);
 };
 
 [@react.component]
@@ -175,14 +177,22 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
              <VSpacing size=Spacing.lg />
            </div>
            <VSpacing size=Spacing.xl />
-           <Text value={j|📄 Cargo.toml|j} size=Text.Lg color=Colors.grayHeader />
-           <VSpacing size=Spacing.xs />
+           <Row>
+             <img src=Images.textDocument className=Styles.maxHeight20 />
+             <HSpacing size=Spacing.md />
+             <Text value="Cargo.toml" size=Text.Lg color=Colors.grayHeader />
+           </Row>
+           <VSpacing size=Spacing.md />
            <div className=Styles.mediumText>
              <ReactHighlight> {CodeExample.toml |> React.string} </ReactHighlight>
            </div>
            <VSpacing size=Spacing.xl />
-           <Text value={j|📄 src/logic.rs|j} size=Text.Lg color=Colors.grayHeader />
-           <VSpacing size=Spacing.xs />
+           <Row>
+             <img src=Images.textDocument className=Styles.maxHeight20 />
+             <HSpacing size=Spacing.md />
+             <Text value="src/logic.rs" size=Text.Lg color=Colors.grayHeader />
+           </Row>
+           <VSpacing size=Spacing.md />
            <div className=Styles.mediumText>
              <ReactHighlight> {CodeExample.logic |> React.string} </ReactHighlight>
            </div>
