@@ -19,9 +19,11 @@
     "bs-css": "^11.0.0",
     "bs-let": "^0.1.11",
     "bs-moment": "^0.4.5",
+    "bs-react-syntax-highlighter": "^0.2.0",
     "js-sha256": "^0.9.0",
     "moment": "^2.24.0",
-    "react": "^16.8.0-0",
+    "react": ">= 0.14.0",
+    "react-highlight": "^0.12.0",
     "reason-react": "^0.7.0",
     "ripemd160": "^2.0.2"
   }
