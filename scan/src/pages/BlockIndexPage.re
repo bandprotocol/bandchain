@@ -11,12 +11,12 @@ module Styles = {
       paddingRight(`px(12)),
       paddingTop(`px(5)),
       paddingBottom(`px(5)),
-      backgroundColor(`hex("E2F0FF")),
+      backgroundColor(Colors.lighterBlue),
       borderRadius(`px(15)),
     ]);
 
   let msgAmount =
-    style([borderRadius(`percent(50.)), padding(`px(3)), backgroundColor(`hex("ececec"))]);
+    style([borderRadius(`percent(50.)), padding(`px(3)), backgroundColor(Colors.lightGray)]);
 
   let seperatedLine =
     style([
@@ -35,7 +35,7 @@ module Styles = {
     style([
       width(`percent(100.)),
       height(`pxFloat(1.4)),
-      backgroundColor(`hex("EEEEEE")),
+      backgroundColor(Colors.lightGray),
       display(`flex),
     ]);
 };
