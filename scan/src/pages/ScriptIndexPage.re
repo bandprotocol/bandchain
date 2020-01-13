@@ -29,10 +29,25 @@ module Styles = {
     ]);
 
   let checkLogo = style([marginRight(`px(10))]);
+
+  let tableContainer = style([border(`px(1), `solid, Colors.lightGray)]);
+
+  let tableHeader = style([backgroundColor(Colors.white), padding(`px(20))]);
+
+  let tableLowerContainer =
+    style([
+      padding(`px(20)),
+      backgroundImage(
+        `linearGradient((
+          deg(0.0),
+          [(`percent(0.0), Colors.white), (`percent(100.0), Colors.lighterGray)],
+        )),
+      ),
+    ]);
 };
 
 [@react.component]
-let make = (~codeHash, ~hashtag) => {
+let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
   <div className=Styles.pageContainer>
     <Row justify=Row.Between>
       <Col>
@@ -70,7 +85,7 @@ let make = (~codeHash, ~hashtag) => {
     <Row>
       <Col>
         <InfoHL
-          info={InfoHL.Hash("0x012030123901923912391293", Colors.lightPurple)}
+          info={InfoHL.Hash("0x012030123901923912391293", Colors.brightPurple)}
           header="SCRIPT HASH"
         />
       </Col>
@@ -78,11 +93,47 @@ let make = (~codeHash, ~hashtag) => {
       <HSpacing size=Spacing.xl />
       <Col>
         <InfoHL
-          info={InfoHL.Hash("0x92392392392939239293293923", Colors.lightPurple)}
+          info={InfoHL.Hash("0x92392392392939239293293923", Colors.brightPurple)}
           header="CREATOR"
         />
       </Col>
     </Row>
-    <VSpacing size={Css.px(400)} />
+    <VSpacing size=Spacing.xl />
+    <div className=Styles.tableContainer>
+      <div className=Styles.tableHeader>
+        <Row>
+          <TabButton
+            active={hashtag == ScriptTransactions}
+            text="Transactions"
+            route={Route.ScriptIndexPage(codeHash, ScriptTransactions)}
+          />
+          <HSpacing size=Spacing.lg />
+          <TabButton
+            active={hashtag == ScriptCode}
+            text="Code"
+            route={Route.ScriptIndexPage(codeHash, ScriptCode)}
+          />
+          <HSpacing size=Spacing.lg />
+          <TabButton
+            active={hashtag == ScriptIntegration}
+            text="Integration"
+            route={Route.ScriptIndexPage(codeHash, ScriptIntegration)}
+          />
+        </Row>
+      </div>
+      {switch (hashtag) {
+       | ScriptTransactions =>
+         <div className=Styles.tableLowerContainer>
+           <Text value="196 Request Transactions" color=Colors.grayHeader size=Text.Lg />
+           <VSpacing size=Spacing.lg />
+           <TxsTable />
+           <VSpacing size=Spacing.lg />
+           <LoadMore />
+         </div>
+       | ScriptCode => <div> {"TODO1" |> React.string} </div>
+       | ScriptIntegration => <div> {"TODO2" |> React.string} </div>
+       }}
+    </div>
+    <VSpacing size=Spacing.xxl />
   </div>;
 };
