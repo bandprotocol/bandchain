@@ -1,23 +1,35 @@
+type script_tab_t =
+  | ScriptTransactions
+  | ScriptCode
+  | ScriptIntegration;
+
+type request_tab_t =
+  | RequestReportStatus
+  | RequestProof;
+
 type t =
   | NotFound
   | HomePage
   | ScriptHomePage
-  | ScriptIndexPage(string, string)
+  | ScriptIndexPage(string, script_tab_t)
   | TxHomePage
-  | TxIndexPage(string, string)
+  | TxIndexPage(string)
   | BlockHomePage
-  | BlockIndexPage(string, string)
-  | RequestIndexPage(string, string);
+  | BlockIndexPage(string)
+  | RequestIndexPage(string, request_tab_t);
 
 let fromUrl = (url: ReasonReactRouter.url) =>
   switch (url.path, url.hash) {
   | (["scripts"], _) => ScriptHomePage
-  | (["script", codeHash], hashtag) => ScriptIndexPage(codeHash, hashtag)
+  | (["script", codeHash], "") => ScriptIndexPage(codeHash, ScriptTransactions)
+  | (["script", codeHash], "code") => ScriptIndexPage(codeHash, ScriptCode)
+  | (["script", codeHash], "integration") => ScriptIndexPage(codeHash, ScriptIntegration)
   | (["txs"], _) => TxHomePage
-  | (["tx", txHash], hashtag) => TxIndexPage(txHash, hashtag)
+  | (["tx", txHash], _) => TxIndexPage(txHash)
   | (["blocks"], _) => BlockHomePage
-  | (["block", blockHeight], hashtag) => BlockIndexPage(blockHeight, hashtag)
-  | (["request", reqID], hashtag) => RequestIndexPage(reqID, hashtag)
+  | (["block", blockHeight], _) => BlockIndexPage(blockHeight)
+  | (["request", reqID], "") => RequestIndexPage(reqID, RequestReportStatus)
+  | (["request", reqID], "proof") => RequestIndexPage(reqID, RequestProof)
   | ([], "") => HomePage
   | (_, _) => NotFound
   };
@@ -25,16 +37,15 @@ let fromUrl = (url: ReasonReactRouter.url) =>
 let toString =
   fun
   | ScriptHomePage => "/scripts"
-  | ScriptIndexPage(codeHash, "") => {j|/script/$codeHash|j}
-  | ScriptIndexPage(codeHash, hashtag) => {j|/script/$codeHash#$hashtag|j}
+  | ScriptIndexPage(codeHash, ScriptTransactions) => {j|/script/$codeHash|j}
+  | ScriptIndexPage(codeHash, ScriptCode) => {j|/script/$codeHash#code|j}
+  | ScriptIndexPage(codeHash, ScriptIntegration) => {j|/script/$codeHash#integration|j}
   | TxHomePage => "/txs"
-  | TxIndexPage(txHash, "") => {j|/tx/$txHash|j}
-  | TxIndexPage(txHash, hashtag) => {j|/tx/$txHash#$hashtag|j}
+  | TxIndexPage(txHash) => {j|/tx/$txHash|j}
   | BlockHomePage => "/blocks"
-  | BlockIndexPage(height, "") => {j|/block/$height|j}
-  | BlockIndexPage(height, hashtag) => {j|/block/$height#$hashtag|j}
-  | RequestIndexPage(reqID, "") => {j|/request/$reqID|j}
-  | RequestIndexPage(reqID, hashtag) => {j|/request/$reqID#$hashtag|j}
+  | BlockIndexPage(height) => {j|/block/$height|j}
+  | RequestIndexPage(reqID, RequestReportStatus) => {j|/request/$reqID|j}
+  | RequestIndexPage(reqID, RequestProof) => {j|/request/$reqID#proof|j}
   | HomePage
   | NotFound => "/";
 
