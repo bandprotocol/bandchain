@@ -62,7 +62,7 @@ func queryRequest(ctx sdk.Context, path []string, req abci.RequestQuery, keeper 
 	}
 	res, err := codec.MarshalJSONIndent(
 		keeper.cdc,
-		types.NewRequestInfo(request.CodeHash, rawParams, request.ReportEndAt, reports, result))
+		types.NewRequestInfo(request.CodeHash, request.Params, rawParams, request.ReportEndAt, reports, result))
 	if err != nil {
 		panic("could not marshal result to JSON")
 	}
