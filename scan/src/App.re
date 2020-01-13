@@ -19,7 +19,7 @@ module Styles = {
     style([
       display(`flex),
       borderRadius(`px(10)),
-      backgroundColor(Colors.pinkLight),
+      backgroundColor(Colors.lightPink),
       padding4(~top=`px(0), ~bottom=`px(0), ~left=Spacing.sm, ~right=Spacing.sm),
       height(`px(20)),
       justifyContent(`center),

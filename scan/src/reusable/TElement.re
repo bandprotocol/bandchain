@@ -3,7 +3,7 @@ module Styles = {
 
   let typeContainer = style([marginRight(`px(20)), maxWidth(`px(210))]);
 
-  let txTypeOval =
+  let txTypeOval = (textColor, bgColor) =>
     style([
       marginLeft(`px(-2)),
       display(`inlineFlex),
@@ -11,8 +11,8 @@ module Styles = {
       alignItems(`center),
       borderRadius(`px(15)),
       padding2(~v=Spacing.xs, ~h=Spacing.sm),
-      color(Colors.purple),
-      backgroundColor(Colors.purpleLight),
+      color(textColor),
+      backgroundColor(bgColor),
     ]);
 
   let msgIcon =
@@ -30,12 +30,40 @@ module Styles = {
   let textContainer = style([display(`flex)]);
 };
 
-let renderTxType = txType =>
+let txTypeMapping = msg => {
+  switch (msg) {
+  | TxHook.Msg.Request(_) => ("DATA REQUEST", Colors.darkBlue, Colors.lighterBlue)
+  | TxHook.Msg.Store(_) => ("NEW SCRIPT", Colors.darkGreen, Colors.lightGreen)
+  | TxHook.Msg.Send(_) => ("SEND TOKEN", Colors.purple, Colors.lightPurple)
+  | TxHook.Msg.Report(_) => ("DATA REPORT", Colors.darkIndigo, Colors.lightIndigo)
+  | Unknown => ("Unknown", Colors.darkGrayText, Colors.grayHeader)
+  };
+};
+
+let renderTxType = txType => {
+  let (typeName, textColor, bgColor) = txTypeMapping(txType);
   <div className=Styles.typeContainer>
-    <div className=Styles.txTypeOval> <Text value="DATA REQUEST" size=Text.Xs block=true /> </div>
+    <div className={Styles.txTypeOval(textColor, bgColor)}>
+      <Text value=typeName size=Text.Xs block=true />
+    </div>
+  </div>;
+};
+
+let renderText = text =>
+  <div className=Styles.typeContainer>
+    <Text value=text size=Text.Lg weight=Text.Semibold block=true ellipsis=true />
+  </div>;
+
+let renderTxTypeWithDetail = txType => {
+  let (typeName, textColor, bgColor) = txTypeMapping(txType);
+  <div className=Styles.typeContainer>
+    <div className={Styles.txTypeOval(textColor, bgColor)}>
+      <Text value=typeName size=Text.Xs block=true />
+    </div>
     <VSpacing size=Spacing.xs />
     <Text value="ETH/USD Price Feed" size=Text.Lg weight=Text.Semibold block=true ellipsis=true />
   </div>;
+};
 
 let renderTxHash = (hash, time) => {
   <div className=Styles.hashContainer>
@@ -44,7 +72,7 @@ let renderTxHash = (hash, time) => {
     <Text
       block=true
       code=true
-      value={hash |> Hash.toHex}
+      value={hash |> Hash.toHex(~with0x=true)}
       size=Text.Lg
       weight=Text.Bold
       ellipsis=true
@@ -80,10 +108,14 @@ let renderAddress = address => {
 
 let renderFee = fee => {
   <div className=Styles.feeContainer>
-    <VSpacing size={`px(4)} />
-    <Text size=Text.Sm block=true value="$0.002" color=Colors.grayText />
-    <VSpacing size={`px(4)} />
-    <Text value={fee->Format.iPretty ++ " BAND"} color=Colors.grayHeader weight=Text.Semibold />
+    {fee == 0 ? React.null : <VSpacing size={`px(4)} />}
+    {fee == 0 ? React.null : <Text size=Text.Sm block=true value="$0.002" color=Colors.grayText />}
+    {fee == 0 ? React.null : <VSpacing size={`px(4)} />}
+    <Text
+      value={fee == 0 ? "FREE" : fee->Format.iPretty ++ " BAND"}
+      color=Colors.grayHeader
+      weight=Text.Semibold
+    />
   </div>;
 };
 
@@ -111,7 +143,7 @@ let msgIcon =
   | Send(_) => Images.sendCoin
   | Request(_) => Images.dataRequest
   | Report(_) => Images.report
-  | _ => Images.checkIcon;
+  | Unknown => Images.checkIcon;
 
 type t =
   | Icon(TxHook.Msg.t)
@@ -119,7 +151,10 @@ type t =
   | Name(string)
   | Timestamp(MomentRe.Moment.t)
   | TxHash(Hash.t, MomentRe.Moment.t)
-  | TxType(list(TxHook.Msg.t))
+  | TxTypeWithDetail(TxHook.Msg.t)
+  | TxType(TxHook.Msg.t)
+  | Detail(string)
+  | Status(string)
   | Fee(int)
   | Hash(Hash.t)
   | Address(Address.t);
@@ -132,9 +167,13 @@ let make = (~elementType) => {
   | Name(name) => renderName(name)
   | Timestamp(time) => renderTime(time)
   | TxHash(hash, timestamp) => renderTxHash(hash, timestamp)
+  | TxTypeWithDetail(msg) => renderTxTypeWithDetail(msg)
   | TxType(msg) => renderTxType(msg)
+  | Detail(detail) => renderText(detail)
+  | Status(status) => renderText(status)
   | Fee(fee) => renderFee(fee)
   | Hash(hash) => renderHash(hash)
+  | Timestamp(_) => React.null
   | Address(address) => renderAddress(address)
   };
 };
