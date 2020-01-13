@@ -44,6 +44,15 @@ module Styles = {
         )),
       ),
     ]);
+
+  let codeTabHeader =
+    style([
+      lineHeight(`px(20)),
+      borderBottom(`px(1), `solid, Colors.lightGray),
+      margin2(`px(0), `px(5)),
+    ]);
+
+  let mediumText = style([fontSize(`px(14)), lineHeight(`px(20))]);
 };
 
 [@react.component]
@@ -130,7 +139,54 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
            <VSpacing size=Spacing.lg />
            <LoadMore />
          </div>
-       | ScriptCode => <div> {"TODO1" |> React.string} </div>
+       | ScriptCode =>
+         <div className=Styles.tableLowerContainer>
+           <div className=Styles.codeTabHeader>
+             <Row>
+               <Col size=1.0>
+                 <Row>
+                   <Col size=1.0>
+                     <Text value="Platform" color=Colors.darkGrayText size=Text.Lg />
+                   </Col>
+                   <Col size=1.0> <Text value="OWASM v0.1" size=Text.Lg /> </Col>
+                 </Row>
+               </Col>
+               <Col size=1.0>
+                 <Row>
+                   <Col size=1.0>
+                     <Text value="Parameters" color=Colors.darkGrayText size=Text.Lg />
+                   </Col>
+                   <Col size=1.0> <Text value="2" size=Text.Lg /> </Col>
+                 </Row>
+               </Col>
+             </Row>
+             <VSpacing size=Spacing.lg />
+             <Row>
+               <Col size=1.0>
+                 <Row>
+                   <Col size=1.0>
+                     <Text value="Language" color=Colors.darkGrayText size=Text.Lg />
+                   </Col>
+                   <Col size=1.0> <Text value="Rust 1.39.0" size=Text.Lg /> </Col>
+                 </Row>
+               </Col>
+               <Col size=1.0> <div /> </Col>
+             </Row>
+             <VSpacing size=Spacing.lg />
+           </div>
+           <VSpacing size=Spacing.xl />
+           <Text value={j|📄 Cargo.toml|j} size=Text.Lg color=Colors.grayHeader />
+           <VSpacing size=Spacing.xs />
+           <div className=Styles.mediumText>
+             <ReactHighlight> {CodeExample.toml |> React.string} </ReactHighlight>
+           </div>
+           <VSpacing size=Spacing.xl />
+           <Text value={j|📄 src/logic.rs|j} size=Text.Lg color=Colors.grayHeader />
+           <VSpacing size=Spacing.xs />
+           <div className=Styles.mediumText>
+             <ReactHighlight> {CodeExample.logic |> React.string} </ReactHighlight>
+           </div>
+         </div>
        | ScriptIntegration => <div> {"TODO2" |> React.string} </div>
        }}
     </div>
