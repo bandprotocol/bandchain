@@ -13,7 +13,15 @@ let yellow = Css.hex("FFC99F");
 
 let orange = Css.hex("FF9C9C");
 
+let greenDarker = Css.hex("127658");
 let green = Css.hex("6BCA4A");
+let greenLighter = Css.hex("C7FCEC");
+
+let blueDarker = Css.hex("396EAB");
+let blueLighter = Css.hex("E2F0FF");
+
+let indigoDarker = Css.hex("4C549C");
+let indigoLighter = Css.hex("E7EAFF");
 
 let darkGreen = Css.hex("127658");
 

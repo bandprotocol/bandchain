@@ -79,19 +79,34 @@ let make = () => {
       ],
     },
   ];
-
   <>
     <THead>
       <Row>
         <Col> <div className=TElement.Styles.msgIcon /> </Col>
-        <Col size=1.3>
+        <Col size=0.5>
           <div className=TElement.Styles.hashCol>
-            <Text block=true value="TX HASH" size=Text.Sm weight=Text.Bold color=Colors.grayText />
+            <Text
+              block=true
+              value="MESSAGE TYPE"
+              size=Text.Sm
+              weight=Text.Bold
+              color=Colors.grayText
+            />
           </div>
         </Col>
-        <Col size=1.3>
-          <Text block=true value="TYPE" size=Text.Sm weight=Text.Bold color=Colors.grayText />
+        <Col size=1.0>
+          <Text block=true value="DETAIL" size=Text.Sm weight=Text.Bold color=Colors.grayText />
         </Col>
+        <Col size=1.3>
+          <div className=TElement.Styles.feeCol>
+            <Text block=true value="CREATOR" size=Text.Sm weight=Text.Bold color=Colors.grayText />
+          </div>
+        </Col>
+        // <Col size=0.5>
+        //   <div className=TElement.Styles.feeCol>
+        //     <Text block=true value="STATUS" size=Text.Sm weight=Text.Bold color=Colors.grayText />
+        //   </div>
+        // </Col>
         <Col size=0.5>
           <div className=TElement.Styles.feeCol>
             <Text block=true value="FEE" size=Text.Sm weight=Text.Bold color=Colors.grayText />
@@ -103,19 +118,20 @@ let make = () => {
      ->Belt.List.map(({hash, timestamp, gasUsed, messages}) => {
          <TBody>
            <Row>
-             <Col> <TElement elementType={messages->Belt.List.getExn(0)->TElement.Icon} /> </Col>
-             <Col size=1.3> <TElement elementType={TElement.TxHash(hash, timestamp)} /> </Col>
-             <Col size=1.3>
-               <TElement elementType={messages->Belt.List.getExn(0)->TElement.TxTypeWithDetail} />
+             <Col size=0.3>
+               <TElement elementType={messages->Belt.List.getExn(0)->TElement.Icon} />
              </Col>
+             <Col size=0.5>
+               <TElement elementType={messages->Belt.List.getExn(0)->TElement.TxType} />
+             </Col>
+             <Col size=1.0> <TElement elementType={"NFL Running Yards"->TElement.Detail} /> </Col>
+             <Col size=1.3> <TElement elementType={hash->TElement.Hash} /> </Col>
+             // <Col size=0.5> <TElement elementType={"PENDING DATA"->TElement.Status} /> </Col>
              <Col size=0.5> <TElement elementType={gasUsed->TElement.Fee} /> </Col>
            </Row>
          </TBody>
        })
      ->Array.of_list
      ->React.array}
-    <div className=Styles.seeMoreContainer>
-      <Text value="SEE MORE" size=Text.Sm weight=Text.Bold block=true color=Colors.grayText />
-    </div>
   </>;
 };
