@@ -36,6 +36,7 @@ let make = () => {
           validator: "0x9139329932193293192130" |> Address.fromHex,
         }),
       ],
+      events: [],
     },
     {
       sender: "0x498968C2B945Ac37b78414f66167b0786E522636" |> Address.fromHex,
@@ -51,6 +52,7 @@ let make = () => {
           amount: [{denom: "BAND", amount: 12.4}, {denom: "UATOM", amount: 10000.3}],
         }),
       ],
+      events: [],
     },
     {
       sender: "0x498968C2B945Ac37b78414f66167b0786E522636" |> Address.fromHex,
@@ -65,6 +67,7 @@ let make = () => {
           owner: "0x949494949499494949494" |> Address.fromHex,
         }),
       ],
+      events: [],
     },
     {
       sender: "0x498968C2B945Ac37b78414f66167b0786E522636" |> Address.fromHex,
@@ -81,6 +84,7 @@ let make = () => {
           sender: "0x99329329239239923923" |> Address.fromHex,
         }),
       ],
+      events: [],
     },
   ];
 
