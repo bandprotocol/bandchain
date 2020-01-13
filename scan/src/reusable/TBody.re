@@ -8,7 +8,7 @@ module Styles = {
       backgroundColor(white),
       marginBottom(`px(1)),
       cursor(`pointer),
-      hover([backgroundColor(Colors.purpleLighter)]),
+      hover([backgroundColor(Colors.lighterPurple)]),
       display(`flex),
       alignItems(`center),
     ]);
@@ -16,5 +16,5 @@ module Styles = {
 
 [@react.component]
 let make = (~children, ~height=60) => {
-  <div className=Styles.container(height)> children </div>;
+  <div className={Styles.container(height)}> children </div>;
 };

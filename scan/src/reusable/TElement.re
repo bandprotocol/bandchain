@@ -32,10 +32,10 @@ module Styles = {
 
 let txTypeMapping = msg => {
   switch (msg) {
-  | TxHook.Msg.Request(_) => ("DATA REQUEST", Colors.blueDarker, Colors.blueLighter)
-  | TxHook.Msg.Store(_) => ("NEW SCRIPT", Colors.greenDarker, Colors.greenLighter)
-  | TxHook.Msg.Send(_) => ("SEND TOKEN", Colors.purple, Colors.purpleLight)
-  | TxHook.Msg.Report(_) => ("DATA REPORT", Colors.indigoDarker, Colors.indigoLighter)
+  | TxHook.Msg.Request(_) => ("DATA REQUEST", Colors.darkBlue, Colors.lighterBlue)
+  | TxHook.Msg.Store(_) => ("NEW SCRIPT", Colors.darkGreen, Colors.lightGreen)
+  | TxHook.Msg.Send(_) => ("SEND TOKEN", Colors.purple, Colors.lightPurple)
+  | TxHook.Msg.Report(_) => ("DATA REPORT", Colors.darkIndigo, Colors.lightIndigo)
   | Unknown => ("Unknown", Colors.darkGrayText, Colors.grayHeader)
   };
 };
