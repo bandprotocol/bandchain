@@ -40,3 +40,9 @@ func (k Keeper) DeleteCode(ctx sdk.Context, codeHash []byte) {
 	store := ctx.KVStore(k.storeKey)
 	store.Delete(types.CodeHashStoreKey(codeHash))
 }
+
+// GetCodesIterator returns an iterator for all codes in chain.
+func (k Keeper) GetCodesIterator(ctx sdk.Context) sdk.Iterator {
+	store := ctx.KVStore(k.storeKey)
+	return sdk.KVStorePrefixIterator(store, types.CodeHashKeyPrefix)
+}
