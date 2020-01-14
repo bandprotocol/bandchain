@@ -121,7 +121,11 @@ func getScriptInfoHandler(cliCtx context.CLIContext, storeName string) http.Hand
 		}
 
 		// Find TxHash and height that of transaction
-		getStoreTxInfo(cliCtx, &scriptInfo, hash)
+		err = getStoreTxInfo(cliCtx, &scriptInfo, hash)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 
 		rest.PostProcessResponse(w, cliCtx, scriptInfo)
 	}
@@ -154,7 +158,7 @@ func getScriptsHandler(cliCtx context.CLIContext, storeName string) http.Handler
 	}
 }
 
-func getStoreTxInfo(cliCtx context.CLIContext, script *ScriptInfoWithTx, hash string) {
+func getStoreTxInfo(cliCtx context.CLIContext, script *ScriptInfoWithTx, hash string) error {
 	// TODO: Get latest store tx as tx hash (wait tendermint release get result in desc order)
 	searchResult, err := utils.QueryTxsByEvents(
 		cliCtx,
@@ -162,9 +166,11 @@ func getStoreTxInfo(cliCtx context.CLIContext, script *ScriptInfoWithTx, hash st
 		1,
 		1,
 	)
-	if err == nil {
-		script.TxHash = searchResult.Txs[0].TxHash
-		script.CreatedAtHeight = searchResult.Txs[0].Height
-		script.CreatedAtTime = searchResult.Txs[0].Timestamp
+	if err != nil {
+		return err
 	}
+	script.TxHash = searchResult.Txs[0].TxHash
+	script.CreatedAtHeight = searchResult.Txs[0].Height
+	script.CreatedAtTime = searchResult.Txs[0].Timestamp
+	return nil
 }
