@@ -18,6 +18,7 @@ const (
 	AttributeKeyPrepare      = types.AttributeKeyPrepare
 	AttributeKeyResult       = types.AttributeKeyResult
 	AttributeKeyValidator    = types.AttributeKeyValidator
+	AttributeKeyCodeName     = types.AttributeKeyCodeName
 )
 
 var (

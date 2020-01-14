@@ -32,10 +32,12 @@ func TestQueryRequestById(t *testing.T) {
 	absPath, _ := filepath.Abs("../../../../wasm/res/test_u64.wasm")
 	code, _ := wasm.ReadBytes(absPath)
 	owner := sdk.AccAddress([]byte("owner"))
-	codeHash := keeper.SetCode(ctx, code, owner)
+	name := "Crypto Price"
+	codeHash := keeper.SetCode(ctx, code, name, owner)
 	params, _ := hex.DecodeString("0000000000000007626974636f696e0000000000000003425443")
 
 	// set request
+
 	request := types.NewRequest(codeHash, params, 3)
 	keeper.SetRequest(ctx, 1, request)
 	result := []byte("result")
@@ -86,9 +88,10 @@ func TestQueryPendingRequest(t *testing.T) {
 	require.Equal(t, acs, acsBytes)
 
 	// set request
+	name := "Crypto price"
 	owner := sdk.AccAddress([]byte("owner"))
 	code := []byte("code")
-	codeHash := keeper.SetCode(ctx, code, owner)
+	codeHash := keeper.SetCode(ctx, code, name, owner)
 	request := types.NewRequest(codeHash, []byte("params"), 3)
 	keeper.SetRequest(ctx, 2, request)
 

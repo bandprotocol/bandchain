@@ -76,7 +76,7 @@ func getRequestHandler(cliCtx context.CLIContext, storeName string) http.Handler
 
 		for _, report := range searchReports.Txs {
 			// TODO: Find validator address from tx not assume in first log of tx
-			reportTxs[report.Logs[0].Events[1].Attributes[1].Value] = ReportDetail{
+			reportTxs[report.Logs[0].Events[1].Attributes[2].Value] = ReportDetail{
 				TxHash:         report.TxHash,
 				ReportedAtTime: report.Timestamp,
 			}

@@ -3,7 +3,6 @@ package wasm
 import (
 	"encoding/binary"
 	"errors"
-	"unicode"
 
 	wasm "github.com/wasmerio/go-ext-wasm/wasmer"
 )
@@ -59,32 +58,6 @@ func parseOutput(instance wasm.Instance, ptr int64) ([]byte, error) {
 
 func storeParams(instance wasm.Instance, params []byte) (int64, error) {
 	return allocateInner(instance, params)
-}
-
-func Name(code []byte) (string, error) {
-	instance, err := wasm.NewInstance(code)
-	if err != nil {
-		return "", err
-	}
-	defer instance.Close()
-	fn := instance.Exports["__name"]
-	if fn == nil {
-		return "", errors.New("__name not implemented")
-	}
-	ptr, err := fn()
-	if err != nil {
-		return "", err
-	}
-	rawResult, err := parseOutput(instance, ptr.ToI64())
-	if err != nil {
-		return "", err
-	}
-	for _, ch := range string(rawResult) {
-		if !unicode.IsPrint(ch) {
-			return "", errors.New("Invalid name character")
-		}
-	}
-	return string(rawResult), nil
 }
 
 func ParamsInfo(code []byte) ([]byte, error) {

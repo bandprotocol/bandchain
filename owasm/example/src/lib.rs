@@ -52,11 +52,6 @@ pub fn __execute(params: u64, input: u64) -> u64 {
 }
 
 #[no_mangle]
-pub fn __name() -> u64 {
-    __return(&logic::name().into_bytes())
-}
-
-#[no_mangle]
 pub fn __params_info() -> u64 {
     __return(&serde_json::to_string(&logic::__Params::__fields()).ok().unwrap().into_bytes())
 }

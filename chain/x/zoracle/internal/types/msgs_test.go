@@ -106,7 +106,8 @@ func TestMsgReportGetSignBytes(t *testing.T) {
 
 func TestMsgStoreCode(t *testing.T) {
 	owner, _ := sdk.AccAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
-	msg := NewMsgStoreCode([]byte("Code"), owner)
+	name := "script name"
+	msg := NewMsgStoreCode([]byte("Code"), name, owner)
 
 	require.Equal(t, RouterKey, msg.Route())
 	require.Equal(t, "store", msg.Type())
@@ -114,17 +115,19 @@ func TestMsgStoreCode(t *testing.T) {
 
 func TestMsgStoreCodeValidation(t *testing.T) {
 	code := []byte("Code")
+	name := "script name"
 	owner, _ := sdk.AccAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
 	failOwner, _ := sdk.AccAddressFromHex("")
 	cases := []struct {
 		valid bool
 		tx    MsgStoreCode
 	}{
-		{true, NewMsgStoreCode(code, owner)},
-		{false, NewMsgStoreCode([]byte(""), owner)},
-		{false, NewMsgStoreCode(nil, owner)},
-		{false, NewMsgStoreCode(code, failOwner)},
-		{false, NewMsgStoreCode(code, nil)},
+		{true, NewMsgStoreCode(code, name, owner)},
+		{false, NewMsgStoreCode([]byte(""), name, owner)},
+		{false, NewMsgStoreCode(code, "", owner)},
+		{false, NewMsgStoreCode(nil, name, owner)},
+		{false, NewMsgStoreCode(code, name, failOwner)},
+		{false, NewMsgStoreCode(code, name, nil)},
 	}
 
 	for _, tc := range cases {
@@ -141,12 +144,13 @@ func TestMsgStoreCodeGetSignBytes(t *testing.T) {
 	config := sdk.GetConfig()
 	config.SetBech32PrefixForAccount("band", "band"+sdk.PrefixPublic)
 
+	name := "script name"
 	code := []byte("Code")
 	owner, _ := sdk.AccAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
-	msg := NewMsgStoreCode(code, owner)
+	msg := NewMsgStoreCode(code, name, owner)
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"zoracle/Store","value":{"code":"Q29kZQ==","owner":"band1hq8j5h0h64csk9tz95df783cxr0dt0dg3jw4p0"}}`
+	expected := `{"type":"zoracle/Store","value":{"code":"Q29kZQ==","name":"script name","owner":"band1hq8j5h0h64csk9tz95df783cxr0dt0dg3jw4p0"}}`
 
 	require.Equal(t, expected, string(res))
 }
