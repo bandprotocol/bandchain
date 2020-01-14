@@ -79,7 +79,7 @@ let make = (~reqID, ~hashtag) => {
     <Row>
       <Col>
         <InfoHL
-          info={InfoHL.Hash("0x012030123901923912391293", Colors.lightPurple)}
+          info={InfoHL.Hash("0x012030123901923912391293", Colors.brightPurple)}
           header="SCRIPT HASH"
         />
       </Col>
@@ -87,7 +87,7 @@ let make = (~reqID, ~hashtag) => {
       <HSpacing size=Spacing.xl />
       <Col>
         <InfoHL
-          info={InfoHL.Hash("0x92392392392939239293293923", Colors.lightPurple)}
+          info={InfoHL.Hash("0x92392392392939239293293923", Colors.brightPurple)}
           header="CREATOR"
         />
       </Col>
@@ -119,7 +119,7 @@ let make = (~reqID, ~hashtag) => {
         </div>
       </div>
       <VSpacing size=Spacing.xl />
-      <div className=Css.merge([Styles.vFlex, Styles.flexStart])>
+      <div className={Css.merge([Styles.vFlex, Styles.flexStart])}>
         <div className=Styles.subHeaderContainer>
           <Text value="Parameters" size=Text.Xl color=Colors.darkGrayText />
         </div>
