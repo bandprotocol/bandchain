@@ -139,7 +139,7 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
            <VSpacing size=Spacing.lg />
            <TxsTable />
            <VSpacing size=Spacing.lg />
-           <LoadMore onClick={_ => ()} />
+           <LoadMore />
          </div>
        | ScriptCode =>
          <div className=Styles.tableLowerContainer>
@@ -178,24 +178,18 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
            </div>
            <VSpacing size=Spacing.xl />
            <Row>
-             <img src=Images.textDocument className=Styles.maxHeight20 />
              <HSpacing size=Spacing.md />
              <Text value="Cargo.toml" size=Text.Lg color=Colors.grayHeader />
            </Row>
            <VSpacing size=Spacing.md />
-           <div className=Styles.mediumText>
-             <ReactHighlight> {CodeExample.toml |> React.string} </ReactHighlight>
-           </div>
+           <div className=Styles.mediumText />
            <VSpacing size=Spacing.xl />
            <Row>
-             <img src=Images.textDocument className=Styles.maxHeight20 />
              <HSpacing size=Spacing.md />
              <Text value="src/logic.rs" size=Text.Lg color=Colors.grayHeader />
            </Row>
            <VSpacing size=Spacing.md />
-           <div className=Styles.mediumText>
-             <ReactHighlight> {CodeExample.logic |> React.string} </ReactHighlight>
-           </div>
+           <div className=Styles.mediumText />
          </div>
        | ScriptIntegration => <div> {"TODO2" |> React.string} </div>
        }}

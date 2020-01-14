@@ -118,7 +118,7 @@ let make = () => {
      ->Array.of_list
      ->React.array}
     <VSpacing size=Spacing.lg />
-    <LoadMore onClick={_ => ()} />
+    <LoadMore />
     <VSpacing size=Spacing.xl />
     <VSpacing size=Spacing.xl />
   </div>;

@@ -21,13 +21,13 @@ module Styles = {
   let proposerBox = style([maxWidth(`px(270)), display(`flex), flexDirection(`column)]);
 };
 
-let renderBody = (idx, block: BlockHook.Block.t) => {
+let renderBody = (block: BlockHook.Block.t) => {
   let height = block.height;
   let timestamp = block.timestamp;
   let proposer = block.proposer->Address.toOperatorBech32;
   let totalTx = block.numTxs;
 
-  <TBody key={idx |> string_of_int}>
+  <TBody key={height |> string_of_int}>
     <div className=Styles.fullWidth onClick={_ => Route.BlockIndexPage(height) |> Route.redirect}>
       <Row>
         <Col size=0.6>
@@ -142,7 +142,7 @@ let make = () => {
          ->React.array}
       </Row>
     </THead>
-    {blocks->Belt_Array.mapWithIndex(renderBody)->React.array}
+    {blocks->Belt_Array.map(renderBody)->React.array}
     <VSpacing size=Spacing.lg />
     <LoadMore onClick={_ => setLimit(oldLimit => oldLimit + 10)} />
   </div>;
