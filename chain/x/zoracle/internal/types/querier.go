@@ -9,9 +9,10 @@ import (
 
 // query endpoints
 const (
-	QueryRequest = "request"
-	QueryPending = "pending_request"
-	QueryScript  = "script"
+	QueryRequest    = "request"
+	QueryPending    = "pending_request"
+	QueryScript     = "script"
+	QueryAllScripts = "scripts"
 )
 
 type U64Array []uint64
@@ -100,4 +101,9 @@ func NewScriptInfo(name string, rawParams, rawDataSources []Field, creator sdk.A
 		DataSources: rawDataSources,
 		Creator:     creator,
 	}
+}
+
+type ScriptInfoWithCodeHash struct {
+	ScriptInfo
+	CodeHash []byte `json:"codeHash"`
 }

@@ -102,7 +102,7 @@ func getRequestHandler(cliCtx context.CLIContext, storeName string) http.Handler
 	}
 }
 
-func getScriptHandler(cliCtx context.CLIContext, storeName string) http.HandlerFunc {
+func getScriptInfoHandler(cliCtx context.CLIContext, storeName string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		hash := vars[codeHash]
@@ -133,5 +133,20 @@ func getScriptHandler(cliCtx context.CLIContext, storeName string) http.HandlerF
 		scriptInfo.CreatedAtTime = searchResult.Txs[0].Timestamp
 
 		rest.PostProcessResponse(w, cliCtx, scriptInfo)
+	}
+}
+
+func getScriptsHandler(cliCtx context.CLIContext, storeName string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		_, page, limit, err := rest.ParseHTTPArgsWithLimit(r, 100)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		}
+		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/scripts/%d/%d", storeName, page, limit), nil)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		rest.PostProcessResponse(w, cliCtx, res)
 	}
 }
