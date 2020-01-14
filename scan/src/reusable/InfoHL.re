@@ -1,6 +1,7 @@
 type t =
   | Height(int)
   | Count(int)
+  | Text(string)
   | Timestamp(MomentRe.Moment.t)
   | Fee(float)
   | DataSources(list(string))
@@ -29,6 +30,7 @@ let make = (~info, ~header) => {
          <Text value={height |> Format.iPretty} size=Text.Lg weight=Text.Semibold />
        </div>
      | Count(count) => <Text value={count |> Format.iPretty} size=Text.Lg weight=Text.Semibold />
+     | Text(text) => <Text value=text size=Text.Lg weight=Text.Semibold />
      | Timestamp(time) =>
        <Text
          value={time |> MomentRe.Moment.format("MMM-DD-YYYY hh:mm:ss A [GMT]Z")}

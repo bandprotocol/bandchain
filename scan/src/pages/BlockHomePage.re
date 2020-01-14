@@ -34,7 +34,7 @@ let renderBody = (block: BlockHook.Block.t) => {
           <div className=Styles.textContainer>
             <Text value="#" size=Text.Md weight=Text.Bold color=Colors.purple />
             <HSpacing size=Spacing.xs />
-            <Text block=true value={height->string_of_int} size=Text.Md weight=Text.Bold />
+            <Text block=true value={height |> Format.iPretty} size=Text.Md weight=Text.Bold />
           </div>
         </Col>
         <Col size=0.8>
@@ -65,7 +65,7 @@ let renderBody = (block: BlockHook.Block.t) => {
         </Col>
         <Col size=0.7>
           <div className=Styles.textContainer>
-            <Text block=true value={totalTx->string_of_int} size=Text.Md weight=Text.Semibold />
+            <Text block=true value={totalTx |> Format.iPretty} size=Text.Md weight=Text.Semibold />
           </div>
         </Col>
         <Col size=0.7>

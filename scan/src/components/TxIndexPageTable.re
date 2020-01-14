@@ -131,7 +131,7 @@ let make = () => {
              <Col size=1.0> <TElement elementType={"NFL Running Yards"->TElement.Detail} /> </Col>
              <Col size=1.3> <TElement elementType={hash->TElement.Hash} /> </Col>
              // <Col size=0.5> <TElement elementType={"PENDING DATA"->TElement.Status} /> </Col>
-             <Col size=0.5> <TElement elementType={gasUsed->TElement.Fee} /> </Col>
+             <Col size=0.5> <TElement elementType={0.->TElement.Fee} /> </Col>
            </Row>
          </TBody>
        })

@@ -41,7 +41,11 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~height) => {
+let make = (~height: int) => {
+  let (limit, setLimit) = React.useState(_ => 10);
+  let blockOpt = BlockHook.atHeight(height, ());
+  let txsOpt = TxHook.atHeight(height, ~limit, ());
+
   <div className=Styles.pageContainer>
     <Row justify=Row.Between>
       <Col>
@@ -55,7 +59,10 @@ let make = (~height) => {
             block=true
           />
           <div className=Styles.seperatedLine />
-          <Text value="51 MINUTES AGO" />
+          {switch (blockOpt) {
+           | Some(block) => <TimeAgos time={block.timestamp} size=Text.Lg weight=Text.Regular />
+           | None => <Text value="in the future" size=Text.Xl />
+           }}
         </div>
       </Col>
     </Row>
@@ -67,25 +74,48 @@ let make = (~height) => {
     </div>
     <VSpacing size=Spacing.lg />
     <Row>
-      <Col size=1.> <InfoHL info={InfoHL.Count(1)} header="TRANSACTIONS" /> </Col>
-      <Col size=2.5>
+      <Col size=1.>
+        {switch (blockOpt) {
+         | Some(block) => <InfoHL info={InfoHL.Count(block.numTxs)} header="TRANSACTIONS" />
+         | None => <InfoHL info={InfoHL.Text("?")} header="TRANSACTIONS" />
+         }}
+      </Col>
+      <Col size=4.>
         <InfoHL
-          info={InfoHL.Hash("0xe38475F47166d30A6e4E2E2C37e4B75E88Aa8b5B", Colors.grayHeader)}
+          info={
+            InfoHL.Hash(
+              switch (blockOpt) {
+              | Some(block) => block.proposer |> Address.toOperatorBech32
+              | None => "?"
+              },
+              Colors.grayHeader,
+            )
+          }
           header="PROPOSED BY"
         />
       </Col>
       <Col size=2.>
-        <InfoHL
-          info={InfoHL.Timestamp(MomentRe.momentWithUnix(1578052800))}
-          header="TIMESTAMP"
-        />
+        {switch (blockOpt) {
+         | Some(block) => <InfoHL info={InfoHL.Timestamp(block.timestamp)} header="TIMESTAMP" />
+         | None => <InfoHL info={InfoHL.Text("?")} header="TRANSACTIONS" />
+         }}
       </Col>
     </Row>
-    <VSpacing size=Spacing.xl />
-    <div className=Styles.seperatorLine />
-    <TxsTable />
-    <VSpacing size=Spacing.lg />
-    <LoadMore />
-    <VSpacing size=Spacing.xl />
+    {switch (blockOpt, txsOpt) {
+     | (Some(_), Some(txs)) =>
+       switch (txs->Belt_List.size) {
+       | 0 => <VSpacing size={`px(280)} />
+       | _ =>
+         <>
+           <VSpacing size=Spacing.xl />
+           <TxsTable txs />
+           <VSpacing size=Spacing.lg />
+           {txs->Belt_List.size < limit
+              ? React.null : <LoadMore onClick={_ => setLimit(oldLimit => oldLimit + 10)} />}
+           <VSpacing size=Spacing.xl />
+         </>
+       }
+     | _ => <VSpacing size={`px(280)} />
+     }}
   </div>;
 };
