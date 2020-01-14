@@ -20,7 +20,7 @@ module Styles = {
 };
 
 let renderBlock = (b: BlockHook.Block.t) =>
-  <div key={string_of_int(b.height)} className=Styles.block>
+  <div key={b.height |> string_of_int} className=Styles.block>
     <Text value="# " color=Colors.pink weight=Text.Semibold size=Text.Lg />
     <Text value={b.height->Format.iPretty} weight=Text.Semibold size=Text.Lg />
     <VSpacing size=Spacing.md />
