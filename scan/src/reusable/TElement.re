@@ -32,7 +32,7 @@ module Styles = {
 
 let txTypeMapping = msg => {
   switch (msg) {
-  | TxHook.Msg.Request(_) => ("DATA REQUEST", Colors.darkBlue, Colors.lighterBlue)
+  | TxHook.Msg.Request(_) => ("DATA REQUEST", Colors.darkBlue, Colors.lightBlue)
   | TxHook.Msg.Store(_) => ("NEW SCRIPT", Colors.darkGreen, Colors.lightGreen)
   | TxHook.Msg.Send(_) => ("SEND TOKEN", Colors.purple, Colors.lightPurple)
   | TxHook.Msg.Report(_) => ("DATA REPORT", Colors.darkIndigo, Colors.lightIndigo)

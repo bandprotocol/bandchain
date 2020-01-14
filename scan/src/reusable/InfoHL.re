@@ -24,7 +24,7 @@ let make = (~info, ~header) => {
     {switch (info) {
      | Height(height) =>
        <div className=Styles.vFlex>
-         <Text value="#" size=Text.Lg weight=Text.Semibold color={Css.hex("806BFF")} />
+         <Text value="#" size=Text.Lg weight=Text.Semibold color=Colors.brightPurple />
          <HSpacing size=Spacing.xs />
          <Text value={height |> Format.iPretty} size=Text.Lg weight=Text.Semibold />
        </div>
