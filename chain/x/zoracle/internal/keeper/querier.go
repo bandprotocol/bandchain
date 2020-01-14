@@ -127,7 +127,7 @@ func queryScript(ctx sdk.Context, path []string, req abci.RequestQuery, keeper K
 		}
 	}
 
-	return codec.MustMarshalJSONIndent(keeper.cdc, types.NewScriptInfo(name, paramsInfo, dataInfo, code.Owner)), nil
+	return codec.MustMarshalJSONIndent(keeper.cdc, types.NewScriptInfo(name, codeHash, paramsInfo, dataInfo, code.Owner)), nil
 }
 
 func queryAllScripts(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
@@ -149,18 +149,19 @@ func queryAllScripts(ctx sdk.Context, path []string, req abci.RequestQuery, keep
 
 	// TODO: Current fetch all scripts and return only script in list
 	iterator := keeper.GetCodesIterator(ctx)
-	results := make([]types.ScriptInfoWithCodeHash, limit)
+	results := make([]types.ScriptInfo, 0)
 	for i := 0; i < end && iterator.Valid(); iterator.Next() {
-		if i <= start {
-			rawInfo, sdkErr := queryScript(ctx, []string{hex.EncodeToString(iterator.Key()[2:])}, req, keeper)
+		if i >= start {
+			var script types.ScriptInfo
+			rawInfo, sdkErr := queryScript(ctx, []string{hex.EncodeToString(iterator.Key()[1:])}, req, keeper)
 			if sdkErr != nil {
 				continue
 			}
-			err := keeper.cdc.UnmarshalJSON(rawInfo, &results[i-start])
+			err := keeper.cdc.UnmarshalJSON(rawInfo, &script)
 			if err != nil {
 				continue
 			}
-			results[i-start].CodeHash = iterator.Key()[2:]
+			results = append(results, script)
 		}
 		i++
 	}

@@ -121,16 +121,7 @@ func getScriptInfoHandler(cliCtx context.CLIContext, storeName string) http.Hand
 		}
 
 		// Find TxHash and height that of transaction
-		// TODO: Get latest store tx as tx hash (wait tendermint release get result in desc order)
-		searchResult, err := utils.QueryTxsByEvents(
-			cliCtx,
-			[]string{fmt.Sprintf("%s.%s='%s'", types.EventTypeStoreCode, types.AttributeKeyCodeHash, hash)},
-			1,
-			1,
-		)
-		scriptInfo.TxHash = searchResult.Txs[0].TxHash
-		scriptInfo.CreatedAtHeight = searchResult.Txs[0].Height
-		scriptInfo.CreatedAtTime = searchResult.Txs[0].Timestamp
+		getStoreTxInfo(cliCtx, &scriptInfo, hash)
 
 		rest.PostProcessResponse(w, cliCtx, scriptInfo)
 	}
@@ -147,6 +138,33 @@ func getScriptsHandler(cliCtx context.CLIContext, storeName string) http.Handler
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
-		rest.PostProcessResponse(w, cliCtx, res)
+
+		var rawScripts []types.ScriptInfo
+		err = cliCtx.Codec.UnmarshalJSON(res, &rawScripts)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		scripts := make([]ScriptInfoWithTx, len(rawScripts))
+		for i, _ := range scripts {
+			scripts[i].Info = rawScripts[i]
+			getStoreTxInfo(cliCtx, &scripts[i], hex.EncodeToString(scripts[i].Info.CodeHash))
+		}
+		rest.PostProcessResponse(w, cliCtx, scripts)
+	}
+}
+
+func getStoreTxInfo(cliCtx context.CLIContext, script *ScriptInfoWithTx, hash string) {
+	// TODO: Get latest store tx as tx hash (wait tendermint release get result in desc order)
+	searchResult, err := utils.QueryTxsByEvents(
+		cliCtx,
+		[]string{fmt.Sprintf("%s.%s='%s'", types.EventTypeStoreCode, types.AttributeKeyCodeHash, hash)},
+		1,
+		1,
+	)
+	if err == nil {
+		script.TxHash = searchResult.Txs[0].TxHash
+		script.CreatedAtHeight = searchResult.Txs[0].Height
+		script.CreatedAtTime = searchResult.Txs[0].Timestamp
 	}
 }

@@ -89,21 +89,18 @@ func MustParseFields(raw []byte) []Field {
 
 type ScriptInfo struct {
 	Name        string         `json:"name"`
+	CodeHash    []byte         `json:"codeHash"`
 	Params      []Field        `json:"params"`
 	DataSources []Field        `json:"dataSources"`
 	Creator     sdk.AccAddress `json:"creator"`
 }
 
-func NewScriptInfo(name string, rawParams, rawDataSources []Field, creator sdk.AccAddress) ScriptInfo {
+func NewScriptInfo(name string, codeHash []byte, rawParams, rawDataSources []Field, creator sdk.AccAddress) ScriptInfo {
 	return ScriptInfo{
 		Name:        name,
+		CodeHash:    codeHash,
 		Params:      rawParams,
 		DataSources: rawDataSources,
 		Creator:     creator,
 	}
-}
-
-type ScriptInfoWithCodeHash struct {
-	ScriptInfo
-	CodeHash []byte `json:"codeHash"`
 }
