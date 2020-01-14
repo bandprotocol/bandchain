@@ -63,9 +63,9 @@ func main() {
 	// }, flags.BroadcastBlock))
 
 	// Send transaction to store code first (commend it if already stored code)
-	fmt.Println(tx.SendTransaction(zoracle.NewMsgStoreCode(bytes, tx.Sender()), flags.BroadcastBlock))
+	fmt.Println(tx.SendTransaction(zoracle.NewMsgStoreCode(bytes, "Crypto price", tx.Sender()), flags.BroadcastBlock))
 
-	codeHash, _ := hex.DecodeString("33cefd052eb9b0cda3d38d4d87313295e45fda5c5b0d6ab9e54870866f62fc80")
+	codeHash, _ := hex.DecodeString("089a092741d2bbe10b1cfaa8e48d1512a51ef183e579ae29f89af59db3e72c85")
 
 	// BTC parameter
 	params, _ := hex.DecodeString("0000000000000007626974636f696e0000000000000003425443")

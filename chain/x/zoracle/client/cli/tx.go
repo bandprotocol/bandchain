@@ -102,19 +102,19 @@ func GetCmdReport(cdc *codec.Codec) *cobra.Command {
 // GetCmdStoreCode implements the store code command handler
 func GetCmdStoreCode(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "store [code]",
+		Use:   "store [name] [code]",
 		Short: "store wasm code to chain",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 
-			code, err := hex.DecodeString(args[0])
+			code, err := hex.DecodeString(args[1])
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgStoreCode(code, cliCtx.GetFromAddress())
+			msg := types.NewMsgStoreCode(code, args[0], cliCtx.GetFromAddress())
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err

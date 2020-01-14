@@ -21,10 +21,6 @@ impl Data {
     }
 }
 
-pub fn name() -> String {
-    String::from("Crypto price")
-}
-
 pub fn execute(data: Vec<Data>) -> u64 {
     let mut total = 0.0;
     for each in &data {

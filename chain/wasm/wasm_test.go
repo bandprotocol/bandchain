@@ -38,12 +38,6 @@ func loadWasmFile() ([]byte, wasm.Instance) {
 	}
 	return bytes, instance
 }
-func TestName(t *testing.T) {
-	code, _ := loadWasmFile()
-	name, err := Name(code)
-	require.Nil(t, err)
-	require.Equal(t, "Crypto price", name)
-}
 
 func TestParamsInfo(t *testing.T) {
 	code, _ := loadWasmFile()

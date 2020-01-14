@@ -12,4 +12,5 @@ const (
 	AttributeKeyPrepare      = "prepare"
 	AttributeKeyResult       = "result"
 	AttributeKeyValidator    = "validator"
+	AttributeKeyCodeName     = "code_name"
 )

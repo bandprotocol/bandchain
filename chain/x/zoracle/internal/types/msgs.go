@@ -114,16 +114,19 @@ func (msg MsgReport) GetSignBytes() []byte {
 // MsgStoreCode defines a Code and owner of this
 type MsgStoreCode struct {
 	Code  []byte         `json:"code"`
+	Name  string         `json:"name"`
 	Owner sdk.AccAddress `json:"owner"`
 }
 
 // NewMsgStoreCode is a constructor function for MsgReport
 func NewMsgStoreCode(
 	code []byte,
+	name string,
 	owner sdk.AccAddress,
 ) MsgStoreCode {
 	return MsgStoreCode{
 		Code:  code,
+		Name:  name,
 		Owner: owner,
 	}
 }
@@ -139,7 +142,9 @@ func (msg MsgStoreCode) ValidateBasic() sdk.Error {
 	if msg.Owner.Empty() {
 		return sdk.ErrInvalidAddress(msg.Owner.String())
 	}
-
+	if len(msg.Name) == 0 {
+		return sdk.ErrUnknownRequest("Name must not be empty")
+	}
 	if msg.Code == nil || len(msg.Code) == 0 {
 		return sdk.ErrUnknownRequest("Code must not be empty")
 	}

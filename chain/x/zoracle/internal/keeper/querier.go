@@ -96,12 +96,6 @@ func queryScript(ctx sdk.Context, path []string, req abci.RequestQuery, keeper K
 	if err != nil {
 		panic("cannot get codehash")
 	}
-	// Get name
-	name, err := wasm.Name(code.Code)
-	if err != nil {
-		// TODO: Return err
-		name = ""
-	}
 
 	// Get raw params info
 	rawParamsInfo, err := wasm.ParamsInfo(code.Code)
@@ -127,7 +121,7 @@ func queryScript(ctx sdk.Context, path []string, req abci.RequestQuery, keeper K
 		}
 	}
 
-	return codec.MustMarshalJSONIndent(keeper.cdc, types.NewScriptInfo(name, codeHash, paramsInfo, dataInfo, code.Owner)), nil
+	return codec.MustMarshalJSONIndent(keeper.cdc, types.NewScriptInfo(code.Name, codeHash, paramsInfo, dataInfo, code.Owner)), nil
 }
 
 func queryAllScripts(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
@@ -166,5 +160,4 @@ func queryAllScripts(ctx sdk.Context, path []string, req abci.RequestQuery, keep
 		i++
 	}
 	return codec.MustMarshalJSONIndent(keeper.cdc, results), nil
-
 }

@@ -32,6 +32,7 @@ import (
 type OracleRequest struct {
 	CodeHash []byte `json:"codeHash" binding:"len=0|len=32"`
 	Code     []byte `json:"code"`
+	Name     string `json:"name"`
 	Params   []byte `json:"params" binding:"required"`
 }
 
@@ -350,7 +351,11 @@ func handleRequestData(c *gin.Context) {
 	}
 
 	if len(requestData.Code) > 0 {
-		requestData.CodeHash = zoracle.NewStoredCode(requestData.Code, txSender.Sender()).GetCodeHash()
+		if len(requestData.Name) <= 0 {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Name should not be empty string"})
+			return
+		}
+		requestData.CodeHash = zoracle.NewStoredCode(requestData.Code, requestData.Name, txSender.Sender()).GetCodeHash()
 		hasCode, err := HasCode(requestData.CodeHash)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -358,7 +363,7 @@ func handleRequestData(c *gin.Context) {
 		}
 		// If codeHash not found then store the code
 		if !hasCode {
-			_, err := txSender.SendTransaction(zoracle.NewMsgStoreCode(requestData.Code, txSender.Sender()), flags.BroadcastBlock)
+			_, err := txSender.SendTransaction(zoracle.NewMsgStoreCode(requestData.Code, requestData.Name, txSender.Sender()), flags.BroadcastBlock)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 				return
