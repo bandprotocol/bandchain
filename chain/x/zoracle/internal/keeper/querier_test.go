@@ -54,7 +54,7 @@ func TestQueryRequestById(t *testing.T) {
 	paramsMap := []byte(`{"symbol_cg":"bitcoin","symbol_cc":"BTC"}`)
 
 	// Use bytes format for comparison
-	request = types.NewRequest(name, codeHash, params, 3)
+	request = types.NewRequest(codeHash, params, 3)
 	acs, errJSON := codec.MarshalJSONIndent(
 		keeper.cdc,
 		types.NewRequestInfo(

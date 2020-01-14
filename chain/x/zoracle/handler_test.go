@@ -284,7 +284,7 @@ func TestEndBlock(t *testing.T) {
 
 	params, _ := hex.DecodeString("0000000000000007626974636f696e0000000000000003425443")
 	// set request
-	request := types.NewRequest(name, codeHash, params, 3)
+	request := types.NewRequest(codeHash, params, 3)
 	keeper.SetRequest(ctx, 1, request)
 
 	// set pending

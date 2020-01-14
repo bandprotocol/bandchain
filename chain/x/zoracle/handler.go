@@ -39,7 +39,6 @@ func handleMsgRequest(ctx sdk.Context, keeper Keeper, msg MsgRequest) sdk.Result
 	newRequestID := keeper.GetNextRequestID(ctx)
 
 	newRequest := types.NewRequest(
-		name,
 		msg.CodeHash,
 		msg.Params,
 		uint64(ctx.BlockHeight())+msg.ReportPeriod,
