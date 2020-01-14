@@ -4,6 +4,7 @@ module Block = {
     height: int,
     timestamp: MomentRe.Moment.t,
     proposer: Address.t,
+    numTxs: int,
   };
 
   let decodeBlock = json =>
@@ -13,6 +14,7 @@ module Block = {
       timestamp: json |> at(["block_meta", "header", "time"], moment),
       proposer:
         json |> at(["block_meta", "header", "proposer_address"], string) |> Address.fromHex,
+      numTxs: json |> at(["block_meta", "header", "num_txs"], intstr),
     };
 
   let decodeBlocks = json => JsonUtils.Decode.(json |> list(decodeBlock));

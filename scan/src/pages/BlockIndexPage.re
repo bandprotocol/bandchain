@@ -63,7 +63,7 @@ let make = (~height) => {
     <div className=Styles.vFlex>
       <Text value="#" size=Text.Xxl weight=Text.Semibold color=Colors.brightPurple />
       <HSpacing size=Spacing.xs />
-      <Text value=height size=Text.Xxl weight=Text.Semibold />
+      <Text value={height |> Format.iPretty} size=Text.Xxl weight=Text.Semibold />
     </div>
     <VSpacing size=Spacing.lg />
     <Row>
