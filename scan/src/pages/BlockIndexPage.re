@@ -11,7 +11,7 @@ module Styles = {
       paddingRight(`px(12)),
       paddingTop(`px(5)),
       paddingBottom(`px(5)),
-      backgroundColor(Colors.lighterBlue),
+      backgroundColor(Colors.lightBlue),
       borderRadius(`px(15)),
     ]);
 
@@ -61,7 +61,7 @@ let make = (~height) => {
     </Row>
     <VSpacing size=Spacing.lg />
     <div className=Styles.vFlex>
-      <Text value="#" size=Text.Xxl weight=Text.Semibold color={Css.hex("806BFF")} />
+      <Text value="#" size=Text.Xxl weight=Text.Semibold color=Colors.brightPurple />
       <HSpacing size=Spacing.xs />
       <Text value=height size=Text.Xxl weight=Text.Semibold />
     </div>

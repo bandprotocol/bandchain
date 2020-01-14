@@ -7,6 +7,8 @@ let purple = Css.hex("8D59B8");
 let lightPurple = Css.hex("E6DDF4");
 let lighterPurple = Css.hex("FCFAFC");
 
+let purpleBlue = Css.hex("7880f3");
+
 let brightPurple = Css.hex("806BFF");
 
 let yellow = Css.hex("FFC99F");
@@ -14,7 +16,8 @@ let yellow = Css.hex("FFC99F");
 let orange = Css.hex("FF9C9C");
 
 let darkBlue = Css.hex("396EAB");
-let lighterBlue = Css.hex("E2F0FF");
+let lightBlue = Css.hex("E2F0FF");
+let lighterBlue = Css.hex("F4F5FF");
 
 let darkIndigo = Css.hex("4C549C");
 let lightIndigo = Css.hex("E7EAFF");
