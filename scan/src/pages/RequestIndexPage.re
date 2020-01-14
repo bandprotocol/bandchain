@@ -3,8 +3,9 @@ module Styles = {
 
   let pageContainer = style([paddingTop(`px(50))]);
 
-  let vFlex =
-    style([display(`flex), flexDirection(`row), alignItems(`center), height(`px(40))]);
+  let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
+
+  let fixHeight = style([height(`px(40))]);
 
   let logo = style([width(`px(30)), marginRight(`px(10))]);
 
@@ -30,6 +31,19 @@ module Styles = {
     ]);
 
   let checkLogo = style([marginRight(`px(10))]);
+
+  let topBoxContainer =
+    style([
+      display(`flex),
+      background(Colors.white),
+      padding(`px(24)),
+      border(`px(1), `solid, `hex("EEEEEE")),
+      flexDirection(`column),
+    ]);
+
+  let flexStart = style([alignItems(`flexStart)]);
+  let subHeaderContainer = style([display(`flex), flex(`num(1.))]);
+  let detailContainer = style([display(`flex), flex(`num(3.5))]);
 };
 
 [@react.component]
@@ -37,7 +51,7 @@ let make = (~reqID, ~hashtag) => {
   <div className=Styles.pageContainer>
     <Row justify=Row.Between>
       <Col>
-        <div className=Styles.vFlex>
+        <div className={Css.merge([Styles.vFlex, Styles.fixHeight])}>
           <img src=Images.dataRequest className=Styles.logo />
           <Text
             value="DATA REQUEST"
@@ -78,6 +92,39 @@ let make = (~reqID, ~hashtag) => {
         />
       </Col>
     </Row>
-    <VSpacing size={Css.px(400)} />
+    <VSpacing size=Spacing.xl />
+    <div className=Styles.topBoxContainer>
+      <div className=Styles.vFlex>
+        <div className=Styles.subHeaderContainer>
+          <Text value="Request ID" size=Text.Xl color=Colors.darkGrayText />
+        </div>
+        <div className=Styles.detailContainer> <Text value=reqID size=Text.Lg /> </div>
+      </div>
+      <VSpacing size=Spacing.xl />
+      <div className=Styles.vFlex>
+        <div className=Styles.subHeaderContainer>
+          <Text value="Status" size=Text.Xl color=Colors.darkGrayText />
+        </div>
+        <div className=Styles.detailContainer> <RequestStatus reqID /> </div>
+      </div>
+      <VSpacing size=Spacing.xl />
+      <div className=Styles.vFlex>
+        <div className=Styles.subHeaderContainer>
+          <Text value="Targeted Block" size=Text.Xl color=Colors.darkGrayText />
+        </div>
+        <div className=Styles.detailContainer>
+          <Text value="1,329" size=Text.Lg weight=Text.Semibold />
+          <HSpacing size=Spacing.sm />
+          <Text value=" (2 blocks remaining)" size=Text.Lg />
+        </div>
+      </div>
+      <VSpacing size=Spacing.xl />
+      <div className=Css.merge([Styles.vFlex, Styles.flexStart])>
+        <div className=Styles.subHeaderContainer>
+          <Text value="Parameters" size=Text.Xl color=Colors.darkGrayText />
+        </div>
+        <div className=Styles.detailContainer> <Parameters /> </div>
+      </div>
+    </div>
   </div>;
 };

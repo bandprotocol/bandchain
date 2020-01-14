@@ -11,7 +11,7 @@ module Styles = {
       paddingRight(`px(12)),
       paddingTop(`px(5)),
       paddingBottom(`px(5)),
-      backgroundColor(Colors.lighterBlue),
+      backgroundColor(Colors.lightBlue),
       borderRadius(`px(15)),
     ]);
 
