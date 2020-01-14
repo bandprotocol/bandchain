@@ -76,7 +76,8 @@ func LatestTxsRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		// TODO: (1) Sort result in desc order after tendermint/tendermint:#4253 is released
 		// TODO: (2) Perform binary search on 'tx.height>?' to optimize the performance
 
-		// Get all latest txs
+		// Temporary implementation to get latest tx sort by descending timestamp
+		// Pull request at bandprotocol/d3n:#224
 		searchResult, err := utils.QueryTxsByEvents(cliCtx, []string{"tx.height>0"}, 1, 1000000)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
