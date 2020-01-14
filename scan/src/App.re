@@ -14,7 +14,7 @@ module Styles = {
     ]);
 
   /* Main bar */
-  let mainBar = style([display(`flex), paddingTop(Spacing.lg)]);
+  let mainBar = style([display(`flex), paddingTop(Spacing.lg), cursor(`pointer)]);
   let version =
     style([
       display(`flex),
@@ -45,7 +45,7 @@ let make = () => {
   <div className=Styles.container>
     <NavBar />
     <div className=Styles.innerContainer>
-      <div className=Styles.mainBar>
+      <div className=Styles.mainBar onClick={_ => Route.redirect(Route.HomePage)}>
         <Row>
           <Col size=1.> <img src=Images.bandLogo className=Styles.bandLogo /> </Col>
           <Col size=4.>
