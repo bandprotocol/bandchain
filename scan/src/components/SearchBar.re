@@ -118,7 +118,7 @@ module SearchResults = {
        ->Belt.Array.mapWithIndex((i, result) =>
            <div
              onMouseOver={_evt => onHover(i)}
-             key={string_of_int(i)}
+             key={i |> string_of_int}
              className={Css.merge([
                Styles.result,
                i == results->Array.length - 1 ? Styles.lastResult : "",
