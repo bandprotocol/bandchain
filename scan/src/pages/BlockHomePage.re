@@ -14,73 +14,83 @@ module Styles = {
       backgroundColor(Colors.grayHeader),
     ]);
 
+  let fullWidth = style([width(`percent(100.0)), display(`flex)]);
+
   let textContainer = style([paddingLeft(Spacing.lg), display(`flex)]);
 
   let proposerBox = style([maxWidth(`px(270)), display(`flex), flexDirection(`column)]);
 };
 
-let renderBody = (idx, (height, timestamp, proposer, totalTx, totalFee, blockReward)) => {
+let renderBody = (idx, block: BlockHook.Block.t) => {
+  let height = block.height;
+  let timestamp = block.timestamp;
+  let proposer = block.proposer->Address.toOperatorBech32;
+  let totalTx = block.numTxs;
+
   <TBody key={idx |> string_of_int}>
-    <Row>
-      <Col size=0.6>
-        <div className=Styles.textContainer>
-          <Text value="#" size=Text.Md weight=Text.Bold color=Colors.purple />
-          <HSpacing size=Spacing.xs />
-          <Text block=true value={height->string_of_int} size=Text.Md weight=Text.Bold />
-        </div>
-      </Col>
-      <Col size=0.8>
-        <div className=Styles.textContainer>
-          <TimeAgos time=timestamp size=Text.Md weight=Text.Semibold />
-        </div>
-      </Col>
-      <Col size=2.0>
-        <div className={Css.merge([Styles.textContainer, Styles.proposerBox])}>
-          <Text
-            block=true
-            value="Staked.us"
-            size=Text.Sm
-            weight=Text.Regular
-            color=Colors.grayHeader
-          />
-          <VSpacing size=Spacing.sm />
-          <Text
-            block=true
-            value=proposer
-            size=Text.Md
-            weight=Text.Bold
-            code=true
-            ellipsis=true
-            color=Colors.black
-          />
-        </div>
-      </Col>
-      <Col size=0.7>
-        <div className=Styles.textContainer>
-          <Text block=true value={totalTx->string_of_int} size=Text.Md weight=Text.Semibold />
-        </div>
-      </Col>
-      <Col size=0.7>
-        <div className=Styles.textContainer>
-          <Text
-            block=true
-            value={totalFee->Js.Float.toString ++ " BAND"}
-            size=Text.Md
-            weight=Text.Semibold
-          />
-        </div>
-      </Col>
-      <Col size=0.8>
-        <div className=Styles.textContainer>
-          <Text block=true value=blockReward size=Text.Md weight=Text.Semibold />
-        </div>
-      </Col>
-    </Row>
+    <div className=Styles.fullWidth onClick={_ => Route.BlockIndexPage(height) |> Route.redirect}>
+      <Row>
+        <Col size=0.6>
+          <div className=Styles.textContainer>
+            <Text value="#" size=Text.Md weight=Text.Bold color=Colors.purple />
+            <HSpacing size=Spacing.xs />
+            <Text block=true value={height->string_of_int} size=Text.Md weight=Text.Bold />
+          </div>
+        </Col>
+        <Col size=0.8>
+          <div className=Styles.textContainer>
+            <TimeAgos time=timestamp size=Text.Md weight=Text.Semibold />
+          </div>
+        </Col>
+        <Col size=2.0>
+          <div className={Css.merge([Styles.textContainer, Styles.proposerBox])}>
+            <Text
+              block=true
+              value="Staked.us"
+              size=Text.Sm
+              weight=Text.Regular
+              color=Colors.grayHeader
+            />
+            <VSpacing size=Spacing.sm />
+            <Text
+              block=true
+              value=proposer
+              size=Text.Md
+              weight=Text.Bold
+              code=true
+              ellipsis=true
+              color=Colors.black
+            />
+          </div>
+        </Col>
+        <Col size=0.7>
+          <div className=Styles.textContainer>
+            <Text block=true value={totalTx->string_of_int} size=Text.Md weight=Text.Semibold />
+          </div>
+        </Col>
+        <Col size=0.7>
+          <div className=Styles.textContainer>
+            <Text block=true value="FREE" size=Text.Md weight=Text.Semibold />
+          </div>
+        </Col>
+        <Col size=0.8>
+          <div className=Styles.textContainer>
+            <Text block=true value="N/A" size=Text.Md weight=Text.Semibold />
+          </div>
+        </Col>
+      </Row>
+    </div>
   </TBody>;
 };
 
 [@react.component]
 let make = () => {
+  let (limit, setLimit) = React.useState(_ => 10);
+  let blocksOpt = BlockHook.latest(~limit, ~pollInterval=3000, ());
+  let blocks = blocksOpt->Belt.Option.getWithDefault([])->Belt_List.toArray;
+
+  let latestBlockOpt = blocks->Belt_Array.get(0);
+
   <div className=Styles.pageContainer>
     <Row>
       <Col>
@@ -93,7 +103,14 @@ let make = () => {
             color=Colors.grayHeader
           />
           <div className=Styles.seperatedLine />
-          <Text value="86,230 in total" />
+          <Text
+            value={
+              switch (latestBlockOpt) {
+              | Some(latestBlock) => latestBlock.height->Format.iPretty ++ " in total"
+              | None => ""
+              }
+            }
+          />
         </div>
       </Col>
     </Row>
@@ -125,44 +142,8 @@ let make = () => {
          ->React.array}
       </Row>
     </THead>
-    {[
-       (
-         100,
-         MomentRe.momentWithUnix(1578348371),
-         "bandvaloper1zpmsn2vg2zcrx4jlg49t2f2y2cwjykr6jnmyxv",
-         3,
-         0.0,
-         "N/A",
-       ),
-       (
-         99,
-         MomentRe.momentWithUnix(1578346271),
-         "bandvaloper1zpmsn2vg2zcrx4jlg49t2f2y2cwjykr6jnmyxv",
-         3,
-         0.0,
-         "N/A",
-       ),
-       (
-         98,
-         MomentRe.momentWithUnix(1578343271),
-         "bandvaloper1zpmsn2vg2zcrx4jlg49t2f2y2cwjykr6jnmyxv",
-         1,
-         0.0,
-         "N/A",
-       ),
-       (
-         97,
-         MomentRe.momentWithUnix(1578341271),
-         "bandvaloper1zpmsn2vg2zcrx4jlg49t2f2y2cwjykr6jnmyxv",
-         2,
-         0.0,
-         "N/A",
-       ),
-     ]
-     ->Belt.List.mapWithIndex(renderBody)
-     ->Array.of_list
-     ->React.array}
+    {blocks->Belt_Array.mapWithIndex(renderBody)->React.array}
     <VSpacing size=Spacing.lg />
-    <LoadMore />
+    <LoadMore onClick={_ => setLimit(oldLimit => oldLimit + 10)} />
   </div>;
 };

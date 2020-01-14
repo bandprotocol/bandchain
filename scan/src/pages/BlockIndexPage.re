@@ -85,7 +85,7 @@ let make = (~height) => {
     <div className=Styles.seperatorLine />
     <TxsTable />
     <VSpacing size=Spacing.lg />
-    <LoadMore />
+    <LoadMore onClick={_ => ()} />
     <VSpacing size=Spacing.xl />
   </div>;
 };

@@ -139,7 +139,7 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
            <VSpacing size=Spacing.lg />
            <TxsTable />
            <VSpacing size=Spacing.lg />
-           <LoadMore />
+           <LoadMore onClick={_ => ()} />
          </div>
        | ScriptCode =>
          <div className=Styles.tableLowerContainer>

@@ -40,7 +40,7 @@ let make = () => {
     <VSpacing size=Spacing.xl />
     <TxsTable />
     <VSpacing size=Spacing.lg />
-    <LoadMore />
+    <LoadMore onClick={_ => ()} />
     <VSpacing size=Spacing.xl />
     <VSpacing size=Spacing.xl />
   </div>;
