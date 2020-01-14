@@ -38,7 +38,7 @@ let make = () => {
       </Col>
     </Row>
     <VSpacing size=Spacing.xl />
-    <TxsTable />
+    <TxsTable txs=[] />
     <VSpacing size=Spacing.lg />
     <LoadMore />
     <VSpacing size=Spacing.xl />

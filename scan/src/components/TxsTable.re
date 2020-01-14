@@ -4,7 +4,7 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~txs: list(TxHook.Tx.t)=[]) => {
+let make = (~txs: list(TxHook.Tx.t)) => {
   <>
     <THead>
       <Row>
@@ -31,8 +31,8 @@ let make = (~txs: list(TxHook.Tx.t)=[]) => {
       </Row>
     </THead>
     {txs
-     ->Belt.List.mapWithIndex((idx, {blockHeight, hash, timestamp, gasUsed, messages, sender}) => {
-         <TBody key={idx |> string_of_int}>
+     ->Belt.List.map(({blockHeight, hash, timestamp, gasUsed, messages, sender}) => {
+         <TBody key={blockHeight |> string_of_int}>
            <div
              className=Styles.fullWidth
              onClick={_ => Route.TxIndexPage(hash |> Hash.toHex(~with0x=true)) |> Route.redirect}>

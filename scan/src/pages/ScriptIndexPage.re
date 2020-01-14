@@ -137,7 +137,7 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
          <div className=Styles.tableLowerContainer>
            <Text value="196 Request Transactions" color=Colors.grayHeader size=Text.Lg />
            <VSpacing size=Spacing.lg />
-           <TxsTable />
+           <TxsTable txs=[] />
            <VSpacing size=Spacing.lg />
            <LoadMore />
          </div>
