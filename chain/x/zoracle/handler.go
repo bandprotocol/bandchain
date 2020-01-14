@@ -37,7 +37,13 @@ func handleMsgRequest(ctx sdk.Context, keeper Keeper, msg MsgRequest) sdk.Result
 	}
 
 	newRequestID := keeper.GetNextRequestID(ctx)
+	name, err := wasm.Name(storedCode.Code)
+	if err != nil {
+		return sdk.NewError(types.DefaultCodespace, types.WasmError, err.Error()).Result()
+	}
+
 	newRequest := types.NewRequest(
+		name,
 		msg.CodeHash,
 		msg.Params,
 		uint64(ctx.BlockHeight())+msg.ReportPeriod,
@@ -60,6 +66,7 @@ func handleMsgRequest(ctx sdk.Context, keeper Keeper, msg MsgRequest) sdk.Result
 			types.EventTypeRequest,
 			sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", newRequestID)),
 			sdk.NewAttribute(types.AttributeKeyCodeHash, hex.EncodeToString(msg.CodeHash)),
+			sdk.NewAttribute(types.AttributeKeyCodeName, name),
 			sdk.NewAttribute(types.AttributeKeyPrepare, hex.EncodeToString(prepare)),
 		),
 	})
@@ -98,6 +105,7 @@ func handleMsgReport(ctx sdk.Context, keeper Keeper, msg MsgReport) sdk.Result {
 		sdk.NewEvent(
 			types.EventTypeReport,
 			sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", msg.RequestID)),
+			sdk.NewAttribute(types.AttributeKeyCodeName, request.Name),
 			sdk.NewAttribute(types.AttributeKeyValidator, msg.Validator.String()),
 		),
 	})
@@ -111,29 +119,43 @@ func handleMsgStoreCode(ctx sdk.Context, keeper Keeper, msg MsgStoreCode) sdk.Re
 		return types.ErrCodeAlreadyExisted(types.DefaultCodespace).Result()
 	}
 	keeper.SetCode(ctx, msg.Code, msg.Owner)
+
+	name, err := wasm.Name(msg.Code)
+	if err != nil {
+		return sdk.NewError(types.DefaultCodespace, types.WasmError, err.Error()).Result()
+	}
+
+	//
 	// Emit store code event
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeStoreCode,
 			sdk.NewAttribute(types.AttributeKeyCodeHash, hex.EncodeToString(codeHash)),
+			sdk.NewAttribute(types.AttributeKeyCodeName, name),
 		),
 	})
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
 func handleMsgDeleteCode(ctx sdk.Context, keeper Keeper, msg MsgDeleteCode) sdk.Result {
-	storedCode, err := keeper.GetCode(ctx, msg.CodeHash)
-	if err != nil {
+	storedCode, sdkErr := keeper.GetCode(ctx, msg.CodeHash)
+	if sdkErr != nil {
 		return types.ErrCodeHashNotFound(types.DefaultCodespace).Result()
 	}
 	if !storedCode.Owner.Equals(msg.Owner) {
 		return types.ErrInvalidOwner(types.DefaultCodespace).Result()
 	}
+	name, err := wasm.Name(storedCode.Code)
+	if err != nil {
+		return sdk.NewError(types.DefaultCodespace, types.WasmError, err.Error()).Result()
+	}
+
 	keeper.DeleteCode(ctx, msg.CodeHash)
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeDeleteCode,
 			sdk.NewAttribute(types.AttributeKeyCodeHash, hex.EncodeToString(msg.CodeHash)),
+			sdk.NewAttribute(types.AttributeKeyCodeName, name),
 		),
 	})
 	return sdk.Result{Events: ctx.EventManager().Events()}

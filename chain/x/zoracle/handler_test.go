@@ -68,12 +68,17 @@ func TestRequestSuccess(t *testing.T) {
 		Key:   []byte(types.AttributeKeyCodeHash),
 		Value: []byte(hex.EncodeToString(codeHash)),
 	}
+	namePair := common.KVPair{
+		Key:   []byte(types.AttributeKeyCodeName),
+		Value: []byte("Crypto price"),
+	}
 	preparePair := common.KVPair{
 		Key:   []byte(types.AttributeKeyPrepare),
 		Value: []byte("5b7b22636d64223a226375726c222c2261726773223a5b2268747470733a2f2f6170692e636f696e6765636b6f2e636f6d2f6170692f76332f73696d706c652f70726963653f6964733d626974636f696e2676735f63757272656e636965733d757364225d7d2c7b22636d64223a226375726c222c2261726773223a5b2268747470733a2f2f6d696e2d6170692e63727970746f636f6d706172652e636f6d2f646174612f70726963653f6673796d3d425443267473796d733d555344225d7d5d"),
 	}
 	require.Equal(t, codeHashPair, ctx.EventManager().Events()[0].Attributes[1])
-	require.Equal(t, preparePair, ctx.EventManager().Events()[0].Attributes[2])
+	require.Equal(t, namePair, ctx.EventManager().Events()[0].Attributes[2])
+	require.Equal(t, preparePair, ctx.EventManager().Events()[0].Attributes[3])
 }
 
 func TestRequestInvalidCodeHash(t *testing.T) {
@@ -104,9 +109,10 @@ func TestReportSuccess(t *testing.T) {
 	validatorAddress := setupTestValidator(ctx, keeper)
 
 	// set request = 2
+	name := "Script1"
 	sender := sdk.AccAddress([]byte("sender"))
 	codeHash := keeper.SetCode(ctx, []byte("Code"), sender)
-	request := types.NewRequest(codeHash, []byte("params"), 3)
+	request := types.NewRequest(name, codeHash, []byte("params"), 3)
 	keeper.SetRequest(ctx, 2, request)
 
 	// set pending
@@ -132,9 +138,10 @@ func TestReportInvalidValidator(t *testing.T) {
 	validatorAddress := sdk.ValAddress(pubKey.Address())
 
 	// set request = 2
+	name := "Script1"
 	sender := sdk.AccAddress([]byte("sender"))
 	codeHash := keeper.SetCode(ctx, []byte("Code"), sender)
-	request := types.NewRequest(codeHash, []byte("params"), 3)
+	request := types.NewRequest(name, codeHash, []byte("params"), 3)
 	keeper.SetRequest(ctx, 1, request)
 
 	// set pending
@@ -152,9 +159,10 @@ func TestOutOfReportPeriod(t *testing.T) {
 	validatorAddress := setupTestValidator(ctx, keeper)
 
 	// set request = 2
+	name := "Script1"
 	sender := sdk.AccAddress([]byte("sender"))
 	codeHash := keeper.SetCode(ctx, []byte("Code"), sender)
-	request := types.NewRequest(codeHash, []byte("params"), 3)
+	request := types.NewRequest(name, codeHash, []byte("params"), 3)
 	keeper.SetRequest(ctx, 2, request)
 
 	// set pending
@@ -267,12 +275,13 @@ func TestEndBlock(t *testing.T) {
 	if err != nil {
 		fmt.Println(err)
 	}
+	name := "Script1"
 	sender := sdk.AccAddress([]byte("sender"))
 	codeHash := keeper.SetCode(ctx, code, sender)
 
 	params, _ := hex.DecodeString("0000000000000007626974636f696e0000000000000003425443")
 	// set request
-	request := types.NewRequest(codeHash, params, 3)
+	request := types.NewRequest(name, codeHash, params, 3)
 	keeper.SetRequest(ctx, 1, request)
 
 	// set pending
