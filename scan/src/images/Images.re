@@ -5,6 +5,7 @@
 [@bs.module] external rightArrow: string = "./right-arrow.svg";
 [@bs.module] external telegramLogo: string = "./telegram-logo.svg";
 [@bs.module] external twitterLogo: string = "./twitter-logo.svg";
+[@bs.module] external textDocument: string = "./text-document.svg";
 [@bs.module] external bg: string = "./bg.png";
 [@bs.module] external checkIcon: string = "./check-icon.svg";
 [@bs.module] external pendingIcon: string = "./pending-icon.svg";
