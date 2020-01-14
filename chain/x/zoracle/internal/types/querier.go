@@ -22,6 +22,7 @@ func (u64a U64Array) String() string {
 
 type RequestInfo struct {
 	CodeHash    []byte            `json:"codeHash"`
+	ParamsHex   []byte            `json:"paramsHex"`
 	Params      RawJson           `json:"params"`
 	TargetBlock uint64            `json:"targetBlock"`
 	Reports     []ValidatorReport `json:"reports"`
@@ -30,6 +31,7 @@ type RequestInfo struct {
 
 func NewRequestInfo(
 	codeHash []byte,
+	paramsHex []byte,
 	params RawJson,
 	targetBlock uint64,
 	reports []ValidatorReport,
@@ -37,6 +39,7 @@ func NewRequestInfo(
 ) RequestInfo {
 	return RequestInfo{
 		CodeHash:    codeHash,
+		ParamsHex:   paramsHex,
 		Params:      params,
 		TargetBlock: targetBlock,
 		Reports:     reports,

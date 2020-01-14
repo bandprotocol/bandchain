@@ -57,6 +57,7 @@ func TestQueryRequestById(t *testing.T) {
 		keeper.cdc,
 		types.NewRequestInfo(
 			request.CodeHash,
+			params,
 			paramsMap,
 			request.ReportEndAt,
 			[]types.ValidatorReport{},

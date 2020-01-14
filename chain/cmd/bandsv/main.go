@@ -483,7 +483,7 @@ func handleGetRequest(c *gin.Context) {
 	odp.RequestId = requestId
 	odp.Data = resp.Response.GetValue()
 	odp.CodeHash = rwr.CodeHash
-	odp.Params = rwr.Params
+	odp.Params = rwr.ParamsHex
 	odp.Version = uint64(opiavl.Proof.Leaves[0].Version)
 
 	for i := len(opiavl.Proof.LeftPath) - 1; i >= 0; i-- {
