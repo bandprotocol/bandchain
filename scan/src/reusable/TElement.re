@@ -113,7 +113,7 @@ let renderFee = fee => {
        ? React.null : <Text size=Text.Sm block=true value="$0.002" color=Colors.grayText />}
     {fee == 0.0 ? React.null : <VSpacing size={`px(4)} />}
     <Text
-      value={fee == 0.0 ? "FREE" : fee->Format.fPretty ++ "BAND"}
+      value={fee == 0.0 ? "FREE" : fee->Format.fPretty ++ " BAND"}
       color=Colors.grayHeader
       weight=Text.Semibold
     />
