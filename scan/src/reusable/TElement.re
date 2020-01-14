@@ -98,7 +98,7 @@ let renderAddress = address => {
     <Text
       block=true
       code=true
-      value={address |> Address.toHex}
+      value={address |> Address.toBech32}
       size=Text.Lg
       weight=Text.Bold
       ellipsis=true
@@ -108,11 +108,12 @@ let renderAddress = address => {
 
 let renderFee = fee => {
   <div className=Styles.feeContainer>
-    {fee == 0 ? React.null : <VSpacing size={`px(4)} />}
-    {fee == 0 ? React.null : <Text size=Text.Sm block=true value="$0.002" color=Colors.grayText />}
-    {fee == 0 ? React.null : <VSpacing size={`px(4)} />}
+    {fee == 0.0 ? React.null : <VSpacing size={`px(4)} />}
+    {fee == 0.0
+       ? React.null : <Text size=Text.Sm block=true value="$0.002" color=Colors.grayText />}
+    {fee == 0.0 ? React.null : <VSpacing size={`px(4)} />}
     <Text
-      value={fee == 0 ? "FREE" : fee->Format.iPretty ++ " BAND"}
+      value={fee == 0.0 ? "FREE" : fee->Format.fPretty ++ "BAND"}
       color=Colors.grayHeader
       weight=Text.Semibold
     />
@@ -155,7 +156,7 @@ type t =
   | TxType(TxHook.Msg.t)
   | Detail(string)
   | Status(string)
-  | Fee(int)
+  | Fee(float)
   | Hash(Hash.t)
   | Address(Address.t);
 
