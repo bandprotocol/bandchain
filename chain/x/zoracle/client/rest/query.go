@@ -152,7 +152,11 @@ func getScriptsHandler(cliCtx context.CLIContext, storeName string) http.Handler
 		scripts := make([]ScriptInfoWithTx, len(rawScripts))
 		for i, _ := range scripts {
 			scripts[i].Info = rawScripts[i]
-			getStoreTxInfo(cliCtx, &scripts[i], hex.EncodeToString(scripts[i].Info.CodeHash))
+			err := getStoreTxInfo(cliCtx, &scripts[i], hex.EncodeToString(scripts[i].Info.CodeHash))
+			if err != nil {
+				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+				return
+			}
 		}
 		rest.PostProcessResponse(w, cliCtx, scripts)
 	}
