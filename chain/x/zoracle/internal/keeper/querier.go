@@ -23,6 +23,8 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 			return queryPending(ctx, path[1:], req, keeper)
 		case types.QueryScript:
 			return queryScript(ctx, path[1:], req, keeper)
+		case types.QueryAllScripts:
+			return queryAllScripts(ctx, path[1:], req, keeper)
 		default:
 			return nil, sdk.ErrUnknownRequest("unknown nameservice query endpoint")
 		}
@@ -125,5 +127,44 @@ func queryScript(ctx sdk.Context, path []string, req abci.RequestQuery, keeper K
 		}
 	}
 
-	return codec.MustMarshalJSONIndent(keeper.cdc, types.NewScriptInfo(name, paramsInfo, dataInfo, code.Owner)), nil
+	return codec.MustMarshalJSONIndent(keeper.cdc, types.NewScriptInfo(name, codeHash, paramsInfo, dataInfo, code.Owner)), nil
+}
+
+func queryAllScripts(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
+	if len(path) != 2 {
+		return nil, sdk.ErrInternal("must specify the page and limit")
+	}
+	page, err := strconv.ParseInt(path[0], 10, 64)
+	if err != nil {
+		return nil, sdk.ErrInternal("page must be a number")
+	}
+
+	limit, err := strconv.ParseInt(path[1], 10, 64)
+	if err != nil {
+		return nil, sdk.ErrInternal("limit must be a number")
+	}
+
+	start := int((page - 1) * limit)
+	end := int(page * limit)
+
+	// TODO: Current fetch all scripts and return only script in list
+	iterator := keeper.GetCodesIterator(ctx)
+	results := make([]types.ScriptInfo, 0)
+	for i := 0; i < end && iterator.Valid(); iterator.Next() {
+		if i >= start {
+			var script types.ScriptInfo
+			rawInfo, sdkErr := queryScript(ctx, []string{hex.EncodeToString(iterator.Key()[1:])}, req, keeper)
+			if sdkErr != nil {
+				continue
+			}
+			err := keeper.cdc.UnmarshalJSON(rawInfo, &script)
+			if err != nil {
+				continue
+			}
+			results = append(results, script)
+		}
+		i++
+	}
+	return codec.MustMarshalJSONIndent(keeper.cdc, results), nil
+
 }

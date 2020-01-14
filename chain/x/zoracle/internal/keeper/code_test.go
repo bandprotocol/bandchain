@@ -42,3 +42,22 @@ func TestDeleteCode(t *testing.T) {
 	require.NotNil(t, err)
 	require.Equal(t, err.Code(), types.CodeInvalidInput)
 }
+
+func TestGetCodesIterator(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+	owner := sdk.AccAddress([]byte("owner"))
+
+	codes := [][]byte{[]byte("This is code"), []byte("This is code2")}
+
+	for _, code := range codes {
+		keeper.SetCode(ctx, code, owner)
+	}
+
+	iterator := keeper.GetCodesIterator(ctx)
+	i := 0
+	for ; iterator.Valid(); iterator.Next() {
+		require.Equal(t, types.NewStoredCode(codes[i], owner).GetCodeHash(), iterator.Key()[1:])
+		i++
+	}
+	require.Equal(t, len(codes), i)
+}
