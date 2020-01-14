@@ -7,9 +7,9 @@ import (
 )
 
 // SetCode is a function to save codeHash as key and code as value.
-func (k Keeper) SetCode(ctx sdk.Context, code []byte, owner sdk.AccAddress) []byte {
+func (k Keeper) SetCode(ctx sdk.Context, code []byte, name string, owner sdk.AccAddress) []byte {
 	store := ctx.KVStore(k.storeKey)
-	sc := types.NewStoredCode(code, owner)
+	sc := types.NewStoredCode(code, name, owner)
 	codeHash := sc.GetCodeHash()
 	key := types.CodeHashStoreKey(codeHash)
 	store.Set(key, k.cdc.MustMarshalBinaryBare(sc))

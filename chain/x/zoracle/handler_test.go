@@ -39,8 +39,9 @@ func TestRequestSuccess(t *testing.T) {
 	if err != nil {
 		fmt.Println(err)
 	}
+	name := "Crypto price"
 	sender := sdk.AccAddress([]byte("sender"))
-	codeHash := keeper.SetCode(ctx, code, sender)
+	codeHash := keeper.SetCode(ctx, code, name, sender)
 	params, _ := hex.DecodeString("0000000000000007626974636f696e0000000000000003425443")
 	msg := types.NewMsgRequest(codeHash, params, 5, sender)
 	got := handleMsgRequest(ctx, keeper, msg)
@@ -96,7 +97,7 @@ func TestRequestInvalidCodeHash(t *testing.T) {
 func TestRequestInvalidWasmCode(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
 	sender := sdk.AccAddress([]byte("sender"))
-	codeHash := keeper.SetCode(ctx, []byte("Fake code"), sender)
+	codeHash := keeper.SetCode(ctx, []byte("Fake code"), "Fake script", sender)
 	params, _ := hex.DecodeString("0000000000000007626974636f696e0000000000000003425443")
 	msg := types.NewMsgRequest(codeHash, params, 5, sender)
 	got := handleMsgRequest(ctx, keeper, msg)
@@ -111,8 +112,8 @@ func TestReportSuccess(t *testing.T) {
 	// set request = 2
 	name := "Script1"
 	sender := sdk.AccAddress([]byte("sender"))
-	codeHash := keeper.SetCode(ctx, []byte("Code"), sender)
-	request := types.NewRequest(name, codeHash, []byte("params"), 3)
+	codeHash := keeper.SetCode(ctx, []byte("Code"), name, sender)
+	request := types.NewRequest(codeHash, []byte("params"), 3)
 	keeper.SetRequest(ctx, 2, request)
 
 	// set pending
@@ -140,8 +141,8 @@ func TestReportInvalidValidator(t *testing.T) {
 	// set request = 2
 	name := "Script1"
 	sender := sdk.AccAddress([]byte("sender"))
-	codeHash := keeper.SetCode(ctx, []byte("Code"), sender)
-	request := types.NewRequest(name, codeHash, []byte("params"), 3)
+	codeHash := keeper.SetCode(ctx, []byte("Code"), name, sender)
+	request := types.NewRequest(codeHash, []byte("params"), 3)
 	keeper.SetRequest(ctx, 1, request)
 
 	// set pending
@@ -161,8 +162,8 @@ func TestOutOfReportPeriod(t *testing.T) {
 	// set request = 2
 	name := "Script1"
 	sender := sdk.AccAddress([]byte("sender"))
-	codeHash := keeper.SetCode(ctx, []byte("Code"), sender)
-	request := types.NewRequest(name, codeHash, []byte("params"), 3)
+	codeHash := keeper.SetCode(ctx, []byte("Code"), name, sender)
+	request := types.NewRequest(codeHash, []byte("params"), 3)
 	keeper.SetRequest(ctx, 2, request)
 
 	// set pending
@@ -186,16 +187,18 @@ func TestStoreCodeSuccess(t *testing.T) {
 	if err != nil {
 		fmt.Println(err)
 	}
+	name := "Crypto price"
 	owner := sdk.AccAddress([]byte("owner"))
-	codeHash := types.NewStoredCode(code, owner).GetCodeHash()
+	codeHash := types.NewStoredCode(code, name, owner).GetCodeHash()
 
-	msg := types.NewMsgStoreCode(code, owner)
+	msg := types.NewMsgStoreCode(code, name, owner)
 	got := handleMsgStoreCode(ctx, keeper, msg)
 	require.True(t, got.IsOK(), "expected store code to be ok, got %v", got)
 
 	// Check codehash from event
 	require.Equal(t, types.EventTypeStoreCode, got.Events.ToABCIEvents()[0].Type)
 	require.Equal(t, hex.EncodeToString(codeHash), string(got.Events.ToABCIEvents()[0].Attributes[0].Value))
+	require.Equal(t, name, string(got.Events.ToABCIEvents()[0].Attributes[1].Value))
 
 	// Check value in store
 	sc, err := keeper.GetCode(ctx, codeHash)
@@ -208,12 +211,12 @@ func TestStoreCodeSuccess(t *testing.T) {
 func TestStoreCodeFailed(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
 	code := []byte("Code")
-
+	name := "Failed script"
 	owner := sdk.AccAddress([]byte("owner"))
 
-	keeper.SetCode(ctx, code, owner)
+	keeper.SetCode(ctx, code, name, owner)
 
-	msg := types.NewMsgStoreCode(code, owner)
+	msg := types.NewMsgStoreCode(code, name, owner)
 	got := handleMsgStoreCode(ctx, keeper, msg)
 
 	require.False(t, got.IsOK())
@@ -224,9 +227,9 @@ func TestStoreCodeFailed(t *testing.T) {
 func TestDeleteCodeSuccess(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
 	code := []byte("Code")
-
+	name := "script"
 	owner := sdk.AccAddress([]byte("owner"))
-	codeHash := keeper.SetCode(ctx, code, owner)
+	codeHash := keeper.SetCode(ctx, code, name, owner)
 
 	msg := types.NewMsgDeleteCode(codeHash, owner)
 	got := handleMsgDeleteCode(ctx, keeper, msg)
@@ -238,9 +241,9 @@ func TestDeleteCodeSuccess(t *testing.T) {
 func TestDeleteCodeInvalidHash(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
 	code := []byte("Code")
-
+	name := "script"
 	owner := sdk.AccAddress([]byte("owner"))
-	codeHash := keeper.SetCode(ctx, code, owner)
+	codeHash := keeper.SetCode(ctx, code, name, owner)
 	invalidCodeHash := append(codeHash[:31], byte('b'))
 
 	msg := types.NewMsgDeleteCode(invalidCodeHash, owner)
@@ -254,9 +257,9 @@ func TestDeleteCodeInvalidHash(t *testing.T) {
 func TestDeleteCodeInvalidOwner(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
 	code := []byte("Code")
-
+	name := "script"
 	owner := sdk.AccAddress([]byte("owner"))
-	codeHash := keeper.SetCode(ctx, code, owner)
+	codeHash := keeper.SetCode(ctx, code, name, owner)
 
 	other := sdk.AccAddress([]byte("other"))
 	msg := types.NewMsgDeleteCode(codeHash, other)
@@ -275,13 +278,13 @@ func TestEndBlock(t *testing.T) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	name := "Script1"
+	name := "Crypto price"
 	sender := sdk.AccAddress([]byte("sender"))
-	codeHash := keeper.SetCode(ctx, code, sender)
+	codeHash := keeper.SetCode(ctx, code, name, sender)
 
 	params, _ := hex.DecodeString("0000000000000007626974636f696e0000000000000003425443")
 	// set request
-	request := types.NewRequest(name, codeHash, params, 3)
+	request := types.NewRequest(codeHash, params, 3)
 	keeper.SetRequest(ctx, 1, request)
 
 	// set pending

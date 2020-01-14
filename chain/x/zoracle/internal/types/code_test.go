@@ -9,10 +9,12 @@ import (
 )
 
 func TestGetCodeHash(t *testing.T) {
-
 	code := []byte("This is code")
-	expectedCodeHash, _ := hex.DecodeString("15e0082d52b1a8fd85ce99ae62d1b0ac236709d4ae3ab7554bba52931231bd8a")
-	sc := NewStoredCode(code, sdk.AccAddress("owner"))
+	expectedCodeHash1, _ := hex.DecodeString("9a794cce93b8fa9b2477f1498bc63f1b602b2dd8edd06747183298822183e935")
+	expectedCodeHash2, _ := hex.DecodeString("3619be5b7c53a74dec4d0ca50825681accd4c9ed7471538b2d1438794bf1cd4c")
+	sc1 := NewStoredCode(code, "script1", sdk.AccAddress("owner"))
+	sc2 := NewStoredCode(code, "script2", sdk.AccAddress("owner"))
 
-	require.Equal(t, expectedCodeHash, sc.GetCodeHash())
+	require.Equal(t, expectedCodeHash1, sc1.GetCodeHash())
+	require.Equal(t, expectedCodeHash2, sc2.GetCodeHash())
 }

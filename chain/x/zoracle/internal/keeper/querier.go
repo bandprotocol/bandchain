@@ -96,12 +96,6 @@ func queryScript(ctx sdk.Context, path []string, req abci.RequestQuery, keeper K
 	if err != nil {
 		panic("cannot get codehash")
 	}
-	// Get name
-	name, err := wasm.Name(code.Code)
-	if err != nil {
-		// TODO: Return err
-		name = ""
-	}
 
 	// Get raw params info
 	rawParamsInfo, err := wasm.ParamsInfo(code.Code)

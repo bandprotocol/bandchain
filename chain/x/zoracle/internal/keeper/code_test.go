@@ -10,16 +10,16 @@ import (
 
 func TestGetterSetterCode(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
-
+	name := "script"
 	owner := sdk.AccAddress([]byte("owner"))
 
 	code := []byte("This is code")
-	codeHash := types.NewStoredCode(code, owner).GetCodeHash()
+	codeHash := types.NewStoredCode(code, name, owner).GetCodeHash()
 
 	_, err := keeper.GetCode(ctx, codeHash)
 	require.NotNil(t, err)
 
-	actualCodeHash := keeper.SetCode(ctx, code, owner)
+	actualCodeHash := keeper.SetCode(ctx, code, name, owner)
 	storedCode, err := keeper.GetCode(ctx, actualCodeHash)
 	require.Nil(t, err)
 	require.Equal(t, code, storedCode.Code)
@@ -33,9 +33,10 @@ func TestDeleteCode(t *testing.T) {
 	owner := sdk.AccAddress([]byte("owner"))
 
 	code := []byte("This is code")
-	codeHash := types.NewStoredCode(code, owner).GetCodeHash()
+	name := "script"
+	codeHash := types.NewStoredCode(code, name, owner).GetCodeHash()
 
-	keeper.SetCode(ctx, code, owner)
+	keeper.SetCode(ctx, code, name, owner)
 
 	keeper.DeleteCode(ctx, codeHash)
 	_, err := keeper.GetCode(ctx, codeHash)
