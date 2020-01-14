@@ -46,18 +46,19 @@ func TestDeleteCode(t *testing.T) {
 
 func TestGetCodesIterator(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
-	owner := sdk.AccAddress([]byte("owner"))
 
+	owner := sdk.AccAddress([]byte("owner"))
+	names := []string{"script1", "script2"}
 	codes := [][]byte{[]byte("This is code"), []byte("This is code2")}
 
-	for _, code := range codes {
-		keeper.SetCode(ctx, code, owner)
+	for i, _ := range codes {
+		keeper.SetCode(ctx, codes[i], names[i], owner)
 	}
 
 	iterator := keeper.GetCodesIterator(ctx)
 	i := 0
 	for ; iterator.Valid(); iterator.Next() {
-		require.Equal(t, types.NewStoredCode(codes[i], owner).GetCodeHash(), iterator.Key()[1:])
+		require.Equal(t, types.NewStoredCode(codes[i], names[i], owner).GetCodeHash(), iterator.Key()[1:])
 		i++
 	}
 	require.Equal(t, len(codes), i)
