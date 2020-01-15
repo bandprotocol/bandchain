@@ -22,7 +22,7 @@ module Styles = {
 [@react.component]
 let make = () => {
   let step = 10;
-  let (limit, setLimit) = React.useState(_ => 10);
+  let (limit, setLimit) = React.useState(_ => step);
   let txsOpt = TxHook.latest(~limit, ~pollInterval=3000, ());
   let txs = txsOpt->Belt.Option.getWithDefault([]);
 
@@ -53,7 +53,7 @@ let make = () => {
     <VSpacing size=Spacing.lg />
     {switch (infoOpt) {
      | Some(_) =>
-       txs->Belt_List.size == 0 || txs->Belt_List.size mod 10 != 0
+       txs->Belt_List.size == 0 || txs->Belt_List.size mod step != 0
          ? React.null : <LoadMore onClick={_ => {setLimit(oldLimit => oldLimit + step)}} />
      | None => React.null
      }}
