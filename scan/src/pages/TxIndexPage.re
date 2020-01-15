@@ -93,31 +93,26 @@ let make = (~txHash) => {
     </div>
     <VSpacing size=Spacing.xl />
     <Row>
-      <Col size=1.>
-        {switch (txOpt) {
-         | Some(tx) => <InfoHL info={InfoHL.Height(tx.blockHeight)} header="HEIGHT" />
-         | None => <InfoHL info={InfoHL.Text("?")} header="HEIGHT" />
-         }}
-      </Col>
-      <Col size=1.>
-        {switch (txOpt) {
-         | Some(tx) =>
-           <InfoHL info={InfoHL.Count(tx.messages |> Belt_List.size)} header="MESSAGES" />
-         | None => <InfoHL info={InfoHL.Text("?")} header="MESSAGES" />
-         }}
-      </Col>
-      <Col size=2.>
-        {switch (txOpt) {
-         | Some(tx) => <InfoHL info={InfoHL.Timestamp(tx.timestamp)} header="TIMESTAMP" />
-         | None => <InfoHL info={InfoHL.Text("?")} header="TIMESTAMP" />
-         }}
-      </Col>
-      <Col size=2.5>
-        {switch (txOpt) {
-         | Some(_) => <InfoHL info={InfoHL.Text("FREE")} header="FEE" />
-         | None => <InfoHL info={InfoHL.Text("?")} header="FEE" />
-         }}
-      </Col>
+      {switch (txOpt) {
+       | Some(tx) =>
+         <>
+           <Col size=1.> <InfoHL info={InfoHL.Height(tx.blockHeight)} header="HEIGHT" /> </Col>
+           <Col size=1.>
+             <InfoHL info={InfoHL.Count(tx.messages |> Belt_List.size)} header="MESSAGES" />
+           </Col>
+           <Col size=2.>
+             <InfoHL info={InfoHL.Timestamp(tx.timestamp)} header="TIMESTAMP" />
+           </Col>
+           <Col size=2.5> <InfoHL info={InfoHL.Text("FREE")} header="FEE" /> </Col>
+         </>
+       | None =>
+         <>
+           <Col size=1.> <InfoHL info={InfoHL.Text("?")} header="HEIGHT" /> </Col>
+           <Col size=1.> <InfoHL info={InfoHL.Text("?")} header="MESSAGES" /> </Col>
+           <Col size=2.> <InfoHL info={InfoHL.Text("?")} header="TIMESTAMP" /> </Col>
+           <Col size=2.5> <InfoHL info={InfoHL.Text("?")} header="FEE" /> </Col>
+         </>
+       }}
     </Row>
     <VSpacing size=Spacing.xl />
     {switch (txOpt) {
