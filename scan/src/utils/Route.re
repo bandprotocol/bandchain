@@ -13,7 +13,7 @@ type t =
   | ScriptHomePage
   | ScriptIndexPage(string, script_tab_t)
   | TxHomePage
-  | TxIndexPage(string)
+  | TxIndexPage(Hash.t)
   | BlockHomePage
   | BlockIndexPage(int)
   | RequestIndexPage(string, request_tab_t);
@@ -25,7 +25,7 @@ let fromUrl = (url: ReasonReactRouter.url) =>
   | (["script", codeHash], "integration") => ScriptIndexPage(codeHash, ScriptIntegration)
   | (["script", codeHash], _) => ScriptIndexPage(codeHash, ScriptTransactions)
   | (["txs"], _) => TxHomePage
-  | (["tx", txHash], _) => TxIndexPage(txHash)
+  | (["tx", txHash], _) => TxIndexPage(Hash.fromHex(txHash))
   | (["blocks"], _) => BlockHomePage
   | (["block", blockHeight], _) =>
     let blockHeightIntOpt = blockHeight |> int_of_string_opt;
