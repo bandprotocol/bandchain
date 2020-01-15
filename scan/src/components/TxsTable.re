@@ -23,7 +23,7 @@ let make = (~txs: list(TxHook.Tx.t)) => {
         <Col size=1.1>
           <Text block=true value="SENDER" size=Text.Sm weight=Text.Bold color=Colors.grayText />
         </Col>
-        <Col size=0.6>
+        <Col size=0.3>
           <div className=TElement.Styles.feeContainer>
             <Text block=true value="FEE" size=Text.Sm weight=Text.Bold color=Colors.grayText />
           </div>
@@ -47,7 +47,7 @@ let make = (~txs: list(TxHook.Tx.t)) => {
                </Col>
                <Col size=0.2> <TElement elementType={TElement.Height(blockHeight)} /> </Col>
                <Col size=1.1> <TElement elementType={sender->TElement.Address} /> </Col>
-               <Col size=0.6> <TElement elementType={0.->TElement.Fee} /> </Col>
+               <Col size=0.3> <TElement elementType={0.->TElement.Fee} /> </Col>
              </Row>
            </div>
          </TBody>
