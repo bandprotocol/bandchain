@@ -32,22 +32,33 @@ module Styles = {
 
   let checkLogo = style([marginRight(`px(10))]);
 
+  let dataContainer =
+    style([display(`flex), border(`px(1), `solid, `hex("EEEEEE")), flexDirection(`column)]);
+
   let topBoxContainer =
     style([
       display(`flex),
       background(Colors.white),
       padding(`px(24)),
       border(`px(1), `solid, `hex("EEEEEE")),
+      borderBottom(`px(0), `solid, `hex("EEEEEE")),
       flexDirection(`column),
     ]);
 
   let flexStart = style([alignItems(`flexStart)]);
   let subHeaderContainer = style([display(`flex), flex(`num(1.))]);
   let detailContainer = style([display(`flex), flex(`num(3.5))]);
+
+  let tableHeader =
+    style([
+      backgroundColor(Colors.white),
+      padding3(~top=`px(30), ~h=`px(20), ~bottom=`px(20)),
+    ]);
+  let tableLowerContainer = style([padding(`px(20)), background(Colors.lighterGray)]);
 };
 
 [@react.component]
-let make = (~reqID, ~hashtag) => {
+let make = (~reqID, ~hashtag: Route.request_tab_t) => {
   <div className=Styles.pageContainer>
     <Row justify=Row.Between>
       <Col>
@@ -93,38 +104,70 @@ let make = (~reqID, ~hashtag) => {
       </Col>
     </Row>
     <VSpacing size=Spacing.xl />
-    <div className=Styles.topBoxContainer>
-      <div className=Styles.vFlex>
-        <div className=Styles.subHeaderContainer>
-          <Text value="Request ID" size=Text.Xl color=Colors.darkGrayText />
+    <div className=Styles.dataContainer>
+      <div className=Styles.topBoxContainer>
+        <div className=Styles.vFlex>
+          <div className=Styles.subHeaderContainer>
+            <Text value="Request ID" size=Text.Xl color=Colors.darkGrayText />
+          </div>
+          <div className=Styles.detailContainer> <Text value=reqID size=Text.Lg /> </div>
         </div>
-        <div className=Styles.detailContainer> <Text value=reqID size=Text.Lg /> </div>
+        <VSpacing size=Spacing.xl />
+        <div className=Styles.vFlex>
+          <div className=Styles.subHeaderContainer>
+            <Text value="Status" size=Text.Xl color=Colors.darkGrayText />
+          </div>
+          <div className=Styles.detailContainer> <RequestStatus reqID /> </div>
+        </div>
+        <VSpacing size=Spacing.xl />
+        <div className=Styles.vFlex>
+          <div className=Styles.subHeaderContainer>
+            <Text value="Targeted Block" size=Text.Xl color=Colors.darkGrayText />
+          </div>
+          <div className=Styles.detailContainer>
+            <Text value="1,329" size=Text.Lg weight=Text.Semibold />
+            <HSpacing size=Spacing.sm />
+            <Text value=" (2 blocks remaining)" size=Text.Lg />
+          </div>
+        </div>
+        <VSpacing size=Spacing.xl />
+        <div className={Css.merge([Styles.vFlex, Styles.flexStart])}>
+          <div className=Styles.subHeaderContainer>
+            <Text value="Parameters" size=Text.Xl color=Colors.darkGrayText />
+          </div>
+          <div className=Styles.detailContainer> <Parameters /> </div>
+        </div>
       </div>
-      <VSpacing size=Spacing.xl />
-      <div className=Styles.vFlex>
-        <div className=Styles.subHeaderContainer>
-          <Text value="Status" size=Text.Xl color=Colors.darkGrayText />
-        </div>
-        <div className=Styles.detailContainer> <RequestStatus reqID /> </div>
+      <div className=Styles.tableHeader>
+        <Row>
+          <TabButton
+            active={hashtag == RequestReportStatus}
+            text="Data Report Status"
+            route={Route.RequestIndexPage(reqID, RequestReportStatus)}
+          />
+          <HSpacing size=Spacing.lg />
+          <TabButton
+            active={hashtag == RequestProof}
+            text="Proof of Validaity"
+            route={Route.RequestIndexPage(reqID, RequestProof)}
+          />
+        </Row>
       </div>
-      <VSpacing size=Spacing.xl />
-      <div className=Styles.vFlex>
-        <div className=Styles.subHeaderContainer>
-          <Text value="Targeted Block" size=Text.Xl color=Colors.darkGrayText />
-        </div>
-        <div className=Styles.detailContainer>
-          <Text value="1,329" size=Text.Lg weight=Text.Semibold />
-          <HSpacing size=Spacing.sm />
-          <Text value=" (2 blocks remaining)" size=Text.Lg />
-        </div>
-      </div>
-      <VSpacing size=Spacing.xl />
-      <div className={Css.merge([Styles.vFlex, Styles.flexStart])}>
-        <div className=Styles.subHeaderContainer>
-          <Text value="Parameters" size=Text.Xl color=Colors.darkGrayText />
-        </div>
-        <div className=Styles.detailContainer> <Parameters /> </div>
-      </div>
+      {switch (hashtag) {
+       | RequestReportStatus =>
+         <div className=Styles.tableLowerContainer>
+           <Text
+             value="Data Report from 3 Validators (Completed 3/4)"
+             color=Colors.grayHeader
+             size=Text.Lg
+           />
+           <VSpacing size=Spacing.lg />
+           <ReportTable />
+           <VSpacing size=Spacing.lg />
+         </div>
+       | RequestProof => <div> {"TODO1" |> React.string} </div>
+       }}
     </div>
+    <VSpacing size=Spacing.xxl />
   </div>;
 };
