@@ -53,8 +53,8 @@ let make = () => {
     <VSpacing size=Spacing.lg />
     {switch (infoOpt) {
      | Some(info) =>
-       txs->Belt_List.size mod step != 0 || txs->Belt_List.size == info.latestBlock.totalTxs
-         ? React.null : <LoadMore onClick={_ => {setLimit(oldLimit => oldLimit + step)}} />
+       txs->Belt_List.size < info.latestBlock.totalTxs
+         ? <LoadMore onClick={_ => {setLimit(oldLimit => oldLimit + step)}} /> : React.null
      | None => React.null
      }}
     <VSpacing size=Spacing.xl />
