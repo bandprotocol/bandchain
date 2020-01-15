@@ -52,8 +52,11 @@ let make = () => {
     <TxsTable txs />
     <VSpacing size=Spacing.lg />
     {switch (infoOpt) {
-     | Some(_) =>
-       txs->Belt_List.size == 0 || txs->Belt_List.size mod step != 0
+     | Some(info) =>
+       txs->Belt_List.size == 0
+       || txs->Belt_List.size
+       mod step != 0
+       || txs->Belt_List.size == info.latestBlock.totalTxs
          ? React.null : <LoadMore onClick={_ => {setLimit(oldLimit => oldLimit + step)}} />
      | None => React.null
      }}
