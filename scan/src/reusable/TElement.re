@@ -163,13 +163,13 @@ type t =
 [@react.component]
 let make = (~elementType) => {
   switch (elementType) {
-  | Icon(msg) => <img src={msg->msgIcon} className=Styles.msgIcon />
+  | Icon({action, _}) => <img src={action->msgIcon} className=Styles.msgIcon />
   | Height(height) => renderHeight(height)
   | Name(name) => renderName(name)
   | Timestamp(time) => renderTime(time)
   | TxHash(hash, timestamp) => renderTxHash(hash, timestamp)
-  | TxTypeWithDetail(msg) => renderTxTypeWithDetail(msg)
-  | TxType(msg) => renderTxType(msg)
+  | TxTypeWithDetail({action, _}) => renderTxTypeWithDetail(action)
+  | TxType({action, _}) => renderTxType(action)
   | Detail(detail) => renderText(detail)
   | Status(status) => renderText(status)
   | Fee(fee) => renderFee(fee)
