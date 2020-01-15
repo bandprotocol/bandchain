@@ -27,6 +27,7 @@ let make = () => {
   let txs = txsOpt->Belt.Option.getWithDefault([]);
 
   let infoOpt = React.useContext(GlobalContext.context);
+  let totalTxsOpt = infoOpt->Belt.Option.map(info => info.latestBlock.totalTxs);
 
   <div className=Styles.pageContainer>
     <Row>
@@ -40,9 +41,8 @@ let make = () => {
             color=Colors.grayHeader
           />
           <div className=Styles.seperatedLine />
-          {switch (infoOpt) {
-           | Some(info) =>
-             <Text value={(info.latestBlock.totalTxs |> Format.iPretty) ++ " in total"} />
+          {switch (totalTxsOpt) {
+           | Some(totalTxs) => <Text value={(totalTxs |> Format.iPretty) ++ " in total"} />
            | None => React.null
            }}
         </div>
@@ -51,11 +51,10 @@ let make = () => {
     <VSpacing size=Spacing.xl />
     <TxsTable txs />
     <VSpacing size=Spacing.lg />
-    {switch (infoOpt) {
-     | Some(info) =>
-       txs->Belt_List.size < info.latestBlock.totalTxs
-         ? <LoadMore onClick={_ => {setLimit(oldLimit => oldLimit + step)}} /> : React.null
-     | None => React.null
+    {if (totalTxsOpt->Belt.Option.mapWithDefault(false, totalTxs => txs->Belt_List.size < totalTxs)) {
+       <LoadMore onClick={_ => {setLimit(oldLimit => oldLimit + step)}} />;
+     } else {
+       React.null;
      }}
     <VSpacing size=Spacing.xl />
     <VSpacing size=Spacing.xl />
