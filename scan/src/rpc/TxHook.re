@@ -96,14 +96,24 @@ module Msg = {
       };
   };
 
-  type t =
+  type action_t =
     | Unknown
     | Send(Send.t)
     | Store(Store.t)
     | Request(Request.t)
     | Report(Report.t);
 
-  let decode = json =>
+  type t = {
+    action: action_t,
+    events: list(Event.t),
+  };
+
+  // mock
+  let getCreator = (msg: t) => "0xaa" |> Address.fromHex;
+  // mock
+  let getDescription = (msg: t) => "mumumumu";
+
+  let decodeAction = json =>
     JsonUtils.Decode.(
       switch (json |> field("type", string)) {
       | "cosmos-sdk/MsgSend" => Send(json |> field("value", Send.decode))
@@ -139,7 +149,6 @@ module Tx = {
     gasWanted: int,
     gasUsed: int,
     messages: list(Msg.t),
-    events: list(list(Event.t)),
   };
 
   let decodeTx = json =>
@@ -155,8 +164,12 @@ module Tx = {
       timestamp: json |> field("timestamp", moment),
       gasWanted: json |> field("gas_wanted", intstr),
       gasUsed: json |> field("gas_used", intstr),
-      messages: json |> at(["tx", "value", "msg"], list(Msg.decode)),
-      events: json |> field("logs", list(Event.decodeEvents)),
+      messages: {
+        let actions = json |> at(["tx", "value", "msg"], list(Msg.decodeAction));
+        let eventDoubleLists = json |> field("logs", list(Event.decodeEvents));
+        Belt.List.zip(actions, eventDoubleLists)
+        ->Belt.List.map(((action, events)) => Msg.{action, events});
+      },
     };
 
   let decodeTxs = json => JsonUtils.Decode.(json |> field("txs", list(decodeTx)));

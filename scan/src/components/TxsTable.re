@@ -34,8 +34,7 @@ let make = (~txs: list(TxHook.Tx.t)) => {
      ->Belt.List.map(({blockHeight, hash, timestamp, gasUsed, messages, sender}) => {
          <TBody key={hash |> Hash.toHex}>
            <div
-             className=Styles.fullWidth
-             onClick={_ => Route.TxIndexPage(hash |> Hash.toHex(~with0x=true)) |> Route.redirect}>
+             className=Styles.fullWidth onClick={_ => Route.TxIndexPage(hash) |> Route.redirect}>
              <Row>
                <Col>
                  <TElement elementType={messages->Belt.List.getExn(0)->TElement.Icon} />

@@ -15,74 +15,7 @@ module Styles = {
 };
 
 [@react.component]
-let make = () => {
-  /* mock tx */
-  let txs: list(TxHook.Tx.t) = [
-    {
-      sender: "0xaAA22E077492CbaD414098EBD98AA8dc1C7AE8D9" |> Address.fromHex,
-      blockHeight: 120339,
-      hash: "0x103020321239012392139023101230" |> Hash.fromHex,
-      timestamp: MomentRe.momentWithUnix(1293912392),
-      gasWanted: 0,
-      gasUsed: 0,
-      messages: [
-        Report({
-          requestId: 2,
-          data: "0x88123812388231823108" |> JsBuffer.fromHex,
-          validator: "0x913932993219329319213" |> Address.fromHex,
-        }),
-      ],
-      events: [],
-    },
-    {
-      sender: "0xF4F9994D5E59aEf6281739b046f0E28c33b3A847" |> Address.fromHex,
-      blockHeight: 120338,
-      hash: "0x12391291239123921392139" |> Hash.fromHex,
-      timestamp: MomentRe.momentWithUnix(1293912392),
-      gasWanted: 0,
-      gasUsed: 0,
-      messages: [
-        Send({
-          fromAddress: "0x923239239923923923" |> Address.fromHex,
-          toAddress: "0x233262363262363263" |> Address.fromHex,
-          amount: [{denom: "BAND", amount: 12.4}, {denom: "UATOM", amount: 10000.3}],
-        }),
-      ],
-      events: [],
-    },
-    {
-      sender: "0xe38475F47166d30A6e4E2E2C37e4B75E88Aa8b5B" |> Address.fromHex,
-      blockHeight: 120337,
-      hash: "0x12391291239123921392139" |> Hash.fromHex,
-      timestamp: MomentRe.momentWithUnix(1293912392),
-      gasWanted: 0,
-      gasUsed: 0,
-      messages: [
-        Store({
-          code: "0x19239129123912930219" |> JsBuffer.fromHex,
-          owner: "0x949494949499494949494" |> Address.fromHex,
-        }),
-      ],
-      events: [],
-    },
-    {
-      sender: "0x498968C2B945Ac37b78414f66167b0786E522636" |> Address.fromHex,
-      blockHeight: 120337,
-      hash: "0x12391291239123921392139" |> Hash.fromHex,
-      timestamp: MomentRe.momentWithUnix(1293912392),
-      gasWanted: 0,
-      gasUsed: 0,
-      messages: [
-        Request({
-          codeHash: "0x91238123812838123" |> Hash.fromHex,
-          params: "0x8238233288238238" |> JsBuffer.fromHex,
-          reportPeriod: 23,
-          sender: "0x99329329239239923923" |> Address.fromHex,
-        }),
-      ],
-      events: [],
-    },
-  ];
+let make = (~messages: list(TxHook.Msg.t)) => {
   <>
     <THead>
       <Row>
@@ -118,18 +51,18 @@ let make = () => {
         </Col>
       </Row>
     </THead>
-    {txs
-     ->Belt.List.map(({hash, timestamp, gasUsed, messages}) => {
+    {messages
+     ->Belt.List.map(msg => {
          <TBody>
            <Row>
-             <Col size=0.3>
-               <TElement elementType={messages->Belt.List.getExn(0)->TElement.Icon} />
+             <Col size=0.3> <TElement elementType={msg->TElement.Icon} /> </Col>
+             <Col size=0.5> <TElement elementType={msg->TElement.TxType} /> </Col>
+             <Col size=1.0>
+               <TElement elementType={msg->TxHook.Msg.getDescription->TElement.Detail} />
              </Col>
-             <Col size=0.5>
-               <TElement elementType={messages->Belt.List.getExn(0)->TElement.TxType} />
+             <Col size=1.3>
+               <TElement elementType={msg->TxHook.Msg.getCreator->TElement.Address} />
              </Col>
-             <Col size=1.0> <TElement elementType={"NFL Running Yards"->TElement.Detail} /> </Col>
-             <Col size=1.3> <TElement elementType={hash->TElement.Hash} /> </Col>
              // <Col size=0.5> <TElement elementType={"PENDING DATA"->TElement.Status} /> </Col>
              <Col size=0.5> <TElement elementType={0.->TElement.Fee} /> </Col>
            </Row>

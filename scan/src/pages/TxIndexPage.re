@@ -53,6 +53,7 @@ module Styles = {
 
 [@react.component]
 let make = (~txHash) => {
+  let txOpt = TxHook.atHash(txHash);
   <div className=Styles.pageContainer>
     <Row justify=Row.Between>
       <Col>
@@ -83,22 +84,41 @@ let make = (~txHash) => {
       </Col>
     </Row>
     <div className=Styles.addressContainer>
-      <Text value=txHash size=Text.Xxl weight=Text.Bold nowrap=true />
+      <Text
+        value={txHash |> Hash.toHex(~with0x=true)}
+        size=Text.Xxl
+        weight=Text.Bold
+        nowrap=true
+      />
     </div>
     <VSpacing size=Spacing.xl />
     <Row>
-      <Col size=1.> <InfoHL info={InfoHL.Height(472395)} header="HEIGHT" /> </Col>
-      <Col size=1.> <InfoHL info={InfoHL.Count(1)} header="MESSAGES" /> </Col>
-      <Col size=2.>
-        <InfoHL
-          info={InfoHL.Timestamp(MomentRe.momentWithUnix(1578052800))}
-          header="TIMESTAMP"
-        />
-      </Col>
-      <Col size=2.5> <InfoHL info={InfoHL.Fee(0.0)} header="FEE" /> </Col>
+      {switch (txOpt) {
+       | Some(tx) =>
+         <>
+           <Col size=1.> <InfoHL info={InfoHL.Height(tx.blockHeight)} header="HEIGHT" /> </Col>
+           <Col size=1.>
+             <InfoHL info={InfoHL.Count(tx.messages |> Belt_List.size)} header="MESSAGES" />
+           </Col>
+           <Col size=2.>
+             <InfoHL info={InfoHL.Timestamp(tx.timestamp)} header="TIMESTAMP" />
+           </Col>
+           <Col size=2.5> <InfoHL info={InfoHL.Text("FREE")} header="FEE" /> </Col>
+         </>
+       | None =>
+         <>
+           <Col size=1.> <InfoHL info={InfoHL.Text("?")} header="HEIGHT" /> </Col>
+           <Col size=1.> <InfoHL info={InfoHL.Text("?")} header="MESSAGES" /> </Col>
+           <Col size=2.> <InfoHL info={InfoHL.Text("?")} header="TIMESTAMP" /> </Col>
+           <Col size=2.5> <InfoHL info={InfoHL.Text("?")} header="FEE" /> </Col>
+         </>
+       }}
     </Row>
     <VSpacing size=Spacing.xl />
-    <div className=Styles.seperatorLine />
-    <TxIndexPageTable />
+    {switch (txOpt) {
+     | Some(tx) =>
+       <> <div className=Styles.seperatorLine /> <TxIndexPageTable messages={tx.messages} /> </>
+     | None => <VSpacing size={`px(250)} />
+     }}
   </div>;
 };
