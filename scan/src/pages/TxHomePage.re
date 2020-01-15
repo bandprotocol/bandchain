@@ -21,6 +21,14 @@ module Styles = {
 
 [@react.component]
 let make = () => {
+  let step = 10;
+  let (limit, setLimit) = React.useState(_ => step);
+  let txsOpt = TxHook.latest(~limit, ~pollInterval=3000, ());
+  let txs = txsOpt->Belt.Option.getWithDefault([]);
+
+  let infoOpt = React.useContext(GlobalContext.context);
+  let totalTxsOpt = infoOpt->Belt.Option.map(info => info.latestBlock.totalTxs);
+
   <div className=Styles.pageContainer>
     <Row>
       <Col>
@@ -33,14 +41,21 @@ let make = () => {
             color=Colors.grayHeader
           />
           <div className=Styles.seperatedLine />
-          <Text value="99,999 in total" />
+          {switch (totalTxsOpt) {
+           | Some(totalTxs) => <Text value={(totalTxs |> Format.iPretty) ++ " in total"} />
+           | None => React.null
+           }}
         </div>
       </Col>
     </Row>
     <VSpacing size=Spacing.xl />
-    <TxsTable txs=[] />
+    <TxsTable txs />
     <VSpacing size=Spacing.lg />
-    <LoadMore />
+    {if (totalTxsOpt->Belt.Option.mapWithDefault(false, totalTxs => txs->Belt_List.size < totalTxs)) {
+       <LoadMore onClick={_ => {setLimit(oldLimit => oldLimit + step)}} />;
+     } else {
+       React.null;
+     }}
     <VSpacing size=Spacing.xl />
     <VSpacing size=Spacing.xl />
   </div>;
