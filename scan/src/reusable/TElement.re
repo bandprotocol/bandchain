@@ -49,9 +49,9 @@ let renderTxType = txType => {
   </div>;
 };
 
-let renderText = text =>
+let renderText = (text, weight) =>
   <div className={Styles.typeContainer(`px(150))}>
-    <Text value=text size=Text.Lg weight=Text.Semibold block=true ellipsis=true />
+    <Text value=text size=Text.Lg weight block=true ellipsis=true />
   </div>;
 
 let renderTxTypeWithDetail = (msg: TxHook.Msg.t) => {
@@ -95,6 +95,20 @@ let renderHash = hash => {
       size=Text.Lg
       weight=Text.Bold
       ellipsis=true
+    />
+  </div>;
+};
+
+let renderHashWithLink = hash => {
+  <div className=Styles.hashContainer onClick={_ => hash->Route.TxIndexPage->Route.redirect}>
+    <Text
+      block=true
+      code=true
+      value={hash |> Hash.toHex}
+      size=Text.Lg
+      weight=Text.Bold
+      ellipsis=true
+      color=Colors.brightPurple
     />
   </div>;
 };
@@ -164,7 +178,10 @@ type t =
   | Status(string)
   | Fee(float)
   | Hash(Hash.t)
-  | Address(Address.t);
+  | HashWithLink(Hash.t)
+  | Address(Address.t)
+  | Source(string)
+  | Value(string);
 
 [@react.component]
 let make = (~elementType) => {
@@ -176,10 +193,13 @@ let make = (~elementType) => {
   | TxHash(hash, timestamp) => renderTxHash(hash, timestamp)
   | TxTypeWithDetail(msg) => renderTxTypeWithDetail(msg)
   | TxType({action, _}) => renderTxType(action)
-  | Detail(detail) => renderText(detail)
-  | Status(status) => renderText(status)
+  | Detail(detail) => renderText(detail, Text.Semibold)
+  | Status(status) => renderText(status, Text.Semibold)
   | Fee(fee) => renderFee(fee)
   | Hash(hash) => renderHash(hash)
+  | HashWithLink(hash) => renderHashWithLink(hash)
   | Address(address) => renderAddress(address)
+  | Source(source) => renderText(source, Text.Regular)
+  | Value(value) => renderText(value, Text.Regular)
   };
 };

@@ -10,7 +10,7 @@ module Styles = {
       display(`inlineFlex),
       justifyContent(`center),
       alignItems(`center),
-      padding2(~v=Spacing.xs, ~h=Spacing.sm),
+      padding2(~v=Spacing.xs, ~h=Spacing.md),
       cursor(`pointer),
     ]);
 };
