@@ -32,7 +32,7 @@ let make = (~txs: list(TxHook.Tx.t)) => {
     </THead>
     {txs
      ->Belt.List.map(({blockHeight, hash, timestamp, gasUsed, messages, sender}) => {
-         <TBody key={blockHeight |> string_of_int}>
+         <TBody key={hash |> Hash.toHex}>
            <div
              className=Styles.fullWidth
              onClick={_ => Route.TxIndexPage(hash |> Hash.toHex(~with0x=true)) |> Route.redirect}>
