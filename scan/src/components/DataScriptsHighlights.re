@@ -74,7 +74,7 @@ let renderFeatured = (recentScripts, index, color, textColor) => {
     color
     textColor
     onClick={_ =>
-      Route.redirect(Route.ScriptIndexPage(txHash |> Hash.toHex, Route.ScriptTransactions))
+      Route.redirect(Route.ScriptIndexPage(txHash, Route.ScriptTransactions))
     }
   />;
 };
@@ -88,7 +88,7 @@ let renderScript = (recentScripts, index) => {
       hash=txHash
       createdAt=createdAtTime
       onClick={_ =>
-        Route.redirect(Route.ScriptIndexPage(txHash |> Hash.toHex, Route.ScriptTransactions))
+        Route.redirect(Route.ScriptIndexPage(txHash, Route.ScriptTransactions))
       }
     />
   </Col>;
