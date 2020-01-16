@@ -1,6 +1,7 @@
 package rpc
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -11,6 +12,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
+)
+
+const (
+	requestID = "requestID"
 )
 
 func getLatestBlocks(cliCtx context.CLIContext, r *http.Request) ([]byte, error) {
@@ -106,4 +111,5 @@ func LatestTxsRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router) {
 	r.HandleFunc("/d3n/blocks/latest", LatestBlocksRequestHandlerFn(cliCtx)).Methods("GET")
 	r.HandleFunc("/d3n/txs/latest", LatestTxsRequestHandlerFn(cliCtx)).Methods("GET")
+	r.HandleFunc(fmt.Sprintf("/d3n/proof/{%s}", requestID), GetProofHandlerFn(cliCtx)).Methods("GET")
 }
