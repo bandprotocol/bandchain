@@ -36,12 +36,9 @@ let make = () =>
     let blocks = info.latestBlocks;
     let validators = info.validators;
     let blocksWithMonikers =
-      blocks
-      ->Belt_List.map(block => {
-          Js.Console.log2(block, validators |> Belt_List.toArray);
-          BlockHook.Block.getProposerMoniker(block, validators);
-        })
-      ->Belt_List.zip(blocks, _);
+      blocks->Belt_List.map(block =>
+        (block, BlockHook.Block.getProposerMoniker(block, validators))
+      );
 
     Some(
       <Row alignItems=`initial>
