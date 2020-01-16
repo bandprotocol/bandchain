@@ -20,6 +20,16 @@ module Block = {
     };
 
   let decodeBlocks = json => JsonUtils.Decode.(json |> list(decodeBlock));
+
+  let getProposerMoniker = (block: t, validators: list(ValidatorHook.Validator.t)) =>
+    validators
+    ->Belt_List.keepMap(validator =>
+        validator.operatorAddress
+        |> Address.toOperatorBech32 == (block.proposer |> Address.toOperatorBech32)
+          ? Some(validator.moniker) : None
+      )
+    ->Belt_List.get(0)
+    ->Belt_Option.getWithDefault("Unknown");
 };
 
 let latest = (~page=1, ~limit=10, ~pollInterval=?, ()) => {
