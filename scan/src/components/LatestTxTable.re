@@ -39,17 +39,23 @@ let make = () => {
       </Row>
     </THead>
     {txs
-     ->Belt.List.mapWithIndex((idx, {hash, timestamp, gasUsed, messages}) => {
-         <TBody key={idx |> string_of_int}>
-           <Row>
-             <Col> <TElement elementType={messages->Belt.List.getExn(0)->TElement.Icon} /> </Col>
-             <Col size=1.3> <TElement elementType={TElement.TxHash(hash, timestamp)} /> </Col>
-             <Col size=1.3>
-               <TElement elementType={messages->Belt.List.getExn(0)->TElement.TxTypeWithDetail} />
-             </Col>
-             <Col size=0.5> <TElement elementType={0.->TElement.Fee} /> </Col>
-           </Row>
-         </TBody>
+     ->Belt.List.map(({hash, timestamp, messages}) => {
+         <div onClick={_ => Route.redirect(TxIndexPage(hash))}>
+           <TBody key={hash |> Hash.toHex}>
+             <Row>
+               <Col>
+                 <TElement elementType={messages->Belt.List.getExn(0)->TElement.Icon} />
+               </Col>
+               <Col size=1.3> <TElement elementType={TElement.TxHash(hash, timestamp)} /> </Col>
+               <Col size=1.3>
+                 <TElement
+                   elementType={messages->Belt.List.getExn(0)->TElement.TxTypeWithDetail}
+                 />
+               </Col>
+               <Col size=0.5> <TElement elementType={0.->TElement.Fee} /> </Col>
+             </Row>
+           </TBody>
+         </div>
        })
      ->Array.of_list
      ->React.array}
