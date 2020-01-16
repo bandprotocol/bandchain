@@ -48,7 +48,13 @@ module Styles = {
     ]);
 
   let grayAreaInner =
-    style([position(`absolute), maxWidth(`px(1100)), marginLeft(`auto), marginRight(`auto)]);
+    style([
+      position(`absolute),
+      maxWidth(`px(1100)),
+      marginLeft(`auto),
+      marginRight(`auto),
+      width(`percent(100.)),
+    ]);
 };
 
 /* SEE ALL btn */
