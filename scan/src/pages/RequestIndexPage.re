@@ -49,12 +49,16 @@ module Styles = {
   let subHeaderContainer = style([display(`flex), flex(`num(1.))]);
   let detailContainer = style([display(`flex), flex(`num(3.5))]);
 
+  let mediumText = style([fontSize(`px(14)), lineHeight(`px(20))]);
+
   let tableHeader =
     style([
       backgroundColor(Colors.white),
       padding3(~top=`px(30), ~h=`px(20), ~bottom=`px(20)),
     ]);
   let tableLowerContainer = style([padding(`px(20)), background(Colors.lighterGray)]);
+
+  let maxHeight20 = style([maxHeight(`px(20))]);
 };
 
 [@react.component]
@@ -62,9 +66,11 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) =>
   {
     let requestOpt = RequestHook.getRequest(reqID, ~pollInterval=3000, ());
     let infoOpt = React.useContext(GlobalContext.context);
+    let proofOpt = ProofHook.get(~requestId=reqID, ());
 
     let%Opt request = requestOpt;
     let%Opt info = infoOpt;
+    let%Opt proof = proofOpt;
 
     let scriptName = request.info.name;
     let scriptHash = request.info.codeHash;
@@ -125,7 +131,9 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) =>
               <div className=Styles.subHeaderContainer>
                 <Text value="Request ID" size=Text.Xl color=Colors.darkGrayText />
               </div>
-              <div className=Styles.detailContainer> <Text value=reqID size=Text.Lg /> </div>
+              <div className=Styles.detailContainer>
+                <Text value={reqID |> Format.iPretty} size=Text.Lg />
+              </div>
             </div>
             <VSpacing size=Spacing.xl />
             <div className=Styles.vFlex>
@@ -199,7 +207,23 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) =>
                <ReportTable reports />
                <VSpacing size=Spacing.lg />
              </div>
-           | RequestProof => <div> {"TODO1" |> React.string} </div>
+           | RequestProof =>
+             <div className=Styles.tableLowerContainer>
+               <Row>
+                 <img src=Images.copy className=Styles.maxHeight20 />
+                 <HSpacing size=Spacing.md />
+                 <Text value="Copy proof for Ethereum" size=Text.Lg color=Colors.grayHeader />
+                 <HSpacing size={`px(30)} />
+                 <img src=Images.copy className=Styles.maxHeight20 />
+                 <HSpacing size=Spacing.md />
+                 <Text value="Copy proof for Cosmos" size=Text.Lg color=Colors.grayHeader />
+               </Row>
+               <VSpacing size=Spacing.lg />
+               <div className=Styles.mediumText>
+                 <ReactHighlight> {proof |> Js.Json.stringify |> React.string} </ReactHighlight>
+               </div>
+               <VSpacing size=Spacing.lg />
+             </div>
            }}
         </div>
         <VSpacing size=Spacing.xxl />
