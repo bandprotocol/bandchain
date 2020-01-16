@@ -8,7 +8,7 @@ module Styles = {
       background(Colors.white),
       display(`inlineFlex),
       padding4(~top=`px(6), ~right=`px(17), ~bottom=`px(6), ~left=`px(17)),
-      border(`px(1), `solid, `hex("EEEEEE")),
+      border(`px(1), `solid, Colors.lightGray),
     ]);
 
   let keyContainer = style([display(`inlineFlex), marginRight(`px(15))]);

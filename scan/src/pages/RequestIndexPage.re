@@ -33,15 +33,15 @@ module Styles = {
   let checkLogo = style([marginRight(`px(10))]);
 
   let dataContainer =
-    style([display(`flex), border(`px(1), `solid, `hex("EEEEEE")), flexDirection(`column)]);
+    style([display(`flex), border(`px(1), `solid, Colors.lightGray), flexDirection(`column)]);
 
   let topBoxContainer =
     style([
       display(`flex),
       background(Colors.white),
       padding(`px(24)),
-      border(`px(1), `solid, `hex("EEEEEE")),
-      borderBottom(`px(0), `solid, `hex("EEEEEE")),
+      border(`px(1), `solid, Colors.lightGray),
+      borderBottom(`px(0), `solid, Colors.lightGray),
       flexDirection(`column),
     ]);
 
