@@ -39,7 +39,7 @@ let make = () => {
       </Row>
     </THead>
     {txs
-     ->Belt.List.mapWithIndex((idx, {hash, timestamp, gasUsed, messages}) => {
+     ->Belt.List.mapWithIndex((idx, {hash, timestamp, messages}) => {
          <div onClick={_ => Route.redirect(TxIndexPage(hash))}>
            <TBody key={idx |> string_of_int}>
              <Row>
