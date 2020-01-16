@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@glennsl/bs-json": "^5.0.1",
-    "axios": "^0.18.0 || ^0.19.0",
+    "axios": "^0.19.1",
     "axios-hook": "^0.0.5",
     "axios-hooks": "^1.9.0",
     "bech32": "^1.1.3",
