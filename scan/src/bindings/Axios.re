@@ -3,8 +3,6 @@ let setRpcUrl: string => unit = [%bs.raw
 function(rpcUrl) {
   const AxiosHooks = require("axios-hooks");
   const Axios = require("axios");
-
-  Axios.defaults.headers.common['Origin'] = null;
   AxiosHooks.configure({
     axios: Axios.create({
       baseURL: rpcUrl,
