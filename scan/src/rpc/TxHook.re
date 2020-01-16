@@ -20,6 +20,11 @@ module Event = {
 
   let decodeEvents = json =>
     List.flatten(JsonUtils.Decode.(json |> field("events", list(decodeEvent))));
+
+  let getValueOfKey = (events: list(t), key) =>
+    events
+    ->Belt.List.keepMap(event => event.key == key ? Some(event.value) : None)
+    ->Belt.List.get(0);
 };
 
 module Coin = {
@@ -33,6 +38,8 @@ module Coin = {
       denom: json |> field("denom", string),
       amount: json |> field("amount", uamount),
     };
+
+  let getDescription = coin => (coin.amount |> Format.fPretty) ++ " " ++ coin.denom;
 };
 
 module Msg = {
@@ -54,12 +61,14 @@ module Msg = {
   module Store = {
     type t = {
       code: JsBuffer.t,
+      name: string,
       owner: Address.t,
     };
 
     let decode = json =>
       JsonUtils.Decode.{
         code: json |> field("code", string) |> JsBuffer.fromBase64,
+        name: json |> field("name", string),
         owner: json |> field("owner", string) |> Address.fromBech32,
       };
   };
@@ -108,10 +117,44 @@ module Msg = {
     events: list(Event.t),
   };
 
-  // mock
-  let getCreator = (msg: t) => "0xaa" |> Address.fromHex;
-  // mock
-  let getDescription = (msg: t) => "mumumumu";
+  let getCreator = msg => {
+    switch (msg.action) {
+    | Send(send) => send.fromAddress
+    | Store(store) => store.owner
+    | Request(request) => request.sender
+    | Report(report) => report.validator
+    | Unknown => "" |> Address.fromHex
+    };
+  };
+
+  let getDescription = msg => {
+    switch (msg.action) {
+    | Send(send) =>
+      send.amount
+      ->Belt_List.map(coin => coin->Coin.getDescription)
+      ->Belt_List.reduceWithIndex("", (des, acc, i) =>
+          acc ++ des ++ (i + 1 < send.amount->Belt_List.size ? ", " : "")
+        )
+      ++ "->"
+      ++ (send.toAddress |> Address.toBech32)
+    | Store(store) => store.name
+    | Request(_) =>
+      switch (msg.events->Event.getValueOfKey("request.code_name")) {
+      | Some(value) =>
+        switch (msg.events->Event.getValueOfKey("request.id")) {
+        | Some(id) => "#" ++ id ++ " " ++ value
+        | None => ""
+        }
+      | None => "?"
+      }
+    | Report(report) =>
+      switch (msg.events->Event.getValueOfKey("report.code_name")) {
+      | Some(value) => "#" ++ (report.requestId |> string_of_int) ++ " " ++ value
+      | None => "?"
+      }
+    | Unknown => "Unknown"
+    };
+  };
 
   let decodeAction = json =>
     JsonUtils.Decode.(
@@ -173,6 +216,8 @@ module Tx = {
     };
 
   let decodeTxs = json => JsonUtils.Decode.(json |> field("txs", list(decodeTx)));
+
+  let getDescription = tx => tx.messages->Belt_List.getExn(0)->Msg.getDescription;
 };
 
 let atHash = txHash => {
