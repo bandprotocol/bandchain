@@ -85,7 +85,6 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) =>
 
     let comfirmed = result->Belt.Option.isSome || reportedValidators == totalValidators;
     let remainingBlock = targetBlock - latestBlock;
-
     Some(
       <div className=Styles.pageContainer>
         <Row justify=Row.Between>
@@ -205,17 +204,7 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) =>
                <ReportTable reports />
                <VSpacing size=Spacing.lg />
              </div>
-           | RequestProof =>
-             <div className=Styles.tableLowerContainer>
-               <Row>
-                 <img src=Images.copy className=Styles.maxHeight20 />
-                 <HSpacing size=Spacing.md />
-                 <Text value="Copy proof for Ethereum" size=Text.Lg color=Colors.grayHeader />
-               </Row>
-               <VSpacing size=Spacing.lg />
-               <ProofTab reqID />
-               <VSpacing size=Spacing.lg />
-             </div>
+           | RequestProof => <ProofTab reqID />
            }}
         </div>
         <VSpacing size=Spacing.xxl />
