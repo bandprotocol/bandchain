@@ -24,7 +24,7 @@ module Styles = {
       marginRight(Spacing.xl),
     ]);
 
-  let hashContainer = style([maxWidth(`px(250))]);
+  let hashContainer = style([maxWidth(`px(220))]);
   let feeContainer = style([maxWidth(`px(80))]);
   let timeContainer = style([display(`flex), alignItems(`center), maxWidth(`px(150))]);
   let textContainer = style([display(`flex)]);
@@ -52,6 +52,11 @@ let renderTxType = txType => {
 let renderText = (text, weight) =>
   <div className={Styles.typeContainer(`px(150))}>
     <Text value=text size=Text.Lg weight block=true ellipsis=true />
+  </div>;
+
+let renderSource = text =>
+  <div className={Styles.typeContainer(`px(150))}>
+    <Text value=text size=Text.Lg align=Text.Right block=true ellipsis=true />
   </div>;
 
 let renderTxTypeWithDetail = (msg: TxHook.Msg.t) => {
@@ -199,7 +204,7 @@ let make = (~elementType) => {
   | Hash(hash) => renderHash(hash)
   | HashWithLink(hash) => renderHashWithLink(hash)
   | Address(address) => renderAddress(address)
-  | Source(source) => renderText(source, Text.Regular)
+  | Source(source) => renderSource(source)
   | Value(value) => renderText(value->Format.fPretty, Text.Regular)
   };
 };

@@ -11,6 +11,10 @@ type weight =
   | Semibold
   | Bold;
 
+type align =
+  | Center
+  | Right;
+
 module Styles = {
   open Css;
   open Belt.Option;
@@ -41,6 +45,14 @@ module Styles = {
   let noWrap = style([whiteSpace(`nowrap)]);
   let block = style([display(`block)]);
   let ellipsis = style([overflow(`hidden), textOverflow(`ellipsis), whiteSpace(`nowrap)]);
+  let textAlign =
+    mapWithDefault(
+      _,
+      style([textAlign(`left)]),
+      fun
+      | Center => style([textAlign(`center)])
+      | Right => style([textAlign(`right)]),
+    );
 
   let code =
     style([
@@ -55,6 +67,7 @@ let make =
     (
       ~size=?,
       ~weight=?,
+      ~align=?,
       ~nowrap=false,
       ~color=?,
       ~block=false,
@@ -66,6 +79,7 @@ let make =
     className={Css.merge([
       Styles.fontSize(size),
       Styles.fontWeight(weight),
+      Styles.textAlign(align),
       nowrap ? Styles.noWrap : "",
       block ? Styles.block : "",
       code ? Styles.code : "",
