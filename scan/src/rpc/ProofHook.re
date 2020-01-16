@@ -1,7 +1,14 @@
 module Proof = {
-  type t = Js.Json.t;
+  type t = {
+    jsonProof: Js.Json.t,
+    evmProof: JsBuffer.t,
+  };
 
-  let decodeProof = JsonUtils.Decode.field("result", json => json);
+  let decodeProof = json =>
+    JsonUtils.Decode.{
+      jsonProof: json |> at(["result", "jsonProof"], json => json),
+      evmProof: json |> at(["result", "evmProof"], string) |> JsBuffer.fromHex,
+    };
 };
 
 let get = (~requestId: int, ~pollInterval=?, ()) => {
