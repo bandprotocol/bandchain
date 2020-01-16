@@ -89,7 +89,7 @@ let make = () => {
          <div
            onClick={_ =>
              Route.redirect(
-               Route.ScriptIndexPage(info.codeHash |> Hash.toHex, Route.ScriptTransactions),
+               Route.ScriptIndexPage(info.codeHash, Route.ScriptTransactions),
              )
            }>
            <TBody key={txHash |> Hash.toHex}>
