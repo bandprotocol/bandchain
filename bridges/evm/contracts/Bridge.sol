@@ -159,11 +159,11 @@ contract Bridge {
     returns (VerifyOracleDataResult memory result)
   {
     (bytes memory relayData, bytes memory verifyData) = abi.decode(data, (bytes, bytes));
-    (bool relayOk,) =
-      address(this).call(abi.encodeWithSelector(this.relayOracleState.selector, relayData));
+    (bool relayOk, ) =
+      address(this).call(abi.encodePacked(this.relayOracleState.selector, relayData));
     require(relayOk, "RELAY_ORACLE_STATE_FAILED");
     (bool verifyOk, bytes memory verifyResult) =
-      address(this).staticcall(abi.encodeWithSelector(this.verifyOracleData.selector, verifyData));
+      address(this).staticcall(abi.encodePacked(this.verifyOracleData.selector, verifyData));
     require(verifyOk, "VERIFY_ORACLE_DATA_FAILED");
     return abi.decode(verifyResult, (VerifyOracleDataResult));
   }
