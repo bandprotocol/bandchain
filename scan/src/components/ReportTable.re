@@ -43,7 +43,7 @@ let make = (~reports: list(RequestHook.Report.t)) => {
              <Col size=1.0>
                <TElement elementType={reporter->TElement.Address} />
                <VSpacing size=Spacing.sm />
-               <TElement elementType={"(CoinGecko DataProvider)"->TElement.Source} />
+               <TElement elementType={"(CoinGecko DataProvider)"->TElement.Detail} />
              </Col>
              <Col size=0.6>
                {values
