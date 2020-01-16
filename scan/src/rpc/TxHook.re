@@ -215,9 +215,20 @@ module Tx = {
       },
     };
 
-  let decodeTxs = json => JsonUtils.Decode.(json |> field("txs", list(decodeTx)));
-
   let getDescription = tx => tx.messages->Belt_List.getExn(0)->Msg.getDescription;
+};
+
+module Txs = {
+  type t = {
+    totalCount: int,
+    txs: list(Tx.t),
+  };
+
+  let decodeTxs = json =>
+    JsonUtils.Decode.{
+      totalCount: json |> field("total_count", intstr),
+      txs: json |> field("txs", list(Tx.decodeTx)),
+    };
 };
 
 let atHash = txHash => {
@@ -228,12 +239,12 @@ let atHash = txHash => {
 
 let atHeight = (height, ~page=1, ~limit=25, ~pollInterval=?, ()) => {
   let json = Axios.use({j|txs?tx.height=$height&page=$page&limit=$limit|j}, ~pollInterval?, ());
-  json |> Belt.Option.map(_, Tx.decodeTxs);
+  json |> Belt.Option.map(_, Txs.decodeTxs);
 };
 
 let latest = (~page=1, ~limit=10, ~pollInterval=?, ()) => {
   let json = Axios.use({j|d3n/txs/latest?page=$page&limit=$limit|j}, ~pollInterval?, ());
-  json |> Belt.Option.map(_, Tx.decodeTxs);
+  json |> Belt.Option.map(_, Txs.decodeTxs);
 };
 
 let withCodehash = (~codeHash, ~page=1, ~limit=10, ~pollInterval=?, ()) => {
@@ -244,5 +255,5 @@ let withCodehash = (~codeHash, ~page=1, ~limit=10, ~pollInterval=?, ()) => {
       ~pollInterval?,
       (),
     );
-  json |> Belt.Option.map(_, Tx.decodeTxs);
+  json |> Belt.Option.map(_, Txs.decodeTxs);
 };
