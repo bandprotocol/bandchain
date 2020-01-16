@@ -39,9 +39,9 @@ let make = () => {
       </Row>
     </THead>
     {txs
-     ->Belt.List.mapWithIndex((idx, {hash, timestamp, messages}) => {
+     ->Belt.List.map(({hash, timestamp, messages}) => {
          <div onClick={_ => Route.redirect(TxIndexPage(hash))}>
-           <TBody key={idx |> string_of_int}>
+           <TBody key={hash |> Hash.toHex}>
              <Row>
                <Col>
                  <TElement elementType={messages->Belt.List.getExn(0)->TElement.Icon} />
