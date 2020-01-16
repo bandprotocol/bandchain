@@ -17,8 +17,7 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~reqID) => {
-  let comfirmed = false; /* use hook right here */
+let make = (~comfirmed, ~totalValidators, ~reportedValidators) => {
   comfirmed
     ? <div className={Css.merge([Styles.badge, Styles.comfirmed])}>
         <img src=Images.checkIcon className=Styles.logo />
@@ -26,6 +25,10 @@ let make = (~reqID) => {
       </div>
     : <div className={Css.merge([Styles.badge, Styles.pending])}>
         <img src=Images.pendingIcon className=Styles.logo />
-        <Text value="Pending Data Reports (3/4 Providers)" size=Text.Lg color=Colors.purpleBlue />
+        <Text
+          value={j|Pending Data Reports ($reportedValidators/$totalValidators Providers)|j}
+          size=Text.Lg
+          color=Colors.purpleBlue
+        />
       </div>;
 };
