@@ -6,6 +6,12 @@ module Styles = {
 
 [@react.component]
 let make = (~reports: list(RequestHook.Report.t)) => {
+  let infoOpt = React.useContext(GlobalContext.context);
+  let validators =
+    switch (infoOpt) {
+    | Some(info) => info.validators
+    | None => []
+    };
   <>
     <THead>
       <Row>
@@ -34,6 +40,13 @@ let make = (~reports: list(RequestHook.Report.t)) => {
     </THead>
     {reports
      ->Belt.List.map(({reporter, txHash, reportedAtHeight, reportedAtTime, values}) => {
+         let moniker =
+           validators
+           ->Belt_List.keepMap(validator =>
+               validator.operatorAddress == reporter ? Some(validator.moniker) : None
+             )
+           ->Belt_List.get(0)
+           ->Belt_Option.getWithDefault("Unknown");
          <TBody key={txHash |> Hash.toHex} height=100>
            <Row alignItems=Css.flexStart>
              <Col> <div className=Styles.txhash /> </Col>
@@ -43,7 +56,7 @@ let make = (~reports: list(RequestHook.Report.t)) => {
              <Col size=1.0>
                <TElement elementType={reporter->TElement.Address} />
                <VSpacing size=Spacing.sm />
-               <TElement elementType={"(CoinGecko DataProvider)"->TElement.Detail} />
+               <TElement elementType={moniker->TElement.Detail} />
              </Col>
              <Col size=0.6>
                {values
@@ -66,7 +79,7 @@ let make = (~reports: list(RequestHook.Report.t)) => {
                 ->React.array}
              </Col>
            </Row>
-         </TBody>
+         </TBody>;
        })
      ->Array.of_list
      ->React.array}

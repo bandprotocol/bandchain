@@ -21,7 +21,7 @@ module Styles = {
   let proposerBox = style([maxWidth(`px(270)), display(`flex), flexDirection(`column)]);
 };
 
-let renderBody = (block: BlockHook.Block.t) => {
+let renderBody = ((block, moniker): (BlockHook.Block.t, string)) => {
   let height = block.height;
   let timestamp = block.timestamp;
   let proposer = block.proposer->Address.toOperatorBech32;
@@ -46,7 +46,7 @@ let renderBody = (block: BlockHook.Block.t) => {
           <div className={Css.merge([Styles.textContainer, Styles.proposerBox])}>
             <Text
               block=true
-              value="Staked.us"
+              value=moniker
               size=Text.Sm
               weight=Text.Regular
               color=Colors.grayHeader
@@ -87,9 +87,21 @@ let renderBody = (block: BlockHook.Block.t) => {
 let make = () => {
   let (limit, setLimit) = React.useState(_ => 10);
   let blocksOpt = BlockHook.latest(~limit, ~pollInterval=3000, ());
-  let blocks = blocksOpt->Belt.Option.getWithDefault([])->Belt_List.toArray;
+  let infoOpt = React.useContext(GlobalContext.context);
 
-  let latestBlockOpt = blocks->Belt_Array.get(0);
+  let blocks = blocksOpt->Belt.Option.getWithDefault([]);
+
+  let latestBlockOpt = blocks->Belt_List.get(0);
+  let validators =
+    switch (infoOpt) {
+    | Some(info) => info.validators
+    | None => []
+    };
+
+  let blocksWithMonikers =
+    blocks->Belt_List.map(block =>
+      (block, BlockHook.Block.getProposerMoniker(block, validators))
+    );
 
   <div className=Styles.pageContainer>
     <Row>
@@ -142,7 +154,7 @@ let make = () => {
          ->React.array}
       </Row>
     </THead>
-    {blocks->Belt_Array.map(renderBody)->React.array}
+    {blocksWithMonikers->Belt_List.toArray->Belt_Array.map(renderBody)->React.array}
     <VSpacing size=Spacing.lg />
     <LoadMore onClick={_ => setLimit(oldLimit => oldLimit + 10)} />
   </div>;
