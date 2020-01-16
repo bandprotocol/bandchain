@@ -139,23 +139,23 @@ module Msg = {
       send.amount
       ->Belt_List.map(coin => coin->Coin.getDescription)
       ->Belt_List.reduceWithIndex("", (des, acc, i) =>
-          acc
-          ++ des
-          ++ {
-            i + 1 < send.amount->Belt_List.size ? ", " : "";
-          }
+          acc ++ des ++ (i + 1 < send.amount->Belt_List.size ? ", " : "")
         )
       ++ "->"
       ++ (send.toAddress |> Address.toBech32)
     | Store(store) => store.name
     | Request(_) =>
       switch (msg.events->Event.getValueOfKey("request.code_name")) {
-      | Some(value) => value
+      | Some(value) =>
+        switch (msg.events->Event.getValueOfKey("request.id")) {
+        | Some(id) => "#" ++ id ++ " " ++ value
+        | None => ""
+        }
       | None => "?"
       }
-    | Report(_) =>
+    | Report(report) =>
       switch (msg.events->Event.getValueOfKey("report.code_name")) {
-      | Some(value) => value
+      | Some(value) => "#" ++ (report.requestId |> string_of_int) ++ " " ++ value
       | None => "?"
       }
     | Unknown => "Unknown"

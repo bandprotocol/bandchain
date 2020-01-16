@@ -1,7 +1,12 @@
 module Styles = {
   open Css;
 
-  let typeContainer = style([marginRight(`px(20)), maxWidth(`px(210)), width(`px(150))]);
+  let typeContainer = w =>
+    style([
+      marginRight(`px(20)),
+      maxWidth(`px(210)),
+      width(w),
+    ]);
 
   let txTypeOval = (textColor, bgColor) =>
     style([
@@ -42,7 +47,7 @@ let txTypeMapping = msg => {
 
 let renderTxType = txType => {
   let (typeName, textColor, bgColor) = txTypeMapping(txType);
-  <div className=Styles.typeContainer>
+  <div className={Styles.typeContainer(`px(100))}>
     <div className={Styles.txTypeOval(textColor, bgColor)}>
       <Text value=typeName size=Text.Xs block=true />
     </div>
@@ -50,13 +55,13 @@ let renderTxType = txType => {
 };
 
 let renderText = text =>
-  <div className=Styles.typeContainer>
+  <div className={Styles.typeContainer(`px(150))}>
     <Text value=text size=Text.Lg weight=Text.Semibold block=true ellipsis=true />
   </div>;
 
 let renderTxTypeWithDetail = (msg: TxHook.Msg.t) => {
   let (typeName, textColor, bgColor) = txTypeMapping(msg.action);
-  <div className=Styles.typeContainer>
+  <div className={Styles.typeContainer(`px(150))}>
     <div className={Styles.txTypeOval(textColor, bgColor)}>
       <Text value=typeName size=Text.Xs block=true />
     </div>
