@@ -35,7 +35,7 @@ module Request = {
 
   let decodeResult = json =>
     JsonUtils.Decode.{
-      info: json |> ScriptHook.ScriptInfo.decode("scriptInfo"),
+      info: json |> field("scriptInfo", ScriptHook.ScriptInfo.decode),
       codeHash: json |> at(["codeHash"], string) |> Hash.fromHex,
       params: json |> at(["params"], dict(JsonUtils.Decode.string)) |> Js.Dict.entries,
       targetBlock: json |> at(["targetBlock"], intstr),
