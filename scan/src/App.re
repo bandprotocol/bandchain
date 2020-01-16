@@ -38,6 +38,8 @@ module Styles = {
 
   let socialLink =
     style([display(`flex), justifyContent(`center), alignItems(`center), width(`px(50))]);
+
+  let logoContainer = style([display(`flex), alignItems(`center)]);
 };
 
 [@react.component]
@@ -45,19 +47,21 @@ let make = () => {
   <div className=Styles.container>
     <NavBar />
     <div className=Styles.innerContainer>
-      <div className=Styles.mainBar onClick={_ => Route.redirect(Route.HomePage)}>
-        <Row>
-          <Col size=1.> <img src=Images.bandLogo className=Styles.bandLogo /> </Col>
-          <Col size=4.>
-            <div className=Styles.uFlex>
-              <Text value="D3N" size=Text.Xxl weight=Text.Bold nowrap=true />
-              <div className=Styles.version>
-                <Text value="v1.0 TESTNET" size=Text.Sm color=Colors.pink nowrap=true />
+      <div className=Styles.mainBar>
+        <div className=Styles.logoContainer onClick={_ => Route.redirect(Route.HomePage)}>
+          <Row>
+            <Col size=1.> <img src=Images.bandLogo className=Styles.bandLogo /> </Col>
+            <Col size=4.>
+              <div className=Styles.uFlex>
+                <Text value="D3N" size=Text.Xxl weight=Text.Bold nowrap=true />
+                <div className=Styles.version>
+                  <Text value="v1.0 TESTNET" size=Text.Sm color=Colors.pink nowrap=true />
+                </div>
               </div>
-            </div>
-            <Text value="Data Request Explorer" nowrap=true />
-          </Col>
-        </Row>
+              <Text value="Data Request Explorer" nowrap=true />
+            </Col>
+          </Row>
+        </div>
         <SearchBar />
         <div className=Styles.skipRight />
         <div className=Styles.socialLink>
