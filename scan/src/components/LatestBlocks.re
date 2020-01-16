@@ -20,7 +20,10 @@ module Styles = {
 };
 
 let renderBlock = ((b, moniker): (BlockHook.Block.t, string)) =>
-  <div key={b.height |> string_of_int} className=Styles.block>
+  <div
+    key={b.height |> string_of_int}
+    className=Styles.block
+    onClick={_ => Route.redirect(BlockIndexPage(b.height))}>
     <Text value="# " color=Colors.pink weight=Text.Semibold size=Text.Lg />
     <Text value={b.height->Format.iPretty} weight=Text.Semibold size=Text.Lg />
     <VSpacing size=Spacing.md />
