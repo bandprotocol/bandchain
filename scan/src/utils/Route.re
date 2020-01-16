@@ -16,7 +16,7 @@ type t =
   | TxIndexPage(Hash.t)
   | BlockHomePage
   | BlockIndexPage(int)
-  | RequestIndexPage(string, request_tab_t);
+  | RequestIndexPage(int, request_tab_t);
 
 let fromUrl = (url: ReasonReactRouter.url) =>
   switch (url.path, url.hash) {
@@ -31,8 +31,8 @@ let fromUrl = (url: ReasonReactRouter.url) =>
   | (["block", blockHeight], _) =>
     let blockHeightIntOpt = blockHeight |> int_of_string_opt;
     BlockIndexPage(blockHeightIntOpt->Belt_Option.getWithDefault(0));
-  | (["request", reqID], "proof") => RequestIndexPage(reqID, RequestProof)
-  | (["request", reqID], _) => RequestIndexPage(reqID, RequestReportStatus)
+  | (["request", reqID], "proof") => RequestIndexPage(reqID |> int_of_string, RequestProof)
+  | (["request", reqID], _) => RequestIndexPage(reqID |> int_of_string, RequestReportStatus)
   | ([], "") => HomePage
   | (_, _) => NotFound
   };
