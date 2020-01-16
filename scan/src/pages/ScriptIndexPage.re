@@ -59,6 +59,13 @@ module Styles = {
 
 [@react.component]
 let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
+  let step = 10;
+  let (limit, setLimit) = React.useState(_ => step);
+  let scriptOpt = ScriptHook.getInfo(codeHash);
+  let (txs, totalCount) =
+    TxHook.withCodehash(~codeHash, ~limit, ~pollInterval=3000, ())
+    ->Belt.Option.mapWithDefault(([], 0), ({txs, totalCount}) => (txs, totalCount));
+
   <div className=Styles.pageContainer>
     <Row justify=Row.Between>
       <Col>
@@ -74,39 +81,69 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
           />
           <HSpacing size=Spacing.sm />
           <div className=Styles.seperatedLine />
-          <Text value="CREATED 96 DAYS AGO" />
+          {switch (scriptOpt) {
+           | Some(script) =>
+             <TimeAgos time={script.createdAtTime} size=Text.Lg weight=Text.Regular />
+           | None => React.null
+           }}
         </div>
       </Col>
       <Col>
-        <div className=Styles.codeVerifiedBadge>
-          <img src=Images.checkIcon className=Styles.checkLogo />
-          <Text value="Code Verified" size=Text.Lg weight=Text.Semibold color=Colors.darkGreen />
-        </div>
+        {switch (scriptOpt) {
+         | Some(_) =>
+           <div className=Styles.codeVerifiedBadge>
+             <img src=Images.checkIcon className=Styles.checkLogo />
+             <Text
+               value="Code Verified"
+               size=Text.Lg
+               weight=Text.Semibold
+               color=Colors.darkGreen
+             />
+           </div>
+         | None => React.null
+         }}
       </Col>
     </Row>
     <div className=Styles.sourceContainer>
-      <Text value="ETH/USD Median Price" size=Text.Xxl weight=Text.Bold nowrap=true />
+      <Text
+        value={
+          switch (scriptOpt) {
+          | Some(script) => script.info.name
+          | None => "?"
+          }
+        }
+        size=Text.Xxl
+        weight=Text.Bold
+        nowrap=true
+      />
     </div>
     <VSpacing size=Spacing.xl />
     <InfoHL
-      info={InfoHL.DataSources(["CoinMarketCap", "CryptoCompare", "Binance"])}
+      info={
+        InfoHL.DataSources(
+          scriptOpt->Belt_Option.mapWithDefault([], script =>
+            script.info.dataSources->Belt_List.map(source => source.name)
+          ),
+        )
+      }
       header="DATA SOURCES"
     />
     <VSpacing size=Spacing.xl />
     <Row>
       <Col>
-        <InfoHL
-          info={InfoHL.Hash("0x012030123901923912391293", Colors.brightPurple)}
-          header="SCRIPT HASH"
-        />
+        <InfoHL info={InfoHL.Hash(codeHash, Colors.brightPurple)} header="SCRIPT HASH" />
       </Col>
       <HSpacing size=Spacing.xl />
       <HSpacing size=Spacing.xl />
       <Col>
-        <InfoHL
-          info={InfoHL.Hash("0x92392392392939239293293923", Colors.brightPurple)}
-          header="CREATOR"
-        />
+        {switch (scriptOpt) {
+         | Some(script) =>
+           <InfoHL
+             info={InfoHL.Address(script.info.creator, Colors.brightPurple)}
+             header="CREATOR"
+           />
+         | None => React.null
+         }}
       </Col>
     </Row>
     <VSpacing size=Spacing.xl />
@@ -135,11 +172,19 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
       {switch (hashtag) {
        | ScriptTransactions =>
          <div className=Styles.tableLowerContainer>
-           <Text value="196 Request Transactions" color=Colors.grayHeader size=Text.Lg />
+           <Text
+             value={(totalCount |> Format.iPretty) ++ " Request Transactions"}
+             color=Colors.grayHeader
+             size=Text.Lg
+           />
            <VSpacing size=Spacing.lg />
-           <TxsTable txs=[] />
+           <TxsTable txs />
            <VSpacing size=Spacing.lg />
-           <LoadMore />
+           {if (txs->Belt_List.size < totalCount) {
+              <LoadMore onClick={_ => {setLimit(oldLimit => oldLimit + step)}} />;
+            } else {
+              React.null;
+            }}
          </div>
        | ScriptCode =>
          <div className=Styles.tableLowerContainer>

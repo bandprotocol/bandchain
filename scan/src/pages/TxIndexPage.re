@@ -46,7 +46,7 @@ module Styles = {
     style([
       width(`percent(100.)),
       height(`pxFloat(1.4)),
-      backgroundColor(`hex("EEEEEE")),
+      backgroundColor(Colors.lightGray),
       display(`flex),
     ]);
 };

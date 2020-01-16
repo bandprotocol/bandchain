@@ -36,10 +36,10 @@ module Featured = {
   open Css;
 
   [@react.component]
-  let make = (~insights, ~title, ~color, ~textColor) => {
-    <div className={Styles.featuredBox(color)}>
+  let make = (~insights, ~title, ~color, ~textColor, ~onClick) => {
+    <div className={Styles.featuredBox(color)} onClick>
       <div className={style([opacity(0.7)])}>
-        <Text value=insights size=Text.Sm color=textColor />
+        <Text value=insights size=Text.Sm color=textColor ellipsis=true block=true />
       </div>
       <div className={style([opacity(0.8)])}>
         <Text value=title size=Text.Xl weight=Text.Semibold color=textColor />
@@ -52,83 +52,74 @@ module Recent = {
   open Css;
 
   [@react.component]
-  let make = (~title, ~hash, ~createdAt) => {
-    <div className=Styles.recentBox>
+  let make = (~title, ~hash, ~createdAt, ~onClick) => {
+    <div className=Styles.recentBox onClick>
       <div className={style([paddingRight(Spacing.lg)])}>
         <Text value=title size=Text.Lg weight=Text.Semibold />
       </div>
       <VSpacing size=Spacing.md />
-      <Text block=true code=true value=hash color=Colors.pink />
+      <Text block=true code=true value={hash->Hash.toHex} color=Colors.pink ellipsis=true />
       <VSpacing size=Spacing.sm />
-      <Text block=true value=createdAt size=Text.Sm color=Colors.grayText />
+      <TimeAgos time=createdAt />
     </div>;
   };
 };
 
+let renderFeatured = (recentScripts, index, color, textColor) => {
+  let {ScriptHook.Script.info} =
+    recentScripts->Belt.List.getExn(index mod recentScripts->Belt.List.length);
+  <Featured
+    title={info.name}
+    insights={info.codeHash->Hash.toHex}
+    color
+    textColor
+    onClick={_ => Route.redirect(Route.ScriptIndexPage(info.codeHash, Route.ScriptTransactions))}
+  />;
+};
+
+let renderScript = (recentScripts, index) => {
+  let {ScriptHook.Script.info, createdAtTime} =
+    recentScripts->Belt.List.getExn(index mod recentScripts->Belt.List.length);
+  <Col>
+    <Recent
+      title={info.name}
+      hash={info.codeHash}
+      createdAt=createdAtTime
+      onClick={_ =>
+        Route.redirect(Route.ScriptIndexPage(info.codeHash, Route.ScriptTransactions))
+      }
+    />
+  </Col>;
+};
+
 [@react.component]
-let make = () => {
-  <Row>
-    <Col size=2.>
-      <Featured
-        title="Latest US stock indexes"
-        insights="2,384 queries today"
-        color=Colors.yellow
-        textColor={Css.hex("333333")}
-      />
-      <Featured
-        title="NFL Most Touchdown By Team"
-        insights="2,384 queries today"
-        color=Colors.orange
-        textColor=Css.white
-      />
-      <Featured
-        title="Premier League Scores at Half time"
-        insights="2,384 queries today"
-        color=Colors.pink
-        textColor=Css.white
-      />
-    </Col>
-    <HSpacing size=Spacing.xl />
-    <Col size=5.>
-      <Text value="Recent Data Scripts" size=Text.Xl weight=Text.Bold block=true />
-      <Row wrap=true alignItems=`initial>
-        <Col>
-          <Recent
-            title="Cryptocurrency Price Feed"
-            hash="0xe122543771888011"
-            createdAt="2 days ago"
-          />
+let make = () =>
+  {
+    let%Opt recentScripts = ScriptHook.getScriptList(~limit=9, ());
+
+    Some(
+      <Row>
+        <Col size=2.>
+          {renderFeatured(recentScripts, 0, Colors.yellow, Css.hex("333333"))}
+          {renderFeatured(recentScripts, 1, Colors.orange, Css.white)}
+          {renderFeatured(recentScripts, 2, Colors.pink, Css.white)}
         </Col>
-        <Col>
-          <Recent title="Powerball Lottery" hash="0xe122543771888011" createdAt="2 days ago" />
+        <HSpacing size=Spacing.xl />
+        <Col size=5. alignSelf=Col.FlexStart>
+          <Text value="Recent Data Scripts" size=Text.Xl weight=Text.Bold block=true />
+          <Row wrap=true alignItems=`flexStart>
+            {renderScript(recentScripts, 3)}
+            {renderScript(recentScripts, 4)}
+            {renderScript(recentScripts, 5)}
+            {renderScript(recentScripts, 6)}
+            {renderScript(recentScripts, 7)}
+            {renderScript(recentScripts, 8)}
+          </Row>
         </Col>
-        <Col>
-          <Recent title="Identity Verification" hash="0xe122543771888011" createdAt="2 days ago" />
-        </Col>
-        <Col>
-          <Recent
-            title="Cryptocurrency Price Feed"
-            hash="0xe122543771888011"
-            createdAt="2 days ago"
-          />
-        </Col>
-        <Col>
-          <Recent
-            title="Cryptocurrency Price Feed"
-            hash="0xe122543771888011"
-            createdAt="2 days ago"
-          />
-        </Col>
-        <Col>
-          <Recent
-            title="Cryptocurrency Price Feed"
-            hash="0xe122543771888011"
-            createdAt="2 days ago"
-          />
-        </Col>
-      </Row>
-    </Col>
-    <Col>
+      </Row>,
+    );
+  }
+  /*<Col>
       <Text block=true value="358" size=Text.Xxl weight=Text.Bold />
       <VSpacing size=Spacing.sm />
       <Text block=true value="DATA SCRIPTS" size=Text.Sm color=Colors.purple />
@@ -139,6 +130,5 @@ let make = () => {
       <Text block=true value="48" size=Text.Xxl weight=Text.Bold />
       <VSpacing size=Spacing.sm />
       <Text block=true value="DATA PROVIDERS" size=Text.Sm color=Colors.purple />
-    </Col>
-  </Row>;
-};
+    </Col>*/
+  ->Belt.Option.getWithDefault(React.null);

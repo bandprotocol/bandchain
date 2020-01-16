@@ -19,30 +19,34 @@ module Styles = {
     ]);
 };
 
-let renderBlock = (b: BlockHook.Block.t) =>
-  <div key={b.height |> string_of_int} className=Styles.block>
+let renderBlock = ((b, moniker): (BlockHook.Block.t, string)) =>
+  <div
+    key={b.height |> string_of_int}
+    className=Styles.block
+    onClick={_ => Route.redirect(BlockIndexPage(b.height))}>
     <Text value="# " color=Colors.pink weight=Text.Semibold size=Text.Lg />
     <Text value={b.height->Format.iPretty} weight=Text.Semibold size=Text.Lg />
     <VSpacing size=Spacing.md />
     <Text value="PROPOSED BY" block=true size=Text.Xs color=Colors.grayText />
     <VSpacing size=Spacing.xs />
-    <Text
-      block=true
-      value={b.proposer |> Address.toHex(~with0x=true)}
-      weight=Text.Semibold
-      ellipsis=true
-    />
+    <Text block=true value=moniker weight=Text.Semibold ellipsis=true />
   </div>;
 
 [@react.component]
 let make = () =>
   {
     let%Opt info = React.useContext(GlobalContext.context);
+    let blocks = info.latestBlocks;
+    let validators = info.validators;
+    let blocksWithMonikers =
+      blocks->Belt_List.map(block =>
+        (block, BlockHook.Block.getProposerMoniker(block, validators))
+      );
 
     Some(
       <Row alignItems=`initial>
         <Col>
-          {info.latestBlocks
+          {blocksWithMonikers
            ->Belt.List.keepWithIndex((_b, i) => i mod 2 == 0)
            ->Belt.List.map(renderBlock)
            ->Array.of_list
@@ -51,7 +55,7 @@ let make = () =>
         <HSpacing size=Spacing.sm />
         <Col>
           <VSpacing size=Spacing.xl />
-          {info.latestBlocks
+          {blocksWithMonikers
            ->Belt.List.keepWithIndex((_b, i) => i mod 2 == 1)
            ->Belt.List.map(renderBlock)
            ->Array.of_list

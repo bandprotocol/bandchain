@@ -52,8 +52,8 @@ let make = (~messages: list(TxHook.Msg.t)) => {
       </Row>
     </THead>
     {messages
-     ->Belt.List.map(msg => {
-         <TBody>
+     ->Belt.List.mapWithIndex((index, msg) => {
+         <TBody key={index |> string_of_int}>
            <Row>
              <Col size=0.3> <TElement elementType={msg->TElement.Icon} /> </Col>
              <Col size=0.5> <TElement elementType={msg->TElement.TxType} /> </Col>
