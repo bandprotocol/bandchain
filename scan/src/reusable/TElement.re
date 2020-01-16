@@ -1,7 +1,7 @@
 module Styles = {
   open Css;
 
-  let typeContainer = style([marginRight(`px(20)), maxWidth(`px(210))]);
+  let typeContainer = style([marginRight(`px(20)), maxWidth(`px(210)), width(`px(150))]);
 
   let txTypeOval = (textColor, bgColor) =>
     style([

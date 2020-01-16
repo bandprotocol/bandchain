@@ -20,6 +20,17 @@ module Event = {
 
   let decodeEvents = json =>
     List.flatten(JsonUtils.Decode.(json |> field("events", list(decodeEvent))));
+
+  let getValueOfKey = (events: list(t), key) => {
+    let hasEvent = events->Belt_List.some(event => event.key == key);
+    if (hasEvent) {
+      Some(
+        events->Belt_List.reduce(key, (result, event) => event.key == key ? event.value : result),
+      );
+    } else {
+      None;
+    };
+  };
 };
 
 module Coin = {
@@ -122,12 +133,6 @@ module Msg = {
     };
   };
 
-  let _getCodeName = (msg, prefix) =>
-    msg.events
-    ->Belt_List.reduce(prefix, (result, event) =>
-        event.key == prefix ++ ".code_name" ? event.value : result
-      );
-
   let getDescription = msg => {
     switch (msg.action) {
     | Send(send) =>
@@ -137,14 +142,22 @@ module Msg = {
           acc
           ++ des
           ++ {
-            i + 1 < send.amount->Belt_List.size ? "," : "";
+            i + 1 < send.amount->Belt_List.size ? ", " : "";
           }
         )
-      ++ "→"
+      ++ "->"
       ++ (send.toAddress |> Address.toBech32)
     | Store(store) => store.name
-    | Request(_) => _getCodeName(msg, "request")
-    | Report(_) => _getCodeName(msg, "report")
+    | Request(_) =>
+      switch (msg.events->Event.getValueOfKey("request.code_name")) {
+      | Some(value) => value
+      | None => "?"
+      }
+    | Report(_) =>
+      switch (msg.events->Event.getValueOfKey("report.code_name")) {
+      | Some(value) => value
+      | None => "?"
+      }
     | Unknown => "Unknown"
     };
   };

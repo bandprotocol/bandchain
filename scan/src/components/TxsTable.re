@@ -9,7 +9,7 @@ let make = (~txs: list(TxHook.Tx.t)) => {
     <THead>
       <Row>
         <Col> <div className=TElement.Styles.msgIcon /> </Col>
-        <Col size=1.0>
+        <Col size=0.8>
           <div className=TElement.Styles.hashContainer>
             <Text block=true value="TX HASH" size=Text.Sm weight=Text.Bold color=Colors.grayText />
           </div>
@@ -20,7 +20,7 @@ let make = (~txs: list(TxHook.Tx.t)) => {
         <Col size=0.2>
           <Text block=true value="BLOCK" size=Text.Sm weight=Text.Bold color=Colors.grayText />
         </Col>
-        <Col size=1.1>
+        <Col size=0.8>
           <Text block=true value="SENDER" size=Text.Sm weight=Text.Bold color=Colors.grayText />
         </Col>
         <Col size=0.3>
@@ -39,14 +39,14 @@ let make = (~txs: list(TxHook.Tx.t)) => {
                <Col>
                  <TElement elementType={messages->Belt.List.getExn(0)->TElement.Icon} />
                </Col>
-               <Col size=1.0> <TElement elementType={TElement.TxHash(hash, timestamp)} /> </Col>
+               <Col size=0.8> <TElement elementType={TElement.TxHash(hash, timestamp)} /> </Col>
                <Col size=0.5>
                  <TElement
                    elementType={messages->Belt.List.getExn(0)->TElement.TxTypeWithDetail}
                  />
                </Col>
                <Col size=0.2> <TElement elementType={TElement.Height(blockHeight)} /> </Col>
-               <Col size=1.1> <TElement elementType={sender->TElement.Address} /> </Col>
+               <Col size=0.8> <TElement elementType={sender->TElement.Address} /> </Col>
                <Col size=0.3> <TElement elementType={0.->TElement.Fee} /> </Col>
              </Row>
            </div>
