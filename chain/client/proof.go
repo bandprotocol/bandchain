@@ -175,10 +175,14 @@ func (signature *TMSignature) encodeToEthFormat() TMSignatureEthereum {
 }
 
 type Proof struct {
+	JsonProof     JsonProof    `json:"jsonProof"`
+	EVMProofBytes cmn.HexBytes `json:"evmProofBytes"`
+}
+
+type JsonProof struct {
 	BlockHeight     uint64          `json:"blockHeight"`
 	OracleDataProof OracleDataProof `json:"oracleDataProof"`
 	BlockRelayProof BlockRelayProof `json:"blockRelayProof"`
-	ProofBytes      cmn.HexBytes    `json:"proofBytes"`
 }
 
 func cdcEncode(cdc *codec.Codec, item interface{}) []byte {
@@ -538,16 +542,17 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 		}
 
-		proofBytes, err := relayAndVerifyArguments.Pack(blockRelayBytes, oracleDataBytes)
+		evmProofBytes, err := relayAndVerifyArguments.Pack(blockRelayBytes, oracleDataBytes)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 		}
 
 		rest.PostProcessResponse(w, cliCtx, Proof{
-			BlockHeight:     height,
-			OracleDataProof: odp,
-			BlockRelayProof: brp,
-			ProofBytes:      proofBytes,
+			JsonProof: JsonProof{
+				BlockHeight:     height,
+				OracleDataProof: odp,
+				BlockRelayProof: brp},
+			EVMProofBytes: evmProofBytes,
 		})
 	}
 }
