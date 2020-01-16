@@ -18,13 +18,13 @@ module ScriptInfo = {
     creator: Address.t,
   };
 
-  let decode = (infoKey, json) =>
+  let decode = json =>
     JsonUtils.Decode.{
-      name: json |> at([infoKey, "name"], string),
-      codeHash: json |> at([infoKey, "codeHash"], string) |> Hash.fromBase64,
-      params: json |> at([infoKey, "params"], list(decodeField)),
-      dataSources: json |> at([infoKey, "dataSources"], list(decodeField)),
-      creator: json |> at([infoKey, "creator"], string) |> Address.fromBech32,
+      name: json |> at(["name"], string),
+      codeHash: json |> at(["codeHash"], string) |> Hash.fromBase64,
+      params: json |> at(["params"], list(decodeField)),
+      dataSources: json |> at(["dataSources"], list(decodeField)),
+      creator: json |> at(["creator"], string) |> Address.fromBech32,
     };
 };
 
@@ -38,7 +38,7 @@ module Script = {
 
   let decodeResultScript = json =>
     JsonUtils.Decode.{
-      info: json |> ScriptInfo.decode("info"),
+      info: json |> field("info", ScriptInfo.decode),
       txHash: json |> field("txhash", string) |> Hash.fromHex,
       createdAtHeight: json |> field("createdAtHeight", intstr),
       createdAtTime: json |> field("createdAtTime", moment),
