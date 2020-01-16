@@ -66,29 +66,27 @@ module Recent = {
 };
 
 let renderFeatured = (recentScripts, index, color, textColor) => {
-  let {ScriptHook.Script.info, txHash} =
+  let {ScriptHook.Script.info} =
     recentScripts->Belt.List.getExn(index mod recentScripts->Belt.List.length);
   <Featured
     title={info.name}
-    insights={txHash->Hash.toHex}
+    insights={info.codeHash->Hash.toHex}
     color
     textColor
-    onClick={_ =>
-      Route.redirect(Route.ScriptIndexPage(txHash, Route.ScriptTransactions))
-    }
+    onClick={_ => Route.redirect(Route.ScriptIndexPage(info.codeHash, Route.ScriptTransactions))}
   />;
 };
 
 let renderScript = (recentScripts, index) => {
-  let {ScriptHook.Script.info, txHash, createdAtTime} =
+  let {ScriptHook.Script.info, createdAtTime} =
     recentScripts->Belt.List.getExn(index mod recentScripts->Belt.List.length);
   <Col>
     <Recent
       title={info.name}
-      hash=txHash
+      hash={info.codeHash}
       createdAt=createdAtTime
       onClick={_ =>
-        Route.redirect(Route.ScriptIndexPage(txHash, Route.ScriptTransactions))
+        Route.redirect(Route.ScriptIndexPage(info.codeHash, Route.ScriptTransactions))
       }
     />
   </Col>;
