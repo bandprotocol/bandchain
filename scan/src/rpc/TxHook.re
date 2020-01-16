@@ -21,16 +21,10 @@ module Event = {
   let decodeEvents = json =>
     List.flatten(JsonUtils.Decode.(json |> field("events", list(decodeEvent))));
 
-  let getValueOfKey = (events: list(t), key) => {
-    let hasEvent = events->Belt_List.some(event => event.key == key);
-    if (hasEvent) {
-      Some(
-        events->Belt_List.reduce(key, (result, event) => event.key == key ? event.value : result),
-      );
-    } else {
-      None;
-    };
-  };
+  let getValueOfKey = (events: list(t), key) =>
+    events
+    ->Belt.List.keepMap(event => event.key == key ? Some(event.value) : None)
+    ->Belt.List.get(0);
 };
 
 module Coin = {
