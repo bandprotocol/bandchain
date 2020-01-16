@@ -21,6 +21,10 @@ module Styles = {
 
 [@react.component]
 let make = () => {
+  let scriptsOpt = ScriptHook.getScriptList(~limit=100000, ~pollInterval=3000, ());
+  let scripts = scriptsOpt->Belt.Option.getWithDefault([]);
+  let totalScript = scripts->Belt.List.length->string_of_int;
+
   <div className=Styles.pageContainer>
     <Row>
       <Col>
@@ -33,7 +37,7 @@ let make = () => {
             color=Colors.grayHeader
           />
           <div className=Styles.seperatedLine />
-          <Text value="30 in total" />
+          <Text value={j|$totalScript in total|j} />
         </div>
       </Col>
     </Row>
@@ -80,45 +84,29 @@ let make = () => {
         </Col>
       </Row>
     </THead>
-    {[
-       (
-         "ETH/USD Price Feed",
-         "0x1923182381238123812383" |> Hash.fromHex,
-         MomentRe.momentWithUnix(1578661269),
-         "0x238283328823823823" |> Address.fromHex,
-         0,
-       ),
-       (
-         "ETH/BTC Price Feed",
-         "0x1923182381238123812383" |> Hash.fromHex,
-         MomentRe.momentWithUnix(1578661269),
-         "0x238283328823823823" |> Address.fromHex,
-         0,
-       ),
-       (
-         "ETH/USD Price Feed",
-         "0x1923182381238123812383" |> Hash.fromHex,
-         MomentRe.momentWithUnix(1578661269),
-         "0x238283328823823823" |> Address.fromHex,
-         0,
-       ),
-     ]
-     ->Belt.List.mapWithIndex((idx, (name, scriptHash, timestamp, creator, fee)) => {
-         <TBody key={idx |> string_of_int}>
-           <Row>
-             <Col> <HSpacing size=Spacing.xl /> </Col>
-             <Col size=1.1> <TElement elementType={name->TElement.Name} /> </Col>
-             <Col size=1.1> <TElement elementType={scriptHash->TElement.Hash} /> </Col>
-             <Col size=0.65> <TElement elementType={timestamp->TElement.Timestamp} /> </Col>
-             <Col size=1.1> <TElement elementType={creator->TElement.Address} /> </Col>
-             <Col size=0.5> <TElement elementType={0.->TElement.Fee} /> </Col>
-           </Row>
-         </TBody>
+    {scripts
+     ->Belt.List.map(({info, txHash, createdAtTime}) => {
+         <div
+           onClick={_ =>
+             Route.redirect(
+               Route.ScriptIndexPage(info.codeHash, Route.ScriptTransactions),
+             )
+           }>
+           <TBody key={txHash |> Hash.toHex}>
+             <Row>
+               <Col> <HSpacing size=Spacing.xl /> </Col>
+               <Col size=1.1> <TElement elementType={info.name->TElement.Name} /> </Col>
+               <Col size=1.1> <TElement elementType={info.codeHash->TElement.Hash} /> </Col>
+               <Col size=0.65> <TElement elementType={createdAtTime->TElement.Timestamp} /> </Col>
+               <Col size=1.1> <TElement elementType={info.creator->TElement.Address} /> </Col>
+               <Col size=0.5> <TElement elementType={0.->TElement.Fee} /> </Col>
+             </Row>
+           </TBody>
+         </div>
        })
      ->Array.of_list
      ->React.array}
     <VSpacing size=Spacing.lg />
-    <LoadMore />
     <VSpacing size=Spacing.xl />
     <VSpacing size=Spacing.xl />
   </div>;
