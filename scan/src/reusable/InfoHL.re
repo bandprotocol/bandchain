@@ -5,7 +5,8 @@ type t =
   | Timestamp(MomentRe.Moment.t)
   | Fee(float)
   | DataSources(list(string))
-  | Hash(string, Css.Types.Color.t);
+  | Hash(Hash.t, Css.Types.Color.t)
+  | Address(Address.t, Css.Types.Color.t);
 
 module Styles = {
   open Css;
@@ -43,7 +44,7 @@ let make = (~info, ~header) => {
        <div className=Styles.vFlex>
          {sources
           ->Belt.List.map(source =>
-              <div className=Styles.sourceContainer>
+              <div key=source className=Styles.sourceContainer>
                 <img src=Images.source className=Styles.sourceIcon />
                 <Text value=source weight=Text.Bold size=Text.Lg />
               </div>
@@ -52,7 +53,19 @@ let make = (~info, ~header) => {
           ->React.array}
        </div>
      | Hash(hash, textColor) =>
-       <Text value=hash size=Text.Lg weight=Text.Semibold color=textColor />
+       <Text
+         value={hash |> Hash.toHex(~with0x=true)}
+         size=Text.Lg
+         weight=Text.Semibold
+         color=textColor
+       />
+     | Address(address, textColor) =>
+       <Text
+         value={address |> Address.toBech32}
+         size=Text.Lg
+         weight=Text.Semibold
+         color=textColor
+       />
      }}
   </div>;
 };

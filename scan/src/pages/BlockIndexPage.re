@@ -83,10 +83,10 @@ let make = (~height: int) => {
       <Col size=4.>
         <InfoHL
           info={
-            InfoHL.Hash(
+            InfoHL.Address(
               switch (blockOpt) {
-              | Some(block) => block.proposer |> Address.toOperatorBech32
-              | None => "?"
+              | Some(block) => block.proposer
+              | None => "" |> Address.fromHex
               },
               Colors.grayHeader,
             )

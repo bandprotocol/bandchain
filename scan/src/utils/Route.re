@@ -11,7 +11,7 @@ type t =
   | NotFound
   | HomePage
   | ScriptHomePage
-  | ScriptIndexPage(string, script_tab_t)
+  | ScriptIndexPage(Hash.t, script_tab_t)
   | TxHomePage
   | TxIndexPage(Hash.t)
   | BlockHomePage
@@ -21,9 +21,10 @@ type t =
 let fromUrl = (url: ReasonReactRouter.url) =>
   switch (url.path, url.hash) {
   | (["scripts"], _) => ScriptHomePage
-  | (["script", codeHash], "code") => ScriptIndexPage(codeHash, ScriptCode)
-  | (["script", codeHash], "integration") => ScriptIndexPage(codeHash, ScriptIntegration)
-  | (["script", codeHash], _) => ScriptIndexPage(codeHash, ScriptTransactions)
+  | (["script", codeHash], "code") => ScriptIndexPage(codeHash |> Hash.fromHex, ScriptCode)
+  | (["script", codeHash], "integration") =>
+    ScriptIndexPage(codeHash |> Hash.fromHex, ScriptIntegration)
+  | (["script", codeHash], _) => ScriptIndexPage(codeHash |> Hash.fromHex, ScriptTransactions)
   | (["txs"], _) => TxHomePage
   | (["tx", txHash], _) => TxIndexPage(Hash.fromHex(txHash))
   | (["blocks"], _) => BlockHomePage
