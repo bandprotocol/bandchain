@@ -100,7 +100,10 @@ let make = () => {
 
   let blocksWithMonikers =
     blocks
-    ->Belt_List.map(__x => BlockHook.Block.getProposerMoniker(__x, validators))
+    ->Belt_List.map(block => {
+        Js.Console.log2(block, validators |> Belt_List.toArray);
+        BlockHook.Block.getProposerMoniker(block, validators);
+      })
     ->Belt_List.zip(blocks, _);
 
   <div className=Styles.pageContainer>

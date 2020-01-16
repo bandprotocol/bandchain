@@ -24,8 +24,9 @@ module Block = {
   let getProposerMoniker = (block: t, validators: list(ValidatorHook.Validator.t)) =>
     validators
     ->Belt_List.keepMap(validator =>
-        validator.operatorAddress
-        |> Address.toOperatorBech32 == (block.proposer |> Address.toOperatorBech32)
+        validator.consensusPubkey
+        |> PubKey.toAddress
+        |> Address.toHex == (block.proposer |> Address.toHex)
           ? Some(validator.moniker) : None
       )
     ->Belt_List.get(0)
