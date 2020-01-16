@@ -36,8 +36,8 @@ module Featured = {
   open Css;
 
   [@react.component]
-  let make = (~insights, ~title, ~color, ~textColor) => {
-    <div className={Styles.featuredBox(color)}>
+  let make = (~insights, ~title, ~color, ~textColor, ~onClick) => {
+    <div className={Styles.featuredBox(color)} onClick>
       <div className={style([opacity(0.7)])}>
         <Text value=insights size=Text.Sm color=textColor ellipsis=true block=true />
       </div>
@@ -52,8 +52,8 @@ module Recent = {
   open Css;
 
   [@react.component]
-  let make = (~title, ~hash, ~createdAt) => {
-    <div className=Styles.recentBox>
+  let make = (~title, ~hash, ~createdAt, ~onClick) => {
+    <div className=Styles.recentBox onClick>
       <div className={style([paddingRight(Spacing.lg)])}>
         <Text value=title size=Text.Lg weight=Text.Semibold />
       </div>
@@ -68,13 +68,30 @@ module Recent = {
 let renderFeatured = (recentScripts, index, color, textColor) => {
   let {ScriptHook.Script.info, txHash} =
     recentScripts->Belt.List.getExn(index mod recentScripts->Belt.List.length);
-  <Featured title={info.name} insights={txHash->Hash.toHex} color textColor />;
+  <Featured
+    title={info.name}
+    insights={txHash->Hash.toHex}
+    color
+    textColor
+    onClick={_ =>
+      Route.redirect(Route.ScriptIndexPage(txHash |> Hash.toHex, Route.ScriptTransactions))
+    }
+  />;
 };
 
 let renderScript = (recentScripts, index) => {
   let {ScriptHook.Script.info, txHash, createdAtTime} =
     recentScripts->Belt.List.getExn(index mod recentScripts->Belt.List.length);
-  <Col> <Recent title={info.name} hash=txHash createdAt=createdAtTime /> </Col>;
+  <Col>
+    <Recent
+      title={info.name}
+      hash=txHash
+      createdAt=createdAtTime
+      onClick={_ =>
+        Route.redirect(Route.ScriptIndexPage(txHash |> Hash.toHex, Route.ScriptTransactions))
+      }
+    />
+  </Col>;
 };
 
 [@react.component]
