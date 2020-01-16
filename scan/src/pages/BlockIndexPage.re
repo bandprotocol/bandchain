@@ -102,7 +102,7 @@ let make = (~height: int) => {
       </Col>
     </Row>
     {switch (blockOpt, txsOpt) {
-     | (Some(_), Some(txs)) =>
+     | (Some(_), Some({txs})) =>
        switch (txs->Belt_List.size) {
        | 0 => <VSpacing size={`px(280)} />
        | _ =>

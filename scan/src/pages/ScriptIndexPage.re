@@ -59,15 +59,13 @@ module Styles = {
 
 [@react.component]
 let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
+  let step = 10;
+  let (limit, setLimit) = React.useState(_ => step);
   let scriptOpt = ScriptHook.getInfo(codeHash);
-  // let txHash = {
-  //   switch (scriptOpt) {
-  //   | Some(script) => script.txHash
-  //   | None => "" |> Hash.fromHex
-  //   };
-  // };
-  // let txOpt = TxHook.atHash(txHash);
-  // Js.Console.log(txOpt);
+  let (txs, totalCount) =
+    TxHook.withCodehash(~codeHash, ~limit, ~pollInterval=3000, ())
+    ->Belt.Option.mapWithDefault(([], 0), ({txs, totalCount}) => (txs, totalCount));
+
   <div className=Styles.pageContainer>
     <Row justify=Row.Between>
       <Col>
@@ -174,11 +172,19 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
       {switch (hashtag) {
        | ScriptTransactions =>
          <div className=Styles.tableLowerContainer>
-           <Text value="196 Request Transactions" color=Colors.grayHeader size=Text.Lg />
+           <Text
+             value={(totalCount |> Format.iPretty) ++ " Request Transactions"}
+             color=Colors.grayHeader
+             size=Text.Lg
+           />
            <VSpacing size=Spacing.lg />
-           <TxsTable txs=[] />
+           <TxsTable txs />
            <VSpacing size=Spacing.lg />
-           <LoadMore />
+           {if (txs->Belt_List.size < totalCount) {
+              <LoadMore onClick={_ => {setLimit(oldLimit => oldLimit + step)}} />;
+            } else {
+              React.null;
+            }}
          </div>
        | ScriptCode =>
          <div className=Styles.tableLowerContainer>
