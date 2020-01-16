@@ -83,10 +83,10 @@ let make = (~height: int) => {
       <Col size=4.>
         <InfoHL
           info={
-            InfoHL.Hash(
+            InfoHL.Address(
               switch (blockOpt) {
-              | Some(block) => block.proposer |> Address.toOperatorBech32
-              | None => "?"
+              | Some(block) => block.proposer
+              | None => "" |> Address.fromHex
               },
               Colors.grayHeader,
             )
@@ -102,7 +102,7 @@ let make = (~height: int) => {
       </Col>
     </Row>
     {switch (blockOpt, txsOpt) {
-     | (Some(_), Some(txs)) =>
+     | (Some(_), Some({txs})) =>
        switch (txs->Belt_List.size) {
        | 0 => <VSpacing size={`px(280)} />
        | _ =>

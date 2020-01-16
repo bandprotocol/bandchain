@@ -67,9 +67,9 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) =>
     let%Opt info = infoOpt;
 
     let scriptName = request.info.name;
-    let scriptHash = request.info.codeHash |> Hash.toHex;
+    let scriptHash = request.info.codeHash;
     let dataSources = request.info.dataSources->Belt.List.map(source => source.name);
-    let creator = request.info.creator |> Address.toBech32;
+    let creator = request.info.creator;
     let targetBlock = request.targetBlock;
     let params = request.params;
     let reports = request.reports;
@@ -115,7 +115,7 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) =>
           <HSpacing size=Spacing.xl />
           <HSpacing size=Spacing.xl />
           <Col>
-            <InfoHL info={InfoHL.Hash(creator, Colors.brightPurple)} header="CREATOR" />
+            <InfoHL info={InfoHL.Address(creator, Colors.brightPurple)} header="CREATOR" />
           </Col>
         </Row>
         <VSpacing size=Spacing.xl />
