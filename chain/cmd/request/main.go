@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"encoding/hex"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/bandprotocol/d3n/chain/cmtx"
@@ -19,11 +18,13 @@ func main() {
 	// Get environment variable
 	privS, ok := os.LookupEnv("PRIVATE_KEY")
 	if !ok {
-		log.Fatal("Missing private key")
+		// Default private key is eedda7a96ad35758f2ffc404d6ccd7be913f149a530c70e95e2e3ee7a952a877
+		privS = "eedda7a96ad35758f2ffc404d6ccd7be913f149a530c70e95e2e3ee7a952a877"
 	}
 	nodeURI, ok := os.LookupEnv("NODE_URI")
 	if !ok {
-		log.Fatal("Missing node uri")
+		// Default node uri is tcp://localhost:26657
+		nodeURI = "tcp://localhost:26657"
 	}
 	viper.Set("nodeURI", nodeURI)
 

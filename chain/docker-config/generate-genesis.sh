@@ -36,13 +36,18 @@ expect $DIR/add-account.exp \
     12345678 \
     "unfair beyond material banner okay genre camera dumb grit balcony permit room intact code degree execute twin flip half salt script cause demand recipe" \
 
+expect $DIR/add-account.exp \
+    requester \
+    12345678 \
+    "smile stem oven genius cave resource better lunar nasty moon company ridge brass rather supply used horn three panic put venue analyst leader comic" \
+
 # add accounts to genesis
 bandd add-genesis-account $(bandcli keys show validator1 -a) 10000000000000uband
 bandd add-genesis-account $(bandcli keys show validator2 -a) 10000000000000uband
 bandd add-genesis-account $(bandcli keys show validator3 -a) 10000000000000uband
 bandd add-genesis-account $(bandcli keys show validator4 -a) 10000000000000uband
 
-bandd add-genesis-account band17geerdwmlxpwxlahmt02vj4wy89wfstjhn085z 10000000000000uband
+bandd add-genesis-account $(bandcli keys show requester -a) 10000000000000uband
 
 # genesis configurations
 bandcli config chain-id bandchain
