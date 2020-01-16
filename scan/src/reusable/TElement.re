@@ -54,14 +54,20 @@ let renderText = text =>
     <Text value=text size=Text.Lg weight=Text.Semibold block=true ellipsis=true />
   </div>;
 
-let renderTxTypeWithDetail = txType => {
-  let (typeName, textColor, bgColor) = txTypeMapping(txType);
+let renderTxTypeWithDetail = (msg: TxHook.Msg.t) => {
+  let (typeName, textColor, bgColor) = txTypeMapping(msg.action);
   <div className=Styles.typeContainer>
     <div className={Styles.txTypeOval(textColor, bgColor)}>
       <Text value=typeName size=Text.Xs block=true />
     </div>
     <VSpacing size=Spacing.xs />
-    <Text value="ETH/USD Price Feed" size=Text.Lg weight=Text.Semibold block=true ellipsis=true />
+    <Text
+      value={msg->TxHook.Msg.getDescription}
+      size=Text.Lg
+      weight=Text.Semibold
+      block=true
+      ellipsis=true
+    />
   </div>;
 };
 
@@ -168,7 +174,7 @@ let make = (~elementType) => {
   | Name(name) => renderName(name)
   | Timestamp(time) => renderTime(time)
   | TxHash(hash, timestamp) => renderTxHash(hash, timestamp)
-  | TxTypeWithDetail({action, _}) => renderTxTypeWithDetail(action)
+  | TxTypeWithDetail(msg) => renderTxTypeWithDetail(msg)
   | TxType({action, _}) => renderTxType(action)
   | Detail(detail) => renderText(detail)
   | Status(status) => renderText(status)
