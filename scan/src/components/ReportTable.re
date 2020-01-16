@@ -37,7 +37,7 @@ let make = (~reports: list(RequestHook.Report.t)) => {
          <TBody key={txHash |> Hash.toHex} height=100>
            <Row alignItems=Css.flexStart>
              <Col> <div className=Styles.txhash /> </Col>
-             <Col size=1.0> <TElement elementType={txHash->TElement.Hash} /> </Col>
+             <Col size=1.0> <TElement elementType={txHash->TElement.HashWithLink} /> </Col>
              <Col size=0.35> <TElement elementType={reportedAtHeight->TElement.Height} /> </Col>
              <Col size=0.4> <TElement elementType={reportedAtTime->TElement.Timestamp} /> </Col>
              <Col size=1.0>
