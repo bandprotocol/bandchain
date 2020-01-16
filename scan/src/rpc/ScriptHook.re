@@ -1,4 +1,4 @@
-module Script = {
+module ScriptInfo = {
   type field_t = {
     name: string,
     dataType: string,
@@ -16,6 +16,21 @@ module Script = {
     params: list(field_t),
     dataSources: list(field_t),
     creator: Address.t,
+  };
+
+  let decode = (infoKey, json) =>
+    JsonUtils.Decode.{
+      name: json |> at([infoKey, "name"], string),
+      codeHash: json |> at([infoKey, "codeHash"], string) |> Hash.fromBase64,
+      params: json |> at([infoKey, "params"], list(decodeField)),
+      dataSources: json |> at([infoKey, "dataSources"], list(decodeField)),
+      creator: json |> at([infoKey, "creator"], string) |> Address.fromBech32,
+    };
+};
+
+module Script = {
+  type t = {
+    info: ScriptInfo.t,
     txHash: Hash.t,
     createdAtHeight: int,
     createdAtTime: MomentRe.Moment.t,
@@ -23,11 +38,7 @@ module Script = {
 
   let decodeResultScript = json =>
     JsonUtils.Decode.{
-      name: json |> at(["info", "name"], string),
-      codeHash: json |> at(["info", "codeHash"], string) |> Hash.fromBase64,
-      params: json |> at(["info", "params"], list(decodeField)),
-      dataSources: json |> at(["info", "dataSources"], list(decodeField)),
-      creator: json |> at(["info", "creator"], string) |> Address.fromBech32,
+      info: json |> ScriptInfo.decode("info"),
       txHash: json |> field("txhash", string) |> Hash.fromHex,
       createdAtHeight: json |> field("createdAtHeight", intstr),
       createdAtTime: json |> field("createdAtTime", moment),

@@ -181,7 +181,7 @@ type t =
   | HashWithLink(Hash.t)
   | Address(Address.t)
   | Source(string)
-  | Value(string);
+  | Value(float);
 
 [@react.component]
 let make = (~elementType) => {
@@ -200,6 +200,6 @@ let make = (~elementType) => {
   | HashWithLink(hash) => renderHashWithLink(hash)
   | Address(address) => renderAddress(address)
   | Source(source) => renderText(source, Text.Regular)
-  | Value(value) => renderText(value, Text.Regular)
+  | Value(value) => renderText(value->Format.fPretty, Text.Regular)
   };
 };

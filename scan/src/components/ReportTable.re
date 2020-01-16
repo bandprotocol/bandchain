@@ -5,56 +5,7 @@ module Styles = {
 };
 
 [@react.component]
-let make = () => {
-  let txs: list(TxHook.Tx.t) = [
-    {
-      sender: "0x498968C2B945Ac37b78414f66167b0786E522636" |> Address.fromHex,
-      blockHeight: 120339,
-      hash: "0x103020321239012391012300" |> Hash.fromHex,
-      timestamp: MomentRe.momentWithUnix(1293912392),
-      gasWanted: 0,
-      gasUsed: 0,
-      messages: [
-        Report({
-          requestId: 2,
-          data: "0x88123812388231823180" |> JsBuffer.fromHex,
-          validator: "0x9139329932193293192130" |> Address.fromHex,
-        }),
-      ],
-      events: [],
-    },
-    {
-      sender: "0x498968C2B945Ac37b78414f66167b0786E522636" |> Address.fromHex,
-      blockHeight: 120338,
-      hash: "0x123912912391239213921390" |> Hash.fromHex,
-      timestamp: MomentRe.momentWithUnix(1293912392),
-      gasWanted: 0,
-      gasUsed: 0,
-      messages: [
-        Send({
-          fromAddress: "0x923239239923923923" |> Address.fromHex,
-          toAddress: "0x233262363262363263" |> Address.fromHex,
-          amount: [{denom: "BAND", amount: 12.4}, {denom: "UATOM", amount: 10000.3}],
-        }),
-      ],
-      events: [],
-    },
-    {
-      sender: "0x498968C2B945Ac37b78414f66167b0786E522636" |> Address.fromHex,
-      blockHeight: 120337,
-      hash: "0x123912912391239213921390" |> Hash.fromHex,
-      timestamp: MomentRe.momentWithUnix(1293912392),
-      gasWanted: 0,
-      gasUsed: 0,
-      messages: [
-        Store({
-          code: "0x19239129123912932190" |> JsBuffer.fromHex,
-          owner: "0x949494949499494949494" |> Address.fromHex,
-        }),
-      ],
-      events: [],
-    },
-  ];
+let make = (~reports: list(RequestHook.Report.t)) => {
   <>
     <THead>
       <Row>
@@ -81,39 +32,37 @@ let make = () => {
         </Col>
       </Row>
     </THead>
-    {txs
-     ->Belt.List.mapWithIndex((idx, {blockHeight, hash, timestamp, gasUsed, messages}) => {
-         <TBody key={idx |> string_of_int} height=100>
+    {reports
+     ->Belt.List.map(({reporter, txHash, reportedAtHeight, reportedAtTime, values}) => {
+         <TBody key={txHash |> Hash.toHex} height=100>
            <Row alignItems=Css.flexStart>
              <Col> <div className=Styles.txhash /> </Col>
-             <Col size=1.0> <TElement elementType={hash->TElement.HashWithLink} /> </Col>
-             <Col size=0.35> <TElement elementType={TElement.Height(blockHeight)} /> </Col>
-             <Col size=0.4> <TElement elementType={timestamp->TElement.Timestamp} /> </Col>
+             <Col size=1.0> <TElement elementType={txHash->TElement.Hash} /> </Col>
+             <Col size=0.35> <TElement elementType={reportedAtHeight->TElement.Height} /> </Col>
+             <Col size=0.4> <TElement elementType={reportedAtTime->TElement.Timestamp} /> </Col>
              <Col size=1.0>
-               <TElement elementType={hash->TElement.Hash} />
+               <TElement elementType={reporter->TElement.Address} />
                <VSpacing size=Spacing.sm />
                <TElement elementType={"(CoinGecko DataProvider)"->TElement.Source} />
              </Col>
              <Col size=0.6>
-               {["CoinMarketCap", "CryptoCompare", "Binance"]
-                ->Belt.List.map(source =>
+               {values
+                ->Belt.Array.map(((source, _)) =>
                     <>
                       <TElement elementType={source->TElement.Source} />
                       <VSpacing size=Spacing.sm />
                     </>
                   )
-                ->Array.of_list
                 ->React.array}
              </Col>
              <Col size=0.9>
-               {["0x0000008332", "0x0000008332", "0x0000008332"]
-                ->Belt.List.map(source =>
+               {values
+                ->Belt.Array.map(((_, value)) =>
                     <>
-                      <TElement elementType={source->TElement.Value} />
+                      <TElement elementType={value->TElement.Value} />
                       <VSpacing size=Spacing.sm />
                     </>
                   )
-                ->Array.of_list
                 ->React.array}
              </Col>
            </Row>

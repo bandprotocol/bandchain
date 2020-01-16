@@ -1,0 +1,56 @@
+module Report = {
+  type t = {
+    reporter: Address.t,
+    txHash: Hash.t,
+    reportedAtHeight: int,
+    reportedAtTime: MomentRe.Moment.t,
+    values: array((string, float)),
+  };
+
+  let decode = json =>
+    JsonUtils.Decode.{
+      reporter: json |> at(["reporter"], string) |> Address.fromBech32,
+      txHash: json |> at(["txhash"], string) |> Hash.fromHex,
+      reportedAtHeight: json |> at(["reportedAtHeight"], intstr),
+      reportedAtTime: json |> at(["reportedAtTime"], moment),
+      values: json |> at(["value"], dict(JsonUtils.Decode.float)) |> Js.Dict.entries,
+    };
+
+  let decodeReports = json => JsonUtils.Decode.(json |> field("reports", list(decode)));
+};
+
+module Request = {
+  type t = {
+    info: ScriptHook.ScriptInfo.t,
+    codeHash: Hash.t,
+    params: array((string, string)),
+    targetBlock: int,
+    requester: Address.t,
+    txHash: Hash.t,
+    requestedAtHeight: int,
+    requestedAtTime: MomentRe.Moment.t,
+    reports: list(Report.t),
+    result: option(string),
+  };
+
+  let decodeResult = json =>
+    JsonUtils.Decode.{
+      info: json |> ScriptHook.ScriptInfo.decode("scriptInfo"),
+      codeHash: json |> at(["codeHash"], string) |> Hash.fromHex,
+      params: json |> at(["params"], dict(JsonUtils.Decode.string)) |> Js.Dict.entries,
+      targetBlock: json |> at(["targetBlock"], intstr),
+      requester: json |> at(["requester"], string) |> Address.fromHex,
+      txHash: json |> at(["txhash"], string) |> Hash.fromHex,
+      requestedAtHeight: json |> at(["requestedAtHeight"], intstr),
+      requestedAtTime: json |> at(["requestedAtTime"], moment),
+      reports: json |> Report.decodeReports,
+      result: json |> at(["result"], JsonUtils.Decode.optional(string)),
+    };
+
+  let decode = json => JsonUtils.Decode.(json |> field("result", decodeResult));
+};
+
+let getRequest = (reqID, ~pollInterval=?, ()) => {
+  let json = Axios.use({j|zoracle/request/$reqID|j}, ~pollInterval?, ());
+  json |> Belt.Option.map(_, Request.decode);
+};
