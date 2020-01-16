@@ -43,8 +43,7 @@ let make = (~reports: list(RequestHook.Report.t)) => {
          let moniker =
            validators
            ->Belt_List.keepMap(validator =>
-               validator.operatorAddress |> Address.toHex == (reporter |> Address.toHex)
-                 ? Some(validator.moniker) : None
+               validator.operatorAddress == reporter ? Some(validator.moniker) : None
              )
            ->Belt_List.get(0)
            ->Belt_Option.getWithDefault("Unknown");
