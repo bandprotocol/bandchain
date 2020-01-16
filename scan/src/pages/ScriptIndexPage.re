@@ -110,7 +110,7 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
       <Text
         value={
           switch (scriptOpt) {
-          | Some(script) => script.name
+          | Some(script) => script.info.name
           | None => "?"
           }
         }
@@ -124,7 +124,7 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
       info={
         InfoHL.DataSources(
           scriptOpt->Belt_Option.mapWithDefault([], script =>
-            script.dataSources->Belt_List.map(source => source.name)
+            script.info.dataSources->Belt_List.map(source => source.name)
           ),
         )
       }
@@ -140,7 +140,10 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
       <Col>
         {switch (scriptOpt) {
          | Some(script) =>
-           <InfoHL info={InfoHL.Address(script.creator, Colors.brightPurple)} header="CREATOR" />
+           <InfoHL
+             info={InfoHL.Address(script.info.creator, Colors.brightPurple)}
+             header="CREATOR"
+           />
          | None => React.null
          }}
       </Col>
