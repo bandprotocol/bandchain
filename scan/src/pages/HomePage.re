@@ -14,7 +14,8 @@ module Styles = {
       justifyContent(`spaceBetween),
     ]);
 
-  let seeAllContainer = style([alignItems(`center), justifyContent(`center), display(`flex)]);
+  let seeAllContainer =
+    style([alignItems(`center), justifyContent(`center), display(`flex), cursor(`pointer)]);
 
   let rightArrow = style([width(`px(13)), marginLeft(`px(5))]);
 
@@ -58,8 +59,8 @@ module Styles = {
 };
 
 /* SEE ALL btn */
-let renderSeeAll = () =>
-  <div className=Styles.seeAllContainer>
+let renderSeeAll = route =>
+  <div className=Styles.seeAllContainer onClick={_ => Route.redirect(route)}>
     <Text block=true value="SEE ALL" size=Text.Sm weight=Text.Bold color=Colors.grayText />
     <img src=Images.rightArrow className=Styles.rightArrow />
   </div>;
@@ -84,7 +85,7 @@ let make = () => {
           <VSpacing size=Spacing.md />
           <div className=Styles.topicBar>
             <Text value="Latest Transactions" size=Text.Xl weight=Text.Bold block=true />
-            {renderSeeAll()}
+            {renderSeeAll(TxHomePage)}
           </div>
           <VSpacing size=Spacing.lg />
           <LatestTxTable />
@@ -95,7 +96,7 @@ let make = () => {
           <VSpacing size=Spacing.md />
           <div className=Styles.topicBar>
             <Text value="Latest Blocks" size=Text.Xl weight=Text.Bold block=true />
-            {renderSeeAll()}
+            {renderSeeAll(BlockHomePage)}
           </div>
           <VSpacing size=Spacing.md />
           <LatestBlocks />
