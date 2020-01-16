@@ -66,11 +66,9 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) =>
   {
     let requestOpt = RequestHook.getRequest(reqID, ~pollInterval=3000, ());
     let infoOpt = React.useContext(GlobalContext.context);
-    let proofOpt = ProofHook.get(~requestId=reqID, ());
 
     let%Opt request = requestOpt;
     let%Opt info = infoOpt;
-    let%Opt proof = proofOpt;
 
     let scriptName = request.info.name;
     let scriptHash = request.info.codeHash;
@@ -213,15 +211,9 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) =>
                  <img src=Images.copy className=Styles.maxHeight20 />
                  <HSpacing size=Spacing.md />
                  <Text value="Copy proof for Ethereum" size=Text.Lg color=Colors.grayHeader />
-                 <HSpacing size={`px(30)} />
-                 <img src=Images.copy className=Styles.maxHeight20 />
-                 <HSpacing size=Spacing.md />
-                 <Text value="Copy proof for Cosmos" size=Text.Lg color=Colors.grayHeader />
                </Row>
                <VSpacing size=Spacing.lg />
-               <div className=Styles.mediumText>
-                 <ReactHighlight> {proof |> Js.Json.stringify |> React.string} </ReactHighlight>
-               </div>
+               <ProofTab reqID />
                <VSpacing size=Spacing.lg />
              </div>
            }}
