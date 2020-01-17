@@ -64,7 +64,9 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
   let scriptOpt = ScriptHook.getInfo(codeHash);
   let (txs, totalCount) =
     TxHook.withCodehash(~codeHash, ~limit, ~pollInterval=3000, ())
-    ->Belt.Option.mapWithDefault(([], 0), ({txs, totalCount}) => (txs, totalCount));
+    ->Belt.Option.mapWithDefault(([], 0), ({txs, totalCount}) =>
+        (txs |> Belt.List.reverse, totalCount)
+      );
 
   <div className=Styles.pageContainer>
     <Row justify=Row.Between>
