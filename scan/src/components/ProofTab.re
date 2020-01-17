@@ -8,7 +8,7 @@ module Styles = {
 
 module CopyComponent = {
   [@react.component]
-  let make = (~evmProofHex) => {
+  let make = (~evmProofBytesOpt) => {
     let (copying, setCopying) = React.useState(_ => false);
 
     React.useEffect1(
@@ -19,27 +19,26 @@ module CopyComponent = {
       [|copying|],
     );
 
-    evmProofHex->String.length > 0
-      ? <div
-          className=Styles.tableHeader
-          onClick={_ => {
-            setCopying(_ => true);
-            Copy.copy(evmProofHex |> JsBuffer.fromHex |> JsBuffer.toHex(~with0x=true));
-          }}>
-          <Row>
-            <img
-              src={copying ? Images.loadingSpinner : Images.copy}
-              className=Styles.maxHeight20
-            />
-            <HSpacing size=Spacing.md />
-            <Text
-              value={copying ? "Copying" : "Copy proof for Ethereum"}
-              size=Text.Lg
-              color=Colors.brightPurple
-            />
-          </Row>
-        </div>
-      : <div className=Styles.tableHeader />;
+    switch (evmProofBytesOpt) {
+    | Some(evmProofBytes) =>
+      <div
+        className=Styles.tableHeader
+        onClick={_ => {
+          setCopying(_ => true);
+          Copy.copy(evmProofBytes |> JsBuffer.toHex(~with0x=true));
+        }}>
+        <Row>
+          <img src={copying ? Images.loadingSpinner : Images.copy} className=Styles.maxHeight20 />
+          <HSpacing size=Spacing.md />
+          <Text
+            value={copying ? "Copying" : "Copy proof for Ethereum"}
+            size=Text.Lg
+            color=Colors.brightPurple
+          />
+        </Row>
+      </div>
+    | None => <div className=Styles.tableHeader />
+    };
   };
 };
 
@@ -47,18 +46,18 @@ module CopyComponent = {
 let make = (~reqID) => {
   let proofOpt = ProofHook.get(~requestId=reqID, ());
 
-  let (innerElement, evmProofHex) =
+  let (innerElement, evmProofBytesOpt) =
     switch (proofOpt) {
     | Some({jsonProof, evmProofBytes}) => (
         <ReactHighlight>
           {jsonProof |> Js.Json.stringifyWithSpace(_, 2) |> React.string}
         </ReactHighlight>,
-        evmProofBytes |> JsBuffer.toHex,
+        Some(evmProofBytes),
       )
-    | None => ("Loading Proofs ..." |> React.string, "")
+    | None => ("Loading Proofs ..." |> React.string, None)
     };
   <div className=Styles.tableLowerContainer>
-    <CopyComponent evmProofHex />
+    <CopyComponent evmProofBytesOpt />
     <VSpacing size=Spacing.lg />
     <div className=Styles.mediumText> innerElement </div>
     <VSpacing size=Spacing.lg />
