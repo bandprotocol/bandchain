@@ -14,3 +14,4 @@
 [@bs.module] external sendCoin: string = "./send-coin.png";
 [@bs.module] external report: string = "./report.png";
 [@bs.module] external copy: string = "./copy.svg";
+[@bs.module] external loadingSpinner: string = "./loading_spinner.gif";
