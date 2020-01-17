@@ -40,6 +40,8 @@ module Styles = {
     style([display(`flex), justifyContent(`center), alignItems(`center), width(`px(50))]);
 
   let logoContainer = style([display(`flex), alignItems(`center)]);
+
+  let routeContainer = style([minHeight(`calc((`sub, `vh(100.), `px(300))))]);
 };
 
 [@react.component]
@@ -76,19 +78,21 @@ let make = () => {
         </div>
       </div>
       /* route handle */
-      {switch (ReasonReactRouter.useUrl() |> Route.fromUrl) {
-       | HomePage => <HomePage />
-       | ScriptHomePage => <ScriptHomePage />
-       | ScriptIndexPage(codeHash, hashtag) => <ScriptIndexPage codeHash hashtag />
-       | TxHomePage => <TxHomePage />
-       | TxIndexPage(txHash) => <TxIndexPage txHash />
-       | BlockHomePage => <BlockHomePage />
-       | BlockIndexPage(height) => <BlockIndexPage height />
-       | RequestIndexPage(reqID, hashtag) => <RequestIndexPage reqID hashtag />
-       | NotFound =>
-         ReasonReactRouter.replace("/");
-         React.null;
-       }}
+      <div className=Styles.routeContainer>
+        {switch (ReasonReactRouter.useUrl() |> Route.fromUrl) {
+         | HomePage => <HomePage />
+         | ScriptHomePage => <ScriptHomePage />
+         | ScriptIndexPage(codeHash, hashtag) => <ScriptIndexPage codeHash hashtag />
+         | TxHomePage => <TxHomePage />
+         | TxIndexPage(txHash) => <TxIndexPage txHash />
+         | BlockHomePage => <BlockHomePage />
+         | BlockIndexPage(height) => <BlockIndexPage height />
+         | RequestIndexPage(reqID, hashtag) => <RequestIndexPage reqID hashtag />
+         | NotFound =>
+           ReasonReactRouter.replace("/");
+           React.null;
+         }}
+      </div>
     </div>
     <Footer />
   </div>;
