@@ -2,7 +2,9 @@ package rpc
 
 import (
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
+	"math/big"
 	"net/http"
 	"sort"
 	"strconv"
@@ -13,6 +15,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/rootmulti"
 	"github.com/cosmos/cosmos-sdk/types/rest"
+	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/gorilla/mux"
 	"github.com/tendermint/iavl"
@@ -26,17 +30,46 @@ import (
 	"github.com/bandprotocol/d3n/chain/x/zoracle"
 )
 
-type OracleInfoResp struct {
-	Request zoracle.RequestInfo `json:"request"`
-	Proof   Proof               `json:"proof"`
+var (
+	relayArguments  abi.Arguments
+	verifyArguments abi.Arguments
+)
+
+func init() {
+	err := json.Unmarshal(relayFormat, &relayArguments)
+	if err != nil {
+		panic(err)
+	}
+	err = json.Unmarshal(verifyFormat, &verifyArguments)
+	if err != nil {
+		panic(err)
+	}
 }
 
 type IAVLMerklePath struct {
+	IsDataOnRight  bool         `json:"isDataOnRight"`
 	SubtreeHeight  uint8        `json:"subtreeHeight"`
 	SubtreeSize    uint64       `json:"subtreeSize"`
 	SubtreeVersion uint64       `json:"subtreeVersion"`
-	IsDataOnRight  bool         `json:"isDataOnRight"`
 	SiblingHash    cmn.HexBytes `json:"siblingHash"`
+}
+
+type IAVLMerklePathEthereum struct {
+	IsDataOnRight  bool
+	SubtreeHeight  uint8
+	SubtreeSize    *big.Int
+	SubtreeVersion *big.Int
+	SiblingHash    common.Hash
+}
+
+func (merklePath *IAVLMerklePath) encodeToEthFormat() IAVLMerklePathEthereum {
+	return IAVLMerklePathEthereum{
+		merklePath.IsDataOnRight,
+		merklePath.SubtreeHeight,
+		big.NewInt(int64(merklePath.SubtreeSize)),
+		big.NewInt(int64(merklePath.SubtreeVersion)),
+		common.BytesToHash(merklePath.SiblingHash),
+	}
 }
 
 type BlockHeaderMerkleParts struct {
@@ -48,6 +81,26 @@ type BlockHeaderMerkleParts struct {
 	EvidenceAndProposerHash     cmn.HexBytes `json:"evidenceAndProposerHash"`
 }
 
+type BlockHeaderMerklePartsEthereum struct {
+	VersionAndChainIdHash       common.Hash
+	TimeHash                    common.Hash
+	TxCountAndLastBlockInfoHash common.Hash
+	ConsensusDataHash           common.Hash
+	LastResultsHash             common.Hash
+	EvidenceAndProposerHash     common.Hash
+}
+
+func (blockHeader *BlockHeaderMerkleParts) encodeToEthFormat() BlockHeaderMerklePartsEthereum {
+	return BlockHeaderMerklePartsEthereum{
+		common.BytesToHash(blockHeader.VersionAndChainIdHash),
+		common.BytesToHash(blockHeader.TimeHash),
+		common.BytesToHash(blockHeader.TxCountAndLastBlockInfoHash),
+		common.BytesToHash(blockHeader.ConsensusDataHash),
+		common.BytesToHash(blockHeader.LastResultsHash),
+		common.BytesToHash(blockHeader.EvidenceAndProposerHash),
+	}
+}
+
 type BlockRelayProof struct {
 	OracleIAVLStateHash    cmn.HexBytes           `json:"oracleIAVLStateHash"`
 	OtherStoresMerkleHash  cmn.HexBytes           `json:"otherStoresMerkleHash"`
@@ -55,6 +108,22 @@ type BlockRelayProof struct {
 	BlockHeaderMerkleParts BlockHeaderMerkleParts `json:"blockHeaderMerkleParts"`
 	SignedDataPrefix       cmn.HexBytes           `json:"signedDataPrefix"`
 	Signatures             []TMSignature          `json:"signatures"`
+}
+
+func (blockRelay *BlockRelayProof) encodeToEthData(blockHeight uint64) ([]byte, error) {
+	parseSignatures := make([]TMSignatureEthereum, len(blockRelay.Signatures))
+	for i, sig := range blockRelay.Signatures {
+		parseSignatures[i] = sig.encodeToEthFormat()
+	}
+	return relayArguments.Pack(
+		big.NewInt(int64(blockHeight)),
+		common.BytesToHash(blockRelay.OracleIAVLStateHash),
+		common.BytesToHash(blockRelay.OtherStoresMerkleHash),
+		common.BytesToHash(blockRelay.SupplyStoresMerkleHash),
+		blockRelay.BlockHeaderMerkleParts.encodeToEthFormat(),
+		blockRelay.SignedDataPrefix,
+		parseSignatures,
+	)
 }
 
 type OracleDataProof struct {
@@ -65,6 +134,23 @@ type OracleDataProof struct {
 	Data        cmn.HexBytes     `json:"data"`
 	MerklePaths []IAVLMerklePath `json:"merklePaths"`
 }
+
+func (oracleData *OracleDataProof) encodeToEthData(blockHeight uint64) ([]byte, error) {
+	parsePaths := make([]IAVLMerklePathEthereum, len(oracleData.MerklePaths))
+	for i, path := range oracleData.MerklePaths {
+		parsePaths[i] = path.encodeToEthFormat()
+	}
+	return verifyArguments.Pack(
+		big.NewInt(int64(blockHeight)),
+		oracleData.Data,
+		oracleData.RequestId,
+		common.BytesToHash(oracleData.CodeHash),
+		oracleData.Params,
+		big.NewInt(int64(oracleData.Version)),
+		parsePaths,
+	)
+}
+
 type TMSignature struct {
 	R                cmn.HexBytes `json:"r"`
 	S                cmn.HexBytes `json:"s"`
@@ -72,7 +158,28 @@ type TMSignature struct {
 	SignedDataSuffix cmn.HexBytes `json:"signedDataSuffix"`
 }
 
+type TMSignatureEthereum struct {
+	R                common.Hash
+	S                common.Hash
+	V                uint8
+	SignedDataSuffix []byte
+}
+
+func (signature *TMSignature) encodeToEthFormat() TMSignatureEthereum {
+	return TMSignatureEthereum{
+		common.BytesToHash(signature.R),
+		common.BytesToHash(signature.S),
+		signature.V,
+		signature.SignedDataSuffix,
+	}
+}
+
 type Proof struct {
+	JsonProof     JsonProof    `json:"jsonProof"`
+	EVMProofBytes cmn.HexBytes `json:"evmProofBytes"`
+}
+
+type JsonProof struct {
 	BlockHeight     uint64          `json:"blockHeight"`
 	OracleDataProof OracleDataProof `json:"oracleDataProof"`
 	BlockRelayProof BlockRelayProof `json:"blockRelayProof"`
@@ -417,10 +524,35 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		brp.SupplyStoresMerkleHash = ssmh
 		brp.OracleIAVLStateHash = oiavlsh
 
+		// Calculate byte for proofbytes
+		var relayAndVerifyArguments abi.Arguments
+		format := `[{"type":"bytes"},{"type":"bytes"}]`
+		err = json.Unmarshal([]byte(format), &relayAndVerifyArguments)
+		if err != nil {
+			panic(err)
+		}
+
+		blockRelayBytes, err := brp.encodeToEthData(height)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		}
+
+		oracleDataBytes, err := odp.encodeToEthData(height)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		}
+
+		evmProofBytes, err := relayAndVerifyArguments.Pack(blockRelayBytes, oracleDataBytes)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		}
+
 		rest.PostProcessResponse(w, cliCtx, Proof{
-			BlockHeight:     height,
-			OracleDataProof: odp,
-			BlockRelayProof: brp,
+			JsonProof: JsonProof{
+				BlockHeight:     height,
+				OracleDataProof: odp,
+				BlockRelayProof: brp},
+			EVMProofBytes: evmProofBytes,
 		})
 	}
 }
