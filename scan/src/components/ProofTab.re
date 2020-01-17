@@ -19,20 +19,27 @@ module CopyComponent = {
       [|copying|],
     );
 
-    <div
-      className=Styles.tableHeader
-      onClick={_ => {
-        Copy.copy(
-          evmProofHex |> JsBuffer.fromHex |> JsBuffer.toHex(~with0x=true),
-          // Window.alert(evmProofHex->String.length > 0 ? "Copied!" : "Loading ... Please Wait");
-        )
-      }}>
-      <Row>
-        <img src=Images.copy className=Styles.maxHeight20 />
-        <HSpacing size=Spacing.md />
-        <Text value="Copy proof for Ethereum" size=Text.Lg color=Colors.brightPurple />
-      </Row>
-    </div>;
+    evmProofHex->String.length > 0
+      ? <div
+          className=Styles.tableHeader
+          onClick={_ => {
+            setCopying(_ => true);
+            Copy.copy(evmProofHex |> JsBuffer.fromHex |> JsBuffer.toHex(~with0x=true));
+          }}>
+          <Row>
+            <img
+              src={copying ? Images.loadingSpinner : Images.copy}
+              className=Styles.maxHeight20
+            />
+            <HSpacing size=Spacing.md />
+            <Text
+              value={copying ? "Copying" : "Copy proof for Ethereum"}
+              size=Text.Lg
+              color=Colors.brightPurple
+            />
+          </Row>
+        </div>
+      : <div className=Styles.tableHeader />;
   };
 };
 
@@ -48,7 +55,7 @@ let make = (~reqID) => {
         </ReactHighlight>,
         evmProofBytes |> JsBuffer.toHex,
       )
-    | None => ("Loading ..." |> React.string, "")
+    | None => ("Loading Proofs ..." |> React.string, "")
     };
   <div className=Styles.tableLowerContainer>
     <CopyComponent evmProofHex />
