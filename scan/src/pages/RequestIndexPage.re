@@ -49,12 +49,16 @@ module Styles = {
   let subHeaderContainer = style([display(`flex), flex(`num(1.))]);
   let detailContainer = style([display(`flex), flex(`num(3.5))]);
 
+  let mediumText = style([fontSize(`px(14)), lineHeight(`px(20))]);
+
   let tableHeader =
     style([
       backgroundColor(Colors.white),
       padding3(~top=`px(30), ~h=`px(20), ~bottom=`px(20)),
     ]);
   let tableLowerContainer = style([padding(`px(20)), background(Colors.lighterGray)]);
+
+  let maxHeight20 = style([maxHeight(`px(20))]);
 };
 
 [@react.component]
@@ -81,7 +85,6 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) =>
 
     let comfirmed = result->Belt.Option.isSome || reportedValidators == totalValidators;
     let remainingBlock = targetBlock - latestBlock;
-
     Some(
       <div className=Styles.pageContainer>
         <Row justify=Row.Between>
@@ -125,7 +128,9 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) =>
               <div className=Styles.subHeaderContainer>
                 <Text value="Request ID" size=Text.Xl color=Colors.darkGrayText />
               </div>
-              <div className=Styles.detailContainer> <Text value=reqID size=Text.Lg /> </div>
+              <div className=Styles.detailContainer>
+                <Text value={reqID |> Format.iPretty} size=Text.Lg />
+              </div>
             </div>
             <VSpacing size=Spacing.xl />
             <div className=Styles.vFlex>
@@ -199,7 +204,7 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) =>
                <ReportTable reports />
                <VSpacing size=Spacing.lg />
              </div>
-           | RequestProof => <div> {"TODO1" |> React.string} </div>
+           | RequestProof => <ProofTab reqID />
            }}
         </div>
         <VSpacing size=Spacing.xxl />
