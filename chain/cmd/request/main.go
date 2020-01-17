@@ -9,6 +9,8 @@ import (
 	"github.com/bandprotocol/d3n/chain/cmtx"
 	"github.com/bandprotocol/d3n/chain/x/zoracle"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 )
@@ -34,47 +36,61 @@ func main() {
 
 	tx := cmtx.NewTxSender(priv)
 
-	file, err := os.Open("../../wasm/res/test_u64.wasm")
-	if err != nil {
-		panic(err)
+	args := os.Args[1:]
+	switch args[0] {
+	case "store":
+		{
+			file, err := os.Open("../../wasm/res/test_u64.wasm")
+			if err != nil {
+				panic(err)
+			}
+			defer file.Close()
+
+			stats, statsErr := file.Stat()
+			if statsErr != nil {
+				panic(statsErr)
+			}
+
+			size := stats.Size()
+			bytes := make([]byte, size)
+
+			bufr := bufio.NewReader(file)
+			_, err = bufr.Read(bytes)
+
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println(tx.SendTransaction(zoracle.NewMsgStoreCode(bytes, "Crypto price", tx.Sender()), flags.BroadcastBlock))
+		}
+	case "send_token":
+		{
+			// Send token
+			to, _ := sdk.AccAddressFromBech32("band13zmknvkq2sj920spz90g4r9zjan8g584x8qalj")
+			fmt.Println(tx.SendTransaction(bank.MsgSend{
+				FromAddress: tx.Sender(),
+				ToAddress:   to,
+				Amount:      sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(10))),
+			}, flags.BroadcastBlock))
+		}
+	case "request":
+		{
+			codeHash, _ := hex.DecodeString("089a092741d2bbe10b1cfaa8e48d1512a51ef183e579ae29f89af59db3e72c85")
+			switch args[1] {
+			case "BTC":
+				{
+					// BTC parameter
+					params, _ := hex.DecodeString("0000000000000007626974636f696e0000000000000003425443")
+					// Send request by code hash
+					fmt.Println(tx.SendTransaction(zoracle.NewMsgRequest(codeHash, params, 4, tx.Sender()), flags.BroadcastBlock))
+				}
+			case "ETH":
+				{
+					// ETH parameter
+					params, _ := hex.DecodeString("0000000000000008657468657265756d0000000000000003455448")
+					// Send request by same code hash with new parameter
+					fmt.Println(tx.SendTransaction(zoracle.NewMsgRequest(codeHash, params, 4, tx.Sender()), flags.BroadcastBlock))
+				}
+			}
+		}
 	}
-	defer file.Close()
-
-	stats, statsErr := file.Stat()
-	if statsErr != nil {
-		panic(statsErr)
-	}
-
-	size := stats.Size()
-	bytes := make([]byte, size)
-
-	bufr := bufio.NewReader(file)
-	_, err = bufr.Read(bytes)
-
-	if err != nil {
-		panic(err)
-	}
-
-	// Send token
-	// to, _ := sdk.AccAddressFromBech32("band13zmknvkq2sj920spz90g4r9zjan8g584x8qalj")
-	// fmt.Println(tx.SendTransaction(bank.MsgSend{
-	// 	FromAddress: tx.Sender(),
-	// 	ToAddress:   to,
-	// 	Amount:      sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(10))),
-	// }, flags.BroadcastBlock))
-
-	// Send transaction to store code first (commend it if already stored code)
-	fmt.Println(tx.SendTransaction(zoracle.NewMsgStoreCode(bytes, "Crypto price", tx.Sender()), flags.BroadcastBlock))
-
-	codeHash, _ := hex.DecodeString("089a092741d2bbe10b1cfaa8e48d1512a51ef183e579ae29f89af59db3e72c85")
-
-	// BTC parameter
-	params, _ := hex.DecodeString("0000000000000007626974636f696e0000000000000003425443")
-	// Send request by code hash
-	fmt.Println(tx.SendTransaction(zoracle.NewMsgRequest(codeHash, params, 4, tx.Sender()), flags.BroadcastBlock))
-
-	// ETH parameter
-	params, _ = hex.DecodeString("0000000000000008657468657265756d0000000000000003455448")
-	// Send request by same code hash with new parameter
-	fmt.Println(tx.SendTransaction(zoracle.NewMsgRequest(codeHash, params, 4, tx.Sender()), flags.BroadcastBlock))
 }
