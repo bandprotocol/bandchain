@@ -47,7 +47,7 @@ module Script = {
   let decodeScript = json => JsonUtils.Decode.(json |> field("result", decodeResultScript));
 
   let decodeScripts = json =>
-    JsonUtils.Decode.(json |> field("result", list(decodeResultScript))) |> Belt.List.reverse;
+    JsonUtils.Decode.(json |> field("result", list(decodeResultScript)));
 };
 
 let getInfo = codeHash => {
