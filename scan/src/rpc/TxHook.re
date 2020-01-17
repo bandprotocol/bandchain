@@ -166,6 +166,34 @@ module Msg = {
       | _ => Unknown
       }
     );
+
+  let getRoute = msg =>
+    switch (msg.action) {
+    | Send(_) => None
+    | Store(_) =>
+      Some(
+        Route.ScriptIndexPage(
+          msg.events->Event.getValueOfKey("store_code.codehash")->Belt.Option.getExn
+          |> Hash.fromHex,
+          ScriptTransactions,
+        ),
+      )
+    | Request(_) =>
+      Some(
+        RequestIndexPage(
+          msg.events->Event.getValueOfKey("request.id")->Belt.Option.getExn,
+          RequestReportStatus,
+        ),
+      )
+    | Report(_) =>
+      Some(
+        RequestIndexPage(
+          msg.events->Event.getValueOfKey("report.id")->Belt.Option.getExn,
+          RequestReportStatus,
+        ),
+      )
+    | Unknown => None
+    };
 };
 
 module Signature = {
