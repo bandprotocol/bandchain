@@ -53,20 +53,28 @@ let make = (~messages: list(TxHook.Msg.t)) => {
     </THead>
     {messages
      ->Belt.List.mapWithIndex((index, msg) => {
-         <TBody key={index |> string_of_int}>
-           <Row>
-             <Col size=0.3> <TElement elementType={msg->TElement.Icon} /> </Col>
-             <Col size=0.5> <TElement elementType={msg->TElement.TxType} /> </Col>
-             <Col size=1.0>
-               <TElement elementType={msg->TxHook.Msg.getDescription->TElement.Detail} />
-             </Col>
-             <Col size=1.3>
-               <TElement elementType={msg->TxHook.Msg.getCreator->TElement.Address} />
-             </Col>
-             // <Col size=0.5> <TElement elementType={"PENDING DATA"->TElement.Status} /> </Col>
-             <Col size=0.5> <TElement elementType={0.->TElement.Fee} /> </Col>
-           </Row>
-         </TBody>
+         <div
+           onClick={_ =>
+             switch (TxHook.Msg.getRoute(msg)) {
+             | Some(route) => Route.redirect(route)
+             | None => ()
+             }
+           }>
+           <TBody key={index |> string_of_int}>
+             <Row>
+               <Col size=0.3> <TElement elementType={msg->TElement.Icon} /> </Col>
+               <Col size=0.5> <TElement elementType={msg->TElement.TxType} /> </Col>
+               <Col size=1.0>
+                 <TElement elementType={msg->TxHook.Msg.getDescription->TElement.Detail} />
+               </Col>
+               <Col size=1.3>
+                 <TElement elementType={msg->TxHook.Msg.getCreator->TElement.Address} />
+               </Col>
+               // <Col size=0.5> <TElement elementType={"PENDING DATA"->TElement.Status} /> </Col>
+               <Col size=0.5> <TElement elementType={0.->TElement.Fee} /> </Col>
+             </Row>
+           </TBody>
+         </div>
        })
      ->Array.of_list
      ->React.array}
