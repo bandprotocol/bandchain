@@ -181,14 +181,14 @@ module Msg = {
     | Request(_) =>
       Some(
         RequestIndexPage(
-          msg.events->Event.getValueOfKey("request.id")->Belt.Option.getExn,
+          msg.events->Event.getValueOfKey("request.id")->Belt.Option.getExn->int_of_string,
           RequestReportStatus,
         ),
       )
     | Report(_) =>
       Some(
         RequestIndexPage(
-          msg.events->Event.getValueOfKey("report.id")->Belt.Option.getExn,
+          msg.events->Event.getValueOfKey("report.id")->Belt.Option.getExn->int_of_string,
           RequestReportStatus,
         ),
       )
