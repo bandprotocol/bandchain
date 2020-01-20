@@ -1,17 +1,16 @@
-use owasm::ext::crypto::{coingecko, cryptocompare};
+use owasm::ext::crypto::{coingecko, coins, cryptocompare};
 use owasm::{decl_data, decl_params};
 
 decl_params! {
     pub struct Parameter {
-        pub symbol_cg: String,
-        pub symbol_cc: String,
+        pub symbol: coins::Coins,
     }
 }
 
 decl_data! {
     pub struct Data {
-        pub coin_gecko: f32 = |params: &Parameter| coingecko::Price::new(&params.symbol_cg),
-        pub crypto_compare: f32 = |params: &Parameter| cryptocompare::Price::new(&params.symbol_cc),
+        pub coin_gecko: f32 = |params: &Parameter| coingecko::Price::new(&params.symbol),
+        pub crypto_compare: f32 = |params: &Parameter| cryptocompare::Price::new(&params.symbol),
     }
 }
 
@@ -47,18 +46,10 @@ mod tests {
     #[test]
     fn test_end_to_end_from_local_env() {
         // Run with local environment
-        let data = Data::build_from_local_env(&Parameter {
-            symbol_cg: String::from("bitcoin"),
-            symbol_cc: String::from("BTC"),
-        })
-        .unwrap();
+        let data = Data::build_from_local_env(&Parameter { symbol: coins::Coins::BTC }).unwrap();
         println!("Current BTC price (times 100) is {}", execute(vec![data]));
 
-        let data = Data::build_from_local_env(&Parameter {
-            symbol_cg: String::from("ethereum"),
-            symbol_cc: String::from("ETH"),
-        })
-        .unwrap();
+        let data = Data::build_from_local_env(&Parameter { symbol: coins::Coins::ETH }).unwrap();
         println!("Current ETH price (times 100) is {}", execute(vec![data]));
     }
 }

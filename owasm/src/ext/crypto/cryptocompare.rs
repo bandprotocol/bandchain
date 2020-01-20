@@ -1,4 +1,5 @@
 use crate::core::{Oracle, ShellCmd};
+use crate::ext::crypto::coins::Coins;
 
 pub static BITCOIN: &str = "BTC";
 pub static ETHEREUM: &str = "ETH";
@@ -8,8 +9,14 @@ pub struct Price {
 }
 
 impl Price {
-    pub fn new(symbol: impl Into<String>) -> Price {
-        Price { symbol: symbol.into() }
+    pub fn new(coin: &Coins) -> Price {
+        Price {
+            symbol: String::from(match coin {
+                Coins::BTC => "BTC",
+                Coins::ETH => "ETH",
+                Coins::BAND => "BAND",
+            }),
+        }
     }
 }
 
@@ -39,7 +46,7 @@ mod tests {
     #[test]
     fn test_as_cmd() {
         assert_eq!(
-            Price::new("BTC").as_cmd(),
+            Price::new(&Coins::BTC).as_cmd(),
             ShellCmd::new(
                 "curl",
                 &["https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USD"]
@@ -49,11 +56,11 @@ mod tests {
 
     #[test]
     fn test_from_cmd_ok() {
-        assert_eq!(Price::new("BTC").from_cmd_output(r#"{"USD":100.0}"#.into()), Some(100.0));
+        assert_eq!(Price::new(&Coins::BTC).from_cmd_output(r#"{"USD":100.0}"#.into()), Some(100.0));
     }
 
     #[test]
     fn test_from_cmd_not_ok() {
-        assert_eq!(Price::new("BTC").from_cmd_output(r#"{}"#.into()), None);
+        assert_eq!(Price::new(&Coins::BTC).from_cmd_output(r#"{}"#.into()), None);
     }
 }
