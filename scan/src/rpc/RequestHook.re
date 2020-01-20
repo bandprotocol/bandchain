@@ -4,7 +4,7 @@ module Report = {
     txHash: Hash.t,
     reportedAtHeight: int,
     reportedAtTime: MomentRe.Moment.t,
-    values: array((string, float)),
+    values: array((string, Js.Json.t)),
   };
 
   let decode = json =>
@@ -13,7 +13,7 @@ module Report = {
       txHash: json |> at(["txhash"], string) |> Hash.fromHex,
       reportedAtHeight: json |> at(["reportedAtHeight"], intstr),
       reportedAtTime: json |> at(["reportedAtTime"], moment),
-      values: json |> at(["value"], dict(JsonUtils.Decode.float)) |> Js.Dict.entries,
+      values: json |> at(["value"], dict(x => x)) |> Js.Dict.entries,
     };
 
   let decodeReports = json => JsonUtils.Decode.(json |> field("reports", list(decode)));
@@ -23,7 +23,7 @@ module Request = {
   type t = {
     info: ScriptHook.ScriptInfo.t,
     codeHash: Hash.t,
-    params: array((string, string)),
+    params: array((string, Js.Json.t)),
     targetBlock: int,
     requester: Address.t,
     txHash: Hash.t,
@@ -37,7 +37,7 @@ module Request = {
     JsonUtils.Decode.{
       info: json |> field("scriptInfo", ScriptHook.ScriptInfo.decode),
       codeHash: json |> at(["codeHash"], string) |> Hash.fromHex,
-      params: json |> at(["params"], dict(JsonUtils.Decode.string)) |> Js.Dict.entries,
+      params: json |> at(["params"], dict(x => x)) |> Js.Dict.entries,
       targetBlock: json |> at(["targetBlock"], intstr),
       requester: json |> at(["requester"], string) |> Address.fromHex,
       txHash: json |> at(["txhash"], string) |> Hash.fromHex,
