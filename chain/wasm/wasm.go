@@ -3,6 +3,8 @@ package wasm
 import (
 	"encoding/binary"
 	"errors"
+	"fmt"
+	"time"
 
 	wasm "github.com/wasmerio/go-ext-wasm/wasmer"
 )
@@ -196,6 +198,31 @@ func Prepare(code []byte, params []byte) ([]byte, error) {
 	return parseOutput(instance, ptr.ToI64())
 }
 
+func executeWithTimeout(fn func(...interface{}) (wasm.Value, error), paramsInput int64, wasmInput int64, limitTimeout time.Duration) (wasm.Value, error) {
+	type wasmOutput struct {
+		ptr wasm.Value
+		err error
+	}
+	chanWasmOutput := make(chan wasmOutput, 1)
+
+	go func() {
+		ptr, err := fn(paramsInput, wasmInput)
+		chanWasmOutput <- wasmOutput{ptr: ptr, err: err}
+	}()
+
+	var res wasmOutput
+	select {
+	case <-time.After(limitTimeout):
+		return wasm.Value{}, fmt.Errorf("wasm execution timeout")
+	case res = <-chanWasmOutput:
+		if res.err != nil {
+			return wasm.Value{}, res.err
+		}
+	}
+
+	return res.ptr, res.err
+}
+
 func Execute(code []byte, params []byte, inputs [][]byte) ([]byte, error) {
 	instance, err := wasm.NewInstance(code)
 	if err != nil {
@@ -214,7 +241,7 @@ func Execute(code []byte, params []byte, inputs [][]byte) ([]byte, error) {
 	if fn == nil {
 		return nil, errors.New("__execute not implemented")
 	}
-	ptr, err := fn(paramsInput, wasmInput)
+	ptr, err := executeWithTimeout(fn, paramsInput, wasmInput, 100*time.Millisecond)
 	if err != nil {
 		return nil, err
 	}
