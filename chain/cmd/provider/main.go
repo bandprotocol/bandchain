@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -8,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -53,6 +55,20 @@ type Command struct {
 	Arguments []string `json:"args"`
 }
 
+func execWithTimeout(command Command, timeoutInMiliSecond int64) ([]byte, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeoutInMiliSecond)*(time.Millisecond))
+	defer cancel()
+	cmd := exec.CommandContext(ctx, command.Cmd, command.Arguments...)
+	out, err := cmd.Output()
+	if ctx.Err() == context.DeadlineExceeded {
+		return []byte{}, fmt.Errorf("Command timed out")
+	}
+	if err != nil {
+		return []byte{}, err
+	}
+	return out, nil
+}
+
 func handleRequest(event *abci.Event) {
 	var requestID uint64
 	var commands []Command
@@ -85,8 +101,7 @@ func handleRequest(event *abci.Event) {
 			fmt.Printf("handleRequest unknown command %s", command.Cmd)
 			return
 		}
-		cmd := exec.Command(command.Cmd, command.Arguments...)
-		query, err := cmd.Output()
+		query, err := execWithTimeout(command, 3000)
 		if err != nil {
 			fmt.Printf("handleRequest query err with command %s %v", command.Cmd, command.Arguments)
 			return
