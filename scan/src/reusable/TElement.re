@@ -28,6 +28,7 @@ module Styles = {
   let feeContainer = style([maxWidth(`px(80))]);
   let timeContainer = style([display(`flex), alignItems(`center), maxWidth(`px(150))]);
   let textContainer = style([display(`flex)]);
+  let countContainer = style([maxWidth(`px(80))]);
 };
 
 let txTypeMapping = msg => {
@@ -163,6 +164,12 @@ let renderTime = time => {
   <div className=Styles.timeContainer> <TimeAgos time size=Text.Md /> </div>;
 };
 
+let renderCount = count => {
+  <div className=Styles.countContainer>
+    <Text value={count |> string_of_int} size=Text.Md weight=Text.Semibold />
+  </div>;
+};
+
 let msgIcon =
   fun
   | TxHook.Msg.Store(_) => Images.newScript
@@ -181,6 +188,7 @@ type t =
   | TxType(TxHook.Msg.t)
   | Detail(string)
   | Status(string)
+  | Count(int)
   | Fee(float)
   | Hash(Hash.t)
   | HashWithLink(Hash.t)
@@ -200,6 +208,7 @@ let make = (~elementType) => {
   | TxType({action, _}) => renderTxType(action)
   | Detail(detail) => renderText(detail, Text.Semibold)
   | Status(status) => renderText(status, Text.Semibold)
+  | Count(count) => renderCount(count)
   | Fee(fee) => renderFee(fee)
   | Hash(hash) => renderHash(hash)
   | HashWithLink(hash) => renderHashWithLink(hash)

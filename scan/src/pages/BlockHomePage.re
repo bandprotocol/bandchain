@@ -3,7 +3,7 @@ module Styles = {
 
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
-  let pageContainer = style([paddingTop(`px(50)), minHeight(`px(500))]);
+  let pageContainer = style([paddingTop(`px(50))]);
 
   let seperatedLine =
     style([
@@ -32,14 +32,12 @@ let renderBody = ((block, moniker): (BlockHook.Block.t, string)) => {
       <Row>
         <Col size=0.6>
           <div className=Styles.textContainer>
-            <Text value="#" size=Text.Md weight=Text.Bold color=Colors.purple />
-            <HSpacing size=Spacing.xs />
-            <Text block=true value={height |> Format.iPretty} size=Text.Md weight=Text.Bold />
+            <TElement elementType={TElement.Height(height)} />
           </div>
         </Col>
         <Col size=0.8>
           <div className=Styles.textContainer>
-            <TimeAgos time=timestamp size=Text.Md weight=Text.Semibold />
+            <TElement elementType={TElement.Timestamp(timestamp)} />
           </div>
         </Col>
         <Col size=2.0>
@@ -65,13 +63,11 @@ let renderBody = ((block, moniker): (BlockHook.Block.t, string)) => {
         </Col>
         <Col size=0.7>
           <div className=Styles.textContainer>
-            <Text block=true value={totalTx |> Format.iPretty} size=Text.Md weight=Text.Semibold />
+            <TElement elementType={TElement.Count(totalTx)} />
           </div>
         </Col>
         <Col size=0.7>
-          <div className=Styles.textContainer>
-            <Text block=true value="FREE" size=Text.Md weight=Text.Semibold />
-          </div>
+          <div className=Styles.textContainer> <TElement elementType={TElement.Fee(0.0)} /> </div>
         </Col>
         <Col size=0.8>
           <div className=Styles.textContainer>
