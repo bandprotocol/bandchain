@@ -40,7 +40,8 @@ func main() {
 	switch args[0] {
 	case "store":
 		{
-			file, err := os.Open("../../wasm/res/test_u64.wasm")
+			// file, err := os.Open("../../wasm/res/test_u64.wasm")
+			file, err := os.Open("../../wasm/res/enum_coins.wasm")
 			if err != nil {
 				panic(err)
 			}
@@ -60,7 +61,7 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
-			fmt.Println(tx.SendTransaction(zoracle.NewMsgStoreCode(bytes, "Crypto price", tx.Sender()), flags.BroadcastBlock))
+			fmt.Println(tx.SendTransaction(zoracle.NewMsgStoreCode(bytes, "Crypto price (enum version)", tx.Sender()), flags.BroadcastBlock))
 		}
 	case "send_token":
 		{
@@ -74,19 +75,20 @@ func main() {
 		}
 	case "request":
 		{
-			codeHash, _ := hex.DecodeString("089a092741d2bbe10b1cfaa8e48d1512a51ef183e579ae29f89af59db3e72c85")
+			// codeHash, _ := hex.DecodeString("089a092741d2bbe10b1cfaa8e48d1512a51ef183e579ae29f89af59db3e72c85")
+			codeHash, _ := hex.DecodeString("e4eb7c91a512602a62f5e3dc5b56bd19833913afdebd405a22a6716b6eb3d374")
 			switch args[1] {
 			case "BTC":
 				{
 					// BTC parameter
-					params, _ := hex.DecodeString("0000000000000007626974636f696e0000000000000003425443")
+					params, _ := hex.DecodeString("00000000")
 					// Send request by code hash
 					fmt.Println(tx.SendTransaction(zoracle.NewMsgRequest(codeHash, params, 4, tx.Sender()), flags.BroadcastBlock))
 				}
 			case "ETH":
 				{
 					// ETH parameter
-					params, _ := hex.DecodeString("0000000000000008657468657265756d0000000000000003455448")
+					params, _ := hex.DecodeString("00000001")
 					// Send request by same code hash with new parameter
 					fmt.Println(tx.SendTransaction(zoracle.NewMsgRequest(codeHash, params, 4, tx.Sender()), flags.BroadcastBlock))
 				}

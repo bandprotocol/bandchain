@@ -1,4 +1,4 @@
-use owasm::core::{decode_cmds, decode_outputs, encode_cmds};
+use owasm::core::{decode_outputs, encode_cmds};
 use std::mem;
 
 mod logic;
@@ -76,81 +76,78 @@ pub fn __parse_raw_data(params: u64, input: u64) -> u64 {
     )
 }
 
-// #[cfg(test)]
-// mod tests {
-//     use super::*;
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-//     #[test]
-//     fn test_encode_decode_parameter() {
-//         let params =
-//             logic::__Params { symbol_cg: String::from("ethereum"), symbol_cc: String::from("ETH") };
+    use owasm::ext::crypto::coins;
 
-//         let encoded_params = __encode_params(params).unwrap();
-//         let ptr = __return(&encoded_params);
-//         let new_params = __decode_params(ptr).unwrap();
+    #[test]
+    fn test_encode_decode_parameter() {
+        let params = logic::__Params { symbol: coins::Coins::ETH };
 
-//         assert_eq!(new_params.symbol_cg, String::from("ethereum"));
-//     }
+        let encoded_params = __encode_params(params).unwrap();
+        let new_params: logic::Parameter =
+            bincode::config().big_endian().deserialize(&encoded_params).ok().unwrap();
 
-//     #[test]
-//     fn test_prepare() {
-//         let params =
-//             logic::__Params { symbol_cg: String::from("ethereum"), symbol_cc: String::from("ETH") };
-//         let ptr = __return(&__encode_params(params).unwrap());
+        println!("{:x?}", encoded_params);
+        assert_eq!(new_params.symbol, coins::Coins::ETH);
+    }
 
-//         let cmds = decode_cmds(__read_data(__prepare(ptr))).unwrap();
-//         assert_eq!(
-//             serde_json::to_string(&cmds[0]).unwrap(),
-//             r#"{"cmd":"curl","args":["https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd"]}"#
-//         );
-//         assert_eq!(
-//             serde_json::to_string(&cmds[1]).unwrap(),
-//             r#"{"cmd":"curl","args":["https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD"]}"#
-//         );
-//     }
+    // #[test]
+    // fn test_prepare() {
+    //     let params =
+    //         logic::__Params { symbol_cg: String::from("ethereum"), symbol_cc: String::from("ETH") };
+    //     let ptr = __return(&__encode_params(params).unwrap());
 
-//     #[test]
-//     fn test_name() {
-//         let ptr_output = __name();
-//         println!("ptr is {}", ptr_output);
-//         let sl =
-//             unsafe { std::slice::from_raw_parts((ptr_output & ((1 << 32) - 1)) as *const u8, 12) };
-//         println!("length {}", sl.len());
-//         println!("x {}", sl[0]);
-//         // let result = std::str::from_utf8(__read_data(ptr_output)).unwrap();
-//         let result = std::str::from_utf8(sl).unwrap();
-//         assert_eq!(result, "Crypto price");
-//     }
+    //     let cmds = decode_cmds(__read_data(__prepare(ptr))).unwrap();
+    //     assert_eq!(
+    //         serde_json::to_string(&cmds[0]).unwrap(),
+    //         r#"{"cmd":"curl","args":["https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd"]}"#
+    //     );
+    //     assert_eq!(
+    //         serde_json::to_string(&cmds[1]).unwrap(),
+    //         r#"{"cmd":"curl","args":["https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD"]}"#
+    //     );
+    // }
 
-//     #[test]
-//     fn test_parse_params() {
-//         let params =
-//             logic::__Params { symbol_cg: String::from("ethereum"), symbol_cc: String::from("ETH") };
-//         let encoded_params = __encode_params(params).unwrap();
-//         let ptr = __return(&encoded_params);
+    // #[test]
+    // fn test_name() {
+    //     let ptr_output = __name();
+    //     println!("ptr is {}", ptr_output);
+    //     let sl =
+    //         unsafe { std::slice::from_raw_parts((ptr_output & ((1 << 32) - 1)) as *const u8, 12) };
+    //     println!("length {}", sl.len());
+    //     println!("x {}", sl[0]);
+    //     // let result = std::str::from_utf8(__read_data(ptr_output)).unwrap();
+    //     let result = std::str::from_utf8(sl).unwrap();
+    //     assert_eq!(result, "Crypto price");
+    // }
 
-//         let ptr_output = __parse_params(ptr);
+    // #[test]
+    // fn test_parse_params() {
+    //     let params =
+    //         logic::__Params { symbol_cg: String::from("ethereum"), symbol_cc: String::from("ETH") };
+    //     let encoded_params = __encode_params(params).unwrap();
+    //     let ptr = __return(&encoded_params);
 
-//         let result = std::str::from_utf8(__read_data(ptr_output)).unwrap();
-//         assert_eq!(result, r#"{"symbol_cg":"ethereum","symbol_cc":"ETH"}"#);
-//     }
+    //     let ptr_output = __parse_params(ptr);
 
-//     #[test]
-//     fn test_raw_data_info() {
-//         let ptr_output = __raw_data_info();
-//         let result = std::str::from_utf8(__read_data(ptr_output)).unwrap();
-//         assert_eq!(result, r#"[["coin_gecko","f32"],["crypto_compare","f32"]]"#);
-//     }
+    //     let result = std::str::from_utf8(__read_data(ptr_output)).unwrap();
+    //     assert_eq!(result, r#"{"symbol_cg":"ethereum","symbol_cc":"ETH"}"#);
+    // }
 
-//     #[test]
-//     fn test_params_info() {
-//         let ptr_output = __params_info();
-//         let result = std::str::from_utf8(__read_data(ptr_output)).unwrap();
-//         assert_eq!(result, r#"[["symbol_cg","String"],["symbol_cc","String"]]"#);
-//     }
+    // #[test]
+    // fn test_raw_data_info() {
+    //     let ptr_output = __raw_data_info();
+    //     let result = std::str::from_utf8(__read_data(ptr_output)).unwrap();
+    //     assert_eq!(result, r#"[["coin_gecko","f32"],["crypto_compare","f32"]]"#);
+    // }
 
-//     #[test]
-//     fn test_a() {
-//         assert_eq!(1, 1);
-//     }
-// }
+    // #[test]
+    // fn test_params_info() {
+    //     let ptr_output = __params_info();
+    //     let result = std::str::from_utf8(__read_data(ptr_output)).unwrap();
+    //     assert_eq!(result, r#"[["symbol_cg","String"],["symbol_cc","String"]]"#);
+    // }
+}

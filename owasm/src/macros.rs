@@ -12,18 +12,17 @@
 ///
 /// ```
 /// use owasm::{decl_data, decl_params};
-/// use owasm::ext::crypto::{coingecko, cryptocompare};
+/// use owasm::ext::crypto::{coingecko, cryptocompare, coins};
 ///
 /// decl_params! {
 ///     pub struct Parameter {
-///         pub symbol_cg: String,
-///         pub symbol_cc: String,
+///         pub symbol: coins::Coins,
 ///     }
 /// }
 /// decl_data! {
 ///     pub struct Data {
-///         pub coin_gecko: f32 = |params: &Parameter| coingecko::Price::new(&params.symbol_cg),
-///         pub crypto_compare: f32 = |params: &Parameter| cryptocompare::Price::new(&params.symbol_cc),
+///         pub coin_gecko: f32 = |params: &Parameter| coingecko::Price::new(&params.symbol),
+///         pub crypto_compare: f32 = |params: &Parameter| cryptocompare::Price::new(&params.symbol),
 ///     }
 /// }
 /// ```
