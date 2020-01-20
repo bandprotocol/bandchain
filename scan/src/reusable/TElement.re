@@ -186,7 +186,7 @@ type t =
   | HashWithLink(Hash.t)
   | Address(Address.t)
   | Source(string)
-  | Value(float);
+  | Value(Js.Json.t);
 
 [@react.component]
 let make = (~elementType) => {
@@ -205,6 +205,6 @@ let make = (~elementType) => {
   | HashWithLink(hash) => renderHashWithLink(hash)
   | Address(address) => renderAddress(address)
   | Source(source) => renderSource(source)
-  | Value(value) => renderText(value->Format.fPretty, Text.Regular)
+  | Value(value) => renderText(value->Js.Json.stringify, Text.Regular)
   };
 };
