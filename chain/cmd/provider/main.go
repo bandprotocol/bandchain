@@ -23,6 +23,7 @@ import (
 )
 
 var txSender cmtx.TxSender
+var allowedCommands = map[string]bool{"curl": true, "ping": true}
 
 func main() {
 	// Get environment variable
@@ -44,7 +45,7 @@ func main() {
 	s := sub.NewSubscriber(viper.GetString("nodeURI"), "/websocket")
 
 	// Tx events
-	s.AddHandler(zoracle.EventTypeRequest, handleRequest)
+	s.AddHandler(zoracle.EventTypeRequest, handleRequestAndLog)
 
 	// start subscription
 	s.Run()
@@ -55,8 +56,8 @@ type Command struct {
 	Arguments []string `json:"args"`
 }
 
-func execWithTimeout(command Command, timeoutInMiliSecond int64) ([]byte, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeoutInMiliSecond)*(time.Millisecond))
+func execWithTimeout(command Command, timeoutInMilliSecond int64) ([]byte, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeoutInMilliSecond)*(time.Millisecond))
 	defer cancel()
 	cmd := exec.CommandContext(ctx, command.Cmd, command.Arguments...)
 	out, err := cmd.Output()
@@ -69,7 +70,7 @@ func execWithTimeout(command Command, timeoutInMiliSecond int64) ([]byte, error)
 	return out, nil
 }
 
-func handleRequest(event *abci.Event) {
+func handleRequest(event *abci.Event) (sdk.TxResponse, error) {
 	var requestID uint64
 	var commands []Command
 
@@ -79,32 +80,27 @@ func handleRequest(event *abci.Event) {
 			var err error
 			requestID, err = strconv.ParseUint(string(kv.Value), 10, 64)
 			if err != nil {
-				fmt.Printf("handleRequest %s", err)
-				return
+				return sdk.TxResponse{}, fmt.Errorf("handleRequest %s", err)
 			}
 		case zoracle.AttributeKeyPrepare:
 			byteValue, err := hex.DecodeString(string(kv.Value))
 			if err != nil {
-				fmt.Printf("handleRequest %s", err)
-				return
+				return sdk.TxResponse{}, fmt.Errorf("handleRequest %s", err)
 			}
 			err = json.Unmarshal(byteValue, &commands)
 			if err != nil {
-				fmt.Printf("handleRequest %s", err)
-				return
+				return sdk.TxResponse{}, fmt.Errorf("handleRequest %s", err)
 			}
 		}
 	}
 	var answer []string
 	for _, command := range commands {
-		if command.Cmd != "curl" {
-			fmt.Printf("handleRequest unknown command %s", command.Cmd)
-			return
+		if !allowedCommands[command.Cmd] {
+			return sdk.TxResponse{}, fmt.Errorf("handleRequest unknown command %s", command.Cmd)
 		}
 		query, err := execWithTimeout(command, 3000)
 		if err != nil {
-			fmt.Printf("handleRequest query err with command %s %v", command.Cmd, command.Arguments)
-			return
+			return sdk.TxResponse{}, fmt.Errorf("handleRequest query err with command: %s %v, error: %v", command.Cmd, command.Arguments, err)
 		}
 		answer = append(answer, string(query))
 	}
@@ -112,8 +108,11 @@ func handleRequest(event *abci.Event) {
 
 	tx, err := txSender.SendTransaction(zoracle.NewMsgReport(requestID, b, sdk.ValAddress(txSender.Sender())), flags.BroadcastSync)
 	if err != nil {
-		fmt.Printf("handleRequest %s", err)
-		return
+		return sdk.TxResponse{}, fmt.Errorf("handleRequest send tx fail : %s", err)
 	}
-	fmt.Println("Tx:", tx)
+	return tx, nil
+}
+
+func handleRequestAndLog(event *abci.Event) {
+	fmt.Println(handleRequest(event))
 }
