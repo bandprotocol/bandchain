@@ -22,6 +22,8 @@ import (
 	"github.com/bandprotocol/d3n/chain/x/zoracle"
 )
 
+const LIMIT_TIMEOUT = 3 * time.Second
+
 var txSender cmtx.TxSender
 var allowedCommands = map[string]bool{"curl": true, "ping": true}
 
@@ -56,8 +58,8 @@ type Command struct {
 	Arguments []string `json:"args"`
 }
 
-func execWithTimeout(command Command, timeoutInMilliSecond int64) ([]byte, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeoutInMilliSecond)*(time.Millisecond))
+func execWithTimeout(command Command, limit time.Duration) ([]byte, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), limit)
 	defer cancel()
 	cmd := exec.CommandContext(ctx, command.Cmd, command.Arguments...)
 	out, err := cmd.Output()
@@ -98,7 +100,7 @@ func handleRequest(event *abci.Event) (sdk.TxResponse, error) {
 		if !allowedCommands[command.Cmd] {
 			return sdk.TxResponse{}, fmt.Errorf("handleRequest unknown command %s", command.Cmd)
 		}
-		query, err := execWithTimeout(command, 3000)
+		query, err := execWithTimeout(command, LIMIT_TIMEOUT)
 		if err != nil {
 			return sdk.TxResponse{}, fmt.Errorf("handleRequest query err with command: %s %v, error: %v", command.Cmd, command.Arguments, err)
 		}
