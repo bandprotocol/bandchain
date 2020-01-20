@@ -1,8 +1,7 @@
 scan-build:
-  image: node:8-alpine
+  image: node:10.17.0-buster
   stage: build
   script:
-    - apk --no-cache add --virtual build-dependencies python g++ gcc make
     - cd scan
     - yarn
     - yarn bsb -make-world
