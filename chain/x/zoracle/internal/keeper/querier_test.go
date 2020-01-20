@@ -29,7 +29,7 @@ func TestQueryRequestById(t *testing.T) {
 	require.Equal(t, types.CodeRequestNotFound, err.Code())
 
 	// set code
-	absPath, _ := filepath.Abs("../../../../wasm/res/test_u64.wasm")
+	absPath, _ := filepath.Abs("../../../../wasm/res/result.wasm")
 	code, _ := wasm.ReadBytes(absPath)
 	owner := sdk.AccAddress([]byte("owner"))
 	name := "Crypto Price"
@@ -40,7 +40,7 @@ func TestQueryRequestById(t *testing.T) {
 
 	request := types.NewRequest(codeHash, params, 3)
 	keeper.SetRequest(ctx, 1, request)
-	result := []byte("result")
+	result, _ := hex.DecodeString("0000000000002710")
 	keeper.SetResult(ctx, 1, codeHash, params, result)
 
 	// create query
@@ -52,6 +52,7 @@ func TestQueryRequestById(t *testing.T) {
 	require.Nil(t, err)
 
 	paramsMap := []byte(`{"symbol_cg":"bitcoin","symbol_cc":"BTC"}`)
+	parsedResult := []byte(`{"price_in_usd": 10000}`)
 
 	// Use bytes format for comparison
 	request = types.NewRequest(codeHash, params, 3)
@@ -59,10 +60,11 @@ func TestQueryRequestById(t *testing.T) {
 		keeper.cdc,
 		types.NewRequestInfo(
 			request.CodeHash,
-			params,
 			paramsMap,
+			params,
 			request.ReportEndAt,
 			[]types.ValidatorReport{},
+			parsedResult,
 			result,
 		),
 	)
@@ -111,4 +113,44 @@ func TestQueryPendingRequest(t *testing.T) {
 	acs, errJSON = codec.MarshalJSONIndent(keeper.cdc, []uint64{2})
 	require.Nil(t, errJSON)
 	require.Equal(t, acs, acsBytes)
+}
+
+func TestQueryScript(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	absPath, _ := filepath.Abs("../../../../wasm/res/result.wasm")
+	code, _ := wasm.ReadBytes(absPath)
+	owner := sdk.AccAddress([]byte("owner"))
+	name := "Crypto Price"
+	codeHash := keeper.SetCode(ctx, code, name, owner)
+
+	// Create variable "querier" which is a function
+	querier := NewQuerier(keeper)
+
+	rawQueryBytes, err := querier(
+		ctx,
+		[]string{"script", hex.EncodeToString(codeHash)},
+		abci.RequestQuery{},
+	)
+	require.Nil(t, err)
+
+	expectJson, errJSON := codec.MarshalJSONIndent(
+		keeper.cdc,
+		types.NewScriptInfo(
+			name,
+			codeHash,
+			[]types.Field{
+				types.Field{Name: "symbol_cg", Type: "String"},
+				types.Field{Name: "symbol_cc", Type: "String"},
+			},
+			[]types.Field{
+				types.Field{Name: "coin_gecko", Type: "f32"},
+				types.Field{Name: "crypto_compare", Type: "f32"},
+			},
+			[]types.Field{types.Field{Name: "price_in_usd", Type: "u64"}},
+			owner,
+		),
+	)
+	require.Nil(t, errJSON)
+	require.Equal(t, expectJson, rawQueryBytes)
 }

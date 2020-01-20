@@ -58,13 +58,24 @@ func queryRequest(ctx sdk.Context, path []string, req abci.RequestQuery, keeper 
 		return nil, sdkErr
 	}
 
-	rawParams, err := wasm.ParseParams(code.Code, request.Params)
+	parsedParams, err := wasm.ParseParams(code.Code, request.Params)
 	if err != nil {
-		rawParams = []byte{}
+		parsedParams = []byte{}
 	}
-	res, err := codec.MarshalJSONIndent(
-		keeper.cdc,
-		types.NewRequestInfo(request.CodeHash, request.Params, rawParams, request.ReportEndAt, reports, result))
+
+	parsedResult, err := wasm.ParseResult(code.Code, result)
+	if err != nil {
+		parsedResult = []byte{}
+	}
+	res, err := codec.MarshalJSONIndent(keeper.cdc, types.NewRequestInfo(
+		request.CodeHash,
+		parsedParams,
+		request.Params,
+		request.ReportEndAt,
+		reports,
+		parsedResult,
+		result,
+	))
 	if err != nil {
 		panic("could not marshal result to JSON")
 	}
@@ -121,7 +132,26 @@ func queryScript(ctx sdk.Context, path []string, req abci.RequestQuery, keeper K
 		}
 	}
 
-	return codec.MustMarshalJSONIndent(keeper.cdc, types.NewScriptInfo(code.Name, codeHash, paramsInfo, dataInfo, code.Owner)), nil
+	// Get result info
+	rawResultInfo, err := wasm.ResultInfo(code.Code)
+	var resultInfo []types.Field
+	if err != nil {
+		resultInfo = nil
+	} else {
+		resultInfo, err = types.ParseFields(rawResultInfo)
+		if err != nil {
+			resultInfo = nil
+		}
+	}
+
+	return codec.MustMarshalJSONIndent(keeper.cdc, types.NewScriptInfo(
+		code.Name,
+		codeHash,
+		paramsInfo,
+		dataInfo,
+		resultInfo,
+		code.Owner,
+	)), nil
 }
 
 func queryAllScripts(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {

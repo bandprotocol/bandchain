@@ -40,7 +40,7 @@ func main() {
 	switch args[0] {
 	case "store":
 		{
-			file, err := os.Open("../../wasm/res/enum_coins.wasm")
+			file, err := os.Open("../../wasm/res/result.wasm")
 			if err != nil {
 				panic(err)
 			}
@@ -74,7 +74,7 @@ func main() {
 		}
 	case "request":
 		{
-			codeHash, _ := hex.DecodeString("e4eb7c91a512602a62f5e3dc5b56bd19833913afdebd405a22a6716b6eb3d374")
+			codeHash, _ := hex.DecodeString("c5d9b37939c8a4f2bb55a14ebb7bc9138e8f29485bf8fcbacff49210ad66d3dc")
 			switch args[1] {
 			case "BTC":
 				{
