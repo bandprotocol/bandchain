@@ -9,8 +9,6 @@ import (
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
 	common "github.com/tendermint/tendermint/libs/common"
-	//sdk "github.com/cosmos/cosmos-sdk/types"
-	// "github.com/stretchr/testify/require"
 )
 
 func TestExecWithTimeoutSuccess(t *testing.T) {
