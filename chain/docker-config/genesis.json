@@ -1,5 +1,5 @@
 {
-  "genesis_time": "2020-01-15T07:59:16.798155Z",
+  "genesis_time": "2020-01-20T18:19:43.174131Z",
   "chain_id": "bandchain",
   "consensus_params": {
     "block": {
@@ -7,223 +7,11 @@
       "max_gas": "-1",
       "time_iota_ms": "1000"
     },
-    "evidence": {
-      "max_age": "100000"
-    },
-    "validator": {
-      "pub_key_types": [
-        "secp256k1"
-      ]
-    }
+    "evidence": { "max_age": "100000" },
+    "validator": { "pub_key_types": ["secp256k1"] }
   },
   "app_hash": "",
   "app_state": {
-    "accounts": [
-      {
-        "address": "band1r8u4m0wefrdyp7sdde7drtrt94qczggkv38jrk",
-        "coins": [
-          {
-            "denom": "uband",
-            "amount": "10000000000000"
-          }
-        ],
-        "sequence_number": "0",
-        "account_number": "0",
-        "original_vesting": [],
-        "delegated_free": [],
-        "delegated_vesting": [],
-        "start_time": "0",
-        "end_time": "0",
-        "module_name": "",
-        "module_permissions": [
-          ""
-        ]
-      },
-      {
-        "address": "band13zmknvkq2sj920spz90g4r9zjan8g584x8qalj",
-        "coins": [
-          {
-            "denom": "uband",
-            "amount": "10000000000000"
-          }
-        ],
-        "sequence_number": "0",
-        "account_number": "0",
-        "original_vesting": [],
-        "delegated_free": [],
-        "delegated_vesting": [],
-        "start_time": "0",
-        "end_time": "0",
-        "module_name": "",
-        "module_permissions": [
-          ""
-        ]
-      },
-      {
-        "address": "band1fwffdxysc5a0hu0falsq4lyneucj05cw0jx2yy",
-        "coins": [
-          {
-            "denom": "uband",
-            "amount": "10000000000000"
-          }
-        ],
-        "sequence_number": "0",
-        "account_number": "0",
-        "original_vesting": [],
-        "delegated_free": [],
-        "delegated_vesting": [],
-        "start_time": "0",
-        "end_time": "0",
-        "module_name": "",
-        "module_permissions": [
-          ""
-        ]
-      },
-      {
-        "address": "band1zpmsn2vg2zcrx4jlg49t2f2y2cwjykr679l8r8",
-        "coins": [
-          {
-            "denom": "uband",
-            "amount": "10000000000000"
-          }
-        ],
-        "sequence_number": "0",
-        "account_number": "0",
-        "original_vesting": [],
-        "delegated_free": [],
-        "delegated_vesting": [],
-        "start_time": "0",
-        "end_time": "0",
-        "module_name": "",
-        "module_permissions": [
-          ""
-        ]
-      },
-      {
-        "address": "band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9",
-        "coins": [
-          {
-            "denom": "uband",
-            "amount": "10000000000000"
-          }
-        ],
-        "sequence_number": "0",
-        "account_number": "0",
-        "original_vesting": [],
-        "delegated_free": [],
-        "delegated_vesting": [],
-        "start_time": "0",
-        "end_time": "0",
-        "module_name": "",
-        "module_permissions": [
-          ""
-        ]
-      }
-    ],
-    "distribution": {
-      "fee_pool": {
-        "community_pool": []
-      },
-      "community_tax": "0.020000000000000000",
-      "base_proposer_reward": "0.010000000000000000",
-      "bonus_proposer_reward": "0.040000000000000000",
-      "withdraw_addr_enabled": true,
-      "delegator_withdraw_infos": [],
-      "previous_proposer": "",
-      "outstanding_rewards": [],
-      "validator_accumulated_commissions": [],
-      "validator_historical_rewards": [],
-      "validator_current_rewards": [],
-      "delegator_starting_infos": [],
-      "validator_slash_events": []
-    },
-    "crisis": {
-      "constant_fee": {
-        "denom": "uband",
-        "amount": "1000"
-      }
-    },
-    "supply": {
-      "supply": []
-    },
-    "mint": {
-      "minter": {
-        "inflation": "0.130000000000000000",
-        "annual_provisions": "0.000000000000000000"
-      },
-      "params": {
-        "mint_denom": "uband",
-        "inflation_rate_change": "0.130000000000000000",
-        "inflation_max": "0.200000000000000000",
-        "inflation_min": "0.070000000000000000",
-        "goal_bonded": "0.670000000000000000",
-        "blocks_per_year": "6311520"
-      }
-    },
-    "zoracle": {},
-    "params": null,
-    "slashing": {
-      "params": {
-        "max_evidence_age": "120000000000",
-        "signed_blocks_window": "100",
-        "min_signed_per_window": "0.500000000000000000",
-        "downtime_jail_duration": "600000000000",
-        "slash_fraction_double_sign": "0.050000000000000000",
-        "slash_fraction_downtime": "0.010000000000000000"
-      },
-      "signing_infos": {},
-      "missed_blocks": {}
-    },
-    "auth": {
-      "params": {
-        "max_memo_characters": "256",
-        "tx_sig_limit": "7",
-        "tx_size_cost_per_byte": "10",
-        "sig_verify_cost_ed25519": "590",
-        "sig_verify_cost_secp256k1": "1000"
-      }
-    },
-    "staking": {
-      "params": {
-        "unbonding_time": "1814400000000000",
-        "max_validators": 100,
-        "max_entries": 7,
-        "bond_denom": "uband"
-      },
-      "last_total_power": "0",
-      "last_validator_powers": null,
-      "validators": null,
-      "delegations": null,
-      "unbonding_delegations": null,
-      "redelegations": null,
-      "exported": false
-    },
-    "bank": {
-      "send_enabled": true
-    },
-    "gov": {
-      "starting_proposal_id": "1",
-      "deposits": null,
-      "votes": null,
-      "proposals": null,
-      "deposit_params": {
-        "min_deposit": [
-          {
-            "denom": "uband",
-            "amount": "10000000"
-          }
-        ],
-        "max_deposit_period": "172800000000000"
-      },
-      "voting_params": {
-        "voting_period": "172800000000000"
-      },
-      "tally_params": {
-        "quorum": "0.334000000000000000",
-        "threshold": "0.500000000000000000",
-        "veto": "0.334000000000000000"
-      }
-    },
     "genutil": {
       "gentxs": [
         {
@@ -234,7 +22,7 @@
                 "type": "cosmos-sdk/MsgCreateValidator",
                 "value": {
                   "description": {
-                    "moniker": "node-validator",
+                    "moniker": "node-validator-1",
                     "identity": "",
                     "website": "",
                     "details": ""
@@ -248,17 +36,11 @@
                   "delegator_address": "band13zmknvkq2sj920spz90g4r9zjan8g584x8qalj",
                   "validator_address": "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e",
                   "pubkey": "bandvalconspub1addwnpepqfey4c5ul6m5juz36z0dlk8gyg6jcnyrvxm4werkgkmcerx8fn5g2gj9q6w",
-                  "value": {
-                    "denom": "uband",
-                    "amount": "100000000"
-                  }
+                  "value": { "denom": "uband", "amount": "100000000" }
                 }
               }
             ],
-            "fee": {
-              "amount": [],
-              "gas": "200000"
-            },
+            "fee": { "amount": [], "gas": "200000" },
             "signatures": [
               {
                 "pub_key": {
@@ -279,7 +61,7 @@
                 "type": "cosmos-sdk/MsgCreateValidator",
                 "value": {
                   "description": {
-                    "moniker": "node-validator",
+                    "moniker": "node-validator-2",
                     "identity": "",
                     "website": "",
                     "details": ""
@@ -293,17 +75,11 @@
                   "delegator_address": "band1r8u4m0wefrdyp7sdde7drtrt94qczggkv38jrk",
                   "validator_address": "bandvaloper1r8u4m0wefrdyp7sdde7drtrt94qczggkq8r3xa",
                   "pubkey": "bandvalconspub1addwnpepq06h7wvh5n5pmrejr6t3pyn7ytpwd5c0kmv0wjdfujs847em8dusjl96sxg",
-                  "value": {
-                    "denom": "uband",
-                    "amount": "100000000"
-                  }
+                  "value": { "denom": "uband", "amount": "100000000" }
                 }
               }
             ],
-            "fee": {
-              "amount": [],
-              "gas": "200000"
-            },
+            "fee": { "amount": [], "gas": "200000" },
             "signatures": [
               {
                 "pub_key": {
@@ -324,7 +100,7 @@
                 "type": "cosmos-sdk/MsgCreateValidator",
                 "value": {
                   "description": {
-                    "moniker": "node-validator",
+                    "moniker": "node-validator-3",
                     "identity": "",
                     "website": "",
                     "details": ""
@@ -338,17 +114,11 @@
                   "delegator_address": "band1zpmsn2vg2zcrx4jlg49t2f2y2cwjykr679l8r8",
                   "validator_address": "bandvaloper1zpmsn2vg2zcrx4jlg49t2f2y2cwjykr6jnmyxv",
                   "pubkey": "bandvalconspub1addwnpepq0grwz83v8g4s06fusnq5s4jkzxnhgvx67qr5g7v8tx39ur5m8tk7rg2nxj",
-                  "value": {
-                    "denom": "uband",
-                    "amount": "100000000"
-                  }
+                  "value": { "denom": "uband", "amount": "100000000" }
                 }
               }
             ],
-            "fee": {
-              "amount": [],
-              "gas": "200000"
-            },
+            "fee": { "amount": [], "gas": "200000" },
             "signatures": [
               {
                 "pub_key": {
@@ -369,7 +139,7 @@
                 "type": "cosmos-sdk/MsgCreateValidator",
                 "value": {
                   "description": {
-                    "moniker": "node-validator",
+                    "moniker": "node-validator-4",
                     "identity": "",
                     "website": "",
                     "details": ""
@@ -383,17 +153,11 @@
                   "delegator_address": "band1fwffdxysc5a0hu0falsq4lyneucj05cw0jx2yy",
                   "validator_address": "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0",
                   "pubkey": "bandvalconspub1addwnpepqwj5l74gfj8j77v8st0gh932s3uyu2yys7n50qf6pptjgwnqu2arxkkn82m",
-                  "value": {
-                    "denom": "uband",
-                    "amount": "100000000"
-                  }
+                  "value": { "denom": "uband", "amount": "100000000" }
                 }
               }
             ],
-            "fee": {
-              "amount": [],
-              "gas": "200000"
-            },
+            "fee": { "amount": [], "gas": "200000" },
             "signatures": [
               {
                 "pub_key": {
@@ -407,6 +171,159 @@
           }
         }
       ]
+    },
+    "crisis": { "constant_fee": { "denom": "uband", "amount": "1000" } },
+    "zoracle": {},
+    "distribution": {
+      "fee_pool": { "community_pool": [] },
+      "community_tax": "0.020000000000000000",
+      "base_proposer_reward": "0.010000000000000000",
+      "bonus_proposer_reward": "0.040000000000000000",
+      "withdraw_addr_enabled": true,
+      "delegator_withdraw_infos": [],
+      "previous_proposer": "",
+      "outstanding_rewards": [],
+      "validator_accumulated_commissions": [],
+      "validator_historical_rewards": [],
+      "validator_current_rewards": [],
+      "delegator_starting_infos": [],
+      "validator_slash_events": []
+    },
+    "gov": {
+      "starting_proposal_id": "1",
+      "deposits": null,
+      "votes": null,
+      "proposals": null,
+      "deposit_params": {
+        "min_deposit": [{ "denom": "uband", "amount": "10000000" }],
+        "max_deposit_period": "172800000000000"
+      },
+      "voting_params": { "voting_period": "172800000000000" },
+      "tally_params": {
+        "quorum": "0.334000000000000000",
+        "threshold": "0.500000000000000000",
+        "veto": "0.334000000000000000"
+      }
+    },
+    "accounts": [
+      {
+        "address": "band1r8u4m0wefrdyp7sdde7drtrt94qczggkv38jrk",
+        "coins": [{ "denom": "uband", "amount": "10000000000000" }],
+        "sequence_number": "0",
+        "account_number": "0",
+        "original_vesting": [],
+        "delegated_free": [],
+        "delegated_vesting": [],
+        "start_time": "0",
+        "end_time": "0",
+        "module_name": "",
+        "module_permissions": [""]
+      },
+      {
+        "address": "band13zmknvkq2sj920spz90g4r9zjan8g584x8qalj",
+        "coins": [{ "denom": "uband", "amount": "10000000000000" }],
+        "sequence_number": "0",
+        "account_number": "0",
+        "original_vesting": [],
+        "delegated_free": [],
+        "delegated_vesting": [],
+        "start_time": "0",
+        "end_time": "0",
+        "module_name": "",
+        "module_permissions": [""]
+      },
+      {
+        "address": "band1fwffdxysc5a0hu0falsq4lyneucj05cw0jx2yy",
+        "coins": [{ "denom": "uband", "amount": "10000000000000" }],
+        "sequence_number": "0",
+        "account_number": "0",
+        "original_vesting": [],
+        "delegated_free": [],
+        "delegated_vesting": [],
+        "start_time": "0",
+        "end_time": "0",
+        "module_name": "",
+        "module_permissions": [""]
+      },
+      {
+        "address": "band1zpmsn2vg2zcrx4jlg49t2f2y2cwjykr679l8r8",
+        "coins": [{ "denom": "uband", "amount": "10000000000000" }],
+        "sequence_number": "0",
+        "account_number": "0",
+        "original_vesting": [],
+        "delegated_free": [],
+        "delegated_vesting": [],
+        "start_time": "0",
+        "end_time": "0",
+        "module_name": "",
+        "module_permissions": [""]
+      },
+      {
+        "address": "band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9",
+        "coins": [{ "denom": "uband", "amount": "10000000000000" }],
+        "sequence_number": "0",
+        "account_number": "0",
+        "original_vesting": [],
+        "delegated_free": [],
+        "delegated_vesting": [],
+        "start_time": "0",
+        "end_time": "0",
+        "module_name": "",
+        "module_permissions": [""]
+      }
+    ],
+    "mint": {
+      "minter": {
+        "inflation": "0.130000000000000000",
+        "annual_provisions": "0.000000000000000000"
+      },
+      "params": {
+        "mint_denom": "uband",
+        "inflation_rate_change": "0.130000000000000000",
+        "inflation_max": "0.200000000000000000",
+        "inflation_min": "0.070000000000000000",
+        "goal_bonded": "0.670000000000000000",
+        "blocks_per_year": "6311520"
+      }
+    },
+    "bank": { "send_enabled": true },
+    "supply": { "supply": [] },
+    "auth": {
+      "params": {
+        "max_memo_characters": "256",
+        "tx_sig_limit": "7",
+        "tx_size_cost_per_byte": "10",
+        "sig_verify_cost_ed25519": "590",
+        "sig_verify_cost_secp256k1": "1000"
+      }
+    },
+    "params": null,
+    "staking": {
+      "params": {
+        "unbonding_time": "1814400000000000",
+        "max_validators": 100,
+        "max_entries": 7,
+        "bond_denom": "uband"
+      },
+      "last_total_power": "0",
+      "last_validator_powers": null,
+      "validators": null,
+      "delegations": null,
+      "unbonding_delegations": null,
+      "redelegations": null,
+      "exported": false
+    },
+    "slashing": {
+      "params": {
+        "max_evidence_age": "120000000000",
+        "signed_blocks_window": "100",
+        "min_signed_per_window": "0.500000000000000000",
+        "downtime_jail_duration": "600000000000",
+        "slash_fraction_double_sign": "0.050000000000000000",
+        "slash_fraction_downtime": "0.010000000000000000"
+      },
+      "signing_infos": {},
+      "missed_blocks": {}
     }
   }
 }
