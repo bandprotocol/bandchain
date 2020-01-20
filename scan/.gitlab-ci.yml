@@ -5,6 +5,26 @@ scan-build:
     - cd scan
     - yarn
     - yarn bsb -make-world
+  cache:
+    key: scan-cache
+    policy: push
+    paths:
+      - scan/node_modules/
+  only:
+    changes:
+      - scan/**/*
+
+scan-test:
+  image: node:10.17.0-buster
+  stage: test
+  script:
+    - cd scan
+    - yarn test
+  cache:
+    key: scan-cache
+    policy: pull
+    paths:
+      - scan/node_modules/
   only:
     changes:
       - scan/**/*
