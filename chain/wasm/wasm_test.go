@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 	wasm "github.com/wasmerio/go-ext-wasm/wasmer"
@@ -147,6 +148,56 @@ func TestPrepare(t *testing.T) {
 	require.Nil(t, err)
 	expect := `[{"cmd":"curl","args":["https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd"]},{"cmd":"curl","args":["https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD"]}]`
 	require.Equal(t, expect, string(prepare))
+}
+
+func TestExecuteWithTimeoutSuccess(t *testing.T) {
+	code, _ := loadWasmFile()
+	params, _ := hex.DecodeString("0000000000000007626974636f696e0000000000000003425443")
+	data, _ := hex.DecodeString("5b227b5c22626974636f696e5c223a7b5c227573645c223a373139342e32357d7d222c227b5c225553445c223a373231342e31327d225d")
+	inputs := [][]byte{data, data}
+	expect, _ := hex.DecodeString("00000000000afe22")
+	instance, err := wasm.NewInstance(code)
+	require.Nil(t, err)
+
+	defer instance.Close()
+	paramsInput, err := storeParams(instance, params)
+	require.Nil(t, err)
+
+	wasmInput, err := allocate(instance, inputs)
+	require.Nil(t, err)
+
+	fn := instance.Exports["__execute"]
+	require.NotNil(t, fn)
+
+	ptr, err := executeWithTimeout(fn, paramsInput, wasmInput, 100*time.Millisecond)
+	require.Nil(t, err)
+
+	result, err := parseOutput(instance, ptr.ToI64())
+	require.Nil(t, err)
+
+	require.Equal(t, expect, result)
+}
+
+func TestExecuteWithTimeoutFailBecauseTimeout(t *testing.T) {
+	code, _ := loadWasmFile()
+	params, _ := hex.DecodeString("0000000000000007626974636f696e0000000000000003425443")
+	data, _ := hex.DecodeString("5b227b5c22626974636f696e5c223a7b5c227573645c223a373139342e32357d7d222c227b5c225553445c223a373231342e31327d225d")
+	inputs := [][]byte{data, data}
+	instance, err := wasm.NewInstance(code)
+	require.Nil(t, err)
+
+	defer instance.Close()
+	paramsInput, err := storeParams(instance, params)
+	require.Nil(t, err)
+
+	wasmInput, err := allocate(instance, inputs)
+	require.Nil(t, err)
+
+	fn := instance.Exports["__execute"]
+	require.NotNil(t, fn)
+
+	_, err = executeWithTimeout(fn, paramsInput, wasmInput, 1*time.Nanosecond)
+	require.EqualError(t, err, "wasm execution timeout")
 }
 
 func TestExecute(t *testing.T) {
