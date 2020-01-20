@@ -21,7 +21,7 @@ let make = (~params) =>
      ->Belt.Array.mapWithIndex((idx, (key, value)) =>
          <div className=Styles.listContainer key={idx |> string_of_int}>
            <div className=Styles.keyContainer> <Text value=key size=Text.Lg /> </div>
-           <Text value size=Text.Lg weight=Text.Semibold />
+           <Text value={value |> Js.Json.stringify} size=Text.Lg weight=Text.Semibold />
          </div>
        )
      ->React.array}
