@@ -8,15 +8,14 @@ This repository is a [monorepo] containing the reference implementation of D3N a
 
 ## Table of Contents
 
-| Module                 | Description                                               |
-| ---------------------- | --------------------------------------------------------- |
-| [`chain`](chain)       | 🔗 D3N blockchain reference implementation                |
-| [`explorer`](explorer) | 🔍 Web interface to explore D3N network                   |
-| [`bridges`](bridges)   | 📡 Lite client bridges on other smart contract platforms  |
-| [`owasm`](owasm)       | 🔮 WebAssembly library for writing oracle scripts         |
-| [`scan`](scan)         |                                                           | 
-| [`spec`](spec)         | 📖 D3N research and specification knowledge base          |
-| [`studio`](studio)     | 🎬 In-browser IDE for testing and deploying owasm scripts |
+| Module               | Description                                               |
+| -------------------- | --------------------------------------------------------- |
+| [`chain`](chain)     | 🔗 D3N blockchain reference implementation                |
+| [`bridges`](bridges) | 📡 Lite client bridges on other smart contract platforms  |
+| [`owasm`](owasm)     | 🔮 WebAssembly library for writing oracle scripts         |
+| [`scan`](scan)       |                                                           |
+| [`spec`](spec)       | 📖 D3N research and specification knowledge base          |
+| [`studio`](studio)   | 🎬 In-browser IDE for testing and deploying owasm scripts |
 
 ## Running with Docker
 
@@ -34,10 +33,10 @@ docker-compose up multi-validator
 docker-compose up single-validator
 ```
 
-#### (Optional) Run Explorer or Owasm Studio
+#### (Optional) Run Owasm Studio
 
 ```
-docker-compose up <single or multi> explorer owasm-studio
+docker-compose up <single or multi> owasm-studio
 ```
 
 #### Tear down
