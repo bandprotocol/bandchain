@@ -87,5 +87,12 @@ echo "12345678" | bandd gentx \
 # collect genesis transactions
 bandd collect-gentxs
 
+# change monikers
+cat ~/.bandd/config/genesis.json \
+    | python3 -c 'import json; import sys; genesis = json.loads(sys.stdin.read()); genesis["app_state"]["genutil"]["gentxs"][0]["value"]["msg"][0]["value"]["description"]["moniker"] = "node-validator-1"; genesis["app_state"]["genutil"]["gentxs"][1]["value"]["msg"][0]["value"]["description"]["moniker"] = "node-validator-2"; genesis["app_state"]["genutil"]["gentxs"][2]["value"]["msg"][0]["value"]["description"]["moniker"] = "node-validator-3"; genesis["app_state"]["genutil"]["gentxs"][3]["value"]["msg"][0]["value"]["description"]["moniker"] = "node-validator-4"; print(json.dumps(genesis))' \
+    > ~/.bandd/config/genesis.json.temp
+
+mv ~/.bandd/config/genesis.json.temp ~/.bandd/config/genesis.json
+
 # copy genesis to the proper location!
 cp ~/.bandd/config/genesis.json $DIR/genesis.json
