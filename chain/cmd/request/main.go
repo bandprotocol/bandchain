@@ -74,7 +74,7 @@ func main() {
 		}
 	case "request":
 		{
-			codeHash, _ := hex.DecodeString("c5d9b37939c8a4f2bb55a14ebb7bc9138e8f29485bf8fcbacff49210ad66d3dc")
+			codeHash, _ := hex.DecodeString("148b6ddfdd2e1a6791b992592160ccd3cef0cea0c5f88ffdbdae7ea4044d9841")
 			switch args[1] {
 			case "BTC":
 				{

@@ -34,7 +34,7 @@ func TestQueryRequestById(t *testing.T) {
 	owner := sdk.AccAddress([]byte("owner"))
 	name := "Crypto Price"
 	codeHash := keeper.SetCode(ctx, code, name, owner)
-	params, _ := hex.DecodeString("0000000000000007626974636f696e0000000000000003425443")
+	params, _ := hex.DecodeString("00000000")
 
 	// set request
 
@@ -51,7 +51,7 @@ func TestQueryRequestById(t *testing.T) {
 	)
 	require.Nil(t, err)
 
-	paramsMap := []byte(`{"symbol_cg":"bitcoin","symbol_cc":"BTC"}`)
+	paramsMap := []byte(`{"symbol":"BTC"}`)
 	parsedResult := []byte(`{"price_in_usd": 10000}`)
 
 	// Use bytes format for comparison

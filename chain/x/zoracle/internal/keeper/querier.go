@@ -44,29 +44,33 @@ func queryRequest(ctx sdk.Context, path []string, req abci.RequestQuery, keeper 
 	if sdkErr != nil {
 		return nil, sdkErr
 	}
-	reports, sdkErr := keeper.GetValidatorReports(ctx, reqID)
-	if sdkErr != nil {
-		return nil, sdkErr
-	}
-	result, sdkErr := keeper.GetResult(ctx, reqID, request.CodeHash, request.Params)
-	if sdkErr != nil {
-		result = []byte{}
-	}
 
 	code, sdkErr := keeper.GetCode(ctx, request.CodeHash)
 	if sdkErr != nil {
 		return nil, sdkErr
 	}
 
-	parsedParams, err := wasm.ParseParams(code.Code, request.Params)
-	if err != nil {
-		parsedParams = []byte{}
+	reports, sdkErr := keeper.GetValidatorReports(ctx, reqID)
+	if sdkErr != nil {
+		return nil, sdkErr
+	}
+	result, sdkErr := keeper.GetResult(ctx, reqID, request.CodeHash, request.Params)
+	var parsedResult []byte
+	if sdkErr != nil {
+		result = []byte{}
+		parsedResult = types.EmptyMap
+	} else {
+		parsedResult, err = wasm.ParseResult(code.Code, result)
+		if err != nil {
+			parsedResult = types.EmptyMap
+		}
 	}
 
-	parsedResult, err := wasm.ParseResult(code.Code, result)
+	parsedParams, err := wasm.ParseParams(code.Code, request.Params)
 	if err != nil {
-		parsedResult = []byte{}
+		parsedParams = types.EmptyMap
 	}
+
 	res, err := codec.MarshalJSONIndent(keeper.cdc, types.NewRequestInfo(
 		request.CodeHash,
 		parsedParams,

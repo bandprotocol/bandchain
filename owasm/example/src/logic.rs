@@ -1,4 +1,4 @@
-use owasm::ext::crypto::{coingecko, cryptocompare};
+use owasm::ext::crypto::{coingecko, coins, cryptocompare};
 use owasm::{decl_data, decl_params, decl_result};
 use serde::{Deserialize, Serialize};
 

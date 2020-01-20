@@ -12,7 +12,7 @@
 ///
 /// ```
 /// use owasm::{decl_data, decl_params, decl_result};
-/// use owasm::ext::crypto::{coingecko, cryptocompare};
+/// use owasm::ext::crypto::{coingecko, coins, cryptocompare};
 /// use serde::{Deserialize, Serialize};
 ///
 /// decl_params! {
