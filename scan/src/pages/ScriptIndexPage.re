@@ -67,6 +67,7 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
     ->Belt.Option.mapWithDefault(([], 0), ({txs, totalCount}) =>
         (txs |> Belt.List.reverse, totalCount)
       );
+  let code = CodeHook.getCode(codeHash, "crypto-price");
 
   <div className=Styles.pageContainer>
     <Row justify=Row.Between>
@@ -231,7 +232,7 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
            </Row>
            <VSpacing size=Spacing.md />
            <div className=Styles.mediumText>
-             <ReactHighlight> {CodeExample.toml |> React.string} </ReactHighlight>
+             <ReactHighlight> {code.toml |> React.string} </ReactHighlight>
            </div>
            <VSpacing size=Spacing.xl />
            <Row>
@@ -241,7 +242,7 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
            </Row>
            <VSpacing size=Spacing.md />
            <div className=Styles.mediumText>
-             <ReactHighlight> {CodeExample.logic |> React.string} </ReactHighlight>
+             <ReactHighlight> {code.logic |> React.string} </ReactHighlight>
            </div>
          </div>
        | ScriptIntegration => <div> {"TODO2" |> React.string} </div>
