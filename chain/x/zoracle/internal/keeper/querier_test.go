@@ -140,8 +140,7 @@ func TestQueryScript(t *testing.T) {
 			name,
 			codeHash,
 			[]types.Field{
-				types.Field{Name: "symbol_cg", Type: "String"},
-				types.Field{Name: "symbol_cc", Type: "String"},
+				types.Field{Name: "symbol", Type: "coins::Coins"},
 			},
 			[]types.Field{
 				types.Field{Name: "coin_gecko", Type: "f32"},
