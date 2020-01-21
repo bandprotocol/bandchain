@@ -195,7 +195,7 @@ func executeWithTimeout(limitTimeout time.Duration, inst wasm.Instance, funcName
 	chanWasmOutput := make(chan wasmOutput, 1)
 	go func() {
 		ptr, err := fn(args...)
-		chanWasmOutput <- wasmOutput{ptr: ptr, err: err}
+		chanWasmOutput <- wasmOutput{ptr, err}
 	}()
 
 	var res wasmOutput
