@@ -56,8 +56,8 @@ func parseOutput(instance wasm.Instance, ptr int64) ([]byte, error) {
 	return res, nil
 }
 
-func storeParams(instance wasm.Instance, params []byte) (int64, error) {
-	return allocateInner(instance, params)
+func storeRawBytes(instance wasm.Instance, rawBytes []byte) (int64, error) {
+	return allocateInner(instance, rawBytes)
 }
 
 func ParamsInfo(code []byte) ([]byte, error) {
@@ -83,7 +83,7 @@ func ParseParams(code []byte, params []byte) ([]byte, error) {
 		return nil, err
 	}
 	defer instance.Close()
-	paramsInput, err := storeParams(instance, params)
+	paramsInput, err := storeRawBytes(instance, params)
 	if err != nil {
 		return nil, err
 	}
@@ -121,7 +121,7 @@ func ParseRawData(code []byte, params []byte, data []byte) ([]byte, error) {
 		return nil, err
 	}
 	defer instance.Close()
-	paramsInput, err := storeParams(instance, params)
+	paramsInput, err := storeRawBytes(instance, params)
 	dataInput, err := allocateInner(instance, data)
 	if err != nil {
 		return nil, err
@@ -137,13 +137,51 @@ func ParseRawData(code []byte, params []byte, data []byte) ([]byte, error) {
 	return parseOutput(instance, ptr.ToI64())
 }
 
+func ResultInfo(code []byte) ([]byte, error) {
+	instance, err := wasm.NewInstance(code)
+	if err != nil {
+		return nil, err
+	}
+	defer instance.Close()
+	fn := instance.Exports["__result_info"]
+	if fn == nil {
+		return nil, errors.New("__result_info not implemented")
+	}
+	ptr, err := fn()
+	if err != nil {
+		return nil, err
+	}
+	return parseOutput(instance, ptr.ToI64())
+}
+
+func ParseResult(code []byte, result []byte) ([]byte, error) {
+	instance, err := wasm.NewInstance(code)
+	if err != nil {
+		return nil, err
+	}
+	defer instance.Close()
+	resultInput, err := storeRawBytes(instance, result)
+	if err != nil {
+		return nil, err
+	}
+	fn := instance.Exports["__parse_result"]
+	if fn == nil {
+		return nil, errors.New("__parse_result not implemented")
+	}
+	ptr, err := fn(resultInput)
+	if err != nil {
+		return nil, err
+	}
+	return parseOutput(instance, ptr.ToI64())
+}
+
 func Prepare(code []byte, params []byte) ([]byte, error) {
 	instance, err := wasm.NewInstance(code)
 	if err != nil {
 		return nil, err
 	}
 	defer instance.Close()
-	paramsInput, err := storeParams(instance, params)
+	paramsInput, err := storeRawBytes(instance, params)
 	if err != nil {
 		return nil, err
 	}
@@ -164,7 +202,7 @@ func Execute(code []byte, params []byte, inputs [][]byte) ([]byte, error) {
 		return nil, err
 	}
 	defer instance.Close()
-	paramsInput, err := storeParams(instance, params)
+	paramsInput, err := storeRawBytes(instance, params)
 	if err != nil {
 		return nil, err
 	}
