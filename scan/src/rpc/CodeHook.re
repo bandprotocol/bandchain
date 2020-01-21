@@ -1,13 +1,17 @@
 module Code = {
-  type t = {
-    toml: string,
-    logic: string,
+  type file_t = {
+    filename: string,
+    code: string,
   };
+
+  type t = list(file_t);
 };
 
-let getCode = (codeHash, filename) => {
-  {
-    Code.toml: {f|[package]
+let getCode = codeHash => {
+  Code.[
+    {
+      filename: "src/config.toml",
+      code: {f|[package]
 name = "awesome-oracle"
 version = "0.1.0"
 authors = ["John <john@example.com>"]
@@ -20,7 +24,10 @@ crate-type = ["cdylib", "rlib"]
 bincode = "1.2.0"
 wasm-bindgen = "*"
 owasm = "*"|f},
-    logic: {f|use owasm::decl_data;
+    },
+    {
+      filename: "src/logic.rs",
+      code: {f|use owasm::decl_data;
 use owasm::ext::{coingecko, cryptocompare};
 
 decl_data! {
@@ -72,5 +79,6 @@ mod tests {
         println!("Current BTC price (times 100) is {}", execute(vec![data]));
     }
 }|f},
-  };
+    },
+  ];
 };
