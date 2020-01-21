@@ -6,7 +6,7 @@ volumes:
 services:
   build-provider-image:
     build:
-      context: docker-provider
+      context: chain/images/provider-vm
     image: band-provider:latest
 
   single-validator:
