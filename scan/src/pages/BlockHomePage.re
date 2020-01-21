@@ -1,7 +1,7 @@
 module Styles = {
   open Css;
 
-  let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
+  let vFlex = style([display(`flex), flexDirection(`row), alignItems(`flexStart)]);
 
   let pageContainer = style([paddingTop(`px(50))]);
 
@@ -16,9 +16,7 @@ module Styles = {
 
   let fullWidth = style([width(`percent(100.0)), display(`flex)]);
 
-  let textContainer = style([paddingLeft(Spacing.lg), display(`flex)]);
-
-  let proposerBox = style([maxWidth(`px(270)), display(`flex), flexDirection(`column)]);
+  let textContainer = style([paddingLeft(Spacing.lg)]);
 };
 
 let renderBody = ((block, moniker): (BlockHook.Block.t, string)) => {
@@ -30,50 +28,13 @@ let renderBody = ((block, moniker): (BlockHook.Block.t, string)) => {
   <TBody key={height |> string_of_int}>
     <div className=Styles.fullWidth onClick={_ => Route.BlockIndexPage(height) |> Route.redirect}>
       <Row>
-        <Col size=0.6>
-          <div className=Styles.textContainer>
-            <TElement elementType={TElement.Height(height)} />
-          </div>
-        </Col>
-        <Col size=0.8>
-          <div className=Styles.textContainer>
-            <TElement elementType={TElement.Timestamp(timestamp)} />
-          </div>
-        </Col>
-        <Col size=2.0>
-          <div className={Css.merge([Styles.textContainer, Styles.proposerBox])}>
-            <Text
-              block=true
-              value=moniker
-              size=Text.Sm
-              weight=Text.Regular
-              color=Colors.grayHeader
-            />
-            <VSpacing size=Spacing.sm />
-            <Text
-              block=true
-              value=proposer
-              size=Text.Md
-              weight=Text.Bold
-              code=true
-              ellipsis=true
-              color=Colors.black
-            />
-          </div>
-        </Col>
-        <Col size=0.7>
-          <div className=Styles.textContainer>
-            <TElement elementType={TElement.Count(totalTx)} />
-          </div>
-        </Col>
-        <Col size=0.7>
-          <div className=Styles.textContainer> <TElement elementType={TElement.Fee(0.0)} /> </div>
-        </Col>
-        <Col size=0.8>
-          <div className=Styles.textContainer>
-            <Text block=true value="N/A" size=Text.Md weight=Text.Semibold />
-          </div>
-        </Col>
+        <Col> <div className=Styles.textContainer /> </Col>
+        <Col size=0.6> <TElement elementType={TElement.Height(height)} /> </Col>
+        <Col size=0.8> <TElement elementType={TElement.Timestamp(timestamp)} /> </Col>
+        <Col size=2.0> <TElement elementType={TElement.Proposer(moniker, proposer)} /> </Col>
+        <Col size=0.7> <TElement elementType={TElement.Count(totalTx)} /> </Col>
+        <Col size=0.7> <TElement elementType={TElement.Fee(0.0)} /> </Col>
+        <Col size=0.8> <Text block=true value="N/A" size=Text.Md weight=Text.Semibold /> </Col>
       </Row>
     </div>
   </TBody>;
@@ -125,6 +86,7 @@ let make = () => {
     <VSpacing size=Spacing.xl />
     <THead>
       <Row>
+        <Col> <div className=Styles.textContainer /> </Col>
         {[
            ("BLOCK", 0.6),
            ("AGE", 0.8),
@@ -135,15 +97,7 @@ let make = () => {
          ]
          ->Belt.List.map(((title, size)) => {
              <Col size key=title>
-               <div className=Styles.textContainer>
-                 <Text
-                   block=true
-                   value=title
-                   size=Text.Sm
-                   weight=Text.Bold
-                   color=Colors.grayText
-                 />
-               </div>
+               <Text block=true value=title size=Text.Sm weight=Text.Bold color=Colors.grayText />
              </Col>
            })
          ->Array.of_list

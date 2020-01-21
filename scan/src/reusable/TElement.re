@@ -29,6 +29,7 @@ module Styles = {
   let timeContainer = style([display(`flex), alignItems(`center), maxWidth(`px(150))]);
   let textContainer = style([display(`flex)]);
   let countContainer = style([maxWidth(`px(80))]);
+  let proposerBox = style([maxWidth(`px(270)), display(`flex), flexDirection(`column)]);
 };
 
 let txTypeMapping = msg => {
@@ -170,6 +171,22 @@ let renderCount = count => {
   </div>;
 };
 
+let renderProposer = (moniker, proposer) => {
+  <div className=Styles.proposerBox>
+    <Text block=true value=moniker size=Text.Sm weight=Text.Regular color=Colors.grayHeader />
+    <VSpacing size=Spacing.sm />
+    <Text
+      block=true
+      value=proposer
+      size=Text.Md
+      weight=Text.Bold
+      code=true
+      ellipsis=true
+      color=Colors.black
+    />
+  </div>;
+};
+
 let msgIcon =
   fun
   | TxHook.Msg.Store(_) => Images.newScript
@@ -194,7 +211,8 @@ type t =
   | HashWithLink(Hash.t)
   | Address(Address.t)
   | Source(string)
-  | Value(Js.Json.t);
+  | Value(Js.Json.t)
+  | Proposer(string, string);
 
 [@react.component]
 let make = (~elementType) => {
@@ -215,5 +233,6 @@ let make = (~elementType) => {
   | Address(address) => renderAddress(address)
   | Source(source) => renderSource(source)
   | Value(value) => renderText(value->Js.Json.stringify, Text.Regular)
+  | Proposer(moniker, proposer) => renderProposer(moniker, proposer)
   };
 };
