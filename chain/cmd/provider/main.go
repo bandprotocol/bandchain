@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -8,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -20,7 +22,10 @@ import (
 	"github.com/bandprotocol/d3n/chain/x/zoracle"
 )
 
+const limitTimeOut = 3 * time.Second
+
 var txSender cmtx.TxSender
+var allowedCommands = map[string]bool{"curl": true}
 
 func main() {
 	// Get environment variable
@@ -42,7 +47,7 @@ func main() {
 	s := sub.NewSubscriber(viper.GetString("nodeURI"), "/websocket")
 
 	// Tx events
-	s.AddHandler(zoracle.EventTypeRequest, handleRequest)
+	s.AddHandler(zoracle.EventTypeRequest, handleRequestAndLog)
 
 	// start subscription
 	s.Run()
@@ -53,7 +58,21 @@ type Command struct {
 	Arguments []string `json:"args"`
 }
 
-func handleRequest(event *abci.Event) {
+func execWithTimeout(command Command, limit time.Duration) ([]byte, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), limit)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, command.Cmd, command.Arguments...)
+	out, err := cmd.Output()
+	if ctx.Err() == context.DeadlineExceeded {
+		return []byte{}, fmt.Errorf("Command timed out")
+	}
+	if err != nil {
+		return []byte{}, err
+	}
+	return out, nil
+}
+
+func handleRequest(event *abci.Event) (sdk.TxResponse, error) {
 	var requestID uint64
 	var commands []Command
 
@@ -63,33 +82,27 @@ func handleRequest(event *abci.Event) {
 			var err error
 			requestID, err = strconv.ParseUint(string(kv.Value), 10, 64)
 			if err != nil {
-				fmt.Printf("handleRequest %s", err)
-				return
+				return sdk.TxResponse{}, fmt.Errorf("handleRequest %s", err)
 			}
 		case zoracle.AttributeKeyPrepare:
 			byteValue, err := hex.DecodeString(string(kv.Value))
 			if err != nil {
-				fmt.Printf("handleRequest %s", err)
-				return
+				return sdk.TxResponse{}, fmt.Errorf("handleRequest %s", err)
 			}
 			err = json.Unmarshal(byteValue, &commands)
 			if err != nil {
-				fmt.Printf("handleRequest %s", err)
-				return
+				return sdk.TxResponse{}, fmt.Errorf("handleRequest %s", err)
 			}
 		}
 	}
 	var answer []string
 	for _, command := range commands {
-		if command.Cmd != "curl" {
-			fmt.Printf("handleRequest unknown command %s", command.Cmd)
-			return
+		if !allowedCommands[command.Cmd] {
+			return sdk.TxResponse{}, fmt.Errorf("handleRequest unknown command %s", command.Cmd)
 		}
-		cmd := exec.Command(command.Cmd, command.Arguments...)
-		query, err := cmd.Output()
+		query, err := execWithTimeout(command, limitTimeOut)
 		if err != nil {
-			fmt.Printf("handleRequest query err with command %s %v", command.Cmd, command.Arguments)
-			return
+			return sdk.TxResponse{}, fmt.Errorf("handleRequest query err with command: %s %v, error: %v", command.Cmd, command.Arguments, err)
 		}
 		answer = append(answer, string(query))
 	}
@@ -97,8 +110,11 @@ func handleRequest(event *abci.Event) {
 
 	tx, err := txSender.SendTransaction(zoracle.NewMsgReport(requestID, b, sdk.ValAddress(txSender.Sender())), flags.BroadcastSync)
 	if err != nil {
-		fmt.Printf("handleRequest %s", err)
-		return
+		return sdk.TxResponse{}, fmt.Errorf("handleRequest send tx fail : %s", err)
 	}
-	fmt.Println("Tx:", tx)
+	return tx, nil
+}
+
+func handleRequestAndLog(event *abci.Event) {
+	fmt.Println(handleRequest(event))
 }
