@@ -144,7 +144,6 @@ type t =
   | Timestamp(MomentRe.Moment.t)
   | TxHash(Hash.t, MomentRe.Moment.t)
   | TxTypeWithDetail(list(TxHook.Msg.t))
-  | TxType(TxHook.Msg.t)
   | Detail(string)
   | Status(string)
   | Fee(float)
@@ -163,7 +162,6 @@ let make = (~elementType) => {
   | Timestamp(time) => renderTime(time)
   | TxHash(hash, timestamp) => renderTxHash(hash, timestamp)
   | TxTypeWithDetail(msgs) => renderTxTypeWithDetail(msgs)
-  | TxType(msg) => <MsgBadge msgs=[msg] />
   | Detail(detail) => renderText(detail, Text.Semibold)
   | Status(status) => renderText(status, Text.Semibold)
   | Fee(fee) => renderFee(fee)
