@@ -13,7 +13,6 @@
 /// ```
 /// use owasm::{decl_data, decl_params, decl_result};
 /// use owasm::ext::crypto::{coingecko, coins, cryptocompare};
-/// use serde::{Deserialize, Serialize};
 ///
 /// decl_params! {
 ///     pub struct Parameter {
@@ -39,7 +38,7 @@ macro_rules! decl_data {
     }) => {
         use $crate::core::{Oracle, ShellCmd, execute_with_local_env};
 
-        #[derive(Debug,Serialize)]
+        #[derive(Debug,serde::Serialize)]
         pub struct $data_name {
             $(pub $field_name : $field_type,)*
         }
@@ -73,7 +72,7 @@ macro_rules! decl_params {
     (pub struct $struct_name:ident {
         $(pub $field_name:ident : $field_type:ty,)*
     }) => {
-        #[derive(Debug, Serialize, Deserialize)]
+        #[derive(Debug, serde::Serialize, serde::Deserialize)]
         pub struct $struct_name {
             $(pub $field_name : $field_type,)*
         }
@@ -93,7 +92,7 @@ macro_rules! decl_result {
     (pub struct $struct_name:ident {
         $(pub $field_name:ident : $field_type:ty,)*
     }) => {
-        #[derive(Debug, Serialize, Deserialize, PartialEq)]
+        #[derive(Debug, serde::Serialize, serde::Deserialize, PartialEq)]
         pub struct $struct_name {
             $(pub $field_name : $field_type,)*
         }

@@ -1,6 +1,5 @@
 use owasm::ext::crypto::{coingecko, coins, cryptocompare};
 use owasm::{decl_data, decl_params, decl_result};
-use serde::{Deserialize, Serialize};
 
 decl_params! {
     pub struct Parameter {
