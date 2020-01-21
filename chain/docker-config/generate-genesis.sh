@@ -55,6 +55,12 @@ bandcli config output json
 bandcli config indent true
 bandcli config trust-node true
 
+# create copy of config.toml
+cp ~/.bandd/config/config.toml ~/.bandd/config/config.toml.temp
+
+# modify moniker
+sed 's/node-validator/node-validator-1/g' ~/.bandd/config/config.toml.temp > ~/.bandd/config/config.toml
+
 # register initial validators
 echo "12345678" | bandd gentx \
     --amount 100000000uband \
@@ -63,6 +69,9 @@ echo "12345678" | bandd gentx \
     --name validator1 \
     --ip 172.18.0.11
 
+# modify moniker
+sed 's/node-validator/node-validator-2/g' ~/.bandd/config/config.toml.temp > ~/.bandd/config/config.toml
+
 echo "12345678" | bandd gentx \
     --amount 100000000uband \
     --node-id 0851086afcd835d5a6fb0ffbf96fcdf74fec742e \
@@ -70,12 +79,18 @@ echo "12345678" | bandd gentx \
     --name validator2 \
     --ip 172.18.0.12
 
+# modify moniker
+sed 's/node-validator/node-validator-3/g' ~/.bandd/config/config.toml.temp > ~/.bandd/config/config.toml
+
 echo "12345678" | bandd gentx \
     --amount 100000000uband \
     --node-id 7b58b086dd915a79836eb8bfa956aeb9488d13b0 \
     --pubkey bandvalconspub1addwnpepqwj5l74gfj8j77v8st0gh932s3uyu2yys7n50qf6pptjgwnqu2arxkkn82m \
     --name validator3 \
     --ip 172.18.0.13
+
+# modify moniker
+sed 's/node-validator/node-validator-4/g' ~/.bandd/config/config.toml.temp > ~/.bandd/config/config.toml
 
 echo "12345678" | bandd gentx \
     --amount 100000000uband \
@@ -86,13 +101,6 @@ echo "12345678" | bandd gentx \
 
 # collect genesis transactions
 bandd collect-gentxs
-
-# change monikers
-cat ~/.bandd/config/genesis.json \
-    | python3 -c 'import json; import sys; genesis = json.loads(sys.stdin.read()); genesis["app_state"]["genutil"]["gentxs"][0]["value"]["msg"][0]["value"]["description"]["moniker"] = "node-validator-1"; genesis["app_state"]["genutil"]["gentxs"][1]["value"]["msg"][0]["value"]["description"]["moniker"] = "node-validator-2"; genesis["app_state"]["genutil"]["gentxs"][2]["value"]["msg"][0]["value"]["description"]["moniker"] = "node-validator-3"; genesis["app_state"]["genutil"]["gentxs"][3]["value"]["msg"][0]["value"]["description"]["moniker"] = "node-validator-4"; print(json.dumps(genesis))' \
-    > ~/.bandd/config/genesis.json.temp
-
-mv ~/.bandd/config/genesis.json.temp ~/.bandd/config/genesis.json
 
 # copy genesis to the proper location!
 cp ~/.bandd/config/genesis.json $DIR/genesis.json
