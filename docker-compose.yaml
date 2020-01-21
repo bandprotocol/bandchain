@@ -4,6 +4,11 @@ volumes:
   chain_config:
 
 services:
+  build-provider-image:
+    build:
+      context: docker-provider
+    image: band-provider:latest
+
   single-validator:
     build:
       context: chain
@@ -14,6 +19,7 @@ services:
       - NODE_URI=tcp://localhost:26657
     volumes:
       - chain_config:/root/.bandd/config/
+      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       bandchain:
         ipv4_address: 172.18.0.11
@@ -47,6 +53,7 @@ services:
       - 26657:26657
     volumes:
       - chain_config:/root/.bandd/config/
+      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       bandchain:
         ipv4_address: 172.18.0.11
@@ -57,6 +64,8 @@ services:
     environment:
       - PRIVATE_KEY=6abc8ab25298fb4af6adcb9d5831db0ad7c959388f0d947abd2b4c4457ef52ec
       - NODE_URI=tcp://localhost:26657
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       bandchain:
         ipv4_address: 172.18.0.12
@@ -67,6 +76,8 @@ services:
     environment:
       - PRIVATE_KEY=894fc1c7e7666c722ae5f30ba4cb18c546e08f0b2634718c27b80b9d39416dbe
       - NODE_URI=tcp://localhost:26657
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       bandchain:
         ipv4_address: 172.18.0.13
@@ -77,6 +88,8 @@ services:
     environment:
       - PRIVATE_KEY=947f1715251d43de45232fc072e3ca4d823e876cf9f4ef74ad9a5f4ef440937e
       - NODE_URI=tcp://localhost:26657
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       bandchain:
         ipv4_address: 172.18.0.14
