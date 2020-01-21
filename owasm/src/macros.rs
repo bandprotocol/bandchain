@@ -11,8 +11,8 @@
 /// getting Bitcoin price from CoinGecko, and `crypto_compare` for getting Bitcoin price from CryptoCompare.
 ///
 /// ```
-/// use owasm::{decl_data, decl_params};
-/// use owasm::ext::crypto::{coingecko, cryptocompare, coins};
+/// use owasm::{decl_data, decl_params, decl_result};
+/// use owasm::ext::crypto::{coingecko, coins, cryptocompare};
 ///
 /// decl_params! {
 ///     pub struct Parameter {
@@ -25,6 +25,11 @@
 ///         pub crypto_compare: f32 = |params: &Parameter| cryptocompare::Price::new(&params.symbol),
 ///     }
 /// }
+/// decl_result! {
+///     pub struct Result {
+///         pub price_in_usd: u64,
+///     }
+/// }
 /// ```
 #[macro_export]
 macro_rules! decl_data {
@@ -33,7 +38,7 @@ macro_rules! decl_data {
     }) => {
         use $crate::core::{Oracle, ShellCmd, execute_with_local_env};
 
-        #[derive(Debug,Serialize)]
+        #[derive(Debug,serde::Serialize)]
         pub struct $data_name {
             $(pub $field_name : $field_type,)*
         }
@@ -67,9 +72,7 @@ macro_rules! decl_params {
     (pub struct $struct_name:ident {
         $(pub $field_name:ident : $field_type:ty,)*
     }) => {
-        use serde::{Deserialize, Serialize};
-
-        #[derive(Debug, Serialize, Deserialize)]
+        #[derive(Debug, serde::Serialize, serde::Deserialize)]
         pub struct $struct_name {
             $(pub $field_name : $field_type,)*
         }
@@ -81,5 +84,25 @@ macro_rules! decl_params {
         }
 
         pub type __Params = $struct_name;
+    };
+}
+
+#[macro_export]
+macro_rules! decl_result {
+    (pub struct $struct_name:ident {
+        $(pub $field_name:ident : $field_type:ty,)*
+    }) => {
+        #[derive(Debug, serde::Serialize, serde::Deserialize, PartialEq)]
+        pub struct $struct_name {
+            $(pub $field_name : $field_type,)*
+        }
+
+        impl $struct_name {
+            pub fn __fields() -> Vec<(String,String)> {
+                vec![ $((String::from(stringify!($field_name)),String::from(stringify!($field_type))),)*]
+            }
+        }
+
+        pub type __Result = $struct_name;
     };
 }

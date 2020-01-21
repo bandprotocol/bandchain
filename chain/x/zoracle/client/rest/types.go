@@ -32,5 +32,5 @@ type RequestQueryInfo struct {
 	RequestedAtHeight int64            `json:"requestedAtHeight"`
 	RequestedAtTime   string           `json:"requestedAtTime"`
 	Reports           []ReportDetail   `json:"reports"`
-	Result            []byte           `json:"result"`
+	Result            types.RawJson    `json:"result"`
 }

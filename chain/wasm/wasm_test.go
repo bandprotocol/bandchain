@@ -12,7 +12,7 @@ import (
 )
 
 func loadWasmFile() ([]byte, wasm.Instance) {
-	file, err := os.Open("./res/test_u64.wasm")
+	file, err := os.Open("./res/result.wasm")
 	if err != nil {
 		panic(err)
 	}
@@ -43,16 +43,16 @@ func TestParamsInfo(t *testing.T) {
 	code, _ := loadWasmFile()
 	info, err := ParamsInfo(code)
 	require.Nil(t, err)
-	expect := `[["symbol_cg","String"],["symbol_cc","String"]]`
+	expect := `[["symbol","coins::Coins"]]`
 	require.Equal(t, expect, string(info))
 }
 
 func TestParseParams(t *testing.T) {
 	code, _ := loadWasmFile()
-	params, _ := hex.DecodeString("0000000000000007626974636f696e0000000000000003425443")
+	params, _ := hex.DecodeString("00000001")
 	paramsByte, err := ParseParams(code, params)
 	require.Nil(t, err)
-	expect := `{"symbol_cg":"bitcoin","symbol_cc":"BTC"}`
+	expect := `{"symbol":"ETH"}`
 	require.Equal(t, expect, string(paramsByte))
 }
 
@@ -66,12 +66,36 @@ func TestRawDataInfo(t *testing.T) {
 
 func TestParseRawData(t *testing.T) {
 	code, _ := loadWasmFile()
-	params, _ := hex.DecodeString("0000000000000007626974636f696e0000000000000003425443")
+	params, _ := hex.DecodeString("00000000")
 	data, _ := hex.DecodeString("5b227b5c22626974636f696e5c223a7b5c227573645c223a373139342e32357d7d222c227b5c225553445c223a373231342e31327d225d")
 	dataByte, err := ParseRawData(code, params, data)
 	require.Nil(t, err)
 	expect := `{"coin_gecko":7194.25,"crypto_compare":7214.12}`
 	require.Equal(t, expect, string(dataByte))
+}
+
+func TestResultInfo(t *testing.T) {
+	code, _ := loadWasmFile()
+	info, err := ResultInfo(code)
+	require.Nil(t, err)
+	expect := `[["price_in_usd","u64"]]`
+	require.Equal(t, expect, string(info))
+}
+
+func TestParseResult(t *testing.T) {
+	code, _ := loadWasmFile()
+	result, _ := hex.DecodeString("00000000000d0e72")
+	resultByte, err := ParseResult(code, result)
+	require.Nil(t, err)
+	expect := `{"price_in_usd":855666}`
+	require.Equal(t, expect, string(resultByte))
+}
+
+func TestParseEmptyResult(t *testing.T) {
+	code, _ := loadWasmFile()
+	result := []byte(nil)
+	_, err := ParseResult(code, result)
+	require.EqualError(t, err, "Failed to call the `__parse_result` exported function.")
 }
 
 func TestAllocateInner(t *testing.T) {
@@ -118,16 +142,16 @@ func TestAllocate(t *testing.T) {
 
 func TestPrepare(t *testing.T) {
 	code, _ := loadWasmFile()
-	params, _ := hex.DecodeString("0000000000000007626974636f696e0000000000000003425443")
+	params, _ := hex.DecodeString("00000001")
 	prepare, err := Prepare(code, params)
 	require.Nil(t, err)
-	expect := `[{"cmd":"curl","args":["https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd"]},{"cmd":"curl","args":["https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USD"]}]`
+	expect := `[{"cmd":"curl","args":["https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd"]},{"cmd":"curl","args":["https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD"]}]`
 	require.Equal(t, expect, string(prepare))
 }
 
 func TestExecute(t *testing.T) {
 	code, _ := loadWasmFile()
-	params, _ := hex.DecodeString("0000000000000007626974636f696e0000000000000003425443")
+	params, _ := hex.DecodeString("00000000")
 	data, _ := hex.DecodeString("5b227b5c22626974636f696e5c223a7b5c227573645c223a373139342e32357d7d222c227b5c225553445c223a373231342e31327d225d")
 	expect, _ := hex.DecodeString("00000000000afe22")
 	result, err := Execute(code, params, [][]byte{data, data})
