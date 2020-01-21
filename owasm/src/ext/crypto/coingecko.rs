@@ -1,17 +1,21 @@
 //! [CoinGecko.com](https://coingecko.com) Oracle Extension
 
 use crate::core::{Oracle, ShellCmd};
-
-pub static BITCOIN: &str = "bitcoin";
-pub static ETHEREUM: &str = "ethereum";
+use crate::ext::crypto::coins::Coins;
 
 pub struct Price {
     symbol: String,
 }
 
 impl Price {
-    pub fn new(symbol: impl Into<String>) -> Price {
-        Price { symbol: symbol.into() }
+    pub fn new(coin: &Coins) -> Price {
+        Price {
+            symbol: String::from(match coin {
+                Coins::BTC => "bitcoin",
+                Coins::ETH => "ethereum",
+                Coins::BAND => "band-protocol",
+            }),
+        }
     }
 }
 
@@ -41,7 +45,7 @@ mod tests {
     #[test]
     fn test_as_cmd() {
         assert_eq!(
-            Price::new("bitcoin").as_cmd(),
+            Price::new(&Coins::BTC).as_cmd(),
             ShellCmd::new(
                 "curl",
                 &["https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd"]
@@ -52,13 +56,13 @@ mod tests {
     #[test]
     fn test_from_cmd_ok() {
         assert_eq!(
-            Price::new("bitcoin").from_cmd_output(r#"{"bitcoin":{"usd":100.0}}"#.into()),
+            Price::new(&Coins::BTC).from_cmd_output(r#"{"bitcoin":{"usd":100.0}}"#.into()),
             Some(100.0)
         );
     }
 
     #[test]
     fn test_from_cmd_not_ok() {
-        assert_eq!(Price::new("bitcoin").from_cmd_output(r#"{}"#.into()), None);
+        assert_eq!(Price::new(&Coins::BTC).from_cmd_output(r#"{}"#.into()), None);
     }
 }
