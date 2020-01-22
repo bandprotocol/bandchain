@@ -19,12 +19,16 @@ fn __encode_params(params: logic::__Params) -> Option<Vec<u8>> {
     bincode::config().big_endian().serialize(&params).ok()
 }
 
-fn __decode_params(input: u64) -> Option<logic::Parameter> {
+fn __decode_params(input: u64) -> Option<logic::__Params> {
     bincode::config().big_endian().deserialize(__read_data(input)).ok()
 }
 
 fn __decode_data(params: &logic::__Params, input: u64) -> Option<logic::__Data> {
     logic::__Data::__output(&params, decode_outputs(__read_data(input))?)
+}
+
+fn __decode_result(input: u64) -> Option<logic::__Result> {
+    bincode::config().big_endian().deserialize(__read_data(input)).ok()
 }
 
 #[no_mangle]
@@ -74,6 +78,16 @@ pub fn __parse_raw_data(params: u64, input: u64) -> u64 {
             .unwrap()
             .into_bytes(),
     )
+}
+
+#[no_mangle]
+pub fn __result_info() -> u64 {
+    __return(&serde_json::to_string(&logic::__Result::__fields()).ok().unwrap().into_bytes())
+}
+
+#[no_mangle]
+pub fn __parse_result(result: u64) -> u64 {
+    __return(&serde_json::to_string(&__decode_result(result).unwrap()).ok().unwrap().into_bytes())
 }
 
 #[cfg(test)]

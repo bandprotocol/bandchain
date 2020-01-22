@@ -429,7 +429,7 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		key := zoracle.ResultStoreKey(reqID, queryRequest.CodeHash, queryRequest.ParamsHex)
+		key := zoracle.ResultStoreKey(reqID, queryRequest.CodeHash, queryRequest.ParamsRaw)
 
 		resp, err := cliCtx.Client.ABCIQueryWithOptions(
 			"/store/zoracle/key",
@@ -484,7 +484,7 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		odp.RequestId = reqID
 		odp.Data = resp.Response.GetValue()
 		odp.CodeHash = queryRequest.CodeHash
-		odp.Params = queryRequest.ParamsHex
+		odp.Params = queryRequest.ParamsRaw
 		odp.Version = uint64(opiavl.Proof.Leaves[0].Version)
 
 		for i := len(opiavl.Proof.LeftPath) - 1; i >= 0; i-- {

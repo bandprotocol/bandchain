@@ -34,7 +34,7 @@ func setupTestValidator(ctx sdk.Context, keeper Keeper) sdk.ValAddress {
 
 func TestRequestSuccess(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
-	absPath, _ := filepath.Abs("../../wasm/res/test_u64.wasm")
+	absPath, _ := filepath.Abs("../../wasm/res/result.wasm")
 	code, err := wasm.ReadBytes(absPath)
 	if err != nil {
 		fmt.Println(err)
@@ -42,7 +42,7 @@ func TestRequestSuccess(t *testing.T) {
 	name := "Crypto price"
 	sender := sdk.AccAddress([]byte("sender"))
 	codeHash := keeper.SetCode(ctx, code, name, sender)
-	params, _ := hex.DecodeString("0000000000000007626974636f696e0000000000000003425443")
+	params, _ := hex.DecodeString("00000000")
 	msg := types.NewMsgRequest(codeHash, params, 5, sender)
 	got := handleMsgRequest(ctx, keeper, msg)
 	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
@@ -87,7 +87,7 @@ func TestRequestInvalidCodeHash(t *testing.T) {
 	sender := sdk.AccAddress([]byte("sender"))
 
 	codeHash, _ := hex.DecodeString("c0dec0dec0dec0dec0dec0dec0dec0dec0dec0dec0dec0dec0dec0dec0dec0de")
-	params, _ := hex.DecodeString("0000000000000007626974636f696e0000000000000003425443")
+	params, _ := hex.DecodeString("00000000")
 	msg := types.NewMsgRequest(codeHash, params, 5, sender)
 	got := handleMsgRequest(ctx, keeper, msg)
 	require.False(t, got.IsOK(), "expected request is an invalid tx")
@@ -98,7 +98,7 @@ func TestRequestInvalidWasmCode(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
 	sender := sdk.AccAddress([]byte("sender"))
 	codeHash := keeper.SetCode(ctx, []byte("Fake code"), "Fake script", sender)
-	params, _ := hex.DecodeString("0000000000000007626974636f696e0000000000000003425443")
+	params, _ := hex.DecodeString("00000000")
 	msg := types.NewMsgRequest(codeHash, params, 5, sender)
 	got := handleMsgRequest(ctx, keeper, msg)
 	require.False(t, got.IsOK(), "expected request is an invalid tx")
@@ -182,7 +182,7 @@ func TestOutOfReportPeriod(t *testing.T) {
 
 func TestStoreCodeSuccess(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
-	absPath, _ := filepath.Abs("../../wasm/res/test_u64.wasm")
+	absPath, _ := filepath.Abs("../../wasm/res/result.wasm")
 	code, err := wasm.ReadBytes(absPath)
 	if err != nil {
 		fmt.Println(err)
@@ -273,7 +273,7 @@ func TestDeleteCodeInvalidOwner(t *testing.T) {
 func TestEndBlock(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
 	ctx = ctx.WithBlockHeight(0)
-	absPath, _ := filepath.Abs("../../wasm/res/test_u64.wasm")
+	absPath, _ := filepath.Abs("../../wasm/res/result.wasm")
 	code, err := wasm.ReadBytes(absPath)
 	if err != nil {
 		fmt.Println(err)
@@ -282,7 +282,7 @@ func TestEndBlock(t *testing.T) {
 	sender := sdk.AccAddress([]byte("sender"))
 	codeHash := keeper.SetCode(ctx, code, name, sender)
 
-	params, _ := hex.DecodeString("0000000000000007626974636f696e0000000000000003425443")
+	params, _ := hex.DecodeString("00000000")
 	// set request
 	request := types.NewRequest(codeHash, params, 3)
 	keeper.SetRequest(ctx, 1, request)
