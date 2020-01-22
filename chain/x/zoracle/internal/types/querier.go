@@ -23,28 +23,31 @@ func (u64a U64Array) String() string {
 
 type RequestInfo struct {
 	CodeHash    []byte            `json:"codeHash"`
-	ParamsHex   []byte            `json:"paramsHex"`
 	Params      RawJson           `json:"params"`
+	ParamsRaw   []byte            `json:"paramsRaw"`
 	TargetBlock uint64            `json:"targetBlock"`
 	Reports     []ValidatorReport `json:"reports"`
-	Result      []byte            `json:"result"`
+	Result      RawJson           `json:"result"`
+	ResultRaw   []byte            `json:"resultRaw"`
 }
 
 func NewRequestInfo(
 	codeHash []byte,
-	paramsHex []byte,
 	params RawJson,
+	paramsRaw []byte,
 	targetBlock uint64,
 	reports []ValidatorReport,
-	result []byte,
+	result RawJson,
+	resultRaw []byte,
 ) RequestInfo {
 	return RequestInfo{
 		CodeHash:    codeHash,
-		ParamsHex:   paramsHex,
+		ParamsRaw:   paramsRaw,
 		Params:      params,
 		TargetBlock: targetBlock,
 		Reports:     reports,
 		Result:      result,
+		ResultRaw:   resultRaw,
 	}
 }
 
@@ -92,15 +95,22 @@ type ScriptInfo struct {
 	CodeHash    []byte         `json:"codeHash"`
 	Params      []Field        `json:"params"`
 	DataSources []Field        `json:"dataSources"`
+	Result      []Field        `json:"result"`
 	Creator     sdk.AccAddress `json:"creator"`
 }
 
-func NewScriptInfo(name string, codeHash []byte, rawParams, rawDataSources []Field, creator sdk.AccAddress) ScriptInfo {
+func NewScriptInfo(
+	name string,
+	codeHash []byte,
+	rawParams, rawDataSources, result []Field,
+	creator sdk.AccAddress,
+) ScriptInfo {
 	return ScriptInfo{
 		Name:        name,
 		CodeHash:    codeHash,
 		Params:      rawParams,
 		DataSources: rawDataSources,
+		Result:      result,
 		Creator:     creator,
 	}
 }
