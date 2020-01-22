@@ -17,12 +17,14 @@ module Styles = {
 [@react.component]
 let make = (~result) =>
   <div className=Styles.container>
-    {result
-     ->Belt.Array.mapWithIndex((idx, (key, value)) =>
-         <div className=Styles.listContainer key={idx |> string_of_int}>
-           <div className=Styles.keyContainer> <Text value=key size=Text.Lg /> </div>
-           <Text value={value |> Js.Json.stringify} size=Text.Lg weight=Text.Semibold />
-         </div>
-       )
-     ->React.array}
+    {result->Belt.Array.size > 0
+       ? result
+         ->Belt.Array.mapWithIndex((idx, (key, value)) =>
+             <div className=Styles.listContainer key={idx |> string_of_int}>
+               <div className=Styles.keyContainer> <Text value=key size=Text.Lg /> </div>
+               <Text value={value |> Js.Json.stringify} size=Text.Lg weight=Text.Semibold />
+             </div>
+           )
+         ->React.array
+       : <Text value="Not Available" size=Text.Lg weight=Text.Semibold />}
   </div>;
