@@ -168,9 +168,7 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) =>
                    <div className=Styles.subHeaderContainer>
                      <Text value="Result" size=Text.Xl color=Colors.darkGrayText />
                    </div>
-                   <div className=Styles.detailContainer>
-                     <Text value={result'->JsBuffer.toHex} />
-                   </div>
+                   <div className=Styles.detailContainer> <Result result=result' /> </div>
                  </div>
                </>
              )}
