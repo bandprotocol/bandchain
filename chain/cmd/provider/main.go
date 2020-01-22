@@ -22,7 +22,7 @@ import (
 	"github.com/bandprotocol/d3n/chain/x/zoracle"
 )
 
-const limitTimeOut = 3 * time.Second
+const limitTimeOut = 10 * time.Second
 
 var txSender cmtx.TxSender
 var allowedCommands = map[string]bool{"curl": true}
@@ -100,7 +100,14 @@ func handleRequest(event *abci.Event) (sdk.TxResponse, error) {
 		if !allowedCommands[command.Cmd] {
 			return sdk.TxResponse{}, fmt.Errorf("handleRequest unknown command %s", command.Cmd)
 		}
-		query, err := execWithTimeout(command, limitTimeOut)
+		dockerCommand := Command{
+			Cmd: "docker",
+			Arguments: append([]string{
+				"run", "--rm", "band-provider",
+				command.Cmd,
+			}, command.Arguments...),
+		}
+		query, err := execWithTimeout(dockerCommand, limitTimeOut)
 		if err != nil {
 			return sdk.TxResponse{}, fmt.Errorf("handleRequest query err with command: %s %v, error: %v", command.Cmd, command.Arguments, err)
 		}
