@@ -1,5 +1,6 @@
 use owasm::ext::crypto::{binance, coingecko, coins, cryptocompare};
 use owasm::ext::finance::alphavantage;
+use owasm::ext::random::qrng_anu;
 use owasm::ext::utils::date;
 use owasm::{decl_data, decl_params, decl_result};
 
@@ -18,6 +19,7 @@ decl_data! {
         pub binance: f32 = |params: &Parameter| binance::Price::new(&params.symbol),
         pub alphavantage: f32 = |params: &Parameter| alphavantage::Price::new(&params.alphavantage_symbol, &params.alphavantage_api_key),
         pub time_stamp: u64 = |_: &Parameter| date::Date::new(),
+        pub rng: Vec<u8> = |_: &Parameter| qrng_anu::RandomBytes::new(8),
     }
 }
 
@@ -26,6 +28,7 @@ decl_result! {
         pub price_in_usd: u64,
         pub time_stamp: u64,
         pub price_from_alphavantage_in_usd: u64,
+        pub random_number: u64,
     }
 }
 
@@ -33,16 +36,26 @@ impl Data {
     pub fn avg_px(&self) -> f32 {
         (self.coin_gecko + self.crypto_compare + self.binance) / 3.0
     }
+
+    pub fn rng_to_u64(&self) -> u64 {
+        let mut acc: u64 = 0;
+        for i in 0..self.rng.len() {
+            acc += (self.rng[i] as u64) * (1 << (i * 8));
+        }
+        acc
+    }
 }
 
 pub fn execute(data: Vec<Data>) -> Result {
     let mut total = 0.0;
     let mut time_stamp_acc: u64 = 0;
+    let mut acc_rng = 0;
     let mut total_price_from_alphavantage = 0.0;
     for each in &data {
         total += each.avg_px();
         time_stamp_acc += each.time_stamp;
         total_price_from_alphavantage += each.alphavantage;
+        acc_rng ^= each.rng_to_u64();
     }
     let average = total / (data.len() as f32);
     let average_price_from_alphavantage = total_price_from_alphavantage / (data.len() as f32);
@@ -51,6 +64,7 @@ pub fn execute(data: Vec<Data>) -> Result {
         price_in_usd: (average * 100.0) as u64,
         price_from_alphavantage_in_usd: (average_price_from_alphavantage * 100.0) as u64,
         time_stamp: avg_time_stamp,
+        random_number: acc_rng,
     }
 }
 
@@ -67,6 +81,7 @@ mod tests {
             binance: 110.0,
             alphavantage: 120.0,
             time_stamp: 10,
+            rng: vec![1, 2, 3, 4, 5, 6, 7, 8],
         };
         // Average is 220.00
         let data2 = Data {
@@ -75,11 +90,17 @@ mod tests {
             binance: 210.0,
             alphavantage: 220.0,
             time_stamp: 12,
+            rng: vec![8, 7, 6, 5, 4, 3, 2, 1],
         };
-        // Average among the two data points is 170.00
+        // Average among the two data points is 175.00
         assert_eq!(
             execute(vec![data1, data2]),
-            Result { price_in_usd: 17000, price_from_alphavantage_in_usd: 17000, time_stamp: 11 }
+            Result {
+                price_in_usd: 17000,
+                price_from_alphavantage_in_usd: 17000,
+                time_stamp: 11,
+                random_number: 649931223095117065
+            }
         );
     }
 
