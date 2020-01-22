@@ -30,7 +30,7 @@ module Request = {
     requestedAtHeight: int,
     requestedAtTime: MomentRe.Moment.t,
     reports: list(Report.t),
-    result: option(JsBuffer.t),
+    result: option(array((string, Js.Json.t))),
   };
 
   let decodeResult = json =>
@@ -46,8 +46,8 @@ module Request = {
       reports: json |> Report.decodeReports,
       result:
         json
-        |> at(["result"], JsonUtils.Decode.optional(string))
-        |> Belt.Option.map(_, JsBuffer.fromBase64),
+        |> at(["result"], JsonUtils.Decode.optional(dict(x => x)))
+        |> Belt.Option.map(_, Js.Dict.entries),
     };
 
   let decode = json => JsonUtils.Decode.(json |> field("result", decodeResult));
