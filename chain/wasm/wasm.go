@@ -69,7 +69,7 @@ func ParamsInfo(code []byte) ([]byte, error) {
 	}
 	defer instance.Close()
 
-	ptr, err := executeWithTimeout(100*time.Millisecond, instance, "__params_info")
+	ptr, err := executeWithTimeout(100*time.Millisecond, &instance, "__params_info")
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +87,7 @@ func ParseParams(code []byte, params []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	ptr, err := executeWithTimeout(100*time.Millisecond, instance, "__parse_params", paramsInput)
+	ptr, err := executeWithTimeout(100*time.Millisecond, &instance, "__parse_params", paramsInput)
 	if err != nil {
 		return nil, err
 	}
@@ -101,7 +101,7 @@ func RawDataInfo(code []byte) ([]byte, error) {
 	}
 	defer instance.Close()
 
-	ptr, err := executeWithTimeout(100*time.Millisecond, instance, "__raw_data_info")
+	ptr, err := executeWithTimeout(100*time.Millisecond, &instance, "__raw_data_info")
 	if err != nil {
 		return nil, err
 	}
@@ -119,7 +119,7 @@ func ParseRawData(code []byte, params []byte, data []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	ptr, err := executeWithTimeout(100*time.Millisecond, instance, "__parse_raw_data", paramsInput, dataInput)
+	ptr, err := executeWithTimeout(100*time.Millisecond, &instance, "__parse_raw_data", paramsInput, dataInput)
 	if err != nil {
 		return nil, err
 	}
@@ -174,14 +174,14 @@ func Prepare(code []byte, params []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	ptr, err := executeWithTimeout(100*time.Millisecond, instance, "__prepare", paramsInput)
+	ptr, err := executeWithTimeout(100*time.Millisecond, &instance, "__prepare", paramsInput)
 	if err != nil {
 		return nil, err
 	}
 	return parseOutput(instance, ptr.ToI64())
 }
 
-func executeWithTimeout(limitTimeout time.Duration, inst wasm.Instance, funcName string, args ...interface{}) (wasm.Value, error) {
+func executeWithTimeout(limitTimeout time.Duration, inst *wasm.Instance, funcName string, args ...interface{}) (wasm.Value, error) {
 	type wasmOutput struct {
 		ptr wasm.Value
 		err error
@@ -225,7 +225,7 @@ func Execute(code []byte, params []byte, inputs [][]byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	ptr, err := executeWithTimeout(100*time.Millisecond, instance, "__execute", paramsInput, wasmInput)
+	ptr, err := executeWithTimeout(100*time.Millisecond, &instance, "__execute", paramsInput, wasmInput)
 	if err != nil {
 		return nil, err
 	}
