@@ -110,7 +110,7 @@ mod tests {
     fn test_encode_decode_parameter() {
         let params = logic::__Params {
             symbol: coins::Coins::ETH,
-            alphavantage_api_key: "some_key".to_string(),
+            alphavantage_api_key: String::from("some_key"),
         };
 
         let encoded_params = __encode_params(params).unwrap();
@@ -119,7 +119,7 @@ mod tests {
 
         println!("{:x?}", encoded_params);
         assert_eq!(new_params.symbol, coins::Coins::ETH);
-        assert_eq!(new_params.alphavantage_api_key, "some_key".to_string());
+        assert_eq!(new_params.alphavantage_api_key, String::from("some_key"));
     }
 
     // #[test]
