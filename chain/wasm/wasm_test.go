@@ -166,7 +166,7 @@ func TestExecuteWithTimeoutSuccess(t *testing.T) {
 	wasmInput, err := allocate(instance, inputs)
 	require.Nil(t, err)
 
-	ptr, err := executeWithTimeout(100*time.Millisecond, instance, "__execute", paramsInput, wasmInput)
+	ptr, err := executeWithTimeout(100*time.Millisecond, &instance, "__execute", paramsInput, wasmInput)
 	require.Nil(t, err)
 
 	result, err := parseOutput(instance, ptr.ToI64())
@@ -181,7 +181,7 @@ func TestExecuteWithTimeoutFailBecauseTimeout(t *testing.T) {
 	require.Nil(t, err)
 	defer instance.Close()
 
-	_, err = executeWithTimeout(1*time.Second, instance, "__execute", 0, 0)
+	_, err = executeWithTimeout(1*time.Second, &instance, "__execute", 0, 0)
 	require.EqualError(t, err, "wasm execution timeout")
 }
 
