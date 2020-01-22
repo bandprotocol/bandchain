@@ -3,18 +3,6 @@ module Styles = {
 
   let typeContainer = w => style([marginRight(`px(20)), width(w)]);
 
-  let txTypeOval = (textColor, bgColor) =>
-    style([
-      marginLeft(`px(-2)),
-      display(`inlineFlex),
-      justifyContent(`center),
-      alignItems(`center),
-      borderRadius(`px(15)),
-      padding2(~v=Spacing.xs, ~h=Spacing.sm),
-      color(textColor),
-      backgroundColor(bgColor),
-    ]);
-
   let msgIcon =
     style([
       width(`px(30)),
@@ -32,25 +20,6 @@ module Styles = {
   let proposerBox = style([maxWidth(`px(270)), display(`flex), flexDirection(`column)]);
 };
 
-let txTypeMapping = msg => {
-  switch (msg) {
-  | TxHook.Msg.Request(_) => ("DATA REQUEST", Colors.darkBlue, Colors.lightBlue)
-  | TxHook.Msg.Store(_) => ("NEW SCRIPT", Colors.darkGreen, Colors.lightGreen)
-  | TxHook.Msg.Send(_) => ("SEND TOKEN", Colors.purple, Colors.lightPurple)
-  | TxHook.Msg.Report(_) => ("DATA REPORT", Colors.darkIndigo, Colors.lightIndigo)
-  | Unknown => ("Unknown", Colors.darkGrayText, Colors.grayHeader)
-  };
-};
-
-let renderTxType = txType => {
-  let (typeName, textColor, bgColor) = txTypeMapping(txType);
-  <div className={Styles.typeContainer(`px(100))}>
-    <div className={Styles.txTypeOval(textColor, bgColor)}>
-      <Text value=typeName size=Text.Xs block=true />
-    </div>
-  </div>;
-};
-
 let renderText = (text, weight) =>
   <div className={Styles.typeContainer(`px(150))}>
     <Text value=text size=Text.Lg weight block=true ellipsis=true />
@@ -61,15 +30,12 @@ let renderSource = text =>
     <Text value=text size=Text.Lg align=Text.Right block=true ellipsis=true />
   </div>;
 
-let renderTxTypeWithDetail = (msg: TxHook.Msg.t) => {
-  let (typeName, textColor, bgColor) = txTypeMapping(msg.action);
+let renderTxTypeWithDetail = (msgs: list(TxHook.Msg.t)) => {
   <div className={Styles.typeContainer(`px(150))}>
-    <div className={Styles.txTypeOval(textColor, bgColor)}>
-      <Text value=typeName size=Text.Xs block=true />
-    </div>
+    <MsgBadge msgs />
     <VSpacing size=Spacing.xs />
     <Text
-      value={msg->TxHook.Msg.getDescription}
+      value={msgs->Belt.List.getExn(0)->TxHook.Msg.getDescription}
       size=Text.Lg
       weight=Text.Semibold
       block=true
@@ -201,8 +167,7 @@ type t =
   | Name(string)
   | Timestamp(MomentRe.Moment.t)
   | TxHash(Hash.t, MomentRe.Moment.t)
-  | TxTypeWithDetail(TxHook.Msg.t)
-  | TxType(TxHook.Msg.t)
+  | TxTypeWithDetail(list(TxHook.Msg.t))
   | Detail(string)
   | Status(string)
   | Count(int)
@@ -222,8 +187,7 @@ let make = (~elementType) => {
   | Name(name) => renderName(name)
   | Timestamp(time) => renderTime(time)
   | TxHash(hash, timestamp) => renderTxHash(hash, timestamp)
-  | TxTypeWithDetail(msg) => renderTxTypeWithDetail(msg)
-  | TxType({action, _}) => renderTxType(action)
+  | TxTypeWithDetail(msgs) => renderTxTypeWithDetail(msgs)
   | Detail(detail) => renderText(detail, Text.Semibold)
   | Status(status) => renderText(status, Text.Semibold)
   | Count(count) => renderCount(count)
