@@ -75,21 +75,21 @@ mod tests {
         // Run with local environment
         let data = Data::build_from_local_env(&Parameter {
             symbol: coins::Coins::BTC,
-            alphavantage_api_key: "WVKPOO76169EX950".to_string(),
+            alphavantage_api_key: String::from("WVKPOO76169EX950"),
         })
         .unwrap();
         println!("Current BTC price (times 100) is {:?}", execute(vec![data]));
 
         let data = Data::build_from_local_env(&Parameter {
             symbol: coins::Coins::ETH,
-            alphavantage_api_key: "WVKPOO76169EX950".to_string(),
+            alphavantage_api_key: String::from("WVKPOO76169EX950"),
         })
         .unwrap();
         println!("Current ETH price (times 100) is {:?}", execute(vec![data]));
 
         let data = Data::build_from_local_env(&Parameter {
             symbol: coins::Coins::BAND,
-            alphavantage_api_key: "WVKPOO76169EX950".to_string(),
+            alphavantage_api_key: String::from("WVKPOO76169EX950"),
         })
         .unwrap();
         println!("Current BAND price (times 100) is {:?}", execute(vec![data]));
