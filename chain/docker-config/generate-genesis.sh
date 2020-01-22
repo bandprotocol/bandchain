@@ -99,6 +99,9 @@ echo "12345678" | bandd gentx \
     --name validator4 \
     --ip 172.18.0.14
 
+# remove temp file
+rm -rf ~/.bandd/config/config.toml.temp
+
 # collect genesis transactions
 bandd collect-gentxs
 
