@@ -161,15 +161,13 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) =>
               </div>
               <div className=Styles.detailContainer> <Parameters params /> </div>
             </div>
-            <>
-              <VSpacing size=Spacing.xl />
-              <div className={Css.merge([Styles.vFlex, Styles.flexStart])}>
-                <div className=Styles.subHeaderContainer>
-                  <Text value="Result" size=Text.Xl color=Colors.darkGrayText />
-                </div>
-                <div className=Styles.detailContainer> <Result result /> </div>
+            <VSpacing size=Spacing.xl />
+            <div className={Css.merge([Styles.vFlex, Styles.flexStart])}>
+              <div className=Styles.subHeaderContainer>
+                <Text value="Result" size=Text.Xl color=Colors.darkGrayText />
               </div>
-            </>
+              <div className=Styles.detailContainer> <Result result /> </div>
+            </div>
           </div>
           <div className=Styles.tableHeader>
             <Row>
