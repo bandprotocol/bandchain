@@ -55,6 +55,12 @@ bandcli config output json
 bandcli config indent true
 bandcli config trust-node true
 
+# create copy of config.toml
+cp ~/.bandd/config/config.toml ~/.bandd/config/config.toml.temp
+
+# modify moniker
+sed 's/node-validator/node-validator-1/g' ~/.bandd/config/config.toml.temp > ~/.bandd/config/config.toml
+
 # register initial validators
 echo "12345678" | bandd gentx \
     --amount 100000000uband \
@@ -63,12 +69,18 @@ echo "12345678" | bandd gentx \
     --name validator1 \
     --ip 172.18.0.11
 
+# modify moniker
+sed 's/node-validator/node-validator-2/g' ~/.bandd/config/config.toml.temp > ~/.bandd/config/config.toml
+
 echo "12345678" | bandd gentx \
     --amount 100000000uband \
     --node-id 0851086afcd835d5a6fb0ffbf96fcdf74fec742e \
     --pubkey bandvalconspub1addwnpepqfey4c5ul6m5juz36z0dlk8gyg6jcnyrvxm4werkgkmcerx8fn5g2gj9q6w \
     --name validator2 \
     --ip 172.18.0.12
+
+# modify moniker
+sed 's/node-validator/node-validator-3/g' ~/.bandd/config/config.toml.temp > ~/.bandd/config/config.toml
 
 echo "12345678" | bandd gentx \
     --amount 100000000uband \
@@ -77,12 +89,18 @@ echo "12345678" | bandd gentx \
     --name validator3 \
     --ip 172.18.0.13
 
+# modify moniker
+sed 's/node-validator/node-validator-4/g' ~/.bandd/config/config.toml.temp > ~/.bandd/config/config.toml
+
 echo "12345678" | bandd gentx \
     --amount 100000000uband \
     --node-id 63808bd64f2ec19acb2a494c8ce8467c595f6fba \
     --pubkey bandvalconspub1addwnpepq0grwz83v8g4s06fusnq5s4jkzxnhgvx67qr5g7v8tx39ur5m8tk7rg2nxj \
     --name validator4 \
     --ip 172.18.0.14
+
+# remove temp file
+rm -rf ~/.bandd/config/config.toml.temp
 
 # collect genesis transactions
 bandd collect-gentxs
