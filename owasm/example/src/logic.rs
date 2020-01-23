@@ -4,6 +4,8 @@ use owasm::ext::random::qrng_anu;
 use owasm::ext::utils::date;
 use owasm::{decl_data, decl_params, decl_result};
 
+use std::convert::TryInto;
+
 decl_params! {
     pub struct Parameter {
         pub symbol: coins::Coins,
@@ -38,11 +40,10 @@ impl Data {
     }
 
     pub fn rng_to_u64(&self) -> u64 {
-        let mut acc: u64 = 0;
-        for i in 0..self.rng.len() {
-            acc += (self.rng[i] as u64) * (1 << (i * 8));
+        match ((&self.rng) as &[u8]).try_into().ok() {
+            Some(data) => u64::from_le_bytes(data),
+            None => 0,
         }
-        acc
     }
 }
 
