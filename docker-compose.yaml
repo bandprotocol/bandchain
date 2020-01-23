@@ -24,6 +24,7 @@ services:
       bandchain:
         ipv4_address: 172.18.0.11
     depends_on:
+      - build-provider-image
       - web-server
       - proxy-server
     ports:
@@ -40,6 +41,7 @@ services:
       - multi-validator2-node
       - multi-validator3-node
       - multi-validator4-node
+      - build-provider-image
       - web-server
       - proxy-server
 
