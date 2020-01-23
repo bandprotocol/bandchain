@@ -120,6 +120,7 @@ mod tests {
 
         println!("{:x?}", encoded_params);
         assert_eq!(new_params.symbol, coins::Coins::ETH);
+        assert_eq!(new_params.alphavantage_symbol, String::from("ETH"));
         assert_eq!(new_params.alphavantage_api_key, String::from("some_key"));
     }
 
