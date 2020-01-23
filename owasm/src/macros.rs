@@ -12,7 +12,7 @@
 ///
 /// ```
 /// use owasm::{decl_data, decl_params, decl_result};
-/// use owasm::ext::crypto::{coingecko, coins, cryptocompare};
+/// use owasm::ext::crypto::{binance, coingecko, coins, cryptocompare};
 ///
 /// decl_params! {
 ///     pub struct Parameter {
@@ -23,6 +23,7 @@
 ///     pub struct Data {
 ///         pub coin_gecko: f32 = |params: &Parameter| coingecko::Price::new(&params.symbol),
 ///         pub crypto_compare: f32 = |params: &Parameter| cryptocompare::Price::new(&params.symbol),
+///         pub binance: f32 = |params: &Parameter| binance::Price::new(&params.symbol),
 ///     }
 /// }
 /// decl_result! {

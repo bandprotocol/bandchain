@@ -47,11 +47,7 @@ let make = () => {
                  <TElement elementType={messages->Belt.List.getExn(0)->TElement.Icon} />
                </Col>
                <Col size=1.3> <TElement elementType={TElement.TxHash(hash, timestamp)} /> </Col>
-               <Col size=1.3>
-                 <TElement
-                   elementType={messages->Belt.List.getExn(0)->TElement.TxTypeWithDetail}
-                 />
-               </Col>
+               <Col size=1.3> <TElement elementType={messages->TElement.TxTypeWithDetail} /> </Col>
                <Col size=0.5> <TElement elementType={0.->TElement.Fee} /> </Col>
              </Row>
            </TBody>

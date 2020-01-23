@@ -40,11 +40,7 @@ let make = (~txs: list(TxHook.Tx.t)) => {
                  <TElement elementType={messages->Belt.List.getExn(0)->TElement.Icon} />
                </Col>
                <Col size=0.8> <TElement elementType={TElement.TxHash(hash, timestamp)} /> </Col>
-               <Col size=0.5>
-                 <TElement
-                   elementType={messages->Belt.List.getExn(0)->TElement.TxTypeWithDetail}
-                 />
-               </Col>
+               <Col size=0.5> <TElement elementType={messages->TElement.TxTypeWithDetail} /> </Col>
                <Col size=0.2> <TElement elementType={TElement.Height(blockHeight)} /> </Col>
                <Col size=0.8> <TElement elementType={sender->TElement.Address} /> </Col>
                <Col size=0.3> <TElement elementType={0.->TElement.Fee} /> </Col>

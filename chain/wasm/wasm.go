@@ -3,6 +3,8 @@ package wasm
 import (
 	"encoding/binary"
 	"errors"
+	"fmt"
+	"time"
 
 	wasm "github.com/wasmerio/go-ext-wasm/wasmer"
 )
@@ -66,11 +68,8 @@ func ParamsInfo(code []byte) ([]byte, error) {
 		return nil, err
 	}
 	defer instance.Close()
-	fn := instance.Exports["__params_info"]
-	if fn == nil {
-		return nil, errors.New("__params_info not implemented")
-	}
-	ptr, err := fn()
+
+	ptr, err := executeWithTimeout(100*time.Millisecond, &instance, "__params_info")
 	if err != nil {
 		return nil, err
 	}
@@ -87,11 +86,8 @@ func ParseParams(code []byte, params []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	fn := instance.Exports["__parse_params"]
-	if fn == nil {
-		return nil, errors.New("__parse_params not implemented")
-	}
-	ptr, err := fn(paramsInput)
+
+	ptr, err := executeWithTimeout(100*time.Millisecond, &instance, "__parse_params", paramsInput)
 	if err != nil {
 		return nil, err
 	}
@@ -104,11 +100,8 @@ func RawDataInfo(code []byte) ([]byte, error) {
 		return nil, err
 	}
 	defer instance.Close()
-	fn := instance.Exports["__raw_data_info"]
-	if fn == nil {
-		return nil, errors.New("__raw_data_info not implemented")
-	}
-	ptr, err := fn()
+
+	ptr, err := executeWithTimeout(100*time.Millisecond, &instance, "__raw_data_info")
 	if err != nil {
 		return nil, err
 	}
@@ -126,11 +119,7 @@ func ParseRawData(code []byte, params []byte, data []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	fn := instance.Exports["__parse_raw_data"]
-	if fn == nil {
-		return nil, errors.New("__parse_raw_data not implemented")
-	}
-	ptr, err := fn(paramsInput, dataInput)
+	ptr, err := executeWithTimeout(100*time.Millisecond, &instance, "__parse_raw_data", paramsInput, dataInput)
 	if err != nil {
 		return nil, err
 	}
@@ -185,15 +174,41 @@ func Prepare(code []byte, params []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	fn := instance.Exports["__prepare"]
-	if fn == nil {
-		return nil, errors.New("__prepare not implemented")
-	}
-	ptr, err := fn(paramsInput)
+	ptr, err := executeWithTimeout(100*time.Millisecond, &instance, "__prepare", paramsInput)
 	if err != nil {
 		return nil, err
 	}
 	return parseOutput(instance, ptr.ToI64())
+}
+
+func executeWithTimeout(limitTimeout time.Duration, inst *wasm.Instance, funcName string, args ...interface{}) (wasm.Value, error) {
+	type wasmOutput struct {
+		ptr wasm.Value
+		err error
+	}
+
+	fn := inst.Exports[funcName]
+	if fn == nil {
+		return wasm.Value{}, errors.New(funcName + " not implemented")
+	}
+
+	chanWasmOutput := make(chan wasmOutput, 1)
+	go func() {
+		ptr, err := fn(args...)
+		chanWasmOutput <- wasmOutput{ptr, err}
+	}()
+
+	var res wasmOutput
+	select {
+	case <-time.After(limitTimeout):
+		return wasm.Value{}, fmt.Errorf("wasm execution timeout")
+	case res = <-chanWasmOutput:
+		if res.err != nil {
+			return wasm.Value{}, res.err
+		} else {
+			return res.ptr, res.err
+		}
+	}
 }
 
 func Execute(code []byte, params []byte, inputs [][]byte) ([]byte, error) {
@@ -210,11 +225,7 @@ func Execute(code []byte, params []byte, inputs [][]byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	fn := instance.Exports["__execute"]
-	if fn == nil {
-		return nil, errors.New("__execute not implemented")
-	}
-	ptr, err := fn(paramsInput, wasmInput)
+	ptr, err := executeWithTimeout(100*time.Millisecond, &instance, "__execute", paramsInput, wasmInput)
 	if err != nil {
 		return nil, err
 	}
