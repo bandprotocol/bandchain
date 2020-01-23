@@ -25,7 +25,7 @@ impl Oracle for RandomBytes {
     fn from_cmd_output(&self, output: String) -> Option<Vec<u8>> {
         let parsed = json::parse(&output).ok()?;
         let bytes = parsed["data"].members().map(|x| x.as_u8()).collect::<Option<Vec<u8>>>()?;
-        if bytes.len() as u8 == self.size {
+        if bytes.len() == self.size as usize {
             Some(bytes)
         } else {
             None
