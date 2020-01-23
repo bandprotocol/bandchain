@@ -56,5 +56,12 @@ mod tests {
     #[test]
     fn test_from_cmd_not_ok() {
         assert_eq!(RandomBytes::new(10).from_cmd_output(r#"{"success":false}"#.into()), None);
+
+        assert_eq!(
+            RandomBytes::new(10).from_cmd_output(
+                r#"{"type":"uint8","length":5,"data":[1,2,3,4,5,6],"success":true}"#.into()
+            ),
+            None
+        );
     }
 }
