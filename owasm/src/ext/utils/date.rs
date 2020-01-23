@@ -16,7 +16,7 @@ impl Oracle for Date {
     }
 
     fn from_cmd_output(&self, output: String) -> Option<u64> {
-        output.parse::<u64>().ok()
+        output.replace("\n", "").replace("'", "").parse::<u64>().ok()
     }
 }
 
