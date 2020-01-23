@@ -5,6 +5,7 @@ use owasm::{decl_data, decl_params, decl_result};
 decl_params! {
     pub struct Parameter {
         pub symbol: coins::Coins,
+        pub alphavantage_symbol: String,
         pub alphavantage_api_key: String,
     }
 }
@@ -14,7 +15,7 @@ decl_data! {
         pub coin_gecko: f32 = |params: &Parameter| coingecko::Price::new(&params.symbol),
         pub crypto_compare: f32 = |params: &Parameter| cryptocompare::Price::new(&params.symbol),
         pub binance: f32 = |params: &Parameter| binance::Price::new(&params.symbol),
-        pub alphavantage: f32 = |params: &Parameter| alphavantage::Price::new(&params.symbol, &params.alphavantage_api_key),
+        pub alphavantage: f32 = |params: &Parameter| alphavantage::Price::new(&params.alphavantage_symbol, &params.alphavantage_api_key),
         pub time_stamp: u64 = |_: &Parameter| date::Date::new(),
     }
 }
@@ -71,27 +72,25 @@ mod tests {
     }
 
     #[test]
-    fn test_end_to_end_from_local_env() {
-        // Run with local environment
+    fn test_call_stock() {
         let data = Data::build_from_local_env(&Parameter {
-            symbol: coins::Coins::BTC,
+            symbol: coins::Coins::ETH,
+            alphavantage_symbol: String::from("GOOG"),
             alphavantage_api_key: String::from("WVKPOO76169EX950"),
         })
         .unwrap();
-        println!("Current BTC price (times 100) is {:?}", execute(vec![data]));
+        println!("Current GOOG price (times 100) is {:?}", execute(vec![data]));
+    }
 
+    #[test]
+    fn test_end_to_end_from_local_env() {
+        // Run with local environment
         let data = Data::build_from_local_env(&Parameter {
             symbol: coins::Coins::ETH,
+            alphavantage_symbol: String::from("ETH"),
             alphavantage_api_key: String::from("WVKPOO76169EX950"),
         })
         .unwrap();
         println!("Current ETH price (times 100) is {:?}", execute(vec![data]));
-
-        let data = Data::build_from_local_env(&Parameter {
-            symbol: coins::Coins::BAND,
-            alphavantage_api_key: String::from("WVKPOO76169EX950"),
-        })
-        .unwrap();
-        println!("Current BAND price (times 100) is {:?}", execute(vec![data]));
     }
 }
