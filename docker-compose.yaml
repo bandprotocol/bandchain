@@ -119,7 +119,7 @@ services:
     depends_on:
       - rest-server
     ports:
-      - 1318:80
+      - 80:80
 
   web-server:
     image: band-validator:latest
