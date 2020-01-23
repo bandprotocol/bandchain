@@ -110,6 +110,7 @@ mod tests {
     fn test_encode_decode_parameter() {
         let params = logic::__Params {
             symbol: coins::Coins::ETH,
+            alphavantage_symbol: String::from("ETH"),
             alphavantage_api_key: String::from("some_key"),
         };
 
