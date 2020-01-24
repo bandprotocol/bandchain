@@ -12,11 +12,11 @@ impl Oracle for Date {
     type T = u64;
 
     fn as_cmd(&self) -> ShellCmd {
-        ShellCmd::new("date", &["+'%s'"])
+        ShellCmd::new("date", &["+%s"])
     }
 
     fn from_cmd_output(&self, output: String) -> Option<u64> {
-        output.replace("\n", "").replace("'", "").parse::<u64>().ok()
+        output.replace("\n", "").parse::<u64>().ok()
     }
 }
 
@@ -26,12 +26,12 @@ mod tests {
 
     #[test]
     fn test_as_cmd() {
-        assert_eq!(Date::new().as_cmd(), (ShellCmd::new("date", &["+'%s'"])));
+        assert_eq!(Date::new().as_cmd(), (ShellCmd::new("date", &["+%s"])));
     }
 
     #[test]
     fn test_from_cmd_ok() {
-        assert_eq!(Date::new().from_cmd_output("1579773294".into()), Some(1579773294));
+        assert_eq!(Date::new().from_cmd_output("1579773294\n".into()), Some(1579773294));
     }
 
     #[test]
