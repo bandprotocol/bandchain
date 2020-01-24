@@ -66,6 +66,16 @@ pub fn __parse_params(params: u64) -> u64 {
 }
 
 #[no_mangle]
+pub fn __serialize_params(json_ptr: u64) -> u64 {
+    let params: logic::__Params = serde_json::from_str(
+        String::from_utf8(__read_data(json_ptr).to_vec()).ok().unwrap().as_str(),
+    )
+    .ok()
+    .unwrap();
+    __return(&__encode_params(params).unwrap())
+}
+
+#[no_mangle]
 pub fn __raw_data_info() -> u64 {
     __return(&serde_json::to_string(&logic::__Data::__fields()).ok().unwrap().into_bytes())
 }
