@@ -83,7 +83,7 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) =>
     let totalValidators = info.validators->Belt.List.length;
     let latestBlock = info.latestBlock.height;
 
-    let comfirmed = result->Belt.Option.isSome || reportedValidators == totalValidators;
+    let comfirmed = result->Belt.Array.size > 0 || reportedValidators == totalValidators;
     let remainingBlock = targetBlock - latestBlock;
     Some(
       <div className=Styles.pageContainer>
@@ -161,19 +161,13 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) =>
               </div>
               <div className=Styles.detailContainer> <Parameters params /> </div>
             </div>
-            {result->Belt.Option.mapWithDefault(React.null, result' =>
-               <>
-                 <VSpacing size=Spacing.xl />
-                 <div className={Css.merge([Styles.vFlex, Styles.flexStart])}>
-                   <div className=Styles.subHeaderContainer>
-                     <Text value="Result" size=Text.Xl color=Colors.darkGrayText />
-                   </div>
-                   <div className=Styles.detailContainer>
-                     <Text value={result'->JsBuffer.toHex} />
-                   </div>
-                 </div>
-               </>
-             )}
+            <VSpacing size=Spacing.xl />
+            <div className={Css.merge([Styles.vFlex, Styles.flexStart])}>
+              <div className=Styles.subHeaderContainer>
+                <Text value="Result" size=Text.Xl color=Colors.darkGrayText />
+              </div>
+              <div className=Styles.detailContainer> <Result result /> </div>
+            </div>
           </div>
           <div className=Styles.tableHeader>
             <Row>
@@ -193,7 +187,7 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) =>
           {switch (hashtag) {
            | RequestReportStatus =>
              <div className=Styles.tableLowerContainer>
-               {result->Belt.Option.isSome
+               {result->Belt.Array.size > 0
                   ? React.null
                   : <Text
                       value={j|Data Report from $reportedValidators Validators (Completed $reportedValidators/$totalValidators)|j}
