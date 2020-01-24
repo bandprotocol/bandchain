@@ -25,7 +25,7 @@ import (
 const limitTimeOut = 10 * time.Second
 
 var txSender cmtx.TxSender
-var allowedCommands = map[string]bool{"curl": true}
+var allowedCommands = map[string]bool{"curl": true, "date": true}
 
 func main() {
 	// Get environment variable
