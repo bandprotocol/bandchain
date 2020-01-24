@@ -1,4 +1,5 @@
 use owasm::ext::crypto::{alphavantage, binance, coingecko, coins, cryptocompare};
+use owasm::ext::finance::alphavantage;
 use owasm::ext::utils::date;
 use owasm::{decl_data, decl_params, decl_result};
 
