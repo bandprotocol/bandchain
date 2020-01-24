@@ -19,7 +19,7 @@ fn main() -> error::Result<()> {
 
     let instance = instantiate(&code, &imports! {})?;
     let params_input = store_bytes(&instance, param_json).unwrap();
-    let ptr_and_sz = instance.call("__serialized_params", &[Value::I64(params_input as i64)])?[0]
+    let ptr_and_sz = instance.call("__serialize_params", &[Value::I64(params_input as i64)])?[0]
         .to_u128() as i64;
     let memory = instance.context().memory(0);
     let ptr = (ptr_and_sz & ((1 << 32) - 1)) as usize;
