@@ -1,7 +1,5 @@
 # EVM Bridge
 
----
-
 ## Supported chains
 
 - [Ethereum](https://ethereum.org/)
