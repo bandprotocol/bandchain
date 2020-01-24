@@ -24,7 +24,9 @@ services:
       bandchain:
         ipv4_address: 172.18.0.11
     depends_on:
+      - build-provider-image
       - web-server
+      - proxy-server
     ports:
       - 26657:26657
     command: sh -c "chmod +x ./docker-config/single-validator/run.sh && ./docker-config/single-validator/run.sh"
@@ -39,7 +41,9 @@ services:
       - multi-validator2-node
       - multi-validator3-node
       - multi-validator4-node
+      - build-provider-image
       - web-server
+      - proxy-server
 
   multi-validator1-node:
     build:
@@ -104,6 +108,18 @@ services:
     ports:
       - 1317:1317
     command: bandcli rest-server --laddr tcp://0.0.0.0:1317 --node tcp://172.18.0.11:26657 --chain-id bandchain
+
+  proxy-server:
+    build:
+      context: scan/proxy
+    image: proxy-server:latest
+    networks:
+      bandchain:
+        ipv4_address: 172.18.0.99
+    depends_on:
+      - rest-server
+    ports:
+      - 80:80
 
   web-server:
     image: band-validator:latest

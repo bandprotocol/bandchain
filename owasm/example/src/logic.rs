@@ -1,4 +1,4 @@
-use owasm::ext::crypto::{coingecko, coins, cryptocompare};
+use owasm::ext::crypto::{binance, coingecko, coins, cryptocompare};
 use owasm::{decl_data, decl_params, decl_result};
 
 decl_params! {
@@ -11,6 +11,7 @@ decl_data! {
     pub struct Data {
         pub coin_gecko: f32 = |params: &Parameter| coingecko::Price::new(&params.symbol),
         pub crypto_compare: f32 = |params: &Parameter| cryptocompare::Price::new(&params.symbol),
+        pub binance: f32 = |params: &Parameter| binance::Price::new(&params.symbol),
     }
 }
 
@@ -22,7 +23,7 @@ decl_result! {
 
 impl Data {
     pub fn avg_px(&self) -> f32 {
-        (self.coin_gecko + self.crypto_compare) / 2.0
+        (self.coin_gecko + self.crypto_compare + self.binance) / 3.0
     }
 }
 
@@ -41,12 +42,12 @@ mod tests {
 
     #[test]
     fn test_execute() {
-        // Average is 125.00
-        let data1 = Data { coin_gecko: 100.0, crypto_compare: 150.0 };
-        // Average is 225.00
-        let data2 = Data { coin_gecko: 200.0, crypto_compare: 250.0 };
-        // Average among the two data points is 175.00
-        assert_eq!(execute(vec![data1, data2]), Result { price_in_usd: 17500 });
+        // Average is 120.00
+        let data1 = Data { coin_gecko: 100.0, crypto_compare: 150.0, binance: 110.0 };
+        // Average is 220.00
+        let data2 = Data { coin_gecko: 200.0, crypto_compare: 250.0, binance: 210.0 };
+        // Average among the two data points is 170.00
+        assert_eq!(execute(vec![data1, data2]), Result { price_in_usd: 17000 });
     }
 
     #[test]
