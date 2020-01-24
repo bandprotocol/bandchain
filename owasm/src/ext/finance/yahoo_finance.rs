@@ -21,16 +21,10 @@ impl Oracle for Price {
         let parsed = json::parse(
             &output
                 .split("root.App.main =")
-                .collect::<Vec<&str>>()
-                .into_iter()
                 .nth(1)?
                 .split("(this)")
-                .collect::<Vec<&str>>()
-                .into_iter()
                 .nth(0)?
                 .split(";\n}")
-                .collect::<Vec<&str>>()
-                .into_iter()
                 .nth(0)?,
         )
         .ok()?;
