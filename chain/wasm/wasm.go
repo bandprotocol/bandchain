@@ -126,6 +126,23 @@ func ParseRawData(code []byte, params []byte, data []byte) ([]byte, error) {
 	return parseOutput(instance, ptr.ToI64())
 }
 
+func SerializeParams(code []byte, params []byte) ([]byte, error) {
+	instance, err := wasm.NewInstance(code)
+	if err != nil {
+		return nil, err
+	}
+	defer instance.Close()
+	paramsInput, err := storeRawBytes(instance, params)
+	if err != nil {
+		return nil, err
+	}
+	ptr, err := executeWithTimeout(100*time.Millisecond, &instance, "__serialize_params", paramsInput)
+	if err != nil {
+		return nil, err
+	}
+	return parseOutput(instance, ptr.ToI64())
+}
+
 func ResultInfo(code []byte) ([]byte, error) {
 	instance, err := wasm.NewInstance(code)
 	if err != nil {
