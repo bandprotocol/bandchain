@@ -13,16 +13,19 @@ function(rpcUrl) {
 ];
 
 [@bs.deriving abstract]
+type context_config_t = {useCache: bool};
+
+[@bs.deriving abstract]
 type t = {
   data: Js.undefined(Js.Json.t),
   loading: bool,
 };
 
 [@bs.val] [@bs.module "axios-hooks"]
-external _context: string => (t, (unit, unit) => unit) = "default";
+external _context: (string, context_config_t) => (t, (unit, unit) => unit) = "default";
 
 let use = (url, ~pollInterval=600000, ()) => {
-  let (rawdata, refetch) = _context(url);
+  let (rawdata, refetch) = _context(url, context_config_t(~useCache=false));
   React.useEffect2(
     () => {
       let intervalId = Js.Global.setInterval(() => refetch((), ()), pollInterval);
