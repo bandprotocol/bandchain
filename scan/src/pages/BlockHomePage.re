@@ -38,8 +38,9 @@ let renderBody = ((block, moniker): (BlockHook.Block.t, string)) => {
     <div className=Styles.fullWidth onClick={_ => Route.BlockIndexPage(height) |> Route.redirect}>
       <Row>
         <Col> <img src=Images.blockLogo className=Styles.icon /> </Col>
-        <Col size=0.6> <TElement elementType={TElement.Height(height)} /> </Col>
-        <Col size=0.8> <TElement elementType={TElement.Timestamp(timestamp)} /> </Col>
+        <Col size=0.6>
+          <TElement elementType={TElement.HeightWithTime(height, timestamp)} />
+        </Col>
         <Col size=2.0> <TElement elementType={TElement.Proposer(moniker, proposer)} /> </Col>
         <Col size=0.7> <TElement elementType={TElement.Count(totalTx)} /> </Col>
         <Col size=0.7> <TElement elementType={TElement.Fee(0.0)} /> </Col>
@@ -98,7 +99,6 @@ let make = () => {
         <Col> <div className=Styles.icon /> </Col>
         {[
            ("BLOCK", 0.6),
-           ("AGE", 0.8),
            ("PROPOSER", 2.0),
            ("TXN", 0.7),
            ("TOTAL FEE", 0.7),
