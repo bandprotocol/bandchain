@@ -74,12 +74,22 @@ type ParamsInfoResponse struct {
 	Params RawJson `json:"params"`
 }
 
+type StoreRequest struct {
+	Code HexString `json:"code" binding:"required"`
+	Name string    `json:"name" binding:"required"`
+}
+
+type StoreResponse struct {
+	TxHash   cmn.HexBytes `json:"txHash"`
+	CodeHash cmn.HexBytes `json:"codeHash"`
+}
+
 type Command struct {
 	Cmd       string   `json:"cmd"`
 	Arguments []string `json:"args"`
 }
 
-var allowedCommands = map[string]bool{"curl": true}
+var allowedCommands = map[string]bool{"curl": true, "date": true}
 
 func execWithTimeout(command Command, limit time.Duration) ([]byte, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), limit)
@@ -95,8 +105,6 @@ func execWithTimeout(command Command, limit time.Duration) ([]byte, error) {
 	return out, nil
 }
 
-const priv = "06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b"
-
 func getEnv(key, def string) string {
 	tmp := os.Getenv(key)
 	if tmp == "" {
@@ -108,6 +116,7 @@ func getEnv(key, def string) string {
 var (
 	port    = getEnv("PORT", "5001")
 	nodeURI = getEnv("NODE_URI", "http://localhost:26657")
+	priv    = getEnv("PRIVATE_KEY", "eedda7a96ad35758f2ffc404d6ccd7be913f149a530c70e95e2e3ee7a952a877")
 )
 
 var rpcClient *rpc.HTTP
@@ -305,6 +314,31 @@ func handleExecute(c *gin.Context) {
 	})
 }
 
+func handleStore(c *gin.Context) {
+	var req StoreRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	codeHash := zoracle.NewStoredCode(req.Code, req.Name, txSender.Sender()).GetCodeHash()
+	tx, err := txSender.SendTransaction(zoracle.NewMsgStoreCode(req.Code, req.Name, txSender.Sender()), flags.BroadcastBlock)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	txHash, err := hex.DecodeString(tx.TxHash)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, StoreResponse{
+		TxHash:   txHash,
+		CodeHash: cmn.HexBytes(codeHash),
+	})
+}
+
 func main() {
 	viper.Set("nodeURI", nodeURI)
 	privBytes, _ := hex.DecodeString(priv)
@@ -320,6 +354,7 @@ func main() {
 	r.POST("/request", handleRequestData)
 	r.POST("/params-info", handleParamsInfo)
 	r.POST("/execute", handleExecute)
+	r.POST("/store", handleStore)
 
 	r.Run("0.0.0.0:" + port) // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
