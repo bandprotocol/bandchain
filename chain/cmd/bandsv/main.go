@@ -58,8 +58,8 @@ type OracleRequestResp struct {
 }
 
 type ExecuteRequest struct {
-	Code   HexString `json:"code" binding:"required"`
-	Params string    `json:"params" binding:"required"`
+	Code   HexString       `json:"code" binding:"required"`
+	Params json.RawMessage `json:"params" binding:"required"`
 }
 
 type ExecuteResponse struct {
