@@ -201,7 +201,7 @@ func getSerializeParams(cliCtx context.CLIContext, storeName string) http.Handle
 
 		txHash := scriptInfo.TxHash
 
-		res, _, err = cliCtx.QueryWithData(fmt.Sprintf("custom/txs/%s", txHash), nil)
+		res, _, err = cliCtx.QueryWithData(fmt.Sprintf("txs/%s", txHash), nil)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusNotFound, err.Error())
 			return
