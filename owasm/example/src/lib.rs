@@ -108,14 +108,20 @@ mod tests {
 
     #[test]
     fn test_encode_decode_parameter() {
-        let params = logic::__Params { symbol: coins::Coins::ETH };
+        let params = logic::__Params {
+            crypto_symbol: coins::Coins::ETH,
+            stock_symbol: String::from("GOOG"),
+            alphavantage_api_key: String::from("some_key"),
+        };
 
         let encoded_params = __encode_params(params).unwrap();
         let new_params: logic::Parameter =
             bincode::config().big_endian().deserialize(&encoded_params).ok().unwrap();
 
         println!("{:x?}", encoded_params);
-        assert_eq!(new_params.symbol, coins::Coins::ETH);
+        assert_eq!(new_params.crypto_symbol, coins::Coins::ETH);
+        assert_eq!(new_params.stock_symbol, String::from("GOOG"));
+        assert_eq!(new_params.alphavantage_api_key, String::from("some_key"));
     }
 
     // #[test]
