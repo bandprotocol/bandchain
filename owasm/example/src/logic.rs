@@ -93,7 +93,7 @@ mod tests {
             time_stamp: 12,
             rng: vec![8, 7, 6, 5, 4, 3, 2, 1],
         };
-        // Average among the two data points is 175.00
+        // Average among the two data points is 170.00
         assert_eq!(
             execute(vec![data1, data2]),
             Result {
