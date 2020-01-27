@@ -199,6 +199,17 @@ func getSerializeParams(cliCtx context.CLIContext, storeName string) http.Handle
 			return
 		}
 
+		txHash := scriptInfo.TxHash
+
+		res, _, err = cliCtx.QueryWithData(fmt.Sprintf("custom/txs/%s", txHash), nil)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusNotFound, err.Error())
+			return
+		}
+
+		rest.PostProcessResponse(w, cliCtx, res)
+		return
+
 		rawParams, err := wasm.SerializeParams([]byte("aaaa"), []byte(paramsVar))
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusNotFound, err.Error())
