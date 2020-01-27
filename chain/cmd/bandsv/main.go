@@ -17,6 +17,7 @@ import (
 	cmc "github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
@@ -312,6 +313,7 @@ func main() {
 	r.POST("/request", handleRequestData)
 	r.POST("/params-info", handleParamsInfo)
 	r.POST("/execute", handleExecute)
-
+	// Allows all origins
+	r.Use(cors.Default())
 	r.Run("0.0.0.0:" + port) // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
