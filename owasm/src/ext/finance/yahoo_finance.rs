@@ -46,13 +46,13 @@ mod tests {
         );
     }
 
-    // #[test]
-    // fn test_from_cmd_ok() {
-    //     assert_eq!(Price::new(&Coins::BTC).from_cmd_output(r#"{"USD":100.0}"#.into()), Some(100.0));
-    // }
+    #[test]
+    fn test_from_cmd_ok() {
+        assert_eq!(Price::new("FB").from_cmd_output(r#"... root.App.main = {"context":{"dispatcher":{"stores":{"QuoteSummaryStore":{"price":{"regularMarketPrice":{"raw":100.0}}}}}}}(this)) ...; "#.into()), Some(100.0));
+    }
 
-    // #[test]
-    // fn test_from_cmd_not_ok() {
-    //     assert_eq!(Price::new(&Coins::BTC).from_cmd_output(r#"{}"#.into()), None);
-    // }
+    #[test]
+    fn test_from_cmd_not_ok() {
+        assert_eq!(Price::new("FB").from_cmd_output(r#"{}"#.into()), None);
+    }
 }
