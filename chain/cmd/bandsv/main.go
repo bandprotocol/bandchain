@@ -253,7 +253,7 @@ func handleExecute(c *gin.Context) {
 		return
 	}
 
-	rawParams, err := wasm.SerializeParams(req.Code, []byte(req.Params))
+	rawParams, err := wasm.SerializeParams(req.Code, req.Params)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
