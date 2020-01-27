@@ -37,14 +37,6 @@ func (hexstr *HexString) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-type RawJson []byte
-
-var EmptyMap = []byte("{}")
-
-func (j RawJson) MarshalJSON() ([]byte, error) {
-	return []byte(j), nil
-}
-
 type OracleRequest struct {
 	CodeHash HexString `json:"codeHash" binding:"len=0|len=32"`
 	Code     HexString `json:"code"`
@@ -63,7 +55,7 @@ type ExecuteRequest struct {
 }
 
 type ExecuteResponse struct {
-	Result RawJson `json:"result"`
+	Result json.RawMessage `json:"result"`
 }
 
 type ParamsInfoRequest struct {
@@ -71,7 +63,7 @@ type ParamsInfoRequest struct {
 }
 
 type ParamsInfoResponse struct {
-	Params RawJson `json:"params"`
+	Params json.RawMessage `json:"params"`
 }
 
 type Command struct {
