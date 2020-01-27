@@ -16,8 +16,6 @@ module Styles = {
 
   let fullWidth = style([width(`percent(100.0)), display(`flex)]);
 
-  let textContainer = style([paddingLeft(Spacing.lg)]);
-
   let icon =
     style([
       width(`px(30)),
