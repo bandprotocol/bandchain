@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"strconv"
 	"time"
 
 	app "github.com/bandprotocol/d3n/chain"
@@ -17,6 +18,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/gin-gonic/gin"
+	"github.com/levigross/grequests"
 	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 	cmn "github.com/tendermint/tendermint/libs/common"
@@ -31,8 +33,8 @@ type OracleRequest struct {
 }
 
 type OracleRequestResp struct {
-	RequestId uint64       `json:"id"`
-	TxHash    cmn.HexBytes `json:"txHash"`
+	RequestId uint64 `json:"id"`
+	TxHash    string `json:"txHash"`
 }
 
 type ExecuteRequest struct {
@@ -58,7 +60,7 @@ type StoreRequest struct {
 }
 
 type StoreResponse struct {
-	TxHash   cmn.HexBytes `json:"txHash"`
+	TxHash   string       `json:"txHash"`
 	CodeHash cmn.HexBytes `json:"codeHash"`
 }
 
@@ -92,9 +94,10 @@ func getEnv(key, def string) string {
 }
 
 var (
-	port    = getEnv("PORT", "5001")
-	nodeURI = getEnv("NODE_URI", "http://localhost:26657")
-	priv    = getEnv("PRIVATE_KEY", "eedda7a96ad35758f2ffc404d6ccd7be913f149a530c70e95e2e3ee7a952a877")
+	port     = getEnv("PORT", "5001")
+	nodeURI  = getEnv("NODE_URI", "http://localhost:26657")
+	queryURI = getEnv("QUERY_URI", "http://localhost:1317")
+	priv     = getEnv("PRIVATE_KEY", "eedda7a96ad35758f2ffc404d6ccd7be913f149a530c70e95e2e3ee7a952a877")
 )
 
 var rpcClient *rpc.HTTP
@@ -103,121 +106,70 @@ var txSender cmtx.TxSender
 var cliCtx cmc.CLIContext
 var cdc *codec.Codec
 
-// TODO
-// - Add query from rest client and ask via that endpoint
-func HasCode(codeHash []byte) (bool, error) {
-	key := zoracle.CodeHashStoreKey(codeHash)
-	resp, err := rpcClient.ABCIQuery("/store/zoracle/key", key)
-	if err != nil {
-		return false, err
-	}
-
-	return len(resp.Response.Value) > 0, nil
+type serializeResponse struct {
+	Result cmn.HexBytes `json:"result"`
 }
 
 func handleRequestData(c *gin.Context) {
-	var requestData OracleRequest
-	if err := c.ShouldBindJSON(&requestData); err != nil {
+	var req OracleRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	// TODO: Mock this endpoint for front-end for now
 
-	// if len(requestData.CodeHash) == 0 && len(requestData.Code) == 0 {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "Missing code/codeHash"})
-	// 	return
-	// }
-	// if len(requestData.CodeHash) > 0 && len(requestData.Code) > 0 {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "Only one of code/codeHash can be sent"})
-	// 	return
-	// }
+	resp, err := grequests.Get(
+		fmt.Sprintf("%s/zoracle/serialize-params/%x/%s", queryURI, req.CodeHash, req.Params),
+		nil,
+	)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	if resp.StatusCode != 200 {
+		c.JSON(resp.StatusCode, gin.H{"error": resp.Error.Error()})
+		return
+	}
 
-	// // TODO
-	// // Need some work around to make params can be empty bytes
-	// if len(requestData.Params) <= 0 {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "Params should not be empty bytes"})
-	// 	return
-	// }
+	var respParams serializeResponse
+	err = resp.JSON(&respParams)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-	// var params []byte
+	params := respParams.Result
 
-	// if len(requestData.Code) > 0 {
-	// 	if len(requestData.Name) <= 0 {
-	// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Name should not be empty string"})
-	// 		return
-	// 	}
-	// 	requestData.CodeHash = zoracle.NewStoredCode(requestData.Code, requestData.Name, txSender.Sender()).GetCodeHash()
-	// 	hasCode, err := HasCode(requestData.CodeHash)
-	// 	if err != nil {
-	// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	// 		return
-	// 	}
-	// 	// If codeHash not found then store the code
-	// 	if !hasCode {
-	// 		_, err := txSender.SendTransaction(zoracle.NewMsgStoreCode(requestData.Code, requestData.Name, txSender.Sender()), flags.BroadcastBlock)
-	// 		if err != nil {
-	// 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	// 			return
-	// 		}
-	// 	}
+	txr, err := txSender.SendTransaction(zoracle.NewMsgRequest(req.CodeHash, params, 4, txSender.Sender()), flags.BroadcastBlock)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
-	// 	// Parse params
-	// 	params, err = wasm.SerializeParams(requestData.Code, []byte(requestData.Params))
-	// 	if err != nil {
-	// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	// 		return
-	// 	}
-	// } else if len(requestData.CodeHash) > 0 {
-	// 	hasCode, err := HasCode(requestData.CodeHash)
-	// 	if err != nil {
-	// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	// 		return
-	// 	}
-	// 	if !hasCode {
-	// 		c.JSON(http.StatusBadRequest, gin.H{"error": "codeHash not found"})
-	// 		return
-	// 	}
-
-	// 	params, err = hex.DecodeString(requestData.Params)
-	// 	if err != nil {
-	// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	// 		return
-	// 	}
-	// }
-
-	// txr, err := txSender.SendTransaction(zoracle.NewMsgRequest(requestData.CodeHash, params, 4, txSender.Sender()), flags.BroadcastBlock)
-	// if err != nil {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	// 	return
-	// }
-
-	// requestId := uint64(0)
-	// events := txr.Events
-	// for _, event := range events {
-	// 	if event.Type == "request" {
-	// 		for _, attr := range event.Attributes {
-	// 			if string(attr.Key) == "id" {
-	// 				requestId, err = strconv.ParseUint(attr.Value, 10, 64)
-	// 				if err != nil {
-	// 					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	// 					return
-	// 				}
-	// 				break
-	// 			}
-	// 		}
-	// 	}
-	// }
-	// if requestId == 0 {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("cannot find requestId: %v", txr)})
-	// 	return
-	// }
-
-	mockTxHash, _ := hex.DecodeString("A5A8482E19F434FD7083B79B51270527243DB1B4EAAD2CEBB3AA75915719589A")
+	requestId := uint64(0)
+	for _, event := range txr.Events {
+		if event.Type == "request" {
+			for _, attr := range event.Attributes {
+				if string(attr.Key) == "id" {
+					requestId, err = strconv.ParseUint(attr.Value, 10, 64)
+					if err != nil {
+						c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+						return
+					}
+					break
+				}
+			}
+		}
+	}
+	if requestId == 0 {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("cannot find requestId: %v", txr)})
+		return
+	}
 
 	c.JSON(200, OracleRequestResp{
-		RequestId: 1,
-		TxHash:    mockTxHash,
+		RequestId: requestId,
+		TxHash:    txr.TxHash,
 	})
 }
 
@@ -311,13 +263,8 @@ func handleStore(c *gin.Context) {
 		return
 	}
 
-	txHash, err := hex.DecodeString(tx.TxHash)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
 	c.JSON(200, StoreResponse{
-		TxHash:   txHash,
+		TxHash:   tx.TxHash,
 		CodeHash: cmn.HexBytes(codeHash),
 	})
 }
@@ -334,19 +281,17 @@ func main() {
 
 	r := gin.Default()
 	// Currently gin-contrib/cors not work so add header manually
-	r.Use(func() gin.HandlerFunc {
-		return func(c *gin.Context) {
-			c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-			c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-			c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
-			c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
+	r.Use(func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
 
-			if c.Request.Method == "OPTIONS" {
-				c.AbortWithStatus(204)
-				return
-			}
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
 		}
-	}())
+	})
 
 	r.POST("/request", handleRequestData)
 	r.POST("/params-info", handleParamsInfo)
