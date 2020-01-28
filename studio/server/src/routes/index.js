@@ -17,10 +17,8 @@ router.post('/test', async (ctx, next) => {
 })
 
 router.post('/upload', async (ctx, next) => {
-  const { wasm, name, code } = ctx.request.body
-  const wasmContent = Buffer.from(wasm, 'hex')
-  const scriptHash = getD3NScriptHash(name, wasmContent)
-  ctx.body = await AWS.uploadFile(scriptHash, code)
+  const { code, hash } = ctx.request.body
+  ctx.body = await AWS.uploadFile(hash, code)
 })
 
 /** TODO: Remove once CORS on bandsv works */

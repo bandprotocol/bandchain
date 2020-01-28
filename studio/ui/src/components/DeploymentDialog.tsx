@@ -203,9 +203,8 @@ export class DeploymentDialog extends React.Component<
       });
 
       const { data: codeUrl } = await axios.post(studiosvUrl + "/upload", {
-        wasm: code,
-        name: this.state.name,
-        code: JSON.stringify(files)
+        code: JSON.stringify(files),
+        hash: codeHash
       });
 
       this.setState({
