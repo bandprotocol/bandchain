@@ -24,7 +24,9 @@ services:
       bandchain:
         ipv4_address: 172.18.0.11
     depends_on:
-      - web-server
+      - build-provider-image
+      - code-server
+      - proxy-server
     ports:
       - 26657:26657
     command: sh -c "chmod +x ./docker-config/single-validator/run.sh && ./docker-config/single-validator/run.sh"
@@ -39,7 +41,9 @@ services:
       - multi-validator2-node
       - multi-validator3-node
       - multi-validator4-node
-      - web-server
+      - build-provider-image
+      - code-server
+      - proxy-server
 
   multi-validator1-node:
     build:
@@ -105,21 +109,34 @@ services:
       - 1317:1317
     command: bandcli rest-server --laddr tcp://0.0.0.0:1317 --node tcp://172.18.0.11:26657 --chain-id bandchain
 
-  web-server:
+  proxy-server:
+    build:
+      context: scan/proxy
+    image: proxy-server:latest
+    networks:
+      bandchain:
+        ipv4_address: 172.18.0.99
+    depends_on:
+      - rest-server
+    ports:
+      - 80:80
+
+  code-server:
     image: band-validator:latest
     environment:
-      - PRIVATE_KEY=06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b
+      - PORT=5000
       - NODE_URI=tcp://172.18.0.11:26657
-      - QUERY_URI=http://172.18.0.15:1317
     networks:
       bandchain:
         ipv4_address: 172.18.0.16
     ports:
       - 5000:5000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     restart: always
     depends_on:
-      - rest-server
-    command: sh -c "cd ./server && go run *"
+      - build-provider-image
+    command: sh -c "cd ./cmd/bandsv && go run *"
 
   owasm-server:
     build: ./studio/compiler-server

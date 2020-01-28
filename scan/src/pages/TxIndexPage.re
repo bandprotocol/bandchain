@@ -55,11 +55,14 @@ let make = (~txHash) => {
           />
           <HSpacing size=Spacing.sm />
           {switch (txOpt) {
-           | Some(tx) => <MsgBadge msgs={tx.messages} position=MsgBadge.Header />
+           | Some(tx) =>
+             <>
+               <MsgBadge msgs={tx.messages} position=MsgBadge.Header />
+               <div className=Styles.seperatedLine />
+               <TimeAgos time={tx.timestamp} size=Text.Lg />
+             </>
            | None => React.null
            }}
-          <div className=Styles.seperatedLine />
-          <Text value="51 MINUTES AGO" />
         </div>
       </Col>
       <Col>

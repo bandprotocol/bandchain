@@ -66,6 +66,16 @@ pub fn __parse_params(params: u64) -> u64 {
 }
 
 #[no_mangle]
+pub fn __serialize_params(json_ptr: u64) -> u64 {
+    let params: logic::__Params = serde_json::from_str(
+        String::from_utf8(__read_data(json_ptr).to_vec()).ok().unwrap().as_str(),
+    )
+    .ok()
+    .unwrap();
+    __return(&__encode_params(params).unwrap())
+}
+
+#[no_mangle]
 pub fn __raw_data_info() -> u64 {
     __return(&serde_json::to_string(&logic::__Data::__fields()).ok().unwrap().into_bytes())
 }
@@ -98,14 +108,20 @@ mod tests {
 
     #[test]
     fn test_encode_decode_parameter() {
-        let params = logic::__Params { symbol: coins::Coins::ETH };
+        let params = logic::__Params {
+            crypto_symbol: coins::Coins::ETH,
+            stock_symbol: String::from("GOOG"),
+            alphavantage_api_key: String::from("some_key"),
+        };
 
         let encoded_params = __encode_params(params).unwrap();
         let new_params: logic::Parameter =
             bincode::config().big_endian().deserialize(&encoded_params).ok().unwrap();
 
         println!("{:x?}", encoded_params);
-        assert_eq!(new_params.symbol, coins::Coins::ETH);
+        assert_eq!(new_params.crypto_symbol, coins::Coins::ETH);
+        assert_eq!(new_params.stock_symbol, String::from("GOOG"));
+        assert_eq!(new_params.alphavantage_api_key, String::from("some_key"));
     }
 
     // #[test]

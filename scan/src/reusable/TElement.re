@@ -121,6 +121,10 @@ let renderHeight = height => {
   </div>;
 };
 
+let renderHeightWithTime = (height, time) => {
+  <> <TimeAgos time /> <VSpacing size={`px(6)} /> {renderHeight(height)} </>;
+};
+
 let renderName = name => {
   <div className=Styles.hashContainer>
     <Text block=true code=true value=name size=Text.Lg weight=Text.Bold ellipsis=true />
@@ -164,6 +168,7 @@ let msgIcon =
 type t =
   | Icon(TxHook.Msg.t)
   | Height(int)
+  | HeightWithTime(int, MomentRe.Moment.t)
   | Name(string)
   | Timestamp(MomentRe.Moment.t)
   | TxHash(Hash.t, MomentRe.Moment.t)
@@ -184,6 +189,7 @@ let make = (~elementType) => {
   switch (elementType) {
   | Icon({action, _}) => <img src={action->msgIcon} className=Styles.msgIcon />
   | Height(height) => renderHeight(height)
+  | HeightWithTime(height, timestamp) => renderHeightWithTime(height, timestamp)
   | Name(name) => renderName(name)
   | Timestamp(time) => renderTime(time)
   | TxHash(hash, timestamp) => renderTxHash(hash, timestamp)
