@@ -5,6 +5,7 @@ go 1.13
 require (
 	github.com/cosmos/cosmos-sdk v0.37.4
 	github.com/ethereum/go-ethereum v1.9.7
+	github.com/gin-contrib/cors v1.3.0
 	github.com/gin-gonic/gin v1.5.0
 	github.com/gorilla/mux v1.7.0
 	github.com/libp2p/go-libp2p-crypto v0.1.0
