@@ -200,8 +200,8 @@ func queryAllScripts(ctx sdk.Context, path []string, req abci.RequestQuery, keep
 
 // serializeParams is a function that receive codeHash and params and return a serialized format of params
 func serializeParams(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
-	if len(path) < 2 {
-		return nil, sdk.ErrInternal("not enough arguments, must specify the codehash and params")
+	if len(path) != 2 {
+		return nil, sdk.ErrInternal(fmt.Sprintf("number of arguments must be 2, but got %d", len(path)))
 	}
 
 	codeHash, err := hex.DecodeString(path[0])
