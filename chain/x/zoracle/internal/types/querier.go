@@ -23,21 +23,21 @@ func (u64a U64Array) String() string {
 
 type RequestInfo struct {
 	CodeHash    []byte            `json:"codeHash"`
-	Params      RawJson           `json:"params"`
+	Params      json.RawMessage   `json:"params"`
 	ParamsRaw   []byte            `json:"paramsRaw"`
 	TargetBlock uint64            `json:"targetBlock"`
 	Reports     []ValidatorReport `json:"reports"`
-	Result      RawJson           `json:"result"`
+	Result      json.RawMessage   `json:"result"`
 	ResultRaw   []byte            `json:"resultRaw"`
 }
 
 func NewRequestInfo(
 	codeHash []byte,
-	params RawJson,
+	params json.RawMessage,
 	paramsRaw []byte,
 	targetBlock uint64,
 	reports []ValidatorReport,
-	result RawJson,
+	result json.RawMessage,
 	resultRaw []byte,
 ) RequestInfo {
 	return RequestInfo{
