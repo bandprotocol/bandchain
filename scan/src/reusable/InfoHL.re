@@ -13,9 +13,15 @@ module Styles = {
 
   let hFlex = style([display(`flex), flexDirection(`column), alignItems(`flexStart)]);
   let vFlex = style([display(`flex), alignItems(`center)]);
+  let datasourcesContainer = style([display(`flex), alignItems(`center), flexWrap(`wrap)]);
   let headerContainer = style([lineHeight(`px(25))]);
   let sourceContainer =
-    style([display(`inlineFlex), alignItems(`center), marginRight(`px(40))]);
+    style([
+      display(`inlineFlex),
+      alignItems(`center),
+      marginRight(`px(40)),
+      marginTop(`px(13)),
+    ]);
   let sourceIcon = style([width(`px(16)), marginRight(`px(8))]);
 };
 
@@ -41,7 +47,7 @@ let make = (~info, ~header) => {
      | Fee(fee) =>
        <Text value={(fee |> Format.fPretty) ++ " BAND"} size=Text.Lg weight=Text.Bold />
      | DataSources(sources) =>
-       <div className=Styles.vFlex>
+       <div className=Styles.datasourcesContainer>
          {sources
           ->Belt.List.map(source =>
               <div key=source className=Styles.sourceContainer>
