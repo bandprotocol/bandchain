@@ -194,3 +194,11 @@ func TestExecute(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, expect, result)
 }
+
+func TestSerializeParams(t *testing.T) {
+	code, _ := loadWasmFile("./res/serialized_params.wasm")
+	result, err := SerializeParams(code, []byte(`{"crypto_symbol":"ETH", "stock_symbol":"GOOG","alphavantage_api_key":"WVKPOO76169EX950"}`))
+	require.Nil(t, err)
+	expect, _ := hex.DecodeString("000000010000000000000004474f4f47000000000000001057564b504f4f37363136394558393530")
+	require.Equal(t, expect, result)
+}

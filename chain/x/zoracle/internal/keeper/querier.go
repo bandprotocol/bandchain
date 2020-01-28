@@ -25,6 +25,8 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 			return queryScript(ctx, path[1:], req, keeper)
 		case types.QueryAllScripts:
 			return queryAllScripts(ctx, path[1:], req, keeper)
+		case types.SerializeParams:
+			return serializeParams(ctx, path[1:], req, keeper)
 		default:
 			return nil, sdk.ErrUnknownRequest("unknown nameservice query endpoint")
 		}
@@ -194,4 +196,27 @@ func queryAllScripts(ctx sdk.Context, path []string, req abci.RequestQuery, keep
 		i++
 	}
 	return codec.MustMarshalJSONIndent(keeper.cdc, results), nil
+}
+
+// serializeParams is a function that receive codeHash and params and return a serialized format of params
+func serializeParams(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
+	if len(path) != 2 {
+		return nil, sdk.ErrInternal(fmt.Sprintf("number of arguments must be 2, but got %d", len(path)))
+	}
+
+	codeHash, err := hex.DecodeString(path[0])
+	if err != nil {
+		return nil, sdk.ErrUnknownRequest("cannot decode hexstr")
+	}
+	if !keeper.CheckCodeHashExists(ctx, codeHash) {
+		return nil, sdk.ErrUnknownRequest("codehash not found")
+	}
+	code, err := keeper.GetCode(ctx, codeHash)
+	if err != nil {
+		panic("cannot get codehash")
+	}
+
+	rawParams, err := wasm.SerializeParams(code.Code, []byte(path[1]))
+
+	return codec.MustMarshalJSONIndent(keeper.cdc, rawParams), nil
 }
