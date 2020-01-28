@@ -218,7 +218,5 @@ func serializeParams(ctx sdk.Context, path []string, req abci.RequestQuery, keep
 
 	rawParams, err := wasm.SerializeParams(code.Code, []byte(path[1]))
 
-	panic(fmt.Sprintf("%x \n %v", rawParams, err))
-
 	return codec.MustMarshalJSONIndent(keeper.cdc, rawParams), nil
 }
