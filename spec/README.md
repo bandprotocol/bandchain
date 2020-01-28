@@ -1,6 +1,6 @@
 <div align="center">
   <h1>📫 Decentralized Data Delivery Network</h1>
-  <img width="300" src="assets/d3n_banner.png" />
+  <img width="300" src="/assets/d3n_banner.png" />
   <br />
   <b>WORKING DRAFT: VERSION 4.0.0</b>
 </div>
