@@ -94,7 +94,18 @@ let make = (~script: ScriptHook.Script.t) => {
      ->Array.of_list
      ->React.array}
     <VSpacing size=Spacing.md />
-    <button className=Styles.button onClick={_ => Js.Console.log(data)}>
+    <button
+      className=Styles.button
+      onClick={_ =>
+        AxiosRequest.execute(
+          AxiosRequest.t(
+            ~codeHash={
+              script.info.codeHash |> Hash.toHex;
+            },
+            ~params=Js.Dict.fromList(data),
+          ),
+        )
+      }>
       {"Send Request" |> React.string}
     </button>
   </div>;
