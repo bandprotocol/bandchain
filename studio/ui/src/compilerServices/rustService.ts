@@ -21,7 +21,7 @@
 import { CompilerService, ServiceInput, ServiceOutput } from "./types";
 
 import { sendRequestJSON, ServiceTypes } from "./sendRequest";
-import { decodeBinary } from "./utils";
+import { Buffer } from "buffer";
 import * as Tar from "tar-js";
 import { base64EncodeBytes } from "../util";
 
@@ -36,30 +36,30 @@ export class RustService implements CompilerService {
       const tarBuffer = new Tar();
 
       const files = input.files;
-      Object.entries(files).forEach(
-        ([name, file]) => {
-          tarBuffer.append(name, file.content, {});
-        }
-      );
+      Object.entries(files).forEach(([name, file]) => {
+        tarBuffer.append(name, file.content, {});
+      });
 
-      const tar = base64EncodeBytes( tarBuffer.out );
+      const tar = base64EncodeBytes(tarBuffer.out);
 
-      result = await sendRequestJSON({ tar, options, }, ServiceTypes.Cargo);
+      result = await sendRequestJSON({ tar, options }, ServiceTypes.Cargo);
       fileRef = Object.keys(files)[0];
     } else {
       const files = Object.values(input.files);
       if (files.length !== 1) {
-        throw new Error(`Supporting compilation of a single file, but ${files.length} file(s) found`);
+        throw new Error(
+          `Supporting compilation of a single file, but ${files.length} file(s) found`
+        );
       }
       fileRef = Object.keys(input.files)[0];
       const code = files[0].content;
-      result = await sendRequestJSON({ code, options, }, ServiceTypes.Rustc);
+      result = await sendRequestJSON({ code, options }, ServiceTypes.Rustc);
     }
 
     const items: any = {};
     let content;
     if (result.success) {
-      content = await decodeBinary(result.output);
+      content = Buffer.from(result.output, "base64");
     }
     let console;
     if (result.tasks && result.tasks.length > 0) {
@@ -68,13 +68,13 @@ export class RustService implements CompilerService {
     const extraItems: any = {};
     if (result.wasmBindgenJs) {
       extraItems["wasm_bindgen.js"] = {
-        content: result.wasmBindgenJs,
+        content: result.wasmBindgenJs
       };
     }
     return {
       success: result.success,
       items: {
-        "a.wasm": { content, fileRef, console, },
+        "a.wasm": { content, fileRef, console },
         ...extraItems
       },
       console: result.message

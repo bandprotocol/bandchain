@@ -43,7 +43,6 @@ import { processJSFile, RewriteSourcesContext } from "./utils/rewriteSources";
 import { getCurrentRunnerInfo } from "./utils/taskRunner";
 import { createCompilerService, Language } from "./compilerServices";
 import { RustTestService } from "./compilerServices/rustTestService";
-import { WasmRunService } from "./compilerServices/wasmRunService";
 
 declare var capstone: {
   ARCH_X86: any;
@@ -78,7 +77,6 @@ export interface ILoadFiddleResponse {
 export { Language } from "./compilerServices";
 
 function getProjectFilePath(file: File): string {
-  window.f = file;
   const project = file.getProject();
   return file.getPath(project);
 }
@@ -311,26 +309,6 @@ export class Service {
       }
     }
     return outputFiles;
-  }
-
-  static async wasmRun(file: File, options = ""): Promise<string> {
-    const service = new WasmRunService();
-    console.log({
-      files: { [getProjectFilePath(file)]: { content: file.getData() } },
-      options
-    });
-    const result = await service.compile({
-      files: { [getProjectFilePath(file)]: { content: file.getData() } },
-      options
-    });
-
-    if (!result.success) {
-      throw new Error(result.console);
-    }
-    const { logLn } = require("./actions/AppActions");
-    logLn(result.console);
-
-    return result.console;
   }
 
   static async testCargo(files: File[], options = ""): Promise<string> {
