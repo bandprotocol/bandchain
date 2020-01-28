@@ -178,3 +178,24 @@ func getStoreTxInfo(cliCtx context.CLIContext, script *ScriptInfoWithTx, hash st
 	script.CreatedAtTime = searchResult.Txs[0].Timestamp
 	return nil
 }
+
+func getSerializeParams(cliCtx context.CLIContext, storeName string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+
+		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/serialize_params/%s/%s", storeName, vars[codeHash], vars[params]), nil)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		var serializeParamsBytes []byte
+		err = cliCtx.Codec.UnmarshalJSON(res, &serializeParamsBytes)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		rest.PostProcessResponse(w, cliCtx, hex.EncodeToString(serializeParamsBytes))
+	}
+}

@@ -153,3 +153,29 @@ func TestQueryScript(t *testing.T) {
 	require.Nil(t, errJSON)
 	require.Equal(t, expectJson, rawQueryBytes)
 }
+
+func TestSerializeParams(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	absPath, _ := filepath.Abs("../../../../wasm/res/serialized_params.wasm")
+	code, _ := wasm.ReadBytes(absPath)
+	owner := sdk.AccAddress([]byte("owner"))
+	name := "Crypto Price"
+	codeHash := keeper.SetCode(ctx, code, name, owner)
+
+	// Create variable "querier" which is a function
+	querier := NewQuerier(keeper)
+
+	rawQueryBytes, err := querier(
+		ctx,
+		[]string{"serialize_params", hex.EncodeToString(codeHash), `{"crypto_symbol":"ETH", "stock_symbol":"GOOG","alphavantage_api_key":"WVKPOO76169EX950"}`},
+		abci.RequestQuery{},
+	)
+	require.Nil(t, err)
+
+	expectBytes, _ := hex.DecodeString("000000010000000000000004474f4f47000000000000001057564b504f4f37363136394558393530")
+	expectJson, errJSON := codec.MarshalJSONIndent(keeper.cdc, expectBytes)
+
+	require.Nil(t, errJSON)
+	require.Equal(t, expectJson, rawQueryBytes)
+}
