@@ -69,7 +69,7 @@ let parameterInput = (name, value, updateData) => {
 };
 
 [@react.component]
-let make = (~script: ScriptHook.Script.t) => {
+let make = (~script: ScriptHook.Script.t, ~codeHash) => {
   let params = script.info.params;
   let preData = params->Belt.List.map(({name}) => (name, ""));
   let (data, setData) = React.useState(_ => preData);
@@ -94,7 +94,11 @@ let make = (~script: ScriptHook.Script.t) => {
      ->Array.of_list
      ->React.array}
     <VSpacing size=Spacing.md />
-    <button className=Styles.button onClick={_ => Js.Console.log(data)}>
+    <button
+      className=Styles.button
+      onClick={_ =>
+        AxiosRequest.execute(AxiosRequest.t(~codeHash, ~params=Js.Dict.fromList(data)))
+      }>
       {"Send Request" |> React.string}
     </button>
   </div>;
