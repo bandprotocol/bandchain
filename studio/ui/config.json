@@ -1,10 +1,12 @@
 {
-  "serviceUrl": "//wasmexplorer-service.herokuapp.com/service.php",
-  "clang": "//webassembly-studio-clang.herokuapp.com/build",
-  "rustc": "http://d3n.bandprotocol.com:8082/rustc",
-  "cargo": "http://d3n.bandprotocol.com:8082/cargo",
-  "cargoTest": "http://d3n.bandprotocol.com:8082/cargo-test",
-  "wasmRun": "http://d3n.bandprotocol.com:8082/wasm-run",
+  "explorerUrl": "http://d3n.bandprotocol.com:12000",
+  "bandsvUrl": "http://localhost:8082",
+  "studiosvUrl": "http://localhost:8082",
+  "serviceUrl": "http://localhost:8082",
+  "cargo": "http://localhost:8082/compile",
+  "cargoTest": "http://localhost:8082/test",
+  "wasmRun": "http://localhost:8082/run",
+  "wasmParamsInfo": "http://localhost:8082/params-info",
   "templates": {
     "default": "/dist/templates/index.js",
     "arc": "/dist/arc-templates/index.js"

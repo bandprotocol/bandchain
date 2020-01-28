@@ -109,7 +109,7 @@ services:
     command: sh -c "cd ./server && go run *"
 
   owasm-server:
-    build: ./studio/compiler-server
+    build: ./studio/server
     image: owasm-server:latest
     ports:
       - 8082:8082

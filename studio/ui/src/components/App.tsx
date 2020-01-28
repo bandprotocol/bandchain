@@ -63,28 +63,14 @@ import { Split, SplitOrientation, SplitInfo } from "./Split";
 import { layout, assert, resetDOMSelection } from "../util";
 
 import * as Mousetrap from "mousetrap";
-import { Sandbox } from "./Sandbox";
-import { Gulpy } from "../gulpy";
 import {
-  GoDelete,
   GoPencil,
-  GoGear,
-  GoVerified,
-  GoFileCode,
-  GoFileBinary,
-  GoFile,
   GoDesktopDownload,
   GoBook,
-  GoRepoForked,
-  GoRocket,
   GoBeaker,
   GoServer,
   GoPlay,
-  GoBeakerGear,
-  GoThreeBars,
-  GoGist,
-  GoOpenIssue,
-  GoQuestion
+  GoThreeBars
 } from "./shared/Icons";
 import { Button } from "./shared/Button";
 
@@ -92,12 +78,11 @@ import { NewFileDialog } from "./NewFileDialog";
 import { EditFileDialog } from "./EditFileDialog";
 import { UploadFileDialog } from "./UploadFileDialog";
 import { ToastContainer } from "./Toasts";
-import { Spacer, Divider } from "./Widgets";
 import { ShareDialog } from "./ShareDialog";
 import { NewProjectDialog, Template } from "./NewProjectDialog";
 import { NewDirectoryDialog } from "./NewDirectoryDialog";
-import { Errors } from "../errors";
 import { DeploymentDialog } from "./DeploymentDialog";
+import { RunDialog } from "./RunDialog";
 import { ControlCenter } from "./ControlCenter";
 import Group from "../utils/group";
 import { StatusBar } from "./StatusBar";
@@ -134,6 +119,11 @@ export interface AppState {
    * If true, the deployment dialog is open.
    */
   deploymentDialog: boolean;
+
+  /**
+   * If true, the run dialog is open.
+   */
+  runDialog: boolean;
 
   /**
    * Primary workspace split state.
@@ -204,6 +194,7 @@ export class App extends React.Component<AppProps, AppState> {
       editFileDialogFile: null,
       newProjectDialog: !props.fiddle,
       deploymentDialog: false,
+      runDialog: false,
       shareDialog: false,
       workspaceSplits: [
         {
@@ -497,63 +488,6 @@ export class App extends React.Component<AppProps, AppState> {
         />
       );
     }
-    if (
-      this.props.embeddingParams.type === EmbeddingType.None ||
-      this.props.embeddingParams.type === EmbeddingType.Arc
-    ) {
-      toolbarButtons.push(
-        <Button
-          key="ForkProject"
-          icon={<GoRepoForked />}
-          label="Fork"
-          title="Fork Project"
-          isDisabled={this.toolbarButtonsAreDisabled()}
-          onClick={() => {
-            return alert("Doesn't work yet");
-            this.fork();
-          }}
-        />
-      );
-    }
-    if (this.props.embeddingParams.type === EmbeddingType.None) {
-      toolbarButtons.push(
-        <Button
-          key="CreateGist"
-          icon={<GoGist />}
-          label="Create Gist"
-          title="Create GitHub Gist from Project"
-          isDisabled={this.toolbarButtonsAreDisabled()}
-          onClick={() => {
-            return alert("Doesn't work yet");
-            this.gist();
-          }}
-        />,
-        <Button
-          key="Download"
-          icon={<GoDesktopDownload />}
-          label="Download"
-          title="Download Project"
-          isDisabled={this.toolbarButtonsAreDisabled()}
-          onClick={() => {
-            this.download();
-          }}
-        />,
-        <Button
-          key="Share"
-          icon={<GoRocket />}
-          label="Share"
-          title={
-            this.state.fiddle
-              ? "Share Project"
-              : "Cannot share a project that has not been forked yet."
-          }
-          isDisabled={this.toolbarButtonsAreDisabled() || !this.state.fiddle}
-          onClick={() => {
-            this.share();
-          }}
-        />
-      );
-    }
     toolbarButtons.push(
       <Button
         key="Build"
@@ -578,75 +512,64 @@ export class App extends React.Component<AppProps, AppState> {
         }}
       />
     );
-    if (this.props.embeddingParams.type !== EmbeddingType.Arc) {
-      toolbarButtons.push(
-        <Button
-          key="Run (Local)"
-          icon={<GoPlay />}
-          label="Run (Local)"
-          title="Run Project: CtrlCmd + Enter"
-          isDisabled={this.toolbarButtonsAreDisabled()}
-          onClick={() => {
-            run();
-          }}
-        />
-      );
-    }
-    if (this.props.embeddingParams.type !== EmbeddingType.Arc) {
-      toolbarButtons.push(
-        <Button
-          key="Deploy on D3N"
-          icon={<GoPlay />}
-          label="Deploy on D3N"
-          title="Run Project: CtrlCmd + Enter"
-          isDisabled={this.toolbarButtonsAreDisabled()}
-          onClick={() => {
-            this.showDeploymentDialog();
-          }}
-        />
-      );
-    }
-    if (this.props.embeddingParams.type === EmbeddingType.Arc) {
-      toolbarButtons.push(
-        <Button
-          key="Preview"
-          icon={<GoGear />}
-          label="Preview"
-          title="Preview Project: CtrlCmd + Enter"
-          isDisabled={this.toolbarButtonsAreDisabled()}
-          onClick={() => {
-            this.publishArc();
-          }}
-        />
-      );
-      toolbarButtons.push(
-        <Button
-          key="BuildAndPreview"
-          icon={<GoGear />}
-          label="Build &amp; Preview"
-          title="Build &amp; Preview Project: CtrlCmd + Alt + Enter"
-          isDisabled={this.toolbarButtonsAreDisabled()}
-          onClick={() => {
-            build().then(() => this.publishArc());
-          }}
-        />
-      );
-    }
-    if (this.props.embeddingParams.type === EmbeddingType.None) {
-      toolbarButtons.push(
-        <Button
-          key="Reference"
-          icon={<GoBook />}
-          label="Reference"
-          title="Reference"
-          customClassName="help"
-          onClick={() => {
-            this.loadHelp();
-          }}
-        />
-      );
-    }
+    toolbarButtons.push(
+      <Button
+        key="Run"
+        icon={<GoPlay />}
+        label="Run"
+        title="Run Project: CtrlCmd + Enter"
+        isDisabled={this.toolbarButtonsAreDisabled()}
+        onClick={() => {
+          this.showRunDialog();
+        }}
+      />
+    );
+
+    toolbarButtons.push(
+      <Button
+        key="Deploy on D3N"
+        icon={<GoPlay />}
+        label="Deploy on D3N"
+        title="Run Project: CtrlCmd + Enter"
+        isDisabled={this.toolbarButtonsAreDisabled()}
+        onClick={() => {
+          this.showDeploymentDialog();
+        }}
+      />
+    );
+
+    toolbarButtons.push(
+      <Button
+        key="Reference"
+        icon={<GoBook />}
+        label="Reference"
+        title="Reference"
+        customClassName="help"
+        onClick={() => {
+          this.loadHelp();
+        }}
+      />
+    );
+    toolbarButtons.push(
+      <Button
+        key="Download"
+        icon={<GoDesktopDownload />}
+        label="Download"
+        title="Download Project"
+        customClassName="help"
+        isDisabled={this.toolbarButtonsAreDisabled()}
+        onClick={() => {
+          this.download();
+        }}
+      />
+    );
+
     return toolbarButtons;
+  }
+  showRunDialog() {
+    this.setState({
+      runDialog: true
+    });
   }
   showDeploymentDialog() {
     this.setState({
@@ -730,6 +653,16 @@ export class App extends React.Component<AppProps, AppState> {
               await openProjectFiles(template);
               this.setState({ newProjectDialog: false });
             }}
+          />
+        )}
+        {this.state.runDialog && (
+          <RunDialog
+            isOpen={true}
+            templatesName={this.props.embeddingParams.templatesName}
+            onCancel={() => {
+              this.setState({ runDialog: null });
+            }}
+            project={this.state.project}
           />
         )}
         {this.state.deploymentDialog && (

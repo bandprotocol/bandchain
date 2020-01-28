@@ -24,7 +24,8 @@ import * as ReactModal from "react-modal";
 import axios from "axios";
 import { Button } from "./shared/Button";
 import { GoGear, GoFile, GoX, Icon } from "./shared/Icons";
-import { Project, ModelRef } from "../models";
+import { Project, ModelRef, Directory } from "../models";
+import getConfig from "../config";
 
 const Step: React.SFC<{
   svg: string;
@@ -101,22 +102,29 @@ export class DeploymentDialog extends React.Component<
   },
   {
     deploying: boolean;
+    name: string;
+    nameEditable: boolean;
+    codeUrl: string;
     step: number;
     done: boolean;
-    requestId: number;
-    txHash: string;
+    codeHash: string;
+    explorerLink: string;
   }
 > {
   constructor(props: any) {
     super(props);
     this.state = {
       deploying: false,
+      name: "",
+      nameEditable: true,
+      codeUrl: "",
       step: -1,
       done: false,
-      requestId: null,
-      txHash: null
+      codeHash: null,
+      explorerLink: null
     };
   }
+
   async componentDidMount() {
     // Load WASM file
     const wasmFile = this.props.project.getModel().getFile("out.wasm");
@@ -138,39 +146,72 @@ export class DeploymentDialog extends React.Component<
 
   async deploy() {
     try {
-      const bot1URL = "http://d3n.bandprotocol.com:5000";
-      const explorerURL = "http://d3n.bandprotocol.com:12000";
-      const abciURL = "http://d3n.bandprotocol.com:26657";
+      const { bandsvUrl, explorerUrl, studiosvUrl } = await getConfig();
 
       this.setState({
         deploying: true,
+        nameEditable: false,
         step: 0,
         done: true,
-        requestId: null,
-        txHash: null
+        codeHash: null,
+        explorerLink: null
       });
       await new Promise(r => setTimeout(r, 500));
 
       const code = this.getWASMFileContent();
 
+      function getAllFiles(
+        currentFile: Directory
+      ): Array<{ name: string; content: string | ArrayBuffer }> {
+        if (currentFile.type !== "directory") {
+          return [
+            {
+              name: currentFile.getPath(),
+              content: currentFile.getData()
+            }
+          ];
+        }
+
+        return currentFile.children.flatMap(getAllFiles);
+      }
+
+      const project = this.props.project.getModel();
+
+      const files = [
+        {
+          name: project.getFile("Cargo.toml").getPath(),
+          content: project.getFile("Cargo.toml").getData()
+        },
+        ...getAllFiles(project.getFile("src") as Directory)
+      ];
+
+      await new Promise(r => setTimeout(r, 1000));
+
+      const {
+        data: { txHash, codeHash }
+      } = await axios.post(bandsvUrl + "/store", {
+        code,
+        name: this.state.name
+      });
+
       this.setState({
         step: 1,
         done: false,
-        deploying: true
+        deploying: true,
+        codeHash,
+        explorerLink: explorerUrl + "/script/" + codeHash
       });
 
-      const requestResult = await axios.post(bot1URL + "/request", {
-        code,
-        delay: 5
+      const { data: codeUrl } = await axios.post(studiosvUrl + "/upload", {
+        wasm: code,
+        name: this.state.name,
+        code: JSON.stringify(files)
       });
-
-      const { txHash, reqID } = requestResult.data;
 
       this.setState({
-        step: 1,
+        step: 2,
         done: true,
-        txHash: txHash,
-        requestId: reqID
+        codeUrl
       });
 
       await new Promise(r => setTimeout(r, 1000));
@@ -184,98 +225,44 @@ export class DeploymentDialog extends React.Component<
 
       this.setState({
         step: 3,
-        done: false
-      });
-
-      const {
-        data: {
-          result: { reportEnd }
-        }
-      } = await axios.get(bot1URL + "/status?reqID=" + reqID);
-
-      const getHeight = async () =>
-        parseInt(
-          (await axios.get(abciURL + "/status")).data.result.sync_info
-            .latest_block_height
-        );
-
-      while (true) {
-        const height = await getHeight();
-
-        if (height >= reportEnd) break;
-
-        this.setState({
-          step: 4 - (reportEnd - height) / 5,
-          done: false
-        });
-
-        await new Promise(r => setTimeout(r, 200));
-      }
-
-      this.setState({
-        step: 4,
-        done: false
-      });
-
-      while ((await getHeight()) < reportEnd + 1) {
-        await new Promise(r => setTimeout(r, 200));
-      }
-
-      this.setState({
-        step: 5,
         done: true
-      });
-
-      // Reset
-      this.setState({
-        deploying: false
       });
     } catch (e) {
       alert("Deployment failed :( Please contact dev@bandprotocol.com");
       console.error("Deployment failed", e);
+    } finally {
+      // Reset states
       this.setState({
-        deploying: false
+        deploying: false,
+        nameEditable: true
       });
     }
   }
 
   render() {
     const steps = [
-      { svg: "/svg/deployment/step1.svg", label: "Validating\nOWASM script" },
       {
         svg: "/svg/deployment/step2.svg",
-        label: "Sending txn\nto D3N"
+        label: "Create Data Request\nScript on D3N"
       },
       {
-        svg: "/svg/deployment/step3.svg",
-        label: "Transaction\nConfirmed",
-        getLink: this.state.txHash
+        svg: "/svg/deployment/step1.svg",
+        label: "Uploading\nSource Code",
+        getLink: this.state.codeUrl
           ? () => ({
-              label: "Explorer",
-              href: `http://d3n.bandprotocol.com:12000/transactions/${this.state.txHash}`
+              label: "Code",
+              href: this.state.codeUrl
             })
           : undefined
       },
       {
-        svg: "/svg/deployment/step4.svg",
-        label: "Waiting for\ndata queries",
-        getLink:
-          this.state.step >= 3 && this.state.txHash
-            ? () => ({
-                label: "Status",
-                href: `http://d3n.bandprotocol.com:5000/status?reqID=${this.state.requestId}`
-              })
-            : undefined
-      },
-      { svg: "/svg/deployment/step5.svg", label: "Executing\nOWASM script" },
-      {
         svg: "/svg/deployment/step6.svg",
-        label: "Data ready\nto use",
+        label: "Script ready\nfor query",
         getLink:
-          this.state.step === 5
+          this.state.step === 3
             ? () => ({
-                label: "Data & Proof",
-                href: `http://d3n.bandprotocol.com:5000/proof?reqID=${this.state.requestId}`
+                label: "Block Explorer",
+                href: `https://d3n-scan.onrender.com/script/${this.state.codeHash}`
               })
             : undefined
       }
@@ -338,22 +325,43 @@ export class DeploymentDialog extends React.Component<
                   borderRadius: 5,
                   transition: "width 0.5s ease-out",
                   width: `${
-                    this.state.step === 5
+                    this.state.step === 3
                       ? 100
-                      : Math.max((this.state.step + 0.5) * (100 / 6), 0)
+                      : Math.max((this.state.step + 0.5) * (100 / 3), 0)
                   }%`
                 }}
               ></div>
             </div>
           </div>
           <div style={{ borderTop: "solid 1px #303030" }}>
-            <Button
-              icon={<GoX />}
-              label="Cancel"
-              title="Cancel"
-              onClick={() => {
-                this.props.onCancel();
+            <span style={{ float: "right" }}>
+              <Button
+                icon={<GoX />}
+                label="Cancel"
+                title="Cancel"
+                onClick={() => {
+                  this.props.onCancel();
+                }}
+              />
+            </span>
+            <input
+              style={{
+                display: "inline-block",
+                height: 40,
+                lineHeight: 40,
+                border: 0,
+                backgroundColor: "var(--grey-900)",
+                padding: "0 8px",
+                width: 180,
+                borderBottom: "2px solid var(--title)",
+                color: "2px solid var(--title)",
+                fontFamily: '"Roboto", sans-serif',
+                fontSize: 14
               }}
+              placeholder="Build name (optional)"
+              value={this.state.name}
+              disabled={!this.state.nameEditable}
+              onChange={e => this.setState({ name: e.target.value })}
             />
             <Button
               icon={<GoFile />}
