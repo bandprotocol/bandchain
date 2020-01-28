@@ -16,7 +16,6 @@ import (
 	cmc "github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
@@ -334,13 +333,25 @@ func main() {
 	cliCtx = cmtx.NewCLIContext(txSender.Sender()).WithCodec(cdc)
 
 	r := gin.Default()
+	// Currently gin-contrib/cors not work so add header manually
+	r.Use(func() gin.HandlerFunc {
+		return func(c *gin.Context) {
+			c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+			c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+			c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+			c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
+
+			if c.Request.Method == "OPTIONS" {
+				c.AbortWithStatus(204)
+				return
+			}
+		}
+	}())
 
 	r.POST("/request", handleRequestData)
 	r.POST("/params-info", handleParamsInfo)
 	r.POST("/execute", handleExecute)
 	r.POST("/store", handleStore)
 
-	// Allows all origins
-	r.Use(cors.Default())
 	r.Run("0.0.0.0:" + port) // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
