@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"encoding/hex"
-	"fmt"
 	"path/filepath"
 	"testing"
 
@@ -169,31 +168,14 @@ func TestSerializeParams(t *testing.T) {
 
 	rawQueryBytes, err := querier(
 		ctx,
-		[]string{"serialize-params", hex.EncodeToString(codeHash), `{"symbol":"ETH"}`},
+		[]string{"serialize-params", hex.EncodeToString(codeHash), `{"crypto_symbol":"ETH", "stock_symbol":"GOOG","alphavantage_api_key":"WVKPOO76169EX950"}`},
 		abci.RequestQuery{},
 	)
 	require.Nil(t, err)
 
-	_ = rawQueryBytes
+	expectBytes, _ := hex.DecodeString("000000010000000000000004474f4f47000000000000001057564b504f4f37363136394558393530")
+	expectJson, errJSON := codec.MarshalJSONIndent(keeper.cdc, expectBytes)
 
-	panic(fmt.Sprintf("ggggg, %s", string(rawQueryBytes)))
-
-	// expectJson, errJSON := codec.MarshalJSONIndent(
-	// 	keeper.cdc,
-	// 	types.NewScriptInfo(
-	// 		name,
-	// 		codeHash,
-	// 		[]types.Field{
-	// 			types.Field{Name: "symbol", Type: "coins::Coins"},
-	// 		},
-	// 		[]types.Field{
-	// 			types.Field{Name: "coin_gecko", Type: "f32"},
-	// 			types.Field{Name: "crypto_compare", Type: "f32"},
-	// 		},
-	// 		[]types.Field{types.Field{Name: "price_in_usd", Type: "u64"}},
-	// 		owner,
-	// 	),
-	// )
-	// require.Nil(t, errJSON)
-	// require.Equal(t, expectJson, rawQueryBytes)
+	require.Nil(t, errJSON)
+	require.Equal(t, expectJson, rawQueryBytes)
 }
