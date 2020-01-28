@@ -2,6 +2,7 @@ package rest
 
 import (
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -10,7 +11,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	"github.com/gorilla/mux"
 
-	"github.com/bandprotocol/d3n/chain/wasm"
 	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 )
 
@@ -183,38 +183,20 @@ func getStoreTxInfo(cliCtx context.CLIContext, script *ScriptInfoWithTx, hash st
 func getSerializeParams(cliCtx context.CLIContext, storeName string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		paramsVar := vars[params]
-		codeHashVar := vars[codeHash]
 
-		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/script/%s", storeName, codeHashVar), nil)
+		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/serialize-params/%s/%s", storeName, vars[codeHash], vars[params]), nil)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusNotFound, err.Error())
 			return
 		}
 
-		var scriptInfo ScriptInfoWithTx
-		err = cliCtx.Codec.UnmarshalJSON(res, &scriptInfo.Info)
+		var serializeParams json.RawMessage
+		err = cliCtx.Codec.UnmarshalJSON(res, &serializeParams)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusNotFound, err.Error())
 			return
 		}
 
-		txHash := scriptInfo.TxHash
-
-		res, _, err = cliCtx.QueryWithData(fmt.Sprintf("txs/%s", txHash), nil)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusNotFound, err.Error())
-			return
-		}
-
-		rest.PostProcessResponse(w, cliCtx, res)
-		return
-
-		rawParams, err := wasm.SerializeParams([]byte("aaaa"), []byte(paramsVar))
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusNotFound, err.Error())
-			return
-		}
-		rest.PostProcessResponse(w, cliCtx, []byte(fmt.Sprintf("%v \n %v", vars, rawParams)))
+		rest.PostProcessResponse(w, cliCtx, serializeParams)
 	}
 }
