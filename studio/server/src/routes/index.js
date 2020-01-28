@@ -20,39 +20,4 @@ router.post('/upload', async (ctx, next) => {
   ctx.body = await AWS.uploadFile(hash, code)
 })
 
-/** TODO: Remove once CORS on bandsv works */
-router.post('/execute', async (ctx, next) => {
-  const { code, params } = ctx.request.body
-
-  ctx.body = (
-    await axios.post('http://d3n-debug.bandprotocol.com:5000/execute', {
-      code,
-      params,
-    })
-  ).data
-})
-
-/** TODO: Remove once CORS on bandsv works */
-router.post('/params-info', async (ctx, next) => {
-  const { code } = ctx.request.body
-
-  ctx.body = (
-    await axios.post('http://d3n-debug.bandprotocol.com:5000/params-info', {
-      code,
-    })
-  ).data
-})
-
-/** TODO: Remove once CORS on bandsv works */
-router.post('/store', async (ctx, next) => {
-  const { code, name } = ctx.request.body
-
-  ctx.body = (
-    await axios.post('http://d3n-debug.bandprotocol.com:5000/store', {
-      code,
-      name,
-    })
-  ).data
-})
-
 module.exports = router
