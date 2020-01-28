@@ -1,0 +1,14 @@
+{
+  "explorerUrl": "http://locahost:1234",
+  "bandsvUrl": "http://d3n-debug.bandprotocol.com:5000",
+  "studiosvUrl": "http://localhost:8082",
+  "serviceUrl": "http://localhost:8082",
+  "cargo": "http://localhost:8082/compile",
+  "cargoTest": "http://localhost:8082/test",
+  "wasmRun": "http://localhost:8082/run",
+  "templates": {
+    "default": "/dist/templates/index.js",
+    "arc": "/dist/arc-templates/index.js"
+  },
+  "sentryDNS": "https://756ae32005ed49cf9d4dd2aa106ccd4a@sentry.io/1229949"
+}
