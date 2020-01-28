@@ -117,18 +117,24 @@ func handleRequestData(c *gin.Context) {
 		return
 	}
 
-	// TODO: Mock this endpoint for front-end for now
-
 	resp, err := grequests.Get(
-		fmt.Sprintf("%s/zoracle/serialize-params/%x/%s", queryURI, req.CodeHash, req.Params),
-		nil,
+		fmt.Sprintf(`%s/zoracle/serialize_params/%x`, queryURI, req.CodeHash),
+		&grequests.RequestOptions{
+			Params: map[string]string{"params": string(req.Params)},
+		},
 	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	if resp.StatusCode != 200 {
-		c.JSON(resp.StatusCode, gin.H{"error": resp.Error.Error()})
+		var body map[string]interface{}
+		err := json.Unmarshal(resp.Bytes(), &body)
+		if err == nil {
+			c.JSON(resp.StatusCode, body)
+		} else {
+			c.JSON(resp.StatusCode, nil)
+		}
 		return
 	}
 
@@ -141,7 +147,7 @@ func handleRequestData(c *gin.Context) {
 
 	params := respParams.Result
 
-	txr, err := txSender.SendTransaction(zoracle.NewMsgRequest(req.CodeHash, params, 4, txSender.Sender()), flags.BroadcastBlock)
+	txr, err := txSender.SendTransaction(zoracle.NewMsgRequest(req.CodeHash, params, 10, txSender.Sender()), flags.BroadcastBlock)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
