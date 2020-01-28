@@ -196,6 +196,6 @@ func getSerializeParams(cliCtx context.CLIContext, storeName string) http.Handle
 			return
 		}
 
-		rest.PostProcessResponse(w, cliCtx, SerializeParams{Result: hex.EncodeToString(serializeParamsBytes)})
+		rest.PostProcessResponse(w, cliCtx, hex.EncodeToString(serializeParamsBytes))
 	}
 }
