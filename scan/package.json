@@ -11,7 +11,7 @@
     "test": "yarn build && yarn jest --coverage"
   },
   "dependencies": {
-    "@glennsl/bs-json": "^5.0.1",
+    "@glennsl/bs-json": "^5.0.2",
     "axios": "^0.19.2",
     "axios-hook": "^0.0.5",
     "axios-hooks": "^1.9.0",
