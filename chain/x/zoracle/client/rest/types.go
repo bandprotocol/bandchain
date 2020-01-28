@@ -36,3 +36,7 @@ type RequestQueryInfo struct {
 	Reports           []ReportDetail   `json:"reports"`
 	Result            json.RawMessage  `json:"result"`
 }
+
+type SerializeParams struct {
+	Result string `json:"result"`
+}
