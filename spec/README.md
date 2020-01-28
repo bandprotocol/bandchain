@@ -2,7 +2,7 @@
   <h1>📫 Decentralized Data Delivery Network</h1>
   <img width="300" src="/assets/d3n_banner.png" />
   <br />
-  <b>WORKING DRAFT: VERSION 4.0.0</b>
+  <b>WORKING DRAFT</b>
 </div>
 
 [![](https://img.shields.io/badge/chat-on%20Telegram%20💬-blue.svg)](https://t.me/bandprotocol)
