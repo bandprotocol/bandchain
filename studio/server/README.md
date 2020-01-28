@@ -15,7 +15,7 @@ Before running it first time, you will need to setup the dependencies:
 
 ```sh
 yarn
-yarn start
+AWS_ACCESS_KEY=<key> AWS_SECRET_ACCESS_KEY=<secret> yarn start
 ```
 
 By default it will run on "0.0.0.0:8082" address. Use `PORT` environment variable to change it.
