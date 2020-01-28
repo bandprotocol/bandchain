@@ -57,6 +57,21 @@ module Styles = {
   let maxHeight20 = style([maxHeight(`px(20))]);
 };
 
+let renderCode = ((filename, code)) => {
+  <>
+    <VSpacing size=Spacing.xl />
+    <Row>
+      <img src=Images.textDocument className=Styles.maxHeight20 />
+      <HSpacing size=Spacing.md />
+      <Text value=filename size=Text.Lg color=Colors.grayHeader />
+    </Row>
+    <VSpacing size=Spacing.md />
+    <div className=Styles.mediumText>
+      <ReactHighlight> {code |> React.string} </ReactHighlight>
+    </div>
+  </>;
+};
+
 [@react.component]
 let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
   let step = 10;
@@ -67,6 +82,8 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
     ->Belt.Option.mapWithDefault(([], 0), ({txs, totalCount}) =>
         (txs |> Belt.List.reverse, totalCount)
       );
+  let codes =
+    CodeHook.getCode(codeHash)->Belt.List.map(({filename, code}) => (filename, code));
 
   <div className=Styles.pageContainer>
     <Row justify=Row.Between>
@@ -165,6 +182,12 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
           />
           <HSpacing size=Spacing.lg />
           <TabButton
+            active={hashtag == ScriptExecute}
+            text="Execute"
+            route={Route.ScriptIndexPage(codeHash, ScriptExecute)}
+          />
+          <HSpacing size=Spacing.lg />
+          <TabButton
             active={hashtag == ScriptIntegration}
             text="Integration"
             route={Route.ScriptIndexPage(codeHash, ScriptIntegration)}
@@ -223,27 +246,13 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
              </Row>
              <VSpacing size=Spacing.lg />
            </div>
-           <VSpacing size=Spacing.xl />
-           <Row>
-             <img src=Images.textDocument className=Styles.maxHeight20 />
-             <HSpacing size=Spacing.md />
-             <Text value="Cargo.toml" size=Text.Lg color=Colors.grayHeader />
-           </Row>
-           <VSpacing size=Spacing.md />
-           <div className=Styles.mediumText>
-             <ReactHighlight> {CodeExample.toml |> React.string} </ReactHighlight>
-           </div>
-           <VSpacing size=Spacing.xl />
-           <Row>
-             <img src=Images.textDocument className=Styles.maxHeight20 />
-             <HSpacing size=Spacing.md />
-             <Text value="src/logic.rs" size=Text.Lg color=Colors.grayHeader />
-           </Row>
-           <VSpacing size=Spacing.md />
-           <div className=Styles.mediumText>
-             <ReactHighlight> {CodeExample.logic |> React.string} </ReactHighlight>
-           </div>
+           {codes->Belt.List.toArray->Belt.Array.map(renderCode)->React.array}
          </div>
+       | ScriptExecute =>
+         switch (scriptOpt) {
+         | Some(script) => <ScriptExecute script />
+         | None => <div />
+         }
        | ScriptIntegration => <div> {"TODO2" |> React.string} </div>
        }}
     </div>

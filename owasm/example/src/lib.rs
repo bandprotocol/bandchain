@@ -19,12 +19,16 @@ fn __encode_params(params: logic::__Params) -> Option<Vec<u8>> {
     bincode::config().big_endian().serialize(&params).ok()
 }
 
-fn __decode_params(input: u64) -> Option<logic::Parameter> {
+fn __decode_params(input: u64) -> Option<logic::__Params> {
     bincode::config().big_endian().deserialize(__read_data(input)).ok()
 }
 
 fn __decode_data(params: &logic::__Params, input: u64) -> Option<logic::__Data> {
     logic::__Data::__output(&params, decode_outputs(__read_data(input))?)
+}
+
+fn __decode_result(input: u64) -> Option<logic::__Result> {
+    bincode::config().big_endian().deserialize(__read_data(input)).ok()
 }
 
 #[no_mangle]
@@ -62,6 +66,16 @@ pub fn __parse_params(params: u64) -> u64 {
 }
 
 #[no_mangle]
+pub fn __serialize_params(json_ptr: u64) -> u64 {
+    let params: logic::__Params = serde_json::from_str(
+        String::from_utf8(__read_data(json_ptr).to_vec()).ok().unwrap().as_str(),
+    )
+    .ok()
+    .unwrap();
+    __return(&__encode_params(params).unwrap())
+}
+
+#[no_mangle]
 pub fn __raw_data_info() -> u64 {
     __return(&serde_json::to_string(&logic::__Data::__fields()).ok().unwrap().into_bytes())
 }
@@ -76,6 +90,16 @@ pub fn __parse_raw_data(params: u64, input: u64) -> u64 {
     )
 }
 
+#[no_mangle]
+pub fn __result_info() -> u64 {
+    __return(&serde_json::to_string(&logic::__Result::__fields()).ok().unwrap().into_bytes())
+}
+
+#[no_mangle]
+pub fn __parse_result(result: u64) -> u64 {
+    __return(&serde_json::to_string(&__decode_result(result).unwrap()).ok().unwrap().into_bytes())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -84,14 +108,20 @@ mod tests {
 
     #[test]
     fn test_encode_decode_parameter() {
-        let params = logic::__Params { symbol: coins::Coins::ETH };
+        let params = logic::__Params {
+            crypto_symbol: coins::Coins::ETH,
+            stock_symbol: String::from("GOOG"),
+            alphavantage_api_key: String::from("some_key"),
+        };
 
         let encoded_params = __encode_params(params).unwrap();
         let new_params: logic::Parameter =
             bincode::config().big_endian().deserialize(&encoded_params).ok().unwrap();
 
         println!("{:x?}", encoded_params);
-        assert_eq!(new_params.symbol, coins::Coins::ETH);
+        assert_eq!(new_params.crypto_symbol, coins::Coins::ETH);
+        assert_eq!(new_params.stock_symbol, String::from("GOOG"));
+        assert_eq!(new_params.alphavantage_api_key, String::from("some_key"));
     }
 
     // #[test]

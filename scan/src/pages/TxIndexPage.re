@@ -5,19 +5,6 @@ module Styles = {
 
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
-  let txTypeBadge =
-    style([
-      paddingLeft(`px(12)),
-      paddingRight(`px(12)),
-      paddingTop(`px(5)),
-      paddingBottom(`px(5)),
-      backgroundColor(Colors.lightBlue),
-      borderRadius(`px(15)),
-    ]);
-
-  let msgAmount =
-    style([borderRadius(`percent(50.)), padding(`px(3)), backgroundColor(Colors.lightGray)]);
-
   let seperatedLine =
     style([
       width(`px(13)),
@@ -67,13 +54,15 @@ let make = (~txHash) => {
             block=true
           />
           <HSpacing size=Spacing.sm />
-          <div className=Styles.txTypeBadge>
-            <Text value="DATA REQUEST" block=true size=Text.Sm />
-          </div>
-          <HSpacing size=Spacing.sm />
-          <div className=Styles.msgAmount> <Text value="+1" block=true size=Text.Sm /> </div>
-          <div className=Styles.seperatedLine />
-          <Text value="51 MINUTES AGO" />
+          {switch (txOpt) {
+           | Some(tx) =>
+             <>
+               <MsgBadge msgs={tx.messages} position=MsgBadge.Header />
+               <div className=Styles.seperatedLine />
+               <TimeAgos time={tx.timestamp} size=Text.Lg />
+             </>
+           | None => React.null
+           }}
         </div>
       </Col>
       <Col>
