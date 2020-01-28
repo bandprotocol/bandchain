@@ -27,22 +27,11 @@ import (
 	"github.com/bandprotocol/d3n/chain/wasm"
 )
 
-type HexString []byte
-
-func (hexstr *HexString) UnmarshalJSON(b []byte) error {
-	b, err := hex.DecodeString(string(b[1 : len(b)-1]))
-	if err != nil {
-		return err
-	}
-	*hexstr = b
-	return nil
-}
-
 type OracleRequest struct {
-	CodeHash HexString `json:"codeHash" binding:"len=0|len=32"`
-	Code     HexString `json:"code"`
-	Name     string    `json:"name" binding:"required"`
-	Params   string    `json:"params" binding:"required"`
+	CodeHash cmn.HexBytes `json:"codeHash" binding:"len=0|len=32"`
+	Code     cmn.HexBytes `json:"code"`
+	Name     string       `json:"name" binding:"required"`
+	Params   string       `json:"params" binding:"required"`
 }
 
 type OracleRequestResp struct {
@@ -51,7 +40,7 @@ type OracleRequestResp struct {
 }
 
 type ExecuteRequest struct {
-	Code   HexString       `json:"code" binding:"required"`
+	Code   cmn.HexBytes    `json:"code" binding:"required"`
 	Params json.RawMessage `json:"params" binding:"required"`
 }
 
@@ -60,7 +49,7 @@ type ExecuteResponse struct {
 }
 
 type ParamsInfoRequest struct {
-	Code HexString `json:"code" binding:"required"`
+	Code cmn.HexBytes `json:"code" binding:"required"`
 }
 
 type ParamsInfoResponse struct {
@@ -68,8 +57,8 @@ type ParamsInfoResponse struct {
 }
 
 type StoreRequest struct {
-	Code HexString `json:"code" binding:"required"`
-	Name string    `json:"name" binding:"required"`
+	Code cmn.HexBytes `json:"code" binding:"required"`
+	Name string       `json:"name" binding:"required"`
 }
 
 type StoreResponse struct {
