@@ -1,6 +1,8 @@
 package types
 
 import (
+	"encoding/json"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -20,13 +22,17 @@ func NewReport(data []byte, reportedAt uint64) Report {
 
 // ValidatorReport is a report that contain operator address in struct
 type ValidatorReport struct {
-	Value      RawJson        `json:"value"`
-	ReportedAt uint64         `json:"reportedAt"`
-	Validator  sdk.ValAddress `json:"validator"`
+	Value      json.RawMessage `json:"value"`
+	ReportedAt uint64          `json:"reportedAt"`
+	Validator  sdk.ValAddress  `json:"validator"`
 }
 
 // NewValidatorReport is a contructor of ValidatorReport
-func NewValidatorReport(value RawJson, reportedAt uint64, valAddress sdk.ValAddress) ValidatorReport {
+func NewValidatorReport(
+	value json.RawMessage,
+	reportedAt uint64,
+	valAddress sdk.ValAddress,
+) ValidatorReport {
 	return ValidatorReport{
 		Value:      value,
 		ReportedAt: reportedAt,

@@ -58,17 +58,17 @@ func queryRequest(ctx sdk.Context, path []string, req abci.RequestQuery, keeper 
 	var parsedResult []byte
 	if sdkErr != nil {
 		result = []byte{}
-		parsedResult = types.EmptyMap
+		parsedResult = []byte("{}")
 	} else {
 		parsedResult, err = wasm.ParseResult(code.Code, result)
 		if err != nil {
-			parsedResult = types.EmptyMap
+			parsedResult = []byte("{}")
 		}
 	}
 
 	parsedParams, err := wasm.ParseParams(code.Code, request.Params)
 	if err != nil {
-		parsedParams = types.EmptyMap
+		parsedParams = []byte("{}")
 	}
 
 	res, err := codec.MarshalJSONIndent(keeper.cdc, types.NewRequestInfo(
