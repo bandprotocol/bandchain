@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"encoding/hex"
+	"fmt"
 	"path/filepath"
 	"testing"
 
@@ -152,4 +153,47 @@ func TestQueryScript(t *testing.T) {
 	)
 	require.Nil(t, errJSON)
 	require.Equal(t, expectJson, rawQueryBytes)
+}
+
+func TestSerializeParams(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	absPath, _ := filepath.Abs("../../../../wasm/res/serialized_params.wasm")
+	code, _ := wasm.ReadBytes(absPath)
+	owner := sdk.AccAddress([]byte("owner"))
+	name := "Crypto Price"
+	codeHash := keeper.SetCode(ctx, code, name, owner)
+
+	// Create variable "querier" which is a function
+	querier := NewQuerier(keeper)
+
+	rawQueryBytes, err := querier(
+		ctx,
+		[]string{"serialize-params", hex.EncodeToString(codeHash), `{"symbol":"ETH"}`},
+		abci.RequestQuery{},
+	)
+	require.Nil(t, err)
+
+	_ = rawQueryBytes
+
+	panic(fmt.Sprintf("ggggg, %s", string(rawQueryBytes)))
+
+	// expectJson, errJSON := codec.MarshalJSONIndent(
+	// 	keeper.cdc,
+	// 	types.NewScriptInfo(
+	// 		name,
+	// 		codeHash,
+	// 		[]types.Field{
+	// 			types.Field{Name: "symbol", Type: "coins::Coins"},
+	// 		},
+	// 		[]types.Field{
+	// 			types.Field{Name: "coin_gecko", Type: "f32"},
+	// 			types.Field{Name: "crypto_compare", Type: "f32"},
+	// 		},
+	// 		[]types.Field{types.Field{Name: "price_in_usd", Type: "u64"}},
+	// 		owner,
+	// 	),
+	// )
+	// require.Nil(t, errJSON)
+	// require.Equal(t, expectJson, rawQueryBytes)
 }
