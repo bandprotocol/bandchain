@@ -168,7 +168,7 @@ func TestSerializeParams(t *testing.T) {
 
 	rawQueryBytes, err := querier(
 		ctx,
-		[]string{"serialize-params", hex.EncodeToString(codeHash), `{"crypto_symbol":"ETH", "stock_symbol":"GOOG","alphavantage_api_key":"WVKPOO76169EX950"}`},
+		[]string{"serialize_params", hex.EncodeToString(codeHash), `{"crypto_symbol":"ETH", "stock_symbol":"GOOG","alphavantage_api_key":"WVKPOO76169EX950"}`},
 		abci.RequestQuery{},
 	)
 	require.Nil(t, err)
