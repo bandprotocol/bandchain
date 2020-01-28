@@ -250,7 +250,7 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
          </div>
        | ScriptExecute =>
          switch (scriptOpt) {
-         | Some(script) => <ScriptExecute script codeHash={codeHash |> Hash.toHex} />
+         | Some(script) => <ScriptExecute script />
          | None => <div />
          }
        | ScriptIntegration => <div> {"TODO2" |> React.string} </div>

@@ -69,7 +69,7 @@ let parameterInput = (name, value, updateData) => {
 };
 
 [@react.component]
-let make = (~script: ScriptHook.Script.t, ~codeHash) => {
+let make = (~script: ScriptHook.Script.t) => {
   let params = script.info.params;
   let preData = params->Belt.List.map(({name}) => (name, ""));
   let (data, setData) = React.useState(_ => preData);
@@ -97,7 +97,14 @@ let make = (~script: ScriptHook.Script.t, ~codeHash) => {
     <button
       className=Styles.button
       onClick={_ =>
-        AxiosRequest.execute(AxiosRequest.t(~codeHash, ~params=Js.Dict.fromList(data)))
+        AxiosRequest.execute(
+          AxiosRequest.t(
+            ~codeHash={
+              script.info.codeHash |> Hash.toHex;
+            },
+            ~params=Js.Dict.fromList(data),
+          ),
+        )
       }>
       {"Send Request" |> React.string}
     </button>
