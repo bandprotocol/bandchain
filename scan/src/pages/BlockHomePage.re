@@ -1,7 +1,7 @@
 module Styles = {
   open Css;
 
-  let vFlex = style([display(`flex), flexDirection(`row), alignItems(`flexStart)]);
+  let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
   let pageContainer = style([paddingTop(`px(50))]);
 
@@ -16,7 +16,14 @@ module Styles = {
 
   let fullWidth = style([width(`percent(100.0)), display(`flex)]);
 
-  let textContainer = style([paddingLeft(Spacing.lg)]);
+  let icon =
+    style([
+      width(`px(30)),
+      height(`px(30)),
+      marginTop(`px(5)),
+      marginLeft(Spacing.xl),
+      marginRight(Spacing.xl),
+    ]);
 };
 
 let renderBody = ((block, moniker): (BlockHook.Block.t, string)) => {
@@ -28,9 +35,10 @@ let renderBody = ((block, moniker): (BlockHook.Block.t, string)) => {
   <TBody key={height |> string_of_int}>
     <div className=Styles.fullWidth onClick={_ => Route.BlockIndexPage(height) |> Route.redirect}>
       <Row>
-        <Col> <div className=Styles.textContainer /> </Col>
-        <Col size=0.6> <TElement elementType={TElement.Height(height)} /> </Col>
-        <Col size=0.8> <TElement elementType={TElement.Timestamp(timestamp)} /> </Col>
+        <Col> <img src=Images.blockLogo className=Styles.icon /> </Col>
+        <Col size=0.6>
+          <TElement elementType={TElement.HeightWithTime(height, timestamp)} />
+        </Col>
         <Col size=2.0> <TElement elementType={TElement.Proposer(moniker, proposer)} /> </Col>
         <Col size=0.7> <TElement elementType={TElement.Count(totalTx)} /> </Col>
         <Col size=0.7> <TElement elementType={TElement.Fee(0.0)} /> </Col>
@@ -86,10 +94,9 @@ let make = () => {
     <VSpacing size=Spacing.xl />
     <THead>
       <Row>
-        <Col> <div className=Styles.textContainer /> </Col>
+        <Col> <div className=Styles.icon /> </Col>
         {[
            ("BLOCK", 0.6),
-           ("AGE", 0.8),
            ("PROPOSER", 2.0),
            ("TXN", 0.7),
            ("TOTAL FEE", 0.7),
