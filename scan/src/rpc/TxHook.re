@@ -237,7 +237,10 @@ module Tx = {
       gasUsed: json |> field("gas_used", intstr),
       messages: {
         let actions = json |> at(["tx", "value", "msg"], list(Msg.decodeAction));
-        let eventDoubleLists = json |> field("logs", list(Event.decodeEvents));
+        let eventDoubleLists =
+          json
+          |> field("logs", optional(list(Event.decodeEvents)))
+          |> Belt.Option.getWithDefault(_, []);
         Belt.List.zip(actions, eventDoubleLists)
         ->Belt.List.map(((action, events)) => Msg.{action, events});
       },
