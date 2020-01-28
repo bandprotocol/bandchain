@@ -171,27 +171,20 @@ module Msg = {
     switch (msg.action) {
     | Send(_) => None
     | Store(_) =>
-      Some(
-        Route.ScriptIndexPage(
-          msg.events->Event.getValueOfKey("store_code.codehash")->Belt.Option.getExn
-          |> Hash.fromHex,
-          ScriptTransactions,
-        ),
-      )
+      switch (msg.events->Event.getValueOfKey("store_code.codehash")) {
+      | Some(value) => Some(Route.ScriptIndexPage(value |> Hash.fromHex, ScriptTransactions))
+      | None => None
+      }
     | Request(_) =>
-      Some(
-        RequestIndexPage(
-          msg.events->Event.getValueOfKey("request.id")->Belt.Option.getExn->int_of_string,
-          RequestReportStatus,
-        ),
-      )
+      switch (msg.events->Event.getValueOfKey("request.id")) {
+      | Some(value) => Some(Route.RequestIndexPage(value->int_of_string, RequestReportStatus))
+      | None => None
+      }
     | Report(_) =>
-      Some(
-        RequestIndexPage(
-          msg.events->Event.getValueOfKey("report.id")->Belt.Option.getExn->int_of_string,
-          RequestReportStatus,
-        ),
-      )
+      switch (msg.events->Event.getValueOfKey("report.id")) {
+      | Some(value) => Some(Route.RequestIndexPage(value->int_of_string, RequestReportStatus))
+      | None => None
+      }
     | Unknown => None
     };
 };
@@ -237,7 +230,10 @@ module Tx = {
       gasUsed: json |> field("gas_used", intstr),
       messages: {
         let actions = json |> at(["tx", "value", "msg"], list(Msg.decodeAction));
-        let eventDoubleLists = json |> field("logs", list(Event.decodeEvents));
+        let eventDoubleLists =
+          json
+          |> field("logs", optional(list(Event.decodeEvents)))
+          |> Belt.Option.getWithDefault(_, []);
         Belt.List.zip(actions, eventDoubleLists)
         ->Belt.List.map(((action, events)) => Msg.{action, events});
       },
