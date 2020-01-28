@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"strconv"
 	"time"
 
 	app "github.com/bandprotocol/d3n/chain"
@@ -28,15 +27,13 @@ import (
 )
 
 type OracleRequest struct {
-	CodeHash cmn.HexBytes `json:"codeHash" binding:"len=0|len=32"`
-	Code     cmn.HexBytes `json:"code"`
-	Name     string       `json:"name" binding:"required"`
-	Params   string       `json:"params" binding:"required"`
+	CodeHash cmn.HexBytes    `json:"codeHash" binding:"len=32"`
+	Params   json.RawMessage `json:"params" binding:"required"`
 }
 
 type OracleRequestResp struct {
 	RequestId uint64       `json:"id"`
-	CodeHash  cmn.HexBytes `json:"codeHash"`
+	TxHash    cmn.HexBytes `json:"txHash"`
 }
 
 type ExecuteRequest struct {
@@ -125,98 +122,103 @@ func handleRequestData(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if len(requestData.CodeHash) == 0 && len(requestData.Code) == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing code/codeHash"})
-		return
-	}
-	if len(requestData.CodeHash) > 0 && len(requestData.Code) > 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Only one of code/codeHash can be sent"})
-		return
-	}
 
-	// TODO
-	// Need some work around to make params can be empty bytes
-	if len(requestData.Params) <= 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Params should not be empty bytes"})
-		return
-	}
+	// TODO: Mock this endpoint for front-end for now
 
-	var params []byte
+	// if len(requestData.CodeHash) == 0 && len(requestData.Code) == 0 {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "Missing code/codeHash"})
+	// 	return
+	// }
+	// if len(requestData.CodeHash) > 0 && len(requestData.Code) > 0 {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "Only one of code/codeHash can be sent"})
+	// 	return
+	// }
 
-	if len(requestData.Code) > 0 {
-		if len(requestData.Name) <= 0 {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Name should not be empty string"})
-			return
-		}
-		requestData.CodeHash = zoracle.NewStoredCode(requestData.Code, requestData.Name, txSender.Sender()).GetCodeHash()
-		hasCode, err := HasCode(requestData.CodeHash)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-		// If codeHash not found then store the code
-		if !hasCode {
-			_, err := txSender.SendTransaction(zoracle.NewMsgStoreCode(requestData.Code, requestData.Name, txSender.Sender()), flags.BroadcastBlock)
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-				return
-			}
-		}
+	// // TODO
+	// // Need some work around to make params can be empty bytes
+	// if len(requestData.Params) <= 0 {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "Params should not be empty bytes"})
+	// 	return
+	// }
 
-		// Parse params
-		params, err = wasm.SerializeParams(requestData.Code, []byte(requestData.Params))
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-	} else if len(requestData.CodeHash) > 0 {
-		hasCode, err := HasCode(requestData.CodeHash)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-		if !hasCode {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "codeHash not found"})
-			return
-		}
+	// var params []byte
 
-		params, err = hex.DecodeString(requestData.Params)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-	}
+	// if len(requestData.Code) > 0 {
+	// 	if len(requestData.Name) <= 0 {
+	// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Name should not be empty string"})
+	// 		return
+	// 	}
+	// 	requestData.CodeHash = zoracle.NewStoredCode(requestData.Code, requestData.Name, txSender.Sender()).GetCodeHash()
+	// 	hasCode, err := HasCode(requestData.CodeHash)
+	// 	if err != nil {
+	// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	// 		return
+	// 	}
+	// 	// If codeHash not found then store the code
+	// 	if !hasCode {
+	// 		_, err := txSender.SendTransaction(zoracle.NewMsgStoreCode(requestData.Code, requestData.Name, txSender.Sender()), flags.BroadcastBlock)
+	// 		if err != nil {
+	// 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	// 			return
+	// 		}
+	// 	}
 
-	txr, err := txSender.SendTransaction(zoracle.NewMsgRequest(requestData.CodeHash, params, 4, txSender.Sender()), flags.BroadcastBlock)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	// 	// Parse params
+	// 	params, err = wasm.SerializeParams(requestData.Code, []byte(requestData.Params))
+	// 	if err != nil {
+	// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// 		return
+	// 	}
+	// } else if len(requestData.CodeHash) > 0 {
+	// 	hasCode, err := HasCode(requestData.CodeHash)
+	// 	if err != nil {
+	// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	// 		return
+	// 	}
+	// 	if !hasCode {
+	// 		c.JSON(http.StatusBadRequest, gin.H{"error": "codeHash not found"})
+	// 		return
+	// 	}
 
-	requestId := uint64(0)
-	events := txr.Events
-	for _, event := range events {
-		if event.Type == "request" {
-			for _, attr := range event.Attributes {
-				if string(attr.Key) == "id" {
-					requestId, err = strconv.ParseUint(attr.Value, 10, 64)
-					if err != nil {
-						c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-						return
-					}
-					break
-				}
-			}
-		}
-	}
-	if requestId == 0 {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("cannot find requestId: %v", txr)})
-		return
-	}
+	// 	params, err = hex.DecodeString(requestData.Params)
+	// 	if err != nil {
+	// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// 		return
+	// 	}
+	// }
+
+	// txr, err := txSender.SendTransaction(zoracle.NewMsgRequest(requestData.CodeHash, params, 4, txSender.Sender()), flags.BroadcastBlock)
+	// if err != nil {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	// 	return
+	// }
+
+	// requestId := uint64(0)
+	// events := txr.Events
+	// for _, event := range events {
+	// 	if event.Type == "request" {
+	// 		for _, attr := range event.Attributes {
+	// 			if string(attr.Key) == "id" {
+	// 				requestId, err = strconv.ParseUint(attr.Value, 10, 64)
+	// 				if err != nil {
+	// 					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	// 					return
+	// 				}
+	// 				break
+	// 			}
+	// 		}
+	// 	}
+	// }
+	// if requestId == 0 {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("cannot find requestId: %v", txr)})
+	// 	return
+	// }
+
+	mockTxHash, _ := hex.DecodeString("A5A8482E19F434FD7083B79B51270527243DB1B4EAAD2CEBB3AA75915719589A")
 
 	c.JSON(200, OracleRequestResp{
-		RequestId: requestId,
-		CodeHash:  cmn.HexBytes(requestData.CodeHash),
+		RequestId: 1,
+		TxHash:    mockTxHash,
 	})
 }
 
