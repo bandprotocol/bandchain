@@ -2,7 +2,6 @@ package rest
 
 import (
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -190,13 +189,13 @@ func getSerializeParams(cliCtx context.CLIContext, storeName string) http.Handle
 			return
 		}
 
-		var serializeParams json.RawMessage
-		err = cliCtx.Codec.UnmarshalJSON(res, &serializeParams)
+		var serializeParamsBytes []byte
+		err = cliCtx.Codec.UnmarshalJSON(res, &serializeParamsBytes)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusNotFound, err.Error())
 			return
 		}
 
-		rest.PostProcessResponse(w, cliCtx, serializeParams)
+		rest.PostProcessResponse(w, cliCtx, SerializeParams{Result: hex.EncodeToString(serializeParamsBytes)})
 	}
 }
