@@ -84,7 +84,6 @@ let make = (~script: ScriptHook.Script.t) => {
         }
       );
     setData(_ => newData);
-    ();
   };
 
   <div className=Styles.container>
