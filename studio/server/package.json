@@ -21,5 +21,8 @@
     "trailingComma": "all",
     "semi": false,
     "singleQuote": true
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
   }
 }
