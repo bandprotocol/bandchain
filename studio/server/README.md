@@ -8,7 +8,7 @@ Before running it first time, you will need to setup the dependencies:
 
 1. rustup, see https://www.rustup.rs/
 2. rustc nightly channel: `rustup toolchain install nightly`
-3. and wasm target: `rustup target add wasm32-unknown-unknown --toolchain`
+3. and wasm target: `rustup target add wasm32-unknown-unknown`
 4. wasm-gc: `cargo install wasm-gc`
 5. wasm-bindgen: `cargo install wasm-bindgen-cli`
 6. rustfmt nightly channel: `rustup component add rustfmt-preview --toolchain nightly`
