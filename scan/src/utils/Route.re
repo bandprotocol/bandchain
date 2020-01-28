@@ -1,6 +1,7 @@
 type script_tab_t =
   | ScriptTransactions
   | ScriptCode
+  | ScriptExecute
   | ScriptIntegration;
 
 type request_tab_t =
@@ -22,6 +23,8 @@ let fromUrl = (url: ReasonReactRouter.url) =>
   switch (url.path, url.hash) {
   | (["scripts"], _) => ScriptHomePage
   | (["script", codeHash], "code") => ScriptIndexPage(codeHash |> Hash.fromHex, ScriptCode)
+  | (["script", codeHash], "execute") =>
+    ScriptIndexPage(codeHash |> Hash.fromHex, ScriptExecute)
   | (["script", codeHash], "integration") =>
     ScriptIndexPage(codeHash |> Hash.fromHex, ScriptIntegration)
   | (["script", codeHash], _) => ScriptIndexPage(codeHash |> Hash.fromHex, ScriptTransactions)
@@ -42,6 +45,7 @@ let toString =
   | ScriptHomePage => "/scripts"
   | ScriptIndexPage(codeHash, ScriptTransactions) => {j|/script/$codeHash|j}
   | ScriptIndexPage(codeHash, ScriptCode) => {j|/script/$codeHash#code|j}
+  | ScriptIndexPage(codeHash, ScriptExecute) => {j|/script/$codeHash#execute|j}
   | ScriptIndexPage(codeHash, ScriptIntegration) => {j|/script/$codeHash#integration|j}
   | TxHomePage => "/txs"
   | TxIndexPage(txHash) => {j|/tx/$txHash|j}

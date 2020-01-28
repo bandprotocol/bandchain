@@ -182,6 +182,12 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
           />
           <HSpacing size=Spacing.lg />
           <TabButton
+            active={hashtag == ScriptExecute}
+            text="Execute"
+            route={Route.ScriptIndexPage(codeHash, ScriptExecute)}
+          />
+          <HSpacing size=Spacing.lg />
+          <TabButton
             active={hashtag == ScriptIntegration}
             text="Integration"
             route={Route.ScriptIndexPage(codeHash, ScriptIntegration)}
@@ -242,6 +248,11 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
            </div>
            {codes->Belt.List.toArray->Belt.Array.map(renderCode)->React.array}
          </div>
+       | ScriptExecute =>
+         switch (scriptOpt) {
+         | Some(script) => <ScriptExecute script />
+         | None => <div />
+         }
        | ScriptIntegration => <div> {"TODO2" |> React.string} </div>
        }}
     </div>
