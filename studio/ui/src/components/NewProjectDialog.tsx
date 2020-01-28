@@ -139,14 +139,16 @@ export class NewProjectDialog extends React.Component<
             </div>
           </div>
           <div style={{ borderTop: "solid 1px #303030" }}>
-            <Button
-              icon={<GoX />}
-              label="Cancel"
-              title="Cancel"
-              onClick={() => {
-                this.props.onCancel();
-              }}
-            />
+            <span style={{ float: "right" }}>
+              <Button
+                icon={<GoX />}
+                label="Cancel"
+                title="Cancel"
+                onClick={() => {
+                  this.props.onCancel();
+                }}
+              />
+            </span>
             <Button
               icon={<GoFile />}
               label="Create"

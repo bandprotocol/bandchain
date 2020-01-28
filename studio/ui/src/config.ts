@@ -20,6 +20,9 @@
  */
 
 export interface IConfig {
+  explorerUrl: string;
+  bandsvUrl: string;
+  studiosvUrl: string;
   serviceUrl: string;
   clang: string;
   rustc: string;

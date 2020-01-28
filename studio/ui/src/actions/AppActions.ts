@@ -333,7 +333,7 @@ export async function build() {
 
 export async function test() {
   pushStatus("Running Test");
-  runTask("test");
+  await runTask("test");
   popStatus();
 }
 
