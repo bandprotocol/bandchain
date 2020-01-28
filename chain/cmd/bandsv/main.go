@@ -221,28 +221,46 @@ func handleExecute(c *gin.Context) {
 		return
 	}
 
-	var answer []string
+	type queryResult struct {
+		answer     string
+		httpStatus int
+		err        interface{}
+	}
+	chanQueryResult := make(chan queryResult)
 	for _, command := range commands {
-		if !allowedCommands[command.Cmd] {
-			c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Errorf("handleRequest unknown command %s", command.Cmd)})
-			return
-		}
-		dockerCommand := Command{
-			Cmd: "docker",
-			Arguments: append([]string{
-				"run", "--rm", "band-provider",
-				command.Cmd,
-			}, command.Arguments...),
-		}
-		query, err := execWithTimeout(dockerCommand, 10*time.Second)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-		answer = append(answer, string(query))
+		go func(command Command) {
+			if !allowedCommands[command.Cmd] {
+				chanQueryResult <- queryResult{answer: "", httpStatus: http.StatusBadRequest, err: gin.H{"error": fmt.Errorf("handleRequest unknown command %s", command.Cmd)}}
+				return
+			}
+			dockerCommand := Command{
+				Cmd: "docker",
+				Arguments: append([]string{
+					"run", "--rm", "band-provider",
+					command.Cmd,
+				}, command.Arguments...),
+			}
+			query, err := execWithTimeout(dockerCommand, 10*time.Second)
+			if err != nil {
+				chanQueryResult <- queryResult{answer: "", httpStatus: http.StatusBadRequest, err: gin.H{"error": err.Error()}}
+				return
+			}
+
+			chanQueryResult <- queryResult{answer: string(query), httpStatus: http.StatusOK, err: nil}
+		}(command)
 	}
 
-	b, _ := json.Marshal(answer)
+	var answers []string
+	for i := 0; i < len(commands); i++ {
+		queryResultTmp := <-chanQueryResult
+		if queryResultTmp.err != nil {
+			c.JSON(queryResultTmp.httpStatus, queryResultTmp.err)
+			return
+		}
+		answers = append(answers, queryResultTmp.answer)
+	}
+
+	b, _ := json.Marshal(answers)
 
 	rawResult, err := wasm.Execute(req.Code, rawParams, [][]byte{b})
 	result, err := wasm.ParseResult(req.Code, rawResult)
