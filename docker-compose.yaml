@@ -144,6 +144,9 @@ services:
     image: owasm-server:latest
     ports:
       - 8082:8082
+    environment:
+      - AWS_ACCESS_KEY
+      - AWS_SECRET_ACCESS_KEY
 
   owasm-studio:
     build: ./studio/ui
