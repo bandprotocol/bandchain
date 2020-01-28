@@ -152,6 +152,8 @@ services:
       - owasm-server
     ports:
       - 28443:28443
+    environment:
+      - ENV
 
 networks:
   bandchain:
