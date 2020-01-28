@@ -3,7 +3,7 @@ module Styles = {
 
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
-  let pageContainer = style([paddingTop(`px(50)), minHeight(`px(500))]);
+  let pageContainer = style([paddingTop(`px(50))]);
 
   let seperatedLine =
     style([
@@ -16,9 +16,14 @@ module Styles = {
 
   let fullWidth = style([width(`percent(100.0)), display(`flex)]);
 
-  let textContainer = style([paddingLeft(Spacing.lg), display(`flex)]);
-
-  let proposerBox = style([maxWidth(`px(270)), display(`flex), flexDirection(`column)]);
+  let icon =
+    style([
+      width(`px(30)),
+      height(`px(30)),
+      marginTop(`px(5)),
+      marginLeft(Spacing.xl),
+      marginRight(Spacing.xl),
+    ]);
 };
 
 let renderBody = ((block, moniker): (BlockHook.Block.t, string)) => {
@@ -30,54 +35,14 @@ let renderBody = ((block, moniker): (BlockHook.Block.t, string)) => {
   <TBody key={height |> string_of_int}>
     <div className=Styles.fullWidth onClick={_ => Route.BlockIndexPage(height) |> Route.redirect}>
       <Row>
+        <Col> <img src=Images.blockLogo className=Styles.icon /> </Col>
         <Col size=0.6>
-          <div className=Styles.textContainer>
-            <Text value="#" size=Text.Md weight=Text.Bold color=Colors.purple />
-            <HSpacing size=Spacing.xs />
-            <Text block=true value={height |> Format.iPretty} size=Text.Md weight=Text.Bold />
-          </div>
+          <TElement elementType={TElement.HeightWithTime(height, timestamp)} />
         </Col>
-        <Col size=0.8>
-          <div className=Styles.textContainer>
-            <TimeAgos time=timestamp size=Text.Md weight=Text.Semibold />
-          </div>
-        </Col>
-        <Col size=2.0>
-          <div className={Css.merge([Styles.textContainer, Styles.proposerBox])}>
-            <Text
-              block=true
-              value=moniker
-              size=Text.Sm
-              weight=Text.Regular
-              color=Colors.grayHeader
-            />
-            <VSpacing size=Spacing.sm />
-            <Text
-              block=true
-              value=proposer
-              size=Text.Md
-              weight=Text.Bold
-              code=true
-              ellipsis=true
-              color=Colors.black
-            />
-          </div>
-        </Col>
-        <Col size=0.7>
-          <div className=Styles.textContainer>
-            <Text block=true value={totalTx |> Format.iPretty} size=Text.Md weight=Text.Semibold />
-          </div>
-        </Col>
-        <Col size=0.7>
-          <div className=Styles.textContainer>
-            <Text block=true value="FREE" size=Text.Md weight=Text.Semibold />
-          </div>
-        </Col>
-        <Col size=0.8>
-          <div className=Styles.textContainer>
-            <Text block=true value="N/A" size=Text.Md weight=Text.Semibold />
-          </div>
-        </Col>
+        <Col size=2.0> <TElement elementType={TElement.Proposer(moniker, proposer)} /> </Col>
+        <Col size=0.7> <TElement elementType={TElement.Count(totalTx)} /> </Col>
+        <Col size=0.7> <TElement elementType={TElement.Fee(0.0)} /> </Col>
+        <Col size=0.8> <Text block=true value="N/A" size=Text.Md weight=Text.Semibold /> </Col>
       </Row>
     </div>
   </TBody>;
@@ -129,9 +94,9 @@ let make = () => {
     <VSpacing size=Spacing.xl />
     <THead>
       <Row>
+        <Col> <div className=Styles.icon /> </Col>
         {[
            ("BLOCK", 0.6),
-           ("AGE", 0.8),
            ("PROPOSER", 2.0),
            ("TXN", 0.7),
            ("TOTAL FEE", 0.7),
@@ -139,15 +104,7 @@ let make = () => {
          ]
          ->Belt.List.map(((title, size)) => {
              <Col size key=title>
-               <div className=Styles.textContainer>
-                 <Text
-                   block=true
-                   value=title
-                   size=Text.Sm
-                   weight=Text.Bold
-                   color=Colors.grayText
-                 />
-               </div>
+               <Text block=true value=title size=Text.Sm weight=Text.Bold color=Colors.grayText />
              </Col>
            })
          ->Array.of_list

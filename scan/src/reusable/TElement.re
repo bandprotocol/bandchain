@@ -3,18 +3,6 @@ module Styles = {
 
   let typeContainer = w => style([marginRight(`px(20)), width(w)]);
 
-  let txTypeOval = (textColor, bgColor) =>
-    style([
-      marginLeft(`px(-2)),
-      display(`inlineFlex),
-      justifyContent(`center),
-      alignItems(`center),
-      borderRadius(`px(15)),
-      padding2(~v=Spacing.xs, ~h=Spacing.sm),
-      color(textColor),
-      backgroundColor(bgColor),
-    ]);
-
   let msgIcon =
     style([
       width(`px(30)),
@@ -28,25 +16,8 @@ module Styles = {
   let feeContainer = style([maxWidth(`px(80))]);
   let timeContainer = style([display(`flex), alignItems(`center), maxWidth(`px(150))]);
   let textContainer = style([display(`flex)]);
-};
-
-let txTypeMapping = msg => {
-  switch (msg) {
-  | TxHook.Msg.Request(_) => ("DATA REQUEST", Colors.darkBlue, Colors.lightBlue)
-  | TxHook.Msg.Store(_) => ("NEW SCRIPT", Colors.darkGreen, Colors.lightGreen)
-  | TxHook.Msg.Send(_) => ("SEND TOKEN", Colors.purple, Colors.lightPurple)
-  | TxHook.Msg.Report(_) => ("DATA REPORT", Colors.darkIndigo, Colors.lightIndigo)
-  | Unknown => ("Unknown", Colors.darkGrayText, Colors.grayHeader)
-  };
-};
-
-let renderTxType = txType => {
-  let (typeName, textColor, bgColor) = txTypeMapping(txType);
-  <div className={Styles.typeContainer(`px(100))}>
-    <div className={Styles.txTypeOval(textColor, bgColor)}>
-      <Text value=typeName size=Text.Xs block=true />
-    </div>
-  </div>;
+  let countContainer = style([maxWidth(`px(80))]);
+  let proposerBox = style([maxWidth(`px(270)), display(`flex), flexDirection(`column)]);
 };
 
 let renderText = (text, weight) =>
@@ -59,15 +30,12 @@ let renderSource = text =>
     <Text value=text size=Text.Lg align=Text.Right block=true ellipsis=true />
   </div>;
 
-let renderTxTypeWithDetail = (msg: TxHook.Msg.t) => {
-  let (typeName, textColor, bgColor) = txTypeMapping(msg.action);
+let renderTxTypeWithDetail = (msgs: list(TxHook.Msg.t)) => {
   <div className={Styles.typeContainer(`px(150))}>
-    <div className={Styles.txTypeOval(textColor, bgColor)}>
-      <Text value=typeName size=Text.Xs block=true />
-    </div>
+    <MsgBadge msgs />
     <VSpacing size=Spacing.xs />
     <Text
-      value={msg->TxHook.Msg.getDescription}
+      value={msgs->Belt.List.getExn(0)->TxHook.Msg.getDescription}
       size=Text.Lg
       weight=Text.Semibold
       block=true
@@ -153,6 +121,10 @@ let renderHeight = height => {
   </div>;
 };
 
+let renderHeightWithTime = (height, time) => {
+  <> <TimeAgos time /> <VSpacing size={`px(6)} /> {renderHeight(height)} </>;
+};
+
 let renderName = name => {
   <div className=Styles.hashContainer>
     <Text block=true code=true value=name size=Text.Lg weight=Text.Bold ellipsis=true />
@@ -161,6 +133,28 @@ let renderName = name => {
 
 let renderTime = time => {
   <div className=Styles.timeContainer> <TimeAgos time size=Text.Md /> </div>;
+};
+
+let renderCount = count => {
+  <div className=Styles.countContainer>
+    <Text value={count |> string_of_int} size=Text.Md weight=Text.Semibold />
+  </div>;
+};
+
+let renderProposer = (moniker, proposer) => {
+  <div className=Styles.proposerBox>
+    <Text block=true value=moniker size=Text.Sm weight=Text.Regular color=Colors.grayHeader />
+    <VSpacing size=Spacing.sm />
+    <Text
+      block=true
+      value=proposer
+      size=Text.Md
+      weight=Text.Bold
+      code=true
+      ellipsis=true
+      color=Colors.black
+    />
+  </div>;
 };
 
 let msgIcon =
@@ -174,37 +168,41 @@ let msgIcon =
 type t =
   | Icon(TxHook.Msg.t)
   | Height(int)
+  | HeightWithTime(int, MomentRe.Moment.t)
   | Name(string)
   | Timestamp(MomentRe.Moment.t)
   | TxHash(Hash.t, MomentRe.Moment.t)
-  | TxTypeWithDetail(TxHook.Msg.t)
-  | TxType(TxHook.Msg.t)
+  | TxTypeWithDetail(list(TxHook.Msg.t))
   | Detail(string)
   | Status(string)
+  | Count(int)
   | Fee(float)
   | Hash(Hash.t)
   | HashWithLink(Hash.t)
   | Address(Address.t)
   | Source(string)
-  | Value(Js.Json.t);
+  | Value(Js.Json.t)
+  | Proposer(string, string);
 
 [@react.component]
 let make = (~elementType) => {
   switch (elementType) {
   | Icon({action, _}) => <img src={action->msgIcon} className=Styles.msgIcon />
   | Height(height) => renderHeight(height)
+  | HeightWithTime(height, timestamp) => renderHeightWithTime(height, timestamp)
   | Name(name) => renderName(name)
   | Timestamp(time) => renderTime(time)
   | TxHash(hash, timestamp) => renderTxHash(hash, timestamp)
-  | TxTypeWithDetail(msg) => renderTxTypeWithDetail(msg)
-  | TxType({action, _}) => renderTxType(action)
+  | TxTypeWithDetail(msgs) => renderTxTypeWithDetail(msgs)
   | Detail(detail) => renderText(detail, Text.Semibold)
   | Status(status) => renderText(status, Text.Semibold)
+  | Count(count) => renderCount(count)
   | Fee(fee) => renderFee(fee)
   | Hash(hash) => renderHash(hash)
   | HashWithLink(hash) => renderHashWithLink(hash)
   | Address(address) => renderAddress(address)
   | Source(source) => renderSource(source)
   | Value(value) => renderText(value->Js.Json.stringify, Text.Regular)
+  | Proposer(moniker, proposer) => renderProposer(moniker, proposer)
   };
 };

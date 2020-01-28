@@ -1,3 +1,4 @@
+pub mod binance;
 pub mod coingecko;
-pub mod cryptocompare;
 pub mod coins;
+pub mod cryptocompare;

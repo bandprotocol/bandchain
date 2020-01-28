@@ -15,6 +15,7 @@ module ScriptInfo = {
     codeHash: Hash.t,
     params: list(field_t),
     dataSources: list(field_t),
+    result: list(field_t),
     creator: Address.t,
   };
 
@@ -24,6 +25,7 @@ module ScriptInfo = {
       codeHash: json |> at(["codeHash"], string) |> Hash.fromBase64,
       params: json |> at(["params"], list(decodeField)),
       dataSources: json |> at(["dataSources"], list(decodeField)),
+      result: json |> at(["result"], list(decodeField)),
       creator: json |> at(["creator"], string) |> Address.fromBech32,
     };
 };

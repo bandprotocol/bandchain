@@ -63,7 +63,7 @@ let make = (~messages: list(TxHook.Msg.t)) => {
            <TBody key={index |> string_of_int}>
              <Row>
                <Col size=0.3> <TElement elementType={msg->TElement.Icon} /> </Col>
-               <Col size=0.5> <TElement elementType={msg->TElement.TxType} /> </Col>
+               <Col size=0.5> <MsgBadge msgs=[msg] /> </Col>
                <Col size=1.0>
                  <TElement elementType={msg->TxHook.Msg.getDescription->TElement.Detail} />
                </Col>
