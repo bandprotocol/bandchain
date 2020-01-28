@@ -333,7 +333,7 @@ func main() {
 	cliCtx = cmtx.NewCLIContext(txSender.Sender()).WithCodec(cdc)
 
 	r := gin.Default()
-	// Allows all origins
+	// Currently gin-contrib/cors not work so add header manually
 	r.Use(func() gin.HandlerFunc {
 		return func(c *gin.Context) {
 			c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
@@ -345,8 +345,6 @@ func main() {
 				c.AbortWithStatus(204)
 				return
 			}
-
-			c.Next()
 		}
 	}())
 
