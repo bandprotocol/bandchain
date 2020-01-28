@@ -2,7 +2,6 @@ const compiler = require('./compiler')
 const Router = require('@koa/router')
 const AWS = require('../aws')
 const axios = require('axios')
-const { getD3NScriptHash } = require('../hash')
 
 const router = new Router()
 
