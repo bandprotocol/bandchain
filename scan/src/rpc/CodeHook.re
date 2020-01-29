@@ -18,7 +18,7 @@ module Code = {
 let getCode = (codeHash: Hash.t) => {
   let codeHashHex = codeHash |> Hash.toHex(~upper=true);
   let json =
-    Axios.use(
+    AxiosHooks.use(
       {j|https://s3.ap-southeast-1.amazonaws.com/code.d3n.bandprotocol.com/$codeHashHex|j},
       ~pollInterval=1000000000,
       (),

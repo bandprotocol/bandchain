@@ -21,13 +21,13 @@ module Price = {
 
 let get = (~pollInterval=?, ()) => {
   let usdJson =
-    Axios.use(
+    AxiosHooks.use(
       "https://api.coingecko.com/api/v3/simple/price?ids=band-protocol&vs_currencies=usd&include_market_cap=true&include_24hr_change=true",
       ~pollInterval?,
       (),
     );
   let btcJson =
-    Axios.use(
+    AxiosHooks.use(
       "https://api.coingecko.com/api/v3/simple/price?ids=band-protocol&vs_currencies=btc&include_market_cap=true&include_24hr_change=true",
       ~pollInterval?,
       (),
