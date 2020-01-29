@@ -35,4 +35,20 @@ describe("Expect Hash to work correctly", () => {
     expect(Hash.fromBase64("AupJR1NqB6pTA+sUrqv4HxcR3U6SjLp3gGCngA+KhB+H") |> toHex)
     |> toBe("02ea4947536a07aa5303eb14aeabf81f1711dd4e928cba778060a7800f8a841f87")
   );
+
+  test("should be able to get hexString in uppercase", () =>
+    expect(
+      fromHex("28913c89fa628136fffce7ded99d65a4e3f5c211f82639fed4adca30d53b8dff")
+      |> toHex(~upper=true),
+    )
+    |> toBe("28913C89FA628136FFFCE7DED99D65A4E3F5C211F82639FED4ADCA30D53B8DFF")
+  );
+
+  test("should be able to get hexString with 0x prefix in uppercase", () =>
+    expect(
+      fromHex("28913c89fa628136fffce7ded99d65a4e3f5c211f82639fed4adca30d53b8dff")
+      |> toHex(~with0x=true, ~upper=true),
+    )
+    |> toBe("0X28913C89FA628136FFFCE7DED99D65A4E3F5C211F82639FED4ADCA30D53B8DFF")
+  );
 });
