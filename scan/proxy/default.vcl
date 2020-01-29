@@ -13,7 +13,7 @@ backend bandsv {
 sub vcl_deliver {
   if (req.url ~ "/") {
     set resp.http.Access-Control-Allow-Origin = "*";
-    set resp.http.Access-Control-Allow-Methods = "GET, OPTIONS";
+    set resp.http.Access-Control-Allow-Methods = "GET, OPTIONS, POST, PATCH, PUT, DELETE";
     set resp.http.Access-Control-Allow-Headers = "Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token";
   }
 }
@@ -28,5 +28,7 @@ sub vcl_recv {
 }
 
 sub vcl_backend_response {
+  if (!req.url == "^/bandsv/") {
     set beresp.ttl = 3s;
+  }
 }
