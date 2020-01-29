@@ -12,6 +12,6 @@ function(data) {
 
 let execute = (data: t) => {
   let%Promise response =
-    Axios.postData("http://d3n-debug.bandprotocol.com:5000/request", convert(data));
+    Axios.postData("https://d3n.bandprotocol.com/bandsv/request", convert(data));
   Promise.ret(response);
 };
