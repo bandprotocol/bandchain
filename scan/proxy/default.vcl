@@ -19,13 +19,11 @@ sub vcl_deliver {
 }
 
 sub vcl_recv {
-  if (req.url == "^/rest/") {
-    set req.backend_hint = default;
-  }
-
   if (req.url == "^/bandsv/") {
     set req.backend_hint = bandsv;
-  }         
+  } else {
+    set req.backend_hint = default;
+  }      
 }
 
 sub vcl_backend_response {
