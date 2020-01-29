@@ -130,7 +130,7 @@ mod tests {
     }
 
     #[test]
-    fn test_request_all_tokens_from_cryptocompare() {
+    fn test_request_all_tokens_price_from_cryptocompare() {
         println!(
             "{:?}",
             (vec![
@@ -149,6 +149,29 @@ mod tests {
             .iter()
             .map(|x| (x.symbol.as_str(), x.from_cmd_output(x.as_cmd().execute()).unwrap_or(0.0)))
             .collect::<Vec<(&str, f32)>>()
+        );
+    }
+
+    #[test]
+    fn test_request_all_tokens_volume24h_from_cryptocompare() {
+        println!(
+            "{:?}",
+            (vec![
+                Volume24h::new(&Coins::ADA),
+                Volume24h::new(&Coins::BAND),
+                Volume24h::new(&Coins::BCH),
+                Volume24h::new(&Coins::BNB),
+                Volume24h::new(&Coins::BTC),
+                Volume24h::new(&Coins::EOS),
+                Volume24h::new(&Coins::ETC),
+                Volume24h::new(&Coins::ETH),
+                Volume24h::new(&Coins::LTC),
+                Volume24h::new(&Coins::TRX),
+                Volume24h::new(&Coins::XRP),
+            ])
+            .iter()
+            .map(|x| (x.symbol.as_str(), x.from_cmd_output(x.as_cmd().execute()).unwrap_or(0.0)))
+            .collect::<Vec<(&str, f64)>>()
         );
     }
 }
