@@ -27,6 +27,8 @@ module Styles = {
       outline(`px(1), `none, white),
     ]);
 
+  let buttonContainer = style([display(`flex), flexDirection(`row), alignItems(`center)]);
+
   let button =
     style([
       width(`px(110)),
@@ -39,7 +41,10 @@ module Styles = {
       cursor(`pointer),
       outline(`px(1), `none, white),
       padding2(~v=Css.px(10), ~h=Css.px(10)),
+      whiteSpace(`nowrap),
     ]);
+
+  let resultLink = style([cursor(`pointer)]);
 };
 
 let parameterInput = (name, value, updateData) => {
@@ -88,29 +93,43 @@ let make = (~script: ScriptHook.Script.t) => {
        ->React.array}
     </div>
     <VSpacing size=Spacing.md />
-    <button
-      className=Styles.button
-      onClick={_ => {
-        AxiosRequest.execute(
-          AxiosRequest.t(
-            ~codeHash={
-              script.info.codeHash |> Hash.toHex;
-            },
-            ~params=Js.Dict.fromList(data),
-          ),
-        )
-        |> Js.Promise.then_(res => {
-             setError(_ => "");
-             Js.Console.log(res);
-             Js.Promise.resolve();
-           })
-        |> Js.Promise.catch(err => {
-             Js.Console.log(err);
-             Js.Promise.resolve();
-           });
-        ();
-      }}>
-      {"Send Request" |> React.string}
-    </button>
+    <div className=Styles.buttonContainer>
+      <button
+        className=Styles.button
+        onClick={_ => {
+          let _ =
+            AxiosRequest.execute(
+              AxiosRequest.t(
+                ~codeHash={
+                  script.info.codeHash |> Hash.toHex;
+                },
+                ~params=Js.Dict.fromList(data),
+              ),
+            )
+            |> Js.Promise.then_(res => {
+                 setError(_ => "");
+                 setTxHash(_ => res##data##txHash);
+                 Js.Promise.resolve();
+               })
+            |> Js.Promise.catch(err => {
+                 let errorValue =
+                   Js.Json.stringifyAny(err)->Belt_Option.getWithDefault("Unknown");
+                 setError(_ => "An error occured: " ++ errorValue);
+                 Js.Promise.resolve();
+               });
+          ();
+        }}>
+        {"Send Request" |> React.string}
+      </button>
+      <HSpacing size=Spacing.xl />
+      {txHash != ""
+         ? <div
+             className=Styles.resultLink
+             onClick={_ => Route.redirect(Route.TxIndexPage(txHash |> Hash.fromHex))}>
+             <Text value=txHash color=Colors.green />
+           </div>
+         : React.null}
+      {error != "" ? <Text value=error color=Colors.red /> : React.null}
+    </div>
   </div>;
 };
