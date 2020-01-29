@@ -63,6 +63,8 @@ let make = (~script: ScriptHook.Script.t) => {
   let params = script.info.params;
   let preData = params->Belt.List.map(({name}) => (name, ""));
   let (data, setData) = React.useState(_ => preData);
+  let (txHash, setTxHash) = React.useState(_ => "");
+  let (error, setError) = React.useState(_ => "");
 
   let updateData = (targetName, newVal) => {
     let newData =
@@ -88,7 +90,7 @@ let make = (~script: ScriptHook.Script.t) => {
     <VSpacing size=Spacing.md />
     <button
       className=Styles.button
-      onClick={_ =>
+      onClick={_ => {
         AxiosRequest.execute(
           AxiosRequest.t(
             ~codeHash={
@@ -97,7 +99,17 @@ let make = (~script: ScriptHook.Script.t) => {
             ~params=Js.Dict.fromList(data),
           ),
         )
-      }>
+        |> Js.Promise.then_(res => {
+             setError(_ => "");
+             Js.Console.log(res);
+             Js.Promise.resolve();
+           })
+        |> Js.Promise.catch(err => {
+             Js.Console.log(err);
+             Js.Promise.resolve();
+           });
+        ();
+      }}>
       {"Send Request" |> React.string}
     </button>
   </div>;
