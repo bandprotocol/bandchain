@@ -15,9 +15,17 @@ impl Volume24h {
     pub fn new(coin: &Coins) -> Volume24h {
         Volume24h {
             symbol: String::from(match coin {
-                Coins::BTC => "bitcoin",
-                Coins::ETH => "ethereum",
+                Coins::ADA => "cardano",
                 Coins::BAND => "band-protocol",
+                Coins::BCH => "bitcoin-cash",
+                Coins::BNB => "binance-coin",
+                Coins::BTC => "bitcoin",
+                Coins::EOS => "eos",
+                Coins::ETH => "ethereum",
+                Coins::LTC => "litecoin",
+                Coins::ETC => "ethereum-classic",
+                Coins::TRX => "tron",
+                Coins::XRP => "ripple",
             }),
         }
     }
@@ -27,9 +35,17 @@ impl Price {
     pub fn new(coin: &Coins) -> Price {
         Price {
             symbol: String::from(match coin {
-                Coins::BTC => "bitcoin",
-                Coins::ETH => "ethereum",
+                Coins::ADA => "cardano",
                 Coins::BAND => "band-protocol",
+                Coins::BCH => "bitcoin-cash",
+                Coins::BNB => "binance-coin",
+                Coins::BTC => "bitcoin",
+                Coins::EOS => "eos",
+                Coins::ETH => "ethereum",
+                Coins::LTC => "litecoin",
+                Coins::ETC => "ethereum-classic",
+                Coins::TRX => "tron",
+                Coins::XRP => "ripple",
             }),
         }
     }
@@ -117,5 +133,28 @@ mod tests {
             Volume24h::new(&Coins::ETH).from_cmd_output(r#"{"prices":[[1579762372880,163.20299006856183]],"market_caps":[[1579762372880,17885078490.944096]],"total_volumes":[]}"#.into()),
             None
         )
+    }
+
+    #[test]
+    fn test_request_all_tokens_from_coingecko() {
+        println!(
+            "{:?}",
+            (vec![
+                Price::new(&Coins::ADA),
+                Price::new(&Coins::BAND),
+                Price::new(&Coins::BCH),
+                Price::new(&Coins::BNB),
+                Price::new(&Coins::BTC),
+                Price::new(&Coins::EOS),
+                Price::new(&Coins::ETC),
+                Price::new(&Coins::ETH),
+                Price::new(&Coins::LTC),
+                Price::new(&Coins::TRX),
+                Price::new(&Coins::XRP),
+            ])
+            .iter()
+            .map(|x| (x.symbol.as_str(), x.from_cmd_output(x.as_cmd().execute()).unwrap_or(0.0)))
+            .collect::<Vec<(&str, f32)>>()
+        );
     }
 }
