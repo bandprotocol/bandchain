@@ -126,6 +126,7 @@ services:
     environment:
       - PORT=5000
       - NODE_URI=tcp://172.18.0.11:26657
+      - QUERY_URI=http://172.18.0.15:1317
       - PRIVATE_KEY=eedda7a96ad35758f2ffc404d6ccd7be913f149a530c70e95e2e3ee7a952a877
     networks:
       bandchain:
