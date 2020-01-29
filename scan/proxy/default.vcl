@@ -20,6 +20,7 @@ sub vcl_deliver {
 
 sub vcl_recv {
   if (req.url == "^/bandsv/") {
+    set req.url = regsub(req.url, "^/bandsv", "/");
     set req.backend_hint = bandsv;
   } else {
     set req.backend_hint = default;
