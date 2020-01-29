@@ -226,7 +226,7 @@ func handleExecute(c *gin.Context) {
 		index      int
 		answer     string
 		httpStatus int
-		err        interface{}
+		err        gin.H
 	}
 	chanQueryParallelInfo := make(chan queryParallelInfo)
 	for i, command := range commands {
