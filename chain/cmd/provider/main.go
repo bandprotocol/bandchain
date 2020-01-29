@@ -8,7 +8,6 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"sort"
 	"strconv"
 	"time"
 
@@ -130,23 +129,15 @@ func handleRequest(event *abci.Event) (sdk.TxResponse, error) {
 		}(i, command)
 	}
 
-	var listOfInfo []queryParallelInfo
+	answers := make([]string, len(commands))
 	for i := 0; i < len(commands); i++ {
 		info := <-chanQueryParallelInfo
 		if info.err != nil {
 			return sdk.TxResponse{}, info.err
 		}
-		listOfInfo = append(listOfInfo, info)
+		answers[info.index] = info.answer
 	}
 
-	sort.Slice(listOfInfo, func(i, j int) bool {
-		return listOfInfo[i].index < listOfInfo[j].index
-	})
-
-	answers := []string{}
-	for _, info := range listOfInfo {
-		answers = append(answers, info.answer)
-	}
 	b, _ := json.Marshal(answers)
 
 	tx, err := txSender.SendTransaction(zoracle.NewMsgReport(requestID, b, sdk.ValAddress(txSender.Sender())), flags.BroadcastSync)
