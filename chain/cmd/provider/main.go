@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"sort"
 	"strconv"
 	"time"
 
@@ -95,25 +96,58 @@ func handleRequest(event *abci.Event) (sdk.TxResponse, error) {
 			}
 		}
 	}
-	var answer []string
-	for _, command := range commands {
-		if !allowedCommands[command.Cmd] {
-			return sdk.TxResponse{}, fmt.Errorf("handleRequest unknown command %s", command.Cmd)
-		}
-		dockerCommand := Command{
-			Cmd: "docker",
-			Arguments: append([]string{
-				"run", "--rm", "band-provider",
-				command.Cmd,
-			}, command.Arguments...),
-		}
-		query, err := execWithTimeout(dockerCommand, limitTimeOut)
-		if err != nil {
-			return sdk.TxResponse{}, fmt.Errorf("handleRequest query err with command: %s %v, error: %v", command.Cmd, command.Arguments, err)
-		}
-		answer = append(answer, string(query))
+
+	type queryParallelInfo struct {
+		index  int
+		answer string
+		err    error
 	}
-	b, _ := json.Marshal(answer)
+	chanQueryParallelInfo := make(chan queryParallelInfo, len(commands))
+	for i, command := range commands {
+		go func(index int, command Command) {
+			info := queryParallelInfo{index: index, answer: "", err: nil}
+			if !allowedCommands[command.Cmd] {
+				info.err = fmt.Errorf("handleRequest unknown command %s", command.Cmd)
+				chanQueryParallelInfo <- info
+				return
+			}
+			dockerCommand := Command{
+				Cmd: "docker",
+				Arguments: append([]string{
+					"run", "--rm", "band-provider",
+					command.Cmd,
+				}, command.Arguments...),
+			}
+			query, err := execWithTimeout(dockerCommand, limitTimeOut)
+			if err != nil {
+				info.err = fmt.Errorf("handleRequest query err with command: %s %v, error: %v", command.Cmd, command.Arguments, err)
+				chanQueryParallelInfo <- info
+				return
+			}
+
+			info.answer = string(query)
+			chanQueryParallelInfo <- info
+		}(i, command)
+	}
+
+	var listOfInfo []queryParallelInfo
+	for i := 0; i < len(commands); i++ {
+		info := <-chanQueryParallelInfo
+		if info.err != nil {
+			return sdk.TxResponse{}, info.err
+		}
+		listOfInfo = append(listOfInfo, info)
+	}
+
+	sort.Slice(listOfInfo, func(i, j int) bool {
+		return listOfInfo[i].index < listOfInfo[j].index
+	})
+
+	answers := []string{}
+	for _, info := range listOfInfo {
+		answers = append(answers, info.answer)
+	}
+	b, _ := json.Marshal(answers)
 
 	tx, err := txSender.SendTransaction(zoracle.NewMsgReport(requestID, b, sdk.ValAddress(txSender.Sender())), flags.BroadcastSync)
 	if err != nil {
