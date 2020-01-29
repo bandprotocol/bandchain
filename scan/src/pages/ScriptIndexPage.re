@@ -44,32 +44,6 @@ module Styles = {
         )),
       ),
     ]);
-
-  let codeTabHeader =
-    style([
-      lineHeight(`px(20)),
-      borderBottom(`px(1), `solid, Colors.lightGray),
-      margin2(`px(0), `px(5)),
-    ]);
-
-  let mediumText = style([fontSize(`px(14)), lineHeight(`px(20))]);
-
-  let maxHeight20 = style([maxHeight(`px(20))]);
-};
-
-let renderCode = ((filename, code)) => {
-  <>
-    <VSpacing size=Spacing.xl />
-    <Row>
-      <img src=Images.textDocument className=Styles.maxHeight20 />
-      <HSpacing size=Spacing.md />
-      <Text value=filename size=Text.Lg color=Colors.grayHeader />
-    </Row>
-    <VSpacing size=Spacing.md />
-    <div className=Styles.mediumText>
-      <ReactHighlight> {code |> React.string} </ReactHighlight>
-    </div>
-  </>;
 };
 
 [@react.component]
@@ -82,8 +56,6 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
     ->Belt.Option.mapWithDefault(([], 0), ({txs, totalCount}) =>
         (txs |> Belt.List.reverse, totalCount)
       );
-  let codes =
-    CodeHook.getCode(codeHash)->Belt.List.map(({filename, code}) => (filename, code));
 
   <div className=Styles.pageContainer>
     <Row justify=Row.Between>
@@ -211,43 +183,7 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
               React.null;
             }}
          </div>
-       | ScriptCode =>
-         <div className=Styles.tableLowerContainer>
-           <div className=Styles.codeTabHeader>
-             <Row>
-               <Col size=1.0>
-                 <Row>
-                   <Col size=1.0>
-                     <Text value="Platform" color=Colors.darkGrayText size=Text.Lg />
-                   </Col>
-                   <Col size=1.0> <Text value="OWASM v0.1" size=Text.Lg /> </Col>
-                 </Row>
-               </Col>
-               <Col size=1.0>
-                 <Row>
-                   <Col size=1.0>
-                     <Text value="Parameters" color=Colors.darkGrayText size=Text.Lg />
-                   </Col>
-                   <Col size=1.0> <Text value="2" size=Text.Lg /> </Col>
-                 </Row>
-               </Col>
-             </Row>
-             <VSpacing size=Spacing.lg />
-             <Row>
-               <Col size=1.0>
-                 <Row>
-                   <Col size=1.0>
-                     <Text value="Language" color=Colors.darkGrayText size=Text.Lg />
-                   </Col>
-                   <Col size=1.0> <Text value="Rust 1.39.0" size=Text.Lg /> </Col>
-                 </Row>
-               </Col>
-               <Col size=1.0> <div /> </Col>
-             </Row>
-             <VSpacing size=Spacing.lg />
-           </div>
-           {codes->Belt.List.toArray->Belt.Array.map(renderCode)->React.array}
-         </div>
+       | ScriptCode => <ScriptCode codeHash />
        | ScriptExecute =>
          switch (scriptOpt) {
          | Some(script) => <ScriptExecute script />
