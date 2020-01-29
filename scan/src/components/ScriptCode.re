@@ -76,7 +76,7 @@ let make = (~codeHash) => {
        ->Belt.List.toArray
        ->Belt.Array.map(renderCode)
        ->React.array
-     | None => <Text value="Code Not Found" />
+     | None => <Text value="Code Not Found" size=Text.Lg />
      }}
   </div>;
 };
