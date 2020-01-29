@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"sort"
 	"strconv"
 	"time"
 
@@ -221,28 +222,62 @@ func handleExecute(c *gin.Context) {
 		return
 	}
 
-	var answer []string
-	for _, command := range commands {
-		if !allowedCommands[command.Cmd] {
-			c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Errorf("handleRequest unknown command %s", command.Cmd)})
-			return
-		}
-		dockerCommand := Command{
-			Cmd: "docker",
-			Arguments: append([]string{
-				"run", "--rm", "band-provider",
-				command.Cmd,
-			}, command.Arguments...),
-		}
-		query, err := execWithTimeout(dockerCommand, 10*time.Second)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-		answer = append(answer, string(query))
+	type queryParallelInfo struct {
+		index      int
+		answer     string
+		httpStatus int
+		err        gin.H
+	}
+	chanQueryParallelInfo := make(chan queryParallelInfo, len(commands))
+	for i, command := range commands {
+		go func(index int, command Command) {
+			info := queryParallelInfo{index: index, answer: "", err: nil}
+			if !allowedCommands[command.Cmd] {
+				info.httpStatus = http.StatusBadRequest
+				info.err = gin.H{"error": fmt.Errorf("handleRequest unknown command %s", command.Cmd)}
+				chanQueryParallelInfo <- info
+				return
+			}
+			dockerCommand := Command{
+				Cmd: "docker",
+				Arguments: append([]string{
+					"run", "--rm", "band-provider",
+					command.Cmd,
+				}, command.Arguments...),
+			}
+			query, err := execWithTimeout(dockerCommand, 10*time.Second)
+			if err != nil {
+				info.httpStatus = http.StatusBadRequest
+				info.err = gin.H{"error": err.Error()}
+				chanQueryParallelInfo <- info
+				return
+			}
+
+			info.answer = string(query)
+			info.httpStatus = http.StatusOK
+			chanQueryParallelInfo <- info
+		}(i, command)
 	}
 
-	b, _ := json.Marshal(answer)
+	var listOfInfo []queryParallelInfo
+	for i := 0; i < len(commands); i++ {
+		info := <-chanQueryParallelInfo
+		if info.err != nil {
+			c.JSON(info.httpStatus, info.err)
+			return
+		}
+		listOfInfo = append(listOfInfo, info)
+	}
+
+	sort.Slice(listOfInfo, func(i, j int) bool {
+		return listOfInfo[i].index < listOfInfo[j].index
+	})
+
+	answers := []string{}
+	for _, info := range listOfInfo {
+		answers = append(answers, info.answer)
+	}
+	b, _ := json.Marshal(answers)
 
 	rawResult, err := wasm.Execute(req.Code, rawParams, [][]byte{b})
 	result, err := wasm.ParseResult(req.Code, rawResult)
