@@ -33,7 +33,9 @@ export interface IConfig {
 }
 
 const configUrl =
-  process.env.ENV === "production" ? "./config.json" : "./config.dev.json";
+  window.location.hostname === "localhost"
+    ? "./config.dev.json"
+    : "./config.json";
 let config: IConfig;
 
 export default async function getConfig() {
