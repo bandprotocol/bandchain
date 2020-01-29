@@ -231,11 +231,11 @@ func handleExecute(c *gin.Context) {
 	chanQueryParallelInfo := make(chan queryParallelInfo)
 	for i, command := range commands {
 		go func(index int, command Command) {
-			qpi := queryParallelInfo{index: index, answer: "", err: nil}
+			info := queryParallelInfo{index: index, answer: "", err: nil}
 			if !allowedCommands[command.Cmd] {
-				qpi.httpStatus = http.StatusBadRequest
-				qpi.err = gin.H{"error": fmt.Errorf("handleRequest unknown command %s", command.Cmd)}
-				chanQueryParallelInfo <- qpi
+				info.httpStatus = http.StatusBadRequest
+				info.err = gin.H{"error": fmt.Errorf("handleRequest unknown command %s", command.Cmd)}
+				chanQueryParallelInfo <- info
 				return
 			}
 			dockerCommand := Command{
@@ -247,35 +247,35 @@ func handleExecute(c *gin.Context) {
 			}
 			query, err := execWithTimeout(dockerCommand, 10*time.Second)
 			if err != nil {
-				qpi.httpStatus = http.StatusBadRequest
-				qpi.err = gin.H{"error": err.Error()}
-				chanQueryParallelInfo <- qpi
+				info.httpStatus = http.StatusBadRequest
+				info.err = gin.H{"error": err.Error()}
+				chanQueryParallelInfo <- info
 				return
 			}
 
-			qpi.answer = string(query)
-			qpi.httpStatus = http.StatusOK
-			chanQueryParallelInfo <- qpi
+			info.answer = string(query)
+			info.httpStatus = http.StatusOK
+			chanQueryParallelInfo <- info
 		}(i, command)
 	}
 
-	var qpis []queryParallelInfo
+	var listOfInfo []queryParallelInfo
 	for i := 0; i < len(commands); i++ {
-		qpi := <-chanQueryParallelInfo
-		if qpi.err != nil {
-			c.JSON(qpi.httpStatus, qpi.err)
+		info := <-chanQueryParallelInfo
+		if info.err != nil {
+			c.JSON(info.httpStatus, info.err)
 			return
 		}
-		qpis = append(qpis, qpi)
+		listOfInfo = append(listOfInfo, info)
 	}
 
-	sort.Slice(qpis, func(i, j int) bool {
-		return qpis[i].index < qpis[j].index
+	sort.Slice(listOfInfo, func(i, j int) bool {
+		return listOfInfo[i].index < listOfInfo[j].index
 	})
 
 	answers := []string{}
-	for _, qpi := range qpis {
-		answers = append(answers, qpi.answer)
+	for _, info := range listOfInfo {
+		answers = append(answers, info.answer)
 	}
 	b, _ := json.Marshal(answers)
 
