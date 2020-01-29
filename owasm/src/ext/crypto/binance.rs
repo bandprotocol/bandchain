@@ -78,7 +78,7 @@ mod tests {
     }
 
     #[test]
-    fn test_request_all_tokens_from_binance() {
+    fn test_request_all_tokens_price_from_binance() {
         println!(
             "{:?}",
             (vec![
