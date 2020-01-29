@@ -9,6 +9,9 @@ let toBase64 =
   fun
   | Hash(hash) => hash->JsBuffer.hexToBase64;
 
-let toHex = (~with0x=false) =>
+let toHex = (~with0x=false, ~upper=false) =>
   fun
-  | Hash(hexstr) => (with0x ? "0x" : "") ++ hexstr;
+  | Hash(hexstr) => {
+      let lowercase = (with0x ? "0x" : "") ++ hexstr;
+      upper ? lowercase->String.uppercase_ascii : lowercase;
+    };
