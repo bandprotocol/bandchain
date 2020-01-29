@@ -269,7 +269,7 @@ func handleExecute(c *gin.Context) {
 		qpis = append(qpis, qpi)
 	}
 
-	sort.SliceStable(qpis, func(i, j int) bool {
+	sort.Slice(qpis, func(i, j int) bool {
 		return qpis[i].index < qpis[j].index
 	})
 
