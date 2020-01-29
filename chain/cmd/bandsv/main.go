@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"sort"
 	"strconv"
 	"time"
 
@@ -221,16 +222,20 @@ func handleExecute(c *gin.Context) {
 		return
 	}
 
-	type queryResult struct {
+	type queryParallelInfo struct {
+		index      int
 		answer     string
 		httpStatus int
 		err        interface{}
 	}
-	chanQueryResult := make(chan queryResult)
-	for _, command := range commands {
-		go func(command Command) {
+	chanQueryParallelInfo := make(chan queryParallelInfo)
+	for i, command := range commands {
+		go func(index int, command Command) {
+			qpi := queryParallelInfo{index: index, answer: "", err: nil}
 			if !allowedCommands[command.Cmd] {
-				chanQueryResult <- queryResult{answer: "", httpStatus: http.StatusBadRequest, err: gin.H{"error": fmt.Errorf("handleRequest unknown command %s", command.Cmd)}}
+				qpi.httpStatus = http.StatusBadRequest
+				qpi.err = gin.H{"error": fmt.Errorf("handleRequest unknown command %s", command.Cmd)}
+				chanQueryParallelInfo <- qpi
 				return
 			}
 			dockerCommand := Command{
@@ -242,24 +247,36 @@ func handleExecute(c *gin.Context) {
 			}
 			query, err := execWithTimeout(dockerCommand, 10*time.Second)
 			if err != nil {
-				chanQueryResult <- queryResult{answer: "", httpStatus: http.StatusBadRequest, err: gin.H{"error": err.Error()}}
+				qpi.httpStatus = http.StatusBadRequest
+				qpi.err = gin.H{"error": err.Error()}
+				chanQueryParallelInfo <- qpi
 				return
 			}
 
-			chanQueryResult <- queryResult{answer: string(query), httpStatus: http.StatusOK, err: nil}
-		}(command)
+			qpi.answer = string(query)
+			qpi.httpStatus = http.StatusOK
+			chanQueryParallelInfo <- qpi
+		}(i, command)
 	}
 
-	var answers []string
+	var qpis []queryParallelInfo
 	for i := 0; i < len(commands); i++ {
-		queryResultTmp := <-chanQueryResult
-		if queryResultTmp.err != nil {
-			c.JSON(queryResultTmp.httpStatus, queryResultTmp.err)
+		qpi := <-chanQueryParallelInfo
+		if qpi.err != nil {
+			c.JSON(qpi.httpStatus, qpi.err)
 			return
 		}
-		answers = append(answers, queryResultTmp.answer)
+		qpis = append(qpis, qpi)
 	}
 
+	sort.SliceStable(qpis, func(i, j int) bool {
+		return qpis[i].index < qpis[j].index
+	})
+
+	answers := []string{}
+	for _, qpi := range qpis {
+		answers = append(answers, qpi.answer)
+	}
 	b, _ := json.Marshal(answers)
 
 	rawResult, err := wasm.Execute(req.Code, rawParams, [][]byte{b})
