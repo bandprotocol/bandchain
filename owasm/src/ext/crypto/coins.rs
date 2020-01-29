@@ -2,7 +2,15 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub enum Coins {
-    BTC,
-    ETH,
+    ADA,
     BAND,
+    BCH,
+    BNB,
+    BTC,
+    EOS,
+    ETC,
+    ETH,
+    LTC,
+    TRX,
+    XRP,
 }
