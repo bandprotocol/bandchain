@@ -16,9 +16,17 @@ impl Volume24h {
     pub fn new(coin: &Coins) -> Volume24h {
         Volume24h {
             symbol: String::from(match coin {
-                Coins::BTC => "BTC",
-                Coins::ETH => "ETH",
+                Coins::ADA => "ADA",
                 Coins::BAND => "BAND",
+                Coins::BCH => "BCH",
+                Coins::BNB => "BNB",
+                Coins::BTC => "BTC",
+                Coins::EOS => "EOS",
+                Coins::ETH => "ETH",
+                Coins::LTC => "LTC",
+                Coins::ETC => "ETC",
+                Coins::TRX => "TRX",
+                Coins::XRP => "XRP",
             }),
         }
     }
@@ -28,9 +36,17 @@ impl Price {
     pub fn new(coin: &Coins) -> Price {
         Price {
             symbol: String::from(match coin {
-                Coins::BTC => "BTC",
-                Coins::ETH => "ETH",
+                Coins::ADA => "ADA",
                 Coins::BAND => "BAND",
+                Coins::BCH => "BCH",
+                Coins::BNB => "BNB",
+                Coins::BTC => "BTC",
+                Coins::EOS => "EOS",
+                Coins::ETH => "ETH",
+                Coins::LTC => "LTC",
+                Coins::ETC => "ETC",
+                Coins::TRX => "TRX",
+                Coins::XRP => "XRP",
             }),
         }
     }
@@ -111,5 +127,28 @@ mod tests {
         assert_eq!(Price::new(&Coins::BTC).from_cmd_output(r#"{}"#.into()), None);
 
         assert_eq!(Volume24h::new(&Coins::BTC).from_cmd_output(r#"{}"#.into()), None);
+    }
+
+    #[test]
+    fn test_request_all_tokens_from_cryptocompare() {
+        println!(
+            "{:?}",
+            (vec![
+                Price::new(&Coins::ADA),
+                Price::new(&Coins::BAND),
+                Price::new(&Coins::BCH),
+                Price::new(&Coins::BNB),
+                Price::new(&Coins::BTC),
+                Price::new(&Coins::EOS),
+                Price::new(&Coins::ETC),
+                Price::new(&Coins::ETH),
+                Price::new(&Coins::LTC),
+                Price::new(&Coins::TRX),
+                Price::new(&Coins::XRP),
+            ])
+            .iter()
+            .map(|x| (x.symbol.as_str(), x.from_cmd_output(x.as_cmd().execute()).unwrap_or(0.0)))
+            .collect::<Vec<(&str, f32)>>()
+        );
     }
 }
