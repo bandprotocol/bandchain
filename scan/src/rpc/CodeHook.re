@@ -20,6 +20,7 @@ let getCode = (codeHash: Hash.t) => {
   let json =
     Axios.use(
       {j|https://s3.ap-southeast-1.amazonaws.com/code.d3n.bandprotocol.com/$codeHashHex|j},
+      ~pollInterval=1000000000,
       (),
     );
   json |> Belt.Option.map(_, Code.decodeCodes);
