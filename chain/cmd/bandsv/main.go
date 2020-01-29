@@ -133,7 +133,7 @@ func handleRequestData(c *gin.Context) {
 		if err == nil {
 			c.JSON(resp.StatusCode, body)
 		} else {
-			c.JSON(resp.StatusCode, nil)
+			c.JSON(resp.StatusCode, resp.Bytes())
 		}
 		return
 	}
