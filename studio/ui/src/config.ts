@@ -32,7 +32,8 @@ export interface IConfig {
   templates: { [name: string]: string };
 }
 
-const configUrl = "./config.json";
+const configUrl =
+  process.env.ENV === "production" ? "./config.json" : "./config.dev.json";
 let config: IConfig;
 
 export default async function getConfig() {

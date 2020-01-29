@@ -13,6 +13,7 @@ const (
 	QueryPending    = "pending_request"
 	QueryScript     = "script"
 	QueryAllScripts = "scripts"
+	SerializeParams = "serialize_params"
 )
 
 type U64Array []uint64

@@ -1,35 +1,25 @@
 module Styles = {
   open Css;
 
-  let container =
-    style([
-      display(`flex),
-      flexDirection(`column),
-      padding(`px(20)),
-      background(Colors.lighterGray),
-    ]);
+  let container = style([padding(`px(20)), background(Colors.lighterGray)]);
+
+  let paramsContainer = style([display(`inlineBlock)]);
 
   let listContainer =
     style([
+      display(`grid),
+      gridColumnGap(`px(15)),
+      gridTemplateColumns([`auto, `px(280)]),
       background(Colors.white),
-      display(`inlineFlex),
-      width(`fitContent),
       border(`px(1), `solid, Colors.lightGray),
       alignItems(`center),
     ]);
 
-  let keyContainer =
-    style([
-      display(`inlineFlex),
-      marginLeft(`px(15)),
-      width(`px(80)),
-      marginRight(`px(15)),
-      justifyContent(`flexEnd),
-    ]);
+  let keyContainer = style([marginLeft(`px(25)), display(`flex), justifyContent(`flexEnd)]);
 
   let input =
     style([
-      width(`px(280)),
+      width(`percent(100.)),
       background(white),
       padding(Spacing.md),
       paddingLeft(`px(10)),
@@ -89,12 +79,25 @@ let make = (~script: ScriptHook.Script.t) => {
   <div className=Styles.container>
     <Text value="Request Data with Parameters" color=Colors.darkGrayText size=Text.Lg />
     <VSpacing size=Spacing.md />
-    {data
-     ->Belt.List.map(((name, value)) => parameterInput(name, value, updateData))
-     ->Array.of_list
-     ->React.array}
+    <div className=Styles.paramsContainer>
+      {data
+       ->Belt.List.map(((name, value)) => parameterInput(name, value, updateData))
+       ->Array.of_list
+       ->React.array}
+    </div>
     <VSpacing size=Spacing.md />
-    <button className=Styles.button onClick={_ => Js.Console.log(data)}>
+    <button
+      className=Styles.button
+      onClick={_ =>
+        AxiosRequest.execute(
+          AxiosRequest.t(
+            ~codeHash={
+              script.info.codeHash |> Hash.toHex;
+            },
+            ~params=Js.Dict.fromList(data),
+          ),
+        )
+      }>
       {"Send Request" |> React.string}
     </button>
   </div>;
