@@ -183,9 +183,16 @@ func getSerializeParams(cliCtx context.CLIContext, storeName string) http.Handle
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
-		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/serialize_params/%s/%s", storeName, vars[codeHash], vars[params]), nil)
+		params := r.URL.Query()["params"][0]
+
+		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/serialize_params/%s/%s", storeName, vars[codeHash], params), nil)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		if string(res) == "null" {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, "Invalid params")
 			return
 		}
 
