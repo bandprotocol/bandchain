@@ -38,7 +38,7 @@ let renderCode = ((name, content)) => {
 [@react.component]
 let make = (~codeHash) => {
   let codes = CodeHook.getCode(codeHash);
-  let wathedValue = codes->Belt.Option.isSome ? codeHash |> Hash.toHex : "";
+  let watchedValue = codes->Belt.Option.isSome ? codeHash |> Hash.toHex : "";
 
   React.useMemo1(
     () =>
@@ -86,6 +86,6 @@ let make = (~codeHash) => {
          | None => <Text value="Code Not Found" size=Text.Lg />
          }}
       </div>,
-    [|wathedValue|],
+    [|watchedValue|],
   );
 };
