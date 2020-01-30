@@ -25,6 +25,6 @@ module Validator = {
 };
 
 let get = (~pollInterval=?, ()) => {
-  let json = Axios.use({j|staking/validators|j}, ~pollInterval?, ());
+  let json = AxiosHooks.use({j|staking/validators|j}, ~pollInterval?, ());
   json |> Belt.Option.map(_, Validator.decodeValidators);
 };

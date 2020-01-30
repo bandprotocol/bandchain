@@ -32,11 +32,11 @@ module Block = {
 };
 
 let latest = (~page=1, ~limit=10, ~pollInterval=?, ()) => {
-  let json = Axios.use({j|d3n/blocks/latest?page=$page&limit=$limit|j}, ~pollInterval?, ());
+  let json = AxiosHooks.use({j|d3n/blocks/latest?page=$page&limit=$limit|j}, ~pollInterval?, ());
   json |> Belt.Option.map(_, Block.decodeBlocks);
 };
 
 let atHeight = (height, ~pollInterval=?, ()) => {
-  let json = Axios.use({j|blocks/$height|j}, ~pollInterval?, ());
+  let json = AxiosHooks.use({j|blocks/$height|j}, ~pollInterval?, ());
   json |> Belt.Option.map(_, Block.decodeBlock);
 };
