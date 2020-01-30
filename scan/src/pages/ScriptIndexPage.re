@@ -183,7 +183,11 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
               React.null;
             }}
          </div>
-       | ScriptCode => <ScriptCode codeHash />
+       | ScriptCode =>
+         switch (scriptOpt) {
+         | Some(script) => <ScriptCode codeHash params={script.info.params} />
+         | None => <div />
+         }
        | ScriptExecute =>
          switch (scriptOpt) {
          | Some(script) => <ScriptExecute script />

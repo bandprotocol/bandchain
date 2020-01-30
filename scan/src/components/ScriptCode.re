@@ -36,7 +36,7 @@ let renderCode = ((name, content)) => {
 };
 
 [@react.component]
-let make = (~codeHash) => {
+let make = (~codeHash, ~params) => {
   let codes = CodeHook.getCode(codeHash);
   let watchedValue = codes->Belt.Option.isSome ? codeHash |> Hash.toHex : "";
 
@@ -58,7 +58,9 @@ let make = (~codeHash) => {
                 <Col size=1.0>
                   <Text value="Parameters" color=Colors.darkGrayText size=Text.Lg />
                 </Col>
-                <Col size=1.0> <Text value="2" size=Text.Lg /> </Col>
+                <Col size=1.0>
+                  <Text value={params->Belt.List.length->string_of_int} size=Text.Lg />
+                </Col>
               </Row>
             </Col>
           </Row>
