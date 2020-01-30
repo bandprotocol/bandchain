@@ -19,12 +19,54 @@ contract DEX {
 
     bytes32 public codeHash;
 
-    mapping(address => mapping(bytes => uint256)) public balances;
+    mapping(address => mapping(bytes => uint256)) _balances;
 
     Bridge bridge = Bridge(0x3e1F8745E4088443350121075828F119075ef641);
 
     constructor(bytes32 _codeHash) public {
         codeHash = _codeHash;
+    }
+
+    function strCmp(string memory a, string memory b)
+        public
+        pure
+        returns (bool)
+    {
+        return keccak256(abi.encodePacked(a)) == keccak256(abi.encodePacked(b));
+    }
+
+    function balanceOf(address account, string memory symbol)
+        public
+        view
+        returns (uint256)
+    {
+        bytes memory key;
+        if (strCmp(symbol, "ADA")) {
+            key = hex"00000000";
+        } else if (strCmp(symbol, "BAND")) {
+            key = hex"00000001";
+        } else if (strCmp(symbol, "BCH")) {
+            key = hex"00000002";
+        } else if (strCmp(symbol, "BNB")) {
+            key = hex"00000003";
+        } else if (strCmp(symbol, "BTC")) {
+            key = hex"00000004";
+        } else if (strCmp(symbol, "EOS")) {
+            key = hex"00000005";
+        } else if (strCmp(symbol, "ETC")) {
+            key = hex"00000006";
+        } else if (strCmp(symbol, "ETH")) {
+            key = hex"00000007";
+        } else if (strCmp(symbol, "LTC")) {
+            key = hex"00000008";
+        } else if (strCmp(symbol, "TRX")) {
+            key = hex"00000009";
+        } else if (strCmp(symbol, "XRP")) {
+            key = hex"0000000A";
+        } else {
+            revert("UNKNOWN_SYMBOL");
+        }
+        return _balances[account][key];
     }
 
     function bytesToPrices(bytes memory _b)
@@ -55,7 +97,7 @@ contract DEX {
 
         uint256 tokenEarn = msg.value.mul(ethPrice).div(otherPrice);
 
-        balances[msg.sender][result.params] = balances[msg.sender][result
+        _balances[msg.sender][result.params] = _balances[msg.sender][result
             .params]
             .add(tokenEarn);
     }
@@ -67,7 +109,7 @@ contract DEX {
 
         require(result.codeHash == codeHash, "INVALID_CODEHASH");
         require(
-            amount <= balances[msg.sender][result.params],
+            amount <= _balances[msg.sender][result.params],
             "INSUFFICIENT_TOKENS"
         );
 
@@ -75,7 +117,7 @@ contract DEX {
 
         uint256 ethEarn = amount.mul(otherPrice).div(ethPrice);
 
-        balances[msg.sender][result.params] = balances[msg.sender][result
+        _balances[msg.sender][result.params] = _balances[msg.sender][result
             .params]
             .sub(amount);
         msg.sender.transfer(ethEarn);
