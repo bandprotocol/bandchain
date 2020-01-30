@@ -55,7 +55,16 @@ module Styles = {
   let selectPadding = style([padding(`px(10))]);
 };
 
-let parameterInput = (name, dataType, value, updateData) => {
+type selection_t = {
+  name: string,
+  dataType: string,
+  value: string,
+};
+
+let newSelection = (name, dataType, value) => {name, dataType, value};
+
+let parameterInput = (selection: selection_t, updateData) => {
+  let {name, dataType, value} = selection;
   <div className=Styles.listContainer key=name>
     <div className=Styles.keyContainer> <Text value=name size=Text.Lg /> </div>
     {switch (dataType) {
@@ -109,16 +118,18 @@ let reducer = _state =>
 let make = (~script: ScriptHook.Script.t) => {
   let params = script.info.params;
   let (data, setData) =
-    React.useState(_ => params->Belt.List.map(({name, dataType}) => (name, dataType, "")));
+    React.useState(_ =>
+      params->Belt.List.map(({name, dataType}) => newSelection(name, dataType, ""))
+    );
   let (result, dispatch) = React.useReducer(reducer, Nothing);
 
   let updateData = (targetName, newVal) => {
     let newData =
-      data->Belt.List.map(((name, dataType, value)) =>
+      data->Belt.List.map(({name, dataType, value}) =>
         if (name == targetName) {
-          (name, dataType, newVal);
+          newSelection(name, dataType, newVal);
         } else {
-          (name, dataType, value);
+          newSelection(name, dataType, value);
         }
       );
     setData(_ => newData);
@@ -129,9 +140,7 @@ let make = (~script: ScriptHook.Script.t) => {
     <VSpacing size=Spacing.md />
     <div className=Styles.paramsContainer>
       {data
-       ->Belt.List.map(((name, dataType, value)) =>
-           parameterInput(name, dataType, value, updateData)
-         )
+       ->Belt.List.map(selection => parameterInput(selection, updateData))
        ->Array.of_list
        ->React.array}
     </div>
@@ -147,8 +156,7 @@ let make = (~script: ScriptHook.Script.t) => {
                 ~codeHash={
                   script.info.codeHash |> Hash.toHex;
                 },
-                ~params=
-                  data->Belt_List.map(((name, _, value)) => (name, value))->Js.Dict.fromList,
+                ~params=data->Belt_List.map(({name, value}) => (name, value))->Js.Dict.fromList,
               ),
             )
             |> Js.Promise.then_(res => {
