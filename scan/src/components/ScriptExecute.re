@@ -114,6 +114,7 @@ let make = (~script: ScriptHook.Script.t) => {
             |> Js.Promise.catch(err => {
                  let errorValue =
                    Js.Json.stringifyAny(err)->Belt_Option.getWithDefault("Unknown");
+                 setTxHash(_ => "");
                  setError(_ => "An error occured: " ++ errorValue);
                  Js.Promise.resolve();
                });
