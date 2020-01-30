@@ -62,7 +62,6 @@ let parameterInput = (name, dataType, value, updateData) => {
      | "coins::Coins" =>
        <div className=Styles.selectPadding>
          <select
-           placeholder="Input Parameter here"
            value
            onChange={event => {
              let newVal = ReactEvent.Form.target(event)##value;
