@@ -4,11 +4,20 @@ type t = {
   params: Js.Dict.t(string),
 };
 
-let convert: t => Js.t('a) = [%bs.raw {|
+/* TODO: FIX THIS MESS */
+let convert: t => Js.t('a) = [%bs.raw
+  {|
 function(data) {
-  return data;
+  let params = data.params;
+  let ret = {};
+  for (let key of Object.keys(params)) {
+    if (isNaN(params[key])) ret[key] = params[key]
+    else ret[key] = parseInt(params[key], 10)
+  }
+  return {...data, params: ret};
 }
-  |}];
+  |}
+];
 
 let execute = (data: t) => {
   let%Promise response =
