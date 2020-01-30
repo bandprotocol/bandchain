@@ -59,6 +59,8 @@ module Styles = {
   let tableLowerContainer = style([padding(`px(20)), background(Colors.lighterGray)]);
 
   let maxHeight20 = style([maxHeight(`px(20))]);
+
+  let link = style([cursor(`pointer)]);
 };
 
 [@react.component]
@@ -113,7 +115,13 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) =>
         <VSpacing size=Spacing.xl />
         <Row>
           <Col>
-            <InfoHL info={InfoHL.Hash(scriptHash, Colors.brightPurple)} header="SCRIPT HASH" />
+            <div
+              className=Styles.link
+              onClick={_ =>
+                Route.redirect(Route.ScriptIndexPage(scriptHash, ScriptTransactions))
+              }>
+              <InfoHL info={InfoHL.Hash(scriptHash, Colors.brightPurple)} header="SCRIPT HASH" />
+            </div>
           </Col>
           <HSpacing size=Spacing.xl />
           <HSpacing size=Spacing.xl />
