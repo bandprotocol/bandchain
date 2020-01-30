@@ -47,7 +47,7 @@ let make = (~reports: list(RequestHook.Report.t)) => {
              )
            ->Belt_List.get(0)
            ->Belt_Option.getWithDefault("Unknown");
-         <TBody key={txHash |> Hash.toHex} height=100>
+         <TBody key={txHash |> Hash.toHex}>
            <Row alignItems=Css.flexStart>
              <Col> <div className=Styles.txhash /> </Col>
              <Col size=1.0> <TElement elementType={txHash->TElement.HashWithLink} /> </Col>
