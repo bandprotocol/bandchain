@@ -186,12 +186,12 @@ export class RunDialog extends React.Component<
       if (["coins::Coins", "String"].includes(type))
         formattedParams[name] = this.state.params[name];
 
-      if ("Int" === type) {
+      if ("u64" === type) {
         if (isNaN(parseInt(this.state.params[name])))
           return alert(`Parameter ${name} must be integer`);
         formattedParams[name] = parseInt(this.state.params[name]);
       }
-      if ("Float" === type) {
+      if ("f64" === type) {
         if (isNaN(parseFloat(this.state.params[name])))
           return alert(`Parameter ${name} must be float`);
         formattedParams[name] = parseFloat(this.state.params[name]);
