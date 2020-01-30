@@ -51,33 +51,37 @@ module Styles = {
     ]);
 
   let resultLink = style([cursor(`pointer)]);
+
+  let selectPadding = style([padding(`px(10))]);
 };
 
-let parameterInput = (name, value, updateData) => {
+let parameterInput = (name, dataType, value, updateData) => {
   <div className=Styles.listContainer key=name>
     <div className=Styles.keyContainer> <Text value=name size=Text.Lg /> </div>
-    {switch (name) {
-     | "crypto_symbol" =>
-       <select
-         placeholder="Input Parameter here"
-         value
-         onChange={event => {
-           let newVal = ReactEvent.Form.target(event)##value;
-           updateData(name, newVal);
-         }}>
-         <option value=""> {"Select token" |> React.string} </option>
-         <option value="ADA"> {"ADA" |> React.string} </option>
-         <option value="BAND"> {"BAND" |> React.string} </option>
-         <option value="BCH"> {"BCH" |> React.string} </option>
-         <option value="BNB"> {"BNB" |> React.string} </option>
-         <option value="BTC"> {"BTC" |> React.string} </option>
-         <option value="EOS"> {"EOS" |> React.string} </option>
-         <option value="ETH"> {"ETH" |> React.string} </option>
-         <option value="LTC"> {"LTC" |> React.string} </option>
-         <option value="ETC"> {"ETC" |> React.string} </option>
-         <option value="TRX"> {"TRX" |> React.string} </option>
-         <option value="XRP"> {"XRP" |> React.string} </option>
-       </select>
+    {switch (dataType) {
+     | "coins::Coins" =>
+       <div className=Styles.selectPadding>
+         <select
+           placeholder="Input Parameter here"
+           value
+           onChange={event => {
+             let newVal = ReactEvent.Form.target(event)##value;
+             updateData(name, newVal);
+           }}>
+           <option value=""> {"Select token" |> React.string} </option>
+           <option value="ADA"> {"ADA" |> React.string} </option>
+           <option value="BAND"> {"BAND" |> React.string} </option>
+           <option value="BCH"> {"BCH" |> React.string} </option>
+           <option value="BNB"> {"BNB" |> React.string} </option>
+           <option value="BTC"> {"BTC" |> React.string} </option>
+           <option value="EOS"> {"EOS" |> React.string} </option>
+           <option value="ETH"> {"ETH" |> React.string} </option>
+           <option value="LTC"> {"LTC" |> React.string} </option>
+           <option value="ETC"> {"ETC" |> React.string} </option>
+           <option value="TRX"> {"TRX" |> React.string} </option>
+           <option value="XRP"> {"XRP" |> React.string} </option>
+         </select>
+       </div>
      | _ =>
        <input
          className=Styles.input
@@ -113,17 +117,17 @@ let reducer = _state =>
 [@react.component]
 let make = (~script: ScriptHook.Script.t) => {
   let params = script.info.params;
-  let preData = params->Belt.List.map(({name}) => (name, ""));
+  let preData = params->Belt.List.map(({name, dataType}) => (name, dataType, ""));
   let (data, setData) = React.useState(_ => preData);
   let (result, dispatch) = React.useReducer(reducer, Nothing);
 
   let updateData = (targetName, newVal) => {
     let newData =
-      data->Belt.List.map(((name, value)) =>
+      data->Belt.List.map(((name, dataType, value)) =>
         if (name == targetName) {
-          (name, newVal);
+          (name, dataType, newVal);
         } else {
-          (name, value);
+          (name, dataType, value);
         }
       );
     setData(_ => newData);
@@ -134,7 +138,9 @@ let make = (~script: ScriptHook.Script.t) => {
     <VSpacing size=Spacing.md />
     <div className=Styles.paramsContainer>
       {data
-       ->Belt.List.map(((name, value)) => parameterInput(name, value, updateData))
+       ->Belt.List.map(((name, dataType, value)) =>
+           parameterInput(name, dataType, value, updateData)
+         )
        ->Array.of_list
        ->React.array}
     </div>
@@ -150,7 +156,8 @@ let make = (~script: ScriptHook.Script.t) => {
                 ~codeHash={
                   script.info.codeHash |> Hash.toHex;
                 },
-                ~params=Js.Dict.fromList(data),
+                ~params=
+                  data->Belt_List.map(((name, _, value)) => (name, value))->Js.Dict.fromList,
               ),
             )
             |> Js.Promise.then_(res => {
