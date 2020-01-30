@@ -4,6 +4,7 @@ type t = {
   params: Js.Dict.t(string),
 };
 
+/* TODO: FIX THIS MESS */
 let convert: t => Js.t('a) = [%bs.raw
   {|
 function(data) {
