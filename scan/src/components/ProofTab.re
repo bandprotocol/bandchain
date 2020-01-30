@@ -45,9 +45,8 @@ module CopyComponent = {
 [@react.component]
 let make = (~reqID) => {
   let proofOpt = ProofHook.get(~requestId=reqID, ());
-  let watchedValue = proofOpt->Belt.Option.isSome ? "Valid" : "Invalid";
 
-  React.useMemo1(
+  React.useMemo2(
     _ => {
       let (innerElement, evmProofBytesOpt) =
         switch (proofOpt) {
@@ -67,6 +66,6 @@ let make = (~reqID) => {
         <VSpacing size=Spacing.lg />
       </div>;
     },
-    [|reqID |> string_of_int, watchedValue|],
+    (reqID, proofOpt->Belt.Option.isSome),
   );
 };
