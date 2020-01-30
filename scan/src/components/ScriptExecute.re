@@ -50,16 +50,27 @@ module Styles = {
 let parameterInput = (name, value, updateData) => {
   <div className=Styles.listContainer key=name>
     <div className=Styles.keyContainer> <Text value=name size=Text.Lg /> </div>
-    <input
-      className=Styles.input
-      type_="text"
-      value
+    <select
       placeholder="Input Parameter here"
+      value
       onChange={event => {
         let newVal = ReactEvent.Form.target(event)##value;
+        Js.Console.log(newVal);
         updateData(name, newVal);
-      }}
-    />
+      }}>
+      <option value="" className=Styles.selectDisable> {"Select token" |> React.string} </option>
+      <option value="ADA"> {"ADA" |> React.string} </option>
+      <option value="BAND"> {"BAND" |> React.string} </option>
+      <option value="BCH"> {"BCH" |> React.string} </option>
+      <option value="BNB"> {"BNB" |> React.string} </option>
+      <option value="BTC"> {"BTC" |> React.string} </option>
+      <option value="EOS"> {"EOS" |> React.string} </option>
+      <option value="ETH"> {"ETH" |> React.string} </option>
+      <option value="LTC"> {"LTC" |> React.string} </option>
+      <option value="ETC"> {"ETC" |> React.string} </option>
+      <option value="TRX"> {"TRX" |> React.string} </option>
+      <option value="XRP"> {"XRP" |> React.string} </option>
+    </select>
   </div>;
 };
 
