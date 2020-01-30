@@ -7,7 +7,7 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-owasm = "0.1.4"
+owasm = "0.1.5"
 wasm-bindgen = "*"
 serde = { version = "1.0.103", features = ["derive"] }
 serde_json = "1.0"
