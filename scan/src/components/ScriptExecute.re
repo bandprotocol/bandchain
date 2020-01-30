@@ -63,14 +63,29 @@ let parameterInput = (name, value, updateData) => {
   </div>;
 };
 
+type result_t =
+  | Nothing
+  | Loading
+  | Error(string)
+  | Success(Hash.t);
+
+type action =
+  | DispatchSuccess(Hash.t)
+  | DispatchError(string)
+  | DispatchLoading;
+
+let reducer = _state =>
+  fun
+  | DispatchLoading => Loading
+  | DispatchError(err) => Error(err)
+  | DispatchSuccess(txHash) => Success(txHash);
+
 [@react.component]
 let make = (~script: ScriptHook.Script.t) => {
   let params = script.info.params;
   let preData = params->Belt.List.map(({name}) => (name, ""));
   let (data, setData) = React.useState(_ => preData);
-  let (loading, setLoading) = React.useState(_ => false);
-  let (txHash, setTxHash) = React.useState(_ => "");
-  let (error, setError) = React.useState(_ => "");
+  let (result, dispatch) = React.useReducer(reducer, Nothing);
 
   let updateData = (targetName, newVal) => {
     let newData =
@@ -98,9 +113,7 @@ let make = (~script: ScriptHook.Script.t) => {
       <button
         className=Styles.button
         onClick={_ => {
-          setError(_ => "");
-          setLoading(_ => true);
-          setTxHash(_ => "");
+          DispatchLoading |> dispatch;
           let _ =
             AxiosRequest.execute(
               AxiosRequest.t(
@@ -111,15 +124,13 @@ let make = (~script: ScriptHook.Script.t) => {
               ),
             )
             |> Js.Promise.then_(res => {
-                 setTxHash(_ => res##data##txHash);
-                 setLoading(_ => false);
+                 DispatchSuccess(res##data##txHash |> Hash.fromHex) |> dispatch;
                  Js.Promise.resolve();
                })
             |> Js.Promise.catch(err => {
                  let errorValue =
                    Js.Json.stringifyAny(err)->Belt_Option.getWithDefault("Unknown");
-                 setError(_ => "An error occured: " ++ errorValue);
-                 setLoading(_ => false);
+                 DispatchError("An error occured: " ++ errorValue) |> dispatch;
                  Js.Promise.resolve();
                });
           ();
@@ -127,15 +138,16 @@ let make = (~script: ScriptHook.Script.t) => {
         {"Send Request" |> React.string}
       </button>
       <HSpacing size=Spacing.xl />
-      {loading ? <Text value="Loading..." /> : React.null}
-      {txHash != ""
-         ? <div
-             className=Styles.resultLink
-             onClick={_ => Route.redirect(Route.TxIndexPage(txHash |> Hash.fromHex))}>
-             <Text value=txHash color=Colors.green />
-           </div>
-         : React.null}
-      {error != "" ? <Text value=error color=Colors.red /> : React.null}
+      {switch (result) {
+       | Nothing => React.null
+       | Loading => <Text value="Loading..." />
+       | Error(error) => <Text value=error color=Colors.red />
+       | Success(txHash) =>
+         <div
+           className=Styles.resultLink onClick={_ => Route.redirect(Route.TxIndexPage(txHash))}>
+           <Text value={txHash |> Hash.toHex} color=Colors.green />
+         </div>
+       }}
     </div>
   </div>;
 };
