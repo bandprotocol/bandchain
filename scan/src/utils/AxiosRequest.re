@@ -4,14 +4,14 @@ type t = {
   params: Js.Dict.t(string),
 };
 
-let execute: t => unit = [%bs.raw
-  {|
+let convert: t => Js.t('a) = [%bs.raw {|
 function(data) {
-  console.log(data);
-  const Axios = require("axios");
-  Axios.post("http://d3n-debug.bandprotocol.com:5000/request", data)
-    .then(response => console.log(response))
-    .catch(err => console.log(err));
+  return data;
 }
-  |}
-];
+  |}];
+
+let execute = (data: t) => {
+  let%Promise response =
+    Axios.postData("https://d3n.bandprotocol.com/bandsv/request", convert(data));
+  Promise.ret(response);
+};

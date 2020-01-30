@@ -257,24 +257,25 @@ module Txs = {
 
 let atHash = txHash => {
   let txHashHex = txHash->Hash.toHex;
-  let json = Axios.use({j|txs/$txHashHex|j}, ());
+  let json = AxiosHooks.use({j|txs/$txHashHex|j}, ());
   json |> Belt.Option.map(_, Tx.decodeTx);
 };
 
 let atHeight = (height, ~page=1, ~limit=25, ~pollInterval=?, ()) => {
-  let json = Axios.use({j|txs?tx.height=$height&page=$page&limit=$limit|j}, ~pollInterval?, ());
+  let json =
+    AxiosHooks.use({j|txs?tx.height=$height&page=$page&limit=$limit|j}, ~pollInterval?, ());
   json |> Belt.Option.map(_, Txs.decodeTxs);
 };
 
 let latest = (~page=1, ~limit=10, ~pollInterval=?, ()) => {
-  let json = Axios.use({j|d3n/txs/latest?page=$page&limit=$limit|j}, ~pollInterval?, ());
+  let json = AxiosHooks.use({j|d3n/txs/latest?page=$page&limit=$limit|j}, ~pollInterval?, ());
   json |> Belt.Option.map(_, Txs.decodeTxs);
 };
 
 let withCodehash = (~codeHash, ~page=1, ~limit=10, ~pollInterval=?, ()) => {
   let codeHashHex = codeHash->Hash.toHex;
   let json =
-    Axios.use(
+    AxiosHooks.use(
       {j|txs?request.codehash=$codeHashHex&page=$page&limit=$limit|j},
       ~pollInterval?,
       (),

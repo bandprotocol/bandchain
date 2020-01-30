@@ -27,6 +27,8 @@ module Styles = {
       outline(`px(1), `none, white),
     ]);
 
+  let buttonContainer = style([display(`flex), flexDirection(`row), alignItems(`center)]);
+
   let button =
     style([
       width(`px(110)),
@@ -39,7 +41,10 @@ module Styles = {
       cursor(`pointer),
       outline(`px(1), `none, white),
       padding2(~v=Css.px(10), ~h=Css.px(10)),
+      whiteSpace(`nowrap),
     ]);
+
+  let resultLink = style([cursor(`pointer)]);
 };
 
 let parameterInput = (name, value, updateData) => {
@@ -58,11 +63,29 @@ let parameterInput = (name, value, updateData) => {
   </div>;
 };
 
+type result_t =
+  | Nothing
+  | Loading
+  | Error(string)
+  | Success(Hash.t);
+
+type action =
+  | DispatchSuccess(Hash.t)
+  | DispatchError(string)
+  | DispatchLoading;
+
+let reducer = _state =>
+  fun
+  | DispatchLoading => Loading
+  | DispatchError(err) => Error(err)
+  | DispatchSuccess(txHash) => Success(txHash);
+
 [@react.component]
 let make = (~script: ScriptHook.Script.t) => {
   let params = script.info.params;
   let preData = params->Belt.List.map(({name}) => (name, ""));
   let (data, setData) = React.useState(_ => preData);
+  let (result, dispatch) = React.useReducer(reducer, Nothing);
 
   let updateData = (targetName, newVal) => {
     let newData =
@@ -86,19 +109,45 @@ let make = (~script: ScriptHook.Script.t) => {
        ->React.array}
     </div>
     <VSpacing size=Spacing.md />
-    <button
-      className=Styles.button
-      onClick={_ =>
-        AxiosRequest.execute(
-          AxiosRequest.t(
-            ~codeHash={
-              script.info.codeHash |> Hash.toHex;
-            },
-            ~params=Js.Dict.fromList(data),
-          ),
-        )
-      }>
-      {"Send Request" |> React.string}
-    </button>
+    <div className=Styles.buttonContainer>
+      <button
+        className=Styles.button
+        onClick={_ => {
+          DispatchLoading |> dispatch;
+          let _ =
+            AxiosRequest.execute(
+              AxiosRequest.t(
+                ~codeHash={
+                  script.info.codeHash |> Hash.toHex;
+                },
+                ~params=Js.Dict.fromList(data),
+              ),
+            )
+            |> Js.Promise.then_(res => {
+                 DispatchSuccess(res##data##txHash |> Hash.fromHex) |> dispatch;
+                 Js.Promise.resolve();
+               })
+            |> Js.Promise.catch(err => {
+                 let errorValue =
+                   Js.Json.stringifyAny(err)->Belt_Option.getWithDefault("Unknown");
+                 DispatchError("An error occured: " ++ errorValue) |> dispatch;
+                 Js.Promise.resolve();
+               });
+          ();
+        }}>
+        {"Send Request" |> React.string}
+      </button>
+      <HSpacing size=Spacing.xl />
+      {switch (result) {
+       | Nothing => React.null
+       | Loading => <Text value="Loading..." />
+       | Error(error) => <Text value=error color=Colors.red />
+       | Success(txHash) =>
+         <div
+           className=Styles.resultLink onClick={_ => Route.redirect(Route.TxIndexPage(txHash))}>
+           <Text value={txHash |> Hash.toHex} color=Colors.green />
+         </div>
+       }}
+    </div>
   </div>;
 };

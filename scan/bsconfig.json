@@ -27,7 +27,8 @@
     "reason-react",
     "@glennsl/bs-json",
     "bs-moment",
-    "bs-css"
+    "bs-css",
+    "bs-axios"
   ],
   "bs-dev-dependencies": ["@glennsl/bs-jest"],
   "refmt": 3,

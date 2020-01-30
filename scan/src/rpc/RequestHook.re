@@ -51,6 +51,6 @@ module Request = {
 };
 
 let getRequest = (reqID, ~pollInterval=?, ()) => {
-  let json = Axios.use({j|zoracle/request/$reqID|j}, ~pollInterval?, ());
+  let json = AxiosHooks.use({j|zoracle/request/$reqID|j}, ~pollInterval?, ());
   json |> Belt.Option.map(_, Request.decode);
 };
