@@ -13,7 +13,7 @@
   },
   "wasmStudio": {
     "name": "Example Price Query",
-    "description": "# Example Crypto Price Query\n## Purpose\nThis example project will get you up to speed on developing OWASM script. Explore `src/logic.rs` file to learn how **Data** is defined and aggregated.\n## Endpoints\n- CoinGecko\n- CryptoCompare",
+    "description": "# Example Crypto Price Query\n## Purpose\nThis example project will get you up to speed on developing OWASM script. Explore `src/logic.rs` file to learn how **Data** is defined and aggregated.\n## Endpoints\n- CoinGecko\n- CryptoCompare\n- Binance\n- Date",
     "icon": "wasm-lang-file-icon"
   }
 }
