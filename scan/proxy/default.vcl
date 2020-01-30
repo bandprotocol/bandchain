@@ -19,7 +19,7 @@ sub vcl_deliver {
 }
 
 sub vcl_recv {
-  if (req.url == "^/bandsv/") {
+  if (req.url ~ "^/bandsv/") {
     set req.url = regsub(req.url, "^/bandsv", "/");
     set req.backend_hint = bandsv;
   } else {
@@ -28,7 +28,7 @@ sub vcl_recv {
 }
 
 sub vcl_backend_response {
-  if (!req.url == "^/bandsv/") {
+  if (!(bereq.url == "^/bandsv/")) {
     set beresp.ttl = 3s;
   }
 }
