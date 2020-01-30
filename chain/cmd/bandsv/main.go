@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"sort"
 	"strconv"
 	"time"
 
@@ -259,24 +258,16 @@ func handleExecute(c *gin.Context) {
 		}(i, command)
 	}
 
-	var listOfInfo []queryParallelInfo
+	answers := make([]string, len(commands))
 	for i := 0; i < len(commands); i++ {
 		info := <-chanQueryParallelInfo
 		if info.err != nil {
 			c.JSON(info.httpStatus, info.err)
 			return
 		}
-		listOfInfo = append(listOfInfo, info)
+		answers[info.index] = info.answer
 	}
 
-	sort.Slice(listOfInfo, func(i, j int) bool {
-		return listOfInfo[i].index < listOfInfo[j].index
-	})
-
-	answers := []string{}
-	for _, info := range listOfInfo {
-		answers = append(answers, info.answer)
-	}
 	b, _ := json.Marshal(answers)
 
 	rawResult, err := wasm.Execute(req.Code, rawParams, [][]byte{b})
