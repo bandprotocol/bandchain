@@ -1,6 +1,6 @@
 {
   "explorerUrl": "http://locahost:1234",
-  "bandsvUrl": "http://d3n-debug.bandprotocol.com:5000",
+  "bandsvUrl": "http://localhost:5000",
   "studiosvUrl": "http://localhost:8082",
   "serviceUrl": "http://localhost:8082",
   "cargo": "http://localhost:8082/compile",
