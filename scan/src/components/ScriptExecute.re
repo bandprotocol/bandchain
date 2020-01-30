@@ -68,17 +68,9 @@ let parameterInput = (name, dataType, value, updateData) => {
              updateData(name, newVal);
            }}>
            <option value=""> {"Select token" |> React.string} </option>
-           <option value="ADA"> {"ADA" |> React.string} </option>
-           <option value="BAND"> {"BAND" |> React.string} </option>
-           <option value="BCH"> {"BCH" |> React.string} </option>
-           <option value="BNB"> {"BNB" |> React.string} </option>
-           <option value="BTC"> {"BTC" |> React.string} </option>
-           <option value="EOS"> {"EOS" |> React.string} </option>
-           <option value="ETH"> {"ETH" |> React.string} </option>
-           <option value="LTC"> {"LTC" |> React.string} </option>
-           <option value="ETC"> {"ETC" |> React.string} </option>
-           <option value="TRX"> {"TRX" |> React.string} </option>
-           <option value="XRP"> {"XRP" |> React.string} </option>
+           {[|"ADA", "BAND", "BCH", "BNB", "BSV", "BTC", "EOS", "ETH", "LTC", "USDT", "XRP"|]
+            ->Belt_Array.map(symbol => <option value=symbol> {symbol |> React.string} </option>)
+            |> React.array}
          </select>
        </div>
      | _ =>
@@ -116,8 +108,8 @@ let reducer = _state =>
 [@react.component]
 let make = (~script: ScriptHook.Script.t) => {
   let params = script.info.params;
-  let preData = params->Belt.List.map(({name, dataType}) => (name, dataType, ""));
-  let (data, setData) = React.useState(_ => preData);
+  let (data, setData) =
+    React.useState(_ => params->Belt.List.map(({name, dataType}) => (name, dataType, "")));
   let (result, dispatch) = React.useReducer(reducer, Nothing);
 
   let updateData = (targetName, newVal) => {
