@@ -68,6 +68,7 @@ let make = (~script: ScriptHook.Script.t) => {
   let params = script.info.params;
   let preData = params->Belt.List.map(({name}) => (name, ""));
   let (data, setData) = React.useState(_ => preData);
+  let (loading, setLoading) = React.useState(_ => false);
   let (txHash, setTxHash) = React.useState(_ => "");
   let (error, setError) = React.useState(_ => "");
 
@@ -97,6 +98,9 @@ let make = (~script: ScriptHook.Script.t) => {
       <button
         className=Styles.button
         onClick={_ => {
+          setError(_ => "");
+          setLoading(_ => true);
+          setTxHash(_ => "");
           let _ =
             AxiosRequest.execute(
               AxiosRequest.t(
@@ -107,15 +111,15 @@ let make = (~script: ScriptHook.Script.t) => {
               ),
             )
             |> Js.Promise.then_(res => {
-                 setError(_ => "");
                  setTxHash(_ => res##data##txHash);
+                 setLoading(_ => false);
                  Js.Promise.resolve();
                })
             |> Js.Promise.catch(err => {
                  let errorValue =
                    Js.Json.stringifyAny(err)->Belt_Option.getWithDefault("Unknown");
-                 setTxHash(_ => "");
                  setError(_ => "An error occured: " ++ errorValue);
+                 setLoading(_ => false);
                  Js.Promise.resolve();
                });
           ();
@@ -123,6 +127,7 @@ let make = (~script: ScriptHook.Script.t) => {
         {"Send Request" |> React.string}
       </button>
       <HSpacing size=Spacing.xl />
+      {loading ? <Text value="Loading..." /> : React.null}
       {txHash != ""
          ? <div
              className=Styles.resultLink
