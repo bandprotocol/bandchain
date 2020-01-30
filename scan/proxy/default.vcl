@@ -28,7 +28,5 @@ sub vcl_recv {
 }
 
 sub vcl_backend_response {
-  if (!(bereq.url == "^/bandsv/")) {
-    set beresp.ttl = 3s;
-  }
+  set beresp.ttl = 3s;
 }
