@@ -302,8 +302,17 @@ export class RunDialog extends React.Component<
                       <option value="" disabled>
                         Select token
                       </option>
+                      <option value="ADA">ADA</option>
+                      <option value="BAND">BAND</option>
+                      <option value="BCH">BCH</option>
+                      <option value="BNB">BNB</option>
                       <option value="BTC">BTC</option>
+                      <option value="EOS">EOS</option>
                       <option value="ETH">ETH</option>
+                      <option value="LTC">LTC</option>
+                      <option value="ETC">ETC</option>
+                      <option value="TRX">TRX</option>
+                      <option value="XRP">XRP</option>
                     </select>
                   ) : (
                     <input
