@@ -14,37 +14,34 @@ interface Bridge {
         returns (VerifyOracleDataResult memory result);
 }
 
-contract TicketSeller {
+contract DEX {
     using SafeMath for uint256;
 
     bytes32 public codeHash;
-    bytes public params;
 
-    uint256 public priceInUSD;
-
-    uint64 public currentEthPrice;
-
-    mapping(address => uint256) public tickets;
+    mapping(address => mapping(bytes => uint256)) public balances;
 
     Bridge bridge = Bridge(0x3e1F8745E4088443350121075828F119075ef641);
 
-    constructor(bytes32 _codeHash, bytes memory _params, uint256 _price)
-        public
-    {
+    constructor(bytes32 _codeHash) public {
         codeHash = _codeHash;
-        params = _params;
-        priceInUSD = _price;
     }
 
-    function bytesToUInt(bytes memory _b) public pure returns (uint256) {
-        uint256 number;
-        for (uint256 i = 0; i < _b.length; i++) {
-            number =
-                number +
-                uint256(uint8(_b[i])) *
-                (2**(8 * (_b.length - (i + 1))));
+    function bytesToPrices(bytes memory _b)
+        public
+        pure
+        returns (uint256, uint256)
+    {
+        require(_b.length >= 16, "INVALID_LENGTH");
+        uint256 ethPrice;
+        uint256 otherPrice;
+        for (uint256 i = 0; i < 8; i++) {
+            ethPrice = ethPrice + (uint256(uint8(_b[i])) << (8 * (7 - i)));
+            otherPrice =
+                otherPrice +
+                (uint256(uint8(_b[i + 8])) << (8 * (7 - i)));
         }
-        return number;
+        return (ethPrice, otherPrice);
     }
 
     function buy(bytes memory _reportPrice) public payable {
@@ -53,21 +50,35 @@ contract TicketSeller {
         );
 
         require(result.codeHash == codeHash, "INVALID_CODEHASH");
-        require(
-            keccak256(result.params) == keccak256(params),
-            "INVALID_PARAMS"
+
+        (uint256 ethPrice, uint256 otherPrice) = bytesToPrices(result.data);
+
+        uint256 tokenEarn = msg.value.mul(ethPrice).div(otherPrice);
+
+        balances[msg.sender][result.params] = balances[msg.sender][result
+            .params]
+            .add(tokenEarn);
+    }
+
+    function sell(uint256 amount, bytes memory _reportPrice) public {
+        Bridge.VerifyOracleDataResult memory result = bridge.relayAndVerify(
+            _reportPrice
         );
 
-        uint256 ethPrice = bytesToUInt(result.data);
+        require(result.codeHash == codeHash, "INVALID_CODEHASH");
+        require(
+            amount <= balances[msg.sender][result.params],
+            "INSUFFICIENT_TOKENS"
+        );
 
-        uint256 ticketPrice = priceInUSD.mul(1e20).div(ethPrice);
+        (uint256 ethPrice, uint256 otherPrice) = bytesToPrices(result.data);
 
-        require(msg.value >= ticketPrice);
+        uint256 ethEarn = amount.mul(otherPrice).div(ethPrice);
 
-        if (msg.value > ticketPrice) {
-            msg.sender.transfer(msg.value - ticketPrice);
-        }
-        tickets[msg.sender]++;
+        balances[msg.sender][result.params] = balances[msg.sender][result
+            .params]
+            .sub(amount);
+        msg.sender.transfer(ethEarn);
     }
 
     function withdraw() public {
