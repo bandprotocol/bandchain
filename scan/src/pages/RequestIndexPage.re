@@ -185,11 +185,13 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) =>
                 route={Route.RequestIndexPage(reqID, RequestReportStatus)}
               />
               <HSpacing size=Spacing.lg />
-              <TabButton
-                active={hashtag == RequestProof}
-                text="Proof of Validaity"
-                route={Route.RequestIndexPage(reqID, RequestProof)}
-              />
+              {result->Belt.Array.size > 0
+                 ? <TabButton
+                     active={hashtag == RequestProof}
+                     text="Proof of Validaity"
+                     route={Route.RequestIndexPage(reqID, RequestProof)}
+                   />
+                 : React.null}
             </Row>
           </div>
           {switch (hashtag) {
