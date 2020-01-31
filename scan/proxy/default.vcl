@@ -1,7 +1,7 @@
 vcl 4.0;
 
 backend default {
-  .host = "172.18.0.15";
+  .host = "172.18.0.20";
   .port = "1317";
 }
 
@@ -24,7 +24,7 @@ sub vcl_recv {
     set req.backend_hint = bandsv;
   } else {
     set req.backend_hint = default;
-  }      
+  }
 }
 
 sub vcl_backend_response {
