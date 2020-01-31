@@ -2,17 +2,7 @@ pragma solidity 0.5.14;
 pragma experimental ABIEncoderV2;
 
 import {SafeMath} from "openzeppelin-solidity/contracts/math/SafeMath.sol";
-
-interface Bridge {
-    struct VerifyOracleDataResult {
-        bytes data;
-        bytes32 codeHash;
-        bytes params;
-    }
-    function relayAndVerify(bytes calldata data)
-        external
-        returns (VerifyOracleDataResult memory result);
-}
+import { IBridge } from "../IBridge.sol";
 
 contract DEX {
     using SafeMath for uint256;
@@ -21,9 +11,10 @@ contract DEX {
 
     mapping(address => mapping(bytes => uint256)) _balances;
 
-    Bridge bridge = Bridge(0x3e1F8745E4088443350121075828F119075ef641);
+    IBridge bridge;
 
-    constructor(bytes32 _codeHash) public {
+    constructor(IBridge _bridge, bytes32 _codeHash) public {
+        bridge = _bridge;
         codeHash = _codeHash;
     }
 
@@ -87,7 +78,7 @@ contract DEX {
     }
 
     function buy(bytes memory _reportPrice) public payable {
-        Bridge.VerifyOracleDataResult memory result = bridge.relayAndVerify(
+        IBridge.VerifyOracleDataResult memory result = bridge.relayAndVerify(
             _reportPrice
         );
 
@@ -103,7 +94,7 @@ contract DEX {
     }
 
     function sell(uint256 amount, bytes memory _reportPrice) public {
-        Bridge.VerifyOracleDataResult memory result = bridge.relayAndVerify(
+        IBridge.VerifyOracleDataResult memory result = bridge.relayAndVerify(
             _reportPrice
         );
 
