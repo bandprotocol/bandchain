@@ -50,8 +50,8 @@ let footerData = [|
     1.0, // flex size
     [|
       ("https://bandprotocol.com", "Band Protocol Website"),
-      ("https://google.com", "D3N Blockchain"),
-      ("https://metamask.io", "D3N Wallet"),
+      // ("https://scan.d3n.bandprotocol.com", "D3N Blockchain"),
+      // ("https://metamask.io", "D3N Wallet"),
     |],
   ),
   (
@@ -59,8 +59,8 @@ let footerData = [|
     1.0,
     [|
       ("https://github.com", "Open Source Repositories"),
-      ("https://google.com", "Developer Docs"),
-      ("https://etherscan.com", "Network Status"),
+      ("https://github.com/bandprotocol/d3n/tree/master/spec", "Developer Docs"),
+      // ("https://etherscan.com", "Network Status"),
     |],
   ),
   (
