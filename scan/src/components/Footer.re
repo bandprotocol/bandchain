@@ -58,7 +58,7 @@ let footerData = [|
     "COMMUNITY",
     1.0,
     [|
-      ("https://github.com", "Open Source Repositories"),
+      ("https://github.com/bandprotocol/d3n", "Open Source Repository"),
       ("https://github.com/bandprotocol/d3n/tree/master/spec", "Developer Docs"),
       // ("https://etherscan.com", "Network Status"),
     |],
