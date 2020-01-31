@@ -10,20 +10,29 @@ contract DEX {
   bytes32 public codeHash;
 
   mapping(address => mapping(bytes => uint256)) _balances;
+  mapping(string => bytes) public supportedTokens;
 
   IBridge bridge;
 
   constructor(IBridge _bridge, bytes32 _codeHash) public {
     bridge = _bridge;
     codeHash = _codeHash;
+    supportedTokens["ADA"] = hex"00000000";
+    supportedTokens["BAND"] = hex"00000001";
+    supportedTokens["BCH"] = hex"00000002";
+    supportedTokens["BNB"] = hex"00000003";
+    supportedTokens["BTC"] = hex"00000004";
+    supportedTokens["EOS"] = hex"00000005";
+    supportedTokens["ETC"] = hex"00000006";
+    supportedTokens["ETH"] = hex"00000007";
+    supportedTokens["LTC"] = hex"00000008";
+    supportedTokens["TRX"] = hex"00000009";
+    supportedTokens["XRP"] = hex"0000000A";
   }
 
-  function strCmp(string memory a, string memory b)
-    public
-    pure
-    returns (bool)
-  {
-    return keccak256(abi.encodePacked(a)) == keccak256(abi.encodePacked(b));
+  function isSupportedToken(string memory a) public view returns(bytes memory, bool) {
+    bytes memory key = supportedTokens[a];
+    return (key, key.length == 4);
   }
 
   function balanceOf(address account, string memory symbol)
@@ -31,30 +40,8 @@ contract DEX {
     view
     returns (uint256)
   {
-    bytes memory key;
-    if (strCmp(symbol, "ADA")) {
-      key = hex"00000000";
-    } else if (strCmp(symbol, "BAND")) {
-      key = hex"00000001";
-    } else if (strCmp(symbol, "BCH")) {
-      key = hex"00000002";
-    } else if (strCmp(symbol, "BNB")) {
-      key = hex"00000003";
-    } else if (strCmp(symbol, "BTC")) {
-      key = hex"00000004";
-    } else if (strCmp(symbol, "EOS")) {
-      key = hex"00000005";
-    } else if (strCmp(symbol, "ETC")) {
-      key = hex"00000006";
-    } else if (strCmp(symbol, "ETH")) {
-      key = hex"00000007";
-    } else if (strCmp(symbol, "LTC")) {
-      key = hex"00000008";
-    } else if (strCmp(symbol, "TRX")) {
-      key = hex"00000009";
-    } else if (strCmp(symbol, "XRP")) {
-      key = hex"0000000A";
-    } else {
+    (bytes memory key, bool _isSupportedToken) = isSupportedToken(symbol);
+    if (!_isSupportedToken) {
       revert("UNKNOWN_SYMBOL");
     }
     return _balances[account][key];
@@ -65,7 +52,7 @@ contract DEX {
     pure
     returns (uint256, uint256)
   {
-    require(_b.length >= 16, "INVALID_LENGTH");
+    require(_b.length == 16, "INVALID_LENGTH");
     uint256 ethPrice;
     uint256 otherPrice;
     for (uint256 i = 0; i < 8; i++) {
