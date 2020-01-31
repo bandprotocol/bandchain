@@ -61,8 +61,6 @@ type selection_t = {
   value: string,
 };
 
-let newSelection = (name, dataType, value) => {name, dataType, value};
-
 let parameterInput = (selection: selection_t, updateData) => {
   let {name, dataType, value} = selection;
   <div className=Styles.listContainer key=name>
@@ -119,18 +117,14 @@ let make = (~script: ScriptHook.Script.t) => {
   let params = script.info.params;
   let (data, setData) =
     React.useState(_ =>
-      params->Belt.List.map(({name, dataType}) => newSelection(name, dataType, ""))
+      params->Belt.List.map(({name, dataType}) => {name, dataType, value: ""})
     );
   let (result, dispatch) = React.useReducer(reducer, Nothing);
 
   let updateData = (targetName, newVal) => {
     let newData =
-      data->Belt.List.map(({name, dataType, value}) =>
-        if (name == targetName) {
-          newSelection(name, dataType, newVal);
-        } else {
-          newSelection(name, dataType, value);
-        }
+      data->Belt.List.map(selection =>
+        {...selection, value: selection.name == targetName ? newVal : selection.value}
       );
     setData(_ => newData);
   };
