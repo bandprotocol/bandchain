@@ -22,7 +22,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       bandchain:
-        ipv4_address: 172.18.0.11
+        ipv4_address: 172.18.0.15
     depends_on:
       - build-provider-image
       - code-server
@@ -41,6 +41,7 @@ services:
       - multi-validator2-node
       - multi-validator3-node
       - multi-validator4-node
+      - query-node
       - build-provider-image
       - code-server
       - proxy-server
@@ -53,10 +54,7 @@ services:
     environment:
       - PRIVATE_KEY=06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b
       - NODE_URI=tcp://localhost:26657
-    ports:
-      - 26657:26657
     volumes:
-      - chain_config:/root/.bandd/config/
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       bandchain:
@@ -99,15 +97,26 @@ services:
         ipv4_address: 172.18.0.14
     command: sh -c "chmod +x ./docker-config/run.sh && ./docker-config/run.sh validator4"
 
+  query-node:
+    image: band-validator:latest
+    ports:
+      - 26657:26657
+    volumes:
+      - chain_config:/root/.bandd/config/
+    networks:
+      bandchain:
+        ipv4_address: 172.18.0.15
+    command: sh -c "chmod +x ./docker-config/run.sh && ./docker-config/run.sh query-node"
+
   rest-server:
     image: band-validator:latest
     networks:
       bandchain:
-        ipv4_address: 172.18.0.15
+        ipv4_address: 172.18.0.20
     restart: always
     ports:
       - 1317:1317
-    command: bandcli rest-server --laddr tcp://0.0.0.0:1317 --node tcp://172.18.0.11:26657 --chain-id bandchain
+    command: bandcli rest-server --laddr tcp://0.0.0.0:1317 --node tcp://172.18.0.15:26657 --chain-id bandchain
 
   proxy-server:
     build:
@@ -126,7 +135,7 @@ services:
     environment:
       - PORT=5000
       - NODE_URI=tcp://172.18.0.11:26657
-      - QUERY_URI=http://172.18.0.15:1317
+      - QUERY_URI=http://172.18.0.20:1317
       - PRIVATE_KEY=eedda7a96ad35758f2ffc404d6ccd7be913f149a530c70e95e2e3ee7a952a877
     networks:
       bandchain:
