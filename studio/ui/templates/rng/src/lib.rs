@@ -52,7 +52,7 @@ pub fn __execute(params: u64, input: u64) -> u64 {
         .into_iter()
         .filter_map(|each| __decode_data(&p, each))
         .collect();
-    __return(&bincode::config().big_endian().serialize(&logic::execute(outputs)).unwrap())
+    __return(&bincode::config().big_endian().serialize(&logic::execute(p, outputs)).unwrap())
 }
 
 #[no_mangle]
