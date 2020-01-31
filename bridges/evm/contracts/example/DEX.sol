@@ -1,7 +1,7 @@
 pragma solidity 0.5.14;
 pragma experimental ABIEncoderV2;
 
-import {SafeMath} from "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import { SafeMath } from "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import { IBridge } from "../IBridge.sol";
 
 contract DEX {
