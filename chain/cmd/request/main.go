@@ -81,14 +81,14 @@ func main() {
 					// BTC parameter
 					params, _ := hex.DecodeString("00000000")
 					// Send request by code hash
-					fmt.Println(tx.SendTransaction(zoracle.NewMsgRequest(codeHash, params, 4, tx.Sender()), flags.BroadcastBlock))
+					fmt.Println(tx.SendTransaction(zoracle.NewMsgRequest(codeHash, params, 6, tx.Sender()), flags.BroadcastBlock))
 				}
 			case "ETH":
 				{
 					// ETH parameter
 					params, _ := hex.DecodeString("00000001")
 					// Send request by same code hash with new parameter
-					fmt.Println(tx.SendTransaction(zoracle.NewMsgRequest(codeHash, params, 4, tx.Sender()), flags.BroadcastBlock))
+					fmt.Println(tx.SendTransaction(zoracle.NewMsgRequest(codeHash, params, 6, tx.Sender()), flags.BroadcastBlock))
 				}
 			}
 		}

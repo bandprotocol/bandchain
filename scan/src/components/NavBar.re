@@ -23,12 +23,13 @@ let make = () => {
       <Col>
         <Row justify=Row.Right>
           {[
-             ("Validators", Route.HomePage),
+             ("Home", Route.HomePage),
+             //  ("Validators", Route.HomePage),
              ("Blocks", BlockHomePage),
              ("Transactions", TxHomePage),
              ("Request Scripts", ScriptHomePage),
-             ("Data Providers", HomePage),
-             ("OWASM Studio", HomePage),
+             //  ("Data Providers", HomePage),
+             //  ("OWASM Studio", HomePage),
            ]
            ->Belt.List.map(((v, route)) =>
                <Col key=v>

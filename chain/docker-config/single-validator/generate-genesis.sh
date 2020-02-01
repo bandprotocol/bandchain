@@ -43,7 +43,7 @@ echo "12345678" | bandd gentx \
     --node-id 11392b605378063b1c505c0ab123f04bd710d7d7 \
     --pubkey bandvalconspub1addwnpepq06h7wvh5n5pmrejr6t3pyn7ytpwd5c0kmv0wjdfujs847em8dusjl96sxg \
     --name validator \
-    --ip 172.18.0.11
+    --ip 172.18.0.15
 
 # collect genesis transactions
 bandd collect-gentxs
