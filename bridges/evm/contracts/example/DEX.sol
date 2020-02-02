@@ -2,9 +2,10 @@ pragma solidity 0.5.14;
 pragma experimental ABIEncoderV2;
 
 import { SafeMath } from "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import { Ownable } from "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import { IBridge } from "../IBridge.sol";
 
-contract DEX {
+contract DEX is Ownable {
   using SafeMath for uint256;
 
   bytes32 public codeHash;
@@ -95,7 +96,7 @@ contract DEX {
     msg.sender.transfer(ethEarn);
   }
 
-  function withdraw() public {
+  function withdraw() public onlyOwner {
     msg.sender.transfer(address(this).balance);
   }
 }
