@@ -161,13 +161,15 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 			return err.Result()
 		}
 
-		// skip this request because it's not end.
-		if request.ReportEndAt > uint64(ctx.BlockHeight()) {
+		// pack data from validator together
+		packedReport := keeper.GetDataReports(ctx, reqID)
+		validatorSize := len(keeper.StakingKeeper.GetLastValidators(ctx))
+
+		// skip this request because it's not end and some validators haven't sent report yet.
+		if uint64(ctx.BlockHeight()) < request.ReportEndAt && len(packedReport) < validatorSize {
 			continue
 		}
 
-		// pack data from validator together
-		packedReport := keeper.GetDataReports(ctx, reqID)
 		var packedData [][]byte
 		for _, report := range packedReport {
 			packedData = append(packedData, report.Data)
