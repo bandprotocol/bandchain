@@ -1,3 +1,5 @@
+//! Used as referrence code after all script have been refactored please remove this folder
+
 use owasm::core::{decode_outputs, encode_cmds};
 use std::mem;
 
