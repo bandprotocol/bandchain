@@ -4,10 +4,11 @@ import { BlockHeaderMerkleParts } from "./BlockHeaderMerkleParts.sol";
 import { IAVLMerklePath } from "./IAVLMerklePath.sol";
 import { TMSignature } from "./TMSignature.sol";
 import { Utils } from "./Utils.sol";
+import { IBridge } from "./IBridge.sol";
 
 /// @title Bridge <3 BandChain D3N
 /// @author Band Protocol Team
-contract Bridge {
+contract Bridge is IBridge {
   using BlockHeaderMerkleParts for BlockHeaderMerkleParts.Data;
   using IAVLMerklePath for IAVLMerklePath.Data;
   using TMSignature for TMSignature.Data;
@@ -98,13 +99,6 @@ contract Bridge {
     bytes32 dataHash;
   }
 
-  /// Helper struct to help the function caller to decode oracle data.
-  struct VerifyOracleDataResult {
-    bytes data;
-    bytes32 codeHash;
-    bytes params;
-  }
-
   /// Verifies that the given data is a valid data on BandChain as of the given block height.
   /// @param _blockHeight The block height. Someone must already relay this block.
   /// @param _data The data to verify, with the format similar to what on the blockchain store.
@@ -153,12 +147,12 @@ contract Bridge {
 
   /// Performs oracle state relay and oracle data verification in one go. The caller submits
   /// the encoded proof and receives back the decoded data, ready to be validated and used.
-  /// @param data The encoded data for oracle state relay and data verification.
-  function relayAndVerify(bytes calldata data)
+  /// @param _data The encoded data for oracle state relay and data verification.
+  function relayAndVerify(bytes calldata _data)
     external
     returns (VerifyOracleDataResult memory result)
   {
-    (bytes memory relayData, bytes memory verifyData) = abi.decode(data, (bytes, bytes));
+    (bytes memory relayData, bytes memory verifyData) = abi.decode(_data, (bytes, bytes));
     (bool relayOk, ) =
       address(this).call(abi.encodePacked(this.relayOracleState.selector, relayData));
     require(relayOk, "RELAY_ORACLE_STATE_FAILED");
