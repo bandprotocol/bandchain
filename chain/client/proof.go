@@ -9,7 +9,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -417,6 +416,14 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
+		rc, err := cliCtx.Client.Commit(nil)
+
+		brp, err := GetBlockRelayProof(cliCtx, uint64(rc.Height))
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
 		var queryRequest zoracle.RequestInfo
 		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/zoracle/request/%d", reqID), nil)
 		if err != nil {
@@ -434,7 +441,7 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		resp, err := cliCtx.Client.ABCIQueryWithOptions(
 			"/store/zoracle/key",
 			key,
-			rpcclient.ABCIQueryOptions{Height: 0, Prove: true},
+			rpcclient.ABCIQueryOptions{Height: rc.Height - 1, Prove: true},
 		)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
@@ -453,7 +460,6 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		height := uint64(resp.Response.Height) + 1
 		var iavlOpData []byte
 		var multistoreOpData []byte
 		for _, op := range ops {
@@ -511,15 +517,7 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		ssmh, osmh, oiavlsh := MakeOtherStoresMerkleHash(opms)
-		var brp BlockRelayProof
-		for i := 0; i < 50; i++ {
-			brp, err = GetBlockRelayProof(cliCtx, height)
-			if err != nil {
-				time.Sleep(time.Second)
-			} else {
-				break
-			}
-		}
+
 		brp.OtherStoresMerkleHash = osmh
 		brp.SupplyStoresMerkleHash = ssmh
 		brp.OracleIAVLStateHash = oiavlsh
@@ -532,12 +530,12 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			panic(err)
 		}
 
-		blockRelayBytes, err := brp.encodeToEthData(height)
+		blockRelayBytes, err := brp.encodeToEthData(uint64(rc.Height))
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 		}
 
-		oracleDataBytes, err := odp.encodeToEthData(height)
+		oracleDataBytes, err := odp.encodeToEthData(uint64(rc.Height))
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 		}
@@ -549,7 +547,7 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 
 		rest.PostProcessResponse(w, cliCtx, Proof{
 			JsonProof: JsonProof{
-				BlockHeight:     height,
+				BlockHeight:     uint64(rc.Height),
 				OracleDataProof: odp,
 				BlockRelayProof: brp},
 			EVMProofBytes: evmProofBytes,
