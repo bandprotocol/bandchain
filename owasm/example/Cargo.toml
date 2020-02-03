@@ -1,6 +1,0 @@
-[workspace]
-
-members = [
-    "coingecko_price",
-    "coingecko_volume",
-]

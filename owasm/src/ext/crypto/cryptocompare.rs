@@ -1,5 +1,6 @@
 use crate::core::{Oracle, ShellCmd};
 use crate::ext::crypto::coins::Coins;
+use crate::ext::utils::curl::Curl;
 
 pub static BITCOIN: &str = "BTC";
 pub static ETHEREUM: &str = "ETH";
@@ -56,13 +57,11 @@ impl Oracle for Price {
     type T = f32;
 
     fn as_cmd(&self) -> ShellCmd {
-        ShellCmd::new(
-            "curl",
-            &[format!(
-                "https://min-api.cryptocompare.com/data/price?fsym={}&tsyms=USD",
-                &self.symbol
-            )],
-        )
+        Curl::new(&[format!(
+            "https://min-api.cryptocompare.com/data/price?fsym={}&tsyms=USD",
+            &self.symbol
+        )])
+        .as_cmd()
     }
 
     fn from_cmd_output(&self, output: String) -> Option<f32> {
@@ -75,13 +74,11 @@ impl Oracle for Volume24h {
     type T = f64;
 
     fn as_cmd(&self) -> ShellCmd {
-        ShellCmd::new(
-            "curl",
-            &[format!(
-                "https://min-api.cryptocompare.com/data/symbol/histoday?fsym={}&tsym=USD&limit=1",
-                &self.symbol
-            )],
-        )
+        Curl::new(&[format!(
+            "https://min-api.cryptocompare.com/data/symbol/histoday?fsym={}&tsym=USD&limit=1",
+            &self.symbol
+        )])
+        .as_cmd()
     }
 
     fn from_cmd_output(&self, output: String) -> Option<f64> {

@@ -1,5 +1,5 @@
 [package]
-name = "coingecko_volume"
+name = "cryptocompare_volume"
 version = "0.1.0"
 authors = ["Band Protocol <connect@bandprotocol.com>"]
 edition = "2018"
