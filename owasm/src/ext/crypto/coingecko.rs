@@ -2,6 +2,7 @@
 
 use crate::core::{Oracle, ShellCmd};
 use crate::ext::crypto::coins::Coins;
+use crate::ext::utils::curl::Curl;
 
 pub struct Price {
     symbol: String,
@@ -55,13 +56,11 @@ impl Oracle for Price {
     type T = f32;
 
     fn as_cmd(&self) -> ShellCmd {
-        ShellCmd::new(
-            "curl",
-            &[format!(
-                "https://api.coingecko.com/api/v3/simple/price?ids={}&vs_currencies=usd",
-                &self.symbol
-            )],
-        )
+        Curl::new(&[format!(
+            "https://api.coingecko.com/api/v3/simple/price?ids={}&vs_currencies=usd",
+            &self.symbol
+        )])
+        .as_cmd()
     }
 
     fn from_cmd_output(&self, output: String) -> Option<f32> {
@@ -74,13 +73,11 @@ impl Oracle for Volume24h {
     type T = f64;
 
     fn as_cmd(&self) -> ShellCmd {
-        ShellCmd::new(
-            "curl",
-            &[format!(
-                "https://api.coingecko.com/api/v3/coins/{}/market_chart?vs_currency=usd&days=1",
-                &self.symbol
-            )],
-        )
+        Curl::new(&[format!(
+            "https://api.coingecko.com/api/v3/coins/{}/market_chart?vs_currency=usd&days=1",
+            &self.symbol
+        )])
+        .as_cmd()
     }
 
     fn from_cmd_output(&self, output: String) -> Option<f64> {
