@@ -2,6 +2,7 @@
 
 use crate::core::{Oracle, ShellCmd};
 use crate::ext::crypto::coins::Coins;
+use crate::ext::utils::curl::Curl;
 
 pub struct Price {
     symbol: String,
@@ -31,10 +32,11 @@ impl Oracle for Price {
     type T = f32;
 
     fn as_cmd(&self) -> ShellCmd {
-        ShellCmd::new(
-            "curl",
-            &[format!("https://api.binance.com/api/v1/depth?symbol={}USDT&limit=5", &self.symbol)],
-        )
+        Curl::new(&[format!(
+            "https://api.binance.com/api/v1/depth?symbol={}USDT&limit=5",
+            &self.symbol
+        )])
+        .as_cmd()
     }
 
     fn from_cmd_output(&self, output: String) -> Option<f32> {
