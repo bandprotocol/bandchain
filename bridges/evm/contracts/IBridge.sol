@@ -9,6 +9,8 @@ interface IBridge {
     bytes params;
   }
 
+  /// Performs oracle state relay and oracle data verification in one go. The caller submits
+  /// the encoded proof and receives back the decoded data, ready to be validated and used.
   /// @param _data The encoded data for oracle state relay and data verification.
   function relayAndVerify(bytes calldata _data)
     external
