@@ -1,3 +1,5 @@
+//! Used as referrence code after all script have been refactored please remove this folder
+
 use owasm::ext::crypto::{binance, coingecko, coins, cryptocompare};
 use owasm::ext::finance::{alphavantage, yahoo_finance};
 use owasm::ext::random::qrng_anu;
