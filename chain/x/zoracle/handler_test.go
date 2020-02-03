@@ -15,8 +15,8 @@ import (
 	"github.com/tendermint/tendermint/libs/common"
 )
 
-func setupTestValidator(ctx sdk.Context, keeper Keeper) sdk.ValAddress {
-	pubKey := keep.NewPubKey("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB50")
+func setupTestValidator(ctx sdk.Context, keeper Keeper, pk string) sdk.ValAddress {
+	pubKey := keep.NewPubKey(pk)
 	validatorAddress := sdk.ValAddress(pubKey.Address())
 	initTokens := sdk.TokensFromConsensusPower(10)
 	initCoins := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, initTokens))
@@ -107,7 +107,11 @@ func TestRequestInvalidWasmCode(t *testing.T) {
 
 func TestReportSuccess(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
-	validatorAddress := setupTestValidator(ctx, keeper)
+	validatorAddress := setupTestValidator(
+		ctx,
+		keeper,
+		"0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB50",
+	)
 
 	// set request = 2
 	name := "Script1"
@@ -157,7 +161,11 @@ func TestReportInvalidValidator(t *testing.T) {
 
 func TestOutOfReportPeriod(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
-	validatorAddress := setupTestValidator(ctx, keeper)
+	validatorAddress := setupTestValidator(
+		ctx,
+		keeper,
+		"0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB50",
+	)
 
 	// set request = 2
 	name := "Script1"
@@ -273,6 +281,18 @@ func TestDeleteCodeInvalidOwner(t *testing.T) {
 func TestEndBlock(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
 	ctx = ctx.WithBlockHeight(0)
+
+	validatorAddress1 := setupTestValidator(
+		ctx,
+		keeper,
+		"0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB50",
+	)
+	validatorAddress2 := setupTestValidator(
+		ctx,
+		keeper,
+		"0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB51",
+	)
+
 	absPath, _ := filepath.Abs("../../wasm/res/result.wasm")
 	code, err := wasm.ReadBytes(absPath)
 	if err != nil {
@@ -292,15 +312,10 @@ func TestEndBlock(t *testing.T) {
 	pendingRequests = append(pendingRequests, 1)
 	keeper.SetPending(ctx, pendingRequests)
 
-	// set report
-	validatorAddress1, _ := sdk.ValAddressFromHex("4aea6cfc5bd14f2308954d544e1dc905268357db")
-	validatorAddress2, _ := sdk.ValAddressFromHex("4bca6cfc5bd14f2308954d544e1dc905268357db")
-
 	data1, _ := hex.DecodeString("5b227b5c22626974636f696e5c223a7b5c227573645c223a373139342e32357d7d222c227b5c225553445c223a373231342e31327d225d")
-	data2, _ := hex.DecodeString("5b227b5c22626974636f696e5c223a7b5c227573645c223a373139342e32357d7d222c227b5c225553445c223a373231342e31327d225d")
+	data2, _ := hex.DecodeString("5b227b5c22626974636f696e5c223a7b5c227573645c223a373139312e32357d7d222c227b5c225553445c223a373230392e31357d225d")
 
 	keeper.SetReport(ctx, 1, validatorAddress1, data1)
-	keeper.SetReport(ctx, 1, validatorAddress2, data2)
 
 	// blockheight update to 2
 	ctx = ctx.WithBlockHeight(2)
@@ -316,10 +331,151 @@ func TestEndBlock(t *testing.T) {
 	require.Equal(t, []uint64{1}, pendingRequests)
 
 	// blockheight update to 4
+	keeper.SetReport(ctx, 1, validatorAddress2, data2)
 	ctx = ctx.WithBlockHeight(4)
-	resultAfter, _ := hex.DecodeString("00000000000afe22")
+	resultAfter, _ := hex.DecodeString("00000000000afd5b")
 
 	// handle end block
+	gotEndBlock = handleEndBlock(ctx, keeper)
+	require.True(t, gotEndBlock.IsOK(), "expected end block to be ok, got %v", gotEndBlock)
+
+	request, _ = keeper.GetRequest(ctx, 1)
+
+	result, err := keeper.GetResult(ctx, 1, codeHash, params)
+	require.Nil(t, err)
+	require.Equal(t, resultAfter, result)
+
+	pendingRequests = keeper.GetPending(ctx)
+	require.Equal(t, []uint64{}, pendingRequests)
+}
+
+func TestEndBlockQuickResolve(t *testing.T) {
+	ctx, keeper := keep.CreateTestInput(t, false)
+	ctx = ctx.WithBlockHeight(0)
+
+	validatorAddress1 := setupTestValidator(
+		ctx,
+		keeper,
+		"0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB50",
+	)
+	validatorAddress2 := setupTestValidator(
+		ctx,
+		keeper,
+		"0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB51",
+	)
+
+	absPath, _ := filepath.Abs("../../wasm/res/result.wasm")
+	code, err := wasm.ReadBytes(absPath)
+	if err != nil {
+		fmt.Println(err)
+	}
+	name := "Crypto price"
+	sender := sdk.AccAddress([]byte("sender"))
+	codeHash := keeper.SetCode(ctx, code, name, sender)
+
+	params, _ := hex.DecodeString("00000000")
+	// set request
+	request := types.NewRequest(codeHash, params, 10000)
+	keeper.SetRequest(ctx, 1, request)
+
+	// set pending
+	pendingRequests := keeper.GetPending(ctx)
+	pendingRequests = append(pendingRequests, 1)
+	keeper.SetPending(ctx, pendingRequests)
+
+	data1, _ := hex.DecodeString("5b227b5c22626974636f696e5c223a7b5c227573645c223a373139342e32357d7d222c227b5c225553445c223a373231342e31327d225d")
+	data2, _ := hex.DecodeString("5b227b5c22626974636f696e5c223a7b5c227573645c223a373139312e32357d7d222c227b5c225553445c223a373230392e31357d225d")
+
+	keeper.SetReport(ctx, 1, validatorAddress1, data1)
+
+	// blockheight update to 100
+	ctx = ctx.WithBlockHeight(100)
+
+	gotEndBlock := handleEndBlock(ctx, keeper)
+	require.True(t, gotEndBlock.IsOK(), "expected end block to be ok, got %v", gotEndBlock)
+
+	_, err = keeper.GetResult(ctx, 1, codeHash, params)
+	// Result must not found
+	require.NotNil(t, err)
+
+	pendingRequests = keeper.GetPending(ctx)
+	require.Equal(t, []uint64{1}, pendingRequests)
+
+	keeper.SetReport(ctx, 1, validatorAddress2, data2)
+	// blockheight update to 300
+	ctx = ctx.WithBlockHeight(300)
+	resultAfter, _ := hex.DecodeString("00000000000afd5b")
+
+	// handle end block should apply quick resolve
+	gotEndBlock = handleEndBlock(ctx, keeper)
+	require.True(t, gotEndBlock.IsOK(), "expected end block to be ok, got %v", gotEndBlock)
+
+	request, _ = keeper.GetRequest(ctx, 1)
+
+	result, err := keeper.GetResult(ctx, 1, codeHash, params)
+	require.Nil(t, err)
+	require.Equal(t, resultAfter, result)
+
+	pendingRequests = keeper.GetPending(ctx)
+	require.Equal(t, []uint64{}, pendingRequests)
+}
+
+func TestEndBlockReportEnd(t *testing.T) {
+	ctx, keeper := keep.CreateTestInput(t, false)
+	ctx = ctx.WithBlockHeight(0)
+
+	validatorAddress1 := setupTestValidator(
+		ctx,
+		keeper,
+		"0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB50",
+	)
+	setupTestValidator(
+		ctx,
+		keeper,
+		"0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB51",
+	)
+
+	absPath, _ := filepath.Abs("../../wasm/res/result.wasm")
+	code, err := wasm.ReadBytes(absPath)
+	if err != nil {
+		fmt.Println(err)
+	}
+	name := "Crypto price"
+	sender := sdk.AccAddress([]byte("sender"))
+	codeHash := keeper.SetCode(ctx, code, name, sender)
+
+	params, _ := hex.DecodeString("00000000")
+	// set request
+	request := types.NewRequest(codeHash, params, 300)
+	keeper.SetRequest(ctx, 1, request)
+
+	// set pending
+	pendingRequests := keeper.GetPending(ctx)
+	pendingRequests = append(pendingRequests, 1)
+	keeper.SetPending(ctx, pendingRequests)
+
+	data1, _ := hex.DecodeString("5b227b5c22626974636f696e5c223a7b5c227573645c223a373139342e32357d7d222c227b5c225553445c223a373231342e31327d225d")
+
+	keeper.SetReport(ctx, 1, validatorAddress1, data1)
+
+	// blockheight update to 100
+	ctx = ctx.WithBlockHeight(100)
+
+	gotEndBlock := handleEndBlock(ctx, keeper)
+	require.True(t, gotEndBlock.IsOK(), "expected end block to be ok, got %v", gotEndBlock)
+
+	_, err = keeper.GetResult(ctx, 1, codeHash, params)
+	// Result must not found
+	require.NotNil(t, err)
+
+	pendingRequests = keeper.GetPending(ctx)
+	require.Equal(t, []uint64{1}, pendingRequests)
+
+	// blockheight update to 300
+	ctx = ctx.WithBlockHeight(300)
+	resultAfter, _ := hex.DecodeString("00000000000afe22")
+
+	// handle end block after report end
 	gotEndBlock = handleEndBlock(ctx, keeper)
 	require.True(t, gotEndBlock.IsOK(), "expected end block to be ok, got %v", gotEndBlock)
 
