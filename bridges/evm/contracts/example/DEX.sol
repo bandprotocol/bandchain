@@ -31,21 +31,21 @@ contract DEX is Ownable {
     supportedTokens["XRP"] = hex"0000000A";
   }
 
-  function isSupportedToken(string memory a) public view returns(bytes memory, bool) {
-    bytes memory key = supportedTokens[a];
-    return (key, key.length == 4);
+  function isSupportedToken(string memory _a) public view returns(bytes memory, bool) {
+    bytes memory key = supportedTokens[_a];
+    return (key, key.length != 0);
   }
 
-  function balanceOf(address account, string memory symbol)
+  function balanceOf(address _account, string memory _symbol)
     public
     view
     returns (uint256)
   {
-    (bytes memory key, bool _isSupportedToken) = isSupportedToken(symbol);
+    (bytes memory key, bool _isSupportedToken) = isSupportedToken(_symbol);
     if (!_isSupportedToken) {
       revert("UNKNOWN_SYMBOL");
     }
-    return _balances[account][key];
+    return _balances[_account][key];
   }
 
   function bytesToPrices(bytes memory _b)
@@ -77,22 +77,22 @@ contract DEX is Ownable {
     _balances[msg.sender][result.params] = _balances[msg.sender][result.params].add(tokenEarn);
   }
 
-  function sell(uint256 amount, bytes memory _reportPrice) public {
+  function sell(uint256 _amount, bytes memory _reportPrice) public {
     IBridge.VerifyOracleDataResult memory result = bridge.relayAndVerify(
       _reportPrice
     );
 
     require(result.codeHash == codeHash, "INVALID_CODEHASH");
     require(
-      amount <= _balances[msg.sender][result.params],
+      _amount <= _balances[msg.sender][result.params],
       "INSUFFICIENT_TOKENS"
     );
 
     (uint256 ethPrice, uint256 otherPrice) = bytesToPrices(result.data);
 
-    uint256 ethEarn = amount.mul(otherPrice).div(ethPrice);
+    uint256 ethEarn = _amount.mul(otherPrice).div(ethPrice);
 
-    _balances[msg.sender][result.params] = _balances[msg.sender][result.params].sub(amount);
+    _balances[msg.sender][result.params] = _balances[msg.sender][result.params].sub(_amount);
     msg.sender.transfer(ethEarn);
   }
 
