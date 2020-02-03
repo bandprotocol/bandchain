@@ -4,7 +4,7 @@ import (
 	"os"
 	"path"
 
-	app "github.com/bandprotocol/d3n/chain"
+	"github.com/bandprotocol/d3n/chain/app"
 	d3nclient "github.com/bandprotocol/d3n/chain/client"
 
 	"github.com/cosmos/cosmos-sdk/client"
