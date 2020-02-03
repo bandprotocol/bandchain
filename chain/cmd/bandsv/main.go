@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"time"
 
-	app "github.com/bandprotocol/d3n/chain"
+	"github.com/bandprotocol/d3n/chain/app"
 	"github.com/bandprotocol/d3n/chain/cmtx"
 	"github.com/bandprotocol/d3n/chain/x/zoracle"
 	cmc "github.com/cosmos/cosmos-sdk/client/context"
