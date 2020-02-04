@@ -1,4 +1,4 @@
-package cmtx
+package provider
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"

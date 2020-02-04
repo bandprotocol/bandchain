@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/bandprotocol/d3n/chain/cmtx"
+	"github.com/bandprotocol/d3n/chain/provider"
 	"github.com/bandprotocol/d3n/chain/x/zoracle"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -34,7 +34,7 @@ func main() {
 	var priv secp256k1.PrivKeySecp256k1
 	copy(priv[:], privB)
 
-	tx := cmtx.NewTxSender(priv)
+	tx := provider.NewBandProvider(priv)
 
 	args := os.Args[1:]
 	switch args[0] {
@@ -60,17 +60,21 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
-			fmt.Println(tx.SendTransaction(zoracle.NewMsgStoreCode(bytes, "Crypto price (enum version)", tx.Sender()), flags.BroadcastBlock))
+			fmt.Println(tx.SendTransaction(
+				[]sdk.Msg{zoracle.NewMsgStoreCode(bytes, "Crypto price (enum version)", tx.Sender())},
+				0, 10000000, "", "", "",
+				flags.BroadcastBlock,
+			))
 		}
 	case "send_token":
 		{
 			// Send token
 			to, _ := sdk.AccAddressFromBech32("band13zmknvkq2sj920spz90g4r9zjan8g584x8qalj")
-			fmt.Println(tx.SendTransaction(bank.MsgSend{
+			fmt.Println(tx.SendTransaction([]sdk.Msg{bank.MsgSend{
 				FromAddress: tx.Sender(),
 				ToAddress:   to,
 				Amount:      sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(10))),
-			}, flags.BroadcastBlock))
+			}}, 0, 10000000, "", "", "", flags.BroadcastBlock))
 		}
 	case "request":
 		{
@@ -81,14 +85,22 @@ func main() {
 					// BTC parameter
 					params, _ := hex.DecodeString("00000000")
 					// Send request by code hash
-					fmt.Println(tx.SendTransaction(zoracle.NewMsgRequest(codeHash, params, 6, tx.Sender()), flags.BroadcastBlock))
+					fmt.Println(tx.SendTransaction(
+						[]sdk.Msg{zoracle.NewMsgRequest(codeHash, params, 6, tx.Sender())},
+						0, 10000000, "", "", "",
+						flags.BroadcastBlock,
+					))
 				}
 			case "ETH":
 				{
 					// ETH parameter
 					params, _ := hex.DecodeString("00000001")
 					// Send request by same code hash with new parameter
-					fmt.Println(tx.SendTransaction(zoracle.NewMsgRequest(codeHash, params, 6, tx.Sender()), flags.BroadcastBlock))
+					fmt.Println(tx.SendTransaction(
+						[]sdk.Msg{zoracle.NewMsgRequest(codeHash, params, 6, tx.Sender())},
+						0, 10000000, "", "", "",
+						flags.BroadcastBlock,
+					))
 				}
 			}
 		}
