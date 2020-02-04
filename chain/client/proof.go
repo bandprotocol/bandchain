@@ -417,6 +417,10 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		rc, err := cliCtx.Client.Commit(nil)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 
 		brp, err := GetBlockRelayProof(cliCtx, uint64(rc.Height))
 		if err != nil {
