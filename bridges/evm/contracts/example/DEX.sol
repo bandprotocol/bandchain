@@ -3,7 +3,7 @@ pragma experimental ABIEncoderV2;
 
 import { SafeMath } from "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import { Ownable } from "openzeppelin-solidity/contracts/ownership/Ownable.sol";
-import { IBridge } from "bandchain-helper-library/contracts/IBridge.sol";
+import { IBridge } from "../IBridge.sol";
 
 contract DEX is Ownable {
   using SafeMath for uint256;
