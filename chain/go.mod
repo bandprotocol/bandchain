@@ -9,7 +9,6 @@ require (
 	github.com/gin-gonic/gin v1.5.0
 	github.com/gorilla/mux v1.7.0
 	github.com/levigross/grequests v0.0.0-20190908174114-253788527a1a
-	github.com/rs/cors v1.7.0
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/viper v1.6.1
 	github.com/stretchr/testify v1.4.0
