@@ -1,0 +1,11 @@
+wasm-test:
+  stage: test
+  image: rust:1-buster
+  script:
+    - apt-get update
+    - apt-get install curl
+    - cd owasm
+    - cargo test --all
+  only:
+    changes:
+      - wasm/**/*
