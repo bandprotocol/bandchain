@@ -1,129 +1,102 @@
 pragma solidity 0.5.14;
 pragma experimental ABIEncoderV2;
 
-import {SafeMath} from "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import { SafeMath } from "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import { Ownable } from "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import { IBridge } from "../IBridge.sol";
 
-interface Bridge {
-    struct VerifyOracleDataResult {
-        bytes data;
-        bytes32 codeHash;
-        bytes params;
+contract DEX is Ownable {
+  using SafeMath for uint256;
+
+  bytes32 public codeHash;
+
+  mapping(address => mapping(bytes => uint256)) _balances;
+  mapping(string => bytes) public supportedTokens;
+
+  IBridge bridge;
+
+  constructor(IBridge _bridge, bytes32 _codeHash) public {
+    bridge = _bridge;
+    codeHash = _codeHash;
+    supportedTokens["ADA"] = hex"00000000";
+    supportedTokens["BAND"] = hex"00000001";
+    supportedTokens["BCH"] = hex"00000002";
+    supportedTokens["BNB"] = hex"00000003";
+    supportedTokens["BTC"] = hex"00000004";
+    supportedTokens["EOS"] = hex"00000005";
+    supportedTokens["ETC"] = hex"00000006";
+    supportedTokens["ETH"] = hex"00000007";
+    supportedTokens["LTC"] = hex"00000008";
+    supportedTokens["TRX"] = hex"00000009";
+    supportedTokens["XRP"] = hex"0000000A";
+  }
+
+  function isSupportedToken(string memory _a) public view returns(bytes memory, bool) {
+    bytes memory key = supportedTokens[_a];
+    return (key, key.length != 0);
+  }
+
+  function balanceOf(address _account, string memory _symbol)
+    public
+    view
+    returns (uint256)
+  {
+    (bytes memory key, bool _isSupportedToken) = isSupportedToken(_symbol);
+    if (!_isSupportedToken) {
+      revert("UNKNOWN_SYMBOL");
     }
-    function relayAndVerify(bytes calldata data)
-        external
-        returns (VerifyOracleDataResult memory result);
-}
+    return _balances[_account][key];
+  }
 
-contract DEX {
-    using SafeMath for uint256;
-
-    bytes32 public codeHash;
-
-    mapping(address => mapping(bytes => uint256)) _balances;
-
-    Bridge bridge = Bridge(0x3e1F8745E4088443350121075828F119075ef641);
-
-    constructor(bytes32 _codeHash) public {
-        codeHash = _codeHash;
+  function bytesToPrices(bytes memory _b)
+    public
+    pure
+    returns (uint256, uint256)
+  {
+    require(_b.length == 16, "INVALID_LENGTH");
+    uint256 ethPrice;
+    uint256 otherPrice;
+    for (uint256 i = 0; i < 8; i++) {
+      ethPrice = ethPrice + (uint256(uint8(_b[i])) << (8 * (7 - i)));
+      otherPrice = otherPrice + (uint256(uint8(_b[i + 8])) << (8 * (7 - i)));
     }
+    return (ethPrice, otherPrice);
+  }
 
-    function strCmp(string memory a, string memory b)
-        public
-        pure
-        returns (bool)
-    {
-        return keccak256(abi.encodePacked(a)) == keccak256(abi.encodePacked(b));
-    }
+  function buy(bytes memory _reportPrice) public payable {
+    IBridge.VerifyOracleDataResult memory result = bridge.relayAndVerify(
+      _reportPrice
+    );
 
-    function balanceOf(address account, string memory symbol)
-        public
-        view
-        returns (uint256)
-    {
-        bytes memory key;
-        if (strCmp(symbol, "ADA")) {
-            key = hex"00000000";
-        } else if (strCmp(symbol, "BAND")) {
-            key = hex"00000001";
-        } else if (strCmp(symbol, "BCH")) {
-            key = hex"00000002";
-        } else if (strCmp(symbol, "BNB")) {
-            key = hex"00000003";
-        } else if (strCmp(symbol, "BTC")) {
-            key = hex"00000004";
-        } else if (strCmp(symbol, "EOS")) {
-            key = hex"00000005";
-        } else if (strCmp(symbol, "ETC")) {
-            key = hex"00000006";
-        } else if (strCmp(symbol, "ETH")) {
-            key = hex"00000007";
-        } else if (strCmp(symbol, "LTC")) {
-            key = hex"00000008";
-        } else if (strCmp(symbol, "TRX")) {
-            key = hex"00000009";
-        } else if (strCmp(symbol, "XRP")) {
-            key = hex"0000000A";
-        } else {
-            revert("UNKNOWN_SYMBOL");
-        }
-        return _balances[account][key];
-    }
+    require(result.codeHash == codeHash, "INVALID_CODEHASH");
 
-    function bytesToPrices(bytes memory _b)
-        public
-        pure
-        returns (uint256, uint256)
-    {
-        require(_b.length >= 16, "INVALID_LENGTH");
-        uint256 ethPrice;
-        uint256 otherPrice;
-        for (uint256 i = 0; i < 8; i++) {
-            ethPrice = ethPrice + (uint256(uint8(_b[i])) << (8 * (7 - i)));
-            otherPrice =
-                otherPrice +
-                (uint256(uint8(_b[i + 8])) << (8 * (7 - i)));
-        }
-        return (ethPrice, otherPrice);
-    }
+    (uint256 ethPrice, uint256 otherPrice) = bytesToPrices(result.data);
 
-    function buy(bytes memory _reportPrice) public payable {
-        Bridge.VerifyOracleDataResult memory result = bridge.relayAndVerify(
-            _reportPrice
-        );
+    uint256 tokenEarn = msg.value.mul(ethPrice).div(otherPrice);
 
-        require(result.codeHash == codeHash, "INVALID_CODEHASH");
+    _balances[msg.sender][result.params] = _balances[msg.sender][result.params].add(tokenEarn);
+  }
 
-        (uint256 ethPrice, uint256 otherPrice) = bytesToPrices(result.data);
+  function sell(uint256 _amount, bytes memory _reportPrice) public {
+    IBridge.VerifyOracleDataResult memory result = bridge.relayAndVerify(
+      _reportPrice
+    );
 
-        uint256 tokenEarn = msg.value.mul(ethPrice).div(otherPrice);
+    require(result.codeHash == codeHash, "INVALID_CODEHASH");
+    require(
+      _amount <= _balances[msg.sender][result.params],
+      "INSUFFICIENT_TOKENS"
+    );
 
-        _balances[msg.sender][result.params] = _balances[msg.sender][result
-            .params]
-            .add(tokenEarn);
-    }
+    (uint256 ethPrice, uint256 otherPrice) = bytesToPrices(result.data);
 
-    function sell(uint256 amount, bytes memory _reportPrice) public {
-        Bridge.VerifyOracleDataResult memory result = bridge.relayAndVerify(
-            _reportPrice
-        );
+    uint256 ethEarn = _amount.mul(otherPrice).div(ethPrice);
 
-        require(result.codeHash == codeHash, "INVALID_CODEHASH");
-        require(
-            amount <= _balances[msg.sender][result.params],
-            "INSUFFICIENT_TOKENS"
-        );
+    _balances[msg.sender][result.params] = _balances[msg.sender][result.params].sub(_amount);
+    msg.sender.transfer(ethEarn);
+  }
 
-        (uint256 ethPrice, uint256 otherPrice) = bytesToPrices(result.data);
-
-        uint256 ethEarn = amount.mul(otherPrice).div(ethPrice);
-
-        _balances[msg.sender][result.params] = _balances[msg.sender][result
-            .params]
-            .sub(amount);
-        msg.sender.transfer(ethEarn);
-    }
-
-    function withdraw() public {
-        msg.sender.transfer(address(this).balance);
-    }
+  function withdraw() public onlyOwner {
+    msg.sender.transfer(address(this).balance);
+  }
 }
