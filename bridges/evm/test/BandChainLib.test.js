@@ -1,12 +1,12 @@
 const { expectRevert } = require("openzeppelin-test-helpers");
-const MockBandChainLib = artifacts.require("MockBandChainLib");
+const BandChainLibMock = artifacts.require("BandChainLibMock");
 
 require("chai").should();
 
-contract("MockBandChainLib", () => {
+contract("BandChainLibMock", () => {
   context("BandChainLib should work correctly", () => {
     beforeEach(async () => {
-      this.forTest = await MockBandChainLib.new();
+      this.forTest = await BandChainLibMock.new();
     });
 
     it("should be able to transform bytes8 to unit64", async () => {
