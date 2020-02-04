@@ -256,11 +256,6 @@ balanced-match@^1.0.0:
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.0.tgz#89b4d199ab2bee49de164ea02b89ce462d71b767"
   integrity sha1-ibTRmasr7kneFk6gK4nORi1xt2c=
 
-bandchain-helper-library@^0.0.4:
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/bandchain-helper-library/-/bandchain-helper-library-0.0.4.tgz#3016c38f5b1be6741f02b3402397ef3f030a5f51"
-  integrity sha512-tYO6fgvO+XKf2KvbtdNFyBvuSfefhoJczz2lkOgHDbY/7/Eiyokcj+Ty9V0bCnlPErO8BxGfgxQpUKce/4SRPw==
-
 bandchain-helper-library@^0.0.5:
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/bandchain-helper-library/-/bandchain-helper-library-0.0.5.tgz#5ca0b3691972d6eed8e06494cf6db0a5b8c3ab5f"
