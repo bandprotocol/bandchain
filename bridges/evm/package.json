@@ -1,12 +1,25 @@
 {
+  "name": "bandchain-helper-library",
+  "version": "0.0.5",
+  "description": "Smart Contract library for connecting with Bandchain",
+  "files": [
+    "/contracts/**/*.sol"
+  ],
+  "keywords": [
+    "solidity",
+    "ethereum",
+    "smart",
+    "contracts",
+    "band"
+  ],
   "dependencies": {
     "@openzeppelin/test-helpers": "^0.5.4",
-    "bandchain-helper-library": "^0.0.3",
+    "bandchain-helper-library": "^0.0.5",
     "chai": "^4.2.0",
     "openzeppelin-solidity": "^2.4.0",
     "openzeppelin-test-helpers": "^0.5.1",
     "truffle": "^5.1.3",
     "truffle-flattener": "^1.4.2"
   },
-  "version": "0.0.0"
+  "license": "MIT"
 }
