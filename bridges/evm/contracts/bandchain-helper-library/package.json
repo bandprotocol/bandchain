@@ -1,6 +1,6 @@
 {
   "name": "bandchain-helper-library",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Smart Contract library for connecting with Bandchain",
   "files": [
     "/contracts/**/*.sol",
