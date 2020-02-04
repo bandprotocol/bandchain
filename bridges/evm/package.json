@@ -14,7 +14,6 @@
   ],
   "dependencies": {
     "@openzeppelin/test-helpers": "^0.5.4",
-    "bandchain-helper-library": "^0.0.5",
     "chai": "^4.2.0",
     "openzeppelin-solidity": "^2.4.0",
     "openzeppelin-test-helpers": "^0.5.1",
