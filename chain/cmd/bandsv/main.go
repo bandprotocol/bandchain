@@ -301,6 +301,27 @@ func handleStore(c *gin.Context) {
 	})
 }
 
+func handleQueryRequest(c *gin.Context) {
+	requestId := c.Param("requestId")
+
+	resp, err := grequests.Get(
+		fmt.Sprintf(`%s/zoracle/request/%s`, queryURI, requestId),
+		nil,
+	)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	var body map[string]interface{}
+	err := json.Unmarshal(resp.Bytes(), &body)
+	if err == nil {
+		c.JSON(resp.StatusCode, body)
+	} else {
+		c.JSON(resp.StatusCode, resp.Bytes())
+	}
+	return
+}
+
 func main() {
 	viper.Set("nodeURI", nodeURI)
 	privBytes, _ := hex.DecodeString(priv)
@@ -329,6 +350,8 @@ func main() {
 	r.POST("/params-info", handleParamsInfo)
 	r.POST("/execute", handleExecute)
 	r.POST("/store", handleStore)
+
+	r.GET("/request/:requestId", handleQueryRequest)
 
 	r.Run("0.0.0.0:" + port) // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
