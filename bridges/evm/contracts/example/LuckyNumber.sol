@@ -2,7 +2,7 @@ pragma solidity 0.5.14;
 pragma experimental ABIEncoderV2;
 
 import { Ownable } from "openzeppelin-solidity/contracts/ownership/Ownable.sol";
-import { IBridge } from "../IBridge.sol";
+import { IBridge } from "bandchain-helper-library/contracts/IBridge.sol";
 
 contract LuckyNumber is Ownable {
   bytes32 public codeHash;
