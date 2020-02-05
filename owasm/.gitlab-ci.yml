@@ -2,7 +2,6 @@ wasm-test:
   stage: test
   image: rust:1-buster
   script:
-    - apt-get update
     - cd owasm
     - cargo test --all
   only:
