@@ -18,15 +18,23 @@ import (
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 
 	"github.com/bandprotocol/d3n/chain/d3nlib"
-	sub "github.com/bandprotocol/d3n/chain/subscriber"
 	"github.com/bandprotocol/d3n/chain/x/zoracle"
 )
+
+type Command struct {
+	Cmd       string   `json:"cmd"`
+	Arguments []string `json:"args"`
+}
 
 const limitTimeOut = 10 * time.Second
 
 // TODO: Replace by `BandStatefulClient` after implementation finished.
 var bandProvider d3nlib.BandProvider
 var allowedCommands = map[string]bool{"curl": true, "date": true}
+
+func getLatestRequest() (uint64, error) {
+	return 0, nil
+}
 
 func main() {
 	// Get environment variable
@@ -49,18 +57,20 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	s := sub.NewSubscriber(viper.GetString("nodeURI"), "/websocket")
 
-	// Tx events
-	s.AddHandler(zoracle.EventTypeRequest, handleRequestAndLog)
+	// Setup poll loop
+	for {
 
-	// start subscription
-	s.Run()
-}
+		time.Sleep(2 * time.Second)
+	}
 
-type Command struct {
-	Cmd       string   `json:"cmd"`
-	Arguments []string `json:"args"`
+	// s := sub.NewSubscriber(viper.GetString("nodeURI"), "/websocket")
+
+	// // Tx events
+	// s.AddHandler(zoracle.EventTypeRequest, handleRequestAndLog)
+
+	// // start subscription
+	// s.Run()
 }
 
 func execWithTimeout(command Command, limit time.Duration) ([]byte, error) {
