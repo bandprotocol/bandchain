@@ -49,9 +49,17 @@ func (client *BandStatefulClient) SendTransaction(
 	client.sequenceNumber++
 	client.mtx.Unlock()
 
-	return client.provider.SendTransaction(
+	tx, err := client.provider.SendTransaction(
 		[]sdk.Msg{msg}, nonce, gas, memo, fees, gasPrices, broadcastMode,
 	)
+
+	if err != nil {
+		// Reset sequence number to 0 make next request use new sequence number
+		client.mtx.Lock()
+		client.sequenceNumber = 0
+		client.mtx.Unlock()
+	}
+	return tx, err
 }
 
 func (client *BandStatefulClient) Sender() sdk.AccAddress {
