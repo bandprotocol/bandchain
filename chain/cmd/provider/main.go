@@ -29,8 +29,7 @@ type Command struct {
 
 const limitTimeOut = 10 * time.Second
 
-// TODO: Replace by `BandStatefulClient` after implementation finished.
-var bandProvider d3nlib.BandProvider
+var bandClient d3nlib.BandStatefulClient
 var allowedCommands = map[string]bool{"curl": true, "date": true}
 
 func getEnv(key, defaultValue string) string {
@@ -69,7 +68,7 @@ func main() {
 	copy(priv[:], privB)
 
 	var err error
-	bandProvider, err = d3nlib.NewBandProvider(nodeURI, priv)
+	bandClient, err = d3nlib.NewBandStatefulClient(nodeURI, priv)
 	if err != nil {
 		panic(err)
 	}
@@ -188,9 +187,9 @@ func handleRequest(event *abci.Event) (sdk.TxResponse, error) {
 
 	b, _ := json.Marshal(answers)
 
-	tx, err := bandProvider.SendTransaction(
-		[]sdk.Msg{zoracle.NewMsgReport(requestID, b, sdk.ValAddress(bandProvider.Sender()))},
-		0, 10000000, "", "", "",
+	tx, err := bandClient.SendTransaction(
+		zoracle.NewMsgReport(requestID, b, sdk.ValAddress(bandClient.Sender())),
+		10000000, "", "", "",
 		flags.BroadcastSync,
 	)
 	if err != nil {
