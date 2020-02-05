@@ -12,11 +12,11 @@ import (
 	"time"
 
 	"github.com/bandprotocol/d3n/chain/app"
-	"github.com/bandprotocol/d3n/chain/cmtx"
+	"github.com/bandprotocol/d3n/chain/d3nlib"
 	"github.com/bandprotocol/d3n/chain/x/zoracle"
-	cmc "github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gin-gonic/gin"
 	"github.com/levigross/grequests"
 	"github.com/spf13/viper"
@@ -102,8 +102,7 @@ var (
 
 var rpcClient *rpc.HTTP
 var pk secp256k1.PrivKeySecp256k1
-var txSender cmtx.TxSender
-var cliCtx cmc.CLIContext
+var bandProvider d3nlib.BandProvider
 var cdc *codec.Codec
 
 type serializeResponse struct {
@@ -147,7 +146,12 @@ func handleRequestData(c *gin.Context) {
 
 	params := respParams.Result
 
-	txr, err := txSender.SendTransaction(zoracle.NewMsgRequest(req.CodeHash, params, 10, txSender.Sender()), flags.BroadcastBlock)
+	// TODO: Replace by `BandStatefulClient` after implementation finished.
+	txr, err := bandProvider.SendTransaction(
+		[]sdk.Msg{zoracle.NewMsgRequest(req.CodeHash, params, 10, bandProvider.Sender())},
+		0, 20000000, "", "", "",
+		flags.BroadcastBlock,
+	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -288,8 +292,13 @@ func handleStore(c *gin.Context) {
 		return
 	}
 
-	codeHash := zoracle.NewStoredCode(req.Code, req.Name, txSender.Sender()).GetCodeHash()
-	tx, err := txSender.SendTransaction(zoracle.NewMsgStoreCode(req.Code, req.Name, txSender.Sender()), flags.BroadcastBlock)
+	codeHash := zoracle.NewStoredCode(req.Code, req.Name, bandProvider.Sender()).GetCodeHash()
+	// TODO: Replace by `BandStatefulClient` after implementation finished.
+	tx, err := bandProvider.SendTransaction(
+		[]sdk.Msg{zoracle.NewMsgStoreCode(req.Code, req.Name, bandProvider.Sender())},
+		0, 20000000, "", "", "",
+		flags.BroadcastBlock,
+	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -306,10 +315,13 @@ func main() {
 	privBytes, _ := hex.DecodeString(priv)
 	copy(pk[:], privBytes)
 
-	txSender = cmtx.NewTxSender(pk)
+	var err error
+	bandProvider, err = d3nlib.NewBandProvider(pk)
+	if err != nil {
+		panic(err)
+	}
 	cdc = app.MakeCodec()
 	rpcClient = rpc.NewHTTP(nodeURI, "/websocket")
-	cliCtx = cmtx.NewCLIContext(txSender.Sender()).WithCodec(cdc)
 
 	r := gin.Default()
 	// Currently gin-contrib/cors not work so add header manually

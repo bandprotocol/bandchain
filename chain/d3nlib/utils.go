@@ -1,4 +1,4 @@
-package cmtx
+package d3nlib
 
 import (
 	"os"
@@ -76,10 +76,5 @@ func completeAndBroadcastTxCLI(
 		return sdk.TxResponse{}, err
 	}
 	// broadcast to a Tendermint node
-	res, err := cliCtx.BroadcastTx(txBytes)
-	if err != nil {
-		return sdk.TxResponse{}, err
-	}
-
-	return res, nil
+	return cliCtx.BroadcastTx(txBytes)
 }

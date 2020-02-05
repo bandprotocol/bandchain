@@ -17,14 +17,15 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 
-	"github.com/bandprotocol/d3n/chain/cmtx"
+	"github.com/bandprotocol/d3n/chain/d3nlib"
 	sub "github.com/bandprotocol/d3n/chain/subscriber"
 	"github.com/bandprotocol/d3n/chain/x/zoracle"
 )
 
 const limitTimeOut = 10 * time.Second
 
-var txSender cmtx.TxSender
+// TODO: Replace by `BandStatefulClient` after implementation finished.
+var bandProvider d3nlib.BandProvider
 var allowedCommands = map[string]bool{"curl": true, "date": true}
 
 func main() {
@@ -43,7 +44,11 @@ func main() {
 	var priv secp256k1.PrivKeySecp256k1
 	copy(priv[:], privB)
 
-	txSender = cmtx.NewTxSender(priv)
+	var err error
+	bandProvider, err = d3nlib.NewBandProvider(priv)
+	if err != nil {
+		panic(err)
+	}
 	s := sub.NewSubscriber(viper.GetString("nodeURI"), "/websocket")
 
 	// Tx events
@@ -140,7 +145,11 @@ func handleRequest(event *abci.Event) (sdk.TxResponse, error) {
 
 	b, _ := json.Marshal(answers)
 
-	tx, err := txSender.SendTransaction(zoracle.NewMsgReport(requestID, b, sdk.ValAddress(txSender.Sender())), flags.BroadcastSync)
+	tx, err := bandProvider.SendTransaction(
+		[]sdk.Msg{zoracle.NewMsgReport(requestID, b, sdk.ValAddress(bandProvider.Sender()))},
+		0, 10000000, "", "", "",
+		flags.BroadcastSync,
+	)
 	if err != nil {
 		return sdk.TxResponse{}, fmt.Errorf("handleRequest send tx fail : %s", err)
 	}
