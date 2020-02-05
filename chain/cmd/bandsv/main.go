@@ -330,6 +330,26 @@ func handleQueryRequest(c *gin.Context) {
 	}
 }
 
+func handleQueryTx(c *gin.Context) {
+	txHash := c.Param("txHash")
+
+	resp, err := grequests.Get(
+		fmt.Sprintf(`%s/txs/%s`, queryURI, txHash),
+		nil,
+	)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	var body map[string]interface{}
+	err = resp.JSON(&body)
+	if err == nil {
+		c.JSON(resp.StatusCode, body)
+	} else {
+		c.JSON(resp.StatusCode, resp.Bytes())
+	}
+}
+
 func main() {
 	viper.Set("nodeURI", nodeURI)
 	privBytes, _ := hex.DecodeString(priv)
@@ -363,6 +383,7 @@ func main() {
 	r.POST("/store", handleStore)
 
 	r.GET("/request/:requestId", handleQueryRequest)
+	r.GET("/txs/:txHash", handleQueryTx)
 
 	r.Run("0.0.0.0:" + port) // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
