@@ -27,6 +27,8 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 			return queryAllScripts(ctx, path[1:], req, keeper)
 		case types.SerializeParams:
 			return serializeParams(ctx, path[1:], req, keeper)
+		case types.QueryRequestNumber:
+			return queryRequestNumber(ctx, req, keeper)
 		default:
 			return nil, sdk.ErrUnknownRequest("unknown nameservice query endpoint")
 		}
@@ -219,4 +221,8 @@ func serializeParams(ctx sdk.Context, path []string, req abci.RequestQuery, keep
 	rawParams, err := wasm.SerializeParams(code.Code, []byte(path[1]))
 
 	return codec.MustMarshalJSONIndent(keeper.cdc, rawParams), nil
+}
+
+func queryRequestNumber(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
+	return codec.MustMarshalJSONIndent(keeper.cdc, keeper.GetRequestCount(ctx)), nil
 }
