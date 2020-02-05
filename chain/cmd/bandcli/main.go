@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"path"
 
@@ -34,7 +35,7 @@ func main() {
 
 	rootCmd := &cobra.Command{
 		Use:   "bandcli",
-		Short: "band Client",
+		Short: "Command line interface for interacting with Band D3N",
 	}
 
 	// Add --chain-id to persistent flags and mark it required
@@ -58,10 +59,11 @@ func main() {
 		client.NewCompletionCmd(rootCmd, true),
 	)
 
-	executor := cli.PrepareMainCmd(rootCmd, "REQ", app.DefaultCLIHome)
+	executor := cli.PrepareMainCmd(rootCmd, "BAND", app.DefaultCLIHome)
 	err := executor.Execute()
 	if err != nil {
-		panic(err)
+		fmt.Printf("Failed executing CLI command: %s, exiting...\n", err)
+		os.Exit(1)
 	}
 }
 
