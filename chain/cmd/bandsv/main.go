@@ -310,24 +310,30 @@ func handleStore(c *gin.Context) {
 	})
 }
 
-func handleQueryRequest(c *gin.Context) {
-	requestId := c.Param("requestId")
-
-	resp, err := grequests.Get(
-		fmt.Sprintf(`%s/zoracle/request/%s`, queryURI, requestId),
-		nil,
-	)
+// relayResponse is the function that query and response
+// please call this function last one.
+func relayResponse(c *gin.Context, url string, options *grequests.RequestOptions) {
+	resp, err := grequests.Get(url, options)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	var body map[string]interface{}
-	err = resp.JSON(&body)
-	if err == nil {
-		c.JSON(resp.StatusCode, body)
-	} else {
-		c.JSON(resp.StatusCode, resp.Bytes())
-	}
+	c.Data(resp.StatusCode, resp.Header.Get("Content-Type"), resp.Bytes())
+}
+
+func handleQueryRequest(c *gin.Context) {
+	requestId := c.Param("requestId")
+	relayResponse(c, fmt.Sprintf(`%s/zoracle/request/%s`, queryURI, requestId), nil)
+}
+
+func handleQueryTx(c *gin.Context) {
+	txHash := c.Param("txHash")
+	relayResponse(c, fmt.Sprintf(`%s/txs/%s`, queryURI, txHash), nil)
+}
+
+func handleQueryProof(c *gin.Context) {
+	requestId := c.Param("requestId")
+	relayResponse(c, fmt.Sprintf(`%s/d3n/proof/%s`, queryURI, requestId), nil)
 }
 
 func main() {
@@ -363,6 +369,8 @@ func main() {
 	r.POST("/store", handleStore)
 
 	r.GET("/request/:requestId", handleQueryRequest)
+	r.GET("/txs/:txHash", handleQueryTx)
+	r.GET("/proof/:requestId", handleQueryProof)
 
 	r.Run("0.0.0.0:" + port) // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
