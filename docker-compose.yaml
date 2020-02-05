@@ -116,7 +116,7 @@ services:
     restart: always
     ports:
       - 1317:1317
-    command: bandcli rest-server --laddr tcp://0.0.0.0:1317 --node tcp://172.18.0.15:26657 --chain-id bandchain
+    command: bandcli rest-server --laddr tcp://0.0.0.0:1317 --node tcp://172.18.0.15:26657 --chain-id bandchain --trust-node
 
   proxy-server:
     build:
