@@ -1,0 +1,9 @@
+wasm-test:
+  stage: test
+  image: rust:1-buster
+  script:
+    - cd owasm
+    - cargo test --all
+  only:
+    changes:
+      - wasm/**/*
