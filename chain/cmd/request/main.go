@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/bandprotocol/d3n/chain/provider"
+	"github.com/bandprotocol/d3n/chain/d3nlib"
 	"github.com/bandprotocol/d3n/chain/x/zoracle"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -34,7 +34,10 @@ func main() {
 	var priv secp256k1.PrivKeySecp256k1
 	copy(priv[:], privB)
 
-	tx := provider.NewBandProvider(priv)
+	tx, err := d3nlib.NewBandProvider(priv)
+	if err != nil {
+		panic(err)
+	}
 
 	args := os.Args[1:]
 	switch args[0] {

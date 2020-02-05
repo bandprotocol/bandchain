@@ -1,4 +1,4 @@
-package provider
+package d3nlib
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"

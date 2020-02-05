@@ -17,7 +17,7 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 
-	"github.com/bandprotocol/d3n/chain/provider"
+	"github.com/bandprotocol/d3n/chain/d3nlib"
 	sub "github.com/bandprotocol/d3n/chain/subscriber"
 	"github.com/bandprotocol/d3n/chain/x/zoracle"
 )
@@ -25,7 +25,7 @@ import (
 const limitTimeOut = 10 * time.Second
 
 // TODO: Replace by `BandStatefulClient` after implementation finished.
-var bandProvider provider.BandProvider
+var bandProvider d3nlib.BandProvider
 var allowedCommands = map[string]bool{"curl": true, "date": true}
 
 func main() {
@@ -44,7 +44,11 @@ func main() {
 	var priv secp256k1.PrivKeySecp256k1
 	copy(priv[:], privB)
 
-	bandProvider = provider.NewBandProvider(priv)
+	var err error
+	bandProvider, err = d3nlib.NewBandProvider(priv)
+	if err != nil {
+		panic(err)
+	}
 	s := sub.NewSubscriber(viper.GetString("nodeURI"), "/websocket")
 
 	// Tx events

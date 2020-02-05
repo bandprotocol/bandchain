@@ -1,4 +1,4 @@
-package provider
+package d3nlib
 
 import (
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -8,7 +8,7 @@ import (
 	"github.com/tendermint/tendermint/crypto"
 )
 
-// BandProvider contain context, txBuilder, private key, and address
+// BandProvider contains context, txBuilder, private key, and address
 type BandProvider struct {
 	cliCtx  context.CLIContext
 	txBldr  authtypes.TxBuilder
@@ -30,14 +30,14 @@ func privKeyToBandAccAddress(privKey crypto.PrivKey) sdk.AccAddress {
 	return sdk.AccAddress(privKey.PubKey().Address().Bytes())
 }
 
-// NewBandProvider create new BandProvider create new cliCtx and txBldr
-func NewBandProvider(privKey crypto.PrivKey) BandProvider {
+// NewBandProvider creates new BandProvider create new cliCtx and txBldr
+func NewBandProvider(privKey crypto.PrivKey) (BandProvider, error) {
 	cdc := NewCodec()
 	addr := privKeyToBandAccAddress(privKey)
 	cliCtx := NewCLIContext(addr).WithCodec(cdc)
 	num, _, err := authtypes.NewAccountRetriever(cliCtx).GetAccountNumberSequence(addr)
 	if err != nil {
-		panic("Cannot get account number")
+		return BandProvider{}, err
 	}
 
 	return BandProvider{
@@ -45,7 +45,7 @@ func NewBandProvider(privKey crypto.PrivKey) BandProvider {
 		txBldr:  NewTxBuilder(utils.GetTxEncoder(cdc)).WithAccountNumber(num),
 		addr:    addr,
 		privKey: privKey,
-	}
+	}, nil
 }
 
 func (provider *BandProvider) Sender() sdk.AccAddress {

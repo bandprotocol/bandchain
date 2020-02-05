@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/bandprotocol/d3n/chain/app"
-	"github.com/bandprotocol/d3n/chain/provider"
+	"github.com/bandprotocol/d3n/chain/d3nlib"
 	"github.com/bandprotocol/d3n/chain/x/zoracle"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -102,7 +102,7 @@ var (
 
 var rpcClient *rpc.HTTP
 var pk secp256k1.PrivKeySecp256k1
-var bandProvider provider.BandProvider
+var bandProvider d3nlib.BandProvider
 var cdc *codec.Codec
 
 type serializeResponse struct {
@@ -315,7 +315,11 @@ func main() {
 	privBytes, _ := hex.DecodeString(priv)
 	copy(pk[:], privBytes)
 
-	bandProvider = provider.NewBandProvider(pk)
+	var err error
+	bandProvider, err = d3nlib.NewBandProvider(pk)
+	if err != nil {
+		panic(err)
+	}
 	cdc = app.MakeCodec()
 	rpcClient = rpc.NewHTTP(nodeURI, "/websocket")
 
