@@ -11,7 +11,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
-	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 )
 
@@ -28,13 +27,12 @@ func main() {
 		// Default node uri is tcp://localhost:26657
 		nodeURI = "tcp://localhost:26657"
 	}
-	viper.Set("nodeURI", nodeURI)
 
 	privB, _ := hex.DecodeString(privS)
 	var priv secp256k1.PrivKeySecp256k1
 	copy(priv[:], privB)
 
-	tx, err := d3nlib.NewBandProvider(priv)
+	tx, err := d3nlib.NewBandProvider(nodeURI, priv)
 	if err != nil {
 		panic(err)
 	}

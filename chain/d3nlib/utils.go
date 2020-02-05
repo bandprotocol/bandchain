@@ -10,11 +10,9 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	"github.com/spf13/viper"
 )
 
-func NewCLIContext(fromAddress sdk.AccAddress) context.CLIContext {
-	nodeURI := viper.GetString("nodeURI")
+func NewCLIContext(nodeURI string, fromAddress sdk.AccAddress) context.CLIContext {
 	rpc := rpcclient.NewHTTP(nodeURI, "/websocket")
 
 	return context.CLIContext{

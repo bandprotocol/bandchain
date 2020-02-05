@@ -13,11 +13,12 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/spf13/viper"
+	"github.com/levigross/grequests"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 
 	"github.com/bandprotocol/d3n/chain/d3nlib"
+	sub "github.com/bandprotocol/d3n/chain/subscriber"
 	"github.com/bandprotocol/d3n/chain/x/zoracle"
 )
 
@@ -32,45 +33,73 @@ const limitTimeOut = 10 * time.Second
 var bandProvider d3nlib.BandProvider
 var allowedCommands = map[string]bool{"curl": true, "date": true}
 
+func getEnv(key, def string) string {
+	tmp := os.Getenv(key)
+	if tmp == "" {
+		return def
+	}
+	return tmp
+}
+
+var (
+	nodeURI  = getEnv("NODE_URI", "http://localhost:26657")
+	queryURI = getEnv("QUERY_URI", "http://localhost:1317")
+	privS    = getEnv("PRIVATE_KEY", "eedda7a96ad35758f2ffc404d6ccd7be913f149a530c70e95e2e3ee7a952a877")
+)
+
 func getLatestRequest() (uint64, error) {
-	return 0, nil
+	resp, err := grequests.Get(fmt.Sprintf("%s/zoracle/request_number", queryURI), nil)
+	if err != nil {
+		return 0, err
+	}
+
+	var responseStruct struct {
+		Result string `json:"result"`
+	}
+	if err := resp.JSON(&responseStruct); err != nil {
+		return 0, err
+	}
+
+	return strconv.ParseUint(responseStruct.Result, 10, 64)
 }
 
 func main() {
-	// Get environment variable
-	privS, ok := os.LookupEnv("PRIVATE_KEY")
-	if !ok {
-		log.Fatal("Missing private key")
-	}
-	nodeURI, ok := os.LookupEnv("NODE_URI")
-	if !ok {
-		log.Fatal("Missing node uri")
-	}
-	viper.Set("nodeURI", nodeURI)
-
 	privB, _ := hex.DecodeString(privS)
 	var priv secp256k1.PrivKeySecp256k1
 	copy(priv[:], privB)
 
 	var err error
-	bandProvider, err = d3nlib.NewBandProvider(priv)
+	bandProvider, err = d3nlib.NewBandProvider(nodeURI, priv)
+	if err != nil {
+		panic(err)
+	}
+
+	currentRequest, err := getLatestRequest()
 	if err != nil {
 		panic(err)
 	}
 
 	// Setup poll loop
 	for {
+		newRequest, err := getLatestRequest()
+		if err != nil {
+			log.Println("Cannot get request number error: ", err.Error())
+		}
 
+		for currentRequest < newRequest {
+			currentRequest++
+			go newHandleRequest(currentRequest)
+		}
 		time.Sleep(2 * time.Second)
 	}
 
-	// s := sub.NewSubscriber(viper.GetString("nodeURI"), "/websocket")
+	s := sub.NewSubscriber(nodeURI, "/websocket")
 
-	// // Tx events
-	// s.AddHandler(zoracle.EventTypeRequest, handleRequestAndLog)
+	// Tx events
+	s.AddHandler(zoracle.EventTypeRequest, handleRequestAndLog)
 
-	// // start subscription
-	// s.Run()
+	// start subscription
+	s.Run()
 }
 
 func execWithTimeout(command Command, limit time.Duration) ([]byte, error) {
@@ -85,6 +114,10 @@ func execWithTimeout(command Command, limit time.Duration) ([]byte, error) {
 		return []byte{}, err
 	}
 	return out, nil
+}
+
+func newHandleRequest(requestID uint64) {
+	fmt.Println("Have new request", requestID)
 }
 
 func handleRequest(event *abci.Event) (sdk.TxResponse, error) {
