@@ -65,3 +65,8 @@ func (provider *BandProvider) SendTransaction(
 func (provider *BandProvider) QueryTx(hashHexStr string) (sdk.TxResponse, error) {
 	return utils.QueryTx(provider.cliCtx, hashHexStr)
 }
+
+func (provider *BandProvider) GetSequenceFromChain() (uint64, error) {
+	_, seq, err := authtypes.NewAccountRetriever(provider.cliCtx).GetAccountNumberSequence(provider.addr)
+	return seq, err
+}

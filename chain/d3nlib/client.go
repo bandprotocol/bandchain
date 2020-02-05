@@ -4,7 +4,6 @@ import (
 	"sync"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/tendermint/tendermint/crypto"
 )
 
@@ -20,7 +19,7 @@ func NewBandStatefulClient(nodeURI string, privKey crypto.PrivKey) (BandStateful
 	if err != nil {
 		return BandStatefulClient{}, err
 	}
-	_, seq, err := authtypes.NewAccountRetriever(provider.cliCtx).GetAccountNumberSequence(provider.Sender())
+	seq, err := provider.GetSequenceFromChain()
 	if err != nil {
 		return BandStatefulClient{}, err
 	}
@@ -36,8 +35,7 @@ func (client *BandStatefulClient) SendTransaction(
 	memo, fees, gasPrices, broadcastMode string,
 ) (sdk.TxResponse, error) {
 	// Ask current sequence number
-	_, seq, err := authtypes.NewAccountRetriever(client.provider.cliCtx).
-		GetAccountNumberSequence(client.provider.Sender())
+	seq, err := client.provider.GetSequenceFromChain()
 	if err != nil {
 		return sdk.TxResponse{}, err
 	}
