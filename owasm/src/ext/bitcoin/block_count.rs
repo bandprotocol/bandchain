@@ -19,7 +19,7 @@ impl Oracle for Info {
     }
 
     fn from_cmd_output(&self, output: String) -> Option<u64> {
-        json::parse(&output).ok()?.as_u64()
+        output.parse::<u64>().ok()
     }
 }
 
