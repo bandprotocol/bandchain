@@ -46,7 +46,7 @@ mod tests {
     #[test]
     fn test_from_cmd_not_ok() {
         assert_eq!(
-            Price::new("fastest").from_cmd_output(r#"{"safeLow":10,"gasPriceRange":{}}"#.into()),
+            Price::new("slow").from_cmd_output(r#"{"fast":80,"fastest":130,"safeLow":10,"average":20,"block_time":13.902757619738752,"blockNum":9385550,"speed":0.7777511075401192,"safeLowWait":9.8,"avgWait":2.1,"fastWait":0.5,"fastestWait":0.5,"gasPriceRange":{"4":231.7,"6":231.7,"8":231.7,"10":9.8,"15":5.9,"20":2.1,"25":1.8,"30":1.4,"35":1.4,"40":1.2,"45":1.2,"50":0.6,"55":0.6,"60":0.6,"65":0.6,"70":0.6,"75":0.6,"80":0.5,"85":0.5,"90":0.5,"95":0.5,"100":0.5,"105":0.5,"110":0.5,"115":0.5,"120":0.5,"125":0.5,"130":0.5}}"#.into()),
             None
         );
     }
