@@ -23,4 +23,5 @@ members = [
     "example/coingecko_volume",
     "example/cryptocompare_price",
     "example/cryptocompare_volume",
+    "example/ethereum_gas_price",
 ]
