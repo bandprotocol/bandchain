@@ -206,3 +206,21 @@ func getSerializeParams(cliCtx context.CLIContext, storeName string) http.Handle
 		rest.PostProcessResponse(w, cliCtx, hex.EncodeToString(serializeParamsBytes))
 	}
 }
+
+func getRequestNumberHandler(cliCtx context.CLIContext, storeName string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/request_number", storeName), nil)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		var requestNumber uint64
+		err = cliCtx.Codec.UnmarshalJSON(res, &requestNumber)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		rest.PostProcessResponse(w, cliCtx, requestNumber)
+	}
+}
