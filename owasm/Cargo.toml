@@ -26,4 +26,5 @@ members = [
     "example/ethereum_gas_price",
     "example/yahoo_price",
     "example/bitcoin_info",
+    "example/weather_info",
 ]
