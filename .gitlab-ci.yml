@@ -6,3 +6,4 @@ include:
   - "/bridges/evm/.gitlab-ci.yml"
   - "/chain/.gitlab-ci.yml"
   - "/scan/.gitlab-ci.yml"
+  - "/owasm/.gitlab-ci.yml"
