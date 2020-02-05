@@ -33,10 +33,10 @@ const limitTimeOut = 10 * time.Second
 var bandProvider d3nlib.BandProvider
 var allowedCommands = map[string]bool{"curl": true, "date": true}
 
-func getEnv(key, def string) string {
+func getEnv(key, defaultValue string) string {
 	tmp := os.Getenv(key)
 	if tmp == "" {
-		return def
+		return defaultValue
 	}
 	return tmp
 }
@@ -47,7 +47,7 @@ var (
 	privS    = getEnv("PRIVATE_KEY", "eedda7a96ad35758f2ffc404d6ccd7be913f149a530c70e95e2e3ee7a952a877")
 )
 
-func getLatestRequest() (uint64, error) {
+func getLatestRequestID() (uint64, error) {
 	resp, err := grequests.Get(fmt.Sprintf("%s/zoracle/request_number", queryURI), nil)
 	if err != nil {
 		return 0, err
@@ -74,23 +74,23 @@ func main() {
 		panic(err)
 	}
 
-	currentRequest, err := getLatestRequest()
+	currentRequestID, err := getLatestRequestID()
 	if err != nil {
 		panic(err)
 	}
 
 	// Setup poll loop
 	for {
-		newRequest, err := getLatestRequest()
+		newRequestID, err := getLatestRequestID()
 		if err != nil {
 			log.Println("Cannot get request number error: ", err.Error())
 		}
 
-		for currentRequest < newRequest {
-			currentRequest++
-			go newHandleRequest(currentRequest)
+		for currentRequestID < newRequestID {
+			currentRequestID++
+			go newHandleRequest(currentRequestID)
 		}
-		time.Sleep(2 * time.Second)
+		time.Sleep(1 * time.Second)
 	}
 
 	s := sub.NewSubscriber(nodeURI, "/websocket")
