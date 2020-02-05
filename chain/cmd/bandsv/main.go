@@ -313,7 +313,7 @@ func handleQueryRequest(c *gin.Context) {
 		return
 	}
 	var body map[string]interface{}
-	err = json.Unmarshal(resp.Bytes(), &body)
+	err = resp.JSON(&body)
 	if err == nil {
 		c.JSON(resp.StatusCode, body)
 	} else {
