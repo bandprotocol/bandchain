@@ -319,7 +319,6 @@ func handleQueryRequest(c *gin.Context) {
 	} else {
 		c.JSON(resp.StatusCode, resp.Bytes())
 	}
-	return
 }
 
 func main() {
