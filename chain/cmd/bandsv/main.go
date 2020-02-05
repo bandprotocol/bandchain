@@ -331,6 +331,11 @@ func handleQueryTx(c *gin.Context) {
 	relayResponse(c, fmt.Sprintf(`%s/txs/%s`, queryURI, txHash), nil)
 }
 
+func handleQueryProof(c *gin.Context) {
+	requestId := c.Param("requestId")
+	relayResponse(c, fmt.Sprintf(`%s/d3n/proof/%s`, queryURI, requestId), nil)
+}
+
 func main() {
 	viper.Set("nodeURI", nodeURI)
 	privBytes, _ := hex.DecodeString(priv)
@@ -365,6 +370,7 @@ func main() {
 
 	r.GET("/request/:requestId", handleQueryRequest)
 	r.GET("/txs/:txHash", handleQueryTx)
+	r.GET("/proof/:requestId", handleQueryProof)
 
 	r.Run("0.0.0.0:" + port) // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
