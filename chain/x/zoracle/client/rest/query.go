@@ -21,7 +21,7 @@ func getRequestHandler(cliCtx context.CLIContext, storeName string) http.Handler
 
 		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/request/%s", storeName, reqID), nil)
 		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusNotFound, err.Error())
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
