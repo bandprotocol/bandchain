@@ -10,7 +10,7 @@ import (
 type BandStatefulClient struct {
 	sequenceNumber uint64
 
-	mtx      sync.RWMutex
+	mtx      sync.Mutex
 	provider BandProvider
 }
 
@@ -39,13 +39,16 @@ func (client *BandStatefulClient) SendTransaction(
 	if err != nil {
 		return sdk.TxResponse{}, err
 	}
-	client.mtx.Lock()
-	if seq > client.sequenceNumber {
-		client.sequenceNumber = seq
+	var nonce uint64
+	{
+		client.mtx.Lock()
+		defer client.mtx.Unlock()
+		if seq > client.sequenceNumber {
+			client.sequenceNumber = seq
+		}
+		nonce = client.sequenceNumber
+		client.sequenceNumber++
 	}
-	nonce := client.sequenceNumber
-	client.sequenceNumber++
-	client.mtx.Unlock()
 
 	tx, err := client.provider.SendTransaction(
 		[]sdk.Msg{msg}, nonce, gas, memo, fees, gasPrices, broadcastMode,
