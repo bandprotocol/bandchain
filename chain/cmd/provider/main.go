@@ -14,7 +14,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
-	"github.com/levigross/grequests"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 
 	"github.com/bandprotocol/d3n/chain/d3nlib"
@@ -28,9 +27,6 @@ type Command struct {
 
 const limitTimeOut = 10 * time.Second
 
-var bandClient d3nlib.BandStatefulClient
-var allowedCommands = map[string]bool{"curl": true, "date": true}
-
 func getEnv(key, defaultValue string) string {
 	tmp := os.Getenv(key)
 	if tmp == "" {
@@ -40,25 +36,28 @@ func getEnv(key, defaultValue string) string {
 }
 
 var (
-	nodeURI  = getEnv("NODE_URI", "http://localhost:26657")
-	queryURI = getEnv("QUERY_URI", "http://localhost:1317")
-	privS    = getEnv("PRIVATE_KEY", "eedda7a96ad35758f2ffc404d6ccd7be913f149a530c70e95e2e3ee7a952a877")
+	bandClient      d3nlib.BandStatefulClient
+	allowedCommands = make(map[string]bool)
+	nodeURI         = getEnv("NODE_URI", "http://localhost:26657")
+	privS           = getEnv("PRIVATE_KEY", "eedda7a96ad35758f2ffc404d6ccd7be913f149a530c70e95e2e3ee7a952a877")
 )
 
+func init() {
+	allowedCommands["curl"] = true
+	allowedCommands["date"] = true
+}
+
 func getLatestRequestID() (uint64, error) {
-	resp, err := grequests.Get(fmt.Sprintf("%s/zoracle/request_number", queryURI), nil)
+	res, _, err := bandClient.GetContext().Query("custom/zoracle/request_number")
 	if err != nil {
 		return 0, err
 	}
-
-	var responseStruct struct {
-		Result string `json:"result"`
-	}
-	if err := resp.JSON(&responseStruct); err != nil {
+	var requestStr string
+	err = json.Unmarshal(res, &requestStr)
+	if err != nil {
 		return 0, err
 	}
-
-	return strconv.ParseUint(responseStruct.Result, 10, 64)
+	return strconv.ParseUint(requestStr, 10, 64)
 }
 
 func main() {
