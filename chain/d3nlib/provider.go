@@ -31,10 +31,10 @@ func privKeyToBandAccAddress(privKey crypto.PrivKey) sdk.AccAddress {
 }
 
 // NewBandProvider creates new BandProvider create new cliCtx and txBldr
-func NewBandProvider(privKey crypto.PrivKey) (BandProvider, error) {
+func NewBandProvider(nodeURI string, privKey crypto.PrivKey) (BandProvider, error) {
 	cdc := NewCodec()
 	addr := privKeyToBandAccAddress(privKey)
-	cliCtx := NewCLIContext(addr).WithCodec(cdc)
+	cliCtx := NewCLIContext(nodeURI, addr).WithCodec(cdc)
 	num, _, err := authtypes.NewAccountRetriever(cliCtx).GetAccountNumberSequence(addr)
 	if err != nil {
 		return BandProvider{}, err

@@ -19,7 +19,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gin-gonic/gin"
 	"github.com/levigross/grequests"
-	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 	cmn "github.com/tendermint/tendermint/libs/common"
 	rpc "github.com/tendermint/tendermint/rpc/client"
@@ -337,12 +336,11 @@ func handleQueryProof(c *gin.Context) {
 }
 
 func main() {
-	viper.Set("nodeURI", nodeURI)
 	privBytes, _ := hex.DecodeString(priv)
 	copy(pk[:], privBytes)
 
 	var err error
-	bandProvider, err = d3nlib.NewBandProvider(pk)
+	bandProvider, err = d3nlib.NewBandProvider(nodeURI, pk)
 	if err != nil {
 		panic(err)
 	}
