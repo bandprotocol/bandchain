@@ -25,14 +25,31 @@ import (
 	"github.com/bandprotocol/d3n/chain/wasm"
 )
 
+const (
+	Asynchronous = "ASYNCHRONOUS"
+	Synchronous  = "SYNCHRONOUS"
+	Full         = "FULL"
+)
+
 type OracleRequest struct {
+	Type     string          `json:"type" binding:"required"`
 	CodeHash cmn.HexBytes    `json:"codeHash" binding:"len=32"`
 	Params   json.RawMessage `json:"params" binding:"required"`
 }
 
-type OracleRequestResp struct {
-	RequestId uint64 `json:"id"`
+type OracleRequestAsynchronousResp struct {
+	TxHash string `json:"txHash"`
+}
+
+type OracleRequestSynchronousResp struct {
 	TxHash    string `json:"txHash"`
+	RequestId uint64 `json:"id"`
+}
+
+type OracleRequestFullResp struct {
+	TxHash    string          `json:"txHash"`
+	RequestId uint64          `json:"id"`
+	Proof     json.RawMessage `json:"proof"`
 }
 
 type ExecuteRequest struct {
@@ -114,6 +131,12 @@ func handleRequestData(c *gin.Context) {
 		return
 	}
 
+	reqType := req.Type
+	if reqType != Asynchronous && reqType != Synchronous && reqType != Full {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Type not match"})
+		return
+	}
+
 	resp, err := grequests.Get(
 		fmt.Sprintf(`%s/zoracle/serialize_params/%x`, queryURI, req.CodeHash),
 		&grequests.RequestOptions{
@@ -143,6 +166,24 @@ func handleRequestData(c *gin.Context) {
 	}
 
 	params := respParams.Result
+
+	// unconfirmed respond
+	if reqType == Asynchronous {
+		txr, err := bandClient.SendTransaction(
+			zoracle.NewMsgRequest(req.CodeHash, params, 10, bandClient.Sender()),
+			20000000, "", "", "",
+			flags.BroadcastAsync,
+		)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(200, OracleRequestAsynchronousResp{
+			TxHash: txr.TxHash,
+		})
+		return
+	}
 
 	txr, err := bandClient.SendTransaction(
 		zoracle.NewMsgRequest(req.CodeHash, params, 10, bandClient.Sender()),
@@ -174,10 +215,47 @@ func handleRequestData(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, OracleRequestResp{
-		RequestId: requestId,
-		TxHash:    txr.TxHash,
-	})
+	// confirmed respond
+	if reqType == Synchronous {
+		c.JSON(200, OracleRequestSynchronousResp{
+			TxHash:    txr.TxHash,
+			RequestId: requestId,
+		})
+		return
+	}
+
+	for i := 0; i < 10; i++ {
+		resp, err := grequests.Get(fmt.Sprintf(`%s/d3n/proof/%d`, queryURI, requestId), nil)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// confirmed + proof respond
+		if resp.StatusCode == 200 {
+			var proof struct {
+				Result json.RawMessage `json:"result"`
+			}
+
+			err = resp.JSON(&proof)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+
+			c.JSON(200, OracleRequestFullResp{
+				TxHash:    txr.TxHash,
+				RequestId: requestId,
+				Proof:     proof.Result,
+			})
+			return
+		}
+
+		time.Sleep(3 * time.Second)
+	}
+
+	// finding proof timeout
+	c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf(`Cannot find proof in this TxHash %s`, txr.TxHash)})
 }
 
 func handleParamsInfo(c *gin.Context) {
