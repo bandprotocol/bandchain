@@ -20,5 +20,3 @@ require (
 	golang.org/x/crypto v0.0.0-20191122220453-ac88ee75c92c // indirect
 	golang.org/x/net v0.0.0-20191124235446-72fef5d5e266 // indirect
 )
-
-replace github.com/tendermint/tendermint => github.com/bandprotocol/tendermint v0.32.9-0.20200116035555-cfd3a61367ea
