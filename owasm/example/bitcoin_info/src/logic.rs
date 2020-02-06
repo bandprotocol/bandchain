@@ -9,14 +9,14 @@ decl_params! {
 
 decl_data! {
     pub struct Data {
-        pub block_hash: [u64;4] = |params: &Parameter| block_hash::Info::new(params.block_height),
+        pub block_hash: [u64; 4] = |params: &Parameter| block_hash::Info::new(params.block_height),
         pub block_count: u64 = |_: &Parameter| block_count::Info::new(),
     }
 }
 
 decl_result! {
     pub struct Result {
-        pub block_hash: [u64;4],
+        pub block_hash: [u64; 4],
         pub confirmation: u64,
     }
 }
