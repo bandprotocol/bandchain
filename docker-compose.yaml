@@ -23,12 +23,12 @@ services:
       - build-provider-image
       - code-server
       - proxy-server
-      - single-provider
+      - single-oracle
     ports:
       - 26657:26657
     command: sh -c "chmod +x ./docker-config/single-validator/run.sh && ./docker-config/single-validator/run.sh"
 
-  single-provider:
+  single-oracle:
     image: band-validator:latest
     environment:
       - PRIVATE_KEY=06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b
@@ -38,7 +38,7 @@ services:
     networks:
       bandchain:
     restart: always
-    command: provider
+    command: bandoracled
 
   multi-validator:
     image: tianon/true
@@ -50,10 +50,10 @@ services:
       - multi-validator2-node
       - multi-validator3-node
       - multi-validator4-node
-      - provider1
-      - provider2
-      - provider3
-      - provider4
+      - oracle1
+      - oracle2
+      - oracle3
+      - oracle4
       - query-node
       - build-provider-image
       - code-server
@@ -69,7 +69,7 @@ services:
         ipv4_address: 172.18.0.11
     command: sh -c "chmod +x ./docker-config/run.sh && ./docker-config/run.sh validator1"
 
-  provider1:
+  oracle1:
     image: band-validator:latest
     environment:
       - PRIVATE_KEY=06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b
@@ -79,7 +79,7 @@ services:
     networks:
       bandchain:
     restart: always
-    command: provider
+    command: bandoracled
 
   multi-validator2-node:
     image: band-validator:latest
@@ -88,7 +88,7 @@ services:
         ipv4_address: 172.18.0.12
     command: sh -c "chmod +x ./docker-config/run.sh && ./docker-config/run.sh validator2"
 
-  provider2:
+  oracle2:
     image: band-validator:latest
     environment:
       - PRIVATE_KEY=6abc8ab25298fb4af6adcb9d5831db0ad7c959388f0d947abd2b4c4457ef52ec
@@ -98,7 +98,7 @@ services:
     networks:
       bandchain:
     restart: always
-    command: provider
+    command: bandoracled
 
   multi-validator3-node:
     image: band-validator:latest
@@ -107,7 +107,7 @@ services:
         ipv4_address: 172.18.0.13
     command: sh -c "chmod +x ./docker-config/run.sh && ./docker-config/run.sh validator3"
 
-  provider3:
+  oracle3:
     image: band-validator:latest
     environment:
       - PRIVATE_KEY=894fc1c7e7666c722ae5f30ba4cb18c546e08f0b2634718c27b80b9d39416dbe
@@ -117,7 +117,7 @@ services:
     networks:
       bandchain:
     restart: always
-    command: provider
+    command: bandoracled
 
   multi-validator4-node:
     image: band-validator:latest
@@ -126,7 +126,7 @@ services:
         ipv4_address: 172.18.0.14
     command: sh -c "chmod +x ./docker-config/run.sh && ./docker-config/run.sh validator4"
 
-  provider4:
+  oracle4:
     image: band-validator:latest
     environment:
       - PRIVATE_KEY=947f1715251d43de45232fc072e3ca4d823e876cf9f4ef74ad9a5f4ef440937e
@@ -136,7 +136,7 @@ services:
     networks:
       bandchain:
     restart: always
-    command: provider
+    command: bandoracled
 
   query-node:
     image: band-validator:latest
@@ -207,8 +207,6 @@ services:
       - owasm-server
     ports:
       - 28443:28443
-    environment:
-      - ENV
 
 networks:
   bandchain:
