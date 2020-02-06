@@ -37,15 +37,10 @@ func getEnv(key, defaultValue string) string {
 
 var (
 	bandClient      d3nlib.BandStatefulClient
-	allowedCommands = make(map[string]bool)
+	allowedCommands = map[string]bool{"curl": true, "date": true}
 	nodeURI         = getEnv("NODE_URI", "http://localhost:26657")
 	privS           = getEnv("PRIVATE_KEY", "eedda7a96ad35758f2ffc404d6ccd7be913f149a530c70e95e2e3ee7a952a877")
 )
-
-func init() {
-	allowedCommands["curl"] = true
-	allowedCommands["date"] = true
-}
 
 func getLatestRequestID() (uint64, error) {
 	res, _, err := bandClient.GetContext().Query("custom/zoracle/request_number")
