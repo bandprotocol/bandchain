@@ -28,9 +28,23 @@ services:
       - build-provider-image
       - code-server
       - proxy-server
+      - single-provider
     ports:
       - 26657:26657
     command: sh -c "chmod +x ./docker-config/single-validator/run.sh && ./docker-config/single-validator/run.sh"
+
+  single-provider:
+    image: band-validator:latest
+    environment:
+      - PRIVATE_KEY=06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b
+      - NODE_URI=tcp://172.18.0.15:26657
+      - QUERY_URI=http://172.18.0.20:1317
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      bandchain:
+    restart: always
+    command: provider
 
   multi-validator:
     image: tianon/true
@@ -139,7 +153,8 @@ services:
     image: band-validator:latest
     environment:
       - PORT=5000
-      - NODE_URI=tcp://172.18.0.11:26657
+      - GIN_MODE=release
+      - NODE_URI=tcp://172.18.0.15:26657
       - QUERY_URI=http://172.18.0.20:1317
       - PRIVATE_KEY=eedda7a96ad35758f2ffc404d6ccd7be913f149a530c70e95e2e3ee7a952a877
     networks:
@@ -152,7 +167,7 @@ services:
     restart: always
     depends_on:
       - build-provider-image
-    command: sh -c "cd ./cmd/bandsv && go run *"
+    command: bandsv
 
   owasm-server:
     build: ./studio/server
