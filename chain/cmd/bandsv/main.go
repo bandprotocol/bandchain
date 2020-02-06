@@ -37,19 +37,10 @@ type OracleRequest struct {
 	Params   json.RawMessage `json:"params" binding:"required"`
 }
 
-type OracleRequestAsynchronousResp struct {
-	TxHash string `json:"txHash"`
-}
-
-type OracleRequestSynchronousResp struct {
-	TxHash    string `json:"txHash"`
-	RequestId uint64 `json:"id"`
-}
-
-type OracleRequestFullResp struct {
+type OracleRequestResp struct {
 	TxHash    string          `json:"txHash"`
-	RequestId uint64          `json:"id"`
-	Proof     json.RawMessage `json:"proof"`
+	RequestId uint64          `json:"id,omitempty"`
+	Proof     json.RawMessage `json:"proof,omitempty"`
 }
 
 type ExecuteRequest struct {
@@ -179,7 +170,7 @@ func handleRequestData(c *gin.Context) {
 			return
 		}
 
-		c.JSON(200, OracleRequestAsynchronousResp{
+		c.JSON(200, OracleRequestResp{
 			TxHash: txr.TxHash,
 		})
 		return
@@ -217,7 +208,7 @@ func handleRequestData(c *gin.Context) {
 
 	// confirmed respond
 	if reqType == Synchronous {
-		c.JSON(200, OracleRequestSynchronousResp{
+		c.JSON(200, OracleRequestResp{
 			TxHash:    txr.TxHash,
 			RequestId: requestId,
 		})
@@ -243,7 +234,7 @@ func handleRequestData(c *gin.Context) {
 				return
 			}
 
-			c.JSON(200, OracleRequestFullResp{
+			c.JSON(200, OracleRequestResp{
 				TxHash:    txr.TxHash,
 				RequestId: requestId,
 				Proof:     proof.Result,
