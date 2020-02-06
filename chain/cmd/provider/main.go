@@ -13,12 +13,12 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	"github.com/levigross/grequests"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 
 	"github.com/bandprotocol/d3n/chain/d3nlib"
-	sub "github.com/bandprotocol/d3n/chain/subscriber"
 	"github.com/bandprotocol/d3n/chain/x/zoracle"
 )
 
@@ -79,12 +79,12 @@ func main() {
 	}
 
 	// Setup poll loop
-	go func() {
-		for {
-			newRequestID, err := getLatestRequestID()
-			if err != nil {
-				log.Println("Cannot get request number error: ", err.Error())
-			}
+	log.Println("Start")
+	for {
+		newRequestID, err := getLatestRequestID()
+		if err != nil {
+			log.Println("Cannot get request number error: ", err.Error())
+		}
 
 			for currentRequestID < newRequestID {
 				currentRequestID++
@@ -92,15 +92,8 @@ func main() {
 			}
 			time.Sleep(1 * time.Second)
 		}
-	}()
-
-	s := sub.NewSubscriber(nodeURI, "/websocket")
-
-	// Tx events
-	s.AddHandler(zoracle.EventTypeRequest, handleRequestAndLog)
-
-	// start subscription
-	s.Run()
+		time.Sleep(1 * time.Second)
+	}
 }
 
 func execWithTimeout(command Command, limit time.Duration) ([]byte, error) {
@@ -118,7 +111,17 @@ func execWithTimeout(command Command, limit time.Duration) ([]byte, error) {
 }
 
 func newHandleRequest(requestID uint64) {
-	fmt.Println("Have new request", requestID)
+	// resp, err := grequests.Get(fmt.Sprintf("%s/txs", queryURI),
+	// 	&grequests.RequestOptions{
+	// 		Params: map[string]string{"request.id": strconv.FormatUint(requestID, 10)},
+	// 	})
+	cliCtx := d3nlib.NewCLIContext(nodeURI, sdk.AccAddress{})
+	searchResult, err := utils.QueryTxsByEvents(cliCtx, []string{fmt.Sprintf("request.id='%d'", requestID)}, 0, 100)
+	if err != nil {
+		log.Println("Fail to get request tx")
+		return
+	}
+	fmt.Println(searchResult)
 }
 
 func handleRequest(event *abci.Event) (sdk.TxResponse, error) {
