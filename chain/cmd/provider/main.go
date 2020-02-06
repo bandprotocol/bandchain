@@ -15,7 +15,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	"github.com/levigross/grequests"
-	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 
 	"github.com/bandprotocol/d3n/chain/d3nlib"
@@ -79,18 +78,14 @@ func main() {
 	}
 
 	// Setup poll loop
-	log.Println("Start")
 	for {
 		newRequestID, err := getLatestRequestID()
 		if err != nil {
 			log.Println("Cannot get request number error: ", err.Error())
 		}
-
-			for currentRequestID < newRequestID {
-				currentRequestID++
-				go newHandleRequest(currentRequestID)
-			}
-			time.Sleep(1 * time.Second)
+		for currentRequestID < newRequestID {
+			currentRequestID++
+			go handleRequestAndLog(currentRequestID)
 		}
 		time.Sleep(1 * time.Second)
 	}
@@ -110,42 +105,41 @@ func execWithTimeout(command Command, limit time.Duration) ([]byte, error) {
 	return out, nil
 }
 
-func newHandleRequest(requestID uint64) {
-	// resp, err := grequests.Get(fmt.Sprintf("%s/txs", queryURI),
-	// 	&grequests.RequestOptions{
-	// 		Params: map[string]string{"request.id": strconv.FormatUint(requestID, 10)},
-	// 	})
-	cliCtx := d3nlib.NewCLIContext(nodeURI, sdk.AccAddress{})
-	searchResult, err := utils.QueryTxsByEvents(cliCtx, []string{fmt.Sprintf("request.id='%d'", requestID)}, 0, 100)
-	if err != nil {
-		log.Println("Fail to get request tx")
-		return
-	}
-	fmt.Println(searchResult)
-}
-
-func handleRequest(event *abci.Event) (sdk.TxResponse, error) {
-	var requestID uint64
-	var commands []Command
-
-	for _, kv := range event.GetAttributes() {
-		switch string(kv.Key) {
-		case zoracle.AttributeKeyRequestID:
-			var err error
-			requestID, err = strconv.ParseUint(string(kv.Value), 10, 64)
-			if err != nil {
-				return sdk.TxResponse{}, fmt.Errorf("handleRequest %s", err)
-			}
-		case zoracle.AttributeKeyPrepare:
-			byteValue, err := hex.DecodeString(string(kv.Value))
-			if err != nil {
-				return sdk.TxResponse{}, fmt.Errorf("handleRequest %s", err)
-			}
-			err = json.Unmarshal(byteValue, &commands)
-			if err != nil {
-				return sdk.TxResponse{}, fmt.Errorf("handleRequest %s", err)
+func getPrepareBytes(searchResult *sdk.SearchTxsResult) ([]byte, error) {
+	for _, tx := range searchResult.Txs {
+		// Stringevents (type of tx.Events) are deprecated in next cosmos-release.
+		for _, event := range tx.Events {
+			if event.Type == "request" {
+				for _, kv := range event.Attributes {
+					if string(kv.Key) == zoracle.AttributeKeyPrepare {
+						return hex.DecodeString(string(kv.Value))
+					}
+				}
 			}
 		}
+	}
+	return nil, fmt.Errorf("Cannot find prepare bytes")
+}
+
+func handleRequest(requestID uint64) (sdk.TxResponse, error) {
+	searchResult, err := utils.QueryTxsByEvents(
+		bandClient.GetContext(),
+		[]string{fmt.Sprintf("request.id='%d'", requestID)},
+		1,
+		100,
+	)
+	if err != nil {
+		return sdk.TxResponse{}, err
+	}
+	byteValue, err := getPrepareBytes(searchResult)
+	if err != nil {
+		return sdk.TxResponse{}, err
+	}
+
+	var commands []Command
+	err = json.Unmarshal(byteValue, &commands)
+	if err != nil {
+		return sdk.TxResponse{}, err
 	}
 
 	type queryParallelInfo struct {
@@ -153,6 +147,7 @@ func handleRequest(event *abci.Event) (sdk.TxResponse, error) {
 		answer string
 		err    error
 	}
+
 	chanQueryParallelInfo := make(chan queryParallelInfo, len(commands))
 	for i, command := range commands {
 		go func(index int, command Command) {
@@ -192,17 +187,13 @@ func handleRequest(event *abci.Event) (sdk.TxResponse, error) {
 
 	b, _ := json.Marshal(answers)
 
-	tx, err := bandClient.SendTransaction(
+	return bandClient.SendTransaction(
 		zoracle.NewMsgReport(requestID, b, sdk.ValAddress(bandClient.Sender())),
 		10000000, "", "", "",
 		flags.BroadcastSync,
 	)
-	if err != nil {
-		return sdk.TxResponse{}, fmt.Errorf("handleRequest send tx fail : %s", err)
-	}
-	return tx, nil
 }
 
-func handleRequestAndLog(event *abci.Event) {
-	fmt.Println(handleRequest(event))
+func handleRequestAndLog(requestID uint64) {
+	fmt.Println(handleRequest(requestID))
 }

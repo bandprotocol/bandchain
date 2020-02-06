@@ -3,6 +3,7 @@ package d3nlib
 import (
 	"sync"
 
+	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/crypto"
 )
@@ -65,4 +66,8 @@ func (client *BandStatefulClient) SendTransaction(
 
 func (client *BandStatefulClient) Sender() sdk.AccAddress {
 	return client.provider.Sender()
+}
+
+func (client *BandStatefulClient) GetContext() context.CLIContext {
+	return client.provider.cliCtx
 }
