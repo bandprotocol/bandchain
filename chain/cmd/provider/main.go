@@ -79,18 +79,20 @@ func main() {
 	}
 
 	// Setup poll loop
-	for {
-		newRequestID, err := getLatestRequestID()
-		if err != nil {
-			log.Println("Cannot get request number error: ", err.Error())
-		}
+	go func() {
+		for {
+			newRequestID, err := getLatestRequestID()
+			if err != nil {
+				log.Println("Cannot get request number error: ", err.Error())
+			}
 
-		for currentRequestID < newRequestID {
-			currentRequestID++
-			go newHandleRequest(currentRequestID)
+			for currentRequestID < newRequestID {
+				currentRequestID++
+				go newHandleRequest(currentRequestID)
+			}
+			time.Sleep(1 * time.Second)
 		}
-		time.Sleep(1 * time.Second)
-	}
+	}()
 
 	s := sub.NewSubscriber(nodeURI, "/websocket")
 
