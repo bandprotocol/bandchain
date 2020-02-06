@@ -16,7 +16,6 @@ import (
 	"github.com/bandprotocol/d3n/chain/x/zoracle"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gin-gonic/gin"
 	"github.com/levigross/grequests"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
@@ -101,7 +100,7 @@ var (
 
 var rpcClient *rpc.HTTP
 var pk secp256k1.PrivKeySecp256k1
-var bandProvider d3nlib.BandProvider
+var bandClient d3nlib.BandStatefulClient
 var cdc *codec.Codec
 
 type serializeResponse struct {
@@ -145,10 +144,9 @@ func handleRequestData(c *gin.Context) {
 
 	params := respParams.Result
 
-	// TODO: Replace by `BandStatefulClient` after implementation finished.
-	txr, err := bandProvider.SendTransaction(
-		[]sdk.Msg{zoracle.NewMsgRequest(req.CodeHash, params, 10, bandProvider.Sender())},
-		0, 20000000, "", "", "",
+	txr, err := bandClient.SendTransaction(
+		zoracle.NewMsgRequest(req.CodeHash, params, 10, bandClient.Sender()),
+		20000000, "", "", "",
 		flags.BroadcastBlock,
 	)
 	if err != nil {
@@ -291,11 +289,11 @@ func handleStore(c *gin.Context) {
 		return
 	}
 
-	codeHash := zoracle.NewStoredCode(req.Code, req.Name, bandProvider.Sender()).GetCodeHash()
-	// TODO: Replace by `BandStatefulClient` after implementation finished.
-	tx, err := bandProvider.SendTransaction(
-		[]sdk.Msg{zoracle.NewMsgStoreCode(req.Code, req.Name, bandProvider.Sender())},
-		0, 20000000, "", "", "",
+	codeHash := zoracle.NewStoredCode(req.Code, req.Name, bandClient.Sender()).GetCodeHash()
+
+	tx, err := bandClient.SendTransaction(
+		zoracle.NewMsgStoreCode(req.Code, req.Name, bandClient.Sender()),
+		20000000, "", "", "",
 		flags.BroadcastBlock,
 	)
 	if err != nil {
@@ -340,7 +338,7 @@ func main() {
 	copy(pk[:], privBytes)
 
 	var err error
-	bandProvider, err = d3nlib.NewBandProvider(nodeURI, pk)
+	bandClient, err = d3nlib.NewBandStatefulClient(nodeURI, pk)
 	if err != nil {
 		panic(err)
 	}
