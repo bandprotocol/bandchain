@@ -168,7 +168,17 @@ func GetProviderStatus(cliCtx context.CLIContext) http.HandlerFunc {
 			status = "BAD"
 		}
 
-		w.Write([]byte(fmt.Sprintf(`height: %d, requestId: %s, reports: %d, status: %s`, block.Block.Height, requestId, numReporters, status)))
+		rest.PostProcessResponseBare(w, cliCtx, struct {
+			Height       int64  `json:"height"`
+			RequestId    string `json:"id"`
+			NumReporters int    `json:"num_reporters"`
+			Status       string `json:"status"`
+		}{
+			Height:       block.Block.Height,
+			RequestId:    requestId,
+			NumReporters: numReporters,
+			Status:       status,
+		})
 	}
 }
 
