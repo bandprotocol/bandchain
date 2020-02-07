@@ -22,7 +22,7 @@ func TestGetterSetterCode(t *testing.T) {
 	actualCodeHash := keeper.SetCode(ctx, code, name, owner)
 	storedCode, err := keeper.GetCode(ctx, actualCodeHash)
 	require.Nil(t, err)
-	require.Equal(t, code, storedCode.Code)
+	require.Equal(t, code, []byte(storedCode.Code))
 	require.Equal(t, owner, storedCode.Owner)
 	require.Equal(t, codeHash, actualCodeHash)
 }
