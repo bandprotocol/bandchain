@@ -4,7 +4,9 @@ use owasm::{decl_data, decl_params, decl_result};
 use std::convert::TryInto;
 
 decl_params! {
-    pub struct Parameter {}
+    pub struct Parameter {
+        pub max_range: u64,
+    }
 }
 
 decl_data! {
@@ -27,8 +29,11 @@ impl Data {
     }
 }
 
-pub fn execute(_params: Parameter, data: Vec<Data>) -> Result {
-    Result { random_u64: data.iter().fold(0, |accumulator, each| accumulator ^ each.rng_to_u64()) }
+pub fn execute(params: Parameter, data: Vec<Data>) -> Result {
+    Result {
+        random_u64: data.iter().fold(0, |accumulator, each| accumulator ^ each.rng_to_u64())
+            % params.max_range,
+    }
 }
 
 #[cfg(test)]
@@ -37,15 +42,15 @@ mod tests {
 
     #[test]
     fn test_execute() {
-        let params = Parameter {};
+        let params = Parameter { max_range: 31 };
         let data1 = Data { random_bytes8: vec![1, 2, 3, 4, 5, 6, 7, 8] };
         let data2 = Data { random_bytes8: vec![8, 7, 6, 5, 4, 3, 2, 1] };
-        assert_eq!(execute(params, vec![data1, data2]), Result { random_u64: 649931223095117065 });
+        assert_eq!(execute(params, vec![data1, data2]), Result { random_u64: 18 });
     }
 
     #[test]
     fn test_call_get_random_u64() {
-        let params = Parameter {};
+        let params = Parameter { max_range: 31 };
         let data =
             Data::build_from_local_env(&params).unwrap_or(Data { random_bytes8: vec![0; 8] });
         println!("Current random number is {:?}", execute(params, vec![data]));
