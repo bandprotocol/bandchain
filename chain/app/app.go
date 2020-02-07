@@ -27,9 +27,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/supply"
+<<<<<<< HEAD
 
 	bandsupply "github.com/bandprotocol/bandchain/chain/x/supply"
 	"github.com/bandprotocol/bandchain/chain/x/zoracle"
+=======
+	// "github.com/bandprotocol/d3n/chain/x/zoracle"
+>>>>>>> Disable zoracle for wenchang release
 )
 
 const (
@@ -60,7 +64,7 @@ var (
 		slashing.AppModuleBasic{},
 		supply.AppModuleBasic{},
 		// D3N-specific modules
-		zoracle.AppModuleBasic{},
+		// zoracle.AppModuleBasic{},
 	)
 	// account permissions
 	maccPerms = map[string][]string{
@@ -110,6 +114,7 @@ type bandApp struct {
 	tkeys map[string]*sdk.TransientStoreKey
 
 	// Keepers
+<<<<<<< HEAD
 	AccountKeeper  auth.AccountKeeper
 	BankKeeper     bank.Keeper
 	SupplyKeeper   supply.Keeper
@@ -126,6 +131,19 @@ type bandApp struct {
 	TxDecoder sdk.TxDecoder
 	// Deliver Context that is set during BeingBlock and unset during EndBlock; primarily for gas refund
 	DeliverContext sdk.Context
+=======
+	accountKeeper  auth.AccountKeeper
+	bankKeeper     bank.Keeper
+	supplyKeeper   supply.Keeper
+	stakingKeeper  staking.Keeper
+	slashingKeeper slashing.Keeper
+	mintKeeper     mint.Keeper
+	distrKeeper    distr.Keeper
+	govKeeper      gov.Keeper
+	crisisKeeper   crisis.Keeper
+	paramsKeeper   params.Keeper
+	// zoracleKeeper  zoracle.Keeper
+>>>>>>> Disable zoracle for wenchang release
 
 	// Module Manager
 	mm *module.Manager
@@ -148,7 +166,7 @@ func NewBandApp(
 	keys := sdk.NewKVStoreKeys(
 		bam.MainStoreKey, auth.StoreKey, staking.StoreKey,
 		supply.StoreKey, mint.StoreKey, distr.StoreKey, slashing.StoreKey,
-		gov.StoreKey, params.StoreKey, zoracle.StoreKey,
+		gov.StoreKey, params.StoreKey, /* zoracle.StoreKey, */
 	)
 
 	tkeys := sdk.NewTransientStoreKeys(staking.TStoreKey, params.TStoreKey)
@@ -289,7 +307,7 @@ func NewBandApp(
 	)
 
 	app.mm.SetOrderBeginBlockers(mint.ModuleName, distr.ModuleName, slashing.ModuleName)
-	app.mm.SetOrderEndBlockers(zoracle.ModuleName, crisis.ModuleName, gov.ModuleName, staking.ModuleName)
+	app.mm.SetOrderEndBlockers( /* zoracle.ModuleName, */ crisis.ModuleName, gov.ModuleName, staking.ModuleName)
 
 	// Sets the order of Genesis - Order matters, genutil is to always come last
 	// NOTE: The genutils moodule must occur after staking so that pools are
@@ -303,7 +321,7 @@ func NewBandApp(
 		slashing.ModuleName,
 		gov.ModuleName,
 		mint.ModuleName,
-		zoracle.ModuleName,
+		// zoracle.ModuleName,
 		supply.ModuleName,
 		crisis.ModuleName,
 		genutil.ModuleName,
