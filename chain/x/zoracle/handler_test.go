@@ -213,7 +213,7 @@ func TestStoreCodeSuccess(t *testing.T) {
 	require.Nil(t, err)
 
 	require.Equal(t, owner, sc.Owner)
-	require.Equal(t, code, sc.Code)
+	require.Equal(t, code, []byte(sc.Code))
 }
 
 func TestStoreCodeFailed(t *testing.T) {

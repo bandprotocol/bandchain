@@ -2,6 +2,7 @@
 //!
 //! TODO
 
+pub mod bitcoin;
 pub mod crypto;
 pub mod ethgasstation;
 pub mod finance;

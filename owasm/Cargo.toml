@@ -25,4 +25,5 @@ members = [
     "example/cryptocompare_volume",
     "example/ethereum_gas_price",
     "example/yahoo_price",
+    "example/bitcoin_info",
 ]

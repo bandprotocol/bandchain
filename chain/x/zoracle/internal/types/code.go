@@ -3,13 +3,14 @@ package types
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/crypto"
+	cmn "github.com/tendermint/tendermint/libs/common"
 )
 
 // StoredCode store actual code with owner
 type StoredCode struct {
-	Code  []byte
-	Name  string
-	Owner sdk.AccAddress
+	Code  cmn.HexBytes   `json:"code"`
+	Name  string         `json:"name"`
+	Owner sdk.AccAddress `json:"owner"`
 }
 
 // NewStoredCode is a constructor of StoredCode
