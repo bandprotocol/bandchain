@@ -15,6 +15,17 @@ cat ~/.bandd/config/genesis.json \
 
 mv ~/.bandd/config/genesis.json.temp ~/.bandd/config/genesis.json
 
+# Generate scripts
+python3 code.py
+
+# make uband staking denom
+cat ~/.bandd/config/genesis.json \
+    | python3 -c 'import json; import sys; genesis = json.loads(sys.stdin.read()); f = open("temp.json","r"); scripts = json.load(f); f.close(); genesis["app_state"]["zoracle"]["scripts"] = scripts; print(json.dumps(genesis))' \
+    > ~/.bandd/config/genesis.json.temp
+
+mv ~/.bandd/config/genesis.json.temp ~/.bandd/config/genesis.json
+
+rm temp.json
 # create acccounts
 expect $DIR/add-account.exp \
     validator1 \
