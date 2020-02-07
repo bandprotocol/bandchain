@@ -133,5 +133,5 @@ func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router) {
 	r.HandleFunc("/d3n/blocks/latest", LatestBlocksRequestHandlerFn(cliCtx)).Methods("GET")
 	r.HandleFunc("/d3n/txs/latest", LatestTxsRequestHandlerFn(cliCtx)).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/d3n/proof/{%s}", requestID), GetProofHandlerFn(cliCtx)).Methods("GET")
-	r.HandleFunc(fmt.Sprintf("/d3n/health_check"), GetHealthStatus(cliCtx)).Methods("GET")
+	r.HandleFunc("/d3n/health_check", GetHealthStatus(cliCtx)).Methods("GET")
 }
