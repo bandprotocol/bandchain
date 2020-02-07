@@ -28,4 +28,5 @@ members = [
     "example/bitcoin_info",
     "example/weather_info",
     "example/flight_verification"
+    "example/random_u64",
 ]
