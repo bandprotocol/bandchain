@@ -173,9 +173,15 @@ func getStoreTxInfo(cliCtx context.CLIContext, script *ScriptInfoWithTx, hash st
 	if err != nil {
 		return err
 	}
-	script.TxHash = searchResult.Txs[0].TxHash
-	script.CreatedAtHeight = searchResult.Txs[0].Height
-	script.CreatedAtTime = searchResult.Txs[0].Timestamp
+	if len(searchResult.Txs) == 1 {
+		script.TxHash = searchResult.Txs[0].TxHash
+		script.CreatedAtHeight = searchResult.Txs[0].Height
+		script.CreatedAtTime = searchResult.Txs[0].Timestamp
+	} else {
+		script.TxHash = "0000000000000000000000000000000000000000000000000000000000000000"
+		script.CreatedAtHeight = 0
+		script.CreatedAtTime = "0"
+	}
 	return nil
 }
 
