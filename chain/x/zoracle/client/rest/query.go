@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/types/rest"
@@ -180,7 +181,7 @@ func getStoreTxInfo(cliCtx context.CLIContext, script *ScriptInfoWithTx, hash st
 	} else {
 		script.TxHash = "0000000000000000000000000000000000000000000000000000000000000000"
 		script.CreatedAtHeight = 0
-		script.CreatedAtTime = "0"
+		script.CreatedAtTime = string(time.Now().Unix())
 	}
 	return nil
 }
