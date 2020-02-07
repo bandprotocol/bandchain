@@ -14,13 +14,13 @@ function(data) {
     if (isNaN(params[key])) ret[key] = params[key]
     else ret[key] = parseInt(params[key], 10)
   }
-  return {...data, params: ret};
+  return {...data, params: ret, type: "SYNCHRONOUS"};
 }
   |}
 ];
 
 let execute = (data: t) => {
   let%Promise response =
-    Axios.postData("https://d3n.bandprotocol.com/bandsv/request", convert(data));
+    Axios.postData("http://rpc.alpha.d3n.xyz/bandsv/request", convert(data));
   Promise.ret(response);
 };
