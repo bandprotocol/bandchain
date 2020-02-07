@@ -1,11 +1,11 @@
 {
-  "explorerUrl": "https://d3n-scan.onrender.com",
-  "bandsvUrl": "http://d3n-debug.bandprotocol.com:5000",
-  "studiosvUrl": "http://d3n-debug.bandprotocol.com:8082",
-  "serviceUrl": "http://d3n-debug.bandprotocol.com:8082",
-  "cargo": "http://d3n-debug.bandprotocol.com:8082/compile",
-  "cargoTest": "http://d3n-debug.bandprotocol.com:8082/test",
-  "wasmRun": "http://d3n-debug.bandprotocol.com:8082/run",
+  "explorerUrl": "http://scan.alpha.d3n.xyz",
+  "bandsvUrl": "http://rpc.alpha-debug.d3n.xyz:5000",
+  "studiosvUrl": "http://rpc.alpha-debug.d3n.xyz:8082",
+  "serviceUrl": "http://rpc.alpha-debug.d3n.xyz:8082",
+  "cargo": "http://rpc.alpha-debug.d3n.xyz:8082/compile",
+  "cargoTest": "http://rpc.alpha-debug.d3n.xyz:8082/test",
+  "wasmRun": "http://rpc.alpha-debug.d3n.xyz:8082/run",
   "templates": {
     "default": "/dist/templates/index.js",
     "arc": "/dist/arc-templates/index.js"
