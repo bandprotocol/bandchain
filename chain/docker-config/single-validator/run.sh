@@ -12,4 +12,4 @@ sed 's/cors_allowed_origins = \[\]/cors_allowed_origins = \["\*"\]/g' config.tom
 mv config_tmp.toml config.toml
 cd /zoracle/
 
-bandd start --rpc.laddr tcp://0.0.0.0:26657 & go run cmd/provider/main.go
+bandd start --rpc.laddr tcp://0.0.0.0:26657

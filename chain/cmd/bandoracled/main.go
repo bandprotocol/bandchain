@@ -8,17 +8,14 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"strconv"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/levigross/grequests"
-	abci "github.com/tendermint/tendermint/abci/types"
+	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 
 	"github.com/bandprotocol/d3n/chain/d3nlib"
-	sub "github.com/bandprotocol/d3n/chain/subscriber"
 	"github.com/bandprotocol/d3n/chain/x/zoracle"
 )
 
@@ -29,9 +26,6 @@ type Command struct {
 
 const limitTimeOut = 10 * time.Second
 
-var bandClient d3nlib.BandStatefulClient
-var allowedCommands = map[string]bool{"curl": true, "date": true}
-
 func getEnv(key, defaultValue string) string {
 	tmp := os.Getenv(key)
 	if tmp == "" {
@@ -41,25 +35,24 @@ func getEnv(key, defaultValue string) string {
 }
 
 var (
-	nodeURI  = getEnv("NODE_URI", "http://localhost:26657")
-	queryURI = getEnv("QUERY_URI", "http://localhost:1317")
-	privS    = getEnv("PRIVATE_KEY", "eedda7a96ad35758f2ffc404d6ccd7be913f149a530c70e95e2e3ee7a952a877")
+	bandClient      d3nlib.BandStatefulClient
+	allowedCommands = map[string]bool{"curl": true, "date": true}
+	nodeURI         = getEnv("NODE_URI", "http://localhost:26657")
+	privS           = getEnv("PRIVATE_KEY", "eedda7a96ad35758f2ffc404d6ccd7be913f149a530c70e95e2e3ee7a952a877")
 )
 
 func getLatestRequestID() (uint64, error) {
-	resp, err := grequests.Get(fmt.Sprintf("%s/zoracle/request_number", queryURI), nil)
+	cliCtx := bandClient.GetContext()
+	res, _, err := cliCtx.Query("custom/zoracle/request_number")
 	if err != nil {
 		return 0, err
 	}
-
-	var responseStruct struct {
-		Result string `json:"result"`
-	}
-	if err := resp.JSON(&responseStruct); err != nil {
+	var requestID uint64
+	err = cliCtx.Codec.UnmarshalJSON(res, &requestID)
+	if err != nil {
 		return 0, err
 	}
-
-	return strconv.ParseUint(responseStruct.Result, 10, 64)
+	return requestID, nil
 }
 
 func main() {
@@ -79,28 +72,17 @@ func main() {
 	}
 
 	// Setup poll loop
-	go func() {
-		for {
-			newRequestID, err := getLatestRequestID()
-			if err != nil {
-				log.Println("Cannot get request number error: ", err.Error())
-			}
-
-			for currentRequestID < newRequestID {
-				currentRequestID++
-				go newHandleRequest(currentRequestID)
-			}
-			time.Sleep(1 * time.Second)
+	for {
+		newRequestID, err := getLatestRequestID()
+		if err != nil {
+			log.Println("Cannot get request number error: ", err.Error())
 		}
-	}()
-
-	s := sub.NewSubscriber(nodeURI, "/websocket")
-
-	// Tx events
-	s.AddHandler(zoracle.EventTypeRequest, handleRequestAndLog)
-
-	// start subscription
-	s.Run()
+		for currentRequestID < newRequestID {
+			currentRequestID++
+			go handleRequestAndLog(currentRequestID)
+		}
+		time.Sleep(1 * time.Second)
+	}
 }
 
 func execWithTimeout(command Command, limit time.Duration) ([]byte, error) {
@@ -117,32 +99,41 @@ func execWithTimeout(command Command, limit time.Duration) ([]byte, error) {
 	return out, nil
 }
 
-func newHandleRequest(requestID uint64) {
-	fmt.Println("Have new request", requestID)
-}
-
-func handleRequest(event *abci.Event) (sdk.TxResponse, error) {
-	var requestID uint64
-	var commands []Command
-
-	for _, kv := range event.GetAttributes() {
-		switch string(kv.Key) {
-		case zoracle.AttributeKeyRequestID:
-			var err error
-			requestID, err = strconv.ParseUint(string(kv.Value), 10, 64)
-			if err != nil {
-				return sdk.TxResponse{}, fmt.Errorf("handleRequest %s", err)
-			}
-		case zoracle.AttributeKeyPrepare:
-			byteValue, err := hex.DecodeString(string(kv.Value))
-			if err != nil {
-				return sdk.TxResponse{}, fmt.Errorf("handleRequest %s", err)
-			}
-			err = json.Unmarshal(byteValue, &commands)
-			if err != nil {
-				return sdk.TxResponse{}, fmt.Errorf("handleRequest %s", err)
+func getPrepareBytes(searchResult *sdk.SearchTxsResult) ([]byte, error) {
+	for _, tx := range searchResult.Txs {
+		// Stringevents (type of tx.Events) are deprecated in next cosmos-release.
+		for _, event := range tx.Events {
+			if event.Type == "request" {
+				for _, kv := range event.Attributes {
+					if string(kv.Key) == zoracle.AttributeKeyPrepare {
+						return hex.DecodeString(string(kv.Value))
+					}
+				}
 			}
 		}
+	}
+	return nil, fmt.Errorf("Cannot find prepare bytes")
+}
+
+func handleRequest(requestID uint64) (sdk.TxResponse, error) {
+	searchResult, err := utils.QueryTxsByEvents(
+		bandClient.GetContext(),
+		[]string{fmt.Sprintf("request.id='%d'", requestID)},
+		1,
+		100,
+	)
+	if err != nil {
+		return sdk.TxResponse{}, err
+	}
+	byteValue, err := getPrepareBytes(searchResult)
+	if err != nil {
+		return sdk.TxResponse{}, err
+	}
+
+	var commands []Command
+	err = json.Unmarshal(byteValue, &commands)
+	if err != nil {
+		return sdk.TxResponse{}, err
 	}
 
 	type queryParallelInfo struct {
@@ -150,6 +141,7 @@ func handleRequest(event *abci.Event) (sdk.TxResponse, error) {
 		answer string
 		err    error
 	}
+
 	chanQueryParallelInfo := make(chan queryParallelInfo, len(commands))
 	for i, command := range commands {
 		go func(index int, command Command) {
@@ -189,17 +181,13 @@ func handleRequest(event *abci.Event) (sdk.TxResponse, error) {
 
 	b, _ := json.Marshal(answers)
 
-	tx, err := bandClient.SendTransaction(
+	return bandClient.SendTransaction(
 		zoracle.NewMsgReport(requestID, b, sdk.ValAddress(bandClient.Sender())),
 		10000000, "", "", "",
 		flags.BroadcastSync,
 	)
-	if err != nil {
-		return sdk.TxResponse{}, fmt.Errorf("handleRequest send tx fail : %s", err)
-	}
-	return tx, nil
 }
 
-func handleRequestAndLog(event *abci.Event) {
-	fmt.Println(handleRequest(event))
+func handleRequestAndLog(requestID uint64) {
+	fmt.Println(handleRequest(requestID))
 }
