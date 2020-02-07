@@ -87,7 +87,7 @@ mod tests {
     }
 
     #[test]
-    fn ttest_from_cmd_with_key_only_not_ok() {
+    fn test_from_cmd_with_key_only_not_ok() {
         assert_eq!(
             WeatherInfo::new("seoul", "main", "").from_cmd_output(r#"{"coord":{"lon":126.98,"lat":37.57},"weather":[{"id":800,"main":"Clear","description":"clear sky","icon":"01n"}],"base":"stations","main":{"temp":264.94,"feels_like":260.37,"temp_min":262.15,"temp_max":267.15,"pressure":1034,"humidity":44},"visibility":10000,"wind":{"speed":1.5,"deg":360},"clouds":{"all":1},"dt":1580905460,"sys":{"type":1,"id":8117,"country":"KR","sunrise":1580855589,"sunset":1580893130},"timezone":32400,"id":1835848,"name":"Seoul","cod":200}"#.into()),
             None
