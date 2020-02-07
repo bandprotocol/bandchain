@@ -46,8 +46,8 @@ mod tests {
     #[test]
     fn test_call_get_random_u64() {
         let params = Parameter {};
-        let data = Data::build_from_local_env(&params)
-            .unwrap_or(Data { random_bytes8: vec![0, 0, 0, 0, 0, 0, 0, 0] });
+        let data =
+            Data::build_from_local_env(&params).unwrap_or(Data { random_bytes8: vec![0; 8] });
         println!("Current random number is {:?}", execute(params, vec![data]));
     }
 }
