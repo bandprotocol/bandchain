@@ -162,7 +162,7 @@ func GetProviderStatus(cliCtx context.CLIContext) http.HandlerFunc {
 
 		numReporters := len(request.Reports)
 		status := "GOOD"
-		// TODO: Hard code provider count threshold
+		// TODO: Remove hard-coded provider count threshold
 		if uint64(block.Block.Height) > request.TargetBlock && numReporters < 3 {
 			fmt.Printf(`BAD ------- requestId: %s, reports: %d`, requestId, numReporters)
 			status = "BAD"
