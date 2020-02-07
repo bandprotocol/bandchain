@@ -25,7 +25,7 @@ for script in os.listdir(EXAMPLE_DIR):
         {
             "code": a.decode()[:-1],
             "name": script,
-            "owner": "band13zmknvkq2sj920spz90g4r9zjan8g584x8qalj",
+            "owner": "band1r8u4m0wefrdyp7sdde7drtrt94qczggkv38jrk",
         }
     )
 
