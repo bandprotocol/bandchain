@@ -27,5 +27,6 @@ members = [
     "example/yahoo_price",
     "example/bitcoin_info",
     "example/weather_info",
-    "example/flight_verification"
+    "example/flight_verification",
+    "example/random_u64",
 ]
