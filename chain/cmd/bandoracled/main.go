@@ -8,7 +8,6 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"strconv"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -43,16 +42,17 @@ var (
 )
 
 func getLatestRequestID() (uint64, error) {
-	res, _, err := bandClient.GetContext().Query("custom/zoracle/request_number")
+	cliCtx := bandClient.GetContext()
+	res, _, err := cliCtx.Query("custom/zoracle/request_number")
 	if err != nil {
 		return 0, err
 	}
-	var requestStr string
-	err = json.Unmarshal(res, &requestStr)
+	var requestID uint64
+	err = cliCtx.Codec.UnmarshalJSON(res, &requestID)
 	if err != nil {
 		return 0, err
 	}
-	return strconv.ParseUint(requestStr, 10, 64)
+	return requestID, nil
 }
 
 func main() {
