@@ -1,12 +1,13 @@
 package zoracle
 
 import (
+	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 type GenesisState struct {
-	// RequestRecords []Request `json:"request_records"`
+	Scripts []types.StoredCode `json:"scripts"`
 }
 
 func NewGenesisState() GenesisState {
@@ -29,16 +30,18 @@ func ValidateGenesis(data GenesisState) error {
 }
 
 func DefaultGenesisState() GenesisState {
-	/* return GenesisState{
-		RequestRecords: []Request{},
-	} */
 	return GenesisState{}
 }
 
 func InitGenesis(ctx sdk.Context, keeper Keeper, data GenesisState) []abci.ValidatorUpdate {
-	// for _, record := range data.WhoisRecords {
-	// 	keeper.SetWhois(ctx, record.Value, record)
-	// }
+	for _, storeCode := range data.Scripts {
+		codeHash := storeCode.GetCodeHash()
+		if keeper.CheckCodeHashExists(ctx, codeHash) {
+			continue
+		}
+		keeper.SetCode(ctx, storeCode.Code, storeCode.Name, storeCode.Owner)
+	}
+
 	return []abci.ValidatorUpdate{}
 }
 
