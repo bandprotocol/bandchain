@@ -13,7 +13,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
-	// "github.com/tendermint/tendermint/types/time"
 )
 
 const (
