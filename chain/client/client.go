@@ -3,6 +3,7 @@ package rpc
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 
@@ -108,8 +109,29 @@ func LatestTxsRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
+func GetHealthStatus(cliCtx context.CLIContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		node, err := cliCtx.GetNode()
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		block, err := node.Block(nil)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		result := "UP"
+		if time.Now().Sub(block.Block.Header.Time) > 3*time.Minute {
+			result = "DOWN"
+		}
+		w.Write([]byte(result))
+	}
+}
+
 func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router) {
 	r.HandleFunc("/d3n/blocks/latest", LatestBlocksRequestHandlerFn(cliCtx)).Methods("GET")
 	r.HandleFunc("/d3n/txs/latest", LatestTxsRequestHandlerFn(cliCtx)).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/d3n/proof/{%s}", requestID), GetProofHandlerFn(cliCtx)).Methods("GET")
+	r.HandleFunc("/d3n/health_check", GetHealthStatus(cliCtx)).Methods("GET")
 }
