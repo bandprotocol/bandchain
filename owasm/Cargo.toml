@@ -27,4 +27,5 @@ members = [
     "example/yahoo_price",
     "example/bitcoin_info",
     "example/weather_info",
+    "example/flight_verification"
 ]
