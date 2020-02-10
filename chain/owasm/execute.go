@@ -19,7 +19,7 @@ func (r *Resolver) ResolveGlobal(module, field string) int64 {
 
 // Execute runs an Owasm script code by via the script's entryID. Note that
 // both result and err can be nil concurrently if the function terminates
-// successfully without calling the `finish` environment function.
+// successfully without `saveReturnData` getting called.
 func Execute(
 	env ExecutionEnvironment,
 	code []byte,
