@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"io"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -41,9 +42,16 @@ func main() {
 	ctx := server.NewDefaultContext()
 
 	rootCmd := &cobra.Command{
-		Use:               "bandd",
-		Short:             "Band D3N App Daemon (server)",
-		PersistentPreRunE: server.PersistentPreRunEFn(ctx),
+		Use:   "bandd",
+		Short: "Band D3N App Daemon (server)",
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			err := server.PersistentPreRunEFn(ctx)(cmd, args)
+			if err != nil {
+				return err
+			}
+			ctx.Config.Consensus.TimeoutCommit = 1000 * time.Millisecond
+			return nil
+		},
 	}
 	// CLI commands to initialize the chain
 	rootCmd.AddCommand(
