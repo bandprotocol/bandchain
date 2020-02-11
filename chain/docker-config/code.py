@@ -4,7 +4,7 @@ import subprocess
 import json
 
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
-EXAMPLE_DIR = CURRENT_PATH + "/../../owasm/example/"
+EXAMPLE_DIR = CURRENT_PATH + "/../../owasm/examples/"
 
 scripts = []
 for script in os.listdir(EXAMPLE_DIR):
