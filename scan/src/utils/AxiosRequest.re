@@ -21,6 +21,6 @@ function(data) {
 
 let execute = (data: t) => {
   let%Promise response =
-    Axios.postData("http://rpc.alpha.d3n.xyz/bandsv/request", convert(data));
+    Axios.postData("http://rpc.alpha.bandchain.org/bandsv/request", convert(data));
   Promise.ret(response);
 };
