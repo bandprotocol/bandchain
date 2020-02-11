@@ -49,7 +49,7 @@ func main() {
 			if err != nil {
 				return err
 			}
-			ctx.Config.Consensus.TimeoutCommit = 1000 * time.Millisecond
+			ctx.Config.Consensus.TimeoutCommit = 1 * time.Second
 			return nil
 		},
 	}
