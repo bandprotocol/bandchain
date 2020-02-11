@@ -17,4 +17,6 @@ func RegisterCodec(cdc *codec.Codec) {
 	cdc.RegisterConcrete(MsgReport{}, "zoracle/Report", nil)
 	cdc.RegisterConcrete(MsgStoreCode{}, "zoracle/Store", nil)
 	cdc.RegisterConcrete(MsgDeleteCode{}, "zoracle/Delete", nil)
+	cdc.RegisterConcrete(MsgRequestData{}, "zoracle/RequestData", nil)
+	cdc.RegisterConcrete(MsgReportData{}, "zoracle/ReportData", nil)
 }

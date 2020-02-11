@@ -54,6 +54,101 @@ func TestMsgRequestGetSignBytes(t *testing.T) {
 	require.Equal(t, expected, string(res))
 }
 
+func TestMsgRequestData(t *testing.T) {
+	sender := sdk.AccAddress([]byte("sender"))
+	msg := NewMsgRequestData(1, []byte("calldata"), 10, 5, 100, sender)
+	require.Equal(t, RouterKey, msg.Route())
+	require.Equal(t, "request", msg.Type())
+	require.Equal(t, int64(1), msg.OracleScriptID)
+	require.Equal(t, []byte("calldata"), msg.Calldata)
+	require.Equal(t, int64(10), msg.RequestedValidatorCount)
+	require.Equal(t, int64(5), msg.SufficientValidatorCount)
+	require.Equal(t, int64(100), msg.Expiration)
+	require.Equal(t, sender, msg.Sender)
+}
+
+func TestMsgRequestDataValidation(t *testing.T) {
+	sender := sdk.AccAddress([]byte("sender"))
+	requestedValidatorCount := int64(10)
+	sufficientValidatorCount := int64(5)
+	expiration := int64(100)
+	cases := []struct {
+		valid bool
+		tx    MsgRequestData
+	}{
+		{
+			true, NewMsgRequestData(
+				1, []byte("calldata"), requestedValidatorCount,
+				sufficientValidatorCount, expiration, sender,
+			),
+		},
+		{
+			false, NewMsgRequestData(
+				0, []byte("calldata"), requestedValidatorCount,
+				sufficientValidatorCount, expiration, sender,
+			),
+		},
+		{
+			true, NewMsgRequestData(
+				1, nil, requestedValidatorCount,
+				sufficientValidatorCount, expiration, sender,
+			),
+		},
+		{
+			false, NewMsgRequestData(
+				1, []byte("calldata"), 0,
+				sufficientValidatorCount, expiration, sender,
+			),
+		},
+		{
+			false, NewMsgRequestData(
+				1, []byte("calldata"), requestedValidatorCount,
+				-1, expiration, sender,
+			),
+		},
+		{
+			false, NewMsgRequestData(
+				1, []byte("calldata"), 6,
+				8, expiration, sender,
+			),
+		},
+		{
+			false, NewMsgRequestData(
+				1, []byte("calldata"), requestedValidatorCount,
+				sufficientValidatorCount, -10, sender,
+			),
+		},
+		{
+			false, NewMsgRequestData(
+				1, []byte("calldata"), requestedValidatorCount,
+				sufficientValidatorCount, expiration, nil,
+			),
+		},
+	}
+
+	for _, tc := range cases {
+		err := tc.tx.ValidateBasic()
+		if tc.valid {
+			require.Nil(t, err)
+		} else {
+			require.NotNil(t, err)
+		}
+	}
+}
+
+func TestMsgRequestDataGetSignBytes(t *testing.T) {
+	config := sdk.GetConfig()
+	config.SetBech32PrefixForAccount("band", "band"+sdk.PrefixPublic)
+
+	sender := sdk.AccAddress([]byte("sender"))
+	msg := NewMsgRequestData(1, []byte("calldata"), 10, 5, 100, sender)
+	res := msg.GetSignBytes()
+
+	expected := `{"type":"zoracle/RequestData","value":{"calldata":"Y2FsbGRhdGE=","expiration":"100","oracleScriptID":"1","requestedValidatorCount":"10","sender":"band1wdjkuer9wgvz7c4y","sufficientValidatorCount":"5"}}`
+
+	require.Equal(t, expected, string(res))
+}
+
 func TestMsgReport(t *testing.T) {
 	requestID := uint64(3)
 	data := []byte("Data")
