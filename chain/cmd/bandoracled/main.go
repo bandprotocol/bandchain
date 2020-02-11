@@ -38,7 +38,7 @@ var (
 	bandClient      d3nlib.BandStatefulClient
 	allowedCommands = map[string]bool{"curl": true, "date": true}
 	nodeURI         = getEnv("NODE_URI", "http://localhost:26657")
-	privS           = getEnv("PRIVATE_KEY", "eedda7a96ad35758f2ffc404d6ccd7be913f149a530c70e95e2e3ee7a952a877")
+	privS           = getEnv("PRIVATE_KEY", "06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b")
 )
 
 func getLatestRequestID() (uint64, error) {

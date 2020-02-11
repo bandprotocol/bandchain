@@ -41,15 +41,13 @@ func (client *BandStatefulClient) SendTransaction(
 		return sdk.TxResponse{}, err
 	}
 	var nonce uint64
-	{
-		client.mtx.Lock()
-		defer client.mtx.Unlock()
-		if seq > client.sequenceNumber {
-			client.sequenceNumber = seq
-		}
-		nonce = client.sequenceNumber
-		client.sequenceNumber++
+	client.mtx.Lock()
+	if seq > client.sequenceNumber {
+		client.sequenceNumber = seq
 	}
+	nonce = client.sequenceNumber
+	client.sequenceNumber++
+	client.mtx.Unlock()
 
 	tx, err := client.provider.SendTransaction(
 		[]sdk.Msg{msg}, nonce, gas, memo, fees, gasPrices, broadcastMode,
