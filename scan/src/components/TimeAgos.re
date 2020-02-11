@@ -16,13 +16,21 @@ function() {
 [@react.component]
 let make = (~time, ~size=Text.Sm, ~weight=Text.Regular) => {
   let (displayTime, setDisplayTime) =
-    React.useState(_ => time->MomentRe.Moment.fromNow(~withoutSuffix=None));
+    React.useState(_ =>
+      MomentRe.momentNow()->MomentRe.Moment.subtract(MomentRe.duration(10., `years)) > time
+        ? "Genesis Script" : time->MomentRe.Moment.fromNow(~withoutSuffix=None)
+    );
 
   React.useEffect1(
     () => {
       let intervalId =
         Js.Global.setInterval(
-          () => setDisplayTime(_ => time->MomentRe.Moment.fromNow(~withoutSuffix=None)),
+          () =>
+            setDisplayTime(_ =>
+              MomentRe.momentNow()->MomentRe.Moment.subtract(MomentRe.duration(10., `years))
+              > time
+                ? "Genesis Script" : time->MomentRe.Moment.fromNow(~withoutSuffix=None)
+            ),
           100,
         );
       Some(() => Js.Global.clearInterval(intervalId));
@@ -30,5 +38,5 @@ let make = (~time, ~size=Text.Sm, ~weight=Text.Regular) => {
     [|time|],
   );
 
-  <Text value=displayTime size weight/>;
+  <Text value=displayTime size weight />;
 };
