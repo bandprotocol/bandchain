@@ -26,6 +26,15 @@ func allocateInner(instance wasm.Instance, data []byte) (int64, error) {
 
 func allocate(instance wasm.Instance, data [][]byte) (int64, error) {
 	sz := len(data)
+	tmp := make([]byte, 8*sz)
+	for idx, each := range data {
+		loc, err := allocateInner(instance, each)
+		if err != nil {
+			return 0, err
+		}
+		binary.LittleEndian.PutUint64(tmp[8*idx:], uint64(loc))
+	}
+
 	res, err := instance.Exports["__allocate"](8 * sz)
 	if err != nil {
 		return 0, err
@@ -35,13 +44,7 @@ func allocate(instance wasm.Instance, data [][]byte) (int64, error) {
 	if len(mem) < 8*sz {
 		return 0, errors.New("allocate: invalid memory size")
 	}
-	for idx, each := range data {
-		loc, err := allocateInner(instance, each)
-		if err != nil {
-			return 0, err
-		}
-		binary.LittleEndian.PutUint64(mem[8*idx:8*idx+8], uint64(loc))
-	}
+	copy(mem, tmp)
 	return int64(sz<<32) | int64(ptr), nil
 }
 
