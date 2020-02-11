@@ -13,27 +13,27 @@ decl_params! {
 decl_data! {
     pub struct Data {
         pub weather_value: f64 = |params: &Parameter| openweathermap::WeatherInfo::new(&params.city, &params.key, &params.sub_key),
-        pub time_stamp: u64 = |_: &Parameter| date::Date::new(),
+        pub timestamp: u64 = |_: &Parameter| date::Date::new(),
     }
 }
 
 decl_result! {
     pub struct Result {
         pub weather_value: u64,
-        pub time_stamp: u64,
+        pub timestamp: u64,
     }
 }
 
 pub fn execute(_params: Parameter, data: Vec<Data>) -> Result {
     let mut total_weather_value = 0.0;
-    let mut time_stamp_acc: u64 = 0;
+    let mut timestamp_acc: u64 = 0;
     for each in &data {
         total_weather_value += each.weather_value;
-        time_stamp_acc += each.time_stamp;
+        timestamp_acc += each.timestamp;
     }
     let average_weather_value = total_weather_value / (data.len() as f64);
-    let avg_time_stamp = time_stamp_acc / (data.len() as u64);
-    Result { weather_value: (average_weather_value * 100.0) as u64, time_stamp: avg_time_stamp }
+    let avg_timestamp = timestamp_acc / (data.len() as u64);
+    Result { weather_value: (average_weather_value * 100.0) as u64, timestamp: avg_timestamp }
 }
 
 #[cfg(test)]
@@ -47,11 +47,11 @@ mod tests {
             key: String::from("main"),
             sub_key: String::from("temp"),
         };
-        let data1 = Data { weather_value: 100.0, time_stamp: 10 };
-        let data2 = Data { weather_value: 200.0, time_stamp: 12 };
+        let data1 = Data { weather_value: 100.0, timestamp: 10 };
+        let data2 = Data { weather_value: 200.0, timestamp: 12 };
         assert_eq!(
             execute(params, vec![data1, data2]),
-            Result { weather_value: 15000, time_stamp: 11 }
+            Result { weather_value: 15000, timestamp: 11 }
         );
     }
 
