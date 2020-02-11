@@ -18,7 +18,7 @@
 
 - For an example use case of Bridge contract on Matic please see [this](https://testnetv3-explorer.matic.network/address/0x78d58f16766078eb10ed26a81b8ff58774db9287)
 
-### [Thaichain](https://matic.network/)
+### [Thaichain](https://thaichain.io/)
 
 - The reason why we support Thaichain is because Thaichain is a popular blockchain for education that run by Thailand's non-profit organizations.
 
