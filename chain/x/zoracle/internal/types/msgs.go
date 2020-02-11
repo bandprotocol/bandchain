@@ -30,13 +30,13 @@ func NewMsgRequest(
 	}
 }
 
-// Route should return the name of the module
+// Route implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgRequest) Route() string { return RouterKey }
 
-// Type should return the action
+// Type implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgRequest) Type() string { return "request" }
 
-// ValidateBasic runs stateless checks on the message
+// ValidateBasic implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgRequest) ValidateBasic() sdk.Error {
 	if msg.Sender.Empty() {
 		return sdk.ErrInvalidAddress(msg.Sender.String())
@@ -50,18 +50,18 @@ func (msg MsgRequest) ValidateBasic() sdk.Error {
 	return nil
 }
 
-// GetSigners defines whose signature is required
+// GetSigners implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.Sender}
 }
 
-// GetSignBytes encodes the message for signing
+// GetSignBytes implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgRequest) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-// MsgRequestData is a new version of request message.
+// MsgRequestData is a message for requesting a new data request to an existing oracle script.
 type MsgRequestData struct {
 	OracleScriptID           int64          `json:"oracleScriptID"`
 	Calldata                 []byte         `json:"calldata"`
@@ -71,7 +71,7 @@ type MsgRequestData struct {
 	Sender                   sdk.AccAddress `json:"sender"`
 }
 
-// NewMsgRequestData is a constructor function for MsgRequestData
+// NewMsgRequestData creates a new NewMsgRequestData instance.
 func NewMsgRequestData(
 	oracleScriptID int64,
 	calldata []byte,
@@ -90,13 +90,13 @@ func NewMsgRequestData(
 	}
 }
 
-// Route should return the name of the module
+// Route implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgRequestData) Route() string { return RouterKey }
 
-// Type should return the action
+// Type implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgRequestData) Type() string { return "request" }
 
-// ValidateBasic runs stateless checks on the message
+// ValidateBasic implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgRequestData) ValidateBasic() sdk.Error {
 	if msg.Sender.Empty() {
 		return sdk.ErrInvalidAddress(msg.Sender.String())
@@ -116,12 +116,12 @@ func (msg MsgRequestData) ValidateBasic() sdk.Error {
 	return nil
 }
 
-// GetSigners defines whose signature is required
+// GetSigners implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgRequestData) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.Sender}
 }
 
-// GetSignBytes encodes the message for signing
+// GetSignBytes implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgRequestData) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
@@ -147,13 +147,13 @@ func NewMsgReport(
 	}
 }
 
-// Route should return the name of the module
+// Route implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgReport) Route() string { return RouterKey }
 
-// Type should return the action
+// Type implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgReport) Type() string { return "report" }
 
-// ValidateBasic runs stateless checks on the message
+// ValidateBasic implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgReport) ValidateBasic() sdk.Error {
 	if msg.Validator.Empty() {
 		return sdk.ErrInvalidAddress(msg.Validator.String())
@@ -166,49 +166,49 @@ func (msg MsgReport) ValidateBasic() sdk.Error {
 	return nil
 }
 
-// GetSigners defines whose signature is required
+// GetSigners implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgReport) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.Validator.Bytes()}
 }
 
-// GetSignBytes encodes the message for signing
+// GetSignBytes implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgReport) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-// MsgReportData defines a new version Report message
+// MsgReportData is a message sent by each of the block validators to respond to a data request.
 type MsgReportData struct {
 	RequestID int64          `json:"requestID"`
-	Data      []ExternalData `json:"data"`
+	DataSet   []ExternalData `json:"dataSet"`
 	Sender    sdk.ValAddress `json:"sender"`
 }
 
-// NewMsgReportData is a constructor function for MsgReportData
+// NewMsgReportData creates a new MsgReportData instance.
 func NewMsgReportData(
 	requestID int64,
-	data []ExternalData,
+	dataSet []ExternalData,
 	sender sdk.ValAddress,
 ) MsgReportData {
 	return MsgReportData{
 		RequestID: requestID,
-		Data:      data,
+		DataSet:   dataSet,
 		Sender:    sender,
 	}
 }
 
-// Route should return the name of the module
+// Route implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgReportData) Route() string { return RouterKey }
 
-// Type should return the action
+// Type implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgReportData) Type() string { return "report" }
 
-// ValidateBasic runs stateless checks on the message
+// ValidateBasic implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgReportData) ValidateBasic() sdk.Error {
 	if msg.RequestID <= 0 {
 		return sdk.ErrUnknownRequest("Request id must be greater than zero")
 	}
-	if msg.Data == nil {
+	if msg.DataSet == nil || len(msg.DataSet) == 0 {
 		return sdk.ErrUnknownRequest("Data must not be empty struct")
 	}
 	if msg.Sender.Empty() {
@@ -217,12 +217,12 @@ func (msg MsgReportData) ValidateBasic() sdk.Error {
 	return nil
 }
 
-// GetSigners defines whose signature is required
+// GetSigners implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgReportData) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{sdk.AccAddress(msg.Sender)}
 }
 
-// GetSignBytes encodes the message for signing
+// GetSignBytes implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgReportData) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
@@ -248,13 +248,13 @@ func NewMsgStoreCode(
 	}
 }
 
-// Route should return the name of the module
+// Route implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgStoreCode) Route() string { return RouterKey }
 
-// Type should return the action
+// Type implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgStoreCode) Type() string { return "store" }
 
-// ValidateBasic runs stateless checks on the message
+// ValidateBasic implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgStoreCode) ValidateBasic() sdk.Error {
 	if msg.Owner.Empty() {
 		return sdk.ErrInvalidAddress(msg.Owner.String())
@@ -269,12 +269,12 @@ func (msg MsgStoreCode) ValidateBasic() sdk.Error {
 	return nil
 }
 
-// GetSigners defines whose signature is required
+// GetSigners implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgStoreCode) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.Owner}
 }
 
-// GetSignBytes encodes the message for signing
+// GetSignBytes implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgStoreCode) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
@@ -296,13 +296,13 @@ func NewMsgDeleteCode(
 	}
 }
 
-// Route should return the name of the module
+// Route implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgDeleteCode) Route() string { return RouterKey }
 
-// Type should return the action
+// Type implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgDeleteCode) Type() string { return "delete" }
 
-// ValidateBasic runs stateless checks on the message
+// ValidateBasic implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgDeleteCode) ValidateBasic() sdk.Error {
 	if msg.Owner.Empty() {
 		return sdk.ErrInvalidAddress(msg.Owner.String())
@@ -315,12 +315,12 @@ func (msg MsgDeleteCode) ValidateBasic() sdk.Error {
 	return nil
 }
 
-// GetSigners defines whose signature is required
+// GetSigners implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgDeleteCode) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.Owner}
 }
 
-// GetSignBytes encodes the message for signing
+// GetSignBytes implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgDeleteCode) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)

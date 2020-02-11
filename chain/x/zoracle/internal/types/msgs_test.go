@@ -199,6 +199,57 @@ func TestMsgReportGetSignBytes(t *testing.T) {
 	require.Equal(t, expected, string(res))
 }
 
+func TestMsgReportData(t *testing.T) {
+	requestID := int64(3)
+	data := []ExternalData{NewExternalData(1, []byte("data1")), NewExternalData(2, []byte("data2"))}
+	provider, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
+	msg := NewMsgReportData(requestID, data, provider)
+
+	require.Equal(t, RouterKey, msg.Route())
+	require.Equal(t, "report", msg.Type())
+}
+
+func TestMsgReportDataValidation(t *testing.T) {
+	requestID := int64(3)
+	data := []ExternalData{NewExternalData(1, []byte("data1")), NewExternalData(2, []byte("data2"))}
+	validator, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
+	failValidator, _ := sdk.ValAddressFromHex("")
+	cases := []struct {
+		valid bool
+		tx    MsgReportData
+	}{
+		{true, NewMsgReportData(requestID, data, validator)},
+		{false, NewMsgReportData(-1, data, validator)},
+		{false, NewMsgReportData(requestID, []ExternalData{}, validator)},
+		{false, NewMsgReportData(requestID, nil, validator)},
+		{false, NewMsgReportData(requestID, data, failValidator)},
+	}
+
+	for _, tc := range cases {
+		err := tc.tx.ValidateBasic()
+		if tc.valid {
+			require.Nil(t, err)
+		} else {
+			require.NotNil(t, err)
+		}
+	}
+}
+
+func TestMsgReportDataGetSignBytes(t *testing.T) {
+	config := sdk.GetConfig()
+	config.SetBech32PrefixForValidator("band"+sdk.PrefixValidator+sdk.PrefixOperator, "band"+sdk.PrefixValidator+sdk.PrefixOperator+sdk.PrefixPublic)
+
+	requestID := int64(3)
+	data := []ExternalData{NewExternalData(1, []byte("data1")), NewExternalData(2, []byte("data2"))}
+	validator, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
+	msg := NewMsgReportData(requestID, data, validator)
+	res := msg.GetSignBytes()
+
+	expected := `{"type":"zoracle/ReportData","value":{"dataSet":[{"data":"ZGF0YTE=","externalDataID":"1"},{"data":"ZGF0YTI=","externalDataID":"2"}],"requestID":"3","sender":"bandvaloper1hq8j5h0h64csk9tz95df783cxr0dt0dgay2kyy"}}`
+
+	require.Equal(t, expected, string(res))
+}
+
 func TestMsgStoreCode(t *testing.T) {
 	owner, _ := sdk.AccAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
 	name := "script name"
