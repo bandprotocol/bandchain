@@ -20,7 +20,7 @@
 
 ### [Thaichain](https://thaichain.io/)
 
-- The reason why we support Thaichain is because Thaichain is a popular blockchain for education that run by Thailand's non-profit organizations.
+- The reason why we support Thaichain is because Thaichain is a popular blockchain for education that run by many non-profit organizations of Thailand.
 
 - For Bridge contract on Thaichain please see [this](https://exp.tch.in.th/addr/0x35616a666E8b8aB605EfB16b551c6804C4e571C7?addr_tab=transactions)
 
