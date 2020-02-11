@@ -240,7 +240,7 @@ Requests a new data based on an existing oracle script. A data request will be a
 
 **Parameters**
 - `OracleScriptId: int64` - The unique identifier of the oracle script.
-- `Params: []byte` - The data to passed over to the oracle script when invoking its [prepare][sec:owasm-prepare] function.
+- `Calldata: []byte` - The data to passed over to the oracle script when invoking its [prepare][sec:owasm-prepare] function.
 - `RequestedValidatorCount: int64` - The number of block validators to perform fetching data tasks issued by this oracle script. Setting this higher may make the request safer against attacks or downtimes of validators, but will incur higher gas fees. The value must between 1 and the number of active validators.
 - `SufficientValidatorCount: int64` - The number of data reports from block validators needed for this data request to be considered ready for aggregation. The number must be positive and not greater than `RequestValidatorCount` value.
 - `Expiration: int64` - The number of blocks that the data request stays active and open for data reports. If the number of validator count is not reached by then. The data request is considered invalid.
