@@ -8,7 +8,7 @@ EXAMPLE_DIR = CURRENT_PATH + "/../../owasm/example/"
 
 scripts = []
 for script in os.listdir(EXAMPLE_DIR):
-    if script.startswith("."):
+    if script.startswith(".") or script.startswith("yahoo"):
         continue
     subprocess.call(
         [CURRENT_PATH + "/build_wasm.sh %s" % EXAMPLE_DIR + script], shell=True
