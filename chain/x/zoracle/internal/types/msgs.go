@@ -414,3 +414,67 @@ func (msg MsgCreateOracleScript) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
+
+// MsgEditOracleScript is a message for editing an existing oracle script.
+type MsgEditOracleScript struct {
+	OracleScriptID int64          `json:"oracleScriptID"`
+	Owner          sdk.AccAddress `json:"owner"`
+	Name           string         `json:"name"`
+	Code           []byte         `json:"code"`
+	Sender         sdk.AccAddress `json:"sender"`
+}
+
+// NewMsgEditOracleScript creates a new MsgEditOracleScript instance.
+func NewMsgEditOracleScript(
+	oracleScriptID int64,
+	owner sdk.AccAddress,
+	name string,
+	code []byte,
+	sender sdk.AccAddress,
+) MsgEditOracleScript {
+	return MsgEditOracleScript{
+		OracleScriptID: oracleScriptID,
+		Owner:          owner,
+		Name:           name,
+		Code:           code,
+		Sender:         sender,
+	}
+}
+
+// Route implements the sdk.Msg interface for MsgEditOracleScript.
+func (msg MsgEditOracleScript) Route() string { return RouterKey }
+
+// Type implements the sdk.Msg interface for MsgEditOracleScript.
+func (msg MsgEditOracleScript) Type() string { return "edit_oracle_script" }
+
+// ValidateBasic implements the sdk.Msg interface for MsgEditOracleScript.
+func (msg MsgEditOracleScript) ValidateBasic() sdk.Error {
+	if msg.OracleScriptID <= 0 {
+		return sdk.ErrInternal("Oracle script id must be greater than zero")
+	}
+	if msg.Owner.Empty() {
+		return sdk.ErrInvalidAddress(msg.Owner.String())
+	}
+	if msg.Sender.Empty() {
+		return sdk.ErrInvalidAddress(msg.Sender.String())
+	}
+	if msg.Name == "" {
+		// TODO: use more clarify error later
+		return sdk.ErrInternal("Name is empty string")
+	}
+	if msg.Code == nil || len(msg.Code) == 0 {
+		return sdk.ErrUnknownRequest("Code not be empty")
+	}
+	return nil
+}
+
+// GetSigners implements the sdk.Msg interface for MsgEditOracleScript.
+func (msg MsgEditOracleScript) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{msg.Sender}
+}
+
+// GetSignBytes implements the sdk.Msg interface for MsgEditOracleScript.
+func (msg MsgEditOracleScript) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}

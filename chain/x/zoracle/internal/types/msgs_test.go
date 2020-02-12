@@ -478,3 +478,73 @@ func TestMsgCreateOracleScriptGetSignBytes(t *testing.T) {
 
 	require.Equal(t, expected, string(res))
 }
+
+func TestMsgEditOracleScript(t *testing.T) {
+	owner := sdk.AccAddress([]byte("owner"))
+	sender := sdk.AccAddress([]byte("sender"))
+	msg := NewMsgEditOracleScript(1, owner, "oracle_script_1", []byte("code"), sender)
+	require.Equal(t, RouterKey, msg.Route())
+	require.Equal(t, "edit_oracle_script", msg.Type())
+	require.Equal(t, int64(1), msg.OracleScriptID)
+	require.Equal(t, owner, msg.Owner)
+	require.Equal(t, "oracle_script_1", msg.Name)
+	require.Equal(t, []byte("code"), msg.Code)
+	require.Equal(t, sender, msg.Sender)
+}
+
+func TestMsgEditOracleScriptValidation(t *testing.T) {
+	owner := sdk.AccAddress([]byte("owner"))
+	sender := sdk.AccAddress([]byte("sender"))
+	name := "oracle_script_1"
+	code := []byte("code")
+
+	cases := []struct {
+		valid bool
+		tx    MsgEditOracleScript
+	}{
+		{
+			true, NewMsgEditOracleScript(1, owner, name, code, sender),
+		},
+		{
+			false, NewMsgEditOracleScript(0, nil, name, code, sender),
+		},
+		{
+			false, NewMsgEditOracleScript(1, nil, name, code, sender),
+		},
+		{
+			false, NewMsgEditOracleScript(1, owner, "", code, sender),
+		},
+		{
+			false, NewMsgEditOracleScript(1, owner, name, []byte{}, sender),
+		},
+		{
+			false, NewMsgEditOracleScript(1, owner, name, nil, sender),
+		},
+		{
+			false, NewMsgEditOracleScript(1, owner, name, code, nil),
+		},
+	}
+
+	for _, tc := range cases {
+		err := tc.tx.ValidateBasic()
+		if tc.valid {
+			require.Nil(t, err)
+		} else {
+			require.NotNil(t, err)
+		}
+	}
+}
+
+func TestMsgEditOracleScriptGetSignBytes(t *testing.T) {
+	config := sdk.GetConfig()
+	config.SetBech32PrefixForAccount("band", "band"+sdk.PrefixPublic)
+
+	owner := sdk.AccAddress([]byte("owner"))
+	sender := sdk.AccAddress([]byte("sender"))
+	msg := NewMsgEditOracleScript(1, owner, "oracle_script_1", []byte("code"), sender)
+	res := msg.GetSignBytes()
+
+	expected := `{"type":"zoracle/EditOracleScript","value":{"code":"Y29kZQ==","name":"oracle_script_1","oracleScriptID":"1","owner":"band1damkuetjcw3c0d","sender":"band1wdjkuer9wgvz7c4y"}}`
+
+	require.Equal(t, expected, string(res))
+}
