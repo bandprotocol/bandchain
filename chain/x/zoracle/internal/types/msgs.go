@@ -248,13 +248,13 @@ func NewMsgCreateDataSource(
 	}
 }
 
-// Route should return the name of the module
+// Route implements the sdk.Msg interface for MsgCreateDataSource.
 func (msg MsgCreateDataSource) Route() string { return RouterKey }
 
-// Type should return the action
+// Type implements the sdk.Msg interface for MsgCreateDataSource.
 func (msg MsgCreateDataSource) Type() string { return "createDataSource" }
 
-// ValidateBasic runs stateless checks on the message
+// ValidateBasic implements the sdk.Msg interface for MsgCreateDataSource.
 func (msg MsgCreateDataSource) ValidateBasic() sdk.Error {
 	if msg.Owner.Empty() {
 		return sdk.ErrInvalidAddress(msg.Owner.String())
@@ -275,18 +275,18 @@ func (msg MsgCreateDataSource) ValidateBasic() sdk.Error {
 	return nil
 }
 
-// GetSigners defines whose signature is required
+// GetSigners implements the sdk.Msg interface for MsgCreateDataSource.
 func (msg MsgCreateDataSource) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.Sender}
 }
 
-// GetSignBytes encodes the message for signing
+// GetSignBytes implements the sdk.Msg interface for MsgCreateDataSource.
 func (msg MsgCreateDataSource) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-// MsgEditDataSource struct
+// MsgEditDataSource is a message for editing existing data source.
 type MsgEditDataSource struct {
 	DataSourceID int64          `json:"dataSourceID"`
 	Owner        sdk.AccAddress `json:"owner"`
@@ -296,7 +296,7 @@ type MsgEditDataSource struct {
 	Sender       sdk.AccAddress `json:"sender"`
 }
 
-// NewMsgEditDataSource is a constructor function for MsgEditDataSource
+// NewMsgEditDataSource creates a new MsgEditDataSource instance.
 func NewMsgEditDataSource(
 	dataSourceID int64,
 	owner sdk.AccAddress,
@@ -315,13 +315,13 @@ func NewMsgEditDataSource(
 	}
 }
 
-// Route should return the name of the module
+// Route implements the sdk.Msg interface for MsgEditDataSource.
 func (msg MsgEditDataSource) Route() string { return RouterKey }
 
-// Type should return the action
+// Type implements the sdk.Msg interface for MsgEditDataSource.
 func (msg MsgEditDataSource) Type() string { return "editDataSource" }
 
-// ValidateBasic runs stateless checks on the message
+// ValidateBasic implements the sdk.Msg interface for MsgEditDataSource.
 func (msg MsgEditDataSource) ValidateBasic() sdk.Error {
 	if msg.DataSourceID <= 0 {
 		return sdk.ErrInternal("Data source id must be greater than zero")
@@ -346,12 +346,12 @@ func (msg MsgEditDataSource) ValidateBasic() sdk.Error {
 	return nil
 }
 
-// GetSigners defines whose signature is required
+// GetSigners implements the sdk.Msg interface for MsgEditDataSource.
 func (msg MsgEditDataSource) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.Sender}
 }
 
-// GetSignBytes encodes the message for signing
+// GetSignBytes implements the sdk.Msg interface for MsgEditDataSource.
 func (msg MsgEditDataSource) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
