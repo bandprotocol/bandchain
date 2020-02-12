@@ -15,7 +15,7 @@ type MsgRequest struct {
 	Sender       sdk.AccAddress `json:"sender"`
 }
 
-// NewMsgRequest is a constructor function for MsgRequest
+// NewMsgRequest creates a new MsgRequest instance.
 func NewMsgRequest(
 	codeHash []byte,
 	params []byte,
@@ -30,13 +30,13 @@ func NewMsgRequest(
 	}
 }
 
-// Route implements the sdk.Msg interface for MsgRequestData.
+// Route implements the sdk.Msg interface for MsgRequest.
 func (msg MsgRequest) Route() string { return RouterKey }
 
-// Type implements the sdk.Msg interface for MsgRequestData.
+// Type implements the sdk.Msg interface for MsgRequest.
 func (msg MsgRequest) Type() string { return "request" }
 
-// ValidateBasic implements the sdk.Msg interface for MsgRequestData.
+// ValidateBasic implements the sdk.Msg interface for MsgRequest.
 func (msg MsgRequest) ValidateBasic() sdk.Error {
 	if msg.Sender.Empty() {
 		return sdk.ErrInvalidAddress(msg.Sender.String())
@@ -50,12 +50,12 @@ func (msg MsgRequest) ValidateBasic() sdk.Error {
 	return nil
 }
 
-// GetSigners implements the sdk.Msg interface for MsgRequestData.
+// GetSigners implements the sdk.Msg interface for MsgRequest.
 func (msg MsgRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.Sender}
 }
 
-// GetSignBytes implements the sdk.Msg interface for MsgRequestData.
+// GetSignBytes implements the sdk.Msg interface for MsgRequest.
 func (msg MsgRequest) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
@@ -71,7 +71,7 @@ type MsgRequestData struct {
 	Sender                   sdk.AccAddress `json:"sender"`
 }
 
-// NewMsgRequestData creates a new NewMsgRequestData instance.
+// NewMsgRequestData creates a new MsgRequestData instance.
 func NewMsgRequestData(
 	oracleScriptID int64,
 	calldata []byte,
@@ -134,7 +134,7 @@ type MsgReport struct {
 	Validator sdk.ValAddress `json:"validator"`
 }
 
-// NewMsgReport is a constructor function for MsgReport
+// NewMsgReport creates a new MsgReport instance.
 func NewMsgReport(
 	requestID uint64,
 	data []byte,
@@ -147,13 +147,13 @@ func NewMsgReport(
 	}
 }
 
-// Route implements the sdk.Msg interface for MsgRequestData.
+// Route implements the sdk.Msg interface for MsgReport.
 func (msg MsgReport) Route() string { return RouterKey }
 
-// Type implements the sdk.Msg interface for MsgRequestData.
+// Type implements the sdk.Msg interface for MsgReport.
 func (msg MsgReport) Type() string { return "report" }
 
-// ValidateBasic implements the sdk.Msg interface for MsgRequestData.
+// ValidateBasic implements the sdk.Msg interface for MsgReport.
 func (msg MsgReport) ValidateBasic() sdk.Error {
 	if msg.Validator.Empty() {
 		return sdk.ErrInvalidAddress(msg.Validator.String())
@@ -166,12 +166,12 @@ func (msg MsgReport) ValidateBasic() sdk.Error {
 	return nil
 }
 
-// GetSigners implements the sdk.Msg interface for MsgRequestData.
+// GetSigners implements the sdk.Msg interface for MsgReport.
 func (msg MsgReport) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.Validator.Bytes()}
 }
 
-// GetSignBytes implements the sdk.Msg interface for MsgRequestData.
+// GetSignBytes implements the sdk.Msg interface for MsgReport.
 func (msg MsgReport) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
@@ -197,13 +197,13 @@ func NewMsgReportData(
 	}
 }
 
-// Route implements the sdk.Msg interface for MsgRequestData.
+// Route implements the sdk.Msg interface for MsgReportData.
 func (msg MsgReportData) Route() string { return RouterKey }
 
-// Type implements the sdk.Msg interface for MsgRequestData.
+// Type implements the sdk.Msg interface for MsgReportData.
 func (msg MsgReportData) Type() string { return "report" }
 
-// ValidateBasic implements the sdk.Msg interface for MsgRequestData.
+// ValidateBasic implements the sdk.Msg interface for MsgReportData.
 func (msg MsgReportData) ValidateBasic() sdk.Error {
 	if msg.RequestID <= 0 {
 		return sdk.ErrUnknownRequest("Request id must be greater than zero")
@@ -217,12 +217,12 @@ func (msg MsgReportData) ValidateBasic() sdk.Error {
 	return nil
 }
 
-// GetSigners implements the sdk.Msg interface for MsgRequestData.
+// GetSigners implements the sdk.Msg interface for MsgReportData.
 func (msg MsgReportData) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{sdk.AccAddress(msg.Sender)}
 }
 
-// GetSignBytes implements the sdk.Msg interface for MsgRequestData.
+// GetSignBytes implements the sdk.Msg interface for MsgReportData.
 func (msg MsgReportData) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
@@ -235,7 +235,7 @@ type MsgStoreCode struct {
 	Owner sdk.AccAddress `json:"owner"`
 }
 
-// NewMsgStoreCode is a constructor function for MsgReport
+// NewMsgStoreCode creates a new MsgStoreCode instance.
 func NewMsgStoreCode(
 	code []byte,
 	name string,
@@ -248,13 +248,13 @@ func NewMsgStoreCode(
 	}
 }
 
-// Route implements the sdk.Msg interface for MsgRequestData.
+// Route implements the sdk.Msg interface for MsgStoreCode.
 func (msg MsgStoreCode) Route() string { return RouterKey }
 
-// Type implements the sdk.Msg interface for MsgRequestData.
+// Type implements the sdk.Msg interface for MsgStoreCode.
 func (msg MsgStoreCode) Type() string { return "store" }
 
-// ValidateBasic implements the sdk.Msg interface for MsgRequestData.
+// ValidateBasic implements the sdk.Msg interface for MsgStoreCode.
 func (msg MsgStoreCode) ValidateBasic() sdk.Error {
 	if msg.Owner.Empty() {
 		return sdk.ErrInvalidAddress(msg.Owner.String())
@@ -269,12 +269,12 @@ func (msg MsgStoreCode) ValidateBasic() sdk.Error {
 	return nil
 }
 
-// GetSigners implements the sdk.Msg interface for MsgRequestData.
+// GetSigners implements the sdk.Msg interface for MsgStoreCode.
 func (msg MsgStoreCode) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.Owner}
 }
 
-// GetSignBytes implements the sdk.Msg interface for MsgRequestData.
+// GetSignBytes implements the sdk.Msg interface for MsgStoreCode.
 func (msg MsgStoreCode) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
@@ -285,7 +285,7 @@ type MsgDeleteCode struct {
 	Owner    sdk.AccAddress `json:"owner"`
 }
 
-// NewMsgDeleteCode is a constructor function for MsgReport
+// NewMsgDeleteCode creates a new MsgDeleteCode instance.
 func NewMsgDeleteCode(
 	codeHash []byte,
 	owner sdk.AccAddress,
@@ -296,13 +296,13 @@ func NewMsgDeleteCode(
 	}
 }
 
-// Route implements the sdk.Msg interface for MsgRequestData.
+// Route implements the sdk.Msg interface for MsgDeleteCode.
 func (msg MsgDeleteCode) Route() string { return RouterKey }
 
-// Type implements the sdk.Msg interface for MsgRequestData.
+// Type implements the sdk.Msg interface for MsgDeleteCode.
 func (msg MsgDeleteCode) Type() string { return "delete" }
 
-// ValidateBasic implements the sdk.Msg interface for MsgRequestData.
+// ValidateBasic implements the sdk.Msg interface for MsgDeleteCode.
 func (msg MsgDeleteCode) ValidateBasic() sdk.Error {
 	if msg.Owner.Empty() {
 		return sdk.ErrInvalidAddress(msg.Owner.String())
@@ -315,12 +315,12 @@ func (msg MsgDeleteCode) ValidateBasic() sdk.Error {
 	return nil
 }
 
-// GetSigners implements the sdk.Msg interface for MsgRequestData.
+// GetSigners implements the sdk.Msg interface for MsgDeleteCode.
 func (msg MsgDeleteCode) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.Owner}
 }
 
-// GetSignBytes implements the sdk.Msg interface for MsgRequestData.
+// GetSignBytes implements the sdk.Msg interface for MsgDeleteCode.
 func (msg MsgDeleteCode) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
