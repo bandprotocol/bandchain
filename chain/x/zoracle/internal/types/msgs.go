@@ -266,9 +266,6 @@ func (msg MsgCreateDataSource) ValidateBasic() sdk.Error {
 	if !msg.Fee.IsValid() {
 		return sdk.ErrInvalidCoins("fee is invalid: " + msg.Fee.String())
 	}
-	if !msg.Fee.IsAllPositive() {
-		return sdk.ErrInsufficientCoins("fee must be positive")
-	}
 	if msg.Executable == nil || len(msg.Executable) == 0 {
 		return sdk.ErrUnknownRequest("Executable not be empty")
 	}
@@ -338,9 +335,6 @@ func (msg MsgEditDataSource) ValidateBasic() sdk.Error {
 	}
 	if !msg.Fee.IsValid() {
 		return sdk.ErrInvalidCoins("fee is invalid: " + msg.Fee.String())
-	}
-	if !msg.Fee.IsAllPositive() {
-		return sdk.ErrInsufficientCoins("fee must be positive")
 	}
 	if msg.Executable == nil || len(msg.Executable) == 0 {
 		return sdk.ErrUnknownRequest("Executable not be empty")

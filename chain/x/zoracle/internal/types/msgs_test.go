@@ -291,7 +291,10 @@ func TestMsgCreateDataSourceValidation(t *testing.T) {
 			false, NewMsgCreateDataSource(owner, "", feeUband10, executable, sender),
 		},
 		{
-			false, NewMsgCreateDataSource(owner, name, feeUband0, executable, sender),
+			true, NewMsgCreateDataSource(owner, name, feeUband0, executable, sender),
+		},
+		{
+			true, NewMsgCreateDataSource(owner, name, sdk.Coins{}, executable, sender),
 		},
 		{
 			false, NewMsgCreateDataSource(owner, name, feeUband10, []byte(""), sender),
@@ -369,7 +372,10 @@ func TestMsgEditDataSourceValidation(t *testing.T) {
 			false, NewMsgEditDataSource(1, owner, "", feeUband10, executable, sender),
 		},
 		{
-			false, NewMsgEditDataSource(1, owner, name, feeUband0, executable, sender),
+			true, NewMsgEditDataSource(1, owner, name, feeUband0, executable, sender),
+		},
+		{
+			true, NewMsgEditDataSource(1, owner, name, sdk.Coins{}, executable, sender),
 		},
 		{
 			false, NewMsgEditDataSource(1, owner, name, feeUband10, []byte(""), sender),
