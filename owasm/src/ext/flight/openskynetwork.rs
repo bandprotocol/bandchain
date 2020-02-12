@@ -43,18 +43,12 @@ impl Oracle for Flight {
 
     fn from_cmd_output(&self, output: String) -> Option<bool> {
         let parsed = json::parse(&output).ok()?;
-        let mut members = parsed.members();
-        if members.len() == 0 {
-            return Some(false);
+        for member in parsed.members() {
+            if member["icao24"].as_str()? == &self.icao24 {
+                return Some(true);
+            }
         }
-        members.nth(0)?["icao24"].as_str()?;
-        Some(
-            members
-                .filter(|x| x["icao24"].as_str() == Some(&self.icao24))
-                .collect::<Vec<&json::JsonValue>>()
-                .len()
-                > 0,
-        )
+        Some(false)
     }
 }
 
