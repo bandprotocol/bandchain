@@ -286,7 +286,7 @@ func (msg MsgCreateDataSource) GetSignBytes() []byte {
 	return sdk.MustSortJSON(bz)
 }
 
-// MsgEditDataSource is a message for editing existing data source.
+// MsgEditDataSource is a message for editing an existing data source.
 type MsgEditDataSource struct {
 	DataSourceID int64          `json:"dataSourceID"`
 	Owner        sdk.AccAddress `json:"owner"`
