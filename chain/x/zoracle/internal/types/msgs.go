@@ -326,6 +326,9 @@ func (msg MsgEditDataSource) Type() string { return "editDataSource" }
 
 // ValidateBasic runs stateless checks on the message
 func (msg MsgEditDataSource) ValidateBasic() sdk.Error {
+	if msg.DataSourceID <= 0 {
+		return sdk.ErrInternal("Data source id must be greater than zero")
+	}
 	if msg.Owner.Empty() {
 		return sdk.ErrInvalidAddress(msg.Owner.String())
 	}
