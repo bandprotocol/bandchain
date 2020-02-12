@@ -39,3 +39,17 @@ func NewValidatorReport(
 		Validator:  valAddress,
 	}
 }
+
+// ExternalData encapsulates a raw data report for an external data source from a block validator.
+type ExternalData struct {
+	ExternalDataID int64  `json:"externalDataID"`
+	Data           []byte `json:"data"`
+}
+
+// NewExternalData creates a new ExternalData instance.
+func NewExternalData(externalDataID int64, data []byte) ExternalData {
+	return ExternalData{
+		ExternalDataID: externalDataID,
+		Data:           data,
+	}
+}

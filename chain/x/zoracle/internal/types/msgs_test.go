@@ -8,26 +8,76 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMsgRequest(t *testing.T) {
+func TestMsgRequestData(t *testing.T) {
 	sender := sdk.AccAddress([]byte("sender"))
-	codeHash, _ := hex.DecodeString("5694d08a2e53ffcae0c3103e5ad6f6076abd960eb1f8a56577040bc1028f702b")
-	msg := NewMsgRequest(codeHash, []byte("params"), uint64(10), sender)
+	msg := NewMsgRequestData(1, []byte("calldata"), 10, 5, 100, sender)
 	require.Equal(t, RouterKey, msg.Route())
 	require.Equal(t, "request", msg.Type())
+	require.Equal(t, int64(1), msg.OracleScriptID)
+	require.Equal(t, []byte("calldata"), msg.Calldata)
+	require.Equal(t, int64(10), msg.RequestedValidatorCount)
+	require.Equal(t, int64(5), msg.SufficientValidatorCount)
+	require.Equal(t, int64(100), msg.Expiration)
+	require.Equal(t, sender, msg.Sender)
 }
 
-func TestMsgRequestValidation(t *testing.T) {
-	codeHash, _ := hex.DecodeString("5694d08a2e53ffcae0c3103e5ad6f6076abd960eb1f8a56577040bc1028f702b")
+func TestMsgRequestDataValidation(t *testing.T) {
 	sender := sdk.AccAddress([]byte("sender"))
-	reportPeriod := uint64(10)
+	requestedValidatorCount := int64(10)
+	sufficientValidatorCount := int64(5)
+	expiration := int64(100)
 	cases := []struct {
 		valid bool
-		tx    MsgRequest
+		tx    MsgRequestData
 	}{
-		{true, NewMsgRequest(codeHash, []byte("params"), reportPeriod, sender)},
-		{false, NewMsgRequest([]byte{}, []byte("params"), reportPeriod, sender)},
-		{false, NewMsgRequest(nil, []byte("params"), reportPeriod, sender)},
-		{false, NewMsgRequest(codeHash, []byte("params"), reportPeriod, sdk.AccAddress([]byte("")))},
+		{
+			true, NewMsgRequestData(
+				1, []byte("calldata"), requestedValidatorCount,
+				sufficientValidatorCount, expiration, sender,
+			),
+		},
+		{
+			false, NewMsgRequestData(
+				0, []byte("calldata"), requestedValidatorCount,
+				sufficientValidatorCount, expiration, sender,
+			),
+		},
+		{
+			true, NewMsgRequestData(
+				1, nil, requestedValidatorCount,
+				sufficientValidatorCount, expiration, sender,
+			),
+		},
+		{
+			false, NewMsgRequestData(
+				1, []byte("calldata"), 0,
+				sufficientValidatorCount, expiration, sender,
+			),
+		},
+		{
+			false, NewMsgRequestData(
+				1, []byte("calldata"), requestedValidatorCount,
+				-1, expiration, sender,
+			),
+		},
+		{
+			false, NewMsgRequestData(
+				1, []byte("calldata"), 6,
+				8, expiration, sender,
+			),
+		},
+		{
+			false, NewMsgRequestData(
+				1, []byte("calldata"), requestedValidatorCount,
+				sufficientValidatorCount, -10, sender,
+			),
+		},
+		{
+			false, NewMsgRequestData(
+				1, []byte("calldata"), requestedValidatorCount,
+				sufficientValidatorCount, expiration, nil,
+			),
+		},
 	}
 
 	for _, tc := range cases {
@@ -40,43 +90,43 @@ func TestMsgRequestValidation(t *testing.T) {
 	}
 }
 
-func TestMsgRequestGetSignBytes(t *testing.T) {
+func TestMsgRequestDataGetSignBytes(t *testing.T) {
 	config := sdk.GetConfig()
 	config.SetBech32PrefixForAccount("band", "band"+sdk.PrefixPublic)
 
-	codeHash, _ := hex.DecodeString("5694d08a2e53ffcae0c3103e5ad6f6076abd960eb1f8a56577040bc1028f702b")
 	sender := sdk.AccAddress([]byte("sender"))
-	msg := NewMsgRequest(codeHash, []byte("params"), uint64(10), sender)
+	msg := NewMsgRequestData(1, []byte("calldata"), 10, 5, 100, sender)
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"zoracle/Request","value":{"codeHash":"VpTQii5T/8rgwxA+Wtb2B2q9lg6x+KVldwQLwQKPcCs=","params":"cGFyYW1z","reportPeriod":"10","sender":"band1wdjkuer9wgvz7c4y"}}`
+	expected := `{"type":"zoracle/Request","value":{"calldata":"Y2FsbGRhdGE=","expiration":"100","oracleScriptID":"1","requestedValidatorCount":"10","sender":"band1wdjkuer9wgvz7c4y","sufficientValidatorCount":"5"}}`
 
 	require.Equal(t, expected, string(res))
 }
 
-func TestMsgReport(t *testing.T) {
-	requestID := uint64(3)
-	data := []byte("Data")
+func TestMsgReportData(t *testing.T) {
+	requestID := int64(3)
+	data := []ExternalData{NewExternalData(1, []byte("data1")), NewExternalData(2, []byte("data2"))}
 	provider, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
-	msg := NewMsgReport(requestID, data, provider)
+	msg := NewMsgReportData(requestID, data, provider)
 
 	require.Equal(t, RouterKey, msg.Route())
 	require.Equal(t, "report", msg.Type())
 }
 
-func TestMsgReportValidation(t *testing.T) {
-	requestID := uint64(3)
-	data := []byte("Data")
+func TestMsgReportDataValidation(t *testing.T) {
+	requestID := int64(3)
+	data := []ExternalData{NewExternalData(1, []byte("data1")), NewExternalData(2, []byte("data2"))}
 	validator, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
 	failValidator, _ := sdk.ValAddressFromHex("")
 	cases := []struct {
 		valid bool
-		tx    MsgReport
+		tx    MsgReportData
 	}{
-		{true, NewMsgReport(requestID, data, validator)},
-		{false, NewMsgReport(requestID, []byte(""), validator)},
-		{false, NewMsgReport(requestID, nil, validator)},
-		{false, NewMsgReport(requestID, data, failValidator)},
+		{true, NewMsgReportData(requestID, data, validator)},
+		{false, NewMsgReportData(-1, data, validator)},
+		{false, NewMsgReportData(requestID, []ExternalData{}, validator)},
+		{false, NewMsgReportData(requestID, nil, validator)},
+		{false, NewMsgReportData(requestID, data, failValidator)},
 	}
 
 	for _, tc := range cases {
@@ -89,17 +139,17 @@ func TestMsgReportValidation(t *testing.T) {
 	}
 }
 
-func TestMsgReportGetSignBytes(t *testing.T) {
+func TestMsgReportDataGetSignBytes(t *testing.T) {
 	config := sdk.GetConfig()
 	config.SetBech32PrefixForValidator("band"+sdk.PrefixValidator+sdk.PrefixOperator, "band"+sdk.PrefixValidator+sdk.PrefixOperator+sdk.PrefixPublic)
 
-	requestID := uint64(3)
-	data := []byte("Data")
+	requestID := int64(3)
+	data := []ExternalData{NewExternalData(1, []byte("data1")), NewExternalData(2, []byte("data2"))}
 	validator, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
-	msg := NewMsgReport(requestID, data, validator)
+	msg := NewMsgReportData(requestID, data, validator)
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"zoracle/Report","value":{"data":"RGF0YQ==","requestID":"3","validator":"bandvaloper1hq8j5h0h64csk9tz95df783cxr0dt0dgay2kyy"}}`
+	expected := `{"type":"zoracle/Report","value":{"dataSet":[{"data":"ZGF0YTE=","externalDataID":"1"},{"data":"ZGF0YTI=","externalDataID":"2"}],"requestID":"3","sender":"bandvaloper1hq8j5h0h64csk9tz95df783cxr0dt0dgay2kyy"}}`
 
 	require.Equal(t, expected, string(res))
 }
