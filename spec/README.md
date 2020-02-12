@@ -323,24 +323,64 @@ Owasm imposes extra. If an oracle script is intended to be a reusable library , 
 
 **Required** - This function is called once every time a new request is made to the Owasm script via [MsgDataRequest][sec:msg-request-data]. Note that the request parameters of are passed through calldata. The function is expected to call [requestExternalData][sec:owasm-request-external-data] function multiple times depending on the number of data sources it needs.
 
-### `execute(i32, i32) -> (u64ptr)`
+### `execute() -> ()`
 
 **Required** - This function is called after sufficient data points are reported for a data request. Note that the request parameters of are passed through calldata. The function is expected to return the final aggregated data through the call of [finish][sec:owasm-finish] function.
 
-**Parameters**
-- `requestedValidatorCount: i32` The number of validators that was specified to 
-- `receivedValidatorCount: i32` The number of validators that actually report raw data points prior to this function call.
 
-### `getParametersInfo() -> ()`
+<!-- ### `getParametersInfo() -> ()`
 **Optional** - Gets the human-readable string representing the specification of this script's parameters. The function invokes [finish][sec:owasm-finish] with the return value.
 
 ### `getResultInfo() -> ()`
-**Optional** - Gets the human-readable string representing the specification of this script's final result. The function invokes [finish][sec:owasm-finish] with the return value. 
+**Optional** - Gets the human-readable string representing the specification of this script's final result. The function invokes [finish][sec:owasm-finish] with the return value.  -->
 
 ## Oracle Environment Interface (OEI)
 The following functions are part of Owasm oracle environment interface, which are accessible to oracle scripts during their executions.
 
-### `finish(i32ptr, i32) -> ()`
+### `getCurrentRequestID() -> i64`
+
+Gets the ID of the current data request.
+
+**Returns**
+- `requestID: i64` - The ID of the current datar request.
+
+### `getRequestedValidatorCount() -> i64`
+
+Gets the number of validators that the current data request specifies.
+
+**Returns**
+- `requestedValidatorCount: i64` - The requested validator count.
+
+### `getReceivedValidatorCount() -> i64`
+
+Gets the number of validators among the requested ones that replied with raw data reports. Return zero during the *preparation* phase.
+
+**Returns**
+- `receivedValidatorCount: i64` - The received validator count.
+
+### `getPrepareBlockTime() -> i64`
+
+Gets the time at which the *preparation* phase of this data request was being run.
+
+**Returns**
+- `timestamp: i64` - The block timestamp during the preparation phase.
+
+### `getAggregateBlockTime() -> i64`
+
+Gets the time at which the *aggregation* phase of this data request was being run. Return zero during the *preparation* phase.
+
+**Returns**
+- `timestamp: i64` - The block timestamp during the aggregation phase.
+
+### `readValidatorPubKey(i64, i32ptr) -> ()`
+
+Reads the 33-byte compressed [secp256k1](https://en.bitcoin.it/wiki/Secp256k1) public key of a validator at the given index.
+
+**Parameters**
+- `validatorIndex: i64` - The validator index. Must be nonnegative and not greater than the number of requested validators.
+- `resultOffset: i32ptr` - The memory offset to save the validator's public key.
+
+<!-- ### `finish(i32ptr, i32) -> ()`
 [sec:owasm-finish]: #finishi32ptr-i32--gt-
 
 Sets the returning output data for the execution, causing a trap and immediately terminating the execution with success result.
@@ -382,7 +422,7 @@ Performs a call similar to [call][sec:owasm-call] function, but disallows the ta
 - `dataSize: i32` - The size of calldata in bytes.
 
 **Returns**
-- `status: i32` - The status of the call: `0` on success and `1` on failure.
+- `status: i32` - The status of the call: `0` on success and `1` on failure. -->
 
 ### `getCallDataSize() -> i32`
 Gets the size of calldata set by the current function's caller in bytes. For the outermost function call, the data is always the data request's encoded parameters.
@@ -398,7 +438,7 @@ Reads the specific part of calldata into the runtime memory. The function will f
 - `seekOffset: i32` - The starting offset of calldata to start copying.
 - `resultSize: i32` - The number of bytes to copy.
 
-### `getReturnDataSize() -> i32`
+<!-- ### `getReturnDataSize() -> i32`
 Gets the size of return data for the last `call` or `callStatic`.
 
 **Returns**
@@ -410,7 +450,14 @@ Reads the specific part of return data into the runtime memory. The function wil
 **Parameters**
 - `resultOffset: i32ptr` - The starting memory offset to copy return data into.
 - `seekOffset: i32` - The starting offset of return data to start copying.
-- `resultSize: i32` - The number of bytes to copy.
+- `resultSize: i32` - The number of bytes to copy.-->
+
+### `saveReturnData(i32ptr, i32, i32) -> ()`
+Saves the specific part of memory as the return data of the current Owasm execution.
+
+**Parameters**
+- `dateOffset: i32ptr` - The starting memory offset to copy return data into.
+- `dataSize: i32` - The number of bytes to copy.
 
 ### `requestExternalData(i64, i64, i32ptr, i32)`
 [sec:owasm-request-external-data]: #requestExternalDatai64-i64-i32ptr-i32
