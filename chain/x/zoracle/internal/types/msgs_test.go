@@ -412,3 +412,69 @@ func TestMsgEditDataSourceGetSignBytes(t *testing.T) {
 
 	require.Equal(t, expected, string(res))
 }
+
+func TestMsgCreateOracleScript(t *testing.T) {
+	owner := sdk.AccAddress([]byte("owner"))
+	sender := sdk.AccAddress([]byte("sender"))
+	msg := NewMsgCreateOracleScript(owner, "oracle_script_1", []byte("code"), sender)
+	require.Equal(t, RouterKey, msg.Route())
+	require.Equal(t, "create_oracle_script", msg.Type())
+	require.Equal(t, owner, msg.Owner)
+	require.Equal(t, "oracle_script_1", msg.Name)
+	require.Equal(t, []byte("code"), msg.Code)
+	require.Equal(t, sender, msg.Sender)
+}
+
+func TestMsgCreateOracleScriptValidation(t *testing.T) {
+	owner := sdk.AccAddress([]byte("owner"))
+	sender := sdk.AccAddress([]byte("sender"))
+	name := "oracle_script_1"
+	code := []byte("code")
+
+	cases := []struct {
+		valid bool
+		tx    MsgCreateOracleScript
+	}{
+		{
+			true, NewMsgCreateOracleScript(owner, name, code, sender),
+		},
+		{
+			false, NewMsgCreateOracleScript(nil, name, code, sender),
+		},
+		{
+			false, NewMsgCreateOracleScript(owner, "", code, sender),
+		},
+		{
+			false, NewMsgCreateOracleScript(owner, name, []byte{}, sender),
+		},
+		{
+			false, NewMsgCreateOracleScript(owner, name, nil, sender),
+		},
+		{
+			false, NewMsgCreateOracleScript(owner, name, code, nil),
+		},
+	}
+
+	for _, tc := range cases {
+		err := tc.tx.ValidateBasic()
+		if tc.valid {
+			require.Nil(t, err)
+		} else {
+			require.NotNil(t, err)
+		}
+	}
+}
+
+func TestMsgCreateOracleScriptGetSignBytes(t *testing.T) {
+	config := sdk.GetConfig()
+	config.SetBech32PrefixForAccount("band", "band"+sdk.PrefixPublic)
+
+	owner := sdk.AccAddress([]byte("owner"))
+	sender := sdk.AccAddress([]byte("sender"))
+	msg := NewMsgCreateOracleScript(owner, "oracle_script_1", []byte("code"), sender)
+	res := msg.GetSignBytes()
+
+	expected := `{"type":"zoracle/CreateOracleScript","value":{"code":"Y29kZQ==","name":"oracle_script_1","owner":"band1damkuetjcw3c0d","sender":"band1wdjkuer9wgvz7c4y"}}`
+
+	require.Equal(t, expected, string(res))
+}

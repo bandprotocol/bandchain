@@ -356,3 +356,61 @@ func (msg MsgEditDataSource) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
+
+// MsgCreateOracleScript is a message for creating a oracle script.
+type MsgCreateOracleScript struct {
+	Owner  sdk.AccAddress `json:"owner"`
+	Name   string         `json:"name"`
+	Code   []byte         `json:"code"`
+	Sender sdk.AccAddress `json:"sender"`
+}
+
+// NewMsgCreateOracleScript creates a new MsgCreateOracleScript instance.
+func NewMsgCreateOracleScript(
+	owner sdk.AccAddress,
+	name string,
+	code []byte,
+	sender sdk.AccAddress,
+) MsgCreateOracleScript {
+	return MsgCreateOracleScript{
+		Owner:  owner,
+		Name:   name,
+		Code:   code,
+		Sender: sender,
+	}
+}
+
+// Route implements the sdk.Msg interface for MsgCreateOracleScript.
+func (msg MsgCreateOracleScript) Route() string { return RouterKey }
+
+// Type implements the sdk.Msg interface for MsgCreateOracleScript.
+func (msg MsgCreateOracleScript) Type() string { return "create_oracle_script" }
+
+// ValidateBasic implements the sdk.Msg interface for MsgCreateOracleScript.
+func (msg MsgCreateOracleScript) ValidateBasic() sdk.Error {
+	if msg.Owner.Empty() {
+		return sdk.ErrInvalidAddress(msg.Owner.String())
+	}
+	if msg.Sender.Empty() {
+		return sdk.ErrInvalidAddress(msg.Sender.String())
+	}
+	if msg.Name == "" {
+		// TODO: use more clarify error later
+		return sdk.ErrInternal("Name is empty string")
+	}
+	if msg.Code == nil || len(msg.Code) == 0 {
+		return sdk.ErrUnknownRequest("Code not be empty")
+	}
+	return nil
+}
+
+// GetSigners implements the sdk.Msg interface for MsgCreateOracleScript.
+func (msg MsgCreateOracleScript) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{msg.Sender}
+}
+
+// GetSignBytes implements the sdk.Msg interface for MsgCreateOracleScript.
+func (msg MsgCreateOracleScript) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}
