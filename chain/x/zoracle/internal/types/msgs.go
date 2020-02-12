@@ -221,3 +221,141 @@ func (msg MsgDeleteCode) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
+
+// MsgCreateDataSource is a message for creating a new data source.
+type MsgCreateDataSource struct {
+	Owner      sdk.AccAddress `json="owner"`
+	Name       string         `json="name"`
+	Fee        sdk.Coins      `json="fee"`
+	Executable []byte         `json="executable"`
+	Sender     sdk.AccAddress `json="sender"`
+}
+
+// NewMsgCreateDataSource creates a new MsgCreateDataSource instance.
+func NewMsgCreateDataSource(
+	owner sdk.AccAddress,
+	name string,
+	fee sdk.Coins,
+	executable []byte,
+	sender sdk.AccAddress,
+) MsgCreateDataSource {
+	return MsgCreateDataSource{
+		Owner:      owner,
+		Name:       name,
+		Fee:        fee,
+		Executable: executable,
+		Sender:     sender,
+	}
+}
+
+// Route should return the name of the module
+func (msg MsgCreateDataSource) Route() string { return RouterKey }
+
+// Type should return the action
+func (msg MsgCreateDataSource) Type() string { return "createDataSource" }
+
+// ValidateBasic runs stateless checks on the message
+func (msg MsgCreateDataSource) ValidateBasic() sdk.Error {
+	if msg.Owner.Empty() {
+		return sdk.ErrInvalidAddress(msg.Owner.String())
+	}
+	if msg.Name == "" {
+		// TODO: use more clarify error later
+		return sdk.ErrInternal("Name is empty string")
+	}
+	if !msg.Fee.IsValid() {
+		return sdk.ErrInvalidCoins("fee is invalid: " + msg.Amount.String())
+	}
+	if !msg.Fee.IsAllPositive() {
+		return sdk.ErrInsufficientCoins("fee must be positive")
+	}
+	if msg.Executable == nil || len(msg.Executable) == 0 {
+		return sdk.ErrUnknownRequest("Executable not be empty")
+	}
+	if msg.Sender.Empty() {
+		return sdk.ErrInvalidAddress(msg.Sender.String())
+	}
+	return nil
+}
+
+// GetSigners defines whose signature is required
+func (msg MsgCreateDataSource) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{msg.Sender}
+}
+
+// GetSignBytes encodes the message for signing
+func (msg MsgCreateDataSource) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}
+
+// MsgEditDataSource struct
+type MsgEditDataSource struct {
+	DataSourceID int64          `json="dataSourceID"`
+	Owner        sdk.AccAddress `json="owner"`
+	Name         string         `json="name"`
+	Fee          sdk.Coins      `json="fee"`
+	Executable   []byte         `json="executable"`
+	Sender       sdk.AccAddress `json="sender"`
+}
+
+// NewMsgEditDataSource is a constructor function for MsgEditDataSource
+func NewMsgEditDataSource(
+	dataSourceID DataSourceID,
+	owner sdk.AccAddress,
+	name string,
+	fee sdk.Coins,
+	executable []byte,
+	sender sdk.AccAddress,
+) MsgEditDataSource {
+	return MsgEditDataSource{
+		DataSourceID: dataSourceID,
+		Owner:        owner,
+		Name:         name,
+		Fee:          fee,
+		Executable:   executable,
+		Sender:       sender,
+	}
+}
+
+// Route should return the name of the module
+func (msg MsgEditDataSource) Route() string { return RouterKey }
+
+// Type should return the action
+func (msg MsgEditDataSource) Type() string { return "editDataSource" }
+
+// ValidateBasic runs stateless checks on the message
+func (msg MsgEditDataSource) ValidateBasic() sdk.Error {
+	if msg.Owner.Empty() {
+		return sdk.ErrInvalidAddress(msg.Owner.String())
+	}
+	if msg.Name == "" {
+		// TODO: use more clarify error later
+		return sdk.ErrInternal("Name is empty string")
+	}
+	if !msg.Fee.IsValid() {
+		return sdk.ErrInvalidCoins("fee is invalid: " + msg.Amount.String())
+	}
+	if !msg.Fee.IsAllPositive() {
+		return sdk.ErrInsufficientCoins("fee must be positive")
+	}
+	if msg.Executable == nil || len(msg.Executable) == 0 {
+		return sdk.ErrUnknownRequest("Executable not be empty")
+	}
+	if msg.Sender.Empty() {
+		return sdk.ErrInvalidAddress(msg.Sender.String())
+	}
+
+	return nil
+}
+
+// GetSigners defines whose signature is required
+func (msg MsgEditDataSource) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{msg.Sender}
+}
+
+// GetSignBytes encodes the message for signing
+func (msg MsgEditDataSource) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}
