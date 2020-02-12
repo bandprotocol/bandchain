@@ -10,7 +10,6 @@ import (
 	"os/exec"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
@@ -179,13 +178,16 @@ func handleRequest(requestID uint64) (sdk.TxResponse, error) {
 		answers[info.index] = info.answer
 	}
 
-	b, _ := json.Marshal(answers)
+	// b, _ := json.Marshal(answers)
 
-	return bandClient.SendTransaction(
-		zoracle.NewMsgReport(requestID, b, sdk.ValAddress(bandClient.Sender())),
-		10000000, "", "", "",
-		flags.BroadcastSync,
-	)
+	// TODO: Send new report
+	return sdk.TxResponse{}, nil
+
+	// return bandClient.SendTransaction(
+	// 	zoracle.NewMsgReport(requestID, b, sdk.ValAddress(bandClient.Sender())),
+	// 	10000000, "", "", "",
+	// 	flags.BroadcastSync,
+	// )
 }
 
 func handleRequestAndLog(requestID uint64) {

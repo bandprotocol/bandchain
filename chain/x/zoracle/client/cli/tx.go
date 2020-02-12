@@ -36,25 +36,48 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 // GetCmdRequest implements the request command handler
 func GetCmdRequest(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "request [report period] [code hash]",
+		Use:   "request [oracleScriptID] [calldata] [requestedCount] [sufficientValidator] [Expiration]",
 		Short: "request open api data",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(5),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
 			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 
-			reportPeriod, err := strconv.ParseUint(args[0], 10, 64)
+			oracleScriptID, err := strconv.ParseInt(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			codeHash, err := hex.DecodeString(args[1])
+			calldata, err := hex.DecodeString(args[1])
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgRequest(codeHash, []byte("params"), reportPeriod, cliCtx.GetFromAddress())
+			requestedValidatorCount, err := strconv.ParseInt(args[2], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			sufficientValidatorCount, err := strconv.ParseInt(args[3], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			expiration, err := strconv.ParseInt(args[4], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgRequestData(
+				oracleScriptID,
+				calldata,
+				requestedValidatorCount,
+				sufficientValidatorCount,
+				expiration,
+				cliCtx.GetFromAddress(),
+			)
+
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
@@ -76,19 +99,18 @@ func GetCmdReport(cdc *codec.Codec) *cobra.Command {
 
 			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 
-			var data []byte
-
-			requestID, err := strconv.ParseUint(args[0], 10, 64)
+			requestID, err := strconv.ParseInt(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			data, err = hex.DecodeString(args[1])
+			var dataset []types.ExternalData
+			err = cdc.UnmarshalJSON([]byte(args[1]), &dataset)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgReport(requestID, data, sdk.ValAddress(cliCtx.GetFromAddress().Bytes()))
+			msg := types.NewMsgReportData(requestID, dataset, sdk.ValAddress(cliCtx.GetFromAddress()))
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
