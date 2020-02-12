@@ -20,4 +20,5 @@ func RegisterCodec(cdc *codec.Codec) {
 	cdc.RegisterConcrete(MsgCreateDataSource{}, "zoracle/CreateDataSource", nil)
 	cdc.RegisterConcrete(MsgEditDataSource{}, "zoracle/EditDataSource", nil)
 	cdc.RegisterConcrete(MsgCreateOracleScript{}, "zoracle/CreateOracleScript", nil)
+	cdc.RegisterConcrete(MsgEditOracleScript{}, "zoracle/EditOracleScript", nil)
 }
