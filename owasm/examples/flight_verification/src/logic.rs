@@ -64,15 +64,15 @@ mod tests {
     #[test]
     fn test_call_and_finding_flight() {
         let params = Parameter {
-            icao24: String::from("a79de9"),
+            icao24: String::from("75857e"),
             flight_option: flight_option::FlightOption::DEPARTURE,
-            airport: String::from("EDDF"),
-            should_happen_after: 1580937440,
-            should_happen_before: 1580997440,
+            airport: String::from("VTBS"),
+            should_happen_after: 1581450301,
+            should_happen_before: 1581495901,
         };
         let data = Data::build_from_local_env(&params).unwrap();
         println!(
-            "Is there a flight with icao24 that departure at EDDF after 1580937440 and before 1580997440 ? \n Answer is {:?}",
+            "Is there a flight with icao24 that departure at VTBS after 1581450301 and before 1581495901 ? \n Answer is {:?}",
             execute(params, vec![data])
         );
     }
