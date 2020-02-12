@@ -224,11 +224,11 @@ func (msg MsgDeleteCode) GetSignBytes() []byte {
 
 // MsgCreateDataSource is a message for creating a new data source.
 type MsgCreateDataSource struct {
-	Owner      sdk.AccAddress `json="owner"`
-	Name       string         `json="name"`
-	Fee        sdk.Coins      `json="fee"`
-	Executable []byte         `json="executable"`
-	Sender     sdk.AccAddress `json="sender"`
+	Owner      sdk.AccAddress `json:"owner"`
+	Name       string         `json:"name"`
+	Fee        sdk.Coins      `json:"fee"`
+	Executable []byte         `json:"executable"`
+	Sender     sdk.AccAddress `json:"sender"`
 }
 
 // NewMsgCreateDataSource creates a new MsgCreateDataSource instance.
@@ -264,7 +264,7 @@ func (msg MsgCreateDataSource) ValidateBasic() sdk.Error {
 		return sdk.ErrInternal("Name is empty string")
 	}
 	if !msg.Fee.IsValid() {
-		return sdk.ErrInvalidCoins("fee is invalid: " + msg.Amount.String())
+		return sdk.ErrInvalidCoins("fee is invalid: " + msg.Fee.String())
 	}
 	if !msg.Fee.IsAllPositive() {
 		return sdk.ErrInsufficientCoins("fee must be positive")
@@ -291,17 +291,17 @@ func (msg MsgCreateDataSource) GetSignBytes() []byte {
 
 // MsgEditDataSource struct
 type MsgEditDataSource struct {
-	DataSourceID int64          `json="dataSourceID"`
-	Owner        sdk.AccAddress `json="owner"`
-	Name         string         `json="name"`
-	Fee          sdk.Coins      `json="fee"`
-	Executable   []byte         `json="executable"`
-	Sender       sdk.AccAddress `json="sender"`
+	DataSourceID int64          `json:"dataSourceID"`
+	Owner        sdk.AccAddress `json:"owner"`
+	Name         string         `json:"name"`
+	Fee          sdk.Coins      `json:"fee"`
+	Executable   []byte         `json:"executable"`
+	Sender       sdk.AccAddress `json:"sender"`
 }
 
 // NewMsgEditDataSource is a constructor function for MsgEditDataSource
 func NewMsgEditDataSource(
-	dataSourceID DataSourceID,
+	dataSourceID int64,
 	owner sdk.AccAddress,
 	name string,
 	fee sdk.Coins,
@@ -334,7 +334,7 @@ func (msg MsgEditDataSource) ValidateBasic() sdk.Error {
 		return sdk.ErrInternal("Name is empty string")
 	}
 	if !msg.Fee.IsValid() {
-		return sdk.ErrInvalidCoins("fee is invalid: " + msg.Amount.String())
+		return sdk.ErrInvalidCoins("fee is invalid: " + msg.Fee.String())
 	}
 	if !msg.Fee.IsAllPositive() {
 		return sdk.ErrInsufficientCoins("fee must be positive")
