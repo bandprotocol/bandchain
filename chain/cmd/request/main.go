@@ -77,33 +77,33 @@ func main() {
 				Amount:      sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(10))),
 			}}, 0, 10000000, "", "", "", flags.BroadcastBlock))
 		}
-	case "request":
-		{
-			codeHash, _ := hex.DecodeString("148b6ddfdd2e1a6791b992592160ccd3cef0cea0c5f88ffdbdae7ea4044d9841")
-			switch args[1] {
-			case "BTC":
-				{
-					// BTC parameter
-					params, _ := hex.DecodeString("00000000")
-					// Send request by code hash
-					fmt.Println(tx.SendTransaction(
-						[]sdk.Msg{zoracle.NewMsgRequest(codeHash, params, 6, tx.Sender())},
-						0, 10000000, "", "", "",
-						flags.BroadcastBlock,
-					))
-				}
-			case "ETH":
-				{
-					// ETH parameter
-					params, _ := hex.DecodeString("00000001")
-					// Send request by same code hash with new parameter
-					fmt.Println(tx.SendTransaction(
-						[]sdk.Msg{zoracle.NewMsgRequest(codeHash, params, 6, tx.Sender())},
-						0, 10000000, "", "", "",
-						flags.BroadcastBlock,
-					))
-				}
-			}
-		}
+		// case "request":
+		// 	{
+		// 		codeHash, _ := hex.DecodeString("148b6ddfdd2e1a6791b992592160ccd3cef0cea0c5f88ffdbdae7ea4044d9841")
+		// 		switch args[1] {
+		// 		case "BTC":
+		// 			{
+		// 				// BTC parameter
+		// 				params, _ := hex.DecodeString("00000000")
+		// 				// Send request by code hash
+		// 				fmt.Println(tx.SendTransaction(
+		// 					[]sdk.Msg{zoracle.NewMsgRequest(codeHash, params, 6, tx.Sender())},
+		// 					0, 10000000, "", "", "",
+		// 					flags.BroadcastBlock,
+		// 				))
+		// 			}
+		// 		case "ETH":
+		// 			{
+		// 				// ETH parameter
+		// 				params, _ := hex.DecodeString("00000001")
+		// 				// Send request by same code hash with new parameter
+		// 				fmt.Println(tx.SendTransaction(
+		// 					[]sdk.Msg{zoracle.NewMsgRequest(codeHash, params, 6, tx.Sender())},
+		// 					0, 10000000, "", "", "",
+		// 					flags.BroadcastBlock,
+		// 				))
+		// 			}
+		// 		}
+		// 	}
 	}
 }

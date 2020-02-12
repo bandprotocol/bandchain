@@ -8,52 +8,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMsgRequest(t *testing.T) {
-	sender := sdk.AccAddress([]byte("sender"))
-	codeHash, _ := hex.DecodeString("5694d08a2e53ffcae0c3103e5ad6f6076abd960eb1f8a56577040bc1028f702b")
-	msg := NewMsgRequest(codeHash, []byte("params"), uint64(10), sender)
-	require.Equal(t, RouterKey, msg.Route())
-	require.Equal(t, "request", msg.Type())
-}
-
-func TestMsgRequestValidation(t *testing.T) {
-	codeHash, _ := hex.DecodeString("5694d08a2e53ffcae0c3103e5ad6f6076abd960eb1f8a56577040bc1028f702b")
-	sender := sdk.AccAddress([]byte("sender"))
-	reportPeriod := uint64(10)
-	cases := []struct {
-		valid bool
-		tx    MsgRequest
-	}{
-		{true, NewMsgRequest(codeHash, []byte("params"), reportPeriod, sender)},
-		{false, NewMsgRequest([]byte{}, []byte("params"), reportPeriod, sender)},
-		{false, NewMsgRequest(nil, []byte("params"), reportPeriod, sender)},
-		{false, NewMsgRequest(codeHash, []byte("params"), reportPeriod, sdk.AccAddress([]byte("")))},
-	}
-
-	for _, tc := range cases {
-		err := tc.tx.ValidateBasic()
-		if tc.valid {
-			require.Nil(t, err)
-		} else {
-			require.NotNil(t, err)
-		}
-	}
-}
-
-func TestMsgRequestGetSignBytes(t *testing.T) {
-	config := sdk.GetConfig()
-	config.SetBech32PrefixForAccount("band", "band"+sdk.PrefixPublic)
-
-	codeHash, _ := hex.DecodeString("5694d08a2e53ffcae0c3103e5ad6f6076abd960eb1f8a56577040bc1028f702b")
-	sender := sdk.AccAddress([]byte("sender"))
-	msg := NewMsgRequest(codeHash, []byte("params"), uint64(10), sender)
-	res := msg.GetSignBytes()
-
-	expected := `{"type":"zoracle/Request","value":{"codeHash":"VpTQii5T/8rgwxA+Wtb2B2q9lg6x+KVldwQLwQKPcCs=","params":"cGFyYW1z","reportPeriod":"10","sender":"band1wdjkuer9wgvz7c4y"}}`
-
-	require.Equal(t, expected, string(res))
-}
-
 func TestMsgRequestData(t *testing.T) {
 	sender := sdk.AccAddress([]byte("sender"))
 	msg := NewMsgRequestData(1, []byte("calldata"), 10, 5, 100, sender)
@@ -144,57 +98,7 @@ func TestMsgRequestDataGetSignBytes(t *testing.T) {
 	msg := NewMsgRequestData(1, []byte("calldata"), 10, 5, 100, sender)
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"zoracle/RequestData","value":{"calldata":"Y2FsbGRhdGE=","expiration":"100","oracleScriptID":"1","requestedValidatorCount":"10","sender":"band1wdjkuer9wgvz7c4y","sufficientValidatorCount":"5"}}`
-
-	require.Equal(t, expected, string(res))
-}
-
-func TestMsgReport(t *testing.T) {
-	requestID := uint64(3)
-	data := []byte("Data")
-	provider, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
-	msg := NewMsgReport(requestID, data, provider)
-
-	require.Equal(t, RouterKey, msg.Route())
-	require.Equal(t, "report", msg.Type())
-}
-
-func TestMsgReportValidation(t *testing.T) {
-	requestID := uint64(3)
-	data := []byte("Data")
-	validator, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
-	failValidator, _ := sdk.ValAddressFromHex("")
-	cases := []struct {
-		valid bool
-		tx    MsgReport
-	}{
-		{true, NewMsgReport(requestID, data, validator)},
-		{false, NewMsgReport(requestID, []byte(""), validator)},
-		{false, NewMsgReport(requestID, nil, validator)},
-		{false, NewMsgReport(requestID, data, failValidator)},
-	}
-
-	for _, tc := range cases {
-		err := tc.tx.ValidateBasic()
-		if tc.valid {
-			require.Nil(t, err)
-		} else {
-			require.NotNil(t, err)
-		}
-	}
-}
-
-func TestMsgReportGetSignBytes(t *testing.T) {
-	config := sdk.GetConfig()
-	config.SetBech32PrefixForValidator("band"+sdk.PrefixValidator+sdk.PrefixOperator, "band"+sdk.PrefixValidator+sdk.PrefixOperator+sdk.PrefixPublic)
-
-	requestID := uint64(3)
-	data := []byte("Data")
-	validator, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
-	msg := NewMsgReport(requestID, data, validator)
-	res := msg.GetSignBytes()
-
-	expected := `{"type":"zoracle/Report","value":{"data":"RGF0YQ==","requestID":"3","validator":"bandvaloper1hq8j5h0h64csk9tz95df783cxr0dt0dgay2kyy"}}`
+	expected := `{"type":"zoracle/Request","value":{"calldata":"Y2FsbGRhdGE=","expiration":"100","oracleScriptID":"1","requestedValidatorCount":"10","sender":"band1wdjkuer9wgvz7c4y","sufficientValidatorCount":"5"}}`
 
 	require.Equal(t, expected, string(res))
 }
@@ -245,7 +149,7 @@ func TestMsgReportDataGetSignBytes(t *testing.T) {
 	msg := NewMsgReportData(requestID, data, validator)
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"zoracle/ReportData","value":{"dataSet":[{"data":"ZGF0YTE=","externalDataID":"1"},{"data":"ZGF0YTI=","externalDataID":"2"}],"requestID":"3","sender":"bandvaloper1hq8j5h0h64csk9tz95df783cxr0dt0dgay2kyy"}}`
+	expected := `{"type":"zoracle/Report","value":{"dataSet":[{"data":"ZGF0YTE=","externalDataID":"1"},{"data":"ZGF0YTI=","externalDataID":"2"}],"requestID":"3","sender":"bandvaloper1hq8j5h0h64csk9tz95df783cxr0dt0dgay2kyy"}}`
 
 	require.Equal(t, expected, string(res))
 }

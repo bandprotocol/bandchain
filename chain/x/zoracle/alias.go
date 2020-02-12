@@ -22,14 +22,14 @@ const (
 )
 
 var (
-	NewKeeper        = keeper.NewKeeper
-	NewQuerier       = keeper.NewQuerier
-	ModuleCdc        = types.ModuleCdc
-	RegisterCodec    = types.RegisterCodec
-	NewMsgRequest    = types.NewMsgRequest
-	NewMsgReport     = types.NewMsgReport
-	NewMsgStoreCode  = types.NewMsgStoreCode
-	NewMsgDeleteCode = types.NewMsgDeleteCode
+	NewKeeper         = keeper.NewKeeper
+	NewQuerier        = keeper.NewQuerier
+	ModuleCdc         = types.ModuleCdc
+	RegisterCodec     = types.RegisterCodec
+	NewMsgRequestData = types.NewMsgRequestData
+	NewMsgReportData  = types.NewMsgReportData
+	NewMsgStoreCode   = types.NewMsgStoreCode
+	NewMsgDeleteCode  = types.NewMsgDeleteCode
 
 	RequestStoreKey  = types.RequestStoreKey
 	CodeHashStoreKey = types.CodeHashStoreKey
@@ -38,10 +38,10 @@ var (
 )
 
 type (
-	Keeper        = keeper.Keeper
-	MsgRequest    = types.MsgRequest
-	MsgReport     = types.MsgReport
-	MsgStoreCode  = types.MsgStoreCode
-	MsgDeleteCode = types.MsgDeleteCode
-	RequestInfo   = types.RequestInfo
+	Keeper         = keeper.Keeper
+	MsgRequestData = types.MsgRequestData
+	MsgReportData  = types.MsgReportData
+	MsgStoreCode   = types.MsgStoreCode
+	MsgDeleteCode  = types.MsgDeleteCode
+	RequestInfo    = types.RequestInfo
 )

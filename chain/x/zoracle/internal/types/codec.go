@@ -13,10 +13,8 @@ func init() {
 
 // RegisterCodec registers concrete types on the Amino codec
 func RegisterCodec(cdc *codec.Codec) {
-	cdc.RegisterConcrete(MsgRequest{}, "zoracle/Request", nil)
-	cdc.RegisterConcrete(MsgReport{}, "zoracle/Report", nil)
+	cdc.RegisterConcrete(MsgRequestData{}, "zoracle/Request", nil)
+	cdc.RegisterConcrete(MsgReportData{}, "zoracle/Report", nil)
 	cdc.RegisterConcrete(MsgStoreCode{}, "zoracle/Store", nil)
 	cdc.RegisterConcrete(MsgDeleteCode{}, "zoracle/Delete", nil)
-	cdc.RegisterConcrete(MsgRequestData{}, "zoracle/RequestData", nil)
-	cdc.RegisterConcrete(MsgReportData{}, "zoracle/ReportData", nil)
 }
