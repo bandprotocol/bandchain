@@ -221,3 +221,138 @@ func (msg MsgDeleteCode) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
+
+// MsgCreateDataSource is a message for creating a new data source.
+type MsgCreateDataSource struct {
+	Owner      sdk.AccAddress `json:"owner"`
+	Name       string         `json:"name"`
+	Fee        sdk.Coins      `json:"fee"`
+	Executable []byte         `json:"executable"`
+	Sender     sdk.AccAddress `json:"sender"`
+}
+
+// NewMsgCreateDataSource creates a new MsgCreateDataSource instance.
+func NewMsgCreateDataSource(
+	owner sdk.AccAddress,
+	name string,
+	fee sdk.Coins,
+	executable []byte,
+	sender sdk.AccAddress,
+) MsgCreateDataSource {
+	return MsgCreateDataSource{
+		Owner:      owner,
+		Name:       name,
+		Fee:        fee,
+		Executable: executable,
+		Sender:     sender,
+	}
+}
+
+// Route implements the sdk.Msg interface for MsgCreateDataSource.
+func (msg MsgCreateDataSource) Route() string { return RouterKey }
+
+// Type implements the sdk.Msg interface for MsgCreateDataSource.
+func (msg MsgCreateDataSource) Type() string { return "create_data_source" }
+
+// ValidateBasic implements the sdk.Msg interface for MsgCreateDataSource.
+func (msg MsgCreateDataSource) ValidateBasic() sdk.Error {
+	if msg.Owner.Empty() {
+		return sdk.ErrInvalidAddress(msg.Owner.String())
+	}
+	if msg.Name == "" {
+		// TODO: use more clarify error later
+		return sdk.ErrInternal("Name is empty string")
+	}
+	if !msg.Fee.IsValid() {
+		return sdk.ErrInvalidCoins("fee is invalid: " + msg.Fee.String())
+	}
+	if msg.Executable == nil || len(msg.Executable) == 0 {
+		return sdk.ErrUnknownRequest("Executable not be empty")
+	}
+	if msg.Sender.Empty() {
+		return sdk.ErrInvalidAddress(msg.Sender.String())
+	}
+	return nil
+}
+
+// GetSigners implements the sdk.Msg interface for MsgCreateDataSource.
+func (msg MsgCreateDataSource) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{msg.Sender}
+}
+
+// GetSignBytes implements the sdk.Msg interface for MsgCreateDataSource.
+func (msg MsgCreateDataSource) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}
+
+// MsgEditDataSource is a message for editing an existing data source.
+type MsgEditDataSource struct {
+	DataSourceID int64          `json:"dataSourceID"`
+	Owner        sdk.AccAddress `json:"owner"`
+	Name         string         `json:"name"`
+	Fee          sdk.Coins      `json:"fee"`
+	Executable   []byte         `json:"executable"`
+	Sender       sdk.AccAddress `json:"sender"`
+}
+
+// NewMsgEditDataSource creates a new MsgEditDataSource instance.
+func NewMsgEditDataSource(
+	dataSourceID int64,
+	owner sdk.AccAddress,
+	name string,
+	fee sdk.Coins,
+	executable []byte,
+	sender sdk.AccAddress,
+) MsgEditDataSource {
+	return MsgEditDataSource{
+		DataSourceID: dataSourceID,
+		Owner:        owner,
+		Name:         name,
+		Fee:          fee,
+		Executable:   executable,
+		Sender:       sender,
+	}
+}
+
+// Route implements the sdk.Msg interface for MsgEditDataSource.
+func (msg MsgEditDataSource) Route() string { return RouterKey }
+
+// Type implements the sdk.Msg interface for MsgEditDataSource.
+func (msg MsgEditDataSource) Type() string { return "edit_data_source" }
+
+// ValidateBasic implements the sdk.Msg interface for MsgEditDataSource.
+func (msg MsgEditDataSource) ValidateBasic() sdk.Error {
+	if msg.DataSourceID <= 0 {
+		return sdk.ErrInternal("Data source id must be greater than zero")
+	}
+	if msg.Owner.Empty() {
+		return sdk.ErrInvalidAddress(msg.Owner.String())
+	}
+	if msg.Name == "" {
+		// TODO: use more clarify error later
+		return sdk.ErrInternal("Name is empty string")
+	}
+	if !msg.Fee.IsValid() {
+		return sdk.ErrInvalidCoins("fee is invalid: " + msg.Fee.String())
+	}
+	if msg.Executable == nil || len(msg.Executable) == 0 {
+		return sdk.ErrUnknownRequest("Executable not be empty")
+	}
+	if msg.Sender.Empty() {
+		return sdk.ErrInvalidAddress(msg.Sender.String())
+	}
+
+	return nil
+}
+
+// GetSigners implements the sdk.Msg interface for MsgEditDataSource.
+func (msg MsgEditDataSource) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{msg.Sender}
+}
+
+// GetSignBytes implements the sdk.Msg interface for MsgEditDataSource.
+func (msg MsgEditDataSource) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}
