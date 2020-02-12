@@ -13,7 +13,7 @@ func TestExecuteCanCallEnv(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	result, gasUsed, err := Execute(NewMockExecutionEnvironment(), code, "execute", []byte{}, 10000)
+	result, gasUsed, err := Execute(&mockExecutionEnvironment{}, code, "execute", []byte{}, 10000)
 	if err != nil {
 		panic(err)
 	}
@@ -26,6 +26,30 @@ func TestExecuteOutOfGas(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	_, _, err = Execute(NewMockExecutionEnvironment(), code, "execute", []byte{}, 10)
+	_, _, err = Execute(&mockExecutionEnvironment{}, code, "execute", []byte{}, 10)
 	require.EqualError(t, err, "gas limit exceeded")
+}
+
+func TestExecuteEndToEnd(t *testing.T) {
+	code, err := ioutil.ReadFile("./res/silly.wasm")
+	if err != nil {
+		panic(err)
+	}
+	env := &mockExecutionEnvironment{
+		externalDataResults: [][][]byte{nil, {[]byte("RETURN_DATA")}},
+	}
+
+	// It should log "RequestExternalData: DataSourceID = 1, ExternalDataID = 1"
+	_, _, err = Execute(env, code, "prepare", []byte{}, 10000)
+	if err != nil {
+		panic(err)
+	}
+
+	// It should return "RETURN_DATA" as the code return data from externalID = 1, validatorIndex = 0
+	result, gasUsed, err := Execute(env, code, "execute", []byte{}, 10000)
+	if err != nil {
+		panic(err)
+	}
+	require.Equal(t, []byte("RETURN_DATA"), result)
+	require.Equal(t, int64(22), gasUsed)
 }
