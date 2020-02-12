@@ -51,5 +51,5 @@ func TestExecuteEndToEnd(t *testing.T) {
 		panic(err)
 	}
 	require.Equal(t, []byte("RETURN_DATA"), result)
-	require.Equal(t, int64(22), gasUsed)
+	require.Equal(t, int64(1061), gasUsed)
 }
