@@ -252,7 +252,7 @@ func NewMsgCreateDataSource(
 func (msg MsgCreateDataSource) Route() string { return RouterKey }
 
 // Type implements the sdk.Msg interface for MsgCreateDataSource.
-func (msg MsgCreateDataSource) Type() string { return "createDataSource" }
+func (msg MsgCreateDataSource) Type() string { return "create_data_source" }
 
 // ValidateBasic implements the sdk.Msg interface for MsgCreateDataSource.
 func (msg MsgCreateDataSource) ValidateBasic() sdk.Error {
@@ -319,7 +319,7 @@ func NewMsgEditDataSource(
 func (msg MsgEditDataSource) Route() string { return RouterKey }
 
 // Type implements the sdk.Msg interface for MsgEditDataSource.
-func (msg MsgEditDataSource) Type() string { return "editDataSource" }
+func (msg MsgEditDataSource) Type() string { return "edit_data_source" }
 
 // ValidateBasic implements the sdk.Msg interface for MsgEditDataSource.
 func (msg MsgEditDataSource) ValidateBasic() sdk.Error {
