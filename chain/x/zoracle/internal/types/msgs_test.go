@@ -254,3 +254,77 @@ func TestMsgDeleteCodeGetSignBytes(t *testing.T) {
 
 	require.Equal(t, expected, string(res))
 }
+
+func TestMsgCreateDataSource(t *testing.T) {
+	owner := sdk.AccAddress([]byte("owner"))
+	sender := sdk.AccAddress([]byte("sender"))
+	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 1000))
+	msg := NewMsgCreateDataSource(owner, "data_source_1", fee, []byte("executable"), sender)
+	require.Equal(t, RouterKey, msg.Route())
+	require.Equal(t, "createDataSource", msg.Type())
+	require.Equal(t, owner, msg.Owner)
+	require.Equal(t, "data_source_1", msg.Name)
+	require.Equal(t, fee, msg.Fee)
+	require.Equal(t, []byte("executable"), msg.Executable)
+	require.Equal(t, sender, msg.Sender)
+}
+
+func TestMsgCreateDataSourceValidation(t *testing.T) {
+	owner := sdk.AccAddress([]byte("owner"))
+	sender := sdk.AccAddress([]byte("sender"))
+	name := "data_source_1"
+	executable := []byte("executable")
+	feeUband10 := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
+	feeUband0 := sdk.NewCoins(sdk.NewInt64Coin("uband", 0))
+
+	cases := []struct {
+		valid bool
+		tx    MsgCreateDataSource
+	}{
+		{
+			true, NewMsgCreateDataSource(owner, name, feeUband10, executable, sender),
+		},
+		{
+			false, NewMsgCreateDataSource(nil, name, feeUband10, executable, sender),
+		},
+		{
+			false, NewMsgCreateDataSource(owner, "", feeUband10, executable, sender),
+		},
+		{
+			false, NewMsgCreateDataSource(owner, name, feeUband0, executable, sender),
+		},
+		{
+			false, NewMsgCreateDataSource(owner, name, feeUband10, []byte(""), sender),
+		},
+		{
+			false, NewMsgCreateDataSource(owner, name, feeUband10, nil, sender),
+		},
+		{
+			false, NewMsgCreateDataSource(owner, name, feeUband10, executable, nil),
+		},
+	}
+
+	for _, tc := range cases {
+		err := tc.tx.ValidateBasic()
+		if tc.valid {
+			require.Nil(t, err)
+		} else {
+			require.NotNil(t, err)
+		}
+	}
+}
+
+func TestMsgCreateDataSourceGetSignBytes(t *testing.T) {
+	config := sdk.GetConfig()
+	config.SetBech32PrefixForAccount("band", "band"+sdk.PrefixPublic)
+
+	owner := sdk.AccAddress([]byte("owner"))
+	sender := sdk.AccAddress([]byte("sender"))
+	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
+	msg := NewMsgCreateDataSource(owner, "data_source_1", fee, []byte("executable"), sender)
+	res := msg.GetSignBytes()
+
+	expected := `{"type":"zoracle/CreateDataSource","value":{"executable":"ZXhlY3V0YWJsZQ==","fee":[{"amount":"10","denom":"uband"}],"name":"data_source_1","owner":"band1damkuetjcw3c0d","sender":"band1wdjkuer9wgvz7c4y"}}`
+
+	require.Equal(t, expected, string(res))
+}
