@@ -75,7 +75,7 @@ let parameterInput = (selection: selection_t, updateData) => {
              updateData(name, newVal);
            }}>
            <option value=""> {"Select token" |> React.string} </option>
-           {[|"ADA", "BAND", "BCH", "BNB", "BSV", "BTC", "EOS", "ETH", "LTC", "TRX", "XRP"|]
+           {[|"ADA", "BAND", "BCH", "BNB", "BTC", "EOS", "ETC", "ETH", "LTC", "TRX", "XRP"|]
             ->Belt_Array.map(symbol => <option value=symbol> {symbol |> React.string} </option>)
             |> React.array}
          </select>
