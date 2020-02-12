@@ -357,7 +357,7 @@ func (msg MsgEditDataSource) GetSignBytes() []byte {
 	return sdk.MustSortJSON(bz)
 }
 
-// MsgCreateOracleScript is a message for creating a oracle script.
+// MsgCreateOracleScript is a message for creating an oracle script.
 type MsgCreateOracleScript struct {
 	Owner  sdk.AccAddress `json:"owner"`
 	Name   string         `json:"name"`
