@@ -51,9 +51,9 @@ func NewHandler(keeper Keeper) sdk.Handler {
 // 	// Save Request to state
 // 	keeper.SetRequest(ctx, newRequestID, newRequest)
 // 	// Add new request to pending bucket
-// 	pendingRequests := keeper.GetPending(ctx)
+// 	pendingRequests := keeper.GetUnresolvedRequests(ctx)
 // 	pendingRequests = append(pendingRequests, newRequestID)
-// 	keeper.SetPending(ctx, pendingRequests)
+// 	keeper.SetUnresolvedRequests(ctx, pendingRequests)
 // 	// Emit request event
 // 	ctx.EventManager().EmitEvents(sdk.Events{
 // 		sdk.NewEvent(
@@ -95,7 +95,7 @@ func NewHandler(keeper Keeper) sdk.Handler {
 // 		}
 // 	}
 // 	if !isFound {
-// 		return types.ErrCodeValidatorNotFound(types.DefaultCodespace).Result()
+// 		return types.ErrInvalidValidator(types.DefaultCodespace).Result()
 // 	}
 
 // 	keeper.SetReport(ctx, msg.RequestID, msg.Validator, msg.Data)
@@ -151,7 +151,7 @@ func handleMsgDeleteCode(ctx sdk.Context, keeper Keeper, msg MsgDeleteCode) sdk.
 }
 
 func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
-	// 	reqIDs := keeper.GetPending(ctx)
+	// 	reqIDs := keeper.GetUnresolvedRequests(ctx)
 	// 	remainingReqIDs := reqIDs
 
 	// 	for _, reqID := range reqIDs {
@@ -190,7 +190,7 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 	// 		remainingReqIDs = remove(remainingReqIDs, reqID)
 	// 	}
 
-	// 	keeper.SetPending(ctx, remainingReqIDs)
+	// 	keeper.SetUnresolvedRequests(ctx, remainingReqIDs)
 
 	// TODO: Emit event
 	return sdk.Result{Events: ctx.EventManager().Events()}

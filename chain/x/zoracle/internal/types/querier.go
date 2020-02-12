@@ -23,35 +23,35 @@ func (u64a U64Array) String() string {
 	return fmt.Sprintf("%v", []uint64(u64a))
 }
 
-type RequestInfo struct {
-	CodeHash    []byte            `json:"codeHash"`
-	Params      json.RawMessage   `json:"params"`
-	ParamsRaw   []byte            `json:"paramsRaw"`
-	TargetBlock uint64            `json:"targetBlock"`
-	Reports     []ValidatorReport `json:"reports"`
-	Result      json.RawMessage   `json:"result"`
-	ResultRaw   []byte            `json:"resultRaw"`
-}
+// type RequestInfo struct {
+// 	CodeHash    []byte            `json:"codeHash"`
+// 	Params      json.RawMessage   `json:"params"`
+// 	ParamsRaw   []byte            `json:"paramsRaw"`
+// 	TargetBlock uint64            `json:"targetBlock"`
+// 	Reports     []ValidatorReport `json:"reports"`
+// 	Result      json.RawMessage   `json:"result"`
+// 	ResultRaw   []byte            `json:"resultRaw"`
+// }
 
-func NewRequestInfo(
-	codeHash []byte,
-	params json.RawMessage,
-	paramsRaw []byte,
-	targetBlock uint64,
-	reports []ValidatorReport,
-	result json.RawMessage,
-	resultRaw []byte,
-) RequestInfo {
-	return RequestInfo{
-		CodeHash:    codeHash,
-		ParamsRaw:   paramsRaw,
-		Params:      params,
-		TargetBlock: targetBlock,
-		Reports:     reports,
-		Result:      result,
-		ResultRaw:   resultRaw,
-	}
-}
+// func NewRequestInfo(
+// 	codeHash []byte,
+// 	params json.RawMessage,
+// 	paramsRaw []byte,
+// 	targetBlock uint64,
+// 	reports []ValidatorReport,
+// 	result json.RawMessage,
+// 	resultRaw []byte,
+// ) RequestInfo {
+// 	return RequestInfo{
+// 		CodeHash:    codeHash,
+// 		ParamsRaw:   paramsRaw,
+// 		Params:      params,
+// 		TargetBlock: targetBlock,
+// 		Reports:     reports,
+// 		Result:      result,
+// 		ResultRaw:   resultRaw,
+// 	}
+// }
 
 type RawBytes []byte
 

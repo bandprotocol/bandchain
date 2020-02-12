@@ -44,5 +44,5 @@ type (
 	MsgReportData  = types.MsgReportData
 	MsgStoreCode   = types.MsgStoreCode
 	MsgDeleteCode  = types.MsgDeleteCode
-	RequestInfo    = types.RequestInfo
+	// RequestInfo    = types.RequestInfo
 )

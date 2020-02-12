@@ -17,8 +17,8 @@ import (
 func NewQuerier(keeper Keeper) sdk.Querier {
 	return func(ctx sdk.Context, path []string, req abci.RequestQuery) (res []byte, err sdk.Error) {
 		switch path[0] {
-		case types.QueryRequest:
-			return queryRequest(ctx, path[1:], req, keeper)
+		// case types.QueryRequest:
+		// 	return queryRequest(ctx, path[1:], req, keeper)
 		case types.QueryPending:
 			return queryPending(ctx, path[1:], req, keeper)
 		case types.QueryScript:
@@ -36,63 +36,63 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 }
 
 // queryRequest is a query function to get request information by request ID.
-func queryRequest(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
-	if len(path) == 0 {
-		return nil, sdk.ErrInternal("must specify the requestid")
-	}
-	reqID, err := strconv.ParseUint(path[0], 10, 64)
-	if err != nil {
-		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for requestid %s", err.Error()))
-	}
-	request, sdkErr := keeper.GetRequest(ctx, reqID)
-	if sdkErr != nil {
-		return nil, sdkErr
-	}
+// func queryRequest(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
+// 	if len(path) == 0 {
+// 		return nil, sdk.ErrInternal("must specify the requestid")
+// 	}
+// 	reqID, err := strconv.ParseInt(path[0], 10, 64)
+// 	if err != nil {
+// 		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for requestid %s", err.Error()))
+// 	}
+// 	request, sdkErr := keeper.GetRequest(ctx, reqID)
+// 	if sdkErr != nil {
+// 		return nil, sdkErr
+// 	}
 
-	code, sdkErr := keeper.GetCode(ctx, request.CodeHash)
-	if sdkErr != nil {
-		return nil, sdkErr
-	}
+// 	code, sdkErr := keeper.GetCode(ctx, request.CodeHash)
+// 	if sdkErr != nil {
+// 		return nil, sdkErr
+// 	}
 
-	reports, sdkErr := keeper.GetValidatorReports(ctx, reqID)
-	if sdkErr != nil {
-		return nil, sdkErr
-	}
-	result, sdkErr := keeper.GetResult(ctx, reqID, request.CodeHash, request.Params)
-	var parsedResult []byte
-	if sdkErr != nil {
-		result = []byte{}
-		parsedResult = []byte("{}")
-	} else {
-		parsedResult, err = wasm.ParseResult(code.Code, result)
-		if err != nil {
-			parsedResult = []byte("{}")
-		}
-	}
+// 	reports, sdkErr := keeper.GetValidatorReports(ctx, reqID)
+// 	if sdkErr != nil {
+// 		return nil, sdkErr
+// 	}
+// 	result, sdkErr := keeper.GetResult(ctx, reqID, request.CodeHash, request.Params)
+// 	var parsedResult []byte
+// 	if sdkErr != nil {
+// 		result = []byte{}
+// 		parsedResult = []byte("{}")
+// 	} else {
+// 		parsedResult, err = wasm.ParseResult(code.Code, result)
+// 		if err != nil {
+// 			parsedResult = []byte("{}")
+// 		}
+// 	}
 
-	parsedParams, err := wasm.ParseParams(code.Code, request.Params)
-	if err != nil {
-		parsedParams = []byte("{}")
-	}
+// 	parsedParams, err := wasm.ParseParams(code.Code, request.Params)
+// 	if err != nil {
+// 		parsedParams = []byte("{}")
+// 	}
 
-	res, err := codec.MarshalJSONIndent(keeper.cdc, types.NewRequestInfo(
-		request.CodeHash,
-		parsedParams,
-		request.Params,
-		request.ReportEndAt,
-		reports,
-		parsedResult,
-		result,
-	))
-	if err != nil {
-		panic("could not marshal result to JSON")
-	}
-	return res, nil
-}
+// 	res, err := codec.MarshalJSONIndent(keeper.cdc, types.NewRequestInfo(
+// 		request.CodeHash,
+// 		parsedParams,
+// 		request.Params,
+// 		request.ReportEndAt,
+// 		reports,
+// 		parsedResult,
+// 		result,
+// 	))
+// 	if err != nil {
+// 		panic("could not marshal result to JSON")
+// 	}
+// 	return res, nil
+// }
 
 // queryPending is a query function to get the list of request IDs that are still on pending status.
 func queryPending(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
-	res, err := codec.MarshalJSONIndent(keeper.cdc, keeper.GetPending(ctx))
+	res, err := codec.MarshalJSONIndent(keeper.cdc, keeper.GetUnresolvedRequests(ctx))
 	if err != nil {
 		panic("could not marshal result to JSON")
 	}

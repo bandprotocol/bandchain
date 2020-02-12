@@ -3,6 +3,7 @@ package keeper
 import (
 	"testing"
 
+	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 )
@@ -13,8 +14,14 @@ func TestGetReportsIterator(t *testing.T) {
 	validatorAddress1, _ := sdk.ValAddressFromHex("4aea6cfc5bd14f2308954d544e1dc905268357db")
 	validatorAddress2, _ := sdk.ValAddressFromHex("4bca6cfc5bd14f2308954d544e1dc905268357db")
 
-	data1 := []byte("This is data1")
-	data2 := []byte("This is data2")
+	data1 := []types.ExternalData{
+		types.NewExternalData(1, []byte("data1:1")),
+		types.NewExternalData(2, []byte("data2:1")),
+	}
+	data2 := []types.ExternalData{
+		types.NewExternalData(1, []byte("data1:2")),
+		types.NewExternalData(2, []byte("data2:2")),
+	}
 
 	keeper.SetReport(ctx, 1, validatorAddress1, data1)
 	keeper.SetReport(ctx, 1, validatorAddress2, data2)
@@ -33,10 +40,16 @@ func TestGetDataReports(t *testing.T) {
 	validatorAddress1, _ := sdk.ValAddressFromHex("4aea6cfc5bd14f2308954d544e1dc905268357db")
 	validatorAddress2, _ := sdk.ValAddressFromHex("4bca6cfc5bd14f2308954d544e1dc905268357db")
 
-	data1 := []byte("This is data1")
-	data2 := []byte("This is data2")
+	data1 := []types.ExternalData{
+		types.NewExternalData(1, []byte("data1:1")),
+		types.NewExternalData(2, []byte("data2:1")),
+	}
+	data2 := []types.ExternalData{
+		types.NewExternalData(1, []byte("data1:2")),
+		types.NewExternalData(2, []byte("data2:2")),
+	}
 
-	datas := [][]byte{data1, data2}
+	datas := [][]types.ExternalData{data1, data2}
 
 	keeper.SetReport(ctx, 1, validatorAddress1, data1)
 	keeper.SetReport(ctx, 1, validatorAddress2, data2)

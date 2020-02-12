@@ -1,32 +1,39 @@
 package types
 
 import (
-	"fmt"
-	"strings"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// Request is a type to store detail of request
+// Request is a type to store detail of request.
 type Request struct {
-	OracleScriptID int64  `json:"oracleScriptID"`
-	Calldata       []byte `json:"calldata"`
-	ReportEndAt    uint64 `json:"reportEnd"`
+	OracleScriptID           int64            `json:"oracleScriptID"`
+	Calldata                 []byte           `json:"calldata"`
+	ValidatorList            []sdk.ValAddress `json:"validatorList"`
+	SufficientValidatorCount int64            `json:"sufficientValidatorCount"`
+	SubmittedValidatorList   []sdk.ValAddress `json:"submittedValidatorList"`
+	RequestedBlock           int64            `json:"requestedBlock"`
+	RequestedTime            int64            `json:"requestedTime"`
+	ExpiredBlock             int64            `json:"expiredBlock"`
+	IsResolved               bool             `json:"isResolved"`
 }
 
-// NewRequest - contructor of Request struct
-func NewRequest(codeHash, params []byte, reportEndAt uint64) Request {
+// NewRequest creates a new Request instance.
+func NewRequest(
+	oracleScriptID int64,
+	calldata []byte,
+	validatorList []sdk.ValAddress,
+	sufficientValidatorCount int64,
+	requestedBlock int64,
+	requestedTime int64,
+	expiredBlock int64,
+) Request {
 	return Request{
-		CodeHash:    codeHash,
-		Params:      params,
-		ReportEndAt: reportEndAt,
+		OracleScriptID:           oracleScriptID,
+		Calldata:                 calldata,
+		ValidatorList:            validatorList,
+		SufficientValidatorCount: sufficientValidatorCount,
+		RequestedBlock:           requestedBlock,
+		RequestedTime:            requestedTime,
+		ExpiredBlock:             expiredBlock,
 	}
-}
-
-func (req Request) String() string {
-	return strings.TrimSpace(fmt.Sprintf(`CodeHash: %x
-Params: %x
-ReportEndAt: %d`,
-		req.CodeHash,
-		req.Params,
-		req.ReportEndAt,
-	))
 }

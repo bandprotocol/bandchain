@@ -1,14 +1,12 @@
 package rpc
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/gorilla/mux"
 
-	"github.com/bandprotocol/d3n/chain/x/zoracle"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -133,52 +131,53 @@ func GetHealthStatus(cliCtx context.CLIContext) http.HandlerFunc {
 
 func GetProviderStatus(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		reqNumberResp, _, err := cliCtx.Query("custom/zoracle/request_number")
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-		var requestId string
-		err = json.Unmarshal(reqNumberResp, &requestId)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+		rest.WriteErrorResponse(w, http.StatusNotImplemented, "")
+		// reqNumberResp, _, err := cliCtx.Query("custom/zoracle/request_number")
+		// if err != nil {
+		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		// 	return
+		// }
+		// var requestId string
+		// err = json.Unmarshal(reqNumberResp, &requestId)
+		// if err != nil {
+		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		// 	return
+		// }
 
-		res, _, err := cliCtx.Query(fmt.Sprintf("custom/zoracle/request/%s", requestId))
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+		// res, _, err := cliCtx.Query(fmt.Sprintf("custom/zoracle/request/%s", requestId))
+		// if err != nil {
+		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		// 	return
+		// }
 
-		var request zoracle.RequestInfo
-		err = cliCtx.Codec.UnmarshalJSON(res, &request)
+		// var request zoracle.RequestInfo
+		// err = cliCtx.Codec.UnmarshalJSON(res, &request)
 
-		block, err := cliCtx.Client.Block(nil)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+		// block, err := cliCtx.Client.Block(nil)
+		// if err != nil {
+		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		// 	return
+		// }
 
-		numReporters := len(request.Reports)
-		status := "GOOD"
-		// TODO: Remove hard-coded provider count threshold
-		if uint64(block.Block.Height) > request.TargetBlock && numReporters < 3 {
-			fmt.Printf(`BAD ------- requestId: %s, reports: %d`, requestId, numReporters)
-			status = "BAD"
-		}
+		// numReporters := len(request.Reports)
+		// status := "GOOD"
+		// // TODO: Remove hard-coded provider count threshold
+		// if uint64(block.Block.Height) > request.TargetBlock && numReporters < 3 {
+		// 	fmt.Printf(`BAD ------- requestId: %s, reports: %d`, requestId, numReporters)
+		// 	status = "BAD"
+		// }
 
-		rest.PostProcessResponseBare(w, cliCtx, struct {
-			Height       int64  `json:"height"`
-			RequestId    string `json:"id"`
-			NumReporters int    `json:"num_reporters"`
-			Status       string `json:"status"`
-		}{
-			Height:       block.Block.Height,
-			RequestId:    requestId,
-			NumReporters: numReporters,
-			Status:       status,
-		})
+		// rest.PostProcessResponseBare(w, cliCtx, struct {
+		// 	Height       int64  `json:"height"`
+		// 	RequestId    string `json:"id"`
+		// 	NumReporters int    `json:"num_reporters"`
+		// 	Status       string `json:"status"`
+		// }{
+		// 	Height:       block.Block.Height,
+		// 	RequestId:    requestId,
+		// 	NumReporters: numReporters,
+		// 	Status:       status,
+		// })
 	}
 }
 

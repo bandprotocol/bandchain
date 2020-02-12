@@ -9,14 +9,14 @@ import (
 )
 
 func TestRequestStoreKey(t *testing.T) {
-	requestID := uint64(20)
+	requestID := int64(20)
 	expectKeyByte, _ := hex.DecodeString("010000000000000014")
 
 	require.Equal(t, expectKeyByte, RequestStoreKey(requestID))
 }
 
 func TestResultStoreKey(t *testing.T) {
-	requestID := uint64(20)
+	requestID := int64(20)
 	codeHash := []byte("code")
 	params := []byte("params")
 
@@ -32,7 +32,7 @@ func TestCodeHashStoreKey(t *testing.T) {
 }
 
 func TestReportStoreKey(t *testing.T) {
-	requestID := uint64(20)
+	requestID := int64(20)
 	validator, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
 
 	expectKeyByte, _ := hex.DecodeString("030000000000000014b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
