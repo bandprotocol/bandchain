@@ -5,7 +5,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k Keeper) setDataSource(ctx sdk.Context, id int64, dataSource types.DataSource) {
+// SetDataSource saves the given data source with the given ID to the storage.
+// WARNING: This function doesn't perform any check on ID.
+func (k Keeper) SetDataSource(ctx sdk.Context, id int64, dataSource types.DataSource) {
 	// TODO: check executable size.
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.DataSourceStoreKey(id), k.cdc.MustMarshalBinaryBare(dataSource))
@@ -16,7 +18,7 @@ func (k Keeper) AddDataSource(ctx sdk.Context, owner sdk.AccAddress, name string
 	newDataSourceID := k.GetNextDataSourceID(ctx)
 
 	newDataSource := types.NewDataSource(owner, name, fee, executable)
-	k.setDataSource(ctx, newDataSourceID, newDataSource)
+	k.SetDataSource(ctx, newDataSourceID, newDataSource)
 	return nil
 }
 
@@ -28,7 +30,7 @@ func (k Keeper) EditDataSource(ctx sdk.Context, dataSourceID int64, owner sdk.Ac
 	}
 
 	updatedDataSource := types.NewDataSource(owner, name, fee, executable)
-	k.setDataSource(ctx, dataSourceID, updatedDataSource)
+	k.SetDataSource(ctx, dataSourceID, updatedDataSource)
 	return nil
 }
 
