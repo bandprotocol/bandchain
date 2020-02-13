@@ -37,7 +37,7 @@ var (
 	// ReportKeyPrefix is a prefix for report store
 	ReportKeyPrefix = []byte{0x03}
 
-	// DataSourceStoreKeyPrefix is a prefix for data source store
+	// DataSourceStoreKeyPrefix is a prefix for data source store.
 	DataSourceStoreKeyPrefix = []byte{0x04}
 )
 
@@ -68,7 +68,7 @@ func ReportStoreKey(requestID uint64, validatorAddress sdk.ValAddress) []byte {
 	return append(buf, validatorAddress.Bytes()...)
 }
 
-// DataSourceStoreKey is a function to generate key for each data source in store
+// DataSourceStoreKey is a function to generate key for each data source in store.
 func DataSourceStoreKey(dataSourceID int64) []byte {
 	buf := int64ToBytes(dataSourceID)
 	return append(DataSourceStoreKeyPrefix, buf...)
