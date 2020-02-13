@@ -484,6 +484,16 @@ import (
 // 	require.Equal(t, []uint64{}, pendingRequests)
 // }
 
+func mockDataSource(ctx sdk.Context, keeper Keeper) {
+	owner := sdk.AccAddress([]byte("owner"))
+	name := "data_source_1"
+	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
+	executable := []byte("executable")
+	sender := sdk.AccAddress([]byte("sender"))
+	msg := types.NewMsgCreateDataSource(owner, name, fee, executable, sender)
+	handleMsgCreateDataSource(ctx, keeper, msg)
+}
+
 func TestCreateDataSourceSuccess(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
 
@@ -496,10 +506,34 @@ func TestCreateDataSourceSuccess(t *testing.T) {
 	got := handleMsgCreateDataSource(ctx, keeper, msg)
 	require.True(t, got.IsOK(), "expected set data source to be ok, got %v", got)
 
+	// Assert
 	dataSource, err := keeper.GetDataSource(ctx, 1)
 	require.Nil(t, err)
 	require.Equal(t, owner, dataSource.Owner)
 	require.Equal(t, name, dataSource.Name)
 	require.Equal(t, fee, dataSource.Fee)
 	require.Equal(t, executable, dataSource.Executable)
+}
+
+func TestEditDataSourceSuccess(t *testing.T) {
+	ctx, keeper := keep.CreateTestInput(t, false)
+	mockDataSource(ctx, keeper)
+
+	newOwner := sdk.AccAddress([]byte("owner2"))
+	newName := "data_source_2"
+	newFee := sdk.NewCoins(sdk.NewInt64Coin("uband", 99))
+	newExecutable := []byte("executable_2")
+	sender := sdk.AccAddress([]byte("sender"))
+
+	msg := types.NewMsgEditDataSource(1, newOwner, newName, newFee, newExecutable, sender)
+	got := handleMsgEditDataSource(ctx, keeper, msg)
+	require.True(t, got.IsOK(), "expected edit data source to be ok, got %v", got)
+
+	// Assert
+	dataSource, err := keeper.GetDataSource(ctx, 1)
+	require.Nil(t, err)
+	require.Equal(t, newOwner, dataSource.Owner)
+	require.Equal(t, newName, dataSource.Name)
+	require.Equal(t, newFee, dataSource.Fee)
+	require.Equal(t, newExecutable, dataSource.Executable)
 }

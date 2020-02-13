@@ -22,6 +22,8 @@ func NewHandler(keeper Keeper) sdk.Handler {
 		// 	return handleMsgDeleteCode(ctx, keeper, msg)
 		case MsgCreateDataSource:
 			return handleMsgCreateDataSource(ctx, keeper, msg)
+		case MsgEditDataSource:
+			return handleMsgEditDataSource(ctx, keeper, msg)
 		default:
 			errMsg := fmt.Sprintf("unrecognized zoracle message type: %T", msg)
 			return sdk.ErrUnknownRequest(errMsg).Result()
@@ -161,8 +163,26 @@ func handleMsgCreateDataSource(ctx sdk.Context, keeper Keeper, msg MsgCreateData
 		msg.Executable,
 	)
 
-	// Save DataSource to state
+	// Save DataSource to state.
 	keeper.SetDataSource(ctx, newDataSourceID, newDataSource)
+	return sdk.Result{}
+}
+
+func handleMsgEditDataSource(ctx sdk.Context, keeper Keeper, msg MsgEditDataSource) sdk.Result {
+	// Check DataSourceID is exist.
+	dataSource, err := keeper.GetDataSource(ctx, msg.DataSourceID)
+	if err != nil {
+		return err.Result()
+	}
+
+	// Update data source attribute.
+	dataSource.Owner = msg.Owner
+	dataSource.Name = msg.Name
+	dataSource.Fee = msg.Fee
+	dataSource.Executable = msg.Executable
+
+	// Save updated data source to store.
+	keeper.SetDataSource(ctx, msg.DataSourceID, dataSource)
 	return sdk.Result{}
 }
 
