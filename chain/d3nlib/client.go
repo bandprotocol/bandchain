@@ -10,9 +10,8 @@ import (
 
 type BandStatefulClient struct {
 	sequenceNumber uint64
-
-	mtx      sync.Mutex
-	provider BandProvider
+	mtx            sync.Mutex
+	provider       BandProvider
 }
 
 func NewBandStatefulClient(nodeURI string, privKey crypto.PrivKey) (BandStatefulClient, error) {
