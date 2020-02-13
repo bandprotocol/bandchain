@@ -33,62 +33,52 @@ func ParamKeyTable() params.KeyTable {
 	return params.NewKeyTable().RegisterParamSet(&types.Params{})
 }
 
-// Get MaxDataSourceExecutableSize.
 func (keeper Keeper) MaxDataSourceExecutableSize(ctx sdk.Context) (res int64) {
 	keeper.ParamSpace.Get(ctx, types.KeyMaxDataSourceExecutableSize, &res)
 	return
 }
 
-// Set SetMaxDataSourceExecutableSize.
 func (keeper Keeper) SetMaxDataSourceExecutableSize(ctx sdk.Context, value int64) {
 	keeper.ParamSpace.Set(ctx, types.KeyMaxDataSourceExecutableSize, value)
 }
 
-// Get MaxOracleScriptCodeSize.
 func (keeper Keeper) MaxOracleScriptCodeSize(ctx sdk.Context) (res int64) {
 	keeper.ParamSpace.Get(ctx, types.KeyMaxOracleScriptCodeSize, &res)
 	return
 }
 
-// Set SetMaxOracleScriptCodeSize.
 func (keeper Keeper) SetMaxOracleScriptCodeSize(ctx sdk.Context, value int64) {
 	keeper.ParamSpace.Set(ctx, types.KeyMaxOracleScriptCodeSize, value)
 }
 
-// Get MaxCalldataSize.
 func (keeper Keeper) MaxCalldataSize(ctx sdk.Context) (res int64) {
 	keeper.ParamSpace.Get(ctx, types.KeyMaxCalldataSize, &res)
 	return
 }
 
-// Set SetMaxCalldataSize.
 func (keeper Keeper) SetMaxCalldataSize(ctx sdk.Context, value int64) {
 	keeper.ParamSpace.Set(ctx, types.KeyMaxCalldataSize, value)
 }
 
-// Get MaxDataSourceCountPerRequest.
 func (keeper Keeper) MaxDataSourceCountPerRequest(ctx sdk.Context) (res int64) {
 	keeper.ParamSpace.Get(ctx, types.KeyMaxDataSourceCountPerRequest, &res)
 	return
 }
 
-// Set SetMaxDataSourceCountPerRequest.
 func (keeper Keeper) SetMaxDataSourceCountPerRequest(ctx sdk.Context, value int64) {
 	keeper.ParamSpace.Set(ctx, types.KeyMaxDataSourceCountPerRequest, value)
 }
 
-// Get MaxRawDataReportSize.
 func (keeper Keeper) MaxRawDataReportSize(ctx sdk.Context) (res int64) {
 	keeper.ParamSpace.Get(ctx, types.KeyMaxRawDataReportSize, &res)
 	return
 }
 
-// Set SetMaxRawDataReportSize.
 func (keeper Keeper) SetMaxRawDataReportSize(ctx sdk.Context, value int64) {
 	keeper.ParamSpace.Set(ctx, types.KeyMaxRawDataReportSize, value)
 }
 
-// Get all parameteras as types.Params.
+// GetParams returns all current parameters as a types.Params instance.
 func (keeper Keeper) GetParams(ctx sdk.Context) types.Params {
 	return types.NewParams(
 		keeper.MaxDataSourceExecutableSize(ctx),
