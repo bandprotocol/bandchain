@@ -24,6 +24,8 @@ func (k Keeper) GetRequest(ctx sdk.Context, id int64) (types.Request, sdk.Error)
 	return request, nil
 }
 
+// AddSubmitValidator checks that new validator is a valid validator and not in submitted list yet then add new
+// validator to list.
 func (k Keeper) AddSubmitValidator(ctx sdk.Context, id int64, validator sdk.ValAddress) sdk.Error {
 	request, err := k.GetRequest(ctx, id)
 	if err != nil {
@@ -35,7 +37,7 @@ func (k Keeper) AddSubmitValidator(ctx sdk.Context, id int64, validator sdk.ValA
 		}
 	}
 	found := false
-	for _, validValidator := range request.ValidatorList {
+	for _, validValidator := range request.Validators {
 		if validator.Equals(validValidator) {
 			found = true
 			break
@@ -50,6 +52,7 @@ func (k Keeper) AddSubmitValidator(ctx sdk.Context, id int64, validator sdk.ValA
 	return nil
 }
 
+// SetResolve set resolve status and save to context.
 func (k Keeper) SetResolve(ctx sdk.Context, id int64, isResolved bool) sdk.Error {
 	request, err := k.GetRequest(ctx, id)
 	if err != nil {

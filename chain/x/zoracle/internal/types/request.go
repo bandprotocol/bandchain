@@ -4,16 +4,17 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// Request is a type to store detail of request.
+// Request is a data structure that stores the detail of a request to an oracle script.
 type Request struct {
 	OracleScriptID           int64            `json:"oracleScriptID"`
 	Calldata                 []byte           `json:"calldata"`
-	ValidatorList            []sdk.ValAddress `json:"validatorList"`
+	Validators               []sdk.ValAddress `json:"validators"`
 	SufficientValidatorCount int64            `json:"sufficientValidatorCount"`
 	SubmittedValidatorList   []sdk.ValAddress `json:"submittedValidatorList"`
-	RequestedBlock           int64            `json:"requestedBlock"`
-	RequestedTime            int64            `json:"requestedTime"`
-	ExpiredBlock             int64            `json:"expiredBlock"`
+	RequestHeight            int64            `json:"requestHeight"`
+	RequestTime              int64            `json:"requestTime"`
+	ExpirationHeight         int64            `json:"expirationHeight"`
+	DataSourceCount          int64            `json:"dataSourceCount"`
 	IsResolved               bool             `json:"isResolved"`
 }
 
@@ -21,19 +22,33 @@ type Request struct {
 func NewRequest(
 	oracleScriptID int64,
 	calldata []byte,
-	validatorList []sdk.ValAddress,
+	validators []sdk.ValAddress,
 	sufficientValidatorCount int64,
-	requestedBlock int64,
-	requestedTime int64,
-	expiredBlock int64,
+	requestHeight int64,
+	requestTime int64,
+	expirationHeight int64,
 ) Request {
 	return Request{
 		OracleScriptID:           oracleScriptID,
 		Calldata:                 calldata,
-		ValidatorList:            validatorList,
+		Validators:               validators,
 		SufficientValidatorCount: sufficientValidatorCount,
-		RequestedBlock:           requestedBlock,
-		RequestedTime:            requestedTime,
-		ExpiredBlock:             expiredBlock,
+		RequestHeight:            requestHeight,
+		RequestTime:              requestTime,
+		ExpirationHeight:         expirationHeight,
+	}
+}
+
+// RequestDetail is a data structure that store what datasource and calldata will be used in request.
+type RequestDetail struct {
+	ScriptID int64  `json:"scriptID"`
+	Calldata []byte `json:"calldata"`
+}
+
+// NewRequestDetail creates a new RequestDetail instance
+func NewRequestDetail(scriptID int64, calldata []byte) RequestDetail {
+	return RequestDetail{
+		ScriptID: scriptID,
+		Calldata: calldata,
 	}
 }

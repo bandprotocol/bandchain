@@ -63,7 +63,7 @@ package keeper
 // 			paramsMap,
 // 			params,
 // 			request.ReportEndAt,
-// 			[]types.ValidatorReport{},
+// 			[]types.ReportWithValidator{},
 // 			parsedResult,
 // 			result,
 // 		),

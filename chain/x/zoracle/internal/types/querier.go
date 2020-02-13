@@ -28,7 +28,7 @@ func (u64a U64Array) String() string {
 // 	Params      json.RawMessage   `json:"params"`
 // 	ParamsRaw   []byte            `json:"paramsRaw"`
 // 	TargetBlock uint64            `json:"targetBlock"`
-// 	Reports     []ValidatorReport `json:"reports"`
+// 	Reports     []ReportWithValidator `json:"reports"`
 // 	Result      json.RawMessage   `json:"result"`
 // 	ResultRaw   []byte            `json:"resultRaw"`
 // }
@@ -38,7 +38,7 @@ func (u64a U64Array) String() string {
 // 	params json.RawMessage,
 // 	paramsRaw []byte,
 // 	targetBlock uint64,
-// 	reports []ValidatorReport,
+// 	reports []ReportWithValidator,
 // 	result json.RawMessage,
 // 	resultRaw []byte,
 // ) RequestInfo {

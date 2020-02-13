@@ -105,7 +105,7 @@ func TestMsgRequestDataGetSignBytes(t *testing.T) {
 
 func TestMsgReportData(t *testing.T) {
 	requestID := int64(3)
-	data := []ExternalData{NewExternalData(1, []byte("data1")), NewExternalData(2, []byte("data2"))}
+	data := []RawDataReport{NewRawDataReport(1, []byte("data1")), NewRawDataReport(2, []byte("data2"))}
 	provider, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
 	msg := NewMsgReportData(requestID, data, provider)
 
@@ -115,7 +115,7 @@ func TestMsgReportData(t *testing.T) {
 
 func TestMsgReportDataValidation(t *testing.T) {
 	requestID := int64(3)
-	data := []ExternalData{NewExternalData(1, []byte("data1")), NewExternalData(2, []byte("data2"))}
+	data := []RawDataReport{NewRawDataReport(1, []byte("data1")), NewRawDataReport(2, []byte("data2"))}
 	validator, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
 	failValidator, _ := sdk.ValAddressFromHex("")
 	cases := []struct {
@@ -124,7 +124,7 @@ func TestMsgReportDataValidation(t *testing.T) {
 	}{
 		{true, NewMsgReportData(requestID, data, validator)},
 		{false, NewMsgReportData(-1, data, validator)},
-		{false, NewMsgReportData(requestID, []ExternalData{}, validator)},
+		{false, NewMsgReportData(requestID, []RawDataReport{}, validator)},
 		{false, NewMsgReportData(requestID, nil, validator)},
 		{false, NewMsgReportData(requestID, data, failValidator)},
 	}
@@ -144,7 +144,7 @@ func TestMsgReportDataGetSignBytes(t *testing.T) {
 	config.SetBech32PrefixForValidator("band"+sdk.PrefixValidator+sdk.PrefixOperator, "band"+sdk.PrefixValidator+sdk.PrefixOperator+sdk.PrefixPublic)
 
 	requestID := int64(3)
-	data := []ExternalData{NewExternalData(1, []byte("data1")), NewExternalData(2, []byte("data2"))}
+	data := []RawDataReport{NewRawDataReport(1, []byte("data1")), NewRawDataReport(2, []byte("data2"))}
 	validator, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
 	msg := NewMsgReportData(requestID, data, validator)
 	res := msg.GetSignBytes()

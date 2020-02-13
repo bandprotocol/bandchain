@@ -104,7 +104,7 @@ func GetCmdReport(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			var dataset []types.ExternalData
+			var dataset []types.RawDataReport
 			err = cdc.UnmarshalJSON([]byte(args[1]), &dataset)
 			if err != nil {
 				return err
