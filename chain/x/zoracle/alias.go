@@ -44,16 +44,6 @@ var (
 	KeyMaxRawDataReportSize         = types.KeyMaxRawDataReportSize
 
 	ParamKeyTable = keeper.ParamKeyTable
-	// MaxDataSourceExecutableSize     = keeper.MaxDataSourceExecutableSize
-	// SetMaxDataSourceExecutableSize  = keeper.SetMaxDataSourceExecutableSize
-	// MaxOracleScriptCodeSize         = keeper.MaxOracleScriptCodeSize
-	// SetMaxOracleScriptCodeSize      = keeper.SetMaxOracleScriptCodeSize
-	// MaxCalldataSize                 = keeper.MaxCalldataSize
-	// SetMaxCalldataSize              = keeper.SetMaxCalldataSize
-	// MaxDataSourceCountPerRequest    = keeper.MaxDataSourceCountPerRequest
-	// SetMaxDataSourceCountPerRequest = keeper.SetMaxDataSourceCountPerRequest
-	// MaxRawDataReportSize            = keeper.MaxRawDataReportSize
-	// SetMaxRawDataReportSize         = keeper.SetMaxRawDataReportSize
 )
 
 type (
