@@ -77,7 +77,7 @@ func (k Keeper) GetNextDataSourceID(ctx sdk.Context) int64 {
 	return dataSourceCount + 1
 }
 
-// GetOracleScriptCount returns the current number of all oracle script ever exist.
+// GetOracleScriptCount returns the current number of all oracle scripts ever exist.
 func (k Keeper) GetOracleScriptCount(ctx sdk.Context) int64 {
 	var oracleScriptCount int64
 	store := ctx.KVStore(k.storeKey)
