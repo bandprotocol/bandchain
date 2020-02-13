@@ -22,15 +22,15 @@ const (
 )
 
 var (
-	NewKeeper         = keeper.NewKeeper
-	NewQuerier        = keeper.NewQuerier
-	ModuleCdc         = types.ModuleCdc
-	RegisterCodec     = types.RegisterCodec
-	NewMsgRequestData = types.NewMsgRequestData
-	NewMsgReportData  = types.NewMsgReportData
-	RequestStoreKey    = types.RequestStoreKey
-	ResultStoreKey     = types.ResultStoreKey
-	DataSourceStoreKey = types.DataSourceStoreKey
+	NewKeeper            = keeper.NewKeeper
+	NewQuerier           = keeper.NewQuerier
+	ModuleCdc            = types.ModuleCdc
+	RegisterCodec        = types.RegisterCodec
+	NewMsgRequestData    = types.NewMsgRequestData
+	NewMsgReportData     = types.NewMsgReportData
+	RequestStoreKey      = types.RequestStoreKey
+	ResultStoreKey       = types.ResultStoreKey
+	DataSourceStoreKey   = types.DataSourceStoreKey
 	OracleScriptStoreKey = types.OracleScriptStoreKey
 )
 
