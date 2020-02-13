@@ -2,15 +2,21 @@ package zoracle
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/gov/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
+// GenesisState is the bank state that must be provided at genesis.
 type GenesisState struct {
 	// Scripts []types.StoredCode `json:"scripts"`
+	Params types.Params `json:"params" yaml:"params"` // inflation params
 }
 
-func NewGenesisState() GenesisState {
-	return GenesisState{}
+// NewGenesisState creates a new genesis state.
+func NewGenesisState(params types.Params) GenesisState {
+	return GenesisState{
+		Params: params,
+	}
 }
 
 func ValidateGenesis(data GenesisState) error {
@@ -28,12 +34,15 @@ func ValidateGenesis(data GenesisState) error {
 	return nil
 }
 
+// DefaultGenesisState returns a default genesis state
 func DefaultGenesisState() GenesisState {
-	return GenesisState{}
+	return GenesisState{
+		Params: DefaultParams(),
+	}
 }
 
 func InitGenesis(ctx sdk.Context, keeper Keeper, data GenesisState) []abci.ValidatorUpdate {
-	// for _, storeCode := range data.Scripts {
+	// for _, storeCode := range data.Scripts
 	// 	codeHash := storeCode.GetCodeHash()
 	// 	if keeper.CheckCodeHashExists(ctx, codeHash) {
 	// 		continue

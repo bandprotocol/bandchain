@@ -32,6 +32,8 @@ var (
 	ResultStoreKey       = types.ResultStoreKey
 	DataSourceStoreKey   = types.DataSourceStoreKey
 	OracleScriptStoreKey = types.OracleScriptStoreKey
+
+	DefaultParams = types.DefaultParams
 )
 
 type (
