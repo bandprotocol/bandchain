@@ -1,32 +1,54 @@
 package types
 
 import (
-	"fmt"
-	"strings"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// Request is a type to store detail of request
+// Request is a data structure that stores the detail of a request to an oracle script.
 type Request struct {
-	CodeHash    []byte `json:"codeHash"`
-	Params      []byte `json:"params"`
-	ReportEndAt uint64 `json:"reportEnd"`
+	OracleScriptID           int64            `json:"oracleScriptID"`
+	Calldata                 []byte           `json:"calldata"`
+	RequestedValidators      []sdk.ValAddress `json:"requestedValidators"`
+	SufficientValidatorCount int64            `json:"sufficientValidatorCount"`
+	ReceivedValidators       []sdk.ValAddress `json:"receivedValidators"`
+	RequestHeight            int64            `json:"requestHeight"`
+	RequestTime              int64            `json:"requestTime"`
+	ExpirationHeight         int64            `json:"expirationHeight"`
+	DataSourceCount          int64            `json:"dataSourceCount"`
+	IsResolved               bool             `json:"isResolved"`
 }
 
-// NewRequest - contructor of Request struct
-func NewRequest(codeHash, params []byte, reportEndAt uint64) Request {
+// NewRequest creates a new Request instance.
+func NewRequest(
+	oracleScriptID int64,
+	calldata []byte,
+	requestedValidators []sdk.ValAddress,
+	sufficientValidatorCount int64,
+	requestHeight int64,
+	requestTime int64,
+	expirationHeight int64,
+) Request {
 	return Request{
-		CodeHash:    codeHash,
-		Params:      params,
-		ReportEndAt: reportEndAt,
+		OracleScriptID:           oracleScriptID,
+		Calldata:                 calldata,
+		RequestedValidators:      requestedValidators,
+		SufficientValidatorCount: sufficientValidatorCount,
+		RequestHeight:            requestHeight,
+		RequestTime:              requestTime,
+		ExpirationHeight:         expirationHeight,
 	}
 }
 
-func (req Request) String() string {
-	return strings.TrimSpace(fmt.Sprintf(`CodeHash: %x
-Params: %x
-ReportEndAt: %d`,
-		req.CodeHash,
-		req.Params,
-		req.ReportEndAt,
-	))
+// RawDataRequest is a data structure that store what datasource and calldata will be used in request.
+type RawDataRequest struct {
+	DataSourceID int64  `json:"dataSourceID"`
+	Calldata     []byte `json:"calldata"`
+}
+
+// NewRawDataRequest creates a new RawDataRequest instance
+func NewRawDataRequest(dataSourceID int64, calldata []byte) RawDataRequest {
+	return RawDataRequest{
+		DataSourceID: dataSourceID,
+		Calldata:     calldata,
+	}
 }

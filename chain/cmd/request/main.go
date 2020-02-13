@@ -1,13 +1,11 @@
 package main
 
 import (
-	"bufio"
 	"encoding/hex"
 	"fmt"
 	"os"
 
 	"github.com/bandprotocol/d3n/chain/d3nlib"
-	"github.com/bandprotocol/d3n/chain/x/zoracle"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
@@ -39,34 +37,34 @@ func main() {
 
 	args := os.Args[1:]
 	switch args[0] {
-	case "store":
-		{
-			file, err := os.Open("../../wasm/res/result.wasm")
-			if err != nil {
-				panic(err)
-			}
-			defer file.Close()
+	// case "store":
+	// 	{
+	// 		file, err := os.Open("../../wasm/res/result.wasm")
+	// 		if err != nil {
+	// 			panic(err)
+	// 		}
+	// 		defer file.Close()
 
-			stats, statsErr := file.Stat()
-			if statsErr != nil {
-				panic(statsErr)
-			}
+	// 		stats, statsErr := file.Stat()
+	// 		if statsErr != nil {
+	// 			panic(statsErr)
+	// 		}
 
-			size := stats.Size()
-			bytes := make([]byte, size)
+	// 		size := stats.Size()
+	// 		bytes := make([]byte, size)
 
-			bufr := bufio.NewReader(file)
-			_, err = bufr.Read(bytes)
+	// 		bufr := bufio.NewReader(file)
+	// 		_, err = bufr.Read(bytes)
 
-			if err != nil {
-				panic(err)
-			}
-			fmt.Println(tx.SendTransaction(
-				[]sdk.Msg{zoracle.NewMsgStoreCode(bytes, "Crypto price (enum version)", tx.Sender())},
-				0, 10000000, "", "", "",
-				flags.BroadcastBlock,
-			))
-		}
+	// 		if err != nil {
+	// 			panic(err)
+	// 		}
+	// 		fmt.Println(tx.SendTransaction(
+	// 			[]sdk.Msg{zoracle.NewMsgStoreCode(bytes, "Crypto price (enum version)", tx.Sender())},
+	// 			0, 10000000, "", "", "",
+	// 			flags.BroadcastBlock,
+	// 		))
+	// 	}
 	case "send_token":
 		{
 			// Send token

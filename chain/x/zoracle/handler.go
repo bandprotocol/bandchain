@@ -1,10 +1,8 @@
 package zoracle
 
 import (
-	"encoding/hex"
 	"fmt"
 
-	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -17,10 +15,10 @@ func NewHandler(keeper Keeper) sdk.Handler {
 		// 	return handleMsgRequest(ctx, keeper, msg)
 		// case MsgReport:
 		// 	return handleMsgReport(ctx, keeper, msg)
-		case MsgStoreCode:
-			return handleMsgStoreCode(ctx, keeper, msg)
-		case MsgDeleteCode:
-			return handleMsgDeleteCode(ctx, keeper, msg)
+		// case MsgStoreCode:
+		// 	return handleMsgStoreCode(ctx, keeper, msg)
+		// case MsgDeleteCode:
+		// 	return handleMsgDeleteCode(ctx, keeper, msg)
 		default:
 			errMsg := fmt.Sprintf("unrecognized zoracle message type: %T", msg)
 			return sdk.ErrUnknownRequest(errMsg).Result()
@@ -51,9 +49,9 @@ func NewHandler(keeper Keeper) sdk.Handler {
 // 	// Save Request to state
 // 	keeper.SetRequest(ctx, newRequestID, newRequest)
 // 	// Add new request to pending bucket
-// 	pendingRequests := keeper.GetPending(ctx)
+// 	pendingRequests := keeper.GetPendingRequests(ctx)
 // 	pendingRequests = append(pendingRequests, newRequestID)
-// 	keeper.SetPending(ctx, pendingRequests)
+// 	keeper.SetPendingRequests(ctx, pendingRequests)
 // 	// Emit request event
 // 	ctx.EventManager().EmitEvents(sdk.Events{
 // 		sdk.NewEvent(
@@ -95,7 +93,7 @@ func NewHandler(keeper Keeper) sdk.Handler {
 // 		}
 // 	}
 // 	if !isFound {
-// 		return types.ErrCodeValidatorNotFound(types.DefaultCodespace).Result()
+// 		return types.ErrInvalidValidator(types.DefaultCodespace).Result()
 // 	}
 
 // 	keeper.SetReport(ctx, msg.RequestID, msg.Validator, msg.Data)
@@ -111,47 +109,47 @@ func NewHandler(keeper Keeper) sdk.Handler {
 // 	return sdk.Result{Events: ctx.EventManager().Events()}
 // }
 
-func handleMsgStoreCode(ctx sdk.Context, keeper Keeper, msg MsgStoreCode) sdk.Result {
-	sc := types.NewStoredCode(msg.Code, msg.Name, msg.Owner)
-	codeHash := sc.GetCodeHash()
-	if keeper.CheckCodeHashExists(ctx, codeHash) {
-		return types.ErrCodeAlreadyExisted(types.DefaultCodespace).Result()
-	}
-	keeper.SetCode(ctx, msg.Code, msg.Name, msg.Owner)
+// func handleMsgStoreCode(ctx sdk.Context, keeper Keeper, msg MsgStoreCode) sdk.Result {
+// 	sc := types.NewStoredCode(msg.Code, msg.Name, msg.Owner)
+// 	codeHash := sc.GetCodeHash()
+// 	if keeper.CheckCodeHashExists(ctx, codeHash) {
+// 		return types.ErrCodeAlreadyExisted(types.DefaultCodespace).Result()
+// 	}
+// 	keeper.SetCode(ctx, msg.Code, msg.Name, msg.Owner)
 
-	// Emit store code event
-	ctx.EventManager().EmitEvents(sdk.Events{
-		sdk.NewEvent(
-			types.EventTypeStoreCode,
-			sdk.NewAttribute(types.AttributeKeyCodeHash, hex.EncodeToString(codeHash)),
-			sdk.NewAttribute(types.AttributeKeyCodeName, msg.Name),
-		),
-	})
-	return sdk.Result{Events: ctx.EventManager().Events()}
-}
+// 	// Emit store code event
+// 	ctx.EventManager().EmitEvents(sdk.Events{
+// 		sdk.NewEvent(
+// 			types.EventTypeStoreCode,
+// 			sdk.NewAttribute(types.AttributeKeyCodeHash, hex.EncodeToString(codeHash)),
+// 			sdk.NewAttribute(types.AttributeKeyCodeName, msg.Name),
+// 		),
+// 	})
+// 	return sdk.Result{Events: ctx.EventManager().Events()}
+// }
 
-func handleMsgDeleteCode(ctx sdk.Context, keeper Keeper, msg MsgDeleteCode) sdk.Result {
-	storedCode, sdkErr := keeper.GetCode(ctx, msg.CodeHash)
-	if sdkErr != nil {
-		return types.ErrCodeHashNotFound(types.DefaultCodespace).Result()
-	}
-	if !storedCode.Owner.Equals(msg.Owner) {
-		return types.ErrInvalidOwner(types.DefaultCodespace).Result()
-	}
+// func handleMsgDeleteCode(ctx sdk.Context, keeper Keeper, msg MsgDeleteCode) sdk.Result {
+// 	storedCode, sdkErr := keeper.GetCode(ctx, msg.CodeHash)
+// 	if sdkErr != nil {
+// 		return types.ErrCodeHashNotFound(types.DefaultCodespace).Result()
+// 	}
+// 	if !storedCode.Owner.Equals(msg.Owner) {
+// 		return types.ErrInvalidOwner(types.DefaultCodespace).Result()
+// 	}
 
-	keeper.DeleteCode(ctx, msg.CodeHash)
-	ctx.EventManager().EmitEvents(sdk.Events{
-		sdk.NewEvent(
-			types.EventTypeDeleteCode,
-			sdk.NewAttribute(types.AttributeKeyCodeHash, hex.EncodeToString(msg.CodeHash)),
-			sdk.NewAttribute(types.AttributeKeyCodeName, storedCode.Name),
-		),
-	})
-	return sdk.Result{Events: ctx.EventManager().Events()}
-}
+// 	keeper.DeleteCode(ctx, msg.CodeHash)
+// 	ctx.EventManager().EmitEvents(sdk.Events{
+// 		sdk.NewEvent(
+// 			types.EventTypeDeleteCode,
+// 			sdk.NewAttribute(types.AttributeKeyCodeHash, hex.EncodeToString(msg.CodeHash)),
+// 			sdk.NewAttribute(types.AttributeKeyCodeName, storedCode.Name),
+// 		),
+// 	})
+// 	return sdk.Result{Events: ctx.EventManager().Events()}
+// }
 
 func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
-	// 	reqIDs := keeper.GetPending(ctx)
+	// 	reqIDs := keeper.GetPendingRequests(ctx)
 	// 	remainingReqIDs := reqIDs
 
 	// 	for _, reqID := range reqIDs {
@@ -190,7 +188,7 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 	// 		remainingReqIDs = remove(remainingReqIDs, reqID)
 	// 	}
 
-	// 	keeper.SetPending(ctx, remainingReqIDs)
+	// 	keeper.SetPendingRequests(ctx, remainingReqIDs)
 
 	// TODO: Emit event
 	return sdk.Result{Events: ctx.EventManager().Events()}
