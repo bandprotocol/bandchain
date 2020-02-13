@@ -14,17 +14,17 @@ type Keeper struct {
 	cdc           *codec.Codec
 	CoinKeeper    bank.Keeper
 	StakingKeeper staking.Keeper
-	Paramspace    params.Subspace
+	ParamSpace    params.Subspace
 }
 
 // NewKeeper creates a new zoracle Keeper instance.
-func NewKeeper(cdc *codec.Codec, key sdk.StoreKey, coinKeeper bank.Keeper, stakingKeeper staking.Keeper, paramspace params.Subspace) Keeper {
+func NewKeeper(cdc *codec.Codec, key sdk.StoreKey, coinKeeper bank.Keeper, stakingKeeper staking.Keeper, paramSpace params.Subspace) Keeper {
 	return Keeper{
 		storeKey:      key,
 		cdc:           cdc,
 		CoinKeeper:    coinKeeper,
 		StakingKeeper: stakingKeeper,
-		Paramspace:    paramspace.WithKeyTable(ParamKeyTable()),
+		ParamSpace:    paramSpace.WithKeyTable(ParamKeyTable()),
 	}
 }
 
@@ -35,57 +35,57 @@ func ParamKeyTable() params.KeyTable {
 
 // Get MaxDataSourceExecutableSize.
 func (keeper Keeper) MaxDataSourceExecutableSize(ctx sdk.Context) (res int64) {
-	keeper.Paramspace.Get(ctx, types.KeyMaxDataSourceExecutableSize, &res)
+	keeper.ParamSpace.Get(ctx, types.KeyMaxDataSourceExecutableSize, &res)
 	return
 }
 
 // Set SetMaxDataSourceExecutableSize.
 func (keeper Keeper) SetMaxDataSourceExecutableSize(ctx sdk.Context, value int64) {
-	keeper.Paramspace.Set(ctx, types.KeyMaxDataSourceExecutableSize, value)
+	keeper.ParamSpace.Set(ctx, types.KeyMaxDataSourceExecutableSize, value)
 }
 
 // Get MaxOracleScriptCodeSize.
 func (keeper Keeper) MaxOracleScriptCodeSize(ctx sdk.Context) (res int64) {
-	keeper.Paramspace.Get(ctx, types.KeyMaxOracleScriptCodeSize, &res)
+	keeper.ParamSpace.Get(ctx, types.KeyMaxOracleScriptCodeSize, &res)
 	return
 }
 
 // Set SetMaxOracleScriptCodeSize.
 func (keeper Keeper) SetMaxOracleScriptCodeSize(ctx sdk.Context, value int64) {
-	keeper.Paramspace.Set(ctx, types.KeyMaxOracleScriptCodeSize, value)
+	keeper.ParamSpace.Set(ctx, types.KeyMaxOracleScriptCodeSize, value)
 }
 
 // Get MaxCalldataSize.
 func (keeper Keeper) MaxCalldataSize(ctx sdk.Context) (res int64) {
-	keeper.Paramspace.Get(ctx, types.KeyMaxCalldataSize, &res)
+	keeper.ParamSpace.Get(ctx, types.KeyMaxCalldataSize, &res)
 	return
 }
 
 // Set SetMaxCalldataSize.
 func (keeper Keeper) SetMaxCalldataSize(ctx sdk.Context, value int64) {
-	keeper.Paramspace.Set(ctx, types.KeyMaxCalldataSize, value)
+	keeper.ParamSpace.Set(ctx, types.KeyMaxCalldataSize, value)
 }
 
 // Get MaxDataSourceCountPerRequest.
 func (keeper Keeper) MaxDataSourceCountPerRequest(ctx sdk.Context) (res int64) {
-	keeper.Paramspace.Get(ctx, types.KeyMaxDataSourceCountPerRequest, &res)
+	keeper.ParamSpace.Get(ctx, types.KeyMaxDataSourceCountPerRequest, &res)
 	return
 }
 
 // Set SetMaxDataSourceCountPerRequest.
 func (keeper Keeper) SetMaxDataSourceCountPerRequest(ctx sdk.Context, value int64) {
-	keeper.Paramspace.Set(ctx, types.KeyMaxDataSourceCountPerRequest, value)
+	keeper.ParamSpace.Set(ctx, types.KeyMaxDataSourceCountPerRequest, value)
 }
 
 // Get MaxRawDataReportSize.
 func (keeper Keeper) MaxRawDataReportSize(ctx sdk.Context) (res int64) {
-	keeper.Paramspace.Get(ctx, types.KeyMaxRawDataReportSize, &res)
+	keeper.ParamSpace.Get(ctx, types.KeyMaxRawDataReportSize, &res)
 	return
 }
 
 // Set SetMaxRawDataReportSize.
 func (keeper Keeper) SetMaxRawDataReportSize(ctx sdk.Context, value int64) {
-	keeper.Paramspace.Set(ctx, types.KeyMaxRawDataReportSize, value)
+	keeper.ParamSpace.Set(ctx, types.KeyMaxRawDataReportSize, value)
 }
 
 // Get all parameteras as types.Params.
