@@ -69,10 +69,10 @@ func NewParams(
 // String implements the stringer interface for Params.
 func (p Params) String() string {
 	return fmt.Sprintf(`Slashing Params:
-		MaxDataSourceExecutableSize:          %d
-		MaxOracleScriptCodeSize:      %d
-		MaxCalldataSize:      %d
-		MaxDataSourceCountPerRequest:    %d
+		MaxDataSourceExecutableSize: %d
+		MaxOracleScriptCodeSize: %d
+		MaxCalldataSize: %d
+		MaxDataSourceCountPerRequest: %d
 		MaxRawDataReportSize: %d`, p.MaxDataSourceExecutableSize,
 		p.MaxOracleScriptCodeSize, p.MaxCalldataSize,
 		p.MaxDataSourceCountPerRequest, p.MaxRawDataReportSize)
