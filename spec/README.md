@@ -351,6 +351,13 @@ Gets the number of validators that the current data request specifies.
 **Returns**
 - `requestedValidatorCount: i64` - The requested validator count.
 
+### `getSufficientValidatorCount() -> i64`
+
+Gets the number of validators that is enough to push this data request into the aggregation phase.
+
+**Returns**
+- `sufficientValidatorCount: i64` - The sufficient validator count.
+
 ### `getReceivedValidatorCount() -> i64`
 
 Gets the number of validators among the requested ones that replied with raw data reports. Return zero during the *preparation* phase.
