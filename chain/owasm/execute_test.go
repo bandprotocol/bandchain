@@ -12,9 +12,7 @@ func TestExecuteCanCallEnv(t *testing.T) {
 	code, err := ioutil.ReadFile("./res/main.wasm")
 	require.Nil(t, err)
 	result, gasUsed, err := Execute(&mockExecutionEnvironment{}, code, "execute", []byte{}, 10000)
-	if err != nil {
-		panic(err)
-	}
+	require.Nil(t, err)
 	require.Equal(t, int64(42), int64(binary.LittleEndian.Uint64(result)))
 	require.Equal(t, int64(22), gasUsed)
 }
