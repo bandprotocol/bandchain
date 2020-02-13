@@ -1,5 +1,5 @@
 {
-  "genesis_time": "2020-02-12T09:16:19.909306Z",
+  "genesis_time": "2020-02-13T08:29:09.198623Z",
   "chain_id": "bandchain",
   "consensus_params": {
     "block": {
@@ -18,6 +18,15 @@
   },
   "app_hash": "",
   "app_state": {
+    "supply": {
+      "supply": []
+    },
+    "crisis": {
+      "constant_fee": {
+        "denom": "uband",
+        "amount": "1000"
+      }
+    },
     "mint": {
       "minter": {
         "inflation": "0.130000000000000000",
@@ -44,20 +53,8 @@
       "signing_infos": {},
       "missed_blocks": {}
     },
-    "staking": {
-      "params": {
-        "unbonding_time": "1814400000000000",
-        "max_validators": 100,
-        "max_entries": 7,
-        "bond_denom": "uband"
-      },
-      "last_total_power": "0",
-      "last_validator_powers": null,
-      "validators": null,
-      "delegations": null,
-      "unbonding_delegations": null,
-      "redelegations": null,
-      "exported": false
+    "bank": {
+      "send_enabled": true
     },
     "accounts": [
       {
@@ -161,26 +158,6 @@
         ]
       }
     ],
-    "supply": {
-      "supply": []
-    },
-    "distribution": {
-      "fee_pool": {
-        "community_pool": []
-      },
-      "community_tax": "0.020000000000000000",
-      "base_proposer_reward": "0.010000000000000000",
-      "bonus_proposer_reward": "0.040000000000000000",
-      "withdraw_addr_enabled": true,
-      "delegator_withdraw_infos": [],
-      "previous_proposer": "",
-      "outstanding_rewards": [],
-      "validator_accumulated_commissions": [],
-      "validator_historical_rewards": [],
-      "validator_current_rewards": [],
-      "delegator_starting_infos": [],
-      "validator_slash_events": []
-    },
     "zoracle": {
       "scripts": [
         {
@@ -238,41 +215,47 @@
           "name": "weather_info",
           "owner": "band1r8u4m0wefrdyp7sdde7drtrt94qczggkv38jrk"
         }
-      ]
-    },
-    "bank": {
-      "send_enabled": true
-    },
-    "crisis": {
-      "constant_fee": {
-        "denom": "uband",
-        "amount": "1000"
+      ],
+      "params": {
+        "max_data_source_executable_size": "16",
+        "max_oracle_script_code_size": "500000",
+        "max_calldata_size": "1000",
+        "max_data_source_count_per_request": "16",
+        "max_raw_data_report_size": "1000"
       }
     },
-    "gov": {
-      "starting_proposal_id": "1",
-      "deposits": null,
-      "votes": null,
-      "proposals": null,
-      "deposit_params": {
-        "min_deposit": [
-          {
-            "denom": "uband",
-            "amount": "10000000"
-          }
-        ],
-        "max_deposit_period": "172800000000000"
+    "staking": {
+      "params": {
+        "unbonding_time": "1814400000000000",
+        "max_validators": 100,
+        "max_entries": 7,
+        "bond_denom": "uband"
       },
-      "voting_params": {
-        "voting_period": "172800000000000"
-      },
-      "tally_params": {
-        "quorum": "0.334000000000000000",
-        "threshold": "0.500000000000000000",
-        "veto": "0.334000000000000000"
-      }
+      "last_total_power": "0",
+      "last_validator_powers": null,
+      "validators": null,
+      "delegations": null,
+      "unbonding_delegations": null,
+      "redelegations": null,
+      "exported": false
     },
-    "params": null,
+    "distribution": {
+      "fee_pool": {
+        "community_pool": []
+      },
+      "community_tax": "0.020000000000000000",
+      "base_proposer_reward": "0.010000000000000000",
+      "bonus_proposer_reward": "0.040000000000000000",
+      "withdraw_addr_enabled": true,
+      "delegator_withdraw_infos": [],
+      "previous_proposer": "",
+      "outstanding_rewards": [],
+      "validator_accumulated_commissions": [],
+      "validator_historical_rewards": [],
+      "validator_current_rewards": [],
+      "delegator_starting_infos": [],
+      "validator_slash_events": []
+    },
     "genutil": {
       "gentxs": [
         {
@@ -457,6 +440,7 @@
         }
       ]
     },
+    "params": null,
     "auth": {
       "params": {
         "max_memo_characters": "256",
@@ -464,6 +448,29 @@
         "tx_size_cost_per_byte": "10",
         "sig_verify_cost_ed25519": "590",
         "sig_verify_cost_secp256k1": "1000"
+      }
+    },
+    "gov": {
+      "starting_proposal_id": "1",
+      "deposits": null,
+      "votes": null,
+      "proposals": null,
+      "deposit_params": {
+        "min_deposit": [
+          {
+            "denom": "uband",
+            "amount": "10000000"
+          }
+        ],
+        "max_deposit_period": "172800000000000"
+      },
+      "voting_params": {
+        "voting_period": "172800000000000"
+      },
+      "tally_params": {
+        "quorum": "0.334000000000000000",
+        "threshold": "0.500000000000000000",
+        "veto": "0.334000000000000000"
       }
     }
   }
