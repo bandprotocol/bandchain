@@ -351,6 +351,13 @@ Gets the number of validators that the current data request specifies.
 **Returns**
 - `requestedValidatorCount: i64` - The requested validator count.
 
+### `getSufficientValidatorCount() -> i64`
+
+Gets the number of validators that is enough to push this data request into the aggregation phase.
+
+**Returns**
+- `sufficientValidatorCount: i64` - The sufficient validator count.
+
 ### `getReceivedValidatorCount() -> i64`
 
 Gets the number of validators among the requested ones that replied with raw data reports. Return zero during the *preparation* phase.
@@ -471,18 +478,18 @@ Issues a raw data request for a specific data source to block validators. The fu
 - `dataLength: i32` - The size of the parameter in bytes.
 
 ### `getExternalDataSize(i64, i32) -> i32`
-Gets the size of raw data report for a specific raw data request from a specific block validator.
+Gets the size of raw data report for a specific raw data request from a specific block validator. Return `-1` if the validator did not report data.
 
 **Parameters**
 - `externalDataId: i64` - The unique identifier of the raw data request.
-- `validatorIndex: i32` - The index of block validators. 0 for the first, 1 for the second validator, and so on. Must be less than the number of validators that report data.
+- `validatorIndex: i32` - The index of block validators. 0 for the first, 1 for the second validator, and so on. Must be less than the number of requested validators.
 
 ### `readExternalData(i64, i32, i32ptr, i32, i32) -> ()`
 Reads the specific part of raw data reports into the runtime memory. The function will fail if `seekOffset + resultSize > getExternalDataSize()`. 
 
 **Parameters**
 - `externalDataId: i64` - The unique identifier of the raw data request.
-- `validatorIndex: i32` - The index of block validators. 0 for the first, 1 for the second validator, and so on. Must be less than the number of validators that report data.
+- `validatorIndex: i32` - The index of block validators. 0 for the first, 1 for the second validator, and so on. Must be less than the number of requested validators.
 - `resultOffset: i32ptr` - The starting memory offset to copy raw report data into.
 - `seekOffset: i32` - The starting offset of raw report data to start copying.
 - `resultSize: i32` - The number of bytes to copy.

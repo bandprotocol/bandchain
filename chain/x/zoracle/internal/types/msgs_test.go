@@ -254,3 +254,297 @@ func TestMsgDeleteCodeGetSignBytes(t *testing.T) {
 
 	require.Equal(t, expected, string(res))
 }
+
+func TestMsgCreateDataSource(t *testing.T) {
+	owner := sdk.AccAddress([]byte("owner"))
+	sender := sdk.AccAddress([]byte("sender"))
+	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 1000))
+	msg := NewMsgCreateDataSource(owner, "data_source_1", fee, []byte("executable"), sender)
+	require.Equal(t, RouterKey, msg.Route())
+	require.Equal(t, "create_data_source", msg.Type())
+	require.Equal(t, owner, msg.Owner)
+	require.Equal(t, "data_source_1", msg.Name)
+	require.Equal(t, fee, msg.Fee)
+	require.Equal(t, []byte("executable"), msg.Executable)
+	require.Equal(t, sender, msg.Sender)
+}
+
+func TestMsgCreateDataSourceValidation(t *testing.T) {
+	owner := sdk.AccAddress([]byte("owner"))
+	sender := sdk.AccAddress([]byte("sender"))
+	name := "data_source_1"
+	executable := []byte("executable")
+	feeUband10 := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
+	feeUband0 := sdk.NewCoins(sdk.NewInt64Coin("uband", 0))
+
+	cases := []struct {
+		valid bool
+		tx    MsgCreateDataSource
+	}{
+		{
+			true, NewMsgCreateDataSource(owner, name, feeUband10, executable, sender),
+		},
+		{
+			false, NewMsgCreateDataSource(nil, name, feeUband10, executable, sender),
+		},
+		{
+			false, NewMsgCreateDataSource(owner, "", feeUband10, executable, sender),
+		},
+		{
+			true, NewMsgCreateDataSource(owner, name, feeUband0, executable, sender),
+		},
+		{
+			true, NewMsgCreateDataSource(owner, name, sdk.Coins{}, executable, sender),
+		},
+		{
+			false, NewMsgCreateDataSource(owner, name, feeUband10, []byte(""), sender),
+		},
+		{
+			false, NewMsgCreateDataSource(owner, name, feeUband10, nil, sender),
+		},
+		{
+			false, NewMsgCreateDataSource(owner, name, feeUband10, executable, nil),
+		},
+	}
+
+	for _, tc := range cases {
+		err := tc.tx.ValidateBasic()
+		if tc.valid {
+			require.Nil(t, err)
+		} else {
+			require.NotNil(t, err)
+		}
+	}
+}
+
+func TestMsgCreateDataSourceGetSignBytes(t *testing.T) {
+	config := sdk.GetConfig()
+	config.SetBech32PrefixForAccount("band", "band"+sdk.PrefixPublic)
+
+	owner := sdk.AccAddress([]byte("owner"))
+	sender := sdk.AccAddress([]byte("sender"))
+	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
+	msg := NewMsgCreateDataSource(owner, "data_source_1", fee, []byte("executable"), sender)
+	res := msg.GetSignBytes()
+
+	expected := `{"type":"zoracle/CreateDataSource","value":{"executable":"ZXhlY3V0YWJsZQ==","fee":[{"amount":"10","denom":"uband"}],"name":"data_source_1","owner":"band1damkuetjcw3c0d","sender":"band1wdjkuer9wgvz7c4y"}}`
+
+	require.Equal(t, expected, string(res))
+}
+
+func TestMsgEditDataSource(t *testing.T) {
+	owner := sdk.AccAddress([]byte("owner"))
+	sender := sdk.AccAddress([]byte("sender"))
+	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 100))
+	msg := NewMsgEditDataSource(1, owner, "data_source_1", fee, []byte("executable"), sender)
+	require.Equal(t, RouterKey, msg.Route())
+	require.Equal(t, "edit_data_source", msg.Type())
+	require.Equal(t, int64(1), msg.DataSourceID)
+	require.Equal(t, owner, msg.Owner)
+	require.Equal(t, "data_source_1", msg.Name)
+	require.Equal(t, fee, msg.Fee)
+	require.Equal(t, []byte("executable"), msg.Executable)
+	require.Equal(t, sender, msg.Sender)
+}
+
+func TestMsgEditDataSourceValidation(t *testing.T) {
+	owner := sdk.AccAddress([]byte("owner"))
+	sender := sdk.AccAddress([]byte("sender"))
+	name := "data_source_1"
+	executable := []byte("executable")
+	feeUband10 := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
+	feeUband0 := sdk.NewCoins(sdk.NewInt64Coin("uband", 0))
+
+	cases := []struct {
+		valid bool
+		tx    MsgEditDataSource
+	}{
+		{
+			true, NewMsgEditDataSource(1, owner, name, feeUband10, executable, sender),
+		},
+		{
+			false, NewMsgEditDataSource(0, owner, name, feeUband10, executable, sender),
+		},
+		{
+			false, NewMsgEditDataSource(1, nil, name, feeUband10, executable, sender),
+		},
+		{
+			false, NewMsgEditDataSource(1, owner, "", feeUband10, executable, sender),
+		},
+		{
+			true, NewMsgEditDataSource(1, owner, name, feeUband0, executable, sender),
+		},
+		{
+			true, NewMsgEditDataSource(1, owner, name, sdk.Coins{}, executable, sender),
+		},
+		{
+			false, NewMsgEditDataSource(1, owner, name, feeUband10, []byte(""), sender),
+		},
+		{
+			false, NewMsgEditDataSource(1, owner, name, feeUband10, nil, sender),
+		},
+		{
+			false, NewMsgEditDataSource(1, owner, name, feeUband10, executable, nil),
+		},
+	}
+
+	for _, tc := range cases {
+		err := tc.tx.ValidateBasic()
+		if tc.valid {
+			require.Nil(t, err)
+		} else {
+			require.NotNil(t, err)
+		}
+	}
+}
+
+func TestMsgEditDataSourceGetSignBytes(t *testing.T) {
+	config := sdk.GetConfig()
+	config.SetBech32PrefixForAccount("band", "band"+sdk.PrefixPublic)
+
+	owner := sdk.AccAddress([]byte("owner"))
+	sender := sdk.AccAddress([]byte("sender"))
+	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
+	msg := NewMsgEditDataSource(1, owner, "data_source_1", fee, []byte("executable"), sender)
+	res := msg.GetSignBytes()
+
+	expected := `{"type":"zoracle/EditDataSource","value":{"dataSourceID":"1","executable":"ZXhlY3V0YWJsZQ==","fee":[{"amount":"10","denom":"uband"}],"name":"data_source_1","owner":"band1damkuetjcw3c0d","sender":"band1wdjkuer9wgvz7c4y"}}`
+
+	require.Equal(t, expected, string(res))
+}
+
+func TestMsgCreateOracleScript(t *testing.T) {
+	owner := sdk.AccAddress([]byte("owner"))
+	sender := sdk.AccAddress([]byte("sender"))
+	msg := NewMsgCreateOracleScript(owner, "oracle_script_1", []byte("code"), sender)
+	require.Equal(t, RouterKey, msg.Route())
+	require.Equal(t, "create_oracle_script", msg.Type())
+	require.Equal(t, owner, msg.Owner)
+	require.Equal(t, "oracle_script_1", msg.Name)
+	require.Equal(t, []byte("code"), msg.Code)
+	require.Equal(t, sender, msg.Sender)
+}
+
+func TestMsgCreateOracleScriptValidation(t *testing.T) {
+	owner := sdk.AccAddress([]byte("owner"))
+	sender := sdk.AccAddress([]byte("sender"))
+	name := "oracle_script_1"
+	code := []byte("code")
+
+	cases := []struct {
+		valid bool
+		tx    MsgCreateOracleScript
+	}{
+		{
+			true, NewMsgCreateOracleScript(owner, name, code, sender),
+		},
+		{
+			false, NewMsgCreateOracleScript(nil, name, code, sender),
+		},
+		{
+			false, NewMsgCreateOracleScript(owner, "", code, sender),
+		},
+		{
+			false, NewMsgCreateOracleScript(owner, name, []byte{}, sender),
+		},
+		{
+			false, NewMsgCreateOracleScript(owner, name, nil, sender),
+		},
+		{
+			false, NewMsgCreateOracleScript(owner, name, code, nil),
+		},
+	}
+
+	for _, tc := range cases {
+		err := tc.tx.ValidateBasic()
+		if tc.valid {
+			require.Nil(t, err)
+		} else {
+			require.NotNil(t, err)
+		}
+	}
+}
+
+func TestMsgCreateOracleScriptGetSignBytes(t *testing.T) {
+	config := sdk.GetConfig()
+	config.SetBech32PrefixForAccount("band", "band"+sdk.PrefixPublic)
+
+	owner := sdk.AccAddress([]byte("owner"))
+	sender := sdk.AccAddress([]byte("sender"))
+	msg := NewMsgCreateOracleScript(owner, "oracle_script_1", []byte("code"), sender)
+	res := msg.GetSignBytes()
+
+	expected := `{"type":"zoracle/CreateOracleScript","value":{"code":"Y29kZQ==","name":"oracle_script_1","owner":"band1damkuetjcw3c0d","sender":"band1wdjkuer9wgvz7c4y"}}`
+
+	require.Equal(t, expected, string(res))
+}
+
+func TestMsgEditOracleScript(t *testing.T) {
+	owner := sdk.AccAddress([]byte("owner"))
+	sender := sdk.AccAddress([]byte("sender"))
+	msg := NewMsgEditOracleScript(1, owner, "oracle_script_1", []byte("code"), sender)
+	require.Equal(t, RouterKey, msg.Route())
+	require.Equal(t, "edit_oracle_script", msg.Type())
+	require.Equal(t, int64(1), msg.OracleScriptID)
+	require.Equal(t, owner, msg.Owner)
+	require.Equal(t, "oracle_script_1", msg.Name)
+	require.Equal(t, []byte("code"), msg.Code)
+	require.Equal(t, sender, msg.Sender)
+}
+
+func TestMsgEditOracleScriptValidation(t *testing.T) {
+	owner := sdk.AccAddress([]byte("owner"))
+	sender := sdk.AccAddress([]byte("sender"))
+	name := "oracle_script_1"
+	code := []byte("code")
+
+	cases := []struct {
+		valid bool
+		tx    MsgEditOracleScript
+	}{
+		{
+			true, NewMsgEditOracleScript(1, owner, name, code, sender),
+		},
+		{
+			false, NewMsgEditOracleScript(0, nil, name, code, sender),
+		},
+		{
+			false, NewMsgEditOracleScript(1, nil, name, code, sender),
+		},
+		{
+			false, NewMsgEditOracleScript(1, owner, "", code, sender),
+		},
+		{
+			false, NewMsgEditOracleScript(1, owner, name, []byte{}, sender),
+		},
+		{
+			false, NewMsgEditOracleScript(1, owner, name, nil, sender),
+		},
+		{
+			false, NewMsgEditOracleScript(1, owner, name, code, nil),
+		},
+	}
+
+	for _, tc := range cases {
+		err := tc.tx.ValidateBasic()
+		if tc.valid {
+			require.Nil(t, err)
+		} else {
+			require.NotNil(t, err)
+		}
+	}
+}
+
+func TestMsgEditOracleScriptGetSignBytes(t *testing.T) {
+	config := sdk.GetConfig()
+	config.SetBech32PrefixForAccount("band", "band"+sdk.PrefixPublic)
+
+	owner := sdk.AccAddress([]byte("owner"))
+	sender := sdk.AccAddress([]byte("sender"))
+	msg := NewMsgEditOracleScript(1, owner, "oracle_script_1", []byte("code"), sender)
+	res := msg.GetSignBytes()
+
+	expected := `{"type":"zoracle/EditOracleScript","value":{"code":"Y29kZQ==","name":"oracle_script_1","oracleScriptID":"1","owner":"band1damkuetjcw3c0d","sender":"band1wdjkuer9wgvz7c4y"}}`
+
+	require.Equal(t, expected, string(res))
+}
