@@ -39,15 +39,15 @@ func NewRequest(
 	}
 }
 
-// RequestDetail is a data structure that store what datasource and calldata will be used in request.
-type RequestDetail struct {
+// RawDataRequest is a data structure that store what datasource and calldata will be used in request.
+type RawDataRequest struct {
 	ScriptID int64  `json:"scriptID"`
 	Calldata []byte `json:"calldata"`
 }
 
-// NewRequestDetail creates a new RequestDetail instance
-func NewRequestDetail(scriptID int64, calldata []byte) RequestDetail {
-	return RequestDetail{
+// NewRawDataRequest creates a new RawDataRequest instance
+func NewRawDataRequest(scriptID int64, calldata []byte) RawDataRequest {
+	return RawDataRequest{
 		ScriptID: scriptID,
 		Calldata: calldata,
 	}

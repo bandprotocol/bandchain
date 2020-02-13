@@ -61,3 +61,7 @@ func ErrDuplicateValidator(codespace sdk.CodespaceType) sdk.Error {
 func ErrDuplicateRequest(codespace sdk.CodespaceType) sdk.Error {
 	return sdk.NewError(codespace, CodeDuplicateRequest, "duplicate request")
 }
+
+func ErrRawDataRequestNotFound(codespace sdk.CodespaceType) sdk.Error {
+	return sdk.NewError(codespace, CodeRequestNotFound, "raw data request not found")
+}
