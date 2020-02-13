@@ -3,6 +3,7 @@ package zoracle
 import (
 	"fmt"
 
+	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -19,6 +20,8 @@ func NewHandler(keeper Keeper) sdk.Handler {
 		// 	return handleMsgStoreCode(ctx, keeper, msg)
 		// case MsgDeleteCode:
 		// 	return handleMsgDeleteCode(ctx, keeper, msg)
+		case MsgCreateDataSource:
+			return handleMsgCreateDataSource(ctx, keeper, msg)
 		default:
 			errMsg := fmt.Sprintf("unrecognized zoracle message type: %T", msg)
 			return sdk.ErrUnknownRequest(errMsg).Result()
@@ -147,6 +150,21 @@ func NewHandler(keeper Keeper) sdk.Handler {
 // 	})
 // 	return sdk.Result{Events: ctx.EventManager().Events()}
 // }
+
+func handleMsgCreateDataSource(ctx sdk.Context, keeper Keeper, msg MsgCreateDataSource) sdk.Result {
+	newDataSourceID := keeper.GetNextDataSourceID(ctx)
+
+	newDataSource := types.NewDataSource(
+		msg.Owner,
+		msg.Name,
+		msg.Fee,
+		msg.Executable,
+	)
+
+	// Save DataSource to state
+	keeper.SetDataSource(ctx, newDataSourceID, newDataSource)
+	return sdk.Result{}
+}
 
 func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 	// 	reqIDs := keeper.GetPendingRequests(ctx)

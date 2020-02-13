@@ -1,5 +1,14 @@
 package zoracle
 
+import (
+	"testing"
+
+	keep "github.com/bandprotocol/d3n/chain/x/zoracle/internal/keeper"
+	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/require"
+)
+
 // func setupTestValidator(ctx sdk.Context, keeper Keeper, pk string) sdk.ValAddress {
 // 	pubKey := keep.NewPubKey(pk)
 // 	validatorAddress := sdk.ValAddress(pubKey.Address())
@@ -474,3 +483,23 @@ package zoracle
 // 	pendingRequests = keeper.GetPendingRequests(ctx)
 // 	require.Equal(t, []uint64{}, pendingRequests)
 // }
+
+func TestCreateDataSourceSuccess(t *testing.T) {
+	ctx, keeper := keep.CreateTestInput(t, false)
+
+	owner := sdk.AccAddress([]byte("owner"))
+	name := "data_source_1"
+	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
+	executable := []byte("executable")
+	sender := sdk.AccAddress([]byte("sender"))
+	msg := types.NewMsgCreateDataSource(owner, name, fee, executable, sender)
+	got := handleMsgCreateDataSource(ctx, keeper, msg)
+	require.True(t, got.IsOK(), "expected set data source to be ok, got %v", got)
+
+	dataSource, err := keeper.GetDataSource(ctx, 1)
+	require.Nil(t, err)
+	require.Equal(t, owner, dataSource.Owner)
+	require.Equal(t, name, dataSource.Name)
+	require.Equal(t, fee, dataSource.Fee)
+	require.Equal(t, executable, dataSource.Executable)
+}
