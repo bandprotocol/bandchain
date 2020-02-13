@@ -31,13 +31,6 @@ func TestRawDataRequestStoreKey(t *testing.T) {
 	require.Equal(t, expectKeyByte, RawDataRequestStoreKey(requestID, externalID))
 }
 
-func TestCodeHashStoreKey(t *testing.T) {
-	codeHash, _ := hex.DecodeString("d765967790f8d531be31d395de5cbce145e71f4d76ed90eda01646d2638ad932")
-	expectKeyByte, _ := hex.DecodeString("aad765967790f8d531be31d395de5cbce145e71f4d76ed90eda01646d2638ad932")
-
-	require.Equal(t, expectKeyByte, CodeHashStoreKey(codeHash))
-}
-
 func TestRawDataReportStoreKey(t *testing.T) {
 	requestID := int64(20)
 	externalID := int64(6)

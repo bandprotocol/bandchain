@@ -26,8 +26,6 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 	zoracleCmd.AddCommand(client.PostCommands(
 		GetCmdRequest(cdc),
 		GetCmdReport(cdc),
-		GetCmdStoreCode(cdc),
-		GetCmdDeleteCode(cdc),
 	)...)
 
 	return zoracleCmd
@@ -111,58 +109,6 @@ func GetCmdReport(cdc *codec.Codec) *cobra.Command {
 			}
 
 			msg := types.NewMsgReportData(requestID, dataset, sdk.ValAddress(cliCtx.GetFromAddress()))
-			err = msg.ValidateBasic()
-			if err != nil {
-				return err
-			}
-
-			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
-		},
-	}
-}
-
-// GetCmdStoreCode implements the store code command handler
-func GetCmdStoreCode(cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
-		Use:   "store [name] [code]",
-		Short: "store wasm code to chain",
-		Args:  cobra.ExactArgs(2),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
-			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-
-			code, err := hex.DecodeString(args[1])
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgStoreCode(code, args[0], cliCtx.GetFromAddress())
-			err = msg.ValidateBasic()
-			if err != nil {
-				return err
-			}
-
-			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
-		},
-	}
-}
-
-// GetCmdDeleteCode implements the delete code command handler
-func GetCmdDeleteCode(cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
-		Use:   "delete [code hash]",
-		Short: "delete wasm code by codehash",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
-			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-
-			codeHash, err := hex.DecodeString(args[0])
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgDeleteCode(codeHash, cliCtx.GetFromAddress())
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err

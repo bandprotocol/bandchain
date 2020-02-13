@@ -75,9 +75,9 @@ func (msg MsgRequestData) GetSignBytes() []byte {
 
 // MsgReportData is a message sent by each of the block validators to respond to a data request.
 type MsgReportData struct {
-	RequestID int64          `json:"requestID"`
+	RequestID int64           `json:"requestID"`
 	DataSet   []RawDataReport `json:"dataSet"`
-	Sender    sdk.ValAddress `json:"sender"`
+	Sender    sdk.ValAddress  `json:"sender"`
 }
 
 // NewMsgReportData creates a new MsgReportData instance.
@@ -120,104 +120,6 @@ func (msg MsgReportData) GetSigners() []sdk.AccAddress {
 
 // GetSignBytes implements the sdk.Msg interface for MsgReportData.
 func (msg MsgReportData) GetSignBytes() []byte {
-	bz := ModuleCdc.MustMarshalJSON(msg)
-	return sdk.MustSortJSON(bz)
-}
-
-// MsgStoreCode defines a Code and owner of this
-type MsgStoreCode struct {
-	Code  []byte         `json:"code"`
-	Name  string         `json:"name"`
-	Owner sdk.AccAddress `json:"owner"`
-}
-
-// NewMsgStoreCode creates a new MsgStoreCode instance.
-func NewMsgStoreCode(
-	code []byte,
-	name string,
-	owner sdk.AccAddress,
-) MsgStoreCode {
-	return MsgStoreCode{
-		Code:  code,
-		Name:  name,
-		Owner: owner,
-	}
-}
-
-// Route implements the sdk.Msg interface for MsgStoreCode.
-func (msg MsgStoreCode) Route() string { return RouterKey }
-
-// Type implements the sdk.Msg interface for MsgStoreCode.
-func (msg MsgStoreCode) Type() string { return "store" }
-
-// ValidateBasic implements the sdk.Msg interface for MsgStoreCode.
-func (msg MsgStoreCode) ValidateBasic() sdk.Error {
-	if msg.Owner.Empty() {
-		return sdk.ErrInvalidAddress(msg.Owner.String())
-	}
-	if len(msg.Name) == 0 {
-		return sdk.ErrUnknownRequest("Name must not be empty")
-	}
-	if msg.Code == nil || len(msg.Code) == 0 {
-		return sdk.ErrUnknownRequest("Code must not be empty")
-	}
-
-	return nil
-}
-
-// GetSigners implements the sdk.Msg interface for MsgStoreCode.
-func (msg MsgStoreCode) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{msg.Owner}
-}
-
-// GetSignBytes implements the sdk.Msg interface for MsgStoreCode.
-func (msg MsgStoreCode) GetSignBytes() []byte {
-	bz := ModuleCdc.MustMarshalJSON(msg)
-	return sdk.MustSortJSON(bz)
-}
-
-type MsgDeleteCode struct {
-	CodeHash []byte         `json:"codeHash"`
-	Owner    sdk.AccAddress `json:"owner"`
-}
-
-// NewMsgDeleteCode creates a new MsgDeleteCode instance.
-func NewMsgDeleteCode(
-	codeHash []byte,
-	owner sdk.AccAddress,
-) MsgDeleteCode {
-	return MsgDeleteCode{
-		CodeHash: codeHash,
-		Owner:    owner,
-	}
-}
-
-// Route implements the sdk.Msg interface for MsgDeleteCode.
-func (msg MsgDeleteCode) Route() string { return RouterKey }
-
-// Type implements the sdk.Msg interface for MsgDeleteCode.
-func (msg MsgDeleteCode) Type() string { return "delete" }
-
-// ValidateBasic implements the sdk.Msg interface for MsgDeleteCode.
-func (msg MsgDeleteCode) ValidateBasic() sdk.Error {
-	if msg.Owner.Empty() {
-		return sdk.ErrInvalidAddress(msg.Owner.String())
-	}
-
-	if msg.CodeHash == nil || len(msg.CodeHash) != 32 {
-		return sdk.ErrUnknownRequest("CodeHash must contain 32 bytes")
-	}
-
-	return nil
-}
-
-// GetSigners implements the sdk.Msg interface for MsgDeleteCode.
-func (msg MsgDeleteCode) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{msg.Owner}
-}
-
-// GetSignBytes implements the sdk.Msg interface for MsgDeleteCode.
-func (msg MsgDeleteCode) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }

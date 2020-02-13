@@ -1,17 +1,9 @@
 package zoracle
 
 import (
-	"encoding/hex"
-	"fmt"
-	"path/filepath"
-	"testing"
-
-	"github.com/bandprotocol/d3n/chain/wasm"
 	keep "github.com/bandprotocol/d3n/chain/x/zoracle/internal/keeper"
-	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	staking "github.com/cosmos/cosmos-sdk/x/staking"
-	"github.com/stretchr/testify/require"
 )
 
 func setupTestValidator(ctx sdk.Context, keeper Keeper, pk string) sdk.ValAddress {
@@ -187,95 +179,96 @@ func setupTestValidator(ctx sdk.Context, keeper Keeper, pk string) sdk.ValAddres
 // 	require.Equal(t, types.CodeOutOfReportPeriod, got.Code)
 // }
 
-func TestStoreCodeSuccess(t *testing.T) {
-	ctx, keeper := keep.CreateTestInput(t, false)
-	absPath, _ := filepath.Abs("../../wasm/res/result.wasm")
-	code, err := wasm.ReadBytes(absPath)
-	if err != nil {
-		fmt.Println(err)
-	}
-	name := "Crypto price"
-	owner := sdk.AccAddress([]byte("owner"))
-	codeHash := types.NewStoredCode(code, name, owner).GetCodeHash()
+// TODO: Left this code as reference code after implemented handle store oracle script please remove these.
+// func TestStoreCodeSuccess(t *testing.T) {
+// 	ctx, keeper := keep.CreateTestInput(t, false)
+// 	absPath, _ := filepath.Abs("../../wasm/res/result.wasm")
+// 	code, err := wasm.ReadBytes(absPath)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
+// 	name := "Crypto price"
+// 	owner := sdk.AccAddress([]byte("owner"))
+// 	codeHash := types.NewStoredCode(code, name, owner).GetCodeHash()
 
-	msg := types.NewMsgStoreCode(code, name, owner)
-	got := handleMsgStoreCode(ctx, keeper, msg)
-	require.True(t, got.IsOK(), "expected store code to be ok, got %v", got)
+// 	msg := types.NewMsgStoreCode(code, name, owner)
+// 	got := handleMsgStoreCode(ctx, keeper, msg)
+// 	require.True(t, got.IsOK(), "expected store code to be ok, got %v", got)
 
-	// Check codehash from event
-	require.Equal(t, types.EventTypeStoreCode, got.Events.ToABCIEvents()[0].Type)
-	require.Equal(t, hex.EncodeToString(codeHash), string(got.Events.ToABCIEvents()[0].Attributes[0].Value))
-	require.Equal(t, name, string(got.Events.ToABCIEvents()[0].Attributes[1].Value))
+// 	// Check codehash from event
+// 	require.Equal(t, types.EventTypeStoreCode, got.Events.ToABCIEvents()[0].Type)
+// 	require.Equal(t, hex.EncodeToString(codeHash), string(got.Events.ToABCIEvents()[0].Attributes[0].Value))
+// 	require.Equal(t, name, string(got.Events.ToABCIEvents()[0].Attributes[1].Value))
 
-	// Check value in store
-	sc, err := keeper.GetCode(ctx, codeHash)
-	require.Nil(t, err)
+// 	// Check value in store
+// 	sc, err := keeper.GetCode(ctx, codeHash)
+// 	require.Nil(t, err)
 
-	require.Equal(t, owner, sc.Owner)
-	require.Equal(t, code, []byte(sc.Code))
-}
+// 	require.Equal(t, owner, sc.Owner)
+// 	require.Equal(t, code, []byte(sc.Code))
+// }
 
-func TestStoreCodeFailed(t *testing.T) {
-	ctx, keeper := keep.CreateTestInput(t, false)
-	code := []byte("Code")
-	name := "Failed script"
-	owner := sdk.AccAddress([]byte("owner"))
+// func TestStoreCodeFailed(t *testing.T) {
+// 	ctx, keeper := keep.CreateTestInput(t, false)
+// 	code := []byte("Code")
+// 	name := "Failed script"
+// 	owner := sdk.AccAddress([]byte("owner"))
 
-	keeper.SetCode(ctx, code, name, owner)
+// 	keeper.SetCode(ctx, code, name, owner)
 
-	msg := types.NewMsgStoreCode(code, name, owner)
-	got := handleMsgStoreCode(ctx, keeper, msg)
+// 	msg := types.NewMsgStoreCode(code, name, owner)
+// 	got := handleMsgStoreCode(ctx, keeper, msg)
 
-	require.False(t, got.IsOK())
+// 	require.False(t, got.IsOK())
 
-	require.Equal(t, types.CodeInvalidInput, got.Code)
-}
+// 	require.Equal(t, types.CodeInvalidInput, got.Code)
+// }
 
-func TestDeleteCodeSuccess(t *testing.T) {
-	ctx, keeper := keep.CreateTestInput(t, false)
-	code := []byte("Code")
-	name := "script"
-	owner := sdk.AccAddress([]byte("owner"))
-	codeHash := keeper.SetCode(ctx, code, name, owner)
+// func TestDeleteCodeSuccess(t *testing.T) {
+// 	ctx, keeper := keep.CreateTestInput(t, false)
+// 	code := []byte("Code")
+// 	name := "script"
+// 	owner := sdk.AccAddress([]byte("owner"))
+// 	codeHash := keeper.SetCode(ctx, code, name, owner)
 
-	msg := types.NewMsgDeleteCode(codeHash, owner)
-	got := handleMsgDeleteCode(ctx, keeper, msg)
+// 	msg := types.NewMsgDeleteCode(codeHash, owner)
+// 	got := handleMsgDeleteCode(ctx, keeper, msg)
 
-	require.Equal(t, types.EventTypeDeleteCode, got.Events.ToABCIEvents()[0].Type)
-	require.Equal(t, hex.EncodeToString(codeHash), string(got.Events.ToABCIEvents()[0].Attributes[0].Value))
-}
+// 	require.Equal(t, types.EventTypeDeleteCode, got.Events.ToABCIEvents()[0].Type)
+// 	require.Equal(t, hex.EncodeToString(codeHash), string(got.Events.ToABCIEvents()[0].Attributes[0].Value))
+// }
 
-func TestDeleteCodeInvalidHash(t *testing.T) {
-	ctx, keeper := keep.CreateTestInput(t, false)
-	code := []byte("Code")
-	name := "script"
-	owner := sdk.AccAddress([]byte("owner"))
-	codeHash := keeper.SetCode(ctx, code, name, owner)
-	invalidCodeHash := append(codeHash[:31], byte('b'))
+// func TestDeleteCodeInvalidHash(t *testing.T) {
+// 	ctx, keeper := keep.CreateTestInput(t, false)
+// 	code := []byte("Code")
+// 	name := "script"
+// 	owner := sdk.AccAddress([]byte("owner"))
+// 	codeHash := keeper.SetCode(ctx, code, name, owner)
+// 	invalidCodeHash := append(codeHash[:31], byte('b'))
 
-	msg := types.NewMsgDeleteCode(invalidCodeHash, owner)
-	got := handleMsgDeleteCode(ctx, keeper, msg)
+// 	msg := types.NewMsgDeleteCode(invalidCodeHash, owner)
+// 	got := handleMsgDeleteCode(ctx, keeper, msg)
 
-	require.False(t, got.IsOK())
+// 	require.False(t, got.IsOK())
 
-	require.Equal(t, types.CodeInvalidInput, got.Code)
-}
+// 	require.Equal(t, types.CodeInvalidInput, got.Code)
+// }
 
-func TestDeleteCodeInvalidOwner(t *testing.T) {
-	ctx, keeper := keep.CreateTestInput(t, false)
-	code := []byte("Code")
-	name := "script"
-	owner := sdk.AccAddress([]byte("owner"))
-	codeHash := keeper.SetCode(ctx, code, name, owner)
+// func TestDeleteCodeInvalidOwner(t *testing.T) {
+// 	ctx, keeper := keep.CreateTestInput(t, false)
+// 	code := []byte("Code")
+// 	name := "script"
+// 	owner := sdk.AccAddress([]byte("owner"))
+// 	codeHash := keeper.SetCode(ctx, code, name, owner)
 
-	other := sdk.AccAddress([]byte("other"))
-	msg := types.NewMsgDeleteCode(codeHash, other)
-	got := handleMsgDeleteCode(ctx, keeper, msg)
+// 	other := sdk.AccAddress([]byte("other"))
+// 	msg := types.NewMsgDeleteCode(codeHash, other)
+// 	got := handleMsgDeleteCode(ctx, keeper, msg)
 
-	require.False(t, got.IsOK())
+// 	require.False(t, got.IsOK())
 
-	require.Equal(t, types.CodeInvalidOwner, got.Code)
-}
+// 	require.Equal(t, types.CodeInvalidOwner, got.Code)
+// }
 
 // func TestEndBlock(t *testing.T) {
 // 	ctx, keeper := keep.CreateTestInput(t, false)

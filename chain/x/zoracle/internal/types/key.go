@@ -34,9 +34,6 @@ var (
 	// RawDataRequestStoreKeyPrefix is a prefix for storing raw data request detail.
 	RawDataRequestStoreKeyPrefix = []byte{0x02}
 
-	// CodeHashKeyPrefix is a prefix for code store (will be removed later)
-	CodeHashKeyPrefix = []byte{0xaa}
-
 	// RawDataReportStoreKeyPrefix is a prefix for report store
 	RawDataReportStoreKeyPrefix = []byte{0x03}
 
@@ -46,14 +43,12 @@ var (
 
 // RequestStoreKey is a function to generate key for each request in store
 func RequestStoreKey(requestID int64) []byte {
-	buf := int64ToBytes(requestID)
-	return append(RequestStoreKeyPrefix, buf...)
+	return append(RequestStoreKeyPrefix, int64ToBytes(requestID)...)
 }
 
 // ResultStoreKey is a function to generate key for each result in store
 func ResultStoreKey(requestID int64, codeHash []byte, params []byte) []byte {
-	buf := int64ToBytes(requestID)
-	buf = append(ResultStoreKeyPrefix, buf...)
+	buf := append(ResultStoreKeyPrefix, int64ToBytes(requestID)...)
 	buf = append(buf, codeHash...)
 	buf = append(buf, params...)
 	return buf
@@ -62,12 +57,8 @@ func ResultStoreKey(requestID int64, codeHash []byte, params []byte) []byte {
 // RawDataRequestStoreKey is a function to generate key for each raw data request in store
 func RawDataRequestStoreKey(requestID, externalID int64) []byte {
 	buf := append(RawDataRequestStoreKeyPrefix, int64ToBytes(requestID)...)
-	return append(buf, int64ToBytes(externalID)...)
-}
-
-// CodeHashStoreKey is a function to generate key for codehash to actual code in store
-func CodeHashStoreKey(codeHash []byte) []byte {
-	return append(CodeHashKeyPrefix, codeHash...)
+	buf = append(buf, int64ToBytes(externalID)...)
+	return buf
 }
 
 // RawDataReportStoreKey is a function to generate key for each raw data report in store.
