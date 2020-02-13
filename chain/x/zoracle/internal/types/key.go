@@ -70,8 +70,7 @@ func ReportStoreKey(requestID uint64, validatorAddress sdk.ValAddress) []byte {
 
 // DataSourceStoreKey is a function to generate key for each data source in store.
 func DataSourceStoreKey(dataSourceID int64) []byte {
-	buf := int64ToBytes(dataSourceID)
-	return append(DataSourceStoreKeyPrefix, buf...)
+	return append(DataSourceStoreKeyPrefix, int64ToBytes(dataSourceID)...)
 }
 
 // GetIteratorPrefix is a function to get specific prefix
