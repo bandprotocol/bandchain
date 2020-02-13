@@ -88,7 +88,7 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 	}
 }
 
-// Defines the default parameters.
+// DefaultParams defines the default parameters.
 func DefaultParams() Params {
 	return NewParams(
 		DefaultMaxDataSourceExecutableSize,
