@@ -155,16 +155,7 @@ func NewHandler(keeper Keeper) sdk.Handler {
 
 // handleMsgCreateDataSource is a function to handle MsgCreateDataSource.
 func handleMsgCreateDataSource(ctx sdk.Context, keeper Keeper, msg MsgCreateDataSource) sdk.Result {
-	newDataSourceID := keeper.GetNextDataSourceID(ctx)
-
-	newDataSource := types.NewDataSource(
-		msg.Owner,
-		msg.Name,
-		msg.Fee,
-		msg.Executable,
-	)
-
-	err := keeper.SetDataSource(ctx, newDataSourceID, newDataSource)
+	err := keeper.AddDataSource(ctx, msg.Owner, msg.Name, msg.Fee, msg.Executable)
 	if err != nil {
 		return err.Result()
 	}
@@ -183,12 +174,7 @@ func handleMsgEditDataSource(ctx sdk.Context, keeper Keeper, msg MsgEditDataSour
 		return types.ErrInvalidOwner(types.DefaultCodespace).Result()
 	}
 
-	dataSource.Owner = msg.Owner
-	dataSource.Name = msg.Name
-	dataSource.Fee = msg.Fee
-	dataSource.Executable = msg.Executable
-
-	err = keeper.SetDataSource(ctx, msg.DataSourceID, dataSource)
+	err = keeper.EditDataSource(ctx, msg.Owner, msg.DataSourceID, msg.Name, msg.Fee, msg.Executable)
 	if err != nil {
 		return err.Result()
 	}
