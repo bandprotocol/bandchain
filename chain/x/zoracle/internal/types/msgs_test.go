@@ -1,7 +1,6 @@
 package types
 
 import (
-	"encoding/hex"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -105,7 +104,7 @@ func TestMsgRequestDataGetSignBytes(t *testing.T) {
 
 func TestMsgReportData(t *testing.T) {
 	requestID := int64(3)
-	data := []ExternalData{NewExternalData(1, []byte("data1")), NewExternalData(2, []byte("data2"))}
+	data := []RawDataReport{NewRawDataReport(1, []byte("data1")), NewRawDataReport(2, []byte("data2"))}
 	provider, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
 	msg := NewMsgReportData(requestID, data, provider)
 
@@ -115,7 +114,7 @@ func TestMsgReportData(t *testing.T) {
 
 func TestMsgReportDataValidation(t *testing.T) {
 	requestID := int64(3)
-	data := []ExternalData{NewExternalData(1, []byte("data1")), NewExternalData(2, []byte("data2"))}
+	data := []RawDataReport{NewRawDataReport(1, []byte("data1")), NewRawDataReport(2, []byte("data2"))}
 	validator, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
 	failValidator, _ := sdk.ValAddressFromHex("")
 	cases := []struct {
@@ -124,7 +123,7 @@ func TestMsgReportDataValidation(t *testing.T) {
 	}{
 		{true, NewMsgReportData(requestID, data, validator)},
 		{false, NewMsgReportData(-1, data, validator)},
-		{false, NewMsgReportData(requestID, []ExternalData{}, validator)},
+		{false, NewMsgReportData(requestID, []RawDataReport{}, validator)},
 		{false, NewMsgReportData(requestID, nil, validator)},
 		{false, NewMsgReportData(requestID, data, failValidator)},
 	}
@@ -144,113 +143,12 @@ func TestMsgReportDataGetSignBytes(t *testing.T) {
 	config.SetBech32PrefixForValidator("band"+sdk.PrefixValidator+sdk.PrefixOperator, "band"+sdk.PrefixValidator+sdk.PrefixOperator+sdk.PrefixPublic)
 
 	requestID := int64(3)
-	data := []ExternalData{NewExternalData(1, []byte("data1")), NewExternalData(2, []byte("data2"))}
+	data := []RawDataReport{NewRawDataReport(1, []byte("data1")), NewRawDataReport(2, []byte("data2"))}
 	validator, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
 	msg := NewMsgReportData(requestID, data, validator)
 	res := msg.GetSignBytes()
 
 	expected := `{"type":"zoracle/Report","value":{"dataSet":[{"data":"ZGF0YTE=","externalDataID":"1"},{"data":"ZGF0YTI=","externalDataID":"2"}],"requestID":"3","sender":"bandvaloper1hq8j5h0h64csk9tz95df783cxr0dt0dgay2kyy"}}`
-
-	require.Equal(t, expected, string(res))
-}
-
-func TestMsgStoreCode(t *testing.T) {
-	owner, _ := sdk.AccAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
-	name := "script name"
-	msg := NewMsgStoreCode([]byte("Code"), name, owner)
-
-	require.Equal(t, RouterKey, msg.Route())
-	require.Equal(t, "store", msg.Type())
-}
-
-func TestMsgStoreCodeValidation(t *testing.T) {
-	code := []byte("Code")
-	name := "script name"
-	owner, _ := sdk.AccAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
-	failOwner, _ := sdk.AccAddressFromHex("")
-	cases := []struct {
-		valid bool
-		tx    MsgStoreCode
-	}{
-		{true, NewMsgStoreCode(code, name, owner)},
-		{false, NewMsgStoreCode([]byte(""), name, owner)},
-		{false, NewMsgStoreCode(code, "", owner)},
-		{false, NewMsgStoreCode(nil, name, owner)},
-		{false, NewMsgStoreCode(code, name, failOwner)},
-		{false, NewMsgStoreCode(code, name, nil)},
-	}
-
-	for _, tc := range cases {
-		err := tc.tx.ValidateBasic()
-		if tc.valid {
-			require.Nil(t, err)
-		} else {
-			require.NotNil(t, err)
-		}
-	}
-}
-
-func TestMsgStoreCodeGetSignBytes(t *testing.T) {
-	config := sdk.GetConfig()
-	config.SetBech32PrefixForAccount("band", "band"+sdk.PrefixPublic)
-
-	name := "script name"
-	code := []byte("Code")
-	owner, _ := sdk.AccAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
-	msg := NewMsgStoreCode(code, name, owner)
-	res := msg.GetSignBytes()
-
-	expected := `{"type":"zoracle/Store","value":{"code":"Q29kZQ==","name":"script name","owner":"band1hq8j5h0h64csk9tz95df783cxr0dt0dg3jw4p0"}}`
-
-	require.Equal(t, expected, string(res))
-}
-
-func TestMsgDeleteCode(t *testing.T) {
-	owner, _ := sdk.AccAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
-	codeHash, _ := hex.DecodeString("5694d08a2e53ffcae0c3103e5ad6f6076abd960eb1f8a56577040bc1028f702b")
-	msg := NewMsgDeleteCode(codeHash, owner)
-
-	require.Equal(t, RouterKey, msg.Route())
-	require.Equal(t, "delete", msg.Type())
-}
-
-func TestMsgDeleteCodeValidation(t *testing.T) {
-	codeHash, _ := hex.DecodeString("5694d08a2e53ffcae0c3103e5ad6f6076abd960eb1f8a56577040bc1028f702b")
-	owner, _ := sdk.AccAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
-	failOwner, _ := sdk.AccAddressFromHex("")
-	cases := []struct {
-		valid bool
-		tx    MsgDeleteCode
-	}{
-		{true, NewMsgDeleteCode(codeHash, owner)},
-		{false, NewMsgDeleteCode([]byte(""), owner)},
-		{false, NewMsgDeleteCode(nil, owner)},
-		{false, NewMsgDeleteCode([]byte("code"), failOwner)},
-		{false, NewMsgDeleteCode(codeHash, failOwner)},
-		{false, NewMsgDeleteCode(codeHash, nil)},
-	}
-
-	for _, tc := range cases {
-		err := tc.tx.ValidateBasic()
-		if tc.valid {
-			require.Nil(t, err)
-		} else {
-			require.NotNil(t, err)
-		}
-	}
-}
-
-func TestMsgDeleteCodeGetSignBytes(t *testing.T) {
-	config := sdk.GetConfig()
-	config.SetBech32PrefixForAccount("band", "band"+sdk.PrefixPublic)
-
-	codeHash, _ := hex.DecodeString("5694d08a2e53ffcae0c3103e5ad6f6076abd960eb1f8a56577040bc1028f702b")
-	owner, _ := sdk.AccAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
-
-	msg := NewMsgDeleteCode(codeHash, owner)
-	res := msg.GetSignBytes()
-
-	expected := `{"type":"zoracle/Delete","value":{"codeHash":"VpTQii5T/8rgwxA+Wtb2B2q9lg6x+KVldwQLwQKPcCs=","owner":"band1hq8j5h0h64csk9tz95df783cxr0dt0dg3jw4p0"}}`
 
 	require.Equal(t, expected, string(res))
 }

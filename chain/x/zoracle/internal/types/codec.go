@@ -15,8 +15,6 @@ func init() {
 func RegisterCodec(cdc *codec.Codec) {
 	cdc.RegisterConcrete(MsgRequestData{}, "zoracle/Request", nil)
 	cdc.RegisterConcrete(MsgReportData{}, "zoracle/Report", nil)
-	cdc.RegisterConcrete(MsgStoreCode{}, "zoracle/Store", nil)
-	cdc.RegisterConcrete(MsgDeleteCode{}, "zoracle/Delete", nil)
 	cdc.RegisterConcrete(MsgCreateDataSource{}, "zoracle/CreateDataSource", nil)
 	cdc.RegisterConcrete(MsgEditDataSource{}, "zoracle/EditDataSource", nil)
 	cdc.RegisterConcrete(MsgCreateOracleScript{}, "zoracle/CreateOracleScript", nil)

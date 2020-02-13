@@ -50,3 +50,29 @@ func (k Keeper) GetNextRequestID(ctx sdk.Context) uint64 {
 	store.Set(types.RequestsCountStoreKey, bz)
 	return requestNumber + 1
 }
+
+// GetDataSourceCount returns the current number of all data sources ever exist.
+func (k Keeper) GetDataSourceCount(ctx sdk.Context) int64 {
+	var dataSourceCount int64
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.DataSourceCountStoreKey)
+	if bz == nil {
+		return 0
+	}
+	err := k.cdc.UnmarshalBinaryLengthPrefixed(bz, &dataSourceCount)
+	if err != nil {
+		panic(err)
+	}
+	return dataSourceCount
+}
+
+// GetNextDataSourceID increments and returns the current number of data source.
+// If the global data source count is not set, it initializes the value and returns 1.
+func (k Keeper) GetNextDataSourceID(ctx sdk.Context) int64 {
+	dataSourceCount := k.GetDataSourceCount(ctx)
+	store := ctx.KVStore(k.storeKey)
+
+	bz := k.cdc.MustMarshalBinaryLengthPrefixed(dataSourceCount + 1)
+	store.Set(types.DataSourceCountStoreKey, bz)
+	return dataSourceCount + 1
+}

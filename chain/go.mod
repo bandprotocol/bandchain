@@ -14,7 +14,6 @@ require (
 	github.com/spf13/viper v1.6.1
 	github.com/stretchr/testify v1.4.0
 	github.com/tendermint/go-amino v0.15.0
-	github.com/tendermint/iavl v0.12.4
 	github.com/tendermint/tendermint v0.32.9
 	github.com/tendermint/tm-db v0.2.0
 	github.com/wasmerio/go-ext-wasm v0.0.0-20191113152408-05371a4e2fe5

@@ -1,17 +1,9 @@
 package zoracle
 
 import (
-	"encoding/hex"
-	"fmt"
-	"path/filepath"
-	"testing"
-
-	"github.com/bandprotocol/d3n/chain/wasm"
 	keep "github.com/bandprotocol/d3n/chain/x/zoracle/internal/keeper"
-	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	staking "github.com/cosmos/cosmos-sdk/x/staking"
-	"github.com/stretchr/testify/require"
 )
 
 func setupTestValidator(ctx sdk.Context, keeper Keeper, pk string) sdk.ValAddress {
@@ -58,7 +50,7 @@ func setupTestValidator(ctx sdk.Context, keeper Keeper, pk string) sdk.ValAddres
 // 	require.Equal(t, uint64(ctx.BlockHeight()+5), request.ReportEndAt)
 
 // 	// Check pending request list
-// 	require.Equal(t, []uint64{1}, keeper.GetPending(ctx))
+// 	require.Equal(t, []uint64{1}, keeper.GetPendingRequests(ctx))
 
 // 	// check event
 // 	require.Equal(t, types.EventTypeRequest, ctx.EventManager().Events()[0].Type)
@@ -120,9 +112,9 @@ func setupTestValidator(ctx sdk.Context, keeper Keeper, pk string) sdk.ValAddres
 // 	keeper.SetRequest(ctx, 2, request)
 
 // 	// set pending
-// 	pendingRequests := keeper.GetPending(ctx)
+// 	pendingRequests := keeper.GetPendingRequests(ctx)
 // 	pendingRequests = append(pendingRequests, 2)
-// 	keeper.SetPending(ctx, pendingRequests)
+// 	keeper.SetPendingRequests(ctx, pendingRequests)
 
 // 	// set blockheight
 // 	ctx = ctx.WithBlockHeight(3)
@@ -149,9 +141,9 @@ func setupTestValidator(ctx sdk.Context, keeper Keeper, pk string) sdk.ValAddres
 // 	keeper.SetRequest(ctx, 1, request)
 
 // 	// set pending
-// 	pendingRequests := keeper.GetPending(ctx)
+// 	pendingRequests := keeper.GetPendingRequests(ctx)
 // 	pendingRequests = append(pendingRequests, 1)
-// 	keeper.SetPending(ctx, pendingRequests)
+// 	keeper.SetPendingRequests(ctx, pendingRequests)
 
 // 	msg := types.NewMsgReport(1, []byte("data"), validatorAddress)
 // 	got := handleMsgReport(ctx, keeper, msg)
@@ -174,9 +166,9 @@ func setupTestValidator(ctx sdk.Context, keeper Keeper, pk string) sdk.ValAddres
 // 	keeper.SetRequest(ctx, 2, request)
 
 // 	// set pending
-// 	pendingRequests := keeper.GetPending(ctx)
+// 	pendingRequests := keeper.GetPendingRequests(ctx)
 // 	pendingRequests = append(pendingRequests, 2)
-// 	keeper.SetPending(ctx, pendingRequests)
+// 	keeper.SetPendingRequests(ctx, pendingRequests)
 
 // 	// set blockheight
 // 	ctx = ctx.WithBlockHeight(10)
@@ -187,95 +179,96 @@ func setupTestValidator(ctx sdk.Context, keeper Keeper, pk string) sdk.ValAddres
 // 	require.Equal(t, types.CodeOutOfReportPeriod, got.Code)
 // }
 
-func TestStoreCodeSuccess(t *testing.T) {
-	ctx, keeper := keep.CreateTestInput(t, false)
-	absPath, _ := filepath.Abs("../../wasm/res/result.wasm")
-	code, err := wasm.ReadBytes(absPath)
-	if err != nil {
-		fmt.Println(err)
-	}
-	name := "Crypto price"
-	owner := sdk.AccAddress([]byte("owner"))
-	codeHash := types.NewStoredCode(code, name, owner).GetCodeHash()
+// TODO: Left this code as reference code after implemented handle store oracle script please remove these.
+// func TestStoreCodeSuccess(t *testing.T) {
+// 	ctx, keeper := keep.CreateTestInput(t, false)
+// 	absPath, _ := filepath.Abs("../../wasm/res/result.wasm")
+// 	code, err := wasm.ReadBytes(absPath)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
+// 	name := "Crypto price"
+// 	owner := sdk.AccAddress([]byte("owner"))
+// 	codeHash := types.NewStoredCode(code, name, owner).GetCodeHash()
 
-	msg := types.NewMsgStoreCode(code, name, owner)
-	got := handleMsgStoreCode(ctx, keeper, msg)
-	require.True(t, got.IsOK(), "expected store code to be ok, got %v", got)
+// 	msg := types.NewMsgStoreCode(code, name, owner)
+// 	got := handleMsgStoreCode(ctx, keeper, msg)
+// 	require.True(t, got.IsOK(), "expected store code to be ok, got %v", got)
 
-	// Check codehash from event
-	require.Equal(t, types.EventTypeStoreCode, got.Events.ToABCIEvents()[0].Type)
-	require.Equal(t, hex.EncodeToString(codeHash), string(got.Events.ToABCIEvents()[0].Attributes[0].Value))
-	require.Equal(t, name, string(got.Events.ToABCIEvents()[0].Attributes[1].Value))
+// 	// Check codehash from event
+// 	require.Equal(t, types.EventTypeStoreCode, got.Events.ToABCIEvents()[0].Type)
+// 	require.Equal(t, hex.EncodeToString(codeHash), string(got.Events.ToABCIEvents()[0].Attributes[0].Value))
+// 	require.Equal(t, name, string(got.Events.ToABCIEvents()[0].Attributes[1].Value))
 
-	// Check value in store
-	sc, err := keeper.GetCode(ctx, codeHash)
-	require.Nil(t, err)
+// 	// Check value in store
+// 	sc, err := keeper.GetCode(ctx, codeHash)
+// 	require.Nil(t, err)
 
-	require.Equal(t, owner, sc.Owner)
-	require.Equal(t, code, []byte(sc.Code))
-}
+// 	require.Equal(t, owner, sc.Owner)
+// 	require.Equal(t, code, []byte(sc.Code))
+// }
 
-func TestStoreCodeFailed(t *testing.T) {
-	ctx, keeper := keep.CreateTestInput(t, false)
-	code := []byte("Code")
-	name := "Failed script"
-	owner := sdk.AccAddress([]byte("owner"))
+// func TestStoreCodeFailed(t *testing.T) {
+// 	ctx, keeper := keep.CreateTestInput(t, false)
+// 	code := []byte("Code")
+// 	name := "Failed script"
+// 	owner := sdk.AccAddress([]byte("owner"))
 
-	keeper.SetCode(ctx, code, name, owner)
+// 	keeper.SetCode(ctx, code, name, owner)
 
-	msg := types.NewMsgStoreCode(code, name, owner)
-	got := handleMsgStoreCode(ctx, keeper, msg)
+// 	msg := types.NewMsgStoreCode(code, name, owner)
+// 	got := handleMsgStoreCode(ctx, keeper, msg)
 
-	require.False(t, got.IsOK())
+// 	require.False(t, got.IsOK())
 
-	require.Equal(t, types.CodeInvalidInput, got.Code)
-}
+// 	require.Equal(t, types.CodeInvalidInput, got.Code)
+// }
 
-func TestDeleteCodeSuccess(t *testing.T) {
-	ctx, keeper := keep.CreateTestInput(t, false)
-	code := []byte("Code")
-	name := "script"
-	owner := sdk.AccAddress([]byte("owner"))
-	codeHash := keeper.SetCode(ctx, code, name, owner)
+// func TestDeleteCodeSuccess(t *testing.T) {
+// 	ctx, keeper := keep.CreateTestInput(t, false)
+// 	code := []byte("Code")
+// 	name := "script"
+// 	owner := sdk.AccAddress([]byte("owner"))
+// 	codeHash := keeper.SetCode(ctx, code, name, owner)
 
-	msg := types.NewMsgDeleteCode(codeHash, owner)
-	got := handleMsgDeleteCode(ctx, keeper, msg)
+// 	msg := types.NewMsgDeleteCode(codeHash, owner)
+// 	got := handleMsgDeleteCode(ctx, keeper, msg)
 
-	require.Equal(t, types.EventTypeDeleteCode, got.Events.ToABCIEvents()[0].Type)
-	require.Equal(t, hex.EncodeToString(codeHash), string(got.Events.ToABCIEvents()[0].Attributes[0].Value))
-}
+// 	require.Equal(t, types.EventTypeDeleteCode, got.Events.ToABCIEvents()[0].Type)
+// 	require.Equal(t, hex.EncodeToString(codeHash), string(got.Events.ToABCIEvents()[0].Attributes[0].Value))
+// }
 
-func TestDeleteCodeInvalidHash(t *testing.T) {
-	ctx, keeper := keep.CreateTestInput(t, false)
-	code := []byte("Code")
-	name := "script"
-	owner := sdk.AccAddress([]byte("owner"))
-	codeHash := keeper.SetCode(ctx, code, name, owner)
-	invalidCodeHash := append(codeHash[:31], byte('b'))
+// func TestDeleteCodeInvalidHash(t *testing.T) {
+// 	ctx, keeper := keep.CreateTestInput(t, false)
+// 	code := []byte("Code")
+// 	name := "script"
+// 	owner := sdk.AccAddress([]byte("owner"))
+// 	codeHash := keeper.SetCode(ctx, code, name, owner)
+// 	invalidCodeHash := append(codeHash[:31], byte('b'))
 
-	msg := types.NewMsgDeleteCode(invalidCodeHash, owner)
-	got := handleMsgDeleteCode(ctx, keeper, msg)
+// 	msg := types.NewMsgDeleteCode(invalidCodeHash, owner)
+// 	got := handleMsgDeleteCode(ctx, keeper, msg)
 
-	require.False(t, got.IsOK())
+// 	require.False(t, got.IsOK())
 
-	require.Equal(t, types.CodeInvalidInput, got.Code)
-}
+// 	require.Equal(t, types.CodeInvalidInput, got.Code)
+// }
 
-func TestDeleteCodeInvalidOwner(t *testing.T) {
-	ctx, keeper := keep.CreateTestInput(t, false)
-	code := []byte("Code")
-	name := "script"
-	owner := sdk.AccAddress([]byte("owner"))
-	codeHash := keeper.SetCode(ctx, code, name, owner)
+// func TestDeleteCodeInvalidOwner(t *testing.T) {
+// 	ctx, keeper := keep.CreateTestInput(t, false)
+// 	code := []byte("Code")
+// 	name := "script"
+// 	owner := sdk.AccAddress([]byte("owner"))
+// 	codeHash := keeper.SetCode(ctx, code, name, owner)
 
-	other := sdk.AccAddress([]byte("other"))
-	msg := types.NewMsgDeleteCode(codeHash, other)
-	got := handleMsgDeleteCode(ctx, keeper, msg)
+// 	other := sdk.AccAddress([]byte("other"))
+// 	msg := types.NewMsgDeleteCode(codeHash, other)
+// 	got := handleMsgDeleteCode(ctx, keeper, msg)
 
-	require.False(t, got.IsOK())
+// 	require.False(t, got.IsOK())
 
-	require.Equal(t, types.CodeInvalidOwner, got.Code)
-}
+// 	require.Equal(t, types.CodeInvalidOwner, got.Code)
+// }
 
 // func TestEndBlock(t *testing.T) {
 // 	ctx, keeper := keep.CreateTestInput(t, false)
@@ -307,9 +300,9 @@ func TestDeleteCodeInvalidOwner(t *testing.T) {
 // 	keeper.SetRequest(ctx, 1, request)
 
 // 	// set pending
-// 	pendingRequests := keeper.GetPending(ctx)
+// 	pendingRequests := keeper.GetPendingRequests(ctx)
 // 	pendingRequests = append(pendingRequests, 1)
-// 	keeper.SetPending(ctx, pendingRequests)
+// 	keeper.SetPendingRequests(ctx, pendingRequests)
 
 // 	data1, _ := hex.DecodeString("5b227b5c22626974636f696e5c223a7b5c227573645c223a373139342e32357d7d222c227b5c225553445c223a373231342e31327d225d")
 // 	data2, _ := hex.DecodeString("5b227b5c22626974636f696e5c223a7b5c227573645c223a373139312e32357d7d222c227b5c225553445c223a373230392e31357d225d")
@@ -326,7 +319,7 @@ func TestDeleteCodeInvalidOwner(t *testing.T) {
 // 	// Result must not found
 // 	require.NotNil(t, err)
 
-// 	pendingRequests = keeper.GetPending(ctx)
+// 	pendingRequests = keeper.GetPendingRequests(ctx)
 // 	require.Equal(t, []uint64{1}, pendingRequests)
 
 // 	// blockheight update to 4
@@ -344,7 +337,7 @@ func TestDeleteCodeInvalidOwner(t *testing.T) {
 // 	require.Nil(t, err)
 // 	require.Equal(t, resultAfter, result)
 
-// 	pendingRequests = keeper.GetPending(ctx)
+// 	pendingRequests = keeper.GetPendingRequests(ctx)
 // 	require.Equal(t, []uint64{}, pendingRequests)
 // }
 
@@ -378,9 +371,9 @@ func TestDeleteCodeInvalidOwner(t *testing.T) {
 // 	keeper.SetRequest(ctx, 1, request)
 
 // 	// set pending
-// 	pendingRequests := keeper.GetPending(ctx)
+// 	pendingRequests := keeper.GetPendingRequests(ctx)
 // 	pendingRequests = append(pendingRequests, 1)
-// 	keeper.SetPending(ctx, pendingRequests)
+// 	keeper.SetPendingRequests(ctx, pendingRequests)
 
 // 	data1, _ := hex.DecodeString("5b227b5c22626974636f696e5c223a7b5c227573645c223a373139342e32357d7d222c227b5c225553445c223a373231342e31327d225d")
 // 	data2, _ := hex.DecodeString("5b227b5c22626974636f696e5c223a7b5c227573645c223a373139312e32357d7d222c227b5c225553445c223a373230392e31357d225d")
@@ -397,7 +390,7 @@ func TestDeleteCodeInvalidOwner(t *testing.T) {
 // 	// Result must not found
 // 	require.NotNil(t, err)
 
-// 	pendingRequests = keeper.GetPending(ctx)
+// 	pendingRequests = keeper.GetPendingRequests(ctx)
 // 	require.Equal(t, []uint64{1}, pendingRequests)
 
 // 	keeper.SetReport(ctx, 1, validatorAddress2, data2)
@@ -415,7 +408,7 @@ func TestDeleteCodeInvalidOwner(t *testing.T) {
 // 	require.Nil(t, err)
 // 	require.Equal(t, resultAfter, result)
 
-// 	pendingRequests = keeper.GetPending(ctx)
+// 	pendingRequests = keeper.GetPendingRequests(ctx)
 // 	require.Equal(t, []uint64{}, pendingRequests)
 // }
 
@@ -449,9 +442,9 @@ func TestDeleteCodeInvalidOwner(t *testing.T) {
 // 	keeper.SetRequest(ctx, 1, request)
 
 // 	// set pending
-// 	pendingRequests := keeper.GetPending(ctx)
+// 	pendingRequests := keeper.GetPendingRequests(ctx)
 // 	pendingRequests = append(pendingRequests, 1)
-// 	keeper.SetPending(ctx, pendingRequests)
+// 	keeper.SetPendingRequests(ctx, pendingRequests)
 
 // 	data1, _ := hex.DecodeString("5b227b5c22626974636f696e5c223a7b5c227573645c223a373139342e32357d7d222c227b5c225553445c223a373231342e31327d225d")
 
@@ -467,7 +460,7 @@ func TestDeleteCodeInvalidOwner(t *testing.T) {
 // 	// Result must not found
 // 	require.NotNil(t, err)
 
-// 	pendingRequests = keeper.GetPending(ctx)
+// 	pendingRequests = keeper.GetPendingRequests(ctx)
 // 	require.Equal(t, []uint64{1}, pendingRequests)
 
 // 	// blockheight update to 300
@@ -484,6 +477,6 @@ func TestDeleteCodeInvalidOwner(t *testing.T) {
 // 	require.Nil(t, err)
 // 	require.Equal(t, resultAfter, result)
 
-// 	pendingRequests = keeper.GetPending(ctx)
+// 	pendingRequests = keeper.GetPendingRequests(ctx)
 // 	require.Equal(t, []uint64{}, pendingRequests)
 // }
