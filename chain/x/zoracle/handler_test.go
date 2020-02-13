@@ -484,35 +484,28 @@ import (
 // 	require.Equal(t, []uint64{}, pendingRequests)
 // }
 
-func mockDataSource(ctx sdk.Context, keeper Keeper) {
+func mockDataSource(ctx sdk.Context, keeper Keeper) sdk.Result {
 	owner := sdk.AccAddress([]byte("owner"))
 	name := "data_source_1"
 	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
 	executable := []byte("executable")
 	sender := sdk.AccAddress([]byte("sender"))
 	msg := types.NewMsgCreateDataSource(owner, name, fee, executable, sender)
-	handleMsgCreateDataSource(ctx, keeper, msg)
+	return handleMsgCreateDataSource(ctx, keeper, msg)
 }
 
 func TestCreateDataSourceSuccess(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
 
-	owner := sdk.AccAddress([]byte("owner"))
-	name := "data_source_1"
-	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
-	executable := []byte("executable")
-	sender := sdk.AccAddress([]byte("sender"))
-	msg := types.NewMsgCreateDataSource(owner, name, fee, executable, sender)
-	got := handleMsgCreateDataSource(ctx, keeper, msg)
+	got := mockDataSource(ctx, keeper)
 	require.True(t, got.IsOK(), "expected set data source to be ok, got %v", got)
 
-	// Assert
 	dataSource, err := keeper.GetDataSource(ctx, 1)
 	require.Nil(t, err)
-	require.Equal(t, owner, dataSource.Owner)
-	require.Equal(t, name, dataSource.Name)
-	require.Equal(t, fee, dataSource.Fee)
-	require.Equal(t, executable, dataSource.Executable)
+	require.Equal(t, sdk.AccAddress([]byte("owner")), dataSource.Owner)
+	require.Equal(t, "data_source_1", dataSource.Name)
+	require.Equal(t, sdk.NewCoins(sdk.NewInt64Coin("uband", 10)), dataSource.Fee)
+	require.Equal(t, []byte("executable"), dataSource.Executable)
 }
 
 func TestEditDataSourceSuccess(t *testing.T) {
@@ -529,7 +522,6 @@ func TestEditDataSourceSuccess(t *testing.T) {
 	got := handleMsgEditDataSource(ctx, keeper, msg)
 	require.True(t, got.IsOK(), "expected edit data source to be ok, got %v", got)
 
-	// Assert
 	dataSource, err := keeper.GetDataSource(ctx, 1)
 	require.Nil(t, err)
 	require.Equal(t, newOwner, dataSource.Owner)
