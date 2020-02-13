@@ -6,9 +6,12 @@ import (
 )
 
 // SetDataSource saves the given data source with the given ID to the storage.
-func (k Keeper) SetDataSource(ctx sdk.Context, id int64, dataSource types.DataSource) {
+func (k Keeper) SetDataSource(ctx sdk.Context, id int64, dataSource types.DataSource) sdk.Error {
+	// TODO: check executable size.
+
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.DataSourceStoreKey(id), k.cdc.MustMarshalBinaryBare(dataSource))
+	return nil
 }
 
 // GetDataSource returns the entire DataSource struct for the given ID.

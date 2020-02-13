@@ -157,8 +157,6 @@ func NewHandler(keeper Keeper) sdk.Handler {
 func handleMsgCreateDataSource(ctx sdk.Context, keeper Keeper, msg MsgCreateDataSource) sdk.Result {
 	newDataSourceID := keeper.GetNextDataSourceID(ctx)
 
-	// TODO: check executable size.
-
 	newDataSource := types.NewDataSource(
 		msg.Owner,
 		msg.Name,
@@ -166,7 +164,10 @@ func handleMsgCreateDataSource(ctx sdk.Context, keeper Keeper, msg MsgCreateData
 		msg.Executable,
 	)
 
-	keeper.SetDataSource(ctx, newDataSourceID, newDataSource)
+	err := keeper.SetDataSource(ctx, newDataSourceID, newDataSource)
+	if err != nil {
+		return err.Result()
+	}
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
@@ -187,7 +188,10 @@ func handleMsgEditDataSource(ctx sdk.Context, keeper Keeper, msg MsgEditDataSour
 	dataSource.Fee = msg.Fee
 	dataSource.Executable = msg.Executable
 
-	keeper.SetDataSource(ctx, msg.DataSourceID, dataSource)
+	err = keeper.SetDataSource(ctx, msg.DataSourceID, dataSource)
+	if err != nil {
+		return err.Result()
+	}
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
