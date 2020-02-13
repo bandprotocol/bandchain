@@ -1,30 +1,39 @@
 package owasm
 
+import "fmt"
+
 type mockExecutionEnvironment struct {
+	requestID               int64
+	requestedValidatorCount int64
+	receivedValidatorCount  int64
+	prepareBlockTime        int64
+	aggregateBlockTime      int64
+	validatorPubKeys        [][]byte
+	externalDataResults     [][][]byte
 }
 
 func (m *mockExecutionEnvironment) GetCurrentRequestID() int64 {
-	return 0
+	return m.requestID
 }
 
 func (m *mockExecutionEnvironment) GetRequestedValidatorCount() int64 {
-	return 0
+	return m.requestedValidatorCount
 }
 
 func (m *mockExecutionEnvironment) GetReceivedValidatorCount() int64 {
-	return 0
+	return m.receivedValidatorCount
 }
 
 func (m *mockExecutionEnvironment) GetPrepareBlockTime() int64 {
-	return 0
+	return m.prepareBlockTime
 }
 
 func (m *mockExecutionEnvironment) GetAggregateBlockTime() int64 {
-	return 0
+	return m.aggregateBlockTime
 }
 
 func (m *mockExecutionEnvironment) GetValidatorPubKey(validatorIndex int64) ([]byte, error) {
-	return []byte{}, nil
+	return m.validatorPubKeys[validatorIndex], nil
 }
 
 func (m *mockExecutionEnvironment) RequestExternalData(
@@ -32,6 +41,8 @@ func (m *mockExecutionEnvironment) RequestExternalData(
 	externalDataID int64,
 	calldata []byte,
 ) error {
+	// TODO: Figure out how to mock this elegantly.
+	fmt.Printf("RequestExternalData: DataSourceID = %d, ExternalDataID = %d\n", dataSourceID, externalDataID)
 	return nil
 }
 
@@ -39,9 +50,5 @@ func (m *mockExecutionEnvironment) GetExternalData(
 	externalDataID int64,
 	validatorIndex int64,
 ) ([]byte, error) {
-	return []byte{}, nil
-}
-
-func NewMockExecutionEnvironment() ExecutionEnvironment {
-	return &mockExecutionEnvironment{}
+	return m.externalDataResults[externalDataID][validatorIndex], nil
 }

@@ -12,8 +12,6 @@ import (
 
 	"github.com/bandprotocol/d3n/chain/app"
 	"github.com/bandprotocol/d3n/chain/d3nlib"
-	"github.com/bandprotocol/d3n/chain/x/zoracle"
-	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/gin-gonic/gin"
 	"github.com/levigross/grequests"
@@ -352,28 +350,29 @@ func handleExecute(c *gin.Context) {
 }
 
 func handleStore(c *gin.Context) {
-	var req StoreRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+	c.JSON(http.StatusNotImplemented, nil)
+	// var req StoreRequest
+	// if err := c.ShouldBindJSON(&req); err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// 	return
+	// }
 
-	codeHash := zoracle.NewStoredCode(req.Code, req.Name, bandClient.Sender()).GetCodeHash()
+	// codeHash := zoracle.NewStoredCode(req.Code, req.Name, bandClient.Sender()).GetCodeHash()
 
-	tx, err := bandClient.SendTransaction(
-		zoracle.NewMsgStoreCode(req.Code, req.Name, bandClient.Sender()),
-		20000000, "", "", "",
-		flags.BroadcastBlock,
-	)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	// tx, err := bandClient.SendTransaction(
+	// 	zoracle.NewMsgStoreCode(req.Code, req.Name, bandClient.Sender()),
+	// 	20000000, "", "", "",
+	// 	flags.BroadcastBlock,
+	// )
+	// if err != nil {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	// 	return
+	// }
 
-	c.JSON(200, StoreResponse{
-		TxHash:   tx.TxHash,
-		CodeHash: cmn.HexBytes(codeHash),
-	})
+	// c.JSON(200, StoreResponse{
+	// 	TxHash:   tx.TxHash,
+	// 	CodeHash: cmn.HexBytes(codeHash),
+	// })
 }
 
 // relayResponse is the function that query and response

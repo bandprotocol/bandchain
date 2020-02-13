@@ -28,20 +28,15 @@ var (
 	RegisterCodec     = types.RegisterCodec
 	NewMsgRequestData = types.NewMsgRequestData
 	NewMsgReportData  = types.NewMsgReportData
-	NewMsgStoreCode   = types.NewMsgStoreCode
-	NewMsgDeleteCode  = types.NewMsgDeleteCode
 
-	RequestStoreKey  = types.RequestStoreKey
-	CodeHashStoreKey = types.CodeHashStoreKey
-	NewStoredCode    = types.NewStoredCode
-	ResultStoreKey   = types.ResultStoreKey
+	RequestStoreKey    = types.RequestStoreKey
+	ResultStoreKey     = types.ResultStoreKey
+	DataSourceStoreKey = types.DataSourceStoreKey
 )
 
 type (
 	Keeper         = keeper.Keeper
 	MsgRequestData = types.MsgRequestData
 	MsgReportData  = types.MsgReportData
-	MsgStoreCode   = types.MsgStoreCode
-	MsgDeleteCode  = types.MsgDeleteCode
-	RequestInfo    = types.RequestInfo
+	// RequestInfo    = types.RequestInfo
 )

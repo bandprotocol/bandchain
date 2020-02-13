@@ -17,8 +17,11 @@ var (
 	// RequestsCountStoreKey is a key that help getting to current requests count state variable
 	RequestsCountStoreKey = append(GlobalStoreKeyPrefix, []byte("RequestsCount")...)
 
-	// PendingListStoreKey is a key that help getting pending request
-	PendingListStoreKey = append(GlobalStoreKeyPrefix, []byte("PendingList")...)
+	// UnresolvedRequestListStoreKey is a key that help getting pending request
+	UnresolvedRequestListStoreKey = append(GlobalStoreKeyPrefix, []byte("PendingList")...)
+
+	// DataSourceCountStoreKey is a key that keeps the current data source count state variable.
+	DataSourceCountStoreKey = append(GlobalStoreKeyPrefix, []byte("DataSourceCount")...)
 
 	// ========================================================================
 
@@ -28,48 +31,56 @@ var (
 	// ResultStoreKeyPrefix is a prefix for storing result
 	ResultStoreKeyPrefix = []byte{0xff}
 
-	// CodeHashKeyPrefix is a prefix for code store
-	CodeHashKeyPrefix = []byte{0x02}
+	// RawDataRequestStoreKeyPrefix is a prefix for storing raw data request detail.
+	RawDataRequestStoreKeyPrefix = []byte{0x02}
 
-	// ReportKeyPrefix is a prefix for report store
-	ReportKeyPrefix = []byte{0x03}
+	// RawDataReportStoreKeyPrefix is a prefix for report store
+	RawDataReportStoreKeyPrefix = []byte{0x03}
+
+	// DataSourceStoreKeyPrefix is a prefix for data source store.
+	DataSourceStoreKeyPrefix = []byte{0x04}
 )
 
 // RequestStoreKey is a function to generate key for each request in store
-func RequestStoreKey(requestID uint64) []byte {
-	buf := uint64ToBytes(requestID)
-	return append(RequestStoreKeyPrefix, buf...)
+func RequestStoreKey(requestID int64) []byte {
+	return append(RequestStoreKeyPrefix, int64ToBytes(requestID)...)
 }
 
 // ResultStoreKey is a function to generate key for each result in store
-func ResultStoreKey(requestID uint64, codeHash []byte, params []byte) []byte {
-	buf := uint64ToBytes(requestID)
-	buf = append(ResultStoreKeyPrefix, buf...)
+func ResultStoreKey(requestID int64, codeHash []byte, params []byte) []byte {
+	buf := append(ResultStoreKeyPrefix, int64ToBytes(requestID)...)
 	buf = append(buf, codeHash...)
 	buf = append(buf, params...)
 	return buf
 }
 
-// CodeHashStoreKey is a function to generate key for codehash to actual code in store
-func CodeHashStoreKey(codeHash []byte) []byte {
-	return append(CodeHashKeyPrefix, codeHash...)
+// RawDataRequestStoreKey is a function to generate key for each raw data request in store
+func RawDataRequestStoreKey(requestID, externalID int64) []byte {
+	buf := append(RawDataRequestStoreKeyPrefix, int64ToBytes(requestID)...)
+	buf = append(buf, int64ToBytes(externalID)...)
+	return buf
 }
 
-// ReportStoreKey is a function to generate key for each report from
-// validator calculate from validator address and request id
-func ReportStoreKey(requestID uint64, validatorAddress sdk.ValAddress) []byte {
-	buf := append(ReportKeyPrefix, uint64ToBytes(requestID)...)
-	return append(buf, validatorAddress.Bytes()...)
+// RawDataReportStoreKey is a function to generate key for each raw data report in store.
+func RawDataReportStoreKey(requestID, externalID int64, validatorAddress sdk.ValAddress) []byte {
+	buf := append(RawDataReportStoreKeyPrefix, int64ToBytes(requestID)...)
+	buf = append(buf, int64ToBytes(externalID)...)
+	buf = append(buf, validatorAddress.Bytes()...)
+	return buf
+}
+
+// DataSourceStoreKey is a function to generate key for each data source in store.
+func DataSourceStoreKey(dataSourceID int64) []byte {
+	return append(DataSourceStoreKeyPrefix, int64ToBytes(dataSourceID)...)
 }
 
 // GetIteratorPrefix is a function to get specific prefix
-func GetIteratorPrefix(prefix []byte, requestID uint64) []byte {
-	buf := uint64ToBytes(requestID)
-	return append(prefix, buf...)
+func GetIteratorPrefix(prefix []byte, requestID int64) []byte {
+	return append(prefix, int64ToBytes(requestID)...)
 }
 
 // GetValidatorAddress is a function to get validator address from key
-func GetValidatorAddress(key []byte, prefix []byte, requestID uint64) sdk.ValAddress {
-	lenRequest := len(uint64ToBytes(requestID))
+func GetValidatorAddress(key []byte, prefix []byte, requestID int64) sdk.ValAddress {
+	lenRequest := len(int64ToBytes(requestID))
 	return key[len(prefix)+lenRequest:]
 }
