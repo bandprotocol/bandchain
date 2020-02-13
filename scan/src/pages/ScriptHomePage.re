@@ -30,7 +30,7 @@ let make = () => {
       <Col>
         <div className=Styles.vFlex>
           <Text
-            value="ALL DATA REQUEST SCRIPTS"
+            value="ALL DATA ORACLE SCRIPTS"
             weight=Text.Bold
             size=Text.Xl
             nowrap=true
