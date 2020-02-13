@@ -165,13 +165,26 @@ func TestGetValidatorPubKey(t *testing.T) {
 
 	_, err = env.GetValidatorAddress(2)
 	require.NotNil(t, err)
+
+	_, err = env.GetValidatorAddress(-1)
+	require.NotNil(t, err)
 }
 
 func TestRequestExternalData(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
+	// Set Request
 	keeper.SetRequest(ctx, 1, types.NewRequest(
 		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))}, 1, 0, 0, 100,
 	))
+
+	// Set Datasource
+	dataSource := types.NewDataSource(
+		sdk.AccAddress([]byte("owner")),
+		"data_source",
+		sdk.NewCoins(sdk.NewInt64Coin("uband", 10)),
+		[]byte("executable"),
+	)
+	keeper.SetDataSource(ctx, 1, dataSource)
 
 	env, err := NewExecutionEnvironment(ctx, keeper, 1)
 	require.Nil(t, err)
@@ -207,5 +220,9 @@ func TestGetExternalData(t *testing.T) {
 
 	// Get report from invalid validator index
 	_, envErr = env.GetExternalData(42, 2)
+	require.NotNil(t, envErr, "validator out of range")
+
+	// Get report from invalid validator index
+	_, envErr = env.GetExternalData(42, -2)
 	require.NotNil(t, envErr, "validator out of range")
 }
