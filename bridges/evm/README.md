@@ -25,3 +25,11 @@
 - For Bridge contract on Thaichain please see [this](https://exp.tch.in.th/addr/0x35616a666E8b8aB605EfB16b551c6804C4e571C7?addr_tab=transactions)
 
 - For an example use case of Bridge contract on Thaichain please see [this](https://exp.tch.in.th/addr/0x86D84bB33ccC482159f46f21993E2d08e511F95E?addr_tab=contract_source)
+
+### [Fantom](https://fantom.foundation/)
+
+- The reason why we support Fantom is because Fantom blockchain has an advanced, fast, and secure consensus for distributed networks.
+
+- We have deployed Bridge (0x5e71f1E61B1Dc88e39011cBE304A927532c1E4d0) contract and SimplePriceDatabase(0x83Ed93D864115F1457611e2f644dECeebdF32474) contract on Fantom testnet.
+
+- We have interact with the testnet by adding Fantom testnet RPC to Metamask. Next we use an account which already have Fantom native currency to deploy both of our contracts. After testing our contracts by submit a bunch of data points to SimplePriceDatabase contract, we have conclude that things work fine on the testnet.

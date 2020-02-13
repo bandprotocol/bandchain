@@ -76,3 +76,29 @@ func (k Keeper) GetNextDataSourceID(ctx sdk.Context) int64 {
 	store.Set(types.DataSourceCountStoreKey, bz)
 	return dataSourceCount + 1
 }
+
+// GetOracleScriptCount returns the current number of all oracle scripts ever exist.
+func (k Keeper) GetOracleScriptCount(ctx sdk.Context) int64 {
+	var oracleScriptCount int64
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.OracleScriptCountStoreKey)
+	if bz == nil {
+		return 0
+	}
+	err := k.cdc.UnmarshalBinaryLengthPrefixed(bz, &oracleScriptCount)
+	if err != nil {
+		panic(err)
+	}
+	return oracleScriptCount
+}
+
+// GetNextOracleScriptID increments and returns the current number of oracle script.
+// If the global oracle script count is not set, it initializes the value and returns 1.
+func (k Keeper) GetNextOracleScriptID(ctx sdk.Context) int64 {
+	oracleScriptCount := k.GetOracleScriptCount(ctx)
+	store := ctx.KVStore(k.storeKey)
+
+	bz := k.cdc.MustMarshalBinaryLengthPrefixed(oracleScriptCount + 1)
+	store.Set(types.OracleScriptCountStoreKey, bz)
+	return oracleScriptCount + 1
+}
