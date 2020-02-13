@@ -28,10 +28,10 @@ var (
 	RegisterCodec     = types.RegisterCodec
 	NewMsgRequestData = types.NewMsgRequestData
 	NewMsgReportData  = types.NewMsgReportData
-
 	RequestStoreKey    = types.RequestStoreKey
 	ResultStoreKey     = types.ResultStoreKey
 	DataSourceStoreKey = types.DataSourceStoreKey
+	OracleScriptStoreKey = types.OracleScriptStoreKey
 )
 
 type (
