@@ -23,6 +23,7 @@ const (
 )
 
 var (
+<<<<<<< HEAD
 	NewKeeper            = keeper.NewKeeper
 	NewQuerier           = keeper.NewQuerier
 	ModuleCdc            = types.ModuleCdc
@@ -33,6 +34,18 @@ var (
 	ResultStoreKey       = types.ResultStoreKey
 	DataSourceStoreKey   = types.DataSourceStoreKey
 	OracleScriptStoreKey = types.OracleScriptStoreKey
+=======
+	NewKeeper         = keeper.NewKeeper
+	NewQuerier        = keeper.NewQuerier
+	ModuleCdc         = types.ModuleCdc
+	RegisterCodec     = types.RegisterCodec
+	NewMsgRequestData = types.NewMsgRequestData
+	NewMsgReportData  = types.NewMsgReportData
+
+	RequestStoreKey    = types.RequestStoreKey
+	ResultStoreKey     = types.ResultStoreKey
+	DataSourceStoreKey = types.DataSourceStoreKey
+>>>>>>> reorder
 
 	ParamKeyTable = types.ParamKeyTable
 	NewParams     = types.NewParams
