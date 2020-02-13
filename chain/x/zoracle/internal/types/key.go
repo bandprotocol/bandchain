@@ -20,6 +20,9 @@ var (
 	// PendingListStoreKey is a key that help getting pending request
 	PendingListStoreKey = append(GlobalStoreKeyPrefix, []byte("PendingList")...)
 
+	// DataSourceCountStoreKey is a key that help getting to current data source count state variable
+	DataSourceCountStoreKey = append(GlobalStoreKeyPrefix, []byte("DataSourceCount")...)
+
 	// ========================================================================
 
 	// RequestStoreKeyPrefix is a prefix for request store
@@ -33,6 +36,9 @@ var (
 
 	// ReportKeyPrefix is a prefix for report store
 	ReportKeyPrefix = []byte{0x03}
+
+	// DataSourceStoreKeyPrefix is a prefix for data source store
+	DataSourceStoreKeyPrefix = []byte{0x04}
 )
 
 // RequestStoreKey is a function to generate key for each request in store
@@ -60,6 +66,12 @@ func CodeHashStoreKey(codeHash []byte) []byte {
 func ReportStoreKey(requestID uint64, validatorAddress sdk.ValAddress) []byte {
 	buf := append(ReportKeyPrefix, uint64ToBytes(requestID)...)
 	return append(buf, validatorAddress.Bytes()...)
+}
+
+// DataSourceStoreKey is a function to generate key for each data source in store
+func DataSourceStoreKey(dataSourceID int64) []byte {
+	buf := int64ToBytes(dataSourceID)
+	return append(DataSourceStoreKeyPrefix, buf...)
 }
 
 // GetIteratorPrefix is a function to get specific prefix

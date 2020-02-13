@@ -38,3 +38,10 @@ func TestReportStoreKey(t *testing.T) {
 	expectKeyByte, _ := hex.DecodeString("030000000000000014b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
 	require.Equal(t, expectKeyByte, ReportStoreKey(requestID, validator))
 }
+
+func TestDataSourceStoreKey(t *testing.T) {
+	dataSourceID := int64(888)
+	expectKeyByte, _ := hex.DecodeString("040000000000000378")
+
+	require.Equal(t, expectKeyByte, DataSourceStoreKey(dataSourceID))
+}
