@@ -48,6 +48,8 @@ func (k Keeper) GetRawDataRequest(
 	return requestDetail, nil
 }
 
+// CheckRawDataRequestExists checks if the raw request data at this request id and external id
+// presents in the store or not.
 func (k Keeper) CheckRawDataRequestExists(ctx sdk.Context, requestID, externalID int64) bool {
 	store := ctx.KVStore(k.storeKey)
 	return store.Has(types.RawDataRequestStoreKey(requestID, externalID))
