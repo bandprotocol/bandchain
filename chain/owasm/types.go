@@ -4,7 +4,7 @@ package owasm
 // can call to interact with the external world. An operation can fail and
 // when that occurs, the whole function call will fail.
 type ExecutionEnvironment interface {
-	// GetCurrentRequestID returns the unique identifier that can is the reference
+	// GetCurrentRequestID returns the unique identifier that is the reference
 	// to the current data request.
 	GetCurrentRequestID() int64
 
