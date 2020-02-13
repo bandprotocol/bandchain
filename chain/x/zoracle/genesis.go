@@ -9,7 +9,7 @@ import (
 // GenesisState is the zoracle state that must be provided at genesis.
 type GenesisState struct {
 	// Scripts []types.StoredCode `json:"scripts"`
-	Params types.Params `json:"params" yaml:"params"` // inflation params
+	Params types.Params `json:"params" yaml:"params"` // module level parameters for zoracle
 }
 
 // NewGenesisState creates a new genesis state.
