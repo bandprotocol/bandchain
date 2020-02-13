@@ -46,3 +46,10 @@ func TestDataSourceStoreKey(t *testing.T) {
 
 	require.Equal(t, expectKeyByte, DataSourceStoreKey(dataSourceID))
 }
+
+func TestOracleScriptStoreKey(t *testing.T) {
+	oracleScriptID := int64(123)
+	expectKeyByte, _ := hex.DecodeString("05000000000000007b")
+
+	require.Equal(t, expectKeyByte, OracleScriptStoreKey(oracleScriptID))
+}

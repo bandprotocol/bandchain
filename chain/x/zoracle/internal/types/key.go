@@ -23,6 +23,9 @@ var (
 	// DataSourceCountStoreKey is a key that keeps the current data source count state variable.
 	DataSourceCountStoreKey = append(GlobalStoreKeyPrefix, []byte("DataSourceCount")...)
 
+	// OracleScriptCountStoreKey is a key that keeps the current oracle script count state variable.
+	OracleScriptCountStoreKey = append(GlobalStoreKeyPrefix, []byte("OracleScriptCount")...)
+
 	// ========================================================================
 
 	// RequestStoreKeyPrefix is a prefix for request store
@@ -39,6 +42,9 @@ var (
 
 	// DataSourceStoreKeyPrefix is a prefix for data source store.
 	DataSourceStoreKeyPrefix = []byte{0x04}
+
+	// OracleScriptStoreKeyPrefix is a prefix for oracle script store.
+	OracleScriptStoreKeyPrefix = []byte{0x05}
 )
 
 // RequestStoreKey is a function to generate key for each request in store
@@ -72,6 +78,11 @@ func RawDataReportStoreKey(requestID, externalID int64, validatorAddress sdk.Val
 // DataSourceStoreKey is a function to generate key for each data source in store.
 func DataSourceStoreKey(dataSourceID int64) []byte {
 	return append(DataSourceStoreKeyPrefix, int64ToBytes(dataSourceID)...)
+}
+
+// OracleScriptStoreKey is a function to generate key for each oracle script in store.
+func OracleScriptStoreKey(oracleScriptID int64) []byte {
+	return append(OracleScriptStoreKeyPrefix, int64ToBytes(oracleScriptID)...)
 }
 
 // GetIteratorPrefix is a function to get specific prefix
