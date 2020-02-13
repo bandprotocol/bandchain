@@ -5,25 +5,30 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+func (k Keeper) setDataSource(ctx sdk.Context, id int64, dataSource types.DataSource) {
+	// TODO: check executable size.
+	store := ctx.KVStore(k.storeKey)
+	store.Set(types.DataSourceStoreKey(id), k.cdc.MustMarshalBinaryBare(dataSource))
+}
+
 // AddDataSource adds the given data source to the storage.
 func (k Keeper) AddDataSource(ctx sdk.Context, owner sdk.AccAddress, name string, fee sdk.Coins, executable []byte) sdk.Error {
 	newDataSourceID := k.GetNextDataSourceID(ctx)
 
-	// TODO: check executable size.
 	newDataSource := types.NewDataSource(owner, name, fee, executable)
-
-	store := ctx.KVStore(k.storeKey)
-	store.Set(types.DataSourceStoreKey(newDataSourceID), k.cdc.MustMarshalBinaryBare(newDataSource))
+	k.setDataSource(ctx, newDataSourceID, newDataSource)
 	return nil
 }
 
 // EditDataSource edits the given data source by given data source id to the storage.
 func (k Keeper) EditDataSource(ctx sdk.Context, dataSourceID int64, owner sdk.AccAddress, name string, fee sdk.Coins, executable []byte) sdk.Error {
-	// TODO: check executable size.
-	updatedDataSource := types.NewDataSource(owner, name, fee, executable)
+	if !k.CheckDataSourceExists(ctx, dataSourceID) {
+		// TODO: fix error later
+		return types.ErrRequestNotFound(types.DefaultCodespace)
+	}
 
-	store := ctx.KVStore(k.storeKey)
-	store.Set(types.DataSourceStoreKey(dataSourceID), k.cdc.MustMarshalBinaryBare(updatedDataSource))
+	updatedDataSource := types.NewDataSource(owner, name, fee, executable)
+	k.setDataSource(ctx, dataSourceID, updatedDataSource)
 	return nil
 }
 
