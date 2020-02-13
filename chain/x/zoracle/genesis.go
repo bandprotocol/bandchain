@@ -34,7 +34,7 @@ func ValidateGenesis(data GenesisState) error {
 	return nil
 }
 
-// DefaultGenesisState returns a default genesis state.
+// DefaultGenesisState returns the default genesis state.
 func DefaultGenesisState() GenesisState {
 	return GenesisState{
 		Params: DefaultParams(),
