@@ -77,9 +77,5 @@ func (env *ExecutionEnvironment) GetExternalData(
 	}
 	validatorAddress := env.request.RequestedValidators[validatorIndex]
 
-	report, err := env.keeper.GetRawDataReport(env.ctx, env.requestID, externalDataID, validatorAddress)
-	if err != nil {
-		return []byte{}, err
-	}
-	return report, nil
+	return env.keeper.GetRawDataReport(env.ctx, env.requestID, externalDataID, validatorAddress)
 }
