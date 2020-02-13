@@ -96,21 +96,51 @@ func (r *resolver) resolveReadCallData(vm *exec.VirtualMachine) int64 {
 func (r *resolver) resolveSaveReturnData(vm *exec.VirtualMachine) int64 {
 	dataOffset := int(GetLocalInt64(vm, 0))
 	dataLength := int(GetLocalInt64(vm, 1))
+	// TODO: Make sure we don't run out of memory from bad owasm code.
 	r.result = make([]byte, dataLength)
 	copy(r.result, vm.Memory[dataOffset:dataOffset+dataLength])
 	return 0
 }
 
 func (r *resolver) resolveRequestExternalData(vm *exec.VirtualMachine) int64 {
-	panic("resolveRequestExternalData: not implemented!")
+	dataSourceID := GetLocalInt64(vm, 0)
+	externalDataID := GetLocalInt64(vm, 1)
+	dataOffset := int(GetLocalInt64(vm, 2))
+	dataLength := int(GetLocalInt64(vm, 3))
+	// TODO: Make sure we don't run out of memory from bad owasm code.
+	data := make([]byte, dataLength)
+	copy(data, vm.Memory[dataOffset:dataOffset+dataLength])
+	err := r.env.RequestExternalData(dataSourceID, externalDataID, data)
+	if err != nil {
+		panic(err)
+	}
+	return 0
 }
 
 func (r *resolver) resolveGetExternalDataSize(vm *exec.VirtualMachine) int64 {
-	panic("resolveGetExternalDataSize: not implemented!")
+	dataSourceID := GetLocalInt64(vm, 0)
+	externalDataID := GetLocalInt64(vm, 1)
+	// TODO: ExternalData should be cached for both this function and the one below.
+	externalData, err := r.env.GetExternalData(dataSourceID, externalDataID)
+	if err != nil {
+		panic(err)
+	}
+	return int64(len(externalData))
 }
 
 func (r *resolver) resolveReadExternalData(vm *exec.VirtualMachine) int64 {
-	panic("resolveReadExternalData: not implemented!")
+	dataSourceID := GetLocalInt64(vm, 0)
+	externalDataID := GetLocalInt64(vm, 1)
+	resultOffset := int(GetLocalInt64(vm, 2))
+	seekOffset := int(GetLocalInt64(vm, 3))
+	resultSize := int(GetLocalInt64(vm, 4))
+	// TODO: ExternalData should be cached for both this function and the one above.
+	externalData, err := r.env.GetExternalData(dataSourceID, externalDataID)
+	if err != nil {
+		panic(err)
+	}
+	copy(vm.Memory[resultOffset:resultOffset+resultSize], externalData[seekOffset:seekOffset+resultSize])
+	return 0
 }
 
 func NewResolver(env ExecutionEnvironment, calldata []byte) *resolver {
