@@ -27,7 +27,7 @@ let make = () => {
              //  ("Validators", Route.HomePage),
              ("Blocks", BlockHomePage),
              ("Transactions", TxHomePage),
-             ("Request Scripts", ScriptHomePage),
+             ("Oracle Scripts", ScriptHomePage),
              //  ("Data Providers", HomePage),
              //  ("OWASM Studio", HomePage),
            ]
