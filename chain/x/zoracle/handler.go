@@ -153,8 +153,11 @@ func NewHandler(keeper Keeper) sdk.Handler {
 // 	return sdk.Result{Events: ctx.EventManager().Events()}
 // }
 
+// handleMsgCreateDataSource is a function to handle MsgCreateDataSource.
 func handleMsgCreateDataSource(ctx sdk.Context, keeper Keeper, msg MsgCreateDataSource) sdk.Result {
 	newDataSourceID := keeper.GetNextDataSourceID(ctx)
+
+	// TODO: check executable size.
 
 	newDataSource := types.NewDataSource(
 		msg.Owner,
@@ -163,27 +166,29 @@ func handleMsgCreateDataSource(ctx sdk.Context, keeper Keeper, msg MsgCreateData
 		msg.Executable,
 	)
 
-	// Save DataSource to state.
 	keeper.SetDataSource(ctx, newDataSourceID, newDataSource)
-	return sdk.Result{}
+	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
+// handleMsgEditDataSource is a function to handle MsgEditDataSource.
 func handleMsgEditDataSource(ctx sdk.Context, keeper Keeper, msg MsgEditDataSource) sdk.Result {
-	// Check DataSourceID is exist.
 	dataSource, err := keeper.GetDataSource(ctx, msg.DataSourceID)
 	if err != nil {
 		return err.Result()
 	}
 
-	// Update data source attribute.
+	if !dataSource.Owner.Equals(msg.Sender) {
+		// TODO: change it later.
+		return types.ErrInvalidOwner(types.DefaultCodespace).Result()
+	}
+
 	dataSource.Owner = msg.Owner
 	dataSource.Name = msg.Name
 	dataSource.Fee = msg.Fee
 	dataSource.Executable = msg.Executable
 
-	// Save updated data source to store.
 	keeper.SetDataSource(ctx, msg.DataSourceID, dataSource)
-	return sdk.Result{}
+	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
 func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {

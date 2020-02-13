@@ -516,7 +516,7 @@ func TestEditDataSourceSuccess(t *testing.T) {
 	newName := "data_source_2"
 	newFee := sdk.NewCoins(sdk.NewInt64Coin("uband", 99))
 	newExecutable := []byte("executable_2")
-	sender := sdk.AccAddress([]byte("sender"))
+	sender := sdk.AccAddress([]byte("owner"))
 
 	msg := types.NewMsgEditDataSource(1, newOwner, newName, newFee, newExecutable, sender)
 	got := handleMsgEditDataSource(ctx, keeper, msg)
@@ -528,4 +528,20 @@ func TestEditDataSourceSuccess(t *testing.T) {
 	require.Equal(t, newName, dataSource.Name)
 	require.Equal(t, newFee, dataSource.Fee)
 	require.Equal(t, newExecutable, dataSource.Executable)
+}
+
+func TestEditDataSourceByNotOwner(t *testing.T) {
+	ctx, keeper := keep.CreateTestInput(t, false)
+	mockDataSource(ctx, keeper)
+
+	newOwner := sdk.AccAddress([]byte("owner2"))
+	newName := "data_source_2"
+	newFee := sdk.NewCoins(sdk.NewInt64Coin("uband", 99))
+	newExecutable := []byte("executable_2")
+	sender := sdk.AccAddress([]byte("sender"))
+
+	msg := types.NewMsgEditDataSource(1, newOwner, newName, newFee, newExecutable, sender)
+	got := handleMsgEditDataSource(ctx, keeper, msg)
+	require.False(t, got.IsOK())
+	require.Equal(t, types.CodeInvalidOwner, got.Code)
 }
