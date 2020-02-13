@@ -11,15 +11,15 @@ const (
 	DefaultParamspace = ModuleName
 
 	// The maximum size of data source executable size, in bytes.
-	// Default value is set to 10 kb.
+	// Default value is set to 10 kB.
 	DefaultMaxDataSourceExecutableSize = int64(10 * 1024)
 
 	// The maximum size of Owasm code, in bytes.
-	// Default value is set to 500 kb.
+	// Default value is set to 500 kB.
 	DefaultMaxOracleScriptCodeSize = int64(500 * 1024)
 
 	// The maximum size of calldata when invoking for oracle scripts or data sources.
-	// Default value is set 1 kb.
+	// Default value is set 1 kB.
 	DefaultMaxCalldataSize = int64(1 * 1024)
 
 	// The maximum number of data sources a request can make.
@@ -27,7 +27,7 @@ const (
 	DefaultMaxDataSourceCountPerRequest = int64(16)
 
 	// The maximum size of raw data report per data source.
-	// Default value is set to 1 kb.
+	// Default value is set to 1 kB.
 	DefaultMaxRawDataReportSize = int64(1 * 1024)
 )
 
@@ -78,7 +78,7 @@ func (p Params) String() string {
 		p.MaxDataSourceCountPerRequest, p.MaxRawDataReportSize)
 }
 
-// ParamSetPairs - Implements params.ParamSet.
+// ParamSetPairs implements the params.ParamSet interface for Params.
 func (p *Params) ParamSetPairs() params.ParamSetPairs {
 	return params.ParamSetPairs{
 		{Key: KeyMaxDataSourceExecutableSize, Value: &p.MaxDataSourceExecutableSize},
@@ -89,7 +89,7 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 	}
 }
 
-// DefaultParams defines the parameters for this module.
+// Defines the default parameters.
 func DefaultParams() Params {
 	return NewParams(
 		DefaultMaxDataSourceExecutableSize,
