@@ -16,6 +16,7 @@ const (
 	CodeOutOfReportPeriod  sdk.CodeType = 106
 	CodeDuplicateValidator sdk.CodeType = 107
 	CodeDuplicateRequest   sdk.CodeType = 108
+	CodeReportNotFound     sdk.CodeType = 109
 
 	WasmError sdk.CodeType = 105
 )
@@ -39,7 +40,7 @@ func ErrInvalidValidator(codespace sdk.CodespaceType) sdk.Error {
 }
 
 func ErrReportNotFound(codespace sdk.CodespaceType) sdk.Error {
-	return sdk.NewError(codespace, CodeRequestNotFound, "report not found")
+	return sdk.NewError(codespace, CodeReportNotFound, "report not found")
 }
 
 func ErrCodeAlreadyExisted(codespace sdk.CodespaceType) sdk.Error {

@@ -37,8 +37,8 @@ var (
 	// CodeHashKeyPrefix is a prefix for code store (will be removed later)
 	CodeHashKeyPrefix = []byte{0xaa}
 
-	// ReportKeyPrefix is a prefix for report store
-	ReportKeyPrefix = []byte{0x03}
+	// RawDataReportStoreKeyPrefix is a prefix for report store
+	RawDataReportStoreKeyPrefix = []byte{0x03}
 
 	// DataSourceStoreKeyPrefix is a prefix for data source store.
 	DataSourceStoreKeyPrefix = []byte{0x04}
@@ -70,10 +70,10 @@ func CodeHashStoreKey(codeHash []byte) []byte {
 	return append(CodeHashKeyPrefix, codeHash...)
 }
 
-// ReportStoreKey is a function to generate key for each report from
-// validator calculate from validator address and request id
-func ReportStoreKey(requestID int64, validatorAddress sdk.ValAddress) []byte {
-	buf := append(ReportKeyPrefix, int64ToBytes(requestID)...)
+// RawDataReportStoreKey is a function to generate key for each raw data report in store.
+func RawDataReportStoreKey(requestID, externalID int64, validatorAddress sdk.ValAddress) []byte {
+	buf := append(RawDataReportStoreKeyPrefix, int64ToBytes(requestID)...)
+	buf = append(buf, int64ToBytes(externalID)...)
 	return append(buf, validatorAddress.Bytes()...)
 }
 
