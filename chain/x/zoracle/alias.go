@@ -23,7 +23,6 @@ const (
 )
 
 var (
-<<<<<<< HEAD
 	NewKeeper            = keeper.NewKeeper
 	NewQuerier           = keeper.NewQuerier
 	ModuleCdc            = types.ModuleCdc
@@ -34,22 +33,27 @@ var (
 	ResultStoreKey       = types.ResultStoreKey
 	DataSourceStoreKey   = types.DataSourceStoreKey
 	OracleScriptStoreKey = types.OracleScriptStoreKey
-=======
-	NewKeeper         = keeper.NewKeeper
-	NewQuerier        = keeper.NewQuerier
-	ModuleCdc         = types.ModuleCdc
-	RegisterCodec     = types.RegisterCodec
-	NewMsgRequestData = types.NewMsgRequestData
-	NewMsgReportData  = types.NewMsgReportData
 
-	RequestStoreKey    = types.RequestStoreKey
-	ResultStoreKey     = types.ResultStoreKey
-	DataSourceStoreKey = types.DataSourceStoreKey
->>>>>>> reorder
-
-	ParamKeyTable = types.ParamKeyTable
 	NewParams     = types.NewParams
 	DefaultParams = types.DefaultParams
+
+	KeyMaxDataSourceExecutableSize  = types.KeyMaxDataSourceExecutableSize
+	KeyMaxOracleScriptCodeSize      = types.KeyMaxOracleScriptCodeSize
+	KeyMaxCalldataSize              = types.KeyMaxCalldataSize
+	KeyMaxDataSourceCountPerRequest = types.KeyMaxDataSourceCountPerRequest
+	KeyMaxRawDataReportSize         = types.KeyMaxRawDataReportSize
+
+	ParamKeyTable = keeper.ParamKeyTable
+	// MaxDataSourceExecutableSize     = keeper.MaxDataSourceExecutableSize
+	// SetMaxDataSourceExecutableSize  = keeper.SetMaxDataSourceExecutableSize
+	// MaxOracleScriptCodeSize         = keeper.MaxOracleScriptCodeSize
+	// SetMaxOracleScriptCodeSize      = keeper.SetMaxOracleScriptCodeSize
+	// MaxCalldataSize                 = keeper.MaxCalldataSize
+	// SetMaxCalldataSize              = keeper.SetMaxCalldataSize
+	// MaxDataSourceCountPerRequest    = keeper.MaxDataSourceCountPerRequest
+	// SetMaxDataSourceCountPerRequest = keeper.SetMaxDataSourceCountPerRequest
+	// MaxRawDataReportSize            = keeper.MaxRawDataReportSize
+	// SetMaxRawDataReportSize         = keeper.SetMaxRawDataReportSize
 )
 
 type (
