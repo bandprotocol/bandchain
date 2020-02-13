@@ -15,6 +15,7 @@ const (
 	CodeInvalidOwner       sdk.CodeType = 105
 	CodeOutOfReportPeriod  sdk.CodeType = 106
 	CodeDuplicateValidator sdk.CodeType = 107
+	CodeDuplicateRequest   sdk.CodeType = 108
 
 	WasmError sdk.CodeType = 105
 )
@@ -55,4 +56,8 @@ func ErrOutOfReportPeriod(codespace sdk.CodespaceType) sdk.Error {
 
 func ErrDuplicateValidator(codespace sdk.CodespaceType) sdk.Error {
 	return sdk.NewError(codespace, CodeDuplicateValidator, "duplicate validator")
+}
+
+func ErrDuplicateRequest(codespace sdk.CodespaceType) sdk.Error {
+	return sdk.NewError(codespace, CodeDuplicateRequest, "duplicate request")
 }

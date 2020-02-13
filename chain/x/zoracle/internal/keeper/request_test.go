@@ -34,40 +34,40 @@ func TestGetterSetterRequest(t *testing.T) {
 	require.Equal(t, request, actualRequest)
 }
 
-// TestAddSubmitValidator tests keeper can add valid validator to request
-func TestAddSubmitValidator(t *testing.T) {
+// TestAddNewReceiveValidator tests keeper can add valid validator to request
+func TestAddNewReceiveValidator(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 	request := newDefaultRequest()
 
 	keeper.SetRequest(ctx, 1, request)
 
-	err := keeper.AddSubmitValidator(ctx, 1, sdk.ValAddress([]byte("validator1")))
+	err := keeper.AddNewReceiveValidator(ctx, 1, sdk.ValAddress([]byte("validator1")))
 	require.Nil(t, err)
 
 	actualRequest, err := keeper.GetRequest(ctx, 1)
-	request.SubmittedValidatorList = []sdk.ValAddress{sdk.ValAddress([]byte("validator1"))}
+	request.ReceivedValidators = []sdk.ValAddress{sdk.ValAddress([]byte("validator1"))}
 	require.Nil(t, err)
 	require.Equal(t, request, actualRequest)
 }
 
-// TestAddSubmitValidatorOnInvalidRequest tests keeper must return if add on invalid request
-func TestAddSubmitValidatorOnInvalidRequest(t *testing.T) {
+// TestAddNewReceiveValidatorOnInvalidRequest tests keeper must return if add on invalid request
+func TestAddNewReceiveValidatorOnInvalidRequest(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 	request := newDefaultRequest()
 
 	keeper.SetRequest(ctx, 1, request)
-	err := keeper.AddSubmitValidator(ctx, 2, sdk.ValAddress([]byte("validator1")))
+	err := keeper.AddNewReceiveValidator(ctx, 2, sdk.ValAddress([]byte("validator1")))
 	require.Equal(t, types.CodeRequestNotFound, err.Code())
 }
 
-// TestAddInvalidSubmitValidator tests keeper return error if try to add new validator that doesn't contain in list.
-func TestAddInvalidSubmitValidator(t *testing.T) {
+// TestAddInvalidValidator tests keeper return error if try to add new validator that doesn't contain in list.
+func TestAddInvalidValidator(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 	request := newDefaultRequest()
 
 	keeper.SetRequest(ctx, 1, request)
 
-	err := keeper.AddSubmitValidator(ctx, 1, sdk.ValAddress([]byte("validator3")))
+	err := keeper.AddNewReceiveValidator(ctx, 1, sdk.ValAddress([]byte("validator3")))
 	require.Equal(t, types.CodeInvalidValidator, err.Code())
 
 	actualRequest, err := keeper.GetRequest(ctx, 1)
@@ -75,23 +75,23 @@ func TestAddInvalidSubmitValidator(t *testing.T) {
 	require.Equal(t, request, actualRequest)
 }
 
-// TestAddDuplicateSubmitValidator tests keeper return error if try to add new validator that already in list.
-func TestAddDuplicateSubmitValidator(t *testing.T) {
+// TestAddDuplicateValidator tests keeper return error if try to add new validator that already in list.
+func TestAddDuplicateValidator(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 	request := newDefaultRequest()
 
 	keeper.SetRequest(ctx, 1, request)
 	// First add must return nil
-	err := keeper.AddSubmitValidator(ctx, 1, sdk.ValAddress([]byte("validator1")))
+	err := keeper.AddNewReceiveValidator(ctx, 1, sdk.ValAddress([]byte("validator1")))
 	require.Nil(t, err)
 
 	// Second add must return duplicate error
-	err = keeper.AddSubmitValidator(ctx, 1, sdk.ValAddress([]byte("validator1")))
+	err = keeper.AddNewReceiveValidator(ctx, 1, sdk.ValAddress([]byte("validator1")))
 	require.Equal(t, types.CodeDuplicateValidator, err.Code())
 
 	// Check final output
 	actualRequest, err := keeper.GetRequest(ctx, 1)
-	request.SubmittedValidatorList = []sdk.ValAddress{sdk.ValAddress([]byte("validator1"))}
+	request.ReceivedValidators = []sdk.ValAddress{sdk.ValAddress([]byte("validator1"))}
 	require.Nil(t, err)
 	require.Equal(t, request, actualRequest)
 }
@@ -123,31 +123,39 @@ func TestSetResolvedOnInvalidRequest(t *testing.T) {
 }
 
 // Can get/set unresolved request correctly and set empty case
-func TestGetSetUnresolvedRequests(t *testing.T) {
+func TestGetSetPendingRequests(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
-	reqIDs := keeper.GetUnresolvedRequests(ctx)
+	reqIDs := keeper.GetPendingRequests(ctx)
 	require.Equal(t, []int64{}, reqIDs)
 
-	keeper.SetUnresolvedRequests(ctx, []int64{1, 2, 3})
+	keeper.SetPendingRequests(ctx, []int64{1, 2, 3})
 
-	reqIDs = keeper.GetUnresolvedRequests(ctx)
+	reqIDs = keeper.GetPendingRequests(ctx)
 	require.Equal(t, []int64{1, 2, 3}, reqIDs)
 
-	keeper.SetUnresolvedRequests(ctx, []int64{})
-	reqIDs = keeper.GetUnresolvedRequests(ctx)
+	keeper.SetPendingRequests(ctx, []int64{})
+	reqIDs = keeper.GetPendingRequests(ctx)
 	require.Equal(t, []int64{}, reqIDs)
 }
 
-// Can set pending request will set only unique request IDs
-func TestGetSetUnresolvedRequestsUnique(t *testing.T) {
+// Can add new pending request if request doesn't exist in list,
+// and return error if request has already existed in list.
+func TestAddPendingRequest(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
-	reqIDs := keeper.GetUnresolvedRequests(ctx)
+	reqIDs := keeper.GetPendingRequests(ctx)
 	require.Equal(t, []int64{}, reqIDs)
 
-	keeper.SetUnresolvedRequests(ctx, []int64{3, 2, 3, 1, 2, 1, 3, 2, 1})
-	reqIDs = keeper.GetUnresolvedRequests(ctx)
-	// no guarantee of an order
-	require.Equal(t, []int64{3, 2, 1}, reqIDs)
+	keeper.SetPendingRequests(ctx, []int64{1, 2})
+	err := keeper.AddPendingRequest(ctx, 3)
+	require.Nil(t, err)
+	reqIDs = keeper.GetPendingRequests(ctx)
+	require.Equal(t, []int64{1, 2, 3}, reqIDs)
+
+	err = keeper.AddPendingRequest(ctx, 3)
+	require.Equal(t, types.CodeDuplicateRequest, err.Code())
+	reqIDs = keeper.GetPendingRequests(ctx)
+	require.Equal(t, []int64{1, 2, 3}, reqIDs)
+
 }

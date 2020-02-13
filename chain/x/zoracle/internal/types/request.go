@@ -8,9 +8,9 @@ import (
 type Request struct {
 	OracleScriptID           int64            `json:"oracleScriptID"`
 	Calldata                 []byte           `json:"calldata"`
-	Validators               []sdk.ValAddress `json:"validators"`
+	RequestedValidators      []sdk.ValAddress `json:"requestedValidators"`
 	SufficientValidatorCount int64            `json:"sufficientValidatorCount"`
-	SubmittedValidatorList   []sdk.ValAddress `json:"submittedValidatorList"`
+	ReceivedValidators       []sdk.ValAddress `json:"receivedValidators"`
 	RequestHeight            int64            `json:"requestHeight"`
 	RequestTime              int64            `json:"requestTime"`
 	ExpirationHeight         int64            `json:"expirationHeight"`
@@ -22,7 +22,7 @@ type Request struct {
 func NewRequest(
 	oracleScriptID int64,
 	calldata []byte,
-	validators []sdk.ValAddress,
+	requestedValidators []sdk.ValAddress,
 	sufficientValidatorCount int64,
 	requestHeight int64,
 	requestTime int64,
@@ -31,7 +31,7 @@ func NewRequest(
 	return Request{
 		OracleScriptID:           oracleScriptID,
 		Calldata:                 calldata,
-		Validators:               validators,
+		RequestedValidators:      requestedValidators,
 		SufficientValidatorCount: sufficientValidatorCount,
 		RequestHeight:            requestHeight,
 		RequestTime:              requestTime,

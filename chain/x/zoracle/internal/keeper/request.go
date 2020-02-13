@@ -24,20 +24,20 @@ func (k Keeper) GetRequest(ctx sdk.Context, id int64) (types.Request, sdk.Error)
 	return request, nil
 }
 
-// AddSubmitValidator checks that new validator is a valid validator and not in submitted list yet then add new
+// AddNewReceiveValidator checks that new validator is a valid validator and not in received list yet then add new
 // validator to list.
-func (k Keeper) AddSubmitValidator(ctx sdk.Context, id int64, validator sdk.ValAddress) sdk.Error {
+func (k Keeper) AddNewReceiveValidator(ctx sdk.Context, id int64, validator sdk.ValAddress) sdk.Error {
 	request, err := k.GetRequest(ctx, id)
 	if err != nil {
 		return err
 	}
-	for _, submittedValidator := range request.SubmittedValidatorList {
+	for _, submittedValidator := range request.ReceivedValidators {
 		if validator.Equals(submittedValidator) {
 			return types.ErrDuplicateValidator(types.DefaultCodespace)
 		}
 	}
 	found := false
-	for _, validValidator := range request.Validators {
+	for _, validValidator := range request.RequestedValidators {
 		if validator.Equals(validValidator) {
 			found = true
 			break
@@ -47,7 +47,7 @@ func (k Keeper) AddSubmitValidator(ctx sdk.Context, id int64, validator sdk.ValA
 	if !found {
 		return types.ErrInvalidValidator(types.DefaultCodespace)
 	}
-	request.SubmittedValidatorList = append(request.SubmittedValidatorList, validator)
+	request.ReceivedValidators = append(request.ReceivedValidators, validator)
 	k.SetRequest(ctx, id, request)
 	return nil
 }
@@ -70,32 +70,31 @@ func (k Keeper) CheckRequestExists(ctx sdk.Context, id int64) bool {
 	return store.Has(types.RequestStoreKey(id))
 }
 
-// uniqueReqIDs is used to create array with all elements being unique (deduplicated).
-func uniqueReqIDs(intSlice []int64) []int64 {
-	keys := make(map[int64]bool)
-	list := []int64{}
-	for _, entry := range intSlice {
-		if _, value := keys[entry]; !value {
-			keys[entry] = true
-			list = append(list, entry)
+// AddPendingRequest checks and append new request id to list if id already existed in list, it will return error.
+func (k Keeper) AddPendingRequest(ctx sdk.Context, requestID int64) sdk.Error {
+	pendingList := k.GetPendingRequests(ctx)
+	for _, entry := range pendingList {
+		if requestID == entry {
+			return types.ErrDuplicateRequest(types.DefaultCodespace)
 		}
 	}
-	return list
+	pendingList = append(pendingList, requestID)
+	k.SetPendingRequests(ctx, pendingList)
+	return nil
 }
 
-// SetUnresolvedRequests saves the list of request in pending period.
-func (k Keeper) SetUnresolvedRequests(ctx sdk.Context, reqIDs []int64) {
+// SetPendingRequests saves the list of pending request that will be resolved at end block.
+func (k Keeper) SetPendingRequests(ctx sdk.Context, reqIDs []int64) {
 	store := ctx.KVStore(k.storeKey)
-	urIDs := uniqueReqIDs(reqIDs)
-	encoded := k.cdc.MustMarshalBinaryBare(urIDs)
+	encoded := k.cdc.MustMarshalBinaryBare(reqIDs)
 	if encoded == nil {
 		encoded = []byte{}
 	}
 	store.Set(types.UnresolvedRequestListStoreKey, encoded)
 }
 
-// GetUnresolvedRequests returns the list of request IDs in pending period.
-func (k Keeper) GetUnresolvedRequests(ctx sdk.Context) []int64 {
+// GetPendingRequests returns the list of pending request.
+func (k Keeper) GetPendingRequests(ctx sdk.Context) []int64 {
 	store := ctx.KVStore(k.storeKey)
 	reqIDsBytes := store.Get(types.UnresolvedRequestListStoreKey)
 

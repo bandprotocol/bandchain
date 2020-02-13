@@ -98,9 +98,9 @@ package keeper
 // 	keeper.SetRequest(ctx, 2, request)
 
 // 	// set pending
-// 	pendingRequests := keeper.GetUnresolvedRequests(ctx)
+// 	pendingRequests := keeper.GetPendingRequests(ctx)
 // 	pendingRequests = append(pendingRequests, 2)
-// 	keeper.SetUnresolvedRequests(ctx, pendingRequests)
+// 	keeper.SetPendingRequests(ctx, pendingRequests)
 
 // 	// Read the state agian. The state should contain 1 pending request. That is reqID = 2.
 // 	acsBytes, err = querier(

@@ -58,7 +58,7 @@ func setupTestValidator(ctx sdk.Context, keeper Keeper, pk string) sdk.ValAddres
 // 	require.Equal(t, uint64(ctx.BlockHeight()+5), request.ReportEndAt)
 
 // 	// Check pending request list
-// 	require.Equal(t, []uint64{1}, keeper.GetUnresolvedRequests(ctx))
+// 	require.Equal(t, []uint64{1}, keeper.GetPendingRequests(ctx))
 
 // 	// check event
 // 	require.Equal(t, types.EventTypeRequest, ctx.EventManager().Events()[0].Type)
@@ -120,9 +120,9 @@ func setupTestValidator(ctx sdk.Context, keeper Keeper, pk string) sdk.ValAddres
 // 	keeper.SetRequest(ctx, 2, request)
 
 // 	// set pending
-// 	pendingRequests := keeper.GetUnresolvedRequests(ctx)
+// 	pendingRequests := keeper.GetPendingRequests(ctx)
 // 	pendingRequests = append(pendingRequests, 2)
-// 	keeper.SetUnresolvedRequests(ctx, pendingRequests)
+// 	keeper.SetPendingRequests(ctx, pendingRequests)
 
 // 	// set blockheight
 // 	ctx = ctx.WithBlockHeight(3)
@@ -149,9 +149,9 @@ func setupTestValidator(ctx sdk.Context, keeper Keeper, pk string) sdk.ValAddres
 // 	keeper.SetRequest(ctx, 1, request)
 
 // 	// set pending
-// 	pendingRequests := keeper.GetUnresolvedRequests(ctx)
+// 	pendingRequests := keeper.GetPendingRequests(ctx)
 // 	pendingRequests = append(pendingRequests, 1)
-// 	keeper.SetUnresolvedRequests(ctx, pendingRequests)
+// 	keeper.SetPendingRequests(ctx, pendingRequests)
 
 // 	msg := types.NewMsgReport(1, []byte("data"), validatorAddress)
 // 	got := handleMsgReport(ctx, keeper, msg)
@@ -174,9 +174,9 @@ func setupTestValidator(ctx sdk.Context, keeper Keeper, pk string) sdk.ValAddres
 // 	keeper.SetRequest(ctx, 2, request)
 
 // 	// set pending
-// 	pendingRequests := keeper.GetUnresolvedRequests(ctx)
+// 	pendingRequests := keeper.GetPendingRequests(ctx)
 // 	pendingRequests = append(pendingRequests, 2)
-// 	keeper.SetUnresolvedRequests(ctx, pendingRequests)
+// 	keeper.SetPendingRequests(ctx, pendingRequests)
 
 // 	// set blockheight
 // 	ctx = ctx.WithBlockHeight(10)
@@ -307,9 +307,9 @@ func TestDeleteCodeInvalidOwner(t *testing.T) {
 // 	keeper.SetRequest(ctx, 1, request)
 
 // 	// set pending
-// 	pendingRequests := keeper.GetUnresolvedRequests(ctx)
+// 	pendingRequests := keeper.GetPendingRequests(ctx)
 // 	pendingRequests = append(pendingRequests, 1)
-// 	keeper.SetUnresolvedRequests(ctx, pendingRequests)
+// 	keeper.SetPendingRequests(ctx, pendingRequests)
 
 // 	data1, _ := hex.DecodeString("5b227b5c22626974636f696e5c223a7b5c227573645c223a373139342e32357d7d222c227b5c225553445c223a373231342e31327d225d")
 // 	data2, _ := hex.DecodeString("5b227b5c22626974636f696e5c223a7b5c227573645c223a373139312e32357d7d222c227b5c225553445c223a373230392e31357d225d")
@@ -326,7 +326,7 @@ func TestDeleteCodeInvalidOwner(t *testing.T) {
 // 	// Result must not found
 // 	require.NotNil(t, err)
 
-// 	pendingRequests = keeper.GetUnresolvedRequests(ctx)
+// 	pendingRequests = keeper.GetPendingRequests(ctx)
 // 	require.Equal(t, []uint64{1}, pendingRequests)
 
 // 	// blockheight update to 4
@@ -344,7 +344,7 @@ func TestDeleteCodeInvalidOwner(t *testing.T) {
 // 	require.Nil(t, err)
 // 	require.Equal(t, resultAfter, result)
 
-// 	pendingRequests = keeper.GetUnresolvedRequests(ctx)
+// 	pendingRequests = keeper.GetPendingRequests(ctx)
 // 	require.Equal(t, []uint64{}, pendingRequests)
 // }
 
@@ -378,9 +378,9 @@ func TestDeleteCodeInvalidOwner(t *testing.T) {
 // 	keeper.SetRequest(ctx, 1, request)
 
 // 	// set pending
-// 	pendingRequests := keeper.GetUnresolvedRequests(ctx)
+// 	pendingRequests := keeper.GetPendingRequests(ctx)
 // 	pendingRequests = append(pendingRequests, 1)
-// 	keeper.SetUnresolvedRequests(ctx, pendingRequests)
+// 	keeper.SetPendingRequests(ctx, pendingRequests)
 
 // 	data1, _ := hex.DecodeString("5b227b5c22626974636f696e5c223a7b5c227573645c223a373139342e32357d7d222c227b5c225553445c223a373231342e31327d225d")
 // 	data2, _ := hex.DecodeString("5b227b5c22626974636f696e5c223a7b5c227573645c223a373139312e32357d7d222c227b5c225553445c223a373230392e31357d225d")
@@ -397,7 +397,7 @@ func TestDeleteCodeInvalidOwner(t *testing.T) {
 // 	// Result must not found
 // 	require.NotNil(t, err)
 
-// 	pendingRequests = keeper.GetUnresolvedRequests(ctx)
+// 	pendingRequests = keeper.GetPendingRequests(ctx)
 // 	require.Equal(t, []uint64{1}, pendingRequests)
 
 // 	keeper.SetReport(ctx, 1, validatorAddress2, data2)
@@ -415,7 +415,7 @@ func TestDeleteCodeInvalidOwner(t *testing.T) {
 // 	require.Nil(t, err)
 // 	require.Equal(t, resultAfter, result)
 
-// 	pendingRequests = keeper.GetUnresolvedRequests(ctx)
+// 	pendingRequests = keeper.GetPendingRequests(ctx)
 // 	require.Equal(t, []uint64{}, pendingRequests)
 // }
 
@@ -449,9 +449,9 @@ func TestDeleteCodeInvalidOwner(t *testing.T) {
 // 	keeper.SetRequest(ctx, 1, request)
 
 // 	// set pending
-// 	pendingRequests := keeper.GetUnresolvedRequests(ctx)
+// 	pendingRequests := keeper.GetPendingRequests(ctx)
 // 	pendingRequests = append(pendingRequests, 1)
-// 	keeper.SetUnresolvedRequests(ctx, pendingRequests)
+// 	keeper.SetPendingRequests(ctx, pendingRequests)
 
 // 	data1, _ := hex.DecodeString("5b227b5c22626974636f696e5c223a7b5c227573645c223a373139342e32357d7d222c227b5c225553445c223a373231342e31327d225d")
 
@@ -467,7 +467,7 @@ func TestDeleteCodeInvalidOwner(t *testing.T) {
 // 	// Result must not found
 // 	require.NotNil(t, err)
 
-// 	pendingRequests = keeper.GetUnresolvedRequests(ctx)
+// 	pendingRequests = keeper.GetPendingRequests(ctx)
 // 	require.Equal(t, []uint64{1}, pendingRequests)
 
 // 	// blockheight update to 300
@@ -484,6 +484,6 @@ func TestDeleteCodeInvalidOwner(t *testing.T) {
 // 	require.Nil(t, err)
 // 	require.Equal(t, resultAfter, result)
 
-// 	pendingRequests = keeper.GetUnresolvedRequests(ctx)
+// 	pendingRequests = keeper.GetPendingRequests(ctx)
 // 	require.Equal(t, []uint64{}, pendingRequests)
 // }

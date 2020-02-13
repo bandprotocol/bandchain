@@ -51,9 +51,9 @@ func NewHandler(keeper Keeper) sdk.Handler {
 // 	// Save Request to state
 // 	keeper.SetRequest(ctx, newRequestID, newRequest)
 // 	// Add new request to pending bucket
-// 	pendingRequests := keeper.GetUnresolvedRequests(ctx)
+// 	pendingRequests := keeper.GetPendingRequests(ctx)
 // 	pendingRequests = append(pendingRequests, newRequestID)
-// 	keeper.SetUnresolvedRequests(ctx, pendingRequests)
+// 	keeper.SetPendingRequests(ctx, pendingRequests)
 // 	// Emit request event
 // 	ctx.EventManager().EmitEvents(sdk.Events{
 // 		sdk.NewEvent(
@@ -151,7 +151,7 @@ func handleMsgDeleteCode(ctx sdk.Context, keeper Keeper, msg MsgDeleteCode) sdk.
 }
 
 func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
-	// 	reqIDs := keeper.GetUnresolvedRequests(ctx)
+	// 	reqIDs := keeper.GetPendingRequests(ctx)
 	// 	remainingReqIDs := reqIDs
 
 	// 	for _, reqID := range reqIDs {
@@ -190,7 +190,7 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 	// 		remainingReqIDs = remove(remainingReqIDs, reqID)
 	// 	}
 
-	// 	keeper.SetUnresolvedRequests(ctx, remainingReqIDs)
+	// 	keeper.SetPendingRequests(ctx, remainingReqIDs)
 
 	// TODO: Emit event
 	return sdk.Result{Events: ctx.EventManager().Events()}
