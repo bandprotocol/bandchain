@@ -26,7 +26,7 @@
 
 - For an example use case of Bridge contract on Thaichain please see [this](https://exp.tch.in.th/addr/0x86D84bB33ccC482159f46f21993E2d08e511F95E?addr_tab=contract_source)
 
-### [Fantom](https://thaichain.io/)
+### [Fantom](https://fantom.foundation/)
 
 - The reason why we support Fantom is because Fantom blockchain has an advanced, fast, and secure consensus for distributed networks.
 
