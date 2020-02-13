@@ -11,24 +11,24 @@ const (
 	DefaultParamspace = ModuleName
 
 	// the maximum size of data source executable size, in bytes.
-	// default value is set to 10000 bytes or 10 kb
-	DefaultMaxDataSourceExecutableSize = int64(10000)
+	// default value is set to 10 kb
+	DefaultMaxDataSourceExecutableSize = int64(10 * 1024)
 
 	// the maximum size of Owasm code, in bytes.
-	// default value is set to 500000 bytes or 500 kb
-	DefaultMaxOracleScriptCodeSize = int64(500000)
+	// default value is set to 500 kb
+	DefaultMaxOracleScriptCodeSize = int64(500 * 1024)
 
 	// the maximum size of calldata when invoking for oracle scripts or data sources.
-	// default value is set to 1000 bytes or 1 kb
-	DefaultMaxCalldataSize = int64(1000)
+	// default value is set 1 kb
+	DefaultMaxCalldataSize = int64(1 * 1024)
 
 	// the maximum number of data sources a request can make.
 	// default value is set to 16.
 	DefaultMaxDataSourceCountPerRequest = int64(16)
 
 	// the maximum size of raw data report per data source.
-	// default value is set to 1000 bytes or 1 kb
-	DefaultMaxRawDataReportSize = int64(1000)
+	// default value is set to 1 kb
+	DefaultMaxRawDataReportSize = int64(1 * 1024)
 )
 
 // Parameter store keys
@@ -47,11 +47,6 @@ type Params struct {
 	MaxCalldataSize              int64 `json:"max_calldata_size" yaml:"max_calldata_size"`
 	MaxDataSourceCountPerRequest int64 `json:"max_data_source_count_per_request" yaml:"max_data_source_count_per_request"`
 	MaxRawDataReportSize         int64 `json:"max_raw_data_report_size" yaml:"max_raw_data_report_size"`
-}
-
-// ParamKeyTable for slashing module
-func ParamKeyTable() params.KeyTable {
-	return params.NewKeyTable().RegisterParamSet(&Params{})
 }
 
 // NewParams creates a new Params object
@@ -97,7 +92,7 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 // DefaultParams defines the parameters for this module
 func DefaultParams() Params {
 	return NewParams(
-		DefaultMaxDataSourceCountPerRequest,
+		DefaultMaxDataSourceExecutableSize,
 		DefaultMaxOracleScriptCodeSize,
 		DefaultMaxCalldataSize,
 		DefaultMaxDataSourceCountPerRequest,
