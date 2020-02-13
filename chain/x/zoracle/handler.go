@@ -174,7 +174,7 @@ func handleMsgEditDataSource(ctx sdk.Context, keeper Keeper, msg MsgEditDataSour
 		return types.ErrInvalidOwner(types.DefaultCodespace).Result()
 	}
 
-	err = keeper.EditDataSource(ctx, msg.Owner, msg.DataSourceID, msg.Name, msg.Fee, msg.Executable)
+	err = keeper.EditDataSource(ctx, msg.DataSourceID, msg.Owner, msg.Name, msg.Fee, msg.Executable)
 	if err != nil {
 		return err.Result()
 	}
