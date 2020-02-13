@@ -18,7 +18,7 @@ func (k Keeper) AddDataSource(ctx sdk.Context, owner sdk.AccAddress, name string
 }
 
 // EditDataSource edits the given data source by given data source id to the storage.
-func (k Keeper) EditDataSource(ctx sdk.Context, owner sdk.AccAddress, dataSourceID int64, name string, fee sdk.Coins, executable []byte) sdk.Error {
+func (k Keeper) EditDataSource(ctx sdk.Context, dataSourceID int64, owner sdk.AccAddress, name string, fee sdk.Coins, executable []byte) sdk.Error {
 	// TODO: check executable size.
 	updatedDataSource := types.NewDataSource(owner, name, fee, executable)
 
