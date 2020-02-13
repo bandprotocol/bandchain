@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/params"
 )
 
-// Default parameter namespace
+// Default parameter namespace.
 const (
 	DefaultParamspace = ModuleName
 
@@ -19,7 +19,7 @@ const (
 	DefaultMaxOracleScriptCodeSize = int64(500 * 1024)
 
 	// The maximum size of calldata when invoking for oracle scripts or data sources.
-	// Default value is set 1 kb
+	// Default value is set 1 kb.
 	DefaultMaxCalldataSize = int64(1 * 1024)
 
 	// The maximum number of data sources a request can make.
