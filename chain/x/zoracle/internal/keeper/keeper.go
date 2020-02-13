@@ -28,7 +28,7 @@ func NewKeeper(cdc *codec.Codec, key sdk.StoreKey, coinKeeper bank.Keeper, staki
 	}
 }
 
-// ParamKeyTable for zoracle module
+// ParamKeyTable for zoracle module.
 func ParamKeyTable() params.KeyTable {
 	return params.NewKeyTable().RegisterParamSet(&types.Params{})
 }
