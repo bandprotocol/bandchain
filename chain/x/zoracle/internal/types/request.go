@@ -41,14 +41,14 @@ func NewRequest(
 
 // RawDataRequest is a data structure that store what datasource and calldata will be used in request.
 type RawDataRequest struct {
-	ScriptID int64  `json:"scriptID"`
-	Calldata []byte `json:"calldata"`
+	DataSourceID int64  `json:"dataSourceID"`
+	Calldata     []byte `json:"calldata"`
 }
 
 // NewRawDataRequest creates a new RawDataRequest instance
-func NewRawDataRequest(scriptID int64, calldata []byte) RawDataRequest {
+func NewRawDataRequest(dataSourceID int64, calldata []byte) RawDataRequest {
 	return RawDataRequest{
-		ScriptID: scriptID,
-		Calldata: calldata,
+		DataSourceID: dataSourceID,
+		Calldata:     calldata,
 	}
 }

@@ -6,11 +6,11 @@ import (
 )
 
 // SetRawDataRequest is a function to save raw data request detail to the given request id and external id.
-func (k Keeper) SetRawDataRequest(ctx sdk.Context, requestID, externalID, scriptID int64, calldata []byte) {
+func (k Keeper) SetRawDataRequest(ctx sdk.Context, requestID, externalID, dataSourceID int64, calldata []byte) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(
 		types.RawDataRequestStoreKey(requestID, externalID),
-		k.cdc.MustMarshalBinaryBare(types.NewRawDataRequest(scriptID, calldata)),
+		k.cdc.MustMarshalBinaryBare(types.NewRawDataRequest(dataSourceID, calldata)),
 	)
 }
 

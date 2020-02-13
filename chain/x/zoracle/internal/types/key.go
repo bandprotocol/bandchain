@@ -65,7 +65,8 @@ func RawDataRequestStoreKey(requestID, externalID int64) []byte {
 func RawDataReportStoreKey(requestID, externalID int64, validatorAddress sdk.ValAddress) []byte {
 	buf := append(RawDataReportStoreKeyPrefix, int64ToBytes(requestID)...)
 	buf = append(buf, int64ToBytes(externalID)...)
-	return append(buf, validatorAddress.Bytes()...)
+	buf = append(buf, validatorAddress.Bytes()...)
+	return buf
 }
 
 // DataSourceStoreKey is a function to generate key for each data source in store.
@@ -75,8 +76,7 @@ func DataSourceStoreKey(dataSourceID int64) []byte {
 
 // GetIteratorPrefix is a function to get specific prefix
 func GetIteratorPrefix(prefix []byte, requestID int64) []byte {
-	buf := int64ToBytes(requestID)
-	return append(prefix, buf...)
+	return append(prefix, int64ToBytes(requestID)...)
 }
 
 // GetValidatorAddress is a function to get validator address from key
