@@ -63,7 +63,7 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
         <div className=Styles.vFlex>
           <img src=Images.newScript className=Styles.logo />
           <Text
-            value="DATA REQUEST SCRIPT"
+            value="DATA ORACLE SCRIPT"
             weight=Text.Semibold
             size=Text.Lg
             nowrap=true
