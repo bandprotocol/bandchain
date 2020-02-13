@@ -10,28 +10,28 @@ import (
 const (
 	DefaultParamspace = ModuleName
 
-	// the maximum size of data source executable size, in bytes.
-	// default value is set to 10 kb
+	// The maximum size of data source executable size, in bytes.
+	// Default value is set to 10 kb.
 	DefaultMaxDataSourceExecutableSize = int64(10 * 1024)
 
-	// the maximum size of Owasm code, in bytes.
-	// default value is set to 500 kb
+	// The maximum size of Owasm code, in bytes.
+	// Default value is set to 500 kb.
 	DefaultMaxOracleScriptCodeSize = int64(500 * 1024)
 
-	// the maximum size of calldata when invoking for oracle scripts or data sources.
-	// default value is set 1 kb
+	// The maximum size of calldata when invoking for oracle scripts or data sources.
+	// Default value is set 1 kb
 	DefaultMaxCalldataSize = int64(1 * 1024)
 
-	// the maximum number of data sources a request can make.
-	// default value is set to 16.
+	// The maximum number of data sources a request can make.
+	// Default value is set to 16.
 	DefaultMaxDataSourceCountPerRequest = int64(16)
 
-	// the maximum size of raw data report per data source.
-	// default value is set to 1 kb
+	// The maximum size of raw data report per data source.
+	// Default value is set to 1 kb.
 	DefaultMaxRawDataReportSize = int64(1 * 1024)
 )
 
-// Parameter store keys
+// Parameter store keys.
 var (
 	KeyMaxDataSourceExecutableSize  = []byte("MaxDataSourceExecutableSize")
 	KeyMaxOracleScriptCodeSize      = []byte("MaxOracleScriptCodeSize")
@@ -40,7 +40,7 @@ var (
 	KeyMaxRawDataReportSize         = []byte("MaxRawDataReportSize")
 )
 
-// Params - used for initializing default parameter for zoracle at genesis
+// Params - used for initializing default parameter for zoracle at genesis.
 type Params struct {
 	MaxDataSourceExecutableSize  int64 `json:"max_data_source_executable_size" yaml:"max_data_source_executable_size"`
 	MaxOracleScriptCodeSize      int64 `json:"max_oracle_script_code_size" yaml:"max_oracle_script_code_size"`
@@ -49,7 +49,7 @@ type Params struct {
 	MaxRawDataReportSize         int64 `json:"max_raw_data_report_size" yaml:"max_raw_data_report_size"`
 }
 
-// NewParams creates a new Params object
+// NewParams creates a new Params object.
 func NewParams(
 	maxDataSourceExecutableSize int64,
 	maxOracleScriptCodeSize int64,
@@ -66,7 +66,7 @@ func NewParams(
 	}
 }
 
-// String implements the stringer interface for Params
+// String implements the stringer interface for Params.
 func (p Params) String() string {
 	return fmt.Sprintf(`Slashing Params:
 		MaxDataSourceExecutableSize:          %d
@@ -78,7 +78,7 @@ func (p Params) String() string {
 		p.MaxDataSourceCountPerRequest, p.MaxRawDataReportSize)
 }
 
-// ParamSetPairs - Implements params.ParamSet
+// ParamSetPairs - Implements params.ParamSet.
 func (p *Params) ParamSetPairs() params.ParamSetPairs {
 	return params.ParamSetPairs{
 		{Key: KeyMaxDataSourceExecutableSize, Value: &p.MaxDataSourceExecutableSize},
@@ -89,7 +89,7 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 	}
 }
 
-// DefaultParams defines the parameters for this module
+// DefaultParams defines the parameters for this module.
 func DefaultParams() Params {
 	return NewParams(
 		DefaultMaxDataSourceExecutableSize,
