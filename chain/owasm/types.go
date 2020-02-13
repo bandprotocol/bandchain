@@ -25,9 +25,9 @@ type ExecutionEnvironment interface {
 	// this data request was being run. Return zero during the *preparation* phase.
 	GetAggregateBlockTime() int64
 
-	// GetValidatorPublic returns the 33-byte compressed public key of the
-	// block validator at the specified index.
-	GetValidatorPubKey(validatorIndex int64) ([]byte, error)
+	// GetValidatorPublic returns the 20-byte address of the block validator
+	// at the specified index.
+	GetValidatorAddress(validatorIndex int64) ([]byte, error)
 
 	// RequestExternalData performs a request to the specified data source
 	// with and assigns the request with the external data ID. The function must

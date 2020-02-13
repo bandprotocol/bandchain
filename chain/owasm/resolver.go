@@ -73,11 +73,11 @@ func (r *resolver) resolveGetAggregateBlockTime(vm *exec.VirtualMachine) int64 {
 func (r *resolver) resolveReadValidatorPubKey(vm *exec.VirtualMachine) int64 {
 	validatorIndex := GetLocalInt64(vm, 0)
 	resultOffset := int(GetLocalInt64(vm, 0))
-	pubkey, err := r.env.GetValidatorPubKey(validatorIndex)
+	address, err := r.env.GetValidatorAddress(validatorIndex)
 	if err != nil {
 		panic(err)
 	}
-	copy(vm.Memory[resultOffset:resultOffset+len(pubkey)], pubkey)
+	copy(vm.Memory[resultOffset:resultOffset+len(address)], address)
 	return 0
 }
 
