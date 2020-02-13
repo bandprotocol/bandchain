@@ -20,7 +20,7 @@ var (
 	// PendingListStoreKey is a key that help getting pending request
 	PendingListStoreKey = append(GlobalStoreKeyPrefix, []byte("PendingList")...)
 
-	// DataSourceCountStoreKey is a key that help getting to current data source count state variable
+	// DataSourceCountStoreKey is a key that keeps the current data source count state variable.
 	DataSourceCountStoreKey = append(GlobalStoreKeyPrefix, []byte("DataSourceCount")...)
 
 	// ========================================================================
