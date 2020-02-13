@@ -5,6 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 )
 
@@ -13,16 +14,89 @@ type Keeper struct {
 	cdc           *codec.Codec
 	CoinKeeper    bank.Keeper
 	StakingKeeper staking.Keeper
+	Paramspace    params.Subspace
 }
 
 // NewKeeper creates a new zoracle Keeper instance.
-func NewKeeper(cdc *codec.Codec, key sdk.StoreKey, coinKeeper bank.Keeper, stakingKeeper staking.Keeper) Keeper {
+func NewKeeper(cdc *codec.Codec, key sdk.StoreKey, coinKeeper bank.Keeper, stakingKeeper staking.Keeper, paramspace params.Subspace) Keeper {
 	return Keeper{
 		storeKey:      key,
 		cdc:           cdc,
 		CoinKeeper:    coinKeeper,
 		StakingKeeper: stakingKeeper,
+		Paramspace:    paramspace.WithKeyTable(ParamKeyTable()),
 	}
+}
+
+// ParamKeyTable for zoracle module
+func ParamKeyTable() params.KeyTable {
+	return params.NewKeyTable().RegisterParamSet(&types.Params{})
+}
+
+// Get MaxDataSourceExecutableSize
+func (keeper Keeper) MaxDataSourceExecutableSize(ctx sdk.Context) (res int64) {
+	keeper.Paramspace.Get(ctx, types.KeyMaxDataSourceExecutableSize, &res)
+	return
+}
+
+// Set SetMaxDataSourceExecutableSize
+func (keeper Keeper) SetMaxDataSourceExecutableSize(ctx sdk.Context, value int64) {
+	keeper.Paramspace.Set(ctx, types.KeyMaxDataSourceExecutableSize, value)
+}
+
+// Get MaxOracleScriptCodeSize
+func (keeper Keeper) MaxOracleScriptCodeSize(ctx sdk.Context) (res int64) {
+	keeper.Paramspace.Get(ctx, types.KeyMaxOracleScriptCodeSize, &res)
+	return
+}
+
+// Set SetMaxOracleScriptCodeSize
+func (keeper Keeper) SetMaxOracleScriptCodeSize(ctx sdk.Context, value int64) {
+	keeper.Paramspace.Set(ctx, types.KeyMaxOracleScriptCodeSize, value)
+}
+
+// Get MaxCalldataSize
+func (keeper Keeper) MaxCalldataSize(ctx sdk.Context) (res int64) {
+	keeper.Paramspace.Get(ctx, types.KeyMaxCalldataSize, &res)
+	return
+}
+
+// Set SetMaxCalldataSize
+func (keeper Keeper) SetMaxCalldataSize(ctx sdk.Context, value int64) {
+	keeper.Paramspace.Set(ctx, types.KeyMaxCalldataSize, value)
+}
+
+// Get MaxDataSourceCountPerRequest
+func (keeper Keeper) MaxDataSourceCountPerRequest(ctx sdk.Context) (res int64) {
+	keeper.Paramspace.Get(ctx, types.KeyMaxDataSourceCountPerRequest, &res)
+	return
+}
+
+// Set SetMaxDataSourceCountPerRequest
+func (keeper Keeper) SetMaxDataSourceCountPerRequest(ctx sdk.Context, value int64) {
+	keeper.Paramspace.Set(ctx, types.KeyMaxDataSourceCountPerRequest, value)
+}
+
+// Get MaxRawDataReportSize
+func (keeper Keeper) MaxRawDataReportSize(ctx sdk.Context) (res int64) {
+	keeper.Paramspace.Get(ctx, types.KeyMaxRawDataReportSize, &res)
+	return
+}
+
+// Set SetMaxRawDataReportSize
+func (keeper Keeper) SetMaxRawDataReportSize(ctx sdk.Context, value int64) {
+	keeper.Paramspace.Set(ctx, types.KeyMaxRawDataReportSize, value)
+}
+
+// Get all parameteras as types.Params
+func (keeper Keeper) GetParams(ctx sdk.Context) types.Params {
+	return types.NewParams(
+		keeper.MaxDataSourceExecutableSize(ctx),
+		keeper.MaxOracleScriptCodeSize(ctx),
+		keeper.MaxCalldataSize(ctx),
+		keeper.MaxDataSourceCountPerRequest(ctx),
+		keeper.MaxRawDataReportSize(ctx),
+	)
 }
 
 // GetRequestCount returns the current number of all requests ever exist.
