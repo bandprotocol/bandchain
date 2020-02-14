@@ -1,9 +1,7 @@
 chain-test:
   stage: test
-  image: golang:1.13
+  image: bandprotocol/go-rust:0.1
   script:
-    - echo "1" | curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-    - curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
     - cd chain
     - chmod +x ./test.sh && ./test.sh
   only:
