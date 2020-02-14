@@ -1,5 +1,5 @@
 #!/bin/bash
-source ~/.profile
+
 cd owasm/res
 
 for f in *; do
