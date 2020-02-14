@@ -6,9 +6,35 @@ import (
 )
 
 // SetDataSource saves the given data source with the given ID to the storage.
+// WARNING: This function doesn't perform any check on ID.
 func (k Keeper) SetDataSource(ctx sdk.Context, id int64, dataSource types.DataSource) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.DataSourceStoreKey(id), k.cdc.MustMarshalBinaryBare(dataSource))
+}
+
+// AddDataSource adds the given data source to the storage.
+func (k Keeper) AddDataSource(ctx sdk.Context, owner sdk.AccAddress, name string, fee sdk.Coins, executable []byte) sdk.Error {
+	newDataSourceID := k.GetNextDataSourceID(ctx)
+
+	// TODO: check executable size.
+
+	newDataSource := types.NewDataSource(owner, name, fee, executable)
+	k.SetDataSource(ctx, newDataSourceID, newDataSource)
+	return nil
+}
+
+// EditDataSource edits the given data source by given data source id to the storage.
+func (k Keeper) EditDataSource(ctx sdk.Context, dataSourceID int64, owner sdk.AccAddress, name string, fee sdk.Coins, executable []byte) sdk.Error {
+	if !k.CheckDataSourceExists(ctx, dataSourceID) {
+		// TODO: fix error later
+		return types.ErrRequestNotFound(types.DefaultCodespace)
+	}
+
+	// TODO: check executable size.
+
+	updatedDataSource := types.NewDataSource(owner, name, fee, executable)
+	k.SetDataSource(ctx, dataSourceID, updatedDataSource)
+	return nil
 }
 
 // GetDataSource returns the entire DataSource struct for the given ID.

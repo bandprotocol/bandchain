@@ -1,16 +1,22 @@
 package zoracle
 
 import (
+	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
+// GenesisState is the zoracle state that must be provided at genesis.
 type GenesisState struct {
 	// Scripts []types.StoredCode `json:"scripts"`
+	Params types.Params `json:"params" yaml:"params"` // module level parameters for zoracle
 }
 
-func NewGenesisState() GenesisState {
-	return GenesisState{}
+// NewGenesisState creates a new genesis state.
+func NewGenesisState(params types.Params) GenesisState {
+	return GenesisState{
+		Params: params,
+	}
 }
 
 func ValidateGenesis(data GenesisState) error {
@@ -28,32 +34,25 @@ func ValidateGenesis(data GenesisState) error {
 	return nil
 }
 
+// DefaultGenesisState returns the default genesis state.
 func DefaultGenesisState() GenesisState {
-	return GenesisState{}
+	return GenesisState{
+		Params: DefaultParams(),
+	}
 }
 
-func InitGenesis(ctx sdk.Context, keeper Keeper, data GenesisState) []abci.ValidatorUpdate {
-	// for _, storeCode := range data.Scripts {
-	// 	codeHash := storeCode.GetCodeHash()
-	// 	if keeper.CheckCodeHashExists(ctx, codeHash) {
-	// 		continue
-	// 	}
-	// 	keeper.SetCode(ctx, storeCode.Code, storeCode.Name, storeCode.Owner)
-	// }
+func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorUpdate {
+	k.SetMaxDataSourceExecutableSize(ctx, data.Params.MaxDataSourceExecutableSize)
+	k.SetMaxOracleScriptCodeSize(ctx, data.Params.MaxOracleScriptCodeSize)
+	k.SetMaxCalldataSize(ctx, data.Params.MaxCalldataSize)
+	k.SetMaxDataSourceCountPerRequest(ctx, data.Params.MaxDataSourceCountPerRequest)
+	k.SetMaxRawDataReportSize(ctx, data.Params.MaxRawDataReportSize)
 
 	return []abci.ValidatorUpdate{}
 }
 
 func ExportGenesis(ctx sdk.Context, k Keeper) GenesisState {
-	// var records []Whois
-	// iterator := k.GetNamesIterator(ctx)
-	// for ; iterator.Valid(); iterator.Next() {
-
-	// 	name := string(iterator.Key())
-	// 	whois := k.GetWhois(ctx, name)
-	// 	records = append(records, whois)
-
-	// }
-	// return GenesisState{WhoisRecords: records}
-	return GenesisState{}
+	return GenesisState{
+		Params: k.GetParams(ctx),
+	}
 }

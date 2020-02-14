@@ -119,7 +119,7 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 	supplyKeeper.SetModuleAccount(ctx, bondPool)
 	supplyKeeper.SetModuleAccount(ctx, notBondedPool)
 
-	keeper := NewKeeper(cdc, keyRequest, bk, sk)
+	keeper := NewKeeper(cdc, keyRequest, bk, sk, pk.Subspace(types.DefaultParamspace))
 	require.Equal(t, account.GetAddress(), addr)
 	accountKeeper.SetAccount(ctx, account)
 
