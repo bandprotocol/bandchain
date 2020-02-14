@@ -237,7 +237,7 @@ func TestEndBlock(t *testing.T) {
 
 	require.Equal(t, []int64{}, keeper.GetPendingResolveList(ctx))
 
-	result, err := keeper.GetResult(ctx, 1)
+	result, err := keeper.GetResult(ctx, 1, 1, calldata)
 	require.Nil(t, err)
 	require.Equal(t, []byte("answer2"), result)
 
