@@ -1,5 +1,3 @@
-use std::mem::transmute;
-
 extern "C" {
     pub fn getCurrentRequestID() -> i64;
     pub fn getRequestedValidatorCount() -> i64;
@@ -13,7 +11,9 @@ pub extern "C" fn execute() {
         let req_id = getCurrentRequestID();
         let validators_count = getRequestedValidatorCount();
 
-        let arr: [u8; 8] = transmute((req_id * 10 + validators_count).to_le());
-        saveReturnData(Box::new(arr).to_vec().as_ptr(), 8);
+        saveReturnData(
+            vec![(req_id + validators_count) as u8, 0, 0, 0, 0, 0, 0, 0].as_ptr(),
+            8,
+        );
     }
 }

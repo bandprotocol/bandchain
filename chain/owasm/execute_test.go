@@ -16,8 +16,8 @@ func TestExecuteCanCallEnv(t *testing.T) {
 		requestedValidatorCount: 2,
 	}, code, "execute", []byte{}, 10000)
 	require.Nil(t, err)
-	require.Equal(t, int64(12), int64(binary.LittleEndian.Uint64(result)))
-	require.Equal(t, int64(1422), gasUsed)
+	require.Equal(t, int64(3), int64(binary.LittleEndian.Uint64(result)))
+	require.Equal(t, int64(1031), gasUsed)
 }
 
 func TestExecuteOutOfGas(t *testing.T) {
