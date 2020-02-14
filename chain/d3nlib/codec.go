@@ -16,6 +16,5 @@ func NewCodec() *codec.Codec {
 	bank.RegisterCodec(cdc)
 	zoracle.RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)
-
 	return cdc
 }
