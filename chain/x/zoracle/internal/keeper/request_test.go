@@ -158,7 +158,7 @@ func TestSetResolvedOnInvalidRequest(t *testing.T) {
 	require.Equal(t, types.CodeRequestNotFound, err.Code())
 }
 
-// Can get/set unresolved request correctly and set empty case
+// Can get/set pending request correctly and set empty case
 func TestGetSetPendingRequests(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 

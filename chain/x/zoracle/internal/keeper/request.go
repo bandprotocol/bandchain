@@ -61,7 +61,7 @@ func (k Keeper) AddRequest(
 	return requestID, nil
 }
 
-// ValidateDataSourceCount validate that the number of raw data requests is
+// ValidateDataSourceCount validates that the number of raw data requests is
 // not greater than `MaxDataSourceCountPerRequest`
 func (k Keeper) ValidateDataSourceCount(ctx sdk.Context, id int64) sdk.Error {
 	// TODO: Check raw data request with MaxDataSourceCountPerRequest
@@ -145,13 +145,13 @@ func (k Keeper) SetPendingResolveList(ctx sdk.Context, reqIDs []int64) {
 	if encoded == nil {
 		encoded = []byte{}
 	}
-	store.Set(types.UnresolvedRequestListStoreKey, encoded)
+	store.Set(types.PendingResolveListStoreKey, encoded)
 }
 
 // GetPendingResolveList returns the list of pending request.
 func (k Keeper) GetPendingResolveList(ctx sdk.Context) []int64 {
 	store := ctx.KVStore(k.storeKey)
-	reqIDsBytes := store.Get(types.UnresolvedRequestListStoreKey)
+	reqIDsBytes := store.Get(types.PendingResolveListStoreKey)
 
 	// If the state is empty
 	if len(reqIDsBytes) == 0 {
