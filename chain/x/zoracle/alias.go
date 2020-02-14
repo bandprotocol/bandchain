@@ -6,9 +6,10 @@ import (
 )
 
 const (
-	ModuleName = types.ModuleName
-	RouterKey  = types.RouterKey
-	StoreKey   = types.StoreKey
+	ModuleName        = types.ModuleName
+	DefaultParamspace = types.DefaultParamspace
+	RouterKey         = types.RouterKey
+	StoreKey          = types.StoreKey
 
 	EventTypeRequest         = types.EventTypeRequest
 	EventTypeReport          = types.EventTypeReport
@@ -32,6 +33,17 @@ var (
 	ResultStoreKey       = types.ResultStoreKey
 	DataSourceStoreKey   = types.DataSourceStoreKey
 	OracleScriptStoreKey = types.OracleScriptStoreKey
+
+	NewParams     = types.NewParams
+	DefaultParams = types.DefaultParams
+
+	KeyMaxDataSourceExecutableSize  = types.KeyMaxDataSourceExecutableSize
+	KeyMaxOracleScriptCodeSize      = types.KeyMaxOracleScriptCodeSize
+	KeyMaxCalldataSize              = types.KeyMaxCalldataSize
+	KeyMaxDataSourceCountPerRequest = types.KeyMaxDataSourceCountPerRequest
+	KeyMaxRawDataReportSize         = types.KeyMaxRawDataReportSize
+
+	ParamKeyTable = keeper.ParamKeyTable
 )
 
 type (
