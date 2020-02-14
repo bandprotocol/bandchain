@@ -2,8 +2,9 @@ chain-test:
   stage: test
   image: golang:1.13
   script:
+    - curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
     - cd chain
-    - go test ./...
+    - chmod +x ./test.sh && ./test.sh
   only:
     changes:
       - chain/**/*
