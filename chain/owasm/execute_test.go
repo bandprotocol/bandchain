@@ -11,10 +11,13 @@ import (
 func TestExecuteCanCallEnv(t *testing.T) {
 	code, err := ioutil.ReadFile("./res/main.wasm")
 	require.Nil(t, err)
-	result, gasUsed, err := Execute(&mockExecutionEnvironment{}, code, "execute", []byte{}, 10000)
+	result, gasUsed, err := Execute(&mockExecutionEnvironment{
+		requestID:               1,
+		requestedValidatorCount: 2,
+	}, code, "execute", []byte{}, 10000)
 	require.Nil(t, err)
-	require.Equal(t, int64(42), int64(binary.LittleEndian.Uint64(result)))
-	require.Equal(t, int64(22), gasUsed)
+	require.Equal(t, int64(12), int64(binary.LittleEndian.Uint64(result)))
+	require.Equal(t, int64(1650), gasUsed)
 }
 
 func TestExecuteOutOfGas(t *testing.T) {
@@ -39,5 +42,5 @@ func TestExecuteEndToEnd(t *testing.T) {
 	result, gasUsed, err := Execute(env, code, "execute", []byte{}, 10000)
 	require.Nil(t, err)
 	require.Equal(t, []byte("RETURN_DATA"), result)
-	require.Equal(t, int64(1061), gasUsed)
+	require.Equal(t, int64(1199), gasUsed)
 }
