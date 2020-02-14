@@ -25,6 +25,10 @@ func NewHandler(keeper Keeper) sdk.Handler {
 			return handleMsgCreateDataSource(ctx, keeper, msg)
 		case MsgEditDataSource:
 			return handleMsgEditDataSource(ctx, keeper, msg)
+		case MsgCreateOracleScript:
+			return handleMsgCreateOracleScript(ctx, keeper, msg)
+		case MsgEditOracleScript:
+			return handleMsgEditOracleScript(ctx, keeper, msg)
 		default:
 			errMsg := fmt.Sprintf("unrecognized zoracle message type: %T", msg)
 			return sdk.ErrUnknownRequest(errMsg).Result()
@@ -152,6 +156,34 @@ func handleMsgEditDataSource(ctx sdk.Context, keeper Keeper, msg MsgEditDataSour
 	}
 
 	err = keeper.EditDataSource(ctx, msg.DataSourceID, msg.Owner, msg.Name, msg.Fee, msg.Executable)
+	if err != nil {
+		return err.Result()
+	}
+	return sdk.Result{Events: ctx.EventManager().Events()}
+}
+
+// handleMsgCreateOracleScript is a function to handle MsgCreateOracleScript.
+func handleMsgCreateOracleScript(ctx sdk.Context, keeper Keeper, msg MsgCreateOracleScript) sdk.Result {
+	err := keeper.AddOracleScript(ctx, msg.Owner, msg.Name, msg.Code)
+	if err != nil {
+		return err.Result()
+	}
+	return sdk.Result{Events: ctx.EventManager().Events()}
+}
+
+// handleMsgEditOracleScript is a function to handle MsgEditOracleScript.
+func handleMsgEditOracleScript(ctx sdk.Context, keeper Keeper, msg MsgEditOracleScript) sdk.Result {
+	oracleScript, err := keeper.GetOracleScript(ctx, msg.OracleScriptID)
+	if err != nil {
+		return err.Result()
+	}
+
+	if !oracleScript.Owner.Equals(msg.Sender) {
+		// TODO: change it later.
+		return types.ErrInvalidOwner(types.DefaultCodespace).Result()
+	}
+
+	err = keeper.EditOracleScript(ctx, msg.OracleScriptID, msg.Owner, msg.Name, msg.Code)
 	if err != nil {
 		return err.Result()
 	}

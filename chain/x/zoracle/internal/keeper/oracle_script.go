@@ -6,9 +6,35 @@ import (
 )
 
 // SetOracleScript saves the given oracle script with the given ID to the storage.
+// WARNING: This function doesn't perform any check on ID.
 func (k Keeper) SetOracleScript(ctx sdk.Context, id int64, oracleScript types.OracleScript) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.OracleScriptStoreKey(id), k.cdc.MustMarshalBinaryBare(oracleScript))
+}
+
+// AddOracleScript adds the given oracle script to the storage.
+func (k Keeper) AddOracleScript(ctx sdk.Context, owner sdk.AccAddress, name string, code []byte) sdk.Error {
+	newOracleScriptID := k.GetNextOracleScriptID(ctx)
+
+	// TODO: check code size.
+
+	newOracleScript := types.NewOracleScript(owner, name, code)
+	k.SetOracleScript(ctx, newOracleScriptID, newOracleScript)
+	return nil
+}
+
+// EditOracleScript edits the given oracle script by given oracle script id to the storage.
+func (k Keeper) EditOracleScript(ctx sdk.Context, oracleScriptID int64, owner sdk.AccAddress, name string, code []byte) sdk.Error {
+	if !k.CheckOracleScriptExists(ctx, oracleScriptID) {
+		// TODO: fix error later
+		return types.ErrRequestNotFound(types.DefaultCodespace)
+	}
+
+	// TODO: check code size.
+
+	updatedOracleScript := types.NewOracleScript(owner, name, code)
+	k.SetOracleScript(ctx, oracleScriptID, updatedOracleScript)
+	return nil
 }
 
 // GetOracleScript returns the entire OracleScript struct for the given ID.
