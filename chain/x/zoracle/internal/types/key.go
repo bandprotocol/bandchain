@@ -53,11 +53,8 @@ func RequestStoreKey(requestID int64) []byte {
 }
 
 // ResultStoreKey is a function to generate key for each result in store
-func ResultStoreKey(requestID int64, codeHash []byte, params []byte) []byte {
-	buf := append(ResultStoreKeyPrefix, int64ToBytes(requestID)...)
-	buf = append(buf, codeHash...)
-	buf = append(buf, params...)
-	return buf
+func ResultStoreKey(requestID int64) []byte {
+	return append(ResultStoreKeyPrefix, int64ToBytes(requestID)...)
 }
 
 // RawDataRequestStoreKey is a function to generate key for each raw data request in store

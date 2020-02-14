@@ -6,24 +6,26 @@ import (
 	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 )
 
-// SetResult is a function to save result of execute code to store
-func (k Keeper) SetResult(ctx sdk.Context, requestID int64, codeHash []byte, params []byte, result []byte) {
+// SetResult is a function to save result of execute code to store.
+func (k Keeper) SetResult(ctx sdk.Context, requestID int64, result []byte) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(
-		types.ResultStoreKey(requestID, codeHash, params),
+		types.ResultStoreKey(requestID),
 		result,
 	)
 }
 
-func (k Keeper) GetResult(ctx sdk.Context, requestID int64, codeHash []byte, params []byte) ([]byte, sdk.Error) {
-	if !k.HasResult(ctx, requestID, codeHash, params) {
+// GetResult returns the result bytes in store.
+func (k Keeper) GetResult(ctx sdk.Context, requestID int64) ([]byte, sdk.Error) {
+	if !k.HasResult(ctx, requestID) {
 		return nil, types.ErrResultNotFound(types.DefaultCodespace)
 	}
 	store := ctx.KVStore(k.storeKey)
-	return store.Get(types.ResultStoreKey(requestID, codeHash, params)), nil
+	return store.Get(types.ResultStoreKey(requestID)), nil
 }
 
-func (k Keeper) HasResult(ctx sdk.Context, requestID int64, codeHash []byte, params []byte) bool {
+// HasResult checks if the result at this request id is present in the store or not.
+func (k Keeper) HasResult(ctx sdk.Context, requestID int64) bool {
 	store := ctx.KVStore(k.storeKey)
-	return store.Has(types.ResultStoreKey(requestID, codeHash, params))
+	return store.Has(types.ResultStoreKey(requestID))
 }

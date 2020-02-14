@@ -17,11 +17,9 @@ func TestRequestStoreKey(t *testing.T) {
 
 func TestResultStoreKey(t *testing.T) {
 	requestID := int64(20)
-	codeHash := []byte("code")
-	params := []byte("params")
 
-	expectKeyByte, _ := hex.DecodeString("ff0000000000000014636f6465706172616d73")
-	require.Equal(t, expectKeyByte, ResultStoreKey(requestID, codeHash, params))
+	expectKeyByte, _ := hex.DecodeString("ff0000000000000014")
+	require.Equal(t, expectKeyByte, ResultStoreKey(requestID))
 }
 
 func TestRawDataRequestStoreKey(t *testing.T) {
