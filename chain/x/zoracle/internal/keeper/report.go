@@ -38,7 +38,7 @@ func (k Keeper) AddReport(
 	}
 
 	if isFirstReport {
-		if int64(len(dataSet)) != keeper.GetRawDataRequestCount(ctx, requestID) {
+		if int64(len(dataSet)) != k.GetRawDataRequestCount(ctx, requestID) {
 			// TODO: fix error later
 			return types.ErrRequestNotFound(types.DefaultCodespace)
 		}

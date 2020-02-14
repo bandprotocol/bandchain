@@ -36,7 +36,7 @@ func TestRequestSuccess(t *testing.T) {
 
 	// Test here
 	got := handleMsgRequest(ctx, keeper, msg)
-	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
+	require.True(t, got.IsOK(), "expected request to be ok, got %v", got)
 
 	// Check global request count
 	require.Equal(t, int64(1), keeper.GetRequestCount(ctx))
@@ -83,60 +83,105 @@ func TestRequestInvalidDataSource(t *testing.T) {
 	require.False(t, got.IsOK())
 }
 
-// func TestRequestInvalidCodeHash(t *testing.T) {
-// 	ctx, keeper := keep.CreateTestInput(t, false)
-// 	sender := sdk.AccAddress([]byte("sender"))
+func TestReportSuccess(t *testing.T) {
+	// Setup test environment
+	ctx, keeper := keep.CreateTestInput(t, false)
+	ctx = ctx.WithBlockHeight(2)
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	calldata := []byte("calldata")
 
-// 	codeHash, _ := hex.DecodeString("c0dec0dec0dec0dec0dec0dec0dec0dec0dec0dec0dec0dec0dec0dec0dec0de")
-// 	params, _ := hex.DecodeString("00000000")
-// 	msg := types.NewMsgRequest(codeHash, params, 5, sender)
-// 	got := handleMsgRequest(ctx, keeper, msg)
-// 	require.False(t, got.IsOK(), "expected request is an invalid tx")
-// 	require.Equal(t, types.CodeInvalidInput, got.Code)
-// }
+	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
+	keeper.SetOracleScript(ctx, 1, script)
 
-// func TestRequestInvalidWasmCode(t *testing.T) {
-// 	ctx, keeper := keep.CreateTestInput(t, false)
-// 	sender := sdk.AccAddress([]byte("sender"))
-// 	codeHash := keeper.SetCode(ctx, []byte("Fake code"), "Fake script", sender)
-// 	params, _ := hex.DecodeString("00000000")
-// 	msg := types.NewMsgRequest(codeHash, params, 5, sender)
-// 	got := handleMsgRequest(ctx, keeper, msg)
-// 	require.False(t, got.IsOK(), "expected request is an invalid tx")
-// 	require.Equal(t, types.WasmError, got.Code)
-// }
+	pubStr := []string{
+		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
+		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
+	}
 
-// func TestReportSuccess(t *testing.T) {
-// 	ctx, keeper := keep.CreateTestInput(t, false)
-// 	validatorAddress := setupTestValidator(
-// 		ctx,
-// 		keeper,
-// 		"0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AFB50",
-// 	)
+	validatorAddress1 := keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
+	validatorAddress2 := keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
 
-// 	// set request = 2
-// 	name := "Script1"
-// 	sender := sdk.AccAddress([]byte("sender"))
-// 	codeHash := keeper.SetCode(ctx, []byte("Code"), name, sender)
-// 	request := types.NewRequest(codeHash, []byte("params"), 3)
-// 	keeper.SetRequest(ctx, 2, request)
+	dataSource := keep.GetTestDataSource()
+	keeper.SetDataSource(ctx, 1, dataSource)
 
-// 	// set pending
-// 	pendingRequests := keeper.GetPendingResolveList(ctx)
-// 	pendingRequests = append(pendingRequests, 2)
-// 	keeper.SetPendingResolveList(ctx, pendingRequests)
+	request := types.NewRequest(1, calldata,
+		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
+		2, 1581589790, 102,
+	)
+	keeper.SetRequest(ctx, 1, request)
+	keeper.SetRawDataRequest(ctx, 1, 42, types.NewRawDataRequest(1, []byte("calldata1")))
 
-// 	// set blockheight
-// 	ctx = ctx.WithBlockHeight(3)
+	ctx = ctx.WithBlockHeight(5)
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589800), 0))
 
-// 	// report data
-// 	msg := types.NewMsgReport(2, []byte("data"), validatorAddress)
-// 	got := handleMsgReport(ctx, keeper, msg)
-// 	require.True(t, got.IsOK(), "expected set report to be ok, got %v", got)
+	msg := types.NewMsgReportData(1, []types.RawDataReport{
+		types.NewRawDataReport(42, []byte("data1")),
+	}, validatorAddress1)
 
-// 	//check event
-// 	require.Equal(t, types.EventTypeReport, ctx.EventManager().Events()[2].Type)
-// }
+	got := handleMsgReport(ctx, keeper, msg)
+	require.True(t, got.IsOK(), "expected report to be ok, got %v", got)
+	list := keeper.GetPendingResolveList(ctx)
+	require.Equal(t, []int64{}, list)
+
+	msg = types.NewMsgReportData(1, []types.RawDataReport{
+		types.NewRawDataReport(42, []byte("data1.5")),
+	}, validatorAddress1)
+
+	got = handleMsgReport(ctx, keeper, msg)
+	require.True(t, got.IsOK(), "expected report to be ok, got %v", got)
+	list = keeper.GetPendingResolveList(ctx)
+	require.Equal(t, []int64{}, list)
+
+	msg = types.NewMsgReportData(1, []types.RawDataReport{
+		types.NewRawDataReport(42, []byte("data2")),
+	}, validatorAddress2)
+
+	got = handleMsgReport(ctx, keeper, msg)
+	require.True(t, got.IsOK(), "expected report to be ok, got %v", got)
+
+	list = keeper.GetPendingResolveList(ctx)
+	require.Equal(t, []int64{1}, list)
+}
+
+func TestReportFailed(t *testing.T) {
+	// Setup test environment
+	ctx, keeper := keep.CreateTestInput(t, false)
+	ctx = ctx.WithBlockHeight(2)
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	calldata := []byte("calldata")
+
+	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
+	keeper.SetOracleScript(ctx, 1, script)
+
+	pubStr := []string{
+		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
+		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
+	}
+
+	validatorAddress1 := keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
+	validatorAddress2 := keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
+
+	dataSource := keep.GetTestDataSource()
+	keeper.SetDataSource(ctx, 1, dataSource)
+
+	request := types.NewRequest(1, calldata,
+		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
+		2, 1581589790, 102,
+	)
+	keeper.SetRequest(ctx, 1, request)
+	keeper.SetRawDataRequest(ctx, 1, 42, types.NewRawDataRequest(1, []byte("calldata1")))
+
+	ctx = ctx.WithBlockHeight(5)
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589800), 0))
+
+	msg := types.NewMsgReportData(1, []types.RawDataReport{
+		types.NewRawDataReport(41, []byte("data1")),
+	}, validatorAddress1)
+
+	// Test only 1 failed case, other case tested in keeper/report_test.go
+	got := handleMsgReport(ctx, keeper, msg)
+	require.False(t, got.IsOK())
+}
 
 // func TestReportInvalidValidator(t *testing.T) {
 // 	ctx, keeper := keep.CreateTestInput(t, false)
