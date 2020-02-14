@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"testing"
+	"time"
 
 	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -25,6 +26,8 @@ func TestGetterSetterRequest(t *testing.T) {
 func TestRequest(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
+	ctx = ctx.WithBlockHeight(2)
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
 	calldata := []byte("calldata")
 	_, err := keeper.Request(ctx, 1, calldata, 2, 2, 100)
 	require.NotNil(t, err)
@@ -34,19 +37,37 @@ func TestRequest(t *testing.T) {
 	_, err = keeper.Request(ctx, 1, calldata, 2, 2, 100)
 	require.NotNil(t, err)
 
-	// Setup validator1
+	pubStr := []string{
+		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
+		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
+	}
+
+	validatorAddress1 := SetupTestValidator(
+		ctx,
+		keeper,
+		pubStr[0],
+		10,
+	)
 	_, err = keeper.Request(ctx, 1, calldata, 2, 2, 100)
 	require.NotNil(t, err)
 
-	// Setup validator2
-	_, err = keeper.Request(ctx, 1, calldata, 2, 2, 100)
-	require.NotNil(t, err)
-
-	dataSource := getTestDataSource()
-	keeper.SetDataSource(ctx, 1, dataSource)
+	validatorAddress2 := SetupTestValidator(
+		ctx,
+		keeper,
+		pubStr[1],
+		100,
+	)
 	requestID, err := keeper.Request(ctx, 1, calldata, 2, 2, 100)
 	require.Nil(t, err)
 	require.Equal(t, int64(1), requestID)
+
+	actualRequest, err := keeper.GetRequest(ctx, 1)
+	require.Nil(t, err)
+	expectRequest := types.NewRequest(1, calldata,
+		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
+		2, 1581589790, 102,
+	)
+	require.Equal(t, expectRequest, actualRequest)
 }
 
 // TestAddNewReceiveValidator tests keeper can add valid validator to request
@@ -175,5 +196,23 @@ func TestAddPendingRequest(t *testing.T) {
 }
 
 func TestHasToPutInPendingList(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	require.False(t, keeper.HasToPutInPendingList(ctx, 1))
+	request := newDefaultRequest()
+	request.SufficientValidatorCount = 1
+	keeper.SetRequest(ctx, 1, request)
+	require.False(t, keeper.HasToPutInPendingList(ctx, 1))
+
+	err := keeper.AddNewReceiveValidator(ctx, 1, sdk.ValAddress([]byte("validator1")))
+	require.Nil(t, err)
+	require.True(t, keeper.HasToPutInPendingList(ctx, 1))
+
+	err = keeper.AddNewReceiveValidator(ctx, 1, sdk.ValAddress([]byte("validator2")))
+	require.Nil(t, err)
+	require.False(t, keeper.HasToPutInPendingList(ctx, 1))
+}
+
+func TestValidateDataSourceCount(t *testing.T) {
 	// TODO: Write test
 }

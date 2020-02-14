@@ -130,8 +130,24 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 	return ctx, keeper
 }
 
-// NewPubKey is a function to generate public key
-func NewPubKey(pk string) (res crypto.PubKey) {
+func SetupTestValidator(ctx sdk.Context, keeper Keeper, pk string, power int64) sdk.ValAddress {
+	pubKey := newPubKey(pk)
+	validatorAddress := sdk.ValAddress(pubKey.Address())
+	initTokens := sdk.TokensFromConsensusPower(power)
+	initCoins := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, initTokens))
+	keeper.CoinKeeper.AddCoins(ctx, sdk.AccAddress(pubKey.Address()), initCoins)
+
+	msgCreateValidator := staking.NewTestMsgCreateValidator(
+		validatorAddress, pubKey, sdk.TokensFromConsensusPower(power),
+	)
+	stakingHandler := staking.NewHandler(keeper.StakingKeeper)
+	stakingHandler(ctx, msgCreateValidator)
+
+	keeper.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
+	return validatorAddress
+}
+
+func newPubKey(pk string) (res crypto.PubKey) {
 	pkBytes, err := hex.DecodeString(pk)
 	if err != nil {
 		panic(err)

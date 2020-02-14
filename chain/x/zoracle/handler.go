@@ -3,6 +3,7 @@ package zoracle
 import (
 	"fmt"
 
+	"github.com/bandprotocol/d3n/chain/owasm"
 	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -33,6 +34,7 @@ func NewHandler(keeper Keeper) sdk.Handler {
 
 func handleMsgRequest(ctx sdk.Context, keeper Keeper, msg MsgRequestData) sdk.Result {
 	id, err := keeper.Request(
+		ctx,
 		msg.OracleScriptID,
 		msg.Calldata,
 		msg.RequestedValidatorCount,
@@ -42,6 +44,27 @@ func handleMsgRequest(ctx sdk.Context, keeper Keeper, msg MsgRequestData) sdk.Re
 	if err != nil {
 		return err.Result()
 	}
+
+	env, err := NewExecutionEnvironment(ctx, keeper, id)
+	if err != nil {
+		return err.Result()
+	}
+
+	script, err := keeper.GetOracleScript(ctx, msg.OracleScriptID)
+	if err != nil {
+		return err.Result()
+	}
+	_, _, errOwasm := owasm.Execute(&env, script.Code, "prepare", msg.Calldata, 100000)
+	if errOwasm != nil {
+		// TODO: error
+		return sdk.ErrUnknownRequest(errOwasm.Error()).Result()
+	}
+
+	err = keeper.ValidateDataSourceCount(ctx, id)
+	if err != nil {
+		return err.Result()
+	}
+
 	// Emit request event
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(

@@ -30,9 +30,9 @@ func (k Keeper) Request(
 	ctx sdk.Context, oracleScriptID int64, calldata []byte,
 	requestedValidatorCount, sufficientValidatorCount, expiration int64,
 ) (int64, sdk.Error) {
-	script, err := k.GetOracleScript(ctx, oracleScriptID)
-	if err != nil {
-		return 0, err
+	if !k.CheckOracleScriptExists(ctx, oracleScriptID) {
+		// TODO: fix error later
+		return 0, types.ErrRequestNotFound(types.DefaultCodespace)
 	}
 
 	// TODO: Test calldata size here
@@ -59,12 +59,14 @@ func (k Keeper) Request(
 		ctx.BlockHeight()+expiration,
 	))
 
-	// Run prepare wasm
-	_ = script.Code
-
-	// TODO: Check raw request data length
-
 	return requestID, nil
+}
+
+// ValidateDataSourceCount validate amount of raw data requests
+// not greater than `MaxDataSourceCountPerRequest`
+func (k Keeper) ValidateDataSourceCount(ctx sdk.Context, id int64) sdk.Error {
+	// TODO: Check raw data request with MaxDataSourceCountPerRequest
+	return nil
 }
 
 // AddNewReceiveValidator checks that new validator is a valid validator and not in received list yet then add new
