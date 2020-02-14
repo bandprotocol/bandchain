@@ -40,13 +40,13 @@ var (
 	privS           = getEnv("PRIVATE_KEY", "06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b")
 )
 
-func getLatestRequestID() (uint64, error) {
+func getLatestRequestID() (int64, error) {
 	cliCtx := bandClient.GetContext()
 	res, _, err := cliCtx.Query("custom/zoracle/request_number")
 	if err != nil {
 		return 0, err
 	}
-	var requestID uint64
+	var requestID int64
 	err = cliCtx.Codec.UnmarshalJSON(res, &requestID)
 	if err != nil {
 		return 0, err
@@ -114,7 +114,7 @@ func getPrepareBytes(searchResult *sdk.SearchTxsResult) ([]byte, error) {
 	return nil, fmt.Errorf("Cannot find prepare bytes")
 }
 
-func handleRequest(requestID uint64) (sdk.TxResponse, error) {
+func handleRequest(requestID int64) (sdk.TxResponse, error) {
 	searchResult, err := utils.QueryTxsByEvents(
 		bandClient.GetContext(),
 		[]string{fmt.Sprintf("request.id='%d'", requestID)},
@@ -190,6 +190,6 @@ func handleRequest(requestID uint64) (sdk.TxResponse, error) {
 	// )
 }
 
-func handleRequestAndLog(requestID uint64) {
+func handleRequestAndLog(requestID int64) {
 	fmt.Println(handleRequest(requestID))
 }
