@@ -3,6 +3,7 @@ package zoracle
 import (
 	"fmt"
 
+	"github.com/bandprotocol/d3n/chain/owasm"
 	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -12,8 +13,8 @@ func NewHandler(keeper Keeper) sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) sdk.Result {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 		switch msg := msg.(type) {
-		// case MsgRequest:
-		// 	return handleMsgRequest(ctx, keeper, msg)
+		case MsgRequestData:
+			return handleMsgRequest(ctx, keeper, msg)
 		// case MsgReport:
 		// 	return handleMsgReport(ctx, keeper, msg)
 		// case MsgStoreCode:
@@ -35,44 +36,48 @@ func NewHandler(keeper Keeper) sdk.Handler {
 	}
 }
 
-// func handleMsgRequest(ctx sdk.Context, keeper Keeper, msg MsgRequest) sdk.Result {
-// 	// Get Code from code hash
-// 	storedCode, sdkError := keeper.GetCode(ctx, msg.CodeHash)
-// 	if sdkError != nil {
-// 		return sdkError.Result()
-// 	}
+func handleMsgRequest(ctx sdk.Context, keeper Keeper, msg MsgRequestData) sdk.Result {
+	id, err := keeper.AddRequest(
+		ctx,
+		msg.OracleScriptID,
+		msg.Calldata,
+		msg.RequestedValidatorCount,
+		msg.SufficientValidatorCount,
+		msg.Expiration,
+	)
+	if err != nil {
+		return err.Result()
+	}
 
-// 	newRequestID := keeper.GetNextRequestID(ctx)
+	env, err := NewExecutionEnvironment(ctx, keeper, id)
+	if err != nil {
+		return err.Result()
+	}
 
-// 	newRequest := types.NewRequest(
-// 		msg.CodeHash,
-// 		msg.Params,
-// 		uint64(ctx.BlockHeight())+msg.ReportPeriod,
-// 	)
+	script, err := keeper.GetOracleScript(ctx, msg.OracleScriptID)
+	if err != nil {
+		return err.Result()
+	}
+	_, _, errOwasm := owasm.Execute(&env, script.Code, "prepare", msg.Calldata, 100000)
+	if errOwasm != nil {
+		// TODO: error
+		return sdk.ErrUnknownRequest(errOwasm.Error()).Result()
+	}
 
-// 	prepare, err := wasm.Prepare(storedCode.Code, msg.Params)
-// 	if err != nil {
-// 		return sdk.NewError(types.DefaultCodespace, types.WasmError, err.Error()).Result()
-// 	}
+	err = keeper.ValidateDataSourceCount(ctx, id)
+	if err != nil {
+		return err.Result()
+	}
 
-// 	// Save Request to state
-// 	keeper.SetRequest(ctx, newRequestID, newRequest)
-// 	// Add new request to pending bucket
-// 	pendingRequests := keeper.GetPendingRequests(ctx)
-// 	pendingRequests = append(pendingRequests, newRequestID)
-// 	keeper.SetPendingRequests(ctx, pendingRequests)
-// 	// Emit request event
-// 	ctx.EventManager().EmitEvents(sdk.Events{
-// 		sdk.NewEvent(
-// 			types.EventTypeRequest,
-// 			sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", newRequestID)),
-// 			sdk.NewAttribute(types.AttributeKeyCodeHash, hex.EncodeToString(msg.CodeHash)),
-// 			sdk.NewAttribute(types.AttributeKeyCodeName, storedCode.Name),
-// 			sdk.NewAttribute(types.AttributeKeyPrepare, hex.EncodeToString(prepare)),
-// 		),
-// 	})
-// 	return sdk.Result{Events: ctx.EventManager().Events()}
-// }
+	// Emit request event
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeRequest,
+			sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", id)),
+		),
+	})
+	return sdk.Result{Events: ctx.EventManager().Events()}
+}
 
 // func handleMsgReport(ctx sdk.Context, keeper Keeper, msg MsgReport) sdk.Result {
 // 	// check request id is valid.
@@ -214,7 +219,7 @@ func handleMsgEditOracleScript(ctx sdk.Context, keeper Keeper, msg MsgEditOracle
 }
 
 func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
-	// 	reqIDs := keeper.GetPendingRequests(ctx)
+	// 	reqIDs := keeper.GetPendingResolveList(ctx)
 	// 	remainingReqIDs := reqIDs
 
 	// 	for _, reqID := range reqIDs {
@@ -253,7 +258,7 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 	// 		remainingReqIDs = remove(remainingReqIDs, reqID)
 	// 	}
 
-	// 	keeper.SetPendingRequests(ctx, remainingReqIDs)
+	// 	keeper.SetPendingResolveList(ctx, remainingReqIDs)
 
 	// TODO: Emit event
 	return sdk.Result{Events: ctx.EventManager().Events()}

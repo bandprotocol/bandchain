@@ -17,8 +17,8 @@ var (
 	// RequestsCountStoreKey is a key that help getting to current requests count state variable
 	RequestsCountStoreKey = append(GlobalStoreKeyPrefix, []byte("RequestsCount")...)
 
-	// UnresolvedRequestListStoreKey is a key that help getting pending request
-	UnresolvedRequestListStoreKey = append(GlobalStoreKeyPrefix, []byte("PendingList")...)
+	// PendingResolveListStoreKey is a key that help getting pending request
+	PendingResolveListStoreKey = append(GlobalStoreKeyPrefix, []byte("PendingList")...)
 
 	// DataSourceCountStoreKey is a key that keeps the current data source count state variable.
 	DataSourceCountStoreKey = append(GlobalStoreKeyPrefix, []byte("DataSourceCount")...)
