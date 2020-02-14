@@ -47,10 +47,12 @@ var (
 )
 
 type (
-	Keeper              = keeper.Keeper
-	MsgRequestData      = types.MsgRequestData
-	MsgReportData       = types.MsgReportData
-	MsgCreateDataSource = types.MsgCreateDataSource
-	MsgEditDataSource   = types.MsgEditDataSource
+	Keeper                = keeper.Keeper
+	MsgRequestData        = types.MsgRequestData
+	MsgReportData         = types.MsgReportData
+	MsgCreateDataSource   = types.MsgCreateDataSource
+	MsgEditDataSource     = types.MsgEditDataSource
+	MsgCreateOracleScript = types.MsgCreateOracleScript
+	MsgEditOracleScript   = types.MsgEditOracleScript
 	// RequestInfo    = types.RequestInfo
 )
