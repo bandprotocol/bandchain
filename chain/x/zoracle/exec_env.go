@@ -65,7 +65,7 @@ func (env *ExecutionEnvironment) RequestExternalData(
 	externalDataID int64,
 	calldata []byte,
 ) error {
-	return env.keeper.SetRawDataRequest(env.ctx, env.requestID, externalDataID, dataSourceID, calldata)
+	return env.keeper.AddNewRawDataRequest(env.ctx, env.requestID, externalDataID, dataSourceID, calldata)
 }
 
 func (env *ExecutionEnvironment) GetExternalData(

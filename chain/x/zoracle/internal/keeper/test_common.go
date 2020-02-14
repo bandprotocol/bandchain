@@ -2,9 +2,11 @@ package keeper
 
 import (
 	"encoding/hex"
+	"path/filepath"
 	"testing"
 	"time"
 
+	"github.com/bandprotocol/d3n/chain/wasm"
 	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 	"github.com/stretchr/testify/require"
 	crypto "github.com/tendermint/tendermint/crypto"
@@ -128,8 +130,24 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 	return ctx, keeper
 }
 
-// NewPubKey is a function to generate public key
-func NewPubKey(pk string) (res crypto.PubKey) {
+func SetupTestValidator(ctx sdk.Context, keeper Keeper, pk string, power int64) sdk.ValAddress {
+	pubKey := newPubKey(pk)
+	validatorAddress := sdk.ValAddress(pubKey.Address())
+	initTokens := sdk.TokensFromConsensusPower(power)
+	initCoins := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, initTokens))
+	keeper.CoinKeeper.AddCoins(ctx, sdk.AccAddress(pubKey.Address()), initCoins)
+
+	msgCreateValidator := staking.NewTestMsgCreateValidator(
+		validatorAddress, pubKey, sdk.TokensFromConsensusPower(power),
+	)
+	stakingHandler := staking.NewHandler(keeper.StakingKeeper)
+	stakingHandler(ctx, msgCreateValidator)
+
+	keeper.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
+	return validatorAddress
+}
+
+func newPubKey(pk string) (res crypto.PubKey) {
 	pkBytes, err := hex.DecodeString(pk)
 	if err != nil {
 		panic(err)
@@ -137,4 +155,38 @@ func NewPubKey(pk string) (res crypto.PubKey) {
 	var pkEd ed25519.PubKeyEd25519
 	copy(pkEd[:], pkBytes)
 	return pkEd
+}
+
+func newDefaultRequest() types.Request {
+	return types.NewRequest(
+		1,
+		[]byte("calldata"),
+		[]sdk.ValAddress{sdk.ValAddress([]byte("validator1")), sdk.ValAddress([]byte("validator2"))},
+		2,
+		0,
+		1581503227,
+		100,
+	)
+}
+
+func GetTestOracleScript(path string) types.OracleScript {
+	absPath, _ := filepath.Abs(path)
+	code, err := wasm.ReadBytes(absPath)
+	if err != nil {
+		panic(err)
+	}
+	return types.NewOracleScript(
+		sdk.AccAddress([]byte("owner")),
+		"silly script",
+		code,
+	)
+}
+
+func GetTestDataSource() types.DataSource {
+	return types.NewDataSource(
+		sdk.AccAddress([]byte("owner")),
+		"data_source",
+		sdk.NewCoins(sdk.NewInt64Coin("uband", 10)),
+		[]byte("executable"),
+	)
 }
