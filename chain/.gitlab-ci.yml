@@ -2,8 +2,8 @@ chain-test:
   stage: test
   image: golang:1.13
   script:
-    - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-    - curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+    - echo "1" | curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    - echo "y" | curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
     - cd chain
     - chmod +x ./test.sh && ./test.sh
   only:
