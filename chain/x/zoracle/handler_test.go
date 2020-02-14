@@ -2,6 +2,7 @@ package zoracle
 
 import (
 	"testing"
+	"time"
 
 	keep "github.com/bandprotocol/d3n/chain/x/zoracle/internal/keeper"
 	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
@@ -9,72 +10,78 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// func setupTestValidator(ctx sdk.Context, keeper Keeper, pk string) sdk.ValAddress {
-// 	pubKey := keep.NewPubKey(pk)
-// 	validatorAddress := sdk.ValAddress(pubKey.Address())
-// 	initTokens := sdk.TokensFromConsensusPower(10)
-// 	initCoins := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, initTokens))
-// 	keeper.CoinKeeper.AddCoins(ctx, sdk.AccAddress(pubKey.Address()), initCoins)
+func TestRequestSuccess(t *testing.T) {
+	// Setup test environment
+	ctx, keeper := keep.CreateTestInput(t, false)
+	ctx = ctx.WithBlockHeight(2)
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	calldata := []byte("calldata")
+	sender := sdk.AccAddress([]byte("sender"))
 
-// 	msgCreateValidator := staking.NewTestMsgCreateValidator(
-// 		validatorAddress, pubKey, sdk.TokensFromConsensusPower(10),
-// 	)
-// 	stakingHandler := staking.NewHandler(keeper.StakingKeeper)
-// 	stakingHandler(ctx, msgCreateValidator)
+	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
+	keeper.SetOracleScript(ctx, 1, script)
 
-// 	keeper.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
-// 	return validatorAddress
-// }
+	pubStr := []string{
+		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
+		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
+	}
 
-// func TestRequestSuccess(t *testing.T) {
-// 	ctx, keeper := keep.CreateTestInput(t, false)
-// 	absPath, _ := filepath.Abs("../../wasm/res/result.wasm")
-// 	code, err := wasm.ReadBytes(absPath)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-// 	name := "Crypto price"
-// 	sender := sdk.AccAddress([]byte("sender"))
-// 	codeHash := keeper.SetCode(ctx, code, name, sender)
-// 	params, _ := hex.DecodeString("00000000")
-// 	msg := types.NewMsgRequest(codeHash, params, 5, sender)
-// 	got := handleMsgRequest(ctx, keeper, msg)
-// 	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
+	validatorAddress1 := keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
+	validatorAddress2 := keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
 
-// 	// Check global request count
-// 	require.Equal(t, uint64(1), keeper.GetRequestCount(ctx))
-// 	request, err := keeper.GetRequest(ctx, 1)
-// 	require.Nil(t, err)
+	dataSource := keep.GetTestDataSource()
+	keeper.SetDataSource(ctx, 1, dataSource)
 
-// 	// Check codeHash must match
-// 	require.Equal(t, codeHash, request.CodeHash)
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, sender)
 
-// 	// Check reportEndAt
-// 	require.Equal(t, uint64(ctx.BlockHeight()+5), request.ReportEndAt)
+	// Test here
+	got := handleMsgRequest(ctx, keeper, msg)
+	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
 
-// 	// Check pending request list
-// 	require.Equal(t, []uint64{1}, keeper.GetPendingRequests(ctx))
+	// Check global request count
+	require.Equal(t, int64(1), keeper.GetRequestCount(ctx))
+	actualRequest, err := keeper.GetRequest(ctx, 1)
+	require.Nil(t, err)
+	expectRequest := types.NewRequest(1, calldata,
+		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
+		2, 1581589790, 102,
+	)
+	require.Equal(t, expectRequest, actualRequest)
 
-// 	// check event
-// 	require.Equal(t, types.EventTypeRequest, ctx.EventManager().Events()[0].Type)
+	require.Equal(t, int64(1), keeper.GetRawDataRequestCount(ctx, 1))
 
-// 	// check codeHash, prepare attribute
-// 	codeHashPair := common.KVPair{
-// 		Key:   []byte(types.AttributeKeyCodeHash),
-// 		Value: []byte(hex.EncodeToString(codeHash)),
-// 	}
-// 	namePair := common.KVPair{
-// 		Key:   []byte(types.AttributeKeyCodeName),
-// 		Value: []byte("Crypto price"),
-// 	}
-// 	preparePair := common.KVPair{
-// 		Key:   []byte(types.AttributeKeyPrepare),
-// 		Value: []byte("5b7b22636d64223a226375726c222c2261726773223a5b2268747470733a2f2f6170692e636f696e6765636b6f2e636f6d2f6170692f76332f73696d706c652f70726963653f6964733d626974636f696e2676735f63757272656e636965733d757364225d7d2c7b22636d64223a226375726c222c2261726773223a5b2268747470733a2f2f6d696e2d6170692e63727970746f636f6d706172652e636f6d2f646174612f70726963653f6673796d3d425443267473796d733d555344225d7d5d"),
-// 	}
-// 	require.Equal(t, codeHashPair, ctx.EventManager().Events()[0].Attributes[1])
-// 	require.Equal(t, namePair, ctx.EventManager().Events()[0].Attributes[2])
-// 	require.Equal(t, preparePair, ctx.EventManager().Events()[0].Attributes[3])
-// }
+	rawRequests := []types.RawDataRequest{
+		types.NewRawDataRequest(1, []byte("band-protocol")),
+	}
+	require.Equal(t, rawRequests, keeper.GetRawDataRequests(ctx, 1))
+}
+
+func TestRequestInvalidDataSource(t *testing.T) {
+	// Setup test environment
+	ctx, keeper := keep.CreateTestInput(t, false)
+	ctx = ctx.WithBlockHeight(2)
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	calldata := []byte("calldata")
+	sender := sdk.AccAddress([]byte("sender"))
+
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, sender)
+	got := handleMsgRequest(ctx, keeper, msg)
+	require.False(t, got.IsOK())
+
+	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
+	keeper.SetOracleScript(ctx, 1, script)
+
+	pubStr := []string{
+		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
+		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
+	}
+
+	keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
+	keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
+
+	got = handleMsgRequest(ctx, keeper, msg)
+	require.False(t, got.IsOK())
+}
 
 // func TestRequestInvalidCodeHash(t *testing.T) {
 // 	ctx, keeper := keep.CreateTestInput(t, false)

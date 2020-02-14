@@ -169,8 +169,8 @@ func newDefaultRequest() types.Request {
 	)
 }
 
-func getTestOracleScript() types.OracleScript {
-	absPath, _ := filepath.Abs("../../../../owasm/res/silly.wasm")
+func GetTestOracleScript(path string) types.OracleScript {
+	absPath, _ := filepath.Abs(path)
 	code, err := wasm.ReadBytes(absPath)
 	if err != nil {
 		panic(err)
@@ -182,7 +182,7 @@ func getTestOracleScript() types.OracleScript {
 	)
 }
 
-func getTestDataSource() types.DataSource {
+func GetTestDataSource() types.DataSource {
 	return types.NewDataSource(
 		sdk.AccAddress([]byte("owner")),
 		"data_source",

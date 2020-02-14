@@ -32,7 +32,7 @@ func TestRequest(t *testing.T) {
 	_, err := keeper.Request(ctx, 1, calldata, 2, 2, 100)
 	require.NotNil(t, err)
 
-	script := getTestOracleScript()
+	script := GetTestOracleScript("../../../../owasm/res/silly.wasm")
 	keeper.SetOracleScript(ctx, 1, script)
 	_, err = keeper.Request(ctx, 1, calldata, 2, 2, 100)
 	require.NotNil(t, err)
