@@ -37,10 +37,10 @@ func TestEditDataSource(t *testing.T) {
 	err := mockDataSource(ctx, keeper)
 	require.Nil(t, err)
 
-	newOwner := sdk.AccAddress([]byte("owner"))
-	newName := "data_source"
-	newFee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
-	newExecutable := []byte("executable")
+	newOwner := sdk.AccAddress([]byte("owner2"))
+	newName := "data_source_2"
+	newFee := sdk.NewCoins(sdk.NewInt64Coin("uband", 1))
+	newExecutable := []byte("executable_2")
 
 	err = keeper.EditDataSource(ctx, 1, newOwner, newName, newFee, newExecutable)
 	require.Nil(t, err)
