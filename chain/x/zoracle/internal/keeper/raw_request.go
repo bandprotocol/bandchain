@@ -39,28 +39,28 @@ func (k Keeper) CheckRawDataRequestExists(ctx sdk.Context, requestID, externalID
 	return store.Has(types.RawDataRequestStoreKey(requestID, externalID))
 }
 
-// AddNewRawDataRequest check all conditions before save new raw data request to store.
+// AddNewRawDataRequest checks all conditions before saving a new raw data request to the store.
 func (k Keeper) AddNewRawDataRequest(
 	ctx sdk.Context, requestID, externalID, dataSourceID int64, calldata []byte,
 ) sdk.Error {
 	// TODO: Check calldata size
 
-	// Check request exist
 	if !k.CheckRequestExists(ctx, requestID) {
 		// TODO: fix error later
 		return types.ErrRequestNotFound(types.DefaultCodespace)
 	}
-	// Check data source exist
+
 	if !k.CheckDataSourceExists(ctx, dataSourceID) {
 		// TODO: fix error later
 		return types.ErrRequestNotFound(types.DefaultCodespace)
 	}
+
 	if k.CheckRawDataRequestExists(ctx, requestID, externalID) {
 		// TODO: fix error later
 		return types.ErrRequestNotFound(types.DefaultCodespace)
 	}
 	k.SetRawDataRequest(ctx, requestID, externalID, types.NewRawDataRequest(dataSourceID, calldata))
-	return nil
+	return k.ValidateDataSourceCount(ctx, requestID)
 }
 
 // GetRawDataRequestIterator is a function to get iterator on all raw data request that belong to

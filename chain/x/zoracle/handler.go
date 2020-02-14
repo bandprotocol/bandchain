@@ -33,7 +33,7 @@ func NewHandler(keeper Keeper) sdk.Handler {
 }
 
 func handleMsgRequest(ctx sdk.Context, keeper Keeper, msg MsgRequestData) sdk.Result {
-	id, err := keeper.Request(
+	id, err := keeper.AddRequest(
 		ctx,
 		msg.OracleScriptID,
 		msg.Calldata,
@@ -187,7 +187,7 @@ func handleMsgEditDataSource(ctx sdk.Context, keeper Keeper, msg MsgEditDataSour
 }
 
 func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
-	// 	reqIDs := keeper.GetPendingRequests(ctx)
+	// 	reqIDs := keeper.GetPendingResolveList(ctx)
 	// 	remainingReqIDs := reqIDs
 
 	// 	for _, reqID := range reqIDs {
@@ -226,7 +226,7 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 	// 		remainingReqIDs = remove(remainingReqIDs, reqID)
 	// 	}
 
-	// 	keeper.SetPendingRequests(ctx, remainingReqIDs)
+	// 	keeper.SetPendingResolveList(ctx, remainingReqIDs)
 
 	// TODO: Emit event
 	return sdk.Result{Events: ctx.EventManager().Events()}

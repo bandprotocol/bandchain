@@ -29,12 +29,12 @@ func TestRequest(t *testing.T) {
 	ctx = ctx.WithBlockHeight(2)
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
 	calldata := []byte("calldata")
-	_, err := keeper.Request(ctx, 1, calldata, 2, 2, 100)
+	_, err := keeper.AddRequest(ctx, 1, calldata, 2, 2, 100)
 	require.NotNil(t, err)
 
 	script := GetTestOracleScript("../../../../owasm/res/silly.wasm")
 	keeper.SetOracleScript(ctx, 1, script)
-	_, err = keeper.Request(ctx, 1, calldata, 2, 2, 100)
+	_, err = keeper.AddRequest(ctx, 1, calldata, 2, 2, 100)
 	require.NotNil(t, err)
 
 	pubStr := []string{
@@ -48,7 +48,7 @@ func TestRequest(t *testing.T) {
 		pubStr[0],
 		10,
 	)
-	_, err = keeper.Request(ctx, 1, calldata, 2, 2, 100)
+	_, err = keeper.AddRequest(ctx, 1, calldata, 2, 2, 100)
 	require.NotNil(t, err)
 
 	validatorAddress2 := SetupTestValidator(
@@ -57,7 +57,7 @@ func TestRequest(t *testing.T) {
 		pubStr[1],
 		100,
 	)
-	requestID, err := keeper.Request(ctx, 1, calldata, 2, 2, 100)
+	requestID, err := keeper.AddRequest(ctx, 1, calldata, 2, 2, 100)
 	require.Nil(t, err)
 	require.Equal(t, int64(1), requestID)
 
@@ -162,16 +162,16 @@ func TestSetResolvedOnInvalidRequest(t *testing.T) {
 func TestGetSetPendingRequests(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
-	reqIDs := keeper.GetPendingRequests(ctx)
+	reqIDs := keeper.GetPendingResolveList(ctx)
 	require.Equal(t, []int64{}, reqIDs)
 
-	keeper.SetPendingRequests(ctx, []int64{1, 2, 3})
+	keeper.SetPendingResolveList(ctx, []int64{1, 2, 3})
 
-	reqIDs = keeper.GetPendingRequests(ctx)
+	reqIDs = keeper.GetPendingResolveList(ctx)
 	require.Equal(t, []int64{1, 2, 3}, reqIDs)
 
-	keeper.SetPendingRequests(ctx, []int64{})
-	reqIDs = keeper.GetPendingRequests(ctx)
+	keeper.SetPendingResolveList(ctx, []int64{})
+	reqIDs = keeper.GetPendingResolveList(ctx)
 	require.Equal(t, []int64{}, reqIDs)
 }
 
@@ -180,37 +180,37 @@ func TestGetSetPendingRequests(t *testing.T) {
 func TestAddPendingRequest(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
-	reqIDs := keeper.GetPendingRequests(ctx)
+	reqIDs := keeper.GetPendingResolveList(ctx)
 	require.Equal(t, []int64{}, reqIDs)
 
-	keeper.SetPendingRequests(ctx, []int64{1, 2})
+	keeper.SetPendingResolveList(ctx, []int64{1, 2})
 	err := keeper.AddPendingRequest(ctx, 3)
 	require.Nil(t, err)
-	reqIDs = keeper.GetPendingRequests(ctx)
+	reqIDs = keeper.GetPendingResolveList(ctx)
 	require.Equal(t, []int64{1, 2, 3}, reqIDs)
 
 	err = keeper.AddPendingRequest(ctx, 3)
 	require.Equal(t, types.CodeDuplicateRequest, err.Code())
-	reqIDs = keeper.GetPendingRequests(ctx)
+	reqIDs = keeper.GetPendingResolveList(ctx)
 	require.Equal(t, []int64{1, 2, 3}, reqIDs)
 }
 
 func TestHasToPutInPendingList(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
-	require.False(t, keeper.HasToPutInPendingList(ctx, 1))
+	require.False(t, keeper.ShouldBecomePendingResolve(ctx, 1))
 	request := newDefaultRequest()
 	request.SufficientValidatorCount = 1
 	keeper.SetRequest(ctx, 1, request)
-	require.False(t, keeper.HasToPutInPendingList(ctx, 1))
+	require.False(t, keeper.ShouldBecomePendingResolve(ctx, 1))
 
 	err := keeper.AddNewReceiveValidator(ctx, 1, sdk.ValAddress([]byte("validator1")))
 	require.Nil(t, err)
-	require.True(t, keeper.HasToPutInPendingList(ctx, 1))
+	require.True(t, keeper.ShouldBecomePendingResolve(ctx, 1))
 
 	err = keeper.AddNewReceiveValidator(ctx, 1, sdk.ValAddress([]byte("validator2")))
 	require.Nil(t, err)
-	require.False(t, keeper.HasToPutInPendingList(ctx, 1))
+	require.False(t, keeper.ShouldBecomePendingResolve(ctx, 1))
 }
 
 func TestValidateDataSourceCount(t *testing.T) {

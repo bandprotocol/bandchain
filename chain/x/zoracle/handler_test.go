@@ -122,9 +122,9 @@ func TestRequestInvalidDataSource(t *testing.T) {
 // 	keeper.SetRequest(ctx, 2, request)
 
 // 	// set pending
-// 	pendingRequests := keeper.GetPendingRequests(ctx)
+// 	pendingRequests := keeper.GetPendingResolveList(ctx)
 // 	pendingRequests = append(pendingRequests, 2)
-// 	keeper.SetPendingRequests(ctx, pendingRequests)
+// 	keeper.SetPendingResolveList(ctx, pendingRequests)
 
 // 	// set blockheight
 // 	ctx = ctx.WithBlockHeight(3)
@@ -151,9 +151,9 @@ func TestRequestInvalidDataSource(t *testing.T) {
 // 	keeper.SetRequest(ctx, 1, request)
 
 // 	// set pending
-// 	pendingRequests := keeper.GetPendingRequests(ctx)
+// 	pendingRequests := keeper.GetPendingResolveList(ctx)
 // 	pendingRequests = append(pendingRequests, 1)
-// 	keeper.SetPendingRequests(ctx, pendingRequests)
+// 	keeper.SetPendingResolveList(ctx, pendingRequests)
 
 // 	msg := types.NewMsgReport(1, []byte("data"), validatorAddress)
 // 	got := handleMsgReport(ctx, keeper, msg)
@@ -176,9 +176,9 @@ func TestRequestInvalidDataSource(t *testing.T) {
 // 	keeper.SetRequest(ctx, 2, request)
 
 // 	// set pending
-// 	pendingRequests := keeper.GetPendingRequests(ctx)
+// 	pendingRequests := keeper.GetPendingResolveList(ctx)
 // 	pendingRequests = append(pendingRequests, 2)
-// 	keeper.SetPendingRequests(ctx, pendingRequests)
+// 	keeper.SetPendingResolveList(ctx, pendingRequests)
 
 // 	// set blockheight
 // 	ctx = ctx.WithBlockHeight(10)
@@ -310,9 +310,9 @@ func TestRequestInvalidDataSource(t *testing.T) {
 // 	keeper.SetRequest(ctx, 1, request)
 
 // 	// set pending
-// 	pendingRequests := keeper.GetPendingRequests(ctx)
+// 	pendingRequests := keeper.GetPendingResolveList(ctx)
 // 	pendingRequests = append(pendingRequests, 1)
-// 	keeper.SetPendingRequests(ctx, pendingRequests)
+// 	keeper.SetPendingResolveList(ctx, pendingRequests)
 
 // 	data1, _ := hex.DecodeString("5b227b5c22626974636f696e5c223a7b5c227573645c223a373139342e32357d7d222c227b5c225553445c223a373231342e31327d225d")
 // 	data2, _ := hex.DecodeString("5b227b5c22626974636f696e5c223a7b5c227573645c223a373139312e32357d7d222c227b5c225553445c223a373230392e31357d225d")
@@ -329,7 +329,7 @@ func TestRequestInvalidDataSource(t *testing.T) {
 // 	// Result must not found
 // 	require.NotNil(t, err)
 
-// 	pendingRequests = keeper.GetPendingRequests(ctx)
+// 	pendingRequests = keeper.GetPendingResolveList(ctx)
 // 	require.Equal(t, []uint64{1}, pendingRequests)
 
 // 	// blockheight update to 4
@@ -347,7 +347,7 @@ func TestRequestInvalidDataSource(t *testing.T) {
 // 	require.Nil(t, err)
 // 	require.Equal(t, resultAfter, result)
 
-// 	pendingRequests = keeper.GetPendingRequests(ctx)
+// 	pendingRequests = keeper.GetPendingResolveList(ctx)
 // 	require.Equal(t, []uint64{}, pendingRequests)
 // }
 
@@ -381,9 +381,9 @@ func TestRequestInvalidDataSource(t *testing.T) {
 // 	keeper.SetRequest(ctx, 1, request)
 
 // 	// set pending
-// 	pendingRequests := keeper.GetPendingRequests(ctx)
+// 	pendingRequests := keeper.GetPendingResolveList(ctx)
 // 	pendingRequests = append(pendingRequests, 1)
-// 	keeper.SetPendingRequests(ctx, pendingRequests)
+// 	keeper.SetPendingResolveList(ctx, pendingRequests)
 
 // 	data1, _ := hex.DecodeString("5b227b5c22626974636f696e5c223a7b5c227573645c223a373139342e32357d7d222c227b5c225553445c223a373231342e31327d225d")
 // 	data2, _ := hex.DecodeString("5b227b5c22626974636f696e5c223a7b5c227573645c223a373139312e32357d7d222c227b5c225553445c223a373230392e31357d225d")
@@ -400,7 +400,7 @@ func TestRequestInvalidDataSource(t *testing.T) {
 // 	// Result must not found
 // 	require.NotNil(t, err)
 
-// 	pendingRequests = keeper.GetPendingRequests(ctx)
+// 	pendingRequests = keeper.GetPendingResolveList(ctx)
 // 	require.Equal(t, []uint64{1}, pendingRequests)
 
 // 	keeper.SetReport(ctx, 1, validatorAddress2, data2)
@@ -418,7 +418,7 @@ func TestRequestInvalidDataSource(t *testing.T) {
 // 	require.Nil(t, err)
 // 	require.Equal(t, resultAfter, result)
 
-// 	pendingRequests = keeper.GetPendingRequests(ctx)
+// 	pendingRequests = keeper.GetPendingResolveList(ctx)
 // 	require.Equal(t, []uint64{}, pendingRequests)
 // }
 
@@ -452,9 +452,9 @@ func TestRequestInvalidDataSource(t *testing.T) {
 // 	keeper.SetRequest(ctx, 1, request)
 
 // 	// set pending
-// 	pendingRequests := keeper.GetPendingRequests(ctx)
+// 	pendingRequests := keeper.GetPendingResolveList(ctx)
 // 	pendingRequests = append(pendingRequests, 1)
-// 	keeper.SetPendingRequests(ctx, pendingRequests)
+// 	keeper.SetPendingResolveList(ctx, pendingRequests)
 
 // 	data1, _ := hex.DecodeString("5b227b5c22626974636f696e5c223a7b5c227573645c223a373139342e32357d7d222c227b5c225553445c223a373231342e31327d225d")
 
@@ -470,7 +470,7 @@ func TestRequestInvalidDataSource(t *testing.T) {
 // 	// Result must not found
 // 	require.NotNil(t, err)
 
-// 	pendingRequests = keeper.GetPendingRequests(ctx)
+// 	pendingRequests = keeper.GetPendingResolveList(ctx)
 // 	require.Equal(t, []uint64{1}, pendingRequests)
 
 // 	// blockheight update to 300
@@ -487,7 +487,7 @@ func TestRequestInvalidDataSource(t *testing.T) {
 // 	require.Nil(t, err)
 // 	require.Equal(t, resultAfter, result)
 
-// 	pendingRequests = keeper.GetPendingRequests(ctx)
+// 	pendingRequests = keeper.GetPendingResolveList(ctx)
 // 	require.Equal(t, []uint64{}, pendingRequests)
 // }
 

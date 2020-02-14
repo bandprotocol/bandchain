@@ -24,9 +24,8 @@ func (k Keeper) GetRequest(ctx sdk.Context, id int64) (types.Request, sdk.Error)
 	return request, nil
 }
 
-// Request attempts to create new request.
-// An error is returned if some conditions failed
-func (k Keeper) Request(
+// AddRequest attempts to create a new request. An error is returned if some conditions failed.
+func (k Keeper) AddRequest(
 	ctx sdk.Context, oracleScriptID int64, calldata []byte,
 	requestedValidatorCount, sufficientValidatorCount, expiration int64,
 ) (int64, sdk.Error) {
@@ -62,7 +61,7 @@ func (k Keeper) Request(
 	return requestID, nil
 }
 
-// ValidateDataSourceCount validate amount of raw data requests
+// ValidateDataSourceCount validate that the number of raw data requests is
 // not greater than `MaxDataSourceCountPerRequest`
 func (k Keeper) ValidateDataSourceCount(ctx sdk.Context, id int64) sdk.Error {
 	// TODO: Check raw data request with MaxDataSourceCountPerRequest
@@ -115,8 +114,10 @@ func (k Keeper) CheckRequestExists(ctx sdk.Context, id int64) bool {
 	return store.Has(types.RequestStoreKey(id))
 }
 
-// HasToPutInPendingList return boolean that request must be put in pending list or not.
-func (k Keeper) HasToPutInPendingList(ctx sdk.Context, id int64) bool {
+// ShouldBecomePendingResolve checks and returns whether the given request should be moved to the
+// pending resolve list, which will be resolved during the EndBlock call. The move will happen exactly when
+// the request receives sufficient raw reports from the validators.
+func (k Keeper) ShouldBecomePendingResolve(ctx sdk.Context, id int64) bool {
 	request, err := k.GetRequest(ctx, id)
 	if err != nil {
 		return false
@@ -126,19 +127,19 @@ func (k Keeper) HasToPutInPendingList(ctx sdk.Context, id int64) bool {
 
 // AddPendingRequest checks and append new request id to list if id already existed in list, it will return error.
 func (k Keeper) AddPendingRequest(ctx sdk.Context, requestID int64) sdk.Error {
-	pendingList := k.GetPendingRequests(ctx)
+	pendingList := k.GetPendingResolveList(ctx)
 	for _, entry := range pendingList {
 		if requestID == entry {
 			return types.ErrDuplicateRequest(types.DefaultCodespace)
 		}
 	}
 	pendingList = append(pendingList, requestID)
-	k.SetPendingRequests(ctx, pendingList)
+	k.SetPendingResolveList(ctx, pendingList)
 	return nil
 }
 
-// SetPendingRequests saves the list of pending request that will be resolved at end block.
-func (k Keeper) SetPendingRequests(ctx sdk.Context, reqIDs []int64) {
+// SetPendingResolveList saves the list of pending request that will be resolved at end block.
+func (k Keeper) SetPendingResolveList(ctx sdk.Context, reqIDs []int64) {
 	store := ctx.KVStore(k.storeKey)
 	encoded := k.cdc.MustMarshalBinaryBare(reqIDs)
 	if encoded == nil {
@@ -147,8 +148,8 @@ func (k Keeper) SetPendingRequests(ctx sdk.Context, reqIDs []int64) {
 	store.Set(types.UnresolvedRequestListStoreKey, encoded)
 }
 
-// GetPendingRequests returns the list of pending request.
-func (k Keeper) GetPendingRequests(ctx sdk.Context) []int64 {
+// GetPendingResolveList returns the list of pending request.
+func (k Keeper) GetPendingResolveList(ctx sdk.Context) []int64 {
 	store := ctx.KVStore(k.storeKey)
 	reqIDsBytes := store.Get(types.UnresolvedRequestListStoreKey)
 
