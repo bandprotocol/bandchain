@@ -1,27 +1,21 @@
 package zoracle
 
-import (
-	keep "github.com/bandprotocol/d3n/chain/x/zoracle/internal/keeper"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	staking "github.com/cosmos/cosmos-sdk/x/staking"
-)
+// func setupTestValidator(ctx sdk.Context, keeper Keeper, pk string) sdk.ValAddress {
+// 	pubKey := keep.NewPubKey(pk)
+// 	validatorAddress := sdk.ValAddress(pubKey.Address())
+// 	initTokens := sdk.TokensFromConsensusPower(10)
+// 	initCoins := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, initTokens))
+// 	keeper.CoinKeeper.AddCoins(ctx, sdk.AccAddress(pubKey.Address()), initCoins)
 
-func setupTestValidator(ctx sdk.Context, keeper Keeper, pk string) sdk.ValAddress {
-	pubKey := keep.NewPubKey(pk)
-	validatorAddress := sdk.ValAddress(pubKey.Address())
-	initTokens := sdk.TokensFromConsensusPower(10)
-	initCoins := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, initTokens))
-	keeper.CoinKeeper.AddCoins(ctx, sdk.AccAddress(pubKey.Address()), initCoins)
+// 	msgCreateValidator := staking.NewTestMsgCreateValidator(
+// 		validatorAddress, pubKey, sdk.TokensFromConsensusPower(10),
+// 	)
+// 	stakingHandler := staking.NewHandler(keeper.StakingKeeper)
+// 	stakingHandler(ctx, msgCreateValidator)
 
-	msgCreateValidator := staking.NewTestMsgCreateValidator(
-		validatorAddress, pubKey, sdk.TokensFromConsensusPower(10),
-	)
-	stakingHandler := staking.NewHandler(keeper.StakingKeeper)
-	stakingHandler(ctx, msgCreateValidator)
-
-	keeper.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
-	return validatorAddress
-}
+// 	keeper.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
+// 	return validatorAddress
+// }
 
 // func TestRequestSuccess(t *testing.T) {
 // 	ctx, keeper := keep.CreateTestInput(t, false)

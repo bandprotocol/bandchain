@@ -6,12 +6,31 @@ import (
 )
 
 // SetRawDataRequest is a function to save raw data request detail to the given request id and external id.
-func (k Keeper) SetRawDataRequest(ctx sdk.Context, requestID, externalID, dataSourceID int64, calldata []byte) {
+func (k Keeper) SetRawDataRequest(
+	ctx sdk.Context, requestID, externalID, dataSourceID int64, calldata []byte,
+) sdk.Error {
 	store := ctx.KVStore(k.storeKey)
+	// TODO: Check calldata size
+
+	// Check request exist
+	if !k.CheckRequestExists(ctx, requestID) {
+		// TODO: fix error later
+		return types.ErrRequestNotFound(types.DefaultCodespace)
+	}
+	// Check data source exist
+	if !k.CheckDataSourceExists(ctx, dataSourceID) {
+		// TODO: fix error later
+		return types.ErrRequestNotFound(types.DefaultCodespace)
+	}
+	if k.CheckRawDataRequestExists(ctx, requestID, externalID) {
+		// TODO: fix error later
+		return types.ErrRequestNotFound(types.DefaultCodespace)
+	}
 	store.Set(
 		types.RawDataRequestStoreKey(requestID, externalID),
 		k.cdc.MustMarshalBinaryBare(types.NewRawDataRequest(dataSourceID, calldata)),
 	)
+	return nil
 }
 
 // GetRawDataRequest is a function to get raw data request detail by the given request id and external id.
@@ -19,7 +38,7 @@ func (k Keeper) GetRawDataRequest(
 	ctx sdk.Context, requestID, externalID int64,
 ) (types.RawDataRequest, sdk.Error) {
 	store := ctx.KVStore(k.storeKey)
-	if !store.Has(types.RawDataRequestStoreKey(requestID, externalID)) {
+	if !k.CheckRawDataRequestExists(ctx, requestID, externalID) {
 		return types.RawDataRequest{}, types.ErrRawDataRequestNotFound(types.DefaultCodespace)
 	}
 
@@ -27,4 +46,11 @@ func (k Keeper) GetRawDataRequest(
 	var requestDetail types.RawDataRequest
 	k.cdc.MustUnmarshalBinaryBare(bz, &requestDetail)
 	return requestDetail, nil
+}
+
+// CheckRawDataRequestExists checks if the raw request data at this request id and external id
+// presents in the store or not.
+func (k Keeper) CheckRawDataRequestExists(ctx sdk.Context, requestID, externalID int64) bool {
+	store := ctx.KVStore(k.storeKey)
+	return store.Has(types.RawDataRequestStoreKey(requestID, externalID))
 }

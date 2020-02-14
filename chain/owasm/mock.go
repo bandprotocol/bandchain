@@ -8,7 +8,7 @@ type mockExecutionEnvironment struct {
 	receivedValidatorCount  int64
 	prepareBlockTime        int64
 	aggregateBlockTime      int64
-	validatorPubKeys        [][]byte
+	validatorAddresses      [][]byte
 	externalDataResults     [][][]byte
 }
 
@@ -32,8 +32,8 @@ func (m *mockExecutionEnvironment) GetAggregateBlockTime() int64 {
 	return m.aggregateBlockTime
 }
 
-func (m *mockExecutionEnvironment) GetValidatorPubKey(validatorIndex int64) ([]byte, error) {
-	return m.validatorPubKeys[validatorIndex], nil
+func (m *mockExecutionEnvironment) GetValidatorAddress(validatorIndex int64) ([]byte, error) {
+	return m.validatorAddresses[validatorIndex], nil
 }
 
 func (m *mockExecutionEnvironment) RequestExternalData(
