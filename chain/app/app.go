@@ -156,6 +156,7 @@ func NewBandApp(
 	slashingSubspace := app.paramsKeeper.Subspace(slashing.DefaultParamspace)
 	govSubspace := app.paramsKeeper.Subspace(gov.DefaultParamspace)
 	crisisSubspace := app.paramsKeeper.Subspace(crisis.DefaultParamspace)
+	zoracleSubspace := app.paramsKeeper.Subspace(zoracle.DefaultParamspace)
 
 	// The AccountKeeper handles address -> account lookups
 	app.accountKeeper = auth.NewAccountKeeper(
@@ -245,6 +246,7 @@ func NewBandApp(
 		keys[zoracle.StoreKey],
 		app.bankKeeper,
 		app.stakingKeeper,
+		zoracleSubspace,
 	)
 
 	app.mm = module.NewManager(
