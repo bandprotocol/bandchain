@@ -3,6 +3,7 @@ package zoracle
 import (
 	"fmt"
 
+	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -19,6 +20,10 @@ func NewHandler(keeper Keeper) sdk.Handler {
 		// 	return handleMsgStoreCode(ctx, keeper, msg)
 		// case MsgDeleteCode:
 		// 	return handleMsgDeleteCode(ctx, keeper, msg)
+		case MsgCreateDataSource:
+			return handleMsgCreateDataSource(ctx, keeper, msg)
+		case MsgEditDataSource:
+			return handleMsgEditDataSource(ctx, keeper, msg)
 		default:
 			errMsg := fmt.Sprintf("unrecognized zoracle message type: %T", msg)
 			return sdk.ErrUnknownRequest(errMsg).Result()
@@ -147,6 +152,34 @@ func NewHandler(keeper Keeper) sdk.Handler {
 // 	})
 // 	return sdk.Result{Events: ctx.EventManager().Events()}
 // }
+
+// handleMsgCreateDataSource is a function to handle MsgCreateDataSource.
+func handleMsgCreateDataSource(ctx sdk.Context, keeper Keeper, msg MsgCreateDataSource) sdk.Result {
+	err := keeper.AddDataSource(ctx, msg.Owner, msg.Name, msg.Fee, msg.Executable)
+	if err != nil {
+		return err.Result()
+	}
+	return sdk.Result{Events: ctx.EventManager().Events()}
+}
+
+// handleMsgEditDataSource is a function to handle MsgEditDataSource.
+func handleMsgEditDataSource(ctx sdk.Context, keeper Keeper, msg MsgEditDataSource) sdk.Result {
+	dataSource, err := keeper.GetDataSource(ctx, msg.DataSourceID)
+	if err != nil {
+		return err.Result()
+	}
+
+	if !dataSource.Owner.Equals(msg.Sender) {
+		// TODO: change it later.
+		return types.ErrInvalidOwner(types.DefaultCodespace).Result()
+	}
+
+	err = keeper.EditDataSource(ctx, msg.DataSourceID, msg.Owner, msg.Name, msg.Fee, msg.Executable)
+	if err != nil {
+		return err.Result()
+	}
+	return sdk.Result{Events: ctx.EventManager().Events()}
+}
 
 func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 	// 	reqIDs := keeper.GetPendingRequests(ctx)

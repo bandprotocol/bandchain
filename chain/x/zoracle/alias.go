@@ -47,8 +47,10 @@ var (
 )
 
 type (
-	Keeper         = keeper.Keeper
-	MsgRequestData = types.MsgRequestData
-	MsgReportData  = types.MsgReportData
+	Keeper              = keeper.Keeper
+	MsgRequestData      = types.MsgRequestData
+	MsgReportData       = types.MsgReportData
+	MsgCreateDataSource = types.MsgCreateDataSource
+	MsgEditDataSource   = types.MsgEditDataSource
 	// RequestInfo    = types.RequestInfo
 )

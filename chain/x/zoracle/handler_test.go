@@ -1,5 +1,14 @@
 package zoracle
 
+import (
+	"testing"
+
+	keep "github.com/bandprotocol/d3n/chain/x/zoracle/internal/keeper"
+	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/require"
+)
+
 // func setupTestValidator(ctx sdk.Context, keeper Keeper, pk string) sdk.ValAddress {
 // 	pubKey := keep.NewPubKey(pk)
 // 	validatorAddress := sdk.ValAddress(pubKey.Address())
@@ -474,3 +483,65 @@ package zoracle
 // 	pendingRequests = keeper.GetPendingRequests(ctx)
 // 	require.Equal(t, []uint64{}, pendingRequests)
 // }
+
+func mockDataSource(ctx sdk.Context, keeper Keeper) sdk.Result {
+	owner := sdk.AccAddress([]byte("owner"))
+	name := "data_source_1"
+	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
+	executable := []byte("executable")
+	sender := sdk.AccAddress([]byte("sender"))
+	msg := types.NewMsgCreateDataSource(owner, name, fee, executable, sender)
+	return handleMsgCreateDataSource(ctx, keeper, msg)
+}
+
+func TestCreateDataSourceSuccess(t *testing.T) {
+	ctx, keeper := keep.CreateTestInput(t, false)
+
+	got := mockDataSource(ctx, keeper)
+	require.True(t, got.IsOK(), "expected set data source to be ok, got %v", got)
+
+	dataSource, err := keeper.GetDataSource(ctx, 1)
+	require.Nil(t, err)
+	require.Equal(t, sdk.AccAddress([]byte("owner")), dataSource.Owner)
+	require.Equal(t, "data_source_1", dataSource.Name)
+	require.Equal(t, sdk.NewCoins(sdk.NewInt64Coin("uband", 10)), dataSource.Fee)
+	require.Equal(t, []byte("executable"), dataSource.Executable)
+}
+
+func TestEditDataSourceSuccess(t *testing.T) {
+	ctx, keeper := keep.CreateTestInput(t, false)
+	mockDataSource(ctx, keeper)
+
+	newOwner := sdk.AccAddress([]byte("owner2"))
+	newName := "data_source_2"
+	newFee := sdk.NewCoins(sdk.NewInt64Coin("uband", 99))
+	newExecutable := []byte("executable_2")
+	sender := sdk.AccAddress([]byte("owner"))
+
+	msg := types.NewMsgEditDataSource(1, newOwner, newName, newFee, newExecutable, sender)
+	got := handleMsgEditDataSource(ctx, keeper, msg)
+	require.True(t, got.IsOK(), "expected edit data source to be ok, got %v", got)
+
+	dataSource, err := keeper.GetDataSource(ctx, 1)
+	require.Nil(t, err)
+	require.Equal(t, newOwner, dataSource.Owner)
+	require.Equal(t, newName, dataSource.Name)
+	require.Equal(t, newFee, dataSource.Fee)
+	require.Equal(t, newExecutable, dataSource.Executable)
+}
+
+func TestEditDataSourceByNotOwner(t *testing.T) {
+	ctx, keeper := keep.CreateTestInput(t, false)
+	mockDataSource(ctx, keeper)
+
+	newOwner := sdk.AccAddress([]byte("owner2"))
+	newName := "data_source_2"
+	newFee := sdk.NewCoins(sdk.NewInt64Coin("uband", 99))
+	newExecutable := []byte("executable_2")
+	sender := sdk.AccAddress([]byte("sender"))
+
+	msg := types.NewMsgEditDataSource(1, newOwner, newName, newFee, newExecutable, sender)
+	got := handleMsgEditDataSource(ctx, keeper, msg)
+	require.False(t, got.IsOK())
+	require.Equal(t, types.CodeInvalidOwner, got.Code)
+}
