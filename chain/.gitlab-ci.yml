@@ -2,6 +2,7 @@ chain-test:
   stage: test
   image: bandprotocol/go-rust:0.1.1
   script:
+    - source ~/.profile
     - cd chain
     - ./run_tests.sh
   only:
