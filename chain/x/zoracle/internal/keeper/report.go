@@ -30,23 +30,21 @@ func (k Keeper) AddReport(
 		return types.ErrInvalidValidator(types.DefaultCodespace)
 	}
 
-	isFirstReport := true
 	for _, submittedValidator := range request.ReceivedValidators {
 		if validator.Equals(submittedValidator) {
-			isFirstReport = false
-		}
-	}
-
-	if isFirstReport {
-		if int64(len(dataSet)) != k.GetRawDataRequestCount(ctx, requestID) {
 			// TODO: fix error later
-			return types.ErrRequestNotFound(types.DefaultCodespace)
+			return types.ErrInvalidValidator(types.DefaultCodespace)
 		}
 	}
 
-	lastExternalID := dataSet[0].ExternalDataID - 1
-	for _, rawReport := range dataSet {
-		if lastExternalID >= rawReport.ExternalDataID {
+	if int64(len(dataSet)) != k.GetRawDataRequestCount(ctx, requestID) {
+		// TODO: fix error later
+		return types.ErrRequestNotFound(types.DefaultCodespace)
+	}
+
+	lastExternalID := int64(0)
+	for idx, rawReport := range dataSet {
+		if idx != 0 && lastExternalID >= rawReport.ExternalDataID {
 			// TODO: fix error later
 			return types.ErrRequestNotFound(types.DefaultCodespace)
 		}
@@ -58,13 +56,12 @@ func (k Keeper) AddReport(
 		lastExternalID = rawReport.ExternalDataID
 	}
 
-	if isFirstReport {
-		request.ReceivedValidators = append(request.ReceivedValidators, validator)
-		k.SetRequest(ctx, requestID, request)
-		if k.ShouldBecomePendingResolve(ctx, requestID) {
-			k.AddPendingRequest(ctx, requestID)
-		}
+	request.ReceivedValidators = append(request.ReceivedValidators, validator)
+	k.SetRequest(ctx, requestID, request)
+	if k.ShouldBecomePendingResolve(ctx, requestID) {
+		k.AddPendingRequest(ctx, requestID)
 	}
+
 	return nil
 }
 

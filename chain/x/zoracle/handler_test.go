@@ -35,7 +35,7 @@ func TestRequestSuccess(t *testing.T) {
 	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, sender)
 
 	// Test here
-	got := handleMsgRequest(ctx, keeper, msg)
+	got := handleMsgRequestData(ctx, keeper, msg)
 	require.True(t, got.IsOK(), "expected request to be ok, got %v", got)
 
 	// Check global request count
@@ -65,7 +65,7 @@ func TestRequestInvalidDataSource(t *testing.T) {
 	sender := sdk.AccAddress([]byte("sender"))
 
 	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, sender)
-	got := handleMsgRequest(ctx, keeper, msg)
+	got := handleMsgRequestData(ctx, keeper, msg)
 	require.False(t, got.IsOK())
 
 	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
@@ -79,7 +79,7 @@ func TestRequestInvalidDataSource(t *testing.T) {
 	keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
 	keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
 
-	got = handleMsgRequest(ctx, keeper, msg)
+	got = handleMsgRequestData(ctx, keeper, msg)
 	require.False(t, got.IsOK())
 }
 
@@ -118,25 +118,16 @@ func TestReportSuccess(t *testing.T) {
 		types.NewRawDataReport(42, []byte("data1")),
 	}, validatorAddress1)
 
-	got := handleMsgReport(ctx, keeper, msg)
+	got := handleMsgReportData(ctx, keeper, msg)
 	require.True(t, got.IsOK(), "expected report to be ok, got %v", got)
 	list := keeper.GetPendingResolveList(ctx)
-	require.Equal(t, []int64{}, list)
-
-	msg = types.NewMsgReportData(1, []types.RawDataReport{
-		types.NewRawDataReport(42, []byte("data1.5")),
-	}, validatorAddress1)
-
-	got = handleMsgReport(ctx, keeper, msg)
-	require.True(t, got.IsOK(), "expected report to be ok, got %v", got)
-	list = keeper.GetPendingResolveList(ctx)
 	require.Equal(t, []int64{}, list)
 
 	msg = types.NewMsgReportData(1, []types.RawDataReport{
 		types.NewRawDataReport(42, []byte("data2")),
 	}, validatorAddress2)
 
-	got = handleMsgReport(ctx, keeper, msg)
+	got = handleMsgReportData(ctx, keeper, msg)
 	require.True(t, got.IsOK(), "expected report to be ok, got %v", got)
 
 	list = keeper.GetPendingResolveList(ctx)
@@ -179,7 +170,7 @@ func TestReportFailed(t *testing.T) {
 	}, validatorAddress1)
 
 	// Test only 1 failed case, other case tested in keeper/report_test.go
-	got := handleMsgReport(ctx, keeper, msg)
+	got := handleMsgReportData(ctx, keeper, msg)
 	require.False(t, got.IsOK())
 }
 
@@ -201,7 +192,7 @@ func TestReportFailed(t *testing.T) {
 // 	keeper.SetPendingResolveList(ctx, pendingRequests)
 
 // 	msg := types.NewMsgReport(1, []byte("data"), validatorAddress)
-// 	got := handleMsgReport(ctx, keeper, msg)
+// 	got := handleMsgReportData(ctx, keeper, msg)
 // 	require.Equal(t, types.CodeInvalidValidator, got.Code)
 // }
 
@@ -230,7 +221,7 @@ func TestReportFailed(t *testing.T) {
 
 // 	// report data
 // 	msg := types.NewMsgReport(2, []byte("data"), validatorAddress)
-// 	got := handleMsgReport(ctx, keeper, msg)
+// 	got := handleMsgReportData(ctx, keeper, msg)
 // 	require.Equal(t, types.CodeOutOfReportPeriod, got.Code)
 // }
 

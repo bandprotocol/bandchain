@@ -75,19 +75,6 @@ func TestAddReportSuccess(t *testing.T) {
 
 	list = keeper.GetPendingResolveList(ctx)
 	require.Equal(t, []int64{1}, list)
-
-	err = keeper.AddReport(ctx, 1, []types.RawDataReport{
-		types.NewRawDataReport(10, []byte("NewValue")),
-	}, sdk.ValAddress([]byte("validator2")))
-	require.Nil(t, err)
-
-	report, err = keeper.GetRawDataReport(ctx, 1, 2, sdk.ValAddress([]byte("validator2")))
-	require.Nil(t, err)
-	require.Equal(t, []byte("data1/2"), report)
-
-	report, err = keeper.GetRawDataReport(ctx, 1, 10, sdk.ValAddress([]byte("validator2")))
-	require.Nil(t, err)
-	require.Equal(t, []byte("NewValue"), report)
 }
 
 func TestAddReportFailed(t *testing.T) {
@@ -142,7 +129,7 @@ func TestAddReportFailed(t *testing.T) {
 	}, sdk.ValAddress([]byte("validator1")))
 	require.NotNil(t, err)
 
-	// Send incomplete report on request in first report.
+	// Send incomplete report on request.
 	request = newDefaultRequest()
 	keeper.SetRequest(ctx, 1, request)
 
@@ -181,6 +168,26 @@ func TestAddReportFailed(t *testing.T) {
 		types.NewRawDataReport(3, []byte("data2/1")),
 		types.NewRawDataReport(10, []byte("data1/1")),
 	}, sdk.ValAddress([]byte("validator1")))
+	require.NotNil(t, err)
+
+	// Cannot report in same request id.
+	request = newDefaultRequest()
+	keeper.SetRequest(ctx, 1, request)
+
+	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata1")))
+	keeper.SetRawDataRequest(ctx, 1, 10, types.NewRawDataRequest(2, []byte("calldata2")))
+
+	ctx = ctx.WithBlockHeight(2)
+	err = keeper.AddReport(ctx, 1, []types.RawDataReport{
+		types.NewRawDataReport(2, []byte("OldValue1")),
+		types.NewRawDataReport(10, []byte("OldValue2")),
+	}, sdk.ValAddress([]byte("validator2")))
+	require.Nil(t, err)
+
+	err = keeper.AddReport(ctx, 1, []types.RawDataReport{
+		types.NewRawDataReport(2, []byte("NewValue1")),
+		types.NewRawDataReport(10, []byte("NewValue2")),
+	}, sdk.ValAddress([]byte("validator2")))
 	require.NotNil(t, err)
 
 }

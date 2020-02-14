@@ -14,9 +14,9 @@ func NewHandler(keeper Keeper) sdk.Handler {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 		switch msg := msg.(type) {
 		case MsgRequestData:
-			return handleMsgRequest(ctx, keeper, msg)
+			return handleMsgRequestData(ctx, keeper, msg)
 		case MsgReportData:
-			return handleMsgReport(ctx, keeper, msg)
+			return handleMsgReportData(ctx, keeper, msg)
 		// case MsgStoreCode:
 		// 	return handleMsgStoreCode(ctx, keeper, msg)
 		// case MsgDeleteCode:
@@ -36,7 +36,7 @@ func NewHandler(keeper Keeper) sdk.Handler {
 	}
 }
 
-func handleMsgRequest(ctx sdk.Context, keeper Keeper, msg MsgRequestData) sdk.Result {
+func handleMsgRequestData(ctx sdk.Context, keeper Keeper, msg MsgRequestData) sdk.Result {
 	id, err := keeper.AddRequest(
 		ctx,
 		msg.OracleScriptID,
@@ -79,7 +79,7 @@ func handleMsgRequest(ctx sdk.Context, keeper Keeper, msg MsgRequestData) sdk.Re
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
-func handleMsgReport(ctx sdk.Context, keeper Keeper, msg MsgReportData) sdk.Result {
+func handleMsgReportData(ctx sdk.Context, keeper Keeper, msg MsgReportData) sdk.Result {
 	err := keeper.AddReport(ctx, msg.RequestID, msg.DataSet, msg.Sender)
 	if err != nil {
 		return err.Result()
