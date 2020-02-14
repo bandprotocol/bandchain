@@ -9,3 +9,8 @@
 vendor
 .vendor-new
 build
+
+Cargo.lock
+**/target
+**/pkg
+/owasm/res/*.wasm
