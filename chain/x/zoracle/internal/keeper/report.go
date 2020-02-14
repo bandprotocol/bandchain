@@ -6,6 +6,68 @@ import (
 	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 )
 
+func (k Keeper) AddReport(
+	ctx sdk.Context, requestID int64, dataSet []types.RawDataReport, validator sdk.ValAddress,
+) sdk.Error {
+	request, err := k.GetRequest(ctx, requestID)
+	if err != nil {
+		return err
+	}
+
+	if request.IsResolved || request.ExpirationHeight < ctx.BlockHeight() {
+		// TODO: fix error later
+		return types.ErrRequestNotFound(types.DefaultCodespace)
+	}
+
+	found := false
+	for _, validValidator := range request.RequestedValidators {
+		if validator.Equals(validValidator) {
+			found = true
+			break
+		}
+	}
+	if !found {
+		return types.ErrInvalidValidator(types.DefaultCodespace)
+	}
+
+	isFirstReport := true
+	for _, submittedValidator := range request.ReceivedValidators {
+		if validator.Equals(submittedValidator) {
+			isFirstReport = false
+		}
+	}
+
+	if isFirstReport {
+		if int64(len(dataSet)) != keeper.GetRawDataRequestCount(ctx, requestID) {
+			// TODO: fix error later
+			return types.ErrRequestNotFound(types.DefaultCodespace)
+		}
+	}
+
+	lastExternalID := dataSet[0].ExternalDataID - 1
+	for _, rawReport := range dataSet {
+		if lastExternalID >= rawReport.ExternalDataID {
+			// TODO: fix error later
+			return types.ErrRequestNotFound(types.DefaultCodespace)
+		}
+		if !k.CheckRawDataRequestExists(ctx, requestID, rawReport.ExternalDataID) {
+			// TODO: fix error later
+			return types.ErrRequestNotFound(types.DefaultCodespace)
+		}
+		k.SetRawDataReport(ctx, requestID, rawReport.ExternalDataID, validator, rawReport.Data)
+		lastExternalID = rawReport.ExternalDataID
+	}
+
+	if isFirstReport {
+		request.ReceivedValidators = append(request.ReceivedValidators, validator)
+		k.SetRequest(ctx, requestID, request)
+		if k.ShouldBecomePendingResolve(ctx, requestID) {
+			k.AddPendingRequest(ctx, requestID)
+		}
+	}
+	return nil
+}
+
 // SetRawDataReport is a function that saves a raw data report to store.
 func (k Keeper) SetRawDataReport(
 	ctx sdk.Context,
