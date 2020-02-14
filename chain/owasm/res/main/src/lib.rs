@@ -13,9 +13,7 @@ pub extern "C" fn execute() {
         let req_id = getCurrentRequestID();
         let validators_count = getRequestedValidatorCount();
 
-        let arr: [u8; 8] = transmute((req_id * 10 + validators_count).to_be());
-        let mut data = Box::new(arr).to_vec();
-        data.reverse();
-        saveReturnData(data.as_ptr(), 8);
+        let arr: [u8; 8] = transmute((req_id * 10 + validators_count).to_le());
+        saveReturnData(Box::new(arr).to_vec().as_ptr(), 8);
     }
 }
