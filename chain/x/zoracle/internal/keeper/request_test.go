@@ -8,18 +8,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func newDefaultRequest() types.Request {
-	return types.NewRequest(
-		1,
-		[]byte("calldata"),
-		[]sdk.ValAddress{sdk.ValAddress([]byte("validator1")), sdk.ValAddress([]byte("validator2"))},
-		2,
-		0,
-		1581503227,
-		100,
-	)
-}
-
 func TestGetterSetterRequest(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
@@ -32,6 +20,33 @@ func TestGetterSetterRequest(t *testing.T) {
 	actualRequest, err := keeper.GetRequest(ctx, 1)
 	require.Nil(t, err)
 	require.Equal(t, request, actualRequest)
+}
+
+func TestRequest(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	calldata := []byte("calldata")
+	_, err := keeper.Request(ctx, 1, calldata, 2, 2, 100)
+	require.NotNil(t, err)
+
+	script := getTestOracleScript()
+	keeper.SetOracleScript(ctx, 1, script)
+	_, err = keeper.Request(ctx, 1, calldata, 2, 2, 100)
+	require.NotNil(t, err)
+
+	// Setup validator1
+	_, err = keeper.Request(ctx, 1, calldata, 2, 2, 100)
+	require.NotNil(t, err)
+
+	// Setup validator2
+	_, err = keeper.Request(ctx, 1, calldata, 2, 2, 100)
+	require.NotNil(t, err)
+
+	dataSource := getTestDataSource()
+	keeper.SetDataSource(ctx, 1, dataSource)
+	requestID, err := keeper.Request(ctx, 1, calldata, 2, 2, 100)
+	require.Nil(t, err)
+	require.Equal(t, int64(1), requestID)
 }
 
 // TestAddNewReceiveValidator tests keeper can add valid validator to request
@@ -157,5 +172,8 @@ func TestAddPendingRequest(t *testing.T) {
 	require.Equal(t, types.CodeDuplicateRequest, err.Code())
 	reqIDs = keeper.GetPendingRequests(ctx)
 	require.Equal(t, []int64{1, 2, 3}, reqIDs)
+}
 
+func TestHasToPutInPendingList(t *testing.T) {
+	// TODO: Write test
 }

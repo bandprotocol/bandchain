@@ -12,8 +12,8 @@ func NewHandler(keeper Keeper) sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) sdk.Result {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 		switch msg := msg.(type) {
-		// case MsgRequest:
-		// 	return handleMsgRequest(ctx, keeper, msg)
+		case MsgRequestData:
+			return handleMsgRequest(ctx, keeper, msg)
 		// case MsgReport:
 		// 	return handleMsgReport(ctx, keeper, msg)
 		// case MsgStoreCode:
@@ -31,44 +31,26 @@ func NewHandler(keeper Keeper) sdk.Handler {
 	}
 }
 
-// func handleMsgRequest(ctx sdk.Context, keeper Keeper, msg MsgRequest) sdk.Result {
-// 	// Get Code from code hash
-// 	storedCode, sdkError := keeper.GetCode(ctx, msg.CodeHash)
-// 	if sdkError != nil {
-// 		return sdkError.Result()
-// 	}
-
-// 	newRequestID := keeper.GetNextRequestID(ctx)
-
-// 	newRequest := types.NewRequest(
-// 		msg.CodeHash,
-// 		msg.Params,
-// 		uint64(ctx.BlockHeight())+msg.ReportPeriod,
-// 	)
-
-// 	prepare, err := wasm.Prepare(storedCode.Code, msg.Params)
-// 	if err != nil {
-// 		return sdk.NewError(types.DefaultCodespace, types.WasmError, err.Error()).Result()
-// 	}
-
-// 	// Save Request to state
-// 	keeper.SetRequest(ctx, newRequestID, newRequest)
-// 	// Add new request to pending bucket
-// 	pendingRequests := keeper.GetPendingRequests(ctx)
-// 	pendingRequests = append(pendingRequests, newRequestID)
-// 	keeper.SetPendingRequests(ctx, pendingRequests)
-// 	// Emit request event
-// 	ctx.EventManager().EmitEvents(sdk.Events{
-// 		sdk.NewEvent(
-// 			types.EventTypeRequest,
-// 			sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", newRequestID)),
-// 			sdk.NewAttribute(types.AttributeKeyCodeHash, hex.EncodeToString(msg.CodeHash)),
-// 			sdk.NewAttribute(types.AttributeKeyCodeName, storedCode.Name),
-// 			sdk.NewAttribute(types.AttributeKeyPrepare, hex.EncodeToString(prepare)),
-// 		),
-// 	})
-// 	return sdk.Result{Events: ctx.EventManager().Events()}
-// }
+func handleMsgRequest(ctx sdk.Context, keeper Keeper, msg MsgRequestData) sdk.Result {
+	id, err := keeper.Request(
+		msg.OracleScriptID,
+		msg.Calldata,
+		msg.RequestedValidatorCount,
+		msg.SufficientValidatorCount,
+		msg.Expiration,
+	)
+	if err != nil {
+		return err.Result()
+	}
+	// Emit request event
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeRequest,
+			sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", id)),
+		),
+	})
+	return sdk.Result{Events: ctx.EventManager().Events()}
+}
 
 // func handleMsgReport(ctx sdk.Context, keeper Keeper, msg MsgReport) sdk.Result {
 // 	// check request id is valid.

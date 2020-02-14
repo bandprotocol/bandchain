@@ -24,6 +24,49 @@ func (k Keeper) GetRequest(ctx sdk.Context, id int64) (types.Request, sdk.Error)
 	return request, nil
 }
 
+// Request attempts to create new request.
+// An error is returned if some conditions failed
+func (k Keeper) Request(
+	ctx sdk.Context, oracleScriptID int64, calldata []byte,
+	requestedValidatorCount, sufficientValidatorCount, expiration int64,
+) (int64, sdk.Error) {
+	script, err := k.GetOracleScript(ctx, oracleScriptID)
+	if err != nil {
+		return 0, err
+	}
+
+	// TODO: Test calldata size here
+
+	validatorsByPower := k.StakingKeeper.GetBondedValidatorsByPower(ctx)
+	if int64(len(validatorsByPower)) < requestedValidatorCount {
+		// TODO: Fix error later
+		return 0, types.ErrRequestNotFound(types.DefaultCodespace)
+	}
+
+	validators := make([]sdk.ValAddress, requestedValidatorCount)
+	for i := int64(0); i < requestedValidatorCount; i++ {
+		validators[i] = validatorsByPower[i].GetOperator()
+	}
+
+	requestID := k.GetNextRequestID(ctx)
+	k.SetRequest(ctx, requestID, types.NewRequest(
+		oracleScriptID,
+		calldata,
+		validators,
+		sufficientValidatorCount,
+		ctx.BlockHeight(),
+		ctx.BlockTime().Unix(),
+		ctx.BlockHeight()+expiration,
+	))
+
+	// Run prepare wasm
+	_ = script.Code
+
+	// TODO: Check raw request data length
+
+	return requestID, nil
+}
+
 // AddNewReceiveValidator checks that new validator is a valid validator and not in received list yet then add new
 // validator to list.
 func (k Keeper) AddNewReceiveValidator(ctx sdk.Context, id int64, validator sdk.ValAddress) sdk.Error {
@@ -68,6 +111,15 @@ func (k Keeper) SetResolve(ctx sdk.Context, id int64, isResolved bool) sdk.Error
 func (k Keeper) CheckRequestExists(ctx sdk.Context, id int64) bool {
 	store := ctx.KVStore(k.storeKey)
 	return store.Has(types.RequestStoreKey(id))
+}
+
+// HasToPutInPendingList return boolean that request must be put in pending list or not.
+func (k Keeper) HasToPutInPendingList(ctx sdk.Context, id int64) bool {
+	request, err := k.GetRequest(ctx, id)
+	if err != nil {
+		return false
+	}
+	return int64(len(request.ReceivedValidators)) == request.SufficientValidatorCount
 }
 
 // AddPendingRequest checks and append new request id to list if id already existed in list, it will return error.

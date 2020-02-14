@@ -57,3 +57,11 @@ func TestGettterSetterRawDataRequest(t *testing.T) {
 	err = keeper.SetRawDataRequest(ctx, 1, 42, 2, []byte("calldata3"))
 	require.NotNil(t, err)
 }
+
+func TestGetRawDataRequestCount(t *testing.T) {
+	// TODO: Write test
+}
+
+func TestGetRawDataRequests(t *testing.T) {
+	// TODO: Write test
+}

@@ -2,9 +2,11 @@ package keeper
 
 import (
 	"encoding/hex"
+	"path/filepath"
 	"testing"
 	"time"
 
+	"github.com/bandprotocol/d3n/chain/wasm"
 	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 	"github.com/stretchr/testify/require"
 	crypto "github.com/tendermint/tendermint/crypto"
@@ -137,4 +139,38 @@ func NewPubKey(pk string) (res crypto.PubKey) {
 	var pkEd ed25519.PubKeyEd25519
 	copy(pkEd[:], pkBytes)
 	return pkEd
+}
+
+func newDefaultRequest() types.Request {
+	return types.NewRequest(
+		1,
+		[]byte("calldata"),
+		[]sdk.ValAddress{sdk.ValAddress([]byte("validator1")), sdk.ValAddress([]byte("validator2"))},
+		2,
+		0,
+		1581503227,
+		100,
+	)
+}
+
+func getTestOracleScript() types.OracleScript {
+	absPath, _ := filepath.Abs("../../../../owasm/res/silly.wasm")
+	code, err := wasm.ReadBytes(absPath)
+	if err != nil {
+		panic(err)
+	}
+	return types.NewOracleScript(
+		sdk.AccAddress([]byte("owner")),
+		"silly script",
+		code,
+	)
+}
+
+func getTestDataSource() types.DataSource {
+	return types.NewDataSource(
+		sdk.AccAddress([]byte("owner")),
+		"data_source",
+		sdk.NewCoins(sdk.NewInt64Coin("uband", 10)),
+		[]byte("executable"),
+	)
 }
