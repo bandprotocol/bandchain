@@ -90,8 +90,8 @@ func (keeper Keeper) GetParams(ctx sdk.Context) types.Params {
 }
 
 // GetRequestCount returns the current number of all requests ever exist.
-func (k Keeper) GetRequestCount(ctx sdk.Context) uint64 {
-	var requestNumber uint64
+func (k Keeper) GetRequestCount(ctx sdk.Context) int64 {
+	var requestNumber int64
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(types.RequestsCountStoreKey)
 	if bz == nil {
@@ -106,7 +106,7 @@ func (k Keeper) GetRequestCount(ctx sdk.Context) uint64 {
 
 // GetNextRequestID increments and returns the current number of requests.
 // If the global request count is not set, it initializes it with value 0.
-func (k Keeper) GetNextRequestID(ctx sdk.Context) uint64 {
+func (k Keeper) GetNextRequestID(ctx sdk.Context) int64 {
 	requestNumber := k.GetRequestCount(ctx)
 	store := ctx.KVStore(k.storeKey)
 

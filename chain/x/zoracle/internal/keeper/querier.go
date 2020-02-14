@@ -87,7 +87,7 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 
 // queryPending is a query function to get the list of request IDs that are still on pending status.
 func queryPending(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
-	res, err := codec.MarshalJSONIndent(keeper.cdc, keeper.GetPendingRequests(ctx))
+	res, err := codec.MarshalJSONIndent(keeper.cdc, keeper.GetPendingResolveList(ctx))
 	if err != nil {
 		panic("could not marshal result to JSON")
 	}

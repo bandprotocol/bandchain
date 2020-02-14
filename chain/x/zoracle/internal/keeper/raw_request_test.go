@@ -12,7 +12,22 @@ import (
 func TestGettterSetterRawDataRequest(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
-	err := keeper.SetRawDataRequest(ctx, 1, 1, 0, []byte("calldata1"))
+	keeper.SetRawDataRequest(ctx, 1, 1, types.NewRawDataRequest(0, []byte("calldata1")))
+	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata2")))
+
+	rawRequest, err := keeper.GetRawDataRequest(ctx, 1, 1)
+	require.Nil(t, err)
+	expect := types.NewRawDataRequest(0, []byte("calldata1"))
+	require.Equal(t, expect, rawRequest)
+
+	_, err = keeper.GetRawDataRequest(ctx, 1, 3)
+	require.Equal(t, types.CodeRequestNotFound, err.Code())
+}
+
+func TestAddNewRawDataRequest(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	err := keeper.AddNewRawDataRequest(ctx, 1, 1, 0, []byte("calldata1"))
 	require.NotNil(t, err)
 
 	_, err = keeper.GetRawDataRequest(ctx, 1, 1)
@@ -21,7 +36,7 @@ func TestGettterSetterRawDataRequest(t *testing.T) {
 	request := newDefaultRequest()
 	keeper.SetRequest(ctx, 1, request)
 
-	err = keeper.SetRawDataRequest(ctx, 1, 1, 0, []byte("calldata1"))
+	err = keeper.AddNewRawDataRequest(ctx, 1, 1, 0, []byte("calldata1"))
 	require.NotNil(t, err)
 
 	dataSource := types.NewDataSource(
@@ -32,7 +47,7 @@ func TestGettterSetterRawDataRequest(t *testing.T) {
 	)
 	keeper.SetDataSource(ctx, 1, dataSource)
 
-	err = keeper.SetRawDataRequest(ctx, 1, 42, 1, []byte("calldata1"))
+	err = keeper.AddNewRawDataRequest(ctx, 1, 42, 1, []byte("calldata1"))
 	require.Nil(t, err)
 
 	rawRequest, err := keeper.GetRawDataRequest(ctx, 1, 42)
@@ -54,6 +69,48 @@ func TestGettterSetterRawDataRequest(t *testing.T) {
 	keeper.SetDataSource(ctx, 2, dataSource2)
 
 	// Cannot set to existed external id
-	err = keeper.SetRawDataRequest(ctx, 1, 42, 2, []byte("calldata3"))
+	err = keeper.AddNewRawDataRequest(ctx, 1, 42, 2, []byte("calldata3"))
 	require.NotNil(t, err)
+}
+
+func TestGetRawDataRequestCount(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	keeper.SetRawDataRequest(ctx, 1, 1, types.NewRawDataRequest(0, []byte("calldata1")))
+	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata2")))
+
+	keeper.SetRawDataRequest(ctx, 2, 1, types.NewRawDataRequest(0, []byte("calldata1")))
+	keeper.SetRawDataRequest(ctx, 2, 2, types.NewRawDataRequest(1, []byte("calldata2")))
+	keeper.SetRawDataRequest(ctx, 2, 3, types.NewRawDataRequest(2, []byte("calldata3")))
+
+	require.Equal(t, int64(2), keeper.GetRawDataRequestCount(ctx, 1))
+	require.Equal(t, int64(3), keeper.GetRawDataRequestCount(ctx, 2))
+	require.Equal(t, int64(0), keeper.GetRawDataRequestCount(ctx, 3))
+	require.Equal(t, int64(0), keeper.GetRawDataRequestCount(ctx, -1))
+}
+
+func TestGetRawDataRequests(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	keeper.SetRawDataRequest(ctx, 1, 1, types.NewRawDataRequest(0, []byte("calldata1")))
+	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata2")))
+
+	keeper.SetRawDataRequest(ctx, 2, 1, types.NewRawDataRequest(0, []byte("calldata1")))
+	keeper.SetRawDataRequest(ctx, 2, 3, types.NewRawDataRequest(2, []byte("calldata3")))
+	keeper.SetRawDataRequest(ctx, 2, 2, types.NewRawDataRequest(1, []byte("calldata2")))
+
+	ans1 := []types.RawDataRequest{
+		types.NewRawDataRequest(0, []byte("calldata1")),
+		types.NewRawDataRequest(1, []byte("calldata2")),
+	}
+
+	ans2 := []types.RawDataRequest{
+		types.NewRawDataRequest(0, []byte("calldata1")),
+		types.NewRawDataRequest(1, []byte("calldata2")),
+		types.NewRawDataRequest(2, []byte("calldata3")),
+	}
+	require.Equal(t, ans1, keeper.GetRawDataRequests(ctx, 1))
+	require.Equal(t, ans2, keeper.GetRawDataRequests(ctx, 2))
+	require.Equal(t, []types.RawDataRequest{}, keeper.GetRawDataRequests(ctx, 3))
+	require.Equal(t, []types.RawDataRequest{}, keeper.GetRawDataRequests(ctx, -1))
 }
