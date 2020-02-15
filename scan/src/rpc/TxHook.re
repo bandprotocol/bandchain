@@ -268,8 +268,7 @@ let atHeight = (height, ~page=1, ~limit=25, ~pollInterval=?, ()) => {
 };
 
 let latest = (~page=1, ~limit=10, ~pollInterval=?, ()) => {
-  let json = AxiosHooks.use({j|d3n/txs/latest?page=$page&limit=$limit|j}, ~pollInterval?, ());
-  json |> Belt.Option.map(_, Txs.decodeTxs);
+  Some({Txs.totalCount: 0, txs: []});
 };
 
 let withCodehash = (~codeHash, ~page=1, ~limit=10, ~pollInterval=?, ()) => {
