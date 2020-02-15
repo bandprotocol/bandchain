@@ -16,7 +16,7 @@ module Styles = {
 
 [@react.component]
 let make = () => {
-  let txsOpt = TxHook.latest(~limit=10, ~pollInterval=3000, ());
+  let txsOpt = TxHook.latest(~limit=10, ~pollInterval=100000, ());
   let txs = txsOpt->Belt.Option.mapWithDefault([], ({txs}) => txs);
 
   <>

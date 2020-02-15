@@ -10,7 +10,7 @@ let context = React.createContext(ContextHelper.default);
 [@react.component]
 let make = (~children) => {
   let financialOpt = PriceHook.get(~pollInterval=300000, ()); // 5-min
-  let latestBlocksOpt = BlockHook.latest(~pollInterval=3000, ()); // 3-sec
+  let latestBlocksOpt = BlockHook.latest(~pollInterval=100000, ()); // 3-sec
   let validatorsOpt = ValidatorHook.get(~pollInterval=300000, ()); // 5-min
 
   let data = {
