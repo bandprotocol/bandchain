@@ -20,7 +20,7 @@ extern "C" {
 }
 
 #[no_mangle]
-pub extern "C" fn prepare() {
+pub fn prepare() {
     let message = "band-protocol".as_bytes();
     unsafe {
         requestExternalData(1, 1, message.as_ptr(), message.len() as i32);
@@ -28,7 +28,7 @@ pub extern "C" fn prepare() {
 }
 
 #[no_mangle]
-pub extern "C" fn execute() {
+pub fn execute() {
     unsafe {
         let data_size = getExternalDataSize(1, 0);
         let mut data = vec![0u8; data_size as usize];

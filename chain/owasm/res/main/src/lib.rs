@@ -6,7 +6,7 @@ extern "C" {
 }
 
 #[no_mangle]
-pub extern "C" fn execute() {
+pub fn execute() {
     unsafe {
         let req_id = getCurrentRequestID();
         let validators_count = getRequestedValidatorCount();
