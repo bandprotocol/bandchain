@@ -669,7 +669,7 @@ func TestEndBlock(t *testing.T) {
 
 	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, sender)
 
-	handleMsgRequest(ctx, keeper, msg)
+	handleMsgRequestData(ctx, keeper, msg)
 
 	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress1, []byte("answer1"))
 	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress2, []byte("answer2"))
