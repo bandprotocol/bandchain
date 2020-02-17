@@ -645,3 +645,47 @@ func TestEditOracleScriptByNotOwner(t *testing.T) {
 	require.False(t, got.IsOK())
 	require.Equal(t, types.CodeInvalidOwner, got.Code)
 }
+
+func TestEndBlock(t *testing.T) {
+	ctx, keeper := keep.CreateTestInput(t, false)
+	ctx = ctx.WithBlockHeight(2)
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	calldata := []byte("calldata")
+	sender := sdk.AccAddress([]byte("sender"))
+
+	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
+	keeper.SetOracleScript(ctx, 1, script)
+
+	pubStr := []string{
+		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
+		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
+	}
+
+	validatorAddress1 := keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
+	validatorAddress2 := keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
+
+	dataSource := keep.GetTestDataSource()
+	keeper.SetDataSource(ctx, 1, dataSource)
+
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, sender)
+
+	handleMsgRequestData(ctx, keeper, msg)
+
+	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress1, []byte("answer1"))
+	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress2, []byte("answer2"))
+
+	keeper.SetPendingResolveList(ctx, []int64{1})
+
+	got := handleEndBlock(ctx, keeper)
+	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
+
+	require.Equal(t, []int64{}, keeper.GetPendingResolveList(ctx))
+
+	result, err := keeper.GetResult(ctx, 1, 1, calldata)
+	require.Nil(t, err)
+	require.Equal(t, []byte("answer2"), result)
+
+	actualRequest, err := keeper.GetRequest(ctx, 1)
+	require.Nil(t, err)
+	require.True(t, actualRequest.IsResolved)
+}

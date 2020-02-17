@@ -9,3 +9,7 @@
 vendor
 .vendor-new
 build
+
+**/target/
+**/pkg/
+/owasm/res/*.wasm
