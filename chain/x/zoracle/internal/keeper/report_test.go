@@ -29,6 +29,169 @@ func TestGetterSetterRawDataReport(t *testing.T) {
 	require.Equal(t, types.CodeReportNotFound, err.Code())
 }
 
+func TestAddReportSuccess(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	request := newDefaultRequest()
+	keeper.SetRequest(ctx, 1, request)
+
+	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata1")))
+	keeper.SetRawDataRequest(ctx, 1, 10, types.NewRawDataRequest(2, []byte("calldata2")))
+
+	err := keeper.AddReport(ctx, 1, []types.RawDataReport{
+		types.NewRawDataReport(2, []byte("data1/1")),
+		types.NewRawDataReport(10, []byte("data2/1")),
+	}, sdk.ValAddress([]byte("validator1")))
+
+	require.Nil(t, err)
+
+	req, err := keeper.GetRequest(ctx, 1)
+	require.Equal(t, []sdk.ValAddress{sdk.ValAddress([]byte("validator1"))}, req.ReceivedValidators)
+
+	report, err := keeper.GetRawDataReport(ctx, 1, 2, sdk.ValAddress([]byte("validator1")))
+	require.Nil(t, err)
+	require.Equal(t, []byte("data1/1"), report)
+
+	report, err = keeper.GetRawDataReport(ctx, 1, 10, sdk.ValAddress([]byte("validator1")))
+	require.Nil(t, err)
+	require.Equal(t, []byte("data2/1"), report)
+
+	list := keeper.GetPendingResolveList(ctx)
+	require.Equal(t, []int64{}, list)
+
+	err = keeper.AddReport(ctx, 1, []types.RawDataReport{
+		types.NewRawDataReport(2, []byte("data1/2")),
+		types.NewRawDataReport(10, []byte("data2/2")),
+	}, sdk.ValAddress([]byte("validator2")))
+	require.Nil(t, err)
+
+	report, err = keeper.GetRawDataReport(ctx, 1, 2, sdk.ValAddress([]byte("validator2")))
+	require.Nil(t, err)
+	require.Equal(t, []byte("data1/2"), report)
+
+	report, err = keeper.GetRawDataReport(ctx, 1, 10, sdk.ValAddress([]byte("validator2")))
+	require.Nil(t, err)
+	require.Equal(t, []byte("data2/2"), report)
+
+	list = keeper.GetPendingResolveList(ctx)
+	require.Equal(t, []int64{1}, list)
+}
+
+func TestAddReportFailed(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	// Send report on invalid request.
+	err := keeper.AddReport(ctx, 1, []types.RawDataReport{
+		types.NewRawDataReport(2, []byte("data1/1")),
+		types.NewRawDataReport(10, []byte("data2/1")),
+	}, sdk.ValAddress([]byte("validator1")))
+	require.NotNil(t, err)
+
+	// Send report on resolved request.
+	request := newDefaultRequest()
+	request.IsResolved = true
+	keeper.SetRequest(ctx, 1, request)
+
+	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata1")))
+	keeper.SetRawDataRequest(ctx, 1, 10, types.NewRawDataRequest(2, []byte("calldata2")))
+
+	err = keeper.AddReport(ctx, 1, []types.RawDataReport{
+		types.NewRawDataReport(2, []byte("data1/1")),
+		types.NewRawDataReport(10, []byte("data2/1")),
+	}, sdk.ValAddress([]byte("validator1")))
+	require.NotNil(t, err)
+
+	// Send report by invalid validator.
+	request = newDefaultRequest()
+	keeper.SetRequest(ctx, 1, request)
+
+	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata1")))
+	keeper.SetRawDataRequest(ctx, 1, 10, types.NewRawDataRequest(2, []byte("calldata2")))
+
+	err = keeper.AddReport(ctx, 1, []types.RawDataReport{
+		types.NewRawDataReport(2, []byte("data1/1")),
+		types.NewRawDataReport(10, []byte("data2/1")),
+	}, sdk.ValAddress([]byte("nonvalidator")))
+	require.NotNil(t, err)
+
+	// Send report on expired request.
+	request = newDefaultRequest()
+	request.ExpirationHeight = 5
+	keeper.SetRequest(ctx, 1, request)
+
+	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata1")))
+	keeper.SetRawDataRequest(ctx, 1, 10, types.NewRawDataRequest(2, []byte("calldata2")))
+
+	ctx = ctx.WithBlockHeight(6)
+	err = keeper.AddReport(ctx, 1, []types.RawDataReport{
+		types.NewRawDataReport(2, []byte("data1/1")),
+		types.NewRawDataReport(10, []byte("data2/1")),
+	}, sdk.ValAddress([]byte("validator1")))
+	require.NotNil(t, err)
+
+	// Send incomplete report on request.
+	request = newDefaultRequest()
+	keeper.SetRequest(ctx, 1, request)
+
+	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata1")))
+	keeper.SetRawDataRequest(ctx, 1, 10, types.NewRawDataRequest(2, []byte("calldata2")))
+
+	ctx = ctx.WithBlockHeight(2)
+	err = keeper.AddReport(ctx, 1, []types.RawDataReport{
+		types.NewRawDataReport(2, []byte("data1/1")),
+	}, sdk.ValAddress([]byte("validator1")))
+	require.NotNil(t, err)
+
+	// Send invalid order report.
+	request = newDefaultRequest()
+	keeper.SetRequest(ctx, 1, request)
+
+	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata1")))
+	keeper.SetRawDataRequest(ctx, 1, 10, types.NewRawDataRequest(2, []byte("calldata2")))
+
+	ctx = ctx.WithBlockHeight(2)
+	err = keeper.AddReport(ctx, 1, []types.RawDataReport{
+		types.NewRawDataReport(10, []byte("data2/1")),
+		types.NewRawDataReport(2, []byte("data1/1")),
+	}, sdk.ValAddress([]byte("validator1")))
+	require.NotNil(t, err)
+
+	// Send invalid external id.
+	request = newDefaultRequest()
+	keeper.SetRequest(ctx, 1, request)
+
+	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata1")))
+	keeper.SetRawDataRequest(ctx, 1, 10, types.NewRawDataRequest(2, []byte("calldata2")))
+
+	ctx = ctx.WithBlockHeight(2)
+	err = keeper.AddReport(ctx, 1, []types.RawDataReport{
+		types.NewRawDataReport(3, []byte("data2/1")),
+		types.NewRawDataReport(10, []byte("data1/1")),
+	}, sdk.ValAddress([]byte("validator1")))
+	require.NotNil(t, err)
+
+	// Cannot report in same request id.
+	request = newDefaultRequest()
+	keeper.SetRequest(ctx, 1, request)
+
+	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata1")))
+	keeper.SetRawDataRequest(ctx, 1, 10, types.NewRawDataRequest(2, []byte("calldata2")))
+
+	ctx = ctx.WithBlockHeight(2)
+	err = keeper.AddReport(ctx, 1, []types.RawDataReport{
+		types.NewRawDataReport(2, []byte("OldValue1")),
+		types.NewRawDataReport(10, []byte("OldValue2")),
+	}, sdk.ValAddress([]byte("validator2")))
+	require.Nil(t, err)
+
+	err = keeper.AddReport(ctx, 1, []types.RawDataReport{
+		types.NewRawDataReport(2, []byte("NewValue1")),
+		types.NewRawDataReport(10, []byte("NewValue2")),
+	}, sdk.ValAddress([]byte("validator2")))
+	require.NotNil(t, err)
+
+}
+
 // func TestGetReportsIterator(t *testing.T) {
 // 	ctx, keeper := CreateTestInput(t, false)
 

@@ -14,9 +14,9 @@ func NewHandler(keeper Keeper) sdk.Handler {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 		switch msg := msg.(type) {
 		case MsgRequestData:
-			return handleMsgRequest(ctx, keeper, msg)
-		// case MsgReport:
-		// 	return handleMsgReport(ctx, keeper, msg)
+			return handleMsgRequestData(ctx, keeper, msg)
+		case MsgReportData:
+			return handleMsgReportData(ctx, keeper, msg)
 		// case MsgStoreCode:
 		// 	return handleMsgStoreCode(ctx, keeper, msg)
 		// case MsgDeleteCode:
@@ -36,7 +36,7 @@ func NewHandler(keeper Keeper) sdk.Handler {
 	}
 }
 
-func handleMsgRequest(ctx sdk.Context, keeper Keeper, msg MsgRequestData) sdk.Result {
+func handleMsgRequestData(ctx sdk.Context, keeper Keeper, msg MsgRequestData) sdk.Result {
 	id, err := keeper.AddRequest(
 		ctx,
 		msg.OracleScriptID,
@@ -79,49 +79,21 @@ func handleMsgRequest(ctx sdk.Context, keeper Keeper, msg MsgRequestData) sdk.Re
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
-// func handleMsgReport(ctx sdk.Context, keeper Keeper, msg MsgReport) sdk.Result {
-// 	// check request id is valid.
-// 	request, err := keeper.GetRequest(ctx, msg.RequestID)
-// 	if err != nil {
-// 		return err.Result()
-// 	}
-
-// 	storedCode, err := keeper.GetCode(ctx, request.CodeHash)
-// 	if err != nil {
-// 		return err.Result()
-// 	}
-
-// 	// check request is in period of reporting
-// 	if uint64(ctx.BlockHeight()) > request.ReportEndAt {
-// 		return types.ErrOutOfReportPeriod(types.DefaultCodespace).Result()
-// 	}
-
-// 	// Validate sender
-// 	validators := keeper.StakingKeeper.GetLastValidators(ctx)
-
-// 	isFound := false
-// 	for _, validator := range validators {
-// 		if msg.Validator.Equals(validator.GetOperator()) {
-// 			isFound = true
-// 			break
-// 		}
-// 	}
-// 	if !isFound {
-// 		return types.ErrInvalidValidator(types.DefaultCodespace).Result()
-// 	}
-
-// 	keeper.SetReport(ctx, msg.RequestID, msg.Validator, msg.Data)
-// 	// Emit report event
-// 	ctx.EventManager().EmitEvents(sdk.Events{
-// 		sdk.NewEvent(
-// 			types.EventTypeReport,
-// 			sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", msg.RequestID)),
-// 			sdk.NewAttribute(types.AttributeKeyCodeName, storedCode.Name),
-// 			sdk.NewAttribute(types.AttributeKeyValidator, msg.Validator.String()),
-// 		),
-// 	})
-// 	return sdk.Result{Events: ctx.EventManager().Events()}
-// }
+func handleMsgReportData(ctx sdk.Context, keeper Keeper, msg MsgReportData) sdk.Result {
+	err := keeper.AddReport(ctx, msg.RequestID, msg.DataSet, msg.Sender)
+	if err != nil {
+		return err.Result()
+	}
+	// Emit report event
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeReport,
+			sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", msg.RequestID)),
+			sdk.NewAttribute(types.AttributeKeyValidator, msg.Sender.String()),
+		),
+	})
+	return sdk.Result{Events: ctx.EventManager().Events()}
+}
 
 // func handleMsgStoreCode(ctx sdk.Context, keeper Keeper, msg MsgStoreCode) sdk.Result {
 // 	sc := types.NewStoredCode(msg.Code, msg.Name, msg.Owner)
