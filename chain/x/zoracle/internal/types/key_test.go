@@ -52,3 +52,12 @@ func TestOracleScriptStoreKey(t *testing.T) {
 
 	require.Equal(t, expectKeyByte, OracleScriptStoreKey(oracleScriptID))
 }
+
+func TestGetValidatorAddressAndExternalID(t *testing.T) {
+	key, _ := hex.DecodeString("0300000000000000140000000000000006b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
+	valAddress, externalID := GetValidatorAddressAndExternalID(key, 1)
+
+	validator, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
+	require.Equal(t, valAddress, validator)
+	require.Equal(t, int64(6), externalID)
+}

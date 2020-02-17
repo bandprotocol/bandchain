@@ -1,76 +1,78 @@
 package keeper
 
-// import (
-// 	"encoding/hex"
-// 	"path/filepath"
-// 	"testing"
+import (
+	"encoding/hex"
+	"testing"
 
-// 	"github.com/bandprotocol/d3n/chain/wasm"
-// 	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
-// 	"github.com/cosmos/cosmos-sdk/codec"
-// 	sdk "github.com/cosmos/cosmos-sdk/types"
-// 	"github.com/stretchr/testify/require"
-// 	abci "github.com/tendermint/tendermint/abci/types"
-// )
+	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
+	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/stretchr/testify/require"
+	abci "github.com/tendermint/tendermint/abci/types"
+)
 
-// func TestQueryRequestById(t *testing.T) {
-// 	ctx, keeper := CreateTestInput(t, false)
+func TestQueryRequestById(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
 
-// 	// Create variable "querier" which is a function
-// 	querier := NewQuerier(keeper)
+	// Create variable "querier" which is a function
+	querier := NewQuerier(keeper)
 
-// 	// query before set new request
-// 	acsBytes, err := querier(
-// 		ctx,
-// 		[]string{"request", "1"},
-// 		abci.RequestQuery{},
-// 	)
-// 	// It must return error request not found
-// 	require.Equal(t, types.CodeRequestNotFound, err.Code())
+	// query before set new request
+	acsBytes, err := querier(
+		ctx,
+		[]string{"request", "1"},
+		abci.RequestQuery{},
+	)
+	// It must return error request not found
+	require.Equal(t, types.CodeRequestNotFound, err.Code())
 
-// 	// set code
-// 	absPath, _ := filepath.Abs("../../../../wasm/res/result.wasm")
-// 	code, _ := wasm.ReadBytes(absPath)
-// 	owner := sdk.AccAddress([]byte("owner"))
-// 	name := "Crypto Price"
-// 	codeHash := keeper.SetCode(ctx, code, name, owner)
-// 	params, _ := hex.DecodeString("00000000")
+	request := newDefaultRequest()
+	keeper.SetRequest(ctx, 1, request)
 
-// 	// set request
+	keeper.SetRawDataRequest(ctx, 1, 1, types.NewRawDataRequest(0, []byte("calldata1")))
+	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata2")))
 
-// 	request := types.NewRequest(codeHash, params, 3)
-// 	keeper.SetRequest(ctx, 1, request)
-// 	result, _ := hex.DecodeString("0000000000002710")
-// 	keeper.SetResult(ctx, 1, codeHash, params, result)
+	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[0], []byte("report1"))
+	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[0], []byte("report2"))
 
-// 	// create query
-// 	acsBytes, err = querier(
-// 		ctx,
-// 		[]string{"request", "1"},
-// 		abci.RequestQuery{},
-// 	)
-// 	require.Nil(t, err)
+	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[1], []byte("report1-2"))
+	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[1], []byte("report2-2"))
 
-// 	paramsMap := []byte(`{"symbol":"BTC"}`)
-// 	parsedResult := []byte(`{"price_in_usd": 10000}`)
+	result, _ := hex.DecodeString("0000000000002710")
+	keeper.SetResult(ctx, 1, request.OracleScriptID, request.Calldata, result)
 
-// 	// Use bytes format for comparison
-// 	request = types.NewRequest(codeHash, params, 3)
-// 	acs, errJSON := codec.MarshalJSONIndent(
-// 		keeper.cdc,
-// 		types.NewRequestInfo(
-// 			request.CodeHash,
-// 			paramsMap,
-// 			params,
-// 			request.ReportEndAt,
-// 			[]types.ReportWithValidator{},
-// 			parsedResult,
-// 			result,
-// 		),
-// 	)
-// 	require.Nil(t, errJSON)
-// 	require.Equal(t, acs, acsBytes)
-// }
+	// create query
+	acsBytes, err = querier(
+		ctx,
+		[]string{"request", "1"},
+		abci.RequestQuery{},
+	)
+	require.Nil(t, err)
+
+	// Use bytes format for comparison
+	acs, errJSON := codec.MarshalJSONIndent(
+		keeper.cdc,
+		types.NewRequestInfo(
+			request,
+			[]types.RawDataRequest{
+				types.NewRawDataRequest(0, []byte("calldata1")),
+				types.NewRawDataRequest(1, []byte("calldata2")),
+			},
+			[]types.ReportWithValidator{
+				types.NewReportWithValidator([]types.RawDataReport{
+					types.NewRawDataReport(1, []byte("report1")),
+					types.NewRawDataReport(2, []byte("report2")),
+				}, request.RequestedValidators[0]),
+				types.NewReportWithValidator([]types.RawDataReport{
+					types.NewRawDataReport(1, []byte("report1-2")),
+					types.NewRawDataReport(2, []byte("report2-2")),
+				}, request.RequestedValidators[1]),
+			},
+			result,
+		),
+	)
+	require.Nil(t, errJSON)
+	require.Equal(t, acs, acsBytes)
+}
 
 // func TestQueryPendingRequest(t *testing.T) {
 // 	ctx, keeper := CreateTestInput(t, false)
