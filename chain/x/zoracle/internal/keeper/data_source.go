@@ -16,7 +16,10 @@ func (k Keeper) SetDataSource(ctx sdk.Context, id int64, dataSource types.DataSo
 func (k Keeper) AddDataSource(ctx sdk.Context, owner sdk.AccAddress, name string, fee sdk.Coins, executable []byte) sdk.Error {
 	newDataSourceID := k.GetNextDataSourceID(ctx)
 
-	// TODO: check executable size.
+	if len(executable) > int(k.MaxDataSourceExecutableSize(ctx)) {
+		// TODO: fix error later
+		return types.ErrRequestNotFound(types.DefaultCodespace)
+	}
 
 	newDataSource := types.NewDataSource(owner, name, fee, executable)
 	k.SetDataSource(ctx, newDataSourceID, newDataSource)
@@ -30,7 +33,10 @@ func (k Keeper) EditDataSource(ctx sdk.Context, dataSourceID int64, owner sdk.Ac
 		return types.ErrRequestNotFound(types.DefaultCodespace)
 	}
 
-	// TODO: check executable size.
+	if len(executable) > int(k.MaxDataSourceExecutableSize(ctx)) {
+		// TODO: fix error later
+		return types.ErrRequestNotFound(types.DefaultCodespace)
+	}
 
 	updatedDataSource := types.NewDataSource(owner, name, fee, executable)
 	k.SetDataSource(ctx, dataSourceID, updatedDataSource)

@@ -43,7 +43,10 @@ func (k Keeper) CheckRawDataRequestExists(ctx sdk.Context, requestID, externalID
 func (k Keeper) AddNewRawDataRequest(
 	ctx sdk.Context, requestID, externalID, dataSourceID int64, calldata []byte,
 ) sdk.Error {
-	// TODO: Check calldata size
+	if len(calldata) > int(k.MaxCalldataSize(ctx)) {
+		// TODO: fix error later
+		return types.ErrRequestNotFound(types.DefaultCodespace)
+	}
 
 	if !k.CheckRequestExists(ctx, requestID) {
 		// TODO: fix error later
