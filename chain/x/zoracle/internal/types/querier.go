@@ -23,20 +23,20 @@ func (u64a U64Array) String() string {
 	return fmt.Sprintf("%v", []uint64(u64a))
 }
 
-type RequestInfo struct {
+type RequestQuerierInfo struct {
 	Request         Request               `json:"request"`
 	RawDataRequests []RawDataRequest      `json:"rawDataRequests"`
 	Reports         []ReportWithValidator `json:"reports"`
 	Result          []byte                `json:"result"`
 }
 
-func NewRequestInfo(
+func NewRequestQuerierInfo(
 	request Request,
 	rawDataRequests []RawDataRequest,
 	reports []ReportWithValidator,
 	result []byte,
-) RequestInfo {
-	return RequestInfo{
+) RequestQuerierInfo {
+	return RequestQuerierInfo{
 		Request:         request,
 		RawDataRequests: rawDataRequests,
 		Reports:         reports,

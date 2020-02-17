@@ -51,7 +51,7 @@ func TestQueryRequestById(t *testing.T) {
 	// Use bytes format for comparison
 	acs, errJSON := codec.MarshalJSONIndent(
 		keeper.cdc,
-		types.NewRequestInfo(
+		types.NewRequestQuerierInfo(
 			request,
 			[]types.RawDataRequest{
 				types.NewRawDataRequest(0, []byte("calldata1")),

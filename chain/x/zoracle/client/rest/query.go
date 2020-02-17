@@ -14,7 +14,7 @@ import (
 )
 
 func newRequestQueryInfo(
-	ctx context.CLIContext, id string, queryRequest types.RequestInfo,
+	ctx context.CLIContext, id string, queryRequest types.RequestQuerierInfo,
 ) (RequestQueryInfo, error) {
 	var request RequestQueryInfo
 
@@ -24,11 +24,9 @@ func newRequestQueryInfo(
 	request.SufficientValidatorCount = queryRequest.Request.SufficientValidatorCount
 	request.ExpirationHeight = queryRequest.Request.ExpirationHeight
 	request.IsResolved = queryRequest.Request.IsResolved
+	request.RawDataRequests = queryRequest.RawDataRequests
 
 	request.Result = queryRequest.Result
-	if queryRequest.Result == nil {
-		request.Result = []byte("")
-	}
 
 	// Get request detail
 	searchRequest, err := utils.QueryTxsByEvents(
@@ -85,7 +83,7 @@ func getRequestHandler(cliCtx context.CLIContext, storeName string) http.Handler
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		reqID := vars[requestID]
-		var queryRequest types.RequestInfo
+		var queryRequest types.RequestQuerierInfo
 		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/request/%s", storeName, reqID), nil)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())

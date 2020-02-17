@@ -75,7 +75,7 @@ func queryRequest(ctx sdk.Context, path []string, req abci.RequestQuery, keeper 
 		result = []byte("")
 	}
 
-	res, err := codec.MarshalJSONIndent(keeper.cdc, types.NewRequestInfo(
+	res, err := codec.MarshalJSONIndent(keeper.cdc, types.NewRequestQuerierInfo(
 		request,
 		rawRequests,
 		reports,

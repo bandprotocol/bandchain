@@ -22,16 +22,17 @@ type ReportDetail struct {
 }
 
 type RequestQueryInfo struct {
-	OracleScriptID           int64            `json:"oracleScriptID"`
-	Calldata                 []byte           `json:"calldata"`
-	RequestedValidators      []sdk.ValAddress `json:"requestedValidators"`
-	SufficientValidatorCount int64            `json:"sufficientValidatorCount"`
-	ExpirationHeight         int64            `json:"expirationHeight"`
-	IsResolved               bool             `json:"isResolved"`
-	Requester                sdk.AccAddress   `json:"requester"`
-	TxHash                   string           `json:"txhash"`
-	RequestedAtHeight        int64            `json:"requestedAtHeight"`
-	RequestedAtTime          string           `json:"requestedAtTime"`
-	Reports                  []ReportDetail   `json:"reports"`
-	Result                   []byte           `json:"result"`
+	OracleScriptID           int64                  `json:"oracleScriptID"`
+	Calldata                 []byte                 `json:"calldata"`
+	RequestedValidators      []sdk.ValAddress       `json:"requestedValidators"`
+	SufficientValidatorCount int64                  `json:"sufficientValidatorCount"`
+	ExpirationHeight         int64                  `json:"expirationHeight"`
+	IsResolved               bool                   `json:"isResolved"`
+	Requester                sdk.AccAddress         `json:"requester"`
+	TxHash                   string                 `json:"txhash"`
+	RequestedAtHeight        int64                  `json:"requestedAtHeight"`
+	RequestedAtTime          string                 `json:"requestedAtTime"`
+	RawDataRequests          []types.RawDataRequest `json:"rawDataRequests"`
+	Reports                  []ReportDetail         `json:"reports"`
+	Result                   []byte                 `json:"result"`
 }
