@@ -53,10 +53,10 @@ func RequestStoreKey(requestID int64) []byte {
 }
 
 // ResultStoreKey is a function to generate key for each result in store
-func ResultStoreKey(requestID int64, codeHash []byte, params []byte) []byte {
+func ResultStoreKey(requestID int64, oracleScriptID int64, calldata []byte) []byte {
 	buf := append(ResultStoreKeyPrefix, int64ToBytes(requestID)...)
-	buf = append(buf, codeHash...)
-	buf = append(buf, params...)
+	buf = append(buf, int64ToBytes(oracleScriptID)...)
+	buf = append(buf, calldata...)
 	return buf
 }
 

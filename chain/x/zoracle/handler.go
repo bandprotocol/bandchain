@@ -191,56 +191,35 @@ func handleMsgEditOracleScript(ctx sdk.Context, keeper Keeper, msg MsgEditOracle
 }
 
 func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
-	// 	reqIDs := keeper.GetPendingResolveList(ctx)
-	// 	remainingReqIDs := reqIDs
+	pendingList := keeper.GetPendingResolveList(ctx)
 
-	// 	for _, reqID := range reqIDs {
-	// 		request, err := keeper.GetRequest(ctx, reqID)
-	// 		if err != nil {
-	// 			return err.Result()
-	// 		}
+	for _, requestID := range pendingList {
+		request, err := keeper.GetRequest(ctx, requestID)
+		if err != nil {
+			// Don't expect to happen
+			continue
+		}
 
-	// 		// pack data from validator together
-	// 		packedReport := keeper.GetDataReports(ctx, reqID)
-	// 		validatorSize := len(keeper.StakingKeeper.GetLastValidators(ctx))
+		env, err := NewExecutionEnvironment(ctx, keeper, requestID)
+		if err != nil {
+			continue
+		}
 
-	// 		// skip this request because it's not end and some validators haven't sent report yet.
-	// 		if uint64(ctx.BlockHeight()) < request.ReportEndAt && len(packedReport) < validatorSize {
-	// 			continue
-	// 		}
+		script, err := keeper.GetOracleScript(ctx, request.OracleScriptID)
+		if err != nil {
+			continue
+		}
 
-	// 		var packedData [][]byte
-	// 		for _, report := range packedReport {
-	// 			packedData = append(packedData, report.Data)
-	// 		}
+		result, _, errOwasm := owasm.Execute(&env, script.Code, "execute", request.Calldata, 100000)
+		// TODO: Handle error if happen
+		if errOwasm == nil {
+			keeper.SetResult(ctx, requestID, request.OracleScriptID, request.Calldata, result)
+			keeper.SetResolve(ctx, requestID, true)
+		}
+	}
 
-	// 		storedCode, err := keeper.GetCode(ctx, request.CodeHash)
-	// 		if err != nil {
-	// 			// remove reqID if can't get code
-	// 			remainingReqIDs = remove(remainingReqIDs, reqID)
-	// 			continue
-	// 		}
-
-	// 		result, errWasm := wasm.Execute(storedCode.Code, request.Params, packedData)
-	// 		if errWasm == nil {
-	// 			keeper.SetResult(ctx, reqID, request.CodeHash, request.Params, result)
-	// 		}
-
-	// 		// remove reqID when set result
-	// 		remainingReqIDs = remove(remainingReqIDs, reqID)
-	// 	}
-
-	// 	keeper.SetPendingResolveList(ctx, remainingReqIDs)
+	keeper.SetPendingResolveList(ctx, []int64{})
 
 	// TODO: Emit event
 	return sdk.Result{Events: ctx.EventManager().Events()}
-}
-
-func remove(pending []uint64, removeElement uint64) (ret []uint64) {
-	for _, s := range pending {
-		if s != removeElement {
-			ret = append(ret, s)
-		}
-	}
-	return
 }
