@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	"github.com/gorilla/mux"
@@ -13,10 +14,20 @@ import (
 	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 )
 
-func newRequestQueryInfo(
+// buildTxDetail takes a TxResponse instance and builds new TxDetail contains only necessary fields.
+func buildTxDetail(tx *sdk.TxResponse) TxDetail {
+	return TxDetail{
+		Hash:      tx.TxHash,
+		Height:    tx.Height,
+		Timestamp: tx.Timestamp,
+	}
+}
+
+// buildRequestRESTInfo takes a RequestQuerierInfo instance and builds a more comprehensive version of it.
+func buildRequestRESTInfo(
 	ctx context.CLIContext, id string, queryRequest types.RequestQuerierInfo,
-) (RequestQueryInfo, error) {
-	var request RequestQueryInfo
+) (RequestRESTInfo, error) {
+	var request RequestRESTInfo
 
 	request.OracleScriptID = queryRequest.Request.OracleScriptID
 	request.Calldata = queryRequest.Request.Calldata
@@ -35,15 +46,16 @@ func newRequestQueryInfo(
 		1,
 		1,
 	)
-	if err != nil {
-		return RequestQueryInfo{}, err
+	if err != nil || len(searchRequest.Txs) != 1 {
+		return RequestRESTInfo{}, err
 	}
-
-	request.TxHash = searchRequest.Txs[0].TxHash
-	request.RequestedAtHeight = searchRequest.Txs[0].Height
-	request.RequestedAtTime = searchRequest.Txs[0].Timestamp
-	// TODO: Find the correct message and not assume the first message is the one
-	request.Requester = searchRequest.Txs[0].Tx.GetMsgs()[0].(types.MsgRequestData).Sender
+	request.RequestTx = buildTxDetail(&searchRequest.Txs[0])
+	for _, msg := range searchRequest.Txs[0].Tx.GetMsgs() {
+		if msg.Type() == "request" && msg.Route() == types.RouterKey {
+			request.Requester = msg.(types.MsgRequestData).Sender
+			break
+		}
+	}
 
 	// Save report tx
 	searchReports, err := utils.QueryTxsByEvents(
@@ -56,18 +68,21 @@ func newRequestQueryInfo(
 	request.Reports = make([]ReportDetail, 0)
 
 	for _, report := range searchReports.Txs {
-		// TODO: Find validator address from tx not assume in first log of tx
-		validatorAddress := report.Logs[0].Events[1].Attributes[1].Value
+		var validatorAddress sdk.ValAddress
+		for _, msg := range report.Tx.GetMsgs() {
+			if msg.Type() == "report" && msg.Route() == types.RouterKey {
+				validatorAddress = msg.(types.MsgReportData).Sender
+				break
+			}
+		}
 		for _, queryReport := range queryRequest.Reports {
-			if queryReport.Validator.String() == validatorAddress {
+			if queryReport.Validator.Equals(validatorAddress) {
 				request.Reports = append(
 					request.Reports,
 					ReportDetail{
-						Reporter:         queryReport.Validator,
-						TxHash:           report.TxHash,
-						ReportedAtHeight: report.Height,
-						ReportedAtTime:   report.Timestamp,
-						Value:            queryReport.RawDataReports,
+						Reporter: queryReport.Validator,
+						Value:    queryReport.RawDataReports,
+						Tx:       buildTxDetail(&report),
 					},
 				)
 				continue
@@ -96,7 +111,7 @@ func getRequestHandler(cliCtx context.CLIContext, storeName string) http.Handler
 			return
 		}
 
-		request, err := newRequestQueryInfo(cliCtx, reqID, queryRequest)
+		request, err := buildRequestRESTInfo(cliCtx, reqID, queryRequest)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return

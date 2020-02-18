@@ -14,14 +14,12 @@ type ScriptInfoWithTx struct {
 }
 
 type ReportDetail struct {
-	Reporter         sdk.ValAddress        `json:"reporter"`
-	TxHash           string                `json:"txhash"`
-	ReportedAtHeight int64                 `json:"reportedAtHeight"`
-	ReportedAtTime   string                `json:"reportedAtTime"`
-	Value            []types.RawDataReport `json:"value"`
+	Reporter sdk.ValAddress        `json:"reporter"`
+	Value    []types.RawDataReport `json:"value"`
+	Tx       TxDetail              `json:"tx"`
 }
 
-type RequestQueryInfo struct {
+type RequestRESTInfo struct {
 	OracleScriptID           int64                  `json:"oracleScriptID"`
 	Calldata                 []byte                 `json:"calldata"`
 	RequestedValidators      []sdk.ValAddress       `json:"requestedValidators"`
@@ -29,10 +27,14 @@ type RequestQueryInfo struct {
 	ExpirationHeight         int64                  `json:"expirationHeight"`
 	IsResolved               bool                   `json:"isResolved"`
 	Requester                sdk.AccAddress         `json:"requester"`
-	TxHash                   string                 `json:"txhash"`
-	RequestedAtHeight        int64                  `json:"requestedAtHeight"`
-	RequestedAtTime          string                 `json:"requestedAtTime"`
+	RequestTx                TxDetail               `json:"requestTx"`
 	RawDataRequests          []types.RawDataRequest `json:"rawDataRequests"`
 	Reports                  []ReportDetail         `json:"reports"`
 	Result                   []byte                 `json:"result"`
+}
+
+type TxDetail struct {
+	Hash      string `json:"hash"`
+	Height    int64  `json:"height"`
+	Timestamp string `json:"timestamp"`
 }
