@@ -8,13 +8,12 @@ import (
 // SetRawDataRequest is a function to save raw data request detail to the given request id and external id.
 func (k Keeper) SetRawDataRequest(
 	ctx sdk.Context, requestID, externalID int64, rawDataRequest types.RawDataRequest,
-) sdk.Error {
+) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(
 		types.RawDataRequestStoreKey(requestID, externalID),
 		k.cdc.MustMarshalBinaryBare(rawDataRequest),
 	)
-	return nil
 }
 
 // GetRawDataRequest is a function to get raw data request detail by the given request id and external id.
@@ -63,10 +62,7 @@ func (k Keeper) AddNewRawDataRequest(
 		return types.ErrRequestNotFound(types.DefaultCodespace)
 	}
 
-	err := k.SetRawDataRequest(ctx, requestID, externalID, types.NewRawDataRequest(dataSourceID, calldata))
-	if err != nil {
-		return err
-	}
+	k.SetRawDataRequest(ctx, requestID, externalID, types.NewRawDataRequest(dataSourceID, calldata))
 
 	return k.ValidateDataSourceCount(ctx, requestID)
 }
