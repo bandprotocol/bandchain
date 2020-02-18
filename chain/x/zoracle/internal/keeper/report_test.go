@@ -194,7 +194,7 @@ func TestAddReportFailed(t *testing.T) {
 
 }
 
-func TestAddNewRawDataRequestFailBecauseCallDataSizeTooBig(t *testing.T) {
+func TestAddNewRawDataRequestCallDataSizeTooBig(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 	keeper.SetMaxDataSourceCountPerRequest(ctx, 1)
 	keeper.SetMaxDataSourceExecutableSize(ctx, 20)
@@ -221,7 +221,7 @@ func TestAddNewRawDataRequestFailBecauseCallDataSizeTooBig(t *testing.T) {
 	require.Nil(t, err)
 }
 
-func TestAddReportFailBecauseReportSizeExceedMaxRawDataReportSize(t *testing.T) {
+func TestAddReportReportSizeExceedMaxRawDataReportSize(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 	keeper.SetMaxRawDataReportSize(ctx, 20)
 
