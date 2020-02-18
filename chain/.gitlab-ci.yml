@@ -1,9 +1,10 @@
 chain-test:
   stage: test
-  image: golang:1.13
+  image: bandprotocol/go-rust:0.1.1
   script:
+    - source ~/.profile
     - cd chain
-    - go test ./...
+    - ./run_tests.sh
   only:
     changes:
       - chain/**/*
