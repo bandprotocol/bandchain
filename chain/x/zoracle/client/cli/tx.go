@@ -19,14 +19,14 @@ import (
 )
 
 const (
-	flagName                = "name"
-	flagScript              = "script"
-	flagCallFee             = "call-fee"
-	flagOwner               = "owner"
-	flagCalldata            = "calldata"
-	flagRequireValidator    = "require-validator"
-	flagSufficientValidator = "sufficient-validator"
-	flagExpiration          = "expiration"
+	flagName                     = "name"
+	flagScript                   = "script"
+	flagCallFee                  = "call-fee"
+	flagOwner                    = "owner"
+	flagCalldata                 = "calldata"
+	flagRequestedValidatorCount  = "requested-validator-count"
+	flagSufficientValidatorCount = "sufficient-validator-count"
+	flagExpiration               = "expiration"
 )
 
 // GetTxCmd returns the transaction commands for this module
@@ -51,15 +51,17 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 // GetCmdRequest implements the request command handler
 func GetCmdRequest(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "request [oracleScriptID] (--calldata [calldata]) (--require-validator [requestedValidatorCount]) (--sufficient-validator [sufficientValidatorCount]) (--expiration [Expiration])",
+		Use:   "request [oracleScriptID] (-c [calldata]) (-r [requestedValidatorCount]) (-v [sufficientValidatorCount]) (-x [expiration])",
 		Short: "Request a new request from an existed oracle script",
 		Args:  cobra.ExactArgs(1),
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Create new request from an existed oracle script with configure flags.
+			fmt.Sprintf(`Create new request from an existed oracle script with the configure flags.
 Example:
-$ %s tx zoracle request 3 --calldata 03455448 --require-validator 4 --sufficient-validator 3 --expiration 20 --from mykey
+$ %s tx zoracle request 3 --calldata 03455448 --requested-validator-count 4 --sufficient-validator-count 3 --expiration 20 --from mykey
+or
+$ %s tx zoracle request 1 -c 455448 -r 4 -v 3 -x 20 --from mykey
 `,
-				version.ClientName,
+				version.ClientName, version.ClientName,
 			),
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -77,12 +79,12 @@ $ %s tx zoracle request 3 --calldata 03455448 --require-validator 4 --sufficient
 				return err
 			}
 
-			requestedValidatorCount, err := cmd.Flags().GetInt64(flagRequireValidator)
+			requestedValidatorCount, err := cmd.Flags().GetInt64(flagRequestedValidatorCount)
 			if err != nil {
 				return err
 			}
 
-			sufficientValidatorCount, err := cmd.Flags().GetInt64(flagSufficientValidator)
+			sufficientValidatorCount, err := cmd.Flags().GetInt64(flagSufficientValidatorCount)
 			if err != nil {
 				return err
 			}
@@ -110,12 +112,12 @@ $ %s tx zoracle request 3 --calldata 03455448 --require-validator 4 --sufficient
 		},
 	}
 
-	cmd.Flags().BytesHex(flagCalldata, nil, "calldata used in calling oracle script")
-	cmd.Flags().Int64(flagRequireValidator, 0, "the number of top validators that need to report for this request")
-	cmd.MarkFlagRequired(flagRequireValidator)
-	cmd.Flags().Int64(flagSufficientValidator, 0, "the minimum number of reports that require to execute the script")
-	cmd.MarkFlagRequired(flagSufficientValidator)
-	cmd.Flags().Int64(flagExpiration, 0, "report period before determined as expired request")
+	cmd.Flags().BytesHexP(flagCalldata, "c", nil, "calldata used in calling oracle script")
+	cmd.Flags().Int64P(flagRequestedValidatorCount, "r", 0, "the number of top validators that need to report for this request")
+	cmd.MarkFlagRequired(flagRequestedValidatorCount)
+	cmd.Flags().Int64P(flagSufficientValidatorCount, "v", 0, "the minimum number of reports that require to execute the script")
+	cmd.MarkFlagRequired(flagSufficientValidatorCount)
+	cmd.Flags().Int64P(flagExpiration, "x", 0, "report period before determined as expired request")
 	cmd.MarkFlagRequired(flagExpiration)
 
 	return cmd
@@ -124,11 +126,11 @@ $ %s tx zoracle request 3 --calldata 03455448 --require-validator 4 --sufficient
 // GetCmdReport implements the report command handler
 func GetCmdReport(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "report [requestid] ([data]...)",
+		Use:   "report [requestID] ([data]...)",
 		Short: "Report to given request id",
 		Args:  cobra.MinimumNArgs(2),
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Report to unresolved request, need to report data equal to the number of raw data request
+			fmt.Sprintf(`Report to an unresolved request. All raw data requests must be reported at once.
 Example:
 $ %s tx zoracle report 1 1:172.5 2:{"price":197.6} --from mykey
 `,
@@ -158,7 +160,7 @@ $ %s tx zoracle report 1 1:172.5 2:{"price":197.6} --from mykey
 				dataset = append(dataset, types.NewRawDataReport(externalID, []byte(reportRaw[1])))
 			}
 
-			// Sort report by external ID
+			// Sort data reports by external ID
 			sort.Slice(dataset, func(i, j int) bool {
 				return dataset[i].ExternalDataID < dataset[j].ExternalDataID
 			})
