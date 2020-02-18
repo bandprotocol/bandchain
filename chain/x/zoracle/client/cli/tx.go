@@ -41,8 +41,13 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 	zoracleCmd.AddCommand(client.PostCommands(
 		GetCmdCreateDataSource(cdc),
 		GetCmdEditDataSource(cdc),
+<<<<<<< HEAD
 		GetCmdRequest(cdc),
 		GetCmdReport(cdc),
+=======
+		GetCmdCreateOracleScript(cdc),
+		GetCmdEditOracleScript(cdc),
+>>>>>>> add function GetCmdCreateOracleScript
 	)...)
 
 	return zoracleCmd
@@ -325,6 +330,80 @@ $ %s tx zoracle edit-data-source 1 --name coingecko-price --script ../price.sh -
 	cmd.Flags().String(flagScript, "", "Path to data source script")
 	cmd.Flags().String(flagCallFee, "", "Fee for querying this data source")
 	cmd.Flags().String(flagOwner, "", "Owner of this data source")
+
+	return cmd
+}
+
+// GetCmdCreateOracleScript implements the create oracle script command handler.
+func GetCmdCreateOracleScript(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "create-oracle-script (--name [name]) (--script [path_to_script]) (--owner [owner])",
+		Short: "Create a new oracle script",
+		Args:  cobra.NoArgs,
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Create new data source that will be used by oracle scripts.
+Example:
+$ %s tx zoracle create-data-source --name coingecko-price --script ../price.sh --call-fee 100uband --owner band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9 --from mykey
+`,
+				version.ClientName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+
+			name, err := cmd.Flags().GetString(flagName)
+			if err != nil {
+				return err
+			}
+			scriptPath, err := cmd.Flags().GetString(flagScript)
+			if err != nil {
+				return err
+			}
+			execBytes, err := ioutil.ReadFile(scriptPath)
+			if err != nil {
+				return err
+			}
+
+			feeStr, err := cmd.Flags().GetString(flagCallFee)
+			if err != nil {
+				return err
+			}
+
+			fee, err := sdk.ParseCoins(feeStr)
+			if err != nil {
+				return err
+			}
+
+			ownerStr, err := cmd.Flags().GetString(flagOwner)
+			if err != nil {
+				return err
+			}
+			owner, err := sdk.AccAddressFromBech32(ownerStr)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgCreateDataSource(
+				owner,
+				name,
+				fee,
+				execBytes,
+				cliCtx.GetFromAddress(),
+			)
+
+			err = msg.ValidateBasic()
+			if err != nil {
+				return err
+			}
+
+			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
+		},
+	}
+	cmd.Flags().String(flagName, "", "name of data source")
+	cmd.Flags().String(flagScript, "", "path to data source script")
+	cmd.Flags().String(flagCallFee, "", "fee for query this data source")
+	cmd.Flags().String(flagOwner, "", "owner of this data source")
 
 	return cmd
 }
