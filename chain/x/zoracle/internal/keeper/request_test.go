@@ -71,7 +71,7 @@ func TestRequest(t *testing.T) {
 	require.Equal(t, expectRequest, actualRequest)
 }
 
-func TestRequestFailBecauseCallDataSizeTooBig(t *testing.T) {
+func TestRequestCallDataSizeTooBig(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
 	script := GetTestOracleScript("../../../../owasm/res/silly.wasm")
