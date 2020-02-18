@@ -13,6 +13,9 @@ import (
 func TestRequestSuccess(t *testing.T) {
 	// Setup test environment
 	ctx, keeper := keep.CreateTestInput(t, false)
+	keeper.SetMaxCalldataSize(ctx, 20)
+	keeper.SetMaxDataSourceCountPerRequest(ctx, 1)
+
 	ctx = ctx.WithBlockHeight(2)
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
 	calldata := []byte("calldata")
@@ -59,6 +62,8 @@ func TestRequestSuccess(t *testing.T) {
 func TestRequestInvalidDataSource(t *testing.T) {
 	// Setup test environment
 	ctx, keeper := keep.CreateTestInput(t, false)
+	keeper.SetMaxCalldataSize(ctx, 20)
+
 	ctx = ctx.WithBlockHeight(2)
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
 	calldata := []byte("calldata")
@@ -86,6 +91,8 @@ func TestRequestInvalidDataSource(t *testing.T) {
 func TestReportSuccess(t *testing.T) {
 	// Setup test environment
 	ctx, keeper := keep.CreateTestInput(t, false)
+	keeper.SetMaxRawDataReportSize(ctx, 10)
+
 	ctx = ctx.WithBlockHeight(2)
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
 	calldata := []byte("calldata")
@@ -539,6 +546,7 @@ func mockDataSource(ctx sdk.Context, keeper Keeper) sdk.Result {
 
 func TestCreateDataSourceSuccess(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
+	keeper.SetMaxDataSourceExecutableSize(ctx, 20)
 
 	got := mockDataSource(ctx, keeper)
 	require.True(t, got.IsOK(), "expected set data source to be ok, got %v", got)
@@ -553,6 +561,7 @@ func TestCreateDataSourceSuccess(t *testing.T) {
 
 func TestEditDataSourceSuccess(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
+	keeper.SetMaxDataSourceExecutableSize(ctx, 20)
 	mockDataSource(ctx, keeper)
 
 	newOwner := sdk.AccAddress([]byte("owner2"))
@@ -575,6 +584,7 @@ func TestEditDataSourceSuccess(t *testing.T) {
 
 func TestEditDataSourceByNotOwner(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
+	keeper.SetMaxDataSourceExecutableSize(ctx, 20)
 	mockDataSource(ctx, keeper)
 
 	newOwner := sdk.AccAddress([]byte("owner2"))
@@ -600,6 +610,7 @@ func mockOracleScript(ctx sdk.Context, keeper Keeper) sdk.Result {
 
 func TestCreateOracleScriptSuccess(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
+	keeper.SetMaxOracleScriptCodeSize(ctx, 20)
 
 	got := mockOracleScript(ctx, keeper)
 	require.True(t, got.IsOK(), "expected set oracle script to be ok, got %v", got)
@@ -613,6 +624,7 @@ func TestCreateOracleScriptSuccess(t *testing.T) {
 
 func TestEditOracleScriptSuccess(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
+	keeper.SetMaxOracleScriptCodeSize(ctx, 20)
 	mockOracleScript(ctx, keeper)
 
 	newOwner := sdk.AccAddress([]byte("owner2"))
@@ -633,6 +645,7 @@ func TestEditOracleScriptSuccess(t *testing.T) {
 
 func TestEditOracleScriptByNotOwner(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
+	keeper.SetMaxOracleScriptCodeSize(ctx, 20)
 	mockOracleScript(ctx, keeper)
 
 	newOwner := sdk.AccAddress([]byte("owner2"))
@@ -648,6 +661,8 @@ func TestEditOracleScriptByNotOwner(t *testing.T) {
 
 func TestEndBlock(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
+	keeper.SetMaxCalldataSize(ctx, 20)
+
 	ctx = ctx.WithBlockHeight(2)
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
 	calldata := []byte("calldata")
