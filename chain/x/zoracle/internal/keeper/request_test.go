@@ -25,6 +25,7 @@ func TestGetterSetterRequest(t *testing.T) {
 
 func TestRequest(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
+	keeper.SetMaxCalldataSize(ctx, 20)
 
 	ctx = ctx.WithBlockHeight(2)
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
@@ -68,6 +69,39 @@ func TestRequest(t *testing.T) {
 		2, 1581589790, 102,
 	)
 	require.Equal(t, expectRequest, actualRequest)
+}
+
+func TestRequestFailBecauseCallDataSizeTooBig(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	script := GetTestOracleScript("../../../../owasm/res/silly.wasm")
+	keeper.SetOracleScript(ctx, 1, script)
+
+	SetupTestValidator(
+		ctx,
+		keeper,
+		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
+		10,
+	)
+	SetupTestValidator(
+		ctx,
+		keeper,
+		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
+		100,
+	)
+
+	// Set MaxCalldataSize to 0
+	keeper.SetMaxCalldataSize(ctx, 0)
+	// Should fail because size of "calldata" is > 0
+	_, err := keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, 100)
+	require.NotNil(t, err)
+
+	// Set MaxCalldataSize to 20
+	keeper.SetMaxCalldataSize(ctx, 20)
+	// Should pass because size of "calldata" is < 20
+	_, err = keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, 100)
+	require.Nil(t, err)
+
 }
 
 // TestAddNewReceiveValidator tests keeper can add valid validator to request
@@ -214,5 +248,31 @@ func TestHasToPutInPendingList(t *testing.T) {
 }
 
 func TestValidateDataSourceCount(t *testing.T) {
-	// TODO: Write test
+	ctx, keeper := CreateTestInput(t, false)
+	// Set MaxDataSourceCountPerRequest to 3
+	keeper.SetMaxDataSourceCountPerRequest(ctx, 3)
+
+	request := newDefaultRequest()
+	keeper.SetRequest(ctx, 1, request)
+
+	err := keeper.SetRawDataRequest(ctx, 1, 101, types.NewRawDataRequest(0, []byte("calldata1")))
+	require.Nil(t, err)
+	err = keeper.ValidateDataSourceCount(ctx, 1)
+	require.Nil(t, err)
+
+	err = keeper.SetRawDataRequest(ctx, 1, 102, types.NewRawDataRequest(0, []byte("calldata2")))
+	require.Nil(t, err)
+	err = keeper.ValidateDataSourceCount(ctx, 1)
+	require.Nil(t, err)
+
+	err = keeper.SetRawDataRequest(ctx, 1, 103, types.NewRawDataRequest(0, []byte("calldata3")))
+	require.Nil(t, err)
+	err = keeper.ValidateDataSourceCount(ctx, 1)
+	require.Nil(t, err)
+
+	// Validation of "104" will return an error because MaxDataSourceCountPerRequest was set to 3.
+	err = keeper.SetRawDataRequest(ctx, 1, 104, types.NewRawDataRequest(0, []byte("calldata4")))
+	require.Nil(t, err)
+	err = keeper.ValidateDataSourceCount(ctx, 1)
+	require.NotNil(t, err)
 }
