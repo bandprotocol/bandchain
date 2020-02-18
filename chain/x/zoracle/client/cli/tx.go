@@ -3,6 +3,7 @@ package cli
 import (
 	"encoding/hex"
 	"fmt"
+	"io/ioutil"
 	"strconv"
 	"strings"
 
@@ -131,14 +132,14 @@ func GetCmdReport(cdc *codec.Codec) *cobra.Command {
 	}
 }
 
-// GetCmdCreateDataSource implements the create data source command handler
+// GetCmdCreateDataSource implements the create data source command handler.
 func GetCmdCreateDataSource(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create-data-source (--name [name]) (--script [path_to_script]) (--call-fee [fee]) (--owner [owner])",
-		Short: "Create new data source",
+		Short: "Create a new data source",
 		Args:  cobra.NoArgs,
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Create new data source that will be used by oracle script.
+			fmt.Sprintf(`Create new data source that will be used by oracle scripts.
 Example:
 $ %s tx zoracle create-data-source --name coingecko-price --script ../price.sh --call-fee 100uband --owner band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9 --from mykey
 `,
@@ -157,7 +158,7 @@ $ %s tx zoracle create-data-source --name coingecko-price --script ../price.sh -
 			if err != nil {
 				return err
 			}
-			execBytes, err := readFile(scriptPath)
+			execBytes, err := ioutil.ReadFile(scriptPath)
 			if err != nil {
 				return err
 			}
@@ -205,14 +206,14 @@ $ %s tx zoracle create-data-source --name coingecko-price --script ../price.sh -
 	return cmd
 }
 
-// GetCmdEditDataSource implements the edit data source command handler
+// GetCmdEditDataSource implements the edit data source command handler.
 func GetCmdEditDataSource(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "edit-data-source [id] (--name [name]) (--script [path_to_script]) (--call-fee [fee]) (--owner [owner])",
 		Short: "Edit data source",
 		Args:  cobra.ExactArgs(1),
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Edit existed data source by current owner.
+			fmt.Sprintf(`Edit an existing data source. The caller must be the current data source's owner.
 Example:
 $ %s tx zoracle edit-data-source 1 --name coingecko-price --script ../price.sh --call-fee 100uband --owner band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9 --from mykey
 `,
@@ -236,7 +237,7 @@ $ %s tx zoracle edit-data-source 1 --name coingecko-price --script ../price.sh -
 			if err != nil {
 				return err
 			}
-			execBytes, err := readFile(scriptPath)
+			execBytes, err := ioutil.ReadFile(scriptPath)
 			if err != nil {
 				return err
 			}
