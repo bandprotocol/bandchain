@@ -12,7 +12,7 @@ func mockDataSource(ctx sdk.Context, keeper Keeper) sdk.Error {
 	name := "data_source"
 	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
 
-	// This executable size is 10 bytes.
+	// Size of "executable" is  10 bytes
 	executable := []byte("executable")
 	return keeper.AddDataSource(ctx, owner, name, fee, executable)
 }
