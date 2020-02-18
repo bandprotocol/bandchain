@@ -1,9 +1,9 @@
 package cli
 
 import (
-	"encoding/hex"
 	"fmt"
 	"io/ioutil"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -19,10 +19,14 @@ import (
 )
 
 const (
-	flagName    = "name"
-	flagScript  = "script"
-	flagCallFee = "call-fee"
-	flagOwner   = "owner"
+	flagName                     = "name"
+	flagScript                   = "script"
+	flagCallFee                  = "call-fee"
+	flagOwner                    = "owner"
+	flagCalldata                 = "calldata"
+	flagRequestedValidatorCount  = "requested-validator-count"
+	flagSufficientValidatorCount = "sufficient-validator-count"
+	flagExpiration               = "expiration"
 )
 
 // GetTxCmd returns the transaction commands for this module
@@ -46,10 +50,20 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 
 // GetCmdRequest implements the request command handler
 func GetCmdRequest(cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
-		Use:   "request [oracleScriptID] [calldata] [requestedCount] [sufficientValidator] [Expiration]",
-		Short: "request open api data",
-		Args:  cobra.ExactArgs(5),
+	cmd := &cobra.Command{
+		Use:   "request [oracleScriptID] (-c [calldata]) (-r [requestedValidatorCount]) (-v [sufficientValidatorCount]) (-x [expiration])",
+		Short: "Request a new request from an existed oracle script",
+		Args:  cobra.ExactArgs(1),
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Create new request from an existed oracle script with the configure flags.
+Example:
+$ %s tx zoracle request 3 --calldata 03455448 --requested-validator-count 4 --sufficient-validator-count 3 --expiration 20 --from mykey
+or
+$ %s tx zoracle request 1 -c 455448 -r 4 -v 3 -x 20 --from mykey
+`,
+				version.ClientName, version.ClientName,
+			),
+		),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
@@ -60,22 +74,22 @@ func GetCmdRequest(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			calldata, err := hex.DecodeString(args[1])
+			calldata, err := cmd.Flags().GetBytesHex(flagCalldata)
 			if err != nil {
 				return err
 			}
 
-			requestedValidatorCount, err := strconv.ParseInt(args[2], 10, 64)
+			requestedValidatorCount, err := cmd.Flags().GetInt64(flagRequestedValidatorCount)
 			if err != nil {
 				return err
 			}
 
-			sufficientValidatorCount, err := strconv.ParseInt(args[3], 10, 64)
+			sufficientValidatorCount, err := cmd.Flags().GetInt64(flagSufficientValidatorCount)
 			if err != nil {
 				return err
 			}
 
-			expiration, err := strconv.ParseInt(args[4], 10, 64)
+			expiration, err := cmd.Flags().GetInt64(flagExpiration)
 			if err != nil {
 				return err
 			}
@@ -97,14 +111,32 @@ func GetCmdRequest(cdc *codec.Codec) *cobra.Command {
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
 		},
 	}
+
+	cmd.Flags().BytesHexP(flagCalldata, "c", nil, "calldata used in calling oracle script")
+	cmd.Flags().Int64P(flagRequestedValidatorCount, "r", 0, "the number of top validators that need to report for this request")
+	cmd.MarkFlagRequired(flagRequestedValidatorCount)
+	cmd.Flags().Int64P(flagSufficientValidatorCount, "v", 0, "the minimum number of reports that require to execute the script")
+	cmd.MarkFlagRequired(flagSufficientValidatorCount)
+	cmd.Flags().Int64P(flagExpiration, "x", 0, "report period before determined as expired request")
+	cmd.MarkFlagRequired(flagExpiration)
+
+	return cmd
 }
 
 // GetCmdReport implements the report command handler
 func GetCmdReport(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "report [requestid] [data]",
-		Short: "report data",
-		Args:  cobra.ExactArgs(2),
+		Use:   "report [requestID] ([data]...)",
+		Short: "Report to given request id",
+		Args:  cobra.MinimumNArgs(2),
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Report to an unresolved request. All raw data requests must be reported at once.
+Example:
+$ %s tx zoracle report 1 1:172.5 2:{"price":197.6} --from mykey
+`,
+				version.ClientName,
+			),
+		),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
@@ -116,10 +148,22 @@ func GetCmdReport(cdc *codec.Codec) *cobra.Command {
 			}
 
 			var dataset []types.RawDataReport
-			err = cdc.UnmarshalJSON([]byte(args[1]), &dataset)
-			if err != nil {
-				return err
+			for _, arg := range args[1:] {
+				reportRaw := strings.SplitN(arg, ":", 2)
+				if len(reportRaw) != 2 {
+					return fmt.Errorf("Invalid report format: %s", reportRaw[0])
+				}
+				externalID, err := strconv.ParseInt(reportRaw[0], 10, 64)
+				if err != nil {
+					return err
+				}
+				dataset = append(dataset, types.NewRawDataReport(externalID, []byte(reportRaw[1])))
 			}
+
+			// Sort data reports by external ID
+			sort.Slice(dataset, func(i, j int) bool {
+				return dataset[i].ExternalDataID < dataset[j].ExternalDataID
+			})
 
 			msg := types.NewMsgReportData(requestID, dataset, sdk.ValAddress(cliCtx.GetFromAddress()))
 			err = msg.ValidateBasic()
