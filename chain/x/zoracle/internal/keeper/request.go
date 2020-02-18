@@ -34,7 +34,10 @@ func (k Keeper) AddRequest(
 		return 0, types.ErrRequestNotFound(types.DefaultCodespace)
 	}
 
-	// TODO: Test calldata size here
+	if len(calldata) > int(k.MaxCalldataSize(ctx)) {
+		// TODO: fix error later
+		return 0, types.ErrRequestNotFound(types.DefaultCodespace)
+	}
 
 	validatorsByPower := k.StakingKeeper.GetBondedValidatorsByPower(ctx)
 	if int64(len(validatorsByPower)) < requestedValidatorCount {
@@ -64,7 +67,11 @@ func (k Keeper) AddRequest(
 // ValidateDataSourceCount validates that the number of raw data requests is
 // not greater than `MaxDataSourceCountPerRequest`
 func (k Keeper) ValidateDataSourceCount(ctx sdk.Context, id int64) sdk.Error {
-	// TODO: Check raw data request with MaxDataSourceCountPerRequest
+	if k.GetRawDataRequestCount(ctx, id) > k.MaxDataSourceCountPerRequest(ctx) {
+		// TODO: fix error later
+		return types.ErrRequestNotFound(types.DefaultCodespace)
+	}
+
 	return nil
 }
 
