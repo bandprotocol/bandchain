@@ -203,7 +203,7 @@ func TestRequestExternalDataExceedMaxDataSourceCountPerRequest(t *testing.T) {
 	envErr = env.RequestExternalData(1, 45, []byte("prepare32"))
 	require.Nil(t, envErr)
 
-	// Should got an error if trying to request more external data
+	// Should get an error if trying to request more external data
 	envErr = env.RequestExternalData(1, 46, []byte("prepare32"))
 	require.NotNil(t, envErr)
 }
