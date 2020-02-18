@@ -62,7 +62,12 @@ func (k Keeper) AddNewRawDataRequest(
 		// TODO: fix error later
 		return types.ErrRequestNotFound(types.DefaultCodespace)
 	}
-	k.SetRawDataRequest(ctx, requestID, externalID, types.NewRawDataRequest(dataSourceID, calldata))
+
+	err := k.SetRawDataRequest(ctx, requestID, externalID, types.NewRawDataRequest(dataSourceID, calldata))
+	if err != nil {
+		return err
+	}
+
 	return k.ValidateDataSourceCount(ctx, requestID)
 }
 
