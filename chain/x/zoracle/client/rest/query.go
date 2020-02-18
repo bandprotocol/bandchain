@@ -51,8 +51,9 @@ func buildRequestRESTInfo(
 	}
 	request.RequestTx = buildTxDetail(&searchRequest.Txs[0])
 	for _, msg := range searchRequest.Txs[0].Tx.GetMsgs() {
-		if msg.Type() == "request" && msg.Route() == types.RouterKey {
-			request.Requester = msg.(types.MsgRequestData).Sender
+		msgRequest, ok := msg.(types.MsgRequestData)
+		if ok {
+			request.Requester = msgRequest.Sender
 			break
 		}
 	}
@@ -70,8 +71,9 @@ func buildRequestRESTInfo(
 	for _, report := range searchReports.Txs {
 		var validatorAddress sdk.ValAddress
 		for _, msg := range report.Tx.GetMsgs() {
-			if msg.Type() == "report" && msg.Route() == types.RouterKey {
-				validatorAddress = msg.(types.MsgReportData).Sender
+			msgReport, ok := msg.(types.MsgReportData)
+			if ok {
+				validatorAddress = msgReport.Sender
 				break
 			}
 		}

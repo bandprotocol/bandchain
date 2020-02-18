@@ -70,9 +70,13 @@ func queryRequest(ctx sdk.Context, path []string, req abci.RequestQuery, keeper 
 		))
 	}
 
-	result, sdkErr := keeper.GetResult(ctx, id, request.OracleScriptID, request.Calldata)
-	if sdkErr != nil {
-		result = []byte("")
+	var result []byte
+	if keeper.HasResult(ctx, id, request.OracleScriptID, request.Calldata) {
+		var sdkErr sdk.Error
+		result, sdkErr = keeper.GetResult(ctx, id, request.OracleScriptID, request.Calldata)
+		if sdkErr != nil {
+			return nil, sdkErr
+		}
 	}
 
 	res, err := codec.MarshalJSONIndent(keeper.cdc, types.NewRequestQuerierInfo(
