@@ -67,12 +67,7 @@ func (k Keeper) AddRequest(
 // ValidateDataSourceCount validates that the number of raw data requests is
 // not greater than `MaxDataSourceCountPerRequest`
 func (k Keeper) ValidateDataSourceCount(ctx sdk.Context, id int64) sdk.Error {
-	request, err := k.GetRequest(ctx, id)
-	if err != nil {
-		return err
-	}
-
-	if request.DataSourceCount > k.MaxDataSourceCountPerRequest(ctx) {
+	if k.GetRawDataRequestCount(ctx, id) > k.MaxDataSourceCountPerRequest(ctx) {
 		// TODO: fix error later
 		return types.ErrRequestNotFound(types.DefaultCodespace)
 	}
