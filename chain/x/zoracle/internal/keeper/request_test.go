@@ -255,24 +255,20 @@ func TestValidateDataSourceCount(t *testing.T) {
 	request := newDefaultRequest()
 	keeper.SetRequest(ctx, 1, request)
 
-	err := keeper.SetRawDataRequest(ctx, 1, 101, types.NewRawDataRequest(0, []byte("calldata1")))
+	keeper.SetRawDataRequest(ctx, 1, 101, types.NewRawDataRequest(0, []byte("calldata1")))
+	err := keeper.ValidateDataSourceCount(ctx, 1)
 	require.Nil(t, err)
+
+	keeper.SetRawDataRequest(ctx, 1, 102, types.NewRawDataRequest(0, []byte("calldata2")))
 	err = keeper.ValidateDataSourceCount(ctx, 1)
 	require.Nil(t, err)
 
-	err = keeper.SetRawDataRequest(ctx, 1, 102, types.NewRawDataRequest(0, []byte("calldata2")))
-	require.Nil(t, err)
-	err = keeper.ValidateDataSourceCount(ctx, 1)
-	require.Nil(t, err)
-
-	err = keeper.SetRawDataRequest(ctx, 1, 103, types.NewRawDataRequest(0, []byte("calldata3")))
-	require.Nil(t, err)
+	keeper.SetRawDataRequest(ctx, 1, 103, types.NewRawDataRequest(0, []byte("calldata3")))
 	err = keeper.ValidateDataSourceCount(ctx, 1)
 	require.Nil(t, err)
 
 	// Validation of "104" will return an error because MaxDataSourceCountPerRequest was set to 3.
-	err = keeper.SetRawDataRequest(ctx, 1, 104, types.NewRawDataRequest(0, []byte("calldata4")))
-	require.Nil(t, err)
+	keeper.SetRawDataRequest(ctx, 1, 104, types.NewRawDataRequest(0, []byte("calldata4")))
 	err = keeper.ValidateDataSourceCount(ctx, 1)
 	require.NotNil(t, err)
 }
