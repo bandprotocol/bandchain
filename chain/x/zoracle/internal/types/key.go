@@ -94,6 +94,13 @@ func GetIteratorPrefix(prefix []byte, requestID int64) []byte {
 	return append(prefix, int64ToBytes(requestID)...)
 }
 
+// GetExternalIDFromRawDataRequestKey is a function to get external id from raw data request key.
+func GetExternalIDFromRawDataRequestKey(key []byte) int64 {
+	prefixLength := len(RawDataRequestStoreKeyPrefix)
+	externalIDBytes := key[prefixLength+8 : prefixLength+16]
+	return int64(binary.BigEndian.Uint64(externalIDBytes))
+}
+
 // GetValidatorAddressAndExternalID is a function to get validator address and external id from raw data report key.
 func GetValidatorAddressAndExternalID(
 	key []byte, requestID int64,

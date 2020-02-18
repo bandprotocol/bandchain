@@ -53,9 +53,15 @@ func TestQueryRequestById(t *testing.T) {
 		keeper.cdc,
 		types.NewRequestQuerierInfo(
 			request,
-			[]types.RawDataRequest{
-				types.NewRawDataRequest(0, []byte("calldata1")),
-				types.NewRawDataRequest(1, []byte("calldata2")),
+			[]types.RawDataRequestWithExternalID{
+				types.NewRawDataRequestWithExternalID(
+					1,
+					types.NewRawDataRequest(0, []byte("calldata1")),
+				),
+				types.NewRawDataRequestWithExternalID(
+					2,
+					types.NewRawDataRequest(1, []byte("calldata2")),
+				),
 			},
 			[]types.ReportWithValidator{
 				types.NewReportWithValidator([]types.RawDataReport{

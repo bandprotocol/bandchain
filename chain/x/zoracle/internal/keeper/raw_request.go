@@ -92,3 +92,21 @@ func (k Keeper) GetRawDataRequests(ctx sdk.Context, requestID int64) []types.Raw
 	}
 	return rawRequests
 }
+
+// GetRawDataRequestWithExternalIDs returns a list of raw data requests with external id in given request.
+func (k Keeper) GetRawDataRequestWithExternalIDs(
+	ctx sdk.Context, requestID int64,
+) []types.RawDataRequestWithExternalID {
+	iterator := k.GetRawDataRequestIterator(ctx, requestID)
+	rawRequests := make([]types.RawDataRequestWithExternalID, 0)
+	for ; iterator.Valid(); iterator.Next() {
+		var rawRequest types.RawDataRequest
+		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &rawRequest)
+		rawRequests = append(rawRequests,
+			types.NewRawDataRequestWithExternalID(
+				types.GetExternalIDFromRawDataRequestKey(iterator.Key()),
+				rawRequest,
+			))
+	}
+	return rawRequests
+}

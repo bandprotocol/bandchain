@@ -47,7 +47,7 @@ func queryRequest(ctx sdk.Context, path []string, req abci.RequestQuery, keeper 
 		return nil, sdkErr
 	}
 
-	rawRequests := keeper.GetRawDataRequests(ctx, id)
+	rawRequests := keeper.GetRawDataRequestWithExternalIDs(ctx, id)
 
 	iterator := keeper.GetRawDataReportsIterator(ctx, id)
 	reportMap := make(map[string]([]types.RawDataReport))

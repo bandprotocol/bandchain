@@ -51,3 +51,17 @@ func NewRawDataRequest(dataSourceID int64, calldata []byte) RawDataRequest {
 		Calldata:     calldata,
 	}
 }
+
+// RawDataRequestWithExternalID is a raw data request that contain external id.
+type RawDataRequestWithExternalID struct {
+	ExternalID     int64          `json:"externalID"`
+	RawDataRequest RawDataRequest `json:"detail"`
+}
+
+// NewRawDataRequestWithExternalID creates a new RawDataRequestWithExternalID instance.
+func NewRawDataRequestWithExternalID(externalID int64, rawDataRequest RawDataRequest) RawDataRequestWithExternalID {
+	return RawDataRequestWithExternalID{
+		ExternalID:     externalID,
+		RawDataRequest: rawDataRequest,
+	}
+}
