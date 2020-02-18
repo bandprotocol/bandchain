@@ -39,27 +39,26 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 	zoracleCmd.AddCommand(client.PostCommands(
-		GetCmdRequest(cdc),
-		GetCmdReport(cdc),
 		GetCmdCreateDataSource(cdc),
 		GetCmdEditDataSource(cdc),
+		GetCmdRequest(cdc),
+		GetCmdReport(cdc),
 	)...)
 
 	return zoracleCmd
 }
 
-// GetCmdRequest implements the request command handler
+// GetCmdRequest implements the request command handler.
 func GetCmdRequest(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "request [oracleScriptID] (-c [calldata]) (-r [requestedValidatorCount]) (-v [sufficientValidatorCount]) (-x [expiration])",
-		Short: "Request a new request from an existed oracle script",
+		Use:   "request [oracle-script-id] (-c [calldata]) (-r [requested-validator-count]) (-v [sufficient-validator-count]) (-x [expiration])",
+		Short: "Make a new data request via an existing oracle script",
 		Args:  cobra.ExactArgs(1),
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Create new request from an existed oracle script with the configure flags.
+			fmt.Sprintf(`Make a new request via an existing oracle script with the configuration flags.
 Example:
-$ %s tx zoracle request 3 --calldata 03455448 --requested-validator-count 4 --sufficient-validator-count 3 --expiration 20 --from mykey
-or
-$ %s tx zoracle request 1 -c 455448 -r 4 -v 3 -x 20 --from mykey
+$ %s tx zoracle request 1 -c 1234abcdef -r 4 -v 3 -x 20 --from mykey
+$ %s tx zoracle request 1 --calldata 1234abcdef --requested-validator-count 4 --sufficient-validator-count 3 --expiration 20 --from mykey
 `,
 				version.ClientName, version.ClientName,
 			),
@@ -112,27 +111,27 @@ $ %s tx zoracle request 1 -c 455448 -r 4 -v 3 -x 20 --from mykey
 		},
 	}
 
-	cmd.Flags().BytesHexP(flagCalldata, "c", nil, "calldata used in calling oracle script")
-	cmd.Flags().Int64P(flagRequestedValidatorCount, "r", 0, "the number of top validators that need to report for this request")
+	cmd.Flags().BytesHexP(flagCalldata, "c", nil, "Calldata used in calling the oracle script")
+	cmd.Flags().Int64P(flagRequestedValidatorCount, "r", 0, "Number of top validators that need to report data for this request")
 	cmd.MarkFlagRequired(flagRequestedValidatorCount)
-	cmd.Flags().Int64P(flagSufficientValidatorCount, "v", 0, "the minimum number of reports that require to execute the script")
+	cmd.Flags().Int64P(flagSufficientValidatorCount, "v", 0, "Minimum number of reports sufficient to conclude the request's result")
 	cmd.MarkFlagRequired(flagSufficientValidatorCount)
-	cmd.Flags().Int64P(flagExpiration, "x", 0, "report period before determined as expired request")
+	cmd.Flags().Int64P(flagExpiration, "x", 0, "Maximum block count before the data request is considered expired")
 	cmd.MarkFlagRequired(flagExpiration)
 
 	return cmd
 }
 
-// GetCmdReport implements the report command handler
+// GetCmdReport implements the report command handler.
 func GetCmdReport(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "report [requestID] ([data]...)",
-		Short: "Report to given request id",
+		Use:   "report [request-id] ([data]...)",
+		Short: "Report raw data for the given request ID",
 		Args:  cobra.MinimumNArgs(2),
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Report to an unresolved request. All raw data requests must be reported at once.
+			fmt.Sprintf(`Report raw data for an unresolved request. All raw data requests must be reported at once.
 Example:
-$ %s tx zoracle report 1 1:172.5 2:{"price":197.6} --from mykey
+$ %s tx zoracle report 1 1:172.5 2:HELLOWORLD --from mykey
 `,
 				version.ClientName,
 			),
@@ -179,11 +178,11 @@ $ %s tx zoracle report 1 1:172.5 2:{"price":197.6} --from mykey
 // GetCmdCreateDataSource implements the create data source command handler.
 func GetCmdCreateDataSource(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-data-source (--name [name]) (--script [path_to_script]) (--call-fee [fee]) (--owner [owner])",
+		Use:   "create-data-source (--name [name]) (--script [path-to-script]) (--call-fee [fee]) (--owner [owner])",
 		Short: "Create a new data source",
 		Args:  cobra.NoArgs,
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Create new data source that will be used by oracle scripts.
+			fmt.Sprintf(`Create a new data source that will be used by oracle scripts.
 Example:
 $ %s tx zoracle create-data-source --name coingecko-price --script ../price.sh --call-fee 100uband --owner band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9 --from mykey
 `,
@@ -242,10 +241,10 @@ $ %s tx zoracle create-data-source --name coingecko-price --script ../price.sh -
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
 		},
 	}
-	cmd.Flags().String(flagName, "", "name of data source")
-	cmd.Flags().String(flagScript, "", "path to data source script")
-	cmd.Flags().String(flagCallFee, "", "fee for query this data source")
-	cmd.Flags().String(flagOwner, "", "owner of this data source")
+	cmd.Flags().String(flagName, "", "Name of data source")
+	cmd.Flags().String(flagScript, "", "Path to data source script")
+	cmd.Flags().String(flagCallFee, "", "Fee for querying this data source")
+	cmd.Flags().String(flagOwner, "", "Owner of this data source")
 
 	return cmd
 }
@@ -253,7 +252,7 @@ $ %s tx zoracle create-data-source --name coingecko-price --script ../price.sh -
 // GetCmdEditDataSource implements the edit data source command handler.
 func GetCmdEditDataSource(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "edit-data-source [id] (--name [name]) (--script [path_to_script]) (--call-fee [fee]) (--owner [owner])",
+		Use:   "edit-data-source [id] (--name [name]) (--script [path-to-script]) (--call-fee [fee]) (--owner [owner])",
 		Short: "Edit data source",
 		Args:  cobra.ExactArgs(1),
 		Long: strings.TrimSpace(
@@ -322,10 +321,10 @@ $ %s tx zoracle edit-data-source 1 --name coingecko-price --script ../price.sh -
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
 		},
 	}
-	cmd.Flags().String(flagName, "", "name of data source")
-	cmd.Flags().String(flagScript, "", "path to data source script")
-	cmd.Flags().String(flagCallFee, "", "fee for query this data source")
-	cmd.Flags().String(flagOwner, "", "owner of this data source")
+	cmd.Flags().String(flagName, "", "Name of data source")
+	cmd.Flags().String(flagScript, "", "Path to data source script")
+	cmd.Flags().String(flagCallFee, "", "Fee for query this data source")
+	cmd.Flags().String(flagOwner, "", "Owner of this data source")
 
 	return cmd
 }
