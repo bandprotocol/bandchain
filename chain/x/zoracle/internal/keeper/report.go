@@ -52,6 +52,10 @@ func (k Keeper) AddReport(
 			// TODO: fix error later
 			return types.ErrRequestNotFound(types.DefaultCodespace)
 		}
+		if len(rawReport.Data) > int(k.MaxRawDataReportSize(ctx)) {
+			// TODO: fix error later
+			return types.ErrRequestNotFound(types.DefaultCodespace)
+		}
 		k.SetRawDataReport(ctx, requestID, rawReport.ExternalDataID, validator, rawReport.Data)
 		lastExternalID = rawReport.ExternalDataID
 	}

@@ -143,6 +143,8 @@ func TestGetValidatorPubKey(t *testing.T) {
 
 func TestRequestExternalData(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
+	keeper.SetMaxCalldataSize(ctx, 20)
+	keeper.SetMaxDataSourceCountPerRequest(ctx, 1)
 	// Set Request
 	keeper.SetRequest(ctx, 1, types.NewRequest(
 		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))}, 1, 0, 0, 100,
@@ -165,6 +167,45 @@ func TestRequestExternalData(t *testing.T) {
 	rawRequest, err := keeper.GetRawDataRequest(ctx, 1, 42)
 	require.Nil(t, err)
 	require.Equal(t, types.NewRawDataRequest(1, []byte("prepare32")), rawRequest)
+}
+
+func TestRequestExternalDataExceedMaxDataSourceCountPerRequest(t *testing.T) {
+	ctx, keeper := keep.CreateTestInput(t, false)
+	keeper.SetMaxCalldataSize(ctx, 20)
+
+	// Set Request
+	keeper.SetRequest(ctx, 1, types.NewRequest(
+		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))}, 1, 0, 0, 100,
+	))
+
+	// Set Datasource
+	dataSource := types.NewDataSource(
+		sdk.AccAddress([]byte("owner")),
+		"data_source",
+		sdk.NewCoins(sdk.NewInt64Coin("uband", 10)),
+		[]byte("executable"),
+	)
+	keeper.SetDataSource(ctx, 1, dataSource)
+
+	env, err := NewExecutionEnvironment(ctx, keeper, 1)
+	require.Nil(t, err)
+
+	// Set MaxDataSourceCountPerRequest to 5
+	keeper.SetMaxDataSourceCountPerRequest(ctx, 5)
+	envErr := env.RequestExternalData(1, 41, []byte("prepare32"))
+	require.Nil(t, envErr)
+	envErr = env.RequestExternalData(1, 42, []byte("prepare32"))
+	require.Nil(t, envErr)
+	envErr = env.RequestExternalData(1, 43, []byte("prepare32"))
+	require.Nil(t, envErr)
+	envErr = env.RequestExternalData(1, 44, []byte("prepare32"))
+	require.Nil(t, envErr)
+	envErr = env.RequestExternalData(1, 45, []byte("prepare32"))
+	require.Nil(t, envErr)
+
+	// Should get an error if trying to request more external data
+	envErr = env.RequestExternalData(1, 46, []byte("prepare32"))
+	require.NotNil(t, envErr)
 }
 
 func TestGetExternalData(t *testing.T) {
