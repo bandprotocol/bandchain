@@ -41,17 +41,9 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 	zoracleCmd.AddCommand(client.PostCommands(
 		GetCmdCreateDataSource(cdc),
 		GetCmdEditDataSource(cdc),
-<<<<<<< HEAD
 		GetCmdRequest(cdc),
 		GetCmdReport(cdc),
-=======
 		GetCmdCreateOracleScript(cdc),
-<<<<<<< HEAD
-		GetCmdEditOracleScript(cdc),
->>>>>>> add function GetCmdCreateOracleScript
-=======
-		// GetCmdEditOracleScript(cdc),
->>>>>>> remove redundant functions
 	)...)
 
 	return zoracleCmd
@@ -345,9 +337,9 @@ func GetCmdCreateOracleScript(cdc *codec.Codec) *cobra.Command {
 		Short: "Create a new oracle script",
 		Args:  cobra.NoArgs,
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Create new oracle script that will be used by making a request.
+			fmt.Sprintf(`Create new data source that will be used by oracle scripts.
 Example:
-$ %s tx zoracle create-oracle-script --name eth-price --script ../eth_price.wasm --owner band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9 --from mykey
+$ %s tx zoracle create-data-source --name coingecko-price --script ../price.sh --call-fee 100uband --owner band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9 --from mykey
 `,
 				version.ClientName,
 			),
@@ -364,7 +356,17 @@ $ %s tx zoracle create-oracle-script --name eth-price --script ../eth_price.wasm
 			if err != nil {
 				return err
 			}
-			scriptCode, err := ioutil.ReadFile(scriptPath)
+			execBytes, err := ioutil.ReadFile(scriptPath)
+			if err != nil {
+				return err
+			}
+
+			feeStr, err := cmd.Flags().GetString(flagCallFee)
+			if err != nil {
+				return err
+			}
+
+			fee, err := sdk.ParseCoins(feeStr)
 			if err != nil {
 				return err
 			}
@@ -378,10 +380,11 @@ $ %s tx zoracle create-oracle-script --name eth-price --script ../eth_price.wasm
 				return err
 			}
 
-			msg := types.NewMsgCreateOracleScript(
+			msg := types.NewMsgCreateDataSource(
 				owner,
 				name,
-				scriptCode,
+				fee,
+				execBytes,
 				cliCtx.GetFromAddress(),
 			)
 
@@ -393,9 +396,10 @@ $ %s tx zoracle create-oracle-script --name eth-price --script ../eth_price.wasm
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
 		},
 	}
-	cmd.Flags().String(flagName, "", "name of oracle script")
-	cmd.Flags().String(flagScript, "", "path to oracle script")
-	cmd.Flags().String(flagOwner, "", "owner of this oracle script")
+	cmd.Flags().String(flagName, "", "name of data source")
+	cmd.Flags().String(flagScript, "", "path to data source script")
+	cmd.Flags().String(flagCallFee, "", "fee for query this data source")
+	cmd.Flags().String(flagOwner, "", "owner of this data source")
 
 	return cmd
 }
