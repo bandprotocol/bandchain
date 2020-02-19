@@ -95,12 +95,12 @@ func (k Keeper) GetRawDataReport(
 	return store.Get(key), nil
 }
 
-// // GetReportsIterator returns an iterator for all reports for a specific request ID.
-// func (k Keeper) GetReportsIterator(ctx sdk.Context, requestID int64) sdk.Iterator {
-// 	prefix := types.GetIteratorPrefix(types.ReportKeyPrefix, requestID)
-// 	store := ctx.KVStore(k.storeKey)
-// 	return sdk.KVStorePrefixIterator(store, prefix)
-// }
+// GetRawDataReportsIterator returns an iterator for all reports for a specific request ID.
+func (k Keeper) GetRawDataReportsIterator(ctx sdk.Context, requestID int64) sdk.Iterator {
+	prefix := types.GetIteratorPrefix(types.RawDataReportStoreKeyPrefix, requestID)
+	store := ctx.KVStore(k.storeKey)
+	return sdk.KVStorePrefixIterator(store, prefix)
+}
 
 // // GetDataReports returns all the reports for a specific request ID.
 // func (k Keeper) GetDataReports(ctx sdk.Context, requestID int64) []types.Report {

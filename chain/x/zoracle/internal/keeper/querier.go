@@ -1,6 +1,9 @@
 package keeper
 
 import (
+	"fmt"
+	"strconv"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -12,8 +15,8 @@ import (
 func NewQuerier(keeper Keeper) sdk.Querier {
 	return func(ctx sdk.Context, path []string, req abci.RequestQuery) (res []byte, err sdk.Error) {
 		switch path[0] {
-		// case types.QueryRequest:
-		// 	return queryRequest(ctx, path[1:], req, keeper)
+		case types.QueryRequest:
+			return queryRequest(ctx, path[1:], req, keeper)
 		case types.QueryPending:
 			return queryPending(ctx, path[1:], req, keeper)
 		// case types.QueryScript:
@@ -31,59 +34,65 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 }
 
 // queryRequest is a query function to get request information by request ID.
-// func queryRequest(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
-// 	if len(path) == 0 {
-// 		return nil, sdk.ErrInternal("must specify the requestid")
-// 	}
-// 	reqID, err := strconv.ParseInt(path[0], 10, 64)
-// 	if err != nil {
-// 		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for requestid %s", err.Error()))
-// 	}
-// 	request, sdkErr := keeper.GetRequest(ctx, reqID)
-// 	if sdkErr != nil {
-// 		return nil, sdkErr
-// 	}
+func queryRequest(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
+	if len(path) == 0 {
+		return nil, sdk.ErrInternal("must specify the requestid")
+	}
+	id, err := strconv.ParseInt(path[0], 10, 64)
+	if err != nil {
+		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for requestid %s", err.Error()))
+	}
+	request, sdkErr := keeper.GetRequest(ctx, id)
+	if sdkErr != nil {
+		return nil, sdkErr
+	}
 
-// 	code, sdkErr := keeper.GetCode(ctx, request.CodeHash)
-// 	if sdkErr != nil {
-// 		return nil, sdkErr
-// 	}
+	rawRequests := keeper.GetRawDataRequestWithExternalIDs(ctx, id)
 
-// 	reports, sdkErr := keeper.GetValidatorReports(ctx, reqID)
-// 	if sdkErr != nil {
-// 		return nil, sdkErr
-// 	}
-// 	result, sdkErr := keeper.GetResult(ctx, reqID, request.CodeHash, request.Params)
-// 	var parsedResult []byte
-// 	if sdkErr != nil {
-// 		result = []byte{}
-// 		parsedResult = []byte("{}")
-// 	} else {
-// 		parsedResult, err = wasm.ParseResult(code.Code, result)
-// 		if err != nil {
-// 			parsedResult = []byte("{}")
-// 		}
-// 	}
+	iterator := keeper.GetRawDataReportsIterator(ctx, id)
+	reportMap := make(map[string]([]types.RawDataReport))
+	for ; iterator.Valid(); iterator.Next() {
+		validator, externalID := types.GetValidatorAddressAndExternalID(iterator.Key(), id)
+		if _, ok := reportMap[string(validator)]; !ok {
+			reportMap[string(validator)] = make([]types.RawDataReport, 0)
+		}
 
-// 	parsedParams, err := wasm.ParseParams(code.Code, request.Params)
-// 	if err != nil {
-// 		parsedParams = []byte("{}")
-// 	}
+		reportMap[string(validator)] = append(
+			reportMap[string(validator)],
+			types.NewRawDataReport(externalID, iterator.Value()),
+		)
+	}
 
-// 	res, err := codec.MarshalJSONIndent(keeper.cdc, types.NewRequestInfo(
-// 		request.CodeHash,
-// 		parsedParams,
-// 		request.Params,
-// 		request.ReportEndAt,
-// 		reports,
-// 		parsedResult,
-// 		result,
-// 	))
-// 	if err != nil {
-// 		panic("could not marshal result to JSON")
-// 	}
-// 	return res, nil
-// }
+	reports := make([]types.ReportWithValidator, 0)
+
+	for _, validator := range request.RequestedValidators {
+		valReport, ok := reportMap[string(validator)]
+		if ok {
+			reports = append(reports, types.NewReportWithValidator(
+				valReport, validator,
+			))
+		}
+	}
+	var result []byte
+	if keeper.HasResult(ctx, id, request.OracleScriptID, request.Calldata) {
+		var sdkErr sdk.Error
+		result, sdkErr = keeper.GetResult(ctx, id, request.OracleScriptID, request.Calldata)
+		if sdkErr != nil {
+			return nil, sdkErr
+		}
+	}
+
+	res, err := codec.MarshalJSONIndent(keeper.cdc, types.NewRequestQuerierInfo(
+		request,
+		rawRequests,
+		reports,
+		result,
+	))
+	if err != nil {
+		panic("could not marshal result to JSON")
+	}
+	return res, nil
+}
 
 // queryPending is a query function to get the list of request IDs that are still on pending status.
 func queryPending(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {

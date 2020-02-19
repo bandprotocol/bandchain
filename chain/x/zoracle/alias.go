@@ -23,19 +23,25 @@ const (
 )
 
 var (
-	NewKeeper            = keeper.NewKeeper
-	NewQuerier           = keeper.NewQuerier
-	ModuleCdc            = types.ModuleCdc
-	RegisterCodec        = types.RegisterCodec
-	NewMsgRequestData    = types.NewMsgRequestData
-	NewMsgReportData     = types.NewMsgReportData
+	NewKeeper                = keeper.NewKeeper
+	NewQuerier               = keeper.NewQuerier
+	ModuleCdc                = types.ModuleCdc
+	RegisterCodec            = types.RegisterCodec
+	NewMsgRequestData        = types.NewMsgRequestData
+	NewMsgReportData         = types.NewMsgReportData
+	NewMsgCreateOracleScript = types.NewMsgCreateOracleScript
+	NewMsgEditOracleScript   = types.NewMsgEditOracleScript
+	NewMsgCreateDataSource   = types.NewMsgCreateDataSource
+	NewMsgEditDataSource     = types.NewMsgEditDataSource
+
 	RequestStoreKey      = types.RequestStoreKey
 	ResultStoreKey       = types.ResultStoreKey
 	DataSourceStoreKey   = types.DataSourceStoreKey
 	OracleScriptStoreKey = types.OracleScriptStoreKey
 
-	NewParams     = types.NewParams
-	DefaultParams = types.DefaultParams
+	NewParams        = types.NewParams
+	DefaultParams    = types.DefaultParams
+	NewRawDataReport = types.NewRawDataReport
 
 	KeyMaxDataSourceExecutableSize  = types.KeyMaxDataSourceExecutableSize
 	KeyMaxOracleScriptCodeSize      = types.KeyMaxOracleScriptCodeSize
@@ -54,5 +60,7 @@ type (
 	MsgEditDataSource     = types.MsgEditDataSource
 	MsgCreateOracleScript = types.MsgCreateOracleScript
 	MsgEditOracleScript   = types.MsgEditOracleScript
+
+	RawDataReport = types.RawDataReport
 	// RequestInfo    = types.RequestInfo
 )
