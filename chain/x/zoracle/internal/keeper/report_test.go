@@ -31,6 +31,7 @@ func TestGetterSetterRawDataReport(t *testing.T) {
 
 func TestAddReportSuccess(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
+	keeper.SetMaxRawDataReportSize(ctx, 20)
 
 	request := newDefaultRequest()
 	keeper.SetRequest(ctx, 1, request)
@@ -79,6 +80,7 @@ func TestAddReportSuccess(t *testing.T) {
 
 func TestAddReportFailed(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
+	keeper.SetMaxRawDataReportSize(ctx, 20)
 
 	// Send report on invalid request.
 	err := keeper.AddReport(ctx, 1, []types.RawDataReport{
@@ -187,6 +189,56 @@ func TestAddReportFailed(t *testing.T) {
 	err = keeper.AddReport(ctx, 1, []types.RawDataReport{
 		types.NewRawDataReport(2, []byte("NewValue1")),
 		types.NewRawDataReport(10, []byte("NewValue2")),
+	}, sdk.ValAddress([]byte("validator2")))
+	require.NotNil(t, err)
+
+}
+
+func TestAddNewRawDataRequestCallDataSizeTooBig(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+	keeper.SetMaxDataSourceCountPerRequest(ctx, 1)
+	keeper.SetMaxDataSourceExecutableSize(ctx, 20)
+
+	request := newDefaultRequest()
+	keeper.SetRequest(ctx, 1, request)
+
+	owner := sdk.AccAddress([]byte("owner"))
+	name := "data_source"
+	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
+	executable := []byte("executable")
+	keeper.AddDataSource(ctx, owner, name, fee, executable)
+
+	// Set MaxCalldataSize to 0
+	// AddNewRawDataRequest should fail because size of "calldata" is > 0
+	keeper.SetMaxCalldataSize(ctx, 0)
+	err := keeper.AddNewRawDataRequest(ctx, 1, 1, 1, []byte("calldata"))
+	require.NotNil(t, err)
+
+	// Set MaxCalldataSize to 20
+	// AddNewRawDataRequest should pass because size of "calldata" is < 20
+	keeper.SetMaxCalldataSize(ctx, 20)
+	err = keeper.AddNewRawDataRequest(ctx, 1, 1, 1, []byte("calldata"))
+	require.Nil(t, err)
+}
+
+func TestAddReportReportSizeExceedMaxRawDataReportSize(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+	keeper.SetMaxRawDataReportSize(ctx, 20)
+
+	request := newDefaultRequest()
+	keeper.SetRequest(ctx, 1, request)
+
+	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata")))
+
+	// Size of "short report" is 12 bytes which is shorter than 20 bytes.
+	err := keeper.AddReport(ctx, 1, []types.RawDataReport{
+		types.NewRawDataReport(2, []byte("short report")),
+	}, sdk.ValAddress([]byte("validator1")))
+	require.Nil(t, err)
+
+	// Size of "a report that obviously longer than 20 bytes" is 44 bytes.
+	err = keeper.AddReport(ctx, 1, []types.RawDataReport{
+		types.NewRawDataReport(2, []byte("a report that obviously longer than 20 bytes")),
 	}, sdk.ValAddress([]byte("validator2")))
 	require.NotNil(t, err)
 

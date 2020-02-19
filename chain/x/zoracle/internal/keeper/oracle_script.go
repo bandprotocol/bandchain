@@ -16,7 +16,10 @@ func (k Keeper) SetOracleScript(ctx sdk.Context, id int64, oracleScript types.Or
 func (k Keeper) AddOracleScript(ctx sdk.Context, owner sdk.AccAddress, name string, code []byte) sdk.Error {
 	newOracleScriptID := k.GetNextOracleScriptID(ctx)
 
-	// TODO: check code size.
+	if len(code) > int(k.MaxOracleScriptCodeSize(ctx)) {
+		// TODO: fix error later
+		return types.ErrRequestNotFound(types.DefaultCodespace)
+	}
 
 	newOracleScript := types.NewOracleScript(owner, name, code)
 	k.SetOracleScript(ctx, newOracleScriptID, newOracleScript)
@@ -30,7 +33,10 @@ func (k Keeper) EditOracleScript(ctx sdk.Context, oracleScriptID int64, owner sd
 		return types.ErrRequestNotFound(types.DefaultCodespace)
 	}
 
-	// TODO: check code size.
+	if len(code) > int(k.MaxOracleScriptCodeSize(ctx)) {
+		// TODO: fix error later
+		return types.ErrRequestNotFound(types.DefaultCodespace)
+	}
 
 	updatedOracleScript := types.NewOracleScript(owner, name, code)
 	k.SetOracleScript(ctx, oracleScriptID, updatedOracleScript)
