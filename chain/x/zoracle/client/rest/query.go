@@ -4,7 +4,6 @@ import (
 	"encoding/hex"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -276,32 +275,13 @@ func getDataSourceHandler(cliCtx context.CLIContext, storeName string) http.Hand
 
 func getDataSourcesHandler(cliCtx context.CLIContext, storeName string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		pageIDStr := vars[dataSourcePageIndex]
-		pageSizeStr := vars[dataSourcePageSize]
-
-		pageID, err := strconv.ParseInt(pageIDStr, 10, 64)
+		_, page, limit, err := rest.ParseHTTPArgsWithLimit(r, 100)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-		if pageID < 1 {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, "data source page id should be >= 1")
-			return
-		}
-
-		pageSize, err := strconv.ParseInt(pageSizeStr, 10, 64)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-		if pageSize < 1 {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, "data source page size should be >= 1 and <= 100")
-			return
 		}
 
 		var queryDataSources []types.DataSourceQuerierInfo
-		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/data_sources/%d/%d", storeName, 1+(pageID-1)*pageSize, pageSize), nil)
+		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/data_sources/%d/%d", storeName, 1+(page-1)*limit, limit), nil)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
