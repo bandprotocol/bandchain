@@ -251,3 +251,24 @@ func getRequestNumberHandler(cliCtx context.CLIContext, storeName string) http.H
 		rest.PostProcessResponse(w, cliCtx, requestNumber)
 	}
 }
+
+func getDataSourceHandler(cliCtx context.CLIContext, storeName string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		dsID := vars[dataSourceID]
+		var queryDataSource types.DataSourceQuerierInfo
+		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/data_source/%s", storeName, dsID), nil)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		err = cliCtx.Codec.UnmarshalJSON(res, &queryDataSource)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		rest.PostProcessResponse(w, cliCtx, queryDataSource)
+	}
+}
