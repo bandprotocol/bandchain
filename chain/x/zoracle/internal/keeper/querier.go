@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"fmt"
-	"sort"
 	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -65,17 +64,15 @@ func queryRequest(ctx sdk.Context, path []string, req abci.RequestQuery, keeper 
 	}
 
 	reports := make([]types.ReportWithValidator, 0)
-	for validator, report := range reportMap {
-		reports = append(reports, types.NewReportWithValidator(
-			report, []byte(validator),
-		))
+
+	for _, validator := range request.RequestedValidators {
+		valReport, ok := reportMap[string(validator)]
+		if ok {
+			reports = append(reports, types.NewReportWithValidator(
+				valReport, validator,
+			))
+		}
 	}
-
-	// Sort report by validator address
-	sort.Slice(reports, func(i, j int) bool {
-		return reports[i].Validator.String() < reports[j].Validator.String()
-	})
-
 	var result []byte
 	if keeper.HasResult(ctx, id, request.OracleScriptID, request.Calldata) {
 		var sdkErr sdk.Error

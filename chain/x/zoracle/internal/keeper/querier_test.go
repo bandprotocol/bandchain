@@ -80,6 +80,66 @@ func TestQueryRequestById(t *testing.T) {
 	require.Equal(t, acs, acsBytes)
 }
 
+func TestQueryRequestIncompleteValidator(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	// Create variable "querier" which is a function
+	querier := NewQuerier(keeper)
+
+	// query before set new request
+	acsBytes, err := querier(
+		ctx,
+		[]string{"request", "1"},
+		abci.RequestQuery{},
+	)
+	// It must return error request not found
+	require.Equal(t, types.CodeRequestNotFound, err.Code())
+
+	request := newDefaultRequest()
+	keeper.SetRequest(ctx, 1, request)
+
+	keeper.SetRawDataRequest(ctx, 1, 1, types.NewRawDataRequest(0, []byte("calldata1")))
+	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata2")))
+
+	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[1], []byte("report1-2"))
+	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[1], []byte("report2-2"))
+
+	// create query
+	acsBytes, err = querier(
+		ctx,
+		[]string{"request", "1"},
+		abci.RequestQuery{},
+	)
+	require.Nil(t, err)
+
+	// Use bytes format for comparison
+	acs, errJSON := codec.MarshalJSONIndent(
+		keeper.cdc,
+		types.NewRequestQuerierInfo(
+			request,
+			[]types.RawDataRequestWithExternalID{
+				types.NewRawDataRequestWithExternalID(
+					1,
+					types.NewRawDataRequest(0, []byte("calldata1")),
+				),
+				types.NewRawDataRequestWithExternalID(
+					2,
+					types.NewRawDataRequest(1, []byte("calldata2")),
+				),
+			},
+			[]types.ReportWithValidator{
+				types.NewReportWithValidator([]types.RawDataReport{
+					types.NewRawDataReport(1, []byte("report1-2")),
+					types.NewRawDataReport(2, []byte("report2-2")),
+				}, request.RequestedValidators[1]),
+			},
+			nil,
+		),
+	)
+	require.Nil(t, errJSON)
+	require.Equal(t, acs, acsBytes)
+}
+
 // func TestQueryPendingRequest(t *testing.T) {
 // 	ctx, keeper := CreateTestInput(t, false)
 // 	// Create variable "querier" which is a function
