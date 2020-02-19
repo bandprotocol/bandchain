@@ -399,7 +399,7 @@ func GetCmdEditOracleScript(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "edit-oracle-script [id] (--name [name]) (--script [path-to-script]) (--owner [owner])",
 		Short: "Edit an existing oracle script that will be used by data requests.",
-		Args:  cobra.NoArgs,
+		Args:  cobra.ExactArgs(1),
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Edit an existing oracle script that will be used by making a request.
 Example:
@@ -455,7 +455,6 @@ $ %s tx zoracle edit-oracle-script 1 --name eth-price --script ../eth_price.wasm
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
 		},
 	}
-	cmd.Flags().String(flagID, "", "ID of oracle script")
 	cmd.Flags().String(flagName, "", "Name of oracle script")
 	cmd.Flags().String(flagScript, "", "Path to oracle script")
 	cmd.Flags().String(flagOwner, "", "Owner of this oracle script")
