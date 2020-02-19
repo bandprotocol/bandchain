@@ -398,10 +398,10 @@ $ %s tx zoracle create-data-source --name coingecko-price --script ../price.sh -
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
 		},
 	}
-	cmd.Flags().String(flagName, "", "name of data source")
-	cmd.Flags().String(flagScript, "", "path to data source script")
-	cmd.Flags().String(flagCallFee, "", "fee for query this data source")
-	cmd.Flags().String(flagOwner, "", "owner of this data source")
+	cmd.Flags().String(flagName, "", "Name of data source")
+	cmd.Flags().String(flagScript, "", "Path to data source script")
+	cmd.Flags().String(flagCallFee, "", "Fee for query this data source")
+	cmd.Flags().String(flagOwner, "", "Owner of this data source")
 
 	return cmd
 }
@@ -469,9 +469,9 @@ $ %s tx zoracle edit-oracle-script --id 1 --name eth-price --script ../eth_price
 		},
 	}
 	cmd.Flags().String(flagID, "", "ID of oracle script")
-	cmd.Flags().String(flagName, "", "name of oracle script")
-	cmd.Flags().String(flagScript, "", "path to oracle script")
-	cmd.Flags().String(flagOwner, "", "owner of this oracle script")
+	cmd.Flags().String(flagName, "", "Name of oracle script")
+	cmd.Flags().String(flagScript, "", "Path to oracle script")
+	cmd.Flags().String(flagOwner, "", "Owner of this oracle script")
 
 	return cmd
 }
