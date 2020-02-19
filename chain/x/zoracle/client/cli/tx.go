@@ -323,7 +323,7 @@ $ %s tx zoracle edit-data-source 1 --name coingecko-price --script ../price.sh -
 	}
 	cmd.Flags().String(flagName, "", "Name of data source")
 	cmd.Flags().String(flagScript, "", "Path to data source script")
-	cmd.Flags().String(flagCallFee, "", "Fee for query this data source")
+	cmd.Flags().String(flagCallFee, "", "Fee for querying this data source")
 	cmd.Flags().String(flagOwner, "", "Owner of this data source")
 
 	return cmd
