@@ -16,6 +16,7 @@ const (
 	SerializeParams    = "serialize_params"
 	QueryRequestNumber = "request_number"
 	QueryDataSource    = "data_source"
+	QueryDataSources   = "data_sources"
 )
 
 type U64Array []uint64
