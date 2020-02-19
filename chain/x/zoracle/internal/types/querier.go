@@ -15,6 +15,7 @@ const (
 	QueryAllScripts    = "scripts"
 	SerializeParams    = "serialize_params"
 	QueryRequestNumber = "request_number"
+	QueryDataSource    = "data_source"
 )
 
 type U64Array []uint64
@@ -24,10 +25,10 @@ func (u64a U64Array) String() string {
 }
 
 type RequestQuerierInfo struct {
-	Request         Request                     `json:"request"`
+	Request         Request                        `json:"request"`
 	RawDataRequests []RawDataRequestWithExternalID `json:"rawDataRequests"`
-	Reports         []ReportWithValidator       `json:"reports"`
-	Result          []byte                      `json:"result"`
+	Reports         []ReportWithValidator          `json:"reports"`
+	Result          []byte                         `json:"result"`
 }
 
 func NewRequestQuerierInfo(
@@ -108,7 +109,7 @@ func NewScriptInfo(
 	}
 }
 
-type DataSourceInfo struct {
+type DataSourceQuerierInfo struct {
 	ID         int64          `json:"id"`
 	Owner      sdk.AccAddress `json:"owner"`
 	Name       string         `json:"name"`
@@ -116,14 +117,14 @@ type DataSourceInfo struct {
 	Executable []byte         `json:"executable"`
 }
 
-func NewDataSourceInfo(
+func NewDataSourceQuerierInfo(
 	id int64,
 	owner sdk.AccAddress,
 	name string,
 	fee sdk.Coins,
 	executable []byte,
-) DataSourceInfo {
-	return DataSourceInfo{
+) DataSourceQuerierInfo {
+	return DataSourceQuerierInfo{
 		ID:         id,
 		Owner:      owner,
 		Name:       name,
