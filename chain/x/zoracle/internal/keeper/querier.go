@@ -234,16 +234,29 @@ func queryRequestNumber(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) (
 }
 
 func queryDataSource(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
+	if len(path) == 0 {
+		return nil, sdk.ErrInternal("must specify the data source id")
+	}
+	id, err := strconv.ParseInt(path[0], 10, 64)
+	if err != nil {
+		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for data source id %s", err.Error()))
+	}
 
-	res, err := codec.MarshalJSONIndent(keeper.cdc, types.NewDataSourceInfo(
+	dataSource, sdkErr := keeper.GetDataSource(ctx, id)
+	if sdkErr != nil {
+		return nil, sdkErr
+	}
+
+	res, err := codec.MarshalJSONIndent(keeper.cdc, types.NewDataSourceQuerierInfo(
 		id,
-		owner,
-		name,
-		fee,
-		executable,
+		dataSource.Owner,
+		dataSource.Name,
+		dataSource.Fee,
+		dataSource.Executable,
 	))
 	if err != nil {
 		panic("could not marshal result to JSON")
 	}
+
 	return res, nil
 }
