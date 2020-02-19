@@ -1,12 +1,15 @@
 package byteexec
 
 import (
+	"context"
 	"fmt"
 	"math/rand"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"sync"
+	"time"
 )
 
 var (
@@ -62,6 +65,30 @@ func New(data []byte) (Exec, error) {
 // Command creates an exec.Cmd using the supplied args.
 func (be *Exec) Command(args ...string) *exec.Cmd {
 	return exec.Command(be.Filename, args...)
+}
+
+// RunOnDocker runs command in new docker container
+func (be *Exec) RunOnDocker(timeOut time.Duration, args ...string) ([]byte, error) {
+	rawID, err := exec.Command(
+		"docker", "run", "-d", "--rm", "band-provider", "sleep", fmt.Sprintf("%d", int(timeOut.Seconds())),
+	).Output()
+	if err != nil {
+		return []byte{}, err
+	}
+	containerID := strings.TrimSpace(string(rawID))
+	defer exec.Command("docker", "stop", containerID).Output()
+
+	_, err = exec.Command(
+		"docker", "cp", be.Filename, fmt.Sprintf("%s:/exec.sh", containerID),
+	).Output()
+	if err != nil {
+		return []byte{}, err
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), timeOut)
+	defer cancel()
+	newArgs := append([]string{"exec", containerID, "./exec.sh"}, args...)
+
+	return exec.CommandContext(ctx, "docker", newArgs...).Output()
 }
 
 // Close deletes temp file after used.

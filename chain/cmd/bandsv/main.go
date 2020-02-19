@@ -1,14 +1,13 @@
 package main
 
 import (
-	"context"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
-	"os/exec"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/bandprotocol/d3n/chain/app"
@@ -56,46 +55,7 @@ type ExecuteRequest struct {
 }
 
 type ExecuteResponse struct {
-	Result []byte `json:"result"`
-}
-
-// type ParamsInfoRequest struct {
-// 	Code cmn.HexBytes `json:"code" binding:"required"`
-// }
-
-// type ParamsInfoResponse struct {
-// 	Params json.RawMessage `json:"params"`
-// }
-
-// type StoreRequest struct {
-// 	Code cmn.HexBytes `json:"code" binding:"required"`
-// 	Name string       `json:"name" binding:"required"`
-// }
-
-// type StoreResponse struct {
-// 	TxHash   string       `json:"txHash"`
-// 	CodeHash cmn.HexBytes `json:"codeHash"`
-// }
-
-// type Command struct {
-// 	Cmd       string   `json:"cmd"`
-// 	Arguments []string `json:"args"`
-// }
-
-// var allowedCommands = map[string]bool{"curl": true, "date": true}
-
-func execWithTimeout(command *exec.Cmd, limit time.Duration) ([]byte, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), limit)
-	defer cancel()
-	cmd := exec.CommandContext(ctx, command.Path, command.Args...)
-	out, err := cmd.Output()
-	if ctx.Err() == context.DeadlineExceeded {
-		return []byte{}, fmt.Errorf("Command timed out")
-	}
-	if err != nil {
-		return []byte{}, err
-	}
-	return out, nil
+	Result string `json:"result"`
 }
 
 func getEnv(key, def string) string {
@@ -146,36 +106,6 @@ func handleRequestData(c *gin.Context) {
 	if req.Expiration == 0 {
 		req.Expiration = DefaultExpiration
 	}
-
-	// resp, err := grequests.Get(
-	// 	fmt.Sprintf(`%s/zoracle/serialize_params/%x`, queryURI, req.CodeHash),
-	// 	&grequests.RequestOptions{
-	// 		Params: map[string]string{"params": string(req.Params)},
-	// 	},
-	// )
-	// if err != nil {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	// 	return
-	// }
-	// if resp.StatusCode != 200 {
-	// 	var body map[string]interface{}
-	// 	err := json.Unmarshal(resp.Bytes(), &body)
-	// 	if err == nil {
-	// 		c.JSON(resp.StatusCode, body)
-	// 	} else {
-	// 		c.JSON(resp.StatusCode, resp.Bytes())
-	// 	}
-	// 	return
-	// }
-
-	// var respParams serializeResponse
-	// err = resp.JSON(&respParams)
-	// if err != nil {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	// 	return
-	// }
-
-	// params := respParams.Result
 
 	// unconfirmed respond
 	if reqType == Asynchronous {
@@ -289,7 +219,6 @@ func handleExecute(c *gin.Context) {
 		return
 	}
 
-	// TODO: Docker version
 	ex, err := byteexec.New(req.Code)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -297,70 +226,13 @@ func handleExecute(c *gin.Context) {
 	}
 	defer ex.Close()
 
-	cmd := ex.Command(req.Calldata)
-	result, err := cmd.Output()
+	result, err := ex.RunOnDocker(1*time.Minute, req.Calldata)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	// type queryParallelInfo struct {
-	// 	index      int
-	// 	answer     string
-	// 	httpStatus int
-	// 	err        gin.H
-	// }
-	// chanQueryParallelInfo := make(chan queryParallelInfo, len(commands))
-	// for i, command := range commands {
-	// 	go func(index int, command Command) {
-	// 		info := queryParallelInfo{index: index, answer: "", err: nil}
-	// 		if !allowedCommands[command.Cmd] {
-	// 			info.httpStatus = http.StatusBadRequest
-	// 			info.err = gin.H{"error": fmt.Errorf("handleRequest unknown command %s", command.Cmd)}
-	// 			chanQueryParallelInfo <- info
-	// 			return
-	// 		}
-	// 		dockerCommand := Command{
-	// 			Cmd: "docker",
-	// 			Arguments: append([]string{
-	// 				"run", "--rm", "band-provider",
-	// 				command.Cmd,
-	// 			}, command.Arguments...),
-	// 		}
-	// 		query, err := execWithTimeout(dockerCommand, 10*time.Second)
-	// 		if err != nil {
-	// 			info.httpStatus = http.StatusBadRequest
-	// 			info.err = gin.H{"error": err.Error()}
-	// 			chanQueryParallelInfo <- info
-	// 			return
-	// 		}
-
-	// 		info.answer = string(query)
-	// 		info.httpStatus = http.StatusOK
-	// 		chanQueryParallelInfo <- info
-	// 	}(i, command)
-	// }
-
-	// answers := make([]string, len(commands))
-	// for i := 0; i < len(commands); i++ {
-	// 	info := <-chanQueryParallelInfo
-	// 	if info.err != nil {
-	// 		c.JSON(info.httpStatus, info.err)
-	// 		return
-	// 	}
-	// 	answers[info.index] = info.answer
-	// }
-
-	// b, _ := json.Marshal(answers)
-
-	// rawResult, err := wasm.Execute(req.Code, rawParams, [][]byte{b})
-	// result, err := wasm.ParseResult(req.Code, rawResult)
-	// if err != nil {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	// 	return
-	// }
 	c.JSON(200, ExecuteResponse{
-		Result: result,
+		Result: strings.TrimSpace(string(result)),
 	})
 }
 
