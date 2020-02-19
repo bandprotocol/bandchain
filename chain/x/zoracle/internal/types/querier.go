@@ -23,35 +23,26 @@ func (u64a U64Array) String() string {
 	return fmt.Sprintf("%v", []uint64(u64a))
 }
 
-// type RequestInfo struct {
-// 	CodeHash    []byte            `json:"codeHash"`
-// 	Params      json.RawMessage   `json:"params"`
-// 	ParamsRaw   []byte            `json:"paramsRaw"`
-// 	TargetBlock uint64            `json:"targetBlock"`
-// 	Reports     []ReportWithValidator `json:"reports"`
-// 	Result      json.RawMessage   `json:"result"`
-// 	ResultRaw   []byte            `json:"resultRaw"`
-// }
+type RequestQuerierInfo struct {
+	Request         Request                     `json:"request"`
+	RawDataRequests []RawDataRequestWithExternalID `json:"rawDataRequests"`
+	Reports         []ReportWithValidator       `json:"reports"`
+	Result          []byte                      `json:"result"`
+}
 
-// func NewRequestInfo(
-// 	codeHash []byte,
-// 	params json.RawMessage,
-// 	paramsRaw []byte,
-// 	targetBlock uint64,
-// 	reports []ReportWithValidator,
-// 	result json.RawMessage,
-// 	resultRaw []byte,
-// ) RequestInfo {
-// 	return RequestInfo{
-// 		CodeHash:    codeHash,
-// 		ParamsRaw:   paramsRaw,
-// 		Params:      params,
-// 		TargetBlock: targetBlock,
-// 		Reports:     reports,
-// 		Result:      result,
-// 		ResultRaw:   resultRaw,
-// 	}
-// }
+func NewRequestQuerierInfo(
+	request Request,
+	rawDataRequests []RawDataRequestWithExternalID,
+	reports []ReportWithValidator,
+	result []byte,
+) RequestQuerierInfo {
+	return RequestQuerierInfo{
+		Request:         request,
+		RawDataRequests: rawDataRequests,
+		Reports:         reports,
+		Result:          result,
+	}
+}
 
 type RawBytes []byte
 

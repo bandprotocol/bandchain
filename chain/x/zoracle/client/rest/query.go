@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	"github.com/gorilla/mux"
@@ -13,93 +14,112 @@ import (
 	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 )
 
+// buildTxDetail takes a TxResponse instance and builds new TxDetail contains only necessary fields.
+func buildTxDetail(tx *sdk.TxResponse) TxDetail {
+	return TxDetail{
+		Hash:      tx.TxHash,
+		Height:    tx.Height,
+		Timestamp: tx.Timestamp,
+	}
+}
+
+// buildRequestRESTInfo takes a RequestQuerierInfo instance and builds a more comprehensive version of it.
+func buildRequestRESTInfo(
+	ctx context.CLIContext, id string, queryRequest types.RequestQuerierInfo,
+) (RequestRESTInfo, error) {
+	var request RequestRESTInfo
+
+	request.OracleScriptID = queryRequest.Request.OracleScriptID
+	request.Calldata = queryRequest.Request.Calldata
+	request.RequestedValidators = queryRequest.Request.RequestedValidators
+	request.SufficientValidatorCount = queryRequest.Request.SufficientValidatorCount
+	request.ExpirationHeight = queryRequest.Request.ExpirationHeight
+	request.IsResolved = queryRequest.Request.IsResolved
+	request.RawDataRequests = queryRequest.RawDataRequests
+
+	request.Result = queryRequest.Result
+
+	// Get request detail
+	searchRequest, err := utils.QueryTxsByEvents(
+		ctx,
+		[]string{fmt.Sprintf("%s.%s='%s'", types.EventTypeRequest, types.AttributeKeyRequestID, id)},
+		1,
+		1,
+	)
+	if err != nil || len(searchRequest.Txs) != 1 {
+		return RequestRESTInfo{}, err
+	}
+	request.RequestTx = buildTxDetail(&searchRequest.Txs[0])
+	for _, msg := range searchRequest.Txs[0].Tx.GetMsgs() {
+		msgRequest, ok := msg.(types.MsgRequestData)
+		if ok {
+			request.Requester = msgRequest.Sender
+			break
+		}
+	}
+
+	// Save report tx
+	searchReports, err := utils.QueryTxsByEvents(
+		ctx,
+		[]string{fmt.Sprintf("%s.%s='%s'", types.EventTypeReport, types.AttributeKeyRequestID, id)},
+		1,
+		10000, // Estimated validator reports
+	)
+
+	request.Reports = make([]ReportDetail, 0)
+
+	for _, report := range searchReports.Txs {
+		var validatorAddress sdk.ValAddress
+		for _, msg := range report.Tx.GetMsgs() {
+			msgReport, ok := msg.(types.MsgReportData)
+			if ok {
+				validatorAddress = msgReport.Sender
+				break
+			}
+		}
+		for _, queryReport := range queryRequest.Reports {
+			if queryReport.Validator.Equals(validatorAddress) {
+				request.Reports = append(
+					request.Reports,
+					ReportDetail{
+						Reporter: queryReport.Validator,
+						Value:    queryReport.RawDataReports,
+						Tx:       buildTxDetail(&report),
+					},
+				)
+				continue
+			}
+		}
+	}
+
+	return request, nil
+
+}
+
 func getRequestHandler(cliCtx context.CLIContext, storeName string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		rest.WriteErrorResponse(w, http.StatusNotImplemented, "")
-		// vars := mux.Vars(r)
-		// reqID := vars[requestID]
-		// var request RequestQueryInfo
+		vars := mux.Vars(r)
+		reqID := vars[requestID]
+		var queryRequest types.RequestQuerierInfo
+		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/request/%s", storeName, reqID), nil)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
 
-		// res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/request/%s", storeName, reqID), nil)
-		// if err != nil {
-		// 	rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-		// 	return
-		// }
+		err = cliCtx.Codec.UnmarshalJSON(res, &queryRequest)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 
-		// var queryRequest types.RequestInfo
-		// err = cliCtx.Codec.UnmarshalJSON(res, &queryRequest)
+		request, err := buildRequestRESTInfo(cliCtx, reqID, queryRequest)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 
-		// request.CodeHash = queryRequest.CodeHash
-		// request.Params = queryRequest.Params
-		// request.TargetBlock = int64(queryRequest.TargetBlock)
-		// request.Result = queryRequest.Result
-
-		// // Get request detail
-		// searchRequest, err := utils.QueryTxsByEvents(
-		// 	cliCtx,
-		// 	[]string{fmt.Sprintf("%s.%s='%s'", types.EventTypeRequest, types.AttributeKeyRequestID, reqID)},
-		// 	1,
-		// 	1,
-		// )
-
-		// request.TxHash = searchRequest.Txs[0].TxHash
-		// request.RequestedAtHeight = searchRequest.Txs[0].Height
-		// request.RequestedAtTime = searchRequest.Txs[0].Timestamp
-		// // TODO: Find the correct message and not assume the first message is the one
-		// request.Requester = searchRequest.Txs[0].Tx.GetMsgs()[0].(types.MsgRequest).Sender
-		// // Script detail
-		// scriptInfoRaw, _, err := cliCtx.QueryWithData(
-		// 	fmt.Sprintf(
-		// 		"custom/%s/script/%s",
-		// 		storeName,
-		// 		hex.EncodeToString(queryRequest.CodeHash),
-		// 	),
-		// 	nil,
-		// )
-		// if err != nil {
-		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-		// 	return
-		// }
-
-		// err = cliCtx.Codec.UnmarshalJSON(scriptInfoRaw, &request.ScriptInfo)
-		// if err != nil {
-		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-		// 	return
-		// }
-		// // Save report tx
-		// reportTxs := make(map[string]ReportDetail)
-		// searchReports, err := utils.QueryTxsByEvents(
-		// 	cliCtx,
-		// 	[]string{fmt.Sprintf("%s.%s='%s'", types.EventTypeReport, types.AttributeKeyRequestID, reqID)},
-		// 	1,
-		// 	10000, // Estimated validator reports
-		// )
-
-		// for _, report := range searchReports.Txs {
-		// 	// TODO: Find validator address from tx not assume in first log of tx
-		// 	reportTxs[report.Logs[0].Events[1].Attributes[2].Value] = ReportDetail{
-		// 		TxHash:         report.TxHash,
-		// 		ReportedAtTime: report.Timestamp,
-		// 	}
-		// }
-
-		// request.Reports = make([]ReportDetail, len(queryRequest.Reports))
-		// for i, report := range queryRequest.Reports {
-		// 	reportTx, ok := reportTxs[report.Validator.String()]
-		// 	if !ok {
-		// 		rest.WriteErrorResponse(w, http.StatusInternalServerError, "Cannot find report tx")
-		// 		return
-		// 	}
-		// 	request.Reports[i] = ReportDetail{
-		// 		Reporter:         report.Validator,
-		// 		TxHash:           reportTx.TxHash,
-		// 		ReportedAtHeight: int64(report.ReportedAt),
-		// 		ReportedAtTime:   reportTx.ReportedAtTime,
-		// 		Value:            report.Value,
-		// 	}
-		// }
-
-		// rest.PostProcessResponse(w, cliCtx, request)
+		rest.PostProcessResponse(w, cliCtx, request)
 	}
 }
 
