@@ -409,13 +409,13 @@ $ %s tx zoracle create-data-source --name coingecko-price --script ../price.sh -
 // GetCmdEditOracleScript implements the editing of oracle script command handler.
 func GetCmdEditOracleScript(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "edit-oracle-script (--id [id]) (--name [name]) (--script [path-to-script]) (--owner [owner])",
+		Use:   "edit-oracle-script [id] (--name [name]) (--script [path-to-script]) (--owner [owner])",
 		Short: "Edit an existing oracle script",
 		Args:  cobra.NoArgs,
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Edit an existing oracle script that will be used by making a request.
 Example:
-$ %s tx zoracle edit-oracle-script --id 1 --name eth-price --script ../eth_price.wasm --owner band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9 --from mykey
+$ %s tx zoracle edit-oracle-script 1 --name eth-price --script ../eth_price.wasm --owner band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9 --from mykey
 `,
 				version.ClientName,
 			),
@@ -424,11 +424,10 @@ $ %s tx zoracle edit-oracle-script --id 1 --name eth-price --script ../eth_price
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 
-			idStr, err := cmd.Flags().GetString(flagID)
+			id, err := strconv.ParseInt(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
-			id, err := strconv.ParseInt(idStr, 10, 64)
 
 			name, err := cmd.Flags().GetString(flagName)
 			if err != nil {
