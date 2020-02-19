@@ -9,9 +9,11 @@ import (
 )
 
 const (
-	requestID    = "requestID"
-	codeHash     = "codeHash"
-	dataSourceID = "dataSourceID"
+	requestID           = "requestID"
+	codeHash            = "codeHash"
+	dataSourceID        = "dataSourceID"
+	dataSourcePageIndex = "dataSourcePageIndex"
+	dataSourcePageSize  = "dataSourcePageSize"
 )
 
 func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router, storeName string) {
@@ -21,4 +23,5 @@ func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router, storeName string) 
 	r.HandleFunc(fmt.Sprintf("/%s/serialize_params/{%s}", storeName, codeHash), getSerializeParams(cliCtx, storeName)).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/%s/request_number", storeName), getRequestNumberHandler(cliCtx, storeName)).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/%s/data_source/{%s}", storeName, dataSourceID), getDataSourceHandler(cliCtx, storeName)).Methods("GET")
+	r.HandleFunc(fmt.Sprintf("/%s/data_sources/{%s}/{%s}", storeName, dataSourcePageIndex, dataSourcePageSize), getDataSourcesHandler(cliCtx, storeName)).Methods("GET")
 }
