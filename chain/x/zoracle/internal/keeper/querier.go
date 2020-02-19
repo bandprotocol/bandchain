@@ -234,6 +234,7 @@ func queryRequestNumber(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) (
 }
 
 func queryDataSource(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
+
 	res, err := codec.MarshalJSONIndent(keeper.cdc, types.NewDataSourceInfo(
 		id,
 		owner,
