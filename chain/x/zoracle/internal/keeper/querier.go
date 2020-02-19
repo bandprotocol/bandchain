@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -69,6 +70,11 @@ func queryRequest(ctx sdk.Context, path []string, req abci.RequestQuery, keeper 
 			report, []byte(validator),
 		))
 	}
+
+	// Sort report by validator address
+	sort.Slice(reports, func(i, j int) bool {
+		return reports[i].Validator.String() < reports[j].Validator.String()
+	})
 
 	var result []byte
 	if keeper.HasResult(ctx, id, request.OracleScriptID, request.Calldata) {
