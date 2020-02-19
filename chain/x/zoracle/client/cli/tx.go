@@ -243,8 +243,8 @@ $ %s tx zoracle create-data-source --name coingecko-price --script ../price.sh -
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
 		},
 	}
-	cmd.Flags().String(flagName, "", "Name of data source")
-	cmd.Flags().String(flagScript, "", "Path to data source script")
+	cmd.Flags().String(flagName, "", "Name of this data source")
+	cmd.Flags().String(flagScript, "", "Path to this data source script")
 	cmd.Flags().String(flagCallFee, "", "Fee for querying this data source")
 	cmd.Flags().String(flagOwner, "", "Owner of this data source")
 
@@ -323,8 +323,8 @@ $ %s tx zoracle edit-data-source 1 --name coingecko-price --script ../price.sh -
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
 		},
 	}
-	cmd.Flags().String(flagName, "", "Name of data source")
-	cmd.Flags().String(flagScript, "", "Path to data source script")
+	cmd.Flags().String(flagName, "", "Name of this data source")
+	cmd.Flags().String(flagScript, "", "Path to this data source script")
 	cmd.Flags().String(flagCallFee, "", "Fee for querying this data source")
 	cmd.Flags().String(flagOwner, "", "Owner of this data source")
 
@@ -386,8 +386,8 @@ $ %s tx zoracle create-oracle-script --name eth-price --script ../eth_price.wasm
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
 		},
 	}
-	cmd.Flags().String(flagName, "", "Name of oracle script")
-	cmd.Flags().String(flagScript, "", "Path to oracle script")
+	cmd.Flags().String(flagName, "", "Name of this oracle script")
+	cmd.Flags().String(flagScript, "", "Path to this oracle script")
 	cmd.Flags().String(flagOwner, "", "Owner of this oracle script")
 
 	return cmd
@@ -454,8 +454,8 @@ $ %s tx zoracle edit-oracle-script 1 --name eth-price --script ../eth_price.wasm
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
 		},
 	}
-	cmd.Flags().String(flagName, "", "Name of oracle script")
-	cmd.Flags().String(flagScript, "", "Path to oracle script")
+	cmd.Flags().String(flagName, "", "Name of this oracle script")
+	cmd.Flags().String(flagScript, "", "Path to this oracle script")
 	cmd.Flags().String(flagOwner, "", "Owner of this oracle script")
 
 	return cmd
