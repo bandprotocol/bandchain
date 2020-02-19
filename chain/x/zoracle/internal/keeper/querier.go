@@ -27,6 +27,8 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 		// 	return serializeParams(ctx, path[1:], req, keeper)
 		case types.QueryRequestNumber:
 			return queryRequestNumber(ctx, req, keeper)
+		case types.QueryDataSource:
+			return queryDataSource(ctx, path[1:], req, keeper)
 		default:
 			return nil, sdk.ErrUnknownRequest("unknown nameservice query endpoint")
 		}
@@ -229,4 +231,18 @@ func queryPending(ctx sdk.Context, path []string, req abci.RequestQuery, keeper 
 
 func queryRequestNumber(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
 	return codec.MustMarshalJSONIndent(keeper.cdc, keeper.GetRequestCount(ctx)), nil
+}
+
+func queryDataSource(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
+	res, err := codec.MarshalJSONIndent(keeper.cdc, types.NewDataSourceInfo(
+		id,
+		owner,
+		name,
+		fee,
+		executable,
+	))
+	if err != nil {
+		panic("could not marshal result to JSON")
+	}
+	return res, nil
 }

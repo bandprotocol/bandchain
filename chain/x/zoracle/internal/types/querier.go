@@ -107,3 +107,27 @@ func NewScriptInfo(
 		Creator:     creator,
 	}
 }
+
+type DataSourceInfo struct {
+	ID         int64          `json:"id"`
+	Owner      sdk.AccAddress `json:"owner"`
+	Name       string         `json:"name"`
+	Fee        sdk.Coins      `json:"fee"`
+	Executable []byte         `json:"executable"`
+}
+
+func NewDataSourceInfo(
+	id int64,
+	owner sdk.AccAddress,
+	name string,
+	fee sdk.Coins,
+	executable []byte,
+) DataSourceInfo {
+	return DataSourceInfo{
+		ID:         id,
+		Owner:      owner,
+		Name:       name,
+		Fee:        fee,
+		Executable: executable,
+	}
+}
