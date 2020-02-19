@@ -8,10 +8,12 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"strconv"
 	"time"
 
 	"github.com/bandprotocol/d3n/chain/app"
 	"github.com/bandprotocol/d3n/chain/d3nlib"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/gin-gonic/gin"
 	"github.com/levigross/grequests"
@@ -20,6 +22,7 @@ import (
 	rpc "github.com/tendermint/tendermint/rpc/client"
 
 	"github.com/bandprotocol/d3n/chain/byteexec"
+	"github.com/bandprotocol/d3n/chain/x/zoracle"
 )
 
 const (
@@ -27,18 +30,18 @@ const (
 	Synchronous  = "SYNCHRONOUS"
 	Full         = "FULL"
 
-	DefualtRequestedValidatorCount  = 1
+	DefaultRequestedValidatorCount  = 1
 	DefaultSufficientValidatorCount = 1
 	DefaultExpiration               = 100
 )
 
 type OracleRequest struct {
 	Type                     string `json:"type" binding:"required"`
-	OracleScriptID           int64  `json:"oracleScriptID" binding:"required"`
+	OracleScriptID           int64  `json:"oracleScriptID,string" binding:"required"`
 	Calldata                 []byte `json:"calldata" binding:"required"`
-	RequestedValidatorCount  int64  `json:"requestedValidatorCount"`
-	SufficientValidatorCount int64  `json:"sufficientValidatorCount"`
-	Expiration               int64  `json:"expiration"`
+	RequestedValidatorCount  int64  `json:"requestedValidatorCount,string"`
+	SufficientValidatorCount int64  `json:"sufficientValidatorCount,string"`
+	Expiration               int64  `json:"expiration,string"`
 }
 
 type OracleRequestResp struct {
@@ -120,18 +123,29 @@ type serializeResponse struct {
 }
 
 func handleRequestData(c *gin.Context) {
-	c.JSON(http.StatusNotImplemented, nil)
-	// var req OracleRequest
-	// if err := c.ShouldBindJSON(&req); err != nil {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	// 	return
-	// }
+	var req OracleRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-	// reqType := req.Type
-	// if reqType != Asynchronous && reqType != Synchronous && reqType != Full {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "Type not match"})
-	// 	return
-	// }
+	reqType := req.Type
+	if reqType != Asynchronous && reqType != Synchronous && reqType != Full {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Type not match"})
+		return
+	}
+
+	if req.RequestedValidatorCount == 0 {
+		req.RequestedValidatorCount = DefaultRequestedValidatorCount
+	}
+
+	if req.SufficientValidatorCount == 0 {
+		req.SufficientValidatorCount = DefaultSufficientValidatorCount
+	}
+
+	if req.Expiration == 0 {
+		req.Expiration = DefaultExpiration
+	}
 
 	// resp, err := grequests.Get(
 	// 	fmt.Sprintf(`%s/zoracle/serialize_params/%x`, queryURI, req.CodeHash),
@@ -163,95 +177,109 @@ func handleRequestData(c *gin.Context) {
 
 	// params := respParams.Result
 
-	// // unconfirmed respond
-	// if reqType == Asynchronous {
-	// 	txr, err := bandClient.SendTransaction(
-	// 		zoracle.NewMsgRequest(req.CodeHash, params, 10, bandClient.Sender()),
-	// 		20000000, "", "", "",
-	// 		flags.BroadcastAsync,
-	// 	)
-	// 	if err != nil {
-	// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	// 		return
-	// 	}
+	// unconfirmed respond
+	if reqType == Asynchronous {
+		txr, err := bandClient.SendTransaction(
+			zoracle.NewMsgRequestData(
+				req.OracleScriptID,
+				req.Calldata,
+				req.RequestedValidatorCount,
+				req.SufficientValidatorCount,
+				req.Expiration,
+				bandClient.Sender(),
+			),
+			20000000, "", "", "",
+			flags.BroadcastAsync,
+		)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 
-	// 	c.JSON(200, OracleRequestResp{
-	// 		TxHash: txr.TxHash,
-	// 	})
-	// 	return
-	// }
+		c.JSON(200, OracleRequestResp{
+			TxHash: txr.TxHash,
+		})
+		return
+	}
 
-	// txr, err := bandClient.SendTransaction(
-	// 	zoracle.NewMsgRequest(req.CodeHash, params, 10, bandClient.Sender()),
-	// 	20000000, "", "", "",
-	// 	flags.BroadcastBlock,
-	// )
-	// if err != nil {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	// 	return
-	// }
+	txr, err := bandClient.SendTransaction(
+		zoracle.NewMsgRequestData(
+			req.OracleScriptID,
+			req.Calldata,
+			req.RequestedValidatorCount,
+			req.SufficientValidatorCount,
+			req.Expiration,
+			bandClient.Sender(),
+		),
+		20000000, "", "", "",
+		flags.BroadcastBlock,
+	)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
-	// requestId := uint64(0)
-	// for _, event := range txr.Events {
-	// 	if event.Type == "request" {
-	// 		for _, attr := range event.Attributes {
-	// 			if string(attr.Key) == "id" {
-	// 				requestId, err = strconv.ParseUint(attr.Value, 10, 64)
-	// 				if err != nil {
-	// 					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	// 					return
-	// 				}
-	// 				break
-	// 			}
-	// 		}
-	// 	}
-	// }
-	// if requestId == 0 {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("cannot find requestId: %v", txr)})
-	// 	return
-	// }
+	requestID := int64(0)
+	for _, event := range txr.Events {
+		if event.Type == "request" {
+			for _, attr := range event.Attributes {
+				if string(attr.Key) == "id" {
+					requestID, err = strconv.ParseInt(attr.Value, 10, 64)
+					if err != nil {
+						c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+						return
+					}
+					break
+				}
+			}
+		}
+	}
+	if requestID == 0 {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("cannot find requestID: %v", txr)})
+		return
+	}
 
-	// // confirmed respond
-	// if reqType == Synchronous {
-	// 	c.JSON(200, OracleRequestResp{
-	// 		TxHash:    txr.TxHash,
-	// 		RequestId: requestId,
-	// 	})
-	// 	return
-	// }
+	// confirmed respond
+	if reqType == Synchronous {
+		c.JSON(200, OracleRequestResp{
+			TxHash:    txr.TxHash,
+			RequestID: requestID,
+		})
+		return
+	}
 
-	// for i := 0; i < 10; i++ {
-	// 	resp, err := grequests.Get(fmt.Sprintf(`%s/d3n/proof/%d`, queryURI, requestId), nil)
-	// 	if err != nil {
-	// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	// 		return
-	// 	}
+	for i := 0; i < 10; i++ {
+		resp, err := grequests.Get(fmt.Sprintf(`%s/d3n/proof/%d`, queryURI, requestID), nil)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 
-	// 	// confirmed + proof respond
-	// 	if resp.StatusCode == 200 {
-	// 		var proof struct {
-	// 			Result json.RawMessage `json:"result"`
-	// 		}
+		// confirmed + proof respond
+		if resp.StatusCode == 200 {
+			var proof struct {
+				Result json.RawMessage `json:"result"`
+			}
 
-	// 		err = resp.JSON(&proof)
-	// 		if err != nil {
-	// 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	// 			return
-	// 		}
+			err = resp.JSON(&proof)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
 
-	// 		c.JSON(200, OracleRequestResp{
-	// 			TxHash:    txr.TxHash,
-	// 			RequestId: requestId,
-	// 			Proof:     proof.Result,
-	// 		})
-	// 		return
-	// 	}
+			c.JSON(200, OracleRequestResp{
+				TxHash:    txr.TxHash,
+				RequestID: requestID,
+				Proof:     proof.Result,
+			})
+			return
+		}
 
-	// 	time.Sleep(3 * time.Second)
-	// }
+		time.Sleep(3 * time.Second)
+	}
 
-	// // finding proof timeout
-	// c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf(`Cannot find proof in this TxHash %s`, txr.TxHash)})
+	// finding proof timeout
+	c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf(`Cannot find proof in this TxHash %s`, txr.TxHash)})
 }
 
 func handleExecute(c *gin.Context) {
