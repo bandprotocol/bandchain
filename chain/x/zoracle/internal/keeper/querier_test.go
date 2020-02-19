@@ -6,6 +6,7 @@ import (
 
 	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 	"github.com/cosmos/cosmos-sdk/codec"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
@@ -138,6 +139,46 @@ func TestQueryRequestIncompleteValidator(t *testing.T) {
 	)
 	require.Nil(t, errJSON)
 	require.Equal(t, acs, acsBytes)
+}
+
+func TestQueryDataSourceById(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+	keeper.SetMaxDataSourceExecutableSize(ctx, 20)
+	// Create variable "querier" which is a function
+	querier := NewQuerier(keeper)
+
+	// query before add a data source
+	_, err := querier(
+		ctx,
+		[]string{"data_source", "1"},
+		abci.RequestQuery{},
+	)
+	// Should return error data source not found
+	require.NotNil(t, err)
+
+	owner := sdk.AccAddress([]byte("owner"))
+	name := "data_source"
+	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
+	executable := []byte("executable")
+	expectedResult := types.NewDataSourceQuerierInfo(1, owner, name, fee, executable)
+
+	// Add a new data source
+	err = keeper.AddDataSource(ctx, expectedResult.Owner, expectedResult.Name, expectedResult.Fee, expectedResult.Executable)
+	require.Nil(t, err)
+
+	// This time querier should be able to find a data source
+	dataSource, err := querier(
+		ctx,
+		[]string{"data_source", "1"},
+		abci.RequestQuery{},
+	)
+	require.Nil(t, err)
+
+	expectedResultBytes, errJSON := codec.MarshalJSONIndent(
+		keeper.cdc, expectedResult)
+	require.Nil(t, errJSON)
+
+	require.Equal(t, expectedResultBytes, dataSource)
 }
 
 // func TestQueryPendingRequest(t *testing.T) {
