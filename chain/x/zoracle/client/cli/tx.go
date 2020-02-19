@@ -336,7 +336,7 @@ $ %s tx zoracle edit-data-source 1 --name coingecko-price --script ../price.sh -
 func GetCmdCreateOracleScript(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create-oracle-script (--name [name]) (--script [path-to-script]) (--owner [owner])",
-		Short: "Create a new oracle script",
+		Short: "Create a new oracle script that will be used by data requests.",
 		Args:  cobra.NoArgs,
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Create new data source that will be used by oracle scripts.
