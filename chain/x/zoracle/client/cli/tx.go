@@ -41,10 +41,10 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 	zoracleCmd.AddCommand(client.PostCommands(
 		GetCmdCreateDataSource(cdc),
 		GetCmdEditDataSource(cdc),
-		GetCmdRequest(cdc),
-		GetCmdReport(cdc),
 		GetCmdCreateOracleScript(cdc),
 		GetCmdEditOracleScript(cdc),
+		GetCmdRequest(cdc),
+		GetCmdReport(cdc),
 	)...)
 
 	return zoracleCmd
