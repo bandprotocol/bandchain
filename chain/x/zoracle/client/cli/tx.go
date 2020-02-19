@@ -339,9 +339,9 @@ func GetCmdCreateOracleScript(cdc *codec.Codec) *cobra.Command {
 		Short: "Create a new oracle script that will be used by data requests.",
 		Args:  cobra.NoArgs,
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Create new data source that will be used by oracle scripts.
+			fmt.Sprintf(`Create a new oracle script that will be used by data requests.
 Example:
-$ %s tx zoracle create-data-source --name coingecko-price --script ../price.sh --call-fee 100uband --owner band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9 --from mykey
+$ %s tx zoracle create-oracle-script --name eth-price --script ../eth_price.wasm --owner band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9 --from mykey
 `,
 				version.ClientName,
 			),
@@ -358,17 +358,7 @@ $ %s tx zoracle create-data-source --name coingecko-price --script ../price.sh -
 			if err != nil {
 				return err
 			}
-			execBytes, err := ioutil.ReadFile(scriptPath)
-			if err != nil {
-				return err
-			}
-
-			feeStr, err := cmd.Flags().GetString(flagCallFee)
-			if err != nil {
-				return err
-			}
-
-			fee, err := sdk.ParseCoins(feeStr)
+			scriptCode, err := ioutil.ReadFile(scriptPath)
 			if err != nil {
 				return err
 			}
@@ -382,11 +372,10 @@ $ %s tx zoracle create-data-source --name coingecko-price --script ../price.sh -
 				return err
 			}
 
-			msg := types.NewMsgCreateDataSource(
+			msg := types.NewMsgCreateOracleScript(
 				owner,
 				name,
-				fee,
-				execBytes,
+				scriptCode,
 				cliCtx.GetFromAddress(),
 			)
 
@@ -398,10 +387,9 @@ $ %s tx zoracle create-data-source --name coingecko-price --script ../price.sh -
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
 		},
 	}
-	cmd.Flags().String(flagName, "", "Name of data source")
-	cmd.Flags().String(flagScript, "", "Path to data source script")
-	cmd.Flags().String(flagCallFee, "", "Fee for query this data source")
-	cmd.Flags().String(flagOwner, "", "Owner of this data source")
+	cmd.Flags().String(flagName, "", "Name of oracle script")
+	cmd.Flags().String(flagScript, "", "Path to oracle script")
+	cmd.Flags().String(flagOwner, "", "Owner of this oracle script")
 
 	return cmd
 }
