@@ -19,7 +19,6 @@ import (
 )
 
 const (
-	flagID                       = "id"
 	flagName                     = "name"
 	flagScript                   = "script"
 	flagCallFee                  = "call-fee"
