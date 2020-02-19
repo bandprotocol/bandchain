@@ -41,6 +41,8 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 	zoracleCmd.AddCommand(client.PostCommands(
 		GetCmdCreateDataSource(cdc),
 		GetCmdEditDataSource(cdc),
+		GetCmdCreateOracleScript(cdc),
+		GetCmdEditOracleScript(cdc),
 		GetCmdRequest(cdc),
 		GetCmdReport(cdc),
 	)...)
@@ -241,8 +243,8 @@ $ %s tx zoracle create-data-source --name coingecko-price --script ../price.sh -
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
 		},
 	}
-	cmd.Flags().String(flagName, "", "Name of data source")
-	cmd.Flags().String(flagScript, "", "Path to data source script")
+	cmd.Flags().String(flagName, "", "Name of this data source")
+	cmd.Flags().String(flagScript, "", "Path to this data source script")
 	cmd.Flags().String(flagCallFee, "", "Fee for querying this data source")
 	cmd.Flags().String(flagOwner, "", "Owner of this data source")
 
@@ -321,10 +323,140 @@ $ %s tx zoracle edit-data-source 1 --name coingecko-price --script ../price.sh -
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
 		},
 	}
-	cmd.Flags().String(flagName, "", "Name of data source")
-	cmd.Flags().String(flagScript, "", "Path to data source script")
+	cmd.Flags().String(flagName, "", "Name of this data source")
+	cmd.Flags().String(flagScript, "", "Path to this data source script")
 	cmd.Flags().String(flagCallFee, "", "Fee for querying this data source")
 	cmd.Flags().String(flagOwner, "", "Owner of this data source")
+
+	return cmd
+}
+
+// GetCmdCreateOracleScript implements the create oracle script command handler.
+func GetCmdCreateOracleScript(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "create-oracle-script (--name [name]) (--script [path-to-script]) (--owner [owner])",
+		Short: "Create a new oracle script that will be used by data requests.",
+		Args:  cobra.NoArgs,
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Create a new oracle script that will be used by data requests.
+Example:
+$ %s tx zoracle create-oracle-script --name eth-price --script ../eth_price.wasm --owner band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9 --from mykey
+`,
+				version.ClientName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+
+			name, err := cmd.Flags().GetString(flagName)
+			if err != nil {
+				return err
+			}
+			scriptPath, err := cmd.Flags().GetString(flagScript)
+			if err != nil {
+				return err
+			}
+			scriptCode, err := ioutil.ReadFile(scriptPath)
+			if err != nil {
+				return err
+			}
+
+			ownerStr, err := cmd.Flags().GetString(flagOwner)
+			if err != nil {
+				return err
+			}
+			owner, err := sdk.AccAddressFromBech32(ownerStr)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgCreateOracleScript(
+				owner,
+				name,
+				scriptCode,
+				cliCtx.GetFromAddress(),
+			)
+
+			err = msg.ValidateBasic()
+			if err != nil {
+				return err
+			}
+
+			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
+		},
+	}
+	cmd.Flags().String(flagName, "", "Name of this oracle script")
+	cmd.Flags().String(flagScript, "", "Path to this oracle script")
+	cmd.Flags().String(flagOwner, "", "Owner of this oracle script")
+
+	return cmd
+}
+
+// GetCmdEditOracleScript implements the editing of oracle script command handler.
+func GetCmdEditOracleScript(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "edit-oracle-script [id] (--name [name]) (--script [path-to-script]) (--owner [owner])",
+		Short: "Edit an existing oracle script that will be used by data requests.",
+		Args:  cobra.ExactArgs(1),
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Edit an existing oracle script that will be used by data requests.
+Example:
+$ %s tx zoracle edit-oracle-script 1 --name eth-price --script ../eth_price.wasm --owner band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9 --from mykey
+`,
+				version.ClientName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+
+			id, err := strconv.ParseInt(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			name, err := cmd.Flags().GetString(flagName)
+			if err != nil {
+				return err
+			}
+			scriptPath, err := cmd.Flags().GetString(flagScript)
+			if err != nil {
+				return err
+			}
+			scriptCode, err := ioutil.ReadFile(scriptPath)
+			if err != nil {
+				return err
+			}
+
+			ownerStr, err := cmd.Flags().GetString(flagOwner)
+			if err != nil {
+				return err
+			}
+			owner, err := sdk.AccAddressFromBech32(ownerStr)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgEditOracleScript(
+				id,
+				owner,
+				name,
+				scriptCode,
+				cliCtx.GetFromAddress(),
+			)
+
+			err = msg.ValidateBasic()
+			if err != nil {
+				return err
+			}
+
+			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
+		},
+	}
+	cmd.Flags().String(flagName, "", "Name of this oracle script")
+	cmd.Flags().String(flagScript, "", "Path to this oracle script")
+	cmd.Flags().String(flagOwner, "", "Owner of this oracle script")
 
 	return cmd
 }
