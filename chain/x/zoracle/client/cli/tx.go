@@ -335,7 +335,7 @@ $ %s tx zoracle edit-data-source 1 --name coingecko-price --script ../price.sh -
 // GetCmdCreateOracleScript implements the create oracle script command handler.
 func GetCmdCreateOracleScript(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-oracle-script (--name [name]) (--script [path_to_script]) (--owner [owner])",
+		Use:   "create-oracle-script (--name [name]) (--script [path-to-script]) (--owner [owner])",
 		Short: "Create a new oracle script",
 		Args:  cobra.NoArgs,
 		Long: strings.TrimSpace(
@@ -409,7 +409,7 @@ $ %s tx zoracle create-data-source --name coingecko-price --script ../price.sh -
 // GetCmdEditOracleScript implements the editing of oracle script command handler.
 func GetCmdEditOracleScript(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "edit-oracle-script (--id [id]) (--name [name]) (--script [path_to_script]) (--owner [owner])",
+		Use:   "edit-oracle-script (--id [id]) (--name [name]) (--script [path-to-script]) (--owner [owner])",
 		Short: "Edit an existing oracle script",
 		Args:  cobra.NoArgs,
 		Long: strings.TrimSpace(
