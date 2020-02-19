@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"encoding/hex"
+	"strconv"
 	"testing"
 
 	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
@@ -174,11 +175,88 @@ func TestQueryDataSourceById(t *testing.T) {
 	)
 	require.Nil(t, err)
 
-	expectedResultBytes, errJSON := codec.MarshalJSONIndent(
-		keeper.cdc, expectedResult)
+	expectedResultBytes, errJSON := codec.MarshalJSONIndent(keeper.cdc, expectedResult)
 	require.Nil(t, errJSON)
 
 	require.Equal(t, expectedResultBytes, dataSource)
+}
+
+func TestQueryDataSourcesByStartIdAndNumberOfDataSources(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+	keeper.SetMaxDataSourceExecutableSize(ctx, 20)
+	// Create variable "querier" which is a function
+	querier := NewQuerier(keeper)
+
+	expectedResult := []types.DataSourceQuerierInfo{}
+
+	// Add a new 10 data sources
+	for i := 1; i <= 10; i++ {
+		owner := sdk.AccAddress([]byte("owner" + strconv.Itoa(i)))
+		name := "data_source_" + strconv.Itoa(i)
+		fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
+		executable := []byte("executable" + strconv.Itoa(i))
+		eachDataSource := types.NewDataSourceQuerierInfo(int64(i), owner, name, fee, executable)
+
+		err := keeper.AddDataSource(ctx, eachDataSource.Owner, eachDataSource.Name, eachDataSource.Fee, eachDataSource.Executable)
+		require.Nil(t, err)
+
+		expectedResult = append(expectedResult, eachDataSource)
+	}
+
+	// This time querier should be able to find a data source
+	dataSources, err := querier(
+		ctx,
+		[]string{"data_sources", "1", "5"},
+		abci.RequestQuery{},
+	)
+	require.Nil(t, err)
+
+	expectedResultBytes, errJSON := codec.MarshalJSONIndent(keeper.cdc, expectedResult[0:5])
+	require.Nil(t, errJSON)
+
+	require.Equal(t, expectedResultBytes, dataSources)
+}
+
+func TestQueryDataSourcesGotEmptyArrayBecauseNoDataSource(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+	keeper.SetMaxDataSourceExecutableSize(ctx, 20)
+	// Create variable "querier" which is a function
+	querier := NewQuerier(keeper)
+
+	dataSources, err := querier(
+		ctx,
+		[]string{"data_sources", "1", "5"},
+		abci.RequestQuery{},
+	)
+	require.Nil(t, err)
+
+	expectedResultBytes, errJSON := codec.MarshalJSONIndent(keeper.cdc, []types.DataSourceQuerierInfo{})
+	require.Nil(t, errJSON)
+
+	require.Equal(t, expectedResultBytes, dataSources)
+}
+
+func TestQueryDataSourcesFailBecauseInvalidNumberOfDataSource(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+	keeper.SetMaxDataSourceExecutableSize(ctx, 20)
+	// Create variable "querier" which is a function
+	querier := NewQuerier(keeper)
+
+	// Number of data sources should <= 100
+	_, err := querier(
+		ctx,
+		[]string{"data_sources", "1", "101"},
+		abci.RequestQuery{},
+	)
+	require.NotNil(t, err)
+
+	// Number of data sources should >= 1
+	_, err = querier(
+		ctx,
+		[]string{"data_sources", "1", "0"},
+		abci.RequestQuery{},
+	)
+	require.NotNil(t, err)
 }
 
 // func TestQueryPendingRequest(t *testing.T) {
