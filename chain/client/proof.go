@@ -7,6 +7,7 @@ import (
 	"math/big"
 	"net/http"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -16,16 +17,18 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/gorilla/mux"
 
 	// "github.com/gorilla/mux"
 	// "github.com/tendermint/iavl"
+	"github.com/tendermint/iavl"
 	"github.com/tendermint/tendermint/crypto/merkle"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 	"github.com/tendermint/tendermint/crypto/tmhash"
 	cmn "github.com/tendermint/tendermint/libs/common"
 
-	// rpcclient "github.com/tendermint/tendermint/rpc/client"
-
+	"github.com/bandprotocol/d3n/chain/x/zoracle"
+	rpcclient "github.com/tendermint/tendermint/rpc/client"
 	"github.com/tendermint/tendermint/types"
 )
 
@@ -126,12 +129,12 @@ func (blockRelay *BlockRelayProof) encodeToEthData(blockHeight uint64) ([]byte, 
 }
 
 type OracleDataProof struct {
-	Version     uint64           `json:"version"`
-	RequestId   uint64           `json:"requestId"`
-	CodeHash    cmn.HexBytes     `json:"codeHash"`
-	Params      cmn.HexBytes     `json:"params"`
-	Data        cmn.HexBytes     `json:"data"`
-	MerklePaths []IAVLMerklePath `json:"merklePaths"`
+	Version        uint64           `json:"version"`
+	RequestID      uint64           `json:"requestID"`
+	OracleScriptID uint64           `json:"oracleScriptID"`
+	Calldata       cmn.HexBytes     `json:"calldata"`
+	Data           cmn.HexBytes     `json:"data"`
+	MerklePaths    []IAVLMerklePath `json:"merklePaths"`
 }
 
 func (oracleData *OracleDataProof) encodeToEthData(blockHeight uint64) ([]byte, error) {
@@ -142,9 +145,9 @@ func (oracleData *OracleDataProof) encodeToEthData(blockHeight uint64) ([]byte, 
 	return verifyArguments.Pack(
 		big.NewInt(int64(blockHeight)),
 		oracleData.Data,
-		oracleData.RequestId,
-		common.BytesToHash(oracleData.CodeHash),
-		oracleData.Params,
+		oracleData.RequestID,
+		oracleData.OracleScriptID,
+		oracleData.Calldata,
 		big.NewInt(int64(oracleData.Version)),
 		parsePaths,
 	)
@@ -408,155 +411,157 @@ func MakeOtherStoresMerkleHash(mspo rootmulti.MultiStoreProofOp) (cmn.HexBytes, 
 
 func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// TODO: Fix on #561
-		rest.PostProcessResponse(w, cliCtx, "OK")
-		return
-		// reqIDStr := vars[requestID]
-		// reqID, err := strconv.ParseUint(reqIDStr, 10, 64)
-		// if err != nil {
-		// 	rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-		// 	return
-		// }
+		vars := mux.Vars(r)
+		reqIDStr := vars[requestID]
+		reqID, err := strconv.ParseUint(reqIDStr, 10, 64)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
 
-		// rc, err := cliCtx.Client.Commit(nil)
-		// if err != nil {
-		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-		// 	return
-		// }
+		rc, err := cliCtx.Client.Commit(nil)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 
-		// brp, err := GetBlockRelayProof(cliCtx, uint64(rc.Height))
-		// if err != nil {
-		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-		// 	return
-		// }
+		brp, err := GetBlockRelayProof(cliCtx, uint64(rc.Height))
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 
-		// var queryRequest zoracle.RequestInfo
-		// res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/zoracle/request/%d", reqID), nil)
-		// if err != nil {
-		// 	rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-		// 	return
-		// }
-		// err = cliCtx.Codec.UnmarshalJSON(res, &queryRequest)
-		// if err != nil {
-		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-		// 	return
-		// }
+		var queryRequest zoracle.RequestQuerierInfo
+		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/zoracle/request/%d", reqID), nil)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
 
-		// key := zoracle.ResultStoreKey(reqID, queryRequest.CodeHash, queryRequest.ParamsRaw)
+		err = cliCtx.Codec.UnmarshalJSON(res, &queryRequest)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 
-		// resp, err := cliCtx.Client.ABCIQueryWithOptions(
-		// 	"/store/zoracle/key",
-		// 	key,
-		// 	rpcclient.ABCIQueryOptions{Height: rc.Height - 1, Prove: true},
-		// )
-		// if err != nil {
-		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-		// 	return
-		// }
+		key := zoracle.ResultStoreKey(int64(reqID), queryRequest.Request.OracleScriptID, queryRequest.Request.Calldata)
 
-		// proof := resp.Response.GetProof()
-		// if proof == nil {
-		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, "proof not found")
-		// 	return
-		// }
+		resp, err := cliCtx.Client.ABCIQueryWithOptions(
+			"/store/zoracle/key",
+			key,
+			rpcclient.ABCIQueryOptions{Height: rc.Height - 1, Prove: true},
+		)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 
-		// ops := proof.GetOps()
-		// if ops == nil {
-		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, "proof ops not found")
-		// 	return
-		// }
+		proof := resp.Response.GetProof()
+		if proof == nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, "proof not found")
+			return
+		}
 
-		// var iavlOpData []byte
-		// var multistoreOpData []byte
-		// for _, op := range ops {
-		// 	opType := op.GetType()
-		// 	if opType == "iavl:v" {
-		// 		iavlOpData = op.GetData()
-		// 	} else if opType == "multistore" {
-		// 		multistoreOpData = op.GetData()
-		// 	}
-		// }
-		// if iavlOpData == nil || multistoreOpData == nil {
-		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, "proof was corrupted")
-		// 	return
-		// }
+		ops := proof.GetOps()
+		if ops == nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, "proof ops not found")
+			return
+		}
 
-		// var opiavl iavl.IAVLValueOp
-		// if iavlOpData == nil {
-		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, "proof was corrupted")
-		// 	return
-		// }
-		// err = cliCtx.Codec.UnmarshalBinaryLengthPrefixed(iavlOpData, &opiavl)
-		// if err != nil {
-		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-		// 	return
-		// }
+		var iavlOpData []byte
+		var multistoreOpData []byte
+		for _, op := range ops {
+			opType := op.GetType()
+			if opType == "iavl:v" {
+				iavlOpData = op.GetData()
+			} else if opType == "multistore" {
+				multistoreOpData = op.GetData()
+			}
+		}
+		if iavlOpData == nil || multistoreOpData == nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, "proof was corrupted")
+			return
+		}
 
-		// odp := OracleDataProof{}
-		// odp.RequestId = reqID
-		// odp.Data = resp.Response.GetValue()
-		// odp.CodeHash = queryRequest.CodeHash
-		// odp.Params = queryRequest.ParamsRaw
-		// odp.Version = uint64(opiavl.Proof.Leaves[0].Version)
+		var opiavl iavl.IAVLValueOp
+		if iavlOpData == nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, "proof was corrupted")
+			return
+		}
+		err = cliCtx.Codec.UnmarshalBinaryLengthPrefixed(iavlOpData, &opiavl)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 
-		// for i := len(opiavl.Proof.LeftPath) - 1; i >= 0; i-- {
-		// 	path := opiavl.Proof.LeftPath[i]
-		// 	imp := IAVLMerklePath{}
-		// 	imp.SubtreeHeight = uint8(path.Height)
-		// 	imp.SubtreeSize = uint64(path.Size)
-		// 	imp.SubtreeVersion = uint64(path.Version)
-		// 	if len(path.Right) == 0 {
-		// 		imp.SiblingHash = path.Left
-		// 		imp.IsDataOnRight = true
-		// 	} else {
-		// 		imp.SiblingHash = path.Right
-		// 		imp.IsDataOnRight = false
-		// 	}
-		// 	odp.MerklePaths = append(odp.MerklePaths, imp)
-		// }
+		odp := OracleDataProof{}
+		odp.RequestID = reqID
+		odp.Data = resp.Response.GetValue()
+		odp.OracleScriptID = uint64(queryRequest.Request.OracleScriptID)
+		odp.Calldata = queryRequest.Request.Calldata
+		odp.Version = uint64(opiavl.Proof.Leaves[0].Version)
 
-		// var opms rootmulti.MultiStoreProofOp
-		// err = cliCtx.Codec.UnmarshalBinaryLengthPrefixed(multistoreOpData, &opms)
-		// if err != nil {
-		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-		// 	return
-		// }
+		for i := len(opiavl.Proof.LeftPath) - 1; i >= 0; i-- {
+			path := opiavl.Proof.LeftPath[i]
+			imp := IAVLMerklePath{}
+			imp.SubtreeHeight = uint8(path.Height)
+			imp.SubtreeSize = uint64(path.Size)
+			imp.SubtreeVersion = uint64(path.Version)
+			if len(path.Right) == 0 {
+				imp.SiblingHash = path.Left
+				imp.IsDataOnRight = true
+			} else {
+				imp.SiblingHash = path.Right
+				imp.IsDataOnRight = false
+			}
+			odp.MerklePaths = append(odp.MerklePaths, imp)
+		}
 
-		// ssmh, osmh, oiavlsh := MakeOtherStoresMerkleHash(opms)
+		var opms rootmulti.MultiStoreProofOp
+		err = cliCtx.Codec.UnmarshalBinaryLengthPrefixed(multistoreOpData, &opms)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 
-		// brp.OtherStoresMerkleHash = osmh
-		// brp.SupplyStoresMerkleHash = ssmh
-		// brp.OracleIAVLStateHash = oiavlsh
+		ssmh, osmh, oiavlsh := MakeOtherStoresMerkleHash(opms)
 
-		// // Calculate byte for proofbytes
-		// var relayAndVerifyArguments abi.Arguments
-		// format := `[{"type":"bytes"},{"type":"bytes"}]`
-		// err = json.Unmarshal([]byte(format), &relayAndVerifyArguments)
-		// if err != nil {
-		// 	panic(err)
-		// }
+		brp.OtherStoresMerkleHash = osmh
+		brp.SupplyStoresMerkleHash = ssmh
+		brp.OracleIAVLStateHash = oiavlsh
 
-		// blockRelayBytes, err := brp.encodeToEthData(uint64(rc.Height))
-		// if err != nil {
-		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-		// }
+		// Calculate byte for proofbytes
+		var relayAndVerifyArguments abi.Arguments
+		format := `[{"type":"bytes"},{"type":"bytes"}]`
+		err = json.Unmarshal([]byte(format), &relayAndVerifyArguments)
+		if err != nil {
+			panic(err)
+		}
 
-		// oracleDataBytes, err := odp.encodeToEthData(uint64(rc.Height))
-		// if err != nil {
-		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-		// }
+		blockRelayBytes, err := brp.encodeToEthData(uint64(rc.Height))
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 
-		// evmProofBytes, err := relayAndVerifyArguments.Pack(blockRelayBytes, oracleDataBytes)
-		// if err != nil {
-		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-		// }
+		oracleDataBytes, err := odp.encodeToEthData(uint64(rc.Height))
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 
-		// rest.PostProcessResponse(w, cliCtx, Proof{
-		// 	JsonProof: JsonProof{
-		// 		BlockHeight:     uint64(rc.Height),
-		// 		OracleDataProof: odp,
-		// 		BlockRelayProof: brp},
-		// 	EVMProofBytes: evmProofBytes,
-		// })
+		evmProofBytes, err := relayAndVerifyArguments.Pack(blockRelayBytes, oracleDataBytes)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		rest.PostProcessResponse(w, cliCtx, Proof{
+			JsonProof: JsonProof{
+				BlockHeight:     uint64(rc.Height),
+				OracleDataProof: odp,
+				BlockRelayProof: brp},
+			EVMProofBytes: evmProofBytes,
+		})
 	}
 }
