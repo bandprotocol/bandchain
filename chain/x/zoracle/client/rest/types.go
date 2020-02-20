@@ -16,7 +16,7 @@ type ScriptInfoWithTx struct {
 type ReportDetail struct {
 	Reporter sdk.ValAddress        `json:"reporter"`
 	Value    []types.RawDataReport `json:"value"`
-	Tx       TxDetail              `json:"tx"`
+	Tx       TxDetail              `json:"tx,omitempty"`
 }
 
 type RequestRESTInfo struct {
@@ -28,7 +28,7 @@ type RequestRESTInfo struct {
 	ExpirationHeight         int64                                `json:"expirationHeight"`
 	IsResolved               bool                                 `json:"isResolved"`
 	Requester                sdk.AccAddress                       `json:"requester"`
-	RequestTx                TxDetail                             `json:"requestTx"`
+	RequestTx                TxDetail                             `json:"requestTx,omitempty"`
 	RawDataRequests          []types.RawDataRequestWithExternalID `json:"rawDataRequests"`
 	Reports                  []ReportDetail                       `json:"reports"`
 	Result                   []byte                               `json:"result"`
