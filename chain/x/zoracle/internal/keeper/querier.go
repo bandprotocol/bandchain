@@ -27,8 +27,8 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 		// 	return serializeParams(ctx, path[1:], req, keeper)
 		case types.QueryRequestNumber:
 			return queryRequestNumber(ctx, req, keeper)
-		case types.QueryDataSource:
-			return queryDataSource(ctx, path[1:], req, keeper)
+		case types.QueryDataSourceByID:
+			return queryDataSourceByID(ctx, path[1:], req, keeper)
 		case types.QueryDataSources:
 			return queryDataSources(ctx, path[1:], req, keeper)
 		default:
@@ -235,7 +235,7 @@ func queryRequestNumber(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) (
 	return codec.MustMarshalJSONIndent(keeper.cdc, keeper.GetRequestCount(ctx)), nil
 }
 
-func queryDataSource(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
+func queryDataSourceByID(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
 	if len(path) == 0 {
 		return nil, sdk.ErrInternal("must specify the data source id")
 	}
@@ -281,12 +281,13 @@ func queryDataSources(ctx sdk.Context, path []string, req abci.RequestQuery, kee
 	}
 
 	dataSources := []types.DataSourceQuerierInfo{}
-	for offset := int64(0); offset < numberOfDataSources; offset++ {
-		id := startID + offset
+	numberOfAllDataSources := keeper.GetDataSourceCount(ctx)
+	for id := startID; id <= numberOfAllDataSources && id < startID+numberOfDataSources; id++ {
 		dataSource, sdkErr := keeper.GetDataSource(ctx, id)
 		if sdkErr != nil {
-			break
+			return nil, sdkErr
 		}
+
 		dataSources = append(dataSources, types.NewDataSourceQuerierInfo(
 			id,
 			dataSource.Owner,
