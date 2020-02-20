@@ -251,3 +251,48 @@ func getRequestNumberHandler(cliCtx context.CLIContext, storeName string) http.H
 		rest.PostProcessResponse(w, cliCtx, requestNumber)
 	}
 }
+
+func getDataSourceByIDHandler(cliCtx context.CLIContext, storeName string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		dataSourceID := vars[dataSourceIDTag]
+		var queryDataSource types.DataSourceQuerierInfo
+		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/data_source/%s", storeName, dataSourceID), nil)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		err = cliCtx.Codec.UnmarshalJSON(res, &queryDataSource)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		rest.PostProcessResponse(w, cliCtx, queryDataSource)
+	}
+}
+
+func getDataSourcesHandler(cliCtx context.CLIContext, storeName string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		_, page, limit, err := rest.ParseHTTPArgsWithLimit(r, 100)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		}
+
+		var queryDataSources []types.DataSourceQuerierInfo
+		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/data_sources/%d/%d", storeName, 1+(page-1)*limit, limit), nil)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		err = cliCtx.Codec.UnmarshalJSON(res, &queryDataSources)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		rest.PostProcessResponse(w, cliCtx, queryDataSources)
+	}
+}

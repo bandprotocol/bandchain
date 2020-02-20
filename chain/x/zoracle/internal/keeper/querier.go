@@ -27,6 +27,10 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 		// 	return serializeParams(ctx, path[1:], req, keeper)
 		case types.QueryRequestNumber:
 			return queryRequestNumber(ctx, req, keeper)
+		case types.QueryDataSourceByID:
+			return queryDataSourceByID(ctx, path[1:], req, keeper)
+		case types.QueryDataSources:
+			return queryDataSources(ctx, path[1:], req, keeper)
 		default:
 			return nil, sdk.ErrUnknownRequest("unknown nameservice query endpoint")
 		}
@@ -82,25 +86,17 @@ func queryRequest(ctx sdk.Context, path []string, req abci.RequestQuery, keeper 
 		}
 	}
 
-	res, err := codec.MarshalJSONIndent(keeper.cdc, types.NewRequestQuerierInfo(
+	return codec.MustMarshalJSONIndent(keeper.cdc, types.NewRequestQuerierInfo(
 		request,
 		rawRequests,
 		reports,
 		result,
-	))
-	if err != nil {
-		panic("could not marshal result to JSON")
-	}
-	return res, nil
+	)), nil
 }
 
 // queryPending is a query function to get the list of request IDs that are still on pending status.
 func queryPending(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
-	res, err := codec.MarshalJSONIndent(keeper.cdc, keeper.GetPendingResolveList(ctx))
-	if err != nil {
-		panic("could not marshal result to JSON")
-	}
-	return res, nil
+	return codec.MustMarshalJSONIndent(keeper.cdc, keeper.GetPendingResolveList(ctx)), nil
 }
 
 // // queryScript is a query function to get infomation of stored wasm code
@@ -229,4 +225,64 @@ func queryPending(ctx sdk.Context, path []string, req abci.RequestQuery, keeper 
 
 func queryRequestNumber(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
 	return codec.MustMarshalJSONIndent(keeper.cdc, keeper.GetRequestCount(ctx)), nil
+}
+
+func queryDataSourceByID(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
+	if len(path) == 0 {
+		return nil, sdk.ErrInternal("must specify the data source id")
+	}
+	id, err := strconv.ParseInt(path[0], 10, 64)
+	if err != nil {
+		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for data source id %s", err.Error()))
+	}
+
+	dataSource, sdkErr := keeper.GetDataSource(ctx, id)
+	if sdkErr != nil {
+		return nil, sdkErr
+	}
+
+	return codec.MustMarshalJSONIndent(keeper.cdc, types.NewDataSourceQuerierInfo(
+		id,
+		dataSource.Owner,
+		dataSource.Name,
+		dataSource.Fee,
+		dataSource.Executable,
+	)), nil
+}
+
+func queryDataSources(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
+	if len(path) != 2 {
+		return nil, sdk.ErrInternal("must specify the data source start_id and number of data sources")
+	}
+	startID, err := strconv.ParseInt(path[0], 10, 64)
+	if err != nil {
+		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for data source start id %s", err.Error()))
+	}
+
+	numberOfDataSources, err := strconv.ParseInt(path[1], 10, 64)
+	if err != nil {
+		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for number of data sources %s", err.Error()))
+	}
+	if numberOfDataSources < 1 || numberOfDataSources > 100 {
+		return nil, sdk.ErrInternal("number of data sources should be >= 1 and <= 100")
+	}
+
+	dataSources := []types.DataSourceQuerierInfo{}
+	allDataSourcesCount := keeper.GetDataSourceCount(ctx)
+	for id := startID; id <= allDataSourcesCount && id < startID+numberOfDataSources; id++ {
+		dataSource, sdkErr := keeper.GetDataSource(ctx, id)
+		if sdkErr != nil {
+			return nil, sdkErr
+		}
+
+		dataSources = append(dataSources, types.NewDataSourceQuerierInfo(
+			id,
+			dataSource.Owner,
+			dataSource.Name,
+			dataSource.Fee,
+			dataSource.Executable,
+		))
+	}
+
+	return codec.MustMarshalJSONIndent(keeper.cdc, dataSources), nil
 }
