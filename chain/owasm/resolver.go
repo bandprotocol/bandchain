@@ -27,8 +27,8 @@ func (r *resolver) ResolveFunc(module, field string) exec.FunctionImport {
 		return r.resolveGetPrepareBlockTime
 	case "getAggregateBlockTime":
 		return r.resolveGetAggregateBlockTime
-	case "readValidatorPubKey":
-		return r.resolveReadValidatorPubKey
+	case "readValidatorAddress":
+		return r.resolveReadValidatorAddress
 	case "getCallDataSize":
 		return r.resolveGetCallDataSize
 	case "readCallData":
@@ -70,7 +70,7 @@ func (r *resolver) resolveGetAggregateBlockTime(vm *exec.VirtualMachine) int64 {
 	return r.env.GetAggregateBlockTime()
 }
 
-func (r *resolver) resolveReadValidatorPubKey(vm *exec.VirtualMachine) int64 {
+func (r *resolver) resolveReadValidatorAddress(vm *exec.VirtualMachine) int64 {
 	validatorIndex := GetLocalInt64(vm, 0)
 	resultOffset := int(GetLocalInt64(vm, 0))
 	address, err := r.env.GetValidatorAddress(validatorIndex)
@@ -118,10 +118,10 @@ func (r *resolver) resolveRequestExternalData(vm *exec.VirtualMachine) int64 {
 }
 
 func (r *resolver) resolveGetExternalDataSize(vm *exec.VirtualMachine) int64 {
-	dataSourceID := GetLocalInt64(vm, 0)
-	externalDataID := GetLocalInt64(vm, 1)
+	externalDataID := GetLocalInt64(vm, 0)
+	validatorIndex := GetLocalInt64(vm, 1)
 	// TODO: ExternalData should be cached for both this function and the one below.
-	externalData, err := r.env.GetExternalData(dataSourceID, externalDataID)
+	externalData, err := r.env.GetExternalData(externalDataID, validatorIndex)
 	if err != nil {
 		panic(err)
 	}
