@@ -47,8 +47,6 @@ pub fn execute() {
             count += 1;
         }
     }
-    // let avg = sum / (count as f64);
-    // let result = (avg * 100.0) as u64;
     let result = (sum / (count as f64) * 100.0) as u64;
     save_return_data(&result.to_be_bytes())
 }
