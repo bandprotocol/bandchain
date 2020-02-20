@@ -1,18 +1,8 @@
 package types
 
-// // Report represent detail of validator report
-// type Report struct {
-// 	Data       []RawDataReport `json:"data"`
-// 	ReportedAt int64           `json:"reportedAt"`
-// }
-
-// // NewReport is a contructor of Report
-// func NewReport(data []RawDataReport, reportedAt int64) Report {
-// 	return Report{
-// 		Data:       data,
-// 		ReportedAt: reportedAt,
-// 	}
-// }
+import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+)
 
 // RawDataReport encapsulates a raw data report for an external data source from a block validator.
 type RawDataReport struct {
@@ -28,22 +18,20 @@ func NewRawDataReport(externalDataID int64, data []byte) RawDataReport {
 	}
 }
 
-// // ReportWithValidator is a report that contain operator address in struct
-// type ReportWithValidator struct {
-// 	Data       []RawDataReport `json:"data"`
-// 	ReportedAt int64           `json:"reportedAt"`
-// 	Validator  sdk.ValAddress  `json:"validator"`
-// }
+// ReportWithValidator is a report that contain operator address in struct
+type ReportWithValidator struct {
+	RawDataReports []RawDataReport `json:"detail"`
+	Validator      sdk.ValAddress  `json:"validator"`
+}
 
-// // NewReportWithValidator is a contructor of ReportWithValidator
-// func NewReportWithValidator(
-// 	data []RawDataReport,
-// 	reportedAt int64,
-// 	valAddress sdk.ValAddress,
-// ) ReportWithValidator {
-// 	return ReportWithValidator{
-// 		Data:       data,
-// 		ReportedAt: reportedAt,
-// 		Validator:  valAddress,
-// 	}
-// }
+// NewReportWithValidator is a contructor of ReportWithValidator
+func NewReportWithValidator(
+	reports []RawDataReport,
+	valAddress sdk.ValAddress,
+
+) ReportWithValidator {
+	return ReportWithValidator{
+		RawDataReports: reports,
+		Validator:      valAddress,
+	}
+}

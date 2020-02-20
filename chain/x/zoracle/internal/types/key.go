@@ -1,6 +1,10 @@
 package types
 
-import sdk "github.com/cosmos/cosmos-sdk/types"
+import (
+	"encoding/binary"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+)
 
 const (
 	// ModuleName is the name of the module
@@ -90,8 +94,19 @@ func GetIteratorPrefix(prefix []byte, requestID int64) []byte {
 	return append(prefix, int64ToBytes(requestID)...)
 }
 
-// GetValidatorAddress is a function to get validator address from key
-func GetValidatorAddress(key []byte, prefix []byte, requestID int64) sdk.ValAddress {
-	lenRequest := len(int64ToBytes(requestID))
-	return key[len(prefix)+lenRequest:]
+// GetExternalIDFromRawDataRequestKey is a function to get external id from raw data request key.
+func GetExternalIDFromRawDataRequestKey(key []byte) int64 {
+	prefixLength := len(RawDataRequestStoreKeyPrefix)
+	externalIDBytes := key[prefixLength+8 : prefixLength+16]
+	return int64(binary.BigEndian.Uint64(externalIDBytes))
+}
+
+// GetValidatorAddressAndExternalID is a function to get validator address and external id from raw data report key.
+func GetValidatorAddressAndExternalID(
+	key []byte, requestID int64,
+) (sdk.ValAddress, int64) {
+	prefixLength := len(RawDataReportStoreKeyPrefix)
+	externalIDBytes := key[prefixLength+8 : prefixLength+16]
+	externalID := int64(binary.BigEndian.Uint64(externalIDBytes))
+	return key[prefixLength+16:], externalID
 }

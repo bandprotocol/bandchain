@@ -116,3 +116,44 @@ func TestGetRawDataRequests(t *testing.T) {
 	require.Equal(t, []types.RawDataRequest{}, keeper.GetRawDataRequests(ctx, 3))
 	require.Equal(t, []types.RawDataRequest{}, keeper.GetRawDataRequests(ctx, -1))
 }
+
+func TestGetRawDataRequestWithExternalIDs(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	keeper.SetRawDataRequest(ctx, 1, 1, types.NewRawDataRequest(0, []byte("calldata1")))
+	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata2")))
+
+	keeper.SetRawDataRequest(ctx, 2, 1, types.NewRawDataRequest(0, []byte("calldata1")))
+	keeper.SetRawDataRequest(ctx, 2, 3, types.NewRawDataRequest(1, []byte("calldata2")))
+	keeper.SetRawDataRequest(ctx, 2, 2, types.NewRawDataRequest(2, []byte("calldata3")))
+
+	ans1 := []types.RawDataRequestWithExternalID{
+		types.NewRawDataRequestWithExternalID(
+			1,
+			types.NewRawDataRequest(0, []byte("calldata1")),
+		),
+		types.NewRawDataRequestWithExternalID(
+			2,
+			types.NewRawDataRequest(1, []byte("calldata2")),
+		),
+	}
+
+	ans2 := []types.RawDataRequestWithExternalID{
+		types.NewRawDataRequestWithExternalID(
+			1,
+			types.NewRawDataRequest(0, []byte("calldata1")),
+		),
+		types.NewRawDataRequestWithExternalID(
+			2,
+			types.NewRawDataRequest(2, []byte("calldata3")),
+		),
+		types.NewRawDataRequestWithExternalID(
+			3,
+			types.NewRawDataRequest(1, []byte("calldata2")),
+		),
+	}
+	require.Equal(t, ans1, keeper.GetRawDataRequestWithExternalIDs(ctx, 1))
+	require.Equal(t, ans2, keeper.GetRawDataRequestWithExternalIDs(ctx, 2))
+	require.Equal(t, []types.RawDataRequestWithExternalID{}, keeper.GetRawDataRequestWithExternalIDs(ctx, 3))
+	require.Equal(t, []types.RawDataRequestWithExternalID{}, keeper.GetRawDataRequestWithExternalIDs(ctx, -1))
+}
