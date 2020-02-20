@@ -185,17 +185,21 @@ func GetProviderStatus(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router) {
+func ServeSwaggerUI() http.Handler {
 	statikFS, err := fs.New()
 	if err != nil {
 		panic(err)
 	}
 	staticServer := http.FileServer(statikFS)
 
+	return http.StripPrefix("/swagger-ui/", staticServer)
+}
+
+func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router) {
 	r.HandleFunc("/d3n/blocks/latest", LatestBlocksRequestHandlerFn(cliCtx)).Methods("GET")
 	r.HandleFunc("/d3n/txs/latest", LatestTxsRequestHandlerFn(cliCtx)).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/d3n/proof/{%s}", requestID), GetProofHandlerFn(cliCtx)).Methods("GET")
 	r.HandleFunc("/d3n/health_check", GetHealthStatus(cliCtx)).Methods("GET")
 	r.HandleFunc("/d3n/provider_status", GetProviderStatus(cliCtx)).Methods("GET")
-	r.PathPrefix("/swagger-ui/").Handler(http.StripPrefix("/swagger-ui/", staticServer))
+	r.PathPrefix("/swagger-ui/").Handler(ServeSwaggerUI())
 }
