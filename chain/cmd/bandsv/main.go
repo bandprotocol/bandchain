@@ -219,14 +219,7 @@ func handleExecute(c *gin.Context) {
 		return
 	}
 
-	ex, err := byteexec.New(req.Code)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	defer ex.Close()
-
-	result, err := ex.RunOnDocker(1*time.Minute, req.Calldata)
+	result, err := byteexec.RunOnDocker(req.Code, 1*time.Minute, req.Calldata)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
