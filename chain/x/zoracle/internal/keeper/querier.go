@@ -102,11 +102,7 @@ func queryRequestByID(
 	if sdkErr != nil {
 		return nil, sdkErr
 	}
-	res, err := codec.MarshalJSONIndent(keeper.cdc, request)
-	if err != nil {
-		panic("could not marshal result to JSON")
-	}
-	return res, nil
+	return codec.MustMarshalJSONIndent(keeper.cdc, request), nil
 }
 
 func queryRequests(
@@ -140,20 +136,12 @@ func queryRequests(
 			requests = append(requests, request)
 		}
 	}
-	res, err := codec.MarshalJSONIndent(keeper.cdc, requests)
-	if err != nil {
-		panic("could not marshal result to JSON")
-	}
-	return res, nil
+	return codec.MustMarshalJSONIndent(keeper.cdc, requests), nil
 }
 
 // queryPending is a query function to get the list of request IDs that are still on pending status.
 func queryPending(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
-	res, err := codec.MarshalJSONIndent(keeper.cdc, keeper.GetPendingResolveList(ctx))
-	if err != nil {
-		panic("could not marshal result to JSON")
-	}
-	return res, nil
+	return codec.MustMarshalJSONIndent(keeper.cdc, keeper.GetPendingResolveList(ctx)), nil
 }
 
 // // queryScript is a query function to get infomation of stored wasm code
