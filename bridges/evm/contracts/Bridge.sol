@@ -109,7 +109,7 @@ contract Bridge is IBridge {
     uint256 _blockHeight,
     bytes memory _data,
     uint64 _requestId,
-    bytes32 _codeHash,
+    uint64 _oracleScriptId,
     bytes memory _params,
     uint256 _version,
     IAVLMerklePath.Data[] memory _merklePaths
@@ -128,10 +128,10 @@ contract Bridge is IBridge {
       uint8(0),  // Height of tree (only leaf node) is 0 (signed-varint encode)
       uint8(2),  // Size of subtree is 1 (signed-varint encode)
       vars.encodedVarint,
-      uint8(41 + _params.length),  // Size of data key (1-byte constant 0x01 + 8-byte request ID + 32-byte codeHash + length of params)
+      uint8(17 + _params.length),  // Size of data key (1-byte constant 0x01 + 8-byte request ID + 8-byte oracleScriptId + length of params)
       uint8(255),  // Constant 0xff prefix data request info storage key
       _requestId,
-      _codeHash,
+      _oracleScriptId,
       _params,
       uint8(32),  // Size of data hash
       vars.dataHash
@@ -142,7 +142,7 @@ contract Bridge is IBridge {
     }
     // Verifies that the computed Merkle root matches what currently exists.
     require(currentMerkleHash == oracleStateRoot, "INVALID_ORACLE_DATA_PROOF");
-    return VerifyOracleDataResult(_data, _codeHash, _params);
+    return VerifyOracleDataResult(_data, _oracleScriptId, _params);
   }
 
   /// Performs oracle state relay and oracle data verification in one go. The caller submits
