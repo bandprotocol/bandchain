@@ -20,6 +20,6 @@ func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router, storeName string) 
 	r.HandleFunc(fmt.Sprintf("/%s/scripts", storeName), getScriptsHandler(cliCtx, storeName)).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/%s/serialize_params/{%s}", storeName, codeHash), getSerializeParams(cliCtx, storeName)).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/%s/request_number", storeName), getRequestNumberHandler(cliCtx, storeName)).Methods("GET")
-	r.HandleFunc(fmt.Sprintf("/%s/data_source/{%s}", storeName, dataSourceID), getDataSourceHandler(cliCtx, storeName)).Methods("GET")
+	r.HandleFunc(fmt.Sprintf("/%s/data_source/{%s}", storeName, dataSourceID), getDataSourceByIDHandler(cliCtx, storeName)).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/%s/data_sources", storeName), getDataSourcesHandler(cliCtx, storeName)).Methods("GET")
 }
