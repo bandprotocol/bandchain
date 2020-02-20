@@ -5,19 +5,19 @@ import { Ownable } from "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import { IBridge } from "../IBridge.sol";
 
 contract LuckyNumber is Ownable {
-  bytes32 public codeHash;
+  uint64 public oracleScriptId;
   uint64 public maxNumber;
 
   uint64 target;
 
   IBridge bridge;
 
-  constructor(IBridge _bridge, bytes32 _codeHash, uint64 _maxNumber, uint64 _target)
+  constructor(IBridge _bridge, uint64 _oracleScriptId, uint64 _maxNumber, uint64 _target)
     public
     payable
   {
     bridge = _bridge;
-    codeHash = _codeHash;
+    oracleScriptId = _oracleScriptId;
     maxNumber = _maxNumber;
     target = _target;
   }
@@ -36,7 +36,7 @@ contract LuckyNumber is Ownable {
       _reportPrice
     );
 
-    require(result.codeHash == codeHash, "INVALID_CODEHASH");
+    require(result.oracleScriptId == oracleScriptId, "INVALID_ORACLE_SCRIPT");
 
     require(maxNumber == bytesToU64(result.params), "INVALID_MAX_NUM");
     require(target == bytesToU64(result.data), "WRONG_GUESS");
