@@ -203,7 +203,7 @@ func TestQueryDataSourcesByStartIdAndNumberOfDataSources(t *testing.T) {
 		expectedResult = append(expectedResult, eachDataSource)
 	}
 
-	// This time querier should be able to find a data source
+	// Query first 5 data sources
 	dataSources, err := querier(
 		ctx,
 		[]string{"data_sources", "1", "5"},
@@ -213,7 +213,45 @@ func TestQueryDataSourcesByStartIdAndNumberOfDataSources(t *testing.T) {
 
 	expectedResultBytes, errJSON := codec.MarshalJSONIndent(keeper.cdc, expectedResult[0:5])
 	require.Nil(t, errJSON)
+	require.Equal(t, expectedResultBytes, dataSources)
 
+	// Query last 5 data sources
+	dataSources, err = querier(
+		ctx,
+		[]string{"data_sources", "6", "5"},
+		abci.RequestQuery{},
+	)
+	require.Nil(t, err)
+
+	expectedResultBytes, errJSON = codec.MarshalJSONIndent(keeper.cdc, expectedResult[5:])
+	require.Nil(t, errJSON)
+	require.Equal(t, expectedResultBytes, dataSources)
+
+	// Query first 15 data sources which exceed number of all data source right now
+	// This should return all exist data sources (10 data sources)
+	dataSources, err = querier(
+		ctx,
+		[]string{"data_sources", "1", "15"},
+		abci.RequestQuery{},
+	)
+	require.Nil(t, err)
+
+	expectedResultBytes, errJSON = codec.MarshalJSONIndent(keeper.cdc, expectedResult)
+	require.Nil(t, errJSON)
+	require.Equal(t, expectedResultBytes, dataSources)
+
+	// Query data sources from id=8 to id=17
+	// But we only have id=1 to id=10
+	// So the result should be [id=8, id=9, id=10]
+	dataSources, err = querier(
+		ctx,
+		[]string{"data_sources", "8", "10"},
+		abci.RequestQuery{},
+	)
+	require.Nil(t, err)
+
+	expectedResultBytes, errJSON = codec.MarshalJSONIndent(keeper.cdc, expectedResult[7:])
+	require.Nil(t, errJSON)
 	require.Equal(t, expectedResultBytes, dataSources)
 }
 
