@@ -86,20 +86,17 @@ func queryRequest(ctx sdk.Context, path []string, req abci.RequestQuery, keeper 
 		}
 	}
 
-	res := codec.MustMarshalJSONIndent(keeper.cdc, types.NewRequestQuerierInfo(
+	return codec.MustMarshalJSONIndent(keeper.cdc, types.NewRequestQuerierInfo(
 		request,
 		rawRequests,
 		reports,
 		result,
-	))
-
-	return res, nil
+	)), nil
 }
 
 // queryPending is a query function to get the list of request IDs that are still on pending status.
 func queryPending(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
-	res := codec.MustMarshalJSONIndent(keeper.cdc, keeper.GetPendingResolveList(ctx))
-	return res, nil
+	return codec.MustMarshalJSONIndent(keeper.cdc, keeper.GetPendingResolveList(ctx)), nil
 }
 
 // // queryScript is a query function to get infomation of stored wasm code
@@ -244,15 +241,13 @@ func queryDataSourceByID(ctx sdk.Context, path []string, req abci.RequestQuery, 
 		return nil, sdkErr
 	}
 
-	res := codec.MustMarshalJSONIndent(keeper.cdc, types.NewDataSourceQuerierInfo(
+	return codec.MustMarshalJSONIndent(keeper.cdc, types.NewDataSourceQuerierInfo(
 		id,
 		dataSource.Owner,
 		dataSource.Name,
 		dataSource.Fee,
 		dataSource.Executable,
-	))
-
-	return res, nil
+	)), nil
 }
 
 func queryDataSources(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
@@ -289,7 +284,5 @@ func queryDataSources(ctx sdk.Context, path []string, req abci.RequestQuery, kee
 		))
 	}
 
-	res := codec.MustMarshalJSONIndent(keeper.cdc, dataSources)
-
-	return res, nil
+	return codec.MustMarshalJSONIndent(keeper.cdc, dataSources), nil
 }
