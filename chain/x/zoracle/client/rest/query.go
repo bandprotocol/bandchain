@@ -255,9 +255,9 @@ func getRequestNumberHandler(cliCtx context.CLIContext, storeName string) http.H
 func getDataSourceByIDHandler(cliCtx context.CLIContext, storeName string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		dsID := vars[dataSourceID]
+		dataSourceID := vars[dataSourceIDTag]
 		var queryDataSource types.DataSourceQuerierInfo
-		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/data_source/%s", storeName, dsID), nil)
+		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/data_source/%s", storeName, dataSourceID), nil)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
