@@ -252,7 +252,7 @@ func getRequestNumberHandler(cliCtx context.CLIContext, storeName string) http.H
 	}
 }
 
-func getDataSourceHandler(cliCtx context.CLIContext, storeName string) http.HandlerFunc {
+func getDataSourceByIDHandler(cliCtx context.CLIContext, storeName string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		dsID := vars[dataSourceID]
