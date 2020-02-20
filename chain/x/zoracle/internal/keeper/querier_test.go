@@ -163,9 +163,7 @@ func TestQueryDataSourceById(t *testing.T) {
 	executable := []byte("executable")
 	expectedResult := types.NewDataSourceQuerierInfo(1, owner, name, fee, executable)
 
-	// Add a new data source
-	err = keeper.AddDataSource(ctx, expectedResult.Owner, expectedResult.Name, expectedResult.Fee, expectedResult.Executable)
-	require.Nil(t, err)
+	keeper.SetDataSource(ctx, 1, types.NewDataSource(owner, name, fee, executable))
 
 	// This time querier should be able to find a data source
 	dataSource, err := querier(
