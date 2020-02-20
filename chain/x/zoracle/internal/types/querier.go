@@ -9,14 +9,14 @@ import (
 
 // query endpoints
 const (
-	QueryRequest       = "request"
-	QueryPending       = "pending_request"
-	QueryScript        = "script"
-	QueryAllScripts    = "scripts"
-	SerializeParams    = "serialize_params"
-	QueryRequestNumber = "request_number"
-	QueryDataSource    = "data_source"
-	QueryDataSources   = "data_sources"
+	QueryRequest        = "request"
+	QueryPending        = "pending_request"
+	QueryScript         = "script"
+	QueryAllScripts     = "scripts"
+	SerializeParams     = "serialize_params"
+	QueryRequestNumber  = "request_number"
+	QueryDataSourceByID = "data_source"
+	QueryDataSources    = "data_sources"
 )
 
 type U64Array []uint64
