@@ -15,13 +15,13 @@ var (
 	fileMode = os.FileMode(0744)
 )
 
-func writeFile(data []byte) (string, string, error) {
+func writeFile(executable []byte) (string, string, error) {
 	dir, err := ioutil.TempDir("/tmp", "temp")
 	if err != nil {
 		return "", "", err
 	}
-	filename := filepath.Join(dir, "exec.sh")
-	err = ioutil.WriteFile(filename, data, fileMode)
+	filename := filepath.Join(dir, "exec")
+	err = ioutil.WriteFile(filename, executable, fileMode)
 	if err != nil {
 		return "", "", err
 	}
@@ -32,9 +32,9 @@ func writeFile(data []byte) (string, string, error) {
 	return dir, filename, nil
 }
 
-// RunOnLocal runs command in sub process.
-func RunOnLocal(data []byte, timeOut time.Duration, args ...string) ([]byte, error) {
-	dir, filename, err := writeFile(data)
+// RunOnLocal spawns a new subprocess and runs the given executable. NOT SAFE!
+func RunOnLocal(executable []byte, timeOut time.Duration, args ...string) ([]byte, error) {
+	dir, filename, err := writeFile(executable)
 	if err != nil {
 		return nil, err
 	}
@@ -46,9 +46,9 @@ func RunOnLocal(data []byte, timeOut time.Duration, args ...string) ([]byte, err
 	return exec.CommandContext(ctx, filename, args...).Output()
 }
 
-// RunOnDocker runs command in new docker container
-func RunOnDocker(data []byte, timeOut time.Duration, args ...string) ([]byte, error) {
-	dir, filename, err := writeFile(data)
+// RunOnDocker runs the given executable in a new docker container.
+func RunOnDocker(executable []byte, timeOut time.Duration, args ...string) ([]byte, error) {
+	dir, filename, err := writeFile(executable)
 	if err != nil {
 		return nil, err
 	}
@@ -64,14 +64,14 @@ func RunOnDocker(data []byte, timeOut time.Duration, args ...string) ([]byte, er
 	defer exec.Command("docker", "stop", containerID).Output()
 
 	_, err = exec.Command(
-		"docker", "cp", filename, fmt.Sprintf("%s:/exec.sh", containerID),
+		"docker", "cp", filename, fmt.Sprintf("%s:/exec", containerID),
 	).Output()
 	if err != nil {
 		return []byte{}, err
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), timeOut)
 	defer cancel()
-	newArgs := append([]string{"exec", containerID, "./exec.sh"}, args...)
+	newArgs := append([]string{"exec", containerID, "./exec"}, args...)
 
 	return exec.CommandContext(ctx, "docker", newArgs...).Output()
 }
