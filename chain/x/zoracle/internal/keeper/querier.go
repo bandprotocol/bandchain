@@ -281,8 +281,8 @@ func queryDataSources(ctx sdk.Context, path []string, req abci.RequestQuery, kee
 	}
 
 	dataSources := []types.DataSourceQuerierInfo{}
-	allDataSourceCount := keeper.GetDataSourceCount(ctx)
-	for id := startID; id <= allDataSourceCount && id < startID+numberOfDataSources; id++ {
+	allDataSourcesCount := keeper.GetDataSourceCount(ctx)
+	for id := startID; id <= allDataSourcesCount && id < startID+numberOfDataSources; id++ {
 		dataSource, sdkErr := keeper.GetDataSource(ctx, id)
 		if sdkErr != nil {
 			return nil, sdkErr
