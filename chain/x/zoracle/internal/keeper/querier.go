@@ -86,24 +86,19 @@ func queryRequest(ctx sdk.Context, path []string, req abci.RequestQuery, keeper 
 		}
 	}
 
-	res, err := codec.MarshalJSONIndent(keeper.cdc, types.NewRequestQuerierInfo(
+	res := codec.MustMarshalJSONIndent(keeper.cdc, types.NewRequestQuerierInfo(
 		request,
 		rawRequests,
 		reports,
 		result,
 	))
-	if err != nil {
-		panic("could not marshal result to JSON")
-	}
+
 	return res, nil
 }
 
 // queryPending is a query function to get the list of request IDs that are still on pending status.
 func queryPending(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
-	res, err := codec.MarshalJSONIndent(keeper.cdc, keeper.GetPendingResolveList(ctx))
-	if err != nil {
-		panic("could not marshal result to JSON")
-	}
+	res := codec.MustMarshalJSONIndent(keeper.cdc, keeper.GetPendingResolveList(ctx))
 	return res, nil
 }
 
@@ -249,16 +244,13 @@ func queryDataSourceByID(ctx sdk.Context, path []string, req abci.RequestQuery, 
 		return nil, sdkErr
 	}
 
-	res, err := codec.MarshalJSONIndent(keeper.cdc, types.NewDataSourceQuerierInfo(
+	res := codec.MustMarshalJSONIndent(keeper.cdc, types.NewDataSourceQuerierInfo(
 		id,
 		dataSource.Owner,
 		dataSource.Name,
 		dataSource.Fee,
 		dataSource.Executable,
 	))
-	if err != nil {
-		panic("could not marshal result to JSON")
-	}
 
 	return res, nil
 }
@@ -297,10 +289,7 @@ func queryDataSources(ctx sdk.Context, path []string, req abci.RequestQuery, kee
 		))
 	}
 
-	res, err := codec.MarshalJSONIndent(keeper.cdc, dataSources)
-	if err != nil {
-		panic("could not marshal result to JSON")
-	}
+	res := codec.MustMarshalJSONIndent(keeper.cdc, dataSources)
 
 	return res, nil
 }
