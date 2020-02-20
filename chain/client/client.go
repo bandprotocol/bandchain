@@ -197,5 +197,5 @@ func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router) {
 	r.HandleFunc(fmt.Sprintf("/d3n/proof/{%s}", requestID), GetProofHandlerFn(cliCtx)).Methods("GET")
 	r.HandleFunc("/d3n/health_check", GetHealthStatus(cliCtx)).Methods("GET")
 	r.HandleFunc("/d3n/provider_status", GetProviderStatus(cliCtx)).Methods("GET")
-	r.PathPrefix("/d3n/swagger-ui/").Handler(http.StripPrefix("/d3n/swagger-ui/", staticServer))
+	r.PathPrefix("/swagger-ui/").Handler(http.StripPrefix("/swagger-ui/", staticServer))
 }
