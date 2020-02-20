@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/rakyll/statik/fs"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -13,6 +14,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
+
+	// unnamed import of statik for swagger UI support
+	_ "github.com/bandprotocol/d3n/chain/client/lcd/statik"
 )
 
 const (
@@ -181,10 +185,21 @@ func GetProviderStatus(cliCtx context.CLIContext) http.HandlerFunc {
 	}
 }
 
+func ServeSwaggerUI() http.Handler {
+	statikFS, err := fs.New()
+	if err != nil {
+		panic(err)
+	}
+	staticServer := http.FileServer(statikFS)
+
+	return http.StripPrefix("/swagger-ui/", staticServer)
+}
+
 func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router) {
 	r.HandleFunc("/d3n/blocks/latest", LatestBlocksRequestHandlerFn(cliCtx)).Methods("GET")
 	r.HandleFunc("/d3n/txs/latest", LatestTxsRequestHandlerFn(cliCtx)).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/d3n/proof/{%s}", requestID), GetProofHandlerFn(cliCtx)).Methods("GET")
 	r.HandleFunc("/d3n/health_check", GetHealthStatus(cliCtx)).Methods("GET")
 	r.HandleFunc("/d3n/provider_status", GetProviderStatus(cliCtx)).Methods("GET")
+	r.PathPrefix("/swagger-ui/").Handler(ServeSwaggerUI())
 }
