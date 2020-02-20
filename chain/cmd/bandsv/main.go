@@ -50,8 +50,8 @@ type OracleRequestResp struct {
 }
 
 type ExecuteRequest struct {
-	Code     cmn.HexBytes `json:"code" binding:"required"`
-	Calldata string       `json:"calldata" binding:"required"`
+	Executable cmn.HexBytes `json:"executable" binding:"required"`
+	Calldata   string       `json:"calldata" binding:"required"`
 }
 
 type ExecuteResponse struct {
@@ -219,7 +219,7 @@ func handleExecute(c *gin.Context) {
 		return
 	}
 
-	result, err := byteexec.RunOnDocker(req.Code, 1*time.Minute, req.Calldata)
+	result, err := byteexec.RunOnDocker(req.Executable, 1*time.Minute, req.Calldata)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
