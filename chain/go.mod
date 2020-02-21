@@ -17,7 +17,6 @@ require (
 	github.com/tendermint/go-amino v0.15.0
 	github.com/tendermint/tendermint v0.32.9
 	github.com/tendermint/tm-db v0.2.0
-	github.com/wasmerio/go-ext-wasm v0.0.0-20191113152408-05371a4e2fe5
 	golang.org/x/crypto v0.0.0-20191122220453-ac88ee75c92c // indirect
 	golang.org/x/net v0.0.0-20191124235446-72fef5d5e266 // indirect
 )
