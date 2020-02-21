@@ -9,12 +9,14 @@ import (
 
 // query endpoints
 const (
-	QueryRequest       = "request"
-	QueryPending       = "pending_request"
-	QueryScript        = "script"
-	QueryAllScripts    = "scripts"
-	SerializeParams    = "serialize_params"
-	QueryRequestNumber = "request_number"
+	QueryRequest        = "request"
+	QueryPending        = "pending_request"
+	QueryScript         = "script"
+	QueryAllScripts     = "scripts"
+	SerializeParams     = "serialize_params"
+	QueryRequestNumber  = "request_number"
+	QueryDataSourceByID = "data_source"
+	QueryDataSources    = "data_sources"
 )
 
 type U64Array []uint64
@@ -24,10 +26,10 @@ func (u64a U64Array) String() string {
 }
 
 type RequestQuerierInfo struct {
-	Request         Request                     `json:"request"`
+	Request         Request                        `json:"request"`
 	RawDataRequests []RawDataRequestWithExternalID `json:"rawDataRequests"`
-	Reports         []ReportWithValidator       `json:"reports"`
-	Result          []byte                      `json:"result"`
+	Reports         []ReportWithValidator          `json:"reports"`
+	Result          []byte                         `json:"result"`
 }
 
 func NewRequestQuerierInfo(
@@ -105,5 +107,29 @@ func NewScriptInfo(
 		DataSources: rawDataSources,
 		Result:      result,
 		Creator:     creator,
+	}
+}
+
+type DataSourceQuerierInfo struct {
+	ID         int64          `json:"id"`
+	Owner      sdk.AccAddress `json:"owner"`
+	Name       string         `json:"name"`
+	Fee        sdk.Coins      `json:"fee"`
+	Executable []byte         `json:"executable"`
+}
+
+func NewDataSourceQuerierInfo(
+	id int64,
+	owner sdk.AccAddress,
+	name string,
+	fee sdk.Coins,
+	executable []byte,
+) DataSourceQuerierInfo {
+	return DataSourceQuerierInfo{
+		ID:         id,
+		Owner:      owner,
+		Name:       name,
+		Fee:        fee,
+		Executable: executable,
 	}
 }
