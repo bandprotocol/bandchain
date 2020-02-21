@@ -2,11 +2,11 @@ package keeper
 
 import (
 	"encoding/hex"
+	"io/ioutil"
 	"path/filepath"
 	"testing"
 	"time"
 
-	"github.com/bandprotocol/d3n/chain/wasm"
 	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 	"github.com/stretchr/testify/require"
 	crypto "github.com/tendermint/tendermint/crypto"
@@ -171,7 +171,7 @@ func newDefaultRequest() types.Request {
 
 func GetTestOracleScript(path string) types.OracleScript {
 	absPath, _ := filepath.Abs(path)
-	code, err := wasm.ReadBytes(absPath)
+	code, err := ioutil.ReadFile(absPath)
 	if err != nil {
 		panic(err)
 	}
