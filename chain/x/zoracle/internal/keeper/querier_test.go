@@ -498,6 +498,42 @@ func TestQueryDataSourcesFailBecauseInvalidNumberOfDataSource(t *testing.T) {
 // 	require.Equal(t, expectJson, rawQueryBytes)
 // }
 
+func TestQueryOracleScriptById(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+	keeper.SetMaxOracleScriptCodeSize(ctx, 20)
+	// Create variable "querier" which is a function
+	querier := NewQuerier(keeper)
+
+	// query before add a oracle script
+	_, err := querier(
+		ctx,
+		[]string{"oracle_script", "1"},
+		abci.RequestQuery{},
+	)
+	// Should return error oracle script not found
+	require.NotNil(t, err)
+
+	owner := sdk.AccAddress([]byte("owner"))
+	name := "oracle_script"
+	code := []byte("code")
+	expectedResult := types.NewOracleScriptQuerierInfo(1, owner, name, code)
+
+	keeper.SetOracleScript(ctx, 1, types.NewOracleScript(owner, name, code))
+
+	// This time querier should be able to find a oracle script
+	oracleScript, err := querier(
+		ctx,
+		[]string{"oracle_script", "1"},
+		abci.RequestQuery{},
+	)
+	require.Nil(t, err)
+
+	expectedResultBytes, errJSON := codec.MarshalJSONIndent(keeper.cdc, expectedResult)
+	require.Nil(t, errJSON)
+
+	require.Equal(t, expectedResultBytes, oracleScript)
+}
+
 func TestQueryOracleScriptsByStartIdAndNumberOfOracleScripts(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 	keeper.SetMaxOracleScriptCodeSize(ctx, 20)
