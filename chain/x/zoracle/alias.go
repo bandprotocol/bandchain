@@ -49,6 +49,15 @@ var (
 	KeyMaxDataSourceCountPerRequest = types.KeyMaxDataSourceCountPerRequest
 	KeyMaxRawDataReportSize         = types.KeyMaxRawDataReportSize
 
+	QueryRequest        = types.QueryRequest
+	QueryPending        = types.QueryPending
+	QueryScript         = types.QueryScript
+	QueryAllScripts     = types.QueryAllScripts
+	SerializeParams     = types.SerializeParams
+	QueryRequestNumber  = types.QueryRequestNumber
+	QueryDataSourceByID = types.QueryDataSourceByID
+	QueryDataSources    = types.QueryDataSources
+
 	ParamKeyTable = keeper.ParamKeyTable
 )
 
@@ -61,6 +70,7 @@ type (
 	MsgCreateOracleScript = types.MsgCreateOracleScript
 	MsgEditOracleScript   = types.MsgEditOracleScript
 
-	RawDataReport = types.RawDataReport
-	// RequestInfo    = types.RequestInfo
+	RawDataReport         = types.RawDataReport
+	RequestQuerierInfo    = types.RequestQuerierInfo
+	DataSourceQuerierInfo = types.DataSourceQuerierInfo
 )
