@@ -5,7 +5,7 @@ fn parse_coingecko_symbol(symbol: &[u8]) -> &[u8] {
     (match s.as_str() {
         "BTC" => "bitcoin",
         "ETH" => "ethereum",
-        _ => "Unsupported coin",
+        _ => panic!("Unsupported coin!"),
     })
     .as_bytes()
 }
