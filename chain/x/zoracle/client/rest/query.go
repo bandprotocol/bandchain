@@ -368,3 +368,27 @@ func getDataSourcesHandler(cliCtx context.CLIContext, storeName string) http.Han
 		rest.PostProcessResponse(w, cliCtx, queryDataSources)
 	}
 }
+
+func getOracleScriptsHandler(cliCtx context.CLIContext, storeName string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		_, page, limit, err := rest.ParseHTTPArgsWithLimit(r, 100)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		}
+
+		var queryOracleScripts []types.OracleScriptQuerierInfo
+		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/oracle_scripts/%d/%d", storeName, 1+(page-1)*limit, limit), nil)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		err = cliCtx.Codec.UnmarshalJSON(res, &queryOracleScripts)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		rest.PostProcessResponse(w, cliCtx, queryOracleScripts)
+	}
+}
