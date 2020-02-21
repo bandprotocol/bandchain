@@ -355,8 +355,6 @@ func queryOracleScriptByID(ctx sdk.Context, path []string, req abci.RequestQuery
 		return nil, sdkErr
 	}
 
-	fmt.Println("XXX", oracleScript.Owner)
-
 	return codec.MustMarshalJSONIndent(keeper.cdc, types.NewOracleScriptQuerierInfo(
 		id,
 		oracleScript.Owner,
