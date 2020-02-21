@@ -1,29 +1,32 @@
 package main
 
 import (
-	"context"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
+	"sort"
+	"strings"
 	"time"
 
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 
+	"github.com/bandprotocol/d3n/chain/byteexec"
 	"github.com/bandprotocol/d3n/chain/d3nlib"
 	"github.com/bandprotocol/d3n/chain/x/zoracle"
 )
 
-type Command struct {
-	Cmd       string   `json:"cmd"`
-	Arguments []string `json:"args"`
-}
+const (
+	limitTimeOut = 1 * time.Minute
+)
 
-const limitTimeOut = 10 * time.Second
+var (
+	bandClient d3nlib.BandStatefulClient
+	nodeURI    = getEnv("NODE_URI", "http://localhost:26657")
+	privS      = getEnv("PRIVATE_KEY", "06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b")
+)
 
 func getEnv(key, defaultValue string) string {
 	tmp := os.Getenv(key)
@@ -32,13 +35,6 @@ func getEnv(key, defaultValue string) string {
 	}
 	return tmp
 }
-
-var (
-	bandClient      d3nlib.BandStatefulClient
-	allowedCommands = map[string]bool{"curl": true, "date": true}
-	nodeURI         = getEnv("NODE_URI", "http://localhost:26657")
-	privS           = getEnv("PRIVATE_KEY", "06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b")
-)
 
 func getLatestRequestID() (int64, error) {
 	cliCtx := bandClient.GetContext()
@@ -84,110 +80,80 @@ func main() {
 	}
 }
 
-func execWithTimeout(command Command, limit time.Duration) ([]byte, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), limit)
-	defer cancel()
-	cmd := exec.CommandContext(ctx, command.Cmd, command.Arguments...)
-	out, err := cmd.Output()
-	if ctx.Err() == context.DeadlineExceeded {
-		return []byte{}, fmt.Errorf("Command timed out")
-	}
-	if err != nil {
-		return []byte{}, err
-	}
-	return out, nil
-}
-
-func getPrepareBytes(searchResult *sdk.SearchTxsResult) ([]byte, error) {
-	for _, tx := range searchResult.Txs {
-		// Stringevents (type of tx.Events) are deprecated in next cosmos-release.
-		for _, event := range tx.Events {
-			if event.Type == "request" {
-				for _, kv := range event.Attributes {
-					if string(kv.Key) == zoracle.AttributeKeyPrepare {
-						return hex.DecodeString(string(kv.Value))
-					}
-				}
-			}
-		}
-	}
-	return nil, fmt.Errorf("Cannot find prepare bytes")
-}
-
 func handleRequest(requestID int64) (sdk.TxResponse, error) {
-	searchResult, err := utils.QueryTxsByEvents(
-		bandClient.GetContext(),
-		[]string{fmt.Sprintf("request.id='%d'", requestID)},
-		1,
-		100,
-	)
+	cliCtx := bandClient.GetContext()
+	res, _, err := cliCtx.Query(fmt.Sprintf("custom/zoracle/request/%d", requestID))
 	if err != nil {
 		return sdk.TxResponse{}, err
 	}
-	byteValue, err := getPrepareBytes(searchResult)
-	if err != nil {
-		return sdk.TxResponse{}, err
-	}
-
-	var commands []Command
-	err = json.Unmarshal(byteValue, &commands)
+	var request zoracle.RequestQuerierInfo
+	err = cliCtx.Codec.UnmarshalJSON(res, &request)
 	if err != nil {
 		return sdk.TxResponse{}, err
 	}
 
 	type queryParallelInfo struct {
-		index  int
-		answer string
-		err    error
+		externalID int64
+		answer     []byte
+		err        error
 	}
 
-	chanQueryParallelInfo := make(chan queryParallelInfo, len(commands))
-	for i, command := range commands {
-		go func(index int, command Command) {
-			info := queryParallelInfo{index: index, answer: "", err: nil}
-			if !allowedCommands[command.Cmd] {
-				info.err = fmt.Errorf("handleRequest unknown command %s", command.Cmd)
-				chanQueryParallelInfo <- info
-				return
-			}
-			dockerCommand := Command{
-				Cmd: "docker",
-				Arguments: append([]string{
-					"run", "--rm", "band-provider",
-					command.Cmd,
-				}, command.Arguments...),
-			}
-			query, err := execWithTimeout(dockerCommand, limitTimeOut)
+	chanQueryParallelInfo := make(chan queryParallelInfo, len(request.RawDataRequests))
+	for _, rawRequest := range request.RawDataRequests {
+		go func(externalID, dataSourceID int64, calldata []byte) {
+			info := queryParallelInfo{externalID: externalID, answer: []byte{}, err: nil}
+			res, _, err := cliCtx.Query(
+				fmt.Sprintf("custom/zoracle/%s/%d", zoracle.QueryDataSourceByID, dataSourceID),
+			)
+
 			if err != nil {
-				info.err = fmt.Errorf("handleRequest query err with command: %s %v, error: %v", command.Cmd, command.Arguments, err)
+				info.err = fmt.Errorf(
+					"handleRequest: Cannot get script id [%d], error: %v", dataSourceID, err,
+				)
 				chanQueryParallelInfo <- info
 				return
 			}
 
-			info.answer = string(query)
+			var dataSource zoracle.DataSourceQuerierInfo
+			err = cliCtx.Codec.UnmarshalJSON(res, &dataSource)
+			if err != nil {
+				info.err = err
+				chanQueryParallelInfo <- info
+				return
+			}
+
+			result, err := byteexec.RunOnDocker(dataSource.Executable, limitTimeOut, string(calldata))
+			if err != nil {
+				info.err = fmt.Errorf(
+					"handleRequest: Execute error on data request id [%d], error: %v", dataSourceID, err,
+				)
+				chanQueryParallelInfo <- info
+				return
+			}
+
+			info.answer = []byte(strings.TrimSpace(string(result)))
 			chanQueryParallelInfo <- info
-		}(i, command)
+		}(rawRequest.ExternalID, rawRequest.RawDataRequest.DataSourceID, rawRequest.RawDataRequest.Calldata)
 	}
 
-	answers := make([]string, len(commands))
-	for i := 0; i < len(commands); i++ {
+	reports := make([]zoracle.RawDataReport, 0)
+	for i := 0; i < len(request.RawDataRequests); i++ {
 		info := <-chanQueryParallelInfo
 		if info.err != nil {
 			return sdk.TxResponse{}, info.err
 		}
-		answers[info.index] = info.answer
+		reports = append(reports, zoracle.NewRawDataReport(info.externalID, info.answer))
 	}
 
-	// b, _ := json.Marshal(answers)
+	sort.Slice(reports, func(i, j int) bool {
+		return reports[i].ExternalDataID < reports[j].ExternalDataID
+	})
 
-	// TODO: Send new report
-	return sdk.TxResponse{}, nil
-
-	// return bandClient.SendTransaction(
-	// 	zoracle.NewMsgReport(requestID, b, sdk.ValAddress(bandClient.Sender())),
-	// 	10000000, "", "", "",
-	// 	flags.BroadcastSync,
-	// )
+	return bandClient.SendTransaction(
+		zoracle.NewMsgReportData(requestID, reports, sdk.ValAddress(bandClient.Sender())),
+		10000000, "", "", "",
+		flags.BroadcastSync,
+	)
 }
 
 func handleRequestAndLog(requestID int64) {
