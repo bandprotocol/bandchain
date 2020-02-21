@@ -17,6 +17,7 @@ const (
 	QueryRequestNumber  = "request_number"
 	QueryDataSourceByID = "data_source"
 	QueryDataSources    = "data_sources"
+	QueryOracleScripts  = "oracle_scripts"
 )
 
 type U64Array []uint64
@@ -131,5 +132,26 @@ func NewDataSourceQuerierInfo(
 		Name:       name,
 		Fee:        fee,
 		Executable: executable,
+	}
+}
+
+type OracleScriptQuerierInfo struct {
+	ID    int64          `json:"id"`
+	Owner sdk.AccAddress `json:"owner`
+	Name  string         `json:"name"`
+	Code  []byte         `json:"code"`
+}
+
+func NewOracleScriptQuerierInfo(
+	id int64,
+	owner sdk.AccAddress,
+	name string,
+	code []byte,
+) OracleScriptQuerierInfo {
+	return OracleScriptQuerierInfo{
+		ID:    id,
+		Owner: owner,
+		Name:  name,
+		Code:  code,
 	}
 }

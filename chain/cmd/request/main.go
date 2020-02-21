@@ -1,10 +1,12 @@
 package main
 
 import (
-	"bufio"
 	"encoding/hex"
 	"fmt"
+	"io/ioutil"
 	"os"
+	"strconv"
+	"time"
 
 	"github.com/bandprotocol/d3n/chain/d3nlib"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -114,23 +116,7 @@ func main() {
 	// 	}
 	case "example":
 		{
-			file, err := os.Open("../../owasm/res/silly.wasm")
-			if err != nil {
-				panic(err)
-			}
-			defer file.Close()
-
-			stats, statsErr := file.Stat()
-			if statsErr != nil {
-				panic(statsErr)
-			}
-
-			size := stats.Size()
-			bytes := make([]byte, size)
-
-			bufr := bufio.NewReader(file)
-			_, err = bufr.Read(bytes)
-
+			bytes, err := ioutil.ReadFile("../../owasm/res/silly/pkg/silly_bg.wasm")
 			if err != nil {
 				panic(err)
 			}
@@ -162,6 +148,27 @@ func main() {
 				0, 10000000, "", "", "",
 				flags.BroadcastBlock,
 			))
+		}
+	case "deploy_oracle_scripts":
+		{
+			bytes, err := ioutil.ReadFile("../../owasm/res/silly/pkg/silly_bg.wasm")
+			if err != nil {
+				panic(err)
+			}
+
+			round, err := strconv.ParseUint(args[1], 10, 64)
+			if round <= 0 || err != nil {
+				panic("round should be more than 0")
+			}
+
+			for i := uint64(0); i < round; i++ {
+				fmt.Println(tx.SendTransaction(
+					[]sdk.Msg{zoracle.NewMsgCreateOracleScript(tx.Sender(), "Silly script", bytes, tx.Sender())},
+					0, 10000000, "", "", "",
+					flags.BroadcastBlock,
+				))
+				time.Sleep(100 * time.Millisecond)
+			}
 		}
 	}
 }
