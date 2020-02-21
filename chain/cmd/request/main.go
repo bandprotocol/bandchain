@@ -1,9 +1,9 @@
 package main
 
 import (
-	"bufio"
 	"encoding/hex"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"strconv"
 	"time"
@@ -116,23 +116,7 @@ func main() {
 	// 	}
 	case "example":
 		{
-			file, err := os.Open("../../owasm/res/silly/pkg/silly_bg.wasm")
-			if err != nil {
-				panic(err)
-			}
-			defer file.Close()
-
-			stats, statsErr := file.Stat()
-			if statsErr != nil {
-				panic(statsErr)
-			}
-
-			size := stats.Size()
-			bytes := make([]byte, size)
-
-			bufr := bufio.NewReader(file)
-			_, err = bufr.Read(bytes)
-
+			bytes, err := ioutil.ReadFile("../../owasm/res/silly/pkg/silly_bg.wasm")
 			if err != nil {
 				panic(err)
 			}
@@ -167,23 +151,7 @@ func main() {
 		}
 	case "deploy_oracle_scripts":
 		{
-			file, err := os.Open("../../owasm/res/silly/pkg/silly_bg.wasm")
-			if err != nil {
-				panic(err)
-			}
-			defer file.Close()
-
-			stats, statsErr := file.Stat()
-			if statsErr != nil {
-				panic(statsErr)
-			}
-
-			size := stats.Size()
-			bytes := make([]byte, size)
-
-			bufr := bufio.NewReader(file)
-			_, err = bufr.Read(bytes)
-
+			bytes, err := ioutil.ReadFile("../../owasm/res/silly/pkg/silly_bg.wasm")
 			if err != nil {
 				panic(err)
 			}
