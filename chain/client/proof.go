@@ -408,8 +408,9 @@ func MakeOtherStoresMerkleHash(mspo rootmulti.MultiStoreProofOp) (cmn.HexBytes, 
 
 func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		rest.WriteErrorResponse(w, http.StatusNotImplemented, "")
-		// vars := mux.Vars(r)
+		// TODO: Fix on #561
+		rest.PostProcessResponse(w, cliCtx, "OK")
+		return
 		// reqIDStr := vars[requestID]
 		// reqID, err := strconv.ParseUint(reqIDStr, 10, 64)
 		// if err != nil {
