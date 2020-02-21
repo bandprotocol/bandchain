@@ -5,7 +5,7 @@ interface IBridge {
   /// Helper struct to help the function caller to decode oracle data.
   struct VerifyOracleDataResult {
     bytes data;
-    bytes32 codeHash;
+    uint64 oracleScriptId;
     bytes params;
   }
 

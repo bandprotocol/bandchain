@@ -7,15 +7,15 @@ import { IBridge } from "../IBridge.sol";
 contract SimplePriceDatabase {
   using BandChainLib for bytes;
 
-  bytes32 public codeHash;
+  uint64 public oracleScriptId;
   bytes public params;
   uint256 public latestETHPrice;
   uint256 public lastUpdate;
 
   IBridge public bridge;
 
-  constructor(bytes32 _codeHash , bytes memory _params, IBridge _bridge) public {
-    codeHash = _codeHash;
+  constructor(uint64 _oracleScriptId , bytes memory _params, IBridge _bridge) public {
+    oracleScriptId = _oracleScriptId;
     params = _params;
     bridge = _bridge;
   }
@@ -23,7 +23,7 @@ contract SimplePriceDatabase {
   function update(bytes memory _reportPrice) public {
     IBridge.VerifyOracleDataResult memory result = bridge.relayAndVerify(_reportPrice);
 
-    require(result.codeHash == codeHash, "INVALID_CODEHASH");
+    require(result.oracleScriptId == oracleScriptId, "INVALID_ORACLE_SCRIPT");
     require(keccak256(result.params) == keccak256(params), "INVALID_PARAMS");
 
     uint64[] memory decodedInfo = result.data.toUint64List();

@@ -8,16 +8,16 @@ import { IBridge } from "../IBridge.sol";
 contract DEX is Ownable {
   using SafeMath for uint256;
 
-  bytes32 public codeHash;
+  uint64 public oracleScriptId;
 
   mapping(address => mapping(bytes => uint256)) _balances;
   mapping(string => bytes) public supportedTokens;
 
   IBridge bridge;
 
-  constructor(IBridge _bridge, bytes32 _codeHash) public {
+  constructor(IBridge _bridge, uint64 _oracleScriptId) public {
     bridge = _bridge;
-    codeHash = _codeHash;
+    oracleScriptId = _oracleScriptId;
     supportedTokens["ADA"] = hex"00000000";
     supportedTokens["BAND"] = hex"00000001";
     supportedTokens["BCH"] = hex"00000002";
@@ -68,7 +68,7 @@ contract DEX is Ownable {
       _reportPrice
     );
 
-    require(result.codeHash == codeHash, "INVALID_CODEHASH");
+    require(result.oracleScriptId == oracleScriptId, "INVALID_ORACLE_SCRIPT");
 
     (uint256 ethPrice, uint256 otherPrice) = bytesToPrices(result.data);
 
@@ -82,7 +82,7 @@ contract DEX is Ownable {
       _reportPrice
     );
 
-    require(result.codeHash == codeHash, "INVALID_CODEHASH");
+    require(result.oracleScriptId == oracleScriptId, "INVALID_ORACLE_SCRIPT");
     require(
       _amount <= _balances[msg.sender][result.params],
       "INSUFFICIENT_TOKENS"
