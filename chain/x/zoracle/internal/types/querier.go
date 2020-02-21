@@ -28,7 +28,7 @@ func (u64a U64Array) String() string {
 }
 
 type RequestQuerierInfo struct {
-	RequestID       int64                          `json:id`
+	ID              int64                          `json:"id"`
 	Request         Request                        `json:"request"`
 	RawDataRequests []RawDataRequestWithExternalID `json:"rawDataRequests"`
 	Reports         []ReportWithValidator          `json:"reports"`
@@ -43,7 +43,7 @@ func NewRequestQuerierInfo(
 	result []byte,
 ) RequestQuerierInfo {
 	return RequestQuerierInfo{
-		RequestID:       id,
+		ID:              id,
 		Request:         request,
 		RawDataRequests: rawDataRequests,
 		Reports:         reports,

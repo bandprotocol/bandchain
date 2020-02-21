@@ -29,7 +29,7 @@ func buildRequestRESTInfo(
 ) (RequestRESTInfo, error) {
 	var request RequestRESTInfo
 
-	request.RequestID = queryRequest.RequestID
+	request.ID = queryRequest.ID
 	request.OracleScriptID = queryRequest.Request.OracleScriptID
 	request.Calldata = queryRequest.Request.Calldata
 	request.RequestedValidators = queryRequest.Request.RequestedValidators
@@ -45,7 +45,7 @@ func buildRequestRESTInfo(
 		searchRequest, err := utils.QueryTxsByEvents(
 			ctx,
 			[]string{fmt.Sprintf("%s.%s='%d'",
-				types.EventTypeRequest, types.AttributeKeyRequestID, queryRequest.RequestID)},
+				types.EventTypeRequest, types.AttributeKeyRequestID, queryRequest.ID)},
 			1,
 			1,
 		)
@@ -69,7 +69,7 @@ func buildRequestRESTInfo(
 		searchReports, err := utils.QueryTxsByEvents(
 			ctx,
 			[]string{fmt.Sprintf("%s.%s='%d'",
-				types.EventTypeReport, types.AttributeKeyRequestID, queryRequest.RequestID)},
+				types.EventTypeReport, types.AttributeKeyRequestID, queryRequest.ID)},
 			1,
 			10000, // Estimated validator reports
 		)

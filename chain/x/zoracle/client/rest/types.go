@@ -20,7 +20,7 @@ type ReportDetail struct {
 }
 
 type RequestRESTInfo struct {
-	RequestID                int64                                `json:"id"`
+	ID                       int64                                `json:"id"`
 	OracleScriptID           int64                                `json:"oracleScriptID"`
 	Calldata                 []byte                               `json:"calldata"`
 	RequestedValidators      []sdk.ValAddress                     `json:"requestedValidators"`
