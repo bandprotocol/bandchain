@@ -169,7 +169,7 @@ func main() {
 
 			for i := uint64(0); i < round; i++ {
 				fmt.Println(tx.SendTransaction(
-					[]sdk.Msg{zoracle.NewMsgCreateOracleScript(tx.Sender(), "Silly script", bytes, tx.Sender())},
+					[]sdk.Msg{zoracle.NewMsgCreateOracleScript(tx.Sender(), fmt.Sprintf("Silly script %d", i), bytes, tx.Sender())},
 					0, 10000000, "", "", "",
 					flags.BroadcastBlock,
 				))
