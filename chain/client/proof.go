@@ -481,10 +481,6 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		var opiavl iavl.IAVLValueOp
-		if iavlOpData == nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, "proof was corrupted")
-			return
-		}
 		err = cliCtx.Codec.UnmarshalBinaryLengthPrefixed(iavlOpData, &opiavl)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
