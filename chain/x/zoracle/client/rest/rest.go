@@ -9,13 +9,13 @@ import (
 )
 
 const (
-	requestID       = "requestID"
+	requestIDTag    = "requestIDTag"
 	codeHash        = "codeHash"
 	dataSourceIDTag = "dataSourceIDTag"
 )
 
 func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router, storeName string) {
-	r.HandleFunc(fmt.Sprintf("/%s/request/{%s}", storeName, requestID), getRequestByIDHandler(cliCtx, storeName)).Methods("GET")
+	r.HandleFunc(fmt.Sprintf("/%s/request/{%s}", storeName, requestIDTag), getRequestByIDHandler(cliCtx, storeName)).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/%s/requests", storeName), getRequestsHandler(cliCtx, storeName)).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/%s/script/{%s}", storeName, codeHash), getScriptInfoHandler(cliCtx, storeName)).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/%s/scripts", storeName), getScriptsHandler(cliCtx, storeName)).Methods("GET")
