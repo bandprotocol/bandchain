@@ -409,8 +409,7 @@ func MakeOtherStoresMerkleHash(mspo rootmulti.MultiStoreProofOp) (cmn.HexBytes, 
 func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		reqIDStr := vars[requestID]
-		reqID, err := strconv.ParseUint(reqIDStr, 10, 64)
+		requestID, err := strconv.ParseUint(vars[requestIDTag], 10, 64)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -429,7 +428,7 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		var queryRequest zoracle.RequestQuerierInfo
-		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/zoracle/request/%d", reqID), nil)
+		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/zoracle/request/%d", requestID), nil)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -441,7 +440,7 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		key := zoracle.ResultStoreKey(int64(reqID), queryRequest.Request.OracleScriptID, queryRequest.Request.Calldata)
+		key := zoracle.ResultStoreKey(int64(requestID), queryRequest.Request.OracleScriptID, queryRequest.Request.Calldata)
 
 		resp, err := cliCtx.Client.ABCIQueryWithOptions(
 			"/store/zoracle/key",
@@ -488,7 +487,7 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		odp := OracleDataProof{}
-		odp.RequestID = reqID
+		odp.RequestID = requestID
 		odp.Data = resp.Response.GetValue()
 		odp.OracleScriptID = uint64(queryRequest.Request.OracleScriptID)
 		odp.Calldata = queryRequest.Request.Calldata
