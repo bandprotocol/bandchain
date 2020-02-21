@@ -49,7 +49,8 @@ var (
 	KeyMaxDataSourceCountPerRequest = types.KeyMaxDataSourceCountPerRequest
 	KeyMaxRawDataReportSize         = types.KeyMaxRawDataReportSize
 
-	QueryRequest        = types.QueryRequest
+	QueryRequestByID    = types.QueryRequestByID
+	QueryRequests       = types.QueryRequests
 	QueryPending        = types.QueryPending
 	QueryScript         = types.QueryScript
 	QueryAllScripts     = types.QueryAllScripts
@@ -57,6 +58,7 @@ var (
 	QueryRequestNumber  = types.QueryRequestNumber
 	QueryDataSourceByID = types.QueryDataSourceByID
 	QueryDataSources    = types.QueryDataSources
+	QueryOracleScripts  = types.QueryOracleScripts
 
 	ParamKeyTable = keeper.ParamKeyTable
 )

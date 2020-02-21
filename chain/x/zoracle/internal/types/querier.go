@@ -9,7 +9,8 @@ import (
 
 // query endpoints
 const (
-	QueryRequest        = "request"
+	QueryRequestByID    = "request"
+	QueryRequests       = "requests"
 	QueryPending        = "pending_request"
 	QueryScript         = "script"
 	QueryAllScripts     = "scripts"
@@ -27,6 +28,7 @@ func (u64a U64Array) String() string {
 }
 
 type RequestQuerierInfo struct {
+	ID              int64                          `json:"id"`
 	Request         Request                        `json:"request"`
 	RawDataRequests []RawDataRequestWithExternalID `json:"rawDataRequests"`
 	Reports         []ReportWithValidator          `json:"reports"`
@@ -34,12 +36,14 @@ type RequestQuerierInfo struct {
 }
 
 func NewRequestQuerierInfo(
+	id int64,
 	request Request,
 	rawDataRequests []RawDataRequestWithExternalID,
 	reports []ReportWithValidator,
 	result []byte,
 ) RequestQuerierInfo {
 	return RequestQuerierInfo{
+		ID:              id,
 		Request:         request,
 		RawDataRequests: rawDataRequests,
 		Reports:         reports,

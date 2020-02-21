@@ -15,8 +15,10 @@ import (
 func NewQuerier(keeper Keeper) sdk.Querier {
 	return func(ctx sdk.Context, path []string, req abci.RequestQuery) (res []byte, err sdk.Error) {
 		switch path[0] {
-		case types.QueryRequest:
-			return queryRequest(ctx, path[1:], req, keeper)
+		case types.QueryRequestByID:
+			return queryRequestByID(ctx, path[1:], req, keeper)
+		case types.QueryRequests:
+			return queryRequests(ctx, path[1:], req, keeper)
 		case types.QueryPending:
 			return queryPending(ctx, path[1:], req, keeper)
 		// case types.QueryScript:
@@ -39,18 +41,12 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 	}
 }
 
-// queryRequest is a query function to get request information by request ID.
-func queryRequest(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
-	if len(path) == 0 {
-		return nil, sdk.ErrInternal("must specify the requestid")
-	}
-	id, err := strconv.ParseInt(path[0], 10, 64)
-	if err != nil {
-		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for requestid %s", err.Error()))
-	}
+func buildRequestQuerierInfo(
+	ctx sdk.Context, keeper Keeper, id int64,
+) (types.RequestQuerierInfo, sdk.Error) {
 	request, sdkErr := keeper.GetRequest(ctx, id)
 	if sdkErr != nil {
-		return nil, sdkErr
+		return types.RequestQuerierInfo{}, sdkErr
 	}
 
 	rawRequests := keeper.GetRawDataRequestWithExternalIDs(ctx, id)
@@ -84,16 +80,70 @@ func queryRequest(ctx sdk.Context, path []string, req abci.RequestQuery, keeper 
 		var sdkErr sdk.Error
 		result, sdkErr = keeper.GetResult(ctx, id, request.OracleScriptID, request.Calldata)
 		if sdkErr != nil {
-			return nil, sdkErr
+			return types.RequestQuerierInfo{}, sdkErr
 		}
 	}
 
-	return codec.MustMarshalJSONIndent(keeper.cdc, types.NewRequestQuerierInfo(
+	return types.NewRequestQuerierInfo(
+		id,
 		request,
 		rawRequests,
 		reports,
 		result,
-	)), nil
+	), nil
+}
+
+// queryRequest is a query function to get request information by request ID.
+func queryRequestByID(
+	ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper,
+) ([]byte, sdk.Error) {
+	if len(path) == 0 {
+		return nil, sdk.ErrInternal("must specify the requestid")
+	}
+	id, err := strconv.ParseInt(path[0], 10, 64)
+	if err != nil {
+		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for requestid %s", err.Error()))
+	}
+
+	request, sdkErr := buildRequestQuerierInfo(ctx, keeper, id)
+	if sdkErr != nil {
+		return nil, sdkErr
+	}
+	return codec.MustMarshalJSONIndent(keeper.cdc, request), nil
+}
+
+func queryRequests(
+	ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper,
+) ([]byte, sdk.Error) {
+	if len(path) != 2 {
+		return nil, sdk.ErrInternal("must specify the request start id and number of requests")
+	}
+	startID, err := strconv.ParseInt(path[0], 10, 64)
+	if err != nil {
+		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for request start id %s", err.Error()))
+	}
+
+	numberOfRequests, err := strconv.ParseInt(path[1], 10, 64)
+	if err != nil {
+		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for number of requests %s", err.Error()))
+	}
+	if numberOfRequests < 1 || numberOfRequests > 100 {
+		return nil, sdk.ErrInternal("number of requests should be >= 1 and <= 100")
+	}
+
+	requests := make([]types.RequestQuerierInfo, 0)
+	allRequestsCount := keeper.GetRequestCount(ctx)
+	limit := startID + numberOfRequests - 1
+	if limit > allRequestsCount {
+		limit = allRequestsCount
+	}
+	for idx := startID; idx <= limit; idx++ {
+		request, err := buildRequestQuerierInfo(ctx, keeper, idx)
+		if err == nil {
+			requests = append(requests, request)
+		}
+	}
+	return codec.MustMarshalJSONIndent(keeper.cdc, requests), nil
 }
 
 // queryPending is a query function to get the list of request IDs that are still on pending status.

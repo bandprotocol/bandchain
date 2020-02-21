@@ -25,10 +25,11 @@ func buildTxDetail(tx *sdk.TxResponse) TxDetail {
 
 // buildRequestRESTInfo takes a RequestQuerierInfo instance and builds a more comprehensive version of it.
 func buildRequestRESTInfo(
-	ctx context.CLIContext, id string, queryRequest types.RequestQuerierInfo,
+	ctx context.CLIContext, queryRequest types.RequestQuerierInfo, withRequestTx, withReportTx bool,
 ) (RequestRESTInfo, error) {
 	var request RequestRESTInfo
 
+	request.ID = queryRequest.ID
 	request.OracleScriptID = queryRequest.Request.OracleScriptID
 	request.Calldata = queryRequest.Request.Calldata
 	request.RequestedValidators = queryRequest.Request.RequestedValidators
@@ -39,69 +40,79 @@ func buildRequestRESTInfo(
 
 	request.Result = queryRequest.Result
 
-	// Get request detail
-	searchRequest, err := utils.QueryTxsByEvents(
-		ctx,
-		[]string{fmt.Sprintf("%s.%s='%s'", types.EventTypeRequest, types.AttributeKeyRequestID, id)},
-		1,
-		1,
-	)
-	if err != nil || len(searchRequest.Txs) != 1 {
-		return RequestRESTInfo{}, err
-	}
-	request.RequestTx = buildTxDetail(&searchRequest.Txs[0])
-	for _, msg := range searchRequest.Txs[0].Tx.GetMsgs() {
-		msgRequest, ok := msg.(types.MsgRequestData)
-		if ok {
-			request.Requester = msgRequest.Sender
-			break
+	if withRequestTx {
+		// Get request detail
+		searchRequest, err := utils.QueryTxsByEvents(
+			ctx,
+			[]string{fmt.Sprintf("%s.%s='%d'",
+				types.EventTypeRequest, types.AttributeKeyRequestID, queryRequest.ID)},
+			1,
+			1,
+		)
+		if err != nil || len(searchRequest.Txs) != 1 {
+			return RequestRESTInfo{}, err
 		}
-	}
-
-	// Save report tx
-	searchReports, err := utils.QueryTxsByEvents(
-		ctx,
-		[]string{fmt.Sprintf("%s.%s='%s'", types.EventTypeReport, types.AttributeKeyRequestID, id)},
-		1,
-		10000, // Estimated validator reports
-	)
-
-	request.Reports = make([]ReportDetail, 0)
-
-	for _, report := range searchReports.Txs {
-		var validatorAddress sdk.ValAddress
-		for _, msg := range report.Tx.GetMsgs() {
-			msgReport, ok := msg.(types.MsgReportData)
+		request.RequestTx = buildTxDetail(&searchRequest.Txs[0])
+		for _, msg := range searchRequest.Txs[0].Tx.GetMsgs() {
+			msgRequest, ok := msg.(types.MsgRequestData)
 			if ok {
-				validatorAddress = msgReport.Sender
+				request.Requester = msgRequest.Sender
 				break
 			}
 		}
-		for _, queryReport := range queryRequest.Reports {
-			if queryReport.Validator.Equals(validatorAddress) {
-				request.Reports = append(
-					request.Reports,
-					ReportDetail{
-						Reporter: queryReport.Validator,
-						Value:    queryReport.RawDataReports,
-						Tx:       buildTxDetail(&report),
-					},
-				)
-				continue
+	}
+
+	txReportMap := make(map[string]TxDetail)
+
+	if withReportTx {
+		// Save report tx
+		searchReports, err := utils.QueryTxsByEvents(
+			ctx,
+			[]string{fmt.Sprintf("%s.%s='%d'",
+				types.EventTypeReport, types.AttributeKeyRequestID, queryRequest.ID)},
+			1,
+			10000, // Estimated validator reports
+		)
+		if err != nil {
+			return RequestRESTInfo{}, err
+		}
+		for _, report := range searchReports.Txs {
+			for _, msg := range report.Tx.GetMsgs() {
+				msgReport, ok := msg.(types.MsgReportData)
+				if ok {
+					txReportMap[string(msgReport.Sender)] = buildTxDetail(&report)
+					break
+				}
 			}
 		}
 	}
 
-	return request, nil
+	request.Reports = make([]ReportDetail, 0)
 
+	for _, queryReport := range queryRequest.Reports {
+		report, ok := txReportMap[string(queryReport.Validator)]
+		if !ok {
+			report = TxDetail{}
+		}
+		request.Reports = append(
+			request.Reports,
+			ReportDetail{
+				Reporter: queryReport.Validator,
+				Value:    queryReport.RawDataReports,
+				Tx:       report,
+			},
+		)
+	}
+
+	return request, nil
 }
 
-func getRequestHandler(cliCtx context.CLIContext, storeName string) http.HandlerFunc {
+func getRequestByIDHandler(cliCtx context.CLIContext, storeName string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		reqID := vars[requestID]
+		requestID := vars[requestIDTag]
 		var queryRequest types.RequestQuerierInfo
-		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/request/%s", storeName, reqID), nil)
+		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/request/%s", storeName, requestID), nil)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -113,13 +124,74 @@ func getRequestHandler(cliCtx context.CLIContext, storeName string) http.Handler
 			return
 		}
 
-		request, err := buildRequestRESTInfo(cliCtx, reqID, queryRequest)
+		request, err := buildRequestRESTInfo(cliCtx, queryRequest, true, true)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
 		rest.PostProcessResponse(w, cliCtx, request)
+	}
+}
+
+func getRequestsHandler(cliCtx context.CLIContext, storeName string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		_, page, limit, err := rest.ParseHTTPArgsWithLimit(r, 100)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		}
+
+		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/request_number", storeName), nil)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		var requestNumber int64
+		err = cliCtx.Codec.UnmarshalJSON(res, &requestNumber)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		firstID := requestNumber - int64(page*limit) + 1
+		lastID := requestNumber - int64((page-1)*limit)
+		if lastID < 1 {
+			rest.PostProcessResponse(w, cliCtx, []types.RequestQuerierInfo{})
+			return
+		}
+
+		if firstID < 1 {
+			firstID = 1
+		}
+
+		var queryRequests []types.RequestQuerierInfo
+		res, _, err = cliCtx.QueryWithData(fmt.Sprintf("custom/%s/requests/%d/%d", storeName, firstID, lastID-firstID+1), nil)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		err = cliCtx.Codec.UnmarshalJSON(res, &queryRequests)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		var requests []RequestRESTInfo
+
+		for idx := len(queryRequests) - 1; idx >= 0; idx-- {
+			request, err := buildRequestRESTInfo(cliCtx, queryRequests[idx], true, true)
+			if err == nil {
+				requests = append(requests, request)
+			}
+		}
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		rest.PostProcessResponse(w, cliCtx, requests)
 	}
 }
 
