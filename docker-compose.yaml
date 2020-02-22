@@ -21,14 +21,17 @@ services:
         ipv4_address: 172.18.0.15
     depends_on:
       - build-provider-image
-      - code-server
-      - proxy-server
+      # - code-server
+      # - proxy-server
       - single-oracle
     ports:
-      - 26657:26657
+      - 26656:26656
     command: sh -c "chmod +x ./docker-config/single-validator/run.sh && ./docker-config/single-validator/run.sh"
 
   single-oracle:
+    build:
+      context: chain
+      dockerfile: Dockerfile
     image: band-validator:latest
     environment:
       - PRIVATE_KEY=06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b
@@ -39,6 +42,17 @@ services:
       bandchain:
     restart: always
     command: bandoracled
+
+  bandsv-and-rest:
+    image: tianon/true
+    restart: "no"
+    networks:
+      bandchain:
+    depends_on:
+      - query-node
+      # - bandsv-node
+      - code-server
+      - proxy-server
 
   multi-validator:
     image: tianon/true
@@ -139,6 +153,9 @@ services:
     command: bandoracled
 
   query-node:
+    build:
+      context: chain
+      dockerfile: Dockerfile
     image: band-validator:latest
     ports:
       - 26657:26657
@@ -146,8 +163,17 @@ services:
       - chain_config:/root/.bandd/config/
     networks:
       bandchain:
-        ipv4_address: 172.18.0.15
+        ipv4_address: 172.18.0.22
     command: sh -c "chmod +x ./docker-config/run.sh && ./docker-config/run.sh query-node"
+
+  bandsv-node:
+    image: band-validator:latest
+    volumes:
+      - chain_config:/root/.bandd/config/
+    networks:
+      bandchain:
+        ipv4_address: 172.18.0.42
+    command: sh -c "chmod +x ./docker-config/run.sh && ./docker-config/run.sh bandsv-node"
 
   rest-server:
     image: band-validator:latest
@@ -157,7 +183,7 @@ services:
     restart: always
     ports:
       - 1317:1317
-    command: bandcli rest-server --laddr tcp://0.0.0.0:1317 --node tcp://172.18.0.15:26657 --chain-id bandchain --trust-node
+    command: bandcli rest-server --laddr tcp://0.0.0.0:1317 --node tcp://172.18.0.22:26657 --chain-id bandchain --trust-node
 
   proxy-server:
     build:
@@ -175,7 +201,7 @@ services:
     image: band-validator:latest
     environment:
       - PORT=5000
-      - NODE_URI=tcp://172.18.0.15:26657
+      - NODE_URI=tcp://172.18.0.22:26657
       - QUERY_URI=http://172.18.0.20:1317
       - PRIVATE_KEY=eedda7a96ad35758f2ffc404d6ccd7be913f149a530c70e95e2e3ee7a952a877
     networks:
