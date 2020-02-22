@@ -55,7 +55,7 @@ services:
       - oracle3
       - oracle4
       - query-node
-      - bandsv-node
+      - bandsv-node  
       - build-provider-image
       - code-server
       - proxy-server
@@ -152,14 +152,12 @@ services:
 
   bandsv-node:
     image: band-validator:latest
-    ports:
-      - 26657:26657
     volumes:
       - chain_config:/root/.bandd/config/
     networks:
       bandchain:
         ipv4_address: 172.18.0.42
-    command: sh -c "chmod +x ./docker-config/run.sh && ./docker-config/run.sh query-node"
+    command: sh -c "chmod +x ./docker-config/run.sh && ./docker-config/run.sh bandsv-node"
   
   rest-server:
     image: band-validator:latest
