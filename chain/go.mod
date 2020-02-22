@@ -15,6 +15,7 @@ require (
 	github.com/spf13/viper v1.6.1
 	github.com/stretchr/testify v1.4.0
 	github.com/tendermint/go-amino v0.15.0
+	github.com/tendermint/iavl v0.12.4
 	github.com/tendermint/tendermint v0.32.9
 	github.com/tendermint/tm-db v0.2.0
 	golang.org/x/crypto v0.0.0-20191122220453-ac88ee75c92c // indirect

@@ -54,6 +54,7 @@ func TestQueryRequestById(t *testing.T) {
 	acs, errJSON := codec.MarshalJSONIndent(
 		keeper.cdc,
 		types.NewRequestQuerierInfo(
+			1,
 			request,
 			[]types.RawDataRequestWithExternalID{
 				types.NewRawDataRequestWithExternalID(
@@ -118,6 +119,7 @@ func TestQueryRequestIncompleteValidator(t *testing.T) {
 	acs, errJSON := codec.MarshalJSONIndent(
 		keeper.cdc,
 		types.NewRequestQuerierInfo(
+			1,
 			request,
 			[]types.RawDataRequestWithExternalID{
 				types.NewRawDataRequestWithExternalID(
@@ -137,6 +139,99 @@ func TestQueryRequestIncompleteValidator(t *testing.T) {
 			},
 			nil,
 		),
+	)
+	require.Nil(t, errJSON)
+	require.Equal(t, acs, acsBytes)
+}
+
+func TestQueryRequests(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	// Create variable "querier" which is a function
+	querier := NewQuerier(keeper)
+
+	// query before set new request
+	acsBytes, err := querier(
+		ctx,
+		[]string{"requests", "1", "3"},
+		abci.RequestQuery{},
+	)
+	// It must return empty array of requests
+	require.Nil(t, err)
+	require.Equal(t, []byte("[]"), acsBytes)
+
+	request := newDefaultRequest()
+	keeper.SetRequest(ctx, 1, request)
+
+	keeper.SetRawDataRequest(ctx, 1, 1, types.NewRawDataRequest(0, []byte("calldata1")))
+	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata2")))
+
+	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[0], []byte("report1"))
+	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[0], []byte("report2"))
+
+	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[1], []byte("report1-2"))
+	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[1], []byte("report2-2"))
+
+	result, _ := hex.DecodeString("0000000000002710")
+	keeper.SetResult(ctx, 1, request.OracleScriptID, request.Calldata, result)
+	keeper.GetNextRequestID(ctx)
+
+	// request 2
+	keeper.SetRequest(ctx, 2, request)
+
+	keeper.SetRawDataRequest(ctx, 2, 100, types.NewRawDataRequest(1, []byte("only calldata")))
+	keeper.GetNextRequestID(ctx)
+
+	// create query
+	acsBytes, err = querier(
+		ctx,
+		[]string{"requests", "1", "3"},
+		abci.RequestQuery{},
+	)
+	require.Nil(t, err)
+
+	// Use bytes format for comparison
+	acs, errJSON := codec.MarshalJSONIndent(
+		keeper.cdc,
+		[]types.RequestQuerierInfo{
+			types.NewRequestQuerierInfo(
+				1,
+				request,
+				[]types.RawDataRequestWithExternalID{
+					types.NewRawDataRequestWithExternalID(
+						1,
+						types.NewRawDataRequest(0, []byte("calldata1")),
+					),
+					types.NewRawDataRequestWithExternalID(
+						2,
+						types.NewRawDataRequest(1, []byte("calldata2")),
+					),
+				},
+				[]types.ReportWithValidator{
+					types.NewReportWithValidator([]types.RawDataReport{
+						types.NewRawDataReport(1, []byte("report1")),
+						types.NewRawDataReport(2, []byte("report2")),
+					}, request.RequestedValidators[0]),
+					types.NewReportWithValidator([]types.RawDataReport{
+						types.NewRawDataReport(1, []byte("report1-2")),
+						types.NewRawDataReport(2, []byte("report2-2")),
+					}, request.RequestedValidators[1]),
+				},
+				result,
+			),
+			types.NewRequestQuerierInfo(
+				2,
+				request,
+				[]types.RawDataRequestWithExternalID{
+					types.NewRawDataRequestWithExternalID(
+						100,
+						types.NewRawDataRequest(1, []byte("only calldata")),
+					),
+				},
+				[]types.ReportWithValidator{},
+				nil,
+			),
+		},
 	)
 	require.Nil(t, errJSON)
 	require.Equal(t, acs, acsBytes)
@@ -402,3 +497,118 @@ func TestQueryDataSourcesFailBecauseInvalidNumberOfDataSource(t *testing.T) {
 // 	require.Nil(t, errJSON)
 // 	require.Equal(t, expectJson, rawQueryBytes)
 // }
+
+func TestQueryOracleScriptsByStartIdAndNumberOfOracleScripts(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+	keeper.SetMaxOracleScriptCodeSize(ctx, 20)
+	// Create variable "querier" which is a function
+	querier := NewQuerier(keeper)
+
+	expectedResult := []types.OracleScriptQuerierInfo{}
+
+	// Add a new 10 oracle scripts
+	for i := 1; i <= 10; i++ {
+		owner := sdk.AccAddress([]byte("owner" + strconv.Itoa(i)))
+		name := "oracle_script_" + strconv.Itoa(i)
+		code := []byte("code" + strconv.Itoa(i))
+		eachOracleScript := types.NewOracleScriptQuerierInfo(int64(i), owner, name, code)
+
+		err := keeper.AddOracleScript(ctx, eachOracleScript.Owner, eachOracleScript.Name, eachOracleScript.Code)
+		require.Nil(t, err)
+
+		expectedResult = append(expectedResult, eachOracleScript)
+	}
+
+	// Query first 5 oracle scripts
+	oracleScripts, err := querier(
+		ctx,
+		[]string{"oracle_scripts", "1", "5"},
+		abci.RequestQuery{},
+	)
+	require.Nil(t, err)
+
+	expectedResultBytes, errJSON := codec.MarshalJSONIndent(keeper.cdc, expectedResult[0:5])
+	require.Nil(t, errJSON)
+	require.Equal(t, expectedResultBytes, oracleScripts)
+
+	// Query last 5 oracle scripts
+	oracleScripts, err = querier(
+		ctx,
+		[]string{"oracle_scripts", "6", "5"},
+		abci.RequestQuery{},
+	)
+	require.Nil(t, err)
+
+	expectedResultBytes, errJSON = codec.MarshalJSONIndent(keeper.cdc, expectedResult[5:])
+	require.Nil(t, errJSON)
+	require.Equal(t, expectedResultBytes, oracleScripts)
+
+	// Query first 15 oracle scripts which exceed number of all oracle script right now
+	// This should return all exist oracle scripts (10 oracle scripts)
+	oracleScripts, err = querier(
+		ctx,
+		[]string{"oracle_scripts", "1", "15"},
+		abci.RequestQuery{},
+	)
+	require.Nil(t, err)
+
+	expectedResultBytes, errJSON = codec.MarshalJSONIndent(keeper.cdc, expectedResult)
+	require.Nil(t, errJSON)
+	require.Equal(t, expectedResultBytes, oracleScripts)
+
+	// Query oracle scripts from id=8 to id=17
+	// But we only have id=1 to id=10
+	// So the result should be [id=8, id=9, id=10]
+	oracleScripts, err = querier(
+		ctx,
+		[]string{"oracle_scripts", "8", "10"},
+		abci.RequestQuery{},
+	)
+	require.Nil(t, err)
+
+	expectedResultBytes, errJSON = codec.MarshalJSONIndent(keeper.cdc, expectedResult[7:])
+	require.Nil(t, errJSON)
+	require.Equal(t, expectedResultBytes, oracleScripts)
+}
+
+func TestQueryOracleScriptsGotEmptyArrayBecauseNoOracleScript(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+	keeper.SetMaxOracleScriptCodeSize(ctx, 20)
+	// Create variable "querier" which is a function
+	querier := NewQuerier(keeper)
+
+	oracleScripts, err := querier(
+		ctx,
+		[]string{"oracle_scripts", "1", "5"},
+		abci.RequestQuery{},
+	)
+	require.Nil(t, err)
+
+	expectedResultBytes, errJSON := codec.MarshalJSONIndent(keeper.cdc, []types.OracleScriptQuerierInfo{})
+	require.Nil(t, errJSON)
+
+	require.Equal(t, expectedResultBytes, oracleScripts)
+}
+
+func TestQueryOracleScriptsFailBecauseInvalidNumberOfOracleScript(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+	keeper.SetMaxOracleScriptCodeSize(ctx, 20)
+	// Create variable "querier" which is a function
+	querier := NewQuerier(keeper)
+
+	// Number of oracle scripts should <= 100
+	_, err := querier(
+		ctx,
+		[]string{"oracle_scripts", "1", "101"},
+		abci.RequestQuery{},
+	)
+	require.NotNil(t, err)
+
+	// Number of oracle scripts should >= 1
+	_, err = querier(
+		ctx,
+		[]string{"oracle_scripts", "1", "0"},
+		abci.RequestQuery{},
+	)
+	require.NotNil(t, err)
+}

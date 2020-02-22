@@ -112,13 +112,13 @@ var verifyFormat = []byte(`
     "type": "uint64"
   },
   {
-    "internalType": "bytes32",
-    "name": "_codeHash",
-    "type": "bytes32"
+    "internalType": "uint64",
+    "name": "_oracleScriptId",
+    "type": "uint64"
   },
   {
     "internalType": "bytes",
-    "name": "_params",
+    "name": "_calldata",
     "type": "bytes"
   },
   {
