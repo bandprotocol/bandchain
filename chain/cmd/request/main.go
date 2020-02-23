@@ -116,7 +116,7 @@ func main() {
 	// 	}
 	case "example":
 		{
-			bytes, err := ioutil.ReadFile("../../owasm/res/silly/pkg/silly_bg.wasm")
+			bytes, err := ioutil.ReadFile("../../owasm/res/silly.wasm")
 			if err != nil {
 				panic(err)
 			}
@@ -154,6 +154,92 @@ func main() {
 				0, 10000000, "", "", "",
 				flags.BroadcastBlock,
 			))
+		}
+	case "report":
+		{
+			fmt.Println(valTx.SendTransaction(
+				[]sdk.Msg{zoracle.NewMsgReportData(4, []zoracle.RawDataReport{
+					zoracle.NewRawDataReport(1, []byte("100.0")),
+					zoracle.NewRawDataReport(2, []byte("200.5")),
+					zoracle.NewRawDataReport(3, []byte("143.6")),
+				}, sdk.ValAddress(valTx.Sender()))},
+				0, 10000000, "", "", "",
+				flags.BroadcastBlock,
+			))
+		}
+	case "price-example":
+		{
+			coingecko, err := ioutil.ReadFile("../../datasources/coingecko_price.sh")
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println(tx.SendTransaction(
+				[]sdk.Msg{zoracle.NewMsgCreateDataSource(
+					tx.Sender(), "Coingecko script", sdk.Coins{}, coingecko, tx.Sender(),
+				)},
+				0, 10000000, "", "", "",
+				flags.BroadcastBlock,
+			))
+
+			cryptoCompare, err := ioutil.ReadFile("../../datasources/crypto_compare_price.sh")
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println(tx.SendTransaction(
+				[]sdk.Msg{zoracle.NewMsgCreateDataSource(
+					tx.Sender(), "Crypto compare script", sdk.Coins{}, cryptoCompare, tx.Sender(),
+				)},
+				0, 10000000, "", "", "",
+				flags.BroadcastBlock,
+			))
+
+			binance, err := ioutil.ReadFile("../../datasources/binance_price.sh")
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println(tx.SendTransaction(
+				[]sdk.Msg{zoracle.NewMsgCreateDataSource(
+					tx.Sender(), "Binance script", sdk.Coins{}, binance, tx.Sender(),
+				)},
+				0, 10000000, "", "", "",
+				flags.BroadcastBlock,
+			))
+
+			oracleBytes, err := ioutil.ReadFile("../../owasm/res/crypto_price/pkg/crypto_price_bg.wasm")
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println(tx.SendTransaction(
+				[]sdk.Msg{zoracle.NewMsgCreateOracleScript(tx.Sender(), "Crypto price script", oracleBytes, tx.Sender())},
+				0, 10000000, "", "", "",
+				flags.BroadcastBlock,
+			))
+
+			fmt.Println(tx.SendTransaction(
+				[]sdk.Msg{zoracle.NewMsgRequestData(1, []byte("ETH"), 1, 1, 100000, tx.Sender())},
+				0, 10000000, "", "", "",
+				flags.BroadcastBlock,
+			))
+
+			fmt.Println(valTx.SendTransaction(
+				[]sdk.Msg{zoracle.NewMsgReportData(1, []zoracle.RawDataReport{
+					zoracle.NewRawDataReport(1, []byte("100.0")),
+					zoracle.NewRawDataReport(2, []byte("200.5")),
+					zoracle.NewRawDataReport(3, []byte("143.6")),
+				}, sdk.ValAddress(valTx.Sender()))},
+				0, 10000000, "", "", "",
+				flags.BroadcastBlock,
+			))
+
+			// _ = valTx.Sender()
+
+			// fmt.Println(valTx.SendTransaction(
+			// 	[]sdk.Msg{zoracle.NewMsgReportData(1, []zoracle.RawDataReport{
+			// 		zoracle.NewRawDataReport(1, []byte("data1")),
+			// 	}, sdk.ValAddress(valTx.Sender()))},
+			// 	0, 10000000, "", "", "",
+			// 	flags.BroadcastBlock,
+			// ))
 		}
 	case "deploy_oracle_scripts":
 		{
