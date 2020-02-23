@@ -148,12 +148,6 @@ func main() {
 				0, 10000000, "", "", "",
 				flags.BroadcastBlock,
 			))
-
-			fmt.Println(tx.SendTransaction(
-				[]sdk.Msg{zoracle.NewMsgRequestData(1, []byte("ETH"), 1, 1, 100, tx.Sender())},
-				0, 10000000, "", "", "",
-				flags.BroadcastBlock,
-			))
 		}
 	case "report":
 		{
@@ -220,26 +214,6 @@ func main() {
 				0, 10000000, "", "", "",
 				flags.BroadcastBlock,
 			))
-
-			fmt.Println(valTx.SendTransaction(
-				[]sdk.Msg{zoracle.NewMsgReportData(1, []zoracle.RawDataReport{
-					zoracle.NewRawDataReport(1, []byte("100.0")),
-					zoracle.NewRawDataReport(2, []byte("200.5")),
-					zoracle.NewRawDataReport(3, []byte("143.6")),
-				}, sdk.ValAddress(valTx.Sender()))},
-				0, 10000000, "", "", "",
-				flags.BroadcastBlock,
-			))
-
-			// _ = valTx.Sender()
-
-			// fmt.Println(valTx.SendTransaction(
-			// 	[]sdk.Msg{zoracle.NewMsgReportData(1, []zoracle.RawDataReport{
-			// 		zoracle.NewRawDataReport(1, []byte("data1")),
-			// 	}, sdk.ValAddress(valTx.Sender()))},
-			// 	0, 10000000, "", "", "",
-			// 	flags.BroadcastBlock,
-			// ))
 		}
 	case "deploy_oracle_scripts":
 		{
