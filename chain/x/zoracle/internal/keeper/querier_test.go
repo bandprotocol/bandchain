@@ -54,6 +54,7 @@ func TestQueryRequestById(t *testing.T) {
 	acs, errJSON := codec.MarshalJSONIndent(
 		keeper.cdc,
 		types.NewRequestQuerierInfo(
+			1,
 			request,
 			[]types.RawDataRequestWithExternalID{
 				types.NewRawDataRequestWithExternalID(
@@ -118,6 +119,7 @@ func TestQueryRequestIncompleteValidator(t *testing.T) {
 	acs, errJSON := codec.MarshalJSONIndent(
 		keeper.cdc,
 		types.NewRequestQuerierInfo(
+			1,
 			request,
 			[]types.RawDataRequestWithExternalID{
 				types.NewRawDataRequestWithExternalID(
@@ -137,6 +139,99 @@ func TestQueryRequestIncompleteValidator(t *testing.T) {
 			},
 			nil,
 		),
+	)
+	require.Nil(t, errJSON)
+	require.Equal(t, acs, acsBytes)
+}
+
+func TestQueryRequests(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	// Create variable "querier" which is a function
+	querier := NewQuerier(keeper)
+
+	// query before set new request
+	acsBytes, err := querier(
+		ctx,
+		[]string{"requests", "1", "3"},
+		abci.RequestQuery{},
+	)
+	// It must return empty array of requests
+	require.Nil(t, err)
+	require.Equal(t, []byte("[]"), acsBytes)
+
+	request := newDefaultRequest()
+	keeper.SetRequest(ctx, 1, request)
+
+	keeper.SetRawDataRequest(ctx, 1, 1, types.NewRawDataRequest(0, []byte("calldata1")))
+	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata2")))
+
+	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[0], []byte("report1"))
+	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[0], []byte("report2"))
+
+	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[1], []byte("report1-2"))
+	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[1], []byte("report2-2"))
+
+	result, _ := hex.DecodeString("0000000000002710")
+	keeper.SetResult(ctx, 1, request.OracleScriptID, request.Calldata, result)
+	keeper.GetNextRequestID(ctx)
+
+	// request 2
+	keeper.SetRequest(ctx, 2, request)
+
+	keeper.SetRawDataRequest(ctx, 2, 100, types.NewRawDataRequest(1, []byte("only calldata")))
+	keeper.GetNextRequestID(ctx)
+
+	// create query
+	acsBytes, err = querier(
+		ctx,
+		[]string{"requests", "1", "3"},
+		abci.RequestQuery{},
+	)
+	require.Nil(t, err)
+
+	// Use bytes format for comparison
+	acs, errJSON := codec.MarshalJSONIndent(
+		keeper.cdc,
+		[]types.RequestQuerierInfo{
+			types.NewRequestQuerierInfo(
+				1,
+				request,
+				[]types.RawDataRequestWithExternalID{
+					types.NewRawDataRequestWithExternalID(
+						1,
+						types.NewRawDataRequest(0, []byte("calldata1")),
+					),
+					types.NewRawDataRequestWithExternalID(
+						2,
+						types.NewRawDataRequest(1, []byte("calldata2")),
+					),
+				},
+				[]types.ReportWithValidator{
+					types.NewReportWithValidator([]types.RawDataReport{
+						types.NewRawDataReport(1, []byte("report1")),
+						types.NewRawDataReport(2, []byte("report2")),
+					}, request.RequestedValidators[0]),
+					types.NewReportWithValidator([]types.RawDataReport{
+						types.NewRawDataReport(1, []byte("report1-2")),
+						types.NewRawDataReport(2, []byte("report2-2")),
+					}, request.RequestedValidators[1]),
+				},
+				result,
+			),
+			types.NewRequestQuerierInfo(
+				2,
+				request,
+				[]types.RawDataRequestWithExternalID{
+					types.NewRawDataRequestWithExternalID(
+						100,
+						types.NewRawDataRequest(1, []byte("only calldata")),
+					),
+				},
+				[]types.ReportWithValidator{},
+				nil,
+			),
+		},
 	)
 	require.Nil(t, errJSON)
 	require.Equal(t, acs, acsBytes)
