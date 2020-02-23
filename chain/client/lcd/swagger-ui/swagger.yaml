@@ -113,7 +113,7 @@ paths:
         200:
           description: OK
           schema:
-            $ref: "#/definitions/PaginatedQueryTxs"
+            $ref: "#/definitions/Proof"
         400:
           description: Invalid request ID
         500:
@@ -308,7 +308,7 @@ paths:
         200:
           description: OK
           schema:
-            type: interger
+            type: integer
             example: 1
         500:
           description: Internal server error
@@ -2216,6 +2216,91 @@ definitions:
       status:
         type: string
         example: GOOD
+  Proof:
+    type: object
+    properties:
+      jsonProof:
+        type: object
+        properties:
+          blockHeight:
+            type: integer
+            example: 123
+          oracleDataProof:
+            type: object
+            properties:
+              version:
+                type: integer
+                example: 3
+              requestID:
+                type: integer
+                example: 1
+              oracleScriptID:
+                type: integer
+                example: 42
+              calldata:
+                type: string
+                example: 455448
+              data:
+                type: string
+                example: 000000000000001200000000000004e1
+              merklePaths:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    isDataOnRight:
+                      type: boolean
+                      example: true
+                    subtreeHeight:
+                      type: integer
+                    subtreeSize:
+                      type: integer
+                    subtreeVersion:
+                      type: integer
+                    siblingHash:
+                      type: string
+          blockRelayProof:
+            type: object
+            properties:
+              oracleIAVLStateHash:
+                type: string
+              otherStoresMerkleHash:
+                type: string
+              supplyStoresMerkleHash:
+                type: string
+              blockHeaderMerkleParts:
+                type: object
+                properties:
+                  versionAndChainIdHash:
+                    type: string
+                  timeHash:
+                    type: string
+                  txCountAndLastBlockInfoHash:
+                    type: string
+                  consensusDataHash:
+                    type: string
+                  lastResultsHash:
+                    type: string
+                  evidenceAndProposerHash:
+                    type: string
+              signedDataPrefix:
+                type: string
+              signatures:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    r:
+                      type: string
+                    s:
+                      type: string
+                    v:
+                      type: integer
+                    signedDataSuffix:
+                      type: string
+      evmProofBytes:
+        type: string
+
   CheckTxResult:
     type: object
     properties:
