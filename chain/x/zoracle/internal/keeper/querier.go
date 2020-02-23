@@ -31,6 +31,8 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 			return queryDataSourceByID(ctx, path[1:], req, keeper)
 		case types.QueryDataSources:
 			return queryDataSources(ctx, path[1:], req, keeper)
+		case types.QueryOracleScripts:
+			return queryOracleScripts(ctx, path[1:], req, keeper)
 		default:
 			return nil, sdk.ErrUnknownRequest("unknown nameservice query endpoint")
 		}
@@ -285,4 +287,40 @@ func queryDataSources(ctx sdk.Context, path []string, req abci.RequestQuery, kee
 	}
 
 	return codec.MustMarshalJSONIndent(keeper.cdc, dataSources), nil
+}
+
+func queryOracleScripts(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
+	if len(path) != 2 {
+		return nil, sdk.ErrInternal("must specify the oracle script start_id and number of oracle script")
+	}
+	startID, err := strconv.ParseInt(path[0], 10, 64)
+	if err != nil {
+		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for oracle script start id %s", err.Error()))
+	}
+
+	numberOfOracleScripts, err := strconv.ParseInt(path[1], 10, 64)
+	if err != nil {
+		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for number of oracle scripts %s", err.Error()))
+	}
+	if numberOfOracleScripts < 1 || numberOfOracleScripts > 100 {
+		return nil, sdk.ErrInternal("number of oracle scripts should be >= 1 and <= 100")
+	}
+
+	oracleScripts := []types.OracleScriptQuerierInfo{}
+	allOracleScriptsCount := keeper.GetOracleScriptCount(ctx)
+	for id := startID; id <= allOracleScriptsCount && id < startID+numberOfOracleScripts; id++ {
+		oracleScript, sdkErr := keeper.GetOracleScript(ctx, id)
+		if sdkErr != nil {
+			return nil, sdkErr
+		}
+
+		oracleScripts = append(oracleScripts, types.NewOracleScriptQuerierInfo(
+			id,
+			oracleScript.Owner,
+			oracleScript.Name,
+			oracleScript.Code,
+		))
+	}
+
+	return codec.MustMarshalJSONIndent(keeper.cdc, oracleScripts), nil
 }
