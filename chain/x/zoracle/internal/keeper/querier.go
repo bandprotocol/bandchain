@@ -33,6 +33,8 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 			return queryDataSourceByID(ctx, path[1:], req, keeper)
 		case types.QueryDataSources:
 			return queryDataSources(ctx, path[1:], req, keeper)
+		case types.QueryOracleScriptByID:
+			return queryOracleScriptByID(ctx, path[1:], req, keeper)
 		case types.QueryOracleScripts:
 			return queryOracleScripts(ctx, path[1:], req, keeper)
 		default:
@@ -337,6 +339,28 @@ func queryDataSources(ctx sdk.Context, path []string, req abci.RequestQuery, kee
 	}
 
 	return codec.MustMarshalJSONIndent(keeper.cdc, dataSources), nil
+}
+
+func queryOracleScriptByID(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
+	if len(path) == 0 {
+		return nil, sdk.ErrInternal("must specify the oracle script id")
+	}
+	id, err := strconv.ParseInt(path[0], 10, 64)
+	if err != nil {
+		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for oracle script id %s", err.Error()))
+	}
+
+	oracleScript, sdkErr := keeper.GetOracleScript(ctx, id)
+	if sdkErr != nil {
+		return nil, sdkErr
+	}
+
+	return codec.MustMarshalJSONIndent(keeper.cdc, types.NewOracleScriptQuerierInfo(
+		id,
+		oracleScript.Owner,
+		oracleScript.Name,
+		oracleScript.Code,
+	)), nil
 }
 
 func queryOracleScripts(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
