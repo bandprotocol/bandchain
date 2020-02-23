@@ -218,7 +218,8 @@ paths:
       responses:
         200:
           description: OK
-          # TODO: data source schema
+          schema:
+            $ref: "#/definitions/DataSource"
         400:
           description: Invalid data source id
         500:
@@ -245,7 +246,10 @@ paths:
       responses:
         200:
           description: OK
-          # TODO: data source schema
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/DataSource"
         400:
           description: Invalid data source id
         500:
@@ -268,7 +272,8 @@ paths:
       responses:
         200:
           description: OK
-          # TODO: oracle script schema
+          schema:
+            $ref: "#/definitions/OracleScript"
         400:
           description: Invalid oracle script id
         500:
@@ -295,7 +300,10 @@ paths:
       responses:
         200:
           description: OK
-          # TODO: oracle script schema
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/OracleScript"
         400:
           description: Invalid oracle script id
         500:
@@ -2257,80 +2265,88 @@ definitions:
                       example: true
                     subtreeHeight:
                       type: integer
+                      example: 1
                     subtreeSize:
                       type: integer
+                      example: 16
                     subtreeVersion:
                       type: integer
+                      example: 3
                     siblingHash:
-                      type: string
+                      $ref: "#/definitions/Hash"
           blockRelayProof:
             type: object
             properties:
               oracleIAVLStateHash:
-                type: string
+                $ref: "#/definitions/Hash"
               otherStoresMerkleHash:
-                type: string
+                $ref: "#/definitions/Hash"
               supplyStoresMerkleHash:
-                type: string
+                $ref: "#/definitions/Hash"
               blockHeaderMerkleParts:
                 type: object
                 properties:
                   versionAndChainIdHash:
-                    type: string
+                    $ref: "#/definitions/Hash"
                   timeHash:
-                    type: string
+                    $ref: "#/definitions/Hash"
                   txCountAndLastBlockInfoHash:
-                    type: string
+                    $ref: "#/definitions/Hash"
                   consensusDataHash:
-                    type: string
+                    $ref: "#/definitions/Hash"
                   lastResultsHash:
-                    type: string
+                    $ref: "#/definitions/Hash"
                   evidenceAndProposerHash:
-                    type: string
+                    $ref: "#/definitions/Hash"
               signedDataPrefix:
                 type: string
+                example: 431B54AB...
               signatures:
                 type: array
                 items:
                   type: object
                   properties:
                     r:
-                      type: string
+                      $ref: "#/definitions/Hash"
                     s:
-                      type: string
+                      $ref: "#/definitions/Hash"
                     v:
                       type: integer
                     signedDataSuffix:
                       type: string
+                      example: 431B54AB...
       evmProofBytes:
         type: string
+        example: 431B54AB...
   Request:
     type: object
     properties:
       id:
         type: integer
-        example: 2
+        example: 1
       oracleScriptID:
         type: integer
         example: 1
       calldata:
         type: string
-        example: 455448
+        example: RVRI
       requestedValidators:
-        type: integer
-        example: 4
+        type: array
+        items:
+          type: string
+          example: bandvaloper1r8u4m0wefrdyp7sdde7drtrt94qczggkq8r3xa
       sufficientValidatorCount:
         type: integer
-        example: 3
+        example: 1
       expirationHeight:
         type: integer
-        example: 100
+        example: 102
       isResolved:
         type: boolean
         example: true
       requester:
         type: string
-        example: 1
+        example: band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9
       requestTx:
         $ref: "#/definitions/TxDetail"
       rawDataRequests:
@@ -2346,10 +2362,10 @@ definitions:
               properties:
                 dataSourceID:
                   type: integer
-                  example: 42
+                  example: 1
                 calldata:
                   type: string
-                  example: 32432A1321E
+                  example: ZXRoZXJldW0=
       reports:
         type: array
         items:
@@ -2357,33 +2373,69 @@ definitions:
           properties:
             reporter:
               type: string
-              example: xx
+              example: bandvaloper1r8u4m0wefrdyp7sdde7drtrt94qczggkq8r3xa
             value:
-              type: object
-              properties:
-                externalDataID:
-                  type: integer
-                  example: 42
-                data:
-                  type: string
-                  example: 32432A1321E
+              type: array
+              items:
+                type: object
+                properties:
+                  externalDataID:
+                    type: integer
+                    example: 1
+                  data:
+                    type: string
+                    example: MjY4LjQ2
             tx:
               $ref: "#/definitions/TxDetail"
       result:
         type: string
-        example: xx
+        example: AAAAAAAAaPM=
+  DataSource:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 1
+      owner:
+        type: string
+        example: band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9
+      name:
+        type: string
+        example: example data source script
+      fee:
+        type: array
+        items:
+          $ref: "#/definitions/Coin"
+      executable:
+        type: string
+        example: IyEvYmluL3NoCgpzeW1ib2w9JD...
+  OracleScript:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 1
+      owner:
+        type: string
+        example: band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9
+      name:
+        type: string
+        example: example oracle script
+      code:
+        type: string
+        example: IyEvYmluL3NoCgpzeW1ib2w9JD...
   TxDetail:
     type: object
     properties:
       hash:
         type: string
-        example: a
+        example: 180593C689D27EF90D5AC768EEBEB689BB3F2532F7F708BB94BDA33101F95227
       height:
         type: integer
         example: 12
       timestamp:
         type: string
-        example: 12-04
+        example: "2020-02-23T12:04:26Z"
   CheckTxResult:
     type: object
     properties:
@@ -2475,7 +2527,7 @@ definitions:
     properties:
       denom:
         type: string
-        example: stake
+        example: uband
       amount:
         type: string
         example: "50"
