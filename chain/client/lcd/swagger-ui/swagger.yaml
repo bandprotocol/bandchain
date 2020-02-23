@@ -164,7 +164,8 @@ paths:
       responses:
         200:
           description: OK
-          # TODO: request schema
+          schema:
+            $ref: "#/definitions/Request"
         400:
           description: Invalid request id
         500:
@@ -191,7 +192,10 @@ paths:
       responses:
         200:
           description: OK
-          # TODO: request schema
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Request"
         400:
           description: Invalid request id
         500:
@@ -2300,7 +2304,86 @@ definitions:
                       type: string
       evmProofBytes:
         type: string
-
+  Request:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 2
+      oracleScriptID:
+        type: integer
+        example: 1
+      calldata:
+        type: string
+        example: 455448
+      requestedValidators:
+        type: integer
+        example: 4
+      sufficientValidatorCount:
+        type: integer
+        example: 3
+      expirationHeight:
+        type: integer
+        example: 100
+      isResolved:
+        type: boolean
+        example: true
+      requester:
+        type: string
+        example: 1
+      requestTx:
+        $ref: "#/definitions/TxDetail"
+      rawDataRequests:
+        type: array
+        items:
+          type: object
+          properties:
+            externalID:
+              type: integer
+              example: 1
+            detail:
+              type: object
+              properties:
+                dataSourceID:
+                  type: integer
+                  example: 42
+                calldata:
+                  type: string
+                  example: 32432A1321E
+      reports:
+        type: array
+        items:
+          type: object
+          properties:
+            reporter:
+              type: string
+              example: xx
+            value:
+              type: object
+              properties:
+                externalDataID:
+                  type: integer
+                  example: 42
+                data:
+                  type: string
+                  example: 32432A1321E
+            tx:
+              $ref: "#/definitions/TxDetail"
+      result:
+        type: string
+        example: xx
+  TxDetail:
+    type: object
+    properties:
+      hash:
+        type: string
+        example: a
+      height:
+        type: integer
+        example: 12
+      timestamp:
+        type: string
+        example: 12-04
   CheckTxResult:
     type: object
     properties:
