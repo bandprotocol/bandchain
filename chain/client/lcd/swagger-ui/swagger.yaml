@@ -5,10 +5,14 @@ info:
   title: D3N
   description: A REST interface for state queries, transaction generation and broadcasting.
 tags:
+  - name: D3N client
+    description: Get lastest block, tx and result proof
   - name: Transactions
     description: Search, encode, or broadcast transactions.
   - name: Tendermint RPC
     description: Tendermint APIs, such as query blocks, transactions and validatorset
+  - name: Zoracle
+    description: Zoracle  module APIs
   - name: Auth
     description: Authenticate accounts
   - name: Bank
@@ -36,6 +40,278 @@ securityDefinitions:
   kms:
     type: basic
 paths:
+  /d3n/blocks/latest:
+    get:
+      summary: Get all blocks order by block id in descending order
+      tags:
+        - D3N client
+      description: Get all blocks order by block id in descending order
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: page
+          description: Page number
+          type: integer
+          x-example: 1
+        - in: query
+          name: limit
+          description: Maximum number of items per page
+          type: integer
+          x-example: 1
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/BlockQuery"
+        500:
+          description: Internal Server Error
+  /d3n/txs/latest:
+    get:
+      summary: Get all txs order by timestamp in descending order
+      tags:
+        - D3N client
+      description: Get all transaction order by timestamp in descending order
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: page
+          description: Page number
+          type: integer
+          x-example: 1
+        - in: query
+          name: limit
+          description: Maximum number of items per page
+          type: integer
+          x-example: 1
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/PaginatedQueryTxs"
+        500:
+          description: Internal Server Error
+  /d3n/proof/{requestID}:
+    get:
+      summary: Get proof of result in the store
+      tags:
+        - D3N client
+      description: Get all transaction order by block id in descending order
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: requestID
+          description: Request id
+          required: true
+          type: number
+          x-example: 1
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/PaginatedQueryTxs"
+        400:
+          description: Invalid request ID
+        500:
+          description: Internal Server Error
+  /d3n/health_check:
+    get:
+      summary: Health check endpoint
+      tags:
+        - D3N client
+      description: Get current status of node
+      produces:
+        - text/plain
+      responses:
+        200:
+          description: UP
+        500:
+          description: Internal Server Error
+  /d3n/provider_status:
+    get:
+      summary: Get current provider status
+      tags:
+        - D3N client
+      description: Get current status of node
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/ProviderStatus"
+        500:
+          description: Internal Server Error
+  /zoracle/request/{requestID}:
+    get:
+      summary: Get request detail by request id
+      tags:
+        - Zoracle
+      description: Get request, raw data request, reports, and result of request by request id
+      parameters:
+        - in: path
+          name: requestID
+          description: Request id
+          required: true
+          type: number
+          x-example: 1
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          # TODO: request schema
+        400:
+          description: Invalid request id
+        500:
+          description: Internal server error
+  /zoracle/requests:
+    get:
+      summary: Get all requests order by request id in descending order
+      tags:
+        - Zoracle
+      description: Get all requests order by request id in descending order.
+      parameters:
+        - in: query
+          name: page
+          description: Page number
+          type: integer
+          x-example: 1
+        - in: query
+          name: limit
+          description: Maximum number of items per page
+          type: integer
+          x-example: 1
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          # TODO: request schema
+        400:
+          description: Invalid request id
+        500:
+          description: Internal server error
+  /zoracle/data_source/{dataSourceID}:
+    get:
+      summary: Get data source detail by data source id
+      tags:
+        - Zoracle
+      description: Get data source detail (executalbe, owner, fee).
+      parameters:
+        - in: path
+          name: dataSourceID
+          description: Data source id
+          required: true
+          type: number
+          x-example: 1
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          # TODO: data source schema
+        400:
+          description: Invalid data source id
+        500:
+          description: Internal server error
+  /zoracle/data_sources:
+    get:
+      summary: Get all data sources order by data source id in ascending order
+      tags:
+        - Zoracle
+      description: Get all data sources order by data source id in ascending order.
+      parameters:
+        - in: query
+          name: page
+          description: Page number
+          type: integer
+          x-example: 1
+        - in: query
+          name: limit
+          description: Maximum number of items per page
+          type: integer
+          x-example: 1
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          # TODO: data source schema
+        400:
+          description: Invalid data source id
+        500:
+          description: Internal server error
+  /zoracle/oracle_script/{oracleScriptID}:
+    get:
+      summary: Get oracle script detail by oracle script id
+      tags:
+        - Zoracle
+      description: Get oracle script detail (wasm code, owner).
+      parameters:
+        - in: path
+          name: oracleScriptID
+          description: Oracle script id
+          required: true
+          type: number
+          x-example: 1
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          # TODO: oracle script schema
+        400:
+          description: Invalid oracle script id
+        500:
+          description: Internal server error
+  /zoracle/oracle_scripts:
+    get:
+      summary: Get all oracle scripts order by oracle script id in ascending order
+      tags:
+        - Zoracle
+      description: Get all oracle scripts order by oracle script id in ascending order.
+      parameters:
+        - in: query
+          name: page
+          description: Page number
+          type: integer
+          x-example: 1
+        - in: query
+          name: limit
+          description: Maximum number of items per page
+          type: integer
+          x-example: 1
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          # TODO: oracle script schema
+        400:
+          description: Invalid oracle script id
+        500:
+          description: Internal server error
+  /zoracle/request_number:
+    get:
+      summary: Get latest request number
+      tags:
+        - Zoracle
+      description: Get latest request id of all requests
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            type: interger
+            example: 1
+        500:
+          description: Internal server error
   /node_info:
     get:
       description: Information about the connected node
@@ -1925,6 +2201,21 @@ paths:
         500:
           description: Internal Server Error
 definitions:
+  ProviderStatus:
+    type: object
+    properties:
+      height:
+        type: integer
+        example: 1
+      id:
+        type: string
+        example: 1
+      num_reporters:
+        type: integer
+        example: 4
+      status:
+        type: string
+        example: GOOD
   CheckTxResult:
     type: object
     properties:
