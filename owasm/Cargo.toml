@@ -30,6 +30,7 @@ members = [
     "examples/weather_info",
     "examples/flight_verification",
     "examples/random_u64",
+    "chaintests/crypto_price",
     "chaintests/main",
     "chaintests/silly",
 ]
