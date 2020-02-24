@@ -17,7 +17,7 @@ func TestExecuteCanCallEnv(t *testing.T) {
 	}, code, "execute", []byte{}, 10000)
 	require.Nil(t, err)
 	require.Equal(t, int64(3), int64(binary.LittleEndian.Uint64(result)))
-	require.Equal(t, int64(1031), gasUsed)
+	require.Equal(t, int64(1056), gasUsed)
 }
 
 func TestExecuteOutOfGas(t *testing.T) {
@@ -42,5 +42,5 @@ func TestExecuteEndToEnd(t *testing.T) {
 	result, gasUsed, err := Execute(env, code, "execute", []byte{}, 10000)
 	require.Nil(t, err)
 	require.Equal(t, []byte("RETURN_DATA"), result)
-	require.Equal(t, int64(1199), gasUsed)
+	require.Equal(t, int64(1266), gasUsed)
 }
