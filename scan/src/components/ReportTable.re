@@ -60,6 +60,7 @@ let make = (~reports: list(RequestHook.Report.t)) => {
              </Col>
              <Col size=0.6>
                {values
+                ->Belt_Option.getWithDefault([||])
                 ->Belt.Array.map(((source, _)) =>
                     <>
                       <TElement elementType={source->TElement.Source} />
@@ -70,6 +71,7 @@ let make = (~reports: list(RequestHook.Report.t)) => {
              </Col>
              <Col size=0.9>
                {values
+                ->Belt_Option.getWithDefault([||])
                 ->Belt.Array.map(((_, value)) =>
                     <>
                       <TElement elementType={value->TElement.Value} />

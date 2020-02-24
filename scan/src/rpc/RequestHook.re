@@ -4,7 +4,7 @@ module Report = {
     txHash: Hash.t,
     reportedAtHeight: int,
     reportedAtTime: MomentRe.Moment.t,
-    values: array((string, Js.Json.t)),
+    values: option(array((string, Js.Json.t))),
   };
 
   let decode = json =>
@@ -13,7 +13,8 @@ module Report = {
       txHash: json |> at(["txhash"], string) |> Hash.fromHex,
       reportedAtHeight: json |> at(["reportedAtHeight"], intstr),
       reportedAtTime: json |> at(["reportedAtTime"], moment),
-      values: json |> at(["value"], dict(x => x)) |> Js.Dict.entries,
+      values:
+        json |> optional(at(["value"], dict(x => x))) |> Belt_Option.map(_, Js.Dict.entries),
     };
 
   let decodeReports = json => JsonUtils.Decode.(json |> field("reports", list(decode)));
