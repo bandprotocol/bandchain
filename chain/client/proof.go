@@ -294,7 +294,8 @@ func GetBlockRelayProof(cliCtx context.CLIContext, blockId uint64) (BlockRelayPr
 		// 	lr1,
 		// })
 	}
-	if len(addrs) < 3 {
+	// Reminder: set 1 for single validator
+	if len(addrs) == 0 {
 		return BlockRelayProof{}, fmt.Errorf("Too many invalid precommits")
 	}
 
