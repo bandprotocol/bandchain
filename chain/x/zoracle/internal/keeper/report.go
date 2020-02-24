@@ -55,7 +55,7 @@ func (k Keeper) GetValidatorReports(ctx sdk.Context, requestID uint64) ([]types.
 
 		rawValue, err := wasm.ParseRawData(code.Code, request.Params, report.Data)
 		if err != nil {
-			rawValue = []byte{}
+			rawValue = []byte("null")
 		}
 		vReport := types.NewValidatorReport(
 			rawValue,
