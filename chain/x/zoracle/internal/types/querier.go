@@ -65,6 +65,13 @@ type Field struct {
 	Type string `json:"type"`
 }
 
+func NewField(name string, type_ string) Field {
+	return Field{
+		Name: name,
+		Type: type_,
+	}
+}
+
 func ParseFields(raw []byte) ([]Field, error) {
 	var data [][]string
 	err := json.Unmarshal(raw, &data)
