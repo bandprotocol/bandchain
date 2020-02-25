@@ -396,16 +396,6 @@ func MakeOtherStoresMerkleHash(mspo rootmulti.MultiStoreProofOp) (cmn.HexBytes, 
 	return h5, h8, zoracleHash
 }
 
-// func HasCode(cliCtx context.CLIContext, codeHash []byte) (bool, error) {
-// 	key := zoracle.CodeHashStoreKey(codeHash)
-// 	resp, err := cliCtx.Client.ABCIQuery("/store/zoracle/key", key)
-// 	if err != nil {
-// 		return false, err
-// 	}
-
-// 	return len(resp.Response.Value) > 0, nil
-// }
-
 func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
