@@ -34,7 +34,7 @@ pub fn execute() {
         let mut val = 0.0;
         let mut fail = false;
         for external_id in 1..4 {
-            let data = oei::get_external_data(external_id, validator_index);
+            let data = oei::get_external_data(external_id, validator_index).unwrap();
             let num = parse_float(data);
             if num.is_none() {
                 fail = true;
