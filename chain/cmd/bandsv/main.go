@@ -32,6 +32,8 @@ const (
 	DefaultRequestedValidatorCount  = 1
 	DefaultSufficientValidatorCount = 1
 	DefaultExpiration               = 100
+
+	DefaultExecuteGas = 50000
 )
 
 type OracleRequest struct {
@@ -112,6 +114,7 @@ func handleRequestData(c *gin.Context) {
 				req.RequestedValidatorCount,
 				req.SufficientValidatorCount,
 				req.Expiration,
+				DefaultExecuteGas,
 				bandClient.Sender(),
 			),
 			20000000, "", "", "",
@@ -135,6 +138,7 @@ func handleRequestData(c *gin.Context) {
 			req.RequestedValidatorCount,
 			req.SufficientValidatorCount,
 			req.Expiration,
+			DefaultExecuteGas,
 			bandClient.Sender(),
 		),
 		20000000, "", "", "",
