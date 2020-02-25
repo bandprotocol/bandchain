@@ -110,10 +110,16 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 
 		result, _, errOwasm := owasm.Execute(&env, script.Code, "execute", request.Calldata, 100000)
 		// TODO: Handle error if happen
-		if errOwasm == nil {
-			keeper.SetResult(ctx, requestID, request.OracleScriptID, request.Calldata, result)
-			keeper.SetResolve(ctx, requestID, true)
+		if errOwasm != nil {
+			continue
 		}
+
+		errResult := keeper.AddResult(ctx, requestID, request.OracleScriptID, request.Calldata, result)
+		if errResult != nil {
+			continue
+		}
+
+		keeper.SetResolve(ctx, requestID, true)
 	}
 
 	keeper.SetPendingResolveList(ctx, []int64{})
