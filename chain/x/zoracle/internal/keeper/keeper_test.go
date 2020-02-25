@@ -70,6 +70,14 @@ func TestGetSetMaxRawDataReportSize(t *testing.T) {
 	require.Equal(t, int64(2), keeper.MaxRawDataReportSize(ctx))
 }
 
+func TestGetSetMaxResultSize(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+	keeper.SetMaxResultSize(ctx, int64(1))
+	require.Equal(t, int64(1), keeper.MaxResultSize(ctx))
+	keeper.SetMaxResultSize(ctx, int64(2))
+	require.Equal(t, int64(2), keeper.MaxResultSize(ctx))
+}
+
 func TestGetGetParams(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
@@ -78,12 +86,14 @@ func TestGetGetParams(t *testing.T) {
 	keeper.SetMaxCalldataSize(ctx, int64(1))
 	keeper.SetMaxDataSourceCountPerRequest(ctx, int64(1))
 	keeper.SetMaxRawDataReportSize(ctx, int64(1))
-	require.Equal(t, types.NewParams(1, 1, 1, 1, 1), keeper.GetParams(ctx))
+	keeper.SetMaxResultSize(ctx, int64(1))
+	require.Equal(t, types.NewParams(1, 1, 1, 1, 1, 1), keeper.GetParams(ctx))
 
 	keeper.SetMaxDataSourceExecutableSize(ctx, int64(2))
 	keeper.SetMaxOracleScriptCodeSize(ctx, int64(2))
 	keeper.SetMaxCalldataSize(ctx, int64(2))
 	keeper.SetMaxDataSourceCountPerRequest(ctx, int64(2))
 	keeper.SetMaxRawDataReportSize(ctx, int64(2))
-	require.Equal(t, types.NewParams(2, 2, 2, 2, 2), keeper.GetParams(ctx))
+	keeper.SetMaxResultSize(ctx, int64(2))
+	require.Equal(t, types.NewParams(2, 2, 2, 2, 2, 2), keeper.GetParams(ctx))
 }
