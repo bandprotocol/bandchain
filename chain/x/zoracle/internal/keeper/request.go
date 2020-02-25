@@ -121,6 +121,21 @@ func (k Keeper) CheckRequestExists(ctx sdk.Context, id int64) bool {
 	return store.Has(types.RequestStoreKey(id))
 }
 
+// ConsumeGasForExecute saves and consumes gas from the current context to use in executing
+// at end block time.
+func (k Keeper) ConsumeGasForExecute(ctx sdk.Context, id int64, executeGas uint64) sdk.Error {
+	request, err := k.GetRequest(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	ctx.GasMeter().ConsumeGas(executeGas, "Execute gas")
+
+	request.ExecuteGas = executeGas
+	k.SetRequest(ctx, id, request)
+	return nil
+}
+
 // ShouldBecomePendingResolve checks and returns whether the given request should be moved to the
 // pending resolve list, which will be resolved during the EndBlock call. The move will happen exactly when
 // the request receives sufficient raw reports from the validators.

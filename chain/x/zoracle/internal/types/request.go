@@ -14,6 +14,7 @@ type Request struct {
 	RequestHeight            int64            `json:"requestHeight"`
 	RequestTime              int64            `json:"requestTime"`
 	ExpirationHeight         int64            `json:"expirationHeight"`
+	ExecuteGas               uint64           `json:"executeGas"`
 	IsResolved               bool             `json:"isResolved"`
 }
 

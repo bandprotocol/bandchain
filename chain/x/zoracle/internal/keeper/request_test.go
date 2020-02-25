@@ -192,6 +192,43 @@ func TestSetResolvedOnInvalidRequest(t *testing.T) {
 	require.Equal(t, types.CodeRequestNotFound, err.Code())
 }
 
+// TestConsumeGasForExecute tests keeper must consume gas from context correctly.
+func TestConsumeGasForExecute(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+	request := newDefaultRequest()
+
+	keeper.SetRequest(ctx, 1, request)
+	keeper.SetRequest(ctx, 2, request)
+
+	// Consume 20000 gas in request 1
+	beforeGas := ctx.GasMeter().GasConsumed()
+	err := keeper.ConsumeGasForExecute(ctx, 1, 20000)
+	require.Nil(t, err)
+	afterGas := ctx.GasMeter().GasConsumed()
+	gasUsed1 := afterGas - beforeGas
+
+	// Consume 40000 gas in request 2
+	beforeGas = ctx.GasMeter().GasConsumed()
+	err = keeper.ConsumeGasForExecute(ctx, 2, 40000)
+	require.Nil(t, err)
+	afterGas = ctx.GasMeter().GasConsumed()
+	gasUsed2 := afterGas - beforeGas
+
+	// The difference of Gas used in request 2 and request 1 must be 20000
+	require.Equal(t, uint64(20000), gasUsed2-gasUsed1)
+
+	actualRequest, err := keeper.GetRequest(ctx, 1)
+	require.Nil(t, err)
+	require.Equal(t, uint64(20000), actualRequest.ExecuteGas)
+
+	actualRequest, err = keeper.GetRequest(ctx, 2)
+	require.Nil(t, err)
+	require.Equal(t, uint64(40000), actualRequest.ExecuteGas)
+
+	err = keeper.ConsumeGasForExecute(ctx, 10, 100)
+	require.NotNil(t, err)
+}
+
 // Can get/set pending request correctly and set empty case
 func TestGetSetPendingRequests(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
