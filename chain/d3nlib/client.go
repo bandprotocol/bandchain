@@ -47,13 +47,13 @@ func (client *BandStatefulClient) SendTransaction(
 	}
 	nonce = client.sequenceNumber
 	client.sequenceNumber++
-	client.mtx.Unlock()
 
 	tx, err := client.provider.SendTransaction(
 		[]sdk.Msg{msg}, nonce, gas, memo, fees, gasPrices, broadcastMode,
 	)
+	client.mtx.Unlock()
 
-	if err != nil {
+	if err != nil || len(tx.Logs) == 0 || !tx.Logs[0].Success {
 		// Reset sequence number to 0 make next request use new sequence number
 		client.mtx.Lock()
 		client.sequenceNumber = 0
