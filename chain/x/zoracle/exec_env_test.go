@@ -18,7 +18,7 @@ func TestNewExecutionEnvironment(t *testing.T) {
 	require.NotNil(t, err)
 
 	keeper.SetRequest(ctx, 1, types.NewRequest(
-		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))}, 1, 0, 0, 100,
+		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))}, 1, 0, 0, 100, 10000,
 	))
 
 	_, err = NewExecutionEnvironment(ctx, keeper, 1)
@@ -28,7 +28,7 @@ func TestNewExecutionEnvironment(t *testing.T) {
 func TestGetCurrentRequestID(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
 	keeper.SetRequest(ctx, 1, types.NewRequest(
-		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))}, 1, 0, 0, 100,
+		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))}, 1, 0, 0, 100, 10000,
 	))
 
 	env, err := NewExecutionEnvironment(ctx, keeper, 1)
@@ -41,7 +41,7 @@ func TestGetRequestedValidatorCount(t *testing.T) {
 	keeper.SetRequest(ctx, 1, types.NewRequest(
 		1, []byte("calldata"),
 		[]sdk.ValAddress{sdk.ValAddress([]byte("val1")), sdk.ValAddress([]byte("val2"))},
-		1, 0, 0, 100,
+		1, 0, 0, 100, 10000,
 	))
 
 	env, err := NewExecutionEnvironment(ctx, keeper, 1)
@@ -54,7 +54,7 @@ func TestGetReceivedValidatorCount(t *testing.T) {
 	keeper.SetRequest(ctx, 1, types.NewRequest(
 		1, []byte("calldata"),
 		[]sdk.ValAddress{sdk.ValAddress([]byte("val1")), sdk.ValAddress([]byte("val2"))},
-		1, 0, 0, 100,
+		1, 0, 0, 100, 10000,
 	))
 
 	env, err := NewExecutionEnvironment(ctx, keeper, 1)
@@ -72,7 +72,8 @@ func TestGetReceivedValidatorCount(t *testing.T) {
 func TestGetPrepareBlockTime(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
 	keeper.SetRequest(ctx, 1, types.NewRequest(
-		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))}, 1, 20, 1581589790, 100,
+		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))},
+		1, 20, 1581589790, 100, 10000,
 	))
 
 	env, err := NewExecutionEnvironment(ctx, keeper, 1)
@@ -83,7 +84,8 @@ func TestGetPrepareBlockTime(t *testing.T) {
 func TestGetAggregateBlockTime(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
 	keeper.SetRequest(ctx, 1, types.NewRequest(
-		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))}, 1, 0, 0, 100,
+		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))},
+		1, 0, 0, 100, 10000,
 	))
 
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
@@ -120,7 +122,8 @@ func TestGetValidatorPubKey(t *testing.T) {
 		10,
 	)
 	keeper.SetRequest(ctx, 1, types.NewRequest(
-		1, []byte("calldata"), []sdk.ValAddress{validatorAddress1, validatorAddress2}, 1, 0, 0, 100,
+		1, []byte("calldata"), []sdk.ValAddress{validatorAddress1, validatorAddress2},
+		1, 0, 0, 100, 10000,
 	))
 
 	env, errSDK := NewExecutionEnvironment(ctx, keeper, 1)
@@ -147,7 +150,8 @@ func TestRequestExternalData(t *testing.T) {
 	keeper.SetMaxDataSourceCountPerRequest(ctx, 1)
 	// Set Request
 	keeper.SetRequest(ctx, 1, types.NewRequest(
-		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))}, 1, 0, 0, 100,
+		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))},
+		1, 0, 0, 100, 10000,
 	))
 
 	// Set Datasource
@@ -175,7 +179,8 @@ func TestRequestExternalDataExceedMaxDataSourceCountPerRequest(t *testing.T) {
 
 	// Set Request
 	keeper.SetRequest(ctx, 1, types.NewRequest(
-		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))}, 1, 0, 0, 100,
+		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))},
+		1, 0, 0, 100, 10000,
 	))
 
 	// Set Datasource
@@ -213,7 +218,7 @@ func TestGetExternalData(t *testing.T) {
 	keeper.SetRequest(ctx, 1, types.NewRequest(
 		1, []byte("calldata"),
 		[]sdk.ValAddress{sdk.ValAddress([]byte("val1")), sdk.ValAddress([]byte("val2"))},
-		1, 0, 0, 100,
+		1, 0, 0, 100, 10000,
 	))
 
 	keeper.SetRawDataReport(ctx, 1, 42, sdk.ValAddress([]byte("val1")), []byte("data42"))

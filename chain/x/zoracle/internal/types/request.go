@@ -27,6 +27,7 @@ func NewRequest(
 	requestHeight int64,
 	requestTime int64,
 	expirationHeight int64,
+	executeGas uint64,
 ) Request {
 	return Request{
 		OracleScriptID:           oracleScriptID,
@@ -36,6 +37,7 @@ func NewRequest(
 		RequestHeight:            requestHeight,
 		RequestTime:              requestTime,
 		ExpirationHeight:         expirationHeight,
+		ExecuteGas:               executeGas,
 	}
 }
 

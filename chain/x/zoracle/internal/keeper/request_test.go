@@ -30,12 +30,12 @@ func TestRequest(t *testing.T) {
 	ctx = ctx.WithBlockHeight(2)
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
 	calldata := []byte("calldata")
-	_, err := keeper.AddRequest(ctx, 1, calldata, 2, 2, 100)
+	_, err := keeper.AddRequest(ctx, 1, calldata, 2, 2, 100, 20000)
 	require.NotNil(t, err)
 
 	script := GetTestOracleScript("../../../../owasm/res/silly.wasm")
 	keeper.SetOracleScript(ctx, 1, script)
-	_, err = keeper.AddRequest(ctx, 1, calldata, 2, 2, 100)
+	_, err = keeper.AddRequest(ctx, 1, calldata, 2, 2, 100, 20000)
 	require.NotNil(t, err)
 
 	pubStr := []string{
@@ -49,7 +49,7 @@ func TestRequest(t *testing.T) {
 		pubStr[0],
 		10,
 	)
-	_, err = keeper.AddRequest(ctx, 1, calldata, 2, 2, 100)
+	_, err = keeper.AddRequest(ctx, 1, calldata, 2, 2, 100, 20000)
 	require.NotNil(t, err)
 
 	validatorAddress2 := SetupTestValidator(
@@ -58,7 +58,7 @@ func TestRequest(t *testing.T) {
 		pubStr[1],
 		100,
 	)
-	requestID, err := keeper.AddRequest(ctx, 1, calldata, 2, 2, 100)
+	requestID, err := keeper.AddRequest(ctx, 1, calldata, 2, 2, 100, 20000)
 	require.Nil(t, err)
 	require.Equal(t, int64(1), requestID)
 
@@ -66,7 +66,7 @@ func TestRequest(t *testing.T) {
 	require.Nil(t, err)
 	expectRequest := types.NewRequest(1, calldata,
 		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
-		2, 1581589790, 102,
+		2, 1581589790, 102, 20000,
 	)
 	require.Equal(t, expectRequest, actualRequest)
 }
@@ -93,13 +93,13 @@ func TestRequestCallDataSizeTooBig(t *testing.T) {
 	// Set MaxCalldataSize to 0
 	keeper.SetMaxCalldataSize(ctx, 0)
 	// Should fail because size of "calldata" is > 0
-	_, err := keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, 100)
+	_, err := keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, 100, 20000)
 	require.NotNil(t, err)
 
 	// Set MaxCalldataSize to 20
 	keeper.SetMaxCalldataSize(ctx, 20)
 	// Should pass because size of "calldata" is < 20
-	_, err = keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, 100)
+	_, err = keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, 100, 20000)
 	require.Nil(t, err)
 
 }
@@ -195,27 +195,41 @@ func TestSetResolvedOnInvalidRequest(t *testing.T) {
 // TestConsumeGasForExecute tests keeper must consume gas from context correctly.
 func TestConsumeGasForExecute(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
-	request := newDefaultRequest()
 
-	keeper.SetRequest(ctx, 1, request)
-	keeper.SetRequest(ctx, 2, request)
+	script := GetTestOracleScript("../../../../owasm/res/silly.wasm")
+	keeper.SetOracleScript(ctx, 1, script)
+
+	SetupTestValidator(
+		ctx,
+		keeper,
+		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
+		10,
+	)
+	SetupTestValidator(
+		ctx,
+		keeper,
+		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
+		100,
+	)
+
+	keeper.SetMaxCalldataSize(ctx, 20)
 
 	// Consume 20000 gas in request 1
 	beforeGas := ctx.GasMeter().GasConsumed()
-	err := keeper.ConsumeGasForExecute(ctx, 1, 20000)
+	_, err := keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, 100, 20000)
 	require.Nil(t, err)
 	afterGas := ctx.GasMeter().GasConsumed()
+
 	gasUsed1 := afterGas - beforeGas
 
 	// Consume 40000 gas in request 2
 	beforeGas = ctx.GasMeter().GasConsumed()
-	err = keeper.ConsumeGasForExecute(ctx, 2, 40000)
+	_, err = keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, 100, 40000)
 	require.Nil(t, err)
 	afterGas = ctx.GasMeter().GasConsumed()
 	gasUsed2 := afterGas - beforeGas
 
-	// The difference of Gas used in request 2 and request 1 must be 20000
-	require.Equal(t, uint64(20000), gasUsed2-gasUsed1)
+	require.True(t, 19800 <= gasUsed2-gasUsed1 && gasUsed2-gasUsed1 <= 20200)
 
 	actualRequest, err := keeper.GetRequest(ctx, 1)
 	require.Nil(t, err)
@@ -224,9 +238,6 @@ func TestConsumeGasForExecute(t *testing.T) {
 	actualRequest, err = keeper.GetRequest(ctx, 2)
 	require.Nil(t, err)
 	require.Equal(t, uint64(40000), actualRequest.ExecuteGas)
-
-	err = keeper.ConsumeGasForExecute(ctx, 10, 100)
-	require.NotNil(t, err)
 }
 
 // Can get/set pending request correctly and set empty case

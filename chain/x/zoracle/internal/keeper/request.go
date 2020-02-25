@@ -27,7 +27,7 @@ func (k Keeper) GetRequest(ctx sdk.Context, id int64) (types.Request, sdk.Error)
 // AddRequest attempts to create a new request. An error is returned if some conditions failed.
 func (k Keeper) AddRequest(
 	ctx sdk.Context, oracleScriptID int64, calldata []byte,
-	requestedValidatorCount, sufficientValidatorCount, expiration int64,
+	requestedValidatorCount, sufficientValidatorCount, expiration int64, executeGas uint64,
 ) (int64, sdk.Error) {
 	if !k.CheckOracleScriptExists(ctx, oracleScriptID) {
 		// TODO: fix error later
@@ -49,6 +49,7 @@ func (k Keeper) AddRequest(
 	for i := int64(0); i < requestedValidatorCount; i++ {
 		validators[i] = validatorsByPower[i].GetOperator()
 	}
+	ctx.GasMeter().ConsumeGas(executeGas, "ExecuteGas")
 
 	requestID := k.GetNextRequestID(ctx)
 	k.SetRequest(ctx, requestID, types.NewRequest(
@@ -59,6 +60,7 @@ func (k Keeper) AddRequest(
 		ctx.BlockHeight(),
 		ctx.BlockTime().Unix(),
 		ctx.BlockHeight()+expiration,
+		executeGas,
 	))
 
 	return requestID, nil
@@ -119,21 +121,6 @@ func (k Keeper) SetResolve(ctx sdk.Context, id int64, isResolved bool) sdk.Error
 func (k Keeper) CheckRequestExists(ctx sdk.Context, id int64) bool {
 	store := ctx.KVStore(k.storeKey)
 	return store.Has(types.RequestStoreKey(id))
-}
-
-// ConsumeGasForExecute saves and consumes gas from the current context to use in executing
-// at end block time.
-func (k Keeper) ConsumeGasForExecute(ctx sdk.Context, id int64, executeGas uint64) sdk.Error {
-	request, err := k.GetRequest(ctx, id)
-	if err != nil {
-		return err
-	}
-
-	ctx.GasMeter().ConsumeGas(executeGas, "Execute gas")
-
-	request.ExecuteGas = executeGas
-	k.SetRequest(ctx, id, request)
-	return nil
 }
 
 // ShouldBecomePendingResolve checks and returns whether the given request should be moved to the

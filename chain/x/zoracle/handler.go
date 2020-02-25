@@ -130,6 +130,7 @@ func handleMsgRequestData(ctx sdk.Context, keeper Keeper, msg MsgRequestData) sd
 		msg.RequestedValidatorCount,
 		msg.SufficientValidatorCount,
 		msg.Expiration,
+		msg.ExecuteGas,
 	)
 	if err != nil {
 		return err.Result()
@@ -151,11 +152,6 @@ func handleMsgRequestData(ctx sdk.Context, keeper Keeper, msg MsgRequestData) sd
 	}
 
 	err = keeper.ValidateDataSourceCount(ctx, id)
-	if err != nil {
-		return err.Result()
-	}
-
-	err = keeper.ConsumeGasForExecute(ctx, id, msg.ExecuteGas)
 	if err != nil {
 		return err.Result()
 	}

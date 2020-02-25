@@ -32,8 +32,7 @@ const (
 	DefaultRequestedValidatorCount  = 1
 	DefaultSufficientValidatorCount = 1
 	DefaultExpiration               = 100
-
-	DefaultExecuteGas = 50000
+	DefaultExecuteGas               = 50000
 )
 
 type OracleRequest struct {
