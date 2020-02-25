@@ -81,8 +81,8 @@ func (p Params) String() string {
   MaxOracleScriptCodeSize:      %d
   MaxCalldataSize:              %d
   MaxDataSourceCountPerRequest: %d
-	MaxRawDataReportSize:         %d
-	MaxResultSize: 								%d
+  MaxRawDataReportSize:         %d
+	MaxResultSize:                %d
 `, p.MaxDataSourceExecutableSize, p.MaxOracleScriptCodeSize, p.MaxCalldataSize, p.MaxDataSourceCountPerRequest, p.MaxRawDataReportSize, p.MaxResultSize)
 }
 
