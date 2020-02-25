@@ -7,6 +7,6 @@ pub fn prepare() {
 
 #[no_mangle]
 pub fn execute() {
-    let data = oei::get_external_data(1, 0);
+    let data = oei::get_external_data(1, 0).unwrap();
     oei::save_return_data(&data);
 }

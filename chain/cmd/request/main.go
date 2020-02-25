@@ -163,12 +163,6 @@ func main() {
 				0, 10000000, "", "", "",
 				flags.BroadcastBlock,
 			))
-
-			fmt.Println(tx.SendTransaction(
-				[]sdk.Msg{zoracle.NewMsgRequestData(1, []byte("ETH"), 1, 1, 100, executeGas, tx.Sender())},
-				0, 10000000, "", "", "",
-				flags.BroadcastBlock,
-			))
 		}
 	case "deploy_oracle_scripts":
 		{
