@@ -11,12 +11,10 @@ const (
 	RouterKey         = types.RouterKey
 	StoreKey          = types.StoreKey
 
-	EventTypeRequest         = types.EventTypeRequest
-	EventTypeReport          = types.EventTypeReport
-	EventTypeRequestExecuted = types.EventTypeRequestExecuted
-	AttributeKeyRequestID    = types.AttributeKeyRequestID
-	AttributeKeyResult       = types.AttributeKeyResult
-	AttributeKeyValidator    = types.AttributeKeyValidator
+	EventTypeRequest      = types.EventTypeRequest
+	EventTypeReport       = types.EventTypeReport
+	AttributeKeyRequestID = types.AttributeKeyRequestID
+	AttributeKeyValidator = types.AttributeKeyValidator
 )
 
 var (
