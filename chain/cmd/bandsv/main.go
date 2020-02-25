@@ -78,10 +78,6 @@ var pk secp256k1.PrivKeySecp256k1
 var bandClient d3nlib.BandStatefulClient
 var cdc *codec.Codec
 
-type serializeResponse struct {
-	Result cmn.HexBytes `json:"result"`
-}
-
 func handleRequestData(c *gin.Context) {
 	var req OracleRequest
 	if err := c.ShouldBindJSON(&req); err != nil {

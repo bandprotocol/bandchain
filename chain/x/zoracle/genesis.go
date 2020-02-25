@@ -8,7 +8,6 @@ import (
 
 // GenesisState is the zoracle state that must be provided at genesis.
 type GenesisState struct {
-	// Scripts []types.StoredCode `json:"scripts"`
 	Params types.Params `json:"params" yaml:"params"` // module level parameters for zoracle
 }
 
@@ -20,17 +19,6 @@ func NewGenesisState(params types.Params) GenesisState {
 }
 
 func ValidateGenesis(data GenesisState) error {
-	// for _, record := range data.RequestRecords {
-	// if record.Owner == nil {
-	// 	return fmt.Errorf("invalid WhoisRecord: Value: %s. Error: Missing Owner", record.Value)
-	// }
-	// if record.Value == "" {
-	// 	return fmt.Errorf("invalid WhoisRecord: Owner: %s. Error: Missing Value", record.Owner)
-	// }
-	// if record.Price == nil {
-	// 	return fmt.Errorf("invalid WhoisRecord: Value: %s. Error: Missing Price", record.Value)
-	// }
-	// }
 	return nil
 }
 

@@ -48,126 +48,7 @@ func main() {
 
 	args := os.Args[1:]
 	switch args[0] {
-	// case "store":
-	// 	{
-	// 		file, err := os.Open("../../wasm/res/result.wasm")
-	// 		if err != nil {
-	// 			panic(err)
-	// 		}
-	// 		defer file.Close()
-
-	// 		stats, statsErr := file.Stat()
-	// 		if statsErr != nil {
-	// 			panic(statsErr)
-	// 		}
-
-	// 		size := stats.Size()
-	// 		bytes := make([]byte, size)
-
-	// 		bufr := bufio.NewReader(file)
-	// 		_, err = bufr.Read(bytes)
-
-	// 		if err != nil {
-	// 			panic(err)
-	// 		}
-	// 		fmt.Println(tx.SendTransaction(
-	// 			[]sdk.Msg{zoracle.NewMsgStoreCode(bytes, "Crypto price (enum version)", tx.Sender())},
-	// 			0, 10000000, "", "", "",
-	// 			flags.BroadcastBlock,
-	// 		))
-	// 	}
-	case "send_token":
-		{
-			// Send token
-			to, _ := sdk.AccAddressFromBech32("band13zmknvkq2sj920spz90g4r9zjan8g584x8qalj")
-			fmt.Println(tx.SendTransaction([]sdk.Msg{bank.MsgSend{
-				FromAddress: tx.Sender(),
-				ToAddress:   to,
-				Amount:      sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(10))),
-			}}, 0, 10000000, "", "", "", flags.BroadcastBlock))
-		}
-	// case "request":
-	// 	{
-	// 		codeHash, _ := hex.DecodeString("148b6ddfdd2e1a6791b992592160ccd3cef0cea0c5f88ffdbdae7ea4044d9841")
-	// 		switch args[1] {
-	// 		case "BTC":
-	// 			{
-	// 				// BTC parameter
-	// 				params, _ := hex.DecodeString("00000000")
-	// 				// Send request by code hash
-	// 				fmt.Println(tx.SendTransaction(
-	// 					[]sdk.Msg{zoracle.NewMsgRequest(codeHash, params, 6, tx.Sender())},
-	// 					0, 10000000, "", "", "",
-	// 					flags.BroadcastBlock,
-	// 				))
-	// 			}
-	// 		case "ETH":
-	// 			{
-	// 				// ETH parameter
-	// 				params, _ := hex.DecodeString("00000001")
-	// 				// Send request by same code hash with new parameter
-	// 				fmt.Println(tx.SendTransaction(
-	// 					[]sdk.Msg{zoracle.NewMsgRequest(codeHash, params, 6, tx.Sender())},
-	// 					0, 10000000, "", "", "",
-	// 					flags.BroadcastBlock,
-	// 				))
-	// 			}
-	// 		}
-	// 	}
-	case "example":
-		{
-			bytes, err := ioutil.ReadFile("../../owasm/res/silly.wasm")
-			if err != nil {
-				panic(err)
-			}
-
-			fmt.Println(tx.SendTransaction(
-				[]sdk.Msg{zoracle.NewMsgCreateOracleScript(tx.Sender(), "Silly script", bytes, tx.Sender())},
-				0, 10000000, "", "", "",
-				flags.BroadcastBlock,
-			))
-
-			fmt.Println(tx.SendTransaction(
-				[]sdk.Msg{zoracle.NewMsgCreateDataSource(tx.Sender(), "Mock Data source", sdk.Coins{}, []byte("exec"), tx.Sender())},
-				0, 10000000, "", "", "",
-				flags.BroadcastBlock,
-			))
-
-			fmt.Println(tx.SendTransaction(
-				[]sdk.Msg{zoracle.NewMsgRequestData(1, []byte("calldata"), 1, 1, 100, tx.Sender())},
-				0, 10000000, "", "", "",
-				flags.BroadcastBlock,
-			))
-
-			// _ = valTx.Sender()
-
-			fmt.Println(valTx.SendTransaction(
-				[]sdk.Msg{zoracle.NewMsgReportData(1, []zoracle.RawDataReport{
-					zoracle.NewRawDataReport(1, []byte("data1")),
-				}, sdk.ValAddress(valTx.Sender()))},
-				0, 10000000, "", "", "",
-				flags.BroadcastBlock,
-			))
-
-			fmt.Println(tx.SendTransaction(
-				[]sdk.Msg{zoracle.NewMsgRequestData(1, []byte("ETH"), 1, 1, 100, tx.Sender())},
-				0, 10000000, "", "", "",
-				flags.BroadcastBlock,
-			))
-		}
-	case "report":
-		{
-			fmt.Println(valTx.SendTransaction(
-				[]sdk.Msg{zoracle.NewMsgReportData(4, []zoracle.RawDataReport{
-					zoracle.NewRawDataReport(1, []byte("100.0")),
-					zoracle.NewRawDataReport(2, []byte("200.5")),
-					zoracle.NewRawDataReport(3, []byte("143.6")),
-				}, sdk.ValAddress(valTx.Sender()))},
-				0, 10000000, "", "", "",
-				flags.BroadcastBlock,
-			))
-		}
-	case "price-example":
+	case "store":
 		{
 			coingecko, err := ioutil.ReadFile("../../datasources/coingecko_price.sh")
 			if err != nil {
@@ -205,7 +86,7 @@ func main() {
 				flags.BroadcastBlock,
 			))
 
-			oracleBytes, err := ioutil.ReadFile("../../owasm/res/crypto_price/pkg/crypto_price_bg.wasm")
+			oracleBytes, err := ioutil.ReadFile("../../owasm/res/crypto_price.wasm")
 			if err != nil {
 				panic(err)
 			}
@@ -214,32 +95,76 @@ func main() {
 				0, 10000000, "", "", "",
 				flags.BroadcastBlock,
 			))
+		}
+	case "send_token":
+		{
+			// Send token
+			to, _ := sdk.AccAddressFromBech32("band13zmknvkq2sj920spz90g4r9zjan8g584x8qalj")
+			fmt.Println(tx.SendTransaction([]sdk.Msg{bank.MsgSend{
+				FromAddress: tx.Sender(),
+				ToAddress:   to,
+				Amount:      sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(10))),
+			}}, 0, 10000000, "", "", "", flags.BroadcastBlock))
+		}
+	case "request":
+		{
+			switch args[1] {
+			case "BTC":
+				{
+					fmt.Println(tx.SendTransaction(
+						[]sdk.Msg{zoracle.NewMsgRequestData(1, []byte("BTC"), 4, 4, 100000, tx.Sender())},
+						0, 10000000, "", "", "",
+						flags.BroadcastBlock,
+					))
+				}
+			case "ETH":
+				{
+					fmt.Println(tx.SendTransaction(
+						[]sdk.Msg{zoracle.NewMsgRequestData(1, []byte("ETH"), 4, 4, 100000, tx.Sender())},
+						0, 10000000, "", "", "",
+						flags.BroadcastBlock,
+					))
+				}
+			}
+		}
+	case "example-test":
+		{
+			bytes, err := ioutil.ReadFile("../../owasm/res/silly.wasm")
+			if err != nil {
+				panic(err)
+			}
 
 			fmt.Println(tx.SendTransaction(
-				[]sdk.Msg{zoracle.NewMsgRequestData(1, []byte("ETH"), 1, 1, 100000, tx.Sender())},
+				[]sdk.Msg{zoracle.NewMsgCreateOracleScript(tx.Sender(), "Silly script", bytes, tx.Sender())},
+				0, 10000000, "", "", "",
+				flags.BroadcastBlock,
+			))
+
+			fmt.Println(tx.SendTransaction(
+				[]sdk.Msg{zoracle.NewMsgCreateDataSource(tx.Sender(), "Mock Data source", sdk.Coins{}, []byte("exec"), tx.Sender())},
+				0, 10000000, "", "", "",
+				flags.BroadcastBlock,
+			))
+
+			fmt.Println(tx.SendTransaction(
+				[]sdk.Msg{zoracle.NewMsgRequestData(1, []byte("calldata"), 1, 1, 100, tx.Sender())},
 				0, 10000000, "", "", "",
 				flags.BroadcastBlock,
 			))
 
 			fmt.Println(valTx.SendTransaction(
 				[]sdk.Msg{zoracle.NewMsgReportData(1, []zoracle.RawDataReport{
-					zoracle.NewRawDataReport(1, []byte("100.0")),
-					zoracle.NewRawDataReport(2, []byte("200.5")),
-					zoracle.NewRawDataReport(3, []byte("143.6")),
+					zoracle.NewRawDataReport(1, []byte("data1")),
 				}, sdk.ValAddress(valTx.Sender()))},
 				0, 10000000, "", "", "",
 				flags.BroadcastBlock,
 			))
 
-			// _ = valTx.Sender()
-
-			// fmt.Println(valTx.SendTransaction(
-			// 	[]sdk.Msg{zoracle.NewMsgReportData(1, []zoracle.RawDataReport{
-			// 		zoracle.NewRawDataReport(1, []byte("data1")),
-			// 	}, sdk.ValAddress(valTx.Sender()))},
-			// 	0, 10000000, "", "", "",
-			// 	flags.BroadcastBlock,
-			// ))
+			fmt.Println(tx.SendTransaction(
+				[]sdk.Msg{zoracle.NewMsgRequestData(1, []byte("ETH"), 1, 1, 100, tx.Sender())},
+				0, 10000000, "", "", "",
+				flags.BroadcastBlock,
+			))
 		}
 	case "deploy_oracle_scripts":
 		{

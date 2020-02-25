@@ -15,11 +15,8 @@ const (
 	EventTypeReport          = types.EventTypeReport
 	EventTypeRequestExecuted = types.EventTypeRequestExecuted
 	AttributeKeyRequestID    = types.AttributeKeyRequestID
-	AttributeKeyCodeHash     = types.AttributeKeyCodeHash
-	AttributeKeyPrepare      = types.AttributeKeyPrepare
 	AttributeKeyResult       = types.AttributeKeyResult
 	AttributeKeyValidator    = types.AttributeKeyValidator
-	AttributeKeyCodeName     = types.AttributeKeyCodeName
 )
 
 var (
@@ -52,9 +49,6 @@ var (
 	QueryRequestByID    = types.QueryRequestByID
 	QueryRequests       = types.QueryRequests
 	QueryPending        = types.QueryPending
-	QueryScript         = types.QueryScript
-	QueryAllScripts     = types.QueryAllScripts
-	SerializeParams     = types.SerializeParams
 	QueryRequestNumber  = types.QueryRequestNumber
 	QueryDataSourceByID = types.QueryDataSourceByID
 	QueryDataSources    = types.QueryDataSources

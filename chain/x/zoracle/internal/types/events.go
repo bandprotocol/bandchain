@@ -8,9 +8,6 @@ const (
 	EventTypeStoreCode       = "store_code"
 	EventTypeDeleteCode      = "delete_code"
 	AttributeKeyRequestID    = "id"
-	AttributeKeyCodeHash     = "codehash"
-	AttributeKeyPrepare      = "prepare"
 	AttributeKeyResult       = "result"
 	AttributeKeyValidator    = "validator"
-	AttributeKeyCodeName     = "code_name"
 )

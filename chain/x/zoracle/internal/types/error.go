@@ -30,11 +30,6 @@ func ErrResultNotFound(codespace sdk.CodespaceType) sdk.Error {
 	return sdk.NewError(codespace, CodeResultNotFound, "result not found")
 }
 
-// ErrCodeHashNotFound is the error for invalid code hash
-func ErrCodeHashNotFound(codespace sdk.CodespaceType) sdk.Error {
-	return sdk.NewError(codespace, CodeInvalidInput, "code hash not found")
-}
-
 func ErrInvalidValidator(codespace sdk.CodespaceType) sdk.Error {
 	return sdk.NewError(codespace, CodeInvalidValidator, "validator invalid")
 }

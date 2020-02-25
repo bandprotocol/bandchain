@@ -12,6 +12,159 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
+func TestQueryDataSourceById(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+	keeper.SetMaxDataSourceExecutableSize(ctx, 20)
+	// Create variable "querier" which is a function
+	querier := NewQuerier(keeper)
+
+	// query before add a data source
+	_, err := querier(
+		ctx,
+		[]string{"data_source", "1"},
+		abci.RequestQuery{},
+	)
+	// Should return error data source not found
+	require.NotNil(t, err)
+
+	owner := sdk.AccAddress([]byte("owner"))
+	name := "data_source"
+	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
+	executable := []byte("executable")
+	expectedResult := types.NewDataSourceQuerierInfo(1, owner, name, fee, executable)
+
+	keeper.SetDataSource(ctx, 1, types.NewDataSource(owner, name, fee, executable))
+
+	// This time querier should be able to find a data source
+	dataSource, err := querier(
+		ctx,
+		[]string{"data_source", "1"},
+		abci.RequestQuery{},
+	)
+	require.Nil(t, err)
+
+	expectedResultBytes, errJSON := codec.MarshalJSONIndent(keeper.cdc, expectedResult)
+	require.Nil(t, errJSON)
+
+	require.Equal(t, expectedResultBytes, dataSource)
+}
+
+func TestQueryDataSourcesByStartIdAndNumberOfDataSources(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+	keeper.SetMaxDataSourceExecutableSize(ctx, 20)
+	// Create variable "querier" which is a function
+	querier := NewQuerier(keeper)
+
+	expectedResult := []types.DataSourceQuerierInfo{}
+
+	// Add a new 10 data sources
+	for i := 1; i <= 10; i++ {
+		owner := sdk.AccAddress([]byte("owner" + strconv.Itoa(i)))
+		name := "data_source_" + strconv.Itoa(i)
+		fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
+		executable := []byte("executable" + strconv.Itoa(i))
+		eachDataSource := types.NewDataSourceQuerierInfo(int64(i), owner, name, fee, executable)
+
+		err := keeper.AddDataSource(ctx, eachDataSource.Owner, eachDataSource.Name, eachDataSource.Fee, eachDataSource.Executable)
+		require.Nil(t, err)
+
+		expectedResult = append(expectedResult, eachDataSource)
+	}
+
+	// Query first 5 data sources
+	dataSources, err := querier(
+		ctx,
+		[]string{"data_sources", "1", "5"},
+		abci.RequestQuery{},
+	)
+	require.Nil(t, err)
+
+	expectedResultBytes, errJSON := codec.MarshalJSONIndent(keeper.cdc, expectedResult[0:5])
+	require.Nil(t, errJSON)
+	require.Equal(t, expectedResultBytes, dataSources)
+
+	// Query last 5 data sources
+	dataSources, err = querier(
+		ctx,
+		[]string{"data_sources", "6", "5"},
+		abci.RequestQuery{},
+	)
+	require.Nil(t, err)
+
+	expectedResultBytes, errJSON = codec.MarshalJSONIndent(keeper.cdc, expectedResult[5:])
+	require.Nil(t, errJSON)
+	require.Equal(t, expectedResultBytes, dataSources)
+
+	// Query first 15 data sources which exceed number of all data source right now
+	// This should return all exist data sources (10 data sources)
+	dataSources, err = querier(
+		ctx,
+		[]string{"data_sources", "1", "15"},
+		abci.RequestQuery{},
+	)
+	require.Nil(t, err)
+
+	expectedResultBytes, errJSON = codec.MarshalJSONIndent(keeper.cdc, expectedResult)
+	require.Nil(t, errJSON)
+	require.Equal(t, expectedResultBytes, dataSources)
+
+	// Query data sources from id=8 to id=17
+	// But we only have id=1 to id=10
+	// So the result should be [id=8, id=9, id=10]
+	dataSources, err = querier(
+		ctx,
+		[]string{"data_sources", "8", "10"},
+		abci.RequestQuery{},
+	)
+	require.Nil(t, err)
+
+	expectedResultBytes, errJSON = codec.MarshalJSONIndent(keeper.cdc, expectedResult[7:])
+	require.Nil(t, errJSON)
+	require.Equal(t, expectedResultBytes, dataSources)
+}
+
+func TestQueryDataSourcesGotEmptyArrayBecauseNoDataSource(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+	keeper.SetMaxDataSourceExecutableSize(ctx, 20)
+	// Create variable "querier" which is a function
+	querier := NewQuerier(keeper)
+
+	dataSources, err := querier(
+		ctx,
+		[]string{"data_sources", "1", "5"},
+		abci.RequestQuery{},
+	)
+	require.Nil(t, err)
+
+	expectedResultBytes, errJSON := codec.MarshalJSONIndent(keeper.cdc, []types.DataSourceQuerierInfo{})
+	require.Nil(t, errJSON)
+
+	require.Equal(t, expectedResultBytes, dataSources)
+}
+
+func TestQueryDataSourcesFailBecauseInvalidNumberOfDataSource(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+	keeper.SetMaxDataSourceExecutableSize(ctx, 20)
+	// Create variable "querier" which is a function
+	querier := NewQuerier(keeper)
+
+	// Number of data sources should <= 100
+	_, err := querier(
+		ctx,
+		[]string{"data_sources", "1", "101"},
+		abci.RequestQuery{},
+	)
+	require.NotNil(t, err)
+
+	// Number of data sources should >= 1
+	_, err = querier(
+		ctx,
+		[]string{"data_sources", "1", "0"},
+		abci.RequestQuery{},
+	)
+	require.NotNil(t, err)
+}
+
 func TestQueryRequestById(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
@@ -236,267 +389,6 @@ func TestQueryRequests(t *testing.T) {
 	require.Nil(t, errJSON)
 	require.Equal(t, acs, acsBytes)
 }
-
-func TestQueryDataSourceById(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-	keeper.SetMaxDataSourceExecutableSize(ctx, 20)
-	// Create variable "querier" which is a function
-	querier := NewQuerier(keeper)
-
-	// query before add a data source
-	_, err := querier(
-		ctx,
-		[]string{"data_source", "1"},
-		abci.RequestQuery{},
-	)
-	// Should return error data source not found
-	require.NotNil(t, err)
-
-	owner := sdk.AccAddress([]byte("owner"))
-	name := "data_source"
-	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
-	executable := []byte("executable")
-	expectedResult := types.NewDataSourceQuerierInfo(1, owner, name, fee, executable)
-
-	keeper.SetDataSource(ctx, 1, types.NewDataSource(owner, name, fee, executable))
-
-	// This time querier should be able to find a data source
-	dataSource, err := querier(
-		ctx,
-		[]string{"data_source", "1"},
-		abci.RequestQuery{},
-	)
-	require.Nil(t, err)
-
-	expectedResultBytes, errJSON := codec.MarshalJSONIndent(keeper.cdc, expectedResult)
-	require.Nil(t, errJSON)
-
-	require.Equal(t, expectedResultBytes, dataSource)
-}
-
-func TestQueryDataSourcesByStartIdAndNumberOfDataSources(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-	keeper.SetMaxDataSourceExecutableSize(ctx, 20)
-	// Create variable "querier" which is a function
-	querier := NewQuerier(keeper)
-
-	expectedResult := []types.DataSourceQuerierInfo{}
-
-	// Add a new 10 data sources
-	for i := 1; i <= 10; i++ {
-		owner := sdk.AccAddress([]byte("owner" + strconv.Itoa(i)))
-		name := "data_source_" + strconv.Itoa(i)
-		fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
-		executable := []byte("executable" + strconv.Itoa(i))
-		eachDataSource := types.NewDataSourceQuerierInfo(int64(i), owner, name, fee, executable)
-
-		err := keeper.AddDataSource(ctx, eachDataSource.Owner, eachDataSource.Name, eachDataSource.Fee, eachDataSource.Executable)
-		require.Nil(t, err)
-
-		expectedResult = append(expectedResult, eachDataSource)
-	}
-
-	// Query first 5 data sources
-	dataSources, err := querier(
-		ctx,
-		[]string{"data_sources", "1", "5"},
-		abci.RequestQuery{},
-	)
-	require.Nil(t, err)
-
-	expectedResultBytes, errJSON := codec.MarshalJSONIndent(keeper.cdc, expectedResult[0:5])
-	require.Nil(t, errJSON)
-	require.Equal(t, expectedResultBytes, dataSources)
-
-	// Query last 5 data sources
-	dataSources, err = querier(
-		ctx,
-		[]string{"data_sources", "6", "5"},
-		abci.RequestQuery{},
-	)
-	require.Nil(t, err)
-
-	expectedResultBytes, errJSON = codec.MarshalJSONIndent(keeper.cdc, expectedResult[5:])
-	require.Nil(t, errJSON)
-	require.Equal(t, expectedResultBytes, dataSources)
-
-	// Query first 15 data sources which exceed number of all data source right now
-	// This should return all exist data sources (10 data sources)
-	dataSources, err = querier(
-		ctx,
-		[]string{"data_sources", "1", "15"},
-		abci.RequestQuery{},
-	)
-	require.Nil(t, err)
-
-	expectedResultBytes, errJSON = codec.MarshalJSONIndent(keeper.cdc, expectedResult)
-	require.Nil(t, errJSON)
-	require.Equal(t, expectedResultBytes, dataSources)
-
-	// Query data sources from id=8 to id=17
-	// But we only have id=1 to id=10
-	// So the result should be [id=8, id=9, id=10]
-	dataSources, err = querier(
-		ctx,
-		[]string{"data_sources", "8", "10"},
-		abci.RequestQuery{},
-	)
-	require.Nil(t, err)
-
-	expectedResultBytes, errJSON = codec.MarshalJSONIndent(keeper.cdc, expectedResult[7:])
-	require.Nil(t, errJSON)
-	require.Equal(t, expectedResultBytes, dataSources)
-}
-
-func TestQueryDataSourcesGotEmptyArrayBecauseNoDataSource(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-	keeper.SetMaxDataSourceExecutableSize(ctx, 20)
-	// Create variable "querier" which is a function
-	querier := NewQuerier(keeper)
-
-	dataSources, err := querier(
-		ctx,
-		[]string{"data_sources", "1", "5"},
-		abci.RequestQuery{},
-	)
-	require.Nil(t, err)
-
-	expectedResultBytes, errJSON := codec.MarshalJSONIndent(keeper.cdc, []types.DataSourceQuerierInfo{})
-	require.Nil(t, errJSON)
-
-	require.Equal(t, expectedResultBytes, dataSources)
-}
-
-func TestQueryDataSourcesFailBecauseInvalidNumberOfDataSource(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-	keeper.SetMaxDataSourceExecutableSize(ctx, 20)
-	// Create variable "querier" which is a function
-	querier := NewQuerier(keeper)
-
-	// Number of data sources should <= 100
-	_, err := querier(
-		ctx,
-		[]string{"data_sources", "1", "101"},
-		abci.RequestQuery{},
-	)
-	require.NotNil(t, err)
-
-	// Number of data sources should >= 1
-	_, err = querier(
-		ctx,
-		[]string{"data_sources", "1", "0"},
-		abci.RequestQuery{},
-	)
-	require.NotNil(t, err)
-}
-
-// func TestQueryPendingRequest(t *testing.T) {
-// 	ctx, keeper := CreateTestInput(t, false)
-// 	// Create variable "querier" which is a function
-// 	querier := NewQuerier(keeper)
-
-// 	// Read the state. The state should contain 0 pending request.
-// 	acsBytes, err := querier(
-// 		ctx,
-// 		[]string{"pending_request"},
-// 		abci.RequestQuery{},
-// 	)
-// 	require.Nil(t, err)
-// 	// Use bytes format for comparison
-// 	acs, errJSON := codec.MarshalJSONIndent(keeper.cdc, []uint64{})
-// 	require.Nil(t, errJSON)
-// 	require.Equal(t, acs, acsBytes)
-
-// 	// set request
-// 	name := "Crypto price"
-// 	owner := sdk.AccAddress([]byte("owner"))
-// 	code := []byte("code")
-// 	codeHash := keeper.SetCode(ctx, code, name, owner)
-// 	request := types.NewRequest(codeHash, []byte("params"), 3)
-// 	keeper.SetRequest(ctx, 2, request)
-
-// 	// set pending
-// 	pendingRequests := keeper.GetPendingResolveList(ctx)
-// 	pendingRequests = append(pendingRequests, 2)
-// 	keeper.SetPendingResolveList(ctx, pendingRequests)
-
-// 	// Read the state agian. The state should contain 1 pending request. That is reqID = 2.
-// 	acsBytes, err = querier(
-// 		ctx,
-// 		[]string{"pending_request"},
-// 		abci.RequestQuery{},
-// 	)
-// 	require.Nil(t, err)
-// 	// Use bytes format for comparison
-// 	acs, errJSON = codec.MarshalJSONIndent(keeper.cdc, []uint64{2})
-// 	require.Nil(t, errJSON)
-// 	require.Equal(t, acs, acsBytes)
-// }
-
-// func TestQueryScript(t *testing.T) {
-// 	ctx, keeper := CreateTestInput(t, false)
-
-// 	absPath, _ := filepath.Abs("../../../../wasm/res/result.wasm")
-// 	code, _ := wasm.ReadBytes(absPath)
-// 	owner := sdk.AccAddress([]byte("owner"))
-// 	name := "Crypto Price"
-// 	codeHash := keeper.SetCode(ctx, code, name, owner)
-
-// 	// Create variable "querier" which is a function
-// 	querier := NewQuerier(keeper)
-
-// 	rawQueryBytes, err := querier(
-// 		ctx,
-// 		[]string{"script", hex.EncodeToString(codeHash)},
-// 		abci.RequestQuery{},
-// 	)
-// 	require.Nil(t, err)
-
-// 	expectJson, errJSON := codec.MarshalJSONIndent(
-// 		keeper.cdc,
-// 		types.NewScriptInfo(
-// 			name,
-// 			codeHash,
-// 			[]types.Field{
-// 				types.Field{Name: "symbol", Type: "coins::Coins"},
-// 			},
-// 			[]types.Field{
-// 				types.Field{Name: "coin_gecko", Type: "f32"},
-// 				types.Field{Name: "crypto_compare", Type: "f32"},
-// 			},
-// 			[]types.Field{types.Field{Name: "price_in_usd", Type: "u64"}},
-// 			owner,
-// 		),
-// 	)
-// 	require.Nil(t, errJSON)
-// 	require.Equal(t, expectJson, rawQueryBytes)
-// }
-
-// func TestSerializeParams(t *testing.T) {
-// 	ctx, keeper := CreateTestInput(t, false)
-
-// 	absPath, _ := filepath.Abs("../../../../wasm/res/serialized_params.wasm")
-// 	code, _ := wasm.ReadBytes(absPath)
-// 	owner := sdk.AccAddress([]byte("owner"))
-// 	name := "Crypto Price"
-// 	codeHash := keeper.SetCode(ctx, code, name, owner)
-
-// 	// Create variable "querier" which is a function
-// 	querier := NewQuerier(keeper)
-
-// 	rawQueryBytes, err := querier(
-// 		ctx,
-// 		[]string{"serialize_params", hex.EncodeToString(codeHash), `{"crypto_symbol":"ETH", "stock_symbol":"GOOG","alphavantage_api_key":"WVKPOO76169EX950"}`},
-// 		abci.RequestQuery{},
-// 	)
-// 	require.Nil(t, err)
-
-// 	expectBytes, _ := hex.DecodeString("000000010000000000000004474f4f47000000000000001057564b504f4f37363136394558393530")
-// 	expectJson, errJSON := codec.MarshalJSONIndent(keeper.cdc, expectBytes)
-
-// 	require.Nil(t, errJSON)
-// 	require.Equal(t, expectJson, rawQueryBytes)
-// }
 
 func TestQueryOracleScriptById(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
