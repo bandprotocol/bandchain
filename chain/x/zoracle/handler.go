@@ -13,14 +13,6 @@ func NewHandler(keeper Keeper) sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) sdk.Result {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 		switch msg := msg.(type) {
-		case MsgRequestData:
-			return handleMsgRequestData(ctx, keeper, msg)
-		case MsgReportData:
-			return handleMsgReportData(ctx, keeper, msg)
-		// case MsgStoreCode:
-		// 	return handleMsgStoreCode(ctx, keeper, msg)
-		// case MsgDeleteCode:
-		// 	return handleMsgDeleteCode(ctx, keeper, msg)
 		case MsgCreateDataSource:
 			return handleMsgCreateDataSource(ctx, keeper, msg)
 		case MsgEditDataSource:
@@ -29,110 +21,16 @@ func NewHandler(keeper Keeper) sdk.Handler {
 			return handleMsgCreateOracleScript(ctx, keeper, msg)
 		case MsgEditOracleScript:
 			return handleMsgEditOracleScript(ctx, keeper, msg)
+		case MsgRequestData:
+			return handleMsgRequestData(ctx, keeper, msg)
+		case MsgReportData:
+			return handleMsgReportData(ctx, keeper, msg)
 		default:
 			errMsg := fmt.Sprintf("unrecognized zoracle message type: %T", msg)
 			return sdk.ErrUnknownRequest(errMsg).Result()
 		}
 	}
 }
-
-func handleMsgRequestData(ctx sdk.Context, keeper Keeper, msg MsgRequestData) sdk.Result {
-	id, err := keeper.AddRequest(
-		ctx,
-		msg.OracleScriptID,
-		msg.Calldata,
-		msg.RequestedValidatorCount,
-		msg.SufficientValidatorCount,
-		msg.Expiration,
-	)
-	if err != nil {
-		return err.Result()
-	}
-
-	env, err := NewExecutionEnvironment(ctx, keeper, id)
-	if err != nil {
-		return err.Result()
-	}
-
-	script, err := keeper.GetOracleScript(ctx, msg.OracleScriptID)
-	if err != nil {
-		return err.Result()
-	}
-	_, _, errOwasm := owasm.Execute(&env, script.Code, "prepare", msg.Calldata, 100000)
-	if errOwasm != nil {
-		// TODO: error
-		return sdk.ErrUnknownRequest(errOwasm.Error()).Result()
-	}
-
-	err = keeper.ValidateDataSourceCount(ctx, id)
-	if err != nil {
-		return err.Result()
-	}
-
-	// Emit request event
-	ctx.EventManager().EmitEvents(sdk.Events{
-		sdk.NewEvent(
-			types.EventTypeRequest,
-			sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", id)),
-		),
-	})
-	return sdk.Result{Events: ctx.EventManager().Events()}
-}
-
-func handleMsgReportData(ctx sdk.Context, keeper Keeper, msg MsgReportData) sdk.Result {
-	err := keeper.AddReport(ctx, msg.RequestID, msg.DataSet, msg.Sender)
-	if err != nil {
-		return err.Result()
-	}
-	// Emit report event
-	ctx.EventManager().EmitEvents(sdk.Events{
-		sdk.NewEvent(
-			types.EventTypeReport,
-			sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", msg.RequestID)),
-			sdk.NewAttribute(types.AttributeKeyValidator, msg.Sender.String()),
-		),
-	})
-	return sdk.Result{Events: ctx.EventManager().Events()}
-}
-
-// func handleMsgStoreCode(ctx sdk.Context, keeper Keeper, msg MsgStoreCode) sdk.Result {
-// 	sc := types.NewStoredCode(msg.Code, msg.Name, msg.Owner)
-// 	codeHash := sc.GetCodeHash()
-// 	if keeper.CheckCodeHashExists(ctx, codeHash) {
-// 		return types.ErrCodeAlreadyExisted(types.DefaultCodespace).Result()
-// 	}
-// 	keeper.SetCode(ctx, msg.Code, msg.Name, msg.Owner)
-
-// 	// Emit store code event
-// 	ctx.EventManager().EmitEvents(sdk.Events{
-// 		sdk.NewEvent(
-// 			types.EventTypeStoreCode,
-// 			sdk.NewAttribute(types.AttributeKeyCodeHash, hex.EncodeToString(codeHash)),
-// 			sdk.NewAttribute(types.AttributeKeyCodeName, msg.Name),
-// 		),
-// 	})
-// 	return sdk.Result{Events: ctx.EventManager().Events()}
-// }
-
-// func handleMsgDeleteCode(ctx sdk.Context, keeper Keeper, msg MsgDeleteCode) sdk.Result {
-// 	storedCode, sdkErr := keeper.GetCode(ctx, msg.CodeHash)
-// 	if sdkErr != nil {
-// 		return types.ErrCodeHashNotFound(types.DefaultCodespace).Result()
-// 	}
-// 	if !storedCode.Owner.Equals(msg.Owner) {
-// 		return types.ErrInvalidOwner(types.DefaultCodespace).Result()
-// 	}
-
-// 	keeper.DeleteCode(ctx, msg.CodeHash)
-// 	ctx.EventManager().EmitEvents(sdk.Events{
-// 		sdk.NewEvent(
-// 			types.EventTypeDeleteCode,
-// 			sdk.NewAttribute(types.AttributeKeyCodeHash, hex.EncodeToString(msg.CodeHash)),
-// 			sdk.NewAttribute(types.AttributeKeyCodeName, storedCode.Name),
-// 		),
-// 	})
-// 	return sdk.Result{Events: ctx.EventManager().Events()}
-// }
 
 // handleMsgCreateDataSource is a function to handle MsgCreateDataSource.
 func handleMsgCreateDataSource(ctx sdk.Context, keeper Keeper, msg MsgCreateDataSource) sdk.Result {
@@ -221,5 +119,64 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 	keeper.SetPendingResolveList(ctx, []int64{})
 
 	// TODO: Emit event
+	return sdk.Result{Events: ctx.EventManager().Events()}
+}
+
+func handleMsgRequestData(ctx sdk.Context, keeper Keeper, msg MsgRequestData) sdk.Result {
+	id, err := keeper.AddRequest(
+		ctx,
+		msg.OracleScriptID,
+		msg.Calldata,
+		msg.RequestedValidatorCount,
+		msg.SufficientValidatorCount,
+		msg.Expiration,
+	)
+	if err != nil {
+		return err.Result()
+	}
+
+	env, err := NewExecutionEnvironment(ctx, keeper, id)
+	if err != nil {
+		return err.Result()
+	}
+
+	script, err := keeper.GetOracleScript(ctx, msg.OracleScriptID)
+	if err != nil {
+		return err.Result()
+	}
+	_, _, errOwasm := owasm.Execute(&env, script.Code, "prepare", msg.Calldata, 100000)
+	if errOwasm != nil {
+		// TODO: error
+		return sdk.ErrUnknownRequest(errOwasm.Error()).Result()
+	}
+
+	err = keeper.ValidateDataSourceCount(ctx, id)
+	if err != nil {
+		return err.Result()
+	}
+
+	// Emit request event
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeRequest,
+			sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", id)),
+		),
+	})
+	return sdk.Result{Events: ctx.EventManager().Events()}
+}
+
+func handleMsgReportData(ctx sdk.Context, keeper Keeper, msg MsgReportData) sdk.Result {
+	err := keeper.AddReport(ctx, msg.RequestID, msg.DataSet, msg.Sender)
+	if err != nil {
+		return err.Result()
+	}
+	// Emit report event
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeReport,
+			sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", msg.RequestID)),
+			sdk.NewAttribute(types.AttributeKeyValidator, msg.Sender.String()),
+		),
+	})
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
