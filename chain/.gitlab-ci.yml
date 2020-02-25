@@ -3,6 +3,7 @@ chain-test:
   image: bandprotocol/go-rust:0.1.1
   script:
     - source ~/.profile
+    - rustup target add wasm32-unknown-unknown
     - cd chain
     - ./run_tests.sh
   only:

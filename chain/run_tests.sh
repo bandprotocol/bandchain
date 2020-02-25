@@ -1,13 +1,13 @@
 #!/bin/bash
 
-cd owasm/res
+cd ../owasm/chaintests
 
 for f in *; do
     if [ -d "$f" ]; then
-        wasm-pack build $f
-        cp ./$f/target/wasm32-unknown-unknown/release/*.wasm ./
+        RUSTFLAGS='-C link-arg=-s' cargo build --target wasm32-unknown-unknown --release --package $f
+        cp ../target/wasm32-unknown-unknown/release/$f.wasm ../../chain/owasm/res
     fi
 done
 
-cd ../../
+cd ../../chain
 go test ./...
