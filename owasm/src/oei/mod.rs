@@ -55,20 +55,24 @@ pub fn request_external_data(data_source_id: i64, external_id: i64, calldata: &[
     }
 }
 
-pub fn get_external_data(external_id: i64, validator_index: i64) -> Vec<u8> {
+pub fn get_external_data(external_id: i64, validator_index: i64) -> Option<Vec<u8>> {
     unsafe {
         let data_size = raw::getExternalDataSize(external_id, validator_index);
-        let mut data = vec![0u8; data_size as usize];
-        assert_eq!(
-            0,
-            raw::readExternalData(
-                external_id,
-                validator_index,
-                data.as_mut_ptr(),
+        if data_size == -1 {
+            None
+        } else {
+            let mut data = vec![0u8; data_size as usize];
+            assert_eq!(
                 0,
-                data_size
-            )
-        );
-        data
+                raw::readExternalData(
+                    external_id,
+                    validator_index,
+                    data.as_mut_ptr(),
+                    0,
+                    data_size
+                )
+            );
+            Some(data)
+        }
     }
 }
