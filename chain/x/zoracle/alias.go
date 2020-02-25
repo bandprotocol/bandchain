@@ -11,15 +11,10 @@ const (
 	RouterKey         = types.RouterKey
 	StoreKey          = types.StoreKey
 
-	EventTypeRequest         = types.EventTypeRequest
-	EventTypeReport          = types.EventTypeReport
-	EventTypeRequestExecuted = types.EventTypeRequestExecuted
-	AttributeKeyRequestID    = types.AttributeKeyRequestID
-	AttributeKeyCodeHash     = types.AttributeKeyCodeHash
-	AttributeKeyPrepare      = types.AttributeKeyPrepare
-	AttributeKeyResult       = types.AttributeKeyResult
-	AttributeKeyValidator    = types.AttributeKeyValidator
-	AttributeKeyCodeName     = types.AttributeKeyCodeName
+	EventTypeRequest      = types.EventTypeRequest
+	EventTypeReport       = types.EventTypeReport
+	AttributeKeyRequestID = types.AttributeKeyRequestID
+	AttributeKeyValidator = types.AttributeKeyValidator
 )
 
 var (
@@ -52,9 +47,6 @@ var (
 	QueryRequestByID    = types.QueryRequestByID
 	QueryRequests       = types.QueryRequests
 	QueryPending        = types.QueryPending
-	QueryScript         = types.QueryScript
-	QueryAllScripts     = types.QueryAllScripts
-	SerializeParams     = types.SerializeParams
 	QueryRequestNumber  = types.QueryRequestNumber
 	QueryDataSourceByID = types.QueryDataSourceByID
 	QueryDataSources    = types.QueryDataSources
