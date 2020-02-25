@@ -30,7 +30,7 @@ const (
 	// Default value is set to 1 kB.
 	DefaultMaxRawDataReportSize = int64(1 * 1024)
 
-	// The maximum size of result from validator.
+	// The maximum size of result after execution.
 	// Default value is set 1 kB.
 	DefaultMaxResultSize = int64(1 * 1024)
 )
@@ -82,7 +82,7 @@ func (p Params) String() string {
   MaxCalldataSize:              %d
   MaxDataSourceCountPerRequest: %d
   MaxRawDataReportSize:         %d
-	MaxResultSize:                %d
+  MaxResultSize:                %d
 `, p.MaxDataSourceExecutableSize, p.MaxOracleScriptCodeSize, p.MaxCalldataSize, p.MaxDataSourceCountPerRequest, p.MaxRawDataReportSize, p.MaxResultSize)
 }
 
