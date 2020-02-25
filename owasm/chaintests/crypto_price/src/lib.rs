@@ -1,4 +1,4 @@
-use owasm::oei::*;
+use owasm::oei;
 
 fn parse_coingecko_symbol(symbol: &[u8]) -> &[u8] {
     let s = String::from_utf8(symbol.to_vec()).unwrap();
@@ -16,25 +16,25 @@ fn parse_float(data: Vec<u8>) -> Option<f64> {
 
 #[no_mangle]
 pub fn prepare() {
-    let calldata = get_calldata();
+    let calldata = oei::get_calldata();
     // Coingecko data source
-    request_external_data(1, 1, parse_coingecko_symbol(&calldata));
+    oei::request_external_data(1, 1, parse_coingecko_symbol(&calldata));
     // Crypto compare source
-    request_external_data(2, 2, &calldata);
+    oei::request_external_data(2, 2, &calldata);
     // Binance source
-    request_external_data(3, 3, &calldata);
+    oei::request_external_data(3, 3, &calldata);
 }
 
 #[no_mangle]
 pub fn execute() {
-    let validator_count = get_requested_validator_count();
+    let validator_count = oei::get_requested_validator_count();
     let mut sum: f64 = 0.0;
     let mut count: u64 = 0;
     for validator_index in 0..validator_count {
         let mut val = 0.0;
         let mut fail = false;
         for external_id in 1..4 {
-            let data = get_external_data(external_id, validator_index);
+            let data = oei::get_external_data(external_id, validator_index);
             let num = parse_float(data);
             if num.is_none() {
                 fail = true;
@@ -48,5 +48,5 @@ pub fn execute() {
         }
     }
     let result = (sum / (count as f64) * 100.0) as u64;
-    save_return_data(&result.to_be_bytes())
+    oei::save_return_data(&result.to_be_bytes())
 }
