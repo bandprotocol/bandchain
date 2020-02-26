@@ -72,3 +72,5 @@ func TestOverflowFailWithExceedMemory(t *testing.T) {
 	_, _, errExecute := Execute(&mockExecutionEnvironment{}, code, "execute", size, 100000000000000000)
 	require.NotNil(t, errExecute)
 }
+
+// TODO: Add more tests for MaxTableSize, MaxValueSlots and MaxCallStackDepth.
