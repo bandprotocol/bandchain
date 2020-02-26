@@ -126,7 +126,7 @@ $ %s tx zoracle request 1 --calldata 1234abcdef --requested-validator-count 4 --
 	cmd.MarkFlagRequired(flagSufficientValidatorCount)
 	cmd.Flags().Int64P(flagExpiration, "x", 0, "Maximum block count before the data request is considered expired")
 	cmd.MarkFlagRequired(flagExpiration)
-	cmd.Flags().Uint64P(flagExecuteGas, "g", 0, "The amount of gas will be consumed for later execution")
+	cmd.Flags().Uint64P(flagExecuteGas, "g", 0, "The amount of gas that will be reserved for later execution")
 	cmd.MarkFlagRequired(flagExecuteGas)
 
 	return cmd
