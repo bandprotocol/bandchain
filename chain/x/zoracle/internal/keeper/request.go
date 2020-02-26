@@ -50,7 +50,7 @@ func (k Keeper) AddRequest(
 		validators[i] = validatorsByPower[i].GetOperator()
 	}
 
-	if executeGas > k.EndBlockGasLimit(ctx) {
+	if executeGas > k.EndBlockExecuteGasLimit(ctx) {
 		// TODO: Fix error later
 		return 0, types.ErrRequestNotFound(types.DefaultCodespace)
 	}

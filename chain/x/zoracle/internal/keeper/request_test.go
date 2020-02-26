@@ -102,7 +102,7 @@ func TestRequestCallDataSizeTooBig(t *testing.T) {
 	require.Nil(t, err)
 }
 
-func TestRequestExceedEndBlockGasLimit(t *testing.T) {
+func TestRequestExceedEndBlockExecuteGasLimit(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
 	script := GetTestOracleScript("../../../../owasm/res/silly.wasm")
@@ -121,14 +121,14 @@ func TestRequestExceedEndBlockGasLimit(t *testing.T) {
 		100,
 	)
 
-	// Set EndBlockGasLimit to 10000
-	keeper.SetEndBlockGasLimit(ctx, 10000)
+	// Set EndBlockExecuteGasLimit to 10000
+	keeper.SetEndBlockExecuteGasLimit(ctx, 10000)
 	// Should fail because required execute gas is > 10000
 	_, err := keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, 100, 20000)
 	require.NotNil(t, err)
 
-	// Set EndBlockGasLimit to 30000
-	keeper.SetEndBlockGasLimit(ctx, 30000)
+	// Set EndBlockExecuteGasLimit to 30000
+	keeper.SetEndBlockExecuteGasLimit(ctx, 30000)
 	// Should fail because required execute gas is < 30000
 	_, err = keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, 100, 20000)
 	require.Nil(t, err)
