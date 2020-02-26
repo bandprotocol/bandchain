@@ -160,10 +160,12 @@ func TestRequestSuccess(t *testing.T) {
 	dataSource := keep.GetTestDataSource()
 	keeper.SetDataSource(ctx, 1, dataSource)
 
-	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, sender)
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 1000000, sender)
 
 	// Test here
+	beforeGas := ctx.GasMeter().GasConsumed()
 	got := handleMsgRequestData(ctx, keeper, msg)
+	afterGas := ctx.GasMeter().GasConsumed()
 	require.True(t, got.IsOK(), "expected request to be ok, got %v", got)
 
 	// Check global request count
@@ -172,8 +174,9 @@ func TestRequestSuccess(t *testing.T) {
 	require.Nil(t, err)
 	expectRequest := types.NewRequest(1, calldata,
 		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
-		2, 1581589790, 102,
+		2, 1581589790, 102, 1000000,
 	)
+	expectRequest.ExecuteGas = 1000000
 	require.Equal(t, expectRequest, actualRequest)
 
 	require.Equal(t, int64(1), keeper.GetRawDataRequestCount(ctx, 1))
@@ -182,6 +185,8 @@ func TestRequestSuccess(t *testing.T) {
 		types.NewRawDataRequest(1, []byte("band-protocol")),
 	}
 	require.Equal(t, rawRequests, keeper.GetRawDataRequests(ctx, 1))
+
+	require.True(t, afterGas-beforeGas > 1000000)
 }
 
 func TestRequestInvalidDataSource(t *testing.T) {
@@ -194,7 +199,7 @@ func TestRequestInvalidDataSource(t *testing.T) {
 	calldata := []byte("calldata")
 	sender := sdk.AccAddress([]byte("sender"))
 
-	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, sender)
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 20000, sender)
 	got := handleMsgRequestData(ctx, keeper, msg)
 	require.False(t, got.IsOK())
 
@@ -238,7 +243,7 @@ func TestReportSuccess(t *testing.T) {
 
 	request := types.NewRequest(1, calldata,
 		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
-		2, 1581589790, 102,
+		2, 1581589790, 102, 1000000,
 	)
 	keeper.SetRequest(ctx, 1, request)
 	keeper.SetRawDataRequest(ctx, 1, 42, types.NewRawDataRequest(1, []byte("calldata1")))
@@ -289,7 +294,7 @@ func TestReportFailed(t *testing.T) {
 
 	request := types.NewRequest(1, calldata,
 		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
-		2, 1581589790, 102,
+		2, 1581589790, 102, 1000000,
 	)
 	keeper.SetRequest(ctx, 1, request)
 	keeper.SetRawDataRequest(ctx, 1, 42, types.NewRawDataRequest(1, []byte("calldata1")))
@@ -329,7 +334,7 @@ func TestEndBlock(t *testing.T) {
 	dataSource := keep.GetTestDataSource()
 	keeper.SetDataSource(ctx, 1, dataSource)
 
-	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, sender)
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 2000, sender)
 
 	handleMsgRequestData(ctx, keeper, msg)
 
