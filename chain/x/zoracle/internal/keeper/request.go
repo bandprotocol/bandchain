@@ -49,6 +49,11 @@ func (k Keeper) AddRequest(
 	for i := int64(0); i < requestedValidatorCount; i++ {
 		validators[i] = validatorsByPower[i].GetOperator()
 	}
+
+	if executeGas > k.EndBlockGasLimit(ctx) {
+		// TODO: Fix error later
+		return 0, types.ErrRequestNotFound(types.DefaultCodespace)
+	}
 	ctx.GasMeter().ConsumeGas(executeGas, "ExecuteGas")
 
 	requestID := k.GetNextRequestID(ctx)

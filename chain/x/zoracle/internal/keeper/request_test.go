@@ -26,7 +26,7 @@ func TestGetterSetterRequest(t *testing.T) {
 func TestRequest(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 	keeper.SetMaxCalldataSize(ctx, 20)
-
+	keeper.SetEndBlockGasLimit(ctx, 1000000)
 	ctx = ctx.WithBlockHeight(2)
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
 	calldata := []byte("calldata")
@@ -73,7 +73,7 @@ func TestRequest(t *testing.T) {
 
 func TestRequestCallDataSizeTooBig(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
-
+	keeper.SetEndBlockGasLimit(ctx, 1000000)
 	script := GetTestOracleScript("../../../../owasm/res/silly.wasm")
 	keeper.SetOracleScript(ctx, 1, script)
 
@@ -101,7 +101,39 @@ func TestRequestCallDataSizeTooBig(t *testing.T) {
 	// Should pass because size of "calldata" is < 20
 	_, err = keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, 100, 20000)
 	require.Nil(t, err)
+}
 
+func TestRequestExceedEndBlockGasLimit(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	keeper.SetMaxCalldataSize(ctx, 20)
+	script := GetTestOracleScript("../../../../owasm/res/silly.wasm")
+	keeper.SetOracleScript(ctx, 1, script)
+
+	SetupTestValidator(
+		ctx,
+		keeper,
+		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
+		10,
+	)
+	SetupTestValidator(
+		ctx,
+		keeper,
+		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
+		100,
+	)
+
+	// Set EndBlockGasLimit to 10000
+	keeper.SetEndBlockGasLimit(ctx, 10000)
+	// Should fail because required execute gas is > 10000
+	_, err := keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, 100, 20000)
+	require.NotNil(t, err)
+
+	// Set EndBlockGasLimit to 30000
+	keeper.SetEndBlockGasLimit(ctx, 30000)
+	// Should fail because required execute gas is < 30000
+	_, err = keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, 100, 20000)
+	require.Nil(t, err)
 }
 
 // TestAddNewReceiveValidator tests keeper can add valid validator to request
@@ -195,7 +227,7 @@ func TestSetResolvedOnInvalidRequest(t *testing.T) {
 // TestConsumeGasForExecute tests keeper must consume gas from context correctly.
 func TestConsumeGasForExecute(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
-
+	keeper.SetEndBlockGasLimit(ctx, 1000000)
 	script := GetTestOracleScript("../../../../owasm/res/silly.wasm")
 	keeper.SetOracleScript(ctx, 1, script)
 
