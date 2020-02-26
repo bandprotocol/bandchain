@@ -54,7 +54,7 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 // GetCmdRequest implements the request command handler.
 func GetCmdRequest(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "request [oracle-script-id] (-c [calldata]) (-r [requested-validator-count]) (-v [sufficient-validator-count]) (-x [expiration]) (-g [execute gas])",
+		Use:   "request [oracle-script-id] (-c [calldata]) (-r [requested-validator-count]) (-v [sufficient-validator-count]) (-x [expiration]) (-g [execute-gas])",
 		Short: "Make a new data request via an existing oracle script",
 		Args:  cobra.ExactArgs(1),
 		Long: strings.TrimSpace(
