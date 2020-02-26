@@ -136,6 +136,7 @@ func handleMsgRequestData(ctx sdk.Context, keeper Keeper, msg MsgRequestData) sd
 		msg.RequestedValidatorCount,
 		msg.SufficientValidatorCount,
 		msg.Expiration,
+		msg.ExecuteGas,
 	)
 	if err != nil {
 		return err.Result()

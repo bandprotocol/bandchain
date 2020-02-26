@@ -27,7 +27,7 @@ func (k Keeper) GetRequest(ctx sdk.Context, id int64) (types.Request, sdk.Error)
 // AddRequest attempts to create a new request. An error is returned if some conditions failed.
 func (k Keeper) AddRequest(
 	ctx sdk.Context, oracleScriptID int64, calldata []byte,
-	requestedValidatorCount, sufficientValidatorCount, expiration int64,
+	requestedValidatorCount, sufficientValidatorCount, expiration int64, executeGas uint64,
 ) (int64, sdk.Error) {
 	if !k.CheckOracleScriptExists(ctx, oracleScriptID) {
 		// TODO: fix error later
@@ -49,6 +49,7 @@ func (k Keeper) AddRequest(
 	for i := int64(0); i < requestedValidatorCount; i++ {
 		validators[i] = validatorsByPower[i].GetOperator()
 	}
+	ctx.GasMeter().ConsumeGas(executeGas, "ExecuteGas")
 
 	requestID := k.GetNextRequestID(ctx)
 	k.SetRequest(ctx, requestID, types.NewRequest(
@@ -59,6 +60,7 @@ func (k Keeper) AddRequest(
 		ctx.BlockHeight(),
 		ctx.BlockTime().Unix(),
 		ctx.BlockHeight()+expiration,
+		executeGas,
 	))
 
 	return requestID, nil

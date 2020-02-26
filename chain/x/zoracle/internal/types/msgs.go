@@ -14,6 +14,7 @@ type MsgRequestData struct {
 	RequestedValidatorCount  int64          `json:"requestedValidatorCount"`
 	SufficientValidatorCount int64          `json:"sufficientValidatorCount"`
 	Expiration               int64          `json:"expiration"`
+	ExecuteGas               uint64         `json:"executeGas"`
 	Sender                   sdk.AccAddress `json:"sender"`
 }
 
@@ -24,6 +25,7 @@ func NewMsgRequestData(
 	requestedValidatorCount int64,
 	sufficientValidatorCount int64,
 	expiration int64,
+	executeGas uint64,
 	sender sdk.AccAddress,
 ) MsgRequestData {
 	return MsgRequestData{
@@ -32,6 +34,7 @@ func NewMsgRequestData(
 		RequestedValidatorCount:  requestedValidatorCount,
 		SufficientValidatorCount: sufficientValidatorCount,
 		Expiration:               expiration,
+		ExecuteGas:               executeGas,
 		Sender:                   sender,
 	}
 }
@@ -58,6 +61,9 @@ func (msg MsgRequestData) ValidateBasic() sdk.Error {
 	}
 	if msg.Expiration <= 0 {
 		return sdk.ErrUnknownRequest("Expiration period must be greater than zero")
+	}
+	if msg.ExecuteGas == 0 {
+		return sdk.ErrUnknownRequest("Execute gas must be greater than zero")
 	}
 	return nil
 }
