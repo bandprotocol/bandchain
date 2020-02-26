@@ -75,7 +75,7 @@ func (r *resolver) resolveReadValidatorAddress(vm *exec.VirtualMachine) int64 {
 	resultOffset := int(GetLocalInt64(vm, 0))
 	address, err := r.env.GetValidatorAddress(validatorIndex)
 	if err != nil {
-		panic(err)
+		return 1
 	}
 	copy(vm.Memory[resultOffset:resultOffset+len(address)], address)
 	return 0
@@ -112,7 +112,7 @@ func (r *resolver) resolveRequestExternalData(vm *exec.VirtualMachine) int64 {
 	copy(data, vm.Memory[dataOffset:dataOffset+dataLength])
 	err := r.env.RequestExternalData(dataSourceID, externalDataID, data)
 	if err != nil {
-		panic(err)
+		return 1
 	}
 	return 0
 }
@@ -123,7 +123,7 @@ func (r *resolver) resolveGetExternalDataSize(vm *exec.VirtualMachine) int64 {
 	// TODO: ExternalData should be cached for both this function and the one below.
 	externalData, err := r.env.GetExternalData(externalDataID, validatorIndex)
 	if err != nil {
-		panic(err)
+		return -1
 	}
 	return int64(len(externalData))
 }
@@ -137,7 +137,7 @@ func (r *resolver) resolveReadExternalData(vm *exec.VirtualMachine) int64 {
 	// TODO: ExternalData should be cached for both this function and the one above.
 	externalData, err := r.env.GetExternalData(dataSourceID, externalDataID)
 	if err != nil {
-		panic(err)
+		return 1
 	}
 	copy(vm.Memory[resultOffset:resultOffset+resultSize], externalData[seekOffset:seekOffset+resultSize])
 	return 0
