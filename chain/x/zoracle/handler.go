@@ -151,11 +151,13 @@ func handleMsgRequestData(ctx sdk.Context, keeper Keeper, msg MsgRequestData) sd
 	if err != nil {
 		return err.Result()
 	}
-	_, _, errOwasm := owasm.Execute(&env, script.Code, "prepare", msg.Calldata, 100000)
+	_, _, errOwasm := owasm.Execute(&env, script.Code, "prepare", msg.Calldata, msg.PrepareGas)
 	if errOwasm != nil {
 		// TODO: error
 		return sdk.ErrUnknownRequest(errOwasm.Error()).Result()
 	}
+
+	ctx.GasMeter().ConsumeGas(msg.PrepareGas, "PrepareRequest")
 
 	err = keeper.ValidateDataSourceCount(ctx, id)
 	if err != nil {

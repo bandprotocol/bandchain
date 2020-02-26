@@ -152,7 +152,7 @@ func TestRequestSuccess(t *testing.T) {
 	dataSource := keep.GetTestDataSource()
 	keeper.SetDataSource(ctx, 1, dataSource)
 
-	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 1000000, sender)
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 1000000, 1000000, sender)
 
 	// Test here
 	beforeGas := ctx.GasMeter().GasConsumed()
@@ -177,8 +177,8 @@ func TestRequestSuccess(t *testing.T) {
 		types.NewRawDataRequest(1, []byte("band-protocol")),
 	}
 	require.Equal(t, rawRequests, keeper.GetRawDataRequests(ctx, 1))
-
-	require.True(t, afterGas-beforeGas > 1000000)
+	// check consumed gas must more than 2000000 (prepareGas + executeGas)
+	require.True(t, afterGas-beforeGas > 2000000)
 }
 
 func TestRequestInvalidDataSource(t *testing.T) {
@@ -190,7 +190,7 @@ func TestRequestInvalidDataSource(t *testing.T) {
 	calldata := []byte("calldata")
 	sender := sdk.AccAddress([]byte("sender"))
 
-	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 20000, sender)
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 30, 20000, sender)
 	got := handleMsgRequestData(ctx, keeper, msg)
 	require.False(t, got.IsOK())
 
@@ -206,6 +206,38 @@ func TestRequestInvalidDataSource(t *testing.T) {
 	keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
 
 	got = handleMsgRequestData(ctx, keeper, msg)
+	require.False(t, got.IsOK())
+}
+
+func TestRequestWithPrepareGasExceed(t *testing.T) {
+	// Setup test environment
+	ctx, keeper := keep.CreateTestInput(t, false)
+	keeper.SetMaxCalldataSize(ctx, 20)
+	keeper.SetMaxDataSourceCountPerRequest(ctx, 1)
+
+	ctx = ctx.WithBlockHeight(2)
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	calldata := []byte("calldata")
+	sender := sdk.AccAddress([]byte("sender"))
+
+	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
+	keeper.SetOracleScript(ctx, 1, script)
+
+	pubStr := []string{
+		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
+		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
+	}
+
+	keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
+	keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
+
+	dataSource := keep.GetTestDataSource()
+	keeper.SetDataSource(ctx, 1, dataSource)
+
+	// set prepare gas to 3 (not enough for using) then it occurs error.
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 3, 1000000, sender)
+
+	got := handleMsgRequestData(ctx, keeper, msg)
 	require.False(t, got.IsOK())
 }
 
@@ -323,7 +355,7 @@ func TestEndBlock(t *testing.T) {
 	dataSource := keep.GetTestDataSource()
 	keeper.SetDataSource(ctx, 1, dataSource)
 
-	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 2000, sender)
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 30, 2000, sender)
 
 	handleMsgRequestData(ctx, keeper, msg)
 
