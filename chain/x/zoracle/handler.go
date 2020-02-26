@@ -2,6 +2,7 @@ package zoracle
 
 import (
 	"fmt"
+	"math"
 
 	"github.com/bandprotocol/d3n/chain/owasm"
 	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
@@ -88,14 +89,38 @@ func handleMsgEditOracleScript(ctx sdk.Context, keeper Keeper, msg MsgEditOracle
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
+func addUint64Overflow(a, b uint64) (uint64, bool) {
+	if math.MaxUint64-a < b {
+		return 0, true
+	}
+
+	return a + b, false
+}
+
 func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 	pendingList := keeper.GetPendingResolveList(ctx)
 
-	for _, requestID := range pendingList {
+	endBlockExecuteGasLimit := keeper.EndBlockExecuteGasLimit(ctx)
+	gasConsumed := uint64(0)
+
+	firstUnresolveRequestIndex := len(pendingList)
+
+	for i, requestID := range pendingList {
 		request, err := keeper.GetRequest(ctx, requestID)
 		if err != nil {
 			// Don't expect to happen
 			continue
+		}
+
+		// Discard the request if execute gas is greater than EndBlockExecuteGasLimit.
+		if request.ExecuteGas > endBlockExecuteGasLimit {
+			continue
+		}
+
+		estimatedgasConsumed, overflow := addUint64Overflow(gasConsumed, request.ExecuteGas)
+		if overflow || estimatedgasConsumed > endBlockExecuteGasLimit {
+			firstUnresolveRequestIndex = i
+			break
 		}
 
 		env, err := NewExecutionEnvironment(ctx, keeper, requestID)
@@ -108,7 +133,20 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 			continue
 		}
 
-		result, _, errOwasm := owasm.Execute(&env, script.Code, "execute", request.Calldata, 100000)
+		result, gasUsed, errOwasm := owasm.Execute(
+			&env, script.Code, "execute", request.Calldata, request.ExecuteGas,
+		)
+
+		if gasUsed > request.ExecuteGas {
+			gasUsed = request.ExecuteGas
+		}
+
+		gasConsumed, overflow = addUint64Overflow(gasConsumed, gasUsed)
+		// Don't expect to happen
+		if overflow {
+			panic(sdk.ErrorGasOverflow{Descriptor: "ExecuteRequest"})
+		}
+
 		// TODO: Handle error if happen
 		if errOwasm != nil {
 			continue
@@ -122,7 +160,7 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 		keeper.SetResolve(ctx, requestID, true)
 	}
 
-	keeper.SetPendingResolveList(ctx, []int64{})
+	keeper.SetPendingResolveList(ctx, pendingList[firstUnresolveRequestIndex:])
 
 	// TODO: Emit event
 	return sdk.Result{Events: ctx.EventManager().Events()}

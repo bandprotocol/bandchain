@@ -345,3 +345,230 @@ func TestEndBlock(t *testing.T) {
 	require.Nil(t, err)
 	require.True(t, actualRequest.IsResolved)
 }
+
+func TestEndBlockExecuteFailedIfExecuteGasLessThanGasUsed(t *testing.T) {
+	ctx, keeper := keep.CreateTestInput(t, false)
+
+	ctx = ctx.WithBlockHeight(2)
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	calldata := []byte("calldata")
+	sender := sdk.AccAddress([]byte("sender"))
+
+	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
+	keeper.SetOracleScript(ctx, 1, script)
+
+	pubStr := []string{
+		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
+		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
+	}
+
+	validatorAddress1 := keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
+	validatorAddress2 := keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
+
+	dataSource := keep.GetTestDataSource()
+	keeper.SetDataSource(ctx, 1, dataSource)
+
+	// Set gas for execution to 500
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 500, sender)
+
+	handleMsgRequestData(ctx, keeper, msg)
+
+	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress1, []byte("answer1"))
+	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress2, []byte("answer2"))
+
+	keeper.SetPendingResolveList(ctx, []int64{1})
+
+	got := handleEndBlock(ctx, keeper)
+	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
+
+	require.Equal(t, []int64{}, keeper.GetPendingResolveList(ctx))
+
+	_, err := keeper.GetResult(ctx, 1, 1, calldata)
+	require.NotNil(t, err)
+
+	actualRequest, err := keeper.GetRequest(ctx, 1)
+	require.Nil(t, err)
+	require.False(t, actualRequest.IsResolved)
+}
+
+func TestSkipInvalidExecuteGas(t *testing.T) {
+	ctx, keeper := keep.CreateTestInput(t, false)
+
+	calldata := []byte("calldata")
+	sender := sdk.AccAddress([]byte("sender"))
+
+	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
+	keeper.SetOracleScript(ctx, 1, script)
+
+	pubStr := []string{
+		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
+		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
+	}
+
+	validatorAddress1 := keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
+	validatorAddress2 := keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
+
+	dataSource := keep.GetTestDataSource()
+	keeper.SetDataSource(ctx, 1, dataSource)
+
+	// Set gas for execution to 1000
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 100000, sender)
+	handleMsgRequestData(ctx, keeper, msg)
+
+	msg = types.NewMsgRequestData(1, calldata, 2, 2, 100, 50000, sender)
+	handleMsgRequestData(ctx, keeper, msg)
+
+	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress1, []byte("answer1"))
+	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress2, []byte("answer2"))
+
+	keeper.SetRawDataReport(ctx, 2, 1, validatorAddress1, []byte("answer1"))
+	keeper.SetRawDataReport(ctx, 2, 1, validatorAddress2, []byte("answer2"))
+
+	keeper.SetEndBlockExecuteGasLimit(ctx, 75000)
+
+	keeper.SetPendingResolveList(ctx, []int64{1, 2})
+	got := handleEndBlock(ctx, keeper)
+	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
+	require.Equal(t, []int64{}, keeper.GetPendingResolveList(ctx))
+
+	_, err := keeper.GetResult(ctx, 1, 1, calldata)
+	require.NotNil(t, err)
+
+	actualRequest, err := keeper.GetRequest(ctx, 1)
+	require.Nil(t, err)
+	require.False(t, actualRequest.IsResolved)
+
+	_, err = keeper.GetResult(ctx, 2, 1, calldata)
+	require.Nil(t, err)
+
+	actualRequest, err = keeper.GetRequest(ctx, 2)
+	require.Nil(t, err)
+	require.True(t, actualRequest.IsResolved)
+}
+
+func TestStopResolveWhenOutOfGas(t *testing.T) {
+	ctx, keeper := keep.CreateTestInput(t, false)
+
+	calldata := []byte("calldata")
+	sender := sdk.AccAddress([]byte("sender"))
+
+	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
+	scriptID := int64(1)
+	keeper.SetOracleScript(ctx, scriptID, script)
+
+	pubStr := []string{
+		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
+		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
+	}
+
+	validatorAddress1 := keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
+	validatorAddress2 := keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
+
+	dataSource := keep.GetTestDataSource()
+	keeper.SetDataSource(ctx, 1, dataSource)
+
+	pendingList := []int64{}
+	for i := int64(1); i <= 10; i++ {
+		handleMsgRequestData(
+			ctx, keeper,
+			types.NewMsgRequestData(scriptID, calldata, 2, 2, 100, 2000, sender),
+		)
+
+		keeper.SetRawDataReport(ctx, i, 1, validatorAddress1, []byte("answer1"))
+		keeper.SetRawDataReport(ctx, i, 1, validatorAddress2, []byte("answer2"))
+		pendingList = append(pendingList, i)
+	}
+
+	// Each execute use 1279 gas, so it can resolve 3 requests per block
+	keeper.SetEndBlockExecuteGasLimit(ctx, 5000)
+	keeper.SetPendingResolveList(ctx, pendingList)
+
+	got := handleEndBlock(ctx, keeper)
+	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
+	require.Equal(t, []int64{4, 5, 6, 7, 8, 9, 10}, keeper.GetPendingResolveList(ctx))
+
+	for i := int64(1); i <= 3; i++ {
+		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
+		require.Nil(t, err)
+
+		actualRequest, err := keeper.GetRequest(ctx, i)
+		require.Nil(t, err)
+		require.True(t, actualRequest.IsResolved)
+	}
+
+	for i := int64(4); i <= 10; i++ {
+		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
+		require.NotNil(t, err)
+
+		actualRequest, err := keeper.GetRequest(ctx, i)
+		require.Nil(t, err)
+		require.False(t, actualRequest.IsResolved)
+	}
+
+	got = handleEndBlock(ctx, keeper)
+	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
+	require.Equal(t, []int64{7, 8, 9, 10}, keeper.GetPendingResolveList(ctx))
+
+	for i := int64(1); i <= 6; i++ {
+		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
+		require.Nil(t, err)
+
+		actualRequest, err := keeper.GetRequest(ctx, i)
+		require.Nil(t, err)
+		require.True(t, actualRequest.IsResolved)
+	}
+
+	for i := int64(7); i <= 10; i++ {
+		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
+		require.NotNil(t, err)
+
+		actualRequest, err := keeper.GetRequest(ctx, i)
+		require.Nil(t, err)
+		require.False(t, actualRequest.IsResolved)
+	}
+
+	// New request
+	handleMsgRequestData(
+		ctx, keeper,
+		types.NewMsgRequestData(scriptID, calldata, 2, 2, 100, 2000, sender),
+	)
+
+	got = handleEndBlock(ctx, keeper)
+	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
+	require.Equal(t, []int64{10}, keeper.GetPendingResolveList(ctx))
+
+	for i := int64(1); i <= 9; i++ {
+		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
+		require.Nil(t, err)
+
+		actualRequest, err := keeper.GetRequest(ctx, i)
+		require.Nil(t, err)
+		require.True(t, actualRequest.IsResolved)
+	}
+
+	for i := int64(10); i <= 10; i++ {
+		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
+		require.NotNil(t, err)
+
+		actualRequest, err := keeper.GetRequest(ctx, i)
+		require.Nil(t, err)
+		require.False(t, actualRequest.IsResolved)
+	}
+
+	keeper.SetRawDataReport(ctx, 11, 1, validatorAddress1, []byte("answer1"))
+	keeper.SetRawDataReport(ctx, 11, 1, validatorAddress2, []byte("answer2"))
+	keeper.SetPendingResolveList(ctx, []int64{10, 11})
+
+	got = handleEndBlock(ctx, keeper)
+	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
+	require.Equal(t, []int64{}, keeper.GetPendingResolveList(ctx))
+
+	for i := int64(1); i <= 11; i++ {
+		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
+		require.Nil(t, err)
+
+		actualRequest, err := keeper.GetRequest(ctx, i)
+		require.Nil(t, err)
+		require.True(t, actualRequest.IsResolved)
+	}
+}
