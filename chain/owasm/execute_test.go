@@ -44,3 +44,33 @@ func TestExecuteEndToEnd(t *testing.T) {
 	require.Equal(t, []byte("RETURN_DATA"), result)
 	require.Equal(t, int64(1279), gasUsed)
 }
+
+// DefaultPageSize = 65536 (≈64KB)
+// MaxMemoryPages = 1024
+// MaxUsageMemory = DefaultPageSize * MaxMemoryPages (≈64MB)
+// allocate.wasm is the allocated memory script. It allocates Vec<i64> (i64 ≈ 8 Bytes).
+// Ex. Length of Vec<i64> is 5,000,000. It means the Vector will allocate around 38.146 MB. (≈ 611 Pages)
+func TestAllocateSuccess(t *testing.T) {
+	code, err := ioutil.ReadFile("./res/allocate.wasm")
+	require.Nil(t, err)
+
+	size := make([]byte, 8)
+	binary.LittleEndian.PutUint64(size, uint64(5000000))
+
+	_, _, err = Execute(&mockExecutionEnvironment{}, code, "execute", size, 100000000000000000)
+	require.Nil(t, err)
+}
+
+// Ex. Length of Vec<i64> is 8,500,000. It means the Vector will allocate around 64.84 MB. (≈ 1,038 Pages)
+func TestAllocateFailWithExceedMemory(t *testing.T) {
+	code, err := ioutil.ReadFile("./res/allocate.wasm")
+	require.Nil(t, err)
+
+	size := make([]byte, 8)
+	binary.LittleEndian.PutUint64(size, uint64(8500000))
+
+	_, _, errExecute := Execute(&mockExecutionEnvironment{}, code, "execute", size, 100000000000000000)
+	require.NotNil(t, errExecute)
+}
+
+// TODO: Add more tests for MaxTableSize, MaxValueSlots and MaxCallStackDepth.
