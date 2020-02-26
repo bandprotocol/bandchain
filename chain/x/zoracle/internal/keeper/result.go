@@ -6,6 +6,18 @@ import (
 	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 )
 
+// AddResult is a function to validate result size and set to store.
+func (k Keeper) AddResult(
+	ctx sdk.Context, requestID int64, oracleScriptID int64, calldata []byte, result []byte,
+) sdk.Error {
+	if int64(len(result)) > k.MaxResultSize(ctx) {
+		// TODO: better error later
+		return types.ErrResultNotFound(types.DefaultCodespace)
+	}
+	k.SetResult(ctx, requestID, oracleScriptID, calldata, result)
+	return nil
+}
+
 // SetResult is a function to save result of execute code to store.
 func (k Keeper) SetResult(
 	ctx sdk.Context, requestID int64, oracleScriptID int64, calldata []byte, result []byte,

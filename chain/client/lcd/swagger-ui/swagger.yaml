@@ -5,10 +5,14 @@ info:
   title: D3N
   description: A REST interface for state queries, transaction generation and broadcasting.
 tags:
+  - name: D3N client
+    description: Get lastest block, tx and result proof
   - name: Transactions
     description: Search, encode, or broadcast transactions.
   - name: Tendermint RPC
     description: Tendermint APIs, such as query blocks, transactions and validatorset
+  - name: Zoracle
+    description: Zoracle  module APIs
   - name: Auth
     description: Authenticate accounts
   - name: Bank
@@ -36,6 +40,290 @@ securityDefinitions:
   kms:
     type: basic
 paths:
+  /d3n/blocks/latest:
+    get:
+      summary: Get all blocks order by block id in descending order
+      tags:
+        - D3N client
+      description: Get all blocks order by block id in descending order
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: page
+          description: Page number
+          type: integer
+          x-example: 1
+        - in: query
+          name: limit
+          description: Maximum number of items per page
+          type: integer
+          x-example: 1
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/BlockQuery"
+        500:
+          description: Internal Server Error
+  /d3n/txs/latest:
+    get:
+      summary: Get all txs order by timestamp in descending order
+      tags:
+        - D3N client
+      description: Get all transaction order by timestamp in descending order
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: page
+          description: Page number
+          type: integer
+          x-example: 1
+        - in: query
+          name: limit
+          description: Maximum number of items per page
+          type: integer
+          x-example: 1
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/PaginatedQueryTxs"
+        500:
+          description: Internal Server Error
+  /d3n/proof/{requestID}:
+    get:
+      summary: Get proof of result in the store
+      tags:
+        - D3N client
+      description: Get all transaction order by block id in descending order
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: requestID
+          description: Request id
+          required: true
+          type: number
+          x-example: 1
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Proof"
+        400:
+          description: Invalid request ID
+        500:
+          description: Internal Server Error
+  /d3n/health_check:
+    get:
+      summary: Health check endpoint
+      tags:
+        - D3N client
+      description: Get current status of node
+      produces:
+        - text/plain
+      responses:
+        200:
+          description: UP
+        500:
+          description: Internal Server Error
+  /d3n/provider_status:
+    get:
+      summary: Get current provider status
+      tags:
+        - D3N client
+      description: Get current status of node
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/ProviderStatus"
+        500:
+          description: Internal Server Error
+  /zoracle/request/{requestID}:
+    get:
+      summary: Get request detail by request id
+      tags:
+        - Zoracle
+      description: Get request, raw data request, reports, and result of request by request id
+      parameters:
+        - in: path
+          name: requestID
+          description: Request id
+          required: true
+          type: number
+          x-example: 1
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Request"
+        400:
+          description: Invalid request id
+        500:
+          description: Internal server error
+  /zoracle/requests:
+    get:
+      summary: Get all requests order by request id in descending order
+      tags:
+        - Zoracle
+      description: Get all requests order by request id in descending order.
+      parameters:
+        - in: query
+          name: page
+          description: Page number
+          type: integer
+          x-example: 1
+        - in: query
+          name: limit
+          description: Maximum number of items per page
+          type: integer
+          x-example: 1
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Request"
+        400:
+          description: Invalid request id
+        500:
+          description: Internal server error
+  /zoracle/data_source/{dataSourceID}:
+    get:
+      summary: Get data source detail by data source id
+      tags:
+        - Zoracle
+      description: Get data source detail (executalbe, owner, fee).
+      parameters:
+        - in: path
+          name: dataSourceID
+          description: Data source id
+          required: true
+          type: number
+          x-example: 1
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/DataSource"
+        400:
+          description: Invalid data source id
+        500:
+          description: Internal server error
+  /zoracle/data_sources:
+    get:
+      summary: Get all data sources order by data source id in ascending order
+      tags:
+        - Zoracle
+      description: Get all data sources order by data source id in ascending order.
+      parameters:
+        - in: query
+          name: page
+          description: Page number
+          type: integer
+          x-example: 1
+        - in: query
+          name: limit
+          description: Maximum number of items per page
+          type: integer
+          x-example: 1
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/DataSource"
+        400:
+          description: Invalid data source id
+        500:
+          description: Internal server error
+  /zoracle/oracle_script/{oracleScriptID}:
+    get:
+      summary: Get oracle script detail by oracle script id
+      tags:
+        - Zoracle
+      description: Get oracle script detail (wasm code, owner).
+      parameters:
+        - in: path
+          name: oracleScriptID
+          description: Oracle script id
+          required: true
+          type: number
+          x-example: 1
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/OracleScript"
+        400:
+          description: Invalid oracle script id
+        500:
+          description: Internal server error
+  /zoracle/oracle_scripts:
+    get:
+      summary: Get all oracle scripts order by oracle script id in ascending order
+      tags:
+        - Zoracle
+      description: Get all oracle scripts order by oracle script id in ascending order.
+      parameters:
+        - in: query
+          name: page
+          description: Page number
+          type: integer
+          x-example: 1
+        - in: query
+          name: limit
+          description: Maximum number of items per page
+          type: integer
+          x-example: 1
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/OracleScript"
+        400:
+          description: Invalid oracle script id
+        500:
+          description: Internal server error
+  /zoracle/request_number:
+    get:
+      summary: Get latest request number
+      tags:
+        - Zoracle
+      description: Get latest request id of all requests
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            type: integer
+            example: 1
+        500:
+          description: Internal server error
   /node_info:
     get:
       description: Information about the connected node
@@ -1925,6 +2213,229 @@ paths:
         500:
           description: Internal Server Error
 definitions:
+  ProviderStatus:
+    type: object
+    properties:
+      height:
+        type: integer
+        example: 1
+      id:
+        type: string
+        example: 1
+      num_reporters:
+        type: integer
+        example: 4
+      status:
+        type: string
+        example: GOOD
+  Proof:
+    type: object
+    properties:
+      jsonProof:
+        type: object
+        properties:
+          blockHeight:
+            type: integer
+            example: 123
+          oracleDataProof:
+            type: object
+            properties:
+              version:
+                type: integer
+                example: 3
+              requestID:
+                type: integer
+                example: 1
+              oracleScriptID:
+                type: integer
+                example: 42
+              calldata:
+                type: string
+                example: 455448
+              data:
+                type: string
+                example: 000000000000001200000000000004e1
+              merklePaths:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    isDataOnRight:
+                      type: boolean
+                      example: true
+                    subtreeHeight:
+                      type: integer
+                      example: 1
+                    subtreeSize:
+                      type: integer
+                      example: 16
+                    subtreeVersion:
+                      type: integer
+                      example: 3
+                    siblingHash:
+                      $ref: "#/definitions/Hash"
+          blockRelayProof:
+            type: object
+            properties:
+              oracleIAVLStateHash:
+                $ref: "#/definitions/Hash"
+              otherStoresMerkleHash:
+                $ref: "#/definitions/Hash"
+              supplyStoresMerkleHash:
+                $ref: "#/definitions/Hash"
+              blockHeaderMerkleParts:
+                type: object
+                properties:
+                  versionAndChainIdHash:
+                    $ref: "#/definitions/Hash"
+                  timeHash:
+                    $ref: "#/definitions/Hash"
+                  txCountAndLastBlockInfoHash:
+                    $ref: "#/definitions/Hash"
+                  consensusDataHash:
+                    $ref: "#/definitions/Hash"
+                  lastResultsHash:
+                    $ref: "#/definitions/Hash"
+                  evidenceAndProposerHash:
+                    $ref: "#/definitions/Hash"
+              signedDataPrefix:
+                type: string
+                example: 431B54AB...
+              signatures:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    r:
+                      $ref: "#/definitions/Hash"
+                    s:
+                      $ref: "#/definitions/Hash"
+                    v:
+                      type: integer
+                    signedDataSuffix:
+                      type: string
+                      example: 431B54AB...
+      evmProofBytes:
+        type: string
+        example: 431B54AB...
+  Request:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 1
+      oracleScriptID:
+        type: integer
+        example: 1
+      calldata:
+        type: string
+        example: RVRI
+      requestedValidators:
+        type: array
+        items:
+          type: string
+          example: bandvaloper1r8u4m0wefrdyp7sdde7drtrt94qczggkq8r3xa
+      sufficientValidatorCount:
+        type: integer
+        example: 1
+      expirationHeight:
+        type: integer
+        example: 102
+      isResolved:
+        type: boolean
+        example: true
+      requester:
+        type: string
+        example: band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9
+      requestTx:
+        $ref: "#/definitions/TxDetail"
+      rawDataRequests:
+        type: array
+        items:
+          type: object
+          properties:
+            externalID:
+              type: integer
+              example: 1
+            detail:
+              type: object
+              properties:
+                dataSourceID:
+                  type: integer
+                  example: 1
+                calldata:
+                  type: string
+                  example: ZXRoZXJldW0=
+      reports:
+        type: array
+        items:
+          type: object
+          properties:
+            reporter:
+              type: string
+              example: bandvaloper1r8u4m0wefrdyp7sdde7drtrt94qczggkq8r3xa
+            value:
+              type: array
+              items:
+                type: object
+                properties:
+                  externalDataID:
+                    type: integer
+                    example: 1
+                  data:
+                    type: string
+                    example: MjY4LjQ2
+            tx:
+              $ref: "#/definitions/TxDetail"
+      result:
+        type: string
+        example: AAAAAAAAaPM=
+  DataSource:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 1
+      owner:
+        type: string
+        example: band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9
+      name:
+        type: string
+        example: example data source script
+      fee:
+        type: array
+        items:
+          $ref: "#/definitions/Coin"
+      executable:
+        type: string
+        example: IyEvYmluL3NoCgpzeW1ib2w9JD...
+  OracleScript:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 1
+      owner:
+        type: string
+        example: band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9
+      name:
+        type: string
+        example: example oracle script
+      code:
+        type: string
+        example: IyEvYmluL3NoCgpzeW1ib2w9JD...
+  TxDetail:
+    type: object
+    properties:
+      hash:
+        type: string
+        example: 180593C689D27EF90D5AC768EEBEB689BB3F2532F7F708BB94BDA33101F95227
+      height:
+        type: integer
+        example: 12
+      timestamp:
+        type: string
+        example: "2020-02-23T12:04:26Z"
   CheckTxResult:
     type: object
     properties:
@@ -2016,7 +2527,7 @@ definitions:
     properties:
       denom:
         type: string
-        example: stake
+        example: uband
       amount:
         type: string
         example: "50"

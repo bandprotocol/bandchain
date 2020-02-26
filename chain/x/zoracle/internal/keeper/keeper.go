@@ -78,6 +78,15 @@ func (keeper Keeper) SetMaxRawDataReportSize(ctx sdk.Context, value int64) {
 	keeper.ParamSpace.Set(ctx, types.KeyMaxRawDataReportSize, value)
 }
 
+func (keeper Keeper) MaxResultSize(ctx sdk.Context) (res int64) {
+	keeper.ParamSpace.Get(ctx, types.KeyMaxResultSize, &res)
+	return
+}
+
+func (keeper Keeper) SetMaxResultSize(ctx sdk.Context, value int64) {
+	keeper.ParamSpace.Set(ctx, types.KeyMaxResultSize, value)
+}
+
 // GetParams returns all current parameters as a types.Params instance.
 func (keeper Keeper) GetParams(ctx sdk.Context) types.Params {
 	return types.NewParams(
@@ -86,6 +95,7 @@ func (keeper Keeper) GetParams(ctx sdk.Context) types.Params {
 		keeper.MaxCalldataSize(ctx),
 		keeper.MaxDataSourceCountPerRequest(ctx),
 		keeper.MaxRawDataReportSize(ctx),
+		keeper.MaxResultSize(ctx),
 	)
 }
 
