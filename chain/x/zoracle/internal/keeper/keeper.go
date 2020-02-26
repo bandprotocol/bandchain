@@ -87,6 +87,15 @@ func (keeper Keeper) SetMaxResultSize(ctx sdk.Context, value int64) {
 	keeper.ParamSpace.Set(ctx, types.KeyMaxResultSize, value)
 }
 
+func (keeper Keeper) EndBlockExecuteGasLimit(ctx sdk.Context) (res uint64) {
+	keeper.ParamSpace.Get(ctx, types.KeyEndBlockExecuteGasLimit, &res)
+	return
+}
+
+func (keeper Keeper) SetEndBlockExecuteGasLimit(ctx sdk.Context, value uint64) {
+	keeper.ParamSpace.Set(ctx, types.KeyEndBlockExecuteGasLimit, value)
+}
+
 // GetParams returns all current parameters as a types.Params instance.
 func (keeper Keeper) GetParams(ctx sdk.Context) types.Params {
 	return types.NewParams(
@@ -96,6 +105,7 @@ func (keeper Keeper) GetParams(ctx sdk.Context) types.Params {
 		keeper.MaxDataSourceCountPerRequest(ctx),
 		keeper.MaxRawDataReportSize(ctx),
 		keeper.MaxResultSize(ctx),
+		keeper.EndBlockExecuteGasLimit(ctx),
 	)
 }
 

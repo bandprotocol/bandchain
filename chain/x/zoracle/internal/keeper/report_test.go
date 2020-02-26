@@ -31,7 +31,6 @@ func TestGetterSetterRawDataReport(t *testing.T) {
 
 func TestAddReportSuccess(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
-	keeper.SetMaxRawDataReportSize(ctx, 20)
 
 	request := newDefaultRequest()
 	keeper.SetRequest(ctx, 1, request)
@@ -80,7 +79,6 @@ func TestAddReportSuccess(t *testing.T) {
 
 func TestAddReportFailed(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
-	keeper.SetMaxRawDataReportSize(ctx, 20)
 
 	// Send report on invalid request.
 	err := keeper.AddReport(ctx, 1, []types.RawDataReport{
@@ -196,8 +194,6 @@ func TestAddReportFailed(t *testing.T) {
 
 func TestAddNewRawDataRequestCallDataSizeTooBig(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
-	keeper.SetMaxDataSourceCountPerRequest(ctx, 1)
-	keeper.SetMaxDataSourceExecutableSize(ctx, 20)
 
 	request := newDefaultRequest()
 	keeper.SetRequest(ctx, 1, request)

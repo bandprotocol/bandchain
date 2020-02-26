@@ -14,7 +14,6 @@ import (
 
 func TestQueryDataSourceById(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
-	keeper.SetMaxDataSourceExecutableSize(ctx, 20)
 	// Create variable "querier" which is a function
 	querier := NewQuerier(keeper)
 
@@ -51,7 +50,6 @@ func TestQueryDataSourceById(t *testing.T) {
 
 func TestQueryDataSourcesByStartIdAndNumberOfDataSources(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
-	keeper.SetMaxDataSourceExecutableSize(ctx, 20)
 	// Create variable "querier" which is a function
 	querier := NewQuerier(keeper)
 
@@ -125,7 +123,6 @@ func TestQueryDataSourcesByStartIdAndNumberOfDataSources(t *testing.T) {
 
 func TestQueryDataSourcesGotEmptyArrayBecauseNoDataSource(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
-	keeper.SetMaxDataSourceExecutableSize(ctx, 20)
 	// Create variable "querier" which is a function
 	querier := NewQuerier(keeper)
 
@@ -144,7 +141,6 @@ func TestQueryDataSourcesGotEmptyArrayBecauseNoDataSource(t *testing.T) {
 
 func TestQueryDataSourcesFailBecauseInvalidNumberOfDataSource(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
-	keeper.SetMaxDataSourceExecutableSize(ctx, 20)
 	// Create variable "querier" which is a function
 	querier := NewQuerier(keeper)
 
@@ -392,7 +388,6 @@ func TestQueryRequests(t *testing.T) {
 
 func TestQueryOracleScriptById(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
-	keeper.SetMaxOracleScriptCodeSize(ctx, 20)
 	// Create variable "querier" which is a function
 	querier := NewQuerier(keeper)
 
@@ -428,7 +423,6 @@ func TestQueryOracleScriptById(t *testing.T) {
 
 func TestQueryOracleScriptsByStartIdAndNumberOfOracleScripts(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
-	keeper.SetMaxOracleScriptCodeSize(ctx, 20)
 	// Create variable "querier" which is a function
 	querier := NewQuerier(keeper)
 
@@ -501,7 +495,6 @@ func TestQueryOracleScriptsByStartIdAndNumberOfOracleScripts(t *testing.T) {
 
 func TestQueryOracleScriptsGotEmptyArrayBecauseNoOracleScript(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
-	keeper.SetMaxOracleScriptCodeSize(ctx, 20)
 	// Create variable "querier" which is a function
 	querier := NewQuerier(keeper)
 
@@ -520,7 +513,6 @@ func TestQueryOracleScriptsGotEmptyArrayBecauseNoOracleScript(t *testing.T) {
 
 func TestQueryOracleScriptsFailBecauseInvalidNumberOfOracleScript(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
-	keeper.SetMaxOracleScriptCodeSize(ctx, 20)
 	// Create variable "querier" which is a function
 	querier := NewQuerier(keeper)
 
