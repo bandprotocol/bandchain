@@ -78,7 +78,15 @@ func TestGetSetMaxResultSize(t *testing.T) {
 	require.Equal(t, int64(2), keeper.MaxResultSize(ctx))
 }
 
-func TestGetGetParams(t *testing.T) {
+func TestGetSetEndBlockGasLimit(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+	keeper.SetEndBlockGasLimit(ctx, uint64(3000))
+	require.Equal(t, uint64(3000), keeper.EndBlockGasLimit(ctx))
+	keeper.SetEndBlockGasLimit(ctx, uint64(5000))
+	require.Equal(t, uint64(5000), keeper.EndBlockGasLimit(ctx))
+}
+
+func TestGetSetParams(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
 	keeper.SetMaxDataSourceExecutableSize(ctx, int64(1))
@@ -87,7 +95,8 @@ func TestGetGetParams(t *testing.T) {
 	keeper.SetMaxDataSourceCountPerRequest(ctx, int64(1))
 	keeper.SetMaxRawDataReportSize(ctx, int64(1))
 	keeper.SetMaxResultSize(ctx, int64(1))
-	require.Equal(t, types.NewParams(1, 1, 1, 1, 1, 1), keeper.GetParams(ctx))
+	keeper.SetEndBlockGasLimit(ctx, uint64(200000))
+	require.Equal(t, types.NewParams(1, 1, 1, 1, 1, 1, 200000), keeper.GetParams(ctx))
 
 	keeper.SetMaxDataSourceExecutableSize(ctx, int64(2))
 	keeper.SetMaxOracleScriptCodeSize(ctx, int64(2))
@@ -95,5 +104,6 @@ func TestGetGetParams(t *testing.T) {
 	keeper.SetMaxDataSourceCountPerRequest(ctx, int64(2))
 	keeper.SetMaxRawDataReportSize(ctx, int64(2))
 	keeper.SetMaxResultSize(ctx, int64(2))
-	require.Equal(t, types.NewParams(2, 2, 2, 2, 2, 2), keeper.GetParams(ctx))
+	keeper.SetEndBlockGasLimit(ctx, uint64(300000))
+	require.Equal(t, types.NewParams(2, 2, 2, 2, 2, 2, 300000), keeper.GetParams(ctx))
 }
