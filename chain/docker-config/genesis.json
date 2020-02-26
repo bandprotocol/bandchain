@@ -1,5 +1,5 @@
 {
-  "genesis_time": "2020-02-25T04:13:14.817754Z",
+  "genesis_time": "2020-02-26T12:05:09.250423Z",
   "chain_id": "bandchain",
   "consensus_params": {
     "block": {
@@ -11,66 +11,18 @@
       "max_age": "100000"
     },
     "validator": {
-      "pub_key_types": ["secp256k1"]
+      "pub_key_types": [
+        "secp256k1"
+      ]
     }
   },
   "app_hash": "",
   "app_state": {
-    "staking": {
-      "params": {
-        "unbonding_time": "1814400000000000",
-        "max_validators": 100,
-        "max_entries": 7,
-        "bond_denom": "uband"
-      },
-      "last_total_power": "0",
-      "last_validator_powers": null,
-      "validators": null,
-      "delegations": null,
-      "unbonding_delegations": null,
-      "redelegations": null,
-      "exported": false
-    },
-    "supply": {
-      "supply": []
-    },
-    "slashing": {
-      "params": {
-        "max_evidence_age": "120000000000",
-        "signed_blocks_window": "100",
-        "min_signed_per_window": "0.500000000000000000",
-        "downtime_jail_duration": "600000000000",
-        "slash_fraction_double_sign": "0.050000000000000000",
-        "slash_fraction_downtime": "0.010000000000000000"
-      },
-      "signing_infos": {},
-      "missed_blocks": {}
-    },
-    "mint": {
-      "minter": {
-        "inflation": "0.130000000000000000",
-        "annual_provisions": "0.000000000000000000"
-      },
-      "params": {
-        "mint_denom": "uband",
-        "inflation_rate_change": "0.130000000000000000",
-        "inflation_max": "0.200000000000000000",
-        "inflation_min": "0.070000000000000000",
-        "goal_bonded": "0.670000000000000000",
-        "blocks_per_year": "6311520"
-      }
-    },
-    "bank": {
-      "send_enabled": true
-    },
     "params": null,
-    "zoracle": {
-      "params": {
-        "max_data_source_executable_size": "10240",
-        "max_oracle_script_code_size": "512000",
-        "max_calldata_size": "1024",
-        "max_data_source_count_per_request": "16",
-        "max_raw_data_report_size": "1024"
+    "crisis": {
+      "constant_fee": {
+        "denom": "uband",
+        "amount": "1000"
       }
     },
     "genutil": {
@@ -257,12 +209,6 @@
         }
       ]
     },
-    "crisis": {
-      "constant_fee": {
-        "denom": "uband",
-        "amount": "1000"
-      }
-    },
     "distribution": {
       "fee_pool": {
         "community_pool": []
@@ -279,15 +225,6 @@
       "validator_current_rewards": [],
       "delegator_starting_infos": [],
       "validator_slash_events": []
-    },
-    "auth": {
-      "params": {
-        "max_memo_characters": "256",
-        "tx_sig_limit": "7",
-        "tx_size_cost_per_byte": "10",
-        "sig_verify_cost_ed25519": "590",
-        "sig_verify_cost_secp256k1": "1000"
-      }
     },
     "gov": {
       "starting_proposal_id": "1",
@@ -329,7 +266,9 @@
         "start_time": "0",
         "end_time": "0",
         "module_name": "",
-        "module_permissions": [""]
+        "module_permissions": [
+          ""
+        ]
       },
       {
         "address": "band13zmknvkq2sj920spz90g4r9zjan8g584x8qalj",
@@ -347,7 +286,9 @@
         "start_time": "0",
         "end_time": "0",
         "module_name": "",
-        "module_permissions": [""]
+        "module_permissions": [
+          ""
+        ]
       },
       {
         "address": "band1fwffdxysc5a0hu0falsq4lyneucj05cw0jx2yy",
@@ -365,7 +306,9 @@
         "start_time": "0",
         "end_time": "0",
         "module_name": "",
-        "module_permissions": [""]
+        "module_permissions": [
+          ""
+        ]
       },
       {
         "address": "band1zpmsn2vg2zcrx4jlg49t2f2y2cwjykr679l8r8",
@@ -383,7 +326,9 @@
         "start_time": "0",
         "end_time": "0",
         "module_name": "",
-        "module_permissions": [""]
+        "module_permissions": [
+          ""
+        ]
       },
       {
         "address": "band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9",
@@ -401,8 +346,77 @@
         "start_time": "0",
         "end_time": "0",
         "module_name": "",
-        "module_permissions": [""]
+        "module_permissions": [
+          ""
+        ]
       }
-    ]
+    ],
+    "mint": {
+      "minter": {
+        "inflation": "0.130000000000000000",
+        "annual_provisions": "0.000000000000000000"
+      },
+      "params": {
+        "mint_denom": "uband",
+        "inflation_rate_change": "0.130000000000000000",
+        "inflation_max": "0.200000000000000000",
+        "inflation_min": "0.070000000000000000",
+        "goal_bonded": "0.670000000000000000",
+        "blocks_per_year": "6311520"
+      }
+    },
+    "supply": {
+      "supply": []
+    },
+    "staking": {
+      "params": {
+        "unbonding_time": "1814400000000000",
+        "max_validators": 100,
+        "max_entries": 7,
+        "bond_denom": "uband"
+      },
+      "last_total_power": "0",
+      "last_validator_powers": null,
+      "validators": null,
+      "delegations": null,
+      "unbonding_delegations": null,
+      "redelegations": null,
+      "exported": false
+    },
+    "slashing": {
+      "params": {
+        "max_evidence_age": "120000000000",
+        "signed_blocks_window": "100",
+        "min_signed_per_window": "0.500000000000000000",
+        "downtime_jail_duration": "600000000000",
+        "slash_fraction_double_sign": "0.050000000000000000",
+        "slash_fraction_downtime": "0.010000000000000000"
+      },
+      "signing_infos": {},
+      "missed_blocks": {}
+    },
+    "auth": {
+      "params": {
+        "max_memo_characters": "256",
+        "tx_sig_limit": "7",
+        "tx_size_cost_per_byte": "10",
+        "sig_verify_cost_ed25519": "590",
+        "sig_verify_cost_secp256k1": "1000"
+      }
+    },
+    "bank": {
+      "send_enabled": true
+    },
+    "zoracle": {
+      "params": {
+        "max_data_source_executable_size": "10240",
+        "max_oracle_script_code_size": "512000",
+        "max_calldata_size": "1024",
+        "max_data_source_count_per_request": "16",
+        "max_raw_data_report_size": "1024",
+        "max_result_size": "1024",
+        "end_block_execute_gas_limit": "1000000"
+      }
+    }
   }
 }
