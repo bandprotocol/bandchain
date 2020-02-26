@@ -18,6 +18,7 @@ import (
 )
 
 const (
+	prepareGas = 10000
 	executeGas = 150000
 )
 
@@ -116,7 +117,7 @@ func main() {
 			case "BTC":
 				{
 					fmt.Println(tx.SendTransaction(
-						[]sdk.Msg{zoracle.NewMsgRequestData(1, []byte("BTC"), 4, 4, 100000, executeGas, tx.Sender())},
+						[]sdk.Msg{zoracle.NewMsgRequestData(1, []byte("BTC"), 4, 4, 100000, prepareGas, executeGas, tx.Sender())},
 						0, 10000000, "", "", "",
 						flags.BroadcastBlock,
 					))
@@ -124,7 +125,7 @@ func main() {
 			case "ETH":
 				{
 					fmt.Println(tx.SendTransaction(
-						[]sdk.Msg{zoracle.NewMsgRequestData(1, []byte("ETH"), 4, 4, 100000, executeGas, tx.Sender())},
+						[]sdk.Msg{zoracle.NewMsgRequestData(1, []byte("ETH"), 4, 4, 100000, prepareGas, executeGas, tx.Sender())},
 						0, 10000000, "", "", "",
 						flags.BroadcastBlock,
 					))
@@ -151,7 +152,7 @@ func main() {
 			))
 
 			fmt.Println(tx.SendTransaction(
-				[]sdk.Msg{zoracle.NewMsgRequestData(1, []byte("calldata"), 1, 1, 100, executeGas, tx.Sender())},
+				[]sdk.Msg{zoracle.NewMsgRequestData(1, []byte("calldata"), 1, 1, 100, prepareGas, executeGas, tx.Sender())},
 				0, 10000000, "", "", "",
 				flags.BroadcastBlock,
 			))
