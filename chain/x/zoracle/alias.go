@@ -43,6 +43,7 @@ var (
 	KeyMaxCalldataSize              = types.KeyMaxCalldataSize
 	KeyMaxDataSourceCountPerRequest = types.KeyMaxDataSourceCountPerRequest
 	KeyMaxRawDataReportSize         = types.KeyMaxRawDataReportSize
+	KeyMaxResultSize                = types.KeyMaxResultSize
 
 	QueryRequestByID    = types.QueryRequestByID
 	QueryRequests       = types.QueryRequests

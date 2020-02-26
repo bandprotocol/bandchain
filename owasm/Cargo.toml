@@ -33,4 +33,5 @@ members = [
     "chaintests/crypto_price",
     "chaintests/main",
     "chaintests/silly",
+    "chaindebugtests/allocate",
 ]

@@ -342,6 +342,7 @@ func TestEndBlock(t *testing.T) {
 	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress2, []byte("answer2"))
 
 	keeper.SetPendingResolveList(ctx, []int64{1})
+	keeper.SetMaxResultSize(ctx, int64(1024))
 
 	got := handleEndBlock(ctx, keeper)
 	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
