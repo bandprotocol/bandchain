@@ -23,8 +23,6 @@ func TestGetterSetterDataSource(t *testing.T) {
 	_, err := keeper.GetDataSource(ctx, 1)
 	require.NotNil(t, err)
 
-	// Set MaxDataSourceExecutableSize to 20
-	keeper.SetMaxDataSourceExecutableSize(ctx, 20)
 	err = mockDataSource(ctx, keeper)
 	require.Nil(t, err)
 
@@ -57,8 +55,6 @@ func TestAddTooLongDataSource(t *testing.T) {
 func TestEditDataSource(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
-	// Set MaxDataSourceExecutableSize to 20
-	keeper.SetMaxDataSourceExecutableSize(ctx, 20)
 	err := mockDataSource(ctx, keeper)
 	require.Nil(t, err)
 

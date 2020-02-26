@@ -20,8 +20,6 @@ func TestGetterSetterOracleScript(t *testing.T) {
 	_, err := keeper.GetOracleScript(ctx, 1)
 	require.NotNil(t, err)
 
-	// Set MaxOracleScriptCodeSize to 20
-	keeper.SetMaxOracleScriptCodeSize(ctx, 20)
 	err = mockOracleScript(ctx, keeper)
 	require.Nil(t, err)
 
@@ -52,8 +50,6 @@ func TestAddTooLongOracleScript(t *testing.T) {
 func TestEditOracleScript(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
-	// Set MaxOracleScriptCodeSize to 20
-	keeper.SetMaxOracleScriptCodeSize(ctx, 20)
 	err := mockOracleScript(ctx, keeper)
 	require.Nil(t, err)
 

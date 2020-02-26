@@ -146,8 +146,6 @@ func TestGetValidatorPubKey(t *testing.T) {
 
 func TestRequestExternalData(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
-	keeper.SetMaxCalldataSize(ctx, 20)
-	keeper.SetMaxDataSourceCountPerRequest(ctx, 1)
 	// Set Request
 	keeper.SetRequest(ctx, 1, types.NewRequest(
 		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))},
@@ -175,7 +173,6 @@ func TestRequestExternalData(t *testing.T) {
 
 func TestRequestExternalDataExceedMaxDataSourceCountPerRequest(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
-	keeper.SetMaxCalldataSize(ctx, 20)
 
 	// Set Request
 	keeper.SetRequest(ctx, 1, types.NewRequest(

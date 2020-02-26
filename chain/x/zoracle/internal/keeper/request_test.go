@@ -25,8 +25,7 @@ func TestGetterSetterRequest(t *testing.T) {
 
 func TestRequest(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
-	keeper.SetMaxCalldataSize(ctx, 20)
-	keeper.SetEndBlockGasLimit(ctx, 1000000)
+
 	ctx = ctx.WithBlockHeight(2)
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
 	calldata := []byte("calldata")
@@ -73,7 +72,7 @@ func TestRequest(t *testing.T) {
 
 func TestRequestCallDataSizeTooBig(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
-	keeper.SetEndBlockGasLimit(ctx, 1000000)
+
 	script := GetTestOracleScript("../../../../owasm/res/silly.wasm")
 	keeper.SetOracleScript(ctx, 1, script)
 
@@ -106,7 +105,6 @@ func TestRequestCallDataSizeTooBig(t *testing.T) {
 func TestRequestExceedEndBlockGasLimit(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
-	keeper.SetMaxCalldataSize(ctx, 20)
 	script := GetTestOracleScript("../../../../owasm/res/silly.wasm")
 	keeper.SetOracleScript(ctx, 1, script)
 
@@ -227,7 +225,7 @@ func TestSetResolvedOnInvalidRequest(t *testing.T) {
 // TestConsumeGasForExecute tests keeper must consume gas from context correctly.
 func TestConsumeGasForExecute(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
-	keeper.SetEndBlockGasLimit(ctx, 1000000)
+
 	script := GetTestOracleScript("../../../../owasm/res/silly.wasm")
 	keeper.SetOracleScript(ctx, 1, script)
 
@@ -243,8 +241,6 @@ func TestConsumeGasForExecute(t *testing.T) {
 		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
 		100,
 	)
-
-	keeper.SetMaxCalldataSize(ctx, 20)
 
 	// Consume 20000 gas in request 1
 	beforeGas := ctx.GasMeter().GasConsumed()

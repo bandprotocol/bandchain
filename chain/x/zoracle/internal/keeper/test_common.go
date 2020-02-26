@@ -127,6 +127,15 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 
 	require.Equal(t, account, accountKeeper.GetAccount(ctx, addr))
 
+	// Set default parameter
+	keeper.SetMaxDataSourceExecutableSize(ctx, types.DefaultMaxDataSourceExecutableSize)
+	keeper.SetMaxOracleScriptCodeSize(ctx, types.DefaultMaxOracleScriptCodeSize)
+	keeper.SetMaxCalldataSize(ctx, types.DefaultMaxCalldataSize)
+	keeper.SetMaxDataSourceCountPerRequest(ctx, types.DefaultMaxDataSourceCountPerRequest)
+	keeper.SetMaxRawDataReportSize(ctx, types.DefaultMaxRawDataReportSize)
+	keeper.SetMaxResultSize(ctx, types.DefaultMaxResultSize)
+	keeper.SetEndBlockGasLimit(ctx, types.DefaultEndBlockGasLimit)
+
 	return ctx, keeper
 }
 

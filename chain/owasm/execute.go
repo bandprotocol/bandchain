@@ -15,8 +15,8 @@ func Execute(
 	code []byte,
 	entry string,
 	calldata []byte,
-	gasLimit int64,
-) (result []byte, gasUsed int64, err error) {
+	gasLimit uint64,
+) (result []byte, gasUsed uint64, err error) {
 	resolver := NewResolver(env, calldata)
 	vm, err := exec.NewVirtualMachine(code, exec.VMConfig{
 		MaxMemoryPages:     1024,
@@ -25,7 +25,7 @@ func Execute(
 		MaxCallStackDepth:  128,
 		DefaultMemoryPages: 64,
 		DefaultTableSize:   65536,
-		GasLimit:           uint64(gasLimit),
+		GasLimit:           gasLimit,
 	}, resolver, &compiler.SimpleGasPolicy{GasPerInstruction: 1})
 	if err != nil {
 		return nil, 0, err
@@ -35,5 +35,5 @@ func Execute(
 		return nil, 0, fmt.Errorf("Execute: invalid owasm entry: %s", entry)
 	}
 	_, err = vm.Run(int(entryID))
-	return resolver.result, int64(vm.Gas), err
+	return resolver.result, vm.Gas, err
 }

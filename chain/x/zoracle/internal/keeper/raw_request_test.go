@@ -26,8 +26,6 @@ func TestGettterSetterRawDataRequest(t *testing.T) {
 
 func TestAddNewRawDataRequest(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
-	keeper.SetMaxCalldataSize(ctx, 20)
-	keeper.SetMaxDataSourceCountPerRequest(ctx, 1)
 
 	err := keeper.AddNewRawDataRequest(ctx, 1, 1, 0, []byte("calldata1"))
 	require.NotNil(t, err)
