@@ -50,7 +50,7 @@ func TestExecuteEndToEnd(t *testing.T) {
 // MaxUsageMemory = DefaultPageSize * MaxMemoryPages (≈64MB)
 // allocate.wasm is the allocated memory script. It allocates Vec<i64> (i64 ≈ 8 Bytes).
 // Ex. Length of Vec<i64> is 5,000,000. It means the Vector will allocate around 38.146 MB. (≈ 611 Pages)
-func TestOverflowSuccess(t *testing.T) {
+func TestAllocateSuccess(t *testing.T) {
 	code, err := ioutil.ReadFile("./res/allocate.wasm")
 	require.Nil(t, err)
 
@@ -62,7 +62,7 @@ func TestOverflowSuccess(t *testing.T) {
 }
 
 // Ex. Length of Vec<i64> is 8,500,000. It means the Vector will allocate around 64.84 MB. (≈ 1,038 Pages)
-func TestOverflowFailWithExceedMemory(t *testing.T) {
+func TestAllocateFailWithExceedMemory(t *testing.T) {
 	code, err := ioutil.ReadFile("./res/allocate.wasm")
 	require.Nil(t, err)
 
