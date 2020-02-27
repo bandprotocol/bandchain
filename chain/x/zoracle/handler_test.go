@@ -399,7 +399,7 @@ func TestEndBlockExecuteFailedIfExecuteGasLessThanGasUsed(t *testing.T) {
 	keeper.SetDataSource(ctx, 1, dataSource)
 
 	// Set gas for execution to 500
-	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 500, sender)
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 500, 500, sender)
 
 	handleMsgRequestData(ctx, keeper, msg)
 
@@ -441,11 +441,11 @@ func TestSkipInvalidExecuteGas(t *testing.T) {
 	dataSource := keep.GetTestDataSource()
 	keeper.SetDataSource(ctx, 1, dataSource)
 
-	// Set gas for execution to 1000
-	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 100000, sender)
+	// Set gas for execution to 100000
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 1000000, 100000, sender)
 	handleMsgRequestData(ctx, keeper, msg)
 
-	msg = types.NewMsgRequestData(1, calldata, 2, 2, 100, 50000, sender)
+	msg = types.NewMsgRequestData(1, calldata, 2, 2, 100, 1000000, 50000, sender)
 	handleMsgRequestData(ctx, keeper, msg)
 
 	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress1, []byte("answer1"))
@@ -501,7 +501,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 	for i := int64(1); i <= 10; i++ {
 		handleMsgRequestData(
 			ctx, keeper,
-			types.NewMsgRequestData(scriptID, calldata, 2, 2, 100, 2000, sender),
+			types.NewMsgRequestData(scriptID, calldata, 2, 2, 100, 2000, 2000, sender),
 		)
 
 		keeper.SetRawDataReport(ctx, i, 1, validatorAddress1, []byte("answer1"))
@@ -560,7 +560,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 	// New request
 	handleMsgRequestData(
 		ctx, keeper,
-		types.NewMsgRequestData(scriptID, calldata, 2, 2, 100, 2000, sender),
+		types.NewMsgRequestData(scriptID, calldata, 2, 2, 100, 2000, 2000, sender),
 	)
 
 	got = handleEndBlock(ctx, keeper)
