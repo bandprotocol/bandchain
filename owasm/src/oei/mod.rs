@@ -8,6 +8,10 @@ pub fn get_requested_validator_count() -> i64 {
     unsafe { raw::getRequestedValidatorCount() }
 }
 
+pub fn get_sufficient_validator_count() -> i64 {
+    unsafe { raw::getSufficientValidatorCount() }
+}
+
 pub fn get_received_validator_count() -> i64 {
     unsafe { raw::getReceivedValidatorCount() }
 }
