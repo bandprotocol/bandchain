@@ -47,7 +47,7 @@ func DecodeResult(b []byte) Result {
 }
 
 // Bytes is a helper function for encoding Result to bytes.
-func (result Result) Bytes() []byte {
+func (result Result) EncodeResult() []byte {
 	bs := make([]byte, 40)
 
 	binary.BigEndian.PutUint64(bs[0:8], uint64(result.RequestTime))
