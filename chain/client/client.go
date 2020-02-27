@@ -90,26 +90,52 @@ func LatestTxsRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 
 		// Temporary implementation to get latest tx sort by descending timestamp
 		// Pull request at bandprotocol/d3n:#224
-		searchResult, err := utils.QueryTxsByEvents(cliCtx, []string{"tx.height>0"}, 1, 1000000)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		noTx := searchResult.TotalCount
-		startIdx := noTx - (page-1)*limit - 1 // Latest tx in page
-		endIdx := noTx - page*limit           // Oldest tx in page
+		node, _ := cliCtx.GetNode()
+		block, _ := node.Block(nil)
+		totalTxs := int(block.Block.Header.TotalTxs)
+		endIndex := totalTxs - (page-1)*limit
+		startIndex := totalTxs - page*limit + 1
 
 		var result sdk.SearchTxsResult
 		result.PageNumber = page
-		result.TotalCount = noTx
+		result.TotalCount = totalTxs
 		result.Limit = limit
 		result.Txs = make([]sdk.TxResponse, 0)
-		for ; startIdx >= endIdx && startIdx >= 0; startIdx-- {
-			result.Txs = append(result.Txs, searchResult.Txs[startIdx])
+
+		if startIndex < 1 {
+			startIndex = 1
 		}
+
+		if endIndex < 1 {
+			result.Count = 0
+			rest.PostProcessResponseBare(w, cliCtx, result)
+			return
+		}
+
+		todoIndex := startIndex
+		for todoIndex <= endIndex {
+			pageOfTodoIndex := (todoIndex-1)/limit + 1
+			startIndexOfPage := (pageOfTodoIndex-1)*limit + 1
+			searchResult, err := utils.QueryTxsByEvents(cliCtx, []string{"tx.height>0"}, pageOfTodoIndex, limit)
+
+			if err != nil {
+				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+				return
+			}
+			for i, tx := range searchResult.Txs {
+				indexOfTx := startIndexOfPage + i
+				if indexOfTx >= startIndex && indexOfTx <= endIndex {
+					result.Txs = append(result.Txs, tx)
+					todoIndex = indexOfTx + 1
+				}
+			}
+		}
+
 		result.Count = len(result.Txs)
-		result.PageTotal = (noTx + limit - 1) / limit
+		result.PageTotal = (totalTxs-1)/limit + 1
+		for i, j := 0, len(result.Txs)-1; i < j; i, j = i+1, j-1 {
+			result.Txs[i], result.Txs[j] = result.Txs[j], result.Txs[i]
+		}
 
 		rest.PostProcessResponseBare(w, cliCtx, result)
 	}
