@@ -212,8 +212,6 @@ func TestRequestInvalidDataSource(t *testing.T) {
 func TestRequestWithPrepareGasExceed(t *testing.T) {
 	// Setup test environment
 	ctx, keeper := keep.CreateTestInput(t, false)
-	keeper.SetMaxCalldataSize(ctx, 20)
-	keeper.SetMaxDataSourceCountPerRequest(ctx, 1)
 
 	ctx = ctx.WithBlockHeight(2)
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
