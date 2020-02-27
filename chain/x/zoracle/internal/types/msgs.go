@@ -65,10 +65,10 @@ func (msg MsgRequestData) ValidateBasic() sdk.Error {
 	if msg.Expiration <= 0 {
 		return sdk.ErrUnknownRequest("Expiration period must be greater than zero")
 	}
-	if msg.PrepareGas == 0 {
+	if msg.PrepareGas <= 0 {
 		return sdk.ErrUnknownRequest("Prepare gas must be greater than zero")
 	}
-	if msg.ExecuteGas == 0 {
+	if msg.ExecuteGas <= 0 {
 		return sdk.ErrUnknownRequest("Execute gas must be greater than zero")
 	}
 	return nil
