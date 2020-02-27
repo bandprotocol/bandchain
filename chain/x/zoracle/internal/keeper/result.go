@@ -14,30 +14,49 @@ func (k Keeper) AddResult(
 		// TODO: better error later
 		return types.ErrResultNotFound(types.DefaultCodespace)
 	}
-	k.SetResult(ctx, requestID, oracleScriptID, calldata, result)
+
+	request, err := k.GetRequest(ctx, requestID)
+	if err != nil {
+		return err
+	}
+
+	k.SetResult(ctx, requestID, oracleScriptID, calldata, types.NewResult(
+		request.RequestTime,
+		ctx.BlockTime().Unix(),
+		int64(len(request.RequestedValidators)),
+		request.SufficientValidatorCount,
+		int64(len(request.ReceivedValidators)),
+		result,
+	))
+
 	return nil
 }
 
 // SetResult is a function to save result of execute code to store.
 func (k Keeper) SetResult(
-	ctx sdk.Context, requestID int64, oracleScriptID int64, calldata []byte, result []byte,
+	ctx sdk.Context, requestID int64, oracleScriptID int64, calldata []byte, result types.Result,
 ) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(
 		types.ResultStoreKey(requestID, oracleScriptID, calldata),
-		result,
+		k.cdc.MustMarshalBinaryBare(result),
 	)
 }
 
 // GetResult returns the result bytes in store.
 func (k Keeper) GetResult(
 	ctx sdk.Context, requestID int64, oracleScriptID int64, calldata []byte,
-) ([]byte, sdk.Error) {
+) (types.Result, sdk.Error) {
 	if !k.HasResult(ctx, requestID, oracleScriptID, calldata) {
-		return nil, types.ErrResultNotFound(types.DefaultCodespace)
+		return types.Result{}, types.ErrResultNotFound(types.DefaultCodespace)
 	}
 	store := ctx.KVStore(k.storeKey)
-	return store.Get(types.ResultStoreKey(requestID, oracleScriptID, calldata)), nil
+
+	bz := store.Get(types.ResultStoreKey(requestID, oracleScriptID, calldata))
+	var result types.Result
+	k.cdc.MustUnmarshalBinaryBare(bz, &result)
+
+	return result, nil
 }
 
 // HasResult checks if the result at this request id is present in the store or not.
