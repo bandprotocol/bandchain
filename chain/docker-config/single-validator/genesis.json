@@ -1,5 +1,5 @@
 {
-  "genesis_time": "2020-02-27T10:09:41.186933Z",
+  "genesis_time": "2020-02-27T10:37:13.437818Z",
   "chain_id": "bandchain",
   "consensus_params": {
     "block": {
@@ -18,62 +18,25 @@
   },
   "app_hash": "",
   "app_state": {
-    "accounts": [
-      {
-        "address": "band1r8u4m0wefrdyp7sdde7drtrt94qczggkv38jrk",
-        "coins": [
-          {
-            "denom": "uband",
-            "amount": "10000000000000"
-          }
-        ],
-        "sequence_number": "0",
-        "account_number": "0",
-        "original_vesting": [],
-        "delegated_free": [],
-        "delegated_vesting": [],
-        "start_time": "0",
-        "end_time": "0",
-        "module_name": "",
-        "module_permissions": [
-          ""
-        ]
+    "distribution": {
+      "fee_pool": {
+        "community_pool": []
       },
-      {
-        "address": "band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9",
-        "coins": [
-          {
-            "denom": "uband",
-            "amount": "10000000000000"
-          }
-        ],
-        "sequence_number": "0",
-        "account_number": "0",
-        "original_vesting": [],
-        "delegated_free": [],
-        "delegated_vesting": [],
-        "start_time": "0",
-        "end_time": "0",
-        "module_name": "",
-        "module_permissions": [
-          ""
-        ]
-      }
-    ],
-    "staking": {
-      "params": {
-        "unbonding_time": "1814400000000000",
-        "max_validators": 100,
-        "max_entries": 7,
-        "bond_denom": "uband"
-      },
-      "last_total_power": "0",
-      "last_validator_powers": null,
-      "validators": null,
-      "delegations": null,
-      "unbonding_delegations": null,
-      "redelegations": null,
-      "exported": false
+      "community_tax": "0.020000000000000000",
+      "base_proposer_reward": "0.010000000000000000",
+      "bonus_proposer_reward": "0.040000000000000000",
+      "withdraw_addr_enabled": true,
+      "delegator_withdraw_infos": [],
+      "previous_proposer": "",
+      "outstanding_rewards": [],
+      "validator_accumulated_commissions": [],
+      "validator_historical_rewards": [],
+      "validator_current_rewards": [],
+      "delegator_starting_infos": [],
+      "validator_slash_events": []
+    },
+    "supply": {
+      "supply": []
     },
     "genutil": {
       "gentxs": [
@@ -124,43 +87,6 @@
         }
       ]
     },
-    "slashing": {
-      "params": {
-        "max_evidence_age": "1814400000000000",
-        "signed_blocks_window": "10000",
-        "min_signed_per_window": "0.050000000000000000",
-        "downtime_jail_duration": "600000000000",
-        "slash_fraction_double_sign": "0.050000000000000000",
-        "slash_fraction_downtime": "0.000100000000000000"
-      },
-      "signing_infos": {},
-      "missed_blocks": {}
-    },
-    "mint": {
-      "minter": {
-        "inflation": "0.130000000000000000",
-        "annual_provisions": "0.000000000000000000"
-      },
-      "params": {
-        "mint_denom": "uband",
-        "inflation_rate_change": "0.130000000000000000",
-        "inflation_max": "0.200000000000000000",
-        "inflation_min": "0.070000000000000000",
-        "goal_bonded": "0.670000000000000000",
-        "blocks_per_year": "31557600"
-      }
-    },
-    "zoracle": {
-      "params": {
-        "max_data_source_executable_size": "10240",
-        "max_oracle_script_code_size": "512000",
-        "max_calldata_size": "1024",
-        "max_data_source_count_per_request": "16",
-        "max_raw_data_report_size": "1024",
-        "max_result_size": "1024",
-        "end_block_execute_gas_limit": "1000000"
-      }
-    },
     "gov": {
       "starting_proposal_id": "1",
       "deposits": null,
@@ -170,7 +96,7 @@
         "min_deposit": [
           {
             "denom": "uband",
-            "amount": "512000000"
+            "amount": "1000000000"
           }
         ],
         "max_deposit_period": "172800000000000"
@@ -184,6 +110,41 @@
         "veto": "0.334000000000000000"
       }
     },
+    "staking": {
+      "params": {
+        "unbonding_time": "1814400000000000",
+        "max_validators": 100,
+        "max_entries": 7,
+        "bond_denom": "uband"
+      },
+      "last_total_power": "0",
+      "last_validator_powers": null,
+      "validators": null,
+      "delegations": null,
+      "unbonding_delegations": null,
+      "redelegations": null,
+      "exported": false
+    },
+    "bank": {
+      "send_enabled": true
+    },
+    "crisis": {
+      "constant_fee": {
+        "denom": "uband",
+        "amount": "1000"
+      }
+    },
+    "zoracle": {
+      "params": {
+        "max_data_source_executable_size": "10240",
+        "max_oracle_script_code_size": "512000",
+        "max_calldata_size": "1024",
+        "max_data_source_count_per_request": "16",
+        "max_raw_data_report_size": "1024",
+        "max_result_size": "1024",
+        "end_block_execute_gas_limit": "1000000"
+      }
+    },
     "auth": {
       "params": {
         "max_memo_characters": "512",
@@ -193,34 +154,73 @@
         "sig_verify_cost_secp256k1": "1000"
       }
     },
-    "bank": {
-      "send_enabled": true
-    },
-    "supply": {
-      "supply": []
-    },
-    "distribution": {
-      "fee_pool": {
-        "community_pool": []
+    "mint": {
+      "minter": {
+        "inflation": "0.135000000000000000",
+        "annual_provisions": "0.000000000000000000"
       },
-      "community_tax": "0.020000000000000000",
-      "base_proposer_reward": "0.010000000000000000",
-      "bonus_proposer_reward": "0.040000000000000000",
-      "withdraw_addr_enabled": true,
-      "delegator_withdraw_infos": [],
-      "previous_proposer": "",
-      "outstanding_rewards": [],
-      "validator_accumulated_commissions": [],
-      "validator_historical_rewards": [],
-      "validator_current_rewards": [],
-      "delegator_starting_infos": [],
-      "validator_slash_events": []
-    },
-    "crisis": {
-      "constant_fee": {
-        "denom": "uband",
-        "amount": "1000"
+      "params": {
+        "mint_denom": "uband",
+        "inflation_rate_change": "0.130000000000000000",
+        "inflation_max": "0.200000000000000000",
+        "inflation_min": "0.070000000000000000",
+        "goal_bonded": "0.670000000000000000",
+        "blocks_per_year": "10519200"
       }
-    }
+    },
+    "slashing": {
+      "params": {
+        "max_evidence_age": "1814400000000000",
+        "signed_blocks_window": "10000",
+        "min_signed_per_window": "0.050000000000000000",
+        "downtime_jail_duration": "600000000000",
+        "slash_fraction_double_sign": "0.050000000000000000",
+        "slash_fraction_downtime": "0.000100000000000000"
+      },
+      "signing_infos": {},
+      "missed_blocks": {}
+    },
+    "accounts": [
+      {
+        "address": "band1r8u4m0wefrdyp7sdde7drtrt94qczggkv38jrk",
+        "coins": [
+          {
+            "denom": "uband",
+            "amount": "10000000000000"
+          }
+        ],
+        "sequence_number": "0",
+        "account_number": "0",
+        "original_vesting": [],
+        "delegated_free": [],
+        "delegated_vesting": [],
+        "start_time": "0",
+        "end_time": "0",
+        "module_name": "",
+        "module_permissions": [
+          ""
+        ]
+      },
+      {
+        "address": "band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9",
+        "coins": [
+          {
+            "denom": "uband",
+            "amount": "10000000000000"
+          }
+        ],
+        "sequence_number": "0",
+        "account_number": "0",
+        "original_vesting": [],
+        "delegated_free": [],
+        "delegated_vesting": [],
+        "start_time": "0",
+        "end_time": "0",
+        "module_name": "",
+        "module_permissions": [
+          ""
+        ]
+      }
+    ]
   }
 }
