@@ -39,7 +39,7 @@ func (k Keeper) SetResult(
 	store := ctx.KVStore(k.storeKey)
 	store.Set(
 		types.ResultStoreKey(requestID, oracleScriptID, calldata),
-		k.cdc.MustMarshalBinaryBare(result),
+		result.Bytes(),
 	)
 }
 
@@ -52,11 +52,9 @@ func (k Keeper) GetResult(
 	}
 	store := ctx.KVStore(k.storeKey)
 
-	bz := store.Get(types.ResultStoreKey(requestID, oracleScriptID, calldata))
-	var result types.Result
-	k.cdc.MustUnmarshalBinaryBare(bz, &result)
-
-	return result, nil
+	return types.DecodeResult(
+		store.Get(types.ResultStoreKey(requestID, oracleScriptID, calldata)),
+	), nil
 }
 
 // HasResult checks if the result at this request id is present in the store or not.
