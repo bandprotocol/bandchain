@@ -87,7 +87,8 @@ func LatestTxsRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 
 		// limit maximum must be 100.
 		if limit > 100 {
-			limit = 100
+			rest.WriteErrorResponse(w, http.StatusBadRequest, "limit must be less than or equal 100.")
+			return
 		}
 
 		// TODO: (1) Sort result in desc order after tendermint/tendermint:#4253 is released
