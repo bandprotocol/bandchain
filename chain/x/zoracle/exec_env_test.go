@@ -49,6 +49,24 @@ func TestGetRequestedValidatorCount(t *testing.T) {
 	require.Equal(t, int64(2), env.GetRequestedValidatorCount())
 }
 
+func TestGetSufficientValidatorCount(t *testing.T) {
+	ctx, keeper := keep.CreateTestInput(t, false)
+	keeper.SetRequest(ctx, 1, types.NewRequest(
+		1, []byte("calldata"),
+		[]sdk.ValAddress{
+			sdk.ValAddress([]byte("val1")),
+			sdk.ValAddress([]byte("val2")),
+			sdk.ValAddress([]byte("val3")),
+			sdk.ValAddress([]byte("val4")),
+		},
+		3, 0, 0, 100, 10000,
+	))
+
+	env, err := NewExecutionEnvironment(ctx, keeper, 1)
+	require.Nil(t, err)
+	require.Equal(t, int64(3), env.GetSufficientValidatorCount())
+}
+
 func TestGetReceivedValidatorCount(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
 	keeper.SetRequest(ctx, 1, types.NewRequest(
