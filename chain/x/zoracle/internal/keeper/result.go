@@ -39,7 +39,7 @@ func (k Keeper) SetResult(
 	store := ctx.KVStore(k.storeKey)
 	store.Set(
 		types.ResultStoreKey(requestID, oracleScriptID, calldata),
-		result.Bytes(),
+		result.EncodeResult(),
 	)
 }
 
