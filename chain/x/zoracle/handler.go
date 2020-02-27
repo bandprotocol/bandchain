@@ -153,7 +153,6 @@ func handleMsgRequestData(ctx sdk.Context, keeper Keeper, msg MsgRequestData) sd
 	}
 
 	ctx.GasMeter().ConsumeGas(msg.PrepareGas, "PrepareRequest")
-
 	_, _, errOwasm := owasm.Execute(&env, script.Code, "prepare", msg.Calldata, msg.PrepareGas)
 	if errOwasm != nil {
 		// TODO: error
