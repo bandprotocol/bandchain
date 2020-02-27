@@ -18,6 +18,15 @@ type Request struct {
 	IsResolved               bool             `json:"isResolved"`
 }
 
+// Result is a data structure that stores the detail of a result of a specific request.
+type Result struct {
+	RequestTime              int64 `json:"requestTime"`
+	AggregationTime          int64 `json:"aggregationTime"`
+	RequestedValidatorsCount int64 `json:"requestedValidatorsCount"`
+	SufficientValidatorCount int64 `json:"sufficientValidatorCount"`
+	ReportedValidatorsCount  int64 `json:"reportedValidatorsCount"`
+}
+
 // NewRequest creates a new Request instance.
 func NewRequest(
 	oracleScriptID int64,
