@@ -117,8 +117,8 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 			continue
 		}
 
-		estimatedgasConsumed, overflow := addUint64Overflow(gasConsumed, request.ExecuteGas)
-		if overflow || estimatedgasConsumed > endBlockExecuteGasLimit {
+		estimatedGasConsumed, overflow := addUint64Overflow(gasConsumed, request.ExecuteGas)
+		if overflow || estimatedGasConsumed > endBlockExecuteGasLimit {
 			firstUnresolvedRequestIndex = i
 			break
 		}
