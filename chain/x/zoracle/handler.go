@@ -103,7 +103,7 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 	endBlockExecuteGasLimit := keeper.EndBlockExecuteGasLimit(ctx)
 	gasConsumed := uint64(0)
 
-	firstUnresolveRequestIndex := len(pendingList)
+	firstUnresolvedRequestIndex := len(pendingList)
 
 	for i, requestID := range pendingList {
 		request, err := keeper.GetRequest(ctx, requestID)
@@ -119,7 +119,7 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 
 		estimatedgasConsumed, overflow := addUint64Overflow(gasConsumed, request.ExecuteGas)
 		if overflow || estimatedgasConsumed > endBlockExecuteGasLimit {
-			firstUnresolveRequestIndex = i
+			firstUnresolvedRequestIndex = i
 			break
 		}
 
@@ -142,7 +142,8 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 		}
 
 		gasConsumed, overflow = addUint64Overflow(gasConsumed, gasUsed)
-		// Don't expect to happen
+		// Must never overflow because we already checked for overflow above with
+		// gasConsumed + request.ExecuteGas (which is >= gasUsed).
 		if overflow {
 			panic(sdk.ErrorGasOverflow{Descriptor: "ExecuteRequest"})
 		}
@@ -160,7 +161,7 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 		keeper.SetResolve(ctx, requestID, true)
 	}
 
-	keeper.SetPendingResolveList(ctx, pendingList[firstUnresolveRequestIndex:])
+	keeper.SetPendingResolveList(ctx, pendingList[firstUnresolvedRequestIndex:])
 
 	// TODO: Emit event
 	return sdk.Result{Events: ctx.EventManager().Events()}
