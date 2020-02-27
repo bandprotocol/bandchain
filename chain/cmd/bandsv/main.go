@@ -32,6 +32,7 @@ const (
 	DefaultRequestedValidatorCount  = 1
 	DefaultSufficientValidatorCount = 1
 	DefaultExpiration               = 100
+	DefaultPrepareGas               = 10000
 	DefaultExecuteGas               = 50000
 )
 
@@ -113,6 +114,7 @@ func handleRequestData(c *gin.Context) {
 				req.RequestedValidatorCount,
 				req.SufficientValidatorCount,
 				req.Expiration,
+				DefaultPrepareGas,
 				DefaultExecuteGas,
 				bandClient.Sender(),
 			),
@@ -137,6 +139,7 @@ func handleRequestData(c *gin.Context) {
 			req.RequestedValidatorCount,
 			req.SufficientValidatorCount,
 			req.Expiration,
+			DefaultPrepareGas,
 			DefaultExecuteGas,
 			bandClient.Sender(),
 		),
