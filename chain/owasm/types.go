@@ -13,7 +13,7 @@ type ExecutionEnvironment interface {
 	GetRequestedValidatorCount() int64
 
 	// GetSufficientValidatorCount returns the number number of validators
-	// that is enough to push this data request into the aggregation phase
+	// that is enough to push this data request into the aggregation phase.
 	GetSufficientValidatorCount() int64
 
 	// GetReceivedValidatorCount returns the number of validators among the
