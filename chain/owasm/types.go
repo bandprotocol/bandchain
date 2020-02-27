@@ -12,6 +12,10 @@ type ExecutionEnvironment interface {
 	// data request specifies for the oracle query.
 	GetRequestedValidatorCount() int64
 
+	// GetSufficientValidatorCount returns the number number of validators
+	// that is enough to push this data request into the aggregation phase
+	GetSufficientValidatorCount() int64
+
 	// GetReceivedValidatorCount returns the number of validators among the
 	// requested ones that replied with raw data reports. Return zero during the
 	// *preparation* phase.
