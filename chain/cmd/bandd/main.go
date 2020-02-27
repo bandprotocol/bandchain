@@ -155,9 +155,6 @@ func InitCmd(ctx *server.Context, cdc *codec.Codec, customAppState map[string]js
 				}
 			}
 
-			// fmt.Println("================================")
-			// fmt.Println(genDoc.ConsensusParams.Validator)
-			displayInfo(cdc, newPrintInfo(config.Moniker, chainID, nodeID, "", appState))
 			genDoc.ChainID = chainID
 			genDoc.Validators = nil
 			genDoc.AppState = appState
