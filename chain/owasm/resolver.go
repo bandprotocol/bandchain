@@ -21,6 +21,8 @@ func (r *resolver) ResolveFunc(module, field string) exec.FunctionImport {
 		return r.resolveGetCurrentRequestID
 	case "getRequestedValidatorCount":
 		return r.resolveGetRequestedValidatorCount
+	case "getSufficientValidatorCount":
+		return r.resolveGetSufficientValidatorCount
 	case "getReceivedValidatorCount":
 		return r.resolveGetReceivedValidatorCount
 	case "getPrepareBlockTime":
@@ -56,6 +58,10 @@ func (r *resolver) resolveGetCurrentRequestID(vm *exec.VirtualMachine) int64 {
 
 func (r *resolver) resolveGetRequestedValidatorCount(vm *exec.VirtualMachine) int64 {
 	return r.env.GetRequestedValidatorCount()
+}
+
+func (r *resolver) resolveGetSufficientValidatorCount(vm *exec.VirtualMachine) int64 {
+	return r.env.GetSufficientValidatorCount()
 }
 
 func (r *resolver) resolveGetReceivedValidatorCount(vm *exec.VirtualMachine) int64 {
