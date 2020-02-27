@@ -27,6 +27,7 @@ const (
 	flagRequestedValidatorCount  = "requested-validator-count"
 	flagSufficientValidatorCount = "sufficient-validator-count"
 	flagExpiration               = "expiration"
+	flagPrepareGas               = "prepare-gas"
 	flagExecuteGas               = "execute-gas"
 )
 
@@ -54,14 +55,14 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 // GetCmdRequest implements the request command handler.
 func GetCmdRequest(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "request [oracle-script-id] (-c [calldata]) (-r [requested-validator-count]) (-v [sufficient-validator-count]) (-x [expiration]) (-g [execute-gas])",
+		Use:   "request [oracle-script-id] (-c [calldata]) (-r [requested-validator-count]) (-v [sufficient-validator-count]) (-x [expiration]) (-w [prepare-gas]) (-g [execute-gas])",
 		Short: "Make a new data request via an existing oracle script",
 		Args:  cobra.ExactArgs(1),
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Make a new request via an existing oracle script with the configuration flags.
 Example:
-$ %s tx zoracle request 1 -c 1234abcdef -r 4 -v 3 -x 20 --from mykey
-$ %s tx zoracle request 1 --calldata 1234abcdef --requested-validator-count 4 --sufficient-validator-count 3 --expiration 20 --from mykey
+$ %s tx zoracle request 1 -c 1234abcdef -r 4 -v 3 -x 20 -w 50 -g 5000 --from mykey
+$ %s tx zoracle request 1 --calldata 1234abcdef --requested-validator-count 4 --sufficient-validator-count 3 --expiration 20 --prepare-gas 50 --execute-gas 5000 --from mykey
 `,
 				version.ClientName, version.ClientName,
 			),
@@ -95,6 +96,12 @@ $ %s tx zoracle request 1 --calldata 1234abcdef --requested-validator-count 4 --
 			if err != nil {
 				return err
 			}
+
+			prepareGas, err := cmd.Flags().GetUint64(flagPrepareGas)
+			if err != nil {
+				return err
+			}
+
 			executionGas, err := cmd.Flags().GetUint64(flagExecuteGas)
 			if err != nil {
 				return err
@@ -106,6 +113,7 @@ $ %s tx zoracle request 1 --calldata 1234abcdef --requested-validator-count 4 --
 				requestedValidatorCount,
 				sufficientValidatorCount,
 				expiration,
+				prepareGas,
 				executionGas,
 				cliCtx.GetFromAddress(),
 			)
@@ -126,6 +134,8 @@ $ %s tx zoracle request 1 --calldata 1234abcdef --requested-validator-count 4 --
 	cmd.MarkFlagRequired(flagSufficientValidatorCount)
 	cmd.Flags().Int64P(flagExpiration, "x", 0, "Maximum block count before the data request is considered expired")
 	cmd.MarkFlagRequired(flagExpiration)
+	cmd.Flags().Uint64P(flagPrepareGas, "w", 0, "The amount of gas that will be reserved for prepare function")
+	cmd.MarkFlagRequired(flagPrepareGas)
 	cmd.Flags().Uint64P(flagExecuteGas, "g", 0, "The amount of gas that will be reserved for later execution")
 	cmd.MarkFlagRequired(flagExecuteGas)
 
