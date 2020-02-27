@@ -369,7 +369,17 @@ func TestEndBlock(t *testing.T) {
 
 	result, err := keeper.GetResult(ctx, 1, 1, calldata)
 	require.Nil(t, err)
-	require.Equal(t, []byte("answer2"), result)
+	require.Equal(t,
+		types.Result{
+			RequestTime:              1581589790,
+			AggregationTime:          1581589790,
+			RequestedValidatorsCount: 2,
+			SufficientValidatorCount: 2,
+			ReportedValidatorsCount:  0,
+			Data:                     []byte("answer2"),
+		},
+		result,
+	)
 
 	actualRequest, err := keeper.GetRequest(ctx, 1)
 	require.Nil(t, err)
