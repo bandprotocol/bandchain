@@ -20,6 +20,18 @@ func TestExecuteCanCallEnv(t *testing.T) {
 	require.Equal(t, uint64(1056), gasUsed)
 }
 
+// Test get number of sufficient validators from env
+func TestGetSufficientValidatorCount(t *testing.T) {
+	code, err := ioutil.ReadFile("./res/get_env.wasm")
+	require.Nil(t, err)
+
+	result, _, errExecute := Execute(&mockExecutionEnvironment{
+		sufficientValidatorCount: 99,
+	}, code, "execute", []byte("getSufficientValidatorCount"), 100000000000000000)
+	require.Nil(t, errExecute)
+	require.Equal(t, uint64(99), binary.BigEndian.Uint64(result))
+}
+
 func TestExecuteOutOfGas(t *testing.T) {
 	code, err := ioutil.ReadFile("./res/main.wasm")
 	require.Nil(t, err)

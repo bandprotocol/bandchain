@@ -1,6 +1,7 @@
 extern "C" {
     pub fn getCurrentRequestID() -> i64;
     pub fn getRequestedValidatorCount() -> i64;
+    pub fn getSufficientValidatorCount() -> i64;
     pub fn getReceivedValidatorCount() -> i64;
     pub fn getPrepareBlockTime() -> i64;
     pub fn getAggregateBlockTime() -> i64;
