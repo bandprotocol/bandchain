@@ -39,7 +39,7 @@ func (env *ExecutionEnvironment) GetRequestedValidatorCount() int64 {
 }
 
 func (env *ExecutionEnvironment) GetSufficientValidatorCount() int64 {
-	return int64(env.request.SufficientValidatorCount)
+	return env.request.SufficientValidatorCount
 }
 
 func (env *ExecutionEnvironment) GetReceivedValidatorCount() int64 {
