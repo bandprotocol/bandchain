@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"testing"
+	"time"
 
 	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -37,6 +38,8 @@ func TestAddResultSuccess(t *testing.T) {
 		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))}, 1, 0, 0, 100, 10000,
 	))
 
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589999), 0))
+
 	err = keeper.AddResult(ctx, 1, 1, []byte("calldata"), []byte("result"))
 	require.Nil(t, err)
 
@@ -46,7 +49,7 @@ func TestAddResultSuccess(t *testing.T) {
 		t,
 		types.Result{
 			RequestTime:              0,
-			AggregationTime:          0,
+			AggregationTime:          1581589999,
 			RequestedValidatorsCount: 1,
 			SufficientValidatorCount: 1,
 			ReportedValidatorsCount:  0,
