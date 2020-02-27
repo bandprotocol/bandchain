@@ -45,7 +45,7 @@ pub fn save_return_data(data: &[u8]) {
     unsafe { assert_eq!(0, raw::saveReturnData(data.as_ptr(), data.len() as i64)) }
 }
 
-pub fn request_external_data(data_source_id: i64, external_id: i64, calldata: &[u8]) {
+pub fn request_external_data(data_source_id: i64, external_id: i64, calldata: &str) {
     unsafe {
         assert_eq!(
             0,
@@ -59,7 +59,7 @@ pub fn request_external_data(data_source_id: i64, external_id: i64, calldata: &[
     }
 }
 
-pub fn get_external_data(external_id: i64, validator_index: i64) -> Option<Vec<u8>> {
+pub fn get_external_data(external_id: i64, validator_index: i64) -> Option<String> {
     unsafe {
         let data_size = raw::getExternalDataSize(external_id, validator_index);
         if data_size == -1 {
@@ -76,7 +76,7 @@ pub fn get_external_data(external_id: i64, validator_index: i64) -> Option<Vec<u
                     data_size
                 )
             );
-            Some(data)
+            Some(String::from_utf8_unchecked(data))
         }
     }
 }

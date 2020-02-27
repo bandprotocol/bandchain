@@ -10,3 +10,4 @@ crate-type = ["cdylib"]
 
 [dependencies]
 owasm = { path = "../.." }
+wee_alloc = "*"

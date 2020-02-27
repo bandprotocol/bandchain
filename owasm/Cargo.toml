@@ -32,6 +32,7 @@ members = [
     "examples/random_u64",
     "chaintests/crypto_price",
     "chaintests/main",
+    "chaintests/moresilly",
     "chaintests/silly",
     "chaintests/get_env",
     "chaindebugtests/allocate",
