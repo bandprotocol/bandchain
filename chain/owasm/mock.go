@@ -3,13 +3,14 @@ package owasm
 import "fmt"
 
 type mockExecutionEnvironment struct {
-	requestID               int64
-	requestedValidatorCount int64
-	receivedValidatorCount  int64
-	prepareBlockTime        int64
-	aggregateBlockTime      int64
-	validatorAddresses      [][]byte
-	externalDataResults     [][][]byte
+	requestID                int64
+	requestedValidatorCount  int64
+	sufficientValidatorCount int64
+	receivedValidatorCount   int64
+	prepareBlockTime         int64
+	aggregateBlockTime       int64
+	validatorAddresses       [][]byte
+	externalDataResults      [][][]byte
 }
 
 func (m *mockExecutionEnvironment) GetCurrentRequestID() int64 {
@@ -18,6 +19,10 @@ func (m *mockExecutionEnvironment) GetCurrentRequestID() int64 {
 
 func (m *mockExecutionEnvironment) GetRequestedValidatorCount() int64 {
 	return m.requestedValidatorCount
+}
+
+func (m *mockExecutionEnvironment) GetSufficientValidatorCount() int64 {
+	return m.sufficientValidatorCount
 }
 
 func (m *mockExecutionEnvironment) GetReceivedValidatorCount() int64 {
