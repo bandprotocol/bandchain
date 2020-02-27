@@ -85,6 +85,11 @@ func LatestTxsRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
+		// limit maximum must be 100.
+		if limit > 100 {
+			limit = 100
+		}
+
 		// TODO: (1) Sort result in desc order after tendermint/tendermint:#4253 is released
 		// TODO: (2) Perform binary search on 'tx.height>?' to optimize the performance
 
@@ -100,6 +105,7 @@ func LatestTxsRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		result.PageNumber = page
 		result.TotalCount = totalTxs
 		result.Limit = limit
+		result.PageTotal = (totalTxs-1)/limit + 1
 		result.Txs = make([]sdk.TxResponse, 0)
 
 		if startIndex < 1 {
@@ -132,7 +138,6 @@ func LatestTxsRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		result.Count = len(result.Txs)
-		result.PageTotal = (totalTxs-1)/limit + 1
 		for i, j := 0, len(result.Txs)-1; i < j; i, j = i+1, j-1 {
 			result.Txs[i], result.Txs[j] = result.Txs[j], result.Txs[i]
 		}
