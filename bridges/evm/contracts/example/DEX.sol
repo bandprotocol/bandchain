@@ -70,7 +70,7 @@ contract DEX is Ownable {
 
     require(result.oracleScriptId == oracleScriptId, "INVALID_ORACLE_SCRIPT");
 
-    (uint256 ethPrice, uint256 otherPrice) = bytesToPrices(result.data);
+    (uint256 ethPrice, uint256 otherPrice) = bytesToPrices(result.result.data);
 
     uint256 tokenEarn = msg.value.mul(ethPrice).div(otherPrice);
 
@@ -88,7 +88,7 @@ contract DEX is Ownable {
       "INSUFFICIENT_TOKENS"
     );
 
-    (uint256 ethPrice, uint256 otherPrice) = bytesToPrices(result.data);
+    (uint256 ethPrice, uint256 otherPrice) = bytesToPrices(result.result.data);
 
     uint256 ethEarn = _amount.mul(otherPrice).div(ethPrice);
 
