@@ -39,7 +39,7 @@ contract LuckyNumber is Ownable {
     require(result.oracleScriptId == oracleScriptId, "INVALID_ORACLE_SCRIPT");
 
     require(maxNumber == bytesToU64(result.params), "INVALID_MAX_NUM");
-    require(target == bytesToU64(result.data), "WRONG_GUESS");
+    require(target == bytesToU64(result.result.data), "WRONG_GUESS");
     msg.sender.transfer(address(this).balance);
   }
 
