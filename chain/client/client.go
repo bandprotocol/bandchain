@@ -85,7 +85,6 @@ func LatestTxsRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		// limit maximum must be 100.
 		if limit > 100 {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, "limit must not be greater than 100.")
 			return
