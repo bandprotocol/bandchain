@@ -140,10 +140,10 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
     <VSpacing size=Spacing.xl />
     <Tab
       tabs=[|
-        {name: "Transactions", route: Route.ScriptIndexPage(codeHash, Route.ScriptTransactions)},
-        {name: "Code", route: Route.ScriptIndexPage(codeHash, Route.ScriptCode)},
-        {name: "Execute", route: Route.ScriptIndexPage(codeHash, Route.ScriptExecute)},
-        {name: "Integration", route: Route.ScriptIndexPage(codeHash, Route.ScriptIntegration)},
+        {name: "TRANSACTIONS", route: Route.ScriptIndexPage(codeHash, Route.ScriptTransactions)},
+        {name: "CODE", route: Route.ScriptIndexPage(codeHash, Route.ScriptCode)},
+        {name: "EXECUTE", route: Route.ScriptIndexPage(codeHash, Route.ScriptExecute)},
+        {name: "INTEGRATION", route: Route.ScriptIndexPage(codeHash, Route.ScriptIntegration)},
       |]
       currentRoute={Route.ScriptIndexPage(codeHash, hashtag)}>
       {switch (hashtag) {
