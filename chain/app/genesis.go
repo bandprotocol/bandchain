@@ -44,7 +44,7 @@ func NewDefaultGenesisState() GenesisState {
 		}),
 		staking.ModuleName: staking.ModuleCdc.MustMarshalJSON(staking.GenesisState{
 			Params: staking.Params{
-				UnbondingTime: time.Hour * 24 * 7 * 3,
+				UnbondingTime: time.Hour * 24 * 7 * 3, // 3 weeks
 				BondDenom:     "uband",
 				MaxEntries:    7,
 				MaxValidators: 100,
@@ -53,14 +53,14 @@ func NewDefaultGenesisState() GenesisState {
 		mint.ModuleName: mint.ModuleCdc.MustMarshalJSON(mint.GenesisState{
 			Minter: mint.Minter{
 				AnnualProvisions: sdk.NewDecWithPrec(0, 0),
-				Inflation:        sdk.NewDecWithPrec(135, 3),
+				Inflation:        sdk.NewDecWithPrec(135, 3), // 13.5%
 			},
 			Params: mint.Params{
-				BlocksPerYear:       10519200, //  assuming 3 second  block times
-				GoalBonded:          sdk.NewDecWithPrec(67, 2),
-				InflationMax:        sdk.NewDecWithPrec(20, 2),
-				InflationMin:        sdk.NewDecWithPrec(7, 2),
-				InflationRateChange: sdk.NewDecWithPrec(13, 2),
+				BlocksPerYear:       10519200,                  // 3 second  block times
+				GoalBonded:          sdk.NewDecWithPrec(67, 2), // 67%
+				InflationMax:        sdk.NewDecWithPrec(20, 2), // 20%
+				InflationMin:        sdk.NewDecWithPrec(7, 2),  // 7%
+				InflationRateChange: sdk.NewDecWithPrec(13, 2), // 13%
 				MintDenom:           "uband",
 			},
 		}),
@@ -89,22 +89,22 @@ func NewDefaultGenesisState() GenesisState {
 				VotingPeriod: 86400 * 2 * time.Second, // 2 days
 			},
 			TallyParams: gov.TallyParams{
-				Quorum:    sdk.NewDecWithPrec(4, 1),
-				Threshold: sdk.NewDecWithPrec(5, 1),
-				Veto:      sdk.NewDecWithPrec(334, 3),
+				Quorum:    sdk.NewDecWithPrec(4, 1),   //  40%
+				Threshold: sdk.NewDecWithPrec(5, 1),   // 50%
+				Veto:      sdk.NewDecWithPrec(334, 3), // 33.4%
 			},
 		}),
 		crisis.ModuleName: crisis.ModuleCdc.MustMarshalJSON(crisis.GenesisState{
-			ConstantFee: sdk.NewCoin("uband", sdk.NewInt(1000)),
+			ConstantFee: sdk.NewCoin("uband", sdk.TokensFromConsensusPower(10000)),
 		}),
 		slashing.ModuleName: slashing.ModuleCdc.MustMarshalJSON(slashing.GenesisState{
 			Params: slashing.Params{
-				MaxEvidenceAge:          60 * 30240 * time.Second,
+				MaxEvidenceAge:          60 * 30240 * time.Second, // 3 weeks
 				SignedBlocksWindow:      int64(10000),
-				MinSignedPerWindow:      sdk.NewDecWithPrec(5, 2),
-				DowntimeJailDuration:    60 * 10 * time.Second,
-				SlashFractionDoubleSign: sdk.NewDecWithPrec(5, 2),
-				SlashFractionDowntime:   sdk.NewDecWithPrec(1, 4),
+				MinSignedPerWindow:      sdk.NewDecWithPrec(5, 2), // 50%
+				DowntimeJailDuration:    60 * 10 * time.Second,    //  10  minutes
+				SlashFractionDoubleSign: sdk.NewDecWithPrec(5, 2), //  50%
+				SlashFractionDowntime:   sdk.NewDecWithPrec(1, 4), // 0.01%
 			},
 			SigningInfos: make(map[string]slashing.ValidatorSigningInfo),
 			MissedBlocks: make(map[string][]slashing.MissedBlock),
