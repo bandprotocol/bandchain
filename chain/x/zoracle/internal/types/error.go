@@ -30,6 +30,10 @@ func ErrResultNotFound(codespace sdk.CodespaceType) sdk.Error {
 	return sdk.NewError(codespace, CodeResultNotFound, "result not found")
 }
 
+func ErrDecodeResultFail(codespace sdk.CodespaceType) sdk.Error {
+	return sdk.NewError(codespace, CodeResultNotFound, "result decoding fail")
+}
+
 func ErrInvalidValidator(codespace sdk.CodespaceType) sdk.Error {
 	return sdk.NewError(codespace, CodeInvalidValidator, "validator invalid")
 }
