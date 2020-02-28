@@ -2,9 +2,19 @@ pragma solidity 0.5.14;
 pragma experimental ABIEncoderV2;
 
 interface IBridge {
+  /// Helper struct to help wraping the information of result and its context.
+  struct WrappedResult {
+    uint64 requestTime;
+    uint64 aggregationTime;
+    uint64 requestedValidatorsCount;
+    uint64 sufficientValidatorCount;
+    uint64 reportedValidatorsCount;
+    bytes data;
+  }
+
   /// Helper struct to help the function caller to decode oracle data.
   struct VerifyOracleDataResult {
-    bytes data;
+    WrappedResult result;
     uint64 oracleScriptId;
     bytes params;
   }
