@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/ethereum/go-ethereum/crypto"
-	secptm "github.com/tendermint/tendermint/crypto/secp256k1"
+	"github.com/tendermint/tendermint/crypto/secp256k1"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/types/rest"
@@ -40,7 +40,7 @@ func GetValidators(cliCtx context.CLIContext) http.HandlerFunc {
 		validatorsOnETH.Validators = []ValidatorMinimal{}
 
 		for _, validator := range validators.Validators {
-			pubKeyBytes, ok := validator.PubKey.(secptm.PubKeySecp256k1)
+			pubKeyBytes, ok := validator.PubKey.(secp256k1.PubKeySecp256k1)
 			if !ok {
 				rest.WriteErrorResponse(w, http.StatusInternalServerError, "fail to cast pubkey")
 				return
