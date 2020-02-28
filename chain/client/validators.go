@@ -11,9 +11,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/types/rest"
-
-	// unnamed import of statik for swagger UI support
-	_ "github.com/bandprotocol/d3n/chain/client/lcd/statik"
 )
 
 type ValidatorMinimal struct {
