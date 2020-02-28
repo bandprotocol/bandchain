@@ -138,34 +138,14 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
       </Col>
     </Row>
     <VSpacing size=Spacing.xl />
-    <div className=Styles.tableContainer>
-      <div className=Styles.tableHeader>
-        <Row>
-          <TabButton
-            active={hashtag == ScriptTransactions}
-            text="Transactions"
-            route={Route.ScriptIndexPage(codeHash, ScriptTransactions)}
-          />
-          <HSpacing size=Spacing.lg />
-          <TabButton
-            active={hashtag == ScriptCode}
-            text="Code"
-            route={Route.ScriptIndexPage(codeHash, ScriptCode)}
-          />
-          <HSpacing size=Spacing.lg />
-          <TabButton
-            active={hashtag == ScriptExecute}
-            text="Execute"
-            route={Route.ScriptIndexPage(codeHash, ScriptExecute)}
-          />
-          <HSpacing size=Spacing.lg />
-          <TabButton
-            active={hashtag == ScriptIntegration}
-            text="Integration"
-            route={Route.ScriptIndexPage(codeHash, ScriptIntegration)}
-          />
-        </Row>
-      </div>
+    <Tab
+      tabs=[|
+        {name: "Transactions", route: Route.ScriptIndexPage(codeHash, Route.ScriptTransactions)},
+        {name: "Code", route: Route.ScriptIndexPage(codeHash, Route.ScriptCode)},
+        {name: "Execute", route: Route.ScriptIndexPage(codeHash, Route.ScriptExecute)},
+        {name: "Integration", route: Route.ScriptIndexPage(codeHash, Route.ScriptIntegration)},
+      |]
+      currentRoute={Route.ScriptIndexPage(codeHash, hashtag)}>
       {switch (hashtag) {
        | ScriptTransactions =>
          <div className=Styles.tableLowerContainer>
@@ -195,7 +175,7 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
          }
        | ScriptIntegration => <div> {"TODO2" |> React.string} </div>
        }}
-    </div>
+    </Tab>
     <VSpacing size=Spacing.xxl />
   </div>;
 };
