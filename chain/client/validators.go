@@ -1,12 +1,10 @@
 package rpc
 
 import (
-	"crypto/elliptic"
 	"fmt"
 	"net/http"
 
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/crypto/secp256k1"
 	secptm "github.com/tendermint/tendermint/crypto/secp256k1"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -47,6 +45,7 @@ func GetValidators(cliCtx context.CLIContext) http.HandlerFunc {
 				rest.WriteErrorResponse(w, http.StatusInternalServerError, "fail to cast pubkey")
 				return
 			}
+
 			if pubkey, err := crypto.DecompressPubkey(pubKeyBytes[:]); err != nil {
 				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 				return
@@ -54,9 +53,7 @@ func GetValidators(cliCtx context.CLIContext) http.HandlerFunc {
 				validatorsOnETH.Validators = append(
 					validatorsOnETH.Validators,
 					ValidatorMinimal{
-						Address: fmt.Sprintf("0x%x", crypto.Keccak256(
-							elliptic.Marshal(secp256k1.S256(), pubkey.X, pubkey.Y)[1:])[12:],
-						),
+						Address:     fmt.Sprintf("0x%x", crypto.PubkeyToAddress(*pubkey)),
 						VotingPower: validator.VotingPower,
 					},
 				)
