@@ -99,6 +99,32 @@ contract Bridge is IBridge {
     bytes32 dataHash;
   }
 
+  /// Decode the encoded result and receives back the decoded data which is the data and its context.
+  /// @param _data The encoded of result and its context.
+  function decodeWrappedResult(bytes memory _data) public pure returns (WrappedResult memory) {
+    require(_data.length > 40, "INPUT_MUST_BE_LONGER_THAN_40_BYTES");
+
+    WrappedResult memory wrapped;
+    assembly {
+      mstore(add(wrapped, 0x00), and(mload(add(_data, add(0x08, 0x00))), 0xffffffffffffffff))
+      mstore(add(wrapped, 0x20), and(mload(add(_data, add(0x08, 0x08))), 0xffffffffffffffff))
+      mstore(add(wrapped, 0x40), and(mload(add(_data, add(0x08, 0x10))), 0xffffffffffffffff))
+      mstore(add(wrapped, 0x60), and(mload(add(_data, add(0x08, 0x18))), 0xffffffffffffffff))
+      mstore(add(wrapped, 0x80), and(mload(add(_data, add(0x08, 0x20))), 0xffffffffffffffff))
+    }
+
+    bytes memory data = new bytes(_data.length - 40);
+    uint256 l = ((data.length - 1) / 32) + 1;
+    for (uint256 i = 0; i < l; i++) {
+      assembly {
+        mstore(add(data,add(0x20, mul(i,0x20))), mload(add(_data, add(0x48, mul(i,0x20)))))
+      }
+    }
+    wrapped.data = data;
+
+    return  wrapped;
+  }
+
   /// Verifies that the given data is a valid data on BandChain as of the given block height.
   /// @param _blockHeight The block height. Someone must already relay this block.
   /// @param _data The data to verify, with the format similar to what on the blockchain store.
@@ -142,7 +168,11 @@ contract Bridge is IBridge {
     }
     // Verifies that the computed Merkle root matches what currently exists.
     require(currentMerkleHash == oracleStateRoot, "INVALID_ORACLE_DATA_PROOF");
-    return VerifyOracleDataResult(_data, _oracleScriptId, _params);
+    return VerifyOracleDataResult(
+      decodeWrappedResult(_data),
+      _oracleScriptId,
+      _params
+    );
   }
 
   /// Performs oracle state relay and oracle data verification in one go. The caller submits
