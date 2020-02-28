@@ -10,6 +10,7 @@ import (
 const (
 	DefaultCodespace sdk.CodespaceType = ModuleName
 
+	// TODO: Change this to 101 after old errors were cleared.
 	CodeInvalidBasicMsg sdk.CodeType = 201
 
 	CodeInvalidInput       sdk.CodeType = 101

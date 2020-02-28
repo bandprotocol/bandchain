@@ -64,7 +64,7 @@ func (msg MsgRequestData) ValidateBasic() sdk.Error {
 	}
 	if msg.RequestedValidatorCount < msg.SufficientValidatorCount {
 		return ErrInvalidBasicMsg(
-			"MsgRequestData: Request validator count (%d) must be greater than sufficient validator count (%d).",
+			"MsgRequestData: Request validator count (%d) must not be less than sufficient validator count (%d).",
 			msg.RequestedValidatorCount,
 			msg.SufficientValidatorCount,
 		)
@@ -130,7 +130,7 @@ func (msg MsgReportData) ValidateBasic() sdk.Error {
 		return ErrInvalidBasicMsg("MsgReportData: Request id (%d) must be positive.", msg.RequestID)
 	}
 	if msg.DataSet == nil || len(msg.DataSet) == 0 {
-		return ErrInvalidBasicMsg("MsgReportData: DataSet must not be empty.")
+		return ErrInvalidBasicMsg("MsgReportData: Data set must not be empty.")
 	}
 	if msg.Sender.Empty() {
 		return ErrInvalidBasicMsg("MsgReportData: Sender address must not be empty.")
