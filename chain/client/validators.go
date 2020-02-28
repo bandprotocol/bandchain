@@ -47,15 +47,16 @@ func GetValidators(cliCtx context.CLIContext) http.HandlerFunc {
 				rest.WriteErrorResponse(w, http.StatusInternalServerError, "fail to cast pubkey")
 				return
 			}
-			if pubkey1, err := crypto.DecompressPubkey(pubKeyBytes[:]); err != nil {
+			if pubkey, err := crypto.DecompressPubkey(pubKeyBytes[:]); err != nil {
 				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 				return
 			} else {
-				pubkey := elliptic.Marshal(secp256k1.S256(), pubkey1.X, pubkey1.Y)
 				validatorsOnETH.Validators = append(
 					validatorsOnETH.Validators,
 					ValidatorMinimal{
-						Address:     fmt.Sprintf("0x%x", crypto.Keccak256(pubkey[1:])[12:]),
+						Address: fmt.Sprintf("0x%x", crypto.Keccak256(
+							elliptic.Marshal(secp256k1.S256(), pubkey.X, pubkey.Y)[1:])[12:],
+						),
 						VotingPower: validator.VotingPower,
 					},
 				)
