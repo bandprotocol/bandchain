@@ -36,8 +36,8 @@ func NewResult(
 
 // DecodeResult is a helper function for decoding bytes to Result.
 func DecodeResult(b []byte) (Result, error) {
-	if len(b) <= 40 {
-		return Result{}, fmt.Errorf(fmt.Sprintf("expect size of input to be more than 40 bytes but got %d bytes", len(b)))
+	if len(b) < 40 {
+		return Result{}, fmt.Errorf(fmt.Sprintf("Expect size of input to be at least 40 bytes but got %d bytes", len(b)))
 	}
 	return Result{
 		RequestTime:              int64(binary.BigEndian.Uint64(b[0:8])),
