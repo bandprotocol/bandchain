@@ -164,6 +164,110 @@ contract Bridge is IBridge {
         );
         return VerifyOracleDataResult(_data, _oracleScriptId, _params);
     }
+    /// Decode the encoded result and receives back the decoded data which is the data and its context.
+    /// @param _data The encoded of result and its context.
+    function decodeWrappedResult(bytes memory _data)
+        public
+        pure
+        returns (WrappedResult memory)
+    {
+        require(_data.length > 40, "INPUT_MUST_BE_LONGER_THAN_40_BYTES");
+
+        WrappedResult memory wrapped;
+        assembly {
+            mstore(
+                add(wrapped, 0x00),
+                and(mload(add(_data, add(0x08, 0x00))), 0xffffffffffffffff)
+            )
+            mstore(
+                add(wrapped, 0x20),
+                and(mload(add(_data, add(0x08, 0x08))), 0xffffffffffffffff)
+            )
+            mstore(
+                add(wrapped, 0x40),
+                and(mload(add(_data, add(0x08, 0x10))), 0xffffffffffffffff)
+            )
+            mstore(
+                add(wrapped, 0x60),
+                and(mload(add(_data, add(0x08, 0x18))), 0xffffffffffffffff)
+            )
+            mstore(
+                add(wrapped, 0x80),
+                and(mload(add(_data, add(0x08, 0x20))), 0xffffffffffffffff)
+            )
+        }
+
+        bytes memory data = new bytes(_data.length - 40);
+        uint256 l = ((data.length - 1) / 32) + 1;
+        for (uint256 i = 0; i < l; i++) {
+            assembly {
+                mstore(
+                    add(data, add(0x20, mul(i, 0x20))),
+                    mload(add(_data, add(0x48, mul(i, 0x20))))
+                )
+            }
+        }
+        wrapped.data = data;
+
+        return wrapped;
+    }
+
+    /// Verifies that the given data is a valid data on BandChain as of the given block height.
+    /// @param _blockHeight The block height. Someone must already relay this block.
+    /// @param _data The data to verify, with the format similar to what on the blockchain store.
+    /// @param _requestId The ID of request for this data piece.
+    /// @param _version Lastest block height that the data node was updated.
+    /// @param _merklePaths Merkle proof that shows how the data leave is part of the oracle iAVL.
+    function verifyOracleData(
+        uint256 _blockHeight,
+        bytes memory _data,
+        uint64 _requestId,
+        uint64 _oracleScriptId,
+        bytes memory _params,
+        uint256 _version,
+        IAVLMerklePath.Data[] memory _merklePaths
+    ) public view returns (VerifyOracleDataResult memory) {
+        bytes32 oracleStateRoot = oracleStates[_blockHeight];
+        require(
+            oracleStateRoot != bytes32(uint256(0)),
+            "NO_ORACLE_ROOT_STATE_DATA"
+        );
+        // Computes the hash of leaf node for iAVL oracle tree.
+        VerifyOracleDataLocalVariables memory vars;
+        vars.encodedVarint = Utils.encodeVarintSigned(_version);
+        vars.dataHash = sha256(_data);
+        bytes32 currentMerkleHash = sha256(
+            abi.encodePacked(
+                uint8(0), // Height of tree (only leaf node) is 0 (signed-varint encode)
+                uint8(2), // Size of subtree is 1 (signed-varint encode)
+                vars.encodedVarint,
+                uint8(17 + _params.length), // Size of data key (1-byte constant 0x01 + 8-byte request ID + 8-byte oracleScriptId + length of params)
+                uint8(255), // Constant 0xff prefix data request info storage key
+                _requestId,
+                _oracleScriptId,
+                _params,
+                uint8(32), // Size of data hash
+                vars.dataHash
+            )
+        );
+        // Goes step-by-step computing hash of parent nodes until reaching root node.
+        for (uint256 idx = 0; idx < _merklePaths.length; ++idx) {
+            currentMerkleHash = _merklePaths[idx].getParentHash(
+                currentMerkleHash
+            );
+        }
+        // Verifies that the computed Merkle root matches what currently exists.
+        require(
+            currentMerkleHash == oracleStateRoot,
+            "INVALID_ORACLE_DATA_PROOF"
+        );
+        return
+            VerifyOracleDataResult(
+                decodeWrappedResult(_data),
+                _oracleScriptId,
+                _params
+            );
+    }
 
     /// Performs oracle state relay and oracle data verification in one go. The caller submits
     /// the encoded proof and receives back the decoded data, ready to be validated and used.
