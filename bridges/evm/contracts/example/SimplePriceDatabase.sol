@@ -26,7 +26,7 @@ contract SimplePriceDatabase {
     require(result.oracleScriptId == oracleScriptId, "INVALID_ORACLE_SCRIPT");
     require(keccak256(result.params) == keccak256(params), "INVALID_PARAMS");
 
-    uint64[] memory decodedInfo = result.data.toUint64List();
+    uint64[] memory decodedInfo = result.result.data.toUint64List();
 
     require(uint256(decodedInfo[1]) > lastUpdate, "TIMESTAMP_IS_OLDER_THAN_THE_LAST_UPDATE");
 
