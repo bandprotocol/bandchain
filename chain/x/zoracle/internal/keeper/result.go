@@ -53,7 +53,8 @@ func (k Keeper) GetResult(
 	store := ctx.KVStore(k.storeKey)
 	result, err := types.DecodeResult(store.Get(types.ResultStoreKey(requestID, oracleScriptID, calldata)))
 	if err != nil {
-		return types.Result{}, types.ErrDecodeResultFail(types.DefaultCodespace)
+		// TODO: fix error later
+		return types.Result{}, types.ErrResultNotFound(types.DefaultCodespace)
 	}
 
 	return result, nil
