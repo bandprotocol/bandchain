@@ -1,6 +1,9 @@
 package types
 
-import "encoding/binary"
+import (
+	"encoding/binary"
+	"fmt"
+)
 
 // Result is a data structure that stores the detail of the result of a specific request.
 type Result struct {
@@ -32,9 +35,9 @@ func NewResult(
 }
 
 // DecodeResult is a helper function for decoding bytes to Result.
-func DecodeResult(b []byte) Result {
-	if len(b) < 40 {
-		return Result{}
+func DecodeResult(b []byte) (Result, error) {
+	if len(b) <= 40 {
+		return Result{}, fmt.Errorf(fmt.Sprintf("expect size of input to be more than 40 bytes but got %d bytes", len(b)))
 	}
 	return Result{
 		RequestTime:              int64(binary.BigEndian.Uint64(b[0:8])),
@@ -43,7 +46,7 @@ func DecodeResult(b []byte) Result {
 		SufficientValidatorCount: int64(binary.BigEndian.Uint64(b[24:32])),
 		ReportedValidatorsCount:  int64(binary.BigEndian.Uint64(b[32:40])),
 		Data:                     b[40:],
-	}
+	}, nil
 }
 
 // Bytes is a helper function for encoding Result to bytes.
