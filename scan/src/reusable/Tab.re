@@ -22,7 +22,8 @@ module Styles = {
       alignItems(`center),
       cursor(`pointer),
       padding2(~v=Spacing.md, ~h=Spacing.lg),
-      borderBottom(active ? `pxFloat(1.5) : `zero, `solid, Colors.brightBlue),
+      borderBottom(`pxFloat(1.5), `solid, active ? Colors.brightBlue : Colors.white),
+      textShadow(Shadow.text(~blur=`pxFloat(active ? 1. : 0.), Colors.brightBlue)),
     ]);
 };
 
@@ -30,7 +31,7 @@ let button = (~name, ~route, ~active) => {
   <div key=name className={Styles.buttonContainer(active)} onClick={_ => route |> Route.redirect}>
     <Text
       value=name
-      weight={active ? Text.Bold : Text.Regular}
+      weight=Text.Regular
       size=Text.Md
       color={active ? Colors.brightBlue : Colors.darkGrayText}
     />
