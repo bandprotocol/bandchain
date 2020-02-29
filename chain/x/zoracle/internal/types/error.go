@@ -1,12 +1,17 @@
 package types
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // DefaultCodespace is the Module Name
 const (
 	DefaultCodespace sdk.CodespaceType = ModuleName
+
+	// TODO: Change this to 101 after old errors were cleared.
+	CodeInvalidBasicMsg sdk.CodeType = 201
 
 	CodeInvalidInput       sdk.CodeType = 101
 	CodeInvalidValidator   sdk.CodeType = 102
@@ -60,4 +65,8 @@ func ErrDuplicateRequest(codespace sdk.CodespaceType) sdk.Error {
 
 func ErrRawDataRequestNotFound(codespace sdk.CodespaceType) sdk.Error {
 	return sdk.NewError(codespace, CodeRequestNotFound, "raw data request not found")
+}
+
+func ErrInvalidBasicMsg(format string, args ...interface{}) sdk.Error {
+	return sdk.NewError(DefaultCodespace, CodeInvalidBasicMsg, fmt.Sprintf(format, args...))
 }

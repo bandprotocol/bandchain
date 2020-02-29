@@ -188,8 +188,8 @@ func TestQueryRequestById(t *testing.T) {
 	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[1], []byte("report1-2"))
 	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[1], []byte("report2-2"))
 
-	result, _ := hex.DecodeString("0000000000002710")
-	keeper.SetResult(ctx, 1, request.OracleScriptID, request.Calldata, result)
+	data, _ := hex.DecodeString("0000000000002710")
+	keeper.SetResult(ctx, 1, request.OracleScriptID, request.Calldata, types.NewResult(1, 2, 3, 2, 2, data))
 
 	// create query
 	acsBytes, err = querier(
@@ -225,7 +225,14 @@ func TestQueryRequestById(t *testing.T) {
 					types.NewRawDataReport(2, []byte("report2-2")),
 				}, request.RequestedValidators[1]),
 			},
-			result,
+			types.Result{
+				RequestTime:              1,
+				AggregationTime:          2,
+				RequestedValidatorsCount: 3,
+				SufficientValidatorCount: 2,
+				ReportedValidatorsCount:  2,
+				Data:                     data,
+			},
 		),
 	)
 	require.Nil(t, errJSON)
@@ -286,7 +293,7 @@ func TestQueryRequestIncompleteValidator(t *testing.T) {
 					types.NewRawDataReport(2, []byte("report2-2")),
 				}, request.RequestedValidators[1]),
 			},
-			nil,
+			types.Result{},
 		),
 	)
 	require.Nil(t, errJSON)
@@ -321,7 +328,15 @@ func TestQueryRequests(t *testing.T) {
 	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[1], []byte("report1-2"))
 	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[1], []byte("report2-2"))
 
-	result, _ := hex.DecodeString("0000000000002710")
+	data, _ := hex.DecodeString("0000000000002710")
+	result := types.Result{
+		RequestTime:              1,
+		AggregationTime:          2,
+		RequestedValidatorsCount: 3,
+		SufficientValidatorCount: 2,
+		ReportedValidatorsCount:  2,
+		Data:                     data,
+	}
 	keeper.SetResult(ctx, 1, request.OracleScriptID, request.Calldata, result)
 	keeper.GetNextRequestID(ctx)
 
@@ -378,7 +393,7 @@ func TestQueryRequests(t *testing.T) {
 					),
 				},
 				[]types.ReportWithValidator{},
-				nil,
+				types.Result{},
 			),
 		},
 	)

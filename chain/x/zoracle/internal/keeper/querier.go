@@ -71,7 +71,7 @@ func buildRequestQuerierInfo(
 			))
 		}
 	}
-	var result []byte
+	var result types.Result
 	if keeper.HasResult(ctx, id, request.OracleScriptID, request.Calldata) {
 		var sdkErr sdk.Error
 		result, sdkErr = keeper.GetResult(ctx, id, request.OracleScriptID, request.Calldata)
