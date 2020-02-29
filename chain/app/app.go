@@ -27,13 +27,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/supply"
-<<<<<<< HEAD
 
 	bandsupply "github.com/bandprotocol/bandchain/chain/x/supply"
-	"github.com/bandprotocol/bandchain/chain/x/zoracle"
-=======
-	// "github.com/bandprotocol/d3n/chain/x/zoracle"
->>>>>>> Disable zoracle for wenchang release
 )
 
 const (
@@ -114,7 +109,6 @@ type bandApp struct {
 	tkeys map[string]*sdk.TransientStoreKey
 
 	// Keepers
-<<<<<<< HEAD
 	AccountKeeper  auth.AccountKeeper
 	BankKeeper     bank.Keeper
 	SupplyKeeper   supply.Keeper
@@ -125,25 +119,12 @@ type bandApp struct {
 	GovKeeper      gov.Keeper
 	CrisisKeeper   crisis.Keeper
 	ParamsKeeper   params.Keeper
-	ZoracleKeeper  zoracle.Keeper
+	// ZoracleKeeper  zoracle.Keeper
 
 	// Decoder for unmarshaling []byte into sdk.Tx
 	TxDecoder sdk.TxDecoder
 	// Deliver Context that is set during BeingBlock and unset during EndBlock; primarily for gas refund
 	DeliverContext sdk.Context
-=======
-	accountKeeper  auth.AccountKeeper
-	bankKeeper     bank.Keeper
-	supplyKeeper   supply.Keeper
-	stakingKeeper  staking.Keeper
-	slashingKeeper slashing.Keeper
-	mintKeeper     mint.Keeper
-	distrKeeper    distr.Keeper
-	govKeeper      gov.Keeper
-	crisisKeeper   crisis.Keeper
-	paramsKeeper   params.Keeper
-	// zoracleKeeper  zoracle.Keeper
->>>>>>> Disable zoracle for wenchang release
 
 	// Module Manager
 	mm *module.Manager
@@ -192,7 +173,7 @@ func NewBandApp(
 	slashingSubspace := app.ParamsKeeper.Subspace(slashing.DefaultParamspace)
 	govSubspace := app.ParamsKeeper.Subspace(gov.DefaultParamspace)
 	crisisSubspace := app.ParamsKeeper.Subspace(crisis.DefaultParamspace)
-	zoracleSubspace := app.ParamsKeeper.Subspace(zoracle.DefaultParamspace)
+	// zoracleSubspace := app.ParamsKeeper.Subspace(zoracle.DefaultParamspace)
 
 	// The AccountKeeper handles address -> account lookups
 	app.AccountKeeper = auth.NewAccountKeeper(
@@ -283,13 +264,13 @@ func NewBandApp(
 			app.SlashingKeeper.Hooks()),
 	)
 
-	app.ZoracleKeeper = zoracle.NewKeeper(
-		app.cdc,
-		keys[zoracle.StoreKey],
-		app.BankKeeper,
-		app.StakingKeeper,
-		zoracleSubspace,
-	)
+	// app.ZoracleKeeper = zoracle.NewKeeper(
+	// 	app.cdc,
+	// 	keys[zoracle.StoreKey],
+	// 	app.BankKeeper,
+	// 	app.StakingKeeper,
+	// 	zoracleSubspace,
+	// )
 
 	app.mm = module.NewManager(
 		genaccounts.NewAppModule(app.AccountKeeper),
@@ -297,7 +278,7 @@ func NewBandApp(
 		auth.NewAppModule(app.AccountKeeper),
 		bank.NewAppModule(app.BankKeeper, app.AccountKeeper),
 		crisis.NewAppModule(&app.CrisisKeeper),
-		zoracle.NewAppModule(app.ZoracleKeeper),
+		// zoracle.NewAppModule(app.ZoracleKeeper),
 		supply.NewAppModule(app.SupplyKeeper, app.AccountKeeper),
 		distr.NewAppModule(app.DistrKeeper, app.SupplyKeeper),
 		gov.NewAppModule(app.GovKeeper, app.SupplyKeeper),
@@ -378,40 +359,40 @@ func (app *bandApp) Commit() (res abci.ResponseCommit) {
 	return app.BaseApp.Commit()
 }
 
-func (app *bandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliverTx) {
-	response := app.BaseApp.DeliverTx(req)
+// func (app *bandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliverTx) {
+// 	response := app.BaseApp.DeliverTx(req)
 
-	if response.IsOK() {
-		// Refund 100% of gas fee for any successful transaction that only contains MsgReportData
-		tx, err := app.TxDecoder(req.Tx)
-		if err != nil { // Should never happen because BaseApp.DeliverTx succeeds
-			panic(err)
-		}
-		isAllReportTxs := true
-		if stdTx, ok := tx.(auth.StdTx); ok {
-			for _, msg := range tx.GetMsgs() {
-				if _, ok := msg.(zoracle.MsgReportData); !ok {
-					isAllReportTxs = false
-					break
-				}
-			}
-			if isAllReportTxs && !stdTx.Fee.Amount.IsZero() {
-				err := app.SupplyKeeper.SendCoinsFromModuleToAccount(
-					app.DeliverContext,
-					auth.FeeCollectorName,
-					stdTx.GetSigners()[0],
-					stdTx.Fee.Amount,
-				)
-				if err != nil { // Should never happen because we just return the collected fee
-					panic(err)
-				}
+// 	if response.IsOK() {
+// 		// Refund 100% of gas fee for any successful transaction that only contains MsgReportData
+// 		tx, err := app.TxDecoder(req.Tx)
+// 		if err != nil { // Should never happen because BaseApp.DeliverTx succeeds
+// 			panic(err)
+// 		}
+// 		isAllReportTxs := true
+// 		if stdTx, ok := tx.(auth.StdTx); ok {
+// 			for _, msg := range tx.GetMsgs() {
+// 				if _, ok := msg.(zoracle.MsgReportData); !ok {
+// 					isAllReportTxs = false
+// 					break
+// 				}
+// 			}
+// 			if isAllReportTxs && !stdTx.Fee.Amount.IsZero() {
+// 				err := app.SupplyKeeper.SendCoinsFromModuleToAccount(
+// 					app.DeliverContext,
+// 					auth.FeeCollectorName,
+// 					stdTx.GetSigners()[0],
+// 					stdTx.Fee.Amount,
+// 				)
+// 				if err != nil { // Should never happen because we just return the collected fee
+// 					panic(err)
+// 				}
 
-			}
-		}
-	}
+// 			}
+// 		}
+// 	}
 
-	return response
-}
+// 	return response
+// }
 
 func (app *bandApp) LoadHeight(height int64) error {
 	return app.LoadVersion(height, app.keys[bam.MainStoreKey])
