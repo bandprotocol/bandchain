@@ -230,7 +230,7 @@ func ServeSwaggerUI() http.Handler {
 func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router) {
 	r.HandleFunc("/d3n/blocks/latest", LatestBlocksRequestHandlerFn(cliCtx)).Methods("GET")
 	r.HandleFunc("/d3n/txs/latest", LatestTxsRequestHandlerFn(cliCtx)).Methods("GET")
-	r.HandleFunc("/bandchain/evm-validators", GetValidators(cliCtx)).Methods("GET")
+	r.HandleFunc("/bandchain/evm-validators", GetEVMValidators(cliCtx)).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/d3n/proof/{%s}", requestIDTag), GetProofHandlerFn(cliCtx)).Methods("GET")
 	r.HandleFunc("/d3n/health_check", GetHealthStatus(cliCtx)).Methods("GET")
 	r.HandleFunc("/d3n/provider_status", GetProviderStatus(cliCtx)).Methods("GET")

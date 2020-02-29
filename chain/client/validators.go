@@ -21,7 +21,7 @@ type ValidatorsMinimal struct {
 	Validators  []ValidatorMinimal `json:"validators"`
 }
 
-func GetValidators(cliCtx context.CLIContext) http.HandlerFunc {
+func GetEVMValidators(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		node, err := cliCtx.GetNode()
 		if err != nil {
