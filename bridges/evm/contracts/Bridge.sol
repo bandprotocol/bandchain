@@ -211,6 +211,15 @@ contract Bridge is IBridge {
 
         return wrapped;
     }
+    // Verifies that the computed Merkle root matches what currently exists.
+    require(currentMerkleHash == oracleStateRoot, "INVALID_ORACLE_DATA_PROOF");
+
+    VerifyOracleDataResult memory result = decodeResult(_data);
+    result.params = _params;
+    result.oracleScriptId = _oracleScriptId;
+
+    return result;
+  }
 
     /// Verifies that the given data is a valid data on BandChain as of the given block height.
     /// @param _blockHeight The block height. Someone must already relay this block.
