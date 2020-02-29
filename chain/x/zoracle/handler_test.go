@@ -362,6 +362,7 @@ func TestEndBlock(t *testing.T) {
 
 	keeper.SetPendingResolveList(ctx, []int64{1})
 
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589999), 0))
 	got := handleEndBlock(ctx, keeper)
 	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
 
@@ -369,7 +370,17 @@ func TestEndBlock(t *testing.T) {
 
 	result, err := keeper.GetResult(ctx, 1, 1, calldata)
 	require.Nil(t, err)
-	require.Equal(t, []byte("answer2"), result)
+	require.Equal(t,
+		types.Result{
+			RequestTime:              1581589790,
+			AggregationTime:          1581589999,
+			RequestedValidatorsCount: 2,
+			SufficientValidatorCount: 2,
+			ReportedValidatorsCount:  0,
+			Data:                     []byte("answer2"),
+		},
+		result,
+	)
 
 	actualRequest, err := keeper.GetRequest(ctx, 1)
 	require.Nil(t, err)

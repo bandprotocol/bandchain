@@ -51,25 +51,38 @@ func (msg MsgRequestData) Type() string { return "request" }
 // ValidateBasic implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgRequestData) ValidateBasic() sdk.Error {
 	if msg.Sender.Empty() {
-		return sdk.ErrInvalidAddress(msg.Sender.String())
+		return ErrInvalidBasicMsg("MsgRequestData: Sender address must not be empty.")
 	}
 	if msg.OracleScriptID <= 0 {
-		return sdk.ErrUnknownRequest("Oracle script id must be greater than zero")
+		return ErrInvalidBasicMsg("MsgRequestData: Oracle script id (%d) must be positive.", msg.OracleScriptID)
 	}
 	if msg.SufficientValidatorCount <= 0 {
-		return sdk.ErrUnknownRequest("Sufficient validator count must be greater than zero")
+		return ErrInvalidBasicMsg(
+			"MsgRequestData: Sufficient validator count (%d) must be positive.",
+			msg.SufficientValidatorCount,
+		)
 	}
 	if msg.RequestedValidatorCount < msg.SufficientValidatorCount {
-		return sdk.ErrUnknownRequest("Request validator count must be greater than sufficient validator")
+		return ErrInvalidBasicMsg(
+			"MsgRequestData: Request validator count (%d) must not be less than sufficient validator count (%d).",
+			msg.RequestedValidatorCount,
+			msg.SufficientValidatorCount,
+		)
 	}
 	if msg.Expiration <= 0 {
-		return sdk.ErrUnknownRequest("Expiration period must be greater than zero")
+		return ErrInvalidBasicMsg("MsgRequestData: Expiration period (%d) must be positive.",
+			msg.Expiration,
+		)
 	}
 	if msg.PrepareGas <= 0 {
-		return sdk.ErrUnknownRequest("Prepare gas must be greater than zero")
+		return ErrInvalidBasicMsg("MsgRequestData: Prepare gas (%d) must be positive.",
+			msg.PrepareGas,
+		)
 	}
 	if msg.ExecuteGas <= 0 {
-		return sdk.ErrUnknownRequest("Execute gas must be greater than zero")
+		return ErrInvalidBasicMsg("MsgRequestData: Execute gas (%d) must be positive.",
+			msg.ExecuteGas,
+		)
 	}
 	return nil
 }
@@ -114,13 +127,13 @@ func (msg MsgReportData) Type() string { return "report" }
 // ValidateBasic implements the sdk.Msg interface for MsgReportData.
 func (msg MsgReportData) ValidateBasic() sdk.Error {
 	if msg.RequestID <= 0 {
-		return sdk.ErrUnknownRequest("Request id must be greater than zero")
+		return ErrInvalidBasicMsg("MsgReportData: Request id (%d) must be positive.", msg.RequestID)
 	}
 	if msg.DataSet == nil || len(msg.DataSet) == 0 {
-		return sdk.ErrUnknownRequest("Data must not be empty struct")
+		return ErrInvalidBasicMsg("MsgReportData: Data set must not be empty.")
 	}
 	if msg.Sender.Empty() {
-		return sdk.ErrInvalidAddress(msg.Sender.String())
+		return ErrInvalidBasicMsg("MsgReportData: Sender address must not be empty.")
 	}
 	return nil
 }
@@ -171,20 +184,19 @@ func (msg MsgCreateDataSource) Type() string { return "create_data_source" }
 // ValidateBasic implements the sdk.Msg interface for MsgCreateDataSource.
 func (msg MsgCreateDataSource) ValidateBasic() sdk.Error {
 	if msg.Owner.Empty() {
-		return sdk.ErrInvalidAddress(msg.Owner.String())
+		return ErrInvalidBasicMsg("MsgCreateDataSource: Owner address must not be empty.")
 	}
 	if msg.Name == "" {
-		// TODO: use more clarify error later
-		return sdk.ErrInternal("Name is empty string")
+		return ErrInvalidBasicMsg("MsgCreateDataSource: Name must not be empty.")
 	}
 	if !msg.Fee.IsValid() {
-		return sdk.ErrInvalidCoins("fee is invalid: " + msg.Fee.String())
+		return ErrInvalidBasicMsg("MsgCreateDataSource: Fee must be valid (%s)", msg.Fee.String())
 	}
 	if msg.Executable == nil || len(msg.Executable) == 0 {
-		return sdk.ErrUnknownRequest("Executable not be empty")
+		return ErrInvalidBasicMsg("MsgCreateDataSource: Executable must not be empty.")
 	}
 	if msg.Sender.Empty() {
-		return sdk.ErrInvalidAddress(msg.Sender.String())
+		return ErrInvalidBasicMsg("MsgCreateDataSource: Sender address must not be empty.")
 	}
 	return nil
 }
@@ -238,23 +250,22 @@ func (msg MsgEditDataSource) Type() string { return "edit_data_source" }
 // ValidateBasic implements the sdk.Msg interface for MsgEditDataSource.
 func (msg MsgEditDataSource) ValidateBasic() sdk.Error {
 	if msg.DataSourceID <= 0 {
-		return sdk.ErrInternal("Data source id must be greater than zero")
+		return ErrInvalidBasicMsg("MsgEditDataSource: Data source id (%d) must be positive.", msg.DataSourceID)
 	}
 	if msg.Owner.Empty() {
-		return sdk.ErrInvalidAddress(msg.Owner.String())
+		return ErrInvalidBasicMsg("MsgEditDataSource: Owner address must not be empty.")
 	}
 	if msg.Name == "" {
-		// TODO: use more clarify error later
-		return sdk.ErrInternal("Name is empty string")
+		return ErrInvalidBasicMsg("MsgEditDataSource: Name must not be empty.")
 	}
 	if !msg.Fee.IsValid() {
-		return sdk.ErrInvalidCoins("fee is invalid: " + msg.Fee.String())
+		return ErrInvalidBasicMsg("MsgEditDataSource: Fee must be valid (%s)", msg.Fee.String())
 	}
 	if msg.Executable == nil || len(msg.Executable) == 0 {
-		return sdk.ErrUnknownRequest("Executable not be empty")
+		return ErrInvalidBasicMsg("MsgEditDataSource: Executable must not be empty.")
 	}
 	if msg.Sender.Empty() {
-		return sdk.ErrInvalidAddress(msg.Sender.String())
+		return ErrInvalidBasicMsg("MsgEditDataSource: Sender address must not be empty.")
 	}
 
 	return nil
@@ -303,17 +314,16 @@ func (msg MsgCreateOracleScript) Type() string { return "create_oracle_script" }
 // ValidateBasic implements the sdk.Msg interface for MsgCreateOracleScript.
 func (msg MsgCreateOracleScript) ValidateBasic() sdk.Error {
 	if msg.Owner.Empty() {
-		return sdk.ErrInvalidAddress(msg.Owner.String())
+		return ErrInvalidBasicMsg("MsgCreateOracleScript: Owner address must not be empty.")
 	}
 	if msg.Sender.Empty() {
-		return sdk.ErrInvalidAddress(msg.Sender.String())
+		return ErrInvalidBasicMsg("MsgCreateOracleScript: Sender address must not be empty.")
 	}
 	if msg.Name == "" {
-		// TODO: use more clarify error later
-		return sdk.ErrInternal("Name is empty string")
+		return ErrInvalidBasicMsg("MsgCreateOracleScript: Name must not be empty.")
 	}
 	if msg.Code == nil || len(msg.Code) == 0 {
-		return sdk.ErrUnknownRequest("Code not be empty")
+		return ErrInvalidBasicMsg("MsgCreateOracleScript: Code must not be empty.")
 	}
 	return nil
 }
@@ -364,20 +374,19 @@ func (msg MsgEditOracleScript) Type() string { return "edit_oracle_script" }
 // ValidateBasic implements the sdk.Msg interface for MsgEditOracleScript.
 func (msg MsgEditOracleScript) ValidateBasic() sdk.Error {
 	if msg.OracleScriptID <= 0 {
-		return sdk.ErrInternal("Oracle script id must be greater than zero")
+		return ErrInvalidBasicMsg("MsgEditOracleScript: Oracle script id (%d) must be positive.", msg.OracleScriptID)
 	}
 	if msg.Owner.Empty() {
-		return sdk.ErrInvalidAddress(msg.Owner.String())
+		return ErrInvalidBasicMsg("MsgEditOracleScript: Owner address must not be empty.")
 	}
 	if msg.Sender.Empty() {
-		return sdk.ErrInvalidAddress(msg.Sender.String())
+		return ErrInvalidBasicMsg("MsgEditOracleScript: Sender address must not be empty.")
 	}
 	if msg.Name == "" {
-		// TODO: use more clarify error later
-		return sdk.ErrInternal("Name is empty string")
+		return ErrInvalidBasicMsg("MsgEditOracleScript: Name must not be empty.")
 	}
 	if msg.Code == nil || len(msg.Code) == 0 {
-		return sdk.ErrUnknownRequest("Code not be empty")
+		return ErrInvalidBasicMsg("MsgEditOracleScript: Code must not be empty.")
 	}
 	return nil
 }
