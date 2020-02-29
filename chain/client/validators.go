@@ -16,7 +16,7 @@ type ValidatorMinimal struct {
 	VotingPower int64  `json:"voting_power"`
 }
 
-type ValidatorsOnEthereum struct {
+type ValidatorsMinimal struct {
 	BlockHeight int64              `json:"block_height"`
 	Validators  []ValidatorMinimal `json:"validators"`
 }
@@ -35,7 +35,7 @@ func GetValidators(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		validatorsOnETH := ValidatorsOnEthereum{}
+		validatorsOnETH := ValidatorsMinimal{}
 		validatorsOnETH.BlockHeight = validators.BlockHeight
 		validatorsOnETH.Validators = []ValidatorMinimal{}
 
