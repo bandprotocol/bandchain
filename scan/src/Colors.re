@@ -14,6 +14,7 @@ let brightPurple = Css.hex("806BFF");
 let yellow = Css.hex("FFC99F");
 
 let orange = Css.hex("FF9C9C");
+let brightOrange = Css.hex("EBA647");
 
 let darkBlue = Css.hex("396EAB");
 let lightBlue = Css.hex("E2F0FF");

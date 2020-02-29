@@ -103,7 +103,7 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
           | None => "?"
           }
         }
-        size=Text.Xxl
+        size=Text.Xxxl
         weight=Text.Bold
         nowrap=true
       />

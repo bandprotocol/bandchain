@@ -55,7 +55,7 @@ let make = () => {
             <Col size=1.> <img src=Images.bandLogo className=Styles.bandLogo /> </Col>
             <Col size=4.>
               <div className=Styles.uFlex>
-                <Text value="D3N" size=Text.Xxl weight=Text.Bold nowrap=true />
+                <Text value="D3N" size=Text.Xxxl weight=Text.Bold nowrap=true />
                 <div className=Styles.version>
                   <Text value="v1.0 TESTNET" size=Text.Sm color=Colors.pink nowrap=true />
                 </div>
@@ -81,6 +81,8 @@ let make = () => {
       <div className=Styles.routeContainer>
         {switch (ReasonReactRouter.useUrl() |> Route.fromUrl) {
          | HomePage => <HomePage />
+         | DataSourceIndexPage(dataSourceID, hashtag) =>
+           <DataSourceIndexPage dataSourceID hashtag />
          | ScriptHomePage => <ScriptHomePage />
          | ScriptIndexPage(codeHash, hashtag) => <ScriptIndexPage codeHash hashtag />
          | TxHomePage => <TxHomePage />

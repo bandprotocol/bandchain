@@ -4,7 +4,8 @@ type size =
   | Md
   | Lg
   | Xl
-  | Xxl;
+  | Xxl
+  | Xxxl;
 
 type weight =
   | Regular
@@ -28,8 +29,9 @@ module Styles = {
       | Sm => style([fontSize(px(10)), letterSpacing(`em(0.05))])
       | Md => style([fontSize(px(12))])
       | Lg => style([fontSize(px(14)), lineHeight(`px(18))])
-      | Xl => style([fontSize(px(16))])
-      | Xxl => style([fontSize(px(24))]),
+      | Xl => style([fontSize(px(16)), lineHeight(`px(18))])
+      | Xxl => style([fontSize(px(18))])
+      | Xxxl => style([fontSize(px(24))]),
     );
 
   let fontWeight =
@@ -57,7 +59,7 @@ module Styles = {
   let code =
     style([
       fontFamily(
-        "Fira Code, cousine, sfmono-regular,Consolas,Menlo,liberation mono,ubuntu mono,Courier,monospace",
+        "IBM Plex Mono, cousine, sfmono-regular,Consolas,Menlo,liberation mono,ubuntu mono,Courier,monospace",
       ),
     ]);
 };
