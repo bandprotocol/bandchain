@@ -6,7 +6,8 @@ type t =
   | Fee(float)
   | DataSources(list(string))
   | Hash(Hash.t, Css.Types.Color.t)
-  | Address(Address.t, Css.Types.Color.t);
+  | Address(Address.t, Css.Types.Color.t)
+  | MockAddress(Css.Types.Color.t);
 
 module Styles = {
   open Css;
@@ -45,7 +46,13 @@ let make = (~info, ~header) => {
          weight=Text.Bold
        />
      | Fee(fee) =>
-       <Text value={(fee |> Format.fPretty) ++ " BAND"} size=Text.Lg weight=Text.Bold />
+       <div className=Styles.vFlex>
+         <Text value={fee |> Format.fPretty} size=Text.Lg weight=Text.Bold code=true />
+         <HSpacing size=Spacing.md />
+         <Text value="BAND" size=Text.Lg weight=Text.Regular code=true />
+         <HSpacing size=Spacing.xs />
+         <Text value="($0.3)" size=Text.Lg weight=Text.Regular code=true />
+       </div>
      | DataSources(sources) =>
        <div className=Styles.datasourcesContainer>
          {sources
@@ -71,7 +78,19 @@ let make = (~info, ~header) => {
          size=Text.Lg
          weight=Text.Semibold
          color=textColor
+         code=true
        />
+     | MockAddress(textColor) =>
+       <div className=Styles.vFlex>
+         <Text value="band" size=Text.Lg weight=Text.Bold color=textColor code=true />
+         <Text
+           value="17rprjgtj0krfw3wyl9creueej6ca9dc4dgxv6e"
+           size=Text.Lg
+           weight=Text.Semibold
+           color=textColor
+           code=true
+         />
+       </div>
      }}
   </div>;
 };
