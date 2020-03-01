@@ -58,7 +58,17 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
     </div>
     <VSpacing size=Spacing.xl />
     <Row>
-      <Col size=1.> <InfoHL header="OWNER" info={InfoHL.MockAddress(Colors.grayHeader)} /> </Col>
+      <Col size=1.>
+        <InfoHL
+          header="OWNER"
+          info={
+            InfoHL.Address(
+              "band1gfskuezzv9hxgsnpdejyyctwv3pxzmnywps0q9" |> Address.fromBech32,
+              Colors.grayHeader,
+            )
+          }
+        />
+      </Col>
       <Col size=0.8> <InfoHL info={InfoHL.Fee(1000.)} header="REQUEST FEE" /> </Col>
     </Row>
     <VSpacing size=Spacing.xl />

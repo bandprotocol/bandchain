@@ -6,8 +6,7 @@ type t =
   | Fee(float)
   | DataSources(list(string))
   | Hash(Hash.t, Css.Types.Color.t)
-  | Address(Address.t, Css.Types.Color.t)
-  | MockAddress(Css.Types.Color.t);
+  | Address(Address.t, Css.Types.Color.t);
 
 module Styles = {
   open Css;
@@ -73,14 +72,13 @@ let make = (~info, ~header) => {
          color=textColor
        />
      | Address(address, textColor) =>
-       <Text
-         value={address |> Address.toBech32}
-         size=Text.Lg
-         weight=Text.Semibold
-         color=textColor
-         code=true
-       />
-     | MockAddress(textColor) =>
+       //  <Text
+       //    value={address |> Address.toBech32}
+       //    size=Text.Lg
+       //    weight=Text.Semibold
+       //    color=textColor
+       //    code=true
+       //  />
        <div className=Styles.vFlex>
          <Text value="band" size=Text.Lg weight=Text.Bold color=textColor code=true />
          <Text
