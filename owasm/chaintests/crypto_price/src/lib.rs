@@ -1,14 +1,13 @@
 use owasm::oei;
 
-#[global_allocator]
-static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
-
-fn parse_coingecko_symbol(symbol: &str) -> &'static str {
-    match symbol {
+fn parse_coingecko_symbol(symbol: &[u8]) -> &[u8] {
+    let s = String::from_utf8(symbol.to_vec()).unwrap();
+    (match s.as_str() {
         "BTC" => "bitcoin",
         "ETH" => "ethereum",
         _ => panic!("Unsupported coin!"),
-    }
+    })
+    .as_bytes()
 }
 
 fn parse_float(data: String) -> Option<f64> {
@@ -17,7 +16,7 @@ fn parse_float(data: String) -> Option<f64> {
 
 #[no_mangle]
 pub fn prepare() {
-    let calldata = String::from_utf8(oei::get_calldata()).unwrap();
+    let calldata = oei::get_calldata();
     // Coingecko data source
     oei::request_external_data(1, 1, parse_coingecko_symbol(&calldata));
     // Crypto compare source

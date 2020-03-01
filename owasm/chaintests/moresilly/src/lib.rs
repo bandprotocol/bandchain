@@ -43,21 +43,15 @@ where
     T: std::str::FromStr,
 {
     // TODO
-    oei::get_external_data(external_id, 0)
-        .unwrap()
-        .parse::<T>()
-        .ok()
-        .unwrap()
+    oei::get_external_data(external_id, 0).unwrap().parse::<T>().ok().unwrap()
 }
 
 fn prepare_impl(input: Input) {
-    oei::request_external_data(PRICE_DATA_SOURCE_ID, PRICE_EXTERNAL_ID, &input.symbol);
+    oei::request_external_data(PRICE_DATA_SOURCE_ID, PRICE_EXTERNAL_ID, input.symbol.as_bytes());
 }
 
 fn execute_impl(input: Input) -> Output {
-    Output {
-        px: (load_average::<f64>(PRICE_EXTERNAL_ID) * input.multiplier as f64) as u64,
-    }
+    Output { px: (load_average::<f64>(PRICE_EXTERNAL_ID) * input.multiplier as f64) as u64 }
 }
 
 prepare_entry_point!(prepare_impl);

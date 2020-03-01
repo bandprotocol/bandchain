@@ -45,7 +45,7 @@ pub fn save_return_data(data: &[u8]) {
     unsafe { assert_eq!(0, raw::saveReturnData(data.as_ptr(), data.len() as i64)) }
 }
 
-pub fn request_external_data(data_source_id: i64, external_id: i64, calldata: &str) {
+pub fn request_external_data(data_source_id: i64, external_id: i64, calldata: &[u8]) {
     unsafe {
         assert_eq!(
             0,
