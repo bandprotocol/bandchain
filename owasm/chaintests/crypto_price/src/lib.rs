@@ -10,8 +10,8 @@ fn parse_coingecko_symbol(symbol: &[u8]) -> &[u8] {
     .as_bytes()
 }
 
-fn parse_float(data: Vec<u8>) -> Option<f64> {
-    String::from_utf8(data).ok()?.parse::<f64>().ok()
+fn parse_float(data: String) -> Option<f64> {
+    data.parse::<f64>().ok()
 }
 
 #[no_mangle]
