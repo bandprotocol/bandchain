@@ -25,7 +25,8 @@ fn prepare_impl(input: Input) {
 }
 
 fn execute_impl(input: Input) -> Output {
-    Output { px: (ext::load_average::<f64>(PRICE_EXTERNAL_ID) * input.multiplier as f64) as u64 }
+    let average_px: f64 = ext::load_average(PRICE_EXTERNAL_ID);
+    Output { px: (average_px * input.multiplier as f64) as u64 }
 }
 
 prepare_entry_point!(prepare_impl);
