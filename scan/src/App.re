@@ -6,7 +6,7 @@ module Styles = {
 
   let innerContainer =
     style([
-      maxWidth(`px(960)),
+      maxWidth(`px(984)),
       marginLeft(`auto),
       marginRight(`auto),
       paddingLeft(Spacing.md),

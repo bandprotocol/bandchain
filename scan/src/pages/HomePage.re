@@ -51,7 +51,7 @@ module Styles = {
   let grayAreaInner =
     style([
       position(`absolute),
-      maxWidth(`px(960)),
+      maxWidth(`px(984)),
       marginLeft(`auto),
       marginRight(`auto),
       width(`percent(100.)),
