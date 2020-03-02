@@ -1,7 +1,6 @@
 package rpc
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/ethereum/go-ethereum/crypto"
@@ -53,7 +52,7 @@ func GetEVMValidators(cliCtx context.CLIContext) http.HandlerFunc {
 				validatorsOnETH.Validators = append(
 					validatorsOnETH.Validators,
 					ValidatorMinimal{
-						Address:     fmt.Sprintf("0x%x", crypto.PubkeyToAddress(*pubkey)),
+						Address:     crypto.PubkeyToAddress(*pubkey).String(),
 						VotingPower: validator.VotingPower,
 					},
 				)
