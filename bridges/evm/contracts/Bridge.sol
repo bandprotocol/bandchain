@@ -114,7 +114,7 @@ contract Bridge is IBridge {
     }
 
     /// Decode the encoded result and returns back the decoded data which is the data and its context.
-    /// @param _data The encoded of result and its context.
+    /// @param _encodedData The encoded of result and its context.
     function decodeResult(bytes memory _encodedData)
         public
         pure
