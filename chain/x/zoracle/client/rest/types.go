@@ -24,7 +24,7 @@ type RequestRESTInfo struct {
 	RequestTx                TxDetail                             `json:"requestTx,omitempty"`
 	RawDataRequests          []types.RawDataRequestWithExternalID `json:"rawDataRequests"`
 	Reports                  []ReportDetail                       `json:"reports"`
-	Result                   []byte                               `json:"result"`
+	Result                   types.Result                         `json:"result"`
 }
 
 type TxDetail struct {

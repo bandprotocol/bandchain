@@ -1,12 +1,16 @@
 pragma solidity 0.5.14;
 
-import { BandChainLib } from "../BandChainLib.sol";
+import {BandChainLib} from "../BandChainLib.sol";
 
 contract BandChainLibMock {
-  using BandChainLib for bytes;
+    using BandChainLib for bytes;
 
-  function toUint64List(bytes memory _data) public pure returns(uint64[] memory) {
-    return _data.toUint64List();
-  }
+    function toUint64List(bytes memory _data)
+        public
+        pure
+        returns (uint64[] memory)
+    {
+        return _data.toUint64List();
+    }
 
 }
