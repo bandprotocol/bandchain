@@ -115,44 +115,44 @@ contract Bridge is IBridge {
 
     /// Decode the encoded result and returns back the decoded data which is the data and its context.
     /// @param _data The encoded of result and its context.
-    function decodeResult(bytes memory _data)
+    function decodeResult(bytes memory _encodedData)
         public
         pure
         returns (VerifyOracleDataResult memory)
     {
-        require(_data.length > 40, "INPUT_MUST_BE_LONGER_THAN_40_BYTES");
+        require(_encodedData.length > 40, "INPUT_MUST_BE_LONGER_THAN_40_BYTES");
 
         VerifyOracleDataResult memory result;
         assembly {
             mstore(
                 add(result, 0x20),
-                and(mload(add(_data, 0x08)), 0xffffffffffffffff)
+                and(mload(add(_encodedData, 0x08)), 0xffffffffffffffff)
             )
             mstore(
                 add(result, 0x40),
-                and(mload(add(_data, 0x10)), 0xffffffffffffffff)
+                and(mload(add(_encodedData, 0x10)), 0xffffffffffffffff)
             )
             mstore(
                 add(result, 0x60),
-                and(mload(add(_data, 0x18)), 0xffffffffffffffff)
+                and(mload(add(_encodedData, 0x18)), 0xffffffffffffffff)
             )
             mstore(
                 add(result, 0x80),
-                and(mload(add(_data, 0x20)), 0xffffffffffffffff)
+                and(mload(add(_encodedData, 0x20)), 0xffffffffffffffff)
             )
             mstore(
                 add(result, 0xa0),
-                and(mload(add(_data, 0x28)), 0xffffffffffffffff)
+                and(mload(add(_encodedData, 0x28)), 0xffffffffffffffff)
             )
         }
 
-        bytes memory data = new bytes(_data.length - 40);
+        bytes memory data = new bytes(_encodedData.length - 40);
         uint256 dataLengthInWords = ((data.length - 1) / 32) + 1;
         for (uint256 i = 0; i < dataLengthInWords; i++) {
             assembly {
                 mstore(
                     add(data, add(0x20, mul(i, 0x20))),
-                    mload(add(_data, add(0x48, mul(i, 0x20))))
+                    mload(add(_encodedData, add(0x48, mul(i, 0x20))))
                 )
             }
         }
