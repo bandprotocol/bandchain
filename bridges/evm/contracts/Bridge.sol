@@ -113,7 +113,7 @@ contract Bridge is IBridge {
         bytes32 dataHash;
     }
 
-    /// Decode the encoded result and returns back the decoded data which is the data and its context.
+    /// Decodes the encoded result and returns back the decoded data which is the data and its context.
     /// @param _encodedData The encoded of result and its context.
     function decodeResult(bytes memory _encodedData)
         public
