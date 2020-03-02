@@ -100,7 +100,7 @@ func (p Params) String() string {
   MaxRawDataReportSize:         %d
   MaxResultSize:                %d
   EndBlockExecuteGasLimit:      %d
-  MaxNameLength					%d
+  MaxNameLength:                %d
 `, p.MaxDataSourceExecutableSize,
 		p.MaxOracleScriptCodeSize,
 		p.MaxCalldataSize,
