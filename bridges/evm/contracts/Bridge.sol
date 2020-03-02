@@ -113,7 +113,7 @@ contract Bridge is IBridge {
         bytes32 dataHash;
     }
 
-    /// Decode the encoded result and receives back the decoded data which is the data and its context.
+    /// Decode the encoded result and returns back the decoded data which is the data and its context.
     /// @param _data The encoded of result and its context.
     function decodeResult(bytes memory _data)
         public
@@ -147,8 +147,8 @@ contract Bridge is IBridge {
         }
 
         bytes memory data = new bytes(_data.length - 40);
-        uint256 l = ((data.length - 1) / 32) + 1;
-        for (uint256 i = 0; i < l; i++) {
+        uint256 dataLengthInWords = ((data.length - 1) / 32) + 1;
+        for (uint256 i = 0; i < dataLengthInWords; i++) {
             assembly {
                 mstore(
                     add(data, add(0x20, mul(i, 0x20))),
@@ -219,7 +219,7 @@ contract Bridge is IBridge {
     }
 
     /// Performs oracle state relay and oracle data verification in one go. The caller submits
-    /// the encoded proof and receives back the decoded data, ready to be validated and used.
+    /// the encoded proof and returns back the decoded data, ready to be validated and used.
     /// @param _data The encoded data for oracle state relay and data verification.
     function relayAndVerify(bytes calldata _data)
         external
