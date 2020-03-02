@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/bandprotocol/d3n/chain/app"
-	"github.com/bandprotocol/d3n/chain/d3nlib"
+	"github.com/bandprotocol/d3n/chain/bandlib"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/gin-gonic/gin"
@@ -77,7 +77,7 @@ var (
 
 var rpcClient *rpc.HTTP
 var pk secp256k1.PrivKeySecp256k1
-var bandClient d3nlib.BandStatefulClient
+var bandClient bandlib.BandStatefulClient
 var cdc *codec.Codec
 
 func handleRequestData(c *gin.Context) {
@@ -262,7 +262,7 @@ func main() {
 	copy(pk[:], privBytes)
 
 	var err error
-	bandClient, err = d3nlib.NewBandStatefulClient(nodeURI, pk)
+	bandClient, err = bandlib.NewBandStatefulClient(nodeURI, pk)
 	if err != nil {
 		panic(err)
 	}
