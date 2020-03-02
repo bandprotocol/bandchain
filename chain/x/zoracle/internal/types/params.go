@@ -37,6 +37,10 @@ const (
 	// The maximum gas that can be used to resolve requests at endblock time
 	// Default value is 1000000
 	DefaultEndBlockExecuteGasLimit = uint64(1000000)
+
+	// The maximum size of name length.
+	// Default value is 280
+	DefaultMaxNameLength = int64(280)
 )
 
 // Parameter store keys.
@@ -48,6 +52,7 @@ var (
 	KeyMaxRawDataReportSize         = []byte("MaxRawDataReportSize")
 	KeyMaxResultSize                = []byte("MaxResultSize")
 	KeyEndBlockExecuteGasLimit      = []byte("EndBlockExecuteGasLimit")
+	KeyMaxNameLength                = []byte("MaxNameLength")
 )
 
 // Params - used for initializing default parameter for zoracle at genesis.
@@ -59,6 +64,7 @@ type Params struct {
 	MaxRawDataReportSize         int64  `json:"max_raw_data_report_size" yaml:"max_raw_data_report_size"`
 	MaxResultSize                int64  `json:"max_result_size" yaml:"max_result_size"`
 	EndBlockExecuteGasLimit      uint64 `json:"end_block_execute_gas_limit" yaml:"end_block_execute_gas_limit"`
+	MaxNameLength                int64  `json:"max_name_length" yaml:"max_name_length"`
 }
 
 // NewParams creates a new Params object.
@@ -70,6 +76,7 @@ func NewParams(
 	maxRawDataReportSize int64,
 	maxResultSize int64,
 	endBlockExecuteGasLimit uint64,
+	maxNameLength int64,
 ) Params {
 	return Params{
 		MaxDataSourceExecutableSize:  maxDataSourceExecutableSize,
@@ -79,6 +86,7 @@ func NewParams(
 		MaxRawDataReportSize:         maxRawDataReportSize,
 		MaxResultSize:                maxResultSize,
 		EndBlockExecuteGasLimit:      endBlockExecuteGasLimit,
+		MaxNameLength:                maxNameLength,
 	}
 }
 
@@ -92,6 +100,7 @@ func (p Params) String() string {
   MaxRawDataReportSize:         %d
   MaxResultSize:                %d
   EndBlockExecuteGasLimit:      %d
+  MaxNameLength					%d
 `, p.MaxDataSourceExecutableSize,
 		p.MaxOracleScriptCodeSize,
 		p.MaxCalldataSize,
@@ -99,6 +108,7 @@ func (p Params) String() string {
 		p.MaxRawDataReportSize,
 		p.MaxResultSize,
 		p.EndBlockExecuteGasLimit,
+		p.MaxNameLength,
 	)
 }
 
@@ -112,6 +122,7 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 		{Key: KeyMaxRawDataReportSize, Value: &p.MaxRawDataReportSize},
 		{Key: KeyMaxResultSize, Value: &p.MaxResultSize},
 		{Key: KeyEndBlockExecuteGasLimit, Value: &p.EndBlockExecuteGasLimit},
+		{Key: KeyMaxNameLength, Value: &p.MaxNameLength},
 	}
 }
 
@@ -125,5 +136,6 @@ func DefaultParams() Params {
 		DefaultMaxRawDataReportSize,
 		DefaultMaxResultSize,
 		DefaultEndBlockExecuteGasLimit,
+		DefaultMaxNameLength,
 	)
 }
