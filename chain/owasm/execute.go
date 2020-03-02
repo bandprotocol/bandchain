@@ -19,13 +19,16 @@ func Execute(
 ) (result []byte, gasUsed uint64, err error) {
 	resolver := NewResolver(env, calldata)
 	vm, err := exec.NewVirtualMachine(code, exec.VMConfig{
-		MaxMemoryPages:     1024,
-		MaxTableSize:       1024,
-		MaxValueSlots:      65536,
-		MaxCallStackDepth:  128,
-		DefaultMemoryPages: 64,
-		DefaultTableSize:   65536,
-		GasLimit:           gasLimit,
+		EnableJIT:                false,
+		MaxMemoryPages:           1024,
+		MaxTableSize:             1024,
+		MaxValueSlots:            65536,
+		MaxCallStackDepth:        128,
+		DefaultMemoryPages:       64,
+		DefaultTableSize:         65536,
+		GasLimit:                 uint64(gasLimit),
+		DisableFloatingPoint:     false,
+		ReturnOnGasLimitExceeded: false,
 	}, resolver, &compiler.SimpleGasPolicy{GasPerInstruction: 1})
 	if err != nil {
 		return nil, 0, err

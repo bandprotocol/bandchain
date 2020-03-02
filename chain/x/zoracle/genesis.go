@@ -37,6 +37,7 @@ func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorU
 	k.SetMaxRawDataReportSize(ctx, data.Params.MaxRawDataReportSize)
 	k.SetMaxResultSize(ctx, data.Params.MaxResultSize)
 	k.SetEndBlockExecuteGasLimit(ctx, data.Params.EndBlockExecuteGasLimit)
+	k.SetMaxNameLength(ctx, data.Params.MaxNameLength)
 
 	return []abci.ValidatorUpdate{}
 }
