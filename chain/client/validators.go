@@ -34,9 +34,9 @@ func GetEVMValidators(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		validatorsOnETH := ValidatorsMinimal{}
-		validatorsOnETH.BlockHeight = validators.BlockHeight
-		validatorsOnETH.Validators = []ValidatorMinimal{}
+		validatorsMinimal := ValidatorsMinimal{}
+		validatorsMinimal.BlockHeight = validators.BlockHeight
+		validatorsMinimal.Validators = []ValidatorMinimal{}
 
 		for _, validator := range validators.Validators {
 			pubKeyBytes, ok := validator.PubKey.(secp256k1.PubKeySecp256k1)
@@ -49,8 +49,8 @@ func GetEVMValidators(cliCtx context.CLIContext) http.HandlerFunc {
 				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 				return
 			} else {
-				validatorsOnETH.Validators = append(
-					validatorsOnETH.Validators,
+				validatorsMinimal.Validators = append(
+					validatorsMinimal.Validators,
 					ValidatorMinimal{
 						Address:     crypto.PubkeyToAddress(*pubkey).String(),
 						VotingPower: validator.VotingPower,
@@ -59,6 +59,6 @@ func GetEVMValidators(cliCtx context.CLIContext) http.HandlerFunc {
 			}
 		}
 
-		rest.PostProcessResponseBare(w, cliCtx, validatorsOnETH)
+		rest.PostProcessResponseBare(w, cliCtx, validatorsMinimal)
 	}
 }
