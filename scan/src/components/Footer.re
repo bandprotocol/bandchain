@@ -24,7 +24,7 @@ module Styles = {
   let footerContainer =
     style([
       marginTop(Spacing.xl),
-      maxWidth(`px(1100)),
+      maxWidth(`px(960)),
       marginLeft(`auto),
       marginRight(`auto),
       paddingLeft(Spacing.md),
