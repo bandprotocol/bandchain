@@ -56,10 +56,16 @@ let make = (~info, ~header) => {
        <div className=Styles.vFlex>
          <Text value={fee |> Format.fPretty} size=Text.Lg weight=Text.Bold code=true />
          <HSpacing size=Spacing.md />
-         <Text value="BAND" size=Text.Lg weight=Text.Regular code=true />
+         <Text value="BAND" size=Text.Lg weight=Text.Regular spacing={Text.Em(0.02)} code=true />
          <HSpacing size=Spacing.xs />
          <HSpacing size=Spacing.xs />
-         <Text value="($0.3)" size=Text.Lg weight=Text.Regular code=true />
+         <Text
+           value="($0.3)"
+           size=Text.Lg
+           weight=Text.Regular
+           spacing={Text.Em(0.02)}
+           code=true
+         />
        </div>
      | DataSources(sources) =>
        <div className=Styles.datasourcesContainer>
@@ -94,6 +100,7 @@ let make = (~info, ~header) => {
            value="17rprjgtj0krfw3wyl9creueej6ca9dc4dgxv6e"
            size=Text.Lg
            weight=Text.Regular
+           spacing={Text.Em(0.02)}
            color=textColor
            code=true
          />
