@@ -126,23 +126,23 @@ contract Bridge is IBridge {
         assembly {
             mstore(
                 add(result, 0x20),
-                and(mload(add(_data, add(0x08, 0x00))), 0xffffffffffffffff)
+                and(mload(add(_data, 0x08)), 0xffffffffffffffff)
             )
             mstore(
                 add(result, 0x40),
-                and(mload(add(_data, add(0x08, 0x08))), 0xffffffffffffffff)
+                and(mload(add(_data, 0x10)), 0xffffffffffffffff)
             )
             mstore(
                 add(result, 0x60),
-                and(mload(add(_data, add(0x08, 0x10))), 0xffffffffffffffff)
+                and(mload(add(_data, 0x18)), 0xffffffffffffffff)
             )
             mstore(
                 add(result, 0x80),
-                and(mload(add(_data, add(0x08, 0x18))), 0xffffffffffffffff)
+                and(mload(add(_data, 0x20)), 0xffffffffffffffff)
             )
             mstore(
                 add(result, 0xa0),
-                and(mload(add(_data, add(0x08, 0x20))), 0xffffffffffffffff)
+                and(mload(add(_data, 0x28)), 0xffffffffffffffff)
             )
         }
 
