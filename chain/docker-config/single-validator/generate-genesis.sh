@@ -8,13 +8,6 @@ rm -rf ~/.band*
 # initial new node
 bandd init validator --chain-id bandchain
 
-# make uband staking denom
-cat ~/.bandd/config/genesis.json \
-    | python3 -c 'import json; import sys; genesis = json.loads(sys.stdin.read()); genesis["app_state"]["staking"]["params"]["bond_denom"] = "uband"; genesis["consensus_params"]["validator"]["pub_key_types"] = ["secp256k1"]; genesis["app_state"]["crisis"]["constant_fee"]["denom"] = "uband"; genesis["app_state"]["gov"]["deposit_params"]["min_deposit"][0]["denom"] = "uband"; genesis["app_state"]["mint"]["params"]["mint_denom"] = "uband"; print(json.dumps(genesis))' \
-    > ~/.bandd/config/genesis.json.temp
-
-mv ~/.bandd/config/genesis.json.temp ~/.bandd/config/genesis.json
-
 # create acccounts
 expect $DIR/../add-account.exp \
     validator \

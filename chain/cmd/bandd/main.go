@@ -3,11 +3,9 @@ package main
 import (
 	"encoding/json"
 	"io"
-	"time"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/store"
 	"github.com/cosmos/cosmos-sdk/x/genaccounts"
@@ -16,11 +14,8 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/tendermint/tendermint/crypto/secp256k1"
 	"github.com/tendermint/tendermint/libs/cli"
-	cmn "github.com/tendermint/tendermint/libs/common"
 	"github.com/tendermint/tendermint/libs/log"
-	"github.com/tendermint/tendermint/privval"
 
 	"github.com/bandprotocol/d3n/chain/app"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -29,40 +24,6 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 )
-
-func GenFilePVIfNotExists(cdc *codec.Codec, keyFilePath, stateFilePath string) {
-	if !cmn.FileExists(keyFilePath) {
-		privKey := secp256k1.GenPrivKey()
-		pv := &privval.FilePV{
-			Key: privval.FilePVKey{
-				Address: privKey.PubKey().Address(),
-				PubKey:  privKey.PubKey(),
-				PrivKey: privKey,
-			},
-			LastSignState: privval.FilePVLastSignState{
-				Step: 0,
-			},
-		}
-
-		jsonBytes, err := cdc.MarshalJSONIndent(pv.Key, "", "  ")
-		if err != nil {
-			panic(err)
-		}
-		err = cmn.WriteFileAtomic(keyFilePath, jsonBytes, 0600)
-		if err != nil {
-			panic(err)
-		}
-
-		jsonBytes, err = cdc.MarshalJSONIndent(pv.LastSignState, "", "  ")
-		if err != nil {
-			panic(err)
-		}
-		err = cmn.WriteFileAtomic(stateFilePath, jsonBytes, 0600)
-		if err != nil {
-			panic(err)
-		}
-	}
-}
 
 const flagInvCheckPeriod = "inv-check-period"
 
@@ -80,25 +41,13 @@ func main() {
 	ctx := server.NewDefaultContext()
 
 	rootCmd := &cobra.Command{
-		Use:   "bandd",
-		Short: "Band D3N App Daemon (server)",
-		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			err := server.PersistentPreRunEFn(ctx)(cmd, args)
-			if err != nil {
-				return err
-			}
-			ctx.Config.Consensus.TimeoutCommit = 1 * time.Second
-			GenFilePVIfNotExists(
-				cdc,
-				ctx.Config.PrivValidatorKeyFile(),
-				ctx.Config.PrivValidatorStateFile(),
-			)
-			return nil
-		},
+		Use:               "bandd",
+		Short:             "Band D3N App Daemon (server)",
+		PersistentPreRunE: server.PersistentPreRunEFn(ctx),
 	}
 	// CLI commands to initialize the chain
 	rootCmd.AddCommand(
-		genutilcli.InitCmd(ctx, cdc, app.ModuleBasics, app.DefaultNodeHome),
+		InitCmd(ctx, cdc, app.NewDefaultGenesisState(), app.DefaultNodeHome),
 		genutilcli.CollectGenTxsCmd(ctx, cdc, genaccounts.AppModuleBasic{}, app.DefaultNodeHome),
 		genutilcli.MigrateGenesisCmd(ctx, cdc),
 		genutilcli.GenTxCmd(
