@@ -17,7 +17,7 @@ func TestExecuteCanCallEnv(t *testing.T) {
 	}, code, "execute", []byte{}, 10000)
 	require.Nil(t, err)
 	require.Equal(t, uint64(3), binary.LittleEndian.Uint64(result))
-	require.Equal(t, uint64(1056), gasUsed)
+	require.Equal(t, uint64(1916), gasUsed)
 }
 
 // Test get number of sufficient validators from env
@@ -54,7 +54,7 @@ func TestExecuteEndToEnd(t *testing.T) {
 	result, gasUsed, err := Execute(env, code, "execute", []byte{}, 10000)
 	require.Nil(t, err)
 	require.Equal(t, []byte("RETURN_DATA"), result)
-	require.Equal(t, uint64(1279), gasUsed)
+	require.Equal(t, uint64(2358), gasUsed)
 }
 
 // DefaultPageSize = 65536 (≈64KB)

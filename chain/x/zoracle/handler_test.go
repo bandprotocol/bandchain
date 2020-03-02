@@ -353,7 +353,7 @@ func TestEndBlock(t *testing.T) {
 	dataSource := keep.GetTestDataSource()
 	keeper.SetDataSource(ctx, 1, dataSource)
 
-	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 30, 2000, sender)
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 30, 2500, sender)
 
 	handleMsgRequestData(ctx, keeper, msg)
 
@@ -512,7 +512,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 	for i := int64(1); i <= 10; i++ {
 		handleMsgRequestData(
 			ctx, keeper,
-			types.NewMsgRequestData(scriptID, calldata, 2, 2, 100, 2000, 2000, sender),
+			types.NewMsgRequestData(scriptID, calldata, 2, 2, 100, 2000, 2500, sender),
 		)
 
 		keeper.SetRawDataReport(ctx, i, 1, validatorAddress1, []byte("answer1"))
@@ -520,8 +520,8 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 		pendingList = append(pendingList, i)
 	}
 
-	// Each execute use 1279 gas, so it can resolve 3 requests per block
-	keeper.SetEndBlockExecuteGasLimit(ctx, 5000)
+	// Each execute use 2270 gas, so it can resolve 3 requests per block
+	keeper.SetEndBlockExecuteGasLimit(ctx, 7500)
 	keeper.SetPendingResolveList(ctx, pendingList)
 
 	got := handleEndBlock(ctx, keeper)
@@ -571,7 +571,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 	// New request
 	handleMsgRequestData(
 		ctx, keeper,
-		types.NewMsgRequestData(scriptID, calldata, 2, 2, 100, 2000, 2000, sender),
+		types.NewMsgRequestData(scriptID, calldata, 2, 2, 100, 2000, 2500, sender),
 	)
 
 	got = handleEndBlock(ctx, keeper)
