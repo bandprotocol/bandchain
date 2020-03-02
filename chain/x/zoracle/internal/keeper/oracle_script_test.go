@@ -82,3 +82,20 @@ func TestEditTooLongOracleScript(t *testing.T) {
 	err = keeper.EditOracleScript(ctx, 1, newOwner, newName, newTooLongCode)
 	require.NotNil(t, err)
 }
+
+func TestAddTooLongOracleScriptName(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	_, err := keeper.GetOracleScript(ctx, 1)
+	require.NotNil(t, err)
+
+	// Set MaxNameLength to 5
+	keeper.SetMaxNameLength(ctx, 5)
+
+	owner := sdk.AccAddress([]byte("owner"))
+	tooLongName := "oracle_script"
+	code := []byte("code")
+
+	err = keeper.AddOracleScript(ctx, owner, tooLongName, code)
+	require.NotNil(t, err)
+}
