@@ -90,3 +90,21 @@ func TestEditTooLongDataSource(t *testing.T) {
 	err = keeper.EditDataSource(ctx, 1, newOwner, newName, newFee, newTooLongExecutable)
 	require.NotNil(t, err)
 }
+
+func TestAddTooLongDataSourceName(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	_, err := keeper.GetDataSource(ctx, 1)
+	require.NotNil(t, err)
+
+	// Set MaxNameLength to 5
+	keeper.SetMaxNameLength(ctx, 5)
+
+	owner := sdk.AccAddress([]byte("owner"))
+	tooLongName := "data_source"
+	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
+	executable := []byte("executable")
+
+	err = keeper.AddDataSource(ctx, owner, tooLongName, fee, executable)
+	require.NotNil(t, err)
+}
