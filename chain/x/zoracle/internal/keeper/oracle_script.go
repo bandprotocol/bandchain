@@ -20,6 +20,10 @@ func (k Keeper) AddOracleScript(ctx sdk.Context, owner sdk.AccAddress, name stri
 		// TODO: fix error later
 		return types.ErrRequestNotFound(types.DefaultCodespace)
 	}
+	
+	if len(name) > int(k.MaxNameLength(ctx)) {
+		return types.ErrRequestNotFound(types.DefaultCodespace)
+	}
 
 	newOracleScript := types.NewOracleScript(owner, name, code)
 	k.SetOracleScript(ctx, newOracleScriptID, newOracleScript)

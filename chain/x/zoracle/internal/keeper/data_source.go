@@ -21,6 +21,10 @@ func (k Keeper) AddDataSource(ctx sdk.Context, owner sdk.AccAddress, name string
 		return types.ErrRequestNotFound(types.DefaultCodespace)
 	}
 
+	if len(name) > int(k.MaxNameLength(ctx)) {
+		return types.ErrRequestNotFound(types.DefaultCodespace)
+	}
+
 	newDataSource := types.NewDataSource(owner, name, fee, executable)
 	k.SetDataSource(ctx, newDataSourceID, newDataSource)
 	return nil
