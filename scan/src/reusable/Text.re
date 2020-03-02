@@ -8,13 +8,23 @@ type size =
   | Xxxl;
 
 type weight =
+  | Thin
   | Regular
+  | Medium
   | Semibold
   | Bold;
 
 type align =
   | Center
   | Right;
+
+type spacing =
+  | Unset
+  | Em(float);
+
+type lineHeight =
+  | Px(int)
+  | PxFloat(float);
 
 module Styles = {
   open Css;
@@ -39,9 +49,29 @@ module Styles = {
       _,
       style([]),
       fun
-      | Regular => style([fontWeight(`normal)])
-      | Semibold => style([fontWeight(`medium)])
-      | Bold => style([fontWeight(`bold)]),
+      | Thin => style([fontWeight(`num(300))])
+      | Regular => style([fontWeight(`num(400))])
+      | Medium => style([fontWeight(`num(500))])
+      | Semibold => style([fontWeight(`num(600))])
+      | Bold => style([fontWeight(`num(700))]),
+    );
+
+  let lineHeight =
+    mapWithDefault(
+      _,
+      style([]),
+      fun
+      | Px(height) => style([lineHeight(`px(height))])
+      | PxFloat(height) => style([lineHeight(`pxFloat(height))]),
+    );
+
+  let letterSpacing =
+    mapWithDefault(
+      _,
+      style([letterSpacing(`unset)]),
+      fun
+      | Unset => style([letterSpacing(`unset)])
+      | Em(spacing) => style([letterSpacing(`em(spacing))]),
     );
 
   let noWrap = style([whiteSpace(`nowrap)]);
@@ -70,6 +100,8 @@ let make =
       ~size=?,
       ~weight=?,
       ~align=?,
+      ~spacing=?,
+      ~height=?,
       ~nowrap=false,
       ~color=?,
       ~block=false,
@@ -82,6 +114,8 @@ let make =
       Styles.fontSize(size),
       Styles.fontWeight(weight),
       Styles.textAlign(align),
+      Styles.letterSpacing(spacing),
+      Styles.lineHeight(height),
       nowrap ? Styles.noWrap : "",
       block ? Styles.block : "",
       code ? Styles.code : "",

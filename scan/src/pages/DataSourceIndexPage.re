@@ -1,7 +1,7 @@
 module Styles = {
   open Css;
 
-  let pageContainer = style([paddingTop(`px(50))]);
+  let pageContainer = style([paddingTop(`px(40))]);
 
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
@@ -26,8 +26,10 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
           <img src=Images.dataSourceLogo className=Styles.logo />
           <Text
             value="DATA SOURCE"
-            weight=Text.Semibold
+            weight=Text.Medium
             size=Text.Md
+            spacing={Text.Em(0.06)}
+            height={Text.Px(15)}
             nowrap=true
             color=Colors.grayHeader
             block=true
@@ -36,7 +38,8 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
           <Text
             value="Last updated 4 hours ago"
             size=Text.Md
-            weight=Text.Regular
+            weight=Text.Thin
+            spacing={Text.Em(0.06)}
             color=Colors.grayHeader
             nowrap=true
           />
@@ -48,13 +51,20 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
       <Text
         value="#D253"
         size=Text.Xxl
-        weight=Text.Bold
+        weight=Text.Semibold
+        height={Text.Px(23)}
         color=Colors.brightOrange
         nowrap=true
         code=true
       />
       <HSpacing size=Spacing.md />
-      <Text value="CoinGecko V.2" size=Text.Xxl weight=Text.Bold nowrap=true />
+      <Text
+        value="CoinGecko V.2"
+        size=Text.Xxl
+        height={Text.Px(22)}
+        weight=Text.Bold
+        nowrap=true
+      />
     </div>
     <VSpacing size=Spacing.xl />
     <Row>
