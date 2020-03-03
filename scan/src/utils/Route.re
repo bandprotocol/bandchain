@@ -1,3 +1,9 @@
+type data_source_tab_t =
+  | DataSourceTransactions
+  | DataSourceCode
+  | DataSourceRequests
+  | DataSourceRevisions;
+
 type script_tab_t =
   | ScriptTransactions
   | ScriptCode
@@ -11,6 +17,7 @@ type request_tab_t =
 type t =
   | NotFound
   | HomePage
+  | DataSourceIndexPage(int, data_source_tab_t)
   | ScriptHomePage
   | ScriptIndexPage(Hash.t, script_tab_t)
   | TxHomePage
@@ -21,6 +28,14 @@ type t =
 
 let fromUrl = (url: ReasonReactRouter.url) =>
   switch (url.path, url.hash) {
+  | (["data-source", dataSourceID], "code") =>
+    DataSourceIndexPage(dataSourceID |> int_of_string, DataSourceCode)
+  | (["data-source", dataSourceID], "requests") =>
+    DataSourceIndexPage(dataSourceID |> int_of_string, DataSourceRequests)
+  | (["data-source", dataSourceID], "revisions") =>
+    DataSourceIndexPage(dataSourceID |> int_of_string, DataSourceRevisions)
+  | (["data-source", dataSourceID], _) =>
+    DataSourceIndexPage(dataSourceID |> int_of_string, DataSourceTransactions)
   | (["scripts"], _) => ScriptHomePage
   | (["script", codeHash], "code") => ScriptIndexPage(codeHash |> Hash.fromHex, ScriptCode)
   | (["script", codeHash], "execute") =>
@@ -42,6 +57,10 @@ let fromUrl = (url: ReasonReactRouter.url) =>
 
 let toString =
   fun
+  | DataSourceIndexPage(dataSourceID, DataSourceTransactions) => {j|/data-source/$dataSourceID|j}
+  | DataSourceIndexPage(dataSourceID, DataSourceCode) => {j|/data-source/$dataSourceID#code|j}
+  | DataSourceIndexPage(dataSourceID, DataSourceRequests) => {j|/data-source/$dataSourceID#requests|j}
+  | DataSourceIndexPage(dataSourceID, DataSourceRevisions) => {j|/data-source/$dataSourceID#revisions|j}
   | ScriptHomePage => "/scripts"
   | ScriptIndexPage(codeHash, ScriptTransactions) => {j|/script/$codeHash|j}
   | ScriptIndexPage(codeHash, ScriptCode) => {j|/script/$codeHash#code|j}
