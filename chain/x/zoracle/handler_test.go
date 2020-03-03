@@ -613,3 +613,68 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 		require.Equal(t, types.Success, actualRequest.ResolveStatus)
 	}
 }
+
+func TestEndBlockInsufficientExecutionConsumeEndBlockGas(t *testing.T) {
+	ctx, keeper := keep.CreateTestInput(t, false)
+
+	calldata := []byte("calldata")
+	sender := sdk.AccAddress([]byte("sender"))
+
+	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
+	scriptID := int64(1)
+	keeper.SetOracleScript(ctx, scriptID, script)
+
+	pubStr := []string{
+		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
+		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
+	}
+
+	validatorAddress1 := keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
+	validatorAddress2 := keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
+
+	dataSource := keep.GetTestDataSource()
+	keeper.SetDataSource(ctx, 1, dataSource)
+
+	pendingList := []int64{}
+	executeGasList := []uint64{2500, 50, 3000}
+
+	for i := int64(1); i <= 3; i++ {
+		handleMsgRequestData(
+			ctx, keeper,
+			types.NewMsgRequestData(scriptID, calldata, 2, 2, 100, 2000, executeGasList[i-1], sender),
+		)
+
+		keeper.SetRawDataReport(ctx, i, 1, validatorAddress1, []byte("answer1"))
+		keeper.SetRawDataReport(ctx, i, 1, validatorAddress2, []byte("answer2"))
+		pendingList = append(pendingList, i)
+	}
+
+	keeper.SetEndBlockExecuteGasLimit(ctx, 2600)
+	keeper.SetPendingResolveList(ctx, pendingList)
+
+	got := handleEndBlock(ctx, keeper)
+	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
+	require.Equal(t, []int64{}, keeper.GetPendingResolveList(ctx))
+
+	_, err := keeper.GetResult(ctx, 1, scriptID, calldata)
+	require.Nil(t, err)
+
+	actualRequest, err := keeper.GetRequest(ctx, 1)
+	require.Nil(t, err)
+	require.Equal(t, types.Success, actualRequest.ResolveStatus)
+
+	_, err = keeper.GetResult(ctx, 2, scriptID, calldata)
+	require.NotNil(t, err)
+
+	actualRequest, err = keeper.GetRequest(ctx, 2)
+	require.Nil(t, err)
+	require.Equal(t, types.Failed, actualRequest.ResolveStatus)
+
+	_, err = keeper.GetResult(ctx, 3, scriptID, calldata)
+	require.NotNil(t, err)
+
+	actualRequest, err = keeper.GetRequest(ctx, 3)
+	require.Nil(t, err)
+	require.Equal(t, types.Pending, actualRequest.ResolveStatus)
+
+}
