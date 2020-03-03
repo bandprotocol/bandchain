@@ -148,7 +148,6 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 			panic(sdk.ErrorGasOverflow{Descriptor: "ExecuteRequest"})
 		}
 
-		// TODO: Handle error if happen
 		if errOwasm != nil {
 			keeper.SetResolve(ctx, requestID, types.Failure)
 			continue
