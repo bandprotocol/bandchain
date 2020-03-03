@@ -147,7 +147,7 @@ func (r *resolver) getExternalDataFromCache(externalDataID int64, validatorIndex
 func (r *resolver) resolveGetExternalDataSize(vm *exec.VirtualMachine) int64 {
 	externalDataID := GetLocalInt64(vm, 0)
 	validatorIndex := GetLocalInt64(vm, 1)
-	// TODO: ExternalData should be cached for both this function and the one below.
+
 	externalData, err := r.getExternalDataFromCache(externalDataID, validatorIndex)
 
 	if err != nil {
@@ -162,7 +162,7 @@ func (r *resolver) resolveReadExternalData(vm *exec.VirtualMachine) int64 {
 	resultOffset := int(GetLocalInt64(vm, 2))
 	seekOffset := int(GetLocalInt64(vm, 3))
 	resultSize := int(GetLocalInt64(vm, 4))
-	// TODO: ExternalData should be cached for both this function and the one above.
+
 	externalData, err := r.getExternalDataFromCache(externalDataID, validatorIndex)
 	if err != nil {
 		return 1
