@@ -149,9 +149,9 @@ func InitCmd(ctx *server.Context, cdc *codec.Codec, customAppState map[string]js
 			genDoc.AppState = appState
 			genDoc.ConsensusParams = &types.ConsensusParams{
 				Block: types.BlockParams{
-					MaxBytes:   200000, // 0.2MB
-					MaxGas:     2000000,
-					TimeIotaMs: 1000, // 1s
+					MaxBytes:   200000,   // 0.2MB
+					MaxGas:     20000000, // 20M gas (Maximum oracle script size uses 15M)
+					TimeIotaMs: 1000,     // 1s
 				},
 				Evidence: types.EvidenceParams{
 					MaxAge: 100000,
