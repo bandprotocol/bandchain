@@ -319,10 +319,7 @@ func NewBandApp(
 func (app *bandApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	var genesisState GenesisState
 
-	err := app.cdc.UnmarshalJSON(req.AppStateBytes, &genesisState)
-	if err != nil {
-		panic(err)
-	}
+	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
 
 	return app.mm.InitGenesis(ctx, genesisState)
 }
