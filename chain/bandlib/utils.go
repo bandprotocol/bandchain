@@ -1,4 +1,4 @@
-package d3nlib
+package bandlib
 
 import (
 	"os"
