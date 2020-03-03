@@ -135,6 +135,7 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 	keeper.SetMaxRawDataReportSize(ctx, types.DefaultMaxRawDataReportSize)
 	keeper.SetMaxResultSize(ctx, types.DefaultMaxResultSize)
 	keeper.SetEndBlockExecuteGasLimit(ctx, types.DefaultEndBlockExecuteGasLimit)
+	keeper.SetMaxNameLength(ctx, types.DefaultMaxNameLength)
 
 	return ctx, keeper
 }
