@@ -28,7 +28,15 @@ module Styles = {
 [@react.component]
 let make = (~info, ~header) => {
   <div className=Styles.hFlex>
-    <div className=Styles.headerContainer> <Text value=header color=Colors.grayHeader /> </div>
+    <div className=Styles.headerContainer>
+      <Text
+        value=header
+        color=Colors.grayHeader
+        size=Text.Sm
+        height={Text.Px(13)}
+        spacing={Text.Em(0.03)}
+      />
+    </div>
     {switch (info) {
      | Height(height) =>
        <div className=Styles.vFlex>
@@ -45,7 +53,20 @@ let make = (~info, ~header) => {
          weight=Text.Bold
        />
      | Fee(fee) =>
-       <Text value={(fee |> Format.fPretty) ++ " BAND"} size=Text.Lg weight=Text.Bold />
+       <div className=Styles.vFlex>
+         <Text value={fee |> Format.fPretty} size=Text.Lg weight=Text.Bold code=true />
+         <HSpacing size=Spacing.md />
+         <Text value="BAND" size=Text.Lg weight=Text.Regular spacing={Text.Em(0.02)} code=true />
+         <HSpacing size=Spacing.xs />
+         <HSpacing size=Spacing.xs />
+         <Text
+           value="($0.3)"
+           size=Text.Lg
+           weight=Text.Regular
+           spacing={Text.Em(0.02)}
+           code=true
+         />
+       </div>
      | DataSources(sources) =>
        <div className=Styles.datasourcesContainer>
          {sources
@@ -66,12 +87,24 @@ let make = (~info, ~header) => {
          color=textColor
        />
      | Address(address, textColor) =>
-       <Text
-         value={address |> Address.toBech32}
-         size=Text.Lg
-         weight=Text.Semibold
-         color=textColor
-       />
+       //  <Text
+       //    value={address |> Address.toBech32}
+       //    size=Text.Lg
+       //    weight=Text.Semibold
+       //    color=textColor
+       //    code=true
+       //  />
+       <div className=Styles.vFlex>
+         <Text value="band" size=Text.Lg weight=Text.Semibold color=textColor code=true />
+         <Text
+           value="17rprjgtj0krfw3wyl9creueej6ca9dc4dgxv6e"
+           size=Text.Lg
+           weight=Text.Regular
+           spacing={Text.Em(0.02)}
+           color=textColor
+           code=true
+         />
+       </div>
      }}
   </div>;
 };

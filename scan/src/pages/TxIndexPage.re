@@ -75,7 +75,7 @@ let make = (~txHash) => {
     <div className=Styles.addressContainer>
       <Text
         value={txHash |> Hash.toHex(~with0x=true)}
-        size=Text.Xxl
+        size=Text.Xxxl
         weight=Text.Bold
         nowrap=true
       />

@@ -7,7 +7,7 @@ module Styles = {
     style([
       paddingTop(Spacing.md),
       paddingBottom(Spacing.md),
-      maxWidth(`px(1100)),
+      maxWidth(`px(984)),
       marginLeft(`auto),
       marginRight(`auto),
       paddingLeft(Spacing.md),

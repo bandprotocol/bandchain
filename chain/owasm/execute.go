@@ -3,7 +3,6 @@ package owasm
 import (
 	"fmt"
 
-	"github.com/perlin-network/life/compiler"
 	"github.com/perlin-network/life/exec"
 )
 
@@ -29,7 +28,7 @@ func Execute(
 		GasLimit:                 uint64(gasLimit),
 		DisableFloatingPoint:     false,
 		ReturnOnGasLimitExceeded: false,
-	}, resolver, &compiler.SimpleGasPolicy{GasPerInstruction: 1})
+	}, resolver, &BandChainGasPolicy{})
 	if err != nil {
 		return nil, 0, err
 	}

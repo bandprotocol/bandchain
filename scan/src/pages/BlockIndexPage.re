@@ -68,9 +68,9 @@ let make = (~height: int) => {
     </Row>
     <VSpacing size=Spacing.lg />
     <div className=Styles.vFlex>
-      <Text value="#" size=Text.Xxl weight=Text.Semibold color=Colors.brightPurple />
+      <Text value="#" size=Text.Xxxl weight=Text.Semibold color=Colors.brightPurple />
       <HSpacing size=Spacing.xs />
-      <Text value={height |> Format.iPretty} size=Text.Xxl weight=Text.Semibold />
+      <Text value={height |> Format.iPretty} size=Text.Xxxl weight=Text.Semibold />
     </div>
     <VSpacing size=Spacing.lg />
     <Row>
