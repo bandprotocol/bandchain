@@ -429,7 +429,7 @@ func TestEndBlockExecuteFailedIfExecuteGasLessThanGasUsed(t *testing.T) {
 
 	actualRequest, err := keeper.GetRequest(ctx, 1)
 	require.Nil(t, err)
-	require.Equal(t, types.Failed, actualRequest.ResolveStatus)
+	require.Equal(t, types.Failure, actualRequest.ResolveStatus)
 }
 
 func TestSkipInvalidExecuteGas(t *testing.T) {
@@ -477,7 +477,7 @@ func TestSkipInvalidExecuteGas(t *testing.T) {
 
 	actualRequest, err := keeper.GetRequest(ctx, 1)
 	require.Nil(t, err)
-	require.Equal(t, types.Pending, actualRequest.ResolveStatus)
+	require.Equal(t, types.Open, actualRequest.ResolveStatus)
 
 	_, err = keeper.GetResult(ctx, 2, 1, calldata)
 	require.Nil(t, err)
@@ -543,7 +543,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 
 		actualRequest, err := keeper.GetRequest(ctx, i)
 		require.Nil(t, err)
-		require.Equal(t, types.Pending, actualRequest.ResolveStatus)
+		require.Equal(t, types.Open, actualRequest.ResolveStatus)
 	}
 
 	got = handleEndBlock(ctx, keeper)
@@ -565,7 +565,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 
 		actualRequest, err := keeper.GetRequest(ctx, i)
 		require.Nil(t, err)
-		require.Equal(t, types.Pending, actualRequest.ResolveStatus)
+		require.Equal(t, types.Open, actualRequest.ResolveStatus)
 	}
 
 	// New request
@@ -593,7 +593,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 
 		actualRequest, err := keeper.GetRequest(ctx, i)
 		require.Nil(t, err)
-		require.Equal(t, types.Pending, actualRequest.ResolveStatus)
+		require.Equal(t, types.Open, actualRequest.ResolveStatus)
 	}
 
 	keeper.SetRawDataReport(ctx, 11, 1, validatorAddress1, []byte("answer1"))
@@ -668,13 +668,13 @@ func TestEndBlockInsufficientExecutionConsumeEndBlockGas(t *testing.T) {
 
 	actualRequest, err = keeper.GetRequest(ctx, 2)
 	require.Nil(t, err)
-	require.Equal(t, types.Failed, actualRequest.ResolveStatus)
+	require.Equal(t, types.Failure, actualRequest.ResolveStatus)
 
 	_, err = keeper.GetResult(ctx, 3, scriptID, calldata)
 	require.NotNil(t, err)
 
 	actualRequest, err = keeper.GetRequest(ctx, 3)
 	require.Nil(t, err)
-	require.Equal(t, types.Pending, actualRequest.ResolveStatus)
+	require.Equal(t, types.Open, actualRequest.ResolveStatus)
 
 }

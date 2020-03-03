@@ -7,9 +7,9 @@ import (
 type ResolveStatus int
 
 const (
-	Pending ResolveStatus = iota
+	Open ResolveStatus = iota
 	Success
-	Failed
+	Failure
 )
 
 // Request is a data structure that stores the detail of a request to an oracle script.
@@ -46,7 +46,7 @@ func NewRequest(
 		RequestTime:              requestTime,
 		ExpirationHeight:         expirationHeight,
 		ExecuteGas:               executeGas,
-		ResolveStatus:            Pending,
+		ResolveStatus:            Open,
 	}
 }
 

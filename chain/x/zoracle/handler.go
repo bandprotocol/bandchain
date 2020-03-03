@@ -150,13 +150,13 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 
 		// TODO: Handle error if happen
 		if errOwasm != nil {
-			keeper.SetResolve(ctx, requestID, types.Failed)
+			keeper.SetResolve(ctx, requestID, types.Failure)
 			continue
 		}
 
 		errResult := keeper.AddResult(ctx, requestID, request.OracleScriptID, request.Calldata, result)
 		if errResult != nil {
-			keeper.SetResolve(ctx, requestID, types.Failed)
+			keeper.SetResolve(ctx, requestID, types.Failure)
 			continue
 		}
 
