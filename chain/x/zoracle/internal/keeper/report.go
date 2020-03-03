@@ -14,7 +14,7 @@ func (k Keeper) AddReport(
 		return err
 	}
 
-	if request.IsResolved || request.ExpirationHeight < ctx.BlockHeight() {
+	if request.ResolveStatus == types.Success || request.ExpirationHeight < ctx.BlockHeight() {
 		// TODO: fix error later
 		return types.ErrRequestNotFound(types.DefaultCodespace)
 	}

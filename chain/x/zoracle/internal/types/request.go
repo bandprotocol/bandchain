@@ -4,6 +4,14 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+type ResolveStatus int
+
+const (
+	Pending ResolveStatus = iota
+	Success
+	Failed
+)
+
 // Request is a data structure that stores the detail of a request to an oracle script.
 type Request struct {
 	OracleScriptID           int64            `json:"oracleScriptID"`
@@ -15,7 +23,7 @@ type Request struct {
 	RequestTime              int64            `json:"requestTime"`
 	ExpirationHeight         int64            `json:"expirationHeight"`
 	ExecuteGas               uint64           `json:"executeGas"`
-	IsResolved               bool             `json:"isResolved"`
+	ResolveStatus            ResolveStatus    `json:"resolveStatus"`
 }
 
 // NewRequest creates a new Request instance.
@@ -38,6 +46,7 @@ func NewRequest(
 		RequestTime:              requestTime,
 		ExpirationHeight:         expirationHeight,
 		ExecuteGas:               executeGas,
+		ResolveStatus:            Pending,
 	}
 }
 

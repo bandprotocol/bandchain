@@ -384,7 +384,7 @@ func TestEndBlock(t *testing.T) {
 
 	actualRequest, err := keeper.GetRequest(ctx, 1)
 	require.Nil(t, err)
-	require.True(t, actualRequest.IsResolved)
+	require.Equal(t, types.Success, actualRequest.ResolveStatus)
 }
 
 func TestEndBlockExecuteFailedIfExecuteGasLessThanGasUsed(t *testing.T) {
@@ -429,7 +429,7 @@ func TestEndBlockExecuteFailedIfExecuteGasLessThanGasUsed(t *testing.T) {
 
 	actualRequest, err := keeper.GetRequest(ctx, 1)
 	require.Nil(t, err)
-	require.False(t, actualRequest.IsResolved)
+	require.Equal(t, types.Failed, actualRequest.ResolveStatus)
 }
 
 func TestSkipInvalidExecuteGas(t *testing.T) {
@@ -477,14 +477,14 @@ func TestSkipInvalidExecuteGas(t *testing.T) {
 
 	actualRequest, err := keeper.GetRequest(ctx, 1)
 	require.Nil(t, err)
-	require.False(t, actualRequest.IsResolved)
+	require.Equal(t, types.Pending, actualRequest.ResolveStatus)
 
 	_, err = keeper.GetResult(ctx, 2, 1, calldata)
 	require.Nil(t, err)
 
 	actualRequest, err = keeper.GetRequest(ctx, 2)
 	require.Nil(t, err)
-	require.True(t, actualRequest.IsResolved)
+	require.Equal(t, types.Success, actualRequest.ResolveStatus)
 }
 
 func TestStopResolveWhenOutOfGas(t *testing.T) {
@@ -534,7 +534,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 
 		actualRequest, err := keeper.GetRequest(ctx, i)
 		require.Nil(t, err)
-		require.True(t, actualRequest.IsResolved)
+		require.Equal(t, types.Success, actualRequest.ResolveStatus)
 	}
 
 	for i := int64(4); i <= 10; i++ {
@@ -543,7 +543,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 
 		actualRequest, err := keeper.GetRequest(ctx, i)
 		require.Nil(t, err)
-		require.False(t, actualRequest.IsResolved)
+		require.Equal(t, types.Pending, actualRequest.ResolveStatus)
 	}
 
 	got = handleEndBlock(ctx, keeper)
@@ -556,7 +556,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 
 		actualRequest, err := keeper.GetRequest(ctx, i)
 		require.Nil(t, err)
-		require.True(t, actualRequest.IsResolved)
+		require.Equal(t, types.Success, actualRequest.ResolveStatus)
 	}
 
 	for i := int64(7); i <= 10; i++ {
@@ -565,7 +565,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 
 		actualRequest, err := keeper.GetRequest(ctx, i)
 		require.Nil(t, err)
-		require.False(t, actualRequest.IsResolved)
+		require.Equal(t, types.Pending, actualRequest.ResolveStatus)
 	}
 
 	// New request
@@ -584,7 +584,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 
 		actualRequest, err := keeper.GetRequest(ctx, i)
 		require.Nil(t, err)
-		require.True(t, actualRequest.IsResolved)
+		require.Equal(t, types.Success, actualRequest.ResolveStatus)
 	}
 
 	for i := int64(10); i <= 10; i++ {
@@ -593,7 +593,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 
 		actualRequest, err := keeper.GetRequest(ctx, i)
 		require.Nil(t, err)
-		require.False(t, actualRequest.IsResolved)
+		require.Equal(t, types.Pending, actualRequest.ResolveStatus)
 	}
 
 	keeper.SetRawDataReport(ctx, 11, 1, validatorAddress1, []byte("answer1"))
@@ -610,6 +610,6 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 
 		actualRequest, err := keeper.GetRequest(ctx, i)
 		require.Nil(t, err)
-		require.True(t, actualRequest.IsResolved)
+		require.Equal(t, types.Success, actualRequest.ResolveStatus)
 	}
 }
