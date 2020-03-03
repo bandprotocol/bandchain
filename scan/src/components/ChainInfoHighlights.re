@@ -12,7 +12,7 @@ module Highlights = {
       <div> <Text value=label size=Text.Sm weight=Text.Bold color=Colors.purple /> </div>
       <div className={Css.style([Css.marginTop(Spacing.sm)])}>
         {valuePrefix->getWithDefault(React.string(""))}
-        <Text value size=Text.Xxl weight=Text.Bold />
+        <Text value size=Text.Xxxl weight=Text.Bold />
       </div>
       <div>
         {<Text value={extraText->Belt_Option.getWithDefault("")} size=Text.Sm />}
@@ -57,7 +57,7 @@ let make = () =>
         <Col size=1.>
           <Highlights
             label="LATEST BLOCK"
-            valuePrefix={<Text value="# " size=Text.Xxl weight=Text.Bold color=Colors.pink />}
+            valuePrefix={<Text value="# " size=Text.Xxxl weight=Text.Bold color=Colors.pink />}
             value={info.latestBlock.height->Format.iPretty}
             extraComponent={<TimeAgos time={info.latestBlock.timestamp} />}
           />
