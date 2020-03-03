@@ -17,7 +17,7 @@ contract SimplePriceReference is IPriceReference, Ownable {
     }
 
     function latestRound() public view returns (uint256) {
-        return prices.length - 1;
+        return prices.length;
     }
 
     function latestAnswer() public view returns (uint256) {
