@@ -4,9 +4,14 @@ pragma experimental ABIEncoderV2;
 interface IBridge {
     /// Helper struct to help the function caller to decode oracle data.
     struct VerifyOracleDataResult {
-        bytes data;
         uint64 oracleScriptId;
+        uint64 requestTime;
+        uint64 aggregationTime;
+        uint64 requestedValidatorsCount;
+        uint64 sufficientValidatorCount;
+        uint64 reportedValidatorsCount;
         bytes params;
+        bytes data;
     }
 
     /// Performs oracle state relay and oracle data verification in one go. The caller submits
