@@ -6,10 +6,17 @@ import (
 	"github.com/perlin-network/life/exec"
 )
 
+type cache struct {
+	externalDataID int64
+	validatorIndex int64
+	data           []byte
+}
+
 type resolver struct {
-	env      ExecutionEnvironment
-	calldata []byte
-	result   []byte
+	env       ExecutionEnvironment
+	calldata  []byte
+	result    []byte
+	cachedata cache
 }
 
 func (r *resolver) ResolveFunc(module, field string) exec.FunctionImport {
@@ -123,11 +130,26 @@ func (r *resolver) resolveRequestExternalData(vm *exec.VirtualMachine) int64 {
 	return 0
 }
 
+func (r *resolver) getExternalDataFromCache(externalDataID int64, validatorIndex int64) ([]byte, error) {
+	if r.cachedata.externalDataID == externalDataID && r.cachedata.validatorIndex == validatorIndex {
+		return r.cachedata.data, nil
+	}
+	externalData, err := r.env.GetExternalData(externalDataID, validatorIndex)
+	r.cachedata = cache{
+		externalDataID: externalDataID,
+		validatorIndex: validatorIndex,
+		data:           externalData,
+	}
+
+	return externalData, err
+}
+
 func (r *resolver) resolveGetExternalDataSize(vm *exec.VirtualMachine) int64 {
 	externalDataID := GetLocalInt64(vm, 0)
 	validatorIndex := GetLocalInt64(vm, 1)
 	// TODO: ExternalData should be cached for both this function and the one below.
-	externalData, err := r.env.GetExternalData(externalDataID, validatorIndex)
+	externalData, err := r.getExternalDataFromCache(externalDataID, validatorIndex)
+
 	if err != nil {
 		return -1
 	}
@@ -135,13 +157,13 @@ func (r *resolver) resolveGetExternalDataSize(vm *exec.VirtualMachine) int64 {
 }
 
 func (r *resolver) resolveReadExternalData(vm *exec.VirtualMachine) int64 {
-	dataSourceID := GetLocalInt64(vm, 0)
-	externalDataID := GetLocalInt64(vm, 1)
+	externalDataID := GetLocalInt64(vm, 0)
+	validatorIndex := GetLocalInt64(vm, 1)
 	resultOffset := int(GetLocalInt64(vm, 2))
 	seekOffset := int(GetLocalInt64(vm, 3))
 	resultSize := int(GetLocalInt64(vm, 4))
 	// TODO: ExternalData should be cached for both this function and the one above.
-	externalData, err := r.env.GetExternalData(dataSourceID, externalDataID)
+	externalData, err := r.getExternalDataFromCache(externalDataID, validatorIndex)
 	if err != nil {
 		return 1
 	}
