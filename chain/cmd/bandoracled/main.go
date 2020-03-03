@@ -13,8 +13,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 
+	"github.com/bandprotocol/d3n/chain/bandlib"
 	"github.com/bandprotocol/d3n/chain/byteexec"
-	"github.com/bandprotocol/d3n/chain/d3nlib"
 	"github.com/bandprotocol/d3n/chain/x/zoracle"
 )
 
@@ -23,7 +23,7 @@ const (
 )
 
 var (
-	bandClient d3nlib.BandStatefulClient
+	bandClient bandlib.BandStatefulClient
 	nodeURI    = getEnv("NODE_URI", "http://localhost:26657")
 	privS      = getEnv("PRIVATE_KEY", "06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b")
 )
@@ -56,7 +56,7 @@ func main() {
 	copy(priv[:], privB)
 
 	var err error
-	bandClient, err = d3nlib.NewBandStatefulClient(nodeURI, priv)
+	bandClient, err = bandlib.NewBandStatefulClient(nodeURI, priv)
 	if err != nil {
 		panic(err)
 	}

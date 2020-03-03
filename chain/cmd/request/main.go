@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/bandprotocol/d3n/chain/d3nlib"
+	"github.com/bandprotocol/d3n/chain/bandlib"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
@@ -40,13 +40,13 @@ func main() {
 	var priv secp256k1.PrivKeySecp256k1
 	copy(priv[:], privB)
 
-	tx, err := d3nlib.NewBandProvider(nodeURI, priv)
+	tx, err := bandlib.NewBandProvider(nodeURI, priv)
 
 	valPrivB, _ := hex.DecodeString("06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b")
 	var valPriv secp256k1.PrivKeySecp256k1
 	copy(valPriv[:], valPrivB)
 
-	valTx, err := d3nlib.NewBandProvider(nodeURI, valPriv)
+	valTx, err := bandlib.NewBandProvider(nodeURI, valPriv)
 	if err != nil {
 		panic(err)
 	}
