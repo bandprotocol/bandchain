@@ -1,5 +1,5 @@
 pragma solidity 0.5.14;
-import { Utils } from "./Utils.sol";
+import {Utils} from "./Utils.sol";
 
 /// @dev Library for computing Tendermint's block header hash from app hash, time, and height.
 ///
@@ -27,41 +27,49 @@ import { Utils } from "./Utils.sol";
 /// root hash, since we only want to validate the correctness of [C] and [2]. In fact, only
 /// [1A], [3], [2B], [2C], [D], and [1H] are needed in order to compute [BlockHeader].
 library BlockHeaderMerkleParts {
-  struct Data {
-    bytes32 versionAndChainIdHash;        // [1A]
-    bytes32 timeHash;                     // [3]
-    bytes32 txCountAndLastBlockInfoHash;  // [2B]
-    bytes32 consensusDataHash;            // [2C]
-    bytes32 lastResultsHash;              // [D]
-    bytes32 evidenceAndProposerHash;      // [1H]
-  }
+    struct Data {
+        bytes32 versionAndChainIdHash; // [1A]
+        bytes32 timeHash; // [3]
+        bytes32 txCountAndLastBlockInfoHash; // [2B]
+        bytes32 consensusDataHash; // [2C]
+        bytes32 lastResultsHash; // [D]
+        bytes32 evidenceAndProposerHash; // [1H]
+    }
 
-  /// @dev Returns the block header hash after combining merkle parts with necessary data.
-  /// @param _appHash The Merkle hash of BandChain application state.
-  /// @param _blockHeight The height of this block.
-  function getBlockHeader(
-    Data memory _self,
-    bytes32 _appHash,
-    uint256 _blockHeight
-  )
-    internal
-    pure
-    returns (bytes32)
-  {
-    return Utils.merkleInnerHash(                                             // [BlockHeader]
-      Utils.merkleInnerHash(                                                  // [3A]
-        Utils.merkleInnerHash(                                                // [2A]
-          _self.versionAndChainIdHash,                                        // [1A]
-          Utils.merkleInnerHash(                                              // [1B]
-            Utils.merkleLeafHash(Utils.encodeVarintUnsigned(_blockHeight)),   // [2]
-            _self.timeHash)),                                                 // [3]
-        _self.txCountAndLastBlockInfoHash),                                   // [2B]
-      Utils.merkleInnerHash(                                                  // [3B]
-        _self.consensusDataHash,                                              // [2C]
-        Utils.merkleInnerHash(                                                // [2D]
-          Utils.merkleInnerHash(                                              // [1G]
-            Utils.merkleLeafHash(abi.encodePacked(uint8(32), _appHash)),      // [C]
-            _self.lastResultsHash),                                           // [D]
-          _self.evidenceAndProposerHash)));                                   // [1H]
-  }
+    /// @dev Returns the block header hash after combining merkle parts with necessary data.
+    /// @param _appHash The Merkle hash of BandChain application state.
+    /// @param _blockHeight The height of this block.
+    function getBlockHeader(
+        Data memory _self,
+        bytes32 _appHash,
+        uint256 _blockHeight
+    ) internal pure returns (bytes32) {
+        return
+            Utils.merkleInnerHash( // [BlockHeader]
+                Utils.merkleInnerHash( // [3A]
+                    Utils.merkleInnerHash( // [2A]
+                        _self.versionAndChainIdHash, // [1A]
+                        Utils.merkleInnerHash( // [1B]
+                            Utils.merkleLeafHash(
+                                Utils.encodeVarintUnsigned(_blockHeight)
+                            ), // [2]
+                            _self.timeHash
+                        )
+                    ), // [3]
+                    _self.txCountAndLastBlockInfoHash
+                ), // [2B]
+                Utils.merkleInnerHash( // [3B]
+                    _self.consensusDataHash, // [2C]
+                    Utils.merkleInnerHash( // [2D]
+                        Utils.merkleInnerHash( // [1G]
+                            Utils.merkleLeafHash(
+                                abi.encodePacked(uint8(32), _appHash)
+                            ), // [C]
+                            _self.lastResultsHash
+                        ), // [D]
+                        _self.evidenceAndProposerHash
+                    )
+                )
+            ); // [1H]
+    }
 }
