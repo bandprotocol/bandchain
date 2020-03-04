@@ -118,7 +118,7 @@ func handleRequestData(c *gin.Context) {
 				DefaultExecuteGas,
 				bandClient.Sender(),
 			),
-			20000000, "", "", "",
+			1000000, "", "", "",
 			flags.BroadcastAsync,
 		)
 		if err != nil {
@@ -143,7 +143,7 @@ func handleRequestData(c *gin.Context) {
 			DefaultExecuteGas,
 			bandClient.Sender(),
 		),
-		20000000, "", "", "",
+		1000000, "", "", "",
 		flags.BroadcastBlock,
 	)
 	if err != nil {

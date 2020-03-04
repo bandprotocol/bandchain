@@ -16,3 +16,4 @@
 [@bs.module] external copy: string = "./copy.svg";
 [@bs.module] external loadingSpinner: string = "./loading_spinner.gif";
 [@bs.module] external blockLogo: string = "./block.png";
+[@bs.module] external dataSourceLogo: string = "./data-source.png";
