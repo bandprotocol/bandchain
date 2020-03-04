@@ -46,9 +46,9 @@ type OracleRequest struct {
 }
 
 type OracleRequestResp struct {
-	TxHash    string          `json:"txHash"`
-	RequestID int64           `json:"id,omitempty"`
-	Proof     json.RawMessage `json:"proof,omitempty"`
+	TxHash    string            `json:"txHash"`
+	RequestID zoracle.RequestID `json:"id,omitempty"`
+	Proof     json.RawMessage   `json:"proof,omitempty"`
 }
 
 type ExecuteRequest struct {
@@ -109,7 +109,7 @@ func handleRequestData(c *gin.Context) {
 	if reqType == Asynchronous {
 		txr, err := bandClient.SendTransaction(
 			zoracle.NewMsgRequestData(
-				req.OracleScriptID,
+				zoracle.OracleScriptID(req.OracleScriptID),
 				req.Calldata,
 				req.RequestedValidatorCount,
 				req.SufficientValidatorCount,
@@ -134,7 +134,7 @@ func handleRequestData(c *gin.Context) {
 
 	txr, err := bandClient.SendTransaction(
 		zoracle.NewMsgRequestData(
-			req.OracleScriptID,
+			zoracle.OracleScriptID(req.OracleScriptID),
 			req.Calldata,
 			req.RequestedValidatorCount,
 			req.SufficientValidatorCount,
@@ -175,7 +175,7 @@ func handleRequestData(c *gin.Context) {
 	if reqType == Synchronous {
 		c.JSON(200, OracleRequestResp{
 			TxHash:    txr.TxHash,
-			RequestID: requestID,
+			RequestID: zoracle.RequestID(requestID),
 		})
 		return
 	}
@@ -201,7 +201,7 @@ func handleRequestData(c *gin.Context) {
 
 			c.JSON(200, OracleRequestResp{
 				TxHash:    txr.TxHash,
-				RequestID: requestID,
+				RequestID: zoracle.RequestID(requestID),
 				Proof:     proof.Result,
 			})
 			return

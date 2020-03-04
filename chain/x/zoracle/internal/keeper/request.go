@@ -6,13 +6,13 @@ import (
 )
 
 // SetRequest is a function to save request to the given ID.
-func (k Keeper) SetRequest(ctx sdk.Context, id int64, request types.Request) {
+func (k Keeper) SetRequest(ctx sdk.Context, id types.RequestID, request types.Request) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.RequestStoreKey(id), k.cdc.MustMarshalBinaryBare(request))
 }
 
 // GetRequest returns the entire Request metadata struct.
-func (k Keeper) GetRequest(ctx sdk.Context, id int64) (types.Request, sdk.Error) {
+func (k Keeper) GetRequest(ctx sdk.Context, id types.RequestID) (types.Request, sdk.Error) {
 	store := ctx.KVStore(k.storeKey)
 	if !k.CheckRequestExists(ctx, id) {
 		return types.Request{}, types.ErrRequestNotFound(types.DefaultCodespace)
@@ -26,9 +26,9 @@ func (k Keeper) GetRequest(ctx sdk.Context, id int64) (types.Request, sdk.Error)
 
 // AddRequest attempts to create a new request. An error is returned if some conditions failed.
 func (k Keeper) AddRequest(
-	ctx sdk.Context, oracleScriptID int64, calldata []byte,
+	ctx sdk.Context, oracleScriptID types.OracleScriptID, calldata []byte,
 	requestedValidatorCount, sufficientValidatorCount, expiration int64, executeGas uint64,
-) (int64, sdk.Error) {
+) (types.RequestID, sdk.Error) {
 	if !k.CheckOracleScriptExists(ctx, oracleScriptID) {
 		// TODO: fix error later
 		return 0, types.ErrRequestNotFound(types.DefaultCodespace)
@@ -73,7 +73,7 @@ func (k Keeper) AddRequest(
 
 // ValidateDataSourceCount validates that the number of raw data requests is
 // not greater than `MaxDataSourceCountPerRequest`
-func (k Keeper) ValidateDataSourceCount(ctx sdk.Context, id int64) sdk.Error {
+func (k Keeper) ValidateDataSourceCount(ctx sdk.Context, id types.RequestID) sdk.Error {
 	if k.GetRawDataRequestCount(ctx, id) > k.MaxDataSourceCountPerRequest(ctx) {
 		// TODO: fix error later
 		return types.ErrRequestNotFound(types.DefaultCodespace)
@@ -84,7 +84,7 @@ func (k Keeper) ValidateDataSourceCount(ctx sdk.Context, id int64) sdk.Error {
 
 // AddNewReceiveValidator checks that new validator is a valid validator and not in received list yet then add new
 // validator to list.
-func (k Keeper) AddNewReceiveValidator(ctx sdk.Context, id int64, validator sdk.ValAddress) sdk.Error {
+func (k Keeper) AddNewReceiveValidator(ctx sdk.Context, id types.RequestID, validator sdk.ValAddress) sdk.Error {
 	request, err := k.GetRequest(ctx, id)
 	if err != nil {
 		return err
@@ -110,8 +110,7 @@ func (k Keeper) AddNewReceiveValidator(ctx sdk.Context, id int64, validator sdk.
 	return nil
 }
 
-// SetResolve set resolve status and save to context.
-func (k Keeper) SetResolve(ctx sdk.Context, id int64, resolveStatus types.ResolveStatus) sdk.Error {
+func (k Keeper) SetResolve(ctx sdk.Context, id types.RequestID, resolveStatus types.ResolveStatus) sdk.Error {
 	request, err := k.GetRequest(ctx, id)
 	if err != nil {
 		return err
@@ -123,7 +122,7 @@ func (k Keeper) SetResolve(ctx sdk.Context, id int64, resolveStatus types.Resolv
 }
 
 // CheckRequestExists checks if the request at this id is present in the store or not.
-func (k Keeper) CheckRequestExists(ctx sdk.Context, id int64) bool {
+func (k Keeper) CheckRequestExists(ctx sdk.Context, id types.RequestID) bool {
 	store := ctx.KVStore(k.storeKey)
 	return store.Has(types.RequestStoreKey(id))
 }
@@ -131,7 +130,7 @@ func (k Keeper) CheckRequestExists(ctx sdk.Context, id int64) bool {
 // ShouldBecomePendingResolve checks and returns whether the given request should be moved to the
 // pending resolve list, which will be resolved during the EndBlock call. The move will happen exactly when
 // the request receives sufficient raw reports from the validators.
-func (k Keeper) ShouldBecomePendingResolve(ctx sdk.Context, id int64) bool {
+func (k Keeper) ShouldBecomePendingResolve(ctx sdk.Context, id types.RequestID) bool {
 	request, err := k.GetRequest(ctx, id)
 	if err != nil {
 		return false
@@ -140,10 +139,10 @@ func (k Keeper) ShouldBecomePendingResolve(ctx sdk.Context, id int64) bool {
 }
 
 // AddPendingRequest checks and append new request id to list if id already existed in list, it will return error.
-func (k Keeper) AddPendingRequest(ctx sdk.Context, requestID int64) sdk.Error {
+func (k Keeper) AddPendingRequest(ctx sdk.Context, requestID types.RequestID) sdk.Error {
 	pendingList := k.GetPendingResolveList(ctx)
 	for _, entry := range pendingList {
-		if requestID == entry {
+		if requestID == types.RequestID(entry) {
 			return types.ErrDuplicateRequest(types.DefaultCodespace)
 		}
 	}
@@ -153,7 +152,7 @@ func (k Keeper) AddPendingRequest(ctx sdk.Context, requestID int64) sdk.Error {
 }
 
 // SetPendingResolveList saves the list of pending request that will be resolved at end block.
-func (k Keeper) SetPendingResolveList(ctx sdk.Context, reqIDs []int64) {
+func (k Keeper) SetPendingResolveList(ctx sdk.Context, reqIDs []types.RequestID) {
 	store := ctx.KVStore(k.storeKey)
 	encoded := k.cdc.MustMarshalBinaryBare(reqIDs)
 	if encoded == nil {
@@ -163,16 +162,16 @@ func (k Keeper) SetPendingResolveList(ctx sdk.Context, reqIDs []int64) {
 }
 
 // GetPendingResolveList returns the list of pending request.
-func (k Keeper) GetPendingResolveList(ctx sdk.Context) []int64 {
+func (k Keeper) GetPendingResolveList(ctx sdk.Context) []types.RequestID {
 	store := ctx.KVStore(k.storeKey)
 	reqIDsBytes := store.Get(types.PendingResolveListStoreKey)
 
 	// If the state is empty
 	if len(reqIDsBytes) == 0 {
-		return []int64{}
+		return []types.RequestID{}
 	}
 
-	var reqIDs []int64
+	var reqIDs []types.RequestID
 	k.cdc.MustUnmarshalBinaryBare(reqIDsBytes, &reqIDs)
 
 	return reqIDs

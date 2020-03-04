@@ -108,7 +108,7 @@ $ %s tx zoracle request 1 --calldata 1234abcdef --requested-validator-count 4 --
 			}
 
 			msg := types.NewMsgRequestData(
-				oracleScriptID,
+				types.OracleScriptID(oracleScriptID),
 				calldata,
 				requestedValidatorCount,
 				sufficientValidatorCount,
@@ -184,7 +184,7 @@ $ %s tx zoracle report 1 1:172.5 2:HELLOWORLD --from mykey
 				return dataset[i].ExternalDataID < dataset[j].ExternalDataID
 			})
 
-			msg := types.NewMsgReportData(requestID, dataset, sdk.ValAddress(cliCtx.GetFromAddress()))
+			msg := types.NewMsgReportData(types.RequestID(requestID), dataset, sdk.ValAddress(cliCtx.GetFromAddress()))
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
@@ -457,7 +457,7 @@ $ %s tx zoracle edit-oracle-script 1 --name eth-price --script ../eth_price.wasm
 			}
 
 			msg := types.NewMsgEditOracleScript(
-				id,
+				types.OracleScriptID(id),
 				owner,
 				name,
 				scriptCode,
