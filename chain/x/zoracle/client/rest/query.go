@@ -34,7 +34,7 @@ func buildRequestRESTInfo(
 	request.RequestedValidators = queryRequest.Request.RequestedValidators
 	request.SufficientValidatorCount = queryRequest.Request.SufficientValidatorCount
 	request.ExpirationHeight = queryRequest.Request.ExpirationHeight
-	request.IsResolved = queryRequest.Request.IsResolved
+	request.ResolveStatus = queryRequest.Request.ResolveStatus
 	request.RawDataRequests = queryRequest.RawDataRequests
 
 	request.Result = queryRequest.Result

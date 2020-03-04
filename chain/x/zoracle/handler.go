@@ -148,17 +148,18 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 			panic(sdk.ErrorGasOverflow{Descriptor: "ExecuteRequest"})
 		}
 
-		// TODO: Handle error if happen
 		if errOwasm != nil {
+			keeper.SetResolve(ctx, requestID, types.Failure)
 			continue
 		}
 
 		errResult := keeper.AddResult(ctx, requestID, request.OracleScriptID, request.Calldata, result)
 		if errResult != nil {
+			keeper.SetResolve(ctx, requestID, types.Failure)
 			continue
 		}
 
-		keeper.SetResolve(ctx, requestID, true)
+		keeper.SetResolve(ctx, requestID, types.Success)
 	}
 
 	keeper.SetPendingResolveList(ctx, pendingList[firstUnresolvedRequestIndex:])
