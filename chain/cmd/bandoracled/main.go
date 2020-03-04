@@ -36,13 +36,13 @@ func getEnv(key, defaultValue string) string {
 	return tmp
 }
 
-func getLatestRequestID() (int64, error) {
+func getLatestRequestID() (zoracle.RequestID, error) {
 	cliCtx := bandClient.GetContext()
 	res, _, err := cliCtx.Query("custom/zoracle/request_number")
 	if err != nil {
 		return 0, err
 	}
-	var requestID int64
+	var requestID zoracle.RequestID
 	err = cliCtx.Codec.UnmarshalJSON(res, &requestID)
 	if err != nil {
 		return 0, err
@@ -80,7 +80,7 @@ func main() {
 	}
 }
 
-func handleRequest(requestID int64) (sdk.TxResponse, error) {
+func handleRequest(requestID zoracle.RequestID) (sdk.TxResponse, error) {
 	cliCtx := bandClient.GetContext()
 	res, _, err := cliCtx.Query(fmt.Sprintf("custom/zoracle/request/%d", requestID))
 	if err != nil {
@@ -93,17 +93,17 @@ func handleRequest(requestID int64) (sdk.TxResponse, error) {
 	}
 
 	type queryParallelInfo struct {
-		externalID int64
+		externalID zoracle.ExternalID
 		answer     []byte
 		err        error
 	}
 
 	chanQueryParallelInfo := make(chan queryParallelInfo, len(request.RawDataRequests))
 	for _, rawRequest := range request.RawDataRequests {
-		go func(externalID, dataSourceID int64, calldata []byte) {
+		go func(externalID zoracle.ExternalID, dataSourceID zoracle.DataSourceID, calldata []byte) {
 			info := queryParallelInfo{externalID: externalID, answer: []byte{}, err: nil}
 			res, _, err := cliCtx.Query(
-				fmt.Sprintf("custom/zoracle/%s/%d", zoracle.QueryDataSourceByID, dataSourceID),
+				fmt.Sprintf("custom/zoracle/%s/%d", zoracle.QueryDataSourceByID, int64(dataSourceID)),
 			)
 
 			if err != nil {
@@ -133,7 +133,7 @@ func handleRequest(requestID int64) (sdk.TxResponse, error) {
 
 			info.answer = []byte(strings.TrimSpace(string(result)))
 			chanQueryParallelInfo <- info
-		}(int64(rawRequest.ExternalID), int64(rawRequest.RawDataRequest.DataSourceID), rawRequest.RawDataRequest.Calldata)
+		}(rawRequest.ExternalID, rawRequest.RawDataRequest.DataSourceID, rawRequest.RawDataRequest.Calldata)
 	}
 
 	reports := make([]zoracle.RawDataReport, 0)
@@ -156,6 +156,6 @@ func handleRequest(requestID int64) (sdk.TxResponse, error) {
 	)
 }
 
-func handleRequestAndLog(requestID int64) {
+func handleRequestAndLog(requestID zoracle.RequestID) {
 	fmt.Println(handleRequest(requestID))
 }
