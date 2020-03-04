@@ -72,4 +72,5 @@ type (
 	RequestID      = types.RequestID
 	OracleScriptID = types.OracleScriptID
 	ExternalID     = types.ExternalID
+	DataSourceID   = types.DataSourceID
 )
