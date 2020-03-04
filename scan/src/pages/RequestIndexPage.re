@@ -108,7 +108,7 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) =>
           </Col>
         </Row>
         <div className=Styles.sourceContainer>
-          <Text value=scriptName size=Text.Xxl weight=Text.Bold nowrap=true />
+          <Text value=scriptName size=Text.Xxxl weight=Text.Bold nowrap=true />
         </div>
         <VSpacing size=Spacing.xl />
         <InfoHL info={InfoHL.DataSources(dataSources)} header="DATA SOURCES" />
