@@ -13,10 +13,11 @@ import (
 func mockDataSource(ctx sdk.Context, keeper Keeper) sdk.Result {
 	owner := sdk.AccAddress([]byte("owner"))
 	name := "data_source_1"
+	description := "description"
 	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
 	executable := []byte("executable")
 	sender := sdk.AccAddress([]byte("sender"))
-	msg := types.NewMsgCreateDataSource(owner, name, fee, executable, sender)
+	msg := types.NewMsgCreateDataSource(owner, name, description, fee, executable, sender)
 	return handleMsgCreateDataSource(ctx, keeper, msg)
 }
 
@@ -49,11 +50,12 @@ func TestEditDataSourceSuccess(t *testing.T) {
 
 	newOwner := sdk.AccAddress([]byte("owner2"))
 	newName := "data_source_2"
+	newDescription := "new_description"
 	newFee := sdk.NewCoins(sdk.NewInt64Coin("uband", 99))
 	newExecutable := []byte("executable_2")
 	sender := sdk.AccAddress([]byte("owner"))
 
-	msg := types.NewMsgEditDataSource(1, newOwner, newName, newFee, newExecutable, sender)
+	msg := types.NewMsgEditDataSource(1, newOwner, newName, newDescription, newFee, newExecutable, sender)
 	got := handleMsgEditDataSource(ctx, keeper, msg)
 	require.True(t, got.IsOK(), "expected edit data source to be ok, got %v", got)
 
@@ -71,11 +73,12 @@ func TestEditDataSourceByNotOwner(t *testing.T) {
 
 	newOwner := sdk.AccAddress([]byte("owner2"))
 	newName := "data_source_2"
+	newDescription := "new_description"
 	newFee := sdk.NewCoins(sdk.NewInt64Coin("uband", 99))
 	newExecutable := []byte("executable_2")
 	sender := sdk.AccAddress([]byte("sender"))
 
-	msg := types.NewMsgEditDataSource(1, newOwner, newName, newFee, newExecutable, sender)
+	msg := types.NewMsgEditDataSource(1, newOwner, newName,newDescription, newFee, newExecutable, sender)
 	got := handleMsgEditDataSource(ctx, keeper, msg)
 	require.False(t, got.IsOK())
 	require.Equal(t, types.CodeInvalidOwner, got.Code)

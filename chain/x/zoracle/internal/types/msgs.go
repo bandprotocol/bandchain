@@ -151,27 +151,30 @@ func (msg MsgReportData) GetSignBytes() []byte {
 
 // MsgCreateDataSource is a message for creating a new data source.
 type MsgCreateDataSource struct {
-	Owner      sdk.AccAddress `json:"owner"`
-	Name       string         `json:"name"`
-	Fee        sdk.Coins      `json:"fee"`
-	Executable []byte         `json:"executable"`
-	Sender     sdk.AccAddress `json:"sender"`
+	Owner       sdk.AccAddress `json:"owner"`
+	Name        string         `json:"name"`
+	Description string         `json:"description"`
+	Fee         sdk.Coins      `json:"fee"`
+	Executable  []byte         `json:"executable"`
+	Sender      sdk.AccAddress `json:"sender"`
 }
 
 // NewMsgCreateDataSource creates a new MsgCreateDataSource instance.
 func NewMsgCreateDataSource(
 	owner sdk.AccAddress,
 	name string,
+	description string,
 	fee sdk.Coins,
 	executable []byte,
 	sender sdk.AccAddress,
 ) MsgCreateDataSource {
 	return MsgCreateDataSource{
-		Owner:      owner,
-		Name:       name,
-		Fee:        fee,
-		Executable: executable,
-		Sender:     sender,
+		Owner:       owner,
+		Name:        name,
+		Description: description,
+		Fee:         fee,
+		Executable:  executable,
+		Sender:      sender,
 	}
 }
 
@@ -217,6 +220,7 @@ type MsgEditDataSource struct {
 	DataSourceID int64          `json:"dataSourceID"`
 	Owner        sdk.AccAddress `json:"owner"`
 	Name         string         `json:"name"`
+	Description  string         `json:"description"`
 	Fee          sdk.Coins      `json:"fee"`
 	Executable   []byte         `json:"executable"`
 	Sender       sdk.AccAddress `json:"sender"`
@@ -227,6 +231,7 @@ func NewMsgEditDataSource(
 	dataSourceID int64,
 	owner sdk.AccAddress,
 	name string,
+	description string,
 	fee sdk.Coins,
 	executable []byte,
 	sender sdk.AccAddress,
@@ -235,6 +240,7 @@ func NewMsgEditDataSource(
 		DataSourceID: dataSourceID,
 		Owner:        owner,
 		Name:         name,
+		Description:  description,
 		Fee:          fee,
 		Executable:   executable,
 		Sender:       sender,

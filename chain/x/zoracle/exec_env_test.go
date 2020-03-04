@@ -174,6 +174,7 @@ func TestRequestExternalData(t *testing.T) {
 	dataSource := types.NewDataSource(
 		sdk.AccAddress([]byte("owner")),
 		"data_source",
+		"description",
 		sdk.NewCoins(sdk.NewInt64Coin("uband", 10)),
 		[]byte("executable"),
 	)
@@ -202,6 +203,7 @@ func TestRequestExternalDataExceedMaxDataSourceCountPerRequest(t *testing.T) {
 	dataSource := types.NewDataSource(
 		sdk.AccAddress([]byte("owner")),
 		"data_source",
+		"description",
 		sdk.NewCoins(sdk.NewInt64Coin("uband", 10)),
 		[]byte("executable"),
 	)

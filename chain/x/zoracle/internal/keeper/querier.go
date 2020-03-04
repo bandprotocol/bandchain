@@ -107,6 +107,7 @@ func queryDataSourceByID(ctx sdk.Context, path []string, req abci.RequestQuery, 
 		id,
 		dataSource.Owner,
 		dataSource.Name,
+		dataSource.Description,
 		dataSource.Fee,
 		dataSource.Executable,
 	)), nil
@@ -141,6 +142,7 @@ func queryDataSources(ctx sdk.Context, path []string, req abci.RequestQuery, kee
 			id,
 			dataSource.Owner,
 			dataSource.Name,
+			dataSource.Description,
 			dataSource.Fee,
 			dataSource.Executable,
 		))

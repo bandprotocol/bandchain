@@ -197,6 +197,7 @@ func GetTestDataSource() types.DataSource {
 	return types.NewDataSource(
 		sdk.AccAddress([]byte("owner")),
 		"data_source",
+		"descriotion",
 		sdk.NewCoins(sdk.NewInt64Coin("uband", 10)),
 		[]byte("executable"),
 	)

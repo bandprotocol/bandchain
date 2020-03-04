@@ -41,6 +41,10 @@ const (
 	// The maximum size of name length.
 	// Default value is 280
 	DefaultMaxNameLength = int64(280)
+
+	// The maximum size of description length.
+	// Default value 4096
+	DefaultDescriptionLength = int64(4096)
 )
 
 // Parameter store keys.
@@ -53,6 +57,7 @@ var (
 	KeyMaxResultSize                = []byte("MaxResultSize")
 	KeyEndBlockExecuteGasLimit      = []byte("EndBlockExecuteGasLimit")
 	KeyMaxNameLength                = []byte("MaxNameLength")
+	KeyMaxDescriptionLength         = []byte("MaxDescriptionLength")
 )
 
 // Params - used for initializing default parameter for zoracle at genesis.
@@ -65,6 +70,7 @@ type Params struct {
 	MaxResultSize                int64  `json:"max_result_size" yaml:"max_result_size"`
 	EndBlockExecuteGasLimit      uint64 `json:"end_block_execute_gas_limit" yaml:"end_block_execute_gas_limit"`
 	MaxNameLength                int64  `json:"max_name_length" yaml:"max_name_length"`
+	MaxDescriptionLength         int64  `json:"max_description_length"`
 }
 
 // NewParams creates a new Params object.
@@ -77,6 +83,7 @@ func NewParams(
 	maxResultSize int64,
 	endBlockExecuteGasLimit uint64,
 	maxNameLength int64,
+	MaxDescriptionLength int64,
 ) Params {
 	return Params{
 		MaxDataSourceExecutableSize:  maxDataSourceExecutableSize,
@@ -87,6 +94,7 @@ func NewParams(
 		MaxResultSize:                maxResultSize,
 		EndBlockExecuteGasLimit:      endBlockExecuteGasLimit,
 		MaxNameLength:                maxNameLength,
+		MaxDescriptionLength:         MaxDescriptionLength,
 	}
 }
 
@@ -101,6 +109,7 @@ func (p Params) String() string {
   MaxResultSize:                %d
   EndBlockExecuteGasLimit:      %d
   MaxNameLength:                %d
+  MaxDescriptionLength:         %d
 `, p.MaxDataSourceExecutableSize,
 		p.MaxOracleScriptCodeSize,
 		p.MaxCalldataSize,
@@ -109,6 +118,7 @@ func (p Params) String() string {
 		p.MaxResultSize,
 		p.EndBlockExecuteGasLimit,
 		p.MaxNameLength,
+		p.MaxDescriptionLength,
 	)
 }
 
@@ -123,6 +133,7 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 		{Key: KeyMaxResultSize, Value: &p.MaxResultSize},
 		{Key: KeyEndBlockExecuteGasLimit, Value: &p.EndBlockExecuteGasLimit},
 		{Key: KeyMaxNameLength, Value: &p.MaxNameLength},
+		{Key: KeyMaxDescriptionLength, Value: &p.MaxDescriptionLength},
 	}
 }
 
@@ -137,5 +148,6 @@ func DefaultParams() Params {
 		DefaultMaxResultSize,
 		DefaultEndBlockExecuteGasLimit,
 		DefaultMaxNameLength,
+		DefaultDescriptionLength,
 	)
 }

@@ -28,11 +28,12 @@ func TestQueryDataSourceById(t *testing.T) {
 
 	owner := sdk.AccAddress([]byte("owner"))
 	name := "data_source"
+	description := "description"
 	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
 	executable := []byte("executable")
-	expectedResult := types.NewDataSourceQuerierInfo(1, owner, name, fee, executable)
+	expectedResult := types.NewDataSourceQuerierInfo(1, owner, name, description, fee, executable)
 
-	keeper.SetDataSource(ctx, 1, types.NewDataSource(owner, name, fee, executable))
+	keeper.SetDataSource(ctx, 1, types.NewDataSource(owner, name, description, fee, executable))
 
 	// This time querier should be able to find a data source
 	dataSource, err := querier(
@@ -59,11 +60,12 @@ func TestQueryDataSourcesByStartIdAndNumberOfDataSources(t *testing.T) {
 	for i := 1; i <= 10; i++ {
 		owner := sdk.AccAddress([]byte("owner" + strconv.Itoa(i)))
 		name := "data_source_" + strconv.Itoa(i)
+		description := "description_" + strconv.Itoa(i)
 		fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
 		executable := []byte("executable" + strconv.Itoa(i))
-		eachDataSource := types.NewDataSourceQuerierInfo(int64(i), owner, name, fee, executable)
+		eachDataSource := types.NewDataSourceQuerierInfo(int64(i), owner, name, description, fee, executable)
 
-		err := keeper.AddDataSource(ctx, eachDataSource.Owner, eachDataSource.Name, eachDataSource.Fee, eachDataSource.Executable)
+		err := keeper.AddDataSource(ctx, eachDataSource.Owner, eachDataSource.Name, eachDataSource.Description, eachDataSource.Fee, eachDataSource.Executable)
 		require.Nil(t, err)
 
 		expectedResult = append(expectedResult, eachDataSource)

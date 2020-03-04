@@ -61,7 +61,7 @@ func main() {
 			}
 			fmt.Println(tx.SendTransaction(
 				[]sdk.Msg{zoracle.NewMsgCreateDataSource(
-					tx.Sender(), "Coingecko script", sdk.Coins{}, coingecko, tx.Sender(),
+					tx.Sender(), "Coingecko script", "coin market ranking chart", sdk.Coins{}, coingecko, tx.Sender(),
 				)},
 				0, 1000000, "", "", "",
 				flags.BroadcastBlock,
@@ -73,7 +73,7 @@ func main() {
 			}
 			fmt.Println(tx.SendTransaction(
 				[]sdk.Msg{zoracle.NewMsgCreateDataSource(
-					tx.Sender(), "Crypto compare script", sdk.Coins{}, cryptoCompare, tx.Sender(),
+					tx.Sender(), "Crypto compare script","compare script", sdk.Coins{}, cryptoCompare, tx.Sender(),
 				)},
 				0, 1000000, "", "", "",
 				flags.BroadcastBlock,
@@ -85,7 +85,7 @@ func main() {
 			}
 			fmt.Println(tx.SendTransaction(
 				[]sdk.Msg{zoracle.NewMsgCreateDataSource(
-					tx.Sender(), "Binance script", sdk.Coins{}, binance, tx.Sender(),
+					tx.Sender(), "Binance script","Binance script", sdk.Coins{}, binance, tx.Sender(),
 				)},
 				0, 1000000, "", "", "",
 				flags.BroadcastBlock,
@@ -146,7 +146,7 @@ func main() {
 			))
 
 			fmt.Println(tx.SendTransaction(
-				[]sdk.Msg{zoracle.NewMsgCreateDataSource(tx.Sender(), "Mock Data source", sdk.Coins{}, []byte("exec"), tx.Sender())},
+				[]sdk.Msg{zoracle.NewMsgCreateDataSource(tx.Sender(), "Mock Data source","Mock Script", sdk.Coins{}, []byte("exec"), tx.Sender())},
 				0, 1000000, "", "", "",
 				flags.BroadcastBlock,
 			))
