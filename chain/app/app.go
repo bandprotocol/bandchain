@@ -28,6 +28,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/supply"
 
+	bandsupply "github.com/bandprotocol/d3n/chain/x/supply"
 	"github.com/bandprotocol/d3n/chain/x/zoracle"
 )
 
@@ -188,7 +189,7 @@ func NewBandApp(
 		app.cdc,
 		keys[staking.StoreKey],
 		tkeys[staking.TStoreKey],
-		app.supplyKeeper,
+		bandsupply.WrapSupplyKeeperBurnToCommunityPool(app.supplyKeeper),
 		stakingSubspace,
 		staking.DefaultCodespace,
 	)
