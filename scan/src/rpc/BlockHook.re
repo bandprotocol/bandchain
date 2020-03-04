@@ -31,12 +31,12 @@ module Block = {
     ->Belt_Option.getWithDefault("Unknown");
 };
 
-let latest = (~page=1, ~limit=10, ~pollInterval=?, ()) => {
-  let json = AxiosHooks.use({j|d3n/blocks/latest?page=$page&limit=$limit|j}, ~pollInterval?, ());
+let latest = (~page=1, ~limit=10, ()) => {
+  let json = AxiosHooks.use({j|d3n/blocks/latest?page=$page&limit=$limit|j});
   json |> Belt.Option.map(_, Block.decodeBlocks);
 };
 
-let atHeight = (height, ~pollInterval=?, ()) => {
-  let json = AxiosHooks.use({j|blocks/$height|j}, ~pollInterval?, ());
+let atHeight = height => {
+  let json = AxiosHooks.use({j|blocks/$height|j});
   json |> Belt.Option.map(_, Block.decodeBlock);
 };

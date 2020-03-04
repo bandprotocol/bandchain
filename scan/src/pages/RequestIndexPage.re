@@ -66,7 +66,7 @@ module Styles = {
 [@react.component]
 let make = (~reqID, ~hashtag: Route.request_tab_t) =>
   {
-    let requestOpt = RequestHook.getRequest(reqID, ~pollInterval=3000, ());
+    let requestOpt = RequestHook.getRequest(reqID);
     let infoOpt = React.useContext(GlobalContext.context);
 
     let%Opt request = requestOpt;

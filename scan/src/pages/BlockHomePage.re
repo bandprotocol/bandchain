@@ -51,7 +51,7 @@ let renderBody = ((block, moniker): (BlockHook.Block.t, string)) => {
 [@react.component]
 let make = () => {
   let (limit, setLimit) = React.useState(_ => 10);
-  let blocksOpt = BlockHook.latest(~limit, ~pollInterval=3000, ());
+  let blocksOpt = BlockHook.latest(~limit, ());
   let infoOpt = React.useContext(GlobalContext.context);
 
   let blocks = blocksOpt->Belt.Option.getWithDefault([]);
