@@ -19,7 +19,7 @@ type RequestRESTInfo struct {
 	RequestedValidators      []sdk.ValAddress                     `json:"requestedValidators"`
 	SufficientValidatorCount int64                                `json:"sufficientValidatorCount"`
 	ExpirationHeight         int64                                `json:"expirationHeight"`
-	IsResolved               bool                                 `json:"isResolved"`
+	ResolveStatus            types.ResolveStatus                  `json:"resolveStatus"`
 	Requester                sdk.AccAddress                       `json:"requester"`
 	RequestTx                TxDetail                             `json:"requestTx,omitempty"`
 	RawDataRequests          []types.RawDataRequestWithExternalID `json:"rawDataRequests"`
