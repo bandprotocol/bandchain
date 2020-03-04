@@ -39,6 +39,7 @@ setup() {
   cd bandchain/chain
   git checkout $TARGET_BRANCH
   make install
+  cd ../..
 }
 
 setup
