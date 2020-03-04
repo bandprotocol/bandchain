@@ -1,64 +1,91 @@
 package bandlib
 
 import (
-	"sync"
+	"fmt"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/crypto"
 )
 
-type BandStatefulClient struct {
-	sequenceNumber uint64
-	mtx            sync.Mutex
-	provider       BandProvider
+type msgDetail struct {
+	msg       sdk.Msg
+	gas       uint64
+	fees      sdk.Coins
+	gasPrices sdk.DecCoins
+	txChan    chan sdk.TxResponse
+	errChan   chan error
 }
 
-func NewBandStatefulClient(nodeURI string, privKey crypto.PrivKey) (BandStatefulClient, error) {
+// BandStatefulClient contains state client
+type BandStatefulClient struct {
+	memo            string
+	maximumMsgPerTx int
+	provider        BandProvider
+	msgChan         chan msgDetail
+	msgs            []sdk.Msg
+	totalGas        uint64
+	totalFees       sdk.Coins
+	totalGasPrices  sdk.DecCoins
+	txChans         []chan sdk.TxResponse
+	errChans        []chan error
+	readMode        <-chan struct{}
+	readModeBackUp  <-chan struct{}
+}
+
+// NewBandStatefulClient creates new instance of BandStatefulClient.
+func NewBandStatefulClient(
+	nodeURI string, privKey crypto.PrivKey, msgsCap, maximumMsgPerTx int, memo string,
+) (BandStatefulClient, error) {
 	provider, err := NewBandProvider(nodeURI, privKey)
 	if err != nil {
 		return BandStatefulClient{}, err
 	}
-	seq, err := provider.GetSequenceFromChain()
-	if err != nil {
-		return BandStatefulClient{}, err
+	ch := make(chan struct{})
+	close(ch)
+	client := BandStatefulClient{
+		provider:        provider,
+		msgChan:         make(chan msgDetail, msgsCap),
+		maximumMsgPerTx: maximumMsgPerTx,
+		memo:            memo,
+		readMode:        ch,
+		readModeBackUp:  ch,
 	}
+	go client.loop()
 
-	return BandStatefulClient{
-		sequenceNumber: seq,
-		provider:       provider,
-	}, nil
+	return client, nil
 }
 
 func (client *BandStatefulClient) SendTransaction(
-	msg sdk.Msg, gas uint64,
-	memo, fees, gasPrices, broadcastMode string,
+	msg sdk.Msg, gas uint64, fees, gasPrices string,
 ) (sdk.TxResponse, error) {
-	// Ask current sequence number
-	seq, err := client.provider.GetSequenceFromChain()
+	// Add msg to channel
+	parsedFees, err := sdk.ParseCoins(fees)
 	if err != nil {
 		return sdk.TxResponse{}, err
 	}
-	var nonce uint64
-	client.mtx.Lock()
-	if seq > client.sequenceNumber {
-		client.sequenceNumber = seq
-	}
-	nonce = client.sequenceNumber
-	client.sequenceNumber++
-	client.mtx.Unlock()
 
-	tx, err := client.provider.SendTransaction(
-		[]sdk.Msg{msg}, nonce, gas, memo, fees, gasPrices, broadcastMode,
-	)
-
+	parsedGasPrices, err := sdk.ParseDecCoins(gasPrices)
 	if err != nil {
-		// Reset sequence number to 0 make next request use new sequence number
-		client.mtx.Lock()
-		client.sequenceNumber = 0
-		client.mtx.Unlock()
+		return sdk.TxResponse{}, err
 	}
-	return tx, err
+
+	txChan := make(chan sdk.TxResponse, 0)
+	errChan := make(chan error, 0)
+
+	client.msgChan <- msgDetail{
+		msg: msg, gas: gas, fees: parsedFees, gasPrices: parsedGasPrices,
+		txChan: txChan, errChan: errChan,
+	}
+
+	select {
+	case txResponse := <-txChan:
+		return txResponse, nil
+	case err := <-errChan:
+		return sdk.TxResponse{}, err
+	}
 }
 
 func (client *BandStatefulClient) Sender() sdk.AccAddress {
@@ -67,4 +94,69 @@ func (client *BandStatefulClient) Sender() sdk.AccAddress {
 
 func (client *BandStatefulClient) GetContext() context.CLIContext {
 	return client.provider.cliCtx
+}
+
+func (client *BandStatefulClient) loop() {
+	for {
+		select {
+		case <-client.readMode:
+			{
+				select {
+				case msg := <-client.msgChan:
+					{
+						client.msgs = append(client.msgs, msg.msg)
+						client.totalGas += msg.gas
+						client.totalFees = client.totalFees.Add(msg.fees)
+						client.totalGasPrices = client.totalGasPrices.Add(msg.gasPrices)
+						client.txChans = append(client.txChans, msg.txChan)
+						client.errChans = append(client.errChans, msg.errChan)
+						if len(client.msgs) == client.maximumMsgPerTx {
+							client.readMode = nil
+						}
+					}
+				case <-time.After(100 * time.Millisecond):
+					{
+						if len(client.msgs) != 0 {
+							client.readMode = nil
+						}
+					}
+				}
+			}
+		default:
+			{
+				seq, err := client.provider.GetSequenceFromChain()
+				if err != nil {
+					// TODO: error handler
+					fmt.Println(err)
+					continue
+				}
+				tx, err := client.provider.SendTransaction(
+					client.msgs,
+					seq,
+					client.totalGas,
+					client.memo,
+					client.totalFees.String(),
+					client.totalGasPrices.String(),
+					flags.BroadcastBlock,
+				)
+				if err != nil {
+					for _, errChan := range client.errChans {
+						errChan <- err
+					}
+				} else {
+					for _, txChan := range client.txChans {
+						txChan <- tx
+					}
+				}
+
+				// Clear state
+				client.readMode = client.readModeBackUp
+				client.msgs = []sdk.Msg{}
+				client.totalGas = uint64(0)
+				client.totalFees = sdk.Coins{}
+				client.totalGasPrices = sdk.DecCoins{}
+				client.txChans = []chan sdk.TxResponse{}
+			}
+		}
+	}
 }

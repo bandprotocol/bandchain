@@ -12,7 +12,6 @@ import (
 
 	"github.com/bandprotocol/d3n/chain/app"
 	"github.com/bandprotocol/d3n/chain/bandlib"
-	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/gin-gonic/gin"
 	"github.com/levigross/grequests"
@@ -88,7 +87,12 @@ func handleRequestData(c *gin.Context) {
 	}
 
 	reqType := req.Type
-	if reqType != Asynchronous && reqType != Synchronous && reqType != Full {
+	if reqType == Asynchronous {
+		c.JSON(http.StatusNotImplemented, gin.H{"error": "Asynchronous doesn't avaliable"})
+		return
+	}
+
+	if reqType != Synchronous && reqType != Full {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Type not match"})
 		return
 	}
@@ -105,32 +109,31 @@ func handleRequestData(c *gin.Context) {
 		req.Expiration = DefaultExpiration
 	}
 
-	// unconfirmed respond
-	if reqType == Asynchronous {
-		txr, err := bandClient.SendTransaction(
-			zoracle.NewMsgRequestData(
-				req.OracleScriptID,
-				req.Calldata,
-				req.RequestedValidatorCount,
-				req.SufficientValidatorCount,
-				req.Expiration,
-				DefaultPrepareGas,
-				DefaultExecuteGas,
-				bandClient.Sender(),
-			),
-			1000000, "", "", "",
-			flags.BroadcastAsync,
-		)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
+	// unconfirmed respond (Not work for now)
+	// if reqType == Asynchronous {
+	// 	txr, err := bandClient.SendTransaction(
+	// 		zoracle.NewMsgRequestData(
+	// 			req.OracleScriptID,
+	// 			req.Calldata,
+	// 			req.RequestedValidatorCount,
+	// 			req.SufficientValidatorCount,
+	// 			req.Expiration,
+	// 			DefaultPrepareGas,
+	// 			DefaultExecuteGas,
+	// 			bandClient.Sender(),
+	// 		),
+	// 		1000000, "", "",
+	// 	)
+	// 	if err != nil {
+	// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	// 		return
+	// 	}
 
-		c.JSON(200, OracleRequestResp{
-			TxHash: txr.TxHash,
-		})
-		return
-	}
+	// 	c.JSON(200, OracleRequestResp{
+	// 		TxHash: txr.TxHash,
+	// 	})
+	// 	return
+	// }
 
 	txr, err := bandClient.SendTransaction(
 		zoracle.NewMsgRequestData(
@@ -143,8 +146,7 @@ func handleRequestData(c *gin.Context) {
 			DefaultExecuteGas,
 			bandClient.Sender(),
 		),
-		1000000, "", "", "",
-		flags.BroadcastBlock,
+		1000000, "", "",
 	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -264,7 +266,7 @@ func main() {
 	copy(pk[:], privBytes)
 
 	var err error
-	bandClient, err = bandlib.NewBandStatefulClient(nodeURI, pk)
+	bandClient, err = bandlib.NewBandStatefulClient(nodeURI, pk, 100, 10, "Bandsv requests")
 	if err != nil {
 		panic(err)
 	}

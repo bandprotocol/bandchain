@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/bandprotocol/d3n/chain/bandlib"
-	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
@@ -40,13 +39,7 @@ func main() {
 	var priv secp256k1.PrivKeySecp256k1
 	copy(priv[:], privB)
 
-	tx, err := bandlib.NewBandProvider(nodeURI, priv)
-
-	valPrivB, _ := hex.DecodeString("6b0b8909eadbbc220797dc0aada9558030d4a89972e51de8de525fc9de42bd40")
-	var valPriv secp256k1.PrivKeySecp256k1
-	copy(valPriv[:], valPrivB)
-
-	valTx, err := bandlib.NewBandProvider(nodeURI, valPriv)
+	tx, err := bandlib.NewBandStatefulClient(nodeURI, priv, 10, 5, "Request script txs")
 	if err != nil {
 		panic(err)
 	}
@@ -60,11 +53,12 @@ func main() {
 				panic(err)
 			}
 			fmt.Println(tx.SendTransaction(
-				[]sdk.Msg{zoracle.NewMsgCreateDataSource(
-					tx.Sender(), "Coingecko script", "The Script that queries crypto price from https://coingecko.com", sdk.Coins{}, coingecko, tx.Sender(),
-				)},
-				0, 1000000, "", "", "",
-				flags.BroadcastBlock,
+				zoracle.NewMsgCreateDataSource(
+					tx.Sender(), "Coingecko script",
+					"The Script that queries crypto price from https://cryptocompare.com",
+					sdk.Coins{}, coingecko, tx.Sender(),
+				),
+				1000000, "", "",
 			))
 
 			cryptoCompare, err := ioutil.ReadFile("../../datasources/crypto_compare_price.sh")
@@ -72,11 +66,12 @@ func main() {
 				panic(err)
 			}
 			fmt.Println(tx.SendTransaction(
-				[]sdk.Msg{zoracle.NewMsgCreateDataSource(
-					tx.Sender(), "Crypto compare script", "The Script that queries crypto price from https://cryptocompare.com", sdk.Coins{}, cryptoCompare, tx.Sender(),
-				)},
-				0, 1000000, "", "", "",
-				flags.BroadcastBlock,
+				zoracle.NewMsgCreateDataSource(
+					tx.Sender(), "Crypto compare script",
+					"The Script that queries crypto price from https://cryptocompare.com",
+					sdk.Coins{}, cryptoCompare, tx.Sender(),
+				),
+				1000000, "", "",
 			))
 
 			binance, err := ioutil.ReadFile("../../datasources/binance_price.sh")
@@ -84,11 +79,12 @@ func main() {
 				panic(err)
 			}
 			fmt.Println(tx.SendTransaction(
-				[]sdk.Msg{zoracle.NewMsgCreateDataSource(
-					tx.Sender(), "Binance script", "The Script that queries crypto price from https://www.binance.com/en", sdk.Coins{}, binance, tx.Sender(),
-				)},
-				0, 1000000, "", "", "",
-				flags.BroadcastBlock,
+				zoracle.NewMsgCreateDataSource(
+					tx.Sender(), "Binance script",
+					"The Script that queries crypto price from https://www.binance.com/en",
+					sdk.Coins{}, binance, tx.Sender(),
+				),
+				1000000, "", "",
 			))
 
 			oracleBytes, err := ioutil.ReadFile("../../owasm/res/crypto_price.wasm")
@@ -96,20 +92,23 @@ func main() {
 				panic(err)
 			}
 			fmt.Println(tx.SendTransaction(
-				[]sdk.Msg{zoracle.NewMsgCreateOracleScript(tx.Sender(), "Crypto price script", "Oracle script for getting an average crypto price from many sources.", oracleBytes, tx.Sender())},
-				0, 3000000, "", "", "",
-				flags.BroadcastBlock,
+				zoracle.NewMsgCreateOracleScript(
+					tx.Sender(), "Crypto price script",
+					"Oracle script for getting an average crypto price from many sources.",
+					oracleBytes, tx.Sender(),
+				),
+				3000000, "", "",
 			))
 		}
 	case "send_token":
 		{
 			// Send token
 			to, _ := sdk.AccAddressFromBech32("band13zmknvkq2sj920spz90g4r9zjan8g584x8qalj")
-			fmt.Println(tx.SendTransaction([]sdk.Msg{bank.MsgSend{
+			fmt.Println(tx.SendTransaction(bank.MsgSend{
 				FromAddress: tx.Sender(),
 				ToAddress:   to,
 				Amount:      sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(10))),
-			}}, 0, 1000000, "", "", "", flags.BroadcastBlock))
+			}, 1000000, "", ""))
 		}
 	case "request":
 		{
@@ -117,18 +116,59 @@ func main() {
 			case "BTC":
 				{
 					fmt.Println(tx.SendTransaction(
-						[]sdk.Msg{zoracle.NewMsgRequestData(1, []byte("BTC"), 4, 4, 100000, prepareGas, executeGas, tx.Sender())},
-						0, 1000000, "", "", "",
-						flags.BroadcastBlock,
+						zoracle.NewMsgRequestData(
+							1, []byte("BTC"), 4, 4, 100000, prepareGas, executeGas, tx.Sender(),
+						), 1000000, "", "",
 					))
 				}
 			case "ETH":
 				{
 					fmt.Println(tx.SendTransaction(
-						[]sdk.Msg{zoracle.NewMsgRequestData(1, []byte("ETH"), 4, 4, 100000, prepareGas, executeGas, tx.Sender())},
-						0, 1000000, "", "", "",
-						flags.BroadcastBlock,
+						zoracle.NewMsgRequestData(
+							1, []byte("ETH"), 4, 4, 100000, prepareGas, executeGas, tx.Sender(),
+						), 1000000, "", "",
 					))
+				}
+			}
+		}
+	case "requests":
+		{
+			txResponses := make(chan sdk.TxResponse, 2)
+			errResponses := make(chan error, 2)
+			go func() {
+				txRes, err := tx.SendTransaction(
+					zoracle.NewMsgRequestData(
+						1, []byte("BTC"), 4, 4, 100000, prepareGas, executeGas, tx.Sender(),
+					), 1000000, "", "",
+				)
+
+				if err != nil {
+					errResponses <- err
+				}
+				txResponses <- txRes
+			}()
+			go func() {
+				txRes, err := tx.SendTransaction(
+					zoracle.NewMsgRequestData(
+						1, []byte("ETH"), 4, 4, 100000, prepareGas, executeGas, tx.Sender(),
+					), 1000000, "", "",
+				)
+
+				if err != nil {
+					errResponses <- err
+				}
+				txResponses <- txRes
+			}()
+			for i := 0; i < 2; i++ {
+				select {
+				case txRes := <-txResponses:
+					{
+						fmt.Println(txRes)
+					}
+				case err := <-errResponses:
+					{
+						fmt.Println(err)
+					}
 				}
 			}
 		}
@@ -140,29 +180,22 @@ func main() {
 			}
 
 			fmt.Println(tx.SendTransaction(
-				[]sdk.Msg{zoracle.NewMsgCreateOracleScript(tx.Sender(), "Silly script", "Test oracle script", bytes, tx.Sender())},
-				0, 3000000, "", "", "",
-				flags.BroadcastBlock,
+				zoracle.NewMsgCreateOracleScript(
+					tx.Sender(), "Silly script", "Test oracle script", bytes, tx.Sender()),
+				3000000, "", "",
 			))
 
 			fmt.Println(tx.SendTransaction(
-				[]sdk.Msg{zoracle.NewMsgCreateDataSource(tx.Sender(), "Mock Data source", "Mock Script", sdk.Coins{}, []byte("exec"), tx.Sender())},
-				0, 1000000, "", "", "",
-				flags.BroadcastBlock,
+				zoracle.NewMsgCreateDataSource(
+					tx.Sender(), "Mock Data source", "Mock Script",
+					sdk.Coins{}, []byte("exec"), tx.Sender(),
+				), 1000000, "", "",
 			))
 
 			fmt.Println(tx.SendTransaction(
-				[]sdk.Msg{zoracle.NewMsgRequestData(1, []byte("calldata"), 1, 1, 100, prepareGas, executeGas, tx.Sender())},
-				0, 1000000, "", "", "",
-				flags.BroadcastBlock,
-			))
-
-			fmt.Println(valTx.SendTransaction(
-				[]sdk.Msg{zoracle.NewMsgReportData(1, []zoracle.RawDataReport{
-					zoracle.NewRawDataReport(1, []byte("data1")),
-				}, sdk.ValAddress(valTx.Sender()))},
-				0, 1000000, "", "", "",
-				flags.BroadcastBlock,
+				zoracle.NewMsgRequestData(
+					1, []byte("calldata"), 1, 1, 100, prepareGas, executeGas, tx.Sender(),
+				), 1000000, "", "",
 			))
 		}
 	case "deploy_oracle_scripts":
@@ -179,9 +212,10 @@ func main() {
 
 			for i := uint64(0); i < round; i++ {
 				fmt.Println(tx.SendTransaction(
-					[]sdk.Msg{zoracle.NewMsgCreateOracleScript(tx.Sender(), fmt.Sprintf("Silly script %d", i), "Test oracle script", bytes, tx.Sender())},
-					0, 1000000, "", "", "",
-					flags.BroadcastBlock,
+					zoracle.NewMsgCreateOracleScript(
+						tx.Sender(), fmt.Sprintf("Silly script %d", i), "Test oracle script",
+						bytes, tx.Sender(),
+					), 1000000, "", "",
 				))
 				time.Sleep(100 * time.Millisecond)
 			}
