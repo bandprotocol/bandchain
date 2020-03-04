@@ -78,3 +78,21 @@ func (k Keeper) CheckDataSourceExists(ctx sdk.Context, id types.DataSourceID) bo
 	store := ctx.KVStore(k.storeKey)
 	return store.Has(types.DataSourceStoreKey(id))
 }
+
+// GetDataSourceIterator returns an iterator for all data sources in the store.
+func (k Keeper) GetDataSourceIterator(ctx sdk.Context) sdk.Iterator {
+	store := ctx.KVStore(k.storeKey)
+	return sdk.KVStorePrefixIterator(store, types.DataSourceStoreKeyPrefix)
+}
+
+// GetAllDataSources returns list of all data sources.
+func (k Keeper) GetAllDataSources(ctx sdk.Context) []types.DataSource {
+	var dataSource types.DataSource
+	dataSources := []types.DataSource{}
+	iterator := k.GetDataSourceIterator(ctx)
+	for ; iterator.Valid(); iterator.Next() {
+		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &dataSource)
+		dataSources = append(dataSources, dataSource)
+	}
+	return dataSources
+}

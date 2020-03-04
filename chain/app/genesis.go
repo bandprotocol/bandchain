@@ -2,6 +2,7 @@ package app
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -118,4 +119,52 @@ func NewDefaultGenesisState() GenesisState {
 			GenTxs: []json.RawMessage{},
 		}),
 	}
+}
+
+func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage {
+	state := zoracle.DefaultGenesisState()
+	dataSources := []struct {
+		name string
+		path string
+	}{
+		{"Coingecko script", "./datasources/coingecko_price.sh"},
+		{"Crypto compare script", "./datasources/crypto_compare_price.sh"},
+		{"Binance price", "./datasources/binance_price.sh"},
+	}
+
+	// TODO: Find a better way to specific path to data sources
+	state.DataSources = make([]zoracle.DataSource, len(dataSources))
+	for i, dataSource := range dataSources {
+		script, err := ioutil.ReadFile(dataSource.path)
+		if err != nil {
+			panic(err)
+		}
+		state.DataSources[i] = zoracle.NewDataSource(
+			owner,
+			dataSource.name,
+			sdk.Coins{},
+			script,
+		)
+	}
+
+	// TODO: Find a better way to specific path to oracle scripts
+	oracleScripts := []struct {
+		name string
+		path string
+	}{
+		{"Crypto price script", "./owasm/res/crypto_price.wasm"},
+	}
+	state.OracleScripts = make([]zoracle.OracleScript, len(oracleScripts))
+	for i, oracleScript := range oracleScripts {
+		code, err := ioutil.ReadFile(oracleScript.path)
+		if err != nil {
+			panic(err)
+		}
+		state.OracleScripts[i] = zoracle.NewOracleScript(
+			owner,
+			oracleScript.name,
+			code,
+		)
+	}
+	return zoracle.ModuleCdc.MustMarshalJSON(state)
 }
