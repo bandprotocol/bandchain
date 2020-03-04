@@ -156,6 +156,7 @@ func (client *BandStatefulClient) loop() {
 				client.totalFees = sdk.Coins{}
 				client.totalGasPrices = sdk.DecCoins{}
 				client.txChans = []chan sdk.TxResponse{}
+				client.errChans = []chan error{}
 			}
 		}
 	}
