@@ -1566,10 +1566,10 @@ bs-axios@^0.0.43:
   dependencies:
     axios "^0.19.2"
 
-bs-css@^11.0.0:
-  version "11.0.0"
-  resolved "https://registry.yarnpkg.com/bs-css/-/bs-css-11.0.0.tgz#6ed1726d7c06aa584d255d1cf23240a2acc0aa07"
-  integrity sha512-bpSwj1VvmWNMoJ5qnsHMQC+Mj0zjL9iwcOhl5ipP7Hfr7v+ZyKqjSMaMK+L1EdukuCp0rJmRD2I/MbS4BHnMmQ==
+bs-css@^12.0.0:
+  version "12.0.0"
+  resolved "https://registry.yarnpkg.com/bs-css/-/bs-css-12.0.0.tgz#309e2d89064a73f77df2e727cfe71aa597e0b412"
+  integrity sha512-bTWhIa0hn/LnHqx60bCZfRxrTppGUzAVoYnxRDmiHrk+V/v0wwD7f3w1c34gic0dpy1xdFuTjsJBpX8ILLjskQ==
   dependencies:
     emotion "^10.0.7"
 
