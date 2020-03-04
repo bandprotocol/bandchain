@@ -178,3 +178,47 @@ func TestSpamGetExternalDataFromCache(t *testing.T) {
 
 	require.Equal(t, int64(1), env.requestExternalDataResultsCounter[extID][valIndex])
 }
+func TestGetExternalDataFromCacheFail(t *testing.T) {
+
+	env := &mockExecutionEnvironment{
+		requestID:                         1,
+		requestedValidatorCount:           2,
+		externalDataResults:               [][][]byte{{[]byte("RETURN_DATA"), nil}},
+		requestExternalDataResultsCounter: [][]int64{{0, 0}, {0, 0}},
+	}
+	gasLimit := uint64(10000)
+
+	code, err := ioutil.ReadFile("./res/allocate.wasm")
+	callData := []byte("calldata")
+	require.Nil(t, err)
+
+	resolver := NewResolver(env, callData)
+
+	vm, err := exec.NewVirtualMachine(code, exec.VMConfig{
+		EnableJIT:                false,
+		MaxMemoryPages:           1024,
+		MaxTableSize:             1024,
+		MaxValueSlots:            65536,
+		MaxCallStackDepth:        128,
+		DefaultMemoryPages:       64,
+		DefaultTableSize:         65536,
+		GasLimit:                 uint64(gasLimit),
+		DisableFloatingPoint:     false,
+		ReturnOnGasLimitExceeded: false,
+	}, resolver, &BandChainGasPolicy{})
+
+	params := [5]int64{}
+
+	// functioncode[69].Numparams is 5
+	vm.Ignite(69, params[:5]...)
+
+	dataSize := resolver.resolveGetCallDataSize(vm)
+	require.Equal(t, dataSize, int64(len(callData)))
+
+	extID := int64(1000)
+	valIndex := int64(1000)
+
+	_, err = resolver.getExternalDataFromCache(extID, valIndex)
+	require.NotNil(t, err)
+
+}
