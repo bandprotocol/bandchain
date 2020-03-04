@@ -176,7 +176,8 @@ $ %s tx zoracle report 1 1:172.5 2:HELLOWORLD --from mykey
 				if err != nil {
 					return err
 				}
-				dataset = append(dataset, types.NewRawDataReport(externalID, []byte(reportRaw[1])))
+
+				dataset = append(dataset, types.NewRawDataReport(types.ExternalID(externalID), []byte(reportRaw[1])))
 			}
 
 			// Sort data reports by external ID
@@ -325,7 +326,7 @@ $ %s tx zoracle edit-data-source 1 --name coingecko-price --script ../price.sh -
 			}
 
 			msg := types.NewMsgEditDataSource(
-				id,
+				types.DataSourceID(id),
 				owner,
 				name,
 				fee,

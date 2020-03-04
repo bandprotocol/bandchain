@@ -7,7 +7,7 @@ import (
 
 // SetRawDataRequest is a function to save raw data request detail to the given request id and external id.
 func (k Keeper) SetRawDataRequest(
-	ctx sdk.Context, requestID types.RequestID, externalID int64, rawDataRequest types.RawDataRequest,
+	ctx sdk.Context, requestID types.RequestID, externalID types.ExternalID, rawDataRequest types.RawDataRequest,
 ) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(
@@ -18,7 +18,7 @@ func (k Keeper) SetRawDataRequest(
 
 // GetRawDataRequest is a function to get raw data request detail by the given request id and external id.
 func (k Keeper) GetRawDataRequest(
-	ctx sdk.Context, requestID types.RequestID, externalID int64,
+	ctx sdk.Context, requestID types.RequestID, externalID types.ExternalID,
 ) (types.RawDataRequest, sdk.Error) {
 	store := ctx.KVStore(k.storeKey)
 	if !k.CheckRawDataRequestExists(ctx, requestID, externalID) {
@@ -33,14 +33,14 @@ func (k Keeper) GetRawDataRequest(
 
 // CheckRawDataRequestExists checks if the raw request data at this request id and external id
 // presents in the store or not.
-func (k Keeper) CheckRawDataRequestExists(ctx sdk.Context, requestID types.RequestID, externalID int64) bool {
+func (k Keeper) CheckRawDataRequestExists(ctx sdk.Context, requestID types.RequestID, externalID types.ExternalID) bool {
 	store := ctx.KVStore(k.storeKey)
 	return store.Has(types.RawDataRequestStoreKey(requestID, externalID))
 }
 
 // AddNewRawDataRequest checks all conditions before saving a new raw data request to the store.
 func (k Keeper) AddNewRawDataRequest(
-	ctx sdk.Context, requestID types.RequestID, externalID, dataSourceID int64, calldata []byte,
+	ctx sdk.Context, requestID types.RequestID, externalID types.ExternalID, dataSourceID types.DataSourceID, calldata []byte,
 ) sdk.Error {
 	if len(calldata) > int(k.MaxCalldataSize(ctx)) {
 		// TODO: fix error later

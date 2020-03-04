@@ -69,7 +69,7 @@ func (env *ExecutionEnvironment) RequestExternalData(
 	externalDataID int64,
 	calldata []byte,
 ) error {
-	return env.keeper.AddNewRawDataRequest(env.ctx, env.requestID, externalDataID, dataSourceID, calldata)
+	return env.keeper.AddNewRawDataRequest(env.ctx, env.requestID, types.ExternalID(externalDataID), types.DataSourceID(dataSourceID), calldata)
 }
 
 func (env *ExecutionEnvironment) GetExternalData(
@@ -81,5 +81,5 @@ func (env *ExecutionEnvironment) GetExternalData(
 	}
 	validatorAddress := env.request.RequestedValidators[validatorIndex]
 
-	return env.keeper.GetRawDataReport(env.ctx, env.requestID, externalDataID, validatorAddress)
+	return env.keeper.GetRawDataReport(env.ctx, env.requestID, types.ExternalID(externalDataID), validatorAddress)
 }

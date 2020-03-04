@@ -65,22 +65,22 @@ func ResultStoreKey(requestID RequestID, oracleScriptID OracleScriptID, calldata
 }
 
 // RawDataRequestStoreKey is a function to generate key for each raw data request in store
-func RawDataRequestStoreKey(requestID RequestID, externalID int64) []byte {
+func RawDataRequestStoreKey(requestID RequestID, externalID ExternalID) []byte {
 	buf := append(RawDataRequestStoreKeyPrefix, int64ToBytes(int64(requestID))...)
-	buf = append(buf, int64ToBytes(externalID)...)
+	buf = append(buf, int64ToBytes(int64(externalID))...)
 	return buf
 }
 
 // RawDataReportStoreKey is a function to generate key for each raw data report in store.
-func RawDataReportStoreKey(requestID RequestID, externalID int64, validatorAddress sdk.ValAddress) []byte {
+func RawDataReportStoreKey(requestID RequestID, externalID ExternalID, validatorAddress sdk.ValAddress) []byte {
 	buf := append(RawDataReportStoreKeyPrefix, int64ToBytes(int64(requestID))...)
-	buf = append(buf, int64ToBytes(externalID)...)
+	buf = append(buf, int64ToBytes(int64(externalID))...)
 	buf = append(buf, validatorAddress.Bytes()...)
 	return buf
 }
 
 // DataSourceStoreKey is a function to generate key for each data source in store.
-func DataSourceStoreKey(dataSourceID int64) []byte {
+func DataSourceStoreKey(dataSourceID DataSourceID) []byte {
 	return append(DataSourceStoreKeyPrefix, int64ToBytes(int64(dataSourceID))...)
 }
 
@@ -95,18 +95,18 @@ func GetIteratorPrefix(prefix []byte, requestID RequestID) []byte {
 }
 
 // GetExternalIDFromRawDataRequestKey is a function to get external id from raw data request key.
-func GetExternalIDFromRawDataRequestKey(key []byte) int64 {
+func GetExternalIDFromRawDataRequestKey(key []byte) ExternalID {
 	prefixLength := len(RawDataRequestStoreKeyPrefix)
 	externalIDBytes := key[prefixLength+8 : prefixLength+16]
-	return int64(binary.BigEndian.Uint64(externalIDBytes))
+	return ExternalID(binary.BigEndian.Uint64(externalIDBytes))
 }
 
 // GetValidatorAddressAndExternalID is a function to get validator address and external id from raw data report key.
 func GetValidatorAddressAndExternalID(
 	key []byte, requestID RequestID,
-) (sdk.ValAddress, int64) {
+) (sdk.ValAddress, ExternalID) {
 	prefixLength := len(RawDataReportStoreKeyPrefix)
 	externalIDBytes := key[prefixLength+8 : prefixLength+16]
-	externalID := int64(binary.BigEndian.Uint64(externalIDBytes))
+	externalID := ExternalID(binary.BigEndian.Uint64(externalIDBytes))
 	return key[prefixLength+16:], externalID
 }

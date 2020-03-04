@@ -42,7 +42,7 @@ func (k Keeper) AddReport(
 		return types.ErrRequestNotFound(types.DefaultCodespace)
 	}
 
-	lastExternalID := int64(0)
+	lastExternalID := types.ExternalID(0)
 	for idx, rawReport := range dataSet {
 		if idx != 0 && lastExternalID >= rawReport.ExternalDataID {
 			// TODO: fix error later
@@ -72,7 +72,7 @@ func (k Keeper) AddReport(
 // SetRawDataReport is a function that saves a raw data report to store.
 func (k Keeper) SetRawDataReport(
 	ctx sdk.Context,
-	requestID types.RequestID, externalID int64,
+	requestID types.RequestID, externalID types.ExternalID,
 	validatorAddress sdk.ValAddress,
 	data []byte,
 ) {
@@ -84,7 +84,7 @@ func (k Keeper) SetRawDataReport(
 // GetRawDataReport is a function that gets a raw data report from store.
 func (k Keeper) GetRawDataReport(
 	ctx sdk.Context,
-	requestID types.RequestID, externalID int64,
+	requestID types.RequestID, externalID types.ExternalID,
 	validatorAddress sdk.ValAddress,
 ) ([]byte, sdk.Error) {
 	key := types.RawDataReportStoreKey(requestID, externalID, validatorAddress)

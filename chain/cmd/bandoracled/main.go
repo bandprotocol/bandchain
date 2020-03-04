@@ -100,7 +100,7 @@ func handleRequest(requestID int64) (sdk.TxResponse, error) {
 
 	chanQueryParallelInfo := make(chan queryParallelInfo, len(request.RawDataRequests))
 	for _, rawRequest := range request.RawDataRequests {
-		go func(externalID, dataSourceID int64, calldata []byte) {
+		go func(externalID , dataSourceID int64, calldata []byte) {
 			info := queryParallelInfo{externalID: externalID, answer: []byte{}, err: nil}
 			res, _, err := cliCtx.Query(
 				fmt.Sprintf("custom/zoracle/%s/%d", zoracle.QueryDataSourceByID, dataSourceID),
@@ -133,7 +133,7 @@ func handleRequest(requestID int64) (sdk.TxResponse, error) {
 
 			info.answer = []byte(strings.TrimSpace(string(result)))
 			chanQueryParallelInfo <- info
-		}(rawRequest.ExternalID, rawRequest.RawDataRequest.DataSourceID, rawRequest.RawDataRequest.Calldata)
+		}(int64(rawRequest.ExternalID), int64(rawRequest.RawDataRequest.DataSourceID), rawRequest.RawDataRequest.Calldata)
 	}
 
 	reports := make([]zoracle.RawDataReport, 0)
@@ -142,7 +142,7 @@ func handleRequest(requestID int64) (sdk.TxResponse, error) {
 		if info.err != nil {
 			return sdk.TxResponse{}, info.err
 		}
-		reports = append(reports, zoracle.NewRawDataReport(info.externalID, info.answer))
+		reports = append(reports, zoracle.NewRawDataReport(zoracle.ExternalID(info.externalID), info.answer))
 	}
 
 	sort.Slice(reports, func(i, j int) bool {

@@ -214,7 +214,7 @@ func (msg MsgCreateDataSource) GetSignBytes() []byte {
 
 // MsgEditDataSource is a message for editing an existing data source.
 type MsgEditDataSource struct {
-	DataSourceID int64          `json:"dataSourceID"`
+	DataSourceID DataSourceID   `json:"dataSourceID"`
 	Owner        sdk.AccAddress `json:"owner"`
 	Name         string         `json:"name"`
 	Fee          sdk.Coins      `json:"fee"`
@@ -224,7 +224,7 @@ type MsgEditDataSource struct {
 
 // NewMsgEditDataSource creates a new MsgEditDataSource instance.
 func NewMsgEditDataSource(
-	dataSourceID int64,
+	dataSourceID DataSourceID,
 	owner sdk.AccAddress,
 	name string,
 	fee sdk.Coins,
