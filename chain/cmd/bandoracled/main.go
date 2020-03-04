@@ -100,7 +100,7 @@ func handleRequest(requestID int64) (sdk.TxResponse, error) {
 
 	chanQueryParallelInfo := make(chan queryParallelInfo, len(request.RawDataRequests))
 	for _, rawRequest := range request.RawDataRequests {
-		go func(externalID , dataSourceID int64, calldata []byte) {
+		go func(externalID, dataSourceID int64, calldata []byte) {
 			info := queryParallelInfo{externalID: externalID, answer: []byte{}, err: nil}
 			res, _, err := cliCtx.Query(
 				fmt.Sprintf("custom/zoracle/%s/%d", zoracle.QueryDataSourceByID, dataSourceID),
