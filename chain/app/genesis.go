@@ -38,7 +38,8 @@ func NewDefaultGenesisState() GenesisState {
 					SigVerifyCostED25519:   590,
 					SigVerifyCostSecp256k1: 1000,
 				},
-			}),
+			},
+		),
 		bank.ModuleName: bank.ModuleCdc.MustMarshalJSON(bank.GenesisState{
 			SendEnabled: true,
 		}),
@@ -82,7 +83,7 @@ func NewDefaultGenesisState() GenesisState {
 		gov.ModuleName: gov.ModuleCdc.MustMarshalJSON(gov.GenesisState{
 			StartingProposalID: 1,
 			DepositParams: gov.DepositParams{
-				MinDeposit:       sdk.Coins{sdk.NewCoin("uband", sdk.TokensFromConsensusPower(1000))},
+				MinDeposit:       sdk.NewCoins(sdk.NewCoin("uband", sdk.TokensFromConsensusPower(1000))),
 				MaxDepositPeriod: 86400 * 2 * time.Second, // 2 days
 			},
 			VotingParams: gov.VotingParams{
