@@ -7,7 +7,7 @@ import (
 )
 
 type cache struct {
-	used           bool
+	isActive       bool
 	externalDataID int64
 	validatorIndex int64
 	data           []byte
@@ -133,7 +133,7 @@ func (r *resolver) resolveRequestExternalData(vm *exec.VirtualMachine) int64 {
 }
 
 func (r *resolver) getExternalDataFromCache(externalDataID int64, validatorIndex int64) ([]byte, error) {
-	if r.cachedata.externalDataID == externalDataID && r.cachedata.validatorIndex == validatorIndex && r.cachedata.used {
+	if r.cachedata.externalDataID == externalDataID && r.cachedata.validatorIndex == validatorIndex && r.cachedata.isActive {
 		return r.cachedata.data, r.cachedata.err
 	}
 	externalData, err := r.env.GetExternalData(externalDataID, validatorIndex)
@@ -142,7 +142,7 @@ func (r *resolver) getExternalDataFromCache(externalDataID int64, validatorIndex
 		validatorIndex: validatorIndex,
 		data:           externalData,
 		err:            err,
-		used:           true,
+		isActive:       true,
 	}
 
 	return externalData, err
