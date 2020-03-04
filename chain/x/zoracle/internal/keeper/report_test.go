@@ -57,7 +57,7 @@ func TestAddReportSuccess(t *testing.T) {
 	require.Equal(t, []byte("data2/1"), report)
 
 	list := keeper.GetPendingResolveList(ctx)
-	require.Equal(t, []int64{}, list)
+	require.Equal(t, []types.RequestID{}, list)
 
 	err = keeper.AddReport(ctx, 1, []types.RawDataReport{
 		types.NewRawDataReport(2, []byte("data1/2")),
@@ -74,7 +74,7 @@ func TestAddReportSuccess(t *testing.T) {
 	require.Equal(t, []byte("data2/2"), report)
 
 	list = keeper.GetPendingResolveList(ctx)
-	require.Equal(t, []int64{1}, list)
+	require.Equal(t, []types.RequestID{1}, list)
 }
 
 func TestAddReportFailed(t *testing.T) {

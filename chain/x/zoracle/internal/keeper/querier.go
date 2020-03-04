@@ -38,7 +38,7 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 }
 
 func buildRequestQuerierInfo(
-	ctx sdk.Context, keeper Keeper, id int64,
+	ctx sdk.Context, keeper Keeper, id types.RequestID,
 ) (types.RequestQuerierInfo, sdk.Error) {
 	request, sdkErr := keeper.GetRequest(ctx, id)
 	if sdkErr != nil {
@@ -158,7 +158,7 @@ func queryOracleScriptByID(ctx sdk.Context, path []string, req abci.RequestQuery
 		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for oracle script id %s", err.Error()))
 	}
 
-	oracleScript, sdkErr := keeper.GetOracleScript(ctx, id)
+	oracleScript, sdkErr := keeper.GetOracleScript(ctx, types.OracleScriptID(id))
 	if sdkErr != nil {
 		return nil, sdkErr
 	}
@@ -191,7 +191,7 @@ func queryOracleScripts(ctx sdk.Context, path []string, req abci.RequestQuery, k
 	oracleScripts := []types.OracleScriptQuerierInfo{}
 	allOracleScriptsCount := keeper.GetOracleScriptCount(ctx)
 	for id := startID; id <= allOracleScriptsCount && id < startID+numberOfOracleScripts; id++ {
-		oracleScript, sdkErr := keeper.GetOracleScript(ctx, id)
+		oracleScript, sdkErr := keeper.GetOracleScript(ctx, types.OracleScriptID(id))
 		if sdkErr != nil {
 			return nil, sdkErr
 		}
@@ -219,7 +219,7 @@ func queryRequestByID(
 		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for requestid %s", err.Error()))
 	}
 
-	request, sdkErr := buildRequestQuerierInfo(ctx, keeper, id)
+	request, sdkErr := buildRequestQuerierInfo(ctx, keeper, types.RequestID(id))
 	if sdkErr != nil {
 		return nil, sdkErr
 	}
@@ -247,12 +247,12 @@ func queryRequests(
 
 	requests := make([]types.RequestQuerierInfo, 0)
 	allRequestsCount := keeper.GetRequestCount(ctx)
-	limit := startID + numberOfRequests - 1
+	limit := types.RequestID(startID + numberOfRequests - 1)
 	if limit > allRequestsCount {
 		limit = allRequestsCount
 	}
-	for idx := startID; idx <= limit; idx++ {
-		request, err := buildRequestQuerierInfo(ctx, keeper, idx)
+	for idx := types.RequestID(startID); idx <= limit; idx++ {
+		request, err := buildRequestQuerierInfo(ctx, keeper, types.RequestID(idx))
 		if err == nil {
 			requests = append(requests, request)
 		}

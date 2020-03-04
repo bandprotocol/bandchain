@@ -11,23 +11,23 @@ func TestGetRequestCount(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
 	// Initial request count must be 0
-	require.Equal(t, int64(0), keeper.GetRequestCount(ctx))
+	require.Equal(t, types.RequestID(0), keeper.GetRequestCount(ctx))
 }
 
 func TestGetNextRequestID(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
 	// First request id must be 1
-	require.Equal(t, int64(1), keeper.GetNextRequestID(ctx))
+	require.Equal(t, types.RequestID(1), keeper.GetNextRequestID(ctx))
 
 	// After add new request, request count must be 1
-	require.Equal(t, int64(1), keeper.GetRequestCount(ctx))
+	require.Equal(t, types.RequestID(1), keeper.GetRequestCount(ctx))
 
-	require.Equal(t, int64(2), keeper.GetNextRequestID(ctx))
-	require.Equal(t, int64(3), keeper.GetNextRequestID(ctx))
-	require.Equal(t, int64(4), keeper.GetNextRequestID(ctx))
+	require.Equal(t, types.RequestID(2), keeper.GetNextRequestID(ctx))
+	require.Equal(t, types.RequestID(3), keeper.GetNextRequestID(ctx))
+	require.Equal(t, types.RequestID(4), keeper.GetNextRequestID(ctx))
 
-	require.Equal(t, int64(4), keeper.GetRequestCount(ctx))
+	require.Equal(t, types.RequestID(4), keeper.GetRequestCount(ctx))
 }
 
 func TestGetSetMaxDataSourceExecutableSize(t *testing.T) {

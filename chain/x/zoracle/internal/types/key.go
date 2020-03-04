@@ -52,28 +52,28 @@ var (
 )
 
 // RequestStoreKey is a function to generate key for each request in store
-func RequestStoreKey(requestID int64) []byte {
-	return append(RequestStoreKeyPrefix, int64ToBytes(requestID)...)
+func RequestStoreKey(requestID RequestID) []byte {
+	return append(RequestStoreKeyPrefix, int64ToBytes(int64(requestID))...)
 }
 
 // ResultStoreKey is a function to generate key for each result in store
-func ResultStoreKey(requestID int64, oracleScriptID int64, calldata []byte) []byte {
-	buf := append(ResultStoreKeyPrefix, int64ToBytes(requestID)...)
-	buf = append(buf, int64ToBytes(oracleScriptID)...)
+func ResultStoreKey(requestID RequestID, oracleScriptID OracleScriptID, calldata []byte) []byte {
+	buf := append(ResultStoreKeyPrefix, int64ToBytes(int64(requestID))...)
+	buf = append(buf, int64ToBytes(int64(oracleScriptID))...)
 	buf = append(buf, calldata...)
 	return buf
 }
 
 // RawDataRequestStoreKey is a function to generate key for each raw data request in store
-func RawDataRequestStoreKey(requestID, externalID int64) []byte {
-	buf := append(RawDataRequestStoreKeyPrefix, int64ToBytes(requestID)...)
+func RawDataRequestStoreKey(requestID RequestID, externalID int64) []byte {
+	buf := append(RawDataRequestStoreKeyPrefix, int64ToBytes(int64(requestID))...)
 	buf = append(buf, int64ToBytes(externalID)...)
 	return buf
 }
 
 // RawDataReportStoreKey is a function to generate key for each raw data report in store.
-func RawDataReportStoreKey(requestID, externalID int64, validatorAddress sdk.ValAddress) []byte {
-	buf := append(RawDataReportStoreKeyPrefix, int64ToBytes(requestID)...)
+func RawDataReportStoreKey(requestID RequestID, externalID int64, validatorAddress sdk.ValAddress) []byte {
+	buf := append(RawDataReportStoreKeyPrefix, int64ToBytes(int64(requestID))...)
 	buf = append(buf, int64ToBytes(externalID)...)
 	buf = append(buf, validatorAddress.Bytes()...)
 	return buf
@@ -81,17 +81,17 @@ func RawDataReportStoreKey(requestID, externalID int64, validatorAddress sdk.Val
 
 // DataSourceStoreKey is a function to generate key for each data source in store.
 func DataSourceStoreKey(dataSourceID int64) []byte {
-	return append(DataSourceStoreKeyPrefix, int64ToBytes(dataSourceID)...)
+	return append(DataSourceStoreKeyPrefix, int64ToBytes(int64(dataSourceID))...)
 }
 
 // OracleScriptStoreKey is a function to generate key for each oracle script in store.
-func OracleScriptStoreKey(oracleScriptID int64) []byte {
-	return append(OracleScriptStoreKeyPrefix, int64ToBytes(oracleScriptID)...)
+func OracleScriptStoreKey(oracleScriptID OracleScriptID) []byte {
+	return append(OracleScriptStoreKeyPrefix, int64ToBytes(int64(oracleScriptID))...)
 }
 
 // GetIteratorPrefix is a function to get specific prefix
-func GetIteratorPrefix(prefix []byte, requestID int64) []byte {
-	return append(prefix, int64ToBytes(requestID)...)
+func GetIteratorPrefix(prefix []byte, requestID RequestID) []byte {
+	return append(prefix, int64ToBytes(int64(requestID))...)
 }
 
 // GetExternalIDFromRawDataRequestKey is a function to get external id from raw data request key.
@@ -103,7 +103,7 @@ func GetExternalIDFromRawDataRequestKey(key []byte) int64 {
 
 // GetValidatorAddressAndExternalID is a function to get validator address and external id from raw data report key.
 func GetValidatorAddressAndExternalID(
-	key []byte, requestID int64,
+	key []byte, requestID RequestID,
 ) (sdk.ValAddress, int64) {
 	prefixLength := len(RawDataReportStoreKeyPrefix)
 	externalIDBytes := key[prefixLength+8 : prefixLength+16]

@@ -6,7 +6,7 @@ import (
 
 // Request is a data structure that stores the detail of a request to an oracle script.
 type Request struct {
-	OracleScriptID           int64            `json:"oracleScriptID"`
+	OracleScriptID           OracleScriptID   `json:"oracleScriptID"`
 	Calldata                 []byte           `json:"calldata"`
 	RequestedValidators      []sdk.ValAddress `json:"requestedValidators"`
 	SufficientValidatorCount int64            `json:"sufficientValidatorCount"`
@@ -20,7 +20,7 @@ type Request struct {
 
 // NewRequest creates a new Request instance.
 func NewRequest(
-	oracleScriptID int64,
+	oracleScriptID OracleScriptID,
 	calldata []byte,
 	requestedValidators []sdk.ValAddress,
 	sufficientValidatorCount int64,

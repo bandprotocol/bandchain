@@ -430,7 +430,7 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		key := zoracle.ResultStoreKey(int64(requestID), queryRequest.Request.OracleScriptID, queryRequest.Request.Calldata)
+		key := zoracle.ResultStoreKey(zoracle.RequestID(requestID), queryRequest.Request.OracleScriptID, queryRequest.Request.Calldata)
 
 		resp, err := cliCtx.Client.ABCIQueryWithOptions(
 			"/store/zoracle/key",
