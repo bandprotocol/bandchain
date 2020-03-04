@@ -67,10 +67,21 @@ func TestResolveReadExternalDataSuccess(t *testing.T) {
 		ReturnOnGasLimitExceeded: false,
 	}, resolver, &BandChainGasPolicy{})
 
-	params := [5]int64{}
+	//resolveReadExternalData need len(vm.GetCurrentFrame().Locals) >= 5
+	localSize := 5
+	functionID := -1
+	for i := 0; i < len(vm.FunctionCode); i++ {
+		if vm.FunctionCode[i].NumParams >= localSize {
+			functionID = i
+			break
+		}
+	}
+	require.NotEqual(t, functionID, -1)
 
-	// functioncode[69].Numparams is 5
-	vm.Ignite(69, params[:5]...)
+	// Ignite initializes the first call frame.
+	params := [5]int64{}
+	vm.Ignite(functionID, params[:5]...)
+
 	dataSize := resolver.resolveGetCallDataSize(vm)
 	require.Equal(t, dataSize, int64(len(callData)))
 
@@ -107,10 +118,20 @@ func TestGetExternalDataFromCacheSuccess(t *testing.T) {
 		ReturnOnGasLimitExceeded: false,
 	}, resolver, &BandChainGasPolicy{})
 
-	params := [5]int64{}
+	//resolveReadExternalData need len(vm.GetCurrentFrame().Locals) >= 5
+	localSize := 5
+	functionID := -1
+	for i := 0; i < len(vm.FunctionCode); i++ {
+		if vm.FunctionCode[i].NumParams >= localSize {
+			functionID = i
+			break
+		}
+	}
+	require.NotEqual(t, functionID, -1)
 
-	// functioncode[69].Numparams is 5
-	vm.Ignite(69, params[:5]...)
+	// Ignite initializes the first call frame.
+	params := [5]int64{}
+	vm.Ignite(functionID, params[:5]...)
 
 	dataSize := resolver.resolveGetCallDataSize(vm)
 	require.Equal(t, dataSize, int64(len(callData)))
@@ -153,10 +174,20 @@ func TestSpamGetExternalDataFromCache(t *testing.T) {
 		ReturnOnGasLimitExceeded: false,
 	}, resolver, &BandChainGasPolicy{})
 
-	params := [5]int64{}
+	//resolveReadExternalData need len(vm.GetCurrentFrame().Locals) >= 5
+	localSize := 5
+	functionID := -1
+	for i := 0; i < len(vm.FunctionCode); i++ {
+		if vm.FunctionCode[i].NumParams >= localSize {
+			functionID = i
+			break
+		}
+	}
+	require.NotEqual(t, functionID, -1)
 
-	// functioncode[69].Numparams is 5
-	vm.Ignite(69, params[:5]...)
+	// Ignite initializes the first call frame.
+	params := [5]int64{}
+	vm.Ignite(functionID, params[:5]...)
 
 	dataSize := resolver.resolveGetCallDataSize(vm)
 	require.Equal(t, dataSize, int64(len(callData)))
@@ -207,10 +238,20 @@ func TestGetExternalDataFromCacheFail(t *testing.T) {
 		ReturnOnGasLimitExceeded: false,
 	}, resolver, &BandChainGasPolicy{})
 
-	params := [5]int64{}
+	//resolveReadExternalData need len(vm.GetCurrentFrame().Locals) >= 5
+	localSize := 5
+	functionID := -1
+	for i := 0; i < len(vm.FunctionCode); i++ {
+		if vm.FunctionCode[i].NumParams >= localSize {
+			functionID = i
+			break
+		}
+	}
+	require.NotEqual(t, functionID, -1)
 
-	// functioncode[69].Numparams is 5
-	vm.Ignite(69, params[:5]...)
+	// Ignite initializes the first call frame.
+	params := [5]int64{}
+	vm.Ignite(functionID, params[:5]...)
 
 	dataSize := resolver.resolveGetCallDataSize(vm)
 	require.Equal(t, dataSize, int64(len(callData)))
