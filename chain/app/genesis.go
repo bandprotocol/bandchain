@@ -101,10 +101,10 @@ func NewDefaultGenesisState() GenesisState {
 		slashing.ModuleName: slashing.ModuleCdc.MustMarshalJSON(slashing.GenesisState{
 			Params: slashing.Params{
 				MaxEvidenceAge:          60 * 30240 * time.Second, // 3 weeks
-				SignedBlocksWindow:      int64(10000),
-				MinSignedPerWindow:      sdk.NewDecWithPrec(5, 2), // 50%
+				SignedBlocksWindow:      int64(30000),
+				MinSignedPerWindow:      sdk.NewDecWithPrec(5, 2), // 5%
 				DowntimeJailDuration:    60 * 10 * time.Second,    //  10  minutes
-				SlashFractionDoubleSign: sdk.NewDecWithPrec(5, 2), //  50%
+				SlashFractionDoubleSign: sdk.NewDecWithPrec(5, 2), //  5%
 				SlashFractionDowntime:   sdk.NewDecWithPrec(1, 4), // 0.01%
 			},
 			SigningInfos: make(map[string]slashing.ValidatorSigningInfo),
