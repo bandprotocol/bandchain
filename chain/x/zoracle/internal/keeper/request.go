@@ -111,13 +111,13 @@ func (k Keeper) AddNewReceiveValidator(ctx sdk.Context, id int64, validator sdk.
 }
 
 // SetResolve set resolve status and save to context.
-func (k Keeper) SetResolve(ctx sdk.Context, id int64, isResolved bool) sdk.Error {
+func (k Keeper) SetResolve(ctx sdk.Context, id int64, resolveStatus types.ResolveStatus) sdk.Error {
 	request, err := k.GetRequest(ctx, id)
 	if err != nil {
 		return err
 	}
 
-	request.IsResolved = isResolved
+	request.ResolveStatus = resolveStatus
 	k.SetRequest(ctx, id, request)
 	return nil
 }
