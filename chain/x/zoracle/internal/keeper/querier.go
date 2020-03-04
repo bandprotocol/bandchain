@@ -98,7 +98,7 @@ func queryDataSourceByID(ctx sdk.Context, path []string, req abci.RequestQuery, 
 		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for data source id %s", err.Error()))
 	}
 
-	dataSource, sdkErr := keeper.GetDataSource(ctx, id)
+	dataSource, sdkErr := keeper.GetDataSource(ctx, types.DataSourceID(id))
 	if sdkErr != nil {
 		return nil, sdkErr
 	}
@@ -132,7 +132,7 @@ func queryDataSources(ctx sdk.Context, path []string, req abci.RequestQuery, kee
 	dataSources := []types.DataSourceQuerierInfo{}
 	allDataSourcesCount := keeper.GetDataSourceCount(ctx)
 	for id := startID; id <= allDataSourcesCount && id < startID+numberOfDataSources; id++ {
-		dataSource, sdkErr := keeper.GetDataSource(ctx, id)
+		dataSource, sdkErr := keeper.GetDataSource(ctx, types.DataSourceID(id))
 		if sdkErr != nil {
 			return nil, sdkErr
 		}

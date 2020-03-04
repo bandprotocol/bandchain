@@ -253,7 +253,7 @@ func TestMsgEditDataSource(t *testing.T) {
 	msg := NewMsgEditDataSource(1, owner, "data_source_1", fee, []byte("executable"), sender)
 	require.Equal(t, RouterKey, msg.Route())
 	require.Equal(t, "edit_data_source", msg.Type())
-	require.Equal(t, int64(1), msg.DataSourceID)
+	require.Equal(t, DataSourceID(1), msg.DataSourceID)
 	require.Equal(t, owner, msg.Owner)
 	require.Equal(t, "data_source_1", msg.Name)
 	require.Equal(t, fee, msg.Fee)
