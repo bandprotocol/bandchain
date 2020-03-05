@@ -419,10 +419,11 @@ func TestQueryOracleScriptById(t *testing.T) {
 
 	owner := sdk.AccAddress([]byte("owner"))
 	name := "oracle_script"
+	description := "description"
 	code := []byte("code")
-	expectedResult := types.NewOracleScriptQuerierInfo(1, owner, name, code)
+	expectedResult := types.NewOracleScriptQuerierInfo(1, owner, name, description, code)
 
-	keeper.SetOracleScript(ctx, 1, types.NewOracleScript(owner, name, code))
+	keeper.SetOracleScript(ctx, 1, types.NewOracleScript(owner, name, description, code))
 
 	// This time querier should be able to find a oracle script
 	oracleScript, err := querier(
@@ -449,10 +450,11 @@ func TestQueryOracleScriptsByStartIdAndNumberOfOracleScripts(t *testing.T) {
 	for i := 1; i <= 10; i++ {
 		owner := sdk.AccAddress([]byte("owner" + strconv.Itoa(i)))
 		name := "oracle_script_" + strconv.Itoa(i)
+		description := "description_" + strconv.Itoa(i)
 		code := []byte("code" + strconv.Itoa(i))
-		eachOracleScript := types.NewOracleScriptQuerierInfo(int64(i), owner, name, code)
+		eachOracleScript := types.NewOracleScriptQuerierInfo(int64(i), owner, name, description, code)
 
-		err := keeper.AddOracleScript(ctx, eachOracleScript.Owner, eachOracleScript.Name, eachOracleScript.Code)
+		err := keeper.AddOracleScript(ctx, eachOracleScript.Owner, eachOracleScript.Name, eachOracleScript.Description, eachOracleScript.Code)
 		require.Nil(t, err)
 
 		expectedResult = append(expectedResult, eachOracleScript)

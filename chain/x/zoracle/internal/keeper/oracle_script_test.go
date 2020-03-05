@@ -10,8 +10,9 @@ import (
 func mockOracleScript(ctx sdk.Context, keeper Keeper) sdk.Error {
 	owner := sdk.AccAddress([]byte("owner"))
 	name := "oracle_script"
+	description := "description"
 	code := []byte("code")
-	return keeper.AddOracleScript(ctx, owner, name, code)
+	return keeper.AddOracleScript(ctx, owner, name, description, code)
 }
 
 func TestGetterSetterOracleScript(t *testing.T) {
@@ -41,9 +42,10 @@ func TestAddTooLongOracleScript(t *testing.T) {
 
 	owner := sdk.AccAddress([]byte("owner"))
 	name := "oracle_script"
+	description := "description"
 	code := []byte("The number of bytes of this oracle script is 82 which is obviously longer than 20.")
 
-	err = keeper.AddOracleScript(ctx, owner, name, code)
+	err = keeper.AddOracleScript(ctx, owner, name, description, code)
 	require.NotNil(t, err)
 }
 
@@ -55,15 +57,17 @@ func TestEditOracleScript(t *testing.T) {
 
 	newOwner := sdk.AccAddress([]byte("owner2"))
 	newName := "oracle_script_2"
+	newDescription := "description_2"
 	newCode := []byte("code_2")
 
-	err = keeper.EditOracleScript(ctx, 1, newOwner, newName, newCode)
+	err = keeper.EditOracleScript(ctx, 1, newOwner, newName, newDescription, newCode)
 	require.Nil(t, err)
 
 	expect, err := keeper.GetOracleScript(ctx, 1)
 	require.Nil(t, err)
 	require.Equal(t, newOwner, expect.Owner)
 	require.Equal(t, newName, expect.Name)
+	require.Equal(t, newDescription, expect.Description)
 	require.Equal(t, newCode, expect.Code)
 }
 
@@ -77,9 +81,10 @@ func TestEditTooLongOracleScript(t *testing.T) {
 
 	newOwner := sdk.AccAddress([]byte("owner2"))
 	newName := "oracle_script_2"
+	newDescription := "description_2"
 	newTooLongCode := []byte("The number of bytes of this oracle script is 82 which is obviously longer than 20.")
 
-	err = keeper.EditOracleScript(ctx, 1, newOwner, newName, newTooLongCode)
+	err = keeper.EditOracleScript(ctx, 1, newOwner, newName, newDescription, newTooLongCode)
 	require.NotNil(t, err)
 }
 
@@ -94,8 +99,27 @@ func TestAddTooLongOracleScriptName(t *testing.T) {
 
 	owner := sdk.AccAddress([]byte("owner"))
 	tooLongName := "oracle_script"
+	description := "description"
 	code := []byte("code")
 
-	err = keeper.AddOracleScript(ctx, owner, tooLongName, code)
+	err = keeper.AddOracleScript(ctx, owner, tooLongName, description, code)
+	require.NotNil(t, err)
+}
+
+func TestAddTooLongOracleScriptDescription(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	_, err := keeper.GetOracleScript(ctx, 1)
+	require.NotNil(t, err)
+
+	// Set MaxNameLength to 5
+	keeper.SetMaxDescriptionLength(ctx, 5)
+
+	owner := sdk.AccAddress([]byte("owner"))
+	name := "oracle_script"
+	tooLongDescription := "description"
+	code := []byte("code")
+
+	err = keeper.AddOracleScript(ctx, owner, name, tooLongDescription, code)
 	require.NotNil(t, err)
 }

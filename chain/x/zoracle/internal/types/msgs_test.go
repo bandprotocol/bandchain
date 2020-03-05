@@ -1,6 +1,7 @@
 package types
 
 import (
+	"fmt"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -333,7 +334,7 @@ func TestMsgEditDataSourceGetSignBytes(t *testing.T) {
 func TestMsgCreateOracleScript(t *testing.T) {
 	owner := sdk.AccAddress([]byte("owner"))
 	sender := sdk.AccAddress([]byte("sender"))
-	msg := NewMsgCreateOracleScript(owner, "oracle_script_1", []byte("code"), sender)
+	msg := NewMsgCreateOracleScript(owner, "oracle_script_1", "description", []byte("code"), sender)
 	require.Equal(t, RouterKey, msg.Route())
 	require.Equal(t, "create_oracle_script", msg.Type())
 	require.Equal(t, owner, msg.Owner)
@@ -344,6 +345,7 @@ func TestMsgCreateOracleScript(t *testing.T) {
 
 func TestMsgCreateOracleScriptValidation(t *testing.T) {
 	owner := sdk.AccAddress([]byte("owner"))
+	description := "description"
 	sender := sdk.AccAddress([]byte("sender"))
 	name := "oracle_script_1"
 	code := []byte("code")
@@ -353,22 +355,22 @@ func TestMsgCreateOracleScriptValidation(t *testing.T) {
 		tx    MsgCreateOracleScript
 	}{
 		{
-			true, NewMsgCreateOracleScript(owner, name, code, sender),
+			true, NewMsgCreateOracleScript(owner, name, description, code, sender),
 		},
 		{
-			false, NewMsgCreateOracleScript(nil, name, code, sender),
+			false, NewMsgCreateOracleScript(nil, name, description, code, sender),
 		},
 		{
-			false, NewMsgCreateOracleScript(owner, "", code, sender),
+			false, NewMsgCreateOracleScript(owner, "", description, code, sender),
 		},
 		{
-			false, NewMsgCreateOracleScript(owner, name, []byte{}, sender),
+			false, NewMsgCreateOracleScript(owner, name, description, []byte{}, sender),
 		},
 		{
-			false, NewMsgCreateOracleScript(owner, name, nil, sender),
+			false, NewMsgCreateOracleScript(owner, name, description, nil, sender),
 		},
 		{
-			false, NewMsgCreateOracleScript(owner, name, code, nil),
+			false, NewMsgCreateOracleScript(owner, name, description, code, nil),
 		},
 	}
 
@@ -388,10 +390,11 @@ func TestMsgCreateOracleScriptGetSignBytes(t *testing.T) {
 
 	owner := sdk.AccAddress([]byte("owner"))
 	sender := sdk.AccAddress([]byte("sender"))
-	msg := NewMsgCreateOracleScript(owner, "oracle_script_1", []byte("code"), sender)
+	msg := NewMsgCreateOracleScript(owner, "oracle_script_1", "description", []byte("code"), sender)
+	fmt.Println(msg)
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"zoracle/CreateOracleScript","value":{"code":"Y29kZQ==","name":"oracle_script_1","owner":"band1damkuetjcw3c0d","sender":"band1wdjkuer9wgvz7c4y"}}`
+	expected := `{"type":"zoracle/CreateOracleScript","value":{"code":"Y29kZQ==","description":"description","name":"oracle_script_1","owner":"band1damkuetjcw3c0d","sender":"band1wdjkuer9wgvz7c4y"}}`
 
 	require.Equal(t, expected, string(res))
 }
@@ -399,7 +402,7 @@ func TestMsgCreateOracleScriptGetSignBytes(t *testing.T) {
 func TestMsgEditOracleScript(t *testing.T) {
 	owner := sdk.AccAddress([]byte("owner"))
 	sender := sdk.AccAddress([]byte("sender"))
-	msg := NewMsgEditOracleScript(1, owner, "oracle_script_1", []byte("code"), sender)
+	msg := NewMsgEditOracleScript(1, owner, "oracle_script_1", "description", []byte("code"), sender)
 	require.Equal(t, RouterKey, msg.Route())
 	require.Equal(t, "edit_oracle_script", msg.Type())
 	require.Equal(t, int64(1), msg.OracleScriptID)
@@ -413,6 +416,7 @@ func TestMsgEditOracleScriptValidation(t *testing.T) {
 	owner := sdk.AccAddress([]byte("owner"))
 	sender := sdk.AccAddress([]byte("sender"))
 	name := "oracle_script_1"
+	description := "description"
 	code := []byte("code")
 
 	cases := []struct {
@@ -420,25 +424,25 @@ func TestMsgEditOracleScriptValidation(t *testing.T) {
 		tx    MsgEditOracleScript
 	}{
 		{
-			true, NewMsgEditOracleScript(1, owner, name, code, sender),
+			true, NewMsgEditOracleScript(1, owner, name, description, code, sender),
 		},
 		{
-			false, NewMsgEditOracleScript(0, nil, name, code, sender),
+			false, NewMsgEditOracleScript(0, nil, name, description, code, sender),
 		},
 		{
-			false, NewMsgEditOracleScript(1, nil, name, code, sender),
+			false, NewMsgEditOracleScript(1, nil, name, description, code, sender),
 		},
 		{
-			false, NewMsgEditOracleScript(1, owner, "", code, sender),
+			false, NewMsgEditOracleScript(1, owner, "", description, code, sender),
 		},
 		{
-			false, NewMsgEditOracleScript(1, owner, name, []byte{}, sender),
+			false, NewMsgEditOracleScript(1, owner, name, description, []byte{}, sender),
 		},
 		{
-			false, NewMsgEditOracleScript(1, owner, name, nil, sender),
+			false, NewMsgEditOracleScript(1, owner, name, description, nil, sender),
 		},
 		{
-			false, NewMsgEditOracleScript(1, owner, name, code, nil),
+			false, NewMsgEditOracleScript(1, owner, name, description, code, nil),
 		},
 	}
 
@@ -458,10 +462,10 @@ func TestMsgEditOracleScriptGetSignBytes(t *testing.T) {
 
 	owner := sdk.AccAddress([]byte("owner"))
 	sender := sdk.AccAddress([]byte("sender"))
-	msg := NewMsgEditOracleScript(1, owner, "oracle_script_1", []byte("code"), sender)
+	msg := NewMsgEditOracleScript(1, owner, "oracle_script_1", "description", []byte("code"), sender)
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"zoracle/EditOracleScript","value":{"code":"Y29kZQ==","name":"oracle_script_1","oracleScriptID":"1","owner":"band1damkuetjcw3c0d","sender":"band1wdjkuer9wgvz7c4y"}}`
+	expected := `{"type":"zoracle/EditOracleScript","value":{"code":"Y29kZQ==","description":"description","name":"oracle_script_1","oracleScriptID":"1","owner":"band1damkuetjcw3c0d","sender":"band1wdjkuer9wgvz7c4y"}}`
 
 	require.Equal(t, expected, string(res))
 }

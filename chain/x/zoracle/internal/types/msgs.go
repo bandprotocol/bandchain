@@ -192,6 +192,9 @@ func (msg MsgCreateDataSource) ValidateBasic() sdk.Error {
 	if msg.Name == "" {
 		return ErrInvalidBasicMsg("MsgCreateDataSource: Name must not be empty.")
 	}
+	if msg.Description == "" {
+		return ErrInvalidBasicMsg("MsgCreateDataSource: Description must not be empty.")
+	}
 	if !msg.Fee.IsValid() {
 		return ErrInvalidBasicMsg("MsgCreateDataSource: Fee must be valid (%s)", msg.Fee.String())
 	}
@@ -290,24 +293,27 @@ func (msg MsgEditDataSource) GetSignBytes() []byte {
 
 // MsgCreateOracleScript is a message for creating an oracle script.
 type MsgCreateOracleScript struct {
-	Owner  sdk.AccAddress `json:"owner"`
-	Name   string         `json:"name"`
-	Code   []byte         `json:"code"`
-	Sender sdk.AccAddress `json:"sender"`
+	Owner       sdk.AccAddress `json:"owner"`
+	Name        string         `json:"name"`
+	Description string         `json:"description"`
+	Code        []byte         `json:"code"`
+	Sender      sdk.AccAddress `json:"sender"`
 }
 
 // NewMsgCreateOracleScript creates a new MsgCreateOracleScript instance.
 func NewMsgCreateOracleScript(
 	owner sdk.AccAddress,
 	name string,
+	description string,
 	code []byte,
 	sender sdk.AccAddress,
 ) MsgCreateOracleScript {
 	return MsgCreateOracleScript{
-		Owner:  owner,
-		Name:   name,
-		Code:   code,
-		Sender: sender,
+		Owner:       owner,
+		Name:        name,
+		Description: description,
+		Code:        code,
+		Sender:      sender,
 	}
 }
 
@@ -327,6 +333,9 @@ func (msg MsgCreateOracleScript) ValidateBasic() sdk.Error {
 	}
 	if msg.Name == "" {
 		return ErrInvalidBasicMsg("MsgCreateOracleScript: Name must not be empty.")
+	}
+	if msg.Description == "" {
+		return ErrInvalidBasicMsg("MsgCreateOracleScript: Description must not be empty.")
 	}
 	if msg.Code == nil || len(msg.Code) == 0 {
 		return ErrInvalidBasicMsg("MsgCreateOracleScript: Code must not be empty.")
@@ -350,6 +359,7 @@ type MsgEditOracleScript struct {
 	OracleScriptID int64          `json:"oracleScriptID"`
 	Owner          sdk.AccAddress `json:"owner"`
 	Name           string         `json:"name"`
+	Description    string         `json:"description"`
 	Code           []byte         `json:"code"`
 	Sender         sdk.AccAddress `json:"sender"`
 }
@@ -359,6 +369,7 @@ func NewMsgEditOracleScript(
 	oracleScriptID int64,
 	owner sdk.AccAddress,
 	name string,
+	description string,
 	code []byte,
 	sender sdk.AccAddress,
 ) MsgEditOracleScript {
@@ -366,6 +377,7 @@ func NewMsgEditOracleScript(
 		OracleScriptID: oracleScriptID,
 		Owner:          owner,
 		Name:           name,
+		Description:    description,
 		Code:           code,
 		Sender:         sender,
 	}

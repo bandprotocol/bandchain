@@ -73,7 +73,7 @@ func main() {
 			}
 			fmt.Println(tx.SendTransaction(
 				[]sdk.Msg{zoracle.NewMsgCreateDataSource(
-					tx.Sender(), "Crypto compare script","compare script", sdk.Coins{}, cryptoCompare, tx.Sender(),
+					tx.Sender(), "Crypto compare script", "compare script", sdk.Coins{}, cryptoCompare, tx.Sender(),
 				)},
 				0, 1000000, "", "", "",
 				flags.BroadcastBlock,
@@ -85,7 +85,7 @@ func main() {
 			}
 			fmt.Println(tx.SendTransaction(
 				[]sdk.Msg{zoracle.NewMsgCreateDataSource(
-					tx.Sender(), "Binance script","Binance script", sdk.Coins{}, binance, tx.Sender(),
+					tx.Sender(), "Binance script", "Binance script", sdk.Coins{}, binance, tx.Sender(),
 				)},
 				0, 1000000, "", "", "",
 				flags.BroadcastBlock,
@@ -96,7 +96,7 @@ func main() {
 				panic(err)
 			}
 			fmt.Println(tx.SendTransaction(
-				[]sdk.Msg{zoracle.NewMsgCreateOracleScript(tx.Sender(), "Crypto price script", oracleBytes, tx.Sender())},
+				[]sdk.Msg{zoracle.NewMsgCreateOracleScript(tx.Sender(), "Crypto price script", "description", oracleBytes, tx.Sender())},
 				0, 3000000, "", "", "",
 				flags.BroadcastBlock,
 			))
@@ -140,13 +140,13 @@ func main() {
 			}
 
 			fmt.Println(tx.SendTransaction(
-				[]sdk.Msg{zoracle.NewMsgCreateOracleScript(tx.Sender(), "Silly script", bytes, tx.Sender())},
+				[]sdk.Msg{zoracle.NewMsgCreateOracleScript(tx.Sender(), "Silly script", "description", bytes, tx.Sender())},
 				0, 3000000, "", "", "",
 				flags.BroadcastBlock,
 			))
 
 			fmt.Println(tx.SendTransaction(
-				[]sdk.Msg{zoracle.NewMsgCreateDataSource(tx.Sender(), "Mock Data source","Mock Script", sdk.Coins{}, []byte("exec"), tx.Sender())},
+				[]sdk.Msg{zoracle.NewMsgCreateDataSource(tx.Sender(), "Mock Data source", "Mock Script", sdk.Coins{}, []byte("exec"), tx.Sender())},
 				0, 1000000, "", "", "",
 				flags.BroadcastBlock,
 			))
@@ -179,7 +179,7 @@ func main() {
 
 			for i := uint64(0); i < round; i++ {
 				fmt.Println(tx.SendTransaction(
-					[]sdk.Msg{zoracle.NewMsgCreateOracleScript(tx.Sender(), fmt.Sprintf("Silly script %d", i), bytes, tx.Sender())},
+					[]sdk.Msg{zoracle.NewMsgCreateOracleScript(tx.Sender(), fmt.Sprintf("Silly script %d", i),"description", bytes, tx.Sender())},
 					0, 1000000, "", "", "",
 					flags.BroadcastBlock,
 				))

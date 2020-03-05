@@ -369,13 +369,13 @@ $ %s tx zoracle edit-data-source 1 --name coingecko-price --description coin-mar
 // GetCmdCreateOracleScript implements the create oracle script command handler.
 func GetCmdCreateOracleScript(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-oracle-script (--name [name]) (--script [path-to-script]) (--owner [owner])",
+		Use:   "create-oracle-script (--name [name]) (--description [description]) (--script [path-to-script]) (--owner [owner])",
 		Short: "Create a new oracle script that will be used by data requests.",
 		Args:  cobra.NoArgs,
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Create a new oracle script that will be used by data requests.
 Example:
-$ %s tx zoracle create-oracle-script --name eth-price --script ../eth_price.wasm --owner band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9 --from mykey
+$ %s tx zoracle create-oracle-script --name eth-price --description description --script ../eth_price.wasm --owner band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9 --from mykey
 `,
 				version.ClientName,
 			),
@@ -388,6 +388,11 @@ $ %s tx zoracle create-oracle-script --name eth-price --script ../eth_price.wasm
 			if err != nil {
 				return err
 			}
+			description, err := cmd.Flags().GetString(flagDescription)
+			if err != nil {
+				return err
+			}
+
 			scriptPath, err := cmd.Flags().GetString(flagScript)
 			if err != nil {
 				return err
@@ -409,6 +414,7 @@ $ %s tx zoracle create-oracle-script --name eth-price --script ../eth_price.wasm
 			msg := types.NewMsgCreateOracleScript(
 				owner,
 				name,
+				description,
 				scriptCode,
 				cliCtx.GetFromAddress(),
 			)
@@ -422,6 +428,7 @@ $ %s tx zoracle create-oracle-script --name eth-price --script ../eth_price.wasm
 		},
 	}
 	cmd.Flags().String(flagName, "", "Name of this oracle script")
+	cmd.Flags().String(flagDescription, "", "Description of this oracle script")
 	cmd.Flags().String(flagScript, "", "Path to this oracle script")
 	cmd.Flags().String(flagOwner, "", "Owner of this oracle script")
 
@@ -431,13 +438,13 @@ $ %s tx zoracle create-oracle-script --name eth-price --script ../eth_price.wasm
 // GetCmdEditOracleScript implements the editing of oracle script command handler.
 func GetCmdEditOracleScript(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "edit-oracle-script [id] (--name [name]) (--script [path-to-script]) (--owner [owner])",
+		Use:   "edit-oracle-script [id] (--name [name]) (--description [description]) (--script [path-to-script]) (--owner [owner])",
 		Short: "Edit an existing oracle script that will be used by data requests.",
 		Args:  cobra.ExactArgs(1),
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Edit an existing oracle script that will be used by data requests.
 Example:
-$ %s tx zoracle edit-oracle-script 1 --name eth-price --script ../eth_price.wasm --owner band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9 --from mykey
+$ %s tx zoracle edit-oracle-script 1 --name eth-price --description description --script ../eth_price.wasm --owner band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9 --from mykey
 `,
 				version.ClientName,
 			),
@@ -455,6 +462,12 @@ $ %s tx zoracle edit-oracle-script 1 --name eth-price --script ../eth_price.wasm
 			if err != nil {
 				return err
 			}
+
+			description, err := cmd.Flags().GetString(flagDescription)
+			if err != nil {
+				return err
+			}
+
 			scriptPath, err := cmd.Flags().GetString(flagScript)
 			if err != nil {
 				return err
@@ -477,6 +490,7 @@ $ %s tx zoracle edit-oracle-script 1 --name eth-price --script ../eth_price.wasm
 				id,
 				owner,
 				name,
+				description,
 				scriptCode,
 				cliCtx.GetFromAddress(),
 			)
@@ -490,6 +504,7 @@ $ %s tx zoracle edit-oracle-script 1 --name eth-price --script ../eth_price.wasm
 		},
 	}
 	cmd.Flags().String(flagName, "", "Name of this oracle script")
+	cmd.Flags().String(flagDescription, "", "Description of this oracle script")
 	cmd.Flags().String(flagScript, "", "Path to this oracle script")
 	cmd.Flags().String(flagOwner, "", "Owner of this oracle script")
 

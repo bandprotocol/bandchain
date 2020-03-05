@@ -24,9 +24,10 @@ func mockDataSource(ctx sdk.Context, keeper Keeper) sdk.Result {
 func mockOracleScript(ctx sdk.Context, keeper Keeper) sdk.Result {
 	owner := sdk.AccAddress([]byte("owner"))
 	name := "oracle_script_1"
+	description := "description"
 	code := []byte("code")
 	sender := sdk.AccAddress([]byte("sender"))
-	msg := types.NewMsgCreateOracleScript(owner, name, code, sender)
+	msg := types.NewMsgCreateOracleScript(owner, name, description, code, sender)
 	return handleMsgCreateOracleScript(ctx, keeper, msg)
 }
 
@@ -78,7 +79,7 @@ func TestEditDataSourceByNotOwner(t *testing.T) {
 	newExecutable := []byte("executable_2")
 	sender := sdk.AccAddress([]byte("sender"))
 
-	msg := types.NewMsgEditDataSource(1, newOwner, newName,newDescription, newFee, newExecutable, sender)
+	msg := types.NewMsgEditDataSource(1, newOwner, newName, newDescription, newFee, newExecutable, sender)
 	got := handleMsgEditDataSource(ctx, keeper, msg)
 	require.False(t, got.IsOK())
 	require.Equal(t, types.CodeInvalidOwner, got.Code)
@@ -103,10 +104,11 @@ func TestEditOracleScriptSuccess(t *testing.T) {
 
 	newOwner := sdk.AccAddress([]byte("owner2"))
 	newName := "oracle_script_2"
+	newDescription := "description_2"
 	newCode := []byte("code_2")
 	sender := sdk.AccAddress([]byte("owner"))
 
-	msg := types.NewMsgEditOracleScript(1, newOwner, newName, newCode, sender)
+	msg := types.NewMsgEditOracleScript(1, newOwner, newName, newDescription, newCode, sender)
 	got := handleMsgEditOracleScript(ctx, keeper, msg)
 	require.True(t, got.IsOK(), "expected edit oracle script to be ok, got %v", got)
 
@@ -123,10 +125,11 @@ func TestEditOracleScriptByNotOwner(t *testing.T) {
 
 	newOwner := sdk.AccAddress([]byte("owner2"))
 	newName := "data_source_2"
+	newDescription := "description_2"
 	newCode := []byte("code_2")
 	sender := sdk.AccAddress([]byte("not_owner"))
 
-	msg := types.NewMsgEditOracleScript(1, newOwner, newName, newCode, sender)
+	msg := types.NewMsgEditOracleScript(1, newOwner, newName, newDescription, newCode, sender)
 	got := handleMsgEditOracleScript(ctx, keeper, msg)
 	require.False(t, got.IsOK())
 	require.Equal(t, types.CodeInvalidOwner, got.Code)

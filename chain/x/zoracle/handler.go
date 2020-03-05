@@ -63,7 +63,7 @@ func handleMsgEditDataSource(ctx sdk.Context, keeper Keeper, msg MsgEditDataSour
 
 // handleMsgCreateOracleScript is a function to handle MsgCreateOracleScript.
 func handleMsgCreateOracleScript(ctx sdk.Context, keeper Keeper, msg MsgCreateOracleScript) sdk.Result {
-	err := keeper.AddOracleScript(ctx, msg.Owner, msg.Name, msg.Code)
+	err := keeper.AddOracleScript(ctx, msg.Owner, msg.Name, msg.Description, msg.Code)
 	if err != nil {
 		return err.Result()
 	}
@@ -82,7 +82,7 @@ func handleMsgEditOracleScript(ctx sdk.Context, keeper Keeper, msg MsgEditOracle
 		return types.ErrInvalidOwner(types.DefaultCodespace).Result()
 	}
 
-	err = keeper.EditOracleScript(ctx, msg.OracleScriptID, msg.Owner, msg.Name, msg.Code)
+	err = keeper.EditOracleScript(ctx, msg.OracleScriptID, msg.Owner, msg.Name, msg.Description, msg.Code)
 	if err != nil {
 		return err.Result()
 	}
