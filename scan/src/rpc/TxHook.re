@@ -58,18 +58,43 @@ module Msg = {
       };
   };
 
-  module Store = {
+  module CreateDataSource = {
     type t = {
-      code: JsBuffer.t,
-      name: string,
       owner: Address.t,
+      name: string,
+      description: string,
+      fee: list(Coin.t),
+      executable: JsBuffer.t,
     };
 
     let decode = json =>
       JsonUtils.Decode.{
-        code: json |> field("code", string) |> JsBuffer.fromBase64,
-        name: json |> field("name", string),
         owner: json |> field("owner", string) |> Address.fromBech32,
+        name: json |> field("name", string),
+        description: json |> field("description", string),
+        fee: json |> field("fee", list(Coin.decodeCoin)),
+        executable: json |> field("executable", string) |> JsBuffer.fromBase64,
+      };
+  };
+
+  module EditDataSource = {
+    type t = {
+      id: int,
+      owner: Address.t,
+      name: string,
+      description: string,
+      fee: list(Coin.t),
+      executable: JsBuffer.t,
+    };
+
+    let decode = json =>
+      JsonUtils.Decode.{
+        id: json |> field("dataSourceID", intstr),
+        owner: json |> field("owner", string) |> Address.fromBech32,
+        name: json |> field("name", string),
+        description: json |> field("description", string),
+        fee: json |> field("fee", list(Coin.decodeCoin)),
+        executable: json |> field("executable", string) |> JsBuffer.fromBase64,
       };
   };
 
@@ -108,7 +133,7 @@ module Msg = {
   type action_t =
     | Unknown
     | Send(Send.t)
-    | Store(Store.t)
+    | CreateDataSource(CreateDataSource.t)
     | Request(Request.t)
     | Report(Report.t);
 
@@ -120,7 +145,7 @@ module Msg = {
   let getCreator = msg => {
     switch (msg.action) {
     | Send(send) => send.fromAddress
-    | Store(store) => store.owner
+    | CreateDataSource(dataSource) => dataSource.owner
     | Request(request) => request.sender
     | Report(report) => report.validator
     | Unknown => "" |> Address.fromHex
@@ -137,7 +162,7 @@ module Msg = {
         )
       ++ "->"
       ++ (send.toAddress |> Address.toBech32)
-    | Store(store) => store.name
+    | CreateDataSource(dataSource) => dataSource.name
     | Request(_) =>
       switch (msg.events->Event.getValueOfKey("request.code_name")) {
       | Some(value) =>
@@ -160,7 +185,8 @@ module Msg = {
     JsonUtils.Decode.(
       switch (json |> field("type", string)) {
       | "cosmos-sdk/MsgSend" => Send(json |> field("value", Send.decode))
-      | "zoracle/Store" => Store(json |> field("value", Store.decode))
+      | "zoracle/CreateDataSource" =>
+        CreateDataSource(json |> field("value", CreateDataSource.decode))
       | "zoracle/Request" => Request(json |> field("value", Request.decode))
       | "zoracle/Report" => Report(json |> field("value", Report.decode))
       | _ => Unknown
@@ -170,11 +196,11 @@ module Msg = {
   let getRoute = msg =>
     switch (msg.action) {
     | Send(_) => None
-    | Store(_) =>
-      switch (msg.events->Event.getValueOfKey("store_code.codehash")) {
-      | Some(value) => Some(Route.ScriptIndexPage(value |> Hash.fromHex, ScriptTransactions))
-      | None => None
-      }
+    | CreateDataSource(_) => None
+    // switch (msg.events->Event.getValueOfKey("store_code.codehash")) {
+    // | Some(value) => Some(Route.ScriptIndexPage(value |> Hash.fromHex, ScriptTransactions))
+    // | None => None
+    // }
     | Request(_) =>
       switch (msg.events->Event.getValueOfKey("request.id")) {
       | Some(value) => Some(Route.RequestIndexPage(value->int_of_string, RequestReportStatus))
