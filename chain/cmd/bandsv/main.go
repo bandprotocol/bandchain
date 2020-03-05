@@ -38,7 +38,7 @@ const (
 
 type OracleRequest struct {
 	Type                     string `json:"type" binding:"required"`
-	OracleScriptID           int64  `json:"oracleScriptID,string" binding:"required"`
+	OracleScriptID           zoracle.OracleScriptID  `json:"oracleScriptID,string" binding:"required"`
 	Calldata                 []byte `json:"calldata" binding:"required"`
 	RequestedValidatorCount  int64  `json:"requestedValidatorCount,string"`
 	SufficientValidatorCount int64  `json:"sufficientValidatorCount,string"`
