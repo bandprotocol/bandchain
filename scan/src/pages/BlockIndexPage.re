@@ -43,7 +43,7 @@ module Styles = {
 [@react.component]
 let make = (~height: int) => {
   let (limit, setLimit) = React.useState(_ => 10);
-  let blockOpt = BlockHook.atHeight(height, ());
+  let blockOpt = BlockHook.atHeight(height);
   let txsOpt = TxHook.atHeight(height, ~limit, ());
 
   <div className=Styles.pageContainer>
