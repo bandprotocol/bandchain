@@ -23,7 +23,7 @@ module Styles = {
 let make = () => {
   let step = 10;
   let (limit, setLimit) = React.useState(_ => step);
-  let txsOpt = TxHook.latest(~limit, ~pollInterval=3000, ());
+  let txsOpt = TxHook.latest(~limit, ());
   let txs = txsOpt->Belt.Option.mapWithDefault([], ({txs}) => txs);
 
   let infoOpt = React.useContext(GlobalContext.context);
