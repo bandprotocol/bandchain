@@ -159,30 +159,17 @@ module Msg = {
       };
   };
 
-  module RawDataReport = {
-    type t = {
-      externalDataID: int,
-      data: JsBuffer.t,
-    };
-
-    let decode = json =>
-      JsonUtils.Decode.{
-        externalDataID: json |> field("externalDataID", intstr),
-        data: json |> field("data", string) |> JsBuffer.fromBase64,
-      };
-  };
-
   module Report = {
     type t = {
       requestID: int,
-      dataSet: list(RawDataReport.t),
+      dataSet: list(RequestHook.RawDataReport.t),
       sender: Address.t,
     };
 
     let decode = json =>
       JsonUtils.Decode.{
         requestID: json |> field("requestID", intstr),
-        dataSet: json |> field("dataSet", list(RawDataReport.decode)),
+        dataSet: json |> field("dataSet", list(RequestHook.RawDataReport.decode)),
         sender: json |> field("sender", string) |> Address.fromBech32,
       };
   };

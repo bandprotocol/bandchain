@@ -5,7 +5,6 @@ document##head##appendChild(style);
 style##innerHTML #= AppStyle.style;
 
 AxiosHooks.setRpcUrl("https://d3n.bandprotocol.com/");
-// AxiosHooks.setRpcUrl("http://rpc.alpha.bandchain.org/");
 
 TimeAgos.setMomentRelativeTimeThreshold();
 
