@@ -62,18 +62,18 @@ module Msg = {
     type t = {
       owner: Address.t,
       name: string,
-      description: string,
       fee: list(Coin.t),
       executable: JsBuffer.t,
+      sender: Address.t,
     };
 
     let decode = json =>
       JsonUtils.Decode.{
         owner: json |> field("owner", string) |> Address.fromBech32,
         name: json |> field("name", string),
-        description: json |> field("description", string),
         fee: json |> field("fee", list(Coin.decodeCoin)),
         executable: json |> field("executable", string) |> JsBuffer.fromBase64,
+        sender: json |> field("sender", string) |> Address.fromBech32,
       };
   };
 
@@ -82,9 +82,9 @@ module Msg = {
       id: int,
       owner: Address.t,
       name: string,
-      description: string,
       fee: list(Coin.t),
       executable: JsBuffer.t,
+      sender: Address.t,
     };
 
     let decode = json =>
@@ -92,41 +92,98 @@ module Msg = {
         id: json |> field("dataSourceID", intstr),
         owner: json |> field("owner", string) |> Address.fromBech32,
         name: json |> field("name", string),
-        description: json |> field("description", string),
         fee: json |> field("fee", list(Coin.decodeCoin)),
         executable: json |> field("executable", string) |> JsBuffer.fromBase64,
+        sender: json |> field("sender", string) |> Address.fromBech32,
       };
   };
 
-  module Request = {
+  module CreateOracleScript = {
     type t = {
-      codeHash: Hash.t,
-      params: JsBuffer.t,
-      reportPeriod: int,
+      owner: Address.t,
+      name: string,
+      code: JsBuffer.t,
       sender: Address.t,
     };
 
     let decode = json =>
       JsonUtils.Decode.{
-        codeHash: json |> field("codeHash", string) |> Hash.fromBase64,
-        params: json |> field("params", string) |> JsBuffer.fromBase64,
-        reportPeriod: json |> field("reportPeriod", intstr),
+        owner: json |> field("owner", string) |> Address.fromBech32,
+        name: json |> field("name", string),
+        code: json |> field("code", string) |> JsBuffer.fromBase64,
         sender: json |> field("sender", string) |> Address.fromBech32,
+      };
+  };
+
+  module EditOracleScript = {
+    type t = {
+      id: int,
+      owner: Address.t,
+      name: string,
+      code: JsBuffer.t,
+      sender: Address.t,
+    };
+
+    let decode = json =>
+      JsonUtils.Decode.{
+        id: json |> field("oracleScriptID", intstr),
+        owner: json |> field("owner", string) |> Address.fromBech32,
+        name: json |> field("name", string),
+        code: json |> field("code", string) |> JsBuffer.fromBase64,
+        sender: json |> field("sender", string) |> Address.fromBech32,
+      };
+  };
+
+  module Request = {
+    type t = {
+      oracleScriptID: int,
+      calldata: JsBuffer.t,
+      requestedValidatorCount: int,
+      sufficientValidatorCount: int,
+      expiration: int,
+      prepareGas: int,
+      executeGas: int,
+      sender: Address.t,
+    };
+
+    let decode = json =>
+      JsonUtils.Decode.{
+        oracleScriptID: json |> field("oracleScriptID", intstr),
+        calldata: json |> field("calldata", string) |> JsBuffer.fromBase64,
+        requestedValidatorCount: json |> field("requestedValidatorCount", intstr),
+        sufficientValidatorCount: json |> field("sufficientValidatorCount", intstr),
+        expiration: json |> field("expiration", intstr),
+        prepareGas: json |> field("prepareGas", intstr),
+        executeGas: json |> field("executeGas", intstr),
+        sender: json |> field("sender", string) |> Address.fromBech32,
+      };
+  };
+
+  module RawDataReport = {
+    type t = {
+      externalDataID: int,
+      data: JsBuffer.t,
+    };
+
+    let decode = json =>
+      JsonUtils.Decode.{
+        externalDataID: json |> field("externalDataID", intstr),
+        data: json |> field("data", string) |> JsBuffer.fromBase64,
       };
   };
 
   module Report = {
     type t = {
-      requestId: int,
-      data: JsBuffer.t,
-      validator: Address.t,
+      requestID: int,
+      dataSet: list(RawDataReport.t),
+      sender: Address.t,
     };
 
     let decode = json =>
       JsonUtils.Decode.{
-        requestId: json |> field("requestID", intstr),
-        data: json |> field("data", string) |> JsBuffer.fromBase64,
-        validator: json |> field("validator", string) |> Address.fromBech32,
+        requestID: json |> field("requestID", intstr),
+        dataSet: json |> field("dataSet", list(RawDataReport.decode)),
+        sender: json |> field("sender", string) |> Address.fromBech32,
       };
   };
 
@@ -134,6 +191,9 @@ module Msg = {
     | Unknown
     | Send(Send.t)
     | CreateDataSource(CreateDataSource.t)
+    | EditDataSource(EditDataSource.t)
+    | CreateOracleScript(CreateOracleScript.t)
+    | EditOracleScript(EditOracleScript.t)
     | Request(Request.t)
     | Report(Report.t);
 
@@ -146,8 +206,11 @@ module Msg = {
     switch (msg.action) {
     | Send(send) => send.fromAddress
     | CreateDataSource(dataSource) => dataSource.owner
+    | EditDataSource(dataSource) => dataSource.owner
+    | CreateOracleScript(oracleScript) => oracleScript.owner
+    | EditOracleScript(oracleScript) => oracleScript.owner
     | Request(request) => request.sender
-    | Report(report) => report.validator
+    | Report(report) => report.sender
     | Unknown => "" |> Address.fromHex
     };
   };
@@ -163,6 +226,9 @@ module Msg = {
       ++ "->"
       ++ (send.toAddress |> Address.toBech32)
     | CreateDataSource(dataSource) => dataSource.name
+    | EditDataSource(dataSource) => dataSource.name
+    | CreateOracleScript(oracleScript) => oracleScript.name
+    | EditOracleScript(oracleScript) => oracleScript.name
     | Request(_) =>
       switch (msg.events->Event.getValueOfKey("request.code_name")) {
       | Some(value) =>
@@ -174,7 +240,7 @@ module Msg = {
       }
     | Report(report) =>
       switch (msg.events->Event.getValueOfKey("report.code_name")) {
-      | Some(value) => "#" ++ (report.requestId |> string_of_int) ++ " " ++ value
+      | Some(value) => "#" ++ (report.requestID |> string_of_int) ++ " " ++ value
       | None => "?"
       }
     | Unknown => "Unknown"
@@ -187,6 +253,11 @@ module Msg = {
       | "cosmos-sdk/MsgSend" => Send(json |> field("value", Send.decode))
       | "zoracle/CreateDataSource" =>
         CreateDataSource(json |> field("value", CreateDataSource.decode))
+      | "zoracle/EditDataSource" => EditDataSource(json |> field("value", EditDataSource.decode))
+      | "zoracle/CreateOracleScript" =>
+        CreateOracleScript(json |> field("value", CreateOracleScript.decode))
+      | "zoracle/EditOracleScript" =>
+        EditOracleScript(json |> field("value", EditOracleScript.decode))
       | "zoracle/Request" => Request(json |> field("value", Request.decode))
       | "zoracle/Report" => Report(json |> field("value", Report.decode))
       | _ => Unknown
@@ -196,11 +267,15 @@ module Msg = {
   let getRoute = msg =>
     switch (msg.action) {
     | Send(_) => None
+    // TODO: Route to each data source and oracle script page
     | CreateDataSource(_) => None
     // switch (msg.events->Event.getValueOfKey("store_code.codehash")) {
     // | Some(value) => Some(Route.ScriptIndexPage(value |> Hash.fromHex, ScriptTransactions))
     // | None => None
     // }
+    | EditDataSource(_) => None
+    | CreateOracleScript(_) => None
+    | EditOracleScript(_) => None
     | Request(_) =>
       switch (msg.events->Event.getValueOfKey("request.id")) {
       | Some(value) => Some(Route.RequestIndexPage(value->int_of_string, RequestReportStatus))
@@ -241,7 +316,8 @@ module Tx = {
     messages: list(Msg.t),
   };
 
-  let decodeTx = json =>
+  let decodeTx = json => {
+    // Js.Console.log(json);
     JsonUtils.Decode.{
       sender:
         json
@@ -258,14 +334,24 @@ module Tx = {
         let actions = json |> at(["tx", "value", "msg"], list(Msg.decodeAction));
         let eventDoubleLists =
           json
-          |> field("logs", optional(list(Event.decodeEvents)))
-          |> Belt.Option.getWithDefault(_, []);
+          |> optional(field("logs", list(Event.decodeEvents)))
+          |> Belt.Option.getWithDefault(_, actions->Belt_List.map(_ => []));
+        Js.Console.log4(
+          actions,
+          eventDoubleLists,
+          actions->Belt_List.length,
+          eventDoubleLists->Belt_List.length,
+        );
         Belt.List.zip(actions, eventDoubleLists)
         ->Belt.List.map(((action, events)) => Msg.{action, events});
       },
     };
+  };
 
-  let getDescription = tx => tx.messages->Belt_List.getExn(0)->Msg.getDescription;
+  let getDescription = tx => {
+    Js.Console.log(tx);
+    tx.messages->Belt_List.getExn(0)->Msg.getDescription;
+  };
 };
 
 module Txs = {
