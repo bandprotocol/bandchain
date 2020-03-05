@@ -142,7 +142,7 @@ func (k Keeper) ShouldBecomePendingResolve(ctx sdk.Context, id types.RequestID) 
 func (k Keeper) AddPendingRequest(ctx sdk.Context, requestID types.RequestID) sdk.Error {
 	pendingList := k.GetPendingResolveList(ctx)
 	for _, entry := range pendingList {
-		if requestID == types.RequestID(entry) {
+		if requestID == entry {
 			return types.ErrDuplicateRequest(types.DefaultCodespace)
 		}
 	}

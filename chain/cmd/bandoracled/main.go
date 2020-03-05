@@ -142,7 +142,7 @@ func handleRequest(requestID zoracle.RequestID) (sdk.TxResponse, error) {
 		if info.err != nil {
 			return sdk.TxResponse{}, info.err
 		}
-		reports = append(reports, zoracle.NewRawDataReport(zoracle.ExternalID(info.externalID), info.answer))
+		reports = append(reports, zoracle.NewRawDataReport(info.externalID, info.answer))
 	}
 
 	sort.Slice(reports, func(i, j int) bool {
@@ -150,7 +150,7 @@ func handleRequest(requestID zoracle.RequestID) (sdk.TxResponse, error) {
 	})
 
 	return bandClient.SendTransaction(
-		zoracle.NewMsgReportData(zoracle.RequestID(requestID), reports, sdk.ValAddress(bandClient.Sender())),
+		zoracle.NewMsgReportData(requestID, reports, sdk.ValAddress(bandClient.Sender())),
 		1000000, "", "", "",
 		flags.BroadcastSync,
 	)

@@ -23,10 +23,10 @@ import (
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 	"github.com/tendermint/tendermint/crypto/tmhash"
 	cmn "github.com/tendermint/tendermint/libs/common"
-
-	"github.com/bandprotocol/d3n/chain/x/zoracle"
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
 	"github.com/tendermint/tendermint/types"
+
+	"github.com/bandprotocol/d3n/chain/x/zoracle"
 )
 
 var (
@@ -126,12 +126,12 @@ func (blockRelay *BlockRelayProof) encodeToEthData(blockHeight uint64) ([]byte, 
 }
 
 type OracleDataProof struct {
-	Version        uint64           `json:"version"`
-	RequestID      uint64           `json:"requestID"`
-	OracleScriptID uint64           `json:"oracleScriptID"`
-	Calldata       cmn.HexBytes     `json:"calldata"`
-	Data           cmn.HexBytes     `json:"data"`
-	MerklePaths    []IAVLMerklePath `json:"merklePaths"`
+	Version        uint64                 `json:"version"`
+	RequestID      zoracle.RequestID      `json:"requestID"`
+	OracleScriptID zoracle.OracleScriptID `json:"oracleScriptID"`
+	Calldata       cmn.HexBytes           `json:"calldata"`
+	Data           cmn.HexBytes           `json:"data"`
+	MerklePaths    []IAVLMerklePath       `json:"merklePaths"`
 }
 
 func (oracleData *OracleDataProof) encodeToEthData(blockHeight uint64) ([]byte, error) {
@@ -142,8 +142,8 @@ func (oracleData *OracleDataProof) encodeToEthData(blockHeight uint64) ([]byte, 
 	return verifyArguments.Pack(
 		big.NewInt(int64(blockHeight)),
 		oracleData.Data,
-		oracleData.RequestID,
-		oracleData.OracleScriptID,
+		uint64(oracleData.RequestID),
+		uint64(oracleData.OracleScriptID),
 		oracleData.Calldata,
 		big.NewInt(int64(oracleData.Version)),
 		parsePaths,
@@ -399,7 +399,8 @@ func MakeOtherStoresMerkleHash(mspo rootmulti.MultiStoreProofOp) (cmn.HexBytes, 
 func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		requestID, err := strconv.ParseUint(vars[requestIDTag], 10, 64)
+		intRequestID, err := strconv.ParseUint(vars[requestIDTag], 10, 64)
+		requestID := zoracle.RequestID(intRequestID)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -418,7 +419,7 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		var queryRequest zoracle.RequestQuerierInfo
-		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/zoracle/request/%d", requestID), nil)
+		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/zoracle/request/%d", uint64(requestID)), nil)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -430,7 +431,7 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		key := zoracle.ResultStoreKey(zoracle.RequestID(requestID), queryRequest.Request.OracleScriptID, queryRequest.Request.Calldata)
+		key := zoracle.ResultStoreKey(requestID, queryRequest.Request.OracleScriptID, queryRequest.Request.Calldata)
 
 		resp, err := cliCtx.Client.ABCIQueryWithOptions(
 			"/store/zoracle/key",
@@ -479,7 +480,7 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		odp := OracleDataProof{}
 		odp.RequestID = requestID
 		odp.Data = resp.Response.GetValue()
-		odp.OracleScriptID = uint64(queryRequest.Request.OracleScriptID)
+		odp.OracleScriptID = queryRequest.Request.OracleScriptID
 		odp.Calldata = queryRequest.Request.Calldata
 		odp.Version = uint64(opiavl.Proof.Leaves[0].Version)
 
