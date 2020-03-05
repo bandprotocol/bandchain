@@ -1,7 +1,7 @@
 module Styles = {
   open Css;
 
-  let container = style([padding2(~h=`px(35), ~v=`px(20))]);
+  let container = style([padding2(~h=`px(20), ~v=`px(20))]);
 
   let paramsContainer = style([display(`flex), flexDirection(`column)]);
 
@@ -11,7 +11,7 @@ module Styles = {
     style([
       width(`percent(100.)),
       background(white),
-      paddingLeft(`px(25)),
+      paddingLeft(`px(20)),
       fontSize(`px(12)),
       fontWeight(`num(500)),
       outline(`px(1), `none, white),
@@ -30,7 +30,7 @@ module Styles = {
       backgroundColor(Colors.btnGreen),
       borderRadius(`px(6)),
       fontSize(`px(12)),
-      fontWeight(`num(500)),
+      fontWeight(`num(600)),
       color(`hex("1D7C73")),
       cursor(`pointer),
       padding2(~v=Css.px(10), ~h=Css.px(10)),
