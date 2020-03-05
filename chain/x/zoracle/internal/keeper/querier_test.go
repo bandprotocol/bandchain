@@ -448,7 +448,7 @@ func TestQueryOracleScriptsByStartIdAndNumberOfOracleScripts(t *testing.T) {
 		owner := sdk.AccAddress([]byte("owner" + strconv.Itoa(i)))
 		name := "oracle_script_" + strconv.Itoa(i)
 		code := []byte("code" + strconv.Itoa(i))
-		eachOracleScript := types.NewOracleScriptQuerierInfo(int64(i), owner, name, code)
+		eachOracleScript := types.NewOracleScriptQuerierInfo(types.OracleScriptID(i), owner, name, code)
 
 		err := keeper.AddOracleScript(ctx, eachOracleScript.Owner, eachOracleScript.Name, eachOracleScript.Code)
 		require.Nil(t, err)
