@@ -103,8 +103,8 @@ func NewDefaultGenesisState() GenesisState {
 				MaxEvidenceAge:          60 * 30240 * time.Second, // 3 weeks
 				SignedBlocksWindow:      int64(30000),
 				MinSignedPerWindow:      sdk.NewDecWithPrec(5, 2), // 5%
-				DowntimeJailDuration:    60 * 10 * time.Second,    //  10  minutes
-				SlashFractionDoubleSign: sdk.NewDecWithPrec(5, 2), //  5%
+				DowntimeJailDuration:    60 * 10 * time.Second,    // 10 minutes
+				SlashFractionDoubleSign: sdk.NewDecWithPrec(5, 2), // 5%
 				SlashFractionDowntime:   sdk.NewDecWithPrec(1, 4), // 0.01%
 			},
 			SigningInfos: make(map[string]slashing.ValidatorSigningInfo),
