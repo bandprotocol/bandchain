@@ -21,8 +21,8 @@ import (
 )
 
 const (
-	flagQueryDuration = "query-duration"
-	flagPrivKey       = "priv-key"
+	flagMaxQueryDuration = "max-query-duration"
+	flagPrivKey          = "priv-key"
 )
 
 var (
@@ -47,6 +47,14 @@ func main() {
 	cmd := &cobra.Command{
 		Use:   "bandoracled",
 		Short: "Band oracle Daemon",
+		Long: strings.TrimSpace(
+			`Band oracle to listen new requests from chain and reports data for execution.
+Example:
+$ bandoracled --node tcp://localhost:26657 --priv-key 06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b -d 60
+`,
+		),
+		Args: cobra.NoArgs,
+
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var err error
 
@@ -87,8 +95,8 @@ func main() {
 
 	cmd.Flags().String(flags.FlagNode, "tcp://localhost:26657", "<host>:<port> to Tendermint RPC interface for this chain")
 	viper.BindPFlag(flags.FlagNode, cmd.Flags().Lookup(flags.FlagNode))
-	cmd.Flags().IntP(flagQueryDuration, "d", 60, "Max duration to query data")
-	viper.BindPFlag(flagQueryDuration, cmd.Flags().Lookup(flagQueryDuration))
+	cmd.Flags().IntP(flagMaxQueryDuration, "d", 60, "Max duration to query data")
+	viper.BindPFlag(flagMaxQueryDuration, cmd.Flags().Lookup(flagMaxQueryDuration))
 	cmd.Flags().String(
 		flagPrivKey,
 		"06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b",
@@ -146,7 +154,7 @@ func handleRequest(requestID int64) (sdk.TxResponse, error) {
 
 			result, err := byteexec.RunOnDocker(
 				dataSource.Executable,
-				time.Duration(viper.GetInt(flagQueryDuration))*time.Second,
+				time.Duration(viper.GetInt(flagMaxQueryDuration))*time.Second,
 				string(calldata),
 			)
 			if err != nil {
