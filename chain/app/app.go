@@ -184,12 +184,15 @@ func NewBandApp(
 		maccPerms,
 	)
 
+	// Wrapped supply keeper allows burned tokens to be transfereed to community pool
+	wrappedSupplyKeeper := bandsupply.WrapSupplyKeeperBurnToCommunityPool(app.supplyKeeper)
+
 	// The staking keeper
 	stakingKeeper := staking.NewKeeper(
 		app.cdc,
 		keys[staking.StoreKey],
 		tkeys[staking.TStoreKey],
-		bandsupply.WrapSupplyKeeperBurnToCommunityPool(app.supplyKeeper),
+		&wrappedSupplyKeeper,
 		stakingSubspace,
 		staking.DefaultCodespace,
 	)
@@ -213,6 +216,9 @@ func NewBandApp(
 		auth.FeeCollectorName,
 		app.ModuleAccountAddrs(),
 	)
+
+	// distrKeeper must be set afterward due to the circular reference of supply-staking-distr
+	wrappedSupplyKeeper.SetDistrKeeper(&app.distrKeeper)
 
 	app.slashingKeeper = slashing.NewKeeper(
 		app.cdc,
