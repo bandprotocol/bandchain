@@ -109,7 +109,7 @@ func handleRequestData(c *gin.Context) {
 	if reqType == Asynchronous {
 		txr, err := bandClient.SendTransaction(
 			zoracle.NewMsgRequestData(
-				zoracle.OracleScriptID(req.OracleScriptID),
+				req.OracleScriptID,
 				req.Calldata,
 				req.RequestedValidatorCount,
 				req.SufficientValidatorCount,
