@@ -37,12 +37,12 @@ const (
 )
 
 type OracleRequest struct {
-	Type                     string `json:"type" binding:"required"`
-	OracleScriptID           zoracle.OracleScriptID  `json:"oracleScriptID,string" binding:"required"`
-	Calldata                 []byte `json:"calldata" binding:"required"`
-	RequestedValidatorCount  int64  `json:"requestedValidatorCount,string"`
-	SufficientValidatorCount int64  `json:"sufficientValidatorCount,string"`
-	Expiration               int64  `json:"expiration,string"`
+	Type                     string                 `json:"type" binding:"required"`
+	OracleScriptID           zoracle.OracleScriptID `json:"oracleScriptID,string" binding:"required"`
+	Calldata                 []byte                 `json:"calldata" binding:"required"`
+	RequestedValidatorCount  int64                  `json:"requestedValidatorCount,string"`
+	SufficientValidatorCount int64                  `json:"sufficientValidatorCount,string"`
+	Expiration               int64                  `json:"expiration,string"`
 }
 
 type OracleRequestResp struct {
@@ -134,7 +134,7 @@ func handleRequestData(c *gin.Context) {
 
 	txr, err := bandClient.SendTransaction(
 		zoracle.NewMsgRequestData(
-			zoracle.OracleScriptID(req.OracleScriptID),
+			req.OracleScriptID,
 			req.Calldata,
 			req.RequestedValidatorCount,
 			req.SufficientValidatorCount,
@@ -151,12 +151,13 @@ func handleRequestData(c *gin.Context) {
 		return
 	}
 
-	requestID := int64(0)
+	requestID := zoracle.RequestID(0)
 	for _, event := range txr.Events {
 		if event.Type == "request" {
 			for _, attr := range event.Attributes {
 				if string(attr.Key) == "id" {
-					requestID, err = strconv.ParseInt(attr.Value, 10, 64)
+					int64RequstID, err := strconv.ParseInt(attr.Value, 10, 64)
+					requestID = zoracle.RequestID(int64RequstID)
 					if err != nil {
 						c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 						return
@@ -166,7 +167,7 @@ func handleRequestData(c *gin.Context) {
 			}
 		}
 	}
-	if requestID == 0 {
+	if requestID == zoracle.RequestID(0) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("cannot find requestID: %v", txr)})
 		return
 	}
@@ -175,7 +176,7 @@ func handleRequestData(c *gin.Context) {
 	if reqType == Synchronous {
 		c.JSON(200, OracleRequestResp{
 			TxHash:    txr.TxHash,
-			RequestID: zoracle.RequestID(requestID),
+			RequestID: requestID,
 		})
 		return
 	}
@@ -201,7 +202,7 @@ func handleRequestData(c *gin.Context) {
 
 			c.JSON(200, OracleRequestResp{
 				TxHash:    txr.TxHash,
-				RequestID: zoracle.RequestID(requestID),
+				RequestID: requestID,
 				Proof:     proof.Result,
 			})
 			return

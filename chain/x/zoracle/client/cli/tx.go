@@ -72,7 +72,8 @@ $ %s tx zoracle request 1 --calldata 1234abcdef --requested-validator-count 4 --
 
 			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 
-			oracleScriptID, err := strconv.ParseInt(args[0], 10, 64)
+			int64OracleScriptID, err := strconv.ParseInt(args[0], 10, 64)
+			oracleScriptID := types.OracleScriptID(int64OracleScriptID)
 			if err != nil {
 				return err
 			}
@@ -108,7 +109,7 @@ $ %s tx zoracle request 1 --calldata 1234abcdef --requested-validator-count 4 --
 			}
 
 			msg := types.NewMsgRequestData(
-				types.OracleScriptID(oracleScriptID),
+				oracleScriptID,
 				calldata,
 				requestedValidatorCount,
 				sufficientValidatorCount,
@@ -161,7 +162,8 @@ $ %s tx zoracle report 1 1:172.5 2:HELLOWORLD --from mykey
 
 			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 
-			requestID, err := strconv.ParseInt(args[0], 10, 64)
+			int64RequestID, err := strconv.ParseInt(args[0], 10, 64)
+			requestID := types.RequestID(int64RequestID)
 			if err != nil {
 				return err
 			}
@@ -172,12 +174,13 @@ $ %s tx zoracle report 1 1:172.5 2:HELLOWORLD --from mykey
 				if len(reportRaw) != 2 {
 					return fmt.Errorf("Invalid report format: %s", reportRaw[0])
 				}
-				externalID, err := strconv.ParseInt(reportRaw[0], 10, 64)
+				int64ExternalID, err := strconv.ParseInt(reportRaw[0], 10, 64)
+				externalID := types.ExternalID(int64ExternalID)
 				if err != nil {
 					return err
 				}
 
-				dataset = append(dataset, types.NewRawDataReport(types.ExternalID(externalID), []byte(reportRaw[1])))
+				dataset = append(dataset, types.NewRawDataReport(externalID, []byte(reportRaw[1])))
 			}
 
 			// Sort data reports by external ID
@@ -185,7 +188,7 @@ $ %s tx zoracle report 1 1:172.5 2:HELLOWORLD --from mykey
 				return dataset[i].ExternalDataID < dataset[j].ExternalDataID
 			})
 
-			msg := types.NewMsgReportData(types.RequestID(requestID), dataset, sdk.ValAddress(cliCtx.GetFromAddress()))
+			msg := types.NewMsgReportData(requestID, dataset, sdk.ValAddress(cliCtx.GetFromAddress()))
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
