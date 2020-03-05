@@ -316,8 +316,7 @@ module Tx = {
     messages: list(Msg.t),
   };
 
-  let decodeTx = json => {
-    // Js.Console.log(json);
+  let decodeTx = json =>
     JsonUtils.Decode.{
       sender:
         json
@@ -336,22 +335,12 @@ module Tx = {
           json
           |> optional(field("logs", list(Event.decodeEvents)))
           |> Belt.Option.getWithDefault(_, actions->Belt_List.map(_ => []));
-        Js.Console.log4(
-          actions,
-          eventDoubleLists,
-          actions->Belt_List.length,
-          eventDoubleLists->Belt_List.length,
-        );
         Belt.List.zip(actions, eventDoubleLists)
         ->Belt.List.map(((action, events)) => Msg.{action, events});
       },
     };
-  };
 
-  let getDescription = tx => {
-    Js.Console.log(tx);
-    tx.messages->Belt_List.getExn(0)->Msg.getDescription;
-  };
+  let getDescription = tx => tx.messages->Belt_List.getExn(0)->Msg.getDescription;
 };
 
 module Txs = {
