@@ -164,7 +164,7 @@ func queryOracleScriptByID(ctx sdk.Context, path []string, req abci.RequestQuery
 	}
 
 	return codec.MustMarshalJSONIndent(keeper.cdc, types.NewOracleScriptQuerierInfo(
-		id,
+		types.OracleScriptID(id),
 		oracleScript.Owner,
 		oracleScript.Name,
 		oracleScript.Code,
@@ -197,7 +197,7 @@ func queryOracleScripts(ctx sdk.Context, path []string, req abci.RequestQuery, k
 		}
 
 		oracleScripts = append(oracleScripts, types.NewOracleScriptQuerierInfo(
-			id,
+			types.OracleScriptID(id),
 			oracleScript.Owner,
 			oracleScript.Name,
 			oracleScript.Code,
