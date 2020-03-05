@@ -66,7 +66,7 @@ module Styles = {
 [@react.component]
 let make = (~reqID, ~hashtag: Route.request_tab_t) =>
   {
-    let requestOpt = RequestHook.getRequest(reqID, ~pollInterval=3000, ());
+    let requestOpt = RequestHook.getRequest(reqID);
     let infoOpt = React.useContext(GlobalContext.context);
 
     let%Opt request = requestOpt;
@@ -108,7 +108,7 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) =>
           </Col>
         </Row>
         <div className=Styles.sourceContainer>
-          <Text value=scriptName size=Text.Xxl weight=Text.Bold nowrap=true />
+          <Text value=scriptName size=Text.Xxxl weight=Text.Bold nowrap=true />
         </div>
         <VSpacing size=Spacing.xl />
         <InfoHL info={InfoHL.DataSources(dataSources)} header="DATA SOURCES" />

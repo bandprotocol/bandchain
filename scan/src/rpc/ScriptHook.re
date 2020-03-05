@@ -54,11 +54,11 @@ module Script = {
 
 let getInfo = codeHash => {
   let codeHashHex = codeHash->Hash.toHex;
-  let json = AxiosHooks.use({j|zoracle/script/$codeHashHex|j}, ());
+  let json = AxiosHooks.use({j|zoracle/script/$codeHashHex|j});
   json |> Belt.Option.map(_, Script.decodeScript);
 };
 
-let getScriptList = (~page=1, ~limit=10, ~pollInterval=?, ()) => {
-  let json = AxiosHooks.use({j|zoracle/scripts?page=$page&limit=$limit|j}, ~pollInterval?, ());
+let getScriptList = (~page=1, ~limit=10, ()) => {
+  let json = AxiosHooks.use({j|zoracle/scripts?page=$page&limit=$limit|j});
   json |> Belt.Option.map(_, Script.decodeScripts);
 };

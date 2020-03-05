@@ -19,18 +19,14 @@ module Price = {
     };
 };
 
-let get = (~pollInterval=?, ()) => {
+let get = () => {
   let usdJson =
     AxiosHooks.use(
       "https://api.coingecko.com/api/v3/simple/price?ids=band-protocol&vs_currencies=usd&include_market_cap=true&include_24hr_change=true",
-      ~pollInterval?,
-      (),
     );
   let btcJson =
     AxiosHooks.use(
       "https://api.coingecko.com/api/v3/simple/price?ids=band-protocol&vs_currencies=btc&include_market_cap=true&include_24hr_change=true",
-      ~pollInterval?,
-      (),
     );
   usdJson |> Belt.Option.flatMap(_, u => btcJson |> Belt.Option.map(_, Price.decode(u)));
 };

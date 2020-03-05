@@ -203,11 +203,11 @@ func TestSetResolved(t *testing.T) {
 
 	keeper.SetRequest(ctx, 1, request)
 
-	err := keeper.SetResolve(ctx, 1, true)
+	err := keeper.SetResolve(ctx, 1, types.Success)
 	require.Nil(t, err)
 
 	actualRequest, err := keeper.GetRequest(ctx, 1)
-	request.IsResolved = true
+	request.ResolveStatus = types.Success
 	require.Nil(t, err)
 	require.Equal(t, request, actualRequest)
 }
@@ -218,7 +218,7 @@ func TestSetResolvedOnInvalidRequest(t *testing.T) {
 	request := newDefaultRequest()
 
 	keeper.SetRequest(ctx, 1, request)
-	err := keeper.SetResolve(ctx, 2, true)
+	err := keeper.SetResolve(ctx, 2, types.Success)
 	require.Equal(t, types.CodeRequestNotFound, err.Code())
 }
 

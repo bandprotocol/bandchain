@@ -52,7 +52,7 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
   let (limit, setLimit) = React.useState(_ => step);
   let scriptOpt = ScriptHook.getInfo(codeHash);
   let (txs, totalCount) =
-    TxHook.withCodehash(~codeHash, ~limit, ~pollInterval=3000, ())
+    TxHook.withCodehash(~codeHash, ~limit, ())
     ->Belt.Option.mapWithDefault(([], 0), ({txs, totalCount}) =>
         (txs |> Belt.List.reverse, totalCount)
       );
@@ -103,7 +103,7 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
           | None => "?"
           }
         }
-        size=Text.Xxl
+        size=Text.Xxxl
         weight=Text.Bold
         nowrap=true
       />

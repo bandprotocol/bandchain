@@ -24,7 +24,7 @@ module Styles = {
   let footerContainer =
     style([
       marginTop(Spacing.xl),
-      maxWidth(`px(1100)),
+      maxWidth(`px(984)),
       marginLeft(`auto),
       marginRight(`auto),
       paddingLeft(Spacing.md),
@@ -101,7 +101,7 @@ let make = () => {
               <Col size=4.>
                 <div className=Styles.vFlex>
                   <Text value="POWERED BY" size=Text.Sm weight=Text.Semibold nowrap=true />
-                  <Text value="Band Protocol" size=Text.Xxl weight=Text.Bold nowrap=true />
+                  <Text value="Band Protocol" size=Text.Xxxl weight=Text.Bold nowrap=true />
                 </div>
               </Col>
             </Row>

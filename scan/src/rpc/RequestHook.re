@@ -50,7 +50,7 @@ module Request = {
   let decode = json => JsonUtils.Decode.(json |> field("result", decodeResult));
 };
 
-let getRequest = (reqID, ~pollInterval=?, ()) => {
-  let json = AxiosHooks.use({j|zoracle/request/$reqID|j}, ~pollInterval?, ());
+let getRequest = reqID => {
+  let json = AxiosHooks.use({j|zoracle/request/$reqID|j});
   json |> Belt.Option.map(_, Request.decode);
 };

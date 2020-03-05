@@ -127,10 +127,7 @@ func (k Keeper) GetRequestCount(ctx sdk.Context) int64 {
 	if bz == nil {
 		return 0
 	}
-	err := k.cdc.UnmarshalBinaryLengthPrefixed(bz, &requestNumber)
-	if err != nil {
-		panic(err)
-	}
+	k.cdc.MustUnmarshalBinaryLengthPrefixed(bz, &requestNumber)
 	return requestNumber
 }
 
@@ -153,10 +150,7 @@ func (k Keeper) GetDataSourceCount(ctx sdk.Context) int64 {
 	if bz == nil {
 		return 0
 	}
-	err := k.cdc.UnmarshalBinaryLengthPrefixed(bz, &dataSourceCount)
-	if err != nil {
-		panic(err)
-	}
+	k.cdc.MustUnmarshalBinaryLengthPrefixed(bz, &dataSourceCount)
 	return dataSourceCount
 }
 
@@ -179,10 +173,7 @@ func (k Keeper) GetOracleScriptCount(ctx sdk.Context) int64 {
 	if bz == nil {
 		return 0
 	}
-	err := k.cdc.UnmarshalBinaryLengthPrefixed(bz, &oracleScriptCount)
-	if err != nil {
-		panic(err)
-	}
+	k.cdc.MustUnmarshalBinaryLengthPrefixed(bz, &oracleScriptCount)
 	return oracleScriptCount
 }
 
