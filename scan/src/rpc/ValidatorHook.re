@@ -102,6 +102,23 @@ module ValidatorIndexReports = {
   type t = {reportCount: int};
 };
 
+module ValidatorIndexProposedBlock = {
+  type t = {
+    height: int,
+    timestamp: MomentRe.Moment.t,
+    blockHash: string,
+    txn: int,
+  };
+};
+
+module ValidatorIndexDelegator = {
+  type t = {
+    delegator: string,
+    sharePercentage: float,
+    amount: int,
+  };
+};
+
 let getGlobalInfo = _ => {
   GlobalInfo.{
     allBondedAmount: 5353500,
@@ -154,4 +171,36 @@ let getValidatorIndexDelegators = _ => {
 
 let getValidatorIndexReports = _ => {
   ValidatorIndexReports.{reportCount: 2};
+};
+
+let getValidatorIndexProposedBlockList = _ => {
+  [
+    ValidatorIndexProposedBlock.{
+      height: 10,
+      timestamp: MomentRe.momentWithUnix(1583465551),
+      blockHash: "bandvaloperwklefk234sdhf2jsadhfkalshdfk13e42",
+      txn: 10,
+    },
+    ValidatorIndexProposedBlock.{
+      height: 11,
+      timestamp: MomentRe.momentWithUnix(1583465599),
+      blockHash: "bandvaloperwklefkasdadjsadhfkalshdfk13e42",
+      txn: 12,
+    },
+  ];
+};
+
+let getValidatorIndexDelegatorList = _ => {
+  [
+    ValidatorIndexDelegator.{
+      delegator: "bandvaloperwklefk234sdhf2jsadhfkalshdfk13e42",
+      sharePercentage: 12.0,
+      amount: 12,
+    },
+    ValidatorIndexDelegator.{
+      delegator: "bandvaloperw123123123312f2jsadhfkalshdfk13e42",
+      sharePercentage: 88.0,
+      amount: 88,
+    },
+  ];
 };
