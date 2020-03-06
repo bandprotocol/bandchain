@@ -73,10 +73,10 @@ $ %s tx zoracle request 1 --calldata 1234abcdef --requested-validator-count 4 --
 			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 
 			int64OracleScriptID, err := strconv.ParseInt(args[0], 10, 64)
-			oracleScriptID := types.OracleScriptID(int64OracleScriptID)
 			if err != nil {
 				return err
 			}
+			oracleScriptID := types.OracleScriptID(int64OracleScriptID)
 
 			calldata, err := cmd.Flags().GetBytesHex(flagCalldata)
 			if err != nil {
@@ -163,10 +163,10 @@ $ %s tx zoracle report 1 1:172.5 2:HELLOWORLD --from mykey
 			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 
 			int64RequestID, err := strconv.ParseInt(args[0], 10, 64)
-			requestID := types.RequestID(int64RequestID)
 			if err != nil {
 				return err
 			}
+			requestID := types.RequestID(int64RequestID)
 
 			var dataset []types.RawDataReport
 			for _, arg := range args[1:] {
@@ -175,10 +175,10 @@ $ %s tx zoracle report 1 1:172.5 2:HELLOWORLD --from mykey
 					return fmt.Errorf("Invalid report format: %s", reportRaw[0])
 				}
 				int64ExternalID, err := strconv.ParseInt(reportRaw[0], 10, 64)
-				externalID := types.ExternalID(int64ExternalID)
 				if err != nil {
 					return err
 				}
+				externalID := types.ExternalID(int64ExternalID)
 
 				dataset = append(dataset, types.NewRawDataReport(externalID, []byte(reportRaw[1])))
 			}
@@ -291,11 +291,11 @@ $ %s tx zoracle edit-data-source 1 --name coingecko-price --script ../price.sh -
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 
-			id, err := strconv.ParseInt(args[0], 10, 64)
+			int64ID, err := strconv.ParseInt(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
-
+			dataSourceID := types.DataSourceID(int64ID)
 			name, err := cmd.Flags().GetString(flagName)
 			if err != nil {
 				return err
@@ -329,7 +329,7 @@ $ %s tx zoracle edit-data-source 1 --name coingecko-price --script ../price.sh -
 			}
 
 			msg := types.NewMsgEditDataSource(
-				types.DataSourceID(id),
+				dataSourceID,
 				owner,
 				name,
 				fee,
@@ -437,7 +437,7 @@ $ %s tx zoracle edit-oracle-script 1 --name eth-price --script ../eth_price.wasm
 			if err != nil {
 				return err
 			}
-
+			oracleScriptID := types.OracleScriptID(id)
 			name, err := cmd.Flags().GetString(flagName)
 			if err != nil {
 				return err
@@ -461,7 +461,7 @@ $ %s tx zoracle edit-oracle-script 1 --name eth-price --script ../eth_price.wasm
 			}
 
 			msg := types.NewMsgEditOracleScript(
-				types.OracleScriptID(id),
+				oracleScriptID,
 				owner,
 				name,
 				scriptCode,
