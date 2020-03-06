@@ -157,11 +157,12 @@ func handleRequestData(c *gin.Context) {
 			for _, attr := range event.Attributes {
 				if string(attr.Key) == "id" {
 					int64RequstID, err := strconv.ParseInt(attr.Value, 10, 64)
-					requestID = zoracle.RequestID(int64RequstID)
+
 					if err != nil {
 						c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 						return
 					}
+					requestID = zoracle.RequestID(int64RequstID)
 					break
 				}
 			}
