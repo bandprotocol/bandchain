@@ -58,11 +58,6 @@ module ValidatorCount = {
     };
 };
 
-let get = (~limit=10, ~page=1, ~status="bonded", ()) => {
-  let json = AxiosHooks.use({j|staking/validators?limit=$limit&page=$page&status=$status|j});
-  json |> Belt.Option.map(_, Validator.decodeValidators);
-};
-
 module ValidatorIndexInfo = {
   type t = {
     isActive: bool,
@@ -117,6 +112,29 @@ module ValidatorIndexDelegator = {
     sharePercentage: float,
     amount: int,
   };
+};
+
+module External = {
+  type t = {
+    externalID: int,
+    externalValue: int,
+  };
+};
+
+module ValidatorIndexReport = {
+  type t = {
+    requestID: int,
+    txHash: string,
+    oracleScriptID: int,
+    oracleScriptName: string,
+    dataSourceIDList: list(int),
+    externalList: list(External.t),
+  };
+};
+
+let getValidator = (~limit=10, ~page=1, ~status="bonded", ()) => {
+  let json = AxiosHooks.use({j|staking/validators?limit=$limit&page=$page&status=$status|j});
+  json |> Belt.Option.map(_, Validator.decodeValidators);
 };
 
 let getGlobalInfo = _ => {
@@ -201,6 +219,29 @@ let getValidatorIndexDelegatorList = _ => {
       delegator: "bandvaloperw123123123312f2jsadhfkalshdfk13e42",
       sharePercentage: 88.0,
       amount: 88,
+    },
+  ];
+};
+
+let getValidatorIndexReportList = _ => {
+  [
+    ValidatorIndexReport.{
+      requestID: 10,
+      txHash: "29NMNMSD3312SF21DF3DS",
+      oracleScriptID: 213,
+      oracleScriptName: "Mean Crypto Price",
+      dataSourceIDList: [1, 2],
+      externalList:
+        External.[{externalID: 1, externalValue: 10}, {externalID: 2, externalValue: 2}],
+    },
+    ValidatorIndexReport.{
+      requestID: 13,
+      txHash: "AKJS123FNK213SL3DF",
+      oracleScriptID: 112,
+      oracleScriptName: "US powerball",
+      dataSourceIDList: [3, 4],
+      externalList:
+        External.[{externalID: 3, externalValue: 110}, {externalID: 4, externalValue: 32}],
     },
   ];
 };
