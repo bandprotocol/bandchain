@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"io"
 	"os"
 
@@ -315,44 +316,33 @@ func NewBandApp(
 	// The initChainer handles translating the genesis.json file into initial state for the network
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
+
+	// Create default an AnteHandler that will be used after checking refundGasPrice
+	defaultAnteHandler := auth.NewAnteHandler(
+		app.accountKeeper,
+		app.supplyKeeper,
+		auth.DefaultSigVerificationGasConsumer,
+	)
 	// The AnteHandler handles signature verification and transaction pre-processing
 	app.SetAnteHandler(
 		func(ctx sdk.Context, tx sdk.Tx, simulate bool) (newCtx sdk.Context, res sdk.Result, abort bool) {
-			totalRefund := sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(0)))
-
-			// all transactions must be of type auth.StdTx
-			stdTx, ok := tx.(auth.StdTx)
-			if !ok {
-				// Set a gas meter with limit 0 as to prevent an infinite gas meter attack
-				// during runTx.
-				newCtx = auth.SetGasMeter(simulate, ctx, 0)
-				return newCtx, sdk.ErrInternal("tx must be StdTx").Result(), true
-			}
-
-			fee := stdTx.Fee
-
-			for _, msg := range tx.GetMsgs() {
-				report, ok := msg.(zoracle.MsgReportData)
-				if ok {
-					// Accumulate totalRefund from all report messages
-					totalRefund = totalRefund.Add(sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(int64(fee.Gas)).Mul(sdk.NewInt(report.RefundGasPrice)))))
+			if stdTx, ok := tx.(auth.StdTx); ok {
+				fee := stdTx.Fee
+				for _, msg := range tx.GetMsgs() {
+					if report, ok := msg.(zoracle.MsgReportData); ok {
+						refundGasPrice := sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(report.RefundGasPrice)))
+						_, refundGasPriceExceedTxGasPrice := fee.GasPrices().SafeSub(sdk.NewDecCoins(refundGasPrice))
+						if refundGasPriceExceedTxGasPrice {
+							return ctx, sdk.ErrInternal(fmt.Sprintf("refundGasPrice(%s) exceed txGasPrice(%s)", refundGasPrice.String(), fee.GasPrices().String())).Result(), true
+						}
+					}
 				}
 			}
 
-			// If totalRefundt exeed totalFee then return error
-			_, totalRefundtExeedTotalFee := fee.Amount.SafeSub(totalRefund)
-			if totalRefundtExeedTotalFee {
-				newCtx = auth.SetGasMeter(simulate, ctx, 0)
-				return newCtx, sdk.ErrInternal("maxRefundAmount(" + totalRefund.String() + ") exceed totalFeeAmount(" + fee.Amount.String() + ")").Result(), true
-			}
-
-			return auth.NewAnteHandler(
-				app.accountKeeper,
-				app.supplyKeeper,
-				auth.DefaultSigVerificationGasConsumer,
-			)(ctx, tx, simulate)
+			return defaultAnteHandler(ctx, tx, simulate)
 		},
 	)
+
 	app.SetEndBlocker(app.EndBlocker)
 
 	if loadLatest {
