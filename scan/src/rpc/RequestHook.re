@@ -28,8 +28,6 @@ module Report = {
       reportedAtTime: json |> at(["tx", "timestamp"], moment),
       values: json |> field("value", list(RawDataReport.decode)),
     };
-
-  let decodeReports = json => JsonUtils.Decode.(json |> field("reports", list(decode)));
 };
 
 module RawDataRequest = {
@@ -48,26 +46,39 @@ module RawDataRequest = {
 };
 
 module Request = {
+  type resolve_status_t =
+    | Open
+    | Success
+    | Failure
+    | Unknown;
+
   type t = {
-    requestID: int,
+    id: int,
     oracleScriptID: int,
     calldata: JsBuffer.t,
     requestedValidators: list(Address.t),
     sufficientValidatorCount: int,
     expirationHeight: int,
-    isResolved: bool,
+    resolveStatus: resolve_status_t,
     requester: Address.t,
     txHash: Hash.t,
     requestedAtHeight: int,
     requestedAtTime: MomentRe.Moment.t,
     rawDataRequests: list(RawDataRequest.t),
     reports: list(Report.t),
-    result: JsBuffer.t,
+    result: option(JsBuffer.t),
   };
 
-  let decodeResult = json =>
+  let getResolveStatus =
+    fun
+    | 0 => Open
+    | 1 => Success
+    | 2 => Failure
+    | _ => Unknown;
+
+  let decode = json =>
     JsonUtils.Decode.{
-      requestID: json |> field("id", intstr),
+      id: json |> field("id", intstr),
       oracleScriptID: json |> field("oracleScriptID", intstr),
       calldata: json |> field("calldata", string) |> JsBuffer.fromBase64,
       requestedValidators:
@@ -78,29 +89,32 @@ module Request = {
            ),
       sufficientValidatorCount: json |> field("sufficientValidatorCount", intstr),
       expirationHeight: json |> field("expirationHeight", intstr),
-      isResolved: json |> field("isResolved", bool),
+      resolveStatus: json |> field("resolveStatus", intstr) |> getResolveStatus,
       requester: json |> at(["requester"], string) |> Address.fromHex,
       txHash: json |> at(["requestTx", "hash"], string) |> Hash.fromHex,
       requestedAtHeight: json |> at(["requestTx", "height"], intstr),
       requestedAtTime: json |> at(["requestTx", "timestamp"], moment),
       rawDataRequests: json |> field("rawDataRequests", list(RawDataRequest.decode)),
-      reports: json |> Report.decodeReports,
-      result: json |> field("result", string) |> JsBuffer.fromBase64,
+      reports: json |> field("reports", list(Report.decode)),
+      result:
+        json
+        |> optional(at(["result", "data"], string))
+        |> Belt.Option.map(_, JsBuffer.fromBase64),
     };
 
-  let decode = json => JsonUtils.Decode.(json |> field("result", decodeResult));
+  let decode = json => JsonUtils.Decode.(json |> field("result", decode));
 };
 
-let getRequest = reqID => {
-  let json = AxiosHooks.use({j|zoracle/request/$reqID|j});
+let get = id => {
+  let json = AxiosHooks.use({j|zoracle/request/$id|j});
   json |> Belt.Option.map(_, Request.decode);
 };
 
 // TODO: mock for now
-let getRequestList = (~page=1, ~limit=10, ()) => {
+let getList = (~page=1, ~limit=10, ()) => {
   Request.[
     {
-      requestID: 1,
+      id: 1,
       oracleScriptID: 1,
       calldata: "AAAAAAAAV0M=" |> JsBuffer.fromBase64,
       requestedValidators: [
@@ -109,14 +123,14 @@ let getRequestList = (~page=1, ~limit=10, ()) => {
       ],
       sufficientValidatorCount: 2,
       expirationHeight: 3000,
-      isResolved: true,
+      resolveStatus: Success,
       requester: "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
       txHash: "AC006D7136B0041DA4568A4CA5B7C1F8E8E0B4A74F11213B99EC4956CC8A247C" |> Hash.fromHex,
       requestedAtHeight: 40000,
       requestedAtTime: MomentRe.momentNow(),
       rawDataRequests: [],
       reports: [],
-      result: "AAAAAAAAV0M=" |> JsBuffer.fromBase64,
+      result: Some("AAAAAAAAV0M=" |> JsBuffer.fromBase64),
     },
   ];
 };
