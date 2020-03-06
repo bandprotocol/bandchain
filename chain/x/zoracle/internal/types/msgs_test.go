@@ -1,7 +1,6 @@
 package types
 
 import (
-	"fmt"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -397,7 +396,6 @@ func TestMsgCreateOracleScriptGetSignBytes(t *testing.T) {
 	owner := sdk.AccAddress([]byte("owner"))
 	sender := sdk.AccAddress([]byte("sender"))
 	msg := NewMsgCreateOracleScript(owner, "oracle_script_1", "description", []byte("code"), sender)
-	fmt.Println(msg)
 	res := msg.GetSignBytes()
 
 	expected := `{"type":"zoracle/CreateOracleScript","value":{"code":"Y29kZQ==","description":"description","name":"oracle_script_1","owner":"band1damkuetjcw3c0d","sender":"band1wdjkuer9wgvz7c4y"}}`
