@@ -32,7 +32,7 @@ func (u64a U64Array) String() string {
 }
 
 type DataSourceQuerierInfo struct {
-	ID         int64          `json:"id"`
+	ID         DataSourceID   `json:"id"`
 	Owner      sdk.AccAddress `json:"owner"`
 	Name       string         `json:"name"`
 	Fee        sdk.Coins      `json:"fee"`
@@ -40,7 +40,7 @@ type DataSourceQuerierInfo struct {
 }
 
 func NewDataSourceQuerierInfo(
-	id int64,
+	id DataSourceID,
 	owner sdk.AccAddress,
 	name string,
 	fee sdk.Coins,

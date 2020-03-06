@@ -161,7 +161,7 @@ func TestRequestSuccess(t *testing.T) {
 	require.True(t, got.IsOK(), "expected request to be ok, got %v", got)
 
 	// Check global request count
-	require.Equal(t, types.RequestID(1), keeper.GetRequestCount(ctx))
+	require.Equal(t, int64(1), keeper.GetRequestCount(ctx))
 	actualRequest, err := keeper.GetRequest(ctx, 1)
 	require.Nil(t, err)
 	expectRequest := types.NewRequest(1, calldata,

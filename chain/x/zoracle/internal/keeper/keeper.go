@@ -120,8 +120,8 @@ func (keeper Keeper) GetParams(ctx sdk.Context) types.Params {
 }
 
 // GetRequestCount returns the current number of all requests ever exist.
-func (k Keeper) GetRequestCount(ctx sdk.Context) types.RequestID {
-	var requestNumber types.RequestID
+func (k Keeper) GetRequestCount(ctx sdk.Context) int64 {
+	var requestNumber int64
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(types.RequestsCountStoreKey)
 	if bz == nil {
@@ -156,13 +156,13 @@ func (k Keeper) GetDataSourceCount(ctx sdk.Context) int64 {
 
 // GetNextDataSourceID increments and returns the current number of data source.
 // If the global data source count is not set, it initializes the value and returns 1.
-func (k Keeper) GetNextDataSourceID(ctx sdk.Context) int64 {
+func (k Keeper) GetNextDataSourceID(ctx sdk.Context) types.DataSourceID {
 	dataSourceCount := k.GetDataSourceCount(ctx)
 	store := ctx.KVStore(k.storeKey)
 
 	bz := k.cdc.MustMarshalBinaryLengthPrefixed(dataSourceCount + 1)
 	store.Set(types.DataSourceCountStoreKey, bz)
-	return dataSourceCount + 1
+	return types.DataSourceID(dataSourceCount + 1)
 }
 
 // GetOracleScriptCount returns the current number of all oracle scripts ever exist.

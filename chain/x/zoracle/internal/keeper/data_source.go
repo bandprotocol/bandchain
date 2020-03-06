@@ -26,7 +26,7 @@ func (k Keeper) AddDataSource(ctx sdk.Context, owner sdk.AccAddress, name string
 	}
 
 	newDataSource := types.NewDataSource(owner, name, fee, executable)
-	k.SetDataSource(ctx, types.DataSourceID(newDataSourceID), newDataSource)
+	k.SetDataSource(ctx, newDataSourceID, newDataSource)
 	return nil
 }
 

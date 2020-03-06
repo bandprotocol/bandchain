@@ -93,12 +93,12 @@ func queryDataSourceByID(ctx sdk.Context, path []string, req abci.RequestQuery, 
 	if len(path) == 0 {
 		return nil, sdk.ErrInternal("must specify the data source id")
 	}
-	id, err := strconv.ParseInt(path[0], 10, 64)
+	intID, err := strconv.ParseInt(path[0], 10, 64)
 	if err != nil {
 		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for data source id %s", err.Error()))
 	}
-
-	dataSource, sdkErr := keeper.GetDataSource(ctx, types.DataSourceID(id))
+	id := types.DataSourceID(intID)
+	dataSource, sdkErr := keeper.GetDataSource(ctx, id)
 	if sdkErr != nil {
 		return nil, sdkErr
 	}
@@ -116,10 +116,11 @@ func queryDataSources(ctx sdk.Context, path []string, req abci.RequestQuery, kee
 	if len(path) != 2 {
 		return nil, sdk.ErrInternal("must specify the data source start_id and number of data sources")
 	}
-	startID, err := strconv.ParseInt(path[0], 10, 64)
+	intStartID, err := strconv.ParseInt(path[0], 10, 64)
 	if err != nil {
 		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for data source start id %s", err.Error()))
 	}
+	startID := types.DataSourceID(intStartID)
 
 	numberOfDataSources, err := strconv.ParseInt(path[1], 10, 64)
 	if err != nil {
@@ -131,7 +132,7 @@ func queryDataSources(ctx sdk.Context, path []string, req abci.RequestQuery, kee
 
 	dataSources := []types.DataSourceQuerierInfo{}
 	allDataSourcesCount := keeper.GetDataSourceCount(ctx)
-	for id := startID; id <= allDataSourcesCount && id < startID+numberOfDataSources; id++ {
+	for id := startID; id <= types.DataSourceID(allDataSourcesCount) && id < startID+types.DataSourceID(numberOfDataSources); id++ {
 		dataSource, sdkErr := keeper.GetDataSource(ctx, types.DataSourceID(id))
 		if sdkErr != nil {
 			return nil, sdkErr
@@ -247,11 +248,11 @@ func queryRequests(
 
 	requests := make([]types.RequestQuerierInfo, 0)
 	allRequestsCount := keeper.GetRequestCount(ctx)
-	limit := types.RequestID(startID + numberOfRequests - 1)
+	limit := startID + numberOfRequests - 1
 	if limit > allRequestsCount {
 		limit = allRequestsCount
 	}
-	for idx := types.RequestID(startID); idx <= limit; idx++ {
+	for idx := types.RequestID(startID); idx <= types.RequestID(limit); idx++ {
 		request, err := buildRequestQuerierInfo(ctx, keeper, types.RequestID(idx))
 		if err == nil {
 			requests = append(requests, request)
