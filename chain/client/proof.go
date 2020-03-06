@@ -400,11 +400,12 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		intRequestID, err := strconv.ParseUint(vars[requestIDTag], 10, 64)
-		requestID := zoracle.RequestID(intRequestID)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
+		requestID := zoracle.RequestID(intRequestID)
+
 
 		rc, err := cliCtx.Client.Commit(nil)
 		if err != nil {
