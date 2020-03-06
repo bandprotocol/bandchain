@@ -621,7 +621,7 @@ func TestEndBlockInsufficientExecutionConsumeEndBlockGas(t *testing.T) {
 	sender := sdk.AccAddress([]byte("sender"))
 
 	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
-	scriptID := int64(1)
+	scriptID := types.OracleScriptID(1)
 	keeper.SetOracleScript(ctx, scriptID, script)
 
 	pubStr := []string{
@@ -635,10 +635,10 @@ func TestEndBlockInsufficientExecutionConsumeEndBlockGas(t *testing.T) {
 	dataSource := keep.GetTestDataSource()
 	keeper.SetDataSource(ctx, 1, dataSource)
 
-	pendingList := []int64{}
+	pendingList := []types.RequestID{}
 	executeGasList := []uint64{2500, 50, 3000}
 
-	for i := int64(1); i <= 3; i++ {
+	for i := types.RequestID(1); i <= types.RequestID(3); i++ {
 		handleMsgRequestData(
 			ctx, keeper,
 			types.NewMsgRequestData(scriptID, calldata, 2, 2, 100, 2000, executeGasList[i-1], sender),
@@ -654,7 +654,7 @@ func TestEndBlockInsufficientExecutionConsumeEndBlockGas(t *testing.T) {
 
 	got := handleEndBlock(ctx, keeper)
 	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
-	require.Equal(t, []int64{}, keeper.GetPendingResolveList(ctx))
+	require.Equal(t, []types.RequestID{}, keeper.GetPendingResolveList(ctx))
 
 	_, err := keeper.GetResult(ctx, 1, scriptID, calldata)
 	require.Nil(t, err)
