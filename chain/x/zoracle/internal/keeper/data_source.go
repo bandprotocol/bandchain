@@ -45,7 +45,10 @@ func (k Keeper) EditDataSource(ctx sdk.Context, dataSourceID int64, owner sdk.Ac
 		// TODO: fix error later
 		return types.ErrRequestNotFound(types.DefaultCodespace)
 	}
-
+	if len(name) > int(k.MaxNameLength(ctx)) {
+		// TODO: fix error later
+		return types.ErrRequestNotFound(types.DefaultCodespace)
+	}
 	if len(description) > int(k.MaxDescriptionLength(ctx)) {
 		// TODO: fix error later
 		return types.ErrRequestNotFound(types.DefaultCodespace)

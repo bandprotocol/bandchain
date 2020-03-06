@@ -205,7 +205,7 @@ func GetCmdCreateDataSource(cdc *codec.Codec) *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Create a new data source that will be used by oracle scripts.
 Example:
-$ %s tx zoracle create-data-source --name coingecko-price --description the-script-that-queries-crypto-price=from-cryptocompare --script ../price.sh --call-fee 100uband --owner band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9 --from mykey
+$ %s tx zoracle create-data-source --name coingecko-price --description "The script that queries crypto price from cryptocompare" --script ../price.sh --call-fee 100uband --owner band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9 --from mykey
 `,
 				version.ClientName,
 			),
@@ -287,7 +287,7 @@ func GetCmdEditDataSource(cdc *codec.Codec) *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Edit an existing data source. The caller must be the current data source's owner.
 Example:
-$ %s tx zoracle edit-data-source 1 --name coingecko-price --description cthe-script-that-queries-crypto-price=from-cryptocompare --script ../price.sh --call-fee 100uband --owner band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9 --from mykey
+$ %s tx zoracle edit-data-source 1 --name coingecko-price --description The script that queries crypto price from cryptocompare --script ../price.sh --call-fee 100uband --owner band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9 --from mykey
 `,
 				version.ClientName,
 			),
@@ -375,7 +375,7 @@ func GetCmdCreateOracleScript(cdc *codec.Codec) *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Create a new oracle script that will be used by data requests.
 Example:
-$ %s tx zoracle create-oracle-script --name eth-price --description description --script ../eth_price.wasm --owner band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9 --from mykey
+$ %s tx zoracle create-oracle-script --name eth-price --description "Oracle script for getting Ethereum price" --script ../eth_price.wasm --owner band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9 --from mykey
 `,
 				version.ClientName,
 			),
@@ -444,7 +444,7 @@ func GetCmdEditOracleScript(cdc *codec.Codec) *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Edit an existing oracle script that will be used by data requests.
 Example:
-$ %s tx zoracle edit-oracle-script 1 --name eth-price --description description --script ../eth_price.wasm --owner band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9 --from mykey
+$ %s tx zoracle edit-oracle-script 1 --name eth-price --description "Oracle script for getting Ethereum price" --script ../eth_price.wasm --owner band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9 --from mykey
 `,
 				version.ClientName,
 			),

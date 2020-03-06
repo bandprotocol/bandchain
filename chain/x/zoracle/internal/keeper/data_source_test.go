@@ -121,7 +121,7 @@ func TestAddTooLongDataSourceDescription(t *testing.T) {
 	_, err := keeper.GetDataSource(ctx, 1)
 	require.NotNil(t, err)
 
-	// Set MaxNameLength to 5
+	// Set MaxDescriptionLength to 5
 	keeper.SetMaxDescriptionLength(ctx, 5)
 
 	owner := sdk.AccAddress([]byte("owner"))
@@ -131,5 +131,41 @@ func TestAddTooLongDataSourceDescription(t *testing.T) {
 	executable := []byte("executable")
 
 	err = keeper.AddDataSource(ctx, owner, name, tooLongDescription, fee, executable)
+	require.NotNil(t, err)
+}
+
+func TestEditTooLongDataSourceName(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	//SetMaxNameLength to 20
+	keeper.SetMaxNameLength(ctx, 20)
+	err := mockDataSource(ctx, keeper)
+	require.Nil(t, err)
+
+	newOwner := sdk.AccAddress([]byte("owner2"))
+	newTooLongName := "Toooooooooooo Longggggggggggg"
+	newDescription := "new_description"
+	newFee := sdk.NewCoins(sdk.NewInt64Coin("uband", 1))
+	newExecutable := []byte("executable")
+
+	err = keeper.EditDataSource(ctx, 1, newOwner, newTooLongName, newDescription, newFee, newExecutable)
+	require.NotNil(t, err)
+}
+
+func TestEditTooLongDataSourceDescription(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	//Set MaxDescriptionLength to 20
+	keeper.SetMaxDescriptionLength(ctx, 20)
+	err := mockDataSource(ctx, keeper)
+	require.Nil(t, err)
+
+	newOwner := sdk.AccAddress([]byte("owner2"))
+	newName := "data_source"
+	newTooLongDescription := "Tooooooooo Loooooooooooooong description"
+	newFee := sdk.NewCoins(sdk.NewInt64Coin("uband", 1))
+	newExecutable := []byte("executable")
+
+	err = keeper.EditDataSource(ctx, 1, newOwner, newName, newTooLongDescription, newFee, newExecutable)
 	require.NotNil(t, err)
 }

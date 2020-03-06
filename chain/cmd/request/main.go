@@ -96,7 +96,7 @@ func main() {
 				panic(err)
 			}
 			fmt.Println(tx.SendTransaction(
-				[]sdk.Msg{zoracle.NewMsgCreateOracleScript(tx.Sender(), "Crypto price script", "description", oracleBytes, tx.Sender())},
+				[]sdk.Msg{zoracle.NewMsgCreateOracleScript(tx.Sender(), "Crypto price script", "Oracle script for getting an average crypto price from many sources.", oracleBytes, tx.Sender())},
 				0, 3000000, "", "", "",
 				flags.BroadcastBlock,
 			))
@@ -140,7 +140,7 @@ func main() {
 			}
 
 			fmt.Println(tx.SendTransaction(
-				[]sdk.Msg{zoracle.NewMsgCreateOracleScript(tx.Sender(), "Silly script", "description", bytes, tx.Sender())},
+				[]sdk.Msg{zoracle.NewMsgCreateOracleScript(tx.Sender(), "Silly script", "Test oracle script", bytes, tx.Sender())},
 				0, 3000000, "", "", "",
 				flags.BroadcastBlock,
 			))
@@ -179,7 +179,7 @@ func main() {
 
 			for i := uint64(0); i < round; i++ {
 				fmt.Println(tx.SendTransaction(
-					[]sdk.Msg{zoracle.NewMsgCreateOracleScript(tx.Sender(), fmt.Sprintf("Silly script %d", i),"description", bytes, tx.Sender())},
+					[]sdk.Msg{zoracle.NewMsgCreateOracleScript(tx.Sender(), fmt.Sprintf("Silly script %d", i),"Test oracle script", bytes, tx.Sender())},
 					0, 1000000, "", "", "",
 					flags.BroadcastBlock,
 				))
