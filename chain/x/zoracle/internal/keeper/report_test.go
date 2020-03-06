@@ -200,9 +200,10 @@ func TestAddNewRawDataRequestCallDataSizeTooBig(t *testing.T) {
 
 	owner := sdk.AccAddress([]byte("owner"))
 	name := "data_source"
+	description := "description"
 	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
 	executable := []byte("executable")
-	keeper.AddDataSource(ctx, owner, name, fee, executable)
+	keeper.AddDataSource(ctx, owner, name, description, fee, executable)
 
 	// Set MaxCalldataSize to 0
 	// AddNewRawDataRequest should fail because size of "calldata" is > 0
