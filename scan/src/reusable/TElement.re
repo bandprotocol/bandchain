@@ -159,7 +159,10 @@ let renderProposer = (moniker, proposer) => {
 
 let msgIcon =
   fun
-  | TxHook.Msg.Store(_) => Images.newScript
+  | TxHook.Msg.CreateDataSource(_) => Images.newScript
+  | EditDataSource(_) => Images.newScript
+  | CreateOracleScript(_) => Images.newScript
+  | EditOracleScript(_) => Images.newScript
   | Send(_) => Images.sendCoin
   | Request(_) => Images.dataRequest
   | Report(_) => Images.report
