@@ -10,12 +10,12 @@ import (
 func mockDataSource(ctx sdk.Context, keeper Keeper) sdk.Error {
 	owner := sdk.AccAddress([]byte("owner"))
 	name := "data_source"
-	descriotion := "descriotion"
+	description := "description"
 	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
 
 	// Size of "executable" is  10 bytes
 	executable := []byte("executable")
-	return keeper.AddDataSource(ctx, owner, name, descriotion, fee, executable)
+	return keeper.AddDataSource(ctx, owner, name, description, fee, executable)
 }
 
 func TestGetterSetterDataSource(t *testing.T) {
@@ -111,6 +111,25 @@ func TestAddTooLongDataSourceName(t *testing.T) {
 	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
 	executable := []byte("executable")
 
-	err = keeper.AddDataSource(ctx, owner, description, tooLongName, fee, executable)
+	err = keeper.AddDataSource(ctx, owner, tooLongName, description, fee, executable)
+	require.NotNil(t, err)
+}
+
+func TestAddTooLongDataSourceDescription(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	_, err := keeper.GetDataSource(ctx, 1)
+	require.NotNil(t, err)
+
+	// Set MaxNameLength to 5
+	keeper.SetMaxDescriptionLength(ctx, 5)
+
+	owner := sdk.AccAddress([]byte("owner"))
+	name := "data_source"
+	tooLongDescription := "description"
+	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
+	executable := []byte("executable")
+
+	err = keeper.AddDataSource(ctx, owner, name, tooLongDescription, fee, executable)
 	require.NotNil(t, err)
 }

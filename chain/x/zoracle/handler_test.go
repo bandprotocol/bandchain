@@ -64,6 +64,7 @@ func TestEditDataSourceSuccess(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, newOwner, dataSource.Owner)
 	require.Equal(t, newName, dataSource.Name)
+	require.Equal(t, newDescription, dataSource.Description)
 	require.Equal(t, newFee, dataSource.Fee)
 	require.Equal(t, newExecutable, dataSource.Executable)
 }

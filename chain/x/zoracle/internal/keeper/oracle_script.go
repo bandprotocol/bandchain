@@ -46,6 +46,11 @@ func (k Keeper) EditOracleScript(ctx sdk.Context, oracleScriptID int64, owner sd
 		return types.ErrRequestNotFound(types.DefaultCodespace)
 	}
 
+	if len(description) > int(k.MaxDescriptionLength(ctx)) {
+		// TODO: fix error later
+		return types.ErrRequestNotFound(types.DefaultCodespace)
+	}
+
 	updatedOracleScript := types.NewOracleScript(owner, name, description, code)
 	k.SetOracleScript(ctx, oracleScriptID, updatedOracleScript)
 	return nil

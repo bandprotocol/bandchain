@@ -61,7 +61,7 @@ func main() {
 			}
 			fmt.Println(tx.SendTransaction(
 				[]sdk.Msg{zoracle.NewMsgCreateDataSource(
-					tx.Sender(), "Coingecko script", "coin market ranking chart", sdk.Coins{}, coingecko, tx.Sender(),
+					tx.Sender(), "Coingecko script", "The Script that queries crypto price from https://cryptocompare.com", sdk.Coins{}, coingecko, tx.Sender(),
 				)},
 				0, 1000000, "", "", "",
 				flags.BroadcastBlock,
@@ -73,7 +73,7 @@ func main() {
 			}
 			fmt.Println(tx.SendTransaction(
 				[]sdk.Msg{zoracle.NewMsgCreateDataSource(
-					tx.Sender(), "Crypto compare script", "compare script", sdk.Coins{}, cryptoCompare, tx.Sender(),
+					tx.Sender(), "Crypto compare script", "The Script that queries crypto price from https://cryptocompare.com", sdk.Coins{}, cryptoCompare, tx.Sender(),
 				)},
 				0, 1000000, "", "", "",
 				flags.BroadcastBlock,
@@ -85,7 +85,7 @@ func main() {
 			}
 			fmt.Println(tx.SendTransaction(
 				[]sdk.Msg{zoracle.NewMsgCreateDataSource(
-					tx.Sender(), "Binance script", "Binance script", sdk.Coins{}, binance, tx.Sender(),
+					tx.Sender(), "Binance script", "The Script that queries crypto price from https://www.binance.com/en", sdk.Coins{}, binance, tx.Sender(),
 				)},
 				0, 1000000, "", "", "",
 				flags.BroadcastBlock,

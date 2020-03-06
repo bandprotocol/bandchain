@@ -267,6 +267,9 @@ func (msg MsgEditDataSource) ValidateBasic() sdk.Error {
 	if msg.Name == "" {
 		return ErrInvalidBasicMsg("MsgEditDataSource: Name must not be empty.")
 	}
+	if msg.Description == "" {
+		return ErrInvalidBasicMsg("MsgEditDataSource: Description must not be empty.")
+	}
 	if !msg.Fee.IsValid() {
 		return ErrInvalidBasicMsg("MsgEditDataSource: Fee must be valid (%s)", msg.Fee.String())
 	}

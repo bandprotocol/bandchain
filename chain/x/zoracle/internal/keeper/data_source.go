@@ -25,13 +25,17 @@ func (k Keeper) AddDataSource(ctx sdk.Context, owner sdk.AccAddress, name string
 		return types.ErrRequestNotFound(types.DefaultCodespace)
 	}
 
+	if len(description) > int(k.MaxDescriptionLength(ctx)) {
+		return types.ErrRequestNotFound(types.DefaultCodespace)
+	}
+
 	newDataSource := types.NewDataSource(owner, name, description, fee, executable)
 	k.SetDataSource(ctx, newDataSourceID, newDataSource)
 	return nil
 }
 
 // EditDataSource edits the given data source by given data source id to the storage.
-func (k Keeper) EditDataSource(ctx sdk.Context, dataSourceID int64, owner sdk.AccAddress, name string, descriotion string, fee sdk.Coins, executable []byte) sdk.Error {
+func (k Keeper) EditDataSource(ctx sdk.Context, dataSourceID int64, owner sdk.AccAddress, name string, description string, fee sdk.Coins, executable []byte) sdk.Error {
 	if !k.CheckDataSourceExists(ctx, dataSourceID) {
 		// TODO: fix error later
 		return types.ErrRequestNotFound(types.DefaultCodespace)
@@ -42,7 +46,12 @@ func (k Keeper) EditDataSource(ctx sdk.Context, dataSourceID int64, owner sdk.Ac
 		return types.ErrRequestNotFound(types.DefaultCodespace)
 	}
 
-	updatedDataSource := types.NewDataSource(owner, name, descriotion, fee, executable)
+	if len(description) > int(k.MaxDescriptionLength(ctx)) {
+		// TODO: fix error later
+		return types.ErrRequestNotFound(types.DefaultCodespace)
+	}
+
+	updatedDataSource := types.NewDataSource(owner, name, description, fee, executable)
 	k.SetDataSource(ctx, dataSourceID, updatedDataSource)
 	return nil
 }

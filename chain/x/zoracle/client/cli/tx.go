@@ -205,7 +205,7 @@ func GetCmdCreateDataSource(cdc *codec.Codec) *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Create a new data source that will be used by oracle scripts.
 Example:
-$ %s tx zoracle create-data-source --name coingecko-price --description coin-market-ranking-chart --script ../price.sh --call-fee 100uband --owner band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9 --from mykey
+$ %s tx zoracle create-data-source --name coingecko-price --description the-script-that-queries-crypto-price=from-cryptocompare --script ../price.sh --call-fee 100uband --owner band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9 --from mykey
 `,
 				version.ClientName,
 			),
@@ -270,7 +270,7 @@ $ %s tx zoracle create-data-source --name coingecko-price --description coin-mar
 		},
 	}
 	cmd.Flags().String(flagName, "", "Name of this data source")
-	cmd.Flags().String(flagDescription, "", "Description")
+	cmd.Flags().String(flagDescription, "", "Description of this data source")
 	cmd.Flags().String(flagScript, "", "Path to this data source script")
 	cmd.Flags().String(flagCallFee, "", "Fee for querying this data source")
 	cmd.Flags().String(flagOwner, "", "Owner of this data source")
@@ -287,7 +287,7 @@ func GetCmdEditDataSource(cdc *codec.Codec) *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Edit an existing data source. The caller must be the current data source's owner.
 Example:
-$ %s tx zoracle edit-data-source 1 --name coingecko-price --description coin-market-ranking-chart --script ../price.sh --call-fee 100uband --owner band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9 --from mykey
+$ %s tx zoracle edit-data-source 1 --name coingecko-price --description cthe-script-that-queries-crypto-price=from-cryptocompare --script ../price.sh --call-fee 100uband --owner band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9 --from mykey
 `,
 				version.ClientName,
 			),
@@ -358,7 +358,7 @@ $ %s tx zoracle edit-data-source 1 --name coingecko-price --description coin-mar
 		},
 	}
 	cmd.Flags().String(flagName, "", "Name of this data source")
-	cmd.Flags().String(flagDescription, "", "Description")
+	cmd.Flags().String(flagDescription, "", "Description of this data source")
 	cmd.Flags().String(flagScript, "", "Path to this data source script")
 	cmd.Flags().String(flagCallFee, "", "Fee for querying this data source")
 	cmd.Flags().String(flagOwner, "", "Owner of this data source")

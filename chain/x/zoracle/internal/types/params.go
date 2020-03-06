@@ -70,7 +70,7 @@ type Params struct {
 	MaxResultSize                int64  `json:"max_result_size" yaml:"max_result_size"`
 	EndBlockExecuteGasLimit      uint64 `json:"end_block_execute_gas_limit" yaml:"end_block_execute_gas_limit"`
 	MaxNameLength                int64  `json:"max_name_length" yaml:"max_name_length"`
-	MaxDescriptionLength         int64  `json:"max_description_length"`
+	MaxDescriptionLength         int64  `json:"max_description_length" yaml:"max_description_length"`
 }
 
 // NewParams creates a new Params object.

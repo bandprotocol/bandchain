@@ -221,6 +221,9 @@ func TestMsgCreateDataSourceValidation(t *testing.T) {
 		{
 			false, NewMsgCreateDataSource(owner, name, description, feeUband10, executable, nil),
 		},
+		{
+			false, NewMsgCreateDataSource(owner, name, "", feeUband10, executable, nil),
+		},
 	}
 
 	for _, tc := range cases {
@@ -302,6 +305,9 @@ func TestMsgEditDataSourceValidation(t *testing.T) {
 		},
 		{
 			false, NewMsgEditDataSource(1, owner, name, description, feeUband10, executable, nil),
+		},
+		{
+			false, NewMsgEditDataSource(1, owner, name, "", feeUband10, executable, sender),
 		},
 	}
 

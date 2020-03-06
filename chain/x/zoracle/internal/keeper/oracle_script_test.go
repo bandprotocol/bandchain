@@ -123,3 +123,20 @@ func TestAddTooLongOracleScriptDescription(t *testing.T) {
 	err = keeper.AddOracleScript(ctx, owner, name, tooLongDescription, code)
 	require.NotNil(t, err)
 }
+
+func TestEditOracleScriptTooLongDescription(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	// Set MaxOracleScriptCodeSize to 20
+	keeper.SetMaxDescriptionLength(ctx, 11)
+	err := mockOracleScript(ctx, keeper)
+	require.Nil(t, err)
+
+	newOwner := sdk.AccAddress([]byte("owner2"))
+	newName := "oracle_script_2"
+	tooLongDescription := "too long description"
+	newCode := []byte("code")
+
+	err = keeper.EditOracleScript(ctx, 1, newOwner, newName, tooLongDescription, newCode)
+	require.NotNil(t, err)
+}
