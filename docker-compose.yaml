@@ -30,15 +30,12 @@ services:
 
   single-oracle:
     image: band-validator:latest
-    environment:
-      - PRIVATE_KEY=06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b
-      - NODE_URI=tcp://172.18.0.15:26657
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       bandchain:
     restart: always
-    command: bandoracled
+    command: bandoracled --node tcp://172.18.0.15:26657 --priv-key 06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b
 
   multi-validator:
     image: tianon/true
@@ -71,15 +68,12 @@ services:
 
   oracle1:
     image: band-validator:latest
-    environment:
-      - PRIVATE_KEY=06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b
-      - NODE_URI=tcp://172.18.0.11:26657
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       bandchain:
     restart: always
-    command: bandoracled
+    command: bandoracled --node tcp://172.18.0.11:26657 --priv-key 06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b
 
   multi-validator2-node:
     image: band-validator:latest
@@ -90,15 +84,12 @@ services:
 
   oracle2:
     image: band-validator:latest
-    environment:
-      - PRIVATE_KEY=6abc8ab25298fb4af6adcb9d5831db0ad7c959388f0d947abd2b4c4457ef52ec
-      - NODE_URI=tcp://172.18.0.12:26657
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       bandchain:
     restart: always
-    command: bandoracled
+    command: bandoracled --node tcp://172.18.0.12:26657 --priv-key 6abc8ab25298fb4af6adcb9d5831db0ad7c959388f0d947abd2b4c4457ef52ec
 
   multi-validator3-node:
     image: band-validator:latest
@@ -109,15 +100,12 @@ services:
 
   oracle3:
     image: band-validator:latest
-    environment:
-      - PRIVATE_KEY=894fc1c7e7666c722ae5f30ba4cb18c546e08f0b2634718c27b80b9d39416dbe
-      - NODE_URI=tcp://172.18.0.13:26657
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       bandchain:
     restart: always
-    command: bandoracled
+    command: bandoracled --node tcp://172.18.0.13:26657 --priv-key 894fc1c7e7666c722ae5f30ba4cb18c546e08f0b2634718c27b80b9d39416dbe
 
   multi-validator4-node:
     image: band-validator:latest
@@ -128,15 +116,12 @@ services:
 
   oracle4:
     image: band-validator:latest
-    environment:
-      - PRIVATE_KEY=947f1715251d43de45232fc072e3ca4d823e876cf9f4ef74ad9a5f4ef440937e
-      - NODE_URI=tcp://172.18.0.14:26657
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       bandchain:
     restart: always
-    command: bandoracled
+    command: bandoracled --node tcp://172.18.0.14:26657 --priv-key 947f1715251d43de45232fc072e3ca4d823e876cf9f4ef74ad9a5f4ef440937e
 
   query-node:
     image: band-validator:latest

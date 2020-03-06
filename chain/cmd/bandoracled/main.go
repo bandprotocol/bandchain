@@ -11,6 +11,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 
 	"github.com/bandprotocol/d3n/chain/bandlib"
@@ -19,22 +21,13 @@ import (
 )
 
 const (
-	limitTimeOut = 1 * time.Minute
+	flagMaxQueryDuration = "max-query-duration"
+	flagPrivKey          = "priv-key"
 )
 
 var (
 	bandClient bandlib.BandStatefulClient
-	nodeURI    = getEnv("NODE_URI", "http://localhost:26657")
-	privS      = getEnv("PRIVATE_KEY", "06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b")
 )
-
-func getEnv(key, defaultValue string) string {
-	tmp := os.Getenv(key)
-	if tmp == "" {
-		return defaultValue
-	}
-	return tmp
-}
 
 func getLatestRequestID() (int64, error) {
 	cliCtx := bandClient.GetContext()
@@ -51,32 +44,69 @@ func getLatestRequestID() (int64, error) {
 }
 
 func main() {
-	privB, _ := hex.DecodeString(privS)
-	var priv secp256k1.PrivKeySecp256k1
-	copy(priv[:], privB)
+	cmd := &cobra.Command{
+		Use:   "bandoracled",
+		Short: "Band oracle Daemon",
+		Long: strings.TrimSpace(
+			`Band oracle to listen new requests from chain and reports data for execution.
+Example:
+$ bandoracled --node tcp://localhost:26657 --priv-key 06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b -d 60
+`,
+		),
+		Args: cobra.NoArgs,
 
-	var err error
-	bandClient, err = bandlib.NewBandStatefulClient(nodeURI, priv)
-	if err != nil {
-		panic(err)
+		RunE: func(cmd *cobra.Command, args []string) error {
+			var err error
+
+			privB, err := hex.DecodeString(viper.GetString(flagPrivKey))
+			if err != nil {
+				return err
+			}
+			var priv secp256k1.PrivKeySecp256k1
+			copy(priv[:], privB)
+
+			bandClient, err = bandlib.NewBandStatefulClient(
+				viper.GetString(flags.FlagNode),
+				priv,
+			)
+			if err != nil {
+				return err
+			}
+
+			currentRequestID, err := getLatestRequestID()
+			if err != nil {
+				return err
+			}
+
+			// Setup poll loop
+			for {
+				newRequestID, err := getLatestRequestID()
+				if err != nil {
+					log.Println("Cannot get request number error: ", err.Error())
+				}
+				for currentRequestID < newRequestID {
+					currentRequestID++
+					go handleRequestAndLog(currentRequestID)
+				}
+				time.Sleep(1 * time.Second)
+			}
+		},
 	}
 
-	currentRequestID, err := getLatestRequestID()
+	cmd.Flags().String(flags.FlagNode, "tcp://localhost:26657", "<host>:<port> to Tendermint RPC interface for this chain")
+	viper.BindPFlag(flags.FlagNode, cmd.Flags().Lookup(flags.FlagNode))
+	cmd.Flags().IntP(flagMaxQueryDuration, "d", 60, "Max duration to query data")
+	viper.BindPFlag(flagMaxQueryDuration, cmd.Flags().Lookup(flagMaxQueryDuration))
+	cmd.Flags().String(
+		flagPrivKey,
+		"06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b",
+		"Private key of validator to send report transaction",
+	)
+	viper.BindPFlag(flagPrivKey, cmd.Flags().Lookup(flagPrivKey))
+	err := cmd.Execute()
 	if err != nil {
-		panic(err)
-	}
-
-	// Setup poll loop
-	for {
-		newRequestID, err := getLatestRequestID()
-		if err != nil {
-			log.Println("Cannot get request number error: ", err.Error())
-		}
-		for currentRequestID < newRequestID {
-			currentRequestID++
-			go handleRequestAndLog(currentRequestID)
-		}
-		time.Sleep(1 * time.Second)
+		fmt.Printf("Failed executing CLI command: %s, exiting...\n", err)
+		os.Exit(1)
 	}
 }
 
@@ -122,7 +152,11 @@ func handleRequest(requestID int64) (sdk.TxResponse, error) {
 				return
 			}
 
-			result, err := byteexec.RunOnDocker(dataSource.Executable, limitTimeOut, string(calldata))
+			result, err := byteexec.RunOnDocker(
+				dataSource.Executable,
+				time.Duration(viper.GetInt(flagMaxQueryDuration))*time.Second,
+				string(calldata),
+			)
 			if err != nil {
 				info.err = fmt.Errorf(
 					"handleRequest: Execute error on data request id [%d], error: %v", dataSourceID, err,
