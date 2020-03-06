@@ -82,6 +82,29 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
       <Col size=0.8> <InfoHL info={InfoHL.Fee(1000.)} header="REQUEST FEE" /> </Col>
     </Row>
     <VSpacing size=Spacing.xl />
-    <VSpacing size=Spacing.xxl />
+    <Tab
+      tabs=[|
+        {
+          name: "EXECUTION",
+          route: Route.DataSourceIndexPage(dataSourceID, Route.DataSourceExecute),
+        },
+        {name: "CODE", route: Route.DataSourceIndexPage(dataSourceID, Route.DataSourceCode)},
+        {
+          name: "REQUESTS",
+          route: Route.DataSourceIndexPage(dataSourceID, Route.DataSourceRequests),
+        },
+        {
+          name: "REVISIONS",
+          route: Route.DataSourceIndexPage(dataSourceID, Route.DataSourceRevisions),
+        },
+      |]
+      currentRoute={Route.DataSourceIndexPage(dataSourceID, hashtag)}>
+      {switch (hashtag) {
+       | DataSourceExecute => <DataSourceExecute />
+       | DataSourceCode => <DataSourceCode />
+       | DataSourceRequests => <div> {"Requests" |> React.string} </div>
+       | DataSourceRevisions => <div> {"Revisions" |> React.string} </div>
+       }}
+    </Tab>
   </div>;
 };
