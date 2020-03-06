@@ -264,6 +264,7 @@ func NewBandApp(
 		keys[zoracle.StoreKey],
 		app.bankKeeper,
 		app.stakingKeeper,
+		app.supplyKeeper,
 		zoracleSubspace,
 	)
 
@@ -316,11 +317,43 @@ func NewBandApp(
 	app.SetBeginBlocker(app.BeginBlocker)
 	// The AnteHandler handles signature verification and transaction pre-processing
 	app.SetAnteHandler(
-		auth.NewAnteHandler(
-			app.accountKeeper,
-			app.supplyKeeper,
-			auth.DefaultSigVerificationGasConsumer,
-		),
+		func(
+			ctx sdk.Context, tx sdk.Tx, simulate bool,
+		) (newCtx sdk.Context, res sdk.Result, abort bool) {
+			totalRefund := sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(0)))
+
+			// all transactions must be of type auth.StdTx
+			stdTx, ok := tx.(auth.StdTx)
+			if !ok {
+				// Set a gas meter with limit 0 as to prevent an infinite gas meter attack
+				// during runTx.
+				newCtx = auth.SetGasMeter(simulate, ctx, 0)
+				return newCtx, sdk.ErrInternal("tx must be StdTx").Result(), true
+			}
+
+			fee := stdTx.Fee
+
+			for _, msg := range tx.GetMsgs() {
+				report, ok := msg.(zoracle.MsgReportData)
+				if ok {
+					// Accumulate totalRefund from all report messages
+					totalRefund = totalRefund.Add(sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(int64(fee.Gas)).Mul(sdk.NewInt(report.RefundGasPrice)))))
+				}
+			}
+
+			// If totalRefundt exeed totalFee then return error
+			_, totalRefundtExeedTotalFee := fee.Amount.SafeSub(totalRefund)
+			if totalRefundtExeedTotalFee {
+				newCtx = auth.SetGasMeter(simulate, ctx, 0)
+				return newCtx, sdk.ErrInternal("maxRefundAmount(" + totalRefund.String() + ") exceed totalFeeAmount(" + fee.Amount.String() + ")").Result(), true
+			}
+
+			return auth.NewAnteHandler(
+				app.accountKeeper,
+				app.supplyKeeper,
+				auth.DefaultSigVerificationGasConsumer,
+			)(ctx, tx, simulate)
+		},
 	)
 	app.SetEndBlocker(app.EndBlocker)
 
