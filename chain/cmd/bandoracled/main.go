@@ -77,7 +77,7 @@ $ bandoracled --node tcp://localhost:26657 --priv-key 06be35b56b048c5a6810a47e2e
 			if err != nil {
 				return err
 			}
-			fmt.Println(viper.GetString(flags.FlagNode), currentRequestID)
+
 			// Setup poll loop
 			for {
 				newRequestID, err := getLatestRequestID()
