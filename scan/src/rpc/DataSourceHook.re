@@ -7,6 +7,7 @@ module DataSource = {
   };
 
   type t = {
+    id: int,
     owner: Address.t,
     name: string,
     fee: list(TxHook.Coin.t),
@@ -17,6 +18,7 @@ module DataSource = {
 
   let decodeResult = json =>
     JsonUtils.Decode.{
+      id: json |> field("id", intstr),
       owner: json |> field("owner", string) |> Address.fromBech32,
       name: json |> field("name", string),
       fee: json |> field("fee", list(TxHook.Coin.decodeCoin)),
