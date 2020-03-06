@@ -187,8 +187,9 @@ func handleRequest(requestID zoracle.RequestID) (sdk.TxResponse, error) {
 	})
 
 	return bandClient.SendTransaction(
-		zoracle.NewMsgReportData(requestID, reports, sdk.ValAddress(bandClient.Sender())),
-		1000000, "",
+		zoracle.NewMsgReportData(requestID, 0, reports, sdk.ValAddress(bandClient.Sender())),
+		1000000, "", "", "",
+		flags.BroadcastSync,
 	)
 }
 
