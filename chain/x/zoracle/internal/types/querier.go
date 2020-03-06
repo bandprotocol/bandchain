@@ -32,47 +32,53 @@ func (u64a U64Array) String() string {
 }
 
 type DataSourceQuerierInfo struct {
-	ID         DataSourceID   `json:"id"`
-	Owner      sdk.AccAddress `json:"owner"`
-	Name       string         `json:"name"`
-	Fee        sdk.Coins      `json:"fee"`
-	Executable []byte         `json:"executable"`
+	ID          DataSourceID   `json:"id"`
+	Owner       sdk.AccAddress `json:"owner"`
+	Name        string         `json:"name"`
+	Description string         `json:"description"`
+	Fee         sdk.Coins      `json:"fee"`
+	Executable  []byte         `json:"executable"`
 }
 
 func NewDataSourceQuerierInfo(
 	id DataSourceID,
 	owner sdk.AccAddress,
 	name string,
+	description string,
 	fee sdk.Coins,
 	executable []byte,
 ) DataSourceQuerierInfo {
 	return DataSourceQuerierInfo{
-		ID:         id,
-		Owner:      owner,
-		Name:       name,
-		Fee:        fee,
-		Executable: executable,
+		ID:          id,
+		Owner:       owner,
+		Name:        name,
+		Description: description,
+		Fee:         fee,
+		Executable:  executable,
 	}
 }
 
 type OracleScriptQuerierInfo struct {
-	ID    OracleScriptID `json:"id"`
-	Owner sdk.AccAddress `json:"owner"`
-	Name  string         `json:"name"`
-	Code  []byte         `json:"code"`
+	ID          OracleScriptID `json:"id"`
+	Owner       sdk.AccAddress `json:"owner"`
+	Name        string         `json:"name"`
+	Description string         `json:"description"`
+	Code        []byte         `json:"code"`
 }
 
 func NewOracleScriptQuerierInfo(
 	id OracleScriptID,
 	owner sdk.AccAddress,
 	name string,
+	description string,
 	code []byte,
 ) OracleScriptQuerierInfo {
 	return OracleScriptQuerierInfo{
-		ID:    id,
-		Owner: owner,
-		Name:  name,
-		Code:  code,
+		ID:          id,
+		Owner:       owner,
+		Description: description,
+		Name:        name,
+		Code:        code,
 	}
 }
 

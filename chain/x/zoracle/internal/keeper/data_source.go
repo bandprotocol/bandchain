@@ -13,7 +13,7 @@ func (k Keeper) SetDataSource(ctx sdk.Context, id types.DataSourceID, dataSource
 }
 
 // AddDataSource adds the given data source to the storage.
-func (k Keeper) AddDataSource(ctx sdk.Context, owner sdk.AccAddress, name string, fee sdk.Coins, executable []byte) sdk.Error {
+func (k Keeper) AddDataSource(ctx sdk.Context, owner sdk.AccAddress, name string, description string, fee sdk.Coins, executable []byte) sdk.Error {
 	newDataSourceID := k.GetNextDataSourceID(ctx)
 
 	if len(executable) > int(k.MaxDataSourceExecutableSize(ctx)) {
@@ -25,13 +25,17 @@ func (k Keeper) AddDataSource(ctx sdk.Context, owner sdk.AccAddress, name string
 		return types.ErrRequestNotFound(types.DefaultCodespace)
 	}
 
-	newDataSource := types.NewDataSource(owner, name, fee, executable)
+	if len(description) > int(k.MaxDescriptionLength(ctx)) {
+		return types.ErrRequestNotFound(types.DefaultCodespace)
+	}
+
+	newDataSource := types.NewDataSource(owner, name, description, fee, executable)
 	k.SetDataSource(ctx, newDataSourceID, newDataSource)
 	return nil
 }
 
 // EditDataSource edits the given data source by given data source id to the storage.
-func (k Keeper) EditDataSource(ctx sdk.Context, dataSourceID types.DataSourceID, owner sdk.AccAddress, name string, fee sdk.Coins, executable []byte) sdk.Error {
+func (k Keeper) EditDataSource(ctx sdk.Context, dataSourceID types.DataSourceID, owner sdk.AccAddress, name string, description string, fee sdk.Coins, executable []byte) sdk.Error {
 	if !k.CheckDataSourceExists(ctx, dataSourceID) {
 		// TODO: fix error later
 		return types.ErrRequestNotFound(types.DefaultCodespace)
@@ -41,8 +45,16 @@ func (k Keeper) EditDataSource(ctx sdk.Context, dataSourceID types.DataSourceID,
 		// TODO: fix error later
 		return types.ErrRequestNotFound(types.DefaultCodespace)
 	}
+	if len(name) > int(k.MaxNameLength(ctx)) {
+		// TODO: fix error later
+		return types.ErrRequestNotFound(types.DefaultCodespace)
+	}
+	if len(description) > int(k.MaxDescriptionLength(ctx)) {
+		// TODO: fix error later
+		return types.ErrRequestNotFound(types.DefaultCodespace)
+	}
 
-	updatedDataSource := types.NewDataSource(owner, name, fee, executable)
+	updatedDataSource := types.NewDataSource(owner, name, description, fee, executable)
 	k.SetDataSource(ctx, dataSourceID, updatedDataSource)
 	return nil
 }

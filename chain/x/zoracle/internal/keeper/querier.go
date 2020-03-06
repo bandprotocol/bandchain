@@ -107,6 +107,7 @@ func queryDataSourceByID(ctx sdk.Context, path []string, req abci.RequestQuery, 
 		id,
 		dataSource.Owner,
 		dataSource.Name,
+		dataSource.Description,
 		dataSource.Fee,
 		dataSource.Executable,
 	)), nil
@@ -142,6 +143,7 @@ func queryDataSources(ctx sdk.Context, path []string, req abci.RequestQuery, kee
 			id,
 			dataSource.Owner,
 			dataSource.Name,
+			dataSource.Description,
 			dataSource.Fee,
 			dataSource.Executable,
 		))
@@ -168,6 +170,7 @@ func queryOracleScriptByID(ctx sdk.Context, path []string, req abci.RequestQuery
 		types.OracleScriptID(id),
 		oracleScript.Owner,
 		oracleScript.Name,
+		oracleScript.Description,
 		oracleScript.Code,
 	)), nil
 }
@@ -201,6 +204,7 @@ func queryOracleScripts(ctx sdk.Context, path []string, req abci.RequestQuery, k
 			types.OracleScriptID(id),
 			oracleScript.Owner,
 			oracleScript.Name,
+			oracleScript.Description,
 			oracleScript.Code,
 		))
 	}

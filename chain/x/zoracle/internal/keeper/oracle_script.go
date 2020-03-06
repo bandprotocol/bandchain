@@ -13,7 +13,7 @@ func (k Keeper) SetOracleScript(ctx sdk.Context, id types.OracleScriptID, oracle
 }
 
 // AddOracleScript adds the given oracle script to the storage.
-func (k Keeper) AddOracleScript(ctx sdk.Context, owner sdk.AccAddress, name string, code []byte) sdk.Error {
+func (k Keeper) AddOracleScript(ctx sdk.Context, owner sdk.AccAddress, name string, description string, code []byte) sdk.Error {
 	newOracleScriptID := k.GetNextOracleScriptID(ctx)
 
 	if len(code) > int(k.MaxOracleScriptCodeSize(ctx)) {
@@ -25,13 +25,17 @@ func (k Keeper) AddOracleScript(ctx sdk.Context, owner sdk.AccAddress, name stri
 		return types.ErrRequestNotFound(types.DefaultCodespace)
 	}
 
-	newOracleScript := types.NewOracleScript(owner, name, code)
+	if len(description) > int(k.MaxDescriptionLength(ctx)) {
+		return types.ErrRequestNotFound(types.DefaultCodespace)
+	}
+
+	newOracleScript := types.NewOracleScript(owner, name, description, code)
 	k.SetOracleScript(ctx, newOracleScriptID, newOracleScript)
 	return nil
 }
 
 // EditOracleScript edits the given oracle script by given oracle script id to the storage.
-func (k Keeper) EditOracleScript(ctx sdk.Context, oracleScriptID types.OracleScriptID, owner sdk.AccAddress, name string, code []byte) sdk.Error {
+func (k Keeper) EditOracleScript(ctx sdk.Context, oracleScriptID types.OracleScriptID, owner sdk.AccAddress, name string, description string, code []byte) sdk.Error {
 	if !k.CheckOracleScriptExists(ctx, oracleScriptID) {
 		// TODO: fix error later
 		return types.ErrRequestNotFound(types.DefaultCodespace)
@@ -42,7 +46,17 @@ func (k Keeper) EditOracleScript(ctx sdk.Context, oracleScriptID types.OracleScr
 		return types.ErrRequestNotFound(types.DefaultCodespace)
 	}
 
-	updatedOracleScript := types.NewOracleScript(owner, name, code)
+	if len(name) > int(k.MaxNameLength(ctx)) {
+		// TODO: fix error later
+		return types.ErrRequestNotFound(types.DefaultCodespace)
+	}
+
+	if len(description) > int(k.MaxDescriptionLength(ctx)) {
+		// TODO: fix error later
+		return types.ErrRequestNotFound(types.DefaultCodespace)
+	}
+
+	updatedOracleScript := types.NewOracleScript(owner, name, description, code)
 	k.SetOracleScript(ctx, oracleScriptID, updatedOracleScript)
 	return nil
 }
