@@ -25,12 +25,7 @@ const (
 	requestIDTag = "requestID"
 )
 
-func getLatestBlocks(cliCtx context.CLIContext, r *http.Request) ([]byte, error) {
-	_, page, limit, err := rest.ParseHTTPArgsWithLimit(r, 10)
-	if err != nil {
-		return nil, err
-	}
-
+func getLatestBlocks(cliCtx context.CLIContext, page, limit int) ([]byte, error) {
 	node, err := cliCtx.GetNode()
 	if err != nil {
 		return nil, err
@@ -62,7 +57,18 @@ func getLatestBlocks(cliCtx context.CLIContext, r *http.Request) ([]byte, error)
 
 func LatestBlocksRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		output, err := getLatestBlocks(cliCtx, r)
+		_, page, limit, err := rest.ParseHTTPArgsWithLimit(r, 10)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		if limit > 100 {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, "limit must not be greater than 100.")
+			return
+		}
+
+		output, err := getLatestBlocks(cliCtx, page, limit)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -228,11 +234,11 @@ func ServeSwaggerUI() http.Handler {
 }
 
 func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router) {
-	r.HandleFunc("/d3n/blocks/latest", LatestBlocksRequestHandlerFn(cliCtx)).Methods("GET")
-	r.HandleFunc("/d3n/txs/latest", LatestTxsRequestHandlerFn(cliCtx)).Methods("GET")
+	r.HandleFunc("/bandchain/blocks/latest", LatestBlocksRequestHandlerFn(cliCtx)).Methods("GET")
+	r.HandleFunc("/bandchain/txs/latest", LatestTxsRequestHandlerFn(cliCtx)).Methods("GET")
 	r.HandleFunc("/bandchain/evm-validators", GetEVMValidators(cliCtx)).Methods("GET")
-	r.HandleFunc(fmt.Sprintf("/d3n/proof/{%s}", requestIDTag), GetProofHandlerFn(cliCtx)).Methods("GET")
-	r.HandleFunc("/d3n/health_check", GetHealthStatus(cliCtx)).Methods("GET")
-	r.HandleFunc("/d3n/provider_status", GetProviderStatus(cliCtx)).Methods("GET")
+	r.HandleFunc(fmt.Sprintf("/bandchain/proof/{%s}", requestIDTag), GetProofHandlerFn(cliCtx)).Methods("GET")
+	r.HandleFunc("/bandchain/health_check", GetHealthStatus(cliCtx)).Methods("GET")
+	r.HandleFunc("/bandchain/provider_status", GetProviderStatus(cliCtx)).Methods("GET")
 	r.PathPrefix("/swagger-ui/").Handler(ServeSwaggerUI())
 }
