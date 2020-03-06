@@ -317,9 +317,7 @@ func NewBandApp(
 	app.SetBeginBlocker(app.BeginBlocker)
 	// The AnteHandler handles signature verification and transaction pre-processing
 	app.SetAnteHandler(
-		func(
-			ctx sdk.Context, tx sdk.Tx, simulate bool,
-		) (newCtx sdk.Context, res sdk.Result, abort bool) {
+		func(ctx sdk.Context, tx sdk.Tx, simulate bool) (newCtx sdk.Context, res sdk.Result, abort bool) {
 			totalRefund := sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(0)))
 
 			// all transactions must be of type auth.StdTx
