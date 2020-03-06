@@ -24,7 +24,7 @@ let get = oracleScriptID => {
   json |> Belt.Option.map(_, OracleScript.decode);
 };
 
-let getScriptList = (~page=1, ~limit=10, ()) => {
+let getList = (~page=1, ~limit=10, ()) => {
   let json = AxiosHooks.use({j|zoracle/oracle_scripts?page=$page&limit=$limit|j});
   json |> Belt.Option.map(_, OracleScript.decodeList);
 };
