@@ -12,8 +12,10 @@ func TestExecuteCanCallEnv(t *testing.T) {
 	code, err := ioutil.ReadFile("./res/main.wasm")
 	require.Nil(t, err)
 	result, gasUsed, err := Execute(&mockExecutionEnvironment{
-		requestID:               1,
-		requestedValidatorCount: 2,
+		requestID:                       1,
+		requestedValidatorCount:         2,
+		maximumResultSize:               1024,
+		maximumCalldataOfDataSourceSize: 1024,
 	}, code, "execute", []byte{}, 10000)
 	require.Nil(t, err)
 	require.Equal(t, uint64(3), binary.LittleEndian.Uint64(result))
@@ -26,7 +28,9 @@ func TestGetSufficientValidatorCount(t *testing.T) {
 	require.Nil(t, err)
 
 	result, _, errExecute := Execute(&mockExecutionEnvironment{
-		sufficientValidatorCount: 99,
+		sufficientValidatorCount:        99,
+		maximumResultSize:               1024,
+		maximumCalldataOfDataSourceSize: 1024,
 	}, code, "execute", []byte("getSufficientValidatorCount"), 100000000000000000)
 	require.Nil(t, errExecute)
 	require.Equal(t, uint64(99), binary.BigEndian.Uint64(result))
@@ -35,7 +39,10 @@ func TestGetSufficientValidatorCount(t *testing.T) {
 func TestExecuteOutOfGas(t *testing.T) {
 	code, err := ioutil.ReadFile("./res/main.wasm")
 	require.Nil(t, err)
-	_, _, err = Execute(&mockExecutionEnvironment{}, code, "execute", []byte{}, 10)
+	_, _, err = Execute(&mockExecutionEnvironment{
+		maximumResultSize:               1024,
+		maximumCalldataOfDataSourceSize: 1024,
+	}, code, "execute", []byte{}, 10)
 	require.EqualError(t, err, "gas limit exceeded")
 }
 
@@ -45,6 +52,8 @@ func TestExecuteEndToEnd(t *testing.T) {
 	env := &mockExecutionEnvironment{
 		externalDataResults:               [][][]byte{nil, {[]byte("RETURN_DATA")}},
 		requestExternalDataResultsCounter: [][]int64{nil, []int64{0}},
+		maximumResultSize:                 1024,
+		maximumCalldataOfDataSourceSize:   1024,
 	}
 
 	// It should log "RequestExternalData: DataSourceID = 1, ExternalDataID = 1"
@@ -70,7 +79,10 @@ func TestAllocateSuccess(t *testing.T) {
 	size := make([]byte, 8)
 	binary.LittleEndian.PutUint64(size, uint64(5000000))
 
-	_, _, err = Execute(&mockExecutionEnvironment{}, code, "execute", size, 100000000000000000)
+	_, _, err = Execute(&mockExecutionEnvironment{
+		maximumResultSize:               1024,
+		maximumCalldataOfDataSourceSize: 1024,
+	}, code, "execute", size, 100000000000000000)
 	require.Nil(t, err)
 }
 
@@ -82,8 +94,54 @@ func TestAllocateFailWithExceedMemory(t *testing.T) {
 	size := make([]byte, 8)
 	binary.LittleEndian.PutUint64(size, uint64(8500000))
 
-	_, _, errExecute := Execute(&mockExecutionEnvironment{}, code, "execute", size, 100000000000000000)
+	_, _, errExecute := Execute(&mockExecutionEnvironment{
+		maximumResultSize:               1024,
+		maximumCalldataOfDataSourceSize: 1024,
+	}, code, "execute", size, 100000000000000000)
 	require.NotNil(t, errExecute)
+}
+
+func TestExecuteInvalidGetMaximumCalldataOfDataSourceSize(t *testing.T) {
+	code, err := ioutil.ReadFile("./res/silly.wasm")
+	require.Nil(t, err)
+	env := &mockExecutionEnvironment{
+		maximumCalldataOfDataSourceSize: 12,
+	}
+
+	// It should return error because "band-protocol" has length equal to 13.
+	_, _, err = Execute(env, code, "prepare", []byte{}, 10000)
+	require.NotNil(t, err)
+
+	// It should print "RequestExternalData: DataSourceID = 1, ExternalDataID = 1"
+	// and not return error.
+	_, _, err = Execute(&mockExecutionEnvironment{
+		maximumCalldataOfDataSourceSize: 13,
+	}, code, "prepare", []byte{}, 10000)
+	require.Nil(t, err)
+}
+
+func TestExecuteInvalidGetMaximumResultSize(t *testing.T) {
+	code, err := ioutil.ReadFile("./res/silly.wasm")
+	require.Nil(t, err)
+	env := &mockExecutionEnvironment{
+		externalDataResults:               [][][]byte{nil, {[]byte("RETURN_DATA")}},
+		requestExternalDataResultsCounter: [][]int64{nil, []int64{0}},
+		maximumResultSize:                 10,
+	}
+
+	// It should return error because "band-protocol" has length equal to 13.
+	_, _, err = Execute(env, code, "execute", []byte{}, 10000)
+	require.NotNil(t, err)
+
+	env2 := &mockExecutionEnvironment{
+		externalDataResults:               [][][]byte{nil, {[]byte("RETURN_DATA")}},
+		requestExternalDataResultsCounter: [][]int64{nil, []int64{0}},
+		maximumResultSize:                 11,
+	}
+	// It should return "RETURN_DATA" and not return error.
+	result, _, err := Execute(env2, code, "execute", []byte{}, 10000)
+	require.Equal(t, []byte("RETURN_DATA"), result)
+	require.Nil(t, err)
 }
 
 // TODO: Add more tests for MaxTableSize, MaxValueSlots and MaxCallStackDepth.

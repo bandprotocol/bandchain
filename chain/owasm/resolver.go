@@ -124,7 +124,7 @@ func (r *resolver) resolveRequestExternalData(vm *exec.VirtualMachine) int64 {
 	externalDataID := GetLocalInt64(vm, 1)
 	dataOffset := int(GetLocalInt64(vm, 2))
 	dataLength := int(GetLocalInt64(vm, 3))
-	if dataOffset+dataLength > int(r.env.GetMaximumCalldataOfDataSourceSize()) {
+	if dataLength > int(r.env.GetMaximumCalldataOfDataSourceSize()) {
 		return 1
 	}
 	data := make([]byte, dataLength)
