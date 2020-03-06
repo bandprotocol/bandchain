@@ -43,7 +43,8 @@ func TestExecuteEndToEnd(t *testing.T) {
 	code, err := ioutil.ReadFile("./res/silly.wasm")
 	require.Nil(t, err)
 	env := &mockExecutionEnvironment{
-		externalDataResults: [][][]byte{nil, {[]byte("RETURN_DATA")}},
+		externalDataResults:               [][][]byte{nil, {[]byte("RETURN_DATA")}},
+		requestExternalDataResultsCounter: [][]int64{nil, []int64{0}},
 	}
 
 	// It should log "RequestExternalData: DataSourceID = 1, ExternalDataID = 1"
