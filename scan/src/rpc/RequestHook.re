@@ -1,3 +1,16 @@
+module RawDataReport = {
+  type t = {
+    externalDataID: int,
+    data: JsBuffer.t,
+  };
+
+  let decode = json =>
+    JsonUtils.Decode.{
+      externalDataID: json |> field("externalDataID", intstr),
+      data: json |> field("data", string) |> JsBuffer.fromBase64,
+    };
+};
+
 module Report = {
   type t = {
     reporter: Address.t,

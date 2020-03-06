@@ -40,8 +40,23 @@ module Styles = {
 
   let txTypeMapping = msg => {
     switch (msg) {
+    | TxHook.Msg.CreateDataSource(_) => (
+        "CREATE DATA SOURCE",
+        Colors.darkGreen,
+        Colors.lightGreen,
+      )
+    | TxHook.Msg.EditDataSource(_) => ("EDIT DATA SOURCE", Colors.darkGreen, Colors.lightGreen)
+    | TxHook.Msg.CreateOracleScript(_) => (
+        "CREATE ORACLE SCRIPT",
+        Colors.darkGreen,
+        Colors.lightGreen,
+      )
+    | TxHook.Msg.EditOracleScript(_) => (
+        "EDIT ORACLE SCRIPT",
+        Colors.darkGreen,
+        Colors.lightGreen,
+      )
     | TxHook.Msg.Request(_) => ("DATA REQUEST", Colors.darkBlue, Colors.lightBlue)
-    | TxHook.Msg.Store(_) => ("NEW SCRIPT", Colors.darkGreen, Colors.lightGreen)
     | TxHook.Msg.Send(_) => ("SEND TOKEN", Colors.purple, Colors.lightPurple)
     | TxHook.Msg.Report(_) => ("DATA REPORT", Colors.darkIndigo, Colors.lightIndigo)
     | Unknown => ("Unknown", Colors.darkGrayText, Colors.grayHeader)
