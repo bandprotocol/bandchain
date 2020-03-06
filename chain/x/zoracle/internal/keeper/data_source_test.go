@@ -10,11 +10,12 @@ import (
 func mockDataSource(ctx sdk.Context, keeper Keeper) sdk.Error {
 	owner := sdk.AccAddress([]byte("owner"))
 	name := "data_source"
+	description := "description"
 	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
 
 	// Size of "executable" is  10 bytes
 	executable := []byte("executable")
-	return keeper.AddDataSource(ctx, owner, name, fee, executable)
+	return keeper.AddDataSource(ctx, owner, name, description, fee, executable)
 }
 
 func TestGetterSetterDataSource(t *testing.T) {
@@ -45,49 +46,11 @@ func TestAddTooLongDataSource(t *testing.T) {
 
 	owner := sdk.AccAddress([]byte("owner"))
 	name := "data_source"
+	description := "description"
 	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
 	tooLongExecutable := []byte("The number of bytes of this data source is 80 which is obviously longer than 20.")
 
-	err = keeper.AddDataSource(ctx, owner, name, fee, tooLongExecutable)
-	require.NotNil(t, err)
-}
-
-func TestEditDataSource(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-
-	err := mockDataSource(ctx, keeper)
-	require.Nil(t, err)
-
-	newOwner := sdk.AccAddress([]byte("owner2"))
-	newName := "data_source_2"
-	newFee := sdk.NewCoins(sdk.NewInt64Coin("uband", 1))
-	newExecutable := []byte("executable_2")
-
-	err = keeper.EditDataSource(ctx, 1, newOwner, newName, newFee, newExecutable)
-	require.Nil(t, err)
-
-	actualDataSource, err := keeper.GetDataSource(ctx, 1)
-	require.Nil(t, err)
-	require.Equal(t, newOwner, actualDataSource.Owner)
-	require.Equal(t, newName, actualDataSource.Name)
-	require.Equal(t, newFee, actualDataSource.Fee)
-	require.Equal(t, newExecutable, actualDataSource.Executable)
-}
-
-func TestEditTooLongDataSource(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-
-	// Set MaxDataSourceExecutableSize to 20
-	keeper.SetMaxDataSourceExecutableSize(ctx, 20)
-	err := mockDataSource(ctx, keeper)
-	require.Nil(t, err)
-
-	newOwner := sdk.AccAddress([]byte("owner2"))
-	newName := "data_source_2"
-	newFee := sdk.NewCoins(sdk.NewInt64Coin("uband", 1))
-	newTooLongExecutable := []byte("The number of bytes of this data source is 80 which is obviously longer than 20.")
-
-	err = keeper.EditDataSource(ctx, 1, newOwner, newName, newFee, newTooLongExecutable)
+	err = keeper.AddDataSource(ctx, owner, name, description, fee, tooLongExecutable)
 	require.NotNil(t, err)
 }
 
@@ -102,9 +65,106 @@ func TestAddTooLongDataSourceName(t *testing.T) {
 
 	owner := sdk.AccAddress([]byte("owner"))
 	tooLongName := "data_source"
+	description := "description"
 	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
 	executable := []byte("executable")
 
-	err = keeper.AddDataSource(ctx, owner, tooLongName, fee, executable)
+	err = keeper.AddDataSource(ctx, owner, tooLongName, description, fee, executable)
+	require.NotNil(t, err)
+}
+
+func TestAddTooLongDataSourceDescription(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	_, err := keeper.GetDataSource(ctx, 1)
+	require.NotNil(t, err)
+
+	// Set MaxDescriptionLength to 5
+	keeper.SetMaxDescriptionLength(ctx, 5)
+
+	owner := sdk.AccAddress([]byte("owner"))
+	name := "data_source"
+	tooLongDescription := "description"
+	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
+	executable := []byte("executable")
+
+	err = keeper.AddDataSource(ctx, owner, name, tooLongDescription, fee, executable)
+	require.NotNil(t, err)
+}
+func TestEditDataSource(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	err := mockDataSource(ctx, keeper)
+	require.Nil(t, err)
+
+	newOwner := sdk.AccAddress([]byte("owner2"))
+	newName := "data_source_2"
+	newDescription := "description_2"
+	newFee := sdk.NewCoins(sdk.NewInt64Coin("uband", 1))
+	newExecutable := []byte("executable_2")
+
+	err = keeper.EditDataSource(ctx, 1, newOwner, newName, newDescription, newFee, newExecutable)
+	require.Nil(t, err)
+
+	actualDataSource, err := keeper.GetDataSource(ctx, 1)
+	require.Nil(t, err)
+	require.Equal(t, newOwner, actualDataSource.Owner)
+	require.Equal(t, newName, actualDataSource.Name)
+	require.Equal(t, newDescription, actualDataSource.Description)
+	require.Equal(t, newFee, actualDataSource.Fee)
+	require.Equal(t, newExecutable, actualDataSource.Executable)
+}
+
+func TestEditTooLongDataSource(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	// Set MaxDataSourceExecutableSize to 20
+	keeper.SetMaxDataSourceExecutableSize(ctx, 20)
+	err := mockDataSource(ctx, keeper)
+	require.Nil(t, err)
+
+	newOwner := sdk.AccAddress([]byte("owner2"))
+	newName := "data_source_2"
+	newDescription := "new_description"
+	newFee := sdk.NewCoins(sdk.NewInt64Coin("uband", 1))
+	newTooLongExecutable := []byte("The number of bytes of this data source is 80 which is obviously longer than 20.")
+
+	err = keeper.EditDataSource(ctx, 1, newOwner, newName, newDescription, newFee, newTooLongExecutable)
+	require.NotNil(t, err)
+}
+
+func TestEditTooLongDataSourceName(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	//SetMaxNameLength to 20
+	keeper.SetMaxNameLength(ctx, 20)
+	err := mockDataSource(ctx, keeper)
+	require.Nil(t, err)
+
+	newOwner := sdk.AccAddress([]byte("owner2"))
+	newTooLongName := "Toooooooooooo Longggggggggggg"
+	newDescription := "new_description"
+	newFee := sdk.NewCoins(sdk.NewInt64Coin("uband", 1))
+	newExecutable := []byte("executable")
+
+	err = keeper.EditDataSource(ctx, 1, newOwner, newTooLongName, newDescription, newFee, newExecutable)
+	require.NotNil(t, err)
+}
+
+func TestEditTooLongDataSourceDescription(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	//Set MaxDescriptionLength to 20
+	keeper.SetMaxDescriptionLength(ctx, 20)
+	err := mockDataSource(ctx, keeper)
+	require.Nil(t, err)
+
+	newOwner := sdk.AccAddress([]byte("owner2"))
+	newName := "data_source"
+	newTooLongDescription := "Tooooooooo Loooooooooooooong description"
+	newFee := sdk.NewCoins(sdk.NewInt64Coin("uband", 1))
+	newExecutable := []byte("executable")
+
+	err = keeper.EditDataSource(ctx, 1, newOwner, newName, newTooLongDescription, newFee, newExecutable)
 	require.NotNil(t, err)
 }
