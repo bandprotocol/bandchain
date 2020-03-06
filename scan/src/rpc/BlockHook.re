@@ -32,7 +32,7 @@ module Block = {
 };
 
 let latest = (~page=1, ~limit=10, ()) => {
-  let json = AxiosHooks.use({j|d3n/blocks/latest?page=$page&limit=$limit|j});
+  let json = AxiosHooks.use({j|bandchain/blocks/latest?page=$page&limit=$limit|j});
   json |> Belt.Option.map(_, Block.decodeBlocks);
 };
 
