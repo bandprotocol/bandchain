@@ -3,7 +3,7 @@ module OracleScript = {
     id: int,
     owner: Address.t,
     name: string,
-    code: string,
+    code: JsBuffer.t,
   };
 
   let decodeResult = json =>
@@ -11,7 +11,7 @@ module OracleScript = {
       id: json |> field("id", intstr),
       owner: json |> field("owner", string) |> Address.fromBech32,
       name: json |> field("name", string),
-      code: json |> field("code", string),
+      code: json |> field("code", string) |> JsBuffer.fromBase64,
     };
 
   let decode = json => JsonUtils.Decode.(json |> field("result", decodeResult));
