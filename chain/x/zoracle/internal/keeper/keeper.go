@@ -104,6 +104,14 @@ func (keeper Keeper) MaxNameLength(ctx sdk.Context) (res int64) {
 	keeper.ParamSpace.Get(ctx, types.KeyMaxNameLength, &res)
 	return
 }
+func (keeper Keeper) MaxDescriptionLength(ctx sdk.Context) (res int64) {
+	keeper.ParamSpace.Get(ctx, types.KeyMaxDescriptionLength, &res)
+	return
+}
+
+func (keeper Keeper) SetMaxDescriptionLength(ctx sdk.Context, value int64) {
+	keeper.ParamSpace.Set(ctx, types.KeyMaxDescriptionLength, value)
+}
 
 // GetParams returns all current parameters as a types.Params instance.
 func (keeper Keeper) GetParams(ctx sdk.Context) types.Params {
@@ -116,6 +124,7 @@ func (keeper Keeper) GetParams(ctx sdk.Context) types.Params {
 		keeper.MaxResultSize(ctx),
 		keeper.EndBlockExecuteGasLimit(ctx),
 		keeper.MaxNameLength(ctx),
+		keeper.MaxDescriptionLength(ctx),
 	)
 }
 

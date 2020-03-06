@@ -42,6 +42,7 @@ func TestAddNewRawDataRequest(t *testing.T) {
 	dataSource := types.NewDataSource(
 		sdk.AccAddress([]byte("owner")),
 		"data_source",
+		"description",
 		sdk.NewCoins(sdk.NewInt64Coin("uband", 10)),
 		[]byte("executable"),
 	)
@@ -63,6 +64,7 @@ func TestAddNewRawDataRequest(t *testing.T) {
 	dataSource2 := types.NewDataSource(
 		sdk.AccAddress([]byte("owner")),
 		"data_source2",
+		"description2",
 		sdk.NewCoins(sdk.NewInt64Coin("uband", 20)),
 		[]byte("executable2"),
 	)

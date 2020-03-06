@@ -136,6 +136,7 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 	keeper.SetMaxResultSize(ctx, types.DefaultMaxResultSize)
 	keeper.SetEndBlockExecuteGasLimit(ctx, types.DefaultEndBlockExecuteGasLimit)
 	keeper.SetMaxNameLength(ctx, types.DefaultMaxNameLength)
+	keeper.SetMaxDescriptionLength(ctx, types.DefaultDescriptionLength)
 
 	return ctx, keeper
 }
@@ -189,6 +190,7 @@ func GetTestOracleScript(path string) types.OracleScript {
 	return types.NewOracleScript(
 		sdk.AccAddress([]byte("owner")),
 		"silly script",
+		"description",
 		code,
 	)
 }
@@ -197,6 +199,7 @@ func GetTestDataSource() types.DataSource {
 	return types.NewDataSource(
 		sdk.AccAddress([]byte("owner")),
 		"data_source",
+		"description",
 		sdk.NewCoins(sdk.NewInt64Coin("uband", 10)),
 		[]byte("executable"),
 	)
