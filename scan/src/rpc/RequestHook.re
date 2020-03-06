@@ -76,7 +76,7 @@ module Request = {
     | 2 => Failure
     | _ => Unknown;
 
-  let decode = json =>
+  let decodeResult = json =>
     JsonUtils.Decode.{
       id: json |> field("id", intstr),
       oracleScriptID: json |> field("oracleScriptID", intstr),
@@ -102,7 +102,7 @@ module Request = {
         |> Belt.Option.map(_, JsBuffer.fromBase64),
     };
 
-  let decode = json => JsonUtils.Decode.(json |> field("result", decode));
+  let decode = json => JsonUtils.Decode.(json |> field("result", decodeResult));
 };
 
 let get = id => {
