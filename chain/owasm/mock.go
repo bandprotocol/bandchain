@@ -3,14 +3,15 @@ package owasm
 import "fmt"
 
 type mockExecutionEnvironment struct {
-	requestID                int64
-	requestedValidatorCount  int64
-	sufficientValidatorCount int64
-	receivedValidatorCount   int64
-	prepareBlockTime         int64
-	aggregateBlockTime       int64
-	validatorAddresses       [][]byte
-	externalDataResults      [][][]byte
+	requestID                         int64
+	requestedValidatorCount           int64
+	sufficientValidatorCount          int64
+	receivedValidatorCount            int64
+	prepareBlockTime                  int64
+	aggregateBlockTime                int64
+	validatorAddresses                [][]byte
+	externalDataResults               [][][]byte
+	requestExternalDataResultsCounter [][]int64
 }
 
 func (m *mockExecutionEnvironment) GetCurrentRequestID() int64 {
@@ -55,5 +56,14 @@ func (m *mockExecutionEnvironment) GetExternalData(
 	externalDataID int64,
 	validatorIndex int64,
 ) ([]byte, error) {
+	if len(m.requestExternalDataResultsCounter) <= int(externalDataID) {
+		return []byte{}, fmt.Errorf("externalDataID is out of range")
+	}
+
+	if len(m.requestExternalDataResultsCounter[externalDataID]) <= int(validatorIndex) {
+		return []byte{}, fmt.Errorf("validatorIndex is out of range")
+	}
+
+	m.requestExternalDataResultsCounter[externalDataID][validatorIndex]++
 	return m.externalDataResults[externalDataID][validatorIndex], nil
 }

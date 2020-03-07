@@ -44,7 +44,7 @@ module CopyComponent = {
 
 [@react.component]
 let make = (~reqID) => {
-  let proofOpt = ProofHook.get(~requestId=reqID, ());
+  let proofOpt = ProofHook.get(reqID);
 
   React.useMemo2(
     _ => {

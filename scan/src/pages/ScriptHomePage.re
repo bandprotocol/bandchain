@@ -21,7 +21,7 @@ module Styles = {
 
 [@react.component]
 let make = () => {
-  let scriptsOpt = ScriptHook.getScriptList(~limit=100000, ~pollInterval=3000, ());
+  let scriptsOpt = ScriptHook.getScriptList(~limit=100000, ());
   let scripts = scriptsOpt->Belt.Option.getWithDefault([]);
   let totalScript = scripts->Belt.List.length->string_of_int;
 
@@ -88,9 +88,7 @@ let make = () => {
      ->Belt.List.map(({info, txHash, createdAtTime}) => {
          <div
            onClick={_ =>
-             Route.redirect(
-               Route.ScriptIndexPage(info.codeHash, Route.ScriptTransactions),
-             )
+             Route.redirect(Route.ScriptIndexPage(info.codeHash, Route.ScriptTransactions))
            }>
            <TBody key={txHash |> Hash.toHex}>
              <Row>

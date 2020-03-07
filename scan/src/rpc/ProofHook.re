@@ -11,7 +11,7 @@ module Proof = {
     };
 };
 
-let get = (~requestId: int, ~pollInterval=?, ()) => {
-  let json = AxiosHooks.use({j|d3n/proof/$requestId|j}, ~pollInterval?, ());
+let get = (requestId: int) => {
+  let json = AxiosHooks.use({j|bandchain/proof/$requestId|j});
   json |> Belt.Option.map(_, Proof.decodeProof);
 };

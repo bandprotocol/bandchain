@@ -28,11 +28,12 @@ let darkGreen = Css.hex("127658");
 let green = Css.hex("6BCA4A");
 let lightGreen = Css.hex("C7FCEC");
 
-let btnGreen = Css.hex("8AFFC7");
+let btnGreen = Css.hex("AAEEE7");
 
 let grayText = Css.hex("A4A4A4");
 let lightGray = Css.hex("EEEEEE");
 let grayHeader = Css.hex("555555");
+let graySubHeader = Css.hex("888888");
 let lighterGray = Css.hex("F9F9F9");
 
 let darkGrayText = Css.hex("777F8E");
