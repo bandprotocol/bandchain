@@ -8,6 +8,14 @@ module Validator = {
     sharePercentage: float,
     amount: int,
   };
+  type block_t = {
+    hash: Hash.t,
+    height: int,
+    timestamp: MomentRe.Moment.t,
+    proposer: Address.t,
+    numTxs: int,
+    totalTxs: int,
+  };
   type report_t = {
     requestID: int,
     hash: Hash.t,
@@ -35,7 +43,7 @@ module Validator = {
     completedRequestCount: int,
     missedRequestCount: int,
     nodeStatus: node_status_t,
-    proposedBlocks: list(BlockHook.Block.t),
+    proposedBlocks: list(block_t),
     delegators: list(delegator_t),
     reports: list(report_t),
   };
