@@ -21,10 +21,10 @@ module Block = {
 
   let decodeBlocks = json => JsonUtils.Decode.(json |> list(decodeBlock));
 
-  let getProposerMoniker = (block: t, validators: list(ValidatorHook.Validator.t)) =>
+  let getProposerMoniker = (height: t, validators: list(ValidatorHook.Validator.t)) =>
     validators
     ->Belt_List.keepMap(validator =>
-        validator.consensusPubkey |> PubKey.toAddress == block.proposer
+        validator.consensusPubkey |> PubKey.toAddress == height.proposer
           ? Some(validator.moniker) : None
       )
     ->Belt_List.get(0)
