@@ -2,7 +2,7 @@ module DataSource = {
   type revision_t = {
     name: string,
     timestamp: MomentRe.Moment.t,
-    block: int,
+    height: int,
     txHash: Hash.t,
   };
 
@@ -10,6 +10,7 @@ module DataSource = {
     id: int,
     owner: Address.t,
     name: string,
+    description: string,
     fee: list(TxHook.Coin.t),
     executable: JsBuffer.t,
     requests: list(RequestHook.Request.t),
@@ -21,6 +22,7 @@ module DataSource = {
       id: json |> field("id", intstr),
       owner: json |> field("owner", string) |> Address.fromBech32,
       name: json |> field("name", string),
+      description: json |> field("description", string),
       fee: json |> field("fee", list(TxHook.Coin.decodeCoin)),
       executable: json |> field("executable", string) |> JsBuffer.fromBase64,
       requests: [
@@ -49,14 +51,14 @@ module DataSource = {
         {
           name: "Coingecko script v2",
           timestamp: MomentRe.momentWithUnix(1583465551),
-          block: 472395,
+          height: 472395,
           txHash:
             "6E1EAE347E7F2E27DFE6F21328DF7EB6A599D4F0ED73D54B356C77646FBEC33D" |> Hash.fromHex,
         },
         {
           name: "Coingecko script",
           timestamp: MomentRe.momentWithUnix(1583465050),
-          block: 472295,
+          height: 472295,
           txHash:
             "D3C77B93B10169E9D3C5ACA9A4A049CED40D7BE231E5D1A79FFAE7498952A032" |> Hash.fromHex,
         },
@@ -64,11 +66,23 @@ module DataSource = {
     };
 
   let decode = json => JsonUtils.Decode.(json |> field("result", decodeResult));
+
+  let decodeList = json =>
+    JsonUtils.Decode.(
+      json
+      |> optional(field("result", list(decodeResult)))
+      |> Belt.Option.getWithDefault(_, [])
+    );
 };
 
-let getDataSource = dataSourceID => {
-  let json = AxiosHooks.use({j|zoracle/data_source/$dataSourceID|j});
+let get = id => {
+  let json = AxiosHooks.use({j|zoracle/data_source/$id|j});
   json |> Belt.Option.map(_, DataSource.decode);
   // TODO: Add requests that use this data source
   // TODO: Add revision txs that create and change this data source
+};
+
+let getList = (~page=1, ~limit=10, ()) => {
+  let json = AxiosHooks.use({j|zoracle/data_sources?page=$page&limit=$limit|j});
+  json |> Belt.Option.map(_, DataSource.decodeList);
 };
