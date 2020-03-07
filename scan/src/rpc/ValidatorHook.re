@@ -1,5 +1,5 @@
 module Validator = {
-  type status_t = {
+  type node_status_t = {
     uptime: float,
     avgResponseTime: int,
   };
@@ -7,28 +7,25 @@ module Validator = {
     completedRequestCount: int,
     missedRequestCount: int,
   };
-  type proposed_block_t = {
-    height: int,
-    timestamp: MomentRe.Moment.t,
-    blockHash: string,
-    txn: int,
-  };
+  // type proposed_block_t = {
+  //   height: int,
+  //   timestamp: MomentRe.Moment.t,
+  //   blockHash: string,
+  //   txn: int,
+  // };
   type delegator_t = {
     delegator: string,
     sharePercentage: float,
     amount: int,
   };
-  type external_t = {
-    externalID: int,
-    externalValue: int,
-  };
   type report_t = {
     requestID: int,
-    txHash: string,
+    hash: Hash.t,
     oracleScriptID: int,
     oracleScriptName: string,
     dataSourceIDList: list(int),
-    externalList: list(external_t),
+    externalIDs: list(int),
+    externalValues: list(int),
   };
 
   type t = {
@@ -47,11 +44,11 @@ module Validator = {
     uptime: float,
     completedRequestCount: int,
     missedRequestCount: int,
-    indexNodeStatus: status_t,
+    nodeStatus: node_status_t,
     indexRequestCountResponse: request_t,
-    proposedBlockList: list(proposed_block_t),
-    delegatorList: list(delegator_t),
-    reportList: list(report_t),
+    proposedBlocks: list(BlockHook.Block.t),
+    delegators: list(delegator_t),
+    reports: list(report_t),
   };
 
   let decodeValidator = json =>
@@ -69,11 +66,11 @@ module Validator = {
       commission:
         json |> at(["commission", "commission_rates", "rate"], JsonUtils.Decode.floatstr),
       bondedHeight: 1,
-      // TODO: hard code
+      // TODO: mock for now
       uptime: 100.0,
       completedRequestCount: 23459,
       missedRequestCount: 100,
-      indexNodeStatus: {
+      nodeStatus: {
         uptime: 100.00,
         avgResponseTime: 2,
       },
@@ -81,21 +78,26 @@ module Validator = {
         completedRequestCount: 23459,
         missedRequestCount: 100,
       },
-      proposedBlockList: [
+      proposedBlocks: [
         {
+          hash: Hash.fromHex("6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"),
           height: 10,
           timestamp: MomentRe.momentWithUnix(1583465551),
-          blockHash: "bandvaloperwklefk234sdhf2jsadhfkalshdfk13e42",
-          txn: 10,
+          proposer:
+            Address.fromHex("15b6a7d60a1ba577524250833761c7afd6405d5a739791dca68feb3f11448506"),
+          numTxs: 10,
+          totalTxs: 100,
         },
         {
-          height: 11,
-          timestamp: MomentRe.momentWithUnix(1583465599),
-          blockHash: "bandvaloperwklefkasdadjsadhfkalshdfk13e42",
-          txn: 12,
+          hash: Hash.fromHex("4cbd10df46c72786dc91b78e44bea2e0718271495d46b63f59ff3cf2e6e86f96"),
+          height: 10,
+          timestamp: MomentRe.momentWithUnix(1583465251),
+          proposer: Address.fromHex("414a1428edf228cd7233502534e462270a723e1a0f31a6fe591b108883dcbf74"),
+          numTxs: 32,
+          totalTxs: 100,
         },
       ],
-      delegatorList: [
+      delegators: [
         {
           delegator: "bandvaloperwklefk234sdhf2jsadhfkalshdfk13e42",
           sharePercentage: 12.0,
@@ -107,25 +109,24 @@ module Validator = {
           amount: 88,
         },
       ],
-      reportList: [
+      reports: [
         {
           requestID: 10,
-          txHash: "29NMNMSD3312SF21DF3DS",
+          hash: Hash.fromBase64("1be50992b1a00d9ea17acaafcf11615e4f37cbc50160e70be4992854b57264e8"),
           oracleScriptID: 213,
           oracleScriptName: "Mean Crypto Price",
           dataSourceIDList: [1, 2],
-          externalList: [{externalID: 1, externalValue: 10}, {externalID: 2, externalValue: 2}],
+          externalIDs: [1, 2],
+          externalValues: [1, 2],
         },
         {
           requestID: 13,
-          txHash: "AKJS123FNK213SL3DF",
+          hash: Hash.fromBase64("a469056894d91a4987ef2a07f16fc7bbae04f8166b43aa168e71e48b71cac651"),
           oracleScriptID: 112,
           oracleScriptName: "US powerball",
           dataSourceIDList: [3, 4],
-          externalList: [
-            {externalID: 3, externalValue: 110},
-            {externalID: 4, externalValue: 32},
-          ],
+          externalIDs: [3, 110],
+          externalValues: [4, 32],
         },
       ],
     };
@@ -143,28 +144,12 @@ module GlobalInfo = {
   };
 };
 
-module ValidatorStatus = {
-  type t = {activeValidatorCount: int};
-
-  let decodeValidators = json =>
-    JsonUtils.Decode.{
-      activeValidatorCount: json |> field("result", list(_ => ())) |> Belt_List.length,
-    };
-};
-
-module ValidatorCount = {
-  type t = {validatorCount: int};
-  let decodeValidators = json =>
-    JsonUtils.Decode.{
-      validatorCount: json |> field("result", list(_ => ())) |> Belt_List.length,
-    };
-};
-
 let getValidators = (~limit=10, ~page=1, ~status="bonded", ()) => {
   let json = AxiosHooks.use({j|staking/validators?limit=$limit&page=$page&status=$status|j});
   json |> Belt.Option.map(_, Validator.decodeValidators);
 };
 
+// TODO: mock for now
 let getGlobalInfo = _ => {
   GlobalInfo.{
     allBondedAmount: 5353500,
@@ -174,14 +159,15 @@ let getGlobalInfo = _ => {
   };
 };
 
+let decodeValidators = json =>
+  JsonUtils.Decode.(json |> field("result", list(_ => ())) |> Belt_List.length);
+
 let getValidatorStatus = (~status="bonded", ()) => {
   let json = AxiosHooks.use({j|staking/validators?status=$status|j});
-  Js.Console.log(json |> Belt.Option.map(_, ValidatorStatus.decodeValidators));
-  json |> Belt.Option.map(_, ValidatorStatus.decodeValidators);
+  json |> Belt.Option.map(_, decodeValidators);
 };
 
 let getValidatorCount = _ => {
   let json = AxiosHooks.use({j|staking/validators|j});
-  Js.Console.log(json |> Belt.Option.map(_, ValidatorCount.decodeValidators));
-  json |> Belt.Option.map(_, ValidatorCount.decodeValidators);
+  json |> Belt.Option.map(_, decodeValidators);
 };
