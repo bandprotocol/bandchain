@@ -33,11 +33,11 @@ type ExecutionEnvironment interface {
 	// at the specified index.
 	GetValidatorAddress(validatorIndex int64) ([]byte, error)
 
-	// GetMaximumResultSize returns a maxixmum size of result data that returns from
+	// GetMaximumResultSize returns the maxixmum size of result data that returns from
 	// execute function.
 	GetMaximumResultSize() int64
 
-	// GetMaximumCalldataOfDataSourceSize returns a maximum size of call data using in
+	// GetMaximumCalldataOfDataSourceSize returns the maximum size of call data using in
 	// data source execution.
 	GetMaximumCalldataOfDataSourceSize() int64
 
