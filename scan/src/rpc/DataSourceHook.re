@@ -25,48 +25,24 @@ module DataSource = {
       executable: json |> field("executable", string) |> JsBuffer.fromBase64,
       requests: [
         {
-          info: {
-            name: "Oracle script1",
-            codeHash:
-              "6E1EAE347E7F2E27DFE6F21328DF7EB6A599D4F0ED73D54B356C77646FBEC33D" |> Hash.fromHex,
-            params: [],
-            dataSources: [],
-            result: [],
-            creator: "band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9" |> Address.fromBech32,
-          },
-          codeHash:
-            "6E1EAE347E7F2E27DFE6F21328DF7EB6A599D4F0ED73D54B356C77646FBEC33D" |> Hash.fromHex,
-          params: [|("symbol", "ETH" |> Json.Encode.string)|],
-          targetBlock: 50000,
-          requester: "band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9" |> Address.fromBech32,
+          id: 1,
+          oracleScriptID: 1,
+          calldata: "AAAAAAAAV0M=" |> JsBuffer.fromBase64,
+          requestedValidators: [
+            "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,
+            "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
+          ],
+          sufficientValidatorCount: 2,
+          expirationHeight: 3000,
+          resolveStatus: Success,
+          requester: "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
           txHash:
-            "D3C77B93B10169E9D3C5ACA9A4A049CED40D7BE231E5D1A79FFAE7498952A032" |> Hash.fromHex,
-          requestedAtHeight: 45000,
-          requestedAtTime: MomentRe.momentWithUnix(1583465551),
+            "AC006D7136B0041DA4568A4CA5B7C1F8E8E0B4A74F11213B99EC4956CC8A247C" |> Hash.fromHex,
+          requestedAtHeight: 40000,
+          requestedAtTime: MomentRe.momentNow(),
+          rawDataRequests: [],
           reports: [],
-          result: [|("price_in_usd", 201.89 |> Json.Encode.float)|],
-        },
-        {
-          info: {
-            name: "Oracle script5",
-            codeHash:
-              "6E1EAE347E7F2E27DFE6F21328DF7EB6A599D4F0ED73D54B356C77646FBEC33D" |> Hash.fromHex,
-            params: [],
-            dataSources: [],
-            result: [],
-            creator: "band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9" |> Address.fromBech32,
-          },
-          codeHash:
-            "6E1EAE347E7F2E27DFE6F21328DF7EB6A599D4F0ED73D54B356C77646FBEC33D" |> Hash.fromHex,
-          params: [|("symbol", "BTC" |> Json.Encode.string)|],
-          targetBlock: 50000,
-          requester: "band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9" |> Address.fromBech32,
-          txHash:
-            "D3C77B93B10169E9D3C5ACA9A4A049CED40D7BE231E5D1A79FFAE7498952A032" |> Hash.fromHex,
-          requestedAtHeight: 45000,
-          requestedAtTime: MomentRe.momentWithUnix(1583465551),
-          reports: [],
-          result: [|("price_in_usd", 9065.89 |> Json.Encode.float)|],
+          result: Some("AAAAAAAAV0M=" |> JsBuffer.fromBase64),
         },
       ],
       revisions: [
