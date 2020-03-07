@@ -50,7 +50,12 @@ func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorU
 
 	for _, dataSource := range data.DataSources {
 		err := k.AddDataSource(
-			ctx, dataSource.Owner, dataSource.Name, dataSource.Fee, dataSource.Executable,
+			ctx,
+			dataSource.Owner,
+			dataSource.Name,
+			dataSource.Description,
+			dataSource.Fee,
+			dataSource.Executable,
 		)
 		if err != nil {
 			panic(err)
@@ -59,7 +64,7 @@ func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorU
 
 	for _, oracleScript := range data.OracleScripts {
 		err := k.AddOracleScript(
-			ctx, oracleScript.Owner, oracleScript.Name, oracleScript.Code,
+			ctx, oracleScript.Owner, oracleScript.Name, oracleScript.Description, oracleScript.Code,
 		)
 		if err != nil {
 			panic(err)

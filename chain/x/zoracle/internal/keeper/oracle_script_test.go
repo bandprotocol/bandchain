@@ -164,11 +164,13 @@ func TestGetAllOracleScripts(t *testing.T) {
 		types.NewOracleScript(
 			sdk.AccAddress([]byte("owner1")),
 			"name1",
+			"description1",
 			[]byte("code1"),
 		),
 		types.NewOracleScript(
 			sdk.AccAddress([]byte("owner2")),
 			"name2",
+			"description2",
 			[]byte("code2"),
 		),
 	}

@@ -178,12 +178,14 @@ func TestGetAllDataSources(t *testing.T) {
 		types.NewDataSource(
 			sdk.AccAddress([]byte("owner1")),
 			"name1",
+			"description1",
 			sdk.NewCoins(sdk.NewInt64Coin("uband", 10)),
 			[]byte("code1"),
 		),
 		types.NewDataSource(
 			sdk.AccAddress([]byte("owner2")),
 			"name2",
+			"description2",
 			sdk.NewCoins(sdk.NewInt64Coin("uband", 100)),
 			[]byte("code2"),
 		),

@@ -61,7 +61,7 @@ func main() {
 			}
 			fmt.Println(tx.SendTransaction(
 				[]sdk.Msg{zoracle.NewMsgCreateDataSource(
-					tx.Sender(), "Coingecko script", "The Script that queries crypto price from https://cryptocompare.com", sdk.Coins{}, coingecko, tx.Sender(),
+					tx.Sender(), "Coingecko script", "The Script that queries crypto price from https://coingecko.com", sdk.Coins{}, coingecko, tx.Sender(),
 				)},
 				0, 1000000, "", "", "",
 				flags.BroadcastBlock,
@@ -179,7 +179,7 @@ func main() {
 
 			for i := uint64(0); i < round; i++ {
 				fmt.Println(tx.SendTransaction(
-					[]sdk.Msg{zoracle.NewMsgCreateOracleScript(tx.Sender(), fmt.Sprintf("Silly script %d", i),"Test oracle script", bytes, tx.Sender())},
+					[]sdk.Msg{zoracle.NewMsgCreateOracleScript(tx.Sender(), fmt.Sprintf("Silly script %d", i), "Test oracle script", bytes, tx.Sender())},
 					0, 1000000, "", "", "",
 					flags.BroadcastBlock,
 				))

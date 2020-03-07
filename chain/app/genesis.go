@@ -124,12 +124,25 @@ func NewDefaultGenesisState() GenesisState {
 func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage {
 	state := zoracle.DefaultGenesisState()
 	dataSources := []struct {
-		name string
-		path string
+		name        string
+		description string
+		path        string
 	}{
-		{"Coingecko script", "./datasources/coingecko_price.sh"},
-		{"Crypto compare script", "./datasources/crypto_compare_price.sh"},
-		{"Binance price", "./datasources/binance_price.sh"},
+		{
+			"Coingecko script",
+			"The Script that queries crypto price from https://coingecko.com",
+			"./datasources/coingecko_price.sh",
+		},
+		{
+			"Crypto compare script",
+			"The Script that queries crypto price from https://cryptocompare.com",
+			"./datasources/crypto_compare_price.sh",
+		},
+		{
+			"Binance price",
+			"The Script that queries crypto price from https://www.binance.com/en",
+			"./datasources/binance_price.sh",
+		},
 	}
 
 	// TODO: Find a better way to specify path to data sources
@@ -142,6 +155,7 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 		state.DataSources[i] = zoracle.NewDataSource(
 			owner,
 			dataSource.name,
+			dataSource.description,
 			sdk.Coins{},
 			script,
 		)
@@ -149,10 +163,15 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 
 	// TODO: Find a better way to specify path to oracle scripts
 	oracleScripts := []struct {
-		name string
-		path string
+		name        string
+		description string
+		path        string
 	}{
-		{"Crypto price script", "./owasm/res/crypto_price.wasm"},
+		{
+			"Crypto price script",
+			"Oracle script for getting an average crypto price from many sources.",
+			"./owasm/res/crypto_price.wasm",
+		},
 	}
 	state.OracleScripts = make([]zoracle.OracleScript, len(oracleScripts))
 	for i, oracleScript := range oracleScripts {
@@ -163,6 +182,7 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 		state.OracleScripts[i] = zoracle.NewOracleScript(
 			owner,
 			oracleScript.name,
+			oracleScript.description,
 			code,
 		)
 	}
