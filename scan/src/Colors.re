@@ -29,6 +29,7 @@ let orange6 = Css.hex("DB6124");
 
 let darkBlue = Css.hex("396EAB");
 let brightBlue = Css.hex("5269FF");
+let brightLightBlue = Css.hex("7183F4");
 let lightBlue = Css.hex("E2F0FF");
 let lighterBlue = Css.hex("F8FAFF");
 let blue1 = Css.hex("EBEDFF");
