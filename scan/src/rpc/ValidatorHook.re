@@ -3,16 +3,6 @@ module Validator = {
     uptime: float,
     avgResponseTime: int,
   };
-  type request_t = {
-    completedRequestCount: int,
-    missedRequestCount: int,
-  };
-  // type proposed_block_t = {
-  //   height: int,
-  //   timestamp: MomentRe.Moment.t,
-  //   blockHash: string,
-  //   txn: int,
-  // };
   type delegator_t = {
     delegator: string,
     sharePercentage: float,
@@ -45,7 +35,6 @@ module Validator = {
     completedRequestCount: int,
     missedRequestCount: int,
     nodeStatus: node_status_t,
-    indexRequestCountResponse: request_t,
     proposedBlocks: list(BlockHook.Block.t),
     delegators: list(delegator_t),
     reports: list(report_t),
@@ -74,10 +63,6 @@ module Validator = {
         uptime: 100.00,
         avgResponseTime: 2,
       },
-      indexRequestCountResponse: {
-        completedRequestCount: 23459,
-        missedRequestCount: 100,
-      },
       proposedBlocks: [
         {
           hash: Hash.fromHex("6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"),
@@ -92,7 +77,8 @@ module Validator = {
           hash: Hash.fromHex("4cbd10df46c72786dc91b78e44bea2e0718271495d46b63f59ff3cf2e6e86f96"),
           height: 10,
           timestamp: MomentRe.momentWithUnix(1583465251),
-          proposer: Address.fromHex("414a1428edf228cd7233502534e462270a723e1a0f31a6fe591b108883dcbf74"),
+          proposer:
+            Address.fromHex("414a1428edf228cd7233502534e462270a723e1a0f31a6fe591b108883dcbf74"),
           numTxs: 32,
           totalTxs: 100,
         },
@@ -112,7 +98,8 @@ module Validator = {
       reports: [
         {
           requestID: 10,
-          hash: Hash.fromBase64("1be50992b1a00d9ea17acaafcf11615e4f37cbc50160e70be4992854b57264e8"),
+          hash:
+            Hash.fromBase64("1be50992b1a00d9ea17acaafcf11615e4f37cbc50160e70be4992854b57264e8"),
           oracleScriptID: 213,
           oracleScriptName: "Mean Crypto Price",
           dataSourceIDList: [1, 2],
@@ -121,7 +108,8 @@ module Validator = {
         },
         {
           requestID: 13,
-          hash: Hash.fromBase64("a469056894d91a4987ef2a07f16fc7bbae04f8166b43aa168e71e48b71cac651"),
+          hash:
+            Hash.fromBase64("a469056894d91a4987ef2a07f16fc7bbae04f8166b43aa168e71e48b71cac651"),
           oracleScriptID: 112,
           oracleScriptName: "US powerball",
           dataSourceIDList: [3, 4],
