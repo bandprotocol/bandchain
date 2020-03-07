@@ -10,7 +10,7 @@ module Styles = {
       display(`flex),
       alignItems(`center),
       padding2(~v=`px(10), ~h=`px(0)),
-      minHeight(`px(60)),
+      minHeight(`px(45)),
     ]);
 };
 

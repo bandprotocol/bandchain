@@ -13,7 +13,7 @@ module Styles = {
       height(`px(1)),
       marginLeft(`px(10)),
       marginRight(`px(10)),
-      backgroundColor(Colors.grayHeader),
+      backgroundColor(Colors.mediumGray),
     ]);
 };
 
@@ -31,7 +31,7 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
             spacing={Text.Em(0.06)}
             height={Text.Px(15)}
             nowrap=true
-            color=Colors.grayHeader
+            color=Colors.mediumGray
             block=true
           />
           <div className=Styles.seperatedLine />
@@ -40,7 +40,7 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
             size=Text.Md
             weight=Text.Thin
             spacing={Text.Em(0.06)}
-            color=Colors.grayHeader
+            color=Colors.mediumGray
             nowrap=true
           />
         </div>
@@ -64,7 +64,10 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
         <InfoHL
           header="OWNER"
           info={
-            InfoHL.Address("band1gfskuezzv9hxgsnpdejyyctwv3pxzmnywps0q9" |> Address.fromBech32)
+            InfoHL.Address(
+              "band1gfskuezzv9hxgsnpdejyyctwv3pxzmnywps0q9" |> Address.fromBech32,
+              Colors.mediumGray,
+            )
           }
         />
       </Col>
@@ -91,8 +94,8 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
       {switch (hashtag) {
        | DataSourceExecute => <DataSourceExecute />
        | DataSourceCode => <DataSourceCode />
-       | DataSourceRequests => <div> {"Requests" |> React.string} </div>
-       | DataSourceRevisions => <div> {"Revisions" |> React.string} </div>
+       | DataSourceRequests => <DataSourceTable />
+       | DataSourceRevisions => <RevisionTable />
        }}
     </Tab>
   </div>;

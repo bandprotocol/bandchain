@@ -59,7 +59,7 @@ module Styles = {
     | TxHook.Msg.Request(_) => ("DATA REQUEST", Colors.darkBlue, Colors.lightBlue)
     | TxHook.Msg.Send(_) => ("SEND TOKEN", Colors.purple, Colors.lightPurple)
     | TxHook.Msg.Report(_) => ("DATA REPORT", Colors.darkIndigo, Colors.lightIndigo)
-    | Unknown => ("Unknown", Colors.darkGrayText, Colors.grayHeader)
+    | Unknown => ("Unknown", Colors.darkGrayText, Colors.mediumGray)
     };
   };
 };

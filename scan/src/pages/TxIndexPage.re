@@ -11,7 +11,7 @@ module Styles = {
       height(`px(1)),
       marginLeft(`px(10)),
       marginRight(`px(10)),
-      backgroundColor(Colors.grayHeader),
+      backgroundColor(Colors.mediumGray),
     ]);
 
   let addressContainer = style([marginTop(`px(25)), marginBottom(`px(44))]);
@@ -52,7 +52,7 @@ let make = (~txHash) => {
             value="TRANSACTION"
             weight=Text.Medium
             nowrap=true
-            color=Colors.grayHeader
+            color=Colors.mediumGray
             spacing={Text.Em(0.06)}
             block=true
           />
