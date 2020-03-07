@@ -132,7 +132,7 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 		{"Binance price", "./datasources/binance_price.sh"},
 	}
 
-	// TODO: Find a better way to specific path to data sources
+	// TODO: Find a better way to specify path to data sources
 	state.DataSources = make([]zoracle.DataSource, len(dataSources))
 	for i, dataSource := range dataSources {
 		script, err := ioutil.ReadFile(dataSource.path)
@@ -147,7 +147,7 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 		)
 	}
 
-	// TODO: Find a better way to specific path to oracle scripts
+	// TODO: Find a better way to specify path to oracle scripts
 	oracleScripts := []struct {
 		name string
 		path string
