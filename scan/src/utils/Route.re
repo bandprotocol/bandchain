@@ -14,6 +14,10 @@ type request_tab_t =
   | RequestReportStatus
   | RequestProof;
 
+type account_tab_t =
+  | AccountTransactions
+  | AccountDelegations;
+
 type t =
   | NotFound
   | HomePage
@@ -24,7 +28,8 @@ type t =
   | TxIndexPage(Hash.t)
   | BlockHomePage
   | BlockIndexPage(int)
-  | RequestIndexPage(int, request_tab_t);
+  | RequestIndexPage(int, request_tab_t)
+  | AccountIndexPage(Address.t, account_tab_t);
 
 let fromUrl = (url: ReasonReactRouter.url) =>
   switch (url.path, url.hash) {
@@ -51,6 +56,10 @@ let fromUrl = (url: ReasonReactRouter.url) =>
     BlockIndexPage(blockHeightIntOpt->Belt_Option.getWithDefault(0));
   | (["request", reqID], "proof") => RequestIndexPage(reqID |> int_of_string, RequestProof)
   | (["request", reqID], _) => RequestIndexPage(reqID |> int_of_string, RequestReportStatus)
+  | (["account", address], "delegations") =>
+    AccountIndexPage(address |> Address.fromBech32, AccountDelegations)
+  | (["account", address], _) =>
+    AccountIndexPage(address |> Address.fromBech32, AccountTransactions)
   | ([], "") => HomePage
   | (_, _) => NotFound
   };
@@ -72,6 +81,8 @@ let toString =
   | BlockIndexPage(height) => {j|/block/$height|j}
   | RequestIndexPage(reqID, RequestReportStatus) => {j|/request/$reqID|j}
   | RequestIndexPage(reqID, RequestProof) => {j|/request/$reqID#proof|j}
+  | AccountIndexPage(address, AccountTransactions) => {j|/account/$address|j}
+  | AccountIndexPage(address, AccountDelegations) => {j|/account/$address#delegations|j}
   | HomePage
   | NotFound => "/";
 
