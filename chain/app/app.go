@@ -34,6 +34,7 @@ import (
 const (
 	appName          = "BandApp"
 	Bech32MainPrefix = "band"
+	Bip44CoinType    = 494
 )
 
 var (
@@ -81,10 +82,20 @@ func MakeCodec() *codec.Codec {
 	return cdc
 }
 
-func SetBech32AddressPrefixes(config *sdk.Config) {
-	config.SetBech32PrefixForAccount(Bech32MainPrefix, Bech32MainPrefix+sdk.PrefixPublic)
-	config.SetBech32PrefixForValidator(Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator, Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator+sdk.PrefixPublic)
-	config.SetBech32PrefixForConsensusNode(Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus, Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus+sdk.PrefixPublic)
+func SetBech32AddressPrefixesAndBip44CoinType(config *sdk.Config) {
+	config.SetBech32PrefixForAccount(
+		Bech32MainPrefix,
+		Bech32MainPrefix+sdk.PrefixPublic,
+	)
+	config.SetBech32PrefixForValidator(
+		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator,
+		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator+sdk.PrefixPublic,
+	)
+	config.SetBech32PrefixForConsensusNode(
+		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus,
+		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus+sdk.PrefixPublic,
+	)
+	config.SetCoinType(Bip44CoinType)
 }
 
 type bandApp struct {

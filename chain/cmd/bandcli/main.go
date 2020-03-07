@@ -30,7 +30,7 @@ func main() {
 
 	// Read in the configuration file for the sdk
 	config := sdk.GetConfig()
-	app.SetBech32AddressPrefixes(config)
+	app.SetBech32AddressPrefixesAndBip44CoinType(config)
 	config.Seal()
 
 	rootCmd := &cobra.Command{
