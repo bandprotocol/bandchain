@@ -1,5 +1,5 @@
 type data_source_tab_t =
-  | DataSourceTransactions
+  | DataSourceExecute
   | DataSourceCode
   | DataSourceRequests
   | DataSourceRevisions;
@@ -35,7 +35,7 @@ let fromUrl = (url: ReasonReactRouter.url) =>
   | (["data-source", dataSourceID], "revisions") =>
     DataSourceIndexPage(dataSourceID |> int_of_string, DataSourceRevisions)
   | (["data-source", dataSourceID], _) =>
-    DataSourceIndexPage(dataSourceID |> int_of_string, DataSourceTransactions)
+    DataSourceIndexPage(dataSourceID |> int_of_string, DataSourceExecute)
   | (["scripts"], _) => ScriptHomePage
   | (["script", codeHash], "code") => ScriptIndexPage(codeHash |> Hash.fromHex, ScriptCode)
   | (["script", codeHash], "execute") =>
@@ -57,7 +57,7 @@ let fromUrl = (url: ReasonReactRouter.url) =>
 
 let toString =
   fun
-  | DataSourceIndexPage(dataSourceID, DataSourceTransactions) => {j|/data-source/$dataSourceID|j}
+  | DataSourceIndexPage(dataSourceID, DataSourceExecute) => {j|/data-source/$dataSourceID|j}
   | DataSourceIndexPage(dataSourceID, DataSourceCode) => {j|/data-source/$dataSourceID#code|j}
   | DataSourceIndexPage(dataSourceID, DataSourceRequests) => {j|/data-source/$dataSourceID#requests|j}
   | DataSourceIndexPage(dataSourceID, DataSourceRevisions) => {j|/data-source/$dataSourceID#revisions|j}
