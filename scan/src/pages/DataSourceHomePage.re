@@ -116,7 +116,7 @@ let make = () => {
          ),
          (
            2,
-           "CoinGecko V.2",
+           "Koo",
            MomentRe.momentNow()
            |> MomentRe.Moment.subtract(~duration=MomentRe.duration(2., `hours)),
            "band17rprjgtj0krfw3wyl9creueej6ca9dc4dgxv6e" |> Address.fromBech32,
@@ -124,7 +124,7 @@ let make = () => {
          ),
          (
            3,
-           "CoinGecko V.2",
+           "Binance",
            MomentRe.momentNow()
            |> MomentRe.Moment.subtract(~duration=MomentRe.duration(10., `hours)),
            "band17rprjgtj0krfw3wyl9creueej6ca9dc4dgxv6e" |> Address.fromBech32,
@@ -132,7 +132,7 @@ let make = () => {
          ),
          (
            4,
-           "CoinGecko V.2",
+           "CMC",
            MomentRe.momentNow()
            |> MomentRe.Moment.subtract(~duration=MomentRe.duration(22., `hours)),
            "band17rprjgtj0krfw3wyl9creueej6ca9dc4dgxv6e" |> Address.fromBech32,
