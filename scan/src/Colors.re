@@ -45,8 +45,8 @@ let btnGreen = Css.hex("AAEEE7");
 
 let grayText = Css.hex("A4A4A4");
 let lightGray = Css.hex("EEEEEE");
-let grayHeader = Css.hex("555555");
-let graySubHeader = Css.hex("888888");
+let mediumGray = Css.hex("555555");
+let mediumLightGray = Css.hex("888888");
 let lighterGray = Css.hex("F9F9F9");
 
 let darkGrayText = Css.hex("777F8E");
@@ -54,3 +54,6 @@ let darkGrayText = Css.hex("777F8E");
 let white = Css.hex("ffffff");
 
 let black = Css.hex("000000");
+
+let brightOrange = Css.hex("EB7E47");
+let brightPink = Css.hex("EB4773");
