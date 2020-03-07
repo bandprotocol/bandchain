@@ -90,6 +90,7 @@ let make = () => {
          | BlockHomePage => <BlockHomePage />
          | BlockIndexPage(height) => <BlockIndexPage height />
          | RequestIndexPage(reqID, hashtag) => <RequestIndexPage reqID hashtag />
+         | AccountIndexPage(address, hashtag) => <AccountIndexPage address hashtag />
          | NotFound =>
            ReasonReactRouter.replace("/");
            React.null;
