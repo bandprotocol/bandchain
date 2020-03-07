@@ -98,7 +98,7 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) => <div />;
 //               weight=Text.Semibold
 //               size=Text.Lg
 //               nowrap=true
-//               color=Colors.grayHeader
+//               color=Colors.mediumGray
 //               block=true
 //             />
 //             <HSpacing size=Spacing.sm />
@@ -201,7 +201,7 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) => <div />;
 //                 ? React.null
 //                 : <Text
 //                     value={j|Data Report from $reportedValidators Validators (Completed $reportedValidators/$totalValidators)|j}
-//                     color=Colors.grayHeader
+//                     color=Colors.mediumGray
 //                     size=Text.Lg
 //                   />}
 //              <VSpacing size=Spacing.lg />
