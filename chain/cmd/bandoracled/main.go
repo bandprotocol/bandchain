@@ -133,7 +133,7 @@ func handleRequest(requestID zoracle.RequestID) (sdk.TxResponse, error) {
 		go func(externalID zoracle.ExternalID, dataSourceID zoracle.DataSourceID, calldata []byte) {
 			info := queryParallelInfo{externalID: externalID, answer: []byte{}, err: nil}
 			res, _, err := cliCtx.Query(
-				fmt.Sprintf("custom/zoracle/%s/%d", zoracle.QueryDataSourceByID, int64(dataSourceID)),
+				fmt.Sprintf("custom/zoracle/%s/%d", zoracle.QueryDataSourceByID, dataSourceID),
 			)
 
 			if err != nil {

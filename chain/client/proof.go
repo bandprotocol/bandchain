@@ -406,7 +406,6 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 		requestID := zoracle.RequestID(intRequestID)
 
-
 		rc, err := cliCtx.Client.Commit(nil)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
@@ -420,7 +419,7 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		var queryRequest zoracle.RequestQuerierInfo
-		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/zoracle/request/%d", uint64(requestID)), nil)
+		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/zoracle/request/%d", requestID), nil)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
