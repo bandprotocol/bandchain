@@ -117,9 +117,9 @@ func main() {
 			case "BTC":
 				{
 					fmt.Println(tx.SendTransaction(
-						zoracle.NewMsgRequestData(
-							1, []byte("BTC"), 4, 4, 100000, prepareGas, executeGas, tx.Sender(),
-						), 1000000, "",
+						[]sdk.Msg{zoracle.NewMsgRequestData(1, []byte("BTC"), 1, 1, 100000, prepareGas, executeGas, tx.Sender())},
+						0, 1000000, "", "", "",
+						flags.BroadcastBlock,
 					))
 				}
 			case "ETH":
@@ -194,7 +194,7 @@ func main() {
 			))
 
 			fmt.Println(tx.SendTransaction(
-				[]sdk.Msg{zoracle.NewMsgRequestData(1, []byte("calldata"), 1, 1, 100, prepareGas, executeGas, tx.Sender())},
+				[]sdk.Msg{zoracle.NewMsgRequestData(1, []byte("calldata"), 4, 1, 100, prepareGas, executeGas, tx.Sender())},
 				0, 1000000, "", "", "",
 				flags.BroadcastBlock,
 			))
@@ -202,13 +202,11 @@ func main() {
 			fmt.Println(valTx.SendTransaction(
 				[]sdk.Msg{zoracle.NewMsgReportData(
 					1,
-					sdk.NewDecCoins(sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(1)))),
+					sdk.NewDecCoins(sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(12)))),
 					[]zoracle.RawDataReport{
 						zoracle.NewRawDataReport(1, []byte("data1")),
-					},
-					sdk.ValAddress(valTx.Sender()),
-				)},
-				0, 1000000, "", "", "",
+					}, sdk.ValAddress(valTx.Sender()))},
+				0, 90000, "", "1000000uband", "",
 				flags.BroadcastBlock,
 			))
 		}
