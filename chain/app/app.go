@@ -330,10 +330,9 @@ func NewBandApp(
 				fee := stdTx.Fee
 				for _, msg := range tx.GetMsgs() {
 					if report, ok := msg.(zoracle.MsgReportData); ok {
-						refundGasPrice := sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(report.RefundGasPrice)))
-						_, refundGasPriceExceedTxGasPrice := fee.GasPrices().SafeSub(sdk.NewDecCoins(refundGasPrice))
+						_, refundGasPriceExceedTxGasPrice := fee.GasPrices().SafeSub(report.RefundGasPrice)
 						if refundGasPriceExceedTxGasPrice {
-							return ctx, sdk.ErrInternal(fmt.Sprintf("refundGasPrice(%s) exceed txGasPrice(%s)", refundGasPrice.String(), fee.GasPrices().String())).Result(), true
+							return ctx, sdk.ErrInternal(fmt.Sprintf("refundGasPrice(%s) exceed txGasPrice(%s)", report.RefundGasPrice.String(), fee.GasPrices().String())).Result(), true
 						}
 					}
 				}

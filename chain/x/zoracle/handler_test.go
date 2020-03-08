@@ -278,7 +278,7 @@ func TestReportSuccess(t *testing.T) {
 	ctx = ctx.WithBlockHeight(5)
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589800), 0))
 
-	msg := types.NewMsgReportData(1, sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(0))), []types.RawDataReport{
+	msg := types.NewMsgReportData(1, sdk.NewDecCoins(sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(0)))), []types.RawDataReport{
 		types.NewRawDataReport(42, []byte("data1")),
 	}, validatorAddress1)
 
@@ -287,7 +287,7 @@ func TestReportSuccess(t *testing.T) {
 	list := keeper.GetPendingResolveList(ctx)
 	require.Equal(t, []types.RequestID{}, list)
 
-	msg = types.NewMsgReportData(1, sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(0))), []types.RawDataReport{
+	msg = types.NewMsgReportData(1, sdk.NewDecCoins(sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(0)))), []types.RawDataReport{
 		types.NewRawDataReport(42, []byte("data2")),
 	}, validatorAddress2)
 
@@ -329,7 +329,7 @@ func TestReportFailed(t *testing.T) {
 	ctx = ctx.WithBlockHeight(5)
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589800), 0))
 
-	msg := types.NewMsgReportData(1, sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(0))), []types.RawDataReport{
+	msg := types.NewMsgReportData(1, sdk.NewDecCoins(sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(0)))), []types.RawDataReport{
 		types.NewRawDataReport(41, []byte("data1")),
 	}, validatorAddress1)
 
