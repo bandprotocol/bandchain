@@ -27,6 +27,7 @@ import (
 )
 
 const Bech32MainPrefix = "band"
+const Bip44CoinType = 494
 
 func createTestCodec() *codec.Codec {
 	var cdc = codec.New()
@@ -36,10 +37,20 @@ func createTestCodec() *codec.Codec {
 	return cdc
 }
 
-func SetBech32AddressPrefixes(config *sdk.Config) {
-	config.SetBech32PrefixForAccount(Bech32MainPrefix, Bech32MainPrefix+sdk.PrefixPublic)
-	config.SetBech32PrefixForValidator(Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator, Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator+sdk.PrefixPublic)
-	config.SetBech32PrefixForConsensusNode(Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus, Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus+sdk.PrefixPublic)
+func SetBech32AddressPrefixesAndBip44CoinType(config *sdk.Config) {
+	config.SetBech32PrefixForAccount(
+		Bech32MainPrefix,
+		Bech32MainPrefix+sdk.PrefixPublic,
+	)
+	config.SetBech32PrefixForValidator(
+		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator,
+		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator+sdk.PrefixPublic,
+	)
+	config.SetBech32PrefixForConsensusNode(
+		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus,
+		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus+sdk.PrefixPublic,
+	)
+	config.SetCoinType(Bip44CoinType)
 }
 
 func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
@@ -51,7 +62,7 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 	keySupply := sdk.NewKVStoreKey(supply.StoreKey)
 
 	config := sdk.GetConfig()
-	SetBech32AddressPrefixes(config)
+	SetBech32AddressPrefixesAndBip44CoinType(config)
 
 	db := dbm.NewMemDB()
 
