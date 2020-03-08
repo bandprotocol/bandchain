@@ -229,7 +229,9 @@ func handleMsgReportData(ctx sdk.Context, keeper Keeper, msg MsgReportData) sdk.
 		ctx,
 		auth.FeeCollectorName,
 		msg.GetSigners()[0],
-		sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(msg.RefundGasPrice*int64(ctx.GasMeter().GasConsumed()-startGas)))),
+		sdk.NewCoins(
+			sdk.NewCoin("uband", msg.RefundGasPrice.AmountOf("uband").Mul(sdk.NewInt(int64(ctx.GasMeter().GasConsumed()-startGas)))),
+		),
 	)
 	if err != nil {
 		return err.Result()

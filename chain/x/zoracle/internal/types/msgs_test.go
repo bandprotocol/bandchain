@@ -122,7 +122,7 @@ func TestMsgReportData(t *testing.T) {
 	requestID := RequestID(3)
 	data := []RawDataReport{NewRawDataReport(1, []byte("data1")), NewRawDataReport(2, []byte("data2"))}
 	provider, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
-	msg := NewMsgReportData(requestID, 0, data, provider)
+	msg := NewMsgReportData(requestID, sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(0))), data, provider)
 
 	require.Equal(t, RouterKey, msg.Route())
 	require.Equal(t, "report", msg.Type())
@@ -137,11 +137,11 @@ func TestMsgReportDataValidation(t *testing.T) {
 		valid bool
 		tx    MsgReportData
 	}{
-		{true, NewMsgReportData(requestID, 0, data, validator)},
-		{false, NewMsgReportData(-1, 0, data, validator)},
-		{false, NewMsgReportData(requestID, 0, []RawDataReport{}, validator)},
-		{false, NewMsgReportData(requestID, 0, nil, validator)},
-		{false, NewMsgReportData(requestID, 0, data, failValidator)},
+		{true, NewMsgReportData(requestID, sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(0))), data, validator)},
+		{false, NewMsgReportData(-1, sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(0))), data, validator)},
+		{false, NewMsgReportData(requestID, sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(0))), []RawDataReport{}, validator)},
+		{false, NewMsgReportData(requestID, sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(0))), nil, validator)},
+		{false, NewMsgReportData(requestID, sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(0))), data, failValidator)},
 	}
 
 	for _, tc := range cases {
@@ -161,10 +161,10 @@ func TestMsgReportDataGetSignBytes(t *testing.T) {
 	requestID := RequestID(3)
 	data := []RawDataReport{NewRawDataReport(1, []byte("data1")), NewRawDataReport(2, []byte("data2"))}
 	validator, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
-	msg := NewMsgReportData(requestID, 0, data, validator)
+	msg := NewMsgReportData(requestID, sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(0))), data, validator)
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"zoracle/Report","value":{"dataSet":[{"data":"ZGF0YTE=","externalDataID":"1"},{"data":"ZGF0YTI=","externalDataID":"2"}],"refundGasPrice":"0","requestID":"3","sender":"bandvaloper1hq8j5h0h64csk9tz95df783cxr0dt0dgay2kyy"}}`
+	expected := `{"type":"zoracle/Report","value":{"dataSet":[{"data":"ZGF0YTE=","externalDataID":"1"},{"data":"ZGF0YTI=","externalDataID":"2"}],"refundGasPrice":[],"requestID":"3","sender":"bandvaloper1hq8j5h0h64csk9tz95df783cxr0dt0dgay2kyy"}}`
 
 	require.Equal(t, expected, string(res))
 }

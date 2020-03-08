@@ -101,7 +101,7 @@ func (msg MsgRequestData) GetSignBytes() []byte {
 // MsgReportData is a message sent by each of the block validators to respond to a data request.
 type MsgReportData struct {
 	RequestID      int64           `json:"requestID"`
-	RefundGasPrice int64           `json:"refundGasPrice"`
+	RefundGasPrice sdk.Coins       `json:"refundGasPrice"`
 	DataSet        []RawDataReport `json:"dataSet"`
 	Sender         sdk.ValAddress  `json:"sender"`
 }
@@ -109,7 +109,7 @@ type MsgReportData struct {
 // NewMsgReportData creates a new MsgReportData instance.
 func NewMsgReportData(
 	requestID int64,
-	refundGasPrice int64,
+	refundGasPrice sdk.Coins,
 	dataSet []RawDataReport,
 	sender sdk.ValAddress,
 ) MsgReportData {
