@@ -298,6 +298,58 @@ func TestReportSuccess(t *testing.T) {
 	require.Equal(t, []types.RequestID{1}, list)
 }
 
+func TestReportAndGetRefund(t *testing.T) {
+	// Setup test environment
+	ctx, keeper := keep.CreateTestInput(t, false)
+
+	ctx = ctx.WithBlockHeight(2)
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	calldata := []byte("calldata")
+
+	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
+	keeper.SetOracleScript(ctx, 1, script)
+
+	pub := "03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f"
+
+	validatorAddress1 := keep.SetupTestValidator(ctx, keeper, pub, 100)
+	address1, err := keep.GetAddressFromPub(pub)
+	require.Nil(t, err)
+
+	dataSource := keep.GetTestDataSource()
+	keeper.SetDataSource(ctx, 1, dataSource)
+
+	_, err = keep.AddUBandToAddress(ctx, keeper, address1, 1000000)
+	require.Nil(t, err)
+
+	balance := keeper.CoinKeeper.GetCoins(ctx, address1)
+	require.Equal(t, keep.NewUBandCoins(1000000), balance)
+
+	keeper.SupplyKeeper.SendCoinsFromAccountToModule(ctx, address1, "fee_collector", keep.NewUBandCoins(500000))
+	balance = keeper.CoinKeeper.GetCoins(ctx, address1)
+	require.Equal(t, keep.NewUBandCoins(500000), balance)
+
+	request := types.NewRequest(1, calldata,
+		[]sdk.ValAddress{validatorAddress1}, 2,
+		2, 1581589790, 102, 1000000,
+	)
+	keeper.SetRequest(ctx, 1, request)
+	keeper.SetRawDataRequest(ctx, 1, 42, types.NewRawDataRequest(1, []byte("calldata1")))
+
+	ctx = ctx.WithBlockHeight(5)
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589800), 0))
+
+	msg := types.NewMsgReportData(1, sdk.NewDecCoins(sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(10)))), []types.RawDataReport{
+		types.NewRawDataReport(42, []byte("data1")),
+	}, validatorAddress1)
+
+	got := handleMsgReportData(ctx, keeper, msg)
+	require.True(t, got.IsOK(), "expected report to be ok, got %v", got)
+
+	// Should get refund back
+	balance = keeper.CoinKeeper.GetCoins(ctx, address1)
+	require.Equal(t, keep.NewUBandCoins(500000+128320), balance)
+}
+
 func TestReportFailed(t *testing.T) {
 	// Setup test environment
 	ctx, keeper := keep.CreateTestInput(t, false)
