@@ -17,3 +17,5 @@
 [@bs.module] external loadingSpinner: string = "./loading_spinner.gif";
 [@bs.module] external blockLogo: string = "./block.png";
 [@bs.module] external dataSourceLogo: string = "./data-source.png";
+[@bs.module] external accountLogo: string = "./account-icon.png";
+[@bs.module] external pieChart: string = "./pie-chart.png";

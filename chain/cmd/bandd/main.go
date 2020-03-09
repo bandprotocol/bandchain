@@ -35,7 +35,7 @@ func main() {
 	cdc := app.MakeCodec()
 
 	config := sdk.GetConfig()
-	app.SetBech32AddressPrefixes(config)
+	app.SetBech32AddressPrefixesAndBip44CoinType(config)
 	config.Seal()
 
 	ctx := server.NewDefaultContext()
