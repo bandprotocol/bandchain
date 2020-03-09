@@ -2,7 +2,7 @@ let checker = (str: string) => {
   let reg = ".*=[$][0-9]+" |> Js.Re.fromString;
   let t =
     reg
-    |> Js.Re.exec(_, str)
+    |> Js.Re.exec_(_, str)
     |> Belt_Option.mapWithDefault(_, [||], Js.Re.captures)
     |> Belt_Array.length;
   t > 0;
