@@ -154,7 +154,7 @@ let renderProposer = (moniker, proposer) => {
 
 let renderDataSource = (id, name) => {
   <div className=Styles.dataSourceContainer>
-    <TypeID id={ID.DataSource(id)} position=TypeID.Text />
+    <TypeID.DataSource id position=TypeID.Text />
     <HSpacing size=Spacing.xs />
     <Text value=name block=true height={Text.Px(16)} spacing={Text.Em(0.02)} />
   </div>;
@@ -189,7 +189,7 @@ type t =
   | Source(string)
   | Value(Js.Json.t)
   | Proposer(string, string)
-  | DataSource(int, string);
+  | DataSource(ID.DataSource.t, string);
 
 [@react.component]
 let make = (~elementType) => {

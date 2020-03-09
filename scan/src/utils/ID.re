@@ -1,26 +1,56 @@
-type t =
-  | DataSource(int)
-  | OracleScript(int)
-  | Request(int)
-  | Block(int);
+module type RawIDSig = {
+  let prefix: string;
+  let color: Css.Types.Color.t;
+  let route: int => Route.t;
+};
 
-let getRoute =
-  fun
-  | DataSource(id) => Route.DataSourceIndexPage(id, Route.DataSourceExecute)
-  | OracleScript(id) => Route.HomePage // TODO: change it later
-  | Request(id) => Route.RequestIndexPage(id, Route.RequestReportStatus)
-  | Block(height) => Route.BlockIndexPage(height);
+module RawDataSourceID = {
+  let prefix = "#D";
+  let color = Colors.brightOrange;
+  let route = id => Route.DataSourceIndexPage(id, Route.DataSourceExecute);
+};
 
-let toString =
-  fun
-  | DataSource(id) => "#D" ++ (id |> string_of_int)
-  | OracleScript(id) => "#O" ++ (id |> string_of_int)
-  | Request(id) => "#R" ++ (id |> string_of_int)
-  | Block(height) => "#B" ++ (height |> string_of_int);
+module RawOracleScriptID = {
+  let prefix = "#O";
+  let color = Colors.brightRed;
+  let route = (id: int) => Route.HomePage;
+};
 
-let getColor =
-  fun
-  | DataSource(_) => Colors.brightOrange
-  | OracleScript(_) => Colors.brightRed
-  | Request(_) => Colors.orange
-  | Block(_) => Colors.brightBlue;
+module RawRequestID = {
+  let prefix = "#R";
+  let color = Colors.orange;
+  let route = id => Route.RequestIndexPage(id, Route.RequestReportStatus);
+};
+
+module RawBlockHeight = {
+  let prefix = "#B";
+  let color = Colors.brightBlue;
+  let route = height => Route.BlockIndexPage(height);
+};
+
+module type IDSig = {
+  include RawIDSig;
+  type t;
+  let getRoute: t => Route.t;
+  let toString: t => string;
+};
+
+module IDCreator = (RawID: RawIDSig) => {
+  include RawID;
+
+  type t =
+    | ID(int);
+
+  let getRoute =
+    fun
+    | ID(id) => RawID.route(id);
+
+  let toString =
+    fun
+    | ID(id) => RawID.prefix ++ string_of_int(id);
+};
+
+module DataSource = IDCreator(RawDataSourceID);
+module OracleScript = IDCreator(RawOracleScriptID);
+module Request = IDCreator(RawRequestID);
+module BlockHeight = IDCreator(RawBlockHeight);

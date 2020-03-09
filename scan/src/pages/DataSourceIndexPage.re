@@ -48,7 +48,7 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
     </Row>
     <VSpacing size=Spacing.md />
     <div className=Styles.vFlex>
-      <TypeID id={ID.DataSource(34)} position=TypeID.Title />
+      <TypeID.DataSource id={ID.DataSource.ID(34)} position=TypeID.Title />
       <HSpacing size=Spacing.md />
       <Text
         value="CoinGecko V.2"

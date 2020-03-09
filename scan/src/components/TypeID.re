@@ -33,21 +33,25 @@ module Styles = {
     | Text => style([pointerEvents(`auto)]);
 };
 
-[@react.component]
-let make = (~id, ~position=Text) => {
-  <div
-    className={Css.merge([Styles.link, Styles.pointerEvents(position)])}
-    onClick={_ => Route.redirect(ID.getRoute(id))}>
-    <Text
-      value={id |> ID.toString}
-      size={position |> fontSize}
-      weight=Text.Semibold
-      height={position |> lineHeight}
-      color={id |> ID.getColor}
-      spacing={position |> letterSpacing}
-      nowrap=true
-      code=true
-      block=true
-    />
-  </div>;
+module ComponentCreator = (RawID: ID.IDSig) => {
+  [@react.component]
+  let make = (~id, ~position=Text) =>
+    <div className={Css.merge([Styles.link, Styles.pointerEvents(position)])}>
+      <Text
+        value={id |> RawID.toString}
+        size={position |> fontSize}
+        weight=Text.Semibold
+        height={position |> lineHeight}
+        color=RawID.color
+        spacing={position |> letterSpacing}
+        nowrap=true
+        code=true
+        block=true
+      />
+    </div>;
 };
+
+module DataSource = ComponentCreator(ID.DataSource);
+module OracleScript = ComponentCreator(ID.OracleScript);
+module Request = ComponentCreator(ID.Request);
+module BlockHeight = ComponentCreator(ID.BlockHeight);
