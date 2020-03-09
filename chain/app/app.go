@@ -28,12 +28,14 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/supply"
 
+	bandsupply "github.com/bandprotocol/d3n/chain/x/supply"
 	"github.com/bandprotocol/d3n/chain/x/zoracle"
 )
 
 const (
 	appName          = "BandApp"
 	Bech32MainPrefix = "band"
+	Bip44CoinType    = 494
 )
 
 var (
@@ -81,10 +83,20 @@ func MakeCodec() *codec.Codec {
 	return cdc
 }
 
-func SetBech32AddressPrefixes(config *sdk.Config) {
-	config.SetBech32PrefixForAccount(Bech32MainPrefix, Bech32MainPrefix+sdk.PrefixPublic)
-	config.SetBech32PrefixForValidator(Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator, Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator+sdk.PrefixPublic)
-	config.SetBech32PrefixForConsensusNode(Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus, Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus+sdk.PrefixPublic)
+func SetBech32AddressPrefixesAndBip44CoinType(config *sdk.Config) {
+	config.SetBech32PrefixForAccount(
+		Bech32MainPrefix,
+		Bech32MainPrefix+sdk.PrefixPublic,
+	)
+	config.SetBech32PrefixForValidator(
+		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator,
+		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator+sdk.PrefixPublic,
+	)
+	config.SetBech32PrefixForConsensusNode(
+		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus,
+		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus+sdk.PrefixPublic,
+	)
+	config.SetCoinType(Bip44CoinType)
 }
 
 type bandApp struct {
@@ -183,12 +195,15 @@ func NewBandApp(
 		maccPerms,
 	)
 
+	// Wrapped supply keeper allows burned tokens to be transfereed to community pool
+	wrappedSupplyKeeper := bandsupply.WrapSupplyKeeperBurnToCommunityPool(app.supplyKeeper)
+
 	// The staking keeper
 	stakingKeeper := staking.NewKeeper(
 		app.cdc,
 		keys[staking.StoreKey],
 		tkeys[staking.TStoreKey],
-		app.supplyKeeper,
+		&wrappedSupplyKeeper,
 		stakingSubspace,
 		staking.DefaultCodespace,
 	)
@@ -212,6 +227,9 @@ func NewBandApp(
 		auth.FeeCollectorName,
 		app.ModuleAccountAddrs(),
 	)
+
+	// distrKeeper must be set afterward due to the circular reference of supply-staking-distr
+	wrappedSupplyKeeper.SetDistrKeeper(&app.distrKeeper)
 
 	app.slashingKeeper = slashing.NewKeeper(
 		app.cdc,
