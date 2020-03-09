@@ -149,7 +149,7 @@ func GetCmdReport(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "report [request-id] ([data]...)",
 		Short: "Report raw data for the given request ID",
-		Args:  cobra.MinimumNArgs(2),
+		Args:  cobra.MinimumNArgs(3),
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Report raw data for an unresolved request. All raw data requests must be reported at once.
 Example:
