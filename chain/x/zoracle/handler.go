@@ -224,14 +224,15 @@ func handleMsgReportData(ctx sdk.Context, keeper Keeper, msg MsgReportData) sdk.
 		return err.Result()
 	}
 
+	// Calculate total refunded by multiply RefundGasPrice with gas used
+	refundedAmount, _ := msg.RefundGasPrice.MulDec(sdk.NewDec(int64(ctx.GasMeter().GasConsumed() - startGas))).TruncateDecimal()
+
 	// Refund the reporter
 	err = keeper.SupplyKeeper.SendCoinsFromModuleToAccount(
 		ctx,
 		auth.FeeCollectorName,
 		msg.GetSigners()[0],
-		sdk.NewCoins(
-			sdk.NewCoin("uband", msg.RefundGasPrice.AmountOf("uband").Mul(sdk.NewDec(int64(ctx.GasMeter().GasConsumed()-startGas))).TruncateInt()),
-		),
+		refundedAmount,
 	)
 	if err != nil {
 		return err.Result()
