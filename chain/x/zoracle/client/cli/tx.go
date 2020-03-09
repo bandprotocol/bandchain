@@ -169,7 +169,7 @@ $ %s tx zoracle report 1 1:172.5 2:HELLOWORLD --from mykey
 			}
 			requestID := types.RequestID(int64RequestID)
 
-			refundGasPrice, err := strconv.ParseInt(args[1], 10, 64)
+			refundGasPrice, err := sdk.ParseDecCoins(args[1])
 			if err != nil {
 				return err
 			}
@@ -194,7 +194,7 @@ $ %s tx zoracle report 1 1:172.5 2:HELLOWORLD --from mykey
 				return dataset[i].ExternalDataID < dataset[j].ExternalDataID
 			})
 
-			msg := types.NewMsgReportData(requestID, sdk.NewDecCoins(sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(refundGasPrice)))), dataset, sdk.ValAddress(cliCtx.GetFromAddress()))
+			msg := types.NewMsgReportData(requestID, refundGasPrice, dataset, sdk.ValAddress(cliCtx.GetFromAddress()))
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
