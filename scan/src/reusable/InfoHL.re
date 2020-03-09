@@ -11,8 +11,14 @@ type t =
 module Styles = {
   open Css;
 
-  let hFlex = style([display(`flex), flexDirection(`column), alignItems(`flexStart)]);
+  let hFlex = isLeft =>
+    style([
+      display(`flex),
+      flexDirection(`column),
+      alignItems(isLeft ? `flexStart : `flexEnd),
+    ]);
   let vFlex = style([display(`flex), alignItems(`center)]);
+  let addressContainer = style([display(`flex), alignItems(`center), maxWidth(`px(290))]);
   let datasourcesContainer = style([display(`flex), alignItems(`center), flexWrap(`wrap)]);
   let headerContainer = style([lineHeight(`px(25))]);
   let sourceContainer =
@@ -26,8 +32,8 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~info, ~header) => {
-  <div className=Styles.hFlex>
+let make = (~info, ~header, ~isLeft=true) => {
+  <div className={Styles.hFlex(isLeft)}>
     <div className=Styles.headerContainer>
       <Text
         value=header
@@ -47,11 +53,21 @@ let make = (~info, ~header) => {
      | Count(count) => <Text value={count |> Format.iPretty} size=Text.Lg weight=Text.Semibold />
      | Text(text) => <Text value=text size=Text.Lg weight=Text.Semibold />
      | Timestamp(time) =>
-       <Text
-         value={time |> MomentRe.Moment.format("MMM-DD-YYYY hh:mm:ss A [GMT]Z")}
-         size=Text.Lg
-         weight=Text.Bold
-       />
+       <div className=Styles.vFlex>
+         <Text
+           value={
+             time
+             |> MomentRe.Moment.format("MMM-DD-YYYY  hh:mm:ss A [+UTC]")
+             |> String.uppercase_ascii
+           }
+           size=Text.Lg
+           weight=Text.Semibold
+           spacing={Text.Em(0.02)}
+           code=true
+         />
+         <HSpacing size=Spacing.sm />
+         <Text value="(9 hrs 2 mins ago)" size=Text.Lg spacing={Text.Em(0.02)} code=true />
+       </div>
      | Fee(fee) =>
        <div className=Styles.vFlex>
          <Text value={fee |> Format.fPretty} size=Text.Lg weight=Text.Bold code=true />
@@ -94,15 +110,18 @@ let make = (~info, ~header) => {
        //    color=textColor
        //    code=true
        //  />
-       <div className=Styles.vFlex>
+       <div className=Styles.addressContainer>
          <Text value="band" size=Text.Lg weight=Text.Semibold color=textColor code=true />
          <Text
            value="17rprjgtj0krfw3wyl9creueej6ca9dc4dgxv6e"
            size=Text.Lg
-           weight=Text.Regular
+           weight=Text.Thin
            spacing={Text.Em(0.02)}
            color=textColor
            code=true
+           nowrap=true
+           block=true
+           ellipsis=true
          />
        </div>
      }}
