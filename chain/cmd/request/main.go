@@ -194,7 +194,7 @@ func main() {
 			))
 
 			fmt.Println(tx.SendTransaction(
-				[]sdk.Msg{zoracle.NewMsgRequestData(1, []byte("calldata"), 4, 1, 100, prepareGas, executeGas, tx.Sender())},
+				[]sdk.Msg{zoracle.NewMsgRequestData(1, []byte("calldata"), 1, 1, 100, prepareGas, executeGas, tx.Sender())},
 				0, 1000000, "", "", "",
 				flags.BroadcastBlock,
 			))
