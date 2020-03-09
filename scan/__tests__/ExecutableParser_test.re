@@ -1,5 +1,5 @@
 open Jest;
-open Parser;
+open ExecutableParser;
 
 open Expect;
 
