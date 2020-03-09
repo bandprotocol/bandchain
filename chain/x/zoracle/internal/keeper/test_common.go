@@ -179,7 +179,7 @@ func NewPubKey(pk string) (res crypto.PubKey) {
 	return pkEd
 }
 
-func GetAddressFromPub(pub string) (addr sdk.AccAddress) {
+func GetAddressFromPub(pub string) sdk.AccAddress {
 	return sdk.AccAddress(NewPubKey(pub).Address())
 }
 
