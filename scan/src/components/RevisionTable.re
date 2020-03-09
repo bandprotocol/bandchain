@@ -122,7 +122,7 @@ let make = () => {
                       <Text
                         block=true
                         value={"#B" ++ (blockHeight |> string_of_int)}
-                        weight=Text.Bold
+                        weight=Text.Semibold
                         code=true
                         color=Colors.brightBlue
                       />
