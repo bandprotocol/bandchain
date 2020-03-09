@@ -138,6 +138,9 @@ func (msg MsgReportData) ValidateBasic() sdk.Error {
 	if msg.Sender.Empty() {
 		return ErrInvalidBasicMsg("MsgReportData: Sender address must not be empty.")
 	}
+	if msg.RefundGasPrice.IsAnyNegative() {
+		return ErrInvalidBasicMsg("MsgReportData: Refund gas price can't be negative.")
+	}
 	return nil
 }
 
