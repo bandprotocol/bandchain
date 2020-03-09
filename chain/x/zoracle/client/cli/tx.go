@@ -153,7 +153,7 @@ func GetCmdReport(cdc *codec.Codec) *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Report raw data for an unresolved request. All raw data requests must be reported at once.
 Example:
-$ %s tx zoracle report 1 1:172.5 2:HELLOWORLD --from mykey
+$ %s tx zoracle report 1 5.0uband 1:172.5 2:HELLOWORLD --from mykey
 `,
 				version.ClientName,
 			),
