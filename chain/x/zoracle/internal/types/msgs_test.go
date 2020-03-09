@@ -133,15 +133,21 @@ func TestMsgReportDataValidation(t *testing.T) {
 	data := []RawDataReport{NewRawDataReport(1, []byte("data1")), NewRawDataReport(2, []byte("data2"))}
 	validator, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
 	failValidator, _ := sdk.ValAddressFromHex("")
+	refundGasFeePos, _ := sdk.ParseDecCoins("0.1uband")
+	refundGasFeeZero, _ := sdk.ParseDecCoins("0.0uband")
+	refundGasFeeNeg := refundGasFeePos.MulDec(sdk.NewDec(-1))
+
 	cases := []struct {
 		valid bool
 		tx    MsgReportData
 	}{
-		{true, NewMsgReportData(requestID, sdk.NewDecCoins(sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(0)))), data, validator)},
-		{false, NewMsgReportData(-1, sdk.NewDecCoins(sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(0)))), data, validator)},
-		{false, NewMsgReportData(requestID, sdk.NewDecCoins(sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(0)))), []RawDataReport{}, validator)},
-		{false, NewMsgReportData(requestID, sdk.NewDecCoins(sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(0)))), nil, validator)},
-		{false, NewMsgReportData(requestID, sdk.NewDecCoins(sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(0)))), data, failValidator)},
+		{true, NewMsgReportData(requestID, refundGasFeePos, data, validator)},
+		{true, NewMsgReportData(requestID, refundGasFeeZero, data, validator)},
+		{false, NewMsgReportData(requestID, refundGasFeeNeg, data, validator)},
+		{false, NewMsgReportData(-1, refundGasFeeZero, data, validator)},
+		{false, NewMsgReportData(requestID, refundGasFeeZero, []RawDataReport{}, validator)},
+		{false, NewMsgReportData(requestID, refundGasFeeZero, nil, validator)},
+		{false, NewMsgReportData(requestID, refundGasFeeZero, data, failValidator)},
 	}
 
 	for _, tc := range cases {
