@@ -186,8 +186,10 @@ func handleRequest(requestID zoracle.RequestID) (sdk.TxResponse, error) {
 		return reports[i].ExternalDataID < reports[j].ExternalDataID
 	})
 
+	refundGasPrice, _ := sdk.ParseDecCoins("1.5uband")
+
 	return bandClient.SendTransaction(
-		zoracle.NewMsgReportData(requestID, sdk.NewDecCoins(sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(0)))), reports, sdk.ValAddress(bandClient.Sender())),
+		zoracle.NewMsgReportData(requestID, refundGasPrice, reports, sdk.ValAddress(bandClient.Sender())),
 		1000000, "", "", "",
 		flags.BroadcastSync,
 	)

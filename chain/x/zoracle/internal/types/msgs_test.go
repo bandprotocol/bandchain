@@ -122,7 +122,8 @@ func TestMsgReportData(t *testing.T) {
 	requestID := RequestID(3)
 	data := []RawDataReport{NewRawDataReport(1, []byte("data1")), NewRawDataReport(2, []byte("data2"))}
 	provider, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
-	msg := NewMsgReportData(requestID, sdk.NewDecCoins(sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(0)))), data, provider)
+
+	msg := NewMsgReportData(requestID, sdk.NewDecCoins(sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(1000)))), data, provider)
 
 	require.Equal(t, RouterKey, msg.Route())
 	require.Equal(t, "report", msg.Type())
@@ -167,10 +168,10 @@ func TestMsgReportDataGetSignBytes(t *testing.T) {
 	requestID := RequestID(3)
 	data := []RawDataReport{NewRawDataReport(1, []byte("data1")), NewRawDataReport(2, []byte("data2"))}
 	validator, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
-	msg := NewMsgReportData(requestID, sdk.NewDecCoins(sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(0)))), data, validator)
+	msg := NewMsgReportData(requestID, sdk.NewDecCoins(sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(1000)))), data, validator)
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"zoracle/Report","value":{"dataSet":[{"data":"ZGF0YTE=","externalDataID":"1"},{"data":"ZGF0YTI=","externalDataID":"2"}],"refundGasPrice":[],"requestID":"3","sender":"bandvaloper1hq8j5h0h64csk9tz95df783cxr0dt0dgay2kyy"}}`
+	expected := `{"type":"zoracle/Report","value":{"dataSet":[{"data":"ZGF0YTE=","externalDataID":"1"},{"data":"ZGF0YTI=","externalDataID":"2"}],"refundGasPrice":[{"amount":"1000.000000000000000000","denom":"uband"}],"requestID":"3","sender":"bandvaloper1hq8j5h0h64csk9tz95df783cxr0dt0dgay2kyy"}}`
 
 	require.Equal(t, expected, string(res))
 }
