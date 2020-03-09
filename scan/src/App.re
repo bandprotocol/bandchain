@@ -81,6 +81,7 @@ let make = () => {
       <div className=Styles.routeContainer>
         {switch (ReasonReactRouter.useUrl() |> Route.fromUrl) {
          | HomePage => <HomePage />
+         | DataSourceHomePage => <DataSourceHomePage />
          | DataSourceIndexPage(dataSourceID, hashtag) =>
            <DataSourceIndexPage dataSourceID hashtag />
          | ScriptHomePage => <ScriptHomePage />
@@ -90,6 +91,7 @@ let make = () => {
          | BlockHomePage => <BlockHomePage />
          | BlockIndexPage(height) => <BlockIndexPage height />
          | RequestIndexPage(reqID, hashtag) => <RequestIndexPage reqID hashtag />
+         | AccountIndexPage(address, hashtag) => <AccountIndexPage address hashtag />
          | NotFound =>
            ReasonReactRouter.replace("/");
            React.null;

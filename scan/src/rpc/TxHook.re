@@ -355,7 +355,7 @@ let atHeight = (height, ~page=1, ~limit=25, ()) => {
 };
 
 let latest = (~page=1, ~limit=10, ()) => {
-  let json = AxiosHooks.use({j|d3n/txs/latest?page=$page&limit=$limit|j});
+  let json = AxiosHooks.use({j|bandchain/txs/latest?page=$page&limit=$limit|j});
   json |> Belt.Option.map(_, Txs.decodeTxs);
 };
 
