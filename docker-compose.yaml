@@ -35,7 +35,7 @@ services:
     networks:
       bandchain:
     restart: always
-    command: bandoracled --node tcp://172.18.0.15:26657 --priv-key 06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b
+    command: bandoracled --node tcp://172.18.0.15:26657 --priv-key 6b0b8909eadbbc220797dc0aada9558030d4a89972e51de8de525fc9de42bd40
 
   multi-validator:
     image: tianon/true
@@ -73,7 +73,7 @@ services:
     networks:
       bandchain:
     restart: always
-    command: bandoracled --node tcp://172.18.0.11:26657 --priv-key 06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b
+    command: bandoracled --node tcp://172.18.0.11:26657 --priv-key 6b0b8909eadbbc220797dc0aada9558030d4a89972e51de8de525fc9de42bd40
 
   multi-validator2-node:
     image: band-validator:latest
@@ -89,7 +89,7 @@ services:
     networks:
       bandchain:
     restart: always
-    command: bandoracled --node tcp://172.18.0.12:26657 --priv-key 6abc8ab25298fb4af6adcb9d5831db0ad7c959388f0d947abd2b4c4457ef52ec
+    command: bandoracled --node tcp://172.18.0.12:26657 --priv-key 6a57cf17b70e4a1e45403258917c79672e2424bb217fb2a9a936aabe4e84d46e
 
   multi-validator3-node:
     image: band-validator:latest
@@ -105,7 +105,7 @@ services:
     networks:
       bandchain:
     restart: always
-    command: bandoracled --node tcp://172.18.0.13:26657 --priv-key 894fc1c7e7666c722ae5f30ba4cb18c546e08f0b2634718c27b80b9d39416dbe
+    command: bandoracled --node tcp://172.18.0.13:26657 --priv-key 363dae9bbcf973746f4816003cdd23ed6b3b1b5373cdcc6bfdee4143cab1e098
 
   multi-validator4-node:
     image: band-validator:latest
@@ -121,7 +121,7 @@ services:
     networks:
       bandchain:
     restart: always
-    command: bandoracled --node tcp://172.18.0.14:26657 --priv-key 947f1715251d43de45232fc072e3ca4d823e876cf9f4ef74ad9a5f4ef440937e
+    command: bandoracled --node tcp://172.18.0.14:26657 --priv-key 7db94d3b30dca300ed8f60f3f7b506b51bd150ed518f997ba0ce81be73b90c15
 
   query-node:
     image: band-validator:latest
@@ -162,7 +162,7 @@ services:
       - PORT=5000
       - NODE_URI=tcp://172.18.0.15:26657
       - QUERY_URI=http://172.18.0.20:1317
-      - PRIVATE_KEY=eedda7a96ad35758f2ffc404d6ccd7be913f149a530c70e95e2e3ee7a952a877
+      - PRIVATE_KEY=27313aa3fd8286b54d5dbe16a4fbbc55c7908e844e37a737997fc2ba74403812
     networks:
       bandchain:
         ipv4_address: 172.18.0.16
