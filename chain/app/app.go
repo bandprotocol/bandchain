@@ -332,7 +332,12 @@ func NewBandApp(
 					if report, ok := msg.(zoracle.MsgReportData); ok {
 						_, refundGasPriceExceedTxGasPrice := fee.GasPrices().SafeSub(report.RefundGasPrice)
 						if refundGasPriceExceedTxGasPrice {
-							return ctx, sdk.ErrInternal(fmt.Sprintf("refundGasPrice(%s) exceed txGasPrice(%s)", report.RefundGasPrice.String(), fee.GasPrices().String())).Result(), true
+							return ctx, sdk.ErrInternal(
+								fmt.Sprintf(
+									"refundGasPrice(%s) exceed txGasPrice(%s)",
+									report.RefundGasPrice.String(), fee.GasPrices().String(),
+								),
+							).Result(), true
 						}
 					}
 				}
