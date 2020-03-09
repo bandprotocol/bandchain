@@ -112,13 +112,13 @@ let make = (~txHash) => {
       {switch (txOpt) {
        | Some(tx) =>
          <>
-           <Col size=1.> <InfoHL info={InfoHL.Text("?")} header="GAS USED" /> </Col>
-           <Col size=1.> <InfoHL info={InfoHL.Text("?")} header="TIMESTAMP" /> </Col>
+           <Col size=1.35> <InfoHL info={InfoHL.Int(130082)} header="GAS USED" /> </Col>
+           <Col size=1.> <InfoHL info={InfoHL.Int(200000)} header="GAS LIMIT" /> </Col>
            <Col size=1.>
-             <InfoHL info={InfoHL.Text("?")} header="GAS PRICE (BAND)" isLeft=false />
+             <InfoHL info={InfoHL.Float(0.000010)} header="GAS PRICE (BAND)" isLeft=false />
            </Col>
-           <Col size=1.>
-             <InfoHL info={InfoHL.Text("?")} header="FEE (BAND)" isLeft=false />
+           <Col size=1.35>
+             <InfoHL info={InfoHL.Float(0.13)} header="FEE (BAND)" isLeft=false />
            </Col>
          </>
        | None =>
@@ -129,6 +129,7 @@ let make = (~txHash) => {
          </>
        }}
     </Row>
+    <VSpacing size=Spacing.xxl />
     // LOWER
     {switch (txOpt) {
      | Some(tx) =>

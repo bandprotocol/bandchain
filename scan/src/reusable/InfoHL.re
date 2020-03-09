@@ -1,6 +1,8 @@
 type t =
   | Height(int)
   | Count(int)
+  | Int(int)
+  | Float(float)
   | Text(string)
   | Timestamp(MomentRe.Moment.t)
   | Fee(float)
@@ -39,6 +41,7 @@ let make = (~info, ~header, ~isLeft=true) => {
         value=header
         color=Colors.grayHeader
         size=Text.Sm
+        weight=Text.Thin
         height={Text.Px(13)}
         spacing={Text.Em(0.03)}
       />
@@ -51,6 +54,22 @@ let make = (~info, ~header, ~isLeft=true) => {
          <Text value={height |> Format.iPretty} size=Text.Lg weight=Text.Semibold />
        </div>
      | Count(count) => <Text value={count |> Format.iPretty} size=Text.Lg weight=Text.Semibold />
+     | Float(value) =>
+       <Text
+         value={value |> Js.Float.toString}
+         size=Text.Lg
+         weight=Text.Semibold
+         spacing={Text.Em(0.02)}
+         code=true
+       />
+     | Int(value) =>
+       <Text
+         value={value |> Format.iPretty}
+         size=Text.Lg
+         weight=Text.Semibold
+         spacing={Text.Em(0.02)}
+         code=true
+       />
      | Text(text) => <Text value=text size=Text.Lg weight=Text.Semibold />
      | Timestamp(time) =>
        <div className=Styles.vFlex>
@@ -115,7 +134,6 @@ let make = (~info, ~header, ~isLeft=true) => {
          <Text
            value="17rprjgtj0krfw3wyl9creueej6ca9dc4dgxv6e"
            size=Text.Lg
-           weight=Text.Thin
            spacing={Text.Em(0.02)}
            color=textColor
            code=true
