@@ -169,7 +169,7 @@ func SetupTestValidator(ctx sdk.Context, keeper Keeper, pk string, power int64) 
 	return validatorAddress
 }
 
-func NewPubKey(pk string) (res crypto.PubKey) {
+func NewPubKey(pk string) crypto.PubKey {
 	pkBytes, err := hex.DecodeString(pk)
 	if err != nil {
 		panic(err)
