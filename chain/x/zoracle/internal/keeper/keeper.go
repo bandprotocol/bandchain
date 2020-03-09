@@ -142,13 +142,13 @@ func (k Keeper) GetRequestCount(ctx sdk.Context) int64 {
 
 // GetNextRequestID increments and returns the current number of requests.
 // If the global request count is not set, it initializes it with value 0.
-func (k Keeper) GetNextRequestID(ctx sdk.Context) int64 {
+func (k Keeper) GetNextRequestID(ctx sdk.Context) types.RequestID {
 	requestNumber := k.GetRequestCount(ctx)
 	store := ctx.KVStore(k.storeKey)
 
 	bz := k.cdc.MustMarshalBinaryLengthPrefixed(requestNumber + 1)
 	store.Set(types.RequestsCountStoreKey, bz)
-	return requestNumber + 1
+	return types.RequestID(requestNumber + 1)
 }
 
 // GetDataSourceCount returns the current number of all data sources ever exist.
@@ -165,13 +165,13 @@ func (k Keeper) GetDataSourceCount(ctx sdk.Context) int64 {
 
 // GetNextDataSourceID increments and returns the current number of data source.
 // If the global data source count is not set, it initializes the value and returns 1.
-func (k Keeper) GetNextDataSourceID(ctx sdk.Context) int64 {
+func (k Keeper) GetNextDataSourceID(ctx sdk.Context) types.DataSourceID {
 	dataSourceCount := k.GetDataSourceCount(ctx)
 	store := ctx.KVStore(k.storeKey)
 
 	bz := k.cdc.MustMarshalBinaryLengthPrefixed(dataSourceCount + 1)
 	store.Set(types.DataSourceCountStoreKey, bz)
-	return dataSourceCount + 1
+	return types.DataSourceID(dataSourceCount + 1)
 }
 
 // GetOracleScriptCount returns the current number of all oracle scripts ever exist.
@@ -188,11 +188,11 @@ func (k Keeper) GetOracleScriptCount(ctx sdk.Context) int64 {
 
 // GetNextOracleScriptID increments and returns the current number of oracle script.
 // If the global oracle script count is not set, it initializes the value and returns 1.
-func (k Keeper) GetNextOracleScriptID(ctx sdk.Context) int64 {
+func (k Keeper) GetNextOracleScriptID(ctx sdk.Context) types.OracleScriptID {
 	oracleScriptCount := k.GetOracleScriptCount(ctx)
 	store := ctx.KVStore(k.storeKey)
 
 	bz := k.cdc.MustMarshalBinaryLengthPrefixed(oracleScriptCount + 1)
 	store.Set(types.OracleScriptCountStoreKey, bz)
-	return oracleScriptCount + 1
+	return types.OracleScriptID(oracleScriptCount + 1)
 }

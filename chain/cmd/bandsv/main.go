@@ -37,18 +37,18 @@ const (
 )
 
 type OracleRequest struct {
-	Type                     string `json:"type" binding:"required"`
-	OracleScriptID           int64  `json:"oracleScriptID,string" binding:"required"`
-	Calldata                 []byte `json:"calldata" binding:"required"`
-	RequestedValidatorCount  int64  `json:"requestedValidatorCount,string"`
-	SufficientValidatorCount int64  `json:"sufficientValidatorCount,string"`
-	Expiration               int64  `json:"expiration,string"`
+	Type                     string                 `json:"type" binding:"required"`
+	OracleScriptID           zoracle.OracleScriptID `json:"oracleScriptID,string" binding:"required"`
+	Calldata                 []byte                 `json:"calldata" binding:"required"`
+	RequestedValidatorCount  int64                  `json:"requestedValidatorCount,string"`
+	SufficientValidatorCount int64                  `json:"sufficientValidatorCount,string"`
+	Expiration               int64                  `json:"expiration,string"`
 }
 
 type OracleRequestResp struct {
-	TxHash    string          `json:"txHash"`
-	RequestID int64           `json:"id,omitempty"`
-	Proof     json.RawMessage `json:"proof,omitempty"`
+	TxHash    string            `json:"txHash"`
+	RequestID zoracle.RequestID `json:"id,omitempty"`
+	Proof     json.RawMessage   `json:"proof,omitempty"`
 }
 
 type ExecuteRequest struct {
@@ -151,22 +151,24 @@ func handleRequestData(c *gin.Context) {
 		return
 	}
 
-	requestID := int64(0)
+	requestID := zoracle.RequestID(0)
 	for _, event := range txr.Events {
 		if event.Type == "request" {
 			for _, attr := range event.Attributes {
 				if string(attr.Key) == "id" {
-					requestID, err = strconv.ParseInt(attr.Value, 10, 64)
+					int64RequstID, err := strconv.ParseInt(attr.Value, 10, 64)
+
 					if err != nil {
 						c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 						return
 					}
+					requestID = zoracle.RequestID(int64RequstID)
 					break
 				}
 			}
 		}
 	}
-	if requestID == 0 {
+	if requestID == zoracle.RequestID(0) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("cannot find requestID: %v", txr)})
 		return
 	}

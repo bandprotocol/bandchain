@@ -59,7 +59,7 @@ func TestRequest(t *testing.T) {
 	)
 	requestID, err := keeper.AddRequest(ctx, 1, calldata, 2, 2, 100, 20000)
 	require.Nil(t, err)
-	require.Equal(t, int64(1), requestID)
+	require.Equal(t, types.RequestID(1), requestID)
 
 	actualRequest, err := keeper.GetRequest(ctx, 1)
 	require.Nil(t, err)
@@ -273,16 +273,17 @@ func TestGetSetPendingRequests(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
 	reqIDs := keeper.GetPendingResolveList(ctx)
-	require.Equal(t, []int64{}, reqIDs)
 
-	keeper.SetPendingResolveList(ctx, []int64{1, 2, 3})
+	require.Equal(t, []types.RequestID{}, reqIDs)
+
+	keeper.SetPendingResolveList(ctx, []types.RequestID{1, 2, 3})
 
 	reqIDs = keeper.GetPendingResolveList(ctx)
-	require.Equal(t, []int64{1, 2, 3}, reqIDs)
+	require.Equal(t, []types.RequestID{1, 2, 3}, reqIDs)
 
-	keeper.SetPendingResolveList(ctx, []int64{})
+	keeper.SetPendingResolveList(ctx, []types.RequestID{})
 	reqIDs = keeper.GetPendingResolveList(ctx)
-	require.Equal(t, []int64{}, reqIDs)
+	require.Equal(t, []types.RequestID{}, reqIDs)
 }
 
 // Can add new pending request if request doesn't exist in list,
@@ -291,18 +292,19 @@ func TestAddPendingRequest(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
 	reqIDs := keeper.GetPendingResolveList(ctx)
-	require.Equal(t, []int64{}, reqIDs)
 
-	keeper.SetPendingResolveList(ctx, []int64{1, 2})
+	require.Equal(t, []types.RequestID{}, reqIDs)
+
+	keeper.SetPendingResolveList(ctx, []types.RequestID{1, 2})
 	err := keeper.AddPendingRequest(ctx, 3)
 	require.Nil(t, err)
 	reqIDs = keeper.GetPendingResolveList(ctx)
-	require.Equal(t, []int64{1, 2, 3}, reqIDs)
+	require.Equal(t, []types.RequestID{1, 2, 3}, reqIDs)
 
 	err = keeper.AddPendingRequest(ctx, 3)
 	require.Equal(t, types.CodeDuplicateRequest, err.Code())
 	reqIDs = keeper.GetPendingResolveList(ctx)
-	require.Equal(t, []int64{1, 2, 3}, reqIDs)
+	require.Equal(t, []types.RequestID{1, 2, 3}, reqIDs)
 }
 
 func TestHasToPutInPendingList(t *testing.T) {

@@ -38,7 +38,7 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 }
 
 func buildRequestQuerierInfo(
-	ctx sdk.Context, keeper Keeper, id int64,
+	ctx sdk.Context, keeper Keeper, id types.RequestID,
 ) (types.RequestQuerierInfo, sdk.Error) {
 	request, sdkErr := keeper.GetRequest(ctx, id)
 	if sdkErr != nil {
@@ -93,11 +93,11 @@ func queryDataSourceByID(ctx sdk.Context, path []string, req abci.RequestQuery, 
 	if len(path) == 0 {
 		return nil, sdk.ErrInternal("must specify the data source id")
 	}
-	id, err := strconv.ParseInt(path[0], 10, 64)
+	intID, err := strconv.ParseInt(path[0], 10, 64)
 	if err != nil {
 		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for data source id %s", err.Error()))
 	}
-
+	id := types.DataSourceID(intID)
 	dataSource, sdkErr := keeper.GetDataSource(ctx, id)
 	if sdkErr != nil {
 		return nil, sdkErr
@@ -117,10 +117,11 @@ func queryDataSources(ctx sdk.Context, path []string, req abci.RequestQuery, kee
 	if len(path) != 2 {
 		return nil, sdk.ErrInternal("must specify the data source start_id and number of data sources")
 	}
-	startID, err := strconv.ParseInt(path[0], 10, 64)
+	intStartID, err := strconv.ParseInt(path[0], 10, 64)
 	if err != nil {
 		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for data source start id %s", err.Error()))
 	}
+	startID := types.DataSourceID(intStartID)
 
 	numberOfDataSources, err := strconv.ParseInt(path[1], 10, 64)
 	if err != nil {
@@ -132,8 +133,8 @@ func queryDataSources(ctx sdk.Context, path []string, req abci.RequestQuery, kee
 
 	dataSources := []types.DataSourceQuerierInfo{}
 	allDataSourcesCount := keeper.GetDataSourceCount(ctx)
-	for id := startID; id <= allDataSourcesCount && id < startID+numberOfDataSources; id++ {
-		dataSource, sdkErr := keeper.GetDataSource(ctx, id)
+	for id := startID; id <= types.DataSourceID(allDataSourcesCount) && id < startID+types.DataSourceID(numberOfDataSources); id++ {
+		dataSource, sdkErr := keeper.GetDataSource(ctx, types.DataSourceID(id))
 		if sdkErr != nil {
 			return nil, sdkErr
 		}
@@ -160,13 +161,13 @@ func queryOracleScriptByID(ctx sdk.Context, path []string, req abci.RequestQuery
 		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for oracle script id %s", err.Error()))
 	}
 
-	oracleScript, sdkErr := keeper.GetOracleScript(ctx, id)
+	oracleScript, sdkErr := keeper.GetOracleScript(ctx, types.OracleScriptID(id))
 	if sdkErr != nil {
 		return nil, sdkErr
 	}
 
 	return codec.MustMarshalJSONIndent(keeper.cdc, types.NewOracleScriptQuerierInfo(
-		id,
+		types.OracleScriptID(id),
 		oracleScript.Owner,
 		oracleScript.Name,
 		oracleScript.Description,
@@ -194,13 +195,13 @@ func queryOracleScripts(ctx sdk.Context, path []string, req abci.RequestQuery, k
 	oracleScripts := []types.OracleScriptQuerierInfo{}
 	allOracleScriptsCount := keeper.GetOracleScriptCount(ctx)
 	for id := startID; id <= allOracleScriptsCount && id < startID+numberOfOracleScripts; id++ {
-		oracleScript, sdkErr := keeper.GetOracleScript(ctx, id)
+		oracleScript, sdkErr := keeper.GetOracleScript(ctx, types.OracleScriptID(id))
 		if sdkErr != nil {
 			return nil, sdkErr
 		}
 
 		oracleScripts = append(oracleScripts, types.NewOracleScriptQuerierInfo(
-			id,
+			types.OracleScriptID(id),
 			oracleScript.Owner,
 			oracleScript.Name,
 			oracleScript.Description,
@@ -223,7 +224,7 @@ func queryRequestByID(
 		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for requestid %s", err.Error()))
 	}
 
-	request, sdkErr := buildRequestQuerierInfo(ctx, keeper, id)
+	request, sdkErr := buildRequestQuerierInfo(ctx, keeper, types.RequestID(id))
 	if sdkErr != nil {
 		return nil, sdkErr
 	}
@@ -255,8 +256,8 @@ func queryRequests(
 	if limit > allRequestsCount {
 		limit = allRequestsCount
 	}
-	for idx := startID; idx <= limit; idx++ {
-		request, err := buildRequestQuerierInfo(ctx, keeper, idx)
+	for idx := types.RequestID(startID); idx <= types.RequestID(limit); idx++ {
+		request, err := buildRequestQuerierInfo(ctx, keeper, types.RequestID(idx))
 		if err == nil {
 			requests = append(requests, request)
 		}

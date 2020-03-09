@@ -285,7 +285,7 @@ func TestReportSuccess(t *testing.T) {
 	got := handleMsgReportData(ctx, keeper, msg)
 	require.True(t, got.IsOK(), "expected report to be ok, got %v", got)
 	list := keeper.GetPendingResolveList(ctx)
-	require.Equal(t, []int64{}, list)
+	require.Equal(t, []types.RequestID{}, list)
 
 	msg = types.NewMsgReportData(1, []types.RawDataReport{
 		types.NewRawDataReport(42, []byte("data2")),
@@ -295,7 +295,7 @@ func TestReportSuccess(t *testing.T) {
 	require.True(t, got.IsOK(), "expected report to be ok, got %v", got)
 
 	list = keeper.GetPendingResolveList(ctx)
-	require.Equal(t, []int64{1}, list)
+	require.Equal(t, []types.RequestID{1}, list)
 }
 
 func TestReportFailed(t *testing.T) {
@@ -367,13 +367,13 @@ func TestEndBlock(t *testing.T) {
 	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress1, []byte("answer1"))
 	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress2, []byte("answer2"))
 
-	keeper.SetPendingResolveList(ctx, []int64{1})
+	keeper.SetPendingResolveList(ctx, []types.RequestID{1})
 
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589999), 0))
 	got := handleEndBlock(ctx, keeper)
 	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
 
-	require.Equal(t, []int64{}, keeper.GetPendingResolveList(ctx))
+	require.Equal(t, []types.RequestID{}, keeper.GetPendingResolveList(ctx))
 
 	result, err := keeper.GetResult(ctx, 1, 1, calldata)
 	require.Nil(t, err)
@@ -424,12 +424,12 @@ func TestEndBlockExecuteFailedIfExecuteGasLessThanGasUsed(t *testing.T) {
 	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress1, []byte("answer1"))
 	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress2, []byte("answer2"))
 
-	keeper.SetPendingResolveList(ctx, []int64{1})
+	keeper.SetPendingResolveList(ctx, []types.RequestID{1})
 
 	got := handleEndBlock(ctx, keeper)
 	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
 
-	require.Equal(t, []int64{}, keeper.GetPendingResolveList(ctx))
+	require.Equal(t, []types.RequestID{}, keeper.GetPendingResolveList(ctx))
 
 	_, err := keeper.GetResult(ctx, 1, 1, calldata)
 	require.NotNil(t, err)
@@ -474,10 +474,10 @@ func TestSkipInvalidExecuteGas(t *testing.T) {
 
 	keeper.SetEndBlockExecuteGasLimit(ctx, 75000)
 
-	keeper.SetPendingResolveList(ctx, []int64{1, 2})
+	keeper.SetPendingResolveList(ctx, []types.RequestID{1, 2})
 	got := handleEndBlock(ctx, keeper)
 	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
-	require.Equal(t, []int64{}, keeper.GetPendingResolveList(ctx))
+	require.Equal(t, []types.RequestID{}, keeper.GetPendingResolveList(ctx))
 
 	_, err := keeper.GetResult(ctx, 1, 1, calldata)
 	require.NotNil(t, err)
@@ -501,7 +501,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 	sender := sdk.AccAddress([]byte("sender"))
 
 	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
-	scriptID := int64(1)
+	scriptID := types.OracleScriptID(1)
 	keeper.SetOracleScript(ctx, scriptID, script)
 
 	pubStr := []string{
@@ -515,8 +515,8 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 	dataSource := keep.GetTestDataSource()
 	keeper.SetDataSource(ctx, 1, dataSource)
 
-	pendingList := []int64{}
-	for i := int64(1); i <= 10; i++ {
+	pendingList := []types.RequestID{}
+	for i := types.RequestID(1); i <= types.RequestID(10); i++ {
 		handleMsgRequestData(
 			ctx, keeper,
 			types.NewMsgRequestData(scriptID, calldata, 2, 2, 100, 2000, 2500, sender),
@@ -533,9 +533,9 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 
 	got := handleEndBlock(ctx, keeper)
 	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
-	require.Equal(t, []int64{4, 5, 6, 7, 8, 9, 10}, keeper.GetPendingResolveList(ctx))
+	require.Equal(t, []types.RequestID{4, 5, 6, 7, 8, 9, 10}, keeper.GetPendingResolveList(ctx))
 
-	for i := int64(1); i <= 3; i++ {
+	for i := types.RequestID(1); i <= types.RequestID(3); i++ {
 		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
 		require.Nil(t, err)
 
@@ -544,7 +544,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 		require.Equal(t, types.Success, actualRequest.ResolveStatus)
 	}
 
-	for i := int64(4); i <= 10; i++ {
+	for i := types.RequestID(4); i <= types.RequestID(10); i++ {
 		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
 		require.NotNil(t, err)
 
@@ -555,9 +555,9 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 
 	got = handleEndBlock(ctx, keeper)
 	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
-	require.Equal(t, []int64{7, 8, 9, 10}, keeper.GetPendingResolveList(ctx))
+	require.Equal(t, []types.RequestID{7, 8, 9, 10}, keeper.GetPendingResolveList(ctx))
 
-	for i := int64(1); i <= 6; i++ {
+	for i := types.RequestID(1); i <= types.RequestID(6); i++ {
 		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
 		require.Nil(t, err)
 
@@ -566,7 +566,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 		require.Equal(t, types.Success, actualRequest.ResolveStatus)
 	}
 
-	for i := int64(7); i <= 10; i++ {
+	for i := types.RequestID(7); i <= types.RequestID(10); i++ {
 		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
 		require.NotNil(t, err)
 
@@ -583,9 +583,9 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 
 	got = handleEndBlock(ctx, keeper)
 	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
-	require.Equal(t, []int64{10}, keeper.GetPendingResolveList(ctx))
+	require.Equal(t, []types.RequestID{10}, keeper.GetPendingResolveList(ctx))
 
-	for i := int64(1); i <= 9; i++ {
+	for i := types.RequestID(1); i <= types.RequestID(9); i++ {
 		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
 		require.Nil(t, err)
 
@@ -594,7 +594,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 		require.Equal(t, types.Success, actualRequest.ResolveStatus)
 	}
 
-	for i := int64(10); i <= 10; i++ {
+	for i := types.RequestID(10); i <= types.RequestID(10); i++ {
 		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
 		require.NotNil(t, err)
 
@@ -605,13 +605,13 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 
 	keeper.SetRawDataReport(ctx, 11, 1, validatorAddress1, []byte("answer1"))
 	keeper.SetRawDataReport(ctx, 11, 1, validatorAddress2, []byte("answer2"))
-	keeper.SetPendingResolveList(ctx, []int64{10, 11})
+	keeper.SetPendingResolveList(ctx, []types.RequestID{10, 11})
 
 	got = handleEndBlock(ctx, keeper)
 	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
-	require.Equal(t, []int64{}, keeper.GetPendingResolveList(ctx))
+	require.Equal(t, []types.RequestID{}, keeper.GetPendingResolveList(ctx))
 
-	for i := int64(1); i <= 11; i++ {
+	for i := types.RequestID(1); i <= types.RequestID(11); i++ {
 		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
 		require.Nil(t, err)
 
@@ -628,7 +628,7 @@ func TestEndBlockInsufficientExecutionConsumeEndBlockGas(t *testing.T) {
 	sender := sdk.AccAddress([]byte("sender"))
 
 	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
-	scriptID := int64(1)
+	scriptID := types.OracleScriptID(1)
 	keeper.SetOracleScript(ctx, scriptID, script)
 
 	pubStr := []string{
@@ -642,10 +642,10 @@ func TestEndBlockInsufficientExecutionConsumeEndBlockGas(t *testing.T) {
 	dataSource := keep.GetTestDataSource()
 	keeper.SetDataSource(ctx, 1, dataSource)
 
-	pendingList := []int64{}
+	pendingList := []types.RequestID{}
 	executeGasList := []uint64{2500, 50, 3000}
 
-	for i := int64(1); i <= 3; i++ {
+	for i := types.RequestID(1); i <= types.RequestID(3); i++ {
 		handleMsgRequestData(
 			ctx, keeper,
 			types.NewMsgRequestData(scriptID, calldata, 2, 2, 100, 2000, executeGasList[i-1], sender),
@@ -661,7 +661,7 @@ func TestEndBlockInsufficientExecutionConsumeEndBlockGas(t *testing.T) {
 
 	got := handleEndBlock(ctx, keeper)
 	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
-	require.Equal(t, []int64{}, keeper.GetPendingResolveList(ctx))
+	require.Equal(t, []types.RequestID{}, keeper.GetPendingResolveList(ctx))
 
 	_, err := keeper.GetResult(ctx, 1, scriptID, calldata)
 	require.Nil(t, err)

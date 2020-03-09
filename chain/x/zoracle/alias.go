@@ -68,4 +68,9 @@ type (
 	RawDataReport         = types.RawDataReport
 	RequestQuerierInfo    = types.RequestQuerierInfo
 	DataSourceQuerierInfo = types.DataSourceQuerierInfo
+
+	RequestID      = types.RequestID
+	OracleScriptID = types.OracleScriptID
+	ExternalID     = types.ExternalID
+	DataSourceID   = types.DataSourceID
 )

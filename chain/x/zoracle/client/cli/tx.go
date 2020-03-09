@@ -73,10 +73,11 @@ $ %s tx zoracle request 1 --calldata 1234abcdef --requested-validator-count 4 --
 
 			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 
-			oracleScriptID, err := strconv.ParseInt(args[0], 10, 64)
+			int64OracleScriptID, err := strconv.ParseInt(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
+			oracleScriptID := types.OracleScriptID(int64OracleScriptID)
 
 			calldata, err := cmd.Flags().GetBytesHex(flagCalldata)
 			if err != nil {
@@ -162,10 +163,11 @@ $ %s tx zoracle report 1 1:172.5 2:HELLOWORLD --from mykey
 
 			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 
-			requestID, err := strconv.ParseInt(args[0], 10, 64)
+			int64RequestID, err := strconv.ParseInt(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
+			requestID := types.RequestID(int64RequestID)
 
 			var dataset []types.RawDataReport
 			for _, arg := range args[1:] {
@@ -173,10 +175,12 @@ $ %s tx zoracle report 1 1:172.5 2:HELLOWORLD --from mykey
 				if len(reportRaw) != 2 {
 					return fmt.Errorf("Invalid report format: %s", reportRaw[0])
 				}
-				externalID, err := strconv.ParseInt(reportRaw[0], 10, 64)
+				int64ExternalID, err := strconv.ParseInt(reportRaw[0], 10, 64)
 				if err != nil {
 					return err
 				}
+				externalID := types.ExternalID(int64ExternalID)
+
 				dataset = append(dataset, types.NewRawDataReport(externalID, []byte(reportRaw[1])))
 			}
 
@@ -296,11 +300,11 @@ $ %s tx zoracle edit-data-source 1 --name coingecko-price --description The scri
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 
-			id, err := strconv.ParseInt(args[0], 10, 64)
+			int64ID, err := strconv.ParseInt(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
-
+			dataSourceID := types.DataSourceID(int64ID)
 			name, err := cmd.Flags().GetString(flagName)
 			if err != nil {
 				return err
@@ -340,7 +344,7 @@ $ %s tx zoracle edit-data-source 1 --name coingecko-price --description The scri
 			}
 
 			msg := types.NewMsgEditDataSource(
-				id,
+				dataSourceID,
 				owner,
 				name,
 				description,
@@ -457,7 +461,7 @@ $ %s tx zoracle edit-oracle-script 1 --name eth-price --description "Oracle scri
 			if err != nil {
 				return err
 			}
-
+			oracleScriptID := types.OracleScriptID(id)
 			name, err := cmd.Flags().GetString(flagName)
 			if err != nil {
 				return err
@@ -487,7 +491,7 @@ $ %s tx zoracle edit-oracle-script 1 --name eth-price --description "Oracle scri
 			}
 
 			msg := types.NewMsgEditOracleScript(
-				id,
+				oracleScriptID,
 				owner,
 				name,
 				description,
