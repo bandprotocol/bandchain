@@ -88,9 +88,17 @@ module Styles = {
 
   let code =
     style([
-      fontFamily(
-        "IBM Plex Mono, cousine, sfmono-regular,Consolas,Menlo,liberation mono,ubuntu mono,Courier,monospace",
-      ),
+      fontFamilies([
+        `custom("IBM Plex Mono"),
+        `custom("cousine"),
+        `custom("sfmono-regular"),
+        `custom("Consolas"),
+        `custom("Menlo"),
+        `custom("liberation mono"),
+        `custom("ubuntu mono"),
+        `custom("Courier"),
+        `monospace,
+      ]),
     ]);
 };
 
