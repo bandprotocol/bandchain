@@ -20,8 +20,6 @@ type oracle_script_t = {
   description: string,
 };
 
-// let os_to_text = (o:oracle_script_t) => <Row><Text block=true value="FEE" size=Text.Sm weight=Text.Bold color=Colors.grayText /><Text block=true value="FEE" size=Text.Sm weight=Text.Bold color=Colors.grayText /></Row>
-
 type request_t = {
   id: int,
   oracleScript: oracle_script_t,
@@ -29,8 +27,6 @@ type request_t = {
   blockHeight: int,
   txHash: Hash.t,
 };
-
-// let req_to_text = () => <Row><Text block=true value="FEE" size=Text.Sm weight=Text.Bold color=Colors.grayText /><Text block=true value="FEE" size=Text.Sm weight=Text.Bold color=Colors.grayText /></Row>
 
 [@react.component]
 let make = () => {
