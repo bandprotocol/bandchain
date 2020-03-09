@@ -516,7 +516,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 	keeper.SetDataSource(ctx, 1, dataSource)
 
 	pendingList := []types.RequestID{}
-	for i := types.RequestID(1); i <= 10; i++ {
+	for i := types.RequestID(1); i <= types.RequestID(10); i++ {
 		handleMsgRequestData(
 			ctx, keeper,
 			types.NewMsgRequestData(scriptID, calldata, 2, 2, 100, 2000, 2500, sender),
@@ -535,7 +535,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
 	require.Equal(t, []types.RequestID{4, 5, 6, 7, 8, 9, 10}, keeper.GetPendingResolveList(ctx))
 
-	for i := types.RequestID(1); i <= 3; i++ {
+	for i := types.RequestID(1); i <= types.RequestID(3); i++ {
 		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
 		require.Nil(t, err)
 
@@ -544,7 +544,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 		require.Equal(t, types.Success, actualRequest.ResolveStatus)
 	}
 
-	for i := types.RequestID(4); i <= 10; i++ {
+	for i := types.RequestID(4); i <= types.RequestID(10); i++ {
 		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
 		require.NotNil(t, err)
 
@@ -557,7 +557,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
 	require.Equal(t, []types.RequestID{7, 8, 9, 10}, keeper.GetPendingResolveList(ctx))
 
-	for i := types.RequestID(1); i <= 6; i++ {
+	for i := types.RequestID(1); i <= types.RequestID(6); i++ {
 		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
 		require.Nil(t, err)
 
@@ -566,7 +566,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 		require.Equal(t, types.Success, actualRequest.ResolveStatus)
 	}
 
-	for i := types.RequestID(7); i <= 10; i++ {
+	for i := types.RequestID(7); i <= types.RequestID(10); i++ {
 		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
 		require.NotNil(t, err)
 
@@ -585,7 +585,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
 	require.Equal(t, []types.RequestID{10}, keeper.GetPendingResolveList(ctx))
 
-	for i := types.RequestID(1); i <= 9; i++ {
+	for i := types.RequestID(1); i <= types.RequestID(9); i++ {
 		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
 		require.Nil(t, err)
 
@@ -594,7 +594,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 		require.Equal(t, types.Success, actualRequest.ResolveStatus)
 	}
 
-	for i := types.RequestID(10); i <= 10; i++ {
+	for i := types.RequestID(10); i <= types.RequestID(10); i++ {
 		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
 		require.NotNil(t, err)
 
@@ -611,7 +611,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
 	require.Equal(t, []types.RequestID{}, keeper.GetPendingResolveList(ctx))
 
-	for i := types.RequestID(1); i <= 11; i++ {
+	for i := types.RequestID(1); i <= types.RequestID(11); i++ {
 		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
 		require.Nil(t, err)
 
