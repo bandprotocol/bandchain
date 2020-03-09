@@ -94,7 +94,7 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
       {switch (hashtag) {
        | DataSourceExecute => <DataSourceExecute />
        | DataSourceCode => <DataSourceCode />
-       | DataSourceRequests => <DataSourceTable />
+       | DataSourceRequests => <DataSourceRequestTable />
        | DataSourceRevisions => <RevisionTable />
        }}
     </Tab>
