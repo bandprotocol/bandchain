@@ -117,7 +117,7 @@ func main() {
 			case "BTC":
 				{
 					fmt.Println(tx.SendTransaction(
-						[]sdk.Msg{zoracle.NewMsgRequestData(1, []byte("BTC"), 1, 1, 100000, prepareGas, executeGas, tx.Sender())},
+						[]sdk.Msg{zoracle.NewMsgRequestData(1, []byte("BTC"), 4, 4, 100000, prepareGas, executeGas, tx.Sender())},
 						0, 1000000, "", "", "",
 						flags.BroadcastBlock,
 					))
