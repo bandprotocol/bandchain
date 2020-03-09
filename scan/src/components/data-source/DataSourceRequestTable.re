@@ -72,7 +72,7 @@ let make = () => {
       <HSpacing size={`px(25)} />
       <Text value={numRequest |> string_of_int} weight=Text.Bold />
       <HSpacing size={`px(5)} />
-      <Text value="Revisions" />
+      <Text value="Requests" />
     </Row>
     <VSpacing size=Spacing.lg />
     {numRequest > 0
