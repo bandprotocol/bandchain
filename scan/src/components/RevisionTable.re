@@ -72,7 +72,7 @@ let make = () => {
                  <div className=TElement.Styles.hashContainer>
                    <Text
                      block=true
-                     value="REQUEST"
+                     value="NAME"
                      size=Text.Sm
                      weight=Text.Bold
                      color=Colors.mediumLightGray
