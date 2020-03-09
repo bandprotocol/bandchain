@@ -81,6 +81,7 @@ let make = () => {
       <div className=Styles.routeContainer>
         {switch (ReasonReactRouter.useUrl() |> Route.fromUrl) {
          | HomePage => <HomePage />
+         | DataSourceHomePage => <DataSourceHomePage />
          | DataSourceIndexPage(dataSourceID, hashtag) =>
            <DataSourceIndexPage dataSourceID hashtag />
          | ScriptHomePage => <ScriptHomePage />
