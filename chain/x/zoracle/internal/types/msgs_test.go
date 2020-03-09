@@ -12,7 +12,7 @@ func TestMsgRequestData(t *testing.T) {
 	msg := NewMsgRequestData(1, []byte("calldata"), 10, 5, 100, 5000, 10000, sender)
 	require.Equal(t, RouterKey, msg.Route())
 	require.Equal(t, "request", msg.Type())
-	require.Equal(t, int64(1), msg.OracleScriptID)
+	require.Equal(t, OracleScriptID(1), msg.OracleScriptID)
 	require.Equal(t, []byte("calldata"), msg.Calldata)
 	require.Equal(t, int64(10), msg.RequestedValidatorCount)
 	require.Equal(t, int64(5), msg.SufficientValidatorCount)
@@ -119,7 +119,7 @@ func TestMsgRequestDataGetSignBytes(t *testing.T) {
 }
 
 func TestMsgReportData(t *testing.T) {
-	requestID := int64(3)
+	requestID := RequestID(3)
 	data := []RawDataReport{NewRawDataReport(1, []byte("data1")), NewRawDataReport(2, []byte("data2"))}
 	provider, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
 	msg := NewMsgReportData(requestID, data, provider)
@@ -129,7 +129,7 @@ func TestMsgReportData(t *testing.T) {
 }
 
 func TestMsgReportDataValidation(t *testing.T) {
-	requestID := int64(3)
+	requestID := RequestID(3)
 	data := []RawDataReport{NewRawDataReport(1, []byte("data1")), NewRawDataReport(2, []byte("data2"))}
 	validator, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
 	failValidator, _ := sdk.ValAddressFromHex("")
@@ -158,7 +158,7 @@ func TestMsgReportDataGetSignBytes(t *testing.T) {
 	config := sdk.GetConfig()
 	config.SetBech32PrefixForValidator("band"+sdk.PrefixValidator+sdk.PrefixOperator, "band"+sdk.PrefixValidator+sdk.PrefixOperator+sdk.PrefixPublic)
 
-	requestID := int64(3)
+	requestID := RequestID(3)
 	data := []RawDataReport{NewRawDataReport(1, []byte("data1")), NewRawDataReport(2, []byte("data2"))}
 	validator, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
 	msg := NewMsgReportData(requestID, data, validator)
@@ -257,7 +257,7 @@ func TestMsgEditDataSource(t *testing.T) {
 	msg := NewMsgEditDataSource(1, owner, "data_source_1", "description", fee, []byte("executable"), sender)
 	require.Equal(t, RouterKey, msg.Route())
 	require.Equal(t, "edit_data_source", msg.Type())
-	require.Equal(t, int64(1), msg.DataSourceID)
+	require.Equal(t, DataSourceID(1), msg.DataSourceID)
 	require.Equal(t, owner, msg.Owner)
 	require.Equal(t, "data_source_1", msg.Name)
 	require.Equal(t, fee, msg.Fee)
@@ -409,7 +409,7 @@ func TestMsgEditOracleScript(t *testing.T) {
 	msg := NewMsgEditOracleScript(1, owner, "oracle_script_1", "description", []byte("code"), sender)
 	require.Equal(t, RouterKey, msg.Route())
 	require.Equal(t, "edit_oracle_script", msg.Type())
-	require.Equal(t, int64(1), msg.OracleScriptID)
+	require.Equal(t, OracleScriptID(1), msg.OracleScriptID)
 	require.Equal(t, owner, msg.Owner)
 	require.Equal(t, "oracle_script_1", msg.Name)
 	require.Equal(t, []byte("code"), msg.Code)

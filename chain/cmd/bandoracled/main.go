@@ -29,13 +29,13 @@ var (
 	bandClient bandlib.BandStatefulClient
 )
 
-func getLatestRequestID() (int64, error) {
+func getLatestRequestID() (zoracle.RequestID, error) {
 	cliCtx := bandClient.GetContext()
 	res, _, err := cliCtx.Query("custom/zoracle/request_number")
 	if err != nil {
 		return 0, err
 	}
-	var requestID int64
+	var requestID zoracle.RequestID
 	err = cliCtx.Codec.UnmarshalJSON(res, &requestID)
 	if err != nil {
 		return 0, err
@@ -110,7 +110,7 @@ $ bandoracled --node tcp://localhost:26657 --priv-key 06be35b56b048c5a6810a47e2e
 	}
 }
 
-func handleRequest(requestID int64) (sdk.TxResponse, error) {
+func handleRequest(requestID zoracle.RequestID) (sdk.TxResponse, error) {
 	cliCtx := bandClient.GetContext()
 	res, _, err := cliCtx.Query(fmt.Sprintf("custom/zoracle/request/%d", requestID))
 	if err != nil {
@@ -123,14 +123,14 @@ func handleRequest(requestID int64) (sdk.TxResponse, error) {
 	}
 
 	type queryParallelInfo struct {
-		externalID int64
+		externalID zoracle.ExternalID
 		answer     []byte
 		err        error
 	}
 
 	chanQueryParallelInfo := make(chan queryParallelInfo, len(request.RawDataRequests))
 	for _, rawRequest := range request.RawDataRequests {
-		go func(externalID, dataSourceID int64, calldata []byte) {
+		go func(externalID zoracle.ExternalID, dataSourceID zoracle.DataSourceID, calldata []byte) {
 			info := queryParallelInfo{externalID: externalID, answer: []byte{}, err: nil}
 			res, _, err := cliCtx.Query(
 				fmt.Sprintf("custom/zoracle/%s/%d", zoracle.QueryDataSourceByID, dataSourceID),
@@ -190,6 +190,6 @@ func handleRequest(requestID int64) (sdk.TxResponse, error) {
 	)
 }
 
-func handleRequestAndLog(requestID int64) {
+func handleRequestAndLog(requestID zoracle.RequestID) {
 	fmt.Println(handleRequest(requestID))
 }

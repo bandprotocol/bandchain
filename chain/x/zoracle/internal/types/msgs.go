@@ -9,7 +9,7 @@ const RouterKey = ModuleName
 
 // MsgRequestData is a message for requesting a new data request to an existing oracle script.
 type MsgRequestData struct {
-	OracleScriptID           int64          `json:"oracleScriptID"`
+	OracleScriptID           OracleScriptID `json:"oracleScriptID"`
 	Calldata                 []byte         `json:"calldata"`
 	RequestedValidatorCount  int64          `json:"requestedValidatorCount"`
 	SufficientValidatorCount int64          `json:"sufficientValidatorCount"`
@@ -21,7 +21,7 @@ type MsgRequestData struct {
 
 // NewMsgRequestData creates a new MsgRequestData instance.
 func NewMsgRequestData(
-	oracleScriptID int64,
+	oracleScriptID OracleScriptID,
 	calldata []byte,
 	requestedValidatorCount int64,
 	sufficientValidatorCount int64,
@@ -100,14 +100,14 @@ func (msg MsgRequestData) GetSignBytes() []byte {
 
 // MsgReportData is a message sent by each of the block validators to respond to a data request.
 type MsgReportData struct {
-	RequestID int64           `json:"requestID"`
+	RequestID RequestID       `json:"requestID"`
 	DataSet   []RawDataReport `json:"dataSet"`
 	Sender    sdk.ValAddress  `json:"sender"`
 }
 
 // NewMsgReportData creates a new MsgReportData instance.
 func NewMsgReportData(
-	requestID int64,
+	requestID RequestID,
 	dataSet []RawDataReport,
 	sender sdk.ValAddress,
 ) MsgReportData {
@@ -220,7 +220,7 @@ func (msg MsgCreateDataSource) GetSignBytes() []byte {
 
 // MsgEditDataSource is a message for editing an existing data source.
 type MsgEditDataSource struct {
-	DataSourceID int64          `json:"dataSourceID"`
+	DataSourceID DataSourceID   `json:"dataSourceID"`
 	Owner        sdk.AccAddress `json:"owner"`
 	Name         string         `json:"name"`
 	Description  string         `json:"description"`
@@ -231,7 +231,7 @@ type MsgEditDataSource struct {
 
 // NewMsgEditDataSource creates a new MsgEditDataSource instance.
 func NewMsgEditDataSource(
-	dataSourceID int64,
+	dataSourceID DataSourceID,
 	owner sdk.AccAddress,
 	name string,
 	description string,
@@ -359,7 +359,7 @@ func (msg MsgCreateOracleScript) GetSignBytes() []byte {
 
 // MsgEditOracleScript is a message for editing an existing oracle script.
 type MsgEditOracleScript struct {
-	OracleScriptID int64          `json:"oracleScriptID"`
+	OracleScriptID OracleScriptID `json:"oracleScriptID"`
 	Owner          sdk.AccAddress `json:"owner"`
 	Name           string         `json:"name"`
 	Description    string         `json:"description"`
@@ -369,7 +369,7 @@ type MsgEditOracleScript struct {
 
 // NewMsgEditOracleScript creates a new MsgEditOracleScript instance.
 func NewMsgEditOracleScript(
-	oracleScriptID int64,
+	oracleScriptID OracleScriptID,
 	owner sdk.AccAddress,
 	name string,
 	description string,

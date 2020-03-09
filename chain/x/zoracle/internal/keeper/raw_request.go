@@ -7,7 +7,7 @@ import (
 
 // SetRawDataRequest is a function to save raw data request detail to the given request id and external id.
 func (k Keeper) SetRawDataRequest(
-	ctx sdk.Context, requestID, externalID int64, rawDataRequest types.RawDataRequest,
+	ctx sdk.Context, requestID types.RequestID, externalID types.ExternalID, rawDataRequest types.RawDataRequest,
 ) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(
@@ -18,7 +18,7 @@ func (k Keeper) SetRawDataRequest(
 
 // GetRawDataRequest is a function to get raw data request detail by the given request id and external id.
 func (k Keeper) GetRawDataRequest(
-	ctx sdk.Context, requestID, externalID int64,
+	ctx sdk.Context, requestID types.RequestID, externalID types.ExternalID,
 ) (types.RawDataRequest, sdk.Error) {
 	store := ctx.KVStore(k.storeKey)
 	if !k.CheckRawDataRequestExists(ctx, requestID, externalID) {
@@ -33,14 +33,14 @@ func (k Keeper) GetRawDataRequest(
 
 // CheckRawDataRequestExists checks if the raw request data at this request id and external id
 // presents in the store or not.
-func (k Keeper) CheckRawDataRequestExists(ctx sdk.Context, requestID, externalID int64) bool {
+func (k Keeper) CheckRawDataRequestExists(ctx sdk.Context, requestID types.RequestID, externalID types.ExternalID) bool {
 	store := ctx.KVStore(k.storeKey)
 	return store.Has(types.RawDataRequestStoreKey(requestID, externalID))
 }
 
 // AddNewRawDataRequest checks all conditions before saving a new raw data request to the store.
 func (k Keeper) AddNewRawDataRequest(
-	ctx sdk.Context, requestID, externalID, dataSourceID int64, calldata []byte,
+	ctx sdk.Context, requestID types.RequestID, externalID types.ExternalID, dataSourceID types.DataSourceID, calldata []byte,
 ) sdk.Error {
 	if len(calldata) > int(k.MaxCalldataSize(ctx)) {
 		// TODO: fix error later
@@ -69,14 +69,14 @@ func (k Keeper) AddNewRawDataRequest(
 
 // GetRawDataRequestIterator is a function to get iterator on all raw data request that belong to
 // given request id
-func (k Keeper) GetRawDataRequestIterator(ctx sdk.Context, requestID int64) sdk.Iterator {
+func (k Keeper) GetRawDataRequestIterator(ctx sdk.Context, requestID types.RequestID) sdk.Iterator {
 	prefix := types.GetIteratorPrefix(types.RawDataRequestStoreKeyPrefix, requestID)
 	store := ctx.KVStore(k.storeKey)
 	return sdk.KVStorePrefixIterator(store, prefix)
 }
 
 // GetRawDataRequestCount returns amount of raw data requests in given request.
-func (k Keeper) GetRawDataRequestCount(ctx sdk.Context, requestID int64) int64 {
+func (k Keeper) GetRawDataRequestCount(ctx sdk.Context, requestID types.RequestID) int64 {
 	iterator := k.GetRawDataRequestIterator(ctx, requestID)
 	count := 0
 	for ; iterator.Valid(); iterator.Next() {
@@ -86,7 +86,7 @@ func (k Keeper) GetRawDataRequestCount(ctx sdk.Context, requestID int64) int64 {
 }
 
 // GetRawDataRequests returns a list of raw data requests in given request.
-func (k Keeper) GetRawDataRequests(ctx sdk.Context, requestID int64) []types.RawDataRequest {
+func (k Keeper) GetRawDataRequests(ctx sdk.Context, requestID types.RequestID) []types.RawDataRequest {
 	iterator := k.GetRawDataRequestIterator(ctx, requestID)
 	rawRequests := make([]types.RawDataRequest, 0)
 	for ; iterator.Valid(); iterator.Next() {
@@ -99,7 +99,7 @@ func (k Keeper) GetRawDataRequests(ctx sdk.Context, requestID int64) []types.Raw
 
 // GetRawDataRequestWithExternalIDs returns a list of raw data requests with external id in given request.
 func (k Keeper) GetRawDataRequestWithExternalIDs(
-	ctx sdk.Context, requestID int64,
+	ctx sdk.Context, requestID types.RequestID,
 ) []types.RawDataRequestWithExternalID {
 	iterator := k.GetRawDataRequestIterator(ctx, requestID)
 	rawRequests := make([]types.RawDataRequestWithExternalID, 0)

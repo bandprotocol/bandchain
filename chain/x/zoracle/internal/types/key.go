@@ -52,61 +52,61 @@ var (
 )
 
 // RequestStoreKey is a function to generate key for each request in store
-func RequestStoreKey(requestID int64) []byte {
-	return append(RequestStoreKeyPrefix, int64ToBytes(requestID)...)
+func RequestStoreKey(requestID RequestID) []byte {
+	return append(RequestStoreKeyPrefix, int64ToBytes(int64(requestID))...)
 }
 
 // ResultStoreKey is a function to generate key for each result in store
-func ResultStoreKey(requestID int64, oracleScriptID int64, calldata []byte) []byte {
-	buf := append(ResultStoreKeyPrefix, int64ToBytes(requestID)...)
-	buf = append(buf, int64ToBytes(oracleScriptID)...)
+func ResultStoreKey(requestID RequestID, oracleScriptID OracleScriptID, calldata []byte) []byte {
+	buf := append(ResultStoreKeyPrefix, int64ToBytes(int64(requestID))...)
+	buf = append(buf, int64ToBytes(int64(oracleScriptID))...)
 	buf = append(buf, calldata...)
 	return buf
 }
 
 // RawDataRequestStoreKey is a function to generate key for each raw data request in store
-func RawDataRequestStoreKey(requestID, externalID int64) []byte {
-	buf := append(RawDataRequestStoreKeyPrefix, int64ToBytes(requestID)...)
-	buf = append(buf, int64ToBytes(externalID)...)
+func RawDataRequestStoreKey(requestID RequestID, externalID ExternalID) []byte {
+	buf := append(RawDataRequestStoreKeyPrefix, int64ToBytes(int64(requestID))...)
+	buf = append(buf, int64ToBytes(int64(externalID))...)
 	return buf
 }
 
 // RawDataReportStoreKey is a function to generate key for each raw data report in store.
-func RawDataReportStoreKey(requestID, externalID int64, validatorAddress sdk.ValAddress) []byte {
-	buf := append(RawDataReportStoreKeyPrefix, int64ToBytes(requestID)...)
-	buf = append(buf, int64ToBytes(externalID)...)
+func RawDataReportStoreKey(requestID RequestID, externalID ExternalID, validatorAddress sdk.ValAddress) []byte {
+	buf := append(RawDataReportStoreKeyPrefix, int64ToBytes(int64(requestID))...)
+	buf = append(buf, int64ToBytes(int64(externalID))...)
 	buf = append(buf, validatorAddress.Bytes()...)
 	return buf
 }
 
 // DataSourceStoreKey is a function to generate key for each data source in store.
-func DataSourceStoreKey(dataSourceID int64) []byte {
-	return append(DataSourceStoreKeyPrefix, int64ToBytes(dataSourceID)...)
+func DataSourceStoreKey(dataSourceID DataSourceID) []byte {
+	return append(DataSourceStoreKeyPrefix, int64ToBytes(int64(dataSourceID))...)
 }
 
 // OracleScriptStoreKey is a function to generate key for each oracle script in store.
-func OracleScriptStoreKey(oracleScriptID int64) []byte {
-	return append(OracleScriptStoreKeyPrefix, int64ToBytes(oracleScriptID)...)
+func OracleScriptStoreKey(oracleScriptID OracleScriptID) []byte {
+	return append(OracleScriptStoreKeyPrefix, int64ToBytes(int64(oracleScriptID))...)
 }
 
 // GetIteratorPrefix is a function to get specific prefix
-func GetIteratorPrefix(prefix []byte, requestID int64) []byte {
-	return append(prefix, int64ToBytes(requestID)...)
+func GetIteratorPrefix(prefix []byte, requestID RequestID) []byte {
+	return append(prefix, int64ToBytes(int64(requestID))...)
 }
 
 // GetExternalIDFromRawDataRequestKey is a function to get external id from raw data request key.
-func GetExternalIDFromRawDataRequestKey(key []byte) int64 {
+func GetExternalIDFromRawDataRequestKey(key []byte) ExternalID {
 	prefixLength := len(RawDataRequestStoreKeyPrefix)
 	externalIDBytes := key[prefixLength+8 : prefixLength+16]
-	return int64(binary.BigEndian.Uint64(externalIDBytes))
+	return ExternalID(binary.BigEndian.Uint64(externalIDBytes))
 }
 
 // GetValidatorAddressAndExternalID is a function to get validator address and external id from raw data report key.
 func GetValidatorAddressAndExternalID(
-	key []byte, requestID int64,
-) (sdk.ValAddress, int64) {
+	key []byte, requestID RequestID,
+) (sdk.ValAddress, ExternalID) {
 	prefixLength := len(RawDataReportStoreKeyPrefix)
 	externalIDBytes := key[prefixLength+8 : prefixLength+16]
-	externalID := int64(binary.BigEndian.Uint64(externalIDBytes))
+	externalID := ExternalID(binary.BigEndian.Uint64(externalIDBytes))
 	return key[prefixLength+16:], externalID
 }

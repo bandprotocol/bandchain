@@ -7,7 +7,7 @@ import (
 )
 
 func (k Keeper) AddReport(
-	ctx sdk.Context, requestID int64, dataSet []types.RawDataReport, validator sdk.ValAddress,
+	ctx sdk.Context, requestID types.RequestID, dataSet []types.RawDataReport, validator sdk.ValAddress,
 ) sdk.Error {
 	request, err := k.GetRequest(ctx, requestID)
 	if err != nil {
@@ -42,7 +42,7 @@ func (k Keeper) AddReport(
 		return types.ErrRequestNotFound(types.DefaultCodespace)
 	}
 
-	lastExternalID := int64(0)
+	lastExternalID := types.ExternalID(0)
 	for idx, rawReport := range dataSet {
 		if idx != 0 && lastExternalID >= rawReport.ExternalDataID {
 			// TODO: fix error later
@@ -72,7 +72,7 @@ func (k Keeper) AddReport(
 // SetRawDataReport is a function that saves a raw data report to store.
 func (k Keeper) SetRawDataReport(
 	ctx sdk.Context,
-	requestID, externalID int64,
+	requestID types.RequestID, externalID types.ExternalID,
 	validatorAddress sdk.ValAddress,
 	data []byte,
 ) {
@@ -84,7 +84,7 @@ func (k Keeper) SetRawDataReport(
 // GetRawDataReport is a function that gets a raw data report from store.
 func (k Keeper) GetRawDataReport(
 	ctx sdk.Context,
-	requestID, externalID int64,
+	requestID types.RequestID, externalID types.ExternalID,
 	validatorAddress sdk.ValAddress,
 ) ([]byte, sdk.Error) {
 	key := types.RawDataReportStoreKey(requestID, externalID, validatorAddress)
@@ -96,14 +96,14 @@ func (k Keeper) GetRawDataReport(
 }
 
 // GetRawDataReportsIterator returns an iterator for all reports for a specific request ID.
-func (k Keeper) GetRawDataReportsIterator(ctx sdk.Context, requestID int64) sdk.Iterator {
+func (k Keeper) GetRawDataReportsIterator(ctx sdk.Context, requestID types.RequestID) sdk.Iterator {
 	prefix := types.GetIteratorPrefix(types.RawDataReportStoreKeyPrefix, requestID)
 	store := ctx.KVStore(k.storeKey)
 	return sdk.KVStorePrefixIterator(store, prefix)
 }
 
 // // GetDataReports returns all the reports for a specific request ID.
-// func (k Keeper) GetDataReports(ctx sdk.Context, requestID int64) []types.Report {
+// func (k Keeper) GetDataReports(ctx sdk.Context, requestID types.RequestID) []types.Report {
 // 	iterator := k.GetReportsIterator(ctx, requestID)
 // 	var data []types.Report
 // 	for ; iterator.Valid(); iterator.Next() {
@@ -115,7 +115,7 @@ func (k Keeper) GetRawDataReportsIterator(ctx sdk.Context, requestID int64) sdk.
 // }
 
 // // GetValidatorReports returns all the reports (each including its reporter) for a specific request ID.
-// func (k Keeper) GetValidatorReports(ctx sdk.Context, requestID int64) ([]types.ReportWithValidator, sdk.Error) {
+// func (k Keeper) GetValidatorReports(ctx sdk.Context, requestID types.RequestID) ([]types.ReportWithValidator, sdk.Error) {
 // 	iterator := k.GetReportsIterator(ctx, requestID)
 // 	data := make([]types.ReportWithValidator, 0)
 
