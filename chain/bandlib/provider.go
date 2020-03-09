@@ -20,7 +20,7 @@ type BandProvider struct {
 func privKeyToBandAccAddress(privKey crypto.PrivKey) sdk.AccAddress {
 	config := sdk.GetConfig()
 	app.SetBech32AddressPrefixesAndBip44CoinType(config)
-	return sdk.AccAddress(privKey.PubKey().Address().Bytes())
+	return sdk.AccAddress(privKey.PubKey().Address())
 }
 
 // NewBandProvider creates new BandProvider create new cliCtx and txBldr
