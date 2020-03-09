@@ -312,13 +312,12 @@ func TestReportAndGetRefund(t *testing.T) {
 	pub := "03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f"
 
 	validatorAddress1 := keep.SetupTestValidator(ctx, keeper, pub, 100)
-	address1, err := keep.GetAddressFromPub(pub)
-	require.Nil(t, err)
+	address1 := keep.GetAddressFromPub(pub)
 
 	dataSource := keep.GetTestDataSource()
 	keeper.SetDataSource(ctx, 1, dataSource)
 
-	_, err = keeper.CoinKeeper.AddCoins(ctx, address1, keep.NewUBandCoins(1000000))
+	_, err := keeper.CoinKeeper.AddCoins(ctx, address1, keep.NewUBandCoins(1000000))
 	require.Nil(t, err)
 
 	balance := keeper.CoinKeeper.GetCoins(ctx, address1)

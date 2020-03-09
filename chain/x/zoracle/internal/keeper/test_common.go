@@ -179,8 +179,8 @@ func NewPubKey(pk string) (res crypto.PubKey) {
 	return pkEd
 }
 
-func GetAddressFromPub(pub string) (addr sdk.AccAddress, err error) {
-	return sdk.AccAddressFromHex(NewPubKey(pub).Address().String())
+func GetAddressFromPub(pub string) (addr sdk.AccAddress) {
+	return sdk.AccAddress(NewPubKey(pub).Address())
 }
 
 func NewUBandCoins(amount int64) sdk.Coins {
