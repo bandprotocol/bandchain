@@ -28,7 +28,7 @@ func main() {
 	privS, ok := os.LookupEnv("PRIVATE_KEY")
 	if !ok {
 		// Default private key is eedda7a96ad35758f2ffc404d6ccd7be913f149a530c70e95e2e3ee7a952a877
-		privS = "eedda7a96ad35758f2ffc404d6ccd7be913f149a530c70e95e2e3ee7a952a877"
+		privS = "27313aa3fd8286b54d5dbe16a4fbbc55c7908e844e37a737997fc2ba74403812"
 	}
 	nodeURI, ok := os.LookupEnv("NODE_URI")
 	if !ok {
@@ -42,7 +42,7 @@ func main() {
 
 	tx, err := bandlib.NewBandProvider(nodeURI, priv)
 
-	valPrivB, _ := hex.DecodeString("06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b")
+	valPrivB, _ := hex.DecodeString("6b0b8909eadbbc220797dc0aada9558030d4a89972e51de8de525fc9de42bd40")
 	var valPriv secp256k1.PrivKeySecp256k1
 	copy(valPriv[:], valPrivB)
 
@@ -179,7 +179,7 @@ func main() {
 
 			for i := uint64(0); i < round; i++ {
 				fmt.Println(tx.SendTransaction(
-					[]sdk.Msg{zoracle.NewMsgCreateOracleScript(tx.Sender(), fmt.Sprintf("Silly script %d", i),"Test oracle script", bytes, tx.Sender())},
+					[]sdk.Msg{zoracle.NewMsgCreateOracleScript(tx.Sender(), fmt.Sprintf("Silly script %d", i), "Test oracle script", bytes, tx.Sender())},
 					0, 1000000, "", "", "",
 					flags.BroadcastBlock,
 				))
