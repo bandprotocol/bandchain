@@ -1,18 +1,23 @@
 let checker = (str: string) => {
-  let len = String.length(str);
-  len >= 3 && str.[len - 3] == '=' && str.[len - 2] == '$' && str.[len - 1] == '1';
+  let reg = ".*=[$][0-9]+" |> Js.Re.fromString;
+  // Belt_Option.mapWithDefault
+  let t =
+    reg
+    |> Js.Re.exec_(_, str)
+    |> Belt_Option.mapWithDefault(_, [||], Js.Re.captures)
+    |> Belt_Array.length;
+  t > 0;
+  // t > 0;
 };
 
 let trim = (str: string) => {
-  let len = String.length(str);
-  String.sub(str, 0, len - 3);
+  str |> String.split_on_char('=') |> Belt_List.get(_, 0) |> Belt_Option.getExn;
 };
 
-let getVariable = (str: string) => {
+let getVariables = (str: string) => {
   String.split_on_char('\n', str) |> List.filter(checker) |> List.map(trim);
 };
-// external btoa : string -> string = "" [@@bs.val]
 
 let parseExecutableScript = (buff: JsBuffer.t) => {
-  buff |> JsBuffer._toString(_, "UTF-8") |> getVariable;
+  buff |> JsBuffer._toString(_, "UTF-8") |> getVariables;
 };
