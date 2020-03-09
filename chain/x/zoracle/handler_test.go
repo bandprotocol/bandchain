@@ -318,7 +318,7 @@ func TestReportAndGetRefund(t *testing.T) {
 	dataSource := keep.GetTestDataSource()
 	keeper.SetDataSource(ctx, 1, dataSource)
 
-	_, err = keep.AddUBandToAddress(ctx, keeper, address1, 1000000)
+	_, err = keeper.CoinKeeper.AddCoins(ctx, address1, keep.NewUBandCoins(1000000))
 	require.Nil(t, err)
 
 	balance := keeper.CoinKeeper.GetCoins(ctx, address1)

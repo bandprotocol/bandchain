@@ -187,10 +187,6 @@ func NewUBandCoins(amount int64) sdk.Coins {
 	return sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(amount)))
 }
 
-func AddUBandToAddress(ctx sdk.Context, keeper Keeper, address sdk.AccAddress, amount int64) (sdk.Coins, sdk.Error) {
-	return keeper.CoinKeeper.AddCoins(ctx, address, NewUBandCoins(amount))
-}
-
 func newDefaultRequest() types.Request {
 	return types.NewRequest(
 		1,
