@@ -1,18 +1,6 @@
 module Styles = {
   open Css;
 
-  let seeMoreContainer =
-    style([
-      width(`percent(100.)),
-      boxShadow(Shadow.box(~x=`px(0), ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
-      backgroundColor(white),
-      display(`flex),
-      justifyContent(`center),
-      alignItems(`center),
-      height(`px(30)),
-      cursor(`pointer),
-    ]);
-
   let tableWrapper = style([padding2(~v=`px(20), ~h=`px(15))]);
 
   let fixWidth = style([width(`px(230))]);
