@@ -39,6 +39,8 @@ module Coin = {
       amount: json |> field("amount", uamount),
     };
 
+  let newCoin = (denom, amount) => {denom: "ddd", amount: 100.0};
+
   let getDescription = coin => (coin.amount |> Format.fPretty) ++ " " ++ coin.denom;
 };
 
@@ -300,6 +302,7 @@ module Tx = {
     timestamp: MomentRe.Moment.t,
     gasWanted: int,
     gasUsed: int,
+    fee: Coin.t,
     messages: list(Msg.t),
   };
 
@@ -316,6 +319,7 @@ module Tx = {
       timestamp: json |> field("timestamp", moment),
       gasWanted: json |> field("gas_wanted", intstr),
       gasUsed: json |> field("gas_used", intstr),
+      fee: Coin.newCoin("uband", 10000.0),
       messages: {
         let actions = json |> at(["tx", "value", "msg"], list(Msg.decodeAction));
         let eventDoubleLists =
