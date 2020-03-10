@@ -1,3 +1,8 @@
+type status_t =
+  | Bonded
+  | Unbonded
+  | Unbonding;
+
 module Validator = {
   type node_status_t = {
     uptime: float,
@@ -48,7 +53,7 @@ module Validator = {
     reports: list(report_t),
   };
 
-  let decodeValidator = json =>
+  let decodeResult = json =>
     JsonUtils.Decode.{
       isActive: true,
       operatorAddress: json |> field("operator_address", string) |> Address.fromBech32,
@@ -127,8 +132,9 @@ module Validator = {
       ],
     };
 
-  let decodeValidators = json =>
-    JsonUtils.Decode.(json |> field("result", list(decodeValidator)));
+  let decodeList = json => JsonUtils.Decode.(json |> field("result", list(decodeResult)));
+
+  let decode = json => JsonUtils.Decode.(json |> field("result", decodeResult));
 };
 
 module GlobalInfo = {
@@ -140,9 +146,15 @@ module GlobalInfo = {
   };
 };
 
+let get = address => {
+  let addressStr = address |> Address.toBech32;
+  let json = AxiosHooks.use({j|staking/validator/$addressStr|j});
+  json |> Belt.Option.map(_, Validator.decode);
+};
+
 let getList = (~limit=10, ~page=1, ~status="bonded", ()) => {
   let json = AxiosHooks.use({j|staking/validators?limit=$limit&page=$page&status=$status|j});
-  json |> Belt.Option.map(_, Validator.decodeValidators);
+  json |> Belt.Option.map(_, Validator.decodeList);
 };
 
 // TODO: mock for now
@@ -155,16 +167,15 @@ let getGlobalInfo = _ => {
   };
 };
 
-let decodeValidators = json =>
-  JsonUtils.Decode.(json |> field("result", list(_ => ())) |> Belt_List.length);
+let toString =
+  fun
+  | Bonded => "bonded"
+  | Unbonded => "unbonded"
+  | Unbonding => "unbonding";
 
-let getValidatorStatus = (~status="bonded", ()) => {
-  let json = AxiosHooks.use({j|staking/validators?status=$status|j});
-  let len = json |> Belt.Option.map(_, decodeValidators) |> Belt_Option.getWithDefault(_, 0);
-  len > 0;
-};
-
-let getValidatorCount = _ => {
-  let json = AxiosHooks.use({j|staking/validators|j});
-  json |> Belt.Option.map(_, decodeValidators);
+let getValidatorCount = (~status=Bonded, ()) => {
+  let statusStr = status |> toString;
+  let json = AxiosHooks.use({j|staking/validators?status=$statusStr|j});
+  Belt_Option.mapWithDefault(json, [], JsonUtils.Decode.(field("result", list(_ => ()))))
+  |> Belt_List.length;
 };
