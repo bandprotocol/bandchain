@@ -71,7 +71,7 @@ let make = (~txHash) => {
     </Row>
     <div className=Styles.addressContainer>
       <Text
-        value={txHash |> Hash.toHex}
+        value={txHash |> Hash.toHex(~upper=true)}
         size=Text.Xxl
         weight=Text.Bold
         nowrap=true
@@ -112,8 +112,8 @@ let make = (~txHash) => {
       {switch (txOpt) {
        | Some(tx) =>
          <>
-           <Col size=1.35> <InfoHL info={InfoHL.Int(130082)} header="GAS USED" /> </Col>
-           <Col size=1.> <InfoHL info={InfoHL.Int(200000)} header="GAS LIMIT" /> </Col>
+           <Col size=1.35> <InfoHL info={InfoHL.Count(130082)} header="GAS USED" /> </Col>
+           <Col size=1.> <InfoHL info={InfoHL.Count(200000)} header="GAS LIMIT" /> </Col>
            <Col size=1.>
              <InfoHL info={InfoHL.Float(0.000010)} header="GAS PRICE (BAND)" isLeft=false />
            </Col>

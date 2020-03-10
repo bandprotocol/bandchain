@@ -1,7 +1,6 @@
 type t =
   | Height(int)
   | Count(int)
-  | Int(int)
   | Float(float)
   | Text(string)
   | Timestamp(MomentRe.Moment.t)
@@ -53,7 +52,6 @@ let make = (~info, ~header, ~isLeft=true) => {
          <HSpacing size=Spacing.xs />
          <Text value={height |> Format.iPretty} size=Text.Lg weight=Text.Semibold />
        </div>
-     | Count(count) => <Text value={count |> Format.iPretty} size=Text.Lg weight=Text.Semibold />
      | Float(value) =>
        <Text
          value={value |> Js.Float.toString}
@@ -62,7 +60,7 @@ let make = (~info, ~header, ~isLeft=true) => {
          spacing={Text.Em(0.02)}
          code=true
        />
-     | Int(value) =>
+     | Count(value) =>
        <Text
          value={value |> Format.iPretty}
          size=Text.Lg
@@ -85,7 +83,13 @@ let make = (~info, ~header, ~isLeft=true) => {
            code=true
          />
          <HSpacing size=Spacing.sm />
-         <Text value="(9 hrs 2 mins ago)" size=Text.Lg spacing={Text.Em(0.02)} code=true />
+         <Text
+           value="(9 hrs 2 mins ago)"
+           size=Text.Lg
+           spacing={Text.Em(0.02)}
+           weight=Text.Thin
+           code=true
+         />
        </div>
      | Fee(fee) =>
        <div className=Styles.vFlex>
