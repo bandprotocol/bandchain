@@ -129,7 +129,7 @@ func TestExecuteInvalidGetMaximumResultSize(t *testing.T) {
 		maximumResultSize:                 10,
 	}
 
-	// It should return error because "band-protocol" has length equal to 13.
+	// It should return error because "RETURN_DATA" has length equal to 11.
 	_, _, err = Execute(env, code, "execute", []byte{}, 10000)
 	require.NotNil(t, err)
 
