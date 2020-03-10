@@ -133,6 +133,7 @@ let make = (~info, ~header, ~isLeft=true) => {
        //    color=textColor
        //    code=true
        //  />
+       //Add TODO: remove hard code address
        <div className=Styles.addressContainer>
          <Text value="band" size=Text.Lg weight=Text.Semibold color=textColor code=true />
          <Text
