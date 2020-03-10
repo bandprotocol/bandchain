@@ -88,7 +88,6 @@ let make = (~height: int) => {
               | Some(block) => block.proposer
               | None => "" |> Address.fromHex
               },
-              Colors.mediumGray,
             )
           }
           header="PROPOSED BY"

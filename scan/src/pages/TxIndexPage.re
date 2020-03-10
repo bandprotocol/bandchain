@@ -61,7 +61,7 @@ let make = (~txHash) => {
             value="SUCCESS"
             weight=Text.Thin
             nowrap=true
-            color=Colors.grayHeader
+            color=Colors.mediumGray
             spacing={Text.Em(0.06)}
             block=true
           />
@@ -76,7 +76,7 @@ let make = (~txHash) => {
         weight=Text.Bold
         nowrap=true
         code=true
-        color=Colors.grayHeader
+        color=Colors.mediumGray
       />
     </div>
     <Row>
