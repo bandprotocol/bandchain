@@ -48,4 +48,4 @@ module ComponentCreator = (RawID: ID.IDSig) => {
 module DataSource = ComponentCreator(ID.DataSource);
 module OracleScript = ComponentCreator(ID.OracleScript);
 module Request = ComponentCreator(ID.Request);
-module BlockHeight = ComponentCreator(ID.BlockHeight);
+module Block = ComponentCreator(ID.Block);

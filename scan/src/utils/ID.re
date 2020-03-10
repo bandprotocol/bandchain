@@ -22,7 +22,7 @@ module RawRequestID = {
   let route = id => Route.RequestIndexPage(id, Route.RequestReportStatus);
 };
 
-module RawBlockHeight = {
+module RawBlock = {
   let prefix = "#B";
   let color = Colors.brightBlue;
   let route = height => Route.BlockIndexPage(height);
@@ -53,4 +53,4 @@ module IDCreator = (RawID: RawIDSig) => {
 module DataSource = IDCreator(RawDataSourceID);
 module OracleScript = IDCreator(RawOracleScriptID);
 module Request = IDCreator(RawRequestID);
-module BlockHeight = IDCreator(RawBlockHeight);
+module Block = IDCreator(RawBlock);
