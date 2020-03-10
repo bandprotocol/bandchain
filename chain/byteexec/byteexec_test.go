@@ -18,7 +18,7 @@ func TestExecByte(t *testing.T) {
 
 func TestExecByte2(t *testing.T) {
 	// Simple bash script
-	execByte, _ := hex.DecodeString("23212f62696e2f62617368aa6563686f202432a")
+	execByte, _ := hex.DecodeString("23212f62696e2f626173680a0a6563686f2024320a")
 	result, err := RunOnLocal(execByte, 10*time.Second, "aS world")
 	require.Nil(t, err)
 	require.Equal(t, []byte("world\n"), result)
@@ -27,8 +27,9 @@ func TestExecByte2(t *testing.T) {
 // 23212f62696e2f626173680a0a6563686f2024322b24310a
 func TestExecByte3(t *testing.T) {
 	// Simple bash script
-	execByte, _ := hex.DecodeString("23212f62696e2f626173680a0a6563686f2024322b24310a")
-	result, err := RunOnLocal(execByte, 10*time.Second, "HELLO WORLD")
+	execByte, _ := hex.DecodeString("23212f62696e2f626173680a6e756d313d24310a6e756d323d24320a6563686f202428286e756d312b6e756d3229290a")
+	result, err := RunOnLocal(execByte, 10*time.Second, "4 14")
 	require.Nil(t, err)
-	require.Equal(t, []byte("HELLOWORLD\n"), result)
+	require.Equal(t, []byte("18\n"), result)
 }
+
