@@ -5,6 +5,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
+
+	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 )
 
 func mockOracleScript(ctx sdk.Context, keeper Keeper) sdk.Error {
@@ -153,4 +155,27 @@ func TestEditOracleScriptTooLongDescription(t *testing.T) {
 
 	err = keeper.EditOracleScript(ctx, 1, newOwner, newName, tooLongDescription, newCode)
 	require.NotNil(t, err)
+}
+
+func TestGetAllOracleScripts(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	oracleScripts := []types.OracleScript{
+		types.NewOracleScript(
+			sdk.AccAddress([]byte("owner1")),
+			"name1",
+			"description1",
+			[]byte("code1"),
+		),
+		types.NewOracleScript(
+			sdk.AccAddress([]byte("owner2")),
+			"name2",
+			"description2",
+			[]byte("code2"),
+		),
+	}
+	keeper.SetOracleScript(ctx, 1, oracleScripts[0])
+	keeper.SetOracleScript(ctx, 2, oracleScripts[1])
+
+	require.Equal(t, oracleScripts, keeper.GetAllOracleScripts(ctx))
 }

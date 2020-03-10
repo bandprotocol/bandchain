@@ -7,9 +7,17 @@ module Styles = {
     style([
       fontSize(`px(12)),
       lineHeight(`px(20)),
-      fontFamily(
-        "IBM Plex Mono, cousine, sfmono-regular,Consolas,Menlo,liberation mono,ubuntu mono,Courier,monospace",
-      ),
+      fontFamilies([
+        `custom("IBM Plex Mono"),
+        `custom("cousine"),
+        `custom("sfmono-regular"),
+        `custom("Consolas"),
+        `custom("Menlo"),
+        `custom("liberation mono"),
+        `custom("ubuntu mono"),
+        `custom("Courier"),
+        `monospace,
+      ]),
     ]);
 
   let padding = style([padding(`px(20))]);
