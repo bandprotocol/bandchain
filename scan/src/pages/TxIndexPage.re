@@ -65,7 +65,7 @@ let make = (~txHash) => {
             spacing={Text.Em(0.06)}
             block=true
           />
-          <img src=Images.correct className=Styles.correctLogo />
+          <img src=Images.success className=Styles.correctLogo />
         </div>
       </Col>
     </Row>
