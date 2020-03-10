@@ -4,11 +4,14 @@ open ExecutableParser;
 open Expect;
 
 describe("Expect Parser to work correctly", () => {
-  test("test check regex", () =>
+  test("test check regex success", () =>
     expect("benz=$1" |> checker) |> toEqual(true)
   );
+  test("test check regex fail", () =>
+    expect("bun=!1" |> checker) |> toEqual(false)
+  );
 
-  test("test getVariables", () =>
+  test("test get 1 variable", () =>
     expect(
       {f|#!/bin/sh
 
@@ -25,7 +28,7 @@ curl -s -X GET $url -H \"accept: application/json\" | jq -er ".[\"$symbol\"].usd
     |> toEqual(["symbol"])
   );
 
-  test("test getVariables", () =>
+  test("test get 1 variable", () =>
     expect({f|"#!/bin/bash
 
 calldata=$1
@@ -35,7 +38,7 @@ echo $calldata
     |> toEqual(["calldata"])
   );
 
-  test("test getVariables", () =>
+  test("test get many variables", () =>
     expect({f|"#!/bin/bash
 
 calldata=$1
@@ -55,4 +58,3 @@ echo $calldata
     |> toEqual(["symbol"])
   );
 });
-// IyEvYmluL3NoCgpzeW1ib2w9JDEKCiMgQ3J5cHRvY3VycmVuY3kgcHJpY2UgZW5kcG9pbnQ6IGh0dHBzOi8vd3d3LmNvaW5nZWNrby5jb20vYXBpL2RvY3VtZW50YXRpb25zL3YzCnVybD0iaHR0cHM6Ly9hcGkuY29pbmdlY2tvLmNvbS9hcGkvdjMvc2ltcGxlL3ByaWNlP2lkcz0kc3ltYm9sJnZzX2N1cnJlbmNpZXM9dXNkIgoKIyBQZXJmb3JtcyBkYXRhIGZldGNoaW5nIGFuZCBwYXJzZXMgdGhlIHJlc3VsdApjdXJsIC1zIC1YIEdFVCAkdXJsIC1IICJhY2NlcHQ6IGFwcGxpY2F0aW9uL2pzb24iIHwganEgLWVyICIuW1wiJHN5bWJvbFwiXS51c2QiCg
