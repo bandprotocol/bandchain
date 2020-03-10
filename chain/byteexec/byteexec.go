@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/mattn/go-shellwords"
 )
 
 var (
@@ -33,21 +35,33 @@ func writeFile(executable []byte) (string, string, error) {
 }
 
 // RunOnLocal spawns a new subprocess and runs the given executable. NOT SAFE!
-func RunOnLocal(executable []byte, timeOut time.Duration, args ...string) ([]byte, error) {
+func RunOnLocal(executable []byte, timeOut time.Duration, arg string) ([]byte, error) {
+	args, err := shellwords.Parse(arg)
+	if err != nil {
+		return []byte{0}, err
+	}
+
 	dir, filename, err := writeFile(executable)
 	if err != nil {
 		return nil, err
 	}
+
 	defer os.RemoveAll(dir) // clean up
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeOut)
+
 	defer cancel()
 
 	return exec.CommandContext(ctx, filename, args...).Output()
 }
 
 // RunOnDocker runs the given executable in a new docker container.
-func RunOnDocker(executable []byte, timeOut time.Duration, args ...string) ([]byte, error) {
+func RunOnDocker(executable []byte, timeOut time.Duration, arg string) ([]byte, error) {
+	args, err := shellwords.Parse(arg)
+	if err != nil {
+		return []byte{0}, err
+	}
+
 	dir, filename, err := writeFile(executable)
 	if err != nil {
 		return nil, err
@@ -60,6 +74,7 @@ func RunOnDocker(executable []byte, timeOut time.Duration, args ...string) ([]by
 	if err != nil {
 		return []byte{}, err
 	}
+
 	containerID := strings.TrimSpace(string(rawID))
 	defer exec.Command("docker", "stop", containerID).Output()
 
