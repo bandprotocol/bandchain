@@ -140,7 +140,7 @@ module GlobalInfo = {
   };
 };
 
-let getValidators = (~limit=10, ~page=1, ~status="bonded", ()) => {
+let getList = (~limit=10, ~page=1, ~status="bonded", ()) => {
   let json = AxiosHooks.use({j|staking/validators?limit=$limit&page=$page&status=$status|j});
   json |> Belt.Option.map(_, Validator.decodeValidators);
 };
@@ -160,7 +160,8 @@ let decodeValidators = json =>
 
 let getValidatorStatus = (~status="bonded", ()) => {
   let json = AxiosHooks.use({j|staking/validators?status=$status|j});
-  json |> Belt.Option.map(_, decodeValidators);
+  let len = json |> Belt.Option.map(_, decodeValidators) |> Belt_Option.getWithDefault(_, 0);
+  len > 0;
 };
 
 let getValidatorCount = _ => {
