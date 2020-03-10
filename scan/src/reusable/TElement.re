@@ -88,18 +88,7 @@ let renderHashWithLink = hash => {
 };
 
 let renderAddress = address => {
-  <div className=Styles.addressContainer>
-    <Text value="band" weight=Text.Semibold height={Text.Px(16)} code=true />
-    <Text
-      value="17rprjgtj0krfw3wyl9creueej6ca9dc4dgxv6e"
-      weight=Text.Regular
-      height={Text.Px(16)}
-      ellipsis=true
-      nowrap=true
-      block=true
-      code=true
-    />
-  </div>;
+  <div className=Styles.addressContainer> <AddressRender address /> </div>;
 };
 
 let renderFee = fee => {
