@@ -21,12 +21,33 @@ module Styles = {
   let proposerBox = style([maxWidth(`px(270)), display(`flex), flexDirection(`column)]);
 };
 
+let msg_actions = [
+  TxHook.Msg.Send({
+    fromAddress: "fACeB00cCC40D220de2A22aA206A43e7A49d54CB" |> Address.fromHex,
+    toAddress: "F4F9994D5E59aEf6281739b046f0E28c33b3A847" |> Address.fromHex,
+    amount: [{denom: "uband", amount: 100.0}],
+  }),
+];
+
+let overwriteTxAt = (i: int, tx: TxHook.Tx.t) =>
+  i < (msg_actions |> Belt_List.length)
+    ? {
+      ...tx,
+      messages: [
+        {...tx.messages->Belt_List.getExn(0), action: msg_actions->Belt_List.getExn(i)},
+      ],
+    }
+    : tx;
+
 [@react.component]
 let make = () => {
   let step = 10;
   let (limit, setLimit) = React.useState(_ => step);
   let txsOpt = TxHook.latest(~limit, ());
-  let txs = txsOpt->Belt.Option.mapWithDefault([], ({txs}) => txs);
+  let txs =
+    txsOpt
+    ->Belt.Option.mapWithDefault([], ({txs}) => txs)
+    ->Belt_List.mapWithIndex(overwriteTxAt);
 
   let infoOpt = React.useContext(GlobalContext.context);
   let totalTxsOpt = infoOpt->Belt.Option.map(info => info.latestBlock.totalTxs);
@@ -53,6 +74,6 @@ let make = () => {
     </Row>
     <VSpacing size=Spacing.xl />
     <TxsTable txs />
-    <VSpacing size=`px(70) />
+    <VSpacing size={`px(70)} />
   </div>;
 };
