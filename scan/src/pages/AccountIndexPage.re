@@ -138,24 +138,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
     </Row>
     <VSpacing size=Spacing.lg />
     <VSpacing size=Spacing.sm />
-    <div className=Styles.vFlex>
-      <Text
-        value="band"
-        size=Text.Xxl
-        height={Text.Px(22)}
-        weight=Text.Semibold
-        nowrap=true
-        code=true
-      />
-      <Text
-        value="17rprjgtj0krfw3wyl9creueej6ca9dc4dgxv6e"
-        size=Text.Xxl
-        height={Text.Px(22)}
-        weight=Text.Regular
-        nowrap=true
-        code=true
-      />
-    </div>
+    <div className=Styles.vFlex> <Addr address position=Addr.Title /> </div>
     <VSpacing size=Spacing.xxl />
     <Row justify=Row.Between>
       <Col size=0.75> <img src=Images.pieChart className=Styles.graph /> </Col>

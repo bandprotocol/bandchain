@@ -84,7 +84,10 @@ let toString =
   | BlockIndexPage(height) => {j|/block/$height|j}
   | RequestIndexPage(reqID, RequestReportStatus) => {j|/request/$reqID|j}
   | RequestIndexPage(reqID, RequestProof) => {j|/request/$reqID#proof|j}
-  | AccountIndexPage(address, AccountTransactions) => {j|/account/$address|j}
+  | AccountIndexPage(address, AccountTransactions) => {
+      let addressBech32 = address |> Address.toBech32;
+      {j|/account/$addressBech32|j};
+    }
   | AccountIndexPage(address, AccountDelegations) => {j|/account/$address#delegations|j}
   | HomePage
   | NotFound => "/";
