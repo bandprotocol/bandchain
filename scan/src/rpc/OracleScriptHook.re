@@ -1,4 +1,4 @@
-module DataSource = {
+module OracleScript = {
   type revision_t = {
     name: string,
     timestamp: MomentRe.Moment.t,
@@ -11,8 +11,8 @@ module DataSource = {
     owner: Address.t,
     name: string,
     description: string,
-    fee: list(TxHook.Coin.t),
-    executable: JsBuffer.t,
+    relatedDataSource: list(int),
+    code: JsBuffer.t,
     requests: list(RequestHook.Request.t),
     revisions: list(revision_t),
   };
@@ -23,8 +23,8 @@ module DataSource = {
       owner: json |> field("owner", string) |> Address.fromBech32,
       name: json |> field("name", string),
       description: json |> field("description", string),
-      fee: json |> field("fee", list(TxHook.Coin.decodeCoin)),
-      executable: json |> field("executable", string) |> JsBuffer.fromBase64,
+      relatedDataSource: [1, 2, 3],
+      code: json |> field("code", string) |> JsBuffer.fromBase64,
       requests: [
         {
           id: 1,
@@ -75,14 +75,14 @@ module DataSource = {
     );
 };
 
-let get = id => {
-  let json = AxiosHooks.use({j|zoracle/data_source/$id|j});
-  json |> Belt.Option.map(_, DataSource.decode);
-  // TODO: Add requests that use this data source
-  // TODO: Add revision txs that create and change this data source
+let get = oracleScriptID => {
+  let json = AxiosHooks.use({j|zoracle/oracle_script/$oracleScriptID|j});
+  json |> Belt.Option.map(_, OracleScript.decode);
+  // TODO: Add requests that use this oracle script.
+  // TODO: Add revision txs that create and change this oracle script.
 };
 
 let getList = (~page=1, ~limit=10, ()) => {
-  let json = AxiosHooks.use({j|zoracle/data_sources?page=$page&limit=$limit|j});
-  json |> Belt.Option.map(_, DataSource.decodeList);
+  let json = AxiosHooks.use({j|zoracle/oracle_scripts?page=$page&limit=$limit|j});
+  json |> Belt.Option.map(_, OracleScript.decodeList);
 };
