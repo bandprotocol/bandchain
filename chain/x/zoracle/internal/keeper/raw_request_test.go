@@ -75,6 +75,40 @@ func TestAddNewRawDataRequest(t *testing.T) {
 	require.NotNil(t, err)
 }
 
+func TestGasConsumeByAddNewRawDataRequest(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+	request := newDefaultRequest()
+
+	// Set GasPerRawDataRequest to 10000
+	keeper.SetGasPerRawDataRequest(ctx, 10000)
+	keeper.SetRequest(ctx, 1, request)
+
+	dataSource := types.NewDataSource(
+		sdk.AccAddress([]byte("owner")),
+		"data_source",
+		"description",
+		sdk.NewCoins(sdk.NewInt64Coin("uband", 10)),
+		[]byte("executable"),
+	)
+	keeper.SetDataSource(ctx, 1, dataSource)
+
+	beforeGas := ctx.GasMeter().GasConsumed()
+	err := keeper.AddNewRawDataRequest(ctx, 1, 42, 1, []byte("calldata1"))
+	require.Nil(t, err)
+
+	gasUsed := ctx.GasMeter().GasConsumed() - beforeGas
+
+	// Set GasPerRawDataRequest to 25000
+	keeper.SetGasPerRawDataRequest(ctx, 25000)
+	keeper.SetRequest(ctx, 2, request)
+	beforeGas = ctx.GasMeter().GasConsumed()
+	err = keeper.AddNewRawDataRequest(ctx, 2, 42, 1, []byte("calldata1"))
+	require.Nil(t, err)
+
+	gasUsed2 := ctx.GasMeter().GasConsumed() - beforeGas
+	require.Equal(t, uint64(30000), gasUsed2-gasUsed)
+}
+
 func TestGetRawDataRequestCount(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
