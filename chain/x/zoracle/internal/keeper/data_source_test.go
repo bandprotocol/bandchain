@@ -5,6 +5,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
+
+	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 )
 
 func mockDataSource(ctx sdk.Context, keeper Keeper) sdk.Error {
@@ -167,4 +169,29 @@ func TestEditTooLongDataSourceDescription(t *testing.T) {
 
 	err = keeper.EditDataSource(ctx, 1, newOwner, newName, newTooLongDescription, newFee, newExecutable)
 	require.NotNil(t, err)
+}
+
+func TestGetAllDataSources(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	dataSources := []types.DataSource{
+		types.NewDataSource(
+			sdk.AccAddress([]byte("owner1")),
+			"name1",
+			"description1",
+			sdk.NewCoins(sdk.NewInt64Coin("uband", 10)),
+			[]byte("code1"),
+		),
+		types.NewDataSource(
+			sdk.AccAddress([]byte("owner2")),
+			"name2",
+			"description2",
+			sdk.NewCoins(sdk.NewInt64Coin("uband", 100)),
+			[]byte("code2"),
+		),
+	}
+	keeper.SetDataSource(ctx, 1, dataSources[0])
+	keeper.SetDataSource(ctx, 2, dataSources[1])
+
+	require.Equal(t, dataSources, keeper.GetAllDataSources(ctx))
 }

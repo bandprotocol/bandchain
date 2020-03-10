@@ -80,3 +80,21 @@ func (k Keeper) CheckOracleScriptExists(ctx sdk.Context, id types.OracleScriptID
 	store := ctx.KVStore(k.storeKey)
 	return store.Has(types.OracleScriptStoreKey(id))
 }
+
+// GetOracleScriptIterator returns an iterator for all oracle scripts in the store.
+func (k Keeper) GetOracleScriptIterator(ctx sdk.Context) sdk.Iterator {
+	store := ctx.KVStore(k.storeKey)
+	return sdk.KVStorePrefixIterator(store, types.OracleScriptStoreKeyPrefix)
+}
+
+// GetAllOracleScripts returns list of all oracle scripts.
+func (k Keeper) GetAllOracleScripts(ctx sdk.Context) []types.OracleScript {
+	var oracleScript types.OracleScript
+	oracleScripts := []types.OracleScript{}
+	iterator := k.GetOracleScriptIterator(ctx)
+	for ; iterator.Valid(); iterator.Next() {
+		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &oracleScript)
+		oracleScripts = append(oracleScripts, oracleScript)
+	}
+	return oracleScripts
+}
