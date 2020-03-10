@@ -15,12 +15,6 @@ let lineHeight =
   | Subtitle => Text.Px(18)
   | Text => Text.Px(16);
 
-let letterSpacing =
-  fun
-  | Title
-  | Subtitle
-  | Text => Text.Em(0.02);
-
 module Styles = {
   open Css;
 
@@ -43,7 +37,7 @@ module ComponentCreator = (RawID: ID.IDSig) => {
         weight=Text.Semibold
         height={position |> lineHeight}
         color=RawID.color
-        spacing={position |> letterSpacing}
+        spacing={Text.Em(0.02)}
         nowrap=true
         code=true
         block=true
