@@ -48,15 +48,7 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
     </Row>
     <VSpacing size=Spacing.md />
     <div className=Styles.vFlex>
-      <Text
-        value="#D253"
-        size=Text.Xxl
-        weight=Text.Semibold
-        height={Text.Px(23)}
-        color=Colors.brightOrange
-        nowrap=true
-        code=true
-      />
+      <TypeID.DataSource id={ID.DataSource.ID(34)} position=TypeID.Title />
       <HSpacing size=Spacing.md />
       <Text
         value="CoinGecko V.2"
