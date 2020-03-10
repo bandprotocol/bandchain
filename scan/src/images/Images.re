@@ -19,3 +19,5 @@
 [@bs.module] external dataSourceLogo: string = "./data-source.png";
 [@bs.module] external accountLogo: string = "./account-icon.png";
 [@bs.module] external pieChart: string = "./pie-chart.png";
+[@bs.module] external txLogo: string = "./tx-icon.png";
+[@bs.module] external correct: string = "./correct.png";
