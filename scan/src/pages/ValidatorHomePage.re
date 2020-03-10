@@ -3,7 +3,10 @@ module Styles = {
 
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
-  let pageContainer = style([paddingTop(`px(50))]);
+  let pageContainer = style([paddingTop(`px(35))]);
+  let validatorsLogo = style([marginRight(`px(10))]);
+  let highlight = style([margin2(~v=`px(28), ~h=`zero)]);
+  let tableSpace = style([width(`px(26))]);
 
   let seperatedLine =
     style([
@@ -56,7 +59,6 @@ let make = () => {
 
   let blocks = blocksOpt->Belt.Option.getWithDefault([]);
 
-  let latestBlockOpt = blocks->Belt_List.get(0);
   let validators =
     switch (infoOpt) {
     | Some(info) => info.validators
@@ -69,49 +71,62 @@ let make = () => {
     );
 
   <div className=Styles.pageContainer>
-    <Row>
-      <Col>
-        <div className=Styles.vFlex>
-          <img src=Images.validators className=Styles.icon />
-          <Text
-            value="ALL VALIDATORS"
-            weight=Text.Medium
-            size=Text.Md
-            nowrap=true
-            color=Colors.grayHeader
-          />
-          <div className=Styles.seperatedLine />
-          <Text
-            value={
-              switch (latestBlockOpt) {
-              | Some(latestBlock) => latestBlock.height->Format.iPretty ++ " in total"
-              | None => ""
-              }
-            }
-          />
-        </div>
-      </Col>
-    </Row>
-    <VSpacing size=Spacing.xl />
+    <div className=Styles.vFlex>
+      <img src=Images.validators className=Styles.validatorsLogo />
+      <Text
+        value="ALL VALIDATORS"
+        weight=Text.Medium
+        size=Text.Md
+        nowrap=true
+        color=Colors.grayHeader
+        spacing={Text.Em(0.06)}
+      />
+      <div className=Styles.seperatedLine />
+      <Text value={20->Format.iPretty ++ " In total"} />
+    </div>
+    <div className=Styles.highlight>
+      <Row>
+        <Col size=0.7> <InfoHL info={InfoHL.Fraction(8, 20, false)} header="VALIDATOR" /> </Col>
+        <Col size=1.1>
+          <InfoHL info={InfoHL.Fraction(5352500, 10849023, true)} header="BONDED TOKENS" />
+        </Col>
+        <Col size=0.9>
+          <InfoHL info={InfoHL.FloatWithSuffix(12.45, "  %")} header="INFLATION RATE" />
+        </Col>
+        <Col size=0.51>
+          <InfoHL info={InfoHL.FloatWithSuffix(2.59, "  secs")} header="24 HOUR AVG BLOCK TIME" />
+        </Col>
+      </Row>
+    </div>
+    // TODO : Add toggle button
     <THead>
       <Row>
-        <Col> <div className=Styles.icon /> </Col>
+        <Col> <div className=Styles.tableSpace /> </Col>
         {[
-           ("BLOCK", 0.6),
-           ("PROPOSER", 2.0),
-           ("TXN", 0.7),
-           ("TOTAL FEE", 0.7),
-           ("BLOCK REWARD", 0.8),
+           ("RANK", 0.8),
+           ("VALIDATOR", 1.6),
+           ("VOTING POWER (BAND)", 2.1),
+           ("COMMISSION (%)", 1.9),
+           ("UPTIME (%)", 1.3),
+           ("REPORT RATE (%)", 1.5),
          ]
          ->Belt.List.map(((title, size)) => {
              <Col size key=title>
-               <Text block=true value=title size=Text.Sm weight=Text.Bold color=Colors.grayText />
+               <Text
+                 block=true
+                 value=title
+                 size=Text.Sm
+                 weight=Text.Semibold
+                 color=Colors.graySubHeader
+                 spacing={Text.Em(0.1)}
+               />
              </Col>
            })
          ->Array.of_list
          ->React.array}
       </Row>
     </THead>
+    // <Col> <div className=Styles.tableSpace /> </Col>
     {blocksWithMonikers->Belt_List.toArray->Belt_Array.map(renderBody)->React.array}
     <VSpacing size=Spacing.lg />
     <LoadMore onClick={_ => setLimit(oldLimit => oldLimit + 10)} />
