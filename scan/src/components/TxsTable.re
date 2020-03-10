@@ -1,6 +1,10 @@
 module Styles = {
   open Css;
   let fullWidth = style([width(`percent(100.0)), display(`flex)]);
+  let hashContainer = style([maxWidth(`px(140))]);
+  let statusContainer =
+    style([maxWidth(`px(95)), display(`flex), flexDirection(`row), alignItems(`center)]);
+  let logo = style([width(`px(20)), marginLeft(`auto), marginRight(`px(15))]);
 };
 
 [@react.component]
@@ -8,44 +12,99 @@ let make = (~txs: list(TxHook.Tx.t)) => {
   <>
     <THead>
       <Row>
-        <Col> <div className=TElement.Styles.msgIcon /> </Col>
-        <Col size=0.8>
-          <div className=TElement.Styles.hashContainer>
-            <Text block=true value="TX HASH" size=Text.Sm weight=Text.Bold color=Colors.grayText />
+        <HSpacing size={`px(20)} />
+        <Col size=1.67>
+          <div className=Styles.fullWidth>
+            <Text value="TX HASH" size=Text.Sm weight=Text.Bold color=Colors.graySubHeader />
           </div>
         </Col>
-        <Col size=0.5>
-          <Text block=true value="TYPE" size=Text.Sm weight=Text.Bold color=Colors.grayText />
-        </Col>
-        <Col size=0.2>
-          <Text block=true value="BLOCK" size=Text.Sm weight=Text.Bold color=Colors.grayText />
-        </Col>
-        <Col size=0.8>
-          <Text block=true value="SENDER" size=Text.Sm weight=Text.Bold color=Colors.grayText />
-        </Col>
-        <Col size=0.3>
-          <div className=TElement.Styles.feeContainer>
-            <Text block=true value="FEE" size=Text.Sm weight=Text.Bold color=Colors.grayText />
+        <Col size=0.88>
+          <div className=Styles.fullWidth>
+            <Text value="BLOCK" size=Text.Sm weight=Text.Bold color=Colors.graySubHeader />
           </div>
         </Col>
+        <Col size=1.>
+          <div className=Styles.fullWidth>
+            <Text value="STATUS" size=Text.Sm weight=Text.Bold color=Colors.graySubHeader />
+          </div>
+        </Col>
+        <Col size=1.25>
+          <div className=Styles.fullWidth>
+            <AutoSpacing dir="left" />
+            <Text
+              value="GAS FEE (BAND)"
+              size=Text.Sm
+              weight=Text.Bold
+              color=Colors.graySubHeader
+            />
+            <HSpacing size={`px(20)} />
+          </div>
+        </Col>
+        <Col size=5.>
+          <div className=Styles.fullWidth>
+            <Text value="ACTIONS" size=Text.Sm weight=Text.Bold color=Colors.graySubHeader />
+          </div>
+        </Col>
+        <HSpacing size={`px(20)} />
       </Row>
     </THead>
     {txs
      ->Belt.List.map(({blockHeight, hash, timestamp, gasUsed, messages, sender}) => {
          <TBody key={hash |> Hash.toHex}>
-           <div
-             className=Styles.fullWidth onClick={_ => Route.TxIndexPage(hash) |> Route.redirect}>
-             <Row>
-               <Col>
-                 <TElement elementType={messages->Belt.List.getExn(0)->TElement.Icon} />
-               </Col>
-               <Col size=0.8> <TElement elementType={TElement.TxHash(hash, timestamp)} /> </Col>
-               <Col size=0.5> <TElement elementType={messages->TElement.TxTypeWithDetail} /> </Col>
-               <Col size=0.2> <TElement elementType={TElement.Height(blockHeight)} /> </Col>
-               <Col size=0.8> <TElement elementType={sender->TElement.Address} /> </Col>
-               <Col size=0.3> <TElement elementType={0.->TElement.Fee} /> </Col>
-             </Row>
-           </div>
+           <Row>
+             <HSpacing size={`px(20)} />
+             <Col size=1.67>
+               <div className=Styles.hashContainer>
+                 <Text
+                   block=true
+                   code=true
+                   spacing={Text.Em(0.02)}
+                   value={hash |> Hash.toHex(~upper=true)}
+                   weight=Text.Medium
+                   ellipsis=true
+                 />
+               </div>
+             </Col>
+             <Col size=0.88>
+               <Text
+                 block=true
+                 code=true
+                 value={"#B" ++ (blockHeight |> Format.iPretty)}
+                 weight=Text.Semibold
+                 size=Text.Md
+                 color=Colors.brightBlue
+               />
+             </Col>
+             <Col size=1.>
+               <div className=Styles.statusContainer>
+                 <Text
+                   block=true
+                   code=true
+                   spacing={Text.Em(0.02)}
+                   value="success"
+                   weight=Text.Medium
+                   ellipsis=true
+                 />
+                 <img src=Images.success className=Styles.logo />
+               </div>
+             </Col>
+             <Col size=1.25>
+               <div className=Styles.fullWidth>
+                 <AutoSpacing dir="left" />
+                 <Text
+                   block=true
+                   code=true
+                   spacing={Text.Em(0.02)}
+                   value="0.01"
+                   weight=Text.Medium
+                   ellipsis=true
+                 />
+                 <HSpacing size={`px(20)} />
+               </div>
+             </Col>
+             <Col size=5.> <TElement elementType={sender->TElement.Address} /> </Col>
+             <HSpacing size={`px(20)} />
+           </Row>
          </TBody>
        })
      ->Array.of_list
