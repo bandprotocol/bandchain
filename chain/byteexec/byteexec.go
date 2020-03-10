@@ -38,7 +38,7 @@ func writeFile(executable []byte) (string, string, error) {
 func RunOnLocal(executable []byte, timeOut time.Duration, arg string) ([]byte, error) {
 	args, err := shellwords.Parse(arg)
 	if err != nil {
-		return []byte{0}, err
+		return []byte{}, err
 	}
 
 	dir, filename, err := writeFile(executable)
@@ -59,7 +59,7 @@ func RunOnLocal(executable []byte, timeOut time.Duration, arg string) ([]byte, e
 func RunOnDocker(executable []byte, timeOut time.Duration, arg string) ([]byte, error) {
 	args, err := shellwords.Parse(arg)
 	if err != nil {
-		return []byte{0}, err
+		return []byte{}, err
 	}
 
 	dir, filename, err := writeFile(executable)
