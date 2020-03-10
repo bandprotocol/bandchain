@@ -47,7 +47,8 @@ func (k Keeper) AddNewRawDataRequest(
 		return types.ErrRequestNotFound(types.DefaultCodespace)
 	}
 
-	if !k.CheckRequestExists(ctx, requestID) {
+	request, err := k.GetRequest(ctx, requestID)
+	if err != nil {
 		// TODO: fix error later
 		return types.ErrRequestNotFound(types.DefaultCodespace)
 	}
@@ -62,6 +63,10 @@ func (k Keeper) AddNewRawDataRequest(
 		return types.ErrRequestNotFound(types.DefaultCodespace)
 	}
 
+	ctx.GasMeter().ConsumeGas(
+		k.GasPerRawDataRequest(ctx)*uint64(len(request.RequestedValidators)),
+		"RawDataRequest",
+	)
 	k.SetRawDataRequest(ctx, requestID, externalID, types.NewRawDataRequest(dataSourceID, calldata))
 
 	return k.ValidateDataSourceCount(ctx, requestID)

@@ -45,6 +45,9 @@ const (
 	// The maximum size of description length.
 	// Default value 4096
 	DefaultDescriptionLength = int64(4096)
+
+	// Gas cost will be consumed each timed the number of raw data requests and per validators.
+	DefaultGasPerRawDataRequest = uint64(25000)
 )
 
 // Parameter store keys.
@@ -58,6 +61,7 @@ var (
 	KeyEndBlockExecuteGasLimit      = []byte("EndBlockExecuteGasLimit")
 	KeyMaxNameLength                = []byte("MaxNameLength")
 	KeyMaxDescriptionLength         = []byte("MaxDescriptionLength")
+	KeyGasPerRawDataRequest         = []byte("GasPerRawDataRequest")
 )
 
 // Params - used for initializing default parameter for zoracle at genesis.
@@ -71,6 +75,7 @@ type Params struct {
 	EndBlockExecuteGasLimit      uint64 `json:"end_block_execute_gas_limit" yaml:"end_block_execute_gas_limit"`
 	MaxNameLength                int64  `json:"max_name_length" yaml:"max_name_length"`
 	MaxDescriptionLength         int64  `json:"max_description_length" yaml:"max_description_length"`
+	GasPerRawDataRequest         uint64 `json:"gas_per_raw_data_request" yaml:"gas_per_raw_data_request"`
 }
 
 // NewParams creates a new Params object.
@@ -83,7 +88,8 @@ func NewParams(
 	maxResultSize int64,
 	endBlockExecuteGasLimit uint64,
 	maxNameLength int64,
-	MaxDescriptionLength int64,
+	maxDescriptionLength int64,
+	gasPerRawDataRequest uint64,
 ) Params {
 	return Params{
 		MaxDataSourceExecutableSize:  maxDataSourceExecutableSize,
@@ -94,7 +100,8 @@ func NewParams(
 		MaxResultSize:                maxResultSize,
 		EndBlockExecuteGasLimit:      endBlockExecuteGasLimit,
 		MaxNameLength:                maxNameLength,
-		MaxDescriptionLength:         MaxDescriptionLength,
+		MaxDescriptionLength:         maxDescriptionLength,
+		GasPerRawDataRequest:         gasPerRawDataRequest,
 	}
 }
 
@@ -110,6 +117,7 @@ func (p Params) String() string {
   EndBlockExecuteGasLimit:      %d
   MaxNameLength:                %d
   MaxDescriptionLength:         %d
+  GasPerRawDataRequest:         %d
 `, p.MaxDataSourceExecutableSize,
 		p.MaxOracleScriptCodeSize,
 		p.MaxCalldataSize,
@@ -119,6 +127,7 @@ func (p Params) String() string {
 		p.EndBlockExecuteGasLimit,
 		p.MaxNameLength,
 		p.MaxDescriptionLength,
+		p.GasPerRawDataRequest,
 	)
 }
 
@@ -134,6 +143,7 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 		{Key: KeyEndBlockExecuteGasLimit, Value: &p.EndBlockExecuteGasLimit},
 		{Key: KeyMaxNameLength, Value: &p.MaxNameLength},
 		{Key: KeyMaxDescriptionLength, Value: &p.MaxDescriptionLength},
+		{Key: KeyGasPerRawDataRequest, Value: &p.GasPerRawDataRequest},
 	}
 }
 
@@ -149,5 +159,6 @@ func DefaultParams() Params {
 		DefaultEndBlockExecuteGasLimit,
 		DefaultMaxNameLength,
 		DefaultDescriptionLength,
+		DefaultGasPerRawDataRequest,
 	)
 }
