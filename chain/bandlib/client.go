@@ -11,12 +11,11 @@ import (
 )
 
 type msgDetail struct {
-	msg       sdk.Msg
-	gas       uint64
-	fees      sdk.Coins
-	gasPrices sdk.DecCoins
-	txChan    chan sdk.TxResponse
-	errChan   chan error
+	msg     sdk.Msg
+	gas     uint64
+	fees    sdk.Coins
+	txChan  chan sdk.TxResponse
+	errChan chan error
 }
 
 // BandStatefulClient contains state client
@@ -28,7 +27,6 @@ type BandStatefulClient struct {
 	msgs            []sdk.Msg
 	totalGas        uint64
 	totalFees       sdk.Coins
-	totalGasPrices  sdk.DecCoins
 	txChans         []chan sdk.TxResponse
 	errChans        []chan error
 	readMode        <-chan struct{}
@@ -59,15 +57,10 @@ func NewBandStatefulClient(
 }
 
 func (client *BandStatefulClient) SendTransaction(
-	msg sdk.Msg, gas uint64, fees, gasPrices string,
+	msg sdk.Msg, gas uint64, fees string,
 ) (sdk.TxResponse, error) {
 	// Add msg to channel
 	parsedFees, err := sdk.ParseCoins(fees)
-	if err != nil {
-		return sdk.TxResponse{}, err
-	}
-
-	parsedGasPrices, err := sdk.ParseDecCoins(gasPrices)
 	if err != nil {
 		return sdk.TxResponse{}, err
 	}
@@ -76,7 +69,7 @@ func (client *BandStatefulClient) SendTransaction(
 	errChan := make(chan error, 0)
 
 	client.msgChan <- msgDetail{
-		msg: msg, gas: gas, fees: parsedFees, gasPrices: parsedGasPrices,
+		msg: msg, gas: gas, fees: parsedFees,
 		txChan: txChan, errChan: errChan,
 	}
 
@@ -107,7 +100,6 @@ func (client *BandStatefulClient) loop() {
 						client.msgs = append(client.msgs, msg.msg)
 						client.totalGas += msg.gas
 						client.totalFees = client.totalFees.Add(msg.fees)
-						client.totalGasPrices = client.totalGasPrices.Add(msg.gasPrices)
 						client.txChans = append(client.txChans, msg.txChan)
 						client.errChans = append(client.errChans, msg.errChan)
 						if len(client.msgs) == client.maximumMsgPerTx {
@@ -136,7 +128,6 @@ func (client *BandStatefulClient) loop() {
 					client.totalGas,
 					client.memo,
 					client.totalFees.String(),
-					client.totalGasPrices.String(),
 					flags.BroadcastBlock,
 				)
 				if err != nil {
@@ -154,7 +145,6 @@ func (client *BandStatefulClient) loop() {
 				client.msgs = []sdk.Msg{}
 				client.totalGas = uint64(0)
 				client.totalFees = sdk.Coins{}
-				client.totalGasPrices = sdk.DecCoins{}
 				client.txChans = []chan sdk.TxResponse{}
 				client.errChans = []chan error{}
 			}

@@ -47,10 +47,10 @@ func (provider *BandProvider) Sender() sdk.AccAddress {
 
 func (provider *BandProvider) SendTransaction(
 	msgs []sdk.Msg, seq, gas uint64,
-	memo, fees, gasPrices, broadcastMode string,
+	memo, fees, broadcastMode string,
 ) (sdk.TxResponse, error) {
 	cliCtx := provider.cliCtx.WithBroadcastMode(broadcastMode)
-	txBldr := provider.txBldr.WithSequence(seq).WithGas(gas).WithMemo(memo).WithFees(fees).WithGasPrices(gasPrices)
+	txBldr := provider.txBldr.WithSequence(seq).WithGas(gas).WithMemo(memo).WithFees(fees)
 	return completeAndBroadcastTxCLI(cliCtx, txBldr, msgs, provider.privKey)
 }
 
