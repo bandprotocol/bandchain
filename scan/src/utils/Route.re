@@ -30,7 +30,8 @@ type t =
   | BlockHomePage
   | BlockIndexPage(int)
   | RequestIndexPage(int, request_tab_t)
-  | AccountIndexPage(Address.t, account_tab_t);
+  | AccountIndexPage(Address.t, account_tab_t)
+  | ValidatorHomePage;
 
 let fromUrl = (url: ReasonReactRouter.url) =>
   switch (url.path, url.hash) {
@@ -52,6 +53,7 @@ let fromUrl = (url: ReasonReactRouter.url) =>
   | (["script", codeHash], _) => ScriptIndexPage(codeHash |> Hash.fromHex, ScriptTransactions)
   | (["txs"], _) => TxHomePage
   | (["tx", txHash], _) => TxIndexPage(Hash.fromHex(txHash))
+  | (["validators"], _) => ValidatorHomePage
   | (["blocks"], _) => BlockHomePage
   | (["block", blockHeight], _) =>
     let blockHeightIntOpt = blockHeight |> int_of_string_opt;
@@ -80,6 +82,7 @@ let toString =
   | ScriptIndexPage(codeHash, ScriptIntegration) => {j|/script/$codeHash#integration|j}
   | TxHomePage => "/txs"
   | TxIndexPage(txHash) => {j|/tx/$txHash|j}
+  | ValidatorHomePage => "/validators"
   | BlockHomePage => "/blocks"
   | BlockIndexPage(height) => {j|/block/$height|j}
   | RequestIndexPage(reqID, RequestReportStatus) => {j|/request/$reqID|j}
