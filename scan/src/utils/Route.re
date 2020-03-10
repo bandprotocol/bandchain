@@ -88,7 +88,10 @@ let toString =
       let addressBech32 = address |> Address.toBech32;
       {j|/account/$addressBech32|j};
     }
-  | AccountIndexPage(address, AccountDelegations) => {j|/account/$address#delegations|j}
+  | AccountIndexPage(address, AccountDelegations) => {
+      let addressBech32 = address |> Address.toBech32;
+      {j|/account/$addressBech32#delegations|j};
+    }
   | HomePage
   | NotFound => "/";
 
