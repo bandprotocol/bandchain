@@ -61,7 +61,7 @@ func main() {
 			}
 			fmt.Println(tx.SendTransaction(
 				[]sdk.Msg{zoracle.NewMsgCreateDataSource(
-					tx.Sender(), "Coingecko script", "The Script that queries crypto price from https://cryptocompare.com", sdk.Coins{}, coingecko, tx.Sender(),
+					tx.Sender(), "Coingecko script", "The Script that queries crypto price from https://coingecko.com", sdk.Coins{}, coingecko, tx.Sender(),
 				)},
 				0, 1000000, "", "", "",
 				flags.BroadcastBlock,
