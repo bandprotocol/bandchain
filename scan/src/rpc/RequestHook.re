@@ -103,6 +103,13 @@ module Request = {
     };
 
   let decode = json => JsonUtils.Decode.(json |> field("result", decodeResult));
+
+  let decodeList = json =>
+    JsonUtils.Decode.(
+      json
+      |> optional(field("result", list(decodeResult)))
+      |> Belt.Option.getWithDefault(_, [])
+    );
 };
 
 let get = id => {
@@ -110,27 +117,7 @@ let get = id => {
   json |> Belt.Option.map(_, Request.decode);
 };
 
-// TODO: mock for now
 let getList = (~page=1, ~limit=10, ()) => {
-  Request.[
-    {
-      id: 1,
-      oracleScriptID: 1,
-      calldata: "AAAAAAAAV0M=" |> JsBuffer.fromBase64,
-      requestedValidators: [
-        "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,
-        "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
-      ],
-      sufficientValidatorCount: 2,
-      expirationHeight: 3000,
-      resolveStatus: Success,
-      requester: "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
-      txHash: "AC006D7136B0041DA4568A4CA5B7C1F8E8E0B4A74F11213B99EC4956CC8A247C" |> Hash.fromHex,
-      requestedAtHeight: 40000,
-      requestedAtTime: MomentRe.momentNow(),
-      rawDataRequests: [],
-      reports: [],
-      result: Some("AAAAAAAAV0M=" |> JsBuffer.fromBase64),
-    },
-  ];
+  let json = AxiosHooks.use({j|zoracle/requests?page=$page&limit=$limit|j});
+  json |> Belt.Option.map(_, Request.decodeList);
 };
