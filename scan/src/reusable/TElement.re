@@ -88,7 +88,7 @@ let renderHashWithLink = hash => {
 };
 
 let renderAddress = address => {
-  <div className=Styles.addressContainer> <Addr address /> </div>;
+  <div className=Styles.addressContainer> <AddressRender address /> </div>;
 };
 
 let renderFee = fee => {

@@ -126,7 +126,9 @@ let make = (~info, ~header, ~isLeft=true) => {
          color=textColor
        />
      | Address(address) =>
-       <div className=Styles.addressContainer> <Addr address position=Addr.Subtitle /> </div>
+       <div className=Styles.addressContainer>
+         <AddressRender address position=AddressRender.Subtitle />
+       </div>
      }}
   </div>;
 };
