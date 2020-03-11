@@ -66,3 +66,4 @@ let white = Css.hex("ffffff");
 let black = Css.hex("000000");
 
 let brightPink = Css.hex("EB4773");
+let blueGray2 = Css.hex("E2E3E9");
