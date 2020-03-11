@@ -40,14 +40,17 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~address, ~position=Text) => {
-  let noPrefixAddress = address |> Address.toBech32 |> Js.String.sliceToEnd(~from=4);
+let make = (~address, ~position=Text, ~validator=false) => {
+  let noPrefixAddress =
+    validator
+      ? address |> Address.toOperatorBech32 |> Js.String.sliceToEnd(~from=11)
+      : address |> Address.toBech32 |> Js.String.sliceToEnd(~from=4);
 
   <div
     className={Css.merge([Styles.container, Styles.pointerEvents(position)])}
     onClick={_ => Route.redirect(Route.AccountIndexPage(address, Route.AccountTransactions))}>
     <Text
-      value="band"
+      value={validator ? "bandvaloper" : "band"}
       size={position |> prefixFontSize}
       weight=Text.Semibold
       code=true
