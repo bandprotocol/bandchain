@@ -102,7 +102,7 @@ let make = (~txs: list(TxHook.Tx.t)) => {
                  <HSpacing size={`px(20)} />
                </div>
              </Col>
-             <Col size=5.> <Msg msg={messages->Belt_List.getExn(0)} width=450 /> </Col>
+             <Col size=5.> <Msg msg={messages->Belt_List.getExn(0)} width=330 /> </Col>
              <HSpacing size={`px(20)} />
            </Row>
          </TBody>
