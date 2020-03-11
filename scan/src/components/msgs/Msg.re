@@ -69,14 +69,7 @@ let make = (~msg: TxHook.Msg.t, ~width: int) => {
           color=Colors.yellow6
         />
       </div>
-      <Text
-        value={"#D" ++ (id |> string_of_int)}
-        color=Colors.yellow5
-        weight=Text.Semibold
-        code=true
-        nowrap=true
-        block=true
-      />
+      <TypeID.DataSource id={ID.DataSource.ID(id)} />
       <HSpacing size=Spacing.sm />
       <div className={Styles.withWidth(170)}>
         <Text
@@ -101,14 +94,7 @@ let make = (~msg: TxHook.Msg.t, ~width: int) => {
           color=Colors.yellow6
         />
       </div>
-      <Text
-        value={"#D" ++ (id |> string_of_int)}
-        color=Colors.yellow5
-        weight=Text.Semibold
-        code=true
-        nowrap=true
-        block=true
-      />
+      <TypeID.DataSource id={ID.DataSource.ID(id)} />
       <HSpacing size=Spacing.sm />
       <div className={Styles.withWidth(170)}>
         <Text
@@ -134,14 +120,7 @@ let make = (~msg: TxHook.Msg.t, ~width: int) => {
         />
       </div>
       <div className={Styles.rowWithWidth(200)}>
-        <Text
-          value={"#O" ++ (id |> string_of_int)}
-          color=Colors.pink5
-          weight=Text.Semibold
-          code=true
-          nowrap=true
-          block=true
-        />
+        <TypeID.OracleScript id={ID.OracleScript.ID(id)} />
         <HSpacing size=Spacing.sm />
         <div className={Styles.withWidth(160)}>
           <Text
@@ -168,14 +147,7 @@ let make = (~msg: TxHook.Msg.t, ~width: int) => {
         />
       </div>
       <div className={Styles.rowWithWidth(210)}>
-        <Text
-          value={"#O" ++ (id |> string_of_int)}
-          color=Colors.pink5
-          weight=Text.Semibold
-          code=true
-          nowrap=true
-          block=true
-        />
+        <TypeID.OracleScript id={ID.OracleScript.ID(id)} />
         <HSpacing size=Spacing.sm />
         <div className={Styles.withWidth(170)}>
           <Text
@@ -201,25 +173,11 @@ let make = (~msg: TxHook.Msg.t, ~width: int) => {
           color=Colors.orange6
         />
       </div>
-      <Text
-        value={"#R" ++ (id |> string_of_int)}
-        color=Colors.orange5
-        weight=Text.Semibold
-        code=true
-        nowrap=true
-        block=true
-      />
+      <TypeID.Request id={ID.Request.ID(id)} />
       <HSpacing size=Spacing.sm />
       <Text value={j|➜|j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
       <HSpacing size=Spacing.sm />
-      <Text
-        value={"#O" ++ (oracleScriptID |> string_of_int)}
-        color=Colors.pink5
-        weight=Text.Semibold
-        code=true
-        nowrap=true
-        block=true
-      />
+      <TypeID.OracleScript id={ID.OracleScript.ID(id)} />
       <HSpacing size=Spacing.sm />
       <div className={Styles.withWidth(170)}>
         <Text
@@ -246,14 +204,7 @@ let make = (~msg: TxHook.Msg.t, ~width: int) => {
       </div>
       <Text value={j|➜|j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
       <HSpacing size=Spacing.sm />
-      <Text
-        value={"#R" ++ (requestID |> string_of_int)}
-        color=Colors.orange5
-        weight=Text.Semibold
-        code=true
-        nowrap=true
-        block=true
-      />
+      <TypeID.Request id={ID.Request.ID(requestID)} />
     </div>
   | Unknown => React.null
   };
