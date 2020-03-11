@@ -1,49 +1,260 @@
 module Styles = {
   open Css;
-  let withWidth = (w: int) => style([width(`px(w)), display(`flex), flexDirection(`row)]);
-  let withBg = (color: Types.Color.t) =>
-    style([height(`px(16)), backgroundColor(color), borderRadius(`px(100))]);
+  let rowWithWidth = (w: int) =>
+    style([width(`px(w)), display(`flex), flexDirection(`row), alignItems(`center)]);
+  let withWidth = (w: int) => style([width(`px(w))]);
+  let withBg = (color: Types.Color.t, mw: int) =>
+    style([
+      minWidth(`px(mw)),
+      height(`px(16)),
+      backgroundColor(color),
+      borderRadius(`px(100)),
+      margin2(`px(0), `px(5)),
+      display(`flex),
+      justifyContent(`center),
+      alignItems(`center),
+    ]);
 };
 
 [@react.component]
 let make = (~msg: TxHook.Msg.t, ~width: int) => {
   switch (msg.action) {
   | Send({fromAddress, toAddress, amount}) =>
-    <div className={Styles.withWidth(width)}>
+    <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(width / 2 - 18)}>
-        <Text value="band" weight=Text.Semibold height={Text.Px(16)} code=true />
+        <AddressRender address=fromAddress />
+      </div>
+      <div className={Styles.withBg(Colors.blue1, 40)}>
         <Text
-          value={fromAddress |> Address.toBech32 |> Js.String.sliceToEnd(~from=4)}
-          weight=Text.Regular
-          height={Text.Px(16)}
-          ellipsis=true
-          nowrap=true
-          block=true
-          code=true
+          value="SEND"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.blue7
         />
       </div>
-      <div className={Styles.withBg(Colors.blue1)}>
-        <Text value="SEND" color=Colors.blue7 />
-      </div>
-      <div className={Styles.withWidth(width / 2 - 18)}>
-        <Text value="band" weight=Text.Semibold height={Text.Px(16)} code=true />
+      <div className={Styles.rowWithWidth(200)}>
         <Text
-          value={toAddress |> Address.toBech32 |> Js.String.sliceToEnd(~from=4)}
-          weight=Text.Regular
-          height={Text.Px(16)}
-          ellipsis=true
+          value={
+            amount
+            ->Belt_List.get(0)
+            ->Belt_Option.getWithDefault(TxHook.Coin.newCoin("uband", 0.0)).
+              amount
+            |> Format.fPretty
+          }
+          weight=Text.Semibold
+          code=true
           nowrap=true
           block=true
-          code=true
+        />
+        <HSpacing size=Spacing.sm />
+        <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
+        <HSpacing size=Spacing.sm />
+        <Text value={j|➜|j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+        <HSpacing size=Spacing.sm />
+      </div>
+      <div className={Styles.withWidth(width / 2 - 18)}>
+        <AddressRender address=toAddress />
+      </div>
+    </div>
+  | CreateDataSource({id, sender, name}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(150)}> <AddressRender address=sender /> </div>
+      <div className={Styles.withBg(Colors.yellow1, 110)}>
+        <Text
+          value="CREATE DATASOURCE"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.yellow6
+        />
+      </div>
+      <Text
+        value={"#D" ++ (id |> string_of_int)}
+        color=Colors.yellow5
+        weight=Text.Semibold
+        code=true
+        nowrap=true
+        block=true
+      />
+      <HSpacing size=Spacing.sm />
+      <div className={Styles.withWidth(170)}>
+        <Text
+          value=name
+          color=Colors.grayHeader
+          weight=Text.Medium
+          nowrap=true
+          block=true
+          ellipsis=true
         />
       </div>
     </div>
-  | CreateDataSource(cds) => React.null
-  | EditDataSource(eds) => React.null
-  | CreateOracleScript(cos) => React.null
-  | EditOracleScript(eos) => React.null
-  | Request(req) => React.null
-  | Report(rep) => React.null
+  | EditDataSource({id, sender, name}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(150)}> <AddressRender address=sender /> </div>
+      <div className={Styles.withBg(Colors.yellow1, 100)}>
+        <Text
+          value="EDIT DATASOURCE"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.yellow6
+        />
+      </div>
+      <Text
+        value={"#D" ++ (id |> string_of_int)}
+        color=Colors.yellow5
+        weight=Text.Semibold
+        code=true
+        nowrap=true
+        block=true
+      />
+      <HSpacing size=Spacing.sm />
+      <div className={Styles.withWidth(170)}>
+        <Text
+          value=name
+          color=Colors.grayHeader
+          weight=Text.Medium
+          nowrap=true
+          block=true
+          ellipsis=true
+        />
+      </div>
+    </div>
+  | CreateOracleScript({id, sender, name}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(140)}> <AddressRender address=sender /> </div>
+      <div className={Styles.withBg(Colors.pink1, 120)}>
+        <Text
+          value="CREATE ORACLE SCRIPT"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.pink6
+        />
+      </div>
+      <div className={Styles.rowWithWidth(200)}>
+        <Text
+          value={"#O" ++ (id |> string_of_int)}
+          color=Colors.pink5
+          weight=Text.Semibold
+          code=true
+          nowrap=true
+          block=true
+        />
+        <HSpacing size=Spacing.sm />
+        <div className={Styles.withWidth(160)}>
+          <Text
+            value=name
+            color=Colors.grayHeader
+            weight=Text.Medium
+            nowrap=true
+            block=true
+            ellipsis=true
+          />
+        </div>
+      </div>
+    </div>
+  | EditOracleScript({id, sender, name}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(140)}> <AddressRender address=sender /> </div>
+      <div className={Styles.withBg(Colors.pink1, 110)}>
+        <Text
+          value="EDIT ORACLE SCRIPT"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.pink6
+        />
+      </div>
+      <div className={Styles.rowWithWidth(210)}>
+        <Text
+          value={"#O" ++ (id |> string_of_int)}
+          color=Colors.pink5
+          weight=Text.Semibold
+          code=true
+          nowrap=true
+          block=true
+        />
+        <HSpacing size=Spacing.sm />
+        <div className={Styles.withWidth(170)}>
+          <Text
+            value=name
+            color=Colors.grayHeader
+            weight=Text.Medium
+            nowrap=true
+            block=true
+            ellipsis=true
+          />
+        </div>
+      </div>
+    </div>
+  | Request({id, oracleScriptID, sender}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(140)}> <AddressRender address=sender /> </div>
+      <div className={Styles.withBg(Colors.orange1, 60)}>
+        <Text
+          value="REQUEST"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.orange6
+        />
+      </div>
+      <Text
+        value={"#R" ++ (id |> string_of_int)}
+        color=Colors.orange5
+        weight=Text.Semibold
+        code=true
+        nowrap=true
+        block=true
+      />
+      <HSpacing size=Spacing.sm />
+      <Text value={j|➜|j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+      <HSpacing size=Spacing.sm />
+      <Text
+        value={"#O" ++ (oracleScriptID |> string_of_int)}
+        color=Colors.pink5
+        weight=Text.Semibold
+        code=true
+        nowrap=true
+        block=true
+      />
+      <HSpacing size=Spacing.sm />
+      <div className={Styles.withWidth(170)}>
+        <Text
+          value="Mock Oracle Script" // TODO , replace with wire up data
+          color=Colors.grayHeader
+          weight=Text.Medium
+          nowrap=true
+          block=true
+          ellipsis=true
+        />
+      </div>
+    </div>
+  | Report({requestID, sender}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(140)}> <AddressRender address=sender /> </div>
+      <div className={Styles.withBg(Colors.orange1, 50)}>
+        <Text
+          value="REPORT"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.orange6
+        />
+      </div>
+      <Text value={j|➜|j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+      <HSpacing size=Spacing.sm />
+      <Text
+        value={"#R" ++ (requestID |> string_of_int)}
+        color=Colors.orange5
+        weight=Text.Semibold
+        code=true
+        nowrap=true
+        block=true
+      />
+    </div>
   | Unknown => React.null
   };
 };
