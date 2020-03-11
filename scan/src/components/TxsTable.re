@@ -65,16 +65,7 @@ let make = (~txs: list(TxHook.Tx.t)) => {
                  />
                </div>
              </Col>
-             <Col size=0.88>
-               <Text
-                 block=true
-                 code=true
-                 value={"#B" ++ (blockHeight |> Format.iPretty)}
-                 weight=Text.Semibold
-                 size=Text.Md
-                 color=Colors.brightBlue
-               />
-             </Col>
+             <Col size=0.88> <TypeID.Block id={ID.Block.ID(blockHeight)} /> </Col>
              <Col size=1.>
                <div className=Styles.statusContainer>
                  <Text
