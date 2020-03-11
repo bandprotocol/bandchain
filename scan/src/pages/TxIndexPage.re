@@ -92,6 +92,7 @@ let make = (~txHash) => {
                info={
                  InfoHL.Address(
                    "band17rprjgtj0krfw3wyl9creueej6ca9dc4dgxv6e" |> Address.fromBech32,
+                   Colors.grayHeader,
                  )
                }
                header="SENDER"

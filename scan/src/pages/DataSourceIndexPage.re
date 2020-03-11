@@ -64,7 +64,10 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
         <InfoHL
           header="OWNER"
           info={
-            InfoHL.Address("band1gfskuezzv9hxgsnpdejyyctwv3pxzmnywps0q9" |> Address.fromBech32)
+            InfoHL.Address(
+              "band1gfskuezzv9hxgsnpdejyyctwv3pxzmnywps0q9" |> Address.fromBech32,
+              Colors.grayHeader,
+            )
           }
         />
       </Col>
