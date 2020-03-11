@@ -1,6 +1,7 @@
 pragma solidity 0.5.14;
 pragma experimental ABIEncoderV2;
 import {BlockHeaderMerkleParts} from "./BlockHeaderMerkleParts.sol";
+import {Ownable} from "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import {IAVLMerklePath} from "./IAVLMerklePath.sol";
 import {TMSignature} from "./TMSignature.sol";
 import {Utils} from "./Utils.sol";
@@ -8,7 +9,7 @@ import {IBridge} from "./IBridge.sol";
 
 /// @title Bridge <3 BandChain D3N
 /// @author Band Protocol Team
-contract Bridge is IBridge {
+contract Bridge is IBridge, Ownable {
     using BlockHeaderMerkleParts for BlockHeaderMerkleParts.Data;
     using IAVLMerklePath for IAVLMerklePath.Data;
     using TMSignature for TMSignature.Data;
@@ -16,22 +17,41 @@ contract Bridge is IBridge {
     /// Mapping from block height to the hash of "zoracle" iAVL Merkle tree.
     mapping(uint256 => bytes32) public oracleStates;
     /// Mapping from an address to whether it's a validator.
-    mapping(address => bool) public validators;
+    mapping(address => uint256) public validatorPowers;
     /// The total number of active validators currently on duty.
-    uint256 public validatorCount;
+    uint256 public totalValidatorPower;
+
+    struct ValidatorWithPower {
+        address addr;
+        uint256 power;
+    }
 
     /// Initializes an oracle bridge to BandChain.
     /// @param _validators The initial set of BandChain active validators.
-    constructor(address[] memory _validators) public {
+    constructor(ValidatorWithPower[] memory _validators) public {
         for (uint256 idx = 0; idx < _validators.length; ++idx) {
-            address validator = _validators[idx];
+            ValidatorWithPower memory validator = _validators[idx];
             require(
-                !validators[validator],
+                validatorPowers[validator.addr] == 0,
                 "DUPLICATION_IN_INITIAL_VALIDATOR_SET"
             );
-            validators[validator] = true;
+            validatorPowers[validator.addr] = validator.power;
+            totalValidatorPower += validator.power;
         }
-        validatorCount = _validators.length;
+    }
+
+    /// Update validator powers by owner.
+    /// @param _validators The changed set of BandChain validators.
+    function updateValidatorPowers(ValidatorWithPower[] memory _validators)
+        public
+        onlyOwner
+    {
+        for (uint256 idx = 0; idx < _validators.length; ++idx) {
+            ValidatorWithPower memory validator = _validators[idx];
+            totalValidatorPower -= validatorPowers[validator.addr];
+            validatorPowers[validator.addr] = validator.power;
+            totalValidatorPower += validator.power;
+        }
     }
 
     /// Relays a new oracle state to the bridge contract.
@@ -86,22 +106,19 @@ contract Bridge is IBridge {
         );
         // Counts the total number of valid signatures signed by active validators.
         address lastSigner = address(0);
-        uint256 validSignatureCount = 0;
+        uint256 sumVotingPower = 0;
         for (uint256 idx = 0; idx < _signatures.length; ++idx) {
             address signer = _signatures[idx].recoverSigner(
                 blockHeader,
                 _signedDataPrefix
             );
             require(signer > lastSigner, "INVALID_SIGNATURE_SIGNER_ORDER");
-            if (validators[signer]) {
-                // Increases valid signature count if the signer is one of the validators.
-                validSignatureCount += 1;
-            }
+            sumVotingPower += validatorPowers[signer];
             lastSigner = signer;
         }
         // Verifies that sufficient validators signed the block and saves the oracle state.
         require(
-            validSignatureCount * 3 > validatorCount * 2,
+            sumVotingPower * 3 > totalValidatorPower * 2,
             "INSUFFICIENT_VALIDATOR_SIGNATURES"
         );
         oracleStates[_blockHeight] = _oracleIAVLStateHash;
