@@ -6,7 +6,8 @@ module Styles = {
   let pageContainer = style([paddingTop(`px(35))]);
   let validatorsLogo = style([marginRight(`px(10))]);
   let highlight = style([margin2(~v=`px(28), ~h=`zero)]);
-  let tableSpace = style([width(`px(26))]);
+  let valueContainer = style([display(`flex), justifyContent(`flexStart)]);
+  let monikerContainer = style([maxWidth(`px(180))]);
 
   let seperatedLine =
     style([
@@ -17,7 +18,13 @@ module Styles = {
       backgroundColor(Colors.grayHeader),
     ]);
 
-  let fullWidth = style([width(`percent(100.0)), display(`flex)]);
+  let fullWidth =
+    style([
+      width(`percent(100.0)),
+      display(`flex),
+      paddingLeft(`px(26)),
+      paddingRight(`px(46)),
+    ]);
 
   let icon =
     style([
@@ -29,23 +36,105 @@ module Styles = {
     ]);
 };
 
-let renderBody = ((block, moniker): (BlockHook.Block.t, string)) => {
-  let height = block.height;
-  let timestamp = block.timestamp;
-  let proposer = block.proposer->Address.toOperatorBech32;
-  let totalTx = block.numTxs;
+let renderBody = (idx: int, x: ValidatorHook.Validator.t) => {
+  let moniker = x.moniker;
+  let votingPower = x.votingPower;
+  let commission = 12.5;
+  let uptime = x.uptime;
+  let reportRate = 100.00;
 
-  <TBody key={height |> string_of_int}>
-    <div className=Styles.fullWidth onClick={_ => Route.BlockIndexPage(height) |> Route.redirect}>
+  <TBody key={idx |> string_of_int}>
+    <div className=Styles.fullWidth onClick={_ => Route.ValidatorHomePage |> Route.redirect}>
       <Row>
-        <Col> <img src=Images.blockLogo className=Styles.icon /> </Col>
-        <Col size=0.6>
-          <TElement elementType={TElement.HeightWithTime(height, timestamp)} />
+        <Col size=0.8 alignSelf=Col.FlexStart>
+          <Col size=1.6 alignSelf=Col.FlexStart>
+            <Text
+              value={idx + 1 |> string_of_int}
+              color=Colors.grayHeader
+              code=true
+              weight=Text.Regular
+              spacing={Text.Em(0.02)}
+              block=true
+              size=Text.Md
+            />
+          </Col>
         </Col>
-        <Col size=2.0> <TElement elementType={TElement.Proposer(moniker, proposer)} /> </Col>
-        <Col size=0.7> <TElement elementType={TElement.Count(totalTx)} /> </Col>
-        <Col size=0.7> <TElement elementType={TElement.Fee(0.0)} /> </Col>
-        <Col size=0.8> <Text block=true value="N/A" size=Text.Md weight=Text.Semibold /> </Col>
+        <Col size=1.9 alignSelf=Col.FlexStart>
+          <div className=Styles.monikerContainer>
+            <Text
+              value=moniker
+              color=Colors.grayHeader
+              code=true
+              weight=Text.Regular
+              spacing={Text.Em(0.02)}
+              block=true
+              size=Text.Md
+              nowrap=true
+              ellipsis=true
+            />
+          </div>
+        </Col>
+        <Col size=1.3 alignSelf=Col.FlexStart>
+          <div>
+            <Text
+              value={12521643 |> Format.iPretty}
+              color=Colors.grayHeader
+              code=true
+              weight=Text.Regular
+              spacing={Text.Em(0.02)}
+              block=true
+              align=Text.Right
+              size=Text.Md
+            />
+            <VSpacing size=Spacing.sm />
+            <Text
+              value={"(" ++ votingPower->Js.Float.toFixedWithPrecision(~digits=2) ++ "%)"}
+              color=Colors.graySubHeader
+              code=true
+              weight=Text.Thin
+              spacing={Text.Em(0.02)}
+              block=true
+              align=Text.Right
+              size=Text.Md
+            />
+          </div>
+        </Col>
+        <Col size=1.4 alignSelf=Col.FlexStart>
+          <Text
+            value={commission->Js.Float.toFixedWithPrecision(~digits=2)}
+            color=Colors.grayHeader
+            code=true
+            weight=Text.Regular
+            spacing={Text.Em(0.02)}
+            block=true
+            align=Text.Right
+            size=Text.Md
+          />
+        </Col>
+        <Col size=1.3 alignSelf=Col.FlexStart>
+          <Text
+            value={uptime->Js.Float.toFixedWithPrecision(~digits=2)}
+            color=Colors.grayHeader
+            code=true
+            weight=Text.Regular
+            spacing={Text.Em(0.02)}
+            block=true
+            align=Text.Right
+            size=Text.Md
+          />
+        </Col>
+        <Col size=1.5 alignSelf=Col.FlexStart>
+          <Text
+            value={reportRate->Js.Float.toFixedWithPrecision(~digits=2)}
+            color=Colors.grayHeader
+            code=true
+            weight=Text.Regular
+            spacing={Text.Em(0.02)}
+            block=true
+            align=Text.Right
+            size=Text.Md
+          />
+        </Col>
       </Row>
     </div>
   </TBody>;
@@ -53,22 +142,7 @@ let renderBody = ((block, moniker): (BlockHook.Block.t, string)) => {
 
 [@react.component]
 let make = () => {
-  let (limit, setLimit) = React.useState(_ => 10);
-  let blocksOpt = BlockHook.latest(~limit, ());
-  let infoOpt = React.useContext(GlobalContext.context);
-
-  let blocks = blocksOpt->Belt.Option.getWithDefault([]);
-
-  let validators =
-    switch (infoOpt) {
-    | Some(info) => info.validators
-    | None => []
-    };
-
-  let blocksWithMonikers =
-    blocks->Belt_List.map(block =>
-      (block, BlockHook.Block.getProposerMoniker(block, validators))
-    );
+  let validatorOpt = ValidatorHook.getList();
 
   <div className=Styles.pageContainer>
     <div className=Styles.vFlex>
@@ -100,35 +174,39 @@ let make = () => {
     </div>
     // TODO : Add toggle button
     <THead>
-      <Row>
-        <Col> <div className=Styles.tableSpace /> </Col>
-        {[
-           ("RANK", 0.8),
-           ("VALIDATOR", 1.6),
-           ("VOTING POWER (BAND)", 2.1),
-           ("COMMISSION (%)", 1.9),
-           ("UPTIME (%)", 1.3),
-           ("REPORT RATE (%)", 1.5),
-         ]
-         ->Belt.List.map(((title, size)) => {
-             <Col size key=title>
-               <Text
-                 block=true
-                 value=title
-                 size=Text.Sm
-                 weight=Text.Semibold
-                 color=Colors.graySubHeader
-                 spacing={Text.Em(0.1)}
-               />
-             </Col>
-           })
-         ->Array.of_list
-         ->React.array}
-      </Row>
+      <div className=Styles.fullWidth>
+        <Row>
+          {[
+             ("RANK", 0.8),
+             ("VALIDATOR", 1.9),
+             ("VOTING POWER (BAND)", 1.3),
+             ("COMMISSION (%)", 1.4),
+             ("UPTIME (%)", 1.3),
+             ("REPORT RATE (%)", 1.5),
+           ]
+           ->Belt.List.mapWithIndex((idx, (title, size)) => {
+               <Col size key=title>
+                 <Text
+                   block=true
+                   value=title
+                   size=Text.Sm
+                   weight=Text.Semibold
+                   align=?{idx > 1 ? Some(Text.Right) : None}
+                   color=Colors.graySubHeader
+                   spacing={Text.Em(0.1)}
+                 />
+               </Col>
+             })
+           ->Array.of_list
+           ->React.array}
+        </Row>
+      </div>
     </THead>
-    // <Col> <div className=Styles.tableSpace /> </Col>
-    {blocksWithMonikers->Belt_List.toArray->Belt_Array.map(renderBody)->React.array}
+    {validatorOpt
+     ->Belt_Option.getWithDefault([])
+     ->Belt.List.toArray
+     ->Belt_Array.mapWithIndex((idx, validator) => renderBody(idx, validator))
+     ->React.array}
     <VSpacing size=Spacing.lg />
-    <LoadMore onClick={_ => setLimit(oldLimit => oldLimit + 10)} />
   </div>;
 };
