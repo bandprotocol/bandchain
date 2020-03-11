@@ -317,7 +317,7 @@ func NewBandApp(
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 
-	// Create a default an AnteHandler that will be used after checking refundGasPrice
+	// Create a default AnteHandler that will be used after checking refundGasPrice
 	defaultAnteHandler := auth.NewAnteHandler(
 		app.accountKeeper,
 		app.supplyKeeper,
