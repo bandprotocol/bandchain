@@ -30,6 +30,8 @@ module Styles = {
   let addressContainer = style([marginTop(`px(15))]);
 
   let checkLogo = style([marginRight(`px(10))]);
+  let blockLogo = style([width(`px(50)), marginRight(`px(10))]);
+  let proposerContainer = style([maxWidth(`px(180))]);
 
   let seperatorLine =
     style([
@@ -50,54 +52,66 @@ let make = (~height: int) => {
     <Row justify=Row.Between>
       <Col>
         <div className=Styles.vFlex>
+          <img src=Images.blockLogo className=Styles.blockLogo />
           <Text
             value="BLOCK"
-            weight=Text.Semibold
-            size=Text.Lg
+            weight=Text.Medium
+            size=Text.Md
             nowrap=true
             color=Colors.mediumGray
             block=true
+            spacing={Text.Em(0.06)}
           />
           <div className=Styles.seperatedLine />
           {switch (blockOpt) {
-           | Some(block) => <TimeAgos time={block.timestamp} size=Text.Lg weight=Text.Regular />
+           | Some(block) =>
+             <Text
+               value={"#B" ++ (height |> Format.iPretty)}
+               size=Text.Md
+               weight=Text.Regular
+               spacing={Text.Em(0.06)}
+             />
            | None => <Text value="in the future" size=Text.Xl />
            }}
         </div>
       </Col>
     </Row>
     <VSpacing size=Spacing.lg />
-    <div className=Styles.vFlex>
-      <Text value="#" size=Text.Xxxl weight=Text.Semibold color=Colors.brightPurple />
-      <HSpacing size=Spacing.xs />
-      <Text value={height |> Format.iPretty} size=Text.Xxxl weight=Text.Semibold />
-    </div>
+    <div className=Styles.vFlex> <HSpacing size=Spacing.xs /> </div>
+    {switch (blockOpt) {
+     | Some(block) =>
+       <Text
+         value={block.hash |> Hash.toHex(~upper=true)}
+         size=Text.Xxl
+         weight=Text.Semibold
+         code=true
+         nowrap=true
+         ellipsis=true
+       />
+     | None => <Text value="in the future" size=Text.Xxl />
+     }}
     <VSpacing size=Spacing.lg />
     <Row>
-      <Col size=1.>
+      <Col size=1.8>
         {switch (blockOpt) {
          | Some(block) => <InfoHL info={InfoHL.Count(block.numTxs)} header="TRANSACTIONS" />
          | None => <InfoHL info={InfoHL.Text("?")} header="TRANSACTIONS" />
          }}
       </Col>
-      <Col size=4.>
-        <InfoHL
-          info={
-            InfoHL.Address(
-              switch (blockOpt) {
-              | Some(block) => block.proposer
-              | None => "" |> Address.fromHex
-              },
-            )
-          }
-          header="PROPOSED BY"
-        />
-      </Col>
-      <Col size=2.>
+      <Col size=4.6>
         {switch (blockOpt) {
          | Some(block) => <InfoHL info={InfoHL.Timestamp(block.timestamp)} header="TIMESTAMP" />
          | None => <InfoHL info={InfoHL.Text("?")} header="TRANSACTIONS" />
          }}
+      </Col>
+      <Col size=3.2>
+        <div className=Styles.proposerContainer>
+          {switch (blockOpt) {
+           | Some(block) => <InfoHL info={InfoHL.Text("CoinGecko")} header="PROPOSED BY" />
+
+           | None => <InfoHL info={InfoHL.Text("?")} header="PROPOSED BY" />
+           }}
+        </div>
       </Col>
     </Row>
     {switch (blockOpt, txsOpt) {

@@ -78,7 +78,8 @@ let make = (~info, ~header, ~isLeft=true) => {
          spacing={Text.Em(0.02)}
          code=true
        />
-     | Text(text) => <Text value=text size=Text.Lg weight=Text.Semibold />
+     | Text(text) =>
+       <Text value=text size=Text.Lg weight=Text.Semibold code=true spacing={Text.Em(0.02)} />
      | Timestamp(time) =>
        <div className=Styles.vFlex>
          <Text
