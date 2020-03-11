@@ -7,7 +7,7 @@ type t =
   | Fee(float)
   | DataSources(list(string))
   | Hash(Hash.t, Css.Types.Color.t)
-  | Address(Address.t, Css.Types.Color.t);
+  | Address(Address.t);
 
 module Styles = {
   open Css;
@@ -125,27 +125,9 @@ let make = (~info, ~header, ~isLeft=true) => {
          weight=Text.Semibold
          color=textColor
        />
-     | Address(address, textColor) =>
-       //  <Text
-       //    value={address |> Address.toBech32}
-       //    size=Text.Lg
-       //    weight=Text.Semibold
-       //    color=textColor
-       //    code=true
-       //  />
-       //Add TODO: remove hard code address
+     | Address(address) =>
        <div className=Styles.addressContainer>
-         <Text value="band" size=Text.Lg weight=Text.Semibold color=textColor code=true />
-         <Text
-           value="17rprjgtj0krfw3wyl9creueej6ca9dc4dgxv6e"
-           size=Text.Lg
-           spacing={Text.Em(0.02)}
-           color=textColor
-           code=true
-           nowrap=true
-           block=true
-           ellipsis=true
-         />
+         <AddressRender address position=AddressRender.Subtitle />
        </div>
      }}
   </div>;

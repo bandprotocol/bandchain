@@ -88,18 +88,7 @@ let renderHashWithLink = hash => {
 };
 
 let renderAddress = address => {
-  <div className=Styles.addressContainer>
-    <Text value="band" weight=Text.Semibold height={Text.Px(16)} code=true />
-    <Text
-      value="17rprjgtj0krfw3wyl9creueej6ca9dc4dgxv6e"
-      weight=Text.Regular
-      height={Text.Px(16)}
-      ellipsis=true
-      nowrap=true
-      block=true
-      code=true
-    />
-  </div>;
+  <div className=Styles.addressContainer> <AddressRender address /> </div>;
 };
 
 let renderFee = fee => {
@@ -154,15 +143,7 @@ let renderProposer = (moniker, proposer) => {
 
 let renderDataSource = (id, name) => {
   <div className=Styles.dataSourceContainer>
-    <Text
-      value={"#D" ++ (id |> string_of_int)}
-      code=true
-      block=true
-      color=Colors.brightOrange
-      height={Text.Px(16)}
-      weight=Text.Bold
-      spacing={Text.Em(0.02)}
-    />
+    <TypeID.DataSource id position=TypeID.Text />
     <HSpacing size=Spacing.xs />
     <Text value=name block=true height={Text.Px(16)} spacing={Text.Em(0.02)} />
   </div>;
@@ -197,7 +178,7 @@ type t =
   | Source(string)
   | Value(Js.Json.t)
   | Proposer(string, string)
-  | DataSource(int, string);
+  | DataSource(ID.DataSource.t, string);
 
 [@react.component]
 let make = (~elementType) => {
