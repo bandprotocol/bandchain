@@ -3,31 +3,35 @@ package main
 import (
 	"encoding/json"
 	"io"
+	"os"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/store"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/genaccounts"
 	genaccscli "github.com/cosmos/cosmos-sdk/x/genaccounts/client/cli"
+	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/log"
-
-	"github.com/bandprotocol/d3n/chain/app"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
-	abci "github.com/tendermint/tendermint/abci/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
+
+	"github.com/bandprotocol/d3n/chain/app"
+	"github.com/bandprotocol/d3n/chain/db"
 )
 
 const flagInvCheckPeriod = "inv-check-period"
 
-var invCheckPeriod uint
+var (
+	invCheckPeriod uint
+	layerDB        *db.BandDB
+)
 
 func main() {
 	cobra.EnableCommandSorting = false
@@ -39,6 +43,12 @@ func main() {
 	config.Seal()
 
 	ctx := server.NewDefaultContext()
+
+	var err error
+	layerDB, err = db.NewDB(os.ExpandEnv("$HOME/.banddb/main.db"))
+	if err != nil {
+		panic(err)
+	}
 
 	rootCmd := &cobra.Command{
 		Use:               "bandd",
@@ -59,13 +69,14 @@ func main() {
 		client.NewCompletionCmd(rootCmd, true),
 	)
 
-	server.AddCommands(ctx, cdc, rootCmd, newApp, exportAppStateAndTMValidators)
+	// server.AddCommands(ctx, cdc, rootCmd, newApp, exportAppStateAndTMValidators)
+	server.AddCommands(ctx, cdc, rootCmd, newDBApp, exportAppStateAndTMValidators)
 
 	// prepare and add flags
 	executor := cli.PrepareBaseCmd(rootCmd, "BAND", app.DefaultNodeHome)
 	rootCmd.PersistentFlags().UintVar(&invCheckPeriod, flagInvCheckPeriod,
 		0, "Assert registered invariants every N blocks")
-	err := executor.Execute()
+	err = executor.Execute()
 	if err != nil {
 		panic(err)
 	}
@@ -74,6 +85,14 @@ func main() {
 func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application {
 	return app.NewBandApp(
 		logger, db, traceStore, true, invCheckPeriod,
+		baseapp.SetPruning(store.NewPruningOptionsFromString(viper.GetString("pruning"))),
+		baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
+		baseapp.SetHaltHeight(uint64(viper.GetInt(server.FlagHaltHeight))))
+}
+
+func newDBApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application {
+	return app.NewDBBandApp(
+		logger, db, traceStore, true, invCheckPeriod, layerDB,
 		baseapp.SetPruning(store.NewPruningOptionsFromString(viper.GetString("pruning"))),
 		baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
 		baseapp.SetHaltHeight(uint64(viper.GetInt(server.FlagHaltHeight))))
