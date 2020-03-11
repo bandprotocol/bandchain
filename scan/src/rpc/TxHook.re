@@ -39,7 +39,7 @@ module Coin = {
       amount: json |> field("amount", uamount),
     };
 
-  let newCoin = (denom, amount) => {denom: "ddd", amount: 100.0};
+  let newCoin = (denom, amount) => {denom, amount};
 
   let getDescription = coin => (coin.amount |> Format.fPretty) ++ " " ++ coin.denom;
 };
@@ -62,6 +62,7 @@ module Msg = {
 
   module CreateDataSource = {
     type t = {
+      id: int,
       owner: Address.t,
       name: string,
       fee: list(Coin.t),
@@ -71,6 +72,7 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
+        id: 952, // TODO, wire up
         owner: json |> field("owner", string) |> Address.fromBech32,
         name: json |> field("name", string),
         fee: json |> field("fee", list(Coin.decodeCoin)),
@@ -102,6 +104,7 @@ module Msg = {
 
   module CreateOracleScript = {
     type t = {
+      id: int,
       owner: Address.t,
       name: string,
       code: JsBuffer.t,
@@ -110,6 +113,7 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
+        id: 999, // TODO , wire up
         owner: json |> field("owner", string) |> Address.fromBech32,
         name: json |> field("name", string),
         code: json |> field("code", string) |> JsBuffer.fromBase64,
@@ -138,6 +142,7 @@ module Msg = {
 
   module Request = {
     type t = {
+      id: int,
       oracleScriptID: int,
       calldata: JsBuffer.t,
       requestedValidatorCount: int,
@@ -150,6 +155,7 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
+        id: 0,
         oracleScriptID: json |> field("oracleScriptID", intstr),
         calldata: json |> field("calldata", string) |> JsBuffer.fromBase64,
         requestedValidatorCount: json |> field("requestedValidatorCount", intstr),
