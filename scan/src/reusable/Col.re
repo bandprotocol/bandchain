@@ -27,16 +27,26 @@ module Styles = {
       | Center => style([justifyContent(`center)])
       | End => style([justifyContent(`flexEnd)]),
     );
+  let alignItems =
+    Belt.Option.mapWithDefault(
+      _,
+      style([]),
+      fun
+      | Start => style([alignItems(`flexStart)])
+      | Center => style([alignItems(`center)])
+      | End => style([alignItems(`flexEnd)]),
+    );
 };
 
 [@react.component]
-let make = (~size=?, ~justifyContent=?, ~alignSelf=?, ~children) => {
+let make = (~size=?, ~alignSelf=?, ~alignItems=?, ~justifyContent=?, ~children) => {
   <div
     className={Css.merge([
       Styles.col,
       size->Belt.Option.mapWithDefault("", Styles.colSize),
       Styles.alignSelf(alignSelf),
       Styles.justifyContent(justifyContent),
+      Styles.alignItems(alignItems),
     ])}>
     children
   </div>;
