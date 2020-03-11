@@ -18,7 +18,7 @@ module RawOracleScriptID = {
 
 module RawRequestID = {
   let prefix = "#R";
-  let color = Colors.orange;
+  let color = Colors.orange5;
   let route = id => Route.RequestIndexPage(id, Route.RequestReportStatus);
 };
 
