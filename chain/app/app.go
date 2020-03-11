@@ -334,7 +334,7 @@ func NewBandApp(
 						if refundGasPriceExceedTxGasPrice {
 							return ctx, sdk.ErrInternal(
 								fmt.Sprintf(
-									"refundGasPrice(%s) exceed txGasPrice(%s)",
+									"refundGasPrice(%s) exceeds txGasPrice(%s)",
 									report.RefundGasPrice.String(), fee.GasPrices().String(),
 								),
 							).Result(), true
