@@ -190,8 +190,7 @@ func handleRequest(requestID zoracle.RequestID) (sdk.TxResponse, error) {
 
 	return bandClient.SendTransaction(
 		zoracle.NewMsgReportData(requestID, refundGasPrice, reports, sdk.ValAddress(bandClient.Sender())),
-		55000, "", "300000uband", "",
-		flags.BroadcastSync,
+		55000, "300000uband",
 	)
 }
 

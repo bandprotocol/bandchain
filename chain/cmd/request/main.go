@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/bandprotocol/d3n/chain/bandlib"
-	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
@@ -117,9 +116,9 @@ func main() {
 			case "BTC":
 				{
 					fmt.Println(tx.SendTransaction(
-						[]sdk.Msg{zoracle.NewMsgRequestData(1, []byte("BTC"), 4, 4, 100000, prepareGas, executeGas, tx.Sender())},
-						0, 1000000, "", "", "",
-						flags.BroadcastBlock,
+						zoracle.NewMsgRequestData(
+							1, []byte("BTC"), 4, 4, 100000, prepareGas, executeGas, tx.Sender(),
+						), 1000000, "",
 					))
 				}
 			case "ETH":
@@ -194,10 +193,10 @@ func main() {
 			))
 
 			fmt.Println(tx.SendTransaction(
-				[]sdk.Msg{zoracle.NewMsgRequestData(2, []byte("calldata"), 1, 1, 100, prepareGas, executeGas, tx.Sender())},
-				0, 1000000, "", "", "",
-				flags.BroadcastBlock,
+				zoracle.NewMsgRequestData(2, []byte("calldata"), 1, 1, 100, prepareGas, executeGas, tx.Sender()),
+				1000000, "",
 			))
+
 		}
 	case "deploy_oracle_scripts":
 		{
