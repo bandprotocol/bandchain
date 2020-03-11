@@ -193,10 +193,10 @@ func main() {
 			))
 
 			fmt.Println(tx.SendTransaction(
-				zoracle.NewMsgRequestData(
-					1, []byte("calldata"), 1, 1, 100, prepareGas, executeGas, tx.Sender(),
-				), 1000000, "",
+				zoracle.NewMsgRequestData(2, []byte("calldata"), 1, 1, 100, prepareGas, executeGas, tx.Sender()),
+				1000000, "",
 			))
+
 		}
 	case "deploy_oracle_scripts":
 		{
