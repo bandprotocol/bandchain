@@ -18,6 +18,11 @@ type account_tab_t =
   | AccountTransactions
   | AccountDelegations;
 
+type validator_tab_t =
+  | Proposed_Blocks
+  | Delegators
+  | Reports;
+
 type t =
   | NotFound
   | HomePage
@@ -32,6 +37,7 @@ type t =
   | RequestIndexPage(int, request_tab_t)
   | AccountIndexPage(Address.t, account_tab_t)
   | ValidatorHomePage;
+  | ValidatorIndexPage(Address.t, validator_tab_t);
 
 let fromUrl = (url: ReasonReactRouter.url) =>
   switch (url.path, url.hash) {
@@ -64,6 +70,8 @@ let fromUrl = (url: ReasonReactRouter.url) =>
     AccountIndexPage(address |> Address.fromBech32, AccountDelegations)
   | (["account", address], _) =>
     AccountIndexPage(address |> Address.fromBech32, AccountTransactions)
+  | (["validator", address], _) =>
+    ValidatorIndexPage(address |> Address.fromBech32, Proposed_Blocks)
   | ([], "") => HomePage
   | (_, _) => NotFound
   };
@@ -94,6 +102,10 @@ let toString =
   | AccountIndexPage(address, AccountDelegations) => {
       let addressBech32 = address |> Address.toBech32;
       {j|/account/$addressBech32#delegations|j};
+    }
+  | ValidatorIndexPage(validatorAddress) => {
+      let validatorAddressBech32 = validatorAddress |> Address.toOperatorBech32;
+      {j|/validator/$validatorAddressBech32#delegations|j};
     }
   | HomePage
   | NotFound => "/";
