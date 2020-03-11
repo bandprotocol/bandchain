@@ -66,8 +66,7 @@ $ bandoracled --node tcp://localhost:26657 --priv-key 06be35b56b048c5a6810a47e2e
 			copy(priv[:], privB)
 
 			bandClient, err = bandlib.NewBandStatefulClient(
-				viper.GetString(flags.FlagNode),
-				priv,
+				viper.GetString(flags.FlagNode), priv, 100, 10, "Bandoracled reports",
 			)
 			if err != nil {
 				return err
@@ -159,7 +158,8 @@ func handleRequest(requestID zoracle.RequestID) (sdk.TxResponse, error) {
 			)
 			if err != nil {
 				info.err = fmt.Errorf(
-					"handleRequest: Execute error on data request id [%d], error: %v", dataSourceID, err,
+					"handleRequest: Execute error on data source id [%d], error: %v",
+					dataSourceID, err,
 				)
 				chanQueryParallelInfo <- info
 				return
@@ -167,7 +167,10 @@ func handleRequest(requestID zoracle.RequestID) (sdk.TxResponse, error) {
 
 			info.answer = []byte(strings.TrimSpace(string(result)))
 			chanQueryParallelInfo <- info
-		}(rawRequest.ExternalID, rawRequest.RawDataRequest.DataSourceID, rawRequest.RawDataRequest.Calldata)
+		}(rawRequest.ExternalID,
+			rawRequest.RawDataRequest.DataSourceID,
+			rawRequest.RawDataRequest.Calldata,
+		)
 	}
 
 	reports := make([]zoracle.RawDataReport, 0)
@@ -185,8 +188,7 @@ func handleRequest(requestID zoracle.RequestID) (sdk.TxResponse, error) {
 
 	return bandClient.SendTransaction(
 		zoracle.NewMsgReportData(requestID, reports, sdk.ValAddress(bandClient.Sender())),
-		1000000, "", "", "",
-		flags.BroadcastSync,
+		1000000, "",
 	)
 }
 
