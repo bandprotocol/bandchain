@@ -1,7 +1,7 @@
 module Styles = {
   open Css;
 
-  let addressContainer = style([width(`px(170))]);
+  let addressContainer = width_ => style([width(`px(width_))]);
 
   let badgeContainer = style([display(`block)]);
 
@@ -42,6 +42,52 @@ module CopyButton = {
   };
 };
 
+let renderSend = msg => {
+  <Row>
+    <Col> <HSpacing size=Spacing.md /> </Col>
+    <Col size=0.4 alignSelf=Col.FlexStart>
+      <div className=Styles.badgeContainer>
+        <div className={Styles.badge(Colors.fadeOrange)}>
+          <Text value="SEND TOKEN" size=Text.Sm spacing={Text.Em(0.07)} color=Colors.darkOrange />
+        </div>
+      </div>
+    </Col>
+    <Col size=0.6 alignSelf=Col.FlexStart>
+      <VSpacing size=Spacing.sm />
+      <div className={Styles.addressContainer(170)}>
+        <AddressRender address={msg |> TxHook.Msg.getCreator} />
+      </div>
+    </Col>
+    <Col size=1.3 alignSelf=Col.FlexStart>
+      <VSpacing size=Spacing.sm />
+      <div className=Styles.topicContainer>
+        <Text value="FROM" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <div className={Styles.addressContainer(300)}>
+          <AddressRender address={msg |> TxHook.Msg.getCreator} />
+        </div>
+      </div>
+      <VSpacing size=Spacing.lg />
+      <div className=Styles.topicContainer>
+        <Text value="TO" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <div className={Styles.addressContainer(300)}>
+          <AddressRender address={msg |> TxHook.Msg.getCreator} />
+        </div>
+      </div>
+      <VSpacing size=Spacing.lg />
+      <div className=Styles.topicContainer>
+        <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <div className=Styles.hFlex>
+          <Text value="10" weight=Text.Bold code=true />
+          <HSpacing size=Spacing.sm />
+          <Text value="BAND" code=true />
+        </div>
+      </div>
+      <VSpacing size=Spacing.lg />
+    </Col>
+    <Col> <HSpacing size=Spacing.md /> </Col>
+  </Row>;
+};
+
 // TODO: move it to file later.
 let renderRequest = msg => {
   <Row>
@@ -64,7 +110,7 @@ let renderRequest = msg => {
     </Col>
     <Col size=0.6 alignSelf=Col.FlexStart>
       <VSpacing size=Spacing.sm />
-      <div className=Styles.addressContainer>
+      <div className={Styles.addressContainer(170)}>
         <AddressRender address={msg |> TxHook.Msg.getCreator} />
       </div>
     </Col>
@@ -117,9 +163,9 @@ let renderRequest = msg => {
       <div className=Styles.topicContainer>
         <Text value="REPORT REPIOD" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className=Styles.hFlex>
-          <Text value="10" weight=Text.Bold />
+          <Text value="10" weight=Text.Bold code=true />
           <HSpacing size=Spacing.sm />
-          <Text value="Blocks" />
+          <Text value="Blocks" code=true />
         </div>
       </div>
       <VSpacing size=Spacing.lg />
@@ -130,7 +176,7 @@ let renderRequest = msg => {
 
 let renderBody = (msg: TxHook.Msg.t) => {
   switch (msg.action) {
-  | Send(_) => React.null
+  | Send(_) => renderSend(msg)
   | CreateDataSource(_) => React.null
   | EditDataSource(_) => React.null
   | CreateOracleScript(_) => React.null
