@@ -7,7 +7,7 @@ type t =
   | Fee(float)
   | DataSources(list(string))
   | Hash(Hash.t, Css.Types.Color.t)
-  | Address(Address.t, Css.Types.Color.t)
+  | Address(Address.t)
   | Fraction(int, int, bool)
   | FloatWithSuffix(float, string);
 
@@ -144,15 +144,7 @@ let make = (~info, ~header, ~isLeft=true) => {
          code=true
        />
 
-     | Address(address, textColor) =>
-       //  <Text
-       //    value={address |> Address.toBech32}
-       //    size=Text.Lg
-       //    weight=Text.Semibold
-       //    color=textColor
-       //    code=true
-       //  />
-       //Add TODO: remove hard code address
+     | Address(address) =>
        <div className=Styles.addressContainer>
          <AddressRender address position=AddressRender.Subtitle />
        </div>
