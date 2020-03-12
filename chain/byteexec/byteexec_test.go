@@ -10,6 +10,12 @@ import (
 
 func TestExecByte(t *testing.T) {
 	// Simple bash script
+	/*
+		!/bin/bash
+
+		echo $1
+
+	*/
 	execByte, _ := hex.DecodeString("23212f62696e2f626173680a0a6563686f2024310a")
 	result, err := RunOnLocal(execByte, 10*time.Second, "hello world")
 	require.Nil(t, err)
@@ -18,6 +24,12 @@ func TestExecByte(t *testing.T) {
 
 func TestExecByte2(t *testing.T) {
 	// Simple bash script
+	/*
+		!/bin/bash
+
+		echo $2
+
+	*/
 	execByte, _ := hex.DecodeString("23212f62696e2f626173680a0a6563686f2024320a")
 	result, err := RunOnLocal(execByte, 10*time.Second, "aS world")
 	require.Nil(t, err)
