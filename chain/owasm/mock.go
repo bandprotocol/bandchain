@@ -11,6 +11,8 @@ type mockExecutionEnvironment struct {
 	aggregateBlockTime                int64
 	validatorAddresses                [][]byte
 	externalDataResults               [][][]byte
+	maximumResultSize                 int64
+	maximumCalldataOfDataSourceSize   int64
 	requestExternalDataResultsCounter [][]int64
 }
 
@@ -40,6 +42,14 @@ func (m *mockExecutionEnvironment) GetAggregateBlockTime() int64 {
 
 func (m *mockExecutionEnvironment) GetValidatorAddress(validatorIndex int64) ([]byte, error) {
 	return m.validatorAddresses[validatorIndex], nil
+}
+
+func (m *mockExecutionEnvironment) GetMaximumResultSize() int64 {
+	return m.maximumResultSize
+}
+
+func (m *mockExecutionEnvironment) GetMaximumCalldataOfDataSourceSize() int64 {
+	return m.maximumCalldataOfDataSourceSize
 }
 
 func (m *mockExecutionEnvironment) RequestExternalData(

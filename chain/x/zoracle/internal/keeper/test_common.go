@@ -132,7 +132,7 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 	supplyKeeper.SetModuleAccount(ctx, bondPool)
 	supplyKeeper.SetModuleAccount(ctx, notBondedPool)
 
-	keeper := NewKeeper(cdc, keyRequest, bk, sk, pk.Subspace(types.DefaultParamspace))
+	keeper := NewKeeper(cdc, keyRequest, bk, sk, supplyKeeper, pk.Subspace(types.DefaultParamspace))
 	require.Equal(t, account.GetAddress(), addr)
 	accountKeeper.SetAccount(ctx, account)
 
@@ -153,7 +153,7 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 }
 
 func SetupTestValidator(ctx sdk.Context, keeper Keeper, pk string, power int64) sdk.ValAddress {
-	pubKey := newPubKey(pk)
+	pubKey := NewPubKey(pk)
 	validatorAddress := sdk.ValAddress(pubKey.Address())
 	initTokens := sdk.TokensFromConsensusPower(power)
 	initCoins := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, initTokens))
@@ -169,7 +169,7 @@ func SetupTestValidator(ctx sdk.Context, keeper Keeper, pk string, power int64) 
 	return validatorAddress
 }
 
-func newPubKey(pk string) (res crypto.PubKey) {
+func NewPubKey(pk string) crypto.PubKey {
 	pkBytes, err := hex.DecodeString(pk)
 	if err != nil {
 		panic(err)
@@ -177,6 +177,14 @@ func newPubKey(pk string) (res crypto.PubKey) {
 	var pkEd ed25519.PubKeyEd25519
 	copy(pkEd[:], pkBytes)
 	return pkEd
+}
+
+func GetAddressFromPub(pub string) sdk.AccAddress {
+	return sdk.AccAddress(NewPubKey(pub).Address())
+}
+
+func NewUBandCoins(amount int64) sdk.Coins {
+	return sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(amount)))
 }
 
 func newDefaultRequest() types.Request {

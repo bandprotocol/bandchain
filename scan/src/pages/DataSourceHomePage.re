@@ -144,7 +144,9 @@ let make = () => {
              <div className=Styles.fullWidth>
                <Row>
                  <Col> <HSpacing size=Spacing.xl /> </Col>
-                 <Col size=0.5> <TElement elementType={TElement.DataSource(id, name)} /> </Col>
+                 <Col size=0.5>
+                   <TElement elementType={TElement.DataSource(ID.DataSource.ID(id), name)} />
+                 </Col>
                  <Col size=0.5> <TElement elementType={timestamp->TElement.Timestamp} /> </Col>
                  <Col size=1.> <TElement elementType={owner->TElement.Address} /> </Col>
                  <Col size=0.4> <TElement elementType={fee->TElement.Fee} /> </Col>

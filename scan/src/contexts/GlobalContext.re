@@ -11,7 +11,7 @@ let context = React.createContext(ContextHelper.default);
 let make = (~children) => {
   let financialOpt = PriceHook.get();
   let latestBlocksOpt = BlockHook.latest();
-  let validatorsOpt = ValidatorHook.get();
+  let validatorsOpt = ValidatorHook.getList();
   let data = {
     let%Opt financial = financialOpt;
     let%Opt latestBlocks = latestBlocksOpt;
