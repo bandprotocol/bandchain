@@ -40,7 +40,7 @@ let make = (~txs: list(TxHook.Tx.t)) => {
         <HSpacing size={`px(20)} />
         <Col size=1.67>
           <div className=Styles.fullWidth>
-            <Text value="TX HASH" size=Text.Sm weight=Text.Bold color=Colors.graySubHeader />
+            <Text value="TX HASH" size=Text.Sm weight=Text.Bold color=Colors.mediumLightGray />
           </div>
         </Col>
         <Col size=1.05>
@@ -50,7 +50,7 @@ let make = (~txs: list(TxHook.Tx.t)) => {
               value="GAS FEE (BAND)"
               size=Text.Sm
               weight=Text.Bold
-              color=Colors.graySubHeader
+              color=Colors.mediumLightGray
             />
             <HSpacing size={`px(20)} />
           </div>
@@ -58,7 +58,7 @@ let make = (~txs: list(TxHook.Tx.t)) => {
         <Col> <div className=Styles.container /> </Col>
         <Col size=5.>
           <div className=Styles.fullWidth>
-            <Text value="ACTIONS" size=Text.Sm weight=Text.Bold color=Colors.graySubHeader />
+            <Text value="ACTIONS" size=Text.Sm weight=Text.Bold color=Colors.mediumLightGray />
           </div>
         </Col>
         <HSpacing size={`px(20)} />
