@@ -30,7 +30,9 @@ module Styles = {
 module ComponentCreator = (RawID: ID.IDSig) => {
   [@react.component]
   let make = (~id, ~position=Text) =>
-    <div className={Css.merge([Styles.link, Styles.pointerEvents(position)])}>
+    <div
+      className={Css.merge([Styles.link, Styles.pointerEvents(position)])}
+      onClick={_ => Route.redirect(id |> RawID.getRoute)}>
       <Text
         value={id |> RawID.toString}
         size={position |> fontSize}
