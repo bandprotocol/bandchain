@@ -117,7 +117,7 @@ let resultRender = result => {
         <div className=Styles.hFlex>
           <HSpacing size=Spacing.lg />
           <div className={Styles.resultWrapper(`px(120), `px(12), `auto)}>
-            <Text value="Exit Status" color=Colors.graySubHeader weight=Text.Bold />
+            <Text value="Exit Status" color=Colors.mediumLightGray weight=Text.Bold />
           </div>
           <Text value="0" />
         </div>
@@ -125,7 +125,7 @@ let resultRender = result => {
         <div className=Styles.hFlex>
           <HSpacing size=Spacing.lg />
           <div className={Styles.resultWrapper(`px(120), `px(12), `auto)}>
-            <Text value="Output" color=Colors.graySubHeader weight=Text.Semibold />
+            <Text value="Output" color=Colors.mediumLightGray weight=Text.Semibold />
           </div>
           <Text value=output code=true weight=Text.Semibold />
         </div>
@@ -151,14 +151,14 @@ let make = (~executable: JsBuffer.t) => {
           "Test data source execution"
           ++ (numParams == 0 ? "" : " with" ++ (numParams == 1 ? " a " : " ") ++ "following")
         }
-        color=Colors.grayHeader
+        color=Colors.mediumGray
       />
       <HSpacing size=Spacing.sm />
       {numParams == 0
          ? React.null
          : <Text
              value={numParams > 1 ? "parameters" : "parameter"}
-             color=Colors.grayHeader
+             color=Colors.mediumGray
              weight=Text.Bold
            />}
     </div>
