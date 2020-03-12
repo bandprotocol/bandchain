@@ -93,7 +93,15 @@ let renderAddress = address => {
 
 let renderFee = fee => {
   <div className=Styles.feeContainer>
-    <Text value={fee->Format.fPretty} color=Colors.grayHeader code=true />
+    {fee == 0.0 ? React.null : <VSpacing size={`px(4)} />}
+    {fee == 0.0
+       ? React.null : <Text size=Text.Sm block=true value="$0.002" color=Colors.grayText />}
+    {fee == 0.0 ? React.null : <VSpacing size={`px(4)} />}
+    <Text
+      value={fee == 0.0 ? "FREE" : fee->Format.fPretty ++ " BAND"}
+      color=Colors.mediumGray
+      weight=Text.Semibold
+    />
   </div>;
 };
 
@@ -127,7 +135,7 @@ let renderCount = count => {
 
 let renderProposer = (moniker, proposer) => {
   <div className=Styles.proposerBox>
-    <Text block=true value=moniker size=Text.Sm weight=Text.Regular color=Colors.grayHeader />
+    <Text block=true value=moniker size=Text.Sm weight=Text.Regular color=Colors.mediumGray />
     <VSpacing size=Spacing.sm />
     <Text
       block=true

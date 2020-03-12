@@ -17,7 +17,7 @@ module Styles = {
       height(`px(1)),
       marginLeft(`px(10)),
       marginRight(`px(10)),
-      backgroundColor(Colors.grayHeader),
+      backgroundColor(Colors.mediumGray),
     ]);
 
   let codeVerifiedBadge =
@@ -98,7 +98,7 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) => <div />;
 //               weight=Text.Semibold
 //               size=Text.Lg
 //               nowrap=true
-//               color=Colors.grayHeader
+//               color=Colors.mediumGray
 //               block=true
 //             />
 //             <HSpacing size=Spacing.sm />
@@ -201,7 +201,7 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) => <div />;
 //                 ? React.null
 //                 : <Text
 //                     value={j|Data Report from $reportedValidators Validators (Completed $reportedValidators/$totalValidators)|j}
-//                     color=Colors.grayHeader
+//                     color=Colors.mediumGray
 //                     size=Text.Lg
 //                   />}
 //              <VSpacing size=Spacing.lg />
