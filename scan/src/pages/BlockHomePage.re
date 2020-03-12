@@ -11,7 +11,7 @@ module Styles = {
       height(`px(1)),
       marginLeft(`px(10)),
       marginRight(`px(10)),
-      backgroundColor(Colors.grayHeader),
+      backgroundColor(Colors.mediumGray),
     ]);
 
   let fullWidth = style([width(`percent(100.0)), display(`flex)]);
@@ -77,7 +77,7 @@ let make = () => {
             weight=Text.Bold
             size=Text.Xl
             nowrap=true
-            color=Colors.grayHeader
+            color=Colors.mediumGray
           />
           <div className=Styles.seperatedLine />
           <Text

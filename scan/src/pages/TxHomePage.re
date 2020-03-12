@@ -13,7 +13,7 @@ module Styles = {
       height(`px(1)),
       marginLeft(`px(10)),
       marginRight(`px(10)),
-      backgroundColor(Colors.grayHeader),
+      backgroundColor(Colors.mediumGray),
     ]);
 
   let textContainer = style([paddingLeft(Spacing.lg), display(`flex)]);
@@ -108,7 +108,7 @@ let make = () => {
             weight=Text.Semibold
             nowrap=true
             spacing={Text.Em(0.06)}
-            color=Colors.grayHeader
+            color=Colors.mediumGray
           />
           <div className=Styles.seperatedLine />
           {switch (totalTxsOpt) {
