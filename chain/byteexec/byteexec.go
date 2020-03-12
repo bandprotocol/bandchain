@@ -56,7 +56,7 @@ func RunOnLocal(executable []byte, timeOut time.Duration, arg string) ([]byte, e
 }
 
 // RunOnDocker runs the given executable in a new docker container.
-func RunOnDocker(executable []byte, timeOut time.Duration, arg string) ([]byte, error) {
+func RunOnDocker(executable []byte, sandboxMode bool, timeOut time.Duration, arg string) ([]byte, error) {
 	args, err := shellwords.Parse(arg)
 	if err != nil {
 		return nil, err
@@ -68,9 +68,13 @@ func RunOnDocker(executable []byte, timeOut time.Duration, arg string) ([]byte, 
 	}
 	defer os.RemoveAll(dir) // clean up
 
-	rawID, err := exec.Command(
-		"docker", "run", "-d", "--rm", "band-provider", "sleep", fmt.Sprintf("%d", int(timeOut.Seconds())),
-	).Output()
+	commands := []string{"run", "-d", "--rm", "band-provider", "sleep", fmt.Sprintf("%d", int(timeOut.Seconds()))}
+	if sandboxMode {
+		tmpCommands := append(commands[:1], "--runtime=runsc")
+		commands = append(tmpCommands, commands[1:]...)
+	}
+	rawID, err := exec.Command("docker", commands...).Output()
+
 	if err != nil {
 		return nil, err
 	}
