@@ -6,18 +6,7 @@ type justify =
 module Styles = {
   open Css;
 
-  let row =
-    style([
-      display(`flex),
-      flex(`num(1.)),
-      width(`percent(100.)),
-      margin4(
-        ~top=`px(0),
-        ~right=`px((-1) * Spacing.unit),
-        ~left=`px((-1) * Spacing.unit),
-        ~bottom=`px(0),
-      ),
-    ]);
+  let row = style([display(`flex), flex(`num(1.)), width(`percent(100.))]);
 
   let justify =
     Belt.Option.mapWithDefault(
