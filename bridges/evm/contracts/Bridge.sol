@@ -1,6 +1,7 @@
 pragma solidity 0.5.14;
 pragma experimental ABIEncoderV2;
 import {BlockHeaderMerkleParts} from "./BlockHeaderMerkleParts.sol";
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import {Ownable} from "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import {IAVLMerklePath} from "./IAVLMerklePath.sol";
 import {TMSignature} from "./TMSignature.sol";
@@ -13,6 +14,7 @@ contract Bridge is IBridge, Ownable {
     using BlockHeaderMerkleParts for BlockHeaderMerkleParts.Data;
     using IAVLMerklePath for IAVLMerklePath.Data;
     using TMSignature for TMSignature.Data;
+    using SafeMath for uint256;
 
     /// Mapping from block height to the hash of "zoracle" iAVL Merkle tree.
     mapping(uint256 => bytes32) public oracleStates;
@@ -36,7 +38,7 @@ contract Bridge is IBridge, Ownable {
                 "DUPLICATION_IN_INITIAL_VALIDATOR_SET"
             );
             validatorPowers[validator.addr] = validator.power;
-            totalValidatorPower += validator.power;
+            totalValidatorPower = totalValidatorPower.add(validator.power);
         }
     }
 
@@ -48,9 +50,11 @@ contract Bridge is IBridge, Ownable {
     {
         for (uint256 idx = 0; idx < _validators.length; ++idx) {
             ValidatorWithPower memory validator = _validators[idx];
-            totalValidatorPower -= validatorPowers[validator.addr];
+            totalValidatorPower = totalValidatorPower.sub(
+                validatorPowers[validator.addr]
+            );
             validatorPowers[validator.addr] = validator.power;
-            totalValidatorPower += validator.power;
+            totalValidatorPower = totalValidatorPower.add(validator.power);
         }
     }
 
@@ -113,12 +117,12 @@ contract Bridge is IBridge, Ownable {
                 _signedDataPrefix
             );
             require(signer > lastSigner, "INVALID_SIGNATURE_SIGNER_ORDER");
-            sumVotingPower += validatorPowers[signer];
+            sumVotingPower = sumVotingPower.add(validatorPowers[signer]);
             lastSigner = signer;
         }
         // Verifies that sufficient validators signed the block and saves the oracle state.
         require(
-            sumVotingPower * 3 > totalValidatorPower * 2,
+            sumVotingPower.mul(3) > totalValidatorPower.mul(2),
             "INSUFFICIENT_VALIDATOR_SIGNATURES"
         );
         oracleStates[_blockHeight] = _oracleIAVLStateHash;
