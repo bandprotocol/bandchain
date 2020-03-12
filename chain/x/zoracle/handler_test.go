@@ -83,7 +83,7 @@ func TestEditDataSourceByNotOwner(t *testing.T) {
 	msg := types.NewMsgEditDataSource(1, newOwner, newName, newDescription, newFee, newExecutable, sender)
 	got := handleMsgEditDataSource(ctx, keeper, msg)
 	require.False(t, got.IsOK())
-	require.Equal(t, types.CodeInvalidOwner, got.Code)
+	require.Equal(t, types.CodeUnauthorizedPermission, got.Code)
 }
 
 func TestCreateOracleScriptSuccess(t *testing.T) {
@@ -133,7 +133,7 @@ func TestEditOracleScriptByNotOwner(t *testing.T) {
 	msg := types.NewMsgEditOracleScript(1, newOwner, newName, newDescription, newCode, sender)
 	got := handleMsgEditOracleScript(ctx, keeper, msg)
 	require.False(t, got.IsOK())
-	require.Equal(t, types.CodeInvalidOwner, got.Code)
+	require.Equal(t, types.CodeUnauthorizedPermission, got.Code)
 }
 
 func TestRequestSuccess(t *testing.T) {
