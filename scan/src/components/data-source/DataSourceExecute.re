@@ -24,18 +24,22 @@ module Styles = {
 
   let buttonContainer = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
-  let button =
+  let button = isLoading =>
     style([
       width(`px(110)),
-      backgroundColor(Colors.btnGreen),
+      backgroundColor(isLoading ? Colors.blueGray3 : Colors.btnGreen),
       borderRadius(`px(6)),
       fontSize(`px(12)),
       fontWeight(`num(600)),
-      color(`hex("1D7C73")),
-      cursor(`pointer),
+      color(isLoading ? Colors.blueGray7 : Colors.green7),
+      cursor(isLoading ? `auto : `pointer),
       padding2(~v=Css.px(10), ~h=Css.px(10)),
       whiteSpace(`nowrap),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.1))),
+      outline(`px(0), `none, white),
+      boxShadow(
+        isLoading
+          ? `none : Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.1)),
+      ),
       border(`zero, `solid, Colors.white),
     ]);
 
@@ -174,31 +178,33 @@ let make = (~executable: JsBuffer.t) => {
     <VSpacing size=Spacing.md />
     <div className=Styles.buttonContainer>
       <button
-        className=Styles.button
-        onClick={_ => {
-          setResult(_ => Loading);
-          let _ =
-            AxiosRequest.execute(
-              AxiosRequest.t(
-                ~executable=executable->JsBuffer.toHex,
-                ~calldata={
-                  calldataArr->Belt_Array.get(0)->Belt_Option.getWithDefault("");
-                },
-              ),
-            )
-            |> Js.Promise.then_(res => {
-                 setResult(_ => Success(res##data##result));
-                 Js.Promise.resolve();
-               })
-            |> Js.Promise.catch(err => {
-                 let errorValue =
-                   Js.Json.stringifyAny(err)->Belt_Option.getWithDefault("Unknown");
-                 setResult(_ => Error(errorValue));
-                 Js.Promise.resolve();
-               });
-          ();
-        }}>
-        {"Test Execution" |> React.string}
+        className={Styles.button(result == Loading)}
+        onClick={_ =>
+          if (result != Loading) {
+            setResult(_ => Loading);
+            let _ =
+              AxiosRequest.execute(
+                AxiosRequest.t(
+                  ~executable=executable->JsBuffer.toHex,
+                  ~calldata={
+                    calldataArr->Belt_Array.get(0)->Belt_Option.getWithDefault("");
+                  },
+                ),
+              )
+              |> Js.Promise.then_(res => {
+                   setResult(_ => Success(res##data##result));
+                   Js.Promise.resolve();
+                 })
+              |> Js.Promise.catch(err => {
+                   let errorValue =
+                     Js.Json.stringifyAny(err)->Belt_Option.getWithDefault("Unknown");
+                   setResult(_ => Error(errorValue));
+                   Js.Promise.resolve();
+                 });
+            ();
+          }
+        }>
+        {(result == Loading ? "Executing ... " : "Test Execution") |> React.string}
       </button>
     </div>
     {resultRender(result)}
