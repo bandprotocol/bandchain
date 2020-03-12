@@ -5,7 +5,7 @@ open Expect;
 
 describe("Expect Parser to work correctly", () => {
   test("test getElement in list", () =>
-    expect(["hello","world"] |> getElementInList(_,1)) |> toEqual("world")
+    expect(["hello", "world"] |> getElementInList(_, 1)) |> toEqual("world")
   );
   test("test check regex success", () =>
     expect("benz=$1" |> checker) |> toEqual(true)
@@ -13,9 +13,11 @@ describe("Expect Parser to work correctly", () => {
   test("test check regex fail", () =>
     expect("bun=!1" |> checker) |> toEqual(false)
   );
-
   test("test check splitEqual success", () =>
-    expect("benz=$13" |> splitToPair) |> toEqual(("benz", 13))
+    expect("benz=$1" |> splitToPair) |> toEqual(("benz", 1))
+  );
+  test("test check splitEqual variables value more than max_int", () =>
+    expect("benz=$1333333333333333333" |> splitToPair) |> toEqual(("benz", (-1)))
   );
 
   test("test get 1 variable", () =>
