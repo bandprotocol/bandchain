@@ -205,24 +205,19 @@ func handleRequest(requestID zoracle.RequestID) {
 		return reports[i].ExternalDataID < reports[j].ExternalDataID
 	})
 
-	refundGasPrice, _ := sdk.ParseDecCoins("5.0uband")
-
-	bandClient.SendTransaction(
+	refundGasPrice, err := sdk.ParseDecCoins(viper.GetString(flags.FlagGasPrices))
+	if err != nil {
+		logger.Error(fmt.Sprintf("Send report fail on request #%d. Error: %v", requestID, err))
+		return
+	}
+	tx, err := bandClient.SendTransaction(
 		zoracle.NewMsgReportData(requestID, refundGasPrice, reports, sdk.ValAddress(bandClient.Sender())),
-		55000, "300000uband",
+		gasFlagVar.Gas, viper.GetString(flags.FlagFees), viper.GetString(flags.FlagGasPrices),
 	)
-	fmt.Println(gasFlagVar, viper.GetString(flags.FlagFees))
-	return
 
-	// tx, err := bandClient.SendTransaction(
-	// 	zoracle.NewMsgReportData(requestID, reports, sdk.ValAddress(bandClient.Sender())),
-	// 	gasFlagVar.Gas, "", viper.GetString(flags.FlagFees), viper.GetString(flags.FlagGasPrices),
-	// 	flags.BroadcastSync,
-	// )
-
-	// if err != nil {
-	// 	logger.Error(fmt.Sprintf("Report fail on request #%d. Error: %v", requestID, err))
-	// 	return
-	// }
-	// logger.Info(fmt.Sprintf("Report on request #%d successfully. Tx hash: %s", requestID, tx.TxHash))
+	if err != nil {
+		logger.Error(fmt.Sprintf("Report fail on request #%d. Error: %v", requestID, err))
+		return
+	}
+	logger.Info(fmt.Sprintf("Report on request #%d successfully. Tx: %v", requestID, tx))
 }
