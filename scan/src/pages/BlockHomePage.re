@@ -1,7 +1,7 @@
 module Styles = {
   open Css;
 
-  let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
+  let vFlex = align => style([display(`flex), flexDirection(`row), alignItems(align)]);
 
   let pageContainer = style([paddingTop(`px(50))]);
 
@@ -42,7 +42,7 @@ let renderBody = ((block, moniker): (BlockHook.Block.t, string)) => {
   <TBody key={height |> string_of_int}>
     <div className=Styles.fullWidth onClick={_ => Route.BlockIndexPage(height) |> Route.redirect}>
       <Row>
-        <Col> <HSpacing size=Spacing.xl /> </Col>
+        <Col> <HSpacing size=Spacing.md /> </Col>
         <Col size=1.11> <TypeID.Block id={ID.Block.ID(height)} /> </Col>
         <Col size=3.93>
           <div className={Styles.withWidth(330)}>
@@ -61,7 +61,7 @@ let renderBody = ((block, moniker): (BlockHook.Block.t, string)) => {
             <Text value={totalTx |> Format.iPretty} code=true weight=Text.Medium />
           </Row>
         </Col>
-        <Col> <HSpacing size=Spacing.xl /> </Col>
+        <Col> <HSpacing size=Spacing.md /> </Col>
       </Row>
     </div>
   </TBody>;
@@ -90,7 +90,7 @@ let make = () => {
   <div className=Styles.pageContainer>
     <Row>
       <Col>
-        <div className=Styles.vFlex>
+        <div className={Styles.vFlex(`center)}>
           <img src=Images.blockLogo className=Styles.logo />
           <Text
             value="All BLOCKS"
@@ -122,7 +122,7 @@ let make = () => {
     <VSpacing size=Spacing.xl />
     <THead>
       <Row>
-        <Col> <HSpacing size=Spacing.xl /> </Col>
+        <Col> <HSpacing size=Spacing.md /> </Col>
         {[
            ("BLOCK", 1.11, false),
            ("BLOCK HASH", 3.93, false),
@@ -131,8 +131,8 @@ let make = () => {
            ("TXN", 1.05, true),
          ]
          ->Belt.List.map(((title, size, alignRight)) => {
-             <Col size key=title>
-               <Row>
+             <Col size key=title justifyContent=Col.Start>
+               <div className={Styles.vFlex(`flexEnd)}>
                  {alignRight ? <div className=Styles.fillLeft /> : React.null}
                  <Text
                    value=title
@@ -141,12 +141,12 @@ let make = () => {
                    color=Colors.mediumLightGray
                    spacing={Text.Em(0.1)}
                  />
-               </Row>
+               </div>
              </Col>
            })
          ->Array.of_list
          ->React.array}
-        <Col> <HSpacing size=Spacing.xl /> </Col>
+        <Col> <HSpacing size=Spacing.md /> </Col>
       </Row>
     </THead>
     {blocksWithMonikers->Belt_List.toArray->Belt_Array.map(renderBody)->React.array}
