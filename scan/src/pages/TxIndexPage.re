@@ -14,7 +14,7 @@ module Styles = {
       backgroundColor(Colors.mediumGray),
     ]);
 
-  let addressContainer = style([marginTop(`px(25)), marginBottom(`px(44))]);
+  let hashContainer = style([marginTop(`px(25)), marginBottom(`px(44))]);
 
   let successBadge =
     style([
@@ -69,7 +69,7 @@ let make = (~txHash) => {
         </div>
       </Col>
     </Row>
-    <div className=Styles.addressContainer>
+    <div className=Styles.hashContainer>
       <Text
         value={txHash |> Hash.toHex(~upper=true)}
         size=Text.Xxl
