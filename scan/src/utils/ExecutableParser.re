@@ -15,17 +15,13 @@ let getElementInList = (l, idx) => {
 let splitToPair = s => {
   let tmp = s |> String.split_on_char('=');
   let s0 = getElementInList(tmp, 0);
-  let s1 =
-    getElementInList(tmp, 1)
-    |> String.split_on_char('$')
-    |> getElementInList(_, 1)
+  let s1 = getElementInList(tmp, 1) |> String.split_on_char('$') |> getElementInList(_, 1);
 
   switch (s1 |> int_of_string) {
-    // the number is to big then return -1
-    | exception (Failure(_)) => (s0,-1)
-    | num => (s0, num);
-  }
-
+  // the number is too big then return -1
+  | exception (Failure(_)) => (s0, (-1))
+  | num => (s0, num)
+  };
 };
 
 let comparePair = ((_, num1), (_, num2)) => {
