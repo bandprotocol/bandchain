@@ -7,6 +7,7 @@ import (
 	"github.com/bandprotocol/d3n/chain/owasm"
 	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	auth "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
 
 // NewHandler creates handler of this module
@@ -35,7 +36,7 @@ func NewHandler(keeper Keeper) sdk.Handler {
 
 // handleMsgCreateDataSource is a function to handle MsgCreateDataSource.
 func handleMsgCreateDataSource(ctx sdk.Context, keeper Keeper, msg MsgCreateDataSource) sdk.Result {
-	err := keeper.AddDataSource(ctx, msg.Owner, msg.Name, msg.Fee, msg.Executable)
+	err := keeper.AddDataSource(ctx, msg.Owner, msg.Name, msg.Description, msg.Fee, msg.Executable)
 	if err != nil {
 		return err.Result()
 	}
@@ -54,7 +55,7 @@ func handleMsgEditDataSource(ctx sdk.Context, keeper Keeper, msg MsgEditDataSour
 		return types.ErrInvalidOwner(types.DefaultCodespace).Result()
 	}
 
-	err = keeper.EditDataSource(ctx, msg.DataSourceID, msg.Owner, msg.Name, msg.Fee, msg.Executable)
+	err = keeper.EditDataSource(ctx, msg.DataSourceID, msg.Owner, msg.Name, msg.Description, msg.Fee, msg.Executable)
 	if err != nil {
 		return err.Result()
 	}
@@ -63,7 +64,7 @@ func handleMsgEditDataSource(ctx sdk.Context, keeper Keeper, msg MsgEditDataSour
 
 // handleMsgCreateOracleScript is a function to handle MsgCreateOracleScript.
 func handleMsgCreateOracleScript(ctx sdk.Context, keeper Keeper, msg MsgCreateOracleScript) sdk.Result {
-	err := keeper.AddOracleScript(ctx, msg.Owner, msg.Name, msg.Code)
+	err := keeper.AddOracleScript(ctx, msg.Owner, msg.Name, msg.Description, msg.Code)
 	if err != nil {
 		return err.Result()
 	}
@@ -82,7 +83,7 @@ func handleMsgEditOracleScript(ctx sdk.Context, keeper Keeper, msg MsgEditOracle
 		return types.ErrInvalidOwner(types.DefaultCodespace).Result()
 	}
 
-	err = keeper.EditOracleScript(ctx, msg.OracleScriptID, msg.Owner, msg.Name, msg.Code)
+	err = keeper.EditOracleScript(ctx, msg.OracleScriptID, msg.Owner, msg.Name, msg.Description, msg.Code)
 	if err != nil {
 		return err.Result()
 	}
@@ -215,10 +216,28 @@ func handleMsgRequestData(ctx sdk.Context, keeper Keeper, msg MsgRequestData) sd
 }
 
 func handleMsgReportData(ctx sdk.Context, keeper Keeper, msg MsgReportData) sdk.Result {
+	startGas := ctx.GasMeter().GasConsumed()
+
+	// Save new report to store
 	err := keeper.AddReport(ctx, msg.RequestID, msg.DataSet, msg.Sender)
 	if err != nil {
 		return err.Result()
 	}
+
+	// Calculate the total refund by multiplying RefundGasPrice with gas used
+	amountToRefund, _ := msg.RefundGasPrice.MulDec(sdk.NewDec(int64(ctx.GasMeter().GasConsumed() - startGas))).TruncateDecimal()
+
+	// Refund the reporter
+	err = keeper.SupplyKeeper.SendCoinsFromModuleToAccount(
+		ctx,
+		auth.FeeCollectorName,
+		msg.GetSigners()[0],
+		amountToRefund,
+	)
+	if err != nil {
+		return err.Result()
+	}
+
 	// Emit report event
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(

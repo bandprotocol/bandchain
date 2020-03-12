@@ -7,6 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/staking"
+	"github.com/cosmos/cosmos-sdk/x/supply"
 )
 
 type Keeper struct {
@@ -14,16 +15,18 @@ type Keeper struct {
 	cdc           *codec.Codec
 	CoinKeeper    bank.Keeper
 	StakingKeeper staking.Keeper
+	SupplyKeeper  supply.Keeper
 	ParamSpace    params.Subspace
 }
 
 // NewKeeper creates a new zoracle Keeper instance.
-func NewKeeper(cdc *codec.Codec, key sdk.StoreKey, coinKeeper bank.Keeper, stakingKeeper staking.Keeper, paramSpace params.Subspace) Keeper {
+func NewKeeper(cdc *codec.Codec, key sdk.StoreKey, coinKeeper bank.Keeper, stakingKeeper staking.Keeper, supplyKeeper supply.Keeper, paramSpace params.Subspace) Keeper {
 	return Keeper{
 		storeKey:      key,
 		cdc:           cdc,
 		CoinKeeper:    coinKeeper,
 		StakingKeeper: stakingKeeper,
+		SupplyKeeper:  supplyKeeper,
 		ParamSpace:    paramSpace.WithKeyTable(ParamKeyTable()),
 	}
 }
@@ -104,6 +107,14 @@ func (keeper Keeper) MaxNameLength(ctx sdk.Context) (res int64) {
 	keeper.ParamSpace.Get(ctx, types.KeyMaxNameLength, &res)
 	return
 }
+func (keeper Keeper) MaxDescriptionLength(ctx sdk.Context) (res int64) {
+	keeper.ParamSpace.Get(ctx, types.KeyMaxDescriptionLength, &res)
+	return
+}
+
+func (keeper Keeper) SetMaxDescriptionLength(ctx sdk.Context, value int64) {
+	keeper.ParamSpace.Set(ctx, types.KeyMaxDescriptionLength, value)
+}
 
 // GetParams returns all current parameters as a types.Params instance.
 func (keeper Keeper) GetParams(ctx sdk.Context) types.Params {
@@ -116,6 +127,7 @@ func (keeper Keeper) GetParams(ctx sdk.Context) types.Params {
 		keeper.MaxResultSize(ctx),
 		keeper.EndBlockExecuteGasLimit(ctx),
 		keeper.MaxNameLength(ctx),
+		keeper.MaxDescriptionLength(ctx),
 	)
 }
 
@@ -133,13 +145,13 @@ func (k Keeper) GetRequestCount(ctx sdk.Context) int64 {
 
 // GetNextRequestID increments and returns the current number of requests.
 // If the global request count is not set, it initializes it with value 0.
-func (k Keeper) GetNextRequestID(ctx sdk.Context) int64 {
+func (k Keeper) GetNextRequestID(ctx sdk.Context) types.RequestID {
 	requestNumber := k.GetRequestCount(ctx)
 	store := ctx.KVStore(k.storeKey)
 
 	bz := k.cdc.MustMarshalBinaryLengthPrefixed(requestNumber + 1)
 	store.Set(types.RequestsCountStoreKey, bz)
-	return requestNumber + 1
+	return types.RequestID(requestNumber + 1)
 }
 
 // GetDataSourceCount returns the current number of all data sources ever exist.
@@ -156,13 +168,13 @@ func (k Keeper) GetDataSourceCount(ctx sdk.Context) int64 {
 
 // GetNextDataSourceID increments and returns the current number of data source.
 // If the global data source count is not set, it initializes the value and returns 1.
-func (k Keeper) GetNextDataSourceID(ctx sdk.Context) int64 {
+func (k Keeper) GetNextDataSourceID(ctx sdk.Context) types.DataSourceID {
 	dataSourceCount := k.GetDataSourceCount(ctx)
 	store := ctx.KVStore(k.storeKey)
 
 	bz := k.cdc.MustMarshalBinaryLengthPrefixed(dataSourceCount + 1)
 	store.Set(types.DataSourceCountStoreKey, bz)
-	return dataSourceCount + 1
+	return types.DataSourceID(dataSourceCount + 1)
 }
 
 // GetOracleScriptCount returns the current number of all oracle scripts ever exist.
@@ -179,11 +191,11 @@ func (k Keeper) GetOracleScriptCount(ctx sdk.Context) int64 {
 
 // GetNextOracleScriptID increments and returns the current number of oracle script.
 // If the global oracle script count is not set, it initializes the value and returns 1.
-func (k Keeper) GetNextOracleScriptID(ctx sdk.Context) int64 {
+func (k Keeper) GetNextOracleScriptID(ctx sdk.Context) types.OracleScriptID {
 	oracleScriptCount := k.GetOracleScriptCount(ctx)
 	store := ctx.KVStore(k.storeKey)
 
 	bz := k.cdc.MustMarshalBinaryLengthPrefixed(oracleScriptCount + 1)
 	store.Set(types.OracleScriptCountStoreKey, bz)
-	return oracleScriptCount + 1
+	return types.OracleScriptID(oracleScriptCount + 1)
 }

@@ -11,13 +11,14 @@ module Styles = {
       marginLeft(Spacing.xl),
       marginRight(Spacing.xl),
     ]);
-
+  let addressContainer = style([display(`flex), maxWidth(`px(320))]);
   let hashContainer = style([maxWidth(`px(220))]);
-  let feeContainer = style([maxWidth(`px(80))]);
+  let feeContainer = style([display(`flex), justifyContent(`flexEnd)]);
   let timeContainer = style([display(`flex), alignItems(`center), maxWidth(`px(150))]);
   let textContainer = style([display(`flex)]);
   let countContainer = style([maxWidth(`px(80))]);
   let proposerBox = style([maxWidth(`px(270)), display(`flex), flexDirection(`column)]);
+  let dataSourceContainer = style([display(`flex)]);
 };
 
 let renderText = (text, weight) =>
@@ -87,29 +88,12 @@ let renderHashWithLink = hash => {
 };
 
 let renderAddress = address => {
-  <div className=Styles.hashContainer>
-    <Text
-      block=true
-      code=true
-      value={address |> Address.toBech32}
-      size=Text.Lg
-      weight=Text.Bold
-      ellipsis=true
-    />
-  </div>;
+  <div className=Styles.addressContainer> <AddressRender address /> </div>;
 };
 
 let renderFee = fee => {
   <div className=Styles.feeContainer>
-    {fee == 0.0 ? React.null : <VSpacing size={`px(4)} />}
-    {fee == 0.0
-       ? React.null : <Text size=Text.Sm block=true value="$0.002" color=Colors.grayText />}
-    {fee == 0.0 ? React.null : <VSpacing size={`px(4)} />}
-    <Text
-      value={fee == 0.0 ? "FREE" : fee->Format.fPretty ++ " BAND"}
-      color=Colors.grayHeader
-      weight=Text.Semibold
-    />
+    <Text value={fee->Format.fPretty} color=Colors.grayHeader code=true />
   </div>;
 };
 
@@ -157,6 +141,14 @@ let renderProposer = (moniker, proposer) => {
   </div>;
 };
 
+let renderDataSource = (id, name) => {
+  <div className=Styles.dataSourceContainer>
+    <TypeID.DataSource id position=TypeID.Text />
+    <HSpacing size=Spacing.xs />
+    <Text value=name block=true height={Text.Px(16)} spacing={Text.Em(0.02)} />
+  </div>;
+};
+
 let msgIcon =
   fun
   | TxHook.Msg.CreateDataSource(_) => Images.newScript
@@ -185,7 +177,8 @@ type t =
   | Address(Address.t)
   | Source(string)
   | Value(Js.Json.t)
-  | Proposer(string, string);
+  | Proposer(string, string)
+  | DataSource(ID.DataSource.t, string);
 
 [@react.component]
 let make = (~elementType) => {
@@ -207,5 +200,6 @@ let make = (~elementType) => {
   | Source(source) => renderSource(source)
   | Value(value) => renderText(value->Js.Json.stringify, Text.Regular)
   | Proposer(moniker, proposer) => renderProposer(moniker, proposer)
+  | DataSource(id, name) => renderDataSource(id, name)
   };
 };

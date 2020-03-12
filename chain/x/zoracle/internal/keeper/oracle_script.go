@@ -7,31 +7,35 @@ import (
 
 // SetOracleScript saves the given oracle script with the given ID to the storage.
 // WARNING: This function doesn't perform any check on ID.
-func (k Keeper) SetOracleScript(ctx sdk.Context, id int64, oracleScript types.OracleScript) {
+func (k Keeper) SetOracleScript(ctx sdk.Context, id types.OracleScriptID, oracleScript types.OracleScript) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.OracleScriptStoreKey(id), k.cdc.MustMarshalBinaryBare(oracleScript))
 }
 
 // AddOracleScript adds the given oracle script to the storage.
-func (k Keeper) AddOracleScript(ctx sdk.Context, owner sdk.AccAddress, name string, code []byte) sdk.Error {
+func (k Keeper) AddOracleScript(ctx sdk.Context, owner sdk.AccAddress, name string, description string, code []byte) sdk.Error {
 	newOracleScriptID := k.GetNextOracleScriptID(ctx)
 
 	if len(code) > int(k.MaxOracleScriptCodeSize(ctx)) {
 		// TODO: fix error later
 		return types.ErrRequestNotFound(types.DefaultCodespace)
 	}
-	
+
 	if len(name) > int(k.MaxNameLength(ctx)) {
 		return types.ErrRequestNotFound(types.DefaultCodespace)
 	}
 
-	newOracleScript := types.NewOracleScript(owner, name, code)
+	if len(description) > int(k.MaxDescriptionLength(ctx)) {
+		return types.ErrRequestNotFound(types.DefaultCodespace)
+	}
+
+	newOracleScript := types.NewOracleScript(owner, name, description, code)
 	k.SetOracleScript(ctx, newOracleScriptID, newOracleScript)
 	return nil
 }
 
 // EditOracleScript edits the given oracle script by given oracle script id to the storage.
-func (k Keeper) EditOracleScript(ctx sdk.Context, oracleScriptID int64, owner sdk.AccAddress, name string, code []byte) sdk.Error {
+func (k Keeper) EditOracleScript(ctx sdk.Context, oracleScriptID types.OracleScriptID, owner sdk.AccAddress, name string, description string, code []byte) sdk.Error {
 	if !k.CheckOracleScriptExists(ctx, oracleScriptID) {
 		// TODO: fix error later
 		return types.ErrRequestNotFound(types.DefaultCodespace)
@@ -42,13 +46,23 @@ func (k Keeper) EditOracleScript(ctx sdk.Context, oracleScriptID int64, owner sd
 		return types.ErrRequestNotFound(types.DefaultCodespace)
 	}
 
-	updatedOracleScript := types.NewOracleScript(owner, name, code)
+	if len(name) > int(k.MaxNameLength(ctx)) {
+		// TODO: fix error later
+		return types.ErrRequestNotFound(types.DefaultCodespace)
+	}
+
+	if len(description) > int(k.MaxDescriptionLength(ctx)) {
+		// TODO: fix error later
+		return types.ErrRequestNotFound(types.DefaultCodespace)
+	}
+
+	updatedOracleScript := types.NewOracleScript(owner, name, description, code)
 	k.SetOracleScript(ctx, oracleScriptID, updatedOracleScript)
 	return nil
 }
 
 // GetOracleScript returns the entire OracleScript struct for the given ID.
-func (k Keeper) GetOracleScript(ctx sdk.Context, id int64) (types.OracleScript, sdk.Error) {
+func (k Keeper) GetOracleScript(ctx sdk.Context, id types.OracleScriptID) (types.OracleScript, sdk.Error) {
 	store := ctx.KVStore(k.storeKey)
 	if !k.CheckOracleScriptExists(ctx, id) {
 		// TODO: fix error later
@@ -62,7 +76,25 @@ func (k Keeper) GetOracleScript(ctx sdk.Context, id int64) (types.OracleScript, 
 }
 
 // CheckOracleScriptExists checks if the oracle script of this ID exists in the storage.
-func (k Keeper) CheckOracleScriptExists(ctx sdk.Context, id int64) bool {
+func (k Keeper) CheckOracleScriptExists(ctx sdk.Context, id types.OracleScriptID) bool {
 	store := ctx.KVStore(k.storeKey)
 	return store.Has(types.OracleScriptStoreKey(id))
+}
+
+// GetOracleScriptIterator returns an iterator for all oracle scripts in the store.
+func (k Keeper) GetOracleScriptIterator(ctx sdk.Context) sdk.Iterator {
+	store := ctx.KVStore(k.storeKey)
+	return sdk.KVStorePrefixIterator(store, types.OracleScriptStoreKeyPrefix)
+}
+
+// GetAllOracleScripts returns list of all oracle scripts.
+func (k Keeper) GetAllOracleScripts(ctx sdk.Context) []types.OracleScript {
+	var oracleScript types.OracleScript
+	oracleScripts := []types.OracleScript{}
+	iterator := k.GetOracleScriptIterator(ctx)
+	for ; iterator.Valid(); iterator.Next() {
+		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &oracleScript)
+		oracleScripts = append(oracleScripts, oracleScript)
+	}
+	return oracleScripts
 }

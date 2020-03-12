@@ -12,7 +12,7 @@ func TestMsgRequestData(t *testing.T) {
 	msg := NewMsgRequestData(1, []byte("calldata"), 10, 5, 100, 5000, 10000, sender)
 	require.Equal(t, RouterKey, msg.Route())
 	require.Equal(t, "request", msg.Type())
-	require.Equal(t, int64(1), msg.OracleScriptID)
+	require.Equal(t, OracleScriptID(1), msg.OracleScriptID)
 	require.Equal(t, []byte("calldata"), msg.Calldata)
 	require.Equal(t, int64(10), msg.RequestedValidatorCount)
 	require.Equal(t, int64(5), msg.SufficientValidatorCount)
@@ -119,29 +119,36 @@ func TestMsgRequestDataGetSignBytes(t *testing.T) {
 }
 
 func TestMsgReportData(t *testing.T) {
-	requestID := int64(3)
+	requestID := RequestID(3)
 	data := []RawDataReport{NewRawDataReport(1, []byte("data1")), NewRawDataReport(2, []byte("data2"))}
 	provider, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
-	msg := NewMsgReportData(requestID, data, provider)
+
+	msg := NewMsgReportData(requestID, sdk.NewDecCoins(sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(1000)))), data, provider)
 
 	require.Equal(t, RouterKey, msg.Route())
 	require.Equal(t, "report", msg.Type())
 }
 
 func TestMsgReportDataValidation(t *testing.T) {
-	requestID := int64(3)
+	requestID := RequestID(3)
 	data := []RawDataReport{NewRawDataReport(1, []byte("data1")), NewRawDataReport(2, []byte("data2"))}
 	validator, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
 	failValidator, _ := sdk.ValAddressFromHex("")
+	refundGasFeePos, _ := sdk.ParseDecCoins("0.1uband")
+	refundGasFeeZero, _ := sdk.ParseDecCoins("0.0uband")
+	refundGasFeeNeg := refundGasFeePos.MulDec(sdk.NewDec(-1))
+
 	cases := []struct {
 		valid bool
 		tx    MsgReportData
 	}{
-		{true, NewMsgReportData(requestID, data, validator)},
-		{false, NewMsgReportData(-1, data, validator)},
-		{false, NewMsgReportData(requestID, []RawDataReport{}, validator)},
-		{false, NewMsgReportData(requestID, nil, validator)},
-		{false, NewMsgReportData(requestID, data, failValidator)},
+		{true, NewMsgReportData(requestID, refundGasFeePos, data, validator)},
+		{true, NewMsgReportData(requestID, refundGasFeeZero, data, validator)},
+		{false, NewMsgReportData(requestID, refundGasFeeNeg, data, validator)},
+		{false, NewMsgReportData(-1, refundGasFeeZero, data, validator)},
+		{false, NewMsgReportData(requestID, refundGasFeeZero, []RawDataReport{}, validator)},
+		{false, NewMsgReportData(requestID, refundGasFeeZero, nil, validator)},
+		{false, NewMsgReportData(requestID, refundGasFeeZero, data, failValidator)},
 	}
 
 	for _, tc := range cases {
@@ -158,13 +165,13 @@ func TestMsgReportDataGetSignBytes(t *testing.T) {
 	config := sdk.GetConfig()
 	config.SetBech32PrefixForValidator("band"+sdk.PrefixValidator+sdk.PrefixOperator, "band"+sdk.PrefixValidator+sdk.PrefixOperator+sdk.PrefixPublic)
 
-	requestID := int64(3)
+	requestID := RequestID(3)
 	data := []RawDataReport{NewRawDataReport(1, []byte("data1")), NewRawDataReport(2, []byte("data2"))}
 	validator, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
-	msg := NewMsgReportData(requestID, data, validator)
+	msg := NewMsgReportData(requestID, sdk.NewDecCoins(sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(1000)))), data, validator)
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"zoracle/Report","value":{"dataSet":[{"data":"ZGF0YTE=","externalDataID":"1"},{"data":"ZGF0YTI=","externalDataID":"2"}],"requestID":"3","sender":"bandvaloper1hq8j5h0h64csk9tz95df783cxr0dt0dgay2kyy"}}`
+	expected := `{"type":"zoracle/Report","value":{"dataSet":[{"data":"ZGF0YTE=","externalDataID":"1"},{"data":"ZGF0YTI=","externalDataID":"2"}],"refundGasPrice":[{"amount":"1000.000000000000000000","denom":"uband"}],"requestID":"3","sender":"bandvaloper1hq8j5h0h64csk9tz95df783cxr0dt0dgay2kyy"}}`
 
 	require.Equal(t, expected, string(res))
 }
@@ -173,7 +180,7 @@ func TestMsgCreateDataSource(t *testing.T) {
 	owner := sdk.AccAddress([]byte("owner"))
 	sender := sdk.AccAddress([]byte("sender"))
 	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 1000))
-	msg := NewMsgCreateDataSource(owner, "data_source_1", fee, []byte("executable"), sender)
+	msg := NewMsgCreateDataSource(owner, "data_source_1", "description", fee, []byte("executable"), sender)
 	require.Equal(t, RouterKey, msg.Route())
 	require.Equal(t, "create_data_source", msg.Type())
 	require.Equal(t, owner, msg.Owner)
@@ -187,6 +194,7 @@ func TestMsgCreateDataSourceValidation(t *testing.T) {
 	owner := sdk.AccAddress([]byte("owner"))
 	sender := sdk.AccAddress([]byte("sender"))
 	name := "data_source_1"
+	description := "description"
 	executable := []byte("executable")
 	feeUband10 := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
 	feeUband0 := sdk.NewCoins(sdk.NewInt64Coin("uband", 0))
@@ -196,28 +204,31 @@ func TestMsgCreateDataSourceValidation(t *testing.T) {
 		tx    MsgCreateDataSource
 	}{
 		{
-			true, NewMsgCreateDataSource(owner, name, feeUband10, executable, sender),
+			true, NewMsgCreateDataSource(owner, name, description, feeUband10, executable, sender),
 		},
 		{
-			false, NewMsgCreateDataSource(nil, name, feeUband10, executable, sender),
+			false, NewMsgCreateDataSource(nil, name, description, feeUband10, executable, sender),
 		},
 		{
-			false, NewMsgCreateDataSource(owner, "", feeUband10, executable, sender),
+			false, NewMsgCreateDataSource(owner, "", description, feeUband10, executable, sender),
 		},
 		{
-			true, NewMsgCreateDataSource(owner, name, feeUband0, executable, sender),
+			true, NewMsgCreateDataSource(owner, name, description, feeUband0, executable, sender),
 		},
 		{
-			true, NewMsgCreateDataSource(owner, name, sdk.Coins{}, executable, sender),
+			true, NewMsgCreateDataSource(owner, name, description, sdk.Coins{}, executable, sender),
 		},
 		{
-			false, NewMsgCreateDataSource(owner, name, feeUband10, []byte(""), sender),
+			false, NewMsgCreateDataSource(owner, name, description, feeUband10, []byte(""), sender),
 		},
 		{
-			false, NewMsgCreateDataSource(owner, name, feeUband10, nil, sender),
+			false, NewMsgCreateDataSource(owner, name, description, feeUband10, nil, sender),
 		},
 		{
-			false, NewMsgCreateDataSource(owner, name, feeUband10, executable, nil),
+			false, NewMsgCreateDataSource(owner, name, description, feeUband10, executable, nil),
+		},
+		{
+			false, NewMsgCreateDataSource(owner, name, "", feeUband10, executable, nil),
 		},
 	}
 
@@ -238,10 +249,10 @@ func TestMsgCreateDataSourceGetSignBytes(t *testing.T) {
 	owner := sdk.AccAddress([]byte("owner"))
 	sender := sdk.AccAddress([]byte("sender"))
 	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
-	msg := NewMsgCreateDataSource(owner, "data_source_1", fee, []byte("executable"), sender)
+	msg := NewMsgCreateDataSource(owner, "data_source_1", "description", fee, []byte("executable"), sender)
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"zoracle/CreateDataSource","value":{"executable":"ZXhlY3V0YWJsZQ==","fee":[{"amount":"10","denom":"uband"}],"name":"data_source_1","owner":"band1damkuetjcw3c0d","sender":"band1wdjkuer9wgvz7c4y"}}`
+	expected := `{"type":"zoracle/CreateDataSource","value":{"description":"description","executable":"ZXhlY3V0YWJsZQ==","fee":[{"amount":"10","denom":"uband"}],"name":"data_source_1","owner":"band1damkuetjcw3c0d","sender":"band1wdjkuer9wgvz7c4y"}}`
 
 	require.Equal(t, expected, string(res))
 }
@@ -250,10 +261,10 @@ func TestMsgEditDataSource(t *testing.T) {
 	owner := sdk.AccAddress([]byte("owner"))
 	sender := sdk.AccAddress([]byte("sender"))
 	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 100))
-	msg := NewMsgEditDataSource(1, owner, "data_source_1", fee, []byte("executable"), sender)
+	msg := NewMsgEditDataSource(1, owner, "data_source_1", "description", fee, []byte("executable"), sender)
 	require.Equal(t, RouterKey, msg.Route())
 	require.Equal(t, "edit_data_source", msg.Type())
-	require.Equal(t, int64(1), msg.DataSourceID)
+	require.Equal(t, DataSourceID(1), msg.DataSourceID)
 	require.Equal(t, owner, msg.Owner)
 	require.Equal(t, "data_source_1", msg.Name)
 	require.Equal(t, fee, msg.Fee)
@@ -265,6 +276,7 @@ func TestMsgEditDataSourceValidation(t *testing.T) {
 	owner := sdk.AccAddress([]byte("owner"))
 	sender := sdk.AccAddress([]byte("sender"))
 	name := "data_source_1"
+	description := "description"
 	executable := []byte("executable")
 	feeUband10 := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
 	feeUband0 := sdk.NewCoins(sdk.NewInt64Coin("uband", 0))
@@ -274,31 +286,34 @@ func TestMsgEditDataSourceValidation(t *testing.T) {
 		tx    MsgEditDataSource
 	}{
 		{
-			true, NewMsgEditDataSource(1, owner, name, feeUband10, executable, sender),
+			true, NewMsgEditDataSource(1, owner, name, description, feeUband10, executable, sender),
 		},
 		{
-			false, NewMsgEditDataSource(0, owner, name, feeUband10, executable, sender),
+			false, NewMsgEditDataSource(0, owner, name, description, feeUband10, executable, sender),
 		},
 		{
-			false, NewMsgEditDataSource(1, nil, name, feeUband10, executable, sender),
+			false, NewMsgEditDataSource(1, nil, name, description, feeUband10, executable, sender),
 		},
 		{
-			false, NewMsgEditDataSource(1, owner, "", feeUband10, executable, sender),
+			false, NewMsgEditDataSource(1, owner, "", description, feeUband10, executable, sender),
 		},
 		{
-			true, NewMsgEditDataSource(1, owner, name, feeUband0, executable, sender),
+			true, NewMsgEditDataSource(1, owner, name, description, feeUband0, executable, sender),
 		},
 		{
-			true, NewMsgEditDataSource(1, owner, name, sdk.Coins{}, executable, sender),
+			true, NewMsgEditDataSource(1, owner, name, description, sdk.Coins{}, executable, sender),
 		},
 		{
-			false, NewMsgEditDataSource(1, owner, name, feeUband10, []byte(""), sender),
+			false, NewMsgEditDataSource(1, owner, name, description, feeUband10, []byte(""), sender),
 		},
 		{
-			false, NewMsgEditDataSource(1, owner, name, feeUband10, nil, sender),
+			false, NewMsgEditDataSource(1, owner, name, description, feeUband10, nil, sender),
 		},
 		{
-			false, NewMsgEditDataSource(1, owner, name, feeUband10, executable, nil),
+			false, NewMsgEditDataSource(1, owner, name, description, feeUband10, executable, nil),
+		},
+		{
+			false, NewMsgEditDataSource(1, owner, name, "", feeUband10, executable, sender),
 		},
 	}
 
@@ -315,14 +330,15 @@ func TestMsgEditDataSourceValidation(t *testing.T) {
 func TestMsgEditDataSourceGetSignBytes(t *testing.T) {
 	config := sdk.GetConfig()
 	config.SetBech32PrefixForAccount("band", "band"+sdk.PrefixPublic)
-
 	owner := sdk.AccAddress([]byte("owner"))
+	name := "data_source_1"
+	description := "description"
 	sender := sdk.AccAddress([]byte("sender"))
 	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
-	msg := NewMsgEditDataSource(1, owner, "data_source_1", fee, []byte("executable"), sender)
+	msg := NewMsgEditDataSource(1, owner, name, description, fee, []byte("executable"), sender)
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"zoracle/EditDataSource","value":{"dataSourceID":"1","executable":"ZXhlY3V0YWJsZQ==","fee":[{"amount":"10","denom":"uband"}],"name":"data_source_1","owner":"band1damkuetjcw3c0d","sender":"band1wdjkuer9wgvz7c4y"}}`
+	expected := `{"type":"zoracle/EditDataSource","value":{"dataSourceID":"1","description":"description","executable":"ZXhlY3V0YWJsZQ==","fee":[{"amount":"10","denom":"uband"}],"name":"data_source_1","owner":"band1damkuetjcw3c0d","sender":"band1wdjkuer9wgvz7c4y"}}`
 
 	require.Equal(t, expected, string(res))
 }
@@ -330,7 +346,7 @@ func TestMsgEditDataSourceGetSignBytes(t *testing.T) {
 func TestMsgCreateOracleScript(t *testing.T) {
 	owner := sdk.AccAddress([]byte("owner"))
 	sender := sdk.AccAddress([]byte("sender"))
-	msg := NewMsgCreateOracleScript(owner, "oracle_script_1", []byte("code"), sender)
+	msg := NewMsgCreateOracleScript(owner, "oracle_script_1", "description", []byte("code"), sender)
 	require.Equal(t, RouterKey, msg.Route())
 	require.Equal(t, "create_oracle_script", msg.Type())
 	require.Equal(t, owner, msg.Owner)
@@ -341,6 +357,7 @@ func TestMsgCreateOracleScript(t *testing.T) {
 
 func TestMsgCreateOracleScriptValidation(t *testing.T) {
 	owner := sdk.AccAddress([]byte("owner"))
+	description := "description"
 	sender := sdk.AccAddress([]byte("sender"))
 	name := "oracle_script_1"
 	code := []byte("code")
@@ -350,22 +367,22 @@ func TestMsgCreateOracleScriptValidation(t *testing.T) {
 		tx    MsgCreateOracleScript
 	}{
 		{
-			true, NewMsgCreateOracleScript(owner, name, code, sender),
+			true, NewMsgCreateOracleScript(owner, name, description, code, sender),
 		},
 		{
-			false, NewMsgCreateOracleScript(nil, name, code, sender),
+			false, NewMsgCreateOracleScript(nil, name, description, code, sender),
 		},
 		{
-			false, NewMsgCreateOracleScript(owner, "", code, sender),
+			false, NewMsgCreateOracleScript(owner, "", description, code, sender),
 		},
 		{
-			false, NewMsgCreateOracleScript(owner, name, []byte{}, sender),
+			false, NewMsgCreateOracleScript(owner, name, description, []byte{}, sender),
 		},
 		{
-			false, NewMsgCreateOracleScript(owner, name, nil, sender),
+			false, NewMsgCreateOracleScript(owner, name, description, nil, sender),
 		},
 		{
-			false, NewMsgCreateOracleScript(owner, name, code, nil),
+			false, NewMsgCreateOracleScript(owner, name, description, code, nil),
 		},
 	}
 
@@ -385,10 +402,10 @@ func TestMsgCreateOracleScriptGetSignBytes(t *testing.T) {
 
 	owner := sdk.AccAddress([]byte("owner"))
 	sender := sdk.AccAddress([]byte("sender"))
-	msg := NewMsgCreateOracleScript(owner, "oracle_script_1", []byte("code"), sender)
+	msg := NewMsgCreateOracleScript(owner, "oracle_script_1", "description", []byte("code"), sender)
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"zoracle/CreateOracleScript","value":{"code":"Y29kZQ==","name":"oracle_script_1","owner":"band1damkuetjcw3c0d","sender":"band1wdjkuer9wgvz7c4y"}}`
+	expected := `{"type":"zoracle/CreateOracleScript","value":{"code":"Y29kZQ==","description":"description","name":"oracle_script_1","owner":"band1damkuetjcw3c0d","sender":"band1wdjkuer9wgvz7c4y"}}`
 
 	require.Equal(t, expected, string(res))
 }
@@ -396,10 +413,10 @@ func TestMsgCreateOracleScriptGetSignBytes(t *testing.T) {
 func TestMsgEditOracleScript(t *testing.T) {
 	owner := sdk.AccAddress([]byte("owner"))
 	sender := sdk.AccAddress([]byte("sender"))
-	msg := NewMsgEditOracleScript(1, owner, "oracle_script_1", []byte("code"), sender)
+	msg := NewMsgEditOracleScript(1, owner, "oracle_script_1", "description", []byte("code"), sender)
 	require.Equal(t, RouterKey, msg.Route())
 	require.Equal(t, "edit_oracle_script", msg.Type())
-	require.Equal(t, int64(1), msg.OracleScriptID)
+	require.Equal(t, OracleScriptID(1), msg.OracleScriptID)
 	require.Equal(t, owner, msg.Owner)
 	require.Equal(t, "oracle_script_1", msg.Name)
 	require.Equal(t, []byte("code"), msg.Code)
@@ -410,6 +427,7 @@ func TestMsgEditOracleScriptValidation(t *testing.T) {
 	owner := sdk.AccAddress([]byte("owner"))
 	sender := sdk.AccAddress([]byte("sender"))
 	name := "oracle_script_1"
+	description := "description"
 	code := []byte("code")
 
 	cases := []struct {
@@ -417,25 +435,25 @@ func TestMsgEditOracleScriptValidation(t *testing.T) {
 		tx    MsgEditOracleScript
 	}{
 		{
-			true, NewMsgEditOracleScript(1, owner, name, code, sender),
+			true, NewMsgEditOracleScript(1, owner, name, description, code, sender),
 		},
 		{
-			false, NewMsgEditOracleScript(0, nil, name, code, sender),
+			false, NewMsgEditOracleScript(0, nil, name, description, code, sender),
 		},
 		{
-			false, NewMsgEditOracleScript(1, nil, name, code, sender),
+			false, NewMsgEditOracleScript(1, nil, name, description, code, sender),
 		},
 		{
-			false, NewMsgEditOracleScript(1, owner, "", code, sender),
+			false, NewMsgEditOracleScript(1, owner, "", description, code, sender),
 		},
 		{
-			false, NewMsgEditOracleScript(1, owner, name, []byte{}, sender),
+			false, NewMsgEditOracleScript(1, owner, name, description, []byte{}, sender),
 		},
 		{
-			false, NewMsgEditOracleScript(1, owner, name, nil, sender),
+			false, NewMsgEditOracleScript(1, owner, name, description, nil, sender),
 		},
 		{
-			false, NewMsgEditOracleScript(1, owner, name, code, nil),
+			false, NewMsgEditOracleScript(1, owner, name, description, code, nil),
 		},
 	}
 
@@ -455,10 +473,10 @@ func TestMsgEditOracleScriptGetSignBytes(t *testing.T) {
 
 	owner := sdk.AccAddress([]byte("owner"))
 	sender := sdk.AccAddress([]byte("sender"))
-	msg := NewMsgEditOracleScript(1, owner, "oracle_script_1", []byte("code"), sender)
+	msg := NewMsgEditOracleScript(1, owner, "oracle_script_1", "description", []byte("code"), sender)
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"zoracle/EditOracleScript","value":{"code":"Y29kZQ==","name":"oracle_script_1","oracleScriptID":"1","owner":"band1damkuetjcw3c0d","sender":"band1wdjkuer9wgvz7c4y"}}`
+	expected := `{"type":"zoracle/EditOracleScript","value":{"code":"Y29kZQ==","description":"description","name":"oracle_script_1","oracleScriptID":"1","owner":"band1damkuetjcw3c0d","sender":"band1wdjkuer9wgvz7c4y"}}`
 
 	require.Equal(t, expected, string(res))
 }

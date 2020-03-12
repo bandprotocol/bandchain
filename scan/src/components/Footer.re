@@ -11,7 +11,7 @@ module Styles = {
       background(hex("F6F3FA")),
       before([
         position(`absolute),
-        contentRule(""),
+        contentRule(`none),
         background(hex("F6F3FA")),
         width(`percent(100.)),
         height(`px(300)),

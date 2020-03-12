@@ -1,6 +1,7 @@
 package bandlib
 
 import (
+	"github.com/bandprotocol/d3n/chain/app"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
@@ -16,27 +17,10 @@ type BandProvider struct {
 	privKey crypto.PrivKey
 }
 
-const Bech32MainPrefix = "band"
-
-func SetBech32AddressPrefixes(config *sdk.Config) {
-	config.SetBech32PrefixForAccount(
-		Bech32MainPrefix,
-		Bech32MainPrefix+sdk.PrefixPublic,
-	)
-	config.SetBech32PrefixForValidator(
-		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator,
-		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator+sdk.PrefixPublic,
-	)
-	config.SetBech32PrefixForConsensusNode(
-		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus,
-		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus+sdk.PrefixPublic,
-	)
-}
-
 func privKeyToBandAccAddress(privKey crypto.PrivKey) sdk.AccAddress {
 	config := sdk.GetConfig()
-	SetBech32AddressPrefixes(config)
-	return sdk.AccAddress(privKey.PubKey().Address().Bytes())
+	app.SetBech32AddressPrefixesAndBip44CoinType(config)
+	return sdk.AccAddress(privKey.PubKey().Address())
 }
 
 // NewBandProvider creates new BandProvider create new cliCtx and txBldr
@@ -63,10 +47,10 @@ func (provider *BandProvider) Sender() sdk.AccAddress {
 
 func (provider *BandProvider) SendTransaction(
 	msgs []sdk.Msg, seq, gas uint64,
-	memo, fees, gasPrices, broadcastMode string,
+	memo, fees, broadcastMode string,
 ) (sdk.TxResponse, error) {
 	cliCtx := provider.cliCtx.WithBroadcastMode(broadcastMode)
-	txBldr := provider.txBldr.WithSequence(seq).WithGas(gas).WithMemo(memo).WithFees(fees).WithGasPrices(gasPrices)
+	txBldr := provider.txBldr.WithSequence(seq).WithGas(gas).WithMemo(memo).WithFees(fees)
 	return completeAndBroadcastTxCLI(cliCtx, txBldr, msgs, provider.privKey)
 }
 

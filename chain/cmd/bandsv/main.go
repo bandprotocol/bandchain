@@ -12,7 +12,6 @@ import (
 
 	"github.com/bandprotocol/d3n/chain/app"
 	"github.com/bandprotocol/d3n/chain/bandlib"
-	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/gin-gonic/gin"
 	"github.com/levigross/grequests"
@@ -37,18 +36,18 @@ const (
 )
 
 type OracleRequest struct {
-	Type                     string `json:"type" binding:"required"`
-	OracleScriptID           int64  `json:"oracleScriptID,string" binding:"required"`
-	Calldata                 []byte `json:"calldata" binding:"required"`
-	RequestedValidatorCount  int64  `json:"requestedValidatorCount,string"`
-	SufficientValidatorCount int64  `json:"sufficientValidatorCount,string"`
-	Expiration               int64  `json:"expiration,string"`
+	Type                     string                 `json:"type" binding:"required"`
+	OracleScriptID           zoracle.OracleScriptID `json:"oracleScriptID,string" binding:"required"`
+	Calldata                 []byte                 `json:"calldata" binding:"required"`
+	RequestedValidatorCount  int64                  `json:"requestedValidatorCount,string"`
+	SufficientValidatorCount int64                  `json:"sufficientValidatorCount,string"`
+	Expiration               int64                  `json:"expiration,string"`
 }
 
 type OracleRequestResp struct {
-	TxHash    string          `json:"txHash"`
-	RequestID int64           `json:"id,omitempty"`
-	Proof     json.RawMessage `json:"proof,omitempty"`
+	TxHash    string            `json:"txHash"`
+	RequestID zoracle.RequestID `json:"id,omitempty"`
+	Proof     json.RawMessage   `json:"proof,omitempty"`
 }
 
 type ExecuteRequest struct {
@@ -88,7 +87,12 @@ func handleRequestData(c *gin.Context) {
 	}
 
 	reqType := req.Type
-	if reqType != Asynchronous && reqType != Synchronous && reqType != Full {
+	if reqType == Asynchronous {
+		c.JSON(http.StatusNotImplemented, gin.H{"error": "Asynchronous doesn't avaliable"})
+		return
+	}
+
+	if reqType != Synchronous && reqType != Full {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Type not match"})
 		return
 	}
@@ -105,32 +109,31 @@ func handleRequestData(c *gin.Context) {
 		req.Expiration = DefaultExpiration
 	}
 
-	// unconfirmed respond
-	if reqType == Asynchronous {
-		txr, err := bandClient.SendTransaction(
-			zoracle.NewMsgRequestData(
-				req.OracleScriptID,
-				req.Calldata,
-				req.RequestedValidatorCount,
-				req.SufficientValidatorCount,
-				req.Expiration,
-				DefaultPrepareGas,
-				DefaultExecuteGas,
-				bandClient.Sender(),
-			),
-			1000000, "", "", "",
-			flags.BroadcastAsync,
-		)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
+	// unconfirmed respond (Not work for now)
+	// if reqType == Asynchronous {
+	// 	txr, err := bandClient.SendTransaction(
+	// 		zoracle.NewMsgRequestData(
+	// 			req.OracleScriptID,
+	// 			req.Calldata,
+	// 			req.RequestedValidatorCount,
+	// 			req.SufficientValidatorCount,
+	// 			req.Expiration,
+	// 			DefaultPrepareGas,
+	// 			DefaultExecuteGas,
+	// 			bandClient.Sender(),
+	// 		),
+	// 		1000000, "", "",
+	// 	)
+	// 	if err != nil {
+	// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	// 		return
+	// 	}
 
-		c.JSON(200, OracleRequestResp{
-			TxHash: txr.TxHash,
-		})
-		return
-	}
+	// 	c.JSON(200, OracleRequestResp{
+	// 		TxHash: txr.TxHash,
+	// 	})
+	// 	return
+	// }
 
 	txr, err := bandClient.SendTransaction(
 		zoracle.NewMsgRequestData(
@@ -143,30 +146,31 @@ func handleRequestData(c *gin.Context) {
 			DefaultExecuteGas,
 			bandClient.Sender(),
 		),
-		1000000, "", "", "",
-		flags.BroadcastBlock,
+		1000000, "",
 	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	requestID := int64(0)
+	requestID := zoracle.RequestID(0)
 	for _, event := range txr.Events {
 		if event.Type == "request" {
 			for _, attr := range event.Attributes {
 				if string(attr.Key) == "id" {
-					requestID, err = strconv.ParseInt(attr.Value, 10, 64)
+					int64RequstID, err := strconv.ParseInt(attr.Value, 10, 64)
+
 					if err != nil {
 						c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 						return
 					}
+					requestID = zoracle.RequestID(int64RequstID)
 					break
 				}
 			}
 		}
 	}
-	if requestID == 0 {
+	if requestID == zoracle.RequestID(0) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("cannot find requestID: %v", txr)})
 		return
 	}
@@ -262,7 +266,7 @@ func main() {
 	copy(pk[:], privBytes)
 
 	var err error
-	bandClient, err = bandlib.NewBandStatefulClient(nodeURI, pk)
+	bandClient, err = bandlib.NewBandStatefulClient(nodeURI, pk, 100, 10, "Bandsv requests")
 	if err != nil {
 		panic(err)
 	}

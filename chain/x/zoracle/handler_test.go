@@ -13,19 +13,21 @@ import (
 func mockDataSource(ctx sdk.Context, keeper Keeper) sdk.Result {
 	owner := sdk.AccAddress([]byte("owner"))
 	name := "data_source_1"
+	description := "description"
 	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
 	executable := []byte("executable")
 	sender := sdk.AccAddress([]byte("sender"))
-	msg := types.NewMsgCreateDataSource(owner, name, fee, executable, sender)
+	msg := types.NewMsgCreateDataSource(owner, name, description, fee, executable, sender)
 	return handleMsgCreateDataSource(ctx, keeper, msg)
 }
 
 func mockOracleScript(ctx sdk.Context, keeper Keeper) sdk.Result {
 	owner := sdk.AccAddress([]byte("owner"))
 	name := "oracle_script_1"
+	description := "description"
 	code := []byte("code")
 	sender := sdk.AccAddress([]byte("sender"))
-	msg := types.NewMsgCreateOracleScript(owner, name, code, sender)
+	msg := types.NewMsgCreateOracleScript(owner, name, description, code, sender)
 	return handleMsgCreateOracleScript(ctx, keeper, msg)
 }
 
@@ -49,11 +51,12 @@ func TestEditDataSourceSuccess(t *testing.T) {
 
 	newOwner := sdk.AccAddress([]byte("owner2"))
 	newName := "data_source_2"
+	newDescription := "new_description"
 	newFee := sdk.NewCoins(sdk.NewInt64Coin("uband", 99))
 	newExecutable := []byte("executable_2")
 	sender := sdk.AccAddress([]byte("owner"))
 
-	msg := types.NewMsgEditDataSource(1, newOwner, newName, newFee, newExecutable, sender)
+	msg := types.NewMsgEditDataSource(1, newOwner, newName, newDescription, newFee, newExecutable, sender)
 	got := handleMsgEditDataSource(ctx, keeper, msg)
 	require.True(t, got.IsOK(), "expected edit data source to be ok, got %v", got)
 
@@ -61,6 +64,7 @@ func TestEditDataSourceSuccess(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, newOwner, dataSource.Owner)
 	require.Equal(t, newName, dataSource.Name)
+	require.Equal(t, newDescription, dataSource.Description)
 	require.Equal(t, newFee, dataSource.Fee)
 	require.Equal(t, newExecutable, dataSource.Executable)
 }
@@ -71,11 +75,12 @@ func TestEditDataSourceByNotOwner(t *testing.T) {
 
 	newOwner := sdk.AccAddress([]byte("owner2"))
 	newName := "data_source_2"
+	newDescription := "new_description"
 	newFee := sdk.NewCoins(sdk.NewInt64Coin("uband", 99))
 	newExecutable := []byte("executable_2")
 	sender := sdk.AccAddress([]byte("sender"))
 
-	msg := types.NewMsgEditDataSource(1, newOwner, newName, newFee, newExecutable, sender)
+	msg := types.NewMsgEditDataSource(1, newOwner, newName, newDescription, newFee, newExecutable, sender)
 	got := handleMsgEditDataSource(ctx, keeper, msg)
 	require.False(t, got.IsOK())
 	require.Equal(t, types.CodeInvalidOwner, got.Code)
@@ -100,10 +105,11 @@ func TestEditOracleScriptSuccess(t *testing.T) {
 
 	newOwner := sdk.AccAddress([]byte("owner2"))
 	newName := "oracle_script_2"
+	newDescription := "description_2"
 	newCode := []byte("code_2")
 	sender := sdk.AccAddress([]byte("owner"))
 
-	msg := types.NewMsgEditOracleScript(1, newOwner, newName, newCode, sender)
+	msg := types.NewMsgEditOracleScript(1, newOwner, newName, newDescription, newCode, sender)
 	got := handleMsgEditOracleScript(ctx, keeper, msg)
 	require.True(t, got.IsOK(), "expected edit oracle script to be ok, got %v", got)
 
@@ -120,10 +126,11 @@ func TestEditOracleScriptByNotOwner(t *testing.T) {
 
 	newOwner := sdk.AccAddress([]byte("owner2"))
 	newName := "data_source_2"
+	newDescription := "description_2"
 	newCode := []byte("code_2")
 	sender := sdk.AccAddress([]byte("not_owner"))
 
-	msg := types.NewMsgEditOracleScript(1, newOwner, newName, newCode, sender)
+	msg := types.NewMsgEditOracleScript(1, newOwner, newName, newDescription, newCode, sender)
 	got := handleMsgEditOracleScript(ctx, keeper, msg)
 	require.False(t, got.IsOK())
 	require.Equal(t, types.CodeInvalidOwner, got.Code)
@@ -256,10 +263,19 @@ func TestReportSuccess(t *testing.T) {
 	}
 
 	validatorAddress1 := keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
+	address1 := keep.GetAddressFromPub(pubStr[0])
+
 	validatorAddress2 := keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
+
+	refundGasPrice, _ := sdk.ParseDecCoins("1.5uband")
 
 	dataSource := keep.GetTestDataSource()
 	keeper.SetDataSource(ctx, 1, dataSource)
+
+	_, err := keeper.CoinKeeper.AddCoins(ctx, address1, keep.NewUBandCoins(1000000))
+	require.Nil(t, err)
+
+	keeper.SupplyKeeper.SendCoinsFromAccountToModule(ctx, address1, "fee_collector", keep.NewUBandCoins(500000))
 
 	request := types.NewRequest(1, calldata,
 		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
@@ -271,16 +287,16 @@ func TestReportSuccess(t *testing.T) {
 	ctx = ctx.WithBlockHeight(5)
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589800), 0))
 
-	msg := types.NewMsgReportData(1, []types.RawDataReport{
+	msg := types.NewMsgReportData(1, refundGasPrice, []types.RawDataReport{
 		types.NewRawDataReport(42, []byte("data1")),
 	}, validatorAddress1)
 
 	got := handleMsgReportData(ctx, keeper, msg)
 	require.True(t, got.IsOK(), "expected report to be ok, got %v", got)
 	list := keeper.GetPendingResolveList(ctx)
-	require.Equal(t, []int64{}, list)
+	require.Equal(t, []types.RequestID{}, list)
 
-	msg = types.NewMsgReportData(1, []types.RawDataReport{
+	msg = types.NewMsgReportData(1, refundGasPrice, []types.RawDataReport{
 		types.NewRawDataReport(42, []byte("data2")),
 	}, validatorAddress2)
 
@@ -288,7 +304,58 @@ func TestReportSuccess(t *testing.T) {
 	require.True(t, got.IsOK(), "expected report to be ok, got %v", got)
 
 	list = keeper.GetPendingResolveList(ctx)
-	require.Equal(t, []int64{1}, list)
+	require.Equal(t, []types.RequestID{1}, list)
+}
+
+func TestReportAndGetRefund(t *testing.T) {
+	// Setup test environment
+	ctx, keeper := keep.CreateTestInput(t, false)
+
+	ctx = ctx.WithBlockHeight(2)
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	calldata := []byte("calldata")
+
+	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
+	keeper.SetOracleScript(ctx, 1, script)
+
+	pub := "03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f"
+
+	validatorAddress1 := keep.SetupTestValidator(ctx, keeper, pub, 100)
+	address1 := keep.GetAddressFromPub(pub)
+
+	dataSource := keep.GetTestDataSource()
+	keeper.SetDataSource(ctx, 1, dataSource)
+
+	_, err := keeper.CoinKeeper.AddCoins(ctx, address1, keep.NewUBandCoins(1000000))
+	require.Nil(t, err)
+
+	balance := keeper.CoinKeeper.GetCoins(ctx, address1)
+	require.Equal(t, keep.NewUBandCoins(1000000), balance)
+
+	keeper.SupplyKeeper.SendCoinsFromAccountToModule(ctx, address1, "fee_collector", keep.NewUBandCoins(500000))
+	balance = keeper.CoinKeeper.GetCoins(ctx, address1)
+	require.Equal(t, keep.NewUBandCoins(500000), balance)
+
+	request := types.NewRequest(1, calldata,
+		[]sdk.ValAddress{validatorAddress1}, 2,
+		2, 1581589790, 102, 1000000,
+	)
+	keeper.SetRequest(ctx, 1, request)
+	keeper.SetRawDataRequest(ctx, 1, 42, types.NewRawDataRequest(1, []byte("calldata1")))
+
+	ctx = ctx.WithBlockHeight(5)
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589800), 0))
+
+	msg := types.NewMsgReportData(1, sdk.NewDecCoins(sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(10)))), []types.RawDataReport{
+		types.NewRawDataReport(42, []byte("data1")),
+	}, validatorAddress1)
+
+	got := handleMsgReportData(ctx, keeper, msg)
+	require.True(t, got.IsOK(), "expected report to be ok, got %v", got)
+
+	// Should get refund back
+	balance = keeper.CoinKeeper.GetCoins(ctx, address1)
+	require.Equal(t, keep.NewUBandCoins(500000+128320), balance)
 }
 
 func TestReportFailed(t *testing.T) {
@@ -309,6 +376,12 @@ func TestReportFailed(t *testing.T) {
 	validatorAddress1 := keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
 	validatorAddress2 := keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
 
+	address1 := keep.GetAddressFromPub(pubStr[0])
+	_, err := keeper.CoinKeeper.AddCoins(ctx, address1, keep.NewUBandCoins(1000000))
+	require.Nil(t, err)
+
+	keeper.SupplyKeeper.SendCoinsFromAccountToModule(ctx, address1, "fee_collector", keep.NewUBandCoins(500000))
+
 	dataSource := keep.GetTestDataSource()
 	keeper.SetDataSource(ctx, 1, dataSource)
 
@@ -322,7 +395,9 @@ func TestReportFailed(t *testing.T) {
 	ctx = ctx.WithBlockHeight(5)
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589800), 0))
 
-	msg := types.NewMsgReportData(1, []types.RawDataReport{
+	refundGasPrice, _ := sdk.ParseDecCoins("1.5uband")
+
+	msg := types.NewMsgReportData(1, refundGasPrice, []types.RawDataReport{
 		types.NewRawDataReport(41, []byte("data1")),
 	}, validatorAddress1)
 
@@ -360,13 +435,13 @@ func TestEndBlock(t *testing.T) {
 	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress1, []byte("answer1"))
 	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress2, []byte("answer2"))
 
-	keeper.SetPendingResolveList(ctx, []int64{1})
+	keeper.SetPendingResolveList(ctx, []types.RequestID{1})
 
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589999), 0))
 	got := handleEndBlock(ctx, keeper)
 	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
 
-	require.Equal(t, []int64{}, keeper.GetPendingResolveList(ctx))
+	require.Equal(t, []types.RequestID{}, keeper.GetPendingResolveList(ctx))
 
 	result, err := keeper.GetResult(ctx, 1, 1, calldata)
 	require.Nil(t, err)
@@ -417,12 +492,12 @@ func TestEndBlockExecuteFailedIfExecuteGasLessThanGasUsed(t *testing.T) {
 	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress1, []byte("answer1"))
 	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress2, []byte("answer2"))
 
-	keeper.SetPendingResolveList(ctx, []int64{1})
+	keeper.SetPendingResolveList(ctx, []types.RequestID{1})
 
 	got := handleEndBlock(ctx, keeper)
 	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
 
-	require.Equal(t, []int64{}, keeper.GetPendingResolveList(ctx))
+	require.Equal(t, []types.RequestID{}, keeper.GetPendingResolveList(ctx))
 
 	_, err := keeper.GetResult(ctx, 1, 1, calldata)
 	require.NotNil(t, err)
@@ -467,10 +542,10 @@ func TestSkipInvalidExecuteGas(t *testing.T) {
 
 	keeper.SetEndBlockExecuteGasLimit(ctx, 75000)
 
-	keeper.SetPendingResolveList(ctx, []int64{1, 2})
+	keeper.SetPendingResolveList(ctx, []types.RequestID{1, 2})
 	got := handleEndBlock(ctx, keeper)
 	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
-	require.Equal(t, []int64{}, keeper.GetPendingResolveList(ctx))
+	require.Equal(t, []types.RequestID{}, keeper.GetPendingResolveList(ctx))
 
 	_, err := keeper.GetResult(ctx, 1, 1, calldata)
 	require.NotNil(t, err)
@@ -494,7 +569,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 	sender := sdk.AccAddress([]byte("sender"))
 
 	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
-	scriptID := int64(1)
+	scriptID := types.OracleScriptID(1)
 	keeper.SetOracleScript(ctx, scriptID, script)
 
 	pubStr := []string{
@@ -508,8 +583,8 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 	dataSource := keep.GetTestDataSource()
 	keeper.SetDataSource(ctx, 1, dataSource)
 
-	pendingList := []int64{}
-	for i := int64(1); i <= 10; i++ {
+	pendingList := []types.RequestID{}
+	for i := types.RequestID(1); i <= types.RequestID(10); i++ {
 		handleMsgRequestData(
 			ctx, keeper,
 			types.NewMsgRequestData(scriptID, calldata, 2, 2, 100, 2000, 2500, sender),
@@ -526,9 +601,9 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 
 	got := handleEndBlock(ctx, keeper)
 	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
-	require.Equal(t, []int64{4, 5, 6, 7, 8, 9, 10}, keeper.GetPendingResolveList(ctx))
+	require.Equal(t, []types.RequestID{4, 5, 6, 7, 8, 9, 10}, keeper.GetPendingResolveList(ctx))
 
-	for i := int64(1); i <= 3; i++ {
+	for i := types.RequestID(1); i <= types.RequestID(3); i++ {
 		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
 		require.Nil(t, err)
 
@@ -537,7 +612,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 		require.Equal(t, types.Success, actualRequest.ResolveStatus)
 	}
 
-	for i := int64(4); i <= 10; i++ {
+	for i := types.RequestID(4); i <= types.RequestID(10); i++ {
 		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
 		require.NotNil(t, err)
 
@@ -548,9 +623,9 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 
 	got = handleEndBlock(ctx, keeper)
 	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
-	require.Equal(t, []int64{7, 8, 9, 10}, keeper.GetPendingResolveList(ctx))
+	require.Equal(t, []types.RequestID{7, 8, 9, 10}, keeper.GetPendingResolveList(ctx))
 
-	for i := int64(1); i <= 6; i++ {
+	for i := types.RequestID(1); i <= types.RequestID(6); i++ {
 		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
 		require.Nil(t, err)
 
@@ -559,7 +634,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 		require.Equal(t, types.Success, actualRequest.ResolveStatus)
 	}
 
-	for i := int64(7); i <= 10; i++ {
+	for i := types.RequestID(7); i <= types.RequestID(10); i++ {
 		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
 		require.NotNil(t, err)
 
@@ -576,9 +651,9 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 
 	got = handleEndBlock(ctx, keeper)
 	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
-	require.Equal(t, []int64{10}, keeper.GetPendingResolveList(ctx))
+	require.Equal(t, []types.RequestID{10}, keeper.GetPendingResolveList(ctx))
 
-	for i := int64(1); i <= 9; i++ {
+	for i := types.RequestID(1); i <= types.RequestID(9); i++ {
 		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
 		require.Nil(t, err)
 
@@ -587,7 +662,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 		require.Equal(t, types.Success, actualRequest.ResolveStatus)
 	}
 
-	for i := int64(10); i <= 10; i++ {
+	for i := types.RequestID(10); i <= types.RequestID(10); i++ {
 		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
 		require.NotNil(t, err)
 
@@ -598,13 +673,13 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 
 	keeper.SetRawDataReport(ctx, 11, 1, validatorAddress1, []byte("answer1"))
 	keeper.SetRawDataReport(ctx, 11, 1, validatorAddress2, []byte("answer2"))
-	keeper.SetPendingResolveList(ctx, []int64{10, 11})
+	keeper.SetPendingResolveList(ctx, []types.RequestID{10, 11})
 
 	got = handleEndBlock(ctx, keeper)
 	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
-	require.Equal(t, []int64{}, keeper.GetPendingResolveList(ctx))
+	require.Equal(t, []types.RequestID{}, keeper.GetPendingResolveList(ctx))
 
-	for i := int64(1); i <= 11; i++ {
+	for i := types.RequestID(1); i <= types.RequestID(11); i++ {
 		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
 		require.Nil(t, err)
 
@@ -621,7 +696,7 @@ func TestEndBlockInsufficientExecutionConsumeEndBlockGas(t *testing.T) {
 	sender := sdk.AccAddress([]byte("sender"))
 
 	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
-	scriptID := int64(1)
+	scriptID := types.OracleScriptID(1)
 	keeper.SetOracleScript(ctx, scriptID, script)
 
 	pubStr := []string{
@@ -635,10 +710,10 @@ func TestEndBlockInsufficientExecutionConsumeEndBlockGas(t *testing.T) {
 	dataSource := keep.GetTestDataSource()
 	keeper.SetDataSource(ctx, 1, dataSource)
 
-	pendingList := []int64{}
+	pendingList := []types.RequestID{}
 	executeGasList := []uint64{2500, 50, 3000}
 
-	for i := int64(1); i <= 3; i++ {
+	for i := types.RequestID(1); i <= types.RequestID(3); i++ {
 		handleMsgRequestData(
 			ctx, keeper,
 			types.NewMsgRequestData(scriptID, calldata, 2, 2, 100, 2000, executeGasList[i-1], sender),
@@ -654,7 +729,7 @@ func TestEndBlockInsufficientExecutionConsumeEndBlockGas(t *testing.T) {
 
 	got := handleEndBlock(ctx, keeper)
 	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
-	require.Equal(t, []int64{}, keeper.GetPendingResolveList(ctx))
+	require.Equal(t, []types.RequestID{}, keeper.GetPendingResolveList(ctx))
 
 	_, err := keeper.GetResult(ctx, 1, scriptID, calldata)
 	require.Nil(t, err)

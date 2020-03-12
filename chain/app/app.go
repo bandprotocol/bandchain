@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"io"
 	"os"
 
@@ -28,12 +29,14 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/supply"
 
+	bandsupply "github.com/bandprotocol/d3n/chain/x/supply"
 	"github.com/bandprotocol/d3n/chain/x/zoracle"
 )
 
 const (
 	appName          = "BandApp"
 	Bech32MainPrefix = "band"
+	Bip44CoinType    = 494
 )
 
 var (
@@ -81,10 +84,20 @@ func MakeCodec() *codec.Codec {
 	return cdc
 }
 
-func SetBech32AddressPrefixes(config *sdk.Config) {
-	config.SetBech32PrefixForAccount(Bech32MainPrefix, Bech32MainPrefix+sdk.PrefixPublic)
-	config.SetBech32PrefixForValidator(Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator, Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator+sdk.PrefixPublic)
-	config.SetBech32PrefixForConsensusNode(Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus, Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus+sdk.PrefixPublic)
+func SetBech32AddressPrefixesAndBip44CoinType(config *sdk.Config) {
+	config.SetBech32PrefixForAccount(
+		Bech32MainPrefix,
+		Bech32MainPrefix+sdk.PrefixPublic,
+	)
+	config.SetBech32PrefixForValidator(
+		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator,
+		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator+sdk.PrefixPublic,
+	)
+	config.SetBech32PrefixForConsensusNode(
+		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus,
+		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus+sdk.PrefixPublic,
+	)
+	config.SetCoinType(Bip44CoinType)
 }
 
 type bandApp struct {
@@ -183,12 +196,15 @@ func NewBandApp(
 		maccPerms,
 	)
 
+	// Wrapped supply keeper allows burned tokens to be transfereed to community pool
+	wrappedSupplyKeeper := bandsupply.WrapSupplyKeeperBurnToCommunityPool(app.supplyKeeper)
+
 	// The staking keeper
 	stakingKeeper := staking.NewKeeper(
 		app.cdc,
 		keys[staking.StoreKey],
 		tkeys[staking.TStoreKey],
-		app.supplyKeeper,
+		&wrappedSupplyKeeper,
 		stakingSubspace,
 		staking.DefaultCodespace,
 	)
@@ -212,6 +228,9 @@ func NewBandApp(
 		auth.FeeCollectorName,
 		app.ModuleAccountAddrs(),
 	)
+
+	// distrKeeper must be set afterward due to the circular reference of supply-staking-distr
+	wrappedSupplyKeeper.SetDistrKeeper(&app.distrKeeper)
 
 	app.slashingKeeper = slashing.NewKeeper(
 		app.cdc,
@@ -246,6 +265,7 @@ func NewBandApp(
 		keys[zoracle.StoreKey],
 		app.bankKeeper,
 		app.stakingKeeper,
+		app.supplyKeeper,
 		zoracleSubspace,
 	)
 
@@ -296,14 +316,37 @@ func NewBandApp(
 	// The initChainer handles translating the genesis.json file into initial state for the network
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
+
+	// Create a default AnteHandler that will be used after checking refundGasPrice
+	defaultAnteHandler := auth.NewAnteHandler(
+		app.accountKeeper,
+		app.supplyKeeper,
+		auth.DefaultSigVerificationGasConsumer,
+	)
 	// The AnteHandler handles signature verification and transaction pre-processing
 	app.SetAnteHandler(
-		auth.NewAnteHandler(
-			app.accountKeeper,
-			app.supplyKeeper,
-			auth.DefaultSigVerificationGasConsumer,
-		),
+		func(ctx sdk.Context, tx sdk.Tx, simulate bool) (newCtx sdk.Context, res sdk.Result, abort bool) {
+			if stdTx, ok := tx.(auth.StdTx); ok {
+				fee := stdTx.Fee
+				for _, msg := range tx.GetMsgs() {
+					if report, ok := msg.(zoracle.MsgReportData); ok {
+						_, refundGasPriceExceedTxGasPrice := fee.GasPrices().SafeSub(report.RefundGasPrice)
+						if refundGasPriceExceedTxGasPrice {
+							return ctx, sdk.ErrInternal(
+								fmt.Sprintf(
+									"refundGasPrice(%s) exceeds txGasPrice(%s)",
+									report.RefundGasPrice.String(), fee.GasPrices().String(),
+								),
+							).Result(), true
+						}
+					}
+				}
+			}
+
+			return defaultAnteHandler(ctx, tx, simulate)
+		},
 	)
+
 	app.SetEndBlocker(app.EndBlocker)
 
 	if loadLatest {

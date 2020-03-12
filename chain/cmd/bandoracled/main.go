@@ -29,13 +29,13 @@ var (
 	bandClient bandlib.BandStatefulClient
 )
 
-func getLatestRequestID() (int64, error) {
+func getLatestRequestID() (zoracle.RequestID, error) {
 	cliCtx := bandClient.GetContext()
 	res, _, err := cliCtx.Query("custom/zoracle/request_number")
 	if err != nil {
 		return 0, err
 	}
-	var requestID int64
+	var requestID zoracle.RequestID
 	err = cliCtx.Codec.UnmarshalJSON(res, &requestID)
 	if err != nil {
 		return 0, err
@@ -66,8 +66,7 @@ $ bandoracled --node tcp://localhost:26657 --priv-key 06be35b56b048c5a6810a47e2e
 			copy(priv[:], privB)
 
 			bandClient, err = bandlib.NewBandStatefulClient(
-				viper.GetString(flags.FlagNode),
-				priv,
+				viper.GetString(flags.FlagNode), priv, 100, 10, "Bandoracled reports",
 			)
 			if err != nil {
 				return err
@@ -110,7 +109,7 @@ $ bandoracled --node tcp://localhost:26657 --priv-key 06be35b56b048c5a6810a47e2e
 	}
 }
 
-func handleRequest(requestID int64) (sdk.TxResponse, error) {
+func handleRequest(requestID zoracle.RequestID) (sdk.TxResponse, error) {
 	cliCtx := bandClient.GetContext()
 	res, _, err := cliCtx.Query(fmt.Sprintf("custom/zoracle/request/%d", requestID))
 	if err != nil {
@@ -123,14 +122,14 @@ func handleRequest(requestID int64) (sdk.TxResponse, error) {
 	}
 
 	type queryParallelInfo struct {
-		externalID int64
+		externalID zoracle.ExternalID
 		answer     []byte
 		err        error
 	}
 
 	chanQueryParallelInfo := make(chan queryParallelInfo, len(request.RawDataRequests))
 	for _, rawRequest := range request.RawDataRequests {
-		go func(externalID, dataSourceID int64, calldata []byte) {
+		go func(externalID zoracle.ExternalID, dataSourceID zoracle.DataSourceID, calldata []byte) {
 			info := queryParallelInfo{externalID: externalID, answer: []byte{}, err: nil}
 			res, _, err := cliCtx.Query(
 				fmt.Sprintf("custom/zoracle/%s/%d", zoracle.QueryDataSourceByID, dataSourceID),
@@ -159,7 +158,8 @@ func handleRequest(requestID int64) (sdk.TxResponse, error) {
 			)
 			if err != nil {
 				info.err = fmt.Errorf(
-					"handleRequest: Execute error on data request id [%d], error: %v", dataSourceID, err,
+					"handleRequest: Execute error on data source id [%d], error: %v",
+					dataSourceID, err,
 				)
 				chanQueryParallelInfo <- info
 				return
@@ -167,7 +167,10 @@ func handleRequest(requestID int64) (sdk.TxResponse, error) {
 
 			info.answer = []byte(strings.TrimSpace(string(result)))
 			chanQueryParallelInfo <- info
-		}(rawRequest.ExternalID, rawRequest.RawDataRequest.DataSourceID, rawRequest.RawDataRequest.Calldata)
+		}(rawRequest.ExternalID,
+			rawRequest.RawDataRequest.DataSourceID,
+			rawRequest.RawDataRequest.Calldata,
+		)
 	}
 
 	reports := make([]zoracle.RawDataReport, 0)
@@ -183,13 +186,14 @@ func handleRequest(requestID int64) (sdk.TxResponse, error) {
 		return reports[i].ExternalDataID < reports[j].ExternalDataID
 	})
 
+	refundGasPrice, _ := sdk.ParseDecCoins("5.0uband")
+
 	return bandClient.SendTransaction(
-		zoracle.NewMsgReportData(requestID, reports, sdk.ValAddress(bandClient.Sender())),
-		1000000, "", "", "",
-		flags.BroadcastSync,
+		zoracle.NewMsgReportData(requestID, refundGasPrice, reports, sdk.ValAddress(bandClient.Sender())),
+		55000, "300000uband",
 	)
 }
 
-func handleRequestAndLog(requestID int64) {
+func handleRequestAndLog(requestID zoracle.RequestID) {
 	fmt.Println(handleRequest(requestID))
 }

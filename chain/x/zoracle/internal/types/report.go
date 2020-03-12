@@ -6,12 +6,12 @@ import (
 
 // RawDataReport encapsulates a raw data report for an external data source from a block validator.
 type RawDataReport struct {
-	ExternalDataID int64  `json:"externalDataID"`
-	Data           []byte `json:"data"`
+	ExternalDataID ExternalID `json:"externalDataID"`
+	Data           []byte     `json:"data"`
 }
 
 // NewRawDataReport creates a new RawDataReport instance.
-func NewRawDataReport(externalDataID int64, data []byte) RawDataReport {
+func NewRawDataReport(externalDataID ExternalID, data []byte) RawDataReport {
 	return RawDataReport{
 		ExternalDataID: externalDataID,
 		Data:           data,

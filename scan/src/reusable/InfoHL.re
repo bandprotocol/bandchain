@@ -1,18 +1,25 @@
 type t =
   | Height(int)
   | Count(int)
+  | Float(float)
   | Text(string)
   | Timestamp(MomentRe.Moment.t)
   | Fee(float)
   | DataSources(list(string))
   | Hash(Hash.t, Css.Types.Color.t)
-  | Address(Address.t, Css.Types.Color.t);
+  | Address(Address.t);
 
 module Styles = {
   open Css;
 
-  let hFlex = style([display(`flex), flexDirection(`column), alignItems(`flexStart)]);
+  let hFlex = isLeft =>
+    style([
+      display(`flex),
+      flexDirection(`column),
+      alignItems(isLeft ? `flexStart : `flexEnd),
+    ]);
   let vFlex = style([display(`flex), alignItems(`center)]);
+  let addressContainer = style([display(`flex), alignItems(`center), maxWidth(`px(290))]);
   let datasourcesContainer = style([display(`flex), alignItems(`center), flexWrap(`wrap)]);
   let headerContainer = style([lineHeight(`px(25))]);
   let sourceContainer =
@@ -26,13 +33,14 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~info, ~header) => {
-  <div className=Styles.hFlex>
+let make = (~info, ~header, ~isLeft=true) => {
+  <div className={Styles.hFlex(isLeft)}>
     <div className=Styles.headerContainer>
       <Text
         value=header
         color=Colors.grayHeader
         size=Text.Sm
+        weight=Text.Thin
         height={Text.Px(13)}
         spacing={Text.Em(0.03)}
       />
@@ -44,14 +52,45 @@ let make = (~info, ~header) => {
          <HSpacing size=Spacing.xs />
          <Text value={height |> Format.iPretty} size=Text.Lg weight=Text.Semibold />
        </div>
-     | Count(count) => <Text value={count |> Format.iPretty} size=Text.Lg weight=Text.Semibold />
+     | Float(value) =>
+       <Text
+         value={value |> Js.Float.toString}
+         size=Text.Lg
+         weight=Text.Semibold
+         spacing={Text.Em(0.02)}
+         code=true
+       />
+     | Count(value) =>
+       <Text
+         value={value |> Format.iPretty}
+         size=Text.Lg
+         weight=Text.Semibold
+         spacing={Text.Em(0.02)}
+         code=true
+       />
      | Text(text) => <Text value=text size=Text.Lg weight=Text.Semibold />
      | Timestamp(time) =>
-       <Text
-         value={time |> MomentRe.Moment.format("MMM-DD-YYYY hh:mm:ss A [GMT]Z")}
-         size=Text.Lg
-         weight=Text.Bold
-       />
+       <div className=Styles.vFlex>
+         <Text
+           value={
+             time
+             |> MomentRe.Moment.format("MMM-DD-YYYY  hh:mm:ss A [+UTC]")
+             |> String.uppercase_ascii
+           }
+           size=Text.Lg
+           weight=Text.Semibold
+           spacing={Text.Em(0.02)}
+           code=true
+         />
+         <HSpacing size=Spacing.sm />
+         <Text
+           value="(9 hrs 2 mins ago)"
+           size=Text.Lg
+           spacing={Text.Em(0.02)}
+           weight=Text.Thin
+           code=true
+         />
+       </div>
      | Fee(fee) =>
        <div className=Styles.vFlex>
          <Text value={fee |> Format.fPretty} size=Text.Lg weight=Text.Bold code=true />
@@ -86,24 +125,9 @@ let make = (~info, ~header) => {
          weight=Text.Semibold
          color=textColor
        />
-     | Address(address, textColor) =>
-       //  <Text
-       //    value={address |> Address.toBech32}
-       //    size=Text.Lg
-       //    weight=Text.Semibold
-       //    color=textColor
-       //    code=true
-       //  />
-       <div className=Styles.vFlex>
-         <Text value="band" size=Text.Lg weight=Text.Semibold color=textColor code=true />
-         <Text
-           value="17rprjgtj0krfw3wyl9creueej6ca9dc4dgxv6e"
-           size=Text.Lg
-           weight=Text.Regular
-           spacing={Text.Em(0.02)}
-           color=textColor
-           code=true
-         />
+     | Address(address) =>
+       <div className=Styles.addressContainer>
+         <AddressRender address position=AddressRender.Subtitle />
        </div>
      }}
   </div>;

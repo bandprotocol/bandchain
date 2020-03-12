@@ -35,6 +35,8 @@ var (
 	OracleScriptStoreKey = types.OracleScriptStoreKey
 
 	NewParams        = types.NewParams
+	NewDataSource    = types.NewDataSource
+	NewOracleScript  = types.NewOracleScript
 	DefaultParams    = types.DefaultParams
 	NewRawDataReport = types.NewRawDataReport
 
@@ -68,4 +70,12 @@ type (
 	RawDataReport         = types.RawDataReport
 	RequestQuerierInfo    = types.RequestQuerierInfo
 	DataSourceQuerierInfo = types.DataSourceQuerierInfo
+
+	RequestID      = types.RequestID
+	OracleScriptID = types.OracleScriptID
+	ExternalID     = types.ExternalID
+	DataSourceID   = types.DataSourceID
+
+	DataSource   = types.DataSource
+	OracleScript = types.OracleScript
 )

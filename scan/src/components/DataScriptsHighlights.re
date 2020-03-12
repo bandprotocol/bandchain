@@ -65,70 +65,70 @@ module Recent = {
   };
 };
 
-let renderFeatured = (recentScripts, index, color, textColor) => {
-  let {ScriptHook.Script.info} =
-    recentScripts->Belt.List.getExn(index mod recentScripts->Belt.List.length);
-  <Featured
-    title={info.name}
-    insights={info.codeHash->Hash.toHex}
-    color
-    textColor
-    onClick={_ => Route.redirect(Route.ScriptIndexPage(info.codeHash, Route.ScriptTransactions))}
-  />;
-};
+// let renderFeatured = (recentScripts, index, color, textColor) => {
+//   let {ScriptHook.Script.info} =
+//     recentScripts->Belt.List.getExn(index mod recentScripts->Belt.List.length);
+//   <Featured
+//     title={info.name}
+//     insights={info.codeHash->Hash.toHex}
+//     color
+//     textColor
+//     onClick={_ => Route.redirect(Route.ScriptIndexPage(info.codeHash, Route.ScriptTransactions))}
+//   />;
+// };
 
-let renderScript = (recentScripts, index) => {
-  let {ScriptHook.Script.info, createdAtTime} =
-    recentScripts->Belt.List.getExn(index mod recentScripts->Belt.List.length);
-  <Col>
-    <Recent
-      title={info.name}
-      hash={info.codeHash}
-      createdAt=createdAtTime
-      onClick={_ =>
-        Route.redirect(Route.ScriptIndexPage(info.codeHash, Route.ScriptTransactions))
-      }
-    />
-  </Col>;
-};
+// let renderScript = (recentScripts, index) => {
+//   let {OracleScriptHook.Oracle.info, createdAtTime} =
+//     recentScripts->Belt.List.getExn(index mod recentScripts->Belt.List.length);
+//   <Col>
+//     <Recent
+//       title={info.name}
+//       hash={info.codeHash}
+//       createdAt=createdAtTime
+//       onClick={_ =>
+//         Route.redirect(Route.ScriptIndexPage(info.codeHash, Route.ScriptTransactions))
+//       }
+//     />
+//   </Col>;
+// };
 
 [@react.component]
-let make = () =>
-  {
-    let%Opt recentScripts = ScriptHook.getScriptList(~limit=9, ());
+let make = () => <div />;
+// {
+//   let%Opt recentScripts = OracleScriptHook.getScriptList(~limit=9, ());
 
-    Some(
-      <Row>
-        <Col size=2.>
-          {renderFeatured(recentScripts, 0, Colors.yellow, Css.hex("333333"))}
-          {renderFeatured(recentScripts, 1, Colors.orange, Css.white)}
-          {renderFeatured(recentScripts, 2, Colors.pink, Css.white)}
-        </Col>
-        <HSpacing size=Spacing.xl />
-        <Col size=5. alignSelf=Col.FlexStart>
-          <Text value="Recent Data Scripts" size=Text.Xl weight=Text.Bold block=true />
-          <Row wrap=true alignItems=`flexStart>
-            {renderScript(recentScripts, 3)}
-            {renderScript(recentScripts, 4)}
-            {renderScript(recentScripts, 5)}
-            {renderScript(recentScripts, 6)}
-            {renderScript(recentScripts, 7)}
-            {renderScript(recentScripts, 8)}
-          </Row>
-        </Col>
-      </Row>,
-    );
-  }
-  /*<Col>
-      <Text block=true value="358" size=Text.Xxl weight=Text.Bold />
-      <VSpacing size=Spacing.sm />
-      <Text block=true value="DATA SCRIPTS" size=Text.Sm color=Colors.purple />
-      <VSpacing size=Spacing.xs />
-      <Text block=true value="CREATED" size=Text.Sm color=Colors.purple />
-      <VSpacing size=Spacing.sm />
-      <VSpacing size=Spacing.xl />
-      <Text block=true value="48" size=Text.Xxl weight=Text.Bold />
-      <VSpacing size=Spacing.sm />
-      <Text block=true value="DATA PROVIDERS" size=Text.Sm color=Colors.purple />
-    </Col>*/
-  ->Belt.Option.getWithDefault(React.null);
+//   Some(
+//     <Row>
+//       <Col size=2.>
+//         {renderFeatured(recentScripts, 0, Colors.yellow, Css.hex("333333"))}
+//         {renderFeatured(recentScripts, 1, Colors.orange, Css.white)}
+//         {renderFeatured(recentScripts, 2, Colors.pink, Css.white)}
+//       </Col>
+//       <HSpacing size=Spacing.xl />
+//       <Col size=5. alignSelf=Col.FlexStart>
+//         <Text value="Recent Data Scripts" size=Text.Xl weight=Text.Bold block=true />
+//         <Row wrap=true alignItems=`flexStart>
+//           {renderScript(recentScripts, 3)}
+//           {renderScript(recentScripts, 4)}
+//           {renderScript(recentScripts, 5)}
+//           {renderScript(recentScripts, 6)}
+//           {renderScript(recentScripts, 7)}
+//           {renderScript(recentScripts, 8)}
+//         </Row>
+//       </Col>
+//     </Row>,
+//   );
+// }
+/*<Col>
+    <Text block=true value="358" size=Text.Xxl weight=Text.Bold />
+    <VSpacing size=Spacing.sm />
+    <Text block=true value="DATA SCRIPTS" size=Text.Sm color=Colors.purple />
+    <VSpacing size=Spacing.xs />
+    <Text block=true value="CREATED" size=Text.Sm color=Colors.purple />
+    <VSpacing size=Spacing.sm />
+    <VSpacing size=Spacing.xl />
+    <Text block=true value="48" size=Text.Xxl weight=Text.Bold />
+    <VSpacing size=Spacing.sm />
+    <Text block=true value="DATA PROVIDERS" size=Text.Sm color=Colors.purple />
+  </Col>*/
+// ->Belt.Option.getWithDefault(React.null);

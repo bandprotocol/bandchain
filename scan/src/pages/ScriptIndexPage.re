@@ -48,15 +48,14 @@ module Styles = {
 
 [@react.component]
 let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
-  let step = 10;
-  let (limit, setLimit) = React.useState(_ => step);
-  let scriptOpt = ScriptHook.getInfo(codeHash);
-  let (txs, totalCount) =
-    TxHook.withCodehash(~codeHash, ~limit, ())
-    ->Belt.Option.mapWithDefault(([], 0), ({txs, totalCount}) =>
-        (txs |> Belt.List.reverse, totalCount)
-      );
-
+  // let step = 10;
+  // let (limit, setLimit) = React.useState(_ => step);
+  // let scriptOpt = ScriptHook.getInfo(codeHash);
+  // let (txs, totalCount) =
+  //   TxHook.withCodehash(~codeHash, ~limit, ())
+  //   ->Belt.Option.mapWithDefault(([], 0), ({txs, totalCount}) =>
+  //       (txs |> Belt.List.reverse, totalCount)
+  //     );
   <div className=Styles.pageContainer>
     <Row justify=Row.Between>
       <Col>
@@ -72,53 +71,53 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
           />
           <HSpacing size=Spacing.sm />
           <div className=Styles.seperatedLine />
-          {switch (scriptOpt) {
-           | Some(script) =>
-             <TimeAgos time={script.createdAtTime} size=Text.Lg weight=Text.Regular />
-           | None => React.null
-           }}
         </div>
       </Col>
-      <Col>
-        {switch (scriptOpt) {
-         | Some(_) =>
-           <div className=Styles.codeVerifiedBadge>
-             <img src=Images.checkIcon className=Styles.checkLogo />
-             <Text
-               value="Code Verified"
-               size=Text.Lg
-               weight=Text.Semibold
-               color=Colors.darkGreen
-             />
-           </div>
-         | None => React.null
-         }}
-      </Col>
     </Row>
-    <div className=Styles.sourceContainer>
-      <Text
-        value={
-          switch (scriptOpt) {
-          | Some(script) => script.info.name
-          | None => "?"
-          }
-        }
-        size=Text.Xxxl
-        weight=Text.Bold
-        nowrap=true
-      />
-    </div>
+    // {switch (scriptOpt) {
+    //  | Some(script) =>
+    //    <TimeAgos time={script.createdAtTime} size=Text.Lg weight=Text.Regular />
+    //  | None => React.null
+    //  }}
+    // <Col>
+    //   {switch (scriptOpt) {
+    //    | Some(_) =>
+    //      <div className=Styles.codeVerifiedBadge>
+    //        <img src=Images.checkIcon className=Styles.checkLogo />
+    //        <Text
+    //          value="Code Verified"
+    //          size=Text.Lg
+    //          weight=Text.Semibold
+    //          color=Colors.darkGreen
+    //        />
+    //      </div>
+    //    | None => React.null
+    //    }}
+    // </Col>
+    // <div className=Styles.sourceContainer>
+    //   <Text
+    //     value={
+    //       switch (scriptOpt) {
+    //       | Some(script) => script.info.name
+    //       | None => "?"
+    //       }
+    //     }
+    //     size=Text.Xxxl
+    //     weight=Text.Bold
+    //     nowrap=true
+    //   />
+    // </div>
     <VSpacing size=Spacing.xl />
-    <InfoHL
-      info={
-        InfoHL.DataSources(
-          scriptOpt->Belt_Option.mapWithDefault([], script =>
-            script.info.dataSources->Belt_List.map(source => source.name)
-          ),
-        )
-      }
-      header="DATA SOURCES"
-    />
+    // <InfoHL
+    //   info={
+    //     InfoHL.DataSources(
+    //       scriptOpt->Belt_Option.mapWithDefault([], script =>
+    //         script.info.dataSources->Belt_List.map(source => source.name)
+    //       ),
+    //     )
+    //   }
+    //   header="DATA SOURCES"
+    // />
     <VSpacing size=Spacing.xl />
     <Row>
       <Col>
@@ -126,56 +125,56 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
       </Col>
       <HSpacing size=Spacing.xl />
       <HSpacing size=Spacing.xl />
-      <Col>
-        {switch (scriptOpt) {
-         | Some(script) =>
-           <InfoHL
-             info={InfoHL.Address(script.info.creator, Colors.brightPurple)}
-             header="CREATOR"
-           />
-         | None => React.null
-         }}
-      </Col>
     </Row>
+    // <Col>
+    //   {switch (scriptOpt) {
+    //    | Some(script) =>
+    //      <InfoHL
+    //        info={InfoHL.Address(script.info.creator, Colors.brightPurple)}
+    //        header="CREATOR"
+    //      />
+    //    | None => React.null
+    //    }}
+    // </Col>
     <VSpacing size=Spacing.xl />
-    <Tab
-      tabs=[|
-        {name: "TRANSACTIONS", route: Route.ScriptIndexPage(codeHash, Route.ScriptTransactions)},
-        {name: "CODE", route: Route.ScriptIndexPage(codeHash, Route.ScriptCode)},
-        {name: "EXECUTE", route: Route.ScriptIndexPage(codeHash, Route.ScriptExecute)},
-        {name: "INTEGRATION", route: Route.ScriptIndexPage(codeHash, Route.ScriptIntegration)},
-      |]
-      currentRoute={Route.ScriptIndexPage(codeHash, hashtag)}>
-      {switch (hashtag) {
-       | ScriptTransactions =>
-         <div className=Styles.tableLowerContainer>
-           <Text
-             value={(totalCount |> Format.iPretty) ++ " Request Transactions"}
-             color=Colors.grayHeader
-             size=Text.Lg
-           />
-           <VSpacing size=Spacing.lg />
-           <TxsTable txs />
-           <VSpacing size=Spacing.lg />
-           {if (txs->Belt_List.size < totalCount) {
-              <LoadMore onClick={_ => {setLimit(oldLimit => oldLimit + step)}} />;
-            } else {
-              React.null;
-            }}
-         </div>
-       | ScriptCode =>
-         switch (scriptOpt) {
-         | Some(script) => <ScriptCode codeHash params={script.info.params} />
-         | None => <div />
-         }
-       | ScriptExecute =>
-         switch (scriptOpt) {
-         | Some(script) => <ScriptExecute script />
-         | None => <div />
-         }
-       | ScriptIntegration => <div> {"TODO2" |> React.string} </div>
-       }}
-    </Tab>
+    // <Tab
+    //   tabs=[|
+    //     {name: "TRANSACTIONS", route: Route.ScriptIndexPage(codeHash, Route.ScriptTransactions)},
+    //     {name: "CODE", route: Route.ScriptIndexPage(codeHash, Route.ScriptCode)},
+    //     {name: "EXECUTE", route: Route.ScriptIndexPage(codeHash, Route.ScriptExecute)},
+    //     {name: "INTEGRATION", route: Route.ScriptIndexPage(codeHash, Route.ScriptIntegration)},
+    //   |]
+    //   currentRoute={Route.ScriptIndexPage(codeHash, hashtag)}>
+    //   {switch (hashtag) {
+    //    | ScriptTransactions =>
+    //      <div className=Styles.tableLowerContainer>
+    //        <Text
+    //          value={(totalCount |> Format.iPretty) ++ " Request Transactions"}
+    //          color=Colors.grayHeader
+    //          size=Text.Lg
+    //        />
+    //        <VSpacing size=Spacing.lg />
+    //        <TxsTable txs />
+    //        <VSpacing size=Spacing.lg />
+    //        {if (txs->Belt_List.size < totalCount) {
+    //           <LoadMore onClick={_ => {setLimit(oldLimit => oldLimit + step)}} />;
+    //         } else {
+    //           React.null;
+    //         }}
+    //      </div>
+    //    | ScriptCode =>
+    //      switch (scriptOpt) {
+    //      | Some(script) => <ScriptCode codeHash params={script.info.params} />
+    //      | None => <div />
+    //      }
+    //    | ScriptExecute =>
+    //      switch (scriptOpt) {
+    //      | Some(script) => <ScriptExecute script />
+    //      | None => <div />
+    //      }
+    //    | ScriptIntegration => <div> {"TODO2" |> React.string} </div>
+    //    }}
+    // </Tab>
     <VSpacing size=Spacing.xxl />
   </div>;
 };

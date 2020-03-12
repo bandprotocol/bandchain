@@ -1,5 +1,5 @@
 type data_source_tab_t =
-  | DataSourceTransactions
+  | DataSourceExecute
   | DataSourceCode
   | DataSourceRequests
   | DataSourceRevisions;
@@ -14,9 +14,14 @@ type request_tab_t =
   | RequestReportStatus
   | RequestProof;
 
+type account_tab_t =
+  | AccountTransactions
+  | AccountDelegations;
+
 type t =
   | NotFound
   | HomePage
+  | DataSourceHomePage
   | DataSourceIndexPage(int, data_source_tab_t)
   | ScriptHomePage
   | ScriptIndexPage(Hash.t, script_tab_t)
@@ -24,10 +29,12 @@ type t =
   | TxIndexPage(Hash.t)
   | BlockHomePage
   | BlockIndexPage(int)
-  | RequestIndexPage(int, request_tab_t);
+  | RequestIndexPage(int, request_tab_t)
+  | AccountIndexPage(Address.t, account_tab_t);
 
 let fromUrl = (url: ReasonReactRouter.url) =>
   switch (url.path, url.hash) {
+  | (["data-sources"], _) => DataSourceHomePage
   | (["data-source", dataSourceID], "code") =>
     DataSourceIndexPage(dataSourceID |> int_of_string, DataSourceCode)
   | (["data-source", dataSourceID], "requests") =>
@@ -35,7 +42,7 @@ let fromUrl = (url: ReasonReactRouter.url) =>
   | (["data-source", dataSourceID], "revisions") =>
     DataSourceIndexPage(dataSourceID |> int_of_string, DataSourceRevisions)
   | (["data-source", dataSourceID], _) =>
-    DataSourceIndexPage(dataSourceID |> int_of_string, DataSourceTransactions)
+    DataSourceIndexPage(dataSourceID |> int_of_string, DataSourceExecute)
   | (["scripts"], _) => ScriptHomePage
   | (["script", codeHash], "code") => ScriptIndexPage(codeHash |> Hash.fromHex, ScriptCode)
   | (["script", codeHash], "execute") =>
@@ -51,13 +58,18 @@ let fromUrl = (url: ReasonReactRouter.url) =>
     BlockIndexPage(blockHeightIntOpt->Belt_Option.getWithDefault(0));
   | (["request", reqID], "proof") => RequestIndexPage(reqID |> int_of_string, RequestProof)
   | (["request", reqID], _) => RequestIndexPage(reqID |> int_of_string, RequestReportStatus)
+  | (["account", address], "delegations") =>
+    AccountIndexPage(address |> Address.fromBech32, AccountDelegations)
+  | (["account", address], _) =>
+    AccountIndexPage(address |> Address.fromBech32, AccountTransactions)
   | ([], "") => HomePage
   | (_, _) => NotFound
   };
 
 let toString =
   fun
-  | DataSourceIndexPage(dataSourceID, DataSourceTransactions) => {j|/data-source/$dataSourceID|j}
+  | DataSourceHomePage => "/data-sources"
+  | DataSourceIndexPage(dataSourceID, DataSourceExecute) => {j|/data-source/$dataSourceID|j}
   | DataSourceIndexPage(dataSourceID, DataSourceCode) => {j|/data-source/$dataSourceID#code|j}
   | DataSourceIndexPage(dataSourceID, DataSourceRequests) => {j|/data-source/$dataSourceID#requests|j}
   | DataSourceIndexPage(dataSourceID, DataSourceRevisions) => {j|/data-source/$dataSourceID#revisions|j}
@@ -72,6 +84,14 @@ let toString =
   | BlockIndexPage(height) => {j|/block/$height|j}
   | RequestIndexPage(reqID, RequestReportStatus) => {j|/request/$reqID|j}
   | RequestIndexPage(reqID, RequestProof) => {j|/request/$reqID#proof|j}
+  | AccountIndexPage(address, AccountTransactions) => {
+      let addressBech32 = address |> Address.toBech32;
+      {j|/account/$addressBech32|j};
+    }
+  | AccountIndexPage(address, AccountDelegations) => {
+      let addressBech32 = address |> Address.toBech32;
+      {j|/account/$addressBech32#delegations|j};
+    }
   | HomePage
   | NotFound => "/";
 

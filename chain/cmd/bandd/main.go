@@ -35,7 +35,7 @@ func main() {
 	cdc := app.MakeCodec()
 
 	config := sdk.GetConfig()
-	app.SetBech32AddressPrefixes(config)
+	app.SetBech32AddressPrefixesAndBip44CoinType(config)
 	config.Seal()
 
 	ctx := server.NewDefaultContext()
@@ -47,7 +47,7 @@ func main() {
 	}
 	// CLI commands to initialize the chain
 	rootCmd.AddCommand(
-		InitCmd(ctx, cdc, app.NewDefaultGenesisState(), app.DefaultNodeHome),
+		InitCmd(ctx, cdc, app.NewDefaultGenesisState(), app.GetDefaultDataSourcesAndOracleScripts, app.DefaultNodeHome),
 		genutilcli.CollectGenTxsCmd(ctx, cdc, genaccounts.AppModuleBasic{}, app.DefaultNodeHome),
 		genutilcli.MigrateGenesisCmd(ctx, cdc),
 		genutilcli.GenTxCmd(

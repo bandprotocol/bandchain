@@ -28,6 +28,7 @@
     "@glennsl/bs-json",
     "bs-moment",
     "bs-css",
+    "bs-css-emotion",
     "bs-axios"
   ],
   "bs-dev-dependencies": ["@glennsl/bs-jest"],
