@@ -17,16 +17,25 @@ func (k Keeper) AddOracleScript(ctx sdk.Context, owner sdk.AccAddress, name stri
 	newOracleScriptID := k.GetNextOracleScriptID(ctx)
 
 	if len(code) > int(k.MaxOracleScriptCodeSize(ctx)) {
-		// TODO: fix error later
-		return types.ErrRequestNotFound(types.DefaultCodespace)
+		return types.ErrBadDataValue(
+			"AddOracleScript: Code size (%d) exceeds the maximum size (%d)",
+			len(code),
+			int(k.MaxOracleScriptCodeSize(ctx)),
+		)
 	}
-
 	if len(name) > int(k.MaxNameLength(ctx)) {
-		return types.ErrRequestNotFound(types.DefaultCodespace)
+		return types.ErrBadDataValue(
+			"AddOracleScript: Name length (%d) exceeds the maximum length (%d)",
+			len(name),
+			int(k.MaxNameLength(ctx)),
+		)
 	}
-
 	if len(description) > int(k.MaxDescriptionLength(ctx)) {
-		return types.ErrRequestNotFound(types.DefaultCodespace)
+		return types.ErrBadDataValue(
+			"AddOracleScript: Name length (%d) exceeds the maximum length (%d)",
+			len(name),
+			int(k.MaxNameLength(ctx)),
+		)
 	}
 
 	newOracleScript := types.NewOracleScript(owner, name, description, code)
@@ -42,18 +51,25 @@ func (k Keeper) EditOracleScript(ctx sdk.Context, oracleScriptID types.OracleScr
 	}
 
 	if len(code) > int(k.MaxOracleScriptCodeSize(ctx)) {
-		// TODO: fix error later
-		return types.ErrRequestNotFound(types.DefaultCodespace)
+		return types.ErrBadDataValue(
+			"EditDataSource: Code size (%d) exceeds the maximum size (%d)",
+			len(code),
+			int(k.MaxOracleScriptCodeSize(ctx)),
+		)
 	}
-
 	if len(name) > int(k.MaxNameLength(ctx)) {
-		// TODO: fix error later
-		return types.ErrRequestNotFound(types.DefaultCodespace)
+		return types.ErrBadDataValue(
+			"EditOracleScript: Name length (%d) exceeds the maximum length (%d)",
+			len(name),
+			int(k.MaxNameLength(ctx)),
+		)
 	}
-
 	if len(description) > int(k.MaxDescriptionLength(ctx)) {
-		// TODO: fix error later
-		return types.ErrRequestNotFound(types.DefaultCodespace)
+		return types.ErrBadDataValue(
+			"EditDataSource: Description length (%d) exceeds the maximum length (%d)",
+			len(description),
+			int(k.MaxDescriptionLength(ctx)),
+		)
 	}
 
 	updatedOracleScript := types.NewOracleScript(owner, name, description, code)

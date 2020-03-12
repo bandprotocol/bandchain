@@ -15,6 +15,7 @@ func (k Keeper) SetRequest(ctx sdk.Context, id types.RequestID, request types.Re
 func (k Keeper) GetRequest(ctx sdk.Context, id types.RequestID) (types.Request, sdk.Error) {
 	store := ctx.KVStore(k.storeKey)
 	if !k.CheckRequestExists(ctx, id) {
+		// TODO: fix error
 		return types.Request{}, types.ErrRequestNotFound(types.DefaultCodespace)
 	}
 
@@ -35,14 +36,20 @@ func (k Keeper) AddRequest(
 	}
 
 	if len(calldata) > int(k.MaxCalldataSize(ctx)) {
-		// TODO: fix error later
-		return 0, types.ErrRequestNotFound(types.DefaultCodespace)
+		return 0, types.ErrBadDataValue(
+			"AddRequest: Calldata size (%d) exceeds the maximum size (%d)",
+			len(calldata),
+			int(k.MaxCalldataSize(ctx)),
+		)
 	}
 
 	validatorsByPower := k.StakingKeeper.GetBondedValidatorsByPower(ctx)
 	if int64(len(validatorsByPower)) < requestedValidatorCount {
-		// TODO: Fix error later
-		return 0, types.ErrRequestNotFound(types.DefaultCodespace)
+		return 0, types.ErrBadDataValue(
+			"AddRequest: Requested validator count (%d) exceeds the current number of validators (%d)",
+			requestedValidatorCount,
+			len(validatorsByPower),
+		)
 	}
 
 	validators := make([]sdk.ValAddress, requestedValidatorCount)
@@ -52,8 +59,11 @@ func (k Keeper) AddRequest(
 
 	ctx.GasMeter().ConsumeGas(executeGas, "ExecuteGas")
 	if executeGas > k.EndBlockExecuteGasLimit(ctx) {
-		// TODO: Fix error later
-		return 0, types.ErrRequestNotFound(types.DefaultCodespace)
+		return 0, types.ErrBadDataValue(
+			"AddRequest: Execute gas (%d) exceeds the maximum limit (%d)",
+			executeGas,
+			k.EndBlockExecuteGasLimit(ctx),
+		)
 	}
 
 	requestID := k.GetNextRequestID(ctx)
@@ -74,9 +84,13 @@ func (k Keeper) AddRequest(
 // ValidateDataSourceCount validates that the number of raw data requests is
 // not greater than `MaxDataSourceCountPerRequest`
 func (k Keeper) ValidateDataSourceCount(ctx sdk.Context, id types.RequestID) sdk.Error {
-	if k.GetRawDataRequestCount(ctx, id) > k.MaxDataSourceCountPerRequest(ctx) {
-		// TODO: fix error later
-		return types.ErrRequestNotFound(types.DefaultCodespace)
+	dataSourceCount := k.GetRawDataRequestCount(ctx, id)
+	if dataSourceCount > k.MaxDataSourceCountPerRequest(ctx) {
+		return types.ErrBadDataValue(
+			"ValidateDataSourceCount: Data source count (%d) exceeds the limit (%d)",
+			dataSourceCount,
+			k.MaxDataSourceCountPerRequest(ctx),
+		)
 	}
 
 	return nil
