@@ -50,6 +50,9 @@ func handleMsgEditDataSource(ctx sdk.Context, keeper Keeper, msg MsgEditDataSour
 	}
 
 	if !dataSource.Owner.Equals(msg.Sender) {
+		return types.ErrUnauthorizedPermission(
+			"handleMsgEditDataSource: Address %s has no permission to edit data source"
+		).Result()
 		// TODO: change it later.
 		return types.ErrInvalidOwner(types.DefaultCodespace).Result()
 	}
