@@ -1,5 +1,5 @@
 let checker = (str: string) => {
-  let reg = ".*=[$][0-9]+" |> Js.Re.fromString;
+  let reg = ".*=[$][1-9][0-9]*" |> Js.Re.fromString;
   let t =
     reg
     |> Js.Re.exec_(_, str)
