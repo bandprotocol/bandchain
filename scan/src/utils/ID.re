@@ -6,7 +6,7 @@ module type RawIDSig = {
 
 module RawDataSourceID = {
   let prefix = "#D";
-  let color = Colors.brightOrange;
+  let color = Colors.yellow5;
   let route = id => Route.DataSourceIndexPage(id, Route.DataSourceExecute);
 };
 

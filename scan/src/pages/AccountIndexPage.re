@@ -17,7 +17,7 @@ module Styles = {
     style([
       width(`px(1)),
       height(`px(200)),
-      backgroundColor(Colors.grayHeader),
+      backgroundColor(Colors.mediumGray),
       marginLeft(`px(20)),
       opacity(0.3),
     ]);
@@ -130,7 +130,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
             spacing={Text.Em(0.06)}
             height={Text.Px(15)}
             nowrap=true
-            color=Colors.grayHeader
+            color=Colors.mediumGray
             block=true
           />
         </div>

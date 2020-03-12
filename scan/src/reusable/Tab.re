@@ -9,7 +9,7 @@ module Styles = {
   let header =
     style([
       backgroundColor(Colors.white),
-      padding2(~v=`zero, ~h=`px(24)),
+      padding2(~v=`zero, ~h=`px(20)),
       borderBottom(`px(1), `solid, Colors.lightGray),
       boxShadow(Shadow.box(~x=`px(0), ~y=`px(2), ~blur=`px(10), Css.rgba(0, 0, 0, 0.08))),
     ]);
@@ -21,7 +21,7 @@ module Styles = {
       justifyContent(`center),
       alignItems(`center),
       cursor(`pointer),
-      padding2(~v=Spacing.md, ~h=`px(24)),
+      padding2(~v=Spacing.md, ~h=`px(20)),
       borderBottom(`pxFloat(1.5), `solid, active ? Colors.brightBlue : Colors.white),
       textShadow(Shadow.text(~blur=`pxFloat(active ? 1. : 0.), Colors.brightBlue)),
     ]);

@@ -38,7 +38,7 @@ let make = (~info, ~header, ~isLeft=true) => {
     <div className=Styles.headerContainer>
       <Text
         value=header
-        color=Colors.grayHeader
+        color=Colors.mediumGray
         size=Text.Sm
         weight=Text.Thin
         height={Text.Px(13)}
