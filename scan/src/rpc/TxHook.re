@@ -308,7 +308,8 @@ module Tx = {
     timestamp: MomentRe.Moment.t,
     gasWanted: int,
     gasUsed: int,
-    fee: Coin.t,
+    fee: float,
+    success: bool,
     messages: list(Msg.t),
   };
 
@@ -325,7 +326,14 @@ module Tx = {
       timestamp: json |> field("timestamp", moment),
       gasWanted: json |> field("gas_wanted", intstr),
       gasUsed: json |> field("gas_used", intstr),
-      fee: Coin.newCoin("uband", 10000.0),
+      fee:
+        (json |> at(["tx", "value", "fee", "amount"], list(Coin.decodeCoin)))
+        ->Belt_List.keep(coin => coin.denom == "uband")
+        ->Belt_List.get(0)
+        ->Belt_Option.mapWithDefault(0., coin => coin.amount),
+      success:
+        (json |> field("logs", list(log => log |> field("success", bool))))
+        ->Belt_List.some(isSuccess => isSuccess),
       messages: {
         let actions = json |> at(["tx", "value", "msg"], list(Msg.decodeAction));
         let eventDoubleLists =
