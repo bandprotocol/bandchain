@@ -15,7 +15,7 @@ module Styles = {
       height(`px(1)),
       marginLeft(`px(10)),
       marginRight(`px(10)),
-      backgroundColor(Colors.grayHeader),
+      backgroundColor(Colors.mediumGray),
     ]);
 
   let fullWidth =
@@ -50,7 +50,7 @@ let renderBody = (idx: int, x: ValidatorHook.Validator.t) => {
           <Col size=1.6 alignSelf=Col.FlexStart>
             <Text
               value={idx + 1 |> string_of_int}
-              color=Colors.grayHeader
+              color=Colors.mediumGray
               code=true
               weight=Text.Regular
               spacing={Text.Em(0.02)}
@@ -63,7 +63,7 @@ let renderBody = (idx: int, x: ValidatorHook.Validator.t) => {
           <div className=Styles.monikerContainer>
             <Text
               value=moniker
-              color=Colors.grayHeader
+              color=Colors.mediumGray
               code=true
               weight=Text.Regular
               spacing={Text.Em(0.02)}
@@ -78,7 +78,7 @@ let renderBody = (idx: int, x: ValidatorHook.Validator.t) => {
           <div>
             <Text
               value={12521643 |> Format.iPretty}
-              color=Colors.grayHeader
+              color=Colors.mediumGray
               code=true
               weight=Text.Regular
               spacing={Text.Em(0.02)}
@@ -89,7 +89,7 @@ let renderBody = (idx: int, x: ValidatorHook.Validator.t) => {
             <VSpacing size=Spacing.sm />
             <Text
               value={"(" ++ votingPower->Js.Float.toFixedWithPrecision(~digits=2) ++ "%)"}
-              color=Colors.graySubHeader
+              color=Colors.mediumLightGray
               code=true
               weight=Text.Thin
               spacing={Text.Em(0.02)}
@@ -102,7 +102,7 @@ let renderBody = (idx: int, x: ValidatorHook.Validator.t) => {
         <Col size=1.4 alignSelf=Col.FlexStart>
           <Text
             value={commission->Js.Float.toFixedWithPrecision(~digits=2)}
-            color=Colors.grayHeader
+            color=Colors.mediumGray
             code=true
             weight=Text.Regular
             spacing={Text.Em(0.02)}
@@ -114,7 +114,7 @@ let renderBody = (idx: int, x: ValidatorHook.Validator.t) => {
         <Col size=1.3 alignSelf=Col.FlexStart>
           <Text
             value={uptime->Js.Float.toFixedWithPrecision(~digits=2)}
-            color=Colors.grayHeader
+            color=Colors.mediumGray
             code=true
             weight=Text.Regular
             spacing={Text.Em(0.02)}
@@ -126,7 +126,7 @@ let renderBody = (idx: int, x: ValidatorHook.Validator.t) => {
         <Col size=1.5 alignSelf=Col.FlexStart>
           <Text
             value={reportRate->Js.Float.toFixedWithPrecision(~digits=2)}
-            color=Colors.grayHeader
+            color=Colors.mediumGray
             code=true
             weight=Text.Regular
             spacing={Text.Em(0.02)}
@@ -152,7 +152,7 @@ let make = () => {
         weight=Text.Medium
         size=Text.Md
         nowrap=true
-        color=Colors.grayHeader
+        color=Colors.mediumGray
         spacing={Text.Em(0.06)}
       />
       <div className=Styles.seperatedLine />
@@ -160,7 +160,7 @@ let make = () => {
     </div>
     <div className=Styles.highlight>
       <Row>
-        <Col size=0.7> <InfoHL info={InfoHL.Fraction(8, 20, false)} header="VALIDATOR" /> </Col>
+        <Col size=0.7> <InfoHL info={InfoHL.Fraction(8, 20, false)} header="VALIDATORS" /> </Col>
         <Col size=1.1>
           <InfoHL info={InfoHL.Fraction(5352500, 10849023, true)} header="BONDED TOKENS" />
         </Col>
@@ -192,7 +192,7 @@ let make = () => {
                    size=Text.Sm
                    weight=Text.Semibold
                    align=?{idx > 1 ? Some(Text.Right) : None}
-                   color=Colors.graySubHeader
+                   color=Colors.mediumLightGray
                    spacing={Text.Em(0.1)}
                  />
                </Col>
