@@ -37,7 +37,7 @@ func (k Keeper) AddRequest(
 
 	if len(calldata) > int(k.MaxCalldataSize(ctx)) {
 		return 0, types.ErrBadDataValue(
-			"AddRequest: Calldata size (%d) exceeds the maximum size (%d)",
+			"AddRequest: Calldata size (%d) exceeds the maximum size (%d).",
 			len(calldata),
 			int(k.MaxCalldataSize(ctx)),
 		)
@@ -46,7 +46,7 @@ func (k Keeper) AddRequest(
 	validatorsByPower := k.StakingKeeper.GetBondedValidatorsByPower(ctx)
 	if int64(len(validatorsByPower)) < requestedValidatorCount {
 		return 0, types.ErrBadDataValue(
-			"AddRequest: Requested validator count (%d) exceeds the current number of validators (%d)",
+			"AddRequest: Requested validator count (%d) exceeds the current number of validators (%d).",
 			requestedValidatorCount,
 			len(validatorsByPower),
 		)
@@ -60,7 +60,7 @@ func (k Keeper) AddRequest(
 	ctx.GasMeter().ConsumeGas(executeGas, "ExecuteGas")
 	if executeGas > k.EndBlockExecuteGasLimit(ctx) {
 		return 0, types.ErrBadDataValue(
-			"AddRequest: Execute gas (%d) exceeds the maximum limit (%d)",
+			"AddRequest: Execute gas (%d) exceeds the maximum limit (%d).",
 			executeGas,
 			k.EndBlockExecuteGasLimit(ctx),
 		)
@@ -87,7 +87,7 @@ func (k Keeper) ValidateDataSourceCount(ctx sdk.Context, id types.RequestID) sdk
 	dataSourceCount := k.GetRawDataRequestCount(ctx, id)
 	if dataSourceCount > k.MaxDataSourceCountPerRequest(ctx) {
 		return types.ErrBadDataValue(
-			"ValidateDataSourceCount: Data source count (%d) exceeds the limit (%d)",
+			"ValidateDataSourceCount: Data source count (%d) exceeds the limit (%d).",
 			dataSourceCount,
 			k.MaxDataSourceCountPerRequest(ctx),
 		)

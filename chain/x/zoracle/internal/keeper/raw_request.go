@@ -45,7 +45,7 @@ func (k Keeper) AddNewRawDataRequest(
 ) sdk.Error {
 	if len(calldata) > int(k.MaxCalldataSize(ctx)) {
 		return types.ErrBadDataValue(
-			"AddNewRawDataRequest: Calldata size (%d) exceeds the maximum size (%d)",
+			"AddNewRawDataRequest: Calldata size (%d) exceeds the maximum size (%d).",
 			len(calldata),
 			int(k.MaxCalldataSize(ctx)),
 		)

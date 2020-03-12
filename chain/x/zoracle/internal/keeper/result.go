@@ -12,7 +12,7 @@ func (k Keeper) AddResult(
 ) sdk.Error {
 	if len(result) > int(k.MaxResultSize(ctx)) {
 		return types.ErrBadDataValue(
-			"AddResult: Result size (%d) exceeds the maximum size (%d)",
+			"AddResult: Result size (%d) exceeds the maximum size (%d).",
 			len(result),
 			int(k.MaxResultSize(ctx)),
 		)
