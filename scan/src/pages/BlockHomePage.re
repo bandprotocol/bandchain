@@ -93,7 +93,7 @@ let make = () => {
         <div className=Styles.vFlex>
           <img src=Images.blockLogo className=Styles.logo />
           <Text
-            value="ALL SOURCES"
+            value="All BLOCKS"
             weight=Text.Medium
             size=Text.Md
             spacing={Text.Em(0.06)}
@@ -138,7 +138,7 @@ let make = () => {
                    value=title
                    size=Text.Sm
                    weight=Text.Semibold
-                   color=Colors.graySubHeader
+                   color=Colors.mediumLightGray
                    spacing={Text.Em(0.1)}
                  />
                </Row>
