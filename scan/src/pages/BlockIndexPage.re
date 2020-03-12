@@ -121,7 +121,7 @@ let make = (~height: int) => {
        | _ =>
          <>
            <VSpacing size=Spacing.xl />
-           <TxsTable txs />
+           <BlockIndexTxsTable txs />
            <VSpacing size=Spacing.lg />
            {txs->Belt_List.size < limit
               ? React.null : <LoadMore onClick={_ => setLimit(oldLimit => oldLimit + 10)} />}
