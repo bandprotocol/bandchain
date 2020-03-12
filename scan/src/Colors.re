@@ -28,10 +28,15 @@ let orange = Css.hex("EB7E47");
 let orange1 = Css.hex("FFF1EB");
 let orange5 = Css.hex("EB7E47");
 let orange6 = Css.hex("DB6124");
+let fadeOrange = Css.hex("FFEFEB");
+let darkOrange = Css.hex("DB4824");
+
+let fadeBlue = Css.hex("EBEDFF");
 
 let darkBlue = Css.hex("396EAB");
 let brightBlue = Css.hex("5269FF");
 let brightLightBlue = Css.hex("7183F4");
+let blue = Css.hex("#475DEB");
 let lightBlue = Css.hex("E2F0FF");
 let lighterBlue = Css.hex("F8FAFF");
 let blue1 = Css.hex("EBEDFF");
@@ -51,6 +56,8 @@ let lightGray = Css.hex("EEEEEE");
 let mediumGray = Css.hex("555555");
 let mediumLightGray = Css.hex("888888");
 let lighterGray = Css.hex("F9F9F9");
+let theadGray = Css.hex("F4F4F7");
+let tbodyGray = Css.hex("FAFAFB");
 
 let darkGrayText = Css.hex("777F8E");
 
