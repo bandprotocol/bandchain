@@ -21,7 +21,7 @@ let splitToPair = s => {
     |> getElementInList(_, 1)
 
   switch (s1 |> int_of_string) {
-    // the number is to big then reture -1
+    // the number is to big then return -1
     | exception (Failure(_)) => (s0,-1)
     | num => (s0, num);
   }

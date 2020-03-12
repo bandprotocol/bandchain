@@ -65,7 +65,7 @@ echo $calldata
     |> toEqual(["calldata", "symbol"])
   );
 
-  test("test get many variables", () =>
+  test("test invalid order variables", () =>
     expect({f|"#!/bin/bash
 symbol=$23
 calldata=$1
