@@ -23,6 +23,8 @@ let yellow6 = Css.hex("DB9924");
 
 let brightOrange = Css.hex("EBA647");
 
+let orange = Css.hex("EB7E47");
+
 let orange1 = Css.hex("FFF1EB");
 let orange5 = Css.hex("EB7E47");
 let orange6 = Css.hex("DB6124");
@@ -56,5 +58,4 @@ let white = Css.hex("ffffff");
 
 let black = Css.hex("000000");
 
-let brightOrange = Css.hex("EB7E47");
 let brightPink = Css.hex("EB4773");

@@ -141,7 +141,7 @@ let make = () => {
                         value={"#R" ++ (id |> string_of_int)}
                         weight=Text.Semibold
                         code=true
-                        color=Colors.brightOrange
+                        color=Colors.orange5
                       />
                     </Col>
                     <Col size=2.8>
