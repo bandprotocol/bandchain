@@ -30,6 +30,8 @@ let make =
       ~spacing=Text.Unset,
       ~color=Colors.mediumGray,
       ~code=false,
+      ~height=Text.Px(10),
+      ~upper=false,
     ) => {
   let (displayTime, setDisplayTime) =
     React.useState(_ => time->MomentRe.Moment.fromNow(~withoutSuffix=None));
