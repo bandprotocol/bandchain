@@ -27,9 +27,14 @@ func TestExecByte2(t *testing.T) {
 // 23212f62696e2f626173680a0a6563686f2024322b24310a
 func TestExecByte3(t *testing.T) {
 	// batch script that can sum two number
+	/*
+		#!/bin/bash
+		num1=$1
+		num2=$2
+		echo $((num1+num2))
+	*/
 	execByte, _ := hex.DecodeString("23212f62696e2f626173680a6e756d313d24310a6e756d323d24320a6563686f202428286e756d312b6e756d3229290a")
 	result, err := RunOnLocal(execByte, 10*time.Second, "4 14")
 	require.Nil(t, err)
 	require.Equal(t, []byte("18\n"), result)
 }
-
