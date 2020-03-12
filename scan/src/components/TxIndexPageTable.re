@@ -47,8 +47,8 @@ let renderSend = msg => {
     <Col> <HSpacing size=Spacing.md /> </Col>
     <Col size=0.4 alignSelf=Col.FlexStart>
       <div className=Styles.badgeContainer>
-        <div className={Styles.badge(Colors.fadeOrange)}>
-          <Text value="SEND TOKEN" size=Text.Sm spacing={Text.Em(0.07)} color=Colors.darkOrange />
+        <div className={Styles.badge(Colors.blue1)}>
+          <Text value="SEND TOKEN" size=Text.Sm spacing={Text.Em(0.07)} color=Colors.blue7 />
         </div>
       </div>
     </Col>
