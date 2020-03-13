@@ -36,15 +36,15 @@ module Styles = {
     ]);
 };
 
-let renderBody = (idx: int, x: ValidatorHook.Validator.t) => {
-  let moniker = x.moniker;
-  let votingPower = x.votingPower;
+let renderBody = (idx: int, validator: ValidatorHook.Validator.t) => {
+  let moniker = validator.moniker;
+  let votingPower = validator.votingPower;
   let commission = 12.5;
-  let uptime = x.uptime;
+  let uptime = validator.uptime;
   let reportRate = 100.00;
 
   <TBody key={idx |> string_of_int}>
-    <div className=Styles.fullWidth onClick={_ => Route.ValidatorHomePage |> Route.redirect}>
+    <div className=Styles.fullWidth>
       <Row>
         <Col size=0.8 alignSelf=Col.Start>
           <Col size=1.6 alignSelf=Col.Start>
@@ -60,19 +60,7 @@ let renderBody = (idx: int, x: ValidatorHook.Validator.t) => {
           </Col>
         </Col>
         <Col size=1.9 alignSelf=Col.Start>
-          <div className=Styles.monikerContainer>
-            <Text
-              value=moniker
-              color=Colors.mediumGray
-              code=true
-              weight=Text.Regular
-              spacing={Text.Em(0.02)}
-              block=true
-              size=Text.Md
-              nowrap=true
-              ellipsis=true
-            />
-          </div>
+          <div className=Styles.monikerContainer> <ValidatorMonikerLink validator /> </div>
         </Col>
         <Col size=1.3 alignSelf=Col.Start>
           <div>

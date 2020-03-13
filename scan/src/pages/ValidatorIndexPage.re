@@ -53,7 +53,7 @@ let kvRow = (k, v: value_row_t) => {
     <Col size=1.>
       <div className={Styles.fullWidth(`row)}> <Text value=k weight=Text.Thin /> </div>
     </Col>
-    <Col size=1. justifyContent=`center alignItems=`flexEnd>
+    <Col size=1. justifyContent=Col.Center alignItems=Col.End>
       <div className={Styles.fullWidth(`row)}>
         <div className=Styles.fillLeft />
         {switch (v) {
