@@ -49,22 +49,11 @@ let make = (~txs: list(TxHook.Tx.t)) => {
       </Row>
     </THead>
     {txs
-     ->Belt.List.map(({blockHeight, hash, timestamp, fee, gasUsed, messages, sender}) => {
+     ->Belt.List.map(({blockHeight, hash, fee, messages, success}) => {
          <TBody key={hash |> Hash.toHex}>
-           <Row>
+           <Row minHeight={`px(30)}>
              <HSpacing size={`px(20)} />
-             <Col size=1.67>
-               <div className=Styles.hashContainer>
-                 <Text
-                   block=true
-                   code=true
-                   spacing={Text.Em(0.02)}
-                   value={hash |> Hash.toHex(~upper=true)}
-                   weight=Text.Medium
-                   ellipsis=true
-                 />
-               </div>
-             </Col>
+             <Col size=1.67> <TxLink txHash=hash width=140 /> </Col>
              <Col size=0.88> <TypeID.Block id={ID.Block.ID(blockHeight)} /> </Col>
              <Col size=1.>
                <div className=Styles.statusContainer>
@@ -72,11 +61,11 @@ let make = (~txs: list(TxHook.Tx.t)) => {
                    block=true
                    code=true
                    spacing={Text.Em(0.02)}
-                   value="success"
+                   value={success ? "success" : "fail"}
                    weight=Text.Medium
                    ellipsis=true
                  />
-                 <img src=Images.success className=Styles.logo />
+                 <img src={success ? Images.success : Images.fail} className=Styles.logo />
                </div>
              </Col>
              <Col size=1.25>
@@ -86,14 +75,14 @@ let make = (~txs: list(TxHook.Tx.t)) => {
                    block=true
                    code=true
                    spacing={Text.Em(0.02)}
-                   value={(fee.amount /. 10000.0)->Format.fPretty}
+                   value={fee->TxHook.Coin.getBandAmountFromCoins->Format.fPretty}
                    weight=Text.Medium
                    ellipsis=true
                  />
                  <HSpacing size={`px(20)} />
                </div>
              </Col>
-             <Col size=5.> <Msg msg={messages->Belt_List.getExn(0)} width=330 /> </Col>
+             <Col size=5.> <Msg msg={messages->Belt_List.getExn(0)} success width=330 /> </Col>
              <HSpacing size={`px(20)} />
            </Row>
          </TBody>
