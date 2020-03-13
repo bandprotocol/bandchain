@@ -2,7 +2,7 @@ module Styles = {
   open Css;
   let fullWidth = style([width(`percent(100.0)), display(`flex)]);
   let container = style([width(`px(68))]);
-  let hashContainer = style([maxWidth(`px(140))]);
+  let hashContainer = style([maxWidth(`px(140)), cursor(`pointer)]);
   let paddingTopContainer = style([paddingTop(`px(5))]);
   let statusContainer =
     style([maxWidth(`px(95)), display(`flex), flexDirection(`row), alignItems(`center)]);
@@ -46,7 +46,9 @@ let make = (~txs: list(TxHook.Tx.t)) => {
            <Row>
              <HSpacing size={`px(20)} />
              <Col size=1.67 alignSelf=Col.Start>
-               <div className={Css.merge([Styles.hashContainer, Styles.paddingTopContainer])}>
+               <div
+                 className={Css.merge([Styles.hashContainer, Styles.paddingTopContainer])}
+                 onClick={_ => Route.redirect(Route.TxIndexPage(hash))}>
                  <Text
                    block=true
                    code=true
