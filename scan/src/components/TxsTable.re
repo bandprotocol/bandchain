@@ -75,7 +75,7 @@ let make = (~txs: list(TxHook.Tx.t)) => {
                    block=true
                    code=true
                    spacing={Text.Em(0.02)}
-                   value={fee->Format.fPretty}
+                   value={fee->TxHook.Coin.getBandAmountFromCoins->Format.fPretty}
                    weight=Text.Medium
                    ellipsis=true
                  />
