@@ -253,7 +253,7 @@ let renderCreateDataSource = msg => {
       <Col> <VSpacing size=Spacing.md /> </Col>
       <div className=Styles.topicContainer>
         <Text value="OWNER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-        <div className={Styles.addressContainer(300)}>
+        <div className={Styles.addressContainer(100)}>
           <AddressRender address={msg |> TxHook.Msg.getCreator} />
         </div>
       </div>
@@ -343,7 +343,7 @@ let renderBody = (msg: TxHook.Msg.t) => {
   switch (msg.action) {
   | Send(_) => renderSend(msg)
   | CreateDataSource(_) => renderCreateDataSource(msg)
-  | EditDataSource(_) => React.null
+  | EditDataSource(_) => renderEditDataSource(msg)
   | CreateOracleScript(_) => React.null
   | EditOracleScript(_) => React.null
   | Request(_) => renderRequest(msg)
