@@ -94,6 +94,21 @@ let make = (~info, ~header, ~isLeft=true) => {
            code=true
          />
          <HSpacing size=Spacing.sm />
+         <TimeAgos
+           time
+           prefix="("
+           size=Text.Md
+           weight=Text.Thin
+           spacing={Text.Em(0.06)}
+           color=Colors.mediumGray
+         />
+         <Text
+           value=")"
+           size=Text.Md
+           weight=Text.Thin
+           spacing={Text.Em(0.06)}
+           color=Colors.mediumGray
+         />
        </div>
      | Fee(fee) =>
        <div className=Styles.vFlex>
