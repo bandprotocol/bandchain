@@ -7,7 +7,9 @@ type t =
   | Fee(float)
   | DataSources(list(string))
   | Hash(Hash.t, Css.Types.Color.t)
-  | Address(Address.t);
+  | Address(Address.t)
+  | Fraction(int, int, bool)
+  | FloatWithSuffix(float, string);
 
 module Styles = {
   open Css;
@@ -55,6 +57,14 @@ let make = (~info, ~header, ~isLeft=true) => {
      | Float(value) =>
        <Text
          value={value |> Js.Float.toString}
+         size=Text.Lg
+         weight=Text.Semibold
+         spacing={Text.Em(0.02)}
+         code=true
+       />
+     | FloatWithSuffix(value, suffix) =>
+       <Text
+         value={(value |> Js.Float.toString) ++ suffix}
          size=Text.Lg
          weight=Text.Semibold
          spacing={Text.Em(0.02)}
@@ -125,6 +135,15 @@ let make = (~info, ~header, ~isLeft=true) => {
          weight=Text.Semibold
          color=textColor
        />
+     | Fraction(x, y, space) =>
+       <Text
+         value={(x |> Format.iPretty) ++ (space ? " / " : "/") ++ (y |> Format.iPretty)}
+         size=Text.Lg
+         weight=Text.Semibold
+         spacing={Text.Em(0.02)}
+         code=true
+       />
+
      | Address(address) =>
        <div className=Styles.addressContainer>
          <AddressRender address position=AddressRender.Subtitle />

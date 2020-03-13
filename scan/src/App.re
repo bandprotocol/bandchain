@@ -90,6 +90,7 @@ let make = () => {
          | TxIndexPage(txHash) => <TxIndexPage txHash />
          | BlockHomePage => <BlockHomePage />
          | BlockIndexPage(height) => <BlockIndexPage height />
+         | ValidatorHomePage => <ValidatorHomePage />
          | RequestIndexPage(reqID, hashtag) => <RequestIndexPage reqID hashtag />
          | AccountIndexPage(address, hashtag) => <AccountIndexPage address hashtag />
          | NotFound =>
