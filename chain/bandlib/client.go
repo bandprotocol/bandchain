@@ -57,12 +57,20 @@ func NewBandStatefulClient(
 }
 
 func (client *BandStatefulClient) SendTransaction(
-	msg sdk.Msg, gas uint64, fees string,
+	msg sdk.Msg, gas uint64, fees string, gasPrice string,
 ) (sdk.TxResponse, error) {
 	// Add msg to channel
 	parsedFees, err := sdk.ParseCoins(fees)
 	if err != nil {
 		return sdk.TxResponse{}, err
+	}
+
+	if parsedFees.IsZero() {
+		parsedGasPrice, err := sdk.ParseDecCoins(gasPrice)
+		if err != nil {
+			return sdk.TxResponse{}, err
+		}
+		parsedFees, _ = parsedGasPrice.MulDec(sdk.NewDec(int64(gas))).TruncateDecimal()
 	}
 
 	txChan := make(chan sdk.TxResponse, 0)
