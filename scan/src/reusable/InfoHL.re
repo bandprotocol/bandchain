@@ -21,7 +21,7 @@ module Styles = {
       alignItems(isLeft ? `flexStart : `flexEnd),
     ]);
   let vFlex = style([display(`flex), alignItems(`center)]);
-  let addressContainer = style([display(`flex), alignItems(`center), maxWidth(`px(290))]);
+  let addressContainer = style([alignItems(`center), maxWidth(`px(290))]);
   let datasourcesContainer = style([display(`flex), alignItems(`center), flexWrap(`wrap)]);
   let headerContainer = style([lineHeight(`px(25))]);
   let sourceContainer =

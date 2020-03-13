@@ -8,9 +8,12 @@ let pink1 = Css.hex("FFEBF0");
 let pink5 = Css.hex("EB4773");
 let pink6 = Css.hex("DB2455");
 
+let fadePurple = Css.hex("FDF7FF");
+let borderPurple = Css.hex("F3CEFD");
 let purple = Css.hex("8D59B8");
 let lightPurple = Css.hex("E6DDF4");
 let lighterPurple = Css.hex("FCFAFC");
+let darkPurple = Css.hex("740B8E");
 
 let purpleBlue = Css.hex("7880f3");
 
