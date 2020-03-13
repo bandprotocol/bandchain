@@ -11,8 +11,9 @@ const (
 	DefaultCodespace sdk.CodespaceType = ModuleName
 
 	// TODO: Change this to 101 after old errors were cleared.
-	CodeInvalidBasicMsg sdk.CodeType = 201
-	CodeBadDataValue    sdk.CodeType = 202
+	CodeInvalidBasicMsg        sdk.CodeType = 201
+	CodeBadDataValue           sdk.CodeType = 202
+	CodeUnauthorizedPermission sdk.CodeType = 203
 
 	CodeInvalidInput       sdk.CodeType = 101
 	CodeInvalidValidator   sdk.CodeType = 102
@@ -74,4 +75,8 @@ func ErrInvalidBasicMsg(format string, args ...interface{}) sdk.Error {
 
 func ErrBadDataValue(format string, args ...interface{}) sdk.Error {
 	return sdk.NewError(DefaultCodespace, CodeBadDataValue, fmt.Sprintf(format, args...))
+}
+
+func ErrUnauthorizedPermission(format string, args ...interface{}) sdk.Error {
+	return sdk.NewError(DefaultCodespace, CodeUnauthorizedPermission, fmt.Sprintf(format, args...))
 }
