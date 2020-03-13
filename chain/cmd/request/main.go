@@ -58,7 +58,7 @@ func main() {
 					"The Script that queries crypto price from https://cryptocompare.com",
 					sdk.Coins{}, coingecko, tx.Sender(),
 				),
-				1000000, "",
+				1000000, "", "",
 			))
 
 			cryptoCompare, err := ioutil.ReadFile("../../datasources/crypto_compare_price.sh")
@@ -71,7 +71,7 @@ func main() {
 					"The Script that queries crypto price from https://cryptocompare.com",
 					sdk.Coins{}, cryptoCompare, tx.Sender(),
 				),
-				1000000, "",
+				1000000, "", "",
 			))
 
 			binance, err := ioutil.ReadFile("../../datasources/binance_price.sh")
@@ -84,7 +84,7 @@ func main() {
 					"The Script that queries crypto price from https://www.binance.com/en",
 					sdk.Coins{}, binance, tx.Sender(),
 				),
-				1000000, "",
+				1000000, "", "",
 			))
 
 			oracleBytes, err := ioutil.ReadFile("../../owasm/res/crypto_price.wasm")
@@ -97,7 +97,7 @@ func main() {
 					"Oracle script for getting an average crypto price from many sources.",
 					oracleBytes, tx.Sender(),
 				),
-				3000000, "",
+				3000000, "", "",
 			))
 		}
 	case "send_token":
@@ -108,7 +108,7 @@ func main() {
 				FromAddress: tx.Sender(),
 				ToAddress:   to,
 				Amount:      sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(10))),
-			}, 1000000, ""))
+			}, 1000000, "", ""))
 		}
 	case "request":
 		{
@@ -118,7 +118,7 @@ func main() {
 					fmt.Println(tx.SendTransaction(
 						zoracle.NewMsgRequestData(
 							1, []byte("BTC"), 4, 4, 100000, prepareGas, executeGas, tx.Sender(),
-						), 1000000, "",
+						), 0, "", "",
 					))
 				}
 			case "ETH":
@@ -126,7 +126,7 @@ func main() {
 					fmt.Println(tx.SendTransaction(
 						zoracle.NewMsgRequestData(
 							1, []byte("ETH"), 4, 4, 100000, prepareGas, executeGas, tx.Sender(),
-						), 1000000, "",
+						), 1000000, "", "",
 					))
 				}
 			}
@@ -139,7 +139,7 @@ func main() {
 				txRes, err := tx.SendTransaction(
 					zoracle.NewMsgRequestData(
 						1, []byte("BTC"), 4, 4, 100000, prepareGas, executeGas, tx.Sender(),
-					), 1000000, "",
+					), 1000000, "", "",
 				)
 
 				if err != nil {
@@ -151,7 +151,7 @@ func main() {
 				txRes, err := tx.SendTransaction(
 					zoracle.NewMsgRequestData(
 						1, []byte("ETH"), 4, 4, 100000, prepareGas, executeGas, tx.Sender(),
-					), 1000000, "",
+					), 1000000, "", "",
 				)
 
 				if err != nil {
@@ -182,19 +182,19 @@ func main() {
 			fmt.Println(tx.SendTransaction(
 				zoracle.NewMsgCreateOracleScript(
 					tx.Sender(), "Silly script", "Test oracle script", bytes, tx.Sender()),
-				3000000, "",
+				3000000, "", "",
 			))
 
 			fmt.Println(tx.SendTransaction(
 				zoracle.NewMsgCreateDataSource(
 					tx.Sender(), "Mock Data source", "Mock Script",
 					sdk.Coins{}, []byte("exec"), tx.Sender(),
-				), 1000000, "",
+				), 1000000, "", "",
 			))
 
 			fmt.Println(tx.SendTransaction(
 				zoracle.NewMsgRequestData(2, []byte("calldata"), 1, 1, 100, prepareGas, executeGas, tx.Sender()),
-				1000000, "",
+				1000000, "", "",
 			))
 
 		}
@@ -215,7 +215,7 @@ func main() {
 					zoracle.NewMsgCreateOracleScript(
 						tx.Sender(), fmt.Sprintf("Silly script %d", i), "Test oracle script",
 						bytes, tx.Sender(),
-					), 1000000, "",
+					), 1000000, "", "",
 				))
 				time.Sleep(100 * time.Millisecond)
 			}

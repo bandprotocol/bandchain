@@ -14,7 +14,7 @@ module Styles = {
       backgroundColor(Colors.mediumGray),
     ]);
 
-  let addressContainer = style([marginTop(`px(25)), marginBottom(`px(44))]);
+  let hashContainer = style([marginTop(`px(25)), marginBottom(`px(44))]);
 
   let successBadge =
     style([
@@ -69,7 +69,7 @@ let make = (~txHash) => {
         </div>
       </Col>
     </Row>
-    <div className=Styles.addressContainer>
+    <div className=Styles.hashContainer>
       <Text
         value={txHash |> Hash.toHex(~upper=true)}
         size=Text.Xxl
@@ -129,7 +129,21 @@ let make = (~txHash) => {
        }}
     </Row>
     <VSpacing size=Spacing.xxl />
-    // LOWER
+    <div className=Styles.vFlex>
+      <HSpacing size=Spacing.md />
+      {switch (txOpt) {
+       | Some(tx) =>
+         <Text
+           value={tx.messages |> Belt.List.length |> string_of_int}
+           weight=Text.Semibold
+           size=Text.Lg
+         />
+       | None => <Text value="?" weight=Text.Semibold size=Text.Lg />
+       }}
+      <HSpacing size=Spacing.md />
+      <Text value="Messages" size=Text.Lg spacing={Text.Em(0.06)} />
+    </div>
+    <VSpacing size=Spacing.md />
     {switch (txOpt) {
      | Some(tx) =>
        <> <div className=Styles.seperatorLine /> <TxIndexPageTable messages={tx.messages} /> </>
