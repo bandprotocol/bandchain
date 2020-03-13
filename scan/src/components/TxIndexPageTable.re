@@ -174,6 +174,55 @@ let renderRequest = msg => {
   </Row>;
 };
 
+let renderReport = msg => {
+  <Row>
+    <Col> <HSpacing size=Spacing.md /> </Col>
+    <Col size=0.4 alignSelf=Col.FlexStart>
+      <div className=Styles.badgeContainer>
+        <div className={Styles.badge(Colors.fadeOrange)}>
+          <Text
+            value="REPORT DATA"
+            size=Text.Sm
+            spacing={Text.Em(0.07)}
+            color=Colors.darkOrange
+          />
+        </div>
+      </div>
+    </Col>
+    <Col size=0.6 alignSelf=Col.FlexStart>
+      <VSpacing size=Spacing.sm />
+      <div className={Styles.addressContainer(170)}>
+        <AddressRender address={msg |> TxHook.Msg.getCreator} />
+      </div>
+    </Col>
+    <Col size=1.3 alignSelf=Col.FlexStart>
+      <VSpacing size=Spacing.sm />
+      <div className=Styles.topicContainer>
+        <Text value="REQUEST ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <div className=Styles.hFlex> <TypeID.Request id={ID.Request.ID(123)} /> </div>
+      </div>
+      <VSpacing size=Spacing.lg />
+      <VSpacing size=Spacing.sm />
+      <div className=Styles.hFlex>
+        <Text value="RAW DATA REPORT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <HSpacing size=Spacing.md />
+        <CopyButton />
+      </div>
+      <VSpacing size=Spacing.md />
+      <KVTable
+        header=["EXTERNAL ID", "VALUE"]
+        kv=[
+          ("1", "14948248048129841924"),
+          ("2", "531750937509892038752859"),
+          ("3", "135863087593175193701535817397538759571"),
+        ]
+      />
+      <VSpacing size=Spacing.lg />
+    </Col>
+    <Col> <HSpacing size=Spacing.md /> </Col>
+  </Row>;
+};
+
 let renderBody = (msg: TxHook.Msg.t) => {
   switch (msg.action) {
   | Send(_) => renderSend(msg)
@@ -182,7 +231,7 @@ let renderBody = (msg: TxHook.Msg.t) => {
   | CreateOracleScript(_) => React.null
   | EditOracleScript(_) => React.null
   | Request(_) => renderRequest(msg)
-  | Report(_) => React.null
+  | Report(_) => renderReport(msg)
   | Unknown => React.null
   };
 };

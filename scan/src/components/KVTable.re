@@ -29,13 +29,13 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~kv) => {
+let make = (~header=["KEY", "VALUE"], ~kv) => {
   <>
     <div className=Styles.thead>
       <Row>
         <Col size=1.>
           <Text
-            value="KEY"
+            value={header |> Belt_List.getExn(_, 0)}
             size=Text.Xs
             weight=Text.Semibold
             spacing={Text.Em(0.05)}
@@ -45,7 +45,7 @@ let make = (~kv) => {
         </Col>
         <Col size=1.>
           <Text
-            value="VALUE"
+            value={header |> Belt_List.getExn(_, 1)}
             size=Text.Xs
             weight=Text.Semibold
             spacing={Text.Em(0.05)}
