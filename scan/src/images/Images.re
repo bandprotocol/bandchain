@@ -23,6 +23,9 @@
 [@bs.module] external txLogo: string = "./tx-icon.png";
 [@bs.module] external noRequestIcon: string = "./noRequest.png";
 [@bs.module] external noRevisionIcon: string = "./noRevision.png";
+[@bs.module] external validatorLogo: string = "./validatorLogo.svg";
+[@bs.module] external inactiveValidatorLogo: string = "./inactiveValidatorLogo.svg";
+[@bs.module] external activeValidatorLogo: string = "./activeValidatorLogo.svg";
 [@bs.module] external correct: string = "./correct.png";
 [@bs.module] external validators: string = "./validators.png";
 [@bs.module] external blockLogo: string = "./blockLogo.svg";
