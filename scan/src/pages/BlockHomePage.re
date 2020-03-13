@@ -32,10 +32,9 @@ module Styles = {
     ]);
 };
 
-let renderBody = ((block, moniker): (BlockHook.Block.t, string)) => {
+let renderBody = ((block, proposer): (BlockHook.Block.t, option(ValidatorHook.Validator.t))) => {
   let height = block.height;
   let timestamp = block.timestamp;
-  let proposer = block.proposer->Address.toOperatorBech32;
   let totalTx = block.numTxs;
   let hash = block.hash |> Hash.toHex(~upper=true);
 
@@ -51,7 +50,10 @@ let renderBody = ((block, moniker): (BlockHook.Block.t, string)) => {
       <Col size=1.32> <TimeAgos time=timestamp size=Text.Md weight=Text.Medium /> </Col>
       <Col size=1.5>
         <div className={Styles.withWidth(150)}>
-          <Text value=moniker weight=Text.Medium block=true ellipsis=true />
+          {switch (proposer) {
+           | Some(validator) => <ValidatorMonikerLink validator />
+           | None => <Text value="Unknown" weight=Text.Medium block=true ellipsis=true />
+           }}
         </div>
       </Col>
       <Col size=1.05>
@@ -80,10 +82,8 @@ let make = () => {
     | None => []
     };
 
-  let blocksWithMonikers =
-    blocks->Belt_List.map(block =>
-      (block, BlockHook.Block.getProposerMoniker(block, validators))
-    );
+  let blocksWithProposers =
+    blocks->Belt_List.map(block => (block, BlockHook.Block.getProposer(block, validators)));
 
   <div className=Styles.pageContainer>
     <Row>
@@ -147,6 +147,6 @@ let make = () => {
         <Col> <HSpacing size=Spacing.md /> </Col>
       </Row>
     </THead>
-    {blocksWithMonikers->Belt_List.toArray->Belt_Array.map(renderBody)->React.array}
+    {blocksWithProposers->Belt_List.toArray->Belt_Array.map(renderBody)->React.array}
   </div>;
 };
