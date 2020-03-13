@@ -78,7 +78,7 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
-        id: json |> field("dataSourceID", intstr),
+        id: 0, // TODO , use id from events (not available right now)
         owner: json |> field("owner", string) |> Address.fromBech32,
         name: json |> field("name", string),
         fee: json |> field("fee", list(Coin.decodeCoin)),
@@ -119,7 +119,7 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
-        id: 0, // TODO , use id from events (not avaliable right now)
+        id: 0, // TODO , use id from events (not available right now)
         owner: json |> field("owner", string) |> Address.fromBech32,
         name: json |> field("name", string),
         code: json |> field("code", string) |> JsBuffer.fromBase64,
