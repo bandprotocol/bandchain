@@ -64,7 +64,7 @@ let make = (~txs: list(TxHook.Tx.t)) => {
       </Row>
     </THead>
     {txs
-     ->Belt.List.map(({blockHeight, hash, timestamp, fee, gasUsed, messages, sender}) => {
+     ->Belt.List.map(({blockHeight, hash, timestamp, fee, gasUsed, messages, sender, success}) => {
          <TBody key={hash |> Hash.toHex}>
            <Row>
              <HSpacing size={`px(20)} />
@@ -87,7 +87,7 @@ let make = (~txs: list(TxHook.Tx.t)) => {
                    block=true
                    code=true
                    spacing={Text.Em(0.02)}
-                   value={(fee.amount /. 10000.0)->Format.fPretty}
+                   value={fee->TxHook.Coin.getBandAmountFromCoins->Format.fPretty}
                    weight=Text.Medium
                    ellipsis=true
                  />
@@ -97,7 +97,9 @@ let make = (~txs: list(TxHook.Tx.t)) => {
              <Col> <div className=Styles.container /> </Col>
              <Col size=5. alignSelf=Col.Start>
                {messages
-                ->Belt.List.map(msg => {<> <Msg msg width=330 /> <VSpacing size=Spacing.md /> </>})
+                ->Belt.List.map(msg => {
+                    <> <Msg msg width=330 success /> <VSpacing size=Spacing.md /> </>
+                  })
                 ->Belt.List.toArray
                 ->React.array}
              </Col>
