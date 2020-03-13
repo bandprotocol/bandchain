@@ -361,7 +361,7 @@ let renderCreateOracleScript = msg => {
     </Col>
     <Col size=0.6 alignSelf=Col.Start>
       <VSpacing size=Spacing.md />
-      <div className={Styles.addressContainer(170)}>
+      <div className={Styles.addressContainer(300)}>
         <AddressRender address={msg |> TxHook.Msg.getCreator} />
       </div>
     </Col>
