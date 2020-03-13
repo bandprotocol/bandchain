@@ -27,7 +27,10 @@ func (k Keeper) AddReport(
 		}
 	}
 	if !found {
-		return types.ErrInvalidValidator(types.DefaultCodespace)
+		return types.ErrUnauthorizedPermission(
+			"AddReport: Reporter (%s) is not on the reporter list.",
+			validator.String(),
+		)
 	}
 
 	for _, submittedValidator := range request.ReceivedValidators {
