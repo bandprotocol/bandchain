@@ -43,7 +43,7 @@ module ToggleButton = {
   let make = (~isActive, ~setIsActive) => {
     <div className={style([display(`flex), alignItems(`center)])}>
       <div onClick={_ => setIsActive(_ => true)} className={style([cursor(`pointer)])}>
-        <Text value="Active" color=?{isActive ? Some(Colors.darkPurple) : None} />
+        <Text value="Active" color=Colors.darkPurple />
       </div>
       <HSpacing size=Spacing.sm />
       <div
@@ -54,15 +54,20 @@ module ToggleButton = {
           borderRadius(`px(15)),
           padding2(~v=`px(1), ~h=`px(2)),
           width(`px(35)),
+          cursor(`pointer),
           boxShadow(
             Shadow.box(~inset=true, ~x=`zero, ~y=`zero, ~blur=`px(4), Colors.borderPurple),
           ),
-        ])}>
-        <img src=Images.thunderIcon className={style([width(`px(15))])} />
+        ])}
+        onClick={_ => setIsActive(oldVal => !oldVal)}>
+        <img
+          src={isActive ? Images.activeValidatorLogo : Images.inactiveValidatorLogo}
+          className={style([width(`px(15))])}
+        />
       </div>
       <HSpacing size=Spacing.sm />
       <div onClick={_ => setIsActive(_ => false)} className={style([cursor(`pointer)])}>
-        <Text value="Inactive" color=?{!isActive ? Some(Colors.darkPurple) : None} />
+        <Text value="Inactive" />
       </div>
     </div>;
   };
