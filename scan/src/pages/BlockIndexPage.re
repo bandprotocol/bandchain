@@ -70,7 +70,16 @@ let make = (~height: int) => {
           />
           <div className=Styles.seperatedLine />
           {switch (blockOpt) {
-           | Some(block) => <TypeID.Block id={ID.Block.ID(height)} />
+           | Some(block) =>
+             <div className=Styles.vFlex>
+               //  <Text value="# " weight=Text.Regular color=Colors.mediumGray />
+
+                 <Text
+                   value={"#B" ++ (height |> Format.iPretty)}
+                   weight=Text.Thin
+                   spacing={Text.Em(0.06)}
+                 />
+               </div>
            | None => <Text value="in the future" size=Text.Xl />
            }}
         </div>
