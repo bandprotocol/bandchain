@@ -10,7 +10,6 @@ module Styles = {
 };
 [@react.component]
 let make = (~txs: list(TxHook.Tx.t)) => {
-  // let x = txs.
   let sendMsg =
     TxHook.Msg.{
       action:
