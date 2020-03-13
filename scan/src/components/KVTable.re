@@ -40,7 +40,7 @@ let make = (~kv) => {
             weight=Text.Semibold
             spacing={Text.Em(0.05)}
             height={Text.Px(18)}
-            color=Colors.graySubHeader
+            color=Colors.mediumLightGray
           />
         </Col>
         <Col size=1.>
@@ -50,7 +50,7 @@ let make = (~kv) => {
             weight=Text.Semibold
             spacing={Text.Em(0.05)}
             height={Text.Px(18)}
-            color=Colors.graySubHeader
+            color=Colors.mediumLightGray
           />
         </Col>
       </Row>
