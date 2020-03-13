@@ -140,7 +140,6 @@ module Validator = {
 
 module GlobalInfo = {
   type t = {
-    allBondedAmount: int,
     totalSupply: int,
     inflationRate: float,
     avgBlockTime: float,
@@ -160,12 +159,7 @@ let getList = (~limit=10, ~page=1, ~status="bonded", ()) => {
 
 // TODO: mock for now
 let getGlobalInfo = _ => {
-  GlobalInfo.{
-    allBondedAmount: 5353500,
-    totalSupply: 10849023,
-    inflationRate: 12.45,
-    avgBlockTime: 2.59,
-  };
+  GlobalInfo.{totalSupply: 10849023, inflationRate: 12.45, avgBlockTime: 2.59};
 };
 
 let toString =

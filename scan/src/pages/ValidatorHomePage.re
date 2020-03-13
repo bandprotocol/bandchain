@@ -180,14 +180,23 @@ let renderBody = (idx: int, validator: ValidatorHook.Validator.t) => {
 [@react.component]
 let make = () => {
   let (isActive, setIsActive) = React.useState(_ => true);
-  let validatorOpt = ValidatorHook.getList();
-
+  let validatorsOpt = ValidatorHook.getList();
+  let globalInfo = ValidatorHook.getGlobalInfo();
   let bondedValidatorCount = ValidatorHook.getValidatorCount(~status=ValidatorHook.Bonded, ());
   let unbondedValidatorCount =
     ValidatorHook.getValidatorCount(~status=ValidatorHook.Unbonded, ());
   let unbondingValidatorCount =
     ValidatorHook.getValidatorCount(~status=ValidatorHook.Unbonding, ());
   let allValidatorCount = bondedValidatorCount + unbondedValidatorCount + unbondingValidatorCount;
+
+  let allBondedAmountOpt = {
+    let%Opt validators = validatorsOpt;
+
+    Some(
+      validators->Belt.List.reduce(0., (acc, validator) => acc +. validator.tokens)
+      |> int_of_float,
+    );
+  };
 
   <div className=Styles.pageContainer>
     <Row justify=Row.Between>
@@ -203,7 +212,7 @@ let make = () => {
             spacing={Text.Em(0.06)}
           />
           <div className=Styles.seperatedLine />
-          <Text value={20->Format.iPretty ++ " In total"} />
+          <Text value={(allValidatorCount |> string_of_int) ++ " In total"} />
         </div>
       </Col>
       <Col> <ToggleButton isActive setIsActive /> </Col>
@@ -216,15 +225,27 @@ let make = () => {
             header="VALIDATORS"
           />
         </Col>
-        // MOCK for now
         <Col size=1.1>
-          <InfoHL info={InfoHL.Fraction(400, 400, true)} header="BONDED TOKENS" />
+          {switch (allBondedAmountOpt) {
+           | Some(allBondedAmount) =>
+             <InfoHL
+               info={InfoHL.Fraction(allBondedAmount, globalInfo.totalSupply, true)}
+               header="BONDED TOKENS"
+             />
+           | None => <InfoHL info={InfoHL.Text("?")} header="BONDED TOKENS" />
+           }}
         </Col>
         <Col size=0.9>
-          <InfoHL info={InfoHL.FloatWithSuffix(13., "  %")} header="INFLATION RATE" />
+          <InfoHL
+            info={InfoHL.FloatWithSuffix(globalInfo.inflationRate, "  %")}
+            header="INFLATION RATE"
+          />
         </Col>
         <Col size=0.51>
-          <InfoHL info={InfoHL.FloatWithSuffix(2.59, "  secs")} header="24 HOUR AVG BLOCK TIME" />
+          <InfoHL
+            info={InfoHL.FloatWithSuffix(globalInfo.avgBlockTime, "  secs")}
+            header="24 HOUR AVG BLOCK TIME"
+          />
         </Col>
       </Row>
     </div>
@@ -258,7 +279,7 @@ let make = () => {
         </Row>
       </div>
     </THead>
-    {validatorOpt
+    {validatorsOpt
      ->Belt_Option.getWithDefault([])
      ->Belt.List.toArray
      ->Belt_Array.mapWithIndex((idx, validator) => renderBody(idx, validator))
