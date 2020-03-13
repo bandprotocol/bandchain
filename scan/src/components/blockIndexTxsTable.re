@@ -10,29 +10,6 @@ module Styles = {
 };
 [@react.component]
 let make = (~txs: list(TxHook.Tx.t)) => {
-  let sendMsg =
-    TxHook.Msg.{
-      action:
-        Send({
-          fromAddress: "band129umpweqxfywq0f2zdpgjcfnkhzcu8jyewxvyx" |> Address.fromBech32,
-          toAddress: "band129umpweqxfywq0f2zdpgjcfnkhzcu8jyewxvyx" |> Address.fromBech32,
-          amount: [{denom: "BAND", amount: 1.2}],
-        }),
-      events: [],
-    };
-  let createDataSource =
-    TxHook.Msg.{
-      action:
-        CreateDataSource({
-          id: 23,
-          owner: "band129umpweqxfywq0f2zdpgjcfnkhzcu8jyewxvyx" |> Address.fromBech32,
-          name: "CoinGecko V.2",
-          fee: [{denom: "BAND", amount: 1.2}],
-          executable: "band129umpweqxfywq0f2zdpgjcfnkhzcu8jyewxvyx" |> JsBuffer.fromBase64,
-          sender: "band129umpweqxfywq0f2zdpgjcfnkhzcu8jyewxvyx" |> Address.fromBech32,
-        }),
-      events: [],
-    };
   <>
     <THead>
       <Row>

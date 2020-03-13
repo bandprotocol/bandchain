@@ -31,6 +31,16 @@ module Styles = {
 
   let checkLogo = style([marginRight(`px(10))]);
   let blockLogo = style([width(`px(50)), marginRight(`px(10))]);
+  let noTransactionLogo = style([width(`px(160))]);
+  let emptyContainer =
+    style([
+      height(`px(300)),
+      display(`flex),
+      justifyContent(`center),
+      alignItems(`center),
+      boxShadow(Shadow.box(~x=`px(0), ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, 0.05))),
+      backgroundColor(white),
+    ]);
   let proposerContainer = style([maxWidth(`px(180))]);
 
   let seperatorLine =
@@ -72,14 +82,12 @@ let make = (~height: int) => {
           {switch (blockOpt) {
            | Some(block) =>
              <div className=Styles.vFlex>
-               //  <Text value="# " weight=Text.Regular color=Colors.mediumGray />
-
-                 <Text
-                   value={"#B" ++ (height |> Format.iPretty)}
-                   weight=Text.Thin
-                   spacing={Text.Em(0.06)}
-                 />
-               </div>
+               <Text
+                 value={"#B" ++ (height |> Format.iPretty)}
+                 weight=Text.Thin
+                 spacing={Text.Em(0.06)}
+               />
+             </div>
            | None => <Text value="in the future" size=Text.Xl />
            }}
         </div>
@@ -133,8 +141,11 @@ let make = (~height: int) => {
        switch (txs->Belt_List.size) {
        | 0 =>
          <>
+           <VSpacing size=Spacing.xl />
            <BlockIndexTxsTable txs />
-           <img src=Images.noTransaction className=Styles.blockLogo />
+           <div className=Styles.emptyContainer>
+             <img src=Images.noTransaction className=Styles.noTransactionLogo />
+           </div>
          </>
        | _ =>
          <>

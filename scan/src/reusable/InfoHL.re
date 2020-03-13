@@ -97,13 +97,7 @@ let make = (~info, ~header, ~isLeft=true) => {
          <TimeAgos
            time
            prefix="("
-           size=Text.Md
-           weight=Text.Thin
-           spacing={Text.Em(0.06)}
-           color=Colors.mediumGray
-         />
-         <Text
-           value=")"
+           suffix=")"
            size=Text.Md
            weight=Text.Thin
            spacing={Text.Em(0.06)}
