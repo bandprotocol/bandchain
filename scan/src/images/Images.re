@@ -15,7 +15,6 @@
 [@bs.module] external report: string = "./report.png";
 [@bs.module] external copy: string = "./copy.svg";
 [@bs.module] external loadingSpinner: string = "./loading_spinner.gif";
-[@bs.module] external blockLogo: string = "./block.png";
 [@bs.module] external dataSourceLogo: string = "./data-source.png";
 [@bs.module] external txLogo: string = "./txLogo.svg";
 [@bs.module] external accountLogo: string = "./account-icon.png";
@@ -26,3 +25,4 @@
 [@bs.module] external noRevisionIcon: string = "./noRevision.png";
 [@bs.module] external correct: string = "./correct.png";
 [@bs.module] external validators: string = "./validators.png";
+[@bs.module] external blockLogo: string = "./blockLogo.svg";

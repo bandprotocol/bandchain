@@ -152,7 +152,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
         {balanceDetail("REWARD", "61,301.04", "60.31", "000C5C")}
       </Col>
       <div className=Styles.separatorLine />
-      <Col size=1. alignSelf=Col.FlexStart>
+      <Col size=1. alignSelf=Col.Start>
         <div className=Styles.totalContainer>
           {totalBalance("TOTAL BAND BALANCE", "12,408,746.93", "BAND")}
           {totalBalance("TOTAL BAND IN USD ($3.42 / BAND)", "37,226,240.79", "USD")}

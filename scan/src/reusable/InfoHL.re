@@ -130,7 +130,7 @@ let make = (~info, ~header, ~isLeft=true) => {
        </div>
      | Hash(hash, textColor) =>
        <Text
-         value={hash |> Hash.toHex(~with0x=true)}
+         value={hash |> Hash.toHex(~with0x=true, ~upper=true)}
          size=Text.Lg
          weight=Text.Semibold
          color=textColor

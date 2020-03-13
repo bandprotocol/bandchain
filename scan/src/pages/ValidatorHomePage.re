@@ -46,8 +46,8 @@ let renderBody = (idx: int, x: ValidatorHook.Validator.t) => {
   <TBody key={idx |> string_of_int}>
     <div className=Styles.fullWidth onClick={_ => Route.ValidatorHomePage |> Route.redirect}>
       <Row>
-        <Col size=0.8 alignSelf=Col.FlexStart>
-          <Col size=1.6 alignSelf=Col.FlexStart>
+        <Col size=0.8 alignSelf=Col.Start>
+          <Col size=1.6 alignSelf=Col.Start>
             <Text
               value={idx + 1 |> string_of_int}
               color=Colors.mediumGray
@@ -59,7 +59,7 @@ let renderBody = (idx: int, x: ValidatorHook.Validator.t) => {
             />
           </Col>
         </Col>
-        <Col size=1.9 alignSelf=Col.FlexStart>
+        <Col size=1.9 alignSelf=Col.Start>
           <div className=Styles.monikerContainer>
             <Text
               value=moniker
@@ -74,7 +74,7 @@ let renderBody = (idx: int, x: ValidatorHook.Validator.t) => {
             />
           </div>
         </Col>
-        <Col size=1.3 alignSelf=Col.FlexStart>
+        <Col size=1.3 alignSelf=Col.Start>
           <div>
             <Text
               value={12521643 |> Format.iPretty}
@@ -99,7 +99,7 @@ let renderBody = (idx: int, x: ValidatorHook.Validator.t) => {
             />
           </div>
         </Col>
-        <Col size=1.4 alignSelf=Col.FlexStart>
+        <Col size=1.4 alignSelf=Col.Start>
           <Text
             value={commission->Js.Float.toFixedWithPrecision(~digits=2)}
             color=Colors.mediumGray
@@ -111,7 +111,7 @@ let renderBody = (idx: int, x: ValidatorHook.Validator.t) => {
             size=Text.Md
           />
         </Col>
-        <Col size=1.3 alignSelf=Col.FlexStart>
+        <Col size=1.3 alignSelf=Col.Start>
           <Text
             value={uptime->Js.Float.toFixedWithPrecision(~digits=2)}
             color=Colors.mediumGray
@@ -123,7 +123,7 @@ let renderBody = (idx: int, x: ValidatorHook.Validator.t) => {
             size=Text.Md
           />
         </Col>
-        <Col size=1.5 alignSelf=Col.FlexStart>
+        <Col size=1.5 alignSelf=Col.Start>
           <Text
             value={reportRate->Js.Float.toFixedWithPrecision(~digits=2)}
             color=Colors.mediumGray
