@@ -1,4 +1,8 @@
-open Css;
+module Styles = {
+  open Css;
+
+  let timeContainer = style([display(`inlineFlex)]);
+};
 
 let setMomentRelativeTimeThreshold: unit => unit = [%bs.raw
   {|
@@ -42,7 +46,7 @@ let make =
     [|time|],
   );
 
-  <div className={style([display(`inlineFlex)])}>
+  <div className=Styles.timeContainer>
     <Text value=prefix size weight spacing color code nowrap=true />
     <HSpacing size=Spacing.sm />
     <Text value=displayTime size weight spacing color code nowrap=true />
