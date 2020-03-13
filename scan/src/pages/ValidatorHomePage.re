@@ -42,7 +42,9 @@ module ToggleButton = {
   [@react.component]
   let make = (~isActive, ~setIsActive) => {
     <div className={style([display(`flex), alignItems(`center)])}>
-      <div onClick={_ => setIsActive(_ => true)} className={style([cursor(`pointer)])}>
+      <div
+        onClick={_ => setIsActive(_ => true)}
+        className={style([display(`flex), cursor(`pointer)])}>
         <Text value="Active" color=Colors.darkPurple />
       </div>
       <HSpacing size=Spacing.sm />
@@ -52,11 +54,17 @@ module ToggleButton = {
           justifyContent(isActive ? `flexStart : `flexEnd),
           backgroundColor(Colors.fadePurple),
           borderRadius(`px(15)),
-          padding2(~v=`px(1), ~h=`px(2)),
-          width(`px(35)),
+          padding2(~v=`px(2), ~h=`px(3)),
+          width(`px(45)),
           cursor(`pointer),
           boxShadow(
-            Shadow.box(~inset=true, ~x=`zero, ~y=`zero, ~blur=`px(4), Colors.borderPurple),
+            Shadow.box(
+              ~inset=true,
+              ~x=`zero,
+              ~y=`zero,
+              ~blur=`px(4),
+              isActive ? Colors.borderPurple : Colors.mediumGray,
+            ),
           ),
         ])}
         onClick={_ => setIsActive(oldVal => !oldVal)}>
@@ -66,7 +74,9 @@ module ToggleButton = {
         />
       </div>
       <HSpacing size=Spacing.sm />
-      <div onClick={_ => setIsActive(_ => false)} className={style([cursor(`pointer)])}>
+      <div
+        onClick={_ => setIsActive(_ => false)}
+        className={style([display(`flex), cursor(`pointer)])}>
         <Text value="Inactive" />
       </div>
     </div>;
