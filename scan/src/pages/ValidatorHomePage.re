@@ -36,6 +36,53 @@ module Styles = {
     ]);
 };
 
+module ToggleButton = {
+  open Css;
+
+  [@react.component]
+  let make = (~isActive, ~setIsActive) => {
+    <div className={style([display(`flex), alignItems(`center)])}>
+      <div
+        onClick={_ => setIsActive(_ => true)}
+        className={style([display(`flex), cursor(`pointer)])}>
+        <Text value="Active" color=Colors.darkPurple />
+      </div>
+      <HSpacing size=Spacing.sm />
+      <div
+        className={style([
+          display(`flex),
+          justifyContent(isActive ? `flexStart : `flexEnd),
+          backgroundColor(Colors.fadePurple),
+          borderRadius(`px(15)),
+          padding2(~v=`px(2), ~h=`px(3)),
+          width(`px(45)),
+          cursor(`pointer),
+          boxShadow(
+            Shadow.box(
+              ~inset=true,
+              ~x=`zero,
+              ~y=`zero,
+              ~blur=`px(4),
+              isActive ? Colors.borderPurple : Colors.mediumGray,
+            ),
+          ),
+        ])}
+        onClick={_ => setIsActive(oldVal => !oldVal)}>
+        <img
+          src={isActive ? Images.activeValidatorLogo : Images.inactiveValidatorLogo}
+          className={style([width(`px(15))])}
+        />
+      </div>
+      <HSpacing size=Spacing.sm />
+      <div
+        onClick={_ => setIsActive(_ => false)}
+        className={style([display(`flex), cursor(`pointer)])}>
+        <Text value="Inactive" />
+      </div>
+    </div>;
+  };
+};
+
 let renderBody = (idx: int, validator: ValidatorHook.Validator.t) => {
   let moniker = validator.moniker;
   let votingPower = validator.votingPower;
@@ -130,22 +177,28 @@ let renderBody = (idx: int, validator: ValidatorHook.Validator.t) => {
 
 [@react.component]
 let make = () => {
+  let (isActive, setIsActive) = React.useState(_ => true);
   let validatorOpt = ValidatorHook.getList();
 
   <div className=Styles.pageContainer>
-    <div className=Styles.vFlex>
-      <img src=Images.validators className=Styles.validatorsLogo />
-      <Text
-        value="ALL VALIDATORS"
-        weight=Text.Medium
-        size=Text.Md
-        nowrap=true
-        color=Colors.mediumGray
-        spacing={Text.Em(0.06)}
-      />
-      <div className=Styles.seperatedLine />
-      <Text value={20->Format.iPretty ++ " In total"} />
-    </div>
+    <Row justify=Row.Between>
+      <Col>
+        <div className=Styles.vFlex>
+          <img src=Images.validators className=Styles.validatorsLogo />
+          <Text
+            value="ALL VALIDATORS"
+            weight=Text.Medium
+            size=Text.Md
+            nowrap=true
+            color=Colors.mediumGray
+            spacing={Text.Em(0.06)}
+          />
+          <div className=Styles.seperatedLine />
+          <Text value={20->Format.iPretty ++ " In total"} />
+        </div>
+      </Col>
+      <Col> <ToggleButton isActive setIsActive /> </Col>
+    </Row>
     <div className=Styles.highlight>
       <Row>
         <Col size=0.7> <InfoHL info={InfoHL.Fraction(8, 20, false)} header="VALIDATORS" /> </Col>
