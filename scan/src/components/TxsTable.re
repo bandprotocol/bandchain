@@ -51,7 +51,7 @@ let make = (~txs: list(TxHook.Tx.t)) => {
     {txs
      ->Belt.List.map(({blockHeight, hash, fee, messages, success}) => {
          <TBody key={hash |> Hash.toHex}>
-           <Row>
+           <Row minHeight={`px(30)}>
              <HSpacing size={`px(20)} />
              <Col size=1.67> <TxLink txHash=hash width=140 /> </Col>
              <Col size=0.88> <TypeID.Block id={ID.Block.ID(blockHeight)} /> </Col>
