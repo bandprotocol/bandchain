@@ -47,7 +47,7 @@ func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorU
 	k.SetEndBlockExecuteGasLimit(ctx, data.Params.EndBlockExecuteGasLimit)
 	k.SetMaxNameLength(ctx, data.Params.MaxNameLength)
 	k.SetMaxDescriptionLength(ctx, data.Params.MaxDescriptionLength)
-	k.SetGasPerRawDataRequest(ctx, data.Params.GasPerRawDataRequest)
+	k.SetGasPerRawDataRequestPerValidator(ctx, data.Params.GasPerRawDataRequestPerValidator)
 
 	for _, dataSource := range data.DataSources {
 		err := k.AddDataSource(

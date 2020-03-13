@@ -64,7 +64,7 @@ func (k Keeper) AddNewRawDataRequest(
 	}
 
 	ctx.GasMeter().ConsumeGas(
-		k.GasPerRawDataRequest(ctx)*uint64(len(request.RequestedValidators)),
+		k.GasPerRawDataRequestPerValidator(ctx)*uint64(len(request.RequestedValidators)),
 		"RawDataRequest",
 	)
 	k.SetRawDataRequest(ctx, requestID, externalID, types.NewRawDataRequest(dataSourceID, calldata))

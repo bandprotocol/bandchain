@@ -86,12 +86,12 @@ func TestGetSetEndBlockExecuteGasLimit(t *testing.T) {
 	require.Equal(t, uint64(5000), keeper.EndBlockExecuteGasLimit(ctx))
 }
 
-func TestGetSetGasPerRawDataRequest(t *testing.T) {
+func TestGetSetGasPerRawDataRequestPerValidator(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
-	keeper.SetGasPerRawDataRequest(ctx, uint64(3000))
-	require.Equal(t, uint64(3000), keeper.GasPerRawDataRequest(ctx))
-	keeper.SetGasPerRawDataRequest(ctx, uint64(5000))
-	require.Equal(t, uint64(5000), keeper.GasPerRawDataRequest(ctx))
+	keeper.SetGasPerRawDataRequestPerValidator(ctx, uint64(3000))
+	require.Equal(t, uint64(3000), keeper.GasPerRawDataRequestPerValidator(ctx))
+	keeper.SetGasPerRawDataRequestPerValidator(ctx, uint64(5000))
+	require.Equal(t, uint64(5000), keeper.GasPerRawDataRequestPerValidator(ctx))
 }
 
 func TestGetSetParams(t *testing.T) {
@@ -106,7 +106,7 @@ func TestGetSetParams(t *testing.T) {
 	keeper.SetEndBlockExecuteGasLimit(ctx, uint64(200000))
 	keeper.SetMaxNameLength(ctx, int64(1))
 	keeper.SetMaxDescriptionLength(ctx, int64(1))
-	keeper.SetGasPerRawDataRequest(ctx, uint64(1000))
+	keeper.SetGasPerRawDataRequestPerValidator(ctx, uint64(1000))
 	require.Equal(t, types.NewParams(1, 1, 1, 1, 1, 1, 200000, 1, 1, 1000), keeper.GetParams(ctx))
 
 	keeper.SetMaxDataSourceExecutableSize(ctx, int64(2))
@@ -118,6 +118,6 @@ func TestGetSetParams(t *testing.T) {
 	keeper.SetEndBlockExecuteGasLimit(ctx, uint64(300000))
 	keeper.SetMaxNameLength(ctx, int64(2))
 	keeper.SetMaxDescriptionLength(ctx, int64(2))
-	keeper.SetGasPerRawDataRequest(ctx, uint64(2000))
+	keeper.SetGasPerRawDataRequestPerValidator(ctx, uint64(2000))
 	require.Equal(t, types.NewParams(2, 2, 2, 2, 2, 2, 300000, 2, 2, 2000), keeper.GetParams(ctx))
 }
