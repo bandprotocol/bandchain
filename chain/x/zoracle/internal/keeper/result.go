@@ -10,9 +10,12 @@ import (
 func (k Keeper) AddResult(
 	ctx sdk.Context, requestID types.RequestID, oracleScriptID types.OracleScriptID, calldata []byte, result []byte,
 ) sdk.Error {
-	if int64(len(result)) > k.MaxResultSize(ctx) {
-		// TODO: better error later
-		return types.ErrResultNotFound(types.DefaultCodespace)
+	if len(result) > int(k.MaxResultSize(ctx)) {
+		return types.ErrBadDataValue(
+			"AddResult: Result size (%d) exceeds the maximum size (%d).",
+			len(result),
+			int(k.MaxResultSize(ctx)),
+		)
 	}
 
 	request, err := k.GetRequest(ctx, requestID)
@@ -48,6 +51,7 @@ func (k Keeper) GetResult(
 	ctx sdk.Context, requestID types.RequestID, oracleScriptID types.OracleScriptID, calldata []byte,
 ) (types.Result, sdk.Error) {
 	if !k.HasResult(ctx, requestID, oracleScriptID, calldata) {
+		// TODO: fix error
 		return types.Result{}, types.ErrResultNotFound(types.DefaultCodespace)
 	}
 	store := ctx.KVStore(k.storeKey)

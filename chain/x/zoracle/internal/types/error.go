@@ -12,6 +12,7 @@ const (
 
 	// TODO: Change this to 101 after old errors were cleared.
 	CodeInvalidBasicMsg sdk.CodeType = 201
+	CodeBadDataValue    sdk.CodeType = 202
 
 	CodeInvalidInput       sdk.CodeType = 101
 	CodeInvalidValidator   sdk.CodeType = 102
@@ -69,4 +70,8 @@ func ErrRawDataRequestNotFound(codespace sdk.CodespaceType) sdk.Error {
 
 func ErrInvalidBasicMsg(format string, args ...interface{}) sdk.Error {
 	return sdk.NewError(DefaultCodespace, CodeInvalidBasicMsg, fmt.Sprintf(format, args...))
+}
+
+func ErrBadDataValue(format string, args ...interface{}) sdk.Error {
+	return sdk.NewError(DefaultCodespace, CodeBadDataValue, fmt.Sprintf(format, args...))
 }
