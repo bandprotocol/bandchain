@@ -51,6 +51,13 @@ func completeAndBroadcastTxCLI(
 		return sdk.TxResponse{}, err
 	}
 
+	if txBldr.Gas() == 0 {
+		txBldr, err = utils.EnrichWithGas(txBldr, cliCtx, msgs)
+		if err != nil {
+			return sdk.TxResponse{}, err
+		}
+	}
+
 	// build and sign the transaction
 	signMsg, err := txBldr.BuildSignMsg(msgs)
 	if err != nil {
