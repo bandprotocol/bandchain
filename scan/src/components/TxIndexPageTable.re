@@ -234,7 +234,7 @@ let renderCreateDataSource = msg => {
             value="NEW DATA SOURCE"
             size=Text.Sm
             spacing={Text.Em(0.07)}
-            color=Colors.lightOrange
+            color=Colors.yellow5
           />
         </div>
         <VSpacing size=Spacing.sm />
@@ -292,7 +292,7 @@ let renderEditDataSource = msg => {
             value="EDIT DATA SOURCE"
             size=Text.Sm
             spacing={Text.Em(0.07)}
-            color=Colors.lightOrange
+            color=Colors.yellow5
           />
         </div>
         <VSpacing size=Spacing.sm />
