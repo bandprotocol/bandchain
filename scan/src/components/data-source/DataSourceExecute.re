@@ -44,7 +44,7 @@ module Styles = {
 
 let parameterInput = (name, placeholder) => {
   <div className=Styles.listContainer key=name>
-    <Text value=name size=Text.Md color=Colors.graySubHeader />
+    <Text value=name size=Text.Md color=Colors.mediumLightGray />
     <VSpacing size=Spacing.xs />
     <input className=Styles.input type_="text" placeholder />
   </div>;
@@ -54,9 +54,9 @@ let parameterInput = (name, placeholder) => {
 let make = () => {
   <div className=Styles.container>
     <div className=Styles.hFlex>
-      <Text value="Test data source execution with following" color=Colors.grayHeader />
+      <Text value="Test data source execution with following" color=Colors.mediumGray />
       <HSpacing size=Spacing.sm />
-      <Text value="parameters" color=Colors.grayHeader weight=Text.Bold />
+      <Text value="parameters" color=Colors.mediumGray weight=Text.Bold />
     </div>
     <VSpacing size=Spacing.lg />
     <div className=Styles.paramsContainer>

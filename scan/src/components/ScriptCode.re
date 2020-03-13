@@ -26,7 +26,7 @@ let renderCode = ((name, content)) => {
     <Row>
       <img src=Images.textDocument className=Styles.maxHeight20 />
       <HSpacing size=Spacing.md />
-      <Text value=name size=Text.Lg color=Colors.grayHeader />
+      <Text value=name size=Text.Lg color=Colors.mediumGray />
     </Row>
     <VSpacing size=Spacing.md />
     <div className=Styles.mediumText>

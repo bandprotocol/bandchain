@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/mattn/go-shellwords"
 )
 
 var (
@@ -33,21 +35,33 @@ func writeFile(executable []byte) (string, string, error) {
 }
 
 // RunOnLocal spawns a new subprocess and runs the given executable. NOT SAFE!
-func RunOnLocal(executable []byte, timeOut time.Duration, args ...string) ([]byte, error) {
+func RunOnLocal(executable []byte, timeOut time.Duration, arg string) ([]byte, error) {
+	args, err := shellwords.Parse(arg)
+	if err != nil {
+		return nil, err
+	}
+
 	dir, filename, err := writeFile(executable)
 	if err != nil {
 		return nil, err
 	}
+
 	defer os.RemoveAll(dir) // clean up
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeOut)
+
 	defer cancel()
 
 	return exec.CommandContext(ctx, filename, args...).Output()
 }
 
 // RunOnDocker runs the given executable in a new docker container.
-func RunOnDocker(executable []byte, timeOut time.Duration, args ...string) ([]byte, error) {
+func RunOnDocker(executable []byte, timeOut time.Duration, arg string) ([]byte, error) {
+	args, err := shellwords.Parse(arg)
+	if err != nil {
+		return nil, err
+	}
+
 	dir, filename, err := writeFile(executable)
 	if err != nil {
 		return nil, err
@@ -58,8 +72,9 @@ func RunOnDocker(executable []byte, timeOut time.Duration, args ...string) ([]by
 		"docker", "run", "-d", "--rm", "band-provider", "sleep", fmt.Sprintf("%d", int(timeOut.Seconds())),
 	).Output()
 	if err != nil {
-		return []byte{}, err
+		return nil, err
 	}
+
 	containerID := strings.TrimSpace(string(rawID))
 	defer exec.Command("docker", "stop", containerID).Output()
 
@@ -67,7 +82,7 @@ func RunOnDocker(executable []byte, timeOut time.Duration, args ...string) ([]by
 		"docker", "cp", filename, fmt.Sprintf("%s:/exec", containerID),
 	).Output()
 	if err != nil {
-		return []byte{}, err
+		return nil, err
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), timeOut)
 	defer cancel()

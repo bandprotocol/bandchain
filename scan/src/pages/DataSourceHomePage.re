@@ -11,7 +11,7 @@ module Styles = {
       height(`px(1)),
       marginLeft(`px(10)),
       marginRight(`px(10)),
-      backgroundColor(Colors.grayHeader),
+      backgroundColor(Colors.mediumGray),
     ]);
 
   let textContainer = style([paddingLeft(Spacing.lg), display(`flex)]);
@@ -39,7 +39,7 @@ let make = () => {
             spacing={Text.Em(0.06)}
             height={Text.Px(15)}
             nowrap=true
-            color=Colors.grayHeader
+            color=Colors.mediumGray
             block=true
           />
           <div className=Styles.seperatedLine />
@@ -48,7 +48,7 @@ let make = () => {
             size=Text.Md
             weight=Text.Thin
             spacing={Text.Em(0.06)}
-            color=Colors.grayHeader
+            color=Colors.mediumGray
             nowrap=true
           />
         </div>

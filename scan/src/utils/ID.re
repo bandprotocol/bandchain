@@ -6,7 +6,7 @@ module type RawIDSig = {
 
 module RawDataSourceID = {
   let prefix = "#D";
-  let color = Colors.brightOrange;
+  let color = Colors.yellow5;
   let route = id => Route.DataSourceIndexPage(id, Route.DataSourceExecute);
 };
 
@@ -18,7 +18,7 @@ module RawOracleScriptID = {
 
 module RawRequestID = {
   let prefix = "#R";
-  let color = Colors.orange;
+  let color = Colors.orange5;
   let route = id => Route.RequestIndexPage(id, Route.RequestReportStatus);
 };
 
