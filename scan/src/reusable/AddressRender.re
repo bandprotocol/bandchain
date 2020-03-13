@@ -1,7 +1,8 @@
 type pos_t =
   | Title
   | Subtitle
-  | Text;
+  | Text
+  | None;
 
 let prefixFontSize =
   fun
@@ -34,20 +35,24 @@ module Styles = {
 
   let pointerEvents =
     fun
-    | Title => style([pointerEvents(`none)])
+    | Title
     | Subtitle
+    | None => style([pointerEvents(`none)])
     | Text => style([pointerEvents(`auto)]);
 };
 
 [@react.component]
-let make = (~address, ~position=Text) => {
-  let noPrefixAddress = address |> Address.toBech32 |> Js.String.sliceToEnd(~from=4);
+let make = (~address, ~position=Text, ~validator=false) => {
+  let noPrefixAddress =
+    validator
+      ? address |> Address.toOperatorBech32 |> Js.String.sliceToEnd(~from=11)
+      : address |> Address.toBech32 |> Js.String.sliceToEnd(~from=4);
 
   <div
-    className={Css.merge([Styles.container, Styles.pointerEvents(position)])}
+    className={Css.merge([Styles.container, Styles.pointerEvents(validator ? None : position)])}
     onClick={_ => Route.redirect(Route.AccountIndexPage(address, Route.AccountTransactions))}>
     <Text
-      value="band"
+      value={validator ? "bandvaloper" : "band"}
       size={position |> prefixFontSize}
       weight=Text.Semibold
       code=true
