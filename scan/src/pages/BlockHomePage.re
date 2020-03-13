@@ -40,30 +40,28 @@ let renderBody = ((block, moniker): (BlockHook.Block.t, string)) => {
   let hash = block.hash |> Hash.toHex(~upper=true);
 
   <TBody key={height |> string_of_int}>
-    <div className=Styles.fullWidth onClick={_ => Route.BlockIndexPage(height) |> Route.redirect}>
-      <Row>
-        <Col> <HSpacing size=Spacing.md /> </Col>
-        <Col size=1.11> <TypeID.Block id={ID.Block.ID(height)} /> </Col>
-        <Col size=3.93>
-          <div className={Styles.withWidth(330)}>
-            <Text value=hash weight=Text.Medium block=true code=true ellipsis=true />
-          </div>
-        </Col>
-        <Col size=1.32> <TimeAgos time=timestamp size=Text.Md weight=Text.Medium /> </Col>
-        <Col size=1.5>
-          <div className={Styles.withWidth(150)}>
-            <Text value=moniker weight=Text.Medium block=true ellipsis=true />
-          </div>
-        </Col>
-        <Col size=1.05>
-          <Row>
-            <div className=Styles.fillLeft />
-            <Text value={totalTx |> Format.iPretty} code=true weight=Text.Medium />
-          </Row>
-        </Col>
-        <Col> <HSpacing size=Spacing.md /> </Col>
-      </Row>
-    </div>
+    <Row minHeight={`px(40)}>
+      <Col> <HSpacing size=Spacing.md /> </Col>
+      <Col size=1.11> <TypeID.Block id={ID.Block.ID(height)} /> </Col>
+      <Col size=3.93>
+        <div className={Styles.withWidth(330)}>
+          <Text value=hash weight=Text.Medium block=true code=true ellipsis=true />
+        </div>
+      </Col>
+      <Col size=1.32> <TimeAgos time=timestamp size=Text.Md weight=Text.Medium /> </Col>
+      <Col size=1.5>
+        <div className={Styles.withWidth(150)}>
+          <Text value=moniker weight=Text.Medium block=true ellipsis=true />
+        </div>
+      </Col>
+      <Col size=1.05>
+        <Row>
+          <div className=Styles.fillLeft />
+          <Text value={totalTx |> Format.iPretty} code=true weight=Text.Medium />
+        </Row>
+      </Col>
+      <Col> <HSpacing size=Spacing.md /> </Col>
+    </Row>
   </TBody>;
 };
 
