@@ -1,3 +1,9 @@
+module Styles = {
+  open Css;
+
+  let timeContainer = style([display(`inlineFlex)]);
+};
+
 let setMomentRelativeTimeThreshold: unit => unit = [%bs.raw
   {|
 function() {
@@ -14,7 +20,17 @@ function() {
 ];
 
 [@react.component]
-let make = (~time, ~size=Text.Sm, ~weight=Text.Regular) => {
+let make =
+    (
+      ~time,
+      ~prefix="",
+      ~suffix="",
+      ~size=Text.Sm,
+      ~weight=Text.Regular,
+      ~spacing=Text.Unset,
+      ~color=Colors.mediumGray,
+      ~code=false,
+    ) => {
   let (displayTime, setDisplayTime) =
     React.useState(_ => time->MomentRe.Moment.fromNow(~withoutSuffix=None));
 
@@ -30,5 +46,11 @@ let make = (~time, ~size=Text.Sm, ~weight=Text.Regular) => {
     [|time|],
   );
 
-  <Text value=displayTime size weight/>;
+  <div className=Styles.timeContainer>
+    <Text value=prefix size weight spacing color code nowrap=true />
+    <HSpacing size=Spacing.sm />
+    <Text value=displayTime size weight spacing color code nowrap=true />
+    <HSpacing size=Spacing.sm />
+    <Text value=suffix size weight spacing color code nowrap=true />
+  </div>;
 };
