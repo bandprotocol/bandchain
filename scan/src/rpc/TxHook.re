@@ -47,7 +47,22 @@ module Coin = {
     ->Belt_List.get(0)
     ->Belt_Option.mapWithDefault(0., coin => coin.amount);
 
-  let getDescription = coin => (coin.amount |> Format.fPretty) ++ " " ++ coin.denom;
+  let getDescription = coin =>
+    (coin.amount |> Format.fPretty)
+    ++ " "
+    ++ (
+      switch (coin.denom.[0]) {
+      | 'u' => coin.denom->String.sub(_, 1, (coin.denom |> String.length) - 1) |> String.uppercase
+      | _ => coin.denom
+      }
+    );
+
+  let toCoinsString = coins =>
+    coins
+    ->Belt_List.map(coin => coin->getDescription)
+    ->Belt_List.reduceWithIndex("", (des, acc, i) =>
+        acc ++ des ++ (i + 1 < coins->Belt_List.size ? ", " : "")
+      );
 };
 
 module Msg = {
@@ -219,13 +234,7 @@ module Msg = {
   let getDescription = msg => {
     switch (msg.action) {
     | Send(send) =>
-      send.amount
-      ->Belt_List.map(coin => coin->Coin.getDescription)
-      ->Belt_List.reduceWithIndex("", (des, acc, i) =>
-          acc ++ des ++ (i + 1 < send.amount->Belt_List.size ? ", " : "")
-        )
-      ++ "->"
-      ++ (send.toAddress |> Address.toBech32)
+      (send.amount |> Coin.toCoinsString) ++ "->" ++ (send.toAddress |> Address.toBech32)
     | CreateDataSource(dataSource) => dataSource.name
     | EditDataSource(dataSource) => dataSource.name
     | CreateOracleScript(oracleScript) => oracleScript.name
