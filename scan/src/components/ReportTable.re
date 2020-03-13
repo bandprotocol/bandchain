@@ -48,8 +48,8 @@ let make = (~reports: list(RequestHook.Report.t)) => {
            ->Belt_List.get(0)
            ->Belt_Option.getWithDefault("Unknown");
          <TBody key={txHash |> Hash.toHex}>
-           <Row alignItems=Css.flexStart>
 
+             <Row alignItems=Css.flexStart>
                <Col> <div className=Styles.txhash /> </Col>
                <Col size=1.0> <TElement elementType={txHash->TElement.HashWithLink} /> </Col>
                <Col size=0.35> <TElement elementType={reportedAtHeight->TElement.Height} /> </Col>
@@ -60,27 +60,27 @@ let make = (~reports: list(RequestHook.Report.t)) => {
                  <TElement elementType={moniker->TElement.Detail} />
                </Col>
              </Row>
-             //  <Col size=0.6>
-             //    {values
-             //     ->Belt.Array.map(((source, _)) =>
-             //         <>
-             //           <TElement elementType={source->TElement.Source} />
-             //           <VSpacing size=Spacing.sm />
-             //         </>
-             //       )
-             //     ->React.array}
-             //  </Col>
-             //  <Col size=0.9>
-             //    {values
-             //     ->Belt.Array.map(((_, value)) =>
-             //         <>
-             //           <TElement elementType={value->TElement.Value} />
-             //           <VSpacing size=Spacing.sm />
-             //         </>
-             //       )
-             //     ->React.array}
-             //  </Col>
-         </TBody>;
+           </TBody>;
+           //  <Col size=0.6>
+           //    {values
+           //     ->Belt.Array.map(((source, _)) =>
+           //         <>
+           //           <TElement elementType={source->TElement.Source} />
+           //           <VSpacing size=Spacing.sm />
+           //         </>
+           //       )
+           //     ->React.array}
+           //  </Col>
+           //  <Col size=0.9>
+           //    {values
+           //     ->Belt.Array.map(((_, value)) =>
+           //         <>
+           //           <TElement elementType={value->TElement.Value} />
+           //           <VSpacing size=Spacing.sm />
+           //         </>
+           //       )
+           //     ->React.array}
+           //  </Col>
        })
      ->Array.of_list
      ->React.array}

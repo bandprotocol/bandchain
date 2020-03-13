@@ -68,7 +68,7 @@ let make = (~txs: list(TxHook.Tx.t)) => {
          <TBody key={hash |> Hash.toHex}>
            <Row>
              <HSpacing size={`px(20)} />
-             <Col size=1.67 alignSelf=Col.FlexStart>
+             <Col size=1.67 alignSelf=Col.Start>
                <div className={Css.merge([Styles.hashContainer, Styles.paddingTopContainer])}>
                  <Text
                    block=true
@@ -80,7 +80,7 @@ let make = (~txs: list(TxHook.Tx.t)) => {
                  />
                </div>
              </Col>
-             <Col size=1.05 alignSelf=Col.FlexStart>
+             <Col size=1.05 alignSelf=Col.Start>
                <div className={Css.merge([Styles.fullWidth, Styles.paddingTopContainer])}>
                  <AutoSpacing dir="left" />
                  <Text
@@ -95,7 +95,7 @@ let make = (~txs: list(TxHook.Tx.t)) => {
                </div>
              </Col>
              <Col> <div className=Styles.container /> </Col>
-             <Col size=5. alignSelf=Col.FlexStart>
+             <Col size=5. alignSelf=Col.Start>
                {messages
                 ->Belt.List.map(msg => {<> <Msg msg width=330 /> <VSpacing size=Spacing.md /> </>})
                 ->Belt.List.toArray
