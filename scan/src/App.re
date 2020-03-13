@@ -93,6 +93,7 @@ let make = () => {
          | ValidatorHomePage => <ValidatorHomePage />
          | RequestIndexPage(reqID, hashtag) => <RequestIndexPage reqID hashtag />
          | AccountIndexPage(address, hashtag) => <AccountIndexPage address hashtag />
+         | ValidatorIndexPage(address, hashtag) => <ValidatorIndexPage address hashtag />
          | NotFound =>
            ReasonReactRouter.replace("/");
            React.null;
