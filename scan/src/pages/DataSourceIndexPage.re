@@ -35,13 +35,13 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
             block=true
           />
           <div className=Styles.seperatedLine />
-          <Text
-            value="Last updated 4 hours ago"
+          // TODO: Mock for now
+          <TimeAgos
+            time={MomentRe.momentNow()}
+            prefix="Last updated"
             size=Text.Md
             weight=Text.Thin
             spacing={Text.Em(0.06)}
-            color=Colors.mediumGray
-            nowrap=true
           />
         </div>
       </Col>
