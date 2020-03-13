@@ -177,7 +177,7 @@ let renderRequest = msg => {
 let renderReport = msg => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
-    <Col size=0.4 alignSelf=Col.FlexStart>
+    <Col size=0.4 alignSelf=Col.Start>
       <div className=Styles.badgeContainer>
         <div className={Styles.badge(Colors.fadeOrange)}>
           <Text
@@ -189,13 +189,13 @@ let renderReport = msg => {
         </div>
       </div>
     </Col>
-    <Col size=0.6 alignSelf=Col.FlexStart>
+    <Col size=0.6 alignSelf=Col.Start>
       <VSpacing size=Spacing.sm />
       <div className={Styles.addressContainer(170)}>
         <AddressRender address={msg |> TxHook.Msg.getCreator} />
       </div>
     </Col>
-    <Col size=1.3 alignSelf=Col.FlexStart>
+    <Col size=1.3 alignSelf=Col.Start>
       <VSpacing size=Spacing.sm />
       <div className=Styles.topicContainer>
         <Text value="REQUEST ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
