@@ -146,14 +146,22 @@ module GlobalInfo = {
   };
 };
 
+let toString =
+  fun
+  | Bonded => "bonded"
+  | Unbonded => "unbonded"
+  | Unbonding => "unbonding";
+
 let get = address => {
   let addressStr = address |> Address.toBech32;
   let json = AxiosHooks.use({j|staking/validator/$addressStr|j});
   json |> Belt.Option.map(_, Validator.decode);
 };
 
-let getList = (~limit=10, ~page=1, ~status="bonded", ()) => {
-  let json = AxiosHooks.use({j|staking/validators?limit=$limit&page=$page&status=$status|j});
+// TODO: combine Unbonded and Unbounding
+let getList = (~limit=10, ~page=1, ~status=Bonded, ()) => {
+  let statusStr = status |> toString;
+  let json = AxiosHooks.use({j|staking/validators?limit=$limit&page=$page&status=$statusStr|j});
   json |> Belt.Option.map(_, Validator.decodeList);
 };
 
@@ -161,12 +169,6 @@ let getList = (~limit=10, ~page=1, ~status="bonded", ()) => {
 let getGlobalInfo = _ => {
   GlobalInfo.{totalSupply: 10849023, inflationRate: 12.45, avgBlockTime: 2.59};
 };
-
-let toString =
-  fun
-  | Bonded => "bonded"
-  | Unbonded => "unbonded"
-  | Unbonding => "unbonding";
 
 let getValidatorCount = (~status=Bonded, ()) => {
   let statusStr = status |> toString;

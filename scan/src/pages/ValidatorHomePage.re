@@ -9,6 +9,17 @@ module Styles = {
   let valueContainer = style([display(`flex), justifyContent(`flexStart)]);
   let monikerContainer = style([maxWidth(`px(180))]);
 
+  let emptyContainer =
+    style([
+      display(`flex),
+      justifyContent(`center),
+      alignItems(`center),
+      height(`px(300)),
+      boxShadow(Shadow.box(~x=`px(0), ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, 0.05))),
+      backgroundColor(white),
+      marginBottom(`px(1)),
+    ]);
+
   let seperatedLine =
     style([
       width(`px(13)),
@@ -180,7 +191,8 @@ let renderBody = (idx: int, validator: ValidatorHook.Validator.t) => {
 [@react.component]
 let make = () => {
   let (isActive, setIsActive) = React.useState(_ => true);
-  let validatorsOpt = ValidatorHook.getList();
+  let validatorsOpt =
+    ValidatorHook.getList(~status=isActive ? ValidatorHook.Bonded : ValidatorHook.Unbonded, ());
   let globalInfo = ValidatorHook.getGlobalInfo();
   let bondedValidatorCount = ValidatorHook.getValidatorCount(~status=ValidatorHook.Bonded, ());
   let unbondedValidatorCount =
@@ -220,10 +232,14 @@ let make = () => {
     <div className=Styles.highlight>
       <Row>
         <Col size=0.7>
-          <InfoHL
-            info={InfoHL.Fraction(bondedValidatorCount, allValidatorCount, false)}
-            header="VALIDATORS"
-          />
+          {switch (validatorsOpt) {
+           | Some(validators) =>
+             <InfoHL
+               info={InfoHL.Fraction(validators->Belt.List.length, allValidatorCount, false)}
+               header="VALIDATORS"
+             />
+           | None => <InfoHL info={InfoHL.Text("?")} header="VALIDATORS" />
+           }}
         </Col>
         <Col size=1.1>
           {switch (allBondedAmountOpt) {
@@ -279,11 +295,19 @@ let make = () => {
         </Row>
       </div>
     </THead>
-    {validatorsOpt
-     ->Belt_Option.getWithDefault([])
-     ->Belt.List.toArray
-     ->Belt_Array.mapWithIndex((idx, validator) => renderBody(idx, validator))
-     ->React.array}
+    {switch (validatorsOpt) {
+     | Some(validators) =>
+       if (validators->Belt_List.length > 0) {
+         validators
+         ->Belt.List.toArray
+         ->Belt_Array.mapWithIndex((idx, validator) => renderBody(idx, validator))
+         ->React.array;
+       } else {
+         <div className=Styles.emptyContainer> <Text value="No Validators" size=Text.Xxl /> </div>;
+       }
+     | None =>
+       <div className=Styles.emptyContainer> <Text value="Loading..." size=Text.Xxl /> </div>
+     }}
     <VSpacing size=Spacing.lg />
   </div>;
 };
