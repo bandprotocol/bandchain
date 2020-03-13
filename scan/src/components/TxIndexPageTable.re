@@ -161,7 +161,7 @@ let renderRequest = msg => {
       </div>
       <VSpacing size=Spacing.lg />
       <div className=Styles.topicContainer>
-        <Text value="REPORT REPIOD" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <Text value="REPORT PERIOD" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className=Styles.hFlex>
           <Text value="10" weight=Text.Bold code=true />
           <HSpacing size=Spacing.sm />
