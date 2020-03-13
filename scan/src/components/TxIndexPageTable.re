@@ -87,7 +87,7 @@ let renderSend = (msg, send: TxHook.Msg.Send.t) => {
 };
 
 // TODO: move it to file later.
-let renderRequest = (msg: TxHook.Msg.t, request: TxHook.Msg.Request.t) => {
+let renderRequest = (msg, request: TxHook.Msg.Request.t) => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
     <Col size=0.4 alignSelf=Col.Start>
@@ -340,7 +340,7 @@ let renderEditDataSource = (msg, dataSource: TxHook.Msg.EditDataSource.t) => {
   </Row>;
 };
 
-let renderCreateOracleScript = msg => {
+let renderCreateOracleScript = (msg, oracleScript: TxHook.Msg.CreateOracleScript.t) => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
     <Col size=0.4 alignSelf=Col.Start>
@@ -356,13 +356,13 @@ let renderCreateOracleScript = msg => {
         </div>
         <VSpacing size=Spacing.sm />
         <div className={Styles.badge(Colors.pink1)}>
-          <TypeID.OracleScript id={ID.OracleScript.ID(123)} />
+          <TypeID.OracleScript id={ID.OracleScript.ID(oracleScript.id)} />
         </div>
       </div>
     </Col>
     <Col size=0.6 alignSelf=Col.Start>
       <VSpacing size=Spacing.md />
-      <div className={Styles.addressContainer(300)}>
+      <div className={Styles.addressContainer(170)}>
         <AddressRender address={msg |> TxHook.Msg.getCreator} />
       </div>
     </Col>
@@ -371,16 +371,16 @@ let renderCreateOracleScript = msg => {
       <div className=Styles.topicContainer>
         <Text value="OWNER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className={Styles.addressContainer(300)}>
-          <AddressRender address={msg |> TxHook.Msg.getCreator} />
+          <AddressRender address={oracleScript.owner} />
         </div>
       </div>
       <VSpacing size=Spacing.lg />
       <div className=Styles.topicContainer>
         <Text value="NAME" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className=Styles.hFlex>
-          <TypeID.OracleScript id={ID.OracleScript.ID(123)} />
+          <TypeID.OracleScript id={ID.OracleScript.ID(oracleScript.id)} />
           <HSpacing size=Spacing.sm />
-          <Text value="Binance Crypto Price" />
+          <Text value={oracleScript.name} />
         </div>
       </div>
       <VSpacing size=Spacing.md />
@@ -389,7 +389,7 @@ let renderCreateOracleScript = msg => {
   </Row>;
 };
 
-let renderEditOracleScript = msg => {
+let renderEditOracleScript = (msg, oracleScript: TxHook.Msg.EditOracleScript.t) => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
     <Col size=0.4 alignSelf=Col.Start>
@@ -405,13 +405,13 @@ let renderEditOracleScript = msg => {
         </div>
         <VSpacing size=Spacing.sm />
         <div className={Styles.badge(Colors.pink1)}>
-          <TypeID.OracleScript id={ID.OracleScript.ID(123)} />
+          <TypeID.OracleScript id={ID.OracleScript.ID(oracleScript.id)} />
         </div>
       </div>
     </Col>
     <Col size=0.6 alignSelf=Col.Start>
       <VSpacing size=Spacing.md />
-      <div className={Styles.addressContainer(300)}>
+      <div className={Styles.addressContainer(170)}>
         <AddressRender address={msg |> TxHook.Msg.getCreator} />
       </div>
     </Col>
@@ -420,16 +420,16 @@ let renderEditOracleScript = msg => {
       <div className=Styles.topicContainer>
         <Text value="OWNER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className={Styles.addressContainer(300)}>
-          <AddressRender address={msg |> TxHook.Msg.getCreator} />
+          <AddressRender address={oracleScript.owner} />
         </div>
       </div>
       <VSpacing size=Spacing.lg />
       <div className=Styles.topicContainer>
         <Text value="NAME" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className=Styles.hFlex>
-          <TypeID.OracleScript id={ID.OracleScript.ID(123)} />
+          <TypeID.OracleScript id={ID.OracleScript.ID(oracleScript.id)} />
           <HSpacing size=Spacing.sm />
-          <Text value="Binance Crypto Price" />
+          <Text value={oracleScript.name} />
         </div>
       </div>
       <VSpacing size=Spacing.md />
@@ -443,8 +443,8 @@ let renderBody = (msg: TxHook.Msg.t) => {
   | Send(send) => renderSend(msg, send)
   | CreateDataSource(dataSource) => renderCreateDataSource(msg, dataSource)
   | EditDataSource(dataSource) => renderEditDataSource(msg, dataSource)
-  | CreateOracleScript(_) => renderCreateOracleScript(msg)
-  | EditOracleScript(_) => renderEditOracleScript(msg)
+  | CreateOracleScript(oracleScript) => renderCreateOracleScript(msg, oracleScript)
+  | EditOracleScript(oracleScript) => renderEditOracleScript(msg, oracleScript)
   | Request(request) => renderRequest(msg, request)
   | Report(report) => renderReport(msg, report)
   | Unknown => React.null
