@@ -59,19 +59,20 @@ module Validator = {
       operatorAddress: json |> field("operator_address", string) |> Address.fromBech32,
       consensusPubkey: json |> field("consensus_pubkey", string) |> PubKey.fromBech32,
       rewardDestinationAddress: "band17ljds2gj3kds234lkg",
-      votingPower: 45.34,
+      votingPower: 25.,
       moniker: json |> at(["description", "moniker"], string),
       identity: json |> at(["description", "identity"], string),
       website: json |> at(["description", "website"], string),
       details: json |> at(["description", "details"], string),
       tokens: json |> at(["tokens"], uamount),
       commission:
-        json |> at(["commission", "commission_rates", "rate"], JsonUtils.Decode.floatstr),
+        (json |> at(["commission", "commission_rates", "rate"], JsonUtils.Decode.floatstr))
+        *. 100.,
       bondedHeight: 1,
       // TODO: mock for now
       uptime: 100.0,
       completedRequestCount: 23459,
-      missedRequestCount: 100,
+      missedRequestCount: 20,
       nodeStatus: {
         uptime: 100.00,
         avgResponseTime: 2,

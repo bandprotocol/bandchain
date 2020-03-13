@@ -84,11 +84,13 @@ module ToggleButton = {
 };
 
 let renderBody = (idx: int, validator: ValidatorHook.Validator.t) => {
-  let moniker = validator.moniker;
   let votingPower = validator.votingPower;
-  let commission = 12.5;
+  let token = validator.tokens;
+  let commission = validator.commission;
   let uptime = validator.uptime;
-  let reportRate = 100.00;
+  let allRequestCount =
+    validator.completedRequestCount + validator.missedRequestCount |> float_of_int;
+  let reportRate = (validator.completedRequestCount |> float_of_int) /. allRequestCount *. 100.;
 
   <TBody key={idx |> string_of_int}>
     <div className=Styles.fullWidth>
@@ -109,10 +111,10 @@ let renderBody = (idx: int, validator: ValidatorHook.Validator.t) => {
         <Col size=1.9 alignSelf=Col.Start>
           <div className=Styles.monikerContainer> <ValidatorMonikerLink validator /> </div>
         </Col>
-        <Col size=1.3 alignSelf=Col.Start>
+        <Col size=1.4 alignSelf=Col.Start>
           <div>
             <Text
-              value={12521643 |> Format.iPretty}
+              value={token |> Format.fPretty}
               color=Colors.mediumGray
               code=true
               weight=Text.Regular
@@ -134,7 +136,7 @@ let renderBody = (idx: int, validator: ValidatorHook.Validator.t) => {
             />
           </div>
         </Col>
-        <Col size=1.4 alignSelf=Col.Start>
+        <Col size=1.2 alignSelf=Col.Start>
           <Text
             value={commission->Js.Float.toFixedWithPrecision(~digits=2)}
             color=Colors.mediumGray
@@ -146,7 +148,7 @@ let renderBody = (idx: int, validator: ValidatorHook.Validator.t) => {
             size=Text.Md
           />
         </Col>
-        <Col size=1.3 alignSelf=Col.Start>
+        <Col size=1.1 alignSelf=Col.Start>
           <Text
             value={uptime->Js.Float.toFixedWithPrecision(~digits=2)}
             color=Colors.mediumGray
@@ -158,7 +160,7 @@ let renderBody = (idx: int, validator: ValidatorHook.Validator.t) => {
             size=Text.Md
           />
         </Col>
-        <Col size=1.5 alignSelf=Col.Start>
+        <Col size=1.2 alignSelf=Col.Start>
           <Text
             value={reportRate->Js.Float.toFixedWithPrecision(~digits=2)}
             color=Colors.mediumGray
@@ -179,6 +181,13 @@ let renderBody = (idx: int, validator: ValidatorHook.Validator.t) => {
 let make = () => {
   let (isActive, setIsActive) = React.useState(_ => true);
   let validatorOpt = ValidatorHook.getList();
+
+  let bondedValidatorCount = ValidatorHook.getValidatorCount(~status=ValidatorHook.Bonded, ());
+  let unbondedValidatorCount =
+    ValidatorHook.getValidatorCount(~status=ValidatorHook.Unbonded, ());
+  let unbondingValidatorCount =
+    ValidatorHook.getValidatorCount(~status=ValidatorHook.Unbonding, ());
+  let allValidatorCount = bondedValidatorCount + unbondedValidatorCount + unbondingValidatorCount;
 
   <div className=Styles.pageContainer>
     <Row justify=Row.Between>
@@ -201,12 +210,18 @@ let make = () => {
     </Row>
     <div className=Styles.highlight>
       <Row>
-        <Col size=0.7> <InfoHL info={InfoHL.Fraction(8, 20, false)} header="VALIDATORS" /> </Col>
+        <Col size=0.7>
+          <InfoHL
+            info={InfoHL.Fraction(bondedValidatorCount, allValidatorCount, false)}
+            header="VALIDATORS"
+          />
+        </Col>
+        // MOCK for now
         <Col size=1.1>
-          <InfoHL info={InfoHL.Fraction(5352500, 10849023, true)} header="BONDED TOKENS" />
+          <InfoHL info={InfoHL.Fraction(400, 400, true)} header="BONDED TOKENS" />
         </Col>
         <Col size=0.9>
-          <InfoHL info={InfoHL.FloatWithSuffix(12.45, "  %")} header="INFLATION RATE" />
+          <InfoHL info={InfoHL.FloatWithSuffix(13., "  %")} header="INFLATION RATE" />
         </Col>
         <Col size=0.51>
           <InfoHL info={InfoHL.FloatWithSuffix(2.59, "  secs")} header="24 HOUR AVG BLOCK TIME" />
@@ -220,10 +235,10 @@ let make = () => {
           {[
              ("RANK", 0.8),
              ("VALIDATOR", 1.9),
-             ("VOTING POWER (BAND)", 1.3),
-             ("COMMISSION (%)", 1.4),
-             ("UPTIME (%)", 1.3),
-             ("REPORT RATE (%)", 1.5),
+             ("VOTING POWER (BAND)", 1.4),
+             ("COMMISSION (%)", 1.2),
+             ("UPTIME (%)", 1.1),
+             ("REPORT RATE (%)", 1.2),
            ]
            ->Belt.List.mapWithIndex((idx, (title, size)) => {
                <Col size key=title>
