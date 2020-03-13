@@ -39,9 +39,9 @@ let make = () => {
           <Text
             value="ALL TRANSACTIONS"
             weight=Text.Semibold
+            color=Colors.mediumGray
             nowrap=true
             spacing={Text.Em(0.06)}
-            color=Colors.mediumGray
           />
           <div className=Styles.seperatedLine />
           {switch (totalTxsOpt) {
