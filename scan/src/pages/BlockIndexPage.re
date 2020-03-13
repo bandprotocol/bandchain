@@ -31,6 +31,16 @@ module Styles = {
 
   let checkLogo = style([marginRight(`px(10))]);
   let blockLogo = style([width(`px(50)), marginRight(`px(10))]);
+  let noTransactionLogo = style([width(`px(160))]);
+  let emptyContainer =
+    style([
+      height(`px(300)),
+      display(`flex),
+      justifyContent(`center),
+      alignItems(`center),
+      boxShadow(Shadow.box(~x=`px(0), ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, 0.05))),
+      backgroundColor(white),
+    ]);
   let proposerContainer = style([maxWidth(`px(180))]);
 
   let seperatorLine =
@@ -70,7 +80,14 @@ let make = (~height: int) => {
           />
           <div className=Styles.seperatedLine />
           {switch (blockOpt) {
-           | Some(block) => <TypeID.Block id={ID.Block.ID(height)} />
+           | Some(block) =>
+             <div className=Styles.vFlex>
+               <Text
+                 value={"#B" ++ (height |> Format.iPretty)}
+                 weight=Text.Thin
+                 spacing={Text.Em(0.06)}
+               />
+             </div>
            | None => <Text value="in the future" size=Text.Xl />
            }}
         </div>
@@ -100,8 +117,13 @@ let make = (~height: int) => {
       </Col>
       <Col size=4.6>
         {switch (blockOpt) {
-         | Some(block) => <InfoHL info={InfoHL.Timestamp(block.timestamp)} header="TIMESTAMP" />
-         | None => <InfoHL info={InfoHL.Text("?")} header="TRANSACTIONS" />
+         | Some(block) =>
+           <>
+             <div className=Styles.vFlex>
+               <InfoHL info={InfoHL.Timestamp(block.timestamp)} header="TIME STAMP" />
+             </div>
+           </>
+         | None => <InfoHL info={InfoHL.Text("?")} header="TIME STAMP" />
          }}
       </Col>
       <Col size=3.2>
@@ -117,7 +139,14 @@ let make = (~height: int) => {
     {switch (blockOpt, txsOpt) {
      | (Some(_), Some({txs})) =>
        switch (txs->Belt_List.size) {
-       | 0 => <VSpacing size={`px(280)} />
+       | 0 =>
+         <>
+           <VSpacing size=Spacing.xl />
+           <BlockIndexTxsTable txs />
+           <div className=Styles.emptyContainer>
+             <img src=Images.noTransaction className=Styles.noTransactionLogo />
+           </div>
+         </>
        | _ =>
          <>
            <VSpacing size=Spacing.xl />

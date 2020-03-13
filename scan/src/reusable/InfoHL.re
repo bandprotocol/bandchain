@@ -94,12 +94,14 @@ let make = (~info, ~header, ~isLeft=true) => {
            code=true
          />
          <HSpacing size=Spacing.sm />
-         <Text
-           value="(9 hrs 2 mins ago)"
-           size=Text.Lg
-           spacing={Text.Em(0.02)}
+         <TimeAgos
+           time
+           prefix="("
+           suffix=")"
+           size=Text.Md
            weight=Text.Thin
-           code=true
+           spacing={Text.Em(0.06)}
+           color=Colors.mediumGray
          />
        </div>
      | Fee(fee) =>
