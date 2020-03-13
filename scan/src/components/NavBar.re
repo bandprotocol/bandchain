@@ -24,11 +24,11 @@ let make = () => {
         <Row justify=Row.Right>
           {[
              ("Home", Route.HomePage),
-             //  ("Validators", Route.HomePage),
+             ("Validators", Route.ValidatorHomePage),
              ("Blocks", BlockHomePage),
              ("Transactions", TxHomePage),
-             ("Oracle Scripts", ScriptHomePage),
-             //  ("Data Providers", HomePage),
+             ("Data Sources", DataSourceHomePage),
+            //  ("Oracle Scripts", ScriptHomePage),
              //  ("OWASM Studio", HomePage),
            ]
            ->Belt.List.map(((v, route)) =>
