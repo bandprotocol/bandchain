@@ -57,15 +57,33 @@ let make = (~txHash) => {
             block=true
           />
           <div className=Styles.seperatedLine />
-          <Text
-            value="SUCCESS"
-            weight=Text.Thin
-            nowrap=true
-            color=Colors.mediumGray
-            spacing={Text.Em(0.06)}
-            block=true
-          />
-          <img src=Images.success className=Styles.correctLogo />
+          {switch (txOpt) {
+           | Some(_) =>
+             true
+               ? <>
+                   <Text
+                     value="SUCCESS"
+                     weight=Text.Thin
+                     nowrap=true
+                     color=Colors.mediumGray
+                     spacing={Text.Em(0.06)}
+                     block=true
+                   />
+                   <img src=Images.success className=Styles.correctLogo />
+                 </>
+               : <>
+                   <Text
+                     value="FAILED"
+                     weight=Text.Thin
+                     nowrap=true
+                     color=Colors.mediumGray
+                     spacing={Text.Em(0.06)}
+                     block=true
+                   />
+                   <img src=Images.success className=Styles.correctLogo />
+                 </>
+           | None => React.null
+           }}
         </div>
       </Col>
     </Row>

@@ -89,7 +89,10 @@ let renderSend = msg => {
 };
 
 // TODO: move it to file later.
-let renderRequest = msg => {
+let renderRequest = (msg: TxHook.Msg.t, request: TxHook.Msg.Request.t) => {
+  let requestID =
+    msg.events->TxHook.Event.getValueOfKey("request.id")->Belt_Option.getWithDefault("0")
+    |> int_of_string;
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
     <Col size=0.4 alignSelf=Col.Start>
@@ -104,7 +107,7 @@ let renderRequest = msg => {
         </div>
         <VSpacing size=Spacing.md />
         <div className={Styles.badge(Colors.fadeOrange)}>
-          <TypeID.Request id={ID.Request.ID(2)} />
+          <TypeID.Request id={ID.Request.ID(requestID)} />
         </div>
       </div>
     </Col>
@@ -119,7 +122,7 @@ let renderRequest = msg => {
       <div className=Styles.topicContainer>
         <Text value="ORACLE SCRIPT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className=Styles.hFlex>
-          <TypeID.OracleScript id={ID.OracleScript.ID(123)} />
+          <TypeID.OracleScript id={ID.OracleScript.ID(request.oracleScriptID)} />
           <HSpacing size=Spacing.sm />
           <Text value="Mean Platinum Price" />
         </div>
@@ -132,6 +135,7 @@ let renderRequest = msg => {
         <CopyButton />
       </div>
       <VSpacing size=Spacing.md />
+      // TODO: Mock call data
       <KVTable
         kv=[
           ("crypto_symbol", "BTC"),
@@ -147,7 +151,7 @@ let renderRequest = msg => {
           weight=Text.Thin
           spacing={Text.Em(0.06)}
         />
-        <Text value="2" weight=Text.Bold />
+        <Text value={request.requestedValidatorCount |> string_of_int} weight=Text.Bold />
       </div>
       <VSpacing size=Spacing.lg />
       <div className=Styles.topicContainer>
@@ -157,13 +161,13 @@ let renderRequest = msg => {
           weight=Text.Thin
           spacing={Text.Em(0.06)}
         />
-        <Text value="2" weight=Text.Bold />
+        <Text value={request.sufficientValidatorCount |> string_of_int} weight=Text.Bold />
       </div>
       <VSpacing size=Spacing.lg />
       <div className=Styles.topicContainer>
         <Text value="REPORT PERIOD" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className=Styles.hFlex>
-          <Text value="10" weight=Text.Bold code=true />
+          <Text value={request.expiration |> string_of_int} weight=Text.Bold code=true />
           <HSpacing size=Spacing.sm />
           <Text value="Blocks" code=true />
         </div>
@@ -174,7 +178,7 @@ let renderRequest = msg => {
   </Row>;
 };
 
-let renderReport = msg => {
+let renderReport = (msg, report: TxHook.Msg.Report.t) => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
     <Col size=0.4 alignSelf=Col.Start>
@@ -199,7 +203,9 @@ let renderReport = msg => {
       <VSpacing size=Spacing.sm />
       <div className=Styles.topicContainer>
         <Text value="REQUEST ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-        <div className=Styles.hFlex> <TypeID.Request id={ID.Request.ID(123)} /> </div>
+        <div className=Styles.hFlex>
+          <TypeID.Request id={ID.Request.ID(report.requestID)} />
+        </div>
       </div>
       <VSpacing size=Spacing.lg />
       <VSpacing size=Spacing.sm />
@@ -211,11 +217,15 @@ let renderReport = msg => {
       <VSpacing size=Spacing.md />
       <KVTable
         header=["EXTERNAL ID", "VALUE"]
-        kv=[
-          ("1", "14948248048129841924"),
-          ("2", "531750937509892038752859"),
-          ("3", "135863087593175193701535817397538759571"),
-        ]
+        kv={
+          report.dataSet
+          |> Belt_List.map(_, rawReport =>
+               (
+                 rawReport.externalDataID |> string_of_int,
+                 rawReport.data |> JsBuffer._toString(_, "UTF-8"),
+               )
+             )
+        }
       />
       <VSpacing size=Spacing.lg />
     </Col>
@@ -444,8 +454,8 @@ let renderBody = (msg: TxHook.Msg.t) => {
   | EditDataSource(_) => renderEditDataSource(msg)
   | CreateOracleScript(_) => renderCreateOracleScript(msg)
   | EditOracleScript(_) => renderEditOracleScript(msg)
-  | Request(_) => renderRequest(msg)
-  | Report(_) => renderReport(msg)
+  | Request(request) => renderRequest(msg, request)
+  | Report(report) => renderReport(msg, report)
   | Unknown => React.null
   };
 };
