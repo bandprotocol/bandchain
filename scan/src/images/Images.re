@@ -30,3 +30,4 @@
 [@bs.module] external correct: string = "./correct.png";
 [@bs.module] external validators: string = "./validators.png";
 [@bs.module] external blockLogo: string = "./blockLogo.svg";
+[@bs.module] external noTransaction: string = "./no_transaction.svg";

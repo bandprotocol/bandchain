@@ -21,7 +21,7 @@ module Styles = {
       alignItems(isLeft ? `flexStart : `flexEnd),
     ]);
   let vFlex = style([display(`flex), alignItems(`center)]);
-  let addressContainer = style([display(`flex), alignItems(`center), maxWidth(`px(290))]);
+  let addressContainer = style([alignItems(`center), maxWidth(`px(290))]);
   let datasourcesContainer = style([display(`flex), alignItems(`center), flexWrap(`wrap)]);
   let headerContainer = style([lineHeight(`px(25))]);
   let sourceContainer =
@@ -94,12 +94,14 @@ let make = (~info, ~header, ~isLeft=true) => {
            code=true
          />
          <HSpacing size=Spacing.sm />
-         <Text
-           value="(9 hrs 2 mins ago)"
-           size=Text.Lg
-           spacing={Text.Em(0.02)}
+         <TimeAgos
+           time
+           prefix="("
+           suffix=")"
+           size=Text.Md
            weight=Text.Thin
-           code=true
+           spacing={Text.Em(0.06)}
+           color=Colors.mediumGray
          />
        </div>
      | Fee(fee) =>
