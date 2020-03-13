@@ -41,6 +41,12 @@ module Coin = {
 
   let newCoin = (denom, amount) => {denom, amount};
 
+  let getBandAmountFromCoins = coins =>
+    coins
+    ->Belt_List.keep(coin => coin.denom == "uband")
+    ->Belt_List.get(0)
+    ->Belt_Option.mapWithDefault(0., coin => coin.amount);
+
   let getDescription = coin => (coin.amount |> Format.fPretty) ++ " " ++ coin.denom;
 };
 
@@ -72,7 +78,7 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
-        id: 952, // TODO, wire up
+        id: json |> field("dataSourceID", intstr),
         owner: json |> field("owner", string) |> Address.fromBech32,
         name: json |> field("name", string),
         fee: json |> field("fee", list(Coin.decodeCoin)),
@@ -113,7 +119,7 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
-        id: 999, // TODO , wire up
+        id: 0, // TODO , use id from events (not avaliable right now)
         owner: json |> field("owner", string) |> Address.fromBech32,
         name: json |> field("name", string),
         code: json |> field("code", string) |> JsBuffer.fromBase64,
@@ -308,9 +314,27 @@ module Tx = {
     timestamp: MomentRe.Moment.t,
     gasWanted: int,
     gasUsed: int,
-    fee: float,
+    fee: list(Coin.t),
     success: bool,
     messages: list(Msg.t),
+  };
+
+  let postProcessMsg = ((action, events)) => {
+    switch (action) {
+    | Msg.Request(request) =>
+      Msg.{
+        action:
+          Msg.Request({
+            ...request,
+            id:
+              events
+              ->Event.getValueOfKey("request.id")
+              ->Belt_Option.mapWithDefault(0, int_of_string),
+          }),
+        events,
+      }
+    | _ => Msg.{action, events}
+    };
   };
 
   let decodeTx = json =>
@@ -326,13 +350,10 @@ module Tx = {
       timestamp: json |> field("timestamp", moment),
       gasWanted: json |> field("gas_wanted", intstr),
       gasUsed: json |> field("gas_used", intstr),
-      fee:
-        (json |> at(["tx", "value", "fee", "amount"], list(Coin.decodeCoin)))
-        ->Belt_List.keep(coin => coin.denom == "uband")
-        ->Belt_List.get(0)
-        ->Belt_Option.mapWithDefault(0., coin => coin.amount),
+      fee: json |> at(["tx", "value", "fee", "amount"], list(Coin.decodeCoin)),
       success:
-        (json |> field("logs", list(log => log |> field("success", bool))))
+        (json |> optional(field("logs", list(log => log |> field("success", bool)))))
+        ->Belt.Option.getWithDefault([])
         ->Belt_List.some(isSuccess => isSuccess),
       messages: {
         let actions = json |> at(["tx", "value", "msg"], list(Msg.decodeAction));
@@ -340,8 +361,7 @@ module Tx = {
           json
           |> optional(field("logs", list(Event.decodeEvents)))
           |> Belt.Option.getWithDefault(_, actions->Belt_List.map(_ => []));
-        Belt.List.zip(actions, eventDoubleLists)
-        ->Belt.List.map(((action, events)) => Msg.{action, events});
+        Belt.List.zip(actions, eventDoubleLists)->Belt.List.map(postProcessMsg);
       },
     };
 
