@@ -226,7 +226,7 @@ let renderReport = msg => {
 let renderCreateDataSource = msg => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
-    <Col size=0.4 alignSelf=Col.FlexStart>
+    <Col size=0.4 alignSelf=Col.Start>
       <div className=Styles.badgeContainer>
         <VSpacing size=Spacing.sm />
         <div className={Styles.badge(Colors.yellow1)}>
@@ -243,13 +243,13 @@ let renderCreateDataSource = msg => {
         </div>
       </div>
     </Col>
-    <Col size=0.6 alignSelf=Col.FlexStart>
+    <Col size=0.6 alignSelf=Col.Start>
       <VSpacing size=Spacing.md />
       <div className={Styles.addressContainer(170)}>
         <AddressRender address={msg |> TxHook.Msg.getCreator} />
       </div>
     </Col>
-    <Col size=1.3 alignSelf=Col.FlexStart>
+    <Col size=1.3 alignSelf=Col.Start>
       <Col> <VSpacing size=Spacing.md /> </Col>
       <div className=Styles.topicContainer>
         <Text value="OWNER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
@@ -284,7 +284,7 @@ let renderCreateDataSource = msg => {
 let renderEditDataSource = msg => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
-    <Col size=0.4 alignSelf=Col.FlexStart>
+    <Col size=0.4 alignSelf=Col.Start>
       <div className=Styles.badgeContainer>
         <VSpacing size=Spacing.sm />
         <div className={Styles.badge(Colors.yellow1)}>
@@ -301,13 +301,13 @@ let renderEditDataSource = msg => {
         </div>
       </div>
     </Col>
-    <Col size=0.6 alignSelf=Col.FlexStart>
+    <Col size=0.6 alignSelf=Col.Start>
       <VSpacing size=Spacing.md />
       <div className={Styles.addressContainer(170)}>
         <AddressRender address={msg |> TxHook.Msg.getCreator} />
       </div>
     </Col>
-    <Col size=1.3 alignSelf=Col.FlexStart>
+    <Col size=1.3 alignSelf=Col.Start>
       <Col> <VSpacing size=Spacing.md /> </Col>
       <div className=Styles.topicContainer>
         <Text value="OWNER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
