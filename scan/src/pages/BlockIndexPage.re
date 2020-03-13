@@ -30,6 +30,8 @@ module Styles = {
   let addressContainer = style([marginTop(`px(15))]);
 
   let checkLogo = style([marginRight(`px(10))]);
+  let blockLogo = style([width(`px(50)), marginRight(`px(10))]);
+  let proposerContainer = style([maxWidth(`px(180))]);
 
   let seperatorLine =
     style([
@@ -43,61 +45,73 @@ module Styles = {
 [@react.component]
 let make = (~height: int) => {
   let (limit, setLimit) = React.useState(_ => 10);
-  let blockOpt = BlockHook.atHeight(height);
   let txsOpt = TxHook.atHeight(height, ~limit, ());
-
+  let infoOpt = React.useContext(GlobalContext.context);
+  let blockOpt = BlockHook.atHeight(height);
+  let monikerOpt = {
+    let%Opt info = infoOpt;
+    let%Opt block = blockOpt;
+    let validators = info.validators;
+    Some(BlockHook.Block.getProposerMoniker(block, validators));
+  };
   <div className=Styles.pageContainer>
     <Row justify=Row.Between>
       <Col>
         <div className=Styles.vFlex>
+          <img src=Images.blockLogo className=Styles.blockLogo />
           <Text
             value="BLOCK"
-            weight=Text.Semibold
-            size=Text.Lg
+            weight=Text.Medium
+            size=Text.Md
             nowrap=true
             color=Colors.mediumGray
             block=true
+            spacing={Text.Em(0.06)}
           />
           <div className=Styles.seperatedLine />
           {switch (blockOpt) {
-           | Some(block) => <TimeAgos time={block.timestamp} size=Text.Lg weight=Text.Regular />
+           | Some(block) => <TypeID.Block id={ID.Block.ID(height)} />
            | None => <Text value="in the future" size=Text.Xl />
            }}
         </div>
       </Col>
     </Row>
     <VSpacing size=Spacing.lg />
-    <div className=Styles.vFlex>
-      <Text value="#" size=Text.Xxxl weight=Text.Semibold color=Colors.brightPurple />
-      <HSpacing size=Spacing.xs />
-      <Text value={height |> Format.iPretty} size=Text.Xxxl weight=Text.Semibold />
-    </div>
+    <div className=Styles.vFlex> <HSpacing size=Spacing.xs /> </div>
+    {switch (blockOpt) {
+     | Some(block) =>
+       <Text
+         value={block.hash |> Hash.toHex(~upper=true)}
+         size=Text.Xxl
+         weight=Text.Semibold
+         code=true
+         nowrap=true
+         ellipsis=true
+       />
+     | None => <Text value="in the future" size=Text.Xxl />
+     }}
     <VSpacing size=Spacing.lg />
     <Row>
-      <Col size=1.>
+      <Col size=1.8>
         {switch (blockOpt) {
          | Some(block) => <InfoHL info={InfoHL.Count(block.numTxs)} header="TRANSACTIONS" />
          | None => <InfoHL info={InfoHL.Text("?")} header="TRANSACTIONS" />
          }}
       </Col>
-      <Col size=4.>
-        <InfoHL
-          info={
-            InfoHL.Address(
-              switch (blockOpt) {
-              | Some(block) => block.proposer
-              | None => "" |> Address.fromHex
-              },
-            )
-          }
-          header="PROPOSED BY"
-        />
-      </Col>
-      <Col size=2.>
+      <Col size=4.6>
         {switch (blockOpt) {
          | Some(block) => <InfoHL info={InfoHL.Timestamp(block.timestamp)} header="TIMESTAMP" />
          | None => <InfoHL info={InfoHL.Text("?")} header="TRANSACTIONS" />
          }}
+      </Col>
+      <Col size=3.2>
+        <div className=Styles.proposerContainer>
+          {switch (monikerOpt) {
+           | Some(moniker) => <InfoHL info={InfoHL.Text(moniker)} header="PROPOSED BY" />
+
+           | None => <InfoHL info={InfoHL.Text("?")} header="PROPOSED BY" />
+           }}
+        </div>
       </Col>
     </Row>
     {switch (blockOpt, txsOpt) {
@@ -107,7 +121,7 @@ let make = (~height: int) => {
        | _ =>
          <>
            <VSpacing size=Spacing.xl />
-           <TxsTable txs />
+           <BlockIndexTxsTable txs />
            <VSpacing size=Spacing.lg />
            {txs->Belt_List.size < limit
               ? React.null : <LoadMore onClick={_ => setLimit(oldLimit => oldLimit + 10)} />}
