@@ -38,7 +38,6 @@ module Styles = {
 [@react.component]
 let make = () => {
   let dataSourcesOpt = DataSourceHook.getList();
-  Js.Console.log(dataSourcesOpt);
 
   <div className=Styles.pageContainer>
     <Row>
