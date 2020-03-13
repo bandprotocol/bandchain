@@ -14,9 +14,22 @@ func (k Keeper) AddReport(
 		return err
 	}
 
-	if request.ResolveStatus != types.Open || request.ExpirationHeight < ctx.BlockHeight() {
-		// TODO: fix error later
-		return types.ErrRequestNotFound(types.DefaultCodespace)
+	if request.ResolveStatus != types.Open {
+		return types.ErrInvalidState(
+			"AddReport: Request ID %d: Expect resolve status to be %d, but actual value is %d",
+			requestID,
+			types.Open,
+			request.ResolveStatus,
+		)
+	}
+
+	if request.ExpirationHeight < ctx.BlockHeight() {
+		return types.ErrInvalidState(
+			"AddReport: Request ID %d: Current block height is %d, but request expired at height %d",
+			requestID,
+			ctx.BlockHeight(),
+			request.ExpirationHeight,
+		)
 	}
 
 	found := false
@@ -35,29 +48,42 @@ func (k Keeper) AddReport(
 
 	for _, submittedValidator := range request.ReceivedValidators {
 		if validator.Equals(submittedValidator) {
-			// TODO: fix error later
-			return types.ErrInvalidValidator(types.DefaultCodespace)
+			return types.ErrItemDuplication(
+				"AddReport: Duplicate report to request ID %d from reporter %s.",
+				requestID,
+				submittedValidator.String(),
+			)
 		}
 	}
 
-	if int64(len(dataSet)) != k.GetRawDataRequestCount(ctx, requestID) {
-		// TODO: fix error later
-		return types.ErrRequestNotFound(types.DefaultCodespace)
+	rawDataRequestCount := k.GetRawDataRequestCount(ctx, requestID)
+	if int64(len(dataSet)) != rawDataRequestCount {
+		return types.ErrBadDataValue(
+			"AddReport: Request ID %d: Expects %d raw data reports, but received %d raw data reports.",
+			requestID,
+			rawDataRequestCount,
+			len(dataSet),
+		)
 	}
 
 	lastExternalID := types.ExternalID(0)
 	for idx, rawReport := range dataSet {
 		if idx != 0 && lastExternalID >= rawReport.ExternalDataID {
-			// TODO: fix error later
-			return types.ErrRequestNotFound(types.DefaultCodespace)
+			return types.ErrBadDataValue("AddReport: Raw data reports are not in an incresaing order.")
 		}
 		if !k.CheckRawDataRequestExists(ctx, requestID, rawReport.ExternalDataID) {
-			// TODO: fix error later
-			return types.ErrRequestNotFound(types.DefaultCodespace)
+			return types.ErrBadDataValue(
+				"AddReport: RequestID %d: Unknown external ID %d",
+				requestID,
+				rawReport.ExternalDataID,
+			)
 		}
 		if len(rawReport.Data) > int(k.MaxRawDataReportSize(ctx)) {
-			// TODO: fix error later
-			return types.ErrRequestNotFound(types.DefaultCodespace)
+			return types.ErrBadDataValue(
+				"AddReport: Raw report data size (%d) exceeds the maximum limit (%d).",
+				len(rawReport.Data),
+				k.MaxRawDataReportSize(ctx),
+			)
 		}
 		k.SetRawDataReport(ctx, requestID, rawReport.ExternalDataID, validator, rawReport.Data)
 		lastExternalID = rawReport.ExternalDataID
@@ -66,7 +92,11 @@ func (k Keeper) AddReport(
 	request.ReceivedValidators = append(request.ReceivedValidators, validator)
 	k.SetRequest(ctx, requestID, request)
 	if k.ShouldBecomePendingResolve(ctx, requestID) {
-		k.AddPendingRequest(ctx, requestID)
+		err := k.AddPendingRequest(ctx, requestID)
+		if err != nil {
+			// This should never happen, but we detect it anyway just in case.
+			return err
+		}
 	}
 
 	return nil
@@ -93,7 +123,12 @@ func (k Keeper) GetRawDataReport(
 	key := types.RawDataReportStoreKey(requestID, externalID, validatorAddress)
 	store := ctx.KVStore(k.storeKey)
 	if !store.Has(key) {
-		return []byte{}, types.ErrReportNotFound(types.DefaultCodespace)
+		return nil, types.ErrItemNotFound(
+			"GetRawDataReport: Unable to find raw data report with request ID %d external ID %d from %s",
+			requestID,
+			externalID,
+			validatorAddress.String(),
+		)
 	}
 	return store.Get(key), nil
 }
@@ -104,39 +139,3 @@ func (k Keeper) GetRawDataReportsIterator(ctx sdk.Context, requestID types.Reque
 	store := ctx.KVStore(k.storeKey)
 	return sdk.KVStorePrefixIterator(store, prefix)
 }
-
-// // GetDataReports returns all the reports for a specific request ID.
-// func (k Keeper) GetDataReports(ctx sdk.Context, requestID types.RequestID) []types.Report {
-// 	iterator := k.GetReportsIterator(ctx, requestID)
-// 	var data []types.Report
-// 	for ; iterator.Valid(); iterator.Next() {
-// 		var report types.Report
-// 		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &report)
-// 		data = append(data, report)
-// 	}
-// 	return data
-// }
-
-// // GetValidatorReports returns all the reports (each including its reporter) for a specific request ID.
-// func (k Keeper) GetValidatorReports(ctx sdk.Context, requestID types.RequestID) ([]types.ReportWithValidator, sdk.Error) {
-// 	iterator := k.GetReportsIterator(ctx, requestID)
-// 	data := make([]types.ReportWithValidator, 0)
-
-// 	// Check request is existed
-// 	if !k.CheckRequestExists(ctx, requestID) {
-// 		return []types.ReportWithValidator{}, types.ErrRequestNotFound(types.DefaultCodespace)
-// 	}
-
-// 	for ; iterator.Valid(); iterator.Next() {
-// 		var report types.Report
-// 		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &report)
-
-// 		vReport := types.NewReportWithValidator(
-// 			report.Data,
-// 			report.ReportedAt,
-// 			types.GetValidatorAddress(iterator.Key(), types.ReportKeyPrefix, requestID),
-// 		)
-// 		data = append(data, vReport)
-// 	}
-// 	return data, nil
-// }

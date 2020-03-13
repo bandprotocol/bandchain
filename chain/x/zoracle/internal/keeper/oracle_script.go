@@ -46,8 +46,10 @@ func (k Keeper) AddOracleScript(ctx sdk.Context, owner sdk.AccAddress, name stri
 // EditOracleScript edits the given oracle script by given oracle script id to the storage.
 func (k Keeper) EditOracleScript(ctx sdk.Context, oracleScriptID types.OracleScriptID, owner sdk.AccAddress, name string, description string, code []byte) sdk.Error {
 	if !k.CheckOracleScriptExists(ctx, oracleScriptID) {
-		// TODO: fix error later
-		return types.ErrRequestNotFound(types.DefaultCodespace)
+		return types.ErrItemNotFound(
+			"EditOracleScript: Unknown oracle script ID %d.",
+			oracleScriptID,
+		)
 	}
 
 	if len(code) > int(k.MaxOracleScriptCodeSize(ctx)) {
@@ -81,8 +83,10 @@ func (k Keeper) EditOracleScript(ctx sdk.Context, oracleScriptID types.OracleScr
 func (k Keeper) GetOracleScript(ctx sdk.Context, id types.OracleScriptID) (types.OracleScript, sdk.Error) {
 	store := ctx.KVStore(k.storeKey)
 	if !k.CheckOracleScriptExists(ctx, id) {
-		// TODO: fix error later
-		return types.OracleScript{}, types.ErrRequestNotFound(types.DefaultCodespace)
+		return types.OracleScript{}, types.ErrItemNotFound(
+			"GetOracleScript: Unknown oracle script ID %d.",
+			id,
+		)
 	}
 
 	bz := store.Get(types.OracleScriptStoreKey(id))

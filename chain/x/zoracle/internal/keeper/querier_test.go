@@ -176,7 +176,7 @@ func TestQueryRequestById(t *testing.T) {
 		abci.RequestQuery{},
 	)
 	// It must return error request not found
-	require.Equal(t, types.CodeRequestNotFound, err.Code())
+	require.Equal(t, types.CodeItemNotFound, err.Code())
 
 	request := newDefaultRequest()
 	keeper.SetRequest(ctx, 1, request)
@@ -254,7 +254,7 @@ func TestQueryRequestIncompleteValidator(t *testing.T) {
 		abci.RequestQuery{},
 	)
 	// It must return error request not found
-	require.Equal(t, types.CodeRequestNotFound, err.Code())
+	require.Equal(t, types.CodeItemNotFound, err.Code())
 
 	request := newDefaultRequest()
 	keeper.SetRequest(ctx, 1, request)

@@ -79,7 +79,7 @@ func TestGetReceivedValidatorCount(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, int64(0), env.GetReceivedValidatorCount())
 
-	keeper.AddNewReceiveValidator(ctx, 1, sdk.ValAddress([]byte("val1")))
+	keeper.AddReport(ctx, 1, []types.RawDataReport{}, sdk.ValAddress([]byte("val1")))
 
 	env, err = NewExecutionEnvironment(ctx, keeper, 1)
 	require.Nil(t, err)
@@ -112,7 +112,7 @@ func TestGetAggregateBlockTime(t *testing.T) {
 	require.Equal(t, int64(0), env.GetAggregateBlockTime())
 
 	// Add received validator
-	err = keeper.AddNewReceiveValidator(ctx, 1, sdk.ValAddress([]byte("val1")))
+	err = keeper.AddReport(ctx, 1, []types.RawDataReport{}, sdk.ValAddress([]byte("val1")))
 	require.Nil(t, err)
 
 	// After report is greater or equal SufficientValidatorCount, it will resolve in current block time.
@@ -250,7 +250,7 @@ func TestGetExternalData(t *testing.T) {
 
 	// Get report from missing validator
 	_, envErr = env.GetExternalData(42, 1)
-	require.EqualError(t, envErr, "ERROR:\nCodespace: zoracle\nCode: 109\nMessage: \"report not found\"\n")
+	require.EqualError(t, envErr, "ERROR:\nCodespace: zoracle\nCode: 205\nMessage: \"GetRawDataReport: Unable to find raw data report with request ID 1 external ID 42 from bandvaloper1weskcvsfgndm9\"\n")
 
 	// Get report from invalid validator index
 	_, envErr = env.GetExternalData(42, 2)

@@ -46,8 +46,10 @@ func (k Keeper) AddDataSource(ctx sdk.Context, owner sdk.AccAddress, name string
 // EditDataSource edits the given data source by given data source id to the storage.
 func (k Keeper) EditDataSource(ctx sdk.Context, dataSourceID types.DataSourceID, owner sdk.AccAddress, name string, description string, fee sdk.Coins, executable []byte) sdk.Error {
 	if !k.CheckDataSourceExists(ctx, dataSourceID) {
-		// TODO: fix error later
-		return types.ErrRequestNotFound(types.DefaultCodespace)
+		return types.ErrItemNotFound(
+			"EditDataSource: Unknown data source ID %d.",
+			dataSourceID,
+		)
 	}
 
 	if len(executable) > int(k.MaxDataSourceExecutableSize(ctx)) {
@@ -81,8 +83,10 @@ func (k Keeper) EditDataSource(ctx sdk.Context, dataSourceID types.DataSourceID,
 func (k Keeper) GetDataSource(ctx sdk.Context, id types.DataSourceID) (types.DataSource, sdk.Error) {
 	store := ctx.KVStore(k.storeKey)
 	if !k.CheckDataSourceExists(ctx, id) {
-		// TODO: fix error later
-		return types.DataSource{}, types.ErrRequestNotFound(types.DefaultCodespace)
+		return types.DataSource{}, types.ErrItemNotFound(
+			"GetDataSource: Unknown data source ID %d.",
+			id,
+		)
 	}
 
 	bz := store.Get(types.DataSourceStoreKey(id))
