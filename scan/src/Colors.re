@@ -30,6 +30,7 @@ let orange5 = Css.hex("EB7E47");
 let orange6 = Css.hex("DB6124");
 let fadeOrange = Css.hex("FFEFEB");
 let darkOrange = Css.hex("DB4824");
+let lightOrange = Css.hex("DB9924");
 
 let fadeBlue = Css.hex("EBEDFF");
 
