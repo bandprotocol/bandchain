@@ -88,23 +88,20 @@ let renderHashWithLink = hash => {
 };
 
 let renderAddress = address => {
-  <div className=Styles.addressContainer>
-    <Text value="band" weight=Text.Semibold height={Text.Px(16)} code=true />
-    <Text
-      value="17rprjgtj0krfw3wyl9creueej6ca9dc4dgxv6e"
-      weight=Text.Regular
-      height={Text.Px(16)}
-      ellipsis=true
-      nowrap=true
-      block=true
-      code=true
-    />
-  </div>;
+  <div className=Styles.addressContainer> <AddressRender address /> </div>;
 };
 
 let renderFee = fee => {
   <div className=Styles.feeContainer>
-    <Text value={fee->Format.fPretty} color=Colors.grayHeader code=true />
+    {fee == 0.0 ? React.null : <VSpacing size={`px(4)} />}
+    {fee == 0.0
+       ? React.null : <Text size=Text.Sm block=true value="$0.002" color=Colors.grayText />}
+    {fee == 0.0 ? React.null : <VSpacing size={`px(4)} />}
+    <Text
+      value={fee == 0.0 ? "FREE" : fee->Format.fPretty ++ " BAND"}
+      color=Colors.mediumGray
+      weight=Text.Semibold
+    />
   </div>;
 };
 
@@ -138,7 +135,7 @@ let renderCount = count => {
 
 let renderProposer = (moniker, proposer) => {
   <div className=Styles.proposerBox>
-    <Text block=true value=moniker size=Text.Sm weight=Text.Regular color=Colors.grayHeader />
+    <Text block=true value=moniker size=Text.Sm weight=Text.Regular color=Colors.mediumGray />
     <VSpacing size=Spacing.sm />
     <Text
       block=true
@@ -154,15 +151,7 @@ let renderProposer = (moniker, proposer) => {
 
 let renderDataSource = (id, name) => {
   <div className=Styles.dataSourceContainer>
-    <Text
-      value={"#D" ++ (id |> string_of_int)}
-      code=true
-      block=true
-      color=Colors.brightOrange
-      height={Text.Px(16)}
-      weight=Text.Bold
-      spacing={Text.Em(0.02)}
-    />
+    <TypeID.DataSource id position=TypeID.Text />
     <HSpacing size=Spacing.xs />
     <Text value=name block=true height={Text.Px(16)} spacing={Text.Em(0.02)} />
   </div>;
@@ -197,7 +186,7 @@ type t =
   | Source(string)
   | Value(Js.Json.t)
   | Proposer(string, string)
-  | DataSource(int, string);
+  | DataSource(ID.DataSource.t, string);
 
 [@react.component]
 let make = (~elementType) => {

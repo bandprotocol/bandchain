@@ -15,7 +15,7 @@ module Styles = {
       height(`px(1)),
       marginLeft(`px(10)),
       marginRight(`px(10)),
-      backgroundColor(Colors.grayHeader),
+      backgroundColor(Colors.mediumGray),
     ]);
 
   let codeVerifiedBadge =
@@ -66,7 +66,7 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
             weight=Text.Semibold
             size=Text.Lg
             nowrap=true
-            color=Colors.grayHeader
+            color=Colors.mediumGray
             block=true
           />
           <HSpacing size=Spacing.sm />

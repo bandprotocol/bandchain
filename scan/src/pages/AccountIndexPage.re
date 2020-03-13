@@ -17,7 +17,7 @@ module Styles = {
     style([
       width(`px(1)),
       height(`px(200)),
-      backgroundColor(Colors.grayHeader),
+      backgroundColor(Colors.mediumGray),
       marginLeft(`px(20)),
       opacity(0.3),
     ]);
@@ -130,7 +130,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
             spacing={Text.Em(0.06)}
             height={Text.Px(15)}
             nowrap=true
-            color=Colors.grayHeader
+            color=Colors.mediumGray
             block=true
           />
         </div>
@@ -138,24 +138,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
     </Row>
     <VSpacing size=Spacing.lg />
     <VSpacing size=Spacing.sm />
-    <div className=Styles.vFlex>
-      <Text
-        value="band"
-        size=Text.Xxl
-        height={Text.Px(22)}
-        weight=Text.Semibold
-        nowrap=true
-        code=true
-      />
-      <Text
-        value="17rprjgtj0krfw3wyl9creueej6ca9dc4dgxv6e"
-        size=Text.Xxl
-        height={Text.Px(22)}
-        weight=Text.Regular
-        nowrap=true
-        code=true
-      />
-    </div>
+    <div className=Styles.vFlex> <AddressRender address position=AddressRender.Title /> </div>
     <VSpacing size=Spacing.xxl />
     <Row justify=Row.Between>
       <Col size=0.75> <img src=Images.pieChart className=Styles.graph /> </Col>

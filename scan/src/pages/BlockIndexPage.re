@@ -24,7 +24,7 @@ module Styles = {
       height(`px(1)),
       marginLeft(`px(10)),
       marginRight(`px(10)),
-      backgroundColor(Colors.grayHeader),
+      backgroundColor(Colors.mediumGray),
     ]);
 
   let addressContainer = style([marginTop(`px(15))]);
@@ -55,7 +55,7 @@ let make = (~height: int) => {
             weight=Text.Semibold
             size=Text.Lg
             nowrap=true
-            color=Colors.grayHeader
+            color=Colors.mediumGray
             block=true
           />
           <div className=Styles.seperatedLine />
@@ -88,7 +88,6 @@ let make = (~height: int) => {
               | Some(block) => block.proposer
               | None => "" |> Address.fromHex
               },
-              Colors.grayHeader,
             )
           }
           header="PROPOSED BY"

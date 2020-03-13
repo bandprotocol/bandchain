@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"io"
 	"os"
 
@@ -264,6 +265,7 @@ func NewBandApp(
 		keys[zoracle.StoreKey],
 		app.bankKeeper,
 		app.stakingKeeper,
+		app.supplyKeeper,
 		zoracleSubspace,
 	)
 
@@ -314,14 +316,37 @@ func NewBandApp(
 	// The initChainer handles translating the genesis.json file into initial state for the network
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
+
+	// Create a default AnteHandler that will be used after checking refundGasPrice
+	defaultAnteHandler := auth.NewAnteHandler(
+		app.accountKeeper,
+		app.supplyKeeper,
+		auth.DefaultSigVerificationGasConsumer,
+	)
 	// The AnteHandler handles signature verification and transaction pre-processing
 	app.SetAnteHandler(
-		auth.NewAnteHandler(
-			app.accountKeeper,
-			app.supplyKeeper,
-			auth.DefaultSigVerificationGasConsumer,
-		),
+		func(ctx sdk.Context, tx sdk.Tx, simulate bool) (newCtx sdk.Context, res sdk.Result, abort bool) {
+			if stdTx, ok := tx.(auth.StdTx); ok {
+				fee := stdTx.Fee
+				for _, msg := range tx.GetMsgs() {
+					if report, ok := msg.(zoracle.MsgReportData); ok {
+						_, refundGasPriceExceedTxGasPrice := fee.GasPrices().SafeSub(report.RefundGasPrice)
+						if refundGasPriceExceedTxGasPrice {
+							return ctx, sdk.ErrInternal(
+								fmt.Sprintf(
+									"refundGasPrice(%s) exceeds txGasPrice(%s)",
+									report.RefundGasPrice.String(), fee.GasPrices().String(),
+								),
+							).Result(), true
+						}
+					}
+				}
+			}
+
+			return defaultAnteHandler(ctx, tx, simulate)
+		},
 	)
+
 	app.SetEndBlocker(app.EndBlocker)
 
 	if loadLatest {

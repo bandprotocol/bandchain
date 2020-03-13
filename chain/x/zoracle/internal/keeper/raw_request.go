@@ -22,6 +22,7 @@ func (k Keeper) GetRawDataRequest(
 ) (types.RawDataRequest, sdk.Error) {
 	store := ctx.KVStore(k.storeKey)
 	if !k.CheckRawDataRequestExists(ctx, requestID, externalID) {
+		// TODO: fix error
 		return types.RawDataRequest{}, types.ErrRawDataRequestNotFound(types.DefaultCodespace)
 	}
 
@@ -43,8 +44,11 @@ func (k Keeper) AddNewRawDataRequest(
 	ctx sdk.Context, requestID types.RequestID, externalID types.ExternalID, dataSourceID types.DataSourceID, calldata []byte,
 ) sdk.Error {
 	if len(calldata) > int(k.MaxCalldataSize(ctx)) {
-		// TODO: fix error later
-		return types.ErrRequestNotFound(types.DefaultCodespace)
+		return types.ErrBadDataValue(
+			"AddNewRawDataRequest: Calldata size (%d) exceeds the maximum size (%d).",
+			len(calldata),
+			int(k.MaxCalldataSize(ctx)),
+		)
 	}
 
 	request, err := k.GetRequest(ctx, requestID)

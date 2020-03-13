@@ -13,7 +13,7 @@ module Styles = {
       height(`px(1)),
       marginLeft(`px(10)),
       marginRight(`px(10)),
-      backgroundColor(Colors.grayHeader),
+      backgroundColor(Colors.mediumGray),
     ]);
 };
 
@@ -31,7 +31,7 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
             spacing={Text.Em(0.06)}
             height={Text.Px(15)}
             nowrap=true
-            color=Colors.grayHeader
+            color=Colors.mediumGray
             block=true
           />
           <div className=Styles.seperatedLine />
@@ -40,7 +40,7 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
             size=Text.Md
             weight=Text.Thin
             spacing={Text.Em(0.06)}
-            color=Colors.grayHeader
+            color=Colors.mediumGray
             nowrap=true
           />
         </div>
@@ -48,15 +48,7 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
     </Row>
     <VSpacing size=Spacing.md />
     <div className=Styles.vFlex>
-      <Text
-        value="#D253"
-        size=Text.Xxl
-        weight=Text.Semibold
-        height={Text.Px(23)}
-        color=Colors.brightOrange
-        nowrap=true
-        code=true
-      />
+      <TypeID.DataSource id={ID.DataSource.ID(34)} position=TypeID.Title />
       <HSpacing size=Spacing.md />
       <Text
         value="CoinGecko V.2"
@@ -72,10 +64,7 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
         <InfoHL
           header="OWNER"
           info={
-            InfoHL.Address(
-              "band1gfskuezzv9hxgsnpdejyyctwv3pxzmnywps0q9" |> Address.fromBech32,
-              Colors.grayHeader,
-            )
+            InfoHL.Address("band1gfskuezzv9hxgsnpdejyyctwv3pxzmnywps0q9" |> Address.fromBech32)
           }
         />
       </Col>
@@ -102,8 +91,8 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
       {switch (hashtag) {
        | DataSourceExecute => <DataSourceExecute />
        | DataSourceCode => <DataSourceCode />
-       | DataSourceRequests => <div> {"Requests" |> React.string} </div>
-       | DataSourceRevisions => <div> {"Revisions" |> React.string} </div>
+       | DataSourceRequests => <DataSourceRequestTable />
+       | DataSourceRevisions => <RevisionTable />
        }}
     </Tab>
   </div>;

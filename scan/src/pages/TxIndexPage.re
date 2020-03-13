@@ -1,7 +1,7 @@
 module Styles = {
   open Css;
 
-  let pageContainer = style([paddingTop(`px(50))]);
+  let pageContainer = style([paddingTop(`px(37))]);
 
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
@@ -11,10 +11,10 @@ module Styles = {
       height(`px(1)),
       marginLeft(`px(10)),
       marginRight(`px(10)),
-      backgroundColor(Colors.grayHeader),
+      backgroundColor(Colors.mediumGray),
     ]);
 
-  let addressContainer = style([marginTop(`px(15))]);
+  let hashContainer = style([marginTop(`px(25)), marginBottom(`px(44))]);
 
   let successBadge =
     style([
@@ -27,7 +27,7 @@ module Styles = {
       height(`px(40)),
     ]);
 
-  let checkLogo = style([marginRight(`px(10))]);
+  let correctLogo = style([width(`px(20)), marginLeft(`px(10))]);
 
   let seperatorLine =
     style([
@@ -36,6 +36,8 @@ module Styles = {
       backgroundColor(Colors.lightGray),
       display(`flex),
     ]);
+
+  let logo = style([width(`px(50)), marginRight(`px(10))]);
 };
 
 [@react.component]
@@ -45,65 +47,103 @@ let make = (~txHash) => {
     <Row justify=Row.Between>
       <Col>
         <div className=Styles.vFlex>
+          <img src=Images.txLogo className=Styles.logo />
           <Text
             value="TRANSACTION"
-            weight=Text.Semibold
-            size=Text.Lg
+            weight=Text.Medium
             nowrap=true
-            color=Colors.grayHeader
+            color=Colors.mediumGray
+            spacing={Text.Em(0.06)}
             block=true
           />
-          <HSpacing size=Spacing.sm />
-          {switch (txOpt) {
-           | Some(tx) =>
-             <>
-               <MsgBadge msgs={tx.messages} position=MsgBadge.Header />
-               <div className=Styles.seperatedLine />
-               <TimeAgos time={tx.timestamp} size=Text.Lg />
-             </>
-           | None => React.null
-           }}
-        </div>
-      </Col>
-      <Col>
-        <div className=Styles.successBadge>
-          <img src=Images.checkIcon className=Styles.checkLogo />
-          <Text value="Success" size=Text.Lg weight=Text.Semibold color=Colors.darkGreen />
+          <div className=Styles.seperatedLine />
+          <Text
+            value="SUCCESS"
+            weight=Text.Thin
+            nowrap=true
+            color=Colors.mediumGray
+            spacing={Text.Em(0.06)}
+            block=true
+          />
+          <img src=Images.success className=Styles.correctLogo />
         </div>
       </Col>
     </Row>
-    <div className=Styles.addressContainer>
+    <div className=Styles.hashContainer>
       <Text
-        value={txHash |> Hash.toHex(~with0x=true)}
-        size=Text.Xxxl
+        value={txHash |> Hash.toHex(~upper=true)}
+        size=Text.Xxl
         weight=Text.Bold
         nowrap=true
+        code=true
+        color=Colors.mediumGray
       />
     </div>
+    <Row>
+      {switch (txOpt) {
+       | Some(tx) =>
+         <>
+           <Col size=0.9> <InfoHL info={InfoHL.Height(tx.blockHeight)} header="BLOCK" /> </Col>
+           <Col size=2.2>
+             <InfoHL info={InfoHL.Timestamp(tx.timestamp)} header="TIMESTAMP" />
+           </Col>
+           <Col size=1.4>
+             <InfoHL
+               info={
+                 InfoHL.Address(
+                   "band17rprjgtj0krfw3wyl9creueej6ca9dc4dgxv6e" |> Address.fromBech32,
+                 )
+               }
+               header="SENDER"
+             />
+           </Col>
+         </>
+       | None =>
+         <>
+           <Col size=0.9> <InfoHL info={InfoHL.Text("?")} header="BLOCK" /> </Col>
+           <Col size=2.2> <InfoHL info={InfoHL.Text("?")} header="TIMESTAMP" /> </Col>
+           <Col size=1.4> <InfoHL info={InfoHL.Text("?")} header="SENDER" /> </Col>
+         </>
+       }}
+    </Row>
     <VSpacing size=Spacing.xl />
     <Row>
       {switch (txOpt) {
        | Some(tx) =>
          <>
-           <Col size=1.> <InfoHL info={InfoHL.Height(tx.blockHeight)} header="HEIGHT" /> </Col>
+           <Col size=1.35> <InfoHL info={InfoHL.Count(130082)} header="GAS USED" /> </Col>
+           <Col size=1.> <InfoHL info={InfoHL.Count(200000)} header="GAS LIMIT" /> </Col>
            <Col size=1.>
-             <InfoHL info={InfoHL.Count(tx.messages |> Belt_List.size)} header="MESSAGES" />
+             <InfoHL info={InfoHL.Float(0.000010)} header="GAS PRICE (BAND)" isLeft=false />
            </Col>
-           <Col size=2.>
-             <InfoHL info={InfoHL.Timestamp(tx.timestamp)} header="TIMESTAMP" />
+           <Col size=1.35>
+             <InfoHL info={InfoHL.Float(0.13)} header="FEE (BAND)" isLeft=false />
            </Col>
-           <Col size=2.5> <InfoHL info={InfoHL.Text("FREE")} header="FEE" /> </Col>
          </>
        | None =>
          <>
-           <Col size=1.> <InfoHL info={InfoHL.Text("?")} header="HEIGHT" /> </Col>
-           <Col size=1.> <InfoHL info={InfoHL.Text("?")} header="MESSAGES" /> </Col>
-           <Col size=2.> <InfoHL info={InfoHL.Text("?")} header="TIMESTAMP" /> </Col>
-           <Col size=2.5> <InfoHL info={InfoHL.Text("?")} header="FEE" /> </Col>
+           <Col size=0.9> <InfoHL info={InfoHL.Text("?")} header="BLOCK" /> </Col>
+           <Col size=2.2> <InfoHL info={InfoHL.Text("?")} header="TIMESTAMP" /> </Col>
+           <Col size=1.4> <InfoHL info={InfoHL.Text("?")} header="SENDER" /> </Col>
          </>
        }}
     </Row>
-    <VSpacing size=Spacing.xl />
+    <VSpacing size=Spacing.xxl />
+    <div className=Styles.vFlex>
+      <HSpacing size=Spacing.md />
+      {switch (txOpt) {
+       | Some(tx) =>
+         <Text
+           value={tx.messages |> Belt.List.length |> string_of_int}
+           weight=Text.Semibold
+           size=Text.Lg
+         />
+       | None => <Text value="?" weight=Text.Semibold size=Text.Lg />
+       }}
+      <HSpacing size=Spacing.md />
+      <Text value="Messages" size=Text.Lg spacing={Text.Em(0.06)} />
+    </div>
+    <VSpacing size=Spacing.md />
     {switch (txOpt) {
      | Some(tx) =>
        <> <div className=Styles.seperatorLine /> <TxIndexPageTable messages={tx.messages} /> </>
