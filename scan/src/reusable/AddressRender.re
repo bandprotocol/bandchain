@@ -35,10 +35,10 @@ module Styles = {
 
   let pointerEvents =
     fun
-    | Title => style([pointerEvents(`none)])
+    | Title
     | Subtitle
-    | Text => style([pointerEvents(`auto)])
-    | None => style([pointerEvents(`none)]);
+    | None => style([pointerEvents(`none)])
+    | Text => style([pointerEvents(`auto)]);
 };
 
 [@react.component]
