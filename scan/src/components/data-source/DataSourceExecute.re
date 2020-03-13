@@ -187,7 +187,9 @@ let make = (~executable: JsBuffer.t) => {
                 AxiosRequest.t(
                   ~executable=executable->JsBuffer.toHex,
                   ~calldata={
-                    calldataArr->Belt_Array.get(0)->Belt_Option.getWithDefault("");
+                    calldataArr
+                    ->Belt_Array.reduce("", (acc, calldata) => acc ++ " " ++ calldata)
+                    ->String.trim;
                   },
                 ),
               )
