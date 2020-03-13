@@ -221,10 +221,10 @@ module Msg = {
   let getCreator = msg => {
     switch (msg.action) {
     | Send(send) => send.fromAddress
-    | CreateDataSource(dataSource) => dataSource.owner
-    | EditDataSource(dataSource) => dataSource.owner
-    | CreateOracleScript(oracleScript) => oracleScript.owner
-    | EditOracleScript(oracleScript) => oracleScript.owner
+    | CreateDataSource(dataSource) => dataSource.sender
+    | EditDataSource(dataSource) => dataSource.sender
+    | CreateOracleScript(oracleScript) => oracleScript.sender
+    | EditOracleScript(oracleScript) => oracleScript.sender
     | Request(request) => request.sender
     | Report(report) => report.sender
     | Unknown => "" |> Address.fromHex

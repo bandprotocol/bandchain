@@ -231,7 +231,7 @@ let renderReport = (msg, report: TxHook.Msg.Report.t) => {
   </Row>;
 };
 
-let renderCreateDataSource = msg => {
+let renderCreateDataSource = (msg, dataSource: TxHook.Msg.CreateDataSource.t) => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
     <Col size=0.4 alignSelf=Col.Start>
@@ -247,7 +247,7 @@ let renderCreateDataSource = msg => {
         </div>
         <VSpacing size=Spacing.sm />
         <div className={Styles.badge(Colors.yellow1)}>
-          <TypeID.DataSource id={ID.DataSource.ID(123)} />
+          <TypeID.DataSource id={ID.DataSource.ID(dataSource.id)} />
         </div>
       </div>
     </Col>
@@ -261,26 +261,24 @@ let renderCreateDataSource = msg => {
       <Col> <VSpacing size=Spacing.md /> </Col>
       <div className=Styles.topicContainer>
         <Text value="OWNER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-        <div className={Styles.addressContainer(100)}>
-          <AddressRender address={msg |> TxHook.Msg.getCreator} />
+        <div className={Styles.addressContainer(300)}>
+          <AddressRender address={dataSource.owner} />
         </div>
       </div>
       <VSpacing size=Spacing.lg />
       <div className=Styles.topicContainer>
         <Text value="NAME" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className=Styles.hFlex>
-          <TypeID.DataSource id={ID.DataSource.ID(123)} />
+          <TypeID.DataSource id={ID.DataSource.ID(dataSource.id)} />
           <HSpacing size=Spacing.sm />
-          <Text value="Binance Crypto Price" />
+          <Text value={dataSource.name} />
         </div>
       </div>
       <VSpacing size=Spacing.md />
       <div className=Styles.topicContainer>
         <Text value="FEE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className=Styles.hFlex>
-          <Text value="1.5" weight=Text.Bold code=true />
-          <HSpacing size=Spacing.sm />
-          <Text value="BAND" code=true />
+          <Text value={dataSource.fee |> TxHook.Coin.toCoinsString} weight=Text.Bold code=true />
         </div>
       </div>
       <VSpacing size=Spacing.md />
@@ -448,7 +446,7 @@ let renderEditOracleScript = msg => {
 let renderBody = (msg: TxHook.Msg.t) => {
   switch (msg.action) {
   | Send(send) => renderSend(msg, send)
-  | CreateDataSource(_) => renderCreateDataSource(msg)
+  | CreateDataSource(dataSource) => renderCreateDataSource(msg, dataSource)
   | EditDataSource(_) => renderEditDataSource(msg)
   | CreateOracleScript(_) => renderCreateOracleScript(msg)
   | EditOracleScript(_) => renderEditOracleScript(msg)
