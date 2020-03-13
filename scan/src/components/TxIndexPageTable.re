@@ -45,20 +45,20 @@ module CopyButton = {
 let renderSend = msg => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
-    <Col size=0.4 alignSelf=Col.FlexStart>
+    <Col size=0.4 alignSelf=Col.Start>
       <div className=Styles.badgeContainer>
         <div className={Styles.badge(Colors.blue1)}>
           <Text value="SEND TOKEN" size=Text.Sm spacing={Text.Em(0.07)} color=Colors.blue7 />
         </div>
       </div>
     </Col>
-    <Col size=0.6 alignSelf=Col.FlexStart>
+    <Col size=0.6 alignSelf=Col.Start>
       <VSpacing size=Spacing.sm />
       <div className={Styles.addressContainer(170)}>
         <AddressRender address={msg |> TxHook.Msg.getCreator} />
       </div>
     </Col>
-    <Col size=1.3 alignSelf=Col.FlexStart>
+    <Col size=1.3 alignSelf=Col.Start>
       <VSpacing size=Spacing.sm />
       <div className=Styles.topicContainer>
         <Text value="FROM" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
@@ -92,7 +92,7 @@ let renderSend = msg => {
 let renderRequest = msg => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
-    <Col size=0.4 alignSelf=Col.FlexStart>
+    <Col size=0.4 alignSelf=Col.Start>
       <div className=Styles.badgeContainer>
         <div className={Styles.badge(Colors.fadeOrange)}>
           <Text
@@ -108,13 +108,13 @@ let renderRequest = msg => {
         </div>
       </div>
     </Col>
-    <Col size=0.6 alignSelf=Col.FlexStart>
+    <Col size=0.6 alignSelf=Col.Start>
       <VSpacing size=Spacing.sm />
       <div className={Styles.addressContainer(170)}>
         <AddressRender address={msg |> TxHook.Msg.getCreator} />
       </div>
     </Col>
-    <Col size=1.3 alignSelf=Col.FlexStart>
+    <Col size=1.3 alignSelf=Col.Start>
       <VSpacing size=Spacing.sm />
       <div className=Styles.topicContainer>
         <Text value="ORACLE SCRIPT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
