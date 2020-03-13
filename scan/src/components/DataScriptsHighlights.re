@@ -105,7 +105,7 @@ let make = () => <div />;
 //         {renderFeatured(recentScripts, 2, Colors.pink, Css.white)}
 //       </Col>
 //       <HSpacing size=Spacing.xl />
-//       <Col size=5. alignSelf=Col.FlexStart>
+//       <Col size=5. alignSelf=Col.Start>
 //         <Text value="Recent Data Scripts" size=Text.Xl weight=Text.Bold block=true />
 //         <Row wrap=true alignItems=`flexStart>
 //           {renderScript(recentScripts, 3)}
