@@ -29,7 +29,7 @@ module Styles = {
       height(`px(1)),
       marginLeft(`px(10)),
       marginRight(`px(10)),
-      backgroundColor(Colors.grayHeader),
+      backgroundColor(Colors.blueGray2),
     ]);
 
   let longLine =
@@ -83,7 +83,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
             spacing={Text.Em(0.06)}
             height={Text.Px(15)}
             nowrap=true
-            color=Colors.grayHeader
+            color=Colors.mediumGray
             block=true
           />
           <div className=Styles.seperatedLine />
@@ -92,7 +92,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
             size=Text.Md
             weight=Text.Thin
             spacing={Text.Em(0.06)}
-            color=Colors.grayHeader
+            color=Colors.mediumGray
             nowrap=true
           />
           <HSpacing size=Spacing.md />

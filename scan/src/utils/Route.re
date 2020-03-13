@@ -36,7 +36,7 @@ type t =
   | BlockIndexPage(int)
   | RequestIndexPage(int, request_tab_t)
   | AccountIndexPage(Address.t, account_tab_t)
-  | ValidatorHomePage;
+  | ValidatorHomePage
   | ValidatorIndexPage(Address.t, validator_tab_t);
 
 let fromUrl = (url: ReasonReactRouter.url) =>
