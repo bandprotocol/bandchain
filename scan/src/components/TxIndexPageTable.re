@@ -24,7 +24,7 @@ module CopyButton = {
   open Css;
 
   [@react.component]
-  let make = () => {
+  let make = (~data) => {
     <div
       className={style([
         backgroundColor(Colors.fadeBlue),
@@ -34,7 +34,8 @@ module CopyButton = {
         borderRadius(`px(6)),
         cursor(`pointer),
         boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), rgba(20, 32, 184, 0.2))),
-      ])}>
+      ])}
+      onClick={_ => {Copy.copy(data |> JsBuffer.toHex(~with0x=false))}}>
       <img src=Images.copy className={Css.style([maxHeight(`px(12))])} />
       <HSpacing size=Spacing.sm />
       <Text value="Copy as bytes" size=Text.Sm block=true color=Colors.brightBlue nowrap=true />
@@ -125,12 +126,12 @@ let renderRequest = (msg, request: TxHook.Msg.Request.t) => {
       <VSpacing size=Spacing.lg />
       <VSpacing size=Spacing.md />
       <div className=Styles.hFlex>
-        <Text value="CALL DATA" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <Text value="CALLDATA" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <HSpacing size=Spacing.md />
-        <CopyButton />
+        <CopyButton data={request.calldata} />
       </div>
       <VSpacing size=Spacing.md />
-      // TODO: Mock call data
+      // TODO: Mock calldata
       <KVTable
         kv=[
           ("crypto_symbol", "BTC"),
@@ -205,9 +206,8 @@ let renderReport = (msg, report: TxHook.Msg.Report.t) => {
       <VSpacing size=Spacing.lg />
       <VSpacing size=Spacing.sm />
       <div className=Styles.hFlex>
-        <Text value="RAW DATA REPORT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <Text value="RAW DATA REPORTS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <HSpacing size=Spacing.md />
-        <CopyButton />
       </div>
       <VSpacing size=Spacing.md />
       <KVTable
