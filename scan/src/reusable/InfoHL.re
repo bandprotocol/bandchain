@@ -50,9 +50,7 @@ let make = (~info, ~header, ~isLeft=true) => {
     {switch (info) {
      | Height(height) =>
        <div className=Styles.vFlex>
-         <Text value="#" size=Text.Lg weight=Text.Semibold color=Colors.brightPurple />
-         <HSpacing size=Spacing.xs />
-         <Text value={height |> Format.iPretty} size=Text.Lg weight=Text.Semibold />
+         <TypeID.Block id={ID.Block.ID(height)} position=TypeID.Subtitle />
        </div>
      | Float(value) =>
        <Text
