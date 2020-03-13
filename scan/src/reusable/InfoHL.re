@@ -94,13 +94,6 @@ let make = (~info, ~header, ~isLeft=true) => {
            code=true
          />
          <HSpacing size=Spacing.sm />
-         <Text
-           value="(9 hrs 2 mins ago)"
-           size=Text.Lg
-           spacing={Text.Em(0.02)}
-           weight=Text.Thin
-           code=true
-         />
        </div>
      | Fee(fee) =>
        <div className=Styles.vFlex>

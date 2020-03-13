@@ -101,36 +101,33 @@ let make = (~height: int) => {
       <Col size=4.6>
         {switch (blockOpt) {
          | Some(block) =>
-           <div className=Styles.vFlex>
-             <Text
-               value={
-                 block.timestamp
-                 |> MomentRe.Moment.format("MMM-DD-YYYY  hh:mm:ss A [+UTC]")
-                 |> String.uppercase_ascii
-               }
-               size=Text.Lg
-               weight=Text.Semibold
-               spacing={Text.Em(0.02)}
-               code=true
-             />
-             <HSpacing size=Spacing.sm />
-             <TimeAgos
-               time={block.timestamp}
-               prefix="("
-               size=Text.Md
-               weight=Text.Thin
-               spacing={Text.Em(0.06)}
-               color=Colors.mediumGray
-             />
-             <Text
-               value=")"
-               size=Text.Md
-               weight=Text.Thin
-               spacing={Text.Em(0.06)}
-               color=Colors.mediumGray
-             />
-           </div>
-         | None => <InfoHL info={InfoHL.Text("?")} header="TRANSACTIONS" />
+           <>
+             <div className=Styles.vFlex>
+               <InfoHL info={InfoHL.Timestamp(block.timestamp)} header="TIME STAMP" />
+               //  <HSpacing size=Spacing.sm />
+               <VSpacing size=Spacing.xxl />
+               <VSpacing size=Spacing.xxl />
+               <VSpacing size=Spacing.xxl />
+               <VSpacing size=Spacing.xxl />
+               <VSpacing size=Spacing.xxl />
+               <TimeAgos
+                 time={block.timestamp}
+                 prefix="("
+                 size=Text.Md
+                 weight=Text.Thin
+                 spacing={Text.Em(0.06)}
+                 color=Colors.mediumGray
+               />
+               <Text
+                 value=")"
+                 size=Text.Md
+                 weight=Text.Thin
+                 spacing={Text.Em(0.06)}
+                 color=Colors.mediumGray
+               />
+             </div>
+           </>
+         | None => <InfoHL info={InfoHL.Text("?")} header="TIME STAMP" />
          }}
       </Col>
       <Col size=3.2>
