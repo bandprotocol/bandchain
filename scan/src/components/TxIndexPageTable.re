@@ -88,9 +88,6 @@ let renderSend = (msg, send: TxHook.Msg.Send.t) => {
 
 // TODO: move it to file later.
 let renderRequest = (msg: TxHook.Msg.t, request: TxHook.Msg.Request.t) => {
-  let requestID =
-    msg.events->TxHook.Event.getValueOfKey("request.id")->Belt_Option.getWithDefault("0")
-    |> int_of_string;
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
     <Col size=0.4 alignSelf=Col.Start>
@@ -105,7 +102,7 @@ let renderRequest = (msg: TxHook.Msg.t, request: TxHook.Msg.Request.t) => {
         </div>
         <VSpacing size=Spacing.md />
         <div className={Styles.badge(Colors.fadeOrange)}>
-          <TypeID.Request id={ID.Request.ID(requestID)} />
+          <TypeID.Request id={ID.Request.ID(request.id)} />
         </div>
       </div>
     </Col>
@@ -122,7 +119,7 @@ let renderRequest = (msg: TxHook.Msg.t, request: TxHook.Msg.Request.t) => {
         <div className=Styles.hFlex>
           <TypeID.OracleScript id={ID.OracleScript.ID(request.oracleScriptID)} />
           <HSpacing size=Spacing.sm />
-          <Text value="Mean Platinum Price" />
+          <Text value="Mock oracle script name" />
         </div>
       </div>
       <VSpacing size=Spacing.lg />
@@ -287,7 +284,7 @@ let renderCreateDataSource = (msg, dataSource: TxHook.Msg.CreateDataSource.t) =>
   </Row>;
 };
 
-let renderEditDataSource = msg => {
+let renderEditDataSource = (msg, dataSource: TxHook.Msg.EditDataSource.t) => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
     <Col size=0.4 alignSelf=Col.Start>
@@ -303,7 +300,7 @@ let renderEditDataSource = msg => {
         </div>
         <VSpacing size=Spacing.sm />
         <div className={Styles.badge(Colors.yellow1)}>
-          <TypeID.DataSource id={ID.DataSource.ID(123)} />
+          <TypeID.DataSource id={ID.DataSource.ID(dataSource.id)} />
         </div>
       </div>
     </Col>
@@ -318,25 +315,23 @@ let renderEditDataSource = msg => {
       <div className=Styles.topicContainer>
         <Text value="OWNER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className={Styles.addressContainer(300)}>
-          <AddressRender address={msg |> TxHook.Msg.getCreator} />
+          <AddressRender address={dataSource.owner} />
         </div>
       </div>
       <VSpacing size=Spacing.lg />
       <div className=Styles.topicContainer>
         <Text value="NAME" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className=Styles.hFlex>
-          <TypeID.DataSource id={ID.DataSource.ID(123)} />
+          <TypeID.DataSource id={ID.DataSource.ID(dataSource.id)} />
           <HSpacing size=Spacing.sm />
-          <Text value="Binance Crypto Price" />
+          <Text value={dataSource.name} />
         </div>
       </div>
       <VSpacing size=Spacing.md />
       <div className=Styles.topicContainer>
         <Text value="FEE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className=Styles.hFlex>
-          <Text value="1.5" weight=Text.Bold code=true />
-          <HSpacing size=Spacing.sm />
-          <Text value="BAND" code=true />
+          <Text value={dataSource.fee |> TxHook.Coin.toCoinsString} weight=Text.Bold code=true />
         </div>
       </div>
       <VSpacing size=Spacing.md />
@@ -447,7 +442,7 @@ let renderBody = (msg: TxHook.Msg.t) => {
   switch (msg.action) {
   | Send(send) => renderSend(msg, send)
   | CreateDataSource(dataSource) => renderCreateDataSource(msg, dataSource)
-  | EditDataSource(_) => renderEditDataSource(msg)
+  | EditDataSource(dataSource) => renderEditDataSource(msg, dataSource)
   | CreateOracleScript(_) => renderCreateOracleScript(msg)
   | EditOracleScript(_) => renderEditOracleScript(msg)
   | Request(request) => renderRequest(msg, request)

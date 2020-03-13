@@ -58,31 +58,27 @@ let make = (~txHash) => {
           />
           <div className=Styles.seperatedLine />
           {switch (txOpt) {
-           | Some(_) =>
-             true
-               ? <>
-                   <Text
-                     value="SUCCESS"
-                     weight=Text.Thin
-                     nowrap=true
-                     color=Colors.mediumGray
-                     spacing={Text.Em(0.06)}
-                     block=true
-                   />
-                   <img src=Images.success className=Styles.correctLogo />
-                 </>
-               : <>
-                   <Text
-                     value="FAILED"
-                     weight=Text.Thin
-                     nowrap=true
-                     color=Colors.mediumGray
-                     spacing={Text.Em(0.06)}
-                     block=true
-                   />
-                   <img src=Images.success className=Styles.correctLogo />
-                 </>
-           | None => React.null
+           | Some(tx) =>
+             <>
+               <Text
+                 value={tx.success ? "SUCCESS" : "FAILED"}
+                 weight=Text.Thin
+                 nowrap=true
+                 color=Colors.mediumGray
+                 spacing={Text.Em(0.06)}
+                 block=true
+               />
+               <img src={tx.success ? Images.success : Images.fail} className=Styles.correctLogo />
+             </>
+           | None =>
+             <Text
+               value="UNKNOWN"
+               weight=Text.Thin
+               nowrap=true
+               color=Colors.mediumGray
+               spacing={Text.Em(0.06)}
+               block=true
+             />
            }}
         </div>
       </Col>
@@ -120,13 +116,25 @@ let make = (~txHash) => {
       {switch (txOpt) {
        | Some(tx) =>
          <>
-           <Col size=1.35> <InfoHL info={InfoHL.Count(130082)} header="GAS USED" /> </Col>
-           <Col size=1.> <InfoHL info={InfoHL.Count(200000)} header="GAS LIMIT" /> </Col>
+           <Col size=1.35> <InfoHL info={InfoHL.Count(tx.gasUsed)} header="GAS USED" /> </Col>
+           <Col size=1.> <InfoHL info={InfoHL.Count(tx.gasWanted)} header="GAS LIMIT" /> </Col>
            <Col size=1.>
-             <InfoHL info={InfoHL.Float(0.000010)} header="GAS PRICE (BAND)" isLeft=false />
+             <InfoHL
+               info={
+                 InfoHL.Float(
+                   (tx.fee |> TxHook.Coin.getBandAmountFromCoins) /. (tx.gasWanted |> float_of_int),
+                 )
+               }
+               header="GAS PRICE (BAND)"
+               isLeft=false
+             />
            </Col>
            <Col size=1.35>
-             <InfoHL info={InfoHL.Float(0.13)} header="FEE (BAND)" isLeft=false />
+             <InfoHL
+               info={InfoHL.Float(tx.fee |> TxHook.Coin.getBandAmountFromCoins)}
+               header="FEE (BAND)"
+               isLeft=false
+             />
            </Col>
          </>
        | None =>
