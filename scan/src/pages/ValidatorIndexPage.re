@@ -40,12 +40,15 @@ module Styles = {
       marginTop(`px(30)),
       marginBottom(`px(45)),
     ]);
+
+  let underline = style([textDecoration(`underline), color(Colors.mediumGray)]);
 };
 
 type value_row_t =
   | VAddress(Address.t)
   | VValidatorAddress(Address.t)
   | VText(string)
+  | VExtLink(string)
   | VCode(string);
 
 let kvRow = (k, v: value_row_t) => {
@@ -59,8 +62,12 @@ let kvRow = (k, v: value_row_t) => {
         {switch (v) {
          | VAddress(address) => <AddressRender address />
          | VValidatorAddress(address) => <AddressRender address validator=true />
-         | VCode(value) => <Text value code=true nowrap=true weight=Text.Medium />
-         | VText(value) => <Text value nowrap=true weight=Text.Medium />
+         | VText(value) => <Text value nowrap=true />
+         | VExtLink(value) =>
+           <a href=value target="_blank" rel="noopener">
+             <div className=Styles.underline> <Text value nowrap=true /> </div>
+           </a>
+         | VCode(value) => <Text value code=true nowrap=true />
          }}
       </div>
     </Col>
@@ -121,7 +128,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
       <VSpacing size=Spacing.lg />
       {kvRow("BONDED HEIGHT", VCode("1"))}
       <VSpacing size=Spacing.lg />
-      {kvRow("WEBSITE", VText("https://coingecko.node"))}
+      {kvRow("WEBSITE", VExtLink("https://coingecko.node"))}
       <VSpacing size=Spacing.lg />
       {kvRow(
          "DETAILS",
