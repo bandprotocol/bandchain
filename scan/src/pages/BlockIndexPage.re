@@ -131,7 +131,11 @@ let make = (~height: int) => {
     {switch (blockOpt, txsOpt) {
      | (Some(_), Some({txs})) =>
        switch (txs->Belt_List.size) {
-       | 0 => <VSpacing size={`px(280)} />
+       | 0 =>
+         <>
+           <BlockIndexTxsTable txs />
+           <img src=Images.noTransaction className=Styles.blockLogo />
+         </>
        | _ =>
          <>
            <VSpacing size=Spacing.xl />
