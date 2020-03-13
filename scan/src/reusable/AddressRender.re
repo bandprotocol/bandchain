@@ -1,7 +1,8 @@
 type pos_t =
   | Title
   | Subtitle
-  | Text;
+  | Text
+  | None;
 
 let prefixFontSize =
   fun
@@ -36,7 +37,8 @@ module Styles = {
     fun
     | Title => style([pointerEvents(`none)])
     | Subtitle
-    | Text => style([pointerEvents(`auto)]);
+    | Text => style([pointerEvents(`auto)])
+    | None => style([pointerEvents(`none)]);
 };
 
 [@react.component]
@@ -47,7 +49,7 @@ let make = (~address, ~position=Text, ~validator=false) => {
       : address |> Address.toBech32 |> Js.String.sliceToEnd(~from=4);
 
   <div
-    className={Css.merge([Styles.container, Styles.pointerEvents(position)])}
+    className={Css.merge([Styles.container, Styles.pointerEvents(validator ? None : position)])}
     onClick={_ => Route.redirect(Route.AccountIndexPage(address, Route.AccountTransactions))}>
     <Text
       value={validator ? "bandvaloper" : "band"}
