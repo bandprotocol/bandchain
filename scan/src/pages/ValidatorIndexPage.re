@@ -111,12 +111,9 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
     <div className=Styles.topPartWrapper>
       <Text value="INFORMATION" size=Text.Lg weight=Text.Semibold />
       <VSpacing size=Spacing.lg />
-      {kvRow(
-         "OPERATOR ADDRESS",
-         VValidatorAddress("e38475F47166d30A6e4E2E2C37e4B75E88Aa8b5B" |> Address.fromHex),
-       )}
+      {kvRow("OPERATOR ADDRESS", VValidatorAddress(address))}
       <VSpacing size=Spacing.lg />
-      {kvRow("ADDRESS", VAddress("e38475F47166d30A6e4E2E2C37e4B75E88Aa8b5B" |> Address.fromHex))}
+      {kvRow("ADDRESS", VAddress(address))}
       <VSpacing size=Spacing.lg />
       {kvRow("VOTING POWER", VCode("45.34% (12,434.234 BAND)"))}
       <VSpacing size=Spacing.lg />
