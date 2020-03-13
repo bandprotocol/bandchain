@@ -64,6 +64,14 @@ func (env *ExecutionEnvironment) GetValidatorAddress(validatorIndex int64) ([]by
 	return env.request.RequestedValidators[validatorIndex], nil
 }
 
+func (env *ExecutionEnvironment) GetMaximumResultSize() int64 {
+	return env.keeper.MaxResultSize(env.ctx)
+}
+
+func (env *ExecutionEnvironment) GetMaximumCalldataOfDataSourceSize() int64 {
+	return env.keeper.MaxCalldataSize(env.ctx)
+}
+
 func (env *ExecutionEnvironment) RequestExternalData(
 	dataSourceID int64,
 	externalDataID int64,

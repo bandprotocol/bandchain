@@ -33,6 +33,14 @@ type ExecutionEnvironment interface {
 	// at the specified index.
 	GetValidatorAddress(validatorIndex int64) ([]byte, error)
 
+	// GetMaximumResultSize returns the maxixmum size of result data that returns from
+	// execute function.
+	GetMaximumResultSize() int64
+
+	// GetMaximumCalldataOfDataSourceSize returns the maximum size of call data using in
+	// data source execution.
+	GetMaximumCalldataOfDataSourceSize() int64
+
 	// RequestExternalData performs a request to the specified data source
 	// with and assigns the request with the external data ID. The function must
 	// only be called during the *preparation* phase of an oracle script.

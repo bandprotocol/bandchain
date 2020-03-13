@@ -17,7 +17,10 @@
 [@bs.module] external loadingSpinner: string = "./loading_spinner.gif";
 [@bs.module] external blockLogo: string = "./block.png";
 [@bs.module] external dataSourceLogo: string = "./data-source.png";
+[@bs.module] external txLogo: string = "./txLogo.svg";
 [@bs.module] external accountLogo: string = "./account-icon.png";
 [@bs.module] external pieChart: string = "./pie-chart.png";
+[@bs.module] external success: string = "./success.svg";
 [@bs.module] external txLogo: string = "./tx-icon.png";
-[@bs.module] external correct: string = "./correct.png";
+[@bs.module] external noRequestIcon: string = "./noRequest.png";
+[@bs.module] external noRevisionIcon: string = "./noRevision.png";

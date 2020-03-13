@@ -11,7 +11,7 @@ module Styles = {
       height(`px(1)),
       marginLeft(`px(10)),
       marginRight(`px(10)),
-      backgroundColor(Colors.grayHeader),
+      backgroundColor(Colors.mediumGray),
     ]);
 
   let addressContainer = style([marginTop(`px(25)), marginBottom(`px(44))]);
@@ -52,7 +52,7 @@ let make = (~txHash) => {
             value="TRANSACTION"
             weight=Text.Medium
             nowrap=true
-            color=Colors.grayHeader
+            color=Colors.mediumGray
             spacing={Text.Em(0.06)}
             block=true
           />
@@ -61,11 +61,11 @@ let make = (~txHash) => {
             value="SUCCESS"
             weight=Text.Thin
             nowrap=true
-            color=Colors.grayHeader
+            color=Colors.mediumGray
             spacing={Text.Em(0.06)}
             block=true
           />
-          <img src=Images.correct className=Styles.correctLogo />
+          <img src=Images.success className=Styles.correctLogo />
         </div>
       </Col>
     </Row>
@@ -76,7 +76,7 @@ let make = (~txHash) => {
         weight=Text.Bold
         nowrap=true
         code=true
-        color=Colors.grayHeader
+        color=Colors.mediumGray
       />
     </div>
     <Row>

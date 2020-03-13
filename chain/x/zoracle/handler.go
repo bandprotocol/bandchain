@@ -7,6 +7,7 @@ import (
 	"github.com/bandprotocol/d3n/chain/owasm"
 	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	auth "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
 
 // NewHandler creates handler of this module
@@ -221,10 +222,28 @@ func handleMsgRequestData(ctx sdk.Context, keeper Keeper, msg MsgRequestData) sd
 }
 
 func handleMsgReportData(ctx sdk.Context, keeper Keeper, msg MsgReportData) sdk.Result {
+	startGas := ctx.GasMeter().GasConsumed()
+
+	// Save new report to store
 	err := keeper.AddReport(ctx, msg.RequestID, msg.DataSet, msg.Sender)
 	if err != nil {
 		return err.Result()
 	}
+
+	// Calculate the total refund by multiplying RefundGasPrice with gas used
+	amountToRefund, _ := msg.RefundGasPrice.MulDec(sdk.NewDec(int64(ctx.GasMeter().GasConsumed() - startGas))).TruncateDecimal()
+
+	// Refund the reporter
+	err = keeper.SupplyKeeper.SendCoinsFromModuleToAccount(
+		ctx,
+		auth.FeeCollectorName,
+		msg.GetSigners()[0],
+		amountToRefund,
+	)
+	if err != nil {
+		return err.Result()
+	}
+
 	// Emit report event
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
