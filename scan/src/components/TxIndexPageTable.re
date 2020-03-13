@@ -339,13 +339,111 @@ let renderEditDataSource = msg => {
   </Row>;
 };
 
+let renderCreateOracleScript = msg => {
+  <Row>
+    <Col> <HSpacing size=Spacing.md /> </Col>
+    <Col size=0.4 alignSelf=Col.Start>
+      <div className=Styles.badgeContainer>
+        <VSpacing size=Spacing.sm />
+        <div className={Styles.badge(Colors.pink1)}>
+          <Text
+            value="NEW ORACLE SCRIPT"
+            size=Text.Sm
+            spacing={Text.Em(0.07)}
+            color=Colors.pink6
+          />
+        </div>
+        <VSpacing size=Spacing.sm />
+        <div className={Styles.badge(Colors.pink1)}>
+          <TypeID.OracleScript id={ID.OracleScript.ID(123)} />
+        </div>
+      </div>
+    </Col>
+    <Col size=0.6 alignSelf=Col.Start>
+      <VSpacing size=Spacing.md />
+      <div className={Styles.addressContainer(170)}>
+        <AddressRender address={msg |> TxHook.Msg.getCreator} />
+      </div>
+    </Col>
+    <Col size=1.3 alignSelf=Col.Start>
+      <Col> <VSpacing size=Spacing.md /> </Col>
+      <div className=Styles.topicContainer>
+        <Text value="OWNER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <div className={Styles.addressContainer(300)}>
+          <AddressRender address={msg |> TxHook.Msg.getCreator} />
+        </div>
+      </div>
+      <VSpacing size=Spacing.lg />
+      <div className=Styles.topicContainer>
+        <Text value="NAME" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <div className=Styles.hFlex>
+          <TypeID.OracleScript id={ID.OracleScript.ID(123)} />
+          <HSpacing size=Spacing.sm />
+          <Text value="Binance Crypto Price" />
+        </div>
+      </div>
+      <VSpacing size=Spacing.md />
+    </Col>
+    <Col> <HSpacing size=Spacing.md /> </Col>
+  </Row>;
+};
+
+let renderEditOracleScript = msg => {
+  <Row>
+    <Col> <HSpacing size=Spacing.md /> </Col>
+    <Col size=0.4 alignSelf=Col.Start>
+      <div className=Styles.badgeContainer>
+        <VSpacing size=Spacing.sm />
+        <div className={Styles.badge(Colors.pink1)}>
+          <Text
+            value="EDIT ORACLE SCRIPT"
+            size=Text.Sm
+            spacing={Text.Em(0.07)}
+            color=Colors.pink6
+          />
+        </div>
+        <VSpacing size=Spacing.sm />
+        <div className={Styles.badge(Colors.pink1)}>
+          <TypeID.OracleScript id={ID.OracleScript.ID(123)} />
+        </div>
+      </div>
+    </Col>
+    <Col size=0.6 alignSelf=Col.Start>
+      <VSpacing size=Spacing.md />
+      <div className={Styles.addressContainer(170)}>
+        <AddressRender address={msg |> TxHook.Msg.getCreator} />
+      </div>
+    </Col>
+    <Col size=1.3 alignSelf=Col.Start>
+      <Col> <VSpacing size=Spacing.md /> </Col>
+      <div className=Styles.topicContainer>
+        <Text value="OWNER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <div className={Styles.addressContainer(300)}>
+          <AddressRender address={msg |> TxHook.Msg.getCreator} />
+        </div>
+      </div>
+      <VSpacing size=Spacing.lg />
+      <div className=Styles.topicContainer>
+        <Text value="NAME" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <div className=Styles.hFlex>
+          <TypeID.OracleScript id={ID.OracleScript.ID(123)} />
+          <HSpacing size=Spacing.sm />
+          <Text value="Binance Crypto Price" />
+        </div>
+      </div>
+      <VSpacing size=Spacing.md />
+    </Col>
+    <Col> <HSpacing size=Spacing.md /> </Col>
+  </Row>;
+};
+
 let renderBody = (msg: TxHook.Msg.t) => {
   switch (msg.action) {
   | Send(_) => renderSend(msg)
   | CreateDataSource(_) => renderCreateDataSource(msg)
   | EditDataSource(_) => renderEditDataSource(msg)
-  | CreateOracleScript(_) => React.null
-  | EditOracleScript(_) => React.null
+  | CreateOracleScript(_) => renderCreateOracleScript(msg)
+  | EditOracleScript(_) => renderEditOracleScript(msg)
   | Request(_) => renderRequest(msg)
   | Report(_) => renderReport(msg)
   | Unknown => React.null
