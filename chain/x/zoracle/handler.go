@@ -51,8 +51,11 @@ func handleMsgEditDataSource(ctx sdk.Context, keeper Keeper, msg MsgEditDataSour
 	}
 
 	if !dataSource.Owner.Equals(msg.Sender) {
-		// TODO: change it later.
-		return types.ErrInvalidOwner(types.DefaultCodespace).Result()
+		return types.ErrUnauthorizedPermission(
+			"handleMsgEditDataSource: Sender (%s) is not data source owner (%s).",
+			msg.Sender.String(),
+			dataSource.Owner.String(),
+		).Result()
 	}
 
 	err = keeper.EditDataSource(ctx, msg.DataSourceID, msg.Owner, msg.Name, msg.Description, msg.Fee, msg.Executable)
@@ -79,8 +82,11 @@ func handleMsgEditOracleScript(ctx sdk.Context, keeper Keeper, msg MsgEditOracle
 	}
 
 	if !oracleScript.Owner.Equals(msg.Sender) {
-		// TODO: change it later.
-		return types.ErrInvalidOwner(types.DefaultCodespace).Result()
+		return types.ErrUnauthorizedPermission(
+			"handleMsgEditOracleScript: Sender (%s) is not oracle owner (%s).",
+			msg.Sender.String(),
+			oracleScript.Owner.String(),
+		).Result()
 	}
 
 	err = keeper.EditOracleScript(ctx, msg.OracleScriptID, msg.Owner, msg.Name, msg.Description, msg.Code)
