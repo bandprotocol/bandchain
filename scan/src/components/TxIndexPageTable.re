@@ -24,7 +24,7 @@ module CopyButton = {
   open Css;
 
   [@react.component]
-  let make = () => {
+  let make = (~data) => {
     <div
       className={style([
         backgroundColor(Colors.fadeBlue),
@@ -34,7 +34,8 @@ module CopyButton = {
         borderRadius(`px(6)),
         cursor(`pointer),
         boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), rgba(20, 32, 184, 0.2))),
-      ])}>
+      ])}
+      onClick={_ => {Copy.copy(data |> JsBuffer.toHex(~with0x=false))}}>
       <img src=Images.copy className={Css.style([maxHeight(`px(12))])} />
       <HSpacing size=Spacing.sm />
       <Text value="Copy as bytes" size=Text.Sm block=true color=Colors.brightBlue nowrap=true />
@@ -42,7 +43,7 @@ module CopyButton = {
   };
 };
 
-let renderSend = msg => {
+let renderSend = (msg, send: TxHook.Msg.Send.t) => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
     <Col size=0.4 alignSelf=Col.Start>
@@ -63,23 +64,21 @@ let renderSend = msg => {
       <div className=Styles.topicContainer>
         <Text value="FROM" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className={Styles.addressContainer(300)}>
-          <AddressRender address={msg |> TxHook.Msg.getCreator} />
+          <AddressRender address={send.fromAddress} />
         </div>
       </div>
       <VSpacing size=Spacing.lg />
       <div className=Styles.topicContainer>
         <Text value="TO" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className={Styles.addressContainer(300)}>
-          <AddressRender address={msg |> TxHook.Msg.getCreator} />
+          <AddressRender address={send.toAddress} />
         </div>
       </div>
       <VSpacing size=Spacing.lg />
       <div className=Styles.topicContainer>
         <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className=Styles.hFlex>
-          <Text value="10" weight=Text.Bold code=true />
-          <HSpacing size=Spacing.sm />
-          <Text value="BAND" code=true />
+          <Text value={send.amount |> TxHook.Coin.toCoinsString} weight=Text.Bold code=true />
         </div>
       </div>
       <VSpacing size=Spacing.lg />
@@ -89,7 +88,7 @@ let renderSend = msg => {
 };
 
 // TODO: move it to file later.
-let renderRequest = msg => {
+let renderRequest = (msg, request: TxHook.Msg.Request.t) => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
     <Col size=0.4 alignSelf=Col.Start>
@@ -104,7 +103,7 @@ let renderRequest = msg => {
         </div>
         <VSpacing size=Spacing.md />
         <div className={Styles.badge(Colors.fadeOrange)}>
-          <TypeID.Request id={ID.Request.ID(2)} />
+          <TypeID.Request id={ID.Request.ID(request.id)} />
         </div>
       </div>
     </Col>
@@ -119,19 +118,20 @@ let renderRequest = msg => {
       <div className=Styles.topicContainer>
         <Text value="ORACLE SCRIPT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className=Styles.hFlex>
-          <TypeID.OracleScript id={ID.OracleScript.ID(123)} />
+          <TypeID.OracleScript id={ID.OracleScript.ID(request.oracleScriptID)} />
           <HSpacing size=Spacing.sm />
-          <Text value="Mean Platinum Price" />
+          <Text value="Mock oracle script name" />
         </div>
       </div>
       <VSpacing size=Spacing.lg />
       <VSpacing size=Spacing.md />
       <div className=Styles.hFlex>
-        <Text value="CALL DATA" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <Text value="CALLDATA" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <HSpacing size=Spacing.md />
-        <CopyButton />
+        <CopyButton data={request.calldata} />
       </div>
       <VSpacing size=Spacing.md />
+      // TODO: Mock calldata
       <KVTable
         kv=[
           ("crypto_symbol", "BTC"),
@@ -147,7 +147,7 @@ let renderRequest = msg => {
           weight=Text.Thin
           spacing={Text.Em(0.06)}
         />
-        <Text value="2" weight=Text.Bold />
+        <Text value={request.requestedValidatorCount |> string_of_int} weight=Text.Bold />
       </div>
       <VSpacing size=Spacing.lg />
       <div className=Styles.topicContainer>
@@ -157,13 +157,13 @@ let renderRequest = msg => {
           weight=Text.Thin
           spacing={Text.Em(0.06)}
         />
-        <Text value="2" weight=Text.Bold />
+        <Text value={request.sufficientValidatorCount |> string_of_int} weight=Text.Bold />
       </div>
       <VSpacing size=Spacing.lg />
       <div className=Styles.topicContainer>
         <Text value="REPORT PERIOD" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className=Styles.hFlex>
-          <Text value="10" weight=Text.Bold code=true />
+          <Text value={request.expiration |> string_of_int} weight=Text.Bold code=true />
           <HSpacing size=Spacing.sm />
           <Text value="Blocks" code=true />
         </div>
@@ -174,7 +174,7 @@ let renderRequest = msg => {
   </Row>;
 };
 
-let renderReport = msg => {
+let renderReport = (msg, report: TxHook.Msg.Report.t) => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
     <Col size=0.4 alignSelf=Col.Start>
@@ -199,23 +199,28 @@ let renderReport = msg => {
       <VSpacing size=Spacing.sm />
       <div className=Styles.topicContainer>
         <Text value="REQUEST ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-        <div className=Styles.hFlex> <TypeID.Request id={ID.Request.ID(123)} /> </div>
+        <div className=Styles.hFlex>
+          <TypeID.Request id={ID.Request.ID(report.requestID)} />
+        </div>
       </div>
       <VSpacing size=Spacing.lg />
       <VSpacing size=Spacing.sm />
       <div className=Styles.hFlex>
-        <Text value="RAW DATA REPORT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <Text value="RAW DATA REPORTS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <HSpacing size=Spacing.md />
-        <CopyButton />
       </div>
       <VSpacing size=Spacing.md />
       <KVTable
         header=["EXTERNAL ID", "VALUE"]
-        kv=[
-          ("1", "14948248048129841924"),
-          ("2", "531750937509892038752859"),
-          ("3", "135863087593175193701535817397538759571"),
-        ]
+        kv={
+          report.dataSet
+          |> Belt_List.map(_, rawReport =>
+               (
+                 rawReport.externalDataID |> string_of_int,
+                 rawReport.data |> JsBuffer._toString(_, "UTF-8"),
+               )
+             )
+        }
       />
       <VSpacing size=Spacing.lg />
     </Col>
@@ -223,7 +228,7 @@ let renderReport = msg => {
   </Row>;
 };
 
-let renderCreateDataSource = msg => {
+let renderCreateDataSource = (msg, dataSource: TxHook.Msg.CreateDataSource.t) => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
     <Col size=0.4 alignSelf=Col.Start>
@@ -239,7 +244,7 @@ let renderCreateDataSource = msg => {
         </div>
         <VSpacing size=Spacing.sm />
         <div className={Styles.badge(Colors.yellow1)}>
-          <TypeID.DataSource id={ID.DataSource.ID(123)} />
+          <TypeID.DataSource id={ID.DataSource.ID(dataSource.id)} />
         </div>
       </div>
     </Col>
@@ -253,26 +258,24 @@ let renderCreateDataSource = msg => {
       <Col> <VSpacing size=Spacing.md /> </Col>
       <div className=Styles.topicContainer>
         <Text value="OWNER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-        <div className={Styles.addressContainer(100)}>
-          <AddressRender address={msg |> TxHook.Msg.getCreator} />
+        <div className={Styles.addressContainer(300)}>
+          <AddressRender address={dataSource.owner} />
         </div>
       </div>
       <VSpacing size=Spacing.lg />
       <div className=Styles.topicContainer>
         <Text value="NAME" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className=Styles.hFlex>
-          <TypeID.DataSource id={ID.DataSource.ID(123)} />
+          <TypeID.DataSource id={ID.DataSource.ID(dataSource.id)} />
           <HSpacing size=Spacing.sm />
-          <Text value="Binance Crypto Price" />
+          <Text value={dataSource.name} />
         </div>
       </div>
       <VSpacing size=Spacing.md />
       <div className=Styles.topicContainer>
         <Text value="FEE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className=Styles.hFlex>
-          <Text value="1.5" weight=Text.Bold code=true />
-          <HSpacing size=Spacing.sm />
-          <Text value="BAND" code=true />
+          <Text value={dataSource.fee |> TxHook.Coin.toCoinsString} weight=Text.Bold code=true />
         </div>
       </div>
       <VSpacing size=Spacing.md />
@@ -281,7 +284,7 @@ let renderCreateDataSource = msg => {
   </Row>;
 };
 
-let renderEditDataSource = msg => {
+let renderEditDataSource = (msg, dataSource: TxHook.Msg.EditDataSource.t) => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
     <Col size=0.4 alignSelf=Col.Start>
@@ -297,7 +300,7 @@ let renderEditDataSource = msg => {
         </div>
         <VSpacing size=Spacing.sm />
         <div className={Styles.badge(Colors.yellow1)}>
-          <TypeID.DataSource id={ID.DataSource.ID(123)} />
+          <TypeID.DataSource id={ID.DataSource.ID(dataSource.id)} />
         </div>
       </div>
     </Col>
@@ -312,25 +315,121 @@ let renderEditDataSource = msg => {
       <div className=Styles.topicContainer>
         <Text value="OWNER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className={Styles.addressContainer(300)}>
-          <AddressRender address={msg |> TxHook.Msg.getCreator} />
+          <AddressRender address={dataSource.owner} />
         </div>
       </div>
       <VSpacing size=Spacing.lg />
       <div className=Styles.topicContainer>
         <Text value="NAME" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className=Styles.hFlex>
-          <TypeID.DataSource id={ID.DataSource.ID(123)} />
+          <TypeID.DataSource id={ID.DataSource.ID(dataSource.id)} />
           <HSpacing size=Spacing.sm />
-          <Text value="Binance Crypto Price" />
+          <Text value={dataSource.name} />
         </div>
       </div>
       <VSpacing size=Spacing.md />
       <div className=Styles.topicContainer>
         <Text value="FEE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className=Styles.hFlex>
-          <Text value="1.5" weight=Text.Bold code=true />
+          <Text value={dataSource.fee |> TxHook.Coin.toCoinsString} weight=Text.Bold code=true />
+        </div>
+      </div>
+      <VSpacing size=Spacing.md />
+    </Col>
+    <Col> <HSpacing size=Spacing.md /> </Col>
+  </Row>;
+};
+
+let renderCreateOracleScript = (msg, oracleScript: TxHook.Msg.CreateOracleScript.t) => {
+  <Row>
+    <Col> <HSpacing size=Spacing.md /> </Col>
+    <Col size=0.4 alignSelf=Col.Start>
+      <div className=Styles.badgeContainer>
+        <VSpacing size=Spacing.sm />
+        <div className={Styles.badge(Colors.pink1)}>
+          <Text
+            value="NEW ORACLE SCRIPT"
+            size=Text.Sm
+            spacing={Text.Em(0.07)}
+            color=Colors.pink6
+          />
+        </div>
+        <VSpacing size=Spacing.sm />
+        <div className={Styles.badge(Colors.pink1)}>
+          <TypeID.OracleScript id={ID.OracleScript.ID(oracleScript.id)} />
+        </div>
+      </div>
+    </Col>
+    <Col size=0.6 alignSelf=Col.Start>
+      <VSpacing size=Spacing.md />
+      <div className={Styles.addressContainer(170)}>
+        <AddressRender address={msg |> TxHook.Msg.getCreator} />
+      </div>
+    </Col>
+    <Col size=1.3 alignSelf=Col.Start>
+      <Col> <VSpacing size=Spacing.md /> </Col>
+      <div className=Styles.topicContainer>
+        <Text value="OWNER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <div className={Styles.addressContainer(300)}>
+          <AddressRender address={oracleScript.owner} />
+        </div>
+      </div>
+      <VSpacing size=Spacing.lg />
+      <div className=Styles.topicContainer>
+        <Text value="NAME" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <div className=Styles.hFlex>
+          <TypeID.OracleScript id={ID.OracleScript.ID(oracleScript.id)} />
           <HSpacing size=Spacing.sm />
-          <Text value="BAND" code=true />
+          <Text value={oracleScript.name} />
+        </div>
+      </div>
+      <VSpacing size=Spacing.md />
+    </Col>
+    <Col> <HSpacing size=Spacing.md /> </Col>
+  </Row>;
+};
+
+let renderEditOracleScript = (msg, oracleScript: TxHook.Msg.EditOracleScript.t) => {
+  <Row>
+    <Col> <HSpacing size=Spacing.md /> </Col>
+    <Col size=0.4 alignSelf=Col.Start>
+      <div className=Styles.badgeContainer>
+        <VSpacing size=Spacing.sm />
+        <div className={Styles.badge(Colors.pink1)}>
+          <Text
+            value="EDIT ORACLE SCRIPT"
+            size=Text.Sm
+            spacing={Text.Em(0.07)}
+            color=Colors.pink6
+          />
+        </div>
+        <VSpacing size=Spacing.sm />
+        <div className={Styles.badge(Colors.pink1)}>
+          <TypeID.OracleScript id={ID.OracleScript.ID(oracleScript.id)} />
+        </div>
+      </div>
+    </Col>
+    <Col size=0.6 alignSelf=Col.Start>
+      <VSpacing size=Spacing.md />
+      <div className={Styles.addressContainer(170)}>
+        <AddressRender address={msg |> TxHook.Msg.getCreator} />
+      </div>
+    </Col>
+    <Col size=1.3 alignSelf=Col.Start>
+      <Col> <VSpacing size=Spacing.md /> </Col>
+      <div className=Styles.topicContainer>
+        <Text value="OWNER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <div className={Styles.addressContainer(300)}>
+          <AddressRender address={oracleScript.owner} />
+        </div>
+      </div>
+      <VSpacing size=Spacing.lg />
+      <div className=Styles.topicContainer>
+        <Text value="NAME" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <div className=Styles.hFlex>
+          <TypeID.OracleScript id={ID.OracleScript.ID(oracleScript.id)} />
+          <HSpacing size=Spacing.sm />
+          <Text value={oracleScript.name} />
         </div>
       </div>
       <VSpacing size=Spacing.md />
@@ -341,13 +440,13 @@ let renderEditDataSource = msg => {
 
 let renderBody = (msg: TxHook.Msg.t) => {
   switch (msg.action) {
-  | Send(_) => renderSend(msg)
-  | CreateDataSource(_) => renderCreateDataSource(msg)
-  | EditDataSource(_) => renderEditDataSource(msg)
-  | CreateOracleScript(_) => React.null
-  | EditOracleScript(_) => React.null
-  | Request(_) => renderRequest(msg)
-  | Report(_) => renderReport(msg)
+  | Send(send) => renderSend(msg, send)
+  | CreateDataSource(dataSource) => renderCreateDataSource(msg, dataSource)
+  | EditDataSource(dataSource) => renderEditDataSource(msg, dataSource)
+  | CreateOracleScript(oracleScript) => renderCreateOracleScript(msg, oracleScript)
+  | EditOracleScript(oracleScript) => renderEditOracleScript(msg, oracleScript)
+  | Request(request) => renderRequest(msg, request)
+  | Report(report) => renderReport(msg, report)
   | Unknown => React.null
   };
 };

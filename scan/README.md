@@ -7,11 +7,19 @@ yarn install
 yarn global add local-cors-proxy
 ```
 
-## Running App
+## Running App Development
 
-In 3 separate tabs:
+In 2 separate tabs:
 
 ```sh
 yarn bsb -make-world -w -ws _ # ReasonML compiler
-yarn parcel index.html # Serve to localhost:1234
+# Replace https://mock.com/ by the real url and don't forgot the / at the back
+RPC_URL=https://mock.com/ yarn parcel index.html # Serve to localhost:1234
+```
+
+## Build production
+
+```sh
+# Replace https://mock.com/ by the real url and don't forgot the / at the back
+RPC_URL=https://mock.com/ yarn build
 ```

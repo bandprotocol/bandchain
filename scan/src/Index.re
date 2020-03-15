@@ -4,7 +4,7 @@ let style = document##createElement("style");
 document##head##appendChild(style);
 style##innerHTML #= AppStyle.style;
 
-AxiosHooks.setRpcUrl("https://d3n.bandprotocol.com/");
+AxiosHooks.setRpcUrl(Env.rpc);
 
 TimeAgos.setMomentRelativeTimeThreshold();
 
