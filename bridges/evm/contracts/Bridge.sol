@@ -1,7 +1,7 @@
 pragma solidity 0.5.14;
 pragma experimental ABIEncoderV2;
 import {BlockHeaderMerkleParts} from "./BlockHeaderMerkleParts.sol";
-import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import {SafeMath} from "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import {Ownable} from "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import {IAVLMerklePath} from "./IAVLMerklePath.sol";
 import {TMSignature} from "./TMSignature.sol";
@@ -18,9 +18,9 @@ contract Bridge is IBridge, Ownable {
 
     /// Mapping from block height to the hash of "zoracle" iAVL Merkle tree.
     mapping(uint256 => bytes32) public oracleStates;
-    /// Mapping from an address to whether it's a validator.
+    /// Mapping from an address to its voting power.
     mapping(address => uint256) public validatorPowers;
-    /// The total number of active validators currently on duty.
+    /// The total voting power of active validators currently on duty.
     uint256 public totalValidatorPower;
 
     struct ValidatorWithPower {
