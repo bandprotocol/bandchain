@@ -143,7 +143,7 @@ let make = (~msg: TxHook.Msg.t, ~width: int, ~success: bool) => {
              <div className={Styles.rowWithWidth(200)}>
                <TypeID.OracleScript id={ID.OracleScript.ID(id)} />
                <HSpacing size=Spacing.sm />
-               <div className={Styles.withWidth(160)}>
+               <div className={Styles.withWidth(150)}>
                  <Text
                    value=name
                    color=Colors.gray7
