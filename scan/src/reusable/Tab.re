@@ -26,7 +26,7 @@ module Styles = {
       textShadow(Shadow.text(~blur=`pxFloat(active ? 1. : 0.), Colors.bandBlue)),
     ]);
 
-  let childrenContainer = style([backgroundColor(Colors.blue1)]);
+  let childrenContainer = style([backgroundColor(Colors.blueGray1)]);
 };
 
 let button = (~name, ~route, ~active) => {

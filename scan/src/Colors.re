@@ -62,7 +62,7 @@ let blue6 = Css.hex("243CDB");
 let blue7 = Css.hex("142AB8");
 let blue8 = Css.hex("0B1D8E");
 
-let blueGray1 = Css.hex("F9F9FB");
+let blueGray1 = Css.hex("F8FAFF");
 let blueGray2 = Css.hex("E2E3E9");
 let blueGray3 = Css.hex("C5C7D3");
 let blueGray4 = Css.hex("A9ACBC");
