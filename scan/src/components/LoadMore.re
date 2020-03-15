@@ -17,6 +17,6 @@ module Styles = {
 [@react.component]
 let make = (~onClick=_ => ()) => {
   <div className=Styles.loadMore onClick>
-    <Text value="LOAD MORE" color=Colors.darkGrayText weight=Text.Bold size=Text.Sm />
+    <Text value="LOAD MORE" color=Colors.gray7 weight=Text.Bold size=Text.Sm />
   </div>;
 };

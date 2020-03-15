@@ -16,25 +16,20 @@ let make = (~txs: list(TxHook.Tx.t)) => {
         <HSpacing size={`px(20)} />
         <Col size=1.67>
           <div className=Styles.fullWidth>
-            <Text value="TX HASH" size=Text.Sm weight=Text.Bold color=Colors.mediumLightGray />
+            <Text value="TX HASH" size=Text.Sm weight=Text.Bold color=Colors.gray6 />
           </div>
         </Col>
         <Col size=1.05>
           <div className=Styles.fullWidth>
             <AutoSpacing dir="left" />
-            <Text
-              value="GAS FEE (BAND)"
-              size=Text.Sm
-              weight=Text.Bold
-              color=Colors.mediumLightGray
-            />
+            <Text value="GAS FEE (BAND)" size=Text.Sm weight=Text.Bold color=Colors.gray6 />
             <HSpacing size={`px(20)} />
           </div>
         </Col>
         <Col> <div className=Styles.container /> </Col>
         <Col size=5.>
           <div className=Styles.fullWidth>
-            <Text value="ACTIONS" size=Text.Sm weight=Text.Bold color=Colors.mediumLightGray />
+            <Text value="ACTIONS" size=Text.Sm weight=Text.Bold color=Colors.gray6 />
           </div>
         </Col>
         <HSpacing size={`px(20)} />

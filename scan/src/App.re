@@ -19,7 +19,7 @@ module Styles = {
     style([
       display(`flex),
       borderRadius(`px(10)),
-      backgroundColor(Colors.lightPink),
+      backgroundColor(Colors.pink2),
       padding4(~top=`px(0), ~bottom=`px(0), ~left=Spacing.sm, ~right=Spacing.sm),
       height(`px(20)),
       justifyContent(`center),
@@ -57,7 +57,7 @@ let make = () => {
               <div className=Styles.uFlex>
                 <Text value="D3N" size=Text.Xxxl weight=Text.Bold nowrap=true />
                 <div className=Styles.version>
-                  <Text value="v1.0 TESTNET" size=Text.Sm color=Colors.pink nowrap=true />
+                  <Text value="v1.0 TESTNET" size=Text.Sm color=Colors.pink6 nowrap=true />
                 </div>
               </div>
               <Text value="Data Request Explorer" nowrap=true />

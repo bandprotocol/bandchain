@@ -27,7 +27,7 @@ module Styles = {
   let button = isLoading =>
     style([
       width(`px(110)),
-      backgroundColor(isLoading ? Colors.blueGray3 : Colors.btnGreen),
+      backgroundColor(isLoading ? Colors.blueGray3 : Colors.green2),
       borderRadius(`px(6)),
       fontSize(`px(12)),
       fontWeight(`num(600)),
@@ -69,7 +69,7 @@ module Styles = {
 
 let parameterInput = (name, placeholder, index, setCalldataArr) => {
   <div className=Styles.listContainer key=name>
-    <Text value=name size=Text.Md color=Colors.mediumLightGray />
+    <Text value=name size=Text.Md color=Colors.gray6 />
     <VSpacing size=Spacing.xs />
     <input
       className=Styles.input
@@ -121,7 +121,7 @@ let resultRender = result => {
         <div className=Styles.hFlex>
           <HSpacing size=Spacing.lg />
           <div className={Styles.resultWrapper(`px(120), `px(12), `auto)}>
-            <Text value="Exit Status" color=Colors.mediumLightGray weight=Text.Bold />
+            <Text value="Exit Status" color=Colors.gray6 weight=Text.Bold />
           </div>
           <Text value="0" />
         </div>
@@ -129,7 +129,7 @@ let resultRender = result => {
         <div className=Styles.hFlex>
           <HSpacing size=Spacing.lg />
           <div className={Styles.resultWrapper(`px(120), `px(12), `auto)}>
-            <Text value="Output" color=Colors.mediumLightGray weight=Text.Semibold />
+            <Text value="Output" color=Colors.gray6 weight=Text.Semibold />
           </div>
           <Text value=output code=true weight=Text.Semibold />
         </div>
@@ -155,14 +155,14 @@ let make = (~executable: JsBuffer.t) => {
           "Test data source execution"
           ++ (numParams == 0 ? "" : " with" ++ (numParams == 1 ? " a " : " ") ++ "following")
         }
-        color=Colors.mediumGray
+        color=Colors.gray7
       />
       <HSpacing size=Spacing.sm />
       {numParams == 0
          ? React.null
          : <Text
              value={numParams > 1 ? "parameters" : "parameter"}
-             color=Colors.mediumGray
+             color=Colors.gray7
              weight=Text.Bold
            />}
     </div>

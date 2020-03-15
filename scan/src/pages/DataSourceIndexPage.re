@@ -13,7 +13,7 @@ module Styles = {
       height(`px(1)),
       marginLeft(`px(10)),
       marginRight(`px(10)),
-      backgroundColor(Colors.mediumGray),
+      backgroundColor(Colors.gray7),
     ]);
 };
 
@@ -33,7 +33,7 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
             spacing={Text.Em(0.06)}
             height={Text.Px(15)}
             nowrap=true
-            color=Colors.mediumGray
+            color=Colors.gray7
             block=true
           />
           <div className=Styles.seperatedLine />

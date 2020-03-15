@@ -1,7 +1,7 @@
 module Styles = {
   open Css;
 
-  let container = style([padding(`px(20)), background(Colors.lighterGray)]);
+  let container = style([padding(`px(20)), background(Colors.gray2)]);
 
   let paramsContainer = style([display(`inlineBlock)]);
 
@@ -11,7 +11,7 @@ module Styles = {
       gridColumnGap(`px(15)),
       gridTemplateColumns([`auto, `px(280)]),
       background(Colors.white),
-      border(`px(1), `solid, Colors.lightGray),
+      border(`px(1), `solid, Colors.gray4),
       alignItems(`center),
     ]);
 
@@ -38,9 +38,9 @@ module Styles = {
   let button =
     style([
       width(`px(110)),
-      backgroundColor(Colors.btnGreen),
+      backgroundColor(Colors.green2),
       borderRadius(`px(4)),
-      border(`px(0), `solid, Colors.green),
+      border(`px(0), `solid, Colors.green4),
       fontSize(`px(12)),
       fontWeight(`medium),
       color(`hex("127658")),
@@ -128,8 +128,10 @@ let make = () => {
   //   setData(_ => newData);
   // };
   <div className=Styles.container>
-    <Text value="Request Data with Parameters" color=Colors.darkGrayText size=Text.Lg />
-    <VSpacing size=Spacing.md />
+
+      <Text value="Request Data with Parameters" color=Colors.gray6 size=Text.Lg />
+      <VSpacing size=Spacing.md />
+    </div>;
     // <div className=Styles.paramsContainer>
     //   {data
     //    ->Belt.List.map(selection => parameterInput(selection, updateData))
@@ -169,13 +171,12 @@ let make = () => {
     //   {switch (result) {
     //    | Nothing => React.null
     //    | Loading => <Text value="Loading..." />
-    //    | Error(error) => <Text value=error color=Colors.red />
+    //    | Error(error) => <Text value=error color=Colors.red5 />
     //    | Success(txHash) =>
     //      <div
     //        className=Styles.resultLink onClick={_ => Route.redirect(Route.TxIndexPage(txHash))}>
-    //        <Text value={txHash |> Hash.toHex} color=Colors.green />
+    //        <Text value={txHash |> Hash.toHex} color=Colors.green4 />
     //      </div>
     //    }}
     // </div>
-  </div>;
 };

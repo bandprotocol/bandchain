@@ -25,15 +25,15 @@ let make = () => {
         <Col> <div className=TElement.Styles.msgIcon /> </Col>
         <Col size=1.3>
           <div className=TElement.Styles.hashContainer>
-            <Text block=true value="TX HASH" size=Text.Sm weight=Text.Bold color=Colors.grayText />
+            <Text block=true value="TX HASH" size=Text.Sm weight=Text.Bold color=Colors.gray5 />
           </div>
         </Col>
         <Col size=1.3>
-          <Text block=true value="TYPE" size=Text.Sm weight=Text.Bold color=Colors.grayText />
+          <Text block=true value="TYPE" size=Text.Sm weight=Text.Bold color=Colors.gray5 />
         </Col>
         <Col size=0.5>
           <div className=TElement.Styles.feeContainer>
-            <Text block=true value="FEE" size=Text.Sm weight=Text.Bold color=Colors.grayText />
+            <Text block=true value="FEE" size=Text.Sm weight=Text.Bold color=Colors.gray5 />
           </div>
         </Col>
       </Row>
@@ -56,7 +56,7 @@ let make = () => {
      ->Array.of_list
      ->React.array}
     <div className=Styles.seeMoreContainer onClick={_ => Route.redirect(TxHomePage)}>
-      <Text value="SEE MORE" size=Text.Sm weight=Text.Bold block=true color=Colors.grayText />
+      <Text value="SEE MORE" size=Text.Sm weight=Text.Bold block=true color=Colors.gray5 />
     </div>
   </>;
 };

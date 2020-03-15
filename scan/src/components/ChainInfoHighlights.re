@@ -9,7 +9,7 @@ module Highlights = {
   [@react.component]
   let make = (~label, ~value, ~valuePrefix=?, ~extraText=?, ~extraComponent=?, ~extraSuffix=?) => {
     <div className=Styles.highlights>
-      <div> <Text value=label size=Text.Sm weight=Text.Bold color=Colors.purple /> </div>
+      <div> <Text value=label size=Text.Sm weight=Text.Bold color=Colors.purple7 /> </div>
       <div className={Css.style([Css.marginTop(Spacing.sm)])}>
         {valuePrefix->getWithDefault(React.string(""))}
         <Text value size=Text.Xxxl weight=Text.Bold />
@@ -42,7 +42,7 @@ let make = () =>
               <Text
                 value={"(" ++ info.financial.usd24HrChange->Format.fPercent ++ ")"}
                 size=Text.Sm
-                color={info.financial.usd24HrChange >= 0. ? Colors.green : Colors.red}
+                color={info.financial.usd24HrChange >= 0. ? Colors.green4 : Colors.red5}
               />
             }
           />
@@ -57,7 +57,7 @@ let make = () =>
         <Col size=1.>
           <Highlights
             label="LATEST BLOCK"
-            valuePrefix={<Text value="# " size=Text.Xxxl weight=Text.Bold color=Colors.pink />}
+            valuePrefix={<Text value="# " size=Text.Xxxl weight=Text.Bold color=Colors.blue7 />}
             value={info.latestBlock.height->Format.iPretty}
             extraComponent={<TimeAgos time={info.latestBlock.timestamp} />}
           />

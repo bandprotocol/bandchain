@@ -82,7 +82,7 @@ let renderHashWithLink = hash => {
       size=Text.Lg
       weight=Text.Bold
       ellipsis=true
-      color=Colors.brightPurple
+      color=Colors.purple3
     />
   </div>;
 };
@@ -94,23 +94,18 @@ let renderAddress = address => {
 let renderFee = fee => {
   <div className=Styles.feeContainer>
     {fee == 0.0 ? React.null : <VSpacing size={`px(4)} />}
-    {fee == 0.0
-       ? React.null : <Text size=Text.Sm block=true value="$0.002" color=Colors.grayText />}
+    {fee == 0.0 ? React.null : <Text size=Text.Sm block=true value="$0.002" color=Colors.gray5 />}
     {fee == 0.0 ? React.null : <VSpacing size={`px(4)} />}
     <Text
       value={fee == 0.0 ? "FREE" : fee->Format.fPretty ++ " BAND"}
-      color=Colors.mediumGray
+      color=Colors.gray7
       weight=Text.Semibold
     />
   </div>;
 };
 
-let renderHeight = height => {
-  <div className=Styles.textContainer>
-    <Text value="#" size=Text.Md weight=Text.Semibold color=Colors.purple />
-    <HSpacing size=Spacing.xs />
-    <Text block=true value={height->Format.iPretty} size=Text.Md weight=Text.Semibold />
-  </div>;
+let renderHeight = blockHeight => {
+  <div className=Styles.textContainer> <TypeID.Block id={ID.Block.ID(blockHeight)} /> </div>;
 };
 
 let renderHeightWithTime = (height, time) => {
@@ -135,7 +130,7 @@ let renderCount = count => {
 
 let renderProposer = (moniker, proposer) => {
   <div className=Styles.proposerBox>
-    <Text block=true value=moniker size=Text.Sm weight=Text.Regular color=Colors.mediumGray />
+    <Text block=true value=moniker size=Text.Sm weight=Text.Regular color=Colors.gray7 />
     <VSpacing size=Spacing.sm />
     <Text
       block=true
@@ -144,7 +139,7 @@ let renderProposer = (moniker, proposer) => {
       weight=Text.Bold
       code=true
       ellipsis=true
-      color=Colors.black
+      color=Colors.gray8
     />
   </div>;
 };

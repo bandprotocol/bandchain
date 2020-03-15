@@ -13,7 +13,7 @@ let make = (~validator: ValidatorHook.Validator.t) => {
     }>
     <Text
       value={validator.moniker}
-      color=Colors.mediumGray
+      color=Colors.gray7
       code=true
       weight=Text.Regular
       spacing={Text.Em(0.02)}

@@ -26,7 +26,7 @@ module Styles = {
       height(`px(1)),
       marginLeft(`px(10)),
       marginRight(`px(10)),
-      backgroundColor(Colors.mediumGray),
+      backgroundColor(Colors.gray7),
     ]);
 
   let fullWidth =
@@ -56,14 +56,14 @@ module ToggleButton = {
       <div
         onClick={_ => setIsActive(_ => true)}
         className={style([display(`flex), cursor(`pointer)])}>
-        <Text value="Active" color=Colors.darkPurple />
+        <Text value="Active" color=Colors.purple8 />
       </div>
       <HSpacing size=Spacing.sm />
       <div
         className={style([
           display(`flex),
           justifyContent(isActive ? `flexStart : `flexEnd),
-          backgroundColor(Colors.fadePurple),
+          backgroundColor(Colors.purple1),
           borderRadius(`px(15)),
           padding2(~v=`px(2), ~h=`px(3)),
           width(`px(45)),
@@ -74,7 +74,7 @@ module ToggleButton = {
               ~x=`zero,
               ~y=`zero,
               ~blur=`px(4),
-              isActive ? Colors.borderPurple : Colors.mediumGray,
+              isActive ? Colors.purple2 : Colors.gray7,
             ),
           ),
         ])}
@@ -110,7 +110,7 @@ let renderBody = (idx: int, validator: ValidatorHook.Validator.t) => {
           <Col size=1.6 alignSelf=Col.Start>
             <Text
               value={idx + 1 |> string_of_int}
-              color=Colors.mediumGray
+              color=Colors.gray7
               code=true
               weight=Text.Regular
               spacing={Text.Em(0.02)}
@@ -126,7 +126,7 @@ let renderBody = (idx: int, validator: ValidatorHook.Validator.t) => {
           <div>
             <Text
               value={token |> Format.fPretty}
-              color=Colors.mediumGray
+              color=Colors.gray7
               code=true
               weight=Text.Regular
               spacing={Text.Em(0.02)}
@@ -137,7 +137,7 @@ let renderBody = (idx: int, validator: ValidatorHook.Validator.t) => {
             <VSpacing size=Spacing.sm />
             <Text
               value={"(" ++ votingPower->Js.Float.toFixedWithPrecision(~digits=2) ++ "%)"}
-              color=Colors.mediumLightGray
+              color=Colors.gray6
               code=true
               weight=Text.Thin
               spacing={Text.Em(0.02)}
@@ -150,7 +150,7 @@ let renderBody = (idx: int, validator: ValidatorHook.Validator.t) => {
         <Col size=1.2 alignSelf=Col.Start>
           <Text
             value={commission->Js.Float.toFixedWithPrecision(~digits=2)}
-            color=Colors.mediumGray
+            color=Colors.gray7
             code=true
             weight=Text.Regular
             spacing={Text.Em(0.02)}
@@ -162,7 +162,7 @@ let renderBody = (idx: int, validator: ValidatorHook.Validator.t) => {
         <Col size=1.1 alignSelf=Col.Start>
           <Text
             value={uptime->Js.Float.toFixedWithPrecision(~digits=2)}
-            color=Colors.mediumGray
+            color=Colors.gray7
             code=true
             weight=Text.Regular
             spacing={Text.Em(0.02)}
@@ -174,7 +174,7 @@ let renderBody = (idx: int, validator: ValidatorHook.Validator.t) => {
         <Col size=1.2 alignSelf=Col.Start>
           <Text
             value={reportRate->Js.Float.toFixedWithPrecision(~digits=2)}
-            color=Colors.mediumGray
+            color=Colors.gray7
             code=true
             weight=Text.Regular
             spacing={Text.Em(0.02)}
@@ -220,7 +220,7 @@ let make = () => {
             weight=Text.Medium
             size=Text.Md
             nowrap=true
-            color=Colors.mediumGray
+            color=Colors.gray7
             spacing={Text.Em(0.06)}
           />
           <div className=Styles.seperatedLine />
@@ -285,7 +285,7 @@ let make = () => {
                    size=Text.Sm
                    weight=Text.Semibold
                    align=?{idx > 1 ? Some(Text.Right) : None}
-                   color=Colors.mediumLightGray
+                   color=Colors.gray6
                    spacing={Text.Em(0.1)}
                  />
                </Col>

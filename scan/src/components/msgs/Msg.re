@@ -87,7 +87,7 @@ let make = (~msg: TxHook.Msg.t, ~width: int, ~success: bool) => {
              <div className={Styles.withWidth(170)}>
                <Text
                  value=name
-                 color=Colors.mediumGray
+                 color=Colors.gray7
                  weight=Text.Medium
                  nowrap=true
                  block=true
@@ -116,7 +116,7 @@ let make = (~msg: TxHook.Msg.t, ~width: int, ~success: bool) => {
              <div className={Styles.withWidth(170)}>
                <Text
                  value=name
-                 color=Colors.mediumGray
+                 color=Colors.gray7
                  weight=Text.Medium
                  nowrap=true
                  block=true
@@ -146,7 +146,7 @@ let make = (~msg: TxHook.Msg.t, ~width: int, ~success: bool) => {
                <div className={Styles.withWidth(160)}>
                  <Text
                    value=name
-                   color=Colors.mediumGray
+                   color=Colors.gray7
                    weight=Text.Medium
                    nowrap=true
                    block=true
@@ -177,7 +177,7 @@ let make = (~msg: TxHook.Msg.t, ~width: int, ~success: bool) => {
                <div className={Styles.withWidth(170)}>
                  <Text
                    value=name
-                   color=Colors.mediumGray
+                   color=Colors.gray7
                    weight=Text.Medium
                    nowrap=true
                    block=true
@@ -218,7 +218,7 @@ let make = (~msg: TxHook.Msg.t, ~width: int, ~success: bool) => {
              <div className={Styles.withWidth(170)}>
                <Text
                  value="Mock Oracle Script" // TODO , replace with wire up data
-                 color=Colors.mediumGray
+                 color=Colors.gray7
                  weight=Text.Medium
                  nowrap=true
                  block=true

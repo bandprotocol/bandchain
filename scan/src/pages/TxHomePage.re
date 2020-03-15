@@ -13,7 +13,7 @@ module Styles = {
       height(`px(1)),
       marginLeft(`px(10)),
       marginRight(`px(10)),
-      backgroundColor(Colors.mediumGray),
+      backgroundColor(Colors.gray7),
     ]);
 
   let textContainer = style([paddingLeft(Spacing.lg), display(`flex)]);
@@ -39,7 +39,7 @@ let make = () => {
           <Text
             value="ALL TRANSACTIONS"
             weight=Text.Semibold
-            color=Colors.mediumGray
+            color=Colors.gray7
             nowrap=true
             spacing={Text.Em(0.06)}
           />
