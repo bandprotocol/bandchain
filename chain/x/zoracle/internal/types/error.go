@@ -10,14 +10,13 @@ import (
 const (
 	DefaultCodespace sdk.CodespaceType = ModuleName
 
-	// TODO: Change this to 101 after old errors were cleared.
-	CodeInvalidBasicMsg        sdk.CodeType = 201
-	CodeBadDataValue           sdk.CodeType = 202
-	CodeUnauthorizedPermission sdk.CodeType = 203
-	CodeItemDuplication        sdk.CodeType = 204
-	CodeItemNotFound           sdk.CodeType = 205
-	CodeInvalidState           sdk.CodeType = 206
-	CodeBadWasmExecution       sdk.CodeType = 207
+	CodeInvalidBasicMsg        sdk.CodeType = 101
+	CodeBadDataValue           sdk.CodeType = 102
+	CodeUnauthorizedPermission sdk.CodeType = 103
+	CodeItemDuplication        sdk.CodeType = 104
+	CodeItemNotFound           sdk.CodeType = 105
+	CodeInvalidState           sdk.CodeType = 106
+	CodeBadWasmExecution       sdk.CodeType = 107
 )
 
 func ErrInvalidBasicMsg(format string, args ...interface{}) sdk.Error {

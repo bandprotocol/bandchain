@@ -34,7 +34,8 @@ func NewResult(
 	}
 }
 
-// DecodeResult is a helper function for decoding bytes to Result.
+// DecodeResult is a helper function for decoding bytes to Result. The function panics if the given
+// input is less than 40 bytes long.
 func MustDecodeResult(b []byte) Result {
 	if len(b) < 40 {
 		panic(fmt.Errorf("Expect size of input to be at least 40 bytes but got %d bytes", len(b)))
