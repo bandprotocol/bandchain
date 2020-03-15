@@ -62,6 +62,11 @@ let lighterGray = Css.hex("F9F9F9");
 let theadGray = Css.hex("F4F4F7");
 let tbodyGray = Css.hex("FAFAFB");
 
+let blueGray3 = Css.hex("C5C7D3");
+let blueGray7 = Css.hex("5B5E71");
+
+let green7 = Css.hex("1D7C73");
+
 let darkGrayText = Css.hex("777F8E");
 
 let white = Css.hex("ffffff");
@@ -70,3 +75,4 @@ let black = Css.hex("000000");
 
 let brightPink = Css.hex("EB4773");
 let blueGray2 = Css.hex("E2E3E9");
+let transparent = Css.rgba(0, 0, 0, 0.);

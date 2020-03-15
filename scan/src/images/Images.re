@@ -15,6 +15,7 @@
 [@bs.module] external report: string = "./report.png";
 [@bs.module] external copy: string = "./copy.svg";
 [@bs.module] external loadingSpinner: string = "./loading_spinner.gif";
+[@bs.module] external loadingCircles: string = "./loading_circles.gif";
 [@bs.module] external dataSourceLogo: string = "./data-source.png";
 [@bs.module] external txLogo: string = "./txLogo.svg";
 [@bs.module] external accountLogo: string = "./account-icon.png";
