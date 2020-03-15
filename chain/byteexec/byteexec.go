@@ -68,14 +68,13 @@ func RunOnDocker(executable []byte, sandboxMode bool, timeOut time.Duration, arg
 	}
 	defer os.RemoveAll(dir) // clean up
 
-	commands := []string{
-		"run", "-d", "--rm", "band-provider", "sleep", fmt.Sprintf("%d", int(timeOut.Seconds())),
-	}
+	commands := []string{"run"}
 	if sandboxMode {
-		commands = append(commands, "")
-		copy(commands[2:], commands[1:])
-		commands[1] = "--runtime=runsc"
+		commands = append(commands, "--runtime=runsc")
 	}
+	commands = append(
+		commands, "-d", "--rm", "band-provider", "sleep", fmt.Sprintf("%d", int(timeOut.Seconds())),
+	)
 	rawID, err := exec.Command("docker", commands...).Output()
 
 	if err != nil {
