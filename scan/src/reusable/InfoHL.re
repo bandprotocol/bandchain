@@ -7,7 +7,7 @@ type t =
   | Fee(float)
   | DataSources(list(string))
   | Hash(Hash.t, Css.Types.Color.t)
-  | Address(Address.t)
+  | Address(Address.t, int)
   | Fraction(int, int, bool)
   | FloatWithSuffix(float, string);
 
@@ -21,7 +21,7 @@ module Styles = {
       alignItems(isLeft ? `flexStart : `flexEnd),
     ]);
   let vFlex = style([display(`flex), alignItems(`center)]);
-  let addressContainer = style([alignItems(`center), maxWidth(`px(290))]);
+  let addressContainer = maxwidth_ => style([alignItems(`center), maxWidth(`px(maxwidth_))]);
   let datasourcesContainer = style([display(`flex), alignItems(`center), flexWrap(`wrap)]);
   let headerContainer = style([lineHeight(`px(25))]);
   let sourceContainer =
@@ -144,9 +144,8 @@ let make = (~info, ~header, ~isLeft=true) => {
          spacing={Text.Em(0.02)}
          code=true
        />
-
-     | Address(address) =>
-       <div className=Styles.addressContainer>
+     | Address(address, maxWidth) =>
+       <div className={Styles.addressContainer(maxWidth)}>
          <AddressRender address position=AddressRender.Subtitle />
        </div>
      }}
