@@ -250,7 +250,7 @@ func GetBlockRelayProof(cliCtx context.CLIContext, blockId uint64) (BlockRelayPr
 
 	bp.BlockHeaderMerkleParts = bhmp
 
-	leftMsgCount := map[string]int{}
+	leftMsg := ""
 	bp.Signatures = []TMSignature{}
 	addrs := []string{}
 	mapAddrs := map[string]TMSignature{}
@@ -264,12 +264,10 @@ func GetBlockRelayProof(cliCtx context.CLIContext, blockId uint64) (BlockRelayPr
 		msg := vote.SignBytes("bandchain")
 		lr := strings.Split(hex.EncodeToString(msg), hex.EncodeToString(block.Hash()))
 
-		val, ok := leftMsgCount[lr[0]]
-		if ok {
-			leftMsgCount[lr[0]] = val + 1
-		} else {
-			leftMsgCount[lr[0]] = 0
+		if leftMsg != "" && leftMsg != lr[0] {
+			return BlockRelayProof{}, fmt.Errorf("Inconsistency prefix signature byte")
 		}
+		leftMsg = lr[0]
 
 		lr1, err := hex.DecodeString(lr[1])
 		if err != nil {
@@ -294,7 +292,7 @@ func GetBlockRelayProof(cliCtx context.CLIContext, blockId uint64) (BlockRelayPr
 		// 	lr1,
 		// })
 	}
-	if len(addrs) < 3 {
+	if len(addrs) == 0 {
 		return BlockRelayProof{}, fmt.Errorf("Too many invalid precommits")
 	}
 
@@ -303,17 +301,11 @@ func GetBlockRelayProof(cliCtx context.CLIContext, blockId uint64) (BlockRelayPr
 		bp.Signatures = append(bp.Signatures, mapAddrs[addr])
 	}
 
-	maxCount := 0
-	for k, count := range leftMsgCount {
-		if count > maxCount {
-			kb, err := hex.DecodeString(k)
-			if err != nil {
-				return BlockRelayProof{}, err
-			}
-			bp.SignedDataPrefix = kb
-			maxCount = count
-		}
+	kb, err := hex.DecodeString(leftMsg)
+	if err != nil {
+		return BlockRelayProof{}, err
 	}
+	bp.SignedDataPrefix = kb
 
 	if err != nil {
 		return BlockRelayProof{}, err

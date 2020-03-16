@@ -1,6 +1,6 @@
 pragma solidity 0.5.14;
 pragma experimental ABIEncoderV2;
-import {Bridge} from "../Bridge.sol";
+import {Bridge, IBridge} from "../Bridge.sol";
 
 /// @dev Mock OracleBridge that allows setting oracle iAVL state at a given height directly.
 contract BridgeMock is Bridge {
@@ -12,5 +12,18 @@ contract BridgeMock is Bridge {
         public
     {
         oracleStates[_blockHeight] = _oracleIAVLStateHash;
+    }
+}
+
+contract ReceiverMock {
+    Bridge.VerifyOracleDataResult public latestResult;
+    IBridge public bridge;
+
+    constructor(IBridge _bridge) public {
+        bridge = _bridge;
+    }
+
+    function relayAndSafe(bytes calldata _data) external {
+        latestResult = bridge.relayAndVerify(_data);
     }
 }
