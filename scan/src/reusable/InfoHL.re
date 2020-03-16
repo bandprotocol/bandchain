@@ -36,6 +36,7 @@ module Styles = {
 
 [@react.component]
 let make = (~info, ~header, ~isLeft=true) => {
+  let infoOpt = React.useContext(GlobalContext.context);
   <div className={Styles.hFlex(isLeft)}>
     <div className=Styles.headerContainer>
       <Text
@@ -109,13 +110,19 @@ let make = (~info, ~header, ~isLeft=true) => {
          <Text value="BAND" size=Text.Lg weight=Text.Regular spacing={Text.Em(0.02)} code=true />
          <HSpacing size=Spacing.xs />
          <HSpacing size=Spacing.xs />
-         <Text
-           value="($0.3)"
-           size=Text.Lg
-           weight=Text.Regular
-           spacing={Text.Em(0.02)}
-           code=true
-         />
+         {switch (infoOpt) {
+          | Some(info) =>
+            let feeInUsd =
+              info.financial.usdPrice *. fee |> Js.Float.toFixedWithPrecision(~digits=2);
+            <Text
+              value={j|(\$$feeInUsd)|j}
+              size=Text.Lg
+              weight=Text.Regular
+              spacing={Text.Em(0.02)}
+              code=true
+            />;
+          | None => React.null
+          }}
        </div>
      | DataSources(sources) =>
        <div className=Styles.datasourcesContainer>
