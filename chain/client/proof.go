@@ -265,7 +265,7 @@ func GetBlockRelayProof(cliCtx context.CLIContext, blockId uint64) (BlockRelayPr
 		lr := strings.Split(hex.EncodeToString(msg), hex.EncodeToString(block.Hash()))
 
 		if leftMsg != "" && leftMsg != lr[0] {
-			return BlockRelayProof{}, fmt.Errorf("Inconsistency prefix signature byte")
+			return BlockRelayProof{}, fmt.Errorf("Inconsistent prefix signature bytes")
 		}
 		leftMsg = lr[0]
 
