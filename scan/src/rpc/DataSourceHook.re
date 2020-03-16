@@ -73,14 +73,14 @@ module DataSource = {
         {
           name: "Coingecko script v2",
           timestamp: MomentRe.momentWithUnix(1583465551),
-          height: 472395,
+          height: 4395,
           txHash:
             "6E1EAE347E7F2E27DFE6F21328DF7EB6A599D4F0ED73D54B356C77646FBEC33D" |> Hash.fromHex,
         },
         {
           name: "Coingecko script",
           timestamp: MomentRe.momentWithUnix(1583465050),
-          height: 472295,
+          height: 47295,
           txHash:
             "D3C77B93B10169E9D3C5ACA9A4A049CED40D7BE231E5D1A79FFAE7498952A032" |> Hash.fromHex,
         },
