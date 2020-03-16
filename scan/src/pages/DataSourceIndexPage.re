@@ -117,8 +117,8 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
            currentRoute={Route.DataSourceIndexPage(dataSourceID, hashtag)}>
            {switch (hashtag) {
             | DataSourceExecute => <DataSourceExecute executable={dataSource.executable} />
-            | DataSourceCode => <DataSourceCode />
-            | DataSourceRequests => <DataSourceRequestTable />
+            | DataSourceCode => <DataSourceCode executable={dataSource.executable} />
+            | DataSourceRequests => <DataSourceRequestTable requests={dataSource.requests} />
             | DataSourceRevisions => <RevisionTable />
             }}
          </Tab>

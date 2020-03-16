@@ -29,6 +29,7 @@ module DataSource = {
         {
           id: 1,
           oracleScriptID: 1,
+          oracleScriptName: "Mean Crypto Price",
           calldata: "AAAAAAAAV0M=" |> JsBuffer.fromBase64,
           requestedValidators: [
             "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,
@@ -41,7 +42,28 @@ module DataSource = {
           txHash:
             "AC006D7136B0041DA4568A4CA5B7C1F8E8E0B4A74F11213B99EC4956CC8A247C" |> Hash.fromHex,
           requestedAtHeight: 40000,
-          requestedAtTime: MomentRe.momentNow(),
+          requestedAtTime: MomentRe.momentWithUnix(1584345041),
+          rawDataRequests: [],
+          reports: [],
+          result: Some("AAAAAAAAV0M=" |> JsBuffer.fromBase64),
+        },
+        {
+          id: 2,
+          oracleScriptID: 42,
+          oracleScriptName: "Max Crypto Price",
+          calldata: "AAAAAAAAV0M=" |> JsBuffer.fromBase64,
+          requestedValidators: [
+            "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,
+            "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
+          ],
+          sufficientValidatorCount: 2,
+          expirationHeight: 3000,
+          resolveStatus: Success,
+          requester: "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
+          txHash:
+            "BBBBBB7136B0041DA4568B4CA5B7C1F8E8E0B4A74F11213B99EC4956CC8A247C" |> Hash.fromHex,
+          requestedAtHeight: 7777,
+          requestedAtTime: MomentRe.momentWithUnix(1584342041),
           rawDataRequests: [],
           reports: [],
           result: Some("AAAAAAAAV0M=" |> JsBuffer.fromBase64),
