@@ -44,7 +44,7 @@ func buildRequestRESTInfo(
 		searchRequest, err := utils.QueryTxsByEvents(
 			ctx,
 			[]string{fmt.Sprintf("%s.%s='%d'",
-				types.EventTypeRequest, types.AttributeKeyRequestID, queryRequest.ID)},
+				types.EventTypeRequest, types.AttributeKeyID, queryRequest.ID)},
 			1,
 			1,
 		)

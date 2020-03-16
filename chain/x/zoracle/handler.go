@@ -255,7 +255,7 @@ func handleMsgRequestData(ctx sdk.Context, keeper Keeper, msg MsgRequestData) sd
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeRequest,
-			sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", id)),
+			sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
 		),
 	})
 	return sdk.Result{Events: ctx.EventManager().Events()}
