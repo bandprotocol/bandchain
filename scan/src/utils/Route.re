@@ -29,7 +29,7 @@ type t =
   | DataSourceHomePage
   | DataSourceIndexPage(int, data_source_tab_t)
   | ScriptHomePage
-  | ScriptIndexPage(Hash.t, script_tab_t)
+  | ScriptIndexPage(int, script_tab_t)
   | TxHomePage
   | TxIndexPage(Hash.t)
   | BlockHomePage
@@ -51,12 +51,12 @@ let fromUrl = (url: ReasonReactRouter.url) =>
   | (["data-source", dataSourceID], _) =>
     DataSourceIndexPage(dataSourceID |> int_of_string, DataSourceExecute)
   | (["scripts"], _) => ScriptHomePage
-  | (["script", codeHash], "code") => ScriptIndexPage(codeHash |> Hash.fromHex, ScriptCode)
-  | (["script", codeHash], "execute") =>
-    ScriptIndexPage(codeHash |> Hash.fromHex, ScriptExecute)
-  | (["script", codeHash], "integration") =>
-    ScriptIndexPage(codeHash |> Hash.fromHex, ScriptIntegration)
-  | (["script", codeHash], _) => ScriptIndexPage(codeHash |> Hash.fromHex, ScriptTransactions)
+  | (["script", scriptID], "code") => ScriptIndexPage(scriptID |> int_of_string, ScriptCode)
+  | (["script", scriptID], "execute") =>
+    ScriptIndexPage(scriptID |> int_of_string, ScriptExecute)
+  | (["script", scriptID], "integration") =>
+    ScriptIndexPage(scriptID |> int_of_string, ScriptIntegration)
+  | (["script", scriptID], _) => ScriptIndexPage(scriptID |> int_of_string, ScriptTransactions)
   | (["txs"], _) => TxHomePage
   | (["tx", txHash], _) => TxIndexPage(Hash.fromHex(txHash))
   | (["validators"], _) => ValidatorHomePage
@@ -123,3 +123,65 @@ let toString =
   | NotFound => "/";
 
 let redirect = (route: t) => ReasonReactRouter.push(route |> toString);
+
+let rec prefixMatch = (prefix: string, str: string) => {
+  let prefixLen = prefix |> String.length;
+  let strLen = str |> String.length;
+
+  switch (prefixLen) {
+  | 0 => true
+  | _ =>
+    prefixLen <= strLen && prefix.[0] == str.[0]
+      ? false
+      : prefixMatch(prefix |> String.sub(_, 1, prefixLen), str |> String.sub(_, 1, strLen))
+  };
+};
+
+let search = (str: string) => {
+  let len = str |> String.length;
+  let capStr = str |> String.capitalize;
+
+  let blockID =
+    capStr |> prefixMatch("O") ? str |> String.sub(_, 1, len) |> int_of_string_opt : None;
+
+  let dataSourceID =
+    capStr |> prefixMatch("D") ? str |> String.sub(_, 1, len) |> int_of_string_opt : None;
+
+  let requestID =
+    capStr |> prefixMatch("R") ? str |> String.sub(_, 1, len) |> int_of_string_opt : None;
+
+  let oracleScriptID =
+    capStr |> prefixMatch("O") ? str |> String.sub(_, 1, len) |> int_of_string_opt : None;
+
+  let isValidatorIndexPage = str |> prefixMatch("bandvaloper");
+
+  let isAccountIndexPage = str |> prefixMatch("band");
+  switch (str |> int_of_string_opt) {
+  | Some(id) => BlockIndexPage(id)
+  | None =>
+    switch (blockID) {
+    | Some(id) => BlockIndexPage(id)
+    | None =>
+      switch (len) {
+      | 32 => TxIndexPage(str |> Hash.fromHex)
+      | _ =>
+        switch (dataSourceID) {
+        | Some(id) => DataSourceIndexPage(id, DataSourceExecute)
+        | _ =>
+          switch (requestID) {
+          | Some(id) => RequestIndexPage(id, RequestReportStatus)
+          | _ =>
+            switch (oracleScriptID) {
+            | Some(id) => ScriptIndexPage(id, ScriptTransactions)
+            | _ =>
+              isValidatorIndexPage
+                ? ValidatorIndexPage(Address.Address(str), ProposedBlocks)
+                : isAccountIndexPage
+                    ? AccountIndexPage(Address.Address(str), AccountTransactions) : NotFound
+            }
+          }
+        }
+      }
+    }
+  };
+};

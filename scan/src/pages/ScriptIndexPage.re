@@ -47,7 +47,7 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
+let make = (~oracleScriptID: int, ~hashtag: Route.script_tab_t) => {
   // let step = 10;
   // let (limit, setLimit) = React.useState(_ => step);
   // let scriptOpt = ScriptHook.getInfo(codeHash);
@@ -120,7 +120,9 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
     // />
     <VSpacing size=Spacing.xl />
     <Row>
-      <Col> <InfoHL info={InfoHL.Hash(codeHash, Colors.purple3)} header="SCRIPT HASH" /> </Col>
+      <Col>
+        <InfoHL info={InfoHL.Text(oracleScriptID |> string_of_int)} header="SCRIPT HASH" />
+      </Col>
       <HSpacing size=Spacing.xl />
       <HSpacing size=Spacing.xl />
     </Row>
