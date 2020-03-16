@@ -4,11 +4,11 @@ type data_source_tab_t =
   | DataSourceRequests
   | DataSourceRevisions;
 
-type script_tab_t =
-  | ScriptTransactions
-  | ScriptCode
-  | ScriptExecute
-  | ScriptIntegration;
+type oracle_script_tab_t =
+  | OracleScriptExecute
+  | OracleScriptCode
+  | OracleScriptRequests
+  | OracleScriptRevisions;
 
 type request_tab_t =
   | RequestReportStatus
@@ -29,7 +29,7 @@ type t =
   | DataSourceHomePage
   | DataSourceIndexPage(int, data_source_tab_t)
   | ScriptHomePage
-  | ScriptIndexPage(Hash.t, script_tab_t)
+  | OracleScriptIndexPage(int, oracle_script_tab_t)
   | TxHomePage
   | TxIndexPage(Hash.t)
   | BlockHomePage
@@ -51,12 +51,14 @@ let fromUrl = (url: ReasonReactRouter.url) =>
   | (["data-source", dataSourceID], _) =>
     DataSourceIndexPage(dataSourceID |> int_of_string, DataSourceExecute)
   | (["scripts"], _) => ScriptHomePage
-  | (["script", codeHash], "code") => ScriptIndexPage(codeHash |> Hash.fromHex, ScriptCode)
-  | (["script", codeHash], "execute") =>
-    ScriptIndexPage(codeHash |> Hash.fromHex, ScriptExecute)
-  | (["script", codeHash], "integration") =>
-    ScriptIndexPage(codeHash |> Hash.fromHex, ScriptIntegration)
-  | (["script", codeHash], _) => ScriptIndexPage(codeHash |> Hash.fromHex, ScriptTransactions)
+  | (["oracle-script", oracleScriptID], "code") =>
+    OracleScriptIndexPage(oracleScriptID |> int_of_string, OracleScriptCode)
+  | (["oracle-script", oracleScriptID], "requests") =>
+    OracleScriptIndexPage(oracleScriptID |> int_of_string, OracleScriptRequests)
+  | (["oracle-script", oracleScriptID], "revisions") =>
+    OracleScriptIndexPage(oracleScriptID |> int_of_string, OracleScriptRevisions)
+  | (["oracle-script", oracleScriptID], _) =>
+    OracleScriptIndexPage(oracleScriptID |> int_of_string, OracleScriptExecute)
   | (["txs"], _) => TxHomePage
   | (["tx", txHash], _) => TxIndexPage(Hash.fromHex(txHash))
   | (["validators"], _) => ValidatorHomePage
@@ -88,10 +90,10 @@ let toString =
   | DataSourceIndexPage(dataSourceID, DataSourceRequests) => {j|/data-source/$dataSourceID#requests|j}
   | DataSourceIndexPage(dataSourceID, DataSourceRevisions) => {j|/data-source/$dataSourceID#revisions|j}
   | ScriptHomePage => "/scripts"
-  | ScriptIndexPage(codeHash, ScriptTransactions) => {j|/script/$codeHash|j}
-  | ScriptIndexPage(codeHash, ScriptCode) => {j|/script/$codeHash#code|j}
-  | ScriptIndexPage(codeHash, ScriptExecute) => {j|/script/$codeHash#execute|j}
-  | ScriptIndexPage(codeHash, ScriptIntegration) => {j|/script/$codeHash#integration|j}
+  | OracleScriptIndexPage(oracleScriptID, OracleScriptExecute) => {j|/oracle-script/$oracleScriptID|j}
+  | OracleScriptIndexPage(oracleScriptID, OracleScriptCode) => {j|/oracle-script/$oracleScriptID#code|j}
+  | OracleScriptIndexPage(oracleScriptID, OracleScriptRequests) => {j|/oracle-script/$oracleScriptID#requests|j}
+  | OracleScriptIndexPage(oracleScriptID, OracleScriptRevisions) => {j|/oracle-script/$oracleScriptID#revisions|j}
   | TxHomePage => "/txs"
   | TxIndexPage(txHash) => {j|/tx/$txHash|j}
   | ValidatorHomePage => "/validators"
