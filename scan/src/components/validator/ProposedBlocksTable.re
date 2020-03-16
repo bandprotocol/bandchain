@@ -41,21 +41,13 @@ let make = () => {
            <THead>
              <Row>
                <Col> <HSpacing size=Spacing.lg /> </Col>
-               <Col size=0.75>
-                 <div className=TElement.Styles.hashContainer>
-                   <Text
-                     block=true
-                     value="BLOCK"
-                     size=Text.Sm
-                     weight=Text.Bold
-                     color=Colors.gray6
-                   />
-                 </div>
+               <Col size=1.4>
+                 <Text block=true value="BLOCK" size=Text.Sm weight=Text.Bold color=Colors.gray6 />
                </Col>
-               <Col size=1.25>
+               <Col size=2.15>
                  <Text block=true value="AGE" size=Text.Sm weight=Text.Bold color=Colors.gray6 />
                </Col>
-               <Col size=4.>
+               <Col size=6.8>
                  <Text
                    block=true
                    value="BLOCK HASH"
@@ -64,7 +56,7 @@ let make = () => {
                    color=Colors.gray6
                  />
                </Col>
-               <Col size=1.>
+               <Col size=1.5>
                  <div className={Styles.vFlex(`flexEnd)}>
                    <div className=Styles.fillLeft />
                    <Text block=true value="TXN" size=Text.Sm weight=Text.Bold color=Colors.gray6 />
@@ -78,9 +70,9 @@ let make = () => {
                 <TBody key={hash |> Hash.toHex(~upper=true)}>
                   <Row>
                     <Col> <HSpacing size=Spacing.lg /> </Col>
-                    <Col size=0.75> <TypeID.Block id={ID.Block.ID(height)} /> </Col>
-                    <Col size=1.25> <TimeAgos time=timestamp code=true size=Text.Md /> </Col>
-                    <Col size=4.>
+                    <Col size=1.5> <TypeID.Block id={ID.Block.ID(height)} /> </Col>
+                    <Col size=2.3> <TimeAgos time=timestamp code=true size=Text.Md /> </Col>
+                    <Col size=6.8>
                       <div className={Styles.withWidth(500)}>
                         <Text
                           value={hash |> Hash.toHex(~upper=true)}
@@ -90,7 +82,7 @@ let make = () => {
                         />
                       </div>
                     </Col>
-                    <Col size=1.>
+                    <Col size=1.5>
                       <Row>
                         <div className=Styles.fillLeft />
                         <Text value={numTxs |> Format.iPretty} code=true />
