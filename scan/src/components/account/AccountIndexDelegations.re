@@ -30,7 +30,7 @@ let make = () => {
               size=Text.Sm
               weight=Text.Bold
               spacing={Text.Em(0.05)}
-              color=Colors.grayText
+              color=Colors.gray6
             />
           </Col>
           <Col size=0.6>
@@ -41,7 +41,7 @@ let make = () => {
                 size=Text.Sm
                 weight=Text.Bold
                 spacing={Text.Em(0.05)}
-                color=Colors.grayText
+                color=Colors.gray6
               />
             </div>
           </Col>
@@ -53,7 +53,7 @@ let make = () => {
                 size=Text.Sm
                 spacing={Text.Em(0.05)}
                 weight=Text.Bold
-                color=Colors.grayText
+                color=Colors.gray6
               />
             </div>
           </Col>
@@ -62,11 +62,11 @@ let make = () => {
       </THead>
       {[
          ("bandvaloper1sjllsnramtg3ewxqwwrwjxfgc4n4ef9u2lcnj0", 30521.534, 2324.23),
-         ("bandvaloper1sjllsnramtg3ewxqwwrwjxfgc4n4ef9u2lcnj0", 30521.534, 2324.23),
-         ("bandvaloper1sjllsnramtg3ewxqwwrwjxfgc4n4ef9u2lcnj0", 30521.534, 2324.23),
+         ("bandvaloper1sjllsfgamtg3ewxqwwrwjxfgc4n4ef9u2l2nj0", 30521.534, 2324.23),
+         ("bandvaloper1sjllsnramtg3ewxqwwrwjxfgc444ef9u2lcnj0", 30521.534, 2324.23),
        ]
        ->Belt.List.map(((validator, amount, reward)) => {
-           <TBody key=validator>
+           <TBody key=validator minHeight=50>
              <Row>
                <Col> <HSpacing size=Spacing.lg /> </Col>
                <Col size=0.9>
