@@ -1,5 +1,6 @@
 import json
 import os
+import shlex
 import subprocess
 
 
@@ -42,7 +43,10 @@ def lambda_handler(event, context):
             + os.path.join(os.getcwd(), "exec", "usr", "lib64")
         )
 
-        result = subprocess.run([path, body["calldata"]], env=env, timeout=3, capture_output=True)
+        result = subprocess.run(
+            [path] + shlex.split(body["calldata"]), env=env, timeout=3, capture_output=True
+        )
+
         return {
             "statusCode": 200,
             "headers": {"content-type": "application/json"},
