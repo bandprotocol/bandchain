@@ -20,13 +20,13 @@ func TestGetterSetterRawDataReport(t *testing.T) {
 	require.Equal(t, []byte("Data1/3"), report)
 
 	_, err = keeper.GetRawDataReport(ctx, 2, 3, validatorAddress1)
-	require.Equal(t, types.CodeReportNotFound, err.Code())
+	require.Equal(t, types.CodeItemNotFound, err.Code())
 
 	_, err = keeper.GetRawDataReport(ctx, 1, 1, validatorAddress1)
-	require.Equal(t, types.CodeReportNotFound, err.Code())
+	require.Equal(t, types.CodeItemNotFound, err.Code())
 
 	_, err = keeper.GetRawDataReport(ctx, 1, 3, sdk.ValAddress([]byte("val1")))
-	require.Equal(t, types.CodeReportNotFound, err.Code())
+	require.Equal(t, types.CodeItemNotFound, err.Code())
 }
 
 func TestAddReportSuccess(t *testing.T) {

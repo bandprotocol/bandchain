@@ -21,7 +21,7 @@ func TestGettterSetterRawDataRequest(t *testing.T) {
 	require.Equal(t, expect, rawRequest)
 
 	_, err = keeper.GetRawDataRequest(ctx, 1, 3)
-	require.Equal(t, types.CodeRequestNotFound, err.Code())
+	require.Equal(t, types.CodeItemNotFound, err.Code())
 }
 
 func TestAddNewRawDataRequest(t *testing.T) {
@@ -58,7 +58,7 @@ func TestAddNewRawDataRequest(t *testing.T) {
 	require.Equal(t, expect, rawRequest)
 
 	_, err = keeper.GetRawDataRequest(ctx, 1, 3)
-	require.Equal(t, types.CodeRequestNotFound, err.Code())
+	require.Equal(t, types.CodeItemNotFound, err.Code())
 
 	// Add new datasource
 	dataSource2 := types.NewDataSource(

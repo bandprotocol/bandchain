@@ -134,68 +134,6 @@ func TestRequestExceedEndBlockExecuteGasLimit(t *testing.T) {
 	require.Nil(t, err)
 }
 
-// TestAddNewReceiveValidator tests keeper can add valid validator to request
-func TestAddNewReceiveValidator(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-	request := newDefaultRequest()
-
-	keeper.SetRequest(ctx, 1, request)
-
-	err := keeper.AddNewReceiveValidator(ctx, 1, sdk.ValAddress([]byte("validator1")))
-	require.Nil(t, err)
-
-	actualRequest, err := keeper.GetRequest(ctx, 1)
-	request.ReceivedValidators = []sdk.ValAddress{sdk.ValAddress([]byte("validator1"))}
-	require.Nil(t, err)
-	require.Equal(t, request, actualRequest)
-}
-
-// TestAddNewReceiveValidatorOnInvalidRequest tests keeper must return if add on invalid request
-func TestAddNewReceiveValidatorOnInvalidRequest(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-	request := newDefaultRequest()
-
-	keeper.SetRequest(ctx, 1, request)
-	err := keeper.AddNewReceiveValidator(ctx, 2, sdk.ValAddress([]byte("validator1")))
-	require.Equal(t, types.CodeRequestNotFound, err.Code())
-}
-
-// TestAddInvalidValidator tests keeper return error if try to add new validator that doesn't contain in list.
-func TestAddInvalidValidator(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-	request := newDefaultRequest()
-
-	keeper.SetRequest(ctx, 1, request)
-
-	err := keeper.AddNewReceiveValidator(ctx, 1, sdk.ValAddress([]byte("validator3")))
-	require.Equal(t, types.CodeInvalidValidator, err.Code())
-
-	actualRequest, err := keeper.GetRequest(ctx, 1)
-	require.Nil(t, err)
-	require.Equal(t, request, actualRequest)
-}
-
-// TestAddDuplicateValidator tests keeper return error if try to add new validator that already in list.
-func TestAddDuplicateValidator(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-	request := newDefaultRequest()
-
-	keeper.SetRequest(ctx, 1, request)
-	// First add must return nil
-	err := keeper.AddNewReceiveValidator(ctx, 1, sdk.ValAddress([]byte("validator1")))
-	require.Nil(t, err)
-
-	// Second add must return duplicate error
-	err = keeper.AddNewReceiveValidator(ctx, 1, sdk.ValAddress([]byte("validator1")))
-	require.Equal(t, types.CodeDuplicateValidator, err.Code())
-
-	// Check final output
-	actualRequest, err := keeper.GetRequest(ctx, 1)
-	request.ReceivedValidators = []sdk.ValAddress{sdk.ValAddress([]byte("validator1"))}
-	require.Nil(t, err)
-	require.Equal(t, request, actualRequest)
-}
-
 // TestSetResolved tests keeper can set resolved status to request
 func TestSetResolved(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
@@ -219,7 +157,7 @@ func TestSetResolvedOnInvalidRequest(t *testing.T) {
 
 	keeper.SetRequest(ctx, 1, request)
 	err := keeper.SetResolve(ctx, 2, types.Success)
-	require.Equal(t, types.CodeRequestNotFound, err.Code())
+	require.Equal(t, types.CodeItemNotFound, err.Code())
 }
 
 // TestConsumeGasForExecute tests keeper must consume gas from context correctly.
@@ -302,7 +240,7 @@ func TestAddPendingRequest(t *testing.T) {
 	require.Equal(t, []types.RequestID{1, 2, 3}, reqIDs)
 
 	err = keeper.AddPendingRequest(ctx, 3)
-	require.Equal(t, types.CodeDuplicateRequest, err.Code())
+	require.Equal(t, types.CodeItemDuplication, err.Code())
 	reqIDs = keeper.GetPendingResolveList(ctx)
 	require.Equal(t, []types.RequestID{1, 2, 3}, reqIDs)
 }
@@ -316,11 +254,11 @@ func TestHasToPutInPendingList(t *testing.T) {
 	keeper.SetRequest(ctx, 1, request)
 	require.False(t, keeper.ShouldBecomePendingResolve(ctx, 1))
 
-	err := keeper.AddNewReceiveValidator(ctx, 1, sdk.ValAddress([]byte("validator1")))
+	err := keeper.AddReport(ctx, 1, []types.RawDataReport{}, sdk.ValAddress([]byte("validator1")))
 	require.Nil(t, err)
 	require.True(t, keeper.ShouldBecomePendingResolve(ctx, 1))
 
-	err = keeper.AddNewReceiveValidator(ctx, 1, sdk.ValAddress([]byte("validator2")))
+	err = keeper.AddReport(ctx, 1, []types.RawDataReport{}, sdk.ValAddress([]byte("validator2")))
 	require.Nil(t, err)
 	require.False(t, keeper.ShouldBecomePendingResolve(ctx, 1))
 }
