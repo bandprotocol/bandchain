@@ -14,7 +14,8 @@ func mockOracleScript(ctx sdk.Context, keeper Keeper) sdk.Error {
 	name := "oracle_script"
 	description := "description"
 	code := []byte("code")
-	return keeper.AddOracleScript(ctx, owner, name, description, code)
+	_, err := keeper.AddOracleScript(ctx, owner, name, description, code)
+	return err
 }
 
 func TestGetterSetterOracleScript(t *testing.T) {
@@ -47,7 +48,7 @@ func TestAddTooLongOracleScript(t *testing.T) {
 	description := "description"
 	code := []byte("The number of bytes of this oracle script is 82 which is obviously longer than 20.")
 
-	err = keeper.AddOracleScript(ctx, owner, name, description, code)
+	_, err = keeper.AddOracleScript(ctx, owner, name, description, code)
 	require.NotNil(t, err)
 }
 
@@ -65,7 +66,7 @@ func TestAddTooLongOracleScriptName(t *testing.T) {
 	description := "description"
 	code := []byte("code")
 
-	err = keeper.AddOracleScript(ctx, owner, tooLongName, description, code)
+	_, err = keeper.AddOracleScript(ctx, owner, tooLongName, description, code)
 	require.NotNil(t, err)
 }
 
@@ -83,7 +84,7 @@ func TestAddTooLongOracleScriptDescription(t *testing.T) {
 	tooLongDescription := "description"
 	code := []byte("code")
 
-	err = keeper.AddOracleScript(ctx, owner, name, tooLongDescription, code)
+	_, err = keeper.AddOracleScript(ctx, owner, name, tooLongDescription, code)
 	require.NotNil(t, err)
 }
 func TestEditOracleScript(t *testing.T) {

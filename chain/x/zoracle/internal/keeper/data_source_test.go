@@ -17,7 +17,8 @@ func mockDataSource(ctx sdk.Context, keeper Keeper) sdk.Error {
 
 	// Size of "executable" is  10 bytes
 	executable := []byte("executable")
-	return keeper.AddDataSource(ctx, owner, name, description, fee, executable)
+	_, err := keeper.AddDataSource(ctx, owner, name, description, fee, executable)
+	return err
 }
 
 func TestGetterSetterDataSource(t *testing.T) {
@@ -52,7 +53,7 @@ func TestAddTooLongDataSource(t *testing.T) {
 	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
 	tooLongExecutable := []byte("The number of bytes of this data source is 80 which is obviously longer than 20.")
 
-	err = keeper.AddDataSource(ctx, owner, name, description, fee, tooLongExecutable)
+	_, err = keeper.AddDataSource(ctx, owner, name, description, fee, tooLongExecutable)
 	require.NotNil(t, err)
 }
 
@@ -71,7 +72,7 @@ func TestAddTooLongDataSourceName(t *testing.T) {
 	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
 	executable := []byte("executable")
 
-	err = keeper.AddDataSource(ctx, owner, tooLongName, description, fee, executable)
+	_, err = keeper.AddDataSource(ctx, owner, tooLongName, description, fee, executable)
 	require.NotNil(t, err)
 }
 
@@ -90,7 +91,7 @@ func TestAddTooLongDataSourceDescription(t *testing.T) {
 	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
 	executable := []byte("executable")
 
-	err = keeper.AddDataSource(ctx, owner, name, tooLongDescription, fee, executable)
+	_, err = keeper.AddDataSource(ctx, owner, name, tooLongDescription, fee, executable)
 	require.NotNil(t, err)
 }
 func TestEditDataSource(t *testing.T) {

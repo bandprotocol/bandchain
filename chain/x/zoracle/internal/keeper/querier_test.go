@@ -65,7 +65,7 @@ func TestQueryDataSourcesByStartIdAndNumberOfDataSources(t *testing.T) {
 		executable := []byte("executable" + strconv.Itoa(int(i)))
 		eachDataSource := types.NewDataSourceQuerierInfo(i, owner, name, description, fee, executable)
 
-		err := keeper.AddDataSource(ctx, eachDataSource.Owner, eachDataSource.Name, eachDataSource.Description, eachDataSource.Fee, eachDataSource.Executable)
+		_, err := keeper.AddDataSource(ctx, eachDataSource.Owner, eachDataSource.Name, eachDataSource.Description, eachDataSource.Fee, eachDataSource.Executable)
 		require.Nil(t, err)
 
 		expectedResult = append(expectedResult, eachDataSource)
@@ -454,7 +454,7 @@ func TestQueryOracleScriptsByStartIdAndNumberOfOracleScripts(t *testing.T) {
 		code := []byte("code" + strconv.Itoa(i))
 		eachOracleScript := types.NewOracleScriptQuerierInfo(types.OracleScriptID(i), owner, name, description, code)
 
-		err := keeper.AddOracleScript(ctx, eachOracleScript.Owner, eachOracleScript.Name, eachOracleScript.Description, eachOracleScript.Code)
+		_, err := keeper.AddOracleScript(ctx, eachOracleScript.Owner, eachOracleScript.Name, eachOracleScript.Description, eachOracleScript.Code)
 		require.Nil(t, err)
 
 		expectedResult = append(expectedResult, eachOracleScript)
