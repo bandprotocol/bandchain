@@ -125,3 +125,65 @@ let toString =
   | NotFound => "/";
 
 let redirect = (route: t) => ReasonReactRouter.push(route |> toString);
+
+let rec prefixMatch = (prefix: string, str: string) => {
+  let prefixLen = prefix |> String.length;
+  let strLen = str |> String.length;
+
+  switch (prefixLen) {
+  | 0 => true
+  | _ =>
+    prefixLen <= strLen && prefix.[0] == str.[0]
+      ? false
+      : prefixMatch(prefix |> String.sub(_, 1, prefixLen), str |> String.sub(_, 1, strLen))
+  };
+};
+
+let search = (str: string) => {
+  let len = str |> String.length;
+  let capStr = str |> String.capitalize;
+
+  let blockID =
+    capStr |> prefixMatch("O") ? str |> String.sub(_, 1, len) |> int_of_string_opt : None;
+
+  let dataSourceID =
+    capStr |> prefixMatch("D") ? str |> String.sub(_, 1, len) |> int_of_string_opt : None;
+
+  let requestID =
+    capStr |> prefixMatch("R") ? str |> String.sub(_, 1, len) |> int_of_string_opt : None;
+
+  let oracleScriptID =
+    capStr |> prefixMatch("O") ? str |> String.sub(_, 1, len) |> int_of_string_opt : None;
+
+  let isValidatorIndexPage = str |> prefixMatch("bandvaloper");
+
+  let isAccountIndexPage = str |> prefixMatch("band");
+  switch (str |> int_of_string_opt) {
+  | Some(id) => BlockIndexPage(id)
+  | None =>
+    switch (blockID) {
+    | Some(id) => BlockIndexPage(id)
+    | None =>
+      switch (len) {
+      | 32 => TxIndexPage(str |> Hash.fromHex)
+      | _ =>
+        switch (dataSourceID) {
+        | Some(id) => DataSourceIndexPage(id, DataSourceExecute)
+        | _ =>
+          switch (requestID) {
+          | Some(id) => RequestIndexPage(id, RequestReportStatus)
+          | _ =>
+            switch (oracleScriptID) {
+            | Some(id) => OracleScriptIndexPage(id, OracleScriptExecute)
+            | _ =>
+              isValidatorIndexPage
+                ? ValidatorIndexPage(Address.Address(str), ProposedBlocks)
+                : isAccountIndexPage
+                    ? AccountIndexPage(Address.Address(str), AccountTransactions) : NotFound
+            }
+          }
+        }
+      }
+    }
+  };
+};
