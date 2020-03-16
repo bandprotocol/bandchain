@@ -47,7 +47,7 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
+let make = (~codeHash, ~hashtag: Route.oracle_script_tab_t) => {
   // let step = 10;
   // let (limit, setLimit) = React.useState(_ => step);
   // let scriptOpt = ScriptHook.getInfo(codeHash);
