@@ -4,47 +4,59 @@ open Expect;
 
 describe("Expect Search Functionality to work correctly", () => {
   test("test block route", () =>
-    expect("123" |> search |> toString) |> toEqual("/block/123")
+    expect("123" |> search) |> toEqual(BlockIndexPage(123))
   );
   test("test block route", () =>
-    expect(
-      "22638794cb5f306ef929b90c58b27d26cb35a77ca5c5c624cf2025a98528c323" |> search |> toString,
-    )
-    |> toEqual("/tx/22638794cb5f306ef929b90c58b27d26cb35a77ca5c5c624cf2025a98528c323")
+    expect("22638794cb5f306ef929b90c58b27d26cb35a77ca5c5c624cf2025a98528c323" |> search)
+    |> toEqual(
+         TxIndexPage(
+           "22638794cb5f306ef929b90c58b27d26cb35a77ca5c5c624cf2025a98528c323" |> Hash.fromHex,
+         ),
+       )
   );
   test("test block prefix is B", () =>
-    expect("B123" |> search |> toString) |> toEqual("/block/123")
+    expect("B123" |> search) |> toEqual(BlockIndexPage(123))
   );
   test("test block prefix is b", () =>
-    expect("b123" |> search |> toString) |> toEqual("/block/123")
+    expect("b123" |> search) |> toEqual(BlockIndexPage(123))
   );
   test("test data soure route prefix is D", () =>
-    expect("D123" |> search |> toString) |> toEqual("/data-source/123")
+    expect("D123" |> search) |> toEqual(DataSourceIndexPage(123, DataSourceExecute))
   );
   test("test data soure route prefix is d", () =>
-    expect("d123" |> search |> toString) |> toEqual("/data-source/123")
+    expect("d123" |> search) |> toEqual(DataSourceIndexPage(123, DataSourceExecute))
   );
   test("test request route prefix is R", () =>
-    expect("R123" |> search |> toString) |> toEqual("/request/123")
+    expect("R123" |> search) |> toEqual(RequestIndexPage(123, RequestReportStatus))
   );
   test("test request route prefix is r", () =>
-    expect("r123" |> search |> toString) |> toEqual("/request/123")
+    expect("r123" |> search) |> toEqual(RequestIndexPage(123, RequestReportStatus))
   );
   test("test oracle script route prefix is O", () =>
-    expect("O123" |> search |> toString) |> toEqual("/script/123")
+    expect("O123" |> search) |> toEqual(OracleScriptIndexPage(123, OracleScriptExecute))
   );
   test("test oracle script route prefix is o", () =>
-    expect("O123" |> search |> toString) |> toEqual("/script/123")
+    expect("O123" |> search) |> toEqual(OracleScriptIndexPage(123, OracleScriptExecute))
   );
   test("test validator route", () =>
-    expect("bandvaloper1p40yh3zkmhcv0ecqp3mcazy83sa57rgjde6wec" |> search |> toString)
-    |> toEqual("/validator/bandvaloper1p40yh3zkmhcv0ecqp3mcazy83sa57rgjde6wec#delegators")
+    expect("bandvaloper1p40yh3zkmhcv0ecqp3mcazy83sa57rgjde6wec" |> search)
+    |> toEqual(
+         ValidatorIndexPage(
+           "bandvaloper1p40yh3zkmhcv0ecqp3mcazy83sa57rgjde6wec" |> Address.fromBech32,
+           Delegators,
+         ),
+       )
   );
   test("test oracle script route", () =>
-    expect("band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun" |> search |> toString)
-    |> toEqual("/account/band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun")
+    expect("band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun" |> search)
+    |> toEqual(
+         AccountIndexPage(
+           "band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun" |> Address.fromBech32,
+           AccountTransactions,
+         ),
+       )
   );
   test("test page not found", () =>
-    expect("D123DD" |> search |> toString) |> toEqual("/")
+    expect("D123DD" |> search) |> toEqual(NotFound)
   );
 });
