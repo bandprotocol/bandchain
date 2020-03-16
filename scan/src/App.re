@@ -85,7 +85,8 @@ let make = () => {
          | DataSourceIndexPage(dataSourceID, hashtag) =>
            <DataSourceIndexPage dataSourceID hashtag />
          | ScriptHomePage => <ScriptHomePage />
-         | ScriptIndexPage(codeHash, hashtag) => <ScriptIndexPage codeHash hashtag />
+         | OracleScriptIndexPage(oracleScriptID, hashtag) =>
+           <OracleScriptIndexPage oracleScriptID hashtag />
          | TxHomePage => <TxHomePage />
          | TxIndexPage(txHash) => <TxIndexPage txHash />
          | BlockHomePage => <BlockHomePage />
