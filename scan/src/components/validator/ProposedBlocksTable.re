@@ -52,7 +52,7 @@ let make = () => {
                    />
                  </div>
                </Col>
-               <Col size=1.>
+               <Col size=1.25>
                  <Text block=true value="AGE" size=Text.Sm weight=Text.Bold color=Colors.gray6 />
                </Col>
                <Col size=4.>
@@ -79,14 +79,11 @@ let make = () => {
                   <Row>
                     <Col> <HSpacing size=Spacing.lg /> </Col>
                     <Col size=0.75> <TypeID.Block id={ID.Block.ID(height)} /> </Col>
-                    <Col size=1.>
-                      <TimeAgos time=timestamp size=Text.Md weight=Text.Medium />
-                    </Col>
+                    <Col size=1.25> <TimeAgos time=timestamp code=true size=Text.Md /> </Col>
                     <Col size=4.>
                       <div className={Styles.withWidth(500)}>
                         <Text
                           value={hash |> Hash.toHex(~upper=true)}
-                          weight=Text.Medium
                           block=true
                           code=true
                           ellipsis=true
@@ -96,7 +93,7 @@ let make = () => {
                     <Col size=1.>
                       <Row>
                         <div className=Styles.fillLeft />
-                        <Text value={numTxs |> Format.iPretty} code=true weight=Text.Medium />
+                        <Text value={numTxs |> Format.iPretty} code=true />
                       </Row>
                     </Col>
                     <Col> <HSpacing size=Spacing.lg /> </Col>
