@@ -1,7 +1,7 @@
-type alignSelf =
-  | FlexStart
+type alignment =
+  | Start
   | Center
-  | FlexEnd;
+  | End;
 
 module Styles = {
   open Css;
@@ -13,19 +13,40 @@ module Styles = {
       _,
       style([]),
       fun
-      | FlexStart => style([alignSelf(`flexStart)])
+      | Start => style([alignSelf(`flexStart)])
       | Center => style([alignSelf(`center)])
-      | FlexEnd => style([alignSelf(`flexEnd)])
+      | End => style([alignSelf(`flexEnd)]),
+    );
+
+  let justifyContent =
+    Belt.Option.mapWithDefault(
+      _,
+      style([]),
+      fun
+      | Start => style([justifyContent(`flexStart)])
+      | Center => style([justifyContent(`center)])
+      | End => style([justifyContent(`flexEnd)]),
+    );
+  let alignItems =
+    Belt.Option.mapWithDefault(
+      _,
+      style([]),
+      fun
+      | Start => style([alignItems(`flexStart)])
+      | Center => style([alignItems(`center)])
+      | End => style([alignItems(`flexEnd)]),
     );
 };
 
 [@react.component]
-let make = (~size=?, ~alignSelf=?, ~children) => {
+let make = (~size=?, ~alignSelf=?, ~alignItems=?, ~justifyContent=?, ~children) => {
   <div
     className={Css.merge([
       Styles.col,
       size->Belt.Option.mapWithDefault("", Styles.colSize),
       Styles.alignSelf(alignSelf),
+      Styles.justifyContent(justifyContent),
+      Styles.alignItems(alignItems),
     ])}>
     children
   </div>;

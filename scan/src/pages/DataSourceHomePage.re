@@ -11,7 +11,7 @@ module Styles = {
       height(`px(1)),
       marginLeft(`px(10)),
       marginRight(`px(10)),
-      backgroundColor(Colors.grayHeader),
+      backgroundColor(Colors.gray7),
     ]);
 
   let textContainer = style([paddingLeft(Spacing.lg), display(`flex)]);
@@ -39,7 +39,7 @@ let make = () => {
             spacing={Text.Em(0.06)}
             height={Text.Px(15)}
             nowrap=true
-            color=Colors.grayHeader
+            color=Colors.gray7
             block=true
           />
           <div className=Styles.seperatedLine />
@@ -48,7 +48,7 @@ let make = () => {
             size=Text.Md
             weight=Text.Thin
             spacing={Text.Em(0.06)}
-            color=Colors.grayHeader
+            color=Colors.gray7
             nowrap=true
           />
         </div>
@@ -66,7 +66,7 @@ let make = () => {
                 value="NAME"
                 size=Text.Sm
                 weight=Text.Semibold
-                color=Colors.grayText
+                color=Colors.gray5
                 spacing={Text.Em(0.1)}
               />
             </div>
@@ -77,7 +77,7 @@ let make = () => {
               value="AGE"
               size=Text.Sm
               weight=Text.Semibold
-              color=Colors.grayText
+              color=Colors.gray5
               spacing={Text.Em(0.1)}
             />
           </Col>
@@ -87,7 +87,7 @@ let make = () => {
               value="OWNER"
               size=Text.Sm
               weight=Text.Semibold
-              color=Colors.grayText
+              color=Colors.gray5
               spacing={Text.Em(0.1)}
             />
           </Col>
@@ -98,7 +98,7 @@ let make = () => {
                 value="REQUEST FEE (BAND)"
                 size=Text.Sm
                 weight=Text.Semibold
-                color=Colors.grayText
+                color=Colors.gray5
                 spacing={Text.Em(0.1)}
               />
             </div>

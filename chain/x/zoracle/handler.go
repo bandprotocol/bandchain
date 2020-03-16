@@ -7,6 +7,7 @@ import (
 	"github.com/bandprotocol/d3n/chain/owasm"
 	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	auth "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
 
 // NewHandler creates handler of this module
@@ -50,8 +51,11 @@ func handleMsgEditDataSource(ctx sdk.Context, keeper Keeper, msg MsgEditDataSour
 	}
 
 	if !dataSource.Owner.Equals(msg.Sender) {
-		// TODO: change it later.
-		return types.ErrInvalidOwner(types.DefaultCodespace).Result()
+		return types.ErrUnauthorizedPermission(
+			"handleMsgEditDataSource: Sender (%s) is not data source owner (%s).",
+			msg.Sender.String(),
+			dataSource.Owner.String(),
+		).Result()
 	}
 
 	err = keeper.EditDataSource(ctx, msg.DataSourceID, msg.Owner, msg.Name, msg.Description, msg.Fee, msg.Executable)
@@ -78,8 +82,11 @@ func handleMsgEditOracleScript(ctx sdk.Context, keeper Keeper, msg MsgEditOracle
 	}
 
 	if !oracleScript.Owner.Equals(msg.Sender) {
-		// TODO: change it later.
-		return types.ErrInvalidOwner(types.DefaultCodespace).Result()
+		return types.ErrUnauthorizedPermission(
+			"handleMsgEditOracleScript: Sender (%s) is not oracle owner (%s).",
+			msg.Sender.String(),
+			oracleScript.Owner.String(),
+		).Result()
 	}
 
 	err = keeper.EditOracleScript(ctx, msg.OracleScriptID, msg.Owner, msg.Name, msg.Description, msg.Code)
@@ -99,21 +106,20 @@ func addUint64Overflow(a, b uint64) (uint64, bool) {
 
 func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 	pendingList := keeper.GetPendingResolveList(ctx)
-
 	endBlockExecuteGasLimit := keeper.EndBlockExecuteGasLimit(ctx)
 	gasConsumed := uint64(0)
-
 	firstUnresolvedRequestIndex := len(pendingList)
 
 	for i, requestID := range pendingList {
 		request, err := keeper.GetRequest(ctx, requestID)
-		if err != nil {
-			// Don't expect to happen
+		if err != nil { // should never happen
+			keeper.SetResolve(ctx, requestID, types.Failure)
 			continue
 		}
 
 		// Discard the request if execute gas is greater than EndBlockExecuteGasLimit.
 		if request.ExecuteGas > endBlockExecuteGasLimit {
+			keeper.SetResolve(ctx, requestID, types.Failure)
 			continue
 		}
 
@@ -124,12 +130,14 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 		}
 
 		env, err := NewExecutionEnvironment(ctx, keeper, requestID)
-		if err != nil {
+		if err != nil { // should never happen
+			keeper.SetResolve(ctx, requestID, types.Failure)
 			continue
 		}
 
 		script, err := keeper.GetOracleScript(ctx, request.OracleScriptID)
-		if err != nil {
+		if err != nil { // should never happen
+			keeper.SetResolve(ctx, requestID, types.Failure)
 			continue
 		}
 
@@ -195,8 +203,9 @@ func handleMsgRequestData(ctx sdk.Context, keeper Keeper, msg MsgRequestData) sd
 	ctx.GasMeter().ConsumeGas(msg.PrepareGas, "PrepareRequest")
 	_, _, errOwasm := owasm.Execute(&env, script.Code, "prepare", msg.Calldata, msg.PrepareGas)
 	if errOwasm != nil {
-		// TODO: error
-		return sdk.ErrUnknownRequest(errOwasm.Error()).Result()
+		return types.ErrBadWasmExecution(
+			"handleMsgRequestData: An error occured while running Owasm prepare.",
+		).Result()
 	}
 
 	err = keeper.ValidateDataSourceCount(ctx, id)
@@ -215,10 +224,30 @@ func handleMsgRequestData(ctx sdk.Context, keeper Keeper, msg MsgRequestData) sd
 }
 
 func handleMsgReportData(ctx sdk.Context, keeper Keeper, msg MsgReportData) sdk.Result {
+	startGas := ctx.GasMeter().GasConsumed()
+
+	// Save new report to store
 	err := keeper.AddReport(ctx, msg.RequestID, msg.DataSet, msg.Sender)
 	if err != nil {
 		return err.Result()
 	}
+
+	// Calculate the total refund by multiplying RefundGasPrice with gas used
+	amountToRefund, _ := msg.RefundGasPrice.MulDec(
+		sdk.NewDec(int64(ctx.GasMeter().GasConsumed() - startGas)),
+	).TruncateDecimal()
+
+	// Refund the reporter
+	err = keeper.SupplyKeeper.SendCoinsFromModuleToAccount(
+		ctx,
+		auth.FeeCollectorName,
+		msg.GetSigners()[0],
+		amountToRefund,
+	)
+	if err != nil {
+		return err.Result()
+	}
+
 	// Emit report event
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(

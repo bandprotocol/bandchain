@@ -9,8 +9,8 @@ module Styles = {
   let header =
     style([
       backgroundColor(Colors.white),
-      padding2(~v=`zero, ~h=`px(24)),
-      borderBottom(`px(1), `solid, Colors.lightGray),
+      padding2(~v=`zero, ~h=`px(20)),
+      borderBottom(`px(1), `solid, Colors.gray4),
       boxShadow(Shadow.box(~x=`px(0), ~y=`px(2), ~blur=`px(10), Css.rgba(0, 0, 0, 0.08))),
     ]);
 
@@ -21,12 +21,12 @@ module Styles = {
       justifyContent(`center),
       alignItems(`center),
       cursor(`pointer),
-      padding2(~v=Spacing.md, ~h=`px(24)),
-      borderBottom(`pxFloat(1.5), `solid, active ? Colors.brightBlue : Colors.white),
-      textShadow(Shadow.text(~blur=`pxFloat(active ? 1. : 0.), Colors.brightBlue)),
+      padding2(~v=Spacing.md, ~h=`px(20)),
+      borderBottom(`pxFloat(1.5), `solid, active ? Colors.bandBlue : Colors.white),
+      textShadow(Shadow.text(~blur=`pxFloat(active ? 1. : 0.), Colors.bandBlue)),
     ]);
 
-  let childrenContainer = style([backgroundColor(Colors.lighterBlue)]);
+  let childrenContainer = style([backgroundColor(Colors.blueGray1)]);
 };
 
 let button = (~name, ~route, ~active) => {
@@ -35,7 +35,7 @@ let button = (~name, ~route, ~active) => {
       value=name
       weight=Text.Regular
       size=Text.Md
-      color={active ? Colors.brightBlue : Colors.darkGrayText}
+      color={active ? Colors.bandBlue : Colors.gray6}
     />
   </div>;
 };

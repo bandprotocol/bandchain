@@ -11,10 +11,10 @@ module Styles = {
       height(`px(1)),
       marginLeft(`px(10)),
       marginRight(`px(10)),
-      backgroundColor(Colors.grayHeader),
+      backgroundColor(Colors.gray7),
     ]);
 
-  let addressContainer = style([marginTop(`px(25)), marginBottom(`px(44))]);
+  let hashContainer = style([marginTop(`px(25)), marginBottom(`px(44))]);
 
   let successBadge =
     style([
@@ -33,7 +33,7 @@ module Styles = {
     style([
       width(`percent(100.)),
       height(`pxFloat(1.4)),
-      backgroundColor(Colors.lightGray),
+      backgroundColor(Colors.gray4),
       display(`flex),
     ]);
 
@@ -52,31 +52,45 @@ let make = (~txHash) => {
             value="TRANSACTION"
             weight=Text.Medium
             nowrap=true
-            color=Colors.grayHeader
+            color=Colors.gray7
             spacing={Text.Em(0.06)}
             block=true
           />
           <div className=Styles.seperatedLine />
-          <Text
-            value="SUCCESS"
-            weight=Text.Thin
-            nowrap=true
-            color=Colors.grayHeader
-            spacing={Text.Em(0.06)}
-            block=true
-          />
-          <img src=Images.correct className=Styles.correctLogo />
+          {switch (txOpt) {
+           | Some(tx) =>
+             <>
+               <Text
+                 value={tx.success ? "SUCCESS" : "FAILED"}
+                 weight=Text.Thin
+                 nowrap=true
+                 color=Colors.gray7
+                 spacing={Text.Em(0.06)}
+                 block=true
+               />
+               <img src={tx.success ? Images.success : Images.fail} className=Styles.correctLogo />
+             </>
+           | None =>
+             <Text
+               value="UNKNOWN"
+               weight=Text.Thin
+               nowrap=true
+               color=Colors.gray7
+               spacing={Text.Em(0.06)}
+               block=true
+             />
+           }}
         </div>
       </Col>
     </Row>
-    <div className=Styles.addressContainer>
+    <div className=Styles.hashContainer>
       <Text
         value={txHash |> Hash.toHex(~upper=true)}
         size=Text.Xxl
         weight=Text.Bold
         nowrap=true
         code=true
-        color=Colors.grayHeader
+        color=Colors.gray7
       />
     </div>
     <Row>
@@ -87,16 +101,7 @@ let make = (~txHash) => {
            <Col size=2.2>
              <InfoHL info={InfoHL.Timestamp(tx.timestamp)} header="TIMESTAMP" />
            </Col>
-           <Col size=1.4>
-             <InfoHL
-               info={
-                 InfoHL.Address(
-                   "band17rprjgtj0krfw3wyl9creueej6ca9dc4dgxv6e" |> Address.fromBech32,
-                 )
-               }
-               header="SENDER"
-             />
-           </Col>
+           <Col size=1.4> <InfoHL info={InfoHL.Address(tx.sender)} header="SENDER" /> </Col>
          </>
        | None =>
          <>
@@ -111,13 +116,25 @@ let make = (~txHash) => {
       {switch (txOpt) {
        | Some(tx) =>
          <>
-           <Col size=1.35> <InfoHL info={InfoHL.Count(130082)} header="GAS USED" /> </Col>
-           <Col size=1.> <InfoHL info={InfoHL.Count(200000)} header="GAS LIMIT" /> </Col>
+           <Col size=1.35> <InfoHL info={InfoHL.Count(tx.gasUsed)} header="GAS USED" /> </Col>
+           <Col size=1.> <InfoHL info={InfoHL.Count(tx.gasWanted)} header="GAS LIMIT" /> </Col>
            <Col size=1.>
-             <InfoHL info={InfoHL.Float(0.000010)} header="GAS PRICE (BAND)" isLeft=false />
+             <InfoHL
+               info={
+                 InfoHL.Float(
+                   (tx.fee |> TxHook.Coin.getBandAmountFromCoins) /. (tx.gasWanted |> float_of_int),
+                 )
+               }
+               header="GAS PRICE (BAND)"
+               isLeft=false
+             />
            </Col>
            <Col size=1.35>
-             <InfoHL info={InfoHL.Float(0.13)} header="FEE (BAND)" isLeft=false />
+             <InfoHL
+               info={InfoHL.Float(tx.fee |> TxHook.Coin.getBandAmountFromCoins)}
+               header="FEE (BAND)"
+               isLeft=false
+             />
            </Col>
          </>
        | None =>
@@ -129,7 +146,21 @@ let make = (~txHash) => {
        }}
     </Row>
     <VSpacing size=Spacing.xxl />
-    // LOWER
+    <div className=Styles.vFlex>
+      <HSpacing size=Spacing.md />
+      {switch (txOpt) {
+       | Some(tx) =>
+         <Text
+           value={tx.messages |> Belt.List.length |> string_of_int}
+           weight=Text.Semibold
+           size=Text.Lg
+         />
+       | None => <Text value="?" weight=Text.Semibold size=Text.Lg />
+       }}
+      <HSpacing size=Spacing.md />
+      <Text value="Messages" size=Text.Lg spacing={Text.Em(0.06)} />
+    </div>
+    <VSpacing size=Spacing.md />
     {switch (txOpt) {
      | Some(tx) =>
        <> <div className=Styles.seperatorLine /> <TxIndexPageTable messages={tx.messages} /> </>

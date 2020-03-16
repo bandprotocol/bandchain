@@ -85,13 +85,13 @@ func NewDefaultGenesisState() GenesisState {
 			StartingProposalID: 1,
 			DepositParams: gov.DepositParams{
 				MinDeposit:       sdk.NewCoins(sdk.NewCoin("uband", sdk.TokensFromConsensusPower(1000))),
-				MaxDepositPeriod: 86400 * 2 * time.Second, // 2 days
+				MaxDepositPeriod: 86400 * 14 * time.Second, // 14 days
 			},
 			VotingParams: gov.VotingParams{
-				VotingPeriod: 86400 * 2 * time.Second, // 2 days
+				VotingPeriod: 86400 * 14 * time.Second, // 14 days
 			},
 			TallyParams: gov.TallyParams{
-				Quorum:    sdk.NewDecWithPrec(4, 1),   //  40%
+				Quorum:    sdk.NewDecWithPrec(4, 1),   // 40%
 				Threshold: sdk.NewDecWithPrec(5, 1),   // 50%
 				Veto:      sdk.NewDecWithPrec(334, 3), // 33.4%
 			},

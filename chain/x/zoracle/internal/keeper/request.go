@@ -15,7 +15,7 @@ func (k Keeper) SetRequest(ctx sdk.Context, id types.RequestID, request types.Re
 func (k Keeper) GetRequest(ctx sdk.Context, id types.RequestID) (types.Request, sdk.Error) {
 	store := ctx.KVStore(k.storeKey)
 	if !k.CheckRequestExists(ctx, id) {
-		return types.Request{}, types.ErrRequestNotFound(types.DefaultCodespace)
+		return types.Request{}, types.ErrItemNotFound("GetRequest: Unknown request ID %d.", id)
 	}
 
 	bz := store.Get(types.RequestStoreKey(id))
@@ -30,19 +30,27 @@ func (k Keeper) AddRequest(
 	requestedValidatorCount, sufficientValidatorCount, expiration int64, executeGas uint64,
 ) (types.RequestID, sdk.Error) {
 	if !k.CheckOracleScriptExists(ctx, oracleScriptID) {
-		// TODO: fix error later
-		return 0, types.ErrRequestNotFound(types.DefaultCodespace)
+		return 0, types.ErrItemNotFound(
+			"AddRequest: Unknown oracle script ID %d.",
+			oracleScriptID,
+		)
 	}
 
 	if len(calldata) > int(k.MaxCalldataSize(ctx)) {
-		// TODO: fix error later
-		return 0, types.ErrRequestNotFound(types.DefaultCodespace)
+		return 0, types.ErrBadDataValue(
+			"AddRequest: Calldata size (%d) exceeds the maximum size (%d).",
+			len(calldata),
+			int(k.MaxCalldataSize(ctx)),
+		)
 	}
 
 	validatorsByPower := k.StakingKeeper.GetBondedValidatorsByPower(ctx)
 	if int64(len(validatorsByPower)) < requestedValidatorCount {
-		// TODO: Fix error later
-		return 0, types.ErrRequestNotFound(types.DefaultCodespace)
+		return 0, types.ErrBadDataValue(
+			"AddRequest: Requested validator count (%d) exceeds the current number of validators (%d).",
+			requestedValidatorCount,
+			len(validatorsByPower),
+		)
 	}
 
 	validators := make([]sdk.ValAddress, requestedValidatorCount)
@@ -52,8 +60,11 @@ func (k Keeper) AddRequest(
 
 	ctx.GasMeter().ConsumeGas(executeGas, "ExecuteGas")
 	if executeGas > k.EndBlockExecuteGasLimit(ctx) {
-		// TODO: Fix error later
-		return 0, types.ErrRequestNotFound(types.DefaultCodespace)
+		return 0, types.ErrBadDataValue(
+			"AddRequest: Execute gas (%d) exceeds the maximum limit (%d).",
+			executeGas,
+			k.EndBlockExecuteGasLimit(ctx),
+		)
 	}
 
 	requestID := k.GetNextRequestID(ctx)
@@ -74,39 +85,15 @@ func (k Keeper) AddRequest(
 // ValidateDataSourceCount validates that the number of raw data requests is
 // not greater than `MaxDataSourceCountPerRequest`
 func (k Keeper) ValidateDataSourceCount(ctx sdk.Context, id types.RequestID) sdk.Error {
-	if k.GetRawDataRequestCount(ctx, id) > k.MaxDataSourceCountPerRequest(ctx) {
-		// TODO: fix error later
-		return types.ErrRequestNotFound(types.DefaultCodespace)
+	dataSourceCount := k.GetRawDataRequestCount(ctx, id)
+	if dataSourceCount > k.MaxDataSourceCountPerRequest(ctx) {
+		return types.ErrBadDataValue(
+			"ValidateDataSourceCount: Data source count (%d) exceeds the limit (%d).",
+			dataSourceCount,
+			k.MaxDataSourceCountPerRequest(ctx),
+		)
 	}
 
-	return nil
-}
-
-// AddNewReceiveValidator checks that new validator is a valid validator and not in received list yet then add new
-// validator to list.
-func (k Keeper) AddNewReceiveValidator(ctx sdk.Context, id types.RequestID, validator sdk.ValAddress) sdk.Error {
-	request, err := k.GetRequest(ctx, id)
-	if err != nil {
-		return err
-	}
-	for _, submittedValidator := range request.ReceivedValidators {
-		if validator.Equals(submittedValidator) {
-			return types.ErrDuplicateValidator(types.DefaultCodespace)
-		}
-	}
-	found := false
-	for _, validValidator := range request.RequestedValidators {
-		if validator.Equals(validValidator) {
-			found = true
-			break
-		}
-	}
-
-	if !found {
-		return types.ErrInvalidValidator(types.DefaultCodespace)
-	}
-	request.ReceivedValidators = append(request.ReceivedValidators, validator)
-	k.SetRequest(ctx, id, request)
 	return nil
 }
 
@@ -143,7 +130,10 @@ func (k Keeper) AddPendingRequest(ctx sdk.Context, requestID types.RequestID) sd
 	pendingList := k.GetPendingResolveList(ctx)
 	for _, entry := range pendingList {
 		if requestID == entry {
-			return types.ErrDuplicateRequest(types.DefaultCodespace)
+			return types.ErrItemDuplication(
+				"AddPendingRequest: Request ID %d already exists in the pending list",
+				requestID,
+			)
 		}
 	}
 	pendingList = append(pendingList, requestID)

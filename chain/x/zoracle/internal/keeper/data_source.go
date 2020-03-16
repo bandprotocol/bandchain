@@ -17,16 +17,25 @@ func (k Keeper) AddDataSource(ctx sdk.Context, owner sdk.AccAddress, name string
 	newDataSourceID := k.GetNextDataSourceID(ctx)
 
 	if len(executable) > int(k.MaxDataSourceExecutableSize(ctx)) {
-		// TODO: fix error later
-		return types.ErrRequestNotFound(types.DefaultCodespace)
+		return types.ErrBadDataValue(
+			"AddDataSource: Executable size (%d) exceeds the maximum size (%d).",
+			len(executable),
+			int(k.MaxDataSourceExecutableSize(ctx)),
+		)
 	}
-
 	if len(name) > int(k.MaxNameLength(ctx)) {
-		return types.ErrRequestNotFound(types.DefaultCodespace)
+		return types.ErrBadDataValue(
+			"AddDataSource: Name length (%d) exceeds the maximum length (%d).",
+			len(name),
+			int(k.MaxNameLength(ctx)),
+		)
 	}
-
 	if len(description) > int(k.MaxDescriptionLength(ctx)) {
-		return types.ErrRequestNotFound(types.DefaultCodespace)
+		return types.ErrBadDataValue(
+			"AddDataSource: Description length (%d) exceeds the maximum length (%d).",
+			len(description),
+			int(k.MaxDescriptionLength(ctx)),
+		)
 	}
 
 	newDataSource := types.NewDataSource(owner, name, description, fee, executable)
@@ -37,21 +46,32 @@ func (k Keeper) AddDataSource(ctx sdk.Context, owner sdk.AccAddress, name string
 // EditDataSource edits the given data source by given data source id to the storage.
 func (k Keeper) EditDataSource(ctx sdk.Context, dataSourceID types.DataSourceID, owner sdk.AccAddress, name string, description string, fee sdk.Coins, executable []byte) sdk.Error {
 	if !k.CheckDataSourceExists(ctx, dataSourceID) {
-		// TODO: fix error later
-		return types.ErrRequestNotFound(types.DefaultCodespace)
+		return types.ErrItemNotFound(
+			"EditDataSource: Unknown data source ID %d.",
+			dataSourceID,
+		)
 	}
 
 	if len(executable) > int(k.MaxDataSourceExecutableSize(ctx)) {
-		// TODO: fix error later
-		return types.ErrRequestNotFound(types.DefaultCodespace)
+		return types.ErrBadDataValue(
+			"EditDataSource: Executable size (%d) exceeds the maximum size (%d).",
+			len(executable),
+			int(k.MaxDataSourceExecutableSize(ctx)),
+		)
 	}
 	if len(name) > int(k.MaxNameLength(ctx)) {
-		// TODO: fix error later
-		return types.ErrRequestNotFound(types.DefaultCodespace)
+		return types.ErrBadDataValue(
+			"EditDataSource: Name length (%d) exceeds the maximum length (%d).",
+			len(name),
+			int(k.MaxNameLength(ctx)),
+		)
 	}
 	if len(description) > int(k.MaxDescriptionLength(ctx)) {
-		// TODO: fix error later
-		return types.ErrRequestNotFound(types.DefaultCodespace)
+		return types.ErrBadDataValue(
+			"EditDataSource: Description length (%d) exceeds the maximum length (%d).",
+			len(description),
+			int(k.MaxDescriptionLength(ctx)),
+		)
 	}
 
 	updatedDataSource := types.NewDataSource(owner, name, description, fee, executable)
@@ -63,8 +83,10 @@ func (k Keeper) EditDataSource(ctx sdk.Context, dataSourceID types.DataSourceID,
 func (k Keeper) GetDataSource(ctx sdk.Context, id types.DataSourceID) (types.DataSource, sdk.Error) {
 	store := ctx.KVStore(k.storeKey)
 	if !k.CheckDataSourceExists(ctx, id) {
-		// TODO: fix error later
-		return types.DataSource{}, types.ErrRequestNotFound(types.DefaultCodespace)
+		return types.DataSource{}, types.ErrItemNotFound(
+			"GetDataSource: Unknown data source ID %d.",
+			id,
+		)
 	}
 
 	bz := store.Get(types.DataSourceStoreKey(id))

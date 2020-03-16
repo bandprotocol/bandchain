@@ -10,9 +10,12 @@ import (
 func (k Keeper) AddResult(
 	ctx sdk.Context, requestID types.RequestID, oracleScriptID types.OracleScriptID, calldata []byte, result []byte,
 ) sdk.Error {
-	if int64(len(result)) > k.MaxResultSize(ctx) {
-		// TODO: better error later
-		return types.ErrResultNotFound(types.DefaultCodespace)
+	if len(result) > int(k.MaxResultSize(ctx)) {
+		return types.ErrBadDataValue(
+			"AddResult: Result size (%d) exceeds the maximum size (%d).",
+			len(result),
+			int(k.MaxResultSize(ctx)),
+		)
 	}
 
 	request, err := k.GetRequest(ctx, requestID)
@@ -48,16 +51,15 @@ func (k Keeper) GetResult(
 	ctx sdk.Context, requestID types.RequestID, oracleScriptID types.OracleScriptID, calldata []byte,
 ) (types.Result, sdk.Error) {
 	if !k.HasResult(ctx, requestID, oracleScriptID, calldata) {
-		return types.Result{}, types.ErrResultNotFound(types.DefaultCodespace)
+		return types.Result{}, types.ErrItemNotFound(
+			"GetResult: Result for request ID %d is not available.",
+			requestID,
+		)
 	}
 	store := ctx.KVStore(k.storeKey)
-	result, err := types.DecodeResult(store.Get(types.ResultStoreKey(requestID, oracleScriptID, calldata)))
-	if err != nil {
-		// TODO: fix error later
-		return types.Result{}, types.ErrResultNotFound(types.DefaultCodespace)
-	}
-
-	return result, nil
+	return types.MustDecodeResult(
+		store.Get(types.ResultStoreKey(requestID, oracleScriptID, calldata)),
+	), nil
 }
 
 // HasResult checks if the result at this request id is present in the store or not.

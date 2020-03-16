@@ -15,7 +15,7 @@ module Styles = {
       height(`px(1)),
       marginLeft(`px(10)),
       marginRight(`px(10)),
-      backgroundColor(Colors.grayHeader),
+      backgroundColor(Colors.gray7),
     ]);
 
   let codeVerifiedBadge =
@@ -30,7 +30,7 @@ module Styles = {
 
   let checkLogo = style([marginRight(`px(10))]);
 
-  let tableContainer = style([border(`px(1), `solid, Colors.lightGray)]);
+  let tableContainer = style([border(`px(1), `solid, Colors.gray4)]);
 
   let tableHeader = style([backgroundColor(Colors.white), padding(`px(20))]);
 
@@ -40,7 +40,7 @@ module Styles = {
       backgroundImage(
         `linearGradient((
           deg(0.0),
-          [(`percent(0.0), Colors.white), (`percent(100.0), Colors.lighterGray)],
+          [(`percent(0.0), Colors.white), (`percent(100.0), Colors.gray2)],
         )),
       ),
     ]);
@@ -66,7 +66,7 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
             weight=Text.Semibold
             size=Text.Lg
             nowrap=true
-            color=Colors.grayHeader
+            color=Colors.gray7
             block=true
           />
           <HSpacing size=Spacing.sm />
@@ -88,7 +88,7 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
     //          value="Code Verified"
     //          size=Text.Lg
     //          weight=Text.Semibold
-    //          color=Colors.darkGreen
+    //          color=Colors.green7
     //        />
     //      </div>
     //    | None => React.null
@@ -120,9 +120,7 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
     // />
     <VSpacing size=Spacing.xl />
     <Row>
-      <Col>
-        <InfoHL info={InfoHL.Hash(codeHash, Colors.brightPurple)} header="SCRIPT HASH" />
-      </Col>
+      <Col> <InfoHL info={InfoHL.Hash(codeHash, Colors.purple3)} header="SCRIPT HASH" /> </Col>
       <HSpacing size=Spacing.xl />
       <HSpacing size=Spacing.xl />
     </Row>
@@ -130,7 +128,7 @@ let make = (~codeHash, ~hashtag: Route.script_tab_t) => {
     //   {switch (scriptOpt) {
     //    | Some(script) =>
     //      <InfoHL
-    //        info={InfoHL.Address(script.info.creator, Colors.brightPurple)}
+    //        info={InfoHL.Address(script.info.creator, Colors.purple3)}
     //        header="CREATOR"
     //      />
     //    | None => React.null

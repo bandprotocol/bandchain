@@ -5,13 +5,15 @@ module Styles = {
 
   let pageContainer = style([paddingTop(`px(50)), minHeight(`px(500))]);
 
+  let logo = style([width(`px(50)), marginRight(`px(10))]);
+
   let seperatedLine =
     style([
       width(`px(13)),
       height(`px(1)),
       marginLeft(`px(10)),
       marginRight(`px(10)),
-      backgroundColor(Colors.grayHeader),
+      backgroundColor(Colors.gray7),
     ]);
 
   let textContainer = style([paddingLeft(Spacing.lg), display(`flex)]);
@@ -31,14 +33,15 @@ let make = () => {
 
   <div className=Styles.pageContainer>
     <Row>
+      <Col> <img src=Images.txLogo className=Styles.logo /> </Col>
       <Col>
         <div className=Styles.vFlex>
           <Text
             value="ALL TRANSACTIONS"
-            weight=Text.Bold
-            size=Text.Xl
+            weight=Text.Semibold
+            color=Colors.gray7
             nowrap=true
-            color=Colors.grayHeader
+            spacing={Text.Em(0.06)}
           />
           <div className=Styles.seperatedLine />
           {switch (totalTxsOpt) {
@@ -50,13 +53,6 @@ let make = () => {
     </Row>
     <VSpacing size=Spacing.xl />
     <TxsTable txs />
-    <VSpacing size=Spacing.lg />
-    {if (totalTxsOpt->Belt.Option.mapWithDefault(false, totalTxs => txs->Belt_List.size < totalTxs)) {
-       <LoadMore onClick={_ => {setLimit(oldLimit => oldLimit + step)}} />;
-     } else {
-       React.null;
-     }}
-    <VSpacing size=Spacing.xl />
-    <VSpacing size=Spacing.xl />
+    <VSpacing size={`px(70)} />
   </div>;
 };

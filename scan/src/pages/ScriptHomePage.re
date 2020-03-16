@@ -11,7 +11,7 @@ module Styles = {
       height(`px(1)),
       marginLeft(`px(10)),
       marginRight(`px(10)),
-      backgroundColor(Colors.grayHeader),
+      backgroundColor(Colors.gray7),
     ]);
 
   let textContainer = style([paddingLeft(Spacing.lg), display(`flex)]);
@@ -47,7 +47,7 @@ let make = () => {
           <Col> <HSpacing size=Spacing.xl /> </Col>
           <Col size=1.1>
             <div className=TElement.Styles.hashContainer>
-              <Text block=true value="NAME" size=Text.Sm weight=Text.Bold color=Colors.grayText />
+              <Text block=true value="NAME" size=Text.Sm weight=Text.Bold color=Colors.gray5 />
             </div>
           </Col>
           <Col size=1.1>
@@ -56,20 +56,14 @@ let make = () => {
               value="SCRIPT HASH"
               size=Text.Sm
               weight=Text.Bold
-              color=Colors.grayText
+              color=Colors.gray5
             />
           </Col>
           <Col size=0.65>
-            <Text
-              block=true
-              value="CREATED AT"
-              size=Text.Sm
-              weight=Text.Bold
-              color=Colors.grayText
-            />
+            <Text block=true value="CREATED AT" size=Text.Sm weight=Text.Bold color=Colors.gray5 />
           </Col>
           <Col size=1.1>
-            <Text block=true value="CREATOR" size=Text.Sm weight=Text.Bold color=Colors.grayText />
+            <Text block=true value="CREATOR" size=Text.Sm weight=Text.Bold color=Colors.gray5 />
           </Col>
           <Col size=0.5>
             <div className=TElement.Styles.feeContainer>
@@ -78,7 +72,7 @@ let make = () => {
                 value="QUERY FEE"
                 size=Text.Sm
                 weight=Text.Bold
-                color=Colors.grayText
+                color=Colors.gray5
               />
             </div>
           </Col>

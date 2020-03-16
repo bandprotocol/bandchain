@@ -17,7 +17,7 @@ module Styles = {
       height(`px(1)),
       marginLeft(`px(10)),
       marginRight(`px(10)),
-      backgroundColor(Colors.grayHeader),
+      backgroundColor(Colors.gray7),
     ]);
 
   let codeVerifiedBadge =
@@ -33,15 +33,15 @@ module Styles = {
   let checkLogo = style([marginRight(`px(10))]);
 
   let dataContainer =
-    style([display(`flex), border(`px(1), `solid, Colors.lightGray), flexDirection(`column)]);
+    style([display(`flex), border(`px(1), `solid, Colors.gray4), flexDirection(`column)]);
 
   let topBoxContainer =
     style([
       display(`flex),
       background(Colors.white),
       padding(`px(24)),
-      border(`px(1), `solid, Colors.lightGray),
-      borderBottom(`px(0), `solid, Colors.lightGray),
+      border(`px(1), `solid, Colors.gray4),
+      borderBottom(`px(0), `solid, Colors.gray4),
       flexDirection(`column),
     ]);
 
@@ -56,7 +56,7 @@ module Styles = {
       backgroundColor(Colors.white),
       padding3(~top=`px(30), ~h=`px(20), ~bottom=`px(20)),
     ]);
-  let tableLowerContainer = style([padding(`px(20)), background(Colors.lighterGray)]);
+  let tableLowerContainer = style([padding(`px(20)), background(Colors.gray2)]);
 
   let maxHeight20 = style([maxHeight(`px(20))]);
 
@@ -98,7 +98,7 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) => <div />;
 //               weight=Text.Semibold
 //               size=Text.Lg
 //               nowrap=true
-//               color=Colors.grayHeader
+//               color=Colors.gray7
 //               block=true
 //             />
 //             <HSpacing size=Spacing.sm />
@@ -120,13 +120,13 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) => <div />;
 //             onClick={_ =>
 //               Route.redirect(Route.ScriptIndexPage(scriptHash, ScriptTransactions))
 //             }>
-//             <InfoHL info={InfoHL.Hash(scriptHash, Colors.brightPurple)} header="SCRIPT HASH" />
+//             <InfoHL info={InfoHL.Hash(scriptHash, Colors.purple3)} header="SCRIPT HASH" />
 //           </div>
 //         </Col>
 //         <HSpacing size=Spacing.xl />
 //         <HSpacing size=Spacing.xl />
 //         <Col>
-//           <InfoHL info={InfoHL.Address(creator, Colors.brightPurple)} header="CREATOR" />
+//           <InfoHL info={InfoHL.Address(creator, Colors.purple3)} header="CREATOR" />
 //         </Col>
 //       </Row>
 //       <VSpacing size=Spacing.xl />
@@ -134,7 +134,7 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) => <div />;
 //         <div className=Styles.topBoxContainer>
 //           <div className=Styles.vFlex>
 //             <div className=Styles.subHeaderContainer>
-//               <Text value="Request ID" size=Text.Xl color=Colors.darkGrayText />
+//               <Text value="Request ID" size=Text.Xl color=Colors.gray6 />
 //             </div>
 //             <div className=Styles.detailContainer>
 //               <Text value={reqID |> Format.iPretty} size=Text.Lg />
@@ -143,7 +143,7 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) => <div />;
 //           <VSpacing size=Spacing.xl />
 //           <div className=Styles.vFlex>
 //             <div className=Styles.subHeaderContainer>
-//               <Text value="Status" size=Text.Xl color=Colors.darkGrayText />
+//               <Text value="Status" size=Text.Xl color=Colors.gray6 />
 //             </div>
 //             <div className=Styles.detailContainer>
 //               <RequestStatus comfirmed reportedValidators totalValidators />
@@ -152,7 +152,7 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) => <div />;
 //           <VSpacing size=Spacing.xl />
 //           <div className=Styles.vFlex>
 //             <div className=Styles.subHeaderContainer>
-//               <Text value="Targeted Block" size=Text.Xl color=Colors.darkGrayText />
+//               <Text value="Targeted Block" size=Text.Xl color=Colors.gray6 />
 //             </div>
 //             <div className=Styles.detailContainer>
 //               <Text value={targetBlock |> string_of_int} size=Text.Lg weight=Text.Semibold />
@@ -165,14 +165,14 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) => <div />;
 //           <VSpacing size=Spacing.xl />
 //           <div className={Css.merge([Styles.vFlex, Styles.flexStart])}>
 //             <div className=Styles.subHeaderContainer>
-//               <Text value="Parameters" size=Text.Xl color=Colors.darkGrayText />
+//               <Text value="Parameters" size=Text.Xl color=Colors.gray6 />
 //             </div>
 //             <div className=Styles.detailContainer> <Parameters params /> </div>
 //           </div>
 //           <VSpacing size=Spacing.xl />
 //           <div className={Css.merge([Styles.vFlex, Styles.flexStart])}>
 //             <div className=Styles.subHeaderContainer>
-//               <Text value="Result" size=Text.Xl color=Colors.darkGrayText />
+//               <Text value="Result" size=Text.Xl color=Colors.gray6 />
 //             </div>
 //             <div className=Styles.detailContainer> <Result result /> </div>
 //           </div>
@@ -201,7 +201,7 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) => <div />;
 //                 ? React.null
 //                 : <Text
 //                     value={j|Data Report from $reportedValidators Validators (Completed $reportedValidators/$totalValidators)|j}
-//                     color=Colors.grayHeader
+//                     color=Colors.gray7
 //                     size=Text.Lg
 //                   />}
 //              <VSpacing size=Spacing.lg />

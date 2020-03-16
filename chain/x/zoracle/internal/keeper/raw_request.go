@@ -22,7 +22,11 @@ func (k Keeper) GetRawDataRequest(
 ) (types.RawDataRequest, sdk.Error) {
 	store := ctx.KVStore(k.storeKey)
 	if !k.CheckRawDataRequestExists(ctx, requestID, externalID) {
-		return types.RawDataRequest{}, types.ErrRawDataRequestNotFound(types.DefaultCodespace)
+		return types.RawDataRequest{}, types.ErrItemNotFound(
+			"GetRawDataRequest: Unknown raw data request for request ID %d external ID %d.",
+			requestID,
+			externalID,
+		)
 	}
 
 	bz := store.Get(types.RawDataRequestStoreKey(requestID, externalID))
@@ -43,27 +47,38 @@ func (k Keeper) AddNewRawDataRequest(
 	ctx sdk.Context, requestID types.RequestID, externalID types.ExternalID, dataSourceID types.DataSourceID, calldata []byte,
 ) sdk.Error {
 	if len(calldata) > int(k.MaxCalldataSize(ctx)) {
-		// TODO: fix error later
-		return types.ErrRequestNotFound(types.DefaultCodespace)
+		return types.ErrBadDataValue(
+			"AddNewRawDataRequest: Calldata size (%d) exceeds the maximum size (%d).",
+			len(calldata),
+			int(k.MaxCalldataSize(ctx)),
+		)
 	}
 
-	if !k.CheckRequestExists(ctx, requestID) {
-		// TODO: fix error later
-		return types.ErrRequestNotFound(types.DefaultCodespace)
+	request, err := k.GetRequest(ctx, requestID)
+	if err != nil {
+		return types.ErrItemNotFound("AddNewRawDataRequest: Unknown request ID %d.", requestID)
 	}
 
 	if !k.CheckDataSourceExists(ctx, dataSourceID) {
-		// TODO: fix error later
-		return types.ErrRequestNotFound(types.DefaultCodespace)
+		return types.ErrItemNotFound(
+			"AddNewRawDataRequest: Data source ID %d does not exist.",
+			dataSourceID,
+		)
 	}
 
 	if k.CheckRawDataRequestExists(ctx, requestID, externalID) {
-		// TODO: fix error later
-		return types.ErrRequestNotFound(types.DefaultCodespace)
+		return types.ErrItemDuplication(
+			"AddNewRawDataRequest: Request ID %d: Raw data with external ID %d already exists.",
+			requestID,
+			externalID,
+		)
 	}
 
+	ctx.GasMeter().ConsumeGas(
+		k.GasPerRawDataRequestPerValidator(ctx)*uint64(len(request.RequestedValidators)),
+		"RawDataRequest",
+	)
 	k.SetRawDataRequest(ctx, requestID, externalID, types.NewRawDataRequest(dataSourceID, calldata))
-
 	return k.ValidateDataSourceCount(ctx, requestID)
 }
 
@@ -110,7 +125,8 @@ func (k Keeper) GetRawDataRequestWithExternalIDs(
 			types.NewRawDataRequestWithExternalID(
 				types.GetExternalIDFromRawDataRequestKey(iterator.Key()),
 				rawRequest,
-			))
+			),
+		)
 	}
 	return rawRequests
 }

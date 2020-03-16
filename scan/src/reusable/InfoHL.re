@@ -7,7 +7,9 @@ type t =
   | Fee(float)
   | DataSources(list(string))
   | Hash(Hash.t, Css.Types.Color.t)
-  | Address(Address.t);
+  | Address(Address.t)
+  | Fraction(int, int, bool)
+  | FloatWithSuffix(float, string);
 
 module Styles = {
   open Css;
@@ -19,7 +21,7 @@ module Styles = {
       alignItems(isLeft ? `flexStart : `flexEnd),
     ]);
   let vFlex = style([display(`flex), alignItems(`center)]);
-  let addressContainer = style([display(`flex), alignItems(`center), maxWidth(`px(290))]);
+  let addressContainer = style([alignItems(`center), maxWidth(`px(290))]);
   let datasourcesContainer = style([display(`flex), alignItems(`center), flexWrap(`wrap)]);
   let headerContainer = style([lineHeight(`px(25))]);
   let sourceContainer =
@@ -38,7 +40,7 @@ let make = (~info, ~header, ~isLeft=true) => {
     <div className=Styles.headerContainer>
       <Text
         value=header
-        color=Colors.grayHeader
+        color=Colors.gray7
         size=Text.Sm
         weight=Text.Thin
         height={Text.Px(13)}
@@ -48,13 +50,19 @@ let make = (~info, ~header, ~isLeft=true) => {
     {switch (info) {
      | Height(height) =>
        <div className=Styles.vFlex>
-         <Text value="#" size=Text.Lg weight=Text.Semibold color=Colors.brightPurple />
-         <HSpacing size=Spacing.xs />
-         <Text value={height |> Format.iPretty} size=Text.Lg weight=Text.Semibold />
+         <TypeID.Block id={ID.Block.ID(height)} position=TypeID.Subtitle />
        </div>
      | Float(value) =>
        <Text
          value={value |> Js.Float.toString}
+         size=Text.Lg
+         weight=Text.Semibold
+         spacing={Text.Em(0.02)}
+         code=true
+       />
+     | FloatWithSuffix(value, suffix) =>
+       <Text
+         value={(value |> Js.Float.toString) ++ suffix}
          size=Text.Lg
          weight=Text.Semibold
          spacing={Text.Em(0.02)}
@@ -68,7 +76,8 @@ let make = (~info, ~header, ~isLeft=true) => {
          spacing={Text.Em(0.02)}
          code=true
        />
-     | Text(text) => <Text value=text size=Text.Lg weight=Text.Semibold />
+     | Text(text) =>
+       <Text value=text size=Text.Lg weight=Text.Semibold code=true spacing={Text.Em(0.02)} />
      | Timestamp(time) =>
        <div className=Styles.vFlex>
          <Text
@@ -83,12 +92,14 @@ let make = (~info, ~header, ~isLeft=true) => {
            code=true
          />
          <HSpacing size=Spacing.sm />
-         <Text
-           value="(9 hrs 2 mins ago)"
-           size=Text.Lg
-           spacing={Text.Em(0.02)}
+         <TimeAgos
+           time
+           prefix="("
+           suffix=")"
+           size=Text.Md
            weight=Text.Thin
-           code=true
+           spacing={Text.Em(0.06)}
+           color=Colors.gray7
          />
        </div>
      | Fee(fee) =>
@@ -120,11 +131,20 @@ let make = (~info, ~header, ~isLeft=true) => {
        </div>
      | Hash(hash, textColor) =>
        <Text
-         value={hash |> Hash.toHex(~with0x=true)}
+         value={hash |> Hash.toHex(~with0x=true, ~upper=true)}
          size=Text.Lg
          weight=Text.Semibold
          color=textColor
        />
+     | Fraction(x, y, space) =>
+       <Text
+         value={(x |> Format.iPretty) ++ (space ? " / " : "/") ++ (y |> Format.iPretty)}
+         size=Text.Lg
+         weight=Text.Semibold
+         spacing={Text.Em(0.02)}
+         code=true
+       />
+
      | Address(address) =>
        <div className=Styles.addressContainer>
          <AddressRender address position=AddressRender.Subtitle />

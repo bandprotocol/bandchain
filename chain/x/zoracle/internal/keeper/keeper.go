@@ -7,6 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/staking"
+	"github.com/cosmos/cosmos-sdk/x/supply"
 )
 
 type Keeper struct {
@@ -14,16 +15,18 @@ type Keeper struct {
 	cdc           *codec.Codec
 	CoinKeeper    bank.Keeper
 	StakingKeeper staking.Keeper
+	SupplyKeeper  supply.Keeper
 	ParamSpace    params.Subspace
 }
 
 // NewKeeper creates a new zoracle Keeper instance.
-func NewKeeper(cdc *codec.Codec, key sdk.StoreKey, coinKeeper bank.Keeper, stakingKeeper staking.Keeper, paramSpace params.Subspace) Keeper {
+func NewKeeper(cdc *codec.Codec, key sdk.StoreKey, coinKeeper bank.Keeper, stakingKeeper staking.Keeper, supplyKeeper supply.Keeper, paramSpace params.Subspace) Keeper {
 	return Keeper{
 		storeKey:      key,
 		cdc:           cdc,
 		CoinKeeper:    coinKeeper,
 		StakingKeeper: stakingKeeper,
+		SupplyKeeper:  supplyKeeper,
 		ParamSpace:    paramSpace.WithKeyTable(ParamKeyTable()),
 	}
 }
@@ -113,6 +116,15 @@ func (keeper Keeper) SetMaxDescriptionLength(ctx sdk.Context, value int64) {
 	keeper.ParamSpace.Set(ctx, types.KeyMaxDescriptionLength, value)
 }
 
+func (keeper Keeper) GasPerRawDataRequestPerValidator(ctx sdk.Context) (res uint64) {
+	keeper.ParamSpace.Get(ctx, types.KeyGasPerRawDataRequestPerValidator, &res)
+	return
+}
+
+func (keeper Keeper) SetGasPerRawDataRequestPerValidator(ctx sdk.Context, value uint64) {
+	keeper.ParamSpace.Set(ctx, types.KeyGasPerRawDataRequestPerValidator, value)
+}
+
 // GetParams returns all current parameters as a types.Params instance.
 func (keeper Keeper) GetParams(ctx sdk.Context) types.Params {
 	return types.NewParams(
@@ -125,6 +137,7 @@ func (keeper Keeper) GetParams(ctx sdk.Context) types.Params {
 		keeper.EndBlockExecuteGasLimit(ctx),
 		keeper.MaxNameLength(ctx),
 		keeper.MaxDescriptionLength(ctx),
+		keeper.GasPerRawDataRequestPerValidator(ctx),
 	)
 }
 
