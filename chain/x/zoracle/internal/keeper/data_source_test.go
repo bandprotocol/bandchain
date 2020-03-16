@@ -38,7 +38,7 @@ func TestGetterSetterDataSource(t *testing.T) {
 	require.Equal(t, []byte("executable"), actualDataSource.Executable)
 }
 
-func TestAddDataSourceReturnCorrectID(t *testing.T) {
+func TestAddDataSourceMustReturnCorrectID(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
 	_, err := keeper.GetDataSource(ctx, 1)

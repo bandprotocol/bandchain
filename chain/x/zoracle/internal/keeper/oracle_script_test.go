@@ -34,7 +34,7 @@ func TestGetterSetterOracleScript(t *testing.T) {
 	require.Equal(t, []byte("code"), actualOracleScript.Code)
 }
 
-func TestAddOracleScriptReturnCorrectID(t *testing.T) {
+func TestAddOracleScriptMustReturnCorrectID(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
 	_, err := keeper.GetDataSource(ctx, 1)
