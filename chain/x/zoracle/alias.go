@@ -11,8 +11,14 @@ const (
 	RouterKey         = types.RouterKey
 	StoreKey          = types.StoreKey
 
-	EventTypeRequest      = types.EventTypeRequest
-	EventTypeReport       = types.EventTypeReport
+	EventTypeCreateDataSource   = types.EventTypeCreateDataSource
+	EventTypeEditDataSource     = types.EventTypeEditDataSource
+	EventTypeCreateOracleScript = types.EventTypeCreateOracleScript
+	EventTypeEditOracleScript   = types.EventTypeEditOracleScript
+	EventTypeRequest            = types.EventTypeRequest
+	EventTypeReport             = types.EventTypeReport
+
+	AttributeKeyID        = types.AttributeKeyID
 	AttributeKeyRequestID = types.AttributeKeyRequestID
 	AttributeKeyValidator = types.AttributeKeyValidator
 )

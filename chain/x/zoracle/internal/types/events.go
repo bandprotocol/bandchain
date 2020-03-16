@@ -9,6 +9,7 @@ const (
 	EventTypeRequest            = "request"
 	EventTypeReport             = "report"
 
+	AttributeKeyID        = "id"
 	AttributeKeyRequestID = "id"
 	AttributeKeyValidator = "validator"
 )

@@ -38,6 +38,27 @@ func TestGetterSetterDataSource(t *testing.T) {
 	require.Equal(t, []byte("executable"), actualDataSource.Executable)
 }
 
+func TestAddDataSourceReturnCorrectID(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	_, err := keeper.GetDataSource(ctx, 1)
+	require.NotNil(t, err)
+
+	owner := sdk.AccAddress([]byte("owner"))
+	name := "data_source"
+	description := "description"
+	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
+	executable := []byte("executable")
+
+	id, err := keeper.AddDataSource(ctx, owner, name, description, fee, executable)
+	require.Nil(t, err)
+	require.Equal(t, types.DataSourceID(1), id)
+
+	id, err = keeper.AddDataSource(ctx, owner, name, description, fee, executable)
+	require.Nil(t, err)
+	require.Equal(t, types.DataSourceID(2), id)
+}
+
 func TestAddTooLongDataSource(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 

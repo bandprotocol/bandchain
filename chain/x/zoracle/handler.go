@@ -47,7 +47,7 @@ func handleMsgCreateDataSource(ctx sdk.Context, keeper Keeper, msg MsgCreateData
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeCreateDataSource,
-			sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", dataSourceID)),
+			sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", dataSourceID)),
 		),
 	})
 
@@ -77,7 +77,7 @@ func handleMsgEditDataSource(ctx sdk.Context, keeper Keeper, msg MsgEditDataSour
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeEditDataSource,
-			sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", msg.DataSourceID)),
+			sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", msg.DataSourceID)),
 		),
 	})
 
@@ -97,7 +97,7 @@ func handleMsgCreateOracleScript(ctx sdk.Context, keeper Keeper, msg MsgCreateOr
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeCreateOracleScript,
-			sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", oracleScriptID)),
+			sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", oracleScriptID)),
 		),
 	})
 
@@ -127,7 +127,7 @@ func handleMsgEditOracleScript(ctx sdk.Context, keeper Keeper, msg MsgEditOracle
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeEditOracleScript,
-			sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", msg.OracleScriptID)),
+			sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", msg.OracleScriptID)),
 		),
 	})
 

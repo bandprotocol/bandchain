@@ -8,6 +8,7 @@ import (
 	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
+	cmn "github.com/tendermint/tendermint/libs/common"
 )
 
 func mockDataSource(ctx sdk.Context, keeper Keeper) sdk.Result {
@@ -43,6 +44,13 @@ func TestCreateDataSourceSuccess(t *testing.T) {
 	require.Equal(t, "data_source_1", dataSource.Name)
 	require.Equal(t, sdk.NewCoins(sdk.NewInt64Coin("uband", 10)), dataSource.Fee)
 	require.Equal(t, []byte("executable"), dataSource.Executable)
+
+	events := ctx.EventManager().Events()
+	require.Equal(t, 1, len(events))
+	require.Equal(t, sdk.Event{
+		Type:       EventTypeCreateDataSource,
+		Attributes: []cmn.KVPair{cmn.KVPair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
+	}, events[0])
 }
 
 func TestEditDataSourceSuccess(t *testing.T) {
@@ -67,6 +75,17 @@ func TestEditDataSourceSuccess(t *testing.T) {
 	require.Equal(t, newDescription, dataSource.Description)
 	require.Equal(t, newFee, dataSource.Fee)
 	require.Equal(t, newExecutable, dataSource.Executable)
+
+	events := ctx.EventManager().Events()
+	require.Equal(t, 2, len(events))
+	require.Equal(t, sdk.Event{
+		Type:       EventTypeCreateDataSource,
+		Attributes: []cmn.KVPair{cmn.KVPair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
+	}, events[0])
+	require.Equal(t, sdk.Event{
+		Type:       EventTypeEditDataSource,
+		Attributes: []cmn.KVPair{cmn.KVPair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
+	}, events[1])
 }
 
 func TestEditDataSourceByNotOwner(t *testing.T) {
@@ -97,6 +116,13 @@ func TestCreateOracleScriptSuccess(t *testing.T) {
 	require.Equal(t, sdk.AccAddress([]byte("owner")), expect.Owner)
 	require.Equal(t, "oracle_script_1", expect.Name)
 	require.Equal(t, []byte("code"), expect.Code)
+
+	events := ctx.EventManager().Events()
+	require.Equal(t, 1, len(events))
+	require.Equal(t, sdk.Event{
+		Type:       EventTypeCreateOracleScript,
+		Attributes: []cmn.KVPair{cmn.KVPair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
+	}, events[0])
 }
 
 func TestEditOracleScriptSuccess(t *testing.T) {
@@ -118,6 +144,17 @@ func TestEditOracleScriptSuccess(t *testing.T) {
 	require.Equal(t, newOwner, oracleScript.Owner)
 	require.Equal(t, newName, oracleScript.Name)
 	require.Equal(t, newCode, oracleScript.Code)
+
+	events := ctx.EventManager().Events()
+	require.Equal(t, 2, len(events))
+	require.Equal(t, sdk.Event{
+		Type:       EventTypeCreateOracleScript,
+		Attributes: []cmn.KVPair{cmn.KVPair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
+	}, events[0])
+	require.Equal(t, sdk.Event{
+		Type:       EventTypeEditOracleScript,
+		Attributes: []cmn.KVPair{cmn.KVPair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
+	}, events[1])
 }
 
 func TestEditOracleScriptByNotOwner(t *testing.T) {

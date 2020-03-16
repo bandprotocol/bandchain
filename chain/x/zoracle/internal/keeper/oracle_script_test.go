@@ -34,6 +34,26 @@ func TestGetterSetterOracleScript(t *testing.T) {
 	require.Equal(t, []byte("code"), actualOracleScript.Code)
 }
 
+func TestAddOracleScriptReturnCorrectID(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	_, err := keeper.GetDataSource(ctx, 1)
+	require.NotNil(t, err)
+
+	owner := sdk.AccAddress([]byte("owner"))
+	name := "oracle_script"
+	description := "description"
+	code := []byte("code")
+
+	id, err := keeper.AddOracleScript(ctx, owner, name, description, code)
+	require.Nil(t, err)
+	require.Equal(t, types.OracleScriptID(1), id)
+
+	id, err = keeper.AddOracleScript(ctx, owner, name, description, code)
+	require.Nil(t, err)
+	require.Equal(t, types.OracleScriptID(2), id)
+}
+
 func TestAddTooLongOracleScript(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
