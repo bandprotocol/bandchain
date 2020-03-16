@@ -76,7 +76,7 @@ let kvRow = (k, v: value_row_t) => {
 
 [@react.component]
 let make = (~address, ~hashtag: Route.validator_tab_t) => {
-  let isActive = false;
+  let isActive = true;
 
   <div className=Styles.pageContainer>
     <Row justify=Row.Between>
@@ -153,5 +153,22 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
         </Col>
       </div>
     </div>
+    <VSpacing size=Spacing.md />
+    <Tab
+      tabs=[|
+        {
+          name: "PROPOSED BLOCKS",
+          route: Route.ValidatorIndexPage(address, Route.ProposedBlocks),
+        },
+        {name: "DELEGATORS", route: Route.ValidatorIndexPage(address, Route.Delegators)},
+        {name: "REPORTS", route: Route.ValidatorIndexPage(address, Route.Reports)},
+      |]
+      currentRoute={Route.ValidatorIndexPage(address, hashtag)}>
+      {switch (hashtag) {
+       | ProposedBlocks => <ProposedBlocksTable />
+       | Delegators => <DataSourceRequestTable />
+       | Reports => <RevisionTable />
+       }}
+    </Tab>
   </div>;
 };
