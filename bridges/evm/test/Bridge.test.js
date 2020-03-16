@@ -330,16 +330,7 @@ contract("Bridge", ([_, owner, alice, bob]) => {
       )
         .toString()
         .should.eq(
-          [
-            1,
-            1582889446,
-            1582889459,
-            1,
-            1,
-            1,
-            "0x63616c6c64617461",
-            "0x6461746131"
-          ].toString()
+          [1, 1582889446, 1582889459, 1, 1, 1, "0x63616c6c64617461", "0x6461746131"].toString()
         );
     });
 
@@ -429,9 +420,7 @@ contract("Bridge", ([_, owner, alice, bob]) => {
       );
       (await this.bridge.oracleStates(1086))
         .toString()
-        .should.eq(
-          "0x1f8ccf68b355092fdf91b6b694edbebee5dad05e109c8160eb29462bdc995117"
-        );
+        .should.eq("0x1f8ccf68b355092fdf91b6b694edbebee5dad05e109c8160eb29462bdc995117");
       result = await this.receiver.latestResult();
       result[0].toString().should.eq("1");
       result[1].toString().should.eq("1584357141");
@@ -449,9 +438,7 @@ contract("Bridge", ([_, owner, alice, bob]) => {
       );
       (await this.bridge.oracleStates(2162))
         .toString()
-        .should.eq(
-          "0x3e71eb34c10e3df166273a80cb328bd9671e3b5039ba0ae5bfc0b4dcf7a67b19"
-        );
+        .should.eq("0x3e71eb34c10e3df166273a80cb328bd9671e3b5039ba0ae5bfc0b4dcf7a67b19");
       result = await this.receiver.latestResult();
       result[0].toString().should.eq("1");
       result[1].toString().should.eq("1584357141");
@@ -488,12 +475,9 @@ contract("Bridge", ([_, owner, alice, bob]) => {
 
     it("should revert if update validator power by non-onwer", async () => {
       await expectRevert(
-        this.bridge.updateValidatorPowers(
-          [["0x652D89a66Eb4eA55366c45b1f9ACfc8e2179E1c5", 150]],
-          {
-            from: alice
-          }
-        ),
+        this.bridge.updateValidatorPowers([["0x652D89a66Eb4eA55366c45b1f9ACfc8e2179E1c5", 150]], {
+          from: alice
+        }),
         "Ownable: caller is not the owner."
       );
     });
@@ -504,11 +488,7 @@ contract("Bridge", ([_, owner, alice, bob]) => {
         { from: owner }
       );
 
-      (
-        await this.bridge.validatorPowers(
-          "0x652D89a66Eb4eA55366c45b1f9ACfc8e2179E1c5"
-        )
-      )
+      (await this.bridge.validatorPowers("0x652D89a66Eb4eA55366c45b1f9ACfc8e2179E1c5"))
         .toString()
         .should.eq("150");
 
@@ -525,27 +505,15 @@ contract("Bridge", ([_, owner, alice, bob]) => {
         { from: owner }
       );
 
-      (
-        await this.bridge.validatorPowers(
-          "0x652D89a66Eb4eA55366c45b1f9ACfc8e2179E1c5"
-        )
-      )
+      (await this.bridge.validatorPowers("0x652D89a66Eb4eA55366c45b1f9ACfc8e2179E1c5"))
         .toString()
         .should.eq("150");
 
-      (
-        await this.bridge.validatorPowers(
-          "0x88e1cd00710495EEB93D4f522d16bC8B87Cb00FE"
-        )
-      )
+      (await this.bridge.validatorPowers("0x88e1cd00710495EEB93D4f522d16bC8B87Cb00FE"))
         .toString()
         .should.eq("0");
 
-      (
-        await this.bridge.validatorPowers(
-          "0x85109F11A7E1385ee826FbF5dA97bB97dba0D76f"
-        )
-      )
+      (await this.bridge.validatorPowers("0x85109F11A7E1385ee826FbF5dA97bB97dba0D76f"))
         .toString()
         .should.eq("200");
 
