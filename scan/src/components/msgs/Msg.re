@@ -21,7 +21,7 @@ let make = (~msg: TxHook.Msg.t, ~width: int, ~success: bool) => {
   switch (msg.action) {
   | Send({fromAddress, toAddress, amount}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(width / 2 - 18)}>
+      <div className={Styles.withWidth(width / 2 - 20)}>
         <AddressRender address=fromAddress />
       </div>
       <div className={Styles.withBg(Colors.blue1, 40)}>
@@ -143,7 +143,7 @@ let make = (~msg: TxHook.Msg.t, ~width: int, ~success: bool) => {
              <div className={Styles.rowWithWidth(200)}>
                <TypeID.OracleScript id={ID.OracleScript.ID(id)} />
                <HSpacing size=Spacing.sm />
-               <div className={Styles.withWidth(160)}>
+               <div className={Styles.withWidth(150)}>
                  <Text
                    value=name
                    color=Colors.gray7
