@@ -373,7 +373,7 @@ func (app *bandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliv
 					isAllReportTxs = false
 				}
 			}
-			if isAllReportTxs {
+			if isAllReportTxs && !stdTx.Fee.Amount.IsZero() {
 				acc := app.accountKeeper.GetAccount(app.deliverContext, stdTx.GetSigners()[0])
 				if acc != nil {
 					err := app.supplyKeeper.SendCoinsFromModuleToAccount(
