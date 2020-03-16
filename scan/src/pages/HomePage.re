@@ -61,7 +61,7 @@ module Styles = {
 /* SEE ALL btn */
 let renderSeeAll = route =>
   <div className=Styles.seeAllContainer onClick={_ => Route.redirect(route)}>
-    <Text block=true value="SEE ALL" size=Text.Sm weight=Text.Bold color=Colors.grayText />
+    <Text block=true value="SEE ALL" size=Text.Sm weight=Text.Bold color=Colors.gray5 />
     <img src=Images.rightArrow className=Styles.rightArrow />
   </div>;
 

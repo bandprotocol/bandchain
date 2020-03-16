@@ -75,27 +75,15 @@ let make = () => {
                      value="NAME"
                      size=Text.Sm
                      weight=Text.Bold
-                     color=Colors.mediumLightGray
+                     color=Colors.gray6
                    />
                  </div>
                </Col>
                <Col size=2.>
-                 <Text
-                   block=true
-                   value="AGE"
-                   size=Text.Sm
-                   weight=Text.Bold
-                   color=Colors.mediumLightGray
-                 />
+                 <Text block=true value="AGE" size=Text.Sm weight=Text.Bold color=Colors.gray6 />
                </Col>
                <Col size=1.5>
-                 <Text
-                   block=true
-                   value="BLOCK"
-                   size=Text.Sm
-                   weight=Text.Bold
-                   color=Colors.mediumLightGray
-                 />
+                 <Text block=true value="BLOCK" size=Text.Sm weight=Text.Bold color=Colors.gray6 />
                </Col>
                <Col size=3.5>
                  <Text
@@ -103,7 +91,7 @@ let make = () => {
                    value="TX HASH"
                    size=Text.Sm
                    weight=Text.Bold
-                   color=Colors.mediumLightGray
+                   color=Colors.gray6
                  />
                </Col>
                <Col> <HSpacing size=Spacing.lg /> </Col>
@@ -115,7 +103,7 @@ let make = () => {
                   <Row>
                     <Col> <HSpacing size=Spacing.lg /> </Col>
                     <Col size=3.>
-                      <Text block=true value=name weight=Text.Medium color=Colors.mediumGray />
+                      <Text block=true value=name weight=Text.Medium color=Colors.gray7 />
                     </Col>
                     <Col size=2.> <TimeAgos time=age size=Text.Md weight=Text.Medium /> </Col>
                     <Col size=1.5>
@@ -124,7 +112,7 @@ let make = () => {
                         value={"#B" ++ (blockHeight |> string_of_int)}
                         weight=Text.Semibold
                         code=true
-                        color=Colors.brightBlue
+                        color=Colors.bandBlue
                       />
                     </Col>
                     <Col size=3.5>
@@ -134,7 +122,7 @@ let make = () => {
                           value={txHash |> Hash.toHex(~upper=true)}
                           weight=Text.Medium
                           code=true
-                          color=Colors.mediumGray
+                          color=Colors.gray7
                           ellipsis=true
                           nowrap=true
                         />
@@ -151,7 +139,7 @@ let make = () => {
            <VSpacing size={`px(30)} />
            <img src=Images.noRevisionIcon className=Styles.icon />
            <VSpacing size={`px(40)} />
-           <Text block=true value="NO REVISION" weight=Text.Regular color=Colors.brightLightBlue />
+           <Text block=true value="NO REVISION" weight=Text.Regular color=Colors.blue4 />
            <VSpacing size={`px(15)} />
          </div>}
   </div>;

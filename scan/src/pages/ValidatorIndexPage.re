@@ -41,7 +41,7 @@ module Styles = {
       marginBottom(`px(45)),
     ]);
 
-  let underline = style([textDecoration(`underline), color(Colors.mediumGray)]);
+  let underline = style([textDecoration(`underline), color(Colors.gray7)]);
 };
 
 type value_row_t =
@@ -90,7 +90,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
             spacing={Text.Em(0.06)}
             height={Text.Px(15)}
             nowrap=true
-            color=Colors.mediumGray
+            color=Colors.gray7
             block=true
           />
           <div className=Styles.seperatedLine />
@@ -99,7 +99,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
             size=Text.Md
             weight=Text.Thin
             spacing={Text.Em(0.06)}
-            color=Colors.mediumGray
+            color=Colors.gray7
             nowrap=true
           />
           <HSpacing size=Spacing.md />

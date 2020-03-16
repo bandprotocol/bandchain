@@ -552,7 +552,7 @@ func TestSkipInvalidExecuteGas(t *testing.T) {
 
 	actualRequest, err := keeper.GetRequest(ctx, 1)
 	require.Nil(t, err)
-	require.Equal(t, types.Open, actualRequest.ResolveStatus)
+	require.Equal(t, types.Failure, actualRequest.ResolveStatus)
 
 	_, err = keeper.GetResult(ctx, 2, 1, calldata)
 	require.Nil(t, err)
@@ -711,9 +711,9 @@ func TestEndBlockInsufficientExecutionConsumeEndBlockGas(t *testing.T) {
 	keeper.SetDataSource(ctx, 1, dataSource)
 
 	pendingList := []types.RequestID{}
-	executeGasList := []uint64{2500, 50, 3000}
+	executeGasList := []uint64{2500, 50, 3000, 2500}
 
-	for i := types.RequestID(1); i <= types.RequestID(3); i++ {
+	for i := types.RequestID(1); i <= types.RequestID(4); i++ {
 		handleMsgRequestData(
 			ctx, keeper,
 			types.NewMsgRequestData(scriptID, calldata, 2, 2, 100, 2000, executeGasList[i-1], sender),
@@ -729,7 +729,7 @@ func TestEndBlockInsufficientExecutionConsumeEndBlockGas(t *testing.T) {
 
 	got := handleEndBlock(ctx, keeper)
 	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
-	require.Equal(t, []types.RequestID{}, keeper.GetPendingResolveList(ctx))
+	require.Equal(t, []types.RequestID{4}, keeper.GetPendingResolveList(ctx))
 
 	_, err := keeper.GetResult(ctx, 1, scriptID, calldata)
 	require.Nil(t, err)
@@ -749,6 +749,13 @@ func TestEndBlockInsufficientExecutionConsumeEndBlockGas(t *testing.T) {
 	require.NotNil(t, err)
 
 	actualRequest, err = keeper.GetRequest(ctx, 3)
+	require.Nil(t, err)
+	require.Equal(t, types.Failure, actualRequest.ResolveStatus)
+
+	_, err = keeper.GetResult(ctx, 4, scriptID, calldata)
+	require.NotNil(t, err)
+
+	actualRequest, err = keeper.GetRequest(ctx, 4)
 	require.Nil(t, err)
 	require.Equal(t, types.Open, actualRequest.ResolveStatus)
 

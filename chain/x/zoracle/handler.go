@@ -106,21 +106,20 @@ func addUint64Overflow(a, b uint64) (uint64, bool) {
 
 func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 	pendingList := keeper.GetPendingResolveList(ctx)
-
 	endBlockExecuteGasLimit := keeper.EndBlockExecuteGasLimit(ctx)
 	gasConsumed := uint64(0)
-
 	firstUnresolvedRequestIndex := len(pendingList)
 
 	for i, requestID := range pendingList {
 		request, err := keeper.GetRequest(ctx, requestID)
-		if err != nil {
-			// Don't expect to happen
+		if err != nil { // should never happen
+			keeper.SetResolve(ctx, requestID, types.Failure)
 			continue
 		}
 
 		// Discard the request if execute gas is greater than EndBlockExecuteGasLimit.
 		if request.ExecuteGas > endBlockExecuteGasLimit {
+			keeper.SetResolve(ctx, requestID, types.Failure)
 			continue
 		}
 
@@ -131,12 +130,14 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 		}
 
 		env, err := NewExecutionEnvironment(ctx, keeper, requestID)
-		if err != nil {
+		if err != nil { // should never happen
+			keeper.SetResolve(ctx, requestID, types.Failure)
 			continue
 		}
 
 		script, err := keeper.GetOracleScript(ctx, request.OracleScriptID)
-		if err != nil {
+		if err != nil { // should never happen
+			keeper.SetResolve(ctx, requestID, types.Failure)
 			continue
 		}
 
@@ -202,8 +203,9 @@ func handleMsgRequestData(ctx sdk.Context, keeper Keeper, msg MsgRequestData) sd
 	ctx.GasMeter().ConsumeGas(msg.PrepareGas, "PrepareRequest")
 	_, _, errOwasm := owasm.Execute(&env, script.Code, "prepare", msg.Calldata, msg.PrepareGas)
 	if errOwasm != nil {
-		// TODO: error
-		return sdk.ErrUnknownRequest(errOwasm.Error()).Result()
+		return types.ErrBadWasmExecution(
+			"handleMsgRequestData: An error occured while running Owasm prepare.",
+		).Result()
 	}
 
 	err = keeper.ValidateDataSourceCount(ctx, id)
@@ -231,7 +233,9 @@ func handleMsgReportData(ctx sdk.Context, keeper Keeper, msg MsgReportData) sdk.
 	}
 
 	// Calculate the total refund by multiplying RefundGasPrice with gas used
-	amountToRefund, _ := msg.RefundGasPrice.MulDec(sdk.NewDec(int64(ctx.GasMeter().GasConsumed() - startGas))).TruncateDecimal()
+	amountToRefund, _ := msg.RefundGasPrice.MulDec(
+		sdk.NewDec(int64(ctx.GasMeter().GasConsumed() - startGas)),
+	).TruncateDecimal()
 
 	// Refund the reporter
 	err = keeper.SupplyKeeper.SendCoinsFromModuleToAccount(

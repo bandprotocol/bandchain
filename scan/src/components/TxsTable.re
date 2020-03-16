@@ -20,19 +20,37 @@ let make = (~txs: list(TxHook.Tx.t)) => {
     <THead>
       <Row>
         <HSpacing size={`px(20)} />
-        <Col size=1.67>
+        <Col size=1.6>
           <div className=Styles.fullWidth>
-            <Text value="TX HASH" size=Text.Sm weight=Text.Bold color=Colors.mediumLightGray />
+            <Text
+              value="TX HASH"
+              size=Text.Sm
+              weight=Text.Semibold
+              color=Colors.gray6
+              spacing={Text.Em(0.05)}
+            />
           </div>
         </Col>
         <Col size=0.88>
           <div className=Styles.fullWidth>
-            <Text value="BLOCK" size=Text.Sm weight=Text.Bold color=Colors.mediumLightGray />
+            <Text
+              value="BLOCK"
+              size=Text.Sm
+              weight=Text.Semibold
+              color=Colors.gray6
+              spacing={Text.Em(0.05)}
+            />
           </div>
         </Col>
         <Col size=1.>
           <div className=Styles.fullWidth>
-            <Text value="STATUS" size=Text.Sm weight=Text.Bold color=Colors.mediumLightGray />
+            <Text
+              value="STATUS"
+              size=Text.Sm
+              weight=Text.Semibold
+              color=Colors.gray6
+              spacing={Text.Em(0.05)}
+            />
           </div>
         </Col>
         <Col size=1.25>
@@ -41,15 +59,22 @@ let make = (~txs: list(TxHook.Tx.t)) => {
             <Text
               value="GAS FEE (BAND)"
               size=Text.Sm
-              weight=Text.Bold
-              color=Colors.mediumLightGray
+              weight=Text.Semibold
+              color=Colors.gray6
+              spacing={Text.Em(0.05)}
             />
             <HSpacing size={`px(20)} />
           </div>
         </Col>
         <Col size=5.>
           <div className=Styles.fullWidth>
-            <Text value="ACTIONS" size=Text.Sm weight=Text.Bold color=Colors.mediumLightGray />
+            <Text
+              value="ACTIONS"
+              size=Text.Sm
+              weight=Text.Semibold
+              color=Colors.gray6
+              spacing={Text.Em(0.05)}
+            />
           </div>
         </Col>
         <HSpacing size={`px(20)} />

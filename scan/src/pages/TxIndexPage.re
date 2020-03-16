@@ -11,7 +11,7 @@ module Styles = {
       height(`px(1)),
       marginLeft(`px(10)),
       marginRight(`px(10)),
-      backgroundColor(Colors.mediumGray),
+      backgroundColor(Colors.gray7),
     ]);
 
   let hashContainer = style([marginTop(`px(25)), marginBottom(`px(44))]);
@@ -33,7 +33,7 @@ module Styles = {
     style([
       width(`percent(100.)),
       height(`pxFloat(1.4)),
-      backgroundColor(Colors.lightGray),
+      backgroundColor(Colors.gray4),
       display(`flex),
     ]);
 
@@ -52,7 +52,7 @@ let make = (~txHash) => {
             value="TRANSACTION"
             weight=Text.Medium
             nowrap=true
-            color=Colors.mediumGray
+            color=Colors.gray7
             spacing={Text.Em(0.06)}
             block=true
           />
@@ -64,7 +64,7 @@ let make = (~txHash) => {
                  value={tx.success ? "SUCCESS" : "FAILED"}
                  weight=Text.Thin
                  nowrap=true
-                 color=Colors.mediumGray
+                 color=Colors.gray7
                  spacing={Text.Em(0.06)}
                  block=true
                />
@@ -75,7 +75,7 @@ let make = (~txHash) => {
                value="UNKNOWN"
                weight=Text.Thin
                nowrap=true
-               color=Colors.mediumGray
+               color=Colors.gray7
                spacing={Text.Em(0.06)}
                block=true
              />
@@ -90,7 +90,7 @@ let make = (~txHash) => {
         weight=Text.Bold
         nowrap=true
         code=true
-        color=Colors.mediumGray
+        color=Colors.gray7
       />
     </div>
     <Row>

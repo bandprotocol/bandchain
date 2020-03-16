@@ -34,10 +34,11 @@ func NewResult(
 	}
 }
 
-// DecodeResult is a helper function for decoding bytes to Result.
-func DecodeResult(b []byte) (Result, error) {
+// MustDecodeResult is a helper function for decoding bytes to Result. The function panics if the
+// given input is less than 40 bytes long.
+func MustDecodeResult(b []byte) Result {
 	if len(b) < 40 {
-		return Result{}, fmt.Errorf(fmt.Sprintf("Expect size of input to be at least 40 bytes but got %d bytes", len(b)))
+		panic(fmt.Errorf("Expect size of input to be at least 40 bytes but got %d bytes", len(b)))
 	}
 	return Result{
 		RequestTime:              int64(binary.BigEndian.Uint64(b[0:8])),
@@ -46,7 +47,7 @@ func DecodeResult(b []byte) (Result, error) {
 		SufficientValidatorCount: int64(binary.BigEndian.Uint64(b[24:32])),
 		ReportedValidatorsCount:  int64(binary.BigEndian.Uint64(b[32:40])),
 		Data:                     b[40:],
-	}, nil
+	}
 }
 
 // Bytes is a helper function for encoding Result to bytes.

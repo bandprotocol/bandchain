@@ -58,7 +58,7 @@ module Recent = {
         <Text value=title size=Text.Lg weight=Text.Semibold />
       </div>
       <VSpacing size=Spacing.md />
-      <Text block=true code=true value={hash->Hash.toHex} color=Colors.pink ellipsis=true />
+      <Text block=true code=true value={hash->Hash.toHex} color=Colors.pink6 ellipsis=true />
       <VSpacing size=Spacing.sm />
       <TimeAgos time=createdAt />
     </div>;
@@ -102,7 +102,7 @@ let make = () => <div />;
 //       <Col size=2.>
 //         {renderFeatured(recentScripts, 0, Colors.yellow, Css.hex("333333"))}
 //         {renderFeatured(recentScripts, 1, Colors.orange, Css.white)}
-//         {renderFeatured(recentScripts, 2, Colors.pink, Css.white)}
+//         {renderFeatured(recentScripts, 2, Colors.pink6, Css.white)}
 //       </Col>
 //       <HSpacing size=Spacing.xl />
 //       <Col size=5. alignSelf=Col.Start>
@@ -122,13 +122,13 @@ let make = () => <div />;
 /*<Col>
     <Text block=true value="358" size=Text.Xxl weight=Text.Bold />
     <VSpacing size=Spacing.sm />
-    <Text block=true value="DATA SCRIPTS" size=Text.Sm color=Colors.purple />
+    <Text block=true value="DATA SCRIPTS" size=Text.Sm color=Colors.purple7 />
     <VSpacing size=Spacing.xs />
-    <Text block=true value="CREATED" size=Text.Sm color=Colors.purple />
+    <Text block=true value="CREATED" size=Text.Sm color=Colors.purple7 />
     <VSpacing size=Spacing.sm />
     <VSpacing size=Spacing.xl />
     <Text block=true value="48" size=Text.Xxl weight=Text.Bold />
     <VSpacing size=Spacing.sm />
-    <Text block=true value="DATA PROVIDERS" size=Text.Sm color=Colors.purple />
+    <Text block=true value="DATA PROVIDERS" size=Text.Sm color=Colors.purple7 />
   </Col>*/
 // ->Belt.Option.getWithDefault(React.null);

@@ -40,7 +40,7 @@ let make = (~info, ~header, ~isLeft=true) => {
     <div className=Styles.headerContainer>
       <Text
         value=header
-        color=Colors.mediumGray
+        color=Colors.gray7
         size=Text.Sm
         weight=Text.Thin
         height={Text.Px(13)}
@@ -99,7 +99,7 @@ let make = (~info, ~header, ~isLeft=true) => {
            size=Text.Md
            weight=Text.Thin
            spacing={Text.Em(0.06)}
-           color=Colors.mediumGray
+           color=Colors.gray7
          />
        </div>
      | Fee(fee) =>

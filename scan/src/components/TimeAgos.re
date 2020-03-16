@@ -28,8 +28,10 @@ let make =
       ~size=Text.Sm,
       ~weight=Text.Regular,
       ~spacing=Text.Unset,
-      ~color=Colors.mediumGray,
+      ~color=Colors.gray7,
       ~code=false,
+      ~height=Text.Px(10),
+      ~upper=false,
     ) => {
   let (displayTime, setDisplayTime) =
     React.useState(_ => time->MomentRe.Moment.fromNow(~withoutSuffix=None));

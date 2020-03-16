@@ -17,7 +17,7 @@ module Styles = {
     style([
       width(`px(1)),
       height(`px(200)),
-      backgroundColor(Colors.mediumGray),
+      backgroundColor(Colors.gray7),
       marginLeft(`px(20)),
       opacity(0.3),
     ]);
@@ -130,7 +130,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
             spacing={Text.Em(0.06)}
             height={Text.Px(15)}
             nowrap=true
-            color=Colors.mediumGray
+            color=Colors.gray7
             block=true
           />
         </div>
@@ -159,5 +159,20 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
         </div>
       </Col>
     </Row>
+    <VSpacing size=Spacing.xl />
+    <Tab
+      tabs=[|
+        {
+          name: "TRANSACTIONS",
+          route: Route.AccountIndexPage(address, Route.AccountTransactions),
+        },
+        {name: "DELEGATIONS", route: Route.AccountIndexPage(address, Route.AccountDelegations)},
+      |]
+      currentRoute={Route.AccountIndexPage(address, hashtag)}>
+      {switch (hashtag) {
+       | AccountTransactions => <AccountIndexTransactions />
+       | AccountDelegations => <AccountIndexDelegations />
+       }}
+    </Tab>
   </div>;
 };

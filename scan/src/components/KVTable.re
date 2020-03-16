@@ -4,7 +4,7 @@ module Styles = {
   let thead =
     style([
       boxShadow(Shadow.box(~x=`px(0), ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, 0.05))),
-      backgroundColor(Colors.theadGray),
+      backgroundColor(Colors.gray3),
       marginBottom(`px(1)),
       display(`flex),
       alignItems(`center),
@@ -16,7 +16,7 @@ module Styles = {
   let tbody =
     style([
       boxShadow(Shadow.box(~x=`px(0), ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
-      backgroundColor(Colors.tbodyGray),
+      backgroundColor(Colors.gray1),
       marginBottom(`px(1)),
       display(`flex),
       alignItems(`center),
@@ -40,7 +40,7 @@ let make = (~header=["KEY", "VALUE"], ~kv) => {
             weight=Text.Semibold
             spacing={Text.Em(0.05)}
             height={Text.Px(18)}
-            color=Colors.mediumLightGray
+            color=Colors.gray6
           />
         </Col>
         <Col size=1.>
@@ -50,7 +50,7 @@ let make = (~header=["KEY", "VALUE"], ~kv) => {
             weight=Text.Semibold
             spacing={Text.Em(0.05)}
             height={Text.Px(18)}
-            color=Colors.mediumLightGray
+            color=Colors.gray6
           />
         </Col>
       </Row>

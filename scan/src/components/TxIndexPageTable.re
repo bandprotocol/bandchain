@@ -27,7 +27,7 @@ module CopyButton = {
   let make = (~data) => {
     <div
       className={style([
-        backgroundColor(Colors.fadeBlue),
+        backgroundColor(Colors.blue1),
         padding2(~h=`px(8), ~v=`px(4)),
         display(`flex),
         width(`px(103)),
@@ -38,7 +38,7 @@ module CopyButton = {
       onClick={_ => {Copy.copy(data |> JsBuffer.toHex(~with0x=false))}}>
       <img src=Images.copy className={Css.style([maxHeight(`px(12))])} />
       <HSpacing size=Spacing.sm />
-      <Text value="Copy as bytes" size=Text.Sm block=true color=Colors.brightBlue nowrap=true />
+      <Text value="Copy as bytes" size=Text.Sm block=true color=Colors.bandBlue nowrap=true />
     </div>;
   };
 };
@@ -93,16 +93,11 @@ let renderRequest = (msg, request: TxHook.Msg.Request.t) => {
     <Col> <HSpacing size=Spacing.md /> </Col>
     <Col size=0.4 alignSelf=Col.Start>
       <div className=Styles.badgeContainer>
-        <div className={Styles.badge(Colors.fadeOrange)}>
-          <Text
-            value="REQUEST DATA"
-            size=Text.Sm
-            spacing={Text.Em(0.07)}
-            color=Colors.darkOrange
-          />
+        <div className={Styles.badge(Colors.orange1)}>
+          <Text value="REQUEST DATA" size=Text.Sm spacing={Text.Em(0.07)} color=Colors.orange6 />
         </div>
         <VSpacing size=Spacing.md />
-        <div className={Styles.badge(Colors.fadeOrange)}>
+        <div className={Styles.badge(Colors.orange1)}>
           <TypeID.Request id={ID.Request.ID(request.id)} />
         </div>
       </div>
@@ -179,13 +174,8 @@ let renderReport = (msg, report: TxHook.Msg.Report.t) => {
     <Col> <HSpacing size=Spacing.md /> </Col>
     <Col size=0.4 alignSelf=Col.Start>
       <div className=Styles.badgeContainer>
-        <div className={Styles.badge(Colors.fadeOrange)}>
-          <Text
-            value="REPORT DATA"
-            size=Text.Sm
-            spacing={Text.Em(0.07)}
-            color=Colors.darkOrange
-          />
+        <div className={Styles.badge(Colors.orange1)}>
+          <Text value="REPORT DATA" size=Text.Sm spacing={Text.Em(0.07)} color=Colors.orange6 />
         </div>
       </div>
     </Col>
@@ -464,7 +454,7 @@ let make = (~messages: list(TxHook.Msg.t)) => {
             size=Text.Sm
             weight=Text.Semibold
             spacing={Text.Em(0.1)}
-            color=Colors.grayText
+            color=Colors.gray5
           />
         </Col>
         <Col size=0.6>
@@ -474,7 +464,7 @@ let make = (~messages: list(TxHook.Msg.t)) => {
               value="CREATOR"
               size=Text.Sm
               weight=Text.Semibold
-              color=Colors.grayText
+              color=Colors.gray5
               spacing={Text.Em(0.1)}
             />
           </div>
@@ -486,7 +476,7 @@ let make = (~messages: list(TxHook.Msg.t)) => {
               value="DETAIL"
               size=Text.Sm
               weight=Text.Semibold
-              color=Colors.grayText
+              color=Colors.gray5
               spacing={Text.Em(0.1)}
             />
           </div>

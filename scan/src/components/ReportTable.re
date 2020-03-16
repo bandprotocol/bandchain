@@ -18,22 +18,22 @@ let make = (~reports: list(RequestHook.Report.t)) => {
         <Col> <div className=Styles.txhash /> </Col>
         <Col size=1.0>
           <div className=TElement.Styles.hashContainer>
-            <Text block=true value="TX HASH" size=Text.Sm weight=Text.Bold color=Colors.grayText />
+            <Text block=true value="TX HASH" size=Text.Sm weight=Text.Bold color=Colors.gray5 />
           </div>
         </Col>
         <Col size=0.35>
-          <Text block=true value="BLOCK" size=Text.Sm weight=Text.Bold color=Colors.grayText />
+          <Text block=true value="BLOCK" size=Text.Sm weight=Text.Bold color=Colors.gray5 />
         </Col>
         <Col size=0.4>
-          <Text block=true value="AGE" size=Text.Sm weight=Text.Bold color=Colors.grayText />
+          <Text block=true value="AGE" size=Text.Sm weight=Text.Bold color=Colors.gray5 />
         </Col>
         <Col size=1.0>
-          <Text block=true value="FROM" size=Text.Sm weight=Text.Bold color=Colors.grayText />
+          <Text block=true value="FROM" size=Text.Sm weight=Text.Bold color=Colors.gray5 />
         </Col>
         <Col size=0.6> <div /> </Col>
         <Col size=0.9>
           <div className=TElement.Styles.feeContainer>
-            <Text block=true value="VALUE" size=Text.Sm weight=Text.Bold color=Colors.grayText />
+            <Text block=true value="VALUE" size=Text.Sm weight=Text.Bold color=Colors.gray5 />
           </div>
         </Col>
       </Row>

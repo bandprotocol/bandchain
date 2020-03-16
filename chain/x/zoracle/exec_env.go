@@ -59,7 +59,7 @@ func (env *ExecutionEnvironment) GetAggregateBlockTime() int64 {
 
 func (env *ExecutionEnvironment) GetValidatorAddress(validatorIndex int64) ([]byte, error) {
 	if validatorIndex < 0 || validatorIndex >= int64(len(env.request.RequestedValidators)) {
-		return []byte{}, errors.New("validator out of range")
+		return nil, errors.New("validator out of range")
 	}
 	return env.request.RequestedValidators[validatorIndex], nil
 }
@@ -85,7 +85,7 @@ func (env *ExecutionEnvironment) GetExternalData(
 	validatorIndex int64,
 ) ([]byte, error) {
 	if validatorIndex < 0 || validatorIndex >= int64(len(env.request.RequestedValidators)) {
-		return []byte{}, errors.New("validator out of range")
+		return nil, errors.New("validator out of range")
 	}
 	validatorAddress := env.request.RequestedValidators[validatorIndex]
 
