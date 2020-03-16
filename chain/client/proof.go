@@ -268,7 +268,7 @@ func GetBlockRelayProof(cliCtx context.CLIContext, blockId uint64) (BlockRelayPr
 		if ok {
 			leftMsgCount[lr[0]] = val + 1
 		} else {
-			leftMsgCount[lr[0]] = 0
+			leftMsgCount[lr[0]] = 1
 		}
 
 		lr1, err := hex.DecodeString(lr[1])
