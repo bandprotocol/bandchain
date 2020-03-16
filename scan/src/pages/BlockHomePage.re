@@ -74,18 +74,22 @@ let make = () => {
 
   let blocksOpt = BlockHook.latest(~limit, ~page, ());
   let infoOpt = React.useContext(GlobalContext.context);
-  let blockCountOpt = BlockHook.latest();
-  let numberOfPage =
+
+  let blocksCountOpt = BlockHook.latest();
+  let latestHeightOpt = {
+    let%Opt blocks = blocksCountOpt;
+    let%Opt latestBlock = blocks->Belt.List.get(0);
+    Some(latestBlock.height);
+  };
+  let pageCount =
     {
-      let%Opt blocks = blockCountOpt;
-      let%Opt latestBlock = blocks->Belt.List.get(0);
-      Some(Page.findNumberOfPage(latestBlock.height, limit));
+      let%Opt latestHeight = latestHeightOpt;
+      Some(Page.findNumberOfPage(latestHeight, limit));
     }
     |> Belt.Option.getWithDefault(_, 1);
 
   let blocks = blocksOpt->Belt.Option.getWithDefault([]);
 
-  let latestBlockOpt = blocks->Belt_List.get(0);
   let validators =
     switch (infoOpt) {
     | Some(info) => info.validators
@@ -113,8 +117,8 @@ let make = () => {
           <div className=Styles.seperatedLine />
           <Text
             value={
-              switch (latestBlockOpt) {
-              | Some(latestBlock) => latestBlock.height->Format.iPretty ++ " in total"
+              switch (latestHeightOpt) {
+              | Some(latestHeight) => latestHeight->Format.iPretty ++ " in total"
               | None => ""
               }
             }
@@ -159,7 +163,7 @@ let make = () => {
     </THead>
     {blocksWithProposers->Belt_List.toArray->Belt_Array.map(renderBody)->React.array}
     <VSpacing size=Spacing.lg />
-    <Pagination currentPage=page numberOfPage onChangePage={newPage => setPage(_ => newPage)} />
+    <Pagination currentPage=page pageCount onChangePage={newPage => setPage(_ => newPage)} />
     <VSpacing size=Spacing.lg />
   </div>;
 };
