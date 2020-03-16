@@ -285,12 +285,6 @@ func GetBlockRelayProof(cliCtx context.CLIContext, blockId uint64) (BlockRelayPr
 			v,
 			lr1,
 		}
-		// bp.Signatures = append(bp.Signatures, TMSignature{
-		// 	vote.Signature[:32],
-		// 	vote.Signature[32:],
-		// 	v,
-		// 	lr1,
-		// })
 	}
 	if len(addrs) == 0 {
 		return BlockRelayProof{}, fmt.Errorf("Too many invalid precommits")
