@@ -287,8 +287,8 @@ func TestReportSuccess(t *testing.T) {
 	ctx = ctx.WithBlockHeight(5)
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589800), 0))
 
-	msg := types.NewMsgReportData(1, refundGasPrice, []types.RawDataReport{
-		types.NewRawDataReport(42, []byte("data1")),
+	msg := types.NewMsgReportData(1, refundGasPrice, []types.RawDataReportWithID{
+		types.NewRawDataReportWithID(42, 0, []byte("data1")),
 	}, validatorAddress1)
 
 	got := handleMsgReportData(ctx, keeper, msg)
@@ -296,8 +296,8 @@ func TestReportSuccess(t *testing.T) {
 	list := keeper.GetPendingResolveList(ctx)
 	require.Equal(t, []types.RequestID{}, list)
 
-	msg = types.NewMsgReportData(1, refundGasPrice, []types.RawDataReport{
-		types.NewRawDataReport(42, []byte("data2")),
+	msg = types.NewMsgReportData(1, refundGasPrice, []types.RawDataReportWithID{
+		types.NewRawDataReportWithID(42, 0, []byte("data2")),
 	}, validatorAddress2)
 
 	got = handleMsgReportData(ctx, keeper, msg)
@@ -346,8 +346,8 @@ func TestReportAndGetRefund(t *testing.T) {
 	ctx = ctx.WithBlockHeight(5)
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589800), 0))
 
-	msg := types.NewMsgReportData(1, sdk.NewDecCoins(sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(10)))), []types.RawDataReport{
-		types.NewRawDataReport(42, []byte("data1")),
+	msg := types.NewMsgReportData(1, sdk.NewDecCoins(sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(10)))), []types.RawDataReportWithID{
+		types.NewRawDataReportWithID(42, 0, []byte("data1")),
 	}, validatorAddress1)
 
 	got := handleMsgReportData(ctx, keeper, msg)
@@ -355,7 +355,7 @@ func TestReportAndGetRefund(t *testing.T) {
 
 	// Should get refund back
 	balance = keeper.CoinKeeper.GetCoins(ctx, address1)
-	require.Equal(t, keep.NewUBandCoins(500000+128320), balance)
+	require.Equal(t, keep.NewUBandCoins(500000+128920), balance)
 }
 
 func TestReportFailed(t *testing.T) {
@@ -397,8 +397,8 @@ func TestReportFailed(t *testing.T) {
 
 	refundGasPrice, _ := sdk.ParseDecCoins("1.5uband")
 
-	msg := types.NewMsgReportData(1, refundGasPrice, []types.RawDataReport{
-		types.NewRawDataReport(41, []byte("data1")),
+	msg := types.NewMsgReportData(1, refundGasPrice, []types.RawDataReportWithID{
+		types.NewRawDataReportWithID(41, 0, []byte("data1")),
 	}, validatorAddress1)
 
 	// Test only 1 failed case, other case tested in keeper/report_test.go
@@ -432,8 +432,8 @@ func TestEndBlock(t *testing.T) {
 
 	handleMsgRequestData(ctx, keeper, msg)
 
-	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress1, []byte("answer1"))
-	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress2, []byte("answer2"))
+	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress1, types.NewRawDataReport(0, []byte("answer1")))
+	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress2, types.NewRawDataReport(0, []byte("answer2")))
 
 	keeper.SetPendingResolveList(ctx, []types.RequestID{1})
 
@@ -489,8 +489,8 @@ func TestEndBlockExecuteFailedIfExecuteGasLessThanGasUsed(t *testing.T) {
 
 	handleMsgRequestData(ctx, keeper, msg)
 
-	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress1, []byte("answer1"))
-	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress2, []byte("answer2"))
+	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress1, types.NewRawDataReport(0, []byte("answer1")))
+	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress2, types.NewRawDataReport(0, []byte("answer2")))
 
 	keeper.SetPendingResolveList(ctx, []types.RequestID{1})
 
@@ -534,11 +534,11 @@ func TestSkipInvalidExecuteGas(t *testing.T) {
 	msg = types.NewMsgRequestData(1, calldata, 2, 2, 100, 1000000, 50000, sender)
 	handleMsgRequestData(ctx, keeper, msg)
 
-	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress1, []byte("answer1"))
-	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress2, []byte("answer2"))
+	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress1, types.NewRawDataReport(0, []byte("answer1")))
+	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress2, types.NewRawDataReport(0, []byte("answer2")))
 
-	keeper.SetRawDataReport(ctx, 2, 1, validatorAddress1, []byte("answer1"))
-	keeper.SetRawDataReport(ctx, 2, 1, validatorAddress2, []byte("answer2"))
+	keeper.SetRawDataReport(ctx, 2, 1, validatorAddress1, types.NewRawDataReport(0, []byte("answer1")))
+	keeper.SetRawDataReport(ctx, 2, 1, validatorAddress2, types.NewRawDataReport(0, []byte("answer2")))
 
 	keeper.SetEndBlockExecuteGasLimit(ctx, 75000)
 
@@ -590,8 +590,8 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 			types.NewMsgRequestData(scriptID, calldata, 2, 2, 100, 2000, 2500, sender),
 		)
 
-		keeper.SetRawDataReport(ctx, i, 1, validatorAddress1, []byte("answer1"))
-		keeper.SetRawDataReport(ctx, i, 1, validatorAddress2, []byte("answer2"))
+		keeper.SetRawDataReport(ctx, i, 1, validatorAddress1, types.NewRawDataReport(0, []byte("answer1")))
+		keeper.SetRawDataReport(ctx, i, 1, validatorAddress2, types.NewRawDataReport(0, []byte("answer2")))
 		pendingList = append(pendingList, i)
 	}
 
@@ -671,8 +671,8 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 		require.Equal(t, types.Open, actualRequest.ResolveStatus)
 	}
 
-	keeper.SetRawDataReport(ctx, 11, 1, validatorAddress1, []byte("answer1"))
-	keeper.SetRawDataReport(ctx, 11, 1, validatorAddress2, []byte("answer2"))
+	keeper.SetRawDataReport(ctx, 11, 1, validatorAddress1, types.NewRawDataReport(0, []byte("answer1")))
+	keeper.SetRawDataReport(ctx, 11, 1, validatorAddress2, types.NewRawDataReport(0, []byte("answer2")))
 	keeper.SetPendingResolveList(ctx, []types.RequestID{10, 11})
 
 	got = handleEndBlock(ctx, keeper)
@@ -719,8 +719,8 @@ func TestEndBlockInsufficientExecutionConsumeEndBlockGas(t *testing.T) {
 			types.NewMsgRequestData(scriptID, calldata, 2, 2, 100, 2000, executeGasList[i-1], sender),
 		)
 
-		keeper.SetRawDataReport(ctx, i, 1, validatorAddress1, []byte("answer1"))
-		keeper.SetRawDataReport(ctx, i, 1, validatorAddress2, []byte("answer2"))
+		keeper.SetRawDataReport(ctx, i, 1, validatorAddress1, types.NewRawDataReport(0, []byte("answer1")))
+		keeper.SetRawDataReport(ctx, i, 1, validatorAddress2, types.NewRawDataReport(0, []byte("answer2")))
 		pendingList = append(pendingList, i)
 	}
 
