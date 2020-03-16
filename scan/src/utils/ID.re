@@ -12,7 +12,7 @@ module RawDataSourceID = {
 
 module RawOracleScriptID = {
   let prefix = "#O";
-  let color = Colors.brightRed;
+  let color = Colors.red4;
   let route = (id: int) => Route.HomePage;
 };
 
@@ -24,7 +24,7 @@ module RawRequestID = {
 
 module RawBlock = {
   let prefix = "#B";
-  let color = Colors.brightBlue;
+  let color = Colors.bandBlue;
   let route = height => Route.BlockIndexPage(height);
 };
 

@@ -19,7 +19,7 @@ module Styles = {
 
   let oval = (textColor, bgColor) =>
     style([
-      backgroundColor(Colors.lightBlue),
+      backgroundColor(Colors.blue1),
       borderRadius(`px(15)),
       color(textColor),
       backgroundColor(bgColor),
@@ -29,7 +29,7 @@ module Styles = {
   let msgAmount =
     style([
       borderRadius(`percent(50.)),
-      backgroundColor(Colors.lightGray),
+      backgroundColor(Colors.gray4),
       marginLeft(`px(5)),
       display(`inlineFlex),
       alignItems(`center),
@@ -40,26 +40,14 @@ module Styles = {
 
   let txTypeMapping = msg => {
     switch (msg) {
-    | TxHook.Msg.CreateDataSource(_) => (
-        "CREATE DATA SOURCE",
-        Colors.darkGreen,
-        Colors.lightGreen,
-      )
-    | TxHook.Msg.EditDataSource(_) => ("EDIT DATA SOURCE", Colors.darkGreen, Colors.lightGreen)
-    | TxHook.Msg.CreateOracleScript(_) => (
-        "CREATE ORACLE SCRIPT",
-        Colors.darkGreen,
-        Colors.lightGreen,
-      )
-    | TxHook.Msg.EditOracleScript(_) => (
-        "EDIT ORACLE SCRIPT",
-        Colors.darkGreen,
-        Colors.lightGreen,
-      )
-    | TxHook.Msg.Request(_) => ("DATA REQUEST", Colors.darkBlue, Colors.lightBlue)
-    | TxHook.Msg.Send(_) => ("SEND TOKEN", Colors.purple, Colors.lightPurple)
-    | TxHook.Msg.Report(_) => ("DATA REPORT", Colors.darkIndigo, Colors.lightIndigo)
-    | Unknown => ("Unknown", Colors.darkGrayText, Colors.mediumGray)
+    | TxHook.Msg.CreateDataSource(_) => ("CREATE DATA SOURCE", Colors.green7, Colors.green1)
+    | TxHook.Msg.EditDataSource(_) => ("EDIT DATA SOURCE", Colors.green7, Colors.green1)
+    | TxHook.Msg.CreateOracleScript(_) => ("CREATE ORACLE SCRIPT", Colors.green7, Colors.green1)
+    | TxHook.Msg.EditOracleScript(_) => ("EDIT ORACLE SCRIPT", Colors.green7, Colors.green1)
+    | TxHook.Msg.Request(_) => ("DATA REQUEST", Colors.blue4, Colors.blue1)
+    | TxHook.Msg.Send(_) => ("SEND TOKEN", Colors.purple6, Colors.purple1)
+    | TxHook.Msg.Report(_) => ("DATA REPORT", Colors.orange6, Colors.orange1)
+    | Unknown => ("Unknown", Colors.gray6, Colors.gray7)
     };
   };
 };

@@ -6,7 +6,7 @@ module Styles = {
       boxShadow(Shadow.box(~x=`px(0), ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, 0.05))),
       backgroundColor(white),
       marginBottom(`px(1)),
-      hover([backgroundColor(Colors.lighterPurple)]),
+      hover([backgroundColor(Colors.blueGray1)]),
       display(`flex),
       alignItems(`center),
       padding2(~v=`px(10), ~h=`px(0)),

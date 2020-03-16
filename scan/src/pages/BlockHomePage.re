@@ -13,7 +13,7 @@ module Styles = {
       height(`px(1)),
       marginLeft(`px(10)),
       marginRight(`px(10)),
-      backgroundColor(Colors.mediumGray),
+      backgroundColor(Colors.gray7),
     ]);
 
   let fullWidth = style([width(`percent(100.0)), display(`flex)]);
@@ -98,7 +98,7 @@ let make = () => {
             height={Text.Px(15)}
             nowrap=true
             block=true
-            color=Colors.mediumGray
+            color=Colors.gray7
           />
           <div className=Styles.seperatedLine />
           <Text
@@ -111,7 +111,7 @@ let make = () => {
             size=Text.Md
             weight=Text.Thin
             spacing={Text.Em(0.06)}
-            color=Colors.mediumGray
+            color=Colors.gray7
             nowrap=true
           />
         </div>
@@ -136,7 +136,7 @@ let make = () => {
                    value=title
                    size=Text.Sm
                    weight=Text.Semibold
-                   color=Colors.mediumLightGray
+                   color=Colors.gray6
                    spacing={Text.Em(0.1)}
                  />
                </div>

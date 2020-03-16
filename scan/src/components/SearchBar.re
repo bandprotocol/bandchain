@@ -40,10 +40,10 @@ module Styles = {
       right(`px(0)),
       width(`px(110)),
       height(`percent(100.)),
-      backgroundColor(Colors.yellow),
+      backgroundColor(Colors.yellow1),
       borderTopRightRadius(`px(4)),
       borderBottomRightRadius(`px(4)),
-      border(`px(1), `solid, Colors.yellow),
+      border(`px(1), `solid, Colors.yellow2),
       fontSize(`px(14)),
       fontWeight(`medium),
       color(rgba(51, 51, 51, 0.54)),
@@ -94,7 +94,7 @@ module SearchResults = {
         searchTerm->isValidAddress
           ? <>
               <VSpacing size={`px(-2)} />
-              <Text value="ADDRESS" size=Text.Xs color=Colors.grayText weight=Text.Semibold />
+              <Text value="ADDRESS" size=Text.Xs color=Colors.gray5 weight=Text.Semibold />
               <VSpacing size=Spacing.xs />
               <Text value={searchTerm ++ "1f2bce"} weight=Text.Bold size=Text.Lg block=true />
               <VSpacing size=Spacing.sm />
@@ -103,7 +103,7 @@ module SearchResults = {
         searchTerm->isValidTx
           ? <>
               <VSpacing size={`px(-2)} />
-              <Text value="TRANSACTION" size=Text.Xs color=Colors.grayText weight=Text.Semibold />
+              <Text value="TRANSACTION" size=Text.Xs color=Colors.gray5 weight=Text.Semibold />
               <VSpacing size=Spacing.xs />
               <Text value={searchTerm ++ "dd92b"} weight=Text.Bold size=Text.Lg block=true />
               <VSpacing size=Spacing.sm />
