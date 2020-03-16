@@ -55,6 +55,7 @@ module Request = {
   type t = {
     id: int,
     oracleScriptID: int,
+    oracleScriptName: string,
     calldata: JsBuffer.t,
     requestedValidators: list(Address.t),
     sufficientValidatorCount: int,
@@ -80,6 +81,7 @@ module Request = {
     JsonUtils.Decode.{
       id: json |> field("id", intstr),
       oracleScriptID: json |> field("oracleScriptID", intstr),
+      oracleScriptName: "Mean Crypto Price",
       calldata: json |> field("calldata", string) |> JsBuffer.fromBase64,
       requestedValidators:
         json
