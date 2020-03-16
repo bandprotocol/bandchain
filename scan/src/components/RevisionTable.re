@@ -5,6 +5,8 @@ module Styles = {
 
   let fixWidth = style([width(`px(300))]);
 
+  let clickable = style([cursor(`pointer)]);
+
   let icon = style([width(`px(80)), height(`px(80))]);
   let iconWrapper =
     style([
@@ -74,7 +76,9 @@ let make = (~revisions: list(DataSourceHook.DataSource.revision_t)) => {
                     </Col>
                     <Col size=1.5> <TypeID.Block id={ID.Block.ID(height)} /> </Col>
                     <Col size=3.5>
-                      <div className=Styles.fixWidth>
+                      <div
+                        className={Css.merge([Styles.fixWidth, Styles.clickable])}
+                        onClick={_ => Route.redirect(Route.TxIndexPage(txHash))}>
                         <Text
                           block=true
                           value={txHash |> Hash.toHex(~upper=true)}
