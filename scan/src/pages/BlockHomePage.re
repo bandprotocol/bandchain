@@ -84,7 +84,7 @@ let make = () => {
   let pageCount =
     {
       let%Opt latestHeight = latestHeightOpt;
-      Some(Page.findNumberOfPage(latestHeight, limit));
+      Some(Page.getPageCount(latestHeight, limit));
     }
     |> Belt.Option.getWithDefault(_, 1);
 
@@ -163,7 +163,7 @@ let make = () => {
     </THead>
     {blocksWithProposers->Belt_List.toArray->Belt_Array.map(renderBody)->React.array}
     <VSpacing size=Spacing.lg />
-    <Pagination currentPage=page pageCount onChangePage={newPage => setPage(_ => newPage)} />
+    <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
     <VSpacing size=Spacing.lg />
   </div>;
 };

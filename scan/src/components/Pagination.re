@@ -50,15 +50,15 @@ module ClickableSymbol = {
 };
 
 [@react.component]
-let make = (~currentPage, ~pageCount, ~onChangePage: int => unit) => {
+let make = (~currentPage, ~pageCount, ~onPageChange: int => unit) => {
   <div className=Styles.container>
     <div className=Styles.innerContainer>
-      <ClickableText isFirst=true onClick={_ => onChangePage(1)} active={currentPage != 1} />
+      <ClickableText isFirst=true onClick={_ => onPageChange(1)} active={currentPage != 1} />
       <HSpacing size=Spacing.lg />
       <ClickableSymbol
         isPrevious=true
         active={currentPage != 1}
-        onClick={_ => onChangePage(currentPage < 1 ? 1 : currentPage - 1)}
+        onClick={_ => onPageChange(currentPage < 1 ? 1 : currentPage - 1)}
       />
       <HSpacing size=Spacing.md />
       <Text value="Page" spacing={Text.Em(0.03)} />
@@ -72,13 +72,13 @@ let make = (~currentPage, ~pageCount, ~onChangePage: int => unit) => {
       <ClickableSymbol
         isPrevious=false
         active={currentPage != pageCount}
-        onClick={_ => onChangePage(currentPage > pageCount ? pageCount : currentPage + 1)}
+        onClick={_ => onPageChange(currentPage > pageCount ? pageCount : currentPage + 1)}
       />
       <HSpacing size=Spacing.lg />
       <ClickableText
         isFirst=false
         active={currentPage != pageCount}
-        onClick={_ => onChangePage(pageCount)}
+        onClick={_ => onPageChange(pageCount)}
       />
     </div>
   </div>;
