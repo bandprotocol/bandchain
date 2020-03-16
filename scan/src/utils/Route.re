@@ -126,38 +126,29 @@ let toString =
 
 let redirect = (route: t) => ReasonReactRouter.push(route |> toString);
 
-let rec prefixMatch = (prefix: string, str: string) => {
-  let prefixLen = prefix |> String.length;
-  let strLen = str |> String.length;
-
-  switch (prefixLen) {
-  | 0 => true
-  | _ =>
-    prefixLen <= strLen && prefix.[0] == str.[0]
-      ? false
-      : prefixMatch(prefix |> String.sub(_, 1, prefixLen), str |> String.sub(_, 1, strLen))
-  };
-};
-
 let search = (str: string) => {
   let len = str |> String.length;
-  let capStr = str |> String.capitalize;
-
+  let capStr = str |> String.capitalize_ascii;
+  // let test = str |> Js_Re.startsWith("O");
   let blockID =
-    capStr |> prefixMatch("O") ? str |> String.sub(_, 1, len) |> int_of_string_opt : None;
+    capStr |> Js.String.startsWith("B")
+      ? str |> String.sub(_, 1, len - 1) |> int_of_string_opt : None;
 
   let dataSourceID =
-    capStr |> prefixMatch("D") ? str |> String.sub(_, 1, len) |> int_of_string_opt : None;
+    capStr |> Js.String.startsWith("D")
+      ? str |> String.sub(_, 1, len - 1) |> int_of_string_opt : None;
 
   let requestID =
-    capStr |> prefixMatch("R") ? str |> String.sub(_, 1, len) |> int_of_string_opt : None;
+    capStr |> Js.String.startsWith("R")
+      ? str |> String.sub(_, 1, len - 1) |> int_of_string_opt : None;
 
   let oracleScriptID =
-    capStr |> prefixMatch("O") ? str |> String.sub(_, 1, len) |> int_of_string_opt : None;
+    capStr |> Js.String.startsWith("O")
+      ? str |> String.sub(_, 1, len - 1) |> int_of_string_opt : None;
 
-  let isValidatorIndexPage = str |> prefixMatch("bandvaloper");
+  let isValidatorIndexPage = str |> Js.String.startsWith("bandvaloper");
 
-  let isAccountIndexPage = str |> prefixMatch("band");
+  let isAccountIndexPage = str |> Js.String.startsWith("band");
   switch (str |> int_of_string_opt) {
   | Some(id) => BlockIndexPage(id)
   | None =>
@@ -165,7 +156,7 @@ let search = (str: string) => {
     | Some(id) => BlockIndexPage(id)
     | None =>
       switch (len) {
-      | 32 => TxIndexPage(str |> Hash.fromHex)
+      | 64 => TxIndexPage(str |> Hash.fromHex)
       | _ =>
         switch (dataSourceID) {
         | Some(id) => DataSourceIndexPage(id, DataSourceExecute)
@@ -177,9 +168,9 @@ let search = (str: string) => {
             | Some(id) => OracleScriptIndexPage(id, OracleScriptExecute)
             | _ =>
               isValidatorIndexPage
-                ? ValidatorIndexPage(Address.Address(str), ProposedBlocks)
+                ? ValidatorIndexPage(str |> Address.fromBech32, Delegators)
                 : isAccountIndexPage
-                    ? AccountIndexPage(Address.Address(str), AccountTransactions) : NotFound
+                    ? AccountIndexPage(str |> Address.fromBech32, AccountTransactions) : NotFound
             }
           }
         }
