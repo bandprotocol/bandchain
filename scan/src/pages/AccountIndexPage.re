@@ -159,5 +159,20 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
         </div>
       </Col>
     </Row>
+    <VSpacing size=Spacing.xl />
+    <Tab
+      tabs=[|
+        {
+          name: "TRANSACTIONS",
+          route: Route.AccountIndexPage(address, Route.AccountTransactions),
+        },
+        {name: "DELEGATIONS", route: Route.AccountIndexPage(address, Route.AccountDelegations)},
+      |]
+      currentRoute={Route.AccountIndexPage(address, hashtag)}>
+      {switch (hashtag) {
+       | AccountTransactions => <AccountIndexTransactions />
+       | AccountDelegations => <AccountIndexDelegations />
+       }}
+    </Tab>
   </div>;
 };
