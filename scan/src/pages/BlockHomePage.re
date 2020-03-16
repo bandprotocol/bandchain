@@ -69,9 +69,19 @@ let renderBody = ((block, proposer): (BlockHook.Block.t, option(ValidatorHook.Va
 
 [@react.component]
 let make = () => {
-  let (limit, setLimit) = React.useState(_ => 10);
-  let blocksOpt = BlockHook.latest(~limit, ());
+  let (page, setPage) = React.useState(_ => 1);
+  let limit = 10;
+
+  let blocksOpt = BlockHook.latest(~limit, ~page, ());
   let infoOpt = React.useContext(GlobalContext.context);
+  let blockCountOpt = BlockHook.latest();
+  let numberOfPage =
+    {
+      let%Opt blocks = blockCountOpt;
+      let%Opt latestBlock = blocks->Belt.List.get(0);
+      Some(Page.findNumberOfPage(latestBlock.height, limit));
+    }
+    |> Belt.Option.getWithDefault(_, 1);
 
   let blocks = blocksOpt->Belt.Option.getWithDefault([]);
 
@@ -148,5 +158,8 @@ let make = () => {
       </Row>
     </THead>
     {blocksWithProposers->Belt_List.toArray->Belt_Array.map(renderBody)->React.array}
+    <VSpacing size=Spacing.lg />
+    <Pagination currentPage=page numberOfPage onChangePage={newPage => setPage(_ => newPage)} />
+    <VSpacing size=Spacing.lg />
   </div>;
 };
