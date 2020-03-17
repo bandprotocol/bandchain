@@ -150,7 +150,7 @@ let search = (str: string) => {
       } else if (capStr |> Js.String.startsWith("O")) {
         let%Opt oracleScriptID = str |> String.sub(_, 1, len - 1) |> int_of_string_opt;
         Some(OracleScriptIndexPage(oracleScriptID, OracleScriptExecute));
-      } else if (len == 64) {
+      } else if (len == 64 || str |> Js.String.startsWith("0x") && len == 66) {
         Some(TxIndexPage(str |> Hash.fromHex));
       } else {
         None;
