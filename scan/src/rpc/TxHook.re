@@ -390,12 +390,14 @@ module Tx = {
 module Txs = {
   type t = {
     totalCount: int,
+    pageCount: int,
     txs: list(Tx.t),
   };
 
   let decodeTxs = json =>
     JsonUtils.Decode.{
       totalCount: json |> field("total_count", intstr),
+      pageCount: json |> field("page_total", intstr),
       txs: json |> field("txs", list(Tx.decodeTx)),
     };
 };
