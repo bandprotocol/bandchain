@@ -246,7 +246,7 @@ let resultRender = result => {
                    />
                  </div>
                </div>
-               <VSpacing size=Spacing.sm />
+               <VSpacing size=Spacing.md />
                <div className={Styles.hFlex(`auto)}>
                  <HSpacing size=Spacing.lg />
                  <div className={Styles.vFlex(`px(220), `auto)} />
