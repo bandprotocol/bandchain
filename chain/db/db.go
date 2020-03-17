@@ -11,11 +11,6 @@ type BandDB struct {
 	db *gorm.DB
 }
 
-type Event struct {
-	gorm.Model
-	Name string
-}
-
 func NewDB(dialect, path string) (*BandDB, error) {
 	db, err := gorm.Open(dialect, path)
 	db.CreateTable(Event{})
@@ -28,9 +23,16 @@ func NewDB(dialect, path string) (*BandDB, error) {
 
 func (b *BandDB) HandleEvent(eventName string, attributes map[string]string) {
 	switch eventName {
+	// Just proof of concept
 	case "message":
 		{
-			b.db.Create(&Event{Name: attributes["action"]})
+			// Event message split events on report event eg.
+			// message map[action:report]
+			// message map[sender:band17xpfvakm2amg962yls6f84z3kell8c5lfkrzn4]
+			action, ok := attributes["action"]
+			if ok {
+				b.handleMessageEvent(action)
+			}
 		}
 	default:
 		// TODO: Better logging
