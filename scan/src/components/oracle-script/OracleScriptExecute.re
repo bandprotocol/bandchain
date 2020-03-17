@@ -265,7 +265,7 @@ let resultRender = result => {
                  />
                </div>
                <div className={Styles.resultWrapper(`px(660), `px(40), `px(0), `auto)}>
-                 <ProgressBar reportedValidators=1 minimumValidators=2 totalValidators=4 />
+                 <ProgressBar reportedValidators=3 minimumValidators=4 totalValidators=5 />
                </div>
              </div>}
       </div>
