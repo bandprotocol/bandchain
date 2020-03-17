@@ -47,6 +47,15 @@ module Styles = {
       borderRight(`px(6), `solid, Colors.transparent),
       borderTop(`px(6), `solid, Colors.bandBlue),
     ]);
+
+  let lowerText =
+    style([
+      position(`absolute),
+      display(`flex),
+      width(`percent(100.)),
+      justifyContent(`center),
+      top(`px(10)),
+    ]);
 };
 
 [@react.component]
@@ -60,13 +69,18 @@ let make = (~reportedValidators, ~minimumValidators, ~totalValidators) => {
     <div className={Styles.withWidth(120, minimumPercentage)}>
       <Text value={"minimum: " ++ (minimumValidators |> Format.iPretty)} color=Colors.bandBlue />
       <div className=Styles.arrowDown />
-      <VSpacing size={`px(8)} />
-      <Text
-        value={
-          "Pending " ++ (minimumValidators - reportedValidators |> Format.iPretty) ++ " Validators"
-        }
-        color=Colors.gray7
-      />
     </div>
+    {reportedValidators < minimumValidators
+       ? <div className=Styles.lowerText>
+           <Text
+             value={
+               "Pending "
+               ++ (minimumValidators - reportedValidators |> Format.iPretty)
+               ++ " Validators"
+             }
+             color=Colors.gray7
+           />
+         </div>
+       : React.null}
   </div>;
 };
