@@ -5,10 +5,6 @@ DIR=`dirname "$0"`
 # remove old genesis
 rm -rf ~/.band*
 
-mkdir ~/.banddb
-
-sqlite3 main.db
-
 # initial new node
 bandd init validator --chain-id bandchain --zoracle band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs
 
