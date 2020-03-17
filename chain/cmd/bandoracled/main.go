@@ -173,7 +173,7 @@ func handleRequest(requestID zoracle.RequestID) {
 				return
 			}
 
-			result, err := byteexec.RunOnDocker(
+			result, err := byteexec.RunOnAWSLambda(
 				dataSource.Executable,
 				viper.IsSet(flagSandboxMode),
 				time.Duration(viper.GetInt(flagMaxQueryDuration))*time.Second,
