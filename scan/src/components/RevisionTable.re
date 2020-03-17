@@ -3,9 +3,7 @@ module Styles = {
 
   let tableWrapper = style([padding2(~v=`px(20), ~h=`px(15))]);
 
-  let fixWidth = style([width(`px(300))]);
-
-  let clickable = style([cursor(`pointer)]);
+  let txContainer = style([width(`px(300)), cursor(`pointer)]);
 
   let icon = style([width(`px(80)), height(`px(80))]);
   let iconWrapper =
@@ -77,7 +75,7 @@ let make = (~revisions: list(DataSourceHook.DataSource.revision_t)) => {
                     <Col size=1.5> <TypeID.Block id={ID.Block.ID(height)} /> </Col>
                     <Col size=3.5>
                       <div
-                        className={Css.merge([Styles.fixWidth, Styles.clickable])}
+                        className=Styles.txContainer
                         onClick={_ => Route.redirect(Route.TxIndexPage(txHash))}>
                         <Text
                           block=true
