@@ -28,7 +28,7 @@ type t =
   | HomePage
   | DataSourceHomePage
   | DataSourceIndexPage(int, data_source_tab_t)
-  | ScriptHomePage
+  | OracleScriptHomePage
   | OracleScriptIndexPage(int, oracle_script_tab_t)
   | TxHomePage
   | TxIndexPage(Hash.t)
@@ -50,7 +50,7 @@ let fromUrl = (url: ReasonReactRouter.url) =>
     DataSourceIndexPage(dataSourceID |> int_of_string, DataSourceRevisions)
   | (["data-source", dataSourceID], _) =>
     DataSourceIndexPage(dataSourceID |> int_of_string, DataSourceExecute)
-  | (["scripts"], _) => ScriptHomePage
+  | (["oracle-scripts"], _) => OracleScriptHomePage
   | (["oracle-script", oracleScriptID], "code") =>
     OracleScriptIndexPage(oracleScriptID |> int_of_string, OracleScriptCode)
   | (["oracle-script", oracleScriptID], "requests") =>
@@ -89,7 +89,7 @@ let toString =
   | DataSourceIndexPage(dataSourceID, DataSourceCode) => {j|/data-source/$dataSourceID#code|j}
   | DataSourceIndexPage(dataSourceID, DataSourceRequests) => {j|/data-source/$dataSourceID#requests|j}
   | DataSourceIndexPage(dataSourceID, DataSourceRevisions) => {j|/data-source/$dataSourceID#revisions|j}
-  | ScriptHomePage => "/scripts"
+  | OracleScriptHomePage => "/oracle-scripts"
   | OracleScriptIndexPage(oracleScriptID, OracleScriptExecute) => {j|/oracle-script/$oracleScriptID|j}
   | OracleScriptIndexPage(oracleScriptID, OracleScriptCode) => {j|/oracle-script/$oracleScriptID#code|j}
   | OracleScriptIndexPage(oracleScriptID, OracleScriptRequests) => {j|/oracle-script/$oracleScriptID#requests|j}
