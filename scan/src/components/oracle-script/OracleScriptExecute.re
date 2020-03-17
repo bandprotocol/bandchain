@@ -35,7 +35,7 @@ module Styles = {
       cursor(isLoading ? `auto : `pointer),
       padding2(~v=Css.px(10), ~h=Css.px(10)),
       whiteSpace(`nowrap),
-      outline(`px(0), `none, white),
+      outline(`zero, `none, white),
       boxShadow(
         isLoading
           ? `none : Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.1)),
@@ -63,7 +63,7 @@ module Styles = {
       height(h),
       display(`flex),
       flexDirection(`column),
-      padding2(paddingV, `px(0)),
+      padding2(paddingV, `zero),
       justifyContent(`center),
       backgroundColor(Colors.white),
       borderRadius(`px(4)),
@@ -150,7 +150,7 @@ let resultRender = result => {
   | Error(err) =>
     <>
       <VSpacing size=Spacing.lg />
-      <div className={Styles.resultWrapper(`percent(100.), `px(90), `px(0), `scroll)}>
+      <div className={Styles.resultWrapper(`percent(100.), `px(90), `zero, `scroll)}>
         <Text value=err />
       </div>
     </>
@@ -165,7 +165,7 @@ let resultRender = result => {
       <div className={Styles.resultWrapper(`percent(100.), `auto, `px(30), `auto)}>
         <div className={Styles.hFlex(`auto)}>
           <HSpacing size=Spacing.lg />
-          <div className={Styles.resultWrapper(`px(220), `px(12), `px(0), `auto)}>
+          <div className={Styles.resultWrapper(`px(220), `px(12), `zero, `auto)}>
             <Text value="EXIT STATUS" size=Text.Sm color=Colors.gray6 weight=Text.Semibold />
           </div>
           <Text value="0" />
@@ -173,7 +173,7 @@ let resultRender = result => {
         <VSpacing size=Spacing.lg />
         <div className={Styles.hFlex(`auto)}>
           <HSpacing size=Spacing.lg />
-          <div className={Styles.resultWrapper(`px(220), `px(12), `px(0), `auto)}>
+          <div className={Styles.resultWrapper(`px(220), `px(12), `zero, `auto)}>
             <Text value="REQUEST ID" size=Text.Sm color=Colors.gray6 weight=Text.Semibold />
           </div>
           <TypeID.Request id={ID.Request.ID(8)} />
@@ -181,7 +181,7 @@ let resultRender = result => {
         <VSpacing size=Spacing.lg />
         <div className={Styles.hFlex(`auto)}>
           <HSpacing size=Spacing.lg />
-          <div className={Styles.resultWrapper(`px(220), `px(12), `px(0), `auto)}>
+          <div className={Styles.resultWrapper(`px(220), `px(12), `zero, `auto)}>
             <Text value="TX HASH" size=Text.Sm color=Colors.gray6 weight=Text.Semibold />
           </div>
           <TxLink
@@ -257,7 +257,7 @@ let resultRender = result => {
              </>
            : <div className={Styles.hFlex(`auto)}>
                <HSpacing size=Spacing.lg />
-               <div className={Styles.resultWrapper(`px(220), `px(12), `px(0), `auto)}>
+               <div className={Styles.resultWrapper(`px(220), `px(12), `zero, `auto)}>
                  <Text
                    value="WAITING FOR OUTPUT AND PROOF"
                    size=Text.Sm
@@ -265,7 +265,7 @@ let resultRender = result => {
                    weight=Text.Semibold
                  />
                </div>
-               <div className={Styles.resultWrapper(`px(660), `px(40), `px(0), `auto)}>
+               <div className={Styles.resultWrapper(`px(660), `px(40), `zero, `auto)}>
                  <ProgressBar reportedValidators=3 minimumValidators=4 totalValidators=5 />
                </div>
              </div>}
