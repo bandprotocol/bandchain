@@ -82,7 +82,7 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) => {
          <VSpacing size=Spacing.xl />
          <Row>
            <Col size=1.>
-             <InfoHL header="OWNER" info={InfoHL.Address(oracleScript.owner)} />
+             <InfoHL header="OWNER" info={InfoHL.Address(oracleScript.owner, 430)} />
            </Col>
            <Col size=0.8>
              <InfoHL
@@ -116,7 +116,7 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) => {
             | OracleScriptExecute => <OracleScriptExecute code={oracleScript.code} />
             | OracleScriptCode => <OracleScriptCode />
             | OracleScriptRequests => <OracleScriptRequestTable />
-            | OracleScriptRevisions => <RevisionTable />
+            | OracleScriptRevisions => <RevisionTable revisions=[] />
             }}
          </Tab>
        </>
