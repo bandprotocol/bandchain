@@ -7,14 +7,14 @@ import (
 )
 
 type ReportDetail struct {
-	Reporter sdk.ValAddress        `json:"reporter"`
-	Value    []types.RawDataReport `json:"value"`
-	Tx       TxDetail              `json:"tx,omitempty"`
+	Reporter sdk.ValAddress              `json:"reporter"`
+	Value    []types.RawDataReportWithID `json:"value"`
+	Tx       TxDetail                    `json:"tx,omitempty"`
 }
 
 type RequestRESTInfo struct {
-	ID                       types.RequestID                                `json:"id"`
-	OracleScriptID           types.OracleScriptID                                `json:"oracleScriptID"`
+	ID                       types.RequestID                      `json:"id"`
+	OracleScriptID           types.OracleScriptID                 `json:"oracleScriptID"`
 	Calldata                 []byte                               `json:"calldata"`
 	RequestedValidators      []sdk.ValAddress                     `json:"requestedValidators"`
 	SufficientValidatorCount int64                                `json:"sufficientValidatorCount"`
