@@ -12,11 +12,11 @@ module Styles = {
 
   let innerContainer = style([display(`inlineFlex), alignItems(`center)]);
 
-  let angle = isflip =>
+  let angle = isFlip =>
     style([
       width(`px(12)),
       cursor(`pointer),
-      transform(`rotateZ(`deg(isflip ? 0. : 180.))),
+      transform(`rotateZ(`deg(isFlip ? 0. : 180.))),
     ]);
 
   let clickable = active =>
