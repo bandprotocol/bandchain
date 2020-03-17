@@ -9,12 +9,12 @@ module Styles = {
 };
 
 [@react.component]
-let make = () => {
+let make = (~delegations) => {
   <div className=Styles.tableLowerContainer>
     <VSpacing size=Spacing.md />
     <div className=Styles.hFlex>
       <HSpacing size=Spacing.lg />
-      <Text value="3" weight=Text.Semibold />
+      <Text value={delegations |> Belt_List.length |> string_of_int} weight=Text.Semibold />
       <HSpacing size=Spacing.xs />
       <Text value="Delegated Validators" />
     </div>
@@ -60,11 +60,7 @@ let make = () => {
           <Col> <HSpacing size=Spacing.lg /> </Col>
         </Row>
       </THead>
-      {[
-         ("bandvaloper1sjllsnramtg3ewxqwwrwjxfgc4n4ef9u2lcnj0", 30521.534, 2324.23),
-         ("bandvaloper1sjllsfgamtg3ewxqwwrwjxfgc4n4ef9u2l2nj0", 30521.534, 2324.23),
-         ("bandvaloper1sjllsnramtg3ewxqwwrwjxfgc444ef9u2lcnj0", 30521.534, 2324.23),
-       ]
+      {delegations
        ->Belt.List.map(((validator, amount, reward)) => {
            <TBody key=validator minHeight=50>
              <Row>

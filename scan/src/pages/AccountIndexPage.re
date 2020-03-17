@@ -118,15 +118,24 @@ let totalBalance = (title, amount, symbol) => {
 
 [@react.component]
 let make = (~address, ~hashtag: Route.account_tab_t) => {
-  let globalInfo = ValidatorHook.getGlobalInfo();
+  let balanceOpt = AccountHook.getBalance(address);
   let priceOpt = PriceHook.get();
-  let avialableBalanceBand = globalInfo.totalSupply;
+  let balanceStakeOpt = AccountHook.getBalanceStake(address);
 
-  let avialableBalanceUSD = {
+  let delegations =
+    AccountHook.getDelegations(address)
+    |> Belt_Option.getWithDefault(_, [])
+    |> List.map(((x, y, z)) => (x |> Address.toBech32, y, 10.0));
+
+  let usdPrice = {
     let%Opt price = priceOpt;
+    Some(price.usdPrice);
+  };
 
-    let supplyUSD = (avialableBalanceBand |> float_of_int) *. price.usdPrice;
-    Some(supplyUSD);
+  let avialableBalance = {
+    let%Opt balanceStake = balanceStakeOpt;
+    let%Opt balance = balanceOpt;
+    Some(balance -. balanceStake);
   };
 
   <div className=Styles.pageContainer>
@@ -154,19 +163,28 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
     <Row justify=Row.Between>
       <Col size=0.75> <img src=Images.pieChart className=Styles.graph /> </Col>
       <Col size=1.>
-        {switch (avialableBalanceUSD) {
-         | Some(usd) =>
+        {switch (avialableBalance, usdPrice) {
+         | (Some(avBalance), Some(price)) =>
            balanceDetail(
              "AVAILABLE BALANCE",
-             avialableBalanceBand |> Format.iPretty,
-             usd |> Format.fPretty,
+             avBalance |> Format.fPretty,
+             avBalance *. price |> Format.fPretty,
              "5269FF",
            )
          | _ => balanceDetail("AVAILABLE BALANCE", "?", "?", "5269FF")
          }}
         <VSpacing size=Spacing.xl />
         <VSpacing size=Spacing.md />
-        {balanceDetail("BALANCE AT STAKE", "1,800,000.00", "158,303.88", "ABB6FF")}
+        {switch (balanceStakeOpt, usdPrice) {
+         | (Some(balanceStake), Some(price)) =>
+           balanceDetail(
+             "BALANCE AT STAKE",
+             balanceStake |> Format.fPretty,
+             balanceStake *. price |> Format.fPretty,
+             "ABB6FF",
+           )
+         | _ => balanceDetail("BALANCE AT STAKE", "?", "?", "ABB6FF")
+         }}
         <VSpacing size=Spacing.xl />
         <VSpacing size=Spacing.md />
         {balanceDetail("REWARD", "61,301.04", "60.31", "000C5C")}
@@ -174,8 +192,22 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
       <div className=Styles.separatorLine />
       <Col size=1. alignSelf=Col.Start>
         <div className=Styles.totalContainer>
-          {totalBalance("TOTAL BAND BALANCE", "12,408,746.93", "BAND")}
-          {totalBalance("TOTAL BAND IN USD ($3.42 / BAND)", "37,226,240.79", "USD")}
+          {switch (balanceOpt, usdPrice) {
+           | (Some(balance), Some(price)) =>
+             <>
+               {totalBalance("TOTAL BAND BALANCE", balance |> Format.fPretty, "BAND")}
+               {totalBalance(
+                  "TOTAL BAND IN USD ($3.42 / BAND)",
+                  balance *. price |> Format.fPretty,
+                  "USD",
+                )}
+             </>
+           | _ =>
+             <>
+               {totalBalance("TOTAL BAND BALANCE", "?", "BAND")}
+               {totalBalance("TOTAL BAND IN USD ($3.42 / BAND)", "?", "USD")}
+             </>
+           }}
         </div>
       </Col>
     </Row>
@@ -191,7 +223,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
       currentRoute={Route.AccountIndexPage(address, hashtag)}>
       {switch (hashtag) {
        | AccountTransactions => <AccountIndexTransactions />
-       | AccountDelegations => <AccountIndexDelegations />
+       | AccountDelegations => <AccountIndexDelegations delegations />
        }}
     </Tab>
   </div>;
