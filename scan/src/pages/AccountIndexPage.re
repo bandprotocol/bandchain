@@ -125,7 +125,9 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
   let delegations =
     AccountHook.getDelegations(address)
     |> Belt_Option.getWithDefault(_, [])
-    |> List.map(((x, y, z)) => (x |> Address.toBech32, y, 10.0));
+    |> List.map(((validatorAddress, amount, reward)) =>
+         (validatorAddress |> Address.toBech32, amount, reward)
+       );
 
   let usdPrice = {
     let%Opt price = priceOpt;

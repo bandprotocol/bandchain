@@ -20,7 +20,7 @@ let decodeDelegation = json =>
   JsonUtils.Decode.(
     json |> field("delegator_address", string) |> Address.fromBech32,
     json |> field("shares", floatstr),
-    10,
+    10000.0,
   );
 let decodeDelegations = json =>
   JsonUtils.Decode.(json |> field("result", list(decodeDelegation)));
