@@ -192,11 +192,6 @@ let make = () => {
         | "ArrowDown" =>
           dispatch(ArrowPressed(Down));
           ReactEvent.Keyboard.preventDefault(event);
-        | _ => ()
-        }
-      }
-      onKeyPress={event =>
-        switch (ReactEvent.Keyboard.key(event)) {
         | "Enter" =>
           dispatch(ChangeSearchTerm(""));
           ReactEvent.Keyboard.preventDefault(event);
