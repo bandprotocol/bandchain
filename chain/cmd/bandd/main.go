@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"io"
-	"os"
+	"strings"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -23,14 +23,16 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/bandprotocol/d3n/chain/app"
-	"github.com/bandprotocol/d3n/chain/db"
+	banddb "github.com/bandprotocol/d3n/chain/db"
 )
 
-const flagInvCheckPeriod = "inv-check-period"
+const (
+	flagInvCheckPeriod = "inv-check-period"
+	flagAddDB          = "add-db"
+)
 
 var (
 	invCheckPeriod uint
-	layerDB        *db.BandDB
 )
 
 func main() {
@@ -43,12 +45,6 @@ func main() {
 	config.Seal()
 
 	ctx := server.NewDefaultContext()
-
-	var err error
-	layerDB, err = db.NewDB(os.ExpandEnv("$HOME/.banddb/main.db"))
-	if err != nil {
-		panic(err)
-	}
 
 	rootCmd := &cobra.Command{
 		Use:               "bandd",
@@ -69,30 +65,37 @@ func main() {
 		client.NewCompletionCmd(rootCmd, true),
 	)
 
-	// server.AddCommands(ctx, cdc, rootCmd, newApp, exportAppStateAndTMValidators)
-	server.AddCommands(ctx, cdc, rootCmd, newDBApp, exportAppStateAndTMValidators)
+	server.AddCommands(ctx, cdc, rootCmd, newApp, exportAppStateAndTMValidators)
 
 	// prepare and add flags
 	executor := cli.PrepareBaseCmd(rootCmd, "BAND", app.DefaultNodeHome)
+	rootCmd.PersistentFlags().String(flagAddDB, "", "Flush event to database")
 	rootCmd.PersistentFlags().UintVar(&invCheckPeriod, flagInvCheckPeriod,
 		0, "Assert registered invariants every N blocks")
-	err = executor.Execute()
+	err := executor.Execute()
 	if err != nil {
 		panic(err)
 	}
 }
 
 func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application {
+	if viper.IsSet(flagAddDB) {
+		dbSplited := strings.SplitN(viper.GetString(flagAddDB), ":", 2)
+		if len(dbSplited) != 2 {
+			panic("Invalid DB string format")
+		}
+		bandDB, err := banddb.NewDB(dbSplited[0], dbSplited[1])
+		if err != nil {
+			panic(err)
+		}
+		return app.NewDBBandApp(
+			logger, db, traceStore, true, invCheckPeriod, bandDB,
+			baseapp.SetPruning(store.NewPruningOptionsFromString(viper.GetString("pruning"))),
+			baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
+			baseapp.SetHaltHeight(uint64(viper.GetInt(server.FlagHaltHeight))))
+	}
 	return app.NewBandApp(
 		logger, db, traceStore, true, invCheckPeriod,
-		baseapp.SetPruning(store.NewPruningOptionsFromString(viper.GetString("pruning"))),
-		baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
-		baseapp.SetHaltHeight(uint64(viper.GetInt(server.FlagHaltHeight))))
-}
-
-func newDBApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application {
-	return app.NewDBBandApp(
-		logger, db, traceStore, true, invCheckPeriod, layerDB,
 		baseapp.SetPruning(store.NewPruningOptionsFromString(viper.GetString("pruning"))),
 		baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
 		baseapp.SetHaltHeight(uint64(viper.GetInt(server.FlagHaltHeight))))

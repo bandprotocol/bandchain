@@ -1,6 +1,8 @@
 package db
 
 import (
+	"fmt"
+
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
@@ -14,8 +16,8 @@ type Event struct {
 	Name string
 }
 
-func NewDB(path string) (*BandDB, error) {
-	db, err := gorm.Open("sqlite3", path)
+func NewDB(dialect, path string) (*BandDB, error) {
+	db, err := gorm.Open(dialect, path)
 	db.CreateTable(Event{})
 
 	if err != nil {
@@ -24,6 +26,14 @@ func NewDB(path string) (*BandDB, error) {
 	return &BandDB{db: db}, nil
 }
 
-func (b *BandDB) HandleEvent(eventName string) {
-	b.db.Create(&Event{Name: eventName})
+func (b *BandDB) HandleEvent(eventName string, attributes map[string]string) {
+	switch eventName {
+	case "message":
+		{
+			b.db.Create(&Event{Name: attributes["action"]})
+		}
+	default:
+		// TODO: Better logging
+		fmt.Println("There isn't event handler for this type")
+	}
 }

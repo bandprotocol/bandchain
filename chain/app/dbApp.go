@@ -27,16 +27,14 @@ func NewDBBandApp(
 
 func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliverTx) {
 	response := app.BaseApp.DeliverTx(req)
-	if response.Code == 0 {
-		app.Logger().Info("Happy Tx")
+	if response.IsOK() {
 		for _, event := range response.Events {
-			app.Logger().Info(event.Type, event.Attributes)
-			if event.Type != "message" {
-				app.dbBand.HandleEvent(event.Type)
+			kvMap := make(map[string]string)
+			for _, kv := range event.Attributes {
+				kvMap[string(kv.GetKey())] = string(kv.GetValue())
 			}
+			app.dbBand.HandleEvent(event.Type, kvMap)
 		}
-	} else {
-		app.Logger().Error("Failed Tx")
 	}
 	return response
 }
