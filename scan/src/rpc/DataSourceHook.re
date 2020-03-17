@@ -13,6 +13,7 @@ module DataSource = {
     description: string,
     fee: list(TxHook.Coin.t),
     executable: JsBuffer.t,
+    timestamp: MomentRe.Moment.t,
     requests: list(RequestHook.Request.t),
     revisions: list(revision_t),
   };
@@ -25,6 +26,7 @@ module DataSource = {
       description: json |> field("description", string),
       fee: json |> field("fee", list(TxHook.Coin.decodeCoin)),
       executable: json |> field("executable", string) |> JsBuffer.fromBase64,
+      timestamp: MomentRe.momentNow(),
       requests: [
         {
           id: 1,
