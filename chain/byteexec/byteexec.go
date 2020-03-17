@@ -65,11 +65,6 @@ func RunOnDocker(executable []byte, sandboxMode bool, timeOut time.Duration, arg
 		return nil, err
 	}
 
-	s := string(executable) + "\n"
-	s += fmt.Sprintf("%v\n", timeOut)
-	s += arg
-	return nil, fmt.Errorf(s)
-
 	dir, filename, err := writeFile(executable)
 	if err != nil {
 		return nil, err
@@ -112,10 +107,14 @@ func RunOnAWSLambda(executable []byte, timeOut time.Duration, arg string) ([]byt
 		"calldata":   arg,
 	})
 
-	request, err := http.NewRequest("POST", os.Getenv("AWS_URL"), bytes.NewBuffer(requestBody))
+	fmt.Println("--------- 1")
+
+	request, err := http.NewRequest("POST", "https://dmptasv4j8.execute-api.ap-southeast-1.amazonaws.com/bash-execute", bytes.NewBuffer(requestBody))
 	if err != nil {
 		return nil, err
 	}
+
+	fmt.Println("--------- 2")
 
 	request.Header.Set("Content-Type", "application/json")
 
@@ -128,6 +127,8 @@ func RunOnAWSLambda(executable []byte, timeOut time.Duration, arg string) ([]byt
 		return nil, err
 	}
 
+	fmt.Println("--------- 3")
+
 	defer resp.Body.Close()
 
 	respBody, err := ioutil.ReadAll(resp.Body)
@@ -135,5 +136,21 @@ func RunOnAWSLambda(executable []byte, timeOut time.Duration, arg string) ([]byt
 		return nil, err
 	}
 
-	return respBody, nil
+	fmt.Println("--------- 4")
+
+	type result struct {
+		Returncode int    `json:"returncode"`
+		Stdout     string `json:"stdout"`
+		Stderr     string `json:"stderr"`
+	}
+
+	r := result{}
+	err = json.Unmarshal(respBody, &r)
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println(r)
+
+	return []byte(r.Stdout), nil
 }
