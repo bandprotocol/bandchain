@@ -360,7 +360,7 @@ func (app *bandApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.R
 func (app *bandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliverTx) {
 	response := app.BaseApp.DeliverTx(req)
 
-	if response.Code == uint32(sdk.CodeOK) {
+	if response.IsOK() {
 		// Refund 100% of gas fee for any successful transaction that only contains MsgReportData
 		tx, err := app.txDecoder(req.Tx)
 		if err != nil { // Should never happen because BaseApp.DeliverTx succeeds
