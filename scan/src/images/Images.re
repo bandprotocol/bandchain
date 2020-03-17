@@ -33,3 +33,4 @@
 [@bs.module] external blockLogo: string = "./blockLogo.svg";
 [@bs.module] external noTransaction: string = "./no_transaction.svg";
 [@bs.module] external leftAngle: string = "./left-angle.svg";
+[@bs.module] external graphBG: string = "./graph-bg.svg";

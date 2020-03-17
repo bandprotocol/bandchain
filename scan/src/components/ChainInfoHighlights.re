@@ -9,6 +9,7 @@ module Styles = {
       backgroundColor(Colors.white),
       borderRadius(`px(4)),
       boxShadow(Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(8), Css.rgba(0, 0, 0, 0.1))),
+      position(`relative),
     ]);
 
   let innerCard =
@@ -19,7 +20,7 @@ module Styles = {
       justifyContent(`spaceBetween),
       alignItems(`flexStart),
       position(`relative),
-      zIndex(1),
+      zIndex(2),
       padding4(~top=`px(13), ~bottom=`px(13), ~left=`px(14), ~right=`px(10)),
     ]);
 
@@ -36,25 +37,32 @@ module Styles = {
       backgroundImage(`url(url)),
       backgroundPosition(`center),
       backgroundSize(`contain),
+      backgroundRepeat(`noRepeat),
       width(`percent(100.)),
+      height(`percent(100.)),
+      position(`absolute),
+      zIndex(1),
+      opacity(0.4),
     ]);
 };
 
 module HighlightCard = {
   [@react.component]
-  let make = (~label, ~valueComponent, ~extraComponent, ~extraTopRight=?, ~bg=?) => {
+  let make = (~label, ~valueComponent, ~extraComponent, ~extraTopRight=?, ~bgUrl=?) => {
     <div className=Styles.card>
-      // <img src=Images.graphBG className=Styles.bgCard />
-
-        <div className=Styles.innerCard>
-          <div className=Styles.labelContainer>
-            <Text value=label color=Colors.bandBlue spacing={Text.Em(0.05)} />
-            {extraTopRight->Belt.Option.getWithDefault(React.null)}
-          </div>
-          valueComponent
-          extraComponent
+      {switch (bgUrl) {
+       | Some(url) => <div className={Styles.bgCard(url)} />
+       | None => React.null
+       }}
+      <div className=Styles.innerCard>
+        <div className=Styles.labelContainer>
+          <Text value=label color=Colors.bandBlue spacing={Text.Em(0.05)} />
+          {extraTopRight->Belt.Option.getWithDefault(React.null)}
         </div>
-      </div>;
+        valueComponent
+        extraComponent
+      </div>
+    </div>;
   };
 };
 
@@ -70,6 +78,7 @@ let make = () =>
       <Row justify=Row.Between>
         <HighlightCard
           label="BAND PRICE"
+          bgUrl=Images.graphBG
           valueComponent={
                            let bandPriceInUSD = "$" ++ info.financial.usdPrice->Format.fPretty;
                            <Text
