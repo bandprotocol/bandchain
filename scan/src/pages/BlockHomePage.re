@@ -1,9 +1,11 @@
 module Styles = {
   open Css;
 
-  let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
+  let vFlex = align => style([display(`flex), flexDirection(`row), alignItems(align)]);
 
   let pageContainer = style([paddingTop(`px(50))]);
+
+  let logo = style([width(`px(50)), marginRight(`px(10))]);
 
   let seperatedLine =
     style([
@@ -11,10 +13,14 @@ module Styles = {
       height(`px(1)),
       marginLeft(`px(10)),
       marginRight(`px(10)),
-      backgroundColor(Colors.mediumGray),
+      backgroundColor(Colors.gray7),
     ]);
 
   let fullWidth = style([width(`percent(100.0)), display(`flex)]);
+
+  let withWidth = w => style([width(`px(w))]);
+
+  let fillLeft = style([marginLeft(`auto)]);
 
   let icon =
     style([
@@ -26,25 +32,38 @@ module Styles = {
     ]);
 };
 
-let renderBody = ((block, moniker): (BlockHook.Block.t, string)) => {
+let renderBody = ((block, proposer): (BlockHook.Block.t, option(ValidatorHook.Validator.t))) => {
   let height = block.height;
   let timestamp = block.timestamp;
-  let proposer = block.proposer->Address.toOperatorBech32;
   let totalTx = block.numTxs;
+  let hash = block.hash |> Hash.toHex(~upper=true);
 
   <TBody key={height |> string_of_int}>
-    <div className=Styles.fullWidth onClick={_ => Route.BlockIndexPage(height) |> Route.redirect}>
-      <Row>
-        <Col> <img src=Images.blockLogo className=Styles.icon /> </Col>
-        <Col size=0.6>
-          <TElement elementType={TElement.HeightWithTime(height, timestamp)} />
-        </Col>
-        <Col size=2.0> <TElement elementType={TElement.Proposer(moniker, proposer)} /> </Col>
-        <Col size=0.7> <TElement elementType={TElement.Count(totalTx)} /> </Col>
-        <Col size=0.7> <TElement elementType={TElement.Fee(0.0)} /> </Col>
-        <Col size=0.8> <Text block=true value="N/A" size=Text.Md weight=Text.Semibold /> </Col>
-      </Row>
-    </div>
+    <Row minHeight={`px(40)}>
+      <Col> <HSpacing size=Spacing.md /> </Col>
+      <Col size=1.11> <TypeID.Block id={ID.Block.ID(height)} /> </Col>
+      <Col size=3.93>
+        <div className={Styles.withWidth(330)}>
+          <Text value=hash weight=Text.Medium block=true code=true ellipsis=true />
+        </div>
+      </Col>
+      <Col size=1.32> <TimeAgos time=timestamp size=Text.Md weight=Text.Medium /> </Col>
+      <Col size=1.5>
+        <div className={Styles.withWidth(150)}>
+          {switch (proposer) {
+           | Some(validator) => <ValidatorMonikerLink validator />
+           | None => <Text value="Unknown" weight=Text.Medium block=true ellipsis=true />
+           }}
+        </div>
+      </Col>
+      <Col size=1.05>
+        <Row>
+          <div className=Styles.fillLeft />
+          <Text value={totalTx |> Format.iPretty} code=true weight=Text.Medium />
+        </Row>
+      </Col>
+      <Col> <HSpacing size=Spacing.md /> </Col>
+    </Row>
   </TBody>;
 };
 
@@ -63,21 +82,23 @@ let make = () => {
     | None => []
     };
 
-  let blocksWithMonikers =
-    blocks->Belt_List.map(block =>
-      (block, BlockHook.Block.getProposerMoniker(block, validators))
-    );
+  let blocksWithProposers =
+    blocks->Belt_List.map(block => (block, BlockHook.Block.getProposer(block, validators)));
 
   <div className=Styles.pageContainer>
     <Row>
       <Col>
-        <div className=Styles.vFlex>
+        <div className={Styles.vFlex(`center)}>
+          <img src=Images.blockLogo className=Styles.logo />
           <Text
-            value="ALL BLOCKS"
-            weight=Text.Bold
-            size=Text.Xl
+            value="All BLOCKS"
+            weight=Text.Medium
+            size=Text.Md
+            spacing={Text.Em(0.06)}
+            height={Text.Px(15)}
             nowrap=true
-            color=Colors.mediumGray
+            block=true
+            color=Colors.gray7
           />
           <div className=Styles.seperatedLine />
           <Text
@@ -87,6 +108,11 @@ let make = () => {
               | None => ""
               }
             }
+            size=Text.Md
+            weight=Text.Thin
+            spacing={Text.Em(0.06)}
+            color=Colors.gray7
+            nowrap=true
           />
         </div>
       </Col>
@@ -94,25 +120,33 @@ let make = () => {
     <VSpacing size=Spacing.xl />
     <THead>
       <Row>
-        <Col> <div className=Styles.icon /> </Col>
+        <Col> <HSpacing size=Spacing.md /> </Col>
         {[
-           ("BLOCK", 0.6),
-           ("PROPOSER", 2.0),
-           ("TXN", 0.7),
-           ("TOTAL FEE", 0.7),
-           ("BLOCK REWARD", 0.8),
+           ("BLOCK", 1.11, false),
+           ("BLOCK HASH", 3.93, false),
+           ("AGE", 1.32, false),
+           ("PROPOSER", 1.5, false),
+           ("TXN", 1.05, true),
          ]
-         ->Belt.List.map(((title, size)) => {
-             <Col size key=title>
-               <Text block=true value=title size=Text.Sm weight=Text.Bold color=Colors.grayText />
+         ->Belt.List.map(((title, size, alignRight)) => {
+             <Col size key=title justifyContent=Col.Start>
+               <div className={Styles.vFlex(`flexEnd)}>
+                 {alignRight ? <div className=Styles.fillLeft /> : React.null}
+                 <Text
+                   value=title
+                   size=Text.Sm
+                   weight=Text.Semibold
+                   color=Colors.gray6
+                   spacing={Text.Em(0.1)}
+                 />
+               </div>
              </Col>
            })
          ->Array.of_list
          ->React.array}
+        <Col> <HSpacing size=Spacing.md /> </Col>
       </Row>
     </THead>
-    {blocksWithMonikers->Belt_List.toArray->Belt_Array.map(renderBody)->React.array}
-    <VSpacing size=Spacing.lg />
-    <LoadMore onClick={_ => setLimit(oldLimit => oldLimit + 10)} />
+    {blocksWithProposers->Belt_List.toArray->Belt_Array.map(renderBody)->React.array}
   </div>;
 };

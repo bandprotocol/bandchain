@@ -3,8 +3,8 @@ module Styles = {
 
   let buttonContainer = active =>
     style([
-      backgroundColor(active ? Colors.brightPurple : Colors.white),
-      border(`px(1), `solid, active ? Colors.brightPurple : Colors.lightGray),
+      backgroundColor(active ? Colors.purple3 : Colors.white),
+      border(`px(1), `solid, active ? Colors.purple3 : Colors.gray4),
       borderRadius(`px(6)),
       height(`px(35)),
       display(`inlineFlex),
@@ -22,7 +22,7 @@ let make = (~active, ~text, ~route) => {
       value=text
       weight=Text.Semibold
       size=Text.Md
-      color={active ? Colors.white : Colors.darkGrayText}
+      color={active ? Colors.white : Colors.gray6}
     />
   </div>;
 };

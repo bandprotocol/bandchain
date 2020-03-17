@@ -3,18 +3,21 @@ const Bridge = artifacts.require("BridgeMock");
 
 require("chai").should();
 
-contract("Bridge", () => {
+contract("Bridge", ([_, owner, alice, bob]) => {
   context("Checking oracle state relay (4 validators)", () => {
     beforeEach(async () => {
-      this.bridge = await Bridge.new([
-        "0x652D89a66Eb4eA55366c45b1f9ACfc8e2179E1c5",
-        "0x88e1cd00710495EEB93D4f522d16bC8B87Cb00FE",
-        "0xaAA22E077492CbaD414098EBD98AA8dc1C7AE8D9",
-        "0xB956589b6fC5523eeD0d9eEcfF06262Ce84ff260"
-      ]);
+      this.bridge = await Bridge.new(
+        [
+          ["0x652D89a66Eb4eA55366c45b1f9ACfc8e2179E1c5", 100],
+          ["0x88e1cd00710495EEB93D4f522d16bC8B87Cb00FE", 100],
+          ["0xaAA22E077492CbaD414098EBD98AA8dc1C7AE8D9", 100],
+          ["0xB956589b6fC5523eeD0d9eEcfF06262Ce84ff260", 100]
+        ],
+        { from: owner }
+      );
     });
 
-    it("should accept correct state relay (4 signatures)", async () => {
+    it("should accept correct state relay (All signatures)", async () => {
       await this.bridge.relayOracleState(
         "46", // _blockHeight,
         "0xC2650A3B2CEE22FECB5A7A4DB2B17A7698D0E1C6D03FCCB423AFA050C3ACE32D", // _oracleIAVLStateHash
@@ -58,7 +61,7 @@ contract("Bridge", () => {
       );
     });
 
-    it("should accept correct state relay (3 signatures)", async () => {
+    it("should accept correct state relay (validator power is more than 2/3)", async () => {
       await this.bridge.relayOracleState(
         "116", // _blockHeight,
         "0xA816762B08E353BEBA284980AB3B70AD49E82D87210A25B8B6D3E44E4176BEA9", // _oracleIAVLStateHash
@@ -93,6 +96,51 @@ contract("Bridge", () => {
             "0x12240A20A16A17527AFDA8B3CC7EDE6E4A07446375E488FBEF828398FD807780319495A910012A0C08E1A7DFF20510C8ADC7AB03320962616E64636861696E" // _signedDataSuffix
           ]
         ]
+      );
+    });
+
+    it("should revert if sum of validator powers is less than 2/3)", async () => {
+      await this.bridge.updateValidatorPowers(
+        [["0xaAA22E077492CbaD414098EBD98AA8dc1C7AE8D9", 300]],
+        { from: owner }
+      );
+      await expectRevert(
+        this.bridge.relayOracleState(
+          "46", // _blockHeight,
+          "0xC2650A3B2CEE22FECB5A7A4DB2B17A7698D0E1C6D03FCCB423AFA050C3ACE32D", // _oracleIAVLStateHash
+          "0x4DFB1C5ABBA9B649F03828E8DBE19DF818F599497F9A370DD514F93B8009F734", // _otherStoresMerkleHash
+          "0xB3238075B0F786359DE6CDE3B1848C19F4998EC7B22F98BAD5E3266C5BB39807", // _supplyStoresMerkleHash
+          [
+            "0x32FA694879095840619F5E49380612BD296FF7E950EAFB66FF654D99CA70869E", // subtreeVersionAndChainIdHash
+            "0xD465F7F7BF5CF4B22767C9BE943AC822E9106D28CD80D25E2BCFF9CA5C03A230", // timeHash
+            "0xAAE6B809E30668B53AB99BA69D605FB16E74ECBDDFC33ECB91A203754EFD78FB", // txCountAndLastBlockInfoHash
+            "0xDEF482CDA986470C27374601EC716E9853DE47D72828AE0131CF8EF98E2972C5", // consensusDataHash
+            "0x6E340B9CFFB37A989CA544E6BB780A2C78901D3FB33738768511A30617AFA01D", // lastResultsHash
+            "0x7F4BE7E5A1EB872AD44103360DDC190410331280C42A54D829A5D752C796685D" // evidenceAndProposerHash
+          ],
+          "0x6E0802112E0000000000000022480A20", // _signedDataPrefix
+          [
+            [
+              "0xF5F2831EE0A9CE0C126F627037744A6F9966AE51434B77829E2988B52003468D", // r
+              "0x6D60442B41A1150353AB3D8687FDD81BA51EB8DCD5FFDEF88912668F0F06BC1E", // s
+              27, // v
+              "0x12240A203A88B5657ABEF8D8CAB1AD0FB84C4796B1106E68F60B20EAFDE282B92E5270AF10012A0C0884F4E3F20510B0EBACE601320962616E64636861696E" // _signedDataSuffix
+            ],
+            [
+              "0xAB0AFD1F7674D6AA12A0280B40D8A971EDC6691B9759E3EA4ADEB95C4E312E15", // r
+              "0x4B98EAF0C989915D1C58DD0B9A493A7D3D9C2F53D6C7483389DE19062FE742CA", // s
+              27, // v
+              "0x12240A203A88B5657ABEF8D8CAB1AD0FB84C4796B1106E68F60B20EAFDE282B92E5270AF10012A0C0884F4E3F20510EC90D6EB01320962616E64636861696E" // _signedDataSuffix
+            ],
+            [
+              "0xD00816DFBD1B0F2766036DE5C312ABFB7AC24997D1F4B9013600CE40108B5A4E", // r
+              "0x108D2E618A5E3DACBD12FA882B9CD415E3D476149B81D29C37B6658051DB797C", // s
+              28, // v
+              "0x12240A203A88B5657ABEF8D8CAB1AD0FB84C4796B1106E68F60B20EAFDE282B92E5270AF10012A0C0884F4E3F20510CCE8E1E801320962616E64636861696E" // _signedDataSuffix
+            ]
+          ]
+        ),
+        "INSUFFICIENT_VALIDATOR_SIGNATURES"
       );
     });
 
@@ -281,16 +329,7 @@ contract("Bridge", () => {
       )
         .toString()
         .should.eq(
-          [
-            1,
-            1582889446,
-            1582889459,
-            1,
-            1,
-            1,
-            "0x63616c6c64617461",
-            "0x6461746131"
-          ].toString()
+          [1, 1582889446, 1582889459, 1, 1, 1, "0x63616c6c64617461", "0x6461746131"].toString()
         );
     });
 
@@ -365,10 +404,10 @@ contract("Bridge", () => {
   context("Relay and Verfiy data", () => {
     beforeEach(async () => {
       this.bridge = await Bridge.new([
-        "0x652D89a66Eb4eA55366c45b1f9ACfc8e2179E1c5",
-        "0x88e1cd00710495EEB93D4f522d16bC8B87Cb00FE",
-        "0xaAA22E077492CbaD414098EBD98AA8dc1C7AE8D9",
-        "0xB956589b6fC5523eeD0d9eEcfF06262Ce84ff260"
+        ["0x652D89a66Eb4eA55366c45b1f9ACfc8e2179E1c5", 100],
+        ["0x88e1cd00710495EEB93D4f522d16bC8B87Cb00FE", 100],
+        ["0xaAA22E077492CbaD414098EBD98AA8dc1C7AE8D9", 100],
+        ["0xB956589b6fC5523eeD0d9eEcfF06262Ce84ff260", 100]
       ]);
     });
 
@@ -378,9 +417,68 @@ contract("Bridge", () => {
       );
       (await this.bridge.oracleStates(46))
         .toString()
-        .should.eq(
-          "0xc2650a3b2cee22fecb5a7a4db2b17a7698d0e1c6d03fccb423afa050c3ace32d"
-        );
+        .should.eq("0xc2650a3b2cee22fecb5a7a4db2b17a7698d0e1c6d03fccb423afa050c3ace32d");
+    });
+  });
+
+  context("Update provider powers", () => {
+    beforeEach(async () => {
+      this.bridge = await Bridge.new(
+        [
+          ["0x652D89a66Eb4eA55366c45b1f9ACfc8e2179E1c5", 100],
+          ["0x88e1cd00710495EEB93D4f522d16bC8B87Cb00FE", 100],
+          ["0xaAA22E077492CbaD414098EBD98AA8dc1C7AE8D9", 100],
+          ["0xB956589b6fC5523eeD0d9eEcfF06262Ce84ff260", 100]
+        ],
+        { from: owner }
+      );
+    });
+
+    it("should revert if update validator power by non-onwer", async () => {
+      await expectRevert(
+        this.bridge.updateValidatorPowers([["0x652D89a66Eb4eA55366c45b1f9ACfc8e2179E1c5", 150]], {
+          from: alice
+        }),
+        "Ownable: caller is not the owner."
+      );
+    });
+
+    it("should update a validator power", async () => {
+      await this.bridge.updateValidatorPowers(
+        [["0x652D89a66Eb4eA55366c45b1f9ACfc8e2179E1c5", 150]],
+        { from: owner }
+      );
+
+      (await this.bridge.validatorPowers("0x652D89a66Eb4eA55366c45b1f9ACfc8e2179E1c5"))
+        .toString()
+        .should.eq("150");
+
+      (await this.bridge.totalValidatorPower()).toString().should.eq("450");
+    });
+
+    it("should update validator powers", async () => {
+      await this.bridge.updateValidatorPowers(
+        [
+          ["0x652D89a66Eb4eA55366c45b1f9ACfc8e2179E1c5", 150],
+          ["0x88e1cd00710495EEB93D4f522d16bC8B87Cb00FE", 0],
+          ["0x85109F11A7E1385ee826FbF5dA97bB97dba0D76f", 200]
+        ],
+        { from: owner }
+      );
+
+      (await this.bridge.validatorPowers("0x652D89a66Eb4eA55366c45b1f9ACfc8e2179E1c5"))
+        .toString()
+        .should.eq("150");
+
+      (await this.bridge.validatorPowers("0x88e1cd00710495EEB93D4f522d16bC8B87Cb00FE"))
+        .toString()
+        .should.eq("0");
+
+      (await this.bridge.validatorPowers("0x85109F11A7E1385ee826FbF5dA97bB97dba0D76f"))
+        .toString()
+        .should.eq("200");
+
+      (await this.bridge.totalValidatorPower()).toString().should.eq("550");
     });
   });
 });

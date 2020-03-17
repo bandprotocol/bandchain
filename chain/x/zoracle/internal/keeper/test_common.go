@@ -148,6 +148,7 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 	keeper.SetEndBlockExecuteGasLimit(ctx, types.DefaultEndBlockExecuteGasLimit)
 	keeper.SetMaxNameLength(ctx, types.DefaultMaxNameLength)
 	keeper.SetMaxDescriptionLength(ctx, types.DefaultDescriptionLength)
+	keeper.SetGasPerRawDataRequestPerValidator(ctx, types.DefaultGasPerRawDataRequestPerValidator)
 
 	return ctx, keeper
 }

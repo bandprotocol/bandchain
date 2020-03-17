@@ -17,11 +17,11 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~msg: TxHook.Msg.t, ~width: int) => {
+let make = (~msg: TxHook.Msg.t, ~width: int, ~success: bool) => {
   switch (msg.action) {
   | Send({fromAddress, toAddress, amount}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(width / 2 - 18)}>
+      <div className={Styles.withWidth(width / 2 - 20)}>
         <AddressRender address=fromAddress />
       </div>
       <div className={Styles.withBg(Colors.blue1, 40)}>
@@ -33,29 +33,40 @@ let make = (~msg: TxHook.Msg.t, ~width: int) => {
           color=Colors.blue7
         />
       </div>
-      <div className={Styles.rowWithWidth(200)}>
-        <Text
-          value={
-            amount
-            ->Belt_List.get(0)
-            ->Belt_Option.getWithDefault(TxHook.Coin.newCoin("uband", 0.0)).
-              amount
-            |> Format.fPretty
-          }
-          weight=Text.Semibold
-          code=true
-          nowrap=true
-          block=true
-        />
-        <HSpacing size=Spacing.sm />
-        <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
-        <HSpacing size=Spacing.sm />
-        <Text value={j|➜|j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
-        <HSpacing size=Spacing.sm />
-      </div>
-      <div className={Styles.withWidth(width / 2 - 18)}>
-        <AddressRender address=toAddress />
-      </div>
+      {success
+         ? <>
+             <div className={Styles.rowWithWidth(200)}>
+               <Text
+                 value={
+                   amount
+                   ->Belt_List.get(0)
+                   ->Belt_Option.getWithDefault(TxHook.Coin.newCoin("uband", 0.0)).
+                     amount
+                   |> Format.fPretty
+                 }
+                 weight=Text.Semibold
+                 code=true
+                 nowrap=true
+                 block=true
+               />
+               <HSpacing size=Spacing.sm />
+               <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
+               <HSpacing size=Spacing.sm />
+               <Text
+                 value={j|➜|j}
+                 size=Text.Xxl
+                 weight=Text.Bold
+                 code=true
+                 nowrap=true
+                 block=true
+               />
+               <HSpacing size=Spacing.sm />
+             </div>
+             <div className={Styles.withWidth(width / 2 - 18)}>
+               <AddressRender address=toAddress />
+             </div>
+           </>
+         : React.null}
     </div>
   | CreateDataSource({id, sender, name}) =>
     <div className={Styles.rowWithWidth(width)}>
@@ -69,18 +80,22 @@ let make = (~msg: TxHook.Msg.t, ~width: int) => {
           color=Colors.yellow6
         />
       </div>
-      <TypeID.DataSource id={ID.DataSource.ID(id)} />
-      <HSpacing size=Spacing.sm />
-      <div className={Styles.withWidth(170)}>
-        <Text
-          value=name
-          color=Colors.mediumGray
-          weight=Text.Medium
-          nowrap=true
-          block=true
-          ellipsis=true
-        />
-      </div>
+      {success
+         ? <>
+             <TypeID.DataSource id={ID.DataSource.ID(id)} />
+             <HSpacing size=Spacing.sm />
+             <div className={Styles.withWidth(170)}>
+               <Text
+                 value=name
+                 color=Colors.gray7
+                 weight=Text.Medium
+                 nowrap=true
+                 block=true
+                 ellipsis=true
+               />
+             </div>
+           </>
+         : React.null}
     </div>
   | EditDataSource({id, sender, name}) =>
     <div className={Styles.rowWithWidth(width)}>
@@ -94,18 +109,22 @@ let make = (~msg: TxHook.Msg.t, ~width: int) => {
           color=Colors.yellow6
         />
       </div>
-      <TypeID.DataSource id={ID.DataSource.ID(id)} />
-      <HSpacing size=Spacing.sm />
-      <div className={Styles.withWidth(170)}>
-        <Text
-          value=name
-          color=Colors.mediumGray
-          weight=Text.Medium
-          nowrap=true
-          block=true
-          ellipsis=true
-        />
-      </div>
+      {success
+         ? <>
+             <TypeID.DataSource id={ID.DataSource.ID(id)} />
+             <HSpacing size=Spacing.sm />
+             <div className={Styles.withWidth(170)}>
+               <Text
+                 value=name
+                 color=Colors.gray7
+                 weight=Text.Medium
+                 nowrap=true
+                 block=true
+                 ellipsis=true
+               />
+             </div>
+           </>
+         : React.null}
     </div>
   | CreateOracleScript({id, sender, name}) =>
     <div className={Styles.rowWithWidth(width)}>
@@ -119,20 +138,24 @@ let make = (~msg: TxHook.Msg.t, ~width: int) => {
           color=Colors.pink6
         />
       </div>
-      <div className={Styles.rowWithWidth(200)}>
-        <TypeID.OracleScript id={ID.OracleScript.ID(id)} />
-        <HSpacing size=Spacing.sm />
-        <div className={Styles.withWidth(160)}>
-          <Text
-            value=name
-            color=Colors.mediumGray
-            weight=Text.Medium
-            nowrap=true
-            block=true
-            ellipsis=true
-          />
-        </div>
-      </div>
+      {success
+         ? <>
+             <div className={Styles.rowWithWidth(200)}>
+               <TypeID.OracleScript id={ID.OracleScript.ID(id)} />
+               <HSpacing size=Spacing.sm />
+               <div className={Styles.withWidth(150)}>
+                 <Text
+                   value=name
+                   color=Colors.gray7
+                   weight=Text.Medium
+                   nowrap=true
+                   block=true
+                   ellipsis=true
+                 />
+               </div>
+             </div>
+           </>
+         : React.null}
     </div>
   | EditOracleScript({id, sender, name}) =>
     <div className={Styles.rowWithWidth(width)}>
@@ -146,20 +169,24 @@ let make = (~msg: TxHook.Msg.t, ~width: int) => {
           color=Colors.pink6
         />
       </div>
-      <div className={Styles.rowWithWidth(210)}>
-        <TypeID.OracleScript id={ID.OracleScript.ID(id)} />
-        <HSpacing size=Spacing.sm />
-        <div className={Styles.withWidth(170)}>
-          <Text
-            value=name
-            color=Colors.mediumGray
-            weight=Text.Medium
-            nowrap=true
-            block=true
-            ellipsis=true
-          />
-        </div>
-      </div>
+      {success
+         ? <>
+             <div className={Styles.rowWithWidth(210)}>
+               <TypeID.OracleScript id={ID.OracleScript.ID(id)} />
+               <HSpacing size=Spacing.sm />
+               <div className={Styles.withWidth(170)}>
+                 <Text
+                   value=name
+                   color=Colors.gray7
+                   weight=Text.Medium
+                   nowrap=true
+                   block=true
+                   ellipsis=true
+                 />
+               </div>
+             </div>
+           </>
+         : React.null}
     </div>
   | Request({id, oracleScriptID, sender}) =>
     <div className={Styles.rowWithWidth(width)}>
@@ -173,22 +200,33 @@ let make = (~msg: TxHook.Msg.t, ~width: int) => {
           color=Colors.orange6
         />
       </div>
-      <TypeID.Request id={ID.Request.ID(id)} />
-      <HSpacing size=Spacing.sm />
-      <Text value={j|➜|j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
-      <HSpacing size=Spacing.sm />
-      <TypeID.OracleScript id={ID.OracleScript.ID(id)} />
-      <HSpacing size=Spacing.sm />
-      <div className={Styles.withWidth(170)}>
-        <Text
-          value="Mock Oracle Script" // TODO , replace with wire up data
-          color=Colors.mediumGray
-          weight=Text.Medium
-          nowrap=true
-          block=true
-          ellipsis=true
-        />
-      </div>
+      {success
+         ? <>
+             <TypeID.Request id={ID.Request.ID(id)} />
+             <HSpacing size=Spacing.sm />
+             <Text
+               value={j|➜|j}
+               size=Text.Xxl
+               weight=Text.Bold
+               code=true
+               nowrap=true
+               block=true
+             />
+             <HSpacing size=Spacing.sm />
+             <TypeID.OracleScript id={ID.OracleScript.ID(oracleScriptID)} />
+             <HSpacing size=Spacing.sm />
+             <div className={Styles.withWidth(170)}>
+               <Text
+                 value="Mock Oracle Script" // TODO , replace with wire up data
+                 color=Colors.gray7
+                 weight=Text.Medium
+                 nowrap=true
+                 block=true
+                 ellipsis=true
+               />
+             </div>
+           </>
+         : React.null}
     </div>
   | Report({requestID, sender}) =>
     <div className={Styles.rowWithWidth(width)}>
@@ -202,9 +240,20 @@ let make = (~msg: TxHook.Msg.t, ~width: int) => {
           color=Colors.orange6
         />
       </div>
-      <Text value={j|➜|j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
-      <HSpacing size=Spacing.sm />
-      <TypeID.Request id={ID.Request.ID(requestID)} />
+      {success
+         ? <>
+             <Text
+               value={j|➜|j}
+               size=Text.Xxl
+               weight=Text.Bold
+               code=true
+               nowrap=true
+               block=true
+             />
+             <HSpacing size=Spacing.sm />
+             <TypeID.Request id={ID.Request.ID(requestID)} />
+           </>
+         : React.null}
     </div>
   | Unknown => React.null
   };

@@ -7,13 +7,13 @@ module Styles = {
       backgroundImage(
         `linearGradient((
           deg(0.0),
-          [(`percent(0.0), Colors.white), (`percent(100.0), Colors.lighterGray)],
+          [(`percent(0.0), Colors.white), (`percent(100.0), Colors.gray2)],
         )),
       ),
     ]);
 
   let codeTabHeader =
-    style([lineHeight(`px(20)), borderBottom(`px(1), `solid, Colors.lightGray)]);
+    style([lineHeight(`px(20)), borderBottom(`px(1), `solid, Colors.gray4)]);
 
   let mediumText = style([fontSize(`px(14)), lineHeight(`px(20))]);
 
@@ -26,7 +26,7 @@ let renderCode = ((name, content)) => {
     <Row>
       <img src=Images.textDocument className=Styles.maxHeight20 />
       <HSpacing size=Spacing.md />
-      <Text value=name size=Text.Lg color=Colors.mediumGray />
+      <Text value=name size=Text.Lg color=Colors.gray7 />
     </Row>
     <VSpacing size=Spacing.md />
     <div className=Styles.mediumText>
@@ -47,17 +47,13 @@ let make = (~codeHash, ~params) => {
           <Row>
             <Col size=1.0>
               <Row>
-                <Col size=1.0>
-                  <Text value="Platform" color=Colors.darkGrayText size=Text.Lg />
-                </Col>
+                <Col size=1.0> <Text value="Platform" color=Colors.gray6 size=Text.Lg /> </Col>
                 <Col size=1.0> <Text value="OWASM v0.1" size=Text.Lg /> </Col>
               </Row>
             </Col>
             <Col size=1.0>
               <Row>
-                <Col size=1.0>
-                  <Text value="Parameters" color=Colors.darkGrayText size=Text.Lg />
-                </Col>
+                <Col size=1.0> <Text value="Parameters" color=Colors.gray6 size=Text.Lg /> </Col>
                 <Col size=1.0>
                   <Text value={params->Belt.List.length->string_of_int} size=Text.Lg />
                 </Col>
@@ -68,9 +64,7 @@ let make = (~codeHash, ~params) => {
           <Row>
             <Col size=1.0>
               <Row>
-                <Col size=1.0>
-                  <Text value="Language" color=Colors.darkGrayText size=Text.Lg />
-                </Col>
+                <Col size=1.0> <Text value="Language" color=Colors.gray6 size=Text.Lg /> </Col>
                 <Col size=1.0> <Text value="Rust 1.39.0" size=Text.Lg /> </Col>
               </Row>
             </Col>

@@ -77,14 +77,14 @@ let footerData = [|
 let renderSubHeader = text =>
   <>
     <div className=Styles.subHeader>
-      <Text value=text size=Text.Md weight=Text.Bold color=Colors.grayText />
+      <Text value=text size=Text.Md weight=Text.Bold color=Colors.gray5 />
     </div>
     <VSpacing size=Spacing.lg />
   </>;
 
 let renderCommonLink = (url, text) =>
   <a href=url target="_blank" rel="noopener" key=url className=Styles.commonLink>
-    <Text value=text size=Text.Md weight=Text.Semibold color=Colors.purple />
+    <Text value=text size=Text.Md weight=Text.Semibold color=Colors.purple7 />
   </a>;
 
 [@react.component]

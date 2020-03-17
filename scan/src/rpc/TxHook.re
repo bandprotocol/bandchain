@@ -41,7 +41,28 @@ module Coin = {
 
   let newCoin = (denom, amount) => {denom, amount};
 
-  let getDescription = coin => (coin.amount |> Format.fPretty) ++ " " ++ coin.denom;
+  let getBandAmountFromCoins = coins =>
+    coins
+    ->Belt_List.keep(coin => coin.denom == "uband")
+    ->Belt_List.get(0)
+    ->Belt_Option.mapWithDefault(0., coin => coin.amount);
+
+  let getDescription = coin =>
+    (coin.amount |> Format.fPretty)
+    ++ " "
+    ++ (
+      switch (coin.denom.[0]) {
+      | 'u' => coin.denom->String.sub(_, 1, (coin.denom |> String.length) - 1) |> String.uppercase
+      | _ => coin.denom
+      }
+    );
+
+  let toCoinsString = coins =>
+    coins
+    ->Belt_List.map(coin => coin->getDescription)
+    ->Belt_List.reduceWithIndex("", (des, acc, i) =>
+        acc ++ des ++ (i + 1 < coins->Belt_List.size ? ", " : "")
+      );
 };
 
 module Msg = {
@@ -72,7 +93,7 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
-        id: 952, // TODO, wire up
+        id: 0, // TODO , use id from events (not available right now)
         owner: json |> field("owner", string) |> Address.fromBech32,
         name: json |> field("name", string),
         fee: json |> field("fee", list(Coin.decodeCoin)),
@@ -113,7 +134,7 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
-        id: 999, // TODO , wire up
+        id: 0, // TODO , use id from events (not available right now)
         owner: json |> field("owner", string) |> Address.fromBech32,
         name: json |> field("name", string),
         code: json |> field("code", string) |> JsBuffer.fromBase64,
@@ -200,10 +221,10 @@ module Msg = {
   let getCreator = msg => {
     switch (msg.action) {
     | Send(send) => send.fromAddress
-    | CreateDataSource(dataSource) => dataSource.owner
-    | EditDataSource(dataSource) => dataSource.owner
-    | CreateOracleScript(oracleScript) => oracleScript.owner
-    | EditOracleScript(oracleScript) => oracleScript.owner
+    | CreateDataSource(dataSource) => dataSource.sender
+    | EditDataSource(dataSource) => dataSource.sender
+    | CreateOracleScript(oracleScript) => oracleScript.sender
+    | EditOracleScript(oracleScript) => oracleScript.sender
     | Request(request) => request.sender
     | Report(report) => report.sender
     | Unknown => "" |> Address.fromHex
@@ -213,13 +234,7 @@ module Msg = {
   let getDescription = msg => {
     switch (msg.action) {
     | Send(send) =>
-      send.amount
-      ->Belt_List.map(coin => coin->Coin.getDescription)
-      ->Belt_List.reduceWithIndex("", (des, acc, i) =>
-          acc ++ des ++ (i + 1 < send.amount->Belt_List.size ? ", " : "")
-        )
-      ++ "->"
-      ++ (send.toAddress |> Address.toBech32)
+      (send.amount |> Coin.toCoinsString) ++ "->" ++ (send.toAddress |> Address.toBech32)
     | CreateDataSource(dataSource) => dataSource.name
     | EditDataSource(dataSource) => dataSource.name
     | CreateOracleScript(oracleScript) => oracleScript.name
@@ -308,8 +323,27 @@ module Tx = {
     timestamp: MomentRe.Moment.t,
     gasWanted: int,
     gasUsed: int,
-    fee: Coin.t,
+    fee: list(Coin.t),
+    success: bool,
     messages: list(Msg.t),
+  };
+
+  let postProcessMsg = ((action, events)) => {
+    switch (action) {
+    | Msg.Request(request) =>
+      Msg.{
+        action:
+          Msg.Request({
+            ...request,
+            id:
+              events
+              ->Event.getValueOfKey("request.id")
+              ->Belt_Option.mapWithDefault(0, int_of_string),
+          }),
+        events,
+      }
+    | _ => Msg.{action, events}
+    };
   };
 
   let decodeTx = json =>
@@ -325,15 +359,18 @@ module Tx = {
       timestamp: json |> field("timestamp", moment),
       gasWanted: json |> field("gas_wanted", intstr),
       gasUsed: json |> field("gas_used", intstr),
-      fee: Coin.newCoin("uband", 10000.0),
+      fee: json |> at(["tx", "value", "fee", "amount"], list(Coin.decodeCoin)),
+      success:
+        (json |> optional(field("logs", list(log => log |> field("success", bool)))))
+        ->Belt.Option.getWithDefault([])
+        ->Belt_List.some(isSuccess => isSuccess),
       messages: {
         let actions = json |> at(["tx", "value", "msg"], list(Msg.decodeAction));
         let eventDoubleLists =
           json
           |> optional(field("logs", list(Event.decodeEvents)))
           |> Belt.Option.getWithDefault(_, actions->Belt_List.map(_ => []));
-        Belt.List.zip(actions, eventDoubleLists)
-        ->Belt.List.map(((action, events)) => Msg.{action, events});
+        Belt.List.zip(actions, eventDoubleLists)->Belt.List.map(postProcessMsg);
       },
     };
 

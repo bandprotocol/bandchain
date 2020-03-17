@@ -1,7 +1,7 @@
 module Styles = {
   open Css;
   let mediumText = style([fontSize(`px(14)), lineHeight(`px(20))]);
-  let tableLowerContainer = style([padding(`px(20)), background(Colors.lighterGray)]);
+  let tableLowerContainer = style([padding(`px(20)), background(Colors.gray2)]);
   let tableHeader = style([cursor(`pointer), width(`percent(100.0))]);
   let maxHeight20 = style([maxHeight(`px(20))]);
 };
@@ -33,7 +33,7 @@ module CopyComponent = {
           <Text
             value={copying ? "Copying" : "Copy proof for Ethereum"}
             size=Text.Lg
-            color=Colors.brightPurple
+            color=Colors.purple3
           />
         </Row>
       </div>

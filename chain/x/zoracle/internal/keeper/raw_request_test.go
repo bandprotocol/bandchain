@@ -21,7 +21,7 @@ func TestGettterSetterRawDataRequest(t *testing.T) {
 	require.Equal(t, expect, rawRequest)
 
 	_, err = keeper.GetRawDataRequest(ctx, 1, 3)
-	require.Equal(t, types.CodeRequestNotFound, err.Code())
+	require.Equal(t, types.CodeItemNotFound, err.Code())
 }
 
 func TestAddNewRawDataRequest(t *testing.T) {
@@ -58,7 +58,7 @@ func TestAddNewRawDataRequest(t *testing.T) {
 	require.Equal(t, expect, rawRequest)
 
 	_, err = keeper.GetRawDataRequest(ctx, 1, 3)
-	require.Equal(t, types.CodeRequestNotFound, err.Code())
+	require.Equal(t, types.CodeItemNotFound, err.Code())
 
 	// Add new datasource
 	dataSource2 := types.NewDataSource(
@@ -73,6 +73,40 @@ func TestAddNewRawDataRequest(t *testing.T) {
 	// Cannot set to existed external id
 	err = keeper.AddNewRawDataRequest(ctx, 1, 42, 2, []byte("calldata3"))
 	require.NotNil(t, err)
+}
+
+func TestGasConsumeByAddNewRawDataRequest(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+	request := newDefaultRequest()
+
+	// Set GasPerRawDataRequestPerValidator to 10000
+	keeper.SetGasPerRawDataRequestPerValidator(ctx, 10000)
+	keeper.SetRequest(ctx, 1, request)
+
+	dataSource := types.NewDataSource(
+		sdk.AccAddress([]byte("owner")),
+		"data_source",
+		"description",
+		sdk.NewCoins(sdk.NewInt64Coin("uband", 10)),
+		[]byte("executable"),
+	)
+	keeper.SetDataSource(ctx, 1, dataSource)
+
+	beforeGas := ctx.GasMeter().GasConsumed()
+	err := keeper.AddNewRawDataRequest(ctx, 1, 42, 1, []byte("calldata1"))
+	require.Nil(t, err)
+
+	gasUsed := ctx.GasMeter().GasConsumed() - beforeGas
+
+	// Set GasPerRawDataRequestPerValidator to 25000
+	keeper.SetGasPerRawDataRequestPerValidator(ctx, 25000)
+	keeper.SetRequest(ctx, 2, request)
+	beforeGas = ctx.GasMeter().GasConsumed()
+	err = keeper.AddNewRawDataRequest(ctx, 2, 42, 1, []byte("calldata1"))
+	require.Nil(t, err)
+
+	gasUsed2 := ctx.GasMeter().GasConsumed() - beforeGas
+	require.Equal(t, uint64(30000), gasUsed2-gasUsed)
 }
 
 func TestGetRawDataRequestCount(t *testing.T) {

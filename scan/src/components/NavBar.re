@@ -19,22 +19,22 @@ module Styles = {
 let make = () => {
   <div className=Styles.navContainer>
     <Row>
-      <Col size=1.> <Text color=Colors.grayText value="Made with <3 by Band Protocol" /> </Col>
+      <Col size=1.> <Text color=Colors.gray5 value="Made with <3 by Band Protocol" /> </Col>
       <Col>
         <Row justify=Row.Right>
           {[
              ("Home", Route.HomePage),
-             //  ("Validators", Route.HomePage),
+             ("Validators", Route.ValidatorHomePage),
              ("Blocks", BlockHomePage),
              ("Transactions", TxHomePage),
-             ("Oracle Scripts", ScriptHomePage),
-             //  ("Data Providers", HomePage),
+             ("Data Sources", DataSourceHomePage),
+             //  ("Oracle Scripts", ScriptHomePage),
              //  ("OWASM Studio", HomePage),
            ]
            ->Belt.List.map(((v, route)) =>
                <Col key=v>
                  <div className=Styles.nav onClick={_ => route |> Route.redirect}>
-                   <Text color=Colors.grayText value=v nowrap=true />
+                   <Text color=Colors.gray5 value=v nowrap=true />
                  </div>
                </Col>
              )
