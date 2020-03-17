@@ -68,11 +68,11 @@ func (m *mockExecutionEnvironment) GetExternalData(
 	externalDataID int64,
 	validatorIndex int64,
 ) ([]byte, uint8, error) {
-	if len(m.requestExternalDataResultsCounter) <= int(externalDataID) {
+	if int64(len(m.requestExternalDataResultsCounter)) <= externalDataID {
 		return nil, 0, fmt.Errorf("externalDataID is out of range")
 	}
 
-	if len(m.requestExternalDataResultsCounter[externalDataID]) <= int(validatorIndex) {
+	if int64(len(m.requestExternalDataResultsCounter[externalDataID])) <= validatorIndex {
 		return nil, 0, fmt.Errorf("validatorIndex is out of range")
 	}
 
