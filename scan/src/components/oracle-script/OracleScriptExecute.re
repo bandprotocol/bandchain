@@ -209,13 +209,14 @@ let resultRender = result => {
                    {kvs->Belt_List.map(entry =>
                       <div className={Styles.hFlex(`px(20))}>
                         <div className={Styles.vFlex(`px(220), `auto)}>
-                          <Text value={entry->Belt_List.getExn(0)} />
+                          <Text value={entry->Belt_List.getExn(0)} color=Colors.gray8 />
                         </div>
                         <div className={Styles.vFlex(`px(440), `auto)}>
                           <Text
                             value={entry->Belt_List.getExn(1)}
                             code=true
-                            weight=Text.Semibold
+                            color=Colors.gray8
+                            weight=Text.Bold
                           />
                         </div>
                       </div>
