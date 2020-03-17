@@ -4,14 +4,14 @@ module Styles = {
   let container =
     style([
       backgroundColor(Colors.white),
-      boxShadow(Shadow.box(~x=`px(0), ~y=`px(2), ~blur=`px(10), Css.rgba(0, 0, 0, 0.08))),
+      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(10), Css.rgba(0, 0, 0, 0.08))),
     ]);
   let header =
     style([
       backgroundColor(Colors.white),
       padding2(~v=`zero, ~h=`px(20)),
       borderBottom(`px(1), `solid, Colors.gray4),
-      boxShadow(Shadow.box(~x=`px(0), ~y=`px(2), ~blur=`px(10), Css.rgba(0, 0, 0, 0.08))),
+      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(10), Css.rgba(0, 0, 0, 0.08))),
     ]);
 
   let buttonContainer = active =>
