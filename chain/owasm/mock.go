@@ -1,6 +1,9 @@
 package owasm
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 type mockExecutionEnvironment struct {
 	requestID                         int64
@@ -60,6 +63,19 @@ func (m *mockExecutionEnvironment) RequestExternalData(
 	// TODO: Figure out how to mock this elegantly.
 	fmt.Printf("RequestExternalData: DataSourceID = %d, ExternalDataID = %d\n", dataSourceID, externalDataID)
 	return nil
+}
+
+func (m *mockExecutionEnvironment) GetExternalDataStatus(
+	externalDataID int64,
+	validatorIndex int64,
+) (uint8, error) {
+	if len(m.requestExternalDataResultsCounter) <= int(externalDataID) {
+		return 0, errors.New("validator out of range")
+	}
+	if len(m.requestExternalDataResultsCounter[externalDataID]) <= int(validatorIndex) {
+		return 0, errors.New("failed to get data from validator")
+	}
+	return 0, nil
 }
 
 func (m *mockExecutionEnvironment) GetExternalData(

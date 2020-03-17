@@ -48,6 +48,8 @@ func (r *resolver) ResolveFunc(module, field string) exec.FunctionImport {
 		return r.resolveSaveReturnData
 	case "requestExternalData":
 		return r.resolveRequestExternalData
+	case "getExternalDataStatus":
+		return r.resolveGetExternalDataStatus
 	case "getExternalDataSize":
 		return r.resolveGetExternalDataSize
 	case "readExternalData":
@@ -90,7 +92,7 @@ func (r *resolver) resolveReadValidatorAddress(vm *exec.VirtualMachine) int64 {
 	resultOffset := int(GetLocalInt64(vm, 0))
 	address, err := r.env.GetValidatorAddress(validatorIndex)
 	if err != nil {
-		return 1
+		return -1
 	}
 	copy(vm.Memory[resultOffset:resultOffset+len(address)], address)
 	return 0
@@ -112,7 +114,7 @@ func (r *resolver) resolveSaveReturnData(vm *exec.VirtualMachine) int64 {
 	dataOffset := int(GetLocalInt64(vm, 0))
 	dataLength := int(GetLocalInt64(vm, 1))
 	if dataLength > int(r.env.GetMaximumResultSize()) {
-		return 1
+		return -1
 	}
 	r.result = make([]byte, dataLength)
 	copy(r.result, vm.Memory[dataOffset:dataOffset+dataLength])
@@ -125,13 +127,13 @@ func (r *resolver) resolveRequestExternalData(vm *exec.VirtualMachine) int64 {
 	dataOffset := int(GetLocalInt64(vm, 2))
 	dataLength := int(GetLocalInt64(vm, 3))
 	if dataLength > int(r.env.GetMaximumCalldataOfDataSourceSize()) {
-		return 1
+		return -1
 	}
 	data := make([]byte, dataLength)
 	copy(data, vm.Memory[dataOffset:dataOffset+dataLength])
 	err := r.env.RequestExternalData(dataSourceID, externalDataID, data)
 	if err != nil {
-		return 1
+		return -1
 	}
 	return 0
 }
@@ -152,12 +154,20 @@ func (r *resolver) getExternalDataFromCache(externalDataID int64, validatorIndex
 	return externalData, err
 }
 
+func (r *resolver) resolveGetExternalDataStatus(vm *exec.VirtualMachine) int64 {
+	externalDataID := GetLocalInt64(vm, 0)
+	validatorIndex := GetLocalInt64(vm, 1)
+	status, err := r.env.GetExternalDataStatus(externalDataID, validatorIndex)
+	if err != nil {
+		return -1
+	}
+	return int64(status)
+}
+
 func (r *resolver) resolveGetExternalDataSize(vm *exec.VirtualMachine) int64 {
 	externalDataID := GetLocalInt64(vm, 0)
 	validatorIndex := GetLocalInt64(vm, 1)
-
 	externalData, err := r.getExternalDataFromCache(externalDataID, validatorIndex)
-
 	if err != nil {
 		return -1
 	}
@@ -170,10 +180,9 @@ func (r *resolver) resolveReadExternalData(vm *exec.VirtualMachine) int64 {
 	resultOffset := int(GetLocalInt64(vm, 2))
 	seekOffset := int(GetLocalInt64(vm, 3))
 	resultSize := int(GetLocalInt64(vm, 4))
-
 	externalData, err := r.getExternalDataFromCache(externalDataID, validatorIndex)
 	if err != nil {
-		return 1
+		return -1
 	}
 	copy(vm.Memory[resultOffset:resultOffset+resultSize], externalData[seekOffset:seekOffset+resultSize])
 	return 0

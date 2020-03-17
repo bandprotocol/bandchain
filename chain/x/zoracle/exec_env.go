@@ -80,6 +80,26 @@ func (env *ExecutionEnvironment) RequestExternalData(
 	return env.keeper.AddNewRawDataRequest(env.ctx, env.requestID, types.ExternalID(externalDataID), types.DataSourceID(dataSourceID), calldata)
 }
 
+func (env *ExecutionEnvironment) GetExternalDataStatus(
+	externalDataID int64,
+	validatorIndex int64,
+) (uint8, error) {
+	if validatorIndex < 0 || validatorIndex >= int64(len(env.request.RequestedValidators)) {
+		return 0, errors.New("validator out of range")
+	}
+	validatorAddress := env.request.RequestedValidators[validatorIndex]
+	rawReport, err := env.keeper.GetRawDataReport(
+		env.ctx,
+		env.requestID,
+		types.ExternalID(externalDataID),
+		validatorAddress,
+	)
+	if err != nil {
+		return 0, errors.New("failed to get data from validator")
+	}
+	return rawReport.ExitCode, nil
+}
+
 func (env *ExecutionEnvironment) GetExternalData(
 	externalDataID int64,
 	validatorIndex int64,
