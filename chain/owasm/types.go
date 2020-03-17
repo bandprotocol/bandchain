@@ -50,16 +50,11 @@ type ExecutionEnvironment interface {
 		calldata []byte,
 	) error
 
-	// GetExternalDataStatus returns the execution status as reported from the given
-	// validator index to the specified external data ID. The function must only be
-	// called during the *aggregation* phase.
-	GetExternalDataStatus(externalDataID int64, validatorIndex int64) (uint8, error)
-
 	// GetExternalData reads from the execution environment state for a raw
 	// data report for the specified external data ID from the specified validator.
 	// The function must only be called during the *aggregation* phase.
 	GetExternalData(
 		externalDataID int64,
 		validatorIndex int64,
-	) ([]byte, error)
+	) ([]byte, uint8, error)
 }

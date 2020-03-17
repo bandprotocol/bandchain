@@ -1,7 +1,6 @@
 package owasm
 
 import (
-	"errors"
 	"fmt"
 )
 
@@ -65,31 +64,18 @@ func (m *mockExecutionEnvironment) RequestExternalData(
 	return nil
 }
 
-func (m *mockExecutionEnvironment) GetExternalDataStatus(
-	externalDataID int64,
-	validatorIndex int64,
-) (uint8, error) {
-	if len(m.requestExternalDataResultsCounter) <= int(externalDataID) {
-		return 0, errors.New("validator out of range")
-	}
-	if len(m.requestExternalDataResultsCounter[externalDataID]) <= int(validatorIndex) {
-		return 0, errors.New("failed to get data from validator")
-	}
-	return 0, nil
-}
-
 func (m *mockExecutionEnvironment) GetExternalData(
 	externalDataID int64,
 	validatorIndex int64,
-) ([]byte, error) {
+) ([]byte, uint8, error) {
 	if len(m.requestExternalDataResultsCounter) <= int(externalDataID) {
-		return []byte{}, fmt.Errorf("externalDataID is out of range")
+		return nil, 0, fmt.Errorf("externalDataID is out of range")
 	}
 
 	if len(m.requestExternalDataResultsCounter[externalDataID]) <= int(validatorIndex) {
-		return []byte{}, fmt.Errorf("validatorIndex is out of range")
+		return nil, 0, fmt.Errorf("validatorIndex is out of range")
 	}
 
 	m.requestExternalDataResultsCounter[externalDataID][validatorIndex]++
-	return m.externalDataResults[externalDataID][validatorIndex], nil
+	return m.externalDataResults[externalDataID][validatorIndex], 0, nil
 }
