@@ -45,8 +45,8 @@ let make = () => {
 
   let pageCount =
     {
-      let%Opt dataSourceCount = dataSourcesCountOpt;
-      Some(Page.getPageCount(dataSourceCount->Belt.List.size, limit));
+      let%Opt dataSourcesCount = dataSourcesCountOpt;
+      Some(Page.getPageCount(dataSourcesCount->Belt.List.size, limit));
     }
     |> Belt.Option.getWithDefault(_, 1);
 
