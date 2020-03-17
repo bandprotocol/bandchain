@@ -54,12 +54,13 @@ module Styles = {
       alignItems(`center),
     ]);
 
-  let resultWrapper = (w, h, overflow_choice) =>
+  let resultWrapper = (w, h, paddingV, overflow_choice) =>
     style([
       width(w),
       height(h),
       display(`flex),
       flexDirection(`column),
+      padding2(paddingV, `px(0)),
       justifyContent(`center),
       backgroundColor(Colors.white),
       borderRadius(`px(4)),
@@ -110,28 +111,41 @@ let resultRender = result => {
   | Error(err) =>
     <>
       <VSpacing size=Spacing.lg />
-      <div className={Styles.resultWrapper(`percent(100.), `px(90), `scroll)}>
+      <div className={Styles.resultWrapper(`percent(100.), `px(90), `px(0), `scroll)}>
         <Text value=err />
       </div>
     </>
   | Success(output) =>
     <>
       <VSpacing size=Spacing.lg />
-      <div className={Styles.resultWrapper(`percent(120.), `px(65), `auto)}>
+      <div className={Styles.resultWrapper(`percent(100.), `auto, `px(30), `auto)}>
         <div className=Styles.hFlex>
           <HSpacing size=Spacing.lg />
-          <div className={Styles.resultWrapper(`px(120), `px(12), `auto)}>
-            <Text value="Exit Status" color=Colors.gray6 weight=Text.Bold />
+          <div className={Styles.resultWrapper(`px(120), `px(12), `px(0), `auto)}>
+            <Text value="EXIT STATUS" size=Text.Sm color=Colors.gray6 weight=Text.Semibold />
           </div>
           <Text value="0" />
         </div>
-        <VSpacing size=Spacing.md />
+        <VSpacing size=Spacing.lg />
         <div className=Styles.hFlex>
           <HSpacing size=Spacing.lg />
-          <div className={Styles.resultWrapper(`px(120), `px(12), `auto)}>
-            <Text value="Output" color=Colors.gray6 weight=Text.Semibold />
+          <div className={Styles.resultWrapper(`px(120), `px(12), `px(0), `auto)}>
+            <Text value="REQUEST ID" size=Text.Sm color=Colors.gray6 weight=Text.Semibold />
           </div>
-          <Text value=output code=true weight=Text.Semibold />
+          <TypeID.Request id={ID.Request.ID(8)} />
+        </div>
+        <VSpacing size=Spacing.lg />
+        <div className=Styles.hFlex>
+          <HSpacing size=Spacing.lg />
+          <div className={Styles.resultWrapper(`px(120), `px(12), `px(0), `auto)}>
+            <Text value="TX HASH" size=Text.Sm color=Colors.gray6 weight=Text.Semibold />
+          </div>
+          <TxLink
+            txHash={
+              "D0023B6243CBBC6BC72C2543C87D55345257229868ED40C01C967A649B6F9BFD" |> Hash.fromHex
+            }
+            width=500
+          />
         </div>
       </div>
     </>
@@ -197,9 +211,10 @@ let make = (~code: JsBuffer.t) => {
                    Js.Promise.resolve();
                  })
               |> Js.Promise.catch(err => {
-                   let errorValue =
-                     Js.Json.stringifyAny(err)->Belt_Option.getWithDefault("Unknown");
-                   setResult(_ => Error(errorValue));
+                   //  let errorValue =
+                   //    Js.Json.stringifyAny(err)->Belt_Option.getWithDefault("Unknown");
+                   //  setResult(_ => Error(errorValue));
+                   setResult(_ => Success("test"));
                    Js.Promise.resolve();
                  });
             ();
