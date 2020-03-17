@@ -196,18 +196,18 @@ let resultRender = result => {
            ? <>
                <div className={Styles.hFlex(`auto)}>
                  <HSpacing size=Spacing.lg />
-                 <div className={Styles.vFlex(`px(220), `px(15 * (kvs |> Belt_List.length)))}>
+                 <div className={Styles.vFlex(`px(220), `px(20 * (kvs |> Belt_List.length)))}>
                    <Text
                      value="OUTPUT"
                      size=Text.Sm
                      color=Colors.gray6
                      weight=Text.Semibold
-                     height={Text.Px(15)}
+                     height={Text.Px(20)}
                    />
                  </div>
                  <div className={Styles.vFlex(`auto, `auto)}>
                    {kvs->Belt_List.map(entry =>
-                      <div className={Styles.hFlex(`px(15))}>
+                      <div className={Styles.hFlex(`px(20))}>
                         <div className={Styles.vFlex(`px(220), `auto)}>
                           <Text value={entry->Belt_List.getExn(0)} />
                         </div>
