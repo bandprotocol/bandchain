@@ -118,6 +118,17 @@ let totalBalance = (title, amount, symbol) => {
 
 [@react.component]
 let make = (~address, ~hashtag: Route.account_tab_t) => {
+  let globalInfo = ValidatorHook.getGlobalInfo();
+  let priceOpt = PriceHook.get();
+  let avialableBalanceBand = globalInfo.totalSupply;
+
+  let avialableBalanceUSD = {
+    let%Opt price = priceOpt;
+
+    let supplyUSD = (avialableBalanceBand |> float_of_int) *. price.usdPrice;
+    Some(supplyUSD);
+  };
+
   <div className=Styles.pageContainer>
     <Row justify=Row.Between>
       <Col>
@@ -143,7 +154,16 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
     <Row justify=Row.Between>
       <Col size=0.75> <img src=Images.pieChart className=Styles.graph /> </Col>
       <Col size=1.>
-        {balanceDetail("AVAILABLE BALANCE", "10,547,434.89", "4,829,360.21", "5269FF")}
+        {switch (avialableBalanceUSD) {
+         | Some(usd) =>
+           balanceDetail(
+             "AVAILABLE BALANCE",
+             avialableBalanceBand |> Format.iPretty,
+             usd |> Format.fPretty,
+             "5269FF",
+           )
+         | _ => balanceDetail("AVAILABLE BALANCE", "?", "?", "5269FF")
+         }}
         <VSpacing size=Spacing.xl />
         <VSpacing size=Spacing.md />
         {balanceDetail("BALANCE AT STAKE", "1,800,000.00", "158,303.88", "ABB6FF")}
