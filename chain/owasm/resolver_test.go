@@ -133,10 +133,10 @@ func TestGetExternalDataFromCacheSuccess(t *testing.T) {
 	extID := GetLocalInt64(vm, 0)
 	valIndex := GetLocalInt64(vm, 1)
 
-	externalData, err := resolver.getExternalDataFromCache(extID, valIndex)
+	externalData, statusCode, err := resolver.getExternalDataFromCache(extID, valIndex)
 	require.Nil(t, err)
 	require.Equal(t, []byte("RETURN_DATA"), externalData)
-
+	require.Equal(t, uint8(0), statusCode)
 }
 
 func TestSpamGetExternalDataFromCache(t *testing.T) {
@@ -186,17 +186,20 @@ func TestSpamGetExternalDataFromCache(t *testing.T) {
 	extID := GetLocalInt64(vm, 0)
 	valIndex := GetLocalInt64(vm, 1)
 
-	externalData, err := resolver.getExternalDataFromCache(extID, valIndex)
+	externalData, statusCode, err := resolver.getExternalDataFromCache(extID, valIndex)
 	require.Nil(t, err)
 	require.Equal(t, []byte("RETURN_DATA"), externalData)
+	require.Equal(t, uint8(0), statusCode)
 
-	externalData, err = resolver.getExternalDataFromCache(extID, valIndex)
+	externalData, statusCode, err = resolver.getExternalDataFromCache(extID, valIndex)
 	require.Nil(t, err)
 	require.Equal(t, []byte("RETURN_DATA"), externalData)
+	require.Equal(t, uint8(0), statusCode)
 
-	externalData, err = resolver.getExternalDataFromCache(extID, valIndex)
+	externalData, statusCode, err = resolver.getExternalDataFromCache(extID, valIndex)
 	require.Nil(t, err)
 	require.Equal(t, []byte("RETURN_DATA"), externalData)
+	require.Equal(t, uint8(0), statusCode)
 
 	require.Equal(t, int64(1), env.requestExternalDataResultsCounter[extID][valIndex])
 }
@@ -250,7 +253,7 @@ func TestGetExternalDataFromCacheFail(t *testing.T) {
 	extID := int64(1000)
 	valIndex := int64(1000)
 
-	_, err = resolver.getExternalDataFromCache(extID, valIndex)
+	_, _, err = resolver.getExternalDataFromCache(extID, valIndex)
 	require.NotNil(t, err)
 }
 

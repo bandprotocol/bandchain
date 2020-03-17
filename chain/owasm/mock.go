@@ -1,6 +1,8 @@
 package owasm
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type mockExecutionEnvironment struct {
 	requestID                         int64
@@ -65,15 +67,15 @@ func (m *mockExecutionEnvironment) RequestExternalData(
 func (m *mockExecutionEnvironment) GetExternalData(
 	externalDataID int64,
 	validatorIndex int64,
-) ([]byte, error) {
-	if len(m.requestExternalDataResultsCounter) <= int(externalDataID) {
-		return []byte{}, fmt.Errorf("externalDataID is out of range")
+) ([]byte, uint8, error) {
+	if int64(len(m.requestExternalDataResultsCounter)) <= externalDataID {
+		return nil, 0, fmt.Errorf("externalDataID is out of range")
 	}
 
-	if len(m.requestExternalDataResultsCounter[externalDataID]) <= int(validatorIndex) {
-		return []byte{}, fmt.Errorf("validatorIndex is out of range")
+	if int64(len(m.requestExternalDataResultsCounter[externalDataID])) <= validatorIndex {
+		return nil, 0, fmt.Errorf("validatorIndex is out of range")
 	}
 
 	m.requestExternalDataResultsCounter[externalDataID][validatorIndex]++
-	return m.externalDataResults[externalDataID][validatorIndex], nil
+	return m.externalDataResults[externalDataID][validatorIndex], 0, nil
 }
