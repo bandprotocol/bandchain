@@ -5,7 +5,7 @@ type t =
   | Text(string)
   | Timestamp(MomentRe.Moment.t)
   | Fee(float)
-  | DataSources(list(int))
+  | DataSources(list(ID.DataSource.t))
   | Hash(Hash.t, Css.Types.Color.t)
   | Address(Address.t, int)
   | Fraction(int, int, bool)
@@ -128,10 +128,7 @@ let make = (~info, ~header, ~isLeft=true) => {
        <div className=Styles.datasourcesContainer>
          {ids
           ->Belt.List.map(id =>
-              <>
-                <TypeID.DataSource id={ID.DataSource.ID(id)} position=TypeID.Subtitle />
-                <HSpacing size=Spacing.sm />
-              </>
+              <> <TypeID.DataSource id position=TypeID.Subtitle /> <HSpacing size=Spacing.sm /> </>
             )
           ->Array.of_list
           ->React.array}
