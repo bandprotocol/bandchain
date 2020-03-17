@@ -14,6 +14,14 @@ describe("Expect Search Functionality to work correctly", () => {
          ),
        )
   );
+  test("test block route prefix is 0x", () =>
+    expect("22638794cb5f306ef929b90c58b27d26cb35a77ca5c5c624cf2025a98528c323" |> search)
+    |> toEqual(
+         TxIndexPage(
+           "0x22638794cb5f306ef929b90c58b27d26cb35a77ca5c5c624cf2025a98528c323" |> Hash.fromHex,
+         ),
+       )
+  );
   test("test block prefix is B", () =>
     expect("B123" |> search) |> toEqual(BlockIndexPage(123))
   );
