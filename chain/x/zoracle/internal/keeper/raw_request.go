@@ -46,7 +46,7 @@ func (k Keeper) CheckRawDataRequestExists(ctx sdk.Context, requestID types.Reque
 func (k Keeper) AddNewRawDataRequest(
 	ctx sdk.Context, requestID types.RequestID, externalID types.ExternalID, dataSourceID types.DataSourceID, calldata []byte,
 ) sdk.Error {
-	if len(calldata) > int(k.MaxCalldataSize(ctx)) {
+	if int64(len(calldata)) > k.MaxCalldataSize(ctx) {
 		return types.ErrBadDataValue(
 			"AddNewRawDataRequest: Calldata size (%d) exceeds the maximum size (%d).",
 			len(calldata),
