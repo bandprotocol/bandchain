@@ -20,7 +20,7 @@ module Styles = {
       display(`flex),
       borderRadius(`px(10)),
       backgroundColor(Colors.pink2),
-      padding4(~top=`px(0), ~bottom=`px(0), ~left=Spacing.sm, ~right=Spacing.sm),
+      padding4(~top=`zero, ~bottom=`zero, ~left=Spacing.sm, ~right=Spacing.sm),
       height(`px(20)),
       justifyContent(`center),
       alignItems(`center),
