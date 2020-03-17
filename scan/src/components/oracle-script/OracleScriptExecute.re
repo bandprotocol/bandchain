@@ -165,7 +165,7 @@ let make = (~code: JsBuffer.t) => {
     <div className=Styles.hFlex>
       <Text
         value={
-          "Request data"
+          "Request"
           ++ (numParams == 0 ? "" : " with" ++ (numParams == 1 ? " a " : " ") ++ "following")
         }
         color=Colors.gray7
