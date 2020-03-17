@@ -67,7 +67,7 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) => {
     {switch (oracleScriptOpt) {
      | Some(oracleScript) =>
        <>
-         <VSpacing size=Spacing.md />
+         <VSpacing size=Spacing.xl />
          <div className=Styles.vFlex>
            <TypeID.OracleScript id={ID.OracleScript.ID(oracleScript.id)} position=TypeID.Title />
            <HSpacing size=Spacing.md />
