@@ -50,36 +50,43 @@ module ClickableSymbol = {
 };
 
 [@react.component]
-let make = (~currentPage, ~pageCount, ~onPageChange: int => unit) => {
-  <div className=Styles.container>
-    <div className=Styles.innerContainer>
-      <ClickableText isFirst=true onClick={_ => onPageChange(1)} active={currentPage != 1} />
-      <HSpacing size=Spacing.lg />
-      <ClickableSymbol
-        isPrevious=true
-        active={currentPage != 1}
-        onClick={_ => onPageChange(currentPage < 1 ? 1 : currentPage - 1)}
-      />
-      <HSpacing size=Spacing.md />
-      <Text value="Page" spacing={Text.Em(0.03)} />
-      <HSpacing size=Spacing.sm />
-      <Text value={currentPage |> Format.iPretty} spacing={Text.Em(0.03)} weight=Text.Semibold />
-      <HSpacing size=Spacing.sm />
-      <Text value="of" spacing={Text.Em(0.03)} />
-      <HSpacing size=Spacing.sm />
-      <Text value={pageCount |> Format.iPretty} spacing={Text.Em(0.03)} weight=Text.Semibold />
-      <HSpacing size=Spacing.md />
-      <ClickableSymbol
-        isPrevious=false
-        active={currentPage != pageCount}
-        onClick={_ => onPageChange(currentPage > pageCount ? pageCount : currentPage + 1)}
-      />
-      <HSpacing size=Spacing.lg />
-      <ClickableText
-        isFirst=false
-        active={currentPage != pageCount}
-        onClick={_ => onPageChange(pageCount)}
-      />
-    </div>
-  </div>;
-};
+let make = (~currentPage, ~pageCount, ~onPageChange: int => unit) =>
+  if (pageCount > 1) {
+    <div className=Styles.container>
+      <div className=Styles.innerContainer>
+        <ClickableText isFirst=true onClick={_ => onPageChange(1)} active={currentPage != 1} />
+        <HSpacing size=Spacing.lg />
+        <ClickableSymbol
+          isPrevious=true
+          active={currentPage != 1}
+          onClick={_ => onPageChange(currentPage < 1 ? 1 : currentPage - 1)}
+        />
+        <HSpacing size=Spacing.md />
+        <Text value="Page" spacing={Text.Em(0.03)} />
+        <HSpacing size=Spacing.sm />
+        <Text
+          value={currentPage |> Format.iPretty}
+          spacing={Text.Em(0.03)}
+          weight=Text.Semibold
+        />
+        <HSpacing size=Spacing.sm />
+        <Text value="of" spacing={Text.Em(0.03)} />
+        <HSpacing size=Spacing.sm />
+        <Text value={pageCount |> Format.iPretty} spacing={Text.Em(0.03)} weight=Text.Semibold />
+        <HSpacing size=Spacing.md />
+        <ClickableSymbol
+          isPrevious=false
+          active={currentPage != pageCount}
+          onClick={_ => onPageChange(currentPage > pageCount ? pageCount : currentPage + 1)}
+        />
+        <HSpacing size=Spacing.lg />
+        <ClickableText
+          isFirst=false
+          active={currentPage != pageCount}
+          onClick={_ => onPageChange(pageCount)}
+        />
+      </div>
+    </div>;
+  } else {
+    React.null;
+  };
