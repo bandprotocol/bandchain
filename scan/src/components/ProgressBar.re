@@ -41,8 +41,8 @@ module Styles = {
 
   let arrowDown =
     style([
-      width(`px(0)),
-      height(`px(0)),
+      width(`zero),
+      height(`zero),
       borderLeft(`px(6), `solid, Colors.transparent),
       borderRight(`px(6), `solid, Colors.transparent),
       borderTop(`px(6), `solid, Colors.bandBlue),
