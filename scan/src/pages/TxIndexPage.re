@@ -101,7 +101,7 @@ let make = (~txHash) => {
            <Col size=2.2>
              <InfoHL info={InfoHL.Timestamp(tx.timestamp)} header="TIMESTAMP" />
            </Col>
-           <Col size=1.4> <InfoHL info={InfoHL.Address(tx.sender)} header="SENDER" /> </Col>
+           <Col size=1.4> <InfoHL info={InfoHL.Address(tx.sender, 290)} header="SENDER" /> </Col>
          </>
        | None =>
          <>

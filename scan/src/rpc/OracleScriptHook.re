@@ -29,6 +29,7 @@ module OracleScript = {
         {
           id: 1,
           oracleScriptID: 1,
+          oracleScriptName: "name",
           calldata: "AAAAAAAAV0M=" |> JsBuffer.fromBase64,
           requestedValidators: [
             "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,

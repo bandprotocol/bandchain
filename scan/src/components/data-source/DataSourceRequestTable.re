@@ -3,7 +3,7 @@ module Styles = {
 
   let tableWrapper = style([padding2(~v=`px(20), ~h=`px(15))]);
 
-  let fixWidth = style([width(`px(230))]);
+  let txContainer = style([width(`px(230)), cursor(`pointer)]);
 
   let icon = style([width(`px(80)), height(`px(80))]);
   let iconWrapper =
@@ -20,51 +20,8 @@ type oracle_script_t = {
   description: string,
 };
 
-type request_t = {
-  id: int,
-  oracleScript: oracle_script_t,
-  age: MomentRe.Moment.t,
-  blockHeight: int,
-  txHash: Hash.t,
-};
-
 [@react.component]
-let make = () => {
-  let requests: list(request_t) = [
-    {
-      id: 6,
-      oracleScript: {
-        id: 895,
-        description: "Mean Bitcoin Price",
-      },
-      age: MomentRe.momentNow(),
-      blockHeight: 234554,
-      txHash: Hash.fromHex("e7f3388a05a804fa99470aa90a18c60abb6b41b8f766e2096db5b1ad89154538"),
-    },
-    {
-      id: 23,
-      oracleScript: {
-        id: 32,
-        description: "Median Stellar Price",
-      },
-      age:
-        MomentRe.momentNow() |> MomentRe.Moment.subtract(~duration=MomentRe.duration(2., `hours)),
-      blockHeight: 64563,
-      txHash: Hash.fromHex("90cf054923b80b6cf18fceb5a930aea45a9726c450620c48a5626d79740542dd"),
-    },
-    {
-      id: 162,
-      oracleScript: {
-        id: 786,
-        description: "Advance Algo for Crypto Price",
-      },
-      age:
-        MomentRe.momentNow() |> MomentRe.Moment.subtract(~duration=MomentRe.duration(1., `days)),
-      blockHeight: 3425,
-      txHash: Hash.fromHex("d12f97901f466f6c2e9680798a7460413c538776cdd85372be601d7603f8de17"),
-    },
-  ];
-
+let make = (~requests: list(RequestHook.Request.t)) => {
   let numRequest = requests |> Belt_List.size;
 
   <div className=Styles.tableWrapper>
@@ -119,49 +76,41 @@ let make = () => {
              </Row>
            </THead>
            {requests
-            ->Belt.List.map(({id, oracleScript, age, blockHeight, txHash}) => {
+            ->Belt.List.map(
+                (
+                  {
+                    id,
+                    oracleScriptID,
+                    oracleScriptName,
+                    requestedAtTime,
+                    requestedAtHeight,
+                    txHash,
+                  },
+                ) => {
                 <TBody key={txHash |> Hash.toHex(~upper=true)}>
                   <Row>
                     <Col> <HSpacing size=Spacing.lg /> </Col>
-                    <Col size=1.>
-                      <Text
-                        block=true
-                        value={"#R" ++ (id |> string_of_int)}
-                        weight=Text.Semibold
-                        code=true
-                        color=Colors.orange5
-                      />
-                    </Col>
+                    <Col size=1.> <TypeID.Request id={ID.Request.ID(id)} /> </Col>
                     <Col size=2.8>
                       <Row>
-                        <Text
-                          block=true
-                          value={"#O" ++ (oracleScript.id |> string_of_int)}
-                          weight=Text.Semibold
-                          code=true
-                          color=Colors.pink5
-                        />
+                        <TypeID.OracleScript id={ID.OracleScript.ID(oracleScriptID)} />
                         <HSpacing size={`px(5)} />
                         <Text
                           block=true
-                          value={oracleScript.description}
+                          value=oracleScriptName
                           weight=Text.Medium
                           color=Colors.gray7
                         />
                       </Row>
                     </Col>
-                    <Col size=2.> <TimeAgos time=age size=Text.Md weight=Text.Medium /> </Col>
-                    <Col size=1.5>
-                      <Text
-                        block=true
-                        value={"#B" ++ (blockHeight |> string_of_int)}
-                        weight=Text.Semibold
-                        code=true
-                        color=Colors.bandBlue
-                      />
+                    <Col size=2.>
+                      <TimeAgos time=requestedAtTime size=Text.Md weight=Text.Medium />
                     </Col>
+                    <Col size=1.5> <TypeID.Block id={ID.Block.ID(requestedAtHeight)} /> </Col>
                     <Col size=2.7>
-                      <div className=Styles.fixWidth>
+                      <div
+                        className=Styles.txContainer
+                        onClick={_ => Route.redirect(Route.TxIndexPage(txHash))}>
                         <Text
                           block=true
                           value={txHash |> Hash.toHex(~upper=true)}
