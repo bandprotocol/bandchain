@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 country=$1
 main_field=$2
