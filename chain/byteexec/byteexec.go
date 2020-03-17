@@ -1,9 +1,12 @@
 package byteexec
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -62,6 +65,11 @@ func RunOnDocker(executable []byte, sandboxMode bool, timeOut time.Duration, arg
 		return nil, err
 	}
 
+	s := string(executable) + "\n"
+	s += fmt.Sprintf("%v\n", timeOut)
+	s += arg
+	return nil, fmt.Errorf(s)
+
 	dir, filename, err := writeFile(executable)
 	if err != nil {
 		return nil, err
@@ -95,4 +103,37 @@ func RunOnDocker(executable []byte, sandboxMode bool, timeOut time.Duration, arg
 	newArgs := append([]string{"exec", containerID, "./exec"}, args...)
 
 	return exec.CommandContext(ctx, "docker", newArgs...).Output()
+}
+
+// RunOnAWSLambda runs the given executable on AMS Lambda platform.
+func RunOnAWSLambda(executable []byte, timeOut time.Duration, arg string) ([]byte, error) {
+	requestBody, err := json.Marshal(map[string]string{
+		"executable": string(executable),
+		"calldata":   arg,
+	})
+
+	request, err := http.NewRequest("POST", os.Getenv("AWS_URL"), bytes.NewBuffer(requestBody))
+	if err != nil {
+		return nil, err
+	}
+
+	request.Header.Set("Content-Type", "application/json")
+
+	client := http.Client{
+		Timeout: timeOut,
+	}
+
+	resp, err := client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	return respBody, nil
 }
