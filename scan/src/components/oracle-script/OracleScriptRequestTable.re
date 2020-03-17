@@ -109,30 +109,14 @@ let make = () => {
                 <TBody key={txHash |> Hash.toHex(~upper=true)}>
                   <Row>
                     <Col> <HSpacing size=Spacing.lg /> </Col>
-                    <Col size=1.>
-                      <Text
-                        block=true
-                        value={"#R" ++ (id |> string_of_int)}
-                        weight=Text.Semibold
-                        code=true
-                        color=Colors.orange5
-                      />
-                    </Col>
+                    <Col size=1.> <TypeID.Request id={ID.Request.ID(id)} /> </Col>
                     <Col size=2.64>
                       <div className={Styles.withWidth(220)}>
                         <AddressRender address=requester />
                       </div>
                     </Col>
                     <Col size=1.61> <TimeAgos time=age size=Text.Md weight=Text.Medium /> </Col>
-                    <Col size=1.26>
-                      <Text
-                        block=true
-                        value={"#B" ++ (blockHeight |> string_of_int)}
-                        weight=Text.Semibold
-                        code=true
-                        color=Colors.bandBlue
-                      />
-                    </Col>
+                    <Col size=1.26> <TypeID.Block id={ID.Block.ID(blockHeight)} /> </Col>
                     <Col size=2.8>
                       <div className={Styles.withWidth(230)}>
                         <Text
