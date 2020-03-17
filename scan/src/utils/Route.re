@@ -135,7 +135,7 @@ let search = (str: string) => {
     | Some(blockID) => Some(BlockIndexPage(blockID))
     | None =>
       if (str |> Js.String.startsWith("bandvaloper")) {
-        Some(ValidatorIndexPage(str |> Address.fromBech32, Delegators));
+        Some(ValidatorIndexPage(str |> Address.fromBech32, ProposedBlocks));
       } else if (str |> Js.String.startsWith("band")) {
         Some(AccountIndexPage(str |> Address.fromBech32, AccountTransactions));
       } else if (capStr |> Js.String.startsWith("B")) {
