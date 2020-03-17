@@ -22,52 +22,49 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
   let dataSourceOpt = DataSourceHook.get(dataSourceID);
 
   <div className=Styles.pageContainer>
-    <Row justify=Row.Between>
-      <Col>
-        <div className=Styles.vFlex>
-          <img src=Images.dataSourceLogo className=Styles.logo />
-          <Text
-            value="DATA SOURCE"
-            weight=Text.Medium
-            size=Text.Md
-            spacing={Text.Em(0.06)}
-            height={Text.Px(15)}
-            nowrap=true
-            color=Colors.gray7
-            block=true
-          />
-          <div className=Styles.seperatedLine />
-          {switch (dataSourceOpt) {
-           | Some(dataSource) =>
-             dataSource.revisions
-             ->Belt_List.get(0)
-             ->Belt_Option.mapWithDefault(React.null, ({timestamp}) =>
-                 <TimeAgos
-                   time=timestamp
-                   prefix="Last updated "
-                   size=Text.Md
-                   weight=Text.Thin
-                   spacing={Text.Em(0.06)}
-                   height={Text.Px(18)}
-                   upper=true
-                 />
-               )
-           | None =>
-             <Text
-               value="???"
+    <div className=Styles.vFlex>
+      <img src=Images.dataSourceLogo className=Styles.logo />
+      <Text
+        value="DATA SOURCE"
+        weight=Text.Medium
+        size=Text.Md
+        spacing={Text.Em(0.06)}
+        height={Text.Px(15)}
+        nowrap=true
+        color=Colors.gray7
+        block=true
+      />
+      <div className=Styles.seperatedLine />
+      {switch (dataSourceOpt) {
+       | Some(dataSource) =>
+         dataSource.revisions
+         ->Belt_List.get(0)
+         ->Belt_Option.mapWithDefault(React.null, ({timestamp}) =>
+             <TimeAgos
+               time=timestamp
+               prefix="Last updated "
                size=Text.Md
                weight=Text.Thin
                spacing={Text.Em(0.06)}
                height={Text.Px(18)}
+               upper=true
              />
-           }}
-        </div>
-      </Col>
-    </Row>
+           )
+       | None =>
+         <Text
+           value="???"
+           size=Text.Md
+           weight=Text.Thin
+           spacing={Text.Em(0.06)}
+           height={Text.Px(18)}
+         />
+       }}
+    </div>
     {switch (dataSourceOpt) {
      | Some(dataSource) =>
        <>
          <VSpacing size=Spacing.md />
+         <VSpacing size=Spacing.sm />
          <div className=Styles.vFlex>
            <TypeID.DataSource id={ID.DataSource.ID(dataSource.id)} position=TypeID.Title />
            <HSpacing size=Spacing.md />
@@ -81,7 +78,9 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
          </div>
          <VSpacing size=Spacing.xl />
          <Row>
-           <Col size=1.> <InfoHL header="OWNER" info={InfoHL.Address(dataSource.owner)} /> </Col>
+           <Col size=1.>
+             <InfoHL header="OWNER" info={InfoHL.Address(dataSource.owner, 380)} />
+           </Col>
            <Col size=0.8>
              <InfoHL
                info={
@@ -118,9 +117,9 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
            currentRoute={Route.DataSourceIndexPage(dataSourceID, hashtag)}>
            {switch (hashtag) {
             | DataSourceExecute => <DataSourceExecute executable={dataSource.executable} />
-            | DataSourceCode => <DataSourceCode />
-            | DataSourceRequests => <DataSourceRequestTable />
-            | DataSourceRevisions => <RevisionTable />
+            | DataSourceCode => <DataSourceCode executable={dataSource.executable} />
+            | DataSourceRequests => <DataSourceRequestTable requests={dataSource.requests} />
+            | DataSourceRevisions => <RevisionTable revisions={dataSource.revisions} />
             }}
          </Tab>
        </>

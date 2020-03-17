@@ -13,25 +13,28 @@ func (k Keeper) SetDataSource(ctx sdk.Context, id types.DataSourceID, dataSource
 }
 
 // AddDataSource adds the given data source to the storage.
-func (k Keeper) AddDataSource(ctx sdk.Context, owner sdk.AccAddress, name string, description string, fee sdk.Coins, executable []byte) sdk.Error {
+func (k Keeper) AddDataSource(
+	ctx sdk.Context, owner sdk.AccAddress, name string, description string,
+	fee sdk.Coins, executable []byte,
+) (types.DataSourceID, sdk.Error) {
 	newDataSourceID := k.GetNextDataSourceID(ctx)
 
 	if len(executable) > int(k.MaxDataSourceExecutableSize(ctx)) {
-		return types.ErrBadDataValue(
+		return 0, types.ErrBadDataValue(
 			"AddDataSource: Executable size (%d) exceeds the maximum size (%d).",
 			len(executable),
 			int(k.MaxDataSourceExecutableSize(ctx)),
 		)
 	}
 	if len(name) > int(k.MaxNameLength(ctx)) {
-		return types.ErrBadDataValue(
+		return 0, types.ErrBadDataValue(
 			"AddDataSource: Name length (%d) exceeds the maximum length (%d).",
 			len(name),
 			int(k.MaxNameLength(ctx)),
 		)
 	}
 	if len(description) > int(k.MaxDescriptionLength(ctx)) {
-		return types.ErrBadDataValue(
+		return 0, types.ErrBadDataValue(
 			"AddDataSource: Description length (%d) exceeds the maximum length (%d).",
 			len(description),
 			int(k.MaxDescriptionLength(ctx)),
@@ -40,7 +43,7 @@ func (k Keeper) AddDataSource(ctx sdk.Context, owner sdk.AccAddress, name string
 
 	newDataSource := types.NewDataSource(owner, name, description, fee, executable)
 	k.SetDataSource(ctx, newDataSourceID, newDataSource)
-	return nil
+	return newDataSourceID, nil
 }
 
 // EditDataSource edits the given data source by given data source id to the storage.

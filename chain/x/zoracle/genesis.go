@@ -50,7 +50,7 @@ func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorU
 	k.SetGasPerRawDataRequestPerValidator(ctx, data.Params.GasPerRawDataRequestPerValidator)
 
 	for _, dataSource := range data.DataSources {
-		err := k.AddDataSource(
+		_, err := k.AddDataSource(
 			ctx,
 			dataSource.Owner,
 			dataSource.Name,
@@ -64,7 +64,7 @@ func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorU
 	}
 
 	for _, oracleScript := range data.OracleScripts {
-		err := k.AddOracleScript(
+		_, err := k.AddOracleScript(
 			ctx, oracleScript.Owner, oracleScript.Name, oracleScript.Description, oracleScript.Code,
 		)
 		if err != nil {

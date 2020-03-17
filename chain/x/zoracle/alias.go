@@ -11,8 +11,14 @@ const (
 	RouterKey         = types.RouterKey
 	StoreKey          = types.StoreKey
 
-	EventTypeRequest      = types.EventTypeRequest
-	EventTypeReport       = types.EventTypeReport
+	EventTypeCreateDataSource   = types.EventTypeCreateDataSource
+	EventTypeEditDataSource     = types.EventTypeEditDataSource
+	EventTypeCreateOracleScript = types.EventTypeCreateOracleScript
+	EventTypeEditOracleScript   = types.EventTypeEditOracleScript
+	EventTypeRequest            = types.EventTypeRequest
+	EventTypeReport             = types.EventTypeReport
+
+	AttributeKeyID        = types.AttributeKeyID
 	AttributeKeyRequestID = types.AttributeKeyRequestID
 	AttributeKeyValidator = types.AttributeKeyValidator
 )
@@ -34,11 +40,12 @@ var (
 	DataSourceStoreKey   = types.DataSourceStoreKey
 	OracleScriptStoreKey = types.OracleScriptStoreKey
 
-	NewParams        = types.NewParams
-	NewDataSource    = types.NewDataSource
-	NewOracleScript  = types.NewOracleScript
-	DefaultParams    = types.DefaultParams
-	NewRawDataReport = types.NewRawDataReport
+	NewParams              = types.NewParams
+	NewDataSource          = types.NewDataSource
+	NewOracleScript        = types.NewOracleScript
+	DefaultParams          = types.DefaultParams
+	NewRawDataReport       = types.NewRawDataReport
+	NewRawDataReportWithID = types.NewRawDataReportWithID
 
 	KeyMaxDataSourceExecutableSize  = types.KeyMaxDataSourceExecutableSize
 	KeyMaxOracleScriptCodeSize      = types.KeyMaxOracleScriptCodeSize
@@ -68,6 +75,7 @@ type (
 	MsgEditOracleScript   = types.MsgEditOracleScript
 
 	RawDataReport         = types.RawDataReport
+	RawDataReportWithID   = types.RawDataReportWithID
 	RequestQuerierInfo    = types.RequestQuerierInfo
 	DataSourceQuerierInfo = types.DataSourceQuerierInfo
 
