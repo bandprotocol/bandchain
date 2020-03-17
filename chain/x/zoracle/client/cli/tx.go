@@ -174,7 +174,7 @@ $ %s tx zoracle report 1 5.0uband 1:172.5 2:HELLOWORLD --from mykey
 				return err
 			}
 
-			var dataset []types.RawDataReport
+			var dataset []types.RawDataReportWithID
 			for _, arg := range args[2:] {
 				reportRaw := strings.SplitN(arg, ":", 2)
 				if len(reportRaw) != 2 {
@@ -186,7 +186,8 @@ $ %s tx zoracle report 1 5.0uband 1:172.5 2:HELLOWORLD --from mykey
 				}
 				externalID := types.ExternalID(int64ExternalID)
 
-				dataset = append(dataset, types.NewRawDataReport(externalID, []byte(reportRaw[1])))
+				// TODO: Do not hardcode exit code
+				dataset = append(dataset, types.NewRawDataReportWithID(externalID, 0, []byte(reportRaw[1])))
 			}
 
 			// Sort data reports by external ID

@@ -13,11 +13,11 @@ func TestGetterSetterRawDataReport(t *testing.T) {
 
 	validatorAddress1, _ := sdk.ValAddressFromHex("4aea6cfc5bd14f2308954d544e1dc905268357db")
 
-	keeper.SetRawDataReport(ctx, 1, 3, validatorAddress1, []byte("Data1/3"))
+	keeper.SetRawDataReport(ctx, 1, 3, validatorAddress1, types.NewRawDataReport(0, []byte("Data1/3")))
 
 	report, err := keeper.GetRawDataReport(ctx, 1, 3, validatorAddress1)
 	require.Nil(t, err)
-	require.Equal(t, []byte("Data1/3"), report)
+	require.Equal(t, types.NewRawDataReport(0, []byte("Data1/3")), report)
 
 	_, err = keeper.GetRawDataReport(ctx, 2, 3, validatorAddress1)
 	require.Equal(t, types.CodeItemNotFound, err.Code())
@@ -38,9 +38,9 @@ func TestAddReportSuccess(t *testing.T) {
 	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata1")))
 	keeper.SetRawDataRequest(ctx, 1, 10, types.NewRawDataRequest(2, []byte("calldata2")))
 
-	err := keeper.AddReport(ctx, 1, []types.RawDataReport{
-		types.NewRawDataReport(2, []byte("data1/1")),
-		types.NewRawDataReport(10, []byte("data2/1")),
+	err := keeper.AddReport(ctx, 1, []types.RawDataReportWithID{
+		types.NewRawDataReportWithID(2, 1, []byte("data1/1")),
+		types.NewRawDataReportWithID(10, 0, []byte("data2/1")),
 	}, sdk.ValAddress([]byte("validator1")))
 
 	require.Nil(t, err)
@@ -50,28 +50,28 @@ func TestAddReportSuccess(t *testing.T) {
 
 	report, err := keeper.GetRawDataReport(ctx, 1, 2, sdk.ValAddress([]byte("validator1")))
 	require.Nil(t, err)
-	require.Equal(t, []byte("data1/1"), report)
+	require.Equal(t, types.NewRawDataReport(1, []byte("data1/1")), report)
 
 	report, err = keeper.GetRawDataReport(ctx, 1, 10, sdk.ValAddress([]byte("validator1")))
 	require.Nil(t, err)
-	require.Equal(t, []byte("data2/1"), report)
+	require.Equal(t, types.NewRawDataReport(0, []byte("data2/1")), report)
 
 	list := keeper.GetPendingResolveList(ctx)
 	require.Equal(t, []types.RequestID{}, list)
 
-	err = keeper.AddReport(ctx, 1, []types.RawDataReport{
-		types.NewRawDataReport(2, []byte("data1/2")),
-		types.NewRawDataReport(10, []byte("data2/2")),
+	err = keeper.AddReport(ctx, 1, []types.RawDataReportWithID{
+		types.NewRawDataReportWithID(2, 0, []byte("data1/2")),
+		types.NewRawDataReportWithID(10, 2, []byte("data2/2")),
 	}, sdk.ValAddress([]byte("validator2")))
 	require.Nil(t, err)
 
 	report, err = keeper.GetRawDataReport(ctx, 1, 2, sdk.ValAddress([]byte("validator2")))
 	require.Nil(t, err)
-	require.Equal(t, []byte("data1/2"), report)
+	require.Equal(t, types.NewRawDataReport(0, []byte("data1/2")), report)
 
 	report, err = keeper.GetRawDataReport(ctx, 1, 10, sdk.ValAddress([]byte("validator2")))
 	require.Nil(t, err)
-	require.Equal(t, []byte("data2/2"), report)
+	require.Equal(t, types.NewRawDataReport(2, []byte("data2/2")), report)
 
 	list = keeper.GetPendingResolveList(ctx)
 	require.Equal(t, []types.RequestID{1}, list)
@@ -81,9 +81,9 @@ func TestAddReportFailed(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
 	// Send report on invalid request.
-	err := keeper.AddReport(ctx, 1, []types.RawDataReport{
-		types.NewRawDataReport(2, []byte("data1/1")),
-		types.NewRawDataReport(10, []byte("data2/1")),
+	err := keeper.AddReport(ctx, 1, []types.RawDataReportWithID{
+		types.NewRawDataReportWithID(2, 0, []byte("data1/1")),
+		types.NewRawDataReportWithID(10, 0, []byte("data2/1")),
 	}, sdk.ValAddress([]byte("validator1")))
 	require.NotNil(t, err)
 
@@ -95,9 +95,9 @@ func TestAddReportFailed(t *testing.T) {
 	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata1")))
 	keeper.SetRawDataRequest(ctx, 1, 10, types.NewRawDataRequest(2, []byte("calldata2")))
 
-	err = keeper.AddReport(ctx, 1, []types.RawDataReport{
-		types.NewRawDataReport(2, []byte("data1/1")),
-		types.NewRawDataReport(10, []byte("data2/1")),
+	err = keeper.AddReport(ctx, 1, []types.RawDataReportWithID{
+		types.NewRawDataReportWithID(2, 0, []byte("data1/1")),
+		types.NewRawDataReportWithID(10, 0, []byte("data2/1")),
 	}, sdk.ValAddress([]byte("validator1")))
 	require.NotNil(t, err)
 
@@ -108,9 +108,9 @@ func TestAddReportFailed(t *testing.T) {
 	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata1")))
 	keeper.SetRawDataRequest(ctx, 1, 10, types.NewRawDataRequest(2, []byte("calldata2")))
 
-	err = keeper.AddReport(ctx, 1, []types.RawDataReport{
-		types.NewRawDataReport(2, []byte("data1/1")),
-		types.NewRawDataReport(10, []byte("data2/1")),
+	err = keeper.AddReport(ctx, 1, []types.RawDataReportWithID{
+		types.NewRawDataReportWithID(2, 0, []byte("data1/1")),
+		types.NewRawDataReportWithID(10, 0, []byte("data2/1")),
 	}, sdk.ValAddress([]byte("nonvalidator")))
 	require.NotNil(t, err)
 
@@ -123,9 +123,9 @@ func TestAddReportFailed(t *testing.T) {
 	keeper.SetRawDataRequest(ctx, 1, 10, types.NewRawDataRequest(2, []byte("calldata2")))
 
 	ctx = ctx.WithBlockHeight(6)
-	err = keeper.AddReport(ctx, 1, []types.RawDataReport{
-		types.NewRawDataReport(2, []byte("data1/1")),
-		types.NewRawDataReport(10, []byte("data2/1")),
+	err = keeper.AddReport(ctx, 1, []types.RawDataReportWithID{
+		types.NewRawDataReportWithID(2, 0, []byte("data1/1")),
+		types.NewRawDataReportWithID(10, 0, []byte("data2/1")),
 	}, sdk.ValAddress([]byte("validator1")))
 	require.NotNil(t, err)
 
@@ -137,8 +137,8 @@ func TestAddReportFailed(t *testing.T) {
 	keeper.SetRawDataRequest(ctx, 1, 10, types.NewRawDataRequest(2, []byte("calldata2")))
 
 	ctx = ctx.WithBlockHeight(2)
-	err = keeper.AddReport(ctx, 1, []types.RawDataReport{
-		types.NewRawDataReport(2, []byte("data1/1")),
+	err = keeper.AddReport(ctx, 1, []types.RawDataReportWithID{
+		types.NewRawDataReportWithID(2, 0, []byte("data1/1")),
 	}, sdk.ValAddress([]byte("validator1")))
 	require.NotNil(t, err)
 
@@ -150,9 +150,9 @@ func TestAddReportFailed(t *testing.T) {
 	keeper.SetRawDataRequest(ctx, 1, 10, types.NewRawDataRequest(2, []byte("calldata2")))
 
 	ctx = ctx.WithBlockHeight(2)
-	err = keeper.AddReport(ctx, 1, []types.RawDataReport{
-		types.NewRawDataReport(10, []byte("data2/1")),
-		types.NewRawDataReport(2, []byte("data1/1")),
+	err = keeper.AddReport(ctx, 1, []types.RawDataReportWithID{
+		types.NewRawDataReportWithID(10, 0, []byte("data2/1")),
+		types.NewRawDataReportWithID(2, 0, []byte("data1/1")),
 	}, sdk.ValAddress([]byte("validator1")))
 	require.NotNil(t, err)
 
@@ -164,9 +164,9 @@ func TestAddReportFailed(t *testing.T) {
 	keeper.SetRawDataRequest(ctx, 1, 10, types.NewRawDataRequest(2, []byte("calldata2")))
 
 	ctx = ctx.WithBlockHeight(2)
-	err = keeper.AddReport(ctx, 1, []types.RawDataReport{
-		types.NewRawDataReport(3, []byte("data2/1")),
-		types.NewRawDataReport(10, []byte("data1/1")),
+	err = keeper.AddReport(ctx, 1, []types.RawDataReportWithID{
+		types.NewRawDataReportWithID(3, 0, []byte("data2/1")),
+		types.NewRawDataReportWithID(10, 0, []byte("data1/1")),
 	}, sdk.ValAddress([]byte("validator1")))
 	require.NotNil(t, err)
 
@@ -178,15 +178,15 @@ func TestAddReportFailed(t *testing.T) {
 	keeper.SetRawDataRequest(ctx, 1, 10, types.NewRawDataRequest(2, []byte("calldata2")))
 
 	ctx = ctx.WithBlockHeight(2)
-	err = keeper.AddReport(ctx, 1, []types.RawDataReport{
-		types.NewRawDataReport(2, []byte("OldValue1")),
-		types.NewRawDataReport(10, []byte("OldValue2")),
+	err = keeper.AddReport(ctx, 1, []types.RawDataReportWithID{
+		types.NewRawDataReportWithID(2, 0, []byte("OldValue1")),
+		types.NewRawDataReportWithID(10, 0, []byte("OldValue2")),
 	}, sdk.ValAddress([]byte("validator2")))
 	require.Nil(t, err)
 
-	err = keeper.AddReport(ctx, 1, []types.RawDataReport{
-		types.NewRawDataReport(2, []byte("NewValue1")),
-		types.NewRawDataReport(10, []byte("NewValue2")),
+	err = keeper.AddReport(ctx, 1, []types.RawDataReportWithID{
+		types.NewRawDataReportWithID(2, 0, []byte("NewValue1")),
+		types.NewRawDataReportWithID(10, 0, []byte("NewValue2")),
 	}, sdk.ValAddress([]byte("validator2")))
 	require.NotNil(t, err)
 
@@ -228,14 +228,14 @@ func TestAddReportReportSizeExceedMaxRawDataReportSize(t *testing.T) {
 	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata")))
 
 	// Size of "short report" is 12 bytes which is shorter than 20 bytes.
-	err := keeper.AddReport(ctx, 1, []types.RawDataReport{
-		types.NewRawDataReport(2, []byte("short report")),
+	err := keeper.AddReport(ctx, 1, []types.RawDataReportWithID{
+		types.NewRawDataReportWithID(2, 0, []byte("short report")),
 	}, sdk.ValAddress([]byte("validator1")))
 	require.Nil(t, err)
 
 	// Size of "a report that obviously longer than 20 bytes" is 44 bytes.
-	err = keeper.AddReport(ctx, 1, []types.RawDataReport{
-		types.NewRawDataReport(2, []byte("a report that obviously longer than 20 bytes")),
+	err = keeper.AddReport(ctx, 1, []types.RawDataReportWithID{
+		types.NewRawDataReportWithID(2, 0, []byte("a report that obviously longer than 20 bytes")),
 	}, sdk.ValAddress([]byte("validator2")))
 	require.NotNil(t, err)
 

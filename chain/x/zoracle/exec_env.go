@@ -88,6 +88,14 @@ func (env *ExecutionEnvironment) GetExternalData(
 		return nil, errors.New("validator out of range")
 	}
 	validatorAddress := env.request.RequestedValidators[validatorIndex]
-
-	return env.keeper.GetRawDataReport(env.ctx, env.requestID, types.ExternalID(externalDataID), validatorAddress)
+	rawReport, err := env.keeper.GetRawDataReport(
+		env.ctx,
+		env.requestID,
+		types.ExternalID(externalDataID),
+		validatorAddress,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return rawReport.Data, nil
 }

@@ -254,11 +254,11 @@ func TestHasToPutInPendingList(t *testing.T) {
 	keeper.SetRequest(ctx, 1, request)
 	require.False(t, keeper.ShouldBecomePendingResolve(ctx, 1))
 
-	err := keeper.AddReport(ctx, 1, []types.RawDataReport{}, sdk.ValAddress([]byte("validator1")))
+	err := keeper.AddReport(ctx, 1, []types.RawDataReportWithID{}, sdk.ValAddress([]byte("validator1")))
 	require.Nil(t, err)
 	require.True(t, keeper.ShouldBecomePendingResolve(ctx, 1))
 
-	err = keeper.AddReport(ctx, 1, []types.RawDataReport{}, sdk.ValAddress([]byte("validator2")))
+	err = keeper.AddReport(ctx, 1, []types.RawDataReportWithID{}, sdk.ValAddress([]byte("validator2")))
 	require.Nil(t, err)
 	require.False(t, keeper.ShouldBecomePendingResolve(ctx, 1))
 }

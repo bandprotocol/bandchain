@@ -7,7 +7,10 @@ import (
 )
 
 func (k Keeper) AddReport(
-	ctx sdk.Context, requestID types.RequestID, dataSet []types.RawDataReport, validator sdk.ValAddress,
+	ctx sdk.Context,
+	requestID types.RequestID,
+	dataSet []types.RawDataReportWithID,
+	validator sdk.ValAddress,
 ) sdk.Error {
 	request, err := k.GetRequest(ctx, requestID)
 	if err != nil {
@@ -85,7 +88,16 @@ func (k Keeper) AddReport(
 				k.MaxRawDataReportSize(ctx),
 			)
 		}
-		k.SetRawDataReport(ctx, requestID, rawReport.ExternalDataID, validator, rawReport.Data)
+		k.SetRawDataReport(
+			ctx,
+			requestID,
+			rawReport.ExternalDataID,
+			validator,
+			types.RawDataReport{
+				ExitCode: rawReport.ExitCode,
+				Data:     rawReport.Data,
+			},
+		)
 		lastExternalID = rawReport.ExternalDataID
 	}
 
@@ -107,11 +119,11 @@ func (k Keeper) SetRawDataReport(
 	ctx sdk.Context,
 	requestID types.RequestID, externalID types.ExternalID,
 	validatorAddress sdk.ValAddress,
-	data []byte,
+	rawDataReport types.RawDataReport,
 ) {
 	key := types.RawDataReportStoreKey(requestID, externalID, validatorAddress)
 	store := ctx.KVStore(k.storeKey)
-	store.Set(key, data)
+	store.Set(key, k.cdc.MustMarshalBinaryBare(rawDataReport))
 }
 
 // GetRawDataReport is a function that gets a raw data report from store.
@@ -119,18 +131,21 @@ func (k Keeper) GetRawDataReport(
 	ctx sdk.Context,
 	requestID types.RequestID, externalID types.ExternalID,
 	validatorAddress sdk.ValAddress,
-) ([]byte, sdk.Error) {
+) (types.RawDataReport, sdk.Error) {
 	key := types.RawDataReportStoreKey(requestID, externalID, validatorAddress)
 	store := ctx.KVStore(k.storeKey)
 	if !store.Has(key) {
-		return nil, types.ErrItemNotFound(
+		return types.RawDataReport{}, types.ErrItemNotFound(
 			"GetRawDataReport: Unable to find raw data report with request ID %d external ID %d from %s",
 			requestID,
 			externalID,
 			validatorAddress.String(),
 		)
 	}
-	return store.Get(key), nil
+	bz := store.Get(key)
+	var rawDataReport types.RawDataReport
+	k.cdc.MustUnmarshalBinaryBare(bz, &rawDataReport)
+	return rawDataReport, nil
 }
 
 // GetRawDataReportsIterator returns an iterator for all reports for a specific request ID.
