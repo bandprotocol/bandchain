@@ -72,6 +72,8 @@ let make = () =>
     let%Opt info = React.useContext(GlobalContext.context);
 
     let validators = info.validators;
+    // let latestBlock = info.latestBlock.getProposerMoniker;
+    let moniker = BlockHook.Block.getProposerMoniker(info.latestBlock, validators);
     let bandBonded = validators->Belt_List.map(x => x.tokens)->Belt_List.reduce(0.0, (+.));
 
     Some(
@@ -157,7 +159,7 @@ let make = () =>
                              code=true
                            />;
                          }
-          extraComponent={<Text value="mock" code=true />}
+          extraComponent={<Text value=moniker code=true />}
         />
         <HighlightCard
           label="ACTIVE VALIDATORS"
