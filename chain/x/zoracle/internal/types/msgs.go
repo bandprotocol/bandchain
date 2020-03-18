@@ -465,8 +465,8 @@ func (msg MsgAddOracleAddress) ValidateBasic() sdk.Error {
 }
 
 // GetSigners implements the sdk.Msg interface for MsgAddOracleAddress.
-func (msg MsgAddOracleAddress) GetSigners() []sdk.ValAddress {
-	return []sdk.ValAddress{msg.Validator}
+func (msg MsgAddOracleAddress) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{sdk.AccAddress(msg.Validator)}
 }
 
 // GetSignBytes implements the sdk.Msg interface for MsgAddOracleAddress.
@@ -511,8 +511,8 @@ func (msg MsgRemoveOracleAdderess) ValidateBasic() sdk.Error {
 }
 
 // GetSigners implements the sdk.Msg interface for MsgRemoveOracleAdderess.
-func (msg MsgRemoveOracleAdderess) GetSigners() []sdk.ValAddress {
-	return []sdk.ValAddress{msg.Validator}
+func (msg MsgRemoveOracleAdderess) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{sdk.AccAddress(msg.Validator)}
 }
 
 // GetSignBytes implements the sdk.Msg interface for MsgRemoveOracleAdderess.
