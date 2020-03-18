@@ -209,13 +209,12 @@ func handleRequest(requestID zoracle.RequestID) {
 		return reports[i].ExternalDataID < reports[j].ExternalDataID
 	})
 
-	refundGasPrice, err := sdk.ParseDecCoins(viper.GetString(flags.FlagGasPrices))
 	if err != nil {
 		logger.Error(fmt.Sprintf("Send report fail on request #%d. Error: %v", requestID, err))
 		return
 	}
 	tx, err := bandClient.SendTransaction(
-		zoracle.NewMsgReportData(requestID, refundGasPrice, reports, sdk.ValAddress(bandClient.Sender())),
+		zoracle.NewMsgReportData(requestID, reports, sdk.ValAddress(bandClient.Sender())),
 		gasFlagVar.Gas, viper.GetString(flags.FlagFees), viper.GetString(flags.FlagGasPrices),
 	)
 
