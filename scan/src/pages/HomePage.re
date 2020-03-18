@@ -70,15 +70,15 @@ let make = () => {
   <div className=Styles.highlightsContainer>
     <ChainInfoHighlights />
     <VSpacing size=Spacing.xl />
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.grayArea>
-      <div className=Styles.bg>
-        <img src=Images.bg />
-        <img src=Images.bg className=Styles.imgRight />
-      </div>
-      <div className=Styles.grayAreaInner> <DataScriptsHighlights /> </div>
-    </div>
-    <div className=Styles.skip />
+    // TODO: for next version
+    // <div className=Styles.grayArea>
+    //   <div className=Styles.bg>
+    //     <img src=Images.bg />
+    //     <img src=Images.bg className=Styles.imgRight />
+    //   </div>
+    //   <div className=Styles.grayAreaInner> <DataScriptsHighlights /> </div>
+    // </div>
+    // <div className=Styles.skip />
     <div className=Styles.section>
       <Row alignItems=`initial>
         <Col size=1.>
