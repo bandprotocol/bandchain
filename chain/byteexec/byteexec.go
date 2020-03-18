@@ -101,20 +101,16 @@ func RunOnDocker(executable []byte, sandboxMode bool, timeOut time.Duration, arg
 }
 
 // RunOnAWSLambda runs the given executable on AMS Lambda platform.
-func RunOnAWSLambda(executable []byte, timeOut time.Duration, arg string) ([]byte, error) {
+func RunOnAWSLambda(executable []byte, timeOut time.Duration, arg string, url string) ([]byte, error) {
 	requestBody, err := json.Marshal(map[string]string{
 		"executable": string(executable),
 		"calldata":   arg,
 	})
 
-	fmt.Println("--------- 1")
-
-	request, err := http.NewRequest("POST", "https://dmptasv4j8.execute-api.ap-southeast-1.amazonaws.com/bash-execute", bytes.NewBuffer(requestBody))
+	request, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println("--------- 2")
 
 	request.Header.Set("Content-Type", "application/json")
 
@@ -127,16 +123,12 @@ func RunOnAWSLambda(executable []byte, timeOut time.Duration, arg string) ([]byt
 		return nil, err
 	}
 
-	fmt.Println("--------- 3")
-
 	defer resp.Body.Close()
 
 	respBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println("--------- 4")
 
 	type result struct {
 		Returncode int    `json:"returncode"`
@@ -149,8 +141,6 @@ func RunOnAWSLambda(executable []byte, timeOut time.Duration, arg string) ([]byt
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println(r)
 
 	return []byte(r.Stdout), nil
 }
