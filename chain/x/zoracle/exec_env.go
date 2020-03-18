@@ -83,11 +83,19 @@ func (env *ExecutionEnvironment) RequestExternalData(
 func (env *ExecutionEnvironment) GetExternalData(
 	externalDataID int64,
 	validatorIndex int64,
-) ([]byte, error) {
+) ([]byte, uint8, error) {
 	if validatorIndex < 0 || validatorIndex >= int64(len(env.request.RequestedValidators)) {
-		return nil, errors.New("validator out of range")
+		return nil, 0, errors.New("validator out of range")
 	}
 	validatorAddress := env.request.RequestedValidators[validatorIndex]
-
-	return env.keeper.GetRawDataReport(env.ctx, env.requestID, types.ExternalID(externalDataID), validatorAddress)
+	rawReport, err := env.keeper.GetRawDataReport(
+		env.ctx,
+		env.requestID,
+		types.ExternalID(externalDataID),
+		validatorAddress,
+	)
+	if err != nil {
+		return nil, 0, err
+	}
+	return rawReport.Data, rawReport.ExitCode, nil
 }

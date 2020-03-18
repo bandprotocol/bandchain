@@ -195,14 +195,14 @@ func handleRequest(requestID zoracle.RequestID) {
 		)
 	}
 
-	reports := make([]zoracle.RawDataReport, 0)
+	reports := make([]zoracle.RawDataReportWithID, 0)
 	for i := 0; i < len(request.RawDataRequests); i++ {
 		info := <-chanQueryParallelInfo
 		if info.err != nil {
 			logger.Error(fmt.Sprintf("Report fail on request #%d. Error: %v", requestID, info.err))
 			return
 		}
-		reports = append(reports, zoracle.NewRawDataReport(info.externalID, info.answer))
+		reports = append(reports, zoracle.NewRawDataReportWithID(info.externalID, 0, info.answer))
 	}
 
 	sort.Slice(reports, func(i, j int) bool {

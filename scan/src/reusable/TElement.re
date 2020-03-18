@@ -93,14 +93,7 @@ let renderAddress = address => {
 
 let renderFee = fee => {
   <div className=Styles.feeContainer>
-    {fee == 0.0 ? React.null : <VSpacing size={`px(4)} />}
-    {fee == 0.0 ? React.null : <Text size=Text.Sm block=true value="$0.002" color=Colors.gray5 />}
-    {fee == 0.0 ? React.null : <VSpacing size={`px(4)} />}
-    <Text
-      value={fee == 0.0 ? "FREE" : fee->Format.fPretty ++ " BAND"}
-      color=Colors.gray7
-      weight=Text.Semibold
-    />
+    <Text value={fee->Format.fPretty} color=Colors.gray7 code=true block=true nowrap=true />
   </div>;
 };
 

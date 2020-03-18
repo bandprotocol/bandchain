@@ -48,16 +48,18 @@ func buildRequestQuerierInfo(
 	rawRequests := keeper.GetRawDataRequestWithExternalIDs(ctx, id)
 
 	iterator := keeper.GetRawDataReportsIterator(ctx, id)
-	reportMap := make(map[string]([]types.RawDataReport))
+	reportMap := make(map[string]([]types.RawDataReportWithID))
 	for ; iterator.Valid(); iterator.Next() {
 		validator, externalID := types.GetValidatorAddressAndExternalID(iterator.Key(), id)
 		if _, ok := reportMap[string(validator)]; !ok {
-			reportMap[string(validator)] = make([]types.RawDataReport, 0)
+			reportMap[string(validator)] = make([]types.RawDataReportWithID, 0)
 		}
 
+		var rawReport types.RawDataReport
+		keeper.cdc.MustUnmarshalBinaryBare(iterator.Value(), &rawReport)
 		reportMap[string(validator)] = append(
 			reportMap[string(validator)],
-			types.NewRawDataReport(externalID, iterator.Value()),
+			types.NewRawDataReportWithID(externalID, rawReport.ExitCode, rawReport.Data),
 		)
 	}
 
