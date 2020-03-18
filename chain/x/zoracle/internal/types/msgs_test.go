@@ -480,3 +480,23 @@ func TestMsgEditOracleScriptGetSignBytes(t *testing.T) {
 
 	require.Equal(t, expected, string(res))
 }
+
+func TestMsgSetOracleAddress(t *testing.T) {
+	validator := sdk.ValAddress([]byte("validator"))
+	reporter := sdk.AccAddress([]byte("reporter"))
+	msg := NewMsgSetOracleAddress(validator, reporter)
+	require.Equal(t, RouterKey, msg.Route())
+	require.Equal(t, "set_oracle_script_address", msg.Type())
+	require.Equal(t, validator, msg.Validator)
+	require.Equal(t, reporter, msg.Reporter)
+}
+
+func TestMsgUnsetOracleAddress(t *testing.T) {
+	validator := sdk.ValAddress([]byte("validator"))
+	reporter := sdk.AccAddress([]byte("reporter"))
+	msg := NewMsgUnsetOracleAddress(validator, reporter)
+	require.Equal(t, RouterKey, msg.Route())
+	require.Equal(t, "unset_oracle_script_address", msg.Type())
+	require.Equal(t, validator, msg.Validator)
+	require.Equal(t, reporter, msg.Reporter)
+}
