@@ -28,8 +28,8 @@ var defaultGas = map[string]int64{
 	"i64.load":     3,
 	"f32.load":     3,
 	"f64.load":     3,
-	"memory.size":  3, // Estimate equal to get_local
-	"memory.grow":  3, // Estimate equal to memory.size
+	"memory.size":  100, // Breaking out of the VM
+	"memory.grow":  100, // Breaking out of the VM
 
 	"i32.store":   3,
 	"i32.store8":  3,
@@ -51,7 +51,7 @@ var defaultGas = map[string]int64{
 
 	// Calls
 	"call":          2,
-	"call_indirect": 2,
+	"call_indirect": 100, // Breaking out of the VM
 
 	// Constants
 	"i32.const": 0,

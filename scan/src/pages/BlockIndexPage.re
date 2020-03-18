@@ -54,8 +54,10 @@ module Styles = {
 
 [@react.component]
 let make = (~height: int) => {
-  let (limit, setLimit) = React.useState(_ => 10);
-  let txsOpt = TxHook.atHeight(height, ~limit, ());
+  let (page, setPage) = React.useState(_ => 1);
+  let limit = 10;
+
+  let txsOpt = TxHook.atHeight(height, ~limit, ~page, ());
   let infoOpt = React.useContext(GlobalContext.context);
   let blockOpt = BlockHook.atHeight(height);
   let monikerOpt = {
@@ -64,6 +66,8 @@ let make = (~height: int) => {
     let validators = info.validators;
     Some(BlockHook.Block.getProposerMoniker(block, validators));
   };
+  let pageCount = txsOpt->Belt.Option.mapWithDefault(1, info => info.pageCount);
+
   <div className=Styles.pageContainer>
     <Row justify=Row.Between>
       <Col>
@@ -79,17 +83,11 @@ let make = (~height: int) => {
             spacing={Text.Em(0.06)}
           />
           <div className=Styles.seperatedLine />
-          {switch (blockOpt) {
-           | Some(block) =>
-             <div className=Styles.vFlex>
-               <Text
-                 value={"#B" ++ (height |> Format.iPretty)}
-                 weight=Text.Thin
-                 spacing={Text.Em(0.06)}
-               />
-             </div>
-           | None => <Text value="in the future" size=Text.Xl />
-           }}
+          <Text
+            value={"#B" ++ (height |> Format.iPretty)}
+            weight=Text.Thin
+            spacing={Text.Em(0.06)}
+          />
         </div>
       </Col>
     </Row>
@@ -130,7 +128,6 @@ let make = (~height: int) => {
         <div className=Styles.proposerContainer>
           {switch (monikerOpt) {
            | Some(moniker) => <InfoHL info={InfoHL.Text(moniker)} header="PROPOSED BY" />
-
            | None => <InfoHL info={InfoHL.Text("?")} header="PROPOSED BY" />
            }}
         </div>
@@ -152,8 +149,11 @@ let make = (~height: int) => {
            <VSpacing size=Spacing.xl />
            <BlockIndexTxsTable txs />
            <VSpacing size=Spacing.lg />
-           {txs->Belt_List.size < limit
-              ? React.null : <LoadMore onClick={_ => setLimit(oldLimit => oldLimit + 10)} />}
+           <Pagination
+             currentPage=page
+             pageCount
+             onPageChange={newPage => setPage(_ => newPage)}
+           />
            <VSpacing size=Spacing.xl />
          </>
        }

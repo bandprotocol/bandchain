@@ -94,7 +94,7 @@ module ToggleButton = {
   };
 };
 
-let renderBody = (idx: int, validator: ValidatorHook.Validator.t) => {
+let renderBody = (rank, validator: ValidatorHook.Validator.t) => {
   let votingPower = validator.votingPower;
   let token = validator.tokens;
   let commission = validator.commission;
@@ -103,13 +103,13 @@ let renderBody = (idx: int, validator: ValidatorHook.Validator.t) => {
     validator.completedRequestCount + validator.missedRequestCount |> float_of_int;
   let reportRate = (validator.completedRequestCount |> float_of_int) /. allRequestCount *. 100.;
 
-  <TBody key={idx |> string_of_int}>
+  <TBody key={rank |> string_of_int}>
     <div className=Styles.fullWidth>
       <Row>
         <Col size=0.8 alignSelf=Col.Start>
           <Col size=1.6 alignSelf=Col.Start>
             <Text
-              value={idx + 1 |> string_of_int}
+              value={rank |> string_of_int}
               color=Colors.gray7
               code=true
               weight=Text.Regular
@@ -190,9 +190,27 @@ let renderBody = (idx: int, validator: ValidatorHook.Validator.t) => {
 
 [@react.component]
 let make = () => {
+  let (page, setPage) = React.useState(_ => 1);
+  let limit = 10;
+
   let (isActive, setIsActive) = React.useState(_ => true);
-  let validatorsOpt =
+  let validatorsCountOpt =
     ValidatorHook.getList(~status=isActive ? ValidatorHook.Bonded : ValidatorHook.Unbonded, ());
+  let validatorsOpt =
+    ValidatorHook.getList(
+      ~status=isActive ? ValidatorHook.Bonded : ValidatorHook.Unbonded,
+      ~page,
+      ~limit,
+      (),
+    );
+
+  let pageCount =
+    {
+      let%Opt validatorsCount = validatorsCountOpt;
+      Some(Page.getPageCount(validatorsCount->Belt.List.size, limit));
+    }
+    |> Belt.Option.getWithDefault(_, 1);
+
   let globalInfo = ValidatorHook.getGlobalInfo();
   let bondedValidatorCount = ValidatorHook.getValidatorCount(~status=ValidatorHook.Bonded, ());
   let unbondedValidatorCount =
@@ -265,7 +283,6 @@ let make = () => {
         </Col>
       </Row>
     </div>
-    // TODO : Add toggle button
     <THead>
       <div className=Styles.fullWidth>
         <Row>
@@ -300,7 +317,9 @@ let make = () => {
        if (validators->Belt_List.length > 0) {
          validators
          ->Belt.List.toArray
-         ->Belt_Array.mapWithIndex((idx, validator) => renderBody(idx, validator))
+         ->Belt_Array.mapWithIndex((idx, validator) =>
+             renderBody(idx + 1 + (page - 1) * limit, validator)
+           )
          ->React.array;
        } else {
          <div className=Styles.emptyContainer> <Text value="No Validators" size=Text.Xxl /> </div>;
@@ -308,6 +327,8 @@ let make = () => {
      | None =>
        <div className=Styles.emptyContainer> <Text value="Loading..." size=Text.Xxl /> </div>
      }}
+    <VSpacing size=Spacing.lg />
+    <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
     <VSpacing size=Spacing.lg />
   </div>;
 };

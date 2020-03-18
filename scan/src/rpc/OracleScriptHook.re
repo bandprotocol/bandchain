@@ -11,6 +11,7 @@ module OracleScript = {
     owner: Address.t,
     name: string,
     description: string,
+    timestamp: MomentRe.Moment.t,
     relatedDataSource: list(ID.DataSource.t),
     code: JsBuffer.t,
     requests: list(RequestHook.Request.t),
@@ -23,7 +24,10 @@ module OracleScript = {
       owner: json |> field("owner", string) |> Address.fromBech32,
       name: json |> field("name", string),
       description: json |> field("description", string),
-      relatedDataSource: [ID.DataSource.ID(1), ID.DataSource.ID(2), ID.DataSource.ID(3)],
+      timestamp: MomentRe.momentNow(),
+      relatedDataSource:
+        json |> field("id", intstr) == 1
+          ? [] : [ID.DataSource.ID(1), ID.DataSource.ID(2), ID.DataSource.ID(3)],
       code: json |> field("code", string) |> JsBuffer.fromBase64,
       requests: [
         {
