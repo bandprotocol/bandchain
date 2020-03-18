@@ -96,8 +96,8 @@ let make = () => {
          | AccountIndexPage(address, hashtag) => <AccountIndexPage address hashtag />
          | ValidatorIndexPage(address, hashtag) => <ValidatorIndexPage address hashtag />
          | NotFound =>
-           ReasonReactRouter.replace("/");
-           React.null;
+           ReasonReactRouter.replace("/notfound");
+           <NotFound />;
          }}
       </div>
     </div>
