@@ -23,13 +23,15 @@ module Styles = {
 
 [@react.component]
 let make = () => {
-  let step = 10;
-  let (limit, setLimit) = React.useState(_ => step);
-  let txsOpt = TxHook.latest(~limit, ());
+  let (page, setPage) = React.useState(_ => 1);
+  let limit = 10;
+
+  let txsOpt = TxHook.latest(~limit, ~page, ());
   let txs = txsOpt->Belt.Option.mapWithDefault([], ({txs}) => txs);
 
-  let infoOpt = React.useContext(GlobalContext.context);
-  let totalTxsOpt = infoOpt->Belt.Option.map(info => info.latestBlock.totalTxs);
+  let totalTxsOpt = txsOpt->Belt.Option.map(info => info.totalCount);
+  // TODO: add loading state later.
+  let pageCount = txsOpt->Belt.Option.mapWithDefault(1, info => info.pageCount);
 
   <div className=Styles.pageContainer>
     <Row>
@@ -53,6 +55,8 @@ let make = () => {
     </Row>
     <VSpacing size=Spacing.xl />
     <TxsTable txs />
-    <VSpacing size={`px(70)} />
+    <VSpacing size=Spacing.lg />
+    <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
+    <VSpacing size=Spacing.lg />
   </div>;
 };
