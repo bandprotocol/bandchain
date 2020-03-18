@@ -122,16 +122,11 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
   let priceOpt = PriceHook.get();
   let balanceStakeOpt = AccountHook.getBalanceStake(address);
 
-  let delegations =
-    AccountHook.getDelegations(address)
-    |> Belt_Option.getWithDefault(_, [])
-    |> List.map(((validatorAddress, amount, reward)) =>
-         (validatorAddress |> Address.toBech32, amount, reward)
-       );
-
+  let delegations = AccountHook.getDelegations(address) |> Belt_Option.getWithDefault(_, []);
+  let rewardOpt = AccountHook.getReward(address);
   let usdPrice = {
     let%Opt price = priceOpt;
-    Some(price.usdPrice);
+    Some(1. /. price.usdPrice);
   };
 
   let avialableBalance = {
@@ -189,7 +184,16 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
          }}
         <VSpacing size=Spacing.xl />
         <VSpacing size=Spacing.md />
-        {balanceDetail("REWARD", "61,301.04", "60.31", "000C5C")}
+        {switch (rewardOpt, usdPrice) {
+         | (Some(reward), Some(price)) =>
+           balanceDetail(
+             "REWARD",
+             reward |> Format.fPretty,
+             reward *. price |> Format.fPretty,
+             "000C5C",
+           )
+         | _ => balanceDetail("REWARD", "?", "?", "000C5C")
+         }}
       </Col>
       <div className=Styles.separatorLine />
       <Col size=1. alignSelf=Col.Start>
