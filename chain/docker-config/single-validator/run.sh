@@ -13,4 +13,4 @@ mv config_tmp.toml config.toml
 cd /zoracle/
 
 mkdir ~/.banddb
-bandd start --rpc.laddr tcp://0.0.0.0:26657 --add-db sqlite3:/root/.banddb/main.db
+bandd start --rpc.laddr tcp://0.0.0.0:26657 --with-db sqlite3:/root/.banddb/main.db

@@ -26,7 +26,7 @@ func NewDBBandApp(
 }
 
 func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliverTx) {
-	response := app.BaseApp.DeliverTx(req)
+	response := app.bandApp.DeliverTx(req)
 	if response.IsOK() {
 		for _, event := range response.Events {
 			kvMap := make(map[string]string)
@@ -37,4 +37,8 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 		}
 	}
 	return response
+}
+
+func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseBeginBlock) {
+	return app.bandApp.BeginBlock(req)
 }
