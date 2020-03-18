@@ -136,7 +136,7 @@ let make = () => {
          ->Belt.List.map(({id, name, timestamp, owner, relatedDataSource}) => {
              <TBody key={id |> string_of_int}>
                <div className=Styles.fullWidth>
-                 <Row>
+                 <Row alignItems=`baseline>
                    <Col> <HSpacing size=Spacing.lg /> </Col>
                    <Col size=1.0>
                      <TElement

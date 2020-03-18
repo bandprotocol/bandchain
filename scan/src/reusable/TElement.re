@@ -151,13 +151,13 @@ let renderOracleScript = (id, name) => {
 
 let renderRelatedDataSources = ids => {
   switch (ids |> Belt_List.length) {
-  | 0 => <Text value="Undetermined" size=Text.Lg spacing={Text.Em(0.06)} />
+  | 0 => <Text value="Undetermined" size=Text.Md spacing={Text.Em(0.02)} />
   | _ =>
     <div className=Styles.dataSourcesContainer>
       {ids
        ->Belt_List.map(id => {
            <div className=Styles.idContainer key={id |> ID.DataSource.toString}>
-             <TypeID.DataSource id position=TypeID.Subtitle />
+             <TypeID.DataSource id position=TypeID.Text />
              <HSpacing size=Spacing.sm />
            </div>
          })
