@@ -97,6 +97,28 @@ func (k Keeper) ValidateDataSourceCount(ctx sdk.Context, id types.RequestID) sdk
 	return nil
 }
 
+// PayDataSourcesFee send fees to the owner of requested data sources.
+func (k Keeper) PayDataSourcesFee(ctx sdk.Context, id types.RequestID, sender sdk.AccAddress) sdk.Error {
+	rawDataRequests := k.GetRawDataRequests(ctx, id)
+	for _, rawDataRequest := range rawDataRequests {
+		dataSource, err := k.GetDataSource(ctx, rawDataRequest.DataSourceID)
+		if err != nil {
+			return err
+		}
+
+		if dataSource.Fee.IsZero() {
+			continue
+		}
+
+		err = k.CoinKeeper.SendCoins(ctx, sender, dataSource.Owner, dataSource.Fee)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (k Keeper) SetResolve(ctx sdk.Context, id types.RequestID, resolveStatus types.ResolveStatus) sdk.Error {
 	request, err := k.GetRequest(ctx, id)
 	if err != nil {

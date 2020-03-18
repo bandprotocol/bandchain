@@ -181,6 +181,10 @@ func TestRequestSuccess(t *testing.T) {
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
 	calldata := []byte("calldata")
 	sender := sdk.AccAddress([]byte("sender"))
+	_, err := keeper.CoinKeeper.AddCoins(ctx, sender, keep.NewUBandCoins(100))
+	require.Nil(t, err)
+
+	owner := sdk.AccAddress([]byte("owner"))
 
 	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
 	keeper.SetOracleScript(ctx, 1, script)
@@ -223,6 +227,12 @@ func TestRequestSuccess(t *testing.T) {
 	require.Equal(t, rawRequests, keeper.GetRawDataRequests(ctx, 1))
 	// check consumed gas must more than 2000000 (prepareGas + executeGas)
 	require.True(t, afterGas-beforeGas > 2000000)
+
+	senderBalance := keeper.CoinKeeper.GetCoins(ctx, sender)
+	require.Equal(t, keep.NewUBandCoins(90), senderBalance)
+
+	ownerBalance := keeper.CoinKeeper.GetCoins(ctx, owner)
+	require.Equal(t, keep.NewUBandCoins(10), ownerBalance)
 }
 
 func TestRequestInvalidDataSource(t *testing.T) {
@@ -278,6 +288,29 @@ func TestRequestWithPrepareGasExceed(t *testing.T) {
 
 	// set prepare gas to 3 (not enough for using) then it occurs error.
 	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 3, 1000000, sender)
+
+	got := handleMsgRequestData(ctx, keeper, msg)
+	require.False(t, got.IsOK())
+}
+
+func TestRequestWithInsufficientFee(t *testing.T) {
+	ctx, keeper := keep.CreateTestInput(t, false)
+
+	ctx = ctx.WithBlockHeight(2)
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	calldata := []byte("calldata")
+	sender := sdk.AccAddress([]byte("sender"))
+
+	_, err := keeper.CoinKeeper.AddCoins(ctx, sender, keep.NewUBandCoins(1))
+	require.Nil(t, err)
+
+	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
+	keeper.SetOracleScript(ctx, 1, script)
+
+	dataSource := keep.GetTestDataSource()
+	keeper.SetDataSource(ctx, 1, dataSource)
+
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 1000000, 1000000, sender)
 
 	got := handleMsgRequestData(ctx, keeper, msg)
 	require.False(t, got.IsOK())
