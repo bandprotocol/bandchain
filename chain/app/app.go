@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"io"
 	"os"
 
@@ -106,7 +105,7 @@ type bandApp struct {
 
 	invCheckPeriod uint
 
-	// keys to access the substores
+	// Keys to access the substores
 	keys  map[string]*sdk.KVStoreKey
 	tkeys map[string]*sdk.TransientStoreKey
 
@@ -122,6 +121,11 @@ type bandApp struct {
 	crisisKeeper   crisis.Keeper
 	paramsKeeper   params.Keeper
 	zoracleKeeper  zoracle.Keeper
+
+	// Decoder for unmarshaling []byte into sdk.Tx
+	txDecoder sdk.TxDecoder
+	// Deliver Context that is set during BeingBlock and unset during EndBlock; primarily for gas refund
+	deliverContext sdk.Context
 
 	// Module Manager
 	mm *module.Manager
@@ -156,6 +160,7 @@ func NewBandApp(
 		invCheckPeriod: invCheckPeriod,
 		keys:           keys,
 		tkeys:          tkeys,
+		txDecoder:      auth.DefaultTxDecoder(cdc),
 	}
 
 	// The ParamsKeeper handles parameter storage for the application
@@ -317,35 +322,12 @@ func NewBandApp(
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 
-	// Create a default AnteHandler that will be used after checking refundGasPrice
-	defaultAnteHandler := auth.NewAnteHandler(
+	// The AnteHandler handles signature verification and transaction pre-processing
+	app.SetAnteHandler(auth.NewAnteHandler(
 		app.accountKeeper,
 		app.supplyKeeper,
 		auth.DefaultSigVerificationGasConsumer,
-	)
-	// The AnteHandler handles signature verification and transaction pre-processing
-	app.SetAnteHandler(
-		func(ctx sdk.Context, tx sdk.Tx, simulate bool) (newCtx sdk.Context, res sdk.Result, abort bool) {
-			if stdTx, ok := tx.(auth.StdTx); ok {
-				fee := stdTx.Fee
-				for _, msg := range tx.GetMsgs() {
-					if report, ok := msg.(zoracle.MsgReportData); ok {
-						_, refundGasPriceExceedTxGasPrice := fee.GasPrices().SafeSub(report.RefundGasPrice)
-						if refundGasPriceExceedTxGasPrice {
-							return ctx, sdk.ErrInternal(
-								fmt.Sprintf(
-									"refundGasPrice(%s) exceeds txGasPrice(%s)",
-									report.RefundGasPrice.String(), fee.GasPrices().String(),
-								),
-							).Result(), true
-						}
-					}
-				}
-			}
-
-			return defaultAnteHandler(ctx, tx, simulate)
-		},
-	)
+	))
 
 	app.SetEndBlocker(app.EndBlocker)
 
@@ -361,18 +343,53 @@ func NewBandApp(
 
 func (app *bandApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	var genesisState GenesisState
-
 	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
-
 	return app.mm.InitGenesis(ctx, genesisState)
 }
 
 func (app *bandApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
+	app.deliverContext = ctx
 	return app.mm.BeginBlock(ctx, req)
 }
 
 func (app *bandApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
+	app.deliverContext = sdk.Context{}
 	return app.mm.EndBlock(ctx, req)
+}
+
+func (app *bandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliverTx) {
+	response := app.BaseApp.DeliverTx(req)
+
+	if response.IsOK() {
+		// Refund 100% of gas fee for any successful transaction that only contains MsgReportData
+		tx, err := app.txDecoder(req.Tx)
+		if err != nil { // Should never happen because BaseApp.DeliverTx succeeds
+			panic(err)
+		}
+		isAllReportTxs := true
+		if stdTx, ok := tx.(auth.StdTx); ok {
+			for _, msg := range tx.GetMsgs() {
+				if _, ok := msg.(zoracle.MsgReportData); !ok {
+					isAllReportTxs = false
+					break
+				}
+			}
+			if isAllReportTxs && !stdTx.Fee.Amount.IsZero() {
+				err := app.supplyKeeper.SendCoinsFromModuleToAccount(
+					app.deliverContext,
+					auth.FeeCollectorName,
+					stdTx.GetSigners()[0],
+					stdTx.Fee.Amount,
+				)
+				if err != nil { // Should never happen because we just return the collected fee
+					panic(err)
+				}
+
+			}
+		}
+	}
+
+	return response
 }
 
 func (app *bandApp) LoadHeight(height int64) error {
