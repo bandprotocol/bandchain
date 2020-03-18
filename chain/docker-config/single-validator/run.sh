@@ -12,4 +12,5 @@ sed 's/cors_allowed_origins = \[\]/cors_allowed_origins = \["\*"\]/g' config.tom
 mv config_tmp.toml config.toml
 cd /zoracle/
 
-bandd start --rpc.laddr tcp://0.0.0.0:26657
+mkdir ~/.banddb
+bandd start --rpc.laddr tcp://0.0.0.0:26657 --with-db sqlite3:/root/.banddb/main.db
