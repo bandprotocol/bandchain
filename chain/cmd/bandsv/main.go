@@ -68,10 +68,11 @@ func getEnv(key, def string) string {
 }
 
 var (
-	port     = getEnv("PORT", "5001")
-	nodeURI  = getEnv("NODE_URI", "http://localhost:26657")
-	queryURI = getEnv("QUERY_URI", "http://localhost:1317")
-	priv     = getEnv("PRIVATE_KEY", "eedda7a96ad35758f2ffc404d6ccd7be913f149a530c70e95e2e3ee7a952a877")
+	port        = getEnv("PORT", "5001")
+	nodeURI     = getEnv("NODE_URI", "http://localhost:26657")
+	queryURI    = getEnv("QUERY_URI", "http://localhost:1317")
+	priv        = getEnv("PRIVATE_KEY", "eedda7a96ad35758f2ffc404d6ccd7be913f149a530c70e95e2e3ee7a952a877")
+	sandboxMode = os.Getenv("SANDBOX_MODE") != ""
 )
 
 var rpcClient *rpc.HTTP
@@ -225,7 +226,7 @@ func handleExecute(c *gin.Context) {
 		return
 	}
 
-	result, err := byteexec.RunOnDocker(req.Executable, 1*time.Minute, req.Calldata)
+	result, err := byteexec.RunOnDocker(req.Executable, sandboxMode, 1*time.Minute, req.Calldata)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
