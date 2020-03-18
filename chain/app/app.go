@@ -374,18 +374,16 @@ func (app *bandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliv
 				}
 			}
 			if isAllReportTxs && !stdTx.Fee.Amount.IsZero() {
-				acc := app.accountKeeper.GetAccount(app.deliverContext, stdTx.GetSigners()[0])
-				if acc != nil {
-					err := app.supplyKeeper.SendCoinsFromModuleToAccount(
-						app.deliverContext,
-						auth.FeeCollectorName,
-						acc.GetAddress(),
-						stdTx.Fee.Amount,
-					)
-					if err != nil { // Should never happen because we just return the collected fee
-						panic(err)
-					}
+				err := app.supplyKeeper.SendCoinsFromModuleToAccount(
+					app.deliverContext,
+					auth.FeeCollectorName,
+					stdTx.GetSigners()[0],
+					stdTx.Fee.Amount,
+				)
+				if err != nil { // Should never happen because we just return the collected fee
+					panic(err)
 				}
+
 			}
 		}
 	}
