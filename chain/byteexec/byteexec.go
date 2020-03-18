@@ -101,13 +101,13 @@ func RunOnDocker(executable []byte, sandboxMode bool, timeOut time.Duration, arg
 }
 
 // RunOnAWSLambda runs the given executable on AMS Lambda platform.
-func RunOnAWSLambda(executable []byte, timeOut time.Duration, arg string, url string) ([]byte, error) {
+func RunOnAWSLambda(executable []byte, timeOut time.Duration, arg string, executeEndPoint string) ([]byte, error) {
 	requestBody, err := json.Marshal(map[string]string{
 		"executable": string(executable),
 		"calldata":   arg,
 	})
 
-	request, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
+	request, err := http.NewRequest("POST", executeEndPoint, bytes.NewBuffer(requestBody))
 	if err != nil {
 		return nil, err
 	}

@@ -24,7 +24,7 @@ const (
 	flagMaxQueryDuration = "max-query-duration"
 	flagPrivKey          = "priv-key"
 	flagSandboxMode      = "sandbox"
-	flagReporterURL      = "reporter-url"
+	flagExecuteEndPoint  = "execute-endpoint"
 )
 
 var (
@@ -125,11 +125,11 @@ $ bandoracled --node tcp://localhost:26657 --priv-key 06be35b56b048c5a6810a47e2e
 	viper.BindPFlag(flagPrivKey, cmd.Flags().Lookup(flagPrivKey))
 
 	cmd.Flags().String(
-		flagReporterURL,
+		flagExecuteEndPoint,
 		"",
-		"The URL of reporter end-point which will receive 3 parameters (executable, timeout, calldata)",
+		"The URL of execution end-point which will receive 3 parameters (executable, timeout, calldata)",
 	)
-	viper.BindPFlag(flagReporterURL, cmd.Flags().Lookup(flagReporterURL))
+	viper.BindPFlag(flagExecuteEndPoint, cmd.Flags().Lookup(flagExecuteEndPoint))
 
 	err := cmd.Execute()
 	if err != nil {
@@ -182,18 +182,13 @@ func handleRequest(requestID zoracle.RequestID) {
 				return
 			}
 
-			result, err := byteexec.RunOnAWSLambda(
-				dataSource.Executable,
-				viper.IsSet(flagSandboxMode),
-				time.Duration(viper.GetInt(flagMaxQueryDuration))*time.Second,
-				string(calldata),
-			)
-			reporterURL := viper.GetString(flagReporterURL)
+			executeEndPoint := viper.GetString(flagExecuteEndPoint)
 
 			var result []byte
-			if reporterURL == "" {
+			if executeEndPoint == "" {
 				result, err = byteexec.RunOnDocker(
 					dataSource.Executable,
+					viper.IsSet(flagSandboxMode),
 					time.Duration(viper.GetInt(flagMaxQueryDuration))*time.Second,
 					string(calldata),
 				)
@@ -202,7 +197,7 @@ func handleRequest(requestID zoracle.RequestID) {
 					dataSource.Executable,
 					time.Duration(viper.GetInt(flagMaxQueryDuration))*time.Second,
 					string(calldata),
-					reporterURL,
+					executeEndPoint,
 				)
 			}
 
