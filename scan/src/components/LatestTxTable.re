@@ -4,7 +4,7 @@ module Styles = {
   let seeMoreContainer =
     style([
       width(`percent(100.)),
-      boxShadow(Shadow.box(~x=`px(0), ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
+      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
       backgroundColor(white),
       display(`flex),
       justifyContent(`center),

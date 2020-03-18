@@ -9,7 +9,7 @@ module Styles = {
       height(`px(16)),
       backgroundColor(color),
       borderRadius(`px(100)),
-      margin2(`px(0), `px(5)),
+      margin2(`zero, `px(5)),
       display(`flex),
       justifyContent(`center),
       alignItems(`center),

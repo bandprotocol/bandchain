@@ -18,7 +18,7 @@ module Styles = {
       backgroundColor(Colors.white),
       borderRadius(`px(4)),
       padding2(`px(35), `px(30)),
-      boxShadow(Shadow.box(~x=`px(0), ~y=`px(2), ~blur=`px(8), Css.rgba(0, 0, 0, 0.08))),
+      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(8), Css.rgba(0, 0, 0, 0.08))),
     ]);
 
   let fullWidth = dir => style([width(`percent(100.0)), display(`flex), flexDirection(dir)]);

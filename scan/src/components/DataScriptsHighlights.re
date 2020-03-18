@@ -4,7 +4,7 @@ module Styles = {
     style([
       backgroundColor(color),
       borderRadius(`px(8)),
-      boxShadow(Shadow.box(~x=`px(0), ~y=`px(4), ~blur=`px(20), Css.rgba(0, 0, 0, 0.1))),
+      boxShadow(Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(20), Css.rgba(0, 0, 0, 0.1))),
       padding(Spacing.lg),
       paddingRight(Spacing.xl),
       marginTop(Spacing.md),
@@ -25,7 +25,7 @@ module Styles = {
       height(`px(115)),
       width(`px(200)),
       borderRadius(`px(8)),
-      boxShadow(Shadow.box(~x=`px(0), ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, 0.05))),
+      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, 0.05))),
       cursor(`pointer),
       transition(~duration=100, "margin-top"),
       hover([marginTop(`px(14))]),
