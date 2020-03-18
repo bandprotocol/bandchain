@@ -35,10 +35,20 @@ module Styles = {
 
 [@react.component]
 let make = () => {
-  let oracleScriptOpt = OracleScriptHook.getList();
-  // let scriptsOpt = ScriptHook.getScriptList(~limit=100000, ());
-  // let scripts = scriptsOpt->Belt.Option.getWithDefault([]);
-  // let totalScript = scripts->Belt.List.length->string_of_int;
+  let (page, setPage) = React.useState(_ => 1);
+  let limit = 10;
+
+  // TODO: use for get all oracle script count.
+  let oracleScriptsCountOpt = DataSourceHook.getList();
+
+  let oracleScriptOpt = OracleScriptHook.getList(~limit, ~page, ());
+
+  let pageCount =
+    {
+      let%Opt oracleScriptsCount = oracleScriptsCountOpt;
+      Some(Page.getPageCount(oracleScriptsCount->Belt.List.size, limit));
+    }
+    |> Belt.Option.getWithDefault(_, 1);
   <div className=Styles.pageContainer>
     <Row>
       <Col>
@@ -55,10 +65,10 @@ let make = () => {
             block=true
           />
           <div className=Styles.seperatedLine />
-          {switch (oracleScriptOpt) {
-           | Some(dataSources) =>
+          {switch (oracleScriptsCountOpt) {
+           | Some(oracleScriptsCount) =>
              <Text
-               value={dataSources->Belt.List.length->string_of_int ++ " In total"}
+               value={oracleScriptsCount->Belt.List.length->string_of_int ++ " In total"}
                size=Text.Md
                weight=Text.Thin
                spacing={Text.Em(0.06)}
@@ -154,7 +164,7 @@ let make = () => {
        }}
     </>
     <VSpacing size=Spacing.lg />
-    <VSpacing size=Spacing.xl />
-    <VSpacing size=Spacing.xl />
+    <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
+    <VSpacing size=Spacing.lg />
   </div>;
 };
