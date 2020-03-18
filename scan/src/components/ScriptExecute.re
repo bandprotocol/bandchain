@@ -40,7 +40,7 @@ module Styles = {
       width(`px(110)),
       backgroundColor(Colors.green2),
       borderRadius(`px(4)),
-      border(`px(0), `solid, Colors.green4),
+      border(`zero, `solid, Colors.green4),
       fontSize(`px(12)),
       fontWeight(`medium),
       color(`hex("127658")),

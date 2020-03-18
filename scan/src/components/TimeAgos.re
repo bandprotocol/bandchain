@@ -49,10 +49,18 @@ let make =
   );
 
   <div className=Styles.timeContainer>
-    <Text value=prefix size weight spacing color code nowrap=true />
-    <HSpacing size=Spacing.sm />
+    {prefix != ""
+       ? <>
+           <Text value=prefix size weight spacing color code nowrap=true />
+           <HSpacing size=Spacing.sm />
+         </>
+       : React.null}
     <Text value=displayTime size weight spacing color code nowrap=true />
-    <HSpacing size=Spacing.sm />
-    <Text value=suffix size weight spacing color code nowrap=true />
+    {suffix != ""
+       ? <>
+           <HSpacing size=Spacing.sm />
+           <Text value=suffix size weight spacing color code nowrap=true />
+         </>
+       : React.null}
   </div>;
 };

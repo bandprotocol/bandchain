@@ -10,7 +10,7 @@ import (
 func (k Keeper) AddResult(
 	ctx sdk.Context, requestID types.RequestID, oracleScriptID types.OracleScriptID, calldata []byte, result []byte,
 ) sdk.Error {
-	if len(result) > int(k.MaxResultSize(ctx)) {
+	if int64(len(result)) > k.MaxResultSize(ctx) {
 		return types.ErrBadDataValue(
 			"AddResult: Result size (%d) exceeds the maximum size (%d).",
 			len(result),

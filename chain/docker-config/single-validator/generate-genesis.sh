@@ -6,7 +6,7 @@ DIR=`dirname "$0"`
 rm -rf ~/.band*
 
 # initial new node
-bandd init validator --chain-id bandchain --zoracle band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9
+bandd init validator --chain-id bandchain --zoracle band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs
 
 # create acccounts
 expect $DIR/../add-account.exp \

@@ -13,25 +13,27 @@ func (k Keeper) SetOracleScript(ctx sdk.Context, id types.OracleScriptID, oracle
 }
 
 // AddOracleScript adds the given oracle script to the storage.
-func (k Keeper) AddOracleScript(ctx sdk.Context, owner sdk.AccAddress, name string, description string, code []byte) sdk.Error {
+func (k Keeper) AddOracleScript(
+	ctx sdk.Context, owner sdk.AccAddress, name string, description string, code []byte,
+) (types.OracleScriptID, sdk.Error) {
 	newOracleScriptID := k.GetNextOracleScriptID(ctx)
 
-	if len(code) > int(k.MaxOracleScriptCodeSize(ctx)) {
-		return types.ErrBadDataValue(
+	if int64(len(code)) > k.MaxOracleScriptCodeSize(ctx) {
+		return 0, types.ErrBadDataValue(
 			"AddOracleScript: Code size (%d) exceeds the maximum size (%d).",
 			len(code),
 			int(k.MaxOracleScriptCodeSize(ctx)),
 		)
 	}
-	if len(name) > int(k.MaxNameLength(ctx)) {
-		return types.ErrBadDataValue(
+	if int64(len(name)) > k.MaxNameLength(ctx) {
+		return 0, types.ErrBadDataValue(
 			"AddOracleScript: Name length (%d) exceeds the maximum length (%d).",
 			len(name),
 			int(k.MaxNameLength(ctx)),
 		)
 	}
-	if len(description) > int(k.MaxDescriptionLength(ctx)) {
-		return types.ErrBadDataValue(
+	if int64(len(description)) > k.MaxDescriptionLength(ctx) {
+		return 0, types.ErrBadDataValue(
 			"AddOracleScript: Name length (%d) exceeds the maximum length (%d).",
 			len(name),
 			int(k.MaxNameLength(ctx)),
@@ -40,7 +42,7 @@ func (k Keeper) AddOracleScript(ctx sdk.Context, owner sdk.AccAddress, name stri
 
 	newOracleScript := types.NewOracleScript(owner, name, description, code)
 	k.SetOracleScript(ctx, newOracleScriptID, newOracleScript)
-	return nil
+	return newOracleScriptID, nil
 }
 
 // EditOracleScript edits the given oracle script by given oracle script id to the storage.
@@ -52,21 +54,21 @@ func (k Keeper) EditOracleScript(ctx sdk.Context, oracleScriptID types.OracleScr
 		)
 	}
 
-	if len(code) > int(k.MaxOracleScriptCodeSize(ctx)) {
+	if int64(len(code)) > k.MaxOracleScriptCodeSize(ctx) {
 		return types.ErrBadDataValue(
 			"EditDataSource: Code size (%d) exceeds the maximum size (%d).",
 			len(code),
 			int(k.MaxOracleScriptCodeSize(ctx)),
 		)
 	}
-	if len(name) > int(k.MaxNameLength(ctx)) {
+	if int64(len(name)) > k.MaxNameLength(ctx) {
 		return types.ErrBadDataValue(
 			"EditOracleScript: Name length (%d) exceeds the maximum length (%d).",
 			len(name),
 			int(k.MaxNameLength(ctx)),
 		)
 	}
-	if len(description) > int(k.MaxDescriptionLength(ctx)) {
+	if int64(len(description)) > k.MaxDescriptionLength(ctx) {
 		return types.ErrBadDataValue(
 			"EditDataSource: Description length (%d) exceeds the maximum length (%d).",
 			len(description),

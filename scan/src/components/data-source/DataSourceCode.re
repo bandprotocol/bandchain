@@ -32,15 +32,8 @@ let renderCode = content => {
 };
 
 [@react.component]
-let make = () => {
-  let code = {f|#!/bin/bash
-
-#Cryptocurrency price endpoint: https://www.coingecko.com/api/documentations/v3
-URL="https://api.coingecko.com/api/v3/simple/price?ids=$1&cs_currencies=usd"
-KEY=".$1.usd"
-
-# Performs data fetching and parses the result
-curl -s -X GET $URL -H "accept: application/json" | jq -r ".[\"$1"\].usd"|f};
+let make = (~executable) => {
+  let code = executable |> JsBuffer._toString(_, "UTF-8");
 
   React.useMemo1(
     () => <div className=Styles.tableLowerContainer> {code |> renderCode} </div>,

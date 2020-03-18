@@ -143,6 +143,11 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			"The Script that queries crypto price from https://www.binance.com/en",
 			"./datasources/binance_price.sh",
 		},
+		{
+			"Open weather",
+			"The script that queries current weather",
+			"./datasources/open_weather_map.sh",
+		},
 	}
 
 	// TODO: Find a better way to specify path to data sources
