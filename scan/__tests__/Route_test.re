@@ -6,7 +6,7 @@ describe("Expect Search Functionality to work correctly", () => {
   test("test block route", () =>
     expect("123" |> search) |> toEqual(BlockIndexPage(123))
   );
-  test("test block route", () =>
+  test("test transaction route", () =>
     expect("22638794cb5f306ef929b90c58b27d26cb35a77ca5c5c624cf2025a98528c323" |> search)
     |> toEqual(
          TxIndexPage(
@@ -14,7 +14,7 @@ describe("Expect Search Functionality to work correctly", () => {
          ),
        )
   );
-  test("test block route prefix is 0x", () =>
+  test("test transaction route prefix is 0x", () =>
     expect("22638794cb5f306ef929b90c58b27d26cb35a77ca5c5c624cf2025a98528c323" |> search)
     |> toEqual(
          TxIndexPage(
@@ -55,7 +55,7 @@ describe("Expect Search Functionality to work correctly", () => {
          ),
        )
   );
-  test("test oracle script route", () =>
+  test("test account route", () =>
     expect("band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun" |> search)
     |> toEqual(
          AccountIndexPage(
