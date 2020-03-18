@@ -41,7 +41,7 @@ module Styles = {
       background(Colors.white),
       padding(`px(24)),
       border(`px(1), `solid, Colors.gray4),
-      borderBottom(`px(0), `solid, Colors.gray4),
+      borderBottom(`zero, `solid, Colors.gray4),
       flexDirection(`column),
     ]);
 

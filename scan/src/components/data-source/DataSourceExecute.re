@@ -35,7 +35,7 @@ module Styles = {
       cursor(isLoading ? `auto : `pointer),
       padding2(~v=Css.px(10), ~h=Css.px(10)),
       whiteSpace(`nowrap),
-      outline(`px(0), `none, white),
+      outline(`zero, `none, white),
       boxShadow(
         isLoading
           ? `none : Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.1)),

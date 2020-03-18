@@ -23,10 +23,22 @@ module Styles = {
   let fullWidth = style([width(`percent(100.0)), display(`flex)]);
 
   let feeContainer = style([display(`flex), justifyContent(`flexEnd), maxWidth(`px(150))]);
+
+  let loadingContainer =
+    style([
+      display(`flex),
+      justifyContent(`center),
+      alignItems(`center),
+      height(`px(200)),
+      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, 0.05))),
+      backgroundColor(white),
+    ]);
 };
 
 [@react.component]
 let make = () => {
+  let dataSourcesOpt = DataSourceHook.getList();
+
   <div className=Styles.pageContainer>
     <Row>
       <Col>
@@ -43,14 +55,18 @@ let make = () => {
             block=true
           />
           <div className=Styles.seperatedLine />
-          <Text
-            value="20 In total"
-            size=Text.Md
-            weight=Text.Thin
-            spacing={Text.Em(0.06)}
-            color=Colors.gray7
-            nowrap=true
-          />
+          {switch (dataSourcesOpt) {
+           | Some(dataSources) =>
+             <Text
+               value={dataSources->Belt.List.length->string_of_int ++ " In total"}
+               size=Text.Md
+               weight=Text.Thin
+               spacing={Text.Em(0.06)}
+               color=Colors.gray7
+               nowrap=true
+             />
+           | None => React.null
+           }}
         </div>
       </Col>
     </Row>
@@ -106,57 +122,32 @@ let make = () => {
           <Col> <HSpacing size=Spacing.xl /> </Col>
         </Row>
       </THead>
-      {[
-         (
-           1,
-           "CoinGecko V.2",
-           MomentRe.momentNow(),
-           "band17rprjgtj0krfw3wyl9creueej6ca9dc4dgxv6e" |> Address.fromBech32,
-           123.3,
-         ),
-         (
-           2,
-           "Koo",
-           MomentRe.momentNow()
-           |> MomentRe.Moment.subtract(~duration=MomentRe.duration(2., `hours)),
-           "band17rprjgtj0krfw3wyl9creueej6ca9dc4dgxv6e" |> Address.fromBech32,
-           123.3,
-         ),
-         (
-           3,
-           "Binance",
-           MomentRe.momentNow()
-           |> MomentRe.Moment.subtract(~duration=MomentRe.duration(10., `hours)),
-           "band17rprjgtj0krfw3wyl9creueej6ca9dc4dgxv6e" |> Address.fromBech32,
-           123.3,
-         ),
-         (
-           4,
-           "CMC",
-           MomentRe.momentNow()
-           |> MomentRe.Moment.subtract(~duration=MomentRe.duration(22., `hours)),
-           "band17rprjgtj0krfw3wyl9creueej6ca9dc4dgxv6e" |> Address.fromBech32,
-           123.3,
-         ),
-       ]
-       ->Belt.List.map(((id, name, timestamp, owner, fee)) => {
-           <TBody key=name>
-             <div className=Styles.fullWidth>
-               <Row>
-                 <Col> <HSpacing size=Spacing.xl /> </Col>
-                 <Col size=0.5>
-                   <TElement elementType={TElement.DataSource(ID.DataSource.ID(id), name)} />
-                 </Col>
-                 <Col size=0.5> <TElement elementType={timestamp->TElement.Timestamp} /> </Col>
-                 <Col size=1.> <TElement elementType={owner->TElement.Address} /> </Col>
-                 <Col size=0.4> <TElement elementType={fee->TElement.Fee} /> </Col>
-                 <Col> <HSpacing size=Spacing.xl /> </Col>
-               </Row>
-             </div>
-           </TBody>
-         })
-       ->Array.of_list
-       ->React.array}
+      {switch (dataSourcesOpt) {
+       | Some(dataSource) =>
+         dataSource
+         ->Belt.List.map(({id, name, timestamp, owner, fee}) => {
+             <TBody key=name>
+               <div className=Styles.fullWidth>
+                 <Row>
+                   <Col> <HSpacing size=Spacing.xl /> </Col>
+                   <Col size=0.5>
+                     <TElement elementType={TElement.DataSource(ID.DataSource.ID(id), name)} />
+                   </Col>
+                   <Col size=0.5> <TElement elementType={timestamp->TElement.Timestamp} /> </Col>
+                   <Col size=1.> <TElement elementType={owner->TElement.Address} /> </Col>
+                   <Col size=0.4>
+                     <TElement elementType={fee->TxHook.Coin.getFeeAmount->TElement.Fee} />
+                   </Col>
+                   <Col> <HSpacing size=Spacing.xl /> </Col>
+                 </Row>
+               </div>
+             </TBody>
+           })
+         ->Array.of_list
+         ->React.array
+       | None =>
+         <div className=Styles.loadingContainer> <Text value="Loading..." size=Text.Xl /> </div>
+       }}
     </>
     <VSpacing size=Spacing.xl />
   </div>;

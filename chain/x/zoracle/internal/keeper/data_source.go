@@ -19,21 +19,21 @@ func (k Keeper) AddDataSource(
 ) (types.DataSourceID, sdk.Error) {
 	newDataSourceID := k.GetNextDataSourceID(ctx)
 
-	if len(executable) > int(k.MaxDataSourceExecutableSize(ctx)) {
+	if int64(len(executable)) > k.MaxDataSourceExecutableSize(ctx) {
 		return 0, types.ErrBadDataValue(
 			"AddDataSource: Executable size (%d) exceeds the maximum size (%d).",
 			len(executable),
 			int(k.MaxDataSourceExecutableSize(ctx)),
 		)
 	}
-	if len(name) > int(k.MaxNameLength(ctx)) {
+	if int64(len(name)) > k.MaxNameLength(ctx) {
 		return 0, types.ErrBadDataValue(
 			"AddDataSource: Name length (%d) exceeds the maximum length (%d).",
 			len(name),
 			int(k.MaxNameLength(ctx)),
 		)
 	}
-	if len(description) > int(k.MaxDescriptionLength(ctx)) {
+	if int64(len(description)) > k.MaxDescriptionLength(ctx) {
 		return 0, types.ErrBadDataValue(
 			"AddDataSource: Description length (%d) exceeds the maximum length (%d).",
 			len(description),
@@ -55,21 +55,21 @@ func (k Keeper) EditDataSource(ctx sdk.Context, dataSourceID types.DataSourceID,
 		)
 	}
 
-	if len(executable) > int(k.MaxDataSourceExecutableSize(ctx)) {
+	if int64(len(executable)) > k.MaxDataSourceExecutableSize(ctx) {
 		return types.ErrBadDataValue(
 			"EditDataSource: Executable size (%d) exceeds the maximum size (%d).",
 			len(executable),
 			int(k.MaxDataSourceExecutableSize(ctx)),
 		)
 	}
-	if len(name) > int(k.MaxNameLength(ctx)) {
+	if int64(len(name)) > k.MaxNameLength(ctx) {
 		return types.ErrBadDataValue(
 			"EditDataSource: Name length (%d) exceeds the maximum length (%d).",
 			len(name),
 			int(k.MaxNameLength(ctx)),
 		)
 	}
-	if len(description) > int(k.MaxDescriptionLength(ctx)) {
+	if int64(len(description)) > k.MaxDescriptionLength(ctx) {
 		return types.ErrBadDataValue(
 			"EditDataSource: Description length (%d) exceeds the maximum length (%d).",
 			len(description),

@@ -32,11 +32,29 @@ let renderCode = content => {
 };
 
 [@react.component]
-let make = (~executable) => {
-  let code = executable |> JsBuffer._toString(_, "UTF-8");
+let make = () => {
+  let code = {f|[package]
+name = "crypto_price"
+version = "0.1.0"
+authors = ["Band Protocol <dev@bandprotocol.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+owasm = { path = "../.." }
+|f};
 
   React.useMemo1(
-    () => <div className=Styles.tableLowerContainer> {code |> renderCode} </div>,
+    () =>
+      <div className=Styles.tableLowerContainer>
+        <Text value="Cargo.toml" />
+        <VSpacing size=Spacing.md />
+        {code |> renderCode}
+      </div>,
     [||],
   );
 };

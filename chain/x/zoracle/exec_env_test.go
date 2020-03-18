@@ -79,7 +79,7 @@ func TestGetReceivedValidatorCount(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, int64(0), env.GetReceivedValidatorCount())
 
-	keeper.AddReport(ctx, 1, []types.RawDataReport{}, sdk.ValAddress([]byte("val1")))
+	keeper.AddReport(ctx, 1, []types.RawDataReportWithID{}, sdk.ValAddress([]byte("val1")))
 
 	env, err = NewExecutionEnvironment(ctx, keeper, 1)
 	require.Nil(t, err)
@@ -112,7 +112,7 @@ func TestGetAggregateBlockTime(t *testing.T) {
 	require.Equal(t, int64(0), env.GetAggregateBlockTime())
 
 	// Add received validator
-	err = keeper.AddReport(ctx, 1, []types.RawDataReport{}, sdk.ValAddress([]byte("val1")))
+	err = keeper.AddReport(ctx, 1, []types.RawDataReportWithID{}, sdk.ValAddress([]byte("val1")))
 	require.Nil(t, err)
 
 	// After report is greater or equal SufficientValidatorCount, it will resolve in current block time.
@@ -238,25 +238,32 @@ func TestGetExternalData(t *testing.T) {
 		1, 0, 0, 100, 10000,
 	))
 
-	keeper.SetRawDataReport(ctx, 1, 42, sdk.ValAddress([]byte("val1")), []byte("data42"))
+	keeper.SetRawDataReport(
+		ctx,
+		1,
+		42,
+		sdk.ValAddress([]byte("val1")),
+		types.NewRawDataReport(42, []byte("data42")),
+	)
 
 	env, err := NewExecutionEnvironment(ctx, keeper, 1)
 	require.Nil(t, err)
 
 	// Get report from reported validator
-	report, envErr := env.GetExternalData(42, 0)
+	report, statusCode, envErr := env.GetExternalData(42, 0)
 	require.Nil(t, envErr)
 	require.Equal(t, []byte("data42"), report)
+	require.Equal(t, uint8(42), statusCode)
 
 	// Get report from missing validator
-	_, envErr = env.GetExternalData(42, 1)
+	_, _, envErr = env.GetExternalData(42, 1)
 	require.EqualError(t, envErr, "ERROR:\nCodespace: zoracle\nCode: 105\nMessage: \"GetRawDataReport: Unable to find raw data report with request ID 1 external ID 42 from bandvaloper1weskcvsfgndm9\"\n")
 
 	// Get report from invalid validator index
-	_, envErr = env.GetExternalData(42, 2)
+	_, _, envErr = env.GetExternalData(42, 2)
 	require.NotNil(t, envErr, "validator out of range")
 
 	// Get report from invalid validator index
-	_, envErr = env.GetExternalData(42, -2)
+	_, _, envErr = env.GetExternalData(42, -2)
 	require.NotNil(t, envErr, "validator out of range")
 }

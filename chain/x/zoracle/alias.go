@@ -40,11 +40,12 @@ var (
 	DataSourceStoreKey   = types.DataSourceStoreKey
 	OracleScriptStoreKey = types.OracleScriptStoreKey
 
-	NewParams        = types.NewParams
-	NewDataSource    = types.NewDataSource
-	NewOracleScript  = types.NewOracleScript
-	DefaultParams    = types.DefaultParams
-	NewRawDataReport = types.NewRawDataReport
+	NewParams              = types.NewParams
+	NewDataSource          = types.NewDataSource
+	NewOracleScript        = types.NewOracleScript
+	DefaultParams          = types.DefaultParams
+	NewRawDataReport       = types.NewRawDataReport
+	NewRawDataReportWithID = types.NewRawDataReportWithID
 
 	KeyMaxDataSourceExecutableSize  = types.KeyMaxDataSourceExecutableSize
 	KeyMaxOracleScriptCodeSize      = types.KeyMaxOracleScriptCodeSize
@@ -74,6 +75,7 @@ type (
 	MsgEditOracleScript   = types.MsgEditOracleScript
 
 	RawDataReport         = types.RawDataReport
+	RawDataReportWithID   = types.RawDataReportWithID
 	RequestQuerierInfo    = types.RequestQuerierInfo
 	DataSourceQuerierInfo = types.DataSourceQuerierInfo
 

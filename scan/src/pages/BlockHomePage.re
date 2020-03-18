@@ -69,13 +69,27 @@ let renderBody = ((block, proposer): (BlockHook.Block.t, option(ValidatorHook.Va
 
 [@react.component]
 let make = () => {
-  let (limit, setLimit) = React.useState(_ => 10);
-  let blocksOpt = BlockHook.latest(~limit, ());
+  let (page, setPage) = React.useState(_ => 1);
+  let limit = 10;
+
+  let blocksOpt = BlockHook.latest(~limit, ~page, ());
   let infoOpt = React.useContext(GlobalContext.context);
+
+  let blocksCountOpt = BlockHook.latest();
+  let latestHeightOpt = {
+    let%Opt blocks = blocksCountOpt;
+    let%Opt latestBlock = blocks->Belt.List.get(0);
+    Some(latestBlock.height);
+  };
+  let pageCount =
+    {
+      let%Opt latestHeight = latestHeightOpt;
+      Some(Page.getPageCount(latestHeight, limit));
+    }
+    |> Belt.Option.getWithDefault(_, 1);
 
   let blocks = blocksOpt->Belt.Option.getWithDefault([]);
 
-  let latestBlockOpt = blocks->Belt_List.get(0);
   let validators =
     switch (infoOpt) {
     | Some(info) => info.validators
@@ -103,8 +117,8 @@ let make = () => {
           <div className=Styles.seperatedLine />
           <Text
             value={
-              switch (latestBlockOpt) {
-              | Some(latestBlock) => latestBlock.height->Format.iPretty ++ " in total"
+              switch (latestHeightOpt) {
+              | Some(latestHeight) => latestHeight->Format.iPretty ++ " in total"
               | None => ""
               }
             }
@@ -148,5 +162,8 @@ let make = () => {
       </Row>
     </THead>
     {blocksWithProposers->Belt_List.toArray->Belt_Array.map(renderBody)->React.array}
+    <VSpacing size=Spacing.lg />
+    <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
+    <VSpacing size=Spacing.lg />
   </div>;
 };
