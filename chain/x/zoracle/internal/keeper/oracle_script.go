@@ -18,21 +18,21 @@ func (k Keeper) AddOracleScript(
 ) (types.OracleScriptID, sdk.Error) {
 	newOracleScriptID := k.GetNextOracleScriptID(ctx)
 
-	if len(code) > int(k.MaxOracleScriptCodeSize(ctx)) {
+	if int64(len(code)) > k.MaxOracleScriptCodeSize(ctx) {
 		return 0, types.ErrBadDataValue(
 			"AddOracleScript: Code size (%d) exceeds the maximum size (%d).",
 			len(code),
 			int(k.MaxOracleScriptCodeSize(ctx)),
 		)
 	}
-	if len(name) > int(k.MaxNameLength(ctx)) {
+	if int64(len(name)) > k.MaxNameLength(ctx) {
 		return 0, types.ErrBadDataValue(
 			"AddOracleScript: Name length (%d) exceeds the maximum length (%d).",
 			len(name),
 			int(k.MaxNameLength(ctx)),
 		)
 	}
-	if len(description) > int(k.MaxDescriptionLength(ctx)) {
+	if int64(len(description)) > k.MaxDescriptionLength(ctx) {
 		return 0, types.ErrBadDataValue(
 			"AddOracleScript: Name length (%d) exceeds the maximum length (%d).",
 			len(name),
@@ -54,21 +54,21 @@ func (k Keeper) EditOracleScript(ctx sdk.Context, oracleScriptID types.OracleScr
 		)
 	}
 
-	if len(code) > int(k.MaxOracleScriptCodeSize(ctx)) {
+	if int64(len(code)) > k.MaxOracleScriptCodeSize(ctx) {
 		return types.ErrBadDataValue(
 			"EditDataSource: Code size (%d) exceeds the maximum size (%d).",
 			len(code),
 			int(k.MaxOracleScriptCodeSize(ctx)),
 		)
 	}
-	if len(name) > int(k.MaxNameLength(ctx)) {
+	if int64(len(name)) > k.MaxNameLength(ctx) {
 		return types.ErrBadDataValue(
 			"EditOracleScript: Name length (%d) exceeds the maximum length (%d).",
 			len(name),
 			int(k.MaxNameLength(ctx)),
 		)
 	}
-	if len(description) > int(k.MaxDescriptionLength(ctx)) {
+	if int64(len(description)) > k.MaxDescriptionLength(ctx) {
 		return types.ErrBadDataValue(
 			"EditDataSource: Description length (%d) exceeds the maximum length (%d).",
 			len(description),
