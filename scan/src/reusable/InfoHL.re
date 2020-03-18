@@ -5,9 +5,9 @@ type t =
   | Text(string)
   | Timestamp(MomentRe.Moment.t)
   | Fee(float)
-  | DataSources(list(string))
+  | DataSources(list(ID.DataSource.t))
   | Hash(Hash.t, Css.Types.Color.t)
-  | Address(Address.t)
+  | Address(Address.t, int)
   | Fraction(int, int, bool)
   | FloatWithSuffix(float, string);
 
@@ -21,7 +21,7 @@ module Styles = {
       alignItems(isLeft ? `flexStart : `flexEnd),
     ]);
   let vFlex = style([display(`flex), alignItems(`center)]);
-  let addressContainer = style([alignItems(`center), maxWidth(`px(290))]);
+  let addressContainer = maxwidth_ => style([alignItems(`center), maxWidth(`px(maxwidth_))]);
   let datasourcesContainer = style([display(`flex), alignItems(`center), flexWrap(`wrap)]);
   let headerContainer = style([lineHeight(`px(25))]);
   let sourceContainer =
@@ -36,6 +36,7 @@ module Styles = {
 
 [@react.component]
 let make = (~info, ~header, ~isLeft=true) => {
+  let infoOpt = React.useContext(GlobalContext.context);
   <div className={Styles.hFlex(isLeft)}>
     <div className=Styles.headerContainer>
       <Text
@@ -109,22 +110,25 @@ let make = (~info, ~header, ~isLeft=true) => {
          <Text value="BAND" size=Text.Lg weight=Text.Regular spacing={Text.Em(0.02)} code=true />
          <HSpacing size=Spacing.xs />
          <HSpacing size=Spacing.xs />
-         <Text
-           value="($0.3)"
-           size=Text.Lg
-           weight=Text.Regular
-           spacing={Text.Em(0.02)}
-           code=true
-         />
+         {switch (infoOpt) {
+          | Some(info) =>
+            let feeInUsd =
+              info.financial.usdPrice *. fee |> Js.Float.toFixedWithPrecision(~digits=2);
+            <Text
+              value={j|(\$$feeInUsd)|j}
+              size=Text.Lg
+              weight=Text.Regular
+              spacing={Text.Em(0.02)}
+              code=true
+            />;
+          | None => React.null
+          }}
        </div>
-     | DataSources(sources) =>
+     | DataSources(ids) =>
        <div className=Styles.datasourcesContainer>
-         {sources
-          ->Belt.List.map(source =>
-              <div key=source className=Styles.sourceContainer>
-                <img src=Images.source className=Styles.sourceIcon />
-                <Text value=source weight=Text.Bold size=Text.Lg />
-              </div>
+         {ids
+          ->Belt.List.map(id =>
+              <> <TypeID.DataSource id position=TypeID.Subtitle /> <HSpacing size=Spacing.sm /> </>
             )
           ->Array.of_list
           ->React.array}
@@ -144,9 +148,8 @@ let make = (~info, ~header, ~isLeft=true) => {
          spacing={Text.Em(0.02)}
          code=true
        />
-
-     | Address(address) =>
-       <div className=Styles.addressContainer>
+     | Address(address, maxWidth) =>
+       <div className={Styles.addressContainer(maxWidth)}>
          <AddressRender address position=AddressRender.Subtitle />
        </div>
      }}

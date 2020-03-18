@@ -17,6 +17,7 @@
 [@bs.module] external loadingSpinner: string = "./loading_spinner.gif";
 [@bs.module] external loadingCircles: string = "./loading_circles.gif";
 [@bs.module] external dataSourceLogo: string = "./data-source.png";
+[@bs.module] external oracleScriptLogo: string = "./oracleScriptLogo.svg";
 [@bs.module] external txLogo: string = "./txLogo.svg";
 [@bs.module] external accountLogo: string = "./account-icon.png";
 [@bs.module] external pieChart: string = "./pie-chart.png";
@@ -31,4 +32,6 @@
 [@bs.module] external correct: string = "./correct.png";
 [@bs.module] external validators: string = "./validators.png";
 [@bs.module] external blockLogo: string = "./blockLogo.svg";
+[@bs.module] external externalLink: string = "./externalLink.svg";
 [@bs.module] external noTransaction: string = "./no_transaction.svg";
+[@bs.module] external leftAngle: string = "./left-angle.svg";

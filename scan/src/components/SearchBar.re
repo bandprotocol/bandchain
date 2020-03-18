@@ -25,8 +25,8 @@ module Styles = {
       padding(Spacing.md),
       paddingLeft(`px(36)),
       boxShadows([
-        Shadow.box(~x=`px(0), ~y=`px(1), ~blur=`px(4), Css.rgba(0, 0, 0, 0.07)),
-        Shadow.box(~x=`px(0), ~y=`px(4), ~blur=`px(12), Css.rgba(0, 0, 0, 0.02)),
+        Shadow.box(~x=`zero, ~y=`px(1), ~blur=`px(4), Css.rgba(0, 0, 0, 0.07)),
+        Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(12), Css.rgba(0, 0, 0, 0.02)),
       ]),
       fontSize(`px(14)),
       outline(`px(1), `none, white),
@@ -37,7 +37,7 @@ module Styles = {
   let button =
     style([
       position(`absolute),
-      right(`px(0)),
+      right(`zero),
       width(`px(110)),
       height(`percent(100.)),
       backgroundColor(Colors.yellow1),
@@ -64,8 +64,8 @@ module SearchResults = {
         backgroundColor(white),
         borderRadius(`px(4)),
         boxShadows([
-          Shadow.box(~x=`px(0), ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.07)),
-          Shadow.box(~x=`px(0), ~y=`px(4), ~blur=`px(12), Css.rgba(0, 0, 0, 0.02)),
+          Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.07)),
+          Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(12), Css.rgba(0, 0, 0, 0.02)),
         ]),
       ]);
 
