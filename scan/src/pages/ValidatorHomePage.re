@@ -15,7 +15,7 @@ module Styles = {
       justifyContent(`center),
       alignItems(`center),
       height(`px(300)),
-      boxShadow(Shadow.box(~x=`px(0), ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, 0.05))),
+      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, 0.05))),
       backgroundColor(white),
       marginBottom(`px(1)),
     ]);

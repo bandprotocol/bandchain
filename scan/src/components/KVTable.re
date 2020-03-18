@@ -3,7 +3,7 @@ module Styles = {
 
   let thead =
     style([
-      boxShadow(Shadow.box(~x=`px(0), ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, 0.05))),
+      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, 0.05))),
       backgroundColor(Colors.gray3),
       marginBottom(`px(1)),
       display(`flex),
@@ -15,7 +15,7 @@ module Styles = {
 
   let tbody =
     style([
-      boxShadow(Shadow.box(~x=`px(0), ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
+      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
       backgroundColor(Colors.gray1),
       marginBottom(`px(1)),
       display(`flex),

@@ -18,7 +18,7 @@ module Styles = {
       backgroundColor(Colors.white),
       borderRadius(`px(4)),
       padding2(`px(35), `px(30)),
-      boxShadow(Shadow.box(~x=`px(0), ~y=`px(2), ~blur=`px(8), Css.rgba(0, 0, 0, 0.08))),
+      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(8), Css.rgba(0, 0, 0, 0.08))),
     ]);
 
   let fullWidth = dir => style([width(`percent(100.0)), display(`flex), flexDirection(dir)]);
@@ -76,7 +76,7 @@ let kvRow = (k, v: value_row_t) => {
 
 [@react.component]
 let make = (~address, ~hashtag: Route.validator_tab_t) => {
-  let isActive = false;
+  let isActive = true;
 
   <div className=Styles.pageContainer>
     <Row justify=Row.Between>
@@ -153,5 +153,22 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
         </Col>
       </div>
     </div>
+    <VSpacing size=Spacing.md />
+    <Tab
+      tabs=[|
+        {
+          name: "PROPOSED BLOCKS",
+          route: Route.ValidatorIndexPage(address, Route.ProposedBlocks),
+        },
+        {name: "DELEGATORS", route: Route.ValidatorIndexPage(address, Route.Delegators)},
+        {name: "REPORTS", route: Route.ValidatorIndexPage(address, Route.Reports)},
+      |]
+      currentRoute={Route.ValidatorIndexPage(address, hashtag)}>
+      {switch (hashtag) {
+       | ProposedBlocks => <ProposedBlocksTable />
+       | Delegators => <div> <Text value="Delegators" /> </div>
+       | Reports => <div> <Text value="Reports" /> </div>
+       }}
+    </Tab>
   </div>;
 };
