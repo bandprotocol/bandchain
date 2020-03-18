@@ -16,90 +16,145 @@ module Styles = {
 
   let textContainer = style([paddingLeft(Spacing.lg), display(`flex)]);
 
-  let proposerBox = style([maxWidth(`px(270)), display(`flex), flexDirection(`column)]);
+  let logo = style([width(`px(50)), marginRight(`px(10))]);
+
+  let addressContainer = style([width(`px(270))]);
+
+  let fullWidth = style([width(`percent(100.0)), display(`flex)]);
+
+  let loadingContainer =
+    style([
+      display(`flex),
+      justifyContent(`center),
+      alignItems(`center),
+      height(`px(200)),
+      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, 0.05))),
+      backgroundColor(white),
+    ]);
 };
 
 [@react.component]
 let make = () => {
+  let oracleScriptOpt = OracleScriptHook.getList();
   // let scriptsOpt = ScriptHook.getScriptList(~limit=100000, ());
   // let scripts = scriptsOpt->Belt.Option.getWithDefault([]);
   // let totalScript = scripts->Belt.List.length->string_of_int;
   <div className=Styles.pageContainer>
-    // <Row>
-    //   <Col>
-    //     <div className=Styles.vFlex>
-    //       <Text
-    //         value="ALL DATA ORACLE SCRIPTS"
-    //         weight=Text.Bold
-    //         size=Text.Xl
-    //         nowrap=true
-    //         color=Colors.grayHeader
-    //       />
-    //       <div className=Styles.seperatedLine />
-    //       <Text value={j|$totalScript in total|j} />
-    //     </div>
-    //   </Col>
-    // </Row>
-
-      <VSpacing size=Spacing.xl />
+    <Row>
+      <Col>
+        <div className=Styles.vFlex>
+          <img src=Images.oracleScriptLogo className=Styles.logo />
+          <Text
+            value="ALL ORACLE SCRIPTS"
+            weight=Text.Medium
+            size=Text.Md
+            spacing={Text.Em(0.06)}
+            height={Text.Px(15)}
+            nowrap=true
+            color=Colors.gray7
+            block=true
+          />
+          <div className=Styles.seperatedLine />
+          {switch (oracleScriptOpt) {
+           | Some(dataSources) =>
+             <Text
+               value={dataSources->Belt.List.length->string_of_int ++ " In total"}
+               size=Text.Md
+               weight=Text.Thin
+               spacing={Text.Em(0.06)}
+               color=Colors.gray7
+               nowrap=true
+             />
+           | None => React.null
+           }}
+        </div>
+      </Col>
+    </Row>
+    <VSpacing size=Spacing.xl />
+    <>
       <THead>
         <Row>
-          <Col> <HSpacing size=Spacing.xl /> </Col>
-          <Col size=1.1>
+          <Col> <HSpacing size=Spacing.lg /> </Col>
+          <Col size=1.0>
             <div className=TElement.Styles.hashContainer>
-              <Text block=true value="NAME" size=Text.Sm weight=Text.Bold color=Colors.gray5 />
-            </div>
-          </Col>
-          <Col size=1.1>
-            <Text
-              block=true
-              value="SCRIPT HASH"
-              size=Text.Sm
-              weight=Text.Bold
-              color=Colors.gray5
-            />
-          </Col>
-          <Col size=0.65>
-            <Text block=true value="CREATED AT" size=Text.Sm weight=Text.Bold color=Colors.gray5 />
-          </Col>
-          <Col size=1.1>
-            <Text block=true value="CREATOR" size=Text.Sm weight=Text.Bold color=Colors.gray5 />
-          </Col>
-          <Col size=0.5>
-            <div className=TElement.Styles.feeContainer>
               <Text
                 block=true
-                value="QUERY FEE"
+                value="NAME"
                 size=Text.Sm
-                weight=Text.Bold
+                weight=Text.Semibold
                 color=Colors.gray5
+                spacing={Text.Em(0.1)}
               />
             </div>
           </Col>
+          <Col size=0.7>
+            <Text
+              block=true
+              value="AGE"
+              size=Text.Sm
+              weight=Text.Semibold
+              color=Colors.gray5
+              spacing={Text.Em(0.1)}
+            />
+          </Col>
+          <Col size=1.45>
+            <Text
+              block=true
+              value="OWNER"
+              size=Text.Sm
+              weight=Text.Semibold
+              color=Colors.gray5
+              spacing={Text.Em(0.1)}
+            />
+          </Col>
+          <Col size=1.35>
+            <Text
+              block=true
+              value="DATA SOURCES"
+              size=Text.Sm
+              weight=Text.Semibold
+              color=Colors.gray5
+              spacing={Text.Em(0.1)}
+            />
+          </Col>
+          <Col> <HSpacing size=Spacing.lg /> </Col>
         </Row>
       </THead>
-      // {scripts
-      //  ->Belt.List.map(({info, txHash, createdAtTime}) => {
-      //      <div
-      //        onClick={_ =>
-      //          Route.redirect(Route.ScriptIndexPage(info.codeHash, Route.ScriptTransactions))
-      //        }>
-      //        <TBody key={txHash |> Hash.toHex}>
-      //          <Row>
-      //            <Col> <HSpacing size=Spacing.xl /> </Col>
-      //            <Col size=1.1> <TElement elementType={info.name->TElement.Name} /> </Col>
-      //            <Col size=1.1> <TElement elementType={info.codeHash->TElement.Hash} /> </Col>
-      //            <Col size=0.65> <TElement elementType={createdAtTime->TElement.Timestamp} /> </Col>
-      //            <Col size=1.1> <TElement elementType={info.creator->TElement.Address} /> </Col>
-      //            <Col size=0.5> <TElement elementType={0.->TElement.Fee} /> </Col>
-      //          </Row>
-      //        </TBody>
-      //      </div>
-      //    })
-      //  ->Array.of_list
-      //  ->React.array}
-      <VSpacing size=Spacing.lg />
-      <VSpacing size=Spacing.xl />
-      <VSpacing size=Spacing.xl />
-    </div>;
+      {switch (oracleScriptOpt) {
+       | Some(oracleScripts) =>
+         oracleScripts
+         ->Belt.List.map(({id, name, timestamp, owner, relatedDataSource}) => {
+             <TBody key={id |> string_of_int}>
+               <div className=Styles.fullWidth>
+                 <Row>
+                   <Col> <HSpacing size=Spacing.lg /> </Col>
+                   <Col size=1.0>
+                     <TElement
+                       elementType={TElement.OracleScript(ID.OracleScript.ID(id), name)}
+                     />
+                   </Col>
+                   <Col size=0.7> <TElement elementType={timestamp->TElement.Timestamp} /> </Col>
+                   <Col size=1.45>
+                     <div className=Styles.addressContainer>
+                       <TElement elementType={owner->TElement.Address} />
+                     </div>
+                   </Col>
+                   <Col size=1.35>
+                     <TElement elementType={relatedDataSource->TElement.RelatedDataSources} />
+                   </Col>
+                   <Col> <HSpacing size=Spacing.lg /> </Col>
+                 </Row>
+               </div>
+             </TBody>
+           })
+         ->Array.of_list
+         ->React.array
+       | None =>
+         <div className=Styles.loadingContainer> <Text value="Loading..." size=Text.Xl /> </div>
+       }}
+    </>
+    <VSpacing size=Spacing.lg />
+    <VSpacing size=Spacing.xl />
+    <VSpacing size=Spacing.xl />
+  </div>;
 };
