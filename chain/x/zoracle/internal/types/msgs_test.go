@@ -484,19 +484,31 @@ func TestMsgEditOracleScriptGetSignBytes(t *testing.T) {
 func TestMsgSetOracleAddress(t *testing.T) {
 	validator := sdk.ValAddress([]byte("validator"))
 	reporter := sdk.AccAddress([]byte("reporter"))
-	msg := NewMsgSetOracleAddress(validator, reporter)
+	msg := NewMsgAddOracleAddress(validator, reporter)
 	require.Equal(t, RouterKey, msg.Route())
-	require.Equal(t, "set_oracle_script_address", msg.Type())
+	require.Equal(t, "add_oracle_address", msg.Type())
 	require.Equal(t, validator, msg.Validator)
 	require.Equal(t, reporter, msg.Reporter)
+
+	res := msg.GetSignBytes()
+	expected := `{"reporter":"band1wfjhqmmjw3jhyy3as6w","validator":"bandvaloper1weskc6tyv96x7usd82k92"}`
+
+	require.Equal(t, expected, string(res))
+
 }
 
 func TestMsgUnsetOracleAddress(t *testing.T) {
 	validator := sdk.ValAddress([]byte("validator"))
 	reporter := sdk.AccAddress([]byte("reporter"))
-	msg := NewMsgUnsetOracleAddress(validator, reporter)
+	msg := NewMsgRemoveOracleAdderess(validator, reporter)
 	require.Equal(t, RouterKey, msg.Route())
-	require.Equal(t, "unset_oracle_script_address", msg.Type())
+	require.Equal(t, "remove_oracle_address", msg.Type())
 	require.Equal(t, validator, msg.Validator)
 	require.Equal(t, reporter, msg.Reporter)
+
+	res := msg.GetSignBytes()
+	expected := `{"reporter":"band1wfjhqmmjw3jhyy3as6w","validator":"bandvaloper1weskc6tyv96x7usd82k92"}`
+
+	require.Equal(t, expected, string(res))
+
 }
