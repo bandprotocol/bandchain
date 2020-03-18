@@ -371,6 +371,7 @@ func (app *bandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliv
 			for _, msg := range tx.GetMsgs() {
 				if _, ok := msg.(zoracle.MsgReportData); !ok {
 					isAllReportTxs = false
+					break
 				}
 			}
 			if isAllReportTxs && !stdTx.Fee.Amount.IsZero() {
