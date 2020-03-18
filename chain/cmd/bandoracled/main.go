@@ -24,6 +24,7 @@ const (
 	flagMaxQueryDuration = "max-query-duration"
 	flagPrivKey          = "priv-key"
 	flagSandboxMode      = "sandbox"
+	flagReporterURL      = "reporter-url"
 )
 
 var (
@@ -122,6 +123,14 @@ $ bandoracled --node tcp://localhost:26657 --priv-key 06be35b56b048c5a6810a47e2e
 		"Private key of validator to send report transaction",
 	)
 	viper.BindPFlag(flagPrivKey, cmd.Flags().Lookup(flagPrivKey))
+
+	cmd.Flags().String(
+		flagReporterURL,
+		"",
+		"The URL of reporter end-point which will receive 3 parameters (executable, timeout, calldata)",
+	)
+	viper.BindPFlag(flagReporterURL, cmd.Flags().Lookup(flagReporterURL))
+
 	err := cmd.Execute()
 	if err != nil {
 		logger.Error(fmt.Sprintf("Failed executing CLI command: %s, exiting...", err))
@@ -179,6 +188,24 @@ func handleRequest(requestID zoracle.RequestID) {
 				time.Duration(viper.GetInt(flagMaxQueryDuration))*time.Second,
 				string(calldata),
 			)
+			reporterURL := viper.GetString(flagReporterURL)
+
+			var result []byte
+			if reporterURL == "" {
+				result, err = byteexec.RunOnDocker(
+					dataSource.Executable,
+					time.Duration(viper.GetInt(flagMaxQueryDuration))*time.Second,
+					string(calldata),
+				)
+			} else {
+				result, err = byteexec.RunOnAWSLambda(
+					dataSource.Executable,
+					time.Duration(viper.GetInt(flagMaxQueryDuration))*time.Second,
+					string(calldata),
+					reporterURL,
+				)
+			}
+
 			if err != nil {
 				info.err = fmt.Errorf(
 					"Execute error on data source id [%d], error: %v", dataSourceID, err,
