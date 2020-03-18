@@ -40,7 +40,9 @@ let make = () => {
   let (page, setPage) = React.useState(_ => 1);
   let limit = 10;
 
+  // TODO: use for get all datasource count.
   let dataSourcesCountOpt = DataSourceHook.getList();
+
   let dataSourcesOpt = DataSourceHook.getList(~limit, ~page, ());
 
   let pageCount =
