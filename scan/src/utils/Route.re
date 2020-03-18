@@ -122,7 +122,7 @@ let toString =
       {j|/validator/$validatorAddressBech32#proposed-blocks|j};
     }
   | HomePage
-  | NotFound => "/";
+  | NotFound => "/notfound";
 
 let redirect = (route: t) => ReasonReactRouter.push(route |> toString);
 
