@@ -74,6 +74,8 @@ let make = () =>
     let validators = info.validators;
     let bandBonded = validators->Belt_List.map(x => x.tokens)->Belt_List.reduce(0.0, (+.));
 
+    Js.Console.log(validators);
+
     Some(
       <Row justify=Row.Between>
         <HighlightCard
@@ -169,13 +171,15 @@ let make = () =>
                              size=Text.Xxxl
                              weight=Text.Semibold
                              color=Colors.gray8
-                             code=true
                            />;
                          }
           extraComponent={
-                           let bondedAmount = bandBonded->Format.fPretty ++ " BAND Bonded";
-                           <Text value=bondedAmount code=true />;
-                         }
+            <div className=Styles.vFlex>
+              <Text value={bandBonded->Format.fPretty} code=true />
+              <HSpacing size=Spacing.sm />
+              <Text value=" BAND Bonded" />
+            </div>
+          }
         />
       </Row>,
     );
