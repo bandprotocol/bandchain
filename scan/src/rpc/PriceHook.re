@@ -6,9 +6,9 @@ module Price = {
     btcPrice: float,
     btcMarketCap: float,
     btc24HrChange: float,
+    circulatingSupply: float,
   };
-
-  let decode = (usdJson, btcJson) =>
+  let decode = (usdJson, btcJson, bandJson) =>
     JsonUtils.Decode.{
       usdPrice: usdJson |> at(["band-protocol", "usd"], JsonUtils.Decode.float),
       usdMarketCap: usdJson |> at(["band-protocol", "usd_market_cap"], JsonUtils.Decode.float),
@@ -16,9 +16,10 @@ module Price = {
       btcPrice: btcJson |> at(["band-protocol", "btc"], JsonUtils.Decode.float),
       btcMarketCap: btcJson |> at(["band-protocol", "btc_market_cap"], JsonUtils.Decode.float),
       btc24HrChange: btcJson |> at(["band-protocol", "btc_24h_change"], JsonUtils.Decode.float),
+      circulatingSupply:
+        bandJson |> at(["market_data", "circulating_supply"], JsonUtils.Decode.float),
     };
 };
-
 let get = () => {
   let usdJson =
     AxiosHooks.use(
@@ -28,5 +29,13 @@ let get = () => {
     AxiosHooks.use(
       "https://api.coingecko.com/api/v3/simple/price?ids=band-protocol&vs_currencies=btc&include_market_cap=true&include_24hr_change=true",
     );
-  usdJson |> Belt.Option.flatMap(_, u => btcJson |> Belt.Option.map(_, Price.decode(u)));
+  let bandJson = AxiosHooks.use("https://api.coingecko.com/api/v3/coins/band-protocol");
+  let gg = x => bandJson |> Belt.Option.map(_, Price.decode(x));
+  // usdJson |> Belt.Option.flatMap(_, u => btcJson |> Belt.Option.map(_, Price.decode(u)));
+  // usdJson |> Belt.Option.flatMap(_, u => btcJson |> Belt.Option.map(_, b => Price.decode(u, b)));
+  let%Opt usd = usdJson;
+  let%Opt btc = btcJson;
+  let%Opt band = bandJson;
+  Js.Console.log(Some(Price.decode(usd, btc, band)));
+  Some(Price.decode(usd, btc, band));
 };

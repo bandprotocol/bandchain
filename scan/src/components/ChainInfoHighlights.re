@@ -1,6 +1,5 @@
 module Styles = {
   open Css;
-
   let card =
     style([
       display(`flex),
@@ -11,7 +10,6 @@ module Styles = {
       boxShadow(Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(8), Css.rgba(0, 0, 0, 0.1))),
       position(`relative),
     ]);
-
   let innerCard =
     style([
       display(`flex),
@@ -23,15 +21,11 @@ module Styles = {
       zIndex(2),
       padding4(~top=`px(13), ~bottom=`px(13), ~left=`px(14), ~right=`px(10)),
     ]);
-
   let labelContainer =
     style([display(`flex), justifyContent(`spaceBetween), width(`percent(100.))]);
-
   let bandPriceExtra =
     style([display(`flex), width(`percent(100.)), justifyContent(`spaceBetween)]);
-
   let vFlex = style([display(`flex), flexDirection(`row)]);
-
   let bgCard = (url: string) =>
     style([
       backgroundImage(`url(url)),
@@ -45,7 +39,6 @@ module Styles = {
       opacity(0.4),
     ]);
 };
-
 module HighlightCard = {
   [@react.component]
   let make = (~label, ~valueComponent, ~extraComponent, ~extraTopRight=?, ~bgUrl=?) => {
@@ -65,15 +58,12 @@ module HighlightCard = {
     </div>;
   };
 };
-
 [@react.component]
 let make = () =>
   {
     let%Opt info = React.useContext(GlobalContext.context);
-
     let validators = info.validators;
     let bandBonded = validators->Belt_List.map(x => x.tokens)->Belt_List.reduce(0.0, (+.));
-
     Some(
       <Row justify=Row.Between>
         <HighlightCard
@@ -131,12 +121,12 @@ let make = () =>
                            />;
                          }
           extraComponent={
-                           let marketcap = info.financial.btcMarketCap;
+                           let marketcap = info.financial.circulatingSupply;
                            <div className=Styles.vFlex>
                              <Text value={marketcap->Format.fPretty} code=true />
                              <HSpacing size=Spacing.xs />
                              <Text
-                               value="BTC"
+                               value="BAND"
                                color=Colors.gray7
                                weight=Text.Thin
                                spacing={Text.Em(0.01)}
