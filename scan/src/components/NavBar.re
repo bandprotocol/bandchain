@@ -28,7 +28,7 @@ let make = () => {
              ("Blocks", BlockHomePage),
              ("Transactions", TxHomePage),
              ("Data Sources", DataSourceHomePage),
-             //  ("Oracle Scripts", ScriptHomePage),
+             ("Oracle Scripts", OracleScriptHomePage),
              //  ("OWASM Studio", HomePage),
            ]
            ->Belt.List.map(((v, route)) =>
