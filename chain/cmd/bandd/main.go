@@ -28,7 +28,7 @@ import (
 
 const (
 	flagInvCheckPeriod = "inv-check-period"
-	flagAddDB          = "add-db"
+	flagWithDB         = "with-db"
 )
 
 var (
@@ -69,7 +69,7 @@ func main() {
 
 	// prepare and add flags
 	executor := cli.PrepareBaseCmd(rootCmd, "BAND", app.DefaultNodeHome)
-	rootCmd.PersistentFlags().String(flagAddDB, "", "Flush event to database")
+	rootCmd.PersistentFlags().String(flagWithDB, "", "Flush event to database")
 	rootCmd.PersistentFlags().UintVar(&invCheckPeriod, flagInvCheckPeriod,
 		0, "Assert registered invariants every N blocks")
 	err := executor.Execute()
@@ -79,12 +79,12 @@ func main() {
 }
 
 func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application {
-	if viper.IsSet(flagAddDB) {
-		dbSplited := strings.SplitN(viper.GetString(flagAddDB), ":", 2)
-		if len(dbSplited) != 2 {
+	if viper.IsSet(flagWithDB) {
+		dbSplit := strings.SplitN(viper.GetString(flagWithDB), ":", 2)
+		if len(dbSplit) != 2 {
 			panic("Invalid DB string format")
 		}
-		bandDB, err := banddb.NewDB(dbSplited[0], dbSplited[1])
+		bandDB, err := banddb.NewDB(dbSplit[0], dbSplit[1])
 		if err != nil {
 			panic(err)
 		}
@@ -93,12 +93,13 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 			baseapp.SetPruning(store.NewPruningOptionsFromString(viper.GetString("pruning"))),
 			baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
 			baseapp.SetHaltHeight(uint64(viper.GetInt(server.FlagHaltHeight))))
+	} else {
+		return app.NewBandApp(
+			logger, db, traceStore, true, invCheckPeriod,
+			baseapp.SetPruning(store.NewPruningOptionsFromString(viper.GetString("pruning"))),
+			baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
+			baseapp.SetHaltHeight(uint64(viper.GetInt(server.FlagHaltHeight))))
 	}
-	return app.NewBandApp(
-		logger, db, traceStore, true, invCheckPeriod,
-		baseapp.SetPruning(store.NewPruningOptionsFromString(viper.GetString("pruning"))),
-		baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
-		baseapp.SetHaltHeight(uint64(viper.GetInt(server.FlagHaltHeight))))
 }
 
 func exportAppStateAndTMValidators(
