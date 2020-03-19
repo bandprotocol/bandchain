@@ -8,7 +8,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/bandprotocol/d3n/chain/db"
+	"github.com/bandprotocol/bandchain/chain/db"
 )
 
 type dbBandApp struct {

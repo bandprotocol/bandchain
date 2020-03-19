@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	keep "github.com/bandprotocol/d3n/chain/x/zoracle/internal/keeper"
-	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
+	keep "github.com/bandprotocol/bandchain/chain/x/zoracle/internal/keeper"
+	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 	cmn "github.com/tendermint/tendermint/libs/common"

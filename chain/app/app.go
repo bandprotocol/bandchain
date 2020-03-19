@@ -28,8 +28,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/supply"
 
-	bandsupply "github.com/bandprotocol/d3n/chain/x/supply"
-	"github.com/bandprotocol/d3n/chain/x/zoracle"
+	bandsupply "github.com/bandprotocol/bandchain/chain/x/supply"
+	"github.com/bandprotocol/bandchain/chain/x/zoracle"
 )
 
 const (

@@ -1,4 +1,4 @@
-module github.com/bandprotocol/d3n/chain
+module github.com/bandprotocol/bandchain/chain
 
 go 1.13
 
