@@ -184,18 +184,18 @@ func handleRequest(requestID zoracle.RequestID) {
 
 			var result []byte
 			if viper.IsSet(flagExecuteEndPoint) {
-				result, err = byteexec.RunOnDocker(
-					dataSource.Executable,
-					viper.IsSet(flagSandboxMode),
-					time.Duration(viper.GetInt(flagMaxQueryDuration))*time.Second,
-					string(calldata),
-				)
-			} else {
 				result, err = byteexec.RunOnAWSLambda(
 					dataSource.Executable,
 					time.Duration(viper.GetInt(flagMaxQueryDuration))*time.Second,
 					string(calldata),
 					viper.GetString(flagExecuteEndPoint),
+				)
+			} else {
+				result, err = byteexec.RunOnDocker(
+					dataSource.Executable,
+					viper.IsSet(flagSandboxMode),
+					time.Duration(viper.GetInt(flagMaxQueryDuration))*time.Second,
+					string(calldata),
 				)
 			}
 
