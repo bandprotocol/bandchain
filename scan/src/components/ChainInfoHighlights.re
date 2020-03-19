@@ -35,7 +35,7 @@ module Styles = {
   let bgCard = (url: string) =>
     style([
       backgroundImage(`url(url)),
-      unsafe("backgroundPosition", "0vw 0.8vw"),
+      top(`px(12)),
       backgroundSize(`contain),
       backgroundRepeat(`noRepeat),
       width(`percent(100.)),
