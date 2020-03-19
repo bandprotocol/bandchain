@@ -32,6 +32,8 @@ module Styles = {
 
   let vFlex = style([display(`flex), flexDirection(`row)]);
 
+  let withWidth = (w: int) => style([width(`px(w))]);
+
   let bgCard = (url: string) =>
     style([
       backgroundImage(`url(url)),
@@ -60,7 +62,7 @@ module HighlightCard = {
           {extraTopRight->Belt.Option.getWithDefault(React.null)}
         </div>
         valueComponent
-        extraComponent
+        <div className={Styles.withWidth(170)}> extraComponent </div>
       </div>
     </div>;
   };
@@ -148,22 +150,15 @@ let make = () =>
         />
         <HighlightCard
           label="LATEST BLOCK"
-          extraTopRight={<TimeAgos time={info.latestBlock.timestamp} />}
+          extraTopRight={<TimeAgos time={info.latestBlock.timestamp} size=Text.Md />}
           valueComponent={
                            let latestBlock = info.latestBlock.height->Format.iPretty;
                            <TypeID.Block
                              id={ID.Block.ID(info.latestBlock.height)}
                              position=TypeID.Landing
                            />;
-                           //  <Text
-                           //    value=latestBlock
-                           //    size=Text.Xxxl
-                           //    weight=Text.Semibold
-                           //    color=Colors.gray8
-                           //    code=true
-                           //  />;
                          }
-          extraComponent={<Text value=moniker code=true />}
+          extraComponent={<Text value=moniker nowrap=true ellipsis=true block=true />}
         />
         <HighlightCard
           label="ACTIVE VALIDATORS"

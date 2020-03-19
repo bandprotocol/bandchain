@@ -25,8 +25,8 @@ module Styles = {
 
   let pointerEvents =
     fun
-    | Landing => style([pointerEvents(`auto)])
     | Title => style([pointerEvents(`none)])
+    | Landing
     | Subtitle
     | Text => style([pointerEvents(`auto)]);
 };
