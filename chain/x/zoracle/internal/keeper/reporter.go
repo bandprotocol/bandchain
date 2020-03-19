@@ -12,9 +12,19 @@ func (k Keeper) CheckReporter(ctx sdk.Context, validatorAddress sdk.ValAddress, 
 
 func (k Keeper) AddReporter(
 	ctx sdk.Context, validatorAddress sdk.ValAddress, reporterAddress sdk.AccAddress,
-) {
+) sdk.Error {
+	if k.CheckReporter(ctx, validatorAddress, reporterAddress) {
+		return types.ErrInvalidState(
+			"AddReporter:  (%s) is already a reporter of (%s).",
+			reporterAddress.String(),
+			validatorAddress.String(),
+		)
+	}
+
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.ReporterStoreKey(validatorAddress, reporterAddress), []byte{1})
+
+	return nil
 }
 
 func (k Keeper) RemoveReporter(
@@ -26,8 +36,8 @@ func (k Keeper) RemoveReporter(
 			validatorAddress.String(),
 			reporterAddress.String(),
 		)
-
 	}
+
 	store := ctx.KVStore(k.storeKey)
 	store.Delete(types.ReporterStoreKey(validatorAddress, reporterAddress))
 
