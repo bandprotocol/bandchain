@@ -8,12 +8,12 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/bandprotocol/d3n/chain/bandlib"
+	"github.com/bandprotocol/bandchain/chain/bandlib"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 
-	"github.com/bandprotocol/d3n/chain/x/zoracle"
+	"github.com/bandprotocol/bandchain/chain/x/zoracle"
 )
 
 const (

@@ -5,8 +5,8 @@ import (
 	"os"
 	"path"
 
-	"github.com/bandprotocol/d3n/chain/app"
-	d3nclient "github.com/bandprotocol/d3n/chain/client"
+	"github.com/bandprotocol/bandchain/chain/app"
+	bandclient "github.com/bandprotocol/bandchain/chain/client"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/keys"
@@ -68,7 +68,7 @@ func main() {
 }
 
 func registerRoutes(rs *lcd.RestServer) {
-	d3nclient.RegisterRoutes(rs.CliCtx, rs.Mux)
+	bandclient.RegisterRoutes(rs.CliCtx, rs.Mux)
 	client.RegisterRoutes(rs.CliCtx, rs.Mux)
 	authrest.RegisterTxRoutes(rs.CliCtx, rs.Mux)
 	app.ModuleBasics.RegisterRESTRoutes(rs.CliCtx, rs.Mux)
