@@ -47,7 +47,7 @@ module Coin = {
     ->Belt_List.get(0)
     ->Belt_Option.mapWithDefault(0., coin => coin.amount);
 
-  let getDescription = coin =>
+  let getDescription = coin => {
     (coin.amount |> Format.fPretty)
     ++ " "
     ++ (
@@ -56,13 +56,23 @@ module Coin = {
       | _ => coin.denom
       }
     );
+  };
 
-  let toCoinsString = coins =>
+  let toCoinsString = coins => {
     coins
     ->Belt_List.map(coin => coin->getDescription)
     ->Belt_List.reduceWithIndex("", (des, acc, i) =>
         acc ++ des ++ (i + 1 < coins->Belt_List.size ? ", " : "")
       );
+  };
+
+  let getFeeAmount = coins => {
+    let coinOpt = coins->Belt_List.get(0);
+    switch (coinOpt) {
+    | Some(coin) => coin.amount
+    | None => 0.
+    };
+  };
 };
 
 module Msg = {
@@ -380,12 +390,14 @@ module Tx = {
 module Txs = {
   type t = {
     totalCount: int,
+    pageCount: int,
     txs: list(Tx.t),
   };
 
   let decodeTxs = json =>
     JsonUtils.Decode.{
       totalCount: json |> field("total_count", intstr),
+      pageCount: json |> field("page_total", intstr),
       txs: json |> field("txs", list(Tx.decodeTx)),
     };
 };

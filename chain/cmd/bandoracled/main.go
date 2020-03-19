@@ -23,6 +23,7 @@ import (
 const (
 	flagMaxQueryDuration = "max-query-duration"
 	flagPrivKey          = "priv-key"
+	flagSandboxMode      = "sandbox"
 )
 
 var (
@@ -113,6 +114,8 @@ $ bandoracled --node tcp://localhost:26657 --priv-key 06be35b56b048c5a6810a47e2e
 		"gas limit to set per-transaction; set to %q to calculate required gas automatically (default %d)",
 		flags.GasFlagAuto, flags.DefaultGasLimit,
 	))
+	cmd.Flags().BoolP(flagSandboxMode, "s", false, "Enable sandbox mode")
+	viper.BindPFlag(flagSandboxMode, cmd.Flags().Lookup(flagSandboxMode))
 	cmd.Flags().String(
 		flagPrivKey,
 		"06be35b56b048c5a6810a47e2ef612eaed735ccb0d7ea4fc409f23f1d1a16e0b",
@@ -172,6 +175,7 @@ func handleRequest(requestID zoracle.RequestID) {
 
 			result, err := byteexec.RunOnDocker(
 				dataSource.Executable,
+				viper.IsSet(flagSandboxMode),
 				time.Duration(viper.GetInt(flagMaxQueryDuration))*time.Second,
 				string(calldata),
 			)
@@ -191,27 +195,26 @@ func handleRequest(requestID zoracle.RequestID) {
 		)
 	}
 
-	reports := make([]zoracle.RawDataReport, 0)
+	reports := make([]zoracle.RawDataReportWithID, 0)
 	for i := 0; i < len(request.RawDataRequests); i++ {
 		info := <-chanQueryParallelInfo
 		if info.err != nil {
 			logger.Error(fmt.Sprintf("Report fail on request #%d. Error: %v", requestID, info.err))
 			return
 		}
-		reports = append(reports, zoracle.NewRawDataReport(info.externalID, info.answer))
+		reports = append(reports, zoracle.NewRawDataReportWithID(info.externalID, 0, info.answer))
 	}
 
 	sort.Slice(reports, func(i, j int) bool {
 		return reports[i].ExternalDataID < reports[j].ExternalDataID
 	})
 
-	refundGasPrice, err := sdk.ParseDecCoins(viper.GetString(flags.FlagGasPrices))
 	if err != nil {
 		logger.Error(fmt.Sprintf("Send report fail on request #%d. Error: %v", requestID, err))
 		return
 	}
 	tx, err := bandClient.SendTransaction(
-		zoracle.NewMsgReportData(requestID, refundGasPrice, reports, sdk.ValAddress(bandClient.Sender())),
+		zoracle.NewMsgReportData(requestID, reports, sdk.ValAddress(bandClient.Sender())),
 		gasFlagVar.Gas, viper.GetString(flags.FlagFees), viper.GetString(flags.FlagGasPrices),
 	)
 

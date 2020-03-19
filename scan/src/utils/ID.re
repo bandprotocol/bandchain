@@ -12,7 +12,7 @@ module RawDataSourceID = {
 
 module RawOracleScriptID = {
   let prefix = "#O";
-  let color = Colors.red4;
+  let color = Colors.pink5;
   let route = (id: int) => Route.HomePage;
 };
 

@@ -65,7 +65,7 @@ func TestQueryDataSourcesByStartIdAndNumberOfDataSources(t *testing.T) {
 		executable := []byte("executable" + strconv.Itoa(int(i)))
 		eachDataSource := types.NewDataSourceQuerierInfo(i, owner, name, description, fee, executable)
 
-		err := keeper.AddDataSource(ctx, eachDataSource.Owner, eachDataSource.Name, eachDataSource.Description, eachDataSource.Fee, eachDataSource.Executable)
+		_, err := keeper.AddDataSource(ctx, eachDataSource.Owner, eachDataSource.Name, eachDataSource.Description, eachDataSource.Fee, eachDataSource.Executable)
 		require.Nil(t, err)
 
 		expectedResult = append(expectedResult, eachDataSource)
@@ -184,11 +184,11 @@ func TestQueryRequestById(t *testing.T) {
 	keeper.SetRawDataRequest(ctx, 1, 1, types.NewRawDataRequest(0, []byte("calldata1")))
 	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata2")))
 
-	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[0], []byte("report1"))
-	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[0], []byte("report2"))
+	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[0], types.NewRawDataReport(0, []byte("report1")))
+	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[0], types.NewRawDataReport(0, []byte("report2")))
 
-	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[1], []byte("report1-2"))
-	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[1], []byte("report2-2"))
+	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[1], types.NewRawDataReport(0, []byte("report1-2")))
+	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[1], types.NewRawDataReport(0, []byte("report2-2")))
 
 	data, _ := hex.DecodeString("0000000000002710")
 	keeper.SetResult(ctx, 1, request.OracleScriptID, request.Calldata, types.NewResult(1, 2, 3, 2, 2, data))
@@ -218,13 +218,13 @@ func TestQueryRequestById(t *testing.T) {
 				),
 			},
 			[]types.ReportWithValidator{
-				types.NewReportWithValidator([]types.RawDataReport{
-					types.NewRawDataReport(1, []byte("report1")),
-					types.NewRawDataReport(2, []byte("report2")),
+				types.NewReportWithValidator([]types.RawDataReportWithID{
+					types.NewRawDataReportWithID(1, 0, []byte("report1")),
+					types.NewRawDataReportWithID(2, 0, []byte("report2")),
 				}, request.RequestedValidators[0]),
-				types.NewReportWithValidator([]types.RawDataReport{
-					types.NewRawDataReport(1, []byte("report1-2")),
-					types.NewRawDataReport(2, []byte("report2-2")),
+				types.NewReportWithValidator([]types.RawDataReportWithID{
+					types.NewRawDataReportWithID(1, 0, []byte("report1-2")),
+					types.NewRawDataReportWithID(2, 0, []byte("report2-2")),
 				}, request.RequestedValidators[1]),
 			},
 			types.Result{
@@ -262,8 +262,8 @@ func TestQueryRequestIncompleteValidator(t *testing.T) {
 	keeper.SetRawDataRequest(ctx, 1, 1, types.NewRawDataRequest(0, []byte("calldata1")))
 	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata2")))
 
-	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[1], []byte("report1-2"))
-	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[1], []byte("report2-2"))
+	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[1], types.NewRawDataReport(0, []byte("report1-2")))
+	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[1], types.NewRawDataReport(0, []byte("report2-2")))
 
 	// create query
 	acsBytes, err = querier(
@@ -290,9 +290,9 @@ func TestQueryRequestIncompleteValidator(t *testing.T) {
 				),
 			},
 			[]types.ReportWithValidator{
-				types.NewReportWithValidator([]types.RawDataReport{
-					types.NewRawDataReport(1, []byte("report1-2")),
-					types.NewRawDataReport(2, []byte("report2-2")),
+				types.NewReportWithValidator([]types.RawDataReportWithID{
+					types.NewRawDataReportWithID(1, 0, []byte("report1-2")),
+					types.NewRawDataReportWithID(2, 0, []byte("report2-2")),
 				}, request.RequestedValidators[1]),
 			},
 			types.Result{},
@@ -324,11 +324,11 @@ func TestQueryRequests(t *testing.T) {
 	keeper.SetRawDataRequest(ctx, 1, 1, types.NewRawDataRequest(0, []byte("calldata1")))
 	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata2")))
 
-	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[0], []byte("report1"))
-	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[0], []byte("report2"))
+	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[0], types.NewRawDataReport(0, []byte("report1")))
+	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[0], types.NewRawDataReport(0, []byte("report2")))
 
-	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[1], []byte("report1-2"))
-	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[1], []byte("report2-2"))
+	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[1], types.NewRawDataReport(0, []byte("report1-2")))
+	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[1], types.NewRawDataReport(0, []byte("report2-2")))
 
 	data, _ := hex.DecodeString("0000000000002710")
 	result := types.Result{
@@ -374,13 +374,13 @@ func TestQueryRequests(t *testing.T) {
 					),
 				},
 				[]types.ReportWithValidator{
-					types.NewReportWithValidator([]types.RawDataReport{
-						types.NewRawDataReport(1, []byte("report1")),
-						types.NewRawDataReport(2, []byte("report2")),
+					types.NewReportWithValidator([]types.RawDataReportWithID{
+						types.NewRawDataReportWithID(1, 0, []byte("report1")),
+						types.NewRawDataReportWithID(2, 0, []byte("report2")),
 					}, request.RequestedValidators[0]),
-					types.NewReportWithValidator([]types.RawDataReport{
-						types.NewRawDataReport(1, []byte("report1-2")),
-						types.NewRawDataReport(2, []byte("report2-2")),
+					types.NewReportWithValidator([]types.RawDataReportWithID{
+						types.NewRawDataReportWithID(1, 0, []byte("report1-2")),
+						types.NewRawDataReportWithID(2, 0, []byte("report2-2")),
 					}, request.RequestedValidators[1]),
 				},
 				result,
@@ -454,7 +454,7 @@ func TestQueryOracleScriptsByStartIdAndNumberOfOracleScripts(t *testing.T) {
 		code := []byte("code" + strconv.Itoa(i))
 		eachOracleScript := types.NewOracleScriptQuerierInfo(types.OracleScriptID(i), owner, name, description, code)
 
-		err := keeper.AddOracleScript(ctx, eachOracleScript.Owner, eachOracleScript.Name, eachOracleScript.Description, eachOracleScript.Code)
+		_, err := keeper.AddOracleScript(ctx, eachOracleScript.Owner, eachOracleScript.Name, eachOracleScript.Description, eachOracleScript.Code)
 		require.Nil(t, err)
 
 		expectedResult = append(expectedResult, eachOracleScript)

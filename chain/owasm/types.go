@@ -51,10 +51,10 @@ type ExecutionEnvironment interface {
 	) error
 
 	// GetExternalData reads from the execution environment state for a raw
-	// data report for the specified external data ID from the specified validator
+	// data report for the specified external data ID from the specified validator.
 	// The function must only be called during the *aggregation* phase.
 	GetExternalData(
 		externalDataID int64,
 		validatorIndex int64,
-	) ([]byte, error)
+	) ([]byte, uint8, error)
 }

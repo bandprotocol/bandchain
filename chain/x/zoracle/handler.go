@@ -7,7 +7,6 @@ import (
 	"github.com/bandprotocol/d3n/chain/owasm"
 	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	auth "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
 
 // NewHandler creates handler of this module
@@ -36,10 +35,21 @@ func NewHandler(keeper Keeper) sdk.Handler {
 
 // handleMsgCreateDataSource is a function to handle MsgCreateDataSource.
 func handleMsgCreateDataSource(ctx sdk.Context, keeper Keeper, msg MsgCreateDataSource) sdk.Result {
-	err := keeper.AddDataSource(ctx, msg.Owner, msg.Name, msg.Description, msg.Fee, msg.Executable)
+	dataSourceID, err := keeper.AddDataSource(
+		ctx, msg.Owner, msg.Name, msg.Description, msg.Fee, msg.Executable,
+	)
+
 	if err != nil {
 		return err.Result()
 	}
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeCreateDataSource,
+			sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", dataSourceID)),
+		),
+	})
+
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
@@ -62,15 +72,34 @@ func handleMsgEditDataSource(ctx sdk.Context, keeper Keeper, msg MsgEditDataSour
 	if err != nil {
 		return err.Result()
 	}
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeEditDataSource,
+			sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", msg.DataSourceID)),
+		),
+	})
+
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
 // handleMsgCreateOracleScript is a function to handle MsgCreateOracleScript.
 func handleMsgCreateOracleScript(ctx sdk.Context, keeper Keeper, msg MsgCreateOracleScript) sdk.Result {
-	err := keeper.AddOracleScript(ctx, msg.Owner, msg.Name, msg.Description, msg.Code)
+	oracleScriptID, err := keeper.AddOracleScript(
+		ctx, msg.Owner, msg.Name, msg.Description, msg.Code,
+	)
+
 	if err != nil {
 		return err.Result()
 	}
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeCreateOracleScript,
+			sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", oracleScriptID)),
+		),
+	})
+
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
@@ -93,6 +122,14 @@ func handleMsgEditOracleScript(ctx sdk.Context, keeper Keeper, msg MsgEditOracle
 	if err != nil {
 		return err.Result()
 	}
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeEditOracleScript,
+			sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", msg.OracleScriptID)),
+		),
+	})
+
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
@@ -217,33 +254,15 @@ func handleMsgRequestData(ctx sdk.Context, keeper Keeper, msg MsgRequestData) sd
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeRequest,
-			sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", id)),
+			sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
 		),
 	})
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
 func handleMsgReportData(ctx sdk.Context, keeper Keeper, msg MsgReportData) sdk.Result {
-	startGas := ctx.GasMeter().GasConsumed()
-
 	// Save new report to store
 	err := keeper.AddReport(ctx, msg.RequestID, msg.DataSet, msg.Sender)
-	if err != nil {
-		return err.Result()
-	}
-
-	// Calculate the total refund by multiplying RefundGasPrice with gas used
-	amountToRefund, _ := msg.RefundGasPrice.MulDec(
-		sdk.NewDec(int64(ctx.GasMeter().GasConsumed() - startGas)),
-	).TruncateDecimal()
-
-	// Refund the reporter
-	err = keeper.SupplyKeeper.SendCoinsFromModuleToAccount(
-		ctx,
-		auth.FeeCollectorName,
-		msg.GetSigners()[0],
-		amountToRefund,
-	)
 	if err != nil {
 		return err.Result()
 	}

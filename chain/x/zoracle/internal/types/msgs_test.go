@@ -120,10 +120,10 @@ func TestMsgRequestDataGetSignBytes(t *testing.T) {
 
 func TestMsgReportData(t *testing.T) {
 	requestID := RequestID(3)
-	data := []RawDataReport{NewRawDataReport(1, []byte("data1")), NewRawDataReport(2, []byte("data2"))}
+	data := []RawDataReportWithID{NewRawDataReportWithID(1, 1, []byte("data1")), NewRawDataReportWithID(2, 2, []byte("data2"))}
 	provider, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
 
-	msg := NewMsgReportData(requestID, sdk.NewDecCoins(sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(1000)))), data, provider)
+	msg := NewMsgReportData(requestID, data, provider)
 
 	require.Equal(t, RouterKey, msg.Route())
 	require.Equal(t, "report", msg.Type())
@@ -131,24 +131,19 @@ func TestMsgReportData(t *testing.T) {
 
 func TestMsgReportDataValidation(t *testing.T) {
 	requestID := RequestID(3)
-	data := []RawDataReport{NewRawDataReport(1, []byte("data1")), NewRawDataReport(2, []byte("data2"))}
+	data := []RawDataReportWithID{NewRawDataReportWithID(1, 1, []byte("data1")), NewRawDataReportWithID(2, 2, []byte("data2"))}
 	validator, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
 	failValidator, _ := sdk.ValAddressFromHex("")
-	refundGasFeePos, _ := sdk.ParseDecCoins("0.1uband")
-	refundGasFeeZero, _ := sdk.ParseDecCoins("0.0uband")
-	refundGasFeeNeg := refundGasFeePos.MulDec(sdk.NewDec(-1))
 
 	cases := []struct {
 		valid bool
 		tx    MsgReportData
 	}{
-		{true, NewMsgReportData(requestID, refundGasFeePos, data, validator)},
-		{true, NewMsgReportData(requestID, refundGasFeeZero, data, validator)},
-		{false, NewMsgReportData(requestID, refundGasFeeNeg, data, validator)},
-		{false, NewMsgReportData(-1, refundGasFeeZero, data, validator)},
-		{false, NewMsgReportData(requestID, refundGasFeeZero, []RawDataReport{}, validator)},
-		{false, NewMsgReportData(requestID, refundGasFeeZero, nil, validator)},
-		{false, NewMsgReportData(requestID, refundGasFeeZero, data, failValidator)},
+		{true, NewMsgReportData(requestID, data, validator)},
+		{false, NewMsgReportData(-1, data, validator)},
+		{false, NewMsgReportData(requestID, []RawDataReportWithID{}, validator)},
+		{false, NewMsgReportData(requestID, nil, validator)},
+		{false, NewMsgReportData(requestID, data, failValidator)},
 	}
 
 	for _, tc := range cases {
@@ -166,12 +161,12 @@ func TestMsgReportDataGetSignBytes(t *testing.T) {
 	config.SetBech32PrefixForValidator("band"+sdk.PrefixValidator+sdk.PrefixOperator, "band"+sdk.PrefixValidator+sdk.PrefixOperator+sdk.PrefixPublic)
 
 	requestID := RequestID(3)
-	data := []RawDataReport{NewRawDataReport(1, []byte("data1")), NewRawDataReport(2, []byte("data2"))}
+	data := []RawDataReportWithID{NewRawDataReportWithID(1, 1, []byte("data1")), NewRawDataReportWithID(2, 2, []byte("data2"))}
 	validator, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
-	msg := NewMsgReportData(requestID, sdk.NewDecCoins(sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(1000)))), data, validator)
+	msg := NewMsgReportData(requestID, data, validator)
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"zoracle/Report","value":{"dataSet":[{"data":"ZGF0YTE=","externalDataID":"1"},{"data":"ZGF0YTI=","externalDataID":"2"}],"refundGasPrice":[{"amount":"1000.000000000000000000","denom":"uband"}],"requestID":"3","sender":"bandvaloper1hq8j5h0h64csk9tz95df783cxr0dt0dgay2kyy"}}`
+	expected := `{"type":"zoracle/Report","value":{"dataSet":[{"data":"ZGF0YTE=","exitCode":1,"externalDataID":"1"},{"data":"ZGF0YTI=","exitCode":2,"externalDataID":"2"}],"requestID":"3","sender":"bandvaloper1hq8j5h0h64csk9tz95df783cxr0dt0dgay2kyy"}}`
 
 	require.Equal(t, expected, string(res))
 }

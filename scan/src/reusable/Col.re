@@ -6,7 +6,7 @@ type alignment =
 module Styles = {
   open Css;
 
-  let col = style([margin4(~top=`px(0), ~right=Spacing.xs, ~left=Spacing.xs, ~bottom=`px(0))]);
+  let col = style([margin4(~top=`zero, ~right=Spacing.xs, ~left=Spacing.xs, ~bottom=`zero)]);
   let colSize = sz => style([flex(`num(sz))]);
   let alignSelf =
     Belt.Option.mapWithDefault(

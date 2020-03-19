@@ -11,7 +11,8 @@ module OracleScript = {
     owner: Address.t,
     name: string,
     description: string,
-    relatedDataSource: list(int),
+    timestamp: MomentRe.Moment.t,
+    relatedDataSource: list(ID.DataSource.t),
     code: JsBuffer.t,
     requests: list(RequestHook.Request.t),
     revisions: list(revision_t),
@@ -23,12 +24,16 @@ module OracleScript = {
       owner: json |> field("owner", string) |> Address.fromBech32,
       name: json |> field("name", string),
       description: json |> field("description", string),
-      relatedDataSource: [1, 2, 3],
+      timestamp: MomentRe.momentNow(),
+      relatedDataSource:
+        json |> field("id", intstr) == 1
+          ? [] : [ID.DataSource.ID(1), ID.DataSource.ID(2), ID.DataSource.ID(3)],
       code: json |> field("code", string) |> JsBuffer.fromBase64,
       requests: [
         {
           id: 1,
           oracleScriptID: 1,
+          oracleScriptName: "name",
           calldata: "AAAAAAAAV0M=" |> JsBuffer.fromBase64,
           requestedValidators: [
             "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,
