@@ -490,6 +490,9 @@ func TestMsgSetOracleAddress(t *testing.T) {
 	require.Equal(t, validator, msg.Validator)
 	require.Equal(t, reporter, msg.Reporter)
 
+	err := msg.ValidateBasic()
+	require.Nil(t, err)
+
 	res := msg.GetSignBytes()
 	expected := `{"reporter":"band1wfjhqmmjw3jhyy3as6w","validator":"bandvaloper1weskc6tyv96x7usd82k92"}`
 
@@ -505,6 +508,9 @@ func TestMsgUnsetOracleAddress(t *testing.T) {
 	require.Equal(t, "remove_oracle_address", msg.Type())
 	require.Equal(t, validator, msg.Validator)
 	require.Equal(t, reporter, msg.Reporter)
+
+	err := msg.ValidateBasic()
+	require.Nil(t, err)
 
 	res := msg.GetSignBytes()
 	expected := `{"reporter":"band1wfjhqmmjw3jhyy3as6w","validator":"bandvaloper1weskc6tyv96x7usd82k92"}`
