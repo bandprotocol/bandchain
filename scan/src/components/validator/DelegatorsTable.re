@@ -5,8 +5,6 @@ module Styles = {
 
   let tableWrapper = style([padding2(~v=`px(20), ~h=`px(15))]);
 
-  let fixWidth = style([width(`px(230))]);
-
   let icon = style([width(`px(80)), height(`px(80))]);
   let iconWrapper =
     style([
@@ -125,7 +123,7 @@ let make = () => {
            <VSpacing size={`px(30)} />
            <img src=Images.noRequestIcon className=Styles.icon />
            <VSpacing size={`px(40)} />
-           <Text block=true value="NO BLOCK" weight=Text.Regular color=Colors.blue4 />
+           <Text block=true value="NO DELEGATORS" weight=Text.Regular color=Colors.blue4 />
            <VSpacing size={`px(15)} />
          </div>}
   </div>;
