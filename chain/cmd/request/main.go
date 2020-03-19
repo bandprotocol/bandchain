@@ -172,6 +172,47 @@ func main() {
 				}
 			}
 		}
+	case "requests-1":
+		{
+			txResponses := make(chan sdk.TxResponse, 2)
+			errResponses := make(chan error, 2)
+			go func() {
+				txRes, err := tx.SendTransaction(
+					zoracle.NewMsgRequestData(
+						1, []byte("BTC"), 1, 1, 100000, prepareGas, executeGas, tx.Sender(),
+					), 1000000, "", "",
+				)
+
+				if err != nil {
+					errResponses <- err
+				}
+				txResponses <- txRes
+			}()
+			go func() {
+				txRes, err := tx.SendTransaction(
+					zoracle.NewMsgRequestData(
+						1, []byte("ETH"), 1, 1, 100000, prepareGas, executeGas, tx.Sender(),
+					), 1000000, "", "",
+				)
+
+				if err != nil {
+					errResponses <- err
+				}
+				txResponses <- txRes
+			}()
+			for i := 0; i < 2; i++ {
+				select {
+				case txRes := <-txResponses:
+					{
+						fmt.Println(txRes)
+					}
+				case err := <-errResponses:
+					{
+						fmt.Println(err)
+					}
+				}
+			}
+		}
 	case "example-test":
 		{
 			bytes, err := ioutil.ReadFile("../../owasm/res/silly.wasm")

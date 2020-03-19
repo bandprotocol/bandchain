@@ -37,9 +37,9 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 }
 
 func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliverTx) {
-	response := app.bandApp.DeliverTx(req)
-	if response.IsOK() && app.dbBand.GetBlockHeight()+1 == app.DeliverContext.BlockHeight() {
-		for _, event := range response.Events {
+	res = app.bandApp.DeliverTx(req)
+	if res.IsOK() && app.dbBand.GetBlockHeight()+1 == app.DeliverContext.BlockHeight() {
+		for _, event := range res.Events {
 			kvMap := make(map[string]string)
 			for _, kv := range event.Attributes {
 				kvMap[string(kv.GetKey())] = string(kv.GetValue())
@@ -47,11 +47,11 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 			app.dbBand.HandleEvent(event.Type, kvMap)
 		}
 	}
-	return response
+	return res
 }
 
-func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) abci.ResponseBeginBlock {
-	res := app.bandApp.BeginBlock(req)
+func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseBeginBlock) {
+	res = app.bandApp.BeginBlock(req)
 	// Open transaction
 	app.dbBand.BeginTransaction()
 	if err := app.dbBand.ValidateChainID(app.DeliverContext.ChainID()); err != nil {
@@ -61,10 +61,15 @@ func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) abci.ResponseBeginB
 	return res
 }
 
-func (app *dbBandApp) EndBlock(req abci.RequestEndBlock) abci.ResponseEndBlock {
-	res := app.bandApp.EndBlock(req)
-	// Do other logic
+func (app *dbBandApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBlock) {
+	res = app.bandApp.EndBlock(req)
 	app.dbBand.SetBlockHeight(req.GetHeight())
+	// Do other logic
+	return res
+}
+
+func (app *dbBandApp) Commit() (res abci.ResponseCommit) {
+	res = app.bandApp.Commit()
 	app.dbBand.Commit()
 	return res
 }
