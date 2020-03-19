@@ -21,6 +21,11 @@ module Styles = {
 
 [@react.component]
 let make = () => {
+  // TODO: Mock to use
+  let (page, setPage) = React.useState(_ => 1);
+
+  let pageCount = 1;
+
   let delegators = [
     ("band1j9vk75jjty02elhwqqjehaspfslaem8p0utr4q", 12.0, 123123.0),
     ("band1j9vk75jjty02elhwqqjehaspfslaem8p0utr4q", 88.0, 883312.0),
@@ -126,5 +131,8 @@ let make = () => {
            <Text block=true value="NO DELEGATORS" weight=Text.Regular color=Colors.blue4 />
            <VSpacing size={`px(15)} />
          </div>}
+    <VSpacing size=Spacing.xl />
+    <VSpacing size=Spacing.sm />
+    <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
   </div>;
 };
