@@ -66,13 +66,15 @@ var (
 )
 
 type (
-	Keeper                = keeper.Keeper
-	MsgRequestData        = types.MsgRequestData
-	MsgReportData         = types.MsgReportData
-	MsgCreateDataSource   = types.MsgCreateDataSource
-	MsgEditDataSource     = types.MsgEditDataSource
-	MsgCreateOracleScript = types.MsgCreateOracleScript
-	MsgEditOracleScript   = types.MsgEditOracleScript
+	Keeper                  = keeper.Keeper
+	MsgRequestData          = types.MsgRequestData
+	MsgReportData           = types.MsgReportData
+	MsgCreateDataSource     = types.MsgCreateDataSource
+	MsgEditDataSource       = types.MsgEditDataSource
+	MsgCreateOracleScript   = types.MsgCreateOracleScript
+	MsgEditOracleScript     = types.MsgEditOracleScript
+	MsgAddOracleAddress     = types.MsgAddOracleAddress
+	MsgRemoveOracleAdderess = types.MsgRemoveOracleAdderess
 
 	RawDataReport         = types.RawDataReport
 	RawDataReportWithID   = types.RawDataReportWithID

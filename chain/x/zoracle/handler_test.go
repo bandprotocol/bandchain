@@ -362,9 +362,12 @@ func TestReportSuccess(t *testing.T) {
 	}
 
 	validatorAddress1 := keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
+	reporterAddress1 := sdk.AccAddress(validatorAddress1)
+
 	address1 := keep.GetAddressFromPub(pubStr[0])
 
 	validatorAddress2 := keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
+	reporterAddress2 := sdk.AccAddress(validatorAddress2)
 
 	dataSource := keep.GetTestDataSource()
 	keeper.SetDataSource(ctx, 1, dataSource)
@@ -384,7 +387,7 @@ func TestReportSuccess(t *testing.T) {
 
 	msg := types.NewMsgReportData(1, []types.RawDataReportWithID{
 		types.NewRawDataReportWithID(42, 0, []byte("data1")),
-	}, validatorAddress1)
+	}, validatorAddress1, reporterAddress1)
 
 	got := handleMsgReportData(ctx, keeper, msg)
 	require.True(t, got.IsOK(), "expected report to be ok, got %v", got)
@@ -393,7 +396,7 @@ func TestReportSuccess(t *testing.T) {
 
 	msg = types.NewMsgReportData(1, []types.RawDataReportWithID{
 		types.NewRawDataReportWithID(42, 0, []byte("data2")),
-	}, validatorAddress2)
+	}, validatorAddress2, reporterAddress2)
 
 	got = handleMsgReportData(ctx, keeper, msg)
 	require.True(t, got.IsOK(), "expected report to be ok, got %v", got)
@@ -420,6 +423,8 @@ func TestReportFailed(t *testing.T) {
 	validatorAddress1 := keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
 	validatorAddress2 := keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
 
+	reporterAddress1 := sdk.AccAddress(validatorAddress1)
+
 	address1 := keep.GetAddressFromPub(pubStr[0])
 	_, err := keeper.CoinKeeper.AddCoins(ctx, address1, keep.NewUBandCoins(1000000))
 	require.Nil(t, err)
@@ -439,7 +444,7 @@ func TestReportFailed(t *testing.T) {
 
 	msg := types.NewMsgReportData(1, []types.RawDataReportWithID{
 		types.NewRawDataReportWithID(41, 0, []byte("data1")),
-	}, validatorAddress1)
+	}, validatorAddress1, reporterAddress1)
 
 	// Test only 1 failed case, other case tested in keeper/report_test.go
 	got := handleMsgReportData(ctx, keeper, msg)

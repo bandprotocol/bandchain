@@ -11,6 +11,7 @@ func (k Keeper) AddReport(
 	requestID types.RequestID,
 	dataSet []types.RawDataReportWithID,
 	validator sdk.ValAddress,
+	reporter sdk.AccAddress,
 ) sdk.Error {
 	request, err := k.GetRequest(ctx, requestID)
 	if err != nil {
@@ -42,10 +43,22 @@ func (k Keeper) AddReport(
 			break
 		}
 	}
+
+	if k.CheckReporter(ctx, validator, reporter) {
+		agent := sdk.ValAddress(reporter)
+		for _, validValidator := range request.RequestedValidators {
+			if agent.Equals(validValidator) {
+				found = true
+				break
+			}
+		}
+	}
+
 	if !found {
 		return types.ErrUnauthorizedPermission(
-			"AddReport: Reporter (%s) is not on the reporter list.",
+			"AddReport: Reporter (%s) and (%s) is not on the reporter list.",
 			validator.String(),
+			reporter.String(),
 		)
 	}
 
