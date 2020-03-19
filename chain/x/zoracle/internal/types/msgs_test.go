@@ -524,7 +524,6 @@ func TestMsgAddOracleAddressValidation(t *testing.T) {
 			require.NotNil(t, err)
 		}
 	}
-
 }
 
 func TestMsgRemoveOracleAddress(t *testing.T) {
@@ -570,5 +569,4 @@ func TestMsgRemoveOracleAddressValidation(t *testing.T) {
 			require.NotNil(t, err)
 		}
 	}
-
 }
