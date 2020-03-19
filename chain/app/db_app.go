@@ -52,7 +52,7 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 
 func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseBeginBlock) {
 	res = app.bandApp.BeginBlock(req)
-	// Open transaction
+	// Begin transaction
 	app.dbBand.BeginTransaction()
 	if err := app.dbBand.ValidateChainID(app.DeliverContext.ChainID()); err != nil {
 		panic(err)
@@ -70,6 +70,7 @@ func (app *dbBandApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBl
 
 func (app *dbBandApp) Commit() (res abci.ResponseCommit) {
 	res = app.bandApp.Commit()
+
 	app.dbBand.Commit()
 	return res
 }

@@ -1,9 +1,7 @@
 package db
 
 import (
-	"errors"
 	"fmt"
-	"strconv"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
@@ -26,21 +24,6 @@ func NewDB(dialect, path string) (*BandDB, error) {
 	return &BandDB{db: db}, nil
 }
 
-func (b *BandDB) SaveChainID(chainID string) {
-	var chainIDRow Metadata
-	// chainIDRow := Metadata{Key: "chain-id", Value: chainID}
-	b.tx.Where(Metadata{Key: "chain-id"}).Assign(Metadata{Value: chainID}).FirstOrCreate(&chainIDRow)
-}
-
-func (b *BandDB) ValidateChainID(chainID string) error {
-	var chainIDRow Metadata
-	b.tx.Where("key = ?", "chain-id").First(&chainIDRow)
-	if chainIDRow.Value != chainID {
-		return errors.New("Chain id not match")
-	}
-	return nil
-}
-
 func (b *BandDB) BeginTransaction() {
 	if b.tx != nil {
 		panic("BeginTransaction: Cannot begin a new transaction without closing the pending one.")
@@ -56,28 +39,6 @@ func (b *BandDB) Commit() {
 func (b *BandDB) RollBack() {
 	b.tx.Rollback()
 	b.tx = nil
-}
-
-func (b *BandDB) GetBlockHeight() int64 {
-	var heightRow Metadata
-	b.tx.Where(
-		Metadata{Key: "height"},
-	).First(&heightRow)
-
-	height, err := strconv.ParseInt(heightRow.Value, 10, 64)
-	if err != nil {
-		panic(err)
-	}
-	return height
-}
-
-func (b *BandDB) SetBlockHeight(height int64) {
-	var heightRow Metadata
-	b.tx.Where(
-		Metadata{Key: "height"},
-	).Assign(
-		Metadata{Value: fmt.Sprintf("%d", height)},
-	).FirstOrCreate(&heightRow)
 }
 
 func (b *BandDB) HandleEvent(eventName string, attributes map[string]string) {
