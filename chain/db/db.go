@@ -29,15 +29,22 @@ func (b *BandDB) BeginTransaction() {
 		panic("BeginTransaction: Cannot begin a new transaction without closing the pending one.")
 	}
 	b.tx = b.db.Begin()
+	if b.tx.Error != nil {
+		panic(b.tx.Error)
+	}
 }
 
 func (b *BandDB) Commit() {
-	b.tx.Commit()
+	if err := b.tx.Commit().Error; err != nil {
+		panic(err)
+	}
 	b.tx = nil
 }
 
 func (b *BandDB) RollBack() {
-	b.tx.Rollback()
+	if err := b.tx.Rollback(); err != nil {
+		panic(err)
+	}
 	b.tx = nil
 }
 

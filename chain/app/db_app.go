@@ -28,8 +28,14 @@ func NewDBBandApp(
 func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
 	app.dbBand.BeginTransaction()
 
-	app.dbBand.SaveChainID(req.GetChainId())
-	app.dbBand.SetBlockHeight(0)
+	err := app.dbBand.SaveChainID(req.GetChainId())
+	if err != nil {
+		panic(err)
+	}
+	err = app.dbBand.SetLastProcessedHeight(0)
+	if err != nil {
+		panic(err)
+	}
 
 	app.dbBand.Commit()
 
@@ -38,7 +44,11 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 
 func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliverTx) {
 	res = app.bandApp.DeliverTx(req)
-	if res.IsOK() && app.dbBand.GetBlockHeight()+1 == app.DeliverContext.BlockHeight() {
+	lastProcessHeight, err := app.dbBand.GetLastProcessedHeight()
+	if err != nil {
+		panic(err)
+	}
+	if res.IsOK() && lastProcessHeight+1 == app.DeliverContext.BlockHeight() {
 		for _, event := range res.Events {
 			kvMap := make(map[string]string)
 			for _, kv := range event.Attributes {
@@ -63,7 +73,9 @@ func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseB
 
 func (app *dbBandApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBlock) {
 	res = app.bandApp.EndBlock(req)
-	app.dbBand.SetBlockHeight(req.GetHeight())
+	if err := app.dbBand.SetLastProcessedHeight(req.GetHeight()); err != nil {
+		panic(err)
+	}
 	// Do other logic
 	return res
 }

@@ -11,38 +11,39 @@ const (
 	KeyLastProcessedHeight = "last_processed_height"
 )
 
-func (b *BandDB) SaveChainID(chainID string) {
-	var chainIDRow Metadata
-	b.tx.Where(Metadata{Key: KeyChainID}).Assign(Metadata{Value: chainID}).FirstOrCreate(&chainIDRow)
+func (b *BandDB) SaveChainID(chainID string) error {
+	return b.tx.Where(Metadata{Key: KeyChainID}).
+		Assign(Metadata{Value: chainID}).
+		FirstOrCreate(&Metadata{}).Error
 }
 
 func (b *BandDB) ValidateChainID(chainID string) error {
 	var chainIDRow Metadata
-	b.tx.Where(Metadata{Key: KeyChainID}).First(&chainIDRow)
+	if err := b.tx.Where(Metadata{Key: KeyChainID}).First(&chainIDRow).Error; err != nil {
+		return err
+	}
 	if chainIDRow.Value != chainID {
 		return errors.New("Chain id not match")
 	}
 	return nil
 }
 
-func (b *BandDB) GetBlockHeight() int64 {
+func (b *BandDB) SetLastProcessedHeight(height int64) error {
+	return b.tx.Where(Metadata{Key: KeyLastProcessedHeight}).
+		Assign(Metadata{Value: fmt.Sprintf("%d", height)}).
+		FirstOrCreate(&Metadata{}).Error
+}
+
+func (b *BandDB) GetLastProcessedHeight() (int64, error) {
 	var heightRow Metadata
-	b.tx.Where(
-		Metadata{Key: KeyLastProcessedHeight},
-	).First(&heightRow)
+	if err := b.tx.Where(Metadata{Key: KeyLastProcessedHeight}).
+		First(&heightRow).Error; err != nil {
+		return 0, err
+	}
 
 	height, err := strconv.ParseInt(heightRow.Value, 10, 64)
 	if err != nil {
-		panic(err)
+		return 0, err
 	}
-	return height
-}
-
-func (b *BandDB) SetBlockHeight(height int64) {
-	var heightRow Metadata
-	b.tx.Where(
-		Metadata{Key: KeyLastProcessedHeight},
-	).Assign(
-		Metadata{Value: fmt.Sprintf("%d", height)},
-	).FirstOrCreate(&heightRow)
+	return height, nil
 }
