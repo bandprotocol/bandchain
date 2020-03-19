@@ -113,6 +113,7 @@ func GetValidatorAddressAndExternalID(
 	return key[prefixLength+16:], externalID
 }
 
+// ReporterStoreKey is a function to generate key for each validator-reporter pair in store.
 func ReporterStoreKey(validatorAddress sdk.ValAddress, reporterAddress sdk.AccAddress) []byte {
 	buff := append(ReporterStoreKeyPrefix, []byte(validatorAddress)...)
 	buff = append(buff, []byte(reporterAddress)...)
