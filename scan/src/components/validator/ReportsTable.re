@@ -3,7 +3,7 @@ module Styles = {
 
   let vFlex = align => style([display(`flex), flexDirection(`row), alignItems(align)]);
 
-  let tableWrapper = style([padding2(~v=`px(20), ~h=`px(15))]);
+  let tableWrapper = style([padding2(~v=`px(9), ~h=`px(15))]);
 
   let fixWidth = style([width(`px(230))]);
 
@@ -25,7 +25,30 @@ module Styles = {
 
 [@react.component]
 let make = () => {
+  let (page, setPage) = React.useState(_ => 1);
+
+  // TODO: Mock to use
+  let pageCount = 1;
+
   let reports = [
+    (
+      324,
+      "6F45B0D19B46F144CDD7ACA9674E2AD8E8F8C15EF56CA073749B2ACD7DF7739D",
+      234,
+      "Mean Crypto Price",
+      [23, 12, 35],
+      [1, 2, 3],
+      [123213123, 123123132, 123123123],
+    ),
+    (
+      324,
+      "6F45B0D19B46F144CDD7ACA9674E2AD8E8F8C15EF56CA073749B2ACD7DF7739D",
+      234,
+      "Mean Crypto Price",
+      [23, 12, 35],
+      [1, 2, 3],
+      [123213123, 123123132, 123123123],
+    ),
     (
       324,
       "6F45B0D19B46F144CDD7ACA9674E2AD8E8F8C15EF56CA073749B2ACD7DF7739D",
@@ -206,13 +229,17 @@ let make = () => {
               })
             ->Array.of_list
             ->React.array}
+           //  <Pagination currentPage="1" pageCount onPageChange={newPage => setPage(_ => newPage)} />
          </>
        : <div className=Styles.iconWrapper>
            <VSpacing size={`px(30)} />
            <img src=Images.noRequestIcon className=Styles.icon />
            <VSpacing size={`px(40)} />
-           <Text block=true value="NO BLOCK" weight=Text.Regular color=Colors.blue4 />
+           <Text block=true value="NO REPORTS" weight=Text.Regular color=Colors.blue4 />
            <VSpacing size={`px(15)} />
          </div>}
+    <VSpacing size=Spacing.xl />
+    <VSpacing size=Spacing.sm />
+    <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
   </div>;
 };
