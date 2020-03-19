@@ -17,8 +17,8 @@ import (
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 
 	// unnamed import of statik for swagger UI support
-	_ "github.com/bandprotocol/d3n/chain/client/lcd/statik"
-	"github.com/bandprotocol/d3n/chain/x/zoracle"
+	_ "github.com/bandprotocol/bandchain/chain/client/lcd/statik"
+	"github.com/bandprotocol/bandchain/chain/x/zoracle"
 )
 
 const (

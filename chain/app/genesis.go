@@ -18,7 +18,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/supply"
 
-	"github.com/bandprotocol/d3n/chain/x/zoracle"
+	"github.com/bandprotocol/bandchain/chain/x/zoracle"
 )
 
 // GenesisState defines a type alias for the Gaia genesis application state.
