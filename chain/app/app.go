@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"io"
 	"os"
 
@@ -106,22 +105,27 @@ type bandApp struct {
 
 	invCheckPeriod uint
 
-	// keys to access the substores
+	// Keys to access the substores
 	keys  map[string]*sdk.KVStoreKey
 	tkeys map[string]*sdk.TransientStoreKey
 
 	// Keepers
-	accountKeeper  auth.AccountKeeper
-	bankKeeper     bank.Keeper
-	supplyKeeper   supply.Keeper
-	stakingKeeper  staking.Keeper
-	slashingKeeper slashing.Keeper
-	mintKeeper     mint.Keeper
-	distrKeeper    distr.Keeper
-	govKeeper      gov.Keeper
-	crisisKeeper   crisis.Keeper
-	paramsKeeper   params.Keeper
-	zoracleKeeper  zoracle.Keeper
+	AccountKeeper  auth.AccountKeeper
+	BankKeeper     bank.Keeper
+	SupplyKeeper   supply.Keeper
+	StakingKeeper  staking.Keeper
+	SlashingKeeper slashing.Keeper
+	MintKeeper     mint.Keeper
+	DistrKeeper    distr.Keeper
+	GovKeeper      gov.Keeper
+	CrisisKeeper   crisis.Keeper
+	ParamsKeeper   params.Keeper
+	ZoracleKeeper  zoracle.Keeper
+
+	// Decoder for unmarshaling []byte into sdk.Tx
+	TxDecoder sdk.TxDecoder
+	// Deliver Context that is set during BeingBlock and unset during EndBlock; primarily for gas refund
+	DeliverContext sdk.Context
 
 	// Module Manager
 	mm *module.Manager
@@ -156,23 +160,24 @@ func NewBandApp(
 		invCheckPeriod: invCheckPeriod,
 		keys:           keys,
 		tkeys:          tkeys,
+		TxDecoder:      auth.DefaultTxDecoder(cdc),
 	}
 
 	// The ParamsKeeper handles parameter storage for the application
-	app.paramsKeeper = params.NewKeeper(app.cdc, keys[params.StoreKey], tkeys[params.TStoreKey], params.DefaultCodespace)
+	app.ParamsKeeper = params.NewKeeper(app.cdc, keys[params.StoreKey], tkeys[params.TStoreKey], params.DefaultCodespace)
 	// Set specific supspaces
-	authSubspace := app.paramsKeeper.Subspace(auth.DefaultParamspace)
-	bankSupspace := app.paramsKeeper.Subspace(bank.DefaultParamspace)
-	stakingSubspace := app.paramsKeeper.Subspace(staking.DefaultParamspace)
-	mintSubspace := app.paramsKeeper.Subspace(mint.DefaultParamspace)
-	distrSubspace := app.paramsKeeper.Subspace(distr.DefaultParamspace)
-	slashingSubspace := app.paramsKeeper.Subspace(slashing.DefaultParamspace)
-	govSubspace := app.paramsKeeper.Subspace(gov.DefaultParamspace)
-	crisisSubspace := app.paramsKeeper.Subspace(crisis.DefaultParamspace)
-	zoracleSubspace := app.paramsKeeper.Subspace(zoracle.DefaultParamspace)
+	authSubspace := app.ParamsKeeper.Subspace(auth.DefaultParamspace)
+	bankSupspace := app.ParamsKeeper.Subspace(bank.DefaultParamspace)
+	stakingSubspace := app.ParamsKeeper.Subspace(staking.DefaultParamspace)
+	mintSubspace := app.ParamsKeeper.Subspace(mint.DefaultParamspace)
+	distrSubspace := app.ParamsKeeper.Subspace(distr.DefaultParamspace)
+	slashingSubspace := app.ParamsKeeper.Subspace(slashing.DefaultParamspace)
+	govSubspace := app.ParamsKeeper.Subspace(gov.DefaultParamspace)
+	crisisSubspace := app.ParamsKeeper.Subspace(crisis.DefaultParamspace)
+	zoracleSubspace := app.ParamsKeeper.Subspace(zoracle.DefaultParamspace)
 
 	// The AccountKeeper handles address -> account lookups
-	app.accountKeeper = auth.NewAccountKeeper(
+	app.AccountKeeper = auth.NewAccountKeeper(
 		app.cdc,
 		keys[auth.StoreKey],
 		authSubspace,
@@ -180,27 +185,27 @@ func NewBandApp(
 	)
 
 	// The BankKeeper allows you perform sdk.Coins interactions
-	app.bankKeeper = bank.NewBaseKeeper(
-		app.accountKeeper,
+	app.BankKeeper = bank.NewBaseKeeper(
+		app.AccountKeeper,
 		bankSupspace,
 		bank.DefaultCodespace,
 		app.ModuleAccountAddrs(),
 	)
 
 	// The SupplyKeeper collects transaction fees and renders them to the fee distribution module
-	app.supplyKeeper = supply.NewKeeper(
+	app.SupplyKeeper = supply.NewKeeper(
 		app.cdc,
 		keys[supply.StoreKey],
-		app.accountKeeper,
-		app.bankKeeper,
+		app.AccountKeeper,
+		app.BankKeeper,
 		maccPerms,
 	)
 
 	// Wrapped supply keeper allows burned tokens to be transfereed to community pool
-	wrappedSupplyKeeper := bandsupply.WrapSupplyKeeperBurnToCommunityPool(app.supplyKeeper)
+	wrappedSupplyKeeper := bandsupply.WrapSupplyKeeperBurnToCommunityPool(app.SupplyKeeper)
 
 	// The staking keeper
-	stakingKeeper := staking.NewKeeper(
+	StakingKeeper := staking.NewKeeper(
 		app.cdc,
 		keys[staking.StoreKey],
 		tkeys[staking.TStoreKey],
@@ -209,79 +214,79 @@ func NewBandApp(
 		staking.DefaultCodespace,
 	)
 
-	app.mintKeeper = mint.NewKeeper(
+	app.MintKeeper = mint.NewKeeper(
 		app.cdc,
 		keys[mint.StoreKey],
 		mintSubspace,
-		&stakingKeeper,
-		app.supplyKeeper,
+		&StakingKeeper,
+		app.SupplyKeeper,
 		auth.FeeCollectorName,
 	)
 
-	app.distrKeeper = distr.NewKeeper(
+	app.DistrKeeper = distr.NewKeeper(
 		app.cdc,
 		keys[distr.StoreKey],
 		distrSubspace,
-		&stakingKeeper,
-		app.supplyKeeper,
+		&StakingKeeper,
+		app.SupplyKeeper,
 		distr.DefaultCodespace,
 		auth.FeeCollectorName,
 		app.ModuleAccountAddrs(),
 	)
 
-	// distrKeeper must be set afterward due to the circular reference of supply-staking-distr
-	wrappedSupplyKeeper.SetDistrKeeper(&app.distrKeeper)
+	// DistrKeeper must be set afterward due to the circular reference of supply-staking-distr
+	wrappedSupplyKeeper.SetDistrKeeper(&app.DistrKeeper)
 
-	app.slashingKeeper = slashing.NewKeeper(
+	app.SlashingKeeper = slashing.NewKeeper(
 		app.cdc,
 		keys[slashing.StoreKey],
-		&stakingKeeper,
+		&StakingKeeper,
 		slashingSubspace,
 		slashing.DefaultCodespace,
 	)
 
-	app.crisisKeeper = crisis.NewKeeper(crisisSubspace, invCheckPeriod, app.supplyKeeper, auth.FeeCollectorName)
+	app.CrisisKeeper = crisis.NewKeeper(crisisSubspace, invCheckPeriod, app.SupplyKeeper, auth.FeeCollectorName)
 
 	// register the proposal types
 	govRouter := gov.NewRouter()
 	govRouter.AddRoute(gov.RouterKey, gov.ProposalHandler).
-		AddRoute(params.RouterKey, params.NewParamChangeProposalHandler(app.paramsKeeper)).
-		AddRoute(distr.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.distrKeeper))
-	app.govKeeper = gov.NewKeeper(
-		app.cdc, keys[gov.StoreKey], app.paramsKeeper, govSubspace,
-		app.supplyKeeper, &stakingKeeper, gov.DefaultCodespace, govRouter,
+		AddRoute(params.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper)).
+		AddRoute(distr.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper))
+	app.GovKeeper = gov.NewKeeper(
+		app.cdc, keys[gov.StoreKey], app.ParamsKeeper, govSubspace,
+		app.SupplyKeeper, &StakingKeeper, gov.DefaultCodespace, govRouter,
 	)
 
 	// register the staking hooks
-	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
-	app.stakingKeeper = *stakingKeeper.SetHooks(
+	// NOTE: StakingKeeper above is passed by reference, so that it will contain these hooks
+	app.StakingKeeper = *StakingKeeper.SetHooks(
 		staking.NewMultiStakingHooks(
-			app.distrKeeper.Hooks(),
-			app.slashingKeeper.Hooks()),
+			app.DistrKeeper.Hooks(),
+			app.SlashingKeeper.Hooks()),
 	)
 
-	app.zoracleKeeper = zoracle.NewKeeper(
+	app.ZoracleKeeper = zoracle.NewKeeper(
 		app.cdc,
 		keys[zoracle.StoreKey],
-		app.bankKeeper,
-		app.stakingKeeper,
-		app.supplyKeeper,
+		app.BankKeeper,
+		app.StakingKeeper,
+		app.SupplyKeeper,
 		zoracleSubspace,
 	)
 
 	app.mm = module.NewManager(
-		genaccounts.NewAppModule(app.accountKeeper),
-		genutil.NewAppModule(app.accountKeeper, app.stakingKeeper, app.BaseApp.DeliverTx),
-		auth.NewAppModule(app.accountKeeper),
-		bank.NewAppModule(app.bankKeeper, app.accountKeeper),
-		crisis.NewAppModule(&app.crisisKeeper),
-		zoracle.NewAppModule(app.zoracleKeeper),
-		supply.NewAppModule(app.supplyKeeper, app.accountKeeper),
-		distr.NewAppModule(app.distrKeeper, app.supplyKeeper),
-		gov.NewAppModule(app.govKeeper, app.supplyKeeper),
-		mint.NewAppModule(app.mintKeeper),
-		slashing.NewAppModule(app.slashingKeeper, app.stakingKeeper),
-		staking.NewAppModule(app.stakingKeeper, app.distrKeeper, app.accountKeeper, app.supplyKeeper),
+		genaccounts.NewAppModule(app.AccountKeeper),
+		genutil.NewAppModule(app.AccountKeeper, app.StakingKeeper, app.BaseApp.DeliverTx),
+		auth.NewAppModule(app.AccountKeeper),
+		bank.NewAppModule(app.BankKeeper, app.AccountKeeper),
+		crisis.NewAppModule(&app.CrisisKeeper),
+		zoracle.NewAppModule(app.ZoracleKeeper),
+		supply.NewAppModule(app.SupplyKeeper, app.AccountKeeper),
+		distr.NewAppModule(app.DistrKeeper, app.SupplyKeeper),
+		gov.NewAppModule(app.GovKeeper, app.SupplyKeeper),
+		mint.NewAppModule(app.MintKeeper),
+		slashing.NewAppModule(app.SlashingKeeper, app.StakingKeeper),
+		staking.NewAppModule(app.StakingKeeper, app.DistrKeeper, app.AccountKeeper, app.SupplyKeeper),
 	)
 
 	app.mm.SetOrderBeginBlockers(mint.ModuleName, distr.ModuleName, slashing.ModuleName)
@@ -305,7 +310,7 @@ func NewBandApp(
 		genutil.ModuleName,
 	)
 
-	app.mm.RegisterInvariants(&app.crisisKeeper)
+	app.mm.RegisterInvariants(&app.CrisisKeeper)
 	// register all module routes and module queriers
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter())
 
@@ -317,35 +322,12 @@ func NewBandApp(
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 
-	// Create a default AnteHandler that will be used after checking refundGasPrice
-	defaultAnteHandler := auth.NewAnteHandler(
-		app.accountKeeper,
-		app.supplyKeeper,
-		auth.DefaultSigVerificationGasConsumer,
-	)
 	// The AnteHandler handles signature verification and transaction pre-processing
-	app.SetAnteHandler(
-		func(ctx sdk.Context, tx sdk.Tx, simulate bool) (newCtx sdk.Context, res sdk.Result, abort bool) {
-			if stdTx, ok := tx.(auth.StdTx); ok {
-				fee := stdTx.Fee
-				for _, msg := range tx.GetMsgs() {
-					if report, ok := msg.(zoracle.MsgReportData); ok {
-						_, refundGasPriceExceedTxGasPrice := fee.GasPrices().SafeSub(report.RefundGasPrice)
-						if refundGasPriceExceedTxGasPrice {
-							return ctx, sdk.ErrInternal(
-								fmt.Sprintf(
-									"refundGasPrice(%s) exceeds txGasPrice(%s)",
-									report.RefundGasPrice.String(), fee.GasPrices().String(),
-								),
-							).Result(), true
-						}
-					}
-				}
-			}
-
-			return defaultAnteHandler(ctx, tx, simulate)
-		},
-	)
+	app.SetAnteHandler(auth.NewAnteHandler(
+		app.AccountKeeper,
+		app.SupplyKeeper,
+		auth.DefaultSigVerificationGasConsumer,
+	))
 
 	app.SetEndBlocker(app.EndBlocker)
 
@@ -361,18 +343,53 @@ func NewBandApp(
 
 func (app *bandApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	var genesisState GenesisState
-
 	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
-
 	return app.mm.InitGenesis(ctx, genesisState)
 }
 
 func (app *bandApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
+	app.DeliverContext = ctx
 	return app.mm.BeginBlock(ctx, req)
 }
 
 func (app *bandApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
+	app.DeliverContext = sdk.Context{}
 	return app.mm.EndBlock(ctx, req)
+}
+
+func (app *bandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliverTx) {
+	response := app.BaseApp.DeliverTx(req)
+
+	if response.IsOK() {
+		// Refund 100% of gas fee for any successful transaction that only contains MsgReportData
+		tx, err := app.TxDecoder(req.Tx)
+		if err != nil { // Should never happen because BaseApp.DeliverTx succeeds
+			panic(err)
+		}
+		isAllReportTxs := true
+		if stdTx, ok := tx.(auth.StdTx); ok {
+			for _, msg := range tx.GetMsgs() {
+				if _, ok := msg.(zoracle.MsgReportData); !ok {
+					isAllReportTxs = false
+					break
+				}
+			}
+			if isAllReportTxs && !stdTx.Fee.Amount.IsZero() {
+				err := app.SupplyKeeper.SendCoinsFromModuleToAccount(
+					app.DeliverContext,
+					auth.FeeCollectorName,
+					stdTx.GetSigners()[0],
+					stdTx.Fee.Amount,
+				)
+				if err != nil { // Should never happen because we just return the collected fee
+					panic(err)
+				}
+
+			}
+		}
+	}
+
+	return response
 }
 
 func (app *bandApp) LoadHeight(height int64) error {

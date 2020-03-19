@@ -37,7 +37,20 @@ module Styles = {
 
 [@react.component]
 let make = () => {
-  let dataSourcesOpt = DataSourceHook.getList();
+  let (page, setPage) = React.useState(_ => 1);
+  let limit = 10;
+
+  // TODO: use for get all datasource count.
+  let dataSourcesCountOpt = DataSourceHook.getList();
+
+  let dataSourcesOpt = DataSourceHook.getList(~limit, ~page, ());
+
+  let pageCount =
+    {
+      let%Opt dataSourcesCount = dataSourcesCountOpt;
+      Some(Page.getPageCount(dataSourcesCount->Belt.List.size, limit));
+    }
+    |> Belt.Option.getWithDefault(_, 1);
 
   <div className=Styles.pageContainer>
     <Row>
@@ -55,10 +68,10 @@ let make = () => {
             block=true
           />
           <div className=Styles.seperatedLine />
-          {switch (dataSourcesOpt) {
-           | Some(dataSources) =>
+          {switch (dataSourcesCountOpt) {
+           | Some(dataSourcesCount) =>
              <Text
-               value={dataSources->Belt.List.length->string_of_int ++ " In total"}
+               value={dataSourcesCount->Belt.List.length->string_of_int ++ " In total"}
                size=Text.Md
                weight=Text.Thin
                spacing={Text.Em(0.06)}
@@ -149,6 +162,8 @@ let make = () => {
          <div className=Styles.loadingContainer> <Text value="Loading..." size=Text.Xl /> </div>
        }}
     </>
-    <VSpacing size=Spacing.xl />
+    <VSpacing size=Spacing.lg />
+    <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
+    <VSpacing size=Spacing.lg />
   </div>;
 };
