@@ -16,7 +16,7 @@ type Event struct {
 
 type ValidatorStatus struct {
 	gorm.Model
-	ValidatorAddress string
+	ValidatorAddress string `gorm:"unique;not null"`
 	ElectedCount     uint
 	VotedCount       uint
 	MissedCount      uint
@@ -24,6 +24,6 @@ type ValidatorStatus struct {
 
 type ValidatorVote struct {
 	ValidatorAddress string `gorm:"primary_key"`
-	Block            int64  `gorm:"primary_key;auto_increment:false"`
+	BlockHeight      int64  `gorm:"primary_key;auto_increment:false"`
 	Voted            bool
 }
