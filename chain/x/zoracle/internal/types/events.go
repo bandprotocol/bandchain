@@ -14,4 +14,5 @@ const (
 	AttributeKeyID        = "id"
 	AttributeKeyRequestID = "request_id"
 	AttributeKeyValidator = "validator"
+	AttributeKeyReporter  = "reporter"
 )

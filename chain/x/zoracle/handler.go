@@ -28,6 +28,9 @@ func NewHandler(keeper Keeper) sdk.Handler {
 			return handleMsgReportData(ctx, keeper, msg)
 		case MsgAddOracleAddress:
 			return handleMsgAddOracleAddress(ctx, keeper, msg)
+		case MsgRemoveOracleAdderess:
+			return handleMsgRemoveOracleAddress(ctx, keeper, msg)
+
 		default:
 			errMsg := fmt.Sprintf("unrecognized zoracle message type: %T", msg)
 			return sdk.ErrUnknownRequest(errMsg).Result()
@@ -296,12 +299,13 @@ func handleMsgAddOracleAddress(ctx sdk.Context, keeper Keeper, msg MsgAddOracleA
 		sdk.NewEvent(
 			types.EventTypeAddOracleAddress,
 			sdk.NewAttribute(types.AttributeKeyValidator, msg.Validator.String()),
+			sdk.NewAttribute(types.AttributeKeyReporter, msg.Reporter.String()),
 		),
 	})
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
-func handleMsgRemoveOracleAddress(ctx sdk.Context, keeper Keeper, msg MsgAddOracleAddress) sdk.Result {
+func handleMsgRemoveOracleAddress(ctx sdk.Context, keeper Keeper, msg MsgRemoveOracleAdderess) sdk.Result {
 	err := keeper.RemoveReporter(ctx, msg.Validator, msg.Reporter)
 	if err != nil {
 		return err.Result()
@@ -312,6 +316,7 @@ func handleMsgRemoveOracleAddress(ctx sdk.Context, keeper Keeper, msg MsgAddOrac
 		sdk.NewEvent(
 			types.EventTypeRemoveOracleAddress,
 			sdk.NewAttribute(types.AttributeKeyValidator, msg.Validator.String()),
+			sdk.NewAttribute(types.AttributeKeyReporter, msg.Reporter.String()),
 		),
 	})
 	return sdk.Result{Events: ctx.EventManager().Events()}

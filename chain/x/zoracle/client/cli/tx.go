@@ -194,7 +194,7 @@ $ %s tx zoracle report 1 1:172.5 2:HELLOWORLD --from mykey
 				return dataset[i].ExternalDataID < dataset[j].ExternalDataID
 			})
 
-			msg := types.NewMsgReportData(requestID, dataset, sdk.ValAddress(cliCtx.GetFromAddress()), sdk.AccAddress(cliCtx.GetFromAddress()))
+			msg := types.NewMsgReportData(requestID, dataset, sdk.ValAddress(cliCtx.GetFromAddress()), cliCtx.GetFromAddress())
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
