@@ -270,7 +270,6 @@ func NewBandApp(
 		keys[zoracle.StoreKey],
 		app.BankKeeper,
 		app.StakingKeeper,
-		app.SupplyKeeper,
 		zoracleSubspace,
 	)
 
