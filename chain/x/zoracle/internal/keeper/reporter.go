@@ -14,7 +14,7 @@ func (k Keeper) AddReporter(
 	ctx sdk.Context, validatorAddress sdk.ValAddress, reporterAddress sdk.AccAddress,
 ) sdk.Error {
 	if k.CheckReporter(ctx, validatorAddress, reporterAddress) {
-		return types.ErrDuplicateItem(
+		return types.ErrItemDuplication(
 			"AddReporter: (%s) is already a reporter of (%s).",
 			reporterAddress.String(),
 			validatorAddress.String(),
@@ -32,7 +32,7 @@ func (k Keeper) RemoveReporter(
 ) sdk.Error {
 	if !k.CheckReporter(ctx, validatorAddress, reporterAddress) {
 		return types.ErrItemNotFound(
-			"RemoveReporter: Item notfound for validator address (%s) is not a reporter of reporter address (%s).",
+			"RemoveReporter: Item not found. %s (reporter addresss) is not a reporter of %s (validator address).",
 			validatorAddress.String(),
 			reporterAddress.String(),
 		)

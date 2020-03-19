@@ -91,6 +91,13 @@ func OracleScriptStoreKey(oracleScriptID OracleScriptID) []byte {
 	return append(OracleScriptStoreKeyPrefix, int64ToBytes(int64(oracleScriptID))...)
 }
 
+// ReporterStoreKey is a function to generate key for each validator-reporter pair in store.
+func ReporterStoreKey(validatorAddress sdk.ValAddress, reporterAddress sdk.AccAddress) []byte {
+	buff := append(ReporterStoreKeyPrefix, []byte(validatorAddress)...)
+	buff = append(buff, []byte(reporterAddress)...)
+	return buff
+}
+
 // GetIteratorPrefix is a function to get specific prefix
 func GetIteratorPrefix(prefix []byte, requestID RequestID) []byte {
 	return append(prefix, int64ToBytes(int64(requestID))...)
@@ -111,11 +118,4 @@ func GetValidatorAddressAndExternalID(
 	externalIDBytes := key[prefixLength+8 : prefixLength+16]
 	externalID := ExternalID(binary.BigEndian.Uint64(externalIDBytes))
 	return key[prefixLength+16:], externalID
-}
-
-// ReporterStoreKey is a function to generate key for each validator-reporter pair in store.
-func ReporterStoreKey(validatorAddress sdk.ValAddress, reporterAddress sdk.AccAddress) []byte {
-	buff := append(ReporterStoreKeyPrefix, []byte(validatorAddress)...)
-	buff = append(buff, []byte(reporterAddress)...)
-	return buff
 }
