@@ -316,9 +316,6 @@ func TestRequestWithInsufficientFee(t *testing.T) {
 	_, err := keeper.CoinKeeper.AddCoins(ctx, sender, keep.NewUBandCoins(50))
 	require.Nil(t, err)
 
-	owner := sdk.AccAddress([]byte("owner"))
-	owner2 := sdk.AccAddress([]byte("owner2"))
-
 	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
 	keeper.SetOracleScript(ctx, 1, script)
 
@@ -327,8 +324,8 @@ func TestRequestWithInsufficientFee(t *testing.T) {
 		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
 	}
 
-	validatorAddress1 := keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
-	validatorAddress2 := keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
+	keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
+	keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
 
 	dataSource := keep.GetTestDataSource()
 	keeper.SetDataSource(ctx, 1, dataSource)
@@ -346,21 +343,6 @@ func TestRequestWithInsufficientFee(t *testing.T) {
 
 	got := handleMsgRequestData(ctx, keeper, msg)
 	require.False(t, got.IsOK())
-
-	request := types.NewRequest(1, calldata,
-		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
-		2, 1581589790, 102, 1000000,
-	)
-	keeper.SetRequest(ctx, 1, request)
-
-	balance := keeper.CoinKeeper.GetCoins(ctx, sender)
-	require.Equal(t, keep.NewUBandCoins(40), balance)
-
-	ownerBalance := keeper.CoinKeeper.GetCoins(ctx, owner)
-	require.Equal(t, keep.NewUBandCoins(10), ownerBalance)
-
-	owner2Balance := keeper.CoinKeeper.GetCoins(ctx, owner2)
-	require.Equal(t, sdk.Coins{}, owner2Balance)
 }
 
 func TestReportSuccess(t *testing.T) {
