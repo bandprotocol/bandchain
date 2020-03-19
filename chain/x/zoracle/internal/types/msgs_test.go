@@ -481,7 +481,7 @@ func TestMsgEditOracleScriptGetSignBytes(t *testing.T) {
 	require.Equal(t, expected, string(res))
 }
 
-func TestMsgSetOracleAddress(t *testing.T) {
+func TestMsgAddOracleAddress(t *testing.T) {
 	validator := sdk.ValAddress([]byte("validator"))
 	reporter := sdk.AccAddress([]byte("reporter"))
 	msg := NewMsgAddOracleAddress(validator, reporter)
@@ -489,6 +489,17 @@ func TestMsgSetOracleAddress(t *testing.T) {
 	require.Equal(t, "add_oracle_address", msg.Type())
 	require.Equal(t, validator, msg.Validator)
 	require.Equal(t, reporter, msg.Reporter)
+
+	res := msg.GetSignBytes()
+	expected := `{"reporter":"band1wfjhqmmjw3jhyy3as6w","validator":"bandvaloper1weskc6tyv96x7usd82k92"}`
+
+	require.Equal(t, expected, string(res))
+
+}
+
+func TestMsgAddOracleAddressValidation(t *testing.T) {
+	validator := sdk.ValAddress([]byte("validator"))
+	reporter := sdk.AccAddress([]byte("reporter"))
 
 	cases := []struct {
 		valid bool
@@ -514,14 +525,9 @@ func TestMsgSetOracleAddress(t *testing.T) {
 		}
 	}
 
-	res := msg.GetSignBytes()
-	expected := `{"reporter":"band1wfjhqmmjw3jhyy3as6w","validator":"bandvaloper1weskc6tyv96x7usd82k92"}`
-
-	require.Equal(t, expected, string(res))
-
 }
 
-func TestMsgUnsetOracleAddress(t *testing.T) {
+func TestMsgRemoveOracleAddress(t *testing.T) {
 	validator := sdk.ValAddress([]byte("validator"))
 	reporter := sdk.AccAddress([]byte("reporter"))
 	msg := NewMsgRemoveOracleAdderess(validator, reporter)
@@ -529,6 +535,17 @@ func TestMsgUnsetOracleAddress(t *testing.T) {
 	require.Equal(t, "remove_oracle_address", msg.Type())
 	require.Equal(t, validator, msg.Validator)
 	require.Equal(t, reporter, msg.Reporter)
+
+	res := msg.GetSignBytes()
+	expected := `{"reporter":"band1wfjhqmmjw3jhyy3as6w","validator":"bandvaloper1weskc6tyv96x7usd82k92"}`
+
+	require.Equal(t, expected, string(res))
+
+}
+
+func TestMsgRemoveOracleAddressValidation(t *testing.T) {
+	validator := sdk.ValAddress([]byte("validator"))
+	reporter := sdk.AccAddress([]byte("reporter"))
 
 	cases := []struct {
 		valid bool
@@ -553,10 +570,5 @@ func TestMsgUnsetOracleAddress(t *testing.T) {
 			require.NotNil(t, err)
 		}
 	}
-
-	res := msg.GetSignBytes()
-	expected := `{"reporter":"band1wfjhqmmjw3jhyy3as6w","validator":"bandvaloper1weskc6tyv96x7usd82k92"}`
-
-	require.Equal(t, expected, string(res))
 
 }
