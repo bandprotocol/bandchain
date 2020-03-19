@@ -352,8 +352,12 @@ func (app *bandApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) ab
 }
 
 func (app *bandApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
-	app.DeliverContext = sdk.Context{}
 	return app.mm.EndBlock(ctx, req)
+}
+
+func (app *bandApp) Commit() (res abci.ResponseCommit) {
+	app.DeliverContext = sdk.Context{}
+	return app.BaseApp.Commit()
 }
 
 func (app *bandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliverTx) {
