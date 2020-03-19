@@ -103,7 +103,10 @@ func RunOnAWSLambda(executable []byte, timeOut time.Duration, arg string, execut
 	resp, err := grequests.Post(
 		executeEndPoint,
 		&grequests.RequestOptions{
-			Data: map[string]string{
+			Headers: map[string]string{
+				"Content-Type": "application/json",
+			},
+			JSON: map[string]string{
 				"executable": string(executable),
 				"calldata":   arg,
 			},
@@ -115,7 +118,7 @@ func RunOnAWSLambda(executable []byte, timeOut time.Duration, arg string, execut
 	}
 
 	if resp.Ok != true {
-		return nil, fmt.Errorf("Request did not return OK")
+		return nil, resp.Error
 	}
 
 	type result struct {
