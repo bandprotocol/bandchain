@@ -12,6 +12,7 @@ This repository is a [monorepo] containing the reference implementation of D3N a
 | -------------------- | --------------------------------------------------------- |
 | [`chain`](chain)     | 🔗 D3N blockchain reference implementation                |
 | [`bridges`](bridges) | 📡 Lite client bridges on other smart contract platforms  |
+| [`lambda`](lambda)   | 👷‍♂️ AWS Lambda package for running data source executables |
 | [`owasm`](owasm)     | 🔮 WebAssembly library for writing oracle scripts         |
 | [`scan`](scan)       | 🔍 Web interface to explore D3N network                   |
 | [`spec`](spec)       | 📖 D3N research and specification knowledge base          |

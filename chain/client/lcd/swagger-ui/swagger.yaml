@@ -40,7 +40,7 @@ securityDefinitions:
   kms:
     type: basic
 paths:
-  /d3n/blocks/latest:
+  /bandchain/blocks/latest:
     get:
       summary: Get all blocks order by block id in descending order
       tags:
@@ -68,7 +68,7 @@ paths:
               $ref: "#/definitions/BlockQuery"
         500:
           description: Internal Server Error
-  /d3n/txs/latest:
+  /bandchain/txs/latest:
     get:
       summary: Get all txs order by timestamp in descending order
       tags:
@@ -94,7 +94,7 @@ paths:
             $ref: "#/definitions/PaginatedQueryTxs"
         500:
           description: Internal Server Error
-  /d3n/proof/{requestID}:
+  /bandchain/proof/{requestID}:
     get:
       summary: Get proof of result in the store
       tags:
@@ -118,7 +118,7 @@ paths:
           description: Invalid request ID
         500:
           description: Internal Server Error
-  /d3n/health_check:
+  /bandchain/health_check:
     get:
       summary: Health check endpoint
       tags:
@@ -131,7 +131,7 @@ paths:
           description: UP
         500:
           description: Internal Server Error
-  /d3n/provider_status:
+  /bandchain/provider_status:
     get:
       summary: Get current provider status
       tags:
