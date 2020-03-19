@@ -250,6 +250,11 @@ func handleMsgRequestData(ctx sdk.Context, keeper Keeper, msg MsgRequestData) sd
 		return err.Result()
 	}
 
+	err = keeper.PayDataSourceFees(ctx, id, msg.Sender)
+	if err != nil {
+		return err.Result()
+	}
+
 	// Emit request event
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(

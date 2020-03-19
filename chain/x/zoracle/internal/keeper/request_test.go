@@ -288,3 +288,50 @@ func TestValidateDataSourceCount(t *testing.T) {
 	err = keeper.ValidateDataSourceCount(ctx, 1)
 	require.NotNil(t, err)
 }
+
+func TestPayDataSourceFees(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	sender := sdk.AccAddress([]byte("sender"))
+	_, err := keeper.CoinKeeper.AddCoins(ctx, sender, NewUBandCoins(100))
+	require.Nil(t, err)
+
+	owner1 := sdk.AccAddress([]byte("owner1"))
+	owner2 := sdk.AccAddress([]byte("owner2"))
+
+	dataSource1 := types.NewDataSource(
+		sdk.AccAddress([]byte("owner1")),
+		"data_source1",
+		"description1",
+		sdk.NewCoins(sdk.NewInt64Coin("uband", 40)),
+		[]byte("executable1"),
+	)
+	keeper.SetDataSource(ctx, 1, dataSource1)
+
+	dataSource2 := types.NewDataSource(
+		sdk.AccAddress([]byte("owner2")),
+		"data_source2",
+		"description2",
+		sdk.NewCoins(sdk.NewInt64Coin("uband", 50)),
+		[]byte("executable2"),
+	)
+	keeper.SetDataSource(ctx, 2, dataSource2)
+
+	request := newDefaultRequest()
+	keeper.SetRequest(ctx, 1, request)
+
+	keeper.SetRawDataRequest(ctx, 1, 1, types.NewRawDataRequest(1, []byte("calldata")))
+	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(2, []byte("calldata")))
+
+	err = keeper.PayDataSourceFees(ctx, 1, sender)
+	require.Nil(t, err)
+
+	balance := keeper.CoinKeeper.GetCoins(ctx, sender)
+	require.Equal(t, NewUBandCoins(10), balance)
+
+	owner1Balance := keeper.CoinKeeper.GetCoins(ctx, owner1)
+	require.Equal(t, NewUBandCoins(40), owner1Balance)
+
+	owner2Balance := keeper.CoinKeeper.GetCoins(ctx, owner2)
+	require.Equal(t, NewUBandCoins(50), owner2Balance)
+}
