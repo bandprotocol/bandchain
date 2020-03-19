@@ -182,10 +182,8 @@ func handleRequest(requestID zoracle.RequestID) {
 				return
 			}
 
-			executeEndPoint := viper.GetString(flagExecuteEndPoint)
-
 			var result []byte
-			if executeEndPoint == "" {
+			if viper.IsSet(flagExecuteEndPoint) {
 				result, err = byteexec.RunOnDocker(
 					dataSource.Executable,
 					viper.IsSet(flagSandboxMode),
@@ -197,7 +195,7 @@ func handleRequest(requestID zoracle.RequestID) {
 					dataSource.Executable,
 					time.Duration(viper.GetInt(flagMaxQueryDuration))*time.Second,
 					string(calldata),
-					executeEndPoint,
+					viper.GetString(flagExecuteEndPoint),
 				)
 			}
 
