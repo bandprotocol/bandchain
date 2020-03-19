@@ -48,20 +48,26 @@ let make = () => {
         block=true
         color=Colors.gray8
       />
-      <div className=Styles.seeAll onClick={_ => Route.redirect(Route.TxHomePage)}>
-        <div className=Styles.cFlex>
-          <span className=Styles.amount> {12344431 |> Format.iPretty |> React.string} </span>
-          <VSpacing size=Spacing.xs />
-          <Text
-            value="ALL TRANSACTIONS"
-            size=Text.Sm
-            color=Colors.bandBlue
-            spacing={Text.Em(0.05)}
-            weight=Text.Medium
-          />
-        </div>
-        <img src=Images.rightArrow className=Styles.rightArrow />
-      </div>
+      {switch (txsOpt) {
+       | Some(txs) =>
+         <div className=Styles.seeAll onClick={_ => Route.redirect(Route.TxHomePage)}>
+           <div className=Styles.cFlex>
+             <span className=Styles.amount>
+               {txs.totalCount |> Format.iPretty |> React.string}
+             </span>
+             <VSpacing size=Spacing.xs />
+             <Text
+               value="ALL TRANSACTIONS"
+               size=Text.Sm
+               color=Colors.bandBlue
+               spacing={Text.Em(0.05)}
+               weight=Text.Medium
+             />
+           </div>
+           <img src=Images.rightArrow className=Styles.rightArrow />
+         </div>
+       | None => React.null
+       }}
     </div>
     <VSpacing size=Spacing.lg />
     <THead>
