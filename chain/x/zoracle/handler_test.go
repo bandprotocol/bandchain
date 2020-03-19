@@ -805,3 +805,69 @@ func TestEndBlockInsufficientExecutionConsumeEndBlockGas(t *testing.T) {
 	require.Equal(t, types.Open, actualRequest.ResolveStatus)
 
 }
+
+func TestAddAndRemoveOracleAddress(t *testing.T) {
+	// Setup test environment
+	ctx, keeper := keep.CreateTestInput(t, false)
+
+	ctx = ctx.WithBlockHeight(2)
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	calldata := []byte("calldata")
+
+	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
+	keeper.SetOracleScript(ctx, 1, script)
+
+	pubStr := []string{
+		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
+		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
+	}
+
+	validatorAddress1 := keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
+
+	address1 := keep.GetAddressFromPub(pubStr[0])
+
+	validatorAddress2 := keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
+	reporterAddress2 := sdk.AccAddress(validatorAddress2)
+
+	dataSource := keep.GetTestDataSource()
+	keeper.SetDataSource(ctx, 1, dataSource)
+
+	_, err := keeper.CoinKeeper.AddCoins(ctx, address1, keep.NewUBandCoins(1000000))
+	require.Nil(t, err)
+
+	request := types.NewRequest(1, calldata,
+		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
+		2, 1581589790, 102, 1000000,
+	)
+	keeper.SetRequest(ctx, 1, request)
+	keeper.SetRawDataRequest(ctx, 1, 42, types.NewRawDataRequest(1, []byte("calldata1")))
+
+	ctx = ctx.WithBlockHeight(5)
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589800), 0))
+
+	keeper.AddReporter(ctx, validatorAddress1, reporterAddress2)
+	err = keeper.AddReporter(ctx, validatorAddress1, reporterAddress2)
+
+	require.NotNil(t, err)
+
+	msg := types.NewMsgReportData(1, []types.RawDataReportWithID{
+		types.NewRawDataReportWithID(42, 0, []byte("data1")),
+	}, validatorAddress1, reporterAddress2)
+
+	got := handleMsgReportData(ctx, keeper, msg)
+	require.True(t, got.IsOK(), "expected report to be ok, got %v", got)
+	list := keeper.GetPendingResolveList(ctx)
+	require.Equal(t, []types.RequestID{}, list)
+
+	keeper.RemoveReporter(ctx, validatorAddress1, reporterAddress2)
+	err = keeper.RemoveReporter(ctx, validatorAddress1, reporterAddress2)
+	require.NotNil(t, err)
+
+	msg = types.NewMsgReportData(1, []types.RawDataReportWithID{
+		types.NewRawDataReportWithID(42, 0, []byte("data2")),
+	}, validatorAddress1, reporterAddress2)
+
+	got = handleMsgReportData(ctx, keeper, msg)
+	require.False(t, got.IsOK(), "expected report to be ok, got %v", got)
+
+}
