@@ -1,18 +1,16 @@
 package byteexec
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
 
+	"github.com/levigross/grequests"
 	"github.com/mattn/go-shellwords"
 )
 
@@ -102,32 +100,22 @@ func RunOnDocker(executable []byte, sandboxMode bool, timeOut time.Duration, arg
 
 // RunOnAWSLambda runs the given executable on AMS Lambda platform.
 func RunOnAWSLambda(executable []byte, timeOut time.Duration, arg string, executeEndPoint string) ([]byte, error) {
-	requestBody, err := json.Marshal(map[string]string{
-		"executable": string(executable),
-		"calldata":   arg,
-	})
+	resp, err := grequests.Post(
+		executeEndPoint,
+		&grequests.RequestOptions{
+			Data: map[string]string{
+				"executable": string(executable),
+				"calldata":   arg,
+			},
+		},
+	)
 
-	request, err := http.NewRequest("POST", executeEndPoint, bytes.NewBuffer(requestBody))
 	if err != nil {
 		return nil, err
 	}
 
-	request.Header.Set("Content-Type", "application/json")
-
-	client := http.Client{
-		Timeout: timeOut,
-	}
-
-	resp, err := client.Do(request)
-	if err != nil {
-		return nil, err
-	}
-
-	defer resp.Body.Close()
-
-	respBody, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
+	if resp.Ok != true {
+		return nil, fmt.Errorf("Request did not return OK")
 	}
 
 	type result struct {
@@ -137,7 +125,7 @@ func RunOnAWSLambda(executable []byte, timeOut time.Duration, arg string, execut
 	}
 
 	r := result{}
-	err = json.Unmarshal(respBody, &r)
+	err = resp.JSON(&r)
 	if err != nil {
 		return nil, err
 	}
