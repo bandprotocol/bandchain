@@ -35,14 +35,16 @@ func (b *BandDB) BeginTransaction() {
 }
 
 func (b *BandDB) Commit() {
-	if err := b.tx.Commit().Error; err != nil {
+	err := b.tx.Commit().Error
+	if err != nil {
 		panic(err)
 	}
 	b.tx = nil
 }
 
 func (b *BandDB) RollBack() {
-	if err := b.tx.Rollback(); err != nil {
+	err := b.tx.Rollback()
+	if err != nil {
 		panic(err)
 	}
 	b.tx = nil
