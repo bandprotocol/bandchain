@@ -9,7 +9,6 @@ import (
 const (
 	// ModuleName is the name of the module
 	ModuleName = "zoracle"
-
 	// StoreKey to be used when creating the KVStore
 	StoreKey = ModuleName
 )
@@ -17,38 +16,29 @@ const (
 var (
 	// GlobalStoreKeyPrefix is a prefix for global primitive state variable
 	GlobalStoreKeyPrefix = []byte{0x00}
-
 	// RequestsCountStoreKey is a key that help getting to current requests count state variable
 	RequestsCountStoreKey = append(GlobalStoreKeyPrefix, []byte("RequestsCount")...)
-
 	// PendingResolveListStoreKey is a key that help getting pending request
 	PendingResolveListStoreKey = append(GlobalStoreKeyPrefix, []byte("PendingList")...)
-
 	// DataSourceCountStoreKey is a key that keeps the current data source count state variable.
 	DataSourceCountStoreKey = append(GlobalStoreKeyPrefix, []byte("DataSourceCount")...)
-
 	// OracleScriptCountStoreKey is a key that keeps the current oracle script count state variable.
 	OracleScriptCountStoreKey = append(GlobalStoreKeyPrefix, []byte("OracleScriptCount")...)
-
 	// ========================================================================
-
 	// RequestStoreKeyPrefix is a prefix for request store
 	RequestStoreKeyPrefix = []byte{0x01}
-
 	// ResultStoreKeyPrefix is a prefix for storing result
 	ResultStoreKeyPrefix = []byte{0xff}
-
 	// RawDataRequestStoreKeyPrefix is a prefix for storing raw data request detail.
 	RawDataRequestStoreKeyPrefix = []byte{0x02}
-
 	// RawDataReportStoreKeyPrefix is a prefix for report store
 	RawDataReportStoreKeyPrefix = []byte{0x03}
-
 	// DataSourceStoreKeyPrefix is a prefix for data source store.
 	DataSourceStoreKeyPrefix = []byte{0x04}
-
 	// OracleScriptStoreKeyPrefix is a prefix for oracle script store.
 	OracleScriptStoreKeyPrefix = []byte{0x05}
+	// ReporterStoreKeyPrefix is a prefix for reporter store.
+	ReporterStoreKeyPrefix = []byte{0x06}
 )
 
 // RequestStoreKey is a function to generate key for each request in store
@@ -109,4 +99,10 @@ func GetValidatorAddressAndExternalID(
 	externalIDBytes := key[prefixLength+8 : prefixLength+16]
 	externalID := ExternalID(binary.BigEndian.Uint64(externalIDBytes))
 	return key[prefixLength+16:], externalID
+}
+
+func ReporterStoreKey(validatorAddress sdk.ValAddress, reporterAddress sdk.AccAddress) []byte {
+	buff := append(ReporterStoreKeyPrefix, []byte(validatorAddress)...)
+	buff = append(buff, []byte(reporterAddress)...)
+	return buff
 }
