@@ -490,8 +490,29 @@ func TestMsgSetOracleAddress(t *testing.T) {
 	require.Equal(t, validator, msg.Validator)
 	require.Equal(t, reporter, msg.Reporter)
 
-	err := msg.ValidateBasic()
-	require.Nil(t, err)
+	cases := []struct {
+		valid bool
+		tx    MsgAddOracleAddress
+	}{
+		{
+			true, NewMsgAddOracleAddress(validator, reporter),
+		},
+		{
+			false, NewMsgAddOracleAddress(nil, reporter),
+		},
+		{
+			false, NewMsgAddOracleAddress(validator, nil),
+		},
+	}
+
+	for _, tc := range cases {
+		err := tc.tx.ValidateBasic()
+		if tc.valid {
+			require.Nil(t, err)
+		} else {
+			require.NotNil(t, err)
+		}
+	}
 
 	res := msg.GetSignBytes()
 	expected := `{"reporter":"band1wfjhqmmjw3jhyy3as6w","validator":"bandvaloper1weskc6tyv96x7usd82k92"}`
@@ -509,8 +530,29 @@ func TestMsgUnsetOracleAddress(t *testing.T) {
 	require.Equal(t, validator, msg.Validator)
 	require.Equal(t, reporter, msg.Reporter)
 
-	err := msg.ValidateBasic()
-	require.Nil(t, err)
+	cases := []struct {
+		valid bool
+		tx    MsgRemoveOracleAdderess
+	}{
+		{
+			true, NewMsgRemoveOracleAdderess(validator, reporter),
+		},
+		{
+			false, NewMsgRemoveOracleAdderess(nil, reporter),
+		},
+		{
+			false, NewMsgRemoveOracleAdderess(validator, nil),
+		},
+	}
+
+	for _, tc := range cases {
+		err := tc.tx.ValidateBasic()
+		if tc.valid {
+			require.Nil(t, err)
+		} else {
+			require.NotNil(t, err)
+		}
+	}
 
 	res := msg.GetSignBytes()
 	expected := `{"reporter":"band1wfjhqmmjw3jhyy3as6w","validator":"bandvaloper1weskc6tyv96x7usd82k92"}`
