@@ -26,14 +26,19 @@ func NewDBBandApp(
 }
 
 func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
+	app.dbBand.OpenTransaction()
+
 	app.dbBand.SaveChainID(req.GetChainId())
+	app.dbBand.SetBlockHeight(0)
+
+	app.dbBand.Commit()
 
 	return app.bandApp.InitChain(req)
 }
 
 func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliverTx) {
 	response := app.bandApp.DeliverTx(req)
-	if response.IsOK() {
+	if response.IsOK() && app.dbBand.GetBlockHeight()+1 == app.DeliverContext.BlockHeight() {
 		for _, event := range response.Events {
 			kvMap := make(map[string]string)
 			for _, kv := range event.Attributes {
@@ -56,7 +61,7 @@ func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) abci.ResponseBeginB
 func (app *dbBandApp) EndBlock(req abci.RequestEndBlock) abci.ResponseEndBlock {
 	res := app.bandApp.EndBlock(req)
 	// Do other logic
-
+	app.dbBand.SetBlockHeight(req.GetHeight())
 	app.dbBand.Commit()
 	return res
 }
