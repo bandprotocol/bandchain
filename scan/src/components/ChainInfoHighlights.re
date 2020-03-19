@@ -133,7 +133,7 @@ let make = () =>
           extraComponent={
                            let marketcap = info.financial.circulatingSupply;
                            <div className=Styles.vFlex>
-                             <Text value={marketcap->Format.fPretty} code=true />
+                             <Text value={marketcap->Format.fPretty} code=true weight=Text.Thin />
                              <HSpacing size=Spacing.xs />
                              <Text
                                value="BAND"
