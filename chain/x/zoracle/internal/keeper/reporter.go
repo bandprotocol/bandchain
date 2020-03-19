@@ -14,8 +14,8 @@ func (k Keeper) AddReporter(
 	ctx sdk.Context, validatorAddress sdk.ValAddress, reporterAddress sdk.AccAddress,
 ) sdk.Error {
 	if k.CheckReporter(ctx, validatorAddress, reporterAddress) {
-		return types.ErrInvalidState(
-			"AddReporter:  (%s) is already a reporter of (%s).",
+		return types.ErrDuplicateItem(
+			"AddReporter: (%s) is already a reporter of (%s).",
 			reporterAddress.String(),
 			validatorAddress.String(),
 		)
