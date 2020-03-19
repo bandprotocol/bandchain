@@ -33,6 +33,5 @@ let get = () => {
   let%Opt usd = usdJson;
   let%Opt btc = btcJson;
   let%Opt band = bandJson;
-  Js.Console.log(Some(Price.decode(usd, btc, band)));
   Some(Price.decode(usd, btc, band));
 };
