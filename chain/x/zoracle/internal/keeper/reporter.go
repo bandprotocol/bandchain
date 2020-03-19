@@ -32,9 +32,9 @@ func (k Keeper) RemoveReporter(
 ) sdk.Error {
 	if !k.CheckReporter(ctx, validatorAddress, reporterAddress) {
 		return types.ErrItemNotFound(
-			"RemoveReporter: Item not found. %s (reporter addresss) is not a reporter of %s (validator address).",
-			validatorAddress.String(),
+			"RemoveReporter: Item not found. %s is not a reporter of %s.",
 			reporterAddress.String(),
+			validatorAddress.String(),
 		)
 	}
 
