@@ -7,7 +7,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.37.7
 	github.com/ethereum/go-ethereum v1.9.12
 	github.com/gin-gonic/gin v1.5.0
-	github.com/gorilla/mux v1.7.0
+	github.com/gorilla/mux v1.7.4
 	github.com/jinzhu/gorm v1.9.12
 	github.com/levigross/grequests v0.0.0-20190908174114-253788527a1a
 	github.com/mattn/go-shellwords v1.0.10
