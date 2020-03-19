@@ -11,24 +11,20 @@ module Styles = {
       marginLeft(Spacing.xl),
       marginRight(Spacing.xl),
     ]);
-  let addressContainer = style([display(`flex), maxWidth(`px(320))]);
+
   let hashContainer = style([maxWidth(`px(220))]);
   let feeContainer = style([display(`flex), justifyContent(`flexEnd)]);
   let timeContainer = style([display(`flex), alignItems(`center), maxWidth(`px(150))]);
   let textContainer = style([display(`flex)]);
   let countContainer = style([maxWidth(`px(80))]);
   let proposerBox = style([maxWidth(`px(270)), display(`flex), flexDirection(`column)]);
-  let dataSourceContainer = style([display(`flex)]);
+  let idContainer = style([display(`flex)]);
+  let dataSourcesContainer = style([display(`flex)]);
 };
 
 let renderText = (text, weight) =>
   <div className={Styles.typeContainer(`px(150))}>
     <Text value=text size=Text.Lg weight block=true ellipsis=true />
-  </div>;
-
-let renderSource = text =>
-  <div className={Styles.typeContainer(`px(150))}>
-    <Text value=text size=Text.Lg align=Text.Right block=true ellipsis=true />
   </div>;
 
 let renderTxTypeWithDetail = (msgs: list(TxHook.Msg.t)) => {
@@ -88,7 +84,7 @@ let renderHashWithLink = hash => {
 };
 
 let renderAddress = address => {
-  <div className=Styles.addressContainer> <AddressRender address /> </div>;
+  <AddressRender address />;
 };
 
 let renderFee = fee => {
@@ -138,11 +134,37 @@ let renderProposer = (moniker, proposer) => {
 };
 
 let renderDataSource = (id, name) => {
-  <div className=Styles.dataSourceContainer>
+  <div className=Styles.idContainer>
     <TypeID.DataSource id position=TypeID.Text />
     <HSpacing size=Spacing.xs />
     <Text value=name block=true height={Text.Px(16)} spacing={Text.Em(0.02)} />
   </div>;
+};
+
+let renderOracleScript = (id, name) => {
+  <div className=Styles.idContainer>
+    <TypeID.OracleScript id position=TypeID.Text />
+    <HSpacing size=Spacing.xs />
+    <Text value=name block=true height={Text.Px(16)} spacing={Text.Em(0.02)} />
+  </div>;
+};
+
+let renderRelatedDataSources = ids => {
+  switch (ids |> Belt_List.length) {
+  | 0 => <Text value="Undetermined" size=Text.Md spacing={Text.Em(0.02)} />
+  | _ =>
+    <div className=Styles.dataSourcesContainer>
+      {ids
+       ->Belt_List.map(id => {
+           <div className=Styles.idContainer key={id |> ID.DataSource.toString}>
+             <TypeID.DataSource id position=TypeID.Text />
+             <HSpacing size=Spacing.sm />
+           </div>
+         })
+       ->Array.of_list
+       ->React.array}
+    </div>
+  };
 };
 
 let msgIcon =
@@ -171,10 +193,11 @@ type t =
   | Hash(Hash.t)
   | HashWithLink(Hash.t)
   | Address(Address.t)
-  | Source(string)
   | Value(Js.Json.t)
   | Proposer(string, string)
-  | DataSource(ID.DataSource.t, string);
+  | DataSource(ID.DataSource.t, string)
+  | OracleScript(ID.OracleScript.t, string)
+  | RelatedDataSources(list(ID.DataSource.t));
 
 [@react.component]
 let make = (~elementType) => {
@@ -193,9 +216,10 @@ let make = (~elementType) => {
   | Hash(hash) => renderHash(hash)
   | HashWithLink(hash) => renderHashWithLink(hash)
   | Address(address) => renderAddress(address)
-  | Source(source) => renderSource(source)
   | Value(value) => renderText(value->Js.Json.stringify, Text.Regular)
   | Proposer(moniker, proposer) => renderProposer(moniker, proposer)
   | DataSource(id, name) => renderDataSource(id, name)
+  | OracleScript(id, name) => renderOracleScript(id, name)
+  | RelatedDataSources(ids) => renderRelatedDataSources(ids)
   };
 };

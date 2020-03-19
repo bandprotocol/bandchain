@@ -125,3 +125,37 @@ let toString =
   | NotFound => "/";
 
 let redirect = (route: t) => ReasonReactRouter.push(route |> toString);
+
+let search = (str: string) => {
+  let len = str |> String.length;
+  let capStr = str |> String.capitalize_ascii;
+
+  (
+    switch (str |> int_of_string_opt) {
+    | Some(blockID) => Some(BlockIndexPage(blockID))
+    | None =>
+      if (str |> Js.String.startsWith("bandvaloper")) {
+        Some(ValidatorIndexPage(str |> Address.fromBech32, ProposedBlocks));
+      } else if (str |> Js.String.startsWith("band")) {
+        Some(AccountIndexPage(str |> Address.fromBech32, AccountTransactions));
+      } else if (capStr |> Js.String.startsWith("B")) {
+        let%Opt blockID = str |> String.sub(_, 1, len - 1) |> int_of_string_opt;
+        Some(BlockIndexPage(blockID));
+      } else if (capStr |> Js.String.startsWith("D")) {
+        let%Opt dataSourceID = str |> String.sub(_, 1, len - 1) |> int_of_string_opt;
+        Some(DataSourceIndexPage(dataSourceID, DataSourceExecute));
+      } else if (capStr |> Js.String.startsWith("R")) {
+        let%Opt requestID = str |> String.sub(_, 1, len - 1) |> int_of_string_opt;
+        Some(RequestIndexPage(requestID, RequestReportStatus));
+      } else if (capStr |> Js.String.startsWith("O")) {
+        let%Opt oracleScriptID = str |> String.sub(_, 1, len - 1) |> int_of_string_opt;
+        Some(OracleScriptIndexPage(oracleScriptID, OracleScriptExecute));
+      } else if (len == 64 || str |> Js.String.startsWith("0x") && len == 66) {
+        Some(TxIndexPage(str |> Hash.fromHex));
+      } else {
+        None;
+      }
+    }
+  )
+  |> Belt_Option.getWithDefault(_, NotFound);
+};

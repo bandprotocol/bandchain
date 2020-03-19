@@ -5,7 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 
-	"github.com/bandprotocol/d3n/chain/x/zoracle"
+	"github.com/bandprotocol/bandchain/chain/x/zoracle"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

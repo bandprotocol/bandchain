@@ -1,13 +1,14 @@
-module github.com/bandprotocol/d3n/chain
+module github.com/bandprotocol/bandchain/chain
 
 go 1.13
 
 require (
 	github.com/btcsuite/btcd v0.0.0-20190213025234-306aecffea32 // indirect
 	github.com/cosmos/cosmos-sdk v0.37.7
-	github.com/ethereum/go-ethereum v1.9.7
+	github.com/ethereum/go-ethereum v1.9.12
 	github.com/gin-gonic/gin v1.5.0
 	github.com/gorilla/mux v1.7.0
+	github.com/jinzhu/gorm v1.9.12
 	github.com/levigross/grequests v0.0.0-20190908174114-253788527a1a
 	github.com/mattn/go-shellwords v1.0.10
 	github.com/perlin-network/life v0.0.0-20191203030451-05c0e0f7eaea
@@ -19,6 +20,4 @@ require (
 	github.com/tendermint/iavl v0.12.4
 	github.com/tendermint/tendermint v0.32.9
 	github.com/tendermint/tm-db v0.2.0
-	golang.org/x/crypto v0.0.0-20191122220453-ac88ee75c92c // indirect
-	golang.org/x/net v0.0.0-20191124235446-72fef5d5e266 // indirect
 )

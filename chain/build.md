@@ -19,8 +19,8 @@ Now, you can install and run the application.
 
 ```
 # Clone the source of the tutorial repository
-git clone git@github.com:bandprotocol/d3n.git
-cd d3n/chain/
+git clone git@github.com:bandprotocol/bandchain.git
+cd bandchain/chain/
 ```
 
 ```bash

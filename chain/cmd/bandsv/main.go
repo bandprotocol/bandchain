@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bandprotocol/d3n/chain/app"
-	"github.com/bandprotocol/d3n/chain/bandlib"
+	"github.com/bandprotocol/bandchain/chain/app"
+	"github.com/bandprotocol/bandchain/chain/bandlib"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/gin-gonic/gin"
 	"github.com/levigross/grequests"
@@ -19,8 +19,8 @@ import (
 	cmn "github.com/tendermint/tendermint/libs/common"
 	rpc "github.com/tendermint/tendermint/rpc/client"
 
-	"github.com/bandprotocol/d3n/chain/byteexec"
-	"github.com/bandprotocol/d3n/chain/x/zoracle"
+	"github.com/bandprotocol/bandchain/chain/byteexec"
+	"github.com/bandprotocol/bandchain/chain/x/zoracle"
 )
 
 const (
@@ -68,10 +68,11 @@ func getEnv(key, def string) string {
 }
 
 var (
-	port     = getEnv("PORT", "5001")
-	nodeURI  = getEnv("NODE_URI", "http://localhost:26657")
-	queryURI = getEnv("QUERY_URI", "http://localhost:1317")
-	priv     = getEnv("PRIVATE_KEY", "eedda7a96ad35758f2ffc404d6ccd7be913f149a530c70e95e2e3ee7a952a877")
+	port        = getEnv("PORT", "5001")
+	nodeURI     = getEnv("NODE_URI", "http://localhost:26657")
+	queryURI    = getEnv("QUERY_URI", "http://localhost:1317")
+	priv        = getEnv("PRIVATE_KEY", "eedda7a96ad35758f2ffc404d6ccd7be913f149a530c70e95e2e3ee7a952a877")
+	sandboxMode = os.Getenv("SANDBOX_MODE") != ""
 )
 
 var rpcClient *rpc.HTTP
@@ -185,7 +186,7 @@ func handleRequestData(c *gin.Context) {
 	}
 
 	for i := 0; i < 10; i++ {
-		resp, err := grequests.Get(fmt.Sprintf(`%s/d3n/proof/%d`, queryURI, requestID), nil)
+		resp, err := grequests.Get(fmt.Sprintf(`%s/bandchain/proof/%d`, queryURI, requestID), nil)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -225,7 +226,7 @@ func handleExecute(c *gin.Context) {
 		return
 	}
 
-	result, err := byteexec.RunOnDocker(req.Executable, 1*time.Minute, req.Calldata)
+	result, err := byteexec.RunOnDocker(req.Executable, sandboxMode, 1*time.Minute, req.Calldata)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -258,7 +259,7 @@ func handleQueryTx(c *gin.Context) {
 
 func handleQueryProof(c *gin.Context) {
 	requestID := c.Param("requestID")
-	relayResponse(c, fmt.Sprintf(`%s/d3n/proof/%s`, queryURI, requestID), nil)
+	relayResponse(c, fmt.Sprintf(`%s/bandchain/proof/%s`, queryURI, requestID), nil)
 }
 
 func main() {

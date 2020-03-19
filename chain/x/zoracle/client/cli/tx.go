@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
+	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -149,11 +149,11 @@ func GetCmdReport(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "report [request-id] ([data]...)",
 		Short: "Report raw data for the given request ID",
-		Args:  cobra.MinimumNArgs(3),
+		Args:  cobra.MinimumNArgs(2),
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Report raw data for an unresolved request. All raw data requests must be reported at once.
 Example:
-$ %s tx zoracle report 1 5.0uband 1:172.5 2:HELLOWORLD --from mykey
+$ %s tx zoracle report 1 1:172.5 2:HELLOWORLD --from mykey
 `,
 				version.ClientName,
 			),
@@ -169,13 +169,12 @@ $ %s tx zoracle report 1 5.0uband 1:172.5 2:HELLOWORLD --from mykey
 			}
 			requestID := types.RequestID(int64RequestID)
 
-			refundGasPrice, err := sdk.ParseDecCoins(args[1])
 			if err != nil {
 				return err
 			}
 
 			var dataset []types.RawDataReportWithID
-			for _, arg := range args[2:] {
+			for _, arg := range args[1:] {
 				reportRaw := strings.SplitN(arg, ":", 2)
 				if len(reportRaw) != 2 {
 					return fmt.Errorf("Invalid report format: %s", reportRaw[0])
@@ -195,7 +194,7 @@ $ %s tx zoracle report 1 5.0uband 1:172.5 2:HELLOWORLD --from mykey
 				return dataset[i].ExternalDataID < dataset[j].ExternalDataID
 			})
 
-			msg := types.NewMsgReportData(requestID, refundGasPrice, dataset, sdk.ValAddress(cliCtx.GetFromAddress()))
+			msg := types.NewMsgReportData(requestID, dataset, sdk.ValAddress(cliCtx.GetFromAddress()))
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
