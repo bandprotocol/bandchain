@@ -9,10 +9,6 @@ type Metadata struct {
 	Value string
 }
 
-func (Metadata) TableName() string {
-	return "metatdata"
-}
-
 type Event struct {
 	gorm.Model
 	Name string

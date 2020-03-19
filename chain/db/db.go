@@ -41,9 +41,9 @@ func (b *BandDB) ValidateChainID(chainID string) error {
 	return nil
 }
 
-func (b *BandDB) OpenTransaction() {
+func (b *BandDB) BeginTransaction() {
 	if b.tx != nil {
-		panic("There is an transaction that left open")
+		panic("BeginTransaction: Cannot begin a new transaction without closing the pending one.")
 	}
 	b.tx = b.db.Begin()
 }

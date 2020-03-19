@@ -26,7 +26,7 @@ func NewDBBandApp(
 }
 
 func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
-	app.dbBand.OpenTransaction()
+	app.dbBand.BeginTransaction()
 
 	app.dbBand.SaveChainID(req.GetChainId())
 	app.dbBand.SetBlockHeight(0)
@@ -53,7 +53,7 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	res := app.bandApp.BeginBlock(req)
 	// Open transaction
-	app.dbBand.OpenTransaction()
+	app.dbBand.BeginTransaction()
 	if err := app.dbBand.ValidateChainID(app.DeliverContext.ChainID()); err != nil {
 		panic(err)
 	}
