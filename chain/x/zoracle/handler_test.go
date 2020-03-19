@@ -372,8 +372,6 @@ func TestReportSuccess(t *testing.T) {
 	_, err := keeper.CoinKeeper.AddCoins(ctx, address1, keep.NewUBandCoins(1000000))
 	require.Nil(t, err)
 
-	keeper.SupplyKeeper.SendCoinsFromAccountToModule(ctx, address1, "fee_collector", keep.NewUBandCoins(500000))
-
 	request := types.NewRequest(1, calldata,
 		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
 		2, 1581589790, 102, 1000000,
@@ -425,8 +423,6 @@ func TestReportFailed(t *testing.T) {
 	address1 := keep.GetAddressFromPub(pubStr[0])
 	_, err := keeper.CoinKeeper.AddCoins(ctx, address1, keep.NewUBandCoins(1000000))
 	require.Nil(t, err)
-
-	keeper.SupplyKeeper.SendCoinsFromAccountToModule(ctx, address1, "fee_collector", keep.NewUBandCoins(500000))
 
 	dataSource := keep.GetTestDataSource()
 	keeper.SetDataSource(ctx, 1, dataSource)
