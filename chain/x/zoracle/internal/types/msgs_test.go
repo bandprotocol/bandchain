@@ -475,3 +475,104 @@ func TestMsgEditOracleScriptGetSignBytes(t *testing.T) {
 
 	require.Equal(t, expected, string(res))
 }
+
+func TestMsgAddOracleAddress(t *testing.T) {
+	validator := sdk.ValAddress([]byte("validator"))
+	reporter := sdk.AccAddress([]byte("reporter"))
+	msg := NewMsgAddOracleAddress(validator, reporter)
+	require.Equal(t, RouterKey, msg.Route())
+	require.Equal(t, "add_oracle_address", msg.Type())
+	require.Equal(t, validator, msg.Validator)
+	require.Equal(t, reporter, msg.Reporter)
+}
+
+func TestMsgAddOracleAddressValidation(t *testing.T) {
+	validator := sdk.ValAddress([]byte("validator"))
+	reporter := sdk.AccAddress([]byte("reporter"))
+
+	cases := []struct {
+		valid bool
+		tx    MsgAddOracleAddress
+	}{
+		{
+			true, NewMsgAddOracleAddress(validator, reporter),
+		},
+		{
+			false, NewMsgAddOracleAddress(nil, reporter),
+		},
+		{
+			false, NewMsgAddOracleAddress(validator, nil),
+		},
+	}
+
+	for _, tc := range cases {
+		err := tc.tx.ValidateBasic()
+		if tc.valid {
+			require.Nil(t, err)
+		} else {
+			require.NotNil(t, err)
+		}
+	}
+}
+func TestMsgAddOracleAddressGetSignBytes(t *testing.T) {
+	validator := sdk.ValAddress([]byte("validator"))
+	reporter := sdk.AccAddress([]byte("reporter"))
+	msg := NewMsgAddOracleAddress(validator, reporter)
+	res := msg.GetSignBytes()
+
+	expected := `{"reporter":"band1wfjhqmmjw3jhyy3as6w","validator":"bandvaloper1weskc6tyv96x7usd82k92"}`
+
+	require.Equal(t, expected, string(res))
+
+}
+
+func TestMsgRemoveOracleAddress(t *testing.T) {
+	validator := sdk.ValAddress([]byte("validator"))
+	reporter := sdk.AccAddress([]byte("reporter"))
+	msg := NewMsgRemoveOracleAdderess(validator, reporter)
+	require.Equal(t, RouterKey, msg.Route())
+	require.Equal(t, "remove_oracle_address", msg.Type())
+	require.Equal(t, validator, msg.Validator)
+	require.Equal(t, reporter, msg.Reporter)
+}
+
+func TestMsgRemoveOracleAddressValidation(t *testing.T) {
+	validator := sdk.ValAddress([]byte("validator"))
+	reporter := sdk.AccAddress([]byte("reporter"))
+
+	cases := []struct {
+		valid bool
+		tx    MsgRemoveOracleAdderess
+	}{
+		{
+			true, NewMsgRemoveOracleAdderess(validator, reporter),
+		},
+		{
+			false, NewMsgRemoveOracleAdderess(nil, reporter),
+		},
+		{
+			false, NewMsgRemoveOracleAdderess(validator, nil),
+		},
+	}
+
+	for _, tc := range cases {
+		err := tc.tx.ValidateBasic()
+		if tc.valid {
+			require.Nil(t, err)
+		} else {
+			require.NotNil(t, err)
+		}
+	}
+}
+
+func TestMsgRemoveOracleAddressGetSignBytes(t *testing.T) {
+	validator := sdk.ValAddress([]byte("validator"))
+	reporter := sdk.AccAddress([]byte("reporter"))
+	msg := NewMsgRemoveOracleAdderess(validator, reporter)
+	res := msg.GetSignBytes()
+
+	expected := `{"reporter":"band1wfjhqmmjw3jhyy3as6w","validator":"bandvaloper1weskc6tyv96x7usd82k92"}`
+
+	require.Equal(t, expected, string(res))
+
+}

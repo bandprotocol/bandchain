@@ -4,7 +4,7 @@ import (
 	"encoding/hex"
 	"testing"
 
-	"github.com/bandprotocol/d3n/chain/x/zoracle"
+	"github.com/bandprotocol/bandchain/chain/x/zoracle"
 	"github.com/stretchr/testify/require"
 )
 

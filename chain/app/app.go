@@ -28,8 +28,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/supply"
 
-	bandsupply "github.com/bandprotocol/d3n/chain/x/supply"
-	"github.com/bandprotocol/d3n/chain/x/zoracle"
+	bandsupply "github.com/bandprotocol/bandchain/chain/x/supply"
+	"github.com/bandprotocol/bandchain/chain/x/zoracle"
 )
 
 const (
@@ -270,7 +270,6 @@ func NewBandApp(
 		keys[zoracle.StoreKey],
 		app.BankKeeper,
 		app.StakingKeeper,
-		app.SupplyKeeper,
 		zoracleSubspace,
 	)
 
@@ -353,8 +352,12 @@ func (app *bandApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) ab
 }
 
 func (app *bandApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
-	app.DeliverContext = sdk.Context{}
 	return app.mm.EndBlock(ctx, req)
+}
+
+func (app *bandApp) Commit() (res abci.ResponseCommit) {
+	app.DeliverContext = sdk.Context{}
+	return app.BaseApp.Commit()
 }
 
 func (app *bandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliverTx) {
