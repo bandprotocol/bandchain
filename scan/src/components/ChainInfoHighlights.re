@@ -151,13 +151,17 @@ let make = () =>
           extraTopRight={<TimeAgos time={info.latestBlock.timestamp} />}
           valueComponent={
                            let latestBlock = info.latestBlock.height->Format.iPretty;
-                           <Text
-                             value=latestBlock
-                             size=Text.Xxxl
-                             weight=Text.Semibold
-                             color=Colors.gray8
-                             code=true
+                           <TypeID.Block
+                             id={ID.Block.ID(info.latestBlock.height)}
+                             position=TypeID.Landing
                            />;
+                           //  <Text
+                           //    value=latestBlock
+                           //    size=Text.Xxxl
+                           //    weight=Text.Semibold
+                           //    color=Colors.gray8
+                           //    code=true
+                           //  />;
                          }
           extraComponent={<Text value=moniker code=true />}
         />
