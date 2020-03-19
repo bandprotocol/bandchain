@@ -1,7 +1,7 @@
 package bandlib
 
 import (
-	"github.com/bandprotocol/d3n/chain/app"
+	"github.com/bandprotocol/bandchain/chain/app"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"

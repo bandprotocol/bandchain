@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
+	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
 	"github.com/stretchr/testify/require"
 	crypto "github.com/tendermint/tendermint/crypto"
 

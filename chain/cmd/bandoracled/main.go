@@ -15,9 +15,9 @@ import (
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/bandprotocol/d3n/chain/bandlib"
-	"github.com/bandprotocol/d3n/chain/byteexec"
-	"github.com/bandprotocol/d3n/chain/x/zoracle"
+	"github.com/bandprotocol/bandchain/chain/bandlib"
+	"github.com/bandprotocol/bandchain/chain/byteexec"
+	"github.com/bandprotocol/bandchain/chain/x/zoracle"
 )
 
 const (
