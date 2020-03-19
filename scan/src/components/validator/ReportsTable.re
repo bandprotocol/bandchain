@@ -25,9 +25,8 @@ module Styles = {
 
 [@react.component]
 let make = () => {
-  let (page, setPage) = React.useState(_ => 1);
-
   // TODO: Mock to use
+  let (page, setPage) = React.useState(_ => 1);
   let pageCount = 1;
 
   let reports = [
