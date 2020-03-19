@@ -64,7 +64,8 @@ func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseB
 	res = app.bandApp.BeginBlock(req)
 	// Begin transaction
 	app.dbBand.BeginTransaction()
-	if err := app.dbBand.ValidateChainID(app.DeliverContext.ChainID()); err != nil {
+	err := app.dbBand.ValidateChainID(app.DeliverContext.ChainID())
+	if err != nil {
 		panic(err)
 	}
 
@@ -73,7 +74,8 @@ func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseB
 
 func (app *dbBandApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBlock) {
 	res = app.bandApp.EndBlock(req)
-	if err := app.dbBand.SetLastProcessedHeight(req.GetHeight()); err != nil {
+	err := app.dbBand.SetLastProcessedHeight(req.GetHeight())
+	if err != nil {
 		panic(err)
 	}
 	// Do other logic

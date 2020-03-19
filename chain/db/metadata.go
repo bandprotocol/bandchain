@@ -19,7 +19,8 @@ func (b *BandDB) SaveChainID(chainID string) error {
 
 func (b *BandDB) ValidateChainID(chainID string) error {
 	var chainIDRow Metadata
-	if err := b.tx.Where(Metadata{Key: KeyChainID}).First(&chainIDRow).Error; err != nil {
+	err := b.tx.Where(Metadata{Key: KeyChainID}).First(&chainIDRow).Error
+	if err != nil {
 		return err
 	}
 	if chainIDRow.Value != chainID {
@@ -36,8 +37,9 @@ func (b *BandDB) SetLastProcessedHeight(height int64) error {
 
 func (b *BandDB) GetLastProcessedHeight() (int64, error) {
 	var heightRow Metadata
-	if err := b.tx.Where(Metadata{Key: KeyLastProcessedHeight}).
-		First(&heightRow).Error; err != nil {
+	err := b.tx.Where(Metadata{Key: KeyLastProcessedHeight}).
+		First(&heightRow).Error
+	if err != nil {
 		return 0, err
 	}
 
