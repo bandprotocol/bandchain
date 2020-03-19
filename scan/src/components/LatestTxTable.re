@@ -1,16 +1,12 @@
 module Styles = {
   open Css;
 
-  let seeMoreContainer =
+  let topicBar =
     style([
       width(`percent(100.)),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
-      backgroundColor(white),
       display(`flex),
-      justifyContent(`center),
-      alignItems(`center),
-      height(`px(30)),
-      cursor(`pointer),
+      flexDirection(`row),
+      justifyContent(`spaceBetween),
     ]);
 };
 
@@ -20,6 +16,10 @@ let make = () => {
   let txs = txsOpt->Belt.Option.mapWithDefault([], ({txs}) => txs);
 
   <>
+    <div className=Styles.topicBar>
+      <Text value="Latest Transactions" size=Text.Xxl weight=Text.Bold block=true />
+    </div>
+    <VSpacing size=Spacing.lg />
     <THead>
       <Row>
         <Col> <div className=TElement.Styles.msgIcon /> </Col>
@@ -55,8 +55,5 @@ let make = () => {
        })
      ->Array.of_list
      ->React.array}
-    <div className=Styles.seeMoreContainer onClick={_ => Route.redirect(TxHomePage)}>
-      <Text value="SEE MORE" size=Text.Sm weight=Text.Bold block=true color=Colors.gray5 />
-    </div>
   </>;
 };
