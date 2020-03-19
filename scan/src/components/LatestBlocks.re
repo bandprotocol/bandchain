@@ -32,7 +32,6 @@ module Styles = {
   let cFlex = style([display(`flex), flexDirection(`column)]);
   let amount =
     style([fontSize(`px(20)), lineHeight(`px(24)), color(Colors.gray8), fontWeight(`bold)]);
-
   let rightArrow = style([width(`px(25)), marginTop(`px(17)), marginLeft(`px(16))]);
 };
 
@@ -86,12 +85,12 @@ let make = () =>
             <span className=Styles.amount>
               {latestHeightOpt |> Format.iPretty |> React.string}
             </span>
-            <VSpacing size=Spacing.sm />
+            <VSpacing size=Spacing.xs />
             <Text
               value="ALL BLOCKS"
               size=Text.Sm
               color=Colors.bandBlue
-              spacing={Text.Em(0.03)}
+              spacing={Text.Em(0.05)}
               weight=Text.Medium
             />
           </div>
