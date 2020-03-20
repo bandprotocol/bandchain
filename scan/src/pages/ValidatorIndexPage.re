@@ -166,8 +166,8 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
       currentRoute={Route.ValidatorIndexPage(address, hashtag)}>
       {switch (hashtag) {
        | ProposedBlocks => <ProposedBlocksTable />
-       | Delegators => <div> <Text value="Delegators" /> </div>
-       | Reports => <div> <ReportsTable /> </div>
+       | Delegators => <DelegatorsTable />
+       | Reports => <ReportsTable />
        }}
     </Tab>
   </div>;
