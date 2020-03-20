@@ -74,8 +74,6 @@ let make = () =>
     let validators = info.validators;
     let bandBonded = validators->Belt_List.map(x => x.tokens)->Belt_List.reduce(0.0, (+.));
 
-    Js.Console.log(validators);
-
     Some(
       <Row justify=Row.Between>
         <HighlightCard
