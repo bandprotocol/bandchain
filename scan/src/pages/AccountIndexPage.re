@@ -131,9 +131,9 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
     Some(1. /. price.usdPrice);
   };
 
-  let avialableBalance = {
+  let totalBalanceOpt = {
     let%Opt account = accountOpt;
-    Some(account.balance -. account.balanceStake);
+    Some(account.balance +. account.balanceStake);
   };
 
   <div className=Styles.pageContainer>
@@ -161,12 +161,12 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
     <Row justify=Row.Between>
       <Col size=0.75> <img src=Images.pieChart className=Styles.graph /> </Col>
       <Col size=1.>
-        {switch (avialableBalance, usdPrice) {
-         | (Some(avBalance), Some(price)) =>
+        {switch (accountOpt, usdPrice) {
+         | (Some(account), Some(price)) =>
            balanceDetail(
              "AVAILABLE BALANCE",
-             avBalance |> Format.fPretty,
-             avBalance *. price |> Format.fPretty,
+             account.balance |> Format.fPretty,
+             account.balance *. price |> Format.fPretty,
              "5269FF",
            )
          | _ => balanceDetail("AVAILABLE BALANCE", "?", "?", "5269FF")
@@ -199,13 +199,13 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
       <div className=Styles.separatorLine />
       <Col size=1. alignSelf=Col.Start>
         <div className=Styles.totalContainer>
-          {switch (accountOpt, usdPrice) {
-           | (Some(account), Some(price)) =>
+          {switch (totalBalanceOpt, usdPrice) {
+           | (Some(totalBand), Some(price)) =>
              <>
-               {totalBalance("TOTAL BAND BALANCE", account.balance |> Format.fPretty, "BAND")}
+               {totalBalance("TOTAL BAND BALANCE", totalBand |> Format.fPretty, "BAND")}
                {totalBalance(
                   "TOTAL BAND IN USD ($" ++ (price |> Format.fPretty) ++ " / BAND)",
-                  account.balance *. price |> Format.fPretty,
+                  totalBand *. price |> Format.fPretty,
                   "USD",
                 )}
              </>
