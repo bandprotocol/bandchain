@@ -38,8 +38,9 @@ func (k Keeper) AddReport(
 
 	if !k.CheckReporter(ctx, validator, reporter) {
 		return types.ErrUnauthorizedPermission(
-			"AddReport: Reporter (%s) is unauthorized permission to be reporter.",
+			"AddReport: %s is not an authorized reporter of %s.",
 			reporter.String(),
+			validator.String(),
 		)
 	}
 
