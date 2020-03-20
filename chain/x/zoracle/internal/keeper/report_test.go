@@ -241,19 +241,22 @@ func TestAddReportReportSizeExceedMaxRawDataReportSize(t *testing.T) {
 
 }
 
-// func TestInvalidReport(t *testing.T) {
-// 	ctx, keeper := CreateTestInput(t, false)
+func TestInvalidReport(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
 
-// 	// Send report on invalid request.
-// 	err := keeper.AddReport(ctx, 1, []types.RawDataReportWithID{
-// 		types.NewRawDataReportWithID(2, 0, []byte("data1/1")),
-// 		types.NewRawDataReportWithID(10, 0, []byte("data1/1")),
-// 	}, sdk.ValAddress([]byte("validator1")), sdk.AccAddress([]byte("validator2")))
+	request := newDefaultRequest()
+	keeper.SetRequest(ctx, 1, request)
 
-// 	require.Equal(t, err.Code(), types.CodeUnauthorizedPermission)
-// }
+	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata1")))
+	keeper.SetRawDataRequest(ctx, 1, 10, types.NewRawDataRequest(2, []byte("calldata2")))
 
-// require.Equal(t, err.Code(), types.CodeUnauthorizedPermission)
+	err := keeper.AddReport(ctx, 1, []types.RawDataReportWithID{
+		types.NewRawDataReportWithID(2, 1, []byte("data1/1")),
+		types.NewRawDataReportWithID(10, 0, []byte("data2/1")),
+	}, sdk.ValAddress([]byte("validator1")), sdk.AccAddress([]byte("nonValidator")))
+
+	require.Equal(t, err.Code(), types.CodeUnauthorizedPermission)
+}
 
 // func TestGetReportsIterator(t *testing.T) {
 // 	ctx, keeper := CreateTestInput(t, false)
