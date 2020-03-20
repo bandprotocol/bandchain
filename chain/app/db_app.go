@@ -1,9 +1,14 @@
 package app
 
 import (
+	"encoding/hex"
 	"io"
+	"strings"
 
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	"github.com/cosmos/cosmos-sdk/x/genutil"
+	"github.com/cosmos/cosmos-sdk/x/staking"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
@@ -37,6 +42,40 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 		panic(err)
 	}
 
+	var genesisState GenesisState
+	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
+
+	// Staking genesis (Not used in our chain)
+	// var stakingState staking.GenesisState
+	// staking.ModuleCdc.MustUnmarshalJSON(genesisState["staking"], &stakingState)
+
+	// for _, val := range stakingState.Validators {
+	// 	err := app.dbBand.AddValidator(val.GetOperator().String(), val.GetConsAddr().String())
+	// 	if err != nil {
+	// 		panic(err)
+	// 	}
+	// }
+
+	// Genutil genesis
+	var genutilState genutil.GenesisState
+	genutil.ModuleCdc.MustUnmarshalJSON(genesisState["genutil"], &genutilState)
+
+	for _, genTx := range genutilState.GenTxs {
+		var tx authtypes.StdTx
+		genutil.ModuleCdc.MustUnmarshalJSON(genTx, &tx)
+		for _, msg := range tx.Msgs {
+			if createMsg, ok := msg.(staking.MsgCreateValidator); ok {
+				err := app.dbBand.AddValidator(
+					createMsg.ValidatorAddress.String(),
+					createMsg.PubKey.Address().String(),
+				)
+				if err != nil {
+					panic(err)
+				}
+			}
+		}
+	}
+
 	app.dbBand.Commit()
 
 	return app.bandApp.InitChain(req)
@@ -65,6 +104,20 @@ func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseB
 	// Begin transaction
 	app.dbBand.BeginTransaction()
 	err := app.dbBand.ValidateChainID(app.DeliverContext.ChainID())
+	if err != nil {
+		panic(err)
+	}
+
+	for _, val := range req.GetLastCommitInfo().Votes {
+		consensusAddress := strings.ToUpper(hex.EncodeToString(val.GetValidator().Address))
+		app.dbBand.UpdateValidatorUpTime(
+			consensusAddress,
+			req.Header.GetHeight()-1,
+			val.GetSignedLastBlock(),
+		)
+	}
+
+	err = app.dbBand.ClearOldVotes(req.Header.GetHeight() - 1)
 	if err != nil {
 		panic(err)
 	}

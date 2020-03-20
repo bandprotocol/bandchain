@@ -19,7 +19,12 @@ func NewDB(dialect, path string) (*BandDB, error) {
 		return nil, err
 	}
 
-	db.AutoMigrate(&Metadata{}, &Event{})
+	db.AutoMigrate(
+		&Metadata{},
+		&Event{},
+		&ValidatorStatus{},
+		&ValidatorVote{},
+	)
 
 	return &BandDB{db: db}, nil
 }
