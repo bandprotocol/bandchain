@@ -13,7 +13,7 @@ type BandDB struct {
 	tx *gorm.DB
 }
 
-func NewDB(dialect, path string) (*BandDB, error) {
+func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 	db, err := gorm.Open(dialect, path)
 	if err != nil {
 		return nil, err
@@ -32,6 +32,15 @@ func NewDB(dialect, path string) (*BandDB, error) {
 		"RESTRICT",
 		"RESTRICT",
 	)
+
+	for key, value := range metadata {
+		err := db.Where(Metadata{Key: key}).
+			Assign(Metadata{Value: value}).
+			FirstOrCreate(&Metadata{}).Error
+		if err != nil {
+			panic(err)
+		}
+	}
 
 	return &BandDB{db: db}, nil
 }

@@ -1,9 +1,5 @@
 package db
 
-const (
-	UptimeLookBackDuration = 20
-)
-
 func (b *BandDB) AddValidator(
 	operatorAddress string,
 	consensusAddress string,
@@ -42,12 +38,17 @@ func (b *BandDB) UpdateValidatorUpTime(
 		validator.MissedCount++
 	}
 
+	uptimeLookBackDuration, err := b.GetUptimeLookBackDuration()
+	if err != nil {
+		return err
+	}
+
 	// Find old vote
-	if height > UptimeLookBackDuration {
+	if height > uptimeLookBackDuration {
 		var vote ValidatorVote
 		err = b.tx.Where(ValidatorVote{
 			ConsensusAddress: consensusAddress,
-			BlockHeight:      height - UptimeLookBackDuration,
+			BlockHeight:      height - uptimeLookBackDuration,
 		}).First(&vote).Error
 		if err == nil {
 			validator.ElectedCount--
@@ -64,11 +65,15 @@ func (b *BandDB) UpdateValidatorUpTime(
 }
 
 func (b *BandDB) ClearOldVotes(currentHeight int64) error {
-	if currentHeight > UptimeLookBackDuration {
+	uptimeLookBackDuration, err := b.GetUptimeLookBackDuration()
+	if err != nil {
+		return err
+	}
+	if currentHeight > uptimeLookBackDuration {
 		return b.tx.Delete(
 			ValidatorVote{},
 			"block_height <= ?",
-			currentHeight-UptimeLookBackDuration,
+			currentHeight-uptimeLookBackDuration,
 		).Error
 	}
 	return nil
