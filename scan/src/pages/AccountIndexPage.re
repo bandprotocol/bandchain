@@ -118,20 +118,19 @@ let totalBalance = (title, amount, symbol) => {
 
 [@react.component]
 let make = (~address, ~hashtag: Route.account_tab_t) => {
-  let balanceOpt = AccountHook.getBalance(address);
+  let accountOpt = AccountHook.get(address);
   let priceOpt = PriceHook.get();
-  let balanceStakeOpt = AccountHook.getBalanceStake(address);
-
   let delegations = AccountHook.getDelegations(address) |> Belt_Option.getWithDefault(_, []);
-  let rewardOpt = AccountHook.getReward(address);
+
   let usdPrice = {
     let%Opt price = priceOpt;
     Some(1. /. price.usdPrice);
   };
 
   let avialableBalance = {
-    let%Opt balanceStake = balanceStakeOpt;
-    let%Opt balance = balanceOpt;
+    let%Opt account = accountOpt;
+    let balanceStake = account.balanceStake;
+    let balance = account.balance;
     Some(balance -. balanceStake);
   };
 
@@ -172,24 +171,24 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
          }}
         <VSpacing size=Spacing.xl />
         <VSpacing size=Spacing.md />
-        {switch (balanceStakeOpt, usdPrice) {
-         | (Some(balanceStake), Some(price)) =>
+        {switch (accountOpt, usdPrice) {
+         | (Some(account), Some(price)) =>
            balanceDetail(
              "BALANCE AT STAKE",
-             balanceStake |> Format.fPretty,
-             balanceStake *. price |> Format.fPretty,
+             account.balanceStake |> Format.fPretty,
+             account.balanceStake *. price |> Format.fPretty,
              "ABB6FF",
            )
          | _ => balanceDetail("BALANCE AT STAKE", "?", "?", "ABB6FF")
          }}
         <VSpacing size=Spacing.xl />
         <VSpacing size=Spacing.md />
-        {switch (rewardOpt, usdPrice) {
-         | (Some(reward), Some(price)) =>
+        {switch (accountOpt, usdPrice) {
+         | (Some(account), Some(price)) =>
            balanceDetail(
              "REWARD",
-             reward |> Format.fPretty,
-             reward *. price |> Format.fPretty,
+             account.reward |> Format.fPretty,
+             account.reward *. price |> Format.fPretty,
              "000C5C",
            )
          | _ => balanceDetail("REWARD", "?", "?", "000C5C")
@@ -198,20 +197,20 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
       <div className=Styles.separatorLine />
       <Col size=1. alignSelf=Col.Start>
         <div className=Styles.totalContainer>
-          {switch (balanceOpt, usdPrice) {
-           | (Some(balance), Some(price)) =>
+          {switch (accountOpt, usdPrice) {
+           | (Some(account), Some(price)) =>
              <>
-               {totalBalance("TOTAL BAND BALANCE", balance |> Format.fPretty, "BAND")}
+               {totalBalance("TOTAL BAND BALANCE", account.balance |> Format.fPretty, "BAND")}
                {totalBalance(
-                  "TOTAL BAND IN USD ($3.42 / BAND)",
-                  balance *. price |> Format.fPretty,
+                  "TOTAL BAND IN USD ($" ++ (price |> Format.fPretty) ++ " / BAND)",
+                  account.balance *. price |> Format.fPretty,
                   "USD",
                 )}
              </>
            | _ =>
              <>
                {totalBalance("TOTAL BAND BALANCE", "?", "BAND")}
-               {totalBalance("TOTAL BAND IN USD ($3.42 / BAND)", "?", "USD")}
+               {totalBalance("TOTAL BAND IN USD ($?/ BAND)", "?", "USD")}
              </>
            }}
         </div>

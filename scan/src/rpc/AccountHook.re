@@ -1,4 +1,4 @@
-module Delegators = {
+module Account = {
   type delegator_t = {
     validatorAddress: string,
     balance: float,
@@ -9,11 +9,33 @@ module Delegators = {
     reward: float,
   };
 
-  type merge_t = {
+  type delelegation_t = {
     validatorAddress: string,
     balance: float,
     reward: float,
   };
+
+  type t = {
+    balance: float,
+    balanceStake: float,
+    reward: float,
+  };
+
+  let filterUband = coins =>
+    coins |> Belt_List.reduce(_, 0.0, (_, (x, y)) => +. (compare("uband", y) == 0 ? x : 0.));
+
+  let decodeCoin = json =>
+    JsonUtils.Decode.(json |> field("amount", uamount), json |> field("denom", string));
+
+  let decode = (balancesJson, balanceStakejson, rewardsJson) =>
+    JsonUtils.Decode.{
+      balance: balancesJson |> field("result", list(decodeCoin)) |> filterUband,
+      balanceStake:
+        balanceStakejson
+        |> field("result", list(json => json |> field("balance", uamount)))
+        |> Belt_List.reduce(_, 0.0, (+.)),
+      reward: rewardsJson |> at(["result", "total"], list(decodeCoin)) |> filterUband,
+    };
 
   let decodeDelegator = json =>
     JsonUtils.Decode.(
@@ -35,51 +57,18 @@ module Delegators = {
   let decodeRewards = json =>
     JsonUtils.Decode.(json |> at(["result", "rewards"], list(decodeReward)));
 };
-
-let decodeDelegation = (delegationJson, rewardJson) =>
-  JsonUtils.Decode.(
-    delegationJson |> field("validator", string),
-    rewardJson |> field("amount", uamount),
-  );
-
-let decodeDelegations = (delegationJsons, rewardJsons) =>
-  JsonUtils.Decode.(
-    delegationJsons |> field("result"),
-    rewardJsons |> at(["result", "rewards"]),
-  );
-
-let decodeBalances = json =>
-  JsonUtils.Decode.(json |> field("result", list(json => json |> field("amount", uamount))));
-
-let decodeBalanceStakes = json =>
-  JsonUtils.Decode.(json |> field("result", list(json => json |> field("balance", uamount))));
-
-let decodeReward = json =>
-  JsonUtils.Decode.(
-    json |> at(["result", "total"], list(json => json |> field("amount", uamount)))
-  );
-
-let getBalanceStake = address => {
+let get = address => {
   let addressStr = address |> Address.toBech32;
-  let json = AxiosHooks.use({j|staking/delegators/$addressStr/delegations|j});
 
-  let balances = json |> Belt.Option.map(_, decodeBalanceStakes);
-  switch (balances) {
-  | None => None
-  | Some(x) => Some(x |> Belt_List.reduce(_, 0.0, (+.)))
-  };
-};
+  let balancesJsonOpt = AxiosHooks.use({j|bank/balances/$addressStr|j});
+  let balanceStakeJsonOpt = AxiosHooks.use({j|staking/delegators/$addressStr/delegations|j});
+  let rewardsJsonOpt = AxiosHooks.use({j|distribution/delegators/$addressStr/rewards|j});
 
-let getBalance = address => {
-  let addressStr = address |> Address.toBech32;
-  let json = AxiosHooks.use({j|bank/balances/$addressStr|j});
+  let%Opt balancesJson = balancesJsonOpt;
+  let%Opt balanceStakeJson = balanceStakeJsonOpt;
+  let%Opt rewardsJson = rewardsJsonOpt;
 
-  let balances = json |> Belt.Option.map(_, decodeBalances);
-
-  switch (balances) {
-  | None => None
-  | Some(x) => Some(x |> Belt_List.reduce(_, 0.0, (+.)))
-  };
+  Some(Account.decode(balancesJson, balanceStakeJson, rewardsJson));
 };
 
 let getDelegations = address => {
@@ -88,8 +77,8 @@ let getDelegations = address => {
   let delegationsJson = AxiosHooks.use({j|staking/delegators/$addressStr/delegations|j});
   let rewardsJson = AxiosHooks.use({j|distribution/delegators/$addressStr/rewards|j});
 
-  let%Opt pairReward = rewardsJson |> Belt_Option.map(_, Delegators.decodeRewards);
-  let%Opt pairDelegation = delegationsJson |> Belt_Option.map(_, Delegators.decodeDelegators);
+  let%Opt pairReward = rewardsJson |> Belt_Option.map(_, Account.decodeRewards);
+  let%Opt pairDelegation = delegationsJson |> Belt_Option.map(_, Account.decodeDelegators);
 
   Some(
     {
@@ -103,13 +92,4 @@ let getDelegations = address => {
       };
     },
   );
-};
-
-let getReward = address => {
-  let addressStr = address |> Address.toBech32;
-  let json = AxiosHooks.use({j|distribution/delegators/$addressStr/rewards|j});
-
-  let%Opt rewards = json |> Belt.Option.map(_, decodeReward);
-
-  Some(rewards |> Belt_List.reduce(_, 0.0, (+.)));
 };
