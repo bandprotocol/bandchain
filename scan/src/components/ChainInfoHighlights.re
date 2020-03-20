@@ -74,7 +74,6 @@ let make = () =>
     let%Opt info = React.useContext(GlobalContext.context);
 
     let validators = info.validators;
-    // let latestBlock = info.latestBlock.getProposerMoniker;
     let moniker = BlockHook.Block.getProposerMoniker(info.latestBlock, validators);
     let bandBonded = validators->Belt_List.map(x => x.tokens)->Belt_List.reduce(0.0, (+.));
 
