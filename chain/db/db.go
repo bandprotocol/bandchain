@@ -1,7 +1,7 @@
 package db
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
@@ -71,7 +71,7 @@ func (b *BandDB) RollBack() {
 	b.tx = nil
 }
 
-func (b *BandDB) HandleEvent(eventName string, attributes map[string]string) {
+func (b *BandDB) HandleEvent(eventName string, attributes map[string]string) error {
 	switch eventName {
 	// Just proof of concept
 	case "message":
@@ -81,11 +81,12 @@ func (b *BandDB) HandleEvent(eventName string, attributes map[string]string) {
 			// message map[sender:band17xpfvakm2amg962yls6f84z3kell8c5lfkrzn4]
 			action, ok := attributes["action"]
 			if ok {
-				b.handleMessageEvent(action)
+				return b.handleMessageEvent(action)
 			}
+			return nil
 		}
 	default:
 		// TODO: Better logging
-		fmt.Println("There isn't event handler for this type")
+		return errors.New("HandleEvent: There isn't event handler for this type")
 	}
 }
