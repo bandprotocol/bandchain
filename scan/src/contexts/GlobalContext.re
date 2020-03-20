@@ -12,8 +12,7 @@ let make = (~children) => {
   let financialOpt = PriceHook.get();
   let latestBlocksOpt = BlockHook.latest();
   let validatorsOpt = ValidatorHook.getList();
-  let x = AccountHook.get("band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun" |> Address.fromBech32);
-  Js.Console.log(x);
+
   let data = {
     let%Opt financial = financialOpt;
     let%Opt latestBlocks = latestBlocksOpt;
