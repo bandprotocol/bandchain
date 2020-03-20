@@ -228,7 +228,6 @@ let make = () => {
               })
             ->Array.of_list
             ->React.array}
-           //  <Pagination currentPage="1" pageCount onPageChange={newPage => setPage(_ => newPage)} />
          </>
        : <div className=Styles.iconWrapper>
            <VSpacing size={`px(30)} />
