@@ -47,7 +47,7 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 
 	// Staking genesis (Not used in our chain)
 	// var stakingState staking.GenesisState
-	// staking.ModuleCdc.MustUnmarshalJSON(genesisState["staking"], &stakingState)
+	// staking.ModuleCdc.MustUnmarshalJSON(genesisState[staking.ModuleName], &stakingState)
 
 	// for _, val := range stakingState.Validators {
 	// 	err := app.dbBand.AddValidator(val.GetOperator().String(), val.GetConsAddr().String())
@@ -58,7 +58,7 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 
 	// Genutil genesis
 	var genutilState genutil.GenesisState
-	genutil.ModuleCdc.MustUnmarshalJSON(genesisState["genutil"], &genutilState)
+	genutil.ModuleCdc.MustUnmarshalJSON(genesisState[genutil.ModuleName], &genutilState)
 
 	for _, genTx := range genutilState.GenTxs {
 		var tx authtypes.StdTx
