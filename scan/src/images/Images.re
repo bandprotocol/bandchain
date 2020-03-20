@@ -37,3 +37,4 @@
 [@bs.module] external leftAngle: string = "./left-angle.svg";
 [@bs.module] external graphBG: string = "./graph-bg.svg";
 [@bs.module] external notFoundBg: string = "./notFoundBg.svg";
+[@bs.module] external txLogo: string = "./tx-icon.png";
