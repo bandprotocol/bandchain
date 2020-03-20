@@ -75,100 +75,127 @@ let kvRow = (k, v: value_row_t) => {
 };
 
 [@react.component]
-let make = (~address, ~hashtag: Route.validator_tab_t) => {
-  let isActive = true;
+let make = (~address, ~hashtag: Route.validator_tab_t) =>
+  {
+    let%Opt info = React.useContext(GlobalContext.context);
+    let%Opt validator =
+      info.validators
+      ->Belt_List.keep(({operatorAddress}) => operatorAddress->Address.isEqual(address))
+      ->Belt_List.get(0);
+    let marketcap = info.financial.circulatingSupply;
 
-  <div className=Styles.pageContainer>
-    <Row justify=Row.Between>
-      <Col>
+    Js.Console.log(validator);
+
+    Some(
+      <div className=Styles.pageContainer>
+        <Row justify=Row.Between>
+          <Col>
+            <div className=Styles.vFlex>
+              <img src=Images.validatorLogo className=Styles.logo />
+              <Text
+                value="VALIDATOR DETAILS"
+                weight=Text.Medium
+                size=Text.Md
+                spacing={Text.Em(0.06)}
+                height={Text.Px(15)}
+                nowrap=true
+                color=Colors.gray7
+                block=true
+              />
+              <div className=Styles.seperatedLine />
+              <Text
+                value={validator.isActive ? "ACTIVE" : "INACTIVE"}
+                size=Text.Md
+                weight=Text.Thin
+                spacing={Text.Em(0.06)}
+                color=Colors.gray7
+                nowrap=true
+              />
+              <HSpacing size=Spacing.md />
+              <img
+                src={
+                  validator.isActive ? Images.activeValidatorLogo : Images.inactiveValidatorLogo
+                }
+                className=Styles.logoSmall
+              />
+            </div>
+          </Col>
+        </Row>
+        <VSpacing size=Spacing.xl />
         <div className=Styles.vFlex>
-          <img src=Images.validatorLogo className=Styles.logo />
-          <Text
-            value="VALIDATOR DETAILS"
-            weight=Text.Medium
-            size=Text.Md
-            spacing={Text.Em(0.06)}
-            height={Text.Px(15)}
-            nowrap=true
-            color=Colors.gray7
-            block=true
-          />
-          <div className=Styles.seperatedLine />
-          <Text
-            value={isActive ? "ACTIVE" : "INACTIVE"}
-            size=Text.Md
-            weight=Text.Thin
-            spacing={Text.Em(0.06)}
-            color=Colors.gray7
-            nowrap=true
-          />
-          <HSpacing size=Spacing.md />
-          <img
-            src={isActive ? Images.activeValidatorLogo : Images.inactiveValidatorLogo}
-            className=Styles.logoSmall
-          />
+          <Text value="CoinGecko Data Provider" size=Text.Xxl weight=Text.Bold nowrap=true />
         </div>
-      </Col>
-    </Row>
-    <VSpacing size=Spacing.xl />
-    <div className=Styles.vFlex>
-      <Text value="CoinGecko Data Provider" size=Text.Xxl weight=Text.Bold nowrap=true />
-    </div>
-    <VSpacing size=Spacing.xl />
-    <div className=Styles.topPartWrapper>
-      <Text value="INFORMATION" size=Text.Lg weight=Text.Semibold />
-      <VSpacing size=Spacing.lg />
-      {kvRow("OPERATOR ADDRESS", VValidatorAddress(address))}
-      <VSpacing size=Spacing.lg />
-      {kvRow("ADDRESS", VAddress(address))}
-      <VSpacing size=Spacing.lg />
-      {kvRow("VOTING POWER", VCode("45.34% (12,434.234 BAND)"))}
-      <VSpacing size=Spacing.lg />
-      {kvRow("COMMISSION", VCode("3.00%"))}
-      <VSpacing size=Spacing.lg />
-      {kvRow("BONDED HEIGHT", VCode("1"))}
-      <VSpacing size=Spacing.lg />
-      {kvRow("WEBSITE", VExtLink("https://coingecko.node"))}
-      <VSpacing size=Spacing.lg />
-      {kvRow(
-         "DETAILS",
-         VText("We are the leading staking service provider for blockchain projects."),
-       )}
-      <div className=Styles.longLine />
-      <div className={Styles.fullWidth(`row)}>
-        <Col size=1.>
-          <Text value="NODE STATUS" size=Text.Lg weight=Text.Semibold />
+        <VSpacing size=Spacing.xl />
+        <div className=Styles.topPartWrapper>
+          <Text value="INFORMATION" size=Text.Lg weight=Text.Semibold />
           <VSpacing size=Spacing.lg />
-          {kvRow("UPTIME", VCode("100.00%"))}
+          {kvRow("OPERATOR ADDRESS", VValidatorAddress(address))}
           <VSpacing size=Spacing.lg />
-          {kvRow("AVG. RESPONSE TIME", VCode("2 blocks"))}
-        </Col>
-        <HSpacing size=Spacing.lg />
-        <Col size=1.>
-          <Text value="REQUEST RESPONSE" size=Text.Lg weight=Text.Semibold />
+          {kvRow("ADDRESS", VAddress(address))}
           <VSpacing size=Spacing.lg />
-          {kvRow("COMPLETED REQUESTS", VCode("23,459"))}
+          {kvRow(
+             "VOTING POWER",
+             VCode(
+               (validator.votingPower /. marketcap)->Format.fPretty
+               ++ "% ("
+               ++ validator.votingPower->Format.fPretty
+               ++ " BAND)",
+             ),
+           )}
           <VSpacing size=Spacing.lg />
-          {kvRow("MISSED REQUESTS", VCode("100"))}
-        </Col>
-      </div>
-    </div>
-    <VSpacing size=Spacing.md />
-    <Tab
-      tabs=[|
-        {
-          name: "PROPOSED BLOCKS",
-          route: Route.ValidatorIndexPage(address, Route.ProposedBlocks),
-        },
-        {name: "DELEGATORS", route: Route.ValidatorIndexPage(address, Route.Delegators)},
-        {name: "REPORTS", route: Route.ValidatorIndexPage(address, Route.Reports)},
-      |]
-      currentRoute={Route.ValidatorIndexPage(address, hashtag)}>
-      {switch (hashtag) {
-       | ProposedBlocks => <ProposedBlocksTable />
-       | Delegators => <DelegatorsTable />
-       | Reports => <ReportsTable />
-       }}
-    </Tab>
-  </div>;
-};
+          {kvRow("COMMISSION", VCode(validator.commission->Format.fPretty ++ "%"))}
+          <VSpacing size=Spacing.lg />
+          {kvRow("BONDED HEIGHT", VCode(validator.bondedHeight->Format.iPretty))}
+          <VSpacing size=Spacing.lg />
+          {kvRow("WEBSITE", VExtLink(validator.website))}
+          <VSpacing size=Spacing.lg />
+          {kvRow("DETAILS", VText(validator.details))}
+          <div className=Styles.longLine />
+          <div className={Styles.fullWidth(`row)}>
+            <Col size=1.>
+              <Text value="NODE STATUS" size=Text.Lg weight=Text.Semibold />
+              <VSpacing size=Spacing.lg />
+              {kvRow("UPTIME", VCode(validator.uptime->Format.fPretty ++ "%"))}
+              <VSpacing size=Spacing.lg />
+              {kvRow(
+                 "AVG. RESPONSE TIME",
+                 VCode(
+                   validator.avgResponseTime->Format.iPretty
+                   ++ (validator.avgResponseTime <= 1 ? " block" : " blocks"),
+                 ),
+               )}
+            </Col>
+            <HSpacing size=Spacing.lg />
+            <Col size=1.>
+              <Text value="REQUEST RESPONSE" size=Text.Lg weight=Text.Semibold />
+              <VSpacing size=Spacing.lg />
+              {kvRow(
+                 "COMPLETED REQUESTS",
+                 VCode(validator.completedRequestCount->Format.iPretty),
+               )}
+              <VSpacing size=Spacing.lg />
+              {kvRow("MISSED REQUESTS", VCode(validator.missedRequestCount->Format.iPretty))}
+            </Col>
+          </div>
+        </div>
+        <VSpacing size=Spacing.md />
+        <Tab
+          tabs=[|
+            {
+              name: "PROPOSED BLOCKS",
+              route: Route.ValidatorIndexPage(address, Route.ProposedBlocks),
+            },
+            {name: "DELEGATORS", route: Route.ValidatorIndexPage(address, Route.Delegators)},
+            {name: "REPORTS", route: Route.ValidatorIndexPage(address, Route.Reports)},
+          |]
+          currentRoute={Route.ValidatorIndexPage(address, hashtag)}>
+          {switch (hashtag) {
+           | ProposedBlocks => <ProposedBlocksTable />
+           | Delegators => <DelegatorsTable />
+           | Reports => <ReportsTable />
+           }}
+        </Tab>
+      </div>,
+    );
+  }
+  ->Belt.Option.getWithDefault(React.null);
