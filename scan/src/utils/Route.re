@@ -78,7 +78,7 @@ let fromUrl = (url: ReasonReactRouter.url) =>
     ValidatorIndexPage(address |> Address.fromBech32, Reports)
   | (["validator", address], _) =>
     ValidatorIndexPage(address |> Address.fromBech32, ProposedBlocks)
-  | ([], "") => HomePage
+  | ([], _) => HomePage
   | (_, _) => NotFound
   };
 
@@ -121,8 +121,8 @@ let toString =
       let validatorAddressBech32 = validatorAddress |> Address.toOperatorBech32;
       {j|/validator/$validatorAddressBech32#proposed-blocks|j};
     }
-  | HomePage
-  | NotFound => "/";
+  | HomePage => "/"
+  | NotFound => "/notfound";
 
 let redirect = (route: t) => ReasonReactRouter.push(route |> toString);
 
