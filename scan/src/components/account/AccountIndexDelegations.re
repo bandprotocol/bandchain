@@ -9,7 +9,7 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~delegations) => {
+let make = (~delegations: list(AccountHook.Account.delegation_t)) => {
   <div className=Styles.tableLowerContainer>
     <VSpacing size=Spacing.md />
     <div className=Styles.hFlex>
@@ -61,8 +61,8 @@ let make = (~delegations) => {
         </Row>
       </THead>
       {delegations
-       ->Belt.List.map(((validator, amount, reward)) => {
-           <TBody key=validator minHeight=50>
+       ->Belt.List.map(delegation => {
+           <TBody key={delegation.validatorAddress} minHeight=50>
              <Row>
                <Col> <HSpacing size=Spacing.lg /> </Col>
                <Col size=0.9>
@@ -75,7 +75,7 @@ let make = (~delegations) => {
                      block=true
                    />
                    <Text
-                     value={validator->Js.String.sliceToEnd(~from=11)}
+                     value={delegation.validatorAddress->Js.String.sliceToEnd(~from=11)}
                      spacing={Text.Em(0.02)}
                      block=true
                      code=true
@@ -86,12 +86,12 @@ let make = (~delegations) => {
                </Col>
                <Col size=0.6>
                  <div className=Styles.alignRight>
-                   <Text value={amount |> Format.fPretty} code=true />
+                   <Text value={delegation.balance |> Format.fPretty} code=true />
                  </div>
                </Col>
                <Col size=0.6>
                  <div className=Styles.alignRight>
-                   <Text value={reward |> Format.fPretty} code=true />
+                   <Text value={delegation.reward |> Format.fPretty} code=true />
                  </div>
                </Col>
                <Col> <HSpacing size=Spacing.lg /> </Col>

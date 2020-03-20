@@ -120,8 +120,12 @@ let totalBalance = (title, amount, symbol) => {
 let make = (~address, ~hashtag: Route.account_tab_t) => {
   let accountOpt = AccountHook.get(address);
   let priceOpt = PriceHook.get();
-  let delegations = AccountHook.getDelegations(address) |> Belt_Option.getWithDefault(_, []);
-
+  let delegations =
+    {
+      let%Opt account = accountOpt;
+      Some(account.delegations);
+    }
+    |> Belt_Option.getWithDefault(_, []);
   let usdPrice = {
     let%Opt price = priceOpt;
     Some(1. /. price.usdPrice);
@@ -129,9 +133,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
 
   let avialableBalance = {
     let%Opt account = accountOpt;
-    let balanceStake = account.balanceStake;
-    let balance = account.balance;
-    Some(balance -. balanceStake);
+    Some(account.balance -. account.balanceStake);
   };
 
   <div className=Styles.pageContainer>
