@@ -41,7 +41,7 @@ type t =
 
 let fromUrl = (url: ReasonReactRouter.url) =>
   switch (url.path, url.hash) {
-  | (["data-sources"], _) => DataSourceHomePage
+  | (["sources"], _) => DataSourceHomePage
   | (["data-source", dataSourceID], "code") =>
     DataSourceIndexPage(dataSourceID |> int_of_string, DataSourceCode)
   | (["data-source", dataSourceID], "requests") =>
@@ -84,7 +84,7 @@ let fromUrl = (url: ReasonReactRouter.url) =>
 
 let toString =
   fun
-  | DataSourceHomePage => "/data-sources"
+  | DataSourceHomePage => "/sources"
   | DataSourceIndexPage(dataSourceID, DataSourceExecute) => {j|/data-source/$dataSourceID|j}
   | DataSourceIndexPage(dataSourceID, DataSourceCode) => {j|/data-source/$dataSourceID#code|j}
   | DataSourceIndexPage(dataSourceID, DataSourceRequests) => {j|/data-source/$dataSourceID#requests|j}
