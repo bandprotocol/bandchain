@@ -84,8 +84,6 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
       ->Belt_List.get(0);
     let marketcap = info.financial.circulatingSupply;
 
-    Js.Console.log(validator);
-
     Some(
       <div className=Styles.pageContainer>
         <Row justify=Row.Between>
