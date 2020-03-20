@@ -192,6 +192,10 @@ let make = () => {
         | "ArrowDown" =>
           dispatch(ArrowPressed(Down));
           ReactEvent.Keyboard.preventDefault(event);
+        | "Enter" =>
+          dispatch(ChangeSearchTerm(""));
+          ReactEvent.Keyboard.preventDefault(event);
+          Route.redirect(searchTerm |> Route.search);
         | _ => ()
         }
       }
@@ -200,11 +204,16 @@ let make = () => {
       placeholder="Search Address (try 0x0 specifically) or TX Hash or Block"
     />
     {switch (resultState) {
-     | ShowAndFocus(focusIndex) when searchTerm->String.length > 0 =>
-       <SearchResults searchTerm focusIndex onHover={idx => dispatch(HoverResultAt(idx))} />
      | ShowAndFocus(_)
      | Hidden => React.null
      }}
-    <button className=Styles.button> {React.string("Search")} </button>
+    <button
+      className=Styles.button
+      onClick={_ => {
+        Route.redirect(searchTerm |> Route.search);
+        dispatch(ChangeSearchTerm(""));
+      }}>
+      {React.string("Search")}
+    </button>
   </div>;
 };

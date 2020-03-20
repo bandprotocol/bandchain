@@ -3,7 +3,7 @@ package rest
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
+	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
 )
 
 type ReportDetail struct {
