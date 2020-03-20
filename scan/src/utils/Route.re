@@ -45,12 +45,6 @@ let chars_to_int = chars =>
   | None => 0
   };
 
-let id_to_int = id_str =>
-  switch (id_str->Js.String.sliceToEnd(1)->int_of_string_opt) {
-  | Some(id_) => id_
-  | None => 0
-  };
-
 let fromUrl = (url: ReasonReactRouter.url) =>
   switch (url.path, url.hash) {
   | (["sources"], _) => DataSourceHomePage
@@ -59,15 +53,10 @@ let fromUrl = (url: ReasonReactRouter.url) =>
   | (["validators"], _) => ValidatorHomePage
   | (["blocks"], _) => BlockHomePage
   | (["tx", txHash], _) => TxIndexPage(Hash.fromHex(txHash))
-
-  | (["request", reqID], "proof") => RequestIndexPage(reqID |> int_of_string, RequestProof)
-  | (["request", reqID], _) => RequestIndexPage(reqID |> int_of_string, RequestReportStatus)
-
   | ([address], "delegations") =>
     AccountIndexPage(address |> Address.fromBech32, AccountDelegations)
   | ([address], "delegators") => ValidatorIndexPage(address |> Address.fromBech32, Delegators)
   | ([address], "reports") => ValidatorIndexPage(address |> Address.fromBech32, Reports)
-
   | ([path], tab) =>
     switch ((path |> Js.String.split(""))->Belt_List.fromArray, tab) {
     | (["B", ...rest], _) => BlockIndexPage(rest |> chars_to_int)
@@ -83,6 +72,8 @@ let fromUrl = (url: ReasonReactRouter.url) =>
     | (["D", ...rest], "revisions") =>
       DataSourceIndexPage(rest |> chars_to_int, DataSourceRevisions)
     | (["D", ...rest], _) => DataSourceIndexPage(rest |> chars_to_int, DataSourceExecute)
+    | (["R", ...rest], "proof") => RequestIndexPage(rest |> chars_to_int, RequestProof)
+    | (["R", ...rest], _) => RequestIndexPage(rest |> chars_to_int, RequestReportStatus)
     | (["b", "a", "n", "d", "v", "a", "l", "o", "p", "e", "r", ..._], _) =>
       ValidatorIndexPage(path |> Address.fromBech32, ProposedBlocks)
     | (["b", "a", "n", "d", ..._], _) =>
@@ -110,8 +101,8 @@ let toString =
   | ValidatorHomePage => "/validators"
   | BlockHomePage => "/blocks"
   | BlockIndexPage(height) => {j|/B$height|j}
-  | RequestIndexPage(reqID, RequestReportStatus) => {j|/request/$reqID|j}
-  | RequestIndexPage(reqID, RequestProof) => {j|/request/$reqID#proof|j}
+  | RequestIndexPage(reqID, RequestReportStatus) => {j|/R$reqID|j}
+  | RequestIndexPage(reqID, RequestProof) => {j|/R$reqID#proof|j}
   | AccountIndexPage(address, AccountTransactions) => {
       let addressBech32 = address |> Address.toBech32;
       {j|$addressBech32|j};
