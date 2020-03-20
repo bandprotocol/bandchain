@@ -5,8 +5,6 @@ module Styles = {
 
   let tableWrapper = style([padding2(~v=`px(9), ~h=`px(15))]);
 
-  let fixWidth = style([width(`px(230))]);
-
   let icon = style([width(`px(80)), height(`px(80))]);
   let iconWrapper =
     style([
@@ -91,7 +89,7 @@ let make = () => {
                    spacing={Text.Em(0.05)}
                  />
                </Col>
-               <Col size=2.>
+               <Col size=2.3>
                  <Text
                    block=true
                    value="ORACLE SCRIPT"
@@ -164,12 +162,14 @@ let make = () => {
                         <Text value=hash block=true code=true ellipsis=true />
                       </div>
                     </Col>
-                    <Col size=2. alignSelf=Col.Start>
+                    <Col size=2.3 alignSelf=Col.Start>
                       <Row>
                         <TypeID.OracleScript id={ID.OracleScript.ID(oracleScriptID)} />
                         <HSpacing size=Spacing.sm />
                         <HSpacing size=Spacing.xs />
-                        <Text value=oracleScriptDescription block=true code=true />
+                        <div className={Styles.withWidth(140)}>
+                          <Text value=oracleScriptDescription block=true code=true ellipsis=true />
+                        </div>
                       </Row>
                     </Col>
                     <Col size=1.>
