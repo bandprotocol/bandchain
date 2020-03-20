@@ -24,16 +24,18 @@ const (
 )
 
 var (
-	NewKeeper                = keeper.NewKeeper
-	NewQuerier               = keeper.NewQuerier
-	ModuleCdc                = types.ModuleCdc
-	RegisterCodec            = types.RegisterCodec
-	NewMsgRequestData        = types.NewMsgRequestData
-	NewMsgReportData         = types.NewMsgReportData
-	NewMsgCreateOracleScript = types.NewMsgCreateOracleScript
-	NewMsgEditOracleScript   = types.NewMsgEditOracleScript
-	NewMsgCreateDataSource   = types.NewMsgCreateDataSource
-	NewMsgEditDataSource     = types.NewMsgEditDataSource
+	NewKeeper                  = keeper.NewKeeper
+	NewQuerier                 = keeper.NewQuerier
+	ModuleCdc                  = types.ModuleCdc
+	RegisterCodec              = types.RegisterCodec
+	NewMsgRequestData          = types.NewMsgRequestData
+	NewMsgReportData           = types.NewMsgReportData
+	NewMsgCreateOracleScript   = types.NewMsgCreateOracleScript
+	NewMsgEditOracleScript     = types.NewMsgEditOracleScript
+	NewMsgCreateDataSource     = types.NewMsgCreateDataSource
+	NewMsgEditDataSource       = types.NewMsgEditDataSource
+	NewMsgAddOracleAddress     = types.NewMsgAddOracleAddress
+	NewMsgRemoveOracleAdderess = types.NewMsgRemoveOracleAdderess
 
 	RequestStoreKey      = types.RequestStoreKey
 	ResultStoreKey       = types.ResultStoreKey

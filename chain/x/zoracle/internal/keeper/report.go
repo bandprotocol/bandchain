@@ -44,7 +44,7 @@ func (k Keeper) AddReport(
 		}
 	}
 
-	if k.CheckReporter(ctx, validator, reporter) {
+	if !found && k.CheckReporter(ctx, validator, reporter) {
 		agent := sdk.ValAddress(reporter)
 		for _, validValidator := range request.RequestedValidators {
 			if agent.Equals(validValidator) {
