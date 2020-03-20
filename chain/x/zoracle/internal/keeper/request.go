@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
+	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -92,6 +92,32 @@ func (k Keeper) ValidateDataSourceCount(ctx sdk.Context, id types.RequestID) sdk
 			dataSourceCount,
 			k.MaxDataSourceCountPerRequest(ctx),
 		)
+	}
+
+	return nil
+}
+
+// PayDataSourceFees sends fees to the owners of the requested data sources.
+func (k Keeper) PayDataSourceFees(ctx sdk.Context, id types.RequestID, sender sdk.AccAddress) sdk.Error {
+	rawDataRequests := k.GetRawDataRequests(ctx, id)
+	for _, rawDataRequest := range rawDataRequests {
+		dataSource, err := k.GetDataSource(ctx, rawDataRequest.DataSourceID)
+		if err != nil {
+			return err
+		}
+
+		if dataSource.Owner.Equals(sender) {
+			continue
+		}
+
+		if dataSource.Fee.IsZero() {
+			continue
+		}
+
+		err = k.CoinKeeper.SendCoins(ctx, sender, dataSource.Owner, dataSource.Fee)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

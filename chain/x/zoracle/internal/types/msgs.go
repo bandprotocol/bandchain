@@ -102,19 +102,22 @@ func (msg MsgRequestData) GetSignBytes() []byte {
 type MsgReportData struct {
 	RequestID RequestID             `json:"requestID"`
 	DataSet   []RawDataReportWithID `json:"dataSet"`
-	Sender    sdk.ValAddress        `json:"sender"`
+	Validator sdk.ValAddress        `json:"validator"`
+	Reporter  sdk.AccAddress        `json:"reporter"`
 }
 
 // NewMsgReportData creates a new MsgReportData instance.
 func NewMsgReportData(
 	requestID RequestID,
 	dataSet []RawDataReportWithID,
-	sender sdk.ValAddress,
+	validator sdk.ValAddress,
+	reporter sdk.AccAddress,
 ) MsgReportData {
 	return MsgReportData{
 		RequestID: requestID,
 		DataSet:   dataSet,
-		Sender:    sender,
+		Validator: validator,
+		Reporter:  reporter,
 	}
 }
 
@@ -132,15 +135,18 @@ func (msg MsgReportData) ValidateBasic() sdk.Error {
 	if msg.DataSet == nil || len(msg.DataSet) == 0 {
 		return ErrInvalidBasicMsg("MsgReportData: Data set must not be empty.")
 	}
-	if msg.Sender.Empty() {
-		return ErrInvalidBasicMsg("MsgReportData: Sender address must not be empty.")
+	if msg.Validator.Empty() {
+		return ErrInvalidBasicMsg("MsgReportData: Validator address must not be empty.")
+	}
+	if msg.Reporter.Empty() {
+		return ErrInvalidBasicMsg("MsgReportData: Reporter address must not be empty.")
 	}
 	return nil
 }
 
 // GetSigners implements the sdk.Msg interface for MsgReportData.
 func (msg MsgReportData) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{sdk.AccAddress(msg.Sender)}
+	return []sdk.AccAddress{msg.Reporter}
 }
 
 // GetSignBytes implements the sdk.Msg interface for MsgReportData.
@@ -419,6 +425,98 @@ func (msg MsgEditOracleScript) GetSigners() []sdk.AccAddress {
 
 // GetSignBytes implements the sdk.Msg interface for MsgEditOracleScript.
 func (msg MsgEditOracleScript) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}
+
+// MsgAddOracleAddress is a message for adding an agent authorized to submit report transactions.
+type MsgAddOracleAddress struct {
+	Validator sdk.ValAddress `json:"validator"`
+	Reporter  sdk.AccAddress `json:"reporter"`
+}
+
+// NewMsgAddOracleAddress creates a new MsgAddOracleAddress instance.
+func NewMsgAddOracleAddress(
+	validator sdk.ValAddress,
+	reporter sdk.AccAddress,
+) MsgAddOracleAddress {
+	return MsgAddOracleAddress{
+		Validator: validator,
+		Reporter:  reporter,
+	}
+}
+
+// Route implements the sdk.Msg interface for MsgAddOracleAddress.
+func (msg MsgAddOracleAddress) Route() string { return RouterKey }
+
+// Type implements the sdk.Msg interface for MsgAddOracleAddress.
+func (msg MsgAddOracleAddress) Type() string { return "add_oracle_address" }
+
+// ValidateBasic implements the sdk.Msg interface for MsgAddOracleAddress.
+func (msg MsgAddOracleAddress) ValidateBasic() sdk.Error {
+
+	if msg.Validator.Empty() {
+		return ErrInvalidBasicMsg("MsgAddOracleAddress: Validator address must not be empty.")
+	}
+	if msg.Reporter.Empty() {
+		return ErrInvalidBasicMsg("MsgAddOracleAddress: Reporter address must not be empty.")
+	}
+	return nil
+}
+
+// GetSigners implements the sdk.Msg interface for MsgAddOracleAddress.
+func (msg MsgAddOracleAddress) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{sdk.AccAddress(msg.Validator)}
+}
+
+// GetSignBytes implements the sdk.Msg interface for MsgAddOracleAddress.
+func (msg MsgAddOracleAddress) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}
+
+// MsgRemoveOracleAdderess is a message for removing an agent from the list of authorized reporters.
+type MsgRemoveOracleAdderess struct {
+	Validator sdk.ValAddress `json:"validator"`
+	Reporter  sdk.AccAddress `json:"reporter"`
+}
+
+// NewMsgRemoveOracleAdderess creates a new MsgRemoveOracleAdderess instance.
+func NewMsgRemoveOracleAdderess(
+	validator sdk.ValAddress,
+	reporter sdk.AccAddress,
+) MsgRemoveOracleAdderess {
+	return MsgRemoveOracleAdderess{
+		Validator: validator,
+		Reporter:  reporter,
+	}
+}
+
+// Route implements the sdk.Msg interface for MsgRemoveOracleAdderess.
+func (msg MsgRemoveOracleAdderess) Route() string { return RouterKey }
+
+// Type implements the sdk.Msg interface for MsgRemoveOracleAdderess.
+func (msg MsgRemoveOracleAdderess) Type() string { return "remove_oracle_address" }
+
+// ValidateBasic implements the sdk.Msg interface for MsgRemoveOracleAdderess.
+func (msg MsgRemoveOracleAdderess) ValidateBasic() sdk.Error {
+
+	if msg.Validator.Empty() {
+		return ErrInvalidBasicMsg("MsgRemoveOracleAdderess: Validator address must not be empty.")
+	}
+	if msg.Reporter.Empty() {
+		return ErrInvalidBasicMsg("MsgRemoveOracleAdderess: Reporter address must not be empty.")
+	}
+	return nil
+}
+
+// GetSigners implements the sdk.Msg interface for MsgRemoveOracleAdderess.
+func (msg MsgRemoveOracleAdderess) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{sdk.AccAddress(msg.Validator)}
+}
+
+// GetSignBytes implements the sdk.Msg interface for MsgRemoveOracleAdderess.
+func (msg MsgRemoveOracleAdderess) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }

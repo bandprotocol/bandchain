@@ -7,8 +7,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	keep "github.com/bandprotocol/d3n/chain/x/zoracle/internal/keeper"
-	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
+	keep "github.com/bandprotocol/bandchain/chain/x/zoracle/internal/keeper"
+	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
 )
 
 func TestNewExecutionEnvironment(t *testing.T) {
@@ -79,7 +79,7 @@ func TestGetReceivedValidatorCount(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, int64(0), env.GetReceivedValidatorCount())
 
-	keeper.AddReport(ctx, 1, []types.RawDataReportWithID{}, sdk.ValAddress([]byte("val1")))
+	keeper.AddReport(ctx, 1, []types.RawDataReportWithID{}, sdk.ValAddress([]byte("val1")), sdk.AccAddress([]byte("val1")))
 
 	env, err = NewExecutionEnvironment(ctx, keeper, 1)
 	require.Nil(t, err)
@@ -112,7 +112,7 @@ func TestGetAggregateBlockTime(t *testing.T) {
 	require.Equal(t, int64(0), env.GetAggregateBlockTime())
 
 	// Add received validator
-	err = keeper.AddReport(ctx, 1, []types.RawDataReportWithID{}, sdk.ValAddress([]byte("val1")))
+	err = keeper.AddReport(ctx, 1, []types.RawDataReportWithID{}, sdk.ValAddress([]byte("val1")), sdk.AccAddress([]byte("val1")))
 	require.Nil(t, err)
 
 	// After report is greater or equal SufficientValidatorCount, it will resolve in current block time.

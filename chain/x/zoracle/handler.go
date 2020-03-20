@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/bandprotocol/d3n/chain/owasm"
-	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
+	"github.com/bandprotocol/bandchain/chain/owasm"
+	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -26,6 +26,11 @@ func NewHandler(keeper Keeper) sdk.Handler {
 			return handleMsgRequestData(ctx, keeper, msg)
 		case MsgReportData:
 			return handleMsgReportData(ctx, keeper, msg)
+		case MsgAddOracleAddress:
+			return handleMsgAddOracleAddress(ctx, keeper, msg)
+		case MsgRemoveOracleAdderess:
+			return handleMsgRemoveOracleAddress(ctx, keeper, msg)
+
 		default:
 			errMsg := fmt.Sprintf("unrecognized zoracle message type: %T", msg)
 			return sdk.ErrUnknownRequest(errMsg).Result()
@@ -250,6 +255,11 @@ func handleMsgRequestData(ctx sdk.Context, keeper Keeper, msg MsgRequestData) sd
 		return err.Result()
 	}
 
+	err = keeper.PayDataSourceFees(ctx, id, msg.Sender)
+	if err != nil {
+		return err.Result()
+	}
+
 	// Emit request event
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
@@ -262,7 +272,7 @@ func handleMsgRequestData(ctx sdk.Context, keeper Keeper, msg MsgRequestData) sd
 
 func handleMsgReportData(ctx sdk.Context, keeper Keeper, msg MsgReportData) sdk.Result {
 	// Save new report to store
-	err := keeper.AddReport(ctx, msg.RequestID, msg.DataSet, msg.Sender)
+	err := keeper.AddReport(ctx, msg.RequestID, msg.DataSet, msg.Validator, msg.Reporter)
 	if err != nil {
 		return err.Result()
 	}
@@ -272,7 +282,41 @@ func handleMsgReportData(ctx sdk.Context, keeper Keeper, msg MsgReportData) sdk.
 		sdk.NewEvent(
 			types.EventTypeReport,
 			sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", msg.RequestID)),
-			sdk.NewAttribute(types.AttributeKeyValidator, msg.Sender.String()),
+			sdk.NewAttribute(types.AttributeKeyValidator, msg.Validator.String()),
+		),
+	})
+	return sdk.Result{Events: ctx.EventManager().Events()}
+}
+
+func handleMsgAddOracleAddress(ctx sdk.Context, keeper Keeper, msg MsgAddOracleAddress) sdk.Result {
+	err := keeper.AddReporter(ctx, msg.Validator, msg.Reporter)
+	if err != nil {
+		return err.Result()
+	}
+
+	// Emit report event
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeAddOracleAddress,
+			sdk.NewAttribute(types.AttributeKeyValidator, msg.Validator.String()),
+			sdk.NewAttribute(types.AttributeKeyReporter, msg.Reporter.String()),
+		),
+	})
+	return sdk.Result{Events: ctx.EventManager().Events()}
+}
+
+func handleMsgRemoveOracleAddress(ctx sdk.Context, keeper Keeper, msg MsgRemoveOracleAdderess) sdk.Result {
+	err := keeper.RemoveReporter(ctx, msg.Validator, msg.Reporter)
+	if err != nil {
+		return err.Result()
+	}
+
+	// Emit report event
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeRemoveOracleAddress,
+			sdk.NewAttribute(types.AttributeKeyValidator, msg.Validator.String()),
+			sdk.NewAttribute(types.AttributeKeyReporter, msg.Reporter.String()),
 		),
 	})
 	return sdk.Result{Events: ctx.EventManager().Events()}

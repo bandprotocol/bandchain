@@ -8,7 +8,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/bandprotocol/d3n/chain/db"
+	"github.com/bandprotocol/bandchain/chain/db"
 )
 
 type dbBandApp struct {
@@ -25,10 +25,31 @@ func NewDBBandApp(
 	return &dbBandApp{bandApp: app, dbBand: dbBand}
 }
 
+func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
+	app.dbBand.BeginTransaction()
+
+	err := app.dbBand.SaveChainID(req.GetChainId())
+	if err != nil {
+		panic(err)
+	}
+	err = app.dbBand.SetLastProcessedHeight(0)
+	if err != nil {
+		panic(err)
+	}
+
+	app.dbBand.Commit()
+
+	return app.bandApp.InitChain(req)
+}
+
 func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliverTx) {
-	response := app.bandApp.DeliverTx(req)
-	if response.IsOK() {
-		for _, event := range response.Events {
+	res = app.bandApp.DeliverTx(req)
+	lastProcessHeight, err := app.dbBand.GetLastProcessedHeight()
+	if err != nil {
+		panic(err)
+	}
+	if res.IsOK() && lastProcessHeight+1 == app.DeliverContext.BlockHeight() {
+		for _, event := range res.Events {
 			kvMap := make(map[string]string)
 			for _, kv := range event.Attributes {
 				kvMap[string(kv.GetKey())] = string(kv.GetValue())
@@ -36,9 +57,34 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 			app.dbBand.HandleEvent(event.Type, kvMap)
 		}
 	}
-	return response
+	return res
 }
 
 func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseBeginBlock) {
-	return app.bandApp.BeginBlock(req)
+	res = app.bandApp.BeginBlock(req)
+	// Begin transaction
+	app.dbBand.BeginTransaction()
+	err := app.dbBand.ValidateChainID(app.DeliverContext.ChainID())
+	if err != nil {
+		panic(err)
+	}
+
+	return res
+}
+
+func (app *dbBandApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBlock) {
+	res = app.bandApp.EndBlock(req)
+	err := app.dbBand.SetLastProcessedHeight(req.GetHeight())
+	if err != nil {
+		panic(err)
+	}
+	// Do other logic
+	return res
+}
+
+func (app *dbBandApp) Commit() (res abci.ResponseCommit) {
+	res = app.bandApp.Commit()
+
+	app.dbBand.Commit()
+	return res
 }

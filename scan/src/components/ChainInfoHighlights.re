@@ -134,12 +134,12 @@ let make = () =>
                            />;
                          }
           extraComponent={
-                           let marketcap = info.financial.btcMarketCap;
+                           let marketcap = info.financial.circulatingSupply;
                            <div className=Styles.vFlex>
-                             <Text value={marketcap->Format.fPretty} code=true />
+                             <Text value={marketcap->Format.fPretty} code=true weight=Text.Thin />
                              <HSpacing size=Spacing.xs />
                              <Text
-                               value="BTC"
+                               value="BAND"
                                color=Colors.gray7
                                weight=Text.Thin
                                spacing={Text.Em(0.01)}

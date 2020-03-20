@@ -1,8 +1,8 @@
 package zoracle
 
 import (
-	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/keeper"
-	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
+	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/keeper"
+	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
 )
 
 const (
@@ -24,16 +24,18 @@ const (
 )
 
 var (
-	NewKeeper                = keeper.NewKeeper
-	NewQuerier               = keeper.NewQuerier
-	ModuleCdc                = types.ModuleCdc
-	RegisterCodec            = types.RegisterCodec
-	NewMsgRequestData        = types.NewMsgRequestData
-	NewMsgReportData         = types.NewMsgReportData
-	NewMsgCreateOracleScript = types.NewMsgCreateOracleScript
-	NewMsgEditOracleScript   = types.NewMsgEditOracleScript
-	NewMsgCreateDataSource   = types.NewMsgCreateDataSource
-	NewMsgEditDataSource     = types.NewMsgEditDataSource
+	NewKeeper                  = keeper.NewKeeper
+	NewQuerier                 = keeper.NewQuerier
+	ModuleCdc                  = types.ModuleCdc
+	RegisterCodec              = types.RegisterCodec
+	NewMsgRequestData          = types.NewMsgRequestData
+	NewMsgReportData           = types.NewMsgReportData
+	NewMsgCreateOracleScript   = types.NewMsgCreateOracleScript
+	NewMsgEditOracleScript     = types.NewMsgEditOracleScript
+	NewMsgCreateDataSource     = types.NewMsgCreateDataSource
+	NewMsgEditDataSource       = types.NewMsgEditDataSource
+	NewMsgAddOracleAddress     = types.NewMsgAddOracleAddress
+	NewMsgRemoveOracleAdderess = types.NewMsgRemoveOracleAdderess
 
 	RequestStoreKey      = types.RequestStoreKey
 	ResultStoreKey       = types.ResultStoreKey
@@ -66,13 +68,15 @@ var (
 )
 
 type (
-	Keeper                = keeper.Keeper
-	MsgRequestData        = types.MsgRequestData
-	MsgReportData         = types.MsgReportData
-	MsgCreateDataSource   = types.MsgCreateDataSource
-	MsgEditDataSource     = types.MsgEditDataSource
-	MsgCreateOracleScript = types.MsgCreateOracleScript
-	MsgEditOracleScript   = types.MsgEditOracleScript
+	Keeper                  = keeper.Keeper
+	MsgRequestData          = types.MsgRequestData
+	MsgReportData           = types.MsgReportData
+	MsgCreateDataSource     = types.MsgCreateDataSource
+	MsgEditDataSource       = types.MsgEditDataSource
+	MsgCreateOracleScript   = types.MsgCreateOracleScript
+	MsgEditOracleScript     = types.MsgEditOracleScript
+	MsgAddOracleAddress     = types.MsgAddOracleAddress
+	MsgRemoveOracleAdderess = types.MsgRemoveOracleAdderess
 
 	RawDataReport         = types.RawDataReport
 	RawDataReportWithID   = types.RawDataReportWithID

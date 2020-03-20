@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	keep "github.com/bandprotocol/d3n/chain/x/zoracle/internal/keeper"
-	"github.com/bandprotocol/d3n/chain/x/zoracle/internal/types"
+	keep "github.com/bandprotocol/bandchain/chain/x/zoracle/internal/keeper"
+	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 	cmn "github.com/tendermint/tendermint/libs/common"
@@ -181,6 +181,11 @@ func TestRequestSuccess(t *testing.T) {
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
 	calldata := []byte("calldata")
 	sender := sdk.AccAddress([]byte("sender"))
+	_, err := keeper.CoinKeeper.AddCoins(ctx, sender, keep.NewUBandCoins(410))
+	require.Nil(t, err)
+
+	owner := sdk.AccAddress([]byte("owner"))
+	owner2 := sdk.AccAddress([]byte("owner2"))
 
 	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
 	keeper.SetOracleScript(ctx, 1, script)
@@ -193,8 +198,17 @@ func TestRequestSuccess(t *testing.T) {
 	validatorAddress1 := keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
 	validatorAddress2 := keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
 
-	dataSource := keep.GetTestDataSource()
-	keeper.SetDataSource(ctx, 1, dataSource)
+	dataSource1 := keep.GetTestDataSource()
+	keeper.SetDataSource(ctx, 1, dataSource1)
+
+	dataSource2 := types.NewDataSource(
+		sdk.AccAddress([]byte("owner2")),
+		"data_source2",
+		"description2",
+		sdk.NewCoins(sdk.NewInt64Coin("uband", 400)),
+		[]byte("executable2"),
+	)
+	keeper.SetDataSource(ctx, 2, dataSource2)
 
 	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 1000000, 1000000, sender)
 
@@ -215,14 +229,23 @@ func TestRequestSuccess(t *testing.T) {
 	expectRequest.ExecuteGas = 1000000
 	require.Equal(t, expectRequest, actualRequest)
 
-	require.Equal(t, int64(1), keeper.GetRawDataRequestCount(ctx, 1))
+	require.Equal(t, int64(2), keeper.GetRawDataRequestCount(ctx, 1))
 
 	rawRequests := []types.RawDataRequest{
-		types.NewRawDataRequest(1, []byte("band-protocol")),
+		types.NewRawDataRequest(1, []byte("band-protocol")), types.NewRawDataRequest(2, []byte("band-chain")),
 	}
 	require.Equal(t, rawRequests, keeper.GetRawDataRequests(ctx, 1))
 	// check consumed gas must more than 2000000 (prepareGas + executeGas)
 	require.True(t, afterGas-beforeGas > 2000000)
+
+	senderBalance := keeper.CoinKeeper.GetCoins(ctx, sender)
+	require.Equal(t, sdk.Coins(nil), senderBalance)
+
+	ownerBalance := keeper.CoinKeeper.GetCoins(ctx, owner)
+	require.Equal(t, keep.NewUBandCoins(10), ownerBalance)
+
+	owner2Balance := keeper.CoinKeeper.GetCoins(ctx, owner2)
+	require.Equal(t, keep.NewUBandCoins(400), owner2Balance)
 }
 
 func TestRequestInvalidDataSource(t *testing.T) {
@@ -283,6 +306,45 @@ func TestRequestWithPrepareGasExceed(t *testing.T) {
 	require.False(t, got.IsOK())
 }
 
+func TestRequestWithInsufficientFee(t *testing.T) {
+	ctx, keeper := keep.CreateTestInput(t, false)
+
+	ctx = ctx.WithBlockHeight(2)
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	calldata := []byte("calldata")
+	sender := sdk.AccAddress([]byte("sender"))
+	_, err := keeper.CoinKeeper.AddCoins(ctx, sender, keep.NewUBandCoins(50))
+	require.Nil(t, err)
+
+	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
+	keeper.SetOracleScript(ctx, 1, script)
+
+	pubStr := []string{
+		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
+		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
+	}
+
+	keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
+	keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
+
+	dataSource := keep.GetTestDataSource()
+	keeper.SetDataSource(ctx, 1, dataSource)
+
+	dataSource2 := types.NewDataSource(
+		sdk.AccAddress([]byte("owner2")),
+		"data_source2",
+		"description2",
+		sdk.NewCoins(sdk.NewInt64Coin("uband", 300)),
+		[]byte("executable2"),
+	)
+	keeper.SetDataSource(ctx, 2, dataSource2)
+
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 1000000, 1000000, sender)
+
+	got := handleMsgRequestData(ctx, keeper, msg)
+	require.False(t, got.IsOK())
+}
+
 func TestReportSuccess(t *testing.T) {
 	// Setup test environment
 	ctx, keeper := keep.CreateTestInput(t, false)
@@ -300,17 +362,18 @@ func TestReportSuccess(t *testing.T) {
 	}
 
 	validatorAddress1 := keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
+	reporterAddress1 := sdk.AccAddress(validatorAddress1)
+
 	address1 := keep.GetAddressFromPub(pubStr[0])
 
 	validatorAddress2 := keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
+	reporterAddress2 := sdk.AccAddress(validatorAddress2)
 
 	dataSource := keep.GetTestDataSource()
 	keeper.SetDataSource(ctx, 1, dataSource)
 
 	_, err := keeper.CoinKeeper.AddCoins(ctx, address1, keep.NewUBandCoins(1000000))
 	require.Nil(t, err)
-
-	keeper.SupplyKeeper.SendCoinsFromAccountToModule(ctx, address1, "fee_collector", keep.NewUBandCoins(500000))
 
 	request := types.NewRequest(1, calldata,
 		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
@@ -324,7 +387,7 @@ func TestReportSuccess(t *testing.T) {
 
 	msg := types.NewMsgReportData(1, []types.RawDataReportWithID{
 		types.NewRawDataReportWithID(42, 0, []byte("data1")),
-	}, validatorAddress1)
+	}, validatorAddress1, reporterAddress1)
 
 	got := handleMsgReportData(ctx, keeper, msg)
 	require.True(t, got.IsOK(), "expected report to be ok, got %v", got)
@@ -333,7 +396,7 @@ func TestReportSuccess(t *testing.T) {
 
 	msg = types.NewMsgReportData(1, []types.RawDataReportWithID{
 		types.NewRawDataReportWithID(42, 0, []byte("data2")),
-	}, validatorAddress2)
+	}, validatorAddress2, reporterAddress2)
 
 	got = handleMsgReportData(ctx, keeper, msg)
 	require.True(t, got.IsOK(), "expected report to be ok, got %v", got)
@@ -360,11 +423,11 @@ func TestReportFailed(t *testing.T) {
 	validatorAddress1 := keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
 	validatorAddress2 := keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
 
+	reporterAddress1 := sdk.AccAddress(validatorAddress1)
+
 	address1 := keep.GetAddressFromPub(pubStr[0])
 	_, err := keeper.CoinKeeper.AddCoins(ctx, address1, keep.NewUBandCoins(1000000))
 	require.Nil(t, err)
-
-	keeper.SupplyKeeper.SendCoinsFromAccountToModule(ctx, address1, "fee_collector", keep.NewUBandCoins(500000))
 
 	dataSource := keep.GetTestDataSource()
 	keeper.SetDataSource(ctx, 1, dataSource)
@@ -381,7 +444,7 @@ func TestReportFailed(t *testing.T) {
 
 	msg := types.NewMsgReportData(1, []types.RawDataReportWithID{
 		types.NewRawDataReportWithID(41, 0, []byte("data1")),
-	}, validatorAddress1)
+	}, validatorAddress1, reporterAddress1)
 
 	// Test only 1 failed case, other case tested in keeper/report_test.go
 	got := handleMsgReportData(ctx, keeper, msg)
@@ -740,5 +803,71 @@ func TestEndBlockInsufficientExecutionConsumeEndBlockGas(t *testing.T) {
 	actualRequest, err = keeper.GetRequest(ctx, 4)
 	require.Nil(t, err)
 	require.Equal(t, types.Open, actualRequest.ResolveStatus)
+
+}
+
+func TestAddAndRemoveOracleAddress(t *testing.T) {
+	// Setup test environment
+	ctx, keeper := keep.CreateTestInput(t, false)
+
+	ctx = ctx.WithBlockHeight(2)
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	calldata := []byte("calldata")
+
+	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
+	keeper.SetOracleScript(ctx, 1, script)
+
+	pubStr := []string{
+		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
+		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
+	}
+
+	validatorAddress1 := keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
+
+	address1 := keep.GetAddressFromPub(pubStr[0])
+
+	validatorAddress2 := keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
+	reporterAddress2 := sdk.AccAddress(validatorAddress2)
+
+	dataSource := keep.GetTestDataSource()
+	keeper.SetDataSource(ctx, 1, dataSource)
+
+	_, err := keeper.CoinKeeper.AddCoins(ctx, address1, keep.NewUBandCoins(1000000))
+	require.Nil(t, err)
+
+	request := types.NewRequest(1, calldata,
+		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
+		2, 1581589790, 102, 1000000,
+	)
+	keeper.SetRequest(ctx, 1, request)
+	keeper.SetRawDataRequest(ctx, 1, 42, types.NewRawDataRequest(1, []byte("calldata1")))
+
+	ctx = ctx.WithBlockHeight(5)
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589800), 0))
+
+	keeper.AddReporter(ctx, validatorAddress1, reporterAddress2)
+	err = keeper.AddReporter(ctx, validatorAddress1, reporterAddress2)
+
+	require.NotNil(t, err)
+
+	msg := types.NewMsgReportData(1, []types.RawDataReportWithID{
+		types.NewRawDataReportWithID(42, 0, []byte("data1")),
+	}, validatorAddress1, reporterAddress2)
+
+	got := handleMsgReportData(ctx, keeper, msg)
+	require.True(t, got.IsOK(), "expected report to be ok, got %v", got)
+	list := keeper.GetPendingResolveList(ctx)
+	require.Equal(t, []types.RequestID{}, list)
+
+	keeper.RemoveReporter(ctx, validatorAddress1, reporterAddress2)
+	err = keeper.RemoveReporter(ctx, validatorAddress1, reporterAddress2)
+	require.NotNil(t, err)
+
+	msg = types.NewMsgReportData(1, []types.RawDataReportWithID{
+		types.NewRawDataReportWithID(42, 0, []byte("data2")),
+	}, validatorAddress1, reporterAddress2)
+
+	got = handleMsgReportData(ctx, keeper, msg)
+	require.False(t, got.IsOK(), "expected report to be ok, got %v", got)
 
 }
