@@ -54,44 +54,41 @@ let id_to_int = id_str =>
 let fromUrl = (url: ReasonReactRouter.url) =>
   switch (url.path, url.hash) {
   | (["sources"], _) => DataSourceHomePage
-  | (["data-source", dataSourceID], "code") =>
-    DataSourceIndexPage(dataSourceID |> int_of_string, DataSourceCode)
-  | (["data-source", dataSourceID], "requests") =>
-    DataSourceIndexPage(dataSourceID |> int_of_string, DataSourceRequests)
-  | (["data-source", dataSourceID], "revisions") =>
-    DataSourceIndexPage(dataSourceID |> int_of_string, DataSourceRevisions)
-  | (["data-source", dataSourceID], _) =>
-    DataSourceIndexPage(dataSourceID |> int_of_string, DataSourceExecute)
   | (["scripts"], _) => OracleScriptHomePage
-  | ([oracleScriptID], "code") =>
-    OracleScriptIndexPage(oracleScriptID |> id_to_int, OracleScriptCode)
-  | ([oracleScriptID], "requests") =>
-    OracleScriptIndexPage(oracleScriptID |> id_to_int, OracleScriptRequests)
-  | ([oracleScriptID], "revisions") =>
-    OracleScriptIndexPage(oracleScriptID |> id_to_int, OracleScriptRevisions)
   | (["txs"], _) => TxHomePage
-  | (["tx", txHash], _) => TxIndexPage(Hash.fromHex(txHash))
   | (["validators"], _) => ValidatorHomePage
   | (["blocks"], _) => BlockHomePage
-  | (["block", blockHeight], _) =>
-    let blockHeightIntOpt = blockHeight |> int_of_string_opt;
-    BlockIndexPage(blockHeightIntOpt->Belt_Option.getWithDefault(0));
+  | (["tx", txHash], _) => TxIndexPage(Hash.fromHex(txHash))
+
   | (["request", reqID], "proof") => RequestIndexPage(reqID |> int_of_string, RequestProof)
   | (["request", reqID], _) => RequestIndexPage(reqID |> int_of_string, RequestReportStatus)
+
   | ([address], "delegations") =>
     AccountIndexPage(address |> Address.fromBech32, AccountDelegations)
   | ([address], "delegators") => ValidatorIndexPage(address |> Address.fromBech32, Delegators)
   | ([address], "reports") => ValidatorIndexPage(address |> Address.fromBech32, Reports)
-  | ([path], _) =>
-    let chars = (path |> Js.String.split(""))->Belt_List.fromArray;
-    switch (chars) {
-    | ["O", ...rest] => OracleScriptIndexPage(rest |> chars_to_int, OracleScriptExecute)
-    | ["b", "a", "n", "d", "v", "a", "l", "o", "p", "e", "r", ..._] =>
+
+  | ([path], tab) =>
+    switch ((path |> Js.String.split(""))->Belt_List.fromArray, tab) {
+    | (["B", ...rest], _) => BlockIndexPage(rest |> chars_to_int)
+    | (["O", ...rest], "code") => OracleScriptIndexPage(rest |> chars_to_int, OracleScriptCode)
+    | (["O", ...rest], "requests") =>
+      OracleScriptIndexPage(rest |> chars_to_int, OracleScriptRequests)
+    | (["O", ...rest], "revisions") =>
+      OracleScriptIndexPage(rest |> chars_to_int, OracleScriptRevisions)
+    | (["O", ...rest], _) => OracleScriptIndexPage(rest |> chars_to_int, OracleScriptExecute)
+    | (["D", ...rest], "code") => DataSourceIndexPage(rest |> chars_to_int, DataSourceCode)
+    | (["D", ...rest], "requests") =>
+      DataSourceIndexPage(rest |> chars_to_int, DataSourceRequests)
+    | (["D", ...rest], "revisions") =>
+      DataSourceIndexPage(rest |> chars_to_int, DataSourceRevisions)
+    | (["D", ...rest], _) => DataSourceIndexPage(rest |> chars_to_int, DataSourceExecute)
+    | (["b", "a", "n", "d", "v", "a", "l", "o", "p", "e", "r", ..._], _) =>
       ValidatorIndexPage(path |> Address.fromBech32, ProposedBlocks)
-    | ["b", "a", "n", "d", ..._] =>
+    | (["b", "a", "n", "d", ..._], _) =>
       AccountIndexPage(path |> Address.fromBech32, AccountTransactions)
     | _ => NotFound
-    };
+    }
   | ([], _) => HomePage
   | (_, _) => NotFound
   };
@@ -99,10 +96,10 @@ let fromUrl = (url: ReasonReactRouter.url) =>
 let toString =
   fun
   | DataSourceHomePage => "/sources"
-  | DataSourceIndexPage(dataSourceID, DataSourceExecute) => {j|/data-source/$dataSourceID|j}
-  | DataSourceIndexPage(dataSourceID, DataSourceCode) => {j|/data-source/$dataSourceID#code|j}
-  | DataSourceIndexPage(dataSourceID, DataSourceRequests) => {j|/data-source/$dataSourceID#requests|j}
-  | DataSourceIndexPage(dataSourceID, DataSourceRevisions) => {j|/data-source/$dataSourceID#revisions|j}
+  | DataSourceIndexPage(dataSourceID, DataSourceExecute) => {j|/D$dataSourceID|j}
+  | DataSourceIndexPage(dataSourceID, DataSourceCode) => {j|/D$dataSourceID#code|j}
+  | DataSourceIndexPage(dataSourceID, DataSourceRequests) => {j|/D$dataSourceID#requests|j}
+  | DataSourceIndexPage(dataSourceID, DataSourceRevisions) => {j|/D$dataSourceID#revisions|j}
   | OracleScriptHomePage => "/scripts"
   | OracleScriptIndexPage(oracleScriptID, OracleScriptExecute) => {j|/O$oracleScriptID|j}
   | OracleScriptIndexPage(oracleScriptID, OracleScriptCode) => {j|/O$oracleScriptID#code|j}
@@ -112,7 +109,7 @@ let toString =
   | TxIndexPage(txHash) => {j|/tx/$txHash|j}
   | ValidatorHomePage => "/validators"
   | BlockHomePage => "/blocks"
-  | BlockIndexPage(height) => {j|/block/$height|j}
+  | BlockIndexPage(height) => {j|/B$height|j}
   | RequestIndexPage(reqID, RequestReportStatus) => {j|/request/$reqID|j}
   | RequestIndexPage(reqID, RequestProof) => {j|/request/$reqID#proof|j}
   | AccountIndexPage(address, AccountTransactions) => {
