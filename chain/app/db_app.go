@@ -1,9 +1,7 @@
 package app
 
 import (
-	"encoding/hex"
 	"io"
-	"strings"
 
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -66,8 +64,8 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 		for _, msg := range tx.Msgs {
 			if createMsg, ok := msg.(staking.MsgCreateValidator); ok {
 				err := app.dbBand.AddValidator(
-					createMsg.ValidatorAddress.String(),
-					createMsg.PubKey.Address().String(),
+					createMsg.ValidatorAddress,
+					createMsg.PubKey,
 				)
 				if err != nil {
 					panic(err)
@@ -109,9 +107,8 @@ func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseB
 	}
 
 	for _, val := range req.GetLastCommitInfo().Votes {
-		consensusAddress := strings.ToUpper(hex.EncodeToString(val.GetValidator().Address))
 		app.dbBand.AddValidatorUpTime(
-			consensusAddress,
+			val.GetValidator().Address,
 			req.Header.GetHeight()-1,
 			val.GetSignedLastBlock(),
 		)
