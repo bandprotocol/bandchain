@@ -110,7 +110,7 @@ func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseB
 
 	for _, val := range req.GetLastCommitInfo().Votes {
 		consensusAddress := strings.ToUpper(hex.EncodeToString(val.GetValidator().Address))
-		app.dbBand.UpdateValidatorUpTime(
+		app.dbBand.AddValidatorUpTime(
 			consensusAddress,
 			req.Header.GetHeight()-1,
 			val.GetSignedLastBlock(),

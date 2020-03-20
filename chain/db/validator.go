@@ -10,7 +10,7 @@ func (b *BandDB) AddValidator(
 	}).Error
 }
 
-func (b *BandDB) UpdateValidatorUpTime(
+func (b *BandDB) AddValidatorUpTime(
 	consensusAddress string,
 	height int64,
 	voted bool,
@@ -38,28 +38,6 @@ func (b *BandDB) UpdateValidatorUpTime(
 		validator.MissedCount++
 	}
 
-	uptimeLookBackDuration, err := b.GetUptimeLookBackDuration()
-	if err != nil {
-		return err
-	}
-
-	// Find old vote
-	if height > uptimeLookBackDuration {
-		var vote ValidatorVote
-		err = b.tx.Where(ValidatorVote{
-			ConsensusAddress: consensusAddress,
-			BlockHeight:      height - uptimeLookBackDuration,
-		}).First(&vote).Error
-		if err == nil {
-			validator.ElectedCount--
-			if vote.Voted {
-				validator.VotedCount--
-			} else {
-				validator.MissedCount--
-			}
-			b.tx.Delete(&vote)
-		}
-	}
 	b.tx.Save(&validator)
 	return nil
 }
@@ -69,7 +47,32 @@ func (b *BandDB) ClearOldVotes(currentHeight int64) error {
 	if err != nil {
 		return err
 	}
+
 	if currentHeight > uptimeLookBackDuration {
+		var votes []ValidatorVote
+		err := b.tx.Find(
+			&votes,
+			"block_height <= ?",
+			currentHeight-uptimeLookBackDuration,
+		).Error
+
+		if err != nil {
+			return err
+		}
+		for _, vote := range votes {
+			var validator ValidatorStatus
+			err = b.tx.Where(ValidatorStatus{ConsensusAddress: vote.ConsensusAddress}).First(&validator).Error
+			if err == nil {
+				validator.ElectedCount--
+				if vote.Voted {
+					validator.VotedCount--
+				} else {
+					validator.MissedCount--
+				}
+				b.tx.Save(&validator)
+			}
+
+		}
 		return b.tx.Delete(
 			ValidatorVote{},
 			"block_height <= ?",
