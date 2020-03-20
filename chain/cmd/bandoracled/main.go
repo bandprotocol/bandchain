@@ -234,7 +234,7 @@ func handleRequest(requestID zoracle.RequestID) {
 		return
 	}
 	tx, err := bandClient.SendTransaction(
-		zoracle.NewMsgReportData(requestID, reports, sdk.ValAddress(bandClient.Sender())),
+		zoracle.NewMsgReportData(requestID, reports, sdk.ValAddress(bandClient.Sender()), bandClient.Sender()),
 		gasFlagVar.Gas, viper.GetString(flags.FlagFees), viper.GetString(flags.FlagGasPrices),
 	)
 

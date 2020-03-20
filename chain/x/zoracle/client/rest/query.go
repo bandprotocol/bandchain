@@ -79,7 +79,7 @@ func buildRequestRESTInfo(
 			for _, msg := range report.Tx.GetMsgs() {
 				msgReport, ok := msg.(types.MsgReportData)
 				if ok {
-					txReportMap[string(msgReport.Sender)] = buildTxDetail(&report)
+					txReportMap[string(msgReport.Validator)] = buildTxDetail(&report)
 					break
 				}
 			}
