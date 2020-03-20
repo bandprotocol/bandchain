@@ -28,25 +28,25 @@ module Account = {
   let decodeCoin = json =>
     JsonUtils.Decode.(json |> field("amount", uamount), json |> field("denom", string));
 
-  let decodeReward1 = json =>
+  let decodeReward = json =>
     JsonUtils.Decode.{
       validatorAddress: json |> field("validator_address", string),
       reward: json |> field("reward", list(decodeCoin)) |> filterUband,
     };
-  let decodeRewards1 = json =>
-    JsonUtils.Decode.(json |> at(["result", "rewards"], list(decodeReward1)));
+  let decodeRewards = json =>
+    JsonUtils.Decode.(json |> at(["result", "rewards"], list(decodeReward)));
 
-  let decodeDelegator1 = json =>
+  let decodeDelegator = json =>
     JsonUtils.Decode.{
       validatorAddress: json |> field("validator_address", string),
       balance: json |> field("balance", uamount),
     };
-  let decodeDelegators1 = json =>
-    JsonUtils.Decode.(json |> field("result", list(decodeDelegator1)));
+  let decodeDelegators = json =>
+    JsonUtils.Decode.(json |> field("result", list(decodeDelegator)));
 
   let decodeDelegations = (rewardsJson, delegationsJson) => {
-    let rewards = rewardsJson |> decodeRewards1;
-    let delegators = delegationsJson |> decodeDelegators1;
+    let rewards = rewardsJson |> decodeRewards;
+    let delegators = delegationsJson |> decodeDelegators;
 
     let%IterList reward = rewards;
     let%IterList delegator = delegators;
