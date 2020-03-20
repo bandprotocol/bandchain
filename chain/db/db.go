@@ -26,6 +26,13 @@ func NewDB(dialect, path string) (*BandDB, error) {
 		&ValidatorVote{},
 	)
 
+	db.Model(&ValidatorVote{}).AddForeignKey(
+		"consensus_address",
+		"validator_statuses(consensus_address)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
 	return &BandDB{db: db}, nil
 }
 

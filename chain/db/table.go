@@ -20,8 +20,6 @@ type ValidatorStatus struct {
 	ElectedCount     uint
 	VotedCount       uint
 	MissedCount      uint
-
-	ValidatorVotes []ValidatorVote `gorm:"foreignkey:ConsensusAddress;association_foreignkey:ConsensusAddress"`
 }
 
 type ValidatorVote struct {
