@@ -21,6 +21,16 @@ func (b *BandDB) GetMetadataValue(key string) (string, error) {
 	return data.Value, nil
 }
 
+func (b *BandDB) SetMetadataValue(key, value string) error {
+	return b.tx.Where(Metadata{Key: key}).
+		Assign(Metadata{Value: value}).
+		FirstOrCreate(&Metadata{}).Error
+}
+
+func (b *BandDB) SetMetadataValueInt64(key string, value int64) error {
+	return b.SetMetadataValue(key, fmt.Sprintf("%d", value))
+}
+
 func (b *BandDB) GetMetadataValueInt64(key string) (int64, error) {
 	rawString, err := b.GetMetadataValue(key)
 	if err != nil {
@@ -33,13 +43,6 @@ func (b *BandDB) GetMetadataValueInt64(key string) (int64, error) {
 	}
 	return value, nil
 }
-
-func (b *BandDB) SetMetadataValue(key, value string) error {
-	return b.tx.Where(Metadata{Key: key}).
-		Assign(Metadata{Value: value}).
-		FirstOrCreate(&Metadata{}).Error
-}
-
 func (b *BandDB) SaveChainID(chainID string) error {
 	return b.SetMetadataValue(KeyChainID, chainID)
 }
@@ -56,7 +59,7 @@ func (b *BandDB) ValidateChainID(chainID string) error {
 }
 
 func (b *BandDB) SetLastProcessedHeight(height int64) error {
-	return b.SetMetadataValue(KeyLastProcessedHeight, fmt.Sprintf("%d", height))
+	return b.SetMetadataValueInt64(KeyLastProcessedHeight, height)
 }
 
 func (b *BandDB) GetLastProcessedHeight() (int64, error) {
@@ -64,7 +67,7 @@ func (b *BandDB) GetLastProcessedHeight() (int64, error) {
 }
 
 func (b *BandDB) SetUptimeLookBackDuration(duration int64) error {
-	return b.SetMetadataValue(KeyUptimeLookBackDuration, fmt.Sprintf("%d", duration))
+	return b.SetMetadataValueInt64(KeyUptimeLookBackDuration, duration)
 }
 
 func (b *BandDB) GetUptimeLookBackDuration() (int64, error) {
