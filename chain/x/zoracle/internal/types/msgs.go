@@ -102,19 +102,22 @@ func (msg MsgRequestData) GetSignBytes() []byte {
 type MsgReportData struct {
 	RequestID RequestID             `json:"requestID"`
 	DataSet   []RawDataReportWithID `json:"dataSet"`
-	Sender    sdk.ValAddress        `json:"sender"`
+	Validator sdk.ValAddress        `json:"validator"`
+	Reporter  sdk.AccAddress        `json:"reporter"`
 }
 
 // NewMsgReportData creates a new MsgReportData instance.
 func NewMsgReportData(
 	requestID RequestID,
 	dataSet []RawDataReportWithID,
-	sender sdk.ValAddress,
+	validator sdk.ValAddress,
+	reporter sdk.AccAddress,
 ) MsgReportData {
 	return MsgReportData{
 		RequestID: requestID,
 		DataSet:   dataSet,
-		Sender:    sender,
+		Validator: validator,
+		Reporter:  reporter,
 	}
 }
 
@@ -132,15 +135,18 @@ func (msg MsgReportData) ValidateBasic() sdk.Error {
 	if msg.DataSet == nil || len(msg.DataSet) == 0 {
 		return ErrInvalidBasicMsg("MsgReportData: Data set must not be empty.")
 	}
-	if msg.Sender.Empty() {
-		return ErrInvalidBasicMsg("MsgReportData: Sender address must not be empty.")
+	if msg.Validator.Empty() {
+		return ErrInvalidBasicMsg("MsgReportData: Validator address must not be empty.")
+	}
+	if msg.Reporter.Empty() {
+		return ErrInvalidBasicMsg("MsgReportData: Reporter address must not be empty.")
 	}
 	return nil
 }
 
 // GetSigners implements the sdk.Msg interface for MsgReportData.
 func (msg MsgReportData) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{sdk.AccAddress(msg.Sender)}
+	return []sdk.AccAddress{msg.Reporter}
 }
 
 // GetSignBytes implements the sdk.Msg interface for MsgReportData.

@@ -9,7 +9,6 @@ import (
 const (
 	// ModuleName is the name of the module
 	ModuleName = "zoracle"
-
 	// StoreKey to be used when creating the KVStore
 	StoreKey = ModuleName
 )
@@ -49,6 +48,9 @@ var (
 
 	// OracleScriptStoreKeyPrefix is a prefix for oracle script store.
 	OracleScriptStoreKeyPrefix = []byte{0x05}
+
+	// ReporterStoreKeyPrefix is a prefix for reporter store.
+	ReporterStoreKeyPrefix = []byte{0x06}
 )
 
 // RequestStoreKey is a function to generate key for each request in store
@@ -87,6 +89,13 @@ func DataSourceStoreKey(dataSourceID DataSourceID) []byte {
 // OracleScriptStoreKey is a function to generate key for each oracle script in store.
 func OracleScriptStoreKey(oracleScriptID OracleScriptID) []byte {
 	return append(OracleScriptStoreKeyPrefix, int64ToBytes(int64(oracleScriptID))...)
+}
+
+// ReporterStoreKey is a function to generate key for each validator-reporter pair in store.
+func ReporterStoreKey(validatorAddress sdk.ValAddress, reporterAddress sdk.AccAddress) []byte {
+	buff := append(ReporterStoreKeyPrefix, []byte(validatorAddress)...)
+	buff = append(buff, []byte(reporterAddress)...)
+	return buff
 }
 
 // GetIteratorPrefix is a function to get specific prefix
