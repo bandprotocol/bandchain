@@ -117,7 +117,7 @@ fn parse_coingecko_symbol(symbol: &[u8]) -> &[u8] {
           <div> <Text value="Rust 1.40.0" code=true weight=Text.Semibold /> </div>
         </Col>
       </Row>
-      <VSpacing size={`px(30)} />
+      <VSpacing size={`px(35)} />
       {codes
        ->Belt_List.map(((co, name)) => {
            React.useMemo1(
