@@ -4,7 +4,7 @@ func (b *BandDB) AddValidator(
 	operatorAddress string,
 	consensusAddress string,
 ) error {
-	return b.tx.Create(&ValidatorStatus{
+	return b.tx.Create(&Validator{
 		OperatorAddress:  operatorAddress,
 		ConsensusAddress: consensusAddress,
 	}).Error
@@ -25,8 +25,8 @@ func (b *BandDB) AddValidatorUpTime(
 		return err
 	}
 
-	var validator ValidatorStatus
-	err = b.tx.Where(ValidatorStatus{ConsensusAddress: consensusAddress}).First(&validator).Error
+	var validator Validator
+	err = b.tx.Where(Validator{ConsensusAddress: consensusAddress}).First(&validator).Error
 	if err != nil {
 		return err
 	}
@@ -60,8 +60,8 @@ func (b *BandDB) ClearOldVotes(currentHeight int64) error {
 			return err
 		}
 		for _, vote := range votes {
-			var validator ValidatorStatus
-			err = b.tx.Where(ValidatorStatus{ConsensusAddress: vote.ConsensusAddress}).First(&validator).Error
+			var validator Validator
+			err = b.tx.Where(Validator{ConsensusAddress: vote.ConsensusAddress}).First(&validator).Error
 			if err == nil {
 				validator.ElectedCount--
 				if vote.Voted {

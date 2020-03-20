@@ -22,13 +22,13 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 	db.AutoMigrate(
 		&Metadata{},
 		&Event{},
-		&ValidatorStatus{},
+		&Validator{},
 		&ValidatorVote{},
 	)
 
 	db.Model(&ValidatorVote{}).AddForeignKey(
 		"consensus_address",
-		"validator_statuses(consensus_address)",
+		"validators(consensus_address)",
 		"RESTRICT",
 		"RESTRICT",
 	)

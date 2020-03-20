@@ -14,7 +14,7 @@ type Event struct {
 	Name string
 }
 
-type ValidatorStatus struct {
+type Validator struct {
 	OperatorAddress  string `gorm:"primary_key"`
 	ConsensusAddress string `gorm:"unique;not null"`
 	ElectedCount     uint
