@@ -7,6 +7,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestCheckSelfReporter(t *testing.T) {
+	ctx, keeper := CreateTestInput(t, false)
+
+	validatorAddress1 := sdk.ValAddress([]byte("validator1"))
+
+	ac := keeper.CheckReporter(ctx, validatorAddress1, sdk.AccAddress(validatorAddress1))
+
+	require.True(t, ac)
+}
+
 func TestAddReporterSuccess(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
