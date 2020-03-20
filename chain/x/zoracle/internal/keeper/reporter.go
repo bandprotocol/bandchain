@@ -6,6 +6,9 @@ import (
 )
 
 func (k Keeper) CheckReporter(ctx sdk.Context, validatorAddress sdk.ValAddress, reporterAddress sdk.AccAddress) bool {
+	if validatorAddress.Equals(sdk.ValAddress(reporterAddress)) {
+		return true
+	}
 	store := ctx.KVStore(k.storeKey)
 	return store.Has(types.ReporterStoreKey(validatorAddress, reporterAddress))
 }
