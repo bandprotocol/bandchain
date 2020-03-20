@@ -36,21 +36,19 @@ func (k Keeper) AddReport(
 		)
 	}
 
-	found := false
-	for _, validValidator := range request.RequestedValidators {
-		if validator.Equals(validValidator) {
-			found = true
-			break
-		}
+	if !k.CheckReporter(ctx, validator, reporter) {
+		return types.ErrUnauthorizedPermission(
+			"AddReport: Reporter (%s) is unauthorized permission to be reporter.",
+			reporter.String(),
+		)
 	}
 
-	if !found && k.CheckReporter(ctx, validator, reporter) {
-		agent := sdk.ValAddress(reporter)
-		for _, validValidator := range request.RequestedValidators {
-			if agent.Equals(validValidator) {
-				found = true
-				break
-			}
+	found := false
+	agent := sdk.ValAddress(reporter)
+	for _, validValidator := range request.RequestedValidators {
+		if agent.Equals(validValidator) {
+			found = true
+			break
 		}
 	}
 
