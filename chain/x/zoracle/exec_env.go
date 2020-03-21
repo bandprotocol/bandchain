@@ -9,10 +9,17 @@ import (
 )
 
 type ExecutionEnvironment struct {
-	ctx       sdk.Context
-	keeper    Keeper
-	requestID types.RequestID
-	request   types.Request
+	ctx    sdk.Context
+	keeper Keeper
+	//
+	requestID       types.RequestID
+	request         types.Request
+	now             int64
+	maxResultSize   int64
+	maxCalldataSize int64
+	//
+	rawDataRequests []types.RawDataRequestWithExternalID
+	rawDataReports  map[string]types.RawDataReport
 }
 
 func NewExecutionEnvironment(
@@ -23,11 +30,28 @@ func NewExecutionEnvironment(
 		return ExecutionEnvironment{}, err
 	}
 	return ExecutionEnvironment{
-		ctx:       ctx,
-		keeper:    keeper,
-		requestID: requestID,
-		request:   request,
+		ctx:             ctx,
+		keeper:          keeper,
+		requestID:       requestID,
+		request:         request,
+		now:             ctx.BlockTime().Unix(),
+		maxResultSize:   keeper.MaxResultSize(ctx),
+		maxCalldataSize: keeper.MaxCalldataSize(ctx),
+		rawDataRequests: []types.RawDataRequestWithExternalID{},
 	}, nil
+}
+
+func (env *ExecutionEnvironment) SaveRawDataRequests(ctx sdk.Context, keeper Keeper) sdk.Error {
+	for _, r := range env.rawDataRequests {
+		err := keeper.AddNewRawDataRequest(
+			ctx, env.requestID, r.ExternalID,
+			r.RawDataRequest.DataSourceID, r.RawDataRequest.Calldata,
+		)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (env *ExecutionEnvironment) GetCurrentRequestID() int64 {
@@ -52,7 +76,7 @@ func (env *ExecutionEnvironment) GetPrepareBlockTime() int64 {
 
 func (env *ExecutionEnvironment) GetAggregateBlockTime() int64 {
 	if int64(len(env.request.ReceivedValidators)) >= env.request.SufficientValidatorCount {
-		return env.ctx.BlockTime().Unix()
+		return env.now
 	}
 	return 0
 }
@@ -65,19 +89,22 @@ func (env *ExecutionEnvironment) GetValidatorAddress(validatorIndex int64) ([]by
 }
 
 func (env *ExecutionEnvironment) GetMaximumResultSize() int64 {
-	return env.keeper.MaxResultSize(env.ctx)
+	return env.maxResultSize
 }
 
 func (env *ExecutionEnvironment) GetMaximumCalldataOfDataSourceSize() int64 {
-	return env.keeper.MaxCalldataSize(env.ctx)
+	return env.maxCalldataSize
 }
 
 func (env *ExecutionEnvironment) RequestExternalData(
 	dataSourceID int64,
 	externalDataID int64,
 	calldata []byte,
-) error {
-	return env.keeper.AddNewRawDataRequest(env.ctx, env.requestID, types.ExternalID(externalDataID), types.DataSourceID(dataSourceID), calldata)
+) {
+	env.rawDataRequests = append(env.rawDataRequests, types.NewRawDataRequestWithExternalID(
+		types.ExternalID(externalDataID),
+		types.NewRawDataRequest(types.DataSourceID(dataSourceID), calldata),
+	))
 }
 
 func (env *ExecutionEnvironment) GetExternalData(

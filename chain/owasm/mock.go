@@ -58,10 +58,9 @@ func (m *mockExecutionEnvironment) RequestExternalData(
 	dataSourceID int64,
 	externalDataID int64,
 	calldata []byte,
-) error {
+) {
 	// TODO: Figure out how to mock this elegantly.
 	fmt.Printf("RequestExternalData: DataSourceID = %d, ExternalDataID = %d\n", dataSourceID, externalDataID)
-	return nil
 }
 
 func (m *mockExecutionEnvironment) GetExternalData(

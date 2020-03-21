@@ -250,6 +250,11 @@ func handleMsgRequestData(ctx sdk.Context, keeper Keeper, msg MsgRequestData) sd
 		).Result()
 	}
 
+	err = env.SaveRawDataRequests(ctx, keeper)
+	if err != nil {
+		return err.Result()
+	}
+
 	err = keeper.ValidateDataSourceCount(ctx, id)
 	if err != nil {
 		return err.Result()
