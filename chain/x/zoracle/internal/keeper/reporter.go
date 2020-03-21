@@ -5,6 +5,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+// CheckReporter returns true iff the given reporter is authorized to report data on behalf of
+// the given validator.
 func (k Keeper) CheckReporter(
 	ctx sdk.Context, validatorAddress sdk.ValAddress, reporterAddress sdk.AccAddress,
 ) bool {
