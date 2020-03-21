@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-type ResolveStatus int
+type ResolveStatus int8
 
 const (
 	Open ResolveStatus = iota
