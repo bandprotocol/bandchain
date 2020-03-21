@@ -126,14 +126,10 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
       Some(account.delegations);
     }
     |> Belt_Option.getWithDefault(_, []);
-  let usdPrice = {
-    let%Opt price = priceOpt;
-    Some(1. /. price.usdPrice);
-  };
 
   let totalBalanceOpt = {
     let%Opt account = accountOpt;
-    Some(account.balance +. account.balanceStake);
+    Some(account.balance +. account.balanceStake +. account.reward);
   };
 
   <div className=Styles.pageContainer>
@@ -161,36 +157,36 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
     <Row justify=Row.Between>
       <Col size=0.75> <img src=Images.pieChart className=Styles.graph /> </Col>
       <Col size=1.>
-        {switch (accountOpt, usdPrice) {
+        {switch (accountOpt, priceOpt) {
          | (Some(account), Some(price)) =>
            balanceDetail(
              "AVAILABLE BALANCE",
              account.balance |> Format.fPretty,
-             account.balance *. price |> Format.fPretty,
+             account.balance *. price.usdPrice |> Format.fPretty,
              "5269FF",
            )
          | _ => balanceDetail("AVAILABLE BALANCE", "?", "?", "5269FF")
          }}
         <VSpacing size=Spacing.xl />
         <VSpacing size=Spacing.md />
-        {switch (accountOpt, usdPrice) {
+        {switch (accountOpt, priceOpt) {
          | (Some(account), Some(price)) =>
            balanceDetail(
              "BALANCE AT STAKE",
              account.balanceStake |> Format.fPretty,
-             account.balanceStake *. price |> Format.fPretty,
+             account.balanceStake *. price.usdPrice |> Format.fPretty,
              "ABB6FF",
            )
          | _ => balanceDetail("BALANCE AT STAKE", "?", "?", "ABB6FF")
          }}
         <VSpacing size=Spacing.xl />
         <VSpacing size=Spacing.md />
-        {switch (accountOpt, usdPrice) {
+        {switch (accountOpt, priceOpt) {
          | (Some(account), Some(price)) =>
            balanceDetail(
              "REWARD",
              account.reward |> Format.fPretty,
-             account.reward *. price |> Format.fPretty,
+             account.reward *. price.usdPrice |> Format.fPretty,
              "000C5C",
            )
          | _ => balanceDetail("REWARD", "?", "?", "000C5C")
@@ -199,13 +195,13 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
       <div className=Styles.separatorLine />
       <Col size=1. alignSelf=Col.Start>
         <div className=Styles.totalContainer>
-          {switch (totalBalanceOpt, usdPrice) {
+          {switch (totalBalanceOpt, priceOpt) {
            | (Some(totalBand), Some(price)) =>
              <>
                {totalBalance("TOTAL BAND BALANCE", totalBand |> Format.fPretty, "BAND")}
                {totalBalance(
-                  "TOTAL BAND IN USD ($" ++ (price |> Format.fPretty) ++ " / BAND)",
-                  totalBand *. price |> Format.fPretty,
+                  "TOTAL BAND IN USD ($" ++ (price.usdPrice |> Format.fPretty) ++ " / BAND)",
+                  totalBand *. price.usdPrice |> Format.fPretty,
                   "USD",
                 )}
              </>
