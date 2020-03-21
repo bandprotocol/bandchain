@@ -182,8 +182,8 @@ func TestRequestExternalData(t *testing.T) {
 
 	env, err := NewExecutionEnvironment(ctx, keeper, 1)
 	require.Nil(t, err)
-	envErr := env.RequestExternalData(1, 42, []byte("prepare32"))
-	require.Nil(t, envErr)
+	env.RequestExternalData(1, 42, []byte("prepare32"))
+	env.SaveRawDataRequests(ctx, keeper)
 
 	rawRequest, err := keeper.GetRawDataRequest(ctx, 1, 42)
 	require.Nil(t, err)
@@ -214,19 +214,15 @@ func TestRequestExternalDataExceedMaxDataSourceCountPerRequest(t *testing.T) {
 
 	// Set MaxDataSourceCountPerRequest to 5
 	keeper.SetParam(ctx, KeyMaxDataSourceCountPerRequest, 5)
-	envErr := env.RequestExternalData(1, 41, []byte("prepare32"))
-	require.Nil(t, envErr)
-	envErr = env.RequestExternalData(1, 42, []byte("prepare32"))
-	require.Nil(t, envErr)
-	envErr = env.RequestExternalData(1, 43, []byte("prepare32"))
-	require.Nil(t, envErr)
-	envErr = env.RequestExternalData(1, 44, []byte("prepare32"))
-	require.Nil(t, envErr)
-	envErr = env.RequestExternalData(1, 45, []byte("prepare32"))
-	require.Nil(t, envErr)
+	env.RequestExternalData(1, 41, []byte("prepare32"))
+	env.RequestExternalData(1, 42, []byte("prepare32"))
+	env.RequestExternalData(1, 43, []byte("prepare32"))
+	env.RequestExternalData(1, 44, []byte("prepare32"))
+	env.RequestExternalData(1, 45, []byte("prepare32"))
+	env.RequestExternalData(1, 46, []byte("prepare32"))
 
 	// Should get an error if trying to request more external data
-	envErr = env.RequestExternalData(1, 46, []byte("prepare32"))
+	envErr := env.SaveRawDataRequests(ctx, keeper)
 	require.NotNil(t, envErr)
 }
 

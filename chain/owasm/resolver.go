@@ -132,10 +132,7 @@ func (r *resolver) resolveRequestExternalData(vm *exec.VirtualMachine) int64 {
 	}
 	data := make([]byte, dataLength)
 	copy(data, vm.Memory[dataOffset:dataOffset+dataLength])
-	err := r.env.RequestExternalData(dataSourceID, externalDataID, data)
-	if err != nil {
-		return -1
-	}
+	r.env.RequestExternalData(dataSourceID, externalDataID, data)
 	return 0
 }
 
