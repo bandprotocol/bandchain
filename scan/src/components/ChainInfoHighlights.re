@@ -169,13 +169,15 @@ let make = () =>
                              size=Text.Xxxl
                              weight=Text.Semibold
                              color=Colors.gray8
-                             code=true
                            />;
                          }
           extraComponent={
-                           let bondedAmount = bandBonded->Format.fPretty ++ " BAND Bonded";
-                           <Text value=bondedAmount code=true />;
-                         }
+            <div className=Styles.vFlex>
+              <Text value={bandBonded->Format.fPretty} code=true />
+              <HSpacing size=Spacing.sm />
+              <Text value=" BAND Bonded" />
+            </div>
+          }
         />
       </Row>,
     );
