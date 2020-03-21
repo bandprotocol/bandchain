@@ -6,6 +6,10 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
+
+	"github.com/bandprotocol/bandchain/chain/x/zoracle"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/auth"
 )
 
 type BandDB struct {
@@ -50,18 +54,37 @@ func (b *BandDB) RollBack() {
 	b.tx = nil
 }
 
-func (b *BandDB) HandleEvent(eventName string, attributes map[string]string) {
-	switch eventName {
+func (b *BandDB) HandleTransaction(tx auth.StdTx, txHash []byte, logs sdk.ABCIMessageLogs) {
+	msgs := tx.GetMsgs()
+	if len(msgs) != len(logs) {
+		panic("Inconsistent size of msgs and logs.")
+	}
+
+	for idx, msg := range msgs {
+		events := logs[idx].Events
+		kvMap := make(map[string]string)
+		for _, event := range events {
+			for _, kv := range event.Attributes {
+				kvMap[event.Type+"."+kv.Key] = kv.Value
+			}
+		}
+		b.HandleMessage(msg, kvMap)
+	}
+}
+
+func (b *BandDB) HandleMessage(msg sdk.Msg, attributes map[string]string) {
+	switch msg := msg.(type) {
 	// Just proof of concept
-	case "message":
+	case zoracle.MsgCreateDataSource:
 		{
+			_ = msg
 			// Event message split events on report event eg.
 			// message map[action:report]
 			// message map[sender:band17xpfvakm2amg962yls6f84z3kell8c5lfkrzn4]
-			action, ok := attributes["action"]
-			if ok {
-				b.handleMessageEvent(action)
-			}
+			// action, ok := attributes["action"]
+			// if ok {
+			// 	b.handleMessageEvent(action)
+			// }
 		}
 	default:
 		// TODO: Better logging
