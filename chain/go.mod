@@ -12,7 +12,7 @@ require (
 	github.com/levigross/grequests v0.0.0-20190908174114-253788527a1a
 	github.com/mattn/go-shellwords v1.0.10
 	github.com/perlin-network/life v0.0.0-20191203030451-05c0e0f7eaea
-	github.com/rakyll/statik v0.1.6
+	github.com/rakyll/statik v0.1.7
 	github.com/spf13/cobra v0.0.6
 	github.com/spf13/viper v1.6.2
 	github.com/stretchr/testify v1.4.0
