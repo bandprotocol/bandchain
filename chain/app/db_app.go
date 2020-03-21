@@ -4,10 +4,12 @@ import (
 	"io"
 
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	abci "github.com/tendermint/tendermint/abci/types"
+	"github.com/tendermint/tendermint/crypto/tmhash"
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
 
@@ -59,7 +61,7 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 	genutil.ModuleCdc.MustUnmarshalJSON(genesisState[genutil.ModuleName], &genutilState)
 
 	for _, genTx := range genutilState.GenTxs {
-		var tx authtypes.StdTx
+		var tx auth.StdTx
 		genutil.ModuleCdc.MustUnmarshalJSON(genTx, &tx)
 		for _, msg := range tx.Msgs {
 			if createMsg, ok := msg.(staking.MsgCreateValidator); ok {
@@ -85,14 +87,24 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 	if err != nil {
 		panic(err)
 	}
-	if res.IsOK() && lastProcessHeight+1 == app.DeliverContext.BlockHeight() {
-		for _, event := range res.Events {
-			kvMap := make(map[string]string)
-			for _, kv := range event.Attributes {
-				kvMap[string(kv.GetKey())] = string(kv.GetValue())
-			}
-			app.dbBand.HandleEvent(event.Type, kvMap)
-		}
+	if lastProcessHeight+1 == app.DeliverContext.BlockHeight() {
+		return res
+	}
+	if !res.IsOK() {
+		// TODO: We should not completely ignore failed transactions.
+		return res
+	}
+	logs, err := sdk.ParseABCILogs(res.Log)
+	if err != nil {
+		panic(err)
+	}
+	tx, err := app.TxDecoder(req.Tx)
+	if err != nil {
+		panic(err)
+	}
+	if stdTx, ok := tx.(auth.StdTx); ok {
+		txHash := tmhash.Sum(req.Tx)
+		app.dbBand.HandleTransaction(stdTx, txHash, logs)
 	}
 	return res
 }
