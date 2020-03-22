@@ -116,7 +116,8 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) => {
             | OracleScriptExecute => <OracleScriptExecute code={oracleScript.code} />
             | OracleScriptCode => <OracleScriptCode />
             | OracleScriptRequests => <OracleScriptRequestTable />
-            | OracleScriptRevisions => <RevisionTable revisions=[] />
+            | OracleScriptRevisions =>
+              <OracleScriptRevisionTable revisions={oracleScript.revisions} />
             }}
          </Tab>
        </>

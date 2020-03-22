@@ -25,6 +25,8 @@ type request_t = {
 
 [@react.component]
 let make = () => {
+  let (page, setPage) = React.useState(_ => 1);
+  let pageCount = 10;
   let requests: list(request_t) = [
     {
       id: 6,
@@ -136,6 +138,13 @@ let make = () => {
               })
             ->Array.of_list
             ->React.array}
+           <VSpacing size=Spacing.lg />
+           <VSpacing size=Spacing.lg />
+           <Pagination
+             currentPage=page
+             pageCount
+             onPageChange={newPage => setPage(_ => newPage)}
+           />
          </>
        : <div className=Styles.iconWrapper>
            <VSpacing size={`px(30)} />
