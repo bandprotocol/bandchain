@@ -1,6 +1,8 @@
 package db
 
 import (
+	"time"
+
 	"github.com/jinzhu/gorm"
 )
 
@@ -26,4 +28,23 @@ type ValidatorVote struct {
 	ConsensusAddress string `gorm:"primary_key"`
 	BlockHeight      int64  `gorm:"primary_key;auto_increment:false"`
 	Voted            bool   `gorm:"not null"`
+}
+
+type DataSource struct {
+	ID          int64 `gorm:"primary_key;auto_increment:false"`
+	Name        string
+	Description string
+	Owner       string
+	Executable  []byte
+	Fee         string
+	LastUpdated time.Time
+}
+
+type DataSourceRevision struct {
+	DataSourceID   int64 `gorm:"primary_key;auto_increment:false"`
+	RevisionNumber int64 `gorm:"primary_key"`
+	Name           string
+	Timestamp      time.Time
+	BlockHeight    int64
+	TxHash         []byte
 }

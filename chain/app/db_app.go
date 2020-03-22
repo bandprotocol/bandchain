@@ -2,6 +2,7 @@ package app
 
 import (
 	"io"
+	"time"
 
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -14,6 +15,7 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/bandprotocol/bandchain/chain/db"
+	"github.com/bandprotocol/bandchain/chain/x/zoracle"
 )
 
 type dbBandApp struct {
@@ -27,6 +29,7 @@ func NewDBBandApp(
 ) *dbBandApp {
 	app := NewBandApp(logger, db, traceStore, loadLatest, invCheckPeriod, baseAppOptions...)
 
+	dbBand.ZoracleKeeper = app.ZoracleKeeper
 	return &dbBandApp{bandApp: app, dbBand: dbBand}
 }
 
@@ -76,6 +79,28 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 		}
 	}
 
+	// Zoracle genesis
+	var zoracleState zoracle.GenesisState
+	zoracle.ModuleCdc.MustUnmarshalJSON(genesisState[zoracle.ModuleName], &zoracleState)
+
+	// Save data source
+	for idx, dataSource := range zoracleState.DataSources {
+		err := app.dbBand.AddDataSource(
+			int64(idx+1),
+			dataSource.Name,
+			dataSource.Description,
+			dataSource.Owner,
+			dataSource.Fee,
+			dataSource.Executable,
+			time.Now(),
+			0,
+			[]byte{},
+		)
+		if err != nil {
+			panic(err)
+		}
+	}
+
 	app.dbBand.Commit()
 
 	return app.bandApp.InitChain(req)
@@ -87,7 +112,7 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 	if err != nil {
 		panic(err)
 	}
-	if lastProcessHeight+1 == app.DeliverContext.BlockHeight() {
+	if lastProcessHeight+1 != app.DeliverContext.BlockHeight() {
 		return res
 	}
 	if !res.IsOK() {
@@ -113,6 +138,7 @@ func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseB
 	res = app.bandApp.BeginBlock(req)
 	// Begin transaction
 	app.dbBand.BeginTransaction()
+	app.dbBand.SetContext(app.DeliverContext)
 	err := app.dbBand.ValidateChainID(app.DeliverContext.ChainID())
 	if err != nil {
 		panic(err)

@@ -13,8 +13,11 @@ import (
 )
 
 type BandDB struct {
-	db *gorm.DB
-	tx *gorm.DB
+	db  *gorm.DB
+	tx  *gorm.DB
+	ctx sdk.Context
+
+	ZoracleKeeper zoracle.Keeper
 }
 
 func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
@@ -28,6 +31,8 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		&Event{},
 		&Validator{},
 		&ValidatorVote{},
+		&DataSource{},
+		&DataSourceRevision{},
 	)
 
 	db.Model(&ValidatorVote{}).AddForeignKey(
@@ -35,6 +40,13 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		"validators(consensus_address)",
 		"RESTRICT",
 		"RESTRICT",
+	)
+
+	db.Model(&DataSourceRevision{}).AddForeignKey(
+		"data_source_id",
+		"data_sources(id)",
+		"CASCADE",
+		"CASCADE",
 	)
 
 	for key, value := range metadata {
@@ -75,6 +87,10 @@ func (b *BandDB) RollBack() {
 	b.tx = nil
 }
 
+func (b *BandDB) SetContext(ctx sdk.Context) {
+	b.ctx = ctx
+}
+
 func (b *BandDB) HandleTransaction(tx auth.StdTx, txHash []byte, logs sdk.ABCIMessageLogs) {
 	msgs := tx.GetMsgs()
 	if len(msgs) != len(logs) {
@@ -89,25 +105,20 @@ func (b *BandDB) HandleTransaction(tx auth.StdTx, txHash []byte, logs sdk.ABCIMe
 				kvMap[event.Type+"."+kv.Key] = kv.Value
 			}
 		}
-		b.HandleMessage(msg, kvMap)
+		err := b.HandleMessage(txHash, msg, kvMap)
+		if err != nil {
+			panic(err)
+		}
 	}
 }
 
-func (b *BandDB) HandleMessage(msg sdk.Msg, attributes map[string]string) error {
+func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]string) error {
 	switch msg := msg.(type) {
 	// Just proof of concept
 	case zoracle.MsgCreateDataSource:
-		{
-			_ = msg
-			// Event message split events on report event eg.
-			// message map[action:report]
-			// message map[sender:band17xpfvakm2amg962yls6f84z3kell8c5lfkrzn4]
-			// action, ok := attributes["action"]
-			// if ok {
-			// 	b.handleMessageEvent(action)
-			// }
-			return nil
-		}
+		return b.handleMsgCreateDataSource(txHash, msg, events)
+	case zoracle.MsgEditDataSource:
+		return b.handleMsgEditDataSource(txHash, msg, events)
 	default:
 		// TODO: Better logging
 		return errors.New("HandleMessage: There isn't event handler for this type")
