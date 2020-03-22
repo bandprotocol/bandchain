@@ -1200,6 +1200,13 @@
   dependencies:
     "@babel/types" "^7.3.0"
 
+"@types/bn.js@^4.11.5":
+  version "4.11.6"
+  resolved "https://registry.yarnpkg.com/@types/bn.js/-/bn.js-4.11.6.tgz#c306c70d9358aaea33cd4eda092a742b9505967c"
+  integrity sha512-pqr857jrp2kPuO9uRjZ3PwnJTjoQy+fcdxvBTvHm6dkmEL9q+hDD/2j/0ELOBPtPnS8LjCX0gI9nbl8lVkadpg==
+  dependencies:
+    "@types/node" "*"
+
 "@types/color-name@^1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@types/color-name/-/color-name-1.1.1.tgz#1c1261bbeaa10a8055bbc5d8ab84b7b2afc846a0"
@@ -1224,6 +1231,11 @@
   dependencies:
     "@types/istanbul-lib-coverage" "*"
     "@types/istanbul-lib-report" "*"
+
+"@types/node@*":
+  version "13.9.2"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-13.9.2.tgz#ace1880c03594cc3e80206d96847157d8e7fa349"
+  integrity sha512-bnoqK579sAYrQbp73wwglccjJ4sfRdKU7WNEZ5FW4K2U6Kc0/eZ5kvXG0JKsEKFB50zrFmfFt52/cvBbZa7eXg==
 
 "@types/parse-json@^4.0.0":
   version "4.0.0"
@@ -1651,10 +1663,23 @@ bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.1.1, bn.js@^4.4.0:
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.11.8.tgz#2cde09eb5ee341f484746bb0309b3253b1b1442f"
   integrity sha512-ItfYfPLkWHUjckQCk8xC+LwxgK8NYcXywGigJgSwOP8Y2iyWT4f2vsZnoOXTTbo+o5yXmIUJ4gn5538SO5S3gA==
 
+bn.js@^5.0.0:
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-5.1.1.tgz#48efc4031a9c4041b9c99c6941d903463ab62eb5"
+  integrity sha512-IUTD/REb78Z2eodka1QZyyEk66pciRcP6Sroka0aI3tG/iwIdYLrBD62RsubR7vqdt3WyX8p4jxeatzmRSphtA==
+
 boolbase@^1.0.0, boolbase@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/boolbase/-/boolbase-1.0.0.tgz#68dff5fbe60c51eb37725ea9e3ed310dcc1e776e"
   integrity sha1-aN/1++YMUes3cl6p4+0xDcwed24=
+
+borsh@^0.2.6:
+  version "0.2.6"
+  resolved "https://registry.yarnpkg.com/borsh/-/borsh-0.2.6.tgz#530d6ad82bf89ddf01a82f32f7ec86dcc10f224b"
+  integrity sha512-XlVNtR4x/hgV7X3RVq1KOizNmaSMJLDn9Ftye6NbPQ3nTpx+mkikfkfKp/hvrBMEPUo2QQU3VDH7sUdcDhGhdA==
+  dependencies:
+    "@types/bn.js" "^4.11.5"
+    bn.js "^5.0.0"
 
 brace-expansion@^1.1.7:
   version "1.1.11"
@@ -1789,18 +1814,18 @@ bs-axios@^0.0.43:
   dependencies:
     axios "^0.19.2"
 
-bs-css-emotion@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/bs-css-emotion/-/bs-css-emotion-1.0.1.tgz#46f01e333460c22c67283fc10ba0596b25cd99f6"
-  integrity sha512-YsbtihsTAvHBH7zO67InQXlxwG9IluFlMNcjmJQ39HBLxG5Lx4KPH0WE+izU3LvsGEah7l589xGJfYu6XjsV9Q==
+bs-css-emotion@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/bs-css-emotion/-/bs-css-emotion-1.1.0.tgz#0accc326fc2c9aff094582c766837373ec436ac1"
+  integrity sha512-G/y3HpM0NIgjkPEDT7fe3fWpP80ZhUpuiyDqL2esM9fueNiU+IcZ5S6g02tD4lp5UQZPCF+5KlzxOmSbKOhn4w==
   dependencies:
-    bs-css "12.0.1"
+    bs-css "12.1.0"
     emotion "^10.0.7"
 
-bs-css@12.0.1:
-  version "12.0.1"
-  resolved "https://registry.yarnpkg.com/bs-css/-/bs-css-12.0.1.tgz#6ff1159f3b708784a8f71e0ba791191a7cda21ba"
-  integrity sha512-kzmLxEptpsE8spP8VSUsTX2wKRd/i9VI8ygBb9QnWj51x0eXNpnk96z1q6/iMgu9FuS3MY2Nb5o6XURG2PsHxg==
+bs-css@12.1.0:
+  version "12.1.0"
+  resolved "https://registry.yarnpkg.com/bs-css/-/bs-css-12.1.0.tgz#8bea8970d31cd133bb81e2aeb78b187a807d003c"
+  integrity sha512-cKxVoPe1PtVTYAUYp81lleRwawd/OhdgDINx8V1/AOUuHkan6g23Jh6b+WACJXrOn4vVJmSgVdBfMqaeHMoi8g==
 
 bs-let@^0.1.14:
   version "0.1.14"
@@ -5762,10 +5787,10 @@ react-is@^16.8.1:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.12.0.tgz#2cc0fe0fba742d97fd527c42a13bec4eeb06241c"
   integrity sha512-rPCkf/mWBtKc97aLL9/txD8DZdemK0vkA3JMLShjlJB3Pj3s+lpf1KaBzMfQrAmhMQB0n1cU/SUGgKKBCe837Q==
 
-react@>=16.8.1, react@^16.13.0, react@^16.8.1:
-  version "16.13.0"
-  resolved "https://registry.yarnpkg.com/react/-/react-16.13.0.tgz#d046eabcdf64e457bbeed1e792e235e1b9934cf7"
-  integrity sha512-TSavZz2iSLkq5/oiE7gnFzmURKZMltmi193rm5HEoUDAXpzT9Kzw6oNZnGoai/4+fUnm7FqS5dwgUL34TujcWQ==
+react@>=16.8.1, react@^16.13.1, react@^16.8.1:
+  version "16.13.1"
+  resolved "https://registry.yarnpkg.com/react/-/react-16.13.1.tgz#2e818822f1a9743122c063d6410d85c1e3afe48e"
+  integrity sha512-YMZQQq32xHLX0bz5Mnibv1/LHb3Sqzngu7xstSM+vrkE5Kzr9xE0yMByK5kMoTK30YVJE61WfbxIFFvfeDKT1w==
   dependencies:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"

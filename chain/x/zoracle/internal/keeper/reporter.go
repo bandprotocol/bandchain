@@ -5,17 +5,25 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k Keeper) CheckReporter(ctx sdk.Context, validatorAddress sdk.ValAddress, reporterAddress sdk.AccAddress) bool {
+// CheckReporter returns true iff the given reporter is authorized to report data on behalf of
+// the given validator.
+func (k Keeper) CheckReporter(
+	ctx sdk.Context, validatorAddress sdk.ValAddress, reporterAddress sdk.AccAddress,
+) bool {
+	if validatorAddress.Equals(sdk.ValAddress(reporterAddress)) {
+		return true
+	}
 	store := ctx.KVStore(k.storeKey)
 	return store.Has(types.ReporterStoreKey(validatorAddress, reporterAddress))
 }
 
+// AddReporter adds the given reporter to the list of reporters of the given validator.
 func (k Keeper) AddReporter(
 	ctx sdk.Context, validatorAddress sdk.ValAddress, reporterAddress sdk.AccAddress,
 ) sdk.Error {
 	if k.CheckReporter(ctx, validatorAddress, reporterAddress) {
 		return types.ErrItemDuplication(
-			"AddReporter: (%s) is already a reporter of (%s).",
+			"AddReporter: %s is already a reporter of %s.",
 			reporterAddress.String(),
 			validatorAddress.String(),
 		)
@@ -27,12 +35,13 @@ func (k Keeper) AddReporter(
 	return nil
 }
 
+// AddReporter removes the given reporter from the list of reporters of the given validator.
 func (k Keeper) RemoveReporter(
 	ctx sdk.Context, validatorAddress sdk.ValAddress, reporterAddress sdk.AccAddress,
 ) sdk.Error {
 	if !k.CheckReporter(ctx, validatorAddress, reporterAddress) {
 		return types.ErrItemNotFound(
-			"RemoveReporter: Item not found. %s is not a reporter of %s.",
+			"RemoveReporter: %s is not a reporter of %s.",
 			reporterAddress.String(),
 			validatorAddress.String(),
 		)
@@ -40,6 +49,5 @@ func (k Keeper) RemoveReporter(
 
 	store := ctx.KVStore(k.storeKey)
 	store.Delete(types.ReporterStoreKey(validatorAddress, reporterAddress))
-
 	return nil
 }

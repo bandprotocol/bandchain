@@ -24,6 +24,7 @@ services:
       - code-server
       - proxy-server
       - single-oracle
+      - graphql-engine
     ports:
       - 26657:26657
     command: sh -c "chmod +x ./docker-config/single-validator/run.sh && ./docker-config/single-validator/run.sh"
@@ -55,6 +56,7 @@ services:
       - build-provider-image
       - code-server
       - proxy-server
+      - graphql-engine
 
   multi-validator1-node:
     build:
@@ -73,7 +75,7 @@ services:
     networks:
       bandchain:
     restart: always
-    command: bandoracled --node tcp://172.18.0.11:26657 --priv-key 6b0b8909eadbbc220797dc0aada9558030d4a89972e51de8de525fc9de42bd40 --gas 100000 --gas-prices 5.0uband
+    command: bandoracled --node tcp://172.18.0.11:26657 --priv-key 6b0b8909eadbbc220797dc0aada9558030d4a89972e51de8de525fc9de42bd40 --gas 100000 --gas-prices 5.0uband --execute-endpoint https://dmptasv4j8.execute-api.ap-southeast-1.amazonaws.com/bash-execute
 
   multi-validator2-node:
     image: band-validator:latest
@@ -89,7 +91,7 @@ services:
     networks:
       bandchain:
     restart: always
-    command: bandoracled --node tcp://172.18.0.12:26657 --priv-key 6a57cf17b70e4a1e45403258917c79672e2424bb217fb2a9a936aabe4e84d46e --gas 100000 --gas-prices 5.0uband
+    command: bandoracled --node tcp://172.18.0.12:26657 --priv-key 6a57cf17b70e4a1e45403258917c79672e2424bb217fb2a9a936aabe4e84d46e --gas 100000 --gas-prices 5.0uband --execute-endpoint https://dmptasv4j8.execute-api.ap-southeast-1.amazonaws.com/bash-execute
 
   multi-validator3-node:
     image: band-validator:latest
@@ -105,7 +107,7 @@ services:
     networks:
       bandchain:
     restart: always
-    command: bandoracled --node tcp://172.18.0.13:26657 --priv-key 363dae9bbcf973746f4816003cdd23ed6b3b1b5373cdcc6bfdee4143cab1e098 --gas 100000 --gas-prices 5.0uband
+    command: bandoracled --node tcp://172.18.0.13:26657 --priv-key 363dae9bbcf973746f4816003cdd23ed6b3b1b5373cdcc6bfdee4143cab1e098 --gas 100000 --gas-prices 5.0uband --execute-endpoint https://dmptasv4j8.execute-api.ap-southeast-1.amazonaws.com/bash-execute
 
   multi-validator4-node:
     image: band-validator:latest
@@ -121,7 +123,7 @@ services:
     networks:
       bandchain:
     restart: always
-    command: bandoracled --node tcp://172.18.0.14:26657 --priv-key 7db94d3b30dca300ed8f60f3f7b506b51bd150ed518f997ba0ce81be73b90c15 --gas 100000 --gas-prices 5.0uband
+    command: bandoracled --node tcp://172.18.0.14:26657 --priv-key 7db94d3b30dca300ed8f60f3f7b506b51bd150ed518f997ba0ce81be73b90c15 --gas 100000 --gas-prices 5.0uband --execute-endpoint https://dmptasv4j8.execute-api.ap-southeast-1.amazonaws.com/bash-execute
 
   query-node:
     image: band-validator:latest
@@ -191,6 +193,26 @@ services:
       - owasm-server
     ports:
       - 28443:28443
+
+  postgres:
+    image: postgres:12
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgrespassword
+
+  graphql-engine:
+    image: hasura/graphql-engine:v1.1.0
+    ports:
+      - "5433:5433"
+    depends_on:
+      - "postgres"
+    restart: always
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:postgrespassword@postgres:5432/postgres
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
+      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
+      HASURA_GRAPHQL_SERVER_HOST: 0.0.0.0
+      HASURA_GRAPHQL_SERVER_PORT: 5433
 
 networks:
   bandchain:
