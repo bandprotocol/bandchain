@@ -82,7 +82,8 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
       info.validators
       ->Belt_List.keep(({operatorAddress}) => operatorAddress->Address.isEqual(address))
       ->Belt_List.get(0);
-    let marketcap = info.financial.circulatingSupply;
+    let totalPower =
+      info.validators->Belt_List.reduce(0., (acc, {votingPower}) => acc +. votingPower);
 
     Some(
       <div className=Styles.pageContainer>
@@ -134,7 +135,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
           {kvRow(
              "VOTING POWER",
              VCode(
-               (validator.votingPower /. marketcap)->Format.fPretty
+               (totalPower > 0. ? validator.votingPower *. 100. /. totalPower : 0.)->Format.fPretty
                ++ "% ("
                ++ validator.votingPower->Format.fPretty
                ++ " BAND)",
