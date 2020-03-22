@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 
@@ -16,7 +15,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/levigross/grequests"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
-	cmn "github.com/tendermint/tendermint/libs/common"
+	"github.com/tendermint/tendermint/libs/bytes"
 	rpc "github.com/tendermint/tendermint/rpc/client"
 
 	"github.com/bandprotocol/bandchain/chain/byteexec"
@@ -51,8 +50,8 @@ type OracleRequestResp struct {
 }
 
 type ExecuteRequest struct {
-	Executable cmn.HexBytes `json:"executable" binding:"required"`
-	Calldata   string       `json:"calldata" binding:"required"`
+	Executable bytes.HexBytes `json:"executable" binding:"required"`
+	Calldata   string         `json:"calldata" binding:"required"`
 }
 
 type ExecuteResponse struct {
@@ -155,22 +154,22 @@ func handleRequestData(c *gin.Context) {
 	}
 
 	requestID := zoracle.RequestID(0)
-	for _, event := range txr.Events {
-		if event.Type == "request" {
-			for _, attr := range event.Attributes {
-				if string(attr.Key) == "id" {
-					int64RequstID, err := strconv.ParseInt(attr.Value, 10, 64)
+	// for _, event := range txr.Events {
+	// 	if event.Type == "request" {
+	// 		for _, attr := range event.Attributes {
+	// 			if string(attr.Key) == "id" {
+	// 				int64RequstID, err := strconv.ParseInt(attr.Value, 10, 64)
 
-					if err != nil {
-						c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-						return
-					}
-					requestID = zoracle.RequestID(int64RequstID)
-					break
-				}
-			}
-		}
-	}
+	// 				if err != nil {
+	// 					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	// 					return
+	// 				}
+	// 				requestID = zoracle.RequestID(int64RequstID)
+	// 				break
+	// 			}
+	// 		}
+	// 	}
+	// }
 	if requestID == zoracle.RequestID(0) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("cannot find requestID: %v", txr)})
 		return
@@ -272,7 +271,10 @@ func main() {
 		panic(err)
 	}
 	cdc = app.MakeCodec()
-	rpcClient = rpc.NewHTTP(nodeURI, "/websocket")
+	rpcClient, err = rpc.NewHTTP(nodeURI, "/websocket")
+	if err != nil {
+		panic(err)
+	}
 
 	r := gin.Default()
 	// Currently gin-contrib/cors not work so add header manually

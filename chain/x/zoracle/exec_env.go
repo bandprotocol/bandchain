@@ -3,9 +3,8 @@ package zoracle
 import (
 	"errors"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type ExecutionEnvironment struct {
@@ -17,7 +16,7 @@ type ExecutionEnvironment struct {
 
 func NewExecutionEnvironment(
 	ctx sdk.Context, keeper Keeper, requestID types.RequestID,
-) (ExecutionEnvironment, sdk.Error) {
+) (ExecutionEnvironment, error) {
 	request, err := keeper.GetRequest(ctx, requestID)
 	if err != nil {
 		return ExecutionEnvironment{}, err

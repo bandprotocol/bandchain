@@ -6,6 +6,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
@@ -13,7 +14,7 @@ import (
 
 // NewQuerier is the module level router for state queries.
 func NewQuerier(keeper Keeper) sdk.Querier {
-	return func(ctx sdk.Context, path []string, req abci.RequestQuery) (res []byte, err sdk.Error) {
+	return func(ctx sdk.Context, path []string, req abci.RequestQuery) (res []byte, err error) {
 		switch path[0] {
 		case types.QueryDataSourceByID:
 			return queryDataSourceByID(ctx, path[1:], req, keeper)
@@ -32,14 +33,17 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 		case types.QueryRequestNumber:
 			return queryRequestNumber(ctx, req, keeper)
 		default:
-			return nil, sdk.ErrUnknownRequest("unknown nameservice query endpoint")
+			return nil, sdkerrors.Wrapf(
+				sdkerrors.ErrUnknownRequest,
+				"Unknown %s query endpoint: %s", types.ModuleName, path[0],
+			)
 		}
 	}
 }
 
 func buildRequestQuerierInfo(
 	ctx sdk.Context, keeper Keeper, id types.RequestID,
-) (types.RequestQuerierInfo, sdk.Error) {
+) (types.RequestQuerierInfo, error) {
 	request, sdkErr := keeper.GetRequest(ctx, id)
 	if sdkErr != nil {
 		return types.RequestQuerierInfo{}, sdkErr
@@ -75,7 +79,7 @@ func buildRequestQuerierInfo(
 	}
 	var result types.Result
 	if keeper.HasResult(ctx, id, request.OracleScriptID, request.Calldata) {
-		var sdkErr sdk.Error
+		var sdkErr error
 		result, sdkErr = keeper.GetResult(ctx, id, request.OracleScriptID, request.Calldata)
 		if sdkErr != nil {
 			return types.RequestQuerierInfo{}, sdkErr
@@ -91,13 +95,13 @@ func buildRequestQuerierInfo(
 	), nil
 }
 
-func queryDataSourceByID(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
+func queryDataSourceByID(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
 	if len(path) == 0 {
-		return nil, sdk.ErrInternal("must specify the data source id")
+		return nil, fmt.Errorf("must specify the data source id")
 	}
 	intID, err := strconv.ParseInt(path[0], 10, 64)
 	if err != nil {
-		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for data source id %s", err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("wrong format for data source id %s", err.Error()))
 	}
 	id := types.DataSourceID(intID)
 	dataSource, sdkErr := keeper.GetDataSource(ctx, id)
@@ -115,22 +119,22 @@ func queryDataSourceByID(ctx sdk.Context, path []string, req abci.RequestQuery, 
 	)), nil
 }
 
-func queryDataSources(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
+func queryDataSources(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
 	if len(path) != 2 {
-		return nil, sdk.ErrInternal("must specify the data source start_id and number of data sources")
+		return nil, fmt.Errorf("must specify the data source start_id and number of data sources")
 	}
 	intStartID, err := strconv.ParseInt(path[0], 10, 64)
 	if err != nil {
-		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for data source start id %s", err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("wrong format for data source start id %s", err.Error()))
 	}
 	startID := types.DataSourceID(intStartID)
 
 	numberOfDataSources, err := strconv.ParseInt(path[1], 10, 64)
 	if err != nil {
-		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for number of data sources %s", err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("wrong format for number of data sources %s", err.Error()))
 	}
 	if numberOfDataSources < 1 || numberOfDataSources > 100 {
-		return nil, sdk.ErrInternal("number of data sources should be >= 1 and <= 100")
+		return nil, fmt.Errorf("number of data sources should be >= 1 and <= 100")
 	}
 
 	dataSources := []types.DataSourceQuerierInfo{}
@@ -154,13 +158,13 @@ func queryDataSources(ctx sdk.Context, path []string, req abci.RequestQuery, kee
 	return codec.MustMarshalJSONIndent(keeper.cdc, dataSources), nil
 }
 
-func queryOracleScriptByID(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
+func queryOracleScriptByID(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
 	if len(path) == 0 {
-		return nil, sdk.ErrInternal("must specify the oracle script id")
+		return nil, fmt.Errorf("must specify the oracle script id")
 	}
 	id, err := strconv.ParseInt(path[0], 10, 64)
 	if err != nil {
-		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for oracle script id %s", err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("wrong format for oracle script id %s", err.Error()))
 	}
 
 	oracleScript, sdkErr := keeper.GetOracleScript(ctx, types.OracleScriptID(id))
@@ -177,21 +181,21 @@ func queryOracleScriptByID(ctx sdk.Context, path []string, req abci.RequestQuery
 	)), nil
 }
 
-func queryOracleScripts(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
+func queryOracleScripts(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
 	if len(path) != 2 {
-		return nil, sdk.ErrInternal("must specify the oracle script start_id and number of oracle script")
+		return nil, fmt.Errorf("must specify the oracle script start_id and number of oracle script")
 	}
 	startID, err := strconv.ParseInt(path[0], 10, 64)
 	if err != nil {
-		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for oracle script start id %s", err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("wrong format for oracle script start id %s", err.Error()))
 	}
 
 	numberOfOracleScripts, err := strconv.ParseInt(path[1], 10, 64)
 	if err != nil {
-		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for number of oracle scripts %s", err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("wrong format for number of oracle scripts %s", err.Error()))
 	}
 	if numberOfOracleScripts < 1 || numberOfOracleScripts > 100 {
-		return nil, sdk.ErrInternal("number of oracle scripts should be >= 1 and <= 100")
+		return nil, fmt.Errorf("number of oracle scripts should be >= 1 and <= 100")
 	}
 
 	oracleScripts := []types.OracleScriptQuerierInfo{}
@@ -217,13 +221,13 @@ func queryOracleScripts(ctx sdk.Context, path []string, req abci.RequestQuery, k
 // queryRequest is a query function to get request information by request ID.
 func queryRequestByID(
 	ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper,
-) ([]byte, sdk.Error) {
+) ([]byte, error) {
 	if len(path) == 0 {
-		return nil, sdk.ErrInternal("must specify the requestid")
+		return nil, fmt.Errorf("must specify the requestid")
 	}
 	id, err := strconv.ParseInt(path[0], 10, 64)
 	if err != nil {
-		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for requestid %s", err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("wrong format for requestid %s", err.Error()))
 	}
 
 	request, sdkErr := buildRequestQuerierInfo(ctx, keeper, types.RequestID(id))
@@ -235,21 +239,21 @@ func queryRequestByID(
 
 func queryRequests(
 	ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper,
-) ([]byte, sdk.Error) {
+) ([]byte, error) {
 	if len(path) != 2 {
-		return nil, sdk.ErrInternal("must specify the request start id and number of requests")
+		return nil, fmt.Errorf("must specify the request start id and number of requests")
 	}
 	startID, err := strconv.ParseInt(path[0], 10, 64)
 	if err != nil {
-		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for request start id %s", err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("wrong format for request start id %s", err.Error()))
 	}
 
 	numberOfRequests, err := strconv.ParseInt(path[1], 10, 64)
 	if err != nil {
-		return nil, sdk.ErrInternal(fmt.Sprintf("wrong format for number of requests %s", err.Error()))
+		return nil, fmt.Errorf(fmt.Sprintf("wrong format for number of requests %s", err.Error()))
 	}
 	if numberOfRequests < 1 || numberOfRequests > 100 {
-		return nil, sdk.ErrInternal("number of requests should be >= 1 and <= 100")
+		return nil, fmt.Errorf("number of requests should be >= 1 and <= 100")
 	}
 
 	requests := make([]types.RequestQuerierInfo, 0)
@@ -268,10 +272,10 @@ func queryRequests(
 }
 
 // queryPending is a query function to get the list of request IDs that are still on pending status.
-func queryPending(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
+func queryPending(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
 	return codec.MustMarshalJSONIndent(keeper.cdc, keeper.GetPendingResolveList(ctx)), nil
 }
 
-func queryRequestNumber(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) ([]byte, sdk.Error) {
+func queryRequestNumber(ctx sdk.Context, req abci.RequestQuery, keeper Keeper) ([]byte, error) {
 	return codec.MustMarshalJSONIndent(keeper.cdc, keeper.GetRequestCount(ctx)), nil
 }

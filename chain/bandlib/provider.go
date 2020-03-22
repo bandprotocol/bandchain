@@ -4,7 +4,7 @@ import (
 	"github.com/bandprotocol/bandchain/chain/app"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
+	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/tendermint/tendermint/crypto"
 )
@@ -35,7 +35,7 @@ func NewBandProvider(nodeURI string, privKey crypto.PrivKey) (BandProvider, erro
 
 	return BandProvider{
 		cliCtx:  cliCtx,
-		txBldr:  NewTxBuilder(utils.GetTxEncoder(cdc)).WithAccountNumber(num),
+		txBldr:  NewTxBuilder(client.GetTxEncoder(cdc)).WithAccountNumber(num),
 		addr:    addr,
 		privKey: privKey,
 	}, nil
@@ -55,7 +55,7 @@ func (provider *BandProvider) SendTransaction(
 }
 
 func (provider *BandProvider) QueryTx(hashHexStr string) (sdk.TxResponse, error) {
-	return utils.QueryTx(provider.cliCtx, hashHexStr)
+	return authclient.QueryTx(provider.cliCtx, hashHexStr)
 }
 
 func (provider *BandProvider) GetSequenceFromChain() (uint64, error) {

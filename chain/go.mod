@@ -4,7 +4,7 @@ go 1.13
 
 require (
 	github.com/btcsuite/btcd v0.0.0-20190213025234-306aecffea32 // indirect
-	github.com/cosmos/cosmos-sdk v0.37.8
+	github.com/cosmos/cosmos-sdk v0.34.4-0.20200318160616-b8295506615b
 	github.com/ethereum/go-ethereum v1.9.12
 	github.com/gin-gonic/gin v1.5.0
 	github.com/gorilla/mux v1.7.4
@@ -17,7 +17,6 @@ require (
 	github.com/spf13/viper v1.6.2
 	github.com/stretchr/testify v1.5.1
 	github.com/tendermint/go-amino v0.15.1
-	github.com/tendermint/iavl v0.12.4
-	github.com/tendermint/tendermint v0.32.9
-	github.com/tendermint/tm-db v0.2.0
+	github.com/tendermint/tendermint v0.33.1-dev3
+	github.com/tendermint/tm-db v0.4.1
 )

@@ -6,6 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/params"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 )
 
@@ -31,9 +32,23 @@ func NewKeeper(
 	}
 }
 
+// TODO: FIX THIS
+func validateNoOp(_ interface{}) error { return nil }
+
 // ParamKeyTable returns the parameter key table for zoracle module.
 func ParamKeyTable() params.KeyTable {
-	return params.NewKeyTable().RegisterParamSet(&types.Params{})
+	return paramtypes.NewKeyTable(
+		paramtypes.NewParamSetPair(types.KeyMaxDataSourceExecutableSize, types.DefaultMaxDataSourceExecutableSize, validateNoOp),
+		paramtypes.NewParamSetPair(types.KeyMaxOracleScriptCodeSize, types.DefaultMaxOracleScriptCodeSize, validateNoOp),
+		paramtypes.NewParamSetPair(types.KeyMaxCalldataSize, types.DefaultMaxCalldataSize, validateNoOp),
+		paramtypes.NewParamSetPair(types.KeyMaxDataSourceCountPerRequest, types.DefaultMaxDataSourceCountPerRequest, validateNoOp),
+		paramtypes.NewParamSetPair(types.KeyMaxRawDataReportSize, types.DefaultMaxRawDataReportSize, validateNoOp),
+		paramtypes.NewParamSetPair(types.KeyMaxResultSize, types.DefaultMaxResultSize, validateNoOp),
+		paramtypes.NewParamSetPair(types.KeyEndBlockExecuteGasLimit, types.DefaultEndBlockExecuteGasLimit, validateNoOp),
+		paramtypes.NewParamSetPair(types.KeyMaxNameLength, types.DefaultMaxNameLength, validateNoOp),
+		paramtypes.NewParamSetPair(types.KeyMaxDescriptionLength, types.DefaultMaxDescriptionLength, validateNoOp),
+		paramtypes.NewParamSetPair(types.KeyGasPerRawDataRequestPerValidator, types.DefaultGasPerRawDataRequestPerValidator, validateNoOp),
+	)
 }
 
 func (keeper Keeper) MaxDataSourceExecutableSize(ctx sdk.Context) (res int64) {

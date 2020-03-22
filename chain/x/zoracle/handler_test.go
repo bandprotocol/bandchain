@@ -8,10 +8,10 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	cmn "github.com/tendermint/tendermint/libs/common"
+	kv "github.com/tendermint/tendermint/libs/kv"
 )
 
-func mockDataSource(ctx sdk.Context, keeper Keeper) sdk.Result {
+func mockDataSource(ctx sdk.Context, keeper Keeper) (*sdk.Result, error) {
 	owner := sdk.AccAddress([]byte("owner"))
 	name := "data_source_1"
 	description := "description"
@@ -22,7 +22,7 @@ func mockDataSource(ctx sdk.Context, keeper Keeper) sdk.Result {
 	return handleMsgCreateDataSource(ctx, keeper, msg)
 }
 
-func mockOracleScript(ctx sdk.Context, keeper Keeper) sdk.Result {
+func mockOracleScript(ctx sdk.Context, keeper Keeper) (*sdk.Result, error) {
 	owner := sdk.AccAddress([]byte("owner"))
 	name := "oracle_script_1"
 	description := "description"
@@ -35,8 +35,8 @@ func mockOracleScript(ctx sdk.Context, keeper Keeper) sdk.Result {
 func TestCreateDataSourceSuccess(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
 
-	got := mockDataSource(ctx, keeper)
-	require.True(t, got.IsOK(), "expected set data source to be ok, got %v", got)
+	_, err := mockDataSource(ctx, keeper)
+	require.Nil(t, err)
 
 	dataSource, err := keeper.GetDataSource(ctx, 1)
 	require.Nil(t, err)
@@ -49,7 +49,7 @@ func TestCreateDataSourceSuccess(t *testing.T) {
 	require.Equal(t, 1, len(events))
 	require.Equal(t, sdk.Event{
 		Type:       EventTypeCreateDataSource,
-		Attributes: []cmn.KVPair{cmn.KVPair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
+		Attributes: []kv.Pair{kv.Pair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
 	}, events[0])
 }
 
@@ -65,8 +65,8 @@ func TestEditDataSourceSuccess(t *testing.T) {
 	sender := sdk.AccAddress([]byte("owner"))
 
 	msg := types.NewMsgEditDataSource(1, newOwner, newName, newDescription, newFee, newExecutable, sender)
-	got := handleMsgEditDataSource(ctx, keeper, msg)
-	require.True(t, got.IsOK(), "expected edit data source to be ok, got %v", got)
+	_, err := handleMsgEditDataSource(ctx, keeper, msg)
+	require.Nil(t, err)
 
 	dataSource, err := keeper.GetDataSource(ctx, 1)
 	require.Nil(t, err)
@@ -80,11 +80,11 @@ func TestEditDataSourceSuccess(t *testing.T) {
 	require.Equal(t, 2, len(events))
 	require.Equal(t, sdk.Event{
 		Type:       EventTypeCreateDataSource,
-		Attributes: []cmn.KVPair{cmn.KVPair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
+		Attributes: []kv.Pair{kv.Pair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
 	}, events[0])
 	require.Equal(t, sdk.Event{
 		Type:       EventTypeEditDataSource,
-		Attributes: []cmn.KVPair{cmn.KVPair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
+		Attributes: []kv.Pair{kv.Pair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
 	}, events[1])
 }
 
@@ -121,7 +121,7 @@ func TestCreateOracleScriptSuccess(t *testing.T) {
 	require.Equal(t, 1, len(events))
 	require.Equal(t, sdk.Event{
 		Type:       EventTypeCreateOracleScript,
-		Attributes: []cmn.KVPair{cmn.KVPair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
+		Attributes: []kv.Pair{kv.Pair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
 	}, events[0])
 }
 
@@ -149,11 +149,11 @@ func TestEditOracleScriptSuccess(t *testing.T) {
 	require.Equal(t, 2, len(events))
 	require.Equal(t, sdk.Event{
 		Type:       EventTypeCreateOracleScript,
-		Attributes: []cmn.KVPair{cmn.KVPair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
+		Attributes: []kv.Pair{kv.Pair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
 	}, events[0])
 	require.Equal(t, sdk.Event{
 		Type:       EventTypeEditOracleScript,
-		Attributes: []cmn.KVPair{cmn.KVPair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
+		Attributes: []kv.Pair{kv.Pair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
 	}, events[1])
 }
 

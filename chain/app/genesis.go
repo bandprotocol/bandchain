@@ -10,7 +10,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
-	"github.com/cosmos/cosmos-sdk/x/genaccounts"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/mint"
@@ -27,9 +26,6 @@ type GenesisState map[string]json.RawMessage
 // NewDefaultGenesisState generates the default state for the application.
 func NewDefaultGenesisState() GenesisState {
 	return GenesisState{
-		genaccounts.ModuleName: genaccounts.ModuleCdc.MustMarshalJSON(
-			genaccounts.GenesisState{},
-		),
 		auth.ModuleName: auth.ModuleCdc.MustMarshalJSON(
 			auth.GenesisState{
 				Params: auth.Params{
@@ -67,11 +63,12 @@ func NewDefaultGenesisState() GenesisState {
 			},
 		}),
 		distr.ModuleName: distr.ModuleCdc.MustMarshalJSON(distr.GenesisState{
-			FeePool:                         distr.InitialFeePool(),
-			CommunityTax:                    sdk.NewDecWithPrec(2, 2), // 2%
-			BaseProposerReward:              sdk.NewDecWithPrec(1, 2), // 1%
-			BonusProposerReward:             sdk.NewDecWithPrec(4, 2), // 4%
-			WithdrawAddrEnabled:             true,
+			FeePool: distr.InitialFeePool(),
+			// TODO: FIX THIS
+			// CommunityTax:                    sdk.NewDecWithPrec(2, 2), // 2%
+			// BaseProposerReward:              sdk.NewDecWithPrec(1, 2), // 1%
+			// BonusProposerReward:             sdk.NewDecWithPrec(4, 2), // 4%
+			// WithdrawAddrEnabled:             true,
 			DelegatorWithdrawInfos:          []distr.DelegatorWithdrawInfo{},
 			PreviousProposer:                nil,
 			OutstandingRewards:              []distr.ValidatorOutstandingRewardsRecord{},
@@ -101,7 +98,8 @@ func NewDefaultGenesisState() GenesisState {
 		}),
 		slashing.ModuleName: slashing.ModuleCdc.MustMarshalJSON(slashing.GenesisState{
 			Params: slashing.Params{
-				MaxEvidenceAge:          60 * 30240 * time.Second, // 3 weeks
+				// TODO: FIX THIS
+				// MaxEvidenceAge:          60 * 30240 * time.Second, // 3 weeks
 				SignedBlocksWindow:      int64(30000),
 				MinSignedPerWindow:      sdk.NewDecWithPrec(5, 2), // 5%
 				DowntimeJailDuration:    60 * 10 * time.Second,    // 10 minutes

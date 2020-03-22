@@ -1,17 +1,17 @@
 package keeper
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // AddResult is a function to validate result size and set to store.
 func (k Keeper) AddResult(
 	ctx sdk.Context, requestID types.RequestID, oracleScriptID types.OracleScriptID, calldata []byte, result []byte,
-) sdk.Error {
+) error {
 	if int64(len(result)) > k.MaxResultSize(ctx) {
-		return types.ErrBadDataValue(
+		return sdkerrors.Wrapf(types.ErrBadDataValue,
 			"AddResult: Result size (%d) exceeds the maximum size (%d).",
 			len(result),
 			int(k.MaxResultSize(ctx)),
@@ -49,9 +49,9 @@ func (k Keeper) SetResult(
 // GetResult returns the result bytes in store.
 func (k Keeper) GetResult(
 	ctx sdk.Context, requestID types.RequestID, oracleScriptID types.OracleScriptID, calldata []byte,
-) (types.Result, sdk.Error) {
+) (types.Result, error) {
 	if !k.HasResult(ctx, requestID, oracleScriptID, calldata) {
-		return types.Result{}, types.ErrItemNotFound(
+		return types.Result{}, sdkerrors.Wrapf(types.ErrItemNotFound,
 			"GetResult: Result for request ID %d is not available.",
 			requestID,
 		)

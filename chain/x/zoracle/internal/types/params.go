@@ -44,7 +44,7 @@ const (
 
 	// The maximum size of description length.
 	// Default value 4096
-	DefaultDescriptionLength = int64(4096)
+	DefaultMaxDescriptionLength = int64(4096)
 
 	// Gas cost per validator for each raw data request.
 	DefaultGasPerRawDataRequestPerValidator = uint64(25000)
@@ -158,7 +158,7 @@ func DefaultParams() Params {
 		DefaultMaxResultSize,
 		DefaultEndBlockExecuteGasLimit,
 		DefaultMaxNameLength,
-		DefaultDescriptionLength,
+		DefaultMaxDescriptionLength,
 		DefaultGasPerRawDataRequestPerValidator,
 	)
 }

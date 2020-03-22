@@ -2,6 +2,7 @@ package types
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // RouterKey is they name of the bank module
@@ -49,38 +50,53 @@ func (msg MsgRequestData) Route() string { return RouterKey }
 func (msg MsgRequestData) Type() string { return "request" }
 
 // ValidateBasic implements the sdk.Msg interface for MsgRequestData.
-func (msg MsgRequestData) ValidateBasic() sdk.Error {
+func (msg MsgRequestData) ValidateBasic() error {
 	if msg.Sender.Empty() {
-		return ErrInvalidBasicMsg("MsgRequestData: Sender address must not be empty.")
+		return sdkerrors.Wrapf(
+			ErrInvalidBasicMsg,
+			"MsgRequestData: Sender address must not be empty.",
+		)
 	}
 	if msg.OracleScriptID <= 0 {
-		return ErrInvalidBasicMsg("MsgRequestData: Oracle script id (%d) must be positive.", msg.OracleScriptID)
+		return sdkerrors.Wrapf(
+			ErrInvalidBasicMsg,
+			"MsgRequestData: Oracle script id (%d) must be positive.",
+			msg.OracleScriptID,
+		)
 	}
 	if msg.SufficientValidatorCount <= 0 {
-		return ErrInvalidBasicMsg(
+		return sdkerrors.Wrapf(
+			ErrInvalidBasicMsg,
 			"MsgRequestData: Sufficient validator count (%d) must be positive.",
 			msg.SufficientValidatorCount,
 		)
 	}
 	if msg.RequestedValidatorCount < msg.SufficientValidatorCount {
-		return ErrInvalidBasicMsg(
+		return sdkerrors.Wrapf(
+			ErrInvalidBasicMsg,
 			"MsgRequestData: Request validator count (%d) must not be less than sufficient validator count (%d).",
 			msg.RequestedValidatorCount,
 			msg.SufficientValidatorCount,
 		)
 	}
 	if msg.Expiration <= 0 {
-		return ErrInvalidBasicMsg("MsgRequestData: Expiration period (%d) must be positive.",
+		return sdkerrors.Wrapf(
+			ErrInvalidBasicMsg,
+			"MsgRequestData: Expiration period (%d) must be positive.",
 			msg.Expiration,
 		)
 	}
 	if msg.PrepareGas <= 0 {
-		return ErrInvalidBasicMsg("MsgRequestData: Prepare gas (%d) must be positive.",
+		return sdkerrors.Wrapf(
+			ErrInvalidBasicMsg,
+			"MsgRequestData: Prepare gas (%d) must be positive.",
 			msg.PrepareGas,
 		)
 	}
 	if msg.ExecuteGas <= 0 {
-		return ErrInvalidBasicMsg("MsgRequestData: Execute gas (%d) must be positive.",
+		return sdkerrors.Wrapf(
+			ErrInvalidBasicMsg,
+			"MsgRequestData: Execute gas (%d) must be positive.",
 			msg.ExecuteGas,
 		)
 	}
@@ -128,18 +144,31 @@ func (msg MsgReportData) Route() string { return RouterKey }
 func (msg MsgReportData) Type() string { return "report" }
 
 // ValidateBasic implements the sdk.Msg interface for MsgReportData.
-func (msg MsgReportData) ValidateBasic() sdk.Error {
+func (msg MsgReportData) ValidateBasic() error {
 	if msg.RequestID <= 0 {
-		return ErrInvalidBasicMsg("MsgReportData: Request id (%d) must be positive.", msg.RequestID)
+		return sdkerrors.Wrapf(
+			ErrInvalidBasicMsg,
+			"MsgReportData: Request id (%d) must be positive.",
+			msg.RequestID,
+		)
 	}
 	if msg.DataSet == nil || len(msg.DataSet) == 0 {
-		return ErrInvalidBasicMsg("MsgReportData: Data set must not be empty.")
+		return sdkerrors.Wrapf(
+			ErrInvalidBasicMsg,
+			"MsgReportData: Data set must not be empty.",
+		)
 	}
 	if msg.Validator.Empty() {
-		return ErrInvalidBasicMsg("MsgReportData: Validator address must not be empty.")
+		return sdkerrors.Wrapf(
+			ErrInvalidBasicMsg,
+			"MsgReportData: Validator address must not be empty.",
+		)
 	}
 	if msg.Reporter.Empty() {
-		return ErrInvalidBasicMsg("MsgReportData: Reporter address must not be empty.")
+		return sdkerrors.Wrapf(
+			ErrInvalidBasicMsg,
+			"MsgReportData: Reporter address must not be empty.",
+		)
 	}
 	return nil
 }
@@ -191,24 +220,43 @@ func (msg MsgCreateDataSource) Route() string { return RouterKey }
 func (msg MsgCreateDataSource) Type() string { return "create_data_source" }
 
 // ValidateBasic implements the sdk.Msg interface for MsgCreateDataSource.
-func (msg MsgCreateDataSource) ValidateBasic() sdk.Error {
+func (msg MsgCreateDataSource) ValidateBasic() error {
 	if msg.Owner.Empty() {
-		return ErrInvalidBasicMsg("MsgCreateDataSource: Owner address must not be empty.")
+		return sdkerrors.Wrapf(
+			ErrInvalidBasicMsg,
+			"MsgCreateDataSource: Owner address must not be empty.",
+		)
 	}
 	if msg.Name == "" {
-		return ErrInvalidBasicMsg("MsgCreateDataSource: Name must not be empty.")
+		return sdkerrors.Wrapf(
+			ErrInvalidBasicMsg,
+			"MsgCreateDataSource: Name must not be empty.",
+		)
 	}
 	if msg.Description == "" {
-		return ErrInvalidBasicMsg("MsgCreateDataSource: Description must not be empty.")
+		return sdkerrors.Wrapf(
+			ErrInvalidBasicMsg,
+			"MsgCreateDataSource: Description must not be empty.",
+		)
 	}
 	if !msg.Fee.IsValid() {
-		return ErrInvalidBasicMsg("MsgCreateDataSource: Fee must be valid (%s)", msg.Fee.String())
+		return sdkerrors.Wrapf(
+			ErrInvalidBasicMsg,
+			"MsgCreateDataSource: Fee must be valid (%s)",
+			msg.Fee.String(),
+		)
 	}
 	if msg.Executable == nil || len(msg.Executable) == 0 {
-		return ErrInvalidBasicMsg("MsgCreateDataSource: Executable must not be empty.")
+		return sdkerrors.Wrapf(
+			ErrInvalidBasicMsg,
+			"MsgCreateDataSource: Executable must not be empty.",
+		)
 	}
 	if msg.Sender.Empty() {
-		return ErrInvalidBasicMsg("MsgCreateDataSource: Sender address must not be empty.")
+		return sdkerrors.Wrapf(
+			ErrInvalidBasicMsg,
+			"MsgCreateDataSource: Sender address must not be empty.",
+		)
 	}
 	return nil
 }
@@ -263,27 +311,50 @@ func (msg MsgEditDataSource) Route() string { return RouterKey }
 func (msg MsgEditDataSource) Type() string { return "edit_data_source" }
 
 // ValidateBasic implements the sdk.Msg interface for MsgEditDataSource.
-func (msg MsgEditDataSource) ValidateBasic() sdk.Error {
+func (msg MsgEditDataSource) ValidateBasic() error {
 	if msg.DataSourceID <= 0 {
-		return ErrInvalidBasicMsg("MsgEditDataSource: Data source id (%d) must be positive.", msg.DataSourceID)
+		return sdkerrors.Wrapf(
+			ErrInvalidBasicMsg,
+			"MsgEditDataSource: Data source id (%d) must be positive.",
+			msg.DataSourceID,
+		)
 	}
 	if msg.Owner.Empty() {
-		return ErrInvalidBasicMsg("MsgEditDataSource: Owner address must not be empty.")
+		return sdkerrors.Wrapf(
+			ErrInvalidBasicMsg,
+			"MsgEditDataSource: Owner address must not be empty.",
+		)
 	}
 	if msg.Name == "" {
-		return ErrInvalidBasicMsg("MsgEditDataSource: Name must not be empty.")
+		return sdkerrors.Wrapf(
+			ErrInvalidBasicMsg,
+			"MsgEditDataSource: Name must not be empty.",
+		)
 	}
 	if msg.Description == "" {
-		return ErrInvalidBasicMsg("MsgEditDataSource: Description must not be empty.")
+		return sdkerrors.Wrapf(
+			ErrInvalidBasicMsg,
+			"MsgEditDataSource: Description must not be empty.",
+		)
 	}
 	if !msg.Fee.IsValid() {
-		return ErrInvalidBasicMsg("MsgEditDataSource: Fee must be valid (%s)", msg.Fee.String())
+		return sdkerrors.Wrapf(
+			ErrInvalidBasicMsg,
+			"MsgEditDataSource: Fee must be valid (%s)",
+			msg.Fee.String(),
+		)
 	}
 	if msg.Executable == nil || len(msg.Executable) == 0 {
-		return ErrInvalidBasicMsg("MsgEditDataSource: Executable must not be empty.")
+		return sdkerrors.Wrapf(
+			ErrInvalidBasicMsg,
+			"MsgEditDataSource: Executable must not be empty.",
+		)
 	}
 	if msg.Sender.Empty() {
-		return ErrInvalidBasicMsg("MsgEditDataSource: Sender address must not be empty.")
+		return sdkerrors.Wrapf(
+			ErrInvalidBasicMsg,
+			"MsgEditDataSource: Sender address must not be empty.",
+		)
 	}
 
 	return nil
@@ -333,21 +404,21 @@ func (msg MsgCreateOracleScript) Route() string { return RouterKey }
 func (msg MsgCreateOracleScript) Type() string { return "create_oracle_script" }
 
 // ValidateBasic implements the sdk.Msg interface for MsgCreateOracleScript.
-func (msg MsgCreateOracleScript) ValidateBasic() sdk.Error {
+func (msg MsgCreateOracleScript) ValidateBasic() error {
 	if msg.Owner.Empty() {
-		return ErrInvalidBasicMsg("MsgCreateOracleScript: Owner address must not be empty.")
+		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgCreateOracleScript: Owner address must not be empty.")
 	}
 	if msg.Sender.Empty() {
-		return ErrInvalidBasicMsg("MsgCreateOracleScript: Sender address must not be empty.")
+		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgCreateOracleScript: Sender address must not be empty.")
 	}
 	if msg.Name == "" {
-		return ErrInvalidBasicMsg("MsgCreateOracleScript: Name must not be empty.")
+		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgCreateOracleScript: Name must not be empty.")
 	}
 	if msg.Description == "" {
-		return ErrInvalidBasicMsg("MsgCreateOracleScript: Description must not be empty.")
+		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgCreateOracleScript: Description must not be empty.")
 	}
 	if msg.Code == nil || len(msg.Code) == 0 {
-		return ErrInvalidBasicMsg("MsgCreateOracleScript: Code must not be empty.")
+		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgCreateOracleScript: Code must not be empty.")
 	}
 	return nil
 }
@@ -399,21 +470,21 @@ func (msg MsgEditOracleScript) Route() string { return RouterKey }
 func (msg MsgEditOracleScript) Type() string { return "edit_oracle_script" }
 
 // ValidateBasic implements the sdk.Msg interface for MsgEditOracleScript.
-func (msg MsgEditOracleScript) ValidateBasic() sdk.Error {
+func (msg MsgEditOracleScript) ValidateBasic() error {
 	if msg.OracleScriptID <= 0 {
-		return ErrInvalidBasicMsg("MsgEditOracleScript: Oracle script id (%d) must be positive.", msg.OracleScriptID)
+		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgEditOracleScript: Oracle script id (%d) must be positive.", msg.OracleScriptID)
 	}
 	if msg.Owner.Empty() {
-		return ErrInvalidBasicMsg("MsgEditOracleScript: Owner address must not be empty.")
+		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgEditOracleScript: Owner address must not be empty.")
 	}
 	if msg.Sender.Empty() {
-		return ErrInvalidBasicMsg("MsgEditOracleScript: Sender address must not be empty.")
+		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgEditOracleScript: Sender address must not be empty.")
 	}
 	if msg.Name == "" {
-		return ErrInvalidBasicMsg("MsgEditOracleScript: Name must not be empty.")
+		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgEditOracleScript: Name must not be empty.")
 	}
 	if msg.Code == nil || len(msg.Code) == 0 {
-		return ErrInvalidBasicMsg("MsgEditOracleScript: Code must not be empty.")
+		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgEditOracleScript: Code must not be empty.")
 	}
 	return nil
 }
@@ -453,13 +524,13 @@ func (msg MsgAddOracleAddress) Route() string { return RouterKey }
 func (msg MsgAddOracleAddress) Type() string { return "add_oracle_address" }
 
 // ValidateBasic implements the sdk.Msg interface for MsgAddOracleAddress.
-func (msg MsgAddOracleAddress) ValidateBasic() sdk.Error {
+func (msg MsgAddOracleAddress) ValidateBasic() error {
 
 	if msg.Validator.Empty() {
-		return ErrInvalidBasicMsg("MsgAddOracleAddress: Validator address must not be empty.")
+		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgAddOracleAddress: Validator address must not be empty.")
 	}
 	if msg.Reporter.Empty() {
-		return ErrInvalidBasicMsg("MsgAddOracleAddress: Reporter address must not be empty.")
+		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgAddOracleAddress: Reporter address must not be empty.")
 	}
 	return nil
 }
@@ -499,13 +570,13 @@ func (msg MsgRemoveOracleAdderess) Route() string { return RouterKey }
 func (msg MsgRemoveOracleAdderess) Type() string { return "remove_oracle_address" }
 
 // ValidateBasic implements the sdk.Msg interface for MsgRemoveOracleAdderess.
-func (msg MsgRemoveOracleAdderess) ValidateBasic() sdk.Error {
+func (msg MsgRemoveOracleAdderess) ValidateBasic() error {
 
 	if msg.Validator.Empty() {
-		return ErrInvalidBasicMsg("MsgRemoveOracleAdderess: Validator address must not be empty.")
+		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgRemoveOracleAdderess: Validator address must not be empty.")
 	}
 	if msg.Reporter.Empty() {
-		return ErrInvalidBasicMsg("MsgRemoveOracleAdderess: Reporter address must not be empty.")
+		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgRemoveOracleAdderess: Reporter address must not be empty.")
 	}
 	return nil
 }

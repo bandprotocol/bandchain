@@ -28,7 +28,8 @@ func GetEVMValidators(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		validators, err := node.Validators(nil)
+		// TODO: FIX THIS
+		validators, err := node.Validators(nil, 1, 100)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return

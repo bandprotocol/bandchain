@@ -1,9 +1,9 @@
 package keeper
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 func (k Keeper) AddReport(
@@ -12,14 +12,14 @@ func (k Keeper) AddReport(
 	dataSet []types.RawDataReportWithID,
 	validator sdk.ValAddress,
 	reporter sdk.AccAddress,
-) sdk.Error {
+) error {
 	request, err := k.GetRequest(ctx, requestID)
 	if err != nil {
 		return err
 	}
 
 	if request.ResolveStatus != types.Open {
-		return types.ErrInvalidState(
+		return sdkerrors.Wrapf(types.ErrInvalidState,
 			"AddReport: Request ID %d: Expect resolve status to be %d, but actual value is %d",
 			requestID,
 			types.Open,
@@ -28,7 +28,7 @@ func (k Keeper) AddReport(
 	}
 
 	if request.ExpirationHeight < ctx.BlockHeight() {
-		return types.ErrInvalidState(
+		return sdkerrors.Wrapf(types.ErrInvalidState,
 			"AddReport: Request ID %d: Current block height is %d, but request expired at height %d",
 			requestID,
 			ctx.BlockHeight(),
@@ -37,7 +37,7 @@ func (k Keeper) AddReport(
 	}
 
 	if !k.CheckReporter(ctx, validator, reporter) {
-		return types.ErrUnauthorizedPermission(
+		return sdkerrors.Wrapf(types.ErrUnauthorizedPermission,
 			"AddReport: %s is not an authorized reporter of %s.",
 			reporter.String(),
 			validator.String(),
@@ -53,7 +53,7 @@ func (k Keeper) AddReport(
 	}
 
 	if !found {
-		return types.ErrUnauthorizedPermission(
+		return sdkerrors.Wrapf(types.ErrUnauthorizedPermission,
 			"AddReport: Reporter (%s) is not on the reporter list.",
 			validator.String(),
 		)
@@ -61,7 +61,7 @@ func (k Keeper) AddReport(
 
 	for _, submittedValidator := range request.ReceivedValidators {
 		if validator.Equals(submittedValidator) {
-			return types.ErrItemDuplication(
+			return sdkerrors.Wrapf(types.ErrItemDuplication,
 				"AddReport: Duplicate report to request ID %d from reporter %s.",
 				requestID,
 				submittedValidator.String(),
@@ -71,7 +71,7 @@ func (k Keeper) AddReport(
 
 	rawDataRequestCount := k.GetRawDataRequestCount(ctx, requestID)
 	if int64(len(dataSet)) != rawDataRequestCount {
-		return types.ErrBadDataValue(
+		return sdkerrors.Wrapf(types.ErrBadDataValue,
 			"AddReport: Request ID %d: Expects %d raw data reports, but received %d raw data reports.",
 			requestID,
 			rawDataRequestCount,
@@ -82,17 +82,17 @@ func (k Keeper) AddReport(
 	lastExternalID := types.ExternalID(0)
 	for idx, rawReport := range dataSet {
 		if idx != 0 && lastExternalID >= rawReport.ExternalDataID {
-			return types.ErrBadDataValue("AddReport: Raw data reports are not in an incresaing order.")
+			return sdkerrors.Wrapf(types.ErrBadDataValue, "AddReport: Raw data reports are not in an incresaing order.")
 		}
 		if !k.CheckRawDataRequestExists(ctx, requestID, rawReport.ExternalDataID) {
-			return types.ErrBadDataValue(
+			return sdkerrors.Wrapf(types.ErrBadDataValue,
 				"AddReport: RequestID %d: Unknown external ID %d",
 				requestID,
 				rawReport.ExternalDataID,
 			)
 		}
 		if int64(len(rawReport.Data)) > k.MaxRawDataReportSize(ctx) {
-			return types.ErrBadDataValue(
+			return sdkerrors.Wrapf(types.ErrBadDataValue,
 				"AddReport: Raw report data size (%d) exceeds the maximum limit (%d).",
 				len(rawReport.Data),
 				k.MaxRawDataReportSize(ctx),
@@ -141,11 +141,11 @@ func (k Keeper) GetRawDataReport(
 	ctx sdk.Context,
 	requestID types.RequestID, externalID types.ExternalID,
 	validatorAddress sdk.ValAddress,
-) (types.RawDataReport, sdk.Error) {
+) (types.RawDataReport, error) {
 	key := types.RawDataReportStoreKey(requestID, externalID, validatorAddress)
 	store := ctx.KVStore(k.storeKey)
 	if !store.Has(key) {
-		return types.RawDataReport{}, types.ErrItemNotFound(
+		return types.RawDataReport{}, sdkerrors.Wrapf(types.ErrItemNotFound,
 			"GetRawDataReport: Unable to find raw data report with request ID %d external ID %d from %s",
 			requestID,
 			externalID,

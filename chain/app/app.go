@@ -5,12 +5,13 @@ import (
 	"os"
 
 	abci "github.com/tendermint/tendermint/abci/types"
-	cmn "github.com/tendermint/tendermint/libs/common"
 	"github.com/tendermint/tendermint/libs/log"
+	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
+	codecstd "github.com/cosmos/cosmos-sdk/codec/std"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
@@ -18,12 +19,15 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
-	"github.com/cosmos/cosmos-sdk/x/genaccounts"
+	"github.com/cosmos/cosmos-sdk/x/evidence"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/gov"
+	"github.com/cosmos/cosmos-sdk/x/ibc"
+	transfer "github.com/cosmos/cosmos-sdk/x/ibc/20-transfer"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
+	paramsproposal "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/supply"
@@ -47,7 +51,6 @@ var (
 
 	// NewBasicManager is in charge of setting up basic module elements
 	ModuleBasics = module.NewBasicManager(
-		genaccounts.AppModuleBasic{},
 		genutil.AppModuleBasic{},
 		auth.AppModuleBasic{},
 		bank.AppModuleBasic{},
@@ -59,6 +62,7 @@ var (
 		crisis.AppModuleBasic{},
 		slashing.AppModuleBasic{},
 		supply.AppModuleBasic{},
+		ibc.AppModuleBasic{},
 		// D3N-specific modules
 		zoracle.AppModuleBasic{},
 	)
@@ -72,16 +76,6 @@ var (
 		gov.ModuleName:            {supply.Burner},
 	}
 )
-
-// MakeCodec generates the necessary codecs for Amino
-func MakeCodec() *codec.Codec {
-	var cdc = codec.New()
-	ModuleBasics.RegisterCodec(cdc)
-	sdk.RegisterCodec(cdc)
-	codec.RegisterCrypto(cdc)
-	codec.RegisterEvidences(cdc)
-	return cdc
-}
 
 func SetBech32AddressPrefixesAndBip44CoinType(config *sdk.Config) {
 	config.SetBech32PrefixForAccount(
@@ -120,6 +114,7 @@ type bandApp struct {
 	GovKeeper      gov.Keeper
 	CrisisKeeper   crisis.Keeper
 	ParamsKeeper   params.Keeper
+	IBCKeeper      ibc.Keeper
 	ZoracleKeeper  zoracle.Keeper
 
 	// Decoder for unmarshaling []byte into sdk.Tx
@@ -137,8 +132,9 @@ func NewBandApp(
 	invCheckPeriod uint, baseAppOptions ...func(*bam.BaseApp),
 ) *bandApp {
 
-	// First define the top level codec that will be shared by the different modules
-	cdc := MakeCodec()
+	// TODO: Remove cdc in favor of appCodec once all modules are migrated.
+	cdc := codecstd.MakeCodec(ModuleBasics)
+	appCodec := codecstd.NewAppCodec(cdc)
 
 	// BaseApp handles interactions with Tendermint through the ABCI protocol
 	bApp := bam.NewBaseApp(appName, logger, db, auth.DefaultTxDecoder(cdc), baseAppOptions...)
@@ -146,9 +142,10 @@ func NewBandApp(
 	bApp.SetAppVersion(version.Version)
 
 	keys := sdk.NewKVStoreKeys(
-		bam.MainStoreKey, auth.StoreKey, staking.StoreKey,
+		bam.MainStoreKey, auth.StoreKey, bank.StoreKey, staking.StoreKey,
 		supply.StoreKey, mint.StoreKey, distr.StoreKey, slashing.StoreKey,
-		gov.StoreKey, params.StoreKey, zoracle.StoreKey,
+		gov.StoreKey, params.StoreKey, ibc.StoreKey, transfer.StoreKey,
+		evidence.StoreKey, zoracle.StoreKey,
 	)
 
 	tkeys := sdk.NewTransientStoreKeys(staking.TStoreKey, params.TStoreKey)
@@ -164,21 +161,21 @@ func NewBandApp(
 	}
 
 	// The ParamsKeeper handles parameter storage for the application
-	app.ParamsKeeper = params.NewKeeper(app.cdc, keys[params.StoreKey], tkeys[params.TStoreKey], params.DefaultCodespace)
+	app.ParamsKeeper = params.NewKeeper(appCodec, keys[params.StoreKey], tkeys[params.TStoreKey])
 	// Set specific supspaces
 	authSubspace := app.ParamsKeeper.Subspace(auth.DefaultParamspace)
-	bankSupspace := app.ParamsKeeper.Subspace(bank.DefaultParamspace)
+	bankSubspace := app.ParamsKeeper.Subspace(bank.DefaultParamspace)
 	stakingSubspace := app.ParamsKeeper.Subspace(staking.DefaultParamspace)
 	mintSubspace := app.ParamsKeeper.Subspace(mint.DefaultParamspace)
 	distrSubspace := app.ParamsKeeper.Subspace(distr.DefaultParamspace)
 	slashingSubspace := app.ParamsKeeper.Subspace(slashing.DefaultParamspace)
-	govSubspace := app.ParamsKeeper.Subspace(gov.DefaultParamspace)
+	govSubspace := app.ParamsKeeper.Subspace(gov.DefaultParamspace).WithKeyTable(gov.ParamKeyTable())
 	crisisSubspace := app.ParamsKeeper.Subspace(crisis.DefaultParamspace)
 	zoracleSubspace := app.ParamsKeeper.Subspace(zoracle.DefaultParamspace)
 
 	// The AccountKeeper handles address -> account lookups
 	app.AccountKeeper = auth.NewAccountKeeper(
-		app.cdc,
+		appCodec,
 		keys[auth.StoreKey],
 		authSubspace,
 		auth.ProtoBaseAccount,
@@ -186,15 +183,16 @@ func NewBandApp(
 
 	// The BankKeeper allows you perform sdk.Coins interactions
 	app.BankKeeper = bank.NewBaseKeeper(
+		appCodec,
+		keys[bank.StoreKey],
 		app.AccountKeeper,
-		bankSupspace,
-		bank.DefaultCodespace,
+		bankSubspace,
 		app.ModuleAccountAddrs(),
 	)
 
 	// The SupplyKeeper collects transaction fees and renders them to the fee distribution module
 	app.SupplyKeeper = supply.NewKeeper(
-		app.cdc,
+		appCodec,
 		keys[supply.StoreKey],
 		app.AccountKeeper,
 		app.BankKeeper,
@@ -206,16 +204,15 @@ func NewBandApp(
 
 	// The staking keeper
 	StakingKeeper := staking.NewKeeper(
-		app.cdc,
+		appCodec,
 		keys[staking.StoreKey],
-		tkeys[staking.TStoreKey],
+		app.BankKeeper,
 		&wrappedSupplyKeeper,
 		stakingSubspace,
-		staking.DefaultCodespace,
 	)
 
 	app.MintKeeper = mint.NewKeeper(
-		app.cdc,
+		appCodec,
 		keys[mint.StoreKey],
 		mintSubspace,
 		&StakingKeeper,
@@ -224,12 +221,12 @@ func NewBandApp(
 	)
 
 	app.DistrKeeper = distr.NewKeeper(
-		app.cdc,
+		appCodec,
 		keys[distr.StoreKey],
 		distrSubspace,
+		app.BankKeeper,
 		&StakingKeeper,
 		app.SupplyKeeper,
-		distr.DefaultCodespace,
 		auth.FeeCollectorName,
 		app.ModuleAccountAddrs(),
 	)
@@ -238,11 +235,10 @@ func NewBandApp(
 	wrappedSupplyKeeper.SetDistrKeeper(&app.DistrKeeper)
 
 	app.SlashingKeeper = slashing.NewKeeper(
-		app.cdc,
+		appCodec,
 		keys[slashing.StoreKey],
 		&StakingKeeper,
 		slashingSubspace,
-		slashing.DefaultCodespace,
 	)
 
 	app.CrisisKeeper = crisis.NewKeeper(crisisSubspace, invCheckPeriod, app.SupplyKeeper, auth.FeeCollectorName)
@@ -250,11 +246,10 @@ func NewBandApp(
 	// register the proposal types
 	govRouter := gov.NewRouter()
 	govRouter.AddRoute(gov.RouterKey, gov.ProposalHandler).
-		AddRoute(params.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper)).
+		AddRoute(paramsproposal.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper)).
 		AddRoute(distr.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper))
 	app.GovKeeper = gov.NewKeeper(
-		app.cdc, keys[gov.StoreKey], app.ParamsKeeper, govSubspace,
-		app.SupplyKeeper, &StakingKeeper, gov.DefaultCodespace, govRouter,
+		appCodec, keys[gov.StoreKey], govSubspace, app.SupplyKeeper, &StakingKeeper, govRouter,
 	)
 
 	// register the staking hooks
@@ -265,8 +260,10 @@ func NewBandApp(
 			app.SlashingKeeper.Hooks()),
 	)
 
+	app.IBCKeeper = ibc.NewKeeper(app.cdc, keys[ibc.StoreKey], app.StakingKeeper)
+
 	app.ZoracleKeeper = zoracle.NewKeeper(
-		app.cdc,
+		cdc,
 		keys[zoracle.StoreKey],
 		app.BankKeeper,
 		app.StakingKeeper,
@@ -274,18 +271,18 @@ func NewBandApp(
 	)
 
 	app.mm = module.NewManager(
-		genaccounts.NewAppModule(app.AccountKeeper),
 		genutil.NewAppModule(app.AccountKeeper, app.StakingKeeper, app.BaseApp.DeliverTx),
-		auth.NewAppModule(app.AccountKeeper),
+		auth.NewAppModule(app.AccountKeeper, app.SupplyKeeper),
 		bank.NewAppModule(app.BankKeeper, app.AccountKeeper),
 		crisis.NewAppModule(&app.CrisisKeeper),
 		zoracle.NewAppModule(app.ZoracleKeeper),
-		supply.NewAppModule(app.SupplyKeeper, app.AccountKeeper),
-		distr.NewAppModule(app.DistrKeeper, app.SupplyKeeper),
-		gov.NewAppModule(app.GovKeeper, app.SupplyKeeper),
-		mint.NewAppModule(app.MintKeeper),
-		slashing.NewAppModule(app.SlashingKeeper, app.StakingKeeper),
-		staking.NewAppModule(app.StakingKeeper, app.DistrKeeper, app.AccountKeeper, app.SupplyKeeper),
+		supply.NewAppModule(app.SupplyKeeper, app.BankKeeper, app.AccountKeeper),
+		distr.NewAppModule(app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.SupplyKeeper, app.StakingKeeper),
+		gov.NewAppModule(app.GovKeeper, app.AccountKeeper, app.BankKeeper, app.SupplyKeeper),
+		mint.NewAppModule(app.MintKeeper, app.SupplyKeeper),
+		slashing.NewAppModule(app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
+		staking.NewAppModule(app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.SupplyKeeper),
+		ibc.NewAppModule(app.IBCKeeper),
 	)
 
 	app.mm.SetOrderBeginBlockers(mint.ModuleName, distr.ModuleName, slashing.ModuleName)
@@ -295,18 +292,9 @@ func NewBandApp(
 	// NOTE: The genutils moodule must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
 	app.mm.SetOrderInitGenesis(
-		genaccounts.ModuleName,
-		distr.ModuleName,
-		staking.ModuleName,
-		auth.ModuleName,
-		bank.ModuleName,
-		slashing.ModuleName,
-		gov.ModuleName,
-		mint.ModuleName,
-		zoracle.ModuleName,
-		supply.ModuleName,
-		crisis.ModuleName,
-		genutil.ModuleName,
+		distr.ModuleName, staking.ModuleName, auth.ModuleName, bank.ModuleName,
+		slashing.ModuleName, gov.ModuleName, mint.ModuleName, supply.ModuleName,
+		crisis.ModuleName, genutil.ModuleName, evidence.ModuleName, zoracle.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -325,6 +313,7 @@ func NewBandApp(
 	app.SetAnteHandler(auth.NewAnteHandler(
 		app.AccountKeeper,
 		app.SupplyKeeper,
+		app.IBCKeeper,
 		auth.DefaultSigVerificationGasConsumer,
 	))
 
@@ -333,7 +322,7 @@ func NewBandApp(
 	if loadLatest {
 		err := app.LoadLatestVersion(app.keys[bam.MainStoreKey])
 		if err != nil {
-			cmn.Exit(err.Error())
+			tmos.Exit(err.Error())
 		}
 	}
 
@@ -343,7 +332,7 @@ func NewBandApp(
 func (app *bandApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	var genesisState GenesisState
 	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
-	return app.mm.InitGenesis(ctx, genesisState)
+	return app.mm.InitGenesis(ctx, app.cdc, genesisState)
 }
 
 func (app *bandApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {

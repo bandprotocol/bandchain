@@ -13,7 +13,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
-	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
+	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 
 	// unnamed import of statik for swagger UI support
@@ -101,9 +101,9 @@ func LatestTxsRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 
 		// Temporary implementation to get latest tx sort by descending timestamp
 		// Pull request at bandprotocol/d3n:#224
-		node, _ := cliCtx.GetNode()
-		block, _ := node.Block(nil)
-		totalTxs := int(block.Block.Header.TotalTxs)
+		// node, _ := cliCtx.GetNode()
+		// block, _ := node.Block(nil)
+		totalTxs := 0 // TODO: FIX THIS int(block.Block.Header.TotalTxs)
 		endIndex := totalTxs - (page-1)*limit
 		startIndex := totalTxs - page*limit + 1
 
@@ -128,7 +128,7 @@ func LatestTxsRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		for todoIndex <= endIndex {
 			pageOfTodoIndex := (todoIndex-1)/limit + 1
 			startIndexOfPage := (pageOfTodoIndex-1)*limit + 1
-			searchResult, err := utils.QueryTxsByEvents(cliCtx, []string{"tx.height>0"}, pageOfTodoIndex, limit)
+			searchResult, err := authclient.QueryTxsByEvents(cliCtx, []string{"tx.height>0"}, pageOfTodoIndex, limit, "")
 
 			if err != nil {
 				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())

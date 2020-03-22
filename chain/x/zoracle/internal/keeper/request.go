@@ -3,6 +3,7 @@ package keeper
 import (
 	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // SetRequest is a function to save request to the given ID.
@@ -12,10 +13,10 @@ func (k Keeper) SetRequest(ctx sdk.Context, id types.RequestID, request types.Re
 }
 
 // GetRequest returns the entire Request metadata struct.
-func (k Keeper) GetRequest(ctx sdk.Context, id types.RequestID) (types.Request, sdk.Error) {
+func (k Keeper) GetRequest(ctx sdk.Context, id types.RequestID) (types.Request, error) {
 	store := ctx.KVStore(k.storeKey)
 	if !k.CheckRequestExists(ctx, id) {
-		return types.Request{}, types.ErrItemNotFound("GetRequest: Unknown request ID %d.", id)
+		return types.Request{}, sdkerrors.Wrapf(types.ErrItemNotFound, "GetRequest: Unknown request ID %d.", id)
 	}
 
 	bz := store.Get(types.RequestStoreKey(id))
@@ -28,16 +29,16 @@ func (k Keeper) GetRequest(ctx sdk.Context, id types.RequestID) (types.Request, 
 func (k Keeper) AddRequest(
 	ctx sdk.Context, oracleScriptID types.OracleScriptID, calldata []byte,
 	requestedValidatorCount, sufficientValidatorCount, expiration int64, executeGas uint64,
-) (types.RequestID, sdk.Error) {
+) (types.RequestID, error) {
 	if !k.CheckOracleScriptExists(ctx, oracleScriptID) {
-		return 0, types.ErrItemNotFound(
+		return 0, sdkerrors.Wrapf(types.ErrItemNotFound,
 			"AddRequest: Unknown oracle script ID %d.",
 			oracleScriptID,
 		)
 	}
 
 	if int64(len(calldata)) > k.MaxCalldataSize(ctx) {
-		return 0, types.ErrBadDataValue(
+		return 0, sdkerrors.Wrapf(types.ErrBadDataValue,
 			"AddRequest: Calldata size (%d) exceeds the maximum size (%d).",
 			len(calldata),
 			int(k.MaxCalldataSize(ctx)),
@@ -46,7 +47,7 @@ func (k Keeper) AddRequest(
 
 	validatorsByPower := k.StakingKeeper.GetBondedValidatorsByPower(ctx)
 	if int64(len(validatorsByPower)) < requestedValidatorCount {
-		return 0, types.ErrBadDataValue(
+		return 0, sdkerrors.Wrapf(types.ErrBadDataValue,
 			"AddRequest: Requested validator count (%d) exceeds the current number of validators (%d).",
 			requestedValidatorCount,
 			len(validatorsByPower),
@@ -60,7 +61,7 @@ func (k Keeper) AddRequest(
 
 	ctx.GasMeter().ConsumeGas(executeGas, "ExecuteGas")
 	if executeGas > k.EndBlockExecuteGasLimit(ctx) {
-		return 0, types.ErrBadDataValue(
+		return 0, sdkerrors.Wrapf(types.ErrBadDataValue,
 			"AddRequest: Execute gas (%d) exceeds the maximum limit (%d).",
 			executeGas,
 			k.EndBlockExecuteGasLimit(ctx),
@@ -84,10 +85,10 @@ func (k Keeper) AddRequest(
 
 // ValidateDataSourceCount validates that the number of raw data requests is
 // not greater than `MaxDataSourceCountPerRequest`
-func (k Keeper) ValidateDataSourceCount(ctx sdk.Context, id types.RequestID) sdk.Error {
+func (k Keeper) ValidateDataSourceCount(ctx sdk.Context, id types.RequestID) error {
 	dataSourceCount := k.GetRawDataRequestCount(ctx, id)
 	if dataSourceCount > k.MaxDataSourceCountPerRequest(ctx) {
-		return types.ErrBadDataValue(
+		return sdkerrors.Wrapf(types.ErrBadDataValue,
 			"ValidateDataSourceCount: Data source count (%d) exceeds the limit (%d).",
 			dataSourceCount,
 			k.MaxDataSourceCountPerRequest(ctx),
@@ -98,7 +99,7 @@ func (k Keeper) ValidateDataSourceCount(ctx sdk.Context, id types.RequestID) sdk
 }
 
 // PayDataSourceFees sends fees to the owners of the requested data sources.
-func (k Keeper) PayDataSourceFees(ctx sdk.Context, id types.RequestID, sender sdk.AccAddress) sdk.Error {
+func (k Keeper) PayDataSourceFees(ctx sdk.Context, id types.RequestID, sender sdk.AccAddress) error {
 	rawDataRequests := k.GetRawDataRequests(ctx, id)
 	for _, rawDataRequest := range rawDataRequests {
 		dataSource, err := k.GetDataSource(ctx, rawDataRequest.DataSourceID)
@@ -123,7 +124,7 @@ func (k Keeper) PayDataSourceFees(ctx sdk.Context, id types.RequestID, sender sd
 	return nil
 }
 
-func (k Keeper) SetResolve(ctx sdk.Context, id types.RequestID, resolveStatus types.ResolveStatus) sdk.Error {
+func (k Keeper) SetResolve(ctx sdk.Context, id types.RequestID, resolveStatus types.ResolveStatus) error {
 	request, err := k.GetRequest(ctx, id)
 	if err != nil {
 		return err
@@ -152,11 +153,11 @@ func (k Keeper) ShouldBecomePendingResolve(ctx sdk.Context, id types.RequestID) 
 }
 
 // AddPendingRequest checks and append new request id to list if id already existed in list, it will return error.
-func (k Keeper) AddPendingRequest(ctx sdk.Context, requestID types.RequestID) sdk.Error {
+func (k Keeper) AddPendingRequest(ctx sdk.Context, requestID types.RequestID) error {
 	pendingList := k.GetPendingResolveList(ctx)
 	for _, entry := range pendingList {
 		if requestID == entry {
-			return types.ErrItemDuplication(
+			return sdkerrors.Wrapf(types.ErrItemDuplication,
 				"AddPendingRequest: Request ID %d already exists in the pending list",
 				requestID,
 			)
