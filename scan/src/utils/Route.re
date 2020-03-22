@@ -111,7 +111,7 @@ let regexes = [
     "^bandvaloper([0-9a-z]+)$",
     keys => {
       switch (
-        keys->Belt_List.get(0)->Belt_Option.getWithDefault("")->Address.fromBech32Opt,
+        keys->Belt_List.head->Belt_Option.getWithDefault("")->Address.fromBech32Opt,
         keys->Belt_List.get(2),
       ) {
       | (Some(addr), Some("")) => ValidatorIndexPage(addr, ProposedBlocks)
@@ -125,7 +125,7 @@ let regexes = [
     "^band([0-9a-z]+)$",
     keys => {
       switch (
-        keys->Belt_List.get(0)->Belt_Option.getWithDefault("")->Address.fromBech32Opt,
+        keys->Belt_List.head->Belt_Option.getWithDefault("")->Address.fromBech32Opt,
         keys->Belt_List.get(2),
       ) {
       | (Some(addr), Some("")) => AccountIndexPage(addr, AccountTransactions)
@@ -141,7 +141,7 @@ let fromUrl = (url: ReasonReactRouter.url) =>
     regexes
     ->Belt_List.keepMap(((regex, keysToRoute)) =>
         url.path
-        ->Belt_List.get(0)
+        ->Belt_List.head
         ->Belt_Option.getWithDefault("")
         ->Js.Re.exec_(regex->Js.Re.fromString, _)
         ->Belt_Option.map(result => (result, keysToRoute))
