@@ -5,6 +5,13 @@ let fromBech32 = bech32str => {
   Address(bech32str->Bech32.decode->Bech32.wordsGet->Bech32.fromWords->JsBuffer.arrayToHex);
 };
 
+let fromBech32Opt = bech32str =>
+  switch (bech32str->Bech32.decodeOpt) {
+  | Some(decoded) =>
+    Some(Address(decoded->Bech32.wordsGet->Bech32.fromWords->JsBuffer.arrayToHex))
+  | _ => None
+  };
+
 let fromHex = hexstr => Address(hexstr->HexUtils.normalizeHexString);
 
 let toHex = (~with0x=false) =>
