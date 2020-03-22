@@ -1,16 +1,19 @@
 type pos_t =
+  | Landing
   | Title
   | Subtitle
   | Text;
 
 let fontSize =
   fun
+  | Landing => Text.Xxxl
   | Title => Text.Xxl
   | Subtitle => Text.Lg
   | Text => Text.Md;
 
 let lineHeight =
   fun
+  | Landing => Text.Px(31)
   | Title => Text.Px(23)
   | Subtitle => Text.Px(18)
   | Text => Text.Px(16);
@@ -23,6 +26,7 @@ module Styles = {
   let pointerEvents =
     fun
     | Title => style([pointerEvents(`none)])
+    | Landing
     | Subtitle
     | Text => style([pointerEvents(`auto)]);
 };
