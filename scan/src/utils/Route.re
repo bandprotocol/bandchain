@@ -4,24 +4,64 @@ type data_source_tab_t =
   | DataSourceRequests
   | DataSourceRevisions;
 
+let dataSourceTab = key =>
+  switch (key) {
+  | "" => Some(DataSourceExecute)
+  | "code" => Some(DataSourceCode)
+  | "requests" => Some(DataSourceRequests)
+  | "revisions" => Some(DataSourceRevisions)
+  | _ => None
+  };
+
 type oracle_script_tab_t =
   | OracleScriptExecute
   | OracleScriptCode
   | OracleScriptRequests
   | OracleScriptRevisions;
 
+let oracleScriptTab = key =>
+  switch (key) {
+  | "" => Some(OracleScriptExecute)
+  | "code" => Some(OracleScriptCode)
+  | "requests" => Some(OracleScriptRequests)
+  | "revisions" => Some(OracleScriptRevisions)
+  | _ => None
+  };
+
 type request_tab_t =
   | RequestReportStatus
   | RequestProof;
+
+let requestTab = key =>
+  switch (key) {
+  | "" => Some(RequestReportStatus)
+  | "proof" => Some(RequestProof)
+  | _ => None
+  };
 
 type account_tab_t =
   | AccountTransactions
   | AccountDelegations;
 
+let accountTab = key =>
+  switch (key) {
+  | "" => Some(AccountTransactions)
+  | "delegations" => Some(AccountDelegations)
+  | _ => None
+  };
+
 type validator_tab_t =
   | ProposedBlocks
   | Delegators
   | Reports;
+
+let validatorTab = key =>
+  switch (key) {
+  | "" => Some(ProposedBlocks)
+  | "delegators" => Some(Delegators)
+  | "reports" => Some(Reports)
+  | _ => None
+  };
 
 type t =
   | NotFound
@@ -66,57 +106,36 @@ let regexes = [
   ),
   (
     "D([0-9]+)$",
-    keys => {
-      switch (
-        keys->Belt_List.get(1)->Belt_Option.getWithDefault("")->int_of_string_opt,
-        keys->Belt_List.get(2),
-      ) {
-      | (Some(id), Some("")) => DataSourceIndexPage(id, DataSourceExecute)
-      | (Some(id), Some("code")) => DataSourceIndexPage(id, DataSourceCode)
-      | (Some(id), Some("requests")) => DataSourceIndexPage(id, DataSourceRequests)
-      | (Some(id), Some("revisions")) => DataSourceIndexPage(id, DataSourceRevisions)
-      | _ => NotFound
-      };
-    },
+    keys =>
+      dataSourceTab(keys->Belt_List.getExn(2))
+      ->Belt_Option.mapWithDefault(NotFound, tab =>
+          DataSourceIndexPage(keys->Belt_List.getExn(1)->int_of_string, tab)
+        ),
   ),
   (
     "O([0-9]+)$",
-    keys => {
-      switch (
-        keys->Belt_List.get(1)->Belt_Option.getWithDefault("")->int_of_string_opt,
-        keys->Belt_List.get(2),
-      ) {
-      | (Some(id), Some("")) => OracleScriptIndexPage(id, OracleScriptExecute)
-      | (Some(id), Some("code")) => OracleScriptIndexPage(id, OracleScriptCode)
-      | (Some(id), Some("requests")) => OracleScriptIndexPage(id, OracleScriptRequests)
-      | (Some(id), Some("revisions")) => OracleScriptIndexPage(id, OracleScriptRevisions)
-      | _ => NotFound
-      };
-    },
+    keys =>
+      oracleScriptTab(keys->Belt_List.getExn(2))
+      ->Belt_Option.mapWithDefault(NotFound, tab =>
+          OracleScriptIndexPage(keys->Belt_List.getExn(1)->int_of_string, tab)
+        ),
   ),
   (
     "R([0-9]+)$",
-    keys => {
-      switch (
-        keys->Belt_List.get(1)->Belt_Option.getWithDefault("")->int_of_string_opt,
-        keys->Belt_List.get(2),
-      ) {
-      | (Some(id), Some("")) => RequestIndexPage(id, RequestReportStatus)
-      | (Some(id), Some("proof")) => RequestIndexPage(id, RequestProof)
-      | _ => NotFound
-      };
-    },
+    keys =>
+      requestTab(keys->Belt_List.getExn(2))
+      ->Belt_Option.mapWithDefault(NotFound, tab =>
+          RequestIndexPage(keys->Belt_List.getExn(1)->int_of_string, tab)
+        ),
   ),
   (
     "^bandvaloper([0-9a-z]+)$",
     keys => {
       switch (
         keys->Belt_List.head->Belt_Option.getWithDefault("")->Address.fromBech32Opt,
-        keys->Belt_List.get(2),
+        keys->Belt_List.getExn(2)->validatorTab,
       ) {
-      | (Some(addr), Some("")) => ValidatorIndexPage(addr, ProposedBlocks)
-      | (Some(addr), Some("delegators")) => ValidatorIndexPage(addr, Delegators)
-      | (Some(addr), Some("reports")) => ValidatorIndexPage(addr, Reports)
+      | (Some(addr), Some(tab)) => ValidatorIndexPage(addr, tab)
       | _ => NotFound
       };
     },
@@ -126,10 +145,9 @@ let regexes = [
     keys => {
       switch (
         keys->Belt_List.head->Belt_Option.getWithDefault("")->Address.fromBech32Opt,
-        keys->Belt_List.get(2),
+        keys->Belt_List.getExn(2)->accountTab,
       ) {
-      | (Some(addr), Some("")) => AccountIndexPage(addr, AccountTransactions)
-      | (Some(addr), Some("delegations")) => AccountIndexPage(addr, AccountDelegations)
+      | (Some(addr), Some(tab)) => AccountIndexPage(addr, tab)
       | _ => NotFound
       };
     },
