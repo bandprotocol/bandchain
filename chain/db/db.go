@@ -45,8 +45,8 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 	db.Model(&DataSourceRevision{}).AddForeignKey(
 		"data_source_id",
 		"data_sources(id)",
-		"RESTRICT",
-		"RESTRICT",
+		"CASCADE",
+		"CASCADE",
 	)
 
 	for key, value := range metadata {
