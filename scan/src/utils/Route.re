@@ -39,12 +39,6 @@ type t =
   | ValidatorHomePage
   | ValidatorIndexPage(Address.t, validator_tab_t);
 
-let chars_to_int = chars =>
-  switch (chars->Belt_List.toArray->Js.Array.joinWith("", _)->int_of_string_opt) {
-  | Some(id) => id
-  | None => 0
-  };
-
 let regexes = [
   ("^$" |> Js.Re.fromString, _ => HomePage),
   ("^blocks$" |> Js.Re.fromString, _ => BlockHomePage),
@@ -142,7 +136,8 @@ let regexes = [
   ),
 ];
 
-let fromUrl = (url: ReasonReactRouter.url) => switch (
+let fromUrl = (url: ReasonReactRouter.url) =>
+  switch (
     regexes
     ->Belt_List.keepMap(((regex, keysToRoute)) =>
         url.path
