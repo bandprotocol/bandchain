@@ -74,7 +74,7 @@ let make = () => {
                      block=true
                      value="REQUEST"
                      size=Text.Sm
-                     weight=Text.Bold
+                     weight=Text.Semibold
                      color=Colors.gray6
                    />
                  </div>
@@ -84,22 +84,34 @@ let make = () => {
                    block=true
                    value="REQUESTER"
                    size=Text.Sm
-                   weight=Text.Bold
+                   weight=Text.Semibold
                    color=Colors.gray6
                  />
                </Col>
                <Col size=1.61>
-                 <Text block=true value="AGE" size=Text.Sm weight=Text.Bold color=Colors.gray6 />
+                 <Text
+                   block=true
+                   value="AGE"
+                   size=Text.Sm
+                   weight=Text.Semibold
+                   color=Colors.gray6
+                 />
                </Col>
                <Col size=1.26>
-                 <Text block=true value="BLOCK" size=Text.Sm weight=Text.Bold color=Colors.gray6 />
+                 <Text
+                   block=true
+                   value="BLOCK"
+                   size=Text.Sm
+                   weight=Text.Semibold
+                   color=Colors.gray6
+                 />
                </Col>
                <Col size=2.8>
                  <Text
                    block=true
                    value="TX HASH"
                    size=Text.Sm
-                   weight=Text.Bold
+                   weight=Text.Semibold
                    color=Colors.gray6
                  />
                </Col>

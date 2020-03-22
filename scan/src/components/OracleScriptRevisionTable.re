@@ -42,23 +42,35 @@ let make = (~revisions: list(OracleScriptHook.OracleScript.revision_t)) => {
                      block=true
                      value="NAME"
                      size=Text.Sm
-                     weight=Text.Bold
+                     weight=Text.Semibold
                      color=Colors.gray6
                    />
                  </div>
                </Col>
                <Col size=2.>
-                 <Text block=true value="AGE" size=Text.Sm weight=Text.Bold color=Colors.gray6 />
+                 <Text
+                   block=true
+                   value="AGE"
+                   size=Text.Sm
+                   weight=Text.Semibold
+                   color=Colors.gray6
+                 />
                </Col>
                <Col size=1.6>
-                 <Text block=true value="BLOCK" size=Text.Sm weight=Text.Bold color=Colors.gray6 />
+                 <Text
+                   block=true
+                   value="BLOCK"
+                   size=Text.Sm
+                   weight=Text.Semibold
+                   color=Colors.gray6
+                 />
                </Col>
                <Col size=3.9>
                  <Text
                    block=true
                    value="TX HASH"
                    size=Text.Sm
-                   weight=Text.Bold
+                   weight=Text.Semibold
                    color=Colors.gray6
                  />
                </Col>
