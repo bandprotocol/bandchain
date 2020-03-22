@@ -40,13 +40,13 @@ type t =
   | ValidatorIndexPage(Address.t, validator_tab_t);
 
 let regexes = [
-  ("^$" |> Js.Re.fromString, _ => HomePage),
-  ("^blocks$" |> Js.Re.fromString, _ => BlockHomePage),
-  ("^scripts$" |> Js.Re.fromString, _ => OracleScriptHomePage),
-  ("^sources$" |> Js.Re.fromString, _ => DataSourceHomePage),
-  ("^txs$" |> Js.Re.fromString, _ => TxHomePage),
+  ("^$", _ => HomePage),
+  ("^blocks$", _ => BlockHomePage),
+  ("^scripts$", _ => OracleScriptHomePage),
+  ("^sources$", _ => DataSourceHomePage),
+  ("^txs$", _ => TxHomePage),
   (
-    "^tx$" |> Js.Re.fromString,
+    "^tx$",
     keys => {
       switch (keys->Belt_List.get(1)) {
       | Some(hash) => TxIndexPage(Hash.fromHex(hash))
@@ -54,9 +54,9 @@ let regexes = [
       };
     },
   ),
-  ("^validators$" |> Js.Re.fromString, _ => ValidatorHomePage),
+  ("^validators$", _ => ValidatorHomePage),
   (
-    "B([0-9]+)$" |> Js.Re.fromString,
+    "B([0-9]+)$",
     keys => {
       switch (keys->Belt_List.get(1)->Belt_Option.getWithDefault("")->int_of_string_opt) {
       | Some(height) => BlockIndexPage(height)
@@ -65,7 +65,7 @@ let regexes = [
     },
   ),
   (
-    "D([0-9]+)$" |> Js.Re.fromString,
+    "D([0-9]+)$",
     keys => {
       switch (
         keys->Belt_List.get(1)->Belt_Option.getWithDefault("")->int_of_string_opt,
@@ -80,7 +80,7 @@ let regexes = [
     },
   ),
   (
-    "O([0-9]+)$" |> Js.Re.fromString,
+    "O([0-9]+)$",
     keys => {
       switch (
         keys->Belt_List.get(1)->Belt_Option.getWithDefault("")->int_of_string_opt,
@@ -95,7 +95,7 @@ let regexes = [
     },
   ),
   (
-    "R([0-9]+)$" |> Js.Re.fromString,
+    "R([0-9]+)$",
     keys => {
       switch (
         keys->Belt_List.get(1)->Belt_Option.getWithDefault("")->int_of_string_opt,
@@ -108,7 +108,7 @@ let regexes = [
     },
   ),
   (
-    "^bandvaloper([0-9a-z]+)$" |> Js.Re.fromString,
+    "^bandvaloper([0-9a-z]+)$",
     keys => {
       switch (
         keys->Belt_List.get(0)->Belt_Option.getWithDefault("")->Address.fromBech32Opt,
@@ -122,7 +122,7 @@ let regexes = [
     },
   ),
   (
-    "^band([0-9a-z]+)$" |> Js.Re.fromString,
+    "^band([0-9a-z]+)$",
     keys => {
       switch (
         keys->Belt_List.get(0)->Belt_Option.getWithDefault("")->Address.fromBech32Opt,
@@ -143,7 +143,7 @@ let fromUrl = (url: ReasonReactRouter.url) =>
         url.path
         ->Belt_List.get(0)
         ->Belt_Option.getWithDefault("")
-        ->Js.Re.exec_(regex, _)
+        ->Js.Re.exec_(regex->Js.Re.fromString, _)
         ->Belt_Option.map(result => (result, keysToRoute))
       )
     ->Belt.List.head
