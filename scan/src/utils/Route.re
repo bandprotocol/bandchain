@@ -45,7 +45,36 @@ let chars_to_int = chars =>
   | None => 0
   };
 
-let fromUrl = (url: ReasonReactRouter.url) =>
+let regexes = [
+  "^blocks$" |> Js.Re.fromString,
+  "^scripts$" |> Js.Re.fromString,
+  "^sources$" |> Js.Re.fromString,
+  "^tx$" |> Js.Re.fromString,
+  "^txs$" |> Js.Re.fromString,
+  "^validators$" |> Js.Re.fromString,
+  "B([0-9]+)$" |> Js.Re.fromString,
+  "D([0-9]+)$" |> Js.Re.fromString,
+  "O([0-9]+)$" |> Js.Re.fromString,
+  "R([0-9]+)$" |> Js.Re.fromString,
+  "^bandvaloper([0-9a-z]+)" |> Js.Re.fromString,
+  "^band([0-9a-z]+)" |> Js.Re.fromString,
+];
+
+let fromUrl = (url: ReasonReactRouter.url) => {
+  switch (
+    regexes
+    ->Belt_List.keepMap(regex =>
+        url.path->Belt_List.get(0)->Belt_Option.getWithDefault("")->Js.Re.exec_(regex, _)
+      )
+    ->Belt.List.head
+  ) {
+  | Some(result) =>
+    let x = result->Js.Re.captures->Belt_Array.keepMap(Js.toOption);
+    Js.Console.log2(x, url.hash);
+    NotFound;
+  | None => NotFound
+  };
+
   switch (url.path, url.hash) {
   | (["sources"], _) => DataSourceHomePage
   | (["scripts"], _) => OracleScriptHomePage
@@ -83,6 +112,7 @@ let fromUrl = (url: ReasonReactRouter.url) =>
   | ([], _) => HomePage
   | (_, _) => NotFound
   };
+};
 
 let toString =
   fun
