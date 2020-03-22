@@ -46,73 +46,124 @@ let chars_to_int = chars =>
   };
 
 let regexes = [
-  "^blocks$" |> Js.Re.fromString,
-  "^scripts$" |> Js.Re.fromString,
-  "^sources$" |> Js.Re.fromString,
-  "^tx$" |> Js.Re.fromString,
-  "^txs$" |> Js.Re.fromString,
-  "^validators$" |> Js.Re.fromString,
-  "B([0-9]+)$" |> Js.Re.fromString,
-  "D([0-9]+)$" |> Js.Re.fromString,
-  "O([0-9]+)$" |> Js.Re.fromString,
-  "R([0-9]+)$" |> Js.Re.fromString,
-  "^bandvaloper([0-9a-z]+)" |> Js.Re.fromString,
-  "^band([0-9a-z]+)" |> Js.Re.fromString,
+  ("^$" |> Js.Re.fromString, _ => HomePage),
+  ("^blocks$" |> Js.Re.fromString, _ => BlockHomePage),
+  ("^scripts$" |> Js.Re.fromString, _ => OracleScriptHomePage),
+  ("^sources$" |> Js.Re.fromString, _ => DataSourceHomePage),
+  ("^txs$" |> Js.Re.fromString, _ => TxHomePage),
+  (
+    "^tx$" |> Js.Re.fromString,
+    keys => {
+      switch (keys->Belt_List.get(1)) {
+      | Some(hash) => TxIndexPage(Hash.fromHex(hash))
+      | None => NotFound
+      };
+    },
+  ),
+  ("^validators$" |> Js.Re.fromString, _ => ValidatorHomePage),
+  (
+    "B([0-9]+)$" |> Js.Re.fromString,
+    keys => {
+      switch (keys->Belt_List.get(1)->Belt_Option.getWithDefault("")->int_of_string_opt) {
+      | Some(height) => BlockIndexPage(height)
+      | None => NotFound
+      };
+    },
+  ),
+  (
+    "D([0-9]+)$" |> Js.Re.fromString,
+    keys => {
+      switch (
+        keys->Belt_List.get(1)->Belt_Option.getWithDefault("")->int_of_string_opt,
+        keys->Belt_List.get(2),
+      ) {
+      | (Some(id), Some("")) => DataSourceIndexPage(id, DataSourceExecute)
+      | (Some(id), Some("code")) => DataSourceIndexPage(id, DataSourceCode)
+      | (Some(id), Some("requests")) => DataSourceIndexPage(id, DataSourceRequests)
+      | (Some(id), Some("revisions")) => DataSourceIndexPage(id, DataSourceRevisions)
+      | _ => NotFound
+      };
+    },
+  ),
+  (
+    "O([0-9]+)$" |> Js.Re.fromString,
+    keys => {
+      switch (
+        keys->Belt_List.get(1)->Belt_Option.getWithDefault("")->int_of_string_opt,
+        keys->Belt_List.get(2),
+      ) {
+      | (Some(id), Some("")) => OracleScriptIndexPage(id, OracleScriptExecute)
+      | (Some(id), Some("code")) => OracleScriptIndexPage(id, OracleScriptCode)
+      | (Some(id), Some("requests")) => OracleScriptIndexPage(id, OracleScriptRequests)
+      | (Some(id), Some("revisions")) => OracleScriptIndexPage(id, OracleScriptRevisions)
+      | _ => NotFound
+      };
+    },
+  ),
+  (
+    "R([0-9]+)$" |> Js.Re.fromString,
+    keys => {
+      switch (
+        keys->Belt_List.get(1)->Belt_Option.getWithDefault("")->int_of_string_opt,
+        keys->Belt_List.get(2),
+      ) {
+      | (Some(id), Some("")) => RequestIndexPage(id, RequestReportStatus)
+      | (Some(id), Some("proof")) => RequestIndexPage(id, RequestProof)
+      | _ => NotFound
+      };
+    },
+  ),
+  (
+    "^bandvaloper([0-9a-z]+)$" |> Js.Re.fromString,
+    keys => {
+      switch (
+        keys->Belt_List.get(0)->Belt_Option.getWithDefault("")->Address.fromBech32Opt,
+        keys->Belt_List.get(2),
+      ) {
+      | (Some(addr), Some("")) => ValidatorIndexPage(addr, ProposedBlocks)
+      | (Some(addr), Some("delegators")) => ValidatorIndexPage(addr, Delegators)
+      | (Some(addr), Some("reports")) => ValidatorIndexPage(addr, Reports)
+      | _ => NotFound
+      };
+    },
+  ),
+  (
+    "^band([0-9a-z]+)$" |> Js.Re.fromString,
+    keys => {
+      switch (
+        keys->Belt_List.get(0)->Belt_Option.getWithDefault("")->Address.fromBech32Opt,
+        keys->Belt_List.get(2),
+      ) {
+      | (Some(addr), Some("")) => AccountIndexPage(addr, AccountTransactions)
+      | (Some(addr), Some("delegations")) => AccountIndexPage(addr, AccountDelegations)
+      | _ => NotFound
+      };
+    },
+  ),
 ];
 
-let fromUrl = (url: ReasonReactRouter.url) => {
-  switch (
+let fromUrl = (url: ReasonReactRouter.url) => switch (
     regexes
-    ->Belt_List.keepMap(regex =>
-        url.path->Belt_List.get(0)->Belt_Option.getWithDefault("")->Js.Re.exec_(regex, _)
+    ->Belt_List.keepMap(((regex, keysToRoute)) =>
+        url.path
+        ->Belt_List.get(0)
+        ->Belt_Option.getWithDefault("")
+        ->Js.Re.exec_(regex, _)
+        ->Belt_Option.map(result => (result, keysToRoute))
       )
     ->Belt.List.head
   ) {
-  | Some(result) =>
-    let x = result->Js.Re.captures->Belt_Array.keepMap(Js.toOption);
-    Js.Console.log2(x, url.hash);
-    NotFound;
+  | Some((result, keysToRoute)) =>
+    keysToRoute(
+      result
+      ->Js.Re.captures
+      ->Belt_Array.keepMap(Js.toOption)
+      ->Belt_List.fromArray
+      ->Belt_List.concat(url.path->Belt_List.drop(1)->Belt_Option.getWithDefault([]))
+      ->Belt_List.concat([url.hash]),
+    )
   | None => NotFound
   };
-
-  switch (url.path, url.hash) {
-  | (["sources"], _) => DataSourceHomePage
-  | (["scripts"], _) => OracleScriptHomePage
-  | (["txs"], _) => TxHomePage
-  | (["validators"], _) => ValidatorHomePage
-  | (["blocks"], _) => BlockHomePage
-  | (["tx", txHash], _) => TxIndexPage(Hash.fromHex(txHash))
-  | ([address], "delegations") =>
-    AccountIndexPage(address |> Address.fromBech32, AccountDelegations)
-  | ([address], "delegators") => ValidatorIndexPage(address |> Address.fromBech32, Delegators)
-  | ([address], "reports") => ValidatorIndexPage(address |> Address.fromBech32, Reports)
-  | ([path], tab) =>
-    switch ((path |> Js.String.split(""))->Belt_List.fromArray, tab) {
-    | (["B", ...rest], _) => BlockIndexPage(rest |> chars_to_int)
-    | (["O", ...rest], "code") => OracleScriptIndexPage(rest |> chars_to_int, OracleScriptCode)
-    | (["O", ...rest], "requests") =>
-      OracleScriptIndexPage(rest |> chars_to_int, OracleScriptRequests)
-    | (["O", ...rest], "revisions") =>
-      OracleScriptIndexPage(rest |> chars_to_int, OracleScriptRevisions)
-    | (["O", ...rest], _) => OracleScriptIndexPage(rest |> chars_to_int, OracleScriptExecute)
-    | (["D", ...rest], "code") => DataSourceIndexPage(rest |> chars_to_int, DataSourceCode)
-    | (["D", ...rest], "requests") =>
-      DataSourceIndexPage(rest |> chars_to_int, DataSourceRequests)
-    | (["D", ...rest], "revisions") =>
-      DataSourceIndexPage(rest |> chars_to_int, DataSourceRevisions)
-    | (["D", ...rest], _) => DataSourceIndexPage(rest |> chars_to_int, DataSourceExecute)
-    | (["R", ...rest], "proof") => RequestIndexPage(rest |> chars_to_int, RequestProof)
-    | (["R", ...rest], _) => RequestIndexPage(rest |> chars_to_int, RequestReportStatus)
-    | (["b", "a", "n", "d", "v", "a", "l", "o", "p", "e", "r", ..._], _) =>
-      ValidatorIndexPage(path |> Address.fromBech32, ProposedBlocks)
-    | (["b", "a", "n", "d", ..._], _) =>
-      AccountIndexPage(path |> Address.fromBech32, AccountTransactions)
-    | _ => NotFound
-    }
-  | ([], _) => HomePage
-  | (_, _) => NotFound
-  };
-};
 
 let toString =
   fun
@@ -151,7 +202,7 @@ let toString =
     }
   | ValidatorIndexPage(validatorAddress, ProposedBlocks) => {
       let validatorAddressBech32 = validatorAddress |> Address.toOperatorBech32;
-      {j|$validatorAddressBech32#proposed-blocks|j};
+      {j|$validatorAddressBech32|j};
     }
   | HomePage => "/"
   | NotFound => "/notfound";
