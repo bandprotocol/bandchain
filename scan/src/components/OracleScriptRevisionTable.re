@@ -17,9 +17,6 @@ module Styles = {
 
 [@react.component]
 let make = (~revisions: list(OracleScriptHook.OracleScript.revision_t)) => {
-  let (page, setPage) = React.useState(_ => 1);
-  let pageCount = 10;
-
   let numRevision = revisions |> Belt_List.size;
 
   <div className=Styles.tableWrapper>
@@ -110,13 +107,6 @@ let make = (~revisions: list(OracleScriptHook.OracleScript.revision_t)) => {
               })
             ->Array.of_list
             ->React.array}
-           <VSpacing size=Spacing.lg />
-           <VSpacing size=Spacing.lg />
-           <Pagination
-             currentPage=page
-             pageCount
-             onPageChange={newPage => setPage(_ => newPage)}
-           />
          </>
        : <div className=Styles.iconWrapper>
            <VSpacing size={`px(30)} />
