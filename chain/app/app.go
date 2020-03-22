@@ -63,17 +63,19 @@ var (
 		slashing.AppModuleBasic{},
 		supply.AppModuleBasic{},
 		ibc.AppModuleBasic{},
+		transfer.AppModuleBasic{},
 		// D3N-specific modules
 		zoracle.AppModuleBasic{},
 	)
 	// account permissions
 	maccPerms = map[string][]string{
-		auth.FeeCollectorName:     nil,
-		distr.ModuleName:          nil,
-		mint.ModuleName:           {supply.Minter},
-		staking.BondedPoolName:    {supply.Burner, supply.Staking},
-		staking.NotBondedPoolName: {supply.Burner, supply.Staking},
-		gov.ModuleName:            {supply.Burner},
+		auth.FeeCollectorName:           nil,
+		distr.ModuleName:                nil,
+		mint.ModuleName:                 {supply.Minter},
+		staking.BondedPoolName:          {supply.Burner, supply.Staking},
+		staking.NotBondedPoolName:       {supply.Burner, supply.Staking},
+		gov.ModuleName:                  {supply.Burner},
+		transfer.GetModuleAccountName(): {supply.Minter, supply.Burner},
 	}
 )
 
@@ -115,6 +117,7 @@ type bandApp struct {
 	CrisisKeeper   crisis.Keeper
 	ParamsKeeper   params.Keeper
 	IBCKeeper      ibc.Keeper
+	TransferKeeper transfer.Keeper
 	ZoracleKeeper  zoracle.Keeper
 
 	// Decoder for unmarshaling []byte into sdk.Tx
@@ -261,6 +264,11 @@ func NewBandApp(
 	)
 
 	app.IBCKeeper = ibc.NewKeeper(app.cdc, keys[ibc.StoreKey], app.StakingKeeper)
+	transferCapKey := app.IBCKeeper.PortKeeper.BindPort(bank.ModuleName)
+	app.TransferKeeper = transfer.NewKeeper(
+		app.cdc, keys[transfer.StoreKey], transferCapKey,
+		app.IBCKeeper.ChannelKeeper, app.BankKeeper, app.SupplyKeeper,
+	)
 
 	app.ZoracleKeeper = zoracle.NewKeeper(
 		cdc,
@@ -283,6 +291,7 @@ func NewBandApp(
 		slashing.NewAppModule(app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
 		staking.NewAppModule(app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.SupplyKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
+		transfer.NewAppModule(app.TransferKeeper),
 	)
 
 	app.mm.SetOrderBeginBlockers(mint.ModuleName, distr.ModuleName, slashing.ModuleName)
