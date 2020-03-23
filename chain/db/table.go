@@ -13,3 +13,17 @@ type Event struct {
 	gorm.Model
 	Name string
 }
+
+type Validator struct {
+	OperatorAddress  string `gorm:"primary_key"`
+	ConsensusAddress string `gorm:"unique;not null"`
+	ElectedCount     uint
+	VotedCount       uint
+	MissedCount      uint
+}
+
+type ValidatorVote struct {
+	ConsensusAddress string `gorm:"primary_key"`
+	BlockHeight      int64  `gorm:"primary_key;auto_increment:false"`
+	Voted            bool
+}
