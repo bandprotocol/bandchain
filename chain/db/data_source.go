@@ -24,7 +24,7 @@ func createDataSource(
 		Owner:       owner.String(),
 		Fee:         fee.String(),
 		Executable:  executable,
-		LastUpdated: blockTime,
+		LastUpdated: blockTime.Unix(),
 	}
 }
 
@@ -55,7 +55,7 @@ func (b *BandDB) AddDataSource(
 	return b.tx.Create(&DataSourceRevision{
 		DataSourceID: id,
 		Name:         name,
-		Timestamp:    blockTime,
+		Timestamp:    blockTime.Unix(),
 		BlockHeight:  blockHeight,
 		TxHash:       txHash,
 	}).Error
@@ -98,7 +98,7 @@ func (b *BandDB) handleMsgEditDataSource(
 	return b.tx.Create(&DataSourceRevision{
 		DataSourceID: int64(msg.DataSourceID),
 		Name:         msg.Name,
-		Timestamp:    b.ctx.BlockTime(),
+		Timestamp:    b.ctx.BlockTime().Unix(),
 		BlockHeight:  b.ctx.BlockHeight(),
 		TxHash:       txHash,
 	}).Error

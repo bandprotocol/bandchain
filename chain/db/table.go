@@ -1,8 +1,6 @@
 package db
 
 import (
-	"time"
-
 	"github.com/jinzhu/gorm"
 )
 
@@ -37,14 +35,14 @@ type DataSource struct {
 	Owner       string
 	Executable  []byte
 	Fee         string
-	LastUpdated time.Time
+	LastUpdated int64
 }
 
 type DataSourceRevision struct {
 	DataSourceID   int64 `gorm:"primary_key;auto_increment:false"`
 	RevisionNumber int64 `gorm:"primary_key"`
 	Name           string
-	Timestamp      time.Time
+	Timestamp      int64
 	BlockHeight    int64
 	TxHash         []byte
 }
