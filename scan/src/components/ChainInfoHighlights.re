@@ -71,6 +71,7 @@ module HighlightCard = {
 [@react.component]
 let make = () =>
   {
+    let metadata = MetadataSub.use();
     let%Opt info = React.useContext(GlobalContext.context);
 
     let validators = info.validators;
@@ -151,12 +152,17 @@ let make = () =>
           label="LATEST BLOCK"
           extraTopRight={<TimeAgos time={info.latestBlock.timestamp} size=Text.Md />}
           valueComponent={
-                           let latestBlock = info.latestBlock.height->Format.iPretty;
-                           <TypeID.Block
-                             id={ID.Block.ID(info.latestBlock.height)}
-                             position=TypeID.Landing
-                           />;
-                         }
+            <TypeID.Block
+              id={
+                ID.Block.ID(
+                  metadata
+                  ->Sub.map(({lastProcessedHeight}) => lastProcessedHeight)
+                  ->Sub.default(0),
+                )
+              }
+              position=TypeID.Landing
+            />
+          }
           extraComponent={<Text value=moniker nowrap=true ellipsis=true block=true />}
         />
         <HighlightCard
