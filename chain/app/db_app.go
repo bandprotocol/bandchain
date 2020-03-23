@@ -162,11 +162,13 @@ func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseB
 
 func (app *dbBandApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBlock) {
 	res = app.bandApp.EndBlock(req)
+
 	err := app.dbBand.SetLastProcessedHeight(req.GetHeight())
 	if err != nil {
 		panic(err)
 	}
 	// Do other logic
+	app.dbBand.SetContext(sdk.Context{})
 	return res
 }
 
