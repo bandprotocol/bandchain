@@ -51,38 +51,3 @@ func (b *BandDB) AddTransaction(
 	err := b.tx.Create(&transaction).Error
 	return err
 }
-
-// type Transaction struct {
-// 	TxHash      []byte `gorm:"primary_key"`
-// 	Timestamp   time.Time
-// 	GasUse      uint64
-// 	GasLimit    uint64
-// 	GasFee      sdk.Coins
-// 	Sender      sdk.AccAddress
-// 	Status      string
-// 	BlockHeight int64
-// }
-
-// func (b *BandDB) handleMsgEditDataSource(
-// 	txHash []byte,
-// 	msg zoracle.MsgEditDataSource,
-// 	events map[string]string,
-// ) error {
-// 	dataSource := createDataSource(
-// 		int64(msg.DataSourceID), msg.Name, msg.Description,
-// 		msg.Owner, msg.Fee, msg.Executable, b.ctx.BlockTime(),
-// 	)
-
-// 	err := b.tx.Save(&dataSource).Error
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	return b.tx.Create(&DataSourceRevision{
-// 		DataSourceID: int64(msg.DataSourceID),
-// 		Name:         msg.Name,
-// 		Timestamp:    b.ctx.BlockTime(),
-// 		BlockHeight:  b.ctx.BlockHeight(),
-// 		TxHash:       txHash,
-// 	}).Error
-// }
