@@ -1,7 +1,7 @@
 package db
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
@@ -13,13 +13,34 @@ type BandDB struct {
 	tx *gorm.DB
 }
 
-func NewDB(dialect, path string) (*BandDB, error) {
+func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 	db, err := gorm.Open(dialect, path)
 	if err != nil {
 		return nil, err
 	}
 
-	db.AutoMigrate(&Metadata{}, &Event{})
+	db.AutoMigrate(
+		&Metadata{},
+		&Event{},
+		&Validator{},
+		&ValidatorVote{},
+	)
+
+	db.Model(&ValidatorVote{}).AddForeignKey(
+		"consensus_address",
+		"validators(consensus_address)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	for key, value := range metadata {
+		err := db.Where(Metadata{Key: key}).
+			Assign(Metadata{Value: value}).
+			FirstOrCreate(&Metadata{}).Error
+		if err != nil {
+			panic(err)
+		}
+	}
 
 	return &BandDB{db: db}, nil
 }
@@ -50,7 +71,7 @@ func (b *BandDB) RollBack() {
 	b.tx = nil
 }
 
-func (b *BandDB) HandleEvent(eventName string, attributes map[string]string) {
+func (b *BandDB) HandleEvent(eventName string, attributes map[string]string) error {
 	switch eventName {
 	// Just proof of concept
 	case "message":
@@ -60,11 +81,12 @@ func (b *BandDB) HandleEvent(eventName string, attributes map[string]string) {
 			// message map[sender:band17xpfvakm2amg962yls6f84z3kell8c5lfkrzn4]
 			action, ok := attributes["action"]
 			if ok {
-				b.handleMessageEvent(action)
+				return b.handleMessageEvent(action)
 			}
+			return nil
 		}
 	default:
 		// TODO: Better logging
-		fmt.Println("There isn't event handler for this type")
+		return errors.New("HandleEvent: There isn't event handler for this type")
 	}
 }
