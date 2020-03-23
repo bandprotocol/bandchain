@@ -67,20 +67,9 @@ let make = (~delegations: list(AccountHook.Account.delegation_t)) => {
                <Col> <HSpacing size=Spacing.lg /> </Col>
                <Col size=0.9>
                  <div className=Styles.hFlex>
-                   <Text
-                     value="bandvaloper"
-                     weight=Text.Semibold
-                     spacing={Text.Em(0.02)}
-                     code=true
-                     block=true
-                   />
-                   <Text
-                     value={delegation.validatorAddress->Js.String.sliceToEnd(~from=11)}
-                     spacing={Text.Em(0.02)}
-                     block=true
-                     code=true
-                     ellipsis=true
-                     nowrap=true
+                   <AddressRender
+                     address={delegation.validatorAddress |> Address.fromBech32}
+                     validator=true
                    />
                  </div>
                </Col>
