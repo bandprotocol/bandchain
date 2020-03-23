@@ -7,6 +7,12 @@ yarn install
 yarn global add local-cors-proxy
 ```
 
+## Download GraphQL Schema
+
+```
+npx get-graphql-schema  http://d3n-debug.bandprotocol.com:5433/v1/graphql -j > graphql_schema.json
+```
+
 ## Running App Development
 
 In 2 separate tabs:
