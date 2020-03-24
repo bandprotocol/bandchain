@@ -23,8 +23,11 @@
   ],
   "suffix": ".bs.js",
   "namespace": true,
+  "ppx-flags": ["@baransu/graphql_ppx_re/ppx6", "bs-let/ppx"],
   "bs-dependencies": [
     "reason-react",
+    "reason-apollo-hooks",
+    "reason-apollo",
     "@glennsl/bs-json",
     "bs-moment",
     "bs-css",
@@ -32,6 +35,5 @@
     "bs-axios"
   ],
   "bs-dev-dependencies": ["@glennsl/bs-jest"],
-  "refmt": 3,
-  "ppx-flags": ["bs-let/ppx"]
+  "refmt": 3
 }
