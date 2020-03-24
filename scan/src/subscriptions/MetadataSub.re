@@ -15,7 +15,7 @@ module Config = [%graphql
 ];
 
 let find = (arr, field) => {
-  arr->Belt.Array.keepMap(a => {a##key == field ? Some(a##value) : None})[0];
+  arr->Belt.Array.keepMap(a => a##key == field ? Some(a##value) : None)[0];
 };
 
 let decode = raw => {
