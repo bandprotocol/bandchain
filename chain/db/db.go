@@ -100,7 +100,7 @@ func (b *BandDB) HandleTransaction(tx auth.StdTx, txHash []byte, logs sdk.ABCIMe
 		b.ctx.BlockTime(),
 		b.ctx.BlockGasMeter().GasConsumed(),
 		b.ctx.BlockGasMeter().GasConsumedToLimit(),
-		tx.Fee.GasPrices().String(),
+		string(tx.Fee.Bytes()),
 		tx.GetSigners()[0],
 		true,
 		b.ctx.BlockHeight(),
