@@ -57,3 +57,10 @@ type Transaction struct {
 	Success     bool   `gorm:"not null"`
 	BlockHeight int64  `gorm:"not null"`
 }
+
+type Block struct {
+	Height    int64  `gorm:"primary_key;auto_increment:false"`
+	Timestamp int64  `gorm:"not null"`
+	Proposer  string `gorm:"not null"`
+	BlockHash string `gorm:"unique;not null"`
+}
