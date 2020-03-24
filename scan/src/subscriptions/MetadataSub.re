@@ -1,5 +1,5 @@
 type t = {
-  lastProcessedHeight: int,
+  lastProcessedHeight: ID.Block.t,
   chainID: string,
 };
 
@@ -21,7 +21,8 @@ let find = (arr, field) => {
 let decode = raw => {
   let metadata = raw##metadata;
   {
-    lastProcessedHeight: metadata |> find(_, "last_processed_height") |> int_of_string,
+    lastProcessedHeight:
+      ID.Block.ID(metadata |> find(_, "last_processed_height") |> int_of_string),
     chainID: metadata |> find(_, "chain_id"),
   };
 };

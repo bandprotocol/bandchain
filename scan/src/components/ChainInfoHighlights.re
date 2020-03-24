@@ -154,11 +154,9 @@ let make = () =>
           valueComponent={
             <TypeID.Block
               id={
-                ID.Block.ID(
-                  metadata
-                  ->Sub.map(({lastProcessedHeight}) => lastProcessedHeight)
-                  ->Sub.default(0),
-                )
+                metadata
+                ->Sub.map(({lastProcessedHeight}) => lastProcessedHeight)
+                ->Sub.default(ID.Block.ID(0))
               }
               position=TypeID.Landing
             />
