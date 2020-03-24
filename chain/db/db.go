@@ -6,11 +6,18 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
+
+	"github.com/bandprotocol/bandchain/chain/x/zoracle"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/auth"
 )
 
 type BandDB struct {
-	db *gorm.DB
-	tx *gorm.DB
+	db  *gorm.DB
+	tx  *gorm.DB
+	ctx sdk.Context
+
+	ZoracleKeeper zoracle.Keeper
 }
 
 func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
@@ -24,11 +31,20 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		&Event{},
 		&Validator{},
 		&ValidatorVote{},
+		&DataSource{},
+		&DataSourceRevision{},
 	)
 
 	db.Model(&ValidatorVote{}).AddForeignKey(
 		"consensus_address",
 		"validators(consensus_address)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&DataSourceRevision{}).AddForeignKey(
+		"data_source_id",
+		"data_sources(id)",
 		"RESTRICT",
 		"RESTRICT",
 	)
@@ -71,22 +87,40 @@ func (b *BandDB) RollBack() {
 	b.tx = nil
 }
 
-func (b *BandDB) HandleEvent(eventName string, attributes map[string]string) error {
-	switch eventName {
-	// Just proof of concept
-	case "message":
-		{
-			// Event message split events on report event eg.
-			// message map[action:report]
-			// message map[sender:band17xpfvakm2amg962yls6f84z3kell8c5lfkrzn4]
-			action, ok := attributes["action"]
-			if ok {
-				return b.handleMessageEvent(action)
+func (b *BandDB) SetContext(ctx sdk.Context) {
+	b.ctx = ctx
+}
+
+func (b *BandDB) HandleTransaction(tx auth.StdTx, txHash []byte, logs sdk.ABCIMessageLogs) {
+	msgs := tx.GetMsgs()
+	if len(msgs) != len(logs) {
+		panic("Inconsistent size of msgs and logs.")
+	}
+
+	for idx, msg := range msgs {
+		events := logs[idx].Events
+		kvMap := make(map[string]string)
+		for _, event := range events {
+			for _, kv := range event.Attributes {
+				kvMap[event.Type+"."+kv.Key] = kv.Value
 			}
-			return nil
 		}
+		err := b.HandleMessage(txHash, msg, kvMap)
+		if err != nil {
+			panic(err)
+		}
+	}
+}
+
+func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]string) error {
+	switch msg := msg.(type) {
+	// Just proof of concept
+	case zoracle.MsgCreateDataSource:
+		return b.handleMsgCreateDataSource(txHash, msg, events)
+	case zoracle.MsgEditDataSource:
+		return b.handleMsgEditDataSource(txHash, msg, events)
 	default:
 		// TODO: Better logging
-		return errors.New("HandleEvent: There isn't event handler for this type")
+		return errors.New("HandleMessage: There isn't event handler for this type")
 	}
 }
