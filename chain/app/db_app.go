@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"io"
 	"time"
 
@@ -168,6 +169,13 @@ func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseB
 	if err != nil {
 		panic(err)
 	}
+
+	app.dbBand.AddBlock(
+		req.Header.GetHeight(),
+		time.Now(),
+		fmt.Sprintf("%X", req.Header.GetProposerAddress()),
+		req.GetHash(),
+	)
 
 	return res
 }
