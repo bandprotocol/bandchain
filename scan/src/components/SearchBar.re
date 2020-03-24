@@ -3,6 +3,7 @@ module Styles = {
 
   let container =
     style([
+      maxWidth(`px(600)),
       width(`percent(100.)),
       height(`percent(100.)),
       position(`relative),
@@ -12,7 +13,7 @@ module Styles = {
   let searchIcon =
     style([
       position(`absolute),
-      top(`px(14)),
+      top(`px(10)),
       left(`px(15)),
       width(`px(15)),
       height(`px(15)),
@@ -22,33 +23,32 @@ module Styles = {
       width(`percent(100.)),
       background(white),
       borderRadius(`px(4)),
-      padding(Spacing.md),
-      paddingLeft(`px(36)),
+      padding4(~left=`px(15), ~right=Spacing.md, ~top=`px(10), ~bottom=`px(10)),
       boxShadows([
         Shadow.box(~x=`zero, ~y=`px(1), ~blur=`px(4), Css.rgba(0, 0, 0, 0.07)),
         Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(12), Css.rgba(0, 0, 0, 0.02)),
       ]),
-      fontSize(`px(14)),
+      fontSize(`px(12)),
       outline(`px(1), `none, white),
       transition(~duration=250, "border"),
       border(`px(1), `solid, white),
+      placeholder([color(Colors.blueGray3)]),
     ]);
 
   let button =
     style([
       position(`absolute),
       right(`zero),
-      width(`px(110)),
+      width(`px(45)),
       height(`percent(100.)),
-      backgroundColor(Colors.yellow1),
+      backgroundColor(Colors.blue1),
       borderTopRightRadius(`px(4)),
       borderBottomRightRadius(`px(4)),
-      border(`px(1), `solid, Colors.yellow2),
       fontSize(`px(14)),
       fontWeight(`medium),
       color(rgba(51, 51, 51, 0.54)),
       cursor(`pointer),
-      outline(`px(1), `none, white),
+      border(`zero, `solid, white),
     ]);
 };
 
@@ -179,7 +179,6 @@ let make = () => {
     React.useReducer(reducer, {searchTerm: "", resultState: Hidden});
 
   <div className=Styles.container>
-    <img src=Images.searchIcon className=Styles.searchIcon />
     <input
       onFocus={_evt => dispatch(StartTyping)}
       onBlur={_evt => dispatch(StopTyping)}
@@ -201,7 +200,7 @@ let make = () => {
       }
       value=searchTerm
       className=Styles.search
-      placeholder="Search Address (try 0x0 specifically) or TX Hash or Block"
+      placeholder="Search Address / TXN Hash / Block"
     />
     {switch (resultState) {
      | ShowAndFocus(_)
@@ -213,7 +212,7 @@ let make = () => {
         Route.redirect(searchTerm |> Route.search);
         dispatch(ChangeSearchTerm(""));
       }}>
-      {React.string("Search")}
+      <img src=Images.searchIcon className=Styles.searchIcon />
     </button>
   </div>;
 };
