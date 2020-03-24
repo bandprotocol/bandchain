@@ -52,7 +52,7 @@ type Transaction struct {
 	Timestamp   int64  `gorm:"not null"`
 	GasUse      uint64 `gorm:"not null"`
 	GasLimit    uint64 `gorm:"not null"`
-	GasFee      uint64 `gorm:"not null"`
+	GasFee      string `gorm:"not null"`
 	Sender      string `gorm:"not null"`
 	Success     bool   `gorm:"not null"`
 	BlockHeight int64  `gorm:"not null"`

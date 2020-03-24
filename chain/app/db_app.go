@@ -129,6 +129,18 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 	}
 	if stdTx, ok := tx.(auth.StdTx); ok {
 		txHash := tmhash.Sum(req.Tx)
+
+		app.dbBand.AddTransaction(
+			txHash,
+			app.DeliverContext.BlockTime(),
+			uint64(res.GasUsed),
+			stdTx.Fee.Gas,
+			stdTx.Fee.Amount,
+			stdTx.GetSigners()[0],
+			true,
+			app.DeliverContext.BlockHeight(),
+		)
+
 		app.dbBand.HandleTransaction(stdTx, txHash, logs)
 	}
 	return res

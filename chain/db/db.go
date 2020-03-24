@@ -46,8 +46,8 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 	db.Model(&DataSourceRevision{}).AddForeignKey(
 		"data_source_id",
 		"data_sources(id)",
-		"CASCADE",
-		"CASCADE",
+		"RESTRICT",
+		"RESTRICT",
 	)
 
 	for key, value := range metadata {
@@ -94,20 +94,6 @@ func (b *BandDB) SetContext(ctx sdk.Context) {
 
 func (b *BandDB) HandleTransaction(tx auth.StdTx, txHash []byte, logs sdk.ABCIMessageLogs) {
 	msgs := tx.GetMsgs()
-
-	err := b.AddTransaction(
-		txHash,
-		b.ctx.BlockTime(),
-		b.ctx.BlockGasMeter().GasConsumed(),
-		b.ctx.BlockGasMeter().GasConsumedToLimit(),
-		tx.Fee.Gas,
-		tx.GetSigners()[0],
-		true,
-		b.ctx.BlockHeight(),
-	)
-	if err != nil {
-		panic(err)
-	}
 
 	if len(msgs) != len(logs) {
 		panic("Inconsistent size of msgs and logs.")
