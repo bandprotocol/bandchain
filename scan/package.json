@@ -33,7 +33,7 @@
     "bs-platform": "^7.0.1",
     "bsb-js": "^1.1.7",
     "css-loader": "^3.4.2",
-    "@baransu/graphql_ppx_re": "^0.4.6",
+    "@baransu/graphql_ppx_re": "^0.7.1",
     "html-webpack-plugin": "^4.0.1",
     "parcel-bundler": "^1.12.4",
     "style-loader": "^1.1.3",
