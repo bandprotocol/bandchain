@@ -32,6 +32,7 @@ module Validator = {
   };
 
   type t = {
+    avgResponseTime: int,
     isActive: bool,
     operatorAddress: Address.t,
     consensusPubkey: PubKey.t,
@@ -55,7 +56,8 @@ module Validator = {
 
   let decodeResult = json =>
     JsonUtils.Decode.{
-      isActive: true,
+      avgResponseTime: 2, // TODO , Replace this Mock with real info
+      isActive: true, // TODO , Replace this Mock with real info
       operatorAddress: json |> field("operator_address", string) |> Address.fromBech32,
       consensusPubkey: json |> field("consensus_pubkey", string) |> PubKey.fromBech32,
       rewardDestinationAddress: "band17ljds2gj3kds234lkg",
