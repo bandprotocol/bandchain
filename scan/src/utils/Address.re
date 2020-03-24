@@ -24,3 +24,5 @@ let toBech32 =
 
 let hexToOperatorBech32 = hexstr => hexstr->fromHex->toOperatorBech32;
 let hexToBech32 = hexstr => hexstr->fromHex->toBech32;
+
+let isEqual = (Address(hexstr1), Address(hexst2)) => hexstr1 == hexst2;
