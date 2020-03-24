@@ -20,12 +20,12 @@ In 2 separate tabs:
 ```sh
 yarn bsb -make-world -w -ws _ # ReasonML compiler
 # Replace https://mock.com/ by the real url and don't forgot the / at the back
-RPC_URL=https://mock.com/ yarn parcel index.html # Serve to localhost:1234
+RPC_URL=https://mock.com/ GRAPHQL_URL=wss://mock-graphql.com yarn parcel index.html # Serve to localhost:1234
 ```
 
 ## Build production
 
 ```sh
 # Replace https://mock.com/ by the real url and don't forgot the / at the back
-RPC_URL=https://mock.com/ yarn build
+RPC_URL=https://mock.com/ GRAPHQL_URL=wss://mock-graphql.com yarn build
 ```
