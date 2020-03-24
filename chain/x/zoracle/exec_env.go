@@ -106,7 +106,6 @@ func (env *ExecutionEnvironment) LoadAllRawDataReports(
 	keeper Keeper,
 ) sdk.Error {
 
-	tmp := []types.ReportWithValidator{}
 	for iterator := keeper.GetRawDataReportsIterator(ctx, env.requestID); iterator.Valid(); iterator.Next() {
 		validatorAddress, externalID := types.GetValidatorAddressAndExternalID(iterator.Key(), env.requestID)
 
@@ -120,15 +119,8 @@ func (env *ExecutionEnvironment) LoadAllRawDataReports(
 			return err
 		}
 
-		rawDataReportWithID := []RawDataReportWithID{types.NewRawDataReportWithID(externalID, rawDataReport.ExitCode, rawDataReport.Data)}
-		tmp = append(tmp, types.NewReportWithValidator(rawDataReportWithID, validatorAddress))
-
-	}
-
-	for _, r := range tmp {
-		key := string(types.RawDataReportStoreKey(env.requestID, r.RawDataReports[0].ExternalDataID, r.Validator))
-		env.rawDataReports[key] = NewRawDataReport(r.RawDataReports[0].ExitCode, r.RawDataReports[0].Data)
-
+		key := string(types.RawDataReportStoreKey(env.requestID, externalID, validatorAddress))
+		env.rawDataReports[key] = rawDataReport
 	}
 
 	return nil
@@ -152,5 +144,5 @@ func (env *ExecutionEnvironment) GetExternalData(
 		return nil, 0, errors.New(errMsg)
 	}
 
-	return rawDataReport.Data, env.rawDataReports[key].ExitCode, nil
+	return rawDataReport.Data, rawDataReport.ExitCode, nil
 }
