@@ -245,6 +245,8 @@ func TestGetExternalData(t *testing.T) {
 	env, err := NewExecutionEnvironment(ctx, keeper, 1)
 	require.Nil(t, err)
 
+	err = env.LoadAllRawDataReports(ctx, keeper)
+	require.Nil(t, err)
 	// Get report from reported validator
 	report, statusCode, envErr := env.GetExternalData(42, 0)
 	require.Nil(t, envErr)

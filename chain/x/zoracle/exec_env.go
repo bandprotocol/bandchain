@@ -2,21 +2,19 @@ package zoracle
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type ExecutionEnvironment struct {
-	ctx    sdk.Context
-	keeper Keeper
-	//
 	requestID       types.RequestID
 	request         types.Request
 	now             int64
 	maxResultSize   int64
 	maxCalldataSize int64
-	//
+
 	rawDataRequests []types.RawDataRequestWithExternalID
 	rawDataReports  map[string]types.RawDataReport
 }
@@ -29,14 +27,13 @@ func NewExecutionEnvironment(
 		return ExecutionEnvironment{}, err
 	}
 	return ExecutionEnvironment{
-		ctx:             ctx,
-		keeper:          keeper,
 		requestID:       requestID,
 		request:         request,
 		now:             ctx.BlockTime().Unix(),
 		maxResultSize:   int64(keeper.GetParam(ctx, KeyMaxResultSize)),
 		maxCalldataSize: int64(keeper.GetParam(ctx, KeyMaxCalldataSize)),
 		rawDataRequests: []types.RawDataRequestWithExternalID{},
+		rawDataReports:  make(map[string]types.RawDataReport),
 	}, nil
 }
 
@@ -104,6 +101,39 @@ func (env *ExecutionEnvironment) RequestExternalData(
 	))
 }
 
+func (env *ExecutionEnvironment) LoadAllRawDataReports(
+	ctx sdk.Context,
+	keeper Keeper,
+) sdk.Error {
+
+	tmp := []types.ReportWithValidator{}
+	for iterator := keeper.GetRawDataReportsIterator(ctx, env.requestID); iterator.Valid(); iterator.Next() {
+		validatorAddress, externalID := types.GetValidatorAddressAndExternalID(iterator.Key(), env.requestID)
+
+		rawDataReport, err := keeper.GetRawDataReport(
+			ctx,
+			env.requestID,
+			externalID,
+			validatorAddress,
+		)
+		if err != nil { // should never happen
+			return err
+		}
+
+		rawDataReportWithID := []RawDataReportWithID{types.NewRawDataReportWithID(externalID, rawDataReport.ExitCode, rawDataReport.Data)}
+		tmp = append(tmp, types.NewReportWithValidator(rawDataReportWithID, validatorAddress))
+
+	}
+
+	for _, r := range tmp {
+		key := string(types.RawDataReportStoreKey(env.requestID, r.RawDataReports[0].ExternalDataID, r.Validator))
+		env.rawDataReports[key] = NewRawDataReport(r.RawDataReports[0].ExitCode, r.RawDataReports[0].Data)
+
+	}
+
+	return nil
+}
+
 func (env *ExecutionEnvironment) GetExternalData(
 	externalDataID int64,
 	validatorIndex int64,
@@ -112,14 +142,15 @@ func (env *ExecutionEnvironment) GetExternalData(
 		return nil, 0, errors.New("validator out of range")
 	}
 	validatorAddress := env.request.RequestedValidators[validatorIndex]
-	rawReport, err := env.keeper.GetRawDataReport(
-		env.ctx,
-		env.requestID,
-		types.ExternalID(externalDataID),
-		validatorAddress,
-	)
-	if err != nil {
-		return nil, 0, err
+	key := string(types.RawDataReportStoreKey(env.requestID, types.ExternalID(externalDataID), validatorAddress))
+
+	rawDataReport, ok := env.rawDataReports[key]
+
+	if !ok {
+		errMsg := fmt.Sprintf("Unable to find raw data report with request ID %d external ID %d from %s\n", int64(env.requestID), externalDataID, validatorAddress.String())
+
+		return nil, 0, errors.New(errMsg)
 	}
-	return rawReport.Data, rawReport.ExitCode, nil
+
+	return rawDataReport.Data, env.rawDataReports[key].ExitCode, nil
 }
