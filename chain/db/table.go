@@ -6,7 +6,7 @@ import (
 
 type Metadata struct {
 	Key   string `gorm:"primary_key"`
-	Value string
+	Value string `gorm:"not null"`
 }
 
 type Event struct {
@@ -17,13 +17,13 @@ type Event struct {
 type Validator struct {
 	OperatorAddress  string `gorm:"primary_key"`
 	ConsensusAddress string `gorm:"unique;not null"`
-	ElectedCount     uint
-	VotedCount       uint
-	MissedCount      uint
+	ElectedCount     uint   `gorm:"not null"`
+	VotedCount       uint   `gorm:"not null"`
+	MissedCount      uint   `gorm:"not null"`
 }
 
 type ValidatorVote struct {
 	ConsensusAddress string `gorm:"primary_key"`
 	BlockHeight      int64  `gorm:"primary_key;auto_increment:false"`
-	Voted            bool
+	Voted            bool   `gorm:"not null"`
 }
