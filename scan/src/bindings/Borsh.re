@@ -34,3 +34,49 @@ function() {
 }
 |}
 ];
+
+let decode: (string, string, JsBuffer.t) => option(array((string, string))) = [%bs.raw
+  {|
+function(_schema, cls, data) {
+  const borsh = require('borsh')
+
+
+  window[cls] = function(x,a) {
+    this.x = x
+    this.a = a
+  }
+
+  var model = window[cls]
+
+  var instance = new model(1, "YO");
+
+  const schema = new Map([
+    [
+      model,
+      {
+        kind: 'struct',
+        fields: [
+          ['x', 'U8'],
+          ['a', 'String']
+        ]
+      }
+    ]
+  ])
+  console.log(instance, model)
+  let buf = borsh.serialize(schema, instance)
+  console.log(buf)
+  try {
+    console.log(cls,data)
+    let new_value = borsh.deserialize(schema, model, data)
+    console.log(data)
+    console.log(new_value)
+    return schema.get(model).fields.map(([fieldName, _]) => {
+        console.log(fieldName,new_value[fieldName])
+        return [fieldName,new_value[fieldName]]
+    });
+  } catch {
+    return null
+  }
+}
+|}
+];

@@ -46,6 +46,15 @@ module Styles = {
 
 [@react.component]
 let make = () => {
+  let ans = Borsh.decode("a", "Test", "ff0500000048656c6c6f" |> JsBuffer.fromHex);
+  Js.Console.log2("FUCK", ans);
+  switch (ans) {
+  | Some(l) =>
+    let _ =
+      l |> Belt_Array.map(_, ((key, value)) => {Js.Console.log3("FUCK", key, value ++ "a")});
+    ();
+  | None => Js.Console.log("Invalid format")
+  };
   <div className=Styles.container>
     <NavBar />
     <div className=Styles.innerContainer>
