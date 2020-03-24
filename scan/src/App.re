@@ -46,8 +46,6 @@ module Styles = {
 
 [@react.component]
 let make = () => {
-  Js.Console.log(DataSourceSub.get(ID.DataSource.ID(1)));
-  Js.Console.log(DataSourceRevisionSub.get(ID.DataSource.ID(4)));
   <div className=Styles.container>
     <NavBar />
     <div className=Styles.innerContainer>
@@ -85,7 +83,7 @@ let make = () => {
          | HomePage => <HomePage />
          | DataSourceHomePage => <DataSourceHomePage />
          | DataSourceIndexPage(dataSourceID, hashtag) =>
-           <DataSourceIndexPage dataSourceID hashtag />
+           <DataSourceIndexPage dataSourceID={ID.DataSource.ID(dataSourceID)} hashtag />
          | OracleScriptHomePage => <OracleScriptHomePage />
          | OracleScriptIndexPage(oracleScriptID, hashtag) =>
            <OracleScriptIndexPage oracleScriptID hashtag />
