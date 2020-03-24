@@ -48,6 +48,12 @@ module IDCreator = (RawID: RawIDSig) => {
   let toString =
     fun
     | ID(id) => RawID.prefix ++ string_of_int(id);
+
+  let fromJson = json => ID(json |> Js.Json.decodeNumber |> Belt.Option.getExn |> int_of_float);
+
+  let toJson =
+    fun
+    | ID(id) => id |> float_of_int |> Js.Json.number;
 };
 
 module DataSource = IDCreator(RawDataSourceID);
