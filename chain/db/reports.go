@@ -1,9 +1,8 @@
 package db
 
 import (
-		"github.com/bandprotocol/bandchain/chain/x/zoracle"
+	"github.com/bandprotocol/bandchain/chain/x/zoracle"
 )
-
 
 func (b *BandDB) handleMsgReportData(
 	txHash []byte,
@@ -17,6 +16,10 @@ func (b *BandDB) handleMsgReportData(
 		TxHash:    txHash,
 		Reporter:  msg.Reporter.String(),
 	}).Error
+
+	if err != nil {
+		return err
+	}
 
 	for _, data := range msg.DataSet {
 		rawDataRequest, errSdk := b.ZoracleKeeper.GetRawDataRequest(
@@ -38,9 +41,6 @@ func (b *BandDB) handleMsgReportData(
 		}
 	}
 
-	if err != nil {
-		return err
-	}
-
 	return nil
 }
+
