@@ -55,15 +55,15 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 
 	db.Model(&Report{}).AddForeignKey(
 		"validator",
-    "validators(consensus_address)",
+		"validators(consensus_address)",
 		"RESTRICT",
 		"RESTRICT",
 	)
-  
-  db.Model(&ReportDetail{}).AddForeignKey(
+
+	db.Model(&ReportDetail{}).AddForeignKey(
 		"request_id,validator",
 		"reports(request_id,validator)",
-    "RESTRICT",
+		"RESTRICT",
 		"RESTRICT",
 	)
 
@@ -73,7 +73,7 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		"RESTRICT",
 		"RESTRICT",
 	)
-  
+
 	db.Model(&Transaction{}).AddForeignKey(
 		"block_height",
 		"blocks(height)",
@@ -160,3 +160,4 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		return nil
 	}
 }
+
