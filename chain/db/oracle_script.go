@@ -22,7 +22,7 @@ func createOracleScript(
 		Description: description,
 		Owner:       owner.String(),
 		Code:        code,
-		LastUpdated: blockTime.Unix(),
+		LastUpdated: blockTime.UnixNano() / int64(time.Millisecond),
 	}
 }
 
@@ -51,7 +51,7 @@ func (b *BandDB) AddOracleScript(
 	return b.tx.Create(&OracleScriptRevision{
 		OracleScriptID: id,
 		Name:           name,
-		Timestamp:      blockTime.Unix(),
+		Timestamp:      blockTime.UnixNano() / int64(time.Millisecond),
 		BlockHeight:    blockHeight,
 		TxHash:         txHash,
 	}).Error
@@ -94,7 +94,7 @@ func (b *BandDB) handleMsgEditOracleScript(
 	return b.tx.Create(&OracleScriptRevision{
 		OracleScriptID: int64(msg.OracleScriptID),
 		Name:           msg.Name,
-		Timestamp:      b.ctx.BlockTime().Unix(),
+		Timestamp:      b.ctx.BlockTime().UnixNano() / int64(time.Millisecond),
 		BlockHeight:    b.ctx.BlockHeight(),
 		TxHash:         txHash,
 	}).Error
