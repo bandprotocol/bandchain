@@ -256,14 +256,9 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 			return "", err
 		}
 
-		jsonMap["dataSourceId"] = events["create_data_source.id"]
+		jsonMap[zoracle.AttributeKeyDataSourceID] = events["create_data_source.id"]
 		jsonMap["type"] = events["message.action"]
-		jsonString, err := json.Marshal(jsonMap)
-		if err != nil {
-			return "", err
-		}
 
-		return fmt.Sprint(string(jsonString)), nil
 	case zoracle.MsgEditDataSource:
 
 		err = b.handleMsgEditDataSource(txHash, msg, events)
@@ -271,84 +266,51 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 			return "", err
 		}
 
-		jsonMap["dataSourceId"] = events["edit_data_source.id"]
+		jsonMap[zoracle.AttributeKeyDataSourceID] = events["edit_data_source.id"]
 		jsonMap["type"] = events["message.action"]
-		jsonString, err := json.Marshal(jsonMap)
-		if err != nil {
-			return "", err
-		}
 
-		return fmt.Sprint(string(jsonString)), nil
 	case zoracle.MsgCreateOracleScript:
 
-		jsonMap["oracleScriptId"] = events["create_oracle_script.id"]
+		jsonMap[zoracle.AttributeKeyOracleScriptID] = events["create_oracle_script.id"]
 		jsonMap["type"] = events["message.action"]
-		jsonString, err := json.Marshal(jsonMap)
-		if err != nil {
-			return "", err
-		}
-
-		return fmt.Sprint(string(jsonString)), nil
 
 	case zoracle.MsgEditOracleScript:
 
-		jsonMap["oracleScriptId"] = events["edit_oracle_script.id"]
+		jsonMap[zoracle.AttributeKeyOracleScriptID] = events["edit_oracle_script.id"]
 		jsonMap["type"] = events["message.action"]
-		jsonString, err := json.Marshal(jsonMap)
-		if err != nil {
-			return "", err
-		}
-
-		return fmt.Sprint(string(jsonString)), nil
-
-	case zoracle.MsgReportData:
-		return "", b.handleMsgReportData(txHash, msg, events)
 
 	case zoracle.MsgRequestData:
 		err := b.handleMsgRequestData(txHash, msg, events)
 		if err != nil {
 			return "", err
 		}
+		jsonMap[zoracle.AttributeKeyRequestID] = events["request.id"]
 		jsonMap["type"] = events["message.action"]
-		jsonString, err := json.Marshal(jsonMap)
-		if err != nil {
-			return "", err
-		}
 
-		return fmt.Sprint(string(jsonString)), nil
+	case zoracle.MsgReportData:
+
+		jsonMap["type"] = events["message.action"]
 
 	case zoracle.MsgAddOracleAddress:
 
 		jsonMap["type"] = events["message.action"]
-		jsonString, err := json.Marshal(jsonMap)
-		if err != nil {
-			return "", err
-		}
-
-		return fmt.Sprint(string(jsonString)), nil
 
 	case zoracle.MsgRemoveOracleAdderess:
 
 		jsonMap["type"] = events["message.action"]
-		jsonString, err := json.Marshal(jsonMap)
-		if err != nil {
-			return "", err
-		}
-
-		return fmt.Sprint(string(jsonString)), nil
 
 	case bank.MsgSend:
 		jsonMap["type"] = events["message.action"]
-		jsonString, err := json.Marshal(jsonMap)
-		if err != nil {
-			return "", err
-		}
-
-		return fmt.Sprint(string(jsonString)), nil
 
 	default:
 		// TODO: Better logging
 		fmt.Println("HandleMessage: There isn't event handler for this type")
 		return "", nil
 	}
+	jsonString, err := json.Marshal(jsonMap)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprint(string(jsonString)), nil
+
 }
