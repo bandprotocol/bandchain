@@ -6,20 +6,10 @@ import (
 	"github.com/perlin-network/life/exec"
 )
 
-type cache struct {
-	isActive       bool
-	externalDataID int64
-	validatorIndex int64
-	data           []byte
-	statusCode     uint8
-	err            error
-}
-
 type resolver struct {
-	env       ExecutionEnvironment
-	calldata  []byte
-	result    []byte
-	cachedata cache
+	env      ExecutionEnvironment
+	calldata []byte
+	result   []byte
 }
 
 func (r *resolver) ResolveFunc(module, field string) exec.FunctionImport {
@@ -137,18 +127,8 @@ func (r *resolver) resolveRequestExternalData(vm *exec.VirtualMachine) int64 {
 }
 
 func (r *resolver) getExternalDataFromCache(externalDataID int64, validatorIndex int64) ([]byte, uint8, error) {
-	if r.cachedata.externalDataID == externalDataID && r.cachedata.validatorIndex == validatorIndex && r.cachedata.isActive {
-		return r.cachedata.data, r.cachedata.statusCode, r.cachedata.err
-	}
+
 	externalData, statusCode, err := r.env.GetExternalData(externalDataID, validatorIndex)
-	r.cachedata = cache{
-		externalDataID: externalDataID,
-		validatorIndex: validatorIndex,
-		data:           externalData,
-		statusCode:     statusCode,
-		err:            err,
-		isActive:       true,
-	}
 
 	return externalData, statusCode, err
 }
