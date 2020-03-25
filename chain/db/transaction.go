@@ -9,7 +9,7 @@ import (
 func createTransaction(
 	txHash []byte,
 	timestamp time.Time,
-	gasUse int64,
+	gasUsed int64,
 	gasLimit uint64,
 	gasFee sdk.Coins,
 	sender sdk.AccAddress,
@@ -19,7 +19,7 @@ func createTransaction(
 	return Transaction{
 		TxHash:      txHash,
 		Timestamp:   timestamp.Unix(),
-		GasUse:      gasUse,
+		GasUsed:     gasUsed,
 		GasLimit:    gasLimit,
 		GasFee:      gasFee.String(),
 		Sender:      sender.String(),
@@ -31,7 +31,7 @@ func createTransaction(
 func (b *BandDB) AddTransaction(
 	txHash []byte,
 	timestamp time.Time,
-	gasUse int64,
+	gasUsed int64,
 	gasLimit uint64,
 	gasFee sdk.Coins,
 	sender sdk.AccAddress,
@@ -41,7 +41,7 @@ func (b *BandDB) AddTransaction(
 	transaction := createTransaction(
 		txHash,
 		timestamp,
-		gasUse,
+		gasUsed,
 		gasLimit,
 		gasFee,
 		sender,
