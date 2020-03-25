@@ -7,10 +7,12 @@ type t =
   | Fee(float)
   | DataSources(list(ID.DataSource.t))
   | OracleScript(ID.OracleScript.t, string)
+  | TxHash(Hash.t, int)
   | Hash(Hash.t, Css.Types.Color.t)
   | Address(Address.t, int)
   | Fraction(int, int, bool)
-  | FloatWithSuffix(float, string);
+  | FloatWithSuffix(float, string)
+  | Validators(list(ValidatorHook.Validator.t));
 
 module Styles = {
   open Css;
@@ -140,6 +142,7 @@ let make = (~info, ~header, ~isLeft=true) => {
          <HSpacing size=Spacing.sm />
          <Text value=name size=Text.Lg weight=Text.Regular spacing={Text.Em(0.02)} code=true />
        </div>
+     | TxHash(txHash, width) => <TxLink txHash width />
      | Hash(hash, textColor) =>
        <Text
          value={hash |> Hash.toHex(~with0x=true, ~upper=true)}
@@ -158,6 +161,18 @@ let make = (~info, ~header, ~isLeft=true) => {
      | Address(address, maxWidth) =>
        <div className={Styles.addressContainer(maxWidth)}>
          <AddressRender address position=AddressRender.Subtitle />
+       </div>
+     | Validators(validators) =>
+       <div className=Styles.datasourcesContainer>
+         {validators
+          ->Belt.List.map(validator =>
+              <>
+                <ValidatorMonikerLink validator size=Text.Lg weight=Text.Medium underline=true />
+                <HSpacing size=Spacing.md />
+              </>
+            )
+          ->Array.of_list
+          ->React.array}
        </div>
      }}
   </div>;
