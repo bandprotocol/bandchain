@@ -46,3 +46,14 @@ type DataSourceRevision struct {
 	BlockHeight    int64  `gorm:"not null"`
 	TxHash         []byte `gorm:"not null"`
 }
+
+type Transaction struct {
+	TxHash      []byte `gorm:"primary_key"`
+	Timestamp   int64  `gorm:"not null"`
+	GasUsed     int64  `gorm:"not null"`
+	GasLimit    uint64 `gorm:"not null"`
+	GasFee      string `gorm:"not null"`
+	Sender      string `gorm:"not null"`
+	Success     bool   `gorm:"not null"`
+	BlockHeight int64  `gorm:"not null"`
+}
