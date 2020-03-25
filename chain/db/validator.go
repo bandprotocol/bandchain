@@ -13,11 +13,11 @@ func (b *BandDB) AddValidator(
 	identity string,
 	website string,
 	details string,
-	commissionRate float64,
-	commissionMaxRate float64,
-	commissionMaxChange float64,
-	minSelfDelegation float64,
-	selfDelegation float64,
+	commissionRate string,
+	commissionMaxRate string,
+	commissionMaxChange string,
+	minSelfDelegation string,
+	selfDelegation string,
 ) error {
 	return b.tx.Create(&Validator{
 		OperatorAddress:     operatorAddress.String(),
