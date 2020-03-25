@@ -265,15 +265,11 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 			return "", err
 		}
 
-		jsonMap["dataSourceID"] = events[zoracle.EventTypeEditOracleScript+"."+zoracle.AttributeKeyID]
-
 	case zoracle.MsgCreateOracleScript:
 
 		jsonMap["oracleScriptID"] = events[zoracle.EventTypeCreateOracleScript+"."+zoracle.AttributeKeyID]
 
 	case zoracle.MsgEditOracleScript:
-
-		jsonMap["oracleScriptID"] = events[zoracle.EventTypeEditOracleScript+"."+zoracle.AttributeKeyID]
 
 	case zoracle.MsgRequestData:
 		err := b.handleMsgRequestData(txHash, msg, events)
