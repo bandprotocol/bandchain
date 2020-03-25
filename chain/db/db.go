@@ -256,8 +256,7 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 			return "", err
 		}
 
-		jsonMap[zoracle.AttributeKeyDataSourceID] = events["create_data_source.id"]
-		jsonMap["type"] = events["message.action"]
+		jsonMap["dataSourceID"] = events[zoracle.EventTypeCreateDataSource+"."+zoracle.AttributeKeyID]
 
 	case zoracle.MsgEditDataSource:
 
@@ -266,18 +265,15 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 			return "", err
 		}
 
-		jsonMap[zoracle.AttributeKeyDataSourceID] = events["edit_data_source.id"]
-		jsonMap["type"] = events["message.action"]
+		jsonMap["dataSourceID"] = events[zoracle.EventTypeEditOracleScript+"."+zoracle.AttributeKeyID]
 
 	case zoracle.MsgCreateOracleScript:
 
-		jsonMap[zoracle.AttributeKeyOracleScriptID] = events["create_oracle_script.id"]
-		jsonMap["type"] = events["message.action"]
+		jsonMap["oracleScriptID"] = events[zoracle.EventTypeCreateOracleScript+"."+zoracle.AttributeKeyID]
 
 	case zoracle.MsgEditOracleScript:
 
-		jsonMap[zoracle.AttributeKeyOracleScriptID] = events["edit_oracle_script.id"]
-		jsonMap["type"] = events["message.action"]
+		jsonMap["oracleScriptID"] = events[zoracle.EventTypeEditOracleScript+"."+zoracle.AttributeKeyID]
 
 	case zoracle.MsgRequestData:
 		err := b.handleMsgRequestData(txHash, msg, events)
@@ -287,26 +283,23 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		jsonMap[zoracle.AttributeKeyRequestID] = events["request.id"]
 		jsonMap["type"] = events["message.action"]
 
-	case zoracle.MsgReportData:
+		jsonMap["requestID"] = events[zoracle.EventTypeRequest+"."+zoracle.AttributeKeyID]
 
-		jsonMap["type"] = events["message.action"]
+	case zoracle.MsgReportData:
 
 	case zoracle.MsgAddOracleAddress:
 
-		jsonMap["type"] = events["message.action"]
-
 	case zoracle.MsgRemoveOracleAdderess:
 
-		jsonMap["type"] = events["message.action"]
-
 	case bank.MsgSend:
-		jsonMap["type"] = events["message.action"]
 
 	default:
 		// TODO: Better logging
 		fmt.Println("HandleMessage: There isn't event handler for this type")
 		return "", nil
 	}
+	jsonMap["type"] = events["message.action"]
+
 	jsonString, err := json.Marshal(jsonMap)
 	if err != nil {
 		return "", err
