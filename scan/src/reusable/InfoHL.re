@@ -6,6 +6,7 @@ type t =
   | Timestamp(MomentRe.Moment.t)
   | Fee(float)
   | DataSources(list(ID.DataSource.t))
+  | OracleScript(ID.OracleScript.t, string)
   | Hash(Hash.t, Css.Types.Color.t)
   | Address(Address.t, int)
   | Fraction(int, int, bool)
@@ -132,6 +133,12 @@ let make = (~info, ~header, ~isLeft=true) => {
             )
           ->Array.of_list
           ->React.array}
+       </div>
+     | OracleScript(id, name) =>
+       <div className=Styles.datasourcesContainer>
+         <TypeID.OracleScript id position=TypeID.Subtitle />
+         <HSpacing size=Spacing.sm />
+         <Text value=name size=Text.Lg weight=Text.Regular spacing={Text.Em(0.02)} code=true />
        </div>
      | Hash(hash, textColor) =>
        <Text
