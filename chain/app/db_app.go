@@ -169,6 +169,13 @@ func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseB
 		panic(err)
 	}
 
+	app.dbBand.AddBlock(
+		req.Header.GetHeight(),
+		app.DeliverContext.BlockTime(),
+		req.Header.GetProposerAddress(),
+		req.GetHash(),
+	)
+
 	return res
 }
 
