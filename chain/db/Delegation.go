@@ -7,7 +7,7 @@ import (
 func (b *BandDB) AddDelegation(
 	delegatorAddress sdk.AccAddress,
 	operatorAddress sdk.ValAddress,
-	Amount sdk.Coin,
+	Coin sdk.Coin,
 ) error {
 	return b.tx.Create(&Delegation{
 		DelegatorAddress: delegatorAddress.String(),
