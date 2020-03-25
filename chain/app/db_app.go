@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"io"
 	"time"
 
@@ -9,7 +10,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-	"github.com/shopspring/decimal"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto/tmhash"
 	"github.com/tendermint/tendermint/libs/log"
@@ -70,6 +70,9 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 		genutil.ModuleCdc.MustUnmarshalJSON(genTx, &tx)
 		for _, msg := range tx.Msgs {
 			if createMsg, ok := msg.(staking.MsgCreateValidator); ok {
+				fmt.Println(createMsg.Commission.Rate.String())
+				fmt.Println(createMsg.Commission.MaxRate.String())
+				fmt.Println(createMsg.Commission.MaxChangeRate.String())
 				err := app.dbBand.AddValidator(
 					createMsg.ValidatorAddress,
 					createMsg.PubKey,
@@ -77,11 +80,11 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 					createMsg.Description.Identity,
 					createMsg.Description.Website,
 					createMsg.Description.Details,
-					decimal.NewFromFloat(1.1),
-					decimal.NewFromFloat(1.1),
-					decimal.NewFromFloat(1.1),
-					decimal.NewFromFloat(1.1),
-					decimal.NewFromFloat(1.1),
+					app.dbBand.SdkDecToFloat64(createMsg.Commission.Rate),
+					app.dbBand.SdkDecToFloat64(createMsg.Commission.MaxRate),
+					app.dbBand.SdkDecToFloat64(createMsg.Commission.MaxChangeRate),
+					app.dbBand.SdkDecToFloat64(createMsg.MinSelfDelegation.ToDec()),
+					app.dbBand.SdkDecToFloat64(createMsg.Value.Amount.ToDec()),
 				)
 				if err != nil {
 					panic(err)
