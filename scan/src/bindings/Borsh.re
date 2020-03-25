@@ -35,47 +35,46 @@ function() {
 |}
 ];
 
+// Test by this test
+// Borsh.decode(
+//   {j|{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"], [\\"what\\", \\"u8\\"] ] }"}|j},
+//   "Input",
+//   "0x03000000425443320000000000000064" |> JsBuffer.fromHex,
+// );
 let decode: (string, string, JsBuffer.t) => option(array((string, string))) = [%bs.raw
   {|
 function(_schema, cls, data) {
   const borsh = require('borsh')
 
-
-  window[cls] = function(x,a) {
-    this.x = x
-    this.a = a
+  function gen(members) {
+    return function(...args) {
+      for (let i in members) {
+        this[members[i]] = args[i]
+      }
+    }
   }
 
-  var model = window[cls]
-
-  var instance = new model(1, "YO");
-
-  const schema = new Map([
-    [
-      model,
-      {
-        kind: 'struct',
-        fields: [
-          ['x', 'U8'],
-          ['a', 'String']
-        ]
-      }
-    ]
-  ])
-  console.log(instance, model)
-  let buf = borsh.serialize(schema, instance)
-  console.log(buf)
   try {
-    console.log(cls,data)
-    let new_value = borsh.deserialize(schema, model, data)
-    console.log(data)
-    console.log(new_value)
-    return schema.get(model).fields.map(([fieldName, _]) => {
-        console.log(fieldName,new_value[fieldName])
-        return [fieldName,new_value[fieldName]]
+    let schema = JSON.parse(_schema)
+    let schemaMap = new Map()
+    for (let className in schema) {
+      let t = JSON.parse(schema[className])
+      if (t.kind == "struct") {
+        window[className] = gen(t.fields.map(x => x[0]))
+        t.fields = t.fields.map(x => {
+          x[1] = x[1].replace(/^\w/, c => c.toUpperCase());
+          return x
+        })
+        schemaMap.set(window[className], t)
+      }
+    }
+    let model = window[cls]
+    let new_value = borsh.deserialize(schemaMap, model, data)
+    return schemaMap.get(model).fields.map(([fieldName, _]) => {
+        return [fieldName, JSON.stringify(new_value[fieldName])]
     });
-  } catch {
-    return null
+  } catch(err) {
+    return undefined
   }
 }
 |}
