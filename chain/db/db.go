@@ -125,7 +125,8 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		"RESTRICT",
 		"RESTRICT",
 	)
-	db.Model(&Delegator{}).AddForeignKey(
+
+	db.Model(&Delegation{}).AddForeignKey(
 		"operator_address",
 		"validators(operator_address)",
 		"RESTRICT",
