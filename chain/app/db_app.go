@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"io"
 	"time"
 
@@ -173,7 +172,7 @@ func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseB
 	app.dbBand.AddBlock(
 		req.Header.GetHeight(),
 		time.Now(),
-		fmt.Sprintf("%X", req.Header.GetProposerAddress()),
+		req.Header.GetProposerAddress(),
 		req.GetHash(),
 	)
 
