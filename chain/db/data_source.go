@@ -55,7 +55,7 @@ func (b *BandDB) AddDataSource(
 	return b.tx.Create(&DataSourceRevision{
 		DataSourceID: id,
 		Name:         name,
-		Timestamp:    blockTime.UnixNano() / int64(time.Millisecond),
+		Timestamp:    blockTime.Unix(),
 		BlockHeight:  blockHeight,
 		TxHash:       txHash,
 	}).Error
@@ -98,7 +98,7 @@ func (b *BandDB) handleMsgEditDataSource(
 	return b.tx.Create(&DataSourceRevision{
 		DataSourceID: int64(msg.DataSourceID),
 		Name:         msg.Name,
-		Timestamp:    b.ctx.BlockTime().UnixNano() / int64(time.Millisecond),
+		Timestamp:    b.ctx.BlockTime().Unix(),
 		BlockHeight:  b.ctx.BlockHeight(),
 		TxHash:       txHash,
 	}).Error
