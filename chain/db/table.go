@@ -59,15 +59,15 @@ type Transaction struct {
 }
 
 type Report struct {
-	RequestID int64  `gorm:"primary_key;foreignkey:Request"`
-	Validator string `gorm:"primary_key;foreignkey:Validator"`
-	TxHash    []byte `gorm:"foreignkey:Transaction"`
+	RequestID int64  `gorm:"primary_key"`
+	Validator string `gorm:"primary_key"`
+	TxHash    []byte `gorm:"not null"`
 	Reporter  string `gorm:"not null"`
 }
 
 type ReportDetail struct {
-	RequestID    int64  `gorm:"primary_key;foreignkey:Report"`
-	Validator    string `gorm:"primary_key;foreignkey:Report"`
+	RequestID    int64  `gorm:"primary_key"`
+	Validator    string `gorm:"primary_key"`
 	ExternalID   int64  `gorm:"primary_key"`
 	DataSourceID int64  `gorm:"not null"`
 	Data         []byte `gorm:"not null"`
