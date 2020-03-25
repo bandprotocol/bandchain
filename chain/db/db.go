@@ -2,7 +2,7 @@ package db
 
 import (
 	"fmt"
-
+	"errors"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
@@ -34,6 +34,8 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		&DataSource{},
 		&DataSourceRevision{},
 		&Transaction{},
+		&Report{},
+		&ReportDetail{},
 	)
 
 	db.Model(&ValidatorVote{}).AddForeignKey(
@@ -121,6 +123,8 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		return b.handleMsgCreateDataSource(txHash, msg, events)
 	case zoracle.MsgEditDataSource:
 		return b.handleMsgEditDataSource(txHash, msg, events)
+	case zoracle.MsgReportData:
+		return b.handleMsgReportData(txHash, msg, events)
 	default:
 		// TODO: Better logging
 		fmt.Println("HandleMessage: There isn't event handler for this type")
