@@ -2,6 +2,7 @@ package db
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/shopspring/decimal"
 	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/libs/common"
 )
@@ -9,10 +10,28 @@ import (
 func (b *BandDB) AddValidator(
 	operatorAddress sdk.ValAddress,
 	consensusAddress crypto.PubKey,
+	moniker string,
+	identity string,
+	website string,
+	details string,
+	commissionRate decimal.Decimal,
+	commissionMaxRate decimal.Decimal,
+	commissionMaxChange decimal.Decimal,
+	minSelfDelegation decimal.Decimal,
+	selfDelegation decimal.Decimal,
 ) error {
 	return b.tx.Create(&Validator{
-		OperatorAddress:  operatorAddress.String(),
-		ConsensusAddress: consensusAddress.Address().String(),
+		OperatorAddress:     operatorAddress.String(),
+		ConsensusAddress:    consensusAddress.Address().String(),
+		Moniker:             moniker,
+		Identity:            identity,
+		Website:             website,
+		Details:             details,
+		CommissionRate:      commissionRate,
+		CommissionMaxRate:   commissionMaxRate,
+		CommissionMaxChange: commissionMaxChange,
+		MinSelfDelegation:   minSelfDelegation,
+		SelfDelegation:      selfDelegation,
 	}).Error
 }
 
