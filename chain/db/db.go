@@ -1,6 +1,7 @@
 package db
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/jinzhu/gorm"
@@ -10,6 +11,7 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/zoracle"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/bank"
 )
 
 type BandDB struct {
@@ -205,12 +207,14 @@ func (b *BandDB) SetContext(ctx sdk.Context) {
 	b.ctx = ctx
 }
 
-func (b *BandDB) HandleTransaction(tx auth.StdTx, txHash []byte, logs sdk.ABCIMessageLogs) {
+func (b *BandDB) HandleTransaction(tx auth.StdTx, txHash []byte, logs sdk.ABCIMessageLogs) string {
 	msgs := tx.GetMsgs()
 
 	if len(msgs) != len(logs) {
 		panic("Inconsistent size of msgs and logs.")
 	}
+
+	messages := []string{}
 
 	for idx, msg := range msgs {
 		events := logs[idx].Events
@@ -220,31 +224,131 @@ func (b *BandDB) HandleTransaction(tx auth.StdTx, txHash []byte, logs sdk.ABCIMe
 				kvMap[event.Type+"."+kv.Key] = kv.Value
 			}
 		}
-		err := b.HandleMessage(txHash, msg, kvMap)
+
+		str, err := b.HandleMessage(txHash, msg, kvMap)
 		if err != nil {
 			panic(err)
 		}
+
+		messages = append(messages, str)
+
 	}
+	return fmt.Sprint(messages)
 }
 
-func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]string) error {
+func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]string) (string, error) {
+	jsonMap := make(map[string]interface{})
+	jsonStr, err := json.Marshal(msg)
+	if err != nil {
+		return "", err
+	}
+
+	err = json.Unmarshal([]byte(jsonStr), &jsonMap)
+	if err != nil {
+		return "", err
+	}
 	switch msg := msg.(type) {
 	// Just proof of concept
 	case zoracle.MsgCreateDataSource:
-		return b.handleMsgCreateDataSource(txHash, msg, events)
+
+		err = b.handleMsgCreateDataSource(txHash, msg, events)
+		if err != nil {
+			return "", err
+		}
+
+		jsonMap["dataSourceId"] = events["create_data_source.id"]
+		jsonMap["type"] = events["message.action"]
+		jsonString, err := json.Marshal(jsonMap)
+		if err != nil {
+			return "", err
+		}
+
+		return fmt.Sprint(string(jsonString)), nil
 	case zoracle.MsgEditDataSource:
-		return b.handleMsgEditDataSource(txHash, msg, events)
+
+		err = b.handleMsgEditDataSource(txHash, msg, events)
+		if err != nil {
+			return "", err
+		}
+
+		jsonMap["dataSourceId"] = events["edit_data_source.id"]
+		jsonMap["type"] = events["message.action"]
+		jsonString, err := json.Marshal(jsonMap)
+		if err != nil {
+			return "", err
+		}
+
+		return fmt.Sprint(string(jsonString)), nil
 	case zoracle.MsgCreateOracleScript:
-		return b.handleMsgCreateOracleScript(txHash, msg, events)
+
+		jsonMap["oracleScriptId"] = events["create_oracle_script.id"]
+		jsonMap["type"] = events["message.action"]
+		jsonString, err := json.Marshal(jsonMap)
+		if err != nil {
+			return "", err
+		}
+
+		return fmt.Sprint(string(jsonString)), nil
+
 	case zoracle.MsgEditOracleScript:
-		return b.handleMsgEditOracleScript(txHash, msg, events)
+
+		jsonMap["oracleScriptId"] = events["edit_oracle_script.id"]
+		jsonMap["type"] = events["message.action"]
+		jsonString, err := json.Marshal(jsonMap)
+		if err != nil {
+			return "", err
+		}
+
+		return fmt.Sprint(string(jsonString)), nil
+
 	case zoracle.MsgReportData:
-		return b.handleMsgReportData(txHash, msg, events)
+		return "", b.handleMsgReportData(txHash, msg, events)
+
 	case zoracle.MsgRequestData:
-		return b.handleMsgRequestData(txHash, msg, events)
+		err := b.handleMsgRequestData(txHash, msg, events)
+		if err != nil {
+			return "", err
+		}
+		jsonMap["type"] = events["message.action"]
+		jsonString, err := json.Marshal(jsonMap)
+		if err != nil {
+			return "", err
+		}
+
+		return fmt.Sprint(string(jsonString)), nil
+
+	case zoracle.MsgAddOracleAddress:
+
+		jsonMap["type"] = events["message.action"]
+		jsonString, err := json.Marshal(jsonMap)
+		if err != nil {
+			return "", err
+		}
+
+		return fmt.Sprint(string(jsonString)), nil
+
+	case zoracle.MsgRemoveOracleAdderess:
+
+		jsonMap["type"] = events["message.action"]
+		jsonString, err := json.Marshal(jsonMap)
+		if err != nil {
+			return "", err
+		}
+
+		return fmt.Sprint(string(jsonString)), nil
+
+	case bank.MsgSend:
+		jsonMap["type"] = events["message.action"]
+		jsonString, err := json.Marshal(jsonMap)
+		if err != nil {
+			return "", err
+		}
+
+		return fmt.Sprint(string(jsonString)), nil
+
 	default:
 		// TODO: Better logging
 		fmt.Println("HandleMessage: There isn't event handler for this type")
-		return nil
+		return "", nil
 	}
 }

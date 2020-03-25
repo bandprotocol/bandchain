@@ -147,6 +147,7 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 	if stdTx, ok := tx.(auth.StdTx); ok {
 		txHash := tmhash.Sum(req.Tx)
 
+		messages := app.dbBand.HandleTransaction(stdTx, txHash, logs)
 		app.dbBand.AddTransaction(
 			txHash,
 			app.DeliverContext.BlockTime(),
@@ -156,9 +157,8 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 			stdTx.GetSigners()[0],
 			true,
 			app.DeliverContext.BlockHeight(),
+			messages,
 		)
-
-		app.dbBand.HandleTransaction(stdTx, txHash, logs)
 	}
 	return res
 }

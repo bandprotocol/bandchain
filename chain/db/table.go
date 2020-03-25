@@ -74,6 +74,7 @@ type Transaction struct {
 	Sender      string `gorm:"not null"`
 	Success     bool   `gorm:"not null"`
 	BlockHeight int64  `gorm:"not null"`
+	Messages    string `gorm:"not null"`
 }
 
 type Report struct {

@@ -15,6 +15,7 @@ func createTransaction(
 	sender sdk.AccAddress,
 	success bool,
 	blockHeight int64,
+	messages string,
 ) Transaction {
 	return Transaction{
 		TxHash:      txHash,
@@ -25,6 +26,7 @@ func createTransaction(
 		Sender:      sender.String(),
 		Success:     success,
 		BlockHeight: blockHeight,
+		Messages:    messages,
 	}
 }
 
@@ -37,6 +39,7 @@ func (b *BandDB) AddTransaction(
 	sender sdk.AccAddress,
 	success bool,
 	blockHeight int64,
+	messages string,
 ) error {
 	transaction := createTransaction(
 		txHash,
@@ -47,6 +50,7 @@ func (b *BandDB) AddTransaction(
 		sender,
 		success,
 		blockHeight,
+		messages,
 	)
 	err := b.tx.Create(&transaction).Error
 	return err
