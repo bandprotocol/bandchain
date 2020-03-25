@@ -12,7 +12,7 @@ func (b *BandDB) AddBlock(
 ) error {
 	return b.tx.Create(&Block{
 		Height:    height,
-		Timestamp: timestamp.UnixNano() / 1000000, // millisecond
+		Timestamp: timestamp.UnixNano() / int64(time.Millisecond), // millisecond
 		Proposer:  proposer,
 		BlockHash: blockHash,
 	}).Error
