@@ -1,7 +1,7 @@
 type t = {
   name: string,
   timestamp: MomentRe.Moment.t,
-  height: int,
+  height: ID.Block.t,
   txHash: Hash.t,
 };
 
@@ -14,7 +14,7 @@ module RevisionsConfig = [%graphql
     ) @bsRecord{
       name
       timestamp @bsDecoder(fn: "GraphQLParser.time")
-      height: block_height @bsDecoder(fn: "GraphQLParser.int64")
+      height: block_height @bsDecoder(fn: "ID.Block.fromJson")
       txHash: tx_hash@bsDecoder(fn: "GraphQLParser.hash")
     }
   }

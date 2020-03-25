@@ -82,7 +82,7 @@ let make = (~id) =>
                       <Col size=2.>
                         <TimeAgos time=timestamp size=Text.Md weight=Text.Medium />
                       </Col>
-                      <Col size=1.5> <TypeID.Block id={ID.Block.ID(height)} /> </Col>
+                      <Col size=1.5> <TypeID.Block id=height /> </Col>
                       <Col size=3.5>
                         <div
                           className=Styles.txContainer
