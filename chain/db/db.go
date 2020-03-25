@@ -33,6 +33,7 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		&ValidatorVote{},
 		&DataSource{},
 		&DataSourceRevision{},
+		&Block{},
 		&Transaction{},
 		&Report{},
 		&ReportDetail{},
@@ -54,14 +55,28 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 
 	db.Model(&Report{}).AddForeignKey(
 		"validator",
+    "validators(consensus_address)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+  
+  db.Model(&ReportDetail{}).AddForeignKey(
+		"request_id,validator",
+		"reports(request_id,validator)",
+    "RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&Block{}).AddForeignKey(
+		"proposer",
 		"validators(consensus_address)",
 		"RESTRICT",
 		"RESTRICT",
 	)
-
-	db.Model(&ReportDetail{}).AddForeignKey(
-		"request_id,validator",
-		"reports(request_id,validator)",
+  
+	db.Model(&Transaction{}).AddForeignKey(
+		"block_height",
+		"blocks(height)",
 		"RESTRICT",
 		"RESTRICT",
 	)

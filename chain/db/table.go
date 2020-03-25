@@ -73,3 +73,10 @@ type ReportDetail struct {
 	Data         []byte `gorm:"not null"`
 	Exitcode     uint8  `gorm:"not null"`
 }
+
+type Block struct {
+	Height    int64  `gorm:"primary_key;auto_increment:false"`
+	Timestamp int64  `gorm:"not null"`
+	Proposer  string `gorm:"not null"`
+	BlockHash []byte `gorm:"not null"`
+}

@@ -18,7 +18,7 @@ func createTransaction(
 ) Transaction {
 	return Transaction{
 		TxHash:      txHash,
-		Timestamp:   timestamp.Unix(),
+		Timestamp:   timestamp.UnixNano() / int64(time.Millisecond),
 		GasUsed:     gasUsed,
 		GasLimit:    gasLimit,
 		GasFee:      gasFee.String(),
