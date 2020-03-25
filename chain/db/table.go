@@ -47,6 +47,24 @@ type DataSourceRevision struct {
 	TxHash         []byte `sql:"default:null"`
 }
 
+type OracleScript struct {
+	ID          int64  `gorm:"primary_key;auto_increment:false"`
+	Name        string `gorm:"not null"`
+	Description string `gorm:"not null"`
+	Owner       string `gorm:"not null"`
+	Code        []byte `gorm:"not null"`
+	LastUpdated int64  `gorm:"not null"`
+}
+
+type OracleScriptRevision struct {
+	OracleScriptID int64  `gorm:"primary_key;auto_increment:false"`
+	RevisionNumber int64  `gorm:"primary_key"`
+	Name           string `gorm:"not null"`
+	Timestamp      int64  `gorm:"not null"`
+	BlockHeight    int64  `gorm:"not null"`
+	TxHash         []byte `gorm:"not null"`
+}
+
 type Transaction struct {
 	TxHash      []byte `gorm:"primary_key"`
 	Timestamp   int64  `gorm:"not null"`
