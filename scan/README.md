@@ -22,11 +22,11 @@ In 2 separate tabs:
 yarn bsb -make-world -w -ws _ # ReasonML compiler
 
 # Second tab
-RPC_URL=https://d3n.bandprotocol.com/rest/ GRAPHQL_URL=wss://d3n.bandprotocol.com/hasura/v1/graphql yarn parcel index.html --no-cache # Serve to localhost:1234
+RPC_URL=https://d3n.bandprotocol.com/rest/ GRAPHQL_URL=wss://d3n.bandprotocol.com/v1/graphql yarn parcel index.html --no-cache # Serve to localhost:1234
 ```
 
 ## Build production
 
 ```sh
-RPC_URL=https://d3n.bandprotocol.com/rest/ GRAPHQL_URL=wss://d3n.bandprotocol.com/hasura/v1/graphql yarn build
+RPC_URL=https://d3n.bandprotocol.com/rest/ GRAPHQL_URL=wss://d3n.bandprotocol.com/v1/graphql yarn build
 ```
