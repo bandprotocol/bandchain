@@ -12,6 +12,6 @@ func (b *BandDB) AddDelegation(
 	return b.tx.Create(&Delegation{
 		DelegatorAddress: delegatorAddress.String(),
 		OperatorAddress:  operatorAddress.String(),
-		Amount:           Amount.String(),
+		Amount:           Coin.String(),
 	}).Error
 }
