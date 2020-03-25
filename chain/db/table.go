@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/jinzhu/gorm"
+	"github.com/shopspring/decimal"
 )
 
 type Metadata struct {
@@ -17,11 +18,20 @@ type Event struct {
 }
 
 type Validator struct {
-	OperatorAddress  string `gorm:"primary_key"`
-	ConsensusAddress string `gorm:"unique;not null"`
-	ElectedCount     uint   `gorm:"not null"`
-	VotedCount       uint   `gorm:"not null"`
-	MissedCount      uint   `gorm:"not null"`
+	OperatorAddress     string          `gorm:"primary_key"`
+	ConsensusAddress    string          `gorm:"unique;not null"`
+	ElectedCount        uint            `gorm:"not null"`
+	VotedCount          uint            `gorm:"not null"`
+	MissedCount         uint            `gorm:"not null"`
+	Moniker             string          `gorm:"not null"`
+	Identity            string          `gorm:"not null"`
+	Website             string          `gorm:"not null"`
+	Details             string          `gorm:"not null"`
+	CommissionRate      decimal.Decimal `gorm:"not null"`
+	CommissionMaxRate   decimal.Decimal `gorm:"not null"`
+	CommissionMaxChange decimal.Decimal `gorm:"not null"`
+	MinSelfDelegation   decimal.Decimal `gorm:"not null"`
+	SelfDelegation      decimal.Decimal `gorm:"not null"`
 }
 
 type ValidatorVote struct {
