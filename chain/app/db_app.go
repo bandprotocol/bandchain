@@ -133,7 +133,7 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 		app.dbBand.AddTransaction(
 			txHash,
 			app.DeliverContext.BlockTime(),
-			uint64(res.GasUsed),
+			res.GasUsed,
 			stdTx.Fee.Gas,
 			stdTx.Fee.Amount,
 			stdTx.GetSigners()[0],
