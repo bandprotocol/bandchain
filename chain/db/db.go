@@ -66,15 +66,6 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		"RESTRICT",
 	)
 
-	/*
-	db.Model(&ReportDetail{}).AddForeignKey(
-		"validator",
-		"reports(validator)",
-		"RESTRICT",
-		"RESTRICT",
-	)
-
-	*/
 	for key, value := range metadata {
 		err := db.Where(Metadata{Key: key}).
 			Assign(Metadata{Value: value}).
