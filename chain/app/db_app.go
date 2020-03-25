@@ -171,7 +171,7 @@ func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseB
 
 	app.dbBand.AddBlock(
 		req.Header.GetHeight(),
-		app.DeliverContext.BlockHeader().Time,
+		app.DeliverContext.BlockTime(),
 		req.Header.GetProposerAddress(),
 		req.GetHash(),
 	)
