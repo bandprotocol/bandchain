@@ -16,17 +16,42 @@ module Styles = {
       marginRight(`px(10)),
       backgroundColor(Colors.gray7),
     ]);
+
+  let lowerPannel =
+    style([
+      width(`percent(100.)),
+      height(`px(540)),
+      display(`flex),
+      justifyContent(`center),
+      alignItems(`center),
+      backgroundColor(Colors.white),
+      boxShadows([
+        Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(4), Css.rgba(0, 0, 0, 0.1)),
+        Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(12), Css.rgba(0, 0, 0, 0.03)),
+      ]),
+      borderRadius(`px(10)),
+    ]);
 };
 
 [@react.component]
 let make = (~reqID, ~hashtag: Route.request_tab_t) => {
   let requestOpt = RequestHook.get(reqID);
+  let requestValidators =
+    switch (React.useContext(GlobalContext.context), requestOpt) {
+    | (Some(info), Some(request)) =>
+      info.validators
+      ->Belt_List.keep(validator =>
+          request.requestedValidators
+          ->Belt_List.has(validator.operatorAddress, (a, b) => a->Address.isEqual(b))
+        )
+    | _ => []
+    };
 
   <div className=Styles.pageContainer>
     <Row justify=Row.Between>
       <Col>
         <div className=Styles.vFlex>
-          <img src=Images.oracleScriptLogo className=Styles.logo />
+          <img src=Images.requestLogo className=Styles.logo />
           <Text
             value="DATA REQUEST"
             weight=Text.Medium
@@ -71,10 +96,7 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) => {
          </div>
          <VSpacing size=Spacing.xl />
          <Row>
-           <Col size=1.>
-             <InfoHL header="OWNER" info={InfoHL.Address(request.requester, 430)} />
-           </Col>
-           <Col size=0.95>
+           <Col size=2.8>
              <InfoHL
                info={
                  InfoHL.OracleScript(
@@ -82,13 +104,26 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) => {
                    request.oracleScriptName,
                  )
                }
-               header="RELATED DATA SOURCES"
+               header="ORACLE SCRIPT"
              />
+           </Col>
+           <Col size=3.2>
+             <InfoHL header="SENDER" info={InfoHL.Address(request.requester, 280)} />
+           </Col>
+           <Col size=4.0>
+             <InfoHL header="TX HASH" info={InfoHL.TxHash(request.txHash, 385)} />
            </Col>
          </Row>
          <VSpacing size=Spacing.xl />
+         <Row>
+           <Col>
+             <InfoHL info={InfoHL.Validators(requestValidators)} header="REQUEST TO VALIDATORS" />
+           </Col>
+         </Row>
        </>
      | None => React.null
      }}
+    <VSpacing size=Spacing.xl />
+    <div className=Styles.lowerPannel> {"TODO" |> React.string} </div>
   </div>;
 };
