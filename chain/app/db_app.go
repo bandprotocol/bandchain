@@ -9,6 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/staking"
+	"github.com/shopspring/decimal"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto/tmhash"
 	"github.com/tendermint/tendermint/libs/log"
@@ -72,6 +73,15 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 				err := app.dbBand.AddValidator(
 					createMsg.ValidatorAddress,
 					createMsg.PubKey,
+					createMsg.Description.Moniker,
+					createMsg.Description.Identity,
+					createMsg.Description.Website,
+					createMsg.Description.Details,
+					decimal.NewFromFloat(1.1),
+					decimal.NewFromFloat(1.1),
+					decimal.NewFromFloat(1.1),
+					decimal.NewFromFloat(1.1),
+					decimal.NewFromFloat(1.1),
 				)
 				if err != nil {
 					panic(err)
