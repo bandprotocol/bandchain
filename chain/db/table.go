@@ -57,3 +57,19 @@ type Transaction struct {
 	Success     bool   `gorm:"not null"`
 	BlockHeight int64  `gorm:"not null"`
 }
+
+type Report struct {
+	RequestID int64  `gorm:"primary_key;foreignkey:Request"`
+	Validator string `gorm:"primary_key;foreignkey:Validator"`
+	TxHash    []byte `gorm:"foreignkey:Transaction"`
+	Reporter  string `gorm:"not null"`
+}
+
+type ReportDetail struct {
+	RequestID    int64  `gorm:"primary_key;foreignkey:Report"`
+	Validator    string `gorm:"primary_key;foreignkey:Report"`
+	ExternalID   int64  `gorm:"primary_key"`
+	DataSourceID int64  `gorm:"not null"`
+	Data         []byte `gorm:"not null"`
+	Exitcode     uint8  `gorm:"not null"`
+}
