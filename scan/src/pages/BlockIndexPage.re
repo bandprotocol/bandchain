@@ -53,18 +53,18 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~height: int) => {
+let make = (~height) => {
   let (page, setPage) = React.useState(_ => 1);
   let limit = 10;
 
   let txsOpt = TxHook.atHeight(height, ~limit, ~page, ());
   let infoOpt = React.useContext(GlobalContext.context);
-  let blockOpt = BlockHook.atHeight(height);
+  let blockOpt = BlockSub.get(height) |> Sub.toOption;
   let monikerOpt = {
     let%Opt info = infoOpt;
     let%Opt block = blockOpt;
     let validators = info.validators;
-    Some(BlockHook.Block.getProposerMoniker(block, validators));
+    Some(BlockSub.getProposerMoniker(block, validators));
   };
   let pageCount = txsOpt->Belt.Option.mapWithDefault(1, info => info.pageCount);
 
@@ -84,7 +84,7 @@ let make = (~height: int) => {
           />
           <div className=Styles.seperatedLine />
           <Text
-            value={"#B" ++ (height |> Format.iPretty)}
+            value={"#B" ++ (height |> ID.Block.toInt |> Format.iPretty)}
             weight=Text.Thin
             spacing={Text.Em(0.06)}
           />
@@ -109,7 +109,7 @@ let make = (~height: int) => {
     <Row>
       <Col size=1.8>
         {switch (blockOpt) {
-         | Some(block) => <InfoHL info={InfoHL.Count(block.numTxs)} header="TRANSACTIONS" />
+         | Some(block) => <InfoHL info={InfoHL.Count(block.txn)} header="TRANSACTIONS" />
          | None => <InfoHL info={InfoHL.Text("?")} header="TRANSACTIONS" />
          }}
       </Col>
