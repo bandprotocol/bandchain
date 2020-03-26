@@ -53,6 +53,13 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		"RESTRICT",
 	)
 
+	db.Model(&DataSourceRevision{}).AddForeignKey(
+		"tx_hash",
+		"transactions(tx_hash)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
 	db.Model(&Report{}).AddForeignKey(
 		"validator",
 		"validators(operator_address)",

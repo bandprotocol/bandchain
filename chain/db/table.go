@@ -44,7 +44,7 @@ type DataSourceRevision struct {
 	Name           string `gorm:"not null"`
 	Timestamp      int64  `gorm:"not null"`
 	BlockHeight    int64  `gorm:"not null"`
-	TxHash         []byte `gorm:"not null"`
+	TxHash         []byte `sql:"default:null"`
 }
 
 type Transaction struct {
