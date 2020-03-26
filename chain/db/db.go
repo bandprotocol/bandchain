@@ -33,6 +33,8 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		&ValidatorVote{},
 		&DataSource{},
 		&DataSourceRevision{},
+		&OracleScript{},
+		&OracleScriptRevision{},
 		&Block{},
 		&Transaction{},
 		&Report{},
@@ -54,6 +56,20 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 	)
 
 	db.Model(&DataSourceRevision{}).AddForeignKey(
+		"tx_hash",
+		"transactions(tx_hash)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&OracleScriptRevision{}).AddForeignKey(
+		"oracle_script_id",
+		"oracle_scripts(id)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&OracleScriptRevision{}).AddForeignKey(
 		"tx_hash",
 		"transactions(tx_hash)",
 		"RESTRICT",
@@ -166,6 +182,10 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		return b.handleMsgCreateDataSource(txHash, msg, events)
 	case zoracle.MsgEditDataSource:
 		return b.handleMsgEditDataSource(txHash, msg, events)
+	case zoracle.MsgCreateOracleScript:
+		return b.handleMsgCreateOracleScript(txHash, msg, events)
+	case zoracle.MsgEditOracleScript:
+		return b.handleMsgEditOracleScript(txHash, msg, events)
 	case zoracle.MsgReportData:
 		return b.handleMsgReportData(txHash, msg, events)
 	default:
