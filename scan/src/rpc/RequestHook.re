@@ -91,7 +91,7 @@ module Request = {
            ),
       sufficientValidatorCount: json |> field("sufficientValidatorCount", intstr),
       expirationHeight: json |> field("expirationHeight", intstr),
-      resolveStatus: Unknown, // TODO , fix this Mock
+      resolveStatus: json |> field("resolveStatus", intstr) |> getResolveStatus,
       requester: json |> at(["requester"], string) |> Address.fromBech32,
       txHash: json |> at(["requestTx", "hash"], string) |> Hash.fromHex,
       requestedAtHeight: json |> at(["requestTx", "height"], intstr),
