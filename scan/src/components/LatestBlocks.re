@@ -35,7 +35,7 @@ module Styles = {
   let rightArrow = style([width(`px(25)), marginTop(`px(17)), marginLeft(`px(16))]);
 };
 
-let renderBlock = ((b, moniker): (BlockHook.Block.t, string)) =>
+let renderBlock = ((b, moniker): (BlockSub.t, string)) =>
   <div
     key={b.height |> string_of_int}
     className=Styles.block
@@ -61,9 +61,7 @@ let make = () =>
     let blocks = info.latestBlocks;
     let validators = info.validators;
     let blocksWithMonikers =
-      blocks->Belt_List.map(block =>
-        (block, BlockHook.Block.getProposerMoniker(block, validators))
-      );
+      blocks->Belt_List.map(block => (block, BlockSub.getProposerMoniker(block, validators)));
     let%Opt latestBlock = blocks->Belt.List.get(0);
     let latestHeightOpt = latestBlock.height;
 
