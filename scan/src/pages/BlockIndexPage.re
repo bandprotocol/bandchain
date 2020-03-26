@@ -59,7 +59,11 @@ let make = (~height) => {
 
   let txsOpt = TxHook.atHeight(height, ~limit, ~page, ());
   let infoOpt = React.useContext(GlobalContext.context);
-  let blockOpt = BlockSub.get(height) |> Sub.toOption;
+  let blockOpt =
+    switch (BlockSub.get(height)) {
+    | ApolloHooks.Subscription.Data(data) => Some(data)
+    | _ => None
+    };
   let monikerOpt = {
     let%Opt info = infoOpt;
     let%Opt block = blockOpt;
