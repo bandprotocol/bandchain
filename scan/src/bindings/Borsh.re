@@ -28,9 +28,9 @@ function() {
     ]
   ])
   let buf = borsh.serialize(schema, value)
-  let new_value = borsh.deserialize(schema, Test, Buffer.from(buf))
+  let newValue = borsh.deserialize(schema, Test, Buffer.from(buf))
   console.log(buf)
-  console.log(new_value)
+  console.log(newValue)
 }
 |}
 ];
@@ -63,9 +63,9 @@ function(_schema, cls, data) {
       }
     }
     let model = window[cls]
-    let new_value = borsh.deserialize(schemaMap, model, data)
+    let newValue = borsh.deserialize(schemaMap, model, data)
     return schemaMap.get(model).fields.map(([fieldName, _]) => {
-      return [fieldName, new_value[fieldName].toString()]
+      return [fieldName, newValue[fieldName].toString()]
     });
   } catch(err) {
     return undefined
