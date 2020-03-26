@@ -79,8 +79,8 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 					createMsg.Commission.Rate.String(),
 					createMsg.Commission.MaxRate.String(),
 					createMsg.Commission.MaxChangeRate.String(),
-					sdk.NewCoin("uband", createMsg.MinSelfDelegation).String(),
-					createMsg.Value.String(),
+					createMsg.MinSelfDelegation.ToDec().String(),
+					createMsg.Value.Amount.ToDec().String(),
 				)
 				if err != nil {
 					panic(err)
