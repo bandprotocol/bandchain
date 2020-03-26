@@ -39,6 +39,9 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		&Transaction{},
 		&Report{},
 		&ReportDetail{},
+		&Request{},
+		&RequestedValidator{},
+		&RawDataRequests{},
 	)
 
 	db.Model(&ValidatorVote{}).AddForeignKey(
@@ -107,6 +110,27 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 	db.Model(&Transaction{}).AddForeignKey(
 		"block_height",
 		"blocks(height)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&RequestedValidator{}).AddForeignKey(
+		"request_id",
+		"requests(id)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&RequestedValidator{}).AddForeignKey(
+		"validator_address",
+		"validators(operator_address)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&RawDataRequests{}).AddForeignKey(
+		"request_id",
+		"requests(id)",
 		"RESTRICT",
 		"RESTRICT",
 	)
@@ -188,6 +212,8 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		return b.handleMsgEditOracleScript(txHash, msg, events)
 	case zoracle.MsgReportData:
 		return b.handleMsgReportData(txHash, msg, events)
+	case zoracle.MsgRequestData:
+		return b.handleMsgRequestData(txHash, msg, events)
 	default:
 		// TODO: Better logging
 		fmt.Println("HandleMessage: There isn't event handler for this type")
