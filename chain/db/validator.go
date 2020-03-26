@@ -1,7 +1,10 @@
 package db
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/libs/common"
 )
@@ -105,4 +108,46 @@ func (b *BandDB) ClearOldVotes(currentHeight int64) error {
 		).Error
 	}
 	return nil
+}
+
+func (b *BandDB) GetValidator(validator Validator) (Validator, error) {
+	err := b.tx.First(&validator).Error
+	return validator, err
+}
+
+func (b *BandDB) handleMsgEditValidator(msg staking.MsgEditValidator) error {
+	validator, err := b.GetValidator(Validator{OperatorAddress: msg.ValidatorAddress.String()})
+	if err != nil {
+		return fmt.Errorf(fmt.Sprintf("validator %s has not exist.", msg.ValidatorAddress.String()))
+	}
+
+	validator.Moniker = msg.Description.Moniker
+	validator.Identity = msg.Description.Identity
+	validator.Website = msg.Description.Website
+	validator.Details = msg.Description.Details
+	validator.CommissionRate = msg.CommissionRate.String()
+	validator.MinSelfDelegation = msg.MinSelfDelegation.ToDec().String()
+
+	return b.tx.Save(&validator).Error
+}
+
+func (b *BandDB) handleMsgCreateValidator(msg staking.MsgCreateValidator) error {
+	_, err := b.GetValidator(Validator{OperatorAddress: msg.ValidatorAddress.String()})
+	if err == nil {
+		return fmt.Errorf(fmt.Sprintf("validator %s has already exist.", msg.ValidatorAddress.String()))
+	}
+
+	return b.AddValidator(
+		msg.ValidatorAddress,
+		msg.PubKey,
+		msg.Description.Moniker,
+		msg.Description.Identity,
+		msg.Description.Website,
+		msg.Description.Details,
+		msg.Commission.Rate.String(),
+		msg.Commission.MaxRate.String(),
+		msg.Commission.MaxChangeRate.String(),
+		msg.MinSelfDelegation.ToDec().String(),
+		msg.Value.Amount.ToDec().String(),
+	)
 }
