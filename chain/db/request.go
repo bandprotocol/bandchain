@@ -128,7 +128,7 @@ func (b *BandDB) handleMsgRequestData(
 		"Pending",
 		msg.Sender.String(),
 		txHash,
-		[]byte{},
+		nil,
 	)
 
 	err = b.tx.Save(&request).Error
