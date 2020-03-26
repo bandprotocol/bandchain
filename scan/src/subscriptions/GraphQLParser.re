@@ -1,5 +1,4 @@
 let int64 = json => json |> Js.Json.decodeNumber |> Belt.Option.getExn |> int_of_float;
-
 let buffer = json =>
   json
   |> Js.Json.decodeString
