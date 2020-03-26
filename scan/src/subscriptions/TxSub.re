@@ -14,6 +14,7 @@ type t = {
   gasUsed: int,
   sender: Address.t,
   timestamp: MomentRe.Moment.t,
+  // TODO: add field message
 };
 
 module SingleConfig = [%graphql
