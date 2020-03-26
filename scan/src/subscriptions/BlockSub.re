@@ -33,7 +33,7 @@ let toExternal = ({height, hash, proposer, timestamp, transactions_aggregate}) =
 module MultiConfig = [%graphql
   {|
   subscription Blocks($limit: Int!, $offset: Int!) {
-    blocks(limit: $limit, offset: $offset) @bsRecord {
+    blocks(limit: $limit, offset: $offset, order_by: {height: desc}) @bsRecord {
       height @bsDecoder(fn: "GraphQLParser.int64")
       hash: block_hash @bsDecoder(fn: "GraphQLParser.hash")
       proposer @bsDecoder(fn: "Address.fromHex")
@@ -50,7 +50,7 @@ module MultiConfig = [%graphql
 
 module SingleConfig = [%graphql
   {|
-  subscription DataSource($height: Int!) {
+  subscription Block($height: bigint!) {
     blocks_by_pk(height: $height) @bsRecord {
       height @bsDecoder(fn: "GraphQLParser.int64")
       hash: block_hash @bsDecoder(fn: "GraphQLParser.hash")
@@ -82,7 +82,7 @@ let get = height => {
   let (result, _) =
     ApolloHooks.useSubscription(
       SingleConfig.definition,
-      ~variables=SingleConfig.makeVariables(~height, ()),
+      ~variables=SingleConfig.makeVariables(~height=height |> ID.Block.toJson, ()),
     );
   let%Sub x = result;
   switch (x##blocks_by_pk) {
@@ -106,3 +106,17 @@ let count = () => {
   result
   |> Sub.map(_, x => x##blocks_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
 };
+
+let getProposer = (block: t, validators: list(ValidatorHook.Validator.t)) =>
+  validators
+  ->Belt_List.keep(validator => validator.consensusPubkey |> PubKey.toAddress == block.proposer)
+  ->Belt_List.get(0);
+
+let getProposerMoniker = (block: t, validators: list(ValidatorHook.Validator.t)) =>
+  validators
+  ->Belt_List.keepMap(validator =>
+      validator.consensusPubkey |> PubKey.toAddress == block.proposer
+        ? Some(validator.moniker) : None
+    )
+  ->Belt_List.get(0)
+  ->Belt_Option.getWithDefault("Unknown");
