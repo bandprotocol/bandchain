@@ -5,4 +5,5 @@ let normalizeHexString = hexstr =>
       result->Js.Re.captures->Belt_Array.keepMap(Js.toOption)
     )
   ->Belt_Array.get(0)
-  ->Belt_Option.getWithDefault(_, "");
+  ->Belt_Option.getWithDefault(_, "")
+  ->String.lowercase_ascii;
