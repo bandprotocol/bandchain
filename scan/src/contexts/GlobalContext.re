@@ -11,7 +11,11 @@ let context = React.createContext(ContextHelper.default);
 let make = (~children) => {
   let financialOpt = PriceHook.get();
   let validatorsOpt = ValidatorHook.getList();
-  let latestBlocksOpt = BlockSub.getList(~pageSize=10, ~page=1, ()) |> Sub.toOption;
+  let latestBlocksOpt =
+    switch (BlockSub.getList(~pageSize=10, ~page=1, ())) {
+    | ApolloHooks.Subscription.Data(data) => Some(data)
+    | _ => None
+    };
 
   let data = {
     let%Opt financial = financialOpt;
