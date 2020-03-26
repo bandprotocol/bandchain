@@ -35,12 +35,6 @@ function() {
 |}
 ];
 
-// Test by this test
-// Borsh.decode(
-//   {j|{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"], [\\"what\\", \\"u8\\"] ] }"}|j},
-//   "Input",
-//   "0x03000000425443320000000000000064" |> JsBuffer.fromHex,
-// );
 let decode: (string, string, JsBuffer.t) => option(array((string, string))) = [%bs.raw
   {|
 function(_schema, cls, data) {
@@ -71,7 +65,7 @@ function(_schema, cls, data) {
     let model = window[cls]
     let new_value = borsh.deserialize(schemaMap, model, data)
     return schemaMap.get(model).fields.map(([fieldName, _]) => {
-        return [fieldName, JSON.stringify(new_value[fieldName])]
+      return [fieldName, new_value[fieldName].toString()]
     });
   } catch(err) {
     return undefined
