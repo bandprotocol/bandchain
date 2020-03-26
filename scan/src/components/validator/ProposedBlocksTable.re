@@ -23,8 +23,7 @@ module Styles = {
 
 [@react.component]
 let make = () => {
-  let blocksOpt = BlockHook.latest(~limit=5, ());
-  let blocks = blocksOpt->Belt.Option.getWithDefault([]);
+  let blocks = BlockSub.getList(~pageSize=5, ~page=1, ())->Sub.default([||])->Belt_List.fromArray;
 
   let numProposedBlocks = 241;
 
@@ -66,7 +65,7 @@ let make = () => {
              </Row>
            </THead>
            {blocks
-            ->Belt.List.map(({height, timestamp, hash, numTxs}) => {
+            ->Belt.List.map(({height, timestamp, hash, txn}) => {
                 <TBody key={hash |> Hash.toHex(~upper=true)}>
                   <Row>
                     <Col> <HSpacing size=Spacing.lg /> </Col>
@@ -85,7 +84,7 @@ let make = () => {
                     <Col size=1.5>
                       <Row>
                         <div className=Styles.fillLeft />
-                        <Text value={numTxs |> Format.iPretty} code=true />
+                        <Text value={txn |> Format.iPretty} code=true />
                       </Row>
                     </Col>
                     <Col> <HSpacing size=Spacing.lg /> </Col>
