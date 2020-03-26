@@ -1,9 +1,9 @@
+open TxSub.Mini;
+
 type t = {
   name: string,
   transaction: option(TxSub.Mini.t),
 };
-
-open TxSub.Mini;
 
 module RevisionsConfig = [%graphql
   {|
