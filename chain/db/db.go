@@ -33,8 +33,12 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		&ValidatorVote{},
 		&DataSource{},
 		&DataSourceRevision{},
+		&OracleScript{},
+		&OracleScriptRevision{},
 		&Block{},
 		&Transaction{},
+		&Report{},
+		&ReportDetail{},
 	)
 
 	db.Model(&ValidatorVote{}).AddForeignKey(
@@ -47,6 +51,48 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 	db.Model(&DataSourceRevision{}).AddForeignKey(
 		"data_source_id",
 		"data_sources(id)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&DataSourceRevision{}).AddForeignKey(
+		"tx_hash",
+		"transactions(tx_hash)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&OracleScriptRevision{}).AddForeignKey(
+		"oracle_script_id",
+		"oracle_scripts(id)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&OracleScriptRevision{}).AddForeignKey(
+		"tx_hash",
+		"transactions(tx_hash)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&Report{}).AddForeignKey(
+		"validator",
+		"validators(operator_address)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&Report{}).AddForeignKey(
+		"tx_hash",
+		"transactions(tx_hash)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&ReportDetail{}).AddForeignKey(
+		"request_id,validator",
+		"reports(request_id,validator)",
 		"RESTRICT",
 		"RESTRICT",
 	)
@@ -136,6 +182,12 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		return b.handleMsgCreateDataSource(txHash, msg, events)
 	case zoracle.MsgEditDataSource:
 		return b.handleMsgEditDataSource(txHash, msg, events)
+	case zoracle.MsgCreateOracleScript:
+		return b.handleMsgCreateOracleScript(txHash, msg, events)
+	case zoracle.MsgEditOracleScript:
+		return b.handleMsgEditOracleScript(txHash, msg, events)
+	case zoracle.MsgReportData:
+		return b.handleMsgReportData(txHash, msg, events)
 	default:
 		// TODO: Better logging
 		fmt.Println("HandleMessage: There isn't event handler for this type")

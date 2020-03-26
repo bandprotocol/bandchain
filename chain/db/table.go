@@ -44,7 +44,25 @@ type DataSourceRevision struct {
 	Name           string `gorm:"not null"`
 	Timestamp      int64  `gorm:"not null"`
 	BlockHeight    int64  `gorm:"not null"`
-	TxHash         []byte `gorm:"not null"`
+	TxHash         []byte `sql:"default:null"`
+}
+
+type OracleScript struct {
+	ID          int64  `gorm:"primary_key;auto_increment:false"`
+	Name        string `gorm:"not null"`
+	Description string `gorm:"not null"`
+	Owner       string `gorm:"not null"`
+	Code        []byte `gorm:"not null"`
+	LastUpdated int64  `gorm:"not null"`
+}
+
+type OracleScriptRevision struct {
+	OracleScriptID int64  `gorm:"primary_key;auto_increment:false"`
+	RevisionNumber int64  `gorm:"primary_key"`
+	Name           string `gorm:"not null"`
+	Timestamp      int64  `gorm:"not null"`
+	BlockHeight    int64  `gorm:"not null"`
+	TxHash         []byte `sql:"default:null"`
 }
 
 type Transaction struct {
@@ -56,6 +74,22 @@ type Transaction struct {
 	Sender      string `gorm:"not null"`
 	Success     bool   `gorm:"not null"`
 	BlockHeight int64  `gorm:"not null"`
+}
+
+type Report struct {
+	RequestID int64  `gorm:"primary_key"`
+	Validator string `gorm:"primary_key"`
+	TxHash    []byte `gorm:"not null"`
+	Reporter  string `gorm:"not null"`
+}
+
+type ReportDetail struct {
+	RequestID    int64  `gorm:"primary_key"`
+	Validator    string `gorm:"primary_key"`
+	ExternalID   int64  `gorm:"primary_key"`
+	DataSourceID int64  `gorm:"not null"`
+	Data         []byte `gorm:"not null"`
+	Exitcode     uint8  `gorm:"not null"`
 }
 
 type Block struct {
