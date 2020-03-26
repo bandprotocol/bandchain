@@ -133,7 +133,7 @@ let make = (~txs: list(TxHook.Tx.t)) => {
                 ->Belt_Array.map(msg =>
                     <>
                       <VSpacing size=Spacing.sm />
-                      <Msg msg success width=330 />
+                      <Msg msg success width=450 />
                       <VSpacing size=Spacing.sm />
                     </>
                   )
