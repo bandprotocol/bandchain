@@ -72,24 +72,49 @@ let make = (~id) =>
                </Row>
              </THead>
              {revisions
-              ->Belt.Array.map(({name, timestamp, height, txHash}) => {
-                  <TBody key={txHash |> Hash.toHex(~upper=true)}>
+              ->Belt.Array.map(({name, transaction}) => {
+                  <TBody
+                    key={
+                      switch (transaction) {
+                      | Some(tx) => tx.txHash |> Hash.toHex(~upper=true)
+                      | None => "Genesis"
+                      }
+                    }>
                     <Row>
                       <Col> <HSpacing size=Spacing.lg /> </Col>
                       <Col size=3.>
                         <Text block=true value=name weight=Text.Medium color=Colors.gray7 />
                       </Col>
                       <Col size=2.>
-                        <TimeAgos time=timestamp size=Text.Md weight=Text.Medium />
+                        {switch (transaction) {
+                         | Some(tx) =>
+                           <TimeAgos time={tx.timestamp} size=Text.Md weight=Text.Medium />
+                         | None => <Text value="GENESIS" />
+                         }}
                       </Col>
-                      <Col size=1.5> <TypeID.Block id=height /> </Col>
+                      <Col size=1.5>
+                        {switch (transaction) {
+                         | Some(tx) => <TypeID.Block id={tx.blockHeight} />
+                         | None => <Text value="GENESIS" />
+                         }}
+                      </Col>
                       <Col size=3.5>
                         <div
                           className=Styles.txContainer
-                          onClick={_ => Route.redirect(Route.TxIndexPage(txHash))}>
+                          onClick={_ => {
+                            switch (transaction) {
+                            | Some(tx) => Route.redirect(Route.TxIndexPage(tx.txHash))
+                            | None => ()
+                            }
+                          }}>
                           <Text
                             block=true
-                            value={txHash |> Hash.toHex(~upper=true)}
+                            value={
+                              switch (transaction) {
+                              | Some(tx) => tx.txHash |> Hash.toHex(~upper=true)
+                              | None => "Genesis transaction"
+                              }
+                            }
                             weight=Text.Medium
                             code=true
                             color=Colors.gray7
