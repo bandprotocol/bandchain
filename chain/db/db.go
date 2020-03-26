@@ -12,6 +12,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/cosmos/cosmos-sdk/x/staking"
 )
 
 type BandDB struct {
@@ -19,6 +20,7 @@ type BandDB struct {
 	tx  *gorm.DB
 	ctx sdk.Context
 
+	StakingKeeper staking.Keeper
 	ZoracleKeeper zoracle.Keeper
 }
 
@@ -248,10 +250,6 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		return "", err
 	}
 
-	for key, value := range events {
-		jsonMap[key] = value
-	}
-
 	switch msg := msg.(type) {
 	// Just proof of concept
 	case zoracle.MsgCreateDataSource:
@@ -277,20 +275,25 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 	case zoracle.MsgEditOracleScript:
 
 	case zoracle.MsgRequestData:
-		err := b.handleMsgRequestData(txHash, msg, events)
+		var oracleScript OracleScript
+
+		err := b.tx.First(&oracleScript, int64(msg.OracleScriptID)).Error
 		if err != nil {
 			return "", err
 		}
-		jsonMap[zoracle.AttributeKeyRequestID] = events["request.id"]
-		jsonMap["type"] = events["message.action"]
 
+		jsonMap["oracleScriptName"] = oracleScript.Name
 		jsonMap["requestID"] = events[zoracle.EventTypeRequest+"."+zoracle.AttributeKeyID]
 
 	case zoracle.MsgReportData:
 
 	case zoracle.MsgAddOracleAddress:
+		val, _ := b.StakingKeeper.GetValidator(b.ctx, msg.Validator)
+		jsonMap["validatorMoniker"] = val.Description.Moniker
 
 	case zoracle.MsgRemoveOracleAdderess:
+		val, _ := b.StakingKeeper.GetValidator(b.ctx, msg.Validator)
+		jsonMap["validatorMoniker"] = val.Description.Moniker
 
 	case bank.MsgSend:
 

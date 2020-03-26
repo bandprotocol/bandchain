@@ -29,6 +29,7 @@ func NewDBBandApp(
 ) *dbBandApp {
 	app := NewBandApp(logger, db, traceStore, loadLatest, invCheckPeriod, baseAppOptions...)
 
+	dbBand.StakingKeeper = app.StakingKeeper
 	dbBand.ZoracleKeeper = app.ZoracleKeeper
 	return &dbBandApp{bandApp: app, dbBand: dbBand}
 }
