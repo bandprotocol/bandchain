@@ -14,6 +14,17 @@ describe("Expect Borsh to decode correctly", () => {
        )
   });
 
+  test("should be able to decode from bytes correctly2", () => {
+    expect(Some([|("symbol", "band"), ("multiplier", "400"), ("what", "100")|]))
+    |> toEqual(
+         Borsh.decode(
+           {j|{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"], [\\"what\\", \\"u8\\"] ] }"}|j},
+           "Input",
+           "0x0400000062616e64900100000000000064" |> JsBuffer.fromHex,
+         ),
+       )
+  });
+
   test("should return None if invalid schema", () => {
     expect(None)
     |> toEqual(
