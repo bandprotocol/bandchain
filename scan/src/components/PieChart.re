@@ -54,10 +54,10 @@ let renderSegment = (offset, asize, color) =>
 let make = (~size, ~availableBalance, ~balanceAtStake, ~reward) => {
   let totalBalance = availableBalance +. balanceAtStake +. reward;
   let balanceAtStakeAsize = totalBalance == 0. ? 0. : 360. *. balanceAtStake /. totalBalance;
-  let brewardAsize = totalBalance == 0. ? 0. : 360. *. reward /. totalBalance;
+  let rewardAsize = totalBalance == 0. ? 0. : 360. *. reward /. totalBalance;
 
   <div className={Styles.pie(size, Colors.bandBlue)}>
     {renderSegment(0., balanceAtStakeAsize, Colors.chartBalanceAtStake)}
-    {renderSegment(balanceAtStakeAsize, brewardAsize, Colors.chartReward)}
+    {renderSegment(balanceAtStakeAsize, rewardAsize, Colors.chartReward)}
   </div>;
 };
