@@ -108,7 +108,7 @@ type Request struct {
 	ResolveStatus            string `gorm:"not null"`
 	Requester                string `gorm:"not null"`
 	TxHash                   []byte `gorm:"not null"`
-	Result                   []byte
+	Result                   []byte `sql:"default:null"`
 }
 
 type RequestedValidator struct {
