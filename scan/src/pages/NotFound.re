@@ -19,7 +19,7 @@ module Styles = {
 
   let linkToHome = style([display(`flex), alignItems(`center), cursor(`pointer)]);
 
-  let rightArrow = style([width(`px(20))]);
+  let rightArrow = style([width(`px(20)), filter([`saturate(50.0), `brightness(70.0)])]);
 
   let logo = style([width(`px(180)), marginRight(`px(10))]);
 };
