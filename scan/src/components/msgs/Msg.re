@@ -84,16 +84,14 @@ let make = (~msg: TxHook.Msg.t, ~width: int, ~success: bool) => {
          ? <>
              <TypeID.DataSource id={ID.DataSource.ID(id)} />
              <HSpacing size=Spacing.sm />
-             <div className={Styles.withWidth(170)}>
-               <Text
-                 value=name
-                 color=Colors.gray7
-                 weight=Text.Medium
-                 nowrap=true
-                 block=true
-                 ellipsis=true
-               />
-             </div>
+             <Text
+               value=name
+               color=Colors.gray7
+               weight=Text.Medium
+               nowrap=true
+               block=true
+               ellipsis=true
+             />
            </>
          : React.null}
     </div>
@@ -113,16 +111,14 @@ let make = (~msg: TxHook.Msg.t, ~width: int, ~success: bool) => {
          ? <>
              <TypeID.DataSource id={ID.DataSource.ID(id)} />
              <HSpacing size=Spacing.sm />
-             <div className={Styles.withWidth(170)}>
-               <Text
-                 value=name
-                 color=Colors.gray7
-                 weight=Text.Medium
-                 nowrap=true
-                 block=true
-                 ellipsis=true
-               />
-             </div>
+             <Text
+               value=name
+               color=Colors.gray7
+               weight=Text.Medium
+               nowrap=true
+               block=true
+               ellipsis=true
+             />
            </>
          : React.null}
     </div>
@@ -143,16 +139,14 @@ let make = (~msg: TxHook.Msg.t, ~width: int, ~success: bool) => {
              <div className={Styles.rowWithWidth(200)}>
                <TypeID.OracleScript id={ID.OracleScript.ID(id)} />
                <HSpacing size=Spacing.sm />
-               <div className={Styles.withWidth(150)}>
-                 <Text
-                   value=name
-                   color=Colors.gray7
-                   weight=Text.Medium
-                   nowrap=true
-                   block=true
-                   ellipsis=true
-                 />
-               </div>
+               <Text
+                 value=name
+                 color=Colors.gray7
+                 weight=Text.Medium
+                 nowrap=true
+                 block=true
+                 ellipsis=true
+               />
              </div>
            </>
          : React.null}
@@ -174,7 +168,6 @@ let make = (~msg: TxHook.Msg.t, ~width: int, ~success: bool) => {
              <div className={Styles.rowWithWidth(210)}>
                <TypeID.OracleScript id={ID.OracleScript.ID(id)} />
                <HSpacing size=Spacing.sm />
-               <div className={Styles.withWidth(170)}>
                  <Text
                    value=name
                    color=Colors.gray7
@@ -183,7 +176,6 @@ let make = (~msg: TxHook.Msg.t, ~width: int, ~success: bool) => {
                    block=true
                    ellipsis=true
                  />
-               </div>
              </div>
            </>
          : React.null}
@@ -215,16 +207,14 @@ let make = (~msg: TxHook.Msg.t, ~width: int, ~success: bool) => {
              <HSpacing size=Spacing.sm />
              <TypeID.OracleScript id={ID.OracleScript.ID(oracleScriptID)} />
              <HSpacing size=Spacing.sm />
-             <div className={Styles.withWidth(170)}>
-               <Text
-                 value="Mock Oracle Script" // TODO , replace with wire up data
-                 color=Colors.gray7
-                 weight=Text.Medium
-                 nowrap=true
-                 block=true
-                 ellipsis=true
-               />
-             </div>
+             <Text
+               value="Mock Oracle Script" // TODO , replace with wire up data
+               color=Colors.gray7
+               weight=Text.Medium
+               nowrap=true
+               block=true
+               ellipsis=true
+             />
            </>
          : React.null}
     </div>

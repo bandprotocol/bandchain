@@ -1,6 +1,6 @@
 vcl 4.0;
 
-backend default {
+backend rest {
   .host = "172.18.0.20";
   .port = "1317";
 }
@@ -8,6 +8,11 @@ backend default {
 backend bandsv {
   .host = "172.18.0.16";
   .port = "5000";
+}
+
+backend hasura {
+  .host = "172.18.0.89";
+  .port = "5433";
 }
 
 sub vcl_deliver {
@@ -22,8 +27,21 @@ sub vcl_recv {
   if (req.url ~ "^/bandsv/") {
     set req.url = regsub(req.url, "^/bandsv", "/");
     set req.backend_hint = bandsv;
+  } else if (req.url ~ "^/rest/") {
+    set req.url = regsub(req.url, "^/rest/", "/");
+    set req.backend_hint = rest;
   } else {
-    set req.backend_hint = default;
+    set req.backend_hint = hasura;
+    if (req.http.upgrade ~ "(?i)websocket") {
+      return (pipe);
+    }
+  }
+}
+
+sub vcl_pipe {
+  if (req.http.upgrade) {
+    set bereq.http.upgrade = req.http.upgrade;
+    set bereq.http.connection = req.http.connection;
   }
 }
 
