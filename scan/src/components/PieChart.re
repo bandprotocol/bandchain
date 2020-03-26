@@ -51,7 +51,7 @@ let renderSegment = (offset, asize, color) =>
   </>;
 
 [@react.component]
-let make = (~size=187, ~availableBalance=500., ~balanceAtStake=60., ~reward=20.) => {
+let make = (~size, ~availableBalance, ~balanceAtStake, ~reward) => {
   let totalBalance = availableBalance +. balanceAtStake +. reward;
   let balanceAtStakeAsize = totalBalance == 0. ? 0. : 360. *. balanceAtStake /. totalBalance;
   let brewardAsize = totalBalance == 0. ? 0. : 360. *. reward /. totalBalance;
