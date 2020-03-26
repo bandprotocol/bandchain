@@ -1,9 +1,9 @@
 type t = {
   name: string,
-  timestamp: MomentRe.Moment.t,
-  height: ID.Block.t,
-  txHash: Hash.t,
+  transaction: option(TxSub.Mini.t),
 };
+
+open TxSub.Mini;
 
 module RevisionsConfig = [%graphql
   {|
@@ -13,9 +13,11 @@ module RevisionsConfig = [%graphql
       order_by: {revision_number: desc}
     ) @bsRecord{
       name
-      timestamp @bsDecoder(fn: "GraphQLParser.time")
-      height: block_height @bsDecoder(fn: "ID.Block.fromJson")
-      txHash: tx_hash@bsDecoder(fn: "GraphQLParser.hash")
+      transaction @bsRecord {
+        txHash: tx_hash @bsDecoder(fn: "GraphQLParser.hash")
+        blockHeight: block_height @bsDecoder(fn: "ID.Block.fromJson")
+        timestamp @bsDecoder(fn: "GraphQLParser.time")
+      }
     }
   }
 |}
