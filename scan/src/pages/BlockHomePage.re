@@ -32,10 +32,10 @@ module Styles = {
     ]);
 };
 
-let renderBody = ((block, proposer): (BlockHook.Block.t, option(ValidatorHook.Validator.t))) => {
+let renderBody = ((block, proposer): (BlockSub.t, option(ValidatorHook.Validator.t))) => {
   let height = block.height;
   let timestamp = block.timestamp;
-  let totalTx = block.numTxs;
+  let totalTx = block.txn;
   let hash = block.hash |> Hash.toHex(~upper=true);
 
   <TBody key={height |> string_of_int}>
@@ -68,102 +68,102 @@ let renderBody = ((block, proposer): (BlockHook.Block.t, option(ValidatorHook.Va
 };
 
 [@react.component]
-let make = () => {
-  let (page, setPage) = React.useState(_ => 1);
-  let limit = 10;
+let make = () =>
+  {
+    let (page, setPage) = React.useState(_ => 1);
+    let pageSize = 10;
 
-  let blocksOpt = BlockHook.latest(~limit, ~page, ());
-  let infoOpt = React.useContext(GlobalContext.context);
+    let blocksCounSub = BlockSub.count();
+    let blocksSub = BlockSub.getList(~pageSize, ~page, ());
+    let infoOpt = React.useContext(GlobalContext.context);
 
-  let blocksCountOpt = BlockHook.latest();
-  let latestHeightOpt = {
-    let%Opt blocks = blocksCountOpt;
-    let%Opt latestBlock = blocks->Belt.List.get(0);
-    Some(latestBlock.height);
-  };
-  let pageCount =
-    {
-      let%Opt latestHeight = latestHeightOpt;
-      Some(Page.getPageCount(latestHeight, limit));
-    }
-    |> Belt.Option.getWithDefault(_, 1);
+    let%Sub blocksCount = blocksCounSub;
+    let%Sub blocks = blocksSub;
 
-  let blocks = blocksOpt->Belt.Option.getWithDefault([]);
+    let pageCount = Page.getPageCount(blocksCount, pageSize);
 
-  let validators =
-    switch (infoOpt) {
-    | Some(info) => info.validators
-    | None => []
-    };
+    let blocksWithProposers =
+      blocks
+      ->Belt_List.fromArray
+      ->Belt_List.map(block =>
+          (
+            block,
+            BlockSub.getProposer(
+              block,
+              infoOpt->Belt_Option.mapWithDefault([], ({validators}) => validators),
+            ),
+          )
+        );
 
-  let blocksWithProposers =
-    blocks->Belt_List.map(block => (block, BlockHook.Block.getProposer(block, validators)));
+    // Js.Console.log(blocksWithProposers);
 
-  <div className=Styles.pageContainer>
-    <Row>
-      <Col>
-        <div className={Styles.vFlex(`center)}>
-          <img src=Images.blockLogo className=Styles.logo />
-          <Text
-            value="All BLOCKS"
-            weight=Text.Medium
-            size=Text.Md
-            spacing={Text.Em(0.06)}
-            height={Text.Px(15)}
-            nowrap=true
-            block=true
-            color=Colors.gray7
-          />
-          <div className=Styles.seperatedLine />
-          <Text
-            value={
-              switch (latestHeightOpt) {
-              | Some(latestHeight) => latestHeight->Format.iPretty ++ " in total"
-              | None => ""
-              }
-            }
-            size=Text.Md
-            weight=Text.Thin
-            spacing={Text.Em(0.06)}
-            color=Colors.gray7
-            nowrap=true
-          />
-        </div>
-      </Col>
-    </Row>
-    <VSpacing size=Spacing.xl />
-    <THead>
+    <div className=Styles.pageContainer>
       <Row>
-        <Col> <HSpacing size=Spacing.md /> </Col>
-        {[
-           ("BLOCK", 1.11, false),
-           ("BLOCK HASH", 3.93, false),
-           ("AGE", 1.32, false),
-           ("PROPOSER", 1.5, false),
-           ("TXN", 1.05, true),
-         ]
-         ->Belt.List.map(((title, size, alignRight)) => {
-             <Col size key=title justifyContent=Col.Start>
-               <div className={Styles.vFlex(`flexEnd)}>
-                 {alignRight ? <div className=Styles.fillLeft /> : React.null}
-                 <Text
-                   value=title
-                   size=Text.Sm
-                   weight=Text.Semibold
-                   color=Colors.gray6
-                   spacing={Text.Em(0.1)}
-                 />
-               </div>
-             </Col>
-           })
-         ->Array.of_list
-         ->React.array}
-        <Col> <HSpacing size=Spacing.md /> </Col>
+        <Col>
+          <div className={Styles.vFlex(`center)}>
+            <img src=Images.blockLogo className=Styles.logo />
+            <Text
+              value="All BLOCKS"
+              weight=Text.Medium
+              size=Text.Md
+              spacing={Text.Em(0.06)}
+              height={Text.Px(15)}
+              nowrap=true
+              block=true
+              color=Colors.gray7
+            />
+            <div className=Styles.seperatedLine />
+            <Text
+              value={
+                switch (blocks->Belt_Array.get(0)) {
+                | Some({height}) => height->Format.iPretty ++ " in total"
+                | None => ""
+                }
+              }
+              size=Text.Md
+              weight=Text.Thin
+              spacing={Text.Em(0.06)}
+              color=Colors.gray7
+              nowrap=true
+            />
+          </div>
+        </Col>
       </Row>
-    </THead>
-    {blocksWithProposers->Belt_List.toArray->Belt_Array.map(renderBody)->React.array}
-    <VSpacing size=Spacing.lg />
-    <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
-    <VSpacing size=Spacing.lg />
-  </div>;
-};
+      <VSpacing size=Spacing.xl />
+      <THead>
+        <Row>
+          <Col> <HSpacing size=Spacing.md /> </Col>
+          {[
+             ("BLOCK", 1.11, false),
+             ("BLOCK HASH", 3.93, false),
+             ("AGE", 1.32, false),
+             ("PROPOSER", 1.5, false),
+             ("TXN", 1.05, true),
+           ]
+           ->Belt.List.map(((title, size, alignRight)) => {
+               <Col size key=title justifyContent=Col.Start>
+                 <div className={Styles.vFlex(`flexEnd)}>
+                   {alignRight ? <div className=Styles.fillLeft /> : React.null}
+                   <Text
+                     value=title
+                     size=Text.Sm
+                     weight=Text.Semibold
+                     color=Colors.gray6
+                     spacing={Text.Em(0.1)}
+                   />
+                 </div>
+               </Col>
+             })
+           ->Array.of_list
+           ->React.array}
+          <Col> <HSpacing size=Spacing.md /> </Col>
+        </Row>
+      </THead>
+      {blocksWithProposers->Belt_List.toArray->Belt_Array.map(renderBody)->React.array}
+      <VSpacing size=Spacing.lg />
+      <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
+      <VSpacing size=Spacing.lg />
+    </div>
+    |> Sub.resolve;
+  }
+  |> Sub.default(_, React.null);
