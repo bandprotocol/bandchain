@@ -1,7 +1,7 @@
 type t = {
   financial: PriceHook.Price.t,
-  latestBlock: BlockHook.Block.t,
-  latestBlocks: list(BlockHook.Block.t),
+  latestBlock: BlockSub.t,
+  latestBlocks: list(BlockSub.t),
   validators: list(ValidatorHook.Validator.t),
 };
 
@@ -10,14 +10,15 @@ let context = React.createContext(ContextHelper.default);
 [@react.component]
 let make = (~children) => {
   let financialOpt = PriceHook.get();
-  let latestBlocksOpt = BlockHook.latest();
   let validatorsOpt = ValidatorHook.getList();
+  let latestBlocksOpt = BlockSub.getList(~pageSize=10, ~page=1, ()) |> Sub.toOption;
+
   let data = {
     let%Opt financial = financialOpt;
     let%Opt latestBlocks = latestBlocksOpt;
-    let%Opt latestBlock = latestBlocks->Belt.List.get(0);
+    let%Opt latestBlock = latestBlocks->Belt_Array.get(0);
     let%Opt validators = validatorsOpt;
-    Some({financial, latestBlock, latestBlocks, validators});
+    Some({financial, latestBlock, latestBlocks: latestBlocks->Belt_List.fromArray, validators});
   };
 
   React.createElement(React.Context.provider(context), {"value": data, "children": children});
