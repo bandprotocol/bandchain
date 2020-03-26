@@ -1,9 +1,6 @@
 package db
 
 import (
-	"encoding/hex"
-	"strings"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/libs/common"
@@ -24,7 +21,7 @@ func (b *BandDB) AddValidatorUpTime(
 	height int64,
 	voted bool,
 ) error {
-	consensusAddress := strings.ToUpper(hex.EncodeToString(rawConsensusAddress))
+	consensusAddress := rawConsensusAddress.String()
 	err := b.tx.Create(&ValidatorVote{
 		ConsensusAddress: consensusAddress,
 		BlockHeight:      height,

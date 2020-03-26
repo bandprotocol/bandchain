@@ -209,7 +209,7 @@ module Msg = {
       JsonUtils.Decode.{
         requestID: json |> field("requestID", intstr),
         dataSet: json |> field("dataSet", list(RequestHook.RawDataReport.decode)),
-        sender: json |> field("sender", string) |> Address.fromBech32,
+        sender: json |> field("reporter", string) |> Address.fromBech32,
       };
   };
 
