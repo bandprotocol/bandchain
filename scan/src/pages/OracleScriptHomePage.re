@@ -39,7 +39,7 @@ let make = () => {
   let limit = 10;
 
   // TODO: use for get all oracle script count.
-  let oracleScriptsCountOpt = DataSourceHook.getList();
+  let oracleScriptsCountOpt = OracleScriptHook.getList();
 
   let oracleScriptOpt = OracleScriptHook.getList(~limit, ~page, ());
 

@@ -83,7 +83,7 @@ let make = () => {
          | HomePage => <HomePage />
          | DataSourceHomePage => <DataSourceHomePage />
          | DataSourceIndexPage(dataSourceID, hashtag) =>
-           <DataSourceIndexPage dataSourceID hashtag />
+           <DataSourceIndexPage dataSourceID={ID.DataSource.ID(dataSourceID)} hashtag />
          | OracleScriptHomePage => <OracleScriptHomePage />
          | OracleScriptIndexPage(oracleScriptID, hashtag) =>
            <OracleScriptIndexPage oracleScriptID hashtag />
