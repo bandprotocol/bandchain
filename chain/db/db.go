@@ -167,3 +167,4 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		return nil
 	}
 }
+
