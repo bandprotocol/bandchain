@@ -55,3 +55,21 @@ func (b *BandDB) AddTransaction(
 	err := b.tx.Create(&transaction).Error
 	return err
 }
+
+func (b *BandDB) UpdateTransaction(
+	txHash []byte,
+	messages string,
+) error {
+
+	var transaction Transaction
+	err := b.tx.First(&transaction, txHash).Error
+
+	if err != nil {
+		return err
+	}
+
+	transaction.Messages = messages
+	err = b.tx.Save(&transaction).Error
+
+	return err
+}

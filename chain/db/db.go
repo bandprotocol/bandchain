@@ -247,6 +247,11 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 	if err != nil {
 		return "", err
 	}
+
+	for key, value := range events {
+		jsonMap[key] = value
+	}
+
 	switch msg := msg.(type) {
 	// Just proof of concept
 	case zoracle.MsgCreateDataSource:
