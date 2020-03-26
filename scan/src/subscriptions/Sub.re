@@ -14,11 +14,6 @@ let default = (result, value) =>
   | _ => value
   };
 
-let toOption =
-  fun
-  | ApolloHooks.Subscription.Data(data) => Some(data)
-  | _ => None;
-
 let let_ = (result, f) =>
   switch (result) {
   | ApolloHooks.Subscription.Data(data) => f(data)
