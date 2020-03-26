@@ -323,6 +323,13 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		val, _ := b.StakingKeeper.GetValidator(b.ctx, msg.Validator)
 		jsonMap["validatorMoniker"] = val.Description.Moniker
 	case bank.MsgSend:
+		return b.handleMsgRequestData(txHash, msg, events)
+	case staking.MsgDelegate:
+		return b.handleMsgDelegate(msg)
+	case staking.MsgCreateValidator:
+		return b.handleMsgCreateValidator(msg)
+	case staking.MsgEditValidator:
+		return b.handleMsgEditValidator(msg)
 	default:
 		// TODO: Better logging
 		fmt.Println("HandleMessage: There isn't event handler for this type")
