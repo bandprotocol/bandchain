@@ -1,6 +1,6 @@
 let normalizeHexString = hexstr =>
   hexstr
-  ->Js.Re.exec_("[0-9a-fA-F]+"->Js.Re.fromString, _)
+  ->Js.Re.exec_("[0-9a-fA-F]+$"->Js.Re.fromString, _)
   ->Belt_Option.mapWithDefault([||], result =>
       result->Js.Re.captures->Belt_Array.keepMap(Js.toOption)
     )
