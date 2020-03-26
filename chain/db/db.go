@@ -93,6 +93,13 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		"RESTRICT",
 	)
 
+	db.Model(&Report{}).AddForeignKey(
+		"request_id",
+		"requests(id)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
 	db.Model(&ReportDetail{}).AddForeignKey(
 		"request_id,validator",
 		"reports(request_id,validator)",
@@ -121,7 +128,7 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		"RESTRICT",
 	)
 
-	db.Model(&Transaction{}).AddForeignKey(
+	db.Model(&Request{}).AddForeignKey(
 		"tx_hash",
 		"transactions(tx_hash)",
 		"RESTRICT",
