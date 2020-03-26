@@ -26,7 +26,7 @@ module Styles = {
     style([
       width(`px(17)),
       height(`px(17)),
-      backgroundColor(Css.hex(color)),
+      backgroundColor(color),
       borderRadius(`percent(50.)),
     ]);
 
@@ -163,9 +163,9 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
              "AVAILABLE BALANCE",
              account.balance |> Format.fPretty,
              account.balance *. price.usdPrice |> Format.fPretty,
-             "5269FF",
+             Colors.bandBlue,
            )
-         | _ => balanceDetail("AVAILABLE BALANCE", "?", "?", "5269FF")
+         | _ => balanceDetail("AVAILABLE BALANCE", "?", "?", Colors.bandBlue)
          }}
         <VSpacing size=Spacing.xl />
         <VSpacing size=Spacing.md />
@@ -175,9 +175,9 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
              "BALANCE AT STAKE",
              account.balanceStake |> Format.fPretty,
              account.balanceStake *. price.usdPrice |> Format.fPretty,
-             "ABB6FF",
+             Colors.blue9,
            )
-         | _ => balanceDetail("BALANCE AT STAKE", "?", "?", "ABB6FF")
+         | _ => balanceDetail("BALANCE AT STAKE", "?", "?", Colors.blue9)
          }}
         <VSpacing size=Spacing.xl />
         <VSpacing size=Spacing.md />
@@ -187,9 +187,9 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
              "REWARD",
              account.reward |> Format.fPretty,
              account.reward *. price.usdPrice |> Format.fPretty,
-             "000C5C",
+             Colors.blue10,
            )
-         | _ => balanceDetail("REWARD", "?", "?", "000C5C")
+         | _ => balanceDetail("REWARD", "?", "?", Colors.blue10)
          }}
       </Col>
       <div className=Styles.separatorLine />
