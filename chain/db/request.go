@@ -150,7 +150,7 @@ func (b *BandDB) handleMsgRequestData(
 	}
 
 	for _, raw := range b.ZoracleKeeper.GetRawDataRequestWithExternalIDs(b.ctx, zoracle.RequestID(id)) {
-		rawDataRequests := createRawDataRequests(id, int64(raw.ExternalID), int64(raw.RawDataRequest.DataSourceID), msg.Calldata)
+		rawDataRequests := createRawDataRequests(id, int64(raw.ExternalID), int64(raw.RawDataRequest.DataSourceID), raw.RawDataRequest.Calldata)
 		err = b.tx.Save(&rawDataRequests).Error
 		if err != nil {
 			return err
