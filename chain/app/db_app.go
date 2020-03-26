@@ -129,6 +129,18 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 	}
 	if stdTx, ok := tx.(auth.StdTx); ok {
 		txHash := tmhash.Sum(req.Tx)
+
+		app.dbBand.AddTransaction(
+			txHash,
+			app.DeliverContext.BlockTime(),
+			res.GasUsed,
+			stdTx.Fee.Gas,
+			stdTx.Fee.Amount,
+			stdTx.GetSigners()[0],
+			true,
+			app.DeliverContext.BlockHeight(),
+		)
+
 		app.dbBand.HandleTransaction(stdTx, txHash, logs)
 	}
 	return res
@@ -156,6 +168,13 @@ func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseB
 	if err != nil {
 		panic(err)
 	}
+
+	app.dbBand.AddBlock(
+		req.Header.GetHeight(),
+		app.DeliverContext.BlockTime(),
+		req.Header.GetProposerAddress(),
+		req.GetHash(),
+	)
 
 	return res
 }

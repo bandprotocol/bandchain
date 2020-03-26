@@ -1,7 +1,7 @@
 package db
 
 import (
-	"errors"
+	"fmt"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
@@ -33,6 +33,8 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		&ValidatorVote{},
 		&DataSource{},
 		&DataSourceRevision{},
+		&Block{},
+		&Transaction{},
 	)
 
 	db.Model(&ValidatorVote{}).AddForeignKey(
@@ -45,6 +47,20 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 	db.Model(&DataSourceRevision{}).AddForeignKey(
 		"data_source_id",
 		"data_sources(id)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&Block{}).AddForeignKey(
+		"proposer",
+		"validators(consensus_address)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&Transaction{}).AddForeignKey(
+		"block_height",
+		"blocks(height)",
 		"RESTRICT",
 		"RESTRICT",
 	)
@@ -93,6 +109,7 @@ func (b *BandDB) SetContext(ctx sdk.Context) {
 
 func (b *BandDB) HandleTransaction(tx auth.StdTx, txHash []byte, logs sdk.ABCIMessageLogs) {
 	msgs := tx.GetMsgs()
+
 	if len(msgs) != len(logs) {
 		panic("Inconsistent size of msgs and logs.")
 	}
@@ -121,6 +138,7 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		return b.handleMsgEditDataSource(txHash, msg, events)
 	default:
 		// TODO: Better logging
-		return errors.New("HandleMessage: There isn't event handler for this type")
+		fmt.Println("HandleMessage: There isn't event handler for this type")
+		return nil
 	}
 }
