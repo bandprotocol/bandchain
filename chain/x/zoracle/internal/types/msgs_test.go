@@ -533,7 +533,7 @@ func TestMsgAddOracleAddressGetSignBytes(t *testing.T) {
 func TestMsgRemoveOracleAddress(t *testing.T) {
 	validator := sdk.ValAddress([]byte("validator"))
 	reporter := sdk.AccAddress([]byte("reporter"))
-	msg := NewMsgRemoveOracleAdderess(validator, reporter)
+	msg := NewMsgRemoveOracleAddress(validator, reporter)
 	require.Equal(t, RouterKey, msg.Route())
 	require.Equal(t, "remove_oracle_address", msg.Type())
 	require.Equal(t, validator, msg.Validator)
@@ -546,16 +546,16 @@ func TestMsgRemoveOracleAddressValidation(t *testing.T) {
 
 	cases := []struct {
 		valid bool
-		tx    MsgRemoveOracleAdderess
+		tx    MsgRemoveOracleAddress
 	}{
 		{
-			true, NewMsgRemoveOracleAdderess(validator, reporter),
+			true, NewMsgRemoveOracleAddress(validator, reporter),
 		},
 		{
-			false, NewMsgRemoveOracleAdderess(nil, reporter),
+			false, NewMsgRemoveOracleAddress(nil, reporter),
 		},
 		{
-			false, NewMsgRemoveOracleAdderess(validator, nil),
+			false, NewMsgRemoveOracleAddress(validator, nil),
 		},
 	}
 
@@ -572,7 +572,7 @@ func TestMsgRemoveOracleAddressValidation(t *testing.T) {
 func TestMsgRemoveOracleAddressGetSignBytes(t *testing.T) {
 	validator := sdk.ValAddress([]byte("validator"))
 	reporter := sdk.AccAddress([]byte("reporter"))
-	msg := NewMsgRemoveOracleAdderess(validator, reporter)
+	msg := NewMsgRemoveOracleAddress(validator, reporter)
 	res := msg.GetSignBytes()
 
 	expected := `{"reporter":"band1wfjhqmmjw3jhyy3as6w","validator":"bandvaloper1weskc6tyv96x7usd82k92"}`
