@@ -524,7 +524,7 @@ func TestMsgAddOracleAddressGetSignBytes(t *testing.T) {
 	msg := NewMsgAddOracleAddress(validator, reporter)
 	res := msg.GetSignBytes()
 
-	expected := `{"reporter":"band1wfjhqmmjw3jhyy3as6w","validator":"bandvaloper1weskc6tyv96x7usd82k92"}`
+	expected := `{"type":"zoracle/AddOracleAddress","value":{"reporter":"band1wfjhqmmjw3jhyy3as6w","validator":"bandvaloper1weskc6tyv96x7usd82k92"}}`
 
 	require.Equal(t, expected, string(res))
 
@@ -575,7 +575,7 @@ func TestMsgRemoveOracleAddressGetSignBytes(t *testing.T) {
 	msg := NewMsgRemoveOracleAddress(validator, reporter)
 	res := msg.GetSignBytes()
 
-	expected := `{"reporter":"band1wfjhqmmjw3jhyy3as6w","validator":"bandvaloper1weskc6tyv96x7usd82k92"}`
+	expected := `{"type":"zoracle/RemoveOracleAddress","value":{"reporter":"band1wfjhqmmjw3jhyy3as6w","validator":"bandvaloper1weskc6tyv96x7usd82k92"}}`
 
 	require.Equal(t, expected, string(res))
 
