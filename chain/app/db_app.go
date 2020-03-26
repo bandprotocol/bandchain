@@ -94,7 +94,7 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 			dataSource.Executable,
 			time.Now(),
 			0,
-			[]byte{},
+			nil,
 		)
 		if err != nil {
 			panic(err)
