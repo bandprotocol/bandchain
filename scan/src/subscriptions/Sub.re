@@ -6,6 +6,8 @@ let map = (result, f) =>
   | NoData => NoData
   };
 
+let resolve = data => ApolloHooks.Subscription.Data(data);
+
 let default = (result, value) =>
   switch (result) {
   | ApolloHooks.Subscription.Data(data) => data

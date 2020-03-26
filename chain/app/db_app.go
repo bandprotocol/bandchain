@@ -94,7 +94,24 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 			dataSource.Executable,
 			time.Now(),
 			0,
-			[]byte{},
+			nil,
+		)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	// Save oracle script
+	for idx, oracleScript := range zoracleState.OracleScripts {
+		err := app.dbBand.AddOracleScript(
+			int64(idx+1),
+			oracleScript.Name,
+			oracleScript.Description,
+			oracleScript.Owner,
+			oracleScript.Code,
+			time.Now(),
+			0,
+			nil,
 		)
 		if err != nil {
 			panic(err)
