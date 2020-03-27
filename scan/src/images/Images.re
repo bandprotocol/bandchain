@@ -38,3 +38,4 @@
 [@bs.module] external graphBG: string = "./graph-bg.svg";
 [@bs.module] external notFoundBg: string = "./notFoundBg.svg";
 [@bs.module] external code: string = "./code.svg";
+[@bs.module] external requestLogo: string = "./requestLogo.svg";

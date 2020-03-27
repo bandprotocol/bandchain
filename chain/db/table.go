@@ -1,6 +1,8 @@
 package db
 
 import (
+	"encoding/json"
+
 	"github.com/jinzhu/gorm"
 )
 
@@ -15,11 +17,20 @@ type Event struct {
 }
 
 type Validator struct {
-	OperatorAddress  string `gorm:"primary_key"`
-	ConsensusAddress string `gorm:"unique;not null"`
-	ElectedCount     uint   `gorm:"not null"`
-	VotedCount       uint   `gorm:"not null"`
-	MissedCount      uint   `gorm:"not null"`
+	OperatorAddress     string `gorm:"primary_key"`
+	ConsensusAddress    string `gorm:"unique;not null"`
+	ElectedCount        uint   `gorm:"not null"`
+	VotedCount          uint   `gorm:"not null"`
+	MissedCount         uint   `gorm:"not null"`
+	Moniker             string `gorm:"not null"`
+	Identity            string `gorm:"not null"`
+	Website             string `gorm:"not null"`
+	Details             string `gorm:"not null"`
+	CommissionRate      string `gorm:"not null"`
+	CommissionMaxRate   string `gorm:"not null"`
+	CommissionMaxChange string `gorm:"not null"`
+	MinSelfDelegation   string `gorm:"not null"`
+	SelfDelegation      string `gorm:"not null"`
 }
 
 type ValidatorVote struct {
@@ -66,14 +77,15 @@ type OracleScriptRevision struct {
 }
 
 type Transaction struct {
-	TxHash      []byte `gorm:"primary_key"`
-	Timestamp   int64  `gorm:"not null"`
-	GasUsed     int64  `gorm:"not null"`
-	GasLimit    uint64 `gorm:"not null"`
-	GasFee      string `gorm:"not null"`
-	Sender      string `gorm:"not null"`
-	Success     bool   `gorm:"not null"`
-	BlockHeight int64  `gorm:"not null"`
+	TxHash      []byte          `gorm:"primary_key"`
+	Timestamp   int64           `gorm:"not null"`
+	GasUsed     int64           `gorm:"not null"`
+	GasLimit    uint64          `gorm:"not null"`
+	GasFee      string          `gorm:"not null"`
+	Sender      string          `gorm:"not null"`
+	Success     bool            `gorm:"not null"`
+	BlockHeight int64           `gorm:"not null"`
+	Messages    json.RawMessage `sql:"json;not null"`
 }
 
 type Report struct {
@@ -121,4 +133,9 @@ type RawDataRequests struct {
 	ExternalID   int64  `gorm:"primary_key;auto_increment:false"`
 	DataSourceID int64  `gorm:"not null"`
 	Calldata     []byte `gorm:"not null"`
+}
+
+type RelatedDataSources struct {
+	DataSourceID   int64 `gorm:"primary_key;auto_increment:false"`
+	OracleScriptID int64 `gorm:"primary_key;auto_increment:false`
 }

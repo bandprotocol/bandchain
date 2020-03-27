@@ -6,7 +6,7 @@ require (
 	github.com/btcsuite/btcd v0.0.0-20190213025234-306aecffea32 // indirect
 	github.com/cosmos/cosmos-sdk v0.37.8
 	github.com/ethereum/go-ethereum v1.9.12
-	github.com/gin-gonic/gin v1.6.1
+	github.com/gin-gonic/gin v1.6.2
 	github.com/gorilla/mux v1.7.4
 	github.com/jinzhu/gorm v1.9.12
 	github.com/levigross/grequests v0.0.0-20190908174114-253788527a1a
