@@ -19,9 +19,7 @@ module Event = {
     );
 
   let decodeEvents = json =>
-    List.flatten(
-      JsonUtils.Decode.(json |> field("events", list(decodeEvent))),
-    );
+    List.flatten(JsonUtils.Decode.(json |> field("events", list(decodeEvent))));
 
   let getValueOfKey = (events: list(t), key) =>
     events
@@ -54,9 +52,7 @@ module Coin = {
     ++ " "
     ++ (
       switch (coin.denom.[0]) {
-      | 'u' =>
-        coin.denom->String.sub(_, 1, (coin.denom |> String.length) - 1)
-        |> String.uppercase
+      | 'u' => coin.denom->String.sub(_, 1, (coin.denom |> String.length) - 1) |> String.uppercase
       | _ => coin.denom
       }
     );
@@ -89,8 +85,7 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
-        fromAddress:
-          json |> field("from_address", string) |> Address.fromBech32,
+        fromAddress: json |> field("from_address", string) |> Address.fromBech32,
         toAddress: json |> field("to_address", string) |> Address.fromBech32,
         amount: json |> field("amount", list(Coin.decodeCoin)),
       };
@@ -112,8 +107,7 @@ module Msg = {
         owner: json |> field("owner", string) |> Address.fromBech32,
         name: json |> field("name", string),
         fee: json |> field("fee", list(Coin.decodeCoin)),
-        executable:
-          json |> field("executable", string) |> JsBuffer.fromBase64,
+        executable: json |> field("executable", string) |> JsBuffer.fromBase64,
         sender: json |> field("sender", string) |> Address.fromBech32,
       };
   };
@@ -134,8 +128,7 @@ module Msg = {
         owner: json |> field("owner", string) |> Address.fromBech32,
         name: json |> field("name", string),
         fee: json |> field("fee", list(Coin.decodeCoin)),
-        executable:
-          json |> field("executable", string) |> JsBuffer.fromBase64,
+        executable: json |> field("executable", string) |> JsBuffer.fromBase64,
         sender: json |> field("sender", string) |> Address.fromBech32,
       };
   };
@@ -196,10 +189,8 @@ module Msg = {
         id: 0,
         oracleScriptID: json |> field("oracleScriptID", intstr),
         calldata: json |> field("calldata", string) |> JsBuffer.fromBase64,
-        requestedValidatorCount:
-          json |> field("requestedValidatorCount", intstr),
-        sufficientValidatorCount:
-          json |> field("sufficientValidatorCount", intstr),
+        requestedValidatorCount: json |> field("requestedValidatorCount", intstr),
+        sufficientValidatorCount: json |> field("sufficientValidatorCount", intstr),
         expiration: json |> field("expiration", intstr),
         prepareGas: json |> field("prepareGas", intstr),
         executeGas: json |> field("executeGas", intstr),
@@ -217,8 +208,7 @@ module Msg = {
     let decode = json =>
       JsonUtils.Decode.{
         requestID: json |> field("requestID", intstr),
-        dataSet:
-          json |> field("dataSet", list(RequestHook.RawDataReport.decode)),
+        dataSet: json |> field("dataSet", list(RequestHook.RawDataReport.decode)),
         sender: json |> field("reporter", string) |> Address.fromBech32,
       };
   };
@@ -309,9 +299,7 @@ module Msg = {
   let getDescription = msg => {
     switch (msg.action) {
     | Send(send) =>
-      (send.amount |> Coin.toCoinsString)
-      ++ "->"
-      ++ (send.toAddress |> Address.toBech32)
+      (send.amount |> Coin.toCoinsString) ++ "->" ++ (send.toAddress |> Address.toBech32)
     | CreateDataSource(dataSource) => dataSource.name
     | EditDataSource(dataSource) => dataSource.name
     | CreateOracleScript(oracleScript) => oracleScript.name
@@ -327,8 +315,7 @@ module Msg = {
       }
     | Report(report) =>
       switch (msg.events->Event.getValueOfKey("report.code_name")) {
-      | Some(value) =>
-        "#" ++ (report.requestID |> string_of_int) ++ " " ++ value
+      | Some(value) => "#" ++ (report.requestID |> string_of_int) ++ " " ++ value
       | None => "?"
       }
     | AddOracleAddress(address) => "ADDORACLEADDRESS DESCRIPTION"
@@ -345,8 +332,7 @@ module Msg = {
       | "cosmos-sdk/MsgSend" => Send(json |> field("value", Send.decode))
       | "zoracle/CreateDataSource" =>
         CreateDataSource(json |> field("value", CreateDataSource.decode))
-      | "zoracle/EditDataSource" =>
-        EditDataSource(json |> field("value", EditDataSource.decode))
+      | "zoracle/EditDataSource" => EditDataSource(json |> field("value", EditDataSource.decode))
       | "zoracle/CreateOracleScript" =>
         CreateOracleScript(json |> field("value", CreateOracleScript.decode))
       | "zoracle/EditOracleScript" =>
@@ -371,18 +357,12 @@ module Msg = {
     | EditOracleScript(_) => None
     | Request(_) =>
       switch (msg.events->Event.getValueOfKey("request.id")) {
-      | Some(value) =>
-        Some(
-          Route.RequestIndexPage(value->int_of_string, RequestReportStatus),
-        )
+      | Some(value) => Some(Route.RequestIndexPage(value->int_of_string, RequestReportStatus))
       | None => None
       }
     | Report(_) =>
       switch (msg.events->Event.getValueOfKey("report.id")) {
-      | Some(value) =>
-        Some(
-          Route.RequestIndexPage(value->int_of_string, RequestReportStatus),
-        )
+      | Some(value) => Some(Route.RequestIndexPage(value->int_of_string, RequestReportStatus))
       | None => None
       }
     | AddOracleAddress(_) => None
@@ -452,31 +432,22 @@ module Tx = {
       timestamp: json |> field("timestamp", moment),
       gasWanted: json |> field("gas_wanted", intstr),
       gasUsed: json |> field("gas_used", intstr),
-      fee:
-        json |> at(["tx", "value", "fee", "amount"], list(Coin.decodeCoin)),
+      fee: json |> at(["tx", "value", "fee", "amount"], list(Coin.decodeCoin)),
       success:
-        (
-          json
-          |> optional(
-               field("logs", list(log => log |> field("success", bool))),
-             )
-        )
+        (json |> optional(field("logs", list(log => log |> field("success", bool)))))
         ->Belt.Option.getWithDefault([])
         ->Belt_List.some(isSuccess => isSuccess),
       messages: {
-        let actions =
-          json |> at(["tx", "value", "msg"], list(Msg.decodeAction));
+        let actions = json |> at(["tx", "value", "msg"], list(Msg.decodeAction));
         let eventDoubleLists =
           json
           |> optional(field("logs", list(Event.decodeEvents)))
           |> Belt.Option.getWithDefault(_, actions->Belt_List.map(_ => []));
-        Belt.List.zip(actions, eventDoubleLists)
-        ->Belt.List.map(postProcessMsg);
+        Belt.List.zip(actions, eventDoubleLists)->Belt.List.map(postProcessMsg);
       },
     };
 
-  let getDescription = tx =>
-    tx.messages->Belt_List.getExn(0)->Msg.getDescription;
+  let getDescription = tx => tx.messages->Belt_List.getExn(0)->Msg.getDescription;
 };
 
 module Txs = {
@@ -501,22 +472,17 @@ let atHash = txHash => {
 };
 
 let atHeight = (height, ~page=1, ~limit=25, ()) => {
-  let json =
-    AxiosHooks.use({j|txs?tx.height=$height&page=$page&limit=$limit|j});
+  let json = AxiosHooks.use({j|txs?tx.height=$height&page=$page&limit=$limit|j});
   json |> Belt.Option.map(_, Txs.decodeTxs);
 };
 
 let latest = (~page=1, ~limit=10, ()) => {
-  let json =
-    AxiosHooks.use({j|bandchain/txs/latest?page=$page&limit=$limit|j});
+  let json = AxiosHooks.use({j|bandchain/txs/latest?page=$page&limit=$limit|j});
   json |> Belt.Option.map(_, Txs.decodeTxs);
 };
 
 let withCodehash = (~codeHash, ~page=1, ~limit=10, ()) => {
   let codeHashHex = codeHash->Hash.toHex;
-  let json =
-    AxiosHooks.use(
-      {j|txs?request.codehash=$codeHashHex&page=$page&limit=$limit|j},
-    );
+  let json = AxiosHooks.use({j|txs?request.codehash=$codeHashHex&page=$page&limit=$limit|j});
   json |> Belt.Option.map(_, Txs.decodeTxs);
 };

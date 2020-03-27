@@ -42,8 +42,7 @@ module Styles = {
 
 [@react.component]
 let make = (~pubKey, ~position=Text) => {
-  let noPrefixAddress =
-    pubKey |> PubKey.toBech32 |> Js.String.sliceToEnd(~from=14);
+  let noPrefixAddress = pubKey |> PubKey.toBech32 |> Js.String.sliceToEnd(~from=14);
 
   <div className=Styles.container>
     <Text
