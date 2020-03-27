@@ -3,6 +3,7 @@ package db
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
@@ -273,7 +274,11 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 			return nil, err
 		}
 
-		jsonMap["dataSourceID"] = events[zoracle.EventTypeCreateDataSource+"."+zoracle.AttributeKeyID]
+		dataSourceID, err := strconv.ParseInt(events[zoracle.EventTypeCreateDataSource+"."+zoracle.AttributeKeyID], 10, 64)
+		if err != nil {
+			return nil, err
+		}
+		jsonMap["dataSourceID"] = dataSourceID
 	case zoracle.MsgEditDataSource:
 		err = b.handleMsgEditDataSource(txHash, msg, events)
 		if err != nil {
@@ -284,8 +289,11 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		if err != nil {
 			return nil, err
 		}
-
-		jsonMap["oracleScriptID"] = events[zoracle.EventTypeCreateOracleScript+"."+zoracle.AttributeKeyID]
+		oracleScriptID, err := strconv.ParseInt(events[zoracle.EventTypeCreateOracleScript+"."+zoracle.AttributeKeyID], 10, 64)
+		if err != nil {
+			return nil, err
+		}
+		jsonMap["oracleScriptID"] = oracleScriptID
 	case zoracle.MsgEditOracleScript:
 		err = b.handleMsgEditOracleScript(txHash, msg, events)
 		if err != nil {
@@ -302,8 +310,14 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		if err != nil {
 			return nil, err
 		}
+
+		requestID, err := strconv.ParseInt(events[zoracle.EventTypeRequest+"."+zoracle.AttributeKeyID], 10, 64)
+		if err != nil {
+			return nil, err
+		}
+
 		jsonMap["oracleScriptName"] = oracleScript.Name
-		jsonMap["requestID"] = events[zoracle.EventTypeRequest+"."+zoracle.AttributeKeyID]
+		jsonMap["requestID"] = requestID
 	case zoracle.MsgReportData:
 		err = b.handleMsgReportData(txHash, msg, events)
 		if err != nil {
