@@ -5,7 +5,8 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~validator: ValidatorHook.Validator.t) => {
+let make =
+    (~validator: ValidatorHook.Validator.t, ~weight=Text.Regular, ~size=Text.Md, ~underline=false) => {
   <div
     className={Css.merge([Styles.container])}
     onClick={_ =>
@@ -15,12 +16,13 @@ let make = (~validator: ValidatorHook.Validator.t) => {
       value={validator.moniker}
       color=Colors.gray7
       code=true
-      weight=Text.Regular
+      weight
       spacing={Text.Em(0.02)}
       block=true
-      size=Text.Md
+      size
       nowrap=true
       ellipsis=true
+      underline
     />
   </div>;
 };
