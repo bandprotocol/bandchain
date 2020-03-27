@@ -5,37 +5,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/libs/common"
 )
-
-func (b *BandDB) AddValidator(
-	operatorAddress sdk.ValAddress,
-	consensusAddress crypto.PubKey,
-	moniker string,
-	identity string,
-	website string,
-	details string,
-	commissionRate string,
-	commissionMaxRate string,
-	commissionMaxChange string,
-	minSelfDelegation string,
-	selfDelegation string,
-) error {
-	return b.tx.Create(&Validator{
-		OperatorAddress:     operatorAddress.String(),
-		ConsensusAddress:    consensusAddress.Address().String(),
-		Moniker:             moniker,
-		Identity:            identity,
-		Website:             website,
-		Details:             details,
-		CommissionRate:      commissionRate,
-		CommissionMaxRate:   commissionMaxRate,
-		CommissionMaxChange: commissionMaxChange,
-		MinSelfDelegation:   minSelfDelegation,
-		SelfDelegation:      selfDelegation,
-	}).Error
-}
 
 func (b *BandDB) AddValidatorUpTime(
 	rawConsensusAddress common.HexBytes,
@@ -145,22 +116,17 @@ func (b *BandDB) handleMsgEditValidator(msg staking.MsgEditValidator) error {
 }
 
 func (b *BandDB) handleMsgCreateValidator(msg staking.MsgCreateValidator) error {
-	_, isFound := b.GetValidator(msg.ValidatorAddress)
-	if isFound {
-		return fmt.Errorf(fmt.Sprintf("validator %s has already exist.", msg.ValidatorAddress.String()))
-	}
-
-	return b.AddValidator(
-		msg.ValidatorAddress,
-		msg.PubKey,
-		msg.Description.Moniker,
-		msg.Description.Identity,
-		msg.Description.Website,
-		msg.Description.Details,
-		msg.Commission.Rate.String(),
-		msg.Commission.MaxRate.String(),
-		msg.Commission.MaxChangeRate.String(),
-		msg.MinSelfDelegation.ToDec().String(),
-		msg.Value.Amount.ToDec().String(),
-	)
+	return b.tx.Create(&Validator{
+		OperatorAddress:     msg.ValidatorAddress.String(),
+		ConsensusAddress:    msg.PubKey.Address().String(),
+		Moniker:             msg.Description.Moniker,
+		Identity:            msg.Description.Identity,
+		Website:             msg.Description.Website,
+		Details:             msg.Description.Details,
+		CommissionRate:      msg.Commission.Rate.String(),
+		CommissionMaxRate:   msg.Commission.MaxRate.String(),
+		CommissionMaxChange: msg.Commission.MaxChangeRate.String(),
+		MinSelfDelegation:   msg.MinSelfDelegation.ToDec().String(),
+		SelfDelegation:      msg.Value.Amount.ToDec().String(),
+	}).Error
 }
