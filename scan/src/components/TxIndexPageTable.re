@@ -600,135 +600,24 @@ let renderCreateValidator = (msg, validator: TxHook.Msg.CreateValidator.t) => {
       <div className=Styles.topicContainer>
         <Text value="MIN SELF DELEGATION" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className=Styles.hFlex>
-          <Text
-            value={validator.minSelfDelegation |> TxHook.Coin.toCoinsString}
-            weight=Text.Semibold
-            code=true
-          />
+          <Text value="100.00" weight=Text.Semibold code=true />
+          <HSpacing size=Spacing.sm />
+          <Text value="BAND" weight=Text.Thin code=true />
         </div>
       </div>
       <VSpacing size=Spacing.md />
       <div className=Styles.topicContainer>
         <Text value="SELF DELEGATION" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className=Styles.hFlex>
-          <Text
-            value={validator.selfDelegation |> TxHook.Coin.toCoinsString}
-            weight=Text.Semibold
-            code=true
-          />
+          <Text value="150.00" weight=Text.Semibold code=true />
+          <HSpacing size=Spacing.sm />
+          <Text value="BAND" weight=Text.Thin code=true />
         </div>
       </div>
     </Col>
     <Col> <HSpacing size=Spacing.md /> </Col>
   </Row>;
 };
-/*
- let renderCreateValidator = (msg, validator: TxHook.Msg.EditValidator.t) => {
-   <Row>
-     <Col> <HSpacing size=Spacing.md /> </Col>
-     <Col size=0.51 alignSelf=Col.Start>
-       <div className=Styles.badgeContainer>
-         <div className={Styles.badge(Colors.purple1)}>
-           <Text
-             value="Create VALIDATOR"
-             size=Text.Sm
-             spacing={Text.Em(0.07)}
-             color=Colors.purple6
-           />
-         </div>
-       </div>
-     </Col>
-     <Col size=0.6 alignSelf=Col.Start>
-       <VSpacing size=Spacing.sm />
-       <div className={Styles.addressContainer(170)}>
-         <AddressRender address={msg |> TxHook.Msg.getCreator} />
-       </div>
-     </Col>
-     <Col size=1.3 alignSelf=Col.Start>
-       <VSpacing size=Spacing.sm />
-       <div className=Styles.topicContainer>
-         <Text
-           value="MONIKER"
-           size=Text.Sm
-           weight=Text.Thin
-           spacing={Text.Em(0.06)}
-         />
-         <Text value={validator.moniker} code=true />
-       </div>
-       <VSpacing size=Spacing.md />
-       <div className=Styles.topicContainer>
-         <Text
-           value="IDENTITY"
-           size=Text.Sm
-           weight=Text.Thin
-           spacing={Text.Em(0.06)}
-         />
-         <Text value={validator.identity} code=true />
-       </div>
-       <VSpacing size=Spacing.md />
-       <div className=Styles.topicContainer>
-         <Text
-           value="WEBSITE"
-           size=Text.Sm
-           weight=Text.Thin
-           spacing={Text.Em(0.06)}
-         />
-         <Text value={validator.website} code=true />
-       </div>
-       <VSpacing size=Spacing.md />
-       <div className=Styles.topicContainer>
-         <Text
-           value="DETAILS"
-           size=Text.Sm
-           weight=Text.Thin
-           spacing={Text.Em(0.06)}
-         />
-         <div className=Styles.detailContainer>
-           <Text
-             value={validator.details}
-             code=true
-             height={Text.Px(16)}
-             align=Text.Right
-           />
-         </div>
-       </div>
-       <VSpacing size=Spacing.md />
-       <div className=Styles.topicContainer>
-         <Text
-           value="COMMISSION RATE"
-           size=Text.Sm
-           weight=Text.Thin
-           spacing={Text.Em(0.06)}
-         />
-         <Text
-           value={
-             validator.commissionRate->Js.Float.toFixedWithPrecision(~digits=4)
-             ++ "%"
-           }
-           code=true
-         />
-       </div>
-       <VSpacing size=Spacing.md />
-       <div className=Styles.topicContainer>
-         <Text
-           value="MIN SELF DELEGATION"
-           size=Text.Sm
-           weight=Text.Thin
-           spacing={Text.Em(0.06)}
-         />
-         <div className=Styles.hFlex>
-           <Text
-             value={validator.minSelfDelegation |> TxHook.Coin.toCoinsString}
-             weight=Text.Semibold
-             code=true
-           />
-         </div>
-       </div>
-     </Col>
-     <Col> <HSpacing size=Spacing.md /> </Col>
-   </Row>;
- };
- */
 
 let renderEditValidator = (msg, validator: TxHook.Msg.EditValidator.t) => {
   <Row>
@@ -791,11 +680,9 @@ let renderEditValidator = (msg, validator: TxHook.Msg.EditValidator.t) => {
       <div className=Styles.topicContainer>
         <Text value="MIN SELF DELEGATION" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className=Styles.hFlex>
-          <Text
-            value={validator.minSelfDelegation |> TxHook.Coin.toCoinsString}
-            weight=Text.Semibold
-            code=true
-          />
+          <Text value="100.00" weight=Text.Semibold code=true />
+          <HSpacing size=Spacing.sm />
+          <Text value="BAND" weight=Text.Thin code=true />
         </div>
       </div>
     </Col>
