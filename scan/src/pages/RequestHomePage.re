@@ -3,7 +3,7 @@ module Styles = {
 
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
-  let pageContainer = style([paddingTop(`px(50)), minHeight(`px(500))]);
+  let pageContainer = style([paddingTop(`px(20)), minHeight(`px(500))]);
 
   let seperatedLine =
     style([
@@ -22,7 +22,9 @@ module Styles = {
 
   let fullWidth = style([width(`percent(100.0)), display(`flex)]);
 
-  let progressBarContainer = style([maxWidth(`px(270))]);
+  let progressBarContainer = style([maxWidth(`px(300))]);
+
+  let resolveStatusContainer = style([justifyContent(`center)]);
 
   let loadingContainer =
     style([
@@ -41,34 +43,114 @@ let make = () =>
     let (page, setPage) = React.useState(_ => 1);
     let pageSize = 10;
 
-    // let dataSourcesCountSub = DataSourceSub.count();
-    // let dataSourcesSub = DataSourceSub.getList(~pageSize, ~page, ());
-
     let requestCount = 100;
-    let requests =
-      RequestHook.Request.[
-        {
-          id: ID.Request.ID(1),
-          oracleScriptID: ID.OracleScript.ID(1),
-          oracleScriptName: "name",
-          calldata: "AAAAAAAAV0M=" |> JsBuffer.fromBase64,
-          requestedValidators: [
-            "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,
-            "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
-          ],
-          sufficientValidatorCount: 2,
-          expirationHeight: 3000,
-          resolveStatus: Success,
-          requester: "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
-          txHash:
-            "AC006D7136B0041DA4568A4CA5B7C1F8E8E0B4A74F11213B99EC4956CC8A247C" |> Hash.fromHex,
-          requestedAtHeight: 40000,
-          requestedAtTime: MomentRe.momentNow(),
-          rawDataRequests: [],
-          reports: [],
-          result: Some("AAAAAAAAV0M=" |> JsBuffer.fromBase64),
-        },
-      ];
+    let requests = [
+      {
+        RequestHook.Request.id: ID.Request.ID(3),
+        oracleScriptID: ID.OracleScript.ID(2),
+        oracleScriptName: "Oracle script 2",
+        calldata: "AAAAAAAAV0M=" |> JsBuffer.fromBase64,
+        requestedValidators: [
+          "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,
+          "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
+          "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
+          "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
+        ],
+        sufficientValidatorCount: 3,
+        expirationHeight: 3000,
+        resolveStatus: Success,
+        requester: "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
+        txHash: "AC006D7136B0041DA4568A4CA5B7C1F8E8E0B4A74F11213B99EC4956CC8A247C" |> Hash.fromHex,
+        requestedAtHeight: 40000,
+        requestedAtTime: MomentRe.momentNow(),
+        rawDataRequests: [],
+        reports: [
+          {
+            reporter: "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,
+            txHash:
+              "AC006D7136B0041DA4568A4CA5B7C1F8E8E0B4A74F11213B99EC4956CC8A247C" |> Hash.fromHex,
+            reportedAtHeight: 40000,
+            reportedAtTime: MomentRe.momentNow(),
+            values: [],
+          },
+          {
+            reporter: "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,
+            txHash:
+              "AC006D7136B0041DA4568A4CA5B7C1F8E8E0B4A74F11213B99EC4956CC8A247C" |> Hash.fromHex,
+            reportedAtHeight: 40000,
+            reportedAtTime: MomentRe.momentNow(),
+            values: [],
+          },
+          {
+            reporter: "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,
+            txHash:
+              "AC006D7136B0041DA4568A4CA5B7C1F8E8E0B4A74F11213B99EC4956CC8A247C" |> Hash.fromHex,
+            reportedAtHeight: 40000,
+            reportedAtTime: MomentRe.momentNow(),
+            values: [],
+          },
+          {
+            reporter: "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,
+            txHash:
+              "AC006D7136B0041DA4568A4CA5B7C1F8E8E0B4A74F11213B99EC4956CC8A247C" |> Hash.fromHex,
+            reportedAtHeight: 40000,
+            reportedAtTime: MomentRe.momentNow(),
+            values: [],
+          },
+        ],
+        result: Some("AAAAAAAAV0M=" |> JsBuffer.fromBase64),
+      },
+      {
+        id: ID.Request.ID(2),
+        oracleScriptID: ID.OracleScript.ID(1),
+        oracleScriptName: "name",
+        calldata: "AAAAAAAAV0M=" |> JsBuffer.fromBase64,
+        requestedValidators: [
+          "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,
+          "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
+        ],
+        sufficientValidatorCount: 2,
+        expirationHeight: 3000,
+        resolveStatus: Failure,
+        requester: "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
+        txHash: "AC006D7136B0041DA4568A4CA5B7C1F8E8E0B4A74F11213B99EC4956CC8A247C" |> Hash.fromHex,
+        requestedAtHeight: 40000,
+        requestedAtTime: MomentRe.momentNow(),
+        rawDataRequests: [],
+        reports: [],
+        result: Some("AAAAAAAAV0M=" |> JsBuffer.fromBase64),
+      },
+      {
+        id: ID.Request.ID(1),
+        oracleScriptID: ID.OracleScript.ID(2),
+        oracleScriptName: "Oracle script 2",
+        calldata: "AAAAAAAAV0M=" |> JsBuffer.fromBase64,
+        requestedValidators: [
+          "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,
+          "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
+          "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
+        ],
+        sufficientValidatorCount: 2,
+        expirationHeight: 3000,
+        resolveStatus: Open,
+        requester: "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
+        txHash: "AC006D7136B0041DA4568A4CA5B7C1F8E8E0B4A74F11213B99EC4956CC8A247C" |> Hash.fromHex,
+        requestedAtHeight: 40000,
+        requestedAtTime: MomentRe.momentNow(),
+        rawDataRequests: [],
+        reports: [
+          {
+            reporter: "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,
+            txHash:
+              "AC006D7136B0041DA4568A4CA5B7C1F8E8E0B4A74F11213B99EC4956CC8A247C" |> Hash.fromHex,
+            reportedAtHeight: 40000,
+            reportedAtTime: MomentRe.momentNow(),
+            values: [],
+          },
+        ],
+        result: Some("AAAAAAAAV0M=" |> JsBuffer.fromBase64),
+      },
+    ];
 
     let pageCount = Page.getPageCount(requestCount, pageSize);
 
@@ -76,7 +158,7 @@ let make = () =>
       <Row>
         <Col>
           <div className=Styles.vFlex>
-            <img src=Images.dataSourceLogo className=Styles.logo />
+            <img src=Images.requestLogo className=Styles.logo />
             <Text
               value="ALL REQUESTS"
               weight=Text.Medium
@@ -134,7 +216,7 @@ let make = () =>
                 spacing={Text.Em(0.1)}
               />
             </Col>
-            <Col size=1.83>
+            <Col size=1.9>
               <Text
                 block=true
                 value="REPORT STATUS"
@@ -144,19 +226,18 @@ let make = () =>
                 spacing={Text.Em(0.1)}
               />
             </Col>
-            <Col size=0.72>
-              <div>
-                <Text
-                  block=true
-                  value="RESOLVE STATUS"
-                  size=Text.Sm
-                  weight=Text.Semibold
-                  color=Colors.gray5
-                  spacing={Text.Em(0.1)}
-                />
-              </div>
+            <Col size=0.72 justifyContent=Col.End>
+              <Text
+                block=true
+                value="RESOLVE STATUS"
+                size=Text.Sm
+                weight=Text.Semibold
+                color=Colors.gray5
+                align=Text.Right
+                spacing={Text.Em(0.1)}
+              />
             </Col>
-            <Col> <HSpacing size=Spacing.lg /> </Col>
+            <Col> <HSpacing size=Spacing.xl /> </Col>
           </Row>
         </THead>
         {requests
@@ -186,7 +267,7 @@ let make = () =>
                        elementType={TElement.OracleScript(oracleScriptID, oracleScriptName)}
                      />
                    </Col>
-                   <Col size=1.83>
+                   <Col size=1.9>
                      <div className=Styles.progressBarContainer>
                        <ProgressBar
                          reportedValidators={reports |> Belt_List.length}
@@ -195,10 +276,10 @@ let make = () =>
                        />
                      </div>
                    </Col>
-                   <Col size=0.72>
+                   <Col size=0.72 justifyContent=Col.End>
                      <TElement elementType={resolveStatus->TElement.RequestStatus} />
                    </Col>
-                   <Col> <HSpacing size=Spacing.lg /> </Col>
+                   <Col> <HSpacing size=Spacing.xl /> </Col>
                  </Row>
                </div>
              </TBody>

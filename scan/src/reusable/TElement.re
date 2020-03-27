@@ -3,6 +3,8 @@ module Styles = {
 
   let typeContainer = w => style([marginRight(`px(20)), width(w)]);
 
+  let resolveIcon = style([width(`px(20)), height(`px(20)), marginLeft(Spacing.sm)]);
+
   let msgIcon =
     style([
       width(`px(30)),
@@ -20,6 +22,8 @@ module Styles = {
   let proposerBox = style([maxWidth(`px(270)), display(`flex), flexDirection(`column)]);
   let idContainer = style([display(`flex)]);
   let dataSourcesContainer = style([display(`flex)]);
+  let resolveStatusContainer =
+    style([display(`flex), alignItems(`center), justifyContent(`flexEnd)]);
 };
 
 let renderText = (text, weight) =>
@@ -158,17 +162,33 @@ let renderRequest = id => {
 };
 
 let renderRequestStatus = status => {
-  <img
-    src={
-      switch (status) {
-      | RequestHook.Request.Success => Images.success
-      | Failure => Images.fail
-      | Open => Images.pending
-      | Unknown => Images.fail
+  <div className=Styles.resolveStatusContainer>
+    <Text
+      block=true
+      size=Text.Md
+      weight=Text.Medium
+      align=Text.Right
+      value={
+        switch (status) {
+        | RequestHook.Request.Success => "Success"
+        | Failure => "Fail"
+        | Open => "Pending"
+        | Unknown => "???"
+        }
       }
-    }
-    className=Styles.msgIcon
-  />;
+    />
+    <img
+      src={
+        switch (status) {
+        | RequestHook.Request.Success => Images.success
+        | Failure => Images.fail
+        | Open => Images.pending
+        | Unknown => Images.fail
+        }
+      }
+      className=Styles.resolveIcon
+    />
+  </div>;
 };
 
 let msgIcon =
