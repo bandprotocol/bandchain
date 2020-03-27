@@ -69,10 +69,7 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 		genutil.ModuleCdc.MustUnmarshalJSON(genTx, &tx)
 		for _, msg := range tx.Msgs {
 			if createMsg, ok := msg.(staking.MsgCreateValidator); ok {
-				err := app.dbBand.AddValidator(
-					createMsg.ValidatorAddress,
-					createMsg.PubKey,
-				)
+				app.dbBand.HandleMessage(nil, createMsg, nil)
 				if err != nil {
 					panic(err)
 				}
