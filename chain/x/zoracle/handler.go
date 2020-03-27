@@ -28,7 +28,7 @@ func NewHandler(keeper Keeper) sdk.Handler {
 			return handleMsgReportData(ctx, keeper, msg)
 		case MsgAddOracleAddress:
 			return handleMsgAddOracleAddress(ctx, keeper, msg)
-		case MsgRemoveOracleAdderess:
+		case MsgRemoveOracleAddress:
 			return handleMsgRemoveOracleAddress(ctx, keeper, msg)
 
 		default:
@@ -305,7 +305,7 @@ func handleMsgAddOracleAddress(ctx sdk.Context, keeper Keeper, msg MsgAddOracleA
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
-func handleMsgRemoveOracleAddress(ctx sdk.Context, keeper Keeper, msg MsgRemoveOracleAdderess) sdk.Result {
+func handleMsgRemoveOracleAddress(ctx sdk.Context, keeper Keeper, msg MsgRemoveOracleAddress) sdk.Result {
 	err := keeper.RemoveReporter(ctx, msg.Validator, msg.Reporter)
 	if err != nil {
 		return err.Result()

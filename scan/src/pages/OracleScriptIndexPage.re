@@ -6,6 +6,7 @@ module Styles = {
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
   let logo = style([width(`px(50)), marginRight(`px(10))]);
+  let headerContainer = style([lineHeight(`px(25))]);
 
   let seperatedLine =
     style([
@@ -84,7 +85,7 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) => {
            <Col size=1.>
              <InfoHL header="OWNER" info={InfoHL.Address(oracleScript.owner, 430)} />
            </Col>
-           <Col size=0.8>
+           <Col size=0.95>
              <InfoHL
                info={InfoHL.DataSources(oracleScript.relatedDataSource)}
                header="RELATED DATA SOURCES"
@@ -116,7 +117,8 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) => {
             | OracleScriptExecute => <OracleScriptExecute code={oracleScript.code} />
             | OracleScriptCode => <OracleScriptCode />
             | OracleScriptRequests => <OracleScriptRequestTable />
-            | OracleScriptRevisions => <RevisionTable revisions=[] />
+            | OracleScriptRevisions =>
+              <OracleScriptRevisionTable revisions={oracleScript.revisions} />
             }}
          </Tab>
        </>

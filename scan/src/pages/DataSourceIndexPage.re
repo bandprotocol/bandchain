@@ -18,112 +18,90 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
-  let dataSourceOpt = DataSourceHook.get(dataSourceID);
+let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) =>
+  {
+    let%Sub dataSource = DataSourceSub.get(dataSourceID);
 
-  <div className=Styles.pageContainer>
-    <div className=Styles.vFlex>
-      <img src=Images.dataSourceLogo className=Styles.logo />
-      <Text
-        value="DATA SOURCE"
-        weight=Text.Medium
-        size=Text.Md
-        spacing={Text.Em(0.06)}
-        height={Text.Px(15)}
-        nowrap=true
-        color=Colors.gray7
-        block=true
-      />
-      <div className=Styles.seperatedLine />
-      {switch (dataSourceOpt) {
-       | Some(dataSource) =>
-         dataSource.revisions
-         ->Belt_List.get(0)
-         ->Belt_Option.mapWithDefault(React.null, ({timestamp}) =>
-             <TimeAgos
-               time=timestamp
-               prefix="Last updated "
-               size=Text.Md
-               weight=Text.Thin
-               spacing={Text.Em(0.06)}
-               height={Text.Px(18)}
-               upper=true
-             />
-           )
-       | None =>
-         <Text
-           value="???"
-           size=Text.Md
-           weight=Text.Thin
-           spacing={Text.Em(0.06)}
-           height={Text.Px(18)}
-         />
-       }}
+    <div className=Styles.pageContainer>
+      <div className=Styles.vFlex>
+        <img src=Images.dataSourceLogo className=Styles.logo />
+        <Text
+          value="DATA SOURCE"
+          weight=Text.Medium
+          size=Text.Md
+          spacing={Text.Em(0.06)}
+          height={Text.Px(15)}
+          nowrap=true
+          color=Colors.gray7
+          block=true
+        />
+        <div className=Styles.seperatedLine />
+        <TimeAgos
+          time={dataSource.timestamp}
+          prefix="Last updated "
+          size=Text.Md
+          weight=Text.Thin
+          spacing={Text.Em(0.06)}
+          height={Text.Px(18)}
+          upper=true
+        />
+      </div>
+      <>
+        <VSpacing size=Spacing.md />
+        <VSpacing size=Spacing.sm />
+        <div className=Styles.vFlex>
+          <TypeID.DataSource id={dataSource.id} position=TypeID.Title />
+          <HSpacing size=Spacing.md />
+          <Text
+            value={dataSource.name}
+            size=Text.Xxl
+            height={Text.Px(22)}
+            weight=Text.Bold
+            nowrap=true
+          />
+        </div>
+        <VSpacing size=Spacing.xl />
+        <Row>
+          <Col size=1.>
+            <InfoHL header="OWNER" info={InfoHL.Address(dataSource.owner, 380)} />
+          </Col>
+          <Col size=0.8>
+            <InfoHL
+              info={InfoHL.Fee(dataSource.fee->TxHook.Coin.getBandAmountFromCoins)}
+              header="REQUEST FEE"
+            />
+          </Col>
+        </Row>
+        <VSpacing size=Spacing.xl />
+        <Tab
+          tabs=[|
+            {
+              name: "EXECUTION",
+              route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceExecute),
+            },
+            {
+              name: "CODE",
+              route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceCode),
+            },
+            {
+              name: "REQUESTS",
+              route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceRequests),
+            },
+            {
+              name: "REVISIONS",
+              route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceRevisions),
+            },
+          |]
+          currentRoute={dataSourceID |> ID.DataSource.getRouteWithTab(_, hashtag)}>
+          {switch (hashtag) {
+           | DataSourceExecute => <DataSourceExecute executable={dataSource.executable} />
+           | DataSourceCode => <DataSourceCode executable={dataSource.executable} />
+           | DataSourceRequests => <DataSourceRequestTable requests=[] />
+           | DataSourceRevisions => <RevisionTable id=dataSourceID />
+           }}
+        </Tab>
+      </>
     </div>
-    {switch (dataSourceOpt) {
-     | Some(dataSource) =>
-       <>
-         <VSpacing size=Spacing.md />
-         <VSpacing size=Spacing.sm />
-         <div className=Styles.vFlex>
-           <TypeID.DataSource id={ID.DataSource.ID(dataSource.id)} position=TypeID.Title />
-           <HSpacing size=Spacing.md />
-           <Text
-             value={dataSource.name}
-             size=Text.Xxl
-             height={Text.Px(22)}
-             weight=Text.Bold
-             nowrap=true
-           />
-         </div>
-         <VSpacing size=Spacing.xl />
-         <Row>
-           <Col size=1.>
-             <InfoHL header="OWNER" info={InfoHL.Address(dataSource.owner, 380)} />
-           </Col>
-           <Col size=0.8>
-             <InfoHL
-               info={
-                 InfoHL.Fee(
-                   dataSource.fee
-                   ->Belt_List.get(0)
-                   ->Belt_Option.mapWithDefault(0., coin => coin.amount),
-                 )
-               }
-               header="REQUEST FEE"
-             />
-           </Col>
-         </Row>
-         <VSpacing size=Spacing.xl />
-         <Tab
-           tabs=[|
-             {
-               name: "EXECUTION",
-               route: Route.DataSourceIndexPage(dataSourceID, Route.DataSourceExecute),
-             },
-             {
-               name: "CODE",
-               route: Route.DataSourceIndexPage(dataSourceID, Route.DataSourceCode),
-             },
-             {
-               name: "REQUESTS",
-               route: Route.DataSourceIndexPage(dataSourceID, Route.DataSourceRequests),
-             },
-             {
-               name: "REVISIONS",
-               route: Route.DataSourceIndexPage(dataSourceID, Route.DataSourceRevisions),
-             },
-           |]
-           currentRoute={Route.DataSourceIndexPage(dataSourceID, hashtag)}>
-           {switch (hashtag) {
-            | DataSourceExecute => <DataSourceExecute executable={dataSource.executable} />
-            | DataSourceCode => <DataSourceCode executable={dataSource.executable} />
-            | DataSourceRequests => <DataSourceRequestTable requests={dataSource.requests} />
-            | DataSourceRevisions => <RevisionTable revisions={dataSource.revisions} />
-            }}
-         </Tab>
-       </>
-     | None => React.null
-     }}
-  </div>;
-};
+    |> Sub.resolve;
+  }
+  |> Sub.default(_, React.null);

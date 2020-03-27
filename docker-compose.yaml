@@ -24,6 +24,7 @@ services:
       - code-server
       - proxy-server
       - single-oracle
+      - graphql-engine
     ports:
       - 26657:26657
     command: sh -c "chmod +x ./docker-config/single-validator/run.sh && ./docker-config/single-validator/run.sh"
@@ -55,6 +56,7 @@ services:
       - build-provider-image
       - code-server
       - proxy-server
+      - graphql-engine
 
   multi-validator1-node:
     build:
@@ -191,6 +193,32 @@ services:
       - owasm-server
     ports:
       - 28443:28443
+
+  postgres:
+    image: postgres:12
+    restart: always
+    networks:
+      bandchain:
+        ipv4_address: 172.18.0.88
+    environment:
+      POSTGRES_PASSWORD: postgrespassword
+
+  graphql-engine:
+    image: hasura/graphql-engine:v1.1.0
+    ports:
+      - "5433:5433"
+    depends_on:
+      - "postgres"
+    restart: always
+    networks:
+      bandchain:
+        ipv4_address: 172.18.0.89
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:postgrespassword@172.18.0.88:5432/postgres
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
+      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
+      HASURA_GRAPHQL_SERVER_HOST: 0.0.0.0
+      HASURA_GRAPHQL_SERVER_PORT: 5433
 
 networks:
   bandchain:

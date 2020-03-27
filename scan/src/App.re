@@ -1,89 +1,110 @@
 module Styles = {
   open Css;
 
+  let pageWidth = style([maxWidth(`px(970))]);
+
   let container =
     style([width(`percent(100.)), height(`percent(100.)), position(`relative)]);
 
-  let innerContainer =
+  let innerContainer = style([marginLeft(`auto), marginRight(`auto)]);
+
+  let topBarContainer =
     style([
-      maxWidth(`px(984)),
-      marginLeft(`auto),
-      marginRight(`auto),
-      paddingLeft(Spacing.md),
-      paddingRight(Spacing.md),
+      display(`flex),
+      justifyContent(`center),
+      alignItems(`center),
+      width(`percent(100.)),
+      paddingTop(Spacing.lg),
+      paddingBottom(Spacing.lg),
+      backgroundColor(Colors.white),
+      border(`px(1), `solid, hex("F9F7FA")),
     ]);
 
-  /* Main bar */
-  let mainBar = style([display(`flex), paddingTop(Spacing.lg), cursor(`pointer)]);
+  let topBarInner =
+    style([display(`flex), width(`percent(100.)), justifyContent(`spaceBetween)]);
+
   let version =
     style([
       display(`flex),
       borderRadius(`px(10)),
-      backgroundColor(Colors.pink2),
-      padding4(~top=`zero, ~bottom=`zero, ~left=Spacing.sm, ~right=Spacing.sm),
-      height(`px(20)),
+      backgroundColor(`hex("EBECFF")),
+      padding2(~v=`pxFloat(4.3), ~h=`px(8)),
       justifyContent(`center),
       alignItems(`center),
       marginLeft(Spacing.xs),
       marginTop(`px(1)),
     ]);
 
-  let uFlex = style([display(`flex), flexDirection(`row)]);
+  let rFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
-  let bandLogo = style([width(`px(35))]);
-  let twitterLogo = style([width(`px(20))]);
-  let telegramLogo = style([width(`px(20))]);
+  let bandLogo = style([width(`px(40))]);
 
-  let skipRight = style([marginLeft(Spacing.xl)]);
-
-  let socialLink =
-    style([display(`flex), justifyContent(`center), alignItems(`center), width(`px(50))]);
-
-  let logoContainer = style([display(`flex), alignItems(`center)]);
+  let logoContainer = style([display(`flex), alignItems(`center), cursor(`pointer)]);
 
   let routeContainer = style([minHeight(`calc((`sub, `vh(100.), `px(300))))]);
+};
+
+module TopBar = {
+  [@react.component]
+  let make = () =>
+    <div className=Styles.topBarContainer>
+      <div className={Css.merge([Styles.topBarInner, Styles.pageWidth])}>
+        <div className=Styles.logoContainer onClick={_ => Route.redirect(Route.HomePage)}>
+          <Row>
+            <Col> <img src=Images.bandLogo className=Styles.bandLogo /> </Col>
+            <Col> <HSpacing size=Spacing.sm /> </Col>
+            <Col>
+              <Text
+                value="BandChain"
+                size=Text.Xxl
+                weight=Text.Bold
+                nowrap=true
+                color=Colors.gray8
+                spacing={Text.Em(0.05)}
+              />
+              <VSpacing size=Spacing.xs />
+              <div className=Styles.rFlex>
+                <Text
+                  value="EXPLORER"
+                  nowrap=true
+                  size=Text.Sm
+                  weight=Text.Semibold
+                  color={Css.hex("777777")}
+                  spacing={Text.Em(0.03)}
+                />
+                <HSpacing size=Spacing.xs />
+                <div className=Styles.version>
+                  <Text
+                    value="v1.0 TESTNET"
+                    size=Text.Xs
+                    color={Css.hex("535BBF")}
+                    nowrap=true
+                    weight=Text.Semibold
+                    spacing={Text.Em(0.03)}
+                  />
+                </div>
+              </div>
+            </Col>
+          </Row>
+        </div>
+        <SearchBar />
+      </div>
+    </div>;
 };
 
 [@react.component]
 let make = () => {
   <div className=Styles.container>
-    <NavBar />
-    <div className=Styles.innerContainer>
-      <div className=Styles.mainBar>
-        <div className=Styles.logoContainer onClick={_ => Route.redirect(Route.HomePage)}>
-          <Row>
-            <Col size=1.> <img src=Images.bandLogo className=Styles.bandLogo /> </Col>
-            <Col size=4.>
-              <div className=Styles.uFlex>
-                <Text value="D3N" size=Text.Xxxl weight=Text.Bold nowrap=true />
-                <div className=Styles.version>
-                  <Text value="v1.0 TESTNET" size=Text.Sm color=Colors.pink6 nowrap=true />
-                </div>
-              </div>
-              <Text value="Data Request Explorer" nowrap=true />
-            </Col>
-          </Row>
-        </div>
-        <SearchBar />
-        <div className=Styles.skipRight />
-        <div className=Styles.socialLink>
-          <a href="https://twitter.com/bandprotocol" target="_blank" rel="noopener">
-            <img src=Images.twitterLogo className=Styles.twitterLogo />
-          </a>
-        </div>
-        <div className=Styles.socialLink>
-          <a href="https://t.me/bandprotocol" target="_blank" rel="noopener">
-            <img src=Images.telegramLogo className=Styles.telegramLogo />
-          </a>
-        </div>
-      </div>
+    <TopBar />
+    <div className={Css.merge([Styles.innerContainer, Styles.pageWidth])}>
+      <NavBar />
       /* route handle */
       <div className=Styles.routeContainer>
         {switch (ReasonReactRouter.useUrl() |> Route.fromUrl) {
          | HomePage => <HomePage />
          | DataSourceHomePage => <DataSourceHomePage />
          | DataSourceIndexPage(dataSourceID, hashtag) =>
-           <DataSourceIndexPage dataSourceID hashtag />
+           <DataSourceIndexPage dataSourceID={ID.DataSource.ID(dataSourceID)} hashtag />
          | OracleScriptHomePage => <OracleScriptHomePage />
          | OracleScriptIndexPage(oracleScriptID, hashtag) =>
            <OracleScriptIndexPage oracleScriptID hashtag />

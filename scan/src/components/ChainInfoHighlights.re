@@ -32,10 +32,12 @@ module Styles = {
 
   let vFlex = style([display(`flex), flexDirection(`row)]);
 
+  let withWidth = (w: int) => style([width(`px(w))]);
+
   let bgCard = (url: string) =>
     style([
       backgroundImage(`url(url)),
-      unsafe("background-position", "0vw 0.8vw"),
+      top(`px(12)),
       backgroundSize(`contain),
       backgroundRepeat(`noRepeat),
       width(`percent(100.)),
@@ -60,7 +62,7 @@ module HighlightCard = {
           {extraTopRight->Belt.Option.getWithDefault(React.null)}
         </div>
         valueComponent
-        extraComponent
+        <div className={Styles.withWidth(170)}> extraComponent </div>
       </div>
     </div>;
   };
@@ -69,9 +71,11 @@ module HighlightCard = {
 [@react.component]
 let make = () =>
   {
+    let metadata = MetadataSub.use();
     let%Opt info = React.useContext(GlobalContext.context);
 
     let validators = info.validators;
+    let moniker = BlockHook.Block.getProposerMoniker(info.latestBlock, validators);
     let bandBonded = validators->Belt_List.map(x => x.tokens)->Belt_List.reduce(0.0, (+.));
 
     Some(
@@ -146,18 +150,18 @@ let make = () =>
         />
         <HighlightCard
           label="LATEST BLOCK"
-          extraTopRight={<TimeAgos time={info.latestBlock.timestamp} />}
+          extraTopRight={<TimeAgos time={info.latestBlock.timestamp} size=Text.Md />}
           valueComponent={
-                           let latestBlock = info.latestBlock.height->Format.iPretty;
-                           <Text
-                             value=latestBlock
-                             size=Text.Xxxl
-                             weight=Text.Semibold
-                             color=Colors.gray8
-                             code=true
-                           />;
-                         }
-          extraComponent={<Text value="mock" code=true />}
+            <TypeID.Block
+              id={
+                metadata
+                ->Sub.map(({lastProcessedHeight}) => lastProcessedHeight)
+                ->Sub.default(ID.Block.ID(0))
+              }
+              position=TypeID.Landing
+            />
+          }
+          extraComponent={<Text value=moniker nowrap=true ellipsis=true block=true />}
         />
         <HighlightCard
           label="ACTIVE VALIDATORS"
@@ -169,13 +173,15 @@ let make = () =>
                              size=Text.Xxxl
                              weight=Text.Semibold
                              color=Colors.gray8
-                             code=true
                            />;
                          }
           extraComponent={
-                           let bondedAmount = bandBonded->Format.fPretty ++ " BAND Bonded";
-                           <Text value=bondedAmount code=true />;
-                         }
+            <div className=Styles.vFlex>
+              <Text value={bandBonded->Format.fPretty} code=true />
+              <HSpacing size=Spacing.sm />
+              <Text value=" BAND Bonded" />
+            </div>
+          }
         />
       </Row>,
     );

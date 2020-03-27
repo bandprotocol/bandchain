@@ -45,7 +45,7 @@ module Coin = {
     coins
     ->Belt_List.keep(coin => coin.denom == "uband")
     ->Belt_List.get(0)
-    ->Belt_Option.mapWithDefault(0., coin => coin.amount);
+    ->Belt_Option.mapWithDefault(0., coin => coin.amount /. 1e6);
 
   let getDescription = coin => {
     (coin.amount |> Format.fPretty)
@@ -209,7 +209,7 @@ module Msg = {
       JsonUtils.Decode.{
         requestID: json |> field("requestID", intstr),
         dataSet: json |> field("dataSet", list(RequestHook.RawDataReport.decode)),
-        sender: json |> field("sender", string) |> Address.fromBech32,
+        sender: json |> field("reporter", string) |> Address.fromBech32,
       };
   };
 

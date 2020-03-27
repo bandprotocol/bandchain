@@ -72,7 +72,7 @@ let make = (~txs: list(TxHook.Tx.t)) => {
              <Col size=5. alignSelf=Col.Start>
                {messages
                 ->Belt.List.map(msg => {
-                    <> <Msg msg width=330 success /> <VSpacing size=Spacing.md /> </>
+                    <> <Msg msg width=530 success /> <VSpacing size=Spacing.md /> </>
                   })
                 ->Belt.List.toArray
                 ->React.array}
