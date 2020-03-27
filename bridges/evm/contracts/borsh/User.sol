@@ -4,7 +4,8 @@ pragma experimental ABIEncoderV2;
 import {Borsh} from "./Borsh.sol";
 import {ResultDecoder} from "./Result.sol";
 
-contract User {
+
+contract BorshUser {
     using ResultDecoder for bytes;
 
     function decode(bytes memory _data)
