@@ -67,7 +67,6 @@ let make = (~reqID, ~hashtag: Route.request_tab_t) => {
            | Some(request) =>
              <TimeAgos
                time={request.requestedAtTime}
-               prefix="Last updated "
                size=Text.Md
                weight=Text.Thin
                spacing={Text.Em(0.06)}
