@@ -122,8 +122,8 @@ func (b *BandDB) GetValidator(validator sdk.ValAddress) (Validator, bool) {
 }
 
 func (b *BandDB) handleMsgEditValidator(msg staking.MsgEditValidator) error {
-	validator, err := b.GetValidator(msg.ValidatorAddress)
-	if err != nil {
+	validator, isFound := b.GetValidator(msg.ValidatorAddress)
+	if !isFound {
 		return fmt.Errorf(fmt.Sprintf("validator %s has not exist.", msg.ValidatorAddress.String()))
 	}
 
@@ -150,8 +150,8 @@ func (b *BandDB) handleMsgEditValidator(msg staking.MsgEditValidator) error {
 }
 
 func (b *BandDB) handleMsgCreateValidator(msg staking.MsgCreateValidator) error {
-	_, err := b.GetValidator(msg.ValidatorAddress)
-	if err == nil {
+	_, isFound := b.GetValidator(msg.ValidatorAddress)
+	if isFound {
 		return fmt.Errorf(fmt.Sprintf("validator %s has already exist.", msg.ValidatorAddress.String()))
 	}
 
