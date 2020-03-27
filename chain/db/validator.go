@@ -122,16 +122,16 @@ func (b *BandDB) handleMsgEditValidator(msg staking.MsgEditValidator) error {
 		return fmt.Errorf(fmt.Sprintf("validator %s has not exist.", msg.ValidatorAddress.String()))
 	}
 
-	if msg.Description.Moniker != "[do-not-modify]" {
+	if msg.Description.Moniker != staking.DoNotModifyDesc {
 		validator.Moniker = msg.Description.Moniker
 	}
-	if msg.Description.Identity != "[do-not-modify]" {
+	if msg.Description.Identity != staking.DoNotModifyDesc {
 		validator.Identity = msg.Description.Identity
 	}
-	if msg.Description.Website != "[do-not-modify]" {
+	if msg.Description.Website != staking.DoNotModifyDesc {
 		validator.Website = msg.Description.Website
 	}
-	if msg.Description.Details != "[do-not-modify]" {
+	if msg.Description.Details != staking.DoNotModifyDesc {
 		validator.Details = msg.Description.Details
 	}
 	if msg.CommissionRate != nil {
