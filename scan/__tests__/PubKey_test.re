@@ -104,4 +104,3 @@ describe("Expect PubKey to work correctly", () => {
        )
   );
 });
-
