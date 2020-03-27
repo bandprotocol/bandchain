@@ -110,13 +110,14 @@ func (b *BandDB) ClearOldVotes(currentHeight int64) error {
 	return nil
 }
 
-func (b *BandDB) GetValidator(validator Validator) (Validator, error) {
+func (b *BandDB) GetValidator(operatorAddress sdk.ValAddress) (Validator, error) {
+	validator := Validator{OperatorAddress: operatorAddress.String()}
 	err := b.tx.First(&validator).Error
 	return validator, err
 }
 
 func (b *BandDB) handleMsgEditValidator(msg staking.MsgEditValidator) error {
-	validator, err := b.GetValidator(Validator{OperatorAddress: msg.ValidatorAddress.String()})
+	validator, err := b.GetValidator(msg.ValidatorAddress)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("validator %s has not exist.", msg.ValidatorAddress.String()))
 	}
@@ -144,7 +145,7 @@ func (b *BandDB) handleMsgEditValidator(msg staking.MsgEditValidator) error {
 }
 
 func (b *BandDB) handleMsgCreateValidator(msg staking.MsgCreateValidator) error {
-	_, err := b.GetValidator(Validator{OperatorAddress: msg.ValidatorAddress.String()})
+	_, err := b.GetValidator(msg.ValidatorAddress)
 	if err == nil {
 		return fmt.Errorf(fmt.Sprintf("validator %s has already exist.", msg.ValidatorAddress.String()))
 	}
