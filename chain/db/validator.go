@@ -90,7 +90,7 @@ func (b *BandDB) GetValidator(validator sdk.ValAddress) (Validator, bool) {
 func (b *BandDB) handleMsgEditValidator(msg staking.MsgEditValidator) error {
 	validator, isFound := b.GetValidator(msg.ValidatorAddress)
 	if !isFound {
-		return fmt.Errorf(fmt.Sprintf("validator %s has not exist.", msg.ValidatorAddress.String()))
+		return fmt.Errorf(fmt.Sprintf("validator %s does not exist.", msg.ValidatorAddress.String()))
 	}
 
 	if msg.Description.Moniker != staking.DoNotModifyDesc {
