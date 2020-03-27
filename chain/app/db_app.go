@@ -29,6 +29,7 @@ func NewDBBandApp(
 ) *dbBandApp {
 	app := NewBandApp(logger, db, traceStore, loadLatest, invCheckPeriod, baseAppOptions...)
 
+	dbBand.StakingKeeper = app.StakingKeeper
 	dbBand.ZoracleKeeper = app.ZoracleKeeper
 	return &dbBandApp{bandApp: app, dbBand: dbBand}
 }
@@ -159,6 +160,7 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 		)
 
 		app.dbBand.HandleTransaction(stdTx, txHash, logs)
+
 	}
 	return res
 }
