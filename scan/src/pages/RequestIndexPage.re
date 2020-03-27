@@ -4,14 +4,12 @@ module Styles = {
   let pageContainer = style([paddingTop(`px(20))]);
 
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
-  let hFlex = h =>
-    style([
-      display(`flex),
-      alignItems(`center),
-      height(`px(h)),
-      width(`percent(100.)),
-      backgroundColor(Colors.orange4),
-    ]);
+  let hFlex = style([display(`flex), alignItems(`center)]);
+
+  let minWidth = mw => style([minWidth(`px(mw))]);
+
+  let topicContainer = h =>
+    style([display(`flex), alignItems(`center), width(`percent(100.)), height(`px(h))]);
 
   let logo = style([width(`px(50)), marginRight(`px(10))]);
   let headerContainer = style([lineHeight(`px(25))]);
@@ -25,13 +23,15 @@ module Styles = {
       backgroundColor(Colors.gray7),
     ]);
 
+  let fillRight = style([marginRight(`auto)]);
+
   let lowerPannel =
     style([
       width(`percent(100.)),
       height(`px(540)),
+      padding(`px(30)),
       display(`flex),
-      justifyContent(`center),
-      alignItems(`center),
+      flexDirection(`column),
       backgroundColor(Colors.white),
       boxShadows([
         Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(4), Css.rgba(0, 0, 0, 0.1)),
@@ -127,10 +127,83 @@ let make = (~reqID) => {
      }}
     <VSpacing size=Spacing.xl />
     <div className=Styles.lowerPannel>
-      <div className={Styles.hFlex(30)}>
-        <Col> {"mumu" |> React.string} </Col>
-        <Col> {"lulu" |> React.string} </Col>
+      <div className={Styles.topicContainer(50)}>
+        <Col size=1.1>
+          <Text
+            value="REPORT STATUS"
+            size=Text.Sm
+            weight=Text.Semibold
+            spacing={Text.Em(0.06)}
+            color=Colors.gray6
+          />
+        </Col>
+        <Col size=5.>
+          <ProgressBar reportedValidators=3 minimumValidators=4 totalValidators=5 />
+        </Col>
+        <Col size=1.5>
+          <div className=Styles.hFlex>
+            <div className=Styles.fillRight />
+            <Text value={0 |> string_of_int} weight=Text.Bold code=true color=Colors.gray8 /> // Mock
+            <HSpacing size=Spacing.sm />
+            <Text value="Reported" weight=Text.Regular code=true color=Colors.gray8 />
+          </div>
+        </Col>
       </div>
+      <div className={Styles.topicContainer(50)}>
+        <Col size=1.>
+          <Text
+            value="EXPIRATION BLOCK"
+            size=Text.Sm
+            weight=Text.Semibold
+            spacing={Text.Em(0.06)}
+            color=Colors.gray6
+          />
+        </Col>
+        <Col size=1.>
+          <div className=Styles.hFlex>
+            <div className=Styles.fillRight />
+            <TypeID.Block id={ID.Block.ID(35135)} /> // Mock
+            <HSpacing size=Spacing.sm />
+            <Text
+              value="(5 blocks remaining)" // Mock
+              weight=Text.Regular
+              code=true
+              color=Colors.gray8
+            />
+          </div>
+        </Col>
+      </div>
+      <div className={Styles.topicContainer(50)}>
+        <Col size=1.>
+          <Text
+            value="EXPIRATION BLOCK"
+            size=Text.Sm
+            weight=Text.Semibold
+            spacing={Text.Em(0.06)}
+            color=Colors.gray6
+          />
+        </Col>
+      </div>
+      <KVTable
+        headers=["EXTERNAL ID", "DATA SOURCE", "PARAM"]
+        rows=[
+          [
+            KVTable.Value("1"),
+            KVTable.DataSource(ID.DataSource.ID(12), "Mock Data Source"),
+            KVTable.Value("BTC"),
+          ],
+          [
+            KVTable.Value("2"),
+            KVTable.DataSource(ID.DataSource.ID(12), "Mock Data Source"),
+            KVTable.Value("BTC"),
+          ],
+          [
+            KVTable.Value("3"),
+            KVTable.DataSource(ID.DataSource.ID(12), "Mock Data Source"),
+            KVTable.Value("BTC"),
+          ],
+        ]
+      />
     </div>
   </div>;
 };
