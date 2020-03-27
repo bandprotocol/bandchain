@@ -134,10 +134,13 @@ let renderRequest = (msg, request: TxHook.Msg.Request.t) => {
       <VSpacing size=Spacing.md />
       // TODO: Mock calldata
       <KVTable
-        kv=[
-          ("crypto_symbol", "BTC"),
-          ("aggregation_method", "mean"),
-          ("data_sources", "Binance v1, coingecko v1, coinmarketcap v1, band-validator"),
+        rows=[
+          [KVTable.Key("crypto_symbol"), KVTable.Value("BTC")],
+          [KVTable.Key("aggregation_method"), KVTable.Value("mean")],
+          [
+            KVTable.Key("data_sources"),
+            KVTable.Value("Binance v1, coingecko v1, coinmarketcap v1, band-validator"),
+          ],
         ]
       />
       <VSpacing size=Spacing.xl />
@@ -205,14 +208,14 @@ let renderReport = (msg, report: TxHook.Msg.Report.t) => {
       </div>
       <VSpacing size=Spacing.md />
       <KVTable
-        header=["EXTERNAL ID", "VALUE"]
-        kv={
+        headers=["EXTERNAL ID", "VALUE"]
+        rows={
           report.dataSet
           |> Belt_List.map(_, rawReport =>
-               (
-                 rawReport.externalDataID |> string_of_int,
-                 rawReport.data |> JsBuffer._toString(_, "UTF-8"),
-               )
+               [
+                 KVTable.Key(rawReport.externalDataID |> string_of_int),
+                 KVTable.Value(rawReport.data |> JsBuffer._toString(_, "UTF-8")),
+               ]
              )
         }
       />
