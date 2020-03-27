@@ -111,14 +111,9 @@ func (b *BandDB) ClearOldVotes(currentHeight int64) error {
 }
 
 func (b *BandDB) GetValidator(validator sdk.ValAddress) (Validator, bool) {
-	validatorSturct := Validator{OperatorAddress: validator.String()}
-	err := b.tx.First(&validatorSturct).Error
-	if err == nil {
-		// Found a validator
-		return validatorSturct, true
-	}
-	// Not found any validator
-	return validatorSturct, false
+	validatorStruct := Validator{OperatorAddress: validator.String()}
+	err := b.tx.First(&validatorStruct).Error
+	return validatorStruct, err == nil
 }
 
 func (b *BandDB) handleMsgEditValidator(msg staking.MsgEditValidator) error {
