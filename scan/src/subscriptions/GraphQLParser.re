@@ -10,7 +10,7 @@ let time = json =>
   json |> Js.Json.decodeNumber |> Belt.Option.getExn |> MomentRe.momentWithTimestampMS;
 
 let hash = json =>
-  json |> Js.Json.decodeString |> Belt.Option.getExn |> Js.String.substr(~from=2) |> Hash.fromHex;
+  json |> Js.Json.decodeString |> Belt.Option.getExn |> HexUtils.normalizeHexString |> Hash.fromHex;
 
 let coinRegEx = "([0-9]+)([a-z][a-z0-9/]{2,31})" |> Js.Re.fromString;
 let coins = str =>
