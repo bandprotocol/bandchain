@@ -122,3 +122,9 @@ type RawDataRequests struct {
 	DataSourceID int64  `gorm:"not null"`
 	Calldata     []byte `gorm:"not null"`
 }
+
+type RelatedDataSources struct {
+	DataSourceID   int64 `gorm:"primary_key;auto_increment:false"`
+	OracleScriptID int64 `gorm:"primary_key;auto_increment:false`
+}
+
