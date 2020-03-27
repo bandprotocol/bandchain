@@ -153,6 +153,24 @@ let renderRelatedDataSources = ids => {
   };
 };
 
+let renderRequest = id => {
+  <div className=Styles.idContainer> <TypeID.Request id position=TypeID.Text /> </div>;
+};
+
+let renderRequestStatus = status => {
+  <img
+    src={
+      switch (status) {
+      | RequestHook.Request.Success => Images.success
+      | Failure => Images.fail
+      | Open => Images.pending
+      | Unknown => Images.fail
+      }
+    }
+    className=Styles.msgIcon
+  />;
+};
+
 let msgIcon =
   fun
   | TxHook.Msg.CreateDataSource(_) => Images.newScript
@@ -186,7 +204,9 @@ type t =
   | Proposer(string, string)
   | DataSource(ID.DataSource.t, string)
   | OracleScript(ID.OracleScript.t, string)
-  | RelatedDataSources(list(ID.DataSource.t));
+  | RelatedDataSources(list(ID.DataSource.t))
+  | Request(ID.Request.t)
+  | RequestStatus(RequestHook.Request.resolve_status_t);
 
 [@react.component]
 let make = (~elementType) => {
@@ -209,5 +229,7 @@ let make = (~elementType) => {
   | DataSource(id, name) => renderDataSource(id, name)
   | OracleScript(id, name) => renderOracleScript(id, name)
   | RelatedDataSources(ids) => renderRelatedDataSources(ids)
+  | Request(id) => renderRequest(id)
+  | RequestStatus(status) => renderRequestStatus(status)
   };
 };
