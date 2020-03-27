@@ -24,18 +24,18 @@ const (
 )
 
 var (
-	NewKeeper                  = keeper.NewKeeper
-	NewQuerier                 = keeper.NewQuerier
-	ModuleCdc                  = types.ModuleCdc
-	RegisterCodec              = types.RegisterCodec
-	NewMsgRequestData          = types.NewMsgRequestData
-	NewMsgReportData           = types.NewMsgReportData
-	NewMsgCreateOracleScript   = types.NewMsgCreateOracleScript
-	NewMsgEditOracleScript     = types.NewMsgEditOracleScript
-	NewMsgCreateDataSource     = types.NewMsgCreateDataSource
-	NewMsgEditDataSource       = types.NewMsgEditDataSource
-	NewMsgAddOracleAddress     = types.NewMsgAddOracleAddress
-	NewMsgRemoveOracleAdderess = types.NewMsgRemoveOracleAdderess
+	NewKeeper                 = keeper.NewKeeper
+	NewQuerier                = keeper.NewQuerier
+	ModuleCdc                 = types.ModuleCdc
+	RegisterCodec             = types.RegisterCodec
+	NewMsgRequestData         = types.NewMsgRequestData
+	NewMsgReportData          = types.NewMsgReportData
+	NewMsgCreateOracleScript  = types.NewMsgCreateOracleScript
+	NewMsgEditOracleScript    = types.NewMsgEditOracleScript
+	NewMsgCreateDataSource    = types.NewMsgCreateDataSource
+	NewMsgEditDataSource      = types.NewMsgEditDataSource
+	NewMsgAddOracleAddress    = types.NewMsgAddOracleAddress
+	NewMsgRemoveOracleAddress = types.NewMsgRemoveOracleAddress
 
 	RequestStoreKey      = types.RequestStoreKey
 	ResultStoreKey       = types.ResultStoreKey
@@ -68,15 +68,15 @@ var (
 )
 
 type (
-	Keeper                  = keeper.Keeper
-	MsgRequestData          = types.MsgRequestData
-	MsgReportData           = types.MsgReportData
-	MsgCreateDataSource     = types.MsgCreateDataSource
-	MsgEditDataSource       = types.MsgEditDataSource
-	MsgCreateOracleScript   = types.MsgCreateOracleScript
-	MsgEditOracleScript     = types.MsgEditOracleScript
-	MsgAddOracleAddress     = types.MsgAddOracleAddress
-	MsgRemoveOracleAdderess = types.MsgRemoveOracleAdderess
+	Keeper                 = keeper.Keeper
+	MsgRequestData         = types.MsgRequestData
+	MsgReportData          = types.MsgReportData
+	MsgCreateDataSource    = types.MsgCreateDataSource
+	MsgEditDataSource      = types.MsgEditDataSource
+	MsgCreateOracleScript  = types.MsgCreateOracleScript
+	MsgEditOracleScript    = types.MsgEditOracleScript
+	MsgAddOracleAddress    = types.MsgAddOracleAddress
+	MsgRemoveOracleAddress = types.MsgRemoveOracleAddress
 
 	RawDataReport         = types.RawDataReport
 	RawDataReportWithID   = types.RawDataReportWithID

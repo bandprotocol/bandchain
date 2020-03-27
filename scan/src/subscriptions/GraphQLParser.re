@@ -6,7 +6,8 @@ let buffer = json =>
   |> Js.String.substr(~from=2)
   |> JsBuffer.fromHex;
 
-let time = json => json |> int64 |> MomentRe.momentWithUnix;
+let time = json =>
+  json |> Js.Json.decodeNumber |> Belt.Option.getExn |> MomentRe.momentWithTimestampMS;
 
 let hash = json =>
   json |> Js.Json.decodeString |> Belt.Option.getExn |> Js.String.substr(~from=2) |> Hash.fromHex;

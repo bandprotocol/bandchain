@@ -44,7 +44,25 @@ type DataSourceRevision struct {
 	Name           string `gorm:"not null"`
 	Timestamp      int64  `gorm:"not null"`
 	BlockHeight    int64  `gorm:"not null"`
-	TxHash         []byte `gorm:"not null"`
+	TxHash         []byte `sql:"default:null"`
+}
+
+type OracleScript struct {
+	ID          int64  `gorm:"primary_key;auto_increment:false"`
+	Name        string `gorm:"not null"`
+	Description string `gorm:"not null"`
+	Owner       string `gorm:"not null"`
+	Code        []byte `gorm:"not null"`
+	LastUpdated int64  `gorm:"not null"`
+}
+
+type OracleScriptRevision struct {
+	OracleScriptID int64  `gorm:"primary_key;auto_increment:false"`
+	RevisionNumber int64  `gorm:"primary_key"`
+	Name           string `gorm:"not null"`
+	Timestamp      int64  `gorm:"not null"`
+	BlockHeight    int64  `gorm:"not null"`
+	TxHash         []byte `sql:"default:null"`
 }
 
 type Transaction struct {
@@ -58,9 +76,54 @@ type Transaction struct {
 	BlockHeight int64  `gorm:"not null"`
 }
 
+type Report struct {
+	RequestID int64  `gorm:"primary_key"`
+	Validator string `gorm:"primary_key"`
+	TxHash    []byte `gorm:"not null"`
+	Reporter  string `gorm:"not null"`
+}
+
+type ReportDetail struct {
+	RequestID    int64  `gorm:"primary_key"`
+	Validator    string `gorm:"primary_key"`
+	ExternalID   int64  `gorm:"primary_key"`
+	DataSourceID int64  `gorm:"not null"`
+	Data         []byte `gorm:"not null"`
+	Exitcode     uint8  `gorm:"not null"`
+}
+
 type Block struct {
 	Height    int64  `gorm:"primary_key;auto_increment:false"`
 	Timestamp int64  `gorm:"not null"`
 	Proposer  string `gorm:"not null"`
 	BlockHash []byte `gorm:"not null"`
+}
+
+type Request struct {
+	ID                       int64  `gorm:"unique;auto_increment:false"`
+	OracleScriptID           int64  `gorm:"primary_key;auto_increment:false"`
+	Calldata                 []byte `gorm:"not null"`
+	SufficientValidatorCount int64  `gorm:"not null"`
+	ExpirationHeight         int64  `gorm:"not null"`
+	ResolveStatus            string `gorm:"not null"`
+	Requester                string `gorm:"not null"`
+	TxHash                   []byte `gorm:"not null"`
+	Result                   []byte `sql:"default:null"`
+}
+
+type RequestedValidator struct {
+	RequestID        int64  `gorm:"primary_key;auto_increment:false"`
+	ValidatorAddress string `gorm:"primary_key"`
+}
+
+type RawDataRequests struct {
+	RequestID    int64  `gorm:"primary_key;auto_increment:false"`
+	ExternalID   int64  `gorm:"primary_key;auto_increment:false"`
+	DataSourceID int64  `gorm:"not null"`
+	Calldata     []byte `gorm:"not null"`
+}
+
+type RelatedDataSources struct {
+	DataSourceID   int64 `gorm:"primary_key;auto_increment:false"`
+	OracleScriptID int64 `gorm:"primary_key;auto_increment:false`
 }
