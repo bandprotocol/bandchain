@@ -209,7 +209,7 @@ func (b *BandDB) SetContext(ctx sdk.Context) {
 	b.ctx = ctx
 }
 
-func (b *BandDB) HandleTransaction(tx auth.StdTx, txHash []byte, logs sdk.ABCIMessageLogs) string {
+func (b *BandDB) HandleTransaction(tx auth.StdTx, txHash []byte, logs sdk.ABCIMessageLogs) {
 	msgs := tx.GetMsgs()
 
 	if len(msgs) != len(logs) {
@@ -235,7 +235,11 @@ func (b *BandDB) HandleTransaction(tx auth.StdTx, txHash []byte, logs sdk.ABCIMe
 		messages = append(messages, str)
 
 	}
-	return fmt.Sprint(messages)
+
+	b.UpdateTransaction(
+		txHash,
+		fmt.Sprint(messages),
+	)
 }
 
 func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]string) (string, error) {
@@ -291,7 +295,7 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		val, _ := b.StakingKeeper.GetValidator(b.ctx, msg.Validator)
 		jsonMap["validatorMoniker"] = val.Description.Moniker
 
-	case zoracle.MsgRemoveOracleAdderess:
+	case zoracle.MsgRemoveOracleAddress:
 		val, _ := b.StakingKeeper.GetValidator(b.ctx, msg.Validator)
 		jsonMap["validatorMoniker"] = val.Description.Moniker
 

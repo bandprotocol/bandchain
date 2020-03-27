@@ -160,11 +160,7 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 			"[]",
 		)
 
-		messages := app.dbBand.HandleTransaction(stdTx, txHash, logs)
-		app.dbBand.UpdateTransaction(
-			txHash,
-			messages,
-		)
+		app.dbBand.HandleTransaction(stdTx, txHash, logs)
 
 	}
 	return res
