@@ -1,6 +1,7 @@
 package db
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/jinzhu/gorm"
@@ -10,6 +11,8 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/zoracle"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/cosmos/cosmos-sdk/x/staking"
 )
 
 type BandDB struct {
@@ -17,6 +20,7 @@ type BandDB struct {
 	tx  *gorm.DB
 	ctx sdk.Context
 
+	StakingKeeper staking.Keeper
 	ZoracleKeeper zoracle.Keeper
 }
 
@@ -42,6 +46,7 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		&Request{},
 		&RequestedValidator{},
 		&RawDataRequests{},
+		&RelatedDataSources{},
 	)
 
 	db.Model(&ValidatorVote{}).AddForeignKey(
@@ -163,6 +168,20 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		"RESTRICT",
 	)
 
+	db.Model(&RelatedDataSources{}).AddForeignKey(
+		"data_source_id",
+		"data_sources(id)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&RelatedDataSources{}).AddForeignKey(
+		"oracle_script_id",
+		"oracle_scripts(id)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
 	for key, value := range metadata {
 		err := db.Where(Metadata{Key: key}).
 			Assign(Metadata{Value: value}).
@@ -212,6 +231,8 @@ func (b *BandDB) HandleTransaction(tx auth.StdTx, txHash []byte, logs sdk.ABCIMe
 		panic("Inconsistent size of msgs and logs.")
 	}
 
+	messages := make([]map[string]interface{}, 0)
+
 	for idx, msg := range msgs {
 		events := logs[idx].Events
 		kvMap := make(map[string]string)
@@ -220,31 +241,87 @@ func (b *BandDB) HandleTransaction(tx auth.StdTx, txHash []byte, logs sdk.ABCIMe
 				kvMap[event.Type+"."+kv.Key] = kv.Value
 			}
 		}
-		err := b.HandleMessage(txHash, msg, kvMap)
+
+		newMsg, err := b.HandleMessage(txHash, msg, kvMap)
 		if err != nil {
 			panic(err)
 		}
+
+		messages = append(messages, newMsg)
+
 	}
+
+	b.UpdateTransaction(txHash, messages)
 }
 
-func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]string) error {
+func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]string) (map[string]interface{}, error) {
+	jsonMap := make(map[string]interface{})
+	rawBytes, err := json.Marshal(msg)
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.Unmarshal(rawBytes, &jsonMap)
+	if err != nil {
+		return nil, err
+	}
+
 	switch msg := msg.(type) {
-	// Just proof of concept
 	case zoracle.MsgCreateDataSource:
-		return b.handleMsgCreateDataSource(txHash, msg, events)
+		err = b.handleMsgCreateDataSource(txHash, msg, events)
+		if err != nil {
+			return nil, err
+		}
+
+		jsonMap["dataSourceID"] = events[zoracle.EventTypeCreateDataSource+"."+zoracle.AttributeKeyID]
 	case zoracle.MsgEditDataSource:
-		return b.handleMsgEditDataSource(txHash, msg, events)
+		err = b.handleMsgEditDataSource(txHash, msg, events)
+		if err != nil {
+			return nil, err
+		}
 	case zoracle.MsgCreateOracleScript:
-		return b.handleMsgCreateOracleScript(txHash, msg, events)
+		err = b.handleMsgCreateOracleScript(txHash, msg, events)
+		if err != nil {
+			return nil, err
+		}
+
+		jsonMap["oracleScriptID"] = events[zoracle.EventTypeCreateOracleScript+"."+zoracle.AttributeKeyID]
 	case zoracle.MsgEditOracleScript:
-		return b.handleMsgEditOracleScript(txHash, msg, events)
-	case zoracle.MsgReportData:
-		return b.handleMsgReportData(txHash, msg, events)
+		err = b.handleMsgEditOracleScript(txHash, msg, events)
+		if err != nil {
+			return nil, err
+		}
 	case zoracle.MsgRequestData:
-		return b.handleMsgRequestData(txHash, msg, events)
+		err = b.handleMsgRequestData(txHash, msg, events)
+		if err != nil {
+			return nil, err
+		}
+
+		var oracleScript OracleScript
+		err := b.tx.First(&oracleScript, int64(msg.OracleScriptID)).Error
+		if err != nil {
+			return nil, err
+		}
+		jsonMap["oracleScriptName"] = oracleScript.Name
+		jsonMap["requestID"] = events[zoracle.EventTypeRequest+"."+zoracle.AttributeKeyID]
+	case zoracle.MsgReportData:
+		err = b.handleMsgReportData(txHash, msg, events)
+		if err != nil {
+			return nil, err
+		}
+	case zoracle.MsgAddOracleAddress:
+		val, _ := b.StakingKeeper.GetValidator(b.ctx, msg.Validator)
+		jsonMap["validatorMoniker"] = val.Description.Moniker
+	case zoracle.MsgRemoveOracleAddress:
+		val, _ := b.StakingKeeper.GetValidator(b.ctx, msg.Validator)
+		jsonMap["validatorMoniker"] = val.Description.Moniker
+	case bank.MsgSend:
 	default:
 		// TODO: Better logging
 		fmt.Println("HandleMessage: There isn't event handler for this type")
-		return nil
+		return nil, nil
 	}
+	jsonMap["type"] = events["message.action"]
+
+	return jsonMap, nil
 }
