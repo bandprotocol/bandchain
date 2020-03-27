@@ -85,15 +85,6 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 				if err != nil {
 					panic(err)
 				}
-
-				err = app.dbBand.AddDelegation(
-					createMsg.DelegatorAddress,
-					createMsg.ValidatorAddress,
-					createMsg.Value,
-				)
-				if err != nil {
-					panic(err)
-				}
 			}
 		}
 	}
