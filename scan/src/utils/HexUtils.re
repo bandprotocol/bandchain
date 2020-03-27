@@ -1,3 +1,7 @@
+// This function receive any string and fliter the latest part
+// that is hex and then make it lowercase.
+// In other words, just strip prefix out and then lowercase.
+// Please see HexUtils_test.re for examples.
 let normalizeHexString = hexstr =>
   hexstr
   ->Js.Re.exec_("[0-9a-fA-F]+$"->Js.Re.fromString, _)
