@@ -202,14 +202,16 @@ module Msg = {
     type t = {
       requestID: int,
       dataSet: list(RequestHook.RawDataReport.t),
-      sender: Address.t,
+      validator: Address.t,
+      reporter: Address.t,
     };
 
     let decode = json =>
       JsonUtils.Decode.{
         requestID: json |> field("requestID", intstr),
         dataSet: json |> field("dataSet", list(RequestHook.RawDataReport.decode)),
-        sender: json |> field("reporter", string) |> Address.fromBech32,
+        validator: json |> field("validator", string) |> Address.fromBech32,
+        reporter: json |> field("reporter", string) |> Address.fromBech32,
       };
   };
 
@@ -287,7 +289,7 @@ module Msg = {
     | CreateOracleScript(oracleScript) => oracleScript.sender
     | EditOracleScript(oracleScript) => oracleScript.sender
     | Request(request) => request.sender
-    | Report(report) => report.sender
+    | Report(report) => report.reporter
     | AddOracleAddress(address) => address.sender
     | RemoveOracleAddress(address) => address.sender
     | CreateValidator(validator) => validator.sender

@@ -77,6 +77,7 @@ module Styles = {
   let noWrap = style([whiteSpace(`nowrap)]);
   let block = style([display(`block)]);
   let ellipsis = style([overflow(`hidden), textOverflow(`ellipsis), whiteSpace(`nowrap)]);
+  let underline = style([textDecoration(`underline)]);
   let textAlign =
     mapWithDefault(
       _,
@@ -115,6 +116,7 @@ let make =
       ~block=false,
       ~code=false,
       ~ellipsis=false,
+      ~underline=false,
       ~value,
     ) => {
   <span
@@ -129,6 +131,7 @@ let make =
       code ? Styles.code : "",
       color->Belt.Option.mapWithDefault("", c => Css.style([Css.color(c)])),
       ellipsis ? Styles.ellipsis : "",
+      underline ? Styles.underline : "",
     ])}>
     {React.string(value)}
   </span>;
