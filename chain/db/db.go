@@ -271,9 +271,24 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		}
 
 	case zoracle.MsgCreateOracleScript:
+		err = b.handleMsgCreateOracleScript(txHash, msg, events)
+		if err != nil {
+			return nil, err
+		}
+
 		jsonMap["oracleScriptID"] = events[zoracle.EventTypeCreateOracleScript+"."+zoracle.AttributeKeyID]
 	case zoracle.MsgEditOracleScript:
+		err = b.handleMsgEditOracleScript(txHash, msg, events)
+		if err != nil {
+			return nil, err
+		}
+
 	case zoracle.MsgRequestData:
+		err = b.handleMsgRequestData(txHash, msg, events)
+		if err != nil {
+			return nil, err
+		}
+
 		var oracleScript OracleScript
 		err := b.tx.First(&oracleScript, int64(msg.OracleScriptID)).Error
 		if err != nil {
@@ -282,6 +297,10 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		jsonMap["oracleScriptName"] = oracleScript.Name
 		jsonMap["requestID"] = events[zoracle.EventTypeRequest+"."+zoracle.AttributeKeyID]
 	case zoracle.MsgReportData:
+		err = b.handleMsgReportData(txHash, msg, events)
+		if err != nil {
+			return nil, err
+		}
 	case zoracle.MsgAddOracleAddress:
 		val, _ := b.StakingKeeper.GetValidator(b.ctx, msg.Validator)
 		jsonMap["validatorMoniker"] = val.Description.Moniker
