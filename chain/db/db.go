@@ -126,13 +126,6 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		"RESTRICT",
 	)
 
-	db.Model(&Delegation{}).AddForeignKey(
-		"operator_address",
-		"validators(operator_address)",
-		"RESTRICT",
-		"RESTRICT",
-	)
-
 	db.Model(&Request{}).AddForeignKey(
 		"oracle_script_id",
 		"oracle_scripts(id)",
