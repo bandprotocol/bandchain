@@ -16,8 +16,8 @@ func createTransaction(
 	sender sdk.AccAddress,
 	success bool,
 	blockHeight int64,
-	messages json.RawMessage,
 ) Transaction {
+	rawJson, _ := json.Marshal(nil)
 	return Transaction{
 		TxHash:      txHash,
 		Timestamp:   timestamp.UnixNano() / int64(time.Millisecond),
@@ -27,7 +27,7 @@ func createTransaction(
 		Sender:      sender.String(),
 		Success:     success,
 		BlockHeight: blockHeight,
-		Messages:    messages,
+		Messages:    rawJson,
 	}
 }
 
@@ -40,12 +40,7 @@ func (b *BandDB) AddTransaction(
 	sender sdk.AccAddress,
 	success bool,
 	blockHeight int64,
-	messages []map[string]interface{},
 ) error {
-	rawJson, err := json.Marshal(messages)
-	if err != nil {
-		return err
-	}
 	transaction := createTransaction(
 		txHash,
 		timestamp,
@@ -55,9 +50,9 @@ func (b *BandDB) AddTransaction(
 		sender,
 		success,
 		blockHeight,
-		rawJson,
 	)
-	err = b.tx.Create(&transaction).Error
+
+	err := b.tx.Create(&transaction).Error
 	return err
 }
 

@@ -236,10 +236,7 @@ func (b *BandDB) HandleTransaction(tx auth.StdTx, txHash []byte, logs sdk.ABCIMe
 
 	}
 
-	b.UpdateTransaction(
-		txHash,
-		messages,
-	)
+	// b.UpdateTransaction(txHash, messages)
 }
 
 func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]string) (map[string]interface{}, error) {
@@ -255,7 +252,6 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 	}
 
 	switch msg := msg.(type) {
-	// Just proof of concept
 	case zoracle.MsgCreateDataSource:
 		err = b.handleMsgCreateDataSource(txHash, msg, events)
 		if err != nil {

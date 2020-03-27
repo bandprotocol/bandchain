@@ -76,7 +76,7 @@ type Transaction struct {
 	Sender      string          `gorm:"not null"`
 	Success     bool            `gorm:"not null"`
 	BlockHeight int64           `gorm:"not null"`
-	Messages    json.RawMessage `sql:"json"`
+	Messages    json.RawMessage `sql:"json;not null"`
 }
 
 type Report struct {
