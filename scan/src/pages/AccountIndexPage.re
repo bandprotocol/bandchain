@@ -175,9 +175,9 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
              "BALANCE AT STAKE",
              account.balanceStake |> Format.fPretty,
              account.balanceStake *. price.usdPrice |> Format.fPretty,
-             Colors.blue9,
+             Colors.chartBalanceAtStake,
            )
-         | _ => balanceDetail("BALANCE AT STAKE", "?", "?", Colors.blue9)
+         | _ => balanceDetail("BALANCE AT STAKE", "?", "?", Colors.chartBalanceAtStake)
          }}
         <VSpacing size=Spacing.xl />
         <VSpacing size=Spacing.md />
@@ -187,9 +187,9 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
              "REWARD",
              account.reward |> Format.fPretty,
              account.reward *. price.usdPrice |> Format.fPretty,
-             Colors.blue10,
+             Colors.chartReward,
            )
-         | _ => balanceDetail("REWARD", "?", "?", Colors.blue10)
+         | _ => balanceDetail("REWARD", "?", "?", Colors.chartReward)
          }}
       </Col>
       <div className=Styles.separatorLine />
