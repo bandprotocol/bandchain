@@ -4,6 +4,14 @@ module Styles = {
   let pageContainer = style([paddingTop(`px(20))]);
 
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
+  let hFlex = h =>
+    style([
+      display(`flex),
+      alignItems(`center),
+      height(`px(h)),
+      width(`percent(100.)),
+      backgroundColor(Colors.orange4),
+    ]);
 
   let logo = style([width(`px(50)), marginRight(`px(10))]);
   let headerContainer = style([lineHeight(`px(25))]);
@@ -118,6 +126,11 @@ let make = (~reqID) => {
      | None => React.null
      }}
     <VSpacing size=Spacing.xl />
-    <div className=Styles.lowerPannel> {"TODO" |> React.string} </div>
+    <div className=Styles.lowerPannel>
+      <div className={Styles.hFlex(30)}>
+        <Col> {"mumu" |> React.string} </Col>
+        <Col> {"lulu" |> React.string} </Col>
+      </div>
+    </div>
   </div>;
 };
