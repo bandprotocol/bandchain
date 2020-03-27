@@ -16,12 +16,6 @@ type Event struct {
 	Name string
 }
 
-type Delegation struct {
-	DelegatorAddress string `gorm:"primary_key"`
-	OperatorAddress  string `gorm:"primary_key"`
-	Amount           string `gorm:"not null"`
-}
-
 type Validator struct {
 	OperatorAddress     string `gorm:"primary_key"`
 	ConsensusAddress    string `gorm:"unique;not null"`
