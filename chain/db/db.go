@@ -263,13 +263,11 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		}
 
 		jsonMap["dataSourceID"] = events[zoracle.EventTypeCreateDataSource+"."+zoracle.AttributeKeyID]
-
 	case zoracle.MsgEditDataSource:
 		err = b.handleMsgEditDataSource(txHash, msg, events)
 		if err != nil {
 			return nil, err
 		}
-
 	case zoracle.MsgCreateOracleScript:
 		err = b.handleMsgCreateOracleScript(txHash, msg, events)
 		if err != nil {
@@ -282,7 +280,6 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		if err != nil {
 			return nil, err
 		}
-
 	case zoracle.MsgRequestData:
 		err = b.handleMsgRequestData(txHash, msg, events)
 		if err != nil {
