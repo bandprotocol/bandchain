@@ -324,8 +324,6 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		jsonMap["validatorMoniker"] = val.Description.Moniker
 	case bank.MsgSend:
 		return b.handleMsgRequestData(txHash, msg, events)
-	case staking.MsgDelegate:
-		return b.handleMsgDelegate(msg)
 	case staking.MsgCreateValidator:
 		return b.handleMsgCreateValidator(msg)
 	case staking.MsgEditValidator:
