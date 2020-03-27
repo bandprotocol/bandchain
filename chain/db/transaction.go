@@ -1,6 +1,7 @@
 package db
 
 import (
+	"encoding/json"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -15,7 +16,7 @@ func createTransaction(
 	sender sdk.AccAddress,
 	success bool,
 	blockHeight int64,
-	messages string,
+	messages json.RawMessage,
 ) Transaction {
 	return Transaction{
 		TxHash:      txHash,
@@ -39,8 +40,12 @@ func (b *BandDB) AddTransaction(
 	sender sdk.AccAddress,
 	success bool,
 	blockHeight int64,
-	messages string,
+	messages []map[string]interface{},
 ) error {
+	rawJson, err := json.Marshal(messages)
+	if err != nil {
+		return err
+	}
 	transaction := createTransaction(
 		txHash,
 		timestamp,
@@ -50,15 +55,15 @@ func (b *BandDB) AddTransaction(
 		sender,
 		success,
 		blockHeight,
-		messages,
+		rawJson,
 	)
-	err := b.tx.Create(&transaction).Error
+	err = b.tx.Create(&transaction).Error
 	return err
 }
 
 func (b *BandDB) UpdateTransaction(
 	txHash []byte,
-	messages string,
+	messages []map[string]interface{},
 ) error {
 
 	var transaction Transaction
@@ -67,8 +72,11 @@ func (b *BandDB) UpdateTransaction(
 	if err != nil {
 		return err
 	}
-
-	transaction.Messages = messages
+	rawJson, err := json.Marshal(messages)
+	if err != nil {
+		return err
+	}
+	transaction.Messages = rawJson
 	err = b.tx.Save(&transaction).Error
 
 	return err

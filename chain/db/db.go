@@ -216,7 +216,7 @@ func (b *BandDB) HandleTransaction(tx auth.StdTx, txHash []byte, logs sdk.ABCIMe
 		panic("Inconsistent size of msgs and logs.")
 	}
 
-	messages := []string{}
+	messages := make([]map[string]interface{}, 0)
 
 	for idx, msg := range msgs {
 		events := logs[idx].Events
@@ -227,91 +227,74 @@ func (b *BandDB) HandleTransaction(tx auth.StdTx, txHash []byte, logs sdk.ABCIMe
 			}
 		}
 
-		str, err := b.HandleMessage(txHash, msg, kvMap)
+		newMsg, err := b.HandleMessage(txHash, msg, kvMap)
 		if err != nil {
 			panic(err)
 		}
 
-		messages = append(messages, str)
+		messages = append(messages, newMsg)
 
 	}
 
 	b.UpdateTransaction(
 		txHash,
-		fmt.Sprint(messages),
+		messages,
 	)
 }
 
-func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]string) (string, error) {
+func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]string) (map[string]interface{}, error) {
 	jsonMap := make(map[string]interface{})
-	jsonStr, err := json.Marshal(msg)
+	rawBytes, err := json.Marshal(msg)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	err = json.Unmarshal([]byte(jsonStr), &jsonMap)
+	err = json.Unmarshal(rawBytes, &jsonMap)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	switch msg := msg.(type) {
 	// Just proof of concept
 	case zoracle.MsgCreateDataSource:
-
 		err = b.handleMsgCreateDataSource(txHash, msg, events)
 		if err != nil {
-			return "", err
+			return nil, err
 		}
 
 		jsonMap["dataSourceID"] = events[zoracle.EventTypeCreateDataSource+"."+zoracle.AttributeKeyID]
 
 	case zoracle.MsgEditDataSource:
-
 		err = b.handleMsgEditDataSource(txHash, msg, events)
 		if err != nil {
-			return "", err
+			return nil, err
 		}
 
 	case zoracle.MsgCreateOracleScript:
-
 		jsonMap["oracleScriptID"] = events[zoracle.EventTypeCreateOracleScript+"."+zoracle.AttributeKeyID]
-
 	case zoracle.MsgEditOracleScript:
-
 	case zoracle.MsgRequestData:
 		var oracleScript OracleScript
-
 		err := b.tx.First(&oracleScript, int64(msg.OracleScriptID)).Error
 		if err != nil {
-			return "", err
+			return nil, err
 		}
-
 		jsonMap["oracleScriptName"] = oracleScript.Name
 		jsonMap["requestID"] = events[zoracle.EventTypeRequest+"."+zoracle.AttributeKeyID]
-
 	case zoracle.MsgReportData:
-
 	case zoracle.MsgAddOracleAddress:
 		val, _ := b.StakingKeeper.GetValidator(b.ctx, msg.Validator)
 		jsonMap["validatorMoniker"] = val.Description.Moniker
-
 	case zoracle.MsgRemoveOracleAddress:
 		val, _ := b.StakingKeeper.GetValidator(b.ctx, msg.Validator)
 		jsonMap["validatorMoniker"] = val.Description.Moniker
-
 	case bank.MsgSend:
-
 	default:
 		// TODO: Better logging
 		fmt.Println("HandleMessage: There isn't event handler for this type")
-		return "", nil
+		return nil, nil
 	}
 	jsonMap["type"] = events["message.action"]
 
-	jsonString, err := json.Marshal(jsonMap)
-	if err != nil {
-		return "", err
-	}
-	return fmt.Sprint(string(jsonString)), nil
-
+	return jsonMap, nil
 }

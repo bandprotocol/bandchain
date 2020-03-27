@@ -157,7 +157,7 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 			stdTx.GetSigners()[0],
 			true,
 			app.DeliverContext.BlockHeight(),
-			"[]",
+			make([]map[string]interface{}, 0),
 		)
 
 		app.dbBand.HandleTransaction(stdTx, txHash, logs)
