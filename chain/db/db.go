@@ -46,6 +46,7 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		&Request{},
 		&RequestedValidator{},
 		&RawDataRequests{},
+		&RelatedDataSources{},
 	)
 
 	db.Model(&ValidatorVote{}).AddForeignKey(
@@ -163,6 +164,20 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 	db.Model(&RawDataRequests{}).AddForeignKey(
 		"data_source_id",
 		"data_sources(id)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&RelatedDataSources{}).AddForeignKey(
+		"data_source_id",
+		"data_sources(id)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&RelatedDataSources{}).AddForeignKey(
+		"oracle_script_id",
+		"oracle_scripts(id)",
 		"RESTRICT",
 		"RESTRICT",
 	)
