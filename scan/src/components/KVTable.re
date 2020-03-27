@@ -1,3 +1,8 @@
+type field_t =
+  | Key(string)
+  | Value(string)
+  | DataSource(ID.DataSource.t, string);
+
 module Styles = {
   open Css;
 
@@ -28,63 +33,72 @@ module Styles = {
   let valueContainer = style([maxWidth(`px(230))]);
 };
 
+let renderField = field =>
+  switch (field) {
+  | Key(x) =>
+    <Text
+      value=x
+      size=Text.Sm
+      weight=Text.Medium
+      height={Text.Px(18)}
+      nowrap=true
+      ellipsis=true
+      block=true
+      code=true
+    />
+  | Value(x) =>
+    <div className=Styles.valueContainer>
+      <Text
+        value=x
+        size=Text.Sm
+        weight=Text.Medium
+        height={Text.Px(18)}
+        nowrap=true
+        ellipsis=true
+        block=true
+        code=true
+      />
+    </div>
+  | DataSource(id, name) =>
+    <div className=Styles.valueContainer>
+      <TypeID.DataSource id />
+      <HSpacing size=Spacing.sm />
+      <Text value=name weight=Text.Regular spacing={Text.Em(0.02)} code=true />
+    </div>
+  };
+
 [@react.component]
-let make = (~header=["KEY", "VALUE"], ~kv) => {
+let make = (~headers=["KEY", "VALUE"], ~rows) => {
   <>
     <div className=Styles.thead>
       <Row>
-        <Col size=1.>
-          <Text
-            value={header |> Belt_List.getExn(_, 0)}
-            size=Text.Xs
-            weight=Text.Semibold
-            spacing={Text.Em(0.05)}
-            height={Text.Px(18)}
-            color=Colors.gray6
-          />
-        </Col>
-        <Col size=1.>
-          <Text
-            value={header |> Belt_List.getExn(_, 1)}
-            size=Text.Xs
-            weight=Text.Semibold
-            spacing={Text.Em(0.05)}
-            height={Text.Px(18)}
-            color=Colors.gray6
-          />
-        </Col>
-      </Row>
-    </div>
-    {kv
-     ->Belt.List.map(((key, value)) => {
-         <div className=Styles.tbody key=value>
-           <Row>
-             <Col size=1.>
+        {headers
+         ->Belt_List.map(header => {
+             <Col key=header size=1.>
                <Text
-                 value=key
-                 size=Text.Sm
-                 weight=Text.Medium
+                 value=header
+                 size=Text.Xs
+                 weight=Text.Semibold
+                 spacing={Text.Em(0.05)}
                  height={Text.Px(18)}
-                 nowrap=true
-                 ellipsis=true
-                 block=true
-                 code=true
+                 color=Colors.gray6
                />
              </Col>
-             <Col size=1.>
-               <div className=Styles.valueContainer>
-                 <Text
-                   value
-                   size=Text.Sm
-                   weight=Text.Medium
-                   height={Text.Px(18)}
-                   nowrap=true
-                   ellipsis=true
-                   block=true
-                   code=true
-                 />
-               </div>
-             </Col>
+           })
+         ->Belt_List.toArray
+         ->React.array}
+      </Row>
+    </div>
+    {rows
+     ->Belt.List.mapWithIndex((i, fields) => {
+         <div className=Styles.tbody key={i |> string_of_int}>
+           <Row>
+             {fields
+              ->Belt_List.mapWithIndex((j, field) => {
+                  <Col key={j |> string_of_int} size=1.> {renderField(field)} </Col>
+                })
+              ->Belt_List.toArray
+              ->React.array}
            </Row>
          </div>
        })
