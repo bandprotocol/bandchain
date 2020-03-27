@@ -1,10 +1,3 @@
-module Mini = {
-  type t = {
-    txHash: Hash.t,
-    blockHeight: ID.Block.t,
-    timestamp: MomentRe.Moment.t,
-  };
-};
 type t = {
   txHash: Hash.t,
   blockHeight: ID.Block.t,
@@ -15,6 +8,14 @@ type t = {
   sender: Address.t,
   timestamp: MomentRe.Moment.t,
   messages: Js.Json.t,
+};
+
+module Mini = {
+  type t = {
+    txHash: Hash.t,
+    blockHeight: ID.Block.t,
+    timestamp: MomentRe.Moment.t,
+  };
 };
 
 module SingleConfig = [%graphql
@@ -53,6 +54,18 @@ module MultiConfig = [%graphql
 |}
 ];
 
+module TxCountConfig = [%graphql
+  {|
+  subscription Transaction {
+    transactions_aggregate{
+      aggregate{
+        count @bsDecoder(fn: "Belt_Option.getExn")
+      }
+    }
+  }
+|}
+];
+
 let get = txHash => {
   let (result, _) =
     ApolloHooks.useSubscription(
@@ -78,4 +91,10 @@ let getList = (~page, ~pageSize, ()) => {
       ~variables=MultiConfig.makeVariables(~limit=pageSize, ~offset, ()),
     );
   result |> Sub.map(_, x => x##transactions);
+};
+
+let count = () => {
+  let (result, _) = ApolloHooks.useSubscription(TxCountConfig.definition);
+  result
+  |> Sub.map(_, x => x##transactions_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
 };
