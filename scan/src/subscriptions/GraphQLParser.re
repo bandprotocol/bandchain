@@ -3,7 +3,7 @@ let buffer = json =>
   json
   |> Js.Json.decodeString
   |> Belt.Option.getExn
-  |> Js.String.substr(~from=2)
+  |> HexUtils.normalizeHexString
   |> JsBuffer.fromHex;
 
 let time = json =>
