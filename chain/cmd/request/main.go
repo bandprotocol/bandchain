@@ -261,5 +261,16 @@ func main() {
 				time.Sleep(100 * time.Millisecond)
 			}
 		}
+	case "add_oracle_address":
+		{
+			acc, _ := sdk.AccAddressFromBech32("band13zmknvkq2sj920spz90g4r9zjan8g584x8qalj")
+			fmt.Println(tx.SendTransaction(
+				zoracle.NewMsgAddOracleAddress(
+					sdk.ValAddress(tx.Sender()),
+					acc),
+				1000000, "", ""))
+
+		}
 	}
+
 }

@@ -155,6 +155,12 @@ func (b *BandDB) handleMsgRequestData(
 		if err != nil {
 			return err
 		}
+
+		b.tx.FirstOrCreate(&RelatedDataSources{
+			DataSourceID:   int64(raw.RawDataRequest.DataSourceID),
+			OracleScriptID: int64(msg.OracleScriptID),
+		})
+
 	}
 
 	return nil
