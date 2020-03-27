@@ -12,7 +12,7 @@ let make = (~children) => {
   let financialOpt = PriceHook.get();
   let latestBlocksOpt = BlockHook.latest();
   let validatorsOpt = ValidatorHook.getList();
-  Js.Console.log(TxSub.getList(~page=1, ~pageSize=10, ()));
+  Js.Console.log();
   let data = {
     let%Opt financial = financialOpt;
     let%Opt latestBlocks = latestBlocksOpt;

@@ -200,6 +200,52 @@ module Msg = {
         reporter: json |> field("reporter", string) |> Address.fromBech32,
       };
   };
+  module AddOracleAddress = {
+    type t = {
+      validator: string,
+      reporterAddress: Address.t,
+      sender: Address.t,
+    };
+  };
+
+  module RemoveOracleAddress = {
+    type t = {
+      validator: string,
+      reporterAddress: Address.t,
+      sender: Address.t,
+    };
+  };
+
+  module CreateValidator = {
+    type t = {
+      moniker: string,
+      identity: string,
+      website: string,
+      details: string,
+      commissionRate: float,
+      commissionMaxRate: float,
+      commissionMaxChange: float,
+      delegatorAddress: Address.t,
+      validatorAddress: Address.t,
+      publicKey: PubKey.t,
+      minSelfDelegation: list(Coin.t),
+      selfDelegation: list(Coin.t),
+      sender: Address.t,
+    };
+  };
+
+  module EditValidator = {
+    type t = {
+      moniker: string,
+      identity: string,
+      website: string,
+      details: string,
+      commissionRate: float,
+      validatorAddress: Address.t,
+      minSelfDelegation: list(Coin.t),
+      sender: Address.t,
+    };
+  };
 
   type t =
     | Unknown
@@ -209,7 +255,11 @@ module Msg = {
     | CreateOracleScript(CreateOracleScript.t)
     | EditOracleScript(EditOracleScript.t)
     | Request(Request.t)
-    | Report(Report.t);
+    | Report(Report.t)
+    | AddOracleAddress(AddOracleAddress.t)
+    | RemoveOracleAddress(RemoveOracleAddress.t)
+    | CreateValidator(CreateValidator.t)
+    | EditValidator(EditValidator.t);
 
   let getCreator = msg => {
     switch (msg) {
@@ -220,6 +270,10 @@ module Msg = {
     | EditOracleScript(oracleScript) => oracleScript.sender
     | Request(request) => request.sender
     | Report(report) => report.reporter
+    | AddOracleAddress(address) => address.sender
+    | RemoveOracleAddress(address) => address.sender
+    | CreateValidator(validator) => validator.sender
+    | EditValidator(validator) => validator.sender
     | Unknown => "" |> Address.fromHex
     };
   };
@@ -246,6 +300,10 @@ module Msg = {
     //   | Some(value) => "#" ++ (report.requestID |> string_of_int) ++ " " ++ value
     //   | None => "?"
     //   }
+    | AddOracleAddress(_) => "ADDORACLEADDRESS DESCRIPTION"
+    | RemoveOracleAddress(_) => "REMOVEORACLEADDRESS DESCRIPTION"
+    | CreateValidator(_) => "CREATEVALIDATOR DESCRIPTION"
+    | EditValidator(_) => "EDITVALIDATOR DESCRIPTION"
     | Unknown => "Unknown"
     };
   };
@@ -254,13 +312,13 @@ module Msg = {
     Js.Console.log(json);
     JsonUtils.Decode.(
       switch (json |> field("type", string)) {
-      // | "send" => Send(json |> Send.decode)
-      // | "createDataSource" => CreateDataSource(json |> CreateDataSource.decode)
-      // | "editDataSource" => EditDataSource(json |> EditDataSource.decode)
-      // | "createOracleScript" => CreateOracleScript(json |> CreateOracleScript.decode)
-      // | "editOracleScript" => EditOracleScript(json |> EditOracleScript.decode)
+      | "send" => Send(json |> Send.decode)
+      | "createDataSource" => CreateDataSource(json |> CreateDataSource.decode)
+      | "editDataSource" => EditDataSource(json |> EditDataSource.decode)
+      | "createOracleScript" => CreateOracleScript(json |> CreateOracleScript.decode)
+      | "editOracleScript" => EditOracleScript(json |> EditOracleScript.decode)
       | "request" => Request(json |> Request.decode)
-      // | "report" => Report(json |> Report.decode)
+      | "report" => Report(json |> Report.decode)
       | _ => Unknown
       }
     );
@@ -289,6 +347,10 @@ module Msg = {
     // | Some(value) => Some(Route.RequestIndexPage(value->int_of_string, RequestReportStatus))
     // | None => None
     // }
+    | AddOracleAddress(_) => None
+    | RemoveOracleAddress(_) => None
+    | CreateValidator(_) => None
+    | EditValidator(_) => None
     | Unknown => None
     };
 };
@@ -349,17 +411,17 @@ module MultiConfig = [%graphql
 |}
 ];
 
-// module TxCountConfig = [%graphql
-//   {|
-//   subscription Transaction {
-//     transactions_aggregate{
-//       aggregate{
-//         count @bsDecoder(fn: "Belt_Option.getExn")
-//       }
-//     }
-//   }
-// |}
-// ];
+module TxCountConfig = [%graphql
+  {|
+  subscription Transaction {
+    transactions_aggregate{
+      aggregate{
+        count @bsDecoder(fn: "Belt_Option.getExn")
+      }
+    }
+  }
+|}
+];
 
 module Event = {
   type t = {
@@ -419,8 +481,8 @@ let getList = (~page, ~pageSize, ()) => {
   result |> Sub.map(_, x => x##transactions);
 };
 
-// let count = () => {
-//   let (result, _) = ApolloHooks.useSubscription(TxCountConfig.definition);
-//   result
-//   |> Sub.map(_, x => x##transactions_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
-// };
+let count = () => {
+  let (result, _) = ApolloHooks.useSubscription(TxCountConfig.definition);
+  result
+  |> Sub.map(_, x => x##transactions_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
+};
