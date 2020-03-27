@@ -1,16 +1,10 @@
 let int64 = json => json |> Js.Json.decodeNumber |> Belt.Option.getExn |> int_of_float;
-let buffer = json =>
-  json
-  |> Js.Json.decodeString
-  |> Belt.Option.getExn
-  |> HexUtils.normalizeHexString
-  |> JsBuffer.fromHex;
+let buffer = json => json |> Js.Json.decodeString |> Belt.Option.getExn |> JsBuffer.fromHex;
 
 let time = json =>
   json |> Js.Json.decodeNumber |> Belt.Option.getExn |> MomentRe.momentWithTimestampMS;
 
-let hash = json =>
-  json |> Js.Json.decodeString |> Belt.Option.getExn |> HexUtils.normalizeHexString |> Hash.fromHex;
+let hash = json => json |> Js.Json.decodeString |> Belt.Option.getExn |> Hash.fromHex;
 
 let coinRegEx = "([0-9]+)([a-z][a-z0-9/]{2,31})" |> Js.Re.fromString;
 let coins = str =>
