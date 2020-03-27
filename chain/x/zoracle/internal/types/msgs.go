@@ -202,7 +202,7 @@ func (msg MsgCreateDataSource) ValidateBasic() sdk.Error {
 		return ErrInvalidBasicMsg("MsgCreateDataSource: Description must not be empty.")
 	}
 	if !msg.Fee.IsValid() {
-		return ErrInvalidBasicMsg("MsgCreateDataSource: Fee must be valid (%s)", msg.Fee.String())
+		return ErrInvalidBasicMsg("MsgCreateDataSource: Fee (%s) is not valid.", msg.Fee.String())
 	}
 	if msg.Executable == nil || len(msg.Executable) == 0 {
 		return ErrInvalidBasicMsg("MsgCreateDataSource: Executable must not be empty.")
@@ -277,7 +277,7 @@ func (msg MsgEditDataSource) ValidateBasic() sdk.Error {
 		return ErrInvalidBasicMsg("MsgEditDataSource: Description must not be empty.")
 	}
 	if !msg.Fee.IsValid() {
-		return ErrInvalidBasicMsg("MsgEditDataSource: Fee must be valid (%s)", msg.Fee.String())
+		return ErrInvalidBasicMsg("MsgEditDataSource: Fee (%s) is not valid.", msg.Fee.String())
 	}
 	if msg.Executable == nil || len(msg.Executable) == 0 {
 		return ErrInvalidBasicMsg("MsgEditDataSource: Executable must not be empty.")
@@ -454,7 +454,6 @@ func (msg MsgAddOracleAddress) Type() string { return "add_oracle_address" }
 
 // ValidateBasic implements the sdk.Msg interface for MsgAddOracleAddress.
 func (msg MsgAddOracleAddress) ValidateBasic() sdk.Error {
-
 	if msg.Validator.Empty() {
 		return ErrInvalidBasicMsg("MsgAddOracleAddress: Validator address must not be empty.")
 	}
@@ -500,7 +499,6 @@ func (msg MsgRemoveOracleAddress) Type() string { return "remove_oracle_address"
 
 // ValidateBasic implements the sdk.Msg interface for MsgRemoveOracleAddress.
 func (msg MsgRemoveOracleAddress) ValidateBasic() sdk.Error {
-
 	if msg.Validator.Empty() {
 		return ErrInvalidBasicMsg("MsgRemoveOracleAddress: Validator address must not be empty.")
 	}
