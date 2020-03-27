@@ -14,7 +14,7 @@ type t = {
   gasUsed: int,
   sender: Address.t,
   timestamp: MomentRe.Moment.t,
-  // TODO: add field message
+  messages: Js.Json.t,
 };
 
 module SingleConfig = [%graphql
@@ -29,6 +29,7 @@ module SingleConfig = [%graphql
       gasUsed : gas_used @bsDecoder(fn: "GraphQLParser.int64")
       sender  @bsDecoder(fn: "Address.fromBech32")
       timestamp  @bsDecoder(fn: "GraphQLParser.time")
+      messages
     }
   },
 |}
@@ -46,6 +47,7 @@ module MultiConfig = [%graphql
       gasUsed : gas_used @bsDecoder(fn: "GraphQLParser.int64")
       sender  @bsDecoder(fn: "Address.fromBech32")
       timestamp  @bsDecoder(fn: "GraphQLParser.time")
+      messages
     }
   }
 |}
