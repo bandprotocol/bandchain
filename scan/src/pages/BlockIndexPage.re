@@ -87,11 +87,7 @@ let make = (~height) => {
             spacing={Text.Em(0.06)}
           />
           <div className=Styles.seperatedLine />
-          <Text
-            value={"#B" ++ (height |> ID.Block.toInt |> Format.iPretty)}
-            weight=Text.Thin
-            spacing={Text.Em(0.06)}
-          />
+          <Text value={height |> ID.Block.toString} weight=Text.Thin spacing={Text.Em(0.06)} />
         </div>
       </Col>
     </Row>
