@@ -236,7 +236,7 @@ func (b *BandDB) HandleTransaction(tx auth.StdTx, txHash []byte, logs sdk.ABCIMe
 
 	}
 
-	// b.UpdateTransaction(txHash, messages)
+	b.UpdateTransaction(txHash, messages)
 }
 
 func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]string) (map[string]interface{}, error) {
