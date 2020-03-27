@@ -57,7 +57,8 @@ let msg_actions = [
   TxHook.Msg.Report({
     requestID: 40,
     dataSet: [],
-    sender: "F4F9994D5E59aEf6281739b046f0E28c33b3A847" |> Address.fromHex,
+    validator: "F4F9994D5E59aEf6281739b046f0E28c33b3A847" |> Address.fromHex,
+    reporter: "F4F9994D5E59aEf6281739b046f0E28c33b3A847" |> Address.fromHex,
   }),
 ];
 
