@@ -13,6 +13,16 @@ describe("Expect Hash to work correctly", () => {
     |> toEqual(Hash("28913c89fa628136fffce7ded99d65a4e3f5c211f82639fed4adca30d53b8dff"))
   );
 
+  test("should be able to create Hash from hex with 0X", () =>
+    expect("0X28913c89fa628136fffce7ded99d65a4e3f5c211f82639fed4adca30d53b8dff" |> fromHex)
+    |> toEqual(Hash("28913c89fa628136fffce7ded99d65a4e3f5c211f82639fed4adca30d53b8dff"))
+  );
+
+  test({j|should be able to create Hash from hex with \\\\x|j}, () =>
+    expect({j|\\\\x28913c89fa628136fffce7ded99d65a4e3f5c211f82639fed4adca30d53b8dff|j} |> fromHex)
+    |> toEqual(Hash("28913c89fa628136fffce7ded99d65a4e3f5c211f82639fed4adca30d53b8dff"))
+  );
+
   test("should be able to get hexString with 0x prefix", () =>
     expect(
       fromHex("28913c89fa628136fffce7ded99d65a4e3f5c211f82639fed4adca30d53b8dff")
