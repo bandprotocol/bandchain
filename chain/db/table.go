@@ -17,11 +17,20 @@ type Event struct {
 }
 
 type Validator struct {
-	OperatorAddress  string `gorm:"primary_key"`
-	ConsensusAddress string `gorm:"unique;not null"`
-	ElectedCount     uint   `gorm:"not null"`
-	VotedCount       uint   `gorm:"not null"`
-	MissedCount      uint   `gorm:"not null"`
+	OperatorAddress     string `gorm:"primary_key"`
+	ConsensusAddress    string `gorm:"unique;not null"`
+	ElectedCount        uint   `gorm:"not null"`
+	VotedCount          uint   `gorm:"not null"`
+	MissedCount         uint   `gorm:"not null"`
+	Moniker             string `gorm:"not null"`
+	Identity            string `gorm:"not null"`
+	Website             string `gorm:"not null"`
+	Details             string `gorm:"not null"`
+	CommissionRate      string `gorm:"not null"`
+	CommissionMaxRate   string `gorm:"not null"`
+	CommissionMaxChange string `gorm:"not null"`
+	MinSelfDelegation   string `gorm:"not null"`
+	SelfDelegation      string `gorm:"not null"`
 }
 
 type ValidatorVote struct {
