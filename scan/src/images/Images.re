@@ -23,7 +23,6 @@
 [@bs.module] external pieChart: string = "./pie-chart.png";
 [@bs.module] external success: string = "./success.svg";
 [@bs.module] external fail: string = "./fail.svg";
-[@bs.module] external txLogo: string = "./tx-icon.png";
 [@bs.module] external noRequestIcon: string = "./noRequest.png";
 [@bs.module] external noRevisionIcon: string = "./noRevision.png";
 [@bs.module] external validatorLogo: string = "./validatorLogo.svg";
