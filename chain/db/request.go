@@ -165,4 +165,3 @@ func (b *BandDB) handleMsgRequestData(
 
 	return nil
 }
-
