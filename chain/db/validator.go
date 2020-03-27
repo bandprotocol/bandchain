@@ -110,10 +110,15 @@ func (b *BandDB) ClearOldVotes(currentHeight int64) error {
 	return nil
 }
 
-func (b *BandDB) GetValidator(validator sdk.ValAddress) (Validator, error) {
+func (b *BandDB) GetValidator(validator sdk.ValAddress) (Validator, bool) {
 	validatorSturct := Validator{OperatorAddress: validator.String()}
 	err := b.tx.First(&validatorSturct).Error
-	return validatorSturct, err
+	if err == nil {
+		// Found a validator
+		return validatorSturct, true
+	}
+	// Not found any validator
+	return validatorSturct, false
 }
 
 func (b *BandDB) handleMsgEditValidator(msg staking.MsgEditValidator) error {
