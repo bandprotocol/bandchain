@@ -5,13 +5,13 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// SetRequest is a function to save request to the given ID.
+// SetRequest saves the given data request to the store without performing any validation.
 func (k Keeper) SetRequest(ctx sdk.Context, id types.RequestID, request types.Request) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.RequestStoreKey(id), k.cdc.MustMarshalBinaryBare(request))
 }
 
-// GetRequest returns the entire Request metadata struct.
+// GetRequest returns the entire Request metadata struct from the store.
 func (k Keeper) GetRequest(ctx sdk.Context, id types.RequestID) (types.Request, sdk.Error) {
 	store := ctx.KVStore(k.storeKey)
 	if !k.CheckRequestExists(ctx, id) {
@@ -24,7 +24,7 @@ func (k Keeper) GetRequest(ctx sdk.Context, id types.RequestID) (types.Request, 
 	return request, nil
 }
 
-// AddRequest attempts to create a new request. An error is returned if some conditions failed.
+// AddRequest attempts to create and save a new request. Returns error some conditions failed.
 func (k Keeper) AddRequest(
 	ctx sdk.Context, oracleScriptID types.OracleScriptID, calldata []byte,
 	requestedValidatorCount, sufficientValidatorCount, expiration int64, executeGas uint64,
@@ -47,7 +47,7 @@ func (k Keeper) AddRequest(
 	validatorsByPower := k.StakingKeeper.GetBondedValidatorsByPower(ctx)
 	if int64(len(validatorsByPower)) < requestedValidatorCount {
 		return 0, types.ErrBadDataValue(
-			"AddRequest: Requested validator count (%d) exceeds the current number of validators (%d).",
+			"AddRequest: Requested validator count (%d) exceeds the number of validators (%d).",
 			requestedValidatorCount,
 			len(validatorsByPower),
 		)
@@ -82,8 +82,8 @@ func (k Keeper) AddRequest(
 	return requestID, nil
 }
 
-// ValidateDataSourceCount validates that the number of raw data requests is
-// not greater than `MaxDataSourceCountPerRequest`
+// ValidateDataSourceCount returns whether the number of raw data requests exceeds the maximum
+// allowed value, as specified by `MaxDataSourceCountPerRequest` parameter.
 func (k Keeper) ValidateDataSourceCount(ctx sdk.Context, id types.RequestID) sdk.Error {
 	dataSourceCount := k.GetRawDataRequestCount(ctx, id)
 	if dataSourceCount > k.MaxDataSourceCountPerRequest(ctx) {
@@ -93,37 +93,37 @@ func (k Keeper) ValidateDataSourceCount(ctx sdk.Context, id types.RequestID) sdk
 			k.MaxDataSourceCountPerRequest(ctx),
 		)
 	}
-
 	return nil
 }
 
-// PayDataSourceFees sends fees to the owners of the requested data sources.
-func (k Keeper) PayDataSourceFees(ctx sdk.Context, id types.RequestID, sender sdk.AccAddress) sdk.Error {
+// PayDataSourceFees sends fees from the sender to the owner of the requested data source.
+func (k Keeper) PayDataSourceFees(
+	ctx sdk.Context, id types.RequestID, sender sdk.AccAddress,
+) sdk.Error {
 	rawDataRequests := k.GetRawDataRequests(ctx, id)
 	for _, rawDataRequest := range rawDataRequests {
 		dataSource, err := k.GetDataSource(ctx, rawDataRequest.DataSourceID)
 		if err != nil {
 			return err
 		}
-
-		if dataSource.Owner.Equals(sender) {
+		if dataSource.Owner.Equals(sender) { // Skip
 			continue
 		}
-
 		if dataSource.Fee.IsZero() {
 			continue
 		}
-
 		err = k.CoinKeeper.SendCoins(ctx, sender, dataSource.Owner, dataSource.Fee)
 		if err != nil {
 			return err
 		}
 	}
-
 	return nil
 }
 
-func (k Keeper) SetResolve(ctx sdk.Context, id types.RequestID, resolveStatus types.ResolveStatus) sdk.Error {
+// SetResolve updates the resolve status of the given request as specified by id.
+func (k Keeper) SetResolve(
+	ctx sdk.Context, id types.RequestID, resolveStatus types.ResolveStatus,
+) sdk.Error {
 	request, err := k.GetRequest(ctx, id)
 	if err != nil {
 		return err
@@ -141,8 +141,8 @@ func (k Keeper) CheckRequestExists(ctx sdk.Context, id types.RequestID) bool {
 }
 
 // ShouldBecomePendingResolve checks and returns whether the given request should be moved to the
-// pending resolve list, which will be resolved during the EndBlock call. The move will happen exactly when
-// the request receives sufficient raw reports from the validators.
+// pending resolve list, which will be resolved during the EndBlock call. The move will happen
+// exactly once will the request receives sufficient raw reports from the validators.
 func (k Keeper) ShouldBecomePendingResolve(ctx sdk.Context, id types.RequestID) bool {
 	request, err := k.GetRequest(ctx, id)
 	if err != nil {
@@ -151,7 +151,8 @@ func (k Keeper) ShouldBecomePendingResolve(ctx sdk.Context, id types.RequestID) 
 	return int64(len(request.ReceivedValidators)) == request.SufficientValidatorCount
 }
 
-// AddPendingRequest checks and append new request id to list if id already existed in list, it will return error.
+// AddPendingRequest appends the given request to the pending list. Returns error if the request
+// already exists in the list.
 func (k Keeper) AddPendingRequest(ctx sdk.Context, requestID types.RequestID) sdk.Error {
 	pendingList := k.GetPendingResolveList(ctx)
 	for _, entry := range pendingList {
@@ -177,18 +178,15 @@ func (k Keeper) SetPendingResolveList(ctx sdk.Context, reqIDs []types.RequestID)
 	store.Set(types.PendingResolveListStoreKey, encoded)
 }
 
-// GetPendingResolveList returns the list of pending request.
+// GetPendingResolveList returns the list of pending requests to be executed during EndBlock.
 func (k Keeper) GetPendingResolveList(ctx sdk.Context) []types.RequestID {
 	store := ctx.KVStore(k.storeKey)
 	reqIDsBytes := store.Get(types.PendingResolveListStoreKey)
-
-	// If the state is empty
 	if len(reqIDsBytes) == 0 {
+		// Return an empty list if the key does not exist in the store.
 		return []types.RequestID{}
 	}
-
 	var reqIDs []types.RequestID
 	k.cdc.MustUnmarshalBinaryBare(reqIDsBytes, &reqIDs)
-
 	return reqIDs
 }
