@@ -39,11 +39,11 @@ let make = () =>
   {
     let txsSub = TxSub.getList(~page=1, ~pageSize=10, ());
     let totalCountSub = TxSub.count();
-
-    let%Sub txs = txsSub;
+    Js.Console.log(txsSub);
+    let%Sub txsArray = txsSub;
     let%Sub totalCount = totalCountSub;
 
-    let txxx = Belt_List.fromArray(txs);
+    let txs = txsArray |> Belt_List.fromArray;
     <>
       <div className=Styles.topicBar>
         <Text
@@ -119,7 +119,7 @@ let make = () =>
           <HSpacing size={`px(20)} />
         </Row>
       </THead>
-      {txxx
+      {txs
        ->Belt.List.map(({blockHeight, txHash, messages, success}) => {
            let numMsgs = messages->Belt_List.size;
            <TBody key={txHash |> Hash.toHex}>
@@ -152,7 +152,7 @@ let make = () =>
                   ->Belt_Array.map(msg =>
                       <>
                         <VSpacing size=Spacing.sm />
-                        <Msg2 msg success width=400 />
+                        <Msg2 msg success width=350 />
                         <VSpacing size=Spacing.sm />
                       </>
                     )

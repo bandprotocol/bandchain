@@ -202,18 +202,30 @@ module Msg = {
   };
   module AddOracleAddress = {
     type t = {
-      validator: string,
-      reporterAddress: Address.t,
-      sender: Address.t,
+      validator: Address.t,
+      reporter: Address.t,
+      validatorMoniker: string,
     };
+    let decode = json =>
+      JsonUtils.Decode.{
+        validator: json |> field("validator", string) |> Address.fromBech32,
+        reporter: json |> field("reporter", string) |> Address.fromBech32,
+        validatorMoniker: json |> field("validatorMoniker", string),
+      };
   };
 
   module RemoveOracleAddress = {
     type t = {
-      validator: string,
-      reporterAddress: Address.t,
-      sender: Address.t,
+      validator: Address.t,
+      reporter: Address.t,
+      validatorMoniker: string,
     };
+    let decode = json =>
+      JsonUtils.Decode.{
+        validator: json |> field("validator", string) |> Address.fromBech32,
+        reporter: json |> field("reporter", string) |> Address.fromBech32,
+        validatorMoniker: json |> field("validatorMoniker", string),
+      };
   };
 
   module CreateValidator = {
@@ -228,10 +240,22 @@ module Msg = {
       delegatorAddress: Address.t,
       validatorAddress: Address.t,
       publicKey: PubKey.t,
-      minSelfDelegation: list(Coin.t),
-      selfDelegation: list(Coin.t),
-      sender: Address.t,
+      minSelfDelegation: float,
     };
+    let decode = json =>
+      JsonUtils.Decode.{
+        moniker: json |> at(["description", "moniker"], string),
+        identity: json |> at(["description", "identity"], string),
+        website: json |> at(["description", "website"], string),
+        details: json |> at(["description", "details"], string),
+        commissionRate: json |> at(["commission", "rate"], floatstr),
+        commissionMaxRate: json |> at(["commission", "max_rate"], floatstr),
+        commissionMaxChange: json |> at(["commission", "max_change_rate"], floatstr),
+        delegatorAddress: json |> field("delegator_address", string) |> Address.fromBech32,
+        validatorAddress: json |> field("validator_address", string) |> Address.fromBech32,
+        publicKey: json |> field("pubkey", string) |> PubKey.fromBech32,
+        minSelfDelegation: json |> field("min_self_delegation", floatstr),
+      };
   };
 
   module EditValidator = {
@@ -242,9 +266,19 @@ module Msg = {
       details: string,
       commissionRate: float,
       validatorAddress: Address.t,
-      minSelfDelegation: list(Coin.t),
+      minSelfDelegation: float,
       sender: Address.t,
     };
+    let decode = json =>
+      JsonUtils.Decode.{
+        moniker: json |> at(["description", "moniker"], string),
+        identity: json |> at(["description", "identity"], string),
+        website: json |> at(["description", "website"], string),
+        details: json |> at(["description", "details"], string),
+        commissionRate: json |> at(["commission", "rate"], floatstr),
+        validatorAddress: json |> field("validator_address", string) |> Address.fromBech32,
+        minSelfDelegation: json |> field("min_self_delegation", floatstr),
+      };
   };
 
   type t =
@@ -270,9 +304,9 @@ module Msg = {
     | EditOracleScript(oracleScript) => oracleScript.sender
     | Request(request) => request.sender
     | Report(report) => report.reporter
-    | AddOracleAddress(address) => address.sender
-    | RemoveOracleAddress(address) => address.sender
-    | CreateValidator(validator) => validator.sender
+    | AddOracleAddress(address) => address.validator
+    | RemoveOracleAddress(address) => address.validator
+    | CreateValidator(validator) => validator.delegatorAddress
     | EditValidator(validator) => validator.sender
     | Unknown => "" |> Address.fromHex
     };
@@ -313,12 +347,16 @@ module Msg = {
     JsonUtils.Decode.(
       switch (json |> field("type", string)) {
       | "send" => Send(json |> Send.decode)
-      | "createDataSource" => CreateDataSource(json |> CreateDataSource.decode)
-      | "editDataSource" => EditDataSource(json |> EditDataSource.decode)
-      | "createOracleScript" => CreateOracleScript(json |> CreateOracleScript.decode)
-      | "editOracleScript" => EditOracleScript(json |> EditOracleScript.decode)
+      | "create_data_source" => CreateDataSource(json |> CreateDataSource.decode)
+      | "edit_data_source" => EditDataSource(json |> EditDataSource.decode)
+      | "create_oracle_script" => CreateOracleScript(json |> CreateOracleScript.decode)
+      | "edit_oracle_script" => EditOracleScript(json |> EditOracleScript.decode)
       | "request" => Request(json |> Request.decode)
       | "report" => Report(json |> Report.decode)
+      | "add_oracle_address" => AddOracleAddress(json |> AddOracleAddress.decode)
+      | "remove_oracle_address" => RemoveOracleAddress(json |> RemoveOracleAddress.decode)
+      | "create_validator" => CreateValidator(json |> CreateValidator.decode)
+      // | "create_validator" => CreateValidator(json |> CreateValidator.decode)
       | _ => Unknown
       }
     );

@@ -161,18 +161,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
       </div>
       {success
          ? <>
-             <div className={Styles.rowWithWidth(210)}>
-               <TypeID.OracleScript id />
-               <HSpacing size=Spacing.sm />
-               <Text
-                 value=name
-                 color=Colors.gray7
-                 weight=Text.Medium
-                 nowrap=true
-                 block=true
-                 ellipsis=true
-               />
-             </div>
+             <TypeID.OracleScript id />
+             <HSpacing size=Spacing.sm />
+             <Text
+               value=name
+               color=Colors.gray7
+               weight=Text.Medium
+               nowrap=true
+               block=true
+               ellipsis=true
+             />
            </>
          : React.null}
     </div>
@@ -241,9 +239,9 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
            </>
          : React.null}
     </div>
-  | AddOracleAddress({sender, reporterAddress}) =>
+  | AddOracleAddress({validator, reporter}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
+      <div className={Styles.withWidth(130)}> <AddressRender address=validator /> </div>
       <div className={Styles.withBg(Colors.purple1, 114)}>
         <Text
           value="ADD ORACLE ADDRESS"
@@ -256,15 +254,13 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
       {success
          ? <>
              <HSpacing size=Spacing.sm />
-             <div className={Styles.withWidth(160)}>
-               <AddressRender address=reporterAddress />
-             </div>
+             <div className={Styles.withWidth(120)}> <AddressRender address=reporter /> </div>
            </>
          : React.null}
     </div>
-  | RemoveOracleAddress({sender, reporterAddress}) =>
+  | RemoveOracleAddress({validator, reporter}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
+      <div className={Styles.withWidth(130)}> <AddressRender address=validator /> </div>
       <div className={Styles.withBg(Colors.purple1, 133)}>
         <Text
           value="REMOVE ORACLE ADDRESS"
@@ -277,15 +273,13 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
       {success
          ? <>
              <HSpacing size=Spacing.sm />
-             <div className={Styles.withWidth(160)}>
-               <AddressRender address=reporterAddress />
-             </div>
+             <div className={Styles.withWidth(120)}> <AddressRender address=reporter /> </div>
            </>
          : React.null}
     </div>
-  | CreateValidator({sender, moniker}) =>
+  | CreateValidator({delegatorAddress, moniker}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
+      <div className={Styles.withWidth(130)}> <AddressRender address=delegatorAddress /> </div>
       <div className={Styles.withBg(Colors.purple1, 97)}>
         <Text
           value="CREATE VALIDATOR"
