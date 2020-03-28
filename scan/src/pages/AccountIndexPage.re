@@ -26,7 +26,7 @@ module Styles = {
     style([
       width(`px(17)),
       height(`px(17)),
-      backgroundColor(Css.hex(color)),
+      backgroundColor(color),
       borderRadius(`percent(50.)),
     ]);
 
@@ -118,6 +118,20 @@ let totalBalance = (title, amount, symbol) => {
 
 [@react.component]
 let make = (~address, ~hashtag: Route.account_tab_t) => {
+  let accountOpt = AccountHook.get(address);
+  let priceOpt = PriceHook.get();
+  let delegations =
+    {
+      let%Opt account = accountOpt;
+      Some(account.delegations);
+    }
+    |> Belt_Option.getWithDefault(_, []);
+
+  let totalBalanceOpt = {
+    let%Opt account = accountOpt;
+    Some(account.balance +. account.balanceStake +. account.reward);
+  };
+
   <div className=Styles.pageContainer>
     <Row justify=Row.Between>
       <Col>
@@ -143,19 +157,60 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
     <Row justify=Row.Between>
       <Col size=0.75> <img src=Images.pieChart className=Styles.graph /> </Col>
       <Col size=1.>
-        {balanceDetail("AVAILABLE BALANCE", "10,547,434.89", "4,829,360.21", "5269FF")}
+        {switch (accountOpt, priceOpt) {
+         | (Some(account), Some(price)) =>
+           balanceDetail(
+             "AVAILABLE BALANCE",
+             account.balance |> Format.fPretty,
+             account.balance *. price.usdPrice |> Format.fPretty,
+             Colors.bandBlue,
+           )
+         | _ => balanceDetail("AVAILABLE BALANCE", "?", "?", Colors.bandBlue)
+         }}
         <VSpacing size=Spacing.xl />
         <VSpacing size=Spacing.md />
-        {balanceDetail("BALANCE AT STAKE", "1,800,000.00", "158,303.88", "ABB6FF")}
+        {switch (accountOpt, priceOpt) {
+         | (Some(account), Some(price)) =>
+           balanceDetail(
+             "BALANCE AT STAKE",
+             account.balanceStake |> Format.fPretty,
+             account.balanceStake *. price.usdPrice |> Format.fPretty,
+             Colors.chartBalanceAtStake,
+           )
+         | _ => balanceDetail("BALANCE AT STAKE", "?", "?", Colors.chartBalanceAtStake)
+         }}
         <VSpacing size=Spacing.xl />
         <VSpacing size=Spacing.md />
-        {balanceDetail("REWARD", "61,301.04", "60.31", "000C5C")}
+        {switch (accountOpt, priceOpt) {
+         | (Some(account), Some(price)) =>
+           balanceDetail(
+             "REWARD",
+             account.reward |> Format.fPretty,
+             account.reward *. price.usdPrice |> Format.fPretty,
+             Colors.chartReward,
+           )
+         | _ => balanceDetail("REWARD", "?", "?", Colors.chartReward)
+         }}
       </Col>
       <div className=Styles.separatorLine />
       <Col size=1. alignSelf=Col.Start>
         <div className=Styles.totalContainer>
-          {totalBalance("TOTAL BAND BALANCE", "12,408,746.93", "BAND")}
-          {totalBalance("TOTAL BAND IN USD ($3.42 / BAND)", "37,226,240.79", "USD")}
+          {switch (totalBalanceOpt, priceOpt) {
+           | (Some(totalBand), Some(price)) =>
+             <>
+               {totalBalance("TOTAL BAND BALANCE", totalBand |> Format.fPretty, "BAND")}
+               {totalBalance(
+                  "TOTAL BAND IN USD ($" ++ (price.usdPrice |> Format.fPretty) ++ " / BAND)",
+                  totalBand *. price.usdPrice |> Format.fPretty,
+                  "USD",
+                )}
+             </>
+           | _ =>
+             <>
+               {totalBalance("TOTAL BAND BALANCE", "?", "BAND")}
+               {totalBalance("TOTAL BAND IN USD ($?/ BAND)", "?", "USD")}
+             </>
+           }}
         </div>
       </Col>
     </Row>
@@ -171,7 +226,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
       currentRoute={Route.AccountIndexPage(address, hashtag)}>
       {switch (hashtag) {
        | AccountTransactions => <AccountIndexTransactions />
-       | AccountDelegations => <AccountIndexDelegations />
+       | AccountDelegations => <AccountIndexDelegations delegations />
        }}
     </Tab>
   </div>;
