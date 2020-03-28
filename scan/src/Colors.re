@@ -82,4 +82,8 @@ let gray8 = Css.hex("333333");
 
 let white = Css.hex("ffffff");
 
+let chartBalanceAtStake = Css.hex("ABB6FF");
+let chartReward = Css.hex("000C5C");
+
 let transparent = Css.rgba(0, 0, 0, 0.);
+

@@ -9,12 +9,12 @@ module Styles = {
 };
 
 [@react.component]
-let make = () => {
+let make = (~delegations: list(AccountHook.Account.delegation_t)) => {
   <div className=Styles.tableLowerContainer>
     <VSpacing size=Spacing.md />
     <div className=Styles.hFlex>
       <HSpacing size=Spacing.lg />
-      <Text value="3" weight=Text.Semibold />
+      <Text value={delegations |> Belt_List.length |> string_of_int} weight=Text.Semibold />
       <HSpacing size=Spacing.xs />
       <Text value="Delegated Validators" />
     </div>
@@ -60,42 +60,27 @@ let make = () => {
           <Col> <HSpacing size=Spacing.lg /> </Col>
         </Row>
       </THead>
-      {[
-         ("bandvaloper1sjllsnramtg3ewxqwwrwjxfgc4n4ef9u2lcnj0", 30521.534, 2324.23),
-         ("bandvaloper1sjllsfgamtg3ewxqwwrwjxfgc4n4ef9u2l2nj0", 30521.534, 2324.23),
-         ("bandvaloper1sjllsnramtg3ewxqwwrwjxfgc444ef9u2lcnj0", 30521.534, 2324.23),
-       ]
-       ->Belt.List.map(((validator, amount, reward)) => {
-           <TBody key=validator minHeight=50>
+      {delegations
+       ->Belt.List.map(delegation => {
+           <TBody key={delegation.validatorAddress} minHeight=50>
              <Row>
                <Col> <HSpacing size=Spacing.lg /> </Col>
                <Col size=0.9>
                  <div className=Styles.hFlex>
-                   <Text
-                     value="bandvaloper"
-                     weight=Text.Semibold
-                     spacing={Text.Em(0.02)}
-                     code=true
-                     block=true
-                   />
-                   <Text
-                     value={validator->Js.String.sliceToEnd(~from=11)}
-                     spacing={Text.Em(0.02)}
-                     block=true
-                     code=true
-                     ellipsis=true
-                     nowrap=true
+                   <AddressRender
+                     address={delegation.validatorAddress |> Address.fromBech32}
+                     validator=true
                    />
                  </div>
                </Col>
                <Col size=0.6>
                  <div className=Styles.alignRight>
-                   <Text value={amount |> Format.fPretty} code=true />
+                   <Text value={delegation.balance |> Format.fPretty} code=true />
                  </div>
                </Col>
                <Col size=0.6>
                  <div className=Styles.alignRight>
-                   <Text value={reward |> Format.fPretty} code=true />
+                   <Text value={delegation.reward |> Format.fPretty} code=true />
                  </div>
                </Col>
                <Col> <HSpacing size=Spacing.lg /> </Col>
