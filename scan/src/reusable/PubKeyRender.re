@@ -53,7 +53,6 @@ let make = (~pubKey, ~position=Text) => {
       spacing={position |> letterSpacing}
       block=true
       nowrap=true
-      height={Text.Px(16)}
     />
     <Text
       value=noPrefixAddress
@@ -63,7 +62,6 @@ let make = (~pubKey, ~position=Text) => {
       code=true
       block=true
       align=Text.Right
-      height={Text.Px(16)}
     />
   </div>;
 };
