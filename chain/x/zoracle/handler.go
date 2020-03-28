@@ -246,7 +246,7 @@ func handleMsgRequestData(ctx sdk.Context, keeper Keeper, msg MsgRequestData) sd
 	_, _, errOwasm := owasm.Execute(&env, script.Code, "prepare", msg.Calldata, msg.PrepareGas)
 	if errOwasm != nil {
 		return types.ErrBadWasmExecution(
-			"handleMsgRequestData: An error occured while running Owasm prepare.",
+			"handleMsgRequestData: An error occurred while running Owasm prepare.",
 		).Result()
 	}
 
