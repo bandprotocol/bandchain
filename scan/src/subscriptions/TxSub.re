@@ -87,7 +87,7 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
-        id: 0, // TODO , use id from events (not available right now)
+        id: json |> field("dataSourceID", intstr),
         owner: json |> field("owner", string) |> Address.fromBech32,
         name: json |> field("name", string),
         fee: json |> field("fee", list(Coin.decodeCoin)),
