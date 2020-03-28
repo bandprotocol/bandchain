@@ -106,7 +106,7 @@ func (k Keeper) PayDataSourceFees(
 		if err != nil {
 			return err
 		}
-		if dataSource.Owner.Equals(sender) { // Skip
+		if dataSource.Owner.Equals(sender) {
 			continue
 		}
 		if dataSource.Fee.IsZero() {
