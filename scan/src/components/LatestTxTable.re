@@ -152,7 +152,7 @@ let make = () =>
                   ->Belt_Array.map(msg =>
                       <>
                         <VSpacing size=Spacing.sm />
-                        <Msg2 msg success width=350 />
+                        <MsgSub msg success width=350 />
                         <VSpacing size=Spacing.sm />
                       </>
                     )

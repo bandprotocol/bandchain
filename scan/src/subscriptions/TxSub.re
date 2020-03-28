@@ -169,7 +169,6 @@ module Msg = {
     };
 
     let decode = json => {
-      Js.Console.log(json);
       JsonUtils.Decode.{
         id: json |> field("requestID", ID.Request.fromJson),
         oracleScriptID: json |> field("oracleScriptID", ID.OracleScript.fromJson),
@@ -265,19 +264,19 @@ module Msg = {
       website: string,
       details: string,
       commissionRate: float,
-      validatorAddress: Address.t,
-      minSelfDelegation: float,
       sender: Address.t,
+      minSelfDelegation: float,
     };
     let decode = json =>
       JsonUtils.Decode.{
-        moniker: json |> at(["description", "moniker"], string),
-        identity: json |> at(["description", "identity"], string),
-        website: json |> at(["description", "website"], string),
-        details: json |> at(["description", "details"], string),
-        commissionRate: json |> at(["commission", "rate"], floatstr),
-        validatorAddress: json |> field("validator_address", string) |> Address.fromBech32,
-        minSelfDelegation: json |> field("min_self_delegation", floatstr),
+        moniker: json |> field("moniker", string),
+        identity: json |> field("identity", string),
+        website: json |> field("website", string),
+        details: json |> field("details", string),
+        commissionRate: 0.,
+        // json |> field("commission_rate", Js.Json.decodeNumber) |> Belt.Option.getExn,
+        sender: json |> field("address", string) |> Address.fromBech32,
+        minSelfDelegation: 0.,
       };
   };
 
@@ -343,7 +342,6 @@ module Msg = {
   };
 
   let decodeAction = json => {
-    Js.Console.log(json);
     JsonUtils.Decode.(
       switch (json |> field("type", string)) {
       | "send" => Send(json |> Send.decode)
@@ -356,7 +354,7 @@ module Msg = {
       | "add_oracle_address" => AddOracleAddress(json |> AddOracleAddress.decode)
       | "remove_oracle_address" => RemoveOracleAddress(json |> RemoveOracleAddress.decode)
       | "create_validator" => CreateValidator(json |> CreateValidator.decode)
-      // | "create_validator" => CreateValidator(json |> CreateValidator.decode)
+      | "edit_validator" => EditValidator(json |> EditValidator.decode)
       | _ => Unknown
       }
     );
@@ -514,7 +512,6 @@ let getList = (~page, ~pageSize, ()) => {
       MultiConfig.definition,
       ~variables=MultiConfig.makeVariables(~limit=pageSize, ~offset, ()),
     );
-  Js.Console.log(result);
 
   result |> Sub.map(_, x => x##transactions);
 };
