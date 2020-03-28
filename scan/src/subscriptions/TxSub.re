@@ -263,9 +263,7 @@ module Msg = {
       identity: string,
       website: string,
       details: string,
-      commissionRate: float,
       sender: Address.t,
-      minSelfDelegation: float,
     };
     let decode = json =>
       JsonUtils.Decode.{
@@ -273,10 +271,7 @@ module Msg = {
         identity: json |> field("identity", string),
         website: json |> field("website", string),
         details: json |> field("details", string),
-        commissionRate: 0.,
-        // json |> field("commission_rate", Js.Json.decodeNumber) |> Belt.Option.getExn,
         sender: json |> field("address", string) |> Address.fromBech32,
-        minSelfDelegation: 0.,
       };
   };
 

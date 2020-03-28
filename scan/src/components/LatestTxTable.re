@@ -39,7 +39,6 @@ let make = () =>
   {
     let txsSub = TxSub.getList(~page=1, ~pageSize=10, ());
     let totalCountSub = TxSub.count();
-    Js.Console.log(txsSub);
     let%Sub txsArray = txsSub;
     let%Sub totalCount = totalCountSub;
 
