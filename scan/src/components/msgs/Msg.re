@@ -218,9 +218,9 @@ let make = (~msg: TxHook.Msg.t, ~width: int, ~success: bool) => {
            </>
          : React.null}
     </div>
-  | Report({requestID, sender}) =>
+  | Report({requestID, reporter}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(140)}> <AddressRender address=sender /> </div>
+      <div className={Styles.withWidth(140)}> <AddressRender address=reporter /> </div>
       <div className={Styles.withBg(Colors.orange1, 50)}>
         <Text
           value="REPORT"

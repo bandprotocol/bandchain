@@ -5,9 +5,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// SetOracleScript saves the given oracle script with the given ID to the storage.
-// WARNING: This function doesn't perform any check on ID.
-func (k Keeper) SetOracleScript(ctx sdk.Context, id types.OracleScriptID, oracleScript types.OracleScript) {
+// SetOracleScript saves the given oracle script to the storage without performing validation.
+func (k Keeper) SetOracleScript(
+	ctx sdk.Context, id types.OracleScriptID, oracleScript types.OracleScript,
+) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.OracleScriptStoreKey(id), k.cdc.MustMarshalBinaryBare(oracleScript))
 }
@@ -16,63 +17,57 @@ func (k Keeper) SetOracleScript(ctx sdk.Context, id types.OracleScriptID, oracle
 func (k Keeper) AddOracleScript(
 	ctx sdk.Context, owner sdk.AccAddress, name string, description string, code []byte,
 ) (types.OracleScriptID, sdk.Error) {
-	newOracleScriptID := k.GetNextOracleScriptID(ctx)
-
 	if int64(len(code)) > k.MaxOracleScriptCodeSize(ctx) {
 		return 0, types.ErrBadDataValue(
 			"AddOracleScript: Code size (%d) exceeds the maximum size (%d).",
-			len(code),
-			int(k.MaxOracleScriptCodeSize(ctx)),
+			len(code), int(k.MaxOracleScriptCodeSize(ctx)),
 		)
 	}
 	if int64(len(name)) > k.MaxNameLength(ctx) {
 		return 0, types.ErrBadDataValue(
-			"AddOracleScript: Name length (%d) exceeds the maximum length (%d).",
-			len(name),
-			int(k.MaxNameLength(ctx)),
+			"AddOracleScript: Name length (%d) exceeds the maximum length (%d). 211",
+			len(name), int(k.MaxNameLength(ctx)),
 		)
 	}
 	if int64(len(description)) > k.MaxDescriptionLength(ctx) {
 		return 0, types.ErrBadDataValue(
 			"AddOracleScript: Name length (%d) exceeds the maximum length (%d).",
-			len(name),
-			int(k.MaxNameLength(ctx)),
+			len(name), int(k.MaxNameLength(ctx)),
 		)
 	}
 
+	newOracleScriptID := k.GetNextOracleScriptID(ctx)
 	newOracleScript := types.NewOracleScript(owner, name, description, code)
 	k.SetOracleScript(ctx, newOracleScriptID, newOracleScript)
 	return newOracleScriptID, nil
 }
 
 // EditOracleScript edits the given oracle script by given oracle script id to the storage.
-func (k Keeper) EditOracleScript(ctx sdk.Context, oracleScriptID types.OracleScriptID, owner sdk.AccAddress, name string, description string, code []byte) sdk.Error {
+func (k Keeper) EditOracleScript(
+	ctx sdk.Context, oracleScriptID types.OracleScriptID, owner sdk.AccAddress,
+	name string, description string, code []byte,
+) sdk.Error {
 	if !k.CheckOracleScriptExists(ctx, oracleScriptID) {
 		return types.ErrItemNotFound(
-			"EditOracleScript: Unknown oracle script ID %d.",
-			oracleScriptID,
+			"EditOracleScript: Unknown oracle script ID %d.", oracleScriptID,
 		)
 	}
-
 	if int64(len(code)) > k.MaxOracleScriptCodeSize(ctx) {
 		return types.ErrBadDataValue(
 			"EditDataSource: Code size (%d) exceeds the maximum size (%d).",
-			len(code),
-			int(k.MaxOracleScriptCodeSize(ctx)),
+			len(code), int(k.MaxOracleScriptCodeSize(ctx)),
 		)
 	}
 	if int64(len(name)) > k.MaxNameLength(ctx) {
 		return types.ErrBadDataValue(
 			"EditOracleScript: Name length (%d) exceeds the maximum length (%d).",
-			len(name),
-			int(k.MaxNameLength(ctx)),
+			len(name), int(k.MaxNameLength(ctx)),
 		)
 	}
 	if int64(len(description)) > k.MaxDescriptionLength(ctx) {
 		return types.ErrBadDataValue(
 			"EditDataSource: Description length (%d) exceeds the maximum length (%d).",
-			len(description),
-			int(k.MaxDescriptionLength(ctx)),
+			len(description), int(k.MaxDescriptionLength(ctx)),
 		)
 	}
 
@@ -82,18 +77,18 @@ func (k Keeper) EditOracleScript(ctx sdk.Context, oracleScriptID types.OracleScr
 }
 
 // GetOracleScript returns the entire OracleScript struct for the given ID.
-func (k Keeper) GetOracleScript(ctx sdk.Context, id types.OracleScriptID) (types.OracleScript, sdk.Error) {
+func (k Keeper) GetOracleScript(
+	ctx sdk.Context, id types.OracleScriptID,
+) (types.OracleScript, sdk.Error) {
 	store := ctx.KVStore(k.storeKey)
 	if !k.CheckOracleScriptExists(ctx, id) {
 		return types.OracleScript{}, types.ErrItemNotFound(
-			"GetOracleScript: Unknown oracle script ID %d.",
-			id,
+			"GetOracleScript: Unknown oracle script ID %d.", id,
 		)
 	}
 
-	bz := store.Get(types.OracleScriptStoreKey(id))
 	var oracleScript types.OracleScript
-	k.cdc.MustUnmarshalBinaryBare(bz, &oracleScript)
+	k.cdc.MustUnmarshalBinaryBare(store.Get(types.OracleScriptStoreKey(id)), &oracleScript)
 	return oracleScript, nil
 }
 

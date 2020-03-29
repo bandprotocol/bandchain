@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
-
-	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
 )
 
 // NewQuerier is the module level router for state queries.

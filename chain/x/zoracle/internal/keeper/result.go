@@ -1,20 +1,19 @@
 package keeper
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// AddResult is a function to validate result size and set to store.
+// AddResult validates the result's size and saves it to the store.
 func (k Keeper) AddResult(
-	ctx sdk.Context, requestID types.RequestID, oracleScriptID types.OracleScriptID, calldata []byte, result []byte,
+	ctx sdk.Context, requestID types.RequestID, oracleScriptID types.OracleScriptID,
+	calldata []byte, result []byte,
 ) sdk.Error {
 	if int64(len(result)) > k.MaxResultSize(ctx) {
 		return types.ErrBadDataValue(
 			"AddResult: Result size (%d) exceeds the maximum size (%d).",
-			len(result),
-			int(k.MaxResultSize(ctx)),
+			len(result), int(k.MaxResultSize(ctx)),
 		)
 	}
 
@@ -24,20 +23,16 @@ func (k Keeper) AddResult(
 	}
 
 	k.SetResult(ctx, requestID, oracleScriptID, calldata, types.NewResult(
-		request.RequestTime,
-		ctx.BlockTime().Unix(),
-		int64(len(request.RequestedValidators)),
-		request.SufficientValidatorCount,
-		int64(len(request.ReceivedValidators)),
-		result,
+		request.RequestTime, ctx.BlockTime().Unix(), int64(len(request.RequestedValidators)),
+		request.SufficientValidatorCount, int64(len(request.ReceivedValidators)), result,
 	))
-
 	return nil
 }
 
-// SetResult is a function to save result of execute code to store.
+// SetResult saves the given result of code execution to the store without performing validation.
 func (k Keeper) SetResult(
-	ctx sdk.Context, requestID types.RequestID, oracleScriptID types.OracleScriptID, calldata []byte, result types.Result,
+	ctx sdk.Context, requestID types.RequestID, oracleScriptID types.OracleScriptID,
+	calldata []byte, result types.Result,
 ) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(
@@ -46,14 +41,14 @@ func (k Keeper) SetResult(
 	)
 }
 
-// GetResult returns the result bytes in store.
+// GetResult returns the result bytes in the store.
 func (k Keeper) GetResult(
-	ctx sdk.Context, requestID types.RequestID, oracleScriptID types.OracleScriptID, calldata []byte,
+	ctx sdk.Context, requestID types.RequestID, oracleScriptID types.OracleScriptID,
+	calldata []byte,
 ) (types.Result, sdk.Error) {
 	if !k.HasResult(ctx, requestID, oracleScriptID, calldata) {
 		return types.Result{}, types.ErrItemNotFound(
-			"GetResult: Result for request ID %d is not available.",
-			requestID,
+			"GetResult: Result for request ID %d is not available.", requestID,
 		)
 	}
 	store := ctx.KVStore(k.storeKey)
@@ -62,8 +57,11 @@ func (k Keeper) GetResult(
 	), nil
 }
 
-// HasResult checks if the result at this request id is present in the store or not.
-func (k Keeper) HasResult(ctx sdk.Context, requestID types.RequestID, oracleScriptID types.OracleScriptID, calldata []byte) bool {
+// HasResult checks whether the result at this request id exists in the store.
+func (k Keeper) HasResult(
+	ctx sdk.Context, requestID types.RequestID, oracleScriptID types.OracleScriptID,
+	calldata []byte,
+) bool {
 	store := ctx.KVStore(k.storeKey)
 	return store.Has(types.ResultStoreKey(requestID, oracleScriptID, calldata))
 }

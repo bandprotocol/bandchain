@@ -202,15 +202,64 @@ module Msg = {
     type t = {
       requestID: int,
       dataSet: list(RequestHook.RawDataReport.t),
-      sender: Address.t,
+      validator: Address.t,
+      reporter: Address.t,
     };
 
     let decode = json =>
       JsonUtils.Decode.{
         requestID: json |> field("requestID", intstr),
         dataSet: json |> field("dataSet", list(RequestHook.RawDataReport.decode)),
-        sender: json |> field("reporter", string) |> Address.fromBech32,
+        validator: json |> field("validator", string) |> Address.fromBech32,
+        reporter: json |> field("reporter", string) |> Address.fromBech32,
       };
+  };
+
+  module AddOracleAddress = {
+    type t = {
+      validator: string,
+      reporterAddress: Address.t,
+      sender: Address.t,
+    };
+  };
+
+  module RemoveOracleAddress = {
+    type t = {
+      validator: string,
+      reporterAddress: Address.t,
+      sender: Address.t,
+    };
+  };
+
+  module CreateValidator = {
+    type t = {
+      moniker: string,
+      identity: string,
+      website: string,
+      details: string,
+      commissionRate: float,
+      commissionMaxRate: float,
+      commissionMaxChange: float,
+      delegatorAddress: Address.t,
+      validatorAddress: Address.t,
+      publicKey: PubKey.t,
+      minSelfDelegation: list(Coin.t),
+      selfDelegation: list(Coin.t),
+      sender: Address.t,
+    };
+  };
+
+  module EditValidator = {
+    type t = {
+      moniker: string,
+      identity: string,
+      website: string,
+      details: string,
+      commissionRate: float,
+      validatorAddress: Address.t,
+      minSelfDelegation: list(Coin.t),
+      sender: Address.t,
+    };
   };
 
   type action_t =
@@ -221,7 +270,11 @@ module Msg = {
     | CreateOracleScript(CreateOracleScript.t)
     | EditOracleScript(EditOracleScript.t)
     | Request(Request.t)
-    | Report(Report.t);
+    | Report(Report.t)
+    | AddOracleAddress(AddOracleAddress.t)
+    | RemoveOracleAddress(RemoveOracleAddress.t)
+    | CreateValidator(CreateValidator.t)
+    | EditValidator(EditValidator.t);
 
   type t = {
     action: action_t,
@@ -236,7 +289,11 @@ module Msg = {
     | CreateOracleScript(oracleScript) => oracleScript.sender
     | EditOracleScript(oracleScript) => oracleScript.sender
     | Request(request) => request.sender
-    | Report(report) => report.sender
+    | Report(report) => report.reporter
+    | AddOracleAddress(address) => address.sender
+    | RemoveOracleAddress(address) => address.sender
+    | CreateValidator(validator) => validator.sender
+    | EditValidator(validator) => validator.sender
     | Unknown => "" |> Address.fromHex
     };
   };
@@ -263,6 +320,10 @@ module Msg = {
       | Some(value) => "#" ++ (report.requestID |> string_of_int) ++ " " ++ value
       | None => "?"
       }
+    | AddOracleAddress(address) => "ADDORACLEADDRESS DESCRIPTION"
+    | RemoveOracleAddress(address) => "REMOVEORACLEADDRESS DESCRIPTION"
+    | CreateValidator(validator) => "CREATEVALIDATOR DESCRIPTION"
+    | EditValidator(validator) => "EDITVALIDATOR DESCRIPTION"
     | Unknown => "Unknown"
     };
   };
@@ -306,6 +367,10 @@ module Msg = {
       | Some(value) => Some(Route.RequestIndexPage(value->int_of_string, RequestReportStatus))
       | None => None
       }
+    | AddOracleAddress(_) => None
+    | RemoveOracleAddress(_) => None
+    | CreateValidator(_) => None
+    | EditValidator(_) => None
     | Unknown => None
     };
 };

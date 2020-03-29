@@ -46,6 +46,7 @@ func TestAddReportSuccess(t *testing.T) {
 	require.Nil(t, err)
 
 	req, err := keeper.GetRequest(ctx, 1)
+	require.Nil(t, err)
 	require.Equal(t, []sdk.ValAddress{sdk.ValAddress([]byte("validator1"))}, req.ReceivedValidators)
 
 	report, err := keeper.GetRawDataReport(ctx, 1, 2, sdk.ValAddress([]byte("validator1")))
