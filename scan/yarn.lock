@@ -1882,10 +1882,10 @@ aws4@^1.8.0:
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.9.1.tgz#7e33d8f7d449b3f673cd72deb9abdc552dbe528e"
   integrity sha512-wMHVg2EOHaMRxbzgFJ9gtjOOCrI80OHLG14rxi28XwOW8ux6IiEbRCGGGqCtdAIg4FQCbW20k9RsT4y3gJlFug==
 
-axios-hook@^0.0.5:
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/axios-hook/-/axios-hook-0.0.5.tgz#32135e398c2bca1f3bd76464f33fe569eeb1b8e3"
-  integrity sha512-hwRcwBNXTvqPHYUOCmiywVp6qQ4ABW64X7UHYt/28prMmo8eUkWAJEltwDXVLxOxAN5AIba0JS9nnAFctOECEw==
+axios-hook@^0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/axios-hook/-/axios-hook-0.0.6.tgz#4fa8d5f1cdf63133ade6fad244759b6b4d4b9753"
+  integrity sha512-5RoAOF/VU384OP6UNsmIOBGZl2OaZLAmh3USd2h/nmhGikcmg8bqBmExQysbPr/HNEXoo+IKvLrtw2J/J+f1Uw==
   dependencies:
     axios "^0.19.0"
     react "^16.8.1"
