@@ -32,11 +32,12 @@ module Styles = {
     ]);
 };
 
-let renderBody = ((block, proposer): (BlockSub.t, option(ValidatorHook.Validator.t))) => {
+let renderBody = (block: BlockSub.t) => {
   let height = block.height;
   let timestamp = block.timestamp;
   let totalTx = block.txn;
   let hash = block.hash |> Hash.toHex(~upper=true);
+  let validator = block.validator;
 
   <TBody key={height |> string_of_int}>
     <Row minHeight={`px(40)}>
@@ -50,10 +51,10 @@ let renderBody = ((block, proposer): (BlockSub.t, option(ValidatorHook.Validator
       <Col size=1.32> <TimeAgos time=timestamp size=Text.Md weight=Text.Medium /> </Col>
       <Col size=1.5>
         <div className={Styles.withWidth(150)}>
-          {switch (proposer) {
-           | Some(validator) => <ValidatorMonikerLink validator />
-           | None => <Text value="Unknown" weight=Text.Medium block=true ellipsis=true />
-           }}
+          <ValidatorMonikerLink
+            validatorAddress={validator.operatorAddress}
+            moniker={validator.moniker}
+          />
         </div>
       </Col>
       <Col size=1.05>
@@ -75,27 +76,11 @@ let make = () =>
 
     let blocksCounSub = BlockSub.count();
     let blocksSub = BlockSub.getList(~pageSize, ~page, ());
-    let infoOpt = React.useContext(GlobalContext.context);
 
     let%Sub blocksCount = blocksCounSub;
     let%Sub blocks = blocksSub;
 
     let pageCount = Page.getPageCount(blocksCount, pageSize);
-
-    let blocksWithProposers =
-      blocks
-      ->Belt_List.fromArray
-      ->Belt_List.map(block =>
-          (
-            block,
-            BlockSub.getProposer(
-              block,
-              infoOpt->Belt_Option.mapWithDefault([], ({validators}) => validators),
-            ),
-          )
-        );
-
-    // Js.Console.log(blocksWithProposers);
 
     <div className=Styles.pageContainer>
       <Row>
@@ -159,7 +144,7 @@ let make = () =>
           <Col> <HSpacing size=Spacing.md /> </Col>
         </Row>
       </THead>
-      {blocksWithProposers->Belt_List.toArray->Belt_Array.map(renderBody)->React.array}
+      {blocks->Belt_Array.map(renderBody)->React.array}
       <VSpacing size=Spacing.lg />
       <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
       <VSpacing size=Spacing.lg />
