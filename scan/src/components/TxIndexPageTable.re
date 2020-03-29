@@ -17,6 +17,12 @@ module Styles = {
 
   let topicContainer =
     style([display(`flex), justifyContent(`spaceBetween), width(`percent(100.))]);
+
+  let detailContainer = style([display(`flex), maxWidth(`px(360)), justifyContent(`flexEnd)]);
+
+  let firstCol = 0.45;
+  let secondCol = 0.50;
+  let thirdCol = 1.20;
 };
 
 // TODO: move it to file later.
@@ -46,20 +52,20 @@ module CopyButton = {
 let renderSend = (msg, send: TxHook.Msg.Send.t) => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
-    <Col size=0.4 alignSelf=Col.Start>
+    <Col size=Styles.firstCol alignSelf=Col.Start>
       <div className=Styles.badgeContainer>
         <div className={Styles.badge(Colors.blue1)}>
           <Text value="SEND TOKEN" size=Text.Sm spacing={Text.Em(0.07)} color=Colors.blue7 />
         </div>
       </div>
     </Col>
-    <Col size=0.6 alignSelf=Col.Start>
+    <Col size=Styles.secondCol alignSelf=Col.Start>
       <VSpacing size=Spacing.sm />
       <div className={Styles.addressContainer(170)}>
         <AddressRender address={msg |> TxHook.Msg.getCreator} />
       </div>
     </Col>
-    <Col size=1.3 alignSelf=Col.Start>
+    <Col size=Styles.thirdCol alignSelf=Col.Start>
       <VSpacing size=Spacing.sm />
       <div className=Styles.topicContainer>
         <Text value="FROM" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
@@ -78,7 +84,7 @@ let renderSend = (msg, send: TxHook.Msg.Send.t) => {
       <div className=Styles.topicContainer>
         <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className=Styles.hFlex>
-          <Text value={send.amount |> TxHook.Coin.toCoinsString} weight=Text.Bold code=true />
+          <Text value={send.amount |> TxHook.Coin.toCoinsString} weight=Text.Semibold code=true />
         </div>
       </div>
       <VSpacing size=Spacing.lg />
@@ -91,7 +97,7 @@ let renderSend = (msg, send: TxHook.Msg.Send.t) => {
 let renderRequest = (msg, request: TxHook.Msg.Request.t) => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
-    <Col size=0.4 alignSelf=Col.Start>
+    <Col size=Styles.firstCol alignSelf=Col.Start>
       <div className=Styles.badgeContainer>
         <div className={Styles.badge(Colors.orange1)}>
           <Text value="REQUEST DATA" size=Text.Sm spacing={Text.Em(0.07)} color=Colors.orange6 />
@@ -102,13 +108,13 @@ let renderRequest = (msg, request: TxHook.Msg.Request.t) => {
         </div>
       </div>
     </Col>
-    <Col size=0.6 alignSelf=Col.Start>
+    <Col size=Styles.secondCol alignSelf=Col.Start>
       <VSpacing size=Spacing.sm />
       <div className={Styles.addressContainer(170)}>
         <AddressRender address={msg |> TxHook.Msg.getCreator} />
       </div>
     </Col>
-    <Col size=1.3 alignSelf=Col.Start>
+    <Col size=Styles.thirdCol alignSelf=Col.Start>
       <VSpacing size=Spacing.sm />
       <div className=Styles.topicContainer>
         <Text value="ORACLE SCRIPT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
@@ -172,20 +178,20 @@ let renderRequest = (msg, request: TxHook.Msg.Request.t) => {
 let renderReport = (msg, report: TxHook.Msg.Report.t) => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
-    <Col size=0.4 alignSelf=Col.Start>
+    <Col size=Styles.firstCol alignSelf=Col.Start>
       <div className=Styles.badgeContainer>
         <div className={Styles.badge(Colors.orange1)}>
           <Text value="REPORT DATA" size=Text.Sm spacing={Text.Em(0.07)} color=Colors.orange6 />
         </div>
       </div>
     </Col>
-    <Col size=0.6 alignSelf=Col.Start>
+    <Col size=Styles.secondCol alignSelf=Col.Start>
       <VSpacing size=Spacing.sm />
       <div className={Styles.addressContainer(170)}>
         <AddressRender address={msg |> TxHook.Msg.getCreator} />
       </div>
     </Col>
-    <Col size=1.3 alignSelf=Col.Start>
+    <Col size=Styles.thirdCol alignSelf=Col.Start>
       <VSpacing size=Spacing.sm />
       <div className=Styles.topicContainer>
         <Text value="REQUEST ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
@@ -221,7 +227,7 @@ let renderReport = (msg, report: TxHook.Msg.Report.t) => {
 let renderCreateDataSource = (msg, dataSource: TxHook.Msg.CreateDataSource.t) => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
-    <Col size=0.4 alignSelf=Col.Start>
+    <Col size=Styles.firstCol alignSelf=Col.Start>
       <div className=Styles.badgeContainer>
         <VSpacing size=Spacing.sm />
         <div className={Styles.badge(Colors.yellow1)}>
@@ -238,13 +244,13 @@ let renderCreateDataSource = (msg, dataSource: TxHook.Msg.CreateDataSource.t) =>
         </div>
       </div>
     </Col>
-    <Col size=0.6 alignSelf=Col.Start>
+    <Col size=Styles.secondCol alignSelf=Col.Start>
       <VSpacing size=Spacing.md />
       <div className={Styles.addressContainer(170)}>
         <AddressRender address={msg |> TxHook.Msg.getCreator} />
       </div>
     </Col>
-    <Col size=1.3 alignSelf=Col.Start>
+    <Col size=Styles.thirdCol alignSelf=Col.Start>
       <Col> <VSpacing size=Spacing.md /> </Col>
       <div className=Styles.topicContainer>
         <Text value="OWNER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
@@ -277,7 +283,7 @@ let renderCreateDataSource = (msg, dataSource: TxHook.Msg.CreateDataSource.t) =>
 let renderEditDataSource = (msg, dataSource: TxHook.Msg.EditDataSource.t) => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
-    <Col size=0.4 alignSelf=Col.Start>
+    <Col size=Styles.firstCol alignSelf=Col.Start>
       <div className=Styles.badgeContainer>
         <VSpacing size=Spacing.sm />
         <div className={Styles.badge(Colors.yellow1)}>
@@ -294,13 +300,13 @@ let renderEditDataSource = (msg, dataSource: TxHook.Msg.EditDataSource.t) => {
         </div>
       </div>
     </Col>
-    <Col size=0.6 alignSelf=Col.Start>
+    <Col size=Styles.secondCol alignSelf=Col.Start>
       <VSpacing size=Spacing.md />
       <div className={Styles.addressContainer(170)}>
         <AddressRender address={msg |> TxHook.Msg.getCreator} />
       </div>
     </Col>
-    <Col size=1.3 alignSelf=Col.Start>
+    <Col size=Styles.thirdCol alignSelf=Col.Start>
       <Col> <VSpacing size=Spacing.md /> </Col>
       <div className=Styles.topicContainer>
         <Text value="OWNER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
@@ -333,7 +339,7 @@ let renderEditDataSource = (msg, dataSource: TxHook.Msg.EditDataSource.t) => {
 let renderCreateOracleScript = (msg, oracleScript: TxHook.Msg.CreateOracleScript.t) => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
-    <Col size=0.4 alignSelf=Col.Start>
+    <Col size=Styles.firstCol alignSelf=Col.Start>
       <div className=Styles.badgeContainer>
         <VSpacing size=Spacing.sm />
         <div className={Styles.badge(Colors.pink1)}>
@@ -350,13 +356,13 @@ let renderCreateOracleScript = (msg, oracleScript: TxHook.Msg.CreateOracleScript
         </div>
       </div>
     </Col>
-    <Col size=0.6 alignSelf=Col.Start>
+    <Col size=Styles.secondCol alignSelf=Col.Start>
       <VSpacing size=Spacing.md />
       <div className={Styles.addressContainer(170)}>
         <AddressRender address={msg |> TxHook.Msg.getCreator} />
       </div>
     </Col>
-    <Col size=1.3 alignSelf=Col.Start>
+    <Col size=Styles.thirdCol alignSelf=Col.Start>
       <Col> <VSpacing size=Spacing.md /> </Col>
       <div className=Styles.topicContainer>
         <Text value="OWNER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
@@ -382,7 +388,7 @@ let renderCreateOracleScript = (msg, oracleScript: TxHook.Msg.CreateOracleScript
 let renderEditOracleScript = (msg, oracleScript: TxHook.Msg.EditOracleScript.t) => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
-    <Col size=0.4 alignSelf=Col.Start>
+    <Col size=Styles.firstCol alignSelf=Col.Start>
       <div className=Styles.badgeContainer>
         <VSpacing size=Spacing.sm />
         <div className={Styles.badge(Colors.pink1)}>
@@ -399,13 +405,13 @@ let renderEditOracleScript = (msg, oracleScript: TxHook.Msg.EditOracleScript.t) 
         </div>
       </div>
     </Col>
-    <Col size=0.6 alignSelf=Col.Start>
+    <Col size=Styles.secondCol alignSelf=Col.Start>
       <VSpacing size=Spacing.md />
       <div className={Styles.addressContainer(170)}>
         <AddressRender address={msg |> TxHook.Msg.getCreator} />
       </div>
     </Col>
-    <Col size=1.3 alignSelf=Col.Start>
+    <Col size=Styles.thirdCol alignSelf=Col.Start>
       <Col> <VSpacing size=Spacing.md /> </Col>
       <div className=Styles.topicContainer>
         <Text value="OWNER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
@@ -428,6 +434,262 @@ let renderEditOracleScript = (msg, oracleScript: TxHook.Msg.EditOracleScript.t) 
   </Row>;
 };
 
+let renderAddOracleAddress = (msg, address: TxHook.Msg.AddOracleAddress.t) => {
+  <Row>
+    <Col> <HSpacing size=Spacing.md /> </Col>
+    <Col size=Styles.firstCol alignSelf=Col.Start>
+      <div className=Styles.badgeContainer>
+        <div className={Styles.badge(Colors.purple1)}>
+          <Text
+            value="ADD ORACLE ADDRESS"
+            size=Text.Sm
+            spacing={Text.Em(0.07)}
+            color=Colors.purple6
+          />
+        </div>
+      </div>
+    </Col>
+    <Col size=Styles.secondCol alignSelf=Col.Start>
+      <VSpacing size=Spacing.sm />
+      <div className={Styles.addressContainer(170)}>
+        <AddressRender address={msg |> TxHook.Msg.getCreator} />
+      </div>
+    </Col>
+    <Col size=Styles.thirdCol alignSelf=Col.Start>
+      <VSpacing size=Spacing.sm />
+      <div className=Styles.topicContainer>
+        <Text value="VALIDATOR" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <Text value={address.validator} code=true />
+      </div>
+      <VSpacing size=Spacing.lg />
+      <div className=Styles.topicContainer>
+        <Text value="REPORTER ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <AddressRender address={address.reporterAddress} />
+      </div>
+    </Col>
+    <Col> <HSpacing size=Spacing.md /> </Col>
+  </Row>;
+};
+
+let renderRemoveOracleAddress = (msg, address: TxHook.Msg.RemoveOracleAddress.t) => {
+  <Row>
+    <Col> <HSpacing size=Spacing.md /> </Col>
+    <Col size=Styles.firstCol alignSelf=Col.Start>
+      <div className=Styles.badgeContainer>
+        <div className={Styles.badge(Colors.purple1)}>
+          <Text
+            value="REMOVE ORACLE ADDRESS"
+            size=Text.Sm
+            spacing={Text.Em(0.07)}
+            color=Colors.purple6
+          />
+        </div>
+      </div>
+    </Col>
+    <Col size=Styles.secondCol alignSelf=Col.Start>
+      <VSpacing size=Spacing.sm />
+      <div className={Styles.addressContainer(170)}>
+        <AddressRender address={msg |> TxHook.Msg.getCreator} />
+      </div>
+    </Col>
+    <Col size=Styles.thirdCol alignSelf=Col.Start>
+      <VSpacing size=Spacing.sm />
+      <div className=Styles.topicContainer>
+        <Text value="VALIDATOR" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <Text value={address.validator} code=true />
+      </div>
+      <VSpacing size=Spacing.lg />
+      <div className=Styles.topicContainer>
+        <Text value="REPORTER ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <AddressRender address={address.reporterAddress} />
+      </div>
+    </Col>
+    <Col> <HSpacing size=Spacing.md /> </Col>
+  </Row>;
+};
+
+let renderCreateValidator = (msg, validator: TxHook.Msg.CreateValidator.t) => {
+  <Row>
+    <Col> <HSpacing size=Spacing.md /> </Col>
+    <Col size=Styles.firstCol alignSelf=Col.Start>
+      <div className=Styles.badgeContainer>
+        <div className={Styles.badge(Colors.purple1)}>
+          <Text
+            value="CREATE VALIDATOR"
+            size=Text.Sm
+            spacing={Text.Em(0.07)}
+            color=Colors.purple6
+          />
+        </div>
+      </div>
+    </Col>
+    <Col size=Styles.secondCol alignSelf=Col.Start>
+      <VSpacing size=Spacing.sm />
+      <div className={Styles.addressContainer(170)}>
+        <AddressRender address={msg |> TxHook.Msg.getCreator} />
+      </div>
+    </Col>
+    <Col size=Styles.thirdCol alignSelf=Col.Start>
+      <VSpacing size=Spacing.sm />
+      <div className=Styles.topicContainer>
+        <Text value="MONIKER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <Text value={validator.moniker} code=true />
+      </div>
+      <VSpacing size=Spacing.md />
+      <div className=Styles.topicContainer>
+        <Text value="IDENTITY" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <Text value={validator.identity} code=true />
+      </div>
+      <VSpacing size=Spacing.md />
+      <div className=Styles.topicContainer>
+        <Text value="WEBSITE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <Text value={validator.website} code=true />
+      </div>
+      <VSpacing size=Spacing.md />
+      <div className=Styles.topicContainer>
+        <Text value="DETAILS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <div className=Styles.detailContainer>
+          <Text value={validator.details} code=true height={Text.Px(16)} align=Text.Right />
+        </div>
+      </div>
+      <VSpacing size=Spacing.md />
+      <div className=Styles.topicContainer>
+        <Text value="COMMISSION RATE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <Text
+          value={validator.commissionRate->Js.Float.toFixedWithPrecision(~digits=4) ++ "%"}
+          code=true
+        />
+      </div>
+      <VSpacing size=Spacing.md />
+      <div className=Styles.topicContainer>
+        <Text value="COMMISSION MAX RATE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <Text
+          value={validator.commissionMaxRate->Js.Float.toFixedWithPrecision(~digits=4) ++ "%"}
+          code=true
+        />
+      </div>
+      <VSpacing size=Spacing.md />
+      <div className=Styles.topicContainer>
+        <Text
+          value="COMMISSION MAX CHANGE"
+          size=Text.Sm
+          weight=Text.Thin
+          spacing={Text.Em(0.06)}
+        />
+        <Text
+          value={validator.commissionMaxChange->Js.Float.toFixedWithPrecision(~digits=4) ++ "%"}
+          code=true
+        />
+      </div>
+      <VSpacing size=Spacing.md />
+      <div className=Styles.topicContainer>
+        <Text value="DELAGATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <AddressRender address={validator.delegatorAddress} />
+      </div>
+      <VSpacing size=Spacing.md />
+      <div className=Styles.topicContainer>
+        <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <AddressRender address={validator.validatorAddress} validator=true />
+      </div>
+      <VSpacing size=Spacing.md />
+      <div className=Styles.topicContainer>
+        <Text value="PUBLIC KEY" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <PubKeyRender pubKey={validator.publicKey} />
+      </div>
+      <VSpacing size=Spacing.md />
+      <div className=Styles.topicContainer>
+        <Text value="MIN SELF DELEGATION" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <div className=Styles.hFlex>
+          <Text value="100.00" weight=Text.Semibold code=true />
+          <HSpacing size=Spacing.sm />
+          <Text value="BAND" weight=Text.Thin code=true />
+        </div>
+      </div>
+      <VSpacing size=Spacing.md />
+      <div className=Styles.topicContainer>
+        <Text value="SELF DELEGATION" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <div className=Styles.hFlex>
+          <Text value="150.00" weight=Text.Semibold code=true />
+          <HSpacing size=Spacing.sm />
+          <Text value="BAND" weight=Text.Thin code=true />
+        </div>
+      </div>
+    </Col>
+    <Col> <HSpacing size=Spacing.md /> </Col>
+  </Row>;
+};
+
+let renderEditValidator = (msg, validator: TxHook.Msg.EditValidator.t) => {
+  <Row>
+    <Col> <HSpacing size=Spacing.md /> </Col>
+    <Col size=Styles.firstCol alignSelf=Col.Start>
+      <div className=Styles.badgeContainer>
+        <div className={Styles.badge(Colors.purple1)}>
+          <Text
+            value="EDIT VALIDATOR"
+            size=Text.Sm
+            spacing={Text.Em(0.07)}
+            color=Colors.purple6
+          />
+        </div>
+      </div>
+    </Col>
+    <Col size=Styles.secondCol alignSelf=Col.Start>
+      <VSpacing size=Spacing.sm />
+      <div className={Styles.addressContainer(170)}>
+        <AddressRender address={msg |> TxHook.Msg.getCreator} />
+      </div>
+    </Col>
+    <Col size=Styles.thirdCol alignSelf=Col.Start>
+      <VSpacing size=Spacing.sm />
+      <div className=Styles.topicContainer>
+        <Text value="MONIKER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <Text value={validator.moniker} code=true />
+      </div>
+      <VSpacing size=Spacing.md />
+      <div className=Styles.topicContainer>
+        <Text value="IDENTITY" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <Text value={validator.identity} code=true />
+      </div>
+      <VSpacing size=Spacing.md />
+      <div className=Styles.topicContainer>
+        <Text value="WEBSITE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <Text value={validator.website} code=true />
+      </div>
+      <VSpacing size=Spacing.md />
+      <div className=Styles.topicContainer>
+        <Text value="DETAILS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <div className=Styles.detailContainer>
+          <Text value={validator.details} code=true height={Text.Px(16)} align=Text.Right />
+        </div>
+      </div>
+      <VSpacing size=Spacing.md />
+      <div className=Styles.topicContainer>
+        <Text value="COMMISSION RATE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <Text
+          value={validator.commissionRate->Js.Float.toFixedWithPrecision(~digits=4) ++ "%"}
+          code=true
+        />
+      </div>
+      <VSpacing size=Spacing.md />
+      <div className=Styles.topicContainer>
+        <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <AddressRender address={validator.validatorAddress} validator=true />
+      </div>
+      <VSpacing size=Spacing.md />
+      <div className=Styles.topicContainer>
+        <Text value="MIN SELF DELEGATION" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <div className=Styles.hFlex>
+          <Text value="100.00" weight=Text.Semibold code=true />
+          <HSpacing size=Spacing.sm />
+          <Text value="BAND" weight=Text.Thin code=true />
+        </div>
+      </div>
+    </Col>
+    <Col> <HSpacing size=Spacing.md /> </Col>
+  </Row>;
+};
+
 let renderBody = (msg: TxHook.Msg.t) => {
   switch (msg.action) {
   | Send(send) => renderSend(msg, send)
@@ -437,17 +699,80 @@ let renderBody = (msg: TxHook.Msg.t) => {
   | EditOracleScript(oracleScript) => renderEditOracleScript(msg, oracleScript)
   | Request(request) => renderRequest(msg, request)
   | Report(report) => renderReport(msg, report)
+  | AddOracleAddress(address) => renderAddOracleAddress(msg, address)
+  | RemoveOracleAddress(address) => renderRemoveOracleAddress(msg, address)
+  | CreateValidator(validator) => renderCreateValidator(msg, validator)
+  | EditValidator(validator) => renderEditValidator(msg, validator)
   | Unknown => React.null
   };
 };
 
 [@react.component]
 let make = (~messages: list(TxHook.Msg.t)) => {
+  let messages =
+    TxHook.Msg.[
+      {
+        action:
+          AddOracleAddress({
+            validator: "node-validator-2",
+            reporterAddress: "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs" |> Address.fromBech32,
+            sender: "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs" |> Address.fromBech32,
+          }),
+        events: [],
+      },
+      {
+        action:
+          RemoveOracleAddress({
+            validator: "node-validator-2",
+            reporterAddress: "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs" |> Address.fromBech32,
+            sender: "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs" |> Address.fromBech32,
+          }),
+        events: [],
+      },
+      {
+        action:
+          CreateValidator({
+            moniker: "Bitkrub-node-validator",
+            identity: "Bitkrub The next generation digital asset exchange",
+            website: "https://www.bitkrub.com/",
+            details: "CEO Changpeng Zhao had previously founded Fusion Systems in 2005 in Shanghai; the company built high-frequency trading systems for brokers.",
+            commissionRate: 3.5250,
+            commissionMaxRate: 10.0000,
+            commissionMaxChange: 0.1000,
+            delegatorAddress: "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs" |> Address.fromBech32,
+            validatorAddress:
+              "bandvaloper1p40yh3zkmhcv0ecqp3mcazy83sa57rgjde6wec" |> Address.fromBech32,
+            publicKey:
+              "bandvalconspub1addwnpepq0grwz83v8g4s06fusnq5s4jkzxnhgvx67qr5g7v8tx39ur5m8tk7rg2nxj"
+              |> PubKey.fromBech32,
+            minSelfDelegation: [{denom: "uband", amount: 100.00}],
+            selfDelegation: [{denom: "uband", amount: 150.00}],
+            sender: "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs" |> Address.fromBech32,
+          }),
+        events: [],
+      },
+      {
+        action:
+          EditValidator({
+            moniker: "Bitkrub-node-validator",
+            identity: "Bitkrub The next generation digital asset exchange",
+            website: "https://www.bitkrub.com/",
+            details: "CEO Changpeng Zhao had previously founded Fusion Systems in 2005 in Shanghai; the company built high-frequency trading systems for brokers.",
+            commissionRate: 3.5250,
+            validatorAddress:
+              "bandvaloper1p40yh3zkmhcv0ecqp3mcazy83sa57rgjde6wec" |> Address.fromBech32,
+            minSelfDelegation: [{denom: "uband", amount: 100.00}],
+            sender: "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs" |> Address.fromBech32,
+          }),
+        events: [],
+      },
+      ...messages,
+    ];
   <>
     <THead>
       <Row>
         <Col> <HSpacing size=Spacing.md /> </Col>
-        <Col size=0.4>
+        <Col size=Styles.firstCol>
           <Text
             block=true
             value="MESSAGE TYPE"
@@ -457,7 +782,7 @@ let make = (~messages: list(TxHook.Msg.t)) => {
             color=Colors.gray5
           />
         </Col>
-        <Col size=0.6>
+        <Col size=Styles.secondCol>
           <div>
             <Text
               block=true
@@ -469,7 +794,7 @@ let make = (~messages: list(TxHook.Msg.t)) => {
             />
           </div>
         </Col>
-        <Col size=1.3>
+        <Col size=Styles.thirdCol>
           <div>
             <Text
               block=true
