@@ -18,7 +18,7 @@ func addUint64Overflow(a, b uint64) (uint64, bool) {
 
 func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 	pendingList := keeper.GetPendingResolveList(ctx)
-	endBlockExecuteGasLimit := keeper.EndBlockExecuteGasLimit(ctx)
+	endBlockExecuteGasLimit := keeper.GetParam(ctx, types.KeyEndBlockExecuteGasLimit)
 	gasConsumed := uint64(0)
 	firstUnresolvedRequestIndex := len(pendingList)
 

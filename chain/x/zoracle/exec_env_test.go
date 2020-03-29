@@ -213,7 +213,7 @@ func TestRequestExternalDataExceedMaxDataSourceCountPerRequest(t *testing.T) {
 	require.Nil(t, err)
 
 	// Set MaxDataSourceCountPerRequest to 5
-	keeper.SetMaxDataSourceCountPerRequest(ctx, 5)
+	keeper.SetParam(ctx, KeyMaxDataSourceCountPerRequest, 5)
 	envErr := env.RequestExternalData(1, 41, []byte("prepare32"))
 	require.Nil(t, envErr)
 	envErr = env.RequestExternalData(1, 42, []byte("prepare32"))

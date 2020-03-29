@@ -33,10 +33,10 @@ func (k Keeper) AddRequest(
 		return 0, types.ErrItemNotFound("AddRequest: Unknown oracle script ID %d.", oracleScriptID)
 	}
 
-	if int64(len(calldata)) > k.MaxCalldataSize(ctx) {
+	if uint64(len(calldata)) > k.GetParam(ctx, types.KeyMaxCalldataSize) {
 		return 0, types.ErrBadDataValue(
 			"AddRequest: Calldata size (%d) exceeds the maximum size (%d).",
-			len(calldata), int(k.MaxCalldataSize(ctx)),
+			len(calldata), int(k.GetParam(ctx, types.KeyMaxCalldataSize)),
 		)
 	}
 
@@ -54,10 +54,10 @@ func (k Keeper) AddRequest(
 	}
 
 	ctx.GasMeter().ConsumeGas(executeGas, "ExecuteGas")
-	if executeGas > k.EndBlockExecuteGasLimit(ctx) {
+	if executeGas > k.GetParam(ctx, types.KeyEndBlockExecuteGasLimit) {
 		return 0, types.ErrBadDataValue(
 			"AddRequest: Execute gas (%d) exceeds the maximum limit (%d).",
-			executeGas, k.EndBlockExecuteGasLimit(ctx),
+			executeGas, k.GetParam(ctx, types.KeyEndBlockExecuteGasLimit),
 		)
 	}
 
@@ -74,10 +74,10 @@ func (k Keeper) AddRequest(
 // allowed value, as specified by `MaxDataSourceCountPerRequest` parameter.
 func (k Keeper) ValidateDataSourceCount(ctx sdk.Context, id types.RequestID) sdk.Error {
 	dataSourceCount := k.GetRawDataRequestCount(ctx, id)
-	if dataSourceCount > k.MaxDataSourceCountPerRequest(ctx) {
+	if uint64(dataSourceCount) > k.GetParam(ctx, types.KeyMaxDataSourceCountPerRequest) {
 		return types.ErrBadDataValue(
 			"ValidateDataSourceCount: Data source count (%d) exceeds the limit (%d).",
-			dataSourceCount, k.MaxDataSourceCountPerRequest(ctx),
+			dataSourceCount, k.GetParam(ctx, types.KeyMaxDataSourceCountPerRequest),
 		)
 	}
 	return nil
