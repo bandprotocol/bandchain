@@ -89,7 +89,7 @@ func handleRequestData(c *gin.Context) {
 
 	reqType := req.Type
 	if reqType == Asynchronous {
-		c.JSON(http.StatusNotImplemented, gin.H{"error": "Asynchronous doesn't avaliable"})
+		c.JSON(http.StatusNotImplemented, gin.H{"error": "Asynchronous doesn't available"})
 		return
 	}
 

@@ -33,6 +33,7 @@ func TestResolveGetCallDataSizet(t *testing.T) {
 		DisableFloatingPoint:     false,
 		ReturnOnGasLimitExceeded: false,
 	}, resolver, &BandChainGasPolicy{})
+	require.Equal(t, err, nil)
 
 	dataSize := resolver.resolveGetCallDataSize(vm)
 	require.Equal(t, dataSize, int64(len(callData)))
@@ -66,6 +67,7 @@ func TestResolveReadExternalDataSuccess(t *testing.T) {
 		DisableFloatingPoint:     false,
 		ReturnOnGasLimitExceeded: false,
 	}, resolver, &BandChainGasPolicy{})
+	require.Equal(t, err, nil)
 
 	//resolveReadExternalData need len(vm.GetCurrentFrame().Locals) >= 5
 	localSize := 5
@@ -114,6 +116,7 @@ func TestGetExternalDataFromCacheSuccess(t *testing.T) {
 		DisableFloatingPoint:     false,
 		ReturnOnGasLimitExceeded: false,
 	}, resolver, &BandChainGasPolicy{})
+	require.Equal(t, err, nil)
 
 	//resolveReadExternalData need len(vm.GetCurrentFrame().Locals) >= 5
 	localSize := 5
@@ -167,6 +170,7 @@ func TestSpamGetExternalDataFromCache(t *testing.T) {
 		DisableFloatingPoint:     false,
 		ReturnOnGasLimitExceeded: false,
 	}, resolver, &BandChainGasPolicy{})
+	require.Equal(t, err, nil)
 
 	//resolveReadExternalData need len(vm.GetCurrentFrame().Locals) >= 5
 	localSize := 5
@@ -231,6 +235,7 @@ func TestGetExternalDataFromCacheFail(t *testing.T) {
 		DisableFloatingPoint:     false,
 		ReturnOnGasLimitExceeded: false,
 	}, resolver, &BandChainGasPolicy{})
+	require.Equal(t, err, nil)
 
 	//resolveReadExternalData need len(vm.GetCurrentFrame().Locals) >= 5
 	localSize := 5
@@ -286,6 +291,7 @@ func TestGetExternalDataSize(t *testing.T) {
 		DisableFloatingPoint:     false,
 		ReturnOnGasLimitExceeded: false,
 	}, resolver, &BandChainGasPolicy{})
+	require.Equal(t, err, nil)
 
 	//resolveReadExternalData need len(vm.GetCurrentFrame().Locals) >= 5
 	localSize := 5
@@ -336,6 +342,7 @@ func TestReadExternalData(t *testing.T) {
 		DisableFloatingPoint:     false,
 		ReturnOnGasLimitExceeded: false,
 	}, resolver, &BandChainGasPolicy{})
+	require.Equal(t, err, nil)
 
 	//resolveReadExternalData need len(vm.GetCurrentFrame().Locals) >= 5
 	localSize := 5

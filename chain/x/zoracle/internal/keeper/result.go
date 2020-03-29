@@ -1,9 +1,8 @@
 package keeper
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // AddResult validates the result's size and saves it to the store.

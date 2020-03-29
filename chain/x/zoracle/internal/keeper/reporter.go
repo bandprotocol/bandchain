@@ -28,10 +28,8 @@ func (k Keeper) AddReporter(
 			validatorAddress.String(),
 		)
 	}
-
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.ReporterStoreKey(validatorAddress, reporterAddress), []byte{1})
-
 	return nil
 }
 
@@ -46,7 +44,6 @@ func (k Keeper) RemoveReporter(
 			validatorAddress.String(),
 		)
 	}
-
 	store := ctx.KVStore(k.storeKey)
 	store.Delete(types.ReporterStoreKey(validatorAddress, reporterAddress))
 	return nil
