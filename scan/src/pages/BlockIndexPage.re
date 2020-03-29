@@ -58,18 +58,12 @@ let make = (~height) => {
   let limit = 10;
 
   let txsOpt = TxHook.atHeight(height, ~limit, ~page, ());
-  let infoOpt = React.useContext(GlobalContext.context);
   let blockOpt =
     switch (BlockSub.get(height)) {
     | ApolloHooks.Subscription.Data(data) => Some(data)
     | _ => None
     };
-  let monikerOpt = {
-    let%Opt info = infoOpt;
-    let%Opt block = blockOpt;
-    let validators = info.validators;
-    Some(BlockSub.getProposerMoniker(block, validators));
-  };
+
   let pageCount = txsOpt->Belt.Option.mapWithDefault(1, info => info.pageCount);
 
   <div className=Styles.pageContainer>
@@ -126,8 +120,9 @@ let make = (~height) => {
       </Col>
       <Col size=3.2>
         <div className=Styles.proposerContainer>
-          {switch (monikerOpt) {
-           | Some(moniker) => <InfoHL info={InfoHL.Text(moniker)} header="PROPOSED BY" />
+          {switch (blockOpt) {
+           | Some({validator: {moniker}}) =>
+             <InfoHL info={InfoHL.Text(moniker)} header="PROPOSED BY" />
            | None => <InfoHL info={InfoHL.Text("?")} header="PROPOSED BY" />
            }}
         </div>
