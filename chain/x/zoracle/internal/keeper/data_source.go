@@ -5,9 +5,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// SetDataSource saves the given data source with the given ID to the storage.
-// WARNING: This function doesn't perform any check on ID.
-func (k Keeper) SetDataSource(ctx sdk.Context, id types.DataSourceID, dataSource types.DataSource) {
+// SetDataSource saves the given data source to the storage without performing validation.
+func (k Keeper) SetDataSource(
+	ctx sdk.Context, id types.DataSourceID, dataSource types.DataSource,
+) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.DataSourceStoreKey(id), k.cdc.MustMarshalBinaryBare(dataSource))
 }
@@ -17,8 +18,6 @@ func (k Keeper) AddDataSource(
 	ctx sdk.Context, owner sdk.AccAddress, name string, description string,
 	fee sdk.Coins, executable []byte,
 ) (types.DataSourceID, sdk.Error) {
-	newDataSourceID := k.GetNextDataSourceID(ctx)
-
 	if int64(len(executable)) > k.MaxDataSourceExecutableSize(ctx) {
 		return 0, types.ErrBadDataValue(
 			"AddDataSource: Executable size (%d) exceeds the maximum size (%d).",
@@ -41,13 +40,17 @@ func (k Keeper) AddDataSource(
 		)
 	}
 
+	newDataSourceID := k.GetNextDataSourceID(ctx)
 	newDataSource := types.NewDataSource(owner, name, description, fee, executable)
 	k.SetDataSource(ctx, newDataSourceID, newDataSource)
 	return newDataSourceID, nil
 }
 
 // EditDataSource edits the given data source by given data source id to the storage.
-func (k Keeper) EditDataSource(ctx sdk.Context, dataSourceID types.DataSourceID, owner sdk.AccAddress, name string, description string, fee sdk.Coins, executable []byte) sdk.Error {
+func (k Keeper) EditDataSource(
+	ctx sdk.Context, dataSourceID types.DataSourceID, owner sdk.AccAddress, name string,
+	description string, fee sdk.Coins, executable []byte,
+) sdk.Error {
 	if !k.CheckDataSourceExists(ctx, dataSourceID) {
 		return types.ErrItemNotFound(
 			"EditDataSource: Unknown data source ID %d.",
@@ -83,7 +86,9 @@ func (k Keeper) EditDataSource(ctx sdk.Context, dataSourceID types.DataSourceID,
 }
 
 // GetDataSource returns the entire DataSource struct for the given ID.
-func (k Keeper) GetDataSource(ctx sdk.Context, id types.DataSourceID) (types.DataSource, sdk.Error) {
+func (k Keeper) GetDataSource(
+	ctx sdk.Context, id types.DataSourceID,
+) (types.DataSource, sdk.Error) {
 	store := ctx.KVStore(k.storeKey)
 	if !k.CheckDataSourceExists(ctx, id) {
 		return types.DataSource{}, types.ErrItemNotFound(
@@ -92,9 +97,8 @@ func (k Keeper) GetDataSource(ctx sdk.Context, id types.DataSourceID) (types.Dat
 		)
 	}
 
-	bz := store.Get(types.DataSourceStoreKey(id))
 	var dataSource types.DataSource
-	k.cdc.MustUnmarshalBinaryBare(bz, &dataSource)
+	k.cdc.MustUnmarshalBinaryBare(store.Get(types.DataSourceStoreKey(id)), &dataSource)
 	return dataSource, nil
 }
 

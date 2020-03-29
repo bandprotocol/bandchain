@@ -5,9 +5,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// SetRawDataRequest is a function to save raw data request detail to the given request id and external id.
+// SetRawDataRequest saves the raw data request to the store without performing validation.
 func (k Keeper) SetRawDataRequest(
-	ctx sdk.Context, requestID types.RequestID, externalID types.ExternalID, rawDataRequest types.RawDataRequest,
+	ctx sdk.Context, requestID types.RequestID, externalID types.ExternalID,
+	rawDataRequest types.RawDataRequest,
 ) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(

@@ -170,7 +170,7 @@ func TestQueryRequestById(t *testing.T) {
 	querier := NewQuerier(keeper)
 
 	// query before set new request
-	acsBytes, err := querier(
+	_, err := querier(
 		ctx,
 		[]string{"request", "1"},
 		abci.RequestQuery{},
@@ -194,7 +194,7 @@ func TestQueryRequestById(t *testing.T) {
 	keeper.SetResult(ctx, 1, request.OracleScriptID, request.Calldata, types.NewResult(1, 2, 3, 2, 2, data))
 
 	// create query
-	acsBytes, err = querier(
+	acsBytes, err := querier(
 		ctx,
 		[]string{"request", "1"},
 		abci.RequestQuery{},
@@ -248,7 +248,7 @@ func TestQueryRequestIncompleteValidator(t *testing.T) {
 	querier := NewQuerier(keeper)
 
 	// query before set new request
-	acsBytes, err := querier(
+	_, err := querier(
 		ctx,
 		[]string{"request", "1"},
 		abci.RequestQuery{},
@@ -266,7 +266,7 @@ func TestQueryRequestIncompleteValidator(t *testing.T) {
 	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[1], types.NewRawDataReport(0, []byte("report2-2")))
 
 	// create query
-	acsBytes, err = querier(
+	acsBytes, err := querier(
 		ctx,
 		[]string{"request", "1"},
 		abci.RequestQuery{},
