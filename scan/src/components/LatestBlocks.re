@@ -35,7 +35,7 @@ module Styles = {
   let rightArrow = style([width(`px(25)), marginTop(`px(17)), marginLeft(`px(16))]);
 };
 
-let renderBlock = ((b, moniker): (BlockSub.t, string)) =>
+let renderBlock = (b: BlockSub.t) =>
   <div
     key={b.height |> string_of_int}
     className=Styles.block
@@ -46,7 +46,7 @@ let renderBlock = ((b, moniker): (BlockSub.t, string)) =>
     <VSpacing size={`px(1)} />
     <Text
       block=true
-      value=moniker
+      value={b.validator.moniker}
       weight=Text.Bold
       ellipsis=true
       height={Text.Px(15)}
@@ -59,9 +59,7 @@ let make = () =>
   {
     let%Opt info = React.useContext(GlobalContext.context);
     let blocks = info.latestBlocks;
-    let validators = info.validators;
-    let blocksWithMonikers =
-      blocks->Belt_List.map(block => (block, BlockSub.getProposerMoniker(block, validators)));
+
     let%Opt latestBlock = blocks->Belt.List.get(0);
     let latestHeightOpt = latestBlock.height;
 
@@ -97,7 +95,7 @@ let make = () =>
         <VSpacing size=Spacing.lg />
         <Row alignItems=`initial>
           <Col>
-            {blocksWithMonikers
+            {blocks
              ->Belt.List.keepWithIndex((_b, i) => i mod 2 == 0)
              ->Belt.List.map(renderBlock)
              ->Array.of_list
@@ -106,7 +104,7 @@ let make = () =>
           <Col>
             <div className=Styles.rightCol>
               <VSpacing size=Spacing.xl />
-              {blocksWithMonikers
+              {blocks
                ->Belt.List.keepWithIndex((_b, i) => i mod 2 == 1)
                ->Belt.List.map(renderBlock)
                ->Array.of_list
