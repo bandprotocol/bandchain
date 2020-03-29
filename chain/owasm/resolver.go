@@ -126,17 +126,17 @@ func (r *resolver) resolveRequestExternalData(vm *exec.VirtualMachine) int64 {
 	return 0
 }
 
-func (r *resolver) getExternalDataFromCache(externalDataID int64, validatorIndex int64) ([]byte, uint8, error) {
+// func (r *resolver) getExternalDataFromCache(externalDataID int64, validatorIndex int64) ([]byte, uint8, error) {
 
-	externalData, statusCode, err := r.env.GetExternalData(externalDataID, validatorIndex)
+// 	externalData, statusCode, err := r.env.GetExternalData(externalDataID, validatorIndex)
 
-	return externalData, statusCode, err
-}
+// 	return externalData, statusCode, err
+// }
 
 func (r *resolver) resolveGetExternalDataStatusCode(vm *exec.VirtualMachine) int64 {
 	externalDataID := GetLocalInt64(vm, 0)
 	validatorIndex := GetLocalInt64(vm, 1)
-	_, statusCode, err := r.getExternalDataFromCache(externalDataID, validatorIndex)
+	_, statusCode, err := r.env.GetExternalData(externalDataID, validatorIndex)
 	if err != nil {
 		return -1
 	}
@@ -146,7 +146,7 @@ func (r *resolver) resolveGetExternalDataStatusCode(vm *exec.VirtualMachine) int
 func (r *resolver) resolveGetExternalDataSize(vm *exec.VirtualMachine) int64 {
 	externalDataID := GetLocalInt64(vm, 0)
 	validatorIndex := GetLocalInt64(vm, 1)
-	externalData, _, err := r.getExternalDataFromCache(externalDataID, validatorIndex)
+	externalData, _, err := r.env.GetExternalData(externalDataID, validatorIndex)
 	if err != nil {
 		return -1
 	}
@@ -159,7 +159,7 @@ func (r *resolver) resolveReadExternalData(vm *exec.VirtualMachine) int64 {
 	resultOffset := int(GetLocalInt64(vm, 2))
 	seekOffset := int(GetLocalInt64(vm, 3))
 	resultSize := int(GetLocalInt64(vm, 4))
-	externalData, _, err := r.getExternalDataFromCache(externalDataID, validatorIndex)
+	externalData, _, err := r.env.GetExternalData(externalDataID, validatorIndex)
 	if err != nil {
 		return -1
 	}
