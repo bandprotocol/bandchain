@@ -1,3 +1,5 @@
+open ValidatorSub.Mini;
+
 type aggregate_t = {count: int};
 
 type transactions_aggregate_t = {aggregate: option(aggregate_t)};
@@ -5,7 +7,7 @@ type transactions_aggregate_t = {aggregate: option(aggregate_t)};
 type internal_t = {
   height: int,
   hash: Hash.t,
-  proposer: Address.t,
+  validator: ValidatorSub.Mini.t,
   timestamp: MomentRe.Moment.t,
   transactions_aggregate: transactions_aggregate_t,
 };
@@ -13,15 +15,15 @@ type internal_t = {
 type t = {
   height: int,
   hash: Hash.t,
-  proposer: Address.t,
+  validator: ValidatorSub.Mini.t,
   timestamp: MomentRe.Moment.t,
   txn: int,
 };
 
-let toExternal = ({height, hash, proposer, timestamp, transactions_aggregate}) => {
+let toExternal = ({height, hash, validator, timestamp, transactions_aggregate}) => {
   height,
   hash,
-  proposer,
+  validator,
   timestamp,
   txn:
     switch (transactions_aggregate.aggregate) {
@@ -36,7 +38,11 @@ module MultiConfig = [%graphql
     blocks(limit: $limit, offset: $offset, order_by: {height: desc}) @bsRecord {
       height @bsDecoder(fn: "GraphQLParser.int64")
       hash: block_hash @bsDecoder(fn: "GraphQLParser.hash")
-      proposer @bsDecoder(fn: "Address.fromHex")
+      validator @bsRecord {
+        consensusAddress: consensus_address @bsDecoder(fn: "Address.fromHex")
+        operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
+        moniker
+      }
       timestamp @bsDecoder(fn: "GraphQLParser.time")
       transactions_aggregate @bsRecord {
         aggregate @bsRecord {
@@ -54,7 +60,11 @@ module SingleConfig = [%graphql
     blocks_by_pk(height: $height) @bsRecord {
       height @bsDecoder(fn: "GraphQLParser.int64")
       hash: block_hash @bsDecoder(fn: "GraphQLParser.hash")
-      proposer @bsDecoder(fn: "Address.fromHex")
+      validator @bsRecord {
+        consensusAddress: consensus_address @bsDecoder(fn: "Address.fromHex")
+        operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
+        moniker
+      }
       timestamp @bsDecoder(fn: "GraphQLParser.time")
       transactions_aggregate @bsRecord {
         aggregate @bsRecord {
@@ -106,17 +116,3 @@ let count = () => {
   result
   |> Sub.map(_, x => x##blocks_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
 };
-
-let getProposer = (block: t, validators: list(ValidatorHook.Validator.t)) =>
-  validators
-  ->Belt_List.keep(validator => validator.consensusPubkey |> PubKey.toAddress == block.proposer)
-  ->Belt_List.get(0);
-
-let getProposerMoniker = (block: t, validators: list(ValidatorHook.Validator.t)) =>
-  validators
-  ->Belt_List.keepMap(validator =>
-      validator.consensusPubkey |> PubKey.toAddress == block.proposer
-        ? Some(validator.moniker) : None
-    )
-  ->Belt_List.get(0)
-  ->Belt_Option.getWithDefault("Unknown");
