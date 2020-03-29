@@ -75,8 +75,9 @@ let make = () =>
     let%Opt info = React.useContext(GlobalContext.context);
 
     let validators = info.validators;
-    let moniker = BlockSub.getProposerMoniker(info.latestBlock, validators);
     let bandBonded = validators->Belt_List.map(x => x.tokens)->Belt_List.reduce(0.0, (+.));
+
+    let moniker = info.latestBlock.validator.moniker;
 
     Some(
       <Row justify=Row.Between>
