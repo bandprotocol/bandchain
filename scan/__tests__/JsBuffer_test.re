@@ -18,8 +18,8 @@ describe("Expect JsBuffer to work correctly", () => {
     |> toEqual(fromHex("f23391b5dbf982e37fb7dadea64aae21cae4c172"))
   );
 
-  test({j|should be able to convert upper case hex with \\\\x to lower case without \\\\x|j}, () =>
-    expect(fromHex({j|\\\\xF23391B5DBF982E37FB7DADEA64AAE21CAE4C172|j}))
+  test({j|should be able to convert upper case hex with \\x to lower case without \\x|j}, () =>
+    expect(fromHex({j|\\xF23391B5DBF982E37FB7DADEA64AAE21CAE4C172|j}))
     |> toEqual(fromHex("f23391b5dbf982e37fb7dadea64aae21cae4c172"))
   );
 

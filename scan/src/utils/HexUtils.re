@@ -3,7 +3,6 @@
 // In other words, just strip prefix out and then lowercase.
 // Please see HexUtils_test.re for example.
 let normalizeHexString = hexstr => {
-  Js.Console.log(hexstr);
   hexstr
   ->Js.Re.exec_("[0-9a-fA-F]+$"->Js.Re.fromString, _)
   ->Belt_Option.mapWithDefault([||], result =>

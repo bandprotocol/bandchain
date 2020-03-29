@@ -21,10 +21,9 @@ describe("Expect Hash to work correctly", () => {
     |> toBe("aaa22e077492cbad414098ebd98aa8dc1c7ae8d9")
   );
 
-  test(
-    {j|should be able to strip \\\\x out and return the lower case of substring after \\\\x|j}, () =>
+  test({j|should be able to strip \\x out and return the lower case of substring after \\x|j}, () =>
     expect(
-      {j|\\\\x49e69bfa12e09bcc12716f3da0b050e210e6138beeb33cee3e3ed5af4fd2aecf|j}
+      {j|\\x49e69bfa12e09bcc12716f3da0b050e210e6138beeb33cee3e3ed5af4fd2aecf|j}
       ->normalizeHexString,
     )
     |> toBe("49e69bfa12e09bcc12716f3da0b050e210e6138beeb33cee3e3ed5af4fd2aecf")
