@@ -13,8 +13,7 @@ func (k Keeper) AddResult(
 	if int64(len(result)) > k.MaxResultSize(ctx) {
 		return types.ErrBadDataValue(
 			"AddResult: Result size (%d) exceeds the maximum size (%d).",
-			len(result),
-			int(k.MaxResultSize(ctx)),
+			len(result), int(k.MaxResultSize(ctx)),
 		)
 	}
 
@@ -24,14 +23,9 @@ func (k Keeper) AddResult(
 	}
 
 	k.SetResult(ctx, requestID, oracleScriptID, calldata, types.NewResult(
-		request.RequestTime,
-		ctx.BlockTime().Unix(),
-		int64(len(request.RequestedValidators)),
-		request.SufficientValidatorCount,
-		int64(len(request.ReceivedValidators)),
-		result,
+		request.RequestTime, ctx.BlockTime().Unix(), int64(len(request.RequestedValidators)),
+		request.SufficientValidatorCount, int64(len(request.ReceivedValidators)), result,
 	))
-
 	return nil
 }
 
@@ -54,8 +48,7 @@ func (k Keeper) GetResult(
 ) (types.Result, sdk.Error) {
 	if !k.HasResult(ctx, requestID, oracleScriptID, calldata) {
 		return types.Result{}, types.ErrItemNotFound(
-			"GetResult: Result for request ID %d is not available.",
-			requestID,
+			"GetResult: Result for request ID %d is not available.", requestID,
 		)
 	}
 	store := ctx.KVStore(k.storeKey)

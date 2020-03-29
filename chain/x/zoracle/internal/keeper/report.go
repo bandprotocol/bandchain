@@ -81,7 +81,9 @@ func (k Keeper) AddReport(
 	lastExternalID := types.ExternalID(0)
 	for idx, rawReport := range dataSet {
 		if idx != 0 && lastExternalID >= rawReport.ExternalDataID {
-			return types.ErrBadDataValue("AddReport: Raw data reports are not in an incresaing order.")
+			return types.ErrBadDataValue(
+				"AddReport: Raw data reports are not in an increasing order.",
+			)
 		}
 		if !k.CheckRawDataRequestExists(ctx, requestID, rawReport.ExternalDataID) {
 			return types.ErrBadDataValue(
@@ -98,10 +100,7 @@ func (k Keeper) AddReport(
 			)
 		}
 		k.SetRawDataReport(
-			ctx,
-			requestID,
-			rawReport.ExternalDataID,
-			validator,
+			ctx, requestID, rawReport.ExternalDataID, validator,
 			types.RawDataReport{
 				ExitCode: rawReport.ExitCode,
 				Data:     rawReport.Data,
@@ -135,7 +134,8 @@ func (k Keeper) SetRawDataReport(
 	store.Set(key, k.cdc.MustMarshalBinaryBare(rawDataReport))
 }
 
-// GetRawDataReport is a function that gets a raw data report from store.
+// GetRawDataReport returns the raw data report from the store for a specific combination of
+// request ID, external ID, and validator address.
 func (k Keeper) GetRawDataReport(
 	ctx sdk.Context,
 	requestID types.RequestID, externalID types.ExternalID,
@@ -145,20 +145,21 @@ func (k Keeper) GetRawDataReport(
 	store := ctx.KVStore(k.storeKey)
 	if !store.Has(key) {
 		return types.RawDataReport{}, types.ErrItemNotFound(
-			"GetRawDataReport: Unable to find raw data report with request ID %d external ID %d from %s",
+			"GetRawDataReport: No raw data report with request ID %d external ID %d from %s",
 			requestID,
 			externalID,
 			validatorAddress.String(),
 		)
 	}
-	bz := store.Get(key)
 	var rawDataReport types.RawDataReport
-	k.cdc.MustUnmarshalBinaryBare(bz, &rawDataReport)
+	k.cdc.MustUnmarshalBinaryBare(store.Get(key), &rawDataReport)
 	return rawDataReport, nil
 }
 
 // GetRawDataReportsIterator returns an iterator for all reports for a specific request ID.
-func (k Keeper) GetRawDataReportsIterator(ctx sdk.Context, requestID types.RequestID) sdk.Iterator {
+func (k Keeper) GetRawDataReportsIterator(
+	ctx sdk.Context, requestID types.RequestID,
+) sdk.Iterator {
 	prefix := types.GetIteratorPrefix(types.RawDataReportStoreKeyPrefix, requestID)
 	store := ctx.KVStore(k.storeKey)
 	return sdk.KVStorePrefixIterator(store, prefix)

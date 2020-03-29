@@ -24,8 +24,7 @@ func (k Keeper) AddReporter(
 	if k.CheckReporter(ctx, validatorAddress, reporterAddress) {
 		return types.ErrItemDuplication(
 			"AddReporter: %s is already a reporter of %s.",
-			reporterAddress.String(),
-			validatorAddress.String(),
+			reporterAddress.String(), validatorAddress.String(),
 		)
 	}
 	store := ctx.KVStore(k.storeKey)
@@ -40,8 +39,7 @@ func (k Keeper) RemoveReporter(
 	if !k.CheckReporter(ctx, validatorAddress, reporterAddress) {
 		return types.ErrItemNotFound(
 			"RemoveReporter: %s is not a reporter of %s.",
-			reporterAddress.String(),
-			validatorAddress.String(),
+			reporterAddress.String(), validatorAddress.String(),
 		)
 	}
 	store := ctx.KVStore(k.storeKey)

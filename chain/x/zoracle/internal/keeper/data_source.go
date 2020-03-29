@@ -21,22 +21,19 @@ func (k Keeper) AddDataSource(
 	if int64(len(executable)) > k.MaxDataSourceExecutableSize(ctx) {
 		return 0, types.ErrBadDataValue(
 			"AddDataSource: Executable size (%d) exceeds the maximum size (%d).",
-			len(executable),
-			int(k.MaxDataSourceExecutableSize(ctx)),
+			len(executable), int(k.MaxDataSourceExecutableSize(ctx)),
 		)
 	}
 	if int64(len(name)) > k.MaxNameLength(ctx) {
 		return 0, types.ErrBadDataValue(
 			"AddDataSource: Name length (%d) exceeds the maximum length (%d).",
-			len(name),
-			int(k.MaxNameLength(ctx)),
+			len(name), int(k.MaxNameLength(ctx)),
 		)
 	}
 	if int64(len(description)) > k.MaxDescriptionLength(ctx) {
 		return 0, types.ErrBadDataValue(
 			"AddDataSource: Description length (%d) exceeds the maximum length (%d).",
-			len(description),
-			int(k.MaxDescriptionLength(ctx)),
+			len(description), int(k.MaxDescriptionLength(ctx)),
 		)
 	}
 
@@ -52,31 +49,25 @@ func (k Keeper) EditDataSource(
 	description string, fee sdk.Coins, executable []byte,
 ) sdk.Error {
 	if !k.CheckDataSourceExists(ctx, dataSourceID) {
-		return types.ErrItemNotFound(
-			"EditDataSource: Unknown data source ID %d.",
-			dataSourceID,
-		)
+		return types.ErrItemNotFound("EditDataSource: Unknown data source ID %d.", dataSourceID)
 	}
 
 	if int64(len(executable)) > k.MaxDataSourceExecutableSize(ctx) {
 		return types.ErrBadDataValue(
 			"EditDataSource: Executable size (%d) exceeds the maximum size (%d).",
-			len(executable),
-			int(k.MaxDataSourceExecutableSize(ctx)),
+			len(executable), int(k.MaxDataSourceExecutableSize(ctx)),
 		)
 	}
 	if int64(len(name)) > k.MaxNameLength(ctx) {
 		return types.ErrBadDataValue(
 			"EditDataSource: Name length (%d) exceeds the maximum length (%d).",
-			len(name),
-			int(k.MaxNameLength(ctx)),
+			len(name), int(k.MaxNameLength(ctx)),
 		)
 	}
 	if int64(len(description)) > k.MaxDescriptionLength(ctx) {
 		return types.ErrBadDataValue(
 			"EditDataSource: Description length (%d) exceeds the maximum length (%d).",
-			len(description),
-			int(k.MaxDescriptionLength(ctx)),
+			len(description), int(k.MaxDescriptionLength(ctx)),
 		)
 	}
 
@@ -92,8 +83,7 @@ func (k Keeper) GetDataSource(
 	store := ctx.KVStore(k.storeKey)
 	if !k.CheckDataSourceExists(ctx, id) {
 		return types.DataSource{}, types.ErrItemNotFound(
-			"GetDataSource: Unknown data source ID %d.",
-			id,
+			"GetDataSource: Unknown data source ID %d.", id,
 		)
 	}
 

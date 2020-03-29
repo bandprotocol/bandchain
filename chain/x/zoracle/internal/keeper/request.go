@@ -30,17 +30,13 @@ func (k Keeper) AddRequest(
 	requestedValidatorCount, sufficientValidatorCount, expiration int64, executeGas uint64,
 ) (types.RequestID, sdk.Error) {
 	if !k.CheckOracleScriptExists(ctx, oracleScriptID) {
-		return 0, types.ErrItemNotFound(
-			"AddRequest: Unknown oracle script ID %d.",
-			oracleScriptID,
-		)
+		return 0, types.ErrItemNotFound("AddRequest: Unknown oracle script ID %d.", oracleScriptID)
 	}
 
 	if int64(len(calldata)) > k.MaxCalldataSize(ctx) {
 		return 0, types.ErrBadDataValue(
 			"AddRequest: Calldata size (%d) exceeds the maximum size (%d).",
-			len(calldata),
-			int(k.MaxCalldataSize(ctx)),
+			len(calldata), int(k.MaxCalldataSize(ctx)),
 		)
 	}
 
@@ -48,8 +44,7 @@ func (k Keeper) AddRequest(
 	if int64(len(validatorsByPower)) < requestedValidatorCount {
 		return 0, types.ErrBadDataValue(
 			"AddRequest: Requested validator count (%d) exceeds the number of validators (%d).",
-			requestedValidatorCount,
-			len(validatorsByPower),
+			requestedValidatorCount, len(validatorsByPower),
 		)
 	}
 
@@ -62,21 +57,14 @@ func (k Keeper) AddRequest(
 	if executeGas > k.EndBlockExecuteGasLimit(ctx) {
 		return 0, types.ErrBadDataValue(
 			"AddRequest: Execute gas (%d) exceeds the maximum limit (%d).",
-			executeGas,
-			k.EndBlockExecuteGasLimit(ctx),
+			executeGas, k.EndBlockExecuteGasLimit(ctx),
 		)
 	}
 
 	requestID := k.GetNextRequestID(ctx)
 	k.SetRequest(ctx, requestID, types.NewRequest(
-		oracleScriptID,
-		calldata,
-		validators,
-		sufficientValidatorCount,
-		ctx.BlockHeight(),
-		ctx.BlockTime().Unix(),
-		ctx.BlockHeight()+expiration,
-		executeGas,
+		oracleScriptID, calldata, validators, sufficientValidatorCount, ctx.BlockHeight(),
+		ctx.BlockTime().Unix(), ctx.BlockHeight()+expiration, executeGas,
 	))
 
 	return requestID, nil
@@ -89,8 +77,7 @@ func (k Keeper) ValidateDataSourceCount(ctx sdk.Context, id types.RequestID) sdk
 	if dataSourceCount > k.MaxDataSourceCountPerRequest(ctx) {
 		return types.ErrBadDataValue(
 			"ValidateDataSourceCount: Data source count (%d) exceeds the limit (%d).",
-			dataSourceCount,
-			k.MaxDataSourceCountPerRequest(ctx),
+			dataSourceCount, k.MaxDataSourceCountPerRequest(ctx),
 		)
 	}
 	return nil
