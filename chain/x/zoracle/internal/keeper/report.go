@@ -5,12 +5,12 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+// AddReport adds a new data report from the given reporter on behalf of the given validator
+// for a specific data request to the store. The function performs validations to make sure
+// that the report is valid and saves it to the store.
 func (k Keeper) AddReport(
-	ctx sdk.Context,
-	requestID types.RequestID,
-	dataSet []types.RawDataReportWithID,
-	validator sdk.ValAddress,
-	reporter sdk.AccAddress,
+	ctx sdk.Context, requestID types.RequestID, dataSet []types.RawDataReportWithID,
+	validator sdk.ValAddress, reporter sdk.AccAddress,
 ) sdk.Error {
 	request, err := k.GetRequest(ctx, requestID)
 	if err != nil {
@@ -19,27 +19,20 @@ func (k Keeper) AddReport(
 
 	if request.ResolveStatus != types.Open {
 		return types.ErrInvalidState(
-			"AddReport: Request ID %d: Expect resolve status to be %d, but actual value is %d",
-			requestID,
-			types.Open,
-			request.ResolveStatus,
+			"AddReport: Request ID %d: Resolve status (%d) is not Open (%d).",
+			requestID, request.ResolveStatus, types.Open,
 		)
 	}
-
 	if request.ExpirationHeight < ctx.BlockHeight() {
 		return types.ErrInvalidState(
-			"AddReport: Request ID %d: Current block height is %d, but request expired at height %d",
-			requestID,
-			ctx.BlockHeight(),
-			request.ExpirationHeight,
+			"AddReport: Request ID %d: Request already expired at height %d. Current height is %d.",
+			requestID, request.ExpirationHeight, ctx.BlockHeight(),
 		)
 	}
-
 	if !k.CheckReporter(ctx, validator, reporter) {
 		return types.ErrUnauthorizedPermission(
-			"AddReport: %s is not an authorized reporter of %s.",
-			reporter.String(),
-			validator.String(),
+			"AddReport: Request ID %d: %s is not an authorized reporter of %s.",
+			requestID, reporter.String(), validator.String(),
 		)
 	}
 
@@ -50,20 +43,18 @@ func (k Keeper) AddReport(
 			break
 		}
 	}
-
 	if !found {
 		return types.ErrUnauthorizedPermission(
-			"AddReport: Reporter (%s) is not on the reporter list.",
-			validator.String(),
+			"AddReport: Request ID %d: %s is not one of the requested validators.",
+			requestID, validator.String(),
 		)
 	}
 
 	for _, submittedValidator := range request.ReceivedValidators {
 		if validator.Equals(submittedValidator) {
 			return types.ErrItemDuplication(
-				"AddReport: Duplicate report to request ID %d from reporter %s.",
-				requestID,
-				submittedValidator.String(),
+				"AddReport: Duplicate report to request ID %d from validator %s.",
+				requestID, submittedValidator.String(),
 			)
 		}
 	}
@@ -71,10 +62,8 @@ func (k Keeper) AddReport(
 	rawDataRequestCount := k.GetRawDataRequestCount(ctx, requestID)
 	if int64(len(dataSet)) != rawDataRequestCount {
 		return types.ErrBadDataValue(
-			"AddReport: Request ID %d: Expects %d raw data reports, but received %d raw data reports.",
-			requestID,
-			rawDataRequestCount,
-			len(dataSet),
+			"AddReport: Request ID %d: Incorrect number (%d) of raw data reports. Expect %d.",
+			requestID, len(dataSet), rawDataRequestCount,
 		)
 	}
 
@@ -87,16 +76,14 @@ func (k Keeper) AddReport(
 		}
 		if !k.CheckRawDataRequestExists(ctx, requestID, rawReport.ExternalDataID) {
 			return types.ErrBadDataValue(
-				"AddReport: RequestID %d: Unknown external ID %d",
-				requestID,
-				rawReport.ExternalDataID,
+				"AddReport: RequestID %d: Unknown external data ID %d",
+				requestID, rawReport.ExternalDataID,
 			)
 		}
 		if int64(len(rawReport.Data)) > k.MaxRawDataReportSize(ctx) {
 			return types.ErrBadDataValue(
-				"AddReport: Raw report data size (%d) exceeds the maximum limit (%d).",
-				len(rawReport.Data),
-				k.MaxRawDataReportSize(ctx),
+				"AddReport: RequestID %d: Raw report data size (%d) exceeds the limit (%d).",
+				requestID, len(rawReport.Data), k.MaxRawDataReportSize(ctx),
 			)
 		}
 		k.SetRawDataReport(
@@ -114,11 +101,10 @@ func (k Keeper) AddReport(
 	if k.ShouldBecomePendingResolve(ctx, requestID) {
 		err := k.AddPendingRequest(ctx, requestID)
 		if err != nil {
-			// This should never happen, but we detect it anyway just in case.
+			// Should never happen because we already perform ShouldBecomePendingResolve check.
 			return err
 		}
 	}
-
 	return nil
 }
 

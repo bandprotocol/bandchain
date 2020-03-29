@@ -58,7 +58,7 @@ func (k Keeper) AddNewRawDataRequest(
 
 	request, err := k.GetRequest(ctx, requestID)
 	if err != nil {
-		return types.ErrItemNotFound("AddNewRawDataRequest: Unknown request ID %d.", requestID)
+		return err
 	}
 
 	if !k.CheckDataSourceExists(ctx, dataSourceID) {
