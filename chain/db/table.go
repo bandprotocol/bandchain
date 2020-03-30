@@ -130,16 +130,16 @@ type RawDataRequests struct {
 }
 
 type Report struct {
-	RequestID int64  `gorm:"primary_key"`
+	RequestID int64  `gorm:"primary_key;auto_increment:false"`
 	Validator string `gorm:"primary_key"`
 	TxHash    []byte `gorm:"not null"`
 	Reporter  string `gorm:"not null"`
 }
 
 type ReportDetail struct {
-	RequestID    int64  `gorm:"primary_key"`
+	RequestID    int64  `gorm:"primary_key;auto_increment:false"`
 	Validator    string `gorm:"primary_key"`
-	ExternalID   int64  `gorm:"primary_key"`
+	ExternalID   int64  `gorm:"primary_key;auto_increment:false"`
 	DataSourceID int64  `gorm:"not null"`
 	Data         []byte `gorm:"not null"`
 	Exitcode     uint8  `gorm:"not null"`
