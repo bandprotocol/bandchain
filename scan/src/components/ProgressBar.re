@@ -79,6 +79,7 @@ let make = (~reportedValidators, ~minimumValidators, ~requestValidators) => {
                ++ " Validators"
              }
              color=Colors.gray7
+             size=Text.Sm
            />
          </div>
        : React.null}
