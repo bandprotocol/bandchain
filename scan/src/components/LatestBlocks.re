@@ -39,8 +39,8 @@ let renderBlock = (b: BlockSub.t) =>
   <div
     key={b.height |> ID.Block.toString}
     className=Styles.block
-    onClick={_ => Route.redirect(BlockIndexPage(b.height))}>
-    <TypeID.Block id={ID.Block.ID(b.height)} />
+    onClick={_ => Route.redirect(b.height |> ID.Block.getRoute)}>
+    <TypeID.Block id={b.height} />
     <VSpacing size=Spacing.md />
     <Text value="PROPOSED BY" block=true size=Text.Xs color=Colors.gray7 spacing={Text.Em(0.1)} />
     <VSpacing size={`px(1)} />
@@ -60,8 +60,7 @@ let make = () =>
     let%Opt info = React.useContext(GlobalContext.context);
     let blocks = info.latestBlocks;
 
-    let%Opt latestBlock = blocks->Belt.List.get(0);
-    let latestHeightOpt = latestBlock.height;
+    let blocksCount = BlockSub.count()->Sub.default(0);
 
     Some(
       <>
@@ -78,9 +77,7 @@ let make = () =>
         <VSpacing size=Spacing.sm />
         <div className=Styles.seeAll onClick={_ => Route.redirect(Route.BlockHomePage)}>
           <div className=Styles.cFlex>
-            <span className=Styles.amount>
-              {latestHeightOpt |> Format.iPretty |> React.string}
-            </span>
+            <span className=Styles.amount> {blocksCount |> Format.iPretty |> React.string} </span>
             <VSpacing size=Spacing.xs />
             <Text
               value="ALL BLOCKS"
