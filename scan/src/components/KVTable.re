@@ -6,8 +6,8 @@ type field_t =
   | TxHash(Hash.t);
 
 type theme_t =
-  | THEME_1
-  | THEME_2;
+  | MessageMiniTable
+  | RequestMiniTable;
 
 type with_setting_t('a) = {
   mainElem: 'a,
@@ -29,15 +29,15 @@ module Styles = {
           ~y=`px(2),
           ~blur=`px(2),
           switch (theme) {
-          | THEME_1 => Css.rgba(0, 0, 0, 0.05)
-          | THEME_2 => Css.rgba(11, 29, 142, 0.05)
+          | MessageMiniTable => Css.rgba(0, 0, 0, 0.05)
+          | RequestMiniTable => Css.rgba(11, 29, 142, 0.05)
           },
         ),
       ),
       backgroundColor(
         switch (theme) {
-        | THEME_1 => Colors.gray3
-        | THEME_2 => Colors.blue1
+        | MessageMiniTable => Colors.gray3
+        | RequestMiniTable => Colors.blue1
         },
       ),
       marginBottom(`px(1)),
@@ -45,8 +45,8 @@ module Styles = {
       alignItems(`center),
       height(
         switch (theme) {
-        | THEME_1 => `px(20)
-        | THEME_2 => `px(25)
+        | MessageMiniTable => `px(20)
+        | RequestMiniTable => `px(25)
         },
       ),
       paddingLeft(`px(7)),
@@ -61,15 +61,15 @@ module Styles = {
           ~y=`px(2),
           ~blur=`px(4),
           switch (theme) {
-          | THEME_1 => Css.rgba(0, 0, 0, 0.08)
-          | THEME_2 => Css.rgba(11, 29, 142, 0.08)
+          | MessageMiniTable => Css.rgba(0, 0, 0, 0.08)
+          | RequestMiniTable => Css.rgba(11, 29, 142, 0.08)
           },
         ),
       ),
       backgroundColor(
         switch (theme) {
-        | THEME_1 => Colors.gray1
-        | THEME_2 => Colors.blueGray1
+        | MessageMiniTable => Colors.gray1
+        | RequestMiniTable => Colors.blueGray1
         },
       ),
       marginBottom(`px(1)),
@@ -77,8 +77,8 @@ module Styles = {
       padding2(
         ~v=
           switch (theme) {
-          | THEME_1 => `px(1)
-          | THEME_2 => `px(5)
+          | MessageMiniTable => `px(1)
+          | RequestMiniTable => `px(5)
           },
         ~h=`px(7),
       ),
@@ -165,7 +165,14 @@ let withSetting = (arr, sizes, isRights) =>
 
 [@react.component]
 let make =
-    (~tableWidth, ~headers=["KEY", "VALUE"], ~rows, ~sizes=[], ~isRights=[], ~theme=THEME_1) => {
+    (
+      ~tableWidth,
+      ~headers=["KEY", "VALUE"],
+      ~rows,
+      ~sizes=[],
+      ~isRights=[],
+      ~theme=MessageMiniTable,
+    ) => {
   let headersWithSetting = headers->withSetting(sizes, isRights);
   let rowsWithSetting = rows->Belt_List.map(fields => fields->withSetting(sizes, isRights));
   <>
@@ -184,8 +191,8 @@ let make =
                    height={Text.Px(18)}
                    color={
                      switch (theme) {
-                     | THEME_1 => Colors.gray6
-                     | THEME_2 => Colors.bandBlue
+                     | MessageMiniTable => Colors.gray6
+                     | RequestMiniTable => Colors.bandBlue
                      }
                    }
                  />
