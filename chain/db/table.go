@@ -76,6 +76,12 @@ type OracleScriptRevision struct {
 	TxHash         []byte `sql:"default:null"`
 }
 
+type OracleScriptCode struct {
+	HashCode []byte `gorm:"not null"`
+	CodeText string `gorm:"not null"`
+	Schema   string `sql:"default:null"`
+}
+
 type Transaction struct {
 	TxHash      []byte          `gorm:"primary_key"`
 	Timestamp   int64           `gorm:"not null"`

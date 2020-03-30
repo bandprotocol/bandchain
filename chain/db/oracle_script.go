@@ -16,6 +16,7 @@ func createOracleScript(
 	code []byte,
 	blockTime time.Time,
 ) OracleScript {
+
 	return OracleScript{
 		ID:          id,
 		Name:        name,
@@ -35,6 +36,8 @@ func (b *BandDB) AddOracleScript(
 	blockHeight int64,
 	txHash []byte,
 ) error {
+	// codeHash := sha256.New().Sum(code)
+
 	oracleScript := createOracleScript(
 		id,
 		name,
