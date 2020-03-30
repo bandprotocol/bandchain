@@ -1,8 +1,12 @@
+type theme_t =
+  | THEME_1
+  | THEME_2;
+
 type t =
   | Height(ID.Block.t)
   | Count(int)
   | Float(float)
-  | Text(string)
+  | Text(string, theme_t)
   | Timestamp(MomentRe.Moment.t)
   | Fee(float)
   | DataSources(list(ID.DataSource.t))
@@ -78,8 +82,12 @@ let make = (~info, ~header, ~isLeft=true) => {
          spacing={Text.Em(0.02)}
          code=true
        />
-     | Text(text) =>
-       <Text value=text size=Text.Lg weight=Text.Semibold code=true spacing={Text.Em(0.02)} />
+     | Text(text, theme) =>
+       switch (theme) {
+       | THEME_1 =>
+         <Text value=text size=Text.Lg weight=Text.Semibold code=true spacing={Text.Em(0.02)} />
+       | THEME_2 => <Text value=text size=Text.Lg weight=Text.Thin spacing={Text.Em(0.)} />
+       }
      | Timestamp(time) =>
        <div className=Styles.vFlex>
          <Text
