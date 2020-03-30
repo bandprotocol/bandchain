@@ -12,6 +12,6 @@ module Proof = {
 };
 
 let get = (requestId: int) => {
-  let json = AxiosHooks.use("bandchain/proof/" ++ (requestId |> string_of_int));
+  let json = AxiosHooks.use({j|bandchain/proof/$requestId|j});
   json |> Belt.Option.map(_, Proof.decodeProof);
 };
