@@ -18,7 +18,6 @@ let request = (data: t) => {
 };
 
 let execute = (data: t) => {
-  let%Promise response =
-    Axios.postData("https://d3n.bandprotocol.com/bandsv/execute", convert(data));
+  let%Promise response = Axios.postData(Env.lambda, convert(data));
   Promise.ret(response);
 };
