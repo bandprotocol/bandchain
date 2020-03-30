@@ -75,6 +75,15 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) =>
           />
         </Col>
       </Row>
+      <VSpacing size=Spacing.sm />
+      <Row>
+        <Col size=1.>
+          <InfoHL
+            header="DESCRIPTION"
+            info={InfoHL.Text(oracleScript.description, InfoHL.THEME_2)}
+          />
+        </Col>
+      </Row>
       <VSpacing size=Spacing.xl />
       <Tab
         tabs=[|
