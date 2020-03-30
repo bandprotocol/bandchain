@@ -52,7 +52,8 @@ module Coin = {
     ++ " "
     ++ (
       switch (coin.denom.[0]) {
-      | 'u' => coin.denom->String.sub(_, 1, (coin.denom |> String.length) - 1) |> String.uppercase
+      | 'u' =>
+        coin.denom->String.sub(_, 1, (coin.denom |> String.length) - 1) |> String.uppercase_ascii
       | _ => coin.denom
       }
     );
@@ -320,10 +321,10 @@ module Msg = {
       | Some(value) => "#" ++ (report.requestID |> string_of_int) ++ " " ++ value
       | None => "?"
       }
-    | AddOracleAddress(address) => "ADDORACLEADDRESS DESCRIPTION"
-    | RemoveOracleAddress(address) => "REMOVEORACLEADDRESS DESCRIPTION"
-    | CreateValidator(validator) => "CREATEVALIDATOR DESCRIPTION"
-    | EditValidator(validator) => "EDITVALIDATOR DESCRIPTION"
+    | AddOracleAddress(_address) => "ADDORACLEADDRESS DESCRIPTION"
+    | RemoveOracleAddress(_address) => "REMOVEORACLEADDRESS DESCRIPTION"
+    | CreateValidator(_validator) => "CREATEVALIDATOR DESCRIPTION"
+    | EditValidator(_validator) => "EDITVALIDATOR DESCRIPTION"
     | Unknown => "Unknown"
     };
   };

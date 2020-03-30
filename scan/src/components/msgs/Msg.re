@@ -9,7 +9,7 @@ module Styles = {
       height(`px(16)),
       backgroundColor(color),
       borderRadius(`px(100)),
-      margin2(`zero, `px(5)),
+      margin2(~v=`zero, ~h=`px(5)),
       display(`flex),
       justifyContent(`center),
       alignItems(`center),
@@ -245,6 +245,10 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
            </>
          : React.null}
     </div>
+  | AddOracleAddress(_) => React.null
+  | RemoveOracleAddress(_) => React.null
+  | CreateValidator(_) => React.null
+  | EditValidator(_) => React.null
   | Unknown => React.null
   };
 };

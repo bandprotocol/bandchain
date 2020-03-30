@@ -77,7 +77,7 @@ let parameterInput = (name, placeholder, index, setCalldataArr) => {
       onChange={event => {
         let newVal = ReactEvent.Form.target(event)##value;
         setCalldataArr(prev => {
-          prev->Belt_Array.set(index, newVal);
+          ignore(prev->Belt_Array.set(index, newVal));
           prev;
         });
       }}

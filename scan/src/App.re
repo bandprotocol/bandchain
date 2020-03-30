@@ -113,7 +113,7 @@ let make = () => {
          | BlockHomePage => <BlockHomePage />
          | BlockIndexPage(height) => <BlockIndexPage height={ID.Block.ID(height)} />
          | ValidatorHomePage => <ValidatorHomePage />
-         | RequestIndexPage(reqID, hashtag) => <RequestIndexPage reqID hashtag />
+         | RequestIndexPage(reqID, hashtag) => <RequestIndexPage reqID _hashtag=hashtag />
          | AccountIndexPage(address, hashtag) => <AccountIndexPage address hashtag />
          | ValidatorIndexPage(address, hashtag) => <ValidatorIndexPage address hashtag />
          | NotFound => <NotFound />

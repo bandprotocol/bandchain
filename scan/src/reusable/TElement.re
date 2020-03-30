@@ -176,6 +176,10 @@ let msgIcon =
   | Send(_) => Images.sendCoin
   | Request(_) => Images.dataRequest
   | Report(_) => Images.report
+  | AddOracleAddress(_) => Images.checkIcon
+  | RemoveOracleAddress(_) => Images.checkIcon
+  | CreateValidator(_) => Images.checkIcon
+  | EditValidator(_) => Images.checkIcon
   | Unknown => Images.checkIcon;
 
 type t =

@@ -63,7 +63,7 @@ module Styles = {
       height(h),
       display(`flex),
       flexDirection(`column),
-      padding2(paddingV, `zero),
+      padding2(~v=paddingV, ~h=`zero),
       justifyContent(`center),
       backgroundColor(Colors.white),
       borderRadius(`px(4)),
@@ -97,7 +97,7 @@ let parameterInput = (name, placeholder, index, setCalldataArr) => {
       onChange={event => {
         let newVal = ReactEvent.Form.target(event)##value;
         setCalldataArr(prev => {
-          prev->Belt_Array.set(index, newVal);
+          ignore(prev->Belt_Array.set(index, newVal));
           prev;
         });
       }}
@@ -154,7 +154,7 @@ let resultRender = result => {
         <Text value=err />
       </div>
     </>
-  | Success(output) =>
+  | Success(_output) =>
     let isFinish = Js.Math.random_int(0, 2) > 0;
     let kvs = [["Price", "866825"], ["Random", "135730902915"]];
     let proof =
@@ -250,7 +250,7 @@ let resultRender = result => {
                <div className={Styles.hFlex(`auto)}>
                  <HSpacing size=Spacing.lg />
                  <div className={Styles.vFlex(`px(220), `auto)} />
-                 {copyButton(proof)}
+                 {copyButton(~data=proof)}
                  <HSpacing size=Spacing.lg />
                  {extLinkButton()}
                </div>
@@ -332,7 +332,7 @@ let make = (~code: JsBuffer.t) => {
                    setResult(_ => Success(res##data##result));
                    Js.Promise.resolve();
                  })
-              |> Js.Promise.catch(err => {
+              |> Js.Promise.catch(_err => {
                    //  let errorValue =
                    //    Js.Json.stringifyAny(err)->Belt_Option.getWithDefault("Unknown");
                    //  setResult(_ => Error(errorValue));

@@ -17,7 +17,7 @@ module Styles = {
       flexDirection(`column),
       backgroundColor(Colors.white),
       borderRadius(`px(4)),
-      padding2(`px(35), `px(30)),
+      padding2(~v=`px(35), ~h=`px(30)),
       boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(8), Css.rgba(0, 0, 0, 0.08))),
     ]);
 
