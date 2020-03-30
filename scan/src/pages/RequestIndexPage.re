@@ -48,17 +48,15 @@ module Styles = {
 [@react.component]
 let make = (~reqID) => {
   let requestOpt = RequestHook.get(reqID);
-  let (requestValidators, totalValidators) =
+  let requestValidators =
     switch (React.useContext(GlobalContext.context), requestOpt) {
-    | (Some(info), Some(request)) => (
-        info.validators
-        ->Belt_List.keep(validator =>
-            request.requestedValidators
-            ->Belt_List.has(validator.operatorAddress, (a, b) => a->Address.isEqual(b))
-          ),
-        info.validators |> Belt_List.length,
-      )
-    | _ => ([], 0)
+    | (Some(info), Some(request)) =>
+      info.validators
+      ->Belt_List.keep(validator =>
+          request.requestedValidators
+          ->Belt_List.has(validator.operatorAddress, (a, b) => a->Address.isEqual(b))
+        )
+    | _ => []
     };
 
   <div className=Styles.pageContainer>
@@ -145,7 +143,7 @@ let make = (~reqID) => {
                <ProgressBar
                  reportedValidators=numReport
                  minimumValidators={request.sufficientValidatorCount}
-                 totalValidators
+                 requestValidators={requestValidators->Belt_List.length}
                />
              </Col>
              <Col size=1.5>
