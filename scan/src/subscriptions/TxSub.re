@@ -306,24 +306,6 @@ module Msg = {
     };
   };
 
-  let getDescription = msg => {
-    switch (msg) {
-    | Send(send) =>
-      (send.amount |> Coin.toCoinsString) ++ "->" ++ (send.toAddress |> Address.toBech32)
-    | CreateDataSource(dataSource) => dataSource.name
-    | EditDataSource(dataSource) => dataSource.name
-    | CreateOracleScript(oracleScript) => oracleScript.name
-    | EditOracleScript(oracleScript) => oracleScript.name
-    | Request(request) => request.id |> ID.Request.toString
-    | Report(report) => report.requestID |> ID.Request.toString
-    | AddOracleAddress(oracleAddress) => oracleAddress.validatorMoniker
-    | RemoveOracleAddress(oracleAddress) => oracleAddress.validatorMoniker
-    | CreateValidator(validator) => validator.moniker
-    | EditValidator(validator) => validator.moniker
-    | Unknown => "Unknown"
-    };
-  };
-
   let decodeAction = json => {
     JsonUtils.Decode.(
       switch (json |> field("type", string)) {
