@@ -32,92 +32,92 @@ func TestGetNextRequestID(t *testing.T) {
 
 func TestGetSetMaxDataSourceExecutableSize(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
-	keeper.SetMaxDataSourceExecutableSize(ctx, int64(1))
-	require.Equal(t, int64(1), keeper.MaxDataSourceExecutableSize(ctx))
-	keeper.SetMaxDataSourceExecutableSize(ctx, int64(2))
-	require.Equal(t, int64(2), keeper.MaxDataSourceExecutableSize(ctx))
+	keeper.SetParam(ctx, types.KeyMaxDataSourceExecutableSize, 1)
+	require.Equal(t, uint64(1), keeper.GetParam(ctx, types.KeyMaxDataSourceExecutableSize))
+	keeper.SetParam(ctx, types.KeyMaxDataSourceExecutableSize, 2)
+	require.Equal(t, uint64(2), keeper.GetParam(ctx, types.KeyMaxDataSourceExecutableSize))
 }
 
 func TestGetSetMaxOracleScriptCodeSize(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
-	keeper.SetMaxOracleScriptCodeSize(ctx, int64(1))
-	require.Equal(t, int64(1), keeper.MaxOracleScriptCodeSize(ctx))
-	keeper.SetMaxOracleScriptCodeSize(ctx, int64(2))
-	require.Equal(t, int64(2), keeper.MaxOracleScriptCodeSize(ctx))
+	keeper.SetParam(ctx, types.KeyMaxOracleScriptCodeSize, 1)
+	require.Equal(t, uint64(1), keeper.GetParam(ctx, types.KeyMaxOracleScriptCodeSize))
+	keeper.SetParam(ctx, types.KeyMaxOracleScriptCodeSize, 2)
+	require.Equal(t, uint64(2), keeper.GetParam(ctx, types.KeyMaxOracleScriptCodeSize))
 }
 
 func TestGetSetMaxCalldataSize(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
-	keeper.SetMaxCalldataSize(ctx, int64(1))
-	require.Equal(t, int64(1), keeper.MaxCalldataSize(ctx))
-	keeper.SetMaxCalldataSize(ctx, int64(2))
-	require.Equal(t, int64(2), keeper.MaxCalldataSize(ctx))
+	keeper.SetParam(ctx, types.KeyMaxCalldataSize, 1)
+	require.Equal(t, uint64(1), keeper.GetParam(ctx, types.KeyMaxCalldataSize))
+	keeper.SetParam(ctx, types.KeyMaxCalldataSize, 2)
+	require.Equal(t, uint64(2), keeper.GetParam(ctx, types.KeyMaxCalldataSize))
 }
 
 func TestGetSetMaxDataSourceCountPerRequest(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
-	keeper.SetMaxDataSourceCountPerRequest(ctx, int64(1))
-	require.Equal(t, int64(1), keeper.MaxDataSourceCountPerRequest(ctx))
-	keeper.SetMaxDataSourceCountPerRequest(ctx, int64(2))
-	require.Equal(t, int64(2), keeper.MaxDataSourceCountPerRequest(ctx))
+	keeper.SetParam(ctx, types.KeyMaxDataSourceCountPerRequest, 1)
+	require.Equal(t, uint64(1), keeper.GetParam(ctx, types.KeyMaxDataSourceCountPerRequest))
+	keeper.SetParam(ctx, types.KeyMaxDataSourceCountPerRequest, 2)
+	require.Equal(t, uint64(2), keeper.GetParam(ctx, types.KeyMaxDataSourceCountPerRequest))
 }
 
 func TestGetSetMaxRawDataReportSize(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
-	keeper.SetMaxRawDataReportSize(ctx, int64(1))
-	require.Equal(t, int64(1), keeper.MaxRawDataReportSize(ctx))
-	keeper.SetMaxRawDataReportSize(ctx, int64(2))
-	require.Equal(t, int64(2), keeper.MaxRawDataReportSize(ctx))
+	keeper.SetParam(ctx, types.KeyMaxRawDataReportSize, 1)
+	require.Equal(t, uint64(1), keeper.GetParam(ctx, types.KeyMaxRawDataReportSize))
+	keeper.SetParam(ctx, types.KeyMaxRawDataReportSize, 2)
+	require.Equal(t, uint64(2), keeper.GetParam(ctx, types.KeyMaxRawDataReportSize))
 }
 
 func TestGetSetMaxResultSize(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
-	keeper.SetMaxResultSize(ctx, int64(1))
-	require.Equal(t, int64(1), keeper.MaxResultSize(ctx))
-	keeper.SetMaxResultSize(ctx, int64(2))
-	require.Equal(t, int64(2), keeper.MaxResultSize(ctx))
+	keeper.SetParam(ctx, types.KeyMaxResultSize, 1)
+	require.Equal(t, uint64(1), keeper.GetParam(ctx, types.KeyMaxResultSize))
+	keeper.SetParam(ctx, types.KeyMaxResultSize, 2)
+	require.Equal(t, uint64(2), keeper.GetParam(ctx, types.KeyMaxResultSize))
 }
 
 func TestGetSetEndBlockExecuteGasLimit(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
-	keeper.SetEndBlockExecuteGasLimit(ctx, uint64(3000))
-	require.Equal(t, uint64(3000), keeper.EndBlockExecuteGasLimit(ctx))
-	keeper.SetEndBlockExecuteGasLimit(ctx, uint64(5000))
-	require.Equal(t, uint64(5000), keeper.EndBlockExecuteGasLimit(ctx))
+	keeper.SetParam(ctx, types.KeyEndBlockExecuteGasLimit, uint64(3000))
+	require.Equal(t, uint64(3000), keeper.GetParam(ctx, types.KeyEndBlockExecuteGasLimit))
+	keeper.SetParam(ctx, types.KeyEndBlockExecuteGasLimit, uint64(5000))
+	require.Equal(t, uint64(5000), keeper.GetParam(ctx, types.KeyEndBlockExecuteGasLimit))
 }
 
 func TestGetSetGasPerRawDataRequestPerValidator(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
-	keeper.SetGasPerRawDataRequestPerValidator(ctx, uint64(3000))
-	require.Equal(t, uint64(3000), keeper.GasPerRawDataRequestPerValidator(ctx))
-	keeper.SetGasPerRawDataRequestPerValidator(ctx, uint64(5000))
-	require.Equal(t, uint64(5000), keeper.GasPerRawDataRequestPerValidator(ctx))
+	keeper.SetParam(ctx, types.KeyGasPerRawDataRequestPerValidator, uint64(3000))
+	require.Equal(t, uint64(3000), keeper.GetParam(ctx, types.KeyGasPerRawDataRequestPerValidator))
+	keeper.SetParam(ctx, types.KeyGasPerRawDataRequestPerValidator, uint64(5000))
+	require.Equal(t, uint64(5000), keeper.GetParam(ctx, types.KeyGasPerRawDataRequestPerValidator))
 }
 
 func TestGetSetParams(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
-	keeper.SetMaxDataSourceExecutableSize(ctx, int64(1))
-	keeper.SetMaxOracleScriptCodeSize(ctx, int64(1))
-	keeper.SetMaxCalldataSize(ctx, int64(1))
-	keeper.SetMaxDataSourceCountPerRequest(ctx, int64(1))
-	keeper.SetMaxRawDataReportSize(ctx, int64(1))
-	keeper.SetMaxResultSize(ctx, int64(1))
-	keeper.SetEndBlockExecuteGasLimit(ctx, uint64(200000))
-	keeper.SetMaxNameLength(ctx, int64(1))
-	keeper.SetMaxDescriptionLength(ctx, int64(1))
-	keeper.SetGasPerRawDataRequestPerValidator(ctx, uint64(1000))
+	keeper.SetParam(ctx, types.KeyMaxDataSourceExecutableSize, 1)
+	keeper.SetParam(ctx, types.KeyMaxOracleScriptCodeSize, 1)
+	keeper.SetParam(ctx, types.KeyMaxCalldataSize, 1)
+	keeper.SetParam(ctx, types.KeyMaxDataSourceCountPerRequest, 1)
+	keeper.SetParam(ctx, types.KeyMaxRawDataReportSize, 1)
+	keeper.SetParam(ctx, types.KeyMaxResultSize, 1)
+	keeper.SetParam(ctx, types.KeyEndBlockExecuteGasLimit, 200000)
+	keeper.SetParam(ctx, types.KeyMaxNameLength, 1)
+	keeper.SetParam(ctx, types.KeyMaxDescriptionLength, 1)
+	keeper.SetParam(ctx, types.KeyGasPerRawDataRequestPerValidator, 1000)
 	require.Equal(t, types.NewParams(1, 1, 1, 1, 1, 1, 200000, 1, 1, 1000), keeper.GetParams(ctx))
 
-	keeper.SetMaxDataSourceExecutableSize(ctx, int64(2))
-	keeper.SetMaxOracleScriptCodeSize(ctx, int64(2))
-	keeper.SetMaxCalldataSize(ctx, int64(2))
-	keeper.SetMaxDataSourceCountPerRequest(ctx, int64(2))
-	keeper.SetMaxRawDataReportSize(ctx, int64(2))
-	keeper.SetMaxResultSize(ctx, int64(2))
-	keeper.SetEndBlockExecuteGasLimit(ctx, uint64(300000))
-	keeper.SetMaxNameLength(ctx, int64(2))
-	keeper.SetMaxDescriptionLength(ctx, int64(2))
-	keeper.SetGasPerRawDataRequestPerValidator(ctx, uint64(2000))
+	keeper.SetParam(ctx, types.KeyMaxDataSourceExecutableSize, 2)
+	keeper.SetParam(ctx, types.KeyMaxOracleScriptCodeSize, 2)
+	keeper.SetParam(ctx, types.KeyMaxCalldataSize, 2)
+	keeper.SetParam(ctx, types.KeyMaxDataSourceCountPerRequest, 2)
+	keeper.SetParam(ctx, types.KeyMaxRawDataReportSize, 2)
+	keeper.SetParam(ctx, types.KeyMaxResultSize, 2)
+	keeper.SetParam(ctx, types.KeyEndBlockExecuteGasLimit, 300000)
+	keeper.SetParam(ctx, types.KeyMaxNameLength, 2)
+	keeper.SetParam(ctx, types.KeyMaxDescriptionLength, 2)
+	keeper.SetParam(ctx, types.KeyGasPerRawDataRequestPerValidator, 2000)
 	require.Equal(t, types.NewParams(2, 2, 2, 2, 2, 2, 300000, 2, 2, 2000), keeper.GetParams(ctx))
 }

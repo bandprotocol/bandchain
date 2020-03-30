@@ -90,13 +90,13 @@ func TestRequestCallDataSizeTooBig(t *testing.T) {
 	)
 
 	// Set MaxCalldataSize to 0
-	keeper.SetMaxCalldataSize(ctx, 0)
+	keeper.SetParam(ctx, types.KeyMaxCalldataSize, 0)
 	// Should fail because size of "calldata" is > 0
 	_, err := keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, 100, 20000)
 	require.NotNil(t, err)
 
 	// Set MaxCalldataSize to 20
-	keeper.SetMaxCalldataSize(ctx, 20)
+	keeper.SetParam(ctx, types.KeyMaxCalldataSize, 20)
 	// Should pass because size of "calldata" is < 20
 	_, err = keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, 100, 20000)
 	require.Nil(t, err)
@@ -122,13 +122,13 @@ func TestRequestExceedEndBlockExecuteGasLimit(t *testing.T) {
 	)
 
 	// Set EndBlockExecuteGasLimit to 10000
-	keeper.SetEndBlockExecuteGasLimit(ctx, 10000)
+	keeper.SetParam(ctx, types.KeyEndBlockExecuteGasLimit, 10000)
 	// Should fail because required execute gas is > 10000
 	_, err := keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, 100, 20000)
 	require.NotNil(t, err)
 
 	// Set EndBlockExecuteGasLimit to 30000
-	keeper.SetEndBlockExecuteGasLimit(ctx, 30000)
+	keeper.SetParam(ctx, types.KeyEndBlockExecuteGasLimit, 30000)
 	// Should fail because required execute gas is < 30000
 	_, err = keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, 100, 20000)
 	require.Nil(t, err)
@@ -266,7 +266,7 @@ func TestHasToPutInPendingList(t *testing.T) {
 func TestValidateDataSourceCount(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 	// Set MaxDataSourceCountPerRequest to 3
-	keeper.SetMaxDataSourceCountPerRequest(ctx, 3)
+	keeper.SetParam(ctx, types.KeyMaxDataSourceCountPerRequest, 3)
 
 	request := newDefaultRequest()
 	keeper.SetRequest(ctx, 1, request)
