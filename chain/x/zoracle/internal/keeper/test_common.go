@@ -139,16 +139,16 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 	require.Equal(t, account, accountKeeper.GetAccount(ctx, addr))
 
 	// Set default parameter
-	keeper.SetMaxDataSourceExecutableSize(ctx, types.DefaultMaxDataSourceExecutableSize)
-	keeper.SetMaxOracleScriptCodeSize(ctx, types.DefaultMaxOracleScriptCodeSize)
-	keeper.SetMaxCalldataSize(ctx, types.DefaultMaxCalldataSize)
-	keeper.SetMaxDataSourceCountPerRequest(ctx, types.DefaultMaxDataSourceCountPerRequest)
-	keeper.SetMaxRawDataReportSize(ctx, types.DefaultMaxRawDataReportSize)
-	keeper.SetMaxResultSize(ctx, types.DefaultMaxResultSize)
-	keeper.SetEndBlockExecuteGasLimit(ctx, types.DefaultEndBlockExecuteGasLimit)
-	keeper.SetMaxNameLength(ctx, types.DefaultMaxNameLength)
-	keeper.SetMaxDescriptionLength(ctx, types.DefaultDescriptionLength)
-	keeper.SetGasPerRawDataRequestPerValidator(ctx, types.DefaultGasPerRawDataRequestPerValidator)
+	keeper.SetParam(ctx, types.KeyMaxDataSourceExecutableSize, types.DefaultMaxDataSourceExecutableSize)
+	keeper.SetParam(ctx, types.KeyMaxOracleScriptCodeSize, types.DefaultMaxOracleScriptCodeSize)
+	keeper.SetParam(ctx, types.KeyMaxCalldataSize, types.DefaultMaxCalldataSize)
+	keeper.SetParam(ctx, types.KeyMaxDataSourceCountPerRequest, types.DefaultMaxDataSourceCountPerRequest)
+	keeper.SetParam(ctx, types.KeyMaxRawDataReportSize, types.DefaultMaxRawDataReportSize)
+	keeper.SetParam(ctx, types.KeyMaxResultSize, types.DefaultMaxResultSize)
+	keeper.SetParam(ctx, types.KeyEndBlockExecuteGasLimit, types.DefaultEndBlockExecuteGasLimit)
+	keeper.SetParam(ctx, types.KeyMaxNameLength, types.DefaultMaxNameLength)
+	keeper.SetParam(ctx, types.KeyMaxDescriptionLength, types.DefaultDescriptionLength)
+	keeper.SetParam(ctx, types.KeyGasPerRawDataRequestPerValidator, types.DefaultGasPerRawDataRequestPerValidator)
 
 	return ctx, keeper
 }
