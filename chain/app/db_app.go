@@ -50,6 +50,17 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 	var genesisState GenesisState
 	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
 
+	// Genaccount genesis
+	var genaccountsState genaccounts.GenesisState
+	genaccounts.ModuleCdc.MustUnmarshalJSON(genesisState[genaccounts.ModuleName], &genaccountsState)
+
+	for _, account := range genaccountsState {
+		err := app.dbBand.AddOrCreateAccount(account.Address, account.Coins)
+		if err != nil {
+			panic(err)
+		}
+	}
+
 	// Staking genesis (Not used in our chain)
 	// var stakingState staking.GenesisState
 	// staking.ModuleCdc.MustUnmarshalJSON(genesisState[staking.ModuleName], &stakingState)
@@ -71,21 +82,13 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 		for _, msg := range tx.Msgs {
 			if createMsg, ok := msg.(staking.MsgCreateValidator); ok {
 				app.dbBand.HandleMessage(nil, createMsg, nil)
+				app.dbBand.DecreaseBalance(
+					createMsg.DelegatorAddress, sdk.NewCoins(createMsg.Value),
+				)
 				if err != nil {
 					panic(err)
 				}
 			}
-		}
-	}
-
-	// Genaccount genesis
-	var genaccountsState genaccounts.GenesisState
-	genaccounts.ModuleCdc.MustUnmarshalJSON(genesisState[genaccounts.ModuleName], &genaccountsState)
-
-	for _, account := range genaccountsState {
-		err := app.dbBand.AddOrCreateAccount(account.Address, account.Coins)
-		if err != nil {
-			panic(err)
 		}
 	}
 
