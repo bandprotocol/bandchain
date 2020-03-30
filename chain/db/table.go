@@ -137,5 +137,5 @@ type RawDataRequests struct {
 
 type RelatedDataSources struct {
 	DataSourceID   int64 `gorm:"primary_key;auto_increment:false"`
-	OracleScriptID int64 `gorm:"primary_key;auto_increment:false`
+	OracleScriptID int64 `gorm:"primary_key;auto_increment:false"`
 }
