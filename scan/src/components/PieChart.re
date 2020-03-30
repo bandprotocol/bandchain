@@ -12,7 +12,7 @@ module Styles = {
       backgroundColor(color),
     ]);
 
-  let segment = (offset, asize, color, isHidden) =>
+  let segment = (offset, angle, color, isHidden) =>
     style([
       visibility(isHidden ? `hidden : `visible),
       overflow(`hidden),
@@ -30,22 +30,22 @@ module Styles = {
         width(`percent(100.)),
         height(`percent(100.)),
         position(`absolute),
-        transforms([`translate((`zero, `percent(100.))), `rotate(`deg(asize))]),
+        transforms([`translate((`zero, `percent(100.))), `rotate(`deg(angle))]),
         transformOrigin(`percent(50.), `percent(0.)),
         backgroundColor(color),
       ]),
     ]);
 };
 
-let renderSegment = (offset, asize, color) =>
+let renderSegment = (offset, angle, color) =>
   <>
-    <div className={Styles.segment(offset, asize <= 180.0 ? asize : 180.0, color, false)} />
+    <div className={Styles.segment(offset, angle <= 180.0 ? angle : 180.0, color, false)} />
     <div
       className={Styles.segment(
         offset +. 180.0,
-        asize <= 180.0 ? 0.0 : asize -. 180.0,
+        angle <= 180.0 ? 0.0 : angle -. 180.0,
         color,
-        asize <= 180.0,
+        angle <= 180.0,
       )}
     />
   </>;
