@@ -175,16 +175,16 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 
 			app.dbBand.HandleTransaction(stdTx, txHash, logs)
 			involvedAccounts = append(involvedAccounts, app.dbBand.GetInvolvedAccounts(stdTx)...)
-			updatedAccounts := make(map[string]bool)
-			for _, account := range involvedAccounts {
-				if found := updatedAccounts[account.String()]; !found {
-					updatedAccounts[account.String()] = true
-					err := app.dbBand.AddOrCreateAccount(
-						account, app.BankKeeper.GetCoins(app.DeliverContext, account),
-					)
-					if err != nil {
-						panic(err)
-					}
+		}
+		updatedAccounts := make(map[string]bool)
+		for _, account := range involvedAccounts {
+			if found := updatedAccounts[account.String()]; !found {
+				updatedAccounts[account.String()] = true
+				err := app.dbBand.AddOrCreateAccount(
+					account, app.BankKeeper.GetCoins(app.DeliverContext, account),
+				)
+				if err != nil {
+					panic(err)
 				}
 			}
 		}
