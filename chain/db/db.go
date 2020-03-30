@@ -176,13 +176,6 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		"RESTRICT",
 	)
 
-	db.Model(&RelatedDataSources{}).AddForeignKey(
-		"oracle_script_id",
-		"oracle_scripts(id)",
-		"RESTRICT",
-		"RESTRICT",
-	)
-
 	for key, value := range metadata {
 		err := db.Where(Metadata{Key: key}).
 			Assign(Metadata{Value: value}).
