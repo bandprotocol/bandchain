@@ -37,7 +37,7 @@ module Styles = {
 
 let renderBlock = (b: BlockSub.t) =>
   <div
-    key={b.height |> string_of_int}
+    key={b.height |> ID.Block.toString}
     className=Styles.block
     onClick={_ => Route.redirect(BlockIndexPage(b.height))}>
     <TypeID.Block id={ID.Block.ID(b.height)} />
