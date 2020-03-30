@@ -120,7 +120,7 @@ let mockReports: list(Report.t) = [
     reporter: "21304A6071c15A0d18f3101a621b70673b1a6eeA" |> Address.fromHex,
     txHash: "983d54647a55f9c7965700ea7170a437c1f93e3997486023f725736b37975fd6" |> Hash.fromHex,
     reportedAtHeight: 15,
-    reportedAtTime: MomentRe.moment("1585346453802"),
+    reportedAtTime: 1585560116000. |> MomentRe.momentWithTimestampMS,
     values: [
       {externalDataID: 2, data: "6c756c75" |> JsBuffer.fromHex},
       {externalDataID: 3, data: "6c756c75" |> JsBuffer.fromHex},
@@ -132,7 +132,7 @@ let mockReports: list(Report.t) = [
     reporter: "f21304A6071b70673c15A0d183101a621b1a6eeA" |> Address.fromHex,
     txHash: "bf7f29332c129628b2fd9e344ac1dfa8704001356966289201e22a0408382820" |> Hash.fromHex,
     reportedAtHeight: 15,
-    reportedAtTime: MomentRe.moment("1585346453802"),
+    reportedAtTime: 1585560116000. |> MomentRe.momentWithTimestampMS,
     values: [
       {externalDataID: 2, data: "6c756c75" |> JsBuffer.fromHex},
       {externalDataID: 4, data: "6c756c75" |> JsBuffer.fromHex},
@@ -144,7 +144,7 @@ let mockReports: list(Report.t) = [
     reporter: "0760979e23e829dd41ab346b0f1112ae5aa911c3" |> Address.fromHex,
     txHash: "001afa2a6d4c817f952430f241fb6cef93903d5c3bb532818292bfe436e57693" |> Hash.fromHex,
     reportedAtHeight: 15,
-    reportedAtTime: MomentRe.moment("1585346453802"),
+    reportedAtTime: 1585560116000. |> MomentRe.momentWithTimestampMS,
     values: [
       {externalDataID: 2, data: "6c756c75" |> JsBuffer.fromHex},
       {externalDataID: 4, data: "6c756c75" |> JsBuffer.fromHex},
@@ -175,7 +175,7 @@ let get: 'a => option(Request.t) =
       requester: "ceAd18f31A021b70671521304A6071b1a6e301a6" |> Address.fromHex,
       txHash: "486023f72a90ea7796570575f6b3797755f9cd683d546170a437c1f93e399743" |> Hash.fromHex,
       requestedAtHeight: 10000,
-      requestedAtTime: MomentRe.moment("1585346453802"),
+      requestedAtTime: 1585560116000. |> MomentRe.momentWithTimestampMS,
       rawDataRequests: [
         {externalID: 3, dataSourceID: 1, calldata: "68656c6c6f" |> JsBuffer.fromHex},
         {externalID: 4, dataSourceID: 353, calldata: "6d756d75" |> JsBuffer.fromHex},
