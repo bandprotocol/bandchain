@@ -86,6 +86,13 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		"RESTRICT",
 	)
 
+	db.Model(&OracleScriptCode{}).AddForeignKey(
+		"code_hash",
+		"oracle_scripts(code_hash)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
 	db.Model(&Report{}).AddForeignKey(
 		"validator",
 		"validators(operator_address)",
@@ -173,6 +180,13 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 	db.Model(&RelatedDataSources{}).AddForeignKey(
 		"data_source_id",
 		"data_sources(id)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&RelatedDataSources{}).AddForeignKey(
+		"oracle_script_id",
+		"oracle_scripts(id)",
 		"RESTRICT",
 		"RESTRICT",
 	)

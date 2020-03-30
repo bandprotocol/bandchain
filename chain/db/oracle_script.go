@@ -14,7 +14,7 @@ func createOracleScript(
 	id int64,
 	name, description string,
 	owner sdk.AccAddress,
-	code []byte,
+	codeHash []byte,
 	blockTime time.Time,
 ) OracleScript {
 
@@ -23,7 +23,7 @@ func createOracleScript(
 		Name:        name,
 		Description: description,
 		Owner:       owner.String(),
-		Code:        code,
+		CodeHash:    codeHash,
 		LastUpdated: blockTime.UnixNano() / int64(time.Millisecond),
 	}
 }
@@ -37,10 +37,9 @@ func (b *BandDB) AddOracleScript(
 	blockHeight int64,
 	txHash []byte,
 ) error {
-	// codeHash := sha256.New().Sum(code)
 	h := sha256.New()
 	h.Write(code)
-	code = []byte{}
+
 	oracleScript := createOracleScript(
 		id,
 		name,
@@ -50,15 +49,6 @@ func (b *BandDB) AddOracleScript(
 		blockTime,
 	)
 	err := b.tx.Create(&oracleScript).Error
-	if err != nil {
-		return err
-	}
-
-	err = b.tx.Create(&OracleScriptCode{
-		HashCode: h.Sum(nil),
-		CodeText: string(code),
-		Schema:   "nil",
-	}).Error
 	if err != nil {
 		return err
 	}
