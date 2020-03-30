@@ -7,12 +7,17 @@ type a =
   | Connect(string)
   | Disconnect;
 
+let lcdURL = "http://localhost:8010";
+let chainID = "bandchain";
+let path = "m/44'/494'/0'/0/0";
+let bech32Prefix = "band";
+
 let reducer = _ =>
   fun
   | Connect(mnemonic) => {
-      let bandchain = BandWeb3.network("http://localhost:8010", "bandchain");
-      bandchain->BandWeb3.setPath("m/44'/494'/0'/0/0");
-      bandchain->BandWeb3.setBech32MainPrefix("band");
+      let bandchain = BandWeb3.network(lcdURL, chainID);
+      bandchain->BandWeb3.setPath(path);
+      bandchain->BandWeb3.setBech32MainPrefix(bech32Prefix);
 
       let newAddress = bandchain |> BandWeb3.getAddress(_, mnemonic) |> Address.fromBech32;
       let newPrivKey = bandchain |> BandWeb3.getECPairPriv(_, mnemonic);
