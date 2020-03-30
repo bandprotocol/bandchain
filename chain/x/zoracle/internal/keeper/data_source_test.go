@@ -66,7 +66,7 @@ func TestAddTooLongDataSource(t *testing.T) {
 	require.NotNil(t, err)
 
 	// Set MaxDataSourceExecutableSize to 20
-	keeper.SetMaxDataSourceExecutableSize(ctx, 20)
+	keeper.SetParam(ctx, types.KeyMaxDataSourceExecutableSize, 20)
 
 	owner := sdk.AccAddress([]byte("owner"))
 	name := "data_source"
@@ -85,7 +85,7 @@ func TestAddTooLongDataSourceName(t *testing.T) {
 	require.NotNil(t, err)
 
 	// Set MaxNameLength to 5
-	keeper.SetMaxNameLength(ctx, 5)
+	keeper.SetParam(ctx, types.KeyMaxNameLength, 5)
 
 	owner := sdk.AccAddress([]byte("owner"))
 	tooLongName := "data_source"
@@ -104,7 +104,7 @@ func TestAddTooLongDataSourceDescription(t *testing.T) {
 	require.NotNil(t, err)
 
 	// Set MaxDescriptionLength to 5
-	keeper.SetMaxDescriptionLength(ctx, 5)
+	keeper.SetParam(ctx, types.KeyMaxDescriptionLength, 5)
 
 	owner := sdk.AccAddress([]byte("owner"))
 	name := "data_source"
@@ -143,7 +143,7 @@ func TestEditTooLongDataSource(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
 	// Set MaxDataSourceExecutableSize to 20
-	keeper.SetMaxDataSourceExecutableSize(ctx, 20)
+	keeper.SetParam(ctx, types.KeyMaxDataSourceExecutableSize, 20)
 	err := mockDataSource(ctx, keeper)
 	require.Nil(t, err)
 
@@ -161,7 +161,7 @@ func TestEditTooLongDataSourceName(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
 	//SetMaxNameLength to 20
-	keeper.SetMaxNameLength(ctx, 20)
+	keeper.SetParam(ctx, types.KeyMaxNameLength, 20)
 	err := mockDataSource(ctx, keeper)
 	require.Nil(t, err)
 
@@ -179,7 +179,7 @@ func TestEditTooLongDataSourceDescription(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
 	//Set MaxDescriptionLength to 20
-	keeper.SetMaxDescriptionLength(ctx, 20)
+	keeper.SetParam(ctx, types.KeyMaxDescriptionLength, 20)
 	err := mockDataSource(ctx, keeper)
 	require.Nil(t, err)
 
