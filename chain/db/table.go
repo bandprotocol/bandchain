@@ -1,6 +1,7 @@
 package db
 
 import (
+	"database/sql"
 	"encoding/json"
 
 	"github.com/jinzhu/gorm"
@@ -77,9 +78,9 @@ type OracleScriptRevision struct {
 }
 
 type OracleScriptCode struct {
-	CodeHash []byte `gorm:"primary_key"`
-	CodeText string `sql:"default:null"`
-	Schema   string `sql:"default:null"`
+	CodeHash []byte         `gorm:"primary_key"`
+	CodeText sql.NullString `sql:"default:null"`
+	Schema   sql.NullString `sql:"default:null"`
 }
 
 type Transaction struct {
