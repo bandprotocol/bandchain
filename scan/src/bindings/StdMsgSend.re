@@ -28,3 +28,27 @@ type t = {
   account_number: string,
   sequence: string,
 };
+
+let create_t = (fromAddress, toAddress, sendAmount, accountNumber, sequence) => {
+  let returnT: t = {
+    msgs: [|
+      {
+        type_: "cosmos-sdk/MsgSend",
+        value: {
+          amount: [|{amount: sendAmount |> string_of_int, denom: "uband"}|],
+          from_address: fromAddress |> Address.toBech32,
+          to_address: toAddress |> Address.toBech32,
+        },
+      },
+    |],
+    chain_id: "banchain",
+    fee: {
+      amount: [|{amount: "5000", denom: "uband"}|],
+      gas: "200000",
+    },
+    memo: "",
+    account_number: accountNumber,
+    sequence,
+  };
+  returnT;
+};

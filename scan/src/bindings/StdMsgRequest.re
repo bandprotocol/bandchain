@@ -33,3 +33,42 @@ type t = {
   account_number: string,
   sequence: string,
 };
+
+let create_t =
+    (
+      oracleScriptID,
+      calldata,
+      requestedValidatorCount,
+      sufficientValidatorCount,
+      sender,
+      feeAmount,
+      accountNumber,
+      sequence,
+    ) => {
+  let returnT: t = {
+    msgs: [|
+      {
+        type_: "zoracle/Request",
+        value: {
+          oracleScriptID: string_of_int(oracleScriptID),
+          calldata: calldata |> JsBuffer.toBase64,
+          requestedValidatorCount: requestedValidatorCount |> string_of_int,
+          sufficientValidatorCount: sufficientValidatorCount |> string_of_int,
+          expiration: 20 |> string_of_int,
+          prepareGas: 20000 |> string_of_int,
+          executeGas: 150000 |> string_of_int,
+          sender: sender |> Address.toBech32,
+        },
+      },
+    |],
+    chain_id: "bandchain",
+    fee: {
+      amount: [|{amount: feeAmount, denom: "uband"}|],
+      gas: 3000000 |> string_of_int,
+    },
+    memo: "",
+    account_number: accountNumber,
+    sequence,
+  };
+  returnT;
+};
