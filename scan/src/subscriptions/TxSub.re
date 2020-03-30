@@ -77,7 +77,7 @@ module Msg = {
 
   module CreateDataSource = {
     type t = {
-      id: int,
+      id: ID.DataSource.t,
       owner: Address.t,
       name: string,
       fee: list(Coin.t),
@@ -87,7 +87,7 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
-        id: json |> field("dataSourceID", intstr),
+        id: json |> field("dataSourceID", ID.DataSource.fromJson),
         owner: json |> field("owner", string) |> Address.fromBech32,
         name: json |> field("name", string),
         fee: json |> field("fee", list(Coin.decodeCoin)),
@@ -98,7 +98,7 @@ module Msg = {
 
   module EditDataSource = {
     type t = {
-      id: int,
+      id: ID.DataSource.t,
       owner: Address.t,
       name: string,
       fee: list(Coin.t),
@@ -108,7 +108,7 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
-        id: json |> field("dataSourceID", intstr),
+        id: json |> field("dataSourceID", ID.DataSource.fromJson),
         owner: json |> field("owner", string) |> Address.fromBech32,
         name: json |> field("name", string),
         fee: json |> field("fee", list(Coin.decodeCoin)),
@@ -314,24 +314,12 @@ module Msg = {
     | EditDataSource(dataSource) => dataSource.name
     | CreateOracleScript(oracleScript) => oracleScript.name
     | EditOracleScript(oracleScript) => oracleScript.name
-    | Request(_) => "yo"
-    // switch (msg.events->Event.getValueOfKey("request.code_name")) {
-    // | Some(value) =>
-    //   switch (msg.events->Event.getValueOfKey("request.id")) {
-    //   | Some(id) => "#" ++ id ++ " " ++ value
-    //   | None => ""
-    //   }
-    // | None => "?"
-    // }
-    | Report(report) => "yo"
-    //   switch (msg.events->Event.getValueOfKey("report.code_name")) {
-    //   | Some(value) => "#" ++ (report.requestID |> string_of_int) ++ " " ++ value
-    //   | None => "?"
-    //   }
-    | AddOracleAddress(_) => "ADDORACLEADDRESS DESCRIPTION"
-    | RemoveOracleAddress(_) => "REMOVEORACLEADDRESS DESCRIPTION"
-    | CreateValidator(_) => "CREATEVALIDATOR DESCRIPTION"
-    | EditValidator(_) => "EDITVALIDATOR DESCRIPTION"
+    | Request(request) => request.id |> ID.Request.toString
+    | Report(report) => report.requestID |> ID.Request.toString
+    | AddOracleAddress(oracleAddress) => oracleAddress.validatorMoniker
+    | RemoveOracleAddress(oracleAddress) => oracleAddress.validatorMoniker
+    | CreateValidator(validator) => validator.moniker
+    | EditValidator(validator) => validator.moniker
     | Unknown => "Unknown"
     };
   };
@@ -358,30 +346,22 @@ module Msg = {
 
   let getRoute = msg =>
     switch (msg) {
-    | Send(_) => None
-    // TODO: Route to each data source and oracle script page
-    | CreateDataSource(_) => None
-    // switch (msg.events->Event.getValueOfKey("store_code.codehash")) {
-    // | Some(value) => Some(Route.ScriptIndexPage(value |> Hash.fromHex, ScriptTransactions))
-    // | None => None
-    // }
-    | EditDataSource(_) => None
-    | CreateOracleScript(_) => None
-    | EditOracleScript(_) => None
-    | Request(_) => None
-    // switch (msg.events->Event.getValueOfKey("request.id")) {
-    // | Some(value) => Some(Route.RequestIndexPage(value->int_of_string, RequestReportStatus))
-    // | None => None
-    // }
-    | Report(_) => None
-    // switch (msg.events->Event.getValueOfKey("report.id")) {
-    // | Some(value) => Some(Route.RequestIndexPage(value->int_of_string, RequestReportStatus))
-    // | None => None
-    // }
-    | AddOracleAddress(_) => None
-    | RemoveOracleAddress(_) => None
-    | CreateValidator(_) => None
-    | EditValidator(_) => None
+    | Send(account) =>
+      Some(Route.AccountIndexPage(account.fromAddress, Route.AccountTransactions))
+    | CreateDataSource(dataSource) => Some(dataSource.id |> ID.DataSource.getRoute)
+    | EditDataSource(dataSource) => Some(dataSource.id |> ID.DataSource.getRoute)
+    | CreateOracleScript(oracleScript) => Some(oracleScript.id |> ID.OracleScript.getRoute)
+    | EditOracleScript(oracleScript) => Some(oracleScript.id |> ID.OracleScript.getRoute)
+    | Request(request) => Some(request.id |> ID.Request.getRoute)
+    | Report(report) => Some(report.requestID |> ID.Request.getRoute)
+    | AddOracleAddress(account) =>
+      Some(Route.AccountIndexPage(account.validator, Route.AccountTransactions))
+    | RemoveOracleAddress(account) =>
+      Some(Route.AccountIndexPage(account.validator, Route.AccountTransactions))
+    | CreateValidator(validator) =>
+      Some(Route.ValidatorIndexPage(validator.validatorAddress, Route.Delegators))
+    | EditValidator(validator) =>
+      Some(Route.ValidatorIndexPage(validator.sender, Route.Delegators))
     | Unknown => None
     };
 };
@@ -454,35 +434,6 @@ module TxCountConfig = [%graphql
 |}
 ];
 
-module Event = {
-  type t = {
-    key: string,
-    value: string,
-  };
-
-  let decode = (prefix, json) =>
-    JsonUtils.Decode.{
-      key: prefix ++ "." ++ (json |> field("key", string)),
-      value: json |> field("value", string),
-    };
-
-  let decodeEvent = json =>
-    JsonUtils.Decode.(
-      {
-        let prefix = json |> field("type", string);
-        json |> field("attributes", list(decode(prefix)));
-      }
-    );
-
-  let decodeEvents = json =>
-    List.flatten(JsonUtils.Decode.(json |> field("events", list(decodeEvent))));
-
-  let getValueOfKey = (events: list(t), key) =>
-    events
-    ->Belt.List.keepMap(event => event.key == key ? Some(event.value) : None)
-    ->Belt.List.get(0);
-};
-
 let get = txHash => {
   let (result, _) =
     ApolloHooks.useSubscription(
@@ -507,7 +458,6 @@ let getList = (~page, ~pageSize, ()) => {
       MultiConfig.definition,
       ~variables=MultiConfig.makeVariables(~limit=pageSize, ~offset, ()),
     );
-
   result |> Sub.map(_, x => x##transactions);
 };
 
