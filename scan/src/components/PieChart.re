@@ -53,11 +53,11 @@ let renderSegment = (offset, angle, color) =>
 [@react.component]
 let make = (~size, ~availableBalance, ~balanceAtStake, ~reward) => {
   let totalBalance = availableBalance +. balanceAtStake +. reward;
-  let balanceAtStakeAsize = totalBalance == 0. ? 0. : 360. *. balanceAtStake /. totalBalance;
-  let rewardAsize = totalBalance == 0. ? 0. : 360. *. reward /. totalBalance;
+  let balanceAtStakeAngle = totalBalance == 0. ? 0. : 360. *. balanceAtStake /. totalBalance;
+  let rewardAngle = totalBalance == 0. ? 0. : 360. *. reward /. totalBalance;
 
   <div className={Styles.pie(size, Colors.bandBlue)}>
-    {renderSegment(0., balanceAtStakeAsize, Colors.chartBalanceAtStake)}
-    {renderSegment(balanceAtStakeAsize, rewardAsize, Colors.chartReward)}
+    {renderSegment(0., balanceAtStakeAngle, Colors.chartBalanceAtStake)}
+    {renderSegment(balanceAtStakeAngle, rewardAngle, Colors.chartReward)}
   </div>;
 };
