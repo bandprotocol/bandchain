@@ -84,11 +84,17 @@ let parameterInput = (name, index, setCalldataList) => {
   </div>;
 };
 
+type result_data_t = {
+  returncode: int,
+  stdout: string,
+  stderr: string,
+};
+
 type result_t =
   | Nothing
   | Loading
   | Error(string)
-  | Success(string);
+  | Success(result_data_t);
 
 let loadingRender = (wDiv, wImg, h) => {
   <div className={Styles.withWH(wDiv, h)}>
@@ -112,7 +118,7 @@ let resultRender = result => {
         <Text value=err />
       </div>
     </>
-  | Success(output) =>
+  | Success({returncode, stdout, stderr}) =>
     <>
       <VSpacing size=Spacing.lg />
       <div className={Styles.resultWrapper(`percent(120.), `px(65), `auto)}>
@@ -121,7 +127,7 @@ let resultRender = result => {
           <div className={Styles.resultWrapper(`px(120), `px(12), `auto)}>
             <Text value="Exit Status" color=Colors.gray6 weight=Text.Bold />
           </div>
-          <Text value="0" />
+          <Text value={returncode |> string_of_int} />
         </div>
         <VSpacing size=Spacing.md />
         <div className=Styles.hFlex>
@@ -129,7 +135,7 @@ let resultRender = result => {
           <div className={Styles.resultWrapper(`px(120), `px(12), `auto)}>
             <Text value="Output" color=Colors.gray6 weight=Text.Semibold />
           </div>
-          <Text value=output code=true weight=Text.Semibold />
+          <Text value={returncode == 0 ? stdout : stderr} code=true weight=Text.Semibold />
         </div>
       </div>
     </>
@@ -183,7 +189,7 @@ let make = (~executable: JsBuffer.t) => {
             let _ =
               AxiosRequest.execute(
                 AxiosRequest.t(
-                  ~executable=executable->JsBuffer.toHex,
+                  ~executable=executable->JsBuffer.toString,
                   ~calldata={
                     callDataList
                     ->Belt_List.reduce("", (acc, calldata) => acc ++ " " ++ calldata)
@@ -192,7 +198,13 @@ let make = (~executable: JsBuffer.t) => {
                 ),
               )
               |> Js.Promise.then_(res => {
-                   setResult(_ => Success(res##data##result));
+                   setResult(_ =>
+                     Success({
+                       returncode: res##data##returncode,
+                       stdout: res##data##stdout,
+                       stderr: res##data##stderr,
+                     })
+                   );
                    Js.Promise.resolve();
                  })
               |> Js.Promise.catch(err => {
