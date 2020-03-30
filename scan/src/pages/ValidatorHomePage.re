@@ -261,7 +261,7 @@ let make = () => {
                info={InfoHL.Fraction(validators->Belt.List.length, allValidatorCount, false)}
                header="VALIDATORS"
              />
-           | None => <InfoHL info={InfoHL.Text("?")} header="VALIDATORS" />
+           | None => <InfoHL info={InfoHL.Text("?", InfoHL.THEME_1)} header="VALIDATORS" />
            }}
         </Col>
         <Col size=1.1>
@@ -271,7 +271,7 @@ let make = () => {
                info={InfoHL.Fraction(allBondedAmount, globalInfo.totalSupply, true)}
                header="BONDED TOKENS"
              />
-           | None => <InfoHL info={InfoHL.Text("?")} header="BONDED TOKENS" />
+           | None => <InfoHL info={InfoHL.Text("?", InfoHL.THEME_1)} header="BONDED TOKENS" />
            }}
         </Col>
         <Col size=0.9>
