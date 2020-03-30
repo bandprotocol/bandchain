@@ -226,7 +226,7 @@ let make = (~reqID) => {
            </div>
            <KVTable
              tableWidth=880
-             theme=KVTable.THEME_2
+             theme=KVTable.RequestMiniTable
              headers=["EXTERNAL ID", "DATA SOURCE", "PARAM"]
              rows=[
                [
@@ -265,7 +265,7 @@ let make = (~reqID) => {
            </div>
            <KVTable
              tableWidth=880
-             theme=KVTable.THEME_2
+             theme=KVTable.RequestMiniTable
              rows=[
                [KVTable.Value("crypto_symbol"), KVTable.Value("Bitcoin")],
                [KVTable.Value("method"), KVTable.Value("median")],
@@ -292,7 +292,7 @@ let make = (~reqID) => {
                   </div>
                   <KVTable
                     tableWidth=880
-                    theme=KVTable.THEME_2
+                    theme=KVTable.RequestMiniTable
                     rows=[
                       [KVTable.Value("price"), KVTable.Value("861200")],
                       [KVTable.Value("timestamp"), KVTable.Value("1583383759")],
@@ -363,7 +363,7 @@ let make = (~reqID) => {
            {numReport > 0
               ? <KVTable
                   tableWidth=880
-                  theme=KVTable.THEME_2
+                  theme=KVTable.RequestMiniTable
                   sizes=[0.92, 0.73, 2., 0.63, 2.4]
                   isRights=[false, false, false, true, true]
                   headers=["REPORT BY", "BLOCK", "TX HASH", "EXTERNAL ID", "VALUE"]
