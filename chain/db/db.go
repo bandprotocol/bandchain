@@ -13,6 +13,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
+	dist "github.com/cosmos/cosmos-sdk/x/distribution"
+	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 )
 
@@ -33,7 +35,9 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 
 	db.AutoMigrate(
 		&Metadata{},
-		&Event{},
+		&Block{},
+		&Transaction{},
+		&Account{},
 		&Validator{},
 		&ValidatorVote{},
 		&DataSource{},
@@ -41,14 +45,12 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		&OracleScript{},
 		&OracleScriptCode{},
 		&OracleScriptRevision{},
-		&Block{},
-		&Transaction{},
-		&Report{},
-		&ReportDetail{},
+		&RelatedDataSources{},
 		&Request{},
 		&RequestedValidator{},
 		&RawDataRequests{},
-		&RelatedDataSources{},
+		&Report{},
+		&ReportDetail{},
 	)
 
 	db.Model(&ValidatorVote{}).AddForeignKey(
@@ -356,4 +358,46 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 	jsonMap["type"] = events["message.action"]
 
 	return jsonMap, nil
+}
+
+func (b *BandDB) GetInvolvedAccounts(tx auth.StdTx) []sdk.AccAddress {
+	involvedAccounts := make([]sdk.AccAddress, 0)
+	for _, msg := range tx.GetMsgs() {
+		switch msg := msg.(type) {
+		case zoracle.MsgRequestData:
+			involvedAccounts = append(involvedAccounts, msg.Sender)
+		case zoracle.MsgReportData:
+			involvedAccounts = append(involvedAccounts, msg.Reporter)
+		case bank.MsgSend:
+			involvedAccounts = append(involvedAccounts, msg.FromAddress, msg.ToAddress)
+		case bank.MsgMultiSend:
+			for _, input := range msg.Inputs {
+				involvedAccounts = append(involvedAccounts, input.Address)
+			}
+			for _, output := range msg.Outputs {
+				involvedAccounts = append(involvedAccounts, output.Address)
+			}
+		case staking.MsgCreateValidator:
+			involvedAccounts = append(involvedAccounts, msg.DelegatorAddress)
+		case staking.MsgDelegate:
+			involvedAccounts = append(involvedAccounts, msg.DelegatorAddress)
+		case staking.MsgBeginRedelegate:
+			involvedAccounts = append(involvedAccounts, msg.DelegatorAddress)
+		case staking.MsgUndelegate:
+			involvedAccounts = append(involvedAccounts, msg.DelegatorAddress)
+		case dist.MsgWithdrawDelegatorReward:
+			involvedAccounts = append(involvedAccounts, msg.DelegatorAddress)
+		case dist.MsgWithdrawValidatorCommission:
+			involvedAccounts = append(involvedAccounts, sdk.AccAddress(msg.ValidatorAddress))
+		case gov.MsgDeposit:
+			involvedAccounts = append(involvedAccounts, msg.Depositor)
+		case gov.MsgSubmitProposal:
+			involvedAccounts = append(involvedAccounts, msg.Proposer)
+		default:
+			// TODO: Better logging
+			fmt.Println("GetInvolvedAccounts: There isn't get involved accounts for this msg type")
+			return nil
+		}
+	}
+	return involvedAccounts
 }

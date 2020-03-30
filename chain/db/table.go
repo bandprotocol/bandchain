@@ -3,8 +3,6 @@ package db
 import (
 	"database/sql"
 	"encoding/json"
-
-	"github.com/jinzhu/gorm"
 )
 
 type Metadata struct {
@@ -12,9 +10,28 @@ type Metadata struct {
 	Value string `gorm:"not null"`
 }
 
-type Event struct {
-	gorm.Model
-	Name string
+type Block struct {
+	Height    int64  `gorm:"primary_key;auto_increment:false"`
+	Timestamp int64  `gorm:"not null"`
+	Proposer  string `gorm:"not null"`
+	BlockHash []byte `gorm:"not null"`
+}
+
+type Transaction struct {
+	TxHash      []byte          `gorm:"primary_key"`
+	Timestamp   int64           `gorm:"not null"`
+	GasUsed     int64           `gorm:"not null"`
+	GasLimit    uint64          `gorm:"not null"`
+	GasFee      string          `gorm:"not null"`
+	Sender      string          `gorm:"not null"`
+	Success     bool            `gorm:"not null"`
+	BlockHeight int64           `gorm:"not null"`
+	Messages    json.RawMessage `sql:"json;not null"`
+}
+
+type Account struct {
+	Address string `gorm:"primary_key"`
+	Balance string `gorm:"not null"`
 }
 
 type Validator struct {
@@ -83,39 +100,9 @@ type OracleScriptCode struct {
 	Schema   sql.NullString `sql:"default:null"`
 }
 
-type Transaction struct {
-	TxHash      []byte          `gorm:"primary_key"`
-	Timestamp   int64           `gorm:"not null"`
-	GasUsed     int64           `gorm:"not null"`
-	GasLimit    uint64          `gorm:"not null"`
-	GasFee      string          `gorm:"not null"`
-	Sender      string          `gorm:"not null"`
-	Success     bool            `gorm:"not null"`
-	BlockHeight int64           `gorm:"not null"`
-	Messages    json.RawMessage `sql:"json;not null"`
-}
-
-type Report struct {
-	RequestID int64  `gorm:"primary_key;auto_increment:false"`
-	Validator string `gorm:"primary_key"`
-	TxHash    []byte `gorm:"not null"`
-	Reporter  string `gorm:"not null"`
-}
-
-type ReportDetail struct {
-	RequestID    int64  `gorm:"primary_key;auto_increment:false"`
-	Validator    string `gorm:"primary_key"`
-	ExternalID   int64  `gorm:"primary_key;auto_increment:false"`
-	DataSourceID int64  `gorm:"not null"`
-	Data         []byte `gorm:"not null"`
-	Exitcode     uint8  `gorm:"not null"`
-}
-
-type Block struct {
-	Height    int64  `gorm:"primary_key;auto_increment:false"`
-	Timestamp int64  `gorm:"not null"`
-	Proposer  string `gorm:"not null"`
-	BlockHash []byte `gorm:"not null"`
+type RelatedDataSources struct {
+	DataSourceID   int64 `gorm:"primary_key;auto_increment:false"`
+	OracleScriptID int64 `gorm:"primary_key;auto_increment:false"`
 }
 
 type Request struct {
@@ -142,7 +129,18 @@ type RawDataRequests struct {
 	Calldata     []byte `gorm:"not null"`
 }
 
-type RelatedDataSources struct {
-	DataSourceID   int64 `gorm:"primary_key;auto_increment:false"`
-	OracleScriptID int64 `gorm:"primary_key;auto_increment:false"`
+type Report struct {
+	RequestID int64  `gorm:"primary_key"`
+	Validator string `gorm:"primary_key"`
+	TxHash    []byte `gorm:"not null"`
+	Reporter  string `gorm:"not null"`
+}
+
+type ReportDetail struct {
+	RequestID    int64  `gorm:"primary_key"`
+	Validator    string `gorm:"primary_key"`
+	ExternalID   int64  `gorm:"primary_key"`
+	DataSourceID int64  `gorm:"not null"`
+	Data         []byte `gorm:"not null"`
+	Exitcode     uint8  `gorm:"not null"`
 }

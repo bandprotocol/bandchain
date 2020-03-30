@@ -7,6 +7,7 @@ import (
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/genaccounts"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -77,6 +78,17 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 		}
 	}
 
+	// Genaccount genesis
+	var genaccountsState genaccounts.GenesisState
+	genaccounts.ModuleCdc.MustUnmarshalJSON(genesisState[genaccounts.ModuleName], &genaccountsState)
+
+	for _, account := range genaccountsState {
+		err := app.dbBand.AddOrCreateAccount(account.Address, account.Coins)
+		if err != nil {
+			panic(err)
+		}
+	}
+
 	// Zoracle genesis
 	var zoracleState zoracle.GenesisState
 	zoracle.ModuleCdc.MustUnmarshalJSON(genesisState[zoracle.ModuleName], &zoracleState)
@@ -130,34 +142,49 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 	if lastProcessHeight+1 != app.DeliverContext.BlockHeight() {
 		return res
 	}
-	if !res.IsOK() {
-		// TODO: We should not completely ignore failed transactions.
-		return res
-	}
-	logs, err := sdk.ParseABCILogs(res.Log)
-	if err != nil {
-		panic(err)
-	}
+
 	tx, err := app.TxDecoder(req.Tx)
 	if err != nil {
 		panic(err)
 	}
 	if stdTx, ok := tx.(auth.StdTx); ok {
-		txHash := tmhash.Sum(req.Tx)
+		// Add involved accounts
+		involvedAccounts := stdTx.GetSigners()
+		if !res.IsOK() {
+			// TODO: We should not completely ignore failed transactions.
+		} else {
+			logs, err := sdk.ParseABCILogs(res.Log)
+			if err != nil {
+				panic(err)
+			}
+			txHash := tmhash.Sum(req.Tx)
 
-		app.dbBand.AddTransaction(
-			txHash,
-			app.DeliverContext.BlockTime(),
-			res.GasUsed,
-			stdTx.Fee.Gas,
-			stdTx.Fee.Amount,
-			stdTx.GetSigners()[0],
-			true,
-			app.DeliverContext.BlockHeight(),
-		)
+			app.dbBand.AddTransaction(
+				txHash,
+				app.DeliverContext.BlockTime(),
+				res.GasUsed,
+				stdTx.Fee.Gas,
+				stdTx.Fee.Amount,
+				stdTx.GetSigners()[0],
+				true,
+				app.DeliverContext.BlockHeight(),
+			)
 
-		app.dbBand.HandleTransaction(stdTx, txHash, logs)
-
+			app.dbBand.HandleTransaction(stdTx, txHash, logs)
+			involvedAccounts = append(involvedAccounts, app.dbBand.GetInvolvedAccounts(stdTx)...)
+			updatedAccounts := make(map[string]bool)
+			for _, account := range involvedAccounts {
+				if found := updatedAccounts[account.String()]; !found {
+					updatedAccounts[account.String()] = true
+					err := app.dbBand.AddOrCreateAccount(
+						account, app.BankKeeper.GetCoins(app.DeliverContext, account),
+					)
+					if err != nil {
+						panic(err)
+					}
+				}
+			}
+		}
 	}
 	return res
 }
