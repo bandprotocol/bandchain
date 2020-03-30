@@ -33,11 +33,15 @@ func (b *BandDB) AddOracleScript(
 	id int64,
 	name, description string,
 	owner sdk.AccAddress,
-	codeHash []byte,
+	code []byte,
 	blockTime time.Time,
 	blockHeight int64,
 	txHash []byte,
 ) error {
+
+	h := sha256.New()
+	h.Write(code)
+	codeHash := h.Sum(nil)
 
 	oracleScript := createOracleScript(
 		id,
@@ -84,11 +88,8 @@ func (b *BandDB) handleMsgCreateOracleScript(
 		return err
 	}
 
-	h := sha256.New()
-	h.Write(msg.Code)
-	codeHash := h.Sum(nil)
 	return b.AddOracleScript(
-		id, msg.Name, msg.Description, msg.Owner, codeHash,
+		id, msg.Name, msg.Description, msg.Owner, msg.Code,
 		b.ctx.BlockTime(), b.ctx.BlockHeight(), txHash,
 	)
 }
@@ -98,9 +99,13 @@ func (b *BandDB) handleMsgEditOracleScript(
 	msg zoracle.MsgEditOracleScript,
 	events map[string]string,
 ) error {
+	h := sha256.New()
+	h.Write(msg.Code)
+	codeHash := h.Sum(nil)
+
 	oracleScript := createOracleScript(
 		int64(msg.OracleScriptID), msg.Name, msg.Description,
-		msg.Owner, msg.Code, b.ctx.BlockTime(),
+		msg.Owner, codeHash, b.ctx.BlockTime(),
 	)
 
 	err := b.tx.Save(&oracleScript).Error
@@ -108,11 +113,8 @@ func (b *BandDB) handleMsgEditOracleScript(
 		return err
 	}
 
-	h := sha256.New()
-	h.Write(msg.Code)
-	codeHash := h.Sum(nil)
 	err = b.tx.Save(&OracleScriptCode{
-		CodeHash: codeHash,
+		CodeHash: msg.Code,
 		CodeText: sql.NullString{},
 		Schema:   sql.NullString{},
 	}).Error
