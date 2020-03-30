@@ -6,10 +6,9 @@ let fromBech32 = bech32str => {
 };
 
 let fromBech32Opt = bech32str =>
-  switch (bech32str->Bech32.decodeOpt) {
-  | Some(decoded) =>
-    Some(Address(decoded->Bech32.wordsGet->Bech32.fromWords->JsBuffer.arrayToHex))
-  | _ => None
+  switch (bech32str |> fromBech32) {
+  | result => Some(result)
+  | exception _ => None
   };
 
 let fromHex = hexstr => Address(hexstr->HexUtils.normalizeHexString);
