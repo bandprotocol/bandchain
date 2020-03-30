@@ -39,6 +39,7 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		&DataSource{},
 		&DataSourceRevision{},
 		&OracleScript{},
+		&OracleScriptCode{},
 		&OracleScriptRevision{},
 		&Block{},
 		&Transaction{},

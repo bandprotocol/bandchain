@@ -1,6 +1,7 @@
 package db
 
 import (
+	"crypto/sha256"
 	"errors"
 	"strconv"
 	"time"
@@ -37,16 +38,27 @@ func (b *BandDB) AddOracleScript(
 	txHash []byte,
 ) error {
 	// codeHash := sha256.New().Sum(code)
-
+	h := sha256.New()
+	h.Write(code)
+	code = []byte{}
 	oracleScript := createOracleScript(
 		id,
 		name,
 		description,
 		owner,
-		code,
+		h.Sum(nil),
 		blockTime,
 	)
 	err := b.tx.Create(&oracleScript).Error
+	if err != nil {
+		return err
+	}
+
+	err = b.tx.Create(&OracleScriptCode{
+		HashCode: h.Sum(nil),
+		CodeText: string(code),
+		Schema:   "nil",
+	}).Error
 	if err != nil {
 		return err
 	}
