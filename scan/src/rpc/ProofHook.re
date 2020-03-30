@@ -12,8 +12,6 @@ module Proof = {
 };
 
 let get = (requestId: int) => {
-  // Mock
-  let json =
-    AxiosHooks.use("http://rpc.alpha.bandchain.org/d3n/proof/" ++ (requestId |> string_of_int));
+  let json = AxiosHooks.use("bandchain/proof/" ++ (requestId |> string_of_int));
   json |> Belt.Option.map(_, Proof.decodeProof);
 };
