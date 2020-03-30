@@ -69,7 +69,7 @@ let make = () => {
                 <TBody key={hash |> Hash.toHex(~upper=true)}>
                   <Row>
                     <Col> <HSpacing size=Spacing.lg /> </Col>
-                    <Col size=1.5> <TypeID.Block id={ID.Block.ID(height)} /> </Col>
+                    <Col size=1.5> <TypeID.Block id=height /> </Col>
                     <Col size=2.3> <TimeAgos time=timestamp code=true size=Text.Md /> </Col>
                     <Col size=6.8>
                       <div className={Styles.withWidth(500)}>
