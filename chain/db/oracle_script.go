@@ -2,6 +2,7 @@ package db
 
 import (
 	"crypto/sha256"
+	"database/sql"
 	"errors"
 	"strconv"
 	"time"
@@ -32,23 +33,30 @@ func (b *BandDB) AddOracleScript(
 	id int64,
 	name, description string,
 	owner sdk.AccAddress,
-	code []byte,
+	codeHash []byte,
 	blockTime time.Time,
 	blockHeight int64,
 	txHash []byte,
 ) error {
-	h := sha256.New()
-	h.Write(code)
 
 	oracleScript := createOracleScript(
 		id,
 		name,
 		description,
 		owner,
-		h.Sum(nil),
+		codeHash,
 		blockTime,
 	)
 	err := b.tx.Create(&oracleScript).Error
+	if err != nil {
+		return err
+	}
+
+	err = b.tx.Create(&OracleScriptCode{
+		CodeHash: codeHash,
+		CodeText: sql.NullString{},
+		Schema:   sql.NullString{},
+	}).Error
 	if err != nil {
 		return err
 	}
@@ -75,8 +83,12 @@ func (b *BandDB) handleMsgCreateOracleScript(
 	if err != nil {
 		return err
 	}
+
+	h := sha256.New()
+	h.Write(msg.Code)
+	codeHash := h.Sum(nil)
 	return b.AddOracleScript(
-		id, msg.Name, msg.Description, msg.Owner, msg.Code,
+		id, msg.Name, msg.Description, msg.Owner, codeHash,
 		b.ctx.BlockTime(), b.ctx.BlockHeight(), txHash,
 	)
 }
@@ -92,6 +104,18 @@ func (b *BandDB) handleMsgEditOracleScript(
 	)
 
 	err := b.tx.Save(&oracleScript).Error
+	if err != nil {
+		return err
+	}
+
+	h := sha256.New()
+	h.Write(msg.Code)
+	codeHash := h.Sum(nil)
+	err = b.tx.Save(&OracleScriptCode{
+		CodeHash: codeHash,
+		CodeText: sql.NullString{},
+		Schema:   sql.NullString{},
+	}).Error
 	if err != nil {
 		return err
 	}
