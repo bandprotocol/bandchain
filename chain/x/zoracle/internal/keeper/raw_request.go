@@ -49,10 +49,10 @@ func (k Keeper) AddNewRawDataRequest(
 	ctx sdk.Context, requestID types.RequestID, externalID types.ExternalID,
 	dataSourceID types.DataSourceID, calldata []byte,
 ) sdk.Error {
-	if int64(len(calldata)) > k.MaxCalldataSize(ctx) {
+	if uint64(len(calldata)) > k.GetParam(ctx, types.KeyMaxCalldataSize) {
 		return types.ErrBadDataValue(
 			"AddNewRawDataRequest: Calldata size (%d) exceeds the maximum size (%d).",
-			len(calldata), int(k.MaxCalldataSize(ctx)),
+			len(calldata), k.GetParam(ctx, types.KeyMaxCalldataSize),
 		)
 	}
 
@@ -75,7 +75,7 @@ func (k Keeper) AddNewRawDataRequest(
 	}
 
 	ctx.GasMeter().ConsumeGas(
-		k.GasPerRawDataRequestPerValidator(ctx)*uint64(len(request.RequestedValidators)),
+		k.GetParam(ctx, types.KeyGasPerRawDataRequestPerValidator)*uint64(len(request.RequestedValidators)),
 		"RawDataRequest",
 	)
 	k.SetRawDataRequest(

@@ -18,22 +18,22 @@ func (k Keeper) AddDataSource(
 	ctx sdk.Context, owner sdk.AccAddress, name string, description string,
 	fee sdk.Coins, executable []byte,
 ) (types.DataSourceID, sdk.Error) {
-	if int64(len(executable)) > k.MaxDataSourceExecutableSize(ctx) {
+	if uint64(len(executable)) > k.GetParam(ctx, types.KeyMaxDataSourceExecutableSize) {
 		return 0, types.ErrBadDataValue(
 			"AddDataSource: Executable size (%d) exceeds the maximum size (%d).",
-			len(executable), int(k.MaxDataSourceExecutableSize(ctx)),
+			len(executable), k.GetParam(ctx, types.KeyMaxDataSourceExecutableSize),
 		)
 	}
-	if int64(len(name)) > k.MaxNameLength(ctx) {
+	if uint64(len(name)) > k.GetParam(ctx, types.KeyMaxNameLength) {
 		return 0, types.ErrBadDataValue(
 			"AddDataSource: Name length (%d) exceeds the maximum length (%d).",
-			len(name), int(k.MaxNameLength(ctx)),
+			len(name), k.GetParam(ctx, types.KeyMaxNameLength),
 		)
 	}
-	if int64(len(description)) > k.MaxDescriptionLength(ctx) {
+	if uint64(len(description)) > k.GetParam(ctx, types.KeyMaxDescriptionLength) {
 		return 0, types.ErrBadDataValue(
 			"AddDataSource: Description length (%d) exceeds the maximum length (%d).",
-			len(description), int(k.MaxDescriptionLength(ctx)),
+			len(description), k.GetParam(ctx, types.KeyMaxDescriptionLength),
 		)
 	}
 
@@ -52,22 +52,22 @@ func (k Keeper) EditDataSource(
 		return types.ErrItemNotFound("EditDataSource: Unknown data source ID %d.", dataSourceID)
 	}
 
-	if int64(len(executable)) > k.MaxDataSourceExecutableSize(ctx) {
+	if uint64(len(executable)) > k.GetParam(ctx, types.KeyMaxDataSourceExecutableSize) {
 		return types.ErrBadDataValue(
 			"EditDataSource: Executable size (%d) exceeds the maximum size (%d).",
-			len(executable), int(k.MaxDataSourceExecutableSize(ctx)),
+			len(executable), k.GetParam(ctx, types.KeyMaxDataSourceExecutableSize),
 		)
 	}
-	if int64(len(name)) > k.MaxNameLength(ctx) {
+	if uint64(len(name)) > k.GetParam(ctx, types.KeyMaxNameLength) {
 		return types.ErrBadDataValue(
 			"EditDataSource: Name length (%d) exceeds the maximum length (%d).",
-			len(name), int(k.MaxNameLength(ctx)),
+			len(name), k.GetParam(ctx, types.KeyMaxNameLength),
 		)
 	}
-	if int64(len(description)) > k.MaxDescriptionLength(ctx) {
+	if uint64(len(description)) > k.GetParam(ctx, types.KeyMaxDescriptionLength) {
 		return types.ErrBadDataValue(
 			"EditDataSource: Description length (%d) exceeds the maximum length (%d).",
-			len(description), int(k.MaxDescriptionLength(ctx)),
+			len(description), k.GetParam(ctx, types.KeyMaxDescriptionLength),
 		)
 	}
 
