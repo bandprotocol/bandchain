@@ -80,7 +80,7 @@ func TestGasConsumeByAddNewRawDataRequest(t *testing.T) {
 	request := newDefaultRequest()
 
 	// Set GasPerRawDataRequestPerValidator to 10000
-	keeper.SetGasPerRawDataRequestPerValidator(ctx, 10000)
+	keeper.SetParam(ctx, types.KeyGasPerRawDataRequestPerValidator, 10000)
 	keeper.SetRequest(ctx, 1, request)
 
 	dataSource := types.NewDataSource(
@@ -99,7 +99,7 @@ func TestGasConsumeByAddNewRawDataRequest(t *testing.T) {
 	gasUsed := ctx.GasMeter().GasConsumed() - beforeGas
 
 	// Set GasPerRawDataRequestPerValidator to 25000
-	keeper.SetGasPerRawDataRequestPerValidator(ctx, 25000)
+	keeper.SetParam(ctx, types.KeyGasPerRawDataRequestPerValidator, 25000)
 	keeper.SetRequest(ctx, 2, request)
 	beforeGas = ctx.GasMeter().GasConsumed()
 	err = keeper.AddNewRawDataRequest(ctx, 2, 42, 1, []byte("calldata1"))

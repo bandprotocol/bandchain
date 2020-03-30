@@ -49,12 +49,16 @@ var (
 	NewRawDataReport       = types.NewRawDataReport
 	NewRawDataReportWithID = types.NewRawDataReportWithID
 
-	KeyMaxDataSourceExecutableSize  = types.KeyMaxDataSourceExecutableSize
-	KeyMaxOracleScriptCodeSize      = types.KeyMaxOracleScriptCodeSize
-	KeyMaxCalldataSize              = types.KeyMaxCalldataSize
-	KeyMaxDataSourceCountPerRequest = types.KeyMaxDataSourceCountPerRequest
-	KeyMaxRawDataReportSize         = types.KeyMaxRawDataReportSize
-	KeyMaxResultSize                = types.KeyMaxResultSize
+	KeyMaxDataSourceExecutableSize      = types.KeyMaxDataSourceExecutableSize
+	KeyMaxOracleScriptCodeSize          = types.KeyMaxOracleScriptCodeSize
+	KeyMaxCalldataSize                  = types.KeyMaxCalldataSize
+	KeyMaxDataSourceCountPerRequest     = types.KeyMaxDataSourceCountPerRequest
+	KeyMaxRawDataReportSize             = types.KeyMaxRawDataReportSize
+	KeyMaxResultSize                    = types.KeyMaxResultSize
+	KeyMaxNameLength                    = types.KeyMaxNameLength
+	KeyMaxDescriptionLength             = types.KeyMaxDescriptionLength
+	KeyEndBlockExecuteGasLimit          = types.KeyEndBlockExecuteGasLimit
+	KeyGasPerRawDataRequestPerValidator = types.KeyGasPerRawDataRequestPerValidator
 
 	QueryRequestByID    = types.QueryRequestByID
 	QueryRequests       = types.QueryRequests

@@ -46,6 +46,7 @@ func TestAddReportSuccess(t *testing.T) {
 	require.Nil(t, err)
 
 	req, err := keeper.GetRequest(ctx, 1)
+	require.Nil(t, err)
 	require.Equal(t, []sdk.ValAddress{sdk.ValAddress([]byte("validator1"))}, req.ReceivedValidators)
 
 	report, err := keeper.GetRawDataReport(ctx, 1, 2, sdk.ValAddress([]byte("validator1")))
@@ -207,20 +208,20 @@ func TestAddNewRawDataRequestCallDataSizeTooBig(t *testing.T) {
 
 	// Set MaxCalldataSize to 0
 	// AddNewRawDataRequest should fail because size of "calldata" is > 0
-	keeper.SetMaxCalldataSize(ctx, 0)
+	keeper.SetParam(ctx, types.KeyMaxCalldataSize, 0)
 	err := keeper.AddNewRawDataRequest(ctx, 1, 1, 1, []byte("calldata"))
 	require.NotNil(t, err)
 
 	// Set MaxCalldataSize to 20
 	// AddNewRawDataRequest should pass because size of "calldata" is < 20
-	keeper.SetMaxCalldataSize(ctx, 20)
+	keeper.SetParam(ctx, types.KeyMaxCalldataSize, 20)
 	err = keeper.AddNewRawDataRequest(ctx, 1, 1, 1, []byte("calldata"))
 	require.Nil(t, err)
 }
 
 func TestAddReportReportSizeExceedMaxRawDataReportSize(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
-	keeper.SetMaxRawDataReportSize(ctx, 20)
+	keeper.SetParam(ctx, types.KeyMaxRawDataReportSize, 20)
 
 	request := newDefaultRequest()
 	keeper.SetRequest(ctx, 1, request)
