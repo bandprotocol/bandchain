@@ -38,16 +38,16 @@ func DefaultGenesisState() GenesisState {
 }
 
 func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorUpdate {
-	k.SetMaxDataSourceExecutableSize(ctx, data.Params.MaxDataSourceExecutableSize)
-	k.SetMaxOracleScriptCodeSize(ctx, data.Params.MaxOracleScriptCodeSize)
-	k.SetMaxCalldataSize(ctx, data.Params.MaxCalldataSize)
-	k.SetMaxDataSourceCountPerRequest(ctx, data.Params.MaxDataSourceCountPerRequest)
-	k.SetMaxRawDataReportSize(ctx, data.Params.MaxRawDataReportSize)
-	k.SetMaxResultSize(ctx, data.Params.MaxResultSize)
-	k.SetEndBlockExecuteGasLimit(ctx, data.Params.EndBlockExecuteGasLimit)
-	k.SetMaxNameLength(ctx, data.Params.MaxNameLength)
-	k.SetMaxDescriptionLength(ctx, data.Params.MaxDescriptionLength)
-	k.SetGasPerRawDataRequestPerValidator(ctx, data.Params.GasPerRawDataRequestPerValidator)
+	k.SetParam(ctx, KeyMaxDataSourceExecutableSize, data.Params.MaxDataSourceExecutableSize)
+	k.SetParam(ctx, KeyMaxOracleScriptCodeSize, data.Params.MaxOracleScriptCodeSize)
+	k.SetParam(ctx, KeyMaxCalldataSize, data.Params.MaxCalldataSize)
+	k.SetParam(ctx, KeyMaxDataSourceCountPerRequest, data.Params.MaxDataSourceCountPerRequest)
+	k.SetParam(ctx, KeyMaxRawDataReportSize, data.Params.MaxRawDataReportSize)
+	k.SetParam(ctx, KeyMaxResultSize, data.Params.MaxResultSize)
+	k.SetParam(ctx, KeyEndBlockExecuteGasLimit, data.Params.EndBlockExecuteGasLimit)
+	k.SetParam(ctx, KeyMaxNameLength, data.Params.MaxNameLength)
+	k.SetParam(ctx, KeyMaxDescriptionLength, data.Params.MaxDescriptionLength)
+	k.SetParam(ctx, KeyGasPerRawDataRequestPerValidator, data.Params.GasPerRawDataRequestPerValidator)
 
 	for _, dataSource := range data.DataSources {
 		_, err := k.AddDataSource(

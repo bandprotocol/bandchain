@@ -585,7 +585,7 @@ func TestSkipInvalidExecuteGas(t *testing.T) {
 	keeper.SetRawDataReport(ctx, 2, 1, validatorAddress1, types.NewRawDataReport(0, []byte("answer1")))
 	keeper.SetRawDataReport(ctx, 2, 1, validatorAddress2, types.NewRawDataReport(0, []byte("answer2")))
 
-	keeper.SetEndBlockExecuteGasLimit(ctx, 75000)
+	keeper.SetParam(ctx, KeyEndBlockExecuteGasLimit, 75000)
 
 	keeper.SetPendingResolveList(ctx, []types.RequestID{1, 2})
 	got := handleEndBlock(ctx, keeper)
@@ -641,7 +641,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 	}
 
 	// Each execute use 2270 gas, so it can resolve 3 requests per block
-	keeper.SetEndBlockExecuteGasLimit(ctx, 7500)
+	keeper.SetParam(ctx, KeyEndBlockExecuteGasLimit, 7500)
 	keeper.SetPendingResolveList(ctx, pendingList)
 
 	got := handleEndBlock(ctx, keeper)
@@ -769,7 +769,7 @@ func TestEndBlockInsufficientExecutionConsumeEndBlockGas(t *testing.T) {
 		pendingList = append(pendingList, i)
 	}
 
-	keeper.SetEndBlockExecuteGasLimit(ctx, 2600)
+	keeper.SetParam(ctx, KeyEndBlockExecuteGasLimit, 2600)
 	keeper.SetPendingResolveList(ctx, pendingList)
 
 	got := handleEndBlock(ctx, keeper)
