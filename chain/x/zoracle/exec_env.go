@@ -13,7 +13,6 @@ type ExecutionEnvironment struct {
 	now             int64
 	maxResultSize   int64
 	maxCalldataSize int64
-
 	rawDataRequests []types.RawDataRequestWithExternalID
 	rawDataReports  map[string]types.RawDataReport
 }
@@ -99,7 +98,7 @@ func (env *ExecutionEnvironment) GetMaximumResultSize() int64 {
 }
 
 func (env *ExecutionEnvironment) GetMaximumCalldataOfDataSourceSize() int64 {
-	return int64(env.keeper.GetParam(env.ctx, KeyMaxCalldataSize))
+	return env.maxCalldataSize
 }
 func (env *ExecutionEnvironment) GetAggregateBlockTime() int64 {
 	if int64(len(env.request.ReceivedValidators)) >= env.request.SufficientValidatorCount {
