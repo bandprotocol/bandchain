@@ -90,7 +90,6 @@ func (b *BandDB) handleMsgCreateOracleScript(
 	if err != nil {
 		return err
 	}
-
 	return b.AddOracleScript(
 		id, msg.Name, msg.Description, msg.Owner, msg.Code,
 		b.ctx.BlockTime(), b.ctx.BlockHeight(), txHash,
