@@ -59,11 +59,11 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~reportedValidators, ~minimumValidators, ~totalValidators) => {
+let make = (~reportedValidators, ~minimumValidators, ~requestValidators) => {
   let minimumPercentage =
-    (minimumValidators * 100 |> float_of_int) /. (totalValidators |> float_of_int);
+    (minimumValidators * 100 |> float_of_int) /. (requestValidators |> float_of_int);
   let progressPercentage =
-    (reportedValidators * 100 |> float_of_int) /. (totalValidators |> float_of_int);
+    (reportedValidators * 100 |> float_of_int) /. (requestValidators |> float_of_int);
   <div className=Styles.container>
     <div className=Styles.outer> <div className={Styles.inner(progressPercentage)} /> </div>
     <div className={Styles.withWidth(120, minimumPercentage)}>
