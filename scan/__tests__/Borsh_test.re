@@ -14,7 +14,7 @@ describe("Expect Borsh to encode correctly", () => {
        )
   });
 
-  test("should be able to decode from bytes correctly2", () => {
+  test("should be able to encode from bytes correctly2", () => {
     expect(Some("0x03000000425443900100000000000064" |> JsBuffer.fromHex))
     |> toEqual(
          encode(
