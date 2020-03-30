@@ -39,10 +39,10 @@ let renderBody = (block: BlockSub.t) => {
   let hash = block.hash |> Hash.toHex(~upper=true);
   let validator = block.validator;
 
-  <TBody key={height |> string_of_int}>
+  <TBody key={height |> ID.Block.toString}>
     <Row minHeight={`px(40)}>
       <Col> <HSpacing size=Spacing.md /> </Col>
-      <Col size=1.11> <TypeID.Block id={ID.Block.ID(height)} /> </Col>
+      <Col size=1.11> <TypeID.Block id=height /> </Col>
       <Col size=3.93>
         <div className={Styles.withWidth(330)}>
           <Text value=hash weight=Text.Medium block=true code=true ellipsis=true />
@@ -74,10 +74,10 @@ let make = () =>
     let (page, setPage) = React.useState(_ => 1);
     let pageSize = 10;
 
-    let blocksCounSub = BlockSub.count();
+    let blocksCountSub = BlockSub.count();
     let blocksSub = BlockSub.getList(~pageSize, ~page, ());
 
-    let%Sub blocksCount = blocksCounSub;
+    let%Sub blocksCount = blocksCountSub;
     let%Sub blocks = blocksSub;
 
     let pageCount = Page.getPageCount(blocksCount, pageSize);
@@ -99,12 +99,7 @@ let make = () =>
             />
             <div className=Styles.seperatedLine />
             <Text
-              value={
-                switch (blocks->Belt_Array.get(0)) {
-                | Some({height}) => height->Format.iPretty ++ " in total"
-                | None => ""
-                }
-              }
+              value={blocksCount->Format.iPretty ++ " in total"}
               size=Text.Md
               weight=Text.Thin
               spacing={Text.Em(0.06)}
