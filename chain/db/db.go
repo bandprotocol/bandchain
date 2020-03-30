@@ -72,6 +72,13 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		"RESTRICT",
 	)
 
+	db.Model(&OracleScript{}).AddForeignKey(
+		"code_hash",
+		"oracle_script_codes(code_hash)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
 	db.Model(&OracleScriptRevision{}).AddForeignKey(
 		"oracle_script_id",
 		"oracle_scripts(id)",
@@ -82,13 +89,6 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 	db.Model(&OracleScriptRevision{}).AddForeignKey(
 		"tx_hash",
 		"transactions(tx_hash)",
-		"RESTRICT",
-		"RESTRICT",
-	)
-
-	db.Model(&OracleScriptCode{}).AddForeignKey(
-		"code_hash",
-		"oracle_scripts(code_hash)",
 		"RESTRICT",
 		"RESTRICT",
 	)

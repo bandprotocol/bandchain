@@ -60,11 +60,11 @@ type DataSourceRevision struct {
 }
 
 type OracleScript struct {
-	ID          int64  `gorm:"unique;auto_increment:false"`
+	ID          int64  `gorm:"primary_key;auto_increment:false"`
 	Name        string `gorm:"not null"`
 	Description string `gorm:"not null"`
 	Owner       string `gorm:"not null"`
-	CodeHash    []byte `gorm:"primary_key"`
+	CodeHash    []byte `gorm:"not null"`
 	LastUpdated int64  `gorm:"not null"`
 }
 
