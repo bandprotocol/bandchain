@@ -13,7 +13,7 @@ func (k Keeper) AddResult(
 	if uint64(len(result)) > k.GetParam(ctx, types.KeyMaxResultSize) {
 		return types.ErrBadDataValue(
 			"AddResult: Result size (%d) exceeds the maximum size (%d).",
-			len(result), int(k.GetParam(ctx, types.KeyMaxResultSize)),
+			len(result), k.GetParam(ctx, types.KeyMaxResultSize),
 		)
 	}
 

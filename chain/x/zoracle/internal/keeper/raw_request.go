@@ -52,7 +52,7 @@ func (k Keeper) AddNewRawDataRequest(
 	if uint64(len(calldata)) > k.GetParam(ctx, types.KeyMaxCalldataSize) {
 		return types.ErrBadDataValue(
 			"AddNewRawDataRequest: Calldata size (%d) exceeds the maximum size (%d).",
-			len(calldata), int(k.GetParam(ctx, types.KeyMaxCalldataSize)),
+			len(calldata), k.GetParam(ctx, types.KeyMaxCalldataSize),
 		)
 	}
 
