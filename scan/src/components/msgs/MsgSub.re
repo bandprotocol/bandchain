@@ -78,7 +78,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
       </div>
       {success
          ? <>
-             <TypeID.DataSource id={ID.DataSource.ID(id)} />
+             <TypeID.DataSource id />
              <HSpacing size=Spacing.sm />
              <Text
                value=name
@@ -105,7 +105,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
       </div>
       {success
          ? <>
-             <TypeID.DataSource id={ID.DataSource.ID(id)} />
+             <TypeID.DataSource id />
              <HSpacing size=Spacing.sm />
              <Text
                value=name
