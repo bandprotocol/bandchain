@@ -41,10 +41,9 @@ let make = () => {
         <Row>
           {[
              ("Home", Route.HomePage),
-             ("Validators", Route.ValidatorHomePage),
+             ("Validators", ValidatorHomePage),
              ("Blocks", BlockHomePage),
              ("Transactions", TxHomePage),
-             ("Request Scripts", HomePage),
              ("Data Sources", DataSourceHomePage),
              ("Oracle Scripts", OracleScriptHomePage),
            ]
