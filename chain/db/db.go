@@ -53,6 +53,27 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		&ReportDetail{},
 	)
 
+	db.Model(&Block{}).AddForeignKey(
+		"proposer",
+		"validators(consensus_address)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&Transaction{}).AddForeignKey(
+		"block_height",
+		"blocks(height)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&Transaction{}).AddForeignKey(
+		"sender",
+		"accounts(address)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
 	db.Model(&ValidatorVote{}).AddForeignKey(
 		"consensus_address",
 		"validators(consensus_address)",
@@ -96,6 +117,13 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 	)
 
 	db.Model(&Report{}).AddForeignKey(
+		"request_id",
+		"requests(id)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&Report{}).AddForeignKey(
 		"validator",
 		"validators(operator_address)",
 		"RESTRICT",
@@ -109,30 +137,9 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		"RESTRICT",
 	)
 
-	db.Model(&Report{}).AddForeignKey(
-		"request_id",
-		"requests(id)",
-		"RESTRICT",
-		"RESTRICT",
-	)
-
 	db.Model(&ReportDetail{}).AddForeignKey(
 		"request_id,validator",
 		"reports(request_id,validator)",
-		"RESTRICT",
-		"RESTRICT",
-	)
-
-	db.Model(&Block{}).AddForeignKey(
-		"proposer",
-		"validators(consensus_address)",
-		"RESTRICT",
-		"RESTRICT",
-	)
-
-	db.Model(&Transaction{}).AddForeignKey(
-		"block_height",
-		"blocks(height)",
 		"RESTRICT",
 		"RESTRICT",
 	)
