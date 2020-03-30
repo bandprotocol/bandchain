@@ -79,6 +79,12 @@ type t =
   | ValidatorHomePage
   | ValidatorIndexPage(Address.t, validator_tab_t);
 
+type url_parts_t = {
+  first: list(string),
+  remaining: list(string),
+  urlHash: string,
+};
+
 let regexes = [
   ("^$", _ => HomePage),
   ("^blocks$", _ => BlockHomePage),
@@ -87,9 +93,9 @@ let regexes = [
   ("^txs$", _ => TxHomePage),
   (
     "^tx$",
-    keys => {
-      switch (keys->Belt_List.get(1)) {
-      | Some(hash) => TxIndexPage(Hash.fromHex(hash))
+    url_parts => {
+      switch (url_parts.remaining->Belt_List.get(0)) {
+      | Some(txHash) => TxIndexPage(Hash.fromHex(txHash))
       | None => NotFound
       };
     },
@@ -97,8 +103,10 @@ let regexes = [
   ("^validators$", _ => ValidatorHomePage),
   (
     "B([0-9]+)$",
-    keys => {
-      switch (keys->Belt_List.get(1)->Belt_Option.getWithDefault("")->int_of_string_opt) {
+    url_parts => {
+      switch (
+        url_parts.first->Belt_List.get(1)->Belt_Option.getWithDefault("")->int_of_string_opt
+      ) {
       | Some(height) => BlockIndexPage(height)
       | None => NotFound
       };
@@ -106,34 +114,34 @@ let regexes = [
   ),
   (
     "D([0-9]+)$",
-    keys =>
-      dataSourceTab(keys->Belt_List.getExn(2))
+    url_parts =>
+      dataSourceTab(url_parts.urlHash)
       ->Belt_Option.mapWithDefault(NotFound, tab =>
-          DataSourceIndexPage(keys->Belt_List.getExn(1)->int_of_string, tab)
+          DataSourceIndexPage(url_parts.first->Belt_List.getExn(1)->int_of_string, tab)
         ),
   ),
   (
     "O([0-9]+)$",
-    keys =>
-      oracleScriptTab(keys->Belt_List.getExn(2))
+    url_parts =>
+      oracleScriptTab(url_parts.urlHash)
       ->Belt_Option.mapWithDefault(NotFound, tab =>
-          OracleScriptIndexPage(keys->Belt_List.getExn(1)->int_of_string, tab)
+          OracleScriptIndexPage(url_parts.first->Belt_List.getExn(1)->int_of_string, tab)
         ),
   ),
   (
     "R([0-9]+)$",
-    keys =>
-      requestTab(keys->Belt_List.getExn(2))
+    url_parts =>
+      requestTab(url_parts.urlHash)
       ->Belt_Option.mapWithDefault(NotFound, tab =>
-          RequestIndexPage(keys->Belt_List.getExn(1)->int_of_string, tab)
+          RequestIndexPage(url_parts.first->Belt_List.getExn(1)->int_of_string, tab)
         ),
   ),
   (
     "^bandvaloper([0-9a-z]+)$",
-    keys => {
+    url_parts => {
       switch (
-        keys->Belt_List.head->Belt_Option.getWithDefault("")->Address.fromBech32Opt,
-        keys->Belt_List.getExn(2)->validatorTab,
+        url_parts.first->Belt_List.head->Belt_Option.getWithDefault("")->Address.fromBech32Opt,
+        url_parts.urlHash->validatorTab,
       ) {
       | (Some(addr), Some(tab)) => ValidatorIndexPage(addr, tab)
       | _ => NotFound
@@ -142,10 +150,10 @@ let regexes = [
   ),
   (
     "^band([0-9a-z]+)$",
-    keys => {
+    url_parts => {
       switch (
-        keys->Belt_List.head->Belt_Option.getWithDefault("")->Address.fromBech32Opt,
-        keys->Belt_List.getExn(2)->accountTab,
+        url_parts.first->Belt_List.head->Belt_Option.getWithDefault("")->Address.fromBech32Opt,
+        url_parts.urlHash->accountTab,
       ) {
       | (Some(addr), Some(tab)) => AccountIndexPage(addr, tab)
       | _ => NotFound
@@ -167,14 +175,11 @@ let fromUrl = (url: ReasonReactRouter.url) =>
     ->Belt.List.head
   ) {
   | Some((result, keysToRoute)) =>
-    keysToRoute(
-      result
-      ->Js.Re.captures
-      ->Belt_Array.keepMap(Js.toOption)
-      ->Belt_List.fromArray
-      ->Belt_List.concat(url.path->Belt_List.drop(1)->Belt_Option.getWithDefault([]))
-      ->Belt_List.concat([url.hash]),
-    )
+    keysToRoute({
+      first: result->Js.Re.captures->Belt_Array.keepMap(Js.toOption)->Belt_List.fromArray,
+      remaining: url.path->Belt_List.drop(1)->Belt_Option.getWithDefault([]),
+      urlHash: url.hash,
+    })
   | None => NotFound
   };
 
