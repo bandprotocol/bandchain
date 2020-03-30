@@ -5,7 +5,7 @@ type aggregate_t = {count: int};
 type transactions_aggregate_t = {aggregate: option(aggregate_t)};
 
 type internal_t = {
-  height: int,
+  height: ID.Block.t,
   hash: Hash.t,
   validator: ValidatorSub.Mini.t,
   timestamp: MomentRe.Moment.t,
@@ -13,7 +13,7 @@ type internal_t = {
 };
 
 type t = {
-  height: int,
+  height: ID.Block.t,
   hash: Hash.t,
   validator: ValidatorSub.Mini.t,
   timestamp: MomentRe.Moment.t,
@@ -36,7 +36,7 @@ module MultiConfig = [%graphql
   {|
   subscription Blocks($limit: Int!, $offset: Int!) {
     blocks(limit: $limit, offset: $offset, order_by: {height: desc}) @bsRecord {
-      height @bsDecoder(fn: "GraphQLParser.int64")
+      height @bsDecoder(fn: "ID.Block.fromJson")
       hash: block_hash @bsDecoder(fn: "GraphQLParser.hash")
       validator @bsRecord {
         consensusAddress: consensus_address @bsDecoder(fn: "Address.fromHex")
@@ -58,7 +58,7 @@ module SingleConfig = [%graphql
   {|
   subscription Block($height: bigint!) {
     blocks_by_pk(height: $height) @bsRecord {
-      height @bsDecoder(fn: "GraphQLParser.int64")
+      height @bsDecoder(fn: "ID.Block.fromJson")
       hash: block_hash @bsDecoder(fn: "GraphQLParser.hash")
       validator @bsRecord {
         consensusAddress: consensus_address @bsDecoder(fn: "Address.fromHex")
