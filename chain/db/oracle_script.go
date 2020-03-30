@@ -1,7 +1,6 @@
 package db
 
 import (
-	"bytes"
 	"crypto/sha256"
 	"database/sql"
 	"errors"
@@ -48,13 +47,12 @@ func (b *BandDB) AddOracleScript(
 		CodeText: sql.NullString{},
 		Schema:   sql.NullString{},
 	}
-	var tmp OracleScriptCode
-	b.tx.First(&tmp, codeHash)
-	if !bytes.Equal(tmp.CodeHash, codeHash) {
-		err := b.tx.Create(&oracleScriptCode).Error
-		if err != nil {
-			return err
-		}
+
+	err := b.tx.Where(OracleScriptCode{CodeHash: codeHash}).
+		Assign(oracleScriptCode).
+		FirstOrCreate(&OracleScriptCode{}).Error
+	if err != nil {
+		return err
 	}
 
 	oracleScript := createOracleScript(
@@ -65,7 +63,7 @@ func (b *BandDB) AddOracleScript(
 		codeHash,
 		blockTime,
 	)
-	err := b.tx.Create(&oracleScript).Error
+	err = b.tx.Create(&oracleScript).Error
 	if err != nil {
 		return err
 	}
