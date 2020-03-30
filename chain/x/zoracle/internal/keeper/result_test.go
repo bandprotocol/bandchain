@@ -65,7 +65,7 @@ func TestAddResultFailWithExceedResultSize(t *testing.T) {
 	_, err := keeper.GetResult(ctx, 1, 1, []byte("calldata"))
 	require.NotNil(t, err)
 
-	keeper.SetMaxResultSize(ctx, int64(1))
+	keeper.SetParam(ctx, types.KeyMaxResultSize, 1)
 	err = keeper.AddResult(ctx, 1, 1, []byte("calldata"), []byte("result"))
 	require.NotNil(t, err)
 }

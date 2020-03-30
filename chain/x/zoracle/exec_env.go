@@ -3,9 +3,8 @@ package zoracle
 import (
 	"errors"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type ExecutionEnvironment struct {
@@ -65,11 +64,11 @@ func (env *ExecutionEnvironment) GetValidatorAddress(validatorIndex int64) ([]by
 }
 
 func (env *ExecutionEnvironment) GetMaximumResultSize() int64 {
-	return env.keeper.MaxResultSize(env.ctx)
+	return int64(env.keeper.GetParam(env.ctx, KeyMaxResultSize))
 }
 
 func (env *ExecutionEnvironment) GetMaximumCalldataOfDataSourceSize() int64 {
-	return env.keeper.MaxCalldataSize(env.ctx)
+	return int64(env.keeper.GetParam(env.ctx, KeyMaxCalldataSize))
 }
 
 func (env *ExecutionEnvironment) RequestExternalData(
