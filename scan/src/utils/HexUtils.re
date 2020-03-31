@@ -1,14 +1,10 @@
-// This function receives any string and filters the latest part
-// that is hex and then makes it lowercase.
-// In other words, just strip prefix out and then lowercase.
-// Please see HexUtils_test.re for example.
 let normalizeHexString = hexstr => {
-  hexstr
-  ->Js.Re.exec_("[0-9a-fA-F]+$"->Js.Re.fromString, _)
-  ->Belt_Option.mapWithDefault([||], result =>
-      result->Js.Re.captures->Belt_Array.keepMap(Js.toOption)
-    )
-  ->Belt_Array.get(0)
-  ->Belt_Option.getWithDefault(_, "")
-  ->String.lowercase_ascii;
+  let len = hexstr->String.length;
+  let prefix = len >= 2 ? hexstr->String.sub(0, 2) : "";
+
+  switch (prefix) {
+  | "0x"
+  | "0X" => hexstr->String.lowercase_ascii->String.sub(2, len - 2)
+  | _ => hexstr->String.lowercase_ascii
+  };
 };
