@@ -404,10 +404,62 @@ module MultiConfig = [%graphql
 |}
 ];
 
+module MultiByHeightConfig = [%graphql
+  {|
+  subscription Transaction($height: bigint!, $limit: Int!, $offset: Int!) {
+    transactions(where: {block_height: {_eq: $height}}, offset: $offset, limit: $limit) @bsRecord {
+      txHash : tx_hash @bsDecoder(fn: "GraphQLParser.hash")
+      blockHeight: block_height @bsDecoder(fn: "ID.Block.fromJson")
+      success
+      gasFee: gas_fee @bsDecoder(fn: "GraphQLParser.coins")
+      gasLimit: gas_limit @bsDecoder(fn: "GraphQLParser.int64")
+      gasUsed : gas_used @bsDecoder(fn: "GraphQLParser.int64")
+      sender  @bsDecoder(fn: "Address.fromBech32")
+      timestamp  @bsDecoder(fn: "GraphQLParser.time")
+      messages @bsDecoder(fn: "Msg.decodeActions")
+    }
+  }
+|}
+];
+
+module MultiBySenderConfig = [%graphql
+  {|
+  subscription Transaction($sender: String!, $limit: Int!, $offset: Int!) {
+    transactions(
+      where: {sender: {_eq: $sender}},
+      offset: $offset,
+      limit: $limit
+    ) @bsRecord {
+      txHash : tx_hash @bsDecoder(fn: "GraphQLParser.hash")
+      blockHeight: block_height @bsDecoder(fn: "ID.Block.fromJson")
+      success
+      gasFee: gas_fee @bsDecoder(fn: "GraphQLParser.coins")
+      gasLimit: gas_limit @bsDecoder(fn: "GraphQLParser.int64")
+      gasUsed : gas_used @bsDecoder(fn: "GraphQLParser.int64")
+      sender  @bsDecoder(fn: "Address.fromBech32")
+      timestamp  @bsDecoder(fn: "GraphQLParser.time")
+      messages @bsDecoder(fn: "Msg.decodeActions")
+    }
+  }
+|}
+];
+
 module TxCountConfig = [%graphql
   {|
   subscription Transaction {
     transactions_aggregate{
+      aggregate{
+        count @bsDecoder(fn: "Belt_Option.getExn")
+      }
+    }
+  }
+|}
+];
+
+module TxCountBySenderConfig = [%graphql
+  {|
+  subscription Transaction($sender: String!) {
+    transactions_aggregate(where: {sender: {_eq: $sender}}) {
       aggregate{
         count @bsDecoder(fn: "Belt_Option.getExn")
       }
@@ -443,8 +495,50 @@ let getList = (~page, ~pageSize, ()) => {
   result |> Sub.map(_, x => x##transactions);
 };
 
+let getListBySender = (sender, ~page, ~pageSize, ()) => {
+  let offset = (page - 1) * pageSize;
+  let (result, _) =
+    ApolloHooks.useSubscription(
+      MultiBySenderConfig.definition,
+      ~variables=
+        MultiBySenderConfig.makeVariables(
+          ~sender=sender |> Address.toBech32,
+          ~limit=pageSize,
+          ~offset,
+          (),
+        ),
+    );
+  result |> Sub.map(_, x => x##transactions);
+};
+
+let getListByBlockHeight = (height, ~page, ~pageSize, ()) => {
+  let offset = (page - 1) * pageSize;
+  let (result, _) =
+    ApolloHooks.useSubscription(
+      MultiByHeightConfig.definition,
+      ~variables=
+        MultiByHeightConfig.makeVariables(
+          ~height=height |> ID.Block.toJson,
+          ~limit=pageSize,
+          ~offset,
+          (),
+        ),
+    );
+  result |> Sub.map(_, x => x##transactions);
+};
+
 let count = () => {
   let (result, _) = ApolloHooks.useSubscription(TxCountConfig.definition);
+  result
+  |> Sub.map(_, x => x##transactions_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
+};
+
+let countBySender = sender => {
+  let (result, _) =
+    ApolloHooks.useSubscription(
+      TxCountBySenderConfig.definition,
+      ~variables=TxCountBySenderConfig.makeVariables(~sender=sender |> Address.toBech32, ()),
+    );
   result
   |> Sub.map(_, x => x##transactions_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
 };
