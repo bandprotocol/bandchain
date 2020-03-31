@@ -1,7 +1,11 @@
+type is_pointer =
+  | IsPointer
+  | NonPointer;
+
 type pos_t =
   | Title
   | Subtitle
-  | Text(bool);
+  | Text(is_pointer);
 
 let prefixFontSize =
   fun
@@ -36,12 +40,12 @@ module Styles = {
     fun
     | Title
     | Subtitle
-    | Text(true) => style([pointerEvents(`auto)])
-    | Text(false) => style([pointerEvents(`none)]);
+    | Text(IsPointer) => style([pointerEvents(`auto)])
+    | Text(NonPointer) => style([pointerEvents(`none)]);
 };
 
 [@react.component]
-let make = (~address, ~position=Text(true), ~validator=false) => {
+let make = (~address, ~position=Text(IsPointer), ~validator=false) => {
   let noPrefixAddress =
     validator
       ? address |> Address.toOperatorBech32 |> Js.String.sliceToEnd(~from=11)
@@ -50,7 +54,7 @@ let make = (~address, ~position=Text(true), ~validator=false) => {
   <div
     className={Css.merge([
       Styles.container,
-      Styles.pointerEvents(validator ? Text(false) : position),
+      Styles.pointerEvents(validator ? Text(NonPointer) : position),
     ])}
     onClick={_ => Route.redirect(Route.AccountIndexPage(address, Route.AccountTransactions))}>
     <Text
