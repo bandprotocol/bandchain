@@ -367,7 +367,7 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 	return jsonMap, nil
 }
 
-func (b *BandDB) GetInvolvedAccounts(tx auth.StdTx) []sdk.AccAddress {
+func (b *BandDB) GetInvolvedAccountsFromTx(tx auth.StdTx) []sdk.AccAddress {
 	involvedAccounts := make([]sdk.AccAddress, 0)
 	for _, msg := range tx.GetMsgs() {
 		switch msg := msg.(type) {
@@ -404,6 +404,26 @@ func (b *BandDB) GetInvolvedAccounts(tx auth.StdTx) []sdk.AccAddress {
 			// TODO: Better logging
 			fmt.Println("GetInvolvedAccounts: There isn't get involved accounts for this msg type")
 			return nil
+		}
+	}
+	return involvedAccounts
+}
+
+func (b *BandDB) GetInvolvedAccountsFromTransferEvents(logs sdk.ABCIMessageLogs) []sdk.AccAddress {
+	involvedAccounts := make([]sdk.AccAddress, 0)
+	for _, log := range logs {
+		for _, event := range log.Events {
+			if event.Type == bank.EventTypeTransfer {
+				for _, kv := range event.Attributes {
+					if kv.Key == bank.AttributeKeySender || kv.Key == bank.AttributeKeyRecipient {
+						account, err := sdk.AccAddressFromBech32(kv.Value)
+						if err != nil {
+							panic(err)
+						}
+						involvedAccounts = append(involvedAccounts, account)
+					}
+				}
+			}
 		}
 	}
 	return involvedAccounts

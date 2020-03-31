@@ -174,7 +174,12 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 			)
 
 			app.dbBand.HandleTransaction(stdTx, txHash, logs)
-			involvedAccounts = append(involvedAccounts, app.dbBand.GetInvolvedAccounts(stdTx)...)
+			involvedAccounts = append(
+				involvedAccounts, app.dbBand.GetInvolvedAccountsFromTx(stdTx)...,
+			)
+			involvedAccounts = append(
+				involvedAccounts, app.dbBand.GetInvolvedAccountsFromTransferEvents(logs)...,
+			)
 		}
 		updatedAccounts := make(map[string]bool)
 		for _, account := range involvedAccounts {
