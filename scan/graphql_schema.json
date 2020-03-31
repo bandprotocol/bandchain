@@ -20633,7 +20633,7 @@
           {
             "args": [
               {
-                "name": "id",
+                "name": "oracle_script_id",
                 "defaultValue": null,
                 "type": {
                   "kind": "NON_NULL",
@@ -21050,20 +21050,6 @@
             "args": [
               {
                 "name": "data_source_id",
-                "defaultValue": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "bigint",
-                    "ofType": null
-                  }
-                },
-                "description": null
-              },
-              {
-                "name": "oracle_script_id",
                 "defaultValue": null,
                 "type": {
                   "kind": "NON_NULL",
@@ -24556,13 +24542,9 @@
             "deprecationReason": null,
             "name": "oracle_script",
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "oracle_scripts",
-                "ofType": null
-              }
+              "kind": "OBJECT",
+              "name": "oracle_scripts",
+              "ofType": null
             },
             "description": "An object relationship"
           },
@@ -24572,13 +24554,9 @@
             "deprecationReason": null,
             "name": "oracle_script_id",
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "bigint",
-                "ofType": null
-              }
+              "kind": "SCALAR",
+              "name": "bigint",
+              "ofType": null
             },
             "description": null
           }
@@ -31648,13 +31626,9 @@
             "deprecationReason": null,
             "name": "id",
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "bigint",
-                "ofType": null
-              }
+              "kind": "SCALAR",
+              "name": "bigint",
+              "ofType": null
             },
             "description": null
           },
@@ -32995,6 +32969,12 @@
         "interfaces": null,
         "name": "requests_constraint",
         "enumValues": [
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "requests_id_key",
+            "description": "unique or primary key constraint"
+          },
           {
             "isDeprecated": false,
             "deprecationReason": null,
@@ -36431,7 +36411,7 @@
           {
             "args": [
               {
-                "name": "id",
+                "name": "oracle_script_id",
                 "defaultValue": null,
                 "type": {
                   "kind": "NON_NULL",
@@ -36848,20 +36828,6 @@
             "args": [
               {
                 "name": "data_source_id",
-                "defaultValue": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "bigint",
-                    "ofType": null
-                  }
-                },
-                "description": null
-              },
-              {
-                "name": "oracle_script_id",
                 "defaultValue": null,
                 "type": {
                   "kind": "NON_NULL",
@@ -44821,7 +44787,7 @@
             "defaultValue": null,
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "String_comparison_exp",
+              "name": "Int_comparison_exp",
               "ofType": null
             },
             "description": null
@@ -44846,112 +44812,6 @@
             },
             "description": null
           },
-          {
-            "name": "missed_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "String_comparison_exp",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "moniker",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "String_comparison_exp",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "operator_address",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "String_comparison_exp",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "details",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "String_comparison_exp",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "elected_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "Int_comparison_exp",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "self_delegation",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "String_comparison_exp",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "validator_votes",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "String_comparison_exp",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "min_self_delegation",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "String_comparison_exp",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "website",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "String_comparison_exp",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "validators_bool_exp",
-        "enumValues": null,
-        "description": "Boolean expression to filter rows from the table \"validators\". All fields are combined with a logical 'AND'.",
-        "fields": null
-      },
-      {
-        "inputFields": null,
-        "kind": "ENUM",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "validators_constraint",
-        "enumValues": [
           {
             "name": "missed_count",
             "defaultValue": null,
@@ -45301,9 +45161,9 @@
         "kind": "INPUT_OBJECT",
         "possibleTypes": null,
         "interfaces": null,
-        "name": "validators_insert_input",
+        "name": "validators_max_order_by",
         "enumValues": null,
-        "description": "input type for inserting data into table \"validators\"",
+        "description": "order by max() on columns of table \"validators\"",
         "fields": null
       },
       {
@@ -45311,9 +45171,9 @@
         "kind": "OBJECT",
         "possibleTypes": null,
         "interfaces": [],
-        "name": "validators_max_fields",
+        "name": "validators_min_fields",
         "enumValues": null,
-        "description": "aggregate max on columns",
+        "description": "aggregate min on columns",
         "fields": [
           {
             "args": [],
@@ -45418,7 +45278,7 @@
             "name": "missed_count",
             "type": {
               "kind": "SCALAR",
-              "name": "String",
+              "name": "Int",
               "ofType": null
             },
             "description": null
@@ -45440,7 +45300,6 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "operator_address",
-            "defaultValue": null,
             "type": {
               "kind": "SCALAR",
               "name": "String",
@@ -45466,8 +45325,8 @@
             "deprecationReason": null,
             "name": "voted_count",
             "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "reports_arr_rel_insert_input",
+              "kind": "SCALAR",
+              "name": "Int",
               "ofType": null
             },
             "description": null
@@ -45522,8 +45381,8 @@
             "name": "consensus_address",
             "defaultValue": null,
             "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "requested_validators_arr_rel_insert_input",
+              "kind": "ENUM",
+              "name": "order_by",
               "ofType": null
             },
             "description": null
@@ -45542,8 +45401,8 @@
             "name": "elected_count",
             "defaultValue": null,
             "type": {
-              "kind": "SCALAR",
-              "name": "String",
+              "kind": "ENUM",
+              "name": "order_by",
               "ofType": null
             },
             "description": null
@@ -45572,8 +45431,8 @@
             "name": "missed_count",
             "defaultValue": null,
             "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "validator_votes_arr_rel_insert_input",
+              "kind": "ENUM",
+              "name": "order_by",
               "ofType": null
             },
             "description": null
@@ -45592,8 +45451,8 @@
             "name": "operator_address",
             "defaultValue": null,
             "type": {
-              "kind": "SCALAR",
-              "name": "Int",
+              "kind": "ENUM",
+              "name": "order_by",
               "ofType": null
             },
             "description": null
@@ -45612,8 +45471,8 @@
             "name": "voted_count",
             "defaultValue": null,
             "type": {
-              "kind": "SCALAR",
-              "name": "String",
+              "kind": "ENUM",
+              "name": "order_by",
               "ofType": null
             },
             "description": null
@@ -45713,7 +45572,7 @@
             "name": "elected_count",
             "type": {
               "kind": "SCALAR",
-              "name": "String",
+              "name": "Int",
               "ofType": null
             },
             "description": null
@@ -45749,7 +45608,7 @@
             "name": "missed_count",
             "type": {
               "kind": "SCALAR",
-              "name": "String",
+              "name": "Int",
               "ofType": null
             },
             "description": null
@@ -45797,7 +45656,7 @@
             "name": "voted_count",
             "type": {
               "kind": "SCALAR",
-              "name": "String",
+              "name": "Int",
               "ofType": null
             },
             "description": null
@@ -45852,8 +45711,8 @@
             "name": "consensus_address",
             "defaultValue": null,
             "type": {
-              "kind": "SCALAR",
-              "name": "Int",
+              "kind": "ENUM",
+              "name": "order_by",
               "ofType": null
             },
             "description": null
