@@ -30,8 +30,9 @@ type Transaction struct {
 }
 
 type Account struct {
-	Address string `gorm:"primary_key"`
-	Balance string `gorm:"not null"`
+	Address       string `gorm:"primary_key"`
+	Balance       string `gorm:"not null"`
+	UpdatedHeight int64  `gorm:"not null"`
 }
 
 type Validator struct {
