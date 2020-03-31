@@ -120,6 +120,6 @@ let make = () => {
          }}
       </div>
     </div>
-    <Footer />
+    // <Footer />
   </div>;
 };
