@@ -17,22 +17,22 @@ func (k Keeper) SetOracleScript(
 func (k Keeper) AddOracleScript(
 	ctx sdk.Context, owner sdk.AccAddress, name string, description string, code []byte,
 ) (types.OracleScriptID, sdk.Error) {
-	if int64(len(code)) > k.MaxOracleScriptCodeSize(ctx) {
+	if uint64(len(code)) > k.GetParam(ctx, types.KeyMaxOracleScriptCodeSize) {
 		return 0, types.ErrBadDataValue(
 			"AddOracleScript: Code size (%d) exceeds the maximum size (%d).",
-			len(code), int(k.MaxOracleScriptCodeSize(ctx)),
+			len(code), k.GetParam(ctx, types.KeyMaxOracleScriptCodeSize),
 		)
 	}
-	if int64(len(name)) > k.MaxNameLength(ctx) {
+	if uint64(len(name)) > k.GetParam(ctx, types.KeyMaxNameLength) {
 		return 0, types.ErrBadDataValue(
 			"AddOracleScript: Name length (%d) exceeds the maximum length (%d). 211",
-			len(name), int(k.MaxNameLength(ctx)),
+			len(name), k.GetParam(ctx, types.KeyMaxNameLength),
 		)
 	}
-	if int64(len(description)) > k.MaxDescriptionLength(ctx) {
+	if uint64(len(description)) > k.GetParam(ctx, types.KeyMaxDescriptionLength) {
 		return 0, types.ErrBadDataValue(
 			"AddOracleScript: Name length (%d) exceeds the maximum length (%d).",
-			len(name), int(k.MaxNameLength(ctx)),
+			len(name), k.GetParam(ctx, types.KeyMaxNameLength),
 		)
 	}
 
@@ -52,22 +52,22 @@ func (k Keeper) EditOracleScript(
 			"EditOracleScript: Unknown oracle script ID %d.", oracleScriptID,
 		)
 	}
-	if int64(len(code)) > k.MaxOracleScriptCodeSize(ctx) {
+	if uint64(len(code)) > k.GetParam(ctx, types.KeyMaxOracleScriptCodeSize) {
 		return types.ErrBadDataValue(
 			"EditDataSource: Code size (%d) exceeds the maximum size (%d).",
-			len(code), int(k.MaxOracleScriptCodeSize(ctx)),
+			len(code), k.GetParam(ctx, types.KeyMaxOracleScriptCodeSize),
 		)
 	}
-	if int64(len(name)) > k.MaxNameLength(ctx) {
+	if uint64(len(name)) > k.GetParam(ctx, types.KeyMaxNameLength) {
 		return types.ErrBadDataValue(
 			"EditOracleScript: Name length (%d) exceeds the maximum length (%d).",
-			len(name), int(k.MaxNameLength(ctx)),
+			len(name), k.GetParam(ctx, types.KeyMaxNameLength),
 		)
 	}
-	if int64(len(description)) > k.MaxDescriptionLength(ctx) {
+	if uint64(len(description)) > k.GetParam(ctx, types.KeyMaxDescriptionLength) {
 		return types.ErrBadDataValue(
 			"EditDataSource: Description length (%d) exceeds the maximum length (%d).",
-			len(description), int(k.MaxDescriptionLength(ctx)),
+			len(description), k.GetParam(ctx, types.KeyMaxDescriptionLength),
 		)
 	}
 
