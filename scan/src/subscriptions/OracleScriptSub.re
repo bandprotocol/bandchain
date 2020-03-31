@@ -5,6 +5,30 @@ type t = {
   description: string,
   code: JsBuffer.t,
   timestamp: MomentRe.Moment.t,
+  relatedDataSources: list(ID.DataSource.t),
+};
+
+type related_data_source_t = {dataSourceID: ID.DataSource.t};
+
+type internal_t = {
+  id: ID.OracleScript.t,
+  owner: Address.t,
+  name: string,
+  description: string,
+  code: JsBuffer.t,
+  timestamp: MomentRe.Moment.t,
+  related_data_sources: array(related_data_source_t),
+};
+
+let toExternal = ({id, owner, description, name, code, timestamp, related_data_sources}) => {
+  id,
+  owner,
+  name,
+  description,
+  code,
+  timestamp,
+  relatedDataSources:
+    related_data_sources->Belt.Array.map(x => x.dataSourceID)->Belt.List.fromArray,
 };
 
 module MultiConfig = [%graphql
@@ -17,6 +41,9 @@ module MultiConfig = [%graphql
       description
       code @bsDecoder(fn: "GraphQLParser.buffer")
       timestamp: last_updated @bsDecoder(fn: "GraphQLParser.time")
+      related_data_sources @bsRecord {
+        dataSourceID: data_source_id @bsDecoder(fn: "ID.DataSource.fromJson")
+      }
     }
   }
 |}
@@ -32,6 +59,9 @@ module SingleConfig = [%graphql
       description
       code @bsDecoder(fn: "GraphQLParser.buffer")
       timestamp: last_updated @bsDecoder(fn: "GraphQLParser.time")
+      related_data_sources @bsRecord {
+        dataSourceID: data_source_id @bsDecoder(fn: "ID.DataSource.fromJson")
+      }
     }
   },
 |}
@@ -57,7 +87,7 @@ let get = id => {
     );
   let%Sub x = result;
   switch (x##oracle_scripts_by_pk) {
-  | Some(data) => Sub.resolve(data)
+  | Some(data) => Sub.resolve(data |> toExternal)
   | None => NoData
   };
 };
@@ -69,7 +99,7 @@ let getList = (~page, ~pageSize, ()) => {
       MultiConfig.definition,
       ~variables=MultiConfig.makeVariables(~limit=pageSize, ~offset, ()),
     );
-  result |> Sub.map(_, x => x##oracle_scripts);
+  result |> Sub.map(_, internal => internal##oracle_scripts->Belt.Array.map(toExternal));
 };
 
 let count = () => {
