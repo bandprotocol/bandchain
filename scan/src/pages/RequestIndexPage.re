@@ -8,8 +8,6 @@ module Styles = {
 
   let centerHFlex = style([display(`flex), alignItems(`center), justifyContent(`center)]);
 
-  let minWidth = mw => style([minWidth(`px(mw)), maxWidth(`px(mw))]);
-
   let topicContainer = h =>
     style([display(`flex), alignItems(`center), width(`percent(100.)), height(`px(h))]);
 

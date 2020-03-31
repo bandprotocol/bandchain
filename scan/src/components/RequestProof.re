@@ -3,7 +3,7 @@ module Styles = {
 
   let hFlex = style([display(`flex), alignItems(`center)]);
 
-  let minWidth = mw => style([minWidth(`px(mw)), maxWidth(`px(mw))]);
+  let withWidth = w => style([width(`px(w))]);
 
   let topicContainer = h =>
     style([display(`flex), alignItems(`center), width(`percent(100.)), height(`px(h))]);
@@ -48,7 +48,7 @@ let make = (~requestID) => {
           />
         </Col>
         <Col size=1.>
-          <div className={Styles.minWidth(700)}>
+          <div className={Styles.withWidth(700)}>
             <Text
               value={proof.evmProofBytes |> JsBuffer.toHex}
               weight=Text.Medium
@@ -63,7 +63,7 @@ let make = (~requestID) => {
       <div className={Styles.topicContainer(20)}>
         <Col size=1.> React.null </Col>
         <Col size=1.>
-          <div className={Styles.minWidth(700)}>
+          <div className={Styles.withWidth(700)}>
             <div className=Styles.hFlex>
               <ShowProofButton showProof setShowProof />
               <HSpacing size=Spacing.md />
