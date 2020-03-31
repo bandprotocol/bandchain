@@ -34,6 +34,7 @@ let make = (~dataSourceID: ID.DataSource.t) =>
     Js.Console.log("ccccccccc");
 
     Js.Console.log(requestsSub);
+    Js.Console.log(totalRequestCountSub);
 
     // let%Sub requests = requestsSub;
     // let%Sub totalRequestCount = totalRequestCountSub;
