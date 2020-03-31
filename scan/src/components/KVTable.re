@@ -154,10 +154,16 @@ let renderField = (field, maxWidth) => {
   };
 };
 
+// This function map a list of any type to a list of with_setting_t
+// by zipping each element of arr,sizes,isRights together.
+// If size of sizes is less then size of arr then '1.0' will be use
+// as the default value.
+// If size of isRights is less then size of arr then 'false' will be use
+// as the default value.
 let withSetting = (arr, sizes, isRights) =>
-  arr->Belt_List.mapWithIndex((i, elem) =>
+  arr->Belt_List.mapWithIndex((i, any) =>
     {
-      mainElem: elem,
+      mainElem: any,
       size: sizes->Belt_List.get(i)->Belt_Option.getWithDefault(1.),
       isRight: isRights->Belt_List.get(i)->Belt_Option.getWithDefault(false),
     }
