@@ -7,6 +7,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/bandprotocol/bandchain/chain/app"
 	"github.com/bandprotocol/bandchain/chain/bandlib"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/gin-gonic/gin"
@@ -66,6 +67,10 @@ func handleRequest(c *gin.Context) {
 }
 
 func main() {
+	config := sdk.GetConfig()
+	app.SetBech32AddressPrefixesAndBip44CoinType(config)
+	config.Seal()
+
 	privBytes, _ := hex.DecodeString(priv)
 	copy(pk[:], privBytes)
 
