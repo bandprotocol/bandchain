@@ -29,7 +29,8 @@ type t = {
   sequence: string,
 };
 
-let create = (fromAddress, toAddress, sendAmount, accountNumber, sequence) => {
+let create =
+    (~fromAddress, ~toAddress, ~sendAmount, ~feeAmount, ~gas=200000, ~accountNumber, ~sequence) => {
   {
     msgs: [|
       {
@@ -43,8 +44,8 @@ let create = (fromAddress, toAddress, sendAmount, accountNumber, sequence) => {
     |],
     chain_id: "banchain",
     fee: {
-      amount: [|{amount: "5000", denom: "uband"}|],
-      gas: "200000",
+      amount: [|{amount: feeAmount |> string_of_int, denom: "uband"}|],
+      gas: gas |> string_of_int,
     },
     memo: "",
     account_number: accountNumber,

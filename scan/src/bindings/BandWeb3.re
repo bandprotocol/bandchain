@@ -74,23 +74,27 @@ let broadcast = (instance, signedMsg) => {
 
 //   //msgSend
 //   let msgSend = StdMsgSend.create(
-//     "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs" |> Address.fromBech32,
-//     "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs" |> Address.fromBech32,
-//     100,
-//     data.accountNumber,
-//     data.sequence,
+//     ~fromAddress="band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs" |> Address.fromBech32,
+//     ~toAddress="band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs" |> Address.fromBech32,
+//     ~sendAmount=100,
+//     ~feeAmount=5000,
+//     ~accountNumber=data.accountNumber,
+//     ~sequence=data.sequence,
 //   );
 //   //msgRequest
 //   let msgRequest =
-//     StdMsgRequest.create(
-//       1,
-//       "RVRI" |> JsBuffer.fromBase64,
-//       1,
-//       1,
-//       "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs" |> Address.fromBech32,
-//       "5000",
-//       data.accountNumber,
-//       data.sequence,
+//      ~oracleScriptID=1,
+//      ~calldata="RVRI" |> JsBuffer.fromBase64,
+//      ~requestedValidatorCount=4,
+//      ~sufficientValidatorCount=4,
+//      ~expiration=20,
+//      ~prepareGas=20000,
+//      ~executeGas=150000,
+//      ~sender"band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs" |> Address.fromBech32,
+//      ~feeAmount=1000000,
+//      ~gas=300000,
+//      ~accountNumber=data.accountNumber,
+//      ~sequence=data.sequence,
 //     );
 
 //   let wrappedMsg = cosmos->newStdMsgRequest(msgRequest);
