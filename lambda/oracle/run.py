@@ -3,27 +3,33 @@ import os
 import shlex
 import subprocess
 
+HEADERS = {
+    "content-type": "application/json",
+    "x-lambda": "true",
+    "access-control-allow-origin": "*",
+    "access-control-allow-methods": "OPTIONS, POST",
+}
 
 def lambda_handler(event, context):
     try:
         body = json.loads(event["body"])
     except (json.decoder.JSONDecodeError, KeyError) as e:
+        # Hack for preflight
         return {
-            "statusCode": 400,
-            "headers": {"content-type": "application/json"},
-            "body": json.dumps({"error": "Missing json payload",}),
+            "statusCode": 200,
+            "headers": HEADERS,
         }
 
     if "executable" not in body:
         return {
             "statusCode": 400,
-            "headers": {"content-type": "application/json"},
+            "headers": HEADERS,
             "body": json.dumps({"error": "Missing executable value",}),
         }
     if "calldata" not in body:
         return {
             "statusCode": 400,
-            "headers": {"content-type": "application/json"},
+            "headers": HEADERS,
             "body": json.dumps({"error": "Missing calldata value",}),
         }
 
@@ -49,7 +55,7 @@ def lambda_handler(event, context):
 
         return {
             "statusCode": 200,
-            "headers": {"content-type": "application/json"},
+            "headers": HEADERS,
             "body": json.dumps(
                 {
                     "returncode": result.returncode,
@@ -61,7 +67,7 @@ def lambda_handler(event, context):
     except subprocess.TimeoutExpired:
         return {
             "statusCode": 200,
-            "headers": {"content-type": "application/json"},
+            "headers": HEADERS,
             "body": json.dumps({"returncode": -1, "error": "Execution timeout",}),
         }
 
