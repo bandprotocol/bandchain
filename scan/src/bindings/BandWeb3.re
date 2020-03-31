@@ -72,7 +72,7 @@ let broadcast = (instance, signedMsg) => {
 //   Js.Console.log2("yo22222", data);
 
 // //msgSend
-// let msgSend = StdMsgSend.create_t(
+// let msgSend = StdMsgSend.createT(
 //   "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs" |> Address.fromBech32,
 //   "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs" |> Address.fromBech32,
 //   100,
@@ -81,7 +81,7 @@ let broadcast = (instance, signedMsg) => {
 // );
 // //msgRequest
 // let msgRequest =
-//   StdMsgRequest.create_t(
+//   StdMsgRequest.createT(
 //     1,
 //     "RVRI" |> JsBuffer.fromBase64,
 //     1,
