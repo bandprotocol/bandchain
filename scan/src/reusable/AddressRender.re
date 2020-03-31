@@ -1,11 +1,11 @@
-type is_pointer =
-  | IsPointer
+type isPointer =
+  | Pointer
   | NonPointer;
 
-type pos_t =
+type position =
   | Title
   | Subtitle
-  | Text(is_pointer);
+  | Text(isPointer);
 
 let prefixFontSize =
   fun
@@ -40,12 +40,12 @@ module Styles = {
     fun
     | Title
     | Subtitle
-    | Text(IsPointer) => style([pointerEvents(`auto)])
+    | Text(Pointer) => style([pointerEvents(`auto)])
     | Text(NonPointer) => style([pointerEvents(`none)]);
 };
 
 [@react.component]
-let make = (~address, ~position=Text(IsPointer), ~validator=false) => {
+let make = (~address, ~position=Text(Pointer), ~validator=false) => {
   let noPrefixAddress =
     validator
       ? address |> Address.toOperatorBech32 |> Js.String.sliceToEnd(~from=11)
