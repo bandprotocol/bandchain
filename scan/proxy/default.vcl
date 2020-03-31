@@ -54,9 +54,9 @@ sub cors {
 }
 
 sub vcl_synth {
-    call cors;
+  call cors;
 }
 
 sub vcl_deliver {
-    call cors;
+  call cors;
 }
