@@ -55,7 +55,7 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 	genaccounts.ModuleCdc.MustUnmarshalJSON(genesisState[genaccounts.ModuleName], &genaccountsState)
 
 	for _, account := range genaccountsState {
-		err := app.dbBand.AddOrCreateAccount(account.Address, account.Coins)
+		err := app.dbBand.SetAccountBalance(account.Address, account.Coins)
 		if err != nil {
 			panic(err)
 		}
@@ -82,7 +82,7 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 		for _, msg := range tx.Msgs {
 			if createMsg, ok := msg.(staking.MsgCreateValidator); ok {
 				app.dbBand.HandleMessage(nil, createMsg, nil)
-				app.dbBand.DecreaseBalance(
+				app.dbBand.DecreaseAccountBalance(
 					createMsg.DelegatorAddress, sdk.NewCoins(createMsg.Value),
 				)
 				if err != nil {
@@ -180,7 +180,7 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 		for _, account := range involvedAccounts {
 			if found := updatedAccounts[account.String()]; !found {
 				updatedAccounts[account.String()] = true
-				err := app.dbBand.AddOrCreateAccount(
+				err := app.dbBand.SetAccountBalance(
 					account, app.BankKeeper.GetCoins(app.DeliverContext, account),
 				)
 				if err != nil {
