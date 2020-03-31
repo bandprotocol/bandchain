@@ -20,7 +20,6 @@
 [@bs.module] external oracleScriptLogo: string = "./oracleScriptLogo.svg";
 [@bs.module] external txLogo: string = "./txLogo.svg";
 [@bs.module] external accountLogo: string = "./account-icon.png";
-[@bs.module] external pieChart: string = "./pie-chart.png";
 [@bs.module] external success: string = "./success.svg";
 [@bs.module] external fail: string = "./fail.svg";
 [@bs.module] external noRequestIcon: string = "./noRequest.png";
