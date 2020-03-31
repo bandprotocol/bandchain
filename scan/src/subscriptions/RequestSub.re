@@ -1,21 +1,27 @@
 module Mini = {
   open TxSub.Mini;
 
+  type oracle_script_internal_t = {
+    id: ID.OracleScript.t,
+    name: string,
+  };
+
   type request_internal = {
-    oracleScriptIDInternal: ID.OracleScript.t,
+    oracleScript: oracle_script_internal_t,
     transaction: TxSub.Mini.t,
   };
 
-  type raw_data_requests_internal = {
-    requestIDInternal: ID.Request.t,
+  type raw_data_requests_internal_t = {
+    idInternal: ID.Request.t,
     request: request_internal,
   };
 
-  type internal_t = {rawDataRequests: array(raw_data_requests_internal)};
+  type internal_t = {rawDataRequests: array(raw_data_requests_internal_t)};
 
   type t = {
-    requestID: ID.Request.t,
+    id: ID.Request.t,
     oracleScriptID: ID.OracleScript.t,
+    oracleScriptName: string,
     txHash: Hash.t,
     blockHeight: ID.Block.t,
     timestamp: MomentRe.Moment.t,
@@ -26,9 +32,12 @@ module Mini = {
       subscription RequestMiniByDataSource($id: bigint!, $limit: Int!, $offset: Int!) {
         data_sources_by_pk(id: $id) @bsRecord {
           rawDataRequests: raw_data_requests(limit: $limit, offset: $offset) @bsRecord {
-            requestIDInternal: request_id @bsDecoder(fn: "ID.Request.fromJson")
+            idInternal: request_id @bsDecoder(fn: "ID.Request.fromJson")
             request @bsRecord {
-              oracleScriptIDInternal: oracle_script_id @bsDecoder(fn: "ID.OracleScript.fromJson")
+              oracleScript: oracle_script @bsRecord {
+                id @bsDecoder(fn: "ID.OracleScript.fromJson")
+                name
+              }
               transaction @bsRecord {
                 txHash: tx_hash @bsDecoder(fn: "GraphQLParser.hash")
                 blockHeight: block_height @bsDecoder(fn: "ID.Block.fromJson")
@@ -43,15 +52,11 @@ module Mini = {
 
   let toExternal = ({rawDataRequests}) =>
     rawDataRequests->Belt_Array.map(
-      (
-        {
-          requestIDInternal,
-          request: {oracleScriptIDInternal, transaction: {txHash, blockHeight, timestamp}},
-        },
-      ) =>
+      ({idInternal, request: {oracleScript, transaction: {txHash, blockHeight, timestamp}}}) =>
       {
-        requestID: requestIDInternal,
-        oracleScriptID: oracleScriptIDInternal,
+        id: idInternal,
+        oracleScriptID: oracleScript.id,
+        oracleScriptName: oracleScript.name,
         txHash,
         blockHeight,
         timestamp,
@@ -74,15 +79,40 @@ module Mini = {
     result
     |> Sub.map(_, x =>
          switch (x##data_sources_by_pk) {
-         | Some(data) => Sub.resolve(data |> toExternal)
-         | None => NoData
+         | Some(data) => data |> toExternal
+         | None => [||]
          }
        );
   };
 };
 
-// let count = () => {
-//   let (result, _) = ApolloHooks.useSubscription(DataSourcesCountConfig.definition);
-//   result
-//   |> Sub.map(_, x => x##data_sources_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
-// };
+module RequestCountByDataSourceConfig = [%graphql
+  {|
+    subscription RequestMiniByDataSourceCount($id: bigint!) {
+      data_sources_by_pk(id: $id) {
+        raw_data_requests_aggregate {
+          aggregate {
+            count @bsDecoder(fn: "Belt_Option.getExn")
+          }
+        }
+      }
+    }
+  |}
+];
+
+let countByDataSource = id => {
+  let (result, _) =
+    ApolloHooks.useSubscription(
+      RequestCountByDataSourceConfig.definition,
+      ~variables=RequestCountByDataSourceConfig.makeVariables(~id=id |> ID.DataSource.toJson, ()),
+    );
+  result
+  |> Sub.map(_, x => {
+       {
+         let%Opt dataSource = x##data_sources_by_pk;
+         let%Opt aggregate = dataSource##raw_data_requests_aggregate##aggregate;
+         Some(aggregate##count);
+       }
+       ->Belt_Option.getWithDefault(0)
+     });
+};
