@@ -114,7 +114,6 @@ let make = () => {
     <TopBar />
     <div className={Css.merge([Styles.innerContainer, Styles.pageWidth])}>
       <NavBar />
-      /* route handle */
       <div className=Styles.routeContainer>
         {switch (ReasonReactRouter.useUrl() |> Route.fromUrl) {
          | HomePage => <HomePage />
@@ -129,13 +128,12 @@ let make = () => {
          | BlockHomePage => <BlockHomePage />
          | BlockIndexPage(height) => <BlockIndexPage height={ID.Block.ID(height)} />
          | ValidatorHomePage => <ValidatorHomePage />
-         | RequestIndexPage(reqID, hashtag) => <RequestIndexPage reqID hashtag />
+         | RequestIndexPage(reqID) => <RequestIndexPage reqID />
          | AccountIndexPage(address, hashtag) => <AccountIndexPage address hashtag />
          | ValidatorIndexPage(address, hashtag) => <ValidatorIndexPage address hashtag />
          | NotFound => <NotFound />
          }}
       </div>
     </div>
-    // <Footer />
   </div>;
 };

@@ -47,6 +47,14 @@ module Styles = {
     | TxHook.Msg.Request(_) => ("DATA REQUEST", Colors.blue4, Colors.blue1)
     | TxHook.Msg.Send(_) => ("SEND TOKEN", Colors.purple6, Colors.purple1)
     | TxHook.Msg.Report(_) => ("DATA REPORT", Colors.orange6, Colors.orange1)
+    | TxHook.Msg.AddOracleAddress(_) => ("ADD ORACLE ADDRESS", Colors.purple6, Colors.purple1)
+    | TxHook.Msg.RemoveOracleAddress(_) => (
+        "REMOVE ORACLE ADDRESS",
+        Colors.purple6,
+        Colors.purple1,
+      )
+    | TxHook.Msg.CreateValidator(_) => ("CREATE VALIDATOR", Colors.purple6, Colors.purple1)
+    | TxHook.Msg.EditValidator(_) => ("EDIT VALIDATOR", Colors.purple6, Colors.purple1)
     | Unknown => ("Unknown", Colors.gray6, Colors.gray7)
     };
   };
