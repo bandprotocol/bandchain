@@ -48,7 +48,7 @@ let broadcast = (instance, signedMsg) => {
   );
 };
 
-// let cosmos = network("http://localhost:8010", "bandchain");
+// let cosmos = network("https://d3n.bandprotocol.com/rest", "bandchain");
 
 // cosmos->setPath("m/44'/494'/0'/0/0");
 // cosmos->setBech32MainPrefix("band");
