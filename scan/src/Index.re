@@ -9,6 +9,8 @@ AxiosHooks.setRpcUrl(Env.rpc);
 TimeAgos.setMomentRelativeTimeThreshold();
 
 ReactDOMRe.render(
-  <ApolloClient> <GlobalContext> <App /> </GlobalContext> </ApolloClient>,
+  <ApolloClient>
+    <GlobalContext> <AccountContext> <App /> </AccountContext> </GlobalContext>
+  </ApolloClient>,
   document##getElementById("root"),
 );
