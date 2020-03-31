@@ -114,7 +114,7 @@ let renderField = (field, maxWidth) => {
     <div className=Styles.vFlex>
       {vals
        ->Belt_List.map(v =>
-           <div className={Styles.valueContainer(maxWidth)}>
+           <div key=v className={Styles.valueContainer(maxWidth)}>
              <Text
                value=v
                size=Text.Sm
@@ -154,16 +154,10 @@ let renderField = (field, maxWidth) => {
   };
 };
 
-// This function map a list of any type to a list of with_setting_t
-// by zipping each element of arr,sizes,isRights together.
-// If size of sizes is less then size of arr then '1.0' will be use
-// as the default value.
-// If size of isRights is less then size of arr then 'false' will be use
-// as the default value.
 let withSetting = (arr, sizes, isRights) =>
-  arr->Belt_List.mapWithIndex((i, any) =>
+  arr->Belt_List.mapWithIndex((i, elem) =>
     {
-      mainElem: any,
+      mainElem: elem,
       size: sizes->Belt_List.get(i)->Belt_Option.getWithDefault(1.),
       isRight: isRights->Belt_List.get(i)->Belt_Option.getWithDefault(false),
     }
@@ -185,8 +179,8 @@ let make =
     <div className={Styles.thead(theme)}>
       <Row>
         {headersWithSetting
-         ->Belt_List.map(({mainElem, size, isRight}) => {
-             <Col size>
+         ->Belt_List.mapWithIndex((i, {mainElem, size, isRight}) => {
+             <Col key={i |> string_of_int} size>
                <div className=Styles.hFlex>
                  {isRight ? <div className=Styles.fillRight /> : React.null}
                  <Text
@@ -215,11 +209,11 @@ let make =
        | _ => sizes->Belt_List.reduce(0., (+.))
        };
      rowsWithSetting
-     ->Belt.List.map(rowWithSetting => {
-         <div className={Styles.tbody(theme)}>
+     ->Belt.List.mapWithIndex((i, rowWithSetting) => {
+         <div key={i |> string_of_int} className={Styles.tbody(theme)}>
            {rowWithSetting
-            ->Belt_List.map(({mainElem, size, isRight}) => {
-                <Col size>
+            ->Belt_List.mapWithIndex((j, {mainElem, size, isRight}) => {
+                <Col key={j |> string_of_int} size>
                   <div className=Styles.hFlex>
                     {isRight ? <div className=Styles.fillRight /> : React.null}
                     {renderField(
