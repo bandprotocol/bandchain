@@ -34,7 +34,7 @@ type t = {
   sequence: string,
 };
 
-let createT =
+let create =
     (
       oracleScriptID,
       calldata,

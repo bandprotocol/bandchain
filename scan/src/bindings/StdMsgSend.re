@@ -29,7 +29,7 @@ type t = {
   sequence: string,
 };
 
-let createT = (fromAddress, toAddress, sendAmount, accountNumber, sequence) => {
+let create = (fromAddress, toAddress, sendAmount, accountNumber, sequence) => {
   {
     msgs: [|
       {
