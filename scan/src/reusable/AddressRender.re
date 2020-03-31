@@ -1,11 +1,11 @@
-type isPointer =
+type is_pointer =
   | Pointer
   | NonPointer;
 
 type position =
   | Title
   | Subtitle
-  | Text(isPointer);
+  | Text(is_pointer);
 
 let prefixFontSize =
   fun
