@@ -447,8 +447,8 @@ module MultiBySenderConfig = [%graphql
 module TxCountConfig = [%graphql
   {|
   subscription Transaction {
-    transactions_aggregate{
-      aggregate{
+    transactions_aggregate {
+      aggregate {
         count @bsDecoder(fn: "Belt_Option.getExn")
       }
     }
@@ -460,7 +460,7 @@ module TxCountBySenderConfig = [%graphql
   {|
   subscription Transaction($sender: String!) {
     transactions_aggregate(where: {sender: {_eq: $sender}}) {
-      aggregate{
+      aggregate {
         count @bsDecoder(fn: "Belt_Option.getExn")
       }
     }

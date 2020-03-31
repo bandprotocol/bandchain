@@ -111,6 +111,14 @@ let getList = (~page, ~pageSize, ()) => {
   result |> Sub.map(_, internal => internal##blocks->Belt_Array.map(toExternal));
 };
 
+let getLatest = () => {
+  let%Sub blocks = getList(~pageSize=1, ~page=1, ());
+  switch (blocks->Belt_Array.get(0)) {
+  | Some(latestBlock) => latestBlock |> Sub.resolve
+  | None => NoData
+  };
+};
+
 let count = () => {
   let (result, _) = ApolloHooks.useSubscription(BlockCountConfig.definition);
   result
