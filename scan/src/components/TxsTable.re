@@ -15,7 +15,7 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~txs: list(TxHook.Tx.t)) => {
+let make = (~txs: array(TxSub.t)) => {
   <>
     <THead>
       <Row>
@@ -81,19 +81,19 @@ let make = (~txs: list(TxHook.Tx.t)) => {
       </Row>
     </THead>
     {txs
-     ->Belt.List.map(({blockHeight, hash, fee, messages, success}) => {
+     ->Belt_Array.map(({blockHeight, txHash, gasFee, messages, success}) => {
          let numMsgs = messages->Belt_List.size;
-         <TBody key={hash |> Hash.toHex}>
+         <TBody key={txHash |> Hash.toHex}>
            <Row minHeight={`px(30)}>
              <HSpacing size={`px(20)} />
              <Col size=1.67>
                <div className={Styles.heightByMsgsNum(numMsgs, 0)}>
-                 <TxLink txHash=hash width=140 />
+                 <TxLink txHash width=140 />
                </div>
              </Col>
              <Col size=0.88>
                <div className={Styles.heightByMsgsNum(numMsgs, -4)}>
-                 <TypeID.Block id={ID.Block.ID(blockHeight)} />
+                 <TypeID.Block id=blockHeight />
                </div>
              </Col>
              <Col size=1.>
@@ -119,7 +119,7 @@ let make = (~txs: list(TxHook.Tx.t)) => {
                      block=true
                      code=true
                      spacing={Text.Em(0.02)}
-                     value={fee->TxHook.Coin.getBandAmountFromCoins->Format.fPretty}
+                     value={gasFee->TxHook.Coin.getBandAmountFromCoins->Format.fPretty}
                      weight=Text.Medium
                      ellipsis=true
                    />
@@ -143,7 +143,6 @@ let make = (~txs: list(TxHook.Tx.t)) => {
            </Row>
          </TBody>;
        })
-     ->Array.of_list
      ->React.array}
   </>;
 };
