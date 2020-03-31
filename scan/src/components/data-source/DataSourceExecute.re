@@ -67,7 +67,7 @@ module Styles = {
     ]);
 };
 
-let parameterInput = (name, placeholder, index, setCalldataArr) => {
+let parameterInput = (name, index, setCalldataList) => {
   <div className=Styles.listContainer key=name>
     <Text value=name size=Text.Md color=Colors.gray6 />
     <VSpacing size=Spacing.xs />
@@ -76,12 +76,10 @@ let parameterInput = (name, placeholder, index, setCalldataArr) => {
       type_="text"
       onChange={event => {
         let newVal = ReactEvent.Form.target(event)##value;
-        setCalldataArr(prev => {
-          ignore(prev->Belt_Array.set(index, newVal));
-          prev;
+        setCalldataList(prev => {
+          prev->Belt_List.mapWithIndex((i, value) => {index == i ? newVal : value})
         });
       }}
-      placeholder
     />
   </div>;
 };
@@ -144,7 +142,7 @@ let make = (~executable: JsBuffer.t) => {
     ExecutableParser.parseExecutableScript(executable)->Belt_Option.getWithDefault([]);
   let numParams = params->Belt_List.length;
 
-  let (calldataArr, setCalldataArr) = React.useState(_ => params->Belt_List.toArray);
+  let (callDataList, setCalldataList) = React.useState(_ => Belt_List.make(numParams, ""));
 
   let (result, setResult) = React.useState(_ => Nothing);
 
@@ -170,7 +168,7 @@ let make = (~executable: JsBuffer.t) => {
     {numParams > 0
        ? <div className=Styles.paramsContainer>
            {params
-            ->Belt_List.mapWithIndex((i, param) => parameterInput(param, "", i, setCalldataArr))
+            ->Belt_List.mapWithIndex((i, param) => parameterInput(param, i, setCalldataList))
             ->Belt_List.toArray
             ->React.array}
          </div>
@@ -187,8 +185,8 @@ let make = (~executable: JsBuffer.t) => {
                 AxiosRequest.t(
                   ~executable=executable->JsBuffer.toHex,
                   ~calldata={
-                    calldataArr
-                    ->Belt_Array.reduce("", (acc, calldata) => acc ++ " " ++ calldata)
+                    callDataList
+                    ->Belt_List.reduce("", (acc, calldata) => acc ++ " " ++ calldata)
                     ->String.trim;
                   },
                 ),
