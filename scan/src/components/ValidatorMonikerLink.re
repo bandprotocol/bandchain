@@ -6,14 +6,18 @@ module Styles = {
 
 [@react.component]
 let make =
-    (~validator: ValidatorHook.Validator.t, ~weight=Text.Regular, ~size=Text.Md, ~underline=false) => {
+    (
+      ~validatorAddress: Address.t,
+      ~moniker: string,
+      ~weight=Text.Regular,
+      ~size=Text.Md,
+      ~underline=false,
+    ) => {
   <div
     className={Css.merge([Styles.container])}
-    onClick={_ =>
-      Route.redirect(Route.ValidatorIndexPage(validator.operatorAddress, ProposedBlocks))
-    }>
+    onClick={_ => Route.redirect(Route.ValidatorIndexPage(validatorAddress, ProposedBlocks))}>
     <Text
-      value={validator.moniker}
+      value=moniker
       color=Colors.gray7
       code=true
       weight

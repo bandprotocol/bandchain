@@ -120,7 +120,12 @@ let renderBody = (rank, validator: ValidatorHook.Validator.t) => {
           </Col>
         </Col>
         <Col size=1.9 alignSelf=Col.Start>
-          <div className=Styles.monikerContainer> <ValidatorMonikerLink validator /> </div>
+          <div className=Styles.monikerContainer>
+            <ValidatorMonikerLink
+              validatorAddress={validator.operatorAddress}
+              moniker={validator.moniker}
+            />
+          </div>
         </Col>
         <Col size=1.4 alignSelf=Col.Start>
           <div>
