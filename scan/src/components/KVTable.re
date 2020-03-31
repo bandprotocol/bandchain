@@ -185,7 +185,12 @@ let make =
                  {isRight ? <div className=Styles.fillRight /> : React.null}
                  <Text
                    value=mainElem
-                   size=Text.Xs
+                   size={
+                     switch (theme) {
+                     | MessageMiniTable => Text.Xs
+                     | RequestMiniTable => Text.Sm
+                     }
+                   }
                    weight=Text.Semibold
                    spacing={Text.Em(0.05)}
                    height={Text.Px(18)}
