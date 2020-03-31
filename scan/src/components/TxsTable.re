@@ -127,7 +127,7 @@ let make = (~txs: array(TxSub.t)) => {
                  </div>
                </div>
              </Col>
-             <Col size=3.>
+             <Col size=5.>
                {messages
                 ->Belt_List.toArray
                 ->Belt_Array.mapWithIndex((i, msg) =>
