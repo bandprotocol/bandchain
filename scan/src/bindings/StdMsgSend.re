@@ -29,8 +29,8 @@ type t = {
   sequence: string,
 };
 
-let create_t = (fromAddress, toAddress, sendAmount, accountNumber, sequence) => {
-  let returnT: t = {
+let createT = (fromAddress, toAddress, sendAmount, accountNumber, sequence) => {
+  {
     msgs: [|
       {
         type_: "cosmos-sdk/MsgSend",
@@ -50,5 +50,4 @@ let create_t = (fromAddress, toAddress, sendAmount, accountNumber, sequence) => 
     account_number: accountNumber,
     sequence,
   };
-  returnT;
 };

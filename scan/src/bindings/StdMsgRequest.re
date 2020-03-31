@@ -34,7 +34,7 @@ type t = {
   sequence: string,
 };
 
-let create_t =
+let createT =
     (
       oracleScriptID,
       calldata,
@@ -45,12 +45,12 @@ let create_t =
       accountNumber,
       sequence,
     ) => {
-  let returnT: t = {
+  {
     msgs: [|
       {
         type_: "zoracle/Request",
         value: {
-          oracleScriptID: string_of_int(oracleScriptID),
+          oracleScriptID: oracleScriptID |> string_of_int,
           calldata: calldata |> JsBuffer.toBase64,
           requestedValidatorCount: requestedValidatorCount |> string_of_int,
           sufficientValidatorCount: sufficientValidatorCount |> string_of_int,
@@ -70,5 +70,4 @@ let create_t =
     account_number: accountNumber,
     sequence,
   };
-  returnT;
 };
