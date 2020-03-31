@@ -1,6 +1,6 @@
 module Mini = {
   type t = {
-    consensusAddress: Address.t,
+    consensusAddress: string,
     operatorAddress: Address.t,
     moniker: string,
   };
