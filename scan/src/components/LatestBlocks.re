@@ -57,59 +57,51 @@ let renderBlock = (b: BlockSub.t) =>
 [@react.component]
 let make = () =>
   {
-    let%Opt info = React.useContext(GlobalContext.context);
-    let blocks = info.latestBlocks;
+    let blocksSub = BlockSub.getList(~pageSize=10, ~page=1, ());
+    let blocksCountSub = BlockSub.count();
 
-    let blocksCount = BlockSub.count()->Sub.default(0);
+    let%Sub blocks = blocksSub;
+    let%Sub blocksCount = blocksCountSub;
 
-    Some(
-      <>
-        <div className=Styles.topicBar>
+    <>
+      <div className=Styles.topicBar>
+        <Text value="Latest Blocks" size=Text.Xxl weight=Text.Bold block=true color=Colors.gray8 />
+      </div>
+      <VSpacing size=Spacing.lg />
+      <VSpacing size=Spacing.sm />
+      <div className=Styles.seeAll onClick={_ => Route.redirect(Route.BlockHomePage)}>
+        <div className=Styles.cFlex>
+          <span className=Styles.amount> {blocksCount |> Format.iPretty |> React.string} </span>
+          <VSpacing size=Spacing.xs />
           <Text
-            value="Latest Blocks"
-            size=Text.Xxl
-            weight=Text.Bold
-            block=true
-            color=Colors.gray8
+            value="ALL BLOCKS"
+            size=Text.Sm
+            color=Colors.bandBlue
+            spacing={Text.Em(0.05)}
+            weight=Text.Medium
           />
         </div>
-        <VSpacing size=Spacing.lg />
-        <VSpacing size=Spacing.sm />
-        <div className=Styles.seeAll onClick={_ => Route.redirect(Route.BlockHomePage)}>
-          <div className=Styles.cFlex>
-            <span className=Styles.amount> {blocksCount |> Format.iPretty |> React.string} </span>
-            <VSpacing size=Spacing.xs />
-            <Text
-              value="ALL BLOCKS"
-              size=Text.Sm
-              color=Colors.bandBlue
-              spacing={Text.Em(0.05)}
-              weight=Text.Medium
-            />
-          </div>
-          <img src=Images.rightArrow className=Styles.rightArrow />
-        </div>
-        <VSpacing size=Spacing.lg />
-        <Row alignItems=`initial>
-          <Col>
+        <img src=Images.rightArrow className=Styles.rightArrow />
+      </div>
+      <VSpacing size=Spacing.lg />
+      <Row alignItems=`initial>
+        <Col>
+          {blocks
+           ->Belt_Array.keepWithIndex((_b, i) => i mod 2 == 0)
+           ->Belt_Array.map(renderBlock)
+           ->React.array}
+        </Col>
+        <Col>
+          <div className=Styles.rightCol>
+            <VSpacing size=Spacing.xl />
             {blocks
-             ->Belt.List.keepWithIndex((_b, i) => i mod 2 == 0)
-             ->Belt.List.map(renderBlock)
-             ->Array.of_list
+             ->Belt_Array.keepWithIndex((_b, i) => i mod 2 == 1)
+             ->Belt_Array.map(renderBlock)
              ->React.array}
-          </Col>
-          <Col>
-            <div className=Styles.rightCol>
-              <VSpacing size=Spacing.xl />
-              {blocks
-               ->Belt.List.keepWithIndex((_b, i) => i mod 2 == 1)
-               ->Belt.List.map(renderBlock)
-               ->Array.of_list
-               ->React.array}
-            </div>
-          </Col>
-        </Row>
-      </>,
-    );
+          </div>
+        </Col>
+      </Row>
+    </>
+    |> Sub.resolve;
   }
-  ->Belt.Option.getWithDefault(React.null);
+  |> Sub.default(_, React.null);
