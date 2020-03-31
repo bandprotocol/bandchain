@@ -219,8 +219,6 @@ let make = (~reqID) => {
                    color=Colors.gray6
                  />
                  <HSpacing size=Spacing.md />
-                 // Mock
-                 <CopyButton data={"aaaa" |> JsBuffer.fromHex} />
                </div>
              </Col>
            </div>
