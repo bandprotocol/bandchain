@@ -8,14 +8,14 @@ import (
 )
 
 type ExecutionEnvironment struct {
-	requestID           types.RequestID
-	request             types.Request
-	now                 int64
-	maxResultSize       int64
-	maxCalldataSize     int64
-	maxDataRequestCount int64
-	rawDataRequests     []types.RawDataRequestWithExternalID
-	rawDataReports      map[string]types.RawDataReport
+	requestID              types.RequestID
+	request                types.Request
+	now                    int64
+	maxResultSize          int64
+	maxCalldataSize        int64
+	maxRawDataRequestCount int64
+	rawDataRequests        []types.RawDataRequestWithExternalID
+	rawDataReports         map[string]types.RawDataReport
 }
 
 func NewExecutionEnvironment(
@@ -26,14 +26,14 @@ func NewExecutionEnvironment(
 		return ExecutionEnvironment{}, err
 	}
 	return ExecutionEnvironment{
-		requestID:           requestID,
-		request:             request,
-		now:                 ctx.BlockTime().Unix(),
-		maxResultSize:       int64(keeper.GetParam(ctx, KeyMaxResultSize)),
-		maxCalldataSize:     int64(keeper.GetParam(ctx, KeyMaxCalldataSize)),
-		maxDataRequestCount: int64(keeper.GetParam(ctx, KeyMaxDataSourceCountPerRequest)),
-		rawDataRequests:     []types.RawDataRequestWithExternalID{},
-		rawDataReports:      make(map[string]types.RawDataReport),
+		requestID:              requestID,
+		request:                request,
+		now:                    ctx.BlockTime().Unix(),
+		maxResultSize:          int64(keeper.GetParam(ctx, KeyMaxResultSize)),
+		maxCalldataSize:        int64(keeper.GetParam(ctx, KeyMaxCalldataSize)),
+		maxRawDataRequestCount: int64(keeper.GetParam(ctx, KeyMaxDataSourceCountPerRequest)),
+		rawDataRequests:        []types.RawDataRequestWithExternalID{},
+		rawDataReports:         make(map[string]types.RawDataReport),
 	}, nil
 }
 
@@ -121,7 +121,8 @@ func (env *ExecutionEnvironment) RequestExternalData(
 	externalDataID int64,
 	calldata []byte,
 ) {
-	if int64(len(calldata)) <= env.maxCalldataSize && len(env.rawDataRequests) < int(env.maxDataRequestCount) {
+	// when size of env.rawDataRequests == env.maxRawDataRequest that mean it exceeds the number of request
+	if int64(len(calldata)) <= env.maxCalldataSize && int64(len(env.rawDataRequests)) <= env.maxRawDataRequestCount {
 		env.rawDataRequests = append(env.rawDataRequests, types.NewRawDataRequestWithExternalID(
 			types.ExternalID(externalDataID),
 			types.NewRawDataRequest(types.DataSourceID(dataSourceID), calldata),
