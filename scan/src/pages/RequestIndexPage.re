@@ -212,7 +212,7 @@ let make = (~reqID) => {
              <Col size=1.>
                <div className=Styles.hFlex>
                  <Text
-                   value="EXPIRATION DATA"
+                   value="EXTERNAL DATA"
                    size=Text.Sm
                    weight=Text.Semibold
                    spacing={Text.Em(0.06)}
