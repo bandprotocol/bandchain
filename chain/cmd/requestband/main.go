@@ -12,7 +12,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/gin-gonic/gin"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
-	rpc "github.com/tendermint/tendermint/rpc/client"
 )
 
 type Request struct {
@@ -20,7 +19,7 @@ type Request struct {
 	Amount  int64  `json:"amount" binding:"required"`
 }
 type Response struct {
-	Result string `json:"result"`
+	TxHash string `json:"txHash"`
 }
 
 func getEnv(key, def string) string {
@@ -32,14 +31,11 @@ func getEnv(key, def string) string {
 }
 
 var (
-	port        = getEnv("PORT", "5001")
-	nodeURI     = getEnv("NODE_URI", "http://localhost:26657")
-	queryURI    = getEnv("QUERY_URI", "http://localhost:1317")
-	priv        = getEnv("PRIVATE_KEY", "27313aa3fd8286b54d5dbe16a4fbbc55c7908e844e37a737997fc2ba74403812")
-	sandboxMode = os.Getenv("SANDBOX_MODE") != ""
+	port    = getEnv("PORT", "5001")
+	nodeURI = getEnv("NODE_URI", "http://localhost:26657")
+	priv    = getEnv("PRIVATE_KEY", "27313aa3fd8286b54d5dbe16a4fbbc55c7908e844e37a737997fc2ba74403812")
 )
 
-var rpcClient *rpc.HTTP
 var pk secp256k1.PrivKeySecp256k1
 var bandClient bandlib.BandStatefulClient
 
@@ -62,7 +58,7 @@ func handleRequest(c *gin.Context) {
 		return
 	}
 	c.JSON(200, Response{
-		Result: result.String(),
+		TxHash: result.TxHash,
 	})
 }
 
@@ -75,11 +71,10 @@ func main() {
 	copy(pk[:], privBytes)
 
 	var err error
-	bandClient, err = bandlib.NewBandStatefulClient(nodeURI, pk, 100, 10, "request band requests")
+	bandClient, err = bandlib.NewBandStatefulClient(nodeURI, pk, 100, 10, "Band faucet")
 	if err != nil {
 		panic(err)
 	}
-	rpcClient = rpc.NewHTTP(nodeURI, "/websocket")
 
 	r := gin.Default()
 	// Currently gin-contrib/cors not work so add header manually
