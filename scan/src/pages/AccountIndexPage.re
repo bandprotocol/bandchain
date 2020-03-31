@@ -7,8 +7,6 @@ module Styles = {
 
   let logo = style([width(`px(50)), marginRight(`px(10))]);
 
-  let graph = style([width(`px(186))]);
-
   let cFlex = style([display(`flex), flexDirection(`column), alignItems(`flexEnd)]);
 
   let rFlex = style([display(`flex), flexDirection(`row)]);
@@ -132,6 +130,11 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
     Some(account.balance +. account.balanceStake +. account.reward);
   };
 
+  // TODO , replace these Mock
+  let availableBalance = (Js.Math.random_int(0, 1000000) |> float_of_int) /. 100.;
+  let balanceAtStake = (Js.Math.random_int(0, 1000000) |> float_of_int) /. 100.;
+  let reward = (Js.Math.random_int(0, 1000000) |> float_of_int) /. 100.;
+
   <div className=Styles.pageContainer>
     <Row justify=Row.Between>
       <Col>
@@ -155,7 +158,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
     <div className=Styles.vFlex> <AddressRender address position=AddressRender.Title /> </div>
     <VSpacing size=Spacing.xxl />
     <Row justify=Row.Between>
-      <Col size=0.75> <img src=Images.pieChart className=Styles.graph /> </Col>
+      <Col size=0.75> <PieChart size=187 availableBalance balanceAtStake reward /> </Col>
       <Col size=1.>
         {switch (accountOpt, priceOpt) {
          | (Some(account), Some(price)) =>

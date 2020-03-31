@@ -86,4 +86,3 @@ let chartBalanceAtStake = Css.hex("ABB6FF");
 let chartReward = Css.hex("000C5C");
 
 let transparent = Css.rgba(0, 0, 0, 0.);
-
