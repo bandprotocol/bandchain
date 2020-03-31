@@ -121,11 +121,11 @@ let resultRender = result => {
   | Success({returncode, stdout, stderr}) =>
     <>
       <VSpacing size=Spacing.lg />
-      <div className={Styles.resultWrapper(`percent(120.), `px(65), `auto)}>
+      <div className={Styles.resultWrapper(`percent(100.), `px(95), `auto)}>
         <div className=Styles.hFlex>
           <HSpacing size=Spacing.lg />
           <div className={Styles.resultWrapper(`px(120), `px(12), `auto)}>
-            <Text value="Exit Status" color=Colors.gray6 weight=Text.Bold />
+            <Text value="Exit Status" color=Colors.gray6 weight=Text.Semibold />
           </div>
           <Text value={returncode |> string_of_int} />
         </div>
@@ -135,7 +135,15 @@ let resultRender = result => {
           <div className={Styles.resultWrapper(`px(120), `px(12), `auto)}>
             <Text value="Output" color=Colors.gray6 weight=Text.Semibold />
           </div>
-          <Text value={returncode == 0 ? stdout : stderr} code=true weight=Text.Semibold />
+          <Text value=stdout code=true weight=Text.Semibold />
+        </div>
+        <VSpacing size=Spacing.md />
+        <div className=Styles.hFlex>
+          <HSpacing size=Spacing.lg />
+          <div className={Styles.resultWrapper(`px(120), `px(12), `auto)}>
+            <Text value="Error" color=Colors.gray6 weight=Text.Semibold />
+          </div>
+          <Text value=stderr code=true weight=Text.Semibold />
         </div>
       </div>
     </>
