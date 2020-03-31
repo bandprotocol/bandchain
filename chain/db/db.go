@@ -13,8 +13,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/cosmos/cosmos-sdk/x/crisis"
 	dist "github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/gov"
+	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 )
 
@@ -371,6 +373,18 @@ func (b *BandDB) GetInvolvedAccountsFromTx(tx auth.StdTx) []sdk.AccAddress {
 	involvedAccounts := make([]sdk.AccAddress, 0)
 	for _, msg := range tx.GetMsgs() {
 		switch msg := msg.(type) {
+		case zoracle.MsgCreateDataSource:
+			continue
+		case zoracle.MsgEditDataSource:
+			continue
+		case zoracle.MsgCreateOracleScript:
+			continue
+		case zoracle.MsgEditOracleScript:
+			continue
+		case zoracle.MsgAddOracleAddress:
+			continue
+		case zoracle.MsgRemoveOracleAddress:
+			continue
 		case zoracle.MsgRequestData:
 			involvedAccounts = append(involvedAccounts, msg.Sender)
 		case zoracle.MsgReportData:
@@ -386,12 +400,16 @@ func (b *BandDB) GetInvolvedAccountsFromTx(tx auth.StdTx) []sdk.AccAddress {
 			}
 		case staking.MsgCreateValidator:
 			involvedAccounts = append(involvedAccounts, msg.DelegatorAddress)
+		case staking.MsgEditValidator:
+			continue
 		case staking.MsgDelegate:
 			involvedAccounts = append(involvedAccounts, msg.DelegatorAddress)
 		case staking.MsgBeginRedelegate:
 			involvedAccounts = append(involvedAccounts, msg.DelegatorAddress)
 		case staking.MsgUndelegate:
 			involvedAccounts = append(involvedAccounts, msg.DelegatorAddress)
+		case dist.MsgSetWithdrawAddress:
+			continue
 		case dist.MsgWithdrawDelegatorReward:
 			involvedAccounts = append(involvedAccounts, msg.DelegatorAddress)
 		case dist.MsgWithdrawValidatorCommission:
@@ -400,10 +418,14 @@ func (b *BandDB) GetInvolvedAccountsFromTx(tx auth.StdTx) []sdk.AccAddress {
 			involvedAccounts = append(involvedAccounts, msg.Depositor)
 		case gov.MsgSubmitProposal:
 			involvedAccounts = append(involvedAccounts, msg.Proposer)
+		case gov.MsgVote:
+			continue
+		case crisis.MsgVerifyInvariant:
+			continue
+		case slashing.MsgUnjail:
+			continue
 		default:
-			// TODO: Better logging
-			fmt.Println("GetInvolvedAccounts: There isn't get involved accounts for this msg type")
-			return nil
+			panic(fmt.Sprintf("Message %s does not support", msg.Type()))
 		}
 	}
 	return involvedAccounts
