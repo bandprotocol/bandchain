@@ -230,7 +230,6 @@ func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseB
 		req.Header.GetProposerAddress(),
 		req.GetHash(),
 	)
-	// panic("ya")
 
 	return res
 }
