@@ -123,7 +123,7 @@ let make = () => {
            <DataSourceIndexPage dataSourceID={ID.DataSource.ID(dataSourceID)} hashtag />
          | OracleScriptHomePage => <OracleScriptHomePage />
          | OracleScriptIndexPage(oracleScriptID, hashtag) =>
-           <OracleScriptIndexPage oracleScriptID hashtag />
+           <OracleScriptIndexPage oracleScriptID={ID.OracleScript.ID(oracleScriptID)} hashtag />
          | TxHomePage => <TxHomePage />
          | TxIndexPage(txHash) => <TxIndexPage txHash />
          | BlockHomePage => <BlockHomePage />
@@ -136,6 +136,6 @@ let make = () => {
          }}
       </div>
     </div>
-    <Footer />
+    // <Footer />
   </div>;
 };
