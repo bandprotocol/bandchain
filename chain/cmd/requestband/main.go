@@ -70,7 +70,7 @@ func main() {
 	copy(pk[:], privBytes)
 
 	var err error
-	bandClient, err = bandlib.NewBandStatefulClient(nodeURI, pk, 100, 10, "Bandsv requests")
+	bandClient, err = bandlib.NewBandStatefulClient(nodeURI, pk, 100, 10, "request band requests")
 	if err != nil {
 		panic(err)
 	}
