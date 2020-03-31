@@ -71,13 +71,18 @@ module HighlightCard = {
 [@react.component]
 let make = () =>
   {
-    let metadata = MetadataSub.use();
-    let%Opt info = React.useContext(GlobalContext.context);
+    let latestBlockOpt =
+      BlockSub.getList(~pageSize=1, ~page=1, ())->Sub.default([||])->Belt_Array.get(0);
+    let infoOpt = React.useContext(GlobalContext.context);
+    let%Opt info = infoOpt;
+    let%Opt latestBlock = latestBlockOpt;
+
+    let lastProcessedHeight = latestBlock.height;
+    let moniker = latestBlock.validator.moniker;
+    let timestamp = latestBlock.timestamp;
 
     let validators = info.validators;
     let bandBonded = validators->Belt_List.map(x => x.tokens)->Belt_List.reduce(0.0, (+.));
-
-    let moniker = info.latestBlock.validator.moniker;
 
     Some(
       <Row justify=Row.Between>
@@ -151,17 +156,8 @@ let make = () =>
         />
         <HighlightCard
           label="LATEST BLOCK"
-          extraTopRight={<TimeAgos time={info.latestBlock.timestamp} size=Text.Md />}
-          valueComponent={
-            <TypeID.Block
-              id={
-                metadata
-                ->Sub.map(({lastProcessedHeight}) => lastProcessedHeight)
-                ->Sub.default(ID.Block.ID(0))
-              }
-              position=TypeID.Landing
-            />
-          }
+          extraTopRight={<TimeAgos time=timestamp size=Text.Md />}
+          valueComponent={<TypeID.Block id=lastProcessedHeight position=TypeID.Landing />}
           extraComponent={<Text value=moniker nowrap=true ellipsis=true block=true />}
         />
         <HighlightCard
