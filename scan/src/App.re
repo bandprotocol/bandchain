@@ -95,32 +95,29 @@ module TopBar = {
 [@react.component]
 let make = () => {
   <div className=Styles.container>
-
-      <TopBar />
-      <div className={Css.merge([Styles.innerContainer, Styles.pageWidth])}>
-        <NavBar />
-        /* route handle */
-        <div className=Styles.routeContainer>
-          {switch (ReasonReactRouter.useUrl() |> Route.fromUrl) {
-           | HomePage => <HomePage />
-           | DataSourceHomePage => <DataSourceHomePage />
-           | DataSourceIndexPage(dataSourceID, hashtag) =>
-             <DataSourceIndexPage dataSourceID={ID.DataSource.ID(dataSourceID)} hashtag />
-           | OracleScriptHomePage => <OracleScriptHomePage />
-           | OracleScriptIndexPage(oracleScriptID, hashtag) =>
-             <OracleScriptIndexPage oracleScriptID={ID.OracleScript.ID(oracleScriptID)} hashtag />
-           | TxHomePage => <TxHomePage />
-           | TxIndexPage(txHash) => <TxIndexPage txHash />
-           | BlockHomePage => <BlockHomePage />
-           | BlockIndexPage(height) => <BlockIndexPage height={ID.Block.ID(height)} />
-           | ValidatorHomePage => <ValidatorHomePage />
-           | RequestIndexPage(reqID) => <RequestIndexPage reqID />
-           | AccountIndexPage(address, hashtag) => <AccountIndexPage address hashtag />
-           | ValidatorIndexPage(address, hashtag) => <ValidatorIndexPage address hashtag />
-           | NotFound => <NotFound />
-           }}
-        </div>
+    <TopBar />
+    <div className={Css.merge([Styles.innerContainer, Styles.pageWidth])}>
+      <NavBar />
+      <div className=Styles.routeContainer>
+        {switch (ReasonReactRouter.useUrl() |> Route.fromUrl) {
+         | HomePage => <HomePage />
+         | DataSourceHomePage => <DataSourceHomePage />
+         | DataSourceIndexPage(dataSourceID, hashtag) =>
+           <DataSourceIndexPage dataSourceID={ID.DataSource.ID(dataSourceID)} hashtag />
+         | OracleScriptHomePage => <OracleScriptHomePage />
+         | OracleScriptIndexPage(oracleScriptID, hashtag) =>
+           <OracleScriptIndexPage oracleScriptID={ID.OracleScript.ID(oracleScriptID)} hashtag />
+         | TxHomePage => <TxHomePage />
+         | TxIndexPage(txHash) => <TxIndexPage txHash />
+         | BlockHomePage => <BlockHomePage />
+         | BlockIndexPage(height) => <BlockIndexPage height={ID.Block.ID(height)} />
+         | ValidatorHomePage => <ValidatorHomePage />
+         | RequestIndexPage(reqID) => <RequestIndexPage reqID />
+         | AccountIndexPage(address, hashtag) => <AccountIndexPage address hashtag />
+         | ValidatorIndexPage(address, hashtag) => <ValidatorIndexPage address hashtag />
+         | NotFound => <NotFound />
+         }}
       </div>
-    </div>;
-    // <Footer />
+    </div>
+  </div>;
 };
