@@ -19626,6 +19626,20 @@
                   }
                 },
                 "description": null
+              },
+              {
+                "name": "oracle_script_id",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "bigint",
+                    "ofType": null
+                  }
+                },
+                "description": null
               }
             ],
             "isDeprecated": false,
@@ -20633,7 +20647,7 @@
           {
             "args": [
               {
-                "name": "oracle_script_id",
+                "name": "id",
                 "defaultValue": null,
                 "type": {
                   "kind": "NON_NULL",
@@ -24542,9 +24556,13 @@
             "deprecationReason": null,
             "name": "oracle_script",
             "type": {
-              "kind": "OBJECT",
-              "name": "oracle_scripts",
-              "ofType": null
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "oracle_scripts",
+                "ofType": null
+              }
             },
             "description": "An object relationship"
           },
@@ -24554,9 +24572,13 @@
             "deprecationReason": null,
             "name": "oracle_script_id",
             "type": {
-              "kind": "SCALAR",
-              "name": "bigint",
-              "ofType": null
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "bigint",
+                "ofType": null
+              }
             },
             "description": null
           }
@@ -31626,9 +31648,13 @@
             "deprecationReason": null,
             "name": "id",
             "type": {
-              "kind": "SCALAR",
-              "name": "bigint",
-              "ofType": null
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "bigint",
+                "ofType": null
+              }
             },
             "description": null
           },
@@ -32969,12 +32995,6 @@
         "interfaces": null,
         "name": "requests_constraint",
         "enumValues": [
-          {
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "requests_id_key",
-            "description": "unique or primary key constraint"
-          },
           {
             "isDeprecated": false,
             "deprecationReason": null,
@@ -35189,6 +35209,20 @@
                   }
                 },
                 "description": null
+              },
+              {
+                "name": "oracle_script_id",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "bigint",
+                    "ofType": null
+                  }
+                },
+                "description": null
               }
             ],
             "isDeprecated": false,
@@ -36196,7 +36230,7 @@
           {
             "args": [
               {
-                "name": "oracle_script_id",
+                "name": "id",
                 "defaultValue": null,
                 "type": {
                   "kind": "NON_NULL",
