@@ -127,15 +127,15 @@ let make = (~txs: array(TxSub.t)) => {
                  </div>
                </div>
              </Col>
-             <Col size=5.>
+             <Col size=3.>
                {messages
                 ->Belt_List.toArray
-                ->Belt_Array.map(msg =>
-                    <>
+                ->Belt_Array.mapWithIndex((i, msg) =>
+                    <React.Fragment key={(txHash |> Hash.toHex) ++ (i |> string_of_int)}>
                       <VSpacing size=Spacing.sm />
-                      <Msg msg success width=450 />
+                      <Msg msg success width=385 />
                       <VSpacing size=Spacing.sm />
-                    </>
+                    </React.Fragment>
                   )
                 ->React.array}
              </Col>
