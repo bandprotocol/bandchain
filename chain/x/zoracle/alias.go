@@ -17,6 +17,7 @@ const (
 	EventTypeEditOracleScript   = types.EventTypeEditOracleScript
 	EventTypeRequest            = types.EventTypeRequest
 	EventTypeReport             = types.EventTypeReport
+	EventTypeEndBlock           = types.EventTypeEndBlock
 
 	AttributeKeyID        = types.AttributeKeyID
 	AttributeKeyRequestID = types.AttributeKeyRequestID

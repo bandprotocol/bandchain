@@ -450,3 +450,20 @@ func (b *BandDB) GetInvolvedAccountsFromTransferEvents(logs sdk.ABCIMessageLogs)
 	}
 	return involvedAccounts
 }
+
+func (b *BandDB) HandleEndBlock(kv map[string]string) error {
+	for id, resolveStatus := range kv {
+		requestID, err := strconv.ParseInt(id, 10, 64)
+		if err != nil {
+			return err
+		}
+
+		err = b.tx.Where(Request{ID: requestID}).
+			Assign(Request{ResolveStatus: resolveStatus}).
+			FirstOrCreate(&Request{}).Error
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}

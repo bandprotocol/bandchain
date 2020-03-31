@@ -1,6 +1,7 @@
 package zoracle
 
 import (
+	"fmt"
 	"math"
 
 	"github.com/bandprotocol/bandchain/chain/owasm"
@@ -21,17 +22,20 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 	endBlockExecuteGasLimit := keeper.GetParam(ctx, types.KeyEndBlockExecuteGasLimit)
 	gasConsumed := uint64(0)
 	firstUnresolvedRequestIndex := len(pendingList)
+	newAttributes := []sdk.Attribute{}
 
 	for i, requestID := range pendingList {
 		request, err := keeper.GetRequest(ctx, requestID)
 		if err != nil { // should never happen
 			keeper.SetResolve(ctx, requestID, types.Failure)
+			newAttributes = append(newAttributes, sdk.NewAttribute(fmt.Sprint(requestID), "Failure"))
 			continue
 		}
 
 		// Discard the request if execute gas is greater than EndBlockExecuteGasLimit.
 		if request.ExecuteGas > endBlockExecuteGasLimit {
 			keeper.SetResolve(ctx, requestID, types.Failure)
+			newAttributes = append(newAttributes, sdk.NewAttribute(fmt.Sprint(requestID), "Failure"))
 			continue
 		}
 
@@ -44,12 +48,14 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 		env, err := NewExecutionEnvironment(ctx, keeper, requestID)
 		if err != nil { // should never happen
 			keeper.SetResolve(ctx, requestID, types.Failure)
+			newAttributes = append(newAttributes, sdk.NewAttribute(fmt.Sprint(requestID), "Failure"))
 			continue
 		}
 
 		script, err := keeper.GetOracleScript(ctx, request.OracleScriptID)
 		if err != nil { // should never happen
 			keeper.SetResolve(ctx, requestID, types.Failure)
+			newAttributes = append(newAttributes, sdk.NewAttribute(fmt.Sprint(requestID), "Failure"))
 			continue
 		}
 
@@ -70,20 +76,28 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 
 		if errOwasm != nil {
 			keeper.SetResolve(ctx, requestID, types.Failure)
+			newAttributes = append(newAttributes, sdk.NewAttribute(fmt.Sprint(requestID), "Failure"))
 			continue
 		}
 
 		errResult := keeper.AddResult(ctx, requestID, request.OracleScriptID, request.Calldata, result)
 		if errResult != nil {
 			keeper.SetResolve(ctx, requestID, types.Failure)
+			newAttributes = append(newAttributes, sdk.NewAttribute(fmt.Sprint(requestID), "Failure"))
 			continue
 		}
 
 		keeper.SetResolve(ctx, requestID, types.Success)
+		newAttributes = append(newAttributes, sdk.NewAttribute(fmt.Sprint(requestID), "Success"))
 	}
 
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeEndBlock,
+			newAttributes...,
+		),
+	})
 	keeper.SetPendingResolveList(ctx, pendingList[firstUnresolvedRequestIndex:])
 
-	// TODO: Emit event
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }

@@ -10,6 +10,7 @@ const (
 	EventTypeReport              = "report"
 	EventTypeAddOracleAddress    = "add_oracle_address"
 	EventTypeRemoveOracleAddress = "remove_oracle_address"
+	EventTypeEndBlock            = "end_block"
 
 	AttributeKeyID        = "id"
 	AttributeKeyRequestID = "request_id"

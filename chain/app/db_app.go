@@ -230,6 +230,7 @@ func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseB
 		req.Header.GetProposerAddress(),
 		req.GetHash(),
 	)
+	// panic("ya")
 
 	return res
 }
@@ -241,7 +242,19 @@ func (app *dbBandApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBl
 	if err != nil {
 		panic(err)
 	}
-	// Do other logic
+
+	events := res.GetEvents()
+	kvMap := make(map[string]string)
+	for _, event := range events {
+		if event.Type != zoracle.EventTypeEndBlock {
+			continue
+		}
+		for _, kv := range event.Attributes {
+			kvMap[string(kv.Key)] = string(kv.Value)
+		}
+	}
+	app.dbBand.HandleEndBlock(kvMap)
+
 	app.dbBand.SetContext(sdk.Context{})
 	return res
 }
