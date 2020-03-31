@@ -330,12 +330,12 @@ module Msg = {
     | EditOracleScript(_) => None
     | Request(_) =>
       switch (msg.events->Event.getValueOfKey("request.id")) {
-      | Some(value) => Some(Route.RequestIndexPage(value->int_of_string, RequestReportStatus))
+      | Some(value) => Some(Route.RequestIndexPage(value->int_of_string))
       | None => None
       }
     | Report(_) =>
       switch (msg.events->Event.getValueOfKey("report.id")) {
-      | Some(value) => Some(Route.RequestIndexPage(value->int_of_string, RequestReportStatus))
+      | Some(value) => Some(Route.RequestIndexPage(value->int_of_string))
       | None => None
       }
     | AddOracleAddress(_) => None
