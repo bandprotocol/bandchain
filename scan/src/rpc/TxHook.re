@@ -299,36 +299,6 @@ module Msg = {
     };
   };
 
-  let getDescription = msg => {
-    switch (msg.action) {
-    | Send(send) =>
-      (send.amount |> Coin.toCoinsString) ++ "->" ++ (send.toAddress |> Address.toBech32)
-    | CreateDataSource(dataSource) => dataSource.name
-    | EditDataSource(dataSource) => dataSource.name
-    | CreateOracleScript(oracleScript) => oracleScript.name
-    | EditOracleScript(oracleScript) => oracleScript.name
-    | Request(_) =>
-      switch (msg.events->Event.getValueOfKey("request.code_name")) {
-      | Some(value) =>
-        switch (msg.events->Event.getValueOfKey("request.id")) {
-        | Some(id) => "#" ++ id ++ " " ++ value
-        | None => ""
-        }
-      | None => "?"
-      }
-    | Report(report) =>
-      switch (msg.events->Event.getValueOfKey("report.code_name")) {
-      | Some(value) => "#" ++ (report.requestID |> string_of_int) ++ " " ++ value
-      | None => "?"
-      }
-    | AddOracleAddress(_address) => "ADDORACLEADDRESS DESCRIPTION"
-    | RemoveOracleAddress(_address) => "REMOVEORACLEADDRESS DESCRIPTION"
-    | CreateValidator(_validator) => "CREATEVALIDATOR DESCRIPTION"
-    | EditValidator(_validator) => "EDITVALIDATOR DESCRIPTION"
-    | Unknown => "Unknown"
-    };
-  };
-
   let decodeAction = json =>
     JsonUtils.Decode.(
       switch (json |> field("type", string)) {
@@ -449,8 +419,6 @@ module Tx = {
         Belt.List.zip(actions, eventDoubleLists)->Belt.List.map(postProcessMsg);
       },
     };
-
-  let getDescription = tx => tx.messages->Belt_List.getExn(0)->Msg.getDescription;
 };
 
 module Txs = {

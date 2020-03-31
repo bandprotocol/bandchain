@@ -27,20 +27,6 @@ let renderText = (text, weight) =>
     <Text value=text size=Text.Lg weight block=true ellipsis=true />
   </div>;
 
-let renderTxTypeWithDetail = (msgs: list(TxHook.Msg.t)) => {
-  <div className={Styles.typeContainer(`px(150))}>
-    <MsgBadge msgs />
-    <VSpacing size=Spacing.xs />
-    <Text
-      value={msgs->Belt.List.getExn(0)->TxHook.Msg.getDescription}
-      size=Text.Lg
-      weight=Text.Semibold
-      block=true
-      ellipsis=true
-    />
-  </div>;
-};
-
 let renderTxHash = (hash, time) => {
   <div className=Styles.hashContainer>
     <TimeAgos time />
@@ -189,7 +175,6 @@ type t =
   | Name(string)
   | Timestamp(MomentRe.Moment.t)
   | TxHash(Hash.t, MomentRe.Moment.t)
-  | TxTypeWithDetail(list(TxHook.Msg.t))
   | Detail(string)
   | Status(string)
   | Count(int)
@@ -212,7 +197,6 @@ let make = (~elementType) => {
   | Name(name) => renderName(name)
   | Timestamp(time) => renderTime(time)
   | TxHash(hash, timestamp) => renderTxHash(hash, timestamp)
-  | TxTypeWithDetail(msgs) => renderTxTypeWithDetail(msgs)
   | Detail(detail) => renderText(detail, Text.Semibold)
   | Status(status) => renderText(status, Text.Semibold)
   | Count(count) => renderCount(count)
