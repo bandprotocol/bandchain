@@ -6,7 +6,7 @@ module Styles = {
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
   let hFlex = style([display(`flex), alignItems(`center)]);
 
-  let centerHFlex = style([display(`flex), alignItems(`center), justifyContent(`center)]);
+  let center = style([justifyContent(center)]);
 
   let topicContainer = h =>
     style([display(`flex), alignItems(`center), width(`percent(100.)), height(`px(h))]);
@@ -385,11 +385,11 @@ let make = (~reqID) => {
                 />
               : <div className={Styles.topicContainer(200)}>
                   <Col size=1.>
-                    <div className=Styles.centerHFlex>
+                    <div className={Css.merge([Styles.center, Styles.hFlex])}>
                       <img src=Images.noReport className={Styles.logo(80, 0)} />
                     </div>
                     <VSpacing size=Spacing.xl />
-                    <div className=Styles.centerHFlex>
+                    <div className={Css.merge([Styles.center, Styles.hFlex])}>
                       <Text value="NO REPORT" weight=Text.Regular color=Colors.blue4 />
                     </div>
                   </Col>
