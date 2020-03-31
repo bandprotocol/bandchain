@@ -60,7 +60,9 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
                />
                <HSpacing size=Spacing.sm />
              </div>
-             <div className={Styles.withWidth(180)}> <AddressRender address=toAddress /> </div>
+             <div className={Styles.withWidth(width / 3)}>
+               <AddressRender address=toAddress />
+             </div>
            </>
          : React.null}
     </div>

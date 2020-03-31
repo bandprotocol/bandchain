@@ -1,6 +1,6 @@
 module Styles = {
   open Css;
-  let hScale = 30;
+  let hScale = 20;
   let fullWidth = style([width(`percent(100.0)), display(`flex)]);
   let hashContainer = style([maxWidth(`px(140))]);
   let statusContainer =
