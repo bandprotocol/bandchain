@@ -39,7 +39,7 @@ module MultiConfig = [%graphql
       height @bsDecoder(fn: "ID.Block.fromJson")
       hash: block_hash @bsDecoder(fn: "GraphQLParser.hash")
       validator @bsRecord {
-        consensusAddress: consensus_address @bsDecoder(fn: "Address.fromHex")
+        consensusAddress: consensus_address
         operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
         moniker
       }
@@ -61,7 +61,7 @@ module SingleConfig = [%graphql
       height @bsDecoder(fn: "ID.Block.fromJson")
       hash: block_hash @bsDecoder(fn: "GraphQLParser.hash")
       validator @bsRecord {
-        consensusAddress: consensus_address @bsDecoder(fn: "Address.fromHex")
+        consensusAddress: consensus_address
         operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
         moniker
       }
