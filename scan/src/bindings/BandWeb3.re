@@ -50,6 +50,7 @@ let broadcast = (instance, signedMsg) => {
   );
 };
 
+// //EXAMPLE
 // let cosmos = network("https://d3n.bandprotocol.com/rest", "bandchain");
 
 // cosmos->setPath("m/44'/494'/0'/0/0");
@@ -71,26 +72,26 @@ let broadcast = (instance, signedMsg) => {
 //   let%Promise data = cosmos->getAccounts(address);
 //   Js.Console.log2("yo22222", data);
 
-// //msgSend
-// let msgSend = StdMsgSend.createT(
-//   "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs" |> Address.fromBech32,
-//   "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs" |> Address.fromBech32,
-//   100,
-//   data.accountNumber,
-//   data.sequence,
-// );
-// //msgRequest
-// let msgRequest =
-//   StdMsgRequest.createT(
-//     1,
-//     "RVRI" |> JsBuffer.fromBase64,
-//     1,
-//     1,
+//   //msgSend
+//   let msgSend = StdMsgSend.createT(
 //     "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs" |> Address.fromBech32,
-//     "5000",
+//     "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs" |> Address.fromBech32,
+//     100,
 //     data.accountNumber,
 //     data.sequence,
 //   );
+//   //msgRequest
+//   let msgRequest =
+//     StdMsgRequest.createT(
+//       1,
+//       "RVRI" |> JsBuffer.fromBase64,
+//       1,
+//       1,
+//       "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs" |> Address.fromBech32,
+//       "5000",
+//       data.accountNumber,
+//       data.sequence,
+//     );
 
 //   let wrappedMsg = cosmos->newStdMsgRequest(msgRequest);
 //   let signedMsg = cosmos->sign(wrappedMsg, ecPairPriv);
