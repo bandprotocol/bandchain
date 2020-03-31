@@ -127,7 +127,7 @@ let make = () => {
          | TxHomePage => <TxHomePage />
          | TxIndexPage(txHash) => <TxIndexPage txHash />
          | BlockHomePage => <BlockHomePage />
-         | BlockIndexPage(height) => <BlockIndexPage height />
+         | BlockIndexPage(height) => <BlockIndexPage height={ID.Block.ID(height)} />
          | ValidatorHomePage => <ValidatorHomePage />
          | RequestIndexPage(reqID, hashtag) => <RequestIndexPage reqID hashtag />
          | AccountIndexPage(address, hashtag) => <AccountIndexPage address hashtag />

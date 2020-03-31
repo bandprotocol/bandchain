@@ -228,7 +228,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
       |]
       currentRoute={Route.AccountIndexPage(address, hashtag)}>
       {switch (hashtag) {
-       | AccountTransactions => <AccountIndexTransactions />
+       | AccountTransactions => <AccountIndexTransactions accountAddress=address />
        | AccountDelegations => <AccountIndexDelegations delegations />
        }}
     </Tab>

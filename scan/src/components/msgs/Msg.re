@@ -17,8 +17,8 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~msg: TxHook.Msg.t, ~width: int, ~success: bool) => {
-  switch (msg.action) {
+let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
+  switch (msg) {
   | Send({fromAddress, toAddress, amount}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(width / 2 - 20)}>
@@ -40,7 +40,7 @@ let make = (~msg: TxHook.Msg.t, ~width: int, ~success: bool) => {
                  value={
                    amount
                    ->Belt_List.get(0)
-                   ->Belt_Option.getWithDefault(TxHook.Coin.newCoin("uband", 0.0)).
+                   ->Belt_Option.getWithDefault(TxSub.Coin.newCoin("uband", 0.0)).
                      amount
                    |> Format.fPretty
                  }
@@ -82,7 +82,7 @@ let make = (~msg: TxHook.Msg.t, ~width: int, ~success: bool) => {
       </div>
       {success
          ? <>
-             <TypeID.DataSource id={ID.DataSource.ID(id)} />
+             <TypeID.DataSource id />
              <HSpacing size=Spacing.sm />
              <Text
                value=name
@@ -109,7 +109,7 @@ let make = (~msg: TxHook.Msg.t, ~width: int, ~success: bool) => {
       </div>
       {success
          ? <>
-             <TypeID.DataSource id={ID.DataSource.ID(id)} />
+             <TypeID.DataSource id />
              <HSpacing size=Spacing.sm />
              <Text
                value=name
@@ -137,7 +137,7 @@ let make = (~msg: TxHook.Msg.t, ~width: int, ~success: bool) => {
       {success
          ? <>
              <div className={Styles.rowWithWidth(200)}>
-               <TypeID.OracleScript id={ID.OracleScript.ID(id)} />
+               <TypeID.OracleScript id />
                <HSpacing size=Spacing.sm />
                <Text
                  value=name
@@ -166,16 +166,16 @@ let make = (~msg: TxHook.Msg.t, ~width: int, ~success: bool) => {
       {success
          ? <>
              <div className={Styles.rowWithWidth(210)}>
-               <TypeID.OracleScript id={ID.OracleScript.ID(id)} />
+               <TypeID.OracleScript id />
                <HSpacing size=Spacing.sm />
-                 <Text
-                   value=name
-                   color=Colors.gray7
-                   weight=Text.Medium
-                   nowrap=true
-                   block=true
-                   ellipsis=true
-                 />
+               <Text
+                 value=name
+                 color=Colors.gray7
+                 weight=Text.Medium
+                 nowrap=true
+                 block=true
+                 ellipsis=true
+               />
              </div>
            </>
          : React.null}
@@ -194,7 +194,7 @@ let make = (~msg: TxHook.Msg.t, ~width: int, ~success: bool) => {
       </div>
       {success
          ? <>
-             <TypeID.Request id={ID.Request.ID(id)} />
+             <TypeID.Request id />
              <HSpacing size=Spacing.sm />
              <Text
                value={j|➜|j}
@@ -205,7 +205,7 @@ let make = (~msg: TxHook.Msg.t, ~width: int, ~success: bool) => {
                block=true
              />
              <HSpacing size=Spacing.sm />
-             <TypeID.OracleScript id={ID.OracleScript.ID(oracleScriptID)} />
+             <TypeID.OracleScript id=oracleScriptID />
              <HSpacing size=Spacing.sm />
              <Text
                value="Mock Oracle Script" // TODO , replace with wire up data
@@ -241,7 +241,7 @@ let make = (~msg: TxHook.Msg.t, ~width: int, ~success: bool) => {
                block=true
              />
              <HSpacing size=Spacing.sm />
-             <TypeID.Request id={ID.Request.ID(requestID)} />
+             <TypeID.Request id=requestID />
            </>
          : React.null}
     </div>

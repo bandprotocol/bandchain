@@ -13,6 +13,11 @@ describe("Expect JsBuffer to work correctly", () => {
     |> toEqual(fromHex("f23391b5dbf982e37fb7dadea64aae21cae4c172"))
   );
 
+  test("should be able to convert upper case hex with 0X to lower case without 0X", () =>
+    expect(fromHex("0XF23391B5DBF982E37FB7DADEA64AAE21CAE4C172"))
+    |> toEqual(fromHex("f23391b5dbf982e37fb7dadea64aae21cae4c172"))
+  );
+
   test("should be able to get hexString with 0x prefix", () =>
     expect(fromHex("f23391b5dbf982e37fb7dadea64aae21cae4c172") |> toHex(~with0x=true))
     |> toBe("0xf23391b5dbf982e37fb7dadea64aae21cae4c172")
