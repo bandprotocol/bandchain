@@ -24,44 +24,30 @@ type request_t = {
 };
 
 [@react.component]
-let make = () => {
-  let requests: list(request_t) = [
-    {
-      id: 6,
-      requester: "e38475F47166d30A6e4E2E2C37e4B75E88Aa8b5B" |> Address.fromHex,
-      age: MomentRe.momentNow(),
-      blockHeight: 234554,
-      txHash: Hash.fromHex("e7f3388a05a804fa99470aa90a18c60abb6b41b8f766e2096db5b1ad89154538"),
-    },
-    {
-      id: 23,
-      requester: "e38475F47166d30A6e4E2E2C37e4B75E88Aa8b5B" |> Address.fromHex,
-      age:
-        MomentRe.momentNow() |> MomentRe.Moment.subtract(~duration=MomentRe.duration(2., `hours)),
-      blockHeight: 64563,
-      txHash: Hash.fromHex("90cf054923b80b6cf18fceb5a930aea45a9726c450620c48a5626d79740542dd"),
-    },
-    {
-      id: 162,
-      requester: "e38475F47166d30A6e4E2E2C37e4B75E88Aa8b5B" |> Address.fromHex,
-      age:
-        MomentRe.momentNow() |> MomentRe.Moment.subtract(~duration=MomentRe.duration(1., `days)),
-      blockHeight: 3425,
-      txHash: Hash.fromHex("d12f97901f466f6c2e9680798a7460413c538776cdd85372be601d7603f8de17"),
-    },
-  ];
+let make = (~oracleScriptID: ID.OracleScript.t) => {
+  let (page, setPage) = React.useState(_ => 1);
+  let pageSize = 5;
 
-  let numRequest = requests |> Belt_List.size;
+  let requestsSub = RequestSub.Mini.getListByOracleScript(oracleScriptID, ~pageSize, ~page, ());
+  let totalRequestCountSub = RequestSub.countByOracleScript(oracleScriptID);
+
+  let requests: array(BandScan.RequestSub.Mini.t) = [||];
+  let totalRequestCount = 100;
+
+  // let%Sub requests = requestsSub;
+  // let%Sub totalRequestCount = totalRequestCountSub;
+
+  let pageCount = Page.getPageCount(totalRequestCount, pageSize);
 
   <div className=Styles.tableWrapper>
     <Row>
       <HSpacing size={`px(25)} />
-      <Text value={numRequest |> string_of_int} weight=Text.Bold />
+      <Text value={totalRequestCount |> string_of_int} weight=Text.Bold />
       <HSpacing size={`px(5)} />
       <Text value="Requests" />
     </Row>
     <VSpacing size=Spacing.lg />
-    {numRequest > 0
+    {totalRequestCount > 0
        ? <>
            <THead>
              <Row>
@@ -117,18 +103,20 @@ let make = () => {
              </Row>
            </THead>
            {requests
-            ->Belt.List.map(({id, requester, age, blockHeight, txHash}) => {
+            ->Belt_Array.map(({id, requester, timestamp, blockHeight, txHash}) => {
                 <TBody key={txHash |> Hash.toHex(~upper=true)}>
                   <Row>
                     <Col> <HSpacing size=Spacing.lg /> </Col>
-                    <Col size=1.> <TypeID.Request id={ID.Request.ID(id)} /> </Col>
+                    <Col size=1.> <TypeID.Request id /> </Col>
                     <Col size=2.64>
                       <div className={Styles.withWidth(220)}>
                         <AddressRender address=requester />
                       </div>
                     </Col>
-                    <Col size=1.61> <TimeAgos time=age size=Text.Md weight=Text.Medium /> </Col>
-                    <Col size=1.26> <TypeID.Block id={ID.Block.ID(blockHeight)} /> </Col>
+                    <Col size=1.61>
+                      <TimeAgos time=timestamp size=Text.Md weight=Text.Medium />
+                    </Col>
+                    <Col size=1.26> <TypeID.Block id=blockHeight /> </Col>
                     <Col size=2.8>
                       <div className={Styles.withWidth(230)}>
                         <Text
@@ -146,7 +134,6 @@ let make = () => {
                   </Row>
                 </TBody>
               })
-            ->Array.of_list
             ->React.array}
          </>
        : <div className=Styles.iconWrapper>
