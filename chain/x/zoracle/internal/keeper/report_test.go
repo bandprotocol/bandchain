@@ -150,13 +150,6 @@ func TestAddReportFailed(t *testing.T) {
 	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata1")))
 	keeper.SetRawDataRequest(ctx, 1, 10, types.NewRawDataRequest(2, []byte("calldata2")))
 
-	ctx = ctx.WithBlockHeight(2)
-	err = keeper.AddReport(ctx, 1, []types.RawDataReportWithID{
-		types.NewRawDataReportWithID(10, 0, []byte("data2/1")),
-		types.NewRawDataReportWithID(2, 0, []byte("data1/1")),
-	}, sdk.ValAddress([]byte("validator1")), sdk.AccAddress([]byte("validator1")))
-	require.NotNil(t, err)
-
 	// Send invalid external id.
 	request = newDefaultRequest()
 	keeper.SetRequest(ctx, 1, request)

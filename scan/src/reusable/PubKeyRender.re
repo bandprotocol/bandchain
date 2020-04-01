@@ -1,8 +1,7 @@
 type pos_t =
   | Title
   | Subtitle
-  | Text
-  | None;
+  | Text;
 
 let prefixFontSize =
   fun

@@ -9,7 +9,7 @@ module Styles = {
       height(`px(16)),
       backgroundColor(color),
       borderRadius(`px(100)),
-      margin2(`zero, `px(5)),
+      margin2(~v=`zero, ~h=`px(5)),
       display(`flex),
       justifyContent(`center),
       alignItems(`center),
@@ -21,9 +21,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
   switch (msg) {
   | Send({fromAddress, toAddress, amount}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(width / 2 - 20)}>
-        <AddressRender address=fromAddress />
-      </div>
+      <div className={Styles.withWidth(130)}> <AddressRender address=fromAddress /> </div>
       <div className={Styles.withBg(Colors.blue1, 40)}>
         <Text
           value="SEND"
@@ -62,7 +60,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
                />
                <HSpacing size=Spacing.sm />
              </div>
-             <div className={Styles.withWidth(width / 2 - 18)}>
+             <div className={Styles.withWidth(width / 3)}>
                <AddressRender address=toAddress />
              </div>
            </>
@@ -70,7 +68,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
     </div>
   | CreateDataSource({id, sender, name}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(150)}> <AddressRender address=sender /> </div>
+      <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
       <div className={Styles.withBg(Colors.yellow1, 110)}>
         <Text
           value="CREATE DATASOURCE"
@@ -97,7 +95,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
     </div>
   | EditDataSource({id, sender, name}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(150)}> <AddressRender address=sender /> </div>
+      <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
       <div className={Styles.withBg(Colors.yellow1, 100)}>
         <Text
           value="EDIT DATASOURCE"
@@ -124,7 +122,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
     </div>
   | CreateOracleScript({id, sender, name}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(140)}> <AddressRender address=sender /> </div>
+      <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
       <div className={Styles.withBg(Colors.pink1, 120)}>
         <Text
           value="CREATE ORACLE SCRIPT"
@@ -153,7 +151,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
     </div>
   | EditOracleScript({id, sender, name}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(140)}> <AddressRender address=sender /> </div>
+      <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
       <div className={Styles.withBg(Colors.pink1, 110)}>
         <Text
           value="EDIT ORACLE SCRIPT"
@@ -182,7 +180,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
     </div>
   | Request({id, oracleScriptID, sender}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(140)}> <AddressRender address=sender /> </div>
+      <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
       <div className={Styles.withBg(Colors.orange1, 60)}>
         <Text
           value="REQUEST"
@@ -242,6 +240,102 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
              />
              <HSpacing size=Spacing.sm />
              <TypeID.Request id=requestID />
+           </>
+         : React.null}
+    </div>
+  | AddOracleAddress({validator, reporter}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=validator /> </div>
+      <div className={Styles.withBg(Colors.purple1, 114)}>
+        <Text
+          value="ADD ORACLE ADDRESS"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.purple6
+        />
+      </div>
+      {success
+         ? <>
+             <HSpacing size=Spacing.sm />
+             <div className={Styles.withWidth(120)}> <AddressRender address=reporter /> </div>
+           </>
+         : React.null}
+    </div>
+  | RemoveOracleAddress({validator, reporter}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=validator /> </div>
+      <div className={Styles.withBg(Colors.purple1, 133)}>
+        <Text
+          value="REMOVE ORACLE ADDRESS"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.purple6
+        />
+      </div>
+      {success
+         ? <>
+             <HSpacing size=Spacing.sm />
+             <div className={Styles.withWidth(120)}> <AddressRender address=reporter /> </div>
+           </>
+         : React.null}
+    </div>
+  | CreateValidator({delegatorAddress, moniker}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=delegatorAddress /> </div>
+      <div className={Styles.withBg(Colors.purple1, 97)}>
+        <Text
+          value="CREATE VALIDATOR"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.purple6
+        />
+      </div>
+      {success
+         ? <>
+             <HSpacing size=Spacing.sm />
+             <div className={Styles.withWidth(width / 2 - 5)}>
+               <Text
+                 value=moniker
+                 color=Colors.gray7
+                 weight=Text.Regular
+                 code=true
+                 nowrap=true
+                 block=true
+                 ellipsis=true
+               />
+             </div>
+           </>
+         : React.null}
+    </div>
+  | EditValidator({sender, moniker}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
+      <div className={Styles.withBg(Colors.purple1, 85)}>
+        <Text
+          value="EDIT VALIDATOR"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.purple6
+        />
+      </div>
+      {success
+         ? <>
+             <HSpacing size=Spacing.sm />
+             <div className={Styles.withWidth(width / 2 - 5)}>
+               <Text
+                 value=moniker
+                 color=Colors.gray7
+                 weight=Text.Regular
+                 code=true
+                 nowrap=true
+                 block=true
+                 ellipsis=true
+               />
+             </div>
            </>
          : React.null}
     </div>

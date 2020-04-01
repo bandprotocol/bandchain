@@ -52,7 +52,8 @@ module Coin = {
     ++ " "
     ++ (
       switch (coin.denom.[0]) {
-      | 'u' => coin.denom->String.sub(_, 1, (coin.denom |> String.length) - 1) |> String.uppercase
+      | 'u' =>
+        coin.denom->String.sub(_, 1, (coin.denom |> String.length) - 1) |> String.uppercase_ascii
       | _ => coin.denom
       }
     );
@@ -298,36 +299,6 @@ module Msg = {
     };
   };
 
-  let getDescription = msg => {
-    switch (msg.action) {
-    | Send(send) =>
-      (send.amount |> Coin.toCoinsString) ++ "->" ++ (send.toAddress |> Address.toBech32)
-    | CreateDataSource(dataSource) => dataSource.name
-    | EditDataSource(dataSource) => dataSource.name
-    | CreateOracleScript(oracleScript) => oracleScript.name
-    | EditOracleScript(oracleScript) => oracleScript.name
-    | Request(_) =>
-      switch (msg.events->Event.getValueOfKey("request.code_name")) {
-      | Some(value) =>
-        switch (msg.events->Event.getValueOfKey("request.id")) {
-        | Some(id) => "#" ++ id ++ " " ++ value
-        | None => ""
-        }
-      | None => "?"
-      }
-    | Report(report) =>
-      switch (msg.events->Event.getValueOfKey("report.code_name")) {
-      | Some(value) => "#" ++ (report.requestID |> string_of_int) ++ " " ++ value
-      | None => "?"
-      }
-    | AddOracleAddress(address) => "ADDORACLEADDRESS DESCRIPTION"
-    | RemoveOracleAddress(address) => "REMOVEORACLEADDRESS DESCRIPTION"
-    | CreateValidator(validator) => "CREATEVALIDATOR DESCRIPTION"
-    | EditValidator(validator) => "EDITVALIDATOR DESCRIPTION"
-    | Unknown => "Unknown"
-    };
-  };
-
   let decodeAction = json =>
     JsonUtils.Decode.(
       switch (json |> field("type", string)) {
@@ -359,12 +330,12 @@ module Msg = {
     | EditOracleScript(_) => None
     | Request(_) =>
       switch (msg.events->Event.getValueOfKey("request.id")) {
-      | Some(value) => Some(Route.RequestIndexPage(value->int_of_string, RequestReportStatus))
+      | Some(value) => Some(Route.RequestIndexPage(value->int_of_string))
       | None => None
       }
     | Report(_) =>
       switch (msg.events->Event.getValueOfKey("report.id")) {
-      | Some(value) => Some(Route.RequestIndexPage(value->int_of_string, RequestReportStatus))
+      | Some(value) => Some(Route.RequestIndexPage(value->int_of_string))
       | None => None
       }
     | AddOracleAddress(_) => None
@@ -448,8 +419,6 @@ module Tx = {
         Belt.List.zip(actions, eventDoubleLists)->Belt.List.map(postProcessMsg);
       },
     };
-
-  let getDescription = tx => tx.messages->Belt_List.getExn(0)->Msg.getDescription;
 };
 
 module Txs = {

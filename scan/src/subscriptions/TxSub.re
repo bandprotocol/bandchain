@@ -36,7 +36,8 @@ module Coin = {
     ++ " "
     ++ (
       switch (coin.denom.[0]) {
-      | 'u' => coin.denom->String.sub(_, 1, (coin.denom |> String.length) - 1) |> String.uppercase
+      | 'u' =>
+        coin.denom->String.sub(_, 1, (coin.denom |> String.length) - 1) |> String.uppercase_ascii
       | _ => coin.denom
       }
     );
