@@ -120,16 +120,19 @@ func (env *ExecutionEnvironment) RequestExternalData(
 	dataSourceID int64,
 	externalDataID int64,
 	calldata []byte,
-) int64 {
-	if int64(len(calldata)) > env.maxCalldataSize || int64(len(env.rawDataRequests)) >= env.maxRawDataRequestCount {
-		return -1
+) error {
+	if int64(len(calldata)) > env.maxCalldataSize {
+		return errors.New("calldata size limit exceeded")
+	}
+	if int64(len(env.rawDataRequests)) >= env.maxRawDataRequestCount {
+		return errors.New("cannot request more than maxRawDataRequestCount")
 	}
 
 	env.rawDataRequests = append(env.rawDataRequests, types.NewRawDataRequestWithExternalID(
 		types.ExternalID(externalDataID),
 		types.NewRawDataRequest(types.DataSourceID(dataSourceID), calldata),
 	))
-	return 0
+	return nil
 }
 
 func (env *ExecutionEnvironment) GetExternalData(
