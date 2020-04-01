@@ -25,8 +25,9 @@ import (
 )
 
 var (
-	priv secp256k1.PrivKeySecp256k1
-	cdc  *codec.Codec
+	priv        secp256k1.PrivKeySecp256k1
+	bandAddress sdk.AccAddress
+	cdc         *codec.Codec
 )
 
 func main() {
@@ -39,6 +40,8 @@ func main() {
 	config := sdk.GetConfig()
 	app.SetBech32AddressPrefixesAndBip44CoinType(config)
 	config.Seal()
+
+	bandAddress = sdk.AccAddress(priv.PubKey().Address())
 
 	ctx := server.NewDefaultContext()
 	cc := ctx.Config
@@ -64,6 +67,15 @@ func GenAppStateFromConfig(cdc *codec.Codec, config *cfg.Config,
 	// process genesis transactions, else create default genesis.json
 	appGenTxs, accounts, err := CollectGenTxsAndAccounts(cdc, txsDir, genDoc)
 
+	// Add Band account
+	accounts = append(accounts, genaccounts.NewGenesisAccountRaw(
+		bandAddress,
+		sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(1000000000000000))),
+		sdk.Coins{},
+		0,
+		0,
+		"",
+	))
 	if err != nil {
 		return appState, err
 	}
@@ -83,6 +95,18 @@ func GenAppStateFromConfig(cdc *codec.Codec, config *cfg.Config,
 	if err != nil {
 		return appState, err
 	}
+
+	var genesisAccounts genaccounts.GenesisAccounts
+	cdc.MustUnmarshalJSON(appGenesisState[genaccounts.ModuleName], &genesisAccounts)
+	for _, account := range accounts {
+		if !genesisAccounts.Contains(account.Address) {
+			genesisAccounts = append(genesisAccounts, account)
+		}
+	}
+
+	genesisStateBz := cdc.MustMarshalJSON(genaccounts.GenesisState(genesisAccounts))
+	appGenesisState[genaccounts.ModuleName] = genesisStateBz
+
 	appState, err = codec.MarshalJSONIndent(cdc, appGenesisState)
 	if err != nil {
 		return appState, err
@@ -141,7 +165,7 @@ func CollectGenTxsAndAccounts(cdc *codec.Codec, genTxsDir string,
 
 		// delegate from band
 		delegateMsg := stakingtypes.NewMsgDelegate(
-			sdk.AccAddress(priv.PubKey().Address()),
+			bandAddress,
 			createMsg.ValidatorAddress,
 			sdk.NewCoin("uband", sdk.NewInt(1000000000)),
 		)
