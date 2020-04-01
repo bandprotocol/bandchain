@@ -121,7 +121,7 @@ func (env *ExecutionEnvironment) RequestExternalData(
 	externalDataID int64,
 	calldata []byte,
 ) {
-	// when size of env.rawDataRequests == env.maxRawDataRequest that mean it exceeds the number of request
+	// We can safely skip appending rawDataRequests if its size already surpasses maxRawDataRequestCount threshold since it will fail the transaction regardless.
 	if int64(len(calldata)) <= env.maxCalldataSize && int64(len(env.rawDataRequests)) <= env.maxRawDataRequestCount {
 		env.rawDataRequests = append(env.rawDataRequests, types.NewRawDataRequestWithExternalID(
 			types.ExternalID(externalDataID),
