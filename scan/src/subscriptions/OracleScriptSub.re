@@ -3,7 +3,7 @@ type t = {
   owner: Address.t,
   name: string,
   description: string,
-  codeHash: JsBuffer.t,
+  codeHash: Hash.t,
   timestamp: MomentRe.Moment.t,
   relatedDataSources: list(ID.DataSource.t),
 };
@@ -15,7 +15,7 @@ type internal_t = {
   owner: Address.t,
   name: string,
   description: string,
-  codeHash: JsBuffer.t,
+  codeHash: Hash.t,
   timestamp: MomentRe.Moment.t,
   related_data_sources: array(related_data_source_t),
 };
@@ -39,7 +39,7 @@ module MultiConfig = [%graphql
       owner @bsDecoder(fn: "Address.fromBech32")
       name
       description
-      codeHash: code_hash @bsDecoder(fn: "GraphQLParser.buffer")
+      codeHash: code_hash @bsDecoder(fn: "GraphQLParser.hash")
       timestamp: last_updated @bsDecoder(fn: "GraphQLParser.time")
       related_data_sources @bsRecord {
         dataSourceID: data_source_id @bsDecoder(fn: "ID.DataSource.fromJson")
@@ -57,7 +57,7 @@ module SingleConfig = [%graphql
       owner @bsDecoder(fn: "Address.fromBech32")
       name
       description
-      codeHash: code_hash @bsDecoder(fn: "GraphQLParser.buffer")
+      codeHash: code_hash @bsDecoder(fn: "GraphQLParser.hash")
       timestamp: last_updated @bsDecoder(fn: "GraphQLParser.time")
       related_data_sources @bsRecord {
         dataSourceID: data_source_id @bsDecoder(fn: "ID.DataSource.fromJson")
