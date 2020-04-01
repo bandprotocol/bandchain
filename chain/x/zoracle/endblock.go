@@ -17,6 +17,15 @@ func addUint64Overflow(a, b uint64) (uint64, bool) {
 	return a + b, false
 }
 
+func setResolveAndAddNewAttribute(ctx sdk.Context, keeper Keeper, requestID RequestID, resolveStatus types.ResolveStatus, newAttributes *[]sdk.Attribute) {
+	keeper.SetResolve(ctx, requestID, resolveStatus)
+	if resolveStatus == types.Failure {
+		*newAttributes = append(*newAttributes, sdk.NewAttribute(fmt.Sprint(requestID), "Failure"))
+	} else if resolveStatus == types.Success {
+		*newAttributes = append(*newAttributes, sdk.NewAttribute(fmt.Sprint(requestID), "Success"))
+	}
+}
+
 func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 	pendingList := keeper.GetPendingResolveList(ctx)
 	endBlockExecuteGasLimit := keeper.GetParam(ctx, types.KeyEndBlockExecuteGasLimit)
@@ -27,15 +36,13 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 	for i, requestID := range pendingList {
 		request, err := keeper.GetRequest(ctx, requestID)
 		if err != nil { // should never happen
-			keeper.SetResolve(ctx, requestID, types.Failure)
-			newAttributes = append(newAttributes, sdk.NewAttribute(fmt.Sprint(requestID), "Failure"))
+			setResolveAndAddNewAttribute(ctx, keeper, requestID, types.Failure, &newAttributes)
 			continue
 		}
 
 		// Discard the request if execute gas is greater than EndBlockExecuteGasLimit.
 		if request.ExecuteGas > endBlockExecuteGasLimit {
-			keeper.SetResolve(ctx, requestID, types.Failure)
-			newAttributes = append(newAttributes, sdk.NewAttribute(fmt.Sprint(requestID), "Failure"))
+			setResolveAndAddNewAttribute(ctx, keeper, requestID, types.Failure, &newAttributes)
 			continue
 		}
 
@@ -47,15 +54,13 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 
 		env, err := NewExecutionEnvironment(ctx, keeper, requestID)
 		if err != nil { // should never happen
-			keeper.SetResolve(ctx, requestID, types.Failure)
-			newAttributes = append(newAttributes, sdk.NewAttribute(fmt.Sprint(requestID), "Failure"))
+			setResolveAndAddNewAttribute(ctx, keeper, requestID, types.Failure, &newAttributes)
 			continue
 		}
 
 		script, err := keeper.GetOracleScript(ctx, request.OracleScriptID)
 		if err != nil { // should never happen
-			keeper.SetResolve(ctx, requestID, types.Failure)
-			newAttributes = append(newAttributes, sdk.NewAttribute(fmt.Sprint(requestID), "Failure"))
+			setResolveAndAddNewAttribute(ctx, keeper, requestID, types.Failure, &newAttributes)
 			continue
 		}
 
@@ -75,25 +80,23 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 		}
 
 		if errOwasm != nil {
-			keeper.SetResolve(ctx, requestID, types.Failure)
-			newAttributes = append(newAttributes, sdk.NewAttribute(fmt.Sprint(requestID), "Failure"))
+			setResolveAndAddNewAttribute(ctx, keeper, requestID, types.Failure, &newAttributes)
 			continue
 		}
 
 		errResult := keeper.AddResult(ctx, requestID, request.OracleScriptID, request.Calldata, result)
 		if errResult != nil {
-			keeper.SetResolve(ctx, requestID, types.Failure)
-			newAttributes = append(newAttributes, sdk.NewAttribute(fmt.Sprint(requestID), "Failure"))
+			setResolveAndAddNewAttribute(ctx, keeper, requestID, types.Failure, &newAttributes)
 			continue
 		}
 
-		keeper.SetResolve(ctx, requestID, types.Success)
-		newAttributes = append(newAttributes, sdk.NewAttribute(fmt.Sprint(requestID), "Success"))
+		setResolveAndAddNewAttribute(ctx, keeper, requestID, types.Success, &newAttributes)
+
 	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			types.EventTypeEndBlock,
+			types.EventTypeRequestExecute,
 			newAttributes...,
 		),
 	})

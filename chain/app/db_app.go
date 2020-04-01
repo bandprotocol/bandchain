@@ -245,11 +245,10 @@ func (app *dbBandApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBl
 	events := res.GetEvents()
 	kvMap := make(map[string]string)
 	for _, event := range events {
-		if event.Type != zoracle.EventTypeEndBlock {
-			continue
-		}
-		for _, kv := range event.Attributes {
-			kvMap[string(kv.Key)] = string(kv.Value)
+		if event.Type == zoracle.EventTypeRequestExecute {
+			for _, kv := range event.Attributes {
+				kvMap[string(kv.Key)] = string(kv.Value)
+			}
 		}
 	}
 	app.dbBand.HandleEndBlock(kvMap)
