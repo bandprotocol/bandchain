@@ -20,7 +20,7 @@ func addUint64Overflow(a, b uint64) (uint64, bool) {
 func newRequestExecuteEvent(requestID RequestID, resolveStatus types.ResolveStatus) sdk.Event {
 	return sdk.NewEvent(
 		types.EventTypeRequestExecute,
-		sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprint(requestID)),
+		sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", requestID)),
 		sdk.NewAttribute(types.AttributeKeyResolveStatus, resolveStatus.String()),
 	)
 }
