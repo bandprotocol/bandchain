@@ -48,7 +48,7 @@ type ExecutionEnvironment interface {
 		dataSourceID int64,
 		externalDataID int64,
 		calldata []byte,
-	)
+	) int64
 
 	// GetExternalData reads from the execution environment state for a raw
 	// data report for the specified external data ID from the specified validator.

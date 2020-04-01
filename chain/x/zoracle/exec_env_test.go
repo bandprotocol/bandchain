@@ -208,22 +208,27 @@ func TestRequestExternalDataExceedMaxDataSourceCountPerRequest(t *testing.T) {
 		[]byte("executable"),
 	)
 	keeper.SetDataSource(ctx, 1, dataSource)
+	// Set MaxDataSourceCountPerRequest to 5
+	keeper.SetParam(ctx, KeyMaxDataSourceCountPerRequest, 5)
 
 	env, err := NewExecutionEnvironment(ctx, keeper, 1)
 	require.Nil(t, err)
 
-	// Set MaxDataSourceCountPerRequest to 5
-	keeper.SetParam(ctx, KeyMaxDataSourceCountPerRequest, 5)
-	env.RequestExternalData(1, 41, []byte("prepare32"))
-	env.RequestExternalData(1, 42, []byte("prepare32"))
-	env.RequestExternalData(1, 43, []byte("prepare32"))
-	env.RequestExternalData(1, 44, []byte("prepare32"))
-	env.RequestExternalData(1, 45, []byte("prepare32"))
-	env.RequestExternalData(1, 46, []byte("prepare32"))
+	result := env.RequestExternalData(1, 41, []byte("prepare32"))
+	require.Equal(t, int64(0), result)
+	result = env.RequestExternalData(1, 42, []byte("prepare32"))
+	require.Equal(t, int64(0), result)
+	result = env.RequestExternalData(1, 43, []byte("prepare32"))
+	require.Equal(t, int64(0), result)
+	result = env.RequestExternalData(1, 44, []byte("prepare32"))
+	require.Equal(t, int64(0), result)
+	result = env.RequestExternalData(1, 45, []byte("prepare32"))
+	require.Equal(t, int64(0), result)
+	result = env.RequestExternalData(1, 46, []byte("prepare32"))
+	require.Equal(t, int64(-1), result)
 
-	// Should get an error if trying to request more external data
 	envErr := env.SaveRawDataRequests(ctx, keeper)
-	require.NotNil(t, envErr)
+	require.Nil(t, envErr)
 }
 
 func TestGetExternalData(t *testing.T) {
