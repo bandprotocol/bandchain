@@ -12,7 +12,7 @@ type t =
   | Address(Address.t, int)
   | Fraction(int, int, bool)
   | FloatWithSuffix(float, string)
-  | Validators(list(ValidatorHook.Validator.t));
+  | Validators(array(ValidatorSub.Validator.t));
 
 module Styles = {
   open Css;
@@ -129,7 +129,8 @@ let make = (~info, ~header, ~isLeft=true) => {
        </div>
      | DataSources(ids) =>
        switch (ids |> Belt_List.size) {
-       | 0 => <Text value="Undetermined" size=Text.Lg spacing={Text.Em(0.06)} height=Text.Px(17)/>
+       | 0 =>
+         <Text value="Undetermined" size=Text.Lg spacing={Text.Em(0.06)} height={Text.Px(17)} />
        | _ =>
          <div className=Styles.datasourcesContainer>
            {ids
@@ -172,7 +173,7 @@ let make = (~info, ~header, ~isLeft=true) => {
      | Validators(validators) =>
        <div className=Styles.datasourcesContainer>
          {validators
-          ->Belt.List.map(validator =>
+          ->Belt.Array.map(validator =>
               <>
                 <ValidatorMonikerLink
                   validatorAddress={validator.operatorAddress}
@@ -183,7 +184,6 @@ let make = (~info, ~header, ~isLeft=true) => {
                 <HSpacing size=Spacing.md />
               </>
             )
-          ->Array.of_list
           ->React.array}
        </div>
      }}
