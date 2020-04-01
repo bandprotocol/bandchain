@@ -45,6 +45,7 @@ module Styles = {
 
 [@react.component]
 let make = (~reqID) => {
+  // let x = RequestSub.get(reqID);
   let requestOpt = RequestHook.get(reqID);
   let requestValidators =
     switch (React.useContext(GlobalContext.context), requestOpt) {
