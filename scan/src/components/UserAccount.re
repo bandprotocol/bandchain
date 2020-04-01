@@ -85,7 +85,7 @@ module DisconnectBtn = {
 module FaucetBtn = {
   [@react.component]
   let make = () => {
-    <div className=Styles.faucetBtn>
+    <div className=Styles.faucetBtn onClick={_ => Window.alert("Under construction")}>
       <Text
         value="get 10 testnet BAND"
         size=Text.Xs
