@@ -23,6 +23,7 @@ const (
 	AttributeKeyRequestID     = types.AttributeKeyRequestID
 	AttributeKeyValidator     = types.AttributeKeyValidator
 	AttributeKeyResolveStatus = types.AttributeKeyResolveStatus
+	AttributeKeyResult        = types.AttributeKeyResult
 )
 
 var (

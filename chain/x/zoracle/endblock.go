@@ -95,7 +95,9 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 		}
 
 		keeper.SetResolve(ctx, requestID, types.Success)
-		events = append(events, newRequestExecuteEvent(requestID, types.Success))
+		event := newRequestExecuteEvent(requestID, types.Success)
+		event.AppendAttributes(sdk.NewAttribute(types.AttributeKeyResult, string(result)))
+		events = append(events, event)
 	}
 
 	ctx.EventManager().EmitEvents(events)

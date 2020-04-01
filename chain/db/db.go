@@ -451,8 +451,11 @@ func (b *BandDB) GetInvolvedAccountsFromTransferEvents(logs sdk.ABCIMessageLogs)
 	return involvedAccounts
 }
 
-func (b *BandDB) HandleEndBlock(id int64, resolveStatus string) error {
-	return b.tx.Where(Request{ID: id}).
-		Assign(Request{ResolveStatus: resolveStatus}).
-		FirstOrCreate(&Request{}).Error
+func (b *BandDB) ResolveRequest(id int64, resolveStatus string, result []byte) error {
+	if resolveStatus == "Success" {
+		return b.tx.Model(&Request{}).Where(Request{ID: id}).
+			Update(Request{ResolveStatus: resolveStatus, Result: result}).Error
+	}
+	return b.tx.Model(&Request{}).Where(Request{ID: id}).
+		Update(Request{ResolveStatus: resolveStatus}).Error
 }

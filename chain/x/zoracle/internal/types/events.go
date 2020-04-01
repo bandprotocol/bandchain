@@ -17,4 +17,5 @@ const (
 	AttributeKeyValidator     = "validator"
 	AttributeKeyReporter      = "reporter"
 	AttributeKeyResolveStatus = "resolve_status"
+	AttributeKeyResult        = "result"
 )
