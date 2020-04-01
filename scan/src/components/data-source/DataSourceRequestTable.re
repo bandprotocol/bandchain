@@ -26,29 +26,11 @@ let make = (~dataSourceID: ID.DataSource.t) =>
     let (page, setPage) = React.useState(_ => 1);
     let pageSize = 5;
 
-    Js.Console.log("zzzzzzzz");
-
     let requestsSub = RequestSub.Mini.getListByDataSource(dataSourceID, ~pageSize, ~page, ());
     let totalRequestCountSub = RequestSub.countByDataSource(dataSourceID);
 
-    Js.Console.log("ccccccccc");
-
-    Js.Console.log(requestsSub);
-    Js.Console.log(totalRequestCountSub);
-
-    switch (totalRequestCountSub) {
-    | ApolloHooks.Subscription.Data(data) => Js.Console.log(data)
-    | Loading => Js.Console.log("loading")
-    | Error(e) => Js.Console.log2("--->", e)
-    | NoData => Js.Console.log("no data")
-    };
-
-    // let%Sub requests = requestsSub;
-    // let%Sub totalRequestCount = totalRequestCountSub;
-    let requests: array(BandScan.RequestSub.Mini.t) = [||];
-    let totalRequestCount = 100;
-
-    Js.Console.log("bbbbbbbbb");
+    let%Sub requests = requestsSub;
+    let%Sub totalRequestCount = totalRequestCountSub;
 
     let pageCount = Page.getPageCount(totalRequestCount, pageSize);
 
