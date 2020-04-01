@@ -1,3 +1,15 @@
+let extractFields: (string, string) => option(array((string, string))) = [%bs.raw
+  {|
+  function(_schema, cls) {
+    try {
+      return JSON.parse(JSON.parse(_schema)[cls])["fields"]
+    } catch(err) {
+      return undefined
+    }
+  }
+|}
+];
+
 let decode: (string, string, JsBuffer.t) => option(array((string, string))) = [%bs.raw
   {|
 function(_schema, cls, data) {

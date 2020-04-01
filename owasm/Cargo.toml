@@ -32,6 +32,7 @@ members = [
     "examples/flight_verification",
     "examples/random_u64",
     "chaintests/crypto_price",
+    "chaintests/crypto_price_borsh",
     "chaintests/main",
     "chaintests/moresilly",
     "chaintests/silly",

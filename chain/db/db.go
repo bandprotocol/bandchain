@@ -13,6 +13,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/cosmos/cosmos-sdk/x/crisis"
+	dist "github.com/cosmos/cosmos-sdk/x/distribution"
+	"github.com/cosmos/cosmos-sdk/x/gov"
+	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 )
 
@@ -33,7 +37,9 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 
 	db.AutoMigrate(
 		&Metadata{},
-		&Event{},
+		&Block{},
+		&Transaction{},
+		&Account{},
 		&Validator{},
 		&ValidatorVote{},
 		&DataSource{},
@@ -41,14 +47,33 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		&OracleScript{},
 		&OracleScriptCode{},
 		&OracleScriptRevision{},
-		&Block{},
-		&Transaction{},
-		&Report{},
-		&ReportDetail{},
+		&RelatedDataSources{},
 		&Request{},
 		&RequestedValidator{},
 		&RawDataRequests{},
-		&RelatedDataSources{},
+		&Report{},
+		&ReportDetail{},
+	)
+
+	db.Model(&Block{}).AddForeignKey(
+		"proposer",
+		"validators(consensus_address)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&Transaction{}).AddForeignKey(
+		"block_height",
+		"blocks(height)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&Transaction{}).AddForeignKey(
+		"sender",
+		"accounts(address)",
+		"RESTRICT",
+		"RESTRICT",
 	)
 
 	db.Model(&ValidatorVote{}).AddForeignKey(
@@ -94,6 +119,13 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 	)
 
 	db.Model(&Report{}).AddForeignKey(
+		"request_id",
+		"requests(id)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&Report{}).AddForeignKey(
 		"validator",
 		"validators(operator_address)",
 		"RESTRICT",
@@ -107,30 +139,9 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		"RESTRICT",
 	)
 
-	db.Model(&Report{}).AddForeignKey(
-		"request_id",
-		"requests(id)",
-		"RESTRICT",
-		"RESTRICT",
-	)
-
 	db.Model(&ReportDetail{}).AddForeignKey(
 		"request_id,validator",
 		"reports(request_id,validator)",
-		"RESTRICT",
-		"RESTRICT",
-	)
-
-	db.Model(&Block{}).AddForeignKey(
-		"proposer",
-		"validators(consensus_address)",
-		"RESTRICT",
-		"RESTRICT",
-	)
-
-	db.Model(&Transaction{}).AddForeignKey(
-		"block_height",
-		"blocks(height)",
 		"RESTRICT",
 		"RESTRICT",
 	)
@@ -356,4 +367,86 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 	jsonMap["type"] = events["message.action"]
 
 	return jsonMap, nil
+}
+
+func (b *BandDB) GetInvolvedAccountsFromTx(tx auth.StdTx) []sdk.AccAddress {
+	involvedAccounts := make([]sdk.AccAddress, 0)
+	for _, msg := range tx.GetMsgs() {
+		switch msg := msg.(type) {
+		case zoracle.MsgCreateDataSource:
+			continue
+		case zoracle.MsgEditDataSource:
+			continue
+		case zoracle.MsgCreateOracleScript:
+			continue
+		case zoracle.MsgEditOracleScript:
+			continue
+		case zoracle.MsgAddOracleAddress:
+			continue
+		case zoracle.MsgRemoveOracleAddress:
+			continue
+		case zoracle.MsgRequestData:
+			involvedAccounts = append(involvedAccounts, msg.Sender)
+		case zoracle.MsgReportData:
+			involvedAccounts = append(involvedAccounts, msg.Reporter)
+		case bank.MsgSend:
+			involvedAccounts = append(involvedAccounts, msg.FromAddress, msg.ToAddress)
+		case bank.MsgMultiSend:
+			for _, input := range msg.Inputs {
+				involvedAccounts = append(involvedAccounts, input.Address)
+			}
+			for _, output := range msg.Outputs {
+				involvedAccounts = append(involvedAccounts, output.Address)
+			}
+		case staking.MsgCreateValidator:
+			involvedAccounts = append(involvedAccounts, msg.DelegatorAddress)
+		case staking.MsgEditValidator:
+			continue
+		case staking.MsgDelegate:
+			involvedAccounts = append(involvedAccounts, msg.DelegatorAddress)
+		case staking.MsgBeginRedelegate:
+			involvedAccounts = append(involvedAccounts, msg.DelegatorAddress)
+		case staking.MsgUndelegate:
+			involvedAccounts = append(involvedAccounts, msg.DelegatorAddress)
+		case dist.MsgSetWithdrawAddress:
+			continue
+		case dist.MsgWithdrawDelegatorReward:
+			involvedAccounts = append(involvedAccounts, msg.DelegatorAddress)
+		case dist.MsgWithdrawValidatorCommission:
+			involvedAccounts = append(involvedAccounts, sdk.AccAddress(msg.ValidatorAddress))
+		case gov.MsgDeposit:
+			involvedAccounts = append(involvedAccounts, msg.Depositor)
+		case gov.MsgSubmitProposal:
+			involvedAccounts = append(involvedAccounts, msg.Proposer)
+		case gov.MsgVote:
+			continue
+		case crisis.MsgVerifyInvariant:
+			continue
+		case slashing.MsgUnjail:
+			continue
+		default:
+			panic(fmt.Sprintf("Message %s does not support", msg.Type()))
+		}
+	}
+	return involvedAccounts
+}
+
+func (b *BandDB) GetInvolvedAccountsFromTransferEvents(logs sdk.ABCIMessageLogs) []sdk.AccAddress {
+	involvedAccounts := make([]sdk.AccAddress, 0)
+	for _, log := range logs {
+		for _, event := range log.Events {
+			if event.Type == bank.EventTypeTransfer {
+				for _, kv := range event.Attributes {
+					if kv.Key == bank.AttributeKeySender || kv.Key == bank.AttributeKeyRecipient {
+						account, err := sdk.AccAddressFromBech32(kv.Value)
+						if err != nil {
+							panic(err)
+						}
+						involvedAccounts = append(involvedAccounts, account)
+					}
+				}
+			}
+		}
+	}
+	return involvedAccounts
 }

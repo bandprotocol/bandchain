@@ -34,6 +34,7 @@ type t =
   | TxIndexPage(Hash.t)
   | BlockHomePage
   | BlockIndexPage(int)
+  | RequestHomePage
   | RequestIndexPage(int)
   | AccountIndexPage(Address.t, account_tab_t)
   | ValidatorHomePage
@@ -66,6 +67,7 @@ let fromUrl = (url: ReasonReactRouter.url) =>
   | (["block", blockHeight], _) =>
     let blockHeightIntOpt = blockHeight |> int_of_string_opt;
     BlockIndexPage(blockHeightIntOpt->Belt_Option.getWithDefault(0));
+  | (["requests"], _) => RequestHomePage
   | (["request", reqID], _) => RequestIndexPage(reqID |> int_of_string)
   | (["account", address], "delegations") =>
     AccountIndexPage(address |> Address.fromBech32, AccountDelegations)
@@ -98,6 +100,7 @@ let toString =
   | ValidatorHomePage => "/validators"
   | BlockHomePage => "/blocks"
   | BlockIndexPage(height) => {j|/block/$height|j}
+  | RequestHomePage => "/requests"
   | RequestIndexPage(reqID) => {j|/request/$reqID|j}
   | AccountIndexPage(address, AccountTransactions) => {
       let addressBech32 = address |> Address.toBech32;
