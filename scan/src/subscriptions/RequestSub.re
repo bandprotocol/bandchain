@@ -28,7 +28,7 @@ module Mini = {
       subscription RequestsMiniByDataSource($id: bigint!, $limit: Int!, $offset: Int!) {
         data_sources_by_pk(id: $id) {
           id
-          raw_data_requests(limit: $limit, offset: $offset) {
+          raw_data_requests(limit: $limit, offset: $offset, order_by: {request_id: desc}) {
             request @bsRecord {
               id @bsDecoder(fn: "ID.Request.fromJson")
               requester @bsDecoder(fn: "Address.fromBech32")
@@ -53,7 +53,7 @@ module Mini = {
       subscription RequestsMiniByOracleScript($id: bigint!, $limit: Int!, $offset: Int!) {
         oracle_scripts_by_pk(id: $id) {
           id
-          requests(limit: $limit, offset: $offset) {
+          requests(limit: $limit, offset: $offset, order_by: {id: desc}) {
             id @bsDecoder(fn: "ID.Request.fromJson")
             requester @bsDecoder(fn: "Address.fromBech32")
             oracle_script @bsRecord {
