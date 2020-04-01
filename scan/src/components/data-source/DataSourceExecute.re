@@ -197,7 +197,7 @@ let make = (~executable: JsBuffer.t) => {
             let _ =
               AxiosRequest.execute(
                 AxiosRequest.t(
-                  ~executable=executable->JsBuffer.toString,
+                  ~executable=executable->JsBuffer.toUTF8,
                   ~calldata={
                     callDataList
                     ->Belt_List.reduce("", (acc, calldata) => acc ++ " " ++ calldata)
