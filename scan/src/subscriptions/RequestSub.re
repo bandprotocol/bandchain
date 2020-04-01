@@ -25,7 +25,7 @@ module Mini = {
 
   module MultiMiniByDataSourceConfig = [%graphql
     {|
-      subscription RequestMiniByDataSource($id: bigint!, $limit: Int!, $offset: Int!) {
+      subscription RequestsMiniByDataSource($id: bigint!, $limit: Int!, $offset: Int!) {
         data_sources_by_pk(id: $id) {
           id
           raw_data_requests(limit: $limit, offset: $offset) {
@@ -50,7 +50,7 @@ module Mini = {
 
   module MultiMiniByOracleScriptConfig = [%graphql
     {|
-      subscription RequestMiniByOracleScript($id: bigint!, $limit: Int!, $offset: Int!) {
+      subscription RequestsMiniByOracleScript($id: bigint!, $limit: Int!, $offset: Int!) {
         oracle_scripts_by_pk(id: $id) {
           id
           requests(limit: $limit, offset: $offset) {
@@ -142,7 +142,7 @@ module Mini = {
 
 module RequestCountByDataSourceConfig = [%graphql
   {|
-    subscription RequestMiniByDataSourceCount($id: bigint!) {
+    subscription RequestsMiniCountByDataSource($id: bigint!) {
       data_sources_by_pk(id: $id) {
         id
         raw_data_requests_aggregate {
@@ -157,7 +157,7 @@ module RequestCountByDataSourceConfig = [%graphql
 
 module RequestCountByOracleScriptConfig = [%graphql
   {|
-    subscription RequestMiniByOracleScriptCount($id: bigint!) {
+    subscription RequestsCountMiniByOracleScript($id: bigint!) {
       oracle_scripts_by_pk(id: $id) {
         id
         requests_aggregate {
