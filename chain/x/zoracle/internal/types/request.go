@@ -15,13 +15,13 @@ const (
 func (resolveStatus ResolveStatus) String() string {
 	switch resolveStatus {
 	case Open:
-		return "Pending"
+		return "Open"
 	case Success:
 		return "Success"
 	case Failure:
 		return "Failure"
 	default:
-		return ""
+		return "Unknown"
 	}
 }
 
