@@ -36,6 +36,13 @@ let make = (~dataSourceID: ID.DataSource.t) =>
     Js.Console.log(requestsSub);
     Js.Console.log(totalRequestCountSub);
 
+    switch (totalRequestCountSub) {
+    | ApolloHooks.Subscription.Data(data) => Js.Console.log(data)
+    | Loading => Js.Console.log("loading")
+    | Error(e) => Js.Console.log2("--->", e)
+    | NoData => Js.Console.log("no data")
+    };
+
     // let%Sub requests = requestsSub;
     // let%Sub totalRequestCount = totalRequestCountSub;
     let requests: array(BandScan.RequestSub.Mini.t) = [||];
