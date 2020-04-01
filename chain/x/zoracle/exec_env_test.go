@@ -208,9 +208,9 @@ func TestRequestExternalDataExceedMaxDataSourceCountPerRequest(t *testing.T) {
 		[]byte("executable"),
 	)
 	keeper.SetDataSource(ctx, 1, dataSource)
+
 	// Set MaxDataSourceCountPerRequest to 5
 	keeper.SetParam(ctx, KeyMaxDataSourceCountPerRequest, 5)
-
 	env, err := NewExecutionEnvironment(ctx, keeper, 1)
 	require.Nil(t, err)
 
