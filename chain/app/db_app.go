@@ -7,6 +7,7 @@ import (
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/genaccounts"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -49,6 +50,17 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 	var genesisState GenesisState
 	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
 
+	// Genaccount genesis
+	var genaccountsState genaccounts.GenesisState
+	genaccounts.ModuleCdc.MustUnmarshalJSON(genesisState[genaccounts.ModuleName], &genaccountsState)
+
+	for _, account := range genaccountsState {
+		err := app.dbBand.SetAccountBalance(account.Address, account.Coins, 0)
+		if err != nil {
+			panic(err)
+		}
+	}
+
 	// Staking genesis (Not used in our chain)
 	// var stakingState staking.GenesisState
 	// staking.ModuleCdc.MustUnmarshalJSON(genesisState[staking.ModuleName], &stakingState)
@@ -70,6 +82,11 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 		for _, msg := range tx.Msgs {
 			if createMsg, ok := msg.(staking.MsgCreateValidator); ok {
 				app.dbBand.HandleMessage(nil, createMsg, nil)
+				app.dbBand.DecreaseAccountBalance(
+					createMsg.DelegatorAddress,
+					sdk.NewCoins(createMsg.Value),
+					0,
+				)
 				if err != nil {
 					panic(err)
 				}
@@ -130,34 +147,56 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 	if lastProcessHeight+1 != app.DeliverContext.BlockHeight() {
 		return res
 	}
-	if !res.IsOK() {
-		// TODO: We should not completely ignore failed transactions.
-		return res
-	}
-	logs, err := sdk.ParseABCILogs(res.Log)
-	if err != nil {
-		panic(err)
-	}
+
 	tx, err := app.TxDecoder(req.Tx)
 	if err != nil {
 		panic(err)
 	}
 	if stdTx, ok := tx.(auth.StdTx); ok {
-		txHash := tmhash.Sum(req.Tx)
+		// Add involved accounts
+		involvedAccounts := stdTx.GetSigners()
+		if !res.IsOK() {
+			// TODO: We should not completely ignore failed transactions.
+		} else {
+			logs, err := sdk.ParseABCILogs(res.Log)
+			if err != nil {
+				panic(err)
+			}
+			txHash := tmhash.Sum(req.Tx)
 
-		app.dbBand.AddTransaction(
-			txHash,
-			app.DeliverContext.BlockTime(),
-			res.GasUsed,
-			stdTx.Fee.Gas,
-			stdTx.Fee.Amount,
-			stdTx.GetSigners()[0],
-			true,
-			app.DeliverContext.BlockHeight(),
-		)
+			app.dbBand.AddTransaction(
+				txHash,
+				app.DeliverContext.BlockTime(),
+				res.GasUsed,
+				stdTx.Fee.Gas,
+				stdTx.Fee.Amount,
+				stdTx.GetSigners()[0],
+				true,
+				app.DeliverContext.BlockHeight(),
+			)
 
-		app.dbBand.HandleTransaction(stdTx, txHash, logs)
-
+			app.dbBand.HandleTransaction(stdTx, txHash, logs)
+			involvedAccounts = append(
+				involvedAccounts, app.dbBand.GetInvolvedAccountsFromTx(stdTx)...,
+			)
+			involvedAccounts = append(
+				involvedAccounts, app.dbBand.GetInvolvedAccountsFromTransferEvents(logs)...,
+			)
+		}
+		updatedAccounts := make(map[string]bool)
+		for _, account := range involvedAccounts {
+			if found := updatedAccounts[account.String()]; !found {
+				updatedAccounts[account.String()] = true
+				err := app.dbBand.SetAccountBalance(
+					account,
+					app.BankKeeper.GetCoins(app.DeliverContext, account),
+					app.DeliverContext.BlockHeight(),
+				)
+				if err != nil {
+					panic(err)
+				}
+			}
+		}
 	}
 	return res
 }
