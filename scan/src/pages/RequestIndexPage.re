@@ -47,9 +47,19 @@ module Styles = {
 let make = (~reqID) =>
   {
     let requestSub = RequestSub.get(reqID);
+    let blockCountSub = BlockSub.count();
+
     let%Sub request = requestSub;
+    let%Sub blockCount = blockCountSub;
 
     let numReport = request.reports |> Belt_Array.size;
+
+    let remainingBlock =
+      blockCount >= request.expirationHeight ? 0 : request.expirationHeight - blockCount;
+
+    let calldataKVs =
+      Borsh.decode(request.oracleScript.oracleScriptCode.schema, "Input", request.calldata)
+      ->Belt_Option.getWithDefault([||]);
 
     <div className=Styles.pageContainer>
       <Row justify=Row.Between>
@@ -179,7 +189,7 @@ let make = (~reqID) =>
                  <>
                    <HSpacing size=Spacing.sm />
                    <Text
-                     value="(5 blocks remaining)" // Mock
+                     value={j|($remainingBlock blocks remaining)|j}
                      weight=Text.Regular
                      code=true
                      color=Colors.gray8
@@ -215,7 +225,7 @@ let make = (~reqID) =>
                 [
                   KVTable.Value(externalID |> string_of_int),
                   KVTable.DataSource(dataSource.dataSourceID, dataSource.name),
-                  KVTable.Value(calldata |> JsBuffer.toHex),
+                  KVTable.Value(calldata |> JsBuffer.toUTF8),
                 ]
               )
             ->Belt_List.fromArray
@@ -233,48 +243,53 @@ let make = (~reqID) =>
                 color=Colors.gray6
               />
               <HSpacing size=Spacing.md />
-              // Mock
-              <CopyButton data={"aaaa" |> JsBuffer.fromHex} />
+              <CopyButton data={request.calldata} />
             </div>
           </Col>
         </div>
         <KVTable
           tableWidth=880
           theme=KVTable.RequestMiniTable
-          rows=[
-            [KVTable.Value("crypto_symbol"), KVTable.Value("Bitcoin")],
-            [KVTable.Value("method"), KVTable.Value("median")],
-          ]
+          rows={
+            calldataKVs
+            ->Belt_Array.map(((k, v)) => [KVTable.Value(k), KVTable.Value(v)])
+            ->Belt_List.fromArray
+          }
         />
-        {numReport > 0
-           ? <>
-               <VSpacing size=Spacing.lg />
-               <div className={Styles.topicContainer(40)}>
-                 <Col size=1.>
-                   <div className=Styles.hFlex>
-                     <Text
-                       value="RESULT"
-                       size=Text.Sm
-                       weight=Text.Semibold
-                       spacing={Text.Em(0.06)}
-                       color=Colors.gray6
-                     />
-                     <HSpacing size=Spacing.md />
-                     // Mock
-                     <CopyButton data={"aaaa" |> JsBuffer.fromHex} />
-                   </div>
-                 </Col>
-               </div>
-               <KVTable
-                 tableWidth=880
-                 theme=KVTable.RequestMiniTable
-                 rows=[
-                   [KVTable.Value("price"), KVTable.Value("861200")],
-                   [KVTable.Value("timestamp"), KVTable.Value("1583383759")],
-                 ]
-               />
-             </>
-           : React.null}
+        {switch (request.result) {
+         | Some(result) =>
+           let resultKVs =
+             Borsh.decode(request.oracleScript.oracleScriptCode.schema, "Output", result)
+             ->Belt_Option.getWithDefault([||]);
+           <>
+             <VSpacing size=Spacing.lg />
+             <div className={Styles.topicContainer(40)}>
+               <Col size=1.>
+                 <div className=Styles.hFlex>
+                   <Text
+                     value="RESULT"
+                     size=Text.Sm
+                     weight=Text.Semibold
+                     spacing={Text.Em(0.06)}
+                     color=Colors.gray6
+                   />
+                   <HSpacing size=Spacing.md />
+                   <CopyButton data=result />
+                 </div>
+               </Col>
+             </div>
+             <KVTable
+               tableWidth=880
+               theme=KVTable.RequestMiniTable
+               rows={
+                 resultKVs
+                 ->Belt_Array.map(((k, v)) => [KVTable.Value(k), KVTable.Value(v)])
+                 ->Belt_List.fromArray
+               }
+             />
+           </>;
+         | None => React.null
+         }}
         {numReport >= request.sufficientValidatorCount
            ? {
              <RequestProof requestID={request.id} />;
@@ -352,7 +367,7 @@ let make = (~reqID) =>
                        ),
                        KVTable.Values(
                          report.reportDetails
-                         ->Belt_Array.map(({data}) => data |> JsBuffer.toHex)
+                         ->Belt_Array.map(({data}) => data |> JsBuffer.toUTF8)
                          ->Belt_List.fromArray,
                        ),
                      ]
