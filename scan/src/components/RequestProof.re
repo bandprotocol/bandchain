@@ -29,7 +29,7 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~requestID) => {
+let make = (~requestID:ID.Request.t) => {
   let proofOpt = ProofHook.get(requestID);
   let (showProof, setShowProof) = React.useState(_ => false);
 
