@@ -389,7 +389,7 @@ module SingleConfig = [%graphql
 
 module MultiConfig = [%graphql
   {|
-  subscription Transaction($limit: Int!, $offset: Int!) {
+  subscription Transactions($limit: Int!, $offset: Int!) {
     transactions(offset: $offset, limit: $limit, order_by: {block_height: desc}) @bsRecord {
       txHash : tx_hash @bsDecoder(fn: "GraphQLParser.hash")
       blockHeight: block_height @bsDecoder(fn: "ID.Block.fromJson")
@@ -407,7 +407,7 @@ module MultiConfig = [%graphql
 
 module MultiByHeightConfig = [%graphql
   {|
-  subscription Transaction($height: bigint!, $limit: Int!, $offset: Int!) {
+  subscription TransactionsByHeight($height: bigint!, $limit: Int!, $offset: Int!) {
     transactions(where: {block_height: {_eq: $height}}, offset: $offset, limit: $limit) @bsRecord {
       txHash : tx_hash @bsDecoder(fn: "GraphQLParser.hash")
       blockHeight: block_height @bsDecoder(fn: "ID.Block.fromJson")
@@ -425,7 +425,7 @@ module MultiByHeightConfig = [%graphql
 
 module MultiBySenderConfig = [%graphql
   {|
-  subscription Transaction($sender: String!, $limit: Int!, $offset: Int!) {
+  subscription TransactionsBySender($sender: String!, $limit: Int!, $offset: Int!) {
     transactions(
       where: {sender: {_eq: $sender}},
       offset: $offset,
@@ -447,7 +447,7 @@ module MultiBySenderConfig = [%graphql
 
 module TxCountConfig = [%graphql
   {|
-  subscription Transaction {
+  subscription TransactionsCount {
     transactions_aggregate {
       aggregate {
         count @bsDecoder(fn: "Belt_Option.getExn")
@@ -459,7 +459,7 @@ module TxCountConfig = [%graphql
 
 module TxCountBySenderConfig = [%graphql
   {|
-  subscription Transaction($sender: String!) {
+  subscription TransactionsCountBySender($sender: String!) {
     transactions_aggregate(where: {sender: {_eq: $sender}}) {
       aggregate {
         count @bsDecoder(fn: "Belt_Option.getExn")
