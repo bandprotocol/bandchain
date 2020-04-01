@@ -229,6 +229,7 @@ services:
     environment:
       - PORT=5005
       - NODE_URI=tcp://172.18.0.15:26657
+    restart: always
     networks:
       bandchain:
         ipv4_address: 172.18.0.17
