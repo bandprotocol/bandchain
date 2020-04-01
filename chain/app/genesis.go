@@ -2,7 +2,6 @@ package app
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -17,8 +16,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/supply"
-
-	"github.com/bandprotocol/bandchain/chain/x/zoracle"
+	// "github.com/bandprotocol/bandchain/chain/x/zoracle"
 )
 
 // GenesisState defines a type alias for the Gaia genesis application state.
@@ -114,82 +112,82 @@ func NewDefaultGenesisState() GenesisState {
 		supply.ModuleName: supply.ModuleCdc.MustMarshalJSON(supply.GenesisState{
 			Supply: sdk.NewCoins(),
 		}),
-		zoracle.ModuleName: zoracle.ModuleCdc.MustMarshalJSON(zoracle.DefaultGenesisState()),
+		// zoracle.ModuleName: zoracle.ModuleCdc.MustMarshalJSON(zoracle.DefaultGenesisState()),
 		genutil.ModuleName: genutil.ModuleCdc.MustMarshalJSON(genutil.GenesisState{
 			GenTxs: []json.RawMessage{},
 		}),
 	}
 }
 
-func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage {
-	state := zoracle.DefaultGenesisState()
-	dataSources := []struct {
-		name        string
-		description string
-		path        string
-	}{
-		{
-			"Coingecko script",
-			"The Script that queries crypto price from https://coingecko.com",
-			"./datasources/coingecko_price.sh",
-		},
-		{
-			"Crypto compare script",
-			"The Script that queries crypto price from https://cryptocompare.com",
-			"./datasources/crypto_compare_price.sh",
-		},
-		{
-			"Binance price",
-			"The Script that queries crypto price from https://www.binance.com/en",
-			"./datasources/binance_price.sh",
-		},
-		{
-			"Open weather",
-			"The script that queries current weather",
-			"./datasources/open_weather_map.sh",
-		},
-	}
+// func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage {
+// 	state := zoracle.DefaultGenesisState()
+// 	dataSources := []struct {
+// 		name        string
+// 		description string
+// 		path        string
+// 	}{
+// 		{
+// 			"Coingecko script",
+// 			"The Script that queries crypto price from https://coingecko.com",
+// 			"./datasources/coingecko_price.sh",
+// 		},
+// 		{
+// 			"Crypto compare script",
+// 			"The Script that queries crypto price from https://cryptocompare.com",
+// 			"./datasources/crypto_compare_price.sh",
+// 		},
+// 		{
+// 			"Binance price",
+// 			"The Script that queries crypto price from https://www.binance.com/en",
+// 			"./datasources/binance_price.sh",
+// 		},
+// 		{
+// 			"Open weather",
+// 			"The script that queries current weather",
+// 			"./datasources/open_weather_map.sh",
+// 		},
+// 	}
 
-	// TODO: Find a better way to specify path to data sources
-	state.DataSources = make([]zoracle.DataSource, len(dataSources))
-	for i, dataSource := range dataSources {
-		script, err := ioutil.ReadFile(dataSource.path)
-		if err != nil {
-			panic(err)
-		}
-		state.DataSources[i] = zoracle.NewDataSource(
-			owner,
-			dataSource.name,
-			dataSource.description,
-			sdk.Coins{},
-			script,
-		)
-	}
+// 	// TODO: Find a better way to specify path to data sources
+// 	state.DataSources = make([]zoracle.DataSource, len(dataSources))
+// 	for i, dataSource := range dataSources {
+// 		script, err := ioutil.ReadFile(dataSource.path)
+// 		if err != nil {
+// 			panic(err)
+// 		}
+// 		state.DataSources[i] = zoracle.NewDataSource(
+// 			owner,
+// 			dataSource.name,
+// 			dataSource.description,
+// 			sdk.Coins{},
+// 			script,
+// 		)
+// 	}
 
-	// TODO: Find a better way to specify path to oracle scripts
-	oracleScripts := []struct {
-		name        string
-		description string
-		path        string
-	}{
-		{
-			"Crypto price script",
-			"Oracle script for getting an average crypto price from many sources.",
-			"./owasm/res/crypto_price.wasm",
-		},
-	}
-	state.OracleScripts = make([]zoracle.OracleScript, len(oracleScripts))
-	for i, oracleScript := range oracleScripts {
-		code, err := ioutil.ReadFile(oracleScript.path)
-		if err != nil {
-			panic(err)
-		}
-		state.OracleScripts[i] = zoracle.NewOracleScript(
-			owner,
-			oracleScript.name,
-			oracleScript.description,
-			code,
-		)
-	}
-	return zoracle.ModuleCdc.MustMarshalJSON(state)
-}
+// 	// TODO: Find a better way to specify path to oracle scripts
+// 	oracleScripts := []struct {
+// 		name        string
+// 		description string
+// 		path        string
+// 	}{
+// 		{
+// 			"Crypto price script",
+// 			"Oracle script for getting an average crypto price from many sources.",
+// 			"./owasm/res/crypto_price.wasm",
+// 		},
+// 	}
+// 	state.OracleScripts = make([]zoracle.OracleScript, len(oracleScripts))
+// 	for i, oracleScript := range oracleScripts {
+// 		code, err := ioutil.ReadFile(oracleScript.path)
+// 		if err != nil {
+// 			panic(err)
+// 		}
+// 		state.OracleScripts[i] = zoracle.NewOracleScript(
+// 			owner,
+// 			oracleScript.name,
+// 			oracleScript.description,
+// 			code,
+// 		)
+// 	}
+// 	return zoracle.ModuleCdc.MustMarshalJSON(state)
+// }

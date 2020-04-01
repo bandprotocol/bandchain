@@ -20,14 +20,13 @@ import (
 	"github.com/tendermint/tendermint/libs/common"
 	"github.com/tendermint/tendermint/privval"
 	"github.com/tendermint/tendermint/types"
-
-	"github.com/bandprotocol/bandchain/chain/x/zoracle"
+	// "github.com/bandprotocol/bandchain/chain/x/zoracle"
 )
 
 const (
 	flagOverwrite  = "overwrite"
 	flagClientHome = "home-client"
-	flagZoracle    = "zoracle"
+	// flagZoracle    = "zoracle"
 )
 
 type printInfo struct {
@@ -100,7 +99,7 @@ func InitCmd(
 	ctx *server.Context,
 	cdc *codec.Codec,
 	customAppState map[string]json.RawMessage,
-	getDefaultDataSourcesAndOracleScripts func(sdk.AccAddress) json.RawMessage,
+	// getDefaultDataSourcesAndOracleScripts func(sdk.AccAddress) json.RawMessage,
 	defaultNodeHome string,
 ) *cobra.Command {
 	cmd := &cobra.Command{
@@ -135,13 +134,13 @@ func InitCmd(
 			if !viper.GetBool(flagOverwrite) && common.FileExists(genFile) {
 				return fmt.Errorf("genesis.json file already exists: %v", genFile)
 			}
-			if viper.IsSet(flagZoracle) {
-				owner, err := sdk.AccAddressFromBech32(viper.GetString(flagZoracle))
-				if err != nil {
-					return err
-				}
-				customAppState[zoracle.ModuleName] = getDefaultDataSourcesAndOracleScripts(owner)
-			}
+			// if viper.IsSet(flagZoracle) {
+			// 	owner, err := sdk.AccAddressFromBech32(viper.GetString(flagZoracle))
+			// 	if err != nil {
+			// 		return err
+			// 	}
+			// 	customAppState[zoracle.ModuleName] = getDefaultDataSourcesAndOracleScripts(owner)
+			// }
 			appState, err := codec.MarshalJSONIndent(cdc, customAppState)
 			if err != nil {
 				return err
@@ -187,7 +186,7 @@ func InitCmd(
 	cmd.Flags().String(cli.HomeFlag, defaultNodeHome, "node's home directory")
 	cmd.Flags().BoolP(flagOverwrite, "o", false, "overwrite the genesis.json file")
 	cmd.Flags().String(client.FlagChainID, "", "genesis file chain-id, if left blank will be randomly created")
-	cmd.Flags().String(flagZoracle, "band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9", "owner of these data sources and oracle scripts")
+	// cmd.Flags().String(flagZoracle, "band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9", "owner of these data sources and oracle scripts")
 
 	return cmd
 }

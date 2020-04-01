@@ -26,7 +26,7 @@ type BandDB struct {
 	ctx sdk.Context
 
 	StakingKeeper staking.Keeper
-	ZoracleKeeper zoracle.Keeper
+	// ZoracleKeeper zoracle.Keeper
 }
 
 func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {

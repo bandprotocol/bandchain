@@ -136,32 +136,32 @@ func (b *BandDB) handleMsgRequestData(
 		return err
 	}
 
-	req, err := b.ZoracleKeeper.GetRequest(b.ctx, zoracle.RequestID(id))
-	if err != nil {
-		return err
-	}
+	// req, err := b.ZoracleKeeper.GetRequest(b.ctx, zoracle.RequestID(id))
+	// if err != nil {
+	// 	return err
+	// }
 
-	for _, validatorAddress := range req.RequestedValidators {
-		requestedValidator := createRequestedValidator(id, validatorAddress.String())
-		err = b.tx.Save(&requestedValidator).Error
-		if err != nil {
-			return err
-		}
-	}
+	// for _, validatorAddress := range req.RequestedValidators {
+	// 	requestedValidator := createRequestedValidator(id, validatorAddress.String())
+	// 	err = b.tx.Save(&requestedValidator).Error
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// }
 
-	for _, raw := range b.ZoracleKeeper.GetRawDataRequestWithExternalIDs(b.ctx, zoracle.RequestID(id)) {
-		rawDataRequests := createRawDataRequests(id, int64(raw.ExternalID), int64(raw.RawDataRequest.DataSourceID), raw.RawDataRequest.Calldata)
-		err = b.tx.Save(&rawDataRequests).Error
-		if err != nil {
-			return err
-		}
+	// for _, raw := range b.ZoracleKeeper.GetRawDataRequestWithExternalIDs(b.ctx, zoracle.RequestID(id)) {
+	// 	rawDataRequests := createRawDataRequests(id, int64(raw.ExternalID), int64(raw.RawDataRequest.DataSourceID), raw.RawDataRequest.Calldata)
+	// 	err = b.tx.Save(&rawDataRequests).Error
+	// 	if err != nil {
+	// 		return err
+	// 	}
 
-		b.tx.FirstOrCreate(&RelatedDataSources{
-			DataSourceID:   int64(raw.RawDataRequest.DataSourceID),
-			OracleScriptID: int64(msg.OracleScriptID),
-		})
+	// 	b.tx.FirstOrCreate(&RelatedDataSources{
+	// 		DataSourceID:   int64(raw.RawDataRequest.DataSourceID),
+	// 		OracleScriptID: int64(msg.OracleScriptID),
+	// 	})
 
-	}
+	// }
 
 	return nil
 }

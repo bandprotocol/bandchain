@@ -54,7 +54,7 @@ func main() {
 	}
 	// CLI commands to initialize the chain
 	rootCmd.AddCommand(
-		InitCmd(ctx, cdc, app.NewDefaultGenesisState(), app.GetDefaultDataSourcesAndOracleScripts, app.DefaultNodeHome),
+		InitCmd(ctx, cdc, app.NewDefaultGenesisState() /* app.GetDefaultDataSourcesAndOracleScripts, */, app.DefaultNodeHome),
 		genutilcli.CollectGenTxsCmd(ctx, cdc, genaccounts.AppModuleBasic{}, app.DefaultNodeHome),
 		genutilcli.MigrateGenesisCmd(ctx, cdc),
 		genutilcli.GenTxCmd(
