@@ -46,7 +46,26 @@ let make = () =>
     let requestCount = 100;
     let requests = [
       {
-        RequestHook.Request.id: ID.Request.ID(3),
+        RequestHook.Request.id: ID.Request.ID(4),
+        oracleScriptID: ID.OracleScript.ID(3),
+        oracleScriptName: "Oracle script 3",
+        calldata: "AAAAAAAAV0M=" |> JsBuffer.fromBase64,
+        requestedValidators: [
+          "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,
+        ],
+        sufficientValidatorCount: 1,
+        expirationHeight: 3000,
+        resolveStatus: Unknown,
+        requester: "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
+        txHash: "AC006D7136B0041DA4568A4CA5B7C1F8E8E0B4A74F11213B99EC4956CC8A247C" |> Hash.fromHex,
+        requestedAtHeight: 40000,
+        requestedAtTime: MomentRe.momentNow(),
+        rawDataRequests: [],
+        reports: [],
+        result: Some("AAAAAAAAV0M=" |> JsBuffer.fromBase64),
+      },
+      {
+        id: ID.Request.ID(3),
         oracleScriptID: ID.OracleScript.ID(2),
         oracleScriptName: "Oracle script 2",
         calldata: "AAAAAAAAV0M=" |> JsBuffer.fromBase64,

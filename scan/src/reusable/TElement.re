@@ -183,7 +183,7 @@ let renderRequestStatus = status => {
         | RequestHook.Request.Success => Images.success
         | Failure => Images.fail
         | Open => Images.pending
-        | Unknown => Images.fail
+        | Unknown => Images.unknown
         }
       }
       className=Styles.resolveIcon
