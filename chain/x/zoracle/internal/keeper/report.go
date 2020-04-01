@@ -19,7 +19,7 @@ func (k Keeper) AddReport(
 
 	if request.ResolveStatus != types.Open {
 		return types.ErrInvalidState(
-			"AddReport: Request ID %d: Resolve status (%d) is not Open (%d).",
+			"AddReport: Request ID %d: Resolve status (%s) is not Open (%s).",
 			requestID, request.ResolveStatus, types.Open,
 		)
 	}
