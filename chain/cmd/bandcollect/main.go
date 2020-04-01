@@ -8,15 +8,14 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"sort"
-	"strings"
 
 	"github.com/bandprotocol/bandchain/chain/app"
-	"github.com/bandprotocol/bandchain/chain/bandlib"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	"github.com/cosmos/cosmos-sdk/x/genaccounts"
 	cfg "github.com/tendermint/tendermint/config"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 
@@ -25,25 +24,24 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 )
 
-const flagGenTxDir = "gentx-dir"
-
-var provider bandlib.BandProvider
+var (
+	priv secp256k1.PrivKeySecp256k1
+	cdc  *codec.Codec
+)
 
 func main() {
 	privS := "27313aa3fd8286b54d5dbe16a4fbbc55c7908e844e37a737997fc2ba74403812"
 	privB, _ := hex.DecodeString(privS)
-	var priv secp256k1.PrivKeySecp256k1
-	copy(priv[:], privB)
-	provider, _ = bandlib.NewBandProvider("http://d3n-debug.bandprotocol.com:26657", priv)
 
-	cdc := app.MakeCodec()
+	copy(priv[:], privB)
+
+	cdc = app.MakeCodec()
 	config := sdk.GetConfig()
 	app.SetBech32AddressPrefixesAndBip44CoinType(config)
 	config.Seal()
 
 	ctx := server.NewDefaultContext()
 	cc := ctx.Config
-	// config.SetRoot(viper.GetString(cli.HomeFlag))
 	cc.SetRoot(os.ExpandEnv("$HOME/.bandd"))
 
 	genDoc, err := tmtypes.GenesisDocFromFile(cc.GenesisFile())
@@ -63,16 +61,12 @@ func main() {
 func GenAppStateFromConfig(cdc *codec.Codec, config *cfg.Config,
 	txsDir string, genDoc tmtypes.GenesisDoc,
 ) (appState json.RawMessage, err error) {
-
 	// process genesis transactions, else create default genesis.json
-	appGenTxs, persistentPeers, err := CollectStdTxs(
-		cdc, config.Moniker, txsDir, genDoc)
+	appGenTxs, accounts, err := CollectGenTxsAndAccounts(cdc, txsDir, genDoc)
+
 	if err != nil {
 		return appState, err
 	}
-
-	config.P2P.PersistentPeers = persistentPeers
-	cfg.WriteConfigFile(filepath.Join(config.RootDir, "config", "config.toml"), config)
 
 	// if there are no gen txs to be processed, return the default empty state
 	if len(appGenTxs) == 0 {
@@ -101,18 +95,15 @@ func GenAppStateFromConfig(cdc *codec.Codec, config *cfg.Config,
 
 // CollectStdTxs processes and validates application's genesis StdTxs and returns
 // the list of appGenTxs, and persistent peers required to generate genesis.json.
-func CollectStdTxs(cdc *codec.Codec, moniker, genTxsDir string,
+func CollectGenTxsAndAccounts(cdc *codec.Codec, genTxsDir string,
 	genDoc tmtypes.GenesisDoc,
-) (appGenTxs []authtypes.StdTx, persistentPeers string, err error) {
+) (appGenTxs []authtypes.StdTx, accounts genaccounts.GenesisAccounts, err error) {
 
 	var fos []os.FileInfo
 	fos, err = ioutil.ReadDir(genTxsDir)
 	if err != nil {
-		return appGenTxs, persistentPeers, err
+		return appGenTxs, accounts, err
 	}
-
-	// addresses and IPs (and port) validator server info
-	var addressesIPs []string
 
 	for idx, fo := range fos {
 		filename := filepath.Join(genTxsDir, fo.Name())
@@ -123,27 +114,26 @@ func CollectStdTxs(cdc *codec.Codec, moniker, genTxsDir string,
 		// get the genStdTx
 		var jsonRawTx []byte
 		if jsonRawTx, err = ioutil.ReadFile(filename); err != nil {
-			return appGenTxs, persistentPeers, err
+			return appGenTxs, accounts, err
 		}
 		var genStdTx authtypes.StdTx
 		if err = cdc.UnmarshalJSON(jsonRawTx, &genStdTx); err != nil {
-			return appGenTxs, persistentPeers, err
+			return appGenTxs, accounts, err
 		}
-		appGenTxs = append(appGenTxs, genStdTx)
 
 		// the memo flag is used to store
 		// the ip and node-id, for example this may be:
 		// "528fd3df22b31f4969b05652bfe8f0fe921321d5@192.168.2.37:26656"
 		nodeAddrIP := genStdTx.GetMemo()
 		if len(nodeAddrIP) == 0 {
-			return appGenTxs, persistentPeers, fmt.Errorf(
+			return appGenTxs, accounts, fmt.Errorf(
 				"couldn't find node's address and IP in %s", fo.Name())
 		}
 
 		// genesis transactions must be single-message
 		msgs := genStdTx.GetMsgs()
 		if len(msgs) != 1 {
-			return appGenTxs, persistentPeers, errors.New(
+			return appGenTxs, accounts, errors.New(
 				"each genesis transaction must provide a single genesis message")
 		}
 
@@ -151,23 +141,53 @@ func CollectStdTxs(cdc *codec.Codec, moniker, genTxsDir string,
 
 		// delegate from band
 		delegateMsg := stakingtypes.NewMsgDelegate(
-			provider.Sender(), createMsg.ValidatorAddress, sdk.NewCoin("uband", sdk.NewInt(1000000000)),
+			sdk.AccAddress(priv.PubKey().Address()),
+			createMsg.ValidatorAddress,
+			sdk.NewCoin("uband", sdk.NewInt(1000000000)),
 		)
 
-		stdTx, err := provider.SignStdTx(uint64(idx), []sdk.Msg{delegateMsg})
+		delegateStdTx, err := signStdTx(uint64(idx), []sdk.Msg{delegateMsg})
 		if err != nil {
-			return appGenTxs, persistentPeers, err
+			return appGenTxs, accounts, err
 		}
-		appGenTxs = append(appGenTxs, stdTx)
 
-		// exclude itself from persistent peers
-		if createMsg.Description.Moniker != moniker {
-			addressesIPs = append(addressesIPs, nodeAddrIP)
+		genAcc := genaccounts.NewGenesisAccountRaw(
+			createMsg.DelegatorAddress,
+			sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(1))),
+			sdk.Coins{}, 0, 0, "", "",
+		)
+		if err := genAcc.Validate(); err != nil {
+			return appGenTxs, accounts, err
 		}
+
+		appGenTxs = append(appGenTxs, genStdTx)
+		appGenTxs = append(appGenTxs, delegateStdTx)
+		accounts = append(accounts, genAcc)
+	}
+	return appGenTxs, accounts, nil
+}
+
+func signStdTx(
+	seq uint64,
+	msgs []sdk.Msg,
+) (authtypes.StdTx, error) {
+	txBldr := authtypes.NewTxBuilder(
+		utils.GetTxEncoder(cdc), 0, seq,
+		200000, 1, false, "bandchain", "", sdk.Coins{}, sdk.DecCoins{},
+	)
+	// build and sign the transaction
+	signMsg, err := txBldr.BuildSignMsg(msgs)
+	if err != nil {
+		return authtypes.StdTx{}, err
 	}
 
-	sort.Strings(addressesIPs)
-	persistentPeers = strings.Join(addressesIPs, ",")
-
-	return appGenTxs, persistentPeers, nil
+	sigBytes, err := priv.Sign(signMsg.Bytes())
+	if err != nil {
+		return authtypes.StdTx{}, err
+	}
+	sig := authtypes.StdSignature{
+		PubKey:    priv.PubKey(),
+		Signature: sigBytes,
+	}
+	return authtypes.NewStdTx(signMsg.Msgs, signMsg.Fee, []authtypes.StdSignature{sig}, signMsg.Memo), nil
 }
