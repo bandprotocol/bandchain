@@ -12,7 +12,7 @@ type t =
   | Address(Address.t, int)
   | Fraction(int, int, bool)
   | FloatWithSuffix(float, string)
-  | Validators(list(ValidatorHook.Validator.t));
+  | Validators(array(ValidatorSub.Mini.t));
 
 module Styles = {
   open Css;
@@ -170,7 +170,7 @@ let make = (~info, ~header, ~isLeft=true) => {
      | Validators(validators) =>
        <div className=Styles.datasourcesContainer>
          {validators
-          ->Belt.List.map(validator =>
+          ->Belt_Array.map(validator =>
               <>
                 <ValidatorMonikerLink
                   validatorAddress={validator.operatorAddress}
@@ -181,7 +181,6 @@ let make = (~info, ~header, ~isLeft=true) => {
                 <HSpacing size=Spacing.md />
               </>
             )
-          ->Array.of_list
           ->React.array}
        </div>
      }}
