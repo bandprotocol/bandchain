@@ -177,6 +177,11 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			"Oracle script for getting an average crypto price from many sources.",
 			"./owasm/res/crypto_price.wasm",
 		},
+		{
+			"Crypto price script (Borsh version)",
+			"Oracle script for getting an average crypto price from many sources encoding parameter by borsh.",
+			"./owasm/res/crypto_price_borsh.wasm",
+		},
 	}
 	state.OracleScripts = make([]zoracle.OracleScript, len(oracleScripts))
 	for i, oracleScript := range oracleScripts {
