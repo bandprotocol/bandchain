@@ -225,14 +225,14 @@ services:
   faucet:
     image: band-validator:latest
     ports:
-      - "5005:5005"
+      - 5005:5005
     environment:
       - PORT=5005
-      - NODE_URI=http://0.0.0.0:26657
+      - NODE_URI=tcp://172.18.0.15:26657
     networks:
       bandchain:
-        ipv4_address: 172.18.0.77
-    command: sh
+        ipv4_address: 172.18.0.17
+    command: sh -c "go run ./cmd/requestband/main.go"
 
 networks:
   bandchain:
