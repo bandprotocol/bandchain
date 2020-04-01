@@ -78,7 +78,7 @@ module SingleConfig = [%graphql
 
 module BlockCountConfig = [%graphql
   {|
-  subscription DataSourcesCount {
+  subscription BlocksCount {
     blocks_aggregate{
       aggregate{
         count @bsDecoder(fn: "Belt_Option.getExn")
