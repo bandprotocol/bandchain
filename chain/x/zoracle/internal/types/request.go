@@ -4,13 +4,26 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-type ResolveStatus string
+type ResolveStatus int8
 
 const (
-	Open    = ResolveStatus("Pending")
-	Success = ResolveStatus("Success")
-	Failure = ResolveStatus("Failure")
+	Open ResolveStatus = iota
+	Success
+	Failure
 )
+
+func (resolveStatus ResolveStatus) String() string {
+	switch resolveStatus {
+	case Open:
+		return "Pending"
+	case Success:
+		return "Success"
+	case Failure:
+		return "Failure"
+	default:
+		return ""
+	}
+}
 
 // Request is a data structure that stores the detail of a request to an oracle script.
 type Request struct {
