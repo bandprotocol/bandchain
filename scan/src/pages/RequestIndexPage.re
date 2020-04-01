@@ -45,7 +45,7 @@ module Styles = {
 
 [@react.component]
 let make = (~reqID) => {
-  // let x = RequestSub.get(reqID);
+  let x = RequestSub.get(reqID);
   let requestOpt = RequestHook.get(reqID);
   let requestValidators =
     switch (React.useContext(GlobalContext.context), requestOpt) {
@@ -57,7 +57,7 @@ let make = (~reqID) => {
         )
     | _ => []
     };
-
+  Js.Console.log2("{}{}{}{}{}", x);
   <div className=Styles.pageContainer>
     <Row justify=Row.Between>
       <Col>
