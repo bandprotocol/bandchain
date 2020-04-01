@@ -155,7 +155,6 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 	if stdTx, ok := tx.(auth.StdTx); ok {
 		// Add involved accounts
 		involvedAccounts := stdTx.GetSigners()
-
 		if !res.IsOK() {
 			txHash := tmhash.Sum(req.Tx)
 			app.dbBand.AddTransaction(
