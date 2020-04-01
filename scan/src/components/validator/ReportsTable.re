@@ -22,7 +22,7 @@ module Styles = {
 };
 
 [@react.component]
-let make = () =>
+let make = (~address) =>
   // TODO: Mock to use
   {
     let (page, setPage) = React.useState(_ => 1);
@@ -30,50 +30,22 @@ let make = () =>
 
     let reportsSub =
       ReportSub.ValidatorReport.getListByValidator(
-        ~page=1,
-        ~pageSize=10,
-        ~validator="bandvaloper1p40yh3zkmhcv0ecqp3mcazy83sa57rgjde6wec",
+        ~page,
+        ~pageSize=5,
+        ~validator={
+          address |> Address.toOperatorBech32;
+        },
       );
-    let%Sub reportsTest = reportsSub;
-
-    let reports = [
-      (
-        324,
-        "6F45B0D19B46F144CDD7ACA9674E2AD8E8F8C15EF56CA073749B2ACD7DF7739D",
-        234,
-        "Mean Crypto Price",
-        [23, 12, 35],
-        [1, 2, 3],
-        [123213123, 123123132, 123123123],
-      ),
-      (
-        324,
-        "6F45B0D19B46F144CDD7ACA9674E2AD8E8F8C15EF56CA073749B2ACD7DF7739D",
-        234,
-        "Mean Crypto Price",
-        [23, 12, 35],
-        [1, 2, 3],
-        [123213123, 123123132, 123123123],
-      ),
-      (
-        324,
-        "6F45B0D19B46F144CDD7ACA9674E2AD8E8F8C15EF56CA073749B2ACD7DF7739D",
-        234,
-        "Mean Crypto Price",
-        [23, 12, 35],
-        [1, 2, 3],
-        [123213123, 123123132, 123123123],
-      ),
-    ];
+    let%Sub reports = reportsSub;
     <div className=Styles.tableWrapper>
       <Row>
         <HSpacing size={`px(25)} />
-        <Text value={reports |> Belt_List.length |> string_of_int} weight=Text.Bold />
+        <Text value={reports |> Belt_Array.length |> string_of_int} weight=Text.Bold />
         <HSpacing size={`px(5)} />
         <Text value="Reports" />
       </Row>
       <VSpacing size=Spacing.lg />
-      {reportsTest->Belt_Array.length > 0
+      {reports->Belt_Array.length > 0
          ? <>
              <THead>
                <Row>
@@ -147,7 +119,7 @@ let make = () =>
                  <Col> <HSpacing size=Spacing.lg /> </Col>
                </Row>
              </THead>
-             {reportsTest
+             {reports
               ->Belt.Array.map(({txHash, request, reportDetails}) => {
                   <TBody key={txHash |> Hash.toBase64}>
                     <Row>
@@ -180,7 +152,7 @@ let make = () =>
                       </Col>
                       <Col size=1.>
                         {reportDetails
-                         ->Belt_Array.map(({dataSourceID, externalID, data}) => dataSourceID)
+                         ->Belt_Array.map(({dataSourceID}) => dataSourceID)
                          ->Belt_Array.map(dataSourceID => {
                              <>
                                <Row> <TypeID.DataSource id=dataSourceID /> </Row>
@@ -192,7 +164,7 @@ let make = () =>
                       </Col>
                       <Col size=1.5>
                         {reportDetails
-                         ->Belt_Array.map(({dataSourceID, externalID, data}) => externalID)
+                         ->Belt_Array.map(({externalID}) => externalID)
                          ->Belt_Array.map(externalDataID => {
                              <>
                                <div className={Styles.vFlex(`flexEnd)}>
@@ -212,13 +184,13 @@ let make = () =>
                       </Col>
                       <Col size=2.2>
                         {reportDetails
-                         ->Belt_Array.map(({dataSourceID, externalID, data}) => data)
+                         ->Belt_Array.map(({data}) => data)
                          ->Belt_Array.map(value => {
                              <>
                                <div className={Styles.vFlex(`flexEnd)}>
                                  <Row>
                                    <div className=Styles.fillLeft />
-                                   <Text value={value |> JsBuffer.toBase64} block=true code=true />
+                                   <Text value={value |> JsBuffer.toUTF8} block=true code=true />
                                  </Row>
                                </div>
                                <VSpacing size=Spacing.md />
