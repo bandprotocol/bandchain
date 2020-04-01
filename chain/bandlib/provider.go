@@ -1,6 +1,8 @@
 package bandlib
 
 import (
+	"fmt"
+
 	"github.com/bandprotocol/bandchain/chain/app"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -61,4 +63,24 @@ func (provider *BandProvider) QueryTx(hashHexStr string) (sdk.TxResponse, error)
 func (provider *BandProvider) GetSequenceFromChain() (uint64, error) {
 	_, seq, err := authtypes.NewAccountRetriever(provider.cliCtx).GetAccountNumberSequence(provider.addr)
 	return seq, err
+}
+
+func (provider *BandProvider) SignStdTx(seq uint64, msgs []sdk.Msg) (authtypes.StdTx, error) {
+	txBldr := provider.txBldr.WithSequence(seq).WithGas(200000).WithMemo("").WithFees("").WithAccountNumber(1)
+	fmt.Println(txBldr)
+	// build and sign the transaction
+	signMsg, err := txBldr.BuildSignMsg(msgs)
+	if err != nil {
+		return authtypes.StdTx{}, err
+	}
+
+	sigBytes, err := provider.privKey.Sign(signMsg.Bytes())
+	if err != nil {
+		return authtypes.StdTx{}, err
+	}
+	sig := authtypes.StdSignature{
+		PubKey:    provider.privKey.PubKey(),
+		Signature: sigBytes,
+	}
+	return authtypes.NewStdTx(signMsg.Msgs, signMsg.Fee, []authtypes.StdSignature{sig}, signMsg.Memo), nil
 }
