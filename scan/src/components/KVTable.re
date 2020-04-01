@@ -138,7 +138,6 @@ let renderField = (field, maxWidth) => {
         value=name
         weight=Text.Regular
         spacing={Text.Em(0.02)}
-        code=true
         size=Text.Sm
         height={Text.Px(16)}
       />
