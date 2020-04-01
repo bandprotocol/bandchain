@@ -53,10 +53,8 @@ let make = (~reqID) =>
     let%Sub blockCount = blockCountSub;
 
     let numReport = request.reports |> Belt_Array.size;
-
     let remainingBlock =
       blockCount >= request.expirationHeight ? 0 : request.expirationHeight - blockCount;
-
     let calldataKVs =
       Borsh.decode(request.oracleScript.oracleScriptCode.schema, "Input", request.calldata)
       ->Belt_Option.getWithDefault([||]);
