@@ -135,6 +135,13 @@ func (msg MsgReportData) ValidateBasic() sdk.Error {
 	if msg.DataSet == nil || len(msg.DataSet) == 0 {
 		return ErrInvalidBasicMsg("MsgReportData: Data set must not be empty.")
 	}
+	uniqueMap := make(map[ExternalID]bool)
+	for _, rawReport := range msg.DataSet {
+		if _, found := uniqueMap[rawReport.ExternalDataID]; found {
+			return ErrInvalidBasicMsg("MsgReportData: External IDs in dataset must be unique.")
+		}
+		uniqueMap[rawReport.ExternalDataID] = true
+	}
 	if msg.Validator.Empty() {
 		return ErrInvalidBasicMsg("MsgReportData: Validator address must not be empty.")
 	}

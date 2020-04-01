@@ -67,13 +67,9 @@ func (k Keeper) AddReport(
 		)
 	}
 
-	lastExternalID := types.ExternalID(0)
-	for idx, rawReport := range dataSet {
-		if idx != 0 && lastExternalID >= rawReport.ExternalDataID {
-			return types.ErrBadDataValue(
-				"AddReport: Raw data reports are not in an increasing order.",
-			)
-		}
+	for _, rawReport := range dataSet {
+		// Here we can safely assume that external IDs are unique, as this has already been
+		// checked by ValidateBasic performed in baseapp's runTx function.
 		if !k.CheckRawDataRequestExists(ctx, requestID, rawReport.ExternalDataID) {
 			return types.ErrBadDataValue(
 				"AddReport: RequestID %d: Unknown external data ID %d",
@@ -93,7 +89,6 @@ func (k Keeper) AddReport(
 				Data:     rawReport.Data,
 			},
 		)
-		lastExternalID = rawReport.ExternalDataID
 	}
 
 	request.ReceivedValidators = append(request.ReceivedValidators, validator)
