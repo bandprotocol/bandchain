@@ -49,7 +49,7 @@ func main() {
 
 	rootCmd := &cobra.Command{
 		Use:               "bandd",
-		Short:             "Band D3N App Daemon (server)",
+		Short:             "BandChain App Daemon (server)",
 		PersistentPreRunE: server.PersistentPreRunEFn(ctx),
 	}
 	// CLI commands to initialize the chain
@@ -70,8 +70,8 @@ func main() {
 
 	// prepare and add flags
 	executor := cli.PrepareBaseCmd(rootCmd, "BAND", app.DefaultNodeHome)
-	rootCmd.PersistentFlags().String(flagWithDB, "", "Flush event to database")
-	rootCmd.PersistentFlags().Int64(flagUptimeLookBackDuration, 1000, "Set uptime lookback duration")
+	rootCmd.PersistentFlags().String(flagWithDB, "", "[Experimental] Flush blockchain state to SQL database")
+	rootCmd.PersistentFlags().Int64(flagUptimeLookBackDuration, 1000, "[Experimental] Historical node uptime lookback duration")
 	rootCmd.PersistentFlags().UintVar(&invCheckPeriod, flagInvCheckPeriod,
 		0, "Assert registered invariants every N blocks")
 	err := executor.Execute()

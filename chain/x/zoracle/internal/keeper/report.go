@@ -76,10 +76,10 @@ func (k Keeper) AddReport(
 				requestID, rawReport.ExternalDataID,
 			)
 		}
-		if int64(len(rawReport.Data)) > k.MaxRawDataReportSize(ctx) {
+		if uint64(len(rawReport.Data)) > k.GetParam(ctx, types.KeyMaxRawDataReportSize) {
 			return types.ErrBadDataValue(
 				"AddReport: RequestID %d: Raw report data size (%d) exceeds the limit (%d).",
-				requestID, len(rawReport.Data), k.MaxRawDataReportSize(ctx),
+				requestID, len(rawReport.Data), k.GetParam(ctx, types.KeyMaxRawDataReportSize),
 			)
 		}
 		k.SetRawDataReport(

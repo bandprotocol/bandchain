@@ -60,9 +60,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
                />
                <HSpacing size=Spacing.sm />
              </div>
-             <div className={Styles.withWidth(width / 3)}>
-               <AddressRender address=toAddress />
-             </div>
+             <div className={Styles.withWidth(100)}> <AddressRender address=toAddress /> </div>
            </>
          : React.null}
     </div>
@@ -163,18 +161,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
       </div>
       {success
          ? <>
-             <div className={Styles.rowWithWidth(210)}>
-               <TypeID.OracleScript id />
-               <HSpacing size=Spacing.sm />
-               <Text
-                 value=name
-                 color=Colors.gray7
-                 weight=Text.Medium
-                 nowrap=true
-                 block=true
-                 ellipsis=true
-               />
-             </div>
+             <TypeID.OracleScript id />
+             <HSpacing size=Spacing.sm />
+             <Text
+               value=name
+               color=Colors.gray7
+               weight=Text.Medium
+               nowrap=true
+               block=true
+               ellipsis=true
+             />
            </>
          : React.null}
     </div>
@@ -216,9 +212,9 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
            </>
          : React.null}
     </div>
-  | Report({requestID, reporter}) =>
+  | Report({requestID, validator}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(140)}> <AddressRender address=reporter /> </div>
+      <div className={Styles.withWidth(130)}> <AddressRender address=validator /> </div>
       <div className={Styles.withBg(Colors.orange1, 50)}>
         <Text
           value="REPORT"

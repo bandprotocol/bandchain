@@ -35,135 +35,135 @@ module Styles = {
 };
 
 [@react.component]
-let make = () => {
-  let txsOpt = TxHook.latest(~limit=10, ());
-  let txs = txsOpt->Belt.Option.mapWithDefault([], ({txs}) => txs);
+let make = () =>
+  {
+    let txsSub = TxSub.getList(~page=1, ~pageSize=10, ());
+    let totalCountSub = TxSub.count();
+    let%Sub txsArray = txsSub;
+    let%Sub totalCount = totalCountSub;
 
-  <>
-    <div className=Styles.topicBar>
-      <Text
-        value="Latest Transactions"
-        size=Text.Xxl
-        weight=Text.Bold
-        block=true
-        color=Colors.gray8
-      />
-      {switch (txsOpt) {
-       | Some(txs) =>
-         <div className=Styles.seeAll onClick={_ => Route.redirect(Route.TxHomePage)}>
-           <div className=Styles.cFlex>
-             <span className=Styles.amount>
-               {txs.totalCount |> Format.iPretty |> React.string}
-             </span>
-             <VSpacing size=Spacing.xs />
-             <Text
-               value="ALL TRANSACTIONS"
-               size=Text.Sm
-               color=Colors.bandBlue
-               spacing={Text.Em(0.05)}
-               weight=Text.Medium
-             />
-           </div>
-           <img src=Images.rightArrow className=Styles.rightArrow />
-         </div>
-       | None => React.null
-       }}
-    </div>
-    <VSpacing size=Spacing.lg />
-    <THead>
-      <Row>
-        <HSpacing size={`px(12)} />
-        <Col size=0.92>
-          <div className=Styles.fullWidth>
+    let txs = txsArray |> Belt_List.fromArray;
+    <>
+      <div className=Styles.topicBar>
+        <Text
+          value="Latest Transactions"
+          size=Text.Xxl
+          weight=Text.Bold
+          block=true
+          color=Colors.gray8
+        />
+        <div className=Styles.seeAll onClick={_ => Route.redirect(Route.TxHomePage)}>
+          <div className=Styles.cFlex>
+            <span className=Styles.amount> {totalCount |> Format.iPretty |> React.string} </span>
+            <VSpacing size=Spacing.xs />
             <Text
-              value="TX HASH"
+              value="ALL TRANSACTIONS"
               size=Text.Sm
-              weight=Text.Semibold
-              color=Colors.gray6
+              color=Colors.bandBlue
               spacing={Text.Em(0.05)}
+              weight=Text.Medium
             />
           </div>
-        </Col>
-        <Col>
-          <div className={Css.merge([Styles.fullWidth, Styles.blockContainer])}>
-            <Text
-              value="BLOCK"
-              size=Text.Sm
-              weight=Text.Semibold
-              color=Colors.gray6
-              spacing={Text.Em(0.05)}
-            />
-          </div>
-        </Col>
-        <Col size=0.5>
-          <div className=Styles.statusContainer>
-            <Text
-              value="STATUS"
-              size=Text.Sm
-              weight=Text.Semibold
-              color=Colors.gray6
-              spacing={Text.Em(0.05)}
-            />
-          </div>
-        </Col>
-        <Col size=3.>
-          <div className=Styles.fullWidth>
-            <Text
-              value="ACTIONS"
-              size=Text.Sm
-              weight=Text.Semibold
-              color=Colors.gray6
-              spacing={Text.Em(0.05)}
-            />
-          </div>
-        </Col>
-        <HSpacing size={`px(20)} />
-      </Row>
-    </THead>
-    {txs
-     ->Belt.List.map(({blockHeight, hash, messages, success}) => {
-         let numMsgs = messages->Belt_List.size;
-         <TBody key={hash |> Hash.toHex}>
-           <Row minHeight={`px(30)}>
-             <HSpacing size={`px(12)} />
-             <Col size=0.92>
-               <div className={Styles.heightByMsgsNum(numMsgs, 0)}>
-                 <TxLink txHash=hash width=110 />
-               </div>
-             </Col>
-             <Col>
-               <div
-                 className={Css.merge([
-                   Styles.heightByMsgsNum(numMsgs, -4),
-                   Styles.blockContainer,
-                 ])}>
-                 <TypeID.Block id={ID.Block.ID(blockHeight)} />
-               </div>
-             </Col>
-             <Col size=0.5>
-               <div className={Styles.heightByMsgsNum(numMsgs, -8)}>
-                 <div className=Styles.statusContainer>
-                   <img src={success ? Images.success : Images.fail} className=Styles.logo />
+          <img src=Images.rightArrow className=Styles.rightArrow />
+        </div>
+      </div>
+      <VSpacing size=Spacing.lg />
+      <THead>
+        <Row>
+          <HSpacing size={`px(12)} />
+          <Col size=0.92>
+            <div className=Styles.fullWidth>
+              <Text
+                value="TX HASH"
+                size=Text.Sm
+                weight=Text.Semibold
+                color=Colors.gray6
+                spacing={Text.Em(0.05)}
+              />
+            </div>
+          </Col>
+          <Col>
+            <div className={Css.merge([Styles.fullWidth, Styles.blockContainer])}>
+              <Text
+                value="BLOCK"
+                size=Text.Sm
+                weight=Text.Semibold
+                color=Colors.gray6
+                spacing={Text.Em(0.05)}
+              />
+            </div>
+          </Col>
+          <Col size=0.5>
+            <div className=Styles.statusContainer>
+              <Text
+                value="STATUS"
+                size=Text.Sm
+                weight=Text.Semibold
+                color=Colors.gray6
+                spacing={Text.Em(0.05)}
+              />
+            </div>
+          </Col>
+          <Col size=3.>
+            <div className=Styles.fullWidth>
+              <Text
+                value="ACTIONS"
+                size=Text.Sm
+                weight=Text.Semibold
+                color=Colors.gray6
+                spacing={Text.Em(0.05)}
+              />
+            </div>
+          </Col>
+          <HSpacing size={`px(20)} />
+        </Row>
+      </THead>
+      {txs
+       ->Belt.List.map(({blockHeight, txHash, messages, success}) => {
+           let numMsgs = messages->Belt_List.size;
+           <TBody key={txHash |> Hash.toHex}>
+             <Row minHeight={`px(30)}>
+               <HSpacing size={`px(12)} />
+               <Col size=0.92>
+                 <div className={Styles.heightByMsgsNum(numMsgs, 0)}>
+                   <TxLink txHash width=110 />
                  </div>
-               </div>
-             </Col>
-             <Col size=3.>
-               {messages
-                ->Belt_List.toArray
-                ->Belt_Array.map(msg =>
-                    <>
-                      <VSpacing size=Spacing.sm />
-                      <Msg msg success width=385 />
-                      <VSpacing size=Spacing.sm />
-                    </>
-                  )
-                ->React.array}
-             </Col>
-             <HSpacing size={`px(20)} />
-           </Row>
-         </TBody>;
-       })
-     ->Array.of_list
-     ->React.array}
-  </>;
-};
+               </Col>
+               <Col>
+                 <div
+                   className={Css.merge([
+                     Styles.heightByMsgsNum(numMsgs, -4),
+                     Styles.blockContainer,
+                   ])}>
+                   <TypeID.Block id=blockHeight />
+                 </div>
+               </Col>
+               <Col size=0.5>
+                 <div className={Styles.heightByMsgsNum(numMsgs, -8)}>
+                   <div className=Styles.statusContainer>
+                     <img src={success ? Images.success : Images.fail} className=Styles.logo />
+                   </div>
+                 </div>
+               </Col>
+               <Col size=3.>
+                 {messages
+                  ->Belt_List.toArray
+                  ->Belt_Array.mapWithIndex((i, msg) =>
+                      <React.Fragment key={(txHash |> Hash.toHex) ++ (i |> string_of_int)}>
+                        <VSpacing size=Spacing.sm />
+                        <Msg msg success width=350 />
+                        <VSpacing size=Spacing.sm />
+                      </React.Fragment>
+                    )
+                  ->React.array}
+               </Col>
+               <HSpacing size={`px(20)} />
+             </Row>
+           </TBody>;
+         })
+       ->Array.of_list
+       ->React.array}
+    </>
+    |> Sub.resolve;
+  }
+  |> Sub.default(_, React.null);

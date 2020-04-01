@@ -167,7 +167,12 @@ let make = (~info, ~header, ~isLeft=true) => {
          {validators
           ->Belt.List.map(validator =>
               <>
-                <ValidatorMonikerLink validator size=Text.Lg underline=true />
+                <ValidatorMonikerLink
+                  validatorAddress={validator.operatorAddress}
+                  moniker={validator.moniker}
+                  size=Text.Lg
+                  underline=true
+                />
                 <HSpacing size=Spacing.md />
               </>
             )

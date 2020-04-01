@@ -39,7 +39,7 @@ let make = (~reports: list(RequestHook.Report.t)) => {
       </Row>
     </THead>
     {reports
-     ->Belt.List.map(({reporter, txHash, reportedAtHeight, reportedAtTime, values}) => {
+     ->Belt.List.map(({reporter, txHash, reportedAtHeight, reportedAtTime}) => {
          let moniker =
            validators
            ->Belt_List.keepMap(validator =>

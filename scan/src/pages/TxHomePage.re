@@ -24,39 +24,42 @@ module Styles = {
 [@react.component]
 let make = () => {
   let (page, setPage) = React.useState(_ => 1);
-  let limit = 10;
+  let pageSize = 10;
 
-  let txsOpt = TxHook.latest(~limit, ~page, ());
-  let txs = txsOpt->Belt.Option.mapWithDefault([], ({txs}) => txs);
+  {
+    let txsSub = TxSub.getList(~pageSize, ~page, ());
+    let numTotalTxsSub = TxSub.count();
 
-  let totalTxsOpt = txsOpt->Belt.Option.map(info => info.totalCount);
-  // TODO: add loading state later.
-  let pageCount = txsOpt->Belt.Option.mapWithDefault(1, info => info.pageCount);
+    let%Sub txs = txsSub;
+    let%Sub numTotalTxs = numTotalTxsSub;
 
-  <div className=Styles.pageContainer>
-    <Row>
-      <Col> <img src=Images.txLogo className=Styles.logo /> </Col>
-      <Col>
-        <div className=Styles.vFlex>
-          <Text
-            value="ALL TRANSACTIONS"
-            weight=Text.Semibold
-            color=Colors.gray7
-            nowrap=true
-            spacing={Text.Em(0.06)}
-          />
-          <div className=Styles.seperatedLine />
-          {switch (totalTxsOpt) {
-           | Some(totalTxs) => <Text value={(totalTxs |> Format.iPretty) ++ " in total"} />
-           | None => React.null
-           }}
-        </div>
-      </Col>
-    </Row>
-    <VSpacing size=Spacing.xl />
-    <TxsTable txs />
-    <VSpacing size=Spacing.lg />
-    <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
-    <VSpacing size=Spacing.lg />
-  </div>;
+    // TODO: add loading state later.
+    let pageCount = Page.getPageCount(numTotalTxs, pageSize);
+
+    <div className=Styles.pageContainer>
+      <Row>
+        <Col> <img src=Images.txLogo className=Styles.logo /> </Col>
+        <Col>
+          <div className=Styles.vFlex>
+            <Text
+              value="ALL TRANSACTIONS"
+              weight=Text.Semibold
+              color=Colors.gray7
+              nowrap=true
+              spacing={Text.Em(0.06)}
+            />
+            <div className=Styles.seperatedLine />
+            <Text value={(numTotalTxs |> Format.iPretty) ++ " in total"} />
+          </div>
+        </Col>
+      </Row>
+      <VSpacing size=Spacing.xl />
+      <TxsTable txs />
+      <VSpacing size=Spacing.lg />
+      <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
+      <VSpacing size=Spacing.lg />
+    </div>
+    |> Sub.resolve;
+  }
+  |> Sub.default(_, React.null);
 };
