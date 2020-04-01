@@ -105,10 +105,11 @@ func (b *BandDB) handleMsgEditOracleScript(
 	h.Write(msg.Code)
 	codeHash := h.Sum(nil)
 
-	var oracleScriptCode OracleScriptCode
-	b.tx.First(&oracleScriptCode, codeHash)
-
-	err := b.tx.Save(&oracleScriptCode).Error
+	err := b.tx.Where(&OracleScriptCode{CodeHash: codeHash}).
+		Assign(OracleScriptCode{
+			CodeText: sql.NullString{},
+			Schema:   sql.NullString{},
+		}).Error
 	if err != nil {
 		return err
 	}
@@ -119,15 +120,6 @@ func (b *BandDB) handleMsgEditOracleScript(
 	)
 
 	err = b.tx.Save(&oracleScript).Error
-	if err != nil {
-		return err
-	}
-
-	err = b.tx.Save(&OracleScriptCode{
-		CodeHash: msg.Code,
-		CodeText: sql.NullString{},
-		Schema:   sql.NullString{},
-	}).Error
 	if err != nil {
 		return err
 	}
