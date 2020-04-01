@@ -291,7 +291,7 @@ let make = () =>
                        <ProgressBar
                          reportedValidators={reports |> Belt_List.length}
                          minimumValidators=sufficientValidatorCount
-                         totalValidators={requestedValidators |> Belt_List.length}
+                         requestValidators={requestedValidators |> Belt_List.length}
                        />
                      </div>
                    </Col>
