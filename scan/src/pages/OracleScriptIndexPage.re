@@ -69,13 +69,11 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) =>
           <InfoHL header="OWNER" info={InfoHL.Address(oracleScript.owner, 430)} />
         </Col>
         <Col size=0.95>
-          // Wire up later
-
-            <InfoHL
-              info={InfoHL.DataSources([ID.DataSource.ID(1)])}
-              header="RELATED DATA SOURCES"
-            />
-          </Col>
+          <InfoHL
+            info={InfoHL.DataSources(oracleScript.relatedDataSources)}
+            header="RELATED DATA SOURCES"
+          />
+        </Col>
       </Row>
       <VSpacing size=Spacing.xl />
       <Tab
