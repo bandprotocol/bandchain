@@ -187,7 +187,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
         {switch (hashtag) {
          | ProposedBlocks => <ProposedBlocksTable />
          | Delegators => <DelegatorsTable />
-         | Reports => <ReportsTable />
+         | Reports => <ReportsTable address />
          }}
       </Tab>
     </div>
