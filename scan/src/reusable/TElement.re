@@ -3,6 +3,8 @@ module Styles = {
 
   let typeContainer = w => style([marginRight(`px(20)), width(w)]);
 
+  let resolveIcon = style([width(`px(20)), height(`px(20)), marginLeft(Spacing.sm)]);
+
   let msgIcon =
     style([
       width(`px(30)),
@@ -20,6 +22,8 @@ module Styles = {
   let proposerBox = style([maxWidth(`px(270)), display(`flex), flexDirection(`column)]);
   let idContainer = style([display(`flex)]);
   let dataSourcesContainer = style([display(`flex)]);
+  let resolveStatusContainer =
+    style([display(`flex), alignItems(`center), justifyContent(`flexEnd)]);
 };
 
 let renderText = (text, weight) =>
@@ -153,6 +157,40 @@ let renderRelatedDataSources = ids => {
   };
 };
 
+let renderRequest = id => {
+  <div className=Styles.idContainer> <TypeID.Request id position=TypeID.Text /> </div>;
+};
+
+let renderRequestStatus = status => {
+  <div className=Styles.resolveStatusContainer>
+    <Text
+      block=true
+      size=Text.Md
+      weight=Text.Medium
+      align=Text.Right
+      value={
+        switch (status) {
+        | RequestHook.Request.Success => "Success"
+        | Failure => "Fail"
+        | Open => "Pending"
+        | Unknown => "???"
+        }
+      }
+    />
+    <img
+      src={
+        switch (status) {
+        | RequestHook.Request.Success => Images.success
+        | Failure => Images.fail
+        | Open => Images.pending
+        | Unknown => Images.unknown
+        }
+      }
+      className=Styles.resolveIcon
+    />
+  </div>;
+};
+
 let msgIcon =
   fun
   | TxHook.Msg.CreateDataSource(_) => Images.newScript
@@ -186,7 +224,9 @@ type t =
   | Proposer(string, string)
   | DataSource(ID.DataSource.t, string)
   | OracleScript(ID.OracleScript.t, string)
-  | RelatedDataSources(list(ID.DataSource.t));
+  | RelatedDataSources(list(ID.DataSource.t))
+  | Request(ID.Request.t)
+  | RequestStatus(RequestHook.Request.resolve_status_t);
 
 [@react.component]
 let make = (~elementType) => {
@@ -209,5 +249,7 @@ let make = (~elementType) => {
   | DataSource(id, name) => renderDataSource(id, name)
   | OracleScript(id, name) => renderOracleScript(id, name)
   | RelatedDataSources(ids) => renderRelatedDataSources(ids)
+  | Request(id) => renderRequest(id)
+  | RequestStatus(status) => renderRequestStatus(status)
   };
 };

@@ -195,9 +195,7 @@ let renderReport = (msg, report: TxHook.Msg.Report.t) => {
       <VSpacing size=Spacing.sm />
       <div className=Styles.topicContainer>
         <Text value="REQUEST ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-        <div className=Styles.hFlex>
-          <TypeID.Request id={ID.Request.ID(report.requestID)} />
-        </div>
+        <div className=Styles.hFlex> <TypeID.Request id={report.requestID} /> </div>
       </div>
       <VSpacing size=Spacing.lg />
       <VSpacing size=Spacing.sm />

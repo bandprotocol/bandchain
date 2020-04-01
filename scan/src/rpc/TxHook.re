@@ -201,7 +201,7 @@ module Msg = {
 
   module Report = {
     type t = {
-      requestID: int,
+      requestID: ID.Request.t,
       dataSet: list(RequestHook.RawDataReport.t),
       validator: Address.t,
       reporter: Address.t,
@@ -209,7 +209,7 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
-        requestID: json |> field("requestID", intstr),
+        requestID: json |> field("requestID", ID.Request.fromJson),
         dataSet: json |> field("dataSet", list(RequestHook.RawDataReport.decode)),
         validator: json |> field("validator", string) |> Address.fromBech32,
         reporter: json |> field("reporter", string) |> Address.fromBech32,
