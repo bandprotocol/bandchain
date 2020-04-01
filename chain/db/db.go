@@ -274,29 +274,16 @@ func (b *BandDB) HandleTransaction(tx auth.StdTx, txHash []byte, logs sdk.ABCIMe
 	b.UpdateTransaction(txHash, messages)
 }
 
-func (b *BandDB) HandleTransactionFail(tx auth.StdTx, txHash []byte, logs sdk.ABCIMessageLogs) {
-
-	msgs := tx.GetMsgs()
-
-	if len(msgs) != len(logs) {
-		panic("Inconsistent size of msgs and logs.")
-	}
-
+func (b *BandDB) HandleTransactionFail(tx auth.StdTx, txHash []byte) {
+	txMsgs := tx.GetMsgs()
 	messages := make([]map[string]interface{}, 0)
-
-	for idx, _ := range msgs {
-		events := logs[idx].Events
-		kvMap := make(map[string]interface{})
-		for _, event := range events {
-			for _, kv := range event.Attributes {
-				kvMap[event.Type+"."+kv.Key] = kv.Value
-			}
-		}
-		messages = append(messages, kvMap)
+	for _, txMsg := range txMsgs {
+		message := make(map[string]interface{})
+		message["sender"] = txMsg.GetSigners()[0].String()
+		message["type"] = txMsg.Type()
+		messages = append(messages, message)
 	}
-
 	b.UpdateTransaction(txHash, messages)
-
 }
 
 func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]string) (map[string]interface{}, error) {
