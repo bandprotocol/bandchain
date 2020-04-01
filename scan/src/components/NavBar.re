@@ -46,6 +46,7 @@ let make = () => {
              ("Transactions", TxHomePage),
              ("Data Sources", DataSourceHomePage),
              ("Oracle Scripts", OracleScriptHomePage),
+             ("Requests", RequestHomePage),
            ]
            ->Belt.List.map(((v, route)) =>
                <Col key=v>

@@ -90,10 +90,10 @@ let make = (~requests: list(RequestHook.Request.t)) => {
                 <TBody key={txHash |> Hash.toHex(~upper=true)}>
                   <Row>
                     <Col> <HSpacing size=Spacing.lg /> </Col>
-                    <Col size=1.> <TypeID.Request id={ID.Request.ID(id)} /> </Col>
+                    <Col size=1.> <TypeID.Request id /> </Col>
                     <Col size=2.8>
                       <Row>
-                        <TypeID.OracleScript id={ID.OracleScript.ID(oracleScriptID)} />
+                        <TypeID.OracleScript id=oracleScriptID />
                         <HSpacing size={`px(5)} />
                         <Text
                           block=true

@@ -91,18 +91,13 @@ let make = (~reqID) => {
        <>
          <VSpacing size=Spacing.xl />
          <div className=Styles.vFlex>
-           <TypeID.Request id={ID.Request.ID(request.id)} position=TypeID.Title />
+           <TypeID.Request id={request.id} position=TypeID.Title />
          </div>
          <VSpacing size=Spacing.xl />
          <Row>
            <Col size=2.8>
              <InfoHL
-               info={
-                 InfoHL.OracleScript(
-                   ID.OracleScript.ID(request.oracleScriptID),
-                   request.oracleScriptName,
-                 )
-               }
+               info={InfoHL.OracleScript(request.oracleScriptID, request.oracleScriptName)}
                header="ORACLE SCRIPT"
              />
            </Col>
