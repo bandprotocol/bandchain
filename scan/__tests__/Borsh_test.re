@@ -2,6 +2,28 @@ open Jest;
 open Borsh;
 open Expect;
 
+describe("Expect Borsh to extract fields correctly", () => {
+  test("should be able to extract fields from bytes correctly", () => {
+    expect(Some([|("symbol", "string"), ("multiplier", "u64"), ("what", "u8")|]))
+    |> toEqual(
+         extractFields(
+           {j|{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"], [\\"what\\", \\"u8\\"] ] }"}|j},
+           "Input",
+         ),
+       )
+  });
+
+  test("should return None on invalid schema", () => {
+    expect(None)
+    |> toEqual(
+         extractFields(
+           {j|{"Input2": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"], [\\"what\\", \\"u8\\"] ] }"}|j},
+           "Input",
+         ),
+       )
+  });
+});
+
 describe("Expect Borsh to encode correctly", () => {
   test("should be able to encode from bytes correctly", () => {
     expect(Some("0x03000000425443320000000000000064" |> JsBuffer.fromHex))
