@@ -109,7 +109,8 @@ func (b *BandDB) handleMsgEditOracleScript(
 		Assign(OracleScriptCode{
 			CodeText: sql.NullString{},
 			Schema:   sql.NullString{},
-		}).Error
+		}).FirstOrCreate(&OracleScriptCode{}).Error
+
 	if err != nil {
 		return err
 	}
