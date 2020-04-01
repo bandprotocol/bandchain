@@ -43,133 +43,11 @@ let make = () =>
     let (page, setPage) = React.useState(_ => 1);
     let pageSize = 10;
 
-    let requestCount = 100;
-    let requests = [
-      {
-        RequestHook.Request.id: ID.Request.ID(4),
-        oracleScriptID: ID.OracleScript.ID(3),
-        oracleScriptName: "Oracle script 3",
-        calldata: "AAAAAAAAV0M=" |> JsBuffer.fromBase64,
-        requestedValidators: [
-          "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,
-        ],
-        sufficientValidatorCount: 1,
-        expirationHeight: 3000,
-        resolveStatus: Unknown,
-        requester: "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
-        txHash: "AC006D7136B0041DA4568A4CA5B7C1F8E8E0B4A74F11213B99EC4956CC8A247C" |> Hash.fromHex,
-        requestedAtHeight: 40000,
-        requestedAtTime: MomentRe.momentNow(),
-        rawDataRequests: [],
-        reports: [],
-        result: Some("AAAAAAAAV0M=" |> JsBuffer.fromBase64),
-      },
-      {
-        id: ID.Request.ID(3),
-        oracleScriptID: ID.OracleScript.ID(2),
-        oracleScriptName: "Oracle script 2",
-        calldata: "AAAAAAAAV0M=" |> JsBuffer.fromBase64,
-        requestedValidators: [
-          "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,
-          "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
-          "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
-          "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
-        ],
-        sufficientValidatorCount: 3,
-        expirationHeight: 3000,
-        resolveStatus: Success,
-        requester: "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
-        txHash: "AC006D7136B0041DA4568A4CA5B7C1F8E8E0B4A74F11213B99EC4956CC8A247C" |> Hash.fromHex,
-        requestedAtHeight: 40000,
-        requestedAtTime: MomentRe.momentNow(),
-        rawDataRequests: [],
-        reports: [
-          {
-            reporter: "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,
-            txHash:
-              "AC006D7136B0041DA4568A4CA5B7C1F8E8E0B4A74F11213B99EC4956CC8A247C" |> Hash.fromHex,
-            reportedAtHeight: 40000,
-            reportedAtTime: MomentRe.momentNow(),
-            values: [],
-          },
-          {
-            reporter: "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,
-            txHash:
-              "AC006D7136B0041DA4568A4CA5B7C1F8E8E0B4A74F11213B99EC4956CC8A247C" |> Hash.fromHex,
-            reportedAtHeight: 40000,
-            reportedAtTime: MomentRe.momentNow(),
-            values: [],
-          },
-          {
-            reporter: "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,
-            txHash:
-              "AC006D7136B0041DA4568A4CA5B7C1F8E8E0B4A74F11213B99EC4956CC8A247C" |> Hash.fromHex,
-            reportedAtHeight: 40000,
-            reportedAtTime: MomentRe.momentNow(),
-            values: [],
-          },
-          {
-            reporter: "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,
-            txHash:
-              "AC006D7136B0041DA4568A4CA5B7C1F8E8E0B4A74F11213B99EC4956CC8A247C" |> Hash.fromHex,
-            reportedAtHeight: 40000,
-            reportedAtTime: MomentRe.momentNow(),
-            values: [],
-          },
-        ],
-        result: Some("AAAAAAAAV0M=" |> JsBuffer.fromBase64),
-      },
-      {
-        id: ID.Request.ID(2),
-        oracleScriptID: ID.OracleScript.ID(1),
-        oracleScriptName: "name",
-        calldata: "AAAAAAAAV0M=" |> JsBuffer.fromBase64,
-        requestedValidators: [
-          "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,
-          "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
-        ],
-        sufficientValidatorCount: 2,
-        expirationHeight: 3000,
-        resolveStatus: Failure,
-        requester: "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
-        txHash: "AC006D7136B0041DA4568A4CA5B7C1F8E8E0B4A74F11213B99EC4956CC8A247C" |> Hash.fromHex,
-        requestedAtHeight: 40000,
-        requestedAtTime: MomentRe.momentNow(),
-        rawDataRequests: [],
-        reports: [],
-        result: Some("AAAAAAAAV0M=" |> JsBuffer.fromBase64),
-      },
-      {
-        id: ID.Request.ID(1),
-        oracleScriptID: ID.OracleScript.ID(2),
-        oracleScriptName: "Oracle script 2",
-        calldata: "AAAAAAAAV0M=" |> JsBuffer.fromBase64,
-        requestedValidators: [
-          "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,
-          "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
-          "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
-        ],
-        sufficientValidatorCount: 2,
-        expirationHeight: 3000,
-        resolveStatus: Open,
-        requester: "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
-        txHash: "AC006D7136B0041DA4568A4CA5B7C1F8E8E0B4A74F11213B99EC4956CC8A247C" |> Hash.fromHex,
-        requestedAtHeight: 40000,
-        requestedAtTime: MomentRe.momentNow(),
-        rawDataRequests: [],
-        reports: [
-          {
-            reporter: "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,
-            txHash:
-              "AC006D7136B0041DA4568A4CA5B7C1F8E8E0B4A74F11213B99EC4956CC8A247C" |> Hash.fromHex,
-            reportedAtHeight: 40000,
-            reportedAtTime: MomentRe.momentNow(),
-            values: [],
-          },
-        ],
-        result: Some("AAAAAAAAV0M=" |> JsBuffer.fromBase64),
-      },
-    ];
+    let requestCountSub = RequestSub.count();
+    let requestsSub = RequestSub.getList(~pageSize, ~page, ());
+
+    let%Sub requestCount = requestCountSub;
+    let%Sub requests = requestsSub;
 
     let pageCount = Page.getPageCount(requestCount, pageSize);
 
@@ -260,13 +138,12 @@ let make = () =>
           </Row>
         </THead>
         {requests
-         ->Belt_List.map(
+         ->Belt_Array.map(
              (
                {
                  id,
-                 requestedAtTime,
-                 oracleScriptID,
-                 oracleScriptName,
+                 transaction,
+                 oracleScript,
                  requestedValidators,
                  sufficientValidatorCount,
                  reports,
@@ -279,19 +156,21 @@ let make = () =>
                    <Col> <HSpacing size=Spacing.lg /> </Col>
                    <Col size=0.5> <TElement elementType={TElement.Request(id)} /> </Col>
                    <Col size=0.78>
-                     <TElement elementType={requestedAtTime->TElement.Timestamp} />
+                     <TElement elementType={transaction.timestamp->TElement.Timestamp} />
                    </Col>
                    <Col size=1.15>
                      <TElement
-                       elementType={TElement.OracleScript(oracleScriptID, oracleScriptName)}
+                       elementType={
+                         TElement.OracleScript(oracleScript.oracleScriptID, oracleScript.name)
+                       }
                      />
                    </Col>
                    <Col size=1.9>
                      <div className=Styles.progressBarContainer>
                        <ProgressBar
-                         reportedValidators={reports |> Belt_List.length}
+                         reportedValidators={reports |> Belt_Array.size}
                          minimumValidators=sufficientValidatorCount
-                         requestValidators={requestedValidators |> Belt_List.length}
+                         requestValidators={requestedValidators |> Belt_Array.size}
                        />
                      </div>
                    </Col>
@@ -303,7 +182,6 @@ let make = () =>
                </div>
              </TBody>
            })
-         ->Belt_List.toArray
          ->React.array}
       </>
       <VSpacing size=Spacing.lg />
