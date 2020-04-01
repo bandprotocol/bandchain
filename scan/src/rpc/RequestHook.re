@@ -161,7 +161,7 @@ let get: 'a => option(Request.t) =
     let random = Js.Math.random_int(0, 4);
     Some({
       id,
-      oracleScriptID: 999,
+      oracleScriptID: ID.OracleScript.ID(999),
       oracleScriptName: "Mock Crypto price script",
       calldata: "626974636f696e" |> JsBuffer.fromHex,
       requestedValidators: [
