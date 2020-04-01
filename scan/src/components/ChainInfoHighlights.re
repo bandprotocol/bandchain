@@ -72,14 +72,18 @@ module HighlightCard = {
 let make = () =>
   {
     let latestBlockSub = BlockSub.getLatest();
+    let validatorCountSub = ValidatorSub.Validator.count();
     let infoOpt = React.useContext(GlobalContext.context);
+    let validatorsSub = ValidatorSub.Validator.getList();
 
     let%Sub latestBlock = latestBlockSub;
+    let%Sub validatorCount = validatorCountSub;
+    let%Sub validators = validatorsSub;
 
     let lastProcessedHeight = latestBlock.height;
     let moniker = latestBlock.validator.moniker;
 
-    let validators = infoOpt->Belt_Option.mapWithDefault([], info => info.validators);
+    let bandBonded = validators->Belt_Array.map(x => x.tokens)->Belt_Array.reduce(0.0, (+.));
 
     // TODO replace this Mock finance.
     let mockFinance: PriceHook.Price.t = {
@@ -92,8 +96,6 @@ let make = () =>
       circulatingSupply: 0.,
     };
     let financial = infoOpt->Belt_Option.mapWithDefault(mockFinance, info => info.financial);
-
-    let bandBonded = validators->Belt_List.map(x => x.tokens)->Belt_List.reduce(0.0, (+.));
 
     <Row justify=Row.Between>
       <HighlightCard
@@ -172,8 +174,7 @@ let make = () =>
       <HighlightCard
         label="ACTIVE VALIDATORS"
         valueComponent={
-                         let activeValidators =
-                           validators->Belt_List.size->Format.iPretty ++ " Nodes";
+                         let activeValidators = validatorCount->Format.iPretty ++ " Nodes";
                          <Text
                            value=activeValidators
                            size=Text.Xxxl
