@@ -35,18 +35,18 @@ module Styles = {
   let rightArrow = style([width(`px(25)), marginTop(`px(17)), marginLeft(`px(16))]);
 };
 
-let renderBlock = ((b, moniker): (BlockHook.Block.t, string)) =>
+let renderBlock = (b: BlockSub.t) =>
   <div
-    key={b.height |> string_of_int}
+    key={b.height |> ID.Block.toString}
     className=Styles.block
-    onClick={_ => Route.redirect(BlockIndexPage(b.height))}>
-    <TypeID.Block id={ID.Block.ID(b.height)} />
+    onClick={_ => Route.redirect(b.height |> ID.Block.getRoute)}>
+    <TypeID.Block id={b.height} />
     <VSpacing size=Spacing.md />
     <Text value="PROPOSED BY" block=true size=Text.Xs color=Colors.gray7 spacing={Text.Em(0.1)} />
     <VSpacing size={`px(1)} />
     <Text
       block=true
-      value=moniker
+      value={b.validator.moniker}
       weight=Text.Bold
       ellipsis=true
       height={Text.Px(15)}
@@ -57,66 +57,51 @@ let renderBlock = ((b, moniker): (BlockHook.Block.t, string)) =>
 [@react.component]
 let make = () =>
   {
-    let%Opt info = React.useContext(GlobalContext.context);
-    let blocks = info.latestBlocks;
-    let validators = info.validators;
-    let blocksWithMonikers =
-      blocks->Belt_List.map(block =>
-        (block, BlockHook.Block.getProposerMoniker(block, validators))
-      );
-    let%Opt latestBlock = blocks->Belt.List.get(0);
-    let latestHeightOpt = latestBlock.height;
+    let blocksSub = BlockSub.getList(~pageSize=10, ~page=1, ());
+    let blocksCountSub = BlockSub.count();
 
-    Some(
-      <>
-        <div className=Styles.topicBar>
+    let%Sub blocks = blocksSub;
+    let%Sub blocksCount = blocksCountSub;
+
+    <>
+      <div className=Styles.topicBar>
+        <Text value="Latest Blocks" size=Text.Xxl weight=Text.Bold block=true color=Colors.gray8 />
+      </div>
+      <VSpacing size=Spacing.lg />
+      <VSpacing size=Spacing.sm />
+      <div className=Styles.seeAll onClick={_ => Route.redirect(Route.BlockHomePage)}>
+        <div className=Styles.cFlex>
+          <span className=Styles.amount> {blocksCount |> Format.iPretty |> React.string} </span>
+          <VSpacing size=Spacing.xs />
           <Text
-            value="Latest Blocks"
-            size=Text.Xxl
-            weight=Text.Bold
-            block=true
-            color=Colors.gray8
+            value="ALL BLOCKS"
+            size=Text.Sm
+            color=Colors.bandBlue
+            spacing={Text.Em(0.05)}
+            weight=Text.Medium
           />
         </div>
-        <VSpacing size=Spacing.lg />
-        <VSpacing size=Spacing.sm />
-        <div className=Styles.seeAll onClick={_ => Route.redirect(Route.BlockHomePage)}>
-          <div className=Styles.cFlex>
-            <span className=Styles.amount>
-              {latestHeightOpt |> Format.iPretty |> React.string}
-            </span>
-            <VSpacing size=Spacing.xs />
-            <Text
-              value="ALL BLOCKS"
-              size=Text.Sm
-              color=Colors.bandBlue
-              spacing={Text.Em(0.05)}
-              weight=Text.Medium
-            />
-          </div>
-          <img src=Images.rightArrow className=Styles.rightArrow />
-        </div>
-        <VSpacing size=Spacing.lg />
-        <Row alignItems=`initial>
-          <Col>
-            {blocksWithMonikers
-             ->Belt.List.keepWithIndex((_b, i) => i mod 2 == 0)
-             ->Belt.List.map(renderBlock)
-             ->Array.of_list
+        <img src=Images.rightArrow className=Styles.rightArrow />
+      </div>
+      <VSpacing size=Spacing.lg />
+      <Row alignItems=`initial>
+        <Col>
+          {blocks
+           ->Belt_Array.keepWithIndex((_b, i) => i mod 2 == 0)
+           ->Belt_Array.map(renderBlock)
+           ->React.array}
+        </Col>
+        <Col>
+          <div className=Styles.rightCol>
+            <VSpacing size=Spacing.xl />
+            {blocks
+             ->Belt_Array.keepWithIndex((_b, i) => i mod 2 == 1)
+             ->Belt_Array.map(renderBlock)
              ->React.array}
-          </Col>
-          <Col>
-            <div className=Styles.rightCol>
-              <VSpacing size=Spacing.xl />
-              {blocksWithMonikers
-               ->Belt.List.keepWithIndex((_b, i) => i mod 2 == 1)
-               ->Belt.List.map(renderBlock)
-               ->Array.of_list
-               ->React.array}
-            </div>
-          </Col>
-        </Row>
-      </>,
-    );
+          </div>
+        </Col>
+      </Row>
+    </>
+    |> Sub.resolve;
   }
-  ->Belt.Option.getWithDefault(React.null);
+  |> Sub.default(_, React.null);

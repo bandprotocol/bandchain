@@ -94,11 +94,26 @@ module TopBar = {
 
 [@react.component]
 let make = () => {
+  // Example (Remove later)
+  let (addressOpt, dispatchAccount) = React.useContext(AccountContext.context);
+  React.useEffect0(_ => {
+    dispatchAccount(
+      Connect(
+        "smile stem oven genius cave resource better lunar nasty moon company ridge brass rather supply used horn three panic put venue analyst leader comic",
+      ),
+    );
+    None;
+  });
+
+  switch (addressOpt) {
+  | Some(address) => Js.Console.log(address |> Address.toBech32)
+  | None => ()
+  };
+
   <div className=Styles.container>
     <TopBar />
     <div className={Css.merge([Styles.innerContainer, Styles.pageWidth])}>
       <NavBar />
-      /* route handle */
       <div className=Styles.routeContainer>
         {switch (ReasonReactRouter.useUrl() |> Route.fromUrl) {
          | HomePage => <HomePage />
@@ -107,19 +122,18 @@ let make = () => {
            <DataSourceIndexPage dataSourceID={ID.DataSource.ID(dataSourceID)} hashtag />
          | OracleScriptHomePage => <OracleScriptHomePage />
          | OracleScriptIndexPage(oracleScriptID, hashtag) =>
-           <OracleScriptIndexPage oracleScriptID hashtag />
+           <OracleScriptIndexPage oracleScriptID={ID.OracleScript.ID(oracleScriptID)} hashtag />
          | TxHomePage => <TxHomePage />
          | TxIndexPage(txHash) => <TxIndexPage txHash />
          | BlockHomePage => <BlockHomePage />
-         | BlockIndexPage(height) => <BlockIndexPage height />
+         | BlockIndexPage(height) => <BlockIndexPage height={ID.Block.ID(height)} />
          | ValidatorHomePage => <ValidatorHomePage />
-         | RequestIndexPage(reqID, hashtag) => <RequestIndexPage reqID hashtag />
+         | RequestIndexPage(reqID) => <RequestIndexPage reqID />
          | AccountIndexPage(address, hashtag) => <AccountIndexPage address hashtag />
          | ValidatorIndexPage(address, hashtag) => <ValidatorIndexPage address hashtag />
          | NotFound => <NotFound />
          }}
       </div>
     </div>
-    <Footer />
   </div>;
 };

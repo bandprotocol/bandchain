@@ -34,7 +34,7 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~reqID, ~hashtag: Route.request_tab_t) => {
+let make = (~reqID) => {
   let requestOpt = RequestHook.get(reqID);
   let requestValidators =
     switch (React.useContext(GlobalContext.context), requestOpt) {

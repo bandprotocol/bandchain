@@ -57,7 +57,7 @@ let make = (~header=["KEY", "VALUE"], ~kv) => {
     </div>
     {kv
      ->Belt.List.map(((key, value)) => {
-         <div className=Styles.tbody>
+         <div className=Styles.tbody key=value>
            <Row>
              <Col size=1.>
                <Text

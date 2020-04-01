@@ -63,7 +63,7 @@ module Styles = {
       height(h),
       display(`flex),
       flexDirection(`column),
-      padding2(paddingV, `zero),
+      padding2(~v=paddingV, ~h=`zero),
       justifyContent(`center),
       backgroundColor(Colors.white),
       borderRadius(`px(4)),
@@ -87,7 +87,7 @@ module Styles = {
   let logo = style([width(`px(15))]);
 };
 
-let parameterInput = (name, placeholder, index, setCalldataArr) => {
+let parameterInput = (name, index, setCalldataList) => {
   <div className=Styles.listContainer key=name>
     <Text value=name size=Text.Md color=Colors.gray6 />
     <VSpacing size=Spacing.xs />
@@ -96,12 +96,10 @@ let parameterInput = (name, placeholder, index, setCalldataArr) => {
       type_="text"
       onChange={event => {
         let newVal = ReactEvent.Form.target(event)##value;
-        setCalldataArr(prev => {
-          prev->Belt_Array.set(index, newVal);
-          prev;
+        setCalldataList(prev => {
+          prev->Belt_List.mapWithIndex((i, value) => {index == i ? newVal : value})
         });
       }}
-      placeholder
     />
   </div>;
 };
@@ -154,7 +152,7 @@ let resultRender = result => {
         <Text value=err />
       </div>
     </>
-  | Success(output) =>
+  | Success(_output) =>
     let isFinish = Js.Math.random_int(0, 2) > 0;
     let kvs = [["Price", "866825"], ["Random", "135730902915"]];
     let proof =
@@ -250,7 +248,7 @@ let resultRender = result => {
                <div className={Styles.hFlex(`auto)}>
                  <HSpacing size=Spacing.lg />
                  <div className={Styles.vFlex(`px(220), `auto)} />
-                 {copyButton(proof)}
+                 {copyButton(~data=proof)}
                  <HSpacing size=Spacing.lg />
                  {extLinkButton()}
                </div>
@@ -279,7 +277,7 @@ let make = (~code: JsBuffer.t) => {
   let params = ["Symbol", "Multiplier"]; // TODO, replace this mock by the real deal
   let numParams = params->Belt_List.length;
 
-  let (calldataArr, setCalldataArr) = React.useState(_ => params->Belt_List.toArray);
+  let (callDataList, setCallDataList) = React.useState(_ => Belt_List.make(numParams, ""));
 
   let (result, setResult) = React.useState(_ => Nothing);
 
@@ -305,7 +303,7 @@ let make = (~code: JsBuffer.t) => {
     {numParams > 0
        ? <div className=Styles.paramsContainer>
            {params
-            ->Belt_List.mapWithIndex((i, param) => parameterInput(param, "", i, setCalldataArr))
+            ->Belt_List.mapWithIndex((i, param) => parameterInput(param, i, setCallDataList))
             ->Belt_List.toArray
             ->React.array}
          </div>
@@ -322,8 +320,8 @@ let make = (~code: JsBuffer.t) => {
                 AxiosRequest.t(
                   ~executable=code->JsBuffer.toHex,
                   ~calldata={
-                    calldataArr
-                    ->Belt_Array.reduce("", (acc, calldata) => acc ++ " " ++ calldata)
+                    callDataList
+                    ->Belt_List.reduce("", (acc, calldata) => acc ++ " " ++ calldata)
                     ->String.trim;
                   },
                 ),
@@ -332,7 +330,7 @@ let make = (~code: JsBuffer.t) => {
                    setResult(_ => Success(res##data##result));
                    Js.Promise.resolve();
                  })
-              |> Js.Promise.catch(err => {
+              |> Js.Promise.catch(_err => {
                    //  let errorValue =
                    //    Js.Json.stringifyAny(err)->Belt_Option.getWithDefault("Unknown");
                    //  setResult(_ => Error(errorValue));

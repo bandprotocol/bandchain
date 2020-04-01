@@ -34,7 +34,7 @@ type t =
   | TxIndexPage(Hash.t)
   | BlockHomePage
   | BlockIndexPage(int)
-  | RequestIndexPage(int, request_tab_t)
+  | RequestIndexPage(int)
   | AccountIndexPage(Address.t, account_tab_t)
   | ValidatorHomePage
   | ValidatorIndexPage(Address.t, validator_tab_t);
@@ -66,8 +66,7 @@ let fromUrl = (url: ReasonReactRouter.url) =>
   | (["block", blockHeight], _) =>
     let blockHeightIntOpt = blockHeight |> int_of_string_opt;
     BlockIndexPage(blockHeightIntOpt->Belt_Option.getWithDefault(0));
-  | (["request", reqID], "proof") => RequestIndexPage(reqID |> int_of_string, RequestProof)
-  | (["request", reqID], _) => RequestIndexPage(reqID |> int_of_string, RequestReportStatus)
+  | (["request", reqID], _) => RequestIndexPage(reqID |> int_of_string)
   | (["account", address], "delegations") =>
     AccountIndexPage(address |> Address.fromBech32, AccountDelegations)
   | (["account", address], _) =>
@@ -99,8 +98,7 @@ let toString =
   | ValidatorHomePage => "/validators"
   | BlockHomePage => "/blocks"
   | BlockIndexPage(height) => {j|/block/$height|j}
-  | RequestIndexPage(reqID, RequestReportStatus) => {j|/request/$reqID|j}
-  | RequestIndexPage(reqID, RequestProof) => {j|/request/$reqID#proof|j}
+  | RequestIndexPage(reqID) => {j|/request/$reqID|j}
   | AccountIndexPage(address, AccountTransactions) => {
       let addressBech32 = address |> Address.toBech32;
       {j|/account/$addressBech32|j};
@@ -146,7 +144,7 @@ let search = (str: string) => {
         Some(DataSourceIndexPage(dataSourceID, DataSourceExecute));
       } else if (capStr |> Js.String.startsWith("R")) {
         let%Opt requestID = str |> String.sub(_, 1, len - 1) |> int_of_string_opt;
-        Some(RequestIndexPage(requestID, RequestReportStatus));
+        Some(RequestIndexPage(requestID));
       } else if (capStr |> Js.String.startsWith("O")) {
         let%Opt oracleScriptID = str |> String.sub(_, 1, len - 1) |> int_of_string_opt;
         Some(OracleScriptIndexPage(oracleScriptID, OracleScriptExecute));
