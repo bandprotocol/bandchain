@@ -193,7 +193,7 @@ let renderRequestStatus = status => {
 
 let msgIcon =
   fun
-  | TxHook.Msg.CreateDataSource(_) => Images.newScript
+  | TxSub.Msg.CreateDataSource(_) => Images.newScript
   | EditDataSource(_) => Images.newScript
   | CreateOracleScript(_) => Images.newScript
   | EditOracleScript(_) => Images.newScript
@@ -207,7 +207,6 @@ let msgIcon =
   | Unknown => Images.checkIcon;
 
 type t =
-  | Icon(TxHook.Msg.t)
   | Height(int)
   | HeightWithTime(int, MomentRe.Moment.t)
   | Name(string)
@@ -231,7 +230,6 @@ type t =
 [@react.component]
 let make = (~elementType) => {
   switch (elementType) {
-  | Icon({action, _}) => <img src={action->msgIcon} className=Styles.msgIcon />
   | Height(height) => renderHeight(height)
   | HeightWithTime(height, timestamp) => renderHeightWithTime(height, timestamp)
   | Name(name) => renderName(name)

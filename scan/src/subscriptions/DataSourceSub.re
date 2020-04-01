@@ -3,7 +3,7 @@ type t = {
   owner: Address.t,
   name: string,
   description: string,
-  fee: list(TxHook.Coin.t),
+  fee: list(Coin.t),
   executable: JsBuffer.t,
   timestamp: MomentRe.Moment.t,
 };
