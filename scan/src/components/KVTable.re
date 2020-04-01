@@ -95,7 +95,7 @@ module Styles = {
   let fillRight = style([marginRight(`auto)]);
 };
 
-let renderField = (field, maxWidth) => {
+let renderField = (field, maxWidth, isRight) => {
   switch (field) {
   | Value(v) =>
     <div className={Styles.valueContainer(maxWidth)}>
@@ -115,6 +115,7 @@ let renderField = (field, maxWidth) => {
       {vals
        ->Belt_List.map(v =>
            <div key=v className={Styles.valueContainer(maxWidth)}>
+             {isRight ? <div className=Styles.fillRight /> : React.null}
              <Text
                value=v
                size=Text.Sm
@@ -225,6 +226,7 @@ let make =
                        sumSizes <= 0.
                          ? tableWidth
                          : (tableWidth |> float_of_int) *. size /. sumSizes |> int_of_float,
+                       isRight,
                      )}
                   </div>
                 </Col>
