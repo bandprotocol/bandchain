@@ -159,6 +159,7 @@ module RequestCountByOracleScriptConfig = [%graphql
   {|
     subscription RequestMiniByOracleScriptCount($id: bigint!) {
       oracle_scripts_by_pk(id: $id) {
+        id
         requests_aggregate {
           aggregate {
             count @bsDecoder(fn: "Belt_Option.getExn")
