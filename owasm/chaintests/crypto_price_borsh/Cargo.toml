@@ -11,4 +11,4 @@ crate-type = ["cdylib"]
 
 [dependencies]
 owasm = { path = "../.." }
-borsh = "*"
+borsh = "0.3.0"
