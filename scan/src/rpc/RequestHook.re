@@ -53,8 +53,8 @@ module Request = {
     | Unknown;
 
   type t = {
-    id: int,
-    oracleScriptID: int,
+    id: ID.Request.t,
+    oracleScriptID: ID.OracleScript.t,
     oracleScriptName: string,
     calldata: JsBuffer.t,
     requestedValidators: list(Address.t),
@@ -79,8 +79,8 @@ module Request = {
 
   let decodeResult = json =>
     JsonUtils.Decode.{
-      id: json |> field("id", intstr),
-      oracleScriptID: json |> field("oracleScriptID", intstr),
+      id: json |> field("id", ID.Request.fromJson),
+      oracleScriptID: json |> field("oracleScriptID", ID.OracleScript.fromJson),
       oracleScriptName: "Mean Crypto Price",
       calldata: json |> field("calldata", string) |> JsBuffer.fromBase64,
       requestedValidators:

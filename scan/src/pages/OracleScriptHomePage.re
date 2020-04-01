@@ -125,7 +125,7 @@ let make = () =>
           </Row>
         </THead>
         {oracleScripts
-         ->Belt.Array.map(({id, name, timestamp, owner}) => {
+         ->Belt.Array.map(({id, name, timestamp, owner, relatedDataSources}) => {
              <TBody key={id |> ID.OracleScript.toString}>
                <div className=Styles.fullWidth>
                  <Row alignItems=`baseline>
@@ -140,10 +140,7 @@ let make = () =>
                      </div>
                    </Col>
                    <Col size=1.35>
-                     // TODO: wire up later  
-                     <TElement
-                       elementType={[ID.DataSource.ID(1)]->TElement.RelatedDataSources}
-                     />
+                     <TElement elementType={relatedDataSources->TElement.RelatedDataSources} />
                    </Col>
                    <Col> <HSpacing size=Spacing.lg /> </Col>
                  </Row>
