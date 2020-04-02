@@ -15,7 +15,7 @@ module Styles = {
       fun
       | Center => style([justifyContent(`center)])
       | Between => style([justifyContent(`spaceBetween)])
-      | Right => style([justifyContent(`right)]),
+      | Right => style([justifyContent(`flexEnd)]),
     );
 
   let wrap = style([flexWrap(`wrap)]);

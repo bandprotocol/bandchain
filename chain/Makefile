@@ -3,7 +3,7 @@ VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
 BINDIR ?= $(GOPATH)/bin
 
-ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=d3n \
+ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=bandchain \
 	-X github.com/cosmos/cosmos-sdk/version.ServerName=bandd \
 	-X github.com/cosmos/cosmos-sdk/version.ClientName=bandcli \
 	-X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \

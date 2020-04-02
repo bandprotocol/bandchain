@@ -16,27 +16,14 @@ module Styles = {
       maxWidth(`px(970)),
       marginLeft(`auto),
       marginRight(`auto),
+      minHeight(`px(70)),
     ]);
-
-  let rFlex = style([display(`flex), flexDirection(`row)]);
-
-  let socialLink =
-    style([
-      display(`flex),
-      flexDirection(`row),
-      justifyContent(`center),
-      alignItems(`center),
-      marginLeft(`px(15)),
-    ]);
-
-  let twitterLogo = style([width(`px(20))]);
-  let telegramLogo = style([width(`px(20))]);
 };
 
 [@react.component]
 let make = () => {
   <div className=Styles.navContainer>
-    <Row justify=Row.Between>
+    <Row justify=Row.Between alignItems=`flexStart>
       <Col>
         <Row>
           {[
@@ -59,20 +46,7 @@ let make = () => {
            ->React.array}
         </Row>
       </Col>
-      <Col>
-        <div className=Styles.rFlex>
-          <div className=Styles.socialLink>
-            <a href="https://twitter.com/bandprotocol" target="_blank" rel="noopener">
-              <img src=Images.twitterLogo className=Styles.twitterLogo />
-            </a>
-          </div>
-          <div className=Styles.socialLink>
-            <a href="https://t.me/bandprotocol" target="_blank" rel="noopener">
-              <img src=Images.telegramLogo className=Styles.telegramLogo />
-            </a>
-          </div>
-        </div>
-      </Col>
+      <Col> <UserAccount /> </Col>
     </Row>
   </div>;
 };

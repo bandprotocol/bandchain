@@ -273,13 +273,15 @@ let resultRender = result => {
 };
 
 [@react.component]
-let make = (~code: JsBuffer.t) => {
+let make = (~code: Hash.t) => {
   let params = ["Symbol", "Multiplier"]; // TODO, replace this mock by the real deal
   let numParams = params->Belt_List.length;
+  // TODO: wire up later
+  Js.Console.log(code);
 
-  let (callDataList, setCallDataList) = React.useState(_ => Belt_List.make(numParams, ""));
+  // let (callDataList, setCallDataList) = React.useState(_ => Belt_List.make(numParams, ""));
 
-  let (result, setResult) = React.useState(_ => Nothing);
+  // let (result, setResult) = React.useState(_ => Nothing);
 
   <div className=Styles.container>
     <div className={Styles.hFlex(`auto)}>
@@ -300,49 +302,47 @@ let make = (~code: JsBuffer.t) => {
            />}
     </div>
     <VSpacing size=Spacing.lg />
-    {numParams > 0
-       ? <div className=Styles.paramsContainer>
-           {params
-            ->Belt_List.mapWithIndex((i, param) => parameterInput(param, i, setCallDataList))
-            ->Belt_List.toArray
-            ->React.array}
-         </div>
-       : React.null}
+    // {numParams > 0
+    //    ? <div className=Styles.paramsContainer>
+    //        {params
+    //         ->Belt_List.mapWithIndex((i, param) => parameterInput(param, i, setCallDataList))
+    //         ->Belt_List.toArray
+    //         ->React.array}
+    //      </div>
+    //    : React.null}
     <VSpacing size=Spacing.md />
-    <div className=Styles.buttonContainer>
-      <button
-        className={Styles.button(result == Loading)}
-        onClick={_ =>
-          if (result != Loading) {
-            setResult(_ => Loading);
-            let _ =
-              AxiosRequest.request(
-                AxiosRequest.t(
-                  ~executable=code->JsBuffer.toHex,
-                  ~calldata={
-                    callDataList
-                    ->Belt_List.reduce("", (acc, calldata) => acc ++ " " ++ calldata)
-                    ->String.trim;
-                  },
-                ),
-              )
-              |> Js.Promise.then_(res => {
-                   setResult(_ => Success(res##data##result));
-                   Js.Promise.resolve();
-                 })
-              |> Js.Promise.catch(_err => {
-                   //  let errorValue =
-                   //    Js.Json.stringifyAny(err)->Belt_Option.getWithDefault("Unknown");
-                   //  setResult(_ => Error(errorValue));
-                   setResult(_ => Success("test"));
-                   Js.Promise.resolve();
-                 });
-            ();
-          }
-        }>
-        {(result == Loading ? "Sending Request ... " : "Request") |> React.string}
-      </button>
-    </div>
-    {resultRender(result)}
   </div>;
+  // <div className=Styles.buttonContainer>
+  // <button className={Styles.button(result == Loading)}>
+  // onClick={_ =>
+  //   if (result != Loading) {
+  //     setResult(_ => Loading);
+  //     let _ =
+  //       AxiosRequest.request(
+  //         AxiosRequest.t(
+  //           ~executable=code->JsBuffer.toHex,
+  //           ~calldata={
+  //             callDataList
+  //             ->Belt_List.reduce("", (acc, calldata) => acc ++ " " ++ calldata)
+  //             ->String.trim;
+  //           },
+  //         ),
+  //       )
+  //       |> Js.Promise.then_(res => {
+  //            setResult(_ => Success(res##data##result));
+  //            Js.Promise.resolve();
+  //          })
+  //       |> Js.Promise.catch(_err => {
+  //            //  let errorValue =
+  //            //    Js.Json.stringifyAny(err)->Belt_Option.getWithDefault("Unknown");
+  //            //  setResult(_ => Error(errorValue));
+  //            setResult(_ => Success("test"));
+  //            Js.Promise.resolve();
+  //          });
+  //     ();
+  //   }
+  // }
+  //  {(result == Loading ? "Sending Request ... " : "Request") |> React.string} </button>
+  // </div>
+  // {resultRender(result)}
 };
