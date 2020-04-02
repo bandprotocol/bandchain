@@ -33,7 +33,7 @@ type t = {
 
 let create =
     (
-      ~oracleScriptID,
+      ID.OracleScript.ID(oracleScriptID),
       ~calldata,
       ~requestedValidatorCount,
       ~sufficientValidatorCount,
