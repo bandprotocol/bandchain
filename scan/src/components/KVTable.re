@@ -3,7 +3,8 @@ type field_t =
   | Values(list(string))
   | DataSource(ID.DataSource.t, string)
   | Block(ID.Block.t)
-  | TxHash(Hash.t);
+  | TxHash(Hash.t)
+  | Validator(ValidatorSub.Mini.t);
 
 type theme_t =
   | MessageMiniTable
@@ -150,6 +151,14 @@ let renderField = (field, maxWidth, isRight) => {
   | TxHash(txHash) =>
     <div className={Styles.valueContainer(maxWidth)}>
       <TxLink txHash width=maxWidth size=Text.Sm />
+    </div>
+  | Validator(validator) =>
+    <div className={Styles.valueContainer(maxWidth)}>
+      <ValidatorMonikerLink
+        size=Text.Sm
+        validatorAddress={validator.operatorAddress}
+        moniker={validator.moniker}
+      />
     </div>
   };
 };
