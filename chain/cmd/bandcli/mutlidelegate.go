@@ -61,7 +61,14 @@ func multiDelegateCommand(cdc *amino.Codec) *cobra.Command {
 				if err != nil {
 					return err
 				}
-				msgs = append(msgs, types.NewMsgDelegate(delAddr, valAddr, amount))
+
+				msg := types.NewMsgDelegate(delAddr, valAddr, amount)
+				err = msg.ValidateBasic()
+				if err != nil {
+					return err
+				}
+
+				msgs = append(msgs, msg)
 			}
 
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, msgs)
