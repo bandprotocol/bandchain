@@ -155,25 +155,24 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 	if stdTx, ok := tx.(auth.StdTx); ok {
 		// Add involved accounts
 		involvedAccounts := stdTx.GetSigners()
+		txHash := tmhash.Sum(req.Tx)
+		app.dbBand.AddTransaction(
+			txHash,
+			app.DeliverContext.BlockTime(),
+			res.GasUsed,
+			stdTx.Fee.Gas,
+			stdTx.Fee.Amount,
+			stdTx.GetSigners()[0],
+			res.IsOK(),
+			app.DeliverContext.BlockHeight(),
+		)
 		if !res.IsOK() {
-			// TODO: We should not completely ignore failed transactions.
+			app.dbBand.HandleTransactionFail(stdTx, txHash)
 		} else {
 			logs, err := sdk.ParseABCILogs(res.Log)
 			if err != nil {
 				panic(err)
 			}
-			txHash := tmhash.Sum(req.Tx)
-
-			app.dbBand.AddTransaction(
-				txHash,
-				app.DeliverContext.BlockTime(),
-				res.GasUsed,
-				stdTx.Fee.Gas,
-				stdTx.Fee.Amount,
-				stdTx.GetSigners()[0],
-				true,
-				app.DeliverContext.BlockHeight(),
-			)
 
 			app.dbBand.HandleTransaction(stdTx, txHash, logs)
 			involvedAccounts = append(
