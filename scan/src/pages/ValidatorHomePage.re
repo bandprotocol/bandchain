@@ -219,23 +219,24 @@ let make = () =>
 
     <div className=Styles.pageContainer>
       <Row justify=Row.Between>
-        <Col>
-          <div className=Styles.vFlex>
-            <img src=Images.validators className=Styles.validatorsLogo />
-            <Text
-              value="ALL VALIDATORS"
-              weight=Text.Medium
-              size=Text.Md
-              nowrap=true
-              color=Colors.gray7
-              spacing={Text.Em(0.06)}
-            />
-            <div className=Styles.seperatedLine />
-            <Text value={(allValidatorCount |> string_of_int) ++ " In total"} />
-          </div>
-        </Col>
-        <Col> <ToggleButton isActive setIsActive /> </Col>
-      </Row>
+
+          <Col>
+            <div className=Styles.vFlex>
+              <img src=Images.validators className=Styles.validatorsLogo />
+              <Text
+                value="ALL VALIDATORS"
+                weight=Text.Medium
+                size=Text.Md
+                nowrap=true
+                color=Colors.gray7
+                spacing={Text.Em(0.06)}
+              />
+              <div className=Styles.seperatedLine />
+              <Text value={(allValidatorCount |> string_of_int) ++ " In total"} />
+            </div>
+          </Col>
+        </Row>
+        // <Col> <ToggleButton isActive setIsActive /> </Col>
       <div className=Styles.highlight>
         <Row>
           <Col size=0.7>
