@@ -16,7 +16,7 @@ type a =
   | Connect(string)
   | Disconnect;
 
-let bandchain = BandWeb3.network("https://d3n.bandprotocol.com/rest", "bandchain");
+let bandchain = BandWeb3.network(Env.rpc, "bandchain");
 bandchain->BandWeb3.setPath("m/44'/494'/0'/0/0");
 bandchain->BandWeb3.setBech32MainPrefix("band");
 
