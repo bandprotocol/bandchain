@@ -262,7 +262,8 @@ func (app *dbBandApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBl
 				}
 			}
 			// Get result from keeper
-			rawResult := []byte{}
+			var rawResult []byte
+			rawResult = nil
 			if resolveStatus == 1 {
 				id := zoracle.RequestID(requestID)
 				request, sdkErr := app.ZoracleKeeper.GetRequest(app.DeliverContext, id)
