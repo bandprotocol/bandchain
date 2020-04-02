@@ -3,7 +3,7 @@ on: [push, pull_request]
 
 jobs:
   test:
-    runs-on: node:10.17.0-buster
+    runs-on: ubuntu-latest
 
     steps:
     - name: Scan Code Checkout
