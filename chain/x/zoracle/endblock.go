@@ -47,6 +47,12 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 			continue
 		}
 
+		err = env.LoadRawDataReports(ctx, keeper)
+		if err != nil { // should never happen
+			keeper.SetResolve(ctx, requestID, types.Failure)
+			continue
+		}
+
 		script, err := keeper.GetOracleScript(ctx, request.OracleScriptID)
 		if err != nil { // should never happen
 			keeper.SetResolve(ctx, requestID, types.Failure)
