@@ -70,29 +70,10 @@ module Styles = {
       overflow(overflow_choice),
     ]);
 
-  let buttonWrapper = color =>
-    style([
-      backgroundColor(color),
-      padding2(~h=`px(8), ~v=`px(4)),
-      display(`flex),
-      width(`px(103)),
-      height(`px(25)),
-      borderRadius(`px(6)),
-      cursor(`pointer),
-      alignItems(`center),
-      justifyContent(`center),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), rgba(20, 32, 184, 0.2))),
-    ]);
-
   let logo = style([width(`px(15))]);
 };
 
-type param_t = {
-  paramName: string,
-  paramType: string,
-};
-
-let parameterInput = ({paramName, paramType}, index, setCalldataArr) => {
+let parameterInput = (Param.{paramName, paramType}, index, setCalldataArr) => {
   <div className=Styles.listContainer key=paramName>
     <Text value={j|$paramName ($paramType)|j} size=Text.Md color=Colors.gray6 />
     <VSpacing size=Spacing.xs />
@@ -109,31 +90,11 @@ let parameterInput = ({paramName, paramType}, index, setCalldataArr) => {
   </div>;
 };
 
-let copyButton = (~data) => {
-  <div
-    className={Styles.buttonWrapper(Colors.blue1)}
-    onClick={_ => {Copy.copy(data |> JsBuffer.toHex(~with0x=false))}}>
-    <img src=Images.copy className=Styles.logo />
-    <HSpacing size=Spacing.sm />
-    <Text value="Copy Proof" size=Text.Sm block=true color=Colors.bandBlue nowrap=true />
-  </div>;
-};
-
-let extLinkButton = () => {
-  <a href="https://twitter.com/bandprotocol" target="_blank" rel="noopener">
-    <div className={Styles.buttonWrapper(Colors.gray4)}>
-      <img src=Images.externalLink className=Styles.logo />
-      <HSpacing size=Spacing.sm />
-      <Text value="What is Proof ?" size=Text.Sm block=true color=Colors.gray7 nowrap=true />
-    </div>
-  </a>;
-};
-
 type result_t =
   | Nothing
   | Loading
   | Error(string)
-  | Success(Hash.t);
+  | Success(BandWeb3.tx_response_t, string);
 
 let loadingRender = (wDiv, wImg, h) => {
   <div className={Styles.withWH(wDiv, h)}>
@@ -157,118 +118,7 @@ let resultRender = result => {
         <Text value=err />
       </div>
     </>
-  | Success(txHash) =>
-    let isFinish = false;
-    let kvs = [["Price", "866825"], ["Random", "135730902915"]];
-    let proof =
-      "0x0000000000000000000434000000009024900000000000b0a0df0000000fd070a00b0becd989f8989af9c80000fd070a00b0becd989f8989af"
-      |> JsBuffer.fromHex;
-    <>
-      <VSpacing size=Spacing.lg />
-      <div className={Styles.resultWrapper(`percent(100.), `auto, `px(30), `auto)}>
-        <div className={Styles.hFlex(`auto)}>
-          <HSpacing size=Spacing.lg />
-          <div className={Styles.resultWrapper(`px(220), `px(12), `zero, `auto)}>
-            <Text value="EXIT STATUS" size=Text.Sm color=Colors.gray6 weight=Text.Semibold />
-          </div>
-          <Text value="0" />
-        </div>
-        <VSpacing size=Spacing.lg />
-        <div className={Styles.hFlex(`auto)}>
-          <HSpacing size=Spacing.lg />
-          <div className={Styles.resultWrapper(`px(220), `px(12), `zero, `auto)}>
-            <Text value="REQUEST ID" size=Text.Sm color=Colors.gray6 weight=Text.Semibold />
-          </div>
-          <TypeID.Request id={ID.Request.ID(8)} />
-        </div>
-        <VSpacing size=Spacing.lg />
-        <div className={Styles.hFlex(`auto)}>
-          <HSpacing size=Spacing.lg />
-          <div className={Styles.resultWrapper(`px(220), `px(12), `zero, `auto)}>
-            <Text value="TX HASH" size=Text.Sm color=Colors.gray6 weight=Text.Semibold />
-          </div>
-          <TxLink txHash width=500 />
-        </div>
-        <VSpacing size=Spacing.lg />
-        {isFinish
-           ? <>
-               <div className={Styles.hFlex(`auto)}>
-                 <HSpacing size=Spacing.lg />
-                 <div className={Styles.vFlex(`px(220), `px(20 * (kvs |> Belt_List.length)))}>
-                   <Text
-                     value="OUTPUT"
-                     size=Text.Sm
-                     color=Colors.gray6
-                     weight=Text.Semibold
-                     height={Text.Px(20)}
-                   />
-                 </div>
-                 <div className={Styles.vFlex(`auto, `auto)}>
-                   {kvs->Belt_List.map(entry =>
-                      <div className={Styles.hFlex(`px(20))}>
-                        <div className={Styles.vFlex(`px(220), `auto)}>
-                          <Text value={entry->Belt_List.getExn(0)} color=Colors.gray8 />
-                        </div>
-                        <div className={Styles.vFlex(`px(440), `auto)}>
-                          <Text
-                            value={entry->Belt_List.getExn(1)}
-                            code=true
-                            color=Colors.gray8
-                            weight=Text.Bold
-                          />
-                        </div>
-                      </div>
-                    )
-                    |> Belt_List.toArray
-                    |> React.array}
-                 </div>
-               </div>
-               <VSpacing size=Spacing.lg />
-               <div className={Styles.hFlex(`auto)}>
-                 <HSpacing size=Spacing.lg />
-                 <div className={Styles.vFlex(`px(220), `auto)}>
-                   <Text
-                     value="PROOF OF VALIDITY"
-                     size=Text.Sm
-                     color=Colors.gray6
-                     weight=Text.Semibold
-                     height={Text.Px(15)}
-                   />
-                 </div>
-                 <div className={Styles.vFlex(`px(660), `auto)}>
-                   <Text
-                     value={proof |> JsBuffer.toHex}
-                     height={Text.Px(15)}
-                     code=true
-                     ellipsis=true
-                   />
-                 </div>
-               </div>
-               <VSpacing size=Spacing.md />
-               <div className={Styles.hFlex(`auto)}>
-                 <HSpacing size=Spacing.lg />
-                 <div className={Styles.vFlex(`px(220), `auto)} />
-                 {copyButton(~data=proof)}
-                 <HSpacing size=Spacing.lg />
-                 {extLinkButton()}
-               </div>
-             </>
-           : <div className={Styles.hFlex(`auto)}>
-               <HSpacing size=Spacing.lg />
-               <div className={Styles.resultWrapper(`px(220), `px(12), `zero, `auto)}>
-                 <Text
-                   value="WAITING FOR OUTPUT AND PROOF"
-                   size=Text.Sm
-                   color=Colors.gray6
-                   weight=Text.Semibold
-                 />
-               </div>
-               <div className={Styles.resultWrapper(`px(660), `px(40), `zero, `auto)}>
-                 <ProgressBar reportedValidators=3 minimumValidators=4 requestValidators=5 />
-               </div>
-             </div>}
-      </div>
-    </>;
+  | Success(txResponse, schema) => <OracleScriptExecuteResponse txResponse schema />
   };
 };
 
@@ -277,13 +127,13 @@ let make = (~id: ID.OracleScript.t, ~schemaOpt: option(string)) => {
   let (AccountContext.{sendRequest}, _) = React.useContext(AccountContext.context);
 
   let schema = schemaOpt->Belt_Option.getWithDefault("");
-  let params =
+  let paramsInput =
     schema
     ->Borsh.extractFields("Input")
     ->Belt_Option.getWithDefault([||])
-    ->Belt_Array.map(((paramName, paramType)) => {paramName, paramType});
+    ->Belt_Array.map(((paramName, paramType)) => Param.{paramName, paramType});
 
-  let numParams = params->Belt_Array.size;
+  let numParams = paramsInput->Belt_Array.size;
 
   let (callDataArr, setCallDataArr) = React.useState(_ => Belt_Array.make(numParams, ""));
   let (result, setResult) = React.useState(_ => Nothing);
@@ -309,7 +159,7 @@ let make = (~id: ID.OracleScript.t, ~schemaOpt: option(string)) => {
     <VSpacing size=Spacing.lg />
     {numParams > 0
        ? <div className=Styles.paramsContainer>
-           {params
+           {paramsInput
             ->Belt_Array.mapWithIndex((i, param) => parameterInput(param, i, setCallDataArr))
             ->React.array}
          </div>
@@ -324,7 +174,9 @@ let make = (~id: ID.OracleScript.t, ~schemaOpt: option(string)) => {
               Borsh.encode(
                 schema,
                 "Input",
-                params->Belt_Array.map(({paramName}) => paramName)->Belt_Array.zip(callDataArr),
+                paramsInput
+                ->Belt_Array.map(({paramName}) => paramName)
+                ->Belt_Array.zip(callDataArr),
               )
             ) {
             | Some(encoded) =>
@@ -332,17 +184,19 @@ let make = (~id: ID.OracleScript.t, ~schemaOpt: option(string)) => {
               Js.Console.log4(
                 schema,
                 "Input",
-                params->Belt_Array.map(({paramName}) => paramName)->Belt_Array.zip(callDataArr),
+                paramsInput
+                ->Belt_Array.map(({paramName}) => paramName)
+                ->Belt_Array.zip(callDataArr),
                 encoded,
               );
               let _ =
                 sendRequest(id, encoded)
                 |> Js.Promise.then_(res =>
                      switch (res) {
-                     | BandWeb3.Tx({txHash}) =>
-                       setResult(_ => Success(txHash));
+                     | BandWeb3.Tx(txResponse) =>
+                       setResult(_ => Success(txResponse, schema));
                        Js.Promise.resolve();
-                     | BandWeb3.Unknown =>
+                     | _ =>
                        setResult(_ =>
                          Error("Fail to sign message, please connect with mnemonic first")
                        );
