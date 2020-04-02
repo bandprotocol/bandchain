@@ -253,7 +253,7 @@ func (app *dbBandApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBl
 				if string(kv.Key) == zoracle.AttributeKeyRequestID {
 					requestID, err = strconv.ParseInt(string(kv.Value), 10, 64)
 					if err != nil {
-						break
+						panic(err)
 					}
 				} else if string(kv.Key) == zoracle.AttributeKeyResolveStatus {
 					resolveStatus = string(kv.Value)
