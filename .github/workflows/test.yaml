@@ -14,5 +14,5 @@ jobs:
       working-directory: ./scan
     
     - name: Scan Test
-      run: ls
+      run: yarn test
       working-directory: ./scan
