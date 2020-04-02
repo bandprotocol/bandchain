@@ -13,7 +13,7 @@ type t =
   | Address(Address.t, int)
   | Fraction(int, int, bool)
   | FloatWithSuffix(float, string)
-  | Validators(array(ValidatorSub.Mini.t));
+  | Validators(array(ValidatorSub.t));
 
 module Styles = {
   open Css;

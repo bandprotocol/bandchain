@@ -247,7 +247,6 @@ func (app *dbBandApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBl
 		if event.Type == zoracle.EventTypeRequestExecute {
 			var requestID int64
 			var resolveStatus zoracle.ResolveStatus
-			var result []byte
 			for _, kv := range event.Attributes {
 				if string(kv.Key) == zoracle.AttributeKeyRequestID {
 					requestID, err = strconv.ParseInt(string(kv.Value), 10, 64)
@@ -260,11 +259,24 @@ func (app *dbBandApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBl
 						panic(err)
 					}
 					resolveStatus = zoracle.ResolveStatus(numResolveStatus)
-				} else if string(kv.Key) == zoracle.AttributeKeyResult {
-					result = kv.Value
 				}
 			}
-			err := app.dbBand.ResolveRequest(requestID, resolveStatus, result)
+			// Get result from keeper
+			var rawResult []byte
+			rawResult = nil
+			if resolveStatus == 1 {
+				id := zoracle.RequestID(requestID)
+				request, sdkErr := app.ZoracleKeeper.GetRequest(app.DeliverContext, id)
+				if sdkErr != nil {
+					panic(err)
+				}
+				result, sdkErr := app.ZoracleKeeper.GetResult(app.DeliverContext, id, request.OracleScriptID, request.Calldata)
+				if sdkErr != nil {
+					panic(err)
+				}
+				rawResult = result.Data
+			}
+			err := app.dbBand.ResolveRequest(requestID, resolveStatus, rawResult)
 			if err != nil {
 				panic(err)
 			}
