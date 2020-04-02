@@ -262,16 +262,21 @@ func (app *dbBandApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBl
 				}
 			}
 			// Get result from keeper
-			id := zoracle.RequestID(requestID)
-			request, sdkErr := app.ZoracleKeeper.GetRequest(app.DeliverContext, id)
-			if sdkErr != nil {
-				panic(err)
+			var rawResult []byte
+			rawResult = nil
+			if resolveStatus == 1 {
+				id := zoracle.RequestID(requestID)
+				request, sdkErr := app.ZoracleKeeper.GetRequest(app.DeliverContext, id)
+				if sdkErr != nil {
+					panic(err)
+				}
+				result, sdkErr := app.ZoracleKeeper.GetResult(app.DeliverContext, id, request.OracleScriptID, request.Calldata)
+				if sdkErr != nil {
+					panic(err)
+				}
+				rawResult = result.Data
 			}
-			result, sdkErr := app.ZoracleKeeper.GetResult(app.DeliverContext, id, request.OracleScriptID, request.Calldata)
-			if sdkErr != nil {
-				panic(err)
-			}
-			err := app.dbBand.ResolveRequest(requestID, resolveStatus, result.Data)
+			err := app.dbBand.ResolveRequest(requestID, resolveStatus, rawResult)
 			if err != nil {
 				panic(err)
 			}
