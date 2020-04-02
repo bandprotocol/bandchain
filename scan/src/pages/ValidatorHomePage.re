@@ -199,7 +199,6 @@ let make = () =>
     let (page, setPage) = React.useState(_ => 1);
     let pageSize = 10;
 
-    let (isActive, setIsActive) = React.useState(_ => true);
     let validatorsCountSub = ValidatorSub.count();
     let validatorsSub = ValidatorSub.getList(~page, ~pageSize, ());
     let bondedValidatorCountSub = ValidatorSub.count();
@@ -219,24 +218,23 @@ let make = () =>
 
     <div className=Styles.pageContainer>
       <Row justify=Row.Between>
-
-          <Col>
-            <div className=Styles.vFlex>
-              <img src=Images.validators className=Styles.validatorsLogo />
-              <Text
-                value="ALL VALIDATORS"
-                weight=Text.Medium
-                size=Text.Md
-                nowrap=true
-                color=Colors.gray7
-                spacing={Text.Em(0.06)}
-              />
-              <div className=Styles.seperatedLine />
-              <Text value={(allValidatorCount |> string_of_int) ++ " In total"} />
-            </div>
-          </Col>
-        </Row>
-        // <Col> <ToggleButton isActive setIsActive /> </Col>
+        <Col>
+          <div className=Styles.vFlex>
+            <img src=Images.validators className=Styles.validatorsLogo />
+            <Text
+              value="ALL VALIDATORS"
+              weight=Text.Medium
+              size=Text.Md
+              nowrap=true
+              color=Colors.gray7
+              spacing={Text.Em(0.06)}
+            />
+            <div className=Styles.seperatedLine />
+            <Text value={(allValidatorCount |> string_of_int) ++ " In total"} />
+          </div>
+        </Col>
+      </Row>
+      // <Col> <ToggleButton isActive setIsActive /> </Col>
       <div className=Styles.highlight>
         <Row>
           <Col size=0.7>
