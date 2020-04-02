@@ -78,10 +78,7 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) =>
       <VSpacing size=Spacing.sm />
       <Row>
         <Col size=1.>
-          <InfoHL
-            header="DESCRIPTION"
-            info={InfoHL.Text(oracleScript.description, InfoHL.THEME_2)}
-          />
+          <InfoHL header="DESCRIPTION" info={InfoHL.Description(oracleScript.description)} />
         </Col>
       </Row>
       <VSpacing size=Spacing.xl />
