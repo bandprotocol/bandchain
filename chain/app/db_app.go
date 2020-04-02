@@ -2,6 +2,7 @@ package app
 
 import (
 	"io"
+	"strconv"
 	"time"
 
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
@@ -155,25 +156,24 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 	if stdTx, ok := tx.(auth.StdTx); ok {
 		// Add involved accounts
 		involvedAccounts := stdTx.GetSigners()
+		txHash := tmhash.Sum(req.Tx)
+		app.dbBand.AddTransaction(
+			txHash,
+			app.DeliverContext.BlockTime(),
+			res.GasUsed,
+			stdTx.Fee.Gas,
+			stdTx.Fee.Amount,
+			stdTx.GetSigners()[0],
+			res.IsOK(),
+			app.DeliverContext.BlockHeight(),
+		)
 		if !res.IsOK() {
-			// TODO: We should not completely ignore failed transactions.
+			app.dbBand.HandleTransactionFail(stdTx, txHash)
 		} else {
 			logs, err := sdk.ParseABCILogs(res.Log)
 			if err != nil {
 				panic(err)
 			}
-			txHash := tmhash.Sum(req.Tx)
-
-			app.dbBand.AddTransaction(
-				txHash,
-				app.DeliverContext.BlockTime(),
-				res.GasUsed,
-				stdTx.Fee.Gas,
-				stdTx.Fee.Amount,
-				stdTx.GetSigners()[0],
-				true,
-				app.DeliverContext.BlockHeight(),
-			)
 
 			app.dbBand.HandleTransaction(stdTx, txHash, logs)
 			involvedAccounts = append(
@@ -241,7 +241,48 @@ func (app *dbBandApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBl
 	if err != nil {
 		panic(err)
 	}
-	// Do other logic
+
+	events := res.GetEvents()
+	for _, event := range events {
+		if event.Type == zoracle.EventTypeRequestExecute {
+			var requestID int64
+			var resolveStatus zoracle.ResolveStatus
+			for _, kv := range event.Attributes {
+				if string(kv.Key) == zoracle.AttributeKeyRequestID {
+					requestID, err = strconv.ParseInt(string(kv.Value), 10, 64)
+					if err != nil {
+						panic(err)
+					}
+				} else if string(kv.Key) == zoracle.AttributeKeyResolveStatus {
+					numResolveStatus, err := strconv.ParseInt(string(kv.Value), 10, 8)
+					if err != nil {
+						panic(err)
+					}
+					resolveStatus = zoracle.ResolveStatus(numResolveStatus)
+				}
+			}
+			// Get result from keeper
+			var rawResult []byte
+			rawResult = nil
+			if resolveStatus == 1 {
+				id := zoracle.RequestID(requestID)
+				request, sdkErr := app.ZoracleKeeper.GetRequest(app.DeliverContext, id)
+				if sdkErr != nil {
+					panic(err)
+				}
+				result, sdkErr := app.ZoracleKeeper.GetResult(app.DeliverContext, id, request.OracleScriptID, request.Calldata)
+				if sdkErr != nil {
+					panic(err)
+				}
+				rawResult = result.Data
+			}
+			err := app.dbBand.ResolveRequest(requestID, resolveStatus, rawResult)
+			if err != nil {
+				panic(err)
+			}
+		}
+	}
+
 	app.dbBand.SetContext(sdk.Context{})
 	return res
 }

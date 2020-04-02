@@ -119,7 +119,7 @@ let make = (~txs: array(TxSub.t)) => {
                      block=true
                      code=true
                      spacing={Text.Em(0.02)}
-                     value={gasFee->TxHook.Coin.getBandAmountFromCoins->Format.fPretty}
+                     value={gasFee->Coin.getBandAmountFromCoins->Format.fPretty}
                      weight=Text.Medium
                      ellipsis=true
                    />

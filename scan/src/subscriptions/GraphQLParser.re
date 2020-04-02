@@ -1,4 +1,5 @@
 let int64 = json => json |> Js.Json.decodeNumber |> Belt.Option.getExn |> int_of_float;
+let string = json => json |> Js.Json.decodeString |> Belt.Option.getExn;
 let buffer = json =>
   json
   |> Js.Json.decodeString
@@ -23,7 +24,7 @@ let coins = str =>
        } else {
          let result = coin |> Js.Re.exec_(coinRegEx) |> Belt_Option.getExn |> Js.Re.captures;
          Some({
-           TxHook.Coin.denom: result[2] |> Js.Nullable.toOption |> Belt_Option.getExn,
+           Coin.denom: result[2] |> Js.Nullable.toOption |> Belt_Option.getExn,
            amount: result[1] |> Js.Nullable.toOption |> Belt_Option.getExn |> float_of_string,
          });
        }

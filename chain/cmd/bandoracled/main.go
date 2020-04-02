@@ -15,6 +15,7 @@ import (
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 	"github.com/tendermint/tendermint/libs/log"
 
+	"github.com/bandprotocol/bandchain/chain/app"
 	"github.com/bandprotocol/bandchain/chain/bandlib"
 	"github.com/bandprotocol/bandchain/chain/byteexec"
 	"github.com/bandprotocol/bandchain/chain/x/zoracle"
@@ -48,6 +49,10 @@ func getLatestRequestID() (zoracle.RequestID, error) {
 }
 
 func main() {
+	config := sdk.GetConfig()
+	app.SetBech32AddressPrefixesAndBip44CoinType(config)
+	config.Seal()
+
 	cmd := &cobra.Command{
 		Use:   "bandoracled",
 		Short: "Band oracle Daemon",

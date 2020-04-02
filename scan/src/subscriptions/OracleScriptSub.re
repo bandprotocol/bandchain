@@ -3,10 +3,12 @@ type t = {
   owner: Address.t,
   name: string,
   description: string,
-  code: JsBuffer.t,
+  codeHash: Hash.t,
   timestamp: MomentRe.Moment.t,
   relatedDataSources: list(ID.DataSource.t),
 };
+
+type oracle_script_code_internal = {codeText: option(string)};
 
 type related_data_source_t = {dataSourceID: ID.DataSource.t};
 
@@ -15,17 +17,17 @@ type internal_t = {
   owner: Address.t,
   name: string,
   description: string,
-  code: JsBuffer.t,
+  codeHash: Hash.t,
   timestamp: MomentRe.Moment.t,
   related_data_sources: array(related_data_source_t),
 };
 
-let toExternal = ({id, owner, description, name, code, timestamp, related_data_sources}) => {
+let toExternal = ({id, owner, description, name, codeHash, timestamp, related_data_sources}) => {
   id,
   owner,
   name,
   description,
-  code,
+  codeHash,
   timestamp,
   relatedDataSources:
     related_data_sources->Belt.Array.map(x => x.dataSourceID)->Belt.List.fromArray,
@@ -39,7 +41,7 @@ module MultiConfig = [%graphql
       owner @bsDecoder(fn: "Address.fromBech32")
       name
       description
-      code @bsDecoder(fn: "GraphQLParser.buffer")
+      codeHash: code_hash @bsDecoder(fn: "GraphQLParser.hash")
       timestamp: last_updated @bsDecoder(fn: "GraphQLParser.time")
       related_data_sources @bsRecord {
         dataSourceID: data_source_id @bsDecoder(fn: "ID.DataSource.fromJson")
@@ -57,7 +59,7 @@ module SingleConfig = [%graphql
       owner @bsDecoder(fn: "Address.fromBech32")
       name
       description
-      code @bsDecoder(fn: "GraphQLParser.buffer")
+      codeHash: code_hash @bsDecoder(fn: "GraphQLParser.hash")
       timestamp: last_updated @bsDecoder(fn: "GraphQLParser.time")
       related_data_sources @bsRecord {
         dataSourceID: data_source_id @bsDecoder(fn: "ID.DataSource.fromJson")
