@@ -38,7 +38,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
                  value={
                    amount
                    ->Belt_List.get(0)
-                   ->Belt_Option.getWithDefault(TxSub.Coin.newCoin("uband", 0.0)).
+                   ->Belt_Option.getWithDefault(Coin.newCoin("uband", 0.0)).
                      amount
                    |> Format.fPretty
                  }
