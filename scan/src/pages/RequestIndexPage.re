@@ -306,7 +306,7 @@ let make = (~reqID) =>
               <Text value="of" weight=Text.Regular color=Colors.gray7 />
               <HSpacing size=Spacing.sm />
               <Text
-                value={request.sufficientValidatorCount |> Format.iPretty}
+                value={request.requestedValidators->Belt_Array.size |> Format.iPretty}
                 weight=Text.Semibold
                 color=Colors.gray7
               />
