@@ -46,7 +46,7 @@ let make = (~children) => {
               oracleScriptID,
               ~calldata,
               ~requestedValidatorCount=4,
-              ~sufficientValidatorCount=3,
+              ~sufficientValidatorCount=4,
               ~expiration=20,
               ~prepareGas=20000,
               ~executeGas=150000,
