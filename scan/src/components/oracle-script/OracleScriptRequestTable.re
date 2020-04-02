@@ -5,6 +5,8 @@ module Styles = {
 
   let withWidth = w => style([width(`px(w))]);
 
+  let txContainer = style([width(`px(230)), cursor(`pointer)]);
+
   let icon = style([width(`px(80)), height(`px(80))]);
   let iconWrapper =
     style([
@@ -116,7 +118,9 @@ let make = (~oracleScriptID: ID.OracleScript.t) =>
                       </Col>
                       <Col size=1.26> <TypeID.Block id=blockHeight /> </Col>
                       <Col size=2.8>
-                        <div className={Styles.withWidth(230)}>
+                        <div
+                          className=Styles.txContainer
+                          onClick={_ => Route.redirect(Route.TxIndexPage(txHash))}>
                           <Text
                             block=true
                             value={txHash |> Hash.toHex(~upper=true)}
