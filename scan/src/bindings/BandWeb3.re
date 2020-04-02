@@ -9,7 +9,10 @@ type account_result_t = {
   sequence: string,
 };
 
-type response_t = {txHash: Hash.t};
+type tx_response_t = {txHash: Hash.t};
+type response_t =
+  | Tx(tx_response_t)
+  | Unknown;
 
 [@bs.module "@cosmostation/cosmosjs"] external network: (string, string) => t = "network";
 
@@ -59,9 +62,8 @@ function(signedMsg) {
 let broadcast = (instance, signedMsg) => {
   addPublicKeyToSignedMsg(signedMsg);
   let%Promise rawResponse = instance->_broadcast(signedMsg);
-
   Promise.ret(
-    JsonUtils.Decode.{txHash: rawResponse |> at(["txhash"], string) |> Hash.fromHex},
+    Tx(JsonUtils.Decode.{txHash: rawResponse |> at(["txhash"], string) |> Hash.fromHex}),
   );
 };
 
