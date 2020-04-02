@@ -52,13 +52,4 @@ module ValidatorReport = {
       );
     result |> Sub.map(_, x => x##reports);
   };
-  // module MultiConfig = [%graphql
-  //   {|
-  //     subscription Reports($validator_address: String!, $limit: Int!, $offset: Int!) {
-  //       reports(where: {validator:{_eq: $validator_address}}, limit: $limit, offset:$offset) @bsRecord{
-  //         txHash: tx_hash @bsDecoder(fn: "Address.fromBech32")
-  //       }
-  //     }
-  //   |}
-  // ];
 };
