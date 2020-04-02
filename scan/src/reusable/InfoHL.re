@@ -1,5 +1,5 @@
 type t =
-  | Height(int)
+  | Height(ID.Block.t)
   | Count(int)
   | Float(float)
   | Text(string)
@@ -53,9 +53,7 @@ let make = (~info, ~header, ~isLeft=true) => {
     </div>
     {switch (info) {
      | Height(height) =>
-       <div className=Styles.vFlex>
-         <TypeID.Block id={ID.Block.ID(height)} position=TypeID.Subtitle />
-       </div>
+       <div className=Styles.vFlex> <TypeID.Block id=height position=TypeID.Subtitle /> </div>
      | Float(value) =>
        <Text
          value={value |> Js.Float.toString}
