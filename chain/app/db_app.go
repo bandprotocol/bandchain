@@ -168,7 +168,6 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 		)
 		if !res.IsOK() {
 			app.dbBand.HandleTransactionFail(stdTx, txHash)
-
 		} else {
 			logs, err := sdk.ParseABCILogs(res.Log)
 			if err != nil {
