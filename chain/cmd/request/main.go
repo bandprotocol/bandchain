@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/bandprotocol/bandchain/chain/app"
 	"github.com/bandprotocol/bandchain/chain/bandlib"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
@@ -23,6 +24,10 @@ const (
 
 // File to send new request to bandchain
 func main() {
+	config := sdk.GetConfig()
+	app.SetBech32AddressPrefixesAndBip44CoinType(config)
+	config.Seal()
+
 	// Get environment variable
 	privS, ok := os.LookupEnv("PRIVATE_KEY")
 	if !ok {

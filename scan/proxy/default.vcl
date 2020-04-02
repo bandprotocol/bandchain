@@ -15,6 +15,11 @@ backend hasura {
   .port = "5433";
 }
 
+backend faucet {
+  .host = "172.18.0.17";
+  .port = "5005";
+}
+
 sub vcl_recv {
   if (req.method == "OPTIONS") {
     return (synth(200));
@@ -26,6 +31,9 @@ sub vcl_recv {
   } else if (req.url ~ "^/rest/") {
     set req.url = regsub(req.url, "^/rest/", "/");
     set req.backend_hint = rest;
+  } else if (req.url ~ "^/faucet/"){
+    set req.url = regsub(req.url, "^/faucet/", "/");
+    set req.backend_hint = faucet;
   } else {
     set req.backend_hint = hasura;
     if (req.http.upgrade ~ "(?i)websocket") {

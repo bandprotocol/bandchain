@@ -1,7 +1,6 @@
 package bandlib
 
 import (
-	"github.com/bandprotocol/bandchain/chain/app"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
@@ -17,16 +16,10 @@ type BandProvider struct {
 	privKey crypto.PrivKey
 }
 
-func privKeyToBandAccAddress(privKey crypto.PrivKey) sdk.AccAddress {
-	config := sdk.GetConfig()
-	app.SetBech32AddressPrefixesAndBip44CoinType(config)
-	return sdk.AccAddress(privKey.PubKey().Address())
-}
-
 // NewBandProvider creates new BandProvider create new cliCtx and txBldr
 func NewBandProvider(nodeURI string, privKey crypto.PrivKey) (BandProvider, error) {
 	cdc := NewCodec()
-	addr := privKeyToBandAccAddress(privKey)
+	addr := sdk.AccAddress(privKey.PubKey().Address())
 	cliCtx := NewCLIContext(nodeURI, addr).WithCodec(cdc)
 	num, _, err := authtypes.NewAccountRetriever(cliCtx).GetAccountNumberSequence(addr)
 	if err != nil {
