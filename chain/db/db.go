@@ -244,11 +244,11 @@ func (b *BandDB) SetContext(ctx sdk.Context) {
 	b.ctx = ctx
 }
 
-func wrapMessage(msg []map[string]interface{}, status string) []map[string]interface{} {
+func wrapMessage(msg []map[string]interface{}, status string) map[string]interface{} {
 	objMsg := make(map[string]interface{})
 	objMsg["messages"] = msg
 	objMsg["status"] = status
-	return []map[string]interface{}{objMsg}
+	return objMsg
 }
 
 func (b *BandDB) HandleTransaction(tx auth.StdTx, txHash []byte, logs sdk.ABCIMessageLogs) {
