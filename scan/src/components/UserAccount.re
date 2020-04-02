@@ -161,7 +161,8 @@ module Balance = {
 
 [@react.component]
 let make = () => {
-  let (addressOpt, dispatchAccount) = React.useContext(AccountContext.context);
+  let (AccountContext.{address: addressOpt}, dispatchAccount) =
+    React.useContext(AccountContext.context);
 
   let connect = () => {
     let mnemonicOpt = Window.prompt("Please enter your mnemonic.", "") |> Js.Nullable.toOption;
