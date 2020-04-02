@@ -131,15 +131,12 @@ let make = (~address) =>
                       <Col> <HSpacing size=Spacing.md /> </Col>
                       <Col size=1. alignSelf=Col.Start> <TypeID.Request id={request.id} /> </Col>
                       <Col size=2. alignSelf=Col.Start>
-                        <div className={Styles.withWidth(140)}>
-                          <Text
-                            value={txHash |> Hash.toBase64}
-                            block=true
-                            code=true
-                            ellipsis=true
-                          />
-                        </div>
-                      </Col>
+                        // TODO: Check TXHASH STYLING
+
+                          <div className={Styles.withWidth(140)}>
+                            <TxLink txHash width=110 />
+                          </div>
+                        </Col>
                       <Col size=2.3 alignSelf=Col.Start>
                         <Row>
                           <TypeID.OracleScript id={request.oracleScript.id} />

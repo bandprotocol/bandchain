@@ -13,6 +13,7 @@ type t =
   | Address(Address.t, int)
   | Fraction(int, int, bool)
   | FloatWithSuffix(float, string)
+  | ValidatorsMini(array(ValidatorSub.Mini.t))
   | Validators(array(ValidatorSub.t));
 
 module Styles = {
@@ -171,11 +172,30 @@ let make = (~info, ~header, ~isLeft=true) => {
        <div className={Styles.addressContainer(maxWidth)}>
          <AddressRender address position=AddressRender.Subtitle />
        </div>
+     | ValidatorsMini(validators) =>
+       <div className=Styles.datasourcesContainer>
+         {validators
+          ->Belt_Array.map(validator =>
+              <div
+                key={validator.operatorAddress |> Address.toBech32}
+                className={Styles.marginRightOnly(10)}>
+                <ValidatorMonikerLink
+                  validatorAddress={validator.operatorAddress}
+                  moniker={validator.moniker}
+                  size=Text.Lg
+                  underline=true
+                />
+              </div>
+            )
+          ->React.array}
+       </div>
      | Validators(validators) =>
        <div className=Styles.datasourcesContainer>
          {validators
           ->Belt_Array.map(validator =>
-              <div key={validator.consensusAddress} className={Styles.marginRightOnly(10)}>
+              <div
+                key={validator.operatorAddress |> Address.toBech32}
+                className={Styles.marginRightOnly(10)}>
                 <ValidatorMonikerLink
                   validatorAddress={validator.operatorAddress}
                   moniker={validator.moniker}

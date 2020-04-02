@@ -110,7 +110,7 @@ let make = (~reqID) =>
         <Col>
           <InfoHL
             info={
-              InfoHL.Validators(
+              InfoHL.ValidatorsMini(
                 request.requestedValidators->Belt_Array.map(({validator}) => validator),
               )
             }
