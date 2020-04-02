@@ -58,7 +58,7 @@ let make = (~children) => {
             );
 
           let wrappedMsg = bandchain->BandWeb3.newStdMsgRequest(msgRequest);
-          let signedMsg = bandchain->BandWeb3.sign(wrappedMsg, privKey);
+          let signedMsg = bandchain->BandWeb3.sign(wrappedMsg, privKey, "block");
           let%Promise res = bandchain->BandWeb3.broadcast(signedMsg);
 
           Promise.ret(res);
