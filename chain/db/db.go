@@ -274,6 +274,18 @@ func (b *BandDB) HandleTransaction(tx auth.StdTx, txHash []byte, logs sdk.ABCIMe
 	b.UpdateTransaction(txHash, messages)
 }
 
+func (b *BandDB) HandleTransactionFail(tx auth.StdTx, txHash []byte) {
+	txMsgs := tx.GetMsgs()
+	messages := make([]map[string]interface{}, 0)
+	for _, txMsg := range txMsgs {
+		message := make(map[string]interface{})
+		message["sender"] = txMsg.GetSigners()[0].String()
+		message["type"] = txMsg.Type()
+		messages = append(messages, message)
+	}
+	b.UpdateTransaction(txHash, messages)
+}
+
 func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]string) (map[string]interface{}, error) {
 	jsonMap := make(map[string]interface{})
 	rawBytes, err := json.Marshal(msg)

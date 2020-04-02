@@ -38,7 +38,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
                  value={
                    amount
                    ->Belt_List.get(0)
-                   ->Belt_Option.getWithDefault(TxSub.Coin.newCoin("uband", 0.0)).
+                   ->Belt_Option.getWithDefault(Coin.newCoin("uband", 0.0)).
                      amount
                    |> Format.fPretty
                  }
@@ -178,7 +178,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
            </>
          : React.null}
     </div>
-  | Request({id, oracleScriptID, sender}) =>
+  | Request({id, oracleScriptID, oracleScriptName, sender}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
       <div className={Styles.withBg(Colors.orange1, 60)}>
@@ -206,7 +206,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
              <TypeID.OracleScript id=oracleScriptID />
              <HSpacing size=Spacing.sm />
              <Text
-               value="Mock Oracle Script" // TODO , replace with wire up data
+               value=oracleScriptName
                color=Colors.gray7
                weight=Text.Medium
                nowrap=true

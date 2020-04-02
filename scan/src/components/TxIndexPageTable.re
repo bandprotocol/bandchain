@@ -25,31 +25,7 @@ module Styles = {
   let thirdCol = 1.20;
 };
 
-// TODO: move it to file later.
-module CopyButton = {
-  open Css;
-
-  [@react.component]
-  let make = (~data) => {
-    <div
-      className={style([
-        backgroundColor(Colors.blue1),
-        padding2(~h=`px(8), ~v=`px(4)),
-        display(`flex),
-        width(`px(103)),
-        borderRadius(`px(6)),
-        cursor(`pointer),
-        boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), rgba(20, 32, 184, 0.2))),
-      ])}
-      onClick={_ => {Copy.copy(data |> JsBuffer.toHex(~with0x=false))}}>
-      <img src=Images.copy className={Css.style([maxHeight(`px(12))])} />
-      <HSpacing size=Spacing.sm />
-      <Text value="Copy as bytes" size=Text.Sm block=true color=Colors.bandBlue nowrap=true />
-    </div>;
-  };
-};
-
-let renderSend = (msg, send: TxHook.Msg.Send.t) => {
+let renderSend = (msg, send: TxSub.Msg.Send.t) => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
     <Col size=Styles.firstCol alignSelf=Col.Start>
@@ -62,7 +38,7 @@ let renderSend = (msg, send: TxHook.Msg.Send.t) => {
     <Col size=Styles.secondCol alignSelf=Col.Start>
       <VSpacing size=Spacing.sm />
       <div className={Styles.addressContainer(170)}>
-        <AddressRender address={msg |> TxHook.Msg.getCreator} />
+        <AddressRender address={msg |> TxSub.Msg.getCreator} />
       </div>
     </Col>
     <Col size=Styles.thirdCol alignSelf=Col.Start>
@@ -84,7 +60,7 @@ let renderSend = (msg, send: TxHook.Msg.Send.t) => {
       <div className=Styles.topicContainer>
         <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className=Styles.hFlex>
-          <Text value={send.amount |> TxHook.Coin.toCoinsString} weight=Text.Semibold code=true />
+          <Text value={send.amount |> Coin.toCoinsString} weight=Text.Semibold code=true />
         </div>
       </div>
       <VSpacing size=Spacing.lg />
@@ -94,7 +70,7 @@ let renderSend = (msg, send: TxHook.Msg.Send.t) => {
 };
 
 // TODO: move it to file later.
-let renderRequest = (msg, request: TxHook.Msg.Request.t) => {
+let renderRequest = (msg, request: TxSub.Msg.Request.t) => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
     <Col size=Styles.firstCol alignSelf=Col.Start>
@@ -103,15 +79,13 @@ let renderRequest = (msg, request: TxHook.Msg.Request.t) => {
           <Text value="REQUEST DATA" size=Text.Sm spacing={Text.Em(0.07)} color=Colors.orange6 />
         </div>
         <VSpacing size=Spacing.md />
-        <div className={Styles.badge(Colors.orange1)}>
-          <TypeID.Request id={ID.Request.ID(request.id)} />
-        </div>
+        <div className={Styles.badge(Colors.orange1)}> <TypeID.Request id={request.id} /> </div>
       </div>
     </Col>
     <Col size=Styles.secondCol alignSelf=Col.Start>
       <VSpacing size=Spacing.sm />
       <div className={Styles.addressContainer(170)}>
-        <AddressRender address={msg |> TxHook.Msg.getCreator} />
+        <AddressRender address={msg |> TxSub.Msg.getCreator} />
       </div>
     </Col>
     <Col size=Styles.thirdCol alignSelf=Col.Start>
@@ -119,9 +93,9 @@ let renderRequest = (msg, request: TxHook.Msg.Request.t) => {
       <div className=Styles.topicContainer>
         <Text value="ORACLE SCRIPT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className=Styles.hFlex>
-          <TypeID.OracleScript id={ID.OracleScript.ID(request.oracleScriptID)} />
+          <TypeID.OracleScript id={request.oracleScriptID} />
           <HSpacing size=Spacing.sm />
-          <Text value="Mock oracle script name" />
+          <Text value={request.oracleScriptName} />
         </div>
       </div>
       <VSpacing size=Spacing.lg />
@@ -134,10 +108,14 @@ let renderRequest = (msg, request: TxHook.Msg.Request.t) => {
       <VSpacing size=Spacing.md />
       // TODO: Mock calldata
       <KVTable
-        kv=[
-          ("crypto_symbol", "BTC"),
-          ("aggregation_method", "mean"),
-          ("data_sources", "Binance v1, coingecko v1, coinmarketcap v1, band-validator"),
+        tableWidth=480
+        rows=[
+          [KVTable.Value("crypto_symbol"), KVTable.Value("BTC")],
+          [KVTable.Value("aggregation_method"), KVTable.Value("mean")],
+          [
+            KVTable.Value("data_sources"),
+            KVTable.Value("Binance v1, coingecko v1, coinmarketcap v1, band-validator"),
+          ],
         ]
       />
       <VSpacing size=Spacing.xl />
@@ -175,7 +153,7 @@ let renderRequest = (msg, request: TxHook.Msg.Request.t) => {
   </Row>;
 };
 
-let renderReport = (msg, report: TxHook.Msg.Report.t) => {
+let renderReport = (msg, report: TxSub.Msg.Report.t) => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
     <Col size=Styles.firstCol alignSelf=Col.Start>
@@ -188,7 +166,7 @@ let renderReport = (msg, report: TxHook.Msg.Report.t) => {
     <Col size=Styles.secondCol alignSelf=Col.Start>
       <VSpacing size=Spacing.sm />
       <div className={Styles.addressContainer(170)}>
-        <AddressRender address={msg |> TxHook.Msg.getCreator} />
+        <AddressRender address={msg |> TxSub.Msg.getCreator} />
       </div>
     </Col>
     <Col size=Styles.thirdCol alignSelf=Col.Start>
@@ -205,14 +183,15 @@ let renderReport = (msg, report: TxHook.Msg.Report.t) => {
       </div>
       <VSpacing size=Spacing.md />
       <KVTable
-        header=["EXTERNAL ID", "VALUE"]
-        kv={
+        tableWidth=480
+        headers=["EXTERNAL ID", "VALUE"]
+        rows={
           report.dataSet
           |> Belt_List.map(_, rawReport =>
-               (
-                 rawReport.externalDataID |> string_of_int,
-                 rawReport.data |> JsBuffer._toString(_, "UTF-8"),
-               )
+               [
+                 KVTable.Value(rawReport.externalDataID |> string_of_int),
+                 KVTable.Value(rawReport.data |> JsBuffer._toString(_, "UTF-8")),
+               ]
              )
         }
       />
@@ -222,7 +201,7 @@ let renderReport = (msg, report: TxHook.Msg.Report.t) => {
   </Row>;
 };
 
-let renderCreateDataSource = (msg, dataSource: TxHook.Msg.CreateDataSource.t) => {
+let renderCreateDataSource = (msg, dataSource: TxSub.Msg.CreateDataSource.t) => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
     <Col size=Styles.firstCol alignSelf=Col.Start>
@@ -238,14 +217,14 @@ let renderCreateDataSource = (msg, dataSource: TxHook.Msg.CreateDataSource.t) =>
         </div>
         <VSpacing size=Spacing.sm />
         <div className={Styles.badge(Colors.yellow1)}>
-          <TypeID.DataSource id={ID.DataSource.ID(dataSource.id)} />
+          <TypeID.DataSource id={dataSource.id} />
         </div>
       </div>
     </Col>
     <Col size=Styles.secondCol alignSelf=Col.Start>
       <VSpacing size=Spacing.md />
       <div className={Styles.addressContainer(170)}>
-        <AddressRender address={msg |> TxHook.Msg.getCreator} />
+        <AddressRender address={msg |> TxSub.Msg.getCreator} />
       </div>
     </Col>
     <Col size=Styles.thirdCol alignSelf=Col.Start>
@@ -260,7 +239,7 @@ let renderCreateDataSource = (msg, dataSource: TxHook.Msg.CreateDataSource.t) =>
       <div className=Styles.topicContainer>
         <Text value="NAME" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className=Styles.hFlex>
-          <TypeID.DataSource id={ID.DataSource.ID(dataSource.id)} />
+          <TypeID.DataSource id={dataSource.id} />
           <HSpacing size=Spacing.sm />
           <Text value={dataSource.name} />
         </div>
@@ -269,7 +248,7 @@ let renderCreateDataSource = (msg, dataSource: TxHook.Msg.CreateDataSource.t) =>
       <div className=Styles.topicContainer>
         <Text value="FEE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className=Styles.hFlex>
-          <Text value={dataSource.fee |> TxHook.Coin.toCoinsString} weight=Text.Bold code=true />
+          <Text value={dataSource.fee |> Coin.toCoinsString} weight=Text.Bold code=true />
         </div>
       </div>
       <VSpacing size=Spacing.md />
@@ -278,7 +257,7 @@ let renderCreateDataSource = (msg, dataSource: TxHook.Msg.CreateDataSource.t) =>
   </Row>;
 };
 
-let renderEditDataSource = (msg, dataSource: TxHook.Msg.EditDataSource.t) => {
+let renderEditDataSource = (msg, dataSource: TxSub.Msg.EditDataSource.t) => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
     <Col size=Styles.firstCol alignSelf=Col.Start>
@@ -294,14 +273,14 @@ let renderEditDataSource = (msg, dataSource: TxHook.Msg.EditDataSource.t) => {
         </div>
         <VSpacing size=Spacing.sm />
         <div className={Styles.badge(Colors.yellow1)}>
-          <TypeID.DataSource id={ID.DataSource.ID(dataSource.id)} />
+          <TypeID.DataSource id={dataSource.id} />
         </div>
       </div>
     </Col>
     <Col size=Styles.secondCol alignSelf=Col.Start>
       <VSpacing size=Spacing.md />
       <div className={Styles.addressContainer(170)}>
-        <AddressRender address={msg |> TxHook.Msg.getCreator} />
+        <AddressRender address={msg |> TxSub.Msg.getCreator} />
       </div>
     </Col>
     <Col size=Styles.thirdCol alignSelf=Col.Start>
@@ -316,7 +295,7 @@ let renderEditDataSource = (msg, dataSource: TxHook.Msg.EditDataSource.t) => {
       <div className=Styles.topicContainer>
         <Text value="NAME" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className=Styles.hFlex>
-          <TypeID.DataSource id={ID.DataSource.ID(dataSource.id)} />
+          <TypeID.DataSource id={dataSource.id} />
           <HSpacing size=Spacing.sm />
           <Text value={dataSource.name} />
         </div>
@@ -325,7 +304,7 @@ let renderEditDataSource = (msg, dataSource: TxHook.Msg.EditDataSource.t) => {
       <div className=Styles.topicContainer>
         <Text value="FEE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className=Styles.hFlex>
-          <Text value={dataSource.fee |> TxHook.Coin.toCoinsString} weight=Text.Bold code=true />
+          <Text value={dataSource.fee |> Coin.toCoinsString} weight=Text.Bold code=true />
         </div>
       </div>
       <VSpacing size=Spacing.md />
@@ -334,7 +313,7 @@ let renderEditDataSource = (msg, dataSource: TxHook.Msg.EditDataSource.t) => {
   </Row>;
 };
 
-let renderCreateOracleScript = (msg, oracleScript: TxHook.Msg.CreateOracleScript.t) => {
+let renderCreateOracleScript = (msg, oracleScript: TxSub.Msg.CreateOracleScript.t) => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
     <Col size=Styles.firstCol alignSelf=Col.Start>
@@ -350,14 +329,14 @@ let renderCreateOracleScript = (msg, oracleScript: TxHook.Msg.CreateOracleScript
         </div>
         <VSpacing size=Spacing.sm />
         <div className={Styles.badge(Colors.pink1)}>
-          <TypeID.OracleScript id={ID.OracleScript.ID(oracleScript.id)} />
+          <TypeID.OracleScript id={oracleScript.id} />
         </div>
       </div>
     </Col>
     <Col size=Styles.secondCol alignSelf=Col.Start>
       <VSpacing size=Spacing.md />
       <div className={Styles.addressContainer(170)}>
-        <AddressRender address={msg |> TxHook.Msg.getCreator} />
+        <AddressRender address={msg |> TxSub.Msg.getCreator} />
       </div>
     </Col>
     <Col size=Styles.thirdCol alignSelf=Col.Start>
@@ -372,7 +351,7 @@ let renderCreateOracleScript = (msg, oracleScript: TxHook.Msg.CreateOracleScript
       <div className=Styles.topicContainer>
         <Text value="NAME" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className=Styles.hFlex>
-          <TypeID.OracleScript id={ID.OracleScript.ID(oracleScript.id)} />
+          <TypeID.OracleScript id={oracleScript.id} />
           <HSpacing size=Spacing.sm />
           <Text value={oracleScript.name} />
         </div>
@@ -383,7 +362,7 @@ let renderCreateOracleScript = (msg, oracleScript: TxHook.Msg.CreateOracleScript
   </Row>;
 };
 
-let renderEditOracleScript = (msg, oracleScript: TxHook.Msg.EditOracleScript.t) => {
+let renderEditOracleScript = (msg, oracleScript: TxSub.Msg.EditOracleScript.t) => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
     <Col size=Styles.firstCol alignSelf=Col.Start>
@@ -399,14 +378,14 @@ let renderEditOracleScript = (msg, oracleScript: TxHook.Msg.EditOracleScript.t) 
         </div>
         <VSpacing size=Spacing.sm />
         <div className={Styles.badge(Colors.pink1)}>
-          <TypeID.OracleScript id={ID.OracleScript.ID(oracleScript.id)} />
+          <TypeID.OracleScript id={oracleScript.id} />
         </div>
       </div>
     </Col>
     <Col size=Styles.secondCol alignSelf=Col.Start>
       <VSpacing size=Spacing.md />
       <div className={Styles.addressContainer(170)}>
-        <AddressRender address={msg |> TxHook.Msg.getCreator} />
+        <AddressRender address={msg |> TxSub.Msg.getCreator} />
       </div>
     </Col>
     <Col size=Styles.thirdCol alignSelf=Col.Start>
@@ -421,7 +400,7 @@ let renderEditOracleScript = (msg, oracleScript: TxHook.Msg.EditOracleScript.t) 
       <div className=Styles.topicContainer>
         <Text value="NAME" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className=Styles.hFlex>
-          <TypeID.OracleScript id={ID.OracleScript.ID(oracleScript.id)} />
+          <TypeID.OracleScript id={oracleScript.id} />
           <HSpacing size=Spacing.sm />
           <Text value={oracleScript.name} />
         </div>
@@ -432,7 +411,7 @@ let renderEditOracleScript = (msg, oracleScript: TxHook.Msg.EditOracleScript.t) 
   </Row>;
 };
 
-let renderAddOracleAddress = (msg, address: TxHook.Msg.AddOracleAddress.t) => {
+let renderAddOracleAddress = (msg, address: TxSub.Msg.AddOracleAddress.t) => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
     <Col size=Styles.firstCol alignSelf=Col.Start>
@@ -450,26 +429,26 @@ let renderAddOracleAddress = (msg, address: TxHook.Msg.AddOracleAddress.t) => {
     <Col size=Styles.secondCol alignSelf=Col.Start>
       <VSpacing size=Spacing.sm />
       <div className={Styles.addressContainer(170)}>
-        <AddressRender address={msg |> TxHook.Msg.getCreator} />
+        <AddressRender address={msg |> TxSub.Msg.getCreator} />
       </div>
     </Col>
     <Col size=Styles.thirdCol alignSelf=Col.Start>
       <VSpacing size=Spacing.sm />
       <div className=Styles.topicContainer>
         <Text value="VALIDATOR" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-        <Text value={address.validator} code=true />
+        <Text value={address.validatorMoniker} code=true />
       </div>
       <VSpacing size=Spacing.lg />
       <div className=Styles.topicContainer>
         <Text value="REPORTER ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-        <AddressRender address={address.reporterAddress} />
+        <AddressRender address={address.reporter} />
       </div>
     </Col>
     <Col> <HSpacing size=Spacing.md /> </Col>
   </Row>;
 };
 
-let renderRemoveOracleAddress = (msg, address: TxHook.Msg.RemoveOracleAddress.t) => {
+let renderRemoveOracleAddress = (msg, address: TxSub.Msg.RemoveOracleAddress.t) => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
     <Col size=Styles.firstCol alignSelf=Col.Start>
@@ -487,26 +466,26 @@ let renderRemoveOracleAddress = (msg, address: TxHook.Msg.RemoveOracleAddress.t)
     <Col size=Styles.secondCol alignSelf=Col.Start>
       <VSpacing size=Spacing.sm />
       <div className={Styles.addressContainer(170)}>
-        <AddressRender address={msg |> TxHook.Msg.getCreator} />
+        <AddressRender address={msg |> TxSub.Msg.getCreator} />
       </div>
     </Col>
     <Col size=Styles.thirdCol alignSelf=Col.Start>
       <VSpacing size=Spacing.sm />
       <div className=Styles.topicContainer>
         <Text value="VALIDATOR" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-        <Text value={address.validator} code=true />
+        <Text value={address.validatorMoniker} code=true />
       </div>
       <VSpacing size=Spacing.lg />
       <div className=Styles.topicContainer>
         <Text value="REPORTER ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-        <AddressRender address={address.reporterAddress} />
+        <AddressRender address={address.reporter} />
       </div>
     </Col>
     <Col> <HSpacing size=Spacing.md /> </Col>
   </Row>;
 };
 
-let renderCreateValidator = (msg, validator: TxHook.Msg.CreateValidator.t) => {
+let renderCreateValidator = (msg, validator: TxSub.Msg.CreateValidator.t) => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
     <Col size=Styles.firstCol alignSelf=Col.Start>
@@ -524,7 +503,7 @@ let renderCreateValidator = (msg, validator: TxHook.Msg.CreateValidator.t) => {
     <Col size=Styles.secondCol alignSelf=Col.Start>
       <VSpacing size=Spacing.sm />
       <div className={Styles.addressContainer(170)}>
-        <AddressRender address={msg |> TxHook.Msg.getCreator} />
+        <AddressRender address={msg |> TxSub.Msg.getCreator} />
       </div>
     </Col>
     <Col size=Styles.thirdCol alignSelf=Col.Start>
@@ -598,7 +577,11 @@ let renderCreateValidator = (msg, validator: TxHook.Msg.CreateValidator.t) => {
       <div className=Styles.topicContainer>
         <Text value="MIN SELF DELEGATION" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className=Styles.hFlex>
-          <Text value="100.00" weight=Text.Semibold code=true />
+          <Text
+            value={validator.minSelfDelegation |> Js.Float.toString}
+            weight=Text.Semibold
+            code=true
+          />
           <HSpacing size=Spacing.sm />
           <Text value="BAND" weight=Text.Thin code=true />
         </div>
@@ -617,7 +600,7 @@ let renderCreateValidator = (msg, validator: TxHook.Msg.CreateValidator.t) => {
   </Row>;
 };
 
-let renderEditValidator = (msg, validator: TxHook.Msg.EditValidator.t) => {
+let renderEditValidator = (msg, validator: TxSub.Msg.EditValidator.t) => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
     <Col size=Styles.firstCol alignSelf=Col.Start>
@@ -635,7 +618,7 @@ let renderEditValidator = (msg, validator: TxHook.Msg.EditValidator.t) => {
     <Col size=Styles.secondCol alignSelf=Col.Start>
       <VSpacing size=Spacing.sm />
       <div className={Styles.addressContainer(170)}>
-        <AddressRender address={msg |> TxHook.Msg.getCreator} />
+        <AddressRender address={msg |> TxSub.Msg.getCreator} />
       </div>
     </Col>
     <Col size=Styles.thirdCol alignSelf=Col.Start>
@@ -672,7 +655,7 @@ let renderEditValidator = (msg, validator: TxHook.Msg.EditValidator.t) => {
       <VSpacing size=Spacing.md />
       <div className=Styles.topicContainer>
         <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-        <AddressRender address={validator.validatorAddress} validator=true />
+        <AddressRender address={validator.sender} validator=true />
       </div>
       <VSpacing size=Spacing.md />
       <div className=Styles.topicContainer>
@@ -688,8 +671,8 @@ let renderEditValidator = (msg, validator: TxHook.Msg.EditValidator.t) => {
   </Row>;
 };
 
-let renderBody = (msg: TxHook.Msg.t) => {
-  switch (msg.action) {
+let renderBody = (msg: TxSub.Msg.t) => {
+  switch (msg) {
   | Send(send) => renderSend(msg, send)
   | CreateDataSource(dataSource) => renderCreateDataSource(msg, dataSource)
   | EditDataSource(dataSource) => renderEditDataSource(msg, dataSource)
@@ -706,66 +689,7 @@ let renderBody = (msg: TxHook.Msg.t) => {
 };
 
 [@react.component]
-let make = (~messages: list(TxHook.Msg.t)) => {
-  let messages =
-    TxHook.Msg.[
-      {
-        action:
-          AddOracleAddress({
-            validator: "node-validator-2",
-            reporterAddress: "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs" |> Address.fromBech32,
-            sender: "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs" |> Address.fromBech32,
-          }),
-        events: [],
-      },
-      {
-        action:
-          RemoveOracleAddress({
-            validator: "node-validator-2",
-            reporterAddress: "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs" |> Address.fromBech32,
-            sender: "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs" |> Address.fromBech32,
-          }),
-        events: [],
-      },
-      {
-        action:
-          CreateValidator({
-            moniker: "Bitkrub-node-validator",
-            identity: "Bitkrub The next generation digital asset exchange",
-            website: "https://www.bitkrub.com/",
-            details: "CEO Changpeng Zhao had previously founded Fusion Systems in 2005 in Shanghai; the company built high-frequency trading systems for brokers.",
-            commissionRate: 3.5250,
-            commissionMaxRate: 10.0000,
-            commissionMaxChange: 0.1000,
-            delegatorAddress: "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs" |> Address.fromBech32,
-            validatorAddress:
-              "bandvaloper1p40yh3zkmhcv0ecqp3mcazy83sa57rgjde6wec" |> Address.fromBech32,
-            publicKey:
-              "bandvalconspub1addwnpepq0grwz83v8g4s06fusnq5s4jkzxnhgvx67qr5g7v8tx39ur5m8tk7rg2nxj"
-              |> PubKey.fromBech32,
-            minSelfDelegation: [{denom: "uband", amount: 100.00}],
-            selfDelegation: [{denom: "uband", amount: 150.00}],
-            sender: "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs" |> Address.fromBech32,
-          }),
-        events: [],
-      },
-      {
-        action:
-          EditValidator({
-            moniker: "Bitkrub-node-validator",
-            identity: "Bitkrub The next generation digital asset exchange",
-            website: "https://www.bitkrub.com/",
-            details: "CEO Changpeng Zhao had previously founded Fusion Systems in 2005 in Shanghai; the company built high-frequency trading systems for brokers.",
-            commissionRate: 3.5250,
-            validatorAddress:
-              "bandvaloper1p40yh3zkmhcv0ecqp3mcazy83sa57rgjde6wec" |> Address.fromBech32,
-            minSelfDelegation: [{denom: "uband", amount: 100.00}],
-            sender: "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs" |> Address.fromBech32,
-          }),
-        events: [],
-      },
-      ...messages,
-    ];
+let make = (~messages: list(TxSub.Msg.t)) => {
   <>
     <THead>
       <Row>

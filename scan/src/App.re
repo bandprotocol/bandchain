@@ -41,6 +41,18 @@ module Styles = {
 
   let logoContainer = style([display(`flex), alignItems(`center), cursor(`pointer)]);
 
+  let socialLink =
+    style([
+      display(`flex),
+      flexDirection(`row),
+      justifyContent(`center),
+      alignItems(`center),
+      marginLeft(`px(10)),
+    ]);
+
+  let twitterLogo = style([width(`px(15))]);
+  let telegramLogo = style([width(`px(15))]);
+
   let routeContainer = style([minHeight(`calc((`sub, `vh(100.), `px(300))))]);
 };
 
@@ -85,6 +97,20 @@ module TopBar = {
                 </div>
               </div>
             </Col>
+            <Col alignSelf=Col.End>
+              <div className=Styles.rFlex>
+                <div className=Styles.socialLink>
+                  <a href="https://twitter.com/bandprotocol" target="_blank" rel="noopener">
+                    <img src=Images.twitterLogo className=Styles.twitterLogo />
+                  </a>
+                </div>
+                <div className=Styles.socialLink>
+                  <a href="https://t.me/bandprotocol" target="_blank" rel="noopener">
+                    <img src=Images.telegramLogo className=Styles.telegramLogo />
+                  </a>
+                </div>
+              </div>
+            </Col>
           </Row>
         </div>
         <SearchBar />
@@ -94,22 +120,6 @@ module TopBar = {
 
 [@react.component]
 let make = () => {
-  // Example (Remove later)
-  let (addressOpt, dispatchAccount) = React.useContext(AccountContext.context);
-  React.useEffect0(_ => {
-    dispatchAccount(
-      Connect(
-        "smile stem oven genius cave resource better lunar nasty moon company ridge brass rather supply used horn three panic put venue analyst leader comic",
-      ),
-    );
-    None;
-  });
-
-  switch (addressOpt) {
-  | Some(address) => Js.Console.log(address |> Address.toBech32)
-  | None => ()
-  };
-
   <div className=Styles.container>
     <TopBar />
     <div className={Css.merge([Styles.innerContainer, Styles.pageWidth])}>
@@ -129,7 +139,7 @@ let make = () => {
          | BlockIndexPage(height) => <BlockIndexPage height={ID.Block.ID(height)} />
          | ValidatorHomePage => <ValidatorHomePage />
          | RequestHomePage => <RequestHomePage />
-         | RequestIndexPage(reqID) => <RequestIndexPage reqID />
+         | RequestIndexPage(reqID) => <RequestIndexPage reqID={ID.Request.ID(reqID)} />
          | AccountIndexPage(address, hashtag) => <AccountIndexPage address hashtag />
          | ValidatorIndexPage(address, hashtag) => <ValidatorIndexPage address hashtag />
          | NotFound => <NotFound />
