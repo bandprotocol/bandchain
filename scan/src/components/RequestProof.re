@@ -29,9 +29,24 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~requestID:ID.Request.t) => {
-  let proofOpt = ProofHook.get(requestID);
+let make = (~requestID: ID.Request.t) => {
+  let (proofOpt, reload) = ProofHook.get(requestID);
   let (showProof, setShowProof) = React.useState(_ => false);
+
+  React.useEffect1(
+    () => {
+      let intervalID =
+        Js.Global.setInterval(
+          () =>
+            if (proofOpt == None) {
+              reload((), ());
+            },
+          2000,
+        );
+      Some(() => Js.Global.clearInterval(intervalID));
+    },
+    [|proofOpt|],
+  );
 
   switch (proofOpt) {
   | Some(proof) =>
