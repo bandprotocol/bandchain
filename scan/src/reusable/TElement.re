@@ -5,15 +5,6 @@ module Styles = {
 
   let resolveIcon = style([width(`px(20)), height(`px(20)), marginLeft(Spacing.sm)]);
 
-  let msgIcon =
-    style([
-      width(`px(30)),
-      height(`px(30)),
-      marginTop(`px(5)),
-      marginLeft(Spacing.xl),
-      marginRight(Spacing.xl),
-    ]);
-
   let hashContainer = style([maxWidth(`px(220))]);
   let feeContainer = style([display(`flex), justifyContent(`flexEnd)]);
   let timeContainer = style([display(`flex), alignItems(`center), maxWidth(`px(150))]);
@@ -190,21 +181,6 @@ let renderRequestStatus = status => {
     />
   </div>;
 };
-
-let msgIcon =
-  fun
-  | TxSub.Msg.CreateDataSource(_) => Images.newScript
-  | EditDataSource(_) => Images.newScript
-  | CreateOracleScript(_) => Images.newScript
-  | EditOracleScript(_) => Images.newScript
-  | Send(_) => Images.sendCoin
-  | Request(_) => Images.dataRequest
-  | Report(_) => Images.report
-  | AddOracleAddress(_) => Images.checkIcon
-  | RemoveOracleAddress(_) => Images.checkIcon
-  | CreateValidator(_) => Images.checkIcon
-  | EditValidator(_) => Images.checkIcon
-  | Unknown => Images.checkIcon;
 
 type t =
   | Height(int)
