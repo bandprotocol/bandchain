@@ -87,17 +87,22 @@ module Styles = {
   let logo = style([width(`px(15))]);
 };
 
-let parameterInput = (name, index, setCalldataList) => {
-  <div className=Styles.listContainer key=name>
-    <Text value=name size=Text.Md color=Colors.gray6 />
+type param_t = {
+  paramName: string,
+  paramType: string,
+};
+
+let parameterInput = ({paramName, paramType}, index, setCalldataArr) => {
+  <div className=Styles.listContainer key=paramName>
+    <Text value={j|$paramName ($paramType)|j} size=Text.Md color=Colors.gray6 />
     <VSpacing size=Spacing.xs />
     <input
       className=Styles.input
       type_="text"
       onChange={event => {
         let newVal = ReactEvent.Form.target(event)##value;
-        setCalldataList(prev => {
-          prev->Belt_List.mapWithIndex((i, value) => {index == i ? newVal : value})
+        setCalldataArr(prev => {
+          prev->Belt_Array.mapWithIndex((i, value) => {index == i ? newVal : value})
         });
       }}
     />
@@ -128,7 +133,7 @@ type result_t =
   | Nothing
   | Loading
   | Error(string)
-  | Success(string);
+  | Success(Hash.t);
 
 let loadingRender = (wDiv, wImg, h) => {
   <div className={Styles.withWH(wDiv, h)}>
@@ -152,8 +157,8 @@ let resultRender = result => {
         <Text value=err />
       </div>
     </>
-  | Success(_output) =>
-    let isFinish = Js.Math.random_int(0, 2) > 0;
+  | Success(txHash) =>
+    let isFinish = false;
     let kvs = [["Price", "866825"], ["Random", "135730902915"]];
     let proof =
       "0x0000000000000000000434000000009024900000000000b0a0df0000000fd070a00b0becd989f8989af9c80000fd070a00b0becd989f8989af"
@@ -182,12 +187,7 @@ let resultRender = result => {
           <div className={Styles.resultWrapper(`px(220), `px(12), `zero, `auto)}>
             <Text value="TX HASH" size=Text.Sm color=Colors.gray6 weight=Text.Semibold />
           </div>
-          <TxLink
-            txHash={
-              "D0023B6243CBBC6BC72C2543C87D55345257229868ED40C01C967A649B6F9BFD" |> Hash.fromHex
-            }
-            width=500
-          />
+          <TxLink txHash width=500 />
         </div>
         <VSpacing size=Spacing.lg />
         {isFinish
@@ -273,15 +273,20 @@ let resultRender = result => {
 };
 
 [@react.component]
-let make = (~code: Hash.t) => {
-  let params = ["Symbol", "Multiplier"]; // TODO, replace this mock by the real deal
-  let numParams = params->Belt_List.length;
-  // TODO: wire up later
-  Js.Console.log(code);
+let make = (~id: ID.OracleScript.t, ~schemaOpt: option(string)) => {
+  let (AccountContext.{sendRequest}, _) = React.useContext(AccountContext.context);
 
-  // let (callDataList, setCallDataList) = React.useState(_ => Belt_List.make(numParams, ""));
+  let schema = schemaOpt->Belt_Option.getWithDefault("");
+  let params =
+    schema
+    ->Borsh.extractFields("Input")
+    ->Belt_Option.getWithDefault([||])
+    ->Belt_Array.map(((paramName, paramType)) => {paramName, paramType});
 
-  // let (result, setResult) = React.useState(_ => Nothing);
+  let numParams = params->Belt_Array.size;
+
+  let (callDataArr, setCallDataArr) = React.useState(_ => Belt_Array.make(numParams, ""));
+  let (result, setResult) = React.useState(_ => Nothing);
 
   <div className=Styles.container>
     <div className={Styles.hFlex(`auto)}>
@@ -302,47 +307,63 @@ let make = (~code: Hash.t) => {
            />}
     </div>
     <VSpacing size=Spacing.lg />
-    // {numParams > 0
-    //    ? <div className=Styles.paramsContainer>
-    //        {params
-    //         ->Belt_List.mapWithIndex((i, param) => parameterInput(param, i, setCallDataList))
-    //         ->Belt_List.toArray
-    //         ->React.array}
-    //      </div>
-    //    : React.null}
+    {numParams > 0
+       ? <div className=Styles.paramsContainer>
+           {params
+            ->Belt_Array.mapWithIndex((i, param) => parameterInput(param, i, setCallDataArr))
+            ->React.array}
+         </div>
+       : React.null}
     <VSpacing size=Spacing.md />
+    <div className=Styles.buttonContainer>
+      <button
+        className={Styles.button(result == Loading)}
+        onClick={_ =>
+          if (result != Loading) {
+            switch (
+              Borsh.encode(
+                schema,
+                "Input",
+                params->Belt_Array.map(({paramName}) => paramName)->Belt_Array.zip(callDataArr),
+              )
+            ) {
+            | Some(encoded) =>
+              setResult(_ => Loading);
+              Js.Console.log4(
+                schema,
+                "Input",
+                params->Belt_Array.map(({paramName}) => paramName)->Belt_Array.zip(callDataArr),
+                encoded,
+              );
+              let _ =
+                sendRequest(id, encoded)
+                |> Js.Promise.then_(res =>
+                     switch (res) {
+                     | BandWeb3.Tx({txHash}) =>
+                       setResult(_ => Success(txHash));
+                       Js.Promise.resolve();
+                     | BandWeb3.Unknown =>
+                       setResult(_ =>
+                         Error("Fail to sign message, please connect with mnemonic first")
+                       );
+                       Js.Promise.resolve();
+                     }
+                   )
+                |> Js.Promise.catch(err => {
+                     let errorValue =
+                       Js.Json.stringifyAny(err)->Belt_Option.getWithDefault("Unknown");
+                     setResult(_ => Error(errorValue));
+                     Js.Promise.resolve();
+                   });
+              ();
+            | None => setResult(_ => Error("Encoding fail, please check each parameter's type"))
+            };
+            ();
+          }
+        }>
+        {(result == Loading ? "Sending Request ... " : "Request") |> React.string}
+      </button>
+    </div>
+    {resultRender(result)}
   </div>;
-  // <div className=Styles.buttonContainer>
-  // <button className={Styles.button(result == Loading)}>
-  // onClick={_ =>
-  //   if (result != Loading) {
-  //     setResult(_ => Loading);
-  //     let _ =
-  //       AxiosRequest.request(
-  //         AxiosRequest.t(
-  //           ~executable=code->JsBuffer.toHex,
-  //           ~calldata={
-  //             callDataList
-  //             ->Belt_List.reduce("", (acc, calldata) => acc ++ " " ++ calldata)
-  //             ->String.trim;
-  //           },
-  //         ),
-  //       )
-  //       |> Js.Promise.then_(res => {
-  //            setResult(_ => Success(res##data##result));
-  //            Js.Promise.resolve();
-  //          })
-  //       |> Js.Promise.catch(_err => {
-  //            //  let errorValue =
-  //            //    Js.Json.stringifyAny(err)->Belt_Option.getWithDefault("Unknown");
-  //            //  setResult(_ => Error(errorValue));
-  //            setResult(_ => Success("test"));
-  //            Js.Promise.resolve();
-  //          });
-  //     ();
-  //   }
-  // }
-  //  {(result == Loading ? "Sending Request ... " : "Request") |> React.string} </button>
-  // </div>
-  // {resultRender(result)}
 };
