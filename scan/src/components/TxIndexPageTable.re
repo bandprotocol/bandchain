@@ -95,7 +95,7 @@ let renderRequest = (msg, request: TxSub.Msg.Request.t) => {
         <div className=Styles.hFlex>
           <TypeID.OracleScript id={request.oracleScriptID} />
           <HSpacing size=Spacing.sm />
-          <Text value="Mock oracle script name" />
+          <Text value={request.oracleScriptName} />
         </div>
       </div>
       <VSpacing size=Spacing.lg />
