@@ -9,7 +9,11 @@ type account_result_t = {
   sequence: string,
 };
 
-type tx_response_t = {txHash: Hash.t};
+type tx_response_t = {
+  txHash: Hash.t,
+  success: bool,
+};
+
 type response_t =
   | Tx(tx_response_t)
   | Unknown;
@@ -30,7 +34,7 @@ type response_t =
 
 [@bs.send] external newStdMsgRequest: (t, StdMsgRequest.t) => wrapped_msg_t = "newStdMsg";
 
-[@bs.send] external sign: (t, wrapped_msg_t, JsBuffer.t) => signed_msg_t = "sign";
+[@bs.send] external sign: (t, wrapped_msg_t, JsBuffer.t, string) => signed_msg_t = "sign";
 
 [@bs.send] external _broadcast: (t, signed_msg_t) => Js.Promise.t(Js.Json.t) = "broadcast";
 
@@ -63,7 +67,15 @@ let broadcast = (instance, signedMsg) => {
   addPublicKeyToSignedMsg(signedMsg);
   let%Promise rawResponse = instance->_broadcast(signedMsg);
   Promise.ret(
-    Tx(JsonUtils.Decode.{txHash: rawResponse |> at(["txhash"], string) |> Hash.fromHex}),
+    Tx(
+      JsonUtils.Decode.{
+        txHash: rawResponse |> at(["txhash"], string) |> Hash.fromHex,
+        success:
+          (rawResponse |> optional(field("logs", list(log => log |> field("success", bool)))))
+          ->Belt_Option.getWithDefault([])
+          ->Belt_List.some(isSuccess => isSuccess),
+      },
+    ),
   );
 };
 
