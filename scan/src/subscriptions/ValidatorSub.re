@@ -165,20 +165,3 @@ module GlobalInfo = {
     {totalSupply: 10849023, inflationRate: 12.45, avgBlockTime: 2.59};
   };
 };
-
-// type block_t = {
-//   hash: Hash.t,
-//   height: int,
-//   timestamp: MomentRe.Moment.t,
-//   proposer: Address.t,
-//   numTxs: int,
-// };
-
-// type report_t = {
-//   request_id: int,
-//   tx_hash: Hash.t,
-//   oracleScriptID: int,
-//   oracleScriptName: string,
-//   dataSourceIDList: list(int),
-//   externalIDs: list(int),
-//   externalVaues: list(int),
