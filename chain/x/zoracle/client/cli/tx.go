@@ -30,8 +30,6 @@ const (
 	flagExpiration               = "expiration"
 	flagPrepareGas               = "prepare-gas"
 	flagExecuteGas               = "execute-gas"
-	flagValidator                = "validator"
-	flagReporter                 = "reporter"
 )
 
 // GetTxCmd returns the transaction commands for this module
