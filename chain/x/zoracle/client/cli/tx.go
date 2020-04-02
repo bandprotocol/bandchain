@@ -531,7 +531,7 @@ func GetCmdAddOracleAddress(cdc *codec.Codec) *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Add an agent authorized to submit report transactions.
 Example:
-$ %s tx zoracle add-oracle-address bandvaloper1p40yh3zkmhcv0ecqp3mcazy83sa57rgjde6wec band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun --from mykey
+$ %s tx zoracle add-oracle-address band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun --from mykey
 `,
 				version.ClientName,
 			),
@@ -539,10 +539,8 @@ $ %s tx zoracle add-oracle-address bandvaloper1p40yh3zkmhcv0ecqp3mcazy83sa57rgjd
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-			validator, err := sdk.ValAddressFromBech32(cliCtx.GetFromAddress().String())
-			if err != nil {
-				return err
-			}
+
+			validator := sdk.ValAddress(cliCtx.GetFromAddress())
 			reporter, err := sdk.AccAddressFromBech32(args[0])
 			if err != nil {
 				return err
@@ -571,7 +569,7 @@ func GetCmdRemoveOracleAddress(cdc *codec.Codec) *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Remove an agent from the list of authorized reporters.
 Example:
-$ %s tx zoracle remove-oracle-address bandvaloper1p40yh3zkmhcv0ecqp3mcazy83sa57rgjde6wec band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun --from mykey
+$ %s tx zoracle remove-oracle-address band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun --from mykey
 `,
 				version.ClientName,
 			),
@@ -579,10 +577,7 @@ $ %s tx zoracle remove-oracle-address bandvaloper1p40yh3zkmhcv0ecqp3mcazy83sa57r
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-			validator, err := sdk.ValAddressFromBech32(cliCtx.GetFromAddress().String())
-			if err != nil {
-				return err
-			}
+			validator := sdk.ValAddress(cliCtx.GetFromAddress())
 			reporter, err := sdk.AccAddressFromBech32(args[0])
 			if err != nil {
 				return err
