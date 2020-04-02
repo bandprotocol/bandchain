@@ -355,7 +355,7 @@ let make = (~reqID) =>
                  request.reports
                  ->Belt_Array.map(report =>
                      [
-                       KVTable.Value("Paul Node"),
+                       KVTable.Validator(report.validatorByValidator),
                        KVTable.Block(report.transaction.blockHeight),
                        KVTable.TxHash(report.transaction.txHash),
                        KVTable.Values(
