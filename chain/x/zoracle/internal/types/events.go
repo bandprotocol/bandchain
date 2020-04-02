@@ -10,9 +10,12 @@ const (
 	EventTypeReport              = "report"
 	EventTypeAddOracleAddress    = "add_oracle_address"
 	EventTypeRemoveOracleAddress = "remove_oracle_address"
+	EventTypeRequestExecute      = "request_execute"
 
-	AttributeKeyID        = "id"
-	AttributeKeyRequestID = "request_id"
-	AttributeKeyValidator = "validator"
-	AttributeKeyReporter  = "reporter"
+	AttributeKeyID            = "id"
+	AttributeKeyRequestID     = "request_id"
+	AttributeKeyValidator     = "validator"
+	AttributeKeyReporter      = "reporter"
+	AttributeKeyResolveStatus = "resolve_status"
+	AttributeKeyResult        = "result"
 )
