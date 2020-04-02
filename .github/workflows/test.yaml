@@ -1,0 +1,21 @@
+name: push
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: node:10.17.0-buster
+
+    steps:
+    - name: Scan Code Checkout
+      uses: actions/checkout@v2
+
+    - name: Scan Build
+      run: yarn && yarn bsb -make-world
+      working-directory: ./scan
+
+    - name: Cache node_modules
+      id: cache-node-modules
+      uses: actions/cache@v1
+      with:
+        path: ./scan/node_modules
+        key: ${{ runner.os }}-primes
