@@ -131,7 +131,7 @@ let make = (~address) =>
                       <Col> <HSpacing size=Spacing.md /> </Col>
                       <Col size=1. alignSelf=Col.Start> <TypeID.Request id={request.id} /> </Col>
                       <Col size=2. alignSelf=Col.Start>
-                        // TODO: Check TXHASH STYLING
+                        // TODO: Check TXHASH STYLINGS
 
                           <div className={Styles.withWidth(140)}>
                             <TxLink txHash width=110 />
