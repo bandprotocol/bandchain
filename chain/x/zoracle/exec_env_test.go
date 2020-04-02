@@ -182,8 +182,10 @@ func TestRequestExternalData(t *testing.T) {
 
 	env, err := NewExecutionEnvironment(ctx, keeper, 1)
 	require.Nil(t, err)
-	env.RequestExternalData(1, 42, []byte("prepare32"))
-	env.SaveRawDataRequests(ctx, keeper)
+	envErr := env.RequestExternalData(1, 42, []byte("prepare32"))
+	require.Nil(t, envErr)
+	err = env.SaveRawDataRequests(ctx, keeper)
+	require.Nil(t, err)
 
 	rawRequest, err := keeper.GetRawDataRequest(ctx, 1, 42)
 	require.Nil(t, err)

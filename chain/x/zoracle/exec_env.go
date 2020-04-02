@@ -148,7 +148,7 @@ func (env *ExecutionEnvironment) GetExternalData(
 	rawDataReport, ok := env.rawDataReports[key]
 
 	if !ok {
-		return nil, 0, types.ErrItemNotFound("Unable to find raw data report with request ID (%d) external ID (%d) from (%s)", int64(env.requestID), externalDataID, validatorAddress.String())
+		return nil, 0, types.ErrItemNotFound("Unable to find raw data report with request ID (%d) external ID (%d) from (%s)", env.requestID, externalDataID, validatorAddress.String())
 	}
 
 	return rawDataReport.Data, rawDataReport.ExitCode, nil
