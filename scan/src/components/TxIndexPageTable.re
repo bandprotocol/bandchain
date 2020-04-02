@@ -25,30 +25,6 @@ module Styles = {
   let thirdCol = 1.20;
 };
 
-// TODO: move it to file later.
-module CopyButton = {
-  open Css;
-
-  [@react.component]
-  let make = (~data) => {
-    <div
-      className={style([
-        backgroundColor(Colors.blue1),
-        padding2(~h=`px(8), ~v=`px(4)),
-        display(`flex),
-        width(`px(103)),
-        borderRadius(`px(6)),
-        cursor(`pointer),
-        boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), rgba(20, 32, 184, 0.2))),
-      ])}
-      onClick={_ => {Copy.copy(data |> JsBuffer.toHex(~with0x=false))}}>
-      <img src=Images.copy className={Css.style([maxHeight(`px(12))])} />
-      <HSpacing size=Spacing.sm />
-      <Text value="Copy as bytes" size=Text.Sm block=true color=Colors.bandBlue nowrap=true />
-    </div>;
-  };
-};
-
 let renderSend = (msg, send: TxHook.Msg.Send.t) => {
   <Row>
     <Col> <HSpacing size=Spacing.md /> </Col>
@@ -134,10 +110,14 @@ let renderRequest = (msg, request: TxHook.Msg.Request.t) => {
       <VSpacing size=Spacing.md />
       // TODO: Mock calldata
       <KVTable
-        kv=[
-          ("crypto_symbol", "BTC"),
-          ("aggregation_method", "mean"),
-          ("data_sources", "Binance v1, coingecko v1, coinmarketcap v1, band-validator"),
+        tableWidth=480
+        rows=[
+          [KVTable.Value("crypto_symbol"), KVTable.Value("BTC")],
+          [KVTable.Value("aggregation_method"), KVTable.Value("mean")],
+          [
+            KVTable.Value("data_sources"),
+            KVTable.Value("Binance v1, coingecko v1, coinmarketcap v1, band-validator"),
+          ],
         ]
       />
       <VSpacing size=Spacing.xl />
@@ -205,14 +185,15 @@ let renderReport = (msg, report: TxHook.Msg.Report.t) => {
       </div>
       <VSpacing size=Spacing.md />
       <KVTable
-        header=["EXTERNAL ID", "VALUE"]
-        kv={
+        tableWidth=480
+        headers=["EXTERNAL ID", "VALUE"]
+        rows={
           report.dataSet
           |> Belt_List.map(_, rawReport =>
-               (
-                 rawReport.externalDataID |> string_of_int,
-                 rawReport.data |> JsBuffer._toString(_, "UTF-8"),
-               )
+               [
+                 KVTable.Value(rawReport.externalDataID |> string_of_int),
+                 KVTable.Value(rawReport.data |> JsBuffer._toString(_, "UTF-8")),
+               ]
              )
         }
       />

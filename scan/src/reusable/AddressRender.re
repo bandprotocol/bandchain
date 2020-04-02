@@ -5,30 +5,35 @@ type is_pointer =
 type position =
   | Title
   | Subtitle
-  | Text(is_pointer);
+  | Text(is_pointer)
+  | Nav;
 
 let prefixFontSize =
   fun
   | Title => Text.Xxl
   | Subtitle => Text.Lg
-  | Text(_) => Text.Md;
+  | Text(_) => Text.Md
+  | Nav => Text.Sm;
 
 let addressFontSize =
   fun
   | Title => Text.Xxl
   | Subtitle => Text.Lg
-  | Text(_) => Text.Md;
+  | Text(_) => Text.Md
+  | Nav => Text.Sm;
 
 let lineHeight =
   fun
   | Title => Text.Px(23)
   | Subtitle => Text.Px(18)
-  | Text(_) => Text.Px(16);
+  | Text(_) => Text.Px(16)
+  | Nav => Text.Px(14);
 
 let letterSpacing =
   fun
   | Title
-  | Text(_) => Text.Unset
+  | Text(_)
+  | Nav => Text.Unset
   | Subtitle => Text.Em(0.02);
 
 module Styles = {
@@ -40,7 +45,8 @@ module Styles = {
     fun
     | Title
     | Subtitle
-    | Text(Pointer) => style([pointerEvents(`auto)])
+    | Text(Pointer)
+    | Nav => style([pointerEvents(`auto)])
     | Text(NonPointer) => style([pointerEvents(`none)]);
 };
 

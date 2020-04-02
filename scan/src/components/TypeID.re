@@ -2,21 +2,24 @@ type pos_t =
   | Landing
   | Title
   | Subtitle
-  | Text;
+  | Text
+  | Mini;
 
 let fontSize =
   fun
   | Landing => Text.Xxxl
   | Title => Text.Xxl
   | Subtitle => Text.Lg
-  | Text => Text.Md;
+  | Text => Text.Md
+  | Mini => Text.Sm;
 
 let lineHeight =
   fun
   | Landing => Text.Px(31)
   | Title => Text.Px(23)
   | Subtitle => Text.Px(18)
-  | Text => Text.Px(16);
+  | Text => Text.Px(16)
+  | Mini => Text.Px(16);
 
 module Styles = {
   open Css;
@@ -28,7 +31,8 @@ module Styles = {
     | Title => style([pointerEvents(`none)])
     | Landing
     | Subtitle
-    | Text => style([pointerEvents(`auto)]);
+    | Text
+    | Mini => style([pointerEvents(`auto)]);
 };
 
 module ComponentCreator = (RawID: ID.IDSig) => {
