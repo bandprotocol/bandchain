@@ -182,6 +182,7 @@ type report_t = {
   reporter: Address.t,
   transaction: TxSub.Mini.t,
   reportDetails: array(report_detail_t),
+  validatorByValidator: ValidatorSub.Mini.t,
 };
 
 type data_source_internal_t = {
@@ -283,6 +284,11 @@ module SingleRequestConfig = [%graphql
             externalID: external_id @bsDecoder(fn: "GraphQLParser.int64")
             data @bsDecoder(fn: "GraphQLParser.buffer")
           }
+          validatorByValidator @bsRecord {
+            consensusAddress: consensus_address
+            operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
+            moniker
+          }
         }
         result @bsDecoder(fn: "optionBuffer")
       }
@@ -337,6 +343,11 @@ module MultiRequestConfig = [%graphql
           reportDetails: report_details @bsRecord {
             externalID: external_id @bsDecoder(fn: "GraphQLParser.int64")
             data @bsDecoder(fn: "GraphQLParser.buffer")
+          }
+          validatorByValidator @bsRecord {
+            consensusAddress: consensus_address
+            operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
+            moniker
           }
         }
         result @bsDecoder(fn: "optionBuffer")
