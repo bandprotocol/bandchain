@@ -77,8 +77,8 @@ let kvRow = (k, v: value_row_t) => {
 [@react.component]
 let make = (~address, ~hashtag: Route.validator_tab_t) =>
   {
-    let validatorsSub = ValidatorSub.Validator.getList();
-    let validatorSub = ValidatorSub.Validator.get(address);
+    let validatorsSub = ValidatorSub.getList();
+    let validatorSub = ValidatorSub.get(address);
     Js.Console.log(validatorSub);
 
     let%Sub validators = validatorsSub;

@@ -73,7 +73,7 @@ let make = () =>
   {
     let latestBlockSub = BlockSub.getLatest();
     let infoOpt = React.useContext(GlobalContext.context);
-    let validatorsSub = ValidatorSub.Validator.getList();
+    let validatorsSub = ValidatorSub.getList();
 
     let%Sub latestBlock = latestBlockSub;
     let%Sub validators = validatorsSub;
