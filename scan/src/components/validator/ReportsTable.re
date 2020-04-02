@@ -23,10 +23,9 @@ module Styles = {
 
 [@react.component]
 let make = (~address) =>
-  // TODO: Mock to use
   {
     let (page, setPage) = React.useState(_ => 1);
-    let pageCount = 1;
+    let pageSize = 5;
 
     let reportsSub =
       ReportSub.ValidatorReport.getListByValidator(
@@ -36,7 +35,13 @@ let make = (~address) =>
           address |> Address.toOperatorBech32;
         },
       );
+    let totalReportsSub = ReportSub.ValidatorReport.count();
+
+    let%Sub totalReports = totalReportsSub;
     let%Sub reports = reportsSub;
+
+    let pageCount = Page.getPageCount(totalReports, pageSize);
+
     <div className=Styles.tableWrapper>
       <Row>
         <HSpacing size={`px(25)} />
