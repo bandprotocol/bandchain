@@ -46,6 +46,8 @@ module Styles = {
     style([display(`flex), flexDirection(`row), alignItems(`center), height(h)]);
 
   let vFlex = (w, h) => style([display(`flex), flexDirection(`column), width(w), height(h)]);
+
+  let pr = size => style([paddingRight(`px(size))]);
 };
 
 let copyButton = (~data) => {
@@ -197,7 +199,11 @@ let make = (~txResponse: BandWeb3.tx_response_t, ~schema: string) =>
                  weight=Text.Semibold
                />
              </div>
-             <div className={Styles.resultWrapper(`px(660), `px(40), `zero, `auto)}>
+             <div
+               className={Css.merge([
+                 Styles.resultWrapper(`px(660), `px(40), `zero, `auto),
+                 Styles.pr(40),
+               ])}>
                <ProgressBar
                  reportedValidators={request.reportsCount}
                  minimumValidators={request.sufficientValidatorCount}

@@ -181,14 +181,6 @@ let make = (~id: ID.OracleScript.t, ~schemaOpt: option(string)) => {
             ) {
             | Some(encoded) =>
               setResult(_ => Loading);
-              Js.Console.log4(
-                schema,
-                "Input",
-                paramsInput
-                ->Belt_Array.map(({paramName}) => paramName)
-                ->Belt_Array.zip(callDataArr),
-                encoded,
-              );
               let _ =
                 sendRequest(id, encoded)
                 |> Js.Promise.then_(res =>
