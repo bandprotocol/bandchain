@@ -3,6 +3,7 @@ type t =
   | Count(int)
   | Float(float)
   | Text(string)
+  | Description(string)
   | Timestamp(MomentRe.Moment.t)
   | Fee(float)
   | DataSources(list(ID.DataSource.t))
@@ -81,6 +82,8 @@ let make = (~info, ~header, ~isLeft=true) => {
        />
      | Text(text) =>
        <Text value=text size=Text.Lg weight=Text.Semibold code=true spacing={Text.Em(0.02)} />
+     | Description(text) =>
+       <Text value=text size=Text.Lg weight=Text.Thin spacing={Text.Em(0.)} />
      | Timestamp(time) =>
        <div className=Styles.vFlex>
          <Text
