@@ -120,7 +120,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
       </Row>
       <VSpacing size=Spacing.xl />
       <div className=Styles.vFlex>
-        <Text value="CoinGecko Data Provider" size=Text.Xxl weight=Text.Bold nowrap=true />
+        <Text value={validator.moniker} size=Text.Xxl weight=Text.Bold nowrap=true />
       </div>
       <VSpacing size=Spacing.xl />
       <div className=Styles.topPartWrapper>
