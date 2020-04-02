@@ -111,6 +111,7 @@ module Msg = {
     type t = {
       id: ID.Request.t,
       oracleScriptID: ID.OracleScript.t,
+      oracleScriptName: string,
       calldata: JsBuffer.t,
       requestedValidatorCount: int,
       sufficientValidatorCount: int,
@@ -124,6 +125,7 @@ module Msg = {
       JsonUtils.Decode.{
         id: json |> field("requestID", ID.Request.fromJson),
         oracleScriptID: json |> field("oracleScriptID", ID.OracleScript.fromJson),
+        oracleScriptName: json |> field("oracleScriptName", string),
         calldata: json |> field("calldata", string) |> JsBuffer.fromBase64,
         requestedValidatorCount: json |> field("requestedValidatorCount", int),
         sufficientValidatorCount: json |> field("sufficientValidatorCount", int),
