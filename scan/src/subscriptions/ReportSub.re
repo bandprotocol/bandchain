@@ -43,6 +43,18 @@ module ValidatorReport = {
       |}
   ];
 
+  module DataSourcesCountConfig = [%graphql
+    {|
+    subscription ReportsCount {
+      reports_aggregate{
+        aggregate{
+          count @bsDecoder(fn: "Belt_Option.getExn")
+        }
+      }
+    }
+  |}
+  ];
+
   let getListByValidator = (~page=1, ~pageSize=5, ~validator) => {
     let offset = (page - 1) * pageSize;
     let (result, _) =
@@ -51,5 +63,11 @@ module ValidatorReport = {
         ~variables=MultiConfig.makeVariables(~limit=pageSize, ~offset, ~validator, ()),
       );
     result |> Sub.map(_, x => x##reports);
+  };
+
+  let count = () => {
+    let (result, _) = ApolloHooks.useSubscription(DataSourcesCountConfig.definition);
+    result
+    |> Sub.map(_, x => x##reports_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
   };
 };
