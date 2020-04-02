@@ -462,3 +462,12 @@ func (b *BandDB) GetInvolvedAccountsFromTransferEvents(logs sdk.ABCIMessageLogs)
 	}
 	return involvedAccounts
 }
+
+func (b *BandDB) ResolveRequest(id int64, resolveStatus zoracle.ResolveStatus, result []byte) error {
+	if resolveStatus == 1 {
+		return b.tx.Model(&Request{}).Where(Request{ID: id}).
+			Update(Request{ResolveStatus: parseResolveStatus(resolveStatus), Result: result}).Error
+	}
+	return b.tx.Model(&Request{}).Where(Request{ID: id}).
+		Update(Request{ResolveStatus: parseResolveStatus(resolveStatus)}).Error
+}

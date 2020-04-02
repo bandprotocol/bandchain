@@ -2,6 +2,7 @@ package app
 
 import (
 	"io"
+	"strconv"
 	"time"
 
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
@@ -240,7 +241,36 @@ func (app *dbBandApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBl
 	if err != nil {
 		panic(err)
 	}
-	// Do other logic
+
+	events := res.GetEvents()
+	for _, event := range events {
+		if event.Type == zoracle.EventTypeRequestExecute {
+			var requestID int64
+			var resolveStatus zoracle.ResolveStatus
+			var result []byte
+			for _, kv := range event.Attributes {
+				if string(kv.Key) == zoracle.AttributeKeyRequestID {
+					requestID, err = strconv.ParseInt(string(kv.Value), 10, 64)
+					if err != nil {
+						panic(err)
+					}
+				} else if string(kv.Key) == zoracle.AttributeKeyResolveStatus {
+					numResolveStatus, err := strconv.ParseInt(string(kv.Value), 10, 8)
+					if err != nil {
+						panic(err)
+					}
+					resolveStatus = zoracle.ResolveStatus(numResolveStatus)
+				} else if string(kv.Key) == zoracle.AttributeKeyResult {
+					result = kv.Value
+				}
+			}
+			err := app.dbBand.ResolveRequest(requestID, resolveStatus, result)
+			if err != nil {
+				panic(err)
+			}
+		}
+	}
+
 	app.dbBand.SetContext(sdk.Context{})
 	return res
 }
