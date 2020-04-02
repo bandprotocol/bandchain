@@ -19626,20 +19626,6 @@
                   }
                 },
                 "description": null
-              },
-              {
-                "name": "oracle_script_id",
-                "defaultValue": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "bigint",
-                    "ofType": null
-                  }
-                },
-                "description": null
               }
             ],
             "isDeprecated": false,
@@ -21064,6 +21050,20 @@
             "args": [
               {
                 "name": "data_source_id",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "bigint",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              },
+              {
+                "name": "oracle_script_id",
                 "defaultValue": null,
                 "type": {
                   "kind": "NON_NULL",
@@ -35209,20 +35209,6 @@
                   }
                 },
                 "description": null
-              },
-              {
-                "name": "oracle_script_id",
-                "defaultValue": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "bigint",
-                    "ofType": null
-                  }
-                },
-                "description": null
               }
             ],
             "isDeprecated": false,
@@ -36230,7 +36216,7 @@
           {
             "args": [
               {
-                "name": "id",
+                "name": "oracle_script_id",
                 "defaultValue": null,
                 "type": {
                   "kind": "NON_NULL",
@@ -36445,7 +36431,7 @@
           {
             "args": [
               {
-                "name": "oracle_script_id",
+                "name": "id",
                 "defaultValue": null,
                 "type": {
                   "kind": "NON_NULL",
@@ -36862,6 +36848,20 @@
             "args": [
               {
                 "name": "data_source_id",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "bigint",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              },
+              {
+                "name": "oracle_script_id",
                 "defaultValue": null,
                 "type": {
                   "kind": "NON_NULL",
@@ -45195,9 +45195,9 @@
         "kind": "INPUT_OBJECT",
         "possibleTypes": null,
         "interfaces": null,
-        "name": "validators_max_order_by",
+        "name": "validators_insert_input",
         "enumValues": null,
-        "description": "order by max() on columns of table \"validators\"",
+        "description": "input type for inserting data into table \"validators\"",
         "fields": null
       },
       {
@@ -45205,9 +45205,9 @@
         "kind": "OBJECT",
         "possibleTypes": null,
         "interfaces": [],
-        "name": "validators_min_fields",
+        "name": "validators_max_fields",
         "enumValues": null,
-        "description": "aggregate min on columns",
+        "description": "aggregate max on columns",
         "fields": [
           {
             "args": [],
@@ -45525,9 +45525,9 @@
         "kind": "INPUT_OBJECT",
         "possibleTypes": null,
         "interfaces": null,
-        "name": "validators_insert_input",
+        "name": "validators_max_order_by",
         "enumValues": null,
-        "description": "input type for inserting data into table \"validators\"",
+        "description": "order by max() on columns of table \"validators\"",
         "fields": null
       },
       {
@@ -45535,9 +45535,9 @@
         "kind": "OBJECT",
         "possibleTypes": null,
         "interfaces": [],
-        "name": "validators_max_fields",
+        "name": "validators_min_fields",
         "enumValues": null,
-        "description": "aggregate max on columns",
+        "description": "aggregate min on columns",
         "fields": [
           {
             "args": [],
