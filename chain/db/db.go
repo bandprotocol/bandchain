@@ -451,11 +451,11 @@ func (b *BandDB) GetInvolvedAccountsFromTransferEvents(logs sdk.ABCIMessageLogs)
 	return involvedAccounts
 }
 
-func (b *BandDB) ResolveRequest(id int64, resolveStatus string, result []byte) error {
-	if resolveStatus == "Success" {
+func (b *BandDB) ResolveRequest(id int64, resolveStatus zoracle.ResolveStatus, result []byte) error {
+	if resolveStatus == 1 {
 		return b.tx.Model(&Request{}).Where(Request{ID: id}).
-			Update(Request{ResolveStatus: resolveStatus, Result: result}).Error
+			Update(Request{ResolveStatus: parseResolveStatus(resolveStatus), Result: result}).Error
 	}
 	return b.tx.Model(&Request{}).Where(Request{ID: id}).
-		Update(Request{ResolveStatus: resolveStatus}).Error
+		Update(Request{ResolveStatus: parseResolveStatus(resolveStatus)}).Error
 }

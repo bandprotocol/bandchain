@@ -21,7 +21,7 @@ func newRequestExecuteEvent(requestID RequestID, resolveStatus types.ResolveStat
 	return sdk.NewEvent(
 		types.EventTypeRequestExecute,
 		sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", requestID)),
-		sdk.NewAttribute(types.AttributeKeyResolveStatus, resolveStatus.String()),
+		sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", resolveStatus)),
 	)
 }
 

@@ -12,19 +12,6 @@ const (
 	Failure
 )
 
-func (resolveStatus ResolveStatus) String() string {
-	switch resolveStatus {
-	case Open:
-		return "Open"
-	case Success:
-		return "Success"
-	case Failure:
-		return "Failure"
-	default:
-		return "Unknown"
-	}
-}
-
 // Request is a data structure that stores the detail of a request to an oracle script.
 type Request struct {
 	OracleScriptID           OracleScriptID   `json:"oracleScriptID"`
