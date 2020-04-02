@@ -12,7 +12,7 @@ type t =
   | Address(Address.t, int)
   | Fraction(int, int, bool)
   | FloatWithSuffix(float, string)
-  | Validators(array(ValidatorSub.Validator.t));
+  | Validators(array(ValidatorSub.t));
 
 module Styles = {
   open Css;
@@ -129,7 +129,7 @@ let make = (~info, ~header, ~isLeft=true) => {
        </div>
      | DataSources(ids) =>
        switch (ids |> Belt_List.size) {
-       | 0 => <Text value="TBD" size=Text.Lg spacing={Text.Em(0.06)} height=Text.Px(17)/>
+       | 0 => <Text value="TBD" size=Text.Lg spacing={Text.Em(0.06)} height={Text.Px(17)} />
        | _ =>
          <div className=Styles.datasourcesContainer>
            {ids

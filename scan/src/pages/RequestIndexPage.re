@@ -46,7 +46,7 @@ module Styles = {
 [@react.component]
 let make = (~reqID) =>
   {
-    let validatorsSub = ValidatorSub.Validator.getList();
+    let validatorsSub = ValidatorSub.getList();
     let%Sub validators = validatorsSub;
     let requestOpt = RequestHook.get(reqID);
     let requestValidators =

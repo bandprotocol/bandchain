@@ -94,7 +94,7 @@ module ToggleButton = {
   };
 };
 
-let renderBody = (rank, validator: ValidatorSub.Validator.t) => {
+let renderBody = (rank, validator: ValidatorSub.t) => {
   let votingPower = validator.votingPower;
   let token = validator.tokens;
   let commission = validator.commission;
@@ -200,9 +200,9 @@ let make = () =>
     let pageSize = 10;
 
     let (isActive, setIsActive) = React.useState(_ => true);
-    let validatorsCountSub = ValidatorSub.Validator.count();
-    let validatorsSub = ValidatorSub.Validator.getList(~page, ~pageSize, ());
-    let bondedValidatorCountSub = ValidatorSub.Validator.count();
+    let validatorsCountSub = ValidatorSub.count();
+    let validatorsSub = ValidatorSub.getList(~page, ~pageSize, ());
+    let bondedValidatorCountSub = ValidatorSub.count();
 
     let%Sub validators = validatorsSub;
     let%Sub validatorCount = validatorsCountSub;
