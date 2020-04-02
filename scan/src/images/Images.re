@@ -20,9 +20,10 @@
 [@bs.module] external oracleScriptLogo: string = "./oracleScriptLogo.svg";
 [@bs.module] external txLogo: string = "./txLogo.svg";
 [@bs.module] external accountLogo: string = "./account-icon.png";
-[@bs.module] external pieChart: string = "./pie-chart.png";
 [@bs.module] external success: string = "./success.svg";
 [@bs.module] external fail: string = "./fail.svg";
+[@bs.module] external pending: string = "./pending.svg";
+[@bs.module] external unknown: string = "./unknown.svg";
 [@bs.module] external noRequestIcon: string = "./noRequest.png";
 [@bs.module] external noRevisionIcon: string = "./noRevision.png";
 [@bs.module] external validatorLogo: string = "./validatorLogo.svg";
@@ -38,3 +39,7 @@
 [@bs.module] external notFoundBg: string = "./notFoundBg.svg";
 [@bs.module] external code: string = "./code.svg";
 [@bs.module] external requestLogo: string = "./requestLogo.svg";
+[@bs.module] external showProofArrow: string = "./showProofArrow.svg";
+[@bs.module] external noReport: string = "./noReport.svg";
+[@bs.module] external connectIcon: string = "./connect-icon.svg";
+[@bs.module] external disconnectIcon: string = "./disconnect-icon.svg";

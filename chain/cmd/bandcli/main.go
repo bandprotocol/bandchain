@@ -35,7 +35,7 @@ func main() {
 
 	rootCmd := &cobra.Command{
 		Use:   "bandcli",
-		Short: "Command line interface for interacting with Band D3N",
+		Short: "Command line interface for interacting with BandChain",
 	}
 
 	// Add --chain-id to persistent flags and mark it required

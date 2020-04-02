@@ -1,31 +1,39 @@
-type pos_t =
+type is_pointer =
+  | Pointer
+  | NonPointer;
+
+type position =
   | Title
   | Subtitle
-  | Text
-  | None;
+  | Text(is_pointer)
+  | Nav;
 
 let prefixFontSize =
   fun
   | Title => Text.Xxl
   | Subtitle => Text.Lg
-  | Text => Text.Md;
+  | Text(_) => Text.Md
+  | Nav => Text.Sm;
 
 let addressFontSize =
   fun
   | Title => Text.Xxl
   | Subtitle => Text.Lg
-  | Text => Text.Md;
+  | Text(_) => Text.Md
+  | Nav => Text.Sm;
 
 let lineHeight =
   fun
   | Title => Text.Px(23)
   | Subtitle => Text.Px(18)
-  | Text => Text.Px(16);
+  | Text(_) => Text.Px(16)
+  | Nav => Text.Px(14);
 
 let letterSpacing =
   fun
   | Title
-  | Text => Text.Unset
+  | Text(_)
+  | Nav => Text.Unset
   | Subtitle => Text.Em(0.02);
 
 module Styles = {
@@ -37,19 +45,23 @@ module Styles = {
     fun
     | Title
     | Subtitle
-    | None => style([pointerEvents(`none)])
-    | Text => style([pointerEvents(`auto)]);
+    | Text(Pointer)
+    | Nav => style([pointerEvents(`auto)])
+    | Text(NonPointer) => style([pointerEvents(`none)]);
 };
 
 [@react.component]
-let make = (~address, ~position=Text, ~validator=false) => {
+let make = (~address, ~position=Text(Pointer), ~validator=false) => {
   let noPrefixAddress =
     validator
       ? address |> Address.toOperatorBech32 |> Js.String.sliceToEnd(~from=11)
       : address |> Address.toBech32 |> Js.String.sliceToEnd(~from=4);
 
   <div
-    className={Css.merge([Styles.container, Styles.pointerEvents(validator ? None : position)])}
+    className={Css.merge([
+      Styles.container,
+      Styles.pointerEvents(validator ? Text(NonPointer) : position),
+    ])}
     onClick={_ => Route.redirect(Route.AccountIndexPage(address, Route.AccountTransactions))}>
     <Text
       value={validator ? "bandvaloper" : "band"}

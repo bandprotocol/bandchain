@@ -37,29 +37,29 @@ func ParamKeyTable() params.KeyTable {
 }
 
 // GetParam returns the parameter as specified by key as an uint64.
-func (keeper Keeper) GetParam(ctx sdk.Context, key []byte) (res uint64) {
-	keeper.ParamSpace.Get(ctx, key, &res)
+func (k Keeper) GetParam(ctx sdk.Context, key []byte) (res uint64) {
+	k.ParamSpace.Get(ctx, key, &res)
 	return
 }
 
 // SetParam saves the given key-value parameter to the store.
-func (keeper Keeper) SetParam(ctx sdk.Context, key []byte, value uint64) {
-	keeper.ParamSpace.Set(ctx, key, value)
+func (k Keeper) SetParam(ctx sdk.Context, key []byte, value uint64) {
+	k.ParamSpace.Set(ctx, key, value)
 }
 
 // GetParams returns all current parameters as a types.Params instance.
-func (keeper Keeper) GetParams(ctx sdk.Context) types.Params {
+func (k Keeper) GetParams(ctx sdk.Context) types.Params {
 	return types.NewParams(
-		keeper.GetParam(ctx, types.KeyMaxDataSourceExecutableSize),
-		keeper.GetParam(ctx, types.KeyMaxOracleScriptCodeSize),
-		keeper.GetParam(ctx, types.KeyMaxCalldataSize),
-		keeper.GetParam(ctx, types.KeyMaxDataSourceCountPerRequest),
-		keeper.GetParam(ctx, types.KeyMaxRawDataReportSize),
-		keeper.GetParam(ctx, types.KeyMaxResultSize),
-		keeper.GetParam(ctx, types.KeyEndBlockExecuteGasLimit),
-		keeper.GetParam(ctx, types.KeyMaxNameLength),
-		keeper.GetParam(ctx, types.KeyMaxDescriptionLength),
-		keeper.GetParam(ctx, types.KeyGasPerRawDataRequestPerValidator),
+		k.GetParam(ctx, types.KeyMaxDataSourceExecutableSize),
+		k.GetParam(ctx, types.KeyMaxOracleScriptCodeSize),
+		k.GetParam(ctx, types.KeyMaxCalldataSize),
+		k.GetParam(ctx, types.KeyMaxDataSourceCountPerRequest),
+		k.GetParam(ctx, types.KeyMaxRawDataReportSize),
+		k.GetParam(ctx, types.KeyMaxResultSize),
+		k.GetParam(ctx, types.KeyEndBlockExecuteGasLimit),
+		k.GetParam(ctx, types.KeyMaxNameLength),
+		k.GetParam(ctx, types.KeyMaxDescriptionLength),
+		k.GetParam(ctx, types.KeyGasPerRawDataRequestPerValidator),
 	)
 }
 

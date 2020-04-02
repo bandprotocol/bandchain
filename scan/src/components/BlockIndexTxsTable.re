@@ -9,7 +9,7 @@ module Styles = {
   let logo = style([width(`px(20)), marginLeft(`auto), marginRight(`px(15))]);
 };
 [@react.component]
-let make = (~txs: list(TxHook.Tx.t)) => {
+let make = (~txs: array(TxSub.t)) => {
   <>
     <THead>
       <Row>
@@ -36,19 +36,19 @@ let make = (~txs: list(TxHook.Tx.t)) => {
       </Row>
     </THead>
     {txs
-     ->Belt.List.map(({blockHeight, hash, timestamp, fee, gasUsed, messages, sender, success}) => {
-         <TBody key={hash |> Hash.toHex}>
+     ->Belt_Array.map(({txHash, gasFee, messages, success}) => {
+         <TBody key={txHash |> Hash.toHex}>
            <Row>
              <HSpacing size={`px(20)} />
              <Col size=1.67 alignSelf=Col.Start>
                <div
                  className={Css.merge([Styles.hashContainer, Styles.paddingTopContainer])}
-                 onClick={_ => Route.redirect(Route.TxIndexPage(hash))}>
+                 onClick={_ => Route.redirect(Route.TxIndexPage(txHash))}>
                  <Text
                    block=true
                    code=true
                    spacing={Text.Em(0.02)}
-                   value={hash |> Hash.toHex(~upper=true)}
+                   value={txHash |> Hash.toHex(~upper=true)}
                    weight=Text.Medium
                    ellipsis=true
                  />
@@ -61,7 +61,7 @@ let make = (~txs: list(TxHook.Tx.t)) => {
                    block=true
                    code=true
                    spacing={Text.Em(0.02)}
-                   value={fee->TxHook.Coin.getBandAmountFromCoins->Format.fPretty}
+                   value={gasFee->TxHook.Coin.getBandAmountFromCoins->Format.fPretty}
                    weight=Text.Medium
                    ellipsis=true
                  />
@@ -81,7 +81,6 @@ let make = (~txs: list(TxHook.Tx.t)) => {
            </Row>
          </TBody>
        })
-     ->Array.of_list
      ->React.array}
   </>;
 };

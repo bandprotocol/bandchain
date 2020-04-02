@@ -67,7 +67,7 @@ module Styles = {
     ]);
 };
 
-let parameterInput = (name, placeholder, index, setCalldataArr) => {
+let parameterInput = (name, index, setCalldataList) => {
   <div className=Styles.listContainer key=name>
     <Text value=name size=Text.Md color=Colors.gray6 />
     <VSpacing size=Spacing.xs />
@@ -76,21 +76,25 @@ let parameterInput = (name, placeholder, index, setCalldataArr) => {
       type_="text"
       onChange={event => {
         let newVal = ReactEvent.Form.target(event)##value;
-        setCalldataArr(prev => {
-          prev->Belt_Array.set(index, newVal);
-          prev;
+        setCalldataList(prev => {
+          prev->Belt_List.mapWithIndex((i, value) => {index == i ? newVal : value})
         });
       }}
-      placeholder
     />
   </div>;
+};
+
+type result_data_t = {
+  returncode: int,
+  stdout: string,
+  stderr: string,
 };
 
 type result_t =
   | Nothing
   | Loading
   | Error(string)
-  | Success(string);
+  | Success(result_data_t);
 
 let loadingRender = (wDiv, wImg, h) => {
   <div className={Styles.withWH(wDiv, h)}>
@@ -114,16 +118,16 @@ let resultRender = result => {
         <Text value=err />
       </div>
     </>
-  | Success(output) =>
+  | Success({returncode, stdout, stderr}) =>
     <>
       <VSpacing size=Spacing.lg />
-      <div className={Styles.resultWrapper(`percent(120.), `px(65), `auto)}>
+      <div className={Styles.resultWrapper(`percent(100.), `px(95), `auto)}>
         <div className=Styles.hFlex>
           <HSpacing size=Spacing.lg />
           <div className={Styles.resultWrapper(`px(120), `px(12), `auto)}>
-            <Text value="Exit Status" color=Colors.gray6 weight=Text.Bold />
+            <Text value="Exit Status" color=Colors.gray6 weight=Text.Semibold />
           </div>
-          <Text value="0" />
+          <Text value={returncode |> string_of_int} />
         </div>
         <VSpacing size=Spacing.md />
         <div className=Styles.hFlex>
@@ -131,7 +135,15 @@ let resultRender = result => {
           <div className={Styles.resultWrapper(`px(120), `px(12), `auto)}>
             <Text value="Output" color=Colors.gray6 weight=Text.Semibold />
           </div>
-          <Text value=output code=true weight=Text.Semibold />
+          <Text value=stdout code=true weight=Text.Semibold />
+        </div>
+        <VSpacing size=Spacing.md />
+        <div className=Styles.hFlex>
+          <HSpacing size=Spacing.lg />
+          <div className={Styles.resultWrapper(`px(120), `px(12), `auto)}>
+            <Text value="Error" color=Colors.gray6 weight=Text.Semibold />
+          </div>
+          <Text value=stderr code=true weight=Text.Semibold />
         </div>
       </div>
     </>
@@ -144,7 +156,7 @@ let make = (~executable: JsBuffer.t) => {
     ExecutableParser.parseExecutableScript(executable)->Belt_Option.getWithDefault([]);
   let numParams = params->Belt_List.length;
 
-  let (calldataArr, setCalldataArr) = React.useState(_ => params->Belt_List.toArray);
+  let (callDataList, setCalldataList) = React.useState(_ => Belt_List.make(numParams, ""));
 
   let (result, setResult) = React.useState(_ => Nothing);
 
@@ -170,7 +182,7 @@ let make = (~executable: JsBuffer.t) => {
     {numParams > 0
        ? <div className=Styles.paramsContainer>
            {params
-            ->Belt_List.mapWithIndex((i, param) => parameterInput(param, "", i, setCalldataArr))
+            ->Belt_List.mapWithIndex((i, param) => parameterInput(param, i, setCalldataList))
             ->Belt_List.toArray
             ->React.array}
          </div>
@@ -185,16 +197,22 @@ let make = (~executable: JsBuffer.t) => {
             let _ =
               AxiosRequest.execute(
                 AxiosRequest.t(
-                  ~executable=executable->JsBuffer.toHex,
+                  ~executable=executable->JsBuffer.toUTF8,
                   ~calldata={
-                    calldataArr
-                    ->Belt_Array.reduce("", (acc, calldata) => acc ++ " " ++ calldata)
+                    callDataList
+                    ->Belt_List.reduce("", (acc, calldata) => acc ++ " " ++ calldata)
                     ->String.trim;
                   },
                 ),
               )
               |> Js.Promise.then_(res => {
-                   setResult(_ => Success(res##data##result));
+                   setResult(_ =>
+                     Success({
+                       returncode: res##data##returncode,
+                       stdout: res##data##stdout,
+                       stderr: res##data##stderr,
+                     })
+                   );
                    Js.Promise.resolve();
                  })
               |> Js.Promise.catch(err => {

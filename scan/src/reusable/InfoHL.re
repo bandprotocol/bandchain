@@ -128,14 +128,21 @@ let make = (~info, ~header, ~isLeft=true) => {
           }}
        </div>
      | DataSources(ids) =>
-       <div className=Styles.datasourcesContainer>
-         {ids
-          ->Belt.List.map(id =>
-              <> <TypeID.DataSource id position=TypeID.Subtitle /> <HSpacing size=Spacing.sm /> </>
-            )
-          ->Array.of_list
-          ->React.array}
-       </div>
+       switch (ids |> Belt_List.size) {
+       | 0 => <Text value="TBD" size=Text.Lg spacing={Text.Em(0.06)} height=Text.Px(17)/>
+       | _ =>
+         <div className=Styles.datasourcesContainer>
+           {ids
+            ->Belt.List.map(id =>
+                <>
+                  <TypeID.DataSource id position=TypeID.Subtitle />
+                  <HSpacing size=Spacing.sm />
+                </>
+              )
+            ->Array.of_list
+            ->React.array}
+         </div>
+       }
      | OracleScript(id, name) =>
        <div className=Styles.datasourcesContainer>
          <TypeID.OracleScript id position=TypeID.Subtitle />
@@ -167,7 +174,12 @@ let make = (~info, ~header, ~isLeft=true) => {
          {validators
           ->Belt.List.map(validator =>
               <>
-                <ValidatorMonikerLink validator size=Text.Lg underline=true />
+                <ValidatorMonikerLink
+                  validatorAddress={validator.operatorAddress}
+                  moniker={validator.moniker}
+                  size=Text.Lg
+                  underline=true
+                />
                 <HSpacing size=Spacing.md />
               </>
             )

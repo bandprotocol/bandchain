@@ -71,119 +71,127 @@ module HighlightCard = {
 [@react.component]
 let make = () =>
   {
-    let metadata = MetadataSub.use();
-    let%Opt info = React.useContext(GlobalContext.context);
+    let latestBlockSub = BlockSub.getLatest();
+    let infoOpt = React.useContext(GlobalContext.context);
 
-    let validators = info.validators;
-    let moniker = BlockHook.Block.getProposerMoniker(info.latestBlock, validators);
+    let%Sub latestBlock = latestBlockSub;
+
+    let lastProcessedHeight = latestBlock.height;
+    let moniker = latestBlock.validator.moniker;
+    let timestamp = latestBlock.timestamp;
+
+    let validators = infoOpt->Belt_Option.mapWithDefault([], info => info.validators);
+
+    // TODO replace this Mock finance.
+    let mockFinance: PriceHook.Price.t = {
+      usdPrice: 0.,
+      usdMarketCap: 0.,
+      usd24HrChange: 0.,
+      btcPrice: 0.,
+      btcMarketCap: 0.,
+      btc24HrChange: 0.,
+      circulatingSupply: 0.,
+    };
+    let financial = infoOpt->Belt_Option.mapWithDefault(mockFinance, info => info.financial);
+
     let bandBonded = validators->Belt_List.map(x => x.tokens)->Belt_List.reduce(0.0, (+.));
 
-    Some(
-      <Row justify=Row.Between>
-        <HighlightCard
-          label="BAND PRICE"
-          bgUrl=Images.graphBG
-          valueComponent={
-                           let bandPriceInUSD = "$" ++ info.financial.usdPrice->Format.fPretty;
-                           <Text
-                             value=bandPriceInUSD
-                             size=Text.Xxxl
-                             weight=Text.Semibold
-                             color=Colors.gray8
-                             code=true
-                           />;
-                         }
-          extraComponent={
-                           let bandPriceInBTC = info.financial.btcPrice;
-                           let usd24HrChange = info.financial.usd24HrChange;
-                           <div className=Styles.bandPriceExtra>
-                             <div className=Styles.vFlex>
-                               <Text
-                                 value={bandPriceInBTC->Format.fPretty}
-                                 color=Colors.gray7
-                                 weight=Text.Thin
-                                 code=true
-                                 spacing={Text.Em(0.01)}
-                               />
-                               <HSpacing size=Spacing.xs />
-                               <Text
-                                 value="BTC"
-                                 color=Colors.gray7
-                                 weight=Text.Thin
-                                 spacing={Text.Em(0.01)}
-                               />
-                             </div>
-                             <Text
-                               value={usd24HrChange->Format.fPercent}
-                               color={usd24HrChange >= 0. ? Colors.green4 : Colors.red5}
-                               weight=Text.Semibold
-                               code=true
-                             />
-                           </div>;
-                         }
-        />
-        <HighlightCard
-          label="MARKET CAP"
-          valueComponent={
-                           let marketcap = "$" ++ info.financial.usdMarketCap->Format.fPretty;
-                           <Text
-                             value=marketcap
-                             size=Text.Xxxl
-                             weight=Text.Semibold
-                             color=Colors.gray8
-                             code=true
-                           />;
-                         }
-          extraComponent={
-                           let marketcap = info.financial.circulatingSupply;
+    <Row justify=Row.Between>
+      <HighlightCard
+        label="BAND PRICE"
+        bgUrl=Images.graphBG
+        valueComponent={
+                         let bandPriceInUSD = "$" ++ financial.usdPrice->Format.fPretty;
+                         <Text
+                           value=bandPriceInUSD
+                           size=Text.Xxxl
+                           weight=Text.Semibold
+                           color=Colors.gray8
+                           code=true
+                         />;
+                       }
+        extraComponent={
+                         let bandPriceInBTC = financial.btcPrice;
+                         let usd24HrChange = financial.usd24HrChange;
+                         <div className=Styles.bandPriceExtra>
                            <div className=Styles.vFlex>
-                             <Text value={marketcap->Format.fPretty} code=true weight=Text.Thin />
+                             <Text
+                               value={bandPriceInBTC->Format.fPretty}
+                               color=Colors.gray7
+                               weight=Text.Thin
+                               code=true
+                               spacing={Text.Em(0.01)}
+                             />
                              <HSpacing size=Spacing.xs />
                              <Text
-                               value="BAND"
+                               value="BTC"
                                color=Colors.gray7
                                weight=Text.Thin
                                spacing={Text.Em(0.01)}
                              />
-                           </div>;
-                         }
-        />
-        <HighlightCard
-          label="LATEST BLOCK"
-          extraTopRight={<TimeAgos time={info.latestBlock.timestamp} size=Text.Md />}
-          valueComponent={
-            <TypeID.Block
-              id={
-                metadata
-                ->Sub.map(({lastProcessedHeight}) => lastProcessedHeight)
-                ->Sub.default(ID.Block.ID(0))
-              }
-              position=TypeID.Landing
-            />
-          }
-          extraComponent={<Text value=moniker nowrap=true ellipsis=true block=true />}
-        />
-        <HighlightCard
-          label="ACTIVE VALIDATORS"
-          valueComponent={
-                           let activeValidators =
-                             validators->Belt_List.size->Format.iPretty ++ " Nodes";
+                           </div>
                            <Text
-                             value=activeValidators
-                             size=Text.Xxxl
+                             value={usd24HrChange->Format.fPercent}
+                             color={usd24HrChange >= 0. ? Colors.green4 : Colors.red5}
                              weight=Text.Semibold
-                             color=Colors.gray8
-                           />;
-                         }
-          extraComponent={
-            <div className=Styles.vFlex>
-              <Text value={bandBonded->Format.fPretty} code=true />
-              <HSpacing size=Spacing.sm />
-              <Text value=" BAND Bonded" />
-            </div>
-          }
-        />
-      </Row>,
-    );
+                             code=true
+                           />
+                         </div>;
+                       }
+      />
+      <HighlightCard
+        label="MARKET CAP"
+        valueComponent={
+                         let marketcap = "$" ++ financial.usdMarketCap->Format.fPretty;
+                         <Text
+                           value=marketcap
+                           size=Text.Xxxl
+                           weight=Text.Semibold
+                           color=Colors.gray8
+                           code=true
+                         />;
+                       }
+        extraComponent={
+                         let marketcap = financial.circulatingSupply;
+                         <div className=Styles.vFlex>
+                           <Text value={marketcap->Format.fPretty} code=true weight=Text.Thin />
+                           <HSpacing size=Spacing.xs />
+                           <Text
+                             value="BAND"
+                             color=Colors.gray7
+                             weight=Text.Thin
+                             spacing={Text.Em(0.01)}
+                           />
+                         </div>;
+                       }
+      />
+      <HighlightCard
+        label="LATEST BLOCK"
+        extraTopRight={<TimeAgos time=timestamp size=Text.Md />}
+        valueComponent={<TypeID.Block id=lastProcessedHeight position=TypeID.Landing />}
+        extraComponent={<Text value=moniker nowrap=true ellipsis=true block=true />}
+      />
+      <HighlightCard
+        label="ACTIVE VALIDATORS"
+        valueComponent={
+                         let activeValidators =
+                           validators->Belt_List.size->Format.iPretty ++ " Nodes";
+                         <Text
+                           value=activeValidators
+                           size=Text.Xxxl
+                           weight=Text.Semibold
+                           color=Colors.gray8
+                         />;
+                       }
+        extraComponent={
+          <div className=Styles.vFlex>
+            <Text value={bandBonded->Format.fPretty} code=true />
+            <HSpacing size=Spacing.sm />
+            <Text value=" BAND Bonded" />
+          </div>
+        }
+      />
+    </Row>
+    |> Sub.resolve;
   }
-  ->Belt.Option.getWithDefault(React.null);
+  |> Sub.default(_, React.null);

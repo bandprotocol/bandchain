@@ -147,6 +147,7 @@ func TestMsgReportDataValidation(t *testing.T) {
 		{false, NewMsgReportData(requestID, nil, validator, reporter)},
 		{false, NewMsgReportData(requestID, data, failValidator, reporter)},
 		{false, NewMsgReportData(requestID, data, failValidator, nil)},
+		{false, NewMsgReportData(requestID, []RawDataReportWithID{NewRawDataReportWithID(1, 1, []byte("data1")), NewRawDataReportWithID(1, 2, []byte("data2"))}, validator, reporter)},
 	}
 
 	for _, tc := range cases {

@@ -19,110 +19,94 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) => {
-  let oracleScriptOpt = OracleScriptHook.get(oracleScriptID);
+let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) =>
+  {
+    let%Sub oracleScript = OracleScriptSub.get(oracleScriptID);
 
-  <div className=Styles.pageContainer>
-    <Row justify=Row.Between>
-      <Col>
-        <div className=Styles.vFlex>
-          <img src=Images.oracleScriptLogo className=Styles.logo />
-          <Text
-            value="ORACLE SCRIPT"
-            weight=Text.Medium
-            size=Text.Md
-            spacing={Text.Em(0.06)}
-            height={Text.Px(15)}
-            nowrap=true
-            color=Colors.gray7
-            block=true
+    <div className=Styles.pageContainer>
+      <Row justify=Row.Between>
+        <Col>
+          <div className=Styles.vFlex>
+            <img src=Images.oracleScriptLogo className=Styles.logo />
+            <Text
+              value="ORACLE SCRIPT"
+              weight=Text.Medium
+              size=Text.Md
+              spacing={Text.Em(0.06)}
+              height={Text.Px(15)}
+              nowrap=true
+              color=Colors.gray7
+              block=true
+            />
+            <div className=Styles.seperatedLine />
+            <TimeAgos
+              time={oracleScript.timestamp}
+              prefix="Last updated "
+              size=Text.Md
+              weight=Text.Thin
+              spacing={Text.Em(0.06)}
+              height={Text.Px(18)}
+              upper=true
+            />
+          </div>
+        </Col>
+      </Row>
+      <VSpacing size=Spacing.xl />
+      <div className=Styles.vFlex>
+        <TypeID.OracleScript id={oracleScript.id} position=TypeID.Title />
+        <HSpacing size=Spacing.md />
+        <Text
+          value={oracleScript.name}
+          size=Text.Xxl
+          height={Text.Px(22)}
+          weight=Text.Bold
+          nowrap=true
+        />
+      </div>
+      <VSpacing size=Spacing.xl />
+      <Row>
+        <Col size=1.>
+          <InfoHL header="OWNER" info={InfoHL.Address(oracleScript.owner, 430)} />
+        </Col>
+        <Col size=0.95>
+          <InfoHL
+            info={InfoHL.DataSources(oracleScript.relatedDataSources)}
+            header="RELATED DATA SOURCES"
           />
-          <div className=Styles.seperatedLine />
-          {switch (oracleScriptOpt) {
-           | Some(oracleScript) =>
-             oracleScript.revisions
-             ->Belt_List.get(0)
-             ->Belt_Option.mapWithDefault(React.null, ({timestamp}) =>
-                 <TimeAgos
-                   time=timestamp
-                   prefix="Last updated "
-                   size=Text.Md
-                   weight=Text.Thin
-                   spacing={Text.Em(0.06)}
-                   height={Text.Px(18)}
-                   upper=true
-                 />
-               )
-           | None =>
-             <Text
-               value="???"
-               size=Text.Md
-               weight=Text.Thin
-               spacing={Text.Em(0.06)}
-               height={Text.Px(18)}
-             />
-           }}
-        </div>
-      </Col>
-    </Row>
-    {switch (oracleScriptOpt) {
-     | Some(oracleScript) =>
-       <>
-         <VSpacing size=Spacing.xl />
-         <div className=Styles.vFlex>
-           <TypeID.OracleScript id={ID.OracleScript.ID(oracleScript.id)} position=TypeID.Title />
-           <HSpacing size=Spacing.md />
-           <Text
-             value={oracleScript.name}
-             size=Text.Xxl
-             height={Text.Px(22)}
-             weight=Text.Bold
-             nowrap=true
-           />
-         </div>
-         <VSpacing size=Spacing.xl />
-         <Row>
-           <Col size=1.>
-             <InfoHL header="OWNER" info={InfoHL.Address(oracleScript.owner, 430)} />
-           </Col>
-           <Col size=0.95>
-             <InfoHL
-               info={InfoHL.DataSources(oracleScript.relatedDataSource)}
-               header="RELATED DATA SOURCES"
-             />
-           </Col>
-         </Row>
-         <VSpacing size=Spacing.xl />
-         <Tab
-           tabs=[|
-             {
-               name: "EXECUTION",
-               route: Route.OracleScriptIndexPage(oracleScriptID, Route.OracleScriptExecute),
-             },
-             {
-               name: "CODE",
-               route: Route.OracleScriptIndexPage(oracleScriptID, Route.OracleScriptCode),
-             },
-             {
-               name: "REQUESTS",
-               route: Route.OracleScriptIndexPage(oracleScriptID, Route.OracleScriptRequests),
-             },
-             {
-               name: "REVISIONS",
-               route: Route.OracleScriptIndexPage(oracleScriptID, Route.OracleScriptRevisions),
-             },
-           |]
-           currentRoute={Route.OracleScriptIndexPage(oracleScriptID, hashtag)}>
-           {switch (hashtag) {
-            | OracleScriptExecute => <OracleScriptExecute code={oracleScript.code} />
-            | OracleScriptCode => <OracleScriptCode />
-            | OracleScriptRequests => <OracleScriptRequestTable />
-            | OracleScriptRevisions =>
-              <OracleScriptRevisionTable revisions={oracleScript.revisions} />
-            }}
-         </Tab>
-       </>
-     | None => React.null
-     }}
-  </div>;
-};
+        </Col>
+      </Row>
+      <VSpacing size=Spacing.xl />
+      <Tab
+        tabs=[|
+          {
+            name: "EXECUTION",
+            route:
+              oracleScriptID |> ID.OracleScript.getRouteWithTab(_, Route.OracleScriptExecute),
+          },
+          {
+            name: "CODE",
+            route: oracleScriptID |> ID.OracleScript.getRouteWithTab(_, Route.OracleScriptCode),
+          },
+          {
+            name: "REQUESTS",
+            route:
+              oracleScriptID |> ID.OracleScript.getRouteWithTab(_, Route.OracleScriptRequests),
+          },
+          {
+            name: "REVISIONS",
+            route:
+              oracleScriptID |> ID.OracleScript.getRouteWithTab(_, Route.OracleScriptRevisions),
+          },
+        |]
+        currentRoute={oracleScriptID |> ID.OracleScript.getRouteWithTab(_, hashtag)}>
+        {switch (hashtag) {
+         | OracleScriptExecute => <OracleScriptExecute code={oracleScript.codeHash} />
+         | OracleScriptCode => <OracleScriptCode />
+         | OracleScriptRequests => <OracleScriptRequestTable />
+         | OracleScriptRevisions => <OracleScriptRevisionTable id=oracleScriptID />
+         }}
+      </Tab>
+    </div>
+    |> Sub.resolve;
+  }
+  |> Sub.default(_, React.null);

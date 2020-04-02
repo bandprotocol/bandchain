@@ -23,11 +23,11 @@ module RawOracleScriptID = {
 };
 
 module RawRequestID = {
-  type tab_t = Route.request_tab_t;
+  type tab_t = unit;
   let prefix = "#R";
   let color = Colors.orange5;
-  let route = (id, tab) => Route.RequestIndexPage(id, tab);
-  let defaultTab = Route.RequestReportStatus;
+  let route = (id, _) => Route.RequestIndexPage(id);
+  let defaultTab = ();
 };
 
 module RawBlock = {
