@@ -36,6 +36,7 @@ module Styles = {
       marginTop(`px(13)),
     ]);
   let sourceIcon = style([width(`px(16)), marginRight(`px(8))]);
+  let marginRightOnly = size => style([marginRight(`px(size))]);
 };
 
 [@react.component]
@@ -173,16 +174,15 @@ let make = (~info, ~header, ~isLeft=true) => {
      | Validators(validators) =>
        <div className=Styles.datasourcesContainer>
          {validators
-          ->Belt.Array.map(validator =>
-              <>
+          ->Belt_Array.map(validator =>
+              <div key={validator.consensusAddress} className={Styles.marginRightOnly(10)}>
                 <ValidatorMonikerLink
                   validatorAddress={validator.operatorAddress}
                   moniker={validator.moniker}
                   size=Text.Lg
                   underline=true
                 />
-                <HSpacing size=Spacing.md />
-              </>
+              </div>
             )
           ->React.array}
        </div>

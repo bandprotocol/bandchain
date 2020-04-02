@@ -11,7 +11,7 @@ module Styles = {
   let textContainer = style([display(`flex)]);
   let countContainer = style([maxWidth(`px(80))]);
   let proposerBox = style([maxWidth(`px(270)), display(`flex), flexDirection(`column)]);
-  let idContainer = style([display(`flex)]);
+  let idContainer = style([display(`flex), maxWidth(`px(200))]);
   let dataSourcesContainer = style([display(`flex)]);
   let resolveStatusContainer =
     style([display(`flex), alignItems(`center), justifyContent(`flexEnd)]);
@@ -126,7 +126,7 @@ let renderOracleScript = (id, name) => {
   <div className=Styles.idContainer>
     <TypeID.OracleScript id position=TypeID.Text />
     <HSpacing size=Spacing.xs />
-    <Text value=name block=true height={Text.Px(16)} spacing={Text.Em(0.02)} />
+    <Text value=name block=true height={Text.Px(16)} spacing={Text.Em(0.02)} ellipsis=true />
   </div>;
 };
 
@@ -161,20 +161,20 @@ let renderRequestStatus = status => {
       align=Text.Right
       value={
         switch (status) {
-        | RequestHook.Request.Success => "Success"
-        | Failure => "Fail"
-        | Open => "Pending"
-        | Unknown => "???"
+        | RequestSub.Success => "Success"
+        | RequestSub.Failure => "Fail"
+        | RequestSub.Pending => "Pending"
+        | RequestSub.Unknown => "???"
         }
       }
     />
     <img
       src={
         switch (status) {
-        | RequestHook.Request.Success => Images.success
-        | Failure => Images.fail
-        | Open => Images.pending
-        | Unknown => Images.unknown
+        | RequestSub.Success => Images.success
+        | RequestSub.Failure => Images.fail
+        | RequestSub.Pending => Images.pending
+        | RequestSub.Unknown => Images.unknown
         }
       }
       className=Styles.resolveIcon
@@ -201,7 +201,7 @@ type t =
   | OracleScript(ID.OracleScript.t, string)
   | RelatedDataSources(list(ID.DataSource.t))
   | Request(ID.Request.t)
-  | RequestStatus(RequestHook.Request.resolve_status_t);
+  | RequestStatus(RequestSub.resolve_status_t);
 
 [@react.component]
 let make = (~elementType) => {
