@@ -138,9 +138,7 @@ let make = () =>
                    <Col size=0.5> <TElement elementType={timestamp->TElement.Timestamp} /> </Col>
                    <Col size=1.> <TElement elementType={owner->TElement.Address} /> </Col>
                    <Col size=0.4>
-                     <TElement
-                       elementType={fee->TxHook.Coin.getBandAmountFromCoins->TElement.Fee}
-                     />
+                     <TElement elementType={fee->Coin.getBandAmountFromCoins->TElement.Fee} />
                    </Col>
                    <Col> <HSpacing size=Spacing.xl /> </Col>
                  </Row>

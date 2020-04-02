@@ -17,10 +17,13 @@ const (
 	EventTypeEditOracleScript   = types.EventTypeEditOracleScript
 	EventTypeRequest            = types.EventTypeRequest
 	EventTypeReport             = types.EventTypeReport
+	EventTypeRequestExecute     = types.EventTypeRequestExecute
 
-	AttributeKeyID        = types.AttributeKeyID
-	AttributeKeyRequestID = types.AttributeKeyRequestID
-	AttributeKeyValidator = types.AttributeKeyValidator
+	AttributeKeyID            = types.AttributeKeyID
+	AttributeKeyRequestID     = types.AttributeKeyRequestID
+	AttributeKeyValidator     = types.AttributeKeyValidator
+	AttributeKeyResolveStatus = types.AttributeKeyResolveStatus
+	AttributeKeyResult        = types.AttributeKeyResult
 )
 
 var (
@@ -92,6 +95,7 @@ type (
 	ExternalID     = types.ExternalID
 	DataSourceID   = types.DataSourceID
 
-	DataSource   = types.DataSource
-	OracleScript = types.OracleScript
+	DataSource    = types.DataSource
+	OracleScript  = types.OracleScript
+	ResolveStatus = types.ResolveStatus
 )

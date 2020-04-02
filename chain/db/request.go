@@ -6,6 +6,19 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/zoracle"
 )
 
+func parseResolveStatus(resolveStatus zoracle.ResolveStatus) string {
+	switch resolveStatus {
+	case 0:
+		return "Pending"
+	case 1:
+		return "Success"
+	case 2:
+		return "Failure"
+	default:
+		return "Unknown"
+	}
+}
+
 func createRequest(
 	id int64,
 	oracleScriptID int64,

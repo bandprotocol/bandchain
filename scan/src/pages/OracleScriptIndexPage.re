@@ -75,6 +75,12 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) =>
           />
         </Col>
       </Row>
+      <VSpacing size=Spacing.sm />
+      <Row>
+        <Col size=1.>
+          <InfoHL header="DESCRIPTION" info={InfoHL.Description(oracleScript.description)} />
+        </Col>
+      </Row>
       <VSpacing size=Spacing.xl />
       <Tab
         tabs=[|
@@ -102,7 +108,7 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) =>
         {switch (hashtag) {
          | OracleScriptExecute => <OracleScriptExecute code={oracleScript.codeHash} />
          | OracleScriptCode => <OracleScriptCode />
-         | OracleScriptRequests => <OracleScriptRequestTable />
+         | OracleScriptRequests => <OracleScriptRequestTable oracleScriptID />
          | OracleScriptRevisions => <OracleScriptRevisionTable id=oracleScriptID />
          }}
       </Tab>

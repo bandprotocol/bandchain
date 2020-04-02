@@ -5,22 +5,13 @@ module Styles = {
 
   let resolveIcon = style([width(`px(20)), height(`px(20)), marginLeft(Spacing.sm)]);
 
-  let msgIcon =
-    style([
-      width(`px(30)),
-      height(`px(30)),
-      marginTop(`px(5)),
-      marginLeft(Spacing.xl),
-      marginRight(Spacing.xl),
-    ]);
-
   let hashContainer = style([maxWidth(`px(220))]);
   let feeContainer = style([display(`flex), justifyContent(`flexEnd)]);
   let timeContainer = style([display(`flex), alignItems(`center), maxWidth(`px(150))]);
   let textContainer = style([display(`flex)]);
   let countContainer = style([maxWidth(`px(80))]);
   let proposerBox = style([maxWidth(`px(270)), display(`flex), flexDirection(`column)]);
-  let idContainer = style([display(`flex)]);
+  let idContainer = style([display(`flex), maxWidth(`px(200))]);
   let dataSourcesContainer = style([display(`flex)]);
   let resolveStatusContainer =
     style([display(`flex), alignItems(`center), justifyContent(`flexEnd)]);
@@ -135,7 +126,7 @@ let renderOracleScript = (id, name) => {
   <div className=Styles.idContainer>
     <TypeID.OracleScript id position=TypeID.Text />
     <HSpacing size=Spacing.xs />
-    <Text value=name block=true height={Text.Px(16)} spacing={Text.Em(0.02)} />
+    <Text value=name block=true height={Text.Px(16)} spacing={Text.Em(0.02)} ellipsis=true />
   </div>;
 };
 
@@ -170,20 +161,20 @@ let renderRequestStatus = status => {
       align=Text.Right
       value={
         switch (status) {
-        | RequestHook.Request.Success => "Success"
-        | Failure => "Fail"
-        | Open => "Pending"
-        | Unknown => "???"
+        | RequestSub.Success => "Success"
+        | RequestSub.Failure => "Fail"
+        | RequestSub.Pending => "Pending"
+        | RequestSub.Unknown => "???"
         }
       }
     />
     <img
       src={
         switch (status) {
-        | RequestHook.Request.Success => Images.success
-        | Failure => Images.fail
-        | Open => Images.pending
-        | Unknown => Images.unknown
+        | RequestSub.Success => Images.success
+        | RequestSub.Failure => Images.fail
+        | RequestSub.Pending => Images.pending
+        | RequestSub.Unknown => Images.unknown
         }
       }
       className=Styles.resolveIcon
@@ -191,23 +182,7 @@ let renderRequestStatus = status => {
   </div>;
 };
 
-let msgIcon =
-  fun
-  | TxHook.Msg.CreateDataSource(_) => Images.newScript
-  | EditDataSource(_) => Images.newScript
-  | CreateOracleScript(_) => Images.newScript
-  | EditOracleScript(_) => Images.newScript
-  | Send(_) => Images.sendCoin
-  | Request(_) => Images.dataRequest
-  | Report(_) => Images.report
-  | AddOracleAddress(_) => Images.checkIcon
-  | RemoveOracleAddress(_) => Images.checkIcon
-  | CreateValidator(_) => Images.checkIcon
-  | EditValidator(_) => Images.checkIcon
-  | Unknown => Images.checkIcon;
-
 type t =
-  | Icon(TxHook.Msg.t)
   | Height(int)
   | HeightWithTime(int, MomentRe.Moment.t)
   | Name(string)
@@ -226,12 +201,11 @@ type t =
   | OracleScript(ID.OracleScript.t, string)
   | RelatedDataSources(list(ID.DataSource.t))
   | Request(ID.Request.t)
-  | RequestStatus(RequestHook.Request.resolve_status_t);
+  | RequestStatus(RequestSub.resolve_status_t);
 
 [@react.component]
 let make = (~elementType) => {
   switch (elementType) {
-  | Icon({action, _}) => <img src={action->msgIcon} className=Styles.msgIcon />
   | Height(height) => renderHeight(height)
   | HeightWithTime(height, timestamp) => renderHeightWithTime(height, timestamp)
   | Name(name) => renderName(name)

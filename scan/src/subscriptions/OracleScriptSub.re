@@ -8,6 +8,8 @@ type t = {
   relatedDataSources: list(ID.DataSource.t),
 };
 
+type oracle_script_code_internal = {codeText: option(string)};
+
 type related_data_source_t = {dataSourceID: ID.DataSource.t};
 
 type internal_t = {

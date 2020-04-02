@@ -1,8 +1,9 @@
 type t =
-  | Height(int)
+  | Height(ID.Block.t)
   | Count(int)
   | Float(float)
   | Text(string)
+  | Description(string)
   | Timestamp(MomentRe.Moment.t)
   | Fee(float)
   | DataSources(list(ID.DataSource.t))
@@ -12,7 +13,7 @@ type t =
   | Address(Address.t, int)
   | Fraction(int, int, bool)
   | FloatWithSuffix(float, string)
-  | Validators(list(ValidatorHook.Validator.t));
+  | Validators(array(ValidatorSub.Mini.t));
 
 module Styles = {
   open Css;
@@ -35,6 +36,7 @@ module Styles = {
       marginTop(`px(13)),
     ]);
   let sourceIcon = style([width(`px(16)), marginRight(`px(8))]);
+  let marginRightOnly = size => style([marginRight(`px(size))]);
 };
 
 [@react.component]
@@ -53,9 +55,7 @@ let make = (~info, ~header, ~isLeft=true) => {
     </div>
     {switch (info) {
      | Height(height) =>
-       <div className=Styles.vFlex>
-         <TypeID.Block id={ID.Block.ID(height)} position=TypeID.Subtitle />
-       </div>
+       <div className=Styles.vFlex> <TypeID.Block id=height position=TypeID.Subtitle /> </div>
      | Float(value) =>
        <Text
          value={value |> Js.Float.toString}
@@ -82,6 +82,8 @@ let make = (~info, ~header, ~isLeft=true) => {
        />
      | Text(text) =>
        <Text value=text size=Text.Lg weight=Text.Semibold code=true spacing={Text.Em(0.02)} />
+     | Description(text) =>
+       <Text value=text size=Text.Lg weight=Text.Thin spacing={Text.Em(0.)} />
      | Timestamp(time) =>
        <div className=Styles.vFlex>
          <Text
@@ -129,7 +131,7 @@ let make = (~info, ~header, ~isLeft=true) => {
        </div>
      | DataSources(ids) =>
        switch (ids |> Belt_List.size) {
-       | 0 => <Text value="TBD" size=Text.Lg spacing={Text.Em(0.06)} height=Text.Px(17)/>
+       | 0 => <Text value="TBD" size=Text.Lg spacing={Text.Em(0.06)} height={Text.Px(17)} />
        | _ =>
          <div className=Styles.datasourcesContainer>
            {ids
@@ -172,18 +174,16 @@ let make = (~info, ~header, ~isLeft=true) => {
      | Validators(validators) =>
        <div className=Styles.datasourcesContainer>
          {validators
-          ->Belt.List.map(validator =>
-              <>
+          ->Belt_Array.map(validator =>
+              <div key={validator.consensusAddress} className={Styles.marginRightOnly(10)}>
                 <ValidatorMonikerLink
                   validatorAddress={validator.operatorAddress}
                   moniker={validator.moniker}
                   size=Text.Lg
                   underline=true
                 />
-                <HSpacing size=Spacing.md />
-              </>
+              </div>
             )
-          ->Array.of_list
           ->React.array}
        </div>
      }}
