@@ -79,7 +79,6 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
   {
     let validatorsSub = ValidatorSub.getList();
     let validatorSub = ValidatorSub.get(address);
-    Js.Console.log(validatorSub);
 
     let%Sub validators = validatorsSub;
     let%Sub validator = validatorSub;
