@@ -525,9 +525,9 @@ $ %s tx zoracle edit-oracle-script 1 --name eth-price --description "Oracle scri
 // GetCmdAddOracleAddress implements the adding of oracle address command handler.
 func GetCmdAddOracleAddress(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-oracle-address [validator] [reporter]",
+		Use:   "add-oracle-address [reporter]",
 		Short: "Add an agent authorized to submit report transactions.",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(1),
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Add an agent authorized to submit report transactions.
 Example:
@@ -539,12 +539,11 @@ $ %s tx zoracle add-oracle-address bandvaloper1p40yh3zkmhcv0ecqp3mcazy83sa57rgjd
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-
-			validator, err := sdk.ValAddressFromBech32(args[0])
+			validator, err := sdk.ValAddressFromBech32(cliCtx.GetFromAddress().String())
 			if err != nil {
 				return err
 			}
-			reporter, err := sdk.AccAddressFromBech32(args[1])
+			reporter, err := sdk.AccAddressFromBech32(args[0])
 			if err != nil {
 				return err
 			}
@@ -566,9 +565,9 @@ $ %s tx zoracle add-oracle-address bandvaloper1p40yh3zkmhcv0ecqp3mcazy83sa57rgjd
 // GetCmdRemoveOracleAddress implements the Removing of oracle address command handler.
 func GetCmdRemoveOracleAddress(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "remove-oracle-address [validator] [reporter]",
+		Use:   "remove-oracle-address [reporter]",
 		Short: "Remove an agent from the list of authorized reporters.",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(1),
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Remove an agent from the list of authorized reporters.
 Example:
@@ -580,12 +579,11 @@ $ %s tx zoracle remove-oracle-address bandvaloper1p40yh3zkmhcv0ecqp3mcazy83sa57r
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-
-			validator, err := sdk.ValAddressFromBech32(args[0])
+			validator, err := sdk.ValAddressFromBech32(cliCtx.GetFromAddress().String())
 			if err != nil {
 				return err
 			}
-			reporter, err := sdk.AccAddressFromBech32(args[1])
+			reporter, err := sdk.AccAddressFromBech32(args[0])
 			if err != nil {
 				return err
 			}
