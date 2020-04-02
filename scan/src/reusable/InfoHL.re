@@ -1,5 +1,5 @@
 type t =
-  | Height(int)
+  | Height(ID.Block.t)
   | Count(int)
   | Float(float)
   | Text(string)
@@ -53,9 +53,7 @@ let make = (~info, ~header, ~isLeft=true) => {
     </div>
     {switch (info) {
      | Height(height) =>
-       <div className=Styles.vFlex>
-         <TypeID.Block id={ID.Block.ID(height)} position=TypeID.Subtitle />
-       </div>
+       <div className=Styles.vFlex> <TypeID.Block id=height position=TypeID.Subtitle /> </div>
      | Float(value) =>
        <Text
          value={value |> Js.Float.toString}
@@ -129,7 +127,7 @@ let make = (~info, ~header, ~isLeft=true) => {
        </div>
      | DataSources(ids) =>
        switch (ids |> Belt_List.size) {
-       | 0 => <Text value="TBD" size=Text.Lg spacing={Text.Em(0.06)} height=Text.Px(17)/>
+       | 0 => <Text value="TBD" size=Text.Lg spacing={Text.Em(0.06)} height={Text.Px(17)} />
        | _ =>
          <div className=Styles.datasourcesContainer>
            {ids

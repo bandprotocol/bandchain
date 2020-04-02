@@ -67,7 +67,7 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) =>
           </Col>
           <Col size=0.8>
             <InfoHL
-              info={InfoHL.Fee(dataSource.fee->TxHook.Coin.getBandAmountFromCoins)}
+              info={InfoHL.Fee(dataSource.fee->Coin.getBandAmountFromCoins)}
               header="REQUEST FEE"
             />
           </Col>
@@ -96,7 +96,7 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) =>
           {switch (hashtag) {
            | DataSourceExecute => <DataSourceExecute executable={dataSource.executable} />
            | DataSourceCode => <DataSourceCode executable={dataSource.executable} />
-           | DataSourceRequests => <DataSourceRequestTable requests=[] />
+           | DataSourceRequests => <DataSourceRequestTable dataSourceID />
            | DataSourceRevisions => <DataSourceRevisionTable id=dataSourceID />
            }}
         </Tab>
