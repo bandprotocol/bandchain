@@ -527,13 +527,13 @@ $ %s tx zoracle edit-oracle-script 1 --name eth-price --description "Oracle scri
 // GetCmdAddOracleAddress implements the adding of oracle address command handler.
 func GetCmdAddOracleAddress(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-oracle-address (--validator [validator]) (--reporter [reporter])",
+		Use:   "add-oracle-address [validator] [reporter]",
 		Short: "Add an agent authorized to submit report transactions.",
-		Args:  cobra.NoArgs,
+		Args:  cobra.ExactArgs(2),
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Add an agent authorized to submit report transactions.
 Example:
-$ %s tx zoracle add-oracle-address --validator bandvaloper1p40yh3zkmhcv0ecqp3mcazy83sa57rgjde6wec --reporter band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun --from mykey
+$ %s tx zoracle add-oracle-address bandvaloper1p40yh3zkmhcv0ecqp3mcazy83sa57rgjde6wec band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun --from mykey
 `,
 				version.ClientName,
 			),
@@ -542,39 +542,25 @@ $ %s tx zoracle add-oracle-address --validator bandvaloper1p40yh3zkmhcv0ecqp3mca
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 
-			validatorStr, err := cmd.Flags().GetString(flagValidator)
+			validator, err := sdk.ValAddressFromBech32(args[0])
 			if err != nil {
 				return err
 			}
-			validator, err := sdk.ValAddressFromBech32(validatorStr)
+			reporter, err := sdk.AccAddressFromBech32(args[1])
 			if err != nil {
 				return err
 			}
-
-			reporterStr, err := cmd.Flags().GetString(flagReporter)
-			if err != nil {
-				return err
-			}
-			reporter, err := sdk.AccAddressFromBech32(reporterStr)
-			if err != nil {
-				return err
-			}
-
 			msg := types.NewMsgAddOracleAddress(
 				validator,
 				reporter,
 			)
-
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
 			}
-
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
 		},
 	}
-	cmd.Flags().String(flagValidator, "", "Address of the validator")
-	cmd.Flags().String(flagReporter, "", "Address of agent authorized reporters")
 
 	return cmd
 }
@@ -582,13 +568,13 @@ $ %s tx zoracle add-oracle-address --validator bandvaloper1p40yh3zkmhcv0ecqp3mca
 // GetCmdRemoveOracleAddress implements the Removing of oracle address command handler.
 func GetCmdRemoveOracleAddress(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "remove-oracle-address (--validator [validator]) (--reporter [reporter])",
+		Use:   "remove-oracle-address [validator] [reporter]",
 		Short: "Remove an agent from the list of authorized reporters.",
-		Args:  cobra.NoArgs,
+		Args:  cobra.ExactArgs(2),
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Remove an agent from the list of authorized reporters.
 Example:
-$ %s tx zoracle remove-oracle-address --validator bandvaloper1p40yh3zkmhcv0ecqp3mcazy83sa57rgjde6wec --reporter band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun --from mykey
+$ %s tx zoracle remove-oracle-address bandvaloper1p40yh3zkmhcv0ecqp3mcazy83sa57rgjde6wec band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun --from mykey
 `,
 				version.ClientName,
 			),
@@ -597,39 +583,25 @@ $ %s tx zoracle remove-oracle-address --validator bandvaloper1p40yh3zkmhcv0ecqp3
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 
-			validatorStr, err := cmd.Flags().GetString(flagValidator)
+			validator, err := sdk.ValAddressFromBech32(args[0])
 			if err != nil {
 				return err
 			}
-			validator, err := sdk.ValAddressFromBech32(validatorStr)
+			reporter, err := sdk.AccAddressFromBech32(args[1])
 			if err != nil {
 				return err
 			}
-
-			reporterStr, err := cmd.Flags().GetString(flagReporter)
-			if err != nil {
-				return err
-			}
-			reporter, err := sdk.AccAddressFromBech32(reporterStr)
-			if err != nil {
-				return err
-			}
-
 			msg := types.NewMsgRemoveOracleAddress(
 				validator,
 				reporter,
 			)
-
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
 			}
-
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
 		},
 	}
-	cmd.Flags().String(flagValidator, "", "Address of the validator")
-	cmd.Flags().String(flagReporter, "", "Address of agent authorized reporters")
 
 	return cmd
 }
