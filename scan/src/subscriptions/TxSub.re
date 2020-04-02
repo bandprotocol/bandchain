@@ -233,6 +233,18 @@ module Msg = {
       };
   };
 
+  module FailMessage = {
+    type t = {
+      sender: Address.t,
+      message: string,
+    };
+    let decode = json =>
+      JsonUtils.Decode.{
+        sender: json |> field("sender", string) |> Address.fromBech32,
+        message: json |> field("type", string),
+      };
+  };
+
   type t =
     | Unknown
     | Send(Send.t)
@@ -245,7 +257,8 @@ module Msg = {
     | AddOracleAddress(AddOracleAddress.t)
     | RemoveOracleAddress(RemoveOracleAddress.t)
     | CreateValidator(CreateValidator.t)
-    | EditValidator(EditValidator.t);
+    | EditValidator(EditValidator.t)
+    | FailMessage(FailMessage.t);
 
   let getCreator = msg => {
     switch (msg) {
@@ -260,6 +273,7 @@ module Msg = {
     | RemoveOracleAddress(address) => address.validator
     | CreateValidator(validator) => validator.delegatorAddress
     | EditValidator(validator) => validator.sender
+    | FailMessage(fail) => fail.sender
     | Unknown => "" |> Address.fromHex
     };
   };
@@ -282,7 +296,17 @@ module Msg = {
       }
     );
   };
-  let decodeActions = json => json |> JsonUtils.Decode.list(decodeAction);
+
+  let decodeFailAction = json => FailMessage(json |> FailMessage.decode);
+
+  let decodeActions = json =>
+    JsonUtils.Decode.(
+      switch (json |> field("status", string)) {
+      | "success" => json |> field("messages", list(decodeAction))
+      | "fail" => json |> field("messages", list(decodeFailAction))
+      | _ => []
+      }
+    );
 
   let getRoute = msg =>
     switch (msg) {
@@ -302,6 +326,7 @@ module Msg = {
       Some(Route.ValidatorIndexPage(validator.validatorAddress, Route.Delegators))
     | EditValidator(validator) =>
       Some(Route.ValidatorIndexPage(validator.sender, Route.Delegators))
+    | FailMessage(_) => None
     | Unknown => None
     };
 };
