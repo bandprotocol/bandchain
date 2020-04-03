@@ -12,8 +12,7 @@ let extractFields: (string, string) => option(array(field_key_type_t)) = [%bs.ra
   {|
   function(_schema, cls) {
     try {
-      let [fieldName, fieldType] =  JSON.parse(JSON.parse(_schema)[cls])["fields"];
-      return {fieldName, fieldType};
+      return JSON.parse(JSON.parse(_schema)[cls])["fields"].map(([fieldName, fieldType]) => ({fieldName, fieldType}));
     } catch(err) {
       return undefined
     }
@@ -51,8 +50,7 @@ function(_schema, cls, data) {
     let model = window[cls]
     let newValue = borsh.deserialize(schemaMap, model, data)
     return schemaMap.get(model).fields.map(([fieldName, _]) => {
-      let [fieldName, fieldValue] = [fieldName, newValue[fieldName].toString()];
-      return {fieldName, fieldValue};
+      return {fieldName, fieldValue: newValue[fieldName].toString()};
     });
   } catch(err) {
     return undefined
