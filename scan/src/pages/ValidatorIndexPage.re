@@ -1,8 +1,6 @@
 module Styles = {
   open Css;
 
-  let pageContainer = style([paddingTop(`px(40))]);
-
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
   let logo = style([width(`px(50)), marginRight(`px(10))]);
@@ -85,7 +83,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
 
     Js.Console.log(totalPower);
 
-    <div className=Styles.pageContainer>
+    <>
       <Row justify=Row.Between>
         <Col>
           <div className=Styles.vFlex>
@@ -188,7 +186,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
          | Reports => <ReportsTable address />
          }}
       </Tab>
-    </div>
+    </>
     |> Sub.resolve;
   }
   |> Sub.default(_, React.null);
