@@ -3,7 +3,8 @@ type field_t =
   | Values(list(string))
   | DataSource(ID.DataSource.t, string)
   | Block(ID.Block.t)
-  | TxHash(Hash.t);
+  | TxHash(Hash.t)
+  | Validator(ValidatorSub.Mini.t);
 
 type theme_t =
   | MessageMiniTable
@@ -95,7 +96,7 @@ module Styles = {
   let fillRight = style([marginRight(`auto)]);
 };
 
-let renderField = (field, maxWidth) => {
+let renderField = (field, maxWidth, isRight) => {
   switch (field) {
   | Value(v) =>
     <div className={Styles.valueContainer(maxWidth)}>
@@ -115,6 +116,7 @@ let renderField = (field, maxWidth) => {
       {vals
        ->Belt_List.map(v =>
            <div key=v className={Styles.valueContainer(maxWidth)}>
+             {isRight ? <div className=Styles.fillRight /> : React.null}
              <Text
                value=v
                size=Text.Sm
@@ -149,6 +151,14 @@ let renderField = (field, maxWidth) => {
   | TxHash(txHash) =>
     <div className={Styles.valueContainer(maxWidth)}>
       <TxLink txHash width=maxWidth size=Text.Sm />
+    </div>
+  | Validator(validator) =>
+    <div className={Styles.valueContainer(maxWidth)}>
+      <ValidatorMonikerLink
+        size=Text.Sm
+        validatorAddress={validator.operatorAddress}
+        moniker={validator.moniker}
+      />
     </div>
   };
 };
@@ -225,6 +235,7 @@ let make =
                        sumSizes <= 0.
                          ? tableWidth
                          : (tableWidth |> float_of_int) *. size /. sumSizes |> int_of_float,
+                       isRight,
                      )}
                   </div>
                 </Col>

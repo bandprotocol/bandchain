@@ -72,6 +72,12 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) =>
             />
           </Col>
         </Row>
+        <VSpacing size=Spacing.sm />
+        <Row>
+          <Col size=1.>
+            <InfoHL header="DESCRIPTION" info={InfoHL.Description(dataSource.description)} />
+          </Col>
+        </Row>
         <VSpacing size=Spacing.xl />
         <Tab
           tabs=[|
