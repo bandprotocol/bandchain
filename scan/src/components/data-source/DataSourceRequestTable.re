@@ -58,7 +58,7 @@ let make = (~dataSourceID: ID.DataSource.t) =>
                      />
                    </div>
                  </Col>
-                 <Col size=2.8>
+                 <Col size=3.05>
                    <Text
                      block=true
                      value="ORACLE SCRIPT"
@@ -67,7 +67,7 @@ let make = (~dataSourceID: ID.DataSource.t) =>
                      color=Colors.gray6
                    />
                  </Col>
-                 <Col size=2.>
+                 <Col size=2.4>
                    <Text
                      block=true
                      value="TIMESTAMP"
@@ -76,7 +76,7 @@ let make = (~dataSourceID: ID.DataSource.t) =>
                      color=Colors.gray6
                    />
                  </Col>
-                 <Col size=1.5>
+                 <Col size=0.9>
                    <Text
                      block=true
                      value="BLOCK"
@@ -104,7 +104,7 @@ let make = (~dataSourceID: ID.DataSource.t) =>
                     <Row>
                       <Col> <HSpacing size=Spacing.lg /> </Col>
                       <Col size=1.> <TypeID.Request id /> </Col>
-                      <Col size=2.8>
+                      <Col size=3.3>
                         <Row>
                           <TypeID.OracleScript id=oracleScriptID />
                           <HSpacing size={`px(5)} />
@@ -116,10 +116,10 @@ let make = (~dataSourceID: ID.DataSource.t) =>
                           />
                         </Row>
                       </Col>
-                      <Col size=2.>
+                      <Col size=2.5>
                         <Timestamp time=timestamp size=Text.Md weight=Text.Regular code=true />
                       </Col>
-                      <Col size=1.5> <TypeID.Block id=blockHeight /> </Col>
+                      <Col size=1.0> <TypeID.Block id=blockHeight /> </Col>
                       <Col size=2.7>
                         <div
                           className=Styles.txContainer
