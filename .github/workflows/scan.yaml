@@ -23,17 +23,3 @@ jobs:
       with:
         name: scan-built
         path: ./scan
-  
-  Scan-Test:
-    runs-on: ubuntu-latest
-    needs: Scan-Build
-
-    steps:
-    
-    - name: Get Built Scan
-    - uses: actions/download-artifact@master
-      with:
-        name: scan-built
-    
-    - name: Test Directory List
-      run: ls
