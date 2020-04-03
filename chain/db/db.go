@@ -291,7 +291,7 @@ func (b *BandDB) HandleTransactionFail(tx auth.StdTx, txHash []byte) {
 		messages = append(messages, message)
 	}
 
-	wrapedMsg := wrapMessage(messages, "fail")
+	wrapedMsg := wrapMessage(messages, "failure")
 	b.UpdateTransaction(txHash, wrapedMsg)
 }
 

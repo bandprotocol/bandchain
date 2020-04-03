@@ -303,7 +303,7 @@ module Msg = {
     JsonUtils.Decode.(
       switch (json |> field("status", string)) {
       | "success" => json |> field("messages", list(decodeAction))
-      | "fail" => json |> field("messages", list(decodeFailAction))
+      | "failure" => json |> field("messages", list(decodeFailAction))
       | _ => []
       }
     );
