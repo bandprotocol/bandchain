@@ -3,7 +3,6 @@ module Styles = {
 
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
-  let pageContainer = style([paddingTop(`px(35))]);
   let validatorsLogo = style([marginRight(`px(10))]);
   let highlight = style([margin2(~v=`px(28), ~h=`zero)]);
   let valueContainer = style([display(`flex), justifyContent(`flexStart)]);
@@ -35,15 +34,6 @@ module Styles = {
       display(`flex),
       paddingLeft(`px(26)),
       paddingRight(`px(46)),
-    ]);
-
-  let icon =
-    style([
-      width(`px(30)),
-      height(`px(30)),
-      marginTop(`px(5)),
-      marginLeft(Spacing.xl),
-      marginRight(Spacing.xl),
     ]);
 };
 
@@ -217,7 +207,7 @@ let make = () =>
 
     let allBondedAmount = bondedValidatorCount;
 
-    <div className=Styles.pageContainer>
+    <>
       <Row justify=Row.Between>
         <Col>
           <div className=Styles.vFlex>
@@ -305,7 +295,7 @@ let make = () =>
       <VSpacing size=Spacing.lg />
       <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
       <VSpacing size=Spacing.lg />
-    </div>
+    </>
     |> Sub.resolve;
   }
   |> Sub.default(_, React.null);

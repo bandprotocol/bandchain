@@ -1,8 +1,6 @@
 module Styles = {
   open Css;
 
-  let pageContainer = style([paddingTop(`px(40))]);
-
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
   let logo = style([width(`px(50)), marginRight(`px(10))]);
@@ -22,7 +20,7 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) =>
   {
     let%Sub dataSource = DataSourceSub.get(dataSourceID);
 
-    <div className=Styles.pageContainer>
+    <>
       <div className=Styles.vFlex>
         <img src=Images.dataSourceLogo className=Styles.logo />
         <Text
@@ -109,7 +107,7 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) =>
            }}
         </Tab>
       </>
-    </div>
+    </>
     |> Sub.resolve;
   }
   |> Sub.default(_, React.null);

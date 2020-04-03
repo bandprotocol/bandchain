@@ -3,8 +3,6 @@ module Styles = {
 
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
-  let pageContainer = style([paddingTop(`px(50)), minHeight(`px(500))]);
-
   let seperatedLine =
     style([
       width(`px(13)),
@@ -49,7 +47,7 @@ let make = () =>
 
     let pageCount = Page.getPageCount(dataSourcesCount, pageSize);
 
-    <div className=Styles.pageContainer>
+    <>
       <Row>
         <Col>
           <div className=Styles.vFlex>
@@ -150,7 +148,7 @@ let make = () =>
       <VSpacing size=Spacing.lg />
       <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
       <VSpacing size=Spacing.lg />
-    </div>
+    </>
     |> Sub.resolve;
   }
   |> Sub.default(_, React.null);

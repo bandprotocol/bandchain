@@ -3,8 +3,6 @@ module Styles = {
 
   let vFlex = align => style([display(`flex), flexDirection(`row), alignItems(align)]);
 
-  let pageContainer = style([paddingTop(`px(50))]);
-
   let logo = style([width(`px(50)), marginRight(`px(10))]);
 
   let seperatedLine =
@@ -22,14 +20,6 @@ module Styles = {
 
   let fillLeft = style([marginLeft(`auto)]);
 
-  let icon =
-    style([
-      width(`px(30)),
-      height(`px(30)),
-      marginTop(`px(5)),
-      marginLeft(Spacing.xl),
-      marginRight(Spacing.xl),
-    ]);
 };
 
 let renderBody = (block: BlockSub.t) => {
@@ -82,7 +72,7 @@ let make = () =>
 
     let pageCount = Page.getPageCount(blocksCount, pageSize);
 
-    <div className=Styles.pageContainer>
+    <>
       <Row>
         <Col>
           <div className={Styles.vFlex(`center)}>
@@ -143,7 +133,7 @@ let make = () =>
       <VSpacing size=Spacing.lg />
       <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
       <VSpacing size=Spacing.lg />
-    </div>
+    </>
     |> Sub.resolve;
   }
   |> Sub.default(_, React.null);

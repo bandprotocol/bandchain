@@ -3,8 +3,6 @@ module Styles = {
 
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
-  let pageContainer = style([paddingTop(`px(20)), minHeight(`px(500))]);
-
   let seperatedLine =
     style([
       width(`px(13)),
@@ -14,27 +12,13 @@ module Styles = {
       backgroundColor(Colors.gray7),
     ]);
 
-  let textContainer = style([paddingLeft(Spacing.lg), display(`flex)]);
-
   let logo = style([width(`px(50)), marginRight(`px(10))]);
-
-  let proposerBox = style([maxWidth(`px(270)), display(`flex), flexDirection(`column)]);
 
   let fullWidth = style([width(`percent(100.0)), display(`flex)]);
 
   let progressBarContainer = style([maxWidth(`px(300))]);
 
   let resolveStatusContainer = style([justifyContent(`center)]);
-
-  let loadingContainer =
-    style([
-      display(`flex),
-      justifyContent(`center),
-      alignItems(`center),
-      height(`px(200)),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, 0.05))),
-      backgroundColor(white),
-    ]);
 };
 
 [@react.component]
@@ -51,7 +35,7 @@ let make = () =>
 
     let pageCount = Page.getPageCount(requestCount, pageSize);
 
-    <div className=Styles.pageContainer>
+    <>
       <Row>
         <Col>
           <div className=Styles.vFlex>
@@ -187,7 +171,7 @@ let make = () =>
       <VSpacing size=Spacing.lg />
       <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
       <VSpacing size=Spacing.lg />
-    </div>
+    </>
     |> Sub.resolve;
   }
   |> Sub.default(_, React.null);
