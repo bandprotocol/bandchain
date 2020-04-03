@@ -179,7 +179,7 @@ func TestRequestSuccess(t *testing.T) {
 
 	ctx = ctx.WithBlockHeight(2)
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
-	ctx = ctx.WithGasMeter(sdk.NewGasMeter(100000000000))
+	ctx = ctx.WithGasMeter(sdk.NewGasMeter(100000000))
 	calldata := []byte("calldata")
 	sender := sdk.AccAddress([]byte("sender"))
 	_, err := keeper.CoinKeeper.AddCoins(ctx, sender, keep.NewUBandCoins(410))
@@ -272,6 +272,36 @@ func TestRequestInvalidDataSource(t *testing.T) {
 
 	got = handleMsgRequestData(ctx, keeper, msg)
 	require.False(t, got.IsOK())
+}
+
+func TestRequestWithPrepareGasExceed(t *testing.T) {
+
+	ctx, keeper := keep.CreateTestInput(t, false)
+
+	ctx = ctx.WithBlockHeight(2)
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	// gas consumed before prepare = 1732482
+	ctx = ctx.WithGasMeter(sdk.NewGasMeter(1732482))
+	calldata := []byte("calldata")
+	sender := sdk.AccAddress([]byte("sender"))
+
+	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
+	keeper.SetOracleScript(ctx, 1, script)
+
+	pubStr := []string{
+		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
+		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
+	}
+
+	keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
+	keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
+
+	dataSource := keep.GetTestDataSource()
+	keeper.SetDataSource(ctx, 1, dataSource)
+
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 1000000, sender)
+
+	require.Panics(t, func() { handleMsgRequestData(ctx, keeper, msg) }, "The code did not panic")
 }
 
 func TestRequestWithInsufficientFee(t *testing.T) {
