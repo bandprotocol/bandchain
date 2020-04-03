@@ -80,7 +80,6 @@ let make = () =>
 
     let lastProcessedHeight = latestBlock.height;
     let moniker = latestBlock.validator.moniker;
-    let timestamp = latestBlock.timestamp;
 
     // TODO replace this Mock finance.
     let mockFinance: PriceHook.Price.t = {
@@ -167,7 +166,6 @@ let make = () =>
       />
       <HighlightCard
         label="LATEST BLOCK"
-        extraTopRight={<TimeAgos time=timestamp size=Text.Md />}
         valueComponent={<TypeID.Block id=lastProcessedHeight position=TypeID.Landing />}
         extraComponent={<Text value=moniker nowrap=true ellipsis=true block=true />}
       />

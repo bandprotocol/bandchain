@@ -73,7 +73,7 @@ let make = (~reqID) =>
               block=true
             />
             <div className=Styles.seperatedLine />
-            <TimeAgos
+            <Timestamp
               time={request.transaction.timestamp}
               size=Text.Md
               weight=Text.Thin

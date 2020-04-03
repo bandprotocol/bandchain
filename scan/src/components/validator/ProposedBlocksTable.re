@@ -40,13 +40,19 @@ let make = () => {
            <THead>
              <Row>
                <Col> <HSpacing size=Spacing.lg /> </Col>
-               <Col size=1.4>
+               <Col size=1.0>
                  <Text block=true value="BLOCK" size=Text.Sm weight=Text.Bold color=Colors.gray6 />
                </Col>
-               <Col size=2.15>
-                 <Text block=true value="AGE" size=Text.Sm weight=Text.Bold color=Colors.gray6 />
+               <Col size=2.75>
+                 <Text
+                   block=true
+                   value="TIMESTAMP"
+                   size=Text.Sm
+                   weight=Text.Bold
+                   color=Colors.gray6
+                 />
                </Col>
-               <Col size=6.8>
+               <Col size=6.0>
                  <Text
                    block=true
                    value="BLOCK HASH"
@@ -70,8 +76,8 @@ let make = () => {
                   <Row>
                     <Col> <HSpacing size=Spacing.lg /> </Col>
                     <Col size=1.5> <TypeID.Block id=height /> </Col>
-                    <Col size=2.3> <TimeAgos time=timestamp code=true size=Text.Md /> </Col>
-                    <Col size=6.8>
+                    <Col size=4.0> <Timestamp time=timestamp code=true size=Text.Md /> </Col>
+                    <Col size=3.0>
                       <div className={Styles.withWidth(500)}>
                         <Text
                           value={hash |> Hash.toHex(~upper=true)}
