@@ -30,7 +30,7 @@ let make = (~address) =>
     let reportsSub =
       ReportSub.ValidatorReport.getListByValidator(
         ~page,
-        ~pageSize=5,
+        ~pageSize,
         ~validator={
           address |> Address.toOperatorBech32;
         },
