@@ -73,14 +73,14 @@ let make = () =>
   {
     let latestBlockSub = BlockSub.getLatest();
     let infoOpt = React.useContext(GlobalContext.context);
+    let validatorsSub = ValidatorSub.getList();
 
     let%Sub latestBlock = latestBlockSub;
+    let%Sub validators = validatorsSub;
 
     let lastProcessedHeight = latestBlock.height;
     let moniker = latestBlock.validator.moniker;
     let timestamp = latestBlock.timestamp;
-
-    let validators = infoOpt->Belt_Option.mapWithDefault([], info => info.validators);
 
     // TODO replace this Mock finance.
     let mockFinance: PriceHook.Price.t = {
@@ -94,7 +94,7 @@ let make = () =>
     };
     let financial = infoOpt->Belt_Option.mapWithDefault(mockFinance, info => info.financial);
 
-    let bandBonded = validators->Belt_List.map(x => x.tokens)->Belt_List.reduce(0.0, (+.));
+    let bandBonded = validators->Belt_Array.map(x => x.tokens)->Belt_Array.reduce(0.0, (+.));
 
     <Row justify=Row.Between>
       <HighlightCard
@@ -175,7 +175,7 @@ let make = () =>
         label="ACTIVE VALIDATORS"
         valueComponent={
                          let activeValidators =
-                           validators->Belt_List.size->Format.iPretty ++ " Nodes";
+                           validators->Belt_Array.size->Format.iPretty ++ " Nodes";
                          <Text
                            value=activeValidators
                            size=Text.Xxxl

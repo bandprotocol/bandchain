@@ -22,222 +22,201 @@ module Styles = {
 };
 
 [@react.component]
-let make = () => {
-  // TODO: Mock to use
-  let (page, setPage) = React.useState(_ => 1);
-  let pageCount = 1;
+let make = (~address) =>
+  {
+    let (page, setPage) = React.useState(_ => 1);
+    let pageSize = 5;
 
-  let reports = [
-    (
-      324,
-      "6F45B0D19B46F144CDD7ACA9674E2AD8E8F8C15EF56CA073749B2ACD7DF7739D",
-      234,
-      "Mean Crypto Price",
-      [23, 12, 35],
-      [1, 2, 3],
-      [123213123, 123123132, 123123123],
-    ),
-    (
-      324,
-      "6F45B0D19B46F144CDD7ACA9674E2AD8E8F8C15EF56CA073749B2ACD7DF7739D",
-      234,
-      "Mean Crypto Price",
-      [23, 12, 35],
-      [1, 2, 3],
-      [123213123, 123123132, 123123123],
-    ),
-    (
-      324,
-      "6F45B0D19B46F144CDD7ACA9674E2AD8E8F8C15EF56CA073749B2ACD7DF7739D",
-      234,
-      "Mean Crypto Price",
-      [23, 12, 35],
-      [1, 2, 3],
-      [123213123, 123123132, 123123123],
-    ),
-  ];
-  <div className=Styles.tableWrapper>
-    <Row>
-      <HSpacing size={`px(25)} />
-      <Text value={reports |> Belt_List.length |> string_of_int} weight=Text.Bold />
-      <HSpacing size={`px(5)} />
-      <Text value="Reports" />
-    </Row>
-    <VSpacing size=Spacing.lg />
-    {reports->Belt_List.length > 0
-       ? <>
-           <THead>
-             <Row>
-               <Col> <HSpacing size=Spacing.md /> </Col>
-               <Col size=1.>
-                 <Text
-                   block=true
-                   value="REQUEST"
-                   size=Text.Sm
-                   weight=Text.Semibold
-                   color=Colors.gray6
-                   spacing={Text.Em(0.05)}
-                 />
-               </Col>
-               <Col size=2.>
-                 <Text
-                   block=true
-                   value="TX HASH"
-                   size=Text.Sm
-                   weight=Text.Semibold
-                   color=Colors.gray6
-                   spacing={Text.Em(0.05)}
-                 />
-               </Col>
-               <Col size=2.3>
-                 <Text
-                   block=true
-                   value="ORACLE SCRIPT"
-                   size=Text.Sm
-                   weight=Text.Semibold
-                   color=Colors.gray6
-                   spacing={Text.Em(0.05)}
-                 />
-               </Col>
-               <Col size=1.>
-                 <Text
-                   block=true
-                   value="DATA SOURCE"
-                   size=Text.Sm
-                   weight=Text.Semibold
-                   color=Colors.gray6
-                   spacing={Text.Em(0.05)}
-                 />
-               </Col>
-               <Col size=1.5>
-                 <div className={Styles.vFlex(`flexEnd)}>
-                   <div className=Styles.fillLeft />
+    let reportsSub =
+      ReportSub.ValidatorReport.getListByValidator(
+        ~page,
+        ~pageSize,
+        ~validator={
+          address |> Address.toOperatorBech32;
+        },
+      );
+    let totalReportsSub = ReportSub.ValidatorReport.count();
+
+    let%Sub totalReports = totalReportsSub;
+    let%Sub reports = reportsSub;
+
+    let pageCount = Page.getPageCount(totalReports, pageSize);
+
+    <div className=Styles.tableWrapper>
+      <Row>
+        <HSpacing size={`px(25)} />
+        <Text value={reports |> Belt_Array.length |> string_of_int} weight=Text.Bold />
+        <HSpacing size={`px(5)} />
+        <Text value="Reports" />
+      </Row>
+      <VSpacing size=Spacing.lg />
+      {reports->Belt_Array.length > 0
+         ? <>
+             <THead>
+               <Row>
+                 <Col> <HSpacing size=Spacing.md /> </Col>
+                 <Col size=1.>
                    <Text
                      block=true
-                     value="EXTERNAL ID"
+                     value="REQUEST"
                      size=Text.Sm
                      weight=Text.Semibold
                      color=Colors.gray6
                      spacing={Text.Em(0.05)}
                    />
-                 </div>
-               </Col>
-               <Col size=2.2>
-                 <div className={Styles.vFlex(`flexEnd)}>
-                   <div className=Styles.fillLeft />
+                 </Col>
+                 <Col size=2.>
                    <Text
                      block=true
-                     value="VALUE"
+                     value="TX HASH"
                      size=Text.Sm
                      weight=Text.Semibold
                      color=Colors.gray6
                      spacing={Text.Em(0.05)}
                    />
-                 </div>
-               </Col>
-               <Col> <HSpacing size=Spacing.lg /> </Col>
-             </Row>
-           </THead>
-           {reports
-            ->Belt.List.map(
-                (
-                  (
-                    requestID,
-                    hash,
-                    oracleScriptID,
-                    oracleScriptDescription,
-                    dataSourceIDs,
-                    externalDataIDs,
-                    values,
-                  ),
-                ) => {
-                <TBody key=hash>
-                  <Row>
-                    <Col> <HSpacing size=Spacing.md /> </Col>
-                    <Col size=1. alignSelf=Col.Start>
-                      <TypeID.Request id={ID.Request.ID(requestID)} />
-                    </Col>
-                    <Col size=2. alignSelf=Col.Start>
-                      <div className={Styles.withWidth(140)}>
-                        <Text value=hash block=true code=true ellipsis=true />
-                      </div>
-                    </Col>
-                    <Col size=2.3 alignSelf=Col.Start>
-                      <Row>
-                        <TypeID.OracleScript id={ID.OracleScript.ID(oracleScriptID)} />
-                        <HSpacing size=Spacing.sm />
-                        <HSpacing size=Spacing.xs />
-                        <div className={Styles.withWidth(140)}>
-                          <Text value=oracleScriptDescription block=true code=true ellipsis=true />
-                        </div>
-                      </Row>
-                    </Col>
-                    <Col size=1.>
-                      {dataSourceIDs
-                       ->Belt_List.map(dataSourceID => {
-                           <>
-                             <Row>
-                               <TypeID.DataSource id={ID.DataSource.ID(dataSourceID)} />
-                             </Row>
-                             <VSpacing size=Spacing.sm />
-                             <VSpacing size=Spacing.xs />
-                           </>
-                         })
-                       ->Belt.List.toArray
-                       ->React.array}
-                    </Col>
-                    <Col size=1.5>
-                      {externalDataIDs
-                       ->Belt_List.map(externalDataID => {
-                           <>
-                             <div className={Styles.vFlex(`flexEnd)}>
-                               <Row>
-                                 <div className=Styles.fillLeft />
-                                 <Text
-                                   value={externalDataID |> string_of_int}
-                                   block=true
-                                   code=true
-                                 />
-                               </Row>
-                             </div>
-                             <VSpacing size=Spacing.md />
-                           </>
-                         })
-                       ->Belt.List.toArray
-                       ->React.array}
-                    </Col>
-                    <Col size=2.2>
-                      {values
-                       ->Belt_List.map(value => {
-                           <>
-                             <div className={Styles.vFlex(`flexEnd)}>
-                               <Row>
-                                 <div className=Styles.fillLeft />
-                                 <Text value={value |> string_of_int} block=true code=true />
-                               </Row>
-                             </div>
-                             <VSpacing size=Spacing.md />
-                           </>
-                         })
-                       ->Belt.List.toArray
-                       ->React.array}
-                    </Col>
-                    <Col> <HSpacing size=Spacing.lg /> </Col>
-                  </Row>
-                </TBody>
-              })
-            ->Array.of_list
-            ->React.array}
-         </>
-       : <div className=Styles.iconWrapper>
-           <VSpacing size={`px(30)} />
-           <img src=Images.noRequestIcon className=Styles.icon />
-           <VSpacing size={`px(40)} />
-           <Text block=true value="NO REPORTS" weight=Text.Regular color=Colors.blue4 />
-           <VSpacing size={`px(15)} />
-         </div>}
-    <VSpacing size=Spacing.xl />
-    <VSpacing size=Spacing.sm />
-    <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
-  </div>;
-};
+                 </Col>
+                 <Col size=2.3>
+                   <Text
+                     block=true
+                     value="ORACLE SCRIPT"
+                     size=Text.Sm
+                     weight=Text.Semibold
+                     color=Colors.gray6
+                     spacing={Text.Em(0.05)}
+                   />
+                 </Col>
+                 <Col size=1.>
+                   <Text
+                     block=true
+                     value="DATA SOURCE"
+                     size=Text.Sm
+                     weight=Text.Semibold
+                     color=Colors.gray6
+                     spacing={Text.Em(0.05)}
+                   />
+                 </Col>
+                 <Col size=1.5>
+                   <div className={Styles.vFlex(`flexEnd)}>
+                     <div className=Styles.fillLeft />
+                     <Text
+                       block=true
+                       value="EXTERNAL ID"
+                       size=Text.Sm
+                       weight=Text.Semibold
+                       color=Colors.gray6
+                       spacing={Text.Em(0.05)}
+                     />
+                   </div>
+                 </Col>
+                 <Col size=2.2>
+                   <div className={Styles.vFlex(`flexEnd)}>
+                     <div className=Styles.fillLeft />
+                     <Text
+                       block=true
+                       value="VALUE"
+                       size=Text.Sm
+                       weight=Text.Semibold
+                       color=Colors.gray6
+                       spacing={Text.Em(0.05)}
+                     />
+                   </div>
+                 </Col>
+                 <Col> <HSpacing size=Spacing.lg /> </Col>
+               </Row>
+             </THead>
+             {reports
+              ->Belt.Array.map(({txHash, request, reportDetails}) => {
+                  <TBody key={txHash |> Hash.toBase64}>
+                    <Row>
+                      <Col> <HSpacing size=Spacing.md /> </Col>
+                      <Col size=1. alignSelf=Col.Start> <TypeID.Request id={request.id} /> </Col>
+                      <Col size=2. alignSelf=Col.Start>
+                        // TODO: Check TXHASH STYLINGS
+
+                          <div className={Styles.withWidth(140)}>
+                            <TxLink txHash width=110 />
+                          </div>
+                        </Col>
+                      <Col size=2.3 alignSelf=Col.Start>
+                        <Row>
+                          <TypeID.OracleScript id={request.oracleScript.id} />
+                          <HSpacing size=Spacing.sm />
+                          <HSpacing size=Spacing.xs />
+                          <div className={Styles.withWidth(140)}>
+                            <Text
+                              value={request.oracleScript.name}
+                              block=true
+                              code=true
+                              ellipsis=true
+                            />
+                          </div>
+                        </Row>
+                      </Col>
+                      <Col size=1.>
+                        {reportDetails
+                         ->Belt_Array.map(({dataSourceID}) => dataSourceID)
+                         ->Belt_Array.map(dataSourceID => {
+                             <>
+                               <Row> <TypeID.DataSource id=dataSourceID /> </Row>
+                               <VSpacing size=Spacing.sm />
+                               <VSpacing size=Spacing.xs />
+                             </>
+                           })
+                         ->React.array}
+                      </Col>
+                      <Col size=1.5>
+                        {reportDetails
+                         ->Belt_Array.map(({externalID}) => externalID)
+                         ->Belt_Array.map(externalDataID => {
+                             <>
+                               <div className={Styles.vFlex(`flexEnd)}>
+                                 <Row>
+                                   <div className=Styles.fillLeft />
+                                   <Text
+                                     value={externalDataID |> string_of_int}
+                                     block=true
+                                     code=true
+                                   />
+                                 </Row>
+                               </div>
+                               <VSpacing size=Spacing.md />
+                             </>
+                           })
+                         ->React.array}
+                      </Col>
+                      <Col size=2.2>
+                        {reportDetails
+                         ->Belt_Array.map(({data}) => data)
+                         ->Belt_Array.map(value => {
+                             <>
+                               <div className={Styles.vFlex(`flexEnd)}>
+                                 <Row>
+                                   <div className=Styles.fillLeft />
+                                   <Text value={value |> JsBuffer.toUTF8} block=true code=true />
+                                 </Row>
+                               </div>
+                               <VSpacing size=Spacing.md />
+                             </>
+                           })
+                         ->React.array}
+                      </Col>
+                      <Col> <HSpacing size=Spacing.lg /> </Col>
+                    </Row>
+                  </TBody>
+                })
+              ->React.array}
+           </>
+         : <div className=Styles.iconWrapper>
+             <VSpacing size={`px(30)} />
+             <img src=Images.noRequestIcon className=Styles.icon />
+             <VSpacing size={`px(40)} />
+             <Text block=true value="NO REPORTS" weight=Text.Regular color=Colors.blue4 />
+             <VSpacing size={`px(15)} />
+           </div>}
+      <VSpacing size=Spacing.xl />
+      <VSpacing size=Spacing.sm />
+      <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
+    </div>
+    |> Sub.resolve;
+  }
+  |> Sub.default(_, React.null);

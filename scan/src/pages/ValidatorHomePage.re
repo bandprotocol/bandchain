@@ -94,7 +94,7 @@ module ToggleButton = {
   };
 };
 
-let renderBody = (rank, validator: ValidatorHook.Validator.t) => {
+let renderBody = (rank, validator: ValidatorSub.t) => {
   let votingPower = validator.votingPower;
   let token = validator.tokens;
   let commission = validator.commission;
@@ -194,146 +194,118 @@ let renderBody = (rank, validator: ValidatorHook.Validator.t) => {
 };
 
 [@react.component]
-let make = () => {
-  let (page, setPage) = React.useState(_ => 1);
-  let limit = 10;
+let make = () =>
+  {
+    let (page, setPage) = React.useState(_ => 1);
+    let pageSize = 10;
 
-  let (isActive, setIsActive) = React.useState(_ => true);
-  let validatorsCountOpt =
-    ValidatorHook.getList(~status=isActive ? ValidatorHook.Bonded : ValidatorHook.Unbonded, ());
-  let validatorsOpt =
-    ValidatorHook.getList(
-      ~status=isActive ? ValidatorHook.Bonded : ValidatorHook.Unbonded,
-      ~page,
-      ~limit,
-      (),
-    );
+    let validatorsCountSub = ValidatorSub.count();
+    let validatorsSub = ValidatorSub.getList(~page, ~pageSize, ());
+    // TODO: Update once bonding status is available
+    let bondedValidatorCountSub = ValidatorSub.count();
 
-  let pageCount =
-    {
-      let%Opt validatorsCount = validatorsCountOpt;
-      Some(Page.getPageCount(validatorsCount->Belt.List.size, limit));
-    }
-    |> Belt.Option.getWithDefault(_, 1);
+    let%Sub validators = validatorsSub;
+    let%Sub validatorCount = validatorsCountSub;
+    let%Sub bondedValidatorCount = bondedValidatorCountSub;
 
-  let globalInfo = ValidatorHook.getGlobalInfo();
-  let bondedValidatorCount = ValidatorHook.getValidatorCount(~status=ValidatorHook.Bonded, ());
-  let unbondedValidatorCount =
-    ValidatorHook.getValidatorCount(~status=ValidatorHook.Unbonded, ());
-  let unbondingValidatorCount =
-    ValidatorHook.getValidatorCount(~status=ValidatorHook.Unbonding, ());
-  let allValidatorCount = bondedValidatorCount + unbondedValidatorCount + unbondingValidatorCount;
+    let pageCount = Page.getPageCount(validatorCount, pageSize);
+    let globalInfo = ValidatorSub.GlobalInfo.getGlobalInfo();
+    let unbondedValidatorCount = 0;
+    let unbondingValidatorCount = 0;
+    let allValidatorCount =
+      bondedValidatorCount + unbondedValidatorCount + unbondingValidatorCount;
 
-  let allBondedAmountOpt = {
-    let%Opt validators = validatorsOpt;
+    let allBondedAmount = bondedValidatorCount;
 
-    Some(
-      validators->Belt.List.reduce(0., (acc, validator) => acc +. validator.tokens)
-      |> int_of_float,
-    );
-  };
-
-  <div className=Styles.pageContainer>
-    <Row justify=Row.Between>
-      <Col>
-        <div className=Styles.vFlex>
-          <img src=Images.validators className=Styles.validatorsLogo />
-          <Text
-            value="ALL VALIDATORS"
-            weight=Text.Medium
-            size=Text.Md
-            nowrap=true
-            color=Colors.gray7
-            spacing={Text.Em(0.06)}
-          />
-          <div className=Styles.seperatedLine />
-          <Text value={(allValidatorCount |> string_of_int) ++ " In total"} />
-        </div>
-      </Col>
-      <Col> <ToggleButton isActive setIsActive /> </Col>
-    </Row>
-    <div className=Styles.highlight>
-      <Row>
-        <Col size=0.7>
-          {switch (validatorsOpt) {
-           | Some(validators) =>
-             <InfoHL
-               info={InfoHL.Fraction(validators->Belt.List.length, allValidatorCount, false)}
-               header="VALIDATORS"
-             />
-           | None => <InfoHL info={InfoHL.Text("?")} header="VALIDATORS" />
-           }}
-        </Col>
-        <Col size=1.1>
-          {switch (allBondedAmountOpt) {
-           | Some(allBondedAmount) =>
-             <InfoHL
-               info={InfoHL.Fraction(allBondedAmount, globalInfo.totalSupply, true)}
-               header="BONDED TOKENS"
-             />
-           | None => <InfoHL info={InfoHL.Text("?")} header="BONDED TOKENS" />
-           }}
-        </Col>
-        <Col size=0.9>
-          <InfoHL
-            info={InfoHL.FloatWithSuffix(globalInfo.inflationRate, "  %")}
-            header="INFLATION RATE"
-          />
-        </Col>
-        <Col size=0.51>
-          <InfoHL
-            info={InfoHL.FloatWithSuffix(globalInfo.avgBlockTime, "  secs")}
-            header="24 HOUR AVG BLOCK TIME"
-          />
+    <div className=Styles.pageContainer>
+      <Row justify=Row.Between>
+        <Col>
+          <div className=Styles.vFlex>
+            <img src=Images.validators className=Styles.validatorsLogo />
+            <Text
+              value="ALL VALIDATORS"
+              weight=Text.Medium
+              size=Text.Md
+              nowrap=true
+              color=Colors.gray7
+              spacing={Text.Em(0.06)}
+            />
+            <div className=Styles.seperatedLine />
+            <Text value={(allValidatorCount |> string_of_int) ++ " In total"} />
+          </div>
         </Col>
       </Row>
-    </div>
-    <THead>
-      <div className=Styles.fullWidth>
+      // <Col> <ToggleButton isActive setIsActive /> </Col>
+      <div className=Styles.highlight>
         <Row>
-          {[
-             ("RANK", 0.8),
-             ("VALIDATOR", 1.9),
-             ("VOTING POWER (BAND)", 1.4),
-             ("COMMISSION (%)", 1.2),
-             ("UPTIME (%)", 1.1),
-             ("REPORT RATE (%)", 1.2),
-           ]
-           ->Belt.List.mapWithIndex((idx, (title, size)) => {
-               <Col size key=title>
-                 <Text
-                   block=true
-                   value=title
-                   size=Text.Sm
-                   weight=Text.Semibold
-                   align=?{idx > 1 ? Some(Text.Right) : None}
-                   color=Colors.gray6
-                   spacing={Text.Em(0.1)}
-                 />
-               </Col>
-             })
-           ->Array.of_list
-           ->React.array}
+          <Col size=0.7>
+            <InfoHL
+              info={InfoHL.Fraction(validators->Belt.Array.size, allValidatorCount, false)}
+              header="VALIDATORS"
+            />
+          </Col>
+          <Col size=1.1>
+            <InfoHL
+              info={InfoHL.Fraction(allBondedAmount, globalInfo.totalSupply, true)}
+              header="BONDED TOKENS"
+            />
+          </Col>
+          <Col size=0.9>
+            <InfoHL
+              info={InfoHL.FloatWithSuffix(globalInfo.inflationRate, "  %")}
+              header="INFLATION RATE"
+            />
+          </Col>
+          <Col size=0.51>
+            <InfoHL
+              info={InfoHL.FloatWithSuffix(globalInfo.avgBlockTime, "  secs")}
+              header="24 HOUR AVG BLOCK TIME"
+            />
+          </Col>
         </Row>
       </div>
-    </THead>
-    {switch (validatorsOpt) {
-     | Some(validators) =>
-       if (validators->Belt_List.length > 0) {
+      <THead>
+        <div className=Styles.fullWidth>
+          <Row>
+            {[
+               ("RANK", 0.8),
+               ("VALIDATOR", 1.9),
+               ("VOTING POWER (BAND)", 1.4),
+               ("COMMISSION (%)", 1.2),
+               ("UPTIME (%)", 1.1),
+               ("REPORT RATE (%)", 1.2),
+             ]
+             ->Belt.List.mapWithIndex((idx, (title, size)) => {
+                 <Col size key=title>
+                   <Text
+                     block=true
+                     value=title
+                     size=Text.Sm
+                     weight=Text.Semibold
+                     align=?{idx > 1 ? Some(Text.Right) : None}
+                     color=Colors.gray6
+                     spacing={Text.Em(0.1)}
+                   />
+                 </Col>
+               })
+             ->Array.of_list
+             ->React.array}
+          </Row>
+        </div>
+      </THead>
+      {if (validators->Belt_Array.size > 0) {
          validators
-         ->Belt.List.toArray
          ->Belt_Array.mapWithIndex((idx, validator) =>
-             renderBody(idx + 1 + (page - 1) * limit, validator)
+             renderBody(idx + 1 + (page - 1) * pageSize, validator)
            )
          ->React.array;
        } else {
          <div className=Styles.emptyContainer> <Text value="No Validators" size=Text.Xxl /> </div>;
-       }
-     | None =>
-       <div className=Styles.emptyContainer> <Text value="Loading..." size=Text.Xxl /> </div>
-     }}
-    <VSpacing size=Spacing.lg />
-    <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
-    <VSpacing size=Spacing.lg />
-  </div>;
-};
+       }}
+      <VSpacing size=Spacing.lg />
+      <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
+      <VSpacing size=Spacing.lg />
+    </div>
+    |> Sub.resolve;
+  }
+  |> Sub.default(_, React.null);
