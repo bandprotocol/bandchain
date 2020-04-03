@@ -20,9 +20,11 @@ jobs:
   
   Scan-Test:
     runs-on: ubuntu-latest
+    needs: Scan-Build
     env:
       working-directory: ./scan
     
     steps:
     - name: Test Directory List
       run: ls
+      working-directory: ${{env.working-directory}}
