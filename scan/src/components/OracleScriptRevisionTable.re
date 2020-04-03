@@ -37,7 +37,7 @@ let make = (~id) =>
              <THead>
                <Row>
                  <Col> <HSpacing size=Spacing.md /> </Col>
-                 <Col size=3.>
+                 <Col size=2.5>
                    <div className=TElement.Styles.hashContainer>
                      <Text
                        block=true
@@ -48,7 +48,7 @@ let make = (~id) =>
                      />
                    </div>
                  </Col>
-                 <Col size=2.>
+                 <Col size=3.5>
                    <Text
                      block=true
                      value="AGE"
@@ -89,13 +89,13 @@ let make = (~id) =>
                     }>
                     <Row>
                       <Col> <HSpacing size=Spacing.md /> </Col>
-                      <Col size=3.>
+                      <Col size=2.5>
                         <Text block=true value=name weight=Text.Medium color=Colors.gray7 />
                       </Col>
-                      <Col size=2.>
+                      <Col size=3.5>
                         {switch (transaction) {
                          | Some(tx) =>
-                           <TimeAgos time={tx.timestamp} size=Text.Md weight=Text.Medium />
+                           <Timestamp time={tx.timestamp} size=Text.Md weight=Text.Medium />
                          | None => <Text value="GENESIS" />
                          }}
                       </Col>

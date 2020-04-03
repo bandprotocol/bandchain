@@ -72,10 +72,10 @@ let make = (~oracleScriptID: ID.OracleScript.t) =>
                      color=Colors.gray6
                    />
                  </Col>
-                 <Col size=1.61>
+                 <Col size=2.2>
                    <Text
                      block=true
-                     value="AGE"
+                     value="TIMESTAMP"
                      size=Text.Sm
                      weight=Text.Semibold
                      color=Colors.gray6
@@ -113,8 +113,8 @@ let make = (~oracleScriptID: ID.OracleScript.t) =>
                           <AddressRender address=requester />
                         </div>
                       </Col>
-                      <Col size=1.61>
-                        <TimeAgos time=timestamp size=Text.Md weight=Text.Medium />
+                      <Col size=2.2>
+                        <Timestamp time=timestamp size=Text.Md weight=Text.Regular code=true />
                       </Col>
                       <Col size=1.26> <TypeID.Block id=blockHeight /> </Col>
                       <Col size=2.8>

@@ -100,7 +100,7 @@ let make = (~height) => {
         <Col size=1.8> <InfoHL info={InfoHL.Count(block.txn)} header="TRANSACTIONS" /> </Col>
         <Col size=4.6>
           <div className=Styles.vFlex>
-            <InfoHL info={InfoHL.Timestamp(block.timestamp)} header="TIME STAMP" />
+            <InfoHL info={InfoHL.Timestamp(block.timestamp)} header="TIMESTAMP" />
           </div>
         </Col>
         <Col size=3.2>

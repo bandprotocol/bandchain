@@ -79,7 +79,7 @@ let make = () =>
         <THead>
           <Row>
             <Col> <HSpacing size=Spacing.lg /> </Col>
-            <Col size=1.0>
+            <Col size=1.5>
               <div className=TElement.Styles.hashContainer>
                 <Text
                   block=true
@@ -91,17 +91,17 @@ let make = () =>
                 />
               </div>
             </Col>
-            <Col size=0.7>
+            <Col size=1.3>
               <Text
                 block=true
-                value="AGE"
+                value="TIMESTAMP"
                 size=Text.Sm
                 weight=Text.Semibold
                 color=Colors.gray5
                 spacing={Text.Em(0.1)}
               />
             </Col>
-            <Col size=1.45>
+            <Col size=2.0>
               <Text
                 block=true
                 value="OWNER"
@@ -130,11 +130,11 @@ let make = () =>
                <div className=Styles.fullWidth>
                  <Row alignItems=`baseline>
                    <Col> <HSpacing size=Spacing.lg /> </Col>
-                   <Col size=1.0>
+                   <Col size=1.5>
                      <TElement elementType={TElement.OracleScript(id, name)} />
                    </Col>
-                   <Col size=0.7> <TElement elementType={timestamp->TElement.Timestamp} /> </Col>
-                   <Col size=1.45>
+                   <Col size=1.3> <TElement elementType={timestamp->TElement.Timestamp} /> </Col>
+                   <Col size=2.0>
                      <div className=Styles.addressContainer>
                        <TElement elementType={owner->TElement.Address} />
                      </div>

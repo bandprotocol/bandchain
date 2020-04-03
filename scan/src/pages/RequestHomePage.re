@@ -93,10 +93,10 @@ let make = () =>
                 spacing={Text.Em(0.1)}
               />
             </Col>
-            <Col size=0.78>
+            <Col size=1.0>
               <Text
                 block=true
-                value="AGE"
+                value="TIMESTAMP"
                 size=Text.Sm
                 weight=Text.Semibold
                 color=Colors.gray5
@@ -155,7 +155,7 @@ let make = () =>
                  <Row minHeight={`px(35)}>
                    <Col> <HSpacing size=Spacing.lg /> </Col>
                    <Col size=0.5> <TElement elementType={TElement.Request(id)} /> </Col>
-                   <Col size=0.78>
+                   <Col size=1.0>
                      <TElement elementType={transaction.timestamp->TElement.Timestamp} />
                    </Col>
                    <Col size=1.15>

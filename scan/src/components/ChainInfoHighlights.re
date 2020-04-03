@@ -167,7 +167,6 @@ let make = () =>
       />
       <HighlightCard
         label="LATEST BLOCK"
-        extraTopRight={<TimeAgos time=timestamp size=Text.Md />}
         valueComponent={<TypeID.Block id=lastProcessedHeight position=TypeID.Landing />}
         extraComponent={<Text value=moniker nowrap=true ellipsis=true block=true />}
       />

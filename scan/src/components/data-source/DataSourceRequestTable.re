@@ -68,7 +68,13 @@ let make = (~dataSourceID: ID.DataSource.t) =>
                    />
                  </Col>
                  <Col size=2.>
-                   <Text block=true value="AGE" size=Text.Sm weight=Text.Bold color=Colors.gray6 />
+                   <Text
+                     block=true
+                     value="TIMESTAMP"
+                     size=Text.Sm
+                     weight=Text.Bold
+                     color=Colors.gray6
+                   />
                  </Col>
                  <Col size=1.5>
                    <Text
@@ -111,7 +117,7 @@ let make = (~dataSourceID: ID.DataSource.t) =>
                         </Row>
                       </Col>
                       <Col size=2.>
-                        <TimeAgos time=timestamp size=Text.Md weight=Text.Medium />
+                        <Timestamp time=timestamp size=Text.Md weight=Text.Regular code=true />
                       </Col>
                       <Col size=1.5> <TypeID.Block id=blockHeight /> </Col>
                       <Col size=2.7>

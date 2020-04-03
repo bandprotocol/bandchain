@@ -27,28 +27,29 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) =>
       <Row justify=Row.Between>
         <Col>
           <div className=Styles.vFlex>
-            <img src=Images.oracleScriptLogo className=Styles.logo />
-            <Text
-              value="ORACLE SCRIPT"
-              weight=Text.Medium
-              size=Text.Md
-              spacing={Text.Em(0.06)}
-              height={Text.Px(15)}
-              nowrap=true
-              color=Colors.gray7
-              block=true
-            />
-            <div className=Styles.seperatedLine />
-            <TimeAgos
-              time={oracleScript.timestamp}
-              prefix="Last updated "
-              size=Text.Md
-              weight=Text.Thin
-              spacing={Text.Em(0.06)}
-              height={Text.Px(18)}
-              upper=true
-            />
-          </div>
+
+              <img src=Images.oracleScriptLogo className=Styles.logo />
+              <Text
+                value="ORACLE SCRIPT"
+                weight=Text.Medium
+                size=Text.Md
+                spacing={Text.Em(0.06)}
+                height={Text.Px(15)}
+                nowrap=true
+                color=Colors.gray7
+                block=true
+              />
+            </div>
+            // <div className=Styles.seperatedLine />
+            // <TimeAgos
+            //   time={oracleScript.timestamp}
+            //   prefix="Last updated "
+            //   size=Text.Md
+            //   weight=Text.Thin
+            //   spacing={Text.Em(0.06)}
+            //   height={Text.Px(18)}
+            //   upper=true
+            // />
         </Col>
       </Row>
       <VSpacing size=Spacing.xl />
