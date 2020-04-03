@@ -2,7 +2,7 @@ name: Scan Workflow
 on:
   push:
     paths:
-    - './scan/**'
+    - 'scan/**'
 
 jobs:
   test:
