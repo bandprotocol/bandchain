@@ -5,7 +5,7 @@ on:
     - 'scan/**'
 
 jobs:
-  Scan Build:
+  Scan-Build:
     runs-on: ubuntu-latest
     env:
       working-directory: ./scan
@@ -18,7 +18,7 @@ jobs:
       run: yarn && yarn bsb -make-world
       working-directory: ${{env.working-directory}}
   
-  Scan Test:
+  Scan-Test:
     runs-on: ubuntu-latest
     env:
       working-directory: ./scan
