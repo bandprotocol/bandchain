@@ -35,6 +35,5 @@ jobs:
       with:
         name: scan-built
     
-    steps:
     - name: Test Directory List
       run: ls
