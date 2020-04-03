@@ -1,8 +1,6 @@
 module Styles = {
   open Css;
 
-  let pageContainer = style([paddingTop(`px(37))]);
-
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
   let seperatedLine =
@@ -15,17 +13,6 @@ module Styles = {
     ]);
 
   let hashContainer = style([marginTop(`px(25)), marginBottom(`px(44))]);
-
-  let successBadge =
-    style([
-      backgroundColor(`hex("D7FFEC")),
-      borderRadius(`px(6)),
-      display(`flex),
-      justifyContent(`center),
-      alignItems(`center),
-      width(`px(120)),
-      height(`px(40)),
-    ]);
 
   let correctLogo = style([width(`px(20)), marginLeft(`px(10))]);
 
@@ -45,7 +32,7 @@ let make = (~txHash) =>
   {
     let txSub = TxSub.get(txHash);
     let%Sub tx = txSub;
-    <div className=Styles.pageContainer>
+    <>
       <Row justify=Row.Between>
         <Col>
           <div className=Styles.vFlex>
@@ -123,7 +110,7 @@ let make = (~txHash) =>
       <VSpacing size=Spacing.md />
       <div className=Styles.seperatorLine />
       <TxIndexPageTable messages={tx.messages} />
-    </div>
+    </>
     |> Sub.resolve;
   }
   |> Sub.default(_, React.null);

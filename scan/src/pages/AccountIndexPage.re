@@ -1,8 +1,6 @@
 module Styles = {
   open Css;
 
-  let pageContainer = style([paddingTop(`px(40))]);
-
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
   let logo = style([width(`px(50)), marginRight(`px(10))]);
@@ -135,7 +133,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
   let balanceAtStake = (Js.Math.random_int(0, 1000000) |> float_of_int) /. 100.;
   let reward = (Js.Math.random_int(0, 1000000) |> float_of_int) /. 100.;
 
-  <div className=Styles.pageContainer>
+  <>
     <Row justify=Row.Between>
       <Col>
         <div className=Styles.vFlex>
@@ -232,5 +230,5 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
        | AccountDelegations => <AccountIndexDelegations delegations />
        }}
     </Tab>
-  </div>;
+  </>;
 };
