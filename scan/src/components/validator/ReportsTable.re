@@ -23,7 +23,7 @@ module Styles = {
 
 [@react.component]
 let make = (~address) =>
-  // TODO: Mocks
+  // TODO: Mockss
   {
     let (page, setPage) = React.useState(_ => 1);
     let pageSize = 5;
