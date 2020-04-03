@@ -29,10 +29,6 @@ let make = (~txResponse: BandWeb3.tx_response_t, ~schema: string) =>
     let%Sub requestsByTxHash = requestsByTxHashSub;
     let requestOpt = requestsByTxHash->Belt_Array.get(0);
 
-    let proof =
-      "0x0000000000000000000434000000009024900000000000b0a0df0000000fd070a00b0becd989f8989af9c80000fd070a00b0becd989f8989af"
-      |> JsBuffer.fromHex;
-
     <>
       <VSpacing size=Spacing.lg />
       <div className={Styles.resultWrapper(`percent(100.), `auto, `px(30), `auto)}>
