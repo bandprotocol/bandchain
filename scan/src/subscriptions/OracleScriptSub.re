@@ -3,6 +3,7 @@ type t = {
   owner: Address.t,
   name: string,
   description: string,
+  codeHash: Hash.t,
   schema: option(string),
   timestamp: MomentRe.Moment.t,
   relatedDataSources: list(ID.DataSource.t),
@@ -19,17 +20,19 @@ type internal_t = {
   owner: Address.t,
   name: string,
   description: string,
+  codeHash: Hash.t,
   oracleScriptCode: oracle_script_code_internal_t,
   timestamp: MomentRe.Moment.t,
   related_data_sources: array(related_data_source_t),
 };
 
 let toExternal =
-    ({id, owner, description, name, oracleScriptCode, timestamp, related_data_sources}) => {
+    ({id, owner, description, codeHash, name, oracleScriptCode, timestamp, related_data_sources}) => {
   id,
   owner,
   name,
   description,
+  codeHash,
   schema: oracleScriptCode.schema,
   timestamp,
   relatedDataSources:
@@ -44,6 +47,7 @@ module MultiConfig = [%graphql
       owner @bsDecoder(fn: "Address.fromBech32")
       name
       description
+      codeHash: code_hash @bsDecoder(fn: "GraphQLParser.hash")
       oracleScriptCode: oracle_script_code @bsRecord {
         schema
       }
@@ -64,6 +68,7 @@ module SingleConfig = [%graphql
       owner @bsDecoder(fn: "Address.fromBech32")
       name
       description
+      codeHash: code_hash @bsDecoder(fn: "GraphQLParser.hash")
       oracleScriptCode: oracle_script_code @bsRecord {
         schema
       }
