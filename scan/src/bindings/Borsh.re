@@ -1,8 +1,19 @@
-let extractFields: (string, string) => option(array((string, string))) = [%bs.raw
+type field_key_type_t = {
+  fieldName: string,
+  fieldType: string,
+};
+
+type field_key_value_t = {
+  fieldName: string,
+  fieldValue: string,
+};
+
+let extractFields: (string, string) => option(array(field_key_type_t)) = [%bs.raw
   {|
   function(_schema, cls) {
     try {
-      return JSON.parse(JSON.parse(_schema)[cls])["fields"]
+      let [fieldName, fieldType] =  JSON.parse(JSON.parse(_schema)[cls])["fields"];
+      return {fieldName, fieldType};
     } catch(err) {
       return undefined
     }
@@ -10,7 +21,7 @@ let extractFields: (string, string) => option(array((string, string))) = [%bs.ra
 |}
 ];
 
-let decode: (string, string, JsBuffer.t) => option(array((string, string))) = [%bs.raw
+let decode: (string, string, JsBuffer.t) => option(array(field_key_value_t)) = [%bs.raw
   {|
 function(_schema, cls, data) {
   const borsh = require('borsh')
@@ -40,7 +51,8 @@ function(_schema, cls, data) {
     let model = window[cls]
     let newValue = borsh.deserialize(schemaMap, model, data)
     return schemaMap.get(model).fields.map(([fieldName, _]) => {
-      return [fieldName, newValue[fieldName].toString()]
+      let [fieldName, fieldValue] = [fieldName, newValue[fieldName].toString()];
+      return {fieldName, fieldValue};
     });
   } catch(err) {
     return undefined
@@ -49,7 +61,7 @@ function(_schema, cls, data) {
 |}
 ];
 
-let encode: (string, string, array((string, string))) => option(JsBuffer.t) = [%bs.raw
+let encode: (string, string, array(field_key_value_t)) => option(JsBuffer.t) = [%bs.raw
   {|
 function(_schema, cls, data) {
   const borsh = require('borsh')
@@ -83,10 +95,10 @@ function(_schema, cls, data) {
     if (!specs.fields) return undefined
 
     for (let i in data) {
-      let isFound = specs.fields.some(x => x[0] == data[i][0])
+      let isFound = specs.fields.some(x => x[0] == data[i].fieldName)
       if (!isFound) return undefined
 
-      rawValue[data[i][0]] = data[i][1]
+      rawValue[data[i].fieldName] = data[i].fieldValue
     }
     let value = new window[cls](rawValue)
 
