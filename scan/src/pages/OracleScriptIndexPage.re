@@ -107,7 +107,7 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) =>
         currentRoute={oracleScriptID |> ID.OracleScript.getRouteWithTab(_, hashtag)}>
         {switch (hashtag) {
          | OracleScriptExecute => <OracleScriptExecute code={oracleScript.codeHash} />
-         | OracleScriptCode => <OracleScriptCode />
+         | OracleScriptCode => <OracleScriptCode code={oracleScript.codeHash} />
          | OracleScriptRequests => <OracleScriptRequestTable oracleScriptID />
          | OracleScriptRevisions => <OracleScriptRevisionTable id=oracleScriptID />
          }}
