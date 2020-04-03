@@ -77,14 +77,13 @@ let kvRow = (k, v: value_row_t) => {
 [@react.component]
 let make = (~address, ~hashtag: Route.validator_tab_t) =>
   {
-    let validatorsSub = ValidatorSub.getList();
     let validatorSub = ValidatorSub.get(address);
-
-    let%Sub validators = validatorsSub;
     let%Sub validator = validatorSub;
 
-    let totalPower =
-      validators->Belt_Array.reduce(0., (acc, {votingPower}) => acc +. votingPower);
+    //TODO: Update to use real value from sub
+    let totalPower = 100.00;
+
+    Js.Console.log(totalPower);
 
     <div className=Styles.pageContainer>
       <Row justify=Row.Between>

@@ -201,6 +201,7 @@ let make = () =>
 
     let validatorsCountSub = ValidatorSub.count();
     let validatorsSub = ValidatorSub.getList(~page, ~pageSize, ());
+    // TODO: Update once bonding status is available
     let bondedValidatorCountSub = ValidatorSub.count();
 
     let%Sub validators = validatorsSub;
