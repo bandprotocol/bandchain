@@ -14,7 +14,6 @@ type MsgRequestData struct {
 	RequestedValidatorCount  int64          `json:"requestedValidatorCount"`
 	SufficientValidatorCount int64          `json:"sufficientValidatorCount"`
 	Expiration               int64          `json:"expiration"`
-	PrepareGas               uint64         `json:"prepareGas"`
 	ExecuteGas               uint64         `json:"executeGas"`
 	Sender                   sdk.AccAddress `json:"sender"`
 }
@@ -36,7 +35,6 @@ func NewMsgRequestData(
 		RequestedValidatorCount:  requestedValidatorCount,
 		SufficientValidatorCount: sufficientValidatorCount,
 		Expiration:               expiration,
-		PrepareGas:               prepareGas,
 		ExecuteGas:               executeGas,
 		Sender:                   sender,
 	}
@@ -72,11 +70,6 @@ func (msg MsgRequestData) ValidateBasic() sdk.Error {
 	if msg.Expiration <= 0 {
 		return ErrInvalidBasicMsg("MsgRequestData: Expiration period (%d) must be positive.",
 			msg.Expiration,
-		)
-	}
-	if msg.PrepareGas <= 0 {
-		return ErrInvalidBasicMsg("MsgRequestData: Prepare gas (%d) must be positive.",
-			msg.PrepareGas,
 		)
 	}
 	if msg.ExecuteGas <= 0 {

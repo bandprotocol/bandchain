@@ -17,7 +17,6 @@ func TestMsgRequestData(t *testing.T) {
 	require.Equal(t, int64(10), msg.RequestedValidatorCount)
 	require.Equal(t, int64(5), msg.SufficientValidatorCount)
 	require.Equal(t, int64(100), msg.Expiration)
-	require.Equal(t, uint64(5000), msg.PrepareGas)
 	require.Equal(t, uint64(10000), msg.ExecuteGas)
 	require.Equal(t, sender, msg.Sender)
 }

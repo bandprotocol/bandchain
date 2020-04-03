@@ -179,6 +179,7 @@ func TestRequestSuccess(t *testing.T) {
 
 	ctx = ctx.WithBlockHeight(2)
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	ctx = ctx.WithGasMeter(sdk.NewGasMeter(100000000000))
 	calldata := []byte("calldata")
 	sender := sdk.AccAddress([]byte("sender"))
 	_, err := keeper.CoinKeeper.AddCoins(ctx, sender, keep.NewUBandCoins(410))
@@ -213,9 +214,7 @@ func TestRequestSuccess(t *testing.T) {
 	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 1000000, 1000000, sender)
 
 	// Test here
-	beforeGas := ctx.GasMeter().GasConsumed()
 	got := handleMsgRequestData(ctx, keeper, msg)
-	afterGas := ctx.GasMeter().GasConsumed()
 	require.True(t, got.IsOK(), "expected request to be ok, got %v", got)
 
 	// Check global request count
@@ -235,8 +234,6 @@ func TestRequestSuccess(t *testing.T) {
 		types.NewRawDataRequest(1, []byte("band-protocol")), types.NewRawDataRequest(2, []byte("band-chain")),
 	}
 	require.Equal(t, rawRequests, keeper.GetRawDataRequests(ctx, 1))
-	// check consumed gas must more than 2000000 (prepareGas + executeGas)
-	require.True(t, afterGas-beforeGas > 2000000)
 
 	senderBalance := keeper.CoinKeeper.GetCoins(ctx, sender)
 	require.Equal(t, sdk.Coins(nil), senderBalance)

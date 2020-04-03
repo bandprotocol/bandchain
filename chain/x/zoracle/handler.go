@@ -143,14 +143,15 @@ func handleMsgRequestData(ctx sdk.Context, keeper Keeper, msg MsgRequestData) sd
 		return err.Result()
 	}
 
-	ctx.GasMeter().ConsumeGas(msg.PrepareGas, "PrepareRequest")
-	_, _, errOwasm := owasm.Execute(&env, script.Code, "prepare", msg.Calldata, msg.PrepareGas)
+	_, gasUsed, errOwasm := owasm.Execute(&env,
+		script.Code, "prepare", msg.Calldata,
+		ctx.GasMeter().Limit()-ctx.GasMeter().GasConsumedToLimit())
 	if errOwasm != nil {
 		return types.ErrBadWasmExecution(
 			"handleMsgRequestData: An error occurred while running Owasm prepare.",
 		).Result()
 	}
-
+	ctx.GasMeter().ConsumeGas(gasUsed, "PrepareRequest")
 	err = env.SaveRawDataRequests(ctx, keeper)
 	if err != nil {
 		return err.Result()
