@@ -66,7 +66,6 @@ let make = (~txResponse: BandWeb3.tx_response_t, ~schema: string) =>
          | Some({id, result: Some(result)}) =>
            let outputKVs =
              Borsh.decode(schema, "Output", result)->Belt_Option.getWithDefault([||]);
-           Js.Console.log2("-=-=-=-> ", outputKVs);
            <>
              <div className={Styles.hFlex(`auto)}>
                <HSpacing size=Spacing.lg />
