@@ -48,6 +48,8 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		GetCmdEditOracleScript(cdc),
 		GetCmdRequest(cdc),
 		GetCmdReport(cdc),
+		GetCmdAddOracleAddress(cdc),
+		GetCmdRemoveOracleAddress(cdc),
 	)...)
 
 	return zoracleCmd
@@ -516,6 +518,81 @@ $ %s tx zoracle edit-oracle-script 1 --name eth-price --description "Oracle scri
 	cmd.Flags().String(flagDescription, "", "Description of this oracle script")
 	cmd.Flags().String(flagScript, "", "Path to this oracle script")
 	cmd.Flags().String(flagOwner, "", "Owner of this oracle script")
+
+	return cmd
+}
+
+// GetCmdAddOracleAddress implements the adding of oracle address command handler.
+func GetCmdAddOracleAddress(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "add-oracle-address [reporter]",
+		Short: "Add an agent authorized to submit report transactions.",
+		Args:  cobra.ExactArgs(1),
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Add an agent authorized to submit report transactions.
+Example:
+$ %s tx zoracle add-oracle-address band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun --from mykey
+`,
+				version.ClientName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+
+			validator := sdk.ValAddress(cliCtx.GetFromAddress())
+			reporter, err := sdk.AccAddressFromBech32(args[0])
+			if err != nil {
+				return err
+			}
+			msg := types.NewMsgAddOracleAddress(
+				validator,
+				reporter,
+			)
+			err = msg.ValidateBasic()
+			if err != nil {
+				return err
+			}
+			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
+		},
+	}
+
+	return cmd
+}
+
+// GetCmdRemoveOracleAddress implements the Removing of oracle address command handler.
+func GetCmdRemoveOracleAddress(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "remove-oracle-address [reporter]",
+		Short: "Remove an agent from the list of authorized reporters.",
+		Args:  cobra.ExactArgs(1),
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Remove an agent from the list of authorized reporters.
+Example:
+$ %s tx zoracle remove-oracle-address band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun --from mykey
+`,
+				version.ClientName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+			validator := sdk.ValAddress(cliCtx.GetFromAddress())
+			reporter, err := sdk.AccAddressFromBech32(args[0])
+			if err != nil {
+				return err
+			}
+			msg := types.NewMsgRemoveOracleAddress(
+				validator,
+				reporter,
+			)
+			err = msg.ValidateBasic()
+			if err != nil {
+				return err
+			}
+			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
+		},
+	}
 
 	return cmd
 }
