@@ -299,12 +299,17 @@ module Msg = {
 
   let decodeFailAction = json => FailMessage(json |> FailMessage.decode);
 
+  let decodeUnknowStatus = _ => {
+    Js.Console.log("Error status messages field");
+    [];
+  };
+
   let decodeActions = json =>
     JsonUtils.Decode.(
       switch (json |> field("status", string)) {
       | "success" => json |> field("messages", list(decodeAction))
       | "failure" => json |> field("messages", list(decodeFailAction))
-      | _ => []
+      | _ => json |> field("messages", decodeUnknowStatus)
       }
     );
 
