@@ -73,9 +73,9 @@ module Styles = {
   let logo = style([width(`px(15))]);
 };
 
-let parameterInput = (Param.{paramName, paramType}, index, setCalldataArr) => {
-  <div className=Styles.listContainer key=paramName>
-    <Text value={j|$paramName ($paramType)|j} size=Text.Md color=Colors.gray6 />
+let parameterInput = (Borsh.{fieldName, fieldType}, index, setCalldataArr) => {
+  <div className=Styles.listContainer key=fieldName>
+    <Text value={j|$fieldName ($fieldType)|j} size=Text.Md color=Colors.gray6 />
     <VSpacing size=Spacing.xs />
     <input
       className=Styles.input
@@ -127,11 +127,7 @@ let make = (~id: ID.OracleScript.t, ~schemaOpt: option(string)) => {
   let (AccountContext.{sendRequest}, _) = React.useContext(AccountContext.context);
 
   let schema = schemaOpt->Belt_Option.getWithDefault("");
-  let paramsInput =
-    schema
-    ->Borsh.extractFields("Input")
-    ->Belt_Option.getWithDefault([||])
-    ->Belt_Array.map(((paramName, paramType)) => Param.{paramName, paramType});
+  let paramsInput = schema->Borsh.extractFields("Input")->Belt_Option.getWithDefault([||]);
 
   let numParams = paramsInput->Belt_Array.size;
 
@@ -175,8 +171,9 @@ let make = (~id: ID.OracleScript.t, ~schemaOpt: option(string)) => {
                 schema,
                 "Input",
                 paramsInput
-                ->Belt_Array.map(({paramName}) => paramName)
-                ->Belt_Array.zip(callDataArr),
+                ->Belt_Array.map(({fieldName}) => fieldName)
+                ->Belt_Array.zip(callDataArr)
+                ->Belt_Array.map(((fieldName, fieldValue)) => Borsh.{fieldName, fieldValue}),
               )
             ) {
             | Some(encoded) =>

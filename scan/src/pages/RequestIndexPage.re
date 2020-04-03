@@ -248,7 +248,9 @@ let make = (~reqID) =>
           theme=KVTable.RequestMiniTable
           rows={
             calldataKVs
-            ->Belt_Array.map(((k, v)) => [KVTable.Value(k), KVTable.Value(v)])
+            ->Belt_Array.map(({fieldName, fieldValue}) =>
+                [KVTable.Value(fieldName), KVTable.Value(fieldValue)]
+              )
             ->Belt_List.fromArray
           }
         />
@@ -279,7 +281,9 @@ let make = (~reqID) =>
                theme=KVTable.RequestMiniTable
                rows={
                  resultKVs
-                 ->Belt_Array.map(((k, v)) => [KVTable.Value(k), KVTable.Value(v)])
+                 ->Belt_Array.map(({fieldName, fieldValue}) =>
+                     [KVTable.Value(fieldName), KVTable.Value(fieldValue)]
+                   )
                  ->Belt_List.fromArray
                }
              />
