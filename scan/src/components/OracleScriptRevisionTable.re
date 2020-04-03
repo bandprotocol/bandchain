@@ -51,7 +51,7 @@ let make = (~id) =>
                  <Col size=3.5>
                    <Text
                      block=true
-                     value="AGE"
+                     value="TIMESTAMP"
                      size=Text.Sm
                      weight=Text.Semibold
                      color=Colors.gray6
@@ -95,8 +95,14 @@ let make = (~id) =>
                       <Col size=3.5>
                         {switch (transaction) {
                          | Some(tx) =>
-                           <Timestamp time={tx.timestamp} size=Text.Md weight=Text.Medium />
-                         | None => <Text value="GENESIS" />
+                           <Timestamp
+                             time={tx.timestamp}
+                             weight=Text.Regular
+                             code=true
+                             size=Text.Md
+                             height={Text.Px(16)}
+                           />
+                         | None => <Text value="GENESIS" weight=Text.Regular code=true />
                          }}
                       </Col>
                       <Col size=1.6>

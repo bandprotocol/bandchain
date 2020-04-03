@@ -80,7 +80,6 @@ let make = () =>
 
     let lastProcessedHeight = latestBlock.height;
     let moniker = latestBlock.validator.moniker;
-    let timestamp = latestBlock.timestamp;
 
     // TODO replace this Mock finance.
     let mockFinance: PriceHook.Price.t = {

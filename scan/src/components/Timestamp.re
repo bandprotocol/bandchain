@@ -4,21 +4,6 @@ module Styles = {
   let timeContainer = style([display(`inlineFlex)]);
 };
 
-let setMomentRelativeTimeThreshold: unit => unit = [%bs.raw
-  {|
-function() {
-  const moment = require("moment");
-  moment.relativeTimeRounding(Math.floor);
-  moment.relativeTimeThreshold('s', 60);
-  moment.relativeTimeThreshold('ss', 0);
-  moment.relativeTimeThreshold('m', 60);
-  moment.relativeTimeThreshold('h', 24);
-  moment.relativeTimeThreshold('d', 30);
-  moment.relativeTimeThreshold('M', 12);
-}
-  |}
-];
-
 [@react.component]
 let make =
     (
@@ -30,8 +15,8 @@ let make =
       ~spacing=Text.Unset,
       ~color=Colors.gray7,
       ~code=false,
-      ~height=Text.Px(10),
       ~upper=false,
+      ~height=Text.Px(10),
     ) => {
   <div className=Styles.timeContainer>
     {prefix != ""
@@ -48,6 +33,8 @@ let make =
       color
       code
       nowrap=true
+      height
+      block=true
     />
     {suffix != ""
        ? <>
