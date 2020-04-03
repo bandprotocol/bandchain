@@ -94,7 +94,7 @@ let make = () =>
             <Col size=0.5>
               <Text
                 block=true
-                value="AGE"
+                value="TIMESTAMP"
                 size=Text.Sm
                 weight=Text.Semibold
                 color=Colors.gray5

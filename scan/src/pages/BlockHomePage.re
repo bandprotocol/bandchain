@@ -38,7 +38,7 @@ let renderBody = (block: BlockSub.t) => {
           <Text value=hash weight=Text.Medium block=true code=true ellipsis=true />
         </div>
       </Col>
-      <Col size=1.32> <TimeAgos time=timestamp size=Text.Md weight=Text.Medium /> </Col>
+      <Col size=2.1> <Timestamp time=timestamp size=Text.Md weight=Text.Regular code=true /> </Col>
       <Col size=1.5>
         <div className={Styles.withWidth(150)}>
           <ValidatorMonikerLink
@@ -105,9 +105,9 @@ let make = () =>
           <Col> <HSpacing size=Spacing.md /> </Col>
           {[
              ("BLOCK", 1.11, false),
-             ("BLOCK HASH", 3.93, false),
-             ("AGE", 1.32, false),
-             ("PROPOSER", 1.5, false),
+             ("BLOCK HASH", 3.80, false),
+             ("TIMESTAMP", 2.1, false),
+             ("PROPOSER", 1.55, false),
              ("TXN", 1.05, true),
            ]
            ->Belt.List.map(((title, size, alignRight)) => {
