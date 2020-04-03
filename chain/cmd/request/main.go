@@ -18,7 +18,6 @@ import (
 )
 
 const (
-	prepareGas = 10000
 	executeGas = 150000
 )
 
@@ -122,7 +121,7 @@ func main() {
 				{
 					fmt.Println(tx.SendTransaction(
 						zoracle.NewMsgRequestData(
-							1, []byte("BTC"), 4, 4, 100000, prepareGas, executeGas, tx.Sender(),
+							1, []byte("BTC"), 4, 4, 100000, executeGas, tx.Sender(),
 						), 0, "", "",
 					))
 				}
@@ -130,7 +129,7 @@ func main() {
 				{
 					fmt.Println(tx.SendTransaction(
 						zoracle.NewMsgRequestData(
-							1, []byte("ETH"), 4, 4, 100000, prepareGas, executeGas, tx.Sender(),
+							1, []byte("ETH"), 4, 4, 100000, executeGas, tx.Sender(),
 						), 1000000, "", "",
 					))
 				}
@@ -143,7 +142,7 @@ func main() {
 			go func() {
 				txRes, err := tx.SendTransaction(
 					zoracle.NewMsgRequestData(
-						1, []byte("BTC"), 4, 4, 100000, prepareGas, executeGas, tx.Sender(),
+						1, []byte("BTC"), 4, 4, 100000, executeGas, tx.Sender(),
 					), 1000000, "", "",
 				)
 
@@ -155,7 +154,7 @@ func main() {
 			go func() {
 				txRes, err := tx.SendTransaction(
 					zoracle.NewMsgRequestData(
-						1, []byte("ETH"), 4, 4, 100000, prepareGas, executeGas, tx.Sender(),
+						1, []byte("ETH"), 4, 4, 100000, executeGas, tx.Sender(),
 					), 1000000, "", "",
 				)
 
@@ -184,7 +183,7 @@ func main() {
 			go func() {
 				txRes, err := tx.SendTransaction(
 					zoracle.NewMsgRequestData(
-						1, []byte("BTC"), 1, 1, 100000, prepareGas, executeGas, tx.Sender(),
+						1, []byte("BTC"), 1, 1, 100000, executeGas, tx.Sender(),
 					), 1000000, "", "",
 				)
 
@@ -196,7 +195,7 @@ func main() {
 			go func() {
 				txRes, err := tx.SendTransaction(
 					zoracle.NewMsgRequestData(
-						1, []byte("ETH"), 1, 1, 100000, prepareGas, executeGas, tx.Sender(),
+						1, []byte("ETH"), 1, 1, 100000, executeGas, tx.Sender(),
 					), 1000000, "", "",
 				)
 
@@ -239,7 +238,7 @@ func main() {
 			))
 
 			fmt.Println(tx.SendTransaction(
-				zoracle.NewMsgRequestData(2, []byte("calldata"), 1, 1, 100, prepareGas, executeGas, tx.Sender()),
+				zoracle.NewMsgRequestData(2, []byte("calldata"), 1, 1, 100, executeGas, tx.Sender()),
 				1000000, "", "",
 			))
 
