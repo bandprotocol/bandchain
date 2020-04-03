@@ -27,7 +27,7 @@ jobs:
 
   scan-test:
     runs-on: ubuntu-latest
-    needs: scan-test
+    needs: scan-build
     env:
       working-directory: ./scan
 

@@ -23,7 +23,7 @@ module Styles = {
 
 [@react.component]
 let make = (~address) =>
-  // TODO: Mocksssssssss
+  // TODO: Mockssssssssss
   {
     let (page, setPage) = React.useState(_ => 1);
     let pageCount = 1;
