@@ -13,7 +13,8 @@ type t =
   | Address(Address.t, int)
   | Fraction(int, int, bool)
   | FloatWithSuffix(float, string)
-  | Validators(list(ValidatorHook.Validator.t));
+  | ValidatorsMini(array(ValidatorSub.Mini.t))
+  | Validators(array(ValidatorSub.t));
 
 module Styles = {
   open Css;
@@ -36,6 +37,7 @@ module Styles = {
       marginTop(`px(13)),
     ]);
   let sourceIcon = style([width(`px(16)), marginRight(`px(8))]);
+  let marginRightOnly = size => style([marginRight(`px(size))]);
 };
 
 [@react.component]
@@ -170,21 +172,38 @@ let make = (~info, ~header, ~isLeft=true) => {
        <div className={Styles.addressContainer(maxWidth)}>
          <AddressRender address position=AddressRender.Subtitle />
        </div>
-     | Validators(validators) =>
+     | ValidatorsMini(validators) =>
        <div className=Styles.datasourcesContainer>
          {validators
-          ->Belt.List.map(validator =>
-              <>
+          ->Belt_Array.map(validator =>
+              <div
+                key={validator.operatorAddress |> Address.toBech32}
+                className={Styles.marginRightOnly(10)}>
                 <ValidatorMonikerLink
                   validatorAddress={validator.operatorAddress}
                   moniker={validator.moniker}
                   size=Text.Lg
                   underline=true
                 />
-                <HSpacing size=Spacing.md />
-              </>
+              </div>
             )
-          ->Array.of_list
+          ->React.array}
+       </div>
+     | Validators(validators) =>
+       <div className=Styles.datasourcesContainer>
+         {validators
+          ->Belt_Array.map(validator =>
+              <div
+                key={validator.operatorAddress |> Address.toBech32}
+                className={Styles.marginRightOnly(10)}>
+                <ValidatorMonikerLink
+                  validatorAddress={validator.operatorAddress}
+                  moniker={validator.moniker}
+                  size=Text.Lg
+                  underline=true
+                />
+              </div>
+            )
           ->React.array}
        </div>
      }}

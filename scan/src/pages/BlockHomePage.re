@@ -3,8 +3,6 @@ module Styles = {
 
   let vFlex = align => style([display(`flex), flexDirection(`row), alignItems(align)]);
 
-  let pageContainer = style([paddingTop(`px(50))]);
-
   let logo = style([width(`px(50)), marginRight(`px(10))]);
 
   let seperatedLine =
@@ -22,14 +20,6 @@ module Styles = {
 
   let fillLeft = style([marginLeft(`auto)]);
 
-  let icon =
-    style([
-      width(`px(30)),
-      height(`px(30)),
-      marginTop(`px(5)),
-      marginLeft(Spacing.xl),
-      marginRight(Spacing.xl),
-    ]);
 };
 
 let renderBody = (block: BlockSub.t) => {
@@ -48,7 +38,7 @@ let renderBody = (block: BlockSub.t) => {
           <Text value=hash weight=Text.Medium block=true code=true ellipsis=true />
         </div>
       </Col>
-      <Col size=1.32> <TimeAgos time=timestamp size=Text.Md weight=Text.Medium /> </Col>
+      <Col size=2.1> <Timestamp time=timestamp size=Text.Md weight=Text.Regular code=true /> </Col>
       <Col size=1.5>
         <div className={Styles.withWidth(150)}>
           <ValidatorMonikerLink
@@ -82,7 +72,7 @@ let make = () =>
 
     let pageCount = Page.getPageCount(blocksCount, pageSize);
 
-    <div className=Styles.pageContainer>
+    <>
       <Row>
         <Col>
           <div className={Styles.vFlex(`center)}>
@@ -115,9 +105,9 @@ let make = () =>
           <Col> <HSpacing size=Spacing.md /> </Col>
           {[
              ("BLOCK", 1.11, false),
-             ("BLOCK HASH", 3.93, false),
-             ("AGE", 1.32, false),
-             ("PROPOSER", 1.5, false),
+             ("BLOCK HASH", 3.80, false),
+             ("TIMESTAMP", 2.1, false),
+             ("PROPOSER", 1.55, false),
              ("TXN", 1.05, true),
            ]
            ->Belt.List.map(((title, size, alignRight)) => {
@@ -143,7 +133,7 @@ let make = () =>
       <VSpacing size=Spacing.lg />
       <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
       <VSpacing size=Spacing.lg />
-    </div>
+    </>
     |> Sub.resolve;
   }
   |> Sub.default(_, React.null);

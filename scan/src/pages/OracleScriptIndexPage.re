@@ -1,8 +1,6 @@
 module Styles = {
   open Css;
 
-  let pageContainer = style([paddingTop(`px(40))]);
-
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
   let logo = style([width(`px(50)), marginRight(`px(10))]);
@@ -23,32 +21,33 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) =>
   {
     let%Sub oracleScript = OracleScriptSub.get(oracleScriptID);
 
-    <div className=Styles.pageContainer>
+    <>
       <Row justify=Row.Between>
         <Col>
           <div className=Styles.vFlex>
-            <img src=Images.oracleScriptLogo className=Styles.logo />
-            <Text
-              value="ORACLE SCRIPT"
-              weight=Text.Medium
-              size=Text.Md
-              spacing={Text.Em(0.06)}
-              height={Text.Px(15)}
-              nowrap=true
-              color=Colors.gray7
-              block=true
-            />
-            <div className=Styles.seperatedLine />
-            <TimeAgos
-              time={oracleScript.timestamp}
-              prefix="Last updated "
-              size=Text.Md
-              weight=Text.Thin
-              spacing={Text.Em(0.06)}
-              height={Text.Px(18)}
-              upper=true
-            />
-          </div>
+
+              <img src=Images.oracleScriptLogo className=Styles.logo />
+              <Text
+                value="ORACLE SCRIPT"
+                weight=Text.Medium
+                size=Text.Md
+                spacing={Text.Em(0.06)}
+                height={Text.Px(15)}
+                nowrap=true
+                color=Colors.gray7
+                block=true
+              />
+            </div>
+            // <div className=Styles.seperatedLine />
+            // <TimeAgos
+            //   time={oracleScript.timestamp}
+            //   prefix="Last updated "
+            //   size=Text.Md
+            //   weight=Text.Thin
+            //   spacing={Text.Em(0.06)}
+            //   height={Text.Px(18)}
+            //   upper=true
+            // />
         </Col>
       </Row>
       <VSpacing size=Spacing.xl />
@@ -107,12 +106,12 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) =>
         currentRoute={oracleScriptID |> ID.OracleScript.getRouteWithTab(_, hashtag)}>
         {switch (hashtag) {
          | OracleScriptExecute => <OracleScriptExecute code={oracleScript.codeHash} />
-         | OracleScriptCode => <OracleScriptCode />
+         | OracleScriptCode => <OracleScriptCode code={oracleScript.codeHash} />
          | OracleScriptRequests => <OracleScriptRequestTable oracleScriptID />
          | OracleScriptRevisions => <OracleScriptRevisionTable id=oracleScriptID />
          }}
       </Tab>
-    </div>
+    </>
     |> Sub.resolve;
   }
   |> Sub.default(_, React.null);

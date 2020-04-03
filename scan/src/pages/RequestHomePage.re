@@ -3,8 +3,6 @@ module Styles = {
 
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
-  let pageContainer = style([paddingTop(`px(20)), minHeight(`px(500))]);
-
   let seperatedLine =
     style([
       width(`px(13)),
@@ -14,27 +12,13 @@ module Styles = {
       backgroundColor(Colors.gray7),
     ]);
 
-  let textContainer = style([paddingLeft(Spacing.lg), display(`flex)]);
-
   let logo = style([width(`px(50)), marginRight(`px(10))]);
-
-  let proposerBox = style([maxWidth(`px(270)), display(`flex), flexDirection(`column)]);
 
   let fullWidth = style([width(`percent(100.0)), display(`flex)]);
 
   let progressBarContainer = style([maxWidth(`px(300))]);
 
   let resolveStatusContainer = style([justifyContent(`center)]);
-
-  let loadingContainer =
-    style([
-      display(`flex),
-      justifyContent(`center),
-      alignItems(`center),
-      height(`px(200)),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, 0.05))),
-      backgroundColor(white),
-    ]);
 };
 
 [@react.component]
@@ -43,137 +27,15 @@ let make = () =>
     let (page, setPage) = React.useState(_ => 1);
     let pageSize = 10;
 
-    let requestCount = 100;
-    let requests = [
-      {
-        RequestHook.Request.id: ID.Request.ID(4),
-        oracleScriptID: ID.OracleScript.ID(3),
-        oracleScriptName: "Oracle script 3",
-        calldata: "AAAAAAAAV0M=" |> JsBuffer.fromBase64,
-        requestedValidators: [
-          "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,
-        ],
-        sufficientValidatorCount: 1,
-        expirationHeight: 3000,
-        resolveStatus: Unknown,
-        requester: "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
-        txHash: "AC006D7136B0041DA4568A4CA5B7C1F8E8E0B4A74F11213B99EC4956CC8A247C" |> Hash.fromHex,
-        requestedAtHeight: 40000,
-        requestedAtTime: MomentRe.momentNow(),
-        rawDataRequests: [],
-        reports: [],
-        result: Some("AAAAAAAAV0M=" |> JsBuffer.fromBase64),
-      },
-      {
-        id: ID.Request.ID(3),
-        oracleScriptID: ID.OracleScript.ID(2),
-        oracleScriptName: "Oracle script 2",
-        calldata: "AAAAAAAAV0M=" |> JsBuffer.fromBase64,
-        requestedValidators: [
-          "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,
-          "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
-          "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
-          "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
-        ],
-        sufficientValidatorCount: 3,
-        expirationHeight: 3000,
-        resolveStatus: Success,
-        requester: "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
-        txHash: "AC006D7136B0041DA4568A4CA5B7C1F8E8E0B4A74F11213B99EC4956CC8A247C" |> Hash.fromHex,
-        requestedAtHeight: 40000,
-        requestedAtTime: MomentRe.momentNow(),
-        rawDataRequests: [],
-        reports: [
-          {
-            reporter: "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,
-            txHash:
-              "AC006D7136B0041DA4568A4CA5B7C1F8E8E0B4A74F11213B99EC4956CC8A247C" |> Hash.fromHex,
-            reportedAtHeight: 40000,
-            reportedAtTime: MomentRe.momentNow(),
-            values: [],
-          },
-          {
-            reporter: "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,
-            txHash:
-              "AC006D7136B0041DA4568A4CA5B7C1F8E8E0B4A74F11213B99EC4956CC8A247C" |> Hash.fromHex,
-            reportedAtHeight: 40000,
-            reportedAtTime: MomentRe.momentNow(),
-            values: [],
-          },
-          {
-            reporter: "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,
-            txHash:
-              "AC006D7136B0041DA4568A4CA5B7C1F8E8E0B4A74F11213B99EC4956CC8A247C" |> Hash.fromHex,
-            reportedAtHeight: 40000,
-            reportedAtTime: MomentRe.momentNow(),
-            values: [],
-          },
-          {
-            reporter: "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,
-            txHash:
-              "AC006D7136B0041DA4568A4CA5B7C1F8E8E0B4A74F11213B99EC4956CC8A247C" |> Hash.fromHex,
-            reportedAtHeight: 40000,
-            reportedAtTime: MomentRe.momentNow(),
-            values: [],
-          },
-        ],
-        result: Some("AAAAAAAAV0M=" |> JsBuffer.fromBase64),
-      },
-      {
-        id: ID.Request.ID(2),
-        oracleScriptID: ID.OracleScript.ID(1),
-        oracleScriptName: "name",
-        calldata: "AAAAAAAAV0M=" |> JsBuffer.fromBase64,
-        requestedValidators: [
-          "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,
-          "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
-        ],
-        sufficientValidatorCount: 2,
-        expirationHeight: 3000,
-        resolveStatus: Failure,
-        requester: "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
-        txHash: "AC006D7136B0041DA4568A4CA5B7C1F8E8E0B4A74F11213B99EC4956CC8A247C" |> Hash.fromHex,
-        requestedAtHeight: 40000,
-        requestedAtTime: MomentRe.momentNow(),
-        rawDataRequests: [],
-        reports: [],
-        result: Some("AAAAAAAAV0M=" |> JsBuffer.fromBase64),
-      },
-      {
-        id: ID.Request.ID(1),
-        oracleScriptID: ID.OracleScript.ID(2),
-        oracleScriptName: "Oracle script 2",
-        calldata: "AAAAAAAAV0M=" |> JsBuffer.fromBase64,
-        requestedValidators: [
-          "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,
-          "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
-          "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
-        ],
-        sufficientValidatorCount: 2,
-        expirationHeight: 3000,
-        resolveStatus: Open,
-        requester: "bandvaloper1fwffdxysc5a0hu0falsq4lyneucj05cwryzfp0" |> Address.fromBech32,
-        txHash: "AC006D7136B0041DA4568A4CA5B7C1F8E8E0B4A74F11213B99EC4956CC8A247C" |> Hash.fromHex,
-        requestedAtHeight: 40000,
-        requestedAtTime: MomentRe.momentNow(),
-        rawDataRequests: [],
-        reports: [
-          {
-            reporter: "bandvaloper13zmknvkq2sj920spz90g4r9zjan8g58423y76e" |> Address.fromBech32,
-            txHash:
-              "AC006D7136B0041DA4568A4CA5B7C1F8E8E0B4A74F11213B99EC4956CC8A247C" |> Hash.fromHex,
-            reportedAtHeight: 40000,
-            reportedAtTime: MomentRe.momentNow(),
-            values: [],
-          },
-        ],
-        result: Some("AAAAAAAAV0M=" |> JsBuffer.fromBase64),
-      },
-    ];
+    let requestCountSub = RequestSub.count();
+    let requestsSub = RequestSub.getList(~pageSize, ~page, ());
+
+    let%Sub requestCount = requestCountSub;
+    let%Sub requests = requestsSub;
 
     let pageCount = Page.getPageCount(requestCount, pageSize);
 
-    <div className=Styles.pageContainer>
+    <>
       <Row>
         <Col>
           <div className=Styles.vFlex>
@@ -215,10 +77,10 @@ let make = () =>
                 spacing={Text.Em(0.1)}
               />
             </Col>
-            <Col size=0.78>
+            <Col size=1.0>
               <Text
                 block=true
-                value="AGE"
+                value="TIMESTAMP"
                 size=Text.Sm
                 weight=Text.Semibold
                 color=Colors.gray5
@@ -260,13 +122,12 @@ let make = () =>
           </Row>
         </THead>
         {requests
-         ->Belt_List.map(
+         ->Belt_Array.map(
              (
                {
                  id,
-                 requestedAtTime,
-                 oracleScriptID,
-                 oracleScriptName,
+                 transaction,
+                 oracleScript,
                  requestedValidators,
                  sufficientValidatorCount,
                  reports,
@@ -278,20 +139,22 @@ let make = () =>
                  <Row minHeight={`px(35)}>
                    <Col> <HSpacing size=Spacing.lg /> </Col>
                    <Col size=0.5> <TElement elementType={TElement.Request(id)} /> </Col>
-                   <Col size=0.78>
-                     <TElement elementType={requestedAtTime->TElement.Timestamp} />
+                   <Col size=1.0>
+                     <TElement elementType={transaction.timestamp->TElement.Timestamp} />
                    </Col>
                    <Col size=1.15>
                      <TElement
-                       elementType={TElement.OracleScript(oracleScriptID, oracleScriptName)}
+                       elementType={
+                         TElement.OracleScript(oracleScript.oracleScriptID, oracleScript.name)
+                       }
                      />
                    </Col>
                    <Col size=1.9>
                      <div className=Styles.progressBarContainer>
                        <ProgressBar
-                         reportedValidators={reports |> Belt_List.length}
+                         reportedValidators={reports |> Belt_Array.size}
                          minimumValidators=sufficientValidatorCount
-                         requestValidators={requestedValidators |> Belt_List.length}
+                         requestValidators={requestedValidators |> Belt_Array.size}
                        />
                      </div>
                    </Col>
@@ -303,13 +166,12 @@ let make = () =>
                </div>
              </TBody>
            })
-         ->Belt_List.toArray
          ->React.array}
       </>
       <VSpacing size=Spacing.lg />
       <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
       <VSpacing size=Spacing.lg />
-    </div>
+    </>
     |> Sub.resolve;
   }
   |> Sub.default(_, React.null);
