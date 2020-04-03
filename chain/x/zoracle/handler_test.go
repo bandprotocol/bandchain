@@ -303,7 +303,10 @@ func TestRequestWithPrepareGasExceed(t *testing.T) {
 	got := handleMsgRequestData(ctx, keeper, msg)
 	gasConsumedAfterHandle := ctx.GasMeter().GasConsumed()
 
+	// the code's prepare function is expected to consume 103 gas
 	ctx = ctx.WithGasMeter(sdk.NewGasMeter(gasConsumedAfterHandle - gasConsumedBeforeHandle - 103))
+
+	// handleMsgRequestData will panic when the gas limit doesn't enough to consume
 	require.Panics(t, func() { handleMsgRequestData(ctx, keeper, msg) }, "The code did not panic")
 
 	require.False(t, got.IsOK())
