@@ -24,29 +24,29 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) =>
 
     <div className=Styles.pageContainer>
       <div className=Styles.vFlex>
-
-          <img src=Images.dataSourceLogo className=Styles.logo />
-          <Text
-            value="DATA SOURCE"
-            weight=Text.Medium
-            size=Text.Md
-            spacing={Text.Em(0.06)}
-            height={Text.Px(15)}
-            nowrap=true
-            color=Colors.gray7
-            block=true
-          />
-        </div>
-        // <div className=Styles.seperatedLine />
-        // <TimeAgos
-        //   time={dataSource.timestamp}
-        //   prefix="Last updated "
-        //   size=Text.Md
-        //   weight=Text.Thin
-        //   spacing={Text.Em(0.06)}
-        //   height={Text.Px(18)}
-        //   upper=true
-        // />
+        <img src=Images.dataSourceLogo className=Styles.logo />
+        <Text
+          value="DATA SOURCE"
+          weight=Text.Medium
+          size=Text.Md
+          spacing={Text.Em(0.06)}
+          height={Text.Px(15)}
+          nowrap=true
+          color=Colors.gray7
+          block=true
+        />
+      </div>
+      // <div className=Styles.seperatedLine />
+      //
+      // <TimeAgos
+      //   time={dataSource.timestamp}
+      //   prefix="Last updated "
+      //   size=Text.Md
+      //   weight=Text.Thin
+      //   spacing={Text.Em(0.06)}
+      //   height={Text.Px(18)}
+      //   upper=true
+      // />
       <>
         <VSpacing size=Spacing.md />
         <VSpacing size=Spacing.sm />
