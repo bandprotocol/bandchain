@@ -1,9 +1,14 @@
-name: Scan
-on: [push, pull_request]
+name: Scan Workflow
+on:
+  push:
+    paths:
+    - './scan/**'
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      working-directory: ./scan
 
     steps:
     - name: Scan Code Checkout
@@ -11,8 +16,8 @@ jobs:
 
     - name: Scan Build
       run: yarn && yarn bsb -make-world
-      working-directory: ./scan
+      working-directory: ${{env.working-directory}}
     
     - name: Scan Test
       run: yarn test
-      working-directory: ./scan
+      working-directory: ${{env.working-directory}}
