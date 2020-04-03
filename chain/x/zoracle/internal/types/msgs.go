@@ -25,7 +25,6 @@ func NewMsgRequestData(
 	requestedValidatorCount int64,
 	sufficientValidatorCount int64,
 	expiration int64,
-	prepareGas uint64,
 	executeGas uint64,
 	sender sdk.AccAddress,
 ) MsgRequestData {
