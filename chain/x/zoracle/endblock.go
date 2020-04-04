@@ -84,7 +84,7 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 		// Must never overflow because we already checked for overflow above with
 		// gasConsumed + request.ExecuteGas (which is >= gasUsed).
 		if overflow {
-			panic("zoracle::handleEndBlock: Gas overflow")
+			panic(sdk.ErrorGasOverflow{Descriptor: "zoracle::handleEndBlock: Gas overflow"})
 		}
 
 		if errOwasm != nil {
