@@ -50,36 +50,53 @@ module Styles = {
 
 module HighlightCard = {
   [@react.component]
-  let make = (~label, ~valueComponent, ~extraComponent, ~extraTopRight=?, ~bgUrl=?) => {
+  let make = (~loading=true, ~label, ~valueComponent, ~extraComponent, ~extraTopRight=?, ~bgUrl=?) => {
     <div className=Styles.card>
-      {switch (bgUrl) {
-       | Some(url) => <div className={Styles.bgCard(url)} />
-       | None => React.null
+      {switch (bgUrl, loading) {
+       | (Some(url), false) => <div className={Styles.bgCard(url)} />
+       | _ => React.null
        }}
       <div className=Styles.innerCard>
         <div className=Styles.labelContainer>
-          <Text value=label color=Colors.bandBlue spacing={Text.Em(0.05)} />
+          {loading
+             ? <LoadingCensorBar width=90 height=18 />
+             : <Text value=label color=Colors.bandBlue spacing={Text.Em(0.05)} />}
           {extraTopRight->Belt.Option.getWithDefault(React.null)}
         </div>
-        valueComponent
-        <div className={Styles.withWidth(170)}> extraComponent </div>
+        {loading ? <LoadingCensorBar width=120 height=20 /> : valueComponent}
+        <div className={Styles.withWidth(170)}>
+          {loading ? <LoadingCensorBar width=75 height=15 /> : extraComponent}
+        </div>
       </div>
     </div>;
   };
 };
 
 [@react.component]
-let make = () =>
-  {
-    let latestBlockSub = BlockSub.getLatest();
-    let infoOpt = React.useContext(GlobalContext.context);
-    let validatorsSub = ValidatorSub.getList();
+let make = () => {
+  let latestBlockSub = BlockSub.getLatest();
+  let infoOpt = React.useContext(GlobalContext.context);
+  let validatorsSub = ValidatorSub.getList();
 
-    let%Sub latestBlock = latestBlockSub;
-    let%Sub validators = validatorsSub;
+  switch (latestBlockSub, validatorsSub) {
+  | (Error(_) | NoData, Error(_) | NoData) => React.null
+  | (latestBlock_, validators_) =>
+    let loading =
+      switch (latestBlock_, validators_) {
+      | (ApolloHooks.Subscription.Data(_), ApolloHooks.Subscription.Data(_)) => false
+      | _ => true
+      };
 
-    let lastProcessedHeight = latestBlock.height;
-    let moniker = latestBlock.validator.moniker;
+    let (lastProcessedHeight, moniker) =
+      switch (latestBlock_) {
+      | ApolloHooks.Subscription.Data({height, validator: {moniker}}) => (height, moniker)
+      | _ => (ID.Block.ID(0), "")
+      };
+    let validators =
+      switch (validators_) {
+      | ApolloHooks.Subscription.Data(vs) => vs
+      | _ => [||]
+      };
 
     // TODO replace this Mock finance.
     let mockFinance: PriceHook.Price.t = {
@@ -92,11 +109,11 @@ let make = () =>
       circulatingSupply: 0.,
     };
     let financial = infoOpt->Belt_Option.mapWithDefault(mockFinance, info => info.financial);
-
     let bandBonded = validators->Belt_Array.map(x => x.tokens)->Belt_Array.reduce(0.0, (+.));
 
     <Row justify=Row.Between>
       <HighlightCard
+        loading
         label="BAND PRICE"
         bgUrl=Images.graphBG
         valueComponent={
@@ -139,6 +156,7 @@ let make = () =>
                        }
       />
       <HighlightCard
+        loading
         label="MARKET CAP"
         valueComponent={
                          let marketcap = "$" ++ financial.usdMarketCap->Format.fPretty;
@@ -165,11 +183,13 @@ let make = () =>
                        }
       />
       <HighlightCard
+        loading
         label="LATEST BLOCK"
         valueComponent={<TypeID.Block id=lastProcessedHeight position=TypeID.Landing />}
         extraComponent={<Text value=moniker nowrap=true ellipsis=true block=true />}
       />
       <HighlightCard
+        loading
         label="ACTIVE VALIDATORS"
         valueComponent={
                          let activeValidators =
@@ -189,7 +209,6 @@ let make = () =>
           </div>
         }
       />
-    </Row>
-    |> Sub.resolve;
-  }
-  |> Sub.default(_, React.null);
+    </Row>;
+  };
+};
