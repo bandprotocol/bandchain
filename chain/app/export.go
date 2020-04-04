@@ -13,7 +13,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 )
 
-// ExportAppStateAndValidators export the state of gaia for a genesis file
+// ExportAppStateAndValidators export the state of band for a genesis file
 func (app *bandApp) ExportAppStateAndValidators(forZeroHeight bool, jailWhiteList []string,
 ) (appState json.RawMessage, validators []tmtypes.GenesisValidator, err error) {
 	// as if they could withdraw from the start of the next block
@@ -23,7 +23,7 @@ func (app *bandApp) ExportAppStateAndValidators(forZeroHeight bool, jailWhiteLis
 		app.prepForZeroHeightGenesis(ctx, jailWhiteList)
 	}
 
-	genState := app.mm.ExportGenesis(ctx)
+	genState := app.mm.ExportGenesis(ctx, app.cdc)
 	appState, err = codec.MarshalJSONIndent(app.cdc, genState)
 	if err != nil {
 		return nil, nil, err
@@ -90,9 +90,9 @@ func (app *bandApp) prepForZeroHeightGenesis(ctx sdk.Context, jailWhiteList []st
 	app.StakingKeeper.IterateValidators(ctx, func(_ int64, val staking.ValidatorI) (stop bool) {
 
 		// donate any unwithdrawn outstanding reward fraction tokens to the community pool
-		scraps := app.DistrKeeper.GetValidatorOutstandingRewards(ctx, val.GetOperator())
+		scraps := app.DistrKeeper.GetValidatorOutstandingRewards(ctx, val.GetOperator()).Rewards
 		feePool := app.DistrKeeper.GetFeePool(ctx)
-		feePool.CommunityPool = feePool.CommunityPool.Add(scraps)
+		feePool.CommunityPool = feePool.CommunityPool.Add(scraps...)
 		app.DistrKeeper.SetFeePool(ctx, feePool)
 
 		app.DistrKeeper.Hooks().AfterValidatorCreated(ctx, val.GetOperator())

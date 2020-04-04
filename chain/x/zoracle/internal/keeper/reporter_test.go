@@ -1,60 +1,60 @@
 package keeper
 
-import (
-	"testing"
+// import (
+// 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/require"
-)
+// 	sdk "github.com/cosmos/cosmos-sdk/types"
+// 	"github.com/stretchr/testify/require"
+// )
 
-func TestCheckSelfReporter(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
+// func TestCheckSelfReporter(t *testing.T) {
+// 	ctx, keeper := CreateTestInput(t, false)
 
-	validatorAddress1 := sdk.ValAddress([]byte("validator1"))
+// 	validatorAddress1 := sdk.ValAddress([]byte("validator1"))
 
-	ac := keeper.CheckReporter(ctx, validatorAddress1, sdk.AccAddress(validatorAddress1))
+// 	ac := keeper.CheckReporter(ctx, validatorAddress1, sdk.AccAddress(validatorAddress1))
 
-	require.True(t, ac)
-}
+// 	require.True(t, ac)
+// }
 
-func TestAddReporterSuccess(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
+// func TestAddReporterSuccess(t *testing.T) {
+// 	ctx, keeper := CreateTestInput(t, false)
 
-	validatorAddress1 := sdk.ValAddress([]byte("validator1"))
-	reporterAddress1 := sdk.AccAddress([]byte("reporter1"))
+// 	validatorAddress1 := sdk.ValAddress([]byte("validator1"))
+// 	reporterAddress1 := sdk.AccAddress([]byte("reporter1"))
 
-	err := keeper.AddReporter(ctx, validatorAddress1, reporterAddress1)
-	require.Nil(t, err)
+// 	err := keeper.AddReporter(ctx, validatorAddress1, reporterAddress1)
+// 	require.Nil(t, err)
 
-	err = keeper.AddReporter(ctx, validatorAddress1, reporterAddress1)
-	require.NotNil(t, err)
+// 	err = keeper.AddReporter(ctx, validatorAddress1, reporterAddress1)
+// 	require.NotNil(t, err)
 
-	reporter := keeper.CheckReporter(ctx, validatorAddress1, reporterAddress1)
-	require.True(t, reporter)
-}
+// 	reporter := keeper.CheckReporter(ctx, validatorAddress1, reporterAddress1)
+// 	require.True(t, reporter)
+// }
 
-func TestRemoveReporterSuccess(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
+// func TestRemoveReporterSuccess(t *testing.T) {
+// 	ctx, keeper := CreateTestInput(t, false)
 
-	validatorAddress1 := sdk.ValAddress([]byte("validator1"))
-	reporterAddress1 := sdk.AccAddress([]byte("reporter1"))
+// 	validatorAddress1 := sdk.ValAddress([]byte("validator1"))
+// 	reporterAddress1 := sdk.AccAddress([]byte("reporter1"))
 
-	err := keeper.AddReporter(ctx, validatorAddress1, reporterAddress1)
-	require.Nil(t, err)
+// 	err := keeper.AddReporter(ctx, validatorAddress1, reporterAddress1)
+// 	require.Nil(t, err)
 
-	err = keeper.RemoveReporter(ctx, validatorAddress1, reporterAddress1)
-	require.Nil(t, err)
+// 	err = keeper.RemoveReporter(ctx, validatorAddress1, reporterAddress1)
+// 	require.Nil(t, err)
 
-	reporter := keeper.CheckReporter(ctx, validatorAddress1, reporterAddress1)
-	require.False(t, reporter)
-}
+// 	reporter := keeper.CheckReporter(ctx, validatorAddress1, reporterAddress1)
+// 	require.False(t, reporter)
+// }
 
-func TestRemoveReporterFail(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
+// func TestRemoveReporterFail(t *testing.T) {
+// 	ctx, keeper := CreateTestInput(t, false)
 
-	validatorAddress1 := sdk.ValAddress([]byte("validator1"))
-	reporterAddress1 := sdk.AccAddress([]byte("reporter1"))
+// 	validatorAddress1 := sdk.ValAddress([]byte("validator1"))
+// 	reporterAddress1 := sdk.AccAddress([]byte("reporter1"))
 
-	err := keeper.RemoveReporter(ctx, validatorAddress1, reporterAddress1)
-	require.NotNil(t, err)
-}
+// 	err := keeper.RemoveReporter(ctx, validatorAddress1, reporterAddress1)
+// 	require.NotNil(t, err)
+// }

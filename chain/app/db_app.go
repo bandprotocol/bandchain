@@ -8,7 +8,6 @@ import (
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/cosmos/cosmos-sdk/x/genaccounts"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -27,10 +26,13 @@ type dbBandApp struct {
 
 func NewDBBandApp(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool,
-	invCheckPeriod uint, dbBand *db.BandDB, baseAppOptions ...func(*bam.BaseApp),
+	invCheckPeriod uint, skipUpgradeHeights map[int64]bool, home string,
+	dbBand *db.BandDB, baseAppOptions ...func(*bam.BaseApp),
 ) *dbBandApp {
-	app := NewBandApp(logger, db, traceStore, loadLatest, invCheckPeriod, baseAppOptions...)
-
+	app := NewBandApp(
+		logger, db, traceStore, loadLatest, invCheckPeriod,
+		skipUpgradeHeights, home, baseAppOptions...,
+	)
 	dbBand.StakingKeeper = app.StakingKeeper
 	dbBand.ZoracleKeeper = app.ZoracleKeeper
 	return &dbBandApp{bandApp: app, dbBand: dbBand}
@@ -52,15 +54,16 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
 
 	// Genaccount genesis
-	var genaccountsState genaccounts.GenesisState
-	genaccounts.ModuleCdc.MustUnmarshalJSON(genesisState[genaccounts.ModuleName], &genaccountsState)
+	// TODO: Figure out how the genesis account is populated
+	// var genaccountsState genaccounts.GenesisState
+	// genaccounts.ModuleCdc.MustUnmarshalJSON(genesisState[genaccounts.ModuleName], &genaccountsState)
 
-	for _, account := range genaccountsState {
-		err := app.dbBand.SetAccountBalance(account.Address, account.Coins, 0)
-		if err != nil {
-			panic(err)
-		}
-	}
+	// for _, account := range genaccountsState {
+	// 	err := app.dbBand.SetAccountBalance(account.Address, account.Coins, 0)
+	// 	if err != nil {
+	// 		panic(err)
+	// 	}
+	// }
 
 	// Staking genesis (Not used in our chain)
 	// var stakingState staking.GenesisState
@@ -189,7 +192,7 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 				updatedAccounts[account.String()] = true
 				err := app.dbBand.SetAccountBalance(
 					account,
-					app.BankKeeper.GetCoins(app.DeliverContext, account),
+					app.BankKeeper.GetAllBalances(app.DeliverContext, account),
 					app.DeliverContext.BlockHeight(),
 				)
 				if err != nil {

@@ -3,6 +3,7 @@ package keeper
 import (
 	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // SetRawDataRequest saves the raw data request to the store without performing validation.
@@ -20,10 +21,10 @@ func (k Keeper) SetRawDataRequest(
 // GetRawDataRequest returns the raw data request detail by the given request ID and external ID.
 func (k Keeper) GetRawDataRequest(
 	ctx sdk.Context, requestID types.RequestID, externalID types.ExternalID,
-) (types.RawDataRequest, sdk.Error) {
+) (types.RawDataRequest, error) {
 	store := ctx.KVStore(k.storeKey)
 	if !k.CheckRawDataRequestExists(ctx, requestID, externalID) {
-		return types.RawDataRequest{}, types.ErrItemNotFound(
+		return types.RawDataRequest{}, sdkerrors.Wrapf(types.ErrItemNotFound,
 			"GetRawDataRequest: Unknown raw data request for request ID %d external ID %d.",
 			requestID, externalID,
 		)
@@ -48,9 +49,9 @@ func (k Keeper) CheckRawDataRequestExists(
 func (k Keeper) AddNewRawDataRequest(
 	ctx sdk.Context, requestID types.RequestID, externalID types.ExternalID,
 	dataSourceID types.DataSourceID, calldata []byte,
-) sdk.Error {
+) error {
 	if uint64(len(calldata)) > k.GetParam(ctx, types.KeyMaxCalldataSize) {
-		return types.ErrBadDataValue(
+		return sdkerrors.Wrapf(types.ErrBadDataValue,
 			"AddNewRawDataRequest: Calldata size (%d) exceeds the maximum size (%d).",
 			len(calldata), k.GetParam(ctx, types.KeyMaxCalldataSize),
 		)
@@ -62,13 +63,13 @@ func (k Keeper) AddNewRawDataRequest(
 	}
 
 	if !k.CheckDataSourceExists(ctx, dataSourceID) {
-		return types.ErrItemNotFound(
+		return sdkerrors.Wrapf(types.ErrItemNotFound,
 			"AddNewRawDataRequest: Data source ID %d does not exist.", dataSourceID,
 		)
 	}
 
 	if k.CheckRawDataRequestExists(ctx, requestID, externalID) {
-		return types.ErrItemDuplication(
+		return sdkerrors.Wrapf(types.ErrItemDuplication,
 			"AddNewRawDataRequest: Request ID %d: Raw data with external ID %d already exists.",
 			requestID, externalID,
 		)

@@ -3,6 +3,7 @@ package keeper
 import (
 	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // CheckReporter returns true iff the given reporter is authorized to report data on behalf of
@@ -20,9 +21,9 @@ func (k Keeper) CheckReporter(
 // AddReporter adds the given reporter to the list of reporters of the given validator.
 func (k Keeper) AddReporter(
 	ctx sdk.Context, validatorAddress sdk.ValAddress, reporterAddress sdk.AccAddress,
-) sdk.Error {
+) error {
 	if k.CheckReporter(ctx, validatorAddress, reporterAddress) {
-		return types.ErrItemDuplication(
+		return sdkerrors.Wrapf(types.ErrItemDuplication,
 			"AddReporter: %s is already a reporter of %s.",
 			reporterAddress.String(), validatorAddress.String(),
 		)
@@ -35,9 +36,9 @@ func (k Keeper) AddReporter(
 // AddReporter removes the given reporter from the list of reporters of the given validator.
 func (k Keeper) RemoveReporter(
 	ctx sdk.Context, validatorAddress sdk.ValAddress, reporterAddress sdk.AccAddress,
-) sdk.Error {
+) error {
 	if !k.CheckReporter(ctx, validatorAddress, reporterAddress) {
-		return types.ErrItemNotFound(
+		return sdkerrors.Wrapf(types.ErrItemNotFound,
 			"RemoveReporter: %s is not a reporter of %s.",
 			reporterAddress.String(), validatorAddress.String(),
 		)
