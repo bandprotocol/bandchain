@@ -124,7 +124,7 @@ let resultRender = result => {
 
 [@react.component]
 let make = (~id: ID.OracleScript.t, ~schemaOpt: option(string)) => {
-  let (AccountContext.{sendRequest}, _) = React.useContext(AccountContext.context);
+  let (_, dispatch) = React.useContext(AccountContext.context);
 
   let schema = schemaOpt->Belt_Option.getWithDefault("");
   let paramsInput = schema->Borsh.extractFields("Input")->Belt_Option.getWithDefault([||]);
@@ -133,6 +133,29 @@ let make = (~id: ID.OracleScript.t, ~schemaOpt: option(string)) => {
 
   let (callDataArr, setCallDataArr) = React.useState(_ => Belt_Array.make(numParams, ""));
   let (result, setResult) = React.useState(_ => Nothing);
+
+  let requestCallback =
+    React.useCallback0(requestPromise => {
+      ignore(
+        requestPromise
+        |> Js.Promise.then_(res =>
+             switch (res) {
+             | BandWeb3.Tx(txResponse) =>
+               setResult(_ => Success(txResponse, schema));
+               Js.Promise.resolve();
+             | _ =>
+               setResult(_ => Error("Fail to sign message, please connect with mnemonic first"));
+               Js.Promise.resolve();
+             }
+           )
+        |> Js.Promise.catch(err => {
+             let errorValue = Js.Json.stringifyAny(err)->Belt_Option.getWithDefault("Unknown");
+             setResult(_ => Error(errorValue));
+             Js.Promise.resolve();
+           }),
+      );
+      ();
+    });
 
   <div className=Styles.container>
     <div className={Styles.hFlex(`auto)}>
@@ -178,26 +201,7 @@ let make = (~id: ID.OracleScript.t, ~schemaOpt: option(string)) => {
             ) {
             | Some(encoded) =>
               setResult(_ => Loading);
-              let _ =
-                sendRequest(id, encoded)
-                |> Js.Promise.then_(res =>
-                     switch (res) {
-                     | BandWeb3.Tx(txResponse) =>
-                       setResult(_ => Success(txResponse, schema));
-                       Js.Promise.resolve();
-                     | _ =>
-                       setResult(_ =>
-                         Error("Fail to sign message, please connect with mnemonic first")
-                       );
-                       Js.Promise.resolve();
-                     }
-                   )
-                |> Js.Promise.catch(err => {
-                     let errorValue =
-                       Js.Json.stringifyAny(err)->Belt_Option.getWithDefault("Unknown");
-                     setResult(_ => Error(errorValue));
-                     Js.Promise.resolve();
-                   });
+              dispatch(AccountContext.SendRequest(id, encoded, requestCallback));
               ();
             | None => setResult(_ => Error("Encoding fail, please check each parameter's type"))
             };
