@@ -172,6 +172,7 @@ func NewBandApp(
 		keys:           keys,
 		tKeys:          tKeys,
 		subspaces:      make(map[string]params.Subspace),
+		TxDecoder:      auth.DefaultTxDecoder(cdc),
 	}
 
 	// init params keeper and subspaces

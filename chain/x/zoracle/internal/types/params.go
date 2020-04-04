@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/x/params"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 // Default parameter namespace.
@@ -131,19 +132,22 @@ func (p Params) String() string {
 	)
 }
 
+func validateNoOp(_ interface{}) error { return nil }
+
 // ParamSetPairs implements the params.ParamSet interface for Params.
 func (p *Params) ParamSetPairs() params.ParamSetPairs {
+	// TODO: Make validation real. Not just noop
 	return params.ParamSetPairs{
-		{Key: KeyMaxDataSourceExecutableSize, Value: &p.MaxDataSourceExecutableSize},
-		{Key: KeyMaxOracleScriptCodeSize, Value: &p.MaxOracleScriptCodeSize},
-		{Key: KeyMaxCalldataSize, Value: &p.MaxCalldataSize},
-		{Key: KeyMaxDataSourceCountPerRequest, Value: &p.MaxDataSourceCountPerRequest},
-		{Key: KeyMaxRawDataReportSize, Value: &p.MaxRawDataReportSize},
-		{Key: KeyMaxResultSize, Value: &p.MaxResultSize},
-		{Key: KeyEndBlockExecuteGasLimit, Value: &p.EndBlockExecuteGasLimit},
-		{Key: KeyMaxNameLength, Value: &p.MaxNameLength},
-		{Key: KeyMaxDescriptionLength, Value: &p.MaxDescriptionLength},
-		{Key: KeyGasPerRawDataRequestPerValidator, Value: &p.GasPerRawDataRequestPerValidator},
+		paramtypes.NewParamSetPair(KeyMaxDataSourceExecutableSize, &p.MaxDataSourceExecutableSize, validateNoOp),
+		paramtypes.NewParamSetPair(KeyMaxOracleScriptCodeSize, &p.MaxOracleScriptCodeSize, validateNoOp),
+		paramtypes.NewParamSetPair(KeyMaxCalldataSize, &p.MaxCalldataSize, validateNoOp),
+		paramtypes.NewParamSetPair(KeyMaxDataSourceCountPerRequest, &p.MaxDataSourceCountPerRequest, validateNoOp),
+		paramtypes.NewParamSetPair(KeyMaxRawDataReportSize, &p.MaxRawDataReportSize, validateNoOp),
+		paramtypes.NewParamSetPair(KeyMaxResultSize, &p.MaxResultSize, validateNoOp),
+		paramtypes.NewParamSetPair(KeyEndBlockExecuteGasLimit, &p.EndBlockExecuteGasLimit, validateNoOp),
+		paramtypes.NewParamSetPair(KeyMaxNameLength, &p.MaxNameLength, validateNoOp),
+		paramtypes.NewParamSetPair(KeyMaxDescriptionLength, &p.MaxDescriptionLength, validateNoOp),
+		paramtypes.NewParamSetPair(KeyGasPerRawDataRequestPerValidator, &p.GasPerRawDataRequestPerValidator, validateNoOp),
 	}
 }
 
