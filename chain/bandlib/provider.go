@@ -26,6 +26,9 @@ var (
 
 // NewBandProvider creates new BandProvider create new cliCtx and txBldr
 func NewBandProvider(nodeURI string, privKey crypto.PrivKey) (BandProvider, error) {
+	// TODO: This is a mess from Cosmos
+	authclient.Codec = appCodec
+
 	addr := sdk.AccAddress(privKey.PubKey().Address())
 	cliCtx := NewCLIContext(nodeURI, addr).WithCodec(cdc)
 	num, _, err := authtypes.NewAccountRetriever(appCodec, cliCtx).GetAccountNumberSequence(addr)
