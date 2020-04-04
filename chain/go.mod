@@ -5,6 +5,7 @@ go 1.13
 require (
 	github.com/btcsuite/btcd v0.0.0-20190807005414-4063feeff79a // indirect
 	github.com/cosmos/cosmos-sdk v0.34.4-0.20200318160616-b8295506615b
+	github.com/gin-gonic/gin v1.6.2
 	github.com/gorilla/mux v1.7.4
 	github.com/jinzhu/gorm v1.9.12
 	github.com/levigross/grequests v0.0.0-20190908174114-253788527a1a
