@@ -5,11 +5,11 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-	"github.com/tendermint/tendermint/libs/common"
+	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 )
 
 func (b *BandDB) AddValidatorUpTime(
-	rawConsensusAddress common.HexBytes,
+	rawConsensusAddress tmbytes.HexBytes,
 	height int64,
 	voted bool,
 ) error {
@@ -118,7 +118,7 @@ func (b *BandDB) handleMsgEditValidator(msg staking.MsgEditValidator) error {
 func (b *BandDB) handleMsgCreateValidator(msg staking.MsgCreateValidator) error {
 	return b.tx.Create(&Validator{
 		OperatorAddress:     msg.ValidatorAddress.String(),
-		ConsensusAddress:    msg.PubKey.Address().String(),
+		ConsensusAddress:    msg.Pubkey,
 		Moniker:             msg.Description.Moniker,
 		Identity:            msg.Description.Identity,
 		Website:             msg.Description.Website,

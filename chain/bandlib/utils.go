@@ -5,15 +5,17 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/tendermint/tendermint/crypto"
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
-
-	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
 
 func NewCLIContext(nodeURI string, fromAddress sdk.AccAddress) context.CLIContext {
-	rpc := rpcclient.NewHTTP(nodeURI, "/websocket")
+	rpc, err := rpcclient.NewHTTP(nodeURI, "/websocket")
+	if err != nil {
+		panic(err)
+	}
 
 	return context.CLIContext{
 		Client:        rpc,
@@ -46,13 +48,13 @@ func completeAndBroadcastTxCLI(
 	msgs []sdk.Msg,
 	privKey crypto.PrivKey,
 ) (sdk.TxResponse, error) {
-	txBldr, err := utils.PrepareTxBuilder(txBldr, cliCtx)
+	txBldr, err := authclient.PrepareTxBuilder(txBldr, cliCtx)
 	if err != nil {
 		return sdk.TxResponse{}, err
 	}
 
 	if txBldr.Gas() == 0 {
-		txBldr, err = utils.EnrichWithGas(txBldr, cliCtx, msgs)
+		txBldr, err = authclient.EnrichWithGas(txBldr, cliCtx, msgs)
 		if err != nil {
 			return sdk.TxResponse{}, err
 		}

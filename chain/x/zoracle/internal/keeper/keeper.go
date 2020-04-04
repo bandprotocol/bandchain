@@ -6,6 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/params"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 )
 
@@ -33,7 +34,7 @@ func NewKeeper(
 
 // ParamKeyTable returns the parameter key table for zoracle module.
 func ParamKeyTable() params.KeyTable {
-	return params.NewKeyTable().RegisterParamSet(&types.Params{})
+	return paramtypes.NewKeyTable().RegisterParamSet(&types.Params{})
 }
 
 // GetParam returns the parameter as specified by key as an uint64.

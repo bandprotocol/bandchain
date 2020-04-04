@@ -1,226 +1,226 @@
 package keeper
 
-import (
-	"encoding/hex"
-	"io/ioutil"
-	"path/filepath"
-	"testing"
-	"time"
+// import (
+// 	"encoding/hex"
+// 	"io/ioutil"
+// 	"path/filepath"
+// 	"testing"
+// 	"time"
 
-	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
-	"github.com/stretchr/testify/require"
-	crypto "github.com/tendermint/tendermint/crypto"
+// 	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
+// 	"github.com/stretchr/testify/require"
+// 	crypto "github.com/tendermint/tendermint/crypto"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/crypto/ed25519"
-	"github.com/tendermint/tendermint/libs/log"
-	dbm "github.com/tendermint/tm-db"
+// 	abci "github.com/tendermint/tendermint/abci/types"
+// 	"github.com/tendermint/tendermint/crypto/ed25519"
+// 	"github.com/tendermint/tendermint/libs/log"
+// 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/store"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/cosmos/cosmos-sdk/x/bank"
-	"github.com/cosmos/cosmos-sdk/x/params"
-	"github.com/cosmos/cosmos-sdk/x/staking"
-	"github.com/cosmos/cosmos-sdk/x/supply"
-)
+// 	"github.com/cosmos/cosmos-sdk/codec"
+// 	"github.com/cosmos/cosmos-sdk/store"
+// 	sdk "github.com/cosmos/cosmos-sdk/types"
+// 	"github.com/cosmos/cosmos-sdk/x/auth"
+// 	"github.com/cosmos/cosmos-sdk/x/bank"
+// 	"github.com/cosmos/cosmos-sdk/x/params"
+// 	"github.com/cosmos/cosmos-sdk/x/staking"
+// 	"github.com/cosmos/cosmos-sdk/x/supply"
+// )
 
-const Bech32MainPrefix = "band"
-const Bip44CoinType = 494
+// const Bech32MainPrefix = "band"
+// const Bip44CoinType = 494
 
-func createTestCodec() *codec.Codec {
-	var cdc = codec.New()
-	supply.RegisterCodec(cdc)
-	codec.RegisterCrypto(cdc)
-	auth.RegisterCodec(cdc)
-	return cdc
-}
+// func createTestCodec() *codec.Codec {
+// 	var cdc = codec.New()
+// 	supply.RegisterCodec(cdc)
+// 	codec.RegisterCrypto(cdc)
+// 	auth.RegisterCodec(cdc)
+// 	return cdc
+// }
 
-func SetBech32AddressPrefixesAndBip44CoinType(config *sdk.Config) {
-	config.SetBech32PrefixForAccount(
-		Bech32MainPrefix,
-		Bech32MainPrefix+sdk.PrefixPublic,
-	)
-	config.SetBech32PrefixForValidator(
-		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator,
-		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator+sdk.PrefixPublic,
-	)
-	config.SetBech32PrefixForConsensusNode(
-		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus,
-		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus+sdk.PrefixPublic,
-	)
-	config.SetCoinType(Bip44CoinType)
-}
+// func SetBech32AddressPrefixesAndBip44CoinType(config *sdk.Config) {
+// 	config.SetBech32PrefixForAccount(
+// 		Bech32MainPrefix,
+// 		Bech32MainPrefix+sdk.PrefixPublic,
+// 	)
+// 	config.SetBech32PrefixForValidator(
+// 		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator,
+// 		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator+sdk.PrefixPublic,
+// 	)
+// 	config.SetBech32PrefixForConsensusNode(
+// 		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus,
+// 		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus+sdk.PrefixPublic,
+// 	)
+// 	config.SetCoinType(Bip44CoinType)
+// }
 
-func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
-	keyRequest := sdk.NewKVStoreKey(types.StoreKey)
-	tkeyRequest := sdk.NewKVStoreKey(staking.TStoreKey)
-	keyAcc := sdk.NewKVStoreKey(auth.StoreKey)
-	keyParams := sdk.NewKVStoreKey(params.StoreKey)
-	tkeyParams := sdk.NewTransientStoreKey(params.TStoreKey)
-	keySupply := sdk.NewKVStoreKey(supply.StoreKey)
+// func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
+// 	keyRequest := sdk.NewKVStoreKey(types.StoreKey)
+// 	tkeyRequest := sdk.NewKVStoreKey(staking.TStoreKey)
+// 	keyAcc := sdk.NewKVStoreKey(auth.StoreKey)
+// 	keyParams := sdk.NewKVStoreKey(params.StoreKey)
+// 	tkeyParams := sdk.NewTransientStoreKey(params.TStoreKey)
+// 	keySupply := sdk.NewKVStoreKey(supply.StoreKey)
 
-	config := sdk.GetConfig()
-	SetBech32AddressPrefixesAndBip44CoinType(config)
+// 	config := sdk.GetConfig()
+// 	SetBech32AddressPrefixesAndBip44CoinType(config)
 
-	db := dbm.NewMemDB()
+// 	db := dbm.NewMemDB()
 
-	ms := store.NewCommitMultiStore(db)
-	ms.MountStoreWithDB(keyRequest, sdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keyAcc, sdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keyParams, sdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(tkeyParams, sdk.StoreTypeTransient, db)
-	ms.MountStoreWithDB(keySupply, sdk.StoreTypeIAVL, db)
+// 	ms := store.NewCommitMultiStore(db)
+// 	ms.MountStoreWithDB(keyRequest, sdk.StoreTypeIAVL, db)
+// 	ms.MountStoreWithDB(keyAcc, sdk.StoreTypeIAVL, db)
+// 	ms.MountStoreWithDB(keyParams, sdk.StoreTypeIAVL, db)
+// 	ms.MountStoreWithDB(tkeyParams, sdk.StoreTypeTransient, db)
+// 	ms.MountStoreWithDB(keySupply, sdk.StoreTypeIAVL, db)
 
-	err := ms.LoadLatestVersion()
-	require.Nil(t, err)
+// 	err := ms.LoadLatestVersion()
+// 	require.Nil(t, err)
 
-	ctx := sdk.NewContext(ms, abci.Header{Time: time.Unix(0, 0)}, isCheckTx, log.NewNopLogger())
-	cdc := createTestCodec()
+// 	ctx := sdk.NewContext(ms, abci.Header{Time: time.Unix(0, 0)}, isCheckTx, log.NewNopLogger())
+// 	cdc := createTestCodec()
 
-	notBondedPool := supply.NewEmptyModuleAccount(staking.NotBondedPoolName, supply.Burner, supply.Staking)
-	bondPool := supply.NewEmptyModuleAccount(staking.BondedPoolName, supply.Burner, supply.Staking)
+// 	notBondedPool := supply.NewEmptyModuleAccount(staking.NotBondedPoolName, supply.Burner, supply.Staking)
+// 	bondPool := supply.NewEmptyModuleAccount(staking.BondedPoolName, supply.Burner, supply.Staking)
 
-	pk := params.NewKeeper(cdc, keyParams, tkeyParams, params.DefaultCodespace)
+// 	pk := params.NewKeeper(cdc, keyParams, tkeyParams, params.DefaultCodespace)
 
-	accountKeeper := auth.NewAccountKeeper(
-		cdc,    // amino codec
-		keyAcc, // account store key
-		pk.Subspace(auth.DefaultParamspace),
-		auth.ProtoBaseAccount, // prototype
-	)
+// 	accountKeeper := auth.NewAccountKeeper(
+// 		cdc,    // amino codec
+// 		keyAcc, // account store key
+// 		pk.Subspace(auth.DefaultParamspace),
+// 		auth.ProtoBaseAccount, // prototype
+// 	)
 
-	addr, _ := sdk.AccAddressFromBech32("band1q8ysvjkslxdkhap2zqd2n5shhay606ru3cdjwr")
+// 	addr, _ := sdk.AccAddressFromBech32("band1q8ysvjkslxdkhap2zqd2n5shhay606ru3cdjwr")
 
-	account := accountKeeper.NewAccountWithAddress(
-		ctx,
-		addr,
-	)
-	// TODO: add feeCollectorAcc, notBondedPool, bondPool
-	// REF: https://github.com/cosmos/cosmos-sdk/blob/02c6c9fafd58da88550ab4d7d494724a477c8a68/x/staking/keeper/test_common.go#L109
-	blacklistedAddrs := map[string]bool{}
-	blacklistedAddrs[notBondedPool.GetAddress().String()] = true
-	blacklistedAddrs[bondPool.GetAddress().String()] = true
+// 	account := accountKeeper.NewAccountWithAddress(
+// 		ctx,
+// 		addr,
+// 	)
+// 	// TODO: add feeCollectorAcc, notBondedPool, bondPool
+// 	// REF: https://github.com/cosmos/cosmos-sdk/blob/02c6c9fafd58da88550ab4d7d494724a477c8a68/x/staking/keeper/test_common.go#L109
+// 	blacklistedAddrs := map[string]bool{}
+// 	blacklistedAddrs[notBondedPool.GetAddress().String()] = true
+// 	blacklistedAddrs[bondPool.GetAddress().String()] = true
 
-	bk := bank.NewBaseKeeper(
-		accountKeeper,
-		pk.Subspace(bank.DefaultParamspace),
-		bank.DefaultCodespace,
-		blacklistedAddrs,
-	)
+// 	bk := bank.NewBaseKeeper(
+// 		accountKeeper,
+// 		pk.Subspace(bank.DefaultParamspace),
+// 		bank.DefaultCodespace,
+// 		blacklistedAddrs,
+// 	)
 
-	maccPerms := map[string][]string{
-		auth.FeeCollectorName:     nil,
-		staking.NotBondedPoolName: {supply.Burner, supply.Staking},
-		staking.BondedPoolName:    {supply.Burner, supply.Staking},
-	}
-	supplyKeeper := supply.NewKeeper(cdc, keySupply, accountKeeper, bk, maccPerms)
+// 	maccPerms := map[string][]string{
+// 		auth.FeeCollectorName:     nil,
+// 		staking.NotBondedPoolName: {supply.Burner, supply.Staking},
+// 		staking.BondedPoolName:    {supply.Burner, supply.Staking},
+// 	}
+// 	supplyKeeper := supply.NewKeeper(cdc, keySupply, accountKeeper, bk, maccPerms)
 
-	initTokens := sdk.TokensFromConsensusPower(10)                                       // 10^7 for staking
-	totalSupply := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, initTokens.MulRaw(2))) // 2 = total validator address
+// 	initTokens := sdk.TokensFromConsensusPower(10)                                       // 10^7 for staking
+// 	totalSupply := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, initTokens.MulRaw(2))) // 2 = total validator address
 
-	supplyKeeper.SetSupply(ctx, supply.NewSupply(totalSupply))
+// 	supplyKeeper.SetSupply(ctx, supply.NewSupply(totalSupply))
 
-	sk := staking.NewKeeper(cdc, keyRequest, tkeyRequest, supplyKeeper, pk.Subspace(staking.DefaultParamspace), staking.DefaultCodespace)
-	sk.SetParams(ctx, staking.DefaultParams())
+// 	sk := staking.NewKeeper(cdc, keyRequest, tkeyRequest, supplyKeeper, pk.Subspace(staking.DefaultParamspace), staking.DefaultCodespace)
+// 	sk.SetParams(ctx, staking.DefaultParams())
 
-	// set module accounts
-	err = notBondedPool.SetCoins(totalSupply)
-	require.NoError(t, err)
+// 	// set module accounts
+// 	err = notBondedPool.SetCoins(totalSupply)
+// 	require.NoError(t, err)
 
-	supplyKeeper.SetModuleAccount(ctx, bondPool)
-	supplyKeeper.SetModuleAccount(ctx, notBondedPool)
+// 	supplyKeeper.SetModuleAccount(ctx, bondPool)
+// 	supplyKeeper.SetModuleAccount(ctx, notBondedPool)
 
-	keeper := NewKeeper(cdc, keyRequest, bk, sk, pk.Subspace(types.DefaultParamspace))
-	require.Equal(t, account.GetAddress(), addr)
-	accountKeeper.SetAccount(ctx, account)
+// 	keeper := NewKeeper(cdc, keyRequest, bk, sk, pk.Subspace(types.DefaultParamspace))
+// 	require.Equal(t, account.GetAddress(), addr)
+// 	accountKeeper.SetAccount(ctx, account)
 
-	require.Equal(t, account, accountKeeper.GetAccount(ctx, addr))
+// 	require.Equal(t, account, accountKeeper.GetAccount(ctx, addr))
 
-	// Set default parameter
-	keeper.SetParam(ctx, types.KeyMaxDataSourceExecutableSize, types.DefaultMaxDataSourceExecutableSize)
-	keeper.SetParam(ctx, types.KeyMaxOracleScriptCodeSize, types.DefaultMaxOracleScriptCodeSize)
-	keeper.SetParam(ctx, types.KeyMaxCalldataSize, types.DefaultMaxCalldataSize)
-	keeper.SetParam(ctx, types.KeyMaxDataSourceCountPerRequest, types.DefaultMaxDataSourceCountPerRequest)
-	keeper.SetParam(ctx, types.KeyMaxRawDataReportSize, types.DefaultMaxRawDataReportSize)
-	keeper.SetParam(ctx, types.KeyMaxResultSize, types.DefaultMaxResultSize)
-	keeper.SetParam(ctx, types.KeyEndBlockExecuteGasLimit, types.DefaultEndBlockExecuteGasLimit)
-	keeper.SetParam(ctx, types.KeyMaxNameLength, types.DefaultMaxNameLength)
-	keeper.SetParam(ctx, types.KeyMaxDescriptionLength, types.DefaultDescriptionLength)
-	keeper.SetParam(ctx, types.KeyGasPerRawDataRequestPerValidator, types.DefaultGasPerRawDataRequestPerValidator)
+// 	// Set default parameter
+// 	keeper.SetParam(ctx, types.KeyMaxDataSourceExecutableSize, types.DefaultMaxDataSourceExecutableSize)
+// 	keeper.SetParam(ctx, types.KeyMaxOracleScriptCodeSize, types.DefaultMaxOracleScriptCodeSize)
+// 	keeper.SetParam(ctx, types.KeyMaxCalldataSize, types.DefaultMaxCalldataSize)
+// 	keeper.SetParam(ctx, types.KeyMaxDataSourceCountPerRequest, types.DefaultMaxDataSourceCountPerRequest)
+// 	keeper.SetParam(ctx, types.KeyMaxRawDataReportSize, types.DefaultMaxRawDataReportSize)
+// 	keeper.SetParam(ctx, types.KeyMaxResultSize, types.DefaultMaxResultSize)
+// 	keeper.SetParam(ctx, types.KeyEndBlockExecuteGasLimit, types.DefaultEndBlockExecuteGasLimit)
+// 	keeper.SetParam(ctx, types.KeyMaxNameLength, types.DefaultMaxNameLength)
+// 	keeper.SetParam(ctx, types.KeyMaxDescriptionLength, types.DefaultDescriptionLength)
+// 	keeper.SetParam(ctx, types.KeyGasPerRawDataRequestPerValidator, types.DefaultGasPerRawDataRequestPerValidator)
 
-	return ctx, keeper
-}
+// 	return ctx, keeper
+// }
 
-func SetupTestValidator(ctx sdk.Context, keeper Keeper, pk string, power int64) sdk.ValAddress {
-	pubKey := NewPubKey(pk)
-	validatorAddress := sdk.ValAddress(pubKey.Address())
-	initTokens := sdk.TokensFromConsensusPower(power)
-	initCoins := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, initTokens))
-	keeper.CoinKeeper.AddCoins(ctx, sdk.AccAddress(pubKey.Address()), initCoins)
+// func SetupTestValidator(ctx sdk.Context, keeper Keeper, pk string, power int64) sdk.ValAddress {
+// 	pubKey := NewPubKey(pk)
+// 	validatorAddress := sdk.ValAddress(pubKey.Address())
+// 	initTokens := sdk.TokensFromConsensusPower(power)
+// 	initCoins := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, initTokens))
+// 	keeper.CoinKeeper.AddCoins(ctx, sdk.AccAddress(pubKey.Address()), initCoins)
 
-	msgCreateValidator := staking.NewTestMsgCreateValidator(
-		validatorAddress, pubKey, sdk.TokensFromConsensusPower(power),
-	)
-	stakingHandler := staking.NewHandler(keeper.StakingKeeper)
-	stakingHandler(ctx, msgCreateValidator)
+// 	msgCreateValidator := staking.NewTestMsgCreateValidator(
+// 		validatorAddress, pubKey, sdk.TokensFromConsensusPower(power),
+// 	)
+// 	stakingHandler := staking.NewHandler(keeper.StakingKeeper)
+// 	stakingHandler(ctx, msgCreateValidator)
 
-	keeper.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
-	return validatorAddress
-}
+// 	keeper.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
+// 	return validatorAddress
+// }
 
-func NewPubKey(pk string) crypto.PubKey {
-	pkBytes, err := hex.DecodeString(pk)
-	if err != nil {
-		panic(err)
-	}
-	var pkEd ed25519.PubKeyEd25519
-	copy(pkEd[:], pkBytes)
-	return pkEd
-}
+// func NewPubKey(pk string) crypto.PubKey {
+// 	pkBytes, err := hex.DecodeString(pk)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	var pkEd ed25519.PubKeyEd25519
+// 	copy(pkEd[:], pkBytes)
+// 	return pkEd
+// }
 
-func GetAddressFromPub(pub string) sdk.AccAddress {
-	return sdk.AccAddress(NewPubKey(pub).Address())
-}
+// func GetAddressFromPub(pub string) sdk.AccAddress {
+// 	return sdk.AccAddress(NewPubKey(pub).Address())
+// }
 
-func NewUBandCoins(amount int64) sdk.Coins {
-	return sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(amount)))
-}
+// func NewUBandCoins(amount int64) sdk.Coins {
+// 	return sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(amount)))
+// }
 
-func newDefaultRequest() types.Request {
-	return types.NewRequest(
-		1,
-		[]byte("calldata"),
-		[]sdk.ValAddress{sdk.ValAddress([]byte("validator1")), sdk.ValAddress([]byte("validator2"))},
-		2,
-		0,
-		1581503227,
-		100,
-		20000,
-	)
-}
+// func newDefaultRequest() types.Request {
+// 	return types.NewRequest(
+// 		1,
+// 		[]byte("calldata"),
+// 		[]sdk.ValAddress{sdk.ValAddress([]byte("validator1")), sdk.ValAddress([]byte("validator2"))},
+// 		2,
+// 		0,
+// 		1581503227,
+// 		100,
+// 		20000,
+// 	)
+// }
 
-func GetTestOracleScript(path string) types.OracleScript {
-	absPath, _ := filepath.Abs(path)
-	code, err := ioutil.ReadFile(absPath)
-	if err != nil {
-		panic(err)
-	}
-	return types.NewOracleScript(
-		sdk.AccAddress([]byte("owner")),
-		"silly script",
-		"description",
-		code,
-	)
-}
+// func GetTestOracleScript(path string) types.OracleScript {
+// 	absPath, _ := filepath.Abs(path)
+// 	code, err := ioutil.ReadFile(absPath)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	return types.NewOracleScript(
+// 		sdk.AccAddress([]byte("owner")),
+// 		"silly script",
+// 		"description",
+// 		code,
+// 	)
+// }
 
-func GetTestDataSource() types.DataSource {
-	return types.NewDataSource(
-		sdk.AccAddress([]byte("owner")),
-		"data_source",
-		"description",
-		sdk.NewCoins(sdk.NewInt64Coin("uband", 10)),
-		[]byte("executable"),
-	)
-}
+// func GetTestDataSource() types.DataSource {
+// 	return types.NewDataSource(
+// 		sdk.AccAddress([]byte("owner")),
+// 		"data_source",
+// 		"description",
+// 		sdk.NewCoins(sdk.NewInt64Coin("uband", 10)),
+// 		[]byte("executable"),
+// 	)
+// }

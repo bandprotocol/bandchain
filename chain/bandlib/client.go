@@ -107,7 +107,7 @@ func (client *BandStatefulClient) loop() {
 					{
 						client.msgs = append(client.msgs, msg.msg)
 						client.totalGas += msg.gas
-						client.totalFees = client.totalFees.Add(msg.fees)
+						client.totalFees = client.totalFees.Add(msg.fees...)
 						client.txChans = append(client.txChans, msg.txChan)
 						client.errChans = append(client.errChans, msg.errChan)
 						if len(client.msgs) == client.maximumMsgPerTx {

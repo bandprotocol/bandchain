@@ -3,6 +3,7 @@ package keeper
 import (
 	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // SetDataSource saves the given data source to the storage without performing validation.
@@ -17,21 +18,21 @@ func (k Keeper) SetDataSource(
 func (k Keeper) AddDataSource(
 	ctx sdk.Context, owner sdk.AccAddress, name string, description string,
 	fee sdk.Coins, executable []byte,
-) (types.DataSourceID, sdk.Error) {
+) (types.DataSourceID, error) {
 	if uint64(len(executable)) > k.GetParam(ctx, types.KeyMaxDataSourceExecutableSize) {
-		return 0, types.ErrBadDataValue(
+		return 0, sdkerrors.Wrapf(types.ErrBadDataValue,
 			"AddDataSource: Executable size (%d) exceeds the maximum size (%d).",
 			len(executable), k.GetParam(ctx, types.KeyMaxDataSourceExecutableSize),
 		)
 	}
 	if uint64(len(name)) > k.GetParam(ctx, types.KeyMaxNameLength) {
-		return 0, types.ErrBadDataValue(
+		return 0, sdkerrors.Wrapf(types.ErrBadDataValue,
 			"AddDataSource: Name length (%d) exceeds the maximum length (%d).",
 			len(name), k.GetParam(ctx, types.KeyMaxNameLength),
 		)
 	}
 	if uint64(len(description)) > k.GetParam(ctx, types.KeyMaxDescriptionLength) {
-		return 0, types.ErrBadDataValue(
+		return 0, sdkerrors.Wrapf(types.ErrBadDataValue,
 			"AddDataSource: Description length (%d) exceeds the maximum length (%d).",
 			len(description), k.GetParam(ctx, types.KeyMaxDescriptionLength),
 		)
@@ -47,25 +48,25 @@ func (k Keeper) AddDataSource(
 func (k Keeper) EditDataSource(
 	ctx sdk.Context, dataSourceID types.DataSourceID, owner sdk.AccAddress, name string,
 	description string, fee sdk.Coins, executable []byte,
-) sdk.Error {
+) error {
 	if !k.CheckDataSourceExists(ctx, dataSourceID) {
-		return types.ErrItemNotFound("EditDataSource: Unknown data source ID %d.", dataSourceID)
+		return sdkerrors.Wrapf(types.ErrItemNotFound, "EditDataSource: Unknown data source ID %d.", dataSourceID)
 	}
 
 	if uint64(len(executable)) > k.GetParam(ctx, types.KeyMaxDataSourceExecutableSize) {
-		return types.ErrBadDataValue(
+		return sdkerrors.Wrapf(types.ErrBadDataValue,
 			"EditDataSource: Executable size (%d) exceeds the maximum size (%d).",
 			len(executable), k.GetParam(ctx, types.KeyMaxDataSourceExecutableSize),
 		)
 	}
 	if uint64(len(name)) > k.GetParam(ctx, types.KeyMaxNameLength) {
-		return types.ErrBadDataValue(
+		return sdkerrors.Wrapf(types.ErrBadDataValue,
 			"EditDataSource: Name length (%d) exceeds the maximum length (%d).",
 			len(name), k.GetParam(ctx, types.KeyMaxNameLength),
 		)
 	}
 	if uint64(len(description)) > k.GetParam(ctx, types.KeyMaxDescriptionLength) {
-		return types.ErrBadDataValue(
+		return sdkerrors.Wrapf(types.ErrBadDataValue,
 			"EditDataSource: Description length (%d) exceeds the maximum length (%d).",
 			len(description), k.GetParam(ctx, types.KeyMaxDescriptionLength),
 		)
@@ -79,10 +80,10 @@ func (k Keeper) EditDataSource(
 // GetDataSource returns the entire DataSource struct for the given ID.
 func (k Keeper) GetDataSource(
 	ctx sdk.Context, id types.DataSourceID,
-) (types.DataSource, sdk.Error) {
+) (types.DataSource, error) {
 	store := ctx.KVStore(k.storeKey)
 	if !k.CheckDataSourceExists(ctx, id) {
-		return types.DataSource{}, types.ErrItemNotFound(
+		return types.DataSource{}, sdkerrors.Wrapf(types.ErrItemNotFound,
 			"GetDataSource: Unknown data source ID %d.", id,
 		)
 	}

@@ -6,11 +6,12 @@ import (
 	"github.com/bandprotocol/bandchain/chain/owasm"
 	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // NewHandler creates the msg handler of this module, as required by Cosmos-SDK standard.
 func NewHandler(keeper Keeper) sdk.Handler {
-	return func(ctx sdk.Context, msg sdk.Msg) sdk.Result {
+	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 		switch msg := msg.(type) {
 		case MsgCreateDataSource:
@@ -31,17 +32,19 @@ func NewHandler(keeper Keeper) sdk.Handler {
 			return handleMsgRemoveOracleAddress(ctx, keeper, msg)
 		default:
 			errMsg := fmt.Sprintf("Unrecognized zoracle message type: %T.", msg)
-			return sdk.ErrUnknownRequest(errMsg).Result()
+			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, errMsg)
 		}
 	}
 }
 
-func handleMsgCreateDataSource(ctx sdk.Context, keeper Keeper, msg MsgCreateDataSource) sdk.Result {
+func handleMsgCreateDataSource(
+	ctx sdk.Context, keeper Keeper, msg MsgCreateDataSource,
+) (*sdk.Result, error) {
 	dataSourceID, err := keeper.AddDataSource(
 		ctx, msg.Owner, msg.Name, msg.Description, msg.Fee, msg.Executable,
 	)
 	if err != nil {
-		return err.Result()
+		return nil, err
 	}
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
@@ -49,25 +52,27 @@ func handleMsgCreateDataSource(ctx sdk.Context, keeper Keeper, msg MsgCreateData
 			sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", dataSourceID)),
 		),
 	})
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
-func handleMsgEditDataSource(ctx sdk.Context, keeper Keeper, msg MsgEditDataSource) sdk.Result {
+func handleMsgEditDataSource(
+	ctx sdk.Context, keeper Keeper, msg MsgEditDataSource,
+) (*sdk.Result, error) {
 	dataSource, err := keeper.GetDataSource(ctx, msg.DataSourceID)
 	if err != nil {
-		return err.Result()
+		return nil, err
 	}
 	if !dataSource.Owner.Equals(msg.Sender) {
-		return types.ErrUnauthorizedPermission(
+		return nil, sdkerrors.Wrapf(types.ErrUnauthorizedPermission,
 			"handleMsgEditDataSource: Sender (%s) is not data source owner (%s).",
 			msg.Sender.String(), dataSource.Owner.String(),
-		).Result()
+		)
 	}
 	err = keeper.EditDataSource(
 		ctx, msg.DataSourceID, msg.Owner, msg.Name, msg.Description, msg.Fee, msg.Executable,
 	)
 	if err != nil {
-		return err.Result()
+		return nil, err
 	}
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
@@ -76,17 +81,17 @@ func handleMsgEditDataSource(ctx sdk.Context, keeper Keeper, msg MsgEditDataSour
 		),
 	})
 
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
 func handleMsgCreateOracleScript(
 	ctx sdk.Context, keeper Keeper, msg MsgCreateOracleScript,
-) sdk.Result {
+) (*sdk.Result, error) {
 	oracleScriptID, err := keeper.AddOracleScript(
 		ctx, msg.Owner, msg.Name, msg.Description, msg.Code,
 	)
 	if err != nil {
-		return err.Result()
+		return nil, err
 	}
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
@@ -94,26 +99,28 @@ func handleMsgCreateOracleScript(
 			sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", oracleScriptID)),
 		),
 	})
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
-func handleMsgEditOracleScript(ctx sdk.Context, keeper Keeper, msg MsgEditOracleScript) sdk.Result {
+func handleMsgEditOracleScript(
+	ctx sdk.Context, keeper Keeper, msg MsgEditOracleScript,
+) (*sdk.Result, error) {
 	oracleScript, err := keeper.GetOracleScript(ctx, msg.OracleScriptID)
 	if err != nil {
-		return err.Result()
+		return nil, err
 	}
 	if !oracleScript.Owner.Equals(msg.Sender) {
-		return types.ErrUnauthorizedPermission(
+		return nil, sdkerrors.Wrapf(types.ErrUnauthorizedPermission,
 			"handleMsgEditOracleScript: Sender (%s) is not oracle owner (%s).",
 			msg.Sender.String(),
 			oracleScript.Owner.String(),
-		).Result()
+		)
 	}
 	err = keeper.EditOracleScript(
 		ctx, msg.OracleScriptID, msg.Owner, msg.Name, msg.Description, msg.Code,
 	)
 	if err != nil {
-		return err.Result()
+		return nil, err
 	}
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
@@ -121,48 +128,50 @@ func handleMsgEditOracleScript(ctx sdk.Context, keeper Keeper, msg MsgEditOracle
 			sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", msg.OracleScriptID)),
 		),
 	})
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
-func handleMsgRequestData(ctx sdk.Context, keeper Keeper, msg MsgRequestData) sdk.Result {
+func handleMsgRequestData(
+	ctx sdk.Context, keeper Keeper, msg MsgRequestData,
+) (*sdk.Result, error) {
 	id, err := keeper.AddRequest(
 		ctx, msg.OracleScriptID, msg.Calldata, msg.RequestedValidatorCount,
 		msg.SufficientValidatorCount, msg.Expiration, msg.ExecuteGas,
 	)
 	if err != nil {
-		return err.Result()
+		return nil, err
 	}
 
 	env, err := NewExecutionEnvironment(ctx, keeper, id)
 	if err != nil {
-		return err.Result()
+		return nil, err
 	}
 
 	script, err := keeper.GetOracleScript(ctx, msg.OracleScriptID)
 	if err != nil {
-		return err.Result()
+		return nil, err
 	}
 
 	ctx.GasMeter().ConsumeGas(msg.PrepareGas, "PrepareRequest")
 	_, _, errOwasm := owasm.Execute(&env, script.Code, "prepare", msg.Calldata, msg.PrepareGas)
 	if errOwasm != nil {
-		return types.ErrBadWasmExecution(
+		return nil, sdkerrors.Wrapf(types.ErrBadWasmExecution,
 			"handleMsgRequestData: An error occurred while running Owasm prepare.",
-		).Result()
+		)
 	}
 
 	err = env.SaveRawDataRequests(ctx, keeper)
 	if err != nil {
-		return err.Result()
+		return nil, err
 	}
 
 	err = keeper.ValidateDataSourceCount(ctx, id)
 	if err != nil {
-		return err.Result()
+		return nil, err
 	}
 	err = keeper.PayDataSourceFees(ctx, id, msg.Sender)
 	if err != nil {
-		return err.Result()
+		return nil, err
 	}
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
@@ -170,13 +179,15 @@ func handleMsgRequestData(ctx sdk.Context, keeper Keeper, msg MsgRequestData) sd
 			sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
 		),
 	})
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
-func handleMsgReportData(ctx sdk.Context, keeper Keeper, msg MsgReportData) sdk.Result {
+func handleMsgReportData(
+	ctx sdk.Context, keeper Keeper, msg MsgReportData,
+) (*sdk.Result, error) {
 	err := keeper.AddReport(ctx, msg.RequestID, msg.DataSet, msg.Validator, msg.Reporter)
 	if err != nil {
-		return err.Result()
+		return nil, err
 	}
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
@@ -185,13 +196,15 @@ func handleMsgReportData(ctx sdk.Context, keeper Keeper, msg MsgReportData) sdk.
 			sdk.NewAttribute(types.AttributeKeyValidator, msg.Validator.String()),
 		),
 	})
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
-func handleMsgAddOracleAddress(ctx sdk.Context, keeper Keeper, msg MsgAddOracleAddress) sdk.Result {
+func handleMsgAddOracleAddress(
+	ctx sdk.Context, keeper Keeper, msg MsgAddOracleAddress,
+) (*sdk.Result, error) {
 	err := keeper.AddReporter(ctx, msg.Validator, msg.Reporter)
 	if err != nil {
-		return err.Result()
+		return nil, err
 	}
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
@@ -200,15 +213,15 @@ func handleMsgAddOracleAddress(ctx sdk.Context, keeper Keeper, msg MsgAddOracleA
 			sdk.NewAttribute(types.AttributeKeyReporter, msg.Reporter.String()),
 		),
 	})
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
 func handleMsgRemoveOracleAddress(
 	ctx sdk.Context, keeper Keeper, msg MsgRemoveOracleAddress,
-) sdk.Result {
+) (*sdk.Result, error) {
 	err := keeper.RemoveReporter(ctx, msg.Validator, msg.Reporter)
 	if err != nil {
-		return err.Result()
+		return nil, err
 	}
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
@@ -217,5 +230,5 @@ func handleMsgRemoveOracleAddress(
 			sdk.NewAttribute(types.AttributeKeyReporter, msg.Reporter.String()),
 		),
 	})
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
