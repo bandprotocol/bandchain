@@ -1,5 +1,7 @@
 package rpc
 
+// TODO: Revive this!
+
 // import (
 // 	"encoding/hex"
 // 	"testing"
