@@ -6,7 +6,7 @@ module Styles = {
       width(w),
       height(h),
       display(`flex),
-      justifyContent(`center),
+      justifyContent(`flexEnd),
       alignItems(`center),
     ]);
 
@@ -43,6 +43,7 @@ module Styles = {
       alignItems(`center),
       borderRadius(`px(10)),
       cursor(`pointer),
+      height(`px(16)),
       boxShadow(Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(4), rgba(11, 29, 142, 0.1))),
     ]);
 
@@ -102,7 +103,7 @@ module FaucetBtn = {
   let make = (~address) => {
     let (isRequest, setIsRequest) = React.useState(_ => false);
     isRequest
-      ? loadingRender(`percent(100.), `px(70), `px(20))
+      ? loadingRender(`pxFloat(98.5), `px(65), `px(16))
       : <div
           className=Styles.faucetBtn
           onClick={_ => {
@@ -127,6 +128,35 @@ module FaucetBtn = {
           />
         </div>;
   };
+};
+
+module Balance = {
+  [@react.component]
+  let make = (~address) =>
+    {
+      let accountSub = AccountSub.get(address);
+      let%Sub account = accountSub;
+
+      <div className=Styles.balanceContainer>
+        <Text
+          value={account.balance |> Coin.getBandAmountFromCoins |> Js.Float.toString}
+          code=true
+          size=Text.Sm
+          height={Text.Px(13)}
+        />
+        <HSpacing size=Spacing.sm />
+        <Text value="BAND" size=Text.Sm height={Text.Px(13)} weight=Text.Thin />
+      </div>
+      |> Sub.resolve;
+    }
+    |> Sub.default(
+         _,
+         <div className=Styles.balanceContainer>
+           <Text value="0" code=true size=Text.Sm height={Text.Px(13)} />
+           <HSpacing size=Spacing.sm />
+           <Text value="BAND" size=Text.Sm height={Text.Px(13)} weight=Text.Thin />
+         </div>,
+       );
 };
 
 [@react.component]
@@ -156,26 +186,17 @@ let make = () => {
        | None => <Col> <ConnectBtn connect /> </Col>
        }}
     </Row>
-    {addressOpt->Belt.Option.isSome
-       ? <>
-           <VSpacing size=Spacing.md />
-           <Row justify=Row.Right>
-             <Col>
-               <div className=Styles.balanceContainer>
-                 <Text
-                   value={20234 |> Format.iPretty}
-                   code=true
-                   size=Text.Sm
-                   height={Text.Px(13)}
-                 />
-                 <HSpacing size=Spacing.sm />
-                 <Text value="BAND" size=Text.Sm height={Text.Px(13)} weight=Text.Thin />
-               </div>
-             </Col>
-             <Col> <HSpacing size={`px(5)} /> </Col>
-             <Col> <FaucetBtn address={addressOpt->Belt_Option.getExn->Address.toBech32} /> </Col>
-           </Row>
-         </>
-       : React.null}
+    {switch (addressOpt) {
+     | Some(address) =>
+       <>
+         <VSpacing size=Spacing.md />
+         <Row justify=Row.Right>
+           <Col> <Balance address /> </Col>
+           <Col> <HSpacing size={`px(5)} /> </Col>
+           <Col> <FaucetBtn address={addressOpt->Belt_Option.getExn->Address.toBech32} /> </Col>
+         </Row>
+       </>
+     | None => React.null
+     }}
   </>;
 };

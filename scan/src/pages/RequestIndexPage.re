@@ -1,8 +1,6 @@
 module Styles = {
   open Css;
 
-  let pageContainer = style([paddingTop(`px(20))]);
-
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
   let hFlex = style([display(`flex), alignItems(`center)]);
 
@@ -59,7 +57,7 @@ let make = (~reqID) =>
       Borsh.decode(request.oracleScript.oracleScriptCode.schema, "Input", request.calldata)
       ->Belt_Option.getWithDefault([||]);
 
-    <div className=Styles.pageContainer>
+    <>
       <Row justify=Row.Between>
         <Col>
           <div className=Styles.vFlex>
@@ -75,7 +73,7 @@ let make = (~reqID) =>
               block=true
             />
             <div className=Styles.seperatedLine />
-            <TimeAgos
+            <Timestamp
               time={request.transaction.timestamp}
               size=Text.Md
               weight=Text.Thin
@@ -385,7 +383,7 @@ let make = (~reqID) =>
                </Col>
              </div>}
       </div>
-    </div>
+    </>
     |> Sub.resolve;
   }
   |> Sub.default(_, React.null);

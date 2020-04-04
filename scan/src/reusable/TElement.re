@@ -89,7 +89,7 @@ let renderName = name => {
 };
 
 let renderTime = time => {
-  <div className=Styles.timeContainer> <TimeAgos time size=Text.Md /> </div>;
+  <div className=Styles.timeContainer> <Timestamp time size=Text.Md /> </div>;
 };
 
 let renderCount = count => {

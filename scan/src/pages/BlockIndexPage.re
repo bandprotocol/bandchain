@@ -1,22 +1,7 @@
 module Styles = {
   open Css;
 
-  let pageContainer = style([paddingTop(`px(50))]);
-
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
-
-  let txTypeBadge =
-    style([
-      paddingLeft(`px(12)),
-      paddingRight(`px(12)),
-      paddingTop(`px(5)),
-      paddingBottom(`px(5)),
-      backgroundColor(Colors.blue1),
-      borderRadius(`px(15)),
-    ]);
-
-  let msgAmount =
-    style([borderRadius(`percent(50.)), padding(`px(3)), backgroundColor(Colors.gray4)]);
 
   let seperatedLine =
     style([
@@ -43,13 +28,6 @@ module Styles = {
     ]);
   let proposerContainer = style([maxWidth(`px(180))]);
 
-  let seperatorLine =
-    style([
-      width(`percent(100.)),
-      height(`pxFloat(1.4)),
-      backgroundColor(Colors.gray4),
-      display(`flex),
-    ]);
 };
 
 [@react.component]
@@ -66,7 +44,7 @@ let make = (~height) => {
 
     let pageCount = Page.getPageCount(block.txn, pageSize);
 
-    <div className=Styles.pageContainer>
+    <>
       <Row justify=Row.Between>
         <Col>
           <div className=Styles.vFlex>
@@ -100,7 +78,7 @@ let make = (~height) => {
         <Col size=1.8> <InfoHL info={InfoHL.Count(block.txn)} header="TRANSACTIONS" /> </Col>
         <Col size=4.6>
           <div className=Styles.vFlex>
-            <InfoHL info={InfoHL.Timestamp(block.timestamp)} header="TIME STAMP" />
+            <InfoHL info={InfoHL.Timestamp(block.timestamp)} header="TIMESTAMP" />
           </div>
         </Col>
         <Col size=3.2>
@@ -128,7 +106,7 @@ let make = (~height) => {
              />
              <VSpacing size=Spacing.xl />
            </>}
-    </div>
+    </>
     |> Sub.resolve;
   }
   |> Sub.default(_, React.null);

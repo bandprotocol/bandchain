@@ -48,7 +48,13 @@ let make = (~id) =>
                    </div>
                  </Col>
                  <Col size=2.>
-                   <Text block=true value="AGE" size=Text.Sm weight=Text.Bold color=Colors.gray6 />
+                   <Text
+                     block=true
+                     value="TIMESTAMP"
+                     size=Text.Sm
+                     weight=Text.Bold
+                     color=Colors.gray6
+                   />
                  </Col>
                  <Col size=1.5>
                    <Text

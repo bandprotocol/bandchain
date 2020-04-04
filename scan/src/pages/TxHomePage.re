@@ -3,8 +3,6 @@ module Styles = {
 
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
-  let pageContainer = style([paddingTop(`px(50)), minHeight(`px(500))]);
-
   let logo = style([width(`px(50)), marginRight(`px(10))]);
 
   let seperatedLine =
@@ -15,10 +13,6 @@ module Styles = {
       marginRight(`px(10)),
       backgroundColor(Colors.gray7),
     ]);
-
-  let textContainer = style([paddingLeft(Spacing.lg), display(`flex)]);
-
-  let proposerBox = style([maxWidth(`px(270)), display(`flex), flexDirection(`column)]);
 };
 
 [@react.component]
@@ -36,7 +30,7 @@ let make = () => {
     // TODO: add loading state later.
     let pageCount = Page.getPageCount(numTotalTxs, pageSize);
 
-    <div className=Styles.pageContainer>
+    <>
       <Row>
         <Col> <img src=Images.txLogo className=Styles.logo /> </Col>
         <Col>
@@ -58,7 +52,7 @@ let make = () => {
       <VSpacing size=Spacing.lg />
       <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
       <VSpacing size=Spacing.lg />
-    </div>
+    </>
     |> Sub.resolve;
   }
   |> Sub.default(_, React.null);
