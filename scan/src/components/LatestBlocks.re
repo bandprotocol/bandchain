@@ -29,7 +29,7 @@ module Styles = {
 
   let topicBar =
     style([
-      width(`percent(500.)),
+      width(`percent(100.)),
       display(`flex),
       flexDirection(`row),
       justifyContent(`spaceBetween),
