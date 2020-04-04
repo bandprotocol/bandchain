@@ -1,6 +1,7 @@
 package rpc
 
-// TODO: Revive this!
+// TODO: Revive this! It's commented because we upgrade to Cosmos 0.38.*.
+// Proof structure will need to change now that we have more modules + the header structure changes.
 
 // var relayFormat = []byte(`
 // [
