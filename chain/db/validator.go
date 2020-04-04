@@ -116,9 +116,14 @@ func (b *BandDB) handleMsgEditValidator(msg staking.MsgEditValidator) error {
 }
 
 func (b *BandDB) handleMsgCreateValidator(msg staking.MsgCreateValidator) error {
+	pubKey, err := sdk.GetPubKeyFromBech32(sdk.Bech32PubKeyTypeConsPub, msg.Pubkey)
+	if err != nil {
+		return err
+	}
+
 	return b.tx.Create(&Validator{
 		OperatorAddress:     msg.ValidatorAddress.String(),
-		ConsensusAddress:    msg.Pubkey,
+		ConsensusAddress:    pubKey.Address().String(),
 		Moniker:             msg.Description.Moniker,
 		Identity:            msg.Description.Identity,
 		Website:             msg.Description.Website,
