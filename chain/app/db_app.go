@@ -8,6 +8,7 @@ import (
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -53,17 +54,16 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 	var genesisState GenesisState
 	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
 
-	// Genaccount genesis
-	// TODO: Figure out how the genesis account is populated
-	// var genaccountsState genaccounts.GenesisState
-	// genaccounts.ModuleCdc.MustUnmarshalJSON(genesisState[genaccounts.ModuleName], &genaccountsState)
+	// Bank balance genesis
+	var bankState bank.GenesisState
+	app.cdc.MustUnmarshalJSON(genesisState[bank.ModuleName], &bankState)
 
-	// for _, account := range genaccountsState {
-	// 	err := app.dbBand.SetAccountBalance(account.Address, account.Coins, 0)
-	// 	if err != nil {
-	// 		panic(err)
-	// 	}
-	// }
+	for _, account := range bankState.Balances {
+		err := app.dbBand.SetAccountBalance(account.Address, account.Coins, 0)
+		if err != nil {
+			panic(err)
+		}
+	}
 
 	// Staking genesis (Not used in our chain)
 	// var stakingState staking.GenesisState
@@ -78,11 +78,11 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 
 	// Genutil genesis
 	var genutilState genutil.GenesisState
-	genutil.ModuleCdc.MustUnmarshalJSON(genesisState[genutil.ModuleName], &genutilState)
+	app.cdc.MustUnmarshalJSON(genesisState[genutil.ModuleName], &genutilState)
 
 	for _, genTx := range genutilState.GenTxs {
 		var tx auth.StdTx
-		genutil.ModuleCdc.MustUnmarshalJSON(genTx, &tx)
+		app.cdc.MustUnmarshalJSON(genTx, &tx)
 		for _, msg := range tx.Msgs {
 			if createMsg, ok := msg.(staking.MsgCreateValidator); ok {
 				app.dbBand.HandleMessage(nil, createMsg, nil)
@@ -100,7 +100,7 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 
 	// Zoracle genesis
 	var zoracleState zoracle.GenesisState
-	zoracle.ModuleCdc.MustUnmarshalJSON(genesisState[zoracle.ModuleName], &zoracleState)
+	app.cdc.MustUnmarshalJSON(genesisState[zoracle.ModuleName], &zoracleState)
 
 	// Save data source
 	for idx, dataSource := range zoracleState.DataSources {
