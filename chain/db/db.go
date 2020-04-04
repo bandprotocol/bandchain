@@ -42,6 +42,7 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		&Account{},
 		&Validator{},
 		&ValidatorVote{},
+		&Delegation{},
 		&DataSource{},
 		&DataSourceRevision{},
 		&OracleScript{},
@@ -79,6 +80,20 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 	db.Model(&ValidatorVote{}).AddForeignKey(
 		"consensus_address",
 		"validators(consensus_address)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&Delegation{}).AddForeignKey(
+		"delegator_address",
+		"accounts(address)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&Delegation{}).AddForeignKey(
+		"validator_address",
+		"validators(operator_address)",
 		"RESTRICT",
 		"RESTRICT",
 	)
@@ -361,6 +376,7 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		val, _ := b.StakingKeeper.GetValidator(b.ctx, msg.Validator)
 		jsonMap["validatorMoniker"] = val.Description.Moniker
 	case bank.MsgSend:
+	case bank.MsgMultiSend:
 	case staking.MsgCreateValidator:
 		err := b.handleMsgCreateValidator(msg)
 		if err != nil {
@@ -371,10 +387,35 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		if err != nil {
 			return nil, err
 		}
+	case staking.MsgDelegate:
+		err := b.handleMsgDelegate(msg)
+		if err != nil {
+			return nil, err
+		}
+	case staking.MsgBeginRedelegate:
+		err := b.handleMsgBeginRedelegate(msg)
+		if err != nil {
+			return nil, err
+		}
+	case staking.MsgUndelegate:
+		err := b.handleMsgUndelegate(msg)
+		if err != nil {
+			return nil, err
+		}
+	case dist.MsgSetWithdrawAddress:
+	case dist.MsgWithdrawDelegatorReward:
+	case dist.MsgWithdrawValidatorCommission:
+	case gov.MsgDeposit:
+	case gov.MsgSubmitProposal:
+	case gov.MsgVote:
+	case crisis.MsgVerifyInvariant:
+	case slashing.MsgUnjail:
+		err := b.handleMsgUnjail(msg)
+		if err != nil {
+			return nil, err
+		}
 	default:
-		// TODO: Better logging
-		fmt.Println("HandleMessage: There isn't event handler for this type")
-		return nil, nil
+		panic(fmt.Sprintf("Message %s does not support", msg.Type()))
 	}
 	jsonMap["type"] = events["message.action"]
 
