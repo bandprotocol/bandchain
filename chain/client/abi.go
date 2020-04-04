@@ -1,5 +1,7 @@
 package rpc
 
+// TODO: Revive this!
+
 // var relayFormat = []byte(`
 // [
 //   {
