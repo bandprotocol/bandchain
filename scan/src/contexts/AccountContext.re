@@ -3,43 +3,28 @@ type t = {
   privKey: JsBuffer.t,
 };
 
-type context_value_t = {
-  address: option(Address.t),
-  sendRequest:
-    React.callback(
-      BandScan.ID.OracleScript.t,
-      BandScan.JsBuffer.t => Js.Promise.t(BandScan.BandWeb3.response_t),
-    ),
-};
-
 type a =
   | Connect(string)
-  | Disconnect;
+  | Disconnect
+  | SendRequest(ID.OracleScript.t, JsBuffer.t, Js.Promise.t(BandWeb3.response_t) => unit);
 
 let bandchain = BandWeb3.network(Env.rpc, "bandchain");
 bandchain->BandWeb3.setPath("m/44'/494'/0'/0/0");
 bandchain->BandWeb3.setBech32MainPrefix("band");
 
-let reducer = _ =>
+let reducer = state =>
   fun
   | Connect(mnemonic) => {
       let newAddress = bandchain |> BandWeb3.getAddress(_, mnemonic) |> Address.fromBech32;
       let newPrivKey = bandchain |> BandWeb3.getECPairPriv(_, mnemonic);
       Some({address: newAddress, privKey: newPrivKey});
     }
-  | Disconnect => None;
-
-let context = React.createContext(ContextHelper.default);
-
-[@react.component]
-let make = (~children) => {
-  let (state, dispatch) = React.useReducer(reducer, None);
-
-  let sendRequest =
-    React.useCallback1(
-      (oracleScriptID, calldata) =>
-        switch (state) {
-        | Some({address, privKey}) =>
+  | Disconnect => None
+  | SendRequest(oracleScriptID, calldata, callback) =>
+    switch (state) {
+    | Some({address, privKey}) =>
+      callback(
+        {
           let%Promise data = bandchain->BandWeb3.getAccounts(address |> Address.toBech32);
           let msgRequest =
             StdMsgRequest.create(
@@ -62,18 +47,25 @@ let make = (~children) => {
           let%Promise res = bandchain->BandWeb3.broadcast(signedMsg);
 
           Promise.ret(res);
-        | None => Promise.ret(BandWeb3.Unknown)
         },
-      [|state->Belt_Option.mapWithDefault("", ({privKey}) => privKey |> JsBuffer.toHex)|],
-    );
+      );
+      state;
+    | None =>
+      callback(Promise.ret(BandWeb3.Unknown));
+      state;
+    };
 
-  let contextValue: context_value_t = {
-    address: state->Belt.Option.map(({address}) => address),
-    sendRequest,
-  };
+let context = React.createContext(ContextHelper.default);
+
+[@react.component]
+let make = (~children) => {
+  let (state, dispatch) = React.useReducer(reducer, None);
 
   React.createElement(
     React.Context.provider(context),
-    {"value": (contextValue, dispatch), "children": children},
+    {
+      "value": (state->Belt.Option.map(({address}) => address), dispatch),
+      "children": children,
+    },
   );
 };
