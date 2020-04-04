@@ -24,6 +24,9 @@ type Request struct {
 	ExpirationHeight         int64            `json:"expirationHeight"`
 	ExecuteGas               uint64           `json:"executeGas"`
 	ResolveStatus            ResolveStatus    `json:"resolveStatus"`
+	// IBC
+	SourcePort    string `json:"source_port"`
+	SourceChannel string `json:"source_channel"`
 }
 
 // NewRequest creates a new Request instance.
@@ -36,6 +39,8 @@ func NewRequest(
 	requestTime int64,
 	expirationHeight int64,
 	executeGas uint64,
+	sourcePort string,
+	sourceChannel string,
 ) Request {
 	return Request{
 		OracleScriptID:           oracleScriptID,
@@ -47,6 +52,8 @@ func NewRequest(
 		ExpirationHeight:         expirationHeight,
 		ExecuteGas:               executeGas,
 		ResolveStatus:            Open,
+		SourcePort:               sourcePort,
+		SourceChannel:            sourceChannel,
 	}
 }
 

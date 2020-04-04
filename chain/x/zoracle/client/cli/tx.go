@@ -62,7 +62,7 @@ func GetCmdRequest(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "request [oracle-script-id] (-c [calldata]) (-r [requested-validator-count]) (-v [sufficient-validator-count]) (-x [expiration]) (-w [prepare-gas]) (-g [execute-gas])",
 		Short: "Make a new data request via an existing oracle script",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(3),
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Make a new request via an existing oracle script with the configuration flags.
 Example:
@@ -122,6 +122,8 @@ $ %s tx zoracle request 1 --calldata 1234abcdef --requested-validator-count 4 --
 				prepareGas,
 				executionGas,
 				cliCtx.GetFromAddress(),
+				args[1],
+				args[2],
 			)
 
 			err = msg.ValidateBasic()

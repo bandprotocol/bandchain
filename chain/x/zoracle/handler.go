@@ -137,6 +137,7 @@ func handleMsgRequestData(
 	id, err := keeper.AddRequest(
 		ctx, msg.OracleScriptID, msg.Calldata, msg.RequestedValidatorCount,
 		msg.SufficientValidatorCount, msg.Expiration, msg.ExecuteGas,
+		msg.SourcePort, msg.SourceChannel,
 	)
 	if err != nil {
 		return nil, err

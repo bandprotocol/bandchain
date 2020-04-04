@@ -18,6 +18,9 @@ type MsgRequestData struct {
 	PrepareGas               uint64         `json:"prepareGas"`
 	ExecuteGas               uint64         `json:"executeGas"`
 	Sender                   sdk.AccAddress `json:"sender"`
+	// IBC
+	SourcePort    string `json:"source_port"`
+	SourceChannel string `json:"source_channel"`
 }
 
 // NewMsgRequestData creates a new MsgRequestData instance.
@@ -30,6 +33,8 @@ func NewMsgRequestData(
 	prepareGas uint64,
 	executeGas uint64,
 	sender sdk.AccAddress,
+	sourcePort string,
+	sourceChannel string,
 ) MsgRequestData {
 	return MsgRequestData{
 		OracleScriptID:           oracleScriptID,
@@ -40,6 +45,8 @@ func NewMsgRequestData(
 		PrepareGas:               prepareGas,
 		ExecuteGas:               executeGas,
 		Sender:                   sender,
+		SourcePort:               sourcePort,
+		SourceChannel:            sourceChannel,
 	}
 }
 
