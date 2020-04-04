@@ -2,7 +2,6 @@ package app
 
 import (
 	"io"
-	"time"
 
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -16,7 +15,6 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/bandprotocol/bandchain/chain/db"
-	"github.com/bandprotocol/bandchain/chain/x/zoracle"
 )
 
 type dbBandApp struct {
@@ -95,43 +93,43 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 	}
 
 	// Zoracle genesis
-	var zoracleState zoracle.GenesisState
-	zoracle.ModuleCdc.MustUnmarshalJSON(genesisState[zoracle.ModuleName], &zoracleState)
+	// var zoracleState zoracle.GenesisState
+	// zoracle.ModuleCdc.MustUnmarshalJSON(genesisState[zoracle.ModuleName], &zoracleState)
 
 	// Save data source
-	for idx, dataSource := range zoracleState.DataSources {
-		err := app.dbBand.AddDataSource(
-			int64(idx+1),
-			dataSource.Name,
-			dataSource.Description,
-			dataSource.Owner,
-			dataSource.Fee,
-			dataSource.Executable,
-			time.Now(),
-			0,
-			nil,
-		)
-		if err != nil {
-			panic(err)
-		}
-	}
+	// for idx, dataSource := range zoracleState.DataSources {
+	// 	err := app.dbBand.AddDataSource(
+	// 		int64(idx+1),
+	// 		dataSource.Name,
+	// 		dataSource.Description,
+	// 		dataSource.Owner,
+	// 		dataSource.Fee,
+	// 		dataSource.Executable,
+	// 		time.Now(),
+	// 		0,
+	// 		nil,
+	// 	)
+	// 	if err != nil {
+	// 		panic(err)
+	// 	}
+	// }
 
 	// Save oracle script
-	for idx, oracleScript := range zoracleState.OracleScripts {
-		err := app.dbBand.AddOracleScript(
-			int64(idx+1),
-			oracleScript.Name,
-			oracleScript.Description,
-			oracleScript.Owner,
-			oracleScript.Code,
-			time.Now(),
-			0,
-			nil,
-		)
-		if err != nil {
-			panic(err)
-		}
-	}
+	// for idx, oracleScript := range zoracleState.OracleScripts {
+	// 	err := app.dbBand.AddOracleScript(
+	// 		int64(idx+1),
+	// 		oracleScript.Name,
+	// 		oracleScript.Description,
+	// 		oracleScript.Owner,
+	// 		oracleScript.Code,
+	// 		time.Now(),
+	// 		0,
+	// 		nil,
+	// 	)
+	// 	if err != nil {
+	// 		panic(err)
+	// 	}
+	// }
 
 	app.dbBand.Commit()
 
