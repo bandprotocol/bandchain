@@ -4,7 +4,7 @@ use std::mem;
 mod logic;
 
 fn __return(output: &[u8]) -> u64 {
-    /// TESTs
+    /// TESTss
     let sz = output.len();
     let loc = __allocate(sz);
     unsafe { std::ptr::copy_nonoverlapping(output.as_ptr(), loc, sz) };
