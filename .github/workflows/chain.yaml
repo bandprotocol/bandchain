@@ -7,13 +7,15 @@ on:
 jobs:
   chain-test:
     runs-on: ubuntu-latest
-    container: 
-      image: bandprotocol/go-rust:0.1.1
-      options: -it bash
     
     steps:
     - name: Code Checkout
       uses: actions/checkout@v2
 
-    - name: Source .profile
-      run: rustup
+    - name: Setup Go
+      uses: actions/setup-go@v2-beta
+      with:
+        go-version: '^1.13.8' # The Go version to download (if necessary) and use.
+
+    - name: Test Go Setup
+      run: go version
