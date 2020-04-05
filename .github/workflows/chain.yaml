@@ -7,6 +7,8 @@ on:
 jobs:
   chain-test:
     runs-on: ubuntu-latest
+    env:
+      working-directory: ./chain
     
     steps:
     - name: Code Checkout
@@ -25,3 +27,7 @@ jobs:
       with:
         toolchain: stable
         target: wasm32-unknown-unknown
+    
+    - name: Run chain tests
+      run : ./run_tests.sh
+      working-directory: ${{env.working-directory}}
