@@ -364,7 +364,7 @@ func (app *bandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliv
 	response := app.BaseApp.DeliverTx(req)
 
 	if response.IsOK() {
-		// Refund 100% of gas fee for any successful transaction that only contains sgReportData
+		// Refund 100% of gas fee for any successful transaction that only containssgReportData
 		tx, err := app.TxDecoder(req.Tx)
 		if err != nil { // Should never happen because BaseApp.DeliverTx succeeds
 			panic(err)
