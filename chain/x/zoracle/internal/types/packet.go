@@ -45,18 +45,22 @@ func (o OracleRequestPacketData) Type() string {
 }
 
 type OracleResponsePacketData struct {
-	Data []byte `json:"data" yaml:"data"`
+	RequestID int64  `json:"requestID" yaml:"requestID"`
+	Data      []byte `json:"data" yaml:"data"`
 }
 
-func NewOracleResponsePacketData(data []byte) OracleResponsePacketData {
+func NewOracleResponsePacketData(requestID int64, data []byte) OracleResponsePacketData {
 	return OracleResponsePacketData{
-		Data: data,
+		RequestID: requestID,
+		Data:      data,
 	}
 }
 
 func (o OracleResponsePacketData) String() string {
 	return fmt.Sprintf(`OracleResponsePacketData:
+	RequestID:            %d
 	Data:                 %s`,
+		o.RequestID,
 		o.Data,
 	)
 }

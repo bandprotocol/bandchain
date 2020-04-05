@@ -7,6 +7,7 @@ import (
 	"github.com/bandprotocol/bandchain/chain/owasm"
 	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	channel "github.com/cosmos/cosmos-sdk/x/ibc/04-channel"
 )
 
 func addUint64Overflow(a, b uint64) (uint64, bool) {
@@ -101,6 +102,9 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) {
 		}
 
 		keeper.SetResolve(ctx, requestID, types.Success)
+		// TODO: We should send packet back even when execute is not successful + not ignore error
+		_ = sendOraclePacket(ctx, keeper, requestID, result)
+
 		event := newRequestExecuteEvent(requestID, types.Success)
 		event.AppendAttributes(sdk.NewAttribute(types.AttributeKeyResult, string(result)))
 		events = append(events, event)
@@ -108,4 +112,39 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) {
 
 	ctx.EventManager().EmitEvents(events)
 	keeper.SetPendingResolveList(ctx, pendingList[firstUnresolvedRequestIndex:])
+}
+
+func sendOraclePacket(ctx sdk.Context, keeper Keeper, requestID RequestID, result []byte) error {
+	request, err := keeper.GetRequest(ctx, requestID)
+	if err != nil {
+		return err
+	}
+
+	sourceChannelEnd, found := keeper.ChannelKeeper.GetChannel(
+		ctx, request.SourcePort, request.SourceChannel,
+	)
+	if !found {
+		fmt.Println("SOURCE NOT FOUND", request.SourcePort, request.SourceChannel)
+		return nil
+	}
+
+	sequence, found := keeper.ChannelKeeper.GetNextSequenceSend(
+		ctx, request.SourcePort, request.SourceChannel,
+	)
+	if !found {
+		fmt.Println("SEQUENCE NOT FOUND", request.SourcePort, request.SourceChannel)
+		return nil
+	}
+
+	packet := channel.NewPacket(
+		types.NewOracleResponsePacketData(int64(requestID), result),
+		sequence, request.SourcePort, request.SourceChannel,
+		sourceChannelEnd.Counterparty.PortID, sourceChannelEnd.Counterparty.ChannelID,
+	)
+	err = keeper.ChannelKeeper.SendPacket(ctx, packet)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
