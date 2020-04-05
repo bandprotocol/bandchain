@@ -14,16 +14,20 @@ jobs:
     - name: Code Checkout
       uses: actions/checkout@v2
 
-    - name: Build
-      run: yarn && yarn bsb -make-world
-      working-directory: ${{env.working-directory}}
-    
-    - name: Cache node_modules
+    - name: Check node_modules cache
       id: cache-node-modules
       uses: actions/cache@v1
       with:
         path: scan/node_modules
         key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+
+    - name: Run yarn
+      if: steps.cache-node-modules.outputs.cache-hit != 'true'
+      run: yarn
+      working-directory: ${{env.working-directory}}
+
+    - name: Run yarn bsb -make-world
+      run: yarn bsb -make-world -w -ws _
 
   scan-test:
     runs-on: ubuntu-latest
@@ -42,6 +46,9 @@ jobs:
         path: scan/node_modules
         key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
 
-    - name: Build
+    - name: Run yarn
       if: steps.cache-node-modules.outputs.cache-hit != 'true'
-      run: echo "rebuilding node_modules for test"
+      run: yarn
+
+    - name: Run yarn test
+      run: yarn test
