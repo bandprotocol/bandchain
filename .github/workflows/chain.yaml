@@ -6,6 +6,9 @@ on:
 
 jobs:
   chain-test:
+    runs-on: ubuntu-latest
+    env:
+      working-directory: ./chain
     container:
       image: bandprotocol/go-rust:0.1.1
     
