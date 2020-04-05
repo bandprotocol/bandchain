@@ -233,6 +233,12 @@ func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseB
 		req.GetHash(),
 	)
 
+	// Handle Begin block event
+	events := res.GetEvents()
+	for _, event := range events {
+		app.dbBand.HandleBeginblockEvent(event)
+	}
+
 	return res
 }
 

@@ -103,7 +103,6 @@ func (b *BandDB) CreateValidator(
 		CommissionMaxRate:   commissionMaxRate.String(),
 		CommissionMaxChange: commissionMaxChangeRate.String(),
 		MinSelfDelegation:   minSelfDelegation.String(),
-		SelfDelegation:      value.Amount.String(),
 		Tokens:              value.Amount.String(),
 		DelegatorShares:     value.Amount.String(),
 	}).Error
