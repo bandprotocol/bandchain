@@ -24,4 +24,3 @@ jobs:
       with:
         command: test
         args: --manifest-path owasm/Cargo.toml --all
-      working-directory: ${{env.working-directory}}
