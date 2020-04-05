@@ -11,10 +11,10 @@ jobs:
       working-directory: ./chain
     
     steps:
-    - name: Code Checkout
+    - name: Code checkout
       uses: actions/checkout@v2
 
-    - name: Setup Go
+    - name: Install Go
       uses: actions/setup-go@v2-beta
       with:
         go-version: '^1.13.8' # The Go version to download (if necessary) and use.
@@ -22,7 +22,7 @@ jobs:
     - name: Test Go Setup
       run: go version
 
-    - name: Install rust toolchain
+    - name: Install Rust and rust toolchain
       uses: actions-rs/toolchain@v1
       with:
         toolchain: stable
