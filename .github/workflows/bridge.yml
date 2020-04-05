@@ -50,4 +50,4 @@ jobs:
 
     - name: Run yarn test
       run: yarn truffle test
-      working-directory: ${{env.working-directory}
+      working-directory: ${{env.working-directory}}
