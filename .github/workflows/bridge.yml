@@ -28,7 +28,7 @@ jobs:
 
   bridges-evm-test:
     runs-on: ubuntu-latest
-    needs: scan-build
+    needs: bridges-evm-build
     env:
       working-directory: ./bridges/evm
 
