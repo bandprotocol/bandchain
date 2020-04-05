@@ -1,5 +1,5 @@
 const Migrations = artifacts.require("Migrations");
-//Testss
+//Testsss
 module.exports = function(deployer) {
   deployer.deploy(Migrations);
 };

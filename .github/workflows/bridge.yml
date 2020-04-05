@@ -2,7 +2,7 @@ name: Bridges Workflow
 on:
   push:
     paths:
-    - 'bridges/evm**'
+    - 'bridges/**'
 
 jobs:
   scan-build:
