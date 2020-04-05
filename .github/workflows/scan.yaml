@@ -19,7 +19,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: scan/node_modules
-        key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+        key: ${{ runner.OS }}-scan-build-${{ hashFiles('**/package-lock.json') }}
 
     - name: Run yarn
       if: steps.scan-node-modules-cache.outputs.cache-hit != 'true'
@@ -45,7 +45,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: scan/node_modules
-        key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+        key: ${{ runner.OS }}-scan-build-${{ hashFiles('**/package-lock.json') }}
 
     - name: Run yarn
       if: steps.scan-node-modules-cache.cache-hit != 'true'
