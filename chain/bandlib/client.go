@@ -18,7 +18,7 @@ type msgDetail struct {
 	errChan chan error
 }
 
-// BandStatefulClient contains state client
+// BandStatefulClient contains state clients
 type BandStatefulClient struct {
 	memo            string
 	maximumMsgPerTx int

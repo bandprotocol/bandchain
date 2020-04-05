@@ -1,0 +1,17 @@
+name: Chain Workflow
+on:
+  push:
+    paths:
+    - 'chain/**'
+
+jobs:
+  chain-test:
+    container:
+      image: bandprotocol/go-rust:0.1.1
+    
+    steps:
+    - name: Code Checkout
+      uses: actions/checkout@v2
+
+    - name: Source .profile
+      run: source ~/.profile
