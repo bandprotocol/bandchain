@@ -28,6 +28,7 @@ jobs:
 
     - name: Run yarn bsb -make-world
       run: yarn bsb -make-world -w -ws _
+      working-directory: ${{env.working-directory}}
 
   scan-test:
     runs-on: ubuntu-latest
@@ -49,6 +50,8 @@ jobs:
     - name: Run yarn
       if: steps.cache-node-modules.outputs.cache-hit != 'true'
       run: yarn
+      working-directory: ${{env.working-directory}}
 
     - name: Run yarn test
       run: yarn test
+      working-directory: ${{env.working-directory}}
