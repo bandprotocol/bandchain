@@ -6,6 +6,7 @@ on:
 
 jobs:
   chain-test:
+    runs-on: ubuntu-latest
     container: bandprotocol/go-rust:0.1.1
     
     steps:
