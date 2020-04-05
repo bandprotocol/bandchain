@@ -24,6 +24,7 @@ func (b *BandDB) handleMsgCreateValidator(msg staking.MsgCreateValidator) error 
 		msg.Commission.MaxChangeRate,
 		msg.MinSelfDelegation,
 		msg.Value,
+		sdk.Bonded,
 	)
 	if err != nil {
 		return err

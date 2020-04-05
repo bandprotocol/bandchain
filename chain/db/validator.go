@@ -91,6 +91,7 @@ func (b *BandDB) CreateValidator(
 	commissionMaxChangeRate sdk.Dec,
 	minSelfDelegation sdk.Int,
 	value sdk.Coin,
+	status sdk.BondStatus,
 ) error {
 	return b.tx.Create(&Validator{
 		OperatorAddress:     validatorAddress.String(),
@@ -103,6 +104,7 @@ func (b *BandDB) CreateValidator(
 		CommissionMaxRate:   commissionMaxRate.String(),
 		CommissionMaxChange: commissionMaxChangeRate.String(),
 		MinSelfDelegation:   minSelfDelegation.String(),
+		Status:              status.String(),
 		Tokens:              value.Amount.String(),
 		DelegatorShares:     value.Amount.String(),
 	}).Error

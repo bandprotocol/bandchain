@@ -10,6 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/staking"
+	"github.com/cosmos/cosmos-sdk/x/staking/exported"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto/tmhash"
 	"github.com/tendermint/tendermint/libs/log"
@@ -254,6 +255,24 @@ func (app *dbBandApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBl
 	for _, event := range events {
 		app.dbBand.HandleEndblockEvent(event)
 	}
+
+	// Update bonding validator status
+	app.StakingKeeper.IterateValidators(app.DeliverContext,
+		func(index int64, validator exported.ValidatorI) bool {
+			var status sdk.BondStatus
+			if validator.IsBonded() {
+				status = sdk.Bonded
+			} else if validator.IsUnbonding() {
+				status = sdk.Unbonding
+			} else {
+				status = sdk.Unbonded
+			}
+			app.dbBand.UpdateValidator(
+				validator.GetOperator(),
+				&db.Validator{Status: status.String()},
+			)
+			return false
+		})
 
 	app.dbBand.SetContext(sdk.Context{})
 	return res
