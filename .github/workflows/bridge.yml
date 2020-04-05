@@ -44,7 +44,7 @@ jobs:
         key: ${{ runner.OS }}-bridges-evm-build-${{ hashFiles('**/package-lock.json') }}
 
     - name: Run yarn
-      if: steps.bridges/evm/node_modules.cache-hit != 'true'
+      if: steps.bridges-node-modules-cache.outputs.cache-hit != 'true'
       run: yarn
       working-directory: ${{env.working-directory}}
 

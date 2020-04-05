@@ -48,7 +48,7 @@ jobs:
         key: ${{ runner.OS }}-scan-build-${{ hashFiles('**/package-lock.json') }}
 
     - name: Run yarn
-      if: steps.scan-node-modules-cache.cache-hit != 'true'
+      if: steps.scan-node-modules-cache.outputs.cache-hit != 'true'
       run: yarn
       working-directory: ${{env.working-directory}}
 
