@@ -1,0 +1,27 @@
+name: Bridges Workflow
+on:
+  push:
+    paths:
+    - 'bridges/evm**'
+
+jobs:
+  scan-build:
+    runs-on: ubuntu-latest
+    env:
+      working-directory: ./bridges/evm
+
+    steps:
+    - name: Code checkout
+      uses: actions/checkout@v2
+
+    - name: Check node_modules cache
+      id: bridges-node-modules-cache
+      uses: actions/cache@v1
+      with:
+        path: bridges/evm/node_modules
+        key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+
+    - name: Run yarn
+      if: steps.bridges-node-modules-cache.outputs.cache-hit != 'true'
+      run: yarn
+      working-directory: ${{env.working-directory}}
