@@ -484,7 +484,7 @@ func TestEndBlock(t *testing.T) {
 	keeper.SetPendingResolveList(ctx, []types.RequestID{1})
 
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589999), 0))
-	_ = handleEndBlock(ctx, keeper)
+	handleEndBlock(ctx, keeper)
 
 	require.Equal(t, []types.RequestID{}, keeper.GetPendingResolveList(ctx))
 
@@ -539,7 +539,7 @@ func TestEndBlockExecuteFailedIfExecuteGasLessThanGasUsed(t *testing.T) {
 
 	keeper.SetPendingResolveList(ctx, []types.RequestID{1})
 
-	_ = handleEndBlock(ctx, keeper)
+	handleEndBlock(ctx, keeper)
 
 	require.Equal(t, []types.RequestID{}, keeper.GetPendingResolveList(ctx))
 
@@ -587,7 +587,7 @@ func TestSkipInvalidExecuteGas(t *testing.T) {
 	keeper.SetParam(ctx, KeyEndBlockExecuteGasLimit, 75000)
 
 	keeper.SetPendingResolveList(ctx, []types.RequestID{1, 2})
-	_ = handleEndBlock(ctx, keeper)
+	handleEndBlock(ctx, keeper)
 	require.Equal(t, []types.RequestID{}, keeper.GetPendingResolveList(ctx))
 
 	_, err := keeper.GetResult(ctx, 1, 1, calldata)
@@ -690,7 +690,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 		types.NewMsgRequestData(scriptID, calldata, 2, 2, 100, 2000, 2500, sender),
 	)
 
-	_ = handleEndBlock(ctx, keeper)
+	handleEndBlock(ctx, keeper)
 	require.Equal(t, []types.RequestID{10}, keeper.GetPendingResolveList(ctx))
 
 	for i := types.RequestID(1); i <= types.RequestID(9); i++ {
@@ -715,7 +715,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 	keeper.SetRawDataReport(ctx, 11, 1, validatorAddress2, types.NewRawDataReport(0, []byte("answer2")))
 	keeper.SetPendingResolveList(ctx, []types.RequestID{10, 11})
 
-	_ = handleEndBlock(ctx, keeper)
+	handleEndBlock(ctx, keeper)
 	require.Equal(t, []types.RequestID{}, keeper.GetPendingResolveList(ctx))
 
 	for i := types.RequestID(1); i <= types.RequestID(11); i++ {
@@ -766,7 +766,7 @@ func TestEndBlockInsufficientExecutionConsumeEndBlockGas(t *testing.T) {
 	keeper.SetParam(ctx, KeyEndBlockExecuteGasLimit, 2600)
 	keeper.SetPendingResolveList(ctx, pendingList)
 
-	_ = handleEndBlock(ctx, keeper)
+	handleEndBlock(ctx, keeper)
 	require.Equal(t, []types.RequestID{4}, keeper.GetPendingResolveList(ctx))
 
 	_, err := keeper.GetResult(ctx, 1, scriptID, calldata)
