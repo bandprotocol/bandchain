@@ -52,7 +52,7 @@ func handleMsgCreateDataSource(
 			sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", dataSourceID)),
 		),
 	})
-	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
+	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
 
 func handleMsgEditDataSource(
@@ -81,7 +81,7 @@ func handleMsgEditDataSource(
 		),
 	})
 
-	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
+	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
 
 func handleMsgCreateOracleScript(
@@ -99,7 +99,7 @@ func handleMsgCreateOracleScript(
 			sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", oracleScriptID)),
 		),
 	})
-	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
+	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
 
 func handleMsgEditOracleScript(
@@ -128,7 +128,7 @@ func handleMsgEditOracleScript(
 			sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", msg.OracleScriptID)),
 		),
 	})
-	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
+	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
 
 func handleMsgRequestData(
@@ -179,7 +179,7 @@ func handleMsgRequestData(
 			sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
 		),
 	})
-	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
+	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
 
 func handleMsgReportData(
@@ -196,7 +196,7 @@ func handleMsgReportData(
 			sdk.NewAttribute(types.AttributeKeyValidator, msg.Validator.String()),
 		),
 	})
-	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
+	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
 
 func handleMsgAddOracleAddress(
@@ -213,7 +213,7 @@ func handleMsgAddOracleAddress(
 			sdk.NewAttribute(types.AttributeKeyReporter, msg.Reporter.String()),
 		),
 	})
-	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
+	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
 
 func handleMsgRemoveOracleAddress(
@@ -230,5 +230,5 @@ func handleMsgRemoveOracleAddress(
 			sdk.NewAttribute(types.AttributeKeyReporter, msg.Reporter.String()),
 		),
 	})
-	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
+	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }

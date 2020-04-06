@@ -71,7 +71,7 @@ func completeAndBroadcastTxCLI(
 		return sdk.TxResponse{}, err
 	}
 	sig := authtypes.StdSignature{
-		PubKey:    privKey.PubKey(),
+		PubKey:    privKey.PubKey().Bytes(),
 		Signature: sigBytes,
 	}
 
