@@ -22,7 +22,8 @@ import (
 
 type dbBandApp struct {
 	*bandApp
-	dbBand *db.BandDB
+	dbBand           *db.BandDB
+	transactionCount int64
 }
 
 func NewDBBandApp(
@@ -33,7 +34,7 @@ func NewDBBandApp(
 
 	dbBand.StakingKeeper = app.StakingKeeper
 	dbBand.ZoracleKeeper = app.ZoracleKeeper
-	return &dbBandApp{bandApp: app, dbBand: dbBand}
+	return &dbBandApp{bandApp: app, dbBand: dbBand, transactionCount: 0}
 }
 
 func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
@@ -140,6 +141,7 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 }
 
 func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliverTx) {
+	app.transactionCount++
 	res = app.bandApp.DeliverTx(req)
 	lastProcessHeight, err := app.dbBand.GetLastProcessedHeight()
 	if err != nil {
@@ -158,6 +160,7 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 		involvedAccounts := stdTx.GetSigners()
 		txHash := tmhash.Sum(req.Tx)
 		app.dbBand.AddTransaction(
+			app.transactionCount,
 			txHash,
 			app.DeliverContext.BlockTime(),
 			res.GasUsed,
@@ -202,7 +205,9 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 }
 
 func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseBeginBlock) {
+
 	res = app.bandApp.BeginBlock(req)
+	app.transactionCount = 0
 	// Begin transaction
 	app.dbBand.BeginTransaction()
 	app.dbBand.SetContext(app.DeliverContext)

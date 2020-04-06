@@ -18,7 +18,7 @@ type Block struct {
 }
 
 type Transaction struct {
-	ID          int64           `gorm:"not null;auto_increment:true"`
+	ID          int64           `gorm:"not null"`
 	TxHash      []byte          `gorm:"primary_key"`
 	Timestamp   int64           `gorm:"not null"`
 	GasUsed     int64           `gorm:"not null"`
