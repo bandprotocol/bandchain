@@ -7,6 +7,7 @@ type data_source_tab_t =
 type oracle_script_tab_t =
   | OracleScriptExecute
   | OracleScriptCode
+  | OracleScriptBridgeCode
   | OracleScriptRequests
   | OracleScriptRevisions;
 
@@ -54,6 +55,8 @@ let fromUrl = (url: ReasonReactRouter.url) =>
   | (["oracle-scripts"], _) => OracleScriptHomePage
   | (["oracle-script", oracleScriptID], "code") =>
     OracleScriptIndexPage(oracleScriptID |> int_of_string, OracleScriptCode)
+  | (["oracle-script", oracleScriptID], "bridgecode") =>
+    OracleScriptIndexPage(oracleScriptID |> int_of_string, OracleScriptBridgeCode)
   | (["oracle-script", oracleScriptID], "requests") =>
     OracleScriptIndexPage(oracleScriptID |> int_of_string, OracleScriptRequests)
   | (["oracle-script", oracleScriptID], "revisions") =>
@@ -93,6 +96,7 @@ let toString =
   | OracleScriptHomePage => "/oracle-scripts"
   | OracleScriptIndexPage(oracleScriptID, OracleScriptExecute) => {j|/oracle-script/$oracleScriptID|j}
   | OracleScriptIndexPage(oracleScriptID, OracleScriptCode) => {j|/oracle-script/$oracleScriptID#code|j}
+  | OracleScriptIndexPage(oracleScriptID, OracleScriptBridgeCode) => {j|/oracle-script/$oracleScriptID#bridgecode|j}
   | OracleScriptIndexPage(oracleScriptID, OracleScriptRequests) => {j|/oracle-script/$oracleScriptID#requests|j}
   | OracleScriptIndexPage(oracleScriptID, OracleScriptRevisions) => {j|/oracle-script/$oracleScriptID#revisions|j}
   | TxHomePage => "/txs"
