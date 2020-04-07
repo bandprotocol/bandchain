@@ -34,7 +34,7 @@ func NewOracleRequestPacketData(
 func (p OracleRequestPacketData) String() string {
 	return fmt.Sprintf(`OracleRequestPacketData:
 	OracleScriptID:           %d
-	Calldata:                 %x
+	Calldata:                 %s
 	RequestedValidatorCount:  %d
 	SufficientValidatorCount: %d
 	Expiration:               %d
@@ -56,5 +56,31 @@ func (p OracleRequestPacketData) ValidateBasic() error {
 }
 
 func (p OracleRequestPacketData) GetBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(p))
+}
+
+type OracleResponsePacketData struct {
+	Result string `json:"result"`
+}
+
+func NewOracleResponsePacketData(result string) OracleResponsePacketData {
+	return OracleResponsePacketData{
+		Result: result,
+	}
+}
+
+func (p OracleResponsePacketData) String() string {
+	return fmt.Sprintf(`OracleResponsePacketData:
+	Result: %s`,
+		p.Result,
+	)
+}
+
+func (p OracleResponsePacketData) ValidateBasic() error {
+	// TODO: Validate oracle request packet
+	return nil
+}
+
+func (p OracleResponsePacketData) GetBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(p))
 }
