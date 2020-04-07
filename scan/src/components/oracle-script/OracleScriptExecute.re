@@ -146,8 +146,10 @@ let make = (~id: ID.OracleScript.t, ~schema: string, ~paramsInput: array(Borsh.f
              }
            )
         |> Js.Promise.catch(err => {
-             let errorValue = Js.Json.stringifyAny(err)->Belt_Option.getWithDefault("Unknown");
-             setResult(_ => Error(errorValue));
+             switch (Js.Json.stringifyAny(err)) {
+             | Some(errorValue) => setResult(_ => Error(errorValue))
+             | None => setResult(_ => Error("Can not stringify error"))
+             };
              Js.Promise.resolve();
            }),
       );
