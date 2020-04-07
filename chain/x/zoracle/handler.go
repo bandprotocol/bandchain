@@ -7,6 +7,8 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	channel "github.com/cosmos/cosmos-sdk/x/ibc/04-channel"
+	channeltypes "github.com/cosmos/cosmos-sdk/x/ibc/04-channel/types"
 )
 
 // NewHandler creates the msg handler of this module, as required by Cosmos-SDK standard.
@@ -23,13 +25,54 @@ func NewHandler(keeper Keeper) sdk.Handler {
 		case MsgEditOracleScript:
 			return handleMsgEditOracleScript(ctx, keeper, msg)
 		case MsgRequestData:
-			return handleMsgRequestData(ctx, keeper, msg)
+			// TODO: Remove this hack!!!
+			// Here we assume that call data contains "sourceChannel + data"
+			// sourceChannel is always 10 characters
+			sourceChannel := string(msg.Calldata[:10])
+			calldata := msg.Calldata[10:]
+			sourceChannelEnd, found := keeper.ChannelKeeper.GetChannel(ctx, "zoracle", sourceChannel)
+			if !found {
+				return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unknown channel %s port zoracle", sourceChannel)
+			}
+			destinationPort := sourceChannelEnd.Counterparty.PortID
+			destinationChannel := sourceChannelEnd.Counterparty.ChannelID
+			sequence, found := keeper.ChannelKeeper.GetNextSequenceSend(ctx, "zoracle", sourceChannel)
+			if !found {
+				return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unknown sequence number for channel %s port zoracle", sourceChannel)
+			}
+
+			err := keeper.ChannelKeeper.SendPacket(ctx, channel.NewPacket(
+				NewOracleRequestPacketData(
+					msg.OracleScriptID, calldata, msg.RequestedValidatorCount,
+					msg.SufficientValidatorCount, msg.Expiration, msg.PrepareGas,
+					msg.ExecuteGas,
+				).GetBytes(),
+				sequence, "zoracle", sourceChannel, destinationPort, destinationChannel,
+				1000000000, // Arbitrarily high timeout for now
+			))
+			if err != nil {
+				return nil, err
+			}
+
+			return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
+			// return handleMsgRequestData(ctx, keeper, msg)
 		case MsgReportData:
 			return handleMsgReportData(ctx, keeper, msg)
 		case MsgAddOracleAddress:
 			return handleMsgAddOracleAddress(ctx, keeper, msg)
 		case MsgRemoveOracleAddress:
 			return handleMsgRemoveOracleAddress(ctx, keeper, msg)
+		case channeltypes.MsgPacket:
+			var data OracleRequestPacketData
+			if err := types.ModuleCdc.UnmarshalBinaryBare(msg.GetData(), &data); err != nil {
+				msg := NewMsgRequestData(
+					data.OracleScriptID, data.Calldata, data.RequestedValidatorCount,
+					data.SufficientValidatorCount, data.Expiration, data.PrepareGas,
+					data.ExecuteGas, sdk.AccAddress([]byte("NOT_IMPORTANT")),
+				)
+				return handleMsgRequestData(ctx, keeper, msg)
+			}
+			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal oracle packet data")
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized %s message type: %T", ModuleName, msg)
 		}
