@@ -841,10 +841,10 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@cosmostation/cosmosjs@^0.5.4":
-  version "0.5.4"
-  resolved "https://registry.yarnpkg.com/@cosmostation/cosmosjs/-/cosmosjs-0.5.4.tgz#79d1e83196ff56dd36be3da298da44f54f8d0eda"
-  integrity sha512-WAgwp0XzUG9d7HNecCkKHNHao9yy41A4oZT0+02c/zRIWxt1zm4iCJlk3AtRcZ7WUlmNMsPHnK2PwBBpKmoq5g==
+"@cosmostation/cosmosjs@^0.5.5":
+  version "0.5.5"
+  resolved "https://registry.yarnpkg.com/@cosmostation/cosmosjs/-/cosmosjs-0.5.5.tgz#c0369c0755dc22735b731ddc9c39970eeb819332"
+  integrity sha512-OTomY9aabLiswYUwljR7RoLLZcbtSqL+MF46SaCBRe107Gzg870X62m1eGjOyQm42I4ZwOggFuN4D3WE7PIHqQ==
   dependencies:
     bech32 "^1.1.3"
     bip32 "^1.0.2"
