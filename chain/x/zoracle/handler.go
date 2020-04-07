@@ -65,7 +65,8 @@ func NewHandler(keeper Keeper) sdk.Handler {
 			return handleMsgRemoveOracleAddress(ctx, keeper, msg)
 		case channeltypes.MsgPacket:
 			var data OracleRequestPacketData
-			if err := types.ModuleCdc.UnmarshalBinaryBare(msg.GetData(), &data); err != nil {
+			if err := types.ModuleCdc.UnmarshalJSON(msg.GetData(), &data); err != nil {
+				fmt.Println(msg.GetData())
 				fmt.Println(data)
 				msg := NewMsgRequestData(
 					data.OracleScriptID, data.Calldata, data.RequestedValidatorCount,

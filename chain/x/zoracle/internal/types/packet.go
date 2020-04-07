@@ -2,8 +2,6 @@ package types
 
 import (
 	"fmt"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type OracleRequestPacketData struct {
@@ -56,5 +54,5 @@ func (p OracleRequestPacketData) ValidateBasic() error {
 }
 
 func (p OracleRequestPacketData) GetBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(p))
+	return ModuleCdc.MustMarshalBinaryBare(p)
 }
