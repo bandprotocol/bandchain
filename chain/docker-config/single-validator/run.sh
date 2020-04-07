@@ -13,4 +13,4 @@ mv config_tmp.toml config.toml
 cd /zoracle/
 
 mkdir ~/.banddb
-bandd start --rpc.laddr tcp://0.0.0.0:26657 --with-db sqlite3:/root/.banddb/main.db
+bandd start --rpc.laddr tcp://0.0.0.0:26657 --with-db "postgres: host=172.18.0.88 port=5432 user=postgres dbname=postgres password=postgrespassword sslmode=disable"

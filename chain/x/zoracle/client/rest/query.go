@@ -7,7 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
-	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
+	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
 	"github.com/gorilla/mux"
 
 	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
@@ -41,12 +41,13 @@ func buildRequestRESTInfo(
 
 	if withRequestTx {
 		// Get request detail
-		searchRequest, err := utils.QueryTxsByEvents(
+		searchRequest, err := authclient.QueryTxsByEvents(
 			ctx,
 			[]string{fmt.Sprintf("%s.%s='%d'",
 				types.EventTypeRequest, types.AttributeKeyID, queryRequest.ID)},
 			1,
 			1,
+			"",
 		)
 		if err != nil || len(searchRequest.Txs) != 1 {
 			return RequestRESTInfo{}, err
@@ -65,12 +66,13 @@ func buildRequestRESTInfo(
 
 	if withReportTx {
 		// Save report tx
-		searchReports, err := utils.QueryTxsByEvents(
+		searchReports, err := authclient.QueryTxsByEvents(
 			ctx,
 			[]string{fmt.Sprintf("%s.%s='%d'",
 				types.EventTypeReport, types.AttributeKeyRequestID, queryRequest.ID)},
 			1,
 			10000, // Estimated validator reports
+			"",
 		)
 		if err != nil {
 			return RequestRESTInfo{}, err

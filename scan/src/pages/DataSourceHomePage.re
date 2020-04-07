@@ -3,8 +3,6 @@ module Styles = {
 
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
-  let pageContainer = style([paddingTop(`px(50)), minHeight(`px(500))]);
-
   let seperatedLine =
     style([
       width(`px(13)),
@@ -49,7 +47,7 @@ let make = () =>
 
     let pageCount = Page.getPageCount(dataSourcesCount, pageSize);
 
-    <div className=Styles.pageContainer>
+    <>
       <Row>
         <Col>
           <div className=Styles.vFlex>
@@ -96,7 +94,7 @@ let make = () =>
             <Col size=0.5>
               <Text
                 block=true
-                value="AGE"
+                value="TIMESTAMP"
                 size=Text.Sm
                 weight=Text.Semibold
                 color=Colors.gray5
@@ -138,9 +136,7 @@ let make = () =>
                    <Col size=0.5> <TElement elementType={timestamp->TElement.Timestamp} /> </Col>
                    <Col size=1.> <TElement elementType={owner->TElement.Address} /> </Col>
                    <Col size=0.4>
-                     <TElement
-                       elementType={fee->TxHook.Coin.getBandAmountFromCoins->TElement.Fee}
-                     />
+                     <TElement elementType={fee->Coin.getBandAmountFromCoins->TElement.Fee} />
                    </Col>
                    <Col> <HSpacing size=Spacing.xl /> </Col>
                  </Row>
@@ -152,7 +148,7 @@ let make = () =>
       <VSpacing size=Spacing.lg />
       <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
       <VSpacing size=Spacing.lg />
-    </div>
+    </>
     |> Sub.resolve;
   }
   |> Sub.default(_, React.null);

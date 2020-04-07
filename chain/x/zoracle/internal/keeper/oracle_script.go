@@ -3,6 +3,7 @@ package keeper
 import (
 	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // SetOracleScript saves the given oracle script to the storage without performing validation.
@@ -16,21 +17,21 @@ func (k Keeper) SetOracleScript(
 // AddOracleScript adds the given oracle script to the storage.
 func (k Keeper) AddOracleScript(
 	ctx sdk.Context, owner sdk.AccAddress, name string, description string, code []byte,
-) (types.OracleScriptID, sdk.Error) {
+) (types.OracleScriptID, error) {
 	if uint64(len(code)) > k.GetParam(ctx, types.KeyMaxOracleScriptCodeSize) {
-		return 0, types.ErrBadDataValue(
+		return 0, sdkerrors.Wrapf(types.ErrBadDataValue,
 			"AddOracleScript: Code size (%d) exceeds the maximum size (%d).",
 			len(code), k.GetParam(ctx, types.KeyMaxOracleScriptCodeSize),
 		)
 	}
 	if uint64(len(name)) > k.GetParam(ctx, types.KeyMaxNameLength) {
-		return 0, types.ErrBadDataValue(
+		return 0, sdkerrors.Wrapf(types.ErrBadDataValue,
 			"AddOracleScript: Name length (%d) exceeds the maximum length (%d). 211",
 			len(name), k.GetParam(ctx, types.KeyMaxNameLength),
 		)
 	}
 	if uint64(len(description)) > k.GetParam(ctx, types.KeyMaxDescriptionLength) {
-		return 0, types.ErrBadDataValue(
+		return 0, sdkerrors.Wrapf(types.ErrBadDataValue,
 			"AddOracleScript: Name length (%d) exceeds the maximum length (%d).",
 			len(name), k.GetParam(ctx, types.KeyMaxNameLength),
 		)
@@ -46,26 +47,26 @@ func (k Keeper) AddOracleScript(
 func (k Keeper) EditOracleScript(
 	ctx sdk.Context, oracleScriptID types.OracleScriptID, owner sdk.AccAddress,
 	name string, description string, code []byte,
-) sdk.Error {
+) error {
 	if !k.CheckOracleScriptExists(ctx, oracleScriptID) {
-		return types.ErrItemNotFound(
+		return sdkerrors.Wrapf(types.ErrItemNotFound,
 			"EditOracleScript: Unknown oracle script ID %d.", oracleScriptID,
 		)
 	}
 	if uint64(len(code)) > k.GetParam(ctx, types.KeyMaxOracleScriptCodeSize) {
-		return types.ErrBadDataValue(
+		return sdkerrors.Wrapf(types.ErrBadDataValue,
 			"EditDataSource: Code size (%d) exceeds the maximum size (%d).",
 			len(code), k.GetParam(ctx, types.KeyMaxOracleScriptCodeSize),
 		)
 	}
 	if uint64(len(name)) > k.GetParam(ctx, types.KeyMaxNameLength) {
-		return types.ErrBadDataValue(
+		return sdkerrors.Wrapf(types.ErrBadDataValue,
 			"EditOracleScript: Name length (%d) exceeds the maximum length (%d).",
 			len(name), k.GetParam(ctx, types.KeyMaxNameLength),
 		)
 	}
 	if uint64(len(description)) > k.GetParam(ctx, types.KeyMaxDescriptionLength) {
-		return types.ErrBadDataValue(
+		return sdkerrors.Wrapf(types.ErrBadDataValue,
 			"EditDataSource: Description length (%d) exceeds the maximum length (%d).",
 			len(description), k.GetParam(ctx, types.KeyMaxDescriptionLength),
 		)
@@ -79,10 +80,10 @@ func (k Keeper) EditOracleScript(
 // GetOracleScript returns the entire OracleScript struct for the given ID.
 func (k Keeper) GetOracleScript(
 	ctx sdk.Context, id types.OracleScriptID,
-) (types.OracleScript, sdk.Error) {
+) (types.OracleScript, error) {
 	store := ctx.KVStore(k.storeKey)
 	if !k.CheckOracleScriptExists(ctx, id) {
-		return types.OracleScript{}, types.ErrItemNotFound(
+		return types.OracleScript{}, sdkerrors.Wrapf(types.ErrItemNotFound,
 			"GetOracleScript: Unknown oracle script ID %d.", id,
 		)
 	}

@@ -2,12 +2,13 @@ package app
 
 import (
 	"io"
+	"strconv"
 	"time"
 
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/cosmos/cosmos-sdk/x/genaccounts"
+	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -26,10 +27,13 @@ type dbBandApp struct {
 
 func NewDBBandApp(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool,
-	invCheckPeriod uint, dbBand *db.BandDB, baseAppOptions ...func(*bam.BaseApp),
+	invCheckPeriod uint, skipUpgradeHeights map[int64]bool, home string,
+	dbBand *db.BandDB, baseAppOptions ...func(*bam.BaseApp),
 ) *dbBandApp {
-	app := NewBandApp(logger, db, traceStore, loadLatest, invCheckPeriod, baseAppOptions...)
-
+	app := NewBandApp(
+		logger, db, traceStore, loadLatest, invCheckPeriod,
+		skipUpgradeHeights, home, baseAppOptions...,
+	)
 	dbBand.StakingKeeper = app.StakingKeeper
 	dbBand.ZoracleKeeper = app.ZoracleKeeper
 	return &dbBandApp{bandApp: app, dbBand: dbBand}
@@ -50,11 +54,11 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 	var genesisState GenesisState
 	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
 
-	// Genaccount genesis
-	var genaccountsState genaccounts.GenesisState
-	genaccounts.ModuleCdc.MustUnmarshalJSON(genesisState[genaccounts.ModuleName], &genaccountsState)
+	// Bank balance genesis
+	var bankState bank.GenesisState
+	app.cdc.MustUnmarshalJSON(genesisState[bank.ModuleName], &bankState)
 
-	for _, account := range genaccountsState {
+	for _, account := range bankState.Balances {
 		err := app.dbBand.SetAccountBalance(account.Address, account.Coins, 0)
 		if err != nil {
 			panic(err)
@@ -74,11 +78,11 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 
 	// Genutil genesis
 	var genutilState genutil.GenesisState
-	genutil.ModuleCdc.MustUnmarshalJSON(genesisState[genutil.ModuleName], &genutilState)
+	app.cdc.MustUnmarshalJSON(genesisState[genutil.ModuleName], &genutilState)
 
 	for _, genTx := range genutilState.GenTxs {
 		var tx auth.StdTx
-		genutil.ModuleCdc.MustUnmarshalJSON(genTx, &tx)
+		app.cdc.MustUnmarshalJSON(genTx, &tx)
 		for _, msg := range tx.Msgs {
 			if createMsg, ok := msg.(staking.MsgCreateValidator); ok {
 				app.dbBand.HandleMessage(nil, createMsg, nil)
@@ -96,7 +100,7 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 
 	// Zoracle genesis
 	var zoracleState zoracle.GenesisState
-	zoracle.ModuleCdc.MustUnmarshalJSON(genesisState[zoracle.ModuleName], &zoracleState)
+	app.cdc.MustUnmarshalJSON(genesisState[zoracle.ModuleName], &zoracleState)
 
 	// Save data source
 	for idx, dataSource := range zoracleState.DataSources {
@@ -155,25 +159,24 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 	if stdTx, ok := tx.(auth.StdTx); ok {
 		// Add involved accounts
 		involvedAccounts := stdTx.GetSigners()
+		txHash := tmhash.Sum(req.Tx)
+		app.dbBand.AddTransaction(
+			txHash,
+			app.DeliverContext.BlockTime(),
+			res.GasUsed,
+			stdTx.Fee.Gas,
+			stdTx.Fee.Amount,
+			stdTx.GetSigners()[0],
+			res.IsOK(),
+			app.DeliverContext.BlockHeight(),
+		)
 		if !res.IsOK() {
-			// TODO: We should not completely ignore failed transactions.
+			app.dbBand.HandleTransactionFail(stdTx, txHash)
 		} else {
 			logs, err := sdk.ParseABCILogs(res.Log)
 			if err != nil {
 				panic(err)
 			}
-			txHash := tmhash.Sum(req.Tx)
-
-			app.dbBand.AddTransaction(
-				txHash,
-				app.DeliverContext.BlockTime(),
-				res.GasUsed,
-				stdTx.Fee.Gas,
-				stdTx.Fee.Amount,
-				stdTx.GetSigners()[0],
-				true,
-				app.DeliverContext.BlockHeight(),
-			)
 
 			app.dbBand.HandleTransaction(stdTx, txHash, logs)
 			involvedAccounts = append(
@@ -189,7 +192,7 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 				updatedAccounts[account.String()] = true
 				err := app.dbBand.SetAccountBalance(
 					account,
-					app.BankKeeper.GetCoins(app.DeliverContext, account),
+					app.BankKeeper.GetAllBalances(app.DeliverContext, account),
 					app.DeliverContext.BlockHeight(),
 				)
 				if err != nil {
@@ -241,7 +244,48 @@ func (app *dbBandApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBl
 	if err != nil {
 		panic(err)
 	}
-	// Do other logic
+
+	events := res.GetEvents()
+	for _, event := range events {
+		if event.Type == zoracle.EventTypeRequestExecute {
+			var requestID int64
+			var resolveStatus zoracle.ResolveStatus
+			for _, kv := range event.Attributes {
+				if string(kv.Key) == zoracle.AttributeKeyRequestID {
+					requestID, err = strconv.ParseInt(string(kv.Value), 10, 64)
+					if err != nil {
+						panic(err)
+					}
+				} else if string(kv.Key) == zoracle.AttributeKeyResolveStatus {
+					numResolveStatus, err := strconv.ParseInt(string(kv.Value), 10, 8)
+					if err != nil {
+						panic(err)
+					}
+					resolveStatus = zoracle.ResolveStatus(numResolveStatus)
+				}
+			}
+			// Get result from keeper
+			var rawResult []byte
+			rawResult = nil
+			if resolveStatus == 1 {
+				id := zoracle.RequestID(requestID)
+				request, sdkErr := app.ZoracleKeeper.GetRequest(app.DeliverContext, id)
+				if sdkErr != nil {
+					panic(err)
+				}
+				result, sdkErr := app.ZoracleKeeper.GetResult(app.DeliverContext, id, request.OracleScriptID, request.Calldata)
+				if sdkErr != nil {
+					panic(err)
+				}
+				rawResult = result.Data
+			}
+			err := app.dbBand.ResolveRequest(requestID, resolveStatus, rawResult)
+			if err != nil {
+				panic(err)
+			}
+		}
+	}
+
 	app.dbBand.SetContext(sdk.Context{})
 	return res
 }

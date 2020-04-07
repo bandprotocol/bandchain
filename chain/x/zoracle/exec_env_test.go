@@ -184,6 +184,8 @@ func TestRequestExternalData(t *testing.T) {
 	require.Nil(t, err)
 	envErr := env.RequestExternalData(1, 42, []byte("prepare32"))
 	require.Nil(t, envErr)
+	err = env.SaveRawDataRequests(ctx, keeper)
+	require.Nil(t, err)
 
 	rawRequest, err := keeper.GetRawDataRequest(ctx, 1, 42)
 	require.Nil(t, err)
@@ -209,25 +211,26 @@ func TestRequestExternalDataExceedMaxDataSourceCountPerRequest(t *testing.T) {
 	)
 	keeper.SetDataSource(ctx, 1, dataSource)
 
+	// Set MaxDataSourceCountPerRequest to 5
+	keeper.SetParam(ctx, KeyMaxDataSourceCountPerRequest, 5)
 	env, err := NewExecutionEnvironment(ctx, keeper, 1)
 	require.Nil(t, err)
 
-	// Set MaxDataSourceCountPerRequest to 5
-	keeper.SetParam(ctx, KeyMaxDataSourceCountPerRequest, 5)
-	envErr := env.RequestExternalData(1, 41, []byte("prepare32"))
-	require.Nil(t, envErr)
-	envErr = env.RequestExternalData(1, 42, []byte("prepare32"))
-	require.Nil(t, envErr)
-	envErr = env.RequestExternalData(1, 43, []byte("prepare32"))
-	require.Nil(t, envErr)
-	envErr = env.RequestExternalData(1, 44, []byte("prepare32"))
-	require.Nil(t, envErr)
-	envErr = env.RequestExternalData(1, 45, []byte("prepare32"))
-	require.Nil(t, envErr)
+	reqErr := env.RequestExternalData(1, 41, []byte("prepare32"))
+	require.Nil(t, reqErr)
+	reqErr = env.RequestExternalData(1, 42, []byte("prepare32"))
+	require.Nil(t, reqErr)
+	reqErr = env.RequestExternalData(1, 43, []byte("prepare32"))
+	require.Nil(t, reqErr)
+	reqErr = env.RequestExternalData(1, 44, []byte("prepare32"))
+	require.Nil(t, reqErr)
+	reqErr = env.RequestExternalData(1, 45, []byte("prepare32"))
+	require.Nil(t, reqErr)
+	reqErr = env.RequestExternalData(1, 46, []byte("prepare32"))
+	require.NotNil(t, reqErr)
 
-	// Should get an error if trying to request more external data
-	envErr = env.RequestExternalData(1, 46, []byte("prepare32"))
-	require.NotNil(t, envErr)
+	envErr := env.SaveRawDataRequests(ctx, keeper)
+	require.Nil(t, envErr)
 }
 
 func TestGetExternalData(t *testing.T) {
@@ -249,6 +252,8 @@ func TestGetExternalData(t *testing.T) {
 	env, err := NewExecutionEnvironment(ctx, keeper, 1)
 	require.Nil(t, err)
 
+	err = env.LoadRawDataReports(ctx, keeper)
+	require.Nil(t, err)
 	// Get report from reported validator
 	report, statusCode, envErr := env.GetExternalData(42, 0)
 	require.Nil(t, envErr)
@@ -257,7 +262,8 @@ func TestGetExternalData(t *testing.T) {
 
 	// Get report from missing validator
 	_, _, envErr = env.GetExternalData(42, 1)
-	require.EqualError(t, envErr, "ERROR:\nCodespace: zoracle\nCode: 105\nMessage: \"GetRawDataReport: No raw data report with request ID 1 external ID 42 from bandvaloper1weskcvsfgndm9\"\n")
+	require.NotNil(t, envErr)
+	require.EqualError(t, envErr, "Unable to find raw data report with request ID (1) external ID (42) from (bandvaloper1weskcvsfgndm9): ItemNotFound")
 
 	// Get report from invalid validator index
 	_, _, envErr = env.GetExternalData(42, 2)

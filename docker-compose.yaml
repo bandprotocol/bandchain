@@ -21,10 +21,10 @@ services:
         ipv4_address: 172.18.0.15
     depends_on:
       - build-provider-image
-      - code-server
       - proxy-server
       - single-oracle
       - graphql-engine
+      - faucet
     ports:
       - 26657:26657
     command: sh -c "chmod +x ./docker-config/single-validator/run.sh && ./docker-config/single-validator/run.sh"
@@ -54,9 +54,9 @@ services:
       - oracle4
       - query-node
       - build-provider-image
-      - code-server
       - proxy-server
       - graphql-engine
+      - faucet
 
   multi-validator1-node:
     build:
@@ -158,25 +158,6 @@ services:
     ports:
       - 80:80
 
-  code-server:
-    image: band-validator:latest
-    environment:
-      - PORT=5000
-      - NODE_URI=tcp://172.18.0.15:26657
-      - QUERY_URI=http://172.18.0.20:1317
-      - PRIVATE_KEY=27313aa3fd8286b54d5dbe16a4fbbc55c7908e844e37a737997fc2ba74403812
-    networks:
-      bandchain:
-        ipv4_address: 172.18.0.16
-    ports:
-      - 5000:5000
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    restart: always
-    depends_on:
-      - build-provider-image
-    command: bandsv
-
   owasm-server:
     build: ./studio/server
     image: owasm-server:latest
@@ -219,6 +200,19 @@ services:
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
       HASURA_GRAPHQL_SERVER_HOST: 0.0.0.0
       HASURA_GRAPHQL_SERVER_PORT: 5433
+
+  faucet:
+    image: band-validator:latest
+    ports:
+      - 5005:5005
+    environment:
+      - PORT=5005
+      - NODE_URI=tcp://172.18.0.15:26657
+    restart: always
+    networks:
+      bandchain:
+        ipv4_address: 172.18.0.17
+    command: sh -c "go run ./cmd/requestband/main.go"
 
 networks:
   bandchain:

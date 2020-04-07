@@ -2,7 +2,7 @@ module Styles = {
   open Css;
 
   let highlightsContainer =
-    style([width(`percent(100.)), paddingTop(`px(40)), paddingBottom(Spacing.xl)]);
+    style([width(`percent(100.)), paddingBottom(Spacing.xl)]);
 
   let section = style([paddingTop(`px(45)), width(`percent(100.))]);
 

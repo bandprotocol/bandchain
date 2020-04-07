@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"bufio"
 	"fmt"
 	"io/ioutil"
 	"sort"
@@ -10,11 +11,12 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
+	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
 	"github.com/spf13/cobra"
 )
 
@@ -41,13 +43,15 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
 	}
-	zoracleCmd.AddCommand(client.PostCommands(
+	zoracleCmd.AddCommand(flags.PostCommands(
 		GetCmdCreateDataSource(cdc),
 		GetCmdEditDataSource(cdc),
 		GetCmdCreateOracleScript(cdc),
 		GetCmdEditOracleScript(cdc),
 		GetCmdRequest(cdc),
 		GetCmdReport(cdc),
+		GetCmdAddOracleAddress(cdc),
+		GetCmdRemoveOracleAddress(cdc),
 	)...)
 
 	return zoracleCmd
@@ -69,9 +73,9 @@ $ %s tx zoracle request 1 --calldata 1234abcdef --requested-validator-count 4 --
 			),
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			inBuf := bufio.NewReader(cmd.InOrStdin())
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
-
-			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(authclient.GetTxEncoder(cdc))
 
 			int64OracleScriptID, err := strconv.ParseInt(args[0], 10, 64)
 			if err != nil {
@@ -125,7 +129,7 @@ $ %s tx zoracle request 1 --calldata 1234abcdef --requested-validator-count 4 --
 				return err
 			}
 
-			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
+			return authclient.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
 		},
 	}
 
@@ -159,9 +163,9 @@ $ %s tx zoracle report 1 1:172.5 2:HELLOWORLD --from mykey
 			),
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			inBuf := bufio.NewReader(cmd.InOrStdin())
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
-
-			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(authclient.GetTxEncoder(cdc))
 
 			int64RequestID, err := strconv.ParseInt(args[0], 10, 64)
 			if err != nil {
@@ -200,7 +204,7 @@ $ %s tx zoracle report 1 1:172.5 2:HELLOWORLD --from mykey
 				return err
 			}
 
-			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
+			return authclient.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
 		},
 	}
 }
@@ -220,8 +224,9 @@ $ %s tx zoracle create-data-source --name coingecko-price --description "The scr
 			),
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			inBuf := bufio.NewReader(cmd.InOrStdin())
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
-			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(authclient.GetTxEncoder(cdc))
 
 			name, err := cmd.Flags().GetString(flagName)
 			if err != nil {
@@ -275,7 +280,7 @@ $ %s tx zoracle create-data-source --name coingecko-price --description "The scr
 				return err
 			}
 
-			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
+			return authclient.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
 		},
 	}
 	cmd.Flags().String(flagName, "", "Name of this data source")
@@ -302,8 +307,9 @@ $ %s tx zoracle edit-data-source 1 --name coingecko-price --description The scri
 			),
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			inBuf := bufio.NewReader(cmd.InOrStdin())
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
-			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(authclient.GetTxEncoder(cdc))
 
 			int64ID, err := strconv.ParseInt(args[0], 10, 64)
 			if err != nil {
@@ -363,7 +369,7 @@ $ %s tx zoracle edit-data-source 1 --name coingecko-price --description The scri
 				return err
 			}
 
-			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
+			return authclient.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
 		},
 	}
 	cmd.Flags().String(flagName, "", "Name of this data source")
@@ -390,8 +396,9 @@ $ %s tx zoracle create-oracle-script --name eth-price --description "Oracle scri
 			),
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			inBuf := bufio.NewReader(cmd.InOrStdin())
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
-			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(authclient.GetTxEncoder(cdc))
 
 			name, err := cmd.Flags().GetString(flagName)
 			if err != nil {
@@ -433,7 +440,7 @@ $ %s tx zoracle create-oracle-script --name eth-price --description "Oracle scri
 				return err
 			}
 
-			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
+			return authclient.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
 		},
 	}
 	cmd.Flags().String(flagName, "", "Name of this oracle script")
@@ -459,8 +466,9 @@ $ %s tx zoracle edit-oracle-script 1 --name eth-price --description "Oracle scri
 			),
 		),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			inBuf := bufio.NewReader(cmd.InOrStdin())
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
-			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(authclient.GetTxEncoder(cdc))
 
 			id, err := strconv.ParseInt(args[0], 10, 64)
 			if err != nil {
@@ -509,13 +517,90 @@ $ %s tx zoracle edit-oracle-script 1 --name eth-price --description "Oracle scri
 				return err
 			}
 
-			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
+			return authclient.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
 		},
 	}
 	cmd.Flags().String(flagName, "", "Name of this oracle script")
 	cmd.Flags().String(flagDescription, "", "Description of this oracle script")
 	cmd.Flags().String(flagScript, "", "Path to this oracle script")
 	cmd.Flags().String(flagOwner, "", "Owner of this oracle script")
+
+	return cmd
+}
+
+// GetCmdAddOracleAddress implements the adding of oracle address command handler.
+func GetCmdAddOracleAddress(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "add-oracle-address [reporter]",
+		Short: "Add an agent authorized to submit report transactions.",
+		Args:  cobra.ExactArgs(1),
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Add an agent authorized to submit report transactions.
+Example:
+$ %s tx zoracle add-oracle-address band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun --from mykey
+`,
+				version.ClientName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			inBuf := bufio.NewReader(cmd.InOrStdin())
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(authclient.GetTxEncoder(cdc))
+
+			validator := sdk.ValAddress(cliCtx.GetFromAddress())
+			reporter, err := sdk.AccAddressFromBech32(args[0])
+			if err != nil {
+				return err
+			}
+			msg := types.NewMsgAddOracleAddress(
+				validator,
+				reporter,
+			)
+			err = msg.ValidateBasic()
+			if err != nil {
+				return err
+			}
+			return authclient.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
+		},
+	}
+
+	return cmd
+}
+
+// GetCmdRemoveOracleAddress implements the Removing of oracle address command handler.
+func GetCmdRemoveOracleAddress(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "remove-oracle-address [reporter]",
+		Short: "Remove an agent from the list of authorized reporters.",
+		Args:  cobra.ExactArgs(1),
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Remove an agent from the list of authorized reporters.
+Example:
+$ %s tx zoracle remove-oracle-address band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun --from mykey
+`,
+				version.ClientName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			inBuf := bufio.NewReader(cmd.InOrStdin())
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(authclient.GetTxEncoder(cdc))
+			validator := sdk.ValAddress(cliCtx.GetFromAddress())
+			reporter, err := sdk.AccAddressFromBech32(args[0])
+			if err != nil {
+				return err
+			}
+			msg := types.NewMsgRemoveOracleAddress(
+				validator,
+				reporter,
+			)
+			err = msg.ValidateBasic()
+			if err != nil {
+				return err
+			}
+			return authclient.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
+		},
+	}
 
 	return cmd
 }
