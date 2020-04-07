@@ -1,6 +1,7 @@
 package zoracle
 
 import (
+	"encoding/hex"
 	"fmt"
 
 	"github.com/bandprotocol/bandchain/chain/owasm"
@@ -29,7 +30,7 @@ func NewHandler(keeper Keeper) sdk.Handler {
 			// Here we assume that call data contains "sourceChannel + data"
 			// sourceChannel is always 10 characters
 			sourceChannel := string(msg.Calldata[:10])
-			calldata := msg.Calldata[10:]
+			calldata := hex.Dump(msg.Calldata[10:])
 			sourceChannelEnd, found := keeper.ChannelKeeper.GetChannel(ctx, "zoracle", sourceChannel)
 			if !found {
 				return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unknown channel %s port zoracle", sourceChannel)
@@ -69,8 +70,12 @@ func NewHandler(keeper Keeper) sdk.Handler {
 			fmt.Println(msg.GetData())
 			if err := types.ModuleCdc.UnmarshalJSON(msg.GetData(), &data); err != nil {
 				fmt.Println(data)
+				calldata, err := hex.DecodeString(data.Calldata)
+				if err != nil {
+					return nil, err
+				}
 				msg := NewMsgRequestData(
-					data.OracleScriptID, data.Calldata, data.RequestedValidatorCount,
+					data.OracleScriptID, calldata, data.RequestedValidatorCount,
 					data.SufficientValidatorCount, data.Expiration, data.PrepareGas,
 					data.ExecuteGas, sdk.AccAddress([]byte("NOT_IMPORTANT")),
 				)

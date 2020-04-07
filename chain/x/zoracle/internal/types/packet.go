@@ -8,7 +8,7 @@ import (
 
 type OracleRequestPacketData struct {
 	OracleScriptID           OracleScriptID `json:"oracleScriptID"`
-	Calldata                 []byte         `json:"calldata"`
+	Calldata                 string         `json:"calldata"`
 	RequestedValidatorCount  int64          `json:"requestedValidatorCount"`
 	SufficientValidatorCount int64          `json:"sufficientValidatorCount"`
 	Expiration               int64          `json:"expiration"`
@@ -17,7 +17,7 @@ type OracleRequestPacketData struct {
 }
 
 func NewOracleRequestPacketData(
-	oracleScriptID OracleScriptID, calldata []byte, requestedValidatorCount int64,
+	oracleScriptID OracleScriptID, calldata string, requestedValidatorCount int64,
 	sufficientValidatorCount int64, expiration int64, prepareGas uint64, executeGas uint64,
 ) OracleRequestPacketData {
 	return OracleRequestPacketData{
