@@ -168,10 +168,13 @@ module Mini = {
     txHash,
     blockHeight,
     timestamp,
-    reportsCount: reportsAggregate.aggregate->Belt_Option.mapWithDefault(0, ({count}) => count),
+    reportsCount:
+      reportsAggregate.aggregate->Belt_Option.map(({count}) => count)->Belt_Option.getExn,
     sufficientValidatorCount,
     requestedValidatorsCount:
-      requestedValidatorsAgregate.aggregate->Belt_Option.mapWithDefault(0, ({count}) => count),
+      requestedValidatorsAgregate.aggregate
+      ->Belt_Option.map(({count}) => count)
+      ->Belt_Option.getExn,
     result,
   };
 
