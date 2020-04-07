@@ -5,6 +5,7 @@ import (
 
 	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 type ExecutionEnvironment struct {
@@ -20,7 +21,7 @@ type ExecutionEnvironment struct {
 
 func NewExecutionEnvironment(
 	ctx sdk.Context, keeper Keeper, requestID types.RequestID,
-) (ExecutionEnvironment, sdk.Error) {
+) (ExecutionEnvironment, error) {
 	request, err := keeper.GetRequest(ctx, requestID)
 	if err != nil {
 		return ExecutionEnvironment{}, err
@@ -37,7 +38,7 @@ func NewExecutionEnvironment(
 	}, nil
 }
 
-func (env *ExecutionEnvironment) SaveRawDataRequests(ctx sdk.Context, keeper Keeper) sdk.Error {
+func (env *ExecutionEnvironment) SaveRawDataRequests(ctx sdk.Context, keeper Keeper) error {
 	for _, r := range env.rawDataRequests {
 		err := keeper.AddNewRawDataRequest(
 			ctx, env.requestID, r.ExternalID,
@@ -53,7 +54,7 @@ func (env *ExecutionEnvironment) SaveRawDataRequests(ctx sdk.Context, keeper Kee
 func (env *ExecutionEnvironment) LoadRawDataReports(
 	ctx sdk.Context,
 	keeper Keeper,
-) sdk.Error {
+) error {
 
 	for iterator := keeper.GetRawDataReportsIterator(ctx, env.requestID); iterator.Valid(); iterator.Next() {
 		validatorAddress, externalID := types.GetValidatorAddressAndExternalID(iterator.Key(), env.requestID)
@@ -148,7 +149,7 @@ func (env *ExecutionEnvironment) GetExternalData(
 	rawDataReport, ok := env.rawDataReports[key]
 
 	if !ok {
-		return nil, 0, types.ErrItemNotFound("Unable to find raw data report with request ID (%d) external ID (%d) from (%s)", env.requestID, externalDataID, validatorAddress.String())
+		return nil, 0, sdkerrors.Wrapf(types.ErrItemNotFound, "Unable to find raw data report with request ID (%d) external ID (%d) from (%s)", env.requestID, externalDataID, validatorAddress.String())
 	}
 
 	return rawDataReport.Data, rawDataReport.ExitCode, nil

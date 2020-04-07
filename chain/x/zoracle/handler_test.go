@@ -8,10 +8,10 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	cmn "github.com/tendermint/tendermint/libs/common"
+	tmkv "github.com/tendermint/tendermint/libs/kv"
 )
 
-func mockDataSource(ctx sdk.Context, keeper Keeper) sdk.Result {
+func mockDataSource(ctx sdk.Context, keeper Keeper) (*sdk.Result, error) {
 	owner := sdk.AccAddress([]byte("owner"))
 	name := "data_source_1"
 	description := "description"
@@ -22,7 +22,7 @@ func mockDataSource(ctx sdk.Context, keeper Keeper) sdk.Result {
 	return handleMsgCreateDataSource(ctx, keeper, msg)
 }
 
-func mockOracleScript(ctx sdk.Context, keeper Keeper) sdk.Result {
+func mockOracleScript(ctx sdk.Context, keeper Keeper) (*sdk.Result, error) {
 	owner := sdk.AccAddress([]byte("owner"))
 	name := "oracle_script_1"
 	description := "description"
@@ -35,8 +35,8 @@ func mockOracleScript(ctx sdk.Context, keeper Keeper) sdk.Result {
 func TestCreateDataSourceSuccess(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
 
-	got := mockDataSource(ctx, keeper)
-	require.True(t, got.IsOK(), "expected set data source to be ok, got %v", got)
+	_, err := mockDataSource(ctx, keeper)
+	require.Nil(t, err)
 
 	dataSource, err := keeper.GetDataSource(ctx, 1)
 	require.Nil(t, err)
@@ -49,15 +49,16 @@ func TestCreateDataSourceSuccess(t *testing.T) {
 	require.Equal(t, 1, len(events))
 	require.Equal(t, sdk.Event{
 		Type:       EventTypeCreateDataSource,
-		Attributes: []cmn.KVPair{cmn.KVPair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
+		Attributes: []tmkv.Pair{tmkv.Pair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
 	}, events[0])
 }
 
 func TestEditDataSourceSuccess(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
-	mockDataSource(ctx, keeper)
+	_, err := mockDataSource(ctx, keeper)
+	require.Nil(t, err)
 
-	newOwner := sdk.AccAddress([]byte("owner2"))
+	newOwner := sdk.AccAddress([]byte("anotherowner"))
 	newName := "data_source_2"
 	newDescription := "new_description"
 	newFee := sdk.NewCoins(sdk.NewInt64Coin("uband", 99))
@@ -65,8 +66,8 @@ func TestEditDataSourceSuccess(t *testing.T) {
 	sender := sdk.AccAddress([]byte("owner"))
 
 	msg := types.NewMsgEditDataSource(1, newOwner, newName, newDescription, newFee, newExecutable, sender)
-	got := handleMsgEditDataSource(ctx, keeper, msg)
-	require.True(t, got.IsOK(), "expected edit data source to be ok, got %v", got)
+	_, err = handleMsgEditDataSource(ctx, keeper, msg)
+	require.Nil(t, err)
 
 	dataSource, err := keeper.GetDataSource(ctx, 1)
 	require.Nil(t, err)
@@ -80,11 +81,11 @@ func TestEditDataSourceSuccess(t *testing.T) {
 	require.Equal(t, 2, len(events))
 	require.Equal(t, sdk.Event{
 		Type:       EventTypeCreateDataSource,
-		Attributes: []cmn.KVPair{cmn.KVPair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
+		Attributes: []tmkv.Pair{tmkv.Pair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
 	}, events[0])
 	require.Equal(t, sdk.Event{
 		Type:       EventTypeEditDataSource,
-		Attributes: []cmn.KVPair{cmn.KVPair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
+		Attributes: []tmkv.Pair{tmkv.Pair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
 	}, events[1])
 }
 
@@ -92,7 +93,7 @@ func TestEditDataSourceByNotOwner(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
 	mockDataSource(ctx, keeper)
 
-	newOwner := sdk.AccAddress([]byte("owner2"))
+	newOwner := sdk.AccAddress([]byte("anotherowner"))
 	newName := "data_source_2"
 	newDescription := "new_description"
 	newFee := sdk.NewCoins(sdk.NewInt64Coin("uband", 99))
@@ -100,16 +101,15 @@ func TestEditDataSourceByNotOwner(t *testing.T) {
 	sender := sdk.AccAddress([]byte("sender"))
 
 	msg := types.NewMsgEditDataSource(1, newOwner, newName, newDescription, newFee, newExecutable, sender)
-	got := handleMsgEditDataSource(ctx, keeper, msg)
-	require.False(t, got.IsOK())
-	require.Equal(t, types.CodeUnauthorizedPermission, got.Code)
+	_, err := handleMsgEditDataSource(ctx, keeper, msg)
+	require.NotNil(t, err)
 }
 
 func TestCreateOracleScriptSuccess(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
 
-	got := mockOracleScript(ctx, keeper)
-	require.True(t, got.IsOK(), "expected set oracle script to be ok, got %v", got)
+	_, err := mockOracleScript(ctx, keeper)
+	require.Nil(t, err)
 
 	expect, err := keeper.GetOracleScript(ctx, 1)
 	require.Nil(t, err)
@@ -121,23 +121,24 @@ func TestCreateOracleScriptSuccess(t *testing.T) {
 	require.Equal(t, 1, len(events))
 	require.Equal(t, sdk.Event{
 		Type:       EventTypeCreateOracleScript,
-		Attributes: []cmn.KVPair{cmn.KVPair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
+		Attributes: []tmkv.Pair{tmkv.Pair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
 	}, events[0])
 }
 
 func TestEditOracleScriptSuccess(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
-	mockOracleScript(ctx, keeper)
+	_, err := mockOracleScript(ctx, keeper)
+	require.Nil(t, err)
 
-	newOwner := sdk.AccAddress([]byte("owner2"))
+	newOwner := sdk.AccAddress([]byte("anotherowner"))
 	newName := "oracle_script_2"
 	newDescription := "description_2"
 	newCode := []byte("code_2")
 	sender := sdk.AccAddress([]byte("owner"))
 
 	msg := types.NewMsgEditOracleScript(1, newOwner, newName, newDescription, newCode, sender)
-	got := handleMsgEditOracleScript(ctx, keeper, msg)
-	require.True(t, got.IsOK(), "expected edit oracle script to be ok, got %v", got)
+	_, err = handleMsgEditOracleScript(ctx, keeper, msg)
+	require.Nil(t, err)
 
 	oracleScript, err := keeper.GetOracleScript(ctx, 1)
 	require.Nil(t, err)
@@ -149,28 +150,28 @@ func TestEditOracleScriptSuccess(t *testing.T) {
 	require.Equal(t, 2, len(events))
 	require.Equal(t, sdk.Event{
 		Type:       EventTypeCreateOracleScript,
-		Attributes: []cmn.KVPair{cmn.KVPair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
+		Attributes: []tmkv.Pair{tmkv.Pair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
 	}, events[0])
 	require.Equal(t, sdk.Event{
 		Type:       EventTypeEditOracleScript,
-		Attributes: []cmn.KVPair{cmn.KVPair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
+		Attributes: []tmkv.Pair{tmkv.Pair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
 	}, events[1])
 }
 
 func TestEditOracleScriptByNotOwner(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
-	mockOracleScript(ctx, keeper)
+	_, err := mockOracleScript(ctx, keeper)
+	require.Nil(t, err)
 
-	newOwner := sdk.AccAddress([]byte("owner2"))
+	newOwner := sdk.AccAddress([]byte("anotherowner"))
 	newName := "data_source_2"
 	newDescription := "description_2"
 	newCode := []byte("code_2")
 	sender := sdk.AccAddress([]byte("not_owner"))
 
 	msg := types.NewMsgEditOracleScript(1, newOwner, newName, newDescription, newCode, sender)
-	got := handleMsgEditOracleScript(ctx, keeper, msg)
-	require.False(t, got.IsOK())
-	require.Equal(t, types.CodeUnauthorizedPermission, got.Code)
+	_, err = handleMsgEditOracleScript(ctx, keeper, msg)
+	require.NotNil(t, err)
 }
 
 func TestRequestSuccess(t *testing.T) {
@@ -185,7 +186,7 @@ func TestRequestSuccess(t *testing.T) {
 	require.Nil(t, err)
 
 	owner := sdk.AccAddress([]byte("owner"))
-	owner2 := sdk.AccAddress([]byte("owner2"))
+	owner2 := sdk.AccAddress([]byte("anotherowner"))
 
 	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
 	keeper.SetOracleScript(ctx, 1, script)
@@ -202,7 +203,7 @@ func TestRequestSuccess(t *testing.T) {
 	keeper.SetDataSource(ctx, 1, dataSource1)
 
 	dataSource2 := types.NewDataSource(
-		sdk.AccAddress([]byte("owner2")),
+		sdk.AccAddress([]byte("anotherowner")),
 		"data_source2",
 		"description2",
 		sdk.NewCoins(sdk.NewInt64Coin("uband", 400)),
@@ -214,9 +215,9 @@ func TestRequestSuccess(t *testing.T) {
 
 	// Test here
 	beforeGas := ctx.GasMeter().GasConsumed()
-	got := handleMsgRequestData(ctx, keeper, msg)
+	_, err = handleMsgRequestData(ctx, keeper, msg)
 	afterGas := ctx.GasMeter().GasConsumed()
-	require.True(t, got.IsOK(), "expected request to be ok, got %v", got)
+	require.Nil(t, err)
 
 	// Check global request count
 	require.Equal(t, int64(1), keeper.GetRequestCount(ctx))
@@ -238,13 +239,13 @@ func TestRequestSuccess(t *testing.T) {
 	// check consumed gas must more than 2000000 (prepareGas + executeGas)
 	require.True(t, afterGas-beforeGas > 2000000)
 
-	senderBalance := keeper.CoinKeeper.GetCoins(ctx, sender)
+	senderBalance := keeper.CoinKeeper.GetAllBalances(ctx, sender)
 	require.Equal(t, sdk.Coins(nil), senderBalance)
 
-	ownerBalance := keeper.CoinKeeper.GetCoins(ctx, owner)
+	ownerBalance := keeper.CoinKeeper.GetAllBalances(ctx, owner)
 	require.Equal(t, keep.NewUBandCoins(10), ownerBalance)
 
-	owner2Balance := keeper.CoinKeeper.GetCoins(ctx, owner2)
+	owner2Balance := keeper.CoinKeeper.GetAllBalances(ctx, owner2)
 	require.Equal(t, keep.NewUBandCoins(400), owner2Balance)
 }
 
@@ -258,8 +259,8 @@ func TestRequestInvalidDataSource(t *testing.T) {
 	sender := sdk.AccAddress([]byte("sender"))
 
 	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 30, 20000, sender)
-	got := handleMsgRequestData(ctx, keeper, msg)
-	require.False(t, got.IsOK())
+	_, err := handleMsgRequestData(ctx, keeper, msg)
+	require.NotNil(t, err)
 
 	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
 	keeper.SetOracleScript(ctx, 1, script)
@@ -272,8 +273,8 @@ func TestRequestInvalidDataSource(t *testing.T) {
 	keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
 	keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
 
-	got = handleMsgRequestData(ctx, keeper, msg)
-	require.False(t, got.IsOK())
+	_, err = handleMsgRequestData(ctx, keeper, msg)
+	require.NotNil(t, err)
 }
 
 func TestRequestWithPrepareGasExceed(t *testing.T) {
@@ -302,8 +303,8 @@ func TestRequestWithPrepareGasExceed(t *testing.T) {
 	// set prepare gas to 3 (not enough for using) then it occurs error.
 	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 3, 1000000, sender)
 
-	got := handleMsgRequestData(ctx, keeper, msg)
-	require.False(t, got.IsOK())
+	_, err := handleMsgRequestData(ctx, keeper, msg)
+	require.NotNil(t, err)
 }
 
 func TestRequestWithInsufficientFee(t *testing.T) {
@@ -331,7 +332,7 @@ func TestRequestWithInsufficientFee(t *testing.T) {
 	keeper.SetDataSource(ctx, 1, dataSource)
 
 	dataSource2 := types.NewDataSource(
-		sdk.AccAddress([]byte("owner2")),
+		sdk.AccAddress([]byte("anotherowner")),
 		"data_source2",
 		"description2",
 		sdk.NewCoins(sdk.NewInt64Coin("uband", 300)),
@@ -341,8 +342,8 @@ func TestRequestWithInsufficientFee(t *testing.T) {
 
 	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 1000000, 1000000, sender)
 
-	got := handleMsgRequestData(ctx, keeper, msg)
-	require.False(t, got.IsOK())
+	_, err = handleMsgRequestData(ctx, keeper, msg)
+	require.NotNil(t, err)
 }
 
 func TestReportSuccess(t *testing.T) {
@@ -389,8 +390,8 @@ func TestReportSuccess(t *testing.T) {
 		types.NewRawDataReportWithID(42, 0, []byte("data1")),
 	}, validatorAddress1, reporterAddress1)
 
-	got := handleMsgReportData(ctx, keeper, msg)
-	require.True(t, got.IsOK(), "expected report to be ok, got %v", got)
+	_, err = handleMsgReportData(ctx, keeper, msg)
+	require.Nil(t, err)
 	list := keeper.GetPendingResolveList(ctx)
 	require.Equal(t, []types.RequestID{}, list)
 
@@ -398,8 +399,8 @@ func TestReportSuccess(t *testing.T) {
 		types.NewRawDataReportWithID(42, 0, []byte("data2")),
 	}, validatorAddress2, reporterAddress2)
 
-	got = handleMsgReportData(ctx, keeper, msg)
-	require.True(t, got.IsOK(), "expected report to be ok, got %v", got)
+	_, err = handleMsgReportData(ctx, keeper, msg)
+	require.Nil(t, err)
 
 	list = keeper.GetPendingResolveList(ctx)
 	require.Equal(t, []types.RequestID{1}, list)
@@ -447,8 +448,8 @@ func TestReportFailed(t *testing.T) {
 	}, validatorAddress1, reporterAddress1)
 
 	// Test only 1 failed case, other case tested in keeper/report_test.go
-	got := handleMsgReportData(ctx, keeper, msg)
-	require.False(t, got.IsOK())
+	_, err = handleMsgReportData(ctx, keeper, msg)
+	require.NotNil(t, err)
 }
 
 func TestEndBlock(t *testing.T) {
@@ -483,8 +484,7 @@ func TestEndBlock(t *testing.T) {
 	keeper.SetPendingResolveList(ctx, []types.RequestID{1})
 
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589999), 0))
-	got := handleEndBlock(ctx, keeper)
-	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
+	handleEndBlock(ctx, keeper)
 
 	require.Equal(t, []types.RequestID{}, keeper.GetPendingResolveList(ctx))
 
@@ -539,8 +539,7 @@ func TestEndBlockExecuteFailedIfExecuteGasLessThanGasUsed(t *testing.T) {
 
 	keeper.SetPendingResolveList(ctx, []types.RequestID{1})
 
-	got := handleEndBlock(ctx, keeper)
-	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
+	handleEndBlock(ctx, keeper)
 
 	require.Equal(t, []types.RequestID{}, keeper.GetPendingResolveList(ctx))
 
@@ -588,8 +587,7 @@ func TestSkipInvalidExecuteGas(t *testing.T) {
 	keeper.SetParam(ctx, KeyEndBlockExecuteGasLimit, 75000)
 
 	keeper.SetPendingResolveList(ctx, []types.RequestID{1, 2})
-	got := handleEndBlock(ctx, keeper)
-	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
+	handleEndBlock(ctx, keeper)
 	require.Equal(t, []types.RequestID{}, keeper.GetPendingResolveList(ctx))
 
 	_, err := keeper.GetResult(ctx, 1, 1, calldata)
@@ -644,8 +642,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 	keeper.SetParam(ctx, KeyEndBlockExecuteGasLimit, 7500)
 	keeper.SetPendingResolveList(ctx, pendingList)
 
-	got := handleEndBlock(ctx, keeper)
-	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
+	handleEndBlock(ctx, keeper)
 	require.Equal(t, []types.RequestID{4, 5, 6, 7, 8, 9, 10}, keeper.GetPendingResolveList(ctx))
 
 	for i := types.RequestID(1); i <= types.RequestID(3); i++ {
@@ -666,8 +663,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 		require.Equal(t, types.Open, actualRequest.ResolveStatus)
 	}
 
-	got = handleEndBlock(ctx, keeper)
-	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
+	handleEndBlock(ctx, keeper)
 	require.Equal(t, []types.RequestID{7, 8, 9, 10}, keeper.GetPendingResolveList(ctx))
 
 	for i := types.RequestID(1); i <= types.RequestID(6); i++ {
@@ -694,8 +690,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 		types.NewMsgRequestData(scriptID, calldata, 2, 2, 100, 2000, 2500, sender),
 	)
 
-	got = handleEndBlock(ctx, keeper)
-	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
+	handleEndBlock(ctx, keeper)
 	require.Equal(t, []types.RequestID{10}, keeper.GetPendingResolveList(ctx))
 
 	for i := types.RequestID(1); i <= types.RequestID(9); i++ {
@@ -720,8 +715,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 	keeper.SetRawDataReport(ctx, 11, 1, validatorAddress2, types.NewRawDataReport(0, []byte("answer2")))
 	keeper.SetPendingResolveList(ctx, []types.RequestID{10, 11})
 
-	got = handleEndBlock(ctx, keeper)
-	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
+	handleEndBlock(ctx, keeper)
 	require.Equal(t, []types.RequestID{}, keeper.GetPendingResolveList(ctx))
 
 	for i := types.RequestID(1); i <= types.RequestID(11); i++ {
@@ -772,8 +766,7 @@ func TestEndBlockInsufficientExecutionConsumeEndBlockGas(t *testing.T) {
 	keeper.SetParam(ctx, KeyEndBlockExecuteGasLimit, 2600)
 	keeper.SetPendingResolveList(ctx, pendingList)
 
-	got := handleEndBlock(ctx, keeper)
-	require.True(t, got.IsOK(), "expected set request to be ok, got %v", got)
+	handleEndBlock(ctx, keeper)
 	require.Equal(t, []types.RequestID{4}, keeper.GetPendingResolveList(ctx))
 
 	_, err := keeper.GetResult(ctx, 1, scriptID, calldata)
@@ -854,8 +847,8 @@ func TestAddAndRemoveOracleAddress(t *testing.T) {
 		types.NewRawDataReportWithID(42, 0, []byte("data1")),
 	}, validatorAddress1, reporterAddress2)
 
-	got := handleMsgReportData(ctx, keeper, msg)
-	require.True(t, got.IsOK(), "expected report to be ok, got %v", got)
+	_, err = handleMsgReportData(ctx, keeper, msg)
+	require.Nil(t, err)
 	list := keeper.GetPendingResolveList(ctx)
 	require.Equal(t, []types.RequestID{}, list)
 
@@ -867,7 +860,6 @@ func TestAddAndRemoveOracleAddress(t *testing.T) {
 		types.NewRawDataReportWithID(42, 0, []byte("data2")),
 	}, validatorAddress1, reporterAddress2)
 
-	got = handleMsgReportData(ctx, keeper, msg)
-	require.False(t, got.IsOK(), "expected report to be ok, got %v", got)
-
+	_, err = handleMsgReportData(ctx, keeper, msg)
+	require.NotNil(t, err)
 }

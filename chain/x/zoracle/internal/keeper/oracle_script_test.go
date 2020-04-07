@@ -9,7 +9,7 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
 )
 
-func mockOracleScript(ctx sdk.Context, keeper Keeper) sdk.Error {
+func mockOracleScript(ctx sdk.Context, keeper Keeper) error {
 	owner := sdk.AccAddress([]byte("owner"))
 	name := "oracle_script"
 	description := "description"

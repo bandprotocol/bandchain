@@ -1,64 +1,67 @@
 package rpc
 
-import (
-	"net/http"
+// TODO: Revive this! It's commented because we upgrade to Cosmos 0.38.*.
+// Proof structure will need to change now that we have more modules + the header structure changes.
 
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/tendermint/tendermint/crypto/secp256k1"
+// import (
+// 	"net/http"
 
-	"github.com/cosmos/cosmos-sdk/client/context"
-	"github.com/cosmos/cosmos-sdk/types/rest"
-)
+// 	"github.com/ethereum/go-ethereum/crypto"
+// 	"github.com/tendermint/tendermint/crypto/secp256k1"
 
-type ValidatorMinimal struct {
-	Address     string `json:"address"`
-	VotingPower int64  `json:"voting_power"`
-}
+// 	"github.com/cosmos/cosmos-sdk/client/context"
+// 	"github.com/cosmos/cosmos-sdk/types/rest"
+// )
 
-type ValidatorsMinimal struct {
-	BlockHeight int64              `json:"block_height"`
-	Validators  []ValidatorMinimal `json:"validators"`
-}
+// type ValidatorMinimal struct {
+// 	Address     string `json:"address"`
+// 	VotingPower int64  `json:"voting_power"`
+// }
 
-func GetEVMValidators(cliCtx context.CLIContext) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		node, err := cliCtx.GetNode()
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+// type ValidatorsMinimal struct {
+// 	BlockHeight int64              `json:"block_height"`
+// 	Validators  []ValidatorMinimal `json:"validators"`
+// }
 
-		validators, err := node.Validators(nil)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+// func GetEVMValidators(cliCtx context.CLIContext) http.HandlerFunc {
+// 	return func(w http.ResponseWriter, r *http.Request) {
+// 		node, err := cliCtx.GetNode()
+// 		if err != nil {
+// 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+// 			return
+// 		}
 
-		validatorsMinimal := ValidatorsMinimal{}
-		validatorsMinimal.BlockHeight = validators.BlockHeight
-		validatorsMinimal.Validators = []ValidatorMinimal{}
+// 		validators, err := node.Validators(nil)
+// 		if err != nil {
+// 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+// 			return
+// 		}
 
-		for _, validator := range validators.Validators {
-			pubKeyBytes, ok := validator.PubKey.(secp256k1.PubKeySecp256k1)
-			if !ok {
-				rest.WriteErrorResponse(w, http.StatusInternalServerError, "fail to cast pubkey")
-				return
-			}
+// 		validatorsMinimal := ValidatorsMinimal{}
+// 		validatorsMinimal.BlockHeight = validators.BlockHeight
+// 		validatorsMinimal.Validators = []ValidatorMinimal{}
 
-			if pubkey, err := crypto.DecompressPubkey(pubKeyBytes[:]); err != nil {
-				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-				return
-			} else {
-				validatorsMinimal.Validators = append(
-					validatorsMinimal.Validators,
-					ValidatorMinimal{
-						Address:     crypto.PubkeyToAddress(*pubkey).String(),
-						VotingPower: validator.VotingPower,
-					},
-				)
-			}
-		}
+// 		for _, validator := range validators.Validators {
+// 			pubKeyBytes, ok := validator.PubKey.(secp256k1.PubKeySecp256k1)
+// 			if !ok {
+// 				rest.WriteErrorResponse(w, http.StatusInternalServerError, "fail to cast pubkey")
+// 				return
+// 			}
 
-		rest.PostProcessResponseBare(w, cliCtx, validatorsMinimal)
-	}
-}
+// 			if pubkey, err := crypto.DecompressPubkey(pubKeyBytes[:]); err != nil {
+// 				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+// 				return
+// 			} else {
+// 				validatorsMinimal.Validators = append(
+// 					validatorsMinimal.Validators,
+// 					ValidatorMinimal{
+// 						Address:     crypto.PubkeyToAddress(*pubkey).String(),
+// 						VotingPower: validator.VotingPower,
+// 					},
+// 				)
+// 			}
+// 		}
+
+// 		rest.PostProcessResponseBare(w, cliCtx, validatorsMinimal)
+// 	}
+// }
