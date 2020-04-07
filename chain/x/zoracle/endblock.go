@@ -25,7 +25,7 @@ func newRequestExecuteEvent(requestID RequestID, resolveStatus types.ResolveStat
 	)
 }
 
-func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
+func handleEndBlock(ctx sdk.Context, keeper Keeper) {
 	pendingList := keeper.GetPendingResolveList(ctx)
 	endBlockExecuteGasLimit := keeper.GetParam(ctx, types.KeyEndBlockExecuteGasLimit)
 	gasConsumed := uint64(0)
@@ -84,7 +84,7 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 		// Must never overflow because we already checked for overflow above with
 		// gasConsumed + request.ExecuteGas (which is >= gasUsed).
 		if overflow {
-			panic(sdk.ErrorGasOverflow{Descriptor: "ExecuteRequest"})
+			panic(sdk.ErrorGasOverflow{Descriptor: "zoracle::handleEndBlock: Gas overflow"})
 		}
 
 		if errOwasm != nil {
@@ -108,6 +108,4 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 
 	ctx.EventManager().EmitEvents(events)
 	keeper.SetPendingResolveList(ctx, pendingList[firstUnresolvedRequestIndex:])
-
-	return sdk.Result{Events: ctx.EventManager().Events()}
 }

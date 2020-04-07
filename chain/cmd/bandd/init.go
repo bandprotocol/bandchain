@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -17,7 +17,9 @@ import (
 	cfg "github.com/tendermint/tendermint/config"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 	"github.com/tendermint/tendermint/libs/cli"
-	"github.com/tendermint/tendermint/libs/common"
+	tmos "github.com/tendermint/tendermint/libs/os"
+	tmrand "github.com/tendermint/tendermint/libs/rand"
+	"github.com/tendermint/tendermint/libs/tempfile"
 	"github.com/tendermint/tendermint/privval"
 	"github.com/tendermint/tendermint/types"
 
@@ -25,9 +27,8 @@ import (
 )
 
 const (
-	flagOverwrite  = "overwrite"
-	flagClientHome = "home-client"
-	flagZoracle    = "zoracle"
+	flagOverwrite = "overwrite"
+	flagZoracle   = "zoracle"
 )
 
 type printInfo struct {
@@ -61,7 +62,7 @@ func displayInfo(cdc *codec.Codec, info printInfo) error {
 }
 
 func GenFilePVIfNotExists(cdc *codec.Codec, keyFilePath, stateFilePath string) {
-	if !common.FileExists(keyFilePath) {
+	if !tmos.FileExists(keyFilePath) {
 		privKey := secp256k1.GenPrivKey()
 		pv := &privval.FilePV{
 			Key: privval.FilePVKey{
@@ -78,7 +79,7 @@ func GenFilePVIfNotExists(cdc *codec.Codec, keyFilePath, stateFilePath string) {
 		if err != nil {
 			panic(err)
 		}
-		err = common.WriteFileAtomic(keyFilePath, jsonBytes, 0600)
+		err = tempfile.WriteFileAtomic(keyFilePath, jsonBytes, 0600)
 		if err != nil {
 			panic(err)
 		}
@@ -87,7 +88,7 @@ func GenFilePVIfNotExists(cdc *codec.Codec, keyFilePath, stateFilePath string) {
 		if err != nil {
 			panic(err)
 		}
-		err = common.WriteFileAtomic(stateFilePath, jsonBytes, 0600)
+		err = tempfile.WriteFileAtomic(stateFilePath, jsonBytes, 0600)
 		if err != nil {
 			panic(err)
 		}
@@ -119,9 +120,9 @@ func InitCmd(
 				config.PrivValidatorStateFile(),
 			)
 
-			chainID := viper.GetString(client.FlagChainID)
+			chainID := viper.GetString(flags.FlagChainID)
 			if chainID == "" {
-				chainID = fmt.Sprintf("test-chain-%v", common.RandStr(6))
+				chainID = fmt.Sprintf("test-chain-%v", tmrand.Str(6))
 			}
 
 			nodeID, _, err := genutil.InitializeNodeValidatorFiles(config)
@@ -132,7 +133,7 @@ func InitCmd(
 			config.Moniker = args[0]
 
 			genFile := config.GenesisFile()
-			if !viper.GetBool(flagOverwrite) && common.FileExists(genFile) {
+			if !viper.GetBool(flagOverwrite) && tmos.FileExists(genFile) {
 				return fmt.Errorf("genesis.json file already exists: %v", genFile)
 			}
 			if viper.IsSet(flagZoracle) {
@@ -162,17 +163,12 @@ func InitCmd(
 			genDoc.ChainID = chainID
 			genDoc.Validators = nil
 			genDoc.AppState = appState
-			genDoc.ConsensusParams = &types.ConsensusParams{
-				Block: types.BlockParams{
-					MaxBytes:   200000,   // 0.2MB
-					MaxGas:     20000000, // 20M gas (Maximum oracle script size uses 15M)
-					TimeIotaMs: 1000,     // 1s
-				},
-				Evidence: types.EvidenceParams{
-					MaxAge: 100000,
-				},
-				Validator: types.ValidatorParams{PubKeyTypes: []string{types.ABCIPubKeyTypeSecp256k1}},
-			}
+			genDoc.ConsensusParams = types.DefaultConsensusParams()
+			genDoc.ConsensusParams.Block.MaxBytes = 200000 // 0.2MB
+			genDoc.ConsensusParams.Block.MaxGas = 20000000 // 20M gas (Maximum oracle script size uses 15M)
+			genDoc.ConsensusParams.Block.TimeIotaMs = 1000 // 0.2MB
+			genDoc.ConsensusParams.Validator.PubKeyTypes = []string{types.ABCIPubKeyTypeSecp256k1}
+
 			if err = genutil.ExportGenesisFile(genDoc, genFile); err != nil {
 				return err
 			}
@@ -186,7 +182,7 @@ func InitCmd(
 
 	cmd.Flags().String(cli.HomeFlag, defaultNodeHome, "node's home directory")
 	cmd.Flags().BoolP(flagOverwrite, "o", false, "overwrite the genesis.json file")
-	cmd.Flags().String(client.FlagChainID, "", "genesis file chain-id, if left blank will be randomly created")
+	cmd.Flags().String(flags.FlagChainID, "", "genesis file chain-id, if left blank will be randomly created")
 	cmd.Flags().String(flagZoracle, "band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9", "owner of these data sources and oracle scripts")
 
 	return cmd

@@ -263,7 +263,7 @@ func TestGetExternalData(t *testing.T) {
 	// Get report from missing validator
 	_, _, envErr = env.GetExternalData(42, 1)
 	require.NotNil(t, envErr)
-	require.EqualError(t, envErr, "ERROR:\nCodespace: zoracle\nCode: 105\nMessage: \"Unable to find raw data report with request ID (1) external ID (42) from (bandvaloper1weskcvsfgndm9)\"\n")
+	require.EqualError(t, envErr, "Unable to find raw data report with request ID (1) external ID (42) from (bandvaloper1weskcvsfgndm9): ItemNotFound")
 
 	// Get report from invalid validator index
 	_, _, envErr = env.GetExternalData(42, 2)

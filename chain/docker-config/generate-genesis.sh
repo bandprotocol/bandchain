@@ -35,12 +35,11 @@ expect $DIR/add-account.exp \
     "smile stem oven genius cave resource better lunar nasty moon company ridge brass rather supply used horn three panic put venue analyst leader comic" \
 
 # add accounts to genesis
-bandd add-genesis-account $(bandcli keys show validator1 -a) 10000000000000uband
-bandd add-genesis-account $(bandcli keys show validator2 -a) 10000000000000uband
-bandd add-genesis-account $(bandcli keys show validator3 -a) 10000000000000uband
-bandd add-genesis-account $(bandcli keys show validator4 -a) 10000000000000uband
-
-bandd add-genesis-account $(bandcli keys show requester -a) 10000000000000uband
+bandd add-genesis-account validator1 10000000000000uband --keyring-backend test
+bandd add-genesis-account validator2 10000000000000uband --keyring-backend test
+bandd add-genesis-account validator3 10000000000000uband --keyring-backend test
+bandd add-genesis-account validator4 10000000000000uband --keyring-backend test
+bandd add-genesis-account requester 10000000000000uband --keyring-backend test
 
 # genesis configurations
 bandcli config chain-id bandchain
@@ -55,44 +54,48 @@ cp ~/.bandd/config/config.toml ~/.bandd/config/config.toml.temp
 sed 's/node-validator/node-validator-1/g' ~/.bandd/config/config.toml.temp > ~/.bandd/config/config.toml
 
 # register initial validators
-echo "12345678" | bandd gentx \
+bandd gentx \
     --amount 100000000uband \
     --node-id 11392b605378063b1c505c0ab123f04bd710d7d7 \
     --pubkey bandvalconspub1addwnpepq06h7wvh5n5pmrejr6t3pyn7ytpwd5c0kmv0wjdfujs847em8dusjl96sxg \
     --name validator1 \
-    --ip 172.18.0.11
+    --ip 172.18.0.11 \
+    --keyring-backend test
 
 # modify moniker
 sed 's/node-validator/node-validator-2/g' ~/.bandd/config/config.toml.temp > ~/.bandd/config/config.toml
 
-echo "12345678" | bandd gentx \
+bandd gentx \
     --amount 100000000uband \
     --node-id 0851086afcd835d5a6fb0ffbf96fcdf74fec742e \
     --pubkey bandvalconspub1addwnpepqfey4c5ul6m5juz36z0dlk8gyg6jcnyrvxm4werkgkmcerx8fn5g2gj9q6w \
     --name validator2 \
-    --ip 172.18.0.12
+    --ip 172.18.0.12 \
+    --keyring-backend test
 
 # modify moniker
 sed 's/node-validator/node-validator-3/g' ~/.bandd/config/config.toml.temp > ~/.bandd/config/config.toml
 
-echo "12345678" | bandd gentx \
+bandd gentx \
     --amount 100000000uband \
     --node-id 7b58b086dd915a79836eb8bfa956aeb9488d13b0 \
     --pubkey bandvalconspub1addwnpepqwj5l74gfj8j77v8st0gh932s3uyu2yys7n50qf6pptjgwnqu2arxkkn82m \
     --name validator3 \
-    --ip 172.18.0.13
+    --ip 172.18.0.13 \
+    --keyring-backend test
 
 # modify moniker
 sed 's/node-validator/node-validator-4/g' ~/.bandd/config/config.toml.temp > ~/.bandd/config/config.toml
 
-echo "12345678" | bandd gentx \
+bandd gentx \
     --amount 100000000uband \
     --node-id 63808bd64f2ec19acb2a494c8ce8467c595f6fba \
     --pubkey bandvalconspub1addwnpepq0grwz83v8g4s06fusnq5s4jkzxnhgvx67qr5g7v8tx39ur5m8tk7rg2nxj \
     --name validator4 \
-    --ip 172.18.0.14
+    --ip 172.18.0.14 \
+    --keyring-backend test
 
-# remove temp file
+# remove temp test
 rm -rf ~/.bandd/config/config.toml.temp
 
 # collect genesis transactions
