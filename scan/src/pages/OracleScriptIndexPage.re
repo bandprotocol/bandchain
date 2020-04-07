@@ -14,6 +14,8 @@ module Styles = {
       marginRight(`px(10)),
       backgroundColor(Colors.gray7),
     ]);
+
+  let withPadding = (h, v) => style([padding2(~h=`px(h), ~v=`px(v))]);
 };
 
 [@react.component]
@@ -110,7 +112,13 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) =>
         currentRoute={oracleScriptID |> ID.OracleScript.getRouteWithTab(_, hashtag)}>
         {switch (hashtag) {
          | OracleScriptExecute =>
-           <OracleScriptExecute id=oracleScriptID schemaOpt={oracleScript.schema} />
+           switch (oracleScript.schema) {
+           | Some(schema) => <OracleScriptExecute id=oracleScriptID schema />
+           | None =>
+             <div className={Styles.withPadding(20, 20)}>
+               <Text value="Schema not found" color=Colors.gray7 />
+             </div>
+           }
          | OracleScriptCode => <OracleScriptCode code={oracleScript.codeHash} />
          | OracleScriptBridgeCode => <OracleScriptBridgeCode />
          | OracleScriptRequests => <OracleScriptRequestTable oracleScriptID />
