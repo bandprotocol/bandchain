@@ -64,14 +64,33 @@ let renderBlock = (i: int, b: BlockSub.t) =>
     />
   </div>;
 
+let getDummyBlock = blocksCount =>
+  BlockSub.{
+    height: ID.Block.ID(blocksCount + 1),
+    hash: "00" |> Hash.fromHex,
+    validator:
+      ValidatorSub.Mini.{
+        consensusAddress: "",
+        operatorAddress: "00" |> Address.fromHex,
+        moniker: "",
+      },
+    timestamp: 0. |> MomentRe.momentWithTimestampMS,
+    txn: 0,
+  };
+
 [@react.component]
 let make = () =>
   {
-    let blocksSub = BlockSub.getList(~pageSize=12, ~page=1, ());
-    let blocksCountSub = BlockSub.count();
+    let blocksSub = BlockSub.getList(~pageSize=11, ~page=1, ());
 
-    let%Sub blocks = blocksSub;
-    let%Sub blocksCount = blocksCountSub;
+    let%Sub realBlocks = blocksSub;
+    let blocksCount =
+      realBlocks
+      ->Belt_Array.get(0)
+      ->Belt_Option.map(({height: ID.Block.ID(x)}) => x)
+      ->Belt_Option.getExn;
+
+    let blocksWithDummy = realBlocks |> Belt_Array.concat([|getDummyBlock(blocksCount)|]);
 
     <>
       <div className=Styles.topicBar>
@@ -96,7 +115,9 @@ let make = () =>
       <VSpacing size=Spacing.lg />
       <Row alignItems=`initial>
         <div className=Styles.vFlex>
-          {blocks->Belt_Array.mapWithIndex((i, block) => renderBlock(i, block))->React.array}
+          {blocksWithDummy
+           ->Belt_Array.mapWithIndex((i, block) => renderBlock(i, block))
+           ->React.array}
         </div>
       </Row>
     </>
