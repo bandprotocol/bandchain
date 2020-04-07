@@ -64,15 +64,10 @@ module HighlightCard = {
            }}
         </div>
         {switch (valueAndExtraComponentSub) {
-         | Data((valueComponent, _)) => valueComponent
-         | _ => <LoadingCensorBar width=120 height=20 />
+         | Data((valueComponent, extraComponent)) => <> valueComponent extraComponent </>
+         | _ =>
+           <> <LoadingCensorBar width=120 height=20 /> <LoadingCensorBar width=75 height=15 /> </>
          }}
-        <div className={Styles.withWidth(170)}>
-          {switch (valueAndExtraComponentSub) {
-           | Data((_, extraComponent)) => extraComponent
-           | _ => <LoadingCensorBar width=75 height=15 />
-           }}
-        </div>
       </div>
     </div>;
   };
@@ -107,24 +102,26 @@ let make = () => {
           {
             let bandPriceInBTC = financial.btcPrice;
             let usd24HrChange = financial.usd24HrChange;
-            <div className=Styles.bandPriceExtra>
-              <div className=Styles.vFlex>
+            <div className={Styles.withWidth(170)}>
+              <div className=Styles.bandPriceExtra>
+                <div className=Styles.vFlex>
+                  <Text
+                    value={bandPriceInBTC->Format.fPretty}
+                    color=Colors.gray7
+                    weight=Text.Thin
+                    code=true
+                    spacing={Text.Em(0.01)}
+                  />
+                  <HSpacing size=Spacing.xs />
+                  <Text value="BTC" color=Colors.gray7 weight=Text.Thin spacing={Text.Em(0.01)} />
+                </div>
                 <Text
-                  value={bandPriceInBTC->Format.fPretty}
-                  color=Colors.gray7
-                  weight=Text.Thin
+                  value={usd24HrChange->Format.fPercent}
+                  color={usd24HrChange >= 0. ? Colors.green4 : Colors.red5}
+                  weight=Text.Semibold
                   code=true
-                  spacing={Text.Em(0.01)}
                 />
-                <HSpacing size=Spacing.xs />
-                <Text value="BTC" color=Colors.gray7 weight=Text.Thin spacing={Text.Em(0.01)} />
               </div>
-              <Text
-                value={usd24HrChange->Format.fPercent}
-                color={usd24HrChange >= 0. ? Colors.green4 : Colors.red5}
-                weight=Text.Semibold
-                code=true
-              />
             </div>;
           },
         )
@@ -148,10 +145,12 @@ let make = () => {
           },
           {
             let marketcap = financial.circulatingSupply;
-            <div className=Styles.vFlex>
-              <Text value={marketcap->Format.fPretty} code=true weight=Text.Thin />
-              <HSpacing size=Spacing.xs />
-              <Text value="BAND" color=Colors.gray7 weight=Text.Thin spacing={Text.Em(0.01)} />
+            <div className={Styles.withWidth(170)}>
+              <div className=Styles.vFlex>
+                <Text value={marketcap->Format.fPretty} code=true weight=Text.Thin />
+                <HSpacing size=Spacing.xs />
+                <Text value="BAND" color=Colors.gray7 weight=Text.Thin spacing={Text.Em(0.01)} />
+              </div>
             </div>;
           },
         )
@@ -164,7 +163,9 @@ let make = () => {
         let%Sub ({height, validator: {moniker}}, _, _) = allSub;
         (
           <TypeID.Block id=height position=TypeID.Landing />,
-          <Text value=moniker nowrap=true ellipsis=true block=true />,
+          <div className={Styles.withWidth(170)}>
+            <Text value=moniker nowrap=true ellipsis=true block=true />
+          </div>,
         )
         |> Sub.resolve;
       }
@@ -178,10 +179,14 @@ let make = () => {
             let activeValidators = validatorCount->Format.iPretty ++ " Nodes";
             <Text value=activeValidators size=Text.Xxxl weight=Text.Semibold color=Colors.gray8 />;
           },
-          <div className=Styles.vFlex>
-            <Text value="A lot of" code=true />
-            <HSpacing size=Spacing.sm />
-            <Text value=" BANDs Bonded" />
+          <div className={Styles.withWidth(170)}>
+            <div className=Styles.vFlex>
+              // TODO: Replace this mock by the real value
+
+                <Text value="A lot of" />
+                <HSpacing size=Spacing.sm />
+                <Text value=" BANDs Bonded" />
+              </div>
           </div>,
         )
         |> Sub.resolve;
