@@ -123,10 +123,8 @@ let resultRender = result => {
 };
 
 [@react.component]
-let make = (~id: ID.OracleScript.t, ~schema: string) => {
+let make = (~id: ID.OracleScript.t, ~schema: string, ~paramsInput: array(Borsh.field_key_type_t)) => {
   let (_, dispatch) = React.useContext(AccountContext.context);
-
-  let paramsInput = schema->Borsh.extractFields("Input")->Belt_Option.getWithDefault([||]);
 
   let numParams = paramsInput->Belt_Array.size;
 

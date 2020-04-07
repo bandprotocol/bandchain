@@ -71,9 +71,12 @@ let broadcast = (instance, signedMsg) => {
       JsonUtils.Decode.{
         txHash: rawResponse |> at(["txhash"], string) |> Hash.fromHex,
         success:
-          (rawResponse |> optional(field("logs", list(log => log |> field("success", bool)))))
-          ->Belt_Option.getWithDefault([])
-          ->Belt_List.some(isSuccess => isSuccess),
+          switch (
+            rawResponse |> optional(field("logs", list(log => log |> field("success", bool))))
+          ) {
+          | Some(bools) => !bools->Belt_List.some(isSuccess => !isSuccess)
+          | None => false
+          },
       },
     ),
   );

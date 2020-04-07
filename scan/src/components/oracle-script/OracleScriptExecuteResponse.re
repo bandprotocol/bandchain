@@ -64,13 +64,23 @@ let make = (~txResponse: BandWeb3.tx_response_t, ~schema: string) =>
         <VSpacing size=Spacing.lg />
         {switch (requestOpt) {
          | Some({id, result: Some(result)}) =>
-           let outputKVs =
-             Borsh.decode(schema, "Output", result)->Belt_Option.getWithDefault([||]);
+           let outputKVsOpt = Borsh.decode(schema, "Output", result);
            <>
              <div className={Styles.hFlex(`auto)}>
                <HSpacing size=Spacing.lg />
                <div
-                 className={Styles.vFlex(`px(220), `px(20 * (outputKVs |> Belt_Array.size)))}>
+                 className={Styles.vFlex(
+                   `px(220),
+                   `px(
+                     20
+                     * (
+                       switch (outputKVsOpt) {
+                       | Some(outputKVs) => outputKVs |> Belt_Array.size
+                       | None => 1
+                       }
+                     ),
+                   ),
+                 )}>
                  <Text
                    value="OUTPUT"
                    size=Text.Sm
@@ -80,17 +90,21 @@ let make = (~txResponse: BandWeb3.tx_response_t, ~schema: string) =>
                  />
                </div>
                <div className={Styles.vFlex(`auto, `auto)}>
-                 {outputKVs->Belt_Array.map(({fieldName, fieldValue}) =>
-                    <div className={Styles.hFlex(`px(20))}>
-                      <div className={Styles.vFlex(`px(220), `auto)}>
-                        <Text value=fieldName color=Colors.gray8 />
+                 {switch (outputKVsOpt) {
+                  | Some(outputKVs) =>
+                    outputKVs->Belt_Array.map(({fieldName, fieldValue}) =>
+                      <div className={Styles.hFlex(`px(20))}>
+                        <div className={Styles.vFlex(`px(220), `auto)}>
+                          <Text value=fieldName color=Colors.gray8 />
+                        </div>
+                        <div className={Styles.vFlex(`px(440), `auto)}>
+                          <Text value=fieldValue code=true color=Colors.gray8 weight=Text.Bold />
+                        </div>
                       </div>
-                      <div className={Styles.vFlex(`px(440), `auto)}>
-                        <Text value=fieldValue code=true color=Colors.gray8 weight=Text.Bold />
-                      </div>
-                    </div>
-                  )
-                  |> React.array}
+                    )
+                    |> React.array
+                  | None => React.null
+                  }}
                </div>
              </div>
              <VSpacing size=Spacing.lg />

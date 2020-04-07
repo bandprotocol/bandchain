@@ -199,11 +199,13 @@ module Mini = {
                timestamp: y##transaction.timestamp,
                reportsCount:
                  y##reportsAggregate.aggregate
-                 ->Belt_Option.mapWithDefault(0, ({count}) => count),
+                 ->Belt_Option.map(({count}) => count)
+                 ->Belt_Option.getExn,
                sufficientValidatorCount: y##sufficientValidatorCount,
                requestedValidatorsCount:
                  y##requestedValidatorsAgregate.aggregate
-                 ->Belt_Option.mapWithDefault(0, ({count}) => count),
+                 ->Belt_Option.map(({count}) => count)
+                 ->Belt_Option.getExn,
                result: y##result,
              }
            )
@@ -523,7 +525,7 @@ let countByOracleScript = id => {
          let%Opt aggregate = x##requests_aggregate##aggregate;
          Some(aggregate##count);
        }
-       ->Belt_Option.getWithDefault(0)
+       ->Belt_Option.getExn
      });
 };
 
@@ -539,6 +541,6 @@ let countByDataSource = id => {
          let%Opt aggregate = x##raw_data_requests_aggregate##aggregate;
          Some(aggregate##count);
        }
-       ->Belt_Option.getWithDefault(0)
+       ->Belt_Option.getExn
      });
 };
