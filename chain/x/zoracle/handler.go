@@ -41,6 +41,7 @@ func NewHandler(keeper Keeper) sdk.Handler {
 				return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unknown sequence number for channel %s port zoracle", sourceChannel)
 			}
 
+			fmt.Println(msg)
 			err := keeper.ChannelKeeper.SendPacket(ctx, channel.NewPacket(
 				NewOracleRequestPacketData(
 					msg.OracleScriptID, calldata, msg.RequestedValidatorCount,
@@ -65,6 +66,7 @@ func NewHandler(keeper Keeper) sdk.Handler {
 		case channeltypes.MsgPacket:
 			var data OracleRequestPacketData
 			if err := types.ModuleCdc.UnmarshalBinaryBare(msg.GetData(), &data); err != nil {
+				fmt.Println(data)
 				msg := NewMsgRequestData(
 					data.OracleScriptID, data.Calldata, data.RequestedValidatorCount,
 					data.SufficientValidatorCount, data.Expiration, data.PrepareGas,
