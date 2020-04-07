@@ -2,7 +2,7 @@ package db
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	cmn "github.com/tendermint/tendermint/libs/common"
+	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -27,7 +27,7 @@ func (b *BandDB) HandleBeginblockEvent(event abci.Event) {
 					panic("HandleBeginblockEvent: validator not found")
 				}
 				err = b.tx.Model(&Validator{}).
-					Where(Validator{ConsensusAddress: cmn.HexBytes(consAddress.Bytes()).String()}).
+					Where(Validator{ConsensusAddress: tmbytes.HexBytes(consAddress.Bytes()).String()}).
 					Update(&Validator{
 						Tokens: validator.Tokens.String(),
 						Jailed: true,

@@ -59,7 +59,7 @@ func (b *BandDB) HandleEndblockEvent(event abci.Event) {
 			}
 			err = b.SetAccountBalance(
 				delegatorAddress,
-				b.ZoracleKeeper.CoinKeeper.GetCoins(b.ctx, delegatorAddress),
+				b.ZoracleKeeper.CoinKeeper.GetAllBalances(b.ctx, delegatorAddress),
 				b.ctx.BlockHeight(),
 			)
 			if err != nil {

@@ -38,6 +38,7 @@ type Account struct {
 type Validator struct {
 	OperatorAddress     string `gorm:"primary_key"`
 	ConsensusAddress    string `gorm:"unique;not null"`
+	ConsensusPubkey     string `gorm:"not null"`
 	ElectedCount        uint   `gorm:"not null"`
 	VotedCount          uint   `gorm:"not null"`
 	MissedCount         uint   `gorm:"not null"`

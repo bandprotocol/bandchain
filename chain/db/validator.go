@@ -81,7 +81,7 @@ func (b *BandDB) ClearOldVotes(currentHeight int64) error {
 
 func (b *BandDB) CreateValidator(
 	validatorAddress sdk.ValAddress,
-	pubKey crypto.PubKey,
+	pubkey crypto.PubKey,
 	moniker string,
 	identity string,
 	website string,
@@ -94,7 +94,8 @@ func (b *BandDB) CreateValidator(
 ) error {
 	return b.tx.Create(&Validator{
 		OperatorAddress:     validatorAddress.String(),
-		ConsensusAddress:    pubKey.Address().String(),
+		ConsensusAddress:    pubkey.Address().String(),
+		ConsensusPubkey:     sdk.MustBech32ifyPubKey(sdk.Bech32PubKeyTypeConsPub, pubkey),
 		Moniker:             moniker,
 		Identity:            identity,
 		Website:             website,
