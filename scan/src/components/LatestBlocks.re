@@ -67,11 +67,11 @@ let renderBlock = (i: int, b: BlockSub.t) =>
 let getDummyBlock = blocksCount =>
   BlockSub.{
     height: ID.Block.ID(blocksCount + 1),
-    hash: "00" |> Hash.fromHex,
+    hash: "" |> Hash.fromHex,
     validator:
       ValidatorSub.Mini.{
         consensusAddress: "",
-        operatorAddress: "00" |> Address.fromHex,
+        operatorAddress: "" |> Address.fromHex,
         moniker: "",
       },
     timestamp: 0. |> MomentRe.momentWithTimestampMS,
