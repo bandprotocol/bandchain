@@ -42,12 +42,13 @@ func NewHandler(keeper Keeper) sdk.Handler {
 			}
 
 			fmt.Println(msg)
-			err := keeper.ChannelKeeper.SendPacket(ctx, channel.NewPacket(
-				NewOracleRequestPacketData(
-					msg.OracleScriptID, calldata, msg.RequestedValidatorCount,
-					msg.SufficientValidatorCount, msg.Expiration, msg.PrepareGas,
-					msg.ExecuteGas,
-				).GetBytes(),
+			packet := NewOracleRequestPacketData(
+				msg.OracleScriptID, calldata, msg.RequestedValidatorCount,
+				msg.SufficientValidatorCount, msg.Expiration, msg.PrepareGas,
+				msg.ExecuteGas,
+			)
+			fmt.Println(packet.GetBytes())
+			err := keeper.ChannelKeeper.SendPacket(ctx, channel.NewPacket(packet.GetBytes(),
 				sequence, "zoracle", sourceChannel, destinationPort, destinationChannel,
 				1000000000, // Arbitrarily high timeout for now
 			))
@@ -65,8 +66,8 @@ func NewHandler(keeper Keeper) sdk.Handler {
 			return handleMsgRemoveOracleAddress(ctx, keeper, msg)
 		case channeltypes.MsgPacket:
 			var data OracleRequestPacketData
+			fmt.Println(msg.GetData())
 			if err := types.ModuleCdc.UnmarshalJSON(msg.GetData(), &data); err != nil {
-				fmt.Println(msg.GetData())
 				fmt.Println(data)
 				msg := NewMsgRequestData(
 					data.OracleScriptID, data.Calldata, data.RequestedValidatorCount,
