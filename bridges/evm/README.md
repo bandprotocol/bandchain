@@ -36,8 +36,8 @@
 
 ### [Celo](https://celo.org/)
 
-- The reason why we support Celo is because Celo is an open platform that makes financial tools accessible to anyone with a mobile phone.
+- The reason we support Celo is that Celo is an open platform that makes financial tools accessible to anyone with a mobile phone.
 
-- We have deployed Bridge (0x9D0E05f4e777d18ea26F397e343501fBC3197F2d) contract on Celo Alfajores testnet.
+- We have deployed our Bridge contract (0x9D0E05f4e777d18ea26F397e343501fBC3197F2d) on the Celo Alfajores test network.
 
-- For more details about Bridge contract deployment and interaction on Alfajores testnet please see this [`example`](integration_examples/celo) .
+- Please see this [`example`](integration_examples/celo) for more details about Bridge contract deployment and interaction on the Alfajores test network .
