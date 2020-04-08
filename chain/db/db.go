@@ -511,6 +511,9 @@ func (b *BandDB) GetInvolvedAccountsFromTx(tx auth.StdTx) []sdk.AccAddress {
 		case channel.MsgPacket:
 		case channel.MsgAcknowledgement:
 		case channel.MsgTimeout:
+		case tclient.MsgCreateClient:
+		case tclient.MsgUpdateClient:
+		case tclient.MsgSubmitClientMisbehaviour:
 		default:
 			panic(fmt.Sprintf("Message %s does not support", msg.Type()))
 		}
