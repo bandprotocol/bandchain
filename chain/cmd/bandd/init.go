@@ -166,7 +166,7 @@ func InitCmd(
 			genDoc.ConsensusParams = types.DefaultConsensusParams()
 			genDoc.ConsensusParams.Block.MaxBytes = 200000 // 0.2MB
 			genDoc.ConsensusParams.Block.MaxGas = 20000000 // 20M gas (Maximum oracle script size uses 15M)
-			genDoc.ConsensusParams.Block.TimeIotaMs = 1000 // 0.2MB
+			genDoc.ConsensusParams.Block.TimeIotaMs = 1000 // 1 second
 			genDoc.ConsensusParams.Validator.PubKeyTypes = []string{types.ABCIPubKeyTypeSecp256k1}
 
 			if err = genutil.ExportGenesisFile(genDoc, genFile); err != nil {
