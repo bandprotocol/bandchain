@@ -58,7 +58,7 @@ func (b *BandDB) AddTransaction(
 
 func (b *BandDB) UpdateTransaction(
 	txHash []byte,
-	messages []map[string]interface{},
+	messages map[string]interface{},
 ) error {
 
 	var transaction Transaction
