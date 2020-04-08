@@ -21,6 +21,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/cosmos/cosmos-sdk/x/ibc"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/supply"
@@ -65,6 +66,7 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 	tkeyParams := sdk.NewTransientStoreKey(params.TStoreKey)
 	keySupply := sdk.NewKVStoreKey(supply.StoreKey)
 	keyBank := sdk.NewKVStoreKey(bank.StoreKey)
+	keyIBC := sdk.NewKVStoreKey(ibc.StoreKey)
 
 	config := sdk.GetConfig()
 	SetBech32AddressPrefixesAndBip44CoinType(config)
@@ -78,6 +80,7 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 	ms.MountStoreWithDB(tkeyParams, sdk.StoreTypeTransient, db)
 	ms.MountStoreWithDB(keySupply, sdk.StoreTypeIAVL, db)
 	ms.MountStoreWithDB(keyBank, sdk.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keyIBC, sdk.StoreTypeIAVL, db)
 
 	err := ms.LoadLatestVersion()
 	require.Nil(t, err)
@@ -140,7 +143,9 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 	supplyKeeper.SetModuleAccount(ctx, bondPool)
 	supplyKeeper.SetModuleAccount(ctx, notBondedPool)
 
-	keeper := NewKeeper(cdc, keyRequest, bk, sk, pk.Subspace(types.DefaultParamspace))
+	ibcKeeper := ibc.NewKeeper(cdc, keyIBC, sk)
+
+	keeper := NewKeeper(cdc, keyRequest, bk, sk, ibcKeeper.ChannelKeeper, pk.Subspace(types.DefaultParamspace))
 	require.Equal(t, account.GetAddress(), addr)
 	accountKeeper.SetAccount(ctx, account)
 

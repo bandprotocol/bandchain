@@ -1,12 +1,15 @@
 package zoracle
 
 import (
+	"encoding/hex"
 	"fmt"
 
 	"github.com/bandprotocol/bandchain/chain/owasm"
 	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	_ "github.com/cosmos/cosmos-sdk/x/ibc/04-channel"
+	channeltypes "github.com/cosmos/cosmos-sdk/x/ibc/04-channel/types"
 )
 
 // NewHandler creates the msg handler of this module, as required by Cosmos-SDK standard.
@@ -23,6 +26,38 @@ func NewHandler(keeper Keeper) sdk.Handler {
 		case MsgEditOracleScript:
 			return handleMsgEditOracleScript(ctx, keeper, msg)
 		case MsgRequestData:
+			// TODO: Remove this hack!!!
+			// Here we assume that call data contains "sourceChannel + data"
+			// sourceChannel is always 10 characters
+			// sourceChannel := string(msg.Calldata[:10])
+			// calldata := hex.EncodeToString(msg.Calldata[10:])
+			// sourceChannelEnd, found := keeper.ChannelKeeper.GetChannel(ctx, "zoracle", sourceChannel)
+			// if !found {
+			// 	return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unknown channel %s port zoracle", sourceChannel)
+			// }
+			// destinationPort := sourceChannelEnd.Counterparty.PortID
+			// destinationChannel := sourceChannelEnd.Counterparty.ChannelID
+			// sequence, found := keeper.ChannelKeeper.GetNextSequenceSend(ctx, "zoracle", sourceChannel)
+			// if !found {
+			// 	return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unknown sequence number for channel %s port zoracle", sourceChannel)
+			// }
+
+			// fmt.Println(msg)
+			// packet := NewOracleRequestPacketData(
+			// 	msg.OracleScriptID, calldata, msg.RequestedValidatorCount,
+			// 	msg.SufficientValidatorCount, msg.Expiration, msg.PrepareGas,
+			// 	msg.ExecuteGas,
+			// )
+			// fmt.Println(packet.GetBytes())
+			// err := keeper.ChannelKeeper.SendPacket(ctx, channel.NewPacket(packet.GetBytes(),
+			// 	sequence, "zoracle", sourceChannel, destinationPort, destinationChannel,
+			// 	1000000000, // Arbitrarily high timeout for now
+			// ))
+			// if err != nil {
+			// 	return nil, err
+			// }
+
+			// return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 			return handleMsgRequestData(ctx, keeper, msg)
 		case MsgReportData:
 			return handleMsgReportData(ctx, keeper, msg)
@@ -30,6 +65,29 @@ func NewHandler(keeper Keeper) sdk.Handler {
 			return handleMsgAddOracleAddress(ctx, keeper, msg)
 		case MsgRemoveOracleAddress:
 			return handleMsgRemoveOracleAddress(ctx, keeper, msg)
+		case channeltypes.MsgPacket:
+			var requestData OracleRequestPacketData
+			if err := types.ModuleCdc.UnmarshalJSON(msg.GetData(), &requestData); err == nil {
+				calldata, err := hex.DecodeString(requestData.Calldata)
+				if err != nil {
+					return nil, err
+				}
+				newMsg := NewMsgRequestData(
+					requestData.OracleScriptID, calldata, requestData.RequestedValidatorCount,
+					requestData.SufficientValidatorCount, requestData.Expiration,
+					requestData.PrepareGas, requestData.ExecuteGas,
+					sdk.AccAddress([]byte("NOT_IMPORTANT")),
+				)
+				return handleMsgRequestData(
+					ctx, keeper, newMsg, msg.GetDestPort(), msg.GetDestChannel(),
+				)
+			}
+			var responseData OracleResponsePacketData
+			if err := types.ModuleCdc.UnmarshalJSON(msg.GetData(), &responseData); err == nil {
+				fmt.Println("I GOT DATA", responseData.Result)
+				return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
+			}
+			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal oracle packet data")
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized %s message type: %T", ModuleName, msg)
 		}
@@ -120,12 +178,21 @@ func handleMsgEditOracleScript(
 }
 
 func handleMsgRequestData(
-	ctx sdk.Context, keeper Keeper, msg MsgRequestData,
+	ctx sdk.Context, keeper Keeper, msg MsgRequestData, ibcData ...string,
 ) (*sdk.Result, error) {
 	id, err := keeper.AddRequest(
 		ctx, msg.OracleScriptID, msg.Calldata, msg.RequestedValidatorCount,
 		msg.SufficientValidatorCount, msg.Expiration, msg.ExecuteGas,
 	)
+	// TODO: HACK AREA!
+	if len(ibcData) == 2 {
+		request, _ := keeper.GetRequest(ctx, id)
+		request.SourcePort = ibcData[0]
+		request.SourceChannel = ibcData[1]
+		keeper.SetRequest(ctx, id, request)
+	}
+	// END HACK AREA!
+
 	if err != nil {
 		return nil, err
 	}

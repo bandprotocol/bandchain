@@ -268,7 +268,7 @@ func NewBandApp(
 		keys[zoracle.StoreKey],
 		app.BankKeeper,
 		app.StakingKeeper,
-		// app.IBCKeeper.ChannelKeeper,
+		app.IBCKeeper.ChannelKeeper,
 		app.subspaces[zoracle.ModuleName],
 	)
 

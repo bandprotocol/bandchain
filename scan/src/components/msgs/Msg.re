@@ -16,8 +16,13 @@ module Styles = {
     ]);
 };
 
+let makeBadge = (name, length, color1, color2) =>
+  <div className={Styles.withBg(color1, length)}>
+    <Text value=name size=Text.Xs spacing={Text.Em(0.07)} weight=Text.Medium color=color2 />
+  </div>;
+
 [@react.component]
-let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
+let make = (~msg: TxSub.Msg.t, ~width: int) => {
   switch (msg) {
   | Send({fromAddress, toAddress, amount}) =>
     <div className={Styles.rowWithWidth(width)}>
@@ -31,40 +36,25 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
           color=Colors.blue7
         />
       </div>
-      {success
-         ? <>
-             <div className={Styles.rowWithWidth(200)}>
-               <Text
-                 value={
-                   amount
-                   ->Belt_List.get(0)
-                   ->Belt_Option.getWithDefault(Coin.newCoin("uband", 0.0)).
-                     amount
-                   |> Format.fPretty
-                 }
-                 weight=Text.Semibold
-                 code=true
-                 nowrap=true
-                 block=true
-               />
-               <HSpacing size=Spacing.sm />
-               <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
-               <HSpacing size=Spacing.sm />
-               <Text
-                 value={j|➜|j}
-                 size=Text.Xxl
-                 weight=Text.Bold
-                 code=true
-                 nowrap=true
-                 block=true
-               />
-               <HSpacing size=Spacing.sm />
-             </div>
-             <div className={Styles.withWidth(width / 3)}>
-               <AddressRender address=toAddress />
-             </div>
-           </>
-         : React.null}
+      <div className={Styles.rowWithWidth(200)}>
+        <Text
+          value={
+            amount->Belt_List.get(0)->Belt_Option.getWithDefault(Coin.newCoin("uband", 0.0)).
+              amount
+            |> Format.fPretty
+          }
+          weight=Text.Semibold
+          code=true
+          nowrap=true
+          block=true
+        />
+        <HSpacing size=Spacing.sm />
+        <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
+        <HSpacing size=Spacing.sm />
+        <Text value={j|➜|j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+        <HSpacing size=Spacing.sm />
+      </div>
+      <div className={Styles.withWidth(width / 3)}> <AddressRender address=toAddress /> </div>
     </div>
   | CreateDataSource({id, sender, name}) =>
     <div className={Styles.rowWithWidth(width)}>
@@ -78,20 +68,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
           color=Colors.yellow6
         />
       </div>
-      {success
-         ? <>
-             <TypeID.DataSource id />
-             <HSpacing size=Spacing.sm />
-             <Text
-               value=name
-               color=Colors.gray7
-               weight=Text.Medium
-               nowrap=true
-               block=true
-               ellipsis=true
-             />
-           </>
-         : React.null}
+      <TypeID.DataSource id />
+      <HSpacing size=Spacing.sm />
+      <Text
+        value=name
+        color=Colors.gray7
+        weight=Text.Medium
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
     </div>
   | EditDataSource({id, sender, name}) =>
     <div className={Styles.rowWithWidth(width)}>
@@ -105,20 +91,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
           color=Colors.yellow6
         />
       </div>
-      {success
-         ? <>
-             <TypeID.DataSource id />
-             <HSpacing size=Spacing.sm />
-             <Text
-               value=name
-               color=Colors.gray7
-               weight=Text.Medium
-               nowrap=true
-               block=true
-               ellipsis=true
-             />
-           </>
-         : React.null}
+      <TypeID.DataSource id />
+      <HSpacing size=Spacing.sm />
+      <Text
+        value=name
+        color=Colors.gray7
+        weight=Text.Medium
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
     </div>
   | CreateOracleScript({id, sender, name}) =>
     <div className={Styles.rowWithWidth(width)}>
@@ -132,22 +114,18 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
           color=Colors.pink6
         />
       </div>
-      {success
-         ? <>
-             <div className={Styles.rowWithWidth(200)}>
-               <TypeID.OracleScript id />
-               <HSpacing size=Spacing.sm />
-               <Text
-                 value=name
-                 color=Colors.gray7
-                 weight=Text.Medium
-                 nowrap=true
-                 block=true
-                 ellipsis=true
-               />
-             </div>
-           </>
-         : React.null}
+      <div className={Styles.rowWithWidth(200)}>
+        <TypeID.OracleScript id />
+        <HSpacing size=Spacing.sm />
+        <Text
+          value=name
+          color=Colors.gray7
+          weight=Text.Medium
+          nowrap=true
+          block=true
+          ellipsis=true
+        />
+      </div>
     </div>
   | EditOracleScript({id, sender, name}) =>
     <div className={Styles.rowWithWidth(width)}>
@@ -161,22 +139,18 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
           color=Colors.pink6
         />
       </div>
-      {success
-         ? <>
-             <div className={Styles.rowWithWidth(210)}>
-               <TypeID.OracleScript id />
-               <HSpacing size=Spacing.sm />
-               <Text
-                 value=name
-                 color=Colors.gray7
-                 weight=Text.Medium
-                 nowrap=true
-                 block=true
-                 ellipsis=true
-               />
-             </div>
-           </>
-         : React.null}
+      <div className={Styles.rowWithWidth(210)}>
+        <TypeID.OracleScript id />
+        <HSpacing size=Spacing.sm />
+        <Text
+          value=name
+          color=Colors.gray7
+          weight=Text.Medium
+          nowrap=true
+          block=true
+          ellipsis=true
+        />
+      </div>
     </div>
   | Request({id, oracleScriptID, oracleScriptName, sender}) =>
     <div className={Styles.rowWithWidth(width)}>
@@ -190,31 +164,20 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
           color=Colors.orange6
         />
       </div>
-      {success
-         ? <>
-             <TypeID.Request id />
-             <HSpacing size=Spacing.sm />
-             <Text
-               value={j|➜|j}
-               size=Text.Xxl
-               weight=Text.Bold
-               code=true
-               nowrap=true
-               block=true
-             />
-             <HSpacing size=Spacing.sm />
-             <TypeID.OracleScript id=oracleScriptID />
-             <HSpacing size=Spacing.sm />
-             <Text
-               value=oracleScriptName
-               color=Colors.gray7
-               weight=Text.Medium
-               nowrap=true
-               block=true
-               ellipsis=true
-             />
-           </>
-         : React.null}
+      <TypeID.Request id />
+      <HSpacing size=Spacing.sm />
+      <Text value={j|➜|j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+      <HSpacing size=Spacing.sm />
+      <TypeID.OracleScript id=oracleScriptID />
+      <HSpacing size=Spacing.sm />
+      <Text
+        value=oracleScriptName
+        color=Colors.gray7
+        weight=Text.Medium
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
     </div>
   | Report({requestID, reporter}) =>
     <div className={Styles.rowWithWidth(width)}>
@@ -228,20 +191,9 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
           color=Colors.orange6
         />
       </div>
-      {success
-         ? <>
-             <Text
-               value={j|➜|j}
-               size=Text.Xxl
-               weight=Text.Bold
-               code=true
-               nowrap=true
-               block=true
-             />
-             <HSpacing size=Spacing.sm />
-             <TypeID.Request id=requestID />
-           </>
-         : React.null}
+      <Text value={j|➜|j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+      <HSpacing size=Spacing.sm />
+      <TypeID.Request id=requestID />
     </div>
   | AddOracleAddress({validator, reporter}) =>
     <div className={Styles.rowWithWidth(width)}>
@@ -255,12 +207,8 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
           color=Colors.purple6
         />
       </div>
-      {success
-         ? <>
-             <HSpacing size=Spacing.sm />
-             <div className={Styles.withWidth(120)}> <AddressRender address=reporter /> </div>
-           </>
-         : React.null}
+      <HSpacing size=Spacing.sm />
+      <div className={Styles.withWidth(120)}> <AddressRender address=reporter /> </div>
     </div>
   | RemoveOracleAddress({validator, reporter}) =>
     <div className={Styles.rowWithWidth(width)}>
@@ -274,12 +222,8 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
           color=Colors.purple6
         />
       </div>
-      {success
-         ? <>
-             <HSpacing size=Spacing.sm />
-             <div className={Styles.withWidth(120)}> <AddressRender address=reporter /> </div>
-           </>
-         : React.null}
+      <HSpacing size=Spacing.sm />
+      <div className={Styles.withWidth(120)}> <AddressRender address=reporter /> </div>
     </div>
   | CreateValidator({delegatorAddress, moniker}) =>
     <div className={Styles.rowWithWidth(width)}>
@@ -293,22 +237,18 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
           color=Colors.purple6
         />
       </div>
-      {success
-         ? <>
-             <HSpacing size=Spacing.sm />
-             <div className={Styles.withWidth(width / 2 - 5)}>
-               <Text
-                 value=moniker
-                 color=Colors.gray7
-                 weight=Text.Regular
-                 code=true
-                 nowrap=true
-                 block=true
-                 ellipsis=true
-               />
-             </div>
-           </>
-         : React.null}
+      <HSpacing size=Spacing.sm />
+      <div className={Styles.withWidth(width / 2 - 5)}>
+        <Text
+          value=moniker
+          color=Colors.gray7
+          weight=Text.Regular
+          code=true
+          nowrap=true
+          block=true
+          ellipsis=true
+        />
+      </div>
     </div>
   | EditValidator({sender, moniker}) =>
     <div className={Styles.rowWithWidth(width)}>
@@ -322,22 +262,40 @@ let make = (~msg: TxSub.Msg.t, ~width: int, ~success: bool) => {
           color=Colors.purple6
         />
       </div>
-      {success
-         ? <>
-             <HSpacing size=Spacing.sm />
-             <div className={Styles.withWidth(width / 2 - 5)}>
-               <Text
-                 value=moniker
-                 color=Colors.gray7
-                 weight=Text.Regular
-                 code=true
-                 nowrap=true
-                 block=true
-                 ellipsis=true
-               />
-             </div>
-           </>
-         : React.null}
+      <HSpacing size=Spacing.sm />
+      <div className={Styles.withWidth(width / 2 - 5)}>
+        <Text
+          value=moniker
+          color=Colors.gray7
+          weight=Text.Regular
+          code=true
+          nowrap=true
+          block=true
+          ellipsis=true
+        />
+      </div>
+    </div>
+  | FailMessage({sender, message}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
+      {switch (message) {
+       | "send" => makeBadge("SEND", 40, Colors.blue1, Colors.blue7)
+       | "create_data_source" =>
+         makeBadge("CREATE DATASOURCE", 110, Colors.yellow1, Colors.yellow6)
+       | "edit_data_source" => makeBadge("EDIT DATASOURCE", 100, Colors.yellow1, Colors.yellow6)
+       | "create_oracle_script" =>
+         makeBadge("CREATE ORACLE SCRIPT", 120, Colors.pink1, Colors.pink6)
+       | "edit_oracle_script" => makeBadge("EDIT ORACLE SCRIPT", 110, Colors.pink1, Colors.pink6)
+       | "request" => makeBadge("REQUEST", 60, Colors.orange1, Colors.orange6)
+       | "report" => makeBadge("REPORT", 50, Colors.orange1, Colors.orange6)
+       | "add_oracle_address" =>
+         makeBadge("ADD ORACLE ADDRESS", 114, Colors.purple1, Colors.purple6)
+       | "remove_oracle_address" =>
+         makeBadge("REMOVE ORACLE ADDRESS", 133, Colors.purple1, Colors.purple6)
+       | "create_validator" => makeBadge("CREATE VALIDATOR", 97, Colors.purple1, Colors.purple6)
+       | "edit_validator" => makeBadge("EDIT VALIDATOR", 85, Colors.purple1, Colors.purple6)
+       | _ => makeBadge("UNKNOWN", 70, Colors.gray1, Colors.gray6)
+       }}
     </div>
   | Unknown => React.null
   };
