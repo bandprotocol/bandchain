@@ -440,7 +440,7 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 	case channel.MsgAcknowledgement:
 	case channel.MsgTimeout:
 	default:
-		panic("HandleMessage: There isn't event handler for this type")
+		panic(fmt.Sprintf("Message %s does not support", msg.Type()))
 	}
 	jsonMap["type"] = events["message.action"]
 
