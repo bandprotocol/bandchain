@@ -259,6 +259,13 @@ func (b *BandDB) SetContext(ctx sdk.Context) {
 	b.ctx = ctx
 }
 
+func wrapMessage(msg []map[string]interface{}, status string) map[string]interface{} {
+	objMsg := make(map[string]interface{})
+	objMsg["messages"] = msg
+	objMsg["status"] = status
+	return objMsg
+}
+
 func (b *BandDB) HandleTransaction(tx auth.StdTx, txHash []byte, logs sdk.ABCIMessageLogs) {
 	msgs := tx.GetMsgs()
 
@@ -285,8 +292,8 @@ func (b *BandDB) HandleTransaction(tx auth.StdTx, txHash []byte, logs sdk.ABCIMe
 		messages = append(messages, newMsg)
 
 	}
-
-	b.UpdateTransaction(txHash, messages)
+	wrapedMsg := wrapMessage(messages, "success")
+	b.UpdateTransaction(txHash, wrapedMsg)
 }
 
 func (b *BandDB) HandleTransactionFail(tx auth.StdTx, txHash []byte) {
@@ -298,7 +305,9 @@ func (b *BandDB) HandleTransactionFail(tx auth.StdTx, txHash []byte) {
 		message["type"] = txMsg.Type()
 		messages = append(messages, message)
 	}
-	b.UpdateTransaction(txHash, messages)
+
+	wrapedMsg := wrapMessage(messages, "failure")
+	b.UpdateTransaction(txHash, wrapedMsg)
 }
 
 func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]string) (map[string]interface{}, error) {
