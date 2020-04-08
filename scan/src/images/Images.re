@@ -43,3 +43,9 @@
 [@bs.module] external noReport: string = "./noReport.svg";
 [@bs.module] external connectIcon: string = "./connect-icon.svg";
 [@bs.module] external disconnectIcon: string = "./disconnect-icon.svg";
+[@bs.module] external ethereumIcon: string = "./ethereumIcon.png";
+[@bs.module] external cosmosIBCIcon: string = "./cosmosIBC-icon.png";
+[@bs.module] external kadenaIcon: string = "./kadenaIcon.png";
+[@bs.module] external solidityIcon: string = "./solidityIcon.png";
+[@bs.module] external vyperIcon: string = "./vyperIcon.png";
+[@bs.module] external missingIcon: string = "./missing.png";

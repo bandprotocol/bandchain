@@ -38,7 +38,6 @@ module Styles = {
       background(rgba(255, 255, 255, 1.)),
       borderRadius(`px(100)),
       boxShadow(Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(4), rgba(0, 0, 0, 0.1))),
-      overflow(`hidden),
     ]);
 
   let selectContent =
@@ -49,7 +48,9 @@ module Styles = {
       float(`right),
     ]);
 
-  let languageWrapper = style([overflow(`hidden)]);
+  let iconWrapper = style([alignItems(`center), justifyContent(`center)]);
+
+  let iconBody = style([width(`px(20))]);
 };
 
 let renderCode = content => {
@@ -60,14 +61,54 @@ let renderCode = content => {
   </div>;
 };
 
+module TargetPlatformIcon = {
+  [@react.component]
+  let make = (~icon) => {
+    <div className=Styles.iconWrapper>
+      <img
+        className=Styles.iconBody
+        src={
+          switch (icon) {
+          | "Ethereum" => Images.ethereumIcon
+          | "Cosmos IBC" => Images.cosmosIBCIcon
+          | "Kadena" => Images.kadenaIcon
+          | _ => Images.missingIcon
+          }
+        }
+      />
+    </div>;
+  };
+};
+
+module LanguageIcon = {
+  [@react.component]
+  let make = (~icon) => {
+    <div className=Styles.iconWrapper>
+      <img
+        className=Styles.iconBody
+        src={
+          switch (icon) {
+          | "Solidity" => Images.solidityIcon
+          | "Vyper" => Images.vyperIcon
+          | _ => Images.missingIcon
+          }
+        }
+      />
+    </div>;
+  };
+};
+
 [@react.component]
 let make = () => {
   let description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent aliquet tempor imperdiet. Morbi tincidunt molestie tortor a finibus. Nulla hendrerit iaculis metus, in laoreet tellus eleifend vel. Aliquam pretium porta mi, a efficitur justo ullamcorper sed. Donec interdum accumsan nibh, sed tempor lectus rutrum ac. Morbi et magna in magna varius iaculis. Praesent mollis nulla non arcu ullamcorper, at bibendum nibh pellentesque. Aenean ac quam eget turpis euismod lacinia. Phasellus libero lectus, pulvinar at ipsum non, ullamcorper commodo felis.";
   let codetest = {j|
-    pragma solidity ^0.5.0;\n
-    import "./Borsch.sol";\n
-    library ResultDecoder {\n\t
-      using Borsh for Borsh.Data;\n
+    pragma solidity ^0.5.0;
+
+    import "./Borsch.sol";
+
+    library ResultDecoder {
+      using Borsh for Borsh.Data;
+
       struct Result {
         string symbol;
         uint64 multiplier;
@@ -85,6 +126,9 @@ let make = () => {
           result.what = data.decodeU8();
       }
     }|j};
+
+  let (targetPlatform, setTargetPlatform) = React.useState(_ => "Ethereum");
+  let (language, setLanguage) = React.useState(_ => "Solidity");
   <div className=Styles.tableWrapper>
     <>
       <VSpacing size={`px(10)} />
@@ -94,9 +138,14 @@ let make = () => {
           <div> <Text value="Target Platform" /> </div>
           <VSpacing size={`px(5)} />
           <div className=Styles.selectWrapper>
-            <select className=Styles.selectContent>
-              <option value=""> {"Ethereum" |> React.string} </option>
-              {[|"Cosmos IBC", "Kadena"|]
+            <TargetPlatformIcon icon=targetPlatform />
+            <select
+              className=Styles.selectContent
+              onChange={event => {
+                let newValue = ReactEvent.Form.target(event)##value;
+                setTargetPlatform(_ => newValue);
+              }}>
+              {[|"Ethereum", "Cosmos IBC", "Kadena"|]
                ->Belt_Array.map(symbol => <option value=symbol> {symbol |> React.string} </option>)
                |> React.array}
             </select>
@@ -104,18 +153,19 @@ let make = () => {
         </Col>
         <HSpacing size={`px(370)} />
         <Col>
-          <div>
-            <Text value="Language" />
-            <div className=Styles.selectWrapper>
-              <select className=Styles.selectContent>
-                <option value=""> {"Solidity" |> React.string} </option>
-                {[|"Vyper"|]
-                 ->Belt_Array.map(symbol =>
-                     <option value=symbol> {symbol |> React.string} </option>
-                   )
-                 |> React.array}
-              </select>
-            </div>
+          <div> <Text value="Language" /> </div>
+          <div className=Styles.selectWrapper>
+            <LanguageIcon icon=language />
+            <select
+              className=Styles.selectContent
+              onChange={event => {
+                let newValue = ReactEvent.Form.target(event)##value;
+                setLanguage(_ => newValue);
+              }}>
+              {[|"Solidity", "Vyper"|]
+               ->Belt_Array.map(symbol => <option value=symbol> {symbol |> React.string} </option>)
+               |> React.array}
+            </select>
           </div>
           <VSpacing size={`px(5)} />
         </Col>
