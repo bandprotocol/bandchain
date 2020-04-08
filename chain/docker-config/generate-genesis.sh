@@ -51,7 +51,7 @@ bandcli config trust-node true
 cp ~/.bandd/config/config.toml ~/.bandd/config/config.toml.temp
 
 # modify moniker
-sed 's/node-validator/node-validator-1/g' ~/.bandd/config/config.toml.temp > ~/.bandd/config/config.toml
+sed 's/node-validator/🙎‍♀️Alice \& Co./g' ~/.bandd/config/config.toml.temp > ~/.bandd/config/config.toml
 
 # register initial validators
 bandd gentx \
@@ -63,7 +63,7 @@ bandd gentx \
     --keyring-backend test
 
 # modify moniker
-sed 's/node-validator/node-validator-2/g' ~/.bandd/config/config.toml.temp > ~/.bandd/config/config.toml
+sed 's/node-validator/Bobby.fish 🐡/g' ~/.bandd/config/config.toml.temp > ~/.bandd/config/config.toml
 
 bandd gentx \
     --amount 100000000uband \
@@ -74,7 +74,7 @@ bandd gentx \
     --keyring-backend test
 
 # modify moniker
-sed 's/node-validator/node-validator-3/g' ~/.bandd/config/config.toml.temp > ~/.bandd/config/config.toml
+sed 's/node-validator/Carol/g' ~/.bandd/config/config.toml.temp > ~/.bandd/config/config.toml
 
 bandd gentx \
     --amount 100000000uband \
@@ -85,7 +85,7 @@ bandd gentx \
     --keyring-backend test
 
 # modify moniker
-sed 's/node-validator/node-validator-4/g' ~/.bandd/config/config.toml.temp > ~/.bandd/config/config.toml
+sed 's/node-validator/Eve 🦹🏿‍♂️the evil with a really long moniker name/g' ~/.bandd/config/config.toml.temp > ~/.bandd/config/config.toml
 
 bandd gentx \
     --amount 100000000uband \
