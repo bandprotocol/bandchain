@@ -178,13 +178,21 @@ func handleMsgEditOracleScript(
 }
 
 func handleMsgRequestData(
-	ctx sdk.Context, keeper Keeper, msg MsgRequestData, sourcePort string, sourceChannel string,
+	ctx sdk.Context, keeper Keeper, msg MsgRequestData, ibcData ...string,
 ) (*sdk.Result, error) {
 	id, err := keeper.AddRequest(
 		ctx, msg.OracleScriptID, msg.Calldata, msg.RequestedValidatorCount,
 		msg.SufficientValidatorCount, msg.Expiration, msg.ExecuteGas,
-		sourcePort, sourceChannel,
 	)
+	// TODO: HACK AREA!
+	if len(ibcData) == 2 {
+		request, _ := keeper.GetRequest(ctx, id)
+		request.SourcePort = ibcData[0]
+		request.SourceChannel = ibcData[1]
+		keeper.SetRequest(ctx, id, request)
+	}
+	// END HACK AREA!
+
 	if err != nil {
 		return nil, err
 	}
