@@ -1,244 +1,247 @@
 package rpc
 
-import (
-	"encoding/json"
-	"fmt"
-	"net/http"
-	"time"
+// TODO: Revive this! It's commented because we upgrade to Cosmos 0.38.*.
+// Proof structure will need to change now that we have more modules + the header structure changes.
 
-	"github.com/gorilla/mux"
-	"github.com/rakyll/statik/fs"
+// import (
+// 	"encoding/json"
+// 	"fmt"
+// 	"net/http"
+// 	"time"
 
-	"github.com/cosmos/cosmos-sdk/client/context"
-	"github.com/cosmos/cosmos-sdk/codec"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/rest"
-	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
-	ctypes "github.com/tendermint/tendermint/rpc/core/types"
+// 	"github.com/gorilla/mux"
+// 	"github.com/rakyll/statik/fs"
 
-	// unnamed import of statik for swagger UI support
-	_ "github.com/bandprotocol/bandchain/chain/client/lcd/statik"
-	"github.com/bandprotocol/bandchain/chain/x/zoracle"
-)
+// 	"github.com/cosmos/cosmos-sdk/client/context"
+// 	"github.com/cosmos/cosmos-sdk/codec"
+// 	sdk "github.com/cosmos/cosmos-sdk/types"
+// 	"github.com/cosmos/cosmos-sdk/types/rest"
+// 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
+// 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 
-const (
-	requestIDTag = "requestID"
-)
+// 	// unnamed import of statik for swagger UI support
+// 	_ "github.com/bandprotocol/bandchain/chain/client/lcd/statik"
+// 	"github.com/bandprotocol/bandchain/chain/x/zoracle"
+// )
 
-func getLatestBlocks(cliCtx context.CLIContext, page, limit int) ([]byte, error) {
-	node, err := cliCtx.GetNode()
-	if err != nil {
-		return nil, err
-	}
+// const (
+// 	requestIDTag = "requestID"
+// )
 
-	status, err := node.Status()
-	if err != nil {
-		return nil, err
-	}
+// func getLatestBlocks(cliCtx context.CLIContext, page, limit int) ([]byte, error) {
+// 	node, err := cliCtx.GetNode()
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	blockHeight := status.SyncInfo.LatestBlockHeight
-	res := make([]*ctypes.ResultBlock, 0)
+// 	status, err := node.Status()
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	for i := (page - 1) * limit; i < page*limit && i < int(blockHeight); i++ {
-		height := blockHeight - int64(i)
-		block, err := node.Block(&height)
-		if err != nil {
-			return nil, err
-		}
-		res = append(res, block)
-	}
+// 	blockHeight := status.SyncInfo.LatestBlockHeight
+// 	res := make([]*ctypes.ResultBlock, 0)
 
-	if cliCtx.Indent {
-		return codec.Cdc.MarshalJSONIndent(res, "", "  ")
-	}
+// 	for i := (page - 1) * limit; i < page*limit && i < int(blockHeight); i++ {
+// 		height := blockHeight - int64(i)
+// 		block, err := node.Block(&height)
+// 		if err != nil {
+// 			return nil, err
+// 		}
+// 		res = append(res, block)
+// 	}
 
-	return codec.Cdc.MarshalJSON(res)
-}
+// 	if cliCtx.Indent {
+// 		return codec.Cdc.MarshalJSONIndent(res, "", "  ")
+// 	}
 
-func LatestBlocksRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		_, page, limit, err := rest.ParseHTTPArgsWithLimit(r, 10)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
+// 	return codec.Cdc.MarshalJSON(res)
+// }
 
-		if limit > 100 {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, "limit must not be greater than 100.")
-			return
-		}
+// func LatestBlocksRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+// 	return func(w http.ResponseWriter, r *http.Request) {
+// 		_, page, limit, err := rest.ParseHTTPArgsWithLimit(r, 10)
+// 		if err != nil {
+// 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+// 			return
+// 		}
 
-		output, err := getLatestBlocks(cliCtx, page, limit)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+// 		if limit > 100 {
+// 			rest.WriteErrorResponse(w, http.StatusBadRequest, "limit must not be greater than 100.")
+// 			return
+// 		}
 
-		rest.PostProcessResponseBare(w, cliCtx, output)
-	}
-}
+// 		output, err := getLatestBlocks(cliCtx, page, limit)
+// 		if err != nil {
+// 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+// 			return
+// 		}
 
-func LatestTxsRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
-		if !ok {
-			return
-		}
+// 		rest.PostProcessResponseBare(w, cliCtx, output)
+// 	}
+// }
 
-		_, page, limit, err := rest.ParseHTTPArgs(r)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
+// func LatestTxsRequestHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+// 	return func(w http.ResponseWriter, r *http.Request) {
+// 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
+// 		if !ok {
+// 			return
+// 		}
 
-		if limit > 100 {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, "limit must not be greater than 100.")
-			return
-		}
+// 		_, page, limit, err := rest.ParseHTTPArgs(r)
+// 		if err != nil {
+// 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+// 			return
+// 		}
 
-		// TODO: (1) Sort result in desc order after tendermint/tendermint:#4253 is released
-		// TODO: (2) Perform binary search on 'tx.height>?' to optimize the performance
+// 		if limit > 100 {
+// 			rest.WriteErrorResponse(w, http.StatusBadRequest, "limit must not be greater than 100.")
+// 			return
+// 		}
 
-		// Temporary implementation to get latest tx sort by descending timestamp
-		// Pull request at bandprotocol/d3n:#224
-		node, _ := cliCtx.GetNode()
-		block, _ := node.Block(nil)
-		totalTxs := int(block.Block.Header.TotalTxs)
-		endIndex := totalTxs - (page-1)*limit
-		startIndex := totalTxs - page*limit + 1
+// 		// TODO: (1) Sort result in desc order after tendermint/tendermint:#4253 is released
+// 		// TODO: (2) Perform binary search on 'tx.height>?' to optimize the performance
 
-		var result sdk.SearchTxsResult
-		result.PageNumber = page
-		result.TotalCount = totalTxs
-		result.Limit = limit
-		result.PageTotal = (totalTxs-1)/limit + 1
-		result.Txs = make([]sdk.TxResponse, 0)
+// 		// Temporary implementation to get latest tx sort by descending timestamp
+// 		// Pull request at bandprotocol/d3n:#224
+// 		node, _ := cliCtx.GetNode()
+// 		block, _ := node.Block(nil)
+// 		totalTxs := int(block.Block.Header.TotalTxs)
+// 		endIndex := totalTxs - (page-1)*limit
+// 		startIndex := totalTxs - page*limit + 1
 
-		if startIndex < 1 {
-			startIndex = 1
-		}
+// 		var result sdk.SearchTxsResult
+// 		result.PageNumber = page
+// 		result.TotalCount = totalTxs
+// 		result.Limit = limit
+// 		result.PageTotal = (totalTxs-1)/limit + 1
+// 		result.Txs = make([]sdk.TxResponse, 0)
 
-		if endIndex < 1 {
-			result.Count = 0
-			rest.PostProcessResponseBare(w, cliCtx, result)
-			return
-		}
+// 		if startIndex < 1 {
+// 			startIndex = 1
+// 		}
 
-		todoIndex := startIndex
-		for todoIndex <= endIndex {
-			pageOfTodoIndex := (todoIndex-1)/limit + 1
-			startIndexOfPage := (pageOfTodoIndex-1)*limit + 1
-			searchResult, err := utils.QueryTxsByEvents(cliCtx, []string{"tx.height>0"}, pageOfTodoIndex, limit)
+// 		if endIndex < 1 {
+// 			result.Count = 0
+// 			rest.PostProcessResponseBare(w, cliCtx, result)
+// 			return
+// 		}
 
-			if err != nil {
-				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-				return
-			}
-			for i, tx := range searchResult.Txs {
-				indexOfTx := startIndexOfPage + i
-				if indexOfTx >= startIndex && indexOfTx <= endIndex {
-					result.Txs = append(result.Txs, tx)
-					todoIndex = indexOfTx + 1
-				}
-			}
-		}
+// 		todoIndex := startIndex
+// 		for todoIndex <= endIndex {
+// 			pageOfTodoIndex := (todoIndex-1)/limit + 1
+// 			startIndexOfPage := (pageOfTodoIndex-1)*limit + 1
+// 			searchResult, err := utils.QueryTxsByEvents(cliCtx, []string{"tx.height>0"}, pageOfTodoIndex, limit)
 
-		result.Count = len(result.Txs)
-		for i, j := 0, len(result.Txs)-1; i < j; i, j = i+1, j-1 {
-			result.Txs[i], result.Txs[j] = result.Txs[j], result.Txs[i]
-		}
+// 			if err != nil {
+// 				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+// 				return
+// 			}
+// 			for i, tx := range searchResult.Txs {
+// 				indexOfTx := startIndexOfPage + i
+// 				if indexOfTx >= startIndex && indexOfTx <= endIndex {
+// 					result.Txs = append(result.Txs, tx)
+// 					todoIndex = indexOfTx + 1
+// 				}
+// 			}
+// 		}
 
-		rest.PostProcessResponseBare(w, cliCtx, result)
-	}
-}
+// 		result.Count = len(result.Txs)
+// 		for i, j := 0, len(result.Txs)-1; i < j; i, j = i+1, j-1 {
+// 			result.Txs[i], result.Txs[j] = result.Txs[j], result.Txs[i]
+// 		}
 
-func GetHealthStatus(cliCtx context.CLIContext) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		node, err := cliCtx.GetNode()
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-		block, err := node.Block(nil)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-		result := "UP"
-		if time.Now().Sub(block.Block.Header.Time) > 3*time.Minute {
-			result = "DOWN"
-		}
-		w.Write([]byte(result))
-	}
-}
+// 		rest.PostProcessResponseBare(w, cliCtx, result)
+// 	}
+// }
 
-func GetProviderStatus(cliCtx context.CLIContext) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		reqNumberResp, _, err := cliCtx.Query("custom/zoracle/request_number")
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-		var requestID string
-		err = json.Unmarshal(reqNumberResp, &requestID)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+// func GetHealthStatus(cliCtx context.CLIContext) http.HandlerFunc {
+// 	return func(w http.ResponseWriter, r *http.Request) {
+// 		node, err := cliCtx.GetNode()
+// 		if err != nil {
+// 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+// 			return
+// 		}
+// 		block, err := node.Block(nil)
+// 		if err != nil {
+// 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+// 			return
+// 		}
+// 		result := "UP"
+// 		if time.Now().Sub(block.Block.Header.Time) > 3*time.Minute {
+// 			result = "DOWN"
+// 		}
+// 		w.Write([]byte(result))
+// 	}
+// }
 
-		res, _, err := cliCtx.Query(fmt.Sprintf("custom/zoracle/request/%s", requestID))
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+// func GetProviderStatus(cliCtx context.CLIContext) http.HandlerFunc {
+// 	return func(w http.ResponseWriter, r *http.Request) {
+// 		reqNumberResp, _, err := cliCtx.Query("custom/zoracle/request_number")
+// 		if err != nil {
+// 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+// 			return
+// 		}
+// 		var requestID string
+// 		err = json.Unmarshal(reqNumberResp, &requestID)
+// 		if err != nil {
+// 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+// 			return
+// 		}
 
-		var request zoracle.RequestQuerierInfo
-		err = cliCtx.Codec.UnmarshalJSON(res, &request)
+// 		res, _, err := cliCtx.Query(fmt.Sprintf("custom/zoracle/request/%s", requestID))
+// 		if err != nil {
+// 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+// 			return
+// 		}
 
-		block, err := cliCtx.Client.Block(nil)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+// 		var request zoracle.RequestQuerierInfo
+// 		err = cliCtx.Codec.UnmarshalJSON(res, &request)
 
-		numReporters := len(request.Reports)
-		status := "GOOD"
-		// TODO: Remove hard-coded provider count threshold
-		if block.Block.Height > request.Request.ExpirationHeight && numReporters < 3 {
-			fmt.Printf(`BAD ------- requestId: %s, reports: %d`, requestID, numReporters)
-			status = "BAD"
-		}
+// 		block, err := cliCtx.Client.Block(nil)
+// 		if err != nil {
+// 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+// 			return
+// 		}
 
-		rest.PostProcessResponseBare(w, cliCtx, struct {
-			Height       int64  `json:"height"`
-			RequestID    string `json:"id"`
-			NumReporters int    `json:"num_reporters"`
-			Status       string `json:"status"`
-		}{
-			Height:       block.Block.Height,
-			RequestID:    requestID,
-			NumReporters: numReporters,
-			Status:       status,
-		})
-	}
-}
+// 		numReporters := len(request.Reports)
+// 		status := "GOOD"
+// 		// TODO: Remove hard-coded provider count threshold
+// 		if block.Block.Height > request.Request.ExpirationHeight && numReporters < 3 {
+// 			fmt.Printf(`BAD ------- requestId: %s, reports: %d`, requestID, numReporters)
+// 			status = "BAD"
+// 		}
 
-func ServeSwaggerUI() http.Handler {
-	statikFS, err := fs.New()
-	if err != nil {
-		panic(err)
-	}
-	staticServer := http.FileServer(statikFS)
+// 		rest.PostProcessResponseBare(w, cliCtx, struct {
+// 			Height       int64  `json:"height"`
+// 			RequestID    string `json:"id"`
+// 			NumReporters int    `json:"num_reporters"`
+// 			Status       string `json:"status"`
+// 		}{
+// 			Height:       block.Block.Height,
+// 			RequestID:    requestID,
+// 			NumReporters: numReporters,
+// 			Status:       status,
+// 		})
+// 	}
+// }
 
-	return http.StripPrefix("/swagger-ui/", staticServer)
-}
+// func ServeSwaggerUI() http.Handler {
+// 	statikFS, err := fs.New()
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	staticServer := http.FileServer(statikFS)
 
-func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router) {
-	r.HandleFunc("/bandchain/blocks/latest", LatestBlocksRequestHandlerFn(cliCtx)).Methods("GET")
-	r.HandleFunc("/bandchain/txs/latest", LatestTxsRequestHandlerFn(cliCtx)).Methods("GET")
-	r.HandleFunc("/bandchain/evm-validators", GetEVMValidators(cliCtx)).Methods("GET")
-	r.HandleFunc(fmt.Sprintf("/bandchain/proof/{%s}", requestIDTag), GetProofHandlerFn(cliCtx)).Methods("GET")
-	r.HandleFunc("/bandchain/health_check", GetHealthStatus(cliCtx)).Methods("GET")
-	r.HandleFunc("/bandchain/provider_status", GetProviderStatus(cliCtx)).Methods("GET")
-	r.PathPrefix("/swagger-ui/").Handler(ServeSwaggerUI())
-}
+// 	return http.StripPrefix("/swagger-ui/", staticServer)
+// }
+
+// func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router) {
+// 	r.HandleFunc("/bandchain/blocks/latest", LatestBlocksRequestHandlerFn(cliCtx)).Methods("GET")
+// 	r.HandleFunc("/bandchain/txs/latest", LatestTxsRequestHandlerFn(cliCtx)).Methods("GET")
+// 	r.HandleFunc("/bandchain/evm-validators", GetEVMValidators(cliCtx)).Methods("GET")
+// 	r.HandleFunc(fmt.Sprintf("/bandchain/proof/{%s}", requestIDTag), GetProofHandlerFn(cliCtx)).Methods("GET")
+// 	r.HandleFunc("/bandchain/health_check", GetHealthStatus(cliCtx)).Methods("GET")
+// 	r.HandleFunc("/bandchain/provider_status", GetProviderStatus(cliCtx)).Methods("GET")
+// 	r.PathPrefix("/swagger-ui/").Handler(ServeSwaggerUI())
+// }

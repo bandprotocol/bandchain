@@ -9,7 +9,7 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
 )
 
-func mockDataSource(ctx sdk.Context, keeper Keeper) sdk.Error {
+func mockDataSource(ctx sdk.Context, keeper Keeper) error {
 	owner := sdk.AccAddress([]byte("owner"))
 	name := "data_source"
 	description := "description"

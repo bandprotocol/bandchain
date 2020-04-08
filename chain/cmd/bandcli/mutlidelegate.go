@@ -1,14 +1,15 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"io/ioutil"
 
-	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
+	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
 	"github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/spf13/cobra"
 	amino "github.com/tendermint/go-amino"
@@ -20,17 +21,18 @@ import (
 //      "to": "bandvaloper1ggmufk3tfrrctr44tg9red3f8hps7nge68z75z",
 //      "amount": "100uband"
 //    }, {
-//      "to": "bandvaloper1asec2q0fyd30kwx6zj7hc5336shmegw0mll724",
+//  	"to": "bandvaloper1asec2q0fyd30kwx6zj7hc5336shmegw0mll724",
 //      "amount": "10uband"
 //    }]
 func multiDelegateCommand(cdc *amino.Codec) *cobra.Command {
-	return client.PostCommands(&cobra.Command{
+	return flags.PostCommands(&cobra.Command{
 		Use:   "multidelegate [config.json]",
 		Short: "Submit a transaction with multiple delegation messages",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			inBuf := bufio.NewReader(cmd.InOrStdin())
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
-			txBldr := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(authclient.GetTxEncoder(cdc))
 
 			type Delegation struct {
 				To     string `json:"to"`
@@ -71,7 +73,7 @@ func multiDelegateCommand(cdc *amino.Codec) *cobra.Command {
 				msgs = append(msgs, msg)
 			}
 
-			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, msgs)
+			return authclient.GenerateOrBroadcastMsgs(cliCtx, txBldr, msgs)
 		},
 	})[0]
 }

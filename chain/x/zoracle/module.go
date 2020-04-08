@@ -26,14 +26,14 @@ func (AppModuleBasic) RegisterCodec(cdc *codec.Codec) {
 	RegisterCodec(cdc)
 }
 
-func (AppModuleBasic) DefaultGenesis() json.RawMessage {
-	return ModuleCdc.MustMarshalJSON(DefaultGenesisState())
+func (AppModuleBasic) DefaultGenesis(cdc codec.JSONMarshaler) json.RawMessage {
+	return cdc.MustMarshalJSON(DefaultGenesisState())
 }
 
 // Validation check of the Genesis
-func (AppModuleBasic) ValidateGenesis(bz json.RawMessage) error {
+func (AppModuleBasic) ValidateGenesis(cdc codec.JSONMarshaler, bz json.RawMessage) error {
 	var data GenesisState
-	err := ModuleCdc.UnmarshalJSON(bz, &data)
+	err := cdc.UnmarshalJSON(bz, &data)
 	if err != nil {
 		return err
 	}
@@ -97,13 +97,13 @@ func (am AppModule) EndBlock(ctx sdk.Context, _ abci.RequestEndBlock) []abci.Val
 	return []abci.ValidatorUpdate{}
 }
 
-func (am AppModule) InitGenesis(ctx sdk.Context, data json.RawMessage) []abci.ValidatorUpdate {
+func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, data json.RawMessage) []abci.ValidatorUpdate {
 	var genesisState GenesisState
-	ModuleCdc.MustUnmarshalJSON(data, &genesisState)
+	cdc.MustUnmarshalJSON(data, &genesisState)
 	return InitGenesis(ctx, am.keeper, genesisState)
 }
 
-func (am AppModule) ExportGenesis(ctx sdk.Context) json.RawMessage {
+func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONMarshaler) json.RawMessage {
 	gs := ExportGenesis(ctx, am.keeper)
-	return ModuleCdc.MustMarshalJSON(gs)
+	return cdc.MustMarshalJSON(gs)
 }

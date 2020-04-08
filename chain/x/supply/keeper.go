@@ -4,8 +4,10 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/supply"
+	"github.com/cosmos/cosmos-sdk/x/supply/types"
 )
 
 // WrappedSupplyKeeper encapsulates the underlying supply keeper and overrides
@@ -37,7 +39,7 @@ func (k *WrappedSupplyKeeper) SetDistrKeeper(distrKeeper *distr.Keeper) {
 // the community pool. The total supply of the coins will not change.
 func (k WrappedSupplyKeeper) BurnCoins(
 	ctx sdk.Context, moduleName string, amt sdk.Coins,
-) sdk.Error {
+) error {
 	// If distrKeeper is not set OR we want to burn coins in distr itself, we will
 	// just use the original BurnCoins function.
 	if k.distrKeeper == nil || moduleName == distr.ModuleName {
@@ -47,19 +49,24 @@ func (k WrappedSupplyKeeper) BurnCoins(
 	// Create the account if it doesn't yet exist.
 	acc := k.GetModuleAccount(ctx, moduleName)
 	if acc == nil {
-		return sdk.ErrUnknownAddress(fmt.Sprintf("module account %s does not exist", moduleName))
+		panic(sdkerrors.Wrapf(
+			sdkerrors.ErrUnknownAddress,
+			"module account %s does not exist", moduleName,
+		))
 	}
 
-	if !acc.HasPermission(supply.Burner) {
-		panic(fmt.Sprintf(
-			"module account %s does not have permissions to burn tokens", moduleName,
+	if !acc.HasPermission(types.Burner) {
+		panic(sdkerrors.Wrapf(
+			sdkerrors.ErrUnauthorized,
+			"module account %s does not have permissions to burn tokens",
+			moduleName,
 		))
 	}
 
 	// Instead of burning coins, we send them to the community pool.
 	k.SendCoinsFromModuleToModule(ctx, moduleName, distr.ModuleName, amt)
 	feePool := k.distrKeeper.GetFeePool(ctx)
-	feePool.CommunityPool = feePool.CommunityPool.Add(sdk.NewDecCoins(amt))
+	feePool.CommunityPool = feePool.CommunityPool.Add(sdk.NewDecCoinsFromCoins(amt...)...)
 	k.distrKeeper.SetFeePool(ctx, feePool)
 
 	logger := k.Logger(ctx)
