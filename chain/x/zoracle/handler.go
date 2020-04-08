@@ -8,7 +8,7 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	channel "github.com/cosmos/cosmos-sdk/x/ibc/04-channel"
+	_ "github.com/cosmos/cosmos-sdk/x/ibc/04-channel"
 	channeltypes "github.com/cosmos/cosmos-sdk/x/ibc/04-channel/types"
 )
 
@@ -29,36 +29,36 @@ func NewHandler(keeper Keeper) sdk.Handler {
 			// TODO: Remove this hack!!!
 			// Here we assume that call data contains "sourceChannel + data"
 			// sourceChannel is always 10 characters
-			sourceChannel := string(msg.Calldata[:10])
-			calldata := hex.EncodeToString(msg.Calldata[10:])
-			sourceChannelEnd, found := keeper.ChannelKeeper.GetChannel(ctx, "zoracle", sourceChannel)
-			if !found {
-				return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unknown channel %s port zoracle", sourceChannel)
-			}
-			destinationPort := sourceChannelEnd.Counterparty.PortID
-			destinationChannel := sourceChannelEnd.Counterparty.ChannelID
-			sequence, found := keeper.ChannelKeeper.GetNextSequenceSend(ctx, "zoracle", sourceChannel)
-			if !found {
-				return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unknown sequence number for channel %s port zoracle", sourceChannel)
-			}
+			// sourceChannel := string(msg.Calldata[:10])
+			// calldata := hex.EncodeToString(msg.Calldata[10:])
+			// sourceChannelEnd, found := keeper.ChannelKeeper.GetChannel(ctx, "zoracle", sourceChannel)
+			// if !found {
+			// 	return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unknown channel %s port zoracle", sourceChannel)
+			// }
+			// destinationPort := sourceChannelEnd.Counterparty.PortID
+			// destinationChannel := sourceChannelEnd.Counterparty.ChannelID
+			// sequence, found := keeper.ChannelKeeper.GetNextSequenceSend(ctx, "zoracle", sourceChannel)
+			// if !found {
+			// 	return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unknown sequence number for channel %s port zoracle", sourceChannel)
+			// }
 
-			fmt.Println(msg)
-			packet := NewOracleRequestPacketData(
-				msg.OracleScriptID, calldata, msg.RequestedValidatorCount,
-				msg.SufficientValidatorCount, msg.Expiration, msg.PrepareGas,
-				msg.ExecuteGas,
-			)
-			fmt.Println(packet.GetBytes())
-			err := keeper.ChannelKeeper.SendPacket(ctx, channel.NewPacket(packet.GetBytes(),
-				sequence, "zoracle", sourceChannel, destinationPort, destinationChannel,
-				1000000000, // Arbitrarily high timeout for now
-			))
-			if err != nil {
-				return nil, err
-			}
+			// fmt.Println(msg)
+			// packet := NewOracleRequestPacketData(
+			// 	msg.OracleScriptID, calldata, msg.RequestedValidatorCount,
+			// 	msg.SufficientValidatorCount, msg.Expiration, msg.PrepareGas,
+			// 	msg.ExecuteGas,
+			// )
+			// fmt.Println(packet.GetBytes())
+			// err := keeper.ChannelKeeper.SendPacket(ctx, channel.NewPacket(packet.GetBytes(),
+			// 	sequence, "zoracle", sourceChannel, destinationPort, destinationChannel,
+			// 	1000000000, // Arbitrarily high timeout for now
+			// ))
+			// if err != nil {
+			// 	return nil, err
+			// }
 
-			return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
-			// return handleMsgRequestData(ctx, keeper, msg)
+			// return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
+			return handleMsgRequestData(ctx, keeper, msg)
 		case MsgReportData:
 			return handleMsgReportData(ctx, keeper, msg)
 		case MsgAddOracleAddress:
