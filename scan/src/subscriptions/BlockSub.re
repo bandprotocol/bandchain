@@ -56,7 +56,7 @@ module MultiConfig = [%graphql
 
 module MultiConsensusAddressConfig = [%graphql
   {|
-  subscription Blocks($limit: Int!, $offset: Int!, $address: String!) {
+  subscription BlocksByConsensusAddress($limit: Int!, $offset: Int!, $address: String!) {
     blocks(limit: $limit, offset: $offset, order_by: {height: desc}, where: {proposer: {_eq: $address}}) @bsRecord {
       height @bsDecoder(fn: "ID.Block.fromJson")
       hash: block_hash @bsDecoder(fn: "GraphQLParser.hash")
@@ -112,7 +112,7 @@ module BlockCountConfig = [%graphql
 
 module BlockCountConsensusAddressConfig = [%graphql
   {|
-  subscription BlocksCount($address: String!) {
+  subscription BlocksCountByConsensusAddress($address: String!) {
     blocks_aggregate(where: {proposer: {_eq: $address}}) {
       aggregate{
         count @bsDecoder(fn: "Belt_Option.getExn")
