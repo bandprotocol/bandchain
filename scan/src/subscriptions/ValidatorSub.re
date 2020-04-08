@@ -23,6 +23,7 @@ type delegator_t = {
 
 type internal_t = {
   operatorAddress: Address.t,
+  consensusAddress: Address.t,
   moniker: string,
   identity: string,
   website: string,
@@ -40,6 +41,7 @@ type t = {
   avgResponseTime: int,
   isActive: bool,
   operatorAddress: Address.t,
+  consensusAddress: Address.t,
   consensusPubKey: PubKey.t,
   rewardDestinationAddress: string,
   votingPower: float,
@@ -60,6 +62,7 @@ let toExternal =
     (
       {
         operatorAddress,
+        consensusAddress,
         moniker,
         identity,
         website,
@@ -76,6 +79,7 @@ let toExternal =
   avgResponseTime: 2,
   isActive: !jailed,
   operatorAddress,
+  consensusAddress,
   consensusPubKey,
   rewardDestinationAddress: "band17ljds2gj3kds234lkg",
   votingPower: tokens,
@@ -106,6 +110,7 @@ module SingleConfig = [%graphql
       subscription Validator($operator_address: String!) {
         validators_by_pk(operator_address: $operator_address) @bsRecord {
           operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
+          consensusAddress: consensus_address @bsDecoder(fn: "Address.fromHex")
           moniker
           identity
           website
@@ -127,6 +132,7 @@ module MultiConfig = [%graphql
       subscription Validator($limit: Int!, $offset: Int!) {
         validators(limit: $limit, offset: $offset) @bsRecord {
           operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
+          consensusAddress: consensus_address @bsDecoder(fn: "Address.fromHex")
           moniker
           identity
           website
