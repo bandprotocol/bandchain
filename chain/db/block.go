@@ -3,13 +3,13 @@ package db
 import (
 	"time"
 
-	"github.com/tendermint/tendermint/libs/common"
+	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 )
 
 func (b *BandDB) AddBlock(
 	height int64,
 	timestamp time.Time,
-	proposer common.HexBytes,
+	proposer tmbytes.HexBytes,
 	blockHash []byte,
 ) error {
 	return b.tx.Create(&Block{

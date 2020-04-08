@@ -17,7 +17,6 @@ all: lint install
 install: go.sum
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/bandd
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/bandcli
-	go install -mod=readonly $(BUILD_FLAGS) ./cmd/bandsv
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/bandoracled
 
 release: go.sum

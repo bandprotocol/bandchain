@@ -7,7 +7,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
 	"github.com/stretchr/testify/require"
 	crypto "github.com/tendermint/tendermint/crypto"
 
@@ -17,13 +16,17 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	codecstd "github.com/cosmos/cosmos-sdk/codec/std"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/cosmos/cosmos-sdk/x/ibc"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/supply"
+
+	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
 )
 
 const Bech32MainPrefix = "band"
@@ -53,13 +56,17 @@ func SetBech32AddressPrefixesAndBip44CoinType(config *sdk.Config) {
 	config.SetCoinType(Bip44CoinType)
 }
 
+// TODO: Create a test context that encapsulates this.
+var accountKeeper auth.AccountKeeper
+
 func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 	keyRequest := sdk.NewKVStoreKey(types.StoreKey)
-	tkeyRequest := sdk.NewKVStoreKey(staking.TStoreKey)
 	keyAcc := sdk.NewKVStoreKey(auth.StoreKey)
 	keyParams := sdk.NewKVStoreKey(params.StoreKey)
 	tkeyParams := sdk.NewTransientStoreKey(params.TStoreKey)
 	keySupply := sdk.NewKVStoreKey(supply.StoreKey)
+	keyBank := sdk.NewKVStoreKey(bank.StoreKey)
+	keyIBC := sdk.NewKVStoreKey(ibc.StoreKey)
 
 	config := sdk.GetConfig()
 	SetBech32AddressPrefixesAndBip44CoinType(config)
@@ -72,21 +79,24 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 	ms.MountStoreWithDB(keyParams, sdk.StoreTypeIAVL, db)
 	ms.MountStoreWithDB(tkeyParams, sdk.StoreTypeTransient, db)
 	ms.MountStoreWithDB(keySupply, sdk.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keyBank, sdk.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keyIBC, sdk.StoreTypeIAVL, db)
 
 	err := ms.LoadLatestVersion()
 	require.Nil(t, err)
 
 	ctx := sdk.NewContext(ms, abci.Header{Time: time.Unix(0, 0)}, isCheckTx, log.NewNopLogger())
 	cdc := createTestCodec()
+	appCodec := codecstd.NewAppCodec(cdc)
 
 	notBondedPool := supply.NewEmptyModuleAccount(staking.NotBondedPoolName, supply.Burner, supply.Staking)
 	bondPool := supply.NewEmptyModuleAccount(staking.BondedPoolName, supply.Burner, supply.Staking)
 
-	pk := params.NewKeeper(cdc, keyParams, tkeyParams, params.DefaultCodespace)
+	pk := params.NewKeeper(appCodec, keyParams, tkeyParams)
 
-	accountKeeper := auth.NewAccountKeeper(
-		cdc,    // amino codec
-		keyAcc, // account store key
+	accountKeeper = auth.NewAccountKeeper(
+		appCodec, // amino codec
+		keyAcc,   // account store key
 		pk.Subspace(auth.DefaultParamspace),
 		auth.ProtoBaseAccount, // prototype
 	)
@@ -104,9 +114,10 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 	blacklistedAddrs[bondPool.GetAddress().String()] = true
 
 	bk := bank.NewBaseKeeper(
+		appCodec,
+		keyBank,
 		accountKeeper,
 		pk.Subspace(bank.DefaultParamspace),
-		bank.DefaultCodespace,
 		blacklistedAddrs,
 	)
 
@@ -115,24 +126,26 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 		staking.NotBondedPoolName: {supply.Burner, supply.Staking},
 		staking.BondedPoolName:    {supply.Burner, supply.Staking},
 	}
-	supplyKeeper := supply.NewKeeper(cdc, keySupply, accountKeeper, bk, maccPerms)
+	supplyKeeper := supply.NewKeeper(appCodec, keySupply, accountKeeper, bk, maccPerms)
 
 	initTokens := sdk.TokensFromConsensusPower(10)                                       // 10^7 for staking
 	totalSupply := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, initTokens.MulRaw(2))) // 2 = total validator address
 
 	supplyKeeper.SetSupply(ctx, supply.NewSupply(totalSupply))
 
-	sk := staking.NewKeeper(cdc, keyRequest, tkeyRequest, supplyKeeper, pk.Subspace(staking.DefaultParamspace), staking.DefaultCodespace)
+	sk := staking.NewKeeper(appCodec, keyRequest, bk, supplyKeeper, pk.Subspace(staking.DefaultParamspace))
 	sk.SetParams(ctx, staking.DefaultParams())
 
 	// set module accounts
-	err = notBondedPool.SetCoins(totalSupply)
+	err = bk.SetBalances(ctx, notBondedPool.GetAddress(), totalSupply)
 	require.NoError(t, err)
 
 	supplyKeeper.SetModuleAccount(ctx, bondPool)
 	supplyKeeper.SetModuleAccount(ctx, notBondedPool)
 
-	keeper := NewKeeper(cdc, keyRequest, bk, sk, pk.Subspace(types.DefaultParamspace))
+	ibcKeeper := ibc.NewKeeper(cdc, keyIBC, sk)
+
+	keeper := NewKeeper(cdc, keyRequest, bk, sk, ibcKeeper.ChannelKeeper, pk.Subspace(types.DefaultParamspace))
 	require.Equal(t, account.GetAddress(), addr)
 	accountKeeper.SetAccount(ctx, account)
 
@@ -158,13 +171,23 @@ func SetupTestValidator(ctx sdk.Context, keeper Keeper, pk string, power int64) 
 	validatorAddress := sdk.ValAddress(pubKey.Address())
 	initTokens := sdk.TokensFromConsensusPower(power)
 	initCoins := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, initTokens))
-	keeper.CoinKeeper.AddCoins(ctx, sdk.AccAddress(pubKey.Address()), initCoins)
 
-	msgCreateValidator := staking.NewTestMsgCreateValidator(
-		validatorAddress, pubKey, sdk.TokensFromConsensusPower(power),
+	addr := sdk.AccAddress(pubKey.Address())
+	keeper.CoinKeeper.SetBalances(ctx, addr, initCoins)
+	accountKeeper.SetAccount(ctx, accountKeeper.NewAccountWithAddress(ctx, addr))
+
+	msgCreateValidator := staking.NewMsgCreateValidator(
+		validatorAddress, pubKey,
+		sdk.NewCoin(sdk.DefaultBondDenom, sdk.TokensFromConsensusPower(power)),
+		staking.Description{},
+		staking.NewCommissionRates(sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec()), sdk.OneInt(),
 	)
+
 	stakingHandler := staking.NewHandler(keeper.StakingKeeper)
-	stakingHandler(ctx, msgCreateValidator)
+	_, err := stakingHandler(ctx, msgCreateValidator)
+	if err != nil {
+		panic(err)
+	}
 
 	keeper.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
 	return validatorAddress
