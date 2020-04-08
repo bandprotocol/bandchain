@@ -163,7 +163,6 @@ func handleRequest(requestID zoracle.RequestID) {
 			found = true
 		}
 	}
-
 	if !found {
 		return
 	}
