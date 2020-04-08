@@ -14,9 +14,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	dist "github.com/cosmos/cosmos-sdk/x/distribution"
+	"github.com/cosmos/cosmos-sdk/x/evidence"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	connection "github.com/cosmos/cosmos-sdk/x/ibc/03-connection"
 	channel "github.com/cosmos/cosmos-sdk/x/ibc/04-channel"
+	tclient "github.com/cosmos/cosmos-sdk/x/ibc/07-tendermint/types"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 
@@ -420,6 +422,7 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 	case gov.MsgDeposit:
 	case gov.MsgSubmitProposal:
 	case gov.MsgVote:
+	case evidence.MsgSubmitEvidenceBase:
 	case crisis.MsgVerifyInvariant:
 	case slashing.MsgUnjail:
 		err := b.handleMsgUnjail(msg)
@@ -439,6 +442,9 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 	case channel.MsgPacket:
 	case channel.MsgAcknowledgement:
 	case channel.MsgTimeout:
+	case tclient.MsgCreateClient:
+	case tclient.MsgUpdateClient:
+	case tclient.MsgSubmitClientMisbehaviour:
 	default:
 		panic(fmt.Sprintf("Message %s does not support", msg.Type()))
 	}
@@ -489,6 +495,7 @@ func (b *BandDB) GetInvolvedAccountsFromTx(tx auth.StdTx) []sdk.AccAddress {
 		case gov.MsgSubmitProposal:
 			involvedAccounts = append(involvedAccounts, msg.Proposer)
 		case gov.MsgVote:
+		case evidence.MsgSubmitEvidenceBase:
 		case crisis.MsgVerifyInvariant:
 		case slashing.MsgUnjail:
 		case connection.MsgConnectionOpenInit:
