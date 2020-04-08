@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
+	"github.com/bandprotocol/bandchain/chain/x/zoracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )

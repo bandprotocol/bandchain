@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
+	"github.com/bandprotocol/bandchain/chain/x/zoracle/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/flags"

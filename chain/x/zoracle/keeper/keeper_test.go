@@ -3,7 +3,7 @@ package keeper
 import (
 	"testing"
 
-	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
+	"github.com/bandprotocol/bandchain/chain/x/zoracle/types"
 	"github.com/stretchr/testify/require"
 )
 
