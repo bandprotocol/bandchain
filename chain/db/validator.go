@@ -1,10 +1,8 @@
 package db
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/staking"
+	"github.com/tendermint/tendermint/crypto"
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 )
 
@@ -81,57 +79,50 @@ func (b *BandDB) ClearOldVotes(currentHeight int64) error {
 	return nil
 }
 
+func (b *BandDB) CreateValidator(
+	validatorAddress sdk.ValAddress,
+	pubkey crypto.PubKey,
+	moniker string,
+	identity string,
+	website string,
+	details string,
+	commissionRate sdk.Dec,
+	commissionMaxRate sdk.Dec,
+	commissionMaxChangeRate sdk.Dec,
+	minSelfDelegation sdk.Int,
+	value sdk.Coin,
+) error {
+	return b.tx.Create(&Validator{
+		OperatorAddress:     validatorAddress.String(),
+		ConsensusAddress:    pubkey.Address().String(),
+		ConsensusPubkey:     sdk.MustBech32ifyPubKey(sdk.Bech32PubKeyTypeConsPub, pubkey),
+		Moniker:             moniker,
+		Identity:            identity,
+		Website:             website,
+		Details:             details,
+		CommissionRate:      commissionRate.String(),
+		CommissionMaxRate:   commissionMaxRate.String(),
+		CommissionMaxChange: commissionMaxChangeRate.String(),
+		MinSelfDelegation:   minSelfDelegation.String(),
+		Tokens:              value.Amount.String(),
+		DelegatorShares:     value.Amount.String(),
+	}).Error
+}
+
+func (b *BandDB) UpdateValidator(validatorAddress sdk.ValAddress, details *Validator) error {
+	return b.tx.Model(&Validator{}).
+		Where(Validator{OperatorAddress: validatorAddress.String()}).
+		Update(details).Error
+}
+
+func (b *BandDB) RemoveValidator(validatorAddress sdk.ValAddress) error {
+	return b.tx.Delete(Validator{
+		OperatorAddress: validatorAddress.String(),
+	}).Error
+}
+
 func (b *BandDB) GetValidator(validator sdk.ValAddress) (Validator, bool) {
 	validatorStruct := Validator{OperatorAddress: validator.String()}
 	err := b.tx.First(&validatorStruct).Error
 	return validatorStruct, err == nil
-}
-
-func (b *BandDB) handleMsgEditValidator(msg staking.MsgEditValidator) error {
-	validator, isFound := b.GetValidator(msg.ValidatorAddress)
-	if !isFound {
-		return fmt.Errorf(fmt.Sprintf("validator %s does not exist.", msg.ValidatorAddress.String()))
-	}
-
-	if msg.Description.Moniker != staking.DoNotModifyDesc {
-		validator.Moniker = msg.Description.Moniker
-	}
-	if msg.Description.Identity != staking.DoNotModifyDesc {
-		validator.Identity = msg.Description.Identity
-	}
-	if msg.Description.Website != staking.DoNotModifyDesc {
-		validator.Website = msg.Description.Website
-	}
-	if msg.Description.Details != staking.DoNotModifyDesc {
-		validator.Details = msg.Description.Details
-	}
-	if msg.CommissionRate != nil {
-		validator.CommissionRate = msg.CommissionRate.String()
-	}
-	if msg.MinSelfDelegation != nil {
-		validator.MinSelfDelegation = msg.MinSelfDelegation.ToDec().String()
-	}
-
-	return b.tx.Save(&validator).Error
-}
-
-func (b *BandDB) handleMsgCreateValidator(msg staking.MsgCreateValidator) error {
-	pubKey, err := sdk.GetPubKeyFromBech32(sdk.Bech32PubKeyTypeConsPub, msg.Pubkey)
-	if err != nil {
-		return err
-	}
-
-	return b.tx.Create(&Validator{
-		OperatorAddress:     msg.ValidatorAddress.String(),
-		ConsensusAddress:    pubKey.Address().String(),
-		Moniker:             msg.Description.Moniker,
-		Identity:            msg.Description.Identity,
-		Website:             msg.Description.Website,
-		Details:             msg.Description.Details,
-		CommissionRate:      msg.Commission.Rate.String(),
-		CommissionMaxRate:   msg.Commission.MaxRate.String(),
-		CommissionMaxChange: msg.Commission.MaxChangeRate.String(),
-		MinSelfDelegation:   msg.MinSelfDelegation.ToDec().String(),
-		SelfDelegation:      msg.Value.Amount.ToDec().String(),
-	}).Error
 }

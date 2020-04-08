@@ -38,6 +38,7 @@ type Account struct {
 type Validator struct {
 	OperatorAddress     string `gorm:"primary_key"`
 	ConsensusAddress    string `gorm:"unique;not null"`
+	ConsensusPubkey     string `gorm:"not null"`
 	ElectedCount        uint   `gorm:"not null"`
 	VotedCount          uint   `gorm:"not null"`
 	MissedCount         uint   `gorm:"not null"`
@@ -49,13 +50,21 @@ type Validator struct {
 	CommissionMaxRate   string `gorm:"not null"`
 	CommissionMaxChange string `gorm:"not null"`
 	MinSelfDelegation   string `gorm:"not null"`
-	SelfDelegation      string `gorm:"not null"`
+	Jailed              bool   `gorm:"not null"`
+	Tokens              string `gorm:"not null"`
+	DelegatorShares     string `gorm:"not null"`
 }
 
 type ValidatorVote struct {
 	ConsensusAddress string `gorm:"primary_key"`
 	BlockHeight      int64  `gorm:"primary_key;auto_increment:false"`
 	Voted            bool   `gorm:"not null"`
+}
+
+type Delegation struct {
+	DelegatorAddress string `gorm:"primary_key"`
+	ValidatorAddress string `gorm:"primary_key"`
+	Shares           string `gorm:"not null"`
 }
 
 type DataSource struct {
