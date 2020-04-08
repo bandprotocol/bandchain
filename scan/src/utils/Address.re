@@ -7,9 +7,12 @@ let fromBech32 = bech32str => {
 
 let fromHex = hexstr => Address(hexstr->HexUtils.normalizeHexString);
 
-let toHex = (~with0x=false) =>
+let toHex = (~with0x=false, ~upper=false) =>
   fun
-  | Address(hexstr) => (with0x ? "0x" : "") ++ hexstr;
+  | Address(hexstr) => {
+      let lowercase = (with0x ? "0x" : "") ++ hexstr;
+      upper ? lowercase->String.uppercase_ascii : lowercase;
+    };
 
 let bech32ToHex = bech32str => bech32str->fromBech32->toHex;
 
