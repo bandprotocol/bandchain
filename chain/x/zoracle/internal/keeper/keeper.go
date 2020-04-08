@@ -15,19 +15,21 @@ type Keeper struct {
 	cdc           *codec.Codec
 	CoinKeeper    bank.Keeper
 	StakingKeeper staking.Keeper
+	ChannelKeeper types.ChannelKeeper
 	ParamSpace    params.Subspace
 }
 
 // NewKeeper creates a new zoracle Keeper instance.
 func NewKeeper(
 	cdc *codec.Codec, key sdk.StoreKey, coinKeeper bank.Keeper,
-	stakingKeeper staking.Keeper, paramSpace params.Subspace,
+	stakingKeeper staking.Keeper, channelKeeper types.ChannelKeeper, paramSpace params.Subspace,
 ) Keeper {
 	return Keeper{
 		storeKey:      key,
 		cdc:           cdc,
 		CoinKeeper:    coinKeeper,
 		StakingKeeper: stakingKeeper,
+		ChannelKeeper: channelKeeper,
 		ParamSpace:    paramSpace.WithKeyTable(ParamKeyTable()),
 	}
 }

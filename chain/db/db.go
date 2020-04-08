@@ -9,15 +9,18 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 
-	"github.com/bandprotocol/bandchain/chain/x/zoracle"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	dist "github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/gov"
+	connection "github.com/cosmos/cosmos-sdk/x/ibc/03-connection"
+	channel "github.com/cosmos/cosmos-sdk/x/ibc/04-channel"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
+
+	"github.com/bandprotocol/bandchain/chain/x/zoracle"
 )
 
 type BandDB struct {
@@ -42,6 +45,7 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		&Account{},
 		&Validator{},
 		&ValidatorVote{},
+		&Delegation{},
 		&DataSource{},
 		&DataSourceRevision{},
 		&OracleScript{},
@@ -79,6 +83,20 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 	db.Model(&ValidatorVote{}).AddForeignKey(
 		"consensus_address",
 		"validators(consensus_address)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&Delegation{}).AddForeignKey(
+		"delegator_address",
+		"accounts(address)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&Delegation{}).AddForeignKey(
+		"validator_address",
+		"validators(operator_address)",
 		"RESTRICT",
 		"RESTRICT",
 	)
@@ -244,6 +262,13 @@ func (b *BandDB) SetContext(ctx sdk.Context) {
 	b.ctx = ctx
 }
 
+func wrapMessage(msg []map[string]interface{}, status string) map[string]interface{} {
+	objMsg := make(map[string]interface{})
+	objMsg["messages"] = msg
+	objMsg["status"] = status
+	return objMsg
+}
+
 func (b *BandDB) HandleTransaction(tx auth.StdTx, txHash []byte, logs sdk.ABCIMessageLogs) {
 	msgs := tx.GetMsgs()
 
@@ -270,8 +295,8 @@ func (b *BandDB) HandleTransaction(tx auth.StdTx, txHash []byte, logs sdk.ABCIMe
 		messages = append(messages, newMsg)
 
 	}
-
-	b.UpdateTransaction(txHash, messages)
+	wrapedMsg := wrapMessage(messages, "success")
+	b.UpdateTransaction(txHash, wrapedMsg)
 }
 
 func (b *BandDB) HandleTransactionFail(tx auth.StdTx, txHash []byte) {
@@ -283,7 +308,9 @@ func (b *BandDB) HandleTransactionFail(tx auth.StdTx, txHash []byte) {
 		message["type"] = txMsg.Type()
 		messages = append(messages, message)
 	}
-	b.UpdateTransaction(txHash, messages)
+
+	wrapedMsg := wrapMessage(messages, "failure")
+	b.UpdateTransaction(txHash, wrapedMsg)
 }
 
 func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]string) (map[string]interface{}, error) {
@@ -361,6 +388,7 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		val, _ := b.StakingKeeper.GetValidator(b.ctx, msg.Validator)
 		jsonMap["validatorMoniker"] = val.Description.Moniker
 	case bank.MsgSend:
+	case bank.MsgMultiSend:
 	case staking.MsgCreateValidator:
 		err := b.handleMsgCreateValidator(msg)
 		if err != nil {
@@ -371,10 +399,48 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		if err != nil {
 			return nil, err
 		}
+	case staking.MsgDelegate:
+		err := b.handleMsgDelegate(msg)
+		if err != nil {
+			return nil, err
+		}
+	case staking.MsgBeginRedelegate:
+		err := b.handleMsgBeginRedelegate(msg)
+		if err != nil {
+			return nil, err
+		}
+	case staking.MsgUndelegate:
+		err := b.handleMsgUndelegate(msg)
+		if err != nil {
+			return nil, err
+		}
+	case dist.MsgSetWithdrawAddress:
+	case dist.MsgWithdrawDelegatorReward:
+	case dist.MsgWithdrawValidatorCommission:
+	case gov.MsgDeposit:
+	case gov.MsgSubmitProposal:
+	case gov.MsgVote:
+	case crisis.MsgVerifyInvariant:
+	case slashing.MsgUnjail:
+		err := b.handleMsgUnjail(msg)
+		if err != nil {
+			return nil, err
+		}
+	case connection.MsgConnectionOpenInit:
+	case connection.MsgConnectionOpenTry:
+	case connection.MsgConnectionOpenAck:
+	case connection.MsgConnectionOpenConfirm:
+	case channel.MsgChannelOpenInit:
+	case channel.MsgChannelOpenTry:
+	case channel.MsgChannelOpenAck:
+	case channel.MsgChannelOpenConfirm:
+	case channel.MsgChannelCloseInit:
+	case channel.MsgChannelCloseConfirm:
+	case channel.MsgPacket:
+	case channel.MsgAcknowledgement:
+	case channel.MsgTimeout:
 	default:
-		// TODO: Better logging
-		fmt.Println("HandleMessage: There isn't event handler for this type")
-		return nil, nil
+		panic(fmt.Sprintf("Message %s does not support", msg.Type()))
 	}
 	jsonMap["type"] = events["message.action"]
 
@@ -386,17 +452,11 @@ func (b *BandDB) GetInvolvedAccountsFromTx(tx auth.StdTx) []sdk.AccAddress {
 	for _, msg := range tx.GetMsgs() {
 		switch msg := msg.(type) {
 		case zoracle.MsgCreateDataSource:
-			continue
 		case zoracle.MsgEditDataSource:
-			continue
 		case zoracle.MsgCreateOracleScript:
-			continue
 		case zoracle.MsgEditOracleScript:
-			continue
 		case zoracle.MsgAddOracleAddress:
-			continue
 		case zoracle.MsgRemoveOracleAddress:
-			continue
 		case zoracle.MsgRequestData:
 			involvedAccounts = append(involvedAccounts, msg.Sender)
 		case zoracle.MsgReportData:
@@ -413,7 +473,6 @@ func (b *BandDB) GetInvolvedAccountsFromTx(tx auth.StdTx) []sdk.AccAddress {
 		case staking.MsgCreateValidator:
 			involvedAccounts = append(involvedAccounts, msg.DelegatorAddress)
 		case staking.MsgEditValidator:
-			continue
 		case staking.MsgDelegate:
 			involvedAccounts = append(involvedAccounts, msg.DelegatorAddress)
 		case staking.MsgBeginRedelegate:
@@ -421,7 +480,6 @@ func (b *BandDB) GetInvolvedAccountsFromTx(tx auth.StdTx) []sdk.AccAddress {
 		case staking.MsgUndelegate:
 			involvedAccounts = append(involvedAccounts, msg.DelegatorAddress)
 		case dist.MsgSetWithdrawAddress:
-			continue
 		case dist.MsgWithdrawDelegatorReward:
 			involvedAccounts = append(involvedAccounts, msg.DelegatorAddress)
 		case dist.MsgWithdrawValidatorCommission:
@@ -431,11 +489,21 @@ func (b *BandDB) GetInvolvedAccountsFromTx(tx auth.StdTx) []sdk.AccAddress {
 		case gov.MsgSubmitProposal:
 			involvedAccounts = append(involvedAccounts, msg.Proposer)
 		case gov.MsgVote:
-			continue
 		case crisis.MsgVerifyInvariant:
-			continue
 		case slashing.MsgUnjail:
-			continue
+		case connection.MsgConnectionOpenInit:
+		case connection.MsgConnectionOpenTry:
+		case connection.MsgConnectionOpenAck:
+		case connection.MsgConnectionOpenConfirm:
+		case channel.MsgChannelOpenInit:
+		case channel.MsgChannelOpenTry:
+		case channel.MsgChannelOpenAck:
+		case channel.MsgChannelOpenConfirm:
+		case channel.MsgChannelCloseInit:
+		case channel.MsgChannelCloseConfirm:
+		case channel.MsgPacket:
+		case channel.MsgAcknowledgement:
+		case channel.MsgTimeout:
 		default:
 			panic(fmt.Sprintf("Message %s does not support", msg.Type()))
 		}

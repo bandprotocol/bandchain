@@ -24,6 +24,9 @@ type Request struct {
 	ExpirationHeight         int64            `json:"expirationHeight"`
 	ExecuteGas               uint64           `json:"executeGas"`
 	ResolveStatus            ResolveStatus    `json:"resolveStatus"`
+
+	SourcePort    string `json:"soucePort"`
+	SourceChannel string `json:"sourceChannel"`
 }
 
 // NewRequest creates a new Request instance.
@@ -47,6 +50,8 @@ func NewRequest(
 		ExpirationHeight:         expirationHeight,
 		ExecuteGas:               executeGas,
 		ResolveStatus:            Open,
+		SourcePort:               "",
+		SourceChannel:            "",
 	}
 }
 
