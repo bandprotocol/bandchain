@@ -684,6 +684,7 @@ let renderBody = (msg: TxSub.Msg.t) => {
   | RemoveOracleAddress(address) => renderRemoveOracleAddress(msg, address)
   | CreateValidator(validator) => renderCreateValidator(msg, validator)
   | EditValidator(validator) => renderEditValidator(msg, validator)
+  | FailMessage(_) => React.null
   | Unknown => React.null
   };
 };
