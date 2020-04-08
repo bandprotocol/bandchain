@@ -6,7 +6,7 @@ import (
 	"math"
 
 	"github.com/bandprotocol/bandchain/chain/owasm"
-	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
+	"github.com/bandprotocol/bandchain/chain/x/zoracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	channel "github.com/cosmos/cosmos-sdk/x/ibc/04-channel"
 )

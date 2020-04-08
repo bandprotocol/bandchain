@@ -1,8 +1,8 @@
 package zoracle
 
 import (
-	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/keeper"
-	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
+	"github.com/bandprotocol/bandchain/chain/x/zoracle/keeper"
+	"github.com/bandprotocol/bandchain/chain/x/zoracle/types"
 )
 
 const (
