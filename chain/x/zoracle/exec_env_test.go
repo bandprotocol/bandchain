@@ -7,8 +7,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	keep "github.com/bandprotocol/bandchain/chain/x/zoracle/internal/keeper"
-	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
+	keep "github.com/bandprotocol/bandchain/chain/x/zoracle/keeper"
+	"github.com/bandprotocol/bandchain/chain/x/zoracle/types"
 )
 
 func TestNewExecutionEnvironment(t *testing.T) {

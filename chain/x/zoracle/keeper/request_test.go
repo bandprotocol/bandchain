@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
+	"github.com/bandprotocol/bandchain/chain/x/zoracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 )
@@ -32,7 +32,7 @@ func TestRequest(t *testing.T) {
 	_, err := keeper.AddRequest(ctx, 1, calldata, 2, 2, 100, 20000)
 	require.NotNil(t, err)
 
-	script := GetTestOracleScript("../../../../owasm/res/silly.wasm")
+	script := GetTestOracleScript("../../../owasm/res/silly.wasm")
 	keeper.SetOracleScript(ctx, 1, script)
 	_, err = keeper.AddRequest(ctx, 1, calldata, 2, 2, 100, 20000)
 	require.NotNil(t, err)
@@ -73,7 +73,7 @@ func TestRequest(t *testing.T) {
 func TestRequestCallDataSizeTooBig(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
-	script := GetTestOracleScript("../../../../owasm/res/silly.wasm")
+	script := GetTestOracleScript("../../../owasm/res/silly.wasm")
 	keeper.SetOracleScript(ctx, 1, script)
 
 	SetupTestValidator(
@@ -105,7 +105,7 @@ func TestRequestCallDataSizeTooBig(t *testing.T) {
 func TestRequestExceedEndBlockExecuteGasLimit(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
-	script := GetTestOracleScript("../../../../owasm/res/silly.wasm")
+	script := GetTestOracleScript("../../../owasm/res/silly.wasm")
 	keeper.SetOracleScript(ctx, 1, script)
 
 	SetupTestValidator(
@@ -164,7 +164,7 @@ func TestSetResolvedOnInvalidRequest(t *testing.T) {
 func TestConsumeGasForExecute(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
-	script := GetTestOracleScript("../../../../owasm/res/silly.wasm")
+	script := GetTestOracleScript("../../../owasm/res/silly.wasm")
 	keeper.SetOracleScript(ctx, 1, script)
 
 	SetupTestValidator(
