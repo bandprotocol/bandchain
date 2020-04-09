@@ -88,6 +88,18 @@ module BlockCountConfig = [%graphql
 |}
 ];
 
+module PastDayBlockCountConfig = [%graphql
+  {|
+  subscription AvgDayBlocksCount($timestamp: bigint!) {
+    blocks_aggregate(where: {timestamp: {_gte: $timestamp}}){
+      aggregate{
+        count @bsDecoder(fn: "Belt_Option.getExn")
+      }
+    }
+  }
+|}
+];
+
 let get = height => {
   let (result, _) =
     ApolloHooks.useSubscription(
@@ -121,6 +133,16 @@ let getLatest = () => {
 
 let count = () => {
   let (result, _) = ApolloHooks.useSubscription(BlockCountConfig.definition);
+  result
+  |> Sub.map(_, x => x##blocks_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
+};
+
+let pastDayCount = timestamp => {
+  let (result, _) =
+    ApolloHooks.useSubscription(
+      PastDayBlockCountConfig.definition,
+      ~variables=PastDayBlockCountConfig.makeVariables(~timestamp, ()),
+    );
   result
   |> Sub.map(_, x => x##blocks_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
 };

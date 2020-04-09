@@ -94,63 +94,33 @@ let renderBody = (rank, validator: ValidatorSub.t, bondedTokenCount) => {
   // let reportRate = (validator.completedRequestCount |> float_of_int) /. allRequestCount *. 100.;
 
   <TBody key={rank |> string_of_int}>
-
-      <div className=Styles.fullWidth>
-        <Row>
-          <Col size=0.8 alignSelf=Col.Start>
-            <Col size=1.6 alignSelf=Col.Start>
-              <Text
-                value={rank |> string_of_int}
-                color=Colors.gray7
-                code=true
-                weight=Text.Regular
-                spacing={Text.Em(0.02)}
-                block=true
-                size=Text.Md
-              />
-            </Col>
-          </Col>
-          <Col size=1.9 alignSelf=Col.Start>
-            <div className=Styles.monikerContainer>
-              <ValidatorMonikerLink
-                validatorAddress={validator.operatorAddress}
-                moniker={validator.moniker}
-              />
-            </div>
-          </Col>
-          <Col size=1.4 alignSelf=Col.Start>
-            <div>
-              <Text
-                value={token |> Format.fPretty}
-                color=Colors.gray7
-                code=true
-                weight=Text.Regular
-                spacing={Text.Em(0.02)}
-                block=true
-                align=Text.Right
-                size=Text.Md
-              />
-              <VSpacing size=Spacing.sm />
-              <Text
-                value={
-                  "("
-                  ++ (votingPower /. bondedTokenCount *. 100.)
-                     ->Js.Float.toFixedWithPrecision(~digits=2)
-                  ++ "%)"
-                }
-                color=Colors.gray6
-                code=true
-                weight=Text.Thin
-                spacing={Text.Em(0.02)}
-                block=true
-                align=Text.Right
-                size=Text.Md
-              />
-            </div>
-          </Col>
-          <Col size=1.2 alignSelf=Col.Start>
+    <div className=Styles.fullWidth>
+      <Row>
+        <Col size=0.8 alignSelf=Col.Start>
+          <Col size=1.6 alignSelf=Col.Start>
             <Text
-              value={commission->Js.Float.toFixedWithPrecision(~digits=2)}
+              value={rank |> string_of_int}
+              color=Colors.gray7
+              code=true
+              weight=Text.Regular
+              spacing={Text.Em(0.02)}
+              block=true
+              size=Text.Md
+            />
+          </Col>
+        </Col>
+        <Col size=1.9 alignSelf=Col.Start>
+          <div className=Styles.monikerContainer>
+            <ValidatorMonikerLink
+              validatorAddress={validator.operatorAddress}
+              moniker={validator.moniker}
+            />
+          </div>
+        </Col>
+        <Col size=1.4 alignSelf=Col.Start>
+          <div>
+            <Text
+              value={token |> Format.fPretty}
               color=Colors.gray7
               code=true
               weight=Text.Regular
@@ -159,52 +129,104 @@ let renderBody = (rank, validator: ValidatorSub.t, bondedTokenCount) => {
               align=Text.Right
               size=Text.Md
             />
-          </Col>
-          <Col size=1.1 alignSelf=Col.Start>
+            <VSpacing size=Spacing.sm />
             <Text
-              value={uptime->Js.Float.toFixedWithPrecision(~digits=2)}
-              color=Colors.gray7
+              value={
+                "("
+                ++ (votingPower /. bondedTokenCount *. 100.)
+                   ->Js.Float.toFixedWithPrecision(~digits=2)
+                ++ "%)"
+              }
+              color=Colors.gray6
               code=true
-              weight=Text.Regular
+              weight=Text.Thin
               spacing={Text.Em(0.02)}
               block=true
               align=Text.Right
               size=Text.Md
             />
-          </Col>
-        </Row>
-      </div>
-    </TBody>;
-    // <Col size=1.2 alignSelf=Col.Start>
-    //   <Text
-    //     value={reportRate->Js.Float.toFixedWithPrecision(~digits=2)}
-    //     color=Colors.gray7
-    //     code=true
-    //     weight=Text.Regular
-    //     spacing={Text.Em(0.02)}
-    //     block=true
-    //     align=Text.Right
-    //     size=Text.Md
-    //   />
-    // </Col>
+          </div>
+        </Col>
+        <Col size=1.2 alignSelf=Col.Start>
+          <Text
+            value={commission->Js.Float.toFixedWithPrecision(~digits=2)}
+            color=Colors.gray7
+            code=true
+            weight=Text.Regular
+            spacing={Text.Em(0.02)}
+            block=true
+            align=Text.Right
+            size=Text.Md
+          />
+        </Col>
+        <Col size=1.1 alignSelf=Col.Start>
+          <Text
+            value={uptime->Js.Float.toFixedWithPrecision(~digits=2)}
+            color=Colors.gray7
+            code=true
+            weight=Text.Regular
+            spacing={Text.Em(0.02)}
+            block=true
+            align=Text.Right
+            size=Text.Md
+          />
+        </Col>
+      </Row>
+    </div>
+  </TBody>;
+  // <Col size=1.2 alignSelf=Col.Start>
+  //   <Text
+  //     value={reportRate->Js.Float.toFixedWithPrecision(~digits=2)}
+  //     color=Colors.gray7
+  //     code=true
+  //     weight=Text.Regular
+  //     spacing={Text.Em(0.02)}
+  //     block=true
+  //     align=Text.Right
+  //     size=Text.Md
+  //   />
+  // </Col>
 };
 
 [@react.component]
 let make = () =>
   {
     let (page, setPage) = React.useState(_ => 1);
+
+    let (prevDay, setPrevDay) =
+      React.useState(_ =>
+        (
+          MomentRe.momentNow()
+          |> MomentRe.Moment.subtract(~duration=MomentRe.duration(1., `days))
+          |> MomentRe.Moment.toUnix
+          |> float_of_int
+        )
+        *. 1000.
+      );
+    React.useEffect0(() => {
+      let newPrevDay = MomentRe.momentNow() |> MomentRe.Moment.toUnix |> float_of_int;
+      let timeOutId = Js.Global.setTimeout(() => setPrevDay(_ => newPrevDay), 1000);
+      Some(() => Js.Global.clearTimeout(timeOutId));
+    });
+
     let pageSize = 10;
+
+    let lastDay = prevDay |> Js.Json.number;
 
     let validatorsCountSub = ValidatorSub.count();
     let validatorsSub = ValidatorSub.getList(~page, ~pageSize, ());
     // TODO: Update once bonding status is available
     let bondedValidatorCountSub = ValidatorSub.count();
     let bondedTokenCountSub = ValidatorSub.getTotalBondedAmount();
+    let pastDayBlockCountSub = BlockSub.pastDayCount(lastDay);
+    let metadataSub = MetadataSub.use();
 
     let%Sub validators = validatorsSub;
     let%Sub validatorCount = validatorsCountSub;
     let%Sub bondedValidatorCount = bondedValidatorCountSub;
     let%Sub bondedTokenCount = bondedTokenCountSub;
+    let%Sub pastDayBlockCount = pastDayBlockCountSub;
+    let%Sub metadata = metadataSub;
 
     let pageCount = Page.getPageCount(validatorCount, pageSize);
     let globalInfo = ValidatorSub.GlobalInfo.getGlobalInfo();
@@ -212,6 +234,11 @@ let make = () =>
     let unbondingValidatorCount = 0;
     let allValidatorCount =
       bondedValidatorCount + unbondedValidatorCount + unbondingValidatorCount;
+
+    //TODO: Replace 400 with real value
+    let allBondedAmount = 400;
+
+    let pastDayAvgBlockTime = (pastDayBlockCount |> float_of_int) /. 86400000.00;
 
     <>
       <Row justify=Row.Between>
@@ -250,13 +277,13 @@ let make = () =>
           </Col>
           <Col size=0.9>
             <InfoHL
-              info={InfoHL.FloatWithSuffix(globalInfo.inflationRate, "  %")}
+              info={InfoHL.FloatWithSuffix(metadata.inflationRate, "  %", 2)}
               header="INFLATION RATE"
             />
           </Col>
           <Col size=0.51>
             <InfoHL
-              info={InfoHL.FloatWithSuffix(globalInfo.avgBlockTime, "  secs")}
+              info={InfoHL.FloatWithSuffix(pastDayAvgBlockTime, "  secs", 6)}
               header="24 HOUR AVG BLOCK TIME"
             />
           </Col>
