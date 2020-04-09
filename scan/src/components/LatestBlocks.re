@@ -35,8 +35,14 @@ module Styles = {
       justifyContent(`spaceBetween),
     ]);
 
-  let vFlex =
-    style([display(`flex), flexDirection(`column), minWidth(`px(245)), position(`relative)]);
+  let blocksWrapper =
+    style([
+      display(`flex),
+      flexDirection(`column),
+      minWidth(`px(245)),
+      minHeight(`px(500)),
+      position(`relative),
+    ]);
 
   let seeAll = style([display(`flex), flexDirection(`row), cursor(`pointer)]);
   let cFlex = style([display(`flex), flexDirection(`column)]);
@@ -45,18 +51,18 @@ module Styles = {
   let rightArrow = style([width(`px(25)), marginTop(`px(17)), marginLeft(`px(16))]);
 };
 
-let renderBlock = (i: int, b: BlockSub.t) =>
+let renderBlock = (i: int, blockHeight: ID.Block.t, moniker: string) =>
   <div
-    key={b.height |> ID.Block.toString}
-    className={Styles.block(i, b.height)}
-    onClick={_ => Route.redirect(b.height |> ID.Block.getRoute)}>
-    <TypeID.Block id={b.height} />
+    key={blockHeight |> ID.Block.toString}
+    className={Styles.block(i, blockHeight)}
+    onClick={_ => Route.redirect(blockHeight |> ID.Block.getRoute)}>
+    <TypeID.Block id=blockHeight />
     <VSpacing size=Spacing.md />
     <Text value="PROPOSED BY" block=true size=Text.Xs color=Colors.gray7 spacing={Text.Em(0.1)} />
     <VSpacing size={`px(1)} />
     <Text
       block=true
-      value={b.validator.moniker}
+      value=moniker
       weight=Text.Bold
       ellipsis=true
       height={Text.Px(15)}
@@ -64,33 +70,15 @@ let renderBlock = (i: int, b: BlockSub.t) =>
     />
   </div>;
 
-let getDummyBlock = blocksCount =>
-  BlockSub.{
-    height: ID.Block.ID(blocksCount + 1),
-    hash: "" |> Hash.fromHex,
-    validator:
-      ValidatorSub.Mini.{
-        consensusAddress: "",
-        operatorAddress: "" |> Address.fromHex,
-        moniker: "",
-      },
-    timestamp: 0. |> MomentRe.momentWithTimestampMS,
-    txn: 0,
-  };
-
 [@react.component]
 let make = () =>
   {
     let blocksSub = BlockSub.getList(~pageSize=11, ~page=1, ());
 
     let%Sub realBlocks = blocksSub;
-    let blocksCount =
-      realBlocks
-      ->Belt_Array.get(0)
-      ->Belt_Option.map(({height: ID.Block.ID(x)}) => x)
-      ->Belt_Option.getExn;
+    let {BlockSub.height: ID.Block.ID(blocksCount)} = realBlocks->Belt_Array.getExn(0);
 
-    let blocksWithDummy = realBlocks |> Belt_Array.concat([|getDummyBlock(blocksCount)|]);
+    let blocksOpt = realBlocks |> Belt_Array.map(_, x => Some(x)) |> Belt_Array.concat([|None|]);
 
     <>
       <div className=Styles.topicBar>
@@ -114,9 +102,14 @@ let make = () =>
       </div>
       <VSpacing size=Spacing.lg />
       <Row alignItems=`initial>
-        <div className=Styles.vFlex>
-          {blocksWithDummy
-           ->Belt_Array.mapWithIndex((i, block) => renderBlock(i, block))
+        <div className=Styles.blocksWrapper>
+          {blocksOpt
+           ->Belt_Array.mapWithIndex((i, blockOpt) =>
+               switch (blockOpt) {
+               | Some({height, validator: {moniker}}) => renderBlock(i, height, moniker)
+               | None => renderBlock(i, ID.Block.ID(blocksCount + 1), "")
+               }
+             )
            ->React.array}
         </div>
       </Row>
