@@ -16,7 +16,7 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/bandprotocol/bandchain/chain/db"
-	"github.com/bandprotocol/bandchain/chain/x/zoracle"
+	"github.com/bandprotocol/bandchain/chain/x/oracle"
 )
 
 type dbBandApp struct {
@@ -34,7 +34,7 @@ func NewDBBandApp(
 		skipUpgradeHeights, home, baseAppOptions...,
 	)
 	dbBand.StakingKeeper = app.StakingKeeper
-	dbBand.ZoracleKeeper = app.ZoracleKeeper
+	dbBand.OracleKeeper = app.OracleKeeper
 	return &dbBandApp{bandApp: app, dbBand: dbBand}
 }
 
@@ -97,12 +97,12 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 		}
 	}
 
-	// Zoracle genesis
-	var zoracleState zoracle.GenesisState
-	app.cdc.MustUnmarshalJSON(genesisState[zoracle.ModuleName], &zoracleState)
+	// Oracle genesis
+	var oracleState oracle.GenesisState
+	app.cdc.MustUnmarshalJSON(genesisState[oracle.ModuleName], &oracleState)
 
 	// Save data source
-	for idx, dataSource := range zoracleState.DataSources {
+	for idx, dataSource := range oracleState.DataSources {
 		err := app.dbBand.AddDataSource(
 			int64(idx+1),
 			dataSource.Name,
@@ -120,7 +120,7 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 	}
 
 	// Save oracle script
-	for idx, oracleScript := range zoracleState.OracleScripts {
+	for idx, oracleScript := range oracleState.OracleScripts {
 		err := app.dbBand.AddOracleScript(
 			int64(idx+1),
 			oracleScript.Name,

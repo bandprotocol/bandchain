@@ -2,15 +2,15 @@
 
 bandd init $1 --chain-id=bandchain
 
-cp /zoracle/docker-config/$1/priv_validator_key.json ~/.bandd/config/priv_validator_key.json
-cp /zoracle/docker-config/$1/node_key.json ~/.bandd/config/node_key.json
-cp /zoracle/docker-config/genesis.json ~/.bandd/config/genesis.json
+cp /oracle/docker-config/$1/priv_validator_key.json ~/.bandd/config/priv_validator_key.json
+cp /oracle/docker-config/$1/node_key.json ~/.bandd/config/node_key.json
+cp /oracle/docker-config/genesis.json ~/.bandd/config/genesis.json
 
 # add cors in config.toml
 cd ~/.bandd/config/
 sed 's/cors_allowed_origins = \[\]/cors_allowed_origins = \["\*"\]/g' config.toml > config_tmp.toml
 mv config_tmp.toml config.toml
-cd /zoracle/
+cd /oracle/
 
 sleep 10
 

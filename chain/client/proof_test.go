@@ -7,7 +7,7 @@ package rpc
 // 	"encoding/hex"
 // 	"testing"
 
-// 	"github.com/bandprotocol/bandchain/chain/x/zoracle"
+// 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 // 	"github.com/stretchr/testify/require"
 // )
 
@@ -62,8 +62,8 @@ package rpc
 // func TestEncodeVerify(t *testing.T) {
 // 	data := OracleDataProof{
 // 		Version:        uint64(509),
-// 		RequestID:      zoracle.RequestID(1),
-// 		OracleScriptID: zoracle.OracleScriptID(1),
+// 		RequestID:      oracle.RequestID(1),
+// 		OracleScriptID: oracle.OracleScriptID(1),
 // 		Calldata:       hexToBytes("63616C6C5F646174615F6D756D75"),
 // 		Data:           hexToBytes("746573745F726573756C745F6D756D75"),
 // 		MerklePaths: []IAVLMerklePath{
