@@ -157,6 +157,16 @@ func handleRequest(requestID oracle.RequestID) {
 		return
 	}
 
+	found := false
+	for _, item := range request.Request.RequestedValidators {
+		if item.Equals(sdk.ValAddress(bandClient.Sender())) {
+			found = true
+		}
+	}
+	if !found {
+		return
+	}
+
 	type queryParallelInfo struct {
 		externalID oracle.ExternalID
 		answer     []byte
