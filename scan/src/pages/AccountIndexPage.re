@@ -126,7 +126,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
     let%Sub totalStake = totalStakeSub;
 
     let availableBalance = account.balance->Coin.getBandAmountFromCoins;
-    let balanceAtStake = totalStake;
+    let balanceAtStake = totalStake /. 1_000_000.;
     let usdPrice = info.financial.usdPrice;
     let totalBalance = availableBalance +. balanceAtStake;
 
