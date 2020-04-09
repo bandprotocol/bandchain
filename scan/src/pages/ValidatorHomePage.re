@@ -89,9 +89,9 @@ let renderBody = (rank, validator: ValidatorSub.t, bondedTokenCount) => {
   let token = validator.tokens;
   let commission = validator.commission;
   let uptime = validator.nodeStatus.uptime;
-  // let allRequestCount =
-  //   validator.completedRequestCount + validator.missedRequestCount |> float_of_int;
-  // let reportRate = (validator.completedRequestCount |> float_of_int) /. allRequestCount *. 100.;
+  let allRequestCount =
+    validator.completedRequestCount + validator.missedRequestCount |> float_of_int;
+  let reportRate = (validator.completedRequestCount |> float_of_int) /. allRequestCount *. 100.;
 
   <TBody key={rank |> string_of_int}>
     <div className=Styles.fullWidth>
