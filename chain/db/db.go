@@ -22,7 +22,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 
-	"github.com/bandprotocol/bandchain/chain/x/zoracle"
+	"github.com/bandprotocol/bandchain/chain/x/oracle"
 )
 
 type BandDB struct {
@@ -31,7 +31,7 @@ type BandDB struct {
 	ctx sdk.Context
 
 	StakingKeeper staking.Keeper
-	ZoracleKeeper zoracle.Keeper
+	OracleKeeper oracle.Keeper
 }
 
 func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
@@ -335,38 +335,38 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 	}
 
 	switch msg := msg.(type) {
-	case zoracle.MsgCreateDataSource:
+	case oracle.MsgCreateDataSource:
 		err = b.handleMsgCreateDataSource(txHash, msg, events)
 		if err != nil {
 			return nil, err
 		}
 
-		dataSourceID, err := strconv.ParseInt(events[zoracle.EventTypeCreateDataSource+"."+zoracle.AttributeKeyID], 10, 64)
+		dataSourceID, err := strconv.ParseInt(events[oracle.EventTypeCreateDataSource+"."+oracle.AttributeKeyID], 10, 64)
 		if err != nil {
 			return nil, err
 		}
 		jsonMap["dataSourceID"] = dataSourceID
-	case zoracle.MsgEditDataSource:
+	case oracle.MsgEditDataSource:
 		err = b.handleMsgEditDataSource(txHash, msg, events)
 		if err != nil {
 			return nil, err
 		}
-	case zoracle.MsgCreateOracleScript:
+	case oracle.MsgCreateOracleScript:
 		err = b.handleMsgCreateOracleScript(txHash, msg, events)
 		if err != nil {
 			return nil, err
 		}
-		oracleScriptID, err := strconv.ParseInt(events[zoracle.EventTypeCreateOracleScript+"."+zoracle.AttributeKeyID], 10, 64)
+		oracleScriptID, err := strconv.ParseInt(events[oracle.EventTypeCreateOracleScript+"."+oracle.AttributeKeyID], 10, 64)
 		if err != nil {
 			return nil, err
 		}
 		jsonMap["oracleScriptID"] = oracleScriptID
-	case zoracle.MsgEditOracleScript:
+	case oracle.MsgEditOracleScript:
 		err = b.handleMsgEditOracleScript(txHash, msg, events)
 		if err != nil {
 			return nil, err
 		}
-	case zoracle.MsgRequestData:
+	case oracle.MsgRequestData:
 		err = b.handleMsgRequestData(txHash, msg, events)
 		if err != nil {
 			return nil, err
@@ -378,22 +378,22 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 			return nil, err
 		}
 
-		requestID, err := strconv.ParseInt(events[zoracle.EventTypeRequest+"."+zoracle.AttributeKeyID], 10, 64)
+		requestID, err := strconv.ParseInt(events[oracle.EventTypeRequest+"."+oracle.AttributeKeyID], 10, 64)
 		if err != nil {
 			return nil, err
 		}
 
 		jsonMap["oracleScriptName"] = oracleScript.Name
 		jsonMap["requestID"] = requestID
-	case zoracle.MsgReportData:
+	case oracle.MsgReportData:
 		err = b.handleMsgReportData(txHash, msg, events)
 		if err != nil {
 			return nil, err
 		}
-	case zoracle.MsgAddOracleAddress:
+	case oracle.MsgAddOracleAddress:
 		val, _ := b.StakingKeeper.GetValidator(b.ctx, msg.Validator)
 		jsonMap["validatorMoniker"] = val.Description.Moniker
-	case zoracle.MsgRemoveOracleAddress:
+	case oracle.MsgRemoveOracleAddress:
 		val, _ := b.StakingKeeper.GetValidator(b.ctx, msg.Validator)
 		jsonMap["validatorMoniker"] = val.Description.Moniker
 	case bank.MsgSend:
@@ -464,15 +464,15 @@ func (b *BandDB) GetInvolvedAccountsFromTx(tx auth.StdTx) []sdk.AccAddress {
 	involvedAccounts := make([]sdk.AccAddress, 0)
 	for _, msg := range tx.GetMsgs() {
 		switch msg := msg.(type) {
-		case zoracle.MsgCreateDataSource:
-		case zoracle.MsgEditDataSource:
-		case zoracle.MsgCreateOracleScript:
-		case zoracle.MsgEditOracleScript:
-		case zoracle.MsgAddOracleAddress:
-		case zoracle.MsgRemoveOracleAddress:
-		case zoracle.MsgRequestData:
+		case oracle.MsgCreateDataSource:
+		case oracle.MsgEditDataSource:
+		case oracle.MsgCreateOracleScript:
+		case oracle.MsgEditOracleScript:
+		case oracle.MsgAddOracleAddress:
+		case oracle.MsgRemoveOracleAddress:
+		case oracle.MsgRequestData:
 			involvedAccounts = append(involvedAccounts, msg.Sender)
-		case zoracle.MsgReportData:
+		case oracle.MsgReportData:
 			involvedAccounts = append(involvedAccounts, msg.Reporter)
 		case bank.MsgSend:
 			involvedAccounts = append(involvedAccounts, msg.FromAddress, msg.ToAddress)
@@ -548,7 +548,7 @@ func (b *BandDB) GetInvolvedAccountsFromTransferEvents(logs sdk.ABCIMessageLogs)
 	return involvedAccounts
 }
 
-func (b *BandDB) ResolveRequest(id int64, resolveStatus zoracle.ResolveStatus, result []byte) error {
+func (b *BandDB) ResolveRequest(id int64, resolveStatus oracle.ResolveStatus, result []byte) error {
 	if resolveStatus == 1 {
 		return b.tx.Model(&Request{}).Where(Request{ID: id}).
 			Update(Request{ResolveStatus: parseResolveStatus(resolveStatus), Result: result}).Error
