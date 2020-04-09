@@ -60,47 +60,47 @@ module TotalStakeConfig = [%graphql
   |}
 ];
 
-let get = (delegator_address, validator_address) => {
+let get = (delegatorAddress, validatorAddress) => {
   let (result, _) =
     ApolloHooks.useSubscription(
       SingleConfig.definition,
       ~variables=
         SingleConfig.makeVariables(
-          ~delegator_address=delegator_address |> Address.toBech32,
-          ~validator_address=validator_address |> Address.toOperatorBech32,
+          ~delegator_address=delegatorAddress |> Address.toBech32,
+          ~validator_address=validatorAddress |> Address.toOperatorBech32,
           (),
         ),
     );
   result |> Sub.map(_, x => x##delegations_by_pk);
 };
 
-let getList = delegator_address => {
+let getList = delegatorAddress => {
   let (result, _) =
     ApolloHooks.useSubscription(
       MultiConfig.definition,
       ~variables=
-        MultiConfig.makeVariables(~delegator_address=delegator_address |> Address.toBech32, ()),
+        MultiConfig.makeVariables(~delegator_address=delegatorAddress |> Address.toBech32, ()),
     );
   result |> Sub.map(_, internal => internal##delegations);
 };
 
-let getStake = delegator_address => {
+let getStake = delegatorAddress => {
   let (result, _) =
     ApolloHooks.useSubscription(
       StakeConfig.definition,
       ~variables=
-        StakeConfig.makeVariables(~delegator_address=delegator_address |> Address.toBech32, ()),
+        StakeConfig.makeVariables(~delegator_address=delegatorAddress |> Address.toBech32, ()),
     );
   result |> Sub.map(_, x => x##delegations_view);
 };
 
-let getTotalStake = delegator_address => {
+let getTotalStake = delegatorAddress => {
   let (result, _) =
     ApolloHooks.useSubscription(
       TotalStakeConfig.definition,
       ~variables=
         TotalStakeConfig.makeVariables(
-          ~delegator_address=delegator_address |> Address.toBech32,
+          ~delegator_address=delegatorAddress |> Address.toBech32,
           (),
         ),
     );
