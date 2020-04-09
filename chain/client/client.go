@@ -21,7 +21,7 @@ package rpc
 
 // 	// unnamed import of statik for swagger UI support
 // 	_ "github.com/bandprotocol/bandchain/chain/client/lcd/statik"
-// 	"github.com/bandprotocol/bandchain/chain/x/zoracle"
+// 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 // )
 
 // const (
@@ -177,7 +177,7 @@ package rpc
 
 // func GetProviderStatus(cliCtx context.CLIContext) http.HandlerFunc {
 // 	return func(w http.ResponseWriter, r *http.Request) {
-// 		reqNumberResp, _, err := cliCtx.Query("custom/zoracle/request_number")
+// 		reqNumberResp, _, err := cliCtx.Query("custom/oracle/request_number")
 // 		if err != nil {
 // 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 // 			return
@@ -189,13 +189,13 @@ package rpc
 // 			return
 // 		}
 
-// 		res, _, err := cliCtx.Query(fmt.Sprintf("custom/zoracle/request/%s", requestID))
+// 		res, _, err := cliCtx.Query(fmt.Sprintf("custom/oracle/request/%s", requestID))
 // 		if err != nil {
 // 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 // 			return
 // 		}
 
-// 		var request zoracle.RequestQuerierInfo
+// 		var request oracle.RequestQuerierInfo
 // 		err = cliCtx.Codec.UnmarshalJSON(res, &request)
 
 // 		block, err := cliCtx.Client.Block(nil)
