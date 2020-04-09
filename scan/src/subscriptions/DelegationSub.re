@@ -104,7 +104,6 @@ let getTotalStake = delegatorAddress => {
           (),
         ),
     );
-  Js.Console.log(result);
   result
   |> Sub.map(_, a =>
        (
