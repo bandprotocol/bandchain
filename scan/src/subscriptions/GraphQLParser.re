@@ -30,3 +30,7 @@ let coins = str =>
          });
        }
      );
+
+let numberOpt = jsonOpt => jsonOpt |> Belt_Option.flatMap(_, Js.Json.decodeNumber);
+
+let addressOpt = jsonOpt => jsonOpt |> Belt_Option.getExn |> Address.fromBech32;

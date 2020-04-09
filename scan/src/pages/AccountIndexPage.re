@@ -113,122 +113,128 @@ let totalBalance = (title, amount, symbol) => {
 };
 
 [@react.component]
-let make = (~address, ~hashtag: Route.account_tab_t) => {
-  let accountOpt = AccountHook.get(address);
-  let priceOpt = PriceHook.get();
-  let delegations =
-    {
+let make = (~address, ~hashtag: Route.account_tab_t) =>
+  {
+    let accountOpt = AccountHook.get(address);
+    let priceOpt = PriceHook.get();
+    let totalBalanceOpt = {
       let%Opt account = accountOpt;
-      Some(account.delegations);
-    }
-    |> Belt_Option.getWithDefault(_, []);
+      Some(account.balance +. account.balanceStake +. account.reward);
+    };
 
-  let totalBalanceOpt = {
-    let%Opt account = accountOpt;
-    Some(account.balance +. account.balanceStake +. account.reward);
-  };
+    let delegatorStakeSub = DelegationSub.getStake(address);
+    let totalStakeSub = DelegationSub.getTotalStake(address);
 
-  // TODO , replace these Mock
-  let availableBalance = (Js.Math.random_int(0, 1000000) |> float_of_int) /. 100.;
-  let balanceAtStake = (Js.Math.random_int(0, 1000000) |> float_of_int) /. 100.;
-  let reward = (Js.Math.random_int(0, 1000000) |> float_of_int) /. 100.;
+    let%Sub delegatorStake = delegatorStakeSub;
+    let%Sub totalStake = totalStakeSub;
 
-  <>
-    <Row justify=Row.Between>
-      <Col>
-        <div className=Styles.vFlex>
-          <img src=Images.accountLogo className=Styles.logo />
-          <Text
-            value="ACCOUNT DETAIL"
-            weight=Text.Medium
-            size=Text.Md
-            spacing={Text.Em(0.06)}
-            height={Text.Px(15)}
-            nowrap=true
-            color=Colors.gray7
-            block=true
-          />
-        </div>
-      </Col>
-    </Row>
-    <VSpacing size=Spacing.lg />
-    <VSpacing size=Spacing.sm />
-    <div className=Styles.vFlex> <AddressRender address position=AddressRender.Title /> </div>
-    <VSpacing size=Spacing.xxl />
-    <Row justify=Row.Between>
-      <Col size=0.75> <PieChart size=187 availableBalance balanceAtStake reward /> </Col>
-      <Col size=1.>
-        {switch (accountOpt, priceOpt) {
-         | (Some(account), Some(price)) =>
-           balanceDetail(
-             "AVAILABLE BALANCE",
-             account.balance |> Format.fPretty,
-             account.balance *. price.usdPrice |> Format.fPretty,
-             Colors.bandBlue,
-           )
-         | _ => balanceDetail("AVAILABLE BALANCE", "?", "?", Colors.bandBlue)
-         }}
-        <VSpacing size=Spacing.xl />
-        <VSpacing size=Spacing.md />
-        {switch (accountOpt, priceOpt) {
-         | (Some(account), Some(price)) =>
-           balanceDetail(
-             "BALANCE AT STAKE",
-             account.balanceStake |> Format.fPretty,
-             account.balanceStake *. price.usdPrice |> Format.fPretty,
-             Colors.chartBalanceAtStake,
-           )
-         | _ => balanceDetail("BALANCE AT STAKE", "?", "?", Colors.chartBalanceAtStake)
-         }}
-        <VSpacing size=Spacing.xl />
-        <VSpacing size=Spacing.md />
-        {switch (accountOpt, priceOpt) {
-         | (Some(account), Some(price)) =>
-           balanceDetail(
-             "REWARD",
-             account.reward |> Format.fPretty,
-             account.reward *. price.usdPrice |> Format.fPretty,
-             Colors.chartReward,
-           )
-         | _ => balanceDetail("REWARD", "?", "?", Colors.chartReward)
-         }}
-      </Col>
-      <div className=Styles.separatorLine />
-      <Col size=1. alignSelf=Col.Start>
-        <div className=Styles.totalContainer>
-          {switch (totalBalanceOpt, priceOpt) {
-           | (Some(totalBand), Some(price)) =>
-             <>
-               {totalBalance("TOTAL BAND BALANCE", totalBand |> Format.fPretty, "BAND")}
-               {totalBalance(
-                  "TOTAL BAND IN USD ($" ++ (price.usdPrice |> Format.fPretty) ++ " / BAND)",
-                  totalBand *. price.usdPrice |> Format.fPretty,
-                  "USD",
-                )}
-             </>
-           | _ =>
-             <>
-               {totalBalance("TOTAL BAND BALANCE", "?", "BAND")}
-               {totalBalance("TOTAL BAND IN USD ($?/ BAND)", "?", "USD")}
-             </>
+    // TODO , replace these Mock
+    let availableBalance = (Js.Math.random_int(0, 1000000) |> float_of_int) /. 100.;
+    let reward = (Js.Math.random_int(0, 1000000) |> float_of_int) /. 100.;
+
+    <>
+      <Row justify=Row.Between>
+        <Col>
+          <div className=Styles.vFlex>
+            <img src=Images.accountLogo className=Styles.logo />
+            <Text
+              value="ACCOUNT DETAIL"
+              weight=Text.Medium
+              size=Text.Md
+              spacing={Text.Em(0.06)}
+              height={Text.Px(15)}
+              nowrap=true
+              color=Colors.gray7
+              block=true
+            />
+          </div>
+        </Col>
+      </Row>
+      <VSpacing size=Spacing.lg />
+      <VSpacing size=Spacing.sm />
+      <div className=Styles.vFlex> <AddressRender address position=AddressRender.Title /> </div>
+      <VSpacing size=Spacing.xxl />
+      <Row justify=Row.Between>
+        <Col size=0.75>
+          <PieChart size=187 availableBalance balanceAtStake=totalStake reward />
+        </Col>
+        <Col size=1.>
+          {switch (accountOpt, priceOpt) {
+           | (Some(account), Some(price)) =>
+             balanceDetail(
+               "AVAILABLE BALANCE",
+               account.balance |> Format.fPretty,
+               account.balance *. price.usdPrice |> Format.fPretty,
+               Colors.bandBlue,
+             )
+           | _ => balanceDetail("AVAILABLE BALANCE", "?", "?", Colors.bandBlue)
            }}
-        </div>
-      </Col>
-    </Row>
-    <VSpacing size=Spacing.xl />
-    <Tab
-      tabs=[|
-        {
-          name: "TRANSACTIONS",
-          route: Route.AccountIndexPage(address, Route.AccountTransactions),
-        },
-        {name: "DELEGATIONS", route: Route.AccountIndexPage(address, Route.AccountDelegations)},
-      |]
-      currentRoute={Route.AccountIndexPage(address, hashtag)}>
-      {switch (hashtag) {
-       | AccountTransactions => <AccountIndexTransactions accountAddress=address />
-       | AccountDelegations => <AccountIndexDelegations delegations />
-       }}
-    </Tab>
-  </>;
-};
+          <VSpacing size=Spacing.xl />
+          <VSpacing size=Spacing.md />
+          {switch (priceOpt) {
+           | Some(price) =>
+             balanceDetail(
+               "BALANCE AT STAKE",
+               totalStake |> Format.fPretty,
+               totalStake *. price.usdPrice |> Format.fPretty,
+               Colors.chartBalanceAtStake,
+             )
+           | _ => balanceDetail("BALANCE AT STAKE", "?", "?", Colors.chartBalanceAtStake)
+           }}
+          <VSpacing size=Spacing.xl />
+          <VSpacing size=Spacing.md />
+          {switch (accountOpt, priceOpt) {
+           | (Some(account), Some(price)) =>
+             balanceDetail(
+               "REWARD",
+               account.reward |> Format.fPretty,
+               account.reward *. price.usdPrice |> Format.fPretty,
+               Colors.chartReward,
+             )
+           | _ => balanceDetail("REWARD", "?", "?", Colors.chartReward)
+           }}
+        </Col>
+        <div className=Styles.separatorLine />
+        <Col size=1. alignSelf=Col.Start>
+          <div className=Styles.totalContainer>
+            {switch (totalBalanceOpt, priceOpt) {
+             | (Some(totalBand), Some(price)) =>
+               <>
+                 {totalBalance("TOTAL BAND BALANCE", totalBand |> Format.fPretty, "BAND")}
+                 {totalBalance(
+                    "TOTAL BAND IN USD ($" ++ (price.usdPrice |> Format.fPretty) ++ " / BAND)",
+                    totalBand *. price.usdPrice |> Format.fPretty,
+                    "USD",
+                  )}
+               </>
+             | _ =>
+               <>
+                 {totalBalance("TOTAL BAND BALANCE", "?", "BAND")}
+                 {totalBalance("TOTAL BAND IN USD ($?/ BAND)", "?", "USD")}
+               </>
+             }}
+          </div>
+        </Col>
+      </Row>
+      <VSpacing size=Spacing.xl />
+      <Tab
+        tabs=[|
+          {
+            name: "TRANSACTIONS",
+            route: Route.AccountIndexPage(address, Route.AccountTransactions),
+          },
+          {
+            name: "DELEGATIONS",
+            route: Route.AccountIndexPage(address, Route.AccountDelegations),
+          },
+        |]
+        currentRoute={Route.AccountIndexPage(address, hashtag)}>
+        {switch (hashtag) {
+         | AccountTransactions => <AccountIndexTransactions accountAddress=address />
+         | AccountDelegations => <AccountIndexDelegations delegatorStake />
+         }}
+      </Tab>
+    </>
+    |> Sub.resolve;
+  }
+  |> Sub.default(_, React.null);
