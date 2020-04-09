@@ -38,7 +38,8 @@ type t =
   | RequestIndexPage(int)
   | AccountIndexPage(Address.t, account_tab_t)
   | ValidatorHomePage
-  | ValidatorIndexPage(Address.t, validator_tab_t);
+  | ValidatorIndexPage(Address.t, validator_tab_t)
+  | IBCHomePage;
 
 let fromUrl = (url: ReasonReactRouter.url) =>
   switch (url.path, url.hash) {
@@ -79,6 +80,7 @@ let fromUrl = (url: ReasonReactRouter.url) =>
     ValidatorIndexPage(address |> Address.fromBech32, Reports)
   | (["validator", address], _) =>
     ValidatorIndexPage(address |> Address.fromBech32, ProposedBlocks)
+  | (["ibcs"], _) => IBCHomePage
   | ([], _) => HomePage
   | (_, _) => NotFound
   };
@@ -122,6 +124,7 @@ let toString =
       let validatorAddressBech32 = validatorAddress |> Address.toOperatorBech32;
       {j|/validator/$validatorAddressBech32#proposed-blocks|j};
     }
+  | IBCHomePage => "/ibcs"
   | HomePage => "/"
   | NotFound => "/notfound";
 
