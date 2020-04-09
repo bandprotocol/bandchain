@@ -25,7 +25,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/ibc"
-	transfer "github.com/cosmos/cosmos-sdk/x/ibc/20-transfer"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
@@ -71,19 +70,17 @@ var (
 		ibc.AppModuleBasic{},
 		upgrade.AppModuleBasic{},
 		evidence.AppModuleBasic{},
-		transfer.AppModuleBasic{},
 		zoracle.AppModuleBasic{},
 	)
 
 	// module account permissions
 	maccPerms = map[string][]string{
-		auth.FeeCollectorName:           nil,
-		distr.ModuleName:                nil,
-		mint.ModuleName:                 {supply.Minter},
-		staking.BondedPoolName:          {supply.Burner, supply.Staking},
-		staking.NotBondedPoolName:       {supply.Burner, supply.Staking},
-		gov.ModuleName:                  {supply.Burner},
-		transfer.GetModuleAccountName(): {supply.Minter, supply.Burner},
+		auth.FeeCollectorName:     nil,
+		distr.ModuleName:          nil,
+		mint.ModuleName:           {supply.Minter},
+		staking.BondedPoolName:    {supply.Burner, supply.Staking},
+		staking.NotBondedPoolName: {supply.Burner, supply.Staking},
+		gov.ModuleName:            {supply.Burner},
 	}
 )
 
@@ -115,7 +112,6 @@ type bandApp struct {
 	UpgradeKeeper  upgrade.Keeper
 	EvidenceKeeper evidence.Keeper
 	IBCKeeper      ibc.Keeper
-	TransferKeeper transfer.Keeper
 	ZoracleKeeper  zoracle.Keeper
 
 	// Decoder for unmarshaling []byte into sdk.Tx
@@ -160,8 +156,8 @@ func NewBandApp(
 	keys := sdk.NewKVStoreKeys(
 		bam.MainStoreKey, auth.StoreKey, bank.StoreKey, staking.StoreKey,
 		supply.StoreKey, mint.StoreKey, distr.StoreKey, slashing.StoreKey,
-		gov.StoreKey, params.StoreKey, ibc.StoreKey, transfer.StoreKey,
-		evidence.StoreKey, upgrade.StoreKey, zoracle.StoreKey,
+		gov.StoreKey, params.StoreKey, ibc.StoreKey, evidence.StoreKey,
+		upgrade.StoreKey, zoracle.StoreKey,
 	)
 	tKeys := sdk.NewTransientStoreKeys(staking.TStoreKey, params.TStoreKey)
 
@@ -199,7 +195,7 @@ func NewBandApp(
 		appCodec, keys[supply.StoreKey], app.AccountKeeper, app.BankKeeper, maccPerms,
 	)
 
-	// Wrapped supply keeper allows burned tokens to be transfereed to community pool
+	// Wrapped supply keeper allows burned tokens to be transfered to community pool
 	wrappedSupplyKeeper := bandsupply.WrapSupplyKeeperBurnToCommunityPool(app.SupplyKeeper)
 
 	stakingKeeper := staking.NewKeeper(
@@ -258,17 +254,12 @@ func NewBandApp(
 
 	app.IBCKeeper = ibc.NewKeeper(app.cdc, keys[ibc.StoreKey], stakingKeeper)
 
-	transferCapKey := app.IBCKeeper.PortKeeper.BindPort(bank.ModuleName)
-	app.TransferKeeper = transfer.NewKeeper(
-		app.cdc, keys[transfer.StoreKey], transferCapKey,
-		app.IBCKeeper.ChannelKeeper, app.BankKeeper, app.SupplyKeeper,
-	)
 	app.ZoracleKeeper = zoracle.NewKeeper(
 		cdc,
 		keys[zoracle.StoreKey],
 		app.BankKeeper,
 		app.StakingKeeper,
-		// app.IBCKeeper.ChannelKeeper,
+		app.IBCKeeper.ChannelKeeper,
 		app.subspaces[zoracle.ModuleName],
 	)
 
@@ -288,7 +279,6 @@ func NewBandApp(
 		upgrade.NewAppModule(app.UpgradeKeeper),
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
-		transfer.NewAppModule(app.TransferKeeper),
 		zoracle.NewAppModule(app.ZoracleKeeper),
 	)
 	// During begin block slashing happens after distr.BeginBlocker so that

@@ -36,7 +36,7 @@ let make = (~txs: array(TxSub.t)) => {
       </Row>
     </THead>
     {txs
-     ->Belt_Array.map(({txHash, gasFee, messages, success}) => {
+     ->Belt_Array.map(({txHash, gasFee, messages}) => {
          <TBody key={txHash |> Hash.toHex}>
            <Row>
              <HSpacing size={`px(20)} />
@@ -71,9 +71,7 @@ let make = (~txs: array(TxSub.t)) => {
              <Col> <div className=Styles.container /> </Col>
              <Col size=5. alignSelf=Col.Start>
                {messages
-                ->Belt.List.map(msg => {
-                    <> <Msg msg width=530 success /> <VSpacing size=Spacing.md /> </>
-                  })
+                ->Belt.List.map(msg => {<> <Msg msg width=530 /> <VSpacing size=Spacing.md /> </>})
                 ->Belt.List.toArray
                 ->React.array}
              </Col>

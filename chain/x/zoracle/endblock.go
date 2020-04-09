@@ -1,12 +1,14 @@
 package zoracle
 
 import (
+	"encoding/hex"
 	"fmt"
 	"math"
 
 	"github.com/bandprotocol/bandchain/chain/owasm"
-	"github.com/bandprotocol/bandchain/chain/x/zoracle/internal/types"
+	"github.com/bandprotocol/bandchain/chain/x/zoracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	channel "github.com/cosmos/cosmos-sdk/x/ibc/04-channel"
 )
 
 func addUint64Overflow(a, b uint64) (uint64, bool) {
@@ -104,6 +106,35 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) {
 		event := newRequestExecuteEvent(requestID, types.Success)
 		event.AppendAttributes(sdk.NewAttribute(types.AttributeKeyResult, string(result)))
 		events = append(events, event)
+
+		fmt.Println("XX", request.SourcePort, request.SourceChannel)
+		sourceChannelEnd, found := keeper.ChannelKeeper.GetChannel(ctx, request.SourcePort, request.SourceChannel)
+		if !found {
+			fmt.Println("SOURCE NOT FOUND", request.SourcePort, request.SourceChannel)
+			continue
+		}
+
+		destinationPort := sourceChannelEnd.Counterparty.PortID
+		destinationChannel := sourceChannelEnd.Counterparty.ChannelID
+
+		// get the next sequence
+		sequence, found := keeper.ChannelKeeper.GetNextSequenceSend(ctx, request.SourcePort, request.SourceChannel)
+		if !found {
+			fmt.Println("SEQUENCE NOT FOUND", request.SourcePort, request.SourceChannel)
+			continue
+		}
+
+		packet := NewOracleResponsePacketData(hex.EncodeToString(result))
+		fmt.Println(packet.GetBytes())
+
+		err = keeper.ChannelKeeper.SendPacket(ctx, channel.NewPacket(packet.GetBytes(),
+			sequence, request.SourcePort, request.SourceChannel, destinationPort, destinationChannel,
+			1000000000, // Arbitrarily high timeout for now
+		))
+
+		if err != nil {
+			fmt.Println("SEND PACKET ERROR", err)
+		}
 	}
 
 	ctx.EventManager().EmitEvents(events)
