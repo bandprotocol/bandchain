@@ -211,7 +211,7 @@ func TestRequestSuccess(t *testing.T) {
 	)
 	keeper.SetDataSource(ctx, 2, dataSource2)
 
-	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 1000000, 1000000, sender)
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 1000000, 1000000, "memo", sender)
 
 	// Test here
 	beforeGas := ctx.GasMeter().GasConsumed()
@@ -258,7 +258,7 @@ func TestRequestInvalidDataSource(t *testing.T) {
 	calldata := []byte("calldata")
 	sender := sdk.AccAddress([]byte("sender"))
 
-	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 30, 20000, sender)
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 30, 20000, "memo", sender)
 	_, err := handleMsgRequestData(ctx, keeper, msg)
 	require.NotNil(t, err)
 
@@ -301,7 +301,7 @@ func TestRequestWithPrepareGasExceed(t *testing.T) {
 	keeper.SetDataSource(ctx, 1, dataSource)
 
 	// set prepare gas to 3 (not enough for using) then it occurs error.
-	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 3, 1000000, sender)
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 3, 1000000, "memo", sender)
 
 	_, err := handleMsgRequestData(ctx, keeper, msg)
 	require.NotNil(t, err)
@@ -340,7 +340,7 @@ func TestRequestWithInsufficientFee(t *testing.T) {
 	)
 	keeper.SetDataSource(ctx, 2, dataSource2)
 
-	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 1000000, 1000000, sender)
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 1000000, 1000000, "memo", sender)
 
 	_, err = handleMsgRequestData(ctx, keeper, msg)
 	require.NotNil(t, err)
@@ -474,7 +474,7 @@ func TestEndBlock(t *testing.T) {
 	dataSource := keep.GetTestDataSource()
 	keeper.SetDataSource(ctx, 1, dataSource)
 
-	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 30, 2500, sender)
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 30, 2500, "memo", sender)
 
 	handleMsgRequestData(ctx, keeper, msg)
 
@@ -530,7 +530,7 @@ func TestEndBlockExecuteFailedIfExecuteGasLessThanGasUsed(t *testing.T) {
 	keeper.SetDataSource(ctx, 1, dataSource)
 
 	// Set gas for execution to 500
-	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 500, 500, sender)
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 500, 500, "memo", sender)
 
 	handleMsgRequestData(ctx, keeper, msg)
 
@@ -572,10 +572,10 @@ func TestSkipInvalidExecuteGas(t *testing.T) {
 	keeper.SetDataSource(ctx, 1, dataSource)
 
 	// Set gas for execution to 100000
-	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 1000000, 100000, sender)
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 1000000, 100000, "memo", sender)
 	handleMsgRequestData(ctx, keeper, msg)
 
-	msg = types.NewMsgRequestData(1, calldata, 2, 2, 100, 1000000, 50000, sender)
+	msg = types.NewMsgRequestData(1, calldata, 2, 2, 100, 1000000, 50000, "memo", sender)
 	handleMsgRequestData(ctx, keeper, msg)
 
 	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress1, types.NewRawDataReport(0, []byte("answer1")))
@@ -630,7 +630,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 	for i := types.RequestID(1); i <= types.RequestID(10); i++ {
 		handleMsgRequestData(
 			ctx, keeper,
-			types.NewMsgRequestData(scriptID, calldata, 2, 2, 100, 2000, 2500, sender),
+			types.NewMsgRequestData(scriptID, calldata, 2, 2, 100, 2000, 2500, "memo", sender),
 		)
 
 		keeper.SetRawDataReport(ctx, i, 1, validatorAddress1, types.NewRawDataReport(0, []byte("answer1")))
@@ -687,7 +687,7 @@ func TestStopResolveWhenOutOfGas(t *testing.T) {
 	// New request
 	handleMsgRequestData(
 		ctx, keeper,
-		types.NewMsgRequestData(scriptID, calldata, 2, 2, 100, 2000, 2500, sender),
+		types.NewMsgRequestData(scriptID, calldata, 2, 2, 100, 2000, 2500, "memo", sender),
 	)
 
 	handleEndBlock(ctx, keeper)
@@ -755,7 +755,7 @@ func TestEndBlockInsufficientExecutionConsumeEndBlockGas(t *testing.T) {
 	for i := types.RequestID(1); i <= types.RequestID(4); i++ {
 		handleMsgRequestData(
 			ctx, keeper,
-			types.NewMsgRequestData(scriptID, calldata, 2, 2, 100, 2000, executeGasList[i-1], sender),
+			types.NewMsgRequestData(scriptID, calldata, 2, 2, 100, 2000, executeGasList[i-1], "memo", sender),
 		)
 
 		keeper.SetRawDataReport(ctx, i, 1, validatorAddress1, types.NewRawDataReport(0, []byte("answer1")))
