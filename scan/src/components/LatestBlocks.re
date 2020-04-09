@@ -6,16 +6,24 @@ type block = {
 module Styles = {
   open Css;
 
-  let block =
+  let block = (i, ID.Block.ID(bh)) =>
     style([
+      position(`absolute),
       backgroundColor(white),
       padding4(~top=`px(14), ~left=`px(10), ~right=`px(18), ~bottom=`px(16)),
       marginBottom(`px(3)),
       boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, 0.05))),
       width(`px(120)),
+      pointerEvents(i == 0 || i == 11 ? `none : `auto),
       cursor(`pointer),
-      transition(~duration=100, "transform"),
-      hover([transform(translateY(`px(-3)))]),
+      opacity(i == 0 || i == 11 ? 0. : 1.),
+      transform(
+        `translate((
+          `px(bh mod 2 == 1 ? 125 : 0),
+          `px(i mod 2 == 1 ? i / 2 * 85 : (i + 1) / 2 * 85 - 42),
+        )),
+      ),
+      transition(~duration=800, "all"),
     ]);
 
   let rightCol = style([marginLeft(`px(-3))]);
@@ -28,6 +36,15 @@ module Styles = {
       justifyContent(`spaceBetween),
     ]);
 
+  let blocksWrapper =
+    style([
+      display(`flex),
+      flexDirection(`column),
+      minWidth(`px(245)),
+      minHeight(`px(500)),
+      position(`relative),
+    ]);
+
   let seeAll = style([display(`flex), flexDirection(`row), cursor(`pointer)]);
   let cFlex = style([display(`flex), flexDirection(`column)]);
   let amount =
@@ -35,18 +52,18 @@ module Styles = {
   let rightArrow = style([width(`px(25)), marginTop(`px(17)), marginLeft(`px(16))]);
 };
 
-let renderBlock = (b: BlockSub.t) =>
+let renderBlock = (i: int, blockHeight: ID.Block.t, moniker: string) =>
   <div
-    key={b.height |> ID.Block.toString}
-    className=Styles.block
-    onClick={_ => Route.redirect(b.height |> ID.Block.getRoute)}>
-    <TypeID.Block id={b.height} />
+    key={blockHeight |> ID.Block.toString}
+    className={Styles.block(i, blockHeight)}
+    onClick={_ => Route.redirect(blockHeight |> ID.Block.getRoute)}>
+    <TypeID.Block id=blockHeight />
     <VSpacing size=Spacing.md />
     <Text value="PROPOSED BY" block=true size=Text.Xs color=Colors.gray7 spacing={Text.Em(0.1)} />
     <VSpacing size={`px(1)} />
     <Text
       block=true
-      value={b.validator.moniker}
+      value=moniker
       weight=Text.Bold
       ellipsis=true
       height={Text.Px(15)}
@@ -57,11 +74,10 @@ let renderBlock = (b: BlockSub.t) =>
 [@react.component]
 let make = () =>
   {
-    let blocksSub = BlockSub.getList(~pageSize=10, ~page=1, ());
-    let blocksCountSub = BlockSub.count();
+    let blocksSub = BlockSub.getList(~pageSize=11, ~page=1, ());
 
     let%Sub blocks = blocksSub;
-    let%Sub blocksCount = blocksCountSub;
+    let {BlockSub.height: ID.Block.ID(blocksCount)} = blocks->Belt_Array.getExn(0);
 
     <>
       <div className=Styles.topicBar>
@@ -85,21 +101,15 @@ let make = () =>
       </div>
       <VSpacing size=Spacing.lg />
       <Row alignItems=`initial>
-        <Col>
-          {blocks
-           ->Belt_Array.keepWithIndex((_b, i) => i mod 2 == 0)
-           ->Belt_Array.map(renderBlock)
+        <div className=Styles.blocksWrapper>
+          {[|renderBlock(0, ID.Block.ID(blocksCount + 1), "")|]
+           ->Belt_Array.concat(
+               blocks->Belt_Array.mapWithIndex((i, {height, validator: {moniker}}) =>
+                 renderBlock(i + 1, height, moniker)
+               ),
+             )
            ->React.array}
-        </Col>
-        <Col>
-          <div className=Styles.rightCol>
-            <VSpacing size=Spacing.xl />
-            {blocks
-             ->Belt_Array.keepWithIndex((_b, i) => i mod 2 == 1)
-             ->Belt_Array.map(renderBlock)
-             ->React.array}
-          </div>
-        </Col>
+        </div>
       </Row>
     </>
     |> Sub.resolve;
