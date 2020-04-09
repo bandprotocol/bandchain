@@ -40,6 +40,7 @@ func NewDefaultGenesisState() GenesisState {
 	slashingGenesis := slashing.DefaultGenesisState()
 
 	stakingGenesis.Params.BondDenom = denom
+	stakingGenesis.Params.HistoricalEntries = 1000
 	mintGenesis.Params.BlocksPerYear = 10519200 // target 3-second block time
 	mintGenesis.Params.MintDenom = denom
 	govGenesis.DepositParams.MinDeposit = sdk.NewCoins(sdk.NewCoin(denom, sdk.TokensFromConsensusPower(1000)))
