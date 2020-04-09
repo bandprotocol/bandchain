@@ -1,6 +1,6 @@
 FROM golang:1.13.5-buster
 
-WORKDIR /zoracle
+WORKDIR /oracle
 
 
 RUN apt-get update && \
@@ -8,7 +8,7 @@ RUN apt-get update && \
     curl docker.io sqlite3 \
     && rm -rf /var/lib/apt/lists/*
 
-COPY . /zoracle
+COPY . /oracle
 
 RUN make install
 

@@ -1,6 +1,7 @@
 type t = {
   lastProcessedHeight: ID.Block.t,
   chainID: string,
+  inflationRate: float,
 };
 
 module Config = [%graphql
@@ -24,6 +25,7 @@ let decode = raw => {
     lastProcessedHeight:
       ID.Block.ID(metadata |> find(_, "last_processed_height") |> int_of_string),
     chainID: metadata |> find(_, "chain_id"),
+    inflationRate: metadata |> find(_, "inflation_rate") |> float_of_string,
   };
 };
 

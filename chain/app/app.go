@@ -12,7 +12,6 @@ import (
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codecstd "github.com/cosmos/cosmos-sdk/codec/std"
-	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
@@ -25,7 +24,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/ibc"
-	transfer "github.com/cosmos/cosmos-sdk/x/ibc/20-transfer"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
@@ -37,7 +35,7 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 
 	bandsupply "github.com/bandprotocol/bandchain/chain/x/supply"
-	"github.com/bandprotocol/bandchain/chain/x/zoracle"
+	"github.com/bandprotocol/bandchain/chain/x/oracle"
 )
 
 const (
@@ -71,19 +69,17 @@ var (
 		ibc.AppModuleBasic{},
 		upgrade.AppModuleBasic{},
 		evidence.AppModuleBasic{},
-		transfer.AppModuleBasic{},
-		zoracle.AppModuleBasic{},
+		oracle.AppModuleBasic{},
 	)
 
 	// module account permissions
 	maccPerms = map[string][]string{
-		auth.FeeCollectorName:           nil,
-		distr.ModuleName:                nil,
-		mint.ModuleName:                 {supply.Minter},
-		staking.BondedPoolName:          {supply.Burner, supply.Staking},
-		staking.NotBondedPoolName:       {supply.Burner, supply.Staking},
-		gov.ModuleName:                  {supply.Burner},
-		transfer.GetModuleAccountName(): {supply.Minter, supply.Burner},
+		auth.FeeCollectorName:     nil,
+		distr.ModuleName:          nil,
+		mint.ModuleName:           {supply.Minter},
+		staking.BondedPoolName:    {supply.Burner, supply.Staking},
+		staking.NotBondedPoolName: {supply.Burner, supply.Staking},
+		gov.ModuleName:            {supply.Burner},
 	}
 )
 
@@ -115,8 +111,7 @@ type bandApp struct {
 	UpgradeKeeper  upgrade.Keeper
 	EvidenceKeeper evidence.Keeper
 	IBCKeeper      ibc.Keeper
-	TransferKeeper transfer.Keeper
-	ZoracleKeeper  zoracle.Keeper
+	OracleKeeper  oracle.Keeper
 
 	// Decoder for unmarshaling []byte into sdk.Tx
 	TxDecoder sdk.TxDecoder
@@ -160,8 +155,8 @@ func NewBandApp(
 	keys := sdk.NewKVStoreKeys(
 		bam.MainStoreKey, auth.StoreKey, bank.StoreKey, staking.StoreKey,
 		supply.StoreKey, mint.StoreKey, distr.StoreKey, slashing.StoreKey,
-		gov.StoreKey, params.StoreKey, ibc.StoreKey, transfer.StoreKey,
-		evidence.StoreKey, upgrade.StoreKey, zoracle.StoreKey,
+		gov.StoreKey, params.StoreKey, ibc.StoreKey, evidence.StoreKey,
+		upgrade.StoreKey, oracle.StoreKey,
 	)
 	tKeys := sdk.NewTransientStoreKeys(staking.TStoreKey, params.TStoreKey)
 
@@ -186,7 +181,7 @@ func NewBandApp(
 	app.subspaces[gov.ModuleName] = app.ParamsKeeper.Subspace(gov.DefaultParamspace).WithKeyTable(gov.ParamKeyTable())
 	app.subspaces[crisis.ModuleName] = app.ParamsKeeper.Subspace(crisis.DefaultParamspace)
 	app.subspaces[evidence.ModuleName] = app.ParamsKeeper.Subspace(evidence.DefaultParamspace)
-	app.subspaces[zoracle.ModuleName] = app.ParamsKeeper.Subspace(zoracle.DefaultParamspace)
+	app.subspaces[oracle.ModuleName] = app.ParamsKeeper.Subspace(oracle.DefaultParamspace)
 
 	// add keepers
 	app.AccountKeeper = auth.NewAccountKeeper(
@@ -199,7 +194,7 @@ func NewBandApp(
 		appCodec, keys[supply.StoreKey], app.AccountKeeper, app.BankKeeper, maccPerms,
 	)
 
-	// Wrapped supply keeper allows burned tokens to be transfereed to community pool
+	// Wrapped supply keeper allows burned tokens to be transfered to community pool
 	wrappedSupplyKeeper := bandsupply.WrapSupplyKeeperBurnToCommunityPool(app.SupplyKeeper)
 
 	stakingKeeper := staking.NewKeeper(
@@ -258,18 +253,13 @@ func NewBandApp(
 
 	app.IBCKeeper = ibc.NewKeeper(app.cdc, keys[ibc.StoreKey], stakingKeeper)
 
-	transferCapKey := app.IBCKeeper.PortKeeper.BindPort(bank.ModuleName)
-	app.TransferKeeper = transfer.NewKeeper(
-		app.cdc, keys[transfer.StoreKey], transferCapKey,
-		app.IBCKeeper.ChannelKeeper, app.BankKeeper, app.SupplyKeeper,
-	)
-	app.ZoracleKeeper = zoracle.NewKeeper(
+	app.OracleKeeper = oracle.NewKeeper(
 		cdc,
-		keys[zoracle.StoreKey],
+		keys[oracle.StoreKey],
 		app.BankKeeper,
 		app.StakingKeeper,
-		// app.IBCKeeper.ChannelKeeper,
-		app.subspaces[zoracle.ModuleName],
+		app.IBCKeeper.ChannelKeeper,
+		app.subspaces[oracle.ModuleName],
 	)
 
 	// NOTE: Any module instantiated in the module manager that is later modified
@@ -288,22 +278,21 @@ func NewBandApp(
 		upgrade.NewAppModule(app.UpgradeKeeper),
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
-		transfer.NewAppModule(app.TransferKeeper),
-		zoracle.NewAppModule(app.ZoracleKeeper),
+		oracle.NewAppModule(app.OracleKeeper),
 	)
 	// During begin block slashing happens after distr.BeginBlocker so that
 	// there is nothing left over in the validator fee pool, so as to keep the
 	// CanWithdrawInvariant invariant.
 
 	app.mm.SetOrderBeginBlockers(upgrade.ModuleName, mint.ModuleName, distr.ModuleName, slashing.ModuleName, staking.ModuleName)
-	app.mm.SetOrderEndBlockers(crisis.ModuleName, gov.ModuleName, zoracle.ModuleName, staking.ModuleName)
+	app.mm.SetOrderEndBlockers(crisis.ModuleName, gov.ModuleName, oracle.ModuleName, staking.ModuleName)
 
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
 	app.mm.SetOrderInitGenesis(
 		distr.ModuleName, staking.ModuleName, auth.ModuleName, bank.ModuleName,
 		slashing.ModuleName, gov.ModuleName, mint.ModuleName, supply.ModuleName,
-		crisis.ModuleName, genutil.ModuleName, evidence.ModuleName, zoracle.ModuleName,
+		crisis.ModuleName, genutil.ModuleName, evidence.ModuleName, oracle.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -351,7 +340,7 @@ func (app *bandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliv
 		isAllReportTxs := true
 		if stdTx, ok := tx.(auth.StdTx); ok {
 			for _, msg := range tx.GetMsgs() {
-				if _, ok := msg.(zoracle.MsgReportData); !ok {
+				if _, ok := msg.(oracle.MsgReportData); !ok {
 					isAllReportTxs = false
 					break
 				}
@@ -386,17 +375,9 @@ func (app *bandApp) Commit() (res abci.ResponseCommit) {
 
 // InitChainer application update at chain initialization
 func (app *bandApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
-	var genesisState simapp.GenesisState
+	var genesisState GenesisState
 	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
-
-	res := app.mm.InitGenesis(ctx, app.cdc, genesisState)
-
-	// Set Historical infos in InitChain to ignore genesis params
-	stakingParams := staking.DefaultParams()
-	stakingParams.HistoricalEntries = 1000
-	app.StakingKeeper.SetParams(ctx, stakingParams)
-
-	return res
+	return app.mm.InitGenesis(ctx, app.cdc, genesisState)
 }
 
 // LoadHeight loads a particular height

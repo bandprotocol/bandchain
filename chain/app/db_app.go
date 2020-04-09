@@ -2,7 +2,6 @@ package app
 
 import (
 	"io"
-	"strconv"
 	"time"
 
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
@@ -17,7 +16,7 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/bandprotocol/bandchain/chain/db"
-	"github.com/bandprotocol/bandchain/chain/x/zoracle"
+	"github.com/bandprotocol/bandchain/chain/x/oracle"
 )
 
 type dbBandApp struct {
@@ -35,7 +34,7 @@ func NewDBBandApp(
 		skipUpgradeHeights, home, baseAppOptions...,
 	)
 	dbBand.StakingKeeper = app.StakingKeeper
-	dbBand.ZoracleKeeper = app.ZoracleKeeper
+	dbBand.OracleKeeper = app.OracleKeeper
 	return &dbBandApp{bandApp: app, dbBand: dbBand}
 }
 
@@ -98,12 +97,12 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 		}
 	}
 
-	// Zoracle genesis
-	var zoracleState zoracle.GenesisState
-	app.cdc.MustUnmarshalJSON(genesisState[zoracle.ModuleName], &zoracleState)
+	// Oracle genesis
+	var oracleState oracle.GenesisState
+	app.cdc.MustUnmarshalJSON(genesisState[oracle.ModuleName], &oracleState)
 
 	// Save data source
-	for idx, dataSource := range zoracleState.DataSources {
+	for idx, dataSource := range oracleState.DataSources {
 		err := app.dbBand.AddDataSource(
 			int64(idx+1),
 			dataSource.Name,
@@ -121,7 +120,7 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 	}
 
 	// Save oracle script
-	for idx, oracleScript := range zoracleState.OracleScripts {
+	for idx, oracleScript := range oracleState.OracleScripts {
 		err := app.dbBand.AddOracleScript(
 			int64(idx+1),
 			oracleScript.Name,
@@ -234,56 +233,30 @@ func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseB
 		req.GetHash(),
 	)
 
+	// Handle Begin block event
+	events := res.GetEvents()
+	for _, event := range events {
+		app.dbBand.HandleBeginblockEvent(event)
+	}
+
 	return res
 }
 
 func (app *dbBandApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBlock) {
 	res = app.bandApp.EndBlock(req)
-
-	err := app.dbBand.SetLastProcessedHeight(req.GetHeight())
+	inflation := app.bandApp.MintKeeper.GetMinter(app.bandApp.DeliverContext).Inflation.String()
+	err := app.dbBand.SetInflationRate(inflation)
+	if err != nil {
+		panic(err)
+	}
+	err = app.dbBand.SetLastProcessedHeight(req.GetHeight())
 	if err != nil {
 		panic(err)
 	}
 
 	events := res.GetEvents()
 	for _, event := range events {
-		if event.Type == zoracle.EventTypeRequestExecute {
-			var requestID int64
-			var resolveStatus zoracle.ResolveStatus
-			for _, kv := range event.Attributes {
-				if string(kv.Key) == zoracle.AttributeKeyRequestID {
-					requestID, err = strconv.ParseInt(string(kv.Value), 10, 64)
-					if err != nil {
-						panic(err)
-					}
-				} else if string(kv.Key) == zoracle.AttributeKeyResolveStatus {
-					numResolveStatus, err := strconv.ParseInt(string(kv.Value), 10, 8)
-					if err != nil {
-						panic(err)
-					}
-					resolveStatus = zoracle.ResolveStatus(numResolveStatus)
-				}
-			}
-			// Get result from keeper
-			var rawResult []byte
-			rawResult = nil
-			if resolveStatus == 1 {
-				id := zoracle.RequestID(requestID)
-				request, sdkErr := app.ZoracleKeeper.GetRequest(app.DeliverContext, id)
-				if sdkErr != nil {
-					panic(err)
-				}
-				result, sdkErr := app.ZoracleKeeper.GetResult(app.DeliverContext, id, request.OracleScriptID, request.Calldata)
-				if sdkErr != nil {
-					panic(err)
-				}
-				rawResult = result.Data
-			}
-			err := app.dbBand.ResolveRequest(requestID, resolveStatus, rawResult)
-			if err != nil {
-				panic(err)
-			}
-		}
+		app.dbBand.HandleEndblockEvent(event)
 	}
 
 	app.dbBand.SetContext(sdk.Context{})

@@ -29,7 +29,7 @@ package rpc
 // 	rpcclient "github.com/tendermint/tendermint/rpc/client"
 // 	"github.com/tendermint/tendermint/types"
 
-// 	"github.com/bandprotocol/bandchain/chain/x/zoracle"
+// 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 // )
 
 // var (
@@ -130,8 +130,8 @@ package rpc
 
 // type OracleDataProof struct {
 // 	Version        uint64                 `json:"version"`
-// 	RequestID      zoracle.RequestID      `json:"requestID"`
-// 	OracleScriptID zoracle.OracleScriptID `json:"oracleScriptID"`
+// 	RequestID      oracle.RequestID      `json:"requestID"`
+// 	OracleScriptID oracle.OracleScriptID `json:"oracleScriptID"`
 // 	Calldata       cmn.HexBytes           `json:"calldata"`
 // 	Data           cmn.HexBytes           `json:"data"`
 // 	MerklePaths    []IAVLMerklePath       `json:"merklePaths"`
@@ -312,18 +312,18 @@ package rpc
 // }
 
 // func MakeOtherStoresMerkleHash(mspo rootmulti.MultiStoreProofOp) (cmn.HexBytes, cmn.HexBytes, cmn.HexBytes) {
-// 	var zoracleHash []byte
+// 	var oracleHash []byte
 // 	m := map[string][]byte{}
 // 	for _, si := range mspo.Proof.StoreInfos {
 // 		m[si.Name] = tmhash.Sum(tmhash.Sum(si.Core.CommitID.Hash))
-// 		if si.Name == "zoracle" {
-// 			zoracleHash = si.Core.CommitID.Hash
+// 		if si.Name == "oracle" {
+// 			oracleHash = si.Core.CommitID.Hash
 // 		}
 // 	}
 
 // 	keys := []string{}
 // 	for k := range m {
-// 		if k != "zoracle" {
+// 		if k != "oracle" {
 // 			keys = append(keys, k)
 // 		}
 // 	}
@@ -382,7 +382,7 @@ package rpc
 
 // 	h8 := tmhash.Sum(append([]byte{1}, append(h6, h7...)...))
 
-// 	return h5, h8, zoracleHash
+// 	return h5, h8, oracleHash
 // }
 
 // func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
@@ -393,7 +393,7 @@ package rpc
 // 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 // 			return
 // 		}
-// 		requestID := zoracle.RequestID(intRequestID)
+// 		requestID := oracle.RequestID(intRequestID)
 
 // 		rc, err := cliCtx.Client.Commit(nil)
 // 		if err != nil {
@@ -407,8 +407,8 @@ package rpc
 // 			return
 // 		}
 
-// 		var queryRequest zoracle.RequestQuerierInfo
-// 		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/zoracle/request/%d", requestID), nil)
+// 		var queryRequest oracle.RequestQuerierInfo
+// 		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/oracle/request/%d", requestID), nil)
 // 		if err != nil {
 // 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 // 			return
@@ -420,10 +420,10 @@ package rpc
 // 			return
 // 		}
 
-// 		key := zoracle.ResultStoreKey(requestID, queryRequest.Request.OracleScriptID, queryRequest.Request.Calldata)
+// 		key := oracle.ResultStoreKey(requestID, queryRequest.Request.OracleScriptID, queryRequest.Request.Calldata)
 
 // 		resp, err := cliCtx.Client.ABCIQueryWithOptions(
-// 			"/store/zoracle/key",
+// 			"/store/oracle/key",
 // 			key,
 // 			rpcclient.ABCIQueryOptions{Height: rc.Height - 1, Prove: true},
 // 		)

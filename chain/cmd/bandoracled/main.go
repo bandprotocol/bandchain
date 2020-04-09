@@ -18,7 +18,7 @@ import (
 	"github.com/bandprotocol/bandchain/chain/app"
 	"github.com/bandprotocol/bandchain/chain/bandlib"
 	"github.com/bandprotocol/bandchain/chain/byteexec"
-	"github.com/bandprotocol/bandchain/chain/x/zoracle"
+	"github.com/bandprotocol/bandchain/chain/x/oracle"
 )
 
 const (
@@ -34,13 +34,13 @@ var (
 	logger     log.Logger
 )
 
-func getLatestRequestID() (zoracle.RequestID, error) {
+func getLatestRequestID() (oracle.RequestID, error) {
 	cliCtx := bandClient.GetContext()
-	res, _, err := cliCtx.Query("custom/zoracle/request_number")
+	res, _, err := cliCtx.Query("custom/oracle/request_number")
 	if err != nil {
 		return 0, err
 	}
-	var requestID zoracle.RequestID
+	var requestID oracle.RequestID
 	err = cliCtx.Codec.UnmarshalJSON(res, &requestID)
 	if err != nil {
 		return 0, err
@@ -143,32 +143,42 @@ $ bandoracled --node tcp://localhost:26657 --priv-key 06be35b56b048c5a6810a47e2e
 	}
 }
 
-func handleRequest(requestID zoracle.RequestID) {
+func handleRequest(requestID oracle.RequestID) {
 	cliCtx := bandClient.GetContext()
-	res, _, err := cliCtx.Query(fmt.Sprintf("custom/zoracle/request/%d", requestID))
+	res, _, err := cliCtx.Query(fmt.Sprintf("custom/oracle/request/%d", requestID))
 	if err != nil {
 		logger.Error(fmt.Sprintf("Cannot get request #%d. Error: %v", requestID, err))
 		return
 	}
-	var request zoracle.RequestQuerierInfo
+	var request oracle.RequestQuerierInfo
 	err = cliCtx.Codec.UnmarshalJSON(res, &request)
 	if err != nil {
 		logger.Error(fmt.Sprintf("Report fail on request #%d. Error: %v", requestID, err))
 		return
 	}
 
+	found := false
+	for _, item := range request.Request.RequestedValidators {
+		if item.Equals(sdk.ValAddress(bandClient.Sender())) {
+			found = true
+		}
+	}
+	if !found {
+		return
+	}
+
 	type queryParallelInfo struct {
-		externalID zoracle.ExternalID
+		externalID oracle.ExternalID
 		answer     []byte
 		err        error
 	}
 
 	chanQueryParallelInfo := make(chan queryParallelInfo, len(request.RawDataRequests))
 	for _, rawRequest := range request.RawDataRequests {
-		go func(externalID zoracle.ExternalID, dataSourceID zoracle.DataSourceID, calldata []byte) {
+		go func(externalID oracle.ExternalID, dataSourceID oracle.DataSourceID, calldata []byte) {
 			info := queryParallelInfo{externalID: externalID, answer: []byte{}, err: nil}
 			res, _, err := cliCtx.Query(
-				fmt.Sprintf("custom/zoracle/%s/%d", zoracle.QueryDataSourceByID, dataSourceID),
+				fmt.Sprintf("custom/oracle/%s/%d", oracle.QueryDataSourceByID, dataSourceID),
 			)
 
 			if err != nil {
@@ -179,7 +189,7 @@ func handleRequest(requestID zoracle.RequestID) {
 				return
 			}
 
-			var dataSource zoracle.DataSourceQuerierInfo
+			var dataSource oracle.DataSourceQuerierInfo
 			err = cliCtx.Codec.UnmarshalJSON(res, &dataSource)
 			if err != nil {
 				info.err = err
@@ -220,14 +230,14 @@ func handleRequest(requestID zoracle.RequestID) {
 		)
 	}
 
-	reports := make([]zoracle.RawDataReportWithID, 0)
+	reports := make([]oracle.RawDataReportWithID, 0)
 	for i := 0; i < len(request.RawDataRequests); i++ {
 		info := <-chanQueryParallelInfo
 		if info.err != nil {
 			logger.Error(fmt.Sprintf("Report fail on request #%d. Error: %v", requestID, info.err))
 			return
 		}
-		reports = append(reports, zoracle.NewRawDataReportWithID(info.externalID, 0, info.answer))
+		reports = append(reports, oracle.NewRawDataReportWithID(info.externalID, 0, info.answer))
 	}
 
 	sort.Slice(reports, func(i, j int) bool {
@@ -239,7 +249,7 @@ func handleRequest(requestID zoracle.RequestID) {
 		return
 	}
 	tx, err := bandClient.SendTransaction(
-		zoracle.NewMsgReportData(requestID, reports, sdk.ValAddress(bandClient.Sender()), bandClient.Sender()),
+		oracle.NewMsgReportData(requestID, reports, sdk.ValAddress(bandClient.Sender()), bandClient.Sender()),
 		gasFlagVar.Gas, viper.GetString(flags.FlagFees), viper.GetString(flags.FlagGasPrices),
 	)
 

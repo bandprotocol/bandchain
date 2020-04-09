@@ -14,7 +14,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 
-	"github.com/bandprotocol/bandchain/chain/x/zoracle"
+	"github.com/bandprotocol/bandchain/chain/x/oracle"
 )
 
 const (
@@ -58,7 +58,7 @@ func main() {
 				panic(err)
 			}
 			fmt.Println(tx.SendTransaction(
-				zoracle.NewMsgCreateDataSource(
+				oracle.NewMsgCreateDataSource(
 					tx.Sender(), "Coingecko script",
 					"The Script that queries crypto price from https://cryptocompare.com",
 					sdk.Coins{}, coingecko, tx.Sender(),
@@ -71,7 +71,7 @@ func main() {
 				panic(err)
 			}
 			fmt.Println(tx.SendTransaction(
-				zoracle.NewMsgCreateDataSource(
+				oracle.NewMsgCreateDataSource(
 					tx.Sender(), "Crypto compare script",
 					"The Script that queries crypto price from https://cryptocompare.com",
 					sdk.Coins{}, cryptoCompare, tx.Sender(),
@@ -84,7 +84,7 @@ func main() {
 				panic(err)
 			}
 			fmt.Println(tx.SendTransaction(
-				zoracle.NewMsgCreateDataSource(
+				oracle.NewMsgCreateDataSource(
 					tx.Sender(), "Binance script",
 					"The Script that queries crypto price from https://www.binance.com/en",
 					sdk.Coins{}, binance, tx.Sender(),
@@ -97,7 +97,7 @@ func main() {
 				panic(err)
 			}
 			fmt.Println(tx.SendTransaction(
-				zoracle.NewMsgCreateOracleScript(
+				oracle.NewMsgCreateOracleScript(
 					tx.Sender(), "Crypto price script",
 					"Oracle script for getting an average crypto price from many sources.",
 					oracleBytes, tx.Sender(),
@@ -121,16 +121,16 @@ func main() {
 			case "BTC":
 				{
 					fmt.Println(tx.SendTransaction(
-						zoracle.NewMsgRequestData(
-							1, []byte("BTC"), 4, 4, 100000, prepareGas, executeGas, tx.Sender(),
+						oracle.NewMsgRequestData(
+							1, []byte("BTC"), 4, 4, 100000, prepareGas, executeGas, "request BTC", tx.Sender(),
 						), 0, "", "",
 					))
 				}
 			case "ETH":
 				{
 					fmt.Println(tx.SendTransaction(
-						zoracle.NewMsgRequestData(
-							1, []byte("ETH"), 4, 4, 100000, prepareGas, executeGas, tx.Sender(),
+						oracle.NewMsgRequestData(
+							1, []byte("ETH"), 4, 4, 100000, prepareGas, executeGas, "request ETH", tx.Sender(),
 						), 1000000, "", "",
 					))
 				}
@@ -142,8 +142,8 @@ func main() {
 			errResponses := make(chan error, 2)
 			go func() {
 				txRes, err := tx.SendTransaction(
-					zoracle.NewMsgRequestData(
-						1, []byte("BTC"), 4, 4, 100000, prepareGas, executeGas, tx.Sender(),
+					oracle.NewMsgRequestData(
+						1, []byte("BTC"), 4, 4, 100000, prepareGas, executeGas, "request BTC", tx.Sender(),
 					), 1000000, "", "",
 				)
 
@@ -154,8 +154,8 @@ func main() {
 			}()
 			go func() {
 				txRes, err := tx.SendTransaction(
-					zoracle.NewMsgRequestData(
-						1, []byte("ETH"), 4, 4, 100000, prepareGas, executeGas, tx.Sender(),
+					oracle.NewMsgRequestData(
+						1, []byte("ETH"), 4, 4, 100000, prepareGas, executeGas, "request ETH", tx.Sender(),
 					), 1000000, "", "",
 				)
 
@@ -183,8 +183,8 @@ func main() {
 			errResponses := make(chan error, 2)
 			go func() {
 				txRes, err := tx.SendTransaction(
-					zoracle.NewMsgRequestData(
-						1, []byte("BTC"), 1, 1, 100000, prepareGas, executeGas, tx.Sender(),
+					oracle.NewMsgRequestData(
+						1, []byte("BTC"), 1, 1, 100000, prepareGas, executeGas, "request BTC", tx.Sender(),
 					), 1000000, "", "",
 				)
 
@@ -195,8 +195,8 @@ func main() {
 			}()
 			go func() {
 				txRes, err := tx.SendTransaction(
-					zoracle.NewMsgRequestData(
-						1, []byte("ETH"), 1, 1, 100000, prepareGas, executeGas, tx.Sender(),
+					oracle.NewMsgRequestData(
+						1, []byte("ETH"), 1, 1, 100000, prepareGas, executeGas, "request ETH", tx.Sender(),
 					), 1000000, "", "",
 				)
 
@@ -226,20 +226,20 @@ func main() {
 			}
 
 			fmt.Println(tx.SendTransaction(
-				zoracle.NewMsgCreateOracleScript(
+				oracle.NewMsgCreateOracleScript(
 					tx.Sender(), "Silly script", "Test oracle script", bytes, tx.Sender()),
 				3000000, "", "",
 			))
 
 			fmt.Println(tx.SendTransaction(
-				zoracle.NewMsgCreateDataSource(
+				oracle.NewMsgCreateDataSource(
 					tx.Sender(), "Mock Data source", "Mock Script",
 					sdk.Coins{}, []byte("exec"), tx.Sender(),
 				), 1000000, "", "",
 			))
 
 			fmt.Println(tx.SendTransaction(
-				zoracle.NewMsgRequestData(2, []byte("calldata"), 1, 1, 100, prepareGas, executeGas, tx.Sender()),
+				oracle.NewMsgRequestData(2, []byte("calldata"), 1, 1, 100, prepareGas, executeGas, "clientID", tx.Sender()),
 				1000000, "", "",
 			))
 
@@ -258,7 +258,7 @@ func main() {
 
 			for i := uint64(0); i < round; i++ {
 				fmt.Println(tx.SendTransaction(
-					zoracle.NewMsgCreateOracleScript(
+					oracle.NewMsgCreateOracleScript(
 						tx.Sender(), fmt.Sprintf("Silly script %d", i), "Test oracle script",
 						bytes, tx.Sender(),
 					), 1000000, "", "",
@@ -270,7 +270,7 @@ func main() {
 		{
 			acc, _ := sdk.AccAddressFromBech32("band13zmknvkq2sj920spz90g4r9zjan8g584x8qalj")
 			fmt.Println(tx.SendTransaction(
-				zoracle.NewMsgAddOracleAddress(
+				oracle.NewMsgAddOracleAddress(
 					sdk.ValAddress(tx.Sender()),
 					acc),
 				1000000, "", ""))

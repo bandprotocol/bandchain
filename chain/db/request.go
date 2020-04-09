@@ -3,10 +3,10 @@ package db
 import (
 	"strconv"
 
-	"github.com/bandprotocol/bandchain/chain/x/zoracle"
+	"github.com/bandprotocol/bandchain/chain/x/oracle"
 )
 
-func parseResolveStatus(resolveStatus zoracle.ResolveStatus) string {
+func parseResolveStatus(resolveStatus oracle.ResolveStatus) string {
 	switch resolveStatus {
 	case 0:
 		return "Pending"
@@ -27,6 +27,7 @@ func createRequest(
 	expirationHeight int64,
 	resolveStatus string,
 	requester string,
+	clientID string,
 	txHash []byte,
 	result []byte,
 ) Request {
@@ -38,12 +39,13 @@ func createRequest(
 		ExpirationHeight:         expirationHeight,
 		ResolveStatus:            resolveStatus,
 		Requester:                requester,
+		ClientID:                 clientID,
 		TxHash:                   txHash,
 		Result:                   result,
 	}
 }
 
-func (b *BandDB) AddRequest(
+func (b *BandDB) AddNewRequest(
 	id int64,
 	oracleScriptID int64,
 	calldata []byte,
@@ -51,6 +53,7 @@ func (b *BandDB) AddRequest(
 	expirationHeight int64,
 	resolveStatus string,
 	requester string,
+	clientID string,
 	txHash []byte,
 	result []byte,
 ) error {
@@ -62,11 +65,47 @@ func (b *BandDB) AddRequest(
 		expirationHeight,
 		resolveStatus,
 		requester,
+		clientID,
 		txHash,
 		result,
 	)
 	err := b.tx.Create(&request).Error
-	return err
+	if err != nil {
+		return err
+	}
+
+	req, err := b.OracleKeeper.GetRequest(b.ctx, oracle.RequestID(id))
+	if err != nil {
+		return err
+	}
+
+	for _, validatorAddress := range req.RequestedValidators {
+		err := b.AddRequestedValidator(id, validatorAddress.String())
+		if err != nil {
+			return err
+		}
+	}
+
+	for _, raw := range b.OracleKeeper.GetRawDataRequestWithExternalIDs(b.ctx, oracle.RequestID(id)) {
+		err := b.AddRawDataRequest(
+			id,
+			int64(raw.ExternalID),
+			int64(raw.RawDataRequest.DataSourceID),
+			raw.RawDataRequest.Calldata,
+		)
+		if err != nil {
+			return err
+		}
+		err = b.tx.FirstOrCreate(&RelatedDataSources{
+			DataSourceID:   int64(raw.RawDataRequest.DataSourceID),
+			OracleScriptID: int64(oracleScriptID),
+		}).Error
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func createRequestedValidator(
@@ -105,7 +144,7 @@ func createRawDataRequests(
 	}
 }
 
-func (b *BandDB) AddRawDataRequests(
+func (b *BandDB) AddRawDataRequest(
 	requestID int64,
 	externalID int64,
 	dataSourceID int64,
@@ -123,16 +162,14 @@ func (b *BandDB) AddRawDataRequests(
 
 func (b *BandDB) handleMsgRequestData(
 	txHash []byte,
-	msg zoracle.MsgRequestData,
+	msg oracle.MsgRequestData,
 	events map[string]string,
 ) error {
-
-	id, err := strconv.ParseInt(events[zoracle.EventTypeRequest+"."+zoracle.AttributeKeyID], 10, 64)
+	id, err := strconv.ParseInt(events[oracle.EventTypeRequest+"."+oracle.AttributeKeyID], 10, 64)
 	if err != nil {
 		return err
 	}
-
-	request := createRequest(
+	return b.AddNewRequest(
 		id,
 		int64(msg.OracleScriptID),
 		msg.Calldata,
@@ -140,41 +177,8 @@ func (b *BandDB) handleMsgRequestData(
 		msg.Expiration,
 		"Pending",
 		msg.Sender.String(),
+		msg.ClientID,
 		txHash,
 		nil,
 	)
-
-	err = b.tx.Save(&request).Error
-	if err != nil {
-		return err
-	}
-
-	req, err := b.ZoracleKeeper.GetRequest(b.ctx, zoracle.RequestID(id))
-	if err != nil {
-		return err
-	}
-
-	for _, validatorAddress := range req.RequestedValidators {
-		requestedValidator := createRequestedValidator(id, validatorAddress.String())
-		err = b.tx.Save(&requestedValidator).Error
-		if err != nil {
-			return err
-		}
-	}
-
-	for _, raw := range b.ZoracleKeeper.GetRawDataRequestWithExternalIDs(b.ctx, zoracle.RequestID(id)) {
-		rawDataRequests := createRawDataRequests(id, int64(raw.ExternalID), int64(raw.RawDataRequest.DataSourceID), raw.RawDataRequest.Calldata)
-		err = b.tx.Save(&rawDataRequests).Error
-		if err != nil {
-			return err
-		}
-
-		b.tx.FirstOrCreate(&RelatedDataSources{
-			DataSourceID:   int64(raw.RawDataRequest.DataSourceID),
-			OracleScriptID: int64(msg.OracleScriptID),
-		})
-
-	}
-
-	return nil
 }

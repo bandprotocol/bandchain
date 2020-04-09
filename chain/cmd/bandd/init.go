@@ -23,12 +23,12 @@ import (
 	"github.com/tendermint/tendermint/privval"
 	"github.com/tendermint/tendermint/types"
 
-	"github.com/bandprotocol/bandchain/chain/x/zoracle"
+	"github.com/bandprotocol/bandchain/chain/x/oracle"
 )
 
 const (
 	flagOverwrite = "overwrite"
-	flagZoracle   = "zoracle"
+	flagOracle    = "oracle"
 )
 
 type printInfo struct {
@@ -136,12 +136,12 @@ func InitCmd(
 			if !viper.GetBool(flagOverwrite) && tmos.FileExists(genFile) {
 				return fmt.Errorf("genesis.json file already exists: %v", genFile)
 			}
-			if viper.IsSet(flagZoracle) {
-				owner, err := sdk.AccAddressFromBech32(viper.GetString(flagZoracle))
+			if viper.IsSet(flagOracle) {
+				owner, err := sdk.AccAddressFromBech32(viper.GetString(flagOracle))
 				if err != nil {
 					return err
 				}
-				customAppState[zoracle.ModuleName] = getDefaultDataSourcesAndOracleScripts(owner)
+				customAppState[oracle.ModuleName] = getDefaultDataSourcesAndOracleScripts(owner)
 			}
 			appState, err := codec.MarshalJSONIndent(cdc, customAppState)
 			if err != nil {
@@ -166,7 +166,7 @@ func InitCmd(
 			genDoc.ConsensusParams = types.DefaultConsensusParams()
 			genDoc.ConsensusParams.Block.MaxBytes = 200000 // 0.2MB
 			genDoc.ConsensusParams.Block.MaxGas = 20000000 // 20M gas (Maximum oracle script size uses 15M)
-			genDoc.ConsensusParams.Block.TimeIotaMs = 1000 // 0.2MB
+			genDoc.ConsensusParams.Block.TimeIotaMs = 1000 // 1 second
 			genDoc.ConsensusParams.Validator.PubKeyTypes = []string{types.ABCIPubKeyTypeSecp256k1}
 
 			if err = genutil.ExportGenesisFile(genDoc, genFile); err != nil {
@@ -183,7 +183,7 @@ func InitCmd(
 	cmd.Flags().String(cli.HomeFlag, defaultNodeHome, "node's home directory")
 	cmd.Flags().BoolP(flagOverwrite, "o", false, "overwrite the genesis.json file")
 	cmd.Flags().String(flags.FlagChainID, "", "genesis file chain-id, if left blank will be randomly created")
-	cmd.Flags().String(flagZoracle, "band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9", "owner of these data sources and oracle scripts")
+	cmd.Flags().String(flagOracle, "band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9", "owner of these data sources and oracle scripts")
 
 	return cmd
 }

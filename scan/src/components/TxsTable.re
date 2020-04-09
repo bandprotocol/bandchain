@@ -134,7 +134,7 @@ let make = (~txs: array(TxSub.t)) => {
                     <React.Fragment key={(txHash |> Hash.toHex) ++ (i |> string_of_int)}>
                       <VSpacing size=Spacing.sm />
                       <VSpacing size=Spacing.xs />
-                      <Msg msg success width=450 />
+                      <Msg msg width=450 />
                       <VSpacing size=Spacing.sm />
                     </React.Fragment>
                   )

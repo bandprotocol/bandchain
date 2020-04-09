@@ -22,7 +22,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/supply"
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 
-	"github.com/bandprotocol/bandchain/chain/x/zoracle"
+	"github.com/bandprotocol/bandchain/chain/x/oracle"
 )
 
 // GenesisState defines a type alias for the Band genesis application state.
@@ -40,6 +40,7 @@ func NewDefaultGenesisState() GenesisState {
 	slashingGenesis := slashing.DefaultGenesisState()
 
 	stakingGenesis.Params.BondDenom = denom
+	stakingGenesis.Params.HistoricalEntries = 1000
 	mintGenesis.Params.BlocksPerYear = 10519200 // target 3-second block time
 	mintGenesis.Params.MintDenom = denom
 	govGenesis.DepositParams.MinDeposit = sdk.NewCoins(sdk.NewCoin(denom, sdk.TokensFromConsensusPower(1000)))
@@ -65,12 +66,12 @@ func NewDefaultGenesisState() GenesisState {
 		upgrade.ModuleName:  upgrade.AppModuleBasic{}.DefaultGenesis(cdc),
 		evidence.ModuleName: evidence.AppModuleBasic{}.DefaultGenesis(cdc),
 		transfer.ModuleName: transfer.AppModuleBasic{}.DefaultGenesis(cdc),
-		zoracle.ModuleName:  zoracle.AppModuleBasic{}.DefaultGenesis(cdc),
+		oracle.ModuleName:  oracle.AppModuleBasic{}.DefaultGenesis(cdc),
 	}
 }
 
 func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage {
-	state := zoracle.DefaultGenesisState()
+	state := oracle.DefaultGenesisState()
 	dataSources := []struct {
 		name        string
 		description string
@@ -99,13 +100,13 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 	}
 
 	// TODO: Find a better way to specify path to data sources
-	state.DataSources = make([]zoracle.DataSource, len(dataSources))
+	state.DataSources = make([]oracle.DataSource, len(dataSources))
 	for i, dataSource := range dataSources {
 		script, err := ioutil.ReadFile(dataSource.path)
 		if err != nil {
 			panic(err)
 		}
-		state.DataSources[i] = zoracle.NewDataSource(
+		state.DataSources[i] = oracle.NewDataSource(
 			owner,
 			dataSource.name,
 			dataSource.description,
@@ -131,18 +132,18 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			"./owasm/res/crypto_price_borsh.wasm",
 		},
 	}
-	state.OracleScripts = make([]zoracle.OracleScript, len(oracleScripts))
+	state.OracleScripts = make([]oracle.OracleScript, len(oracleScripts))
 	for i, oracleScript := range oracleScripts {
 		code, err := ioutil.ReadFile(oracleScript.path)
 		if err != nil {
 			panic(err)
 		}
-		state.OracleScripts[i] = zoracle.NewOracleScript(
+		state.OracleScripts[i] = oracle.NewOracleScript(
 			owner,
 			oracleScript.name,
 			oracleScript.description,
 			code,
 		)
 	}
-	return zoracle.ModuleCdc.MustMarshalJSON(state)
+	return oracle.ModuleCdc.MustMarshalJSON(state)
 }

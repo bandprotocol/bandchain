@@ -11,8 +11,8 @@ tags:
     description: Search, encode, or broadcast transactions.
   - name: Tendermint RPC
     description: Tendermint APIs, such as query blocks, transactions and validatorset
-  - name: Zoracle
-    description: Zoracle  module APIs
+  - name: Oracle
+    description: Oracle  module APIs
   - name: Auth
     description: Authenticate accounts
   - name: Bank
@@ -146,11 +146,11 @@ paths:
             $ref: "#/definitions/ProviderStatus"
         500:
           description: Internal Server Error
-  /zoracle/request/{requestID}:
+  /oracle/request/{requestID}:
     get:
       summary: Get request detail by request id
       tags:
-        - Zoracle
+        - Oracle
       description: Get request, raw data request, reports, and result of request by request id
       parameters:
         - in: path
@@ -170,11 +170,11 @@ paths:
           description: Invalid request id
         500:
           description: Internal server error
-  /zoracle/requests:
+  /oracle/requests:
     get:
       summary: Get all requests order by request id in descending order
       tags:
-        - Zoracle
+        - Oracle
       description: Get all requests order by request id in descending order.
       parameters:
         - in: query
@@ -200,11 +200,11 @@ paths:
           description: Invalid request id
         500:
           description: Internal server error
-  /zoracle/data_source/{dataSourceID}:
+  /oracle/data_source/{dataSourceID}:
     get:
       summary: Get data source detail by data source id
       tags:
-        - Zoracle
+        - Oracle
       description: Get data source detail (executalbe, owner, fee).
       parameters:
         - in: path
@@ -224,11 +224,11 @@ paths:
           description: Invalid data source id
         500:
           description: Internal server error
-  /zoracle/data_sources:
+  /oracle/data_sources:
     get:
       summary: Get all data sources order by data source id in ascending order
       tags:
-        - Zoracle
+        - Oracle
       description: Get all data sources order by data source id in ascending order.
       parameters:
         - in: query
@@ -254,11 +254,11 @@ paths:
           description: Invalid data source id
         500:
           description: Internal server error
-  /zoracle/oracle_script/{oracleScriptID}:
+  /oracle/oracle_script/{oracleScriptID}:
     get:
       summary: Get oracle script detail by oracle script id
       tags:
-        - Zoracle
+        - Oracle
       description: Get oracle script detail (wasm code, owner).
       parameters:
         - in: path
@@ -278,11 +278,11 @@ paths:
           description: Invalid oracle script id
         500:
           description: Internal server error
-  /zoracle/oracle_scripts:
+  /oracle/oracle_scripts:
     get:
       summary: Get all oracle scripts order by oracle script id in ascending order
       tags:
-        - Zoracle
+        - Oracle
       description: Get all oracle scripts order by oracle script id in ascending order.
       parameters:
         - in: query
@@ -308,11 +308,11 @@ paths:
           description: Invalid oracle script id
         500:
           description: Internal server error
-  /zoracle/request_number:
+  /oracle/request_number:
     get:
       summary: Get latest request number
       tags:
-        - Zoracle
+        - Oracle
       description: Get latest request id of all requests
       produces:
         - application/json
