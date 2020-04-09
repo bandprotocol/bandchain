@@ -123,7 +123,7 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) {
 			continue
 		}
 
-		packet := NewOracleResponsePacketData(requestID, hex.EncodeToString(result))
+		packet := NewOracleResponsePacketData(requestID, request.ClientID, hex.EncodeToString(result))
 
 		err = keeper.ChannelKeeper.SendPacket(ctx, channel.NewPacket(packet.GetBytes(),
 			sequence, request.SourcePort, request.SourceChannel, destinationPort, destinationChannel,

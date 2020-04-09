@@ -32,6 +32,7 @@ func (b *BandDB) handleMsgPacket(
 			requestData.Expiration,
 			"Pending",
 			msg.Signer.String(),
+			requestData.ClientID,
 			txHash,
 			nil,
 		)
