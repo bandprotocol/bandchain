@@ -52,7 +52,7 @@ let create =
   {
     msgs: [|
       {
-        type_: "zoracle/Request",
+        type_: "oracle/Request",
         value: {
           oracleScriptID: oracleScriptID |> string_of_int,
           calldata: calldata |> JsBuffer.toBase64,
