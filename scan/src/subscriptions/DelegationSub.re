@@ -84,7 +84,7 @@ let getList = delegatorAddress => {
   result |> Sub.map(_, internal => internal##delegations);
 };
 
-let getStake = delegatorAddress => {
+let getStakeList = delegatorAddress => {
   let (result, _) =
     ApolloHooks.useSubscription(
       StakeConfig.definition,
