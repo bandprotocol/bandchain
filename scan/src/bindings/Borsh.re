@@ -122,9 +122,9 @@ type field_t = {
   varType: variable_t,
 };
 
-let parse = ((name, varType)) => {
+let parse = ({fieldName, fieldType}) => {
   let v =
-    switch (varType |> ChangeCase.camelCase) {
+    switch (fieldType |> ChangeCase.camelCase) {
     | "string" => Some(String)
     | "u64" => Some(U64)
     | "u32" => Some(U32)
@@ -133,7 +133,7 @@ let parse = ((name, varType)) => {
     };
 
   let%Opt varType' = v;
-  Some({name, varType: varType'});
+  Some({name: fieldName, varType: varType'});
 };
 
 let declareSolidity = ({name, varType}) => {
