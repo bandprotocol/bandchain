@@ -107,8 +107,12 @@ let getTotalStake = delegatorAddress => {
   result
   |> Sub.map(_, a =>
        (
-         (a##delegations_view_aggregate##aggregate |> Belt_Option.getExn)##sum |> Belt_Option.getExn
-       )##amount
-       |> Belt_Option.getWithDefault(_, 0.0)
+         (
+           (a##delegations_view_aggregate##aggregate |> Belt_Option.getExn)##sum
+           |> Belt_Option.getExn
+         )##amount
+         |> Belt_Option.getWithDefault(_, 0.0)
+       )
+       /. 1_000_000.00
      );
 };

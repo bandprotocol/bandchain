@@ -74,7 +74,9 @@ let make = (~delegations: array(DelegationSub.stake_t)) => {
                  <div className=Styles.alignRight>
                    <Text
                      value={
-                       delegator.amount |> Belt_Option.getWithDefault(_, 0.00) |> Format.fPretty
+                       (delegator.amount |> Belt_Option.getWithDefault(_, 0.00))
+                       /. 1_000_000.
+                       |> Format.fPretty
                      }
                      code=true
                    />
