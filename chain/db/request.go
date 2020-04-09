@@ -43,7 +43,7 @@ func createRequest(
 	}
 }
 
-func (b *BandDB) AddRequest(
+func (b *BandDB) AddNewRequest(
 	id int64,
 	oracleScriptID int64,
 	calldata []byte,
@@ -66,7 +66,42 @@ func (b *BandDB) AddRequest(
 		result,
 	)
 	err := b.tx.Create(&request).Error
-	return err
+	if err != nil {
+		return err
+	}
+
+	req, err := b.OracleKeeper.GetRequest(b.ctx, oracle.RequestID(id))
+	if err != nil {
+		return err
+	}
+
+	for _, validatorAddress := range req.RequestedValidators {
+		err := b.AddRequestedValidator(id, validatorAddress.String())
+		if err != nil {
+			return err
+		}
+	}
+
+	for _, raw := range b.OracleKeeper.GetRawDataRequestWithExternalIDs(b.ctx, oracle.RequestID(id)) {
+		err := b.AddRawDataRequest(
+			id,
+			int64(raw.ExternalID),
+			int64(raw.RawDataRequest.DataSourceID),
+			raw.RawDataRequest.Calldata,
+		)
+		if err != nil {
+			return err
+		}
+		err = b.tx.FirstOrCreate(&RelatedDataSources{
+			DataSourceID:   int64(raw.RawDataRequest.DataSourceID),
+			OracleScriptID: int64(oracleScriptID),
+		}).Error
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func createRequestedValidator(
@@ -105,7 +140,7 @@ func createRawDataRequests(
 	}
 }
 
-func (b *BandDB) AddRawDataRequests(
+func (b *BandDB) AddRawDataRequest(
 	requestID int64,
 	externalID int64,
 	dataSourceID int64,
@@ -126,13 +161,11 @@ func (b *BandDB) handleMsgRequestData(
 	msg oracle.MsgRequestData,
 	events map[string]string,
 ) error {
-
 	id, err := strconv.ParseInt(events[oracle.EventTypeRequest+"."+oracle.AttributeKeyID], 10, 64)
 	if err != nil {
 		return err
 	}
-
-	request := createRequest(
+	return b.AddNewRequest(
 		id,
 		int64(msg.OracleScriptID),
 		msg.Calldata,
@@ -143,38 +176,4 @@ func (b *BandDB) handleMsgRequestData(
 		txHash,
 		nil,
 	)
-
-	err = b.tx.Save(&request).Error
-	if err != nil {
-		return err
-	}
-
-	req, err := b.OracleKeeper.GetRequest(b.ctx, oracle.RequestID(id))
-	if err != nil {
-		return err
-	}
-
-	for _, validatorAddress := range req.RequestedValidators {
-		requestedValidator := createRequestedValidator(id, validatorAddress.String())
-		err = b.tx.Save(&requestedValidator).Error
-		if err != nil {
-			return err
-		}
-	}
-
-	for _, raw := range b.OracleKeeper.GetRawDataRequestWithExternalIDs(b.ctx, oracle.RequestID(id)) {
-		rawDataRequests := createRawDataRequests(id, int64(raw.ExternalID), int64(raw.RawDataRequest.DataSourceID), raw.RawDataRequest.Calldata)
-		err = b.tx.Save(&rawDataRequests).Error
-		if err != nil {
-			return err
-		}
-
-		b.tx.FirstOrCreate(&RelatedDataSources{
-			DataSourceID:   int64(raw.RawDataRequest.DataSourceID),
-			OracleScriptID: int64(msg.OracleScriptID),
-		})
-
-	}
-
-	return nil
 }
