@@ -5,8 +5,8 @@ type wrapped_msg_t;
 type signed_msg_t;
 
 type account_result_t = {
-  accountNumber: string,
-  sequence: string,
+  accountNumber: int,
+  sequence: int,
 };
 
 type tx_response_t = {
@@ -43,8 +43,8 @@ let getAccounts = (instance, address) => {
 
   Promise.ret(
     JsonUtils.Decode.{
-      accountNumber: rawResult |> at(["result", "value", "account_number"], string),
-      sequence: rawResult |> at(["result", "value", "sequence"], string),
+      accountNumber: rawResult |> at(["result", "value", "account_number"], int),
+      sequence: rawResult |> at(["result", "value", "sequence"], int),
     },
   );
 };
@@ -66,6 +66,7 @@ function(signedMsg) {
 let broadcast = (instance, signedMsg) => {
   addPublicKeyToSignedMsg(signedMsg);
   let%Promise rawResponse = instance->_broadcast(signedMsg);
+  Js.Console.log2("rawResponse: ", rawResponse);
   Promise.ret(
     Tx(
       JsonUtils.Decode.{

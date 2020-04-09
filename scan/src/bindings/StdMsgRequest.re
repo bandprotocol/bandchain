@@ -27,7 +27,7 @@ type t = {
   chain_id: string,
   fee: fee_t,
   memo: string,
-  account_number: string,
+  accountNumber: string,
   sequence: string,
 };
 
@@ -62,7 +62,7 @@ let create =
       gas: gas |> string_of_int,
     },
     memo: "",
-    account_number: accountNumber,
+    accountNumber: accountNumber,
     sequence,
   };
 };

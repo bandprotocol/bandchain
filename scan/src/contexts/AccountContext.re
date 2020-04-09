@@ -25,7 +25,8 @@ let reducer = state =>
     | Some({address, privKey}) =>
       callback(
         {
-          let%Promise data = bandchain->BandWeb3.getAccounts(address |> Address.toBech32);
+          let%Promise {accountNumber, sequence} =
+            bandchain->BandWeb3.getAccounts(address |> Address.toBech32);
           let msgRequest =
             StdMsgRequest.create(
               oracleScriptID,
@@ -38,10 +39,9 @@ let reducer = state =>
               ~sender=address,
               ~feeAmount=1000000,
               ~gas=3000000,
-              ~accountNumber=data.accountNumber,
-              ~sequence=data.sequence,
+              ~accountNumber=accountNumber |> string_of_int,
+              ~sequence=sequence |> string_of_int,
             );
-
           let wrappedMsg = bandchain->BandWeb3.newStdMsgRequest(msgRequest);
           let signedMsg = bandchain->BandWeb3.sign(wrappedMsg, privKey, "block");
           let%Promise res = bandchain->BandWeb3.broadcast(signedMsg);
