@@ -12,7 +12,6 @@ import (
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codecstd "github.com/cosmos/cosmos-sdk/codec/std"
-	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
@@ -376,17 +375,9 @@ func (app *bandApp) Commit() (res abci.ResponseCommit) {
 
 // InitChainer application update at chain initialization
 func (app *bandApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
-	var genesisState simapp.GenesisState
+	var genesisState GenesisState
 	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
-
-	res := app.mm.InitGenesis(ctx, app.cdc, genesisState)
-
-	// Set Historical infos in InitChain to ignore genesis params
-	stakingParams := staking.DefaultParams()
-	stakingParams.HistoricalEntries = 1000
-	app.StakingKeeper.SetParams(ctx, stakingParams)
-
-	return res
+	return app.mm.InitGenesis(ctx, app.cdc, genesisState)
 }
 
 // LoadHeight loads a particular height
