@@ -149,7 +149,7 @@ $ %s tx oracle request 1 --calldata 1234abcdef --requested-validator-count 4 --s
 	cmd.MarkFlagRequired(flagExpiration)
 	cmd.Flags().Uint64P(flagPrepareGas, "w", 0, "The amount of gas that will be reserved for prepare function")
 	cmd.MarkFlagRequired(flagPrepareGas)
-	cmd.Flags().StringP(flagClientID, "m", "", "ClientID to send along with transaction")
+	cmd.Flags().StringP(flagClientID, "m", "", "Requester can match up the request with response by clientID")
 	cmd.Flags().Uint64P(flagExecuteGas, "g", 0, "The amount of gas that will be reserved for later execution")
 	cmd.MarkFlagRequired(flagExecuteGas)
 
