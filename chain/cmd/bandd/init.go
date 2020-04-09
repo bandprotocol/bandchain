@@ -28,7 +28,7 @@ import (
 
 const (
 	flagOverwrite = "overwrite"
-	flagOracle   = "oracle"
+	flagOracle    = "oracle"
 )
 
 type printInfo struct {
