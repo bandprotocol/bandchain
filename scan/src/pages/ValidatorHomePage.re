@@ -235,7 +235,7 @@ let make = () =>
     let allValidatorCount =
       bondedValidatorCount + unbondedValidatorCount + unbondingValidatorCount;
 
-    //TODO: Replace 400 with real value
+    //TODO: Replace with real value
     let allBondedAmount = 400;
 
     let pastDayAvgBlockTime = (pastDayBlockCount |> float_of_int) /. 86400000.00;
