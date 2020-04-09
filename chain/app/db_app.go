@@ -239,8 +239,12 @@ func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseB
 
 func (app *dbBandApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBlock) {
 	res = app.bandApp.EndBlock(req)
-
-	err := app.dbBand.SetLastProcessedHeight(req.GetHeight())
+	inflation := app.bandApp.MintKeeper.GetMinter(app.bandApp.DeliverContext).Inflation.String()
+	err := app.dbBand.SetInflationRate(inflation)
+	if err != nil {
+		panic(err)
+	}
+	err = app.dbBand.SetLastProcessedHeight(req.GetHeight())
 	if err != nil {
 		panic(err)
 	}
