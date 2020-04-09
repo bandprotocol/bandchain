@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/bandprotocol/bandchain/chain/x/zoracle"
+	"github.com/bandprotocol/bandchain/chain/x/oracle"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -79,10 +79,10 @@ func (b *BandDB) AddOracleScript(
 
 func (b *BandDB) handleMsgCreateOracleScript(
 	txHash []byte,
-	msg zoracle.MsgCreateOracleScript,
+	msg oracle.MsgCreateOracleScript,
 	events map[string]string,
 ) error {
-	rawID, ok := events[zoracle.EventTypeCreateOracleScript+"."+zoracle.AttributeKeyID]
+	rawID, ok := events[oracle.EventTypeCreateOracleScript+"."+oracle.AttributeKeyID]
 	if !ok {
 		return errors.New("handleMsgCreateOracleScript: cannot find oracle script id")
 	}
@@ -98,7 +98,7 @@ func (b *BandDB) handleMsgCreateOracleScript(
 
 func (b *BandDB) handleMsgEditOracleScript(
 	txHash []byte,
-	msg zoracle.MsgEditOracleScript,
+	msg oracle.MsgEditOracleScript,
 	events map[string]string,
 ) error {
 	h := sha256.New()

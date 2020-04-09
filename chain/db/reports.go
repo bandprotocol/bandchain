@@ -1,12 +1,12 @@
 package db
 
 import (
-	"github.com/bandprotocol/bandchain/chain/x/zoracle"
+	"github.com/bandprotocol/bandchain/chain/x/oracle"
 )
 
 func (b *BandDB) handleMsgReportData(
 	txHash []byte,
-	msg zoracle.MsgReportData,
+	msg oracle.MsgReportData,
 	events map[string]string,
 ) error {
 
@@ -22,7 +22,7 @@ func (b *BandDB) handleMsgReportData(
 	}
 
 	for _, data := range msg.DataSet {
-		rawDataRequest, errSdk := b.ZoracleKeeper.GetRawDataRequest(
+		rawDataRequest, errSdk := b.OracleKeeper.GetRawDataRequest(
 			b.ctx, msg.RequestID, data.ExternalDataID,
 		)
 		if errSdk != nil {
