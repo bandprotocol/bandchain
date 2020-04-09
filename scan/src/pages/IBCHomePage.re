@@ -1,7 +1,7 @@
 module Styles = {
   open Css;
 
-  let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
+  let title = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
   let logo = style([width(`px(50)), marginRight(`px(10))]);
 
@@ -13,15 +13,22 @@ module Styles = {
       marginRight(`px(10)),
       backgroundColor(Colors.gray7),
     ]);
+
+  let vFlex = style([display(`flex), flexDirection(`column), width(`percent(100.))]);
+  let hFlex = style([display(`flex), flexDirection(`row), width(`percent(100.))]);
 };
 
 [@react.component]
 let make = () => {
+  let (page, setPage) = React.useState(_ => 1);
+  // let pageSize = 10;
+  let pageCount = 5;
+  let packets = IBCSub.getMockList();
   <>
     <Row>
       <Col> <img src=Images.ibcLogo className=Styles.logo /> </Col>
       <Col>
-        <div className=Styles.vFlex>
+        <div className=Styles.title>
           <Text
             value="ALL IBC PACKETS"
             weight=Text.Semibold
@@ -37,21 +44,19 @@ let make = () => {
     </Row>
     <VSpacing size=Spacing.xl />
     <THead>
-      <Row>
-        <Col> <HSpacing size=Spacing.xl /> </Col>
-        <Col size=0.5>
-          <div className=TElement.Styles.hashContainer>
-            <Text
-              block=true
-              value="PACKET"
-              size=Text.Sm
-              weight=Text.Semibold
-              color=Colors.gray5
-              spacing={Text.Em(0.1)}
-            />
-          </div>
+      <div className=Styles.hFlex>
+        <Col> <HSpacing size=Spacing.md /> </Col>
+        <Col size=9.7>
+          <Text
+            block=true
+            value="PACKET"
+            size=Text.Sm
+            weight=Text.Semibold
+            color=Colors.gray5
+            spacing={Text.Em(0.1)}
+          />
         </Col>
-        <Col size=0.5>
+        <Col size=18.3>
           <Text
             block=true
             value="PEER INFO"
@@ -61,7 +66,7 @@ let make = () => {
             spacing={Text.Em(0.1)}
           />
         </Col>
-        <Col size=1.>
+        <Col size=8.1>
           <Text
             block=true
             value="BLOCK"
@@ -71,7 +76,7 @@ let make = () => {
             spacing={Text.Em(0.1)}
           />
         </Col>
-        <Col size=0.4>
+        <Col size=44.2>
           <Text
             block=true
             value="DETAIL"
@@ -81,29 +86,25 @@ let make = () => {
             spacing={Text.Em(0.1)}
           />
         </Col>
-        <Col> <HSpacing size=Spacing.xl /> </Col>
-      </Row>
+        <Col> <HSpacing size=Spacing.md /> </Col>
+      </div>
     </THead>
-    // {dataSources
-    //  ->Belt_Array.map(({id, name, timestamp, owner, fee}) => {
-    //      <TBody key=name>
-    //        <div className=Styles.fullWidth>
-    //          <Row>
-    //            <Col> <HSpacing size=Spacing.xl /> </Col>
-    //            <Col size=0.5> <TElement elementType={TElement.DataSource(id, name)} /> </Col>
-    //            <Col size=0.5> <TElement elementType={timestamp->TElement.Timestamp} /> </Col>
-    //            <Col size=1.> <TElement elementType={owner->TElement.Address} /> </Col>
-    //            <Col size=0.4>
-    //              <TElement elementType={fee->Coin.getBandAmountFromCoins->TElement.Fee} />
-    //            </Col>
-    //            <Col> <HSpacing size=Spacing.xl /> </Col>
-    //          </Row>
-    //        </div>
-    //      </TBody>
-    //    })
-    //  ->React.array}
+    {packets
+     ->Belt_Array.mapWithIndex((i, {direction, chainID, chennel, port, blockHeight, packet}) => {
+         <TBody key={i |> string_of_int}>
+           <Row>
+             <Col> <HSpacing size=Spacing.md /> </Col>
+             <Col size=9.7> <Text value="test" /> </Col>
+             <Col size=18.3> <Text value="test" /> </Col>
+             <Col size=8.1> <TypeID.Block id=blockHeight /> </Col>
+             <Col size=44.2> <Packet packet /> </Col>
+             <Col> <HSpacing size=Spacing.md /> </Col>
+           </Row>
+         </TBody>
+       })
+     ->React.array}
     <VSpacing size=Spacing.lg />
-    // <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
+    <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
     <VSpacing size=Spacing.lg />
   </>;
 };
