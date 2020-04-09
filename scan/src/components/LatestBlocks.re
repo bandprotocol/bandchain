@@ -14,7 +14,8 @@ module Styles = {
       marginBottom(`px(3)),
       boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, 0.05))),
       width(`px(120)),
-      cursor(i == 0 || i == 11 ? auto : `pointer),
+      pointerEvents(i == 0 || i == 11 ? `none : `auto),
+      cursor(`pointer),
       opacity(i == 0 || i == 11 ? 0. : 1.),
       transform(
         `translate((
