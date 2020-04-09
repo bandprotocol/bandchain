@@ -101,10 +101,11 @@ let make = () =>
       <VSpacing size=Spacing.lg />
       <Row alignItems=`initial>
         <div className=Styles.blocksWrapper>
-          {renderBlock(0, ID.Block.ID(blocksCount + 1), "")}
-          {blocks
-           ->Belt_Array.mapWithIndex((i, {height, validator: {moniker}}) =>
-               renderBlock(i + 1, height, moniker)
+          {[|renderBlock(0, ID.Block.ID(blocksCount + 1), "")|]
+           ->Belt_Array.concat(
+               blocks->Belt_Array.mapWithIndex((i, {height, validator: {moniker}}) =>
+                 renderBlock(i + 1, height, moniker)
+               ),
              )
            ->React.array}
         </div>
