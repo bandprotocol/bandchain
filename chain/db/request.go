@@ -27,6 +27,7 @@ func createRequest(
 	expirationHeight int64,
 	resolveStatus string,
 	requester string,
+	memo string,
 	txHash []byte,
 	result []byte,
 ) Request {
@@ -38,6 +39,7 @@ func createRequest(
 		ExpirationHeight:         expirationHeight,
 		ResolveStatus:            resolveStatus,
 		Requester:                requester,
+		Memo:                     memo,
 		TxHash:                   txHash,
 		Result:                   result,
 	}
@@ -51,6 +53,7 @@ func (b *BandDB) AddNewRequest(
 	expirationHeight int64,
 	resolveStatus string,
 	requester string,
+	memo string,
 	txHash []byte,
 	result []byte,
 ) error {
@@ -62,6 +65,7 @@ func (b *BandDB) AddNewRequest(
 		expirationHeight,
 		resolveStatus,
 		requester,
+		memo,
 		txHash,
 		result,
 	)
@@ -173,6 +177,7 @@ func (b *BandDB) handleMsgRequestData(
 		msg.Expiration,
 		"Pending",
 		msg.Sender.String(),
+		msg.Memo,
 		txHash,
 		nil,
 	)

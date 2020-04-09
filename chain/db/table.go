@@ -125,6 +125,7 @@ type Request struct {
 	ResolveStatus            string `gorm:"not null"`
 	Requester                string `gorm:"not null"`
 	TxHash                   []byte `gorm:"not null"`
+	Memo                     string `gorm:"not null"`
 	Result                   []byte `sql:"default:null"`
 }
 
