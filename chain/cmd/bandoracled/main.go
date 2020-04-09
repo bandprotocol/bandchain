@@ -259,13 +259,3 @@ func handleRequest(requestID oracle.RequestID) {
 	}
 	logger.Info(fmt.Sprintf("Report on request #%d successfully. Tx: %v", requestID, tx))
 }
-
-// Find takes a slice and looks for an element in it.
-func find(slice []sdk.ValAddress, val sdk.ValAddress) bool {
-	for _, item := range slice {
-		if item.Equals(val) {
-			return true
-		}
-	}
-	return false
-}
