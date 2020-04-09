@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 func parseResolveStatus(resolveStatus oracle.ResolveStatus) string {
@@ -169,12 +170,13 @@ func (b *BandDB) handleMsgRequestData(
 	if err != nil {
 		return err
 	}
+	expirationHeight := b.ctx.BlockHeight() + int64(b.OracleKeeper.GetParam(b.ctx, types.KeyExpirationBlockCount))
 	return b.AddNewRequest(
 		id,
 		int64(msg.OracleScriptID),
 		msg.Calldata,
 		msg.SufficientValidatorCount,
-		msg.Expiration,
+		expirationHeight,
 		"Pending",
 		msg.Sender.String(),
 		msg.ClientID,

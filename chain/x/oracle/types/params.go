@@ -50,6 +50,7 @@ const (
 	// Gas cost per validator for each raw data request.
 	DefaultGasPerRawDataRequestPerValidator = uint64(25000)
 
+	// Expiration block count value 20
 	DefaultExpirationBlockCount = uint64(20)
 )
 

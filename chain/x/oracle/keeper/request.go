@@ -28,7 +28,7 @@ func (k Keeper) GetRequest(ctx sdk.Context, id types.RequestID) (types.Request, 
 // AddRequest attempts to create and save a new request. Returns error some conditions failed.
 func (k Keeper) AddRequest(
 	ctx sdk.Context, oracleScriptID types.OracleScriptID, calldata []byte,
-	requestedValidatorCount, sufficientValidatorCount, expiration int64, executeGas uint64, clientID string,
+	requestedValidatorCount, sufficientValidatorCount int64, executeGas uint64, clientID string,
 ) (types.RequestID, error) {
 	if !k.CheckOracleScriptExists(ctx, oracleScriptID) {
 		return 0, sdkerrors.Wrapf(types.ErrItemNotFound, "AddRequest: Unknown oracle script ID %d.", oracleScriptID)
@@ -62,10 +62,11 @@ func (k Keeper) AddRequest(
 		)
 	}
 
+	expirationHeight := ctx.BlockHeight() + int64(k.GetParam(ctx, types.KeyExpirationBlockCount))
 	requestID := k.GetNextRequestID(ctx)
 	k.SetRequest(ctx, requestID, types.NewRequest(
 		oracleScriptID, calldata, validators, sufficientValidatorCount, ctx.BlockHeight(),
-		ctx.BlockTime().Unix(), ctx.BlockHeight()+expiration, executeGas, clientID,
+		ctx.BlockTime().Unix(), expirationHeight, executeGas, clientID,
 	))
 
 	return requestID, nil

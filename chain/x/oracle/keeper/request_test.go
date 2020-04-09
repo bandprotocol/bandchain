@@ -29,12 +29,12 @@ func TestRequest(t *testing.T) {
 	ctx = ctx.WithBlockHeight(2)
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
 	calldata := []byte("calldata")
-	_, err := keeper.AddRequest(ctx, 1, calldata, 2, 2, 100, 20000, "clientID")
+	_, err := keeper.AddRequest(ctx, 1, calldata, 2, 2, 20000, "clientID")
 	require.NotNil(t, err)
 
 	script := GetTestOracleScript("../../../owasm/res/silly.wasm")
 	keeper.SetOracleScript(ctx, 1, script)
-	_, err = keeper.AddRequest(ctx, 1, calldata, 2, 2, 100, 20000, "clientID")
+	_, err = keeper.AddRequest(ctx, 1, calldata, 2, 2, 20000, "clientID")
 	require.NotNil(t, err)
 
 	pubStr := []string{
@@ -48,7 +48,7 @@ func TestRequest(t *testing.T) {
 		pubStr[0],
 		10,
 	)
-	_, err = keeper.AddRequest(ctx, 1, calldata, 2, 2, 100, 20000, "clientID")
+	_, err = keeper.AddRequest(ctx, 1, calldata, 2, 2, 20000, "clientID")
 	require.NotNil(t, err)
 
 	validatorAddress2 := SetupTestValidator(
@@ -57,7 +57,7 @@ func TestRequest(t *testing.T) {
 		pubStr[1],
 		100,
 	)
-	requestID, err := keeper.AddRequest(ctx, 1, calldata, 2, 2, 100, 20000, "clientID")
+	requestID, err := keeper.AddRequest(ctx, 1, calldata, 2, 2, 20000, "clientID")
 	require.Nil(t, err)
 	require.Equal(t, types.RequestID(1), requestID)
 
@@ -65,7 +65,7 @@ func TestRequest(t *testing.T) {
 	require.Nil(t, err)
 	expectRequest := types.NewRequest(1, calldata,
 		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
-		2, 1581589790, 102, 20000, "clientID",
+		2, 1581589790, 22, 20000, "clientID",
 	)
 	require.Equal(t, expectRequest, actualRequest)
 }
@@ -92,13 +92,13 @@ func TestRequestCallDataSizeTooBig(t *testing.T) {
 	// Set MaxCalldataSize to 0
 	keeper.SetParam(ctx, types.KeyMaxCalldataSize, 0)
 	// Should fail because size of "calldata" is > 0
-	_, err := keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, 100, 20000, "clientID")
+	_, err := keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, 20000, "clientID")
 	require.NotNil(t, err)
 
 	// Set MaxCalldataSize to 20
 	keeper.SetParam(ctx, types.KeyMaxCalldataSize, 20)
 	// Should pass because size of "calldata" is < 20
-	_, err = keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, 100, 20000, "clientID")
+	_, err = keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, 20000, "clientID")
 	require.Nil(t, err)
 }
 
@@ -124,13 +124,13 @@ func TestRequestExceedEndBlockExecuteGasLimit(t *testing.T) {
 	// Set EndBlockExecuteGasLimit to 10000
 	keeper.SetParam(ctx, types.KeyEndBlockExecuteGasLimit, 10000)
 	// Should fail because required execute gas is > 10000
-	_, err := keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, 100, 20000, "clientID")
+	_, err := keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, 20000, "clientID")
 	require.NotNil(t, err)
 
 	// Set EndBlockExecuteGasLimit to 30000
 	keeper.SetParam(ctx, types.KeyEndBlockExecuteGasLimit, 30000)
 	// Should fail because required execute gas is < 30000
-	_, err = keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, 100, 20000, "clientID")
+	_, err = keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, 20000, "clientID")
 	require.Nil(t, err)
 }
 
@@ -182,7 +182,7 @@ func TestConsumeGasForExecute(t *testing.T) {
 
 	// Consume 20000 gas in request 1
 	beforeGas := ctx.GasMeter().GasConsumed()
-	_, err := keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, 100, 20000, "clientID")
+	_, err := keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, 20000, "clientID")
 	require.Nil(t, err)
 	afterGas := ctx.GasMeter().GasConsumed()
 
@@ -190,7 +190,7 @@ func TestConsumeGasForExecute(t *testing.T) {
 
 	// Consume 40000 gas in request 2
 	beforeGas = ctx.GasMeter().GasConsumed()
-	_, err = keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, 100, 40000, "clientID")
+	_, err = keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, 40000, "clientID")
 	require.Nil(t, err)
 	afterGas = ctx.GasMeter().GasConsumed()
 	gasUsed2 := afterGas - beforeGas
