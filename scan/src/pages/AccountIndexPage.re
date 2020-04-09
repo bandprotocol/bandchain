@@ -114,6 +114,7 @@ let totalBalance = (title, amount, symbol) => {
 
 [@react.component]
 let make = (~address, ~hashtag: Route.account_tab_t) =>
+  //TODO: Update to use sub
   {
     let accountOpt = AccountHook.get(address);
     let priceOpt = PriceHook.get();
