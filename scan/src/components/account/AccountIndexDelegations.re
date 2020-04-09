@@ -61,20 +61,20 @@ let make = (~delegations: array(DelegationSub.stake_t)) => {
         </Row>
       </THead>
       {delegations
-       ->Belt.Array.map(delegator => {
-           <TBody key={delegator.validatorAddress |> Address.toBech32} minHeight=50>
+       ->Belt.Array.map(delegation => {
+           <TBody key={delegation.validatorAddress |> Address.toBech32} minHeight=50>
              <Row>
                <Col> <HSpacing size=Spacing.lg /> </Col>
                <Col size=0.9>
                  <div className=Styles.hFlex>
-                   <AddressRender address={delegator.validatorAddress} validator=true />
+                   <AddressRender address={delegation.validatorAddress} validator=true />
                  </div>
                </Col>
                <Col size=0.6>
                  <div className=Styles.alignRight>
                    <Text
                      value={
-                       (delegator.amount |> Belt_Option.getWithDefault(_, 0.00))
+                       (delegation.amount |> Belt_Option.getWithDefault(_, 0.00))
                        /. 1_000_000.
                        |> Format.fPretty
                      }

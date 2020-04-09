@@ -114,7 +114,6 @@ let totalBalanceRender = (title, amount, symbol) => {
 
 [@react.component]
 let make = (~address, ~hashtag: Route.account_tab_t) =>
-  //TODO: Update to use sub
   {
     let accountSub = AccountSub.get(address);
     let infoSub = React.useContext(GlobalContext.context);
