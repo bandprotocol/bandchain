@@ -167,6 +167,6 @@ type Packet struct {
 	YourChannel string          `gorm:"not null"`
 	YourPort    string          `gorm:"not null"`
 	BlockHeight int64           `gorm:"not null"`
-	IsIncoming  bool            `gorm:"primary_key"`
+	IsIncoming  *bool           `gorm:"primary_key"`
 	Detail      json.RawMessage `sql:"json;not null"`
 }

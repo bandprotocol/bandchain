@@ -106,6 +106,7 @@ func (b *BandDB) HandleEndblockEvent(event abci.Event) {
 			panic(err)
 		}
 
+		isIncoming := false
 		err = b.tx.Create(&Packet{
 			Type:        packetType,
 			Sequence:    sequence,
@@ -115,7 +116,7 @@ func (b *BandDB) HandleEndblockEvent(event abci.Event) {
 			YourChannel: kvMap[channel.AttributeKeyDstChannel],
 			YourPort:    kvMap[channel.AttributeKeyDstPort],
 			BlockHeight: b.ctx.BlockHeight(),
-			IsIncoming:  false,
+			IsIncoming:  &isIncoming,
 			Detail:      rawJson,
 		}).Error
 

@@ -72,7 +72,13 @@ func (b *BandDB) handleMsgPacket(
 			return err
 		}
 
+		oracleScript, err := b.OracleKeeper.GetOracleScript(b.ctx, requestData.OracleScriptID)
+		if err != nil {
+			return err
+		}
+
 		extra["requestID"] = id
+		extra["oracleScriptName"] = oracleScript.Name
 	}
 	if packetType == "" {
 		return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized oracle package type: %T", msg.Packet)
@@ -88,6 +94,7 @@ func (b *BandDB) handleMsgPacket(
 	if err != nil {
 		return err
 	}
+	isIncoming := true
 	return b.tx.Create(&Packet{
 		Type:        packetType,
 		Sequence:    msg.GetSequence(),
@@ -97,7 +104,7 @@ func (b *BandDB) handleMsgPacket(
 		YourChannel: msg.GetSourceChannel(),
 		YourPort:    msg.GetSourcePort(),
 		BlockHeight: b.ctx.BlockHeight(),
-		IsIncoming:  true,
+		IsIncoming:  &isIncoming,
 		Detail:      rawJson,
 	}).Error
 }
