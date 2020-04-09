@@ -239,7 +239,7 @@ func main() {
 			))
 
 			fmt.Println(tx.SendTransaction(
-				oracle.NewMsgRequestData(2, []byte("calldata"), 1, 1, 100, prepareGas, executeGas, "memo", tx.Sender()),
+				oracle.NewMsgRequestData(2, []byte("calldata"), 1, 1, 100, prepareGas, executeGas, "clientID", tx.Sender()),
 				1000000, "", "",
 			))
 
