@@ -49,6 +49,8 @@ const (
 
 	// Gas cost per validator for each raw data request.
 	DefaultGasPerRawDataRequestPerValidator = uint64(25000)
+
+	DefaultExpirationBlockCount = uint64(20)
 )
 
 // Parameter store keys.
@@ -63,6 +65,7 @@ var (
 	KeyMaxNameLength                    = []byte("MaxNameLength")
 	KeyMaxDescriptionLength             = []byte("MaxDescriptionLength")
 	KeyGasPerRawDataRequestPerValidator = []byte("GasPerRawDataRequestPerValidator")
+	KeyExpirationBlockCount             = []byte("ExpirationBlockCount")
 )
 
 // Params - used for initializing default parameter for oracle at genesis.
@@ -77,6 +80,7 @@ type Params struct {
 	MaxNameLength                    uint64 `json:"max_name_length" yaml:"max_name_length"`
 	MaxDescriptionLength             uint64 `json:"max_description_length" yaml:"max_description_length"`
 	GasPerRawDataRequestPerValidator uint64 `json:"gas_per_raw_data_request" yaml:"gas_per_raw_data_request"`
+	ExpirationBlockCount             uint64 `json:"expiration_block_count"`
 }
 
 // NewParams creates a new Params object.
@@ -91,6 +95,7 @@ func NewParams(
 	maxNameLength uint64,
 	maxDescriptionLength uint64,
 	gasPerRawDataRequestPerValidator uint64,
+	expirationBlockCount uint64,
 ) Params {
 	return Params{
 		MaxDataSourceExecutableSize:      maxDataSourceExecutableSize,
@@ -103,6 +108,7 @@ func NewParams(
 		MaxNameLength:                    maxNameLength,
 		MaxDescriptionLength:             maxDescriptionLength,
 		GasPerRawDataRequestPerValidator: gasPerRawDataRequestPerValidator,
+		ExpirationBlockCount:             expirationBlockCount,
 	}
 }
 
@@ -119,6 +125,7 @@ func (p Params) String() string {
   MaxNameLength:                    %d
   MaxDescriptionLength:             %d
   GasPerRawDataRequestPerValidator: %d
+  ExpirationBlockCount:             %d
 `, p.MaxDataSourceExecutableSize,
 		p.MaxOracleScriptCodeSize,
 		p.MaxCalldataSize,
@@ -129,6 +136,7 @@ func (p Params) String() string {
 		p.MaxNameLength,
 		p.MaxDescriptionLength,
 		p.GasPerRawDataRequestPerValidator,
+		p.ExpirationBlockCount,
 	)
 }
 
@@ -148,6 +156,7 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyMaxNameLength, &p.MaxNameLength, validateNoOp),
 		paramtypes.NewParamSetPair(KeyMaxDescriptionLength, &p.MaxDescriptionLength, validateNoOp),
 		paramtypes.NewParamSetPair(KeyGasPerRawDataRequestPerValidator, &p.GasPerRawDataRequestPerValidator, validateNoOp),
+		paramtypes.NewParamSetPair(KeyExpirationBlockCount, &p.ExpirationBlockCount, validateNoOp),
 	}
 }
 
@@ -164,5 +173,6 @@ func DefaultParams() Params {
 		DefaultMaxNameLength,
 		DefaultDescriptionLength,
 		DefaultGasPerRawDataRequestPerValidator,
+		DefaultExpirationBlockCount,
 	)
 }

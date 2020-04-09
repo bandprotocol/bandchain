@@ -107,7 +107,8 @@ func TestGetSetParams(t *testing.T) {
 	keeper.SetParam(ctx, types.KeyMaxNameLength, 1)
 	keeper.SetParam(ctx, types.KeyMaxDescriptionLength, 1)
 	keeper.SetParam(ctx, types.KeyGasPerRawDataRequestPerValidator, 1000)
-	require.Equal(t, types.NewParams(1, 1, 1, 1, 1, 1, 200000, 1, 1, 1000), keeper.GetParams(ctx))
+	keeper.SetParam(ctx, types.KeyExpirationBlockCount, 30)
+	require.Equal(t, types.NewParams(1, 1, 1, 1, 1, 1, 200000, 1, 1, 1000, 30), keeper.GetParams(ctx))
 
 	keeper.SetParam(ctx, types.KeyMaxDataSourceExecutableSize, 2)
 	keeper.SetParam(ctx, types.KeyMaxOracleScriptCodeSize, 2)
@@ -119,5 +120,6 @@ func TestGetSetParams(t *testing.T) {
 	keeper.SetParam(ctx, types.KeyMaxNameLength, 2)
 	keeper.SetParam(ctx, types.KeyMaxDescriptionLength, 2)
 	keeper.SetParam(ctx, types.KeyGasPerRawDataRequestPerValidator, 2000)
-	require.Equal(t, types.NewParams(2, 2, 2, 2, 2, 2, 300000, 2, 2, 2000), keeper.GetParams(ctx))
+	keeper.SetParam(ctx, types.KeyExpirationBlockCount, 40)
+	require.Equal(t, types.NewParams(2, 2, 2, 2, 2, 2, 300000, 2, 2, 2000, 40), keeper.GetParams(ctx))
 }
