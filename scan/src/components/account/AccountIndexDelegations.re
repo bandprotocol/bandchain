@@ -9,12 +9,12 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~delegations: list(AccountHook.Account.delegation_t)) => {
+let make = (~delegatorStake: Js.Array.t(DelegationSub.stake_t)) => {
   <div className=Styles.tableLowerContainer>
     <VSpacing size=Spacing.md />
     <div className=Styles.hFlex>
       <HSpacing size=Spacing.lg />
-      <Text value={delegations |> Belt_List.length |> string_of_int} weight=Text.Semibold />
+      <Text value={delegatorStake |> Belt_Array.length |> string_of_int} weight=Text.Semibold />
       <HSpacing size=Spacing.xs />
       <Text value="Delegated Validators" />
     </div>
@@ -60,34 +60,30 @@ let make = (~delegations: list(AccountHook.Account.delegation_t)) => {
           <Col> <HSpacing size=Spacing.lg /> </Col>
         </Row>
       </THead>
-      {delegations
-       ->Belt.List.map(delegation => {
-           <TBody key={delegation.validatorAddress} minHeight=50>
+      {delegatorStake
+       ->Belt.Array.map(delegation => {
+           <TBody key={delegation.validatorAddress |> Address.toBech32} minHeight=50>
              <Row>
                <Col> <HSpacing size=Spacing.lg /> </Col>
                <Col size=0.9>
                  <div className=Styles.hFlex>
-                   <AddressRender
-                     address={delegation.validatorAddress |> Address.fromBech32}
-                     validator=true
-                   />
+                   <AddressRender address={delegation.validatorAddress} validator=true />
                  </div>
                </Col>
                <Col size=0.6>
                  <div className=Styles.alignRight>
-                   <Text value={delegation.balance |> Format.fPretty} code=true />
+                   <Text value={12.00 |> Format.fPretty} code=true />
                  </div>
                </Col>
                <Col size=0.6>
                  <div className=Styles.alignRight>
-                   <Text value={delegation.reward |> Format.fPretty} code=true />
+                   <Text value={12.00 |> Format.fPretty} code=true />
                  </div>
                </Col>
                <Col> <HSpacing size=Spacing.lg /> </Col>
              </Row>
            </TBody>
          })
-       ->Array.of_list
        ->React.array}
       <VSpacing size=Spacing.lg />
     </>
