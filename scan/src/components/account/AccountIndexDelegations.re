@@ -82,7 +82,7 @@ let make = (~delegatorStake: Js.Array.t(DelegationSub.stake_t)) => {
                </Col>
                <Col size=0.6>
                  <div className=Styles.alignRight>
-                   <Text value={12.00 |> Format.fPretty} code=true />
+                   <Text value={0.00 |> Format.fPretty} code=true />
                  </div>
                </Col>
                <Col> <HSpacing size=Spacing.lg /> </Col>
