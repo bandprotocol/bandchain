@@ -10,8 +10,6 @@ module Styles = {
     ]);
   let seeAll = style([display(`flex), flexDirection(`row), cursor(`pointer)]);
   let cFlex = style([display(`flex), flexDirection(`column)]);
-  let amount =
-    style([fontSize(`px(20)), lineHeight(`px(24)), color(Colors.gray8), fontWeight(`bold)]);
   let rightArrow = style([width(`px(25)), marginTop(`px(17)), marginLeft(`px(16))]);
 
   let hScale = 20;
@@ -19,12 +17,13 @@ module Styles = {
   let blockContainer = style([minWidth(`px(60))]);
   let statusContainer =
     style([
-      maxWidth(`px(95)),
+      minWidth(`percent(100.)),
       display(`flex),
       flexDirection(`row),
       alignItems(`center),
       justifyContent(`center),
     ]);
+
   let logo = style([width(`px(20))]);
 
   let heightByMsgsNum = (numMsgs, mt) =>
@@ -43,17 +42,17 @@ let txBodyRender = (reserveIndex: int, txSub: ApolloHooks.Subscription.variant(T
       }
     }>
     <Row minHeight={`px(30)}>
-      <HSpacing size={`px(12)} />
-      <Col size=0.92>
+      <Col> <HSpacing size={`px(12)} /> </Col>
+      <Col size=1.2>
         {switch (txSub) {
          | Data({messages, txHash}) =>
            <div className={Styles.heightByMsgsNum(messages->Belt_List.size, 0)}>
              <TxLink txHash width=110 />
            </div>
-         | _ => <LoadingCensorBar width=105 height=10 />
+         | _ => <LoadingCensorBar width=100 height=10 />
          }}
       </Col>
-      <Col>
+      <Col size=0.68>
         {switch (txSub) {
          | Data({messages, blockHeight}) =>
            <div
@@ -63,10 +62,10 @@ let txBodyRender = (reserveIndex: int, txSub: ApolloHooks.Subscription.variant(T
              ])}>
              <TypeID.Block id=blockHeight />
            </div>
-         | _ => <LoadingCensorBar width=75 height=10 />
+         | _ => <LoadingCensorBar width=50 height=10 />
          }}
       </Col>
-      <Col size=0.5>
+      <Col size=1.>
         {switch (txSub) {
          | Data({messages, success}) =>
            <div className={Styles.heightByMsgsNum(messages->Belt_List.size, -8)}>
@@ -80,23 +79,23 @@ let txBodyRender = (reserveIndex: int, txSub: ApolloHooks.Subscription.variant(T
            </div>
          }}
       </Col>
-      <Col size=3.>
+      <Col size=3.8>
         {switch (txSub) {
-         | Data({messages, success, txHash}) =>
+         | Data({messages, txHash}) =>
            messages
            ->Belt_List.toArray
            ->Belt_Array.mapWithIndex((i, msg) =>
                <React.Fragment key={(txHash |> Hash.toHex) ++ (i |> string_of_int)}>
                  <VSpacing size=Spacing.sm />
-                 <Msg msg success width=350 />
+                 <Msg msg width=350 />
                  <VSpacing size=Spacing.sm />
                </React.Fragment>
              )
            ->React.array
-         | _ => <LoadingCensorBar width=405 height=10 />
+         | _ => <LoadingCensorBar width=360 height=10 />
          }}
       </Col>
-      <HSpacing size={`px(20)} />
+      <Col> <HSpacing size={`px(12)} /> </Col>
     </Row>
   </TBody>;
 };
@@ -118,7 +117,13 @@ let make = () => {
         <div className=Styles.cFlex>
           {switch (allSub) {
            | Data((_, totalCount)) =>
-             <span className=Styles.amount> {totalCount |> Format.iPretty |> React.string} </span>
+             <Text
+               value={totalCount |> Format.iPretty}
+               size=Text.Xxl
+               color=Colors.gray8
+               height={Text.Px(24)}
+               weight=Text.Bold
+             />
            | _ => <LoadingCensorBar width=90 height=18 />
            }}
           <VSpacing size=Spacing.xs />
@@ -136,8 +141,8 @@ let make = () => {
     <VSpacing size=Spacing.lg />
     <THead>
       <Row>
-        <HSpacing size={`px(12)} />
-        <Col size=0.92>
+        <Col> <HSpacing size={`px(12)} /> </Col>
+        <Col size=1.2>
           <div className=Styles.fullWidth>
             <Text
               value="TX HASH"
@@ -148,7 +153,7 @@ let make = () => {
             />
           </div>
         </Col>
-        <Col>
+        <Col size=0.68>
           <div className={Css.merge([Styles.fullWidth, Styles.blockContainer])}>
             <Text
               value="BLOCK"
@@ -159,7 +164,7 @@ let make = () => {
             />
           </div>
         </Col>
-        <Col size=0.5>
+        <Col size=1.>
           <div className=Styles.statusContainer>
             <Text
               value="STATUS"
@@ -170,7 +175,7 @@ let make = () => {
             />
           </div>
         </Col>
-        <Col size=3.>
+        <Col size=3.8>
           <div className=Styles.fullWidth>
             <Text
               value="ACTIONS"
@@ -181,14 +186,12 @@ let make = () => {
             />
           </div>
         </Col>
-        <HSpacing size={`px(20)} />
+        <Col> <HSpacing size={`px(12)} /> </Col>
       </Row>
     </THead>
     {switch (allSub) {
      | Data((txs, _)) =>
-       txs
-       ->Belt_Array.mapWithIndex((i, e) => txBodyRender(i, ApolloHooks.Subscription.Data(e)))
-       ->React.array
+       txs->Belt_Array.mapWithIndex((i, e) => txBodyRender(i, Sub.resolve(e)))->React.array
      | _ =>
        Belt_Array.make(10, ApolloHooks.Subscription.NoData)
        ->Belt_Array.mapWithIndex((i, noData) => txBodyRender(i, noData))
