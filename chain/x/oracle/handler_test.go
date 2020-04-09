@@ -225,7 +225,7 @@ func TestRequestSuccess(t *testing.T) {
 	require.Nil(t, err)
 	expectRequest := types.NewRequest(1, calldata,
 		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
-		2, 1581589790, 102, 1000000,
+		2, 1581589790, 102, 1000000, "clientID",
 	)
 	expectRequest.ExecuteGas = 1000000
 	require.Equal(t, expectRequest, actualRequest)
@@ -378,7 +378,7 @@ func TestReportSuccess(t *testing.T) {
 
 	request := types.NewRequest(1, calldata,
 		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
-		2, 1581589790, 102, 1000000,
+		2, 1581589790, 102, 1000000, "clientID",
 	)
 	keeper.SetRequest(ctx, 1, request)
 	keeper.SetRawDataRequest(ctx, 1, 42, types.NewRawDataRequest(1, []byte("calldata1")))
@@ -435,7 +435,7 @@ func TestReportFailed(t *testing.T) {
 
 	request := types.NewRequest(1, calldata,
 		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
-		2, 1581589790, 102, 1000000,
+		2, 1581589790, 102, 1000000, "clientID",
 	)
 	keeper.SetRequest(ctx, 1, request)
 	keeper.SetRawDataRequest(ctx, 1, 42, types.NewRawDataRequest(1, []byte("calldata1")))
@@ -830,7 +830,7 @@ func TestAddAndRemoveOracleAddress(t *testing.T) {
 
 	request := types.NewRequest(1, calldata,
 		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
-		2, 1581589790, 102, 1000000,
+		2, 1581589790, 102, 1000000, "clientID",
 	)
 	keeper.SetRequest(ctx, 1, request)
 	keeper.SetRawDataRequest(ctx, 1, 42, types.NewRawDataRequest(1, []byte("calldata1")))

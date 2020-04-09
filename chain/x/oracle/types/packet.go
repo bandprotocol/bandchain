@@ -69,9 +69,10 @@ type OracleResponsePacketData struct {
 	Result    string    `json:"result"`
 }
 
-func NewOracleResponsePacketData(requestID RequestID, result string) OracleResponsePacketData {
+func NewOracleResponsePacketData(requestID RequestID, clientID string, result string) OracleResponsePacketData {
 	return OracleResponsePacketData{
 		RequestID: requestID,
+		ClientID:  clientID,
 		Result:    result,
 	}
 }
