@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/bandprotocol/bandchain/chain/x/zoracle"
+	"github.com/bandprotocol/bandchain/chain/x/oracle"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -63,10 +63,10 @@ func (b *BandDB) AddDataSource(
 
 func (b *BandDB) handleMsgCreateDataSource(
 	txHash []byte,
-	msg zoracle.MsgCreateDataSource,
+	msg oracle.MsgCreateDataSource,
 	events map[string]string,
 ) error {
-	rawID, ok := events[zoracle.EventTypeCreateDataSource+"."+zoracle.AttributeKeyID]
+	rawID, ok := events[oracle.EventTypeCreateDataSource+"."+oracle.AttributeKeyID]
 	if !ok {
 		return errors.New("handleMsgCreateDataSource: cannot find data source id")
 	}
@@ -82,7 +82,7 @@ func (b *BandDB) handleMsgCreateDataSource(
 
 func (b *BandDB) handleMsgEditDataSource(
 	txHash []byte,
-	msg zoracle.MsgEditDataSource,
+	msg oracle.MsgEditDataSource,
 	events map[string]string,
 ) error {
 	dataSource := createDataSource(

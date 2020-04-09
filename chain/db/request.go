@@ -3,10 +3,10 @@ package db
 import (
 	"strconv"
 
-	"github.com/bandprotocol/bandchain/chain/x/zoracle"
+	"github.com/bandprotocol/bandchain/chain/x/oracle"
 )
 
-func parseResolveStatus(resolveStatus zoracle.ResolveStatus) string {
+func parseResolveStatus(resolveStatus oracle.ResolveStatus) string {
 	switch resolveStatus {
 	case 0:
 		return "Pending"
@@ -123,11 +123,11 @@ func (b *BandDB) AddRawDataRequests(
 
 func (b *BandDB) handleMsgRequestData(
 	txHash []byte,
-	msg zoracle.MsgRequestData,
+	msg oracle.MsgRequestData,
 	events map[string]string,
 ) error {
 
-	id, err := strconv.ParseInt(events[zoracle.EventTypeRequest+"."+zoracle.AttributeKeyID], 10, 64)
+	id, err := strconv.ParseInt(events[oracle.EventTypeRequest+"."+oracle.AttributeKeyID], 10, 64)
 	if err != nil {
 		return err
 	}
@@ -149,7 +149,7 @@ func (b *BandDB) handleMsgRequestData(
 		return err
 	}
 
-	req, err := b.ZoracleKeeper.GetRequest(b.ctx, zoracle.RequestID(id))
+	req, err := b.OracleKeeper.GetRequest(b.ctx, oracle.RequestID(id))
 	if err != nil {
 		return err
 	}
@@ -162,7 +162,7 @@ func (b *BandDB) handleMsgRequestData(
 		}
 	}
 
-	for _, raw := range b.ZoracleKeeper.GetRawDataRequestWithExternalIDs(b.ctx, zoracle.RequestID(id)) {
+	for _, raw := range b.OracleKeeper.GetRawDataRequestWithExternalIDs(b.ctx, oracle.RequestID(id)) {
 		rawDataRequests := createRawDataRequests(id, int64(raw.ExternalID), int64(raw.RawDataRequest.DataSourceID), raw.RawDataRequest.Calldata)
 		err = b.tx.Save(&rawDataRequests).Error
 		if err != nil {

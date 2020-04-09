@@ -91,16 +91,16 @@ bandcli query account $(bandcli keys show validator1 -a)
 
 ```bash
  # send request
- bandcli tx zoracle request 30 $(xxd -p -c100000000000 ./wasm/res/result.wasm) --from owner --gas 10000000
+ bandcli tx oracle request 30 $(xxd -p -c100000000000 ./wasm/res/result.wasm) --from owner --gas 10000000
 
  # get request by id
- bandcli query zoracle request <reqID>
+ bandcli query oracle request <reqID>
 
  # get pending request
- bandcli query zoracle pending_request
+ bandcli query oracle pending_request
 
  # send report
- bandcli tx zoracle report <reqID> <data> --from <validator>
+ bandcli tx oracle report <reqID> <data> --from <validator>
 
- bandcli tx zoracle report <reqID> 02000000000000001b000000000000007b22626974636f696e223a7b22757364223a373436392e34397d7d0f000000000000007b22555344223a373531302e32317d --from owner
+ bandcli tx oracle report <reqID> 02000000000000001b000000000000007b22626974636f696e223a7b22757364223a373436392e34397d7d0f000000000000007b22555344223a373531302e32317d --from owner
 ```

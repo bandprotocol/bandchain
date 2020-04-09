@@ -36,7 +36,7 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 
 	bandsupply "github.com/bandprotocol/bandchain/chain/x/supply"
-	"github.com/bandprotocol/bandchain/chain/x/zoracle"
+	"github.com/bandprotocol/bandchain/chain/x/oracle"
 )
 
 const (
@@ -70,7 +70,7 @@ var (
 		ibc.AppModuleBasic{},
 		upgrade.AppModuleBasic{},
 		evidence.AppModuleBasic{},
-		zoracle.AppModuleBasic{},
+		oracle.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -112,7 +112,7 @@ type bandApp struct {
 	UpgradeKeeper  upgrade.Keeper
 	EvidenceKeeper evidence.Keeper
 	IBCKeeper      ibc.Keeper
-	ZoracleKeeper  zoracle.Keeper
+	OracleKeeper  oracle.Keeper
 
 	// Decoder for unmarshaling []byte into sdk.Tx
 	TxDecoder sdk.TxDecoder
@@ -157,7 +157,7 @@ func NewBandApp(
 		bam.MainStoreKey, auth.StoreKey, bank.StoreKey, staking.StoreKey,
 		supply.StoreKey, mint.StoreKey, distr.StoreKey, slashing.StoreKey,
 		gov.StoreKey, params.StoreKey, ibc.StoreKey, evidence.StoreKey,
-		upgrade.StoreKey, zoracle.StoreKey,
+		upgrade.StoreKey, oracle.StoreKey,
 	)
 	tKeys := sdk.NewTransientStoreKeys(staking.TStoreKey, params.TStoreKey)
 
@@ -182,7 +182,7 @@ func NewBandApp(
 	app.subspaces[gov.ModuleName] = app.ParamsKeeper.Subspace(gov.DefaultParamspace).WithKeyTable(gov.ParamKeyTable())
 	app.subspaces[crisis.ModuleName] = app.ParamsKeeper.Subspace(crisis.DefaultParamspace)
 	app.subspaces[evidence.ModuleName] = app.ParamsKeeper.Subspace(evidence.DefaultParamspace)
-	app.subspaces[zoracle.ModuleName] = app.ParamsKeeper.Subspace(zoracle.DefaultParamspace)
+	app.subspaces[oracle.ModuleName] = app.ParamsKeeper.Subspace(oracle.DefaultParamspace)
 
 	// add keepers
 	app.AccountKeeper = auth.NewAccountKeeper(
@@ -254,13 +254,13 @@ func NewBandApp(
 
 	app.IBCKeeper = ibc.NewKeeper(app.cdc, keys[ibc.StoreKey], stakingKeeper)
 
-	app.ZoracleKeeper = zoracle.NewKeeper(
+	app.OracleKeeper = oracle.NewKeeper(
 		cdc,
-		keys[zoracle.StoreKey],
+		keys[oracle.StoreKey],
 		app.BankKeeper,
 		app.StakingKeeper,
 		app.IBCKeeper.ChannelKeeper,
-		app.subspaces[zoracle.ModuleName],
+		app.subspaces[oracle.ModuleName],
 	)
 
 	// NOTE: Any module instantiated in the module manager that is later modified
@@ -279,21 +279,21 @@ func NewBandApp(
 		upgrade.NewAppModule(app.UpgradeKeeper),
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
-		zoracle.NewAppModule(app.ZoracleKeeper),
+		oracle.NewAppModule(app.OracleKeeper),
 	)
 	// During begin block slashing happens after distr.BeginBlocker so that
 	// there is nothing left over in the validator fee pool, so as to keep the
 	// CanWithdrawInvariant invariant.
 
 	app.mm.SetOrderBeginBlockers(upgrade.ModuleName, mint.ModuleName, distr.ModuleName, slashing.ModuleName, staking.ModuleName)
-	app.mm.SetOrderEndBlockers(crisis.ModuleName, gov.ModuleName, zoracle.ModuleName, staking.ModuleName)
+	app.mm.SetOrderEndBlockers(crisis.ModuleName, gov.ModuleName, oracle.ModuleName, staking.ModuleName)
 
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
 	app.mm.SetOrderInitGenesis(
 		distr.ModuleName, staking.ModuleName, auth.ModuleName, bank.ModuleName,
 		slashing.ModuleName, gov.ModuleName, mint.ModuleName, supply.ModuleName,
-		crisis.ModuleName, genutil.ModuleName, evidence.ModuleName, zoracle.ModuleName,
+		crisis.ModuleName, genutil.ModuleName, evidence.ModuleName, oracle.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -341,7 +341,7 @@ func (app *bandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliv
 		isAllReportTxs := true
 		if stdTx, ok := tx.(auth.StdTx); ok {
 			for _, msg := range tx.GetMsgs() {
-				if _, ok := msg.(zoracle.MsgReportData); !ok {
+				if _, ok := msg.(oracle.MsgReportData); !ok {
 					isAllReportTxs = false
 					break
 				}
