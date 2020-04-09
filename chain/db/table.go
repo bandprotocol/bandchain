@@ -53,6 +53,7 @@ type Validator struct {
 	Jailed              bool   `gorm:"not null"`
 	Tokens              string `gorm:"not null"`
 	DelegatorShares     string `gorm:"not null"`
+	BondedHeight        int64  `gorm:"not null"`
 }
 
 type ValidatorVote struct {
