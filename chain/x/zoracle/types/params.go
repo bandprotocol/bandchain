@@ -65,7 +65,7 @@ var (
 	KeyGasPerRawDataRequestPerValidator = []byte("GasPerRawDataRequestPerValidator")
 )
 
-// Params - used for initializing default parameter for zoracle at genesis.
+// Params - used for initializing default parameter for oracle at genesis.
 type Params struct {
 	MaxDataSourceExecutableSize      uint64 `json:"max_data_source_executable_size" yaml:"max_data_source_executable_size"`
 	MaxOracleScriptCodeSize          uint64 `json:"max_oracle_script_code_size" yaml:"max_oracle_script_code_size"`
@@ -108,7 +108,7 @@ func NewParams(
 
 // String implements the stringer interface for Params.
 func (p Params) String() string {
-	return fmt.Sprintf(`Zoracle Params:
+	return fmt.Sprintf(`Oracle Params:
   MaxDataSourceExecutableSize:      %d
   MaxOracleScriptCodeSize:          %d
   MaxCalldataSize:                  %d

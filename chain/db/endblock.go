@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/bandprotocol/bandchain/chain/x/zoracle"
+	"github.com/bandprotocol/bandchain/chain/x/oracle"
 	staking "github.com/cosmos/cosmos-sdk/x/staking/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
@@ -17,29 +17,29 @@ func (b *BandDB) HandleEndblockEvent(event abci.Event) {
 	}
 
 	switch event.Type {
-	case zoracle.EventTypeRequestExecute:
+	case oracle.EventTypeRequestExecute:
 		{
-			requestID, err := strconv.ParseInt(kvMap[zoracle.AttributeKeyRequestID], 10, 64)
+			requestID, err := strconv.ParseInt(kvMap[oracle.AttributeKeyRequestID], 10, 64)
 			if err != nil {
 				panic(err)
 			}
 
-			numResolveStatus, err := strconv.ParseInt(kvMap[zoracle.AttributeKeyResolveStatus], 10, 8)
+			numResolveStatus, err := strconv.ParseInt(kvMap[oracle.AttributeKeyResolveStatus], 10, 8)
 			if err != nil {
 				panic(err)
 			}
-			resolveStatus := zoracle.ResolveStatus(numResolveStatus)
+			resolveStatus := oracle.ResolveStatus(numResolveStatus)
 
 			// Get result from keeper
 			var rawResult []byte
 			rawResult = nil
 			if resolveStatus == 1 {
-				id := zoracle.RequestID(requestID)
-				request, sdkErr := b.ZoracleKeeper.GetRequest(b.ctx, id)
+				id := oracle.RequestID(requestID)
+				request, sdkErr := b.OracleKeeper.GetRequest(b.ctx, id)
 				if sdkErr != nil {
 					panic(err)
 				}
-				result, sdkErr := b.ZoracleKeeper.GetResult(b.ctx, id, request.OracleScriptID, request.Calldata)
+				result, sdkErr := b.OracleKeeper.GetResult(b.ctx, id, request.OracleScriptID, request.Calldata)
 				if sdkErr != nil {
 					panic(err)
 				}
@@ -59,7 +59,7 @@ func (b *BandDB) HandleEndblockEvent(event abci.Event) {
 			}
 			err = b.SetAccountBalance(
 				delegatorAddress,
-				b.ZoracleKeeper.CoinKeeper.GetAllBalances(b.ctx, delegatorAddress),
+				b.OracleKeeper.CoinKeeper.GetAllBalances(b.ctx, delegatorAddress),
 				b.ctx.BlockHeight(),
 			)
 			if err != nil {
