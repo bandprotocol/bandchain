@@ -75,10 +75,8 @@ let make = () =>
   {
     let blocksSub = BlockSub.getList(~pageSize=11, ~page=1, ());
 
-    let%Sub realBlocks = blocksSub;
-    let {BlockSub.height: ID.Block.ID(blocksCount)} = realBlocks->Belt_Array.getExn(0);
-
-    let blocksOpt = realBlocks |> Belt_Array.map(_, x => Some(x)) |> Belt_Array.concat([|None|]);
+    let%Sub blocks = blocksSub;
+    let {BlockSub.height: ID.Block.ID(blocksCount)} = blocks->Belt_Array.getExn(0);
 
     <>
       <div className=Styles.topicBar>
@@ -103,12 +101,10 @@ let make = () =>
       <VSpacing size=Spacing.lg />
       <Row alignItems=`initial>
         <div className=Styles.blocksWrapper>
-          {blocksOpt
-           ->Belt_Array.mapWithIndex((i, blockOpt) =>
-               switch (blockOpt) {
-               | Some({height, validator: {moniker}}) => renderBlock(i, height, moniker)
-               | None => renderBlock(i, ID.Block.ID(blocksCount + 1), "")
-               }
+          {renderBlock(0, ID.Block.ID(blocksCount + 1), "")}
+          {blocks
+           ->Belt_Array.mapWithIndex((i, {height, validator: {moniker}}) =>
+               renderBlock(i + 1, height, moniker)
              )
            ->React.array}
         </div>
