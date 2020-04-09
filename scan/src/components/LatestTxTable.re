@@ -101,13 +101,6 @@ let txBodyRender = (reserveIndex: int, txSub: ApolloHooks.Subscription.variant(T
   </TBody>;
 };
 
-let rec createNoDataList = n =>
-  if (n <= 0) {
-    [];
-  } else {
-    [ApolloHooks.Subscription.NoData, ...createNoDataList(n - 1)];
-  };
-
 [@react.component]
 let make = () => {
   let allSub = Sub.all2(TxSub.getList(~page=1, ~pageSize=10, ()), TxSub.count());
@@ -197,8 +190,7 @@ let make = () => {
        ->Belt_Array.mapWithIndex((i, e) => txBodyRender(i, ApolloHooks.Subscription.Data(e)))
        ->React.array
      | _ =>
-       createNoDataList(10)
-       ->Belt_List.toArray
+       Belt_Array.make(10, ApolloHooks.Subscription.NoData)
        ->Belt_Array.mapWithIndex((i, noData) => txBodyRender(i, noData))
        ->React.array
      }}
