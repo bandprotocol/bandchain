@@ -29,7 +29,6 @@ const (
 	flagCalldata                 = "calldata"
 	flagRequestedValidatorCount  = "requested-validator-count"
 	flagSufficientValidatorCount = "sufficient-validator-count"
-	flagExpiration               = "expiration"
 	flagPrepareGas               = "prepare-gas"
 	flagExecuteGas               = "execute-gas"
 	flagClientID                 = "client-id"
@@ -139,8 +138,6 @@ $ %s tx oracle request 1 --calldata 1234abcdef --requested-validator-count 4 --s
 	cmd.MarkFlagRequired(flagRequestedValidatorCount)
 	cmd.Flags().Int64P(flagSufficientValidatorCount, "v", 0, "Minimum number of reports sufficient to conclude the request's result")
 	cmd.MarkFlagRequired(flagSufficientValidatorCount)
-	cmd.Flags().Int64P(flagExpiration, "x", 0, "Maximum block count before the data request is considered expired")
-	cmd.MarkFlagRequired(flagExpiration)
 	cmd.Flags().Uint64P(flagPrepareGas, "w", 0, "The amount of gas that will be reserved for prepare function")
 	cmd.MarkFlagRequired(flagPrepareGas)
 	cmd.Flags().StringP(flagClientID, "m", "", "Requester can match up the request with response by clientID")
