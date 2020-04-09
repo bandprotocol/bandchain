@@ -53,7 +53,8 @@ module Styles = {
   let twitterLogo = style([width(`px(15))]);
   let telegramLogo = style([width(`px(15))]);
 
-  let routeContainer = style([minHeight(`calc((`sub, `vh(100.), `px(200)))), paddingBottom(`px(20))]);
+  let routeContainer =
+    style([minHeight(`calc((`sub, `vh(100.), `px(200)))), paddingBottom(`px(20))]);
 };
 
 module TopBar = {
@@ -142,6 +143,7 @@ let make = () => {
          | RequestHomePage => <RequestHomePage />
          | RequestIndexPage(reqID) => <RequestIndexPage reqID={ID.Request.ID(reqID)} />
          | AccountIndexPage(address, hashtag) => <AccountIndexPage address hashtag />
+         | IBCHomePage => <IBCHomePage />
          | NotFound => <NotFound />
          }}
       </div>
