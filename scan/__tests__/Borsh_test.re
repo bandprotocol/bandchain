@@ -115,3 +115,99 @@ describe("Expect Borsh to decode correctly", () => {
        )
   });
 });
+
+describe("should be able to generate solidity correctly", () => {
+  test("should be able to generate solidity", () => {
+    expect(
+      Some(
+        {j|
+pragma solidity ^0.5.0;
+
+import "./Borsh.sol";
+
+library ResultDecoder {
+    using Borsh for Borsh.Data;
+
+    struct Result {
+        string symbol;
+        uint64 multiplier;
+        uint8 what;
+    }
+
+    function decodeResult(bytes memory _data)
+        internal
+        pure
+        returns (Result memory result)
+    {
+        Borsh.Data memory data = Borsh.from(_data);
+        result.symbol = string(data.decodeBytes());
+        result.multiplier = data.decodeU64();
+        result.what = data.decodeU8();
+    }
+}
+|j},
+      ),
+    )
+    |> toEqual(
+         generateSolidity(
+           {j|{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"], [\\"what\\", \\"u8\\"] ] }"}|j},
+           "Input",
+         ),
+       )
+  });
+
+  test("should be able to generate solidity 2", () => {
+    expect(
+      Some(
+        {j|
+pragma solidity ^0.5.0;
+
+import "./Borsh.sol";
+
+library ResultDecoder {
+    using Borsh for Borsh.Data;
+
+    struct Result {
+        uint64 px;
+    }
+
+    function decodeResult(bytes memory _data)
+        internal
+        pure
+        returns (Result memory result)
+    {
+        Borsh.Data memory data = Borsh.from(_data);
+        result.px = data.decodeU64();
+    }
+}
+|j},
+      ),
+    )
+    |> toEqual(
+         generateSolidity(
+           {j|{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"], [\\"what\\", \\"u8\\"] ] }","Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }"}|j},
+           "Output",
+         ),
+       )
+  });
+
+  test("should return None if invalid class", () => {
+    expect(None)
+    |> toEqual(
+         generateSolidity(
+           {j|{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"], [\\"what\\", \\"u8\\"] ] }"}|j},
+           "Input2",
+         ),
+       )
+  });
+
+  test("should return None if invalid type", () => {
+    expect(None)
+    |> toEqual(
+         generateSolidity(
+           {j|{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"bytes\\"], [\\"multiplier\\", \\"u64\\"], [\\"what\\", \\"u8\\"] ] }"}|j},
+           "Input",
+         ),
+       )
+  });
+});

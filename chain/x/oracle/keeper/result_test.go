@@ -35,7 +35,7 @@ func TestAddResultSuccess(t *testing.T) {
 	require.NotNil(t, err)
 
 	keeper.SetRequest(ctx, 1, types.NewRequest(
-		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))}, 1, 0, 0, 100, 10000,
+		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))}, 1, 0, 0, 100, 10000, "clientID",
 	))
 
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589999), 0))

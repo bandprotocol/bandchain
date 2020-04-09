@@ -14,11 +14,12 @@ type OracleRequestPacketData struct {
 	Expiration               int64          `json:"expiration"`
 	PrepareGas               uint64         `json:"prepareGas"`
 	ExecuteGas               uint64         `json:"executeGas"`
+	ClientID                 string         `json:"clientID"`
 }
 
 func NewOracleRequestPacketData(
 	oracleScriptID OracleScriptID, calldata string, requestedValidatorCount int64,
-	sufficientValidatorCount int64, expiration int64, prepareGas uint64, executeGas uint64,
+	sufficientValidatorCount int64, expiration int64, prepareGas uint64, executeGas uint64, clientID string,
 ) OracleRequestPacketData {
 	return OracleRequestPacketData{
 		OracleScriptID:           oracleScriptID,
@@ -28,6 +29,7 @@ func NewOracleRequestPacketData(
 		Expiration:               expiration,
 		PrepareGas:               prepareGas,
 		ExecuteGas:               executeGas,
+		ClientID:                 clientID,
 	}
 }
 
@@ -39,7 +41,8 @@ func (p OracleRequestPacketData) String() string {
 	SufficientValidatorCount: %d
 	Expiration:               %d
 	PrepareGas:               %d
-	ExecuteGas:               %d`,
+	ExecuteGas:               %d
+	ClientID:                 %s`,
 		p.OracleScriptID,
 		p.Calldata,
 		p.RequestedValidatorCount,
@@ -47,6 +50,7 @@ func (p OracleRequestPacketData) String() string {
 		p.Expiration,
 		p.PrepareGas,
 		p.ExecuteGas,
+		p.ClientID,
 	)
 }
 
@@ -61,12 +65,14 @@ func (p OracleRequestPacketData) GetBytes() []byte {
 
 type OracleResponsePacketData struct {
 	RequestID RequestID `json:"requestID"`
+	ClientID  string    `json:"clientID"`
 	Result    string    `json:"result"`
 }
 
-func NewOracleResponsePacketData(requestID RequestID, result string) OracleResponsePacketData {
+func NewOracleResponsePacketData(requestID RequestID, clientID string, result string) OracleResponsePacketData {
 	return OracleResponsePacketData{
 		RequestID: requestID,
+		ClientID:  clientID,
 		Result:    result,
 	}
 }
@@ -74,8 +80,10 @@ func NewOracleResponsePacketData(requestID RequestID, result string) OracleRespo
 func (p OracleResponsePacketData) String() string {
 	return fmt.Sprintf(`OracleResponsePacketData:
 	RequestID: %d
+	ClientID: %s
 	Result: %s`,
 		p.RequestID,
+		p.ClientID,
 		p.Result,
 	)
 }
