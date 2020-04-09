@@ -23,7 +23,7 @@ module Response = {
     oracleScriptID: ID.OracleScript.t,
     oracleScriptName: string,
     status: status_t,
-    calldata: JsBuffer.t,
+    result: option(JsBuffer.t),
   };
 };
 
@@ -55,7 +55,7 @@ let getMockList = () => [|
     blockHeight: ID.Block.ID(9999),
     packet:
       Request({
-        id: ID.Request.ID(8888),
+        id: ID.Request.ID(888),
         oracleScriptID: ID.OracleScript.ID(7777),
         oracleScriptName: "Mock Oracle Script",
         calldata: "aa" |> JsBuffer.fromHex,
@@ -79,7 +79,7 @@ let getMockList = () => [|
         oracleScriptID: ID.OracleScript.ID(10777),
         oracleScriptName: "Mock Oracle Script",
         status: Response.Success,
-        calldata: "aa" |> JsBuffer.fromHex,
+        result: Some("aa" |> JsBuffer.fromHex),
       }),
   },
   {
@@ -94,7 +94,7 @@ let getMockList = () => [|
         oracleScriptID: ID.OracleScript.ID(20777),
         oracleScriptName: "Mock Oracle Script",
         status: Response.Fail,
-        calldata: "aa" |> JsBuffer.fromHex,
+        result: None,
       }),
   },
 |];
