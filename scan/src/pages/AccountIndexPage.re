@@ -123,10 +123,10 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
       Some(account.balance +. account.balanceStake +. account.reward);
     };
 
-    let delegatorStakeSub = DelegationSub.getStake(address);
+    let delegationsSub = DelegationSub.getStakeList(address);
     let totalStakeSub = DelegationSub.getTotalStake(address);
 
-    let%Sub delegatorStake = delegatorStakeSub;
+    let%Sub delegations = delegationsSub;
     let%Sub totalStake = totalStakeSub;
 
     // TODO , replace these Mock
@@ -232,7 +232,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
         currentRoute={Route.AccountIndexPage(address, hashtag)}>
         {switch (hashtag) {
          | AccountTransactions => <AccountIndexTransactions accountAddress=address />
-         | AccountDelegations => <AccountIndexDelegations delegatorStake />
+         | AccountDelegations => <AccountIndexDelegations delegations />
          }}
       </Tab>
     </>
