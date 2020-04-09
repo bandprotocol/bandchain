@@ -48,9 +48,9 @@ module Styles = {
       float(`right),
     ]);
 
-  let iconWrapper = style([alignItems(`center), justifyContent(`center)]);
+  let iconWrapper = style([display(`flex), alignItems(`center), justifyContent(`center)]);
 
-  let iconBody = style([width(`px(20))]);
+  let iconBody = style([width(`px(20)), height(`px(20))]);
 };
 
 let renderCode = content => {
@@ -90,6 +90,8 @@ module LanguageIcon = {
           switch (icon) {
           | "Solidity" => Images.solidityIcon
           | "Vyper" => Images.vyperIcon
+          | "Go" => Images.golangIcon
+          | "PACT" => Images.pactIcon
           | _ => Images.missingIcon
           }
         }
@@ -144,6 +146,12 @@ let make = () => {
               onChange={event => {
                 let newValue = ReactEvent.Form.target(event)##value;
                 setTargetPlatform(_ => newValue);
+                switch (newValue) {
+                | "Ethereum" => setLanguage(_ => "Solidity")
+                | "Cosmos IBC" => setLanguage(_ => "Go")
+                | "Kadena" => setLanguage(_ => "PACT")
+                | _ => setLanguage(_ => "Solidity")
+                };
               }}>
               {[|"Ethereum", "Cosmos IBC", "Kadena"|]
                ->Belt_Array.map(symbol => <option value=symbol> {symbol |> React.string} </option>)
@@ -162,9 +170,22 @@ let make = () => {
                 let newValue = ReactEvent.Form.target(event)##value;
                 setLanguage(_ => newValue);
               }}>
-              {[|"Solidity", "Vyper"|]
-               ->Belt_Array.map(symbol => <option value=symbol> {symbol |> React.string} </option>)
-               |> React.array}
+              {switch (targetPlatform) {
+               | "Ethereum" =>
+                 [|"Solidity", "Vyper"|]
+                 ->Belt_Array.map(symbol =>
+                     <option value=symbol> {symbol |> React.string} </option>
+                   )
+                 |> React.array
+               | "Cosmos IBC" => <option value="Go"> {"Go" |> React.string} </option>
+               | "Kadena" => <option value="PACT"> {"PACT" |> React.string} </option>
+               | _ =>
+                 [|"Solidity", "Vyper"|]
+                 ->Belt_Array.map(symbol =>
+                     <option value=symbol> {symbol |> React.string} </option>
+                   )
+                 |> React.array
+               }}
             </select>
           </div>
           <VSpacing size={`px(5)} />
