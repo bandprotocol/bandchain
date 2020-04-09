@@ -26,38 +26,6 @@ func NewHandler(keeper Keeper) sdk.Handler {
 		case MsgEditOracleScript:
 			return handleMsgEditOracleScript(ctx, keeper, msg)
 		case MsgRequestData:
-			// TODO: Remove this hack!!!
-			// Here we assume that call data contains "sourceChannel + data"
-			// sourceChannel is always 10 characters
-			// sourceChannel := string(msg.Calldata[:10])
-			// calldata := hex.EncodeToString(msg.Calldata[10:])
-			// sourceChannelEnd, found := keeper.ChannelKeeper.GetChannel(ctx, "oracle", sourceChannel)
-			// if !found {
-			// 	return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unknown channel %s port oracle", sourceChannel)
-			// }
-			// destinationPort := sourceChannelEnd.Counterparty.PortID
-			// destinationChannel := sourceChannelEnd.Counterparty.ChannelID
-			// sequence, found := keeper.ChannelKeeper.GetNextSequenceSend(ctx, "oracle", sourceChannel)
-			// if !found {
-			// 	return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unknown sequence number for channel %s port oracle", sourceChannel)
-			// }
-
-			// fmt.Println(msg)
-			// packet := NewOracleRequestPacketData(
-			// 	msg.OracleScriptID, calldata, msg.RequestedValidatorCount,
-			// 	msg.SufficientValidatorCount, msg.Expiration, msg.PrepareGas,
-			// 	msg.ExecuteGas,
-			// )
-			// fmt.Println(packet.GetBytes())
-			// err := keeper.ChannelKeeper.SendPacket(ctx, channel.NewPacket(packet.GetBytes(),
-			// 	sequence, "oracle", sourceChannel, destinationPort, destinationChannel,
-			// 	1000000000, // Arbitrarily high timeout for now
-			// ))
-			// if err != nil {
-			// 	return nil, err
-			// }
-
-			// return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 			return handleMsgRequestData(ctx, keeper, msg)
 		case MsgReportData:
 			return handleMsgReportData(ctx, keeper, msg)
@@ -81,11 +49,6 @@ func NewHandler(keeper Keeper) sdk.Handler {
 				return handleMsgRequestData(
 					ctx, keeper, newMsg, msg.GetDestPort(), msg.GetDestChannel(),
 				)
-			}
-			var responseData OracleResponsePacketData
-			if err := types.ModuleCdc.UnmarshalJSON(msg.GetData(), &responseData); err == nil {
-				fmt.Println("I GOT DATA", responseData.Result)
-				return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 			}
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal oracle packet data")
 		default:
