@@ -11,5 +11,15 @@ let make = (~children) => {
     Some({financial: financial});
   };
 
-  React.createElement(React.Context.provider(context), {"value": data, "children": children});
+  React.createElement(
+    React.Context.provider(context),
+    {
+      "value":
+        switch (data) {
+        | Some(x) => Sub.resolve(x)
+        | None => Loading
+        },
+      "children": children,
+    },
+  );
 };
