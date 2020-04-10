@@ -204,14 +204,19 @@ let make = () =>
         *. 1000.
       );
     React.useEffect0(() => {
-      let newPrevDay = MomentRe.momentNow() |> MomentRe.Moment.toUnix |> float_of_int;
-      let timeOutId = Js.Global.setTimeout(() => setPrevDay(_ => newPrevDay), 1000);
+      let newPrevDay =
+        (
+          MomentRe.momentNow()
+          |> MomentRe.Moment.subtract(~duration=MomentRe.duration(1., `days))
+          |> MomentRe.Moment.toUnix
+          |> float_of_int
+        )
+        *. 1000.;
+      let timeOutId = Js.Global.setTimeout(() => setPrevDay(_ => newPrevDay), 60000);
       Some(() => Js.Global.clearTimeout(timeOutId));
     });
 
     let pageSize = 10;
-
-    let lastDay = prevDay |> Js.Json.number;
 
     let validatorsCountSub = ValidatorSub.count();
     let validatorsSub = ValidatorSub.getList(~page, ~pageSize, ());
