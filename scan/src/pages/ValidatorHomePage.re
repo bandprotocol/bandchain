@@ -193,10 +193,12 @@ let make = () =>
     let validatorsSub = ValidatorSub.getList(~page, ~pageSize, ());
     // TODO: Update once bonding status is available
     let bondedValidatorCountSub = ValidatorSub.count();
+    let bondedTokenCountSub = ValidatorSub.getTotalBondedAmount();
 
     let%Sub validators = validatorsSub;
     let%Sub validatorCount = validatorsCountSub;
     let%Sub bondedValidatorCount = bondedValidatorCountSub;
+    let%Sub bondedTokenCount = bondedTokenCountSub;
 
     let pageCount = Page.getPageCount(validatorCount, pageSize);
     let globalInfo = ValidatorSub.GlobalInfo.getGlobalInfo();
@@ -204,8 +206,6 @@ let make = () =>
     let unbondingValidatorCount = 0;
     let allValidatorCount =
       bondedValidatorCount + unbondedValidatorCount + unbondingValidatorCount;
-
-    let allBondedAmount = bondedValidatorCount;
 
     <>
       <Row justify=Row.Between>
@@ -236,7 +236,9 @@ let make = () =>
           </Col>
           <Col size=1.1>
             <InfoHL
-              info={InfoHL.Fraction(allBondedAmount, globalInfo.totalSupply, true)}
+              info={
+                InfoHL.Fraction(bondedTokenCount |> int_of_float, globalInfo.totalSupply, true)
+              }
               header="BONDED TOKENS"
             />
           </Col>

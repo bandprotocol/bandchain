@@ -109,7 +109,7 @@ module SingleConfig = [%graphql
           moniker
           identity
           website
-          tokens @bsDecoder(fn: "float_of_string")
+          tokens @bsDecoder(fn: "GraphQLParser.floatWithMillionDivision")
           commissionRate: commission_rate @bsDecoder(fn: "float_of_string")
           consensusPubKey: consensus_pubkey @bsDecoder(fn: "PubKey.fromBech32")
           bondedHeight: bonded_height @bsDecoder(fn: "GraphQLParser.int64")
@@ -130,7 +130,7 @@ module MultiConfig = [%graphql
           moniker
           identity
           website
-          tokens @bsDecoder(fn: "float_of_string")
+          tokens @bsDecoder(fn: "GraphQLParser.floatWithMillionDivision")
           commissionRate: commission_rate @bsDecoder(fn: "float_of_string")
           consensusPubKey: consensus_pubkey @bsDecoder(fn: "PubKey.fromBech32")
           bondedHeight: bonded_height @bsDecoder(fn: "GraphQLParser.int64")
@@ -140,6 +140,20 @@ module MultiConfig = [%graphql
           details
         }
       }
+  |}
+];
+
+module TotalBondedAmountConfig = [%graphql
+  {|
+  subscription TotalBondedAmount{
+    validators_aggregate{
+      aggregate{
+        sum{
+          tokens @bsDecoder(fn: "GraphQLParser.numberWithDefault")
+        }
+      }
+    }
+  }
   |}
 ];
 
@@ -186,6 +200,14 @@ let count = () => {
   let (result, _) = ApolloHooks.useSubscription(ValidatorCountConfig.definition);
   result
   |> Sub.map(_, x => x##validators_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
+};
+
+let getTotalBondedAmount = () => {
+  let (result, _) = ApolloHooks.useSubscription(TotalBondedAmountConfig.definition);
+  result
+  |> Sub.map(_, a =>
+       ((a##validators_aggregate##aggregate |> Belt_Option.getExn)##sum |> Belt_Option.getExn)##tokens
+     );
 };
 
 module GlobalInfo = {
