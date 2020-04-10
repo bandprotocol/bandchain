@@ -18,6 +18,7 @@ type Block struct {
 }
 
 type Transaction struct {
+	Index       int64           `gorm:"not null"`
 	TxHash      []byte          `gorm:"primary_key"`
 	Timestamp   int64           `gorm:"not null"`
 	GasUsed     int64           `gorm:"not null"`
