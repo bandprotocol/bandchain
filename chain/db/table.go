@@ -52,7 +52,7 @@ type Validator struct {
 	CommissionMaxChange string `gorm:"not null"`
 	MinSelfDelegation   string `gorm:"not null"`
 	Jailed              bool   `gorm:"not null"`
-	Tokens              string `gorm:"not null"`
+	Tokens              uint64 `gorm:"not null"`
 	DelegatorShares     string `gorm:"not null"`
 	BondedHeight        int64  `gorm:"not null"`
 }
