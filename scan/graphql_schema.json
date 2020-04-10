@@ -22439,7 +22439,8 @@
                     "name": null,
                     "ofType": {
                       "kind": "INPUT_OBJECT",
-                      "name": "delegations_order_by",
+<<<<<<< HEAD
+                      "name": "data_source_revisions_order_by",
                       "ofType": null
                     }
                   }
@@ -22451,7 +22452,7 @@
                 "defaultValue": null,
                 "type": {
                   "kind": "INPUT_OBJECT",
-                  "name": "delegations_bool_exp",
+                  "name": "data_source_revisions_bool_exp",
                   "ofType": null
                 },
                 "description": "filter the rows returned"
@@ -22459,12 +22460,516 @@
             ],
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "delegations_aggregate",
+            "name": "data_source_revisions_aggregate",
             "type": {
               "kind": "NON_NULL",
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
+                "name": "data_source_revisions_aggregate",
+                "ofType": null
+              }
+            },
+            "description": "fetch aggregated fields from the table: \"data_source_revisions\""
+          },
+          {
+            "args": [
+              {
+                "name": "data_source_id",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "bigint",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              },
+              {
+                "name": "revision_number",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "bigint",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "data_source_revisions_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "data_source_revisions",
+              "ofType": null
+            },
+            "description": "fetch data from the table: \"data_source_revisions\" using primary key columns"
+          },
+          {
+            "args": [
+              {
+                "name": "distinct_on",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "ENUM",
+                      "name": "data_sources_select_column",
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": "distinct select on columns"
+              },
+              {
+                "name": "limit",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "description": "limit the number of rows returned"
+              },
+              {
+                "name": "offset",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "description": "skip the first n rows. Use only with order_by"
+              },
+              {
+                "name": "order_by",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "data_sources_order_by",
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": "sort the rows by one or more columns"
+              },
+              {
+                "name": "where",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "data_sources_bool_exp",
+                  "ofType": null
+                },
+                "description": "filter the rows returned"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "data_sources",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "data_sources",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "description": "fetch data from the table: \"data_sources\""
+          },
+          {
+            "args": [
+              {
+                "name": "distinct_on",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "ENUM",
+                      "name": "data_sources_select_column",
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": "distinct select on columns"
+              },
+              {
+                "name": "limit",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "description": "limit the number of rows returned"
+              },
+              {
+                "name": "offset",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "description": "skip the first n rows. Use only with order_by"
+              },
+              {
+                "name": "order_by",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "data_sources_order_by",
+=======
+                      "name": "delegations_order_by",
+>>>>>>> 486d4be513b4bf933e1ef86528332c1e57bd7b65
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": "sort the rows by one or more columns"
+              },
+              {
+                "name": "where",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+<<<<<<< HEAD
+                  "name": "data_sources_bool_exp",
+=======
+                  "name": "delegations_bool_exp",
+>>>>>>> 486d4be513b4bf933e1ef86528332c1e57bd7b65
+                  "ofType": null
+                },
+                "description": "filter the rows returned"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+<<<<<<< HEAD
+            "name": "data_sources_aggregate",
+=======
+            "name": "delegations_aggregate",
+>>>>>>> 486d4be513b4bf933e1ef86528332c1e57bd7b65
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+<<<<<<< HEAD
+                "name": "data_sources_aggregate",
+                "ofType": null
+              }
+            },
+            "description": "fetch aggregated fields from the table: \"data_sources\""
+=======
+                "name": "delegations_aggregate",
+                "ofType": null
+              }
+            },
+            "description": "fetch aggregated fields from the table: \"delegations\""
+>>>>>>> 486d4be513b4bf933e1ef86528332c1e57bd7b65
+          },
+          {
+            "args": [
+              {
+<<<<<<< HEAD
+                "name": "id",
+=======
+                "name": "delegator_address",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              },
+              {
+                "name": "validator_address",
+>>>>>>> 486d4be513b4bf933e1ef86528332c1e57bd7b65
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+<<<<<<< HEAD
+            "name": "data_sources_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "data_sources",
+              "ofType": null
+            },
+            "description": "fetch data from the table: \"data_sources\" using primary key columns"
+=======
+            "name": "delegations_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "delegations",
+              "ofType": null
+            },
+            "description": "fetch data from the table: \"delegations\" using primary key columns"
+>>>>>>> 486d4be513b4bf933e1ef86528332c1e57bd7b65
+          },
+          {
+            "args": [
+              {
+                "name": "distinct_on",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "ENUM",
+<<<<<<< HEAD
+                      "name": "delegations_select_column",
+=======
+                      "name": "delegations_view_select_column",
+>>>>>>> 486d4be513b4bf933e1ef86528332c1e57bd7b65
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": "distinct select on columns"
+              },
+              {
+                "name": "limit",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "description": "limit the number of rows returned"
+              },
+              {
+                "name": "offset",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "description": "skip the first n rows. Use only with order_by"
+              },
+              {
+                "name": "order_by",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+<<<<<<< HEAD
+                      "name": "delegations_order_by",
+=======
+                      "name": "delegations_view_order_by",
+>>>>>>> 486d4be513b4bf933e1ef86528332c1e57bd7b65
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": "sort the rows by one or more columns"
+              },
+              {
+                "name": "where",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+<<<<<<< HEAD
+                  "name": "delegations_bool_exp",
+=======
+                  "name": "delegations_view_bool_exp",
+>>>>>>> 486d4be513b4bf933e1ef86528332c1e57bd7b65
+                  "ofType": null
+                },
+                "description": "filter the rows returned"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+<<<<<<< HEAD
+            "name": "delegations",
+=======
+            "name": "delegations_view",
+>>>>>>> 486d4be513b4bf933e1ef86528332c1e57bd7b65
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+<<<<<<< HEAD
+                    "name": "delegations",
+=======
+                    "name": "delegations_view",
+>>>>>>> 486d4be513b4bf933e1ef86528332c1e57bd7b65
+                    "ofType": null
+                  }
+                }
+              }
+            },
+<<<<<<< HEAD
+            "description": "fetch data from the table: \"delegations\""
+=======
+            "description": "fetch data from the table: \"delegations_view\""
+>>>>>>> 486d4be513b4bf933e1ef86528332c1e57bd7b65
+          },
+          {
+            "args": [
+              {
+                "name": "distinct_on",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "ENUM",
+<<<<<<< HEAD
+                      "name": "delegations_select_column",
+=======
+                      "name": "delegations_view_select_column",
+>>>>>>> 486d4be513b4bf933e1ef86528332c1e57bd7b65
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": "distinct select on columns"
+              },
+              {
+                "name": "limit",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "description": "limit the number of rows returned"
+              },
+              {
+                "name": "offset",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "description": "skip the first n rows. Use only with order_by"
+              },
+              {
+                "name": "order_by",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+<<<<<<< HEAD
+                      "name": "delegations_order_by",
+=======
+                      "name": "delegations_view_order_by",
+>>>>>>> 486d4be513b4bf933e1ef86528332c1e57bd7b65
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": "sort the rows by one or more columns"
+              },
+              {
+                "name": "where",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+<<<<<<< HEAD
+                  "name": "delegations_bool_exp",
+=======
+                  "name": "delegations_view_bool_exp",
+>>>>>>> 486d4be513b4bf933e1ef86528332c1e57bd7b65
+                  "ofType": null
+                },
+                "description": "filter the rows returned"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+<<<<<<< HEAD
+            "name": "delegations_aggregate",
+=======
+            "name": "delegations_view_aggregate",
+>>>>>>> 486d4be513b4bf933e1ef86528332c1e57bd7b65
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+<<<<<<< HEAD
                 "name": "delegations_aggregate",
                 "ofType": null
               }
@@ -22684,6 +23189,12 @@
                 "ofType": null
               }
             },
+=======
+                "name": "delegations_view_aggregate",
+                "ofType": null
+              }
+            },
+>>>>>>> 486d4be513b4bf933e1ef86528332c1e57bd7b65
             "description": "fetch aggregated fields from the table: \"delegations_view\""
           },
           {
