@@ -1,6 +1,3 @@
-[@bs.module "change-case"] external pascalCase: string => string = "pascalCase";
-[@bs.module "change-case"] external camelCase: string => string = "camelCase";
-
 let extractFields: (string, string) => option(array((string, string))) = [%bs.raw
   {|
   function(_schema, cls) {
@@ -117,7 +114,7 @@ type field_t = {
 
 let parse = ((name, varType)) => {
   let v =
-    switch (varType |> camelCase) {
+    switch (varType |> ChangeCase.camelCase) {
     | "string" => Some(String)
     | "u64" => Some(U64)
     | "u32" => Some(U32)
@@ -192,7 +189,7 @@ library ResultDecoder {
 };
 
 let declareGo = ({name, varType}) => {
-  let capitalizedName = name |> pascalCase;
+  let capitalizedName = name |> ChangeCase.pascalCase;
   switch (varType) {
   | String => {j|$capitalizedName string|j}
   | U64 => {j|$capitalizedName uint64|j}
@@ -203,19 +200,19 @@ let declareGo = ({name, varType}) => {
 
 let assignGo = ({name, varType}) => {
   switch (varType) {
-  | String => {j|	$name, err := decoder.DecodeString()
+  | String => {j|$name, err := decoder.DecodeString()
 	if err != nil {
 		return Result{}, err
 	}|j}
-  | U64 => {j|	$name, err := decoder.DecodeU64()
+  | U64 => {j|$name, err := decoder.DecodeU64()
 	if err != nil {
 		return Result{}, err
 	}|j}
-  | U32 => {j|	$name, err := decoder.DecodeU32()
+  | U32 => {j|$name, err := decoder.DecodeU32()
 	if err != nil {
 		return Result{}, err
 	}|j}
-  | U8 => {j|	$name, err := decoder.DecodeU8()
+  | U8 => {j|$name, err := decoder.DecodeU8()
 	if err != nil {
 		return Result{}, err
 	}|j}
@@ -223,12 +220,12 @@ let assignGo = ({name, varType}) => {
 };
 
 let resultGo = ({name, varType}) => {
-  let capitalizedName = name |> pascalCase;
+  let capitalizedName = name |> ChangeCase.pascalCase;
   switch (varType) {
-  | String => {j|$capitalizedName:      $name|j}
-  | U64 => {j|$capitalizedName:  $name|j}
-  | U32 => {j|$capitalizedName:  $name|j}
-  | U8 => {j|$capitalizedName:        $name|j}
+  | String => {j|$capitalizedName: $name|j}
+  | U64 => {j|$capitalizedName: $name|j}
+  | U32 => {j|$capitalizedName: $name|j}
+  | U8 => {j|$capitalizedName: $name|j}
   };
 };
 
@@ -242,7 +239,7 @@ type Result struct {
 func DecodeResult(data []byte) (Result, error) {
 \tdecoder := NewBorshDecoder(data)
 
-$functions
+\t$functions
 
 \tif !decoder.Finished() {
 \t\treturn Result{}, errors.New("Borsh: bytes left when decode result")
@@ -258,7 +255,7 @@ $functions
   Some(
     template(
       fields |> Belt_Array.map(_, declareGo) |> Js.Array.joinWith("\n\t"),
-      fields |> Belt_Array.map(_, assignGo) |> Js.Array.joinWith("\n"),
+      fields |> Belt_Array.map(_, assignGo) |> Js.Array.joinWith("\n\t"),
       fields |> Belt_Array.map(_, resultGo) |> Js.Array.joinWith("\n\t\t"),
     ),
   );

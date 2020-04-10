@@ -245,9 +245,9 @@ func DecodeResult(data []byte) (Result, error) {
 	}
 
 	return Result{
-		Symbol:      symbol
-		Multiplier:  multiplier
-		What:        what
+		Symbol: symbol
+		Multiplier: multiplier
+		What: what
 	}, nil
 }|j},
       ),
@@ -282,7 +282,7 @@ func DecodeResult(data []byte) (Result, error) {
 	}
 
 	return Result{
-		Px:  px
+		Px: px
 	}, nil
 }|j},
       ),
