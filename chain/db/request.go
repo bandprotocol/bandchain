@@ -4,7 +4,6 @@ import (
 	"strconv"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 func parseResolveStatus(resolveStatus oracle.ResolveStatus) string {
@@ -170,7 +169,7 @@ func (b *BandDB) handleMsgRequestData(
 	if err != nil {
 		return err
 	}
-	request, err := b.OracleKeeper.GetRequest(b.ctx, types.RequestID(id))
+	request, err := b.OracleKeeper.GetRequest(b.ctx, oracle.RequestID(id))
 	if err != nil {
 		return err
 	}
