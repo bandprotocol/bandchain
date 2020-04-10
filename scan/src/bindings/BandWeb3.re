@@ -50,7 +50,6 @@ function(signedMsg) {
       'eb5ae98721' + Buffer.from(sig.pub_key.value, 'base64').toString('hex'), 'hex'
     ).toString('base64')
   }
-  return signedMsg
 }
   |}
 ];
