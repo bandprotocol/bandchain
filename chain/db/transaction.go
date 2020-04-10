@@ -8,6 +8,7 @@ import (
 )
 
 func createTransaction(
+	id int64,
 	txHash []byte,
 	timestamp time.Time,
 	gasUsed int64,
@@ -19,6 +20,7 @@ func createTransaction(
 ) Transaction {
 	rawJson, _ := json.Marshal(nil)
 	return Transaction{
+		ID:          id,
 		TxHash:      txHash,
 		Timestamp:   timestamp.UnixNano() / int64(time.Millisecond),
 		GasUsed:     gasUsed,
@@ -32,6 +34,7 @@ func createTransaction(
 }
 
 func (b *BandDB) AddTransaction(
+	id int64,
 	txHash []byte,
 	timestamp time.Time,
 	gasUsed int64,
@@ -42,6 +45,7 @@ func (b *BandDB) AddTransaction(
 	blockHeight int64,
 ) error {
 	transaction := createTransaction(
+		id,
 		txHash,
 		timestamp,
 		gasUsed,
