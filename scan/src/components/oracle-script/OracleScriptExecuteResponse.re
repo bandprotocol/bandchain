@@ -63,7 +63,7 @@ let make = (~txResponse: BandWeb3.tx_response_t, ~schema: string) =>
         </div>
         <VSpacing size=Spacing.lg />
         {switch (requestOpt) {
-         | Some({id, result: Some(result)}) =>
+         | Some({result: Some(result)}) =>
            let outputKVsOpt = Borsh.decode(schema, "Output", result);
            <>
              <div className={Styles.hFlex(`auto)}>
