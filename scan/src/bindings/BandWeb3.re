@@ -42,10 +42,9 @@ let getAccounts = (instance, address) => {
   );
 };
 
-let fuckAroundWithSignedMsg: signed_msg_t => unit = [%bs.raw
+let addPublicKeyToSignedMsg: signed_msg_t => unit = [%bs.raw
   {|
 function(signedMsg) {
-  console.log(signedMsg.json)
   for (const sig of signedMsg.tx.signatures) {
     sig.public_key = Buffer.from(
       'eb5ae98721' + Buffer.from(sig.pub_key.value, 'base64').toString('hex'), 'hex'
@@ -57,7 +56,7 @@ function(signedMsg) {
 ];
 
 let broadcast = (instance, signedMsg) => {
-  fuckAroundWithSignedMsg(signedMsg);
+  addPublicKeyToSignedMsg(signedMsg);
   let%Promise rawResponse = instance->_broadcast(signedMsg);
 
   Promise.ret(
