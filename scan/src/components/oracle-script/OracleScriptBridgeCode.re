@@ -33,11 +33,12 @@ module Styles = {
       position(`static),
       width(`px(169)),
       height(`px(30)),
-      left(`px(0)),
+      left(`zero),
       top(`px(32)),
       background(rgba(255, 255, 255, 1.)),
       borderRadius(`px(100)),
       boxShadow(Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(4), rgba(0, 0, 0, 0.1))),
+      float(`left),
     ]);
 
   let selectContent =
@@ -51,6 +52,10 @@ module Styles = {
   let iconWrapper = style([display(`flex), alignItems(`center), justifyContent(`center)]);
 
   let iconBody = style([width(`px(20)), height(`px(20))]);
+
+  let languageOption = style([display(`flex), flexDirection(`row), alignContent(`center)]);
+
+  let languageText = style([alignItems(`center), display(`flex)]);
 };
 
 let renderCode = content => {
@@ -60,6 +65,17 @@ let renderCode = content => {
     </ReactHighlight>
   </div>;
 };
+
+type target_platform =
+  | Ethereum
+  | CosmosIBC
+  | Kadena;
+
+type language =
+  | Solidity
+  | Vyper
+  | Go
+  | PACT;
 
 module TargetPlatformIcon = {
   [@react.component]
@@ -72,7 +88,6 @@ module TargetPlatformIcon = {
           | "Ethereum" => Images.ethereumIcon
           | "Cosmos IBC" => Images.cosmosIBCIcon
           | "Kadena" => Images.kadenaIcon
-          | _ => Images.missingIcon
           }
         }
       />
@@ -92,7 +107,6 @@ module LanguageIcon = {
           | "Vyper" => Images.vyperIcon
           | "Go" => Images.golangIcon
           | "PACT" => Images.pactIcon
-          | _ => Images.missingIcon
           }
         }
       />
@@ -132,36 +146,39 @@ let make = () => {
   let (targetPlatform, setTargetPlatform) = React.useState(_ => "Ethereum");
   let (language, setLanguage) = React.useState(_ => "Solidity");
   <div className=Styles.tableWrapper>
-    <>
-      <VSpacing size={`px(10)} />
-      <Row>
-        <HSpacing size={`px(15)} />
-        <Col>
-          <div> <Text value="Target Platform" /> </div>
-          <VSpacing size={`px(5)} />
-          <div className=Styles.selectWrapper>
-            <TargetPlatformIcon icon=targetPlatform />
-            <select
-              className=Styles.selectContent
-              onChange={event => {
-                let newValue = ReactEvent.Form.target(event)##value;
-                setTargetPlatform(_ => newValue);
-                switch (newValue) {
-                | "Ethereum" => setLanguage(_ => "Solidity")
-                | "Cosmos IBC" => setLanguage(_ => "Go")
-                | "Kadena" => setLanguage(_ => "PACT")
-                | _ => setLanguage(_ => "Solidity")
-                };
-              }}>
-              {[|"Ethereum", "Cosmos IBC", "Kadena"|]
-               ->Belt_Array.map(symbol => <option value=symbol> {symbol |> React.string} </option>)
-               |> React.array}
-            </select>
-          </div>
-        </Col>
-        <HSpacing size={`px(370)} />
-        <Col>
-          <div> <Text value="Language" /> </div>
+    <VSpacing size={`px(10)} />
+    <Row>
+      <HSpacing size={`px(15)} />
+      <Col> <div> <Text value="Target Platform" /> </div> </Col>
+      <HSpacing size={`px(370)} />
+    </Row>
+    <Row>
+      <Col size=1.>
+        <VSpacing size={`px(5)} />
+        <div className=Styles.selectWrapper>
+          <TargetPlatformIcon icon=targetPlatform />
+          <select
+            className=Styles.selectContent
+            onChange={event => {
+              let newValue = ReactEvent.Form.target(event)##value;
+              setTargetPlatform(_ => newValue);
+              switch (newValue) {
+              | "Ethereum" => setLanguage(_ => "Solidity")
+              | "Cosmos IBC" => setLanguage(_ => "Go")
+              | "Kadena" => setLanguage(_ => "PACT")
+              | _ => setLanguage(_ => "Solidity")
+              };
+            }}>
+            {[|"Ethereum", "Cosmos IBC", "Kadena"|]
+             ->Belt_Array.map(symbol => <option value=symbol> {symbol |> React.string} </option>)
+             |> React.array}
+          </select>
+        </div>
+      </Col>
+      <Col size=1.>
+        <div className=Styles.languageOption>
+          <div className=Styles.languageText> <Text value="Language" /> </div>
+          <HSpacing size={`px(15)} />
           <div className=Styles.selectWrapper>
             <LanguageIcon icon=language />
             <select
@@ -179,35 +196,28 @@ let make = () => {
                  |> React.array
                | "Cosmos IBC" => <option value="Go"> {"Go" |> React.string} </option>
                | "Kadena" => <option value="PACT"> {"PACT" |> React.string} </option>
-               | _ =>
-                 [|"Solidity", "Vyper"|]
-                 ->Belt_Array.map(symbol =>
-                     <option value=symbol> {symbol |> React.string} </option>
-                   )
-                 |> React.array
                }}
             </select>
           </div>
-          <VSpacing size={`px(5)} />
-        </Col>
-      </Row>
-      <VSpacing size={`px(35)} />
-      <div className=Styles.tableLowerContainer>
-        <div className=Styles.vFlex>
-          <Text value="Description" size=Text.Lg color=Colors.gray7 weight=Text.Medium />
         </div>
-        <VSpacing size=Spacing.lg />
-        <Text value=description size=Text.Lg />
+      </Col>
+    </Row>
+    <VSpacing size={`px(35)} />
+    <div className=Styles.tableLowerContainer>
+      <div className=Styles.vFlex>
+        <Text value="Description" size=Text.Lg color=Colors.gray7 spacing={Text.Em(0.03)} />
       </div>
-      <VSpacing size={`px(35)} />
-      <div className=Styles.tableLowerContainer>
-        <div className=Styles.vFlex>
-          <img src=Images.code className=Styles.codeImage />
-          <Text value="ResultDecoder.sol" size=Text.Lg color=Colors.gray7 />
-        </div>
-        <VSpacing size=Spacing.lg />
-        codetest->renderCode
+      <VSpacing size=Spacing.lg />
+      <Text value=description size=Text.Lg weight=Text.Thin spacing={Text.Em(0.03)} />
+    </div>
+    <VSpacing size={`px(35)} />
+    <div className=Styles.tableLowerContainer>
+      <div className=Styles.vFlex>
+        <img src=Images.code className=Styles.codeImage />
+        <Text value="ResultDecoder.sol" size=Text.Lg color=Colors.gray7 />
       </div>
-    </>
+      <VSpacing size=Spacing.lg />
+      codetest->renderCode
+    </div>
   </div>;
 };
