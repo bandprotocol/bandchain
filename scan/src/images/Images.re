@@ -43,3 +43,5 @@
 [@bs.module] external noReport: string = "./noReport.svg";
 [@bs.module] external connectIcon: string = "./connect-icon.svg";
 [@bs.module] external disconnectIcon: string = "./disconnect-icon.svg";
+[@bs.module] external ibcLogo: string = "./ibcLogo.svg";
+[@bs.module] external ibcDirArrow: string = "./ibcDirArrow.svg";
