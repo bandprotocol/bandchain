@@ -2,6 +2,7 @@ package db
 
 import (
 	"encoding/hex"
+	"encoding/json"
 	"strconv"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
@@ -9,13 +10,44 @@ import (
 	channel "github.com/cosmos/cosmos-sdk/x/ibc/04-channel"
 )
 
+func (b *BandDB) getChainID(channelID, channelPort string) (string, error) {
+	channel, found := b.IBCKeeper.ChannelKeeper.GetChannel(
+		b.ctx,
+		channelPort,
+		channelID,
+	)
+	if !found {
+		return "", sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot find channel")
+	}
+	connection, found := b.IBCKeeper.ConnectionKeeper.GetConnection(b.ctx, channel.ConnectionHops[0])
+	if !found {
+		return "", sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot find connection")
+	}
+
+	client, found := b.IBCKeeper.ClientKeeper.GetClientState(b.ctx, connection.GetClientID())
+	if !found {
+		return "", sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot find client")
+	}
+	return client.GetChainID(), nil
+}
+
 func (b *BandDB) handleMsgPacket(
 	txHash []byte,
 	msg channel.MsgPacket,
 	events map[string]string,
 ) error {
+	packetType := ""
+	jsonMap := make(map[string]interface{})
+
+	err := json.Unmarshal(msg.GetData(), &jsonMap)
+	if err != nil {
+		return err
+	}
+	extra := make(map[string]interface{})
+
 	var requestData oracle.OracleRequestPacketData
 	if err := oracle.ModuleCdc.UnmarshalJSON(msg.GetData(), &requestData); err == nil {
+		packetType = "ORACLE REQUEST"
 		id, err := strconv.ParseInt(events[oracle.EventTypeRequest+"."+oracle.AttributeKeyID], 10, 64)
 		if err != nil {
 			return err
@@ -24,7 +56,7 @@ func (b *BandDB) handleMsgPacket(
 		if err != nil {
 			return err
 		}
-		return b.AddNewRequest(
+		err = b.AddNewRequest(
 			id,
 			int64(requestData.OracleScriptID),
 			calldata,
@@ -36,6 +68,43 @@ func (b *BandDB) handleMsgPacket(
 			txHash,
 			nil,
 		)
+		if err != nil {
+			return err
+		}
+
+		oracleScript, err := b.OracleKeeper.GetOracleScript(b.ctx, requestData.OracleScriptID)
+		if err != nil {
+			return err
+		}
+
+		extra["requestID"] = id
+		extra["oracleScriptName"] = oracleScript.Name
 	}
-	return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized oracle package type: %T", msg.Packet)
+	if packetType == "" {
+		return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized oracle package type: %T", msg.Packet)
+	}
+
+	chainID, err := b.getChainID(msg.GetDestChannel(), msg.GetDestPort())
+	if err != nil {
+		return err
+	}
+
+	jsonMap["extra"] = extra
+	rawJson, err := json.Marshal(jsonMap)
+	if err != nil {
+		return err
+	}
+	isIncoming := true
+	return b.tx.Create(&Packet{
+		Type:        packetType,
+		Sequence:    msg.GetSequence(),
+		MyChannel:   msg.GetDestChannel(),
+		MyPort:      msg.GetDestPort(),
+		YourChainID: chainID,
+		YourChannel: msg.GetSourceChannel(),
+		YourPort:    msg.GetSourcePort(),
+		BlockHeight: b.ctx.BlockHeight(),
+		IsIncoming:  &isIncoming,
+		Detail:      rawJson,
+	}).Error
 }
