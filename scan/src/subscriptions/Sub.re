@@ -1,3 +1,5 @@
+type t('a) = ApolloHooks.Subscription.variant('a);
+
 let map = (result, f) =>
   switch (result) {
   | ApolloHooks.Subscription.Data(data) => ApolloHooks.Subscription.Data(data |> f)

@@ -1,8 +1,7 @@
 module Styles = {
   open Css;
 
-  let highlightsContainer =
-    style([width(`percent(100.)), paddingBottom(Spacing.xl)]);
+  let highlightsContainer = style([width(`percent(100.)), paddingBottom(Spacing.xl)]);
 
   let section = style([paddingTop(`px(45)), width(`percent(100.))]);
 
@@ -55,8 +54,13 @@ module Styles = {
 
 [@react.component]
 let make = () => {
+  // Subscribe for latest 11 blocks here so both "LatestBlocks" and "ChainInfoHighLights"
+  // share the same infomation.
+  let lastest11BlocksSub = BlockSub.getList(~pageSize=11, ~page=1, ());
+  let latestBlockSub = lastest11BlocksSub->Sub.map(blocks => blocks->Belt_Array.getExn(0));
+
   <div className=Styles.highlightsContainer>
-    <ChainInfoHighlights />
+    <ChainInfoHighlights latestBlockSub />
     <VSpacing size=Spacing.xl />
     // TODO: for next version
     // <div className=Styles.grayArea>
@@ -69,7 +73,7 @@ let make = () => {
     // <div className=Styles.skip />
     <div className=Styles.section>
       <Row alignItems=`initial>
-        <Col> <LatestBlocks /> </Col>
+        <Col> <LatestBlocks blocksSub=lastest11BlocksSub /> </Col>
         <HSpacing size=Spacing.lg />
         <Col size=1.> <LatestTxTable /> </Col>
       </Row>

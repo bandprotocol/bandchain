@@ -64,16 +64,23 @@ func (p OracleRequestPacketData) GetBytes() []byte {
 }
 
 type OracleResponsePacketData struct {
-	RequestID RequestID `json:"requestID"`
-	ClientID  string    `json:"clientID"`
-	Result    string    `json:"result"`
+	RequestID     RequestID     `json:"requestID"`
+	ClientID      string        `json:"clientID"`
+	ResolveStatus ResolveStatus `json:"resolveStatus"`
+	Result        string        `json:"result"`
 }
 
-func NewOracleResponsePacketData(requestID RequestID, clientID string, result string) OracleResponsePacketData {
+func NewOracleResponsePacketData(
+	requestID RequestID,
+	clientID string,
+	resolveStatus ResolveStatus,
+	result string,
+) OracleResponsePacketData {
 	return OracleResponsePacketData{
-		RequestID: requestID,
-		ClientID:  clientID,
-		Result:    result,
+		RequestID:     requestID,
+		ClientID:      clientID,
+		ResolveStatus: resolveStatus,
+		Result:        result,
 	}
 }
 
@@ -81,9 +88,11 @@ func (p OracleResponsePacketData) String() string {
 	return fmt.Sprintf(`OracleResponsePacketData:
 	RequestID: %d
 	ClientID: %s
+	ResolveStatus: %d
 	Result: %s`,
 		p.RequestID,
 		p.ClientID,
+		p.ResolveStatus,
 		p.Result,
 	)
 }
