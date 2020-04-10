@@ -31,7 +31,7 @@ type BandDB struct {
 	ctx sdk.Context
 
 	StakingKeeper staking.Keeper
-	OracleKeeper oracle.Keeper
+	OracleKeeper  oracle.Keeper
 }
 
 func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
@@ -60,6 +60,13 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		&Report{},
 		&ReportDetail{},
 	)
+
+	db.Exec(`CREATE VIEW delegations_view AS 
+			SELECT CAST(shares AS DECIMAL) * CAST(tokens AS DECIMAL) / CAST(delegator_shares AS DECIMAL) as amount, 
+			validator_address, 
+			delegator_address 
+			FROM delegations JOIN validators ON validator_address = operator_address;
+	`)
 
 	db.Model(&Block{}).AddForeignKey(
 		"proposer",
@@ -440,6 +447,10 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 	case channel.MsgChannelCloseInit:
 	case channel.MsgChannelCloseConfirm:
 	case channel.MsgPacket:
+		err := b.handleMsgPacket(txHash, msg, events)
+		if err != nil {
+			return nil, err
+		}
 	case channel.MsgAcknowledgement:
 	case channel.MsgTimeout:
 	case tclient.MsgCreateClient:

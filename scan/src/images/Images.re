@@ -51,3 +51,5 @@
 [@bs.module] external missingIcon: string = "./missing.png";
 [@bs.module] external golangIcon: string = "./golang.svg";
 [@bs.module] external pactIcon: string = "./pact.svg";
+[@bs.module] external ibcLogo: string = "./ibcLogo.svg";
+[@bs.module] external ibcDirArrow: string = "./ibcDirArrow.svg";

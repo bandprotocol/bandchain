@@ -107,7 +107,6 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) {
 		event.AppendAttributes(sdk.NewAttribute(types.AttributeKeyResult, string(result)))
 		events = append(events, event)
 
-		fmt.Println("XX", request.SourcePort, request.SourceChannel)
 		sourceChannelEnd, found := keeper.ChannelKeeper.GetChannel(ctx, request.SourcePort, request.SourceChannel)
 		if !found {
 			fmt.Println("SOURCE NOT FOUND", request.SourcePort, request.SourceChannel)
@@ -124,8 +123,7 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) {
 			continue
 		}
 
-		packet := NewOracleResponsePacketData(hex.EncodeToString(result))
-		fmt.Println(packet.GetBytes())
+		packet := NewOracleResponsePacketData(requestID, request.ClientID, hex.EncodeToString(result))
 
 		err = keeper.ChannelKeeper.SendPacket(ctx, channel.NewPacket(packet.GetBytes(),
 			sequence, request.SourcePort, request.SourceChannel, destinationPort, destinationChannel,

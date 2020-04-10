@@ -53,6 +53,7 @@ type Validator struct {
 	Jailed              bool   `gorm:"not null"`
 	Tokens              string `gorm:"not null"`
 	DelegatorShares     string `gorm:"not null"`
+	BondedHeight        int64  `gorm:"not null"`
 }
 
 type ValidatorVote struct {
@@ -124,6 +125,7 @@ type Request struct {
 	ResolveStatus            string `gorm:"not null"`
 	Requester                string `gorm:"not null"`
 	TxHash                   []byte `gorm:"not null"`
+	ClientID                 string `gorm:"not null"`
 	Result                   []byte `sql:"default:null"`
 }
 

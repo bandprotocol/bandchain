@@ -17,6 +17,7 @@ type MsgRequestData struct {
 	Expiration               int64          `json:"expiration"`
 	PrepareGas               uint64         `json:"prepareGas"`
 	ExecuteGas               uint64         `json:"executeGas"`
+	ClientID                 string         `json:"clientID"`
 	Sender                   sdk.AccAddress `json:"sender"`
 }
 
@@ -29,6 +30,7 @@ func NewMsgRequestData(
 	expiration int64,
 	prepareGas uint64,
 	executeGas uint64,
+	clientID string,
 	sender sdk.AccAddress,
 ) MsgRequestData {
 	return MsgRequestData{
@@ -39,6 +41,7 @@ func NewMsgRequestData(
 		Expiration:               expiration,
 		PrepareGas:               prepareGas,
 		ExecuteGas:               executeGas,
+		ClientID:                 clientID,
 		Sender:                   sender,
 	}
 }
