@@ -290,11 +290,11 @@ let make = (~reqID) =>
            </>;
          | None => React.null
          }}
-        {numReport >= request.sufficientValidatorCount
-           ? {
-             <RequestProof requestID={request.id} />;
-           }
-           : React.null}
+        // {numReport >= request.sufficientValidatorCount
+        //    ? {
+        //      <RequestProof requestID={request.id} />;
+        //    }
+        //    : React.null}
         <VSpacing size=Spacing.xl />
         <div className=Styles.seperatedLongLine />
         <VSpacing size=Spacing.md />

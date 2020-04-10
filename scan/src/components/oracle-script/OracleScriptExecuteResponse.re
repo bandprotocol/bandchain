@@ -93,7 +93,7 @@ let make = (~txResponse: BandWeb3.tx_response_t, ~schema: string) =>
                  {switch (outputKVsOpt) {
                   | Some(outputKVs) =>
                     outputKVs->Belt_Array.map(({fieldName, fieldValue}) =>
-                      <div className={Styles.hFlex(`px(20))}>
+                      <div key=fieldName className={Styles.hFlex(`px(20))}>
                         <div className={Styles.vFlex(`px(220), `auto)}>
                           <Text value=fieldName color=Colors.gray8 />
                         </div>
@@ -107,8 +107,8 @@ let make = (~txResponse: BandWeb3.tx_response_t, ~schema: string) =>
                   }}
                </div>
              </div>
-             <VSpacing size=Spacing.lg />
-             <OracleScriptExecuteProof id />
+             // <VSpacing size=Spacing.lg />
+             // <OracleScriptExecuteProof id />
            </>;
          | Some(request) =>
            <div className={Styles.hFlex(`auto)}>
