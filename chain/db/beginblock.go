@@ -29,7 +29,7 @@ func (b *BandDB) HandleBeginblockEvent(event abci.Event) {
 				err = b.tx.Model(&Validator{}).
 					Where(Validator{ConsensusAddress: tmbytes.HexBytes(consAddress.Bytes()).String()}).
 					Update(&Validator{
-						Tokens: validator.Tokens.String(),
+						Tokens: validator.Tokens.Uint64(),
 						Jailed: true,
 					}).Error
 				if err != nil {
