@@ -212,7 +212,7 @@ let make = () =>
           |> float_of_int
         )
         *. 1000.;
-      let timeOutId = Js.Global.setTimeout(() => setPrevDay(_ => newPrevDay), 60000);
+      let timeOutId = Js.Global.setTimeout(() => setPrevDay(_ => newPrevDay), 60_000);
       Some(() => Js.Global.clearTimeout(timeOutId));
     });
 
@@ -243,7 +243,7 @@ let make = () =>
     //TODO: Replace with real value
     let allBondedAmount = 400;
 
-    let pastDayAvgBlockTime = (pastDayBlockCount |> float_of_int) /. 86400000.00;
+    let pastDayAvgBlockTime = (pastDayBlockCount |> float_of_int) /. 86_400_000.00;
 
     <>
       <Row justify=Row.Between>
