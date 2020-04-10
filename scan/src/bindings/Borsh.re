@@ -126,7 +126,7 @@ let parse = ((name, varType)) => {
   Some({name, varType: varType'});
 };
 
-let declare = ({name, varType}) => {
+let declareSolidity = ({name, varType}) => {
   switch (varType) {
   | String => {j|string $name;|j}
   | U64 => {j|uint64 $name;|j}
@@ -135,7 +135,7 @@ let declare = ({name, varType}) => {
   };
 };
 
-let assign = ({name, varType}) => {
+let assignSolidity = ({name, varType}) => {
   switch (varType) {
   | String => {j|result.$name = string(data.decodeBytes());|j}
   | U64 => {j|result.$name = data.decodeU64();|j}
@@ -182,8 +182,82 @@ library ResultDecoder {
   let indent = "\n        ";
   Some(
     template(
-      fields |> Belt_Array.map(_, declare) |> Js.Array.joinWith(indent),
-      fields |> Belt_Array.map(_, assign) |> Js.Array.joinWith(indent),
+      fields |> Belt_Array.map(_, declareSolidity) |> Js.Array.joinWith(indent),
+      fields |> Belt_Array.map(_, assignSolidity) |> Js.Array.joinWith(indent),
+    ),
+  );
+};
+
+let declareGo = ({name, varType}) => {
+  let capitalizedName = String.capitalize_ascii(name);
+  switch (varType) {
+  | String => {j|$capitalizedName string|j}
+  | U64 => {j|$capitalizedName uint64|j}
+  | U32 => {j|$capitalizedName uint32|j}
+  | U8 => {j|$capitalizedName uint8|j}
+  };
+};
+
+let assignGo = ({name, varType}) => {
+  switch (varType) {
+  | String => {j|	$name, err := decoder.DecodeString()
+	if err != nil {
+		return Result{}, err
+	}|j}
+  | U64 => {j|	$name, err := decoder.DecodeU64()
+	if err != nil {
+		return Result{}, err
+	}|j}
+  | U32 => {j|	$name, err := decoder.DecodeU32()
+	if err != nil {
+		return Result{}, err
+	}|j}
+  | U8 => {j|	$name, err := decoder.DecodeU8()
+	if err != nil {
+		return Result{}, err
+	}|j}
+  };
+};
+
+let resultGo = ({name, varType}) => {
+  let capitalizedName = String.capitalize_ascii(name);
+  switch (varType) {
+  | String => {j|$capitalizedName:      $name|j}
+  | U64 => {j|$capitalizedName:  $name|j}
+  | U32 => {j|$capitalizedName:  $name|j}
+  | U8 => {j|$capitalizedName:        $name|j}
+  };
+};
+
+let generateGo = (packageName, schema, name) => {
+  let template = (structs, functions, results) => {j|package $packageName
+
+type Result struct {
+\t$structs
+}
+
+func DecodeResult(data []byte) (Result, error) {
+\tdecoder := NewBorshDecoder(data)
+
+$functions
+
+\tif !decoder.Finished() {
+\t\treturn Result{}, errors.New("Borsh: bytes left when decode result")
+\t}
+
+\treturn Result{
+\t\t$results
+\t}, nil
+}
+  |j};
+
+  let%Opt fieldsPair = extractFields(schema, name);
+  let%Opt fields = fieldsPair |> Belt_Array.map(_, parse) |> optionsAll;
+  Some(
+    template(
+      fields |> Belt_Array.map(_, declareGo) |> Js.Array.joinWith("\n\t"),
+      fields |> Belt_Array.map(_, assignGo) |> Js.Array.joinWith("\n"),
+      fields |> Belt_Array.map(_, resultGo) |> Js.Array.joinWith("\n\t\t"),
     ),
   );
 };

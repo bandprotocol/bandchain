@@ -191,7 +191,7 @@ library ResultDecoder {
        )
   });
 
-  test("should return None if invalid class", () => {
+  test("should return None if invalid class (solidity)", () => {
     expect(None)
     |> toEqual(
          generateSolidity(
@@ -201,10 +201,117 @@ library ResultDecoder {
        )
   });
 
-  test("should return None if invalid type", () => {
+  test("should return None if invalid type (solidity)", () => {
     expect(None)
     |> toEqual(
          generateSolidity(
+           {j|{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"bytes\\"], [\\"multiplier\\", \\"u64\\"], [\\"what\\", \\"u8\\"] ] }"}|j},
+           "Input",
+         ),
+       )
+  });
+});
+
+describe("should be able to generate go code correctly", () => {
+  test("should be able to generate go code 1", () => {
+    expect(
+      Some(
+        {j|package main
+
+type Result struct {
+	Symbol string
+	Multiplier uint64
+	What uint8
+}
+
+func DecodeResult(data []byte) (Result, error) {
+	decoder := NewBorshDecoder(data)
+
+	symbol, err := decoder.DecodeString()
+	if err != nil {
+		return Result{}, err
+	}
+	multiplier, err := decoder.DecodeU64()
+	if err != nil {
+		return Result{}, err
+	}
+	what, err := decoder.DecodeU8()
+	if err != nil {
+		return Result{}, err
+	}
+
+	if !decoder.Finished() {
+		return Result{}, errors.New("Borsh: bytes left when decode result")
+	}
+
+	return Result{
+		Symbol:      symbol
+		Multiplier:  multiplier
+		What:        what
+	}, nil
+}
+  |j},
+      ),
+    )
+    |> toEqual(
+         generateGo(
+           "main",
+           {j|{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"], [\\"what\\", \\"u8\\"] ] }"}|j},
+           "Input",
+         ),
+       )
+  });
+  test("should be able to generate go code 2", () => {
+    expect(
+      Some(
+        {j|package test
+
+type Result struct {
+	Px uint64
+}
+
+func DecodeResult(data []byte) (Result, error) {
+	decoder := NewBorshDecoder(data)
+
+	px, err := decoder.DecodeU64()
+	if err != nil {
+		return Result{}, err
+	}
+
+	if !decoder.Finished() {
+		return Result{}, errors.New("Borsh: bytes left when decode result")
+	}
+
+	return Result{
+		Px:  px
+	}, nil
+}
+  |j},
+      ),
+    )
+    |> toEqual(
+         generateGo(
+           "test",
+           {j|{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"], [\\"what\\", \\"u8\\"] ] }","Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }"}|j},
+           "Output",
+         ),
+       )
+  });
+  test("should return None if invalid class (go)", () => {
+    expect(None)
+    |> toEqual(
+         generateGo(
+           "main",
+           {j|{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"], [\\"what\\", \\"u8\\"] ] }"}|j},
+           "Input2",
+         ),
+       )
+  });
+  test("should return None if invalid type (go)", () => {
+    expect(None)
+    |> toEqual(
+         generateGo(
+           "main",
            {j|{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"bytes\\"], [\\"multiplier\\", \\"u64\\"], [\\"what\\", \\"u8\\"] ] }"}|j},
            "Input",
          ),
