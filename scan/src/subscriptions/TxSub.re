@@ -463,7 +463,7 @@ let get = txHash => {
       SingleConfig.definition,
       ~variables=
         SingleConfig.makeVariables(
-          ~tx_hash=txHash |> Hash.toHex |> (x => "\x" ++ x) |> Js.Json.string,
+          ~tx_hash=txHash |> Hash.toHex |> (x => "\\x" ++ x) |> Js.Json.string,
           (),
         ),
     );
