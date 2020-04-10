@@ -24,7 +24,7 @@ let make = (~accountAddress: Address.t) => {
       <VSpacing size=Spacing.md />
       <div className=Styles.hFlex>
         <HSpacing size=Spacing.lg />
-        <Text value="28" weight=Text.Semibold />
+        <Text value={txsCount |> string_of_int} weight=Text.Semibold />
         <HSpacing size=Spacing.xs />
         <Text value="Transactions In Total" />
       </div>
