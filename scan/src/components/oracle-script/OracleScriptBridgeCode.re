@@ -66,16 +66,53 @@ let renderCode = content => {
   </div>;
 };
 
-type target_platform =
+type target_platform_t =
   | Ethereum
   | CosmosIBC
   | Kadena;
 
-type language =
+type language_t =
   | Solidity
   | Vyper
   | Go
   | PACT;
+
+exception WrongLanugageChoice(string);
+exception WrongPlatformChoice(string);
+
+let toLanguageVariant =
+  fun
+  | "Solidity" => Solidity
+  | "Vyper" => Vyper
+  | "Go" => Go
+  | "PACT" => PACT
+  | _ => raise(WrongLanugageChoice("Chosen language does not exist"));
+
+let toPlatformVariant =
+  fun
+  | "Ethereum" => Ethereum
+  | "Cosmos IBC" => CosmosIBC
+  | "Kadena" => Kadena
+  | _ => raise(WrongPlatformChoice("Chosen language does not exist"));
+
+let toLanguageString =
+  fun
+  | Solidity => "Solidity"
+  | Vyper => "Vyper"
+  | Go => "Go"
+  | PACT => "PACT";
+
+let toPlatformString =
+  fun
+  | Ethereum => "Ethereum"
+  | CosmosIBC => "Cosmos IBC"
+  | Kadena => "Kadena";
+
+let getLanguageByPlatform =
+  fun
+  | Ethereum => [|Solidity, Vyper|]
+  | CosmosIBC => [|Go|]
+  | Kadena => [|PACT|];
 
 module TargetPlatformIcon = {
   [@react.component]
@@ -85,9 +122,9 @@ module TargetPlatformIcon = {
         className=Styles.iconBody
         src={
           switch (icon) {
-          | "Ethereum" => Images.ethereumIcon
-          | "Cosmos IBC" => Images.cosmosIBCIcon
-          | "Kadena" => Images.kadenaIcon
+          | Ethereum => Images.ethereumIcon
+          | CosmosIBC => Images.cosmosIBCIcon
+          | Kadena => Images.kadenaIcon
           }
         }
       />
@@ -103,10 +140,10 @@ module LanguageIcon = {
         className=Styles.iconBody
         src={
           switch (icon) {
-          | "Solidity" => Images.solidityIcon
-          | "Vyper" => Images.vyperIcon
-          | "Go" => Images.golangIcon
-          | "PACT" => Images.pactIcon
+          | Solidity => Images.solidityIcon
+          | Vyper => Images.vyperIcon
+          | Go => Images.golangIcon
+          | PACT => Images.pactIcon
           }
         }
       />
@@ -143,8 +180,8 @@ let make = () => {
       }
     }|j};
 
-  let (targetPlatform, setTargetPlatform) = React.useState(_ => "Ethereum");
-  let (language, setLanguage) = React.useState(_ => "Solidity");
+  let (targetPlatform, setTargetPlatform) = React.useState(_ => Ethereum);
+  let (language, setLanguage) = React.useState(_ => Solidity);
   <div className=Styles.tableWrapper>
     <VSpacing size={`px(10)} />
     <Row>
@@ -160,17 +197,17 @@ let make = () => {
           <select
             className=Styles.selectContent
             onChange={event => {
-              let newValue = ReactEvent.Form.target(event)##value;
-              setTargetPlatform(_ => newValue);
-              switch (newValue) {
-              | "Ethereum" => setLanguage(_ => "Solidity")
-              | "Cosmos IBC" => setLanguage(_ => "Go")
-              | "Kadena" => setLanguage(_ => "PACT")
-              | _ => setLanguage(_ => "Solidity")
-              };
+              let platform = ReactEvent.Form.target(event)##value |> toPlatformVariant;
+              setTargetPlatform(_ => platform);
+              let language = platform |> getLanguageByPlatform |> Belt_Array.getExn(_, 0);
+              setLanguage(_ => language);
             }}>
-            {[|"Ethereum", "Cosmos IBC", "Kadena"|]
-             ->Belt_Array.map(symbol => <option value=symbol> {symbol |> React.string} </option>)
+            {[|Ethereum, CosmosIBC, Kadena|]
+             ->Belt_Array.map(symbol =>
+                 <option value={symbol |> toPlatformString}>
+                   {symbol |> toPlatformString |> React.string}
+                 </option>
+               )
              |> React.array}
           </select>
         </div>
@@ -184,19 +221,17 @@ let make = () => {
             <select
               className=Styles.selectContent
               onChange={event => {
-                let newValue = ReactEvent.Form.target(event)##value;
-                setLanguage(_ => newValue);
+                let language = ReactEvent.Form.target(event)##value |> toLanguageVariant;
+                setLanguage(_ => language);
               }}>
-              {switch (targetPlatform) {
-               | "Ethereum" =>
-                 [|"Solidity", "Vyper"|]
-                 ->Belt_Array.map(symbol =>
-                     <option value=symbol> {symbol |> React.string} </option>
-                   )
-                 |> React.array
-               | "Cosmos IBC" => <option value="Go"> {"Go" |> React.string} </option>
-               | "Kadena" => <option value="PACT"> {"PACT" |> React.string} </option>
-               }}
+              {targetPlatform
+               |> getLanguageByPlatform
+               |> Belt.Array.map(_, symbol =>
+                    <option value={symbol |> toLanguageString}>
+                      {symbol |> toLanguageString |> React.string}
+                    </option>
+                  )
+               |> React.array}
             </select>
           </div>
         </div>
