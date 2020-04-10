@@ -205,8 +205,8 @@ let make = () =>
 
     let (prevDay, setPrevDay) = React.useState(getPrevDay);
     React.useEffect0(() => {
-      let timeOutId = Js.Global.setTimeout(() => setPrevDay(getPrevDay), 60_000);
-      Some(() => Js.Global.clearTimeout(timeOutId));
+      let timeOutId = Js.Global.setInterval(() => setPrevDay(getPrevDay), 60_000);
+      Some(() => Js.Global.clearInterval(timeOutId));
     });
 
     let pageSize = 10;
@@ -218,7 +218,6 @@ let make = () =>
     let bondedTokenCountSub = ValidatorSub.getTotalBondedAmount();
     let pastDayBlockCountSub = BlockSub.pastDayCount(lastDay);
     let metadataSub = MetadataSub.use();
-    let bondedAmountSub = ValidatorSub.getAmount();
 
     let%Sub validators = validatorsSub;
     let%Sub validatorCount = validatorsCountSub;
@@ -226,7 +225,6 @@ let make = () =>
     let%Sub bondedTokenCount = bondedTokenCountSub;
     let%Sub pastDayBlockCount = pastDayBlockCountSub;
     let%Sub metadata = metadataSub;
-    let%Sub bondedAmount = bondedAmountSub;
 
     let pageCount = Page.getPageCount(validatorCount, pageSize);
     let globalInfo = ValidatorSub.GlobalInfo.getGlobalInfo();
@@ -277,7 +275,7 @@ let make = () =>
           </Col>
           <Col size=0.9>
             <InfoHL
-              info={InfoHL.FloatWithSuffix(metadata.inflationRate, "  %", 2)}
+              info={InfoHL.FloatWithSuffix(metadata.inflationRate *. 100., "  %", 2)}
               header="INFLATION RATE"
             />
           </Col>

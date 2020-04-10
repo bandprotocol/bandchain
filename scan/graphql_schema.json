@@ -10621,8 +10621,6 @@
                     "ofType": {
                       "kind": "ENUM",
                       "name": "delegations_select_column",
-<<<<<<< HEAD
-=======
                       "ofType": null
                     }
                   }
@@ -12151,2353 +12149,6 @@
         "name": "delegations_view_select_column",
         "enumValues": [
           {
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "amount",
-            "description": "column name"
-          },
-          {
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "delegator_address",
-            "description": "column name"
-          },
-          {
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "validator_address",
-            "description": "column name"
-          }
-        ],
-        "description": "select columns of table \"delegations_view\"",
-        "fields": null
-      },
-      {
-        "inputFields": null,
-        "kind": "OBJECT",
-        "possibleTypes": null,
-        "interfaces": [],
-        "name": "delegations_view_stddev_fields",
-        "enumValues": null,
-        "description": "aggregate stddev on columns",
-        "fields": [
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "amount",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          }
-        ]
-      },
-      {
-        "inputFields": [
-          {
-            "name": "amount",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "delegations_view_stddev_order_by",
-        "enumValues": null,
-        "description": "order by stddev() on columns of table \"delegations_view\"",
-        "fields": null
-      },
-      {
-        "inputFields": null,
-        "kind": "OBJECT",
-        "possibleTypes": null,
-        "interfaces": [],
-        "name": "delegations_view_stddev_pop_fields",
-        "enumValues": null,
-        "description": "aggregate stddev_pop on columns",
-        "fields": [
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "amount",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          }
-        ]
-      },
-      {
-        "inputFields": [
-          {
-            "name": "amount",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "delegations_view_stddev_pop_order_by",
-        "enumValues": null,
-        "description": "order by stddev_pop() on columns of table \"delegations_view\"",
-        "fields": null
-      },
-      {
-        "inputFields": null,
-        "kind": "OBJECT",
-        "possibleTypes": null,
-        "interfaces": [],
-        "name": "delegations_view_stddev_samp_fields",
-        "enumValues": null,
-        "description": "aggregate stddev_samp on columns",
-        "fields": [
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "amount",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          }
-        ]
-      },
-      {
-        "inputFields": [
-          {
-            "name": "amount",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "delegations_view_stddev_samp_order_by",
-        "enumValues": null,
-        "description": "order by stddev_samp() on columns of table \"delegations_view\"",
-        "fields": null
-      },
-      {
-        "inputFields": null,
-        "kind": "OBJECT",
-        "possibleTypes": null,
-        "interfaces": [],
-        "name": "delegations_view_sum_fields",
-        "enumValues": null,
-        "description": "aggregate sum on columns",
-        "fields": [
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "amount",
-            "type": {
-              "kind": "SCALAR",
-              "name": "numeric",
-              "ofType": null
-            },
-            "description": null
-          }
-        ]
-      },
-      {
-        "inputFields": [
-          {
-            "name": "amount",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "delegations_view_sum_order_by",
-        "enumValues": null,
-        "description": "order by sum() on columns of table \"delegations_view\"",
-        "fields": null
-      },
-      {
-        "inputFields": null,
-        "kind": "OBJECT",
-        "possibleTypes": null,
-        "interfaces": [],
-        "name": "delegations_view_var_pop_fields",
-        "enumValues": null,
-        "description": "aggregate var_pop on columns",
-        "fields": [
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "amount",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          }
-        ]
-      },
-      {
-        "inputFields": [
-          {
-            "name": "amount",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "delegations_view_var_pop_order_by",
-        "enumValues": null,
-        "description": "order by var_pop() on columns of table \"delegations_view\"",
-        "fields": null
-      },
-      {
-        "inputFields": null,
-        "kind": "OBJECT",
-        "possibleTypes": null,
-        "interfaces": [],
-        "name": "delegations_view_var_samp_fields",
-        "enumValues": null,
-        "description": "aggregate var_samp on columns",
-        "fields": [
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "amount",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          }
-        ]
-      },
-      {
-        "inputFields": [
-          {
-            "name": "amount",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "delegations_view_var_samp_order_by",
-        "enumValues": null,
-        "description": "order by var_samp() on columns of table \"delegations_view\"",
-        "fields": null
-      },
-      {
-        "inputFields": null,
-        "kind": "OBJECT",
-        "possibleTypes": null,
-        "interfaces": [],
-        "name": "delegations_view_variance_fields",
-        "enumValues": null,
-        "description": "aggregate variance on columns",
-        "fields": [
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "amount",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          }
-        ]
-      },
-      {
-        "inputFields": [
-          {
-            "name": "amount",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "delegations_view_variance_order_by",
-        "enumValues": null,
-        "description": "order by variance() on columns of table \"delegations_view\"",
-        "fields": null
-      },
-      {
-        "inputFields": null,
-        "kind": "SCALAR",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "jsonb",
-        "enumValues": null,
-        "description": null,
-        "fields": null
-      },
-      {
-        "inputFields": [
-          {
-            "name": "_contained_in",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "jsonb",
-              "ofType": null
-            },
-            "description": "is the column contained in the given json value"
-          },
-          {
-            "name": "_contains",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "jsonb",
-              "ofType": null
-            },
-            "description": "does the column contain the given json value at the top level"
-          },
-          {
-            "name": "_eq",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "jsonb",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "_gt",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "jsonb",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "_gte",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "jsonb",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "_has_key",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "description": "does the string exist as a top-level key in the column"
-          },
-          {
-            "name": "_has_keys_all",
-            "defaultValue": null,
-            "type": {
-              "kind": "LIST",
-              "name": null,
-              "ofType": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "String",
-                  "ofType": null
-                }
-              }
-            },
-            "description": "do all of these strings exist as top-level keys in the column"
-          },
-          {
-            "name": "_has_keys_any",
-            "defaultValue": null,
-            "type": {
-              "kind": "LIST",
-              "name": null,
-              "ofType": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "String",
-                  "ofType": null
-                }
-              }
-            },
-            "description": "do any of these strings exist as top-level keys in the column"
-          },
-          {
-            "name": "_in",
-            "defaultValue": null,
-            "type": {
-              "kind": "LIST",
-              "name": null,
-              "ofType": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "jsonb",
-                  "ofType": null
-                }
-              }
-            },
-            "description": null
-          },
-          {
-            "name": "_is_null",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Boolean",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "_lt",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "jsonb",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "_lte",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "jsonb",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "_neq",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "jsonb",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "_nin",
-            "defaultValue": null,
-            "type": {
-              "kind": "LIST",
-              "name": null,
-              "ofType": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "jsonb",
-                  "ofType": null
-                }
-              }
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "jsonb_comparison_exp",
-        "enumValues": null,
-        "description": "expression to compare columns of type jsonb. All fields are combined with logical 'AND'.",
-        "fields": null
-      },
-      {
-        "inputFields": null,
-        "kind": "OBJECT",
-        "possibleTypes": null,
-        "interfaces": [],
-        "name": "metadata",
-        "enumValues": null,
-        "description": "columns and relationships of \"metadata\"",
-        "fields": [
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "key",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              }
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "value",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              }
-            },
-            "description": null
-          }
-        ]
-      },
-      {
-        "inputFields": null,
-        "kind": "OBJECT",
-        "possibleTypes": null,
-        "interfaces": [],
-        "name": "metadata_aggregate",
-        "enumValues": null,
-        "description": "aggregated selection of \"metadata\"",
-        "fields": [
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "aggregate",
-            "type": {
-              "kind": "OBJECT",
-              "name": "metadata_aggregate_fields",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "nodes",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "metadata",
-                    "ofType": null
-                  }
-                }
-              }
-            },
-            "description": null
-          }
-        ]
-      },
-      {
-        "inputFields": null,
-        "kind": "OBJECT",
-        "possibleTypes": null,
-        "interfaces": [],
-        "name": "metadata_aggregate_fields",
-        "enumValues": null,
-        "description": "aggregate fields of \"metadata\"",
-        "fields": [
-          {
-            "args": [
-              {
-                "name": "columns",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "ENUM",
-                      "name": "metadata_select_column",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": null
-              },
-              {
-                "name": "distinct",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Boolean",
-                  "ofType": null
-                },
-                "description": null
-              }
-            ],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "count",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "max",
-            "type": {
-              "kind": "OBJECT",
-              "name": "delegations_max_fields",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "min",
-            "type": {
-              "kind": "OBJECT",
-              "name": "delegations_min_fields",
-              "ofType": null
-            },
-            "description": null
-          }
-        ]
-      },
-      {
-        "inputFields": [
-          {
-            "name": "count",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "max",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "delegations_max_order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "min",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "delegations_min_order_by",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "delegations_aggregate_order_by",
-        "enumValues": null,
-        "description": "order by aggregate values of table \"delegations\"",
-        "fields": null
-      },
-      {
-        "inputFields": [
-          {
-            "name": "data",
-            "defaultValue": null,
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "INPUT_OBJECT",
-                    "name": "delegations_insert_input",
-                    "ofType": null
-                  }
-                }
-              }
-            },
-            "description": null
-          },
-          {
-            "name": "on_conflict",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "delegations_on_conflict",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "delegations_arr_rel_insert_input",
-        "enumValues": null,
-        "description": "input type for inserting array relation for remote table \"delegations\"",
-        "fields": null
-      },
-      {
-        "inputFields": [
-          {
-            "name": "_and",
-            "defaultValue": null,
-            "type": {
-              "kind": "LIST",
-              "name": null,
-              "ofType": {
-                "kind": "INPUT_OBJECT",
-                "name": "delegations_bool_exp",
-                "ofType": null
-              }
-            },
-            "description": null
-          },
-          {
-            "name": "_not",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "delegations_bool_exp",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "_or",
-            "defaultValue": null,
-            "type": {
-              "kind": "LIST",
-              "name": null,
-              "ofType": {
-                "kind": "INPUT_OBJECT",
-                "name": "delegations_bool_exp",
-                "ofType": null
-              }
-            },
-            "description": null
-          },
-          {
-            "name": "account",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "accounts_bool_exp",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "delegator_address",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "String_comparison_exp",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "shares",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "String_comparison_exp",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "validator",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "validators_bool_exp",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "validator_address",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "String_comparison_exp",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "delegations_bool_exp",
-        "enumValues": null,
-        "description": "Boolean expression to filter rows from the table \"delegations\". All fields are combined with a logical 'AND'.",
-        "fields": null
-      },
-      {
-        "inputFields": null,
-        "kind": "ENUM",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "delegations_constraint",
-        "enumValues": [
-          {
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "delegations_pkey",
-            "description": "unique or primary key constraint"
-          }
-        ],
-        "description": "unique or primary key constraints on table \"delegations\"",
-        "fields": null
-      },
-      {
-        "inputFields": [
-          {
-            "name": "account",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "accounts_obj_rel_insert_input",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "delegator_address",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "shares",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "validator",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "validators_obj_rel_insert_input",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "validator_address",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "delegations_insert_input",
-        "enumValues": null,
-        "description": "input type for inserting data into table \"delegations\"",
-        "fields": null
-      },
-      {
-        "inputFields": null,
-        "kind": "OBJECT",
-        "possibleTypes": null,
-        "interfaces": [],
-        "name": "delegations_max_fields",
-        "enumValues": null,
-        "description": "aggregate max on columns",
-        "fields": [
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "delegator_address",
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "shares",
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "validator_address",
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "description": null
-          }
-        ]
-      },
-      {
-        "inputFields": [
-          {
-            "name": "delegator_address",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "shares",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "validator_address",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "delegations_max_order_by",
-        "enumValues": null,
-        "description": "order by max() on columns of table \"delegations\"",
-        "fields": null
-      },
-      {
-        "inputFields": null,
-        "kind": "OBJECT",
-        "possibleTypes": null,
-        "interfaces": [],
-        "name": "delegations_min_fields",
-        "enumValues": null,
-        "description": "aggregate min on columns",
-        "fields": [
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "delegator_address",
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "shares",
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "validator_address",
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "description": null
-          }
-        ]
-      },
-      {
-        "inputFields": [
-          {
-            "name": "delegator_address",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "shares",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "validator_address",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "delegations_min_order_by",
-        "enumValues": null,
-        "description": "order by min() on columns of table \"delegations\"",
-        "fields": null
-      },
-      {
-        "inputFields": null,
-        "kind": "OBJECT",
-        "possibleTypes": null,
-        "interfaces": [],
-        "name": "delegations_mutation_response",
-        "enumValues": null,
-        "description": "response of any mutation on the table \"delegations\"",
-        "fields": [
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "affected_rows",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Int",
-                "ofType": null
-              }
-            },
-            "description": "number of affected rows by the mutation"
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "returning",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "delegations",
-                    "ofType": null
-                  }
-                }
-              }
-            },
-            "description": "data of the affected rows by the mutation"
-          }
-        ]
-      },
-      {
-        "inputFields": [
-          {
-            "name": "data",
-            "defaultValue": null,
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "INPUT_OBJECT",
-                "name": "delegations_insert_input",
-                "ofType": null
-              }
-            },
-            "description": null
-          },
-          {
-            "name": "on_conflict",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "delegations_on_conflict",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "delegations_obj_rel_insert_input",
-        "enumValues": null,
-        "description": "input type for inserting object relation for remote table \"delegations\"",
-        "fields": null
-      },
-      {
-        "inputFields": [
-          {
-            "name": "constraint",
-            "defaultValue": null,
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "ENUM",
-                "name": "delegations_constraint",
-                "ofType": null
-              }
-            },
-            "description": null
-          },
-          {
-            "name": "update_columns",
-            "defaultValue": null,
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "ENUM",
-                    "name": "delegations_update_column",
-                    "ofType": null
-                  }
-                }
-              }
-            },
-            "description": null
-          },
-          {
-            "name": "where",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "delegations_bool_exp",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "delegations_on_conflict",
-        "enumValues": null,
-        "description": "on conflict condition type for table \"delegations\"",
-        "fields": null
-      },
-      {
-        "inputFields": [
-          {
-            "name": "account",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "accounts_order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "delegator_address",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "shares",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "validator",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "validators_order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "validator_address",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "delegations_order_by",
-        "enumValues": null,
-        "description": "ordering options when selecting data from \"delegations\"",
-        "fields": null
-      },
-      {
-        "inputFields": null,
-        "kind": "ENUM",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "delegations_select_column",
-        "enumValues": [
-          {
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "delegator_address",
-            "description": "column name"
-          },
-          {
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "shares",
-            "description": "column name"
-          },
-          {
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "validator_address",
-            "description": "column name"
-          }
-        ],
-        "description": "select columns of table \"delegations\"",
-        "fields": null
-      },
-      {
-        "inputFields": [
-          {
-            "name": "delegator_address",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "shares",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "validator_address",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "delegations_set_input",
-        "enumValues": null,
-        "description": "input type for updating data in table \"delegations\"",
-        "fields": null
-      },
-      {
-        "inputFields": null,
-        "kind": "ENUM",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "delegations_update_column",
-        "enumValues": [
-          {
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "delegator_address",
-            "description": "column name"
-          },
-          {
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "shares",
-            "description": "column name"
-          },
-          {
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "validator_address",
-            "description": "column name"
-          }
-        ],
-        "description": "update columns of table \"delegations\"",
-        "fields": null
-      },
-      {
-        "inputFields": null,
-        "kind": "OBJECT",
-        "possibleTypes": null,
-        "interfaces": [],
-        "name": "delegations_view",
-        "enumValues": null,
-        "description": "columns and relationships of \"delegations_view\"",
-        "fields": [
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "amount",
-            "type": {
-              "kind": "SCALAR",
-              "name": "numeric",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "delegator_address",
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "validator_address",
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "description": null
-          }
-        ]
-      },
-      {
-        "inputFields": null,
-        "kind": "OBJECT",
-        "possibleTypes": null,
-        "interfaces": [],
-        "name": "delegations_view_aggregate",
-        "enumValues": null,
-        "description": "aggregated selection of \"delegations_view\"",
-        "fields": [
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "aggregate",
-            "type": {
-              "kind": "OBJECT",
-              "name": "delegations_view_aggregate_fields",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "nodes",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-<<<<<<< HEAD
-                    "kind": "OBJECT",
-                    "name": "delegations_view",
-=======
-                    "kind": "INPUT_OBJECT",
-                    "name": "delegations_bool_exp",
-                    "ofType": null
-                  }
-                },
-                "description": "filter the rows which have to be deleted"
-              }
-            ],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "delete_delegations",
-            "type": {
-              "kind": "OBJECT",
-              "name": "delegations_mutation_response",
-              "ofType": null
-            },
-            "description": "delete data from the table: \"delegations\""
-          },
-          {
-            "args": [
-              {
-                "name": "where",
-                "defaultValue": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "INPUT_OBJECT",
-                    "name": "metadata_bool_exp",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
-                    "ofType": null
-                  }
-                }
-              }
-            },
-            "description": null
-          }
-        ]
-      },
-      {
-        "inputFields": null,
-        "kind": "OBJECT",
-        "possibleTypes": null,
-        "interfaces": [],
-        "name": "delegations_view_aggregate_fields",
-        "enumValues": null,
-        "description": "aggregate fields of \"delegations_view\"",
-        "fields": [
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "avg",
-            "type": {
-              "kind": "OBJECT",
-              "name": "delegations_view_avg_fields",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [
-              {
-                "name": "columns",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "ENUM",
-                      "name": "delegations_view_select_column",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": null
-              },
-              {
-                "name": "distinct",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Boolean",
-                  "ofType": null
-                },
-                "description": null
-              }
-            ],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "count",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "max",
-            "type": {
-              "kind": "OBJECT",
-              "name": "delegations_view_max_fields",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "min",
-            "type": {
-              "kind": "OBJECT",
-              "name": "delegations_view_min_fields",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "stddev",
-            "type": {
-              "kind": "OBJECT",
-              "name": "delegations_view_stddev_fields",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "stddev_pop",
-            "type": {
-              "kind": "OBJECT",
-              "name": "delegations_view_stddev_pop_fields",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "stddev_samp",
-            "type": {
-              "kind": "OBJECT",
-              "name": "delegations_view_stddev_samp_fields",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "sum",
-            "type": {
-              "kind": "OBJECT",
-              "name": "delegations_view_sum_fields",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "var_pop",
-            "type": {
-              "kind": "OBJECT",
-              "name": "delegations_view_var_pop_fields",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "var_samp",
-            "type": {
-              "kind": "OBJECT",
-              "name": "delegations_view_var_samp_fields",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "variance",
-            "type": {
-              "kind": "OBJECT",
-              "name": "delegations_view_variance_fields",
-              "ofType": null
-            },
-            "description": null
-          }
-        ]
-      },
-      {
-        "inputFields": [
-          {
-            "name": "avg",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "delegations_view_avg_order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "count",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "max",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "delegations_view_max_order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "min",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "delegations_view_min_order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "stddev",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "delegations_view_stddev_order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "stddev_pop",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "delegations_view_stddev_pop_order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-<<<<<<< HEAD
-            "name": "stddev_samp",
-            "defaultValue": null,
-=======
-            "args": [
-              {
-                "name": "objects",
-                "defaultValue": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "LIST",
-                    "name": null,
-                    "ofType": {
-                      "kind": "NON_NULL",
-                      "name": null,
-                      "ofType": {
-                        "kind": "INPUT_OBJECT",
-                        "name": "delegations_insert_input",
-                        "ofType": null
-                      }
-                    }
-                  }
-                },
-                "description": "the rows to be inserted"
-              },
-              {
-                "name": "on_conflict",
-                "defaultValue": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "delegations_on_conflict",
-                  "ofType": null
-                },
-                "description": "on conflict condition"
-              }
-            ],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "insert_delegations",
-            "type": {
-              "kind": "OBJECT",
-              "name": "delegations_mutation_response",
-              "ofType": null
-            },
-            "description": "insert data into the table: \"delegations\""
-          },
-          {
-            "args": [
-              {
-                "name": "objects",
-                "defaultValue": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "LIST",
-                    "name": null,
-                    "ofType": {
-                      "kind": "NON_NULL",
-                      "name": null,
-                      "ofType": {
-                        "kind": "INPUT_OBJECT",
-                        "name": "metadata_insert_input",
-                        "ofType": null
-                      }
-                    }
-                  }
-                },
-                "description": "the rows to be inserted"
-              },
-              {
-                "name": "on_conflict",
-                "defaultValue": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "metadata_on_conflict",
-                  "ofType": null
-                },
-                "description": "on conflict condition"
-              }
-            ],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "insert_metadata",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "delegations_view_stddev_samp_order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "sum",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "delegations_view_sum_order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "var_pop",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "delegations_view_var_pop_order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "var_samp",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "delegations_view_var_samp_order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "variance",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "delegations_view_variance_order_by",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "delegations_view_aggregate_order_by",
-        "enumValues": null,
-        "description": "order by aggregate values of table \"delegations_view\"",
-        "fields": null
-      },
-      {
-        "inputFields": null,
-        "kind": "OBJECT",
-        "possibleTypes": null,
-        "interfaces": [],
-        "name": "delegations_view_avg_fields",
-        "enumValues": null,
-        "description": "aggregate avg on columns",
-        "fields": [
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "amount",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          }
-        ]
-      },
-      {
-        "inputFields": [
-          {
-            "name": "amount",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "delegations_view_avg_order_by",
-        "enumValues": null,
-        "description": "order by avg() on columns of table \"delegations_view\"",
-        "fields": null
-      },
-      {
-        "inputFields": [
-          {
-            "name": "_and",
-            "defaultValue": null,
-            "type": {
-              "kind": "LIST",
-              "name": null,
-              "ofType": {
-                "kind": "INPUT_OBJECT",
-                "name": "delegations_view_bool_exp",
-                "ofType": null
-              }
-            },
-            "description": null
-          },
-          {
-            "name": "_not",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "delegations_view_bool_exp",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "_or",
-            "defaultValue": null,
-            "type": {
-              "kind": "LIST",
-              "name": null,
-              "ofType": {
-                "kind": "INPUT_OBJECT",
-                "name": "delegations_view_bool_exp",
-                "ofType": null
-              }
-            },
-            "description": null
-          },
-          {
-            "name": "amount",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "numeric_comparison_exp",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "delegator_address",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "String_comparison_exp",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "validator_address",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "String_comparison_exp",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "delegations_view_bool_exp",
-        "enumValues": null,
-        "description": "Boolean expression to filter rows from the table \"delegations_view\". All fields are combined with a logical 'AND'.",
-        "fields": null
-      },
-      {
-        "inputFields": null,
-        "kind": "OBJECT",
-        "possibleTypes": null,
-        "interfaces": [],
-        "name": "delegations_view_max_fields",
-        "enumValues": null,
-        "description": "aggregate max on columns",
-        "fields": [
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "amount",
-            "type": {
-              "kind": "SCALAR",
-              "name": "numeric",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "delegator_address",
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "validator_address",
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "description": null
-          }
-        ]
-      },
-      {
-        "inputFields": [
-          {
-            "name": "amount",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "delegator_address",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "validator_address",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "delegations_view_max_order_by",
-        "enumValues": null,
-        "description": "order by max() on columns of table \"delegations_view\"",
-        "fields": null
-      },
-      {
-        "inputFields": null,
-        "kind": "OBJECT",
-        "possibleTypes": null,
-        "interfaces": [],
-        "name": "delegations_view_min_fields",
-        "enumValues": null,
-        "description": "aggregate min on columns",
-        "fields": [
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "amount",
-            "type": {
-              "kind": "SCALAR",
-              "name": "numeric",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "delegator_address",
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "validator_address",
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "description": null
-          }
-        ]
-      },
-      {
-        "inputFields": [
-          {
-            "name": "amount",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-<<<<<<< HEAD
-            "name": "delegator_address",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "validator_address",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "delegations_view_min_order_by",
-        "enumValues": null,
-        "description": "order by min() on columns of table \"delegations_view\"",
-        "fields": null
-      },
-      {
-        "inputFields": [
-          {
-            "name": "amount",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "delegator_address",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "validator_address",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "delegations_view_order_by",
-        "enumValues": null,
-        "description": "ordering options when selecting data from \"delegations_view\"",
-        "fields": null
-      },
-      {
-        "inputFields": null,
-        "kind": "ENUM",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "delegations_view_select_column",
-        "enumValues": [
-          {
-=======
-            "args": [
-              {
-                "name": "_set",
-                "defaultValue": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "delegations_set_input",
-                  "ofType": null
-                },
-                "description": "sets the columns of the filtered rows to the given values"
-              },
-              {
-                "name": "where",
-                "defaultValue": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "INPUT_OBJECT",
-                    "name": "delegations_bool_exp",
-                    "ofType": null
-                  }
-                },
-                "description": "filter the rows which have to be updated"
-              }
-            ],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "update_delegations",
-            "type": {
-              "kind": "OBJECT",
-              "name": "delegations_mutation_response",
-              "ofType": null
-            },
-            "description": "update data of the table: \"delegations\""
-          },
-          {
-            "args": [
-              {
-                "name": "_set",
-                "defaultValue": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "metadata_set_input",
-                  "ofType": null
-                },
-                "description": "sets the columns of the filtered rows to the given values"
-              },
-              {
-                "name": "where",
-                "defaultValue": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "INPUT_OBJECT",
-                    "name": "metadata_bool_exp",
-                    "ofType": null
-                  }
-                },
-                "description": "filter the rows which have to be updated"
-              }
-            ],
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "amount",
@@ -20427,133 +18078,6 @@
         "name": "oracle_script_revisions_min_order_by",
         "enumValues": null,
         "description": "order by min() on columns of table \"oracle_script_revisions\"",
-        "fields": null
-      },
-      {
-        "inputFields": null,
-        "kind": "SCALAR",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "numeric",
-        "enumValues": null,
-        "description": null,
-        "fields": null
-      },
-      {
-        "inputFields": [
-          {
-            "name": "_eq",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "numeric",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "_gt",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "numeric",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "_gte",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "numeric",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "_in",
-            "defaultValue": null,
-            "type": {
-              "kind": "LIST",
-              "name": null,
-              "ofType": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "numeric",
-                  "ofType": null
-                }
-              }
-            },
-            "description": null
-          },
-          {
-            "name": "_is_null",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Boolean",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "_lt",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "numeric",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "_lte",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "numeric",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "_neq",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "numeric",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "_nin",
-            "defaultValue": null,
-            "type": {
-              "kind": "LIST",
-              "name": null,
-              "ofType": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "numeric",
-                  "ofType": null
-                }
-              }
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "numeric_comparison_exp",
-        "enumValues": null,
-        "description": "expression to compare columns of type numeric. All fields are combined with logical 'AND'.",
         "fields": null
       },
       {
@@ -27546,315 +25070,6 @@
                     "name": null,
                     "ofType": {
                       "kind": "INPUT_OBJECT",
-<<<<<<< HEAD
-                      "name": "data_sources_order_by",
-=======
-                      "name": "data_source_revisions_order_by",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "sort the rows by one or more columns"
-              },
-              {
-                "name": "where",
-                "defaultValue": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "data_source_revisions_bool_exp",
-                  "ofType": null
-                },
-                "description": "filter the rows returned"
-              }
-            ],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "data_source_revisions",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "data_source_revisions",
-                    "ofType": null
-                  }
-                }
-              }
-            },
-            "description": "fetch data from the table: \"data_source_revisions\""
-          },
-          {
-            "args": [
-              {
-                "name": "distinct_on",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "ENUM",
-                      "name": "data_source_revisions_select_column",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "distinct select on columns"
-              },
-              {
-                "name": "limit",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "limit the number of rows returned"
-              },
-              {
-                "name": "offset",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "skip the first n rows. Use only with order_by"
-              },
-              {
-                "name": "order_by",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "INPUT_OBJECT",
-                      "name": "data_source_revisions_order_by",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "sort the rows by one or more columns"
-              },
-              {
-                "name": "where",
-                "defaultValue": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "data_source_revisions_bool_exp",
-                  "ofType": null
-                },
-                "description": "filter the rows returned"
-              }
-            ],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "data_source_revisions_aggregate",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "data_source_revisions_aggregate",
-                "ofType": null
-              }
-            },
-            "description": "fetch aggregated fields from the table: \"data_source_revisions\""
-          },
-          {
-            "args": [
-              {
-                "name": "data_source_id",
-                "defaultValue": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "bigint",
-                    "ofType": null
-                  }
-                },
-                "description": null
-              },
-              {
-                "name": "revision_number",
-                "defaultValue": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "bigint",
-                    "ofType": null
-                  }
-                },
-                "description": null
-              }
-            ],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "data_source_revisions_by_pk",
-            "type": {
-              "kind": "OBJECT",
-              "name": "data_source_revisions",
-              "ofType": null
-            },
-            "description": "fetch data from the table: \"data_source_revisions\" using primary key columns"
-          },
-          {
-            "args": [
-              {
-                "name": "distinct_on",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "ENUM",
-                      "name": "data_sources_select_column",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "distinct select on columns"
-              },
-              {
-                "name": "limit",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "limit the number of rows returned"
-              },
-              {
-                "name": "offset",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "skip the first n rows. Use only with order_by"
-              },
-              {
-                "name": "order_by",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "INPUT_OBJECT",
-                      "name": "data_sources_order_by",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "sort the rows by one or more columns"
-              },
-              {
-                "name": "where",
-                "defaultValue": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "data_sources_bool_exp",
-                  "ofType": null
-                },
-                "description": "filter the rows returned"
-              }
-            ],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "data_sources",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "data_sources",
-                    "ofType": null
-                  }
-                }
-              }
-            },
-            "description": "fetch data from the table: \"data_sources\""
-          },
-          {
-            "args": [
-              {
-                "name": "distinct_on",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "ENUM",
-                      "name": "data_sources_select_column",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "distinct select on columns"
-              },
-              {
-                "name": "limit",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "limit the number of rows returned"
-              },
-              {
-                "name": "offset",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "skip the first n rows. Use only with order_by"
-              },
-              {
-                "name": "order_by",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "INPUT_OBJECT",
                       "name": "data_sources_order_by",
                       "ofType": null
                     }
@@ -27966,134 +25181,6 @@
                     "ofType": {
                       "kind": "INPUT_OBJECT",
                       "name": "delegations_order_by",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "sort the rows by one or more columns"
-              },
-              {
-                "name": "where",
-                "defaultValue": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-<<<<<<< HEAD
-                  "name": "data_sources_bool_exp",
-=======
-                  "name": "delegations_bool_exp",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
-                  "ofType": null
-                },
-                "description": "filter the rows returned"
-              }
-            ],
-            "isDeprecated": false,
-            "deprecationReason": null,
-<<<<<<< HEAD
-            "name": "data_sources_aggregate",
-=======
-            "name": "delegations",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "data_sources_aggregate",
-                "ofType": null
-              }
-            },
-            "description": "fetch aggregated fields from the table: \"data_sources\""
-          },
-          {
-            "args": [
-              {
-                "name": "id",
-                "defaultValue": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-<<<<<<< HEAD
-                    "kind": "SCALAR",
-                    "name": "bigint",
-=======
-                    "kind": "OBJECT",
-                    "name": "delegations",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
-                    "ofType": null
-                  }
-                },
-                "description": null
-              }
-            ],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "data_sources_by_pk",
-            "type": {
-              "kind": "OBJECT",
-              "name": "data_sources",
-              "ofType": null
-            },
-<<<<<<< HEAD
-            "description": "fetch data from the table: \"data_sources\" using primary key columns"
-=======
-            "description": "fetch data from the table: \"delegations\""
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
-          },
-          {
-            "args": [
-              {
-                "name": "distinct_on",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "ENUM",
-                      "name": "delegations_select_column",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "distinct select on columns"
-              },
-              {
-                "name": "limit",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "limit the number of rows returned"
-              },
-              {
-                "name": "offset",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "skip the first n rows. Use only with order_by"
-              },
-              {
-                "name": "order_by",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "INPUT_OBJECT",
-                      "name": "delegations_order_by",
                       "ofType": null
                     }
                   }
@@ -28113,16 +25200,11 @@
             ],
             "isDeprecated": false,
             "deprecationReason": null,
-<<<<<<< HEAD
             "name": "delegations",
-=======
-            "name": "delegations_aggregate",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
             "type": {
               "kind": "NON_NULL",
               "name": null,
               "ofType": {
-<<<<<<< HEAD
                 "kind": "LIST",
                 "name": null,
                 "ofType": {
@@ -28131,59 +25213,12 @@
                   "ofType": {
                     "kind": "OBJECT",
                     "name": "delegations",
-=======
-                "kind": "OBJECT",
-                "name": "delegations_aggregate",
-                "ofType": null
-              }
-            },
-            "description": "fetch aggregated fields from the table: \"delegations\""
-          },
-          {
-            "args": [
-              {
-                "name": "delegator_address",
-                "defaultValue": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "String",
-                    "ofType": null
-                  }
-                },
-                "description": null
-              },
-              {
-                "name": "validator_address",
-                "defaultValue": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "String",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
                     "ofType": null
                   }
                 }
               }
-<<<<<<< HEAD
             },
             "description": "fetch data from the table: \"delegations\""
-=======
-            ],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "delegations_by_pk",
-            "type": {
-              "kind": "OBJECT",
-              "name": "delegations",
-              "ofType": null
-            },
-            "description": "fetch data from the table: \"delegations\" using primary key columns"
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
           },
           {
             "args": [
@@ -28198,11 +25233,7 @@
                     "name": null,
                     "ofType": {
                       "kind": "ENUM",
-<<<<<<< HEAD
                       "name": "delegations_select_column",
-=======
-                      "name": "delegations_view_select_column",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
                       "ofType": null
                     }
                   }
@@ -28240,11 +25271,7 @@
                     "name": null,
                     "ofType": {
                       "kind": "INPUT_OBJECT",
-<<<<<<< HEAD
                       "name": "delegations_order_by",
-=======
-                      "name": "delegations_view_order_by",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
                       "ofType": null
                     }
                   }
@@ -28256,11 +25283,7 @@
                 "defaultValue": null,
                 "type": {
                   "kind": "INPUT_OBJECT",
-<<<<<<< HEAD
                   "name": "delegations_bool_exp",
-=======
-                  "name": "delegations_view_bool_exp",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
                   "ofType": null
                 },
                 "description": "filter the rows returned"
@@ -28268,11 +25291,7 @@
             ],
             "isDeprecated": false,
             "deprecationReason": null,
-<<<<<<< HEAD
             "name": "delegations_aggregate",
-=======
-            "name": "delegations_view",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
             "type": {
               "kind": "NON_NULL",
               "name": null,
@@ -28293,13 +25312,8 @@
                   "kind": "NON_NULL",
                   "name": null,
                   "ofType": {
-<<<<<<< HEAD
                     "kind": "SCALAR",
                     "name": "String",
-=======
-                    "kind": "OBJECT",
-                    "name": "delegations_view",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
                     "ofType": null
                   }
                 },
@@ -28328,11 +25342,7 @@
               "name": "delegations",
               "ofType": null
             },
-<<<<<<< HEAD
             "description": "fetch data from the table: \"delegations\" using primary key columns"
-=======
-            "description": "fetch data from the table: \"delegations_view\""
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
           },
           {
             "args": [
@@ -28405,16 +25415,11 @@
             ],
             "isDeprecated": false,
             "deprecationReason": null,
-<<<<<<< HEAD
             "name": "delegations_view",
-=======
-            "name": "delegations_view_aggregate",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
             "type": {
               "kind": "NON_NULL",
               "name": null,
               "ofType": {
-<<<<<<< HEAD
                 "kind": "LIST",
                 "name": null,
                 "ofType": {
@@ -28511,13 +25516,6 @@
                 "ofType": null
               }
             },
-=======
-                "kind": "OBJECT",
-                "name": "delegations_view_aggregate",
-                "ofType": null
-              }
-            },
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
             "description": "fetch aggregated fields from the table: \"delegations_view\""
           },
           {
@@ -44523,222 +41521,6 @@
                     "name": null,
                     "ofType": {
                       "kind": "INPUT_OBJECT",
-<<<<<<< HEAD
-                      "name": "data_source_revisions_order_by",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "sort the rows by one or more columns"
-              },
-              {
-                "name": "where",
-                "defaultValue": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "data_source_revisions_bool_exp",
-                  "ofType": null
-                },
-                "description": "filter the rows returned"
-              }
-            ],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "data_source_revisions",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "data_source_revisions",
-                    "ofType": null
-                  }
-                }
-              }
-            },
-            "description": "fetch data from the table: \"data_source_revisions\""
-          },
-          {
-            "args": [
-              {
-                "name": "distinct_on",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "ENUM",
-                      "name": "data_source_revisions_select_column",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "distinct select on columns"
-              },
-              {
-                "name": "limit",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "limit the number of rows returned"
-              },
-              {
-                "name": "offset",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "skip the first n rows. Use only with order_by"
-              },
-              {
-                "name": "order_by",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "INPUT_OBJECT",
-                      "name": "data_source_revisions_order_by",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "sort the rows by one or more columns"
-              },
-              {
-                "name": "where",
-                "defaultValue": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "data_source_revisions_bool_exp",
-                  "ofType": null
-                },
-                "description": "filter the rows returned"
-              }
-            ],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "data_source_revisions_aggregate",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "data_source_revisions_aggregate",
-                "ofType": null
-              }
-            },
-            "description": "fetch aggregated fields from the table: \"data_source_revisions\""
-          },
-          {
-            "args": [
-              {
-                "name": "data_source_id",
-                "defaultValue": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "bigint",
-                    "ofType": null
-                  }
-                },
-                "description": null
-              },
-              {
-                "name": "revision_number",
-                "defaultValue": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "bigint",
-                    "ofType": null
-                  }
-                },
-                "description": null
-              }
-            ],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "data_source_revisions_by_pk",
-            "type": {
-              "kind": "OBJECT",
-              "name": "data_source_revisions",
-              "ofType": null
-            },
-            "description": "fetch data from the table: \"data_source_revisions\" using primary key columns"
-          },
-          {
-            "args": [
-              {
-                "name": "distinct_on",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "ENUM",
-                      "name": "data_sources_select_column",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "distinct select on columns"
-              },
-              {
-                "name": "limit",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "limit the number of rows returned"
-              },
-              {
-                "name": "offset",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "skip the first n rows. Use only with order_by"
-              },
-              {
-                "name": "order_by",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "INPUT_OBJECT",
                       "name": "data_sources_order_by",
                       "ofType": null
                     }
@@ -45032,9 +41814,6 @@
                     "ofType": {
                       "kind": "INPUT_OBJECT",
                       "name": "delegations_order_by",
-=======
-                      "name": "data_sources_order_by",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
                       "ofType": null
                     }
                   }
@@ -45046,11 +41825,7 @@
                 "defaultValue": null,
                 "type": {
                   "kind": "INPUT_OBJECT",
-<<<<<<< HEAD
                   "name": "delegations_bool_exp",
-=======
-                  "name": "data_sources_bool_exp",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
                   "ofType": null
                 },
                 "description": "filter the rows returned"
@@ -45058,11 +41833,7 @@
             ],
             "isDeprecated": false,
             "deprecationReason": null,
-<<<<<<< HEAD
             "name": "delegations_aggregate",
-=======
-            "name": "data_sources",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
             "type": {
               "kind": "NON_NULL",
               "name": null,
@@ -45083,13 +41854,8 @@
                   "kind": "NON_NULL",
                   "name": null,
                   "ofType": {
-<<<<<<< HEAD
                     "kind": "SCALAR",
                     "name": "String",
-=======
-                    "kind": "OBJECT",
-                    "name": "data_sources",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
                     "ofType": null
                   }
                 },
@@ -45118,11 +41884,7 @@
               "name": "delegations",
               "ofType": null
             },
-<<<<<<< HEAD
             "description": "fetch data from the table: \"delegations\" using primary key columns"
-=======
-            "description": "fetch data from the table: \"data_sources\""
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
           },
           {
             "args": [
@@ -45137,11 +41899,7 @@
                     "name": null,
                     "ofType": {
                       "kind": "ENUM",
-<<<<<<< HEAD
                       "name": "delegations_view_select_column",
-=======
-                      "name": "data_sources_select_column",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
                       "ofType": null
                     }
                   }
@@ -45179,11 +41937,7 @@
                     "name": null,
                     "ofType": {
                       "kind": "INPUT_OBJECT",
-<<<<<<< HEAD
                       "name": "delegations_view_order_by",
-=======
-                      "name": "data_sources_order_by",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
                       "ofType": null
                     }
                   }
@@ -45195,11 +41949,7 @@
                 "defaultValue": null,
                 "type": {
                   "kind": "INPUT_OBJECT",
-<<<<<<< HEAD
                   "name": "delegations_view_bool_exp",
-=======
-                  "name": "data_sources_bool_exp",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
                   "ofType": null
                 },
                 "description": "filter the rows returned"
@@ -45207,16 +41957,11 @@
             ],
             "isDeprecated": false,
             "deprecationReason": null,
-<<<<<<< HEAD
             "name": "delegations_view",
-=======
-            "name": "data_sources_aggregate",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
             "type": {
               "kind": "NON_NULL",
               "name": null,
               "ofType": {
-<<<<<<< HEAD
                 "kind": "LIST",
                 "name": null,
                 "ofType": {
@@ -45231,19 +41976,10 @@
               }
             },
             "description": "fetch data from the table: \"delegations_view\""
-=======
-                "kind": "OBJECT",
-                "name": "data_sources_aggregate",
-                "ofType": null
-              }
-            },
-            "description": "fetch aggregated fields from the table: \"data_sources\""
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
           },
           {
             "args": [
               {
-<<<<<<< HEAD
                 "name": "distinct_on",
                 "defaultValue": null,
                 "type": {
@@ -45263,9 +41999,6 @@
               },
               {
                 "name": "limit",
-=======
-                "name": "id",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
                 "defaultValue": null,
                 "type": {
                   "kind": "SCALAR",
@@ -45315,7 +42048,6 @@
             ],
             "isDeprecated": false,
             "deprecationReason": null,
-<<<<<<< HEAD
             "name": "delegations_view_aggregate",
             "type": {
               "kind": "NON_NULL",
@@ -45327,15 +42059,6 @@
               }
             },
             "description": "fetch aggregated fields from the table: \"delegations_view\""
-=======
-            "name": "data_sources_by_pk",
-            "type": {
-              "kind": "OBJECT",
-              "name": "data_sources",
-              "ofType": null
-            },
-            "description": "fetch data from the table: \"data_sources\" using primary key columns"
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
           },
           {
             "args": [
@@ -45350,11 +42073,7 @@
                     "name": null,
                     "ofType": {
                       "kind": "ENUM",
-<<<<<<< HEAD
                       "name": "metadata_select_column",
-=======
-                      "name": "delegations_select_column",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
                       "ofType": null
                     }
                   }
@@ -45392,11 +42111,7 @@
                     "name": null,
                     "ofType": {
                       "kind": "INPUT_OBJECT",
-<<<<<<< HEAD
                       "name": "metadata_order_by",
-=======
-                      "name": "delegations_order_by",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
                       "ofType": null
                     }
                   }
@@ -45408,11 +42123,7 @@
                 "defaultValue": null,
                 "type": {
                   "kind": "INPUT_OBJECT",
-<<<<<<< HEAD
                   "name": "metadata_bool_exp",
-=======
-                  "name": "delegations_bool_exp",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
                   "ofType": null
                 },
                 "description": "filter the rows returned"
@@ -45420,11 +42131,7 @@
             ],
             "isDeprecated": false,
             "deprecationReason": null,
-<<<<<<< HEAD
             "name": "metadata",
-=======
-            "name": "delegations",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
             "type": {
               "kind": "NON_NULL",
               "name": null,
@@ -45436,21 +42143,13 @@
                   "name": null,
                   "ofType": {
                     "kind": "OBJECT",
-<<<<<<< HEAD
                     "name": "metadata",
-=======
-                    "name": "delegations",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
                     "ofType": null
                   }
                 }
               }
             },
-<<<<<<< HEAD
             "description": "fetch data from the table: \"metadata\""
-=======
-            "description": "fetch data from the table: \"delegations\""
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
           },
           {
             "args": [
@@ -45465,11 +42164,7 @@
                     "name": null,
                     "ofType": {
                       "kind": "ENUM",
-<<<<<<< HEAD
                       "name": "metadata_select_column",
-=======
-                      "name": "delegations_select_column",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
                       "ofType": null
                     }
                   }
@@ -45507,11 +42202,7 @@
                     "name": null,
                     "ofType": {
                       "kind": "INPUT_OBJECT",
-<<<<<<< HEAD
                       "name": "metadata_order_by",
-=======
-                      "name": "delegations_order_by",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
                       "ofType": null
                     }
                   }
@@ -45523,11 +42214,7 @@
                 "defaultValue": null,
                 "type": {
                   "kind": "INPUT_OBJECT",
-<<<<<<< HEAD
                   "name": "metadata_bool_exp",
-=======
-                  "name": "delegations_bool_exp",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
                   "ofType": null
                 },
                 "description": "filter the rows returned"
@@ -45535,38 +42222,22 @@
             ],
             "isDeprecated": false,
             "deprecationReason": null,
-<<<<<<< HEAD
             "name": "metadata_aggregate",
-=======
-            "name": "delegations_aggregate",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
             "type": {
               "kind": "NON_NULL",
               "name": null,
               "ofType": {
                 "kind": "OBJECT",
-<<<<<<< HEAD
                 "name": "metadata_aggregate",
                 "ofType": null
               }
             },
             "description": "fetch aggregated fields from the table: \"metadata\""
-=======
-                "name": "delegations_aggregate",
-                "ofType": null
-              }
-            },
-            "description": "fetch aggregated fields from the table: \"delegations\""
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
           },
           {
             "args": [
               {
-<<<<<<< HEAD
                 "name": "key",
-=======
-                "name": "delegator_address",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
                 "defaultValue": null,
                 "type": {
                   "kind": "NON_NULL",
@@ -45574,23 +42245,6 @@
                   "ofType": {
                     "kind": "SCALAR",
                     "name": "String",
-<<<<<<< HEAD
-=======
-                    "ofType": null
-                  }
-                },
-                "description": null
-              },
-              {
-                "name": "validator_address",
-                "defaultValue": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "String",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
                     "ofType": null
                   }
                 },
@@ -45599,7 +42253,6 @@
             ],
             "isDeprecated": false,
             "deprecationReason": null,
-<<<<<<< HEAD
             "name": "metadata_by_pk",
             "type": {
               "kind": "OBJECT",
@@ -45607,189 +42260,6 @@
               "ofType": null
             },
             "description": "fetch data from the table: \"metadata\" using primary key columns"
-=======
-            "name": "delegations_by_pk",
-            "type": {
-              "kind": "OBJECT",
-              "name": "delegations",
-              "ofType": null
-            },
-            "description": "fetch data from the table: \"delegations\" using primary key columns"
-          },
-          {
-            "args": [
-              {
-                "name": "distinct_on",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "ENUM",
-                      "name": "delegations_view_select_column",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "distinct select on columns"
-              },
-              {
-                "name": "limit",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "limit the number of rows returned"
-              },
-              {
-                "name": "offset",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "skip the first n rows. Use only with order_by"
-              },
-              {
-                "name": "order_by",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "INPUT_OBJECT",
-                      "name": "delegations_view_order_by",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "sort the rows by one or more columns"
-              },
-              {
-                "name": "where",
-                "defaultValue": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "delegations_view_bool_exp",
-                  "ofType": null
-                },
-                "description": "filter the rows returned"
-              }
-            ],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "delegations_view",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "delegations_view",
-                    "ofType": null
-                  }
-                }
-              }
-            },
-            "description": "fetch data from the table: \"delegations_view\""
-          },
-          {
-            "args": [
-              {
-                "name": "distinct_on",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "ENUM",
-                      "name": "delegations_view_select_column",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "distinct select on columns"
-              },
-              {
-                "name": "limit",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "limit the number of rows returned"
-              },
-              {
-                "name": "offset",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "skip the first n rows. Use only with order_by"
-              },
-              {
-                "name": "order_by",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "INPUT_OBJECT",
-                      "name": "delegations_view_order_by",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "sort the rows by one or more columns"
-              },
-              {
-                "name": "where",
-                "defaultValue": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "delegations_view_bool_exp",
-                  "ofType": null
-                },
-                "description": "filter the rows returned"
-              }
-            ],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "delegations_view_aggregate",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "delegations_view_aggregate",
-                "ofType": null
-              }
-            },
-            "description": "fetch aggregated fields from the table: \"delegations_view\""
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
           },
           {
             "args": [
@@ -54139,8 +50609,6 @@
                     "ofType": {
                       "kind": "INPUT_OBJECT",
                       "name": "delegations_order_by",
-<<<<<<< HEAD
-=======
                       "ofType": null
                     }
                   }
@@ -54232,109 +50700,6 @@
                     "ofType": {
                       "kind": "INPUT_OBJECT",
                       "name": "delegations_order_by",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "sort the rows by one or more columns"
-              },
-              {
-                "name": "where",
-                "defaultValue": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "delegations_bool_exp",
-                  "ofType": null
-                },
-                "description": "filter the rows returned"
-              }
-            ],
-            "isDeprecated": false,
-            "deprecationReason": null,
-<<<<<<< HEAD
-            "name": "delegations",
-=======
-            "name": "delegations_aggregate",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-<<<<<<< HEAD
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "delegations",
-                    "ofType": null
-                  }
-                }
-=======
-                "kind": "OBJECT",
-                "name": "delegations_aggregate",
-                "ofType": null
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
-              }
-            },
-            "description": "An array relationship"
-          },
-          {
-<<<<<<< HEAD
-            "args": [
-              {
-                "name": "distinct_on",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "ENUM",
-                      "name": "delegations_select_column",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "distinct select on columns"
-              },
-              {
-                "name": "limit",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "limit the number of rows returned"
-              },
-              {
-                "name": "offset",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "skip the first n rows. Use only with order_by"
-              },
-              {
-                "name": "order_by",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "INPUT_OBJECT",
-                      "name": "delegations_order_by",
                       "ofType": null
                     }
                   }
@@ -54355,12 +50720,6 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "delegations_aggregate",
-=======
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "delegator_shares",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
             "type": {
               "kind": "NON_NULL",
               "name": null,
@@ -54376,11 +50735,7 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
-<<<<<<< HEAD
             "name": "delegator_shares",
-=======
-            "name": "details",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
             "type": {
               "kind": "NON_NULL",
               "name": null,
@@ -54396,11 +50751,23 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
-<<<<<<< HEAD
             "name": "details",
-=======
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "elected_count",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
             "type": {
               "kind": "NON_NULL",
               "name": null,
@@ -54416,27 +50783,6 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
-<<<<<<< HEAD
-            "name": "elected_count",
-=======
-            "name": "identity",
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Int",
-                "ofType": null
-              }
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-<<<<<<< HEAD
             "name": "identity",
             "type": {
               "kind": "NON_NULL",
@@ -54453,8 +50799,6 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
-=======
->>>>>>> Implement Sub and wire up for Average Block time and Inflation rate
             "name": "jailed",
             "type": {
               "kind": "NON_NULL",

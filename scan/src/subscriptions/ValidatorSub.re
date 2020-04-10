@@ -196,16 +196,6 @@ let getList = (~page=1, ~pageSize=10, ()) => {
   result |> Sub.map(_, x => x##validators->Belt_Array.map(toExternal));
 };
 
-//TODO: Change to total aggregate
-let getAmount = () => {
-  let (result, _) =
-    ApolloHooks.useSubscription(
-      MultiConfig.definition,
-      ~variables=AllTokensConfig.makeVariables(),
-    );
-  result |> Sub.map(_, x => x##validators->Belt_Array.map(toExternal));
-};
-
 let count = () => {
   let (result, _) = ApolloHooks.useSubscription(ValidatorCountConfig.definition);
   result
