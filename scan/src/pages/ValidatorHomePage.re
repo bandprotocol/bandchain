@@ -53,7 +53,7 @@ module ToggleButton = {
         className={style([
           display(`flex),
           justifyContent(isActive ? `flexStart : `flexEnd),
-          backgroundColor(Colors.purple1),
+          backgroundColor(Colors.gray2),
           borderRadius(`px(15)),
           padding2(~v=`px(2), ~h=`px(3)),
           width(`px(45)),
@@ -94,63 +94,33 @@ let renderBody = (rank, validator: ValidatorSub.t, bondedTokenCount) => {
   // let reportRate = (validator.completedRequestCount |> float_of_int) /. allRequestCount *. 100.;
 
   <TBody key={rank |> string_of_int}>
-
-      <div className=Styles.fullWidth>
-        <Row>
-          <Col size=0.8 alignSelf=Col.Start>
-            <Col size=1.6 alignSelf=Col.Start>
-              <Text
-                value={rank |> string_of_int}
-                color=Colors.gray7
-                code=true
-                weight=Text.Regular
-                spacing={Text.Em(0.02)}
-                block=true
-                size=Text.Md
-              />
-            </Col>
-          </Col>
-          <Col size=1.9 alignSelf=Col.Start>
-            <div className=Styles.monikerContainer>
-              <ValidatorMonikerLink
-                validatorAddress={validator.operatorAddress}
-                moniker={validator.moniker}
-              />
-            </div>
-          </Col>
-          <Col size=1.4 alignSelf=Col.Start>
-            <div>
-              <Text
-                value={token |> Format.fPretty}
-                color=Colors.gray7
-                code=true
-                weight=Text.Regular
-                spacing={Text.Em(0.02)}
-                block=true
-                align=Text.Right
-                size=Text.Md
-              />
-              <VSpacing size=Spacing.sm />
-              <Text
-                value={
-                  "("
-                  ++ (votingPower /. bondedTokenCount *. 100.)
-                     ->Js.Float.toFixedWithPrecision(~digits=2)
-                  ++ "%)"
-                }
-                color=Colors.gray6
-                code=true
-                weight=Text.Thin
-                spacing={Text.Em(0.02)}
-                block=true
-                align=Text.Right
-                size=Text.Md
-              />
-            </div>
-          </Col>
-          <Col size=1.2 alignSelf=Col.Start>
+    <div className=Styles.fullWidth>
+      <Row>
+        <Col size=0.8 alignSelf=Col.Start>
+          <Col size=1.6 alignSelf=Col.Start>
             <Text
-              value={commission->Js.Float.toFixedWithPrecision(~digits=2)}
+              value={rank |> string_of_int}
+              color=Colors.gray7
+              code=true
+              weight=Text.Regular
+              spacing={Text.Em(0.02)}
+              block=true
+              size=Text.Md
+            />
+          </Col>
+        </Col>
+        <Col size=1.9 alignSelf=Col.Start>
+          <div className=Styles.monikerContainer>
+            <ValidatorMonikerLink
+              validatorAddress={validator.operatorAddress}
+              moniker={validator.moniker}
+            />
+          </div>
+        </Col>
+        <Col size=1.4 alignSelf=Col.Start>
+          <div>
+            <Text
+              value={token |> Format.fPretty}
               color=Colors.gray7
               code=true
               weight=Text.Regular
@@ -159,34 +129,63 @@ let renderBody = (rank, validator: ValidatorSub.t, bondedTokenCount) => {
               align=Text.Right
               size=Text.Md
             />
-          </Col>
-          <Col size=1.1 alignSelf=Col.Start>
+            <VSpacing size=Spacing.sm />
             <Text
-              value={uptime->Js.Float.toFixedWithPrecision(~digits=2)}
-              color=Colors.gray7
+              value={
+                "("
+                ++ (votingPower /. bondedTokenCount *. 100.)
+                   ->Js.Float.toFixedWithPrecision(~digits=2)
+                ++ "%)"
+              }
+              color=Colors.gray6
               code=true
-              weight=Text.Regular
+              weight=Text.Thin
               spacing={Text.Em(0.02)}
               block=true
               align=Text.Right
               size=Text.Md
             />
-          </Col>
-        </Row>
-      </div>
-    </TBody>;
-    // <Col size=1.2 alignSelf=Col.Start>
-    //   <Text
-    //     value={reportRate->Js.Float.toFixedWithPrecision(~digits=2)}
-    //     color=Colors.gray7
-    //     code=true
-    //     weight=Text.Regular
-    //     spacing={Text.Em(0.02)}
-    //     block=true
-    //     align=Text.Right
-    //     size=Text.Md
-    //   />
-    // </Col>
+          </div>
+        </Col>
+        <Col size=1.2 alignSelf=Col.Start>
+          <Text
+            value={commission->Js.Float.toFixedWithPrecision(~digits=2)}
+            color=Colors.gray7
+            code=true
+            weight=Text.Regular
+            spacing={Text.Em(0.02)}
+            block=true
+            align=Text.Right
+            size=Text.Md
+          />
+        </Col>
+        <Col size=1.1 alignSelf=Col.Start>
+          <Text
+            value={uptime->Js.Float.toFixedWithPrecision(~digits=2)}
+            color=Colors.gray7
+            code=true
+            weight=Text.Regular
+            spacing={Text.Em(0.02)}
+            block=true
+            align=Text.Right
+            size=Text.Md
+          />
+        </Col>
+      </Row>
+    </div>
+  </TBody>;
+  // <Col size=1.2 alignSelf=Col.Start>
+  //   <Text
+  //     value={reportRate->Js.Float.toFixedWithPrecision(~digits=2)}
+  //     color=Colors.gray7
+  //     code=true
+  //     weight=Text.Regular
+  //     spacing={Text.Em(0.02)}
+  //     block=true
+  //     align=Text.Right
+  //     size=Text.Md
+  //   />
+  // </Col>
 };
 
 [@react.component]
@@ -195,8 +194,10 @@ let make = () =>
     let (page, setPage) = React.useState(_ => 1);
     let pageSize = 10;
 
+    let (isActive, setIsActive) = React.useState(_ => true);
+
     let validatorsCountSub = ValidatorSub.count();
-    let validatorsSub = ValidatorSub.getList(~page, ~pageSize, ());
+    let validatorsSub = ValidatorSub.getList(~page, ~pageSize, ~isActive, ());
     // TODO: Update once bonding status is available
     let bondedValidatorCountSub = ValidatorSub.count();
     let bondedTokenCountSub = ValidatorSub.getTotalBondedAmount();
@@ -230,8 +231,8 @@ let make = () =>
             <Text value={(allValidatorCount |> string_of_int) ++ " In total"} />
           </div>
         </Col>
+        <Col> <ToggleButton isActive setIsActive /> </Col>
       </Row>
-      // <Col> <ToggleButton isActive setIsActive /> </Col>
       <div className=Styles.highlight>
         <Row>
           <Col size=0.7>
