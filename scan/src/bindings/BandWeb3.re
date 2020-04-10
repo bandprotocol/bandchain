@@ -11,6 +11,7 @@ type account_result_t = {
 
 type tx_response_t = {
   txHash: Hash.t,
+  rawLog: string,
   success: bool,
 };
 
@@ -66,16 +67,15 @@ function(signedMsg) {
 let broadcast = (instance, signedMsg) => {
   addPublicKeyToSignedMsg(signedMsg);
   let%Promise rawResponse = instance->_broadcast(signedMsg);
-  Js.Console.log2("rawResponse: ", rawResponse);
+
   Promise.ret(
     Tx(
       JsonUtils.Decode.{
         txHash: rawResponse |> at(["txhash"], string) |> Hash.fromHex,
+        rawLog: rawResponse |> at(["raw_log"], string),
         success:
-          switch (
-            rawResponse |> optional(field("logs", list(log => log |> field("success", bool))))
-          ) {
-          | Some(bools) => !bools->Belt_List.some(isSuccess => !isSuccess)
+          switch (rawResponse |> optional(field("logs", list(log => log)))) {
+          | Some(_) => true
           | None => false
           },
       },
