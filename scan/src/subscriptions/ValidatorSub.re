@@ -129,8 +129,8 @@ module SingleConfig = [%graphql
 
 module MultiConfig = [%graphql
   {|
-      subscription Validator($limit: Int!, $offset: Int!) {
-        validators(limit: $limit, offset: $offset, order_by: {tokens: desc}) @bsRecord {
+      subscription Validator($limit: Int!, $offset: Int!, $jailed: Boolean!) {
+        validators(limit: $limit, offset: $offset, order_by: {tokens: desc}, where: {jailed: {_eq: $jailed}}) @bsRecord {
           operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
           consensusAddress: consensus_address @bsDecoder(fn: "Address.fromHex")
           moniker
@@ -192,12 +192,12 @@ let get = operator_address => {
   };
 };
 
-let getList = (~page=1, ~pageSize=10, ()) => {
+let getList = (~page=1, ~pageSize=10, ~isActive, ()) => {
   let offset = (page - 1) * pageSize;
   let (result, _) =
     ApolloHooks.useSubscription(
       MultiConfig.definition,
-      ~variables=MultiConfig.makeVariables(~limit=pageSize, ~offset, ()),
+      ~variables=MultiConfig.makeVariables(~limit=pageSize, ~offset, ~jailed=!isActive, ()),
     );
   result |> Sub.map(_, x => x##validators->Belt_Array.map(toExternal));
 };
