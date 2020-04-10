@@ -5,7 +5,7 @@ type t = {
 };
 
 type stake_t = {
-  amount: option(float),
+  amount: float,
   delegatorAddress: Address.t,
   validatorAddress: Address.t,
 };
@@ -38,7 +38,7 @@ module StakeConfig = [%graphql
   {|
   subscription Stake($delegator_address: String!)  {
     delegations_view(where: {delegator_address: {_eq: $delegator_address}}) @bsRecord  {
-      amount @bsDecoder(fn: "GraphQLParser.numberOpt")
+      amount @bsDecoder(fn: "GraphQLParser.bandAmountOpt")
       delegatorAddress: delegator_address @bsDecoder(fn: "GraphQLParser.addressOpt")
       validatorAddress: validator_address @bsDecoder(fn: "GraphQLParser.addressOpt")
     }
@@ -107,8 +107,12 @@ let getTotalStake = delegatorAddress => {
   result
   |> Sub.map(_, a =>
        (
-         (a##delegations_view_aggregate##aggregate |> Belt_Option.getExn)##sum |> Belt_Option.getExn
-       )##amount
-       |> Belt_Option.getWithDefault(_, 0.0)
+         (
+           (a##delegations_view_aggregate##aggregate |> Belt_Option.getExn)##sum
+           |> Belt_Option.getExn
+         )##amount
+         |> Belt_Option.getWithDefault(_, 0.0)
+       )
+       /. 1_000_000.
      );
 };

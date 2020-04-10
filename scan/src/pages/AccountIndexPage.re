@@ -118,15 +118,14 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
     let accountSub = AccountSub.get(address);
     let infoSub = React.useContext(GlobalContext.context);
     let delegationsSub = DelegationSub.getStakeList(address);
-    let totalStakeSub = DelegationSub.getTotalStake(address);
+    let balanceAtStakeSub = DelegationSub.getTotalStake(address);
 
     let%Sub info = infoSub;
     let%Sub account = accountSub;
     let%Sub delegations = delegationsSub;
-    let%Sub totalStake = totalStakeSub;
+    let%Sub balanceAtStake = balanceAtStakeSub;
 
     let availableBalance = account.balance->Coin.getBandAmountFromCoins;
-    let balanceAtStake = totalStake /. 1_000_000.;
     let usdPrice = info.financial.usdPrice;
     let totalBalance = availableBalance +. balanceAtStake;
 

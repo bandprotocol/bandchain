@@ -34,3 +34,9 @@ let coins = str =>
 let numberOpt = jsonOpt => jsonOpt |> Belt_Option.flatMap(_, Js.Json.decodeNumber);
 
 let addressOpt = jsonOpt => jsonOpt |> Belt_Option.getExn |> Address.fromBech32;
+
+let bandAmountOpt = jsonOpt =>
+  (
+    jsonOpt |> Belt_Option.flatMap(_, Js.Json.decodeNumber) |> Belt_Option.getWithDefault(_, 0.00)
+  )
+  /. 1_000_000.;
