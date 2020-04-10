@@ -249,8 +249,7 @@ func DecodeResult(data []byte) (Result, error) {
 		Multiplier:  multiplier
 		What:        what
 	}, nil
-}
-  |j},
+}|j},
       ),
     )
     |> toEqual(
@@ -285,8 +284,7 @@ func DecodeResult(data []byte) (Result, error) {
 	return Result{
 		Px:  px
 	}, nil
-}
-  |j},
+}|j},
       ),
     )
     |> toEqual(

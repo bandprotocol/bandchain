@@ -1,3 +1,6 @@
+[@bs.module "change-case"] external pascalCase: string => string = "pascalCase";
+[@bs.module "change-case"] external camelCase: string => string = "camelCase";
+
 let extractFields: (string, string) => option(array((string, string))) = [%bs.raw
   {|
   function(_schema, cls) {
@@ -114,7 +117,7 @@ type field_t = {
 
 let parse = ((name, varType)) => {
   let v =
-    switch (varType |> String.lowercase_ascii) {
+    switch (varType |> camelCase) {
     | "string" => Some(String)
     | "u64" => Some(U64)
     | "u32" => Some(U32)
@@ -189,7 +192,7 @@ library ResultDecoder {
 };
 
 let declareGo = ({name, varType}) => {
-  let capitalizedName = String.capitalize_ascii(name);
+  let capitalizedName = name |> pascalCase;
   switch (varType) {
   | String => {j|$capitalizedName string|j}
   | U64 => {j|$capitalizedName uint64|j}
@@ -220,7 +223,7 @@ let assignGo = ({name, varType}) => {
 };
 
 let resultGo = ({name, varType}) => {
-  let capitalizedName = String.capitalize_ascii(name);
+  let capitalizedName = name |> pascalCase;
   switch (varType) {
   | String => {j|$capitalizedName:      $name|j}
   | U64 => {j|$capitalizedName:  $name|j}
@@ -248,8 +251,7 @@ $functions
 \treturn Result{
 \t\t$results
 \t}, nil
-}
-  |j};
+}|j};
 
   let%Opt fieldsPair = extractFields(schema, name);
   let%Opt fields = fieldsPair |> Belt_Array.map(_, parse) |> optionsAll;
