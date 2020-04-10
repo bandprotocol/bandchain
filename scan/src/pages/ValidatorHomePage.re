@@ -188,31 +188,24 @@ let renderBody = (rank, validator: ValidatorSub.t, bondedTokenCount) => {
   // </Col>
 };
 
+let getPrevDay = _ => {
+  (
+    MomentRe.momentNow()
+    |> MomentRe.Moment.subtract(~duration=MomentRe.duration(1., `days))
+    |> MomentRe.Moment.toUnix
+    |> float_of_int
+  )
+  *. 1000.;
+};
+
 [@react.component]
 let make = () =>
   {
     let (page, setPage) = React.useState(_ => 1);
 
-    let (prevDay, setPrevDay) =
-      React.useState(_ =>
-        (
-          MomentRe.momentNow()
-          |> MomentRe.Moment.subtract(~duration=MomentRe.duration(1., `days))
-          |> MomentRe.Moment.toUnix
-          |> float_of_int
-        )
-        *. 1000.
-      );
+    let (prevDay, setPrevDay) = React.useState(getPrevDay);
     React.useEffect0(() => {
-      let newPrevDay =
-        (
-          MomentRe.momentNow()
-          |> MomentRe.Moment.subtract(~duration=MomentRe.duration(1., `days))
-          |> MomentRe.Moment.toUnix
-          |> float_of_int
-        )
-        *. 1000.;
-      let timeOutId = Js.Global.setTimeout(() => setPrevDay(_ => newPrevDay), 60_000);
+      let timeOutId = Js.Global.setTimeout(() => setPrevDay(getPrevDay), 60_000);
       Some(() => Js.Global.clearTimeout(timeOutId));
     });
 
@@ -225,6 +218,7 @@ let make = () =>
     let bondedTokenCountSub = ValidatorSub.getTotalBondedAmount();
     let pastDayBlockCountSub = BlockSub.pastDayCount(lastDay);
     let metadataSub = MetadataSub.use();
+    let bondedAmountSub = ValidatorSub.getAmount();
 
     let%Sub validators = validatorsSub;
     let%Sub validatorCount = validatorsCountSub;
@@ -232,6 +226,7 @@ let make = () =>
     let%Sub bondedTokenCount = bondedTokenCountSub;
     let%Sub pastDayBlockCount = pastDayBlockCountSub;
     let%Sub metadata = metadataSub;
+    let%Sub bondedAmount = bondedAmountSub;
 
     let pageCount = Page.getPageCount(validatorCount, pageSize);
     let globalInfo = ValidatorSub.GlobalInfo.getGlobalInfo();
