@@ -88,7 +88,7 @@ let renderBody = (rank, validator: ValidatorSub.t) => {
   let votingPower = validator.votingPower;
   let token = validator.tokens;
   let commission = validator.commission;
-  let uptime = validator.uptime;
+  let uptime = validator.nodeStatus.uptime;
   let allRequestCount =
     validator.completedRequestCount + validator.missedRequestCount |> float_of_int;
   let reportRate = (validator.completedRequestCount |> float_of_int) /. allRequestCount *. 100.;

@@ -149,7 +149,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
           <Col size=1.>
             <Text value="NODE STATUS" size=Text.Lg weight=Text.Semibold />
             <VSpacing size=Spacing.lg />
-            {kvRow("UPTIME", VCode(validator.uptime->Format.fPretty ++ "%"))}
+            {kvRow("UPTIME", VCode(validator.nodeStatus.uptime->Format.fPretty ++ "%"))}
             <VSpacing size=Spacing.lg />
             {kvRow(
                "AVG. RESPONSE TIME",

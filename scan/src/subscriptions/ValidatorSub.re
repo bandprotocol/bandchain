@@ -50,7 +50,6 @@ type t = {
   tokens: float,
   commission: float,
   bondedHeight: int,
-  uptime: float,
   completedRequestCount: int,
   missedRequestCount: int,
   nodeStatus: node_status_t,
@@ -75,7 +74,7 @@ let toExternal =
       }: internal_t,
     ) => {
   avgResponseTime: 2,
-  isActive: jailed,
+  isActive: !jailed,
   operatorAddress,
   consensusPubKey,
   rewardDestinationAddress: "band17ljds2gj3kds234lkg",
@@ -87,11 +86,10 @@ let toExternal =
   tokens,
   commission: commissionRate *. 100.,
   bondedHeight,
-  uptime: electedCount /. votedCount *. 100.,
   completedRequestCount: 23459,
   missedRequestCount: 20,
   nodeStatus: {
-    uptime: 100.00,
+    uptime: votedCount /. electedCount *. 100.,
     avgResponseTime: 2,
   },
   delegators: [
