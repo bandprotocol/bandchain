@@ -30,3 +30,14 @@ let coins = str =>
          });
        }
      );
+
+let numberExn = jsonOpt =>
+  (jsonOpt |> Belt_Option.flatMap(_, Js.Json.decodeNumber) |> Belt.Option.getExn) /. 1_000_000.;
+
+let numberWithDefault = jsonOpt =>
+  (jsonOpt |> Belt_Option.flatMap(_, Js.Json.decodeNumber) |> Belt.Option.getWithDefault(_, 0.0))
+  /. 1_000_000.;
+
+let floatWithMillionDivision = json => {
+  (json |> Js.Json.decodeNumber |> Belt.Option.getExn) /. 1_000_000.;
+};
