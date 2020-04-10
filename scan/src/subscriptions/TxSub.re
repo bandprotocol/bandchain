@@ -337,7 +337,6 @@ module Msg = {
 };
 
 type t = {
-  id: int,
   txHash: Hash.t,
   blockHeight: ID.Block.t,
   success: bool,
@@ -361,7 +360,6 @@ module SingleConfig = [%graphql
   {|
   subscription Transaction($tx_hash:bytea!) {
     transactions_by_pk(tx_hash: $tx_hash) @bsRecord {
-      id @bsDecoder(fn: "GraphQLParser.int64")
       txHash : tx_hash @bsDecoder(fn: "GraphQLParser.hash")
       blockHeight: block_height @bsDecoder(fn: "ID.Block.fromJson")
       success
@@ -379,8 +377,7 @@ module SingleConfig = [%graphql
 module MultiConfig = [%graphql
   {|
   subscription Transactions($limit: Int!, $offset: Int!) {
-    transactions(offset: $offset, limit: $limit, order_by: {block_height: desc}) @bsRecord {
-      id @bsDecoder(fn: "GraphQLParser.int64")
+    transactions(offset: $offset, limit: $limit, order_by: {block_height: desc, index: desc}) @bsRecord {
       txHash : tx_hash @bsDecoder(fn: "GraphQLParser.hash")
       blockHeight: block_height @bsDecoder(fn: "ID.Block.fromJson")
       success
@@ -398,8 +395,7 @@ module MultiConfig = [%graphql
 module MultiByHeightConfig = [%graphql
   {|
   subscription TransactionsByHeight($height: bigint!, $limit: Int!, $offset: Int!) {
-    transactions(where: {block_height: {_eq: $height}}, offset: $offset, limit: $limit) @bsRecord {
-      id @bsDecoder(fn: "GraphQLParser.int64")
+    transactions(where: {block_height: {_eq: $height}}, offset: $offset, limit: $limit, order_by: {index: desc}) @bsRecord {
       txHash : tx_hash @bsDecoder(fn: "GraphQLParser.hash")
       blockHeight: block_height @bsDecoder(fn: "ID.Block.fromJson")
       success
@@ -420,9 +416,9 @@ module MultiBySenderConfig = [%graphql
     transactions(
       where: {sender: {_eq: $sender}},
       offset: $offset,
-      limit: $limit
+      limit: $limit,
+      order_by: {block_height: desc,index: desc},
     ) @bsRecord {
-      id @bsDecoder(fn: "GraphQLParser.int64")
       txHash : tx_hash @bsDecoder(fn: "GraphQLParser.hash")
       blockHeight: block_height @bsDecoder(fn: "ID.Block.fromJson")
       success
