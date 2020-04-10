@@ -219,14 +219,9 @@ let assignGo = ({name, varType}) => {
   };
 };
 
-let resultGo = ({name, varType}) => {
+let resultGo = ({name}) => {
   let capitalizedName = name |> ChangeCase.pascalCase;
-  switch (varType) {
-  | String => {j|$capitalizedName: $name|j}
-  | U64 => {j|$capitalizedName: $name|j}
-  | U32 => {j|$capitalizedName: $name|j}
-  | U8 => {j|$capitalizedName: $name|j}
-  };
+  {j|$capitalizedName: $name|j};
 };
 
 let generateGo = (packageName, schema, name) => {
