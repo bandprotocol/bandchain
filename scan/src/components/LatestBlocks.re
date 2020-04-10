@@ -72,10 +72,8 @@ let renderBlock = (i: int, blockHeight: ID.Block.t, moniker: string) =>
   </div>;
 
 [@react.component]
-let make = () =>
+let make = (~blocksSub) =>
   {
-    let blocksSub = BlockSub.getList(~pageSize=11, ~page=1, ());
-
     let%Sub blocks = blocksSub;
     let {BlockSub.height: ID.Block.ID(blocksCount)} = blocks->Belt_Array.getExn(0);
 

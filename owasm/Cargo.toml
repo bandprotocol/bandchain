@@ -10,27 +10,11 @@ TODO
 """
 
 [dependencies]
-serde = { version = "1.0.103", features = ["derive"] }
-serde_json = "1.0"
 json = "0.12.0"
 num = "*"
 
 [workspace]
 members = [
-    "exec",
-    "parser",
-    "examples/alphavantage",
-    "examples/binance_price",
-    "examples/coingecko_price",
-    "examples/coingecko_volume",
-    "examples/cryptocompare_price",
-    "examples/cryptocompare_volume",
-    "examples/ethereum_gas_price",
-    "examples/yahoo_price",
-    "examples/bitcoin_info",
-    "examples/weather_info",
-    "examples/flight_verification",
-    "examples/random_u64",
     "chaintests/crypto_price",
     "chaintests/crypto_price_borsh",
     "chaintests/main",

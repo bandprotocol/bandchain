@@ -74,8 +74,7 @@ module HighlightCard = {
 };
 
 [@react.component]
-let make = () => {
-  let latestBlockSub = BlockSub.getLatest();
+let make = (~latestBlockSub: Sub.t(BlockSub.t)) => {
   let infoSub = React.useContext(GlobalContext.context);
   // TODO: Only count active validators
   let validatorCountSub = ValidatorSub.count();
