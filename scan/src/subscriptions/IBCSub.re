@@ -6,7 +6,9 @@ module Request = {
     calldata: JsBuffer.t,
     requestedValidatorCount: int,
     sufficientValidatorCount: int,
-    sender: Address.t,
+    expiration: int,
+    prepareGas: int,
+    executeGas: int,
   };
 };
 
@@ -42,53 +44,102 @@ type t = {
   packet: packet_t,
 };
 
-// TODO: replace this mock when wireup
-let getMockList = () => [|
-  {
-    direction: Incoming,
-    chainID: "wenchang testnet v0",
-    chennel: "htjvlvazyj",
-    port: "bibc1",
-    blockHeight: ID.Block.ID(9999),
+type internal_t = {
+  isIncoming: bool,
+  blockHeight: ID.Block.t,
+  chennel: string,
+  port: string,
+  packetType: string,
+  packetDetail: Js.Json.t,
+};
+
+let toExternal: internal_t => t =
+  ({isIncoming, blockHeight, chennel, port, packetType, packetDetail}) => {
+    direction: isIncoming ? Incoming : Outgoing,
+    chainID: "bandchain",
+    chennel,
+    port,
+    blockHeight,
     packet:
-      Request({
-        id: ID.Request.ID(888),
-        oracleScriptID: ID.OracleScript.ID(7777),
-        oracleScriptName: "Mock Oracle Script",
-        calldata: "aa" |> JsBuffer.fromHex,
-        requestedValidatorCount: 4,
-        sufficientValidatorCount: 3,
-        sender: "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs" |> Address.fromBech32,
-      }),
-  },
-  {
-    direction: Outgoing,
-    chainID: "Gawa testnet 01",
-    chennel: "tjlvazhyjv",
-    port: "oracle",
-    blockHeight: ID.Block.ID(10999),
-    packet:
-      Response({
-        requestID: ID.Request.ID(10888),
-        oracleScriptID: ID.OracleScript.ID(10777),
-        oracleScriptName: "Mock Oracle Script",
-        status: Response.Success,
-        result: Some("aa" |> JsBuffer.fromHex),
-      }),
-  },
-  {
-    direction: Outgoing,
-    chainID: "Mumu network 01",
-    chennel: "azjlvvthyj",
-    port: "mumian_port",
-    blockHeight: ID.Block.ID(20999),
-    packet:
-      Response({
-        requestID: ID.Request.ID(20888),
-        oracleScriptID: ID.OracleScript.ID(20777),
-        oracleScriptName: "Mock Oracle Script",
-        status: Response.Fail,
-        result: None,
-      }),
-  },
-|];
+      switch (packetType) {
+      | "ORACLE REQUEST" =>
+        Request(
+          JsonUtils.Decode.{
+            id: ID.Request.ID(packetDetail |> at(["extra", "requestID"], int)),
+            oracleScriptID:
+              ID.OracleScript.ID(packetDetail |> at(["value", "oracleScriptID"], intstr)),
+            oracleScriptName: packetDetail |> at(["extra", "oracleScriptName"], string),
+            calldata: packetDetail |> at(["value", "calldata"], string) |> JsBuffer.fromHex,
+            requestedValidatorCount:
+              packetDetail |> at(["value", "requestedValidatorCount"], intstr),
+            sufficientValidatorCount:
+              packetDetail |> at(["value", "sufficientValidatorCount"], intstr),
+            expiration: packetDetail |> at(["value", "expiration"], intstr),
+            prepareGas: packetDetail |> at(["value", "prepareGas"], intstr),
+            executeGas: packetDetail |> at(["value", "executeGas"], intstr),
+          },
+        )
+      | _ =>
+        let status =
+          packetDetail
+          |> JsonUtils.Decode.at(["extra", "resolveStatus"], JsonUtils.Decode.string)
+          == "Success"
+            ? Response.Success : Response.Fail;
+        Response(
+          JsonUtils.Decode.{
+            requestID: ID.Request.ID(packetDetail |> at(["value", "requestID"], intstr)),
+            oracleScriptID:
+              ID.OracleScript.ID(packetDetail |> at(["extra", "oracleScriptID"], int)),
+            oracleScriptName: packetDetail |> at(["extra", "oracleScriptName"], string),
+            status,
+            result:
+              status == Success
+                ? Some(packetDetail |> at(["value", "result"], string) |> JsBuffer.fromHex)
+                : None,
+          },
+        );
+      },
+  };
+
+module MultiPacketsConfig = [%graphql
+  {|
+    subscription Requests($limit: Int!, $offset: Int!) {
+      packets(limit: $limit, offset: $offset) @bsRecord {
+        isIncoming: is_incoming
+        blockHeight: block_height @bsDecoder(fn: "ID.Block.fromJson")
+        chennel: my_channel
+        port: my_port
+        packetType: type
+        packetDetail: detail
+      }
+    }
+  |}
+];
+
+module PacketCountConfig = [%graphql
+  {|
+  subscription PacketsCount {
+    packets_aggregate{
+      aggregate{
+        count @bsDecoder(fn: "Belt_Option.getExn")
+      }
+    }
+  }
+|}
+];
+
+let getList = (~page=1, ~pageSize=10, ()) => {
+  let offset = (page - 1) * pageSize;
+  let (result, _) =
+    ApolloHooks.useSubscription(
+      MultiPacketsConfig.definition,
+      ~variables=MultiPacketsConfig.makeVariables(~limit=pageSize, ~offset, ()),
+    );
+  result |> Sub.map(_, x => x##packets->Belt_Array.map(toExternal));
+};
+
+let count = () => {
+  let (result, _) = ApolloHooks.useSubscription(PacketCountConfig.definition);
+  result
+  |> Sub.map(_, x => x##packets_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
+};
