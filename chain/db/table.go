@@ -157,3 +157,16 @@ type ReportDetail struct {
 	Data         []byte `gorm:"not null"`
 	Exitcode     uint8  `gorm:"not null"`
 }
+
+type Packet struct {
+	Type        string          `gorm:"not null"`
+	Sequence    uint64          `gorm:"primary_key;auto_increment:false"`
+	MyChannel   string          `gorm:"primary_key"`
+	MyPort      string          `gorm:"primary_key"`
+	YourChainID string          `gorm:"not null"`
+	YourChannel string          `gorm:"not null"`
+	YourPort    string          `gorm:"not null"`
+	BlockHeight int64           `gorm:"not null"`
+	IsIncoming  *bool           `gorm:"primary_key"`
+	Detail      json.RawMessage `sql:"json;not null"`
+}

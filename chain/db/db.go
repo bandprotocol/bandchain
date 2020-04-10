@@ -16,6 +16,7 @@ import (
 	dist "github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/evidence"
 	"github.com/cosmos/cosmos-sdk/x/gov"
+	"github.com/cosmos/cosmos-sdk/x/ibc"
 	connection "github.com/cosmos/cosmos-sdk/x/ibc/03-connection"
 	channel "github.com/cosmos/cosmos-sdk/x/ibc/04-channel"
 	tclient "github.com/cosmos/cosmos-sdk/x/ibc/07-tendermint/types"
@@ -32,6 +33,7 @@ type BandDB struct {
 
 	StakingKeeper staking.Keeper
 	OracleKeeper  oracle.Keeper
+	IBCKeeper     ibc.Keeper
 }
 
 func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
@@ -59,12 +61,13 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		&RawDataRequests{},
 		&Report{},
 		&ReportDetail{},
+		&Packet{},
 	)
 
-	db.Exec(`CREATE VIEW delegations_view AS 
-			SELECT CAST(shares AS DECIMAL) * CAST(tokens AS DECIMAL) / CAST(delegator_shares AS DECIMAL) as amount, 
-			validator_address, 
-			delegator_address 
+	db.Exec(`CREATE VIEW delegations_view AS
+			SELECT CAST(shares AS DECIMAL) * CAST(tokens AS DECIMAL) / CAST(delegator_shares AS DECIMAL) as amount,
+			validator_address,
+			delegator_address
 			FROM delegations JOIN validators ON validator_address = operator_address;
 	`)
 
@@ -225,6 +228,13 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 	db.Model(&RelatedDataSources{}).AddForeignKey(
 		"oracle_script_id",
 		"oracle_scripts(id)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&Packet{}).AddForeignKey(
+		"block_height",
+		"blocks(height)",
 		"RESTRICT",
 		"RESTRICT",
 	)

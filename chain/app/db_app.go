@@ -36,6 +36,7 @@ func NewDBBandApp(
 	)
 	dbBand.StakingKeeper = app.StakingKeeper
 	dbBand.OracleKeeper = app.OracleKeeper
+	dbBand.IBCKeeper = app.IBCKeeper
 	return &dbBandApp{bandApp: app, dbBand: dbBand}
 }
 
