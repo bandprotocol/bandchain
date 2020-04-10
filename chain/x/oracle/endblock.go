@@ -35,78 +35,97 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) {
 	events := []sdk.Event{}
 	for i, requestID := range pendingList {
 		request, err := keeper.GetRequest(ctx, requestID)
-		if err != nil { // should never happen
-			keeper.SetResolve(ctx, requestID, types.Failure)
-			events = append(events, newRequestExecuteEvent(requestID, types.Failure))
-			continue
-		}
+		event, packet, stopped := func(i int, requestID RequestID) (sdk.Event, OracleResponsePacketData, bool) {
+			if err != nil { // should never happen
+				keeper.SetResolve(ctx, requestID, types.Failure)
+				return newRequestExecuteEvent(requestID, types.Failure),
+					NewOracleResponsePacketData(requestID, request.ClientID, types.Failure, ""),
+					false
+			}
 
-		// Discard the request if execute gas is greater than EndBlockExecuteGasLimit.
-		if request.ExecuteGas > endBlockExecuteGasLimit {
-			keeper.SetResolve(ctx, requestID, types.Failure)
-			events = append(events, newRequestExecuteEvent(requestID, types.Failure))
-			continue
-		}
+			// Discard the request if execute gas is greater than EndBlockExecuteGasLimit.
+			if request.ExecuteGas > endBlockExecuteGasLimit {
+				keeper.SetResolve(ctx, requestID, types.Failure)
+				return newRequestExecuteEvent(requestID, types.Failure),
+					NewOracleResponsePacketData(requestID, request.ClientID, types.Failure, ""),
+					false
+			}
 
-		estimatedGasConsumed, overflow := addUint64Overflow(gasConsumed, request.ExecuteGas)
-		if overflow || estimatedGasConsumed > endBlockExecuteGasLimit {
-			firstUnresolvedRequestIndex = i
+			estimatedGasConsumed, overflow := addUint64Overflow(gasConsumed, request.ExecuteGas)
+			if overflow || estimatedGasConsumed > endBlockExecuteGasLimit {
+				firstUnresolvedRequestIndex = i
+				return sdk.Event{},
+					OracleResponsePacketData{},
+					true
+			}
+
+			env, err := NewExecutionEnvironment(ctx, keeper, requestID)
+			if err != nil { // should never happen
+				keeper.SetResolve(ctx, requestID, types.Failure)
+				return newRequestExecuteEvent(requestID, types.Failure),
+					NewOracleResponsePacketData(requestID, request.ClientID, types.Failure, ""),
+					false
+			}
+
+			err = env.LoadRawDataReports(ctx, keeper)
+			if err != nil { // should never happen
+				keeper.SetResolve(ctx, requestID, types.Failure)
+				return newRequestExecuteEvent(requestID, types.Failure),
+					NewOracleResponsePacketData(requestID, request.ClientID, types.Failure, ""),
+					false
+			}
+
+			script, err := keeper.GetOracleScript(ctx, request.OracleScriptID)
+			if err != nil { // should never happen
+				keeper.SetResolve(ctx, requestID, types.Failure)
+				return newRequestExecuteEvent(requestID, types.Failure),
+					NewOracleResponsePacketData(requestID, request.ClientID, types.Failure, ""),
+					false
+			}
+
+			result, gasUsed, errOwasm := owasm.Execute(
+				&env, script.Code, "execute", request.Calldata, request.ExecuteGas,
+			)
+
+			if gasUsed > request.ExecuteGas {
+				gasUsed = request.ExecuteGas
+			}
+
+			gasConsumed, overflow = addUint64Overflow(gasConsumed, gasUsed)
+			// Must never overflow because we already checked for overflow above with
+			// gasConsumed + request.ExecuteGas (which is >= gasUsed).
+			if overflow {
+				panic(sdk.ErrorGasOverflow{Descriptor: "oracle::handleEndBlock: Gas overflow"})
+			}
+
+			if errOwasm != nil {
+				keeper.SetResolve(ctx, requestID, types.Failure)
+				return newRequestExecuteEvent(requestID, types.Failure),
+					NewOracleResponsePacketData(requestID, request.ClientID, types.Failure, ""),
+					false
+			}
+
+			errResult := keeper.AddResult(ctx, requestID, request.OracleScriptID, request.Calldata, result)
+			if errResult != nil {
+				keeper.SetResolve(ctx, requestID, types.Failure)
+				return newRequestExecuteEvent(requestID, types.Failure),
+					NewOracleResponsePacketData(requestID, request.ClientID, types.Failure, ""),
+					false
+			}
+
+			keeper.SetResolve(ctx, requestID, types.Success)
+			event := newRequestExecuteEvent(requestID, types.Success)
+			event.AppendAttributes(sdk.NewAttribute(types.AttributeKeyResult, string(result)))
+			return event,
+				NewOracleResponsePacketData(requestID, request.ClientID, types.Success, hex.EncodeToString(result)),
+				false
+
+		}(i, requestID)
+
+		if stopped {
 			break
 		}
-
-		env, err := NewExecutionEnvironment(ctx, keeper, requestID)
-		if err != nil { // should never happen
-			keeper.SetResolve(ctx, requestID, types.Failure)
-			events = append(events, newRequestExecuteEvent(requestID, types.Failure))
-			continue
-		}
-
-		err = env.LoadRawDataReports(ctx, keeper)
-		if err != nil { // should never happen
-			keeper.SetResolve(ctx, requestID, types.Failure)
-			continue
-		}
-
-		script, err := keeper.GetOracleScript(ctx, request.OracleScriptID)
-		if err != nil { // should never happen
-			keeper.SetResolve(ctx, requestID, types.Failure)
-			events = append(events, newRequestExecuteEvent(requestID, types.Failure))
-			continue
-		}
-
-		result, gasUsed, errOwasm := owasm.Execute(
-			&env, script.Code, "execute", request.Calldata, request.ExecuteGas,
-		)
-
-		if gasUsed > request.ExecuteGas {
-			gasUsed = request.ExecuteGas
-		}
-
-		gasConsumed, overflow = addUint64Overflow(gasConsumed, gasUsed)
-		// Must never overflow because we already checked for overflow above with
-		// gasConsumed + request.ExecuteGas (which is >= gasUsed).
-		if overflow {
-			panic(sdk.ErrorGasOverflow{Descriptor: "oracle::handleEndBlock: Gas overflow"})
-		}
-
-		if errOwasm != nil {
-			keeper.SetResolve(ctx, requestID, types.Failure)
-			events = append(events, newRequestExecuteEvent(requestID, types.Failure))
-			continue
-		}
-
-		errResult := keeper.AddResult(ctx, requestID, request.OracleScriptID, request.Calldata, result)
-		if errResult != nil {
-			keeper.SetResolve(ctx, requestID, types.Failure)
-			events = append(events, newRequestExecuteEvent(requestID, types.Failure))
-			continue
-		}
-
-		keeper.SetResolve(ctx, requestID, types.Success)
-		event := newRequestExecuteEvent(requestID, types.Success)
-		event.AppendAttributes(sdk.NewAttribute(types.AttributeKeyResult, string(result)))
 		events = append(events, event)
-
 		sourceChannelEnd, found := keeper.ChannelKeeper.GetChannel(ctx, request.SourcePort, request.SourceChannel)
 		if !found {
 			fmt.Println("SOURCE NOT FOUND", request.SourcePort, request.SourceChannel)
@@ -122,8 +141,6 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) {
 			fmt.Println("SEQUENCE NOT FOUND", request.SourcePort, request.SourceChannel)
 			continue
 		}
-
-		packet := NewOracleResponsePacketData(requestID, request.ClientID, hex.EncodeToString(result))
 
 		err = keeper.ChannelKeeper.SendPacket(ctx, channel.NewPacket(packet.GetBytes(),
 			sequence, request.SourcePort, request.SourceChannel, destinationPort, destinationChannel,

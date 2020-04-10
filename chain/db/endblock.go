@@ -81,6 +81,17 @@ func (b *BandDB) HandleEndblockEvent(event abci.Event) {
 		var responseData oracle.OracleResponsePacketData
 		if err := oracle.ModuleCdc.UnmarshalJSON(data, &responseData); err == nil {
 			packetType = "ORACLE RESPONSE"
+			request, err := b.OracleKeeper.GetRequest(b.ctx, responseData.RequestID)
+			if err != nil {
+				panic(err)
+			}
+			oracleScript, err := b.OracleKeeper.GetOracleScript(b.ctx, request.OracleScriptID)
+			if err != nil {
+				panic(err)
+			}
+			extra["oracleScriptID"] = request.OracleScriptID
+			extra["oracleScriptName"] = oracleScript.Name
+			extra["resolveStatus"] = parseResolveStatus(request.ResolveStatus)
 		}
 
 		if packetType == "" {
