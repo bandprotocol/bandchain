@@ -28,7 +28,7 @@ module TotalStakeByDelegatorConfig = [%graphql
     delegations_view_aggregate(where: {delegator_address: {_eq: $delegator_address}}){
       aggregate{
         sum{
-          amount @bsDecoder(fn: "GraphQLParser.numberExn")
+          amount @bsDecoder(fn: "GraphQLParser.numberWithDefault")
         }
       }
     }
