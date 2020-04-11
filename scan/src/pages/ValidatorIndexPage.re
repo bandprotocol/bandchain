@@ -76,13 +76,11 @@ let kvRow = (k, v: value_row_t) => {
 let make = (~address, ~hashtag: Route.validator_tab_t) =>
   {
     let validatorSub = ValidatorSub.get(address);
+    let bondedTokenCountSub = ValidatorSub.getTotalBondedAmount();
     let%Sub validator = validatorSub;
+    let%Sub bondedTokenCount = bondedTokenCountSub;
 
-    //TODO: Update to use real value from sub
-    let totalPower = 100.00;
-
-    Js.Console.log(totalPower);
-
+    Js.Console.log(bondedTokenCount);
     <>
       <Row justify=Row.Between>
         <Col>
@@ -130,7 +128,8 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
         {kvRow(
            "VOTING POWER",
            VCode(
-             (totalPower > 0. ? validator.votingPower *. 100. /. totalPower : 0.)->Format.fPretty
+             (bondedTokenCount > 0. ? validator.votingPower *. 100. /. bondedTokenCount : 0.)
+             ->Format.fPretty
              ++ "% ("
              ++ validator.votingPower->Format.fPretty
              ++ " BAND)",
@@ -149,7 +148,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
           <Col size=1.>
             <Text value="NODE STATUS" size=Text.Lg weight=Text.Semibold />
             <VSpacing size=Spacing.lg />
-            {kvRow("UPTIME", VCode(validator.uptime->Format.fPretty ++ "%"))}
+            {kvRow("UPTIME", VCode(validator.nodeStatus.uptime->Format.fPretty ++ "%"))}
             <VSpacing size=Spacing.lg />
             {kvRow(
                "AVG. RESPONSE TIME",
