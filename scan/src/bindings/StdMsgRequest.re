@@ -9,7 +9,6 @@ type request_value_t = {
   requestedValidatorCount: string,
   sufficientValidatorCount: string,
   expiration: string,
-  executeGas: string,
   sender: string,
 };
 
@@ -40,7 +39,6 @@ let create =
       ~requestedValidatorCount,
       ~sufficientValidatorCount,
       ~expiration=20,
-      ~executeGas=150000,
       ~sender,
       ~feeAmount,
       ~gas=300000,
@@ -57,7 +55,6 @@ let create =
           requestedValidatorCount: requestedValidatorCount |> string_of_int,
           sufficientValidatorCount: sufficientValidatorCount |> string_of_int,
           expiration: expiration |> string_of_int,
-          executeGas: executeGas |> string_of_int,
           sender: sender |> Address.toBech32,
         },
       },

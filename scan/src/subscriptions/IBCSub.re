@@ -7,7 +7,6 @@ module Request = {
     requestedValidatorCount: int,
     sufficientValidatorCount: int,
     expiration: int,
-    executeGas: int,
     sender: Address.t,
   };
 };
@@ -61,7 +60,6 @@ let getMockList = () => [|
         requestedValidatorCount: 4,
         sufficientValidatorCount: 3,
         expiration: 6666,
-        executeGas: 1000000,
         sender: "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs" |> Address.fromBech32,
       }),
   },
