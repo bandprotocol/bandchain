@@ -93,7 +93,7 @@ let toPlatformVariant =
   | "Ethereum" => Ethereum
   | "Cosmos IBC" => CosmosIBC
   | "Kadena" => Kadena
-  | _ => raise(WrongPlatformChoice("Chosen language does not exist"));
+  | _ => raise(WrongPlatformChoice("Chosen platform does not exist"));
 
 let toLanguageString =
   fun
@@ -108,7 +108,7 @@ let toPlatformString =
   | CosmosIBC => "Cosmos IBC"
   | Kadena => "Kadena";
 
-let getLanguageByPlatform =
+let getLanguagesByPlatform =
   fun
   | Ethereum => [|Solidity, Vyper|]
   | CosmosIBC => [|Go|]
@@ -199,7 +199,7 @@ let make = () => {
             onChange={event => {
               let platform = ReactEvent.Form.target(event)##value |> toPlatformVariant;
               setTargetPlatform(_ => platform);
-              let language = platform |> getLanguageByPlatform |> Belt_Array.getExn(_, 0);
+              let language = platform |> getLanguagesByPlatform |> Belt_Array.getExn(_, 0);
               setLanguage(_ => language);
             }}>
             {[|Ethereum, CosmosIBC, Kadena|]
@@ -225,7 +225,7 @@ let make = () => {
                 setLanguage(_ => language);
               }}>
               {targetPlatform
-               |> getLanguageByPlatform
+               |> getLanguagesByPlatform
                |> Belt.Array.map(_, symbol =>
                     <option value={symbol |> toLanguageString}>
                       {symbol |> toLanguageString |> React.string}
