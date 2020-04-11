@@ -12,14 +12,13 @@ type OracleRequestPacketData struct {
 	RequestedValidatorCount  int64          `json:"requestedValidatorCount"`
 	SufficientValidatorCount int64          `json:"sufficientValidatorCount"`
 	Expiration               int64          `json:"expiration"`
-	PrepareGas               uint64         `json:"prepareGas"`
 	ExecuteGas               uint64         `json:"executeGas"`
 	ClientID                 string         `json:"clientID"`
 }
 
 func NewOracleRequestPacketData(
 	oracleScriptID OracleScriptID, calldata string, requestedValidatorCount int64,
-	sufficientValidatorCount int64, expiration int64, prepareGas uint64, executeGas uint64, clientID string,
+	sufficientValidatorCount int64, expiration int64, executeGas uint64, clientID string,
 ) OracleRequestPacketData {
 	return OracleRequestPacketData{
 		OracleScriptID:           oracleScriptID,
@@ -27,7 +26,6 @@ func NewOracleRequestPacketData(
 		RequestedValidatorCount:  requestedValidatorCount,
 		SufficientValidatorCount: sufficientValidatorCount,
 		Expiration:               expiration,
-		PrepareGas:               prepareGas,
 		ExecuteGas:               executeGas,
 		ClientID:                 clientID,
 	}
@@ -40,7 +38,6 @@ func (p OracleRequestPacketData) String() string {
 	RequestedValidatorCount:  %d
 	SufficientValidatorCount: %d
 	Expiration:               %d
-	PrepareGas:               %d
 	ExecuteGas:               %d
 	ClientID:                 %s`,
 		p.OracleScriptID,
@@ -48,7 +45,6 @@ func (p OracleRequestPacketData) String() string {
 		p.RequestedValidatorCount,
 		p.SufficientValidatorCount,
 		p.Expiration,
-		p.PrepareGas,
 		p.ExecuteGas,
 		p.ClientID,
 	)

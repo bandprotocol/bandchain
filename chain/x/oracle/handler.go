@@ -43,7 +43,7 @@ func NewHandler(keeper Keeper) sdk.Handler {
 				newMsg := NewMsgRequestData(
 					requestData.OracleScriptID, calldata, requestData.RequestedValidatorCount,
 					requestData.SufficientValidatorCount, requestData.Expiration,
-					requestData.PrepareGas, requestData.ExecuteGas, requestData.ClientID,
+					requestData.ExecuteGas, requestData.ClientID,
 					sdk.AccAddress([]byte("NOT_IMPORTANT")),
 				)
 				return handleMsgRequestData(
@@ -170,8 +170,10 @@ func handleMsgRequestData(
 		return nil, err
 	}
 
-	ctx.GasMeter().ConsumeGas(msg.PrepareGas, "PrepareRequest")
-	_, _, errOwasm := owasm.Execute(&env, script.Code, "prepare", msg.Calldata, msg.PrepareGas)
+	// Hard-code prepare gas to 100000 for now
+	ctx.GasMeter().ConsumeGas(100000, "PrepareRequest")
+	_, _, errOwasm := owasm.Execute(&env, script.Code, "prepare", msg.Calldata, 100000)
+
 	if errOwasm != nil {
 		return nil, sdkerrors.Wrapf(types.ErrBadWasmExecution,
 			"handleMsgRequestData: An error occurred while running Owasm prepare.",
