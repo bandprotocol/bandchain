@@ -301,7 +301,7 @@ func TestRequestWithPrepareGasExceed(t *testing.T) {
 	dataSource := keep.GetTestDataSource()
 	keeper.SetDataSource(ctx, 1, dataSource)
 
-	// set prepare gas to 3 (not enough for using) then it occurs error.
+	// This thing consumes more gas than the allocated prepare gas (100k)
 	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 1000000, "clientID", sender)
 
 	_, err := handleMsgRequestData(ctx, keeper, msg)
