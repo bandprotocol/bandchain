@@ -18,6 +18,7 @@ type Block struct {
 }
 
 type Transaction struct {
+	Index       int64           `gorm:"not null"`
 	TxHash      []byte          `gorm:"primary_key"`
 	Timestamp   int64           `gorm:"not null"`
 	GasUsed     int64           `gorm:"not null"`
@@ -51,7 +52,7 @@ type Validator struct {
 	CommissionMaxChange string `gorm:"not null"`
 	MinSelfDelegation   string `gorm:"not null"`
 	Jailed              bool   `gorm:"not null"`
-	Tokens              string `gorm:"not null"`
+	Tokens              uint64 `gorm:"not null"`
 	DelegatorShares     string `gorm:"not null"`
 	BondedHeight        int64  `gorm:"not null"`
 }
@@ -155,4 +156,17 @@ type ReportDetail struct {
 	DataSourceID int64  `gorm:"not null"`
 	Data         []byte `gorm:"not null"`
 	Exitcode     uint8  `gorm:"not null"`
+}
+
+type Packet struct {
+	Type        string          `gorm:"not null"`
+	Sequence    uint64          `gorm:"primary_key;auto_increment:false"`
+	MyChannel   string          `gorm:"primary_key"`
+	MyPort      string          `gorm:"primary_key"`
+	YourChainID string          `gorm:"not null"`
+	YourChannel string          `gorm:"not null"`
+	YourPort    string          `gorm:"not null"`
+	BlockHeight int64           `gorm:"not null"`
+	IsIncoming  *bool           `gorm:"primary_key"`
+	Detail      json.RawMessage `sql:"json;not null"`
 }

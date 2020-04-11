@@ -117,13 +117,13 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
   {
     let accountSub = AccountSub.get(address);
     let infoSub = React.useContext(GlobalContext.context);
+    let balanceAtStakeSub = DelegationSub.getTotalStakeByDelegator(address);
 
     let%Sub info = infoSub;
     let%Sub account = accountSub;
+    let%Sub balanceAtStake = balanceAtStakeSub;
 
     let availableBalance = account.balance->Coin.getBandAmountFromCoins;
-    // TODO , replace these Mock
-    let balanceAtStake = 0.;
     let usdPrice = info.financial.usdPrice;
     let totalBalance = availableBalance +. balanceAtStake;
 
@@ -207,7 +207,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
         currentRoute={Route.AccountIndexPage(address, hashtag)}>
         {switch (hashtag) {
          | AccountTransactions => <AccountIndexTransactions accountAddress=address />
-         | AccountDelegations => <div />
+         | AccountDelegations => <AccountIndexDelegations address />
          }}
       </Tab>
     </>

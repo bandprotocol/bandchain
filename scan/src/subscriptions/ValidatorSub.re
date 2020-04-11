@@ -26,6 +26,14 @@ type internal_t = {
   moniker: string,
   identity: string,
   website: string,
+  tokens: float,
+  commissionRate: float,
+  consensusPubKey: PubKey.t,
+  bondedHeight: int,
+  jailed: bool,
+  electedCount: float,
+  votedCount: float,
+  details: string,
 };
 
 type t = {
@@ -42,34 +50,46 @@ type t = {
   tokens: float,
   commission: float,
   bondedHeight: int,
-  uptime: float,
   completedRequestCount: int,
   missedRequestCount: int,
   nodeStatus: node_status_t,
   delegators: list(delegator_t),
 };
 
-let toExternal = ({operatorAddress, moniker, identity, website}: internal_t) => {
+let toExternal =
+    (
+      {
+        operatorAddress,
+        moniker,
+        identity,
+        website,
+        tokens,
+        commissionRate,
+        consensusPubKey,
+        bondedHeight,
+        jailed,
+        electedCount,
+        votedCount,
+        details,
+      }: internal_t,
+    ) => {
   avgResponseTime: 2,
-  isActive: true,
+  isActive: !jailed,
   operatorAddress,
-  consensusPubKey:
-    "bandvalconspub1addwnpepq0grwz83v8g4s06fusnq5s4jkzxnhgvx67qr5g7v8tx39ur5m8tk7rg2nxj"
-    |> PubKey.fromBech32,
+  consensusPubKey,
   rewardDestinationAddress: "band17ljds2gj3kds234lkg",
-  votingPower: 25.0,
+  votingPower: tokens,
   moniker,
   identity,
   website,
-  details: "DETAILS",
-  tokens: 100.00,
-  commission: 100.00,
-  bondedHeight: 1,
-  uptime: 100.0,
+  details,
+  tokens,
+  commission: commissionRate *. 100.,
+  bondedHeight,
   completedRequestCount: 23459,
   missedRequestCount: 20,
   nodeStatus: {
-    uptime: 100.00,
+    uptime: votedCount /. electedCount *. 100.,
     avgResponseTime: 2,
   },
   delegators: [
@@ -89,6 +109,14 @@ module SingleConfig = [%graphql
           moniker
           identity
           website
+          tokens @bsDecoder(fn: "GraphQLParser.floatWithMillionDivision")
+          commissionRate: commission_rate @bsDecoder(fn: "float_of_string")
+          consensusPubKey: consensus_pubkey @bsDecoder(fn: "PubKey.fromBech32")
+          bondedHeight: bonded_height @bsDecoder(fn: "GraphQLParser.int64")
+          jailed
+          votedCount: voted_count @bsDecoder(fn: "float_of_int")
+          electedCount: elected_count @bsDecoder(fn: "float_of_int")
+          details
         }
       }
   |}
@@ -102,8 +130,30 @@ module MultiConfig = [%graphql
           moniker
           identity
           website
+          tokens @bsDecoder(fn: "GraphQLParser.floatWithMillionDivision")
+          commissionRate: commission_rate @bsDecoder(fn: "float_of_string")
+          consensusPubKey: consensus_pubkey @bsDecoder(fn: "PubKey.fromBech32")
+          bondedHeight: bonded_height @bsDecoder(fn: "GraphQLParser.int64")
+          jailed
+          votedCount: voted_count @bsDecoder(fn: "float_of_int")
+          electedCount: elected_count @bsDecoder(fn: "float_of_int")
+          details
         }
       }
+  |}
+];
+
+module TotalBondedAmountConfig = [%graphql
+  {|
+  subscription TotalBondedAmount{
+    validators_aggregate{
+      aggregate{
+        sum{
+          tokens @bsDecoder(fn: "GraphQLParser.numberWithDefault")
+        }
+      }
+    }
+  }
   |}
 ];
 
@@ -150,6 +200,14 @@ let count = () => {
   let (result, _) = ApolloHooks.useSubscription(ValidatorCountConfig.definition);
   result
   |> Sub.map(_, x => x##validators_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
+};
+
+let getTotalBondedAmount = () => {
+  let (result, _) = ApolloHooks.useSubscription(TotalBondedAmountConfig.definition);
+  result
+  |> Sub.map(_, a =>
+       ((a##validators_aggregate##aggregate |> Belt_Option.getExn)##sum |> Belt_Option.getExn)##tokens
+     );
 };
 
 module GlobalInfo = {
