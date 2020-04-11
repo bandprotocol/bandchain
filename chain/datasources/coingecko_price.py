@@ -17,8 +17,7 @@ def main(symbol):
     for coin in coins:
         if coin["symbol"] == symbol.lower():
             slug = coin["id"]
-            res = json.loads(urllib.request.urlopen(PRICE_URL.format(slug)).read())
-            return res[slug]["usd"]
+            return make_json_request(PRICE_URL.format(slug))[slug]["usd"]
     raise ValueError("unknown CoinGecko symbol: {}".format(symbol))
 
 
