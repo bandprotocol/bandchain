@@ -43,8 +43,7 @@ func NewHandler(keeper Keeper) sdk.Handler {
 				newMsg := NewMsgRequestData(
 					requestData.OracleScriptID, calldata, requestData.RequestedValidatorCount,
 					requestData.SufficientValidatorCount, requestData.Expiration,
-					requestData.ExecuteGas, requestData.ClientID,
-					sdk.AccAddress([]byte("NOT_IMPORTANT")),
+					requestData.ClientID, sdk.AccAddress([]byte("NOT_IMPORTANT")),
 				)
 				return handleMsgRequestData(
 					ctx, keeper, newMsg, msg.GetDestPort(), msg.GetDestChannel(),
@@ -145,7 +144,7 @@ func handleMsgRequestData(
 ) (*sdk.Result, error) {
 	id, err := keeper.AddRequest(
 		ctx, msg.OracleScriptID, msg.Calldata, msg.RequestedValidatorCount,
-		msg.SufficientValidatorCount, msg.Expiration, msg.ExecuteGas, msg.ClientID,
+		msg.SufficientValidatorCount, msg.Expiration, msg.ClientID,
 	)
 	// TODO: HACK AREA!
 	if len(ibcData) == 2 {

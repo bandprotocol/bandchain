@@ -22,7 +22,6 @@ type Request struct {
 	RequestHeight            int64            `json:"requestHeight"`
 	RequestTime              int64            `json:"requestTime"`
 	ExpirationHeight         int64            `json:"expirationHeight"`
-	ExecuteGas               uint64           `json:"executeGas"`
 	ResolveStatus            ResolveStatus    `json:"resolveStatus"`
 	ClientID                 string           `json:"clientID"`
 
@@ -39,7 +38,6 @@ func NewRequest(
 	requestHeight int64,
 	requestTime int64,
 	expirationHeight int64,
-	executeGas uint64,
 	clientID string,
 ) Request {
 	return Request{
@@ -50,7 +48,6 @@ func NewRequest(
 		RequestHeight:            requestHeight,
 		RequestTime:              requestTime,
 		ExpirationHeight:         expirationHeight,
-		ExecuteGas:               executeGas,
 		ResolveStatus:            Open,
 		SourcePort:               "",
 		SourceChannel:            "",
