@@ -40,6 +40,9 @@ type t = {
   chainID: string,
   chennel: string,
   port: string,
+  yourChainID: string,
+  yourChannel: string,
+  yourPort: string,
   blockHeight: ID.Block.t,
   packet: packet_t,
 };
@@ -49,16 +52,34 @@ type internal_t = {
   blockHeight: ID.Block.t,
   chennel: string,
   port: string,
+  yourChainID: string,
+  yourChannel: string,
+  yourPort: string,
   packetType: string,
   packetDetail: Js.Json.t,
 };
 
 let toExternal: internal_t => t =
-  ({isIncoming, blockHeight, chennel, port, packetType, packetDetail}) => {
+  (
+    {
+      isIncoming,
+      blockHeight,
+      chennel,
+      port,
+      yourChainID,
+      yourChannel,
+      yourPort,
+      packetType,
+      packetDetail,
+    },
+  ) => {
     direction: isIncoming ? Incoming : Outgoing,
     chainID: "bandchain",
     chennel,
     port,
+    yourChainID,
+    yourChannel,
+    yourPort,
     blockHeight,
     packet:
       switch (packetType) {
@@ -109,6 +130,9 @@ module MultiPacketsConfig = [%graphql
         blockHeight: block_height @bsDecoder(fn: "ID.Block.fromJson")
         chennel: my_channel
         port: my_port
+        yourChainID: your_chain_id
+        yourChannel: your_channel
+        yourPort: your_port
         packetType: type
         packetDetail: detail
       }
