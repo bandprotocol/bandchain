@@ -10,6 +10,7 @@ module Config = [%graphql
   |}
 ];
 
+// TODO: If we can get the schema out of IBCSub directly then this module is not necessary any more.
 module SchemaByOracleScriptIDConfig = [%graphql
   {|
     subscription OracleScriptCode($oracleScriptID: bigint!) {
@@ -37,6 +38,7 @@ let get = codeHash => {
   };
 };
 
+// TODO: If we can get the schema out of IBCSub directly then this function is not necessary any more.
 let getSchemaByOracleScriptID = oracleScriptID => {
   let (result, _) =
     ApolloHooks.useSubscription(

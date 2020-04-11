@@ -21,7 +21,9 @@ module Styles = {
 
 [@react.component]
 let make = (~packet: IBCSub.packet_t, ~oracleScriptID: ID.OracleScript.t) => {
+  // TODO: If we can get the schema out of IBCSub directly then this sub is not necessary any more.
   let schemaSub = OracleScriptCodeSub.getSchemaByOracleScriptID(oracleScriptID);
+
   switch (packet) {
   | IBCSub.Request(request) =>
     let outputKVsOpt =
