@@ -66,6 +66,7 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 
 	db.Exec(`CREATE VIEW delegations_view AS
 			SELECT CAST(shares AS DECIMAL) * CAST(tokens AS DECIMAL) / CAST(delegator_shares AS DECIMAL) as amount,
+			CAST(shares AS DECIMAL) as shares,
 			validator_address,
 			delegator_address
 			FROM delegations JOIN validators ON validator_address = operator_address;
