@@ -93,6 +93,7 @@ func (b *BandDB) HandleEndblockEvent(event abci.Event) {
 			if err != nil {
 				panic(err)
 			}
+			jsonMap["type"] = "oracle/OracleResponsePacketData"
 			jsonMap["oracleScriptID"] = request.OracleScriptID
 			jsonMap["oracleScriptName"] = oracleScript.Name
 			jsonMap["resolveStatus"] = parseResolveStatus(request.ResolveStatus)

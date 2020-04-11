@@ -83,6 +83,7 @@ func (b *BandDB) handleMsgPacket(
 			return err
 		}
 
+		jsonMap["type"] = "oracle/OracleRequestPacketData"
 		jsonMap["requestID"] = id
 		jsonMap["oracleScriptName"] = oracleScript.Name
 	}
