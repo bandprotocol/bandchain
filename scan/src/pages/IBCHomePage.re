@@ -127,7 +127,21 @@ let make = () =>
         </div>
       </THead>
       {packets
-       ->Belt_Array.mapWithIndex((i, {direction, chainID, chennel, port, blockHeight, packet}) => {
+       ->Belt_Array.mapWithIndex(
+           (
+             i,
+             {
+               direction,
+               chainID,
+               chennel,
+               port,
+               yourChainID,
+               yourChannel,
+               yourPort,
+               blockHeight,
+               packet,
+             },
+           ) => {
            <TBody key={i |> string_of_int} paddingV={`px(20)}>
              <Row alignItems=`flexStart>
                <Col> <HSpacing size=Spacing.md /> </Col>
@@ -171,7 +185,18 @@ let make = () =>
                      code=true
                      height={Text.Px(16)}
                    />
-                   <Text value=chainID size=Text.Sm code=true height={Text.Px(16)} />
+                   <Text
+                     value={
+                       switch (packet) {
+                       | Request(_) => chainID
+                       | Response(_) => yourChainID
+                       | Unknown => "Unknown"
+                       }
+                     }
+                     size=Text.Sm
+                     code=true
+                     height={Text.Px(16)}
+                   />
                  </div>
                  <VSpacing size=Spacing.md />
                  <div className=Styles.hFlex>
@@ -181,7 +206,18 @@ let make = () =>
                      code=true
                      height={Text.Px(16)}
                    />
-                   <Text value=chennel size=Text.Sm code=true height={Text.Px(16)} />
+                   <Text
+                     value={
+                       switch (packet) {
+                       | Request(_) => chennel
+                       | Response(_) => yourChannel
+                       | Unknown => "Unknown"
+                       }
+                     }
+                     size=Text.Sm
+                     code=true
+                     height={Text.Px(16)}
+                   />
                  </div>
                  <VSpacing size=Spacing.md />
                  <div className=Styles.hFlex>
@@ -191,11 +227,28 @@ let make = () =>
                      code=true
                      height={Text.Px(16)}
                    />
-                   <Text value=port size=Text.Sm code=true height={Text.Px(16)} />
+                   <Text
+                     value={
+                       switch (packet) {
+                       | Request(_) => port
+                       | Response(_) => yourPort
+                       | Unknown => "Unknown"
+                       }
+                     }
+                     size=Text.Sm
+                     code=true
+                     height={Text.Px(16)}
+                   />
                  </div>
                </Col>
                <Col size=8.1> <TypeID.Block id=blockHeight /> </Col>
-               <Col size=44.2> <Packet packet /> </Col>
+               <Col size=44.2>
+                 {switch (packet) {
+                  | Request({oracleScriptID}) => <Packet packet oracleScriptID />
+                  | Response({oracleScriptID}) => <Packet packet oracleScriptID />
+                  | Unknown => React.null
+                  }}
+               </Col>
                <Col> <HSpacing size=Spacing.md /> </Col>
              </Row>
            </TBody>
