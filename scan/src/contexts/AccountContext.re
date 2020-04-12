@@ -34,8 +34,6 @@ let reducer = state =>
               ~requestedValidatorCount=4,
               ~sufficientValidatorCount=4,
               ~expiration=20,
-              ~prepareGas=20000,
-              ~executeGas=150000,
               ~sender=address,
               ~feeAmount=1000000,
               ~gas=3000000,
