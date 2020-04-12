@@ -93,7 +93,7 @@ let renderBody = (rank, validator: ValidatorSub.t, bondedTokenCount) => {
   //   validator.completedRequestCount + validator.missedRequestCount |> float_of_int;
   // let reportRate = (validator.completedRequestCount |> float_of_int) /. allRequestCount *. 100.;
 
-  <TBody key={rank |> string_of_int}>
+  <TBody key={validator.operatorAddress |> Address.toBech32}>
     <div className=Styles.fullWidth>
       <Row>
         <Col size=0.8 alignSelf=Col.Start>
