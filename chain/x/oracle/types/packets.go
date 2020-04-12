@@ -106,8 +106,8 @@ func (p OracleResponsePacketData) String() string {
 	ResolveTime: %d
 	ResolveStatus: %d
 	Result: %s`,
-		p.RequestID,
 		p.ClientID,
+		p.RequestID,
 		p.AnsCount,
 		p.PrepareTime,
 		p.ResolveTime,
