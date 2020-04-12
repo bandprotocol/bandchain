@@ -22,4 +22,10 @@ BandChain archives the aforementioned goals with a blockchain specifically built
 
 # Table of Contents
 
-TODO
+The specification is split into multiple sub-documents. See the following for the complete list.
+
+1. [Terminology](./1_terminology.md) - The overview of terms used in BandChain specification.
+2. [System Overview](./2_system_overview.md) - TODO
+3. TBD
+4. TBD
+5. TBD
