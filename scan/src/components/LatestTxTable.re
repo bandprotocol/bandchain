@@ -87,7 +87,7 @@ let txBodyRender = (reserveIndex: int, txSub: ApolloHooks.Subscription.variant(T
            ->Belt_Array.mapWithIndex((i, msg) =>
                <React.Fragment key={(txHash |> Hash.toHex) ++ (i |> string_of_int)}>
                  <VSpacing size=Spacing.sm />
-                 <Msg msg width=350 />
+                 <Msg msg width=250 />
                  <VSpacing size=Spacing.sm />
                </React.Fragment>
              )
