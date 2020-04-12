@@ -10,13 +10,15 @@ This live document outlines implementation plans and research directions for [Ba
 
 # Introduction
 
-The majority of existing smart contract platforms, while support trustless executation of arbitrary programs, lack access to real-world data. This renders smart contracts not as useful. BandChain connects public blockchains with off-chain information, with the following design goals.
+The majority of existing smart contract platforms, while support trustless execution of arbitrary programs, lack access to real-world data. This renders smart contracts not as useful. BandChain connects public blockchains with off-chain information, with the following design goals.
 
-1. **Speed and Scalability:** The system must be able to serve a large quantity of data requests to multiple public blockchains with minimal latency.
-2. **Cross-Chain Compatibility:** The system must be blockchain-agnostic and able to serve data to most available public blockchains.
+1. **Speed and Scalability:** The system must be able to serve a large quantity of data requests to multiple public blockchains with minimal latency and high throughput. The expected response time must be in the order of seconds.
+
+2. **Cross-Chain Compatibility:** The system must be blockchain-agnostic and able to serve data to most available public blockchains. Verification of data authenticity on the target blockchains must be efficient and trustless.
+
 3. **Data Flexibility:** The system must be generic and able to support different ways to fetch and aggregate data, including both permissionless, publicly available data and information guarded by centralized parties.
 
-BandChain archives the aforementioned goals with a blockchain specifically built for offchain data curation. The blockchain supports generic data requests and on-chain aggregations with WebAssembly-powered oracle scripts. Oracle results on BandChain blockchain can be sent across to other blockchains via the [Inter-Blockchain Communication protocol (IBC)](https://cosmos.network/ibc/) or customized one-way bridges with minimal latency.
+BandChain archives the aforementioned goals with a blockchain specifically built for off-chain data curation. The blockchain supports generic data requests and on-chain aggregations with WebAssembly-powered oracle scripts. Oracle results on BandChain blockchain can be sent across to other blockchains via the [Inter-Blockchain Communication protocol (IBC)](https://cosmos.network/ibc/) or customized one-way bridges with minimal latency.
 
 # Table of Contents
 
