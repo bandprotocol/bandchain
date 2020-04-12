@@ -67,7 +67,7 @@ function(signedMsg) {
 let broadcast = (instance, signedMsg) => {
   addPublicKeyToSignedMsg(signedMsg);
   let%Promise rawResponse = instance->_broadcast(signedMsg);
-  Js.Console.log(rawResponse);
+
   Promise.ret(
     Tx(
       JsonUtils.Decode.{
