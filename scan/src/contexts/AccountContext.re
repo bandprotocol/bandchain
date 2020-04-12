@@ -33,7 +33,6 @@ let reducer = state =>
               ~calldata,
               ~requestedValidatorCount=4,
               ~sufficientValidatorCount=4,
-              ~expiration=20,
               ~sender=address,
               ~feeAmount=1000000,
               ~gas=3000000,
