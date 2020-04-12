@@ -14,9 +14,6 @@ type MsgRequestData struct {
 	Calldata                 []byte         `json:"calldata"`
 	RequestedValidatorCount  int64          `json:"requestedValidatorCount"`
 	SufficientValidatorCount int64          `json:"sufficientValidatorCount"`
-	Expiration               int64          `json:"expiration"`
-	PrepareGas               uint64         `json:"prepareGas"`
-	ExecuteGas               uint64         `json:"executeGas"`
 	ClientID                 string         `json:"clientID"`
 	Sender                   sdk.AccAddress `json:"sender"`
 }
@@ -27,9 +24,6 @@ func NewMsgRequestData(
 	calldata []byte,
 	requestedValidatorCount int64,
 	sufficientValidatorCount int64,
-	expiration int64,
-	prepareGas uint64,
-	executeGas uint64,
 	clientID string,
 	sender sdk.AccAddress,
 ) MsgRequestData {
@@ -38,9 +32,6 @@ func NewMsgRequestData(
 		Calldata:                 calldata,
 		RequestedValidatorCount:  requestedValidatorCount,
 		SufficientValidatorCount: sufficientValidatorCount,
-		Expiration:               expiration,
-		PrepareGas:               prepareGas,
-		ExecuteGas:               executeGas,
 		ClientID:                 clientID,
 		Sender:                   sender,
 	}
@@ -71,21 +62,6 @@ func (msg MsgRequestData) ValidateBasic() error {
 			"MsgRequestData: Request validator count (%d) must not be less than sufficient validator count (%d).",
 			msg.RequestedValidatorCount,
 			msg.SufficientValidatorCount,
-		)
-	}
-	if msg.Expiration <= 0 {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgRequestData: Expiration period (%d) must be positive.",
-			msg.Expiration,
-		)
-	}
-	if msg.PrepareGas <= 0 {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgRequestData: Prepare gas (%d) must be positive.",
-			msg.PrepareGas,
-		)
-	}
-	if msg.ExecuteGas <= 0 {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgRequestData: Execute gas (%d) must be positive.",
-			msg.ExecuteGas,
 		)
 	}
 	return nil
