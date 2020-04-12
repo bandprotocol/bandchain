@@ -66,7 +66,7 @@ func NewDefaultGenesisState() GenesisState {
 		upgrade.ModuleName:  upgrade.AppModuleBasic{}.DefaultGenesis(cdc),
 		evidence.ModuleName: evidence.AppModuleBasic{}.DefaultGenesis(cdc),
 		transfer.ModuleName: transfer.AppModuleBasic{}.DefaultGenesis(cdc),
-		oracle.ModuleName:  oracle.AppModuleBasic{}.DefaultGenesis(cdc),
+		oracle.ModuleName:   oracle.AppModuleBasic{}.DefaultGenesis(cdc),
 	}
 }
 
@@ -80,7 +80,7 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 		{
 			"Coingecko script",
 			"The Script that queries crypto price from https://coingecko.com",
-			"./datasources/coingecko_price.sh",
+			"./datasources/coingecko_price.py",
 		},
 		{
 			"Crypto compare script",
