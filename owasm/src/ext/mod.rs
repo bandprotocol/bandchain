@@ -131,13 +131,13 @@ mod tests {
     }
 
     #[test]
-    fn test_majority_string() {
+    fn test_majority_char() {
         let vals = vec!['a', 'b', 'a', 'b', 'b'];
         assert_eq!(majority(vals), Some('b'));
     }
 
     #[test]
-    fn test_majority_string_result_none() {
+    fn test_majority_char_result_none() {
         let vals = vec!['a', 'b', 'a', 'b', 'c', 'b'];
         assert_eq!(majority(vals), None);
     }
