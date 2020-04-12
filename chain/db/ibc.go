@@ -64,7 +64,7 @@ func (b *BandDB) handleMsgPacket(
 			id,
 			int64(requestData.OracleScriptID),
 			calldata,
-			requestData.SufficientValidatorCount,
+			requestData.MinCount,
 			request.ExpirationHeight,
 			"Pending",
 			msg.Signer.String(),
