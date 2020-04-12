@@ -211,7 +211,7 @@ func TestRequestSuccess(t *testing.T) {
 	)
 	keeper.SetDataSource(ctx, 2, dataSource2)
 
-	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 1000000, 1000000, "clientID", sender)
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, "clientID", sender)
 
 	// Test here
 	beforeGas := ctx.GasMeter().GasConsumed()
@@ -225,9 +225,8 @@ func TestRequestSuccess(t *testing.T) {
 	require.Nil(t, err)
 	expectRequest := types.NewRequest(1, calldata,
 		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
-		2, 1581589790, 102, 1000000, "clientID",
+		2, 1581589790, 102, "clientID",
 	)
-	expectRequest.ExecuteGas = 1000000
 	require.Equal(t, expectRequest, actualRequest)
 
 	require.Equal(t, int64(2), keeper.GetRawDataRequestCount(ctx, 1))
@@ -236,8 +235,9 @@ func TestRequestSuccess(t *testing.T) {
 		types.NewRawDataRequest(1, []byte("band-protocol")), types.NewRawDataRequest(2, []byte("band-chain")),
 	}
 	require.Equal(t, rawRequests, keeper.GetRawDataRequests(ctx, 1))
-	// check consumed gas must more than 2000000 (prepareGas + executeGas)
-	require.True(t, afterGas-beforeGas > 2000000)
+	// check consumed gas must more than 100000
+	// TODO: Write a better test than just checking number comparison
+	require.GreaterOrEqual(t, afterGas-beforeGas, uint64(100000))
 
 	senderBalance := keeper.CoinKeeper.GetAllBalances(ctx, sender)
 	require.Equal(t, sdk.Coins(nil), senderBalance)
@@ -258,7 +258,7 @@ func TestRequestInvalidDataSource(t *testing.T) {
 	calldata := []byte("calldata")
 	sender := sdk.AccAddress([]byte("sender"))
 
-	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 30, 20000, "clientID", sender)
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, "clientID", sender)
 	_, err := handleMsgRequestData(ctx, keeper, msg)
 	require.NotNil(t, err)
 
@@ -300,8 +300,8 @@ func TestRequestWithPrepareGasExceed(t *testing.T) {
 	dataSource := keep.GetTestDataSource()
 	keeper.SetDataSource(ctx, 1, dataSource)
 
-	// set prepare gas to 3 (not enough for using) then it occurs error.
-	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 3, 1000000, "clientID", sender)
+	// This thing consumes more gas than the allocated prepare gas (100k)
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, "clientID", sender)
 
 	_, err := handleMsgRequestData(ctx, keeper, msg)
 	require.NotNil(t, err)
@@ -340,7 +340,7 @@ func TestRequestWithInsufficientFee(t *testing.T) {
 	)
 	keeper.SetDataSource(ctx, 2, dataSource2)
 
-	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 1000000, 1000000, "clientID", sender)
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, "clientID", sender)
 
 	_, err = handleMsgRequestData(ctx, keeper, msg)
 	require.NotNil(t, err)
@@ -378,7 +378,7 @@ func TestReportSuccess(t *testing.T) {
 
 	request := types.NewRequest(1, calldata,
 		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
-		2, 1581589790, 102, 1000000, "clientID",
+		2, 1581589790, 102, "clientID",
 	)
 	keeper.SetRequest(ctx, 1, request)
 	keeper.SetRawDataRequest(ctx, 1, 42, types.NewRawDataRequest(1, []byte("calldata1")))
@@ -435,7 +435,7 @@ func TestReportFailed(t *testing.T) {
 
 	request := types.NewRequest(1, calldata,
 		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
-		2, 1581589790, 102, 1000000, "clientID",
+		2, 1581589790, 102, "clientID",
 	)
 	keeper.SetRequest(ctx, 1, request)
 	keeper.SetRawDataRequest(ctx, 1, 42, types.NewRawDataRequest(1, []byte("calldata1")))
@@ -474,7 +474,7 @@ func TestEndBlock(t *testing.T) {
 	dataSource := keep.GetTestDataSource()
 	keeper.SetDataSource(ctx, 1, dataSource)
 
-	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 30, 2500, "clientID", sender)
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, "clientID", sender)
 
 	handleMsgRequestData(ctx, keeper, msg)
 
@@ -508,295 +508,7 @@ func TestEndBlock(t *testing.T) {
 }
 
 func TestEndBlockExecuteFailedIfExecuteGasLessThanGasUsed(t *testing.T) {
-	ctx, keeper := keep.CreateTestInput(t, false)
-
-	ctx = ctx.WithBlockHeight(2)
-	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
-	calldata := []byte("calldata")
-	sender := sdk.AccAddress([]byte("sender"))
-
-	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
-	keeper.SetOracleScript(ctx, 1, script)
-
-	pubStr := []string{
-		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
-		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
-	}
-
-	validatorAddress1 := keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
-	validatorAddress2 := keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
-
-	dataSource := keep.GetTestDataSource()
-	keeper.SetDataSource(ctx, 1, dataSource)
-
-	// Set gas for execution to 500
-	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 500, 500, "clientID", sender)
-
-	handleMsgRequestData(ctx, keeper, msg)
-
-	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress1, types.NewRawDataReport(0, []byte("answer1")))
-	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress2, types.NewRawDataReport(0, []byte("answer2")))
-
-	keeper.SetPendingResolveList(ctx, []types.RequestID{1})
-
-	handleEndBlock(ctx, keeper)
-
-	require.Equal(t, []types.RequestID{}, keeper.GetPendingResolveList(ctx))
-
-	_, err := keeper.GetResult(ctx, 1, 1, calldata)
-	require.NotNil(t, err)
-
-	actualRequest, err := keeper.GetRequest(ctx, 1)
-	require.Nil(t, err)
-	require.Equal(t, types.Failure, actualRequest.ResolveStatus)
-}
-
-func TestSkipInvalidExecuteGas(t *testing.T) {
-	ctx, keeper := keep.CreateTestInput(t, false)
-
-	calldata := []byte("calldata")
-	sender := sdk.AccAddress([]byte("sender"))
-
-	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
-	keeper.SetOracleScript(ctx, 1, script)
-
-	pubStr := []string{
-		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
-		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
-	}
-
-	validatorAddress1 := keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
-	validatorAddress2 := keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
-
-	dataSource := keep.GetTestDataSource()
-	keeper.SetDataSource(ctx, 1, dataSource)
-
-	// Set gas for execution to 100000
-	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, 1000000, 100000, "clientID", sender)
-	handleMsgRequestData(ctx, keeper, msg)
-
-	msg = types.NewMsgRequestData(1, calldata, 2, 2, 100, 1000000, 50000, "clientID", sender)
-	handleMsgRequestData(ctx, keeper, msg)
-
-	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress1, types.NewRawDataReport(0, []byte("answer1")))
-	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress2, types.NewRawDataReport(0, []byte("answer2")))
-
-	keeper.SetRawDataReport(ctx, 2, 1, validatorAddress1, types.NewRawDataReport(0, []byte("answer1")))
-	keeper.SetRawDataReport(ctx, 2, 1, validatorAddress2, types.NewRawDataReport(0, []byte("answer2")))
-
-	keeper.SetParam(ctx, KeyEndBlockExecuteGasLimit, 75000)
-
-	keeper.SetPendingResolveList(ctx, []types.RequestID{1, 2})
-	handleEndBlock(ctx, keeper)
-	require.Equal(t, []types.RequestID{}, keeper.GetPendingResolveList(ctx))
-
-	_, err := keeper.GetResult(ctx, 1, 1, calldata)
-	require.NotNil(t, err)
-
-	actualRequest, err := keeper.GetRequest(ctx, 1)
-	require.Nil(t, err)
-	require.Equal(t, types.Failure, actualRequest.ResolveStatus)
-
-	_, err = keeper.GetResult(ctx, 2, 1, calldata)
-	require.Nil(t, err)
-
-	actualRequest, err = keeper.GetRequest(ctx, 2)
-	require.Nil(t, err)
-	require.Equal(t, types.Success, actualRequest.ResolveStatus)
-}
-
-func TestStopResolveWhenOutOfGas(t *testing.T) {
-	ctx, keeper := keep.CreateTestInput(t, false)
-
-	calldata := []byte("calldata")
-	sender := sdk.AccAddress([]byte("sender"))
-
-	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
-	scriptID := types.OracleScriptID(1)
-	keeper.SetOracleScript(ctx, scriptID, script)
-
-	pubStr := []string{
-		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
-		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
-	}
-
-	validatorAddress1 := keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
-	validatorAddress2 := keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
-
-	dataSource := keep.GetTestDataSource()
-	keeper.SetDataSource(ctx, 1, dataSource)
-
-	pendingList := []types.RequestID{}
-	for i := types.RequestID(1); i <= types.RequestID(10); i++ {
-		handleMsgRequestData(
-			ctx, keeper,
-			types.NewMsgRequestData(scriptID, calldata, 2, 2, 100, 2000, 2500, "clientID", sender),
-		)
-
-		keeper.SetRawDataReport(ctx, i, 1, validatorAddress1, types.NewRawDataReport(0, []byte("answer1")))
-		keeper.SetRawDataReport(ctx, i, 1, validatorAddress2, types.NewRawDataReport(0, []byte("answer2")))
-		pendingList = append(pendingList, i)
-	}
-
-	// Each execute use 2270 gas, so it can resolve 3 requests per block
-	keeper.SetParam(ctx, KeyEndBlockExecuteGasLimit, 7500)
-	keeper.SetPendingResolveList(ctx, pendingList)
-
-	handleEndBlock(ctx, keeper)
-	require.Equal(t, []types.RequestID{4, 5, 6, 7, 8, 9, 10}, keeper.GetPendingResolveList(ctx))
-
-	for i := types.RequestID(1); i <= types.RequestID(3); i++ {
-		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
-		require.Nil(t, err)
-
-		actualRequest, err := keeper.GetRequest(ctx, i)
-		require.Nil(t, err)
-		require.Equal(t, types.Success, actualRequest.ResolveStatus)
-	}
-
-	for i := types.RequestID(4); i <= types.RequestID(10); i++ {
-		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
-		require.NotNil(t, err)
-
-		actualRequest, err := keeper.GetRequest(ctx, i)
-		require.Nil(t, err)
-		require.Equal(t, types.Open, actualRequest.ResolveStatus)
-	}
-
-	handleEndBlock(ctx, keeper)
-	require.Equal(t, []types.RequestID{7, 8, 9, 10}, keeper.GetPendingResolveList(ctx))
-
-	for i := types.RequestID(1); i <= types.RequestID(6); i++ {
-		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
-		require.Nil(t, err)
-
-		actualRequest, err := keeper.GetRequest(ctx, i)
-		require.Nil(t, err)
-		require.Equal(t, types.Success, actualRequest.ResolveStatus)
-	}
-
-	for i := types.RequestID(7); i <= types.RequestID(10); i++ {
-		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
-		require.NotNil(t, err)
-
-		actualRequest, err := keeper.GetRequest(ctx, i)
-		require.Nil(t, err)
-		require.Equal(t, types.Open, actualRequest.ResolveStatus)
-	}
-
-	// New request
-	handleMsgRequestData(
-		ctx, keeper,
-		types.NewMsgRequestData(scriptID, calldata, 2, 2, 100, 2000, 2500, "clientID", sender),
-	)
-
-	handleEndBlock(ctx, keeper)
-	require.Equal(t, []types.RequestID{10}, keeper.GetPendingResolveList(ctx))
-
-	for i := types.RequestID(1); i <= types.RequestID(9); i++ {
-		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
-		require.Nil(t, err)
-
-		actualRequest, err := keeper.GetRequest(ctx, i)
-		require.Nil(t, err)
-		require.Equal(t, types.Success, actualRequest.ResolveStatus)
-	}
-
-	for i := types.RequestID(10); i <= types.RequestID(10); i++ {
-		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
-		require.NotNil(t, err)
-
-		actualRequest, err := keeper.GetRequest(ctx, i)
-		require.Nil(t, err)
-		require.Equal(t, types.Open, actualRequest.ResolveStatus)
-	}
-
-	keeper.SetRawDataReport(ctx, 11, 1, validatorAddress1, types.NewRawDataReport(0, []byte("answer1")))
-	keeper.SetRawDataReport(ctx, 11, 1, validatorAddress2, types.NewRawDataReport(0, []byte("answer2")))
-	keeper.SetPendingResolveList(ctx, []types.RequestID{10, 11})
-
-	handleEndBlock(ctx, keeper)
-	require.Equal(t, []types.RequestID{}, keeper.GetPendingResolveList(ctx))
-
-	for i := types.RequestID(1); i <= types.RequestID(11); i++ {
-		_, err := keeper.GetResult(ctx, i, scriptID, calldata)
-		require.Nil(t, err)
-
-		actualRequest, err := keeper.GetRequest(ctx, i)
-		require.Nil(t, err)
-		require.Equal(t, types.Success, actualRequest.ResolveStatus)
-	}
-}
-
-func TestEndBlockInsufficientExecutionConsumeEndBlockGas(t *testing.T) {
-	ctx, keeper := keep.CreateTestInput(t, false)
-
-	calldata := []byte("calldata")
-	sender := sdk.AccAddress([]byte("sender"))
-
-	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
-	scriptID := types.OracleScriptID(1)
-	keeper.SetOracleScript(ctx, scriptID, script)
-
-	pubStr := []string{
-		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
-		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
-	}
-
-	validatorAddress1 := keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
-	validatorAddress2 := keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
-
-	dataSource := keep.GetTestDataSource()
-	keeper.SetDataSource(ctx, 1, dataSource)
-
-	pendingList := []types.RequestID{}
-	executeGasList := []uint64{2500, 50, 3000, 2500}
-
-	for i := types.RequestID(1); i <= types.RequestID(4); i++ {
-		handleMsgRequestData(
-			ctx, keeper,
-			types.NewMsgRequestData(scriptID, calldata, 2, 2, 100, 2000, executeGasList[i-1], "clientID", sender),
-		)
-
-		keeper.SetRawDataReport(ctx, i, 1, validatorAddress1, types.NewRawDataReport(0, []byte("answer1")))
-		keeper.SetRawDataReport(ctx, i, 1, validatorAddress2, types.NewRawDataReport(0, []byte("answer2")))
-		pendingList = append(pendingList, i)
-	}
-
-	keeper.SetParam(ctx, KeyEndBlockExecuteGasLimit, 2600)
-	keeper.SetPendingResolveList(ctx, pendingList)
-
-	handleEndBlock(ctx, keeper)
-	require.Equal(t, []types.RequestID{4}, keeper.GetPendingResolveList(ctx))
-
-	_, err := keeper.GetResult(ctx, 1, scriptID, calldata)
-	require.Nil(t, err)
-
-	actualRequest, err := keeper.GetRequest(ctx, 1)
-	require.Nil(t, err)
-	require.Equal(t, types.Success, actualRequest.ResolveStatus)
-
-	_, err = keeper.GetResult(ctx, 2, scriptID, calldata)
-	require.NotNil(t, err)
-
-	actualRequest, err = keeper.GetRequest(ctx, 2)
-	require.Nil(t, err)
-	require.Equal(t, types.Failure, actualRequest.ResolveStatus)
-
-	_, err = keeper.GetResult(ctx, 3, scriptID, calldata)
-	require.NotNil(t, err)
-
-	actualRequest, err = keeper.GetRequest(ctx, 3)
-	require.Nil(t, err)
-	require.Equal(t, types.Failure, actualRequest.ResolveStatus)
-
-	_, err = keeper.GetResult(ctx, 4, scriptID, calldata)
-	require.NotNil(t, err)
-
-	actualRequest, err = keeper.GetRequest(ctx, 4)
-	require.Nil(t, err)
-	require.Equal(t, types.Open, actualRequest.ResolveStatus)
-
+	// TODO: Write this test properly. Pending on having owasm that can easily control gas usage.
 }
 
 func TestAddAndRemoveOracleAddress(t *testing.T) {
@@ -830,7 +542,7 @@ func TestAddAndRemoveOracleAddress(t *testing.T) {
 
 	request := types.NewRequest(1, calldata,
 		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
-		2, 1581589790, 102, 1000000, "clientID",
+		2, 1581589790, 102, "clientID",
 	)
 	keeper.SetRequest(ctx, 1, request)
 	keeper.SetRawDataRequest(ctx, 1, 42, types.NewRawDataRequest(1, []byte("calldata1")))

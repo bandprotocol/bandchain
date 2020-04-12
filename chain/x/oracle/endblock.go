@@ -46,15 +46,18 @@ func handleResolveRequest(
 			false
 	}
 
+	// TODO: Refactor this code. For now we hardcode execute gas to 100k
+	executeGas := uint64(100000)
+
 	// Discard the request if execute gas is greater than EndBlockExecuteGasLimit.
-	if request.ExecuteGas > resolveContext.endBlockExecuteGasLimit {
+	if executeGas > resolveContext.endBlockExecuteGasLimit {
 		keeper.SetResolve(ctx, requestID, types.Failure)
 		return newRequestExecuteEvent(requestID, types.Failure),
 			NewOracleResponsePacketData(requestID, request.ClientID, types.Failure, ""),
 			false
 	}
 
-	estimatedGasConsumed, overflow := addUint64Overflow(resolveContext.gasConsumed, request.ExecuteGas)
+	estimatedGasConsumed, overflow := addUint64Overflow(resolveContext.gasConsumed, executeGas)
 	if overflow || estimatedGasConsumed > resolveContext.endBlockExecuteGasLimit {
 		return sdk.Event{},
 			OracleResponsePacketData{},
@@ -86,16 +89,16 @@ func handleResolveRequest(
 	}
 
 	result, gasUsed, errOwasm := owasm.Execute(
-		&env, script.Code, "execute", request.Calldata, request.ExecuteGas,
+		&env, script.Code, "execute", request.Calldata, executeGas,
 	)
 
-	if gasUsed > request.ExecuteGas {
-		gasUsed = request.ExecuteGas
+	if gasUsed > executeGas {
+		gasUsed = executeGas
 	}
 
 	resolveContext.gasConsumed, overflow = addUint64Overflow(resolveContext.gasConsumed, gasUsed)
 	// Must never overflow because we already checked for overflow above with
-	// gasConsumed + request.ExecuteGas (which is >= gasUsed).
+	// gasConsumed + executeGas (which is >= gasUsed).
 	if overflow {
 		panic(sdk.ErrorGasOverflow{Descriptor: "oracle::handleEndBlock: Gas overflow"})
 	}

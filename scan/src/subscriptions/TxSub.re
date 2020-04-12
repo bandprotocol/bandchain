@@ -116,8 +116,6 @@ module Msg = {
       requestedValidatorCount: int,
       sufficientValidatorCount: int,
       expiration: int,
-      prepareGas: int,
-      executeGas: int,
       sender: Address.t,
     };
 
@@ -130,8 +128,6 @@ module Msg = {
         requestedValidatorCount: json |> field("requestedValidatorCount", int),
         sufficientValidatorCount: json |> field("sufficientValidatorCount", int),
         expiration: json |> field("expiration", int),
-        prepareGas: json |> field("prepareGas", int),
-        executeGas: json |> field("executeGas", int),
         sender: json |> field("sender", string) |> Address.fromBech32,
       };
     };
