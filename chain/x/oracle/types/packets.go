@@ -11,20 +11,18 @@ type OracleRequestPacketData struct {
 	Calldata                 string         `json:"calldata"`
 	RequestedValidatorCount  int64          `json:"requestedValidatorCount"`
 	SufficientValidatorCount int64          `json:"sufficientValidatorCount"`
-	Expiration               int64          `json:"expiration"`
 	ClientID                 string         `json:"clientID"`
 }
 
 func NewOracleRequestPacketData(
 	oracleScriptID OracleScriptID, calldata string, requestedValidatorCount int64,
-	sufficientValidatorCount int64, expiration int64, clientID string,
+	sufficientValidatorCount int64, clientID string,
 ) OracleRequestPacketData {
 	return OracleRequestPacketData{
 		OracleScriptID:           oracleScriptID,
 		Calldata:                 calldata,
 		RequestedValidatorCount:  requestedValidatorCount,
 		SufficientValidatorCount: sufficientValidatorCount,
-		Expiration:               expiration,
 		ClientID:                 clientID,
 	}
 }
@@ -35,13 +33,11 @@ func (p OracleRequestPacketData) String() string {
 	Calldata:                 %s
 	RequestedValidatorCount:  %d
 	SufficientValidatorCount: %d
-	Expiration:               %d
 	ClientID:                 %s`,
 		p.OracleScriptID,
 		p.Calldata,
 		p.RequestedValidatorCount,
 		p.SufficientValidatorCount,
-		p.Expiration,
 		p.ClientID,
 	)
 }
