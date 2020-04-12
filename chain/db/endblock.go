@@ -81,9 +81,7 @@ func (b *BandDB) HandleEndblockEvent(event abci.Event) {
 		var responseData oracle.OracleResponsePacketData
 		if err := oracle.ModuleCdc.UnmarshalJSON(data, &responseData); err == nil {
 			packetType = "ORACLE RESPONSE"
-			// TODO: Figure out how to get request id
-			requestID := oracle.RequestID(1)
-			request, err := b.OracleKeeper.GetRequest(b.ctx, requestID)
+			request, err := b.OracleKeeper.GetRequest(b.ctx, responseData.RequestID)
 			if err != nil {
 				panic(err)
 			}
