@@ -74,7 +74,6 @@ let make = () =>
               spacing={Text.Em(0.06)}
             />
             <div className=Styles.seperatedLine />
-            // TODO: replace this mock
             <Text value={(packetsCount |> Format.iPretty) ++ " in total"} />
           </div>
         </Col>
