@@ -29,7 +29,6 @@ const (
 	flagCalldata                 = "calldata"
 	flagRequestedValidatorCount  = "requested-validator-count"
 	flagSufficientValidatorCount = "sufficient-validator-count"
-	flagExpiration               = "expiration"
 	flagClientID                 = "client-id"
 )
 
@@ -59,14 +58,14 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 // GetCmdRequest implements the request command handler.
 func GetCmdRequest(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "request [oracle-script-id] (-c [calldata]) (-r [requested-validator-count]) (-v [sufficient-validator-count]) (-x [expiration]) (-m [client-id])",
+		Use:   "request [oracle-script-id] (-c [calldata]) (-r [requested-validator-count]) (-v [sufficient-validator-count]) (-m [client-id])",
 		Short: "Make a new data request via an existing oracle script",
 		Args:  cobra.ExactArgs(1),
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Make a new request via an existing oracle script with the configuration flags.
 Example:
 $ %s tx oracle request 1 -c 1234abcdef -r 4 -v 3 -x 20 -m client-id --from mykey
-$ %s tx oracle request 1 --calldata 1234abcdef --requested-validator-count 4 --sufficient-validator-count 3 --expiration 20 --client-id cliend-id --from mykey
+$ %s tx oracle request 1 --calldata 1234abcdef --requested-validator-count 4 --sufficient-validator-count 3 --client-id cliend-id --from mykey
 `,
 				version.ClientName, version.ClientName,
 			),
@@ -97,11 +96,6 @@ $ %s tx oracle request 1 --calldata 1234abcdef --requested-validator-count 4 --s
 				return err
 			}
 
-			expiration, err := cmd.Flags().GetInt64(flagExpiration)
-			if err != nil {
-				return err
-			}
-
 			clientID, err := cmd.Flags().GetString(flagClientID)
 			if err != nil {
 				return err
@@ -112,7 +106,6 @@ $ %s tx oracle request 1 --calldata 1234abcdef --requested-validator-count 4 --s
 				calldata,
 				requestedValidatorCount,
 				sufficientValidatorCount,
-				expiration,
 				clientID,
 				cliCtx.GetFromAddress(),
 			)
@@ -131,8 +124,6 @@ $ %s tx oracle request 1 --calldata 1234abcdef --requested-validator-count 4 --s
 	cmd.MarkFlagRequired(flagRequestedValidatorCount)
 	cmd.Flags().Int64P(flagSufficientValidatorCount, "v", 0, "Minimum number of reports sufficient to conclude the request's result")
 	cmd.MarkFlagRequired(flagSufficientValidatorCount)
-	cmd.Flags().Int64P(flagExpiration, "x", 0, "Maximum block count before the data request is considered expired")
-	cmd.MarkFlagRequired(flagExpiration)
 	cmd.Flags().StringP(flagClientID, "m", "", "Requester can match up the request with response by clientID")
 
 	return cmd

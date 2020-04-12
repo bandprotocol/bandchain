@@ -211,7 +211,7 @@ func TestRequestSuccess(t *testing.T) {
 	)
 	keeper.SetDataSource(ctx, 2, dataSource2)
 
-	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, "clientID", sender)
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, "clientID", sender)
 
 	// Test here
 	beforeGas := ctx.GasMeter().GasConsumed()
@@ -225,7 +225,7 @@ func TestRequestSuccess(t *testing.T) {
 	require.Nil(t, err)
 	expectRequest := types.NewRequest(1, calldata,
 		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
-		2, 1581589790, 102, "clientID",
+		2, 1581589790, 22, "clientID",
 	)
 	require.Equal(t, expectRequest, actualRequest)
 
@@ -258,7 +258,8 @@ func TestRequestInvalidDataSource(t *testing.T) {
 	calldata := []byte("calldata")
 	sender := sdk.AccAddress([]byte("sender"))
 
-	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, "clientID", sender)
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, "clientID", sender)
+
 	_, err := handleMsgRequestData(ctx, keeper, msg)
 	require.NotNil(t, err)
 
@@ -300,8 +301,7 @@ func TestRequestWithPrepareGasExceed(t *testing.T) {
 	dataSource := keep.GetTestDataSource()
 	keeper.SetDataSource(ctx, 1, dataSource)
 
-	// This thing consumes more gas than the allocated prepare gas (100k)
-	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, "clientID", sender)
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, "clientID", sender)
 
 	_, err := handleMsgRequestData(ctx, keeper, msg)
 	require.NotNil(t, err)
@@ -340,7 +340,7 @@ func TestRequestWithInsufficientFee(t *testing.T) {
 	)
 	keeper.SetDataSource(ctx, 2, dataSource2)
 
-	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, "clientID", sender)
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, "clientID", sender)
 
 	_, err = handleMsgRequestData(ctx, keeper, msg)
 	require.NotNil(t, err)
@@ -474,7 +474,7 @@ func TestEndBlock(t *testing.T) {
 	dataSource := keep.GetTestDataSource()
 	keeper.SetDataSource(ctx, 1, dataSource)
 
-	msg := types.NewMsgRequestData(1, calldata, 2, 2, 100, "clientID", sender)
+	msg := types.NewMsgRequestData(1, calldata, 2, 2, "clientID", sender)
 
 	handleMsgRequestData(ctx, keeper, msg)
 

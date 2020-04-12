@@ -63,6 +63,7 @@ func (k Keeper) GetParams(ctx sdk.Context) types.Params {
 		k.GetParam(ctx, types.KeyMaxNameLength),
 		k.GetParam(ctx, types.KeyMaxDescriptionLength),
 		k.GetParam(ctx, types.KeyGasPerRawDataRequestPerValidator),
+		k.GetParam(ctx, types.KeyExpirationBlockCount),
 	)
 }
 

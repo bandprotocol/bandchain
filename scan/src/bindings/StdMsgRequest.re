@@ -8,7 +8,6 @@ type request_value_t = {
   calldata: string,
   requestedValidatorCount: string,
   sufficientValidatorCount: string,
-  expiration: string,
   sender: string,
 };
 
@@ -38,7 +37,6 @@ let create =
       ~calldata,
       ~requestedValidatorCount,
       ~sufficientValidatorCount,
-      ~expiration=20,
       ~sender,
       ~feeAmount,
       ~gas=300000,
@@ -54,7 +52,6 @@ let create =
           calldata: calldata |> JsBuffer.toBase64,
           requestedValidatorCount: requestedValidatorCount |> string_of_int,
           sufficientValidatorCount: sufficientValidatorCount |> string_of_int,
-          expiration: expiration |> string_of_int,
           sender: sender |> Address.toBech32,
         },
       },

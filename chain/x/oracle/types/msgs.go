@@ -14,7 +14,6 @@ type MsgRequestData struct {
 	Calldata                 []byte         `json:"calldata"`
 	RequestedValidatorCount  int64          `json:"requestedValidatorCount"`
 	SufficientValidatorCount int64          `json:"sufficientValidatorCount"`
-	Expiration               int64          `json:"expiration"`
 	ClientID                 string         `json:"clientID"`
 	Sender                   sdk.AccAddress `json:"sender"`
 }
@@ -25,7 +24,6 @@ func NewMsgRequestData(
 	calldata []byte,
 	requestedValidatorCount int64,
 	sufficientValidatorCount int64,
-	expiration int64,
 	clientID string,
 	sender sdk.AccAddress,
 ) MsgRequestData {
@@ -34,7 +32,6 @@ func NewMsgRequestData(
 		Calldata:                 calldata,
 		RequestedValidatorCount:  requestedValidatorCount,
 		SufficientValidatorCount: sufficientValidatorCount,
-		Expiration:               expiration,
 		ClientID:                 clientID,
 		Sender:                   sender,
 	}
@@ -65,11 +62,6 @@ func (msg MsgRequestData) ValidateBasic() error {
 			"MsgRequestData: Request validator count (%d) must not be less than sufficient validator count (%d).",
 			msg.RequestedValidatorCount,
 			msg.SufficientValidatorCount,
-		)
-	}
-	if msg.Expiration <= 0 {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgRequestData: Expiration period (%d) must be positive.",
-			msg.Expiration,
 		)
 	}
 	return nil

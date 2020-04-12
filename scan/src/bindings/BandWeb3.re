@@ -102,7 +102,6 @@ let broadcast = (instance, signedMsg) => {
 //      ~calldata="RVRI" |> JsBuffer.fromBase64,
 //      ~requestedValidatorCount=4,
 //      ~sufficientValidatorCount=4,
-//      ~expiration=20,
 //      ~sender"band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs" |> Address.fromBech32,
 //      ~feeAmount=1000000,
 //      ~gas=300000,

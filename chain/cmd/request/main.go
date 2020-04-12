@@ -117,7 +117,7 @@ func main() {
 				{
 					fmt.Println(tx.SendTransaction(
 						oracle.NewMsgRequestData(
-							1, []byte("BTC"), 4, 4, 100000, "request BTC", tx.Sender(),
+							1, []byte("BTC"), 4, 4, "request BTC", tx.Sender(),
 						), 0, "", "",
 					))
 				}
@@ -125,7 +125,7 @@ func main() {
 				{
 					fmt.Println(tx.SendTransaction(
 						oracle.NewMsgRequestData(
-							1, []byte("ETH"), 4, 4, 100000, "request ETH", tx.Sender(),
+							1, []byte("ETH"), 4, 4, "request ETH", tx.Sender(),
 						), 1000000, "", "",
 					))
 				}
@@ -138,7 +138,7 @@ func main() {
 			go func() {
 				txRes, err := tx.SendTransaction(
 					oracle.NewMsgRequestData(
-						1, []byte("BTC"), 4, 4, 100000, "request BTC", tx.Sender(),
+						1, []byte("BTC"), 4, 4, "request BTC", tx.Sender(),
 					), 1000000, "", "",
 				)
 
@@ -150,7 +150,7 @@ func main() {
 			go func() {
 				txRes, err := tx.SendTransaction(
 					oracle.NewMsgRequestData(
-						1, []byte("ETH"), 4, 4, 100000, "request ETH", tx.Sender(),
+						1, []byte("ETH"), 4, 4, "request ETH", tx.Sender(),
 					), 1000000, "", "",
 				)
 
@@ -179,7 +179,7 @@ func main() {
 			go func() {
 				txRes, err := tx.SendTransaction(
 					oracle.NewMsgRequestData(
-						1, []byte("BTC"), 1, 1, 100000, "request BTC", tx.Sender(),
+						1, []byte("BTC"), 1, 1, "request BTC", tx.Sender(),
 					), 1000000, "", "",
 				)
 
@@ -191,7 +191,7 @@ func main() {
 			go func() {
 				txRes, err := tx.SendTransaction(
 					oracle.NewMsgRequestData(
-						1, []byte("ETH"), 1, 1, 100000, "request ETH", tx.Sender(),
+						1, []byte("ETH"), 1, 1, "request ETH", tx.Sender(),
 					), 1000000, "", "",
 				)
 
@@ -234,7 +234,7 @@ func main() {
 			))
 
 			fmt.Println(tx.SendTransaction(
-				oracle.NewMsgRequestData(2, []byte("calldata"), 1, 1, 100, "clientID", tx.Sender()),
+				oracle.NewMsgRequestData(2, []byte("calldata"), 1, 1, "clientID", tx.Sender()),
 				1000000, "", "",
 			))
 
