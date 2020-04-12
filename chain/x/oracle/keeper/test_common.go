@@ -221,7 +221,6 @@ func newDefaultRequest() types.Request {
 		0,
 		1581503227,
 		100,
-		20000,
 		"clientID",
 	)
 }

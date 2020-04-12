@@ -9,15 +9,13 @@ import (
 
 func TestMsgRequestData(t *testing.T) {
 	sender := sdk.AccAddress([]byte("sender"))
-	msg := NewMsgRequestData(1, []byte("calldata"), 10, 5, 5000, 10000, "clientID", sender)
+	msg := NewMsgRequestData(1, []byte("calldata"), 10, 5, "clientID", sender)
 	require.Equal(t, RouterKey, msg.Route())
 	require.Equal(t, "request", msg.Type())
 	require.Equal(t, OracleScriptID(1), msg.OracleScriptID)
 	require.Equal(t, []byte("calldata"), msg.Calldata)
 	require.Equal(t, int64(10), msg.RequestedValidatorCount)
 	require.Equal(t, int64(5), msg.SufficientValidatorCount)
-	require.Equal(t, uint64(5000), msg.PrepareGas)
-	require.Equal(t, uint64(10000), msg.ExecuteGas)
 	require.Equal(t, sender, msg.Sender)
 }
 
@@ -25,8 +23,6 @@ func TestMsgRequestDataValidation(t *testing.T) {
 	sender := sdk.AccAddress([]byte("sender"))
 	requestedValidatorCount := int64(10)
 	sufficientValidatorCount := int64(5)
-	prepareGas := uint64(5000)
-	executeGas := uint64(10000)
 	clientID := "clientID"
 	cases := []struct {
 		valid bool
@@ -34,56 +30,37 @@ func TestMsgRequestDataValidation(t *testing.T) {
 	}{
 		{
 			true, NewMsgRequestData(
-				1, []byte("calldata"), requestedValidatorCount,
-				sufficientValidatorCount, prepareGas, executeGas, clientID, sender,
+				1, []byte("calldata"), requestedValidatorCount, sufficientValidatorCount, clientID, sender,
 			),
 		},
 		{
 			false, NewMsgRequestData(
-				0, []byte("calldata"), requestedValidatorCount,
-				sufficientValidatorCount, prepareGas, executeGas, clientID, sender,
+				0, []byte("calldata"), requestedValidatorCount, sufficientValidatorCount, clientID, sender,
 			),
 		},
 		{
 			true, NewMsgRequestData(
-				1, nil, requestedValidatorCount,
-				sufficientValidatorCount, prepareGas, executeGas, clientID, sender,
+				1, nil, requestedValidatorCount, sufficientValidatorCount, clientID, sender,
 			),
 		},
 		{
 			false, NewMsgRequestData(
-				1, []byte("calldata"), 0,
-				sufficientValidatorCount, prepareGas, executeGas, clientID, sender,
+				1, []byte("calldata"), 0, sufficientValidatorCount, clientID, sender,
 			),
 		},
 		{
 			false, NewMsgRequestData(
-				1, []byte("calldata"), requestedValidatorCount,
-				-1, prepareGas, executeGas, clientID, sender,
+				1, []byte("calldata"), requestedValidatorCount, -1, clientID, sender,
 			),
 		},
 		{
 			false, NewMsgRequestData(
-				1, []byte("calldata"), 6,
-				8, prepareGas, executeGas, clientID, sender,
+				1, []byte("calldata"), 6, 8, clientID, sender,
 			),
 		},
 		{
 			false, NewMsgRequestData(
-				1, []byte("calldata"), requestedValidatorCount,
-				sufficientValidatorCount, 0, executeGas, clientID, sender,
-			),
-		},
-		{
-			false, NewMsgRequestData(
-				1, []byte("calldata"), requestedValidatorCount,
-				sufficientValidatorCount, prepareGas, 0, clientID, sender,
-			),
-		},
-		{
-			false, NewMsgRequestData(
-				1, []byte("calldata"), requestedValidatorCount,
-				sufficientValidatorCount, prepareGas, executeGas, clientID, nil,
+				1, []byte("calldata"), requestedValidatorCount, sufficientValidatorCount, clientID, nil,
 			),
 		},
 	}
@@ -103,10 +80,10 @@ func TestMsgRequestDataGetSignBytes(t *testing.T) {
 	config.SetBech32PrefixForAccount("band", "band"+sdk.PrefixPublic)
 
 	sender := sdk.AccAddress([]byte("sender"))
-	msg := NewMsgRequestData(1, []byte("calldata"), 10, 5, 5000, 10000, "clientID", sender)
+	msg := NewMsgRequestData(1, []byte("calldata"), 10, 5, "clientID", sender)
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"oracle/Request","value":{"calldata":"Y2FsbGRhdGE=","clientID":"clientID","executeGas":"10000","oracleScriptID":"1","prepareGas":"5000","requestedValidatorCount":"10","sender":"band1wdjkuer9wgvz7c4y","sufficientValidatorCount":"5"}}`
+	expected := `{"type":"oracle/Request","value":{"calldata":"Y2FsbGRhdGE=","clientID":"clientID","oracleScriptID":"1","requestedValidatorCount":"10","sender":"band1wdjkuer9wgvz7c4y","sufficientValidatorCount":"5"}}`
 
 	require.Equal(t, expected, string(res))
 }
