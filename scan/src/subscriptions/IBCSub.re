@@ -126,7 +126,7 @@ module Internal = {
   module MultiPacketsConfig = [%graphql
     {|
     subscription Requests($limit: Int!, $offset: Int!) {
-      packets(limit: $limit, offset: $offset) @bsRecord {
+      packets(limit: $limit, offset: $offset, order_by: {block_height: desc}) @bsRecord {
         isIncoming: is_incoming
         blockHeight: block_height @bsDecoder(fn: "ID.Block.fromJson")
         channel: my_channel
