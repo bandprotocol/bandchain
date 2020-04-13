@@ -38,21 +38,23 @@ func (b *BandDB) handleMsgPacket(
 ) error {
 	packetType := ""
 	jsonMap := make(map[string]interface{})
-
-	err := json.Unmarshal(msg.GetData(), &jsonMap)
-	if err != nil {
-		return err
-	}
-	extra := make(map[string]interface{})
-
-	var requestData oracle.OracleRequestPacketData
-	if err := oracle.ModuleCdc.UnmarshalJSON(msg.GetData(), &requestData); err == nil {
+	var requestPacket oracle.OracleRequestPacketData
+	if err := oracle.ModuleCdc.UnmarshalJSON(msg.GetData(), &requestPacket); err == nil {
 		packetType = "ORACLE REQUEST"
+		rawBytes, err := json.Marshal(requestPacket)
+		if err != nil {
+			return err
+		}
+
+		err = json.Unmarshal(rawBytes, &jsonMap)
+		if err != nil {
+			return err
+		}
 		id, err := strconv.ParseInt(events[oracle.EventTypeRequest+"."+oracle.AttributeKeyID], 10, 64)
 		if err != nil {
 			return err
 		}
-		calldata, err := hex.DecodeString(requestData.Calldata)
+		calldata, err := hex.DecodeString(requestPacket.Calldata)
 		if err != nil {
 			return err
 		}
@@ -62,13 +64,13 @@ func (b *BandDB) handleMsgPacket(
 		}
 		err = b.AddNewRequest(
 			id,
-			int64(requestData.OracleScriptID),
+			int64(requestPacket.OracleScriptID),
 			calldata,
-			requestData.MinCount,
+			requestPacket.MinCount,
 			request.ExpirationHeight,
 			"Pending",
 			msg.Signer.String(),
-			requestData.ClientID,
+			requestPacket.ClientID,
 			txHash,
 			nil,
 		)
@@ -76,13 +78,14 @@ func (b *BandDB) handleMsgPacket(
 			return err
 		}
 
-		oracleScript, err := b.OracleKeeper.GetOracleScript(b.ctx, requestData.OracleScriptID)
+		oracleScript, err := b.OracleKeeper.GetOracleScript(b.ctx, requestPacket.OracleScriptID)
 		if err != nil {
 			return err
 		}
 
-		extra["requestID"] = id
-		extra["oracleScriptName"] = oracleScript.Name
+		jsonMap["type"] = "oracle/OracleRequestPacketData"
+		jsonMap["request_id"] = id
+		jsonMap["oracle_script_name"] = oracleScript.Name
 	}
 	if packetType == "" {
 		return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized oracle package type: %T", msg.Packet)
@@ -93,7 +96,6 @@ func (b *BandDB) handleMsgPacket(
 		return err
 	}
 
-	jsonMap["extra"] = extra
 	rawJson, err := json.Marshal(jsonMap)
 	if err != nil {
 		return err
