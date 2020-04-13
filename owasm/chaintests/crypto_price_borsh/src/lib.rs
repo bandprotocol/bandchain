@@ -1,15 +1,6 @@
 use borsh::{BorshDeserialize, BorshSchema, BorshSerialize};
 use owasm::{execute_entry_point, oei, prepare_entry_point};
 
-fn parse_coingecko_symbol(symbol: &str) -> &[u8] {
-    (match symbol {
-        "BTC" => "bitcoin",
-        "ETH" => "ethereum",
-        _ => panic!("Unsupported coin!"),
-    })
-    .as_bytes()
-}
-
 fn parse_float(data: String) -> Option<f64> {
     data.parse::<f64>().ok()
 }
@@ -27,7 +18,7 @@ struct Output {
 
 fn prepare_impl(input: Input) {
     // Coingecko data source
-    oei::request_external_data(1, 1, parse_coingecko_symbol(&input.symbol));
+    oei::request_external_data(1, 1, &input.symbol.as_bytes());
     // Crypto compare source
     oei::request_external_data(2, 2, &input.symbol.as_bytes());
     // Binance source
