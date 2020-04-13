@@ -124,6 +124,12 @@ let make = (~address) =>
                   </TBody>
                 })
               ->React.array}
+             <VSpacing size=Spacing.lg />
+             <Pagination
+               currentPage=page
+               pageCount
+               onPageChange={newPage => setPage(_ => newPage)}
+             />
            </>
          : <div className=Styles.iconWrapper>
              <VSpacing size={`px(30)} />
@@ -132,9 +138,6 @@ let make = (~address) =>
              <Text block=true value="NO DELEGATORS" weight=Text.Regular color=Colors.blue4 />
              <VSpacing size={`px(15)} />
            </div>}
-      <VSpacing size=Spacing.xl />
-      <VSpacing size=Spacing.sm />
-      <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
     </div>
     |> Sub.resolve;
   }
