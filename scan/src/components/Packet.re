@@ -70,7 +70,9 @@ let make = (~packet: IBCSub.packet_t, ~oracleScriptID: ID.OracleScript.t) => {
              tableWidth=470
              rows={
                outputKVs
-               ->Belt_Array.map(((k, v)) => [KVTable.Value(k), KVTable.Value(v)])
+               ->Belt_Array.map(({fieldName, fieldValue}) =>
+                   [KVTable.Value(fieldName), KVTable.Value(fieldValue)]
+                 )
                ->Belt_List.fromArray
              }
            />
@@ -167,7 +169,9 @@ let make = (~packet: IBCSub.packet_t, ~oracleScriptID: ID.OracleScript.t) => {
                   tableWidth=470
                   rows={
                     outputKVs
-                    ->Belt_Array.map(((k, v)) => [KVTable.Value(k), KVTable.Value(v)])
+                    ->Belt_Array.map(({fieldName, fieldValue}) =>
+                        [KVTable.Value(fieldName), KVTable.Value(fieldValue)]
+                      )
                     ->Belt_List.fromArray
                   }
                 />
