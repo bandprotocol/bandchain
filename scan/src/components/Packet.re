@@ -101,6 +101,7 @@ let make = (~packet: IBCSub.packet_t, ~oracleScriptID: ID.OracleScript.t) => {
       </div>
     </>;
   | IBCSub.Response(response) =>
+    // TODO: support loading state, no data later
     <>
       <div className=Styles.topicContainer>
         <Text value="REQUEST ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
@@ -138,6 +139,7 @@ let make = (~packet: IBCSub.packet_t, ~oracleScriptID: ID.OracleScript.t) => {
       </div>
       {switch (response.status, response.result) {
        | (IBCSub.Response.Success, Some(result)) =>
+         // TODO: support loading state, no data later
          let outputKVsOpt =
            switch (schemaSub) {
            | Data(schema) => Borsh.decode(schema, "Output", result)
