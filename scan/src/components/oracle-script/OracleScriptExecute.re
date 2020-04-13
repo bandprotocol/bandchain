@@ -7,6 +7,8 @@ module Styles = {
 
   let listContainer = style([marginBottom(`px(25))]);
 
+  let withPadding = (h, v) => style([padding2(~h=`px(h), ~v=`px(v))]);
+
   let input =
     style([
       width(`percent(100.)),
@@ -122,94 +124,116 @@ let resultRender = result => {
   };
 };
 
-[@react.component]
-let make = (~id: ID.OracleScript.t, ~schema: string, ~paramsInput: array(Borsh.field_key_type_t)) => {
-  let (_, dispatch) = React.useContext(AccountContext.context);
+module ExecutionPart = {
+  [@react.component]
+  let make =
+      (~id: ID.OracleScript.t, ~schema: string, ~paramsInput: array(Borsh.field_key_type_t)) => {
+    let (_, dispatch) = React.useContext(AccountContext.context);
 
-  let numParams = paramsInput->Belt_Array.size;
+    let numParams = paramsInput->Belt_Array.size;
 
-  let (callDataArr, setCallDataArr) = React.useState(_ => Belt_Array.make(numParams, ""));
-  let (result, setResult) = React.useState(_ => Nothing);
+    let (callDataArr, setCallDataArr) = React.useState(_ => Belt_Array.make(numParams, ""));
+    let (result, setResult) = React.useState(_ => Nothing);
 
-  let requestCallback =
-    React.useCallback0(requestPromise => {
-      ignore(
-        requestPromise
-        |> Js.Promise.then_(res =>
-             switch (res) {
-             | BandWeb3.Tx(txResponse) =>
-               setResult(_ => Success(txResponse, schema));
+    let requestCallback =
+      React.useCallback0(requestPromise => {
+        ignore(
+          requestPromise
+          |> Js.Promise.then_(res =>
+               switch (res) {
+               | BandWeb3.Tx(txResponse) =>
+                 setResult(_ => Success(txResponse, schema));
+                 Js.Promise.resolve();
+               | _ =>
+                 setResult(_ =>
+                   Error("Fail to sign message, please connect with mnemonic first")
+                 );
+                 Js.Promise.resolve();
+               }
+             )
+          |> Js.Promise.catch(err => {
+               switch (Js.Json.stringifyAny(err)) {
+               | Some(errorValue) => setResult(_ => Error(errorValue))
+               | None => setResult(_ => Error("Can not stringify error"))
+               };
                Js.Promise.resolve();
-             | _ =>
-               setResult(_ => Error("Fail to sign message, please connect with mnemonic first"));
-               Js.Promise.resolve();
-             }
-           )
-        |> Js.Promise.catch(err => {
-             switch (Js.Json.stringifyAny(err)) {
-             | Some(errorValue) => setResult(_ => Error(errorValue))
-             | None => setResult(_ => Error("Can not stringify error"))
-             };
-             Js.Promise.resolve();
-           }),
-      );
-      ();
-    });
+             }),
+        );
+        ();
+      });
 
-  <div className=Styles.container>
-    <div className={Styles.hFlex(`auto)}>
-      <Text
-        value={
-          "Request"
-          ++ (numParams == 0 ? "" : " with" ++ (numParams == 1 ? " a " : " ") ++ "following")
-        }
-        color=Colors.gray7
-      />
-      <HSpacing size=Spacing.sm />
-      {numParams == 0
-         ? React.null
-         : <Text
-             value={numParams > 1 ? "parameters" : "parameter"}
-             color=Colors.gray7
-             weight=Text.Bold
-           />}
-    </div>
-    <VSpacing size=Spacing.lg />
-    {numParams > 0
-       ? <div className=Styles.paramsContainer>
-           {paramsInput
-            ->Belt_Array.mapWithIndex((i, param) => parameterInput(param, i, setCallDataArr))
-            ->React.array}
-         </div>
-       : React.null}
-    <VSpacing size=Spacing.md />
-    <div className=Styles.buttonContainer>
-      <button
-        className={Styles.button(result == Loading)}
-        onClick={_ =>
-          if (result != Loading) {
-            switch (
-              Borsh.encode(
-                schema,
-                "Input",
-                paramsInput
-                ->Belt_Array.map(({fieldName}) => fieldName)
-                ->Belt_Array.zip(callDataArr)
-                ->Belt_Array.map(((fieldName, fieldValue)) => Borsh.{fieldName, fieldValue}),
-              )
-            ) {
-            | Some(encoded) =>
-              setResult(_ => Loading);
-              dispatch(AccountContext.SendRequest(id, encoded, requestCallback));
-              ();
-            | None => setResult(_ => Error("Encoding fail, please check each parameter's type"))
-            };
-            ();
+    <div className=Styles.container>
+      <div className={Styles.hFlex(`auto)}>
+        <Text
+          value={
+            "Request"
+            ++ (numParams == 0 ? "" : " with" ++ (numParams == 1 ? " a " : " ") ++ "following")
           }
-        }>
-        {(result == Loading ? "Sending Request ... " : "Request") |> React.string}
-      </button>
+          color=Colors.gray7
+        />
+        <HSpacing size=Spacing.sm />
+        {numParams == 0
+           ? React.null
+           : <Text
+               value={numParams > 1 ? "parameters" : "parameter"}
+               color=Colors.gray7
+               weight=Text.Bold
+             />}
+      </div>
+      <VSpacing size=Spacing.lg />
+      {numParams > 0
+         ? <div className=Styles.paramsContainer>
+             {paramsInput
+              ->Belt_Array.mapWithIndex((i, param) => parameterInput(param, i, setCallDataArr))
+              ->React.array}
+           </div>
+         : React.null}
+      <VSpacing size=Spacing.md />
+      <div className=Styles.buttonContainer>
+        <button
+          className={Styles.button(result == Loading)}
+          onClick={_ =>
+            if (result != Loading) {
+              switch (
+                Borsh.encode(
+                  schema,
+                  "Input",
+                  paramsInput
+                  ->Belt_Array.map(({fieldName}) => fieldName)
+                  ->Belt_Array.zip(callDataArr)
+                  ->Belt_Array.map(((fieldName, fieldValue)) => Borsh.{fieldName, fieldValue}),
+                )
+              ) {
+              | Some(encoded) =>
+                setResult(_ => Loading);
+                dispatch(AccountContext.SendRequest(id, encoded, requestCallback));
+                ();
+              | None => setResult(_ => Error("Encoding fail, please check each parameter's type"))
+              };
+              ();
+            }
+          }>
+          {(result == Loading ? "Sending Request ... " : "Request") |> React.string}
+        </button>
+      </div>
+      {resultRender(result)}
+    </div>;
+  };
+};
+
+[@react.component]
+let make = (~id: ID.OracleScript.t, ~schemaOpt: option(string)) => {
+  switch (
+    {
+      let%Opt schema = schemaOpt;
+      let%Opt paramsInput = schema->Borsh.extractFields("Input");
+      Some(<ExecutionPart id schema paramsInput />);
+    }
+  ) {
+  | Some(dom) => dom
+  | None =>
+    <div className={Styles.withPadding(20, 20)}>
+      <Text value="Schema not found" color=Colors.gray7 />
     </div>
-    {resultRender(result)}
-  </div>;
+  };
 };

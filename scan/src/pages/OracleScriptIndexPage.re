@@ -112,19 +112,7 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) =>
         currentRoute={oracleScriptID |> ID.OracleScript.getRouteWithTab(_, hashtag)}>
         {switch (hashtag) {
          | OracleScriptExecute =>
-           switch (
-             {
-               let%Opt schema = oracleScript.schema;
-               let%Opt paramsInput = schema->Borsh.extractFields("Input");
-               Some(<OracleScriptExecute id=oracleScriptID schema paramsInput />);
-             }
-           ) {
-           | Some(dom) => dom
-           | None =>
-             <div className={Styles.withPadding(20, 20)}>
-               <Text value="Schema not found" color=Colors.gray7 />
-             </div>
-           }
+           <OracleScriptExecute id=oracleScriptID schemaOpt={oracleScript.schema} />
          | OracleScriptCode => <OracleScriptCode code={oracleScript.codeHash} />
          | OracleScriptBridgeCode => <OracleScriptBridgeCode />
          | OracleScriptRequests => <OracleScriptRequestTable oracleScriptID />
