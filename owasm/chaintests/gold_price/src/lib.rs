@@ -14,9 +14,9 @@ struct Output {
 #[no_mangle]
 fn prepare() {
     // Gold price data source
-    oei::request_external_data(5, 1, "GOLD".as_bytes());
+    oei::request_external_data(5, 1, "".as_bytes());
     // Binance data source
-    oei::request_external_data(6, 2, "ATOM".as_bytes());
+    oei::request_external_data(3, 2, "ATOM".as_bytes());
 }
 
 #[no_mangle]
