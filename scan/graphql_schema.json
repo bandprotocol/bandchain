@@ -11451,6 +11451,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "share_percentage",
+            "type": {
+              "kind": "SCALAR",
+              "name": "numeric",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "validator_address",
             "type": {
               "kind": "SCALAR",
@@ -11821,6 +11833,18 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "share_percentage",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
           }
         ]
       },
@@ -11828,6 +11852,16 @@
         "inputFields": [
           {
             "name": "amount",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "share_percentage",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -11906,6 +11940,16 @@
             "description": null
           },
           {
+            "name": "share_percentage",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "numeric_comparison_exp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "validator_address",
             "defaultValue": null,
             "type": {
@@ -11961,6 +12005,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "share_percentage",
+            "type": {
+              "kind": "SCALAR",
+              "name": "numeric",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "validator_address",
             "type": {
               "kind": "SCALAR",
@@ -11985,6 +12041,16 @@
           },
           {
             "name": "delegator_address",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "share_percentage",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -12049,6 +12115,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "share_percentage",
+            "type": {
+              "kind": "SCALAR",
+              "name": "numeric",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "validator_address",
             "type": {
               "kind": "SCALAR",
@@ -12073,6 +12151,16 @@
           },
           {
             "name": "delegator_address",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "share_percentage",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -12123,6 +12211,16 @@
             "description": null
           },
           {
+            "name": "share_percentage",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "validator_address",
             "defaultValue": null,
             "type": {
@@ -12163,6 +12261,12 @@
           {
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "share_percentage",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "validator_address",
             "description": "column name"
           }
@@ -12190,6 +12294,18 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "share_percentage",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
           }
         ]
       },
@@ -12197,6 +12313,16 @@
         "inputFields": [
           {
             "name": "amount",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "share_percentage",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -12234,6 +12360,18 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "share_percentage",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
           }
         ]
       },
@@ -12241,6 +12379,16 @@
         "inputFields": [
           {
             "name": "amount",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "share_percentage",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -12278,6 +12426,18 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "share_percentage",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
           }
         ]
       },
@@ -12285,6 +12445,16 @@
         "inputFields": [
           {
             "name": "amount",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "share_percentage",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -12322,6 +12492,18 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "share_percentage",
+            "type": {
+              "kind": "SCALAR",
+              "name": "numeric",
+              "ofType": null
+            },
+            "description": null
           }
         ]
       },
@@ -12329,6 +12511,16 @@
         "inputFields": [
           {
             "name": "amount",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "share_percentage",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -12366,6 +12558,18 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "share_percentage",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
           }
         ]
       },
@@ -12373,6 +12577,16 @@
         "inputFields": [
           {
             "name": "amount",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "share_percentage",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -12410,6 +12624,18 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "share_percentage",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
           }
         ]
       },
@@ -12417,6 +12643,16 @@
         "inputFields": [
           {
             "name": "amount",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "share_percentage",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -12454,6 +12690,18 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "share_percentage",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
           }
         ]
       },
@@ -12461,6 +12709,16 @@
         "inputFields": [
           {
             "name": "amount",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "share_percentage",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",

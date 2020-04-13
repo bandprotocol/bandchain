@@ -120,9 +120,9 @@ module Msg = {
 
     let decode = json => {
       JsonUtils.Decode.{
-        id: json |> field("requestID", ID.Request.fromJson),
+        id: json |> field("request_id", ID.Request.fromJson),
         oracleScriptID: json |> field("oracleScriptID", ID.OracleScript.fromJson),
-        oracleScriptName: json |> field("oracleScriptName", string),
+        oracleScriptName: json |> field("oracle_script_name", string),
         calldata: json |> field("calldata", string) |> JsBuffer.fromBase64,
         requestedValidatorCount: json |> field("requestedValidatorCount", int),
         sufficientValidatorCount: json |> field("sufficientValidatorCount", int),

@@ -72,16 +72,20 @@ func (b *BandDB) HandleEndblockEvent(event abci.Event) {
 		packetType := ""
 		data := []byte(kvMap[channel.AttributeKeyData])
 		jsonMap := make(map[string]interface{})
-		err := json.Unmarshal(data, &jsonMap)
-		if err != nil {
-			panic(err)
-		}
-		extra := make(map[string]interface{})
 
-		var responseData oracle.OracleResponsePacketData
-		if err := oracle.ModuleCdc.UnmarshalJSON(data, &responseData); err == nil {
+		var responsePacket oracle.OracleResponsePacketData
+		if err := oracle.ModuleCdc.UnmarshalJSON(data, &responsePacket); err == nil {
 			packetType = "ORACLE RESPONSE"
-			request, err := b.OracleKeeper.GetRequest(b.ctx, responseData.RequestID)
+			rawBytes, err := json.Marshal(responsePacket)
+			if err != nil {
+				panic(err)
+			}
+			err = json.Unmarshal(rawBytes, &jsonMap)
+			if err != nil {
+				panic(err)
+			}
+
+			request, err := b.OracleKeeper.GetRequest(b.ctx, responsePacket.RequestID)
 			if err != nil {
 				panic(err)
 			}
@@ -89,9 +93,10 @@ func (b *BandDB) HandleEndblockEvent(event abci.Event) {
 			if err != nil {
 				panic(err)
 			}
-			extra["oracleScriptID"] = request.OracleScriptID
-			extra["oracleScriptName"] = oracleScript.Name
-			extra["resolveStatus"] = parseResolveStatus(request.ResolveStatus)
+			jsonMap["type"] = "oracle/OracleResponsePacketData"
+			jsonMap["oracle_script_id"] = request.OracleScriptID
+			jsonMap["oracle_script_name"] = oracleScript.Name
+			jsonMap["resolve_status"] = parseResolveStatus(request.ResolveStatus)
 		}
 
 		if packetType == "" {
@@ -111,7 +116,6 @@ func (b *BandDB) HandleEndblockEvent(event abci.Event) {
 			panic(err)
 		}
 
-		jsonMap["extra"] = extra
 		rawJson, err := json.Marshal(jsonMap)
 		if err != nil {
 			panic(err)
