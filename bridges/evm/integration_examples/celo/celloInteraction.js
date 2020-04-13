@@ -1,7 +1,7 @@
 const Kit = require("@celo/contractkit");
 
 // create new kit object with rpc url
-const kit = Kit.newKit("https://alfajores-forno.celo-testnet.org");
+const kit = Kit.newKit("https://baklava-forno.celo-testnet.org");
 
 const deployBridgeObj = {
   gas: "8000000",
