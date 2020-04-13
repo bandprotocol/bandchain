@@ -123,7 +123,6 @@ let make = (~consensusAddress) =>
                pageCount
                onPageChange={newPage => setPage(_ => newPage)}
              />
-             <VSpacing size=Spacing.lg />
            </>
          : <div className=Styles.iconWrapper>
              <VSpacing size={`px(30)} />
