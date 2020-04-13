@@ -91,7 +91,7 @@ module Internal = {
             clientID: packetDetail |> at(["client_id"], string),
             calldata: packetDetail |> at(["calldata"], string) |> JsBuffer.fromHex,
             requestedValidatorCount: packetDetail |> at(["ask_count"], int),
-            sufficientValidatorCount: packetDetail |> at(["ask_count"], int),
+            sufficientValidatorCount: packetDetail |> at(["min_count"], int),
           },
         )
       | "ORACLE RESPONSE" =>
