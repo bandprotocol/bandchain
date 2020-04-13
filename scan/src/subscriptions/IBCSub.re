@@ -47,32 +47,33 @@ type t = {
   packet: packet_t,
 };
 
-type internal_t = {
-  isIncoming: bool,
-  blockHeight: ID.Block.t,
-  channel: string,
-  port: string,
-  yourChainID: string,
-  yourChannel: string,
-  yourPort: string,
-  packetType: string,
-  packetDetail: Js.Json.t,
-};
+module Internal = {
+  type t = {
+    isIncoming: bool,
+    blockHeight: ID.Block.t,
+    channel: string,
+    port: string,
+    yourChainID: string,
+    yourChannel: string,
+    yourPort: string,
+    packetType: string,
+    packetDetail: Js.Json.t,
+  };
 
-let toExternal: internal_t => t =
-  (
-    {
-      isIncoming,
-      blockHeight,
-      channel,
-      port,
-      yourChainID,
-      yourChannel,
-      yourPort,
-      packetType,
-      packetDetail,
-    },
-  ) => {
+  let toExternal =
+      (
+        {
+          isIncoming,
+          blockHeight,
+          channel,
+          port,
+          yourChainID,
+          yourChannel,
+          yourPort,
+          packetType,
+          packetDetail,
+        },
+      ) => {
     direction: isIncoming ? Incoming : Outgoing,
     chainID: "bandchain",
     channel,
@@ -122,8 +123,8 @@ let toExternal: internal_t => t =
       },
   };
 
-module MultiPacketsConfig = [%graphql
-  {|
+  module MultiPacketsConfig = [%graphql
+    {|
     subscription Requests($limit: Int!, $offset: Int!) {
       packets(limit: $limit, offset: $offset) @bsRecord {
         isIncoming: is_incoming
@@ -138,7 +139,8 @@ module MultiPacketsConfig = [%graphql
       }
     }
   |}
-];
+  ];
+};
 
 module PacketCountConfig = [%graphql
   {|
@@ -156,10 +158,10 @@ let getList = (~page=1, ~pageSize=10, ()) => {
   let offset = (page - 1) * pageSize;
   let (result, _) =
     ApolloHooks.useSubscription(
-      MultiPacketsConfig.definition,
-      ~variables=MultiPacketsConfig.makeVariables(~limit=pageSize, ~offset, ()),
+      Internal.MultiPacketsConfig.definition,
+      ~variables=Internal.MultiPacketsConfig.makeVariables(~limit=pageSize, ~offset, ()),
     );
-  result |> Sub.map(_, x => x##packets->Belt_Array.map(toExternal));
+  result |> Sub.map(_, x => x##packets->Belt_Array.map(Internal.toExternal));
 };
 
 let count = () => {
