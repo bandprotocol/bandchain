@@ -38,7 +38,7 @@ type packet_t =
 type t = {
   direction: packet_direction_t,
   chainID: string,
-  chennel: string,
+  channel: string,
   port: string,
   yourChainID: string,
   yourChannel: string,
@@ -50,7 +50,7 @@ type t = {
 type internal_t = {
   isIncoming: bool,
   blockHeight: ID.Block.t,
-  chennel: string,
+  channel: string,
   port: string,
   yourChainID: string,
   yourChannel: string,
@@ -64,7 +64,7 @@ let toExternal: internal_t => t =
     {
       isIncoming,
       blockHeight,
-      chennel,
+      channel,
       port,
       yourChainID,
       yourChannel,
@@ -75,7 +75,7 @@ let toExternal: internal_t => t =
   ) => {
     direction: isIncoming ? Incoming : Outgoing,
     chainID: "bandchain",
-    chennel,
+    channel,
     port,
     yourChainID,
     yourChannel,
@@ -128,7 +128,7 @@ module MultiPacketsConfig = [%graphql
       packets(limit: $limit, offset: $offset) @bsRecord {
         isIncoming: is_incoming
         blockHeight: block_height @bsDecoder(fn: "ID.Block.fromJson")
-        chennel: my_channel
+        channel: my_channel
         port: my_port
         yourChainID: your_chain_id
         yourChannel: your_channel
