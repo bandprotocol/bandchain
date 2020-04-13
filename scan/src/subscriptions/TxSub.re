@@ -157,7 +157,7 @@ module Msg = {
       JsonUtils.Decode.{
         validator: json |> field("validator", string) |> Address.fromBech32,
         reporter: json |> field("reporter", string) |> Address.fromBech32,
-        validatorMoniker: json |> field("validatorMoniker", string),
+        validatorMoniker: json |> field("validator_moniker", string),
       };
   };
 
@@ -171,7 +171,7 @@ module Msg = {
       JsonUtils.Decode.{
         validator: json |> field("validator", string) |> Address.fromBech32,
         reporter: json |> field("reporter", string) |> Address.fromBech32,
-        validatorMoniker: json |> field("validatorMoniker", string),
+        validatorMoniker: json |> field("validator_moniker", string),
       };
   };
 
