@@ -138,7 +138,7 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 		},
 		{
 			"Gold price script",
-			"Oracle script for getting an average gold price from many sources.",
+			"Oracle script for getting an average gold price in ATOM",
 			"./owasm/res/gold_price.wasm",
 		},
 	}
