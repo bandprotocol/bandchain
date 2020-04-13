@@ -84,8 +84,8 @@ func (b *BandDB) handleMsgPacket(
 		}
 
 		jsonMap["type"] = "oracle/OracleRequestPacketData"
-		jsonMap["requestID"] = id
-		jsonMap["oracleScriptName"] = oracleScript.Name
+		jsonMap["request_id"] = id
+		jsonMap["oracle_script_name"] = oracleScript.Name
 	}
 	if packetType == "" {
 		return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized oracle package type: %T", msg.Packet)

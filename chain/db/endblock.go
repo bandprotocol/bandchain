@@ -94,9 +94,9 @@ func (b *BandDB) HandleEndblockEvent(event abci.Event) {
 				panic(err)
 			}
 			jsonMap["type"] = "oracle/OracleResponsePacketData"
-			jsonMap["oracleScriptID"] = request.OracleScriptID
-			jsonMap["oracleScriptName"] = oracleScript.Name
-			jsonMap["resolveStatus"] = parseResolveStatus(request.ResolveStatus)
+			jsonMap["oracle_script_id"] = request.OracleScriptID
+			jsonMap["oracle_script_name"] = oracleScript.Name
+			jsonMap["resolve_status"] = parseResolveStatus(request.ResolveStatus)
 		}
 
 		if packetType == "" {
