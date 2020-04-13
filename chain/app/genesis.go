@@ -102,11 +102,6 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			"The script that queries current gold price",
 			"./datasources/gold_price.sh",
 		},
-		{
-			"Atom price from binance",
-			"The Script that queries Atom price from https://coingecko.com",
-			"./datasources/binance_atom_price.sh",
-		},
 	}
 
 	// TODO: Find a better way to specify path to data sources
