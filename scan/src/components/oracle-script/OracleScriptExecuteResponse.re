@@ -1,7 +1,7 @@
 module Styles = {
   open Css;
 
-  let resultWrapper = (w, h, paddingV, overflow_choice) =>
+  let resultWrapper = (w, h, paddingV, overflowChioce) =>
     style([
       width(w),
       height(h),
@@ -11,7 +11,7 @@ module Styles = {
       justifyContent(`center),
       backgroundColor(Colors.white),
       borderRadius(`px(4)),
-      overflow(overflow_choice),
+      overflow(overflowChioce),
     ]);
 
   let hFlex = h =>
