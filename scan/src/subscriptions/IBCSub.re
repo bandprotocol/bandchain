@@ -83,7 +83,6 @@ module Internal = {
     packet:
       switch (packetType) {
       | "ORACLE REQUEST" =>
-        Js.Console.log(packetType);
         Request(
           JsonUtils.Decode.{
             id: ID.Request.ID(packetDetail |> at(["request_id"], int)),
@@ -94,7 +93,7 @@ module Internal = {
             requestedValidatorCount: packetDetail |> at(["ask_count"], int),
             sufficientValidatorCount: packetDetail |> at(["ask_count"], int),
           },
-        );
+        )
       | "ORACLE RESPONSE" =>
         let status =
           packetDetail
