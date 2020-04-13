@@ -26,6 +26,7 @@ let make = (~packet: IBCSub.packet_t, ~oracleScriptID: ID.OracleScript.t) => {
 
   switch (packet) {
   | IBCSub.Request(request) =>
+    // TODO: support loading state, no data later
     let outputKVsOpt =
       switch (schemaSub) {
       | Data(schema) => Borsh.decode(schema, "Input", request.calldata)
@@ -139,7 +140,6 @@ let make = (~packet: IBCSub.packet_t, ~oracleScriptID: ID.OracleScript.t) => {
       </div>
       {switch (response.status, response.result) {
        | (IBCSub.Response.Success, Some(result)) =>
-         // TODO: support loading state, no data later
          let outputKVsOpt =
            switch (schemaSub) {
            | Data(schema) => Borsh.decode(schema, "Output", result)
