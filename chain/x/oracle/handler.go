@@ -169,8 +169,8 @@ func handleMsgRequestData(
 		return nil, err
 	}
 
-	// Hard-code prepare gas to 100000 for now
-	ctx.GasMeter().ConsumeGas(100000, "PrepareRequest")
+	gasPrepare := keeper.GetParam(ctx, types.KeyPrepareGas)
+	ctx.GasMeter().ConsumeGas(gasPrepare, "PrepareRequest")
 	_, _, errOwasm := owasm.Execute(&env, script.Code, "prepare", msg.Calldata, 100000)
 
 	if errOwasm != nil {
