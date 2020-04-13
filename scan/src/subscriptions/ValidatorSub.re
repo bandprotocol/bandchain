@@ -125,7 +125,7 @@ module SingleConfig = [%graphql
 module MultiConfig = [%graphql
   {|
       subscription Validator($limit: Int!, $offset: Int!) {
-        validators(limit: $limit, offset: $offset) @bsRecord {
+        validators(limit: $limit, offset: $offset, order_by: {tokens: desc}) @bsRecord {
           operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
           moniker
           identity

@@ -24,7 +24,7 @@ module ValidatorReport = {
   module MultiConfig = [%graphql
     {|
       subscription Reports ($limit: Int!, $offset: Int!, $validator: String!) {
-        reports (where: {validator: {_eq: $validator}}, limit: $limit, offset: $offset) @bsRecord {
+        reports (where: {validator: {_eq: $validator}}, limit: $limit, offset: $offset, order_by: {request_id: desc}) @bsRecord {
             request @bsRecord {
               id @bsDecoder (fn: "ID.Request.fromJson")
               oracleScript: oracle_script @bsRecord {
