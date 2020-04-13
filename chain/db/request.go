@@ -169,12 +169,16 @@ func (b *BandDB) handleMsgRequestData(
 	if err != nil {
 		return err
 	}
+	request, err := b.OracleKeeper.GetRequest(b.ctx, oracle.RequestID(id))
+	if err != nil {
+		return err
+	}
 	return b.AddNewRequest(
 		id,
 		int64(msg.OracleScriptID),
 		msg.Calldata,
 		msg.SufficientValidatorCount,
-		msg.Expiration,
+		request.ExpirationHeight,
 		"Pending",
 		msg.Sender.String(),
 		msg.ClientID,

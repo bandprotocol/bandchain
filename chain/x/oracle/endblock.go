@@ -42,19 +42,22 @@ func handleResolveRequest(
 	if err != nil { // should never happen
 		keeper.SetResolve(ctx, requestID, types.Failure)
 		return newRequestExecuteEvent(requestID, types.Failure),
-			NewOracleResponsePacketData(requestID, request.ClientID, types.Failure, ""),
+			NewOracleResponsePacketData(request.ClientID, requestID, int64(len(request.ReceivedValidators)), request.RequestTime, ctx.BlockTime().Unix(), types.Failure, ""),
 			false
 	}
+
+	// TODO: Refactor this code. For now we hardcode execute gas to 100k
+	executeGas := uint64(100000)
 
 	// Discard the request if execute gas is greater than EndBlockExecuteGasLimit.
-	if request.ExecuteGas > resolveContext.endBlockExecuteGasLimit {
+	if executeGas > resolveContext.endBlockExecuteGasLimit {
 		keeper.SetResolve(ctx, requestID, types.Failure)
 		return newRequestExecuteEvent(requestID, types.Failure),
-			NewOracleResponsePacketData(requestID, request.ClientID, types.Failure, ""),
+			NewOracleResponsePacketData(request.ClientID, requestID, int64(len(request.ReceivedValidators)), request.RequestTime, ctx.BlockTime().Unix(), types.Failure, ""),
 			false
 	}
 
-	estimatedGasConsumed, overflow := addUint64Overflow(resolveContext.gasConsumed, request.ExecuteGas)
+	estimatedGasConsumed, overflow := addUint64Overflow(resolveContext.gasConsumed, executeGas)
 	if overflow || estimatedGasConsumed > resolveContext.endBlockExecuteGasLimit {
 		return sdk.Event{},
 			OracleResponsePacketData{},
@@ -65,7 +68,7 @@ func handleResolveRequest(
 	if err != nil { // should never happen
 		keeper.SetResolve(ctx, requestID, types.Failure)
 		return newRequestExecuteEvent(requestID, types.Failure),
-			NewOracleResponsePacketData(requestID, request.ClientID, types.Failure, ""),
+			NewOracleResponsePacketData(request.ClientID, requestID, int64(len(request.ReceivedValidators)), request.RequestTime, ctx.BlockTime().Unix(), types.Failure, ""),
 			false
 	}
 
@@ -73,7 +76,7 @@ func handleResolveRequest(
 	if err != nil { // should never happen
 		keeper.SetResolve(ctx, requestID, types.Failure)
 		return newRequestExecuteEvent(requestID, types.Failure),
-			NewOracleResponsePacketData(requestID, request.ClientID, types.Failure, ""),
+			NewOracleResponsePacketData(request.ClientID, requestID, int64(len(request.ReceivedValidators)), request.RequestTime, ctx.BlockTime().Unix(), types.Failure, ""),
 			false
 	}
 
@@ -81,21 +84,21 @@ func handleResolveRequest(
 	if err != nil { // should never happen
 		keeper.SetResolve(ctx, requestID, types.Failure)
 		return newRequestExecuteEvent(requestID, types.Failure),
-			NewOracleResponsePacketData(requestID, request.ClientID, types.Failure, ""),
+			NewOracleResponsePacketData(request.ClientID, requestID, int64(len(request.ReceivedValidators)), request.RequestTime, ctx.BlockTime().Unix(), types.Failure, ""),
 			false
 	}
 
 	result, gasUsed, errOwasm := owasm.Execute(
-		&env, script.Code, "execute", request.Calldata, request.ExecuteGas,
+		&env, script.Code, "execute", request.Calldata, executeGas,
 	)
 
-	if gasUsed > request.ExecuteGas {
-		gasUsed = request.ExecuteGas
+	if gasUsed > executeGas {
+		gasUsed = executeGas
 	}
 
 	resolveContext.gasConsumed, overflow = addUint64Overflow(resolveContext.gasConsumed, gasUsed)
 	// Must never overflow because we already checked for overflow above with
-	// gasConsumed + request.ExecuteGas (which is >= gasUsed).
+	// gasConsumed + executeGas (which is >= gasUsed).
 	if overflow {
 		panic(sdk.ErrorGasOverflow{Descriptor: "oracle::handleEndBlock: Gas overflow"})
 	}
@@ -103,7 +106,7 @@ func handleResolveRequest(
 	if errOwasm != nil {
 		keeper.SetResolve(ctx, requestID, types.Failure)
 		return newRequestExecuteEvent(requestID, types.Failure),
-			NewOracleResponsePacketData(requestID, request.ClientID, types.Failure, ""),
+			NewOracleResponsePacketData(request.ClientID, requestID, int64(len(request.ReceivedValidators)), request.RequestTime, ctx.BlockTime().Unix(), types.Failure, ""),
 			false
 	}
 
@@ -111,7 +114,7 @@ func handleResolveRequest(
 	if errResult != nil {
 		keeper.SetResolve(ctx, requestID, types.Failure)
 		return newRequestExecuteEvent(requestID, types.Failure),
-			NewOracleResponsePacketData(requestID, request.ClientID, types.Failure, ""),
+			NewOracleResponsePacketData(request.ClientID, requestID, int64(len(request.ReceivedValidators)), request.RequestTime, ctx.BlockTime().Unix(), types.Failure, ""),
 			false
 	}
 
@@ -119,7 +122,7 @@ func handleResolveRequest(
 	event := newRequestExecuteEvent(requestID, types.Success)
 	event.AppendAttributes(sdk.NewAttribute(types.AttributeKeyResult, string(result)))
 	return event,
-		NewOracleResponsePacketData(requestID, request.ClientID, types.Success, hex.EncodeToString(result)),
+		NewOracleResponsePacketData(request.ClientID, requestID, int64(len(request.ReceivedValidators)), request.RequestTime, ctx.BlockTime().Unix(), types.Success, hex.EncodeToString(result)),
 		false
 
 }

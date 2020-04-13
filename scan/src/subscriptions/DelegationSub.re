@@ -6,6 +6,7 @@ type t = {
 
 type stake_t = {
   amount: float,
+  sharePercentage: float,
   delegatorAddress: Address.t,
   validatorAddress: Address.t,
 };
@@ -15,6 +16,7 @@ module StakeConfig = [%graphql
   subscription Stake($limit: Int!, $offset: Int!, $delegator_address: String!)  {
     delegations_view(offset: $offset, limit: $limit, order_by: {amount: desc}, where: {delegator_address: {_eq: $delegator_address}}) @bsRecord  {
       amount @bsDecoder(fn: "GraphQLParser.numberExn")
+      sharePercentage: share_percentage @bsDecoder(fn: "GraphQLParser.floatExn")
       delegatorAddress: delegator_address @bsDecoder(fn: "GraphQLParser.addressExn")
       validatorAddress: validator_address @bsDecoder(fn: "GraphQLParser.addressExn")
     }
@@ -46,6 +48,31 @@ module StakeCountByDelegatorConfig = [%graphql
     }
   }
 |}
+];
+
+module DelegatorsByValidatorConfig = [%graphql
+  {|
+  subscription Stake($limit: Int!, $offset: Int!, $validator_address: String!)  {
+    delegations_view(offset: $offset, limit: $limit, order_by: {amount: desc}, where: {validator_address: {_eq: $validator_address}}) @bsRecord  {
+      amount @bsDecoder(fn: "GraphQLParser.numberExn")
+      sharePercentage: share_percentage @bsDecoder(fn: "GraphQLParser.floatExn")
+      delegatorAddress: delegator_address @bsDecoder(fn: "GraphQLParser.addressExn")
+      validatorAddress: validator_address @bsDecoder(fn: "GraphQLParser.addressExn")
+    }
+  }
+  |}
+];
+
+module DelegatorCountConfig = [%graphql
+  {|
+    subscription DelegatorCount($validator_address: String!) {
+      delegations_view_aggregate(where: {validator_address: {_eq: $validator_address}}) {
+        aggregate {
+          count @bsDecoder(fn: "Belt_Option.getExn")
+        }
+      }
+    }
+  |}
 ];
 
 let getStakeList = (delegatorAddress, ~page, ~pageSize, ()) => {
@@ -98,50 +125,34 @@ let getStakeCountByDelegator = delegatorAddress => {
      );
 } /* }*/;
 
-//TODO: Change and use for Delegator Sub
+let getDelegatorsByValidator = (validatorAddress, ~page, ~pageSize, ()) => {
+  let offset = (page - 1) * pageSize;
+  let (result, _) =
+    ApolloHooks.useSubscription(
+      DelegatorsByValidatorConfig.definition,
+      ~variables=
+        DelegatorsByValidatorConfig.makeVariables(
+          ~validator_address=validatorAddress |> Address.toOperatorBech32,
+          ~limit=pageSize,
+          ~offset,
+          (),
+        ),
+    );
+  result |> Sub.map(_, x => x##delegations_view);
+};
 
-// module SingleConfig = [%graphql
-//   {|
-//       subscription Validator($delegator_address: String!, $validator_address: String!) {
-//         delegations_by_pk(delegator_address: $delegator_address, validator_address: $validator_address) @bsRecord {
-//             delegatorAddress: delegator_address @bsDecoder(fn: "Address.fromBech32")
-//             validatorAddress: validator_address @bsDecoder(fn: "Address.fromBech32")
-//             shares @bsDecoder(fn: "float_of_string")
-//         }
-//       }
-//   |}
-// ];
-
-// module MultiConfig = [%graphql
-//   {|
-//   subscription Delegation($delegator_address: String!)  {
-//     delegations(where: {delegator_address: {_eq: $delegator_address}}) @bsRecord  {
-//       delegatorAddress: delegator_address @bsDecoder(fn: "Address.fromBech32")
-//       validatorAddress: validator_address @bsDecoder(fn: "Address.fromBech32")
-//       shares @bsDecoder(fn: "float_of_string")
-//     }
-//   }
-//   |}
-// ];
-// let get = (delegatorAddress, validatorAddress) => {
-//   let (result, _) =
-//     ApolloHooks.useSubscription(
-//       SingleConfig.definition,
-//       ~variables=
-//         SingleConfig.makeVariables(
-//           ~delegator_address=delegatorAddress |> Address.toBech32,
-//           ~validator_address=validatorAddress |> Address.toOperatorBech32,
-//           (),
-//         ),
-//     );
-//   result |> Sub.map(_, x => x##delegations_by_pk);
-// };
-
-// let getList = delegatorAddress => {
-//   let (result, _) =
-//     ApolloHooks.useSubscription(
-//       MultiConfig.definition,
-//       ~variables=
-//         MultiConfig.makeVariables(~delegator_address=delegatorAddress |> Address.toBech32, ()),
-//     );
-//   result |> Sub.map(_, internal => internal##delegations);
+let getDelegatorCountByValidator = validatorAddress => {
+  let (result, _) =
+    ApolloHooks.useSubscription(
+      DelegatorCountConfig.definition,
+      ~variables=
+        DelegatorCountConfig.makeVariables(
+          ~validator_address=validatorAddress |> Address.toOperatorBech32,
+          (),
+        ),
+    );
+  result
+  |> Sub.map(_, x =>
+       x##delegations_view_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count)
+     );
+};

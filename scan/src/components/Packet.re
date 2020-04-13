@@ -75,14 +75,6 @@ let make = (~packet: IBCSub.packet_t) => {
         <Text value={request.sufficientValidatorCount |> string_of_int} weight=Text.Bold />
       </div>
       <VSpacing size=Spacing.md />
-      <div className=Styles.topicContainer>
-        <Text value="REPORT PERIOD" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-        <div className=Styles.hFlex>
-          <Text value={request.expiration |> string_of_int} weight=Text.Bold code=true />
-          <HSpacing size=Spacing.sm />
-          <Text value="Blocks" code=true />
-        </div>
-      </div>
     </>
   | IBCSub.Response(response) =>
     <>
