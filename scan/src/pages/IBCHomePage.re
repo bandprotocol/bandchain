@@ -132,7 +132,7 @@ let make = () =>
              {
                direction,
                chainID,
-               chennel,
+               channel,
                port,
                yourChainID,
                yourChannel,
@@ -208,7 +208,7 @@ let make = () =>
                    <Text
                      value={
                        switch (packet) {
-                       | Request(_) => chennel
+                       | Request(_) => channel
                        | Response(_) => yourChannel
                        | Unknown => "Unknown"
                        }
