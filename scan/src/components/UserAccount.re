@@ -161,18 +161,18 @@ module Balance = {
 
 [@react.component]
 let make = () => {
-  let (addressOpt, dispatchAccount) = React.useContext(AccountContext.context);
+  let (addressOpt, dispatch) = React.useContext(AccountContext.context);
 
   let connect = () => {
     let mnemonicOpt = Window.prompt("Please enter your mnemonic.", "") |> Js.Nullable.toOption;
 
     switch (mnemonicOpt) {
-    | Some(mnemonic) => dispatchAccount(Connect(mnemonic))
+    | Some(mnemonic) => dispatch(Connect(mnemonic))
     | None => ()
     };
   };
 
-  let disconnect = () => dispatchAccount(Disconnect);
+  let disconnect = () => dispatch(Disconnect);
 
   <>
     <Row justify=Row.Right>
