@@ -67,30 +67,25 @@ fn majority<T>(vec: Vec<T>) -> Option<T>
 where
     T: std::str::FromStr + std::cmp::PartialEq + std::marker::Copy,
 {
-    let len = vec.len();
     let mut candidate = vec[0];
-    let mut count = 0;
-    for (idx, &x) in vec.iter().enumerate() {
-        if idx == 0 {
-            candidate = x;
-            count = 1;
-            continue;
-        }
+    let mut count = 1;
+    let len = vec.len();
 
-        if candidate == x {
+    for idx in 1..len {
+        if candidate == vec[idx] {
             count = count + 1;
         } else {
             count = count - 1;
         }
         if count == 0 {
-            candidate = x;
+            candidate = vec[idx];
             count = 1;
         }
     }
 
     count = 0;
-    for x in vec {
-        if x == candidate {
+    for idx in 0..len {
+        if candidate == vec[idx] {
             count = count + 1;
         }
     }
