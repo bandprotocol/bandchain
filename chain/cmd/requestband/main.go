@@ -34,7 +34,7 @@ var (
 	port    = getEnv("PORT", "5001")
 	nodeURI = getEnv("NODE_URI", "http://localhost:26657")
 	priv    = getEnv("PRIVATE_KEY", "27313aa3fd8286b54d5dbe16a4fbbc55c7908e844e37a737997fc2ba74403812")
-	chainID = getEnv("CHAIN_NAME", "bandchain")
+	chainID = getEnv("CHAIN_ID", "bandchain")
 )
 
 var pk secp256k1.PrivKeySecp256k1
