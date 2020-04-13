@@ -143,17 +143,17 @@ let make = (~packet: IBCSub.packet_t, ~oracleScriptID: ID.OracleScript.t) => {
            };
          <>
            <VSpacing size=Spacing.lg />
-           {let resultHeaderRender =
+           {let resultHeadRender =
               <div className=Styles.hFlex>
                 <Text value="RESULT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
                 <HSpacing size=Spacing.md />
                 <CopyButton data=result />
               </div>;
             switch (outputKVsOpt) {
-            | Some(_) => resultHeaderRender
+            | Some(_) => resultHeadRender
             | None =>
               <div className=Styles.topicContainer>
-                resultHeaderRender
+                resultHeadRender
                 <div className={Styles.maxWidth(250)}>
                   <Text value={result |> JsBuffer.toHex} code=true ellipsis=true block=true />
                 </div>
