@@ -3,12 +3,10 @@ module Request = {
     id: ID.Request.t,
     oracleScriptID: ID.OracleScript.t,
     oracleScriptName: string,
+    clientID: string,
     calldata: JsBuffer.t,
     requestedValidatorCount: int,
     sufficientValidatorCount: int,
-    expiration: int,
-    prepareGas: int,
-    executeGas: int,
   };
 };
 
@@ -85,41 +83,35 @@ module Internal = {
     packet:
       switch (packetType) {
       | "ORACLE REQUEST" =>
+        Js.Console.log(packetType);
         Request(
           JsonUtils.Decode.{
-            id: ID.Request.ID(packetDetail |> at(["extra", "requestID"], int)),
-            oracleScriptID:
-              ID.OracleScript.ID(packetDetail |> at(["value", "oracleScriptID"], intstr)),
-            oracleScriptName: packetDetail |> at(["extra", "oracleScriptName"], string),
-            calldata: packetDetail |> at(["value", "calldata"], string) |> JsBuffer.fromHex,
-            requestedValidatorCount:
-              packetDetail |> at(["value", "requestedValidatorCount"], intstr),
-            sufficientValidatorCount:
-              packetDetail |> at(["value", "sufficientValidatorCount"], intstr),
-            expiration: packetDetail |> at(["value", "expiration"], intstr),
-            prepareGas: packetDetail |> at(["value", "prepareGas"], intstr),
-            executeGas: packetDetail |> at(["value", "executeGas"], intstr),
+            id: ID.Request.ID(packetDetail |> at(["request_id"], int)),
+            oracleScriptID: ID.OracleScript.ID(packetDetail |> at(["oracle_script_id"], int)),
+            oracleScriptName: packetDetail |> at(["oracle_script_name"], string),
+            clientID: packetDetail |> at(["client_id"], string),
+            calldata: packetDetail |> at(["calldata"], string) |> JsBuffer.fromHex,
+            requestedValidatorCount: packetDetail |> at(["ask_count"], int),
+            sufficientValidatorCount: packetDetail |> at(["ask_count"], int),
           },
-        )
-      | _ =>
+        );
+      | "ORACLE RESPONSE" =>
         let status =
           packetDetail
-          |> JsonUtils.Decode.at(["extra", "resolveStatus"], JsonUtils.Decode.string)
-          == "Success"
+          |> JsonUtils.Decode.at(["resolve_status"], JsonUtils.Decode.string) == "Success"
             ? Response.Success : Response.Fail;
         Response(
           JsonUtils.Decode.{
-            requestID: ID.Request.ID(packetDetail |> at(["value", "requestID"], intstr)),
-            oracleScriptID:
-              ID.OracleScript.ID(packetDetail |> at(["extra", "oracleScriptID"], int)),
-            oracleScriptName: packetDetail |> at(["extra", "oracleScriptName"], string),
+            requestID: ID.Request.ID(packetDetail |> at(["request_id"], int)),
+            oracleScriptID: ID.OracleScript.ID(packetDetail |> at(["oracle_script_id"], int)),
+            oracleScriptName: packetDetail |> at(["oracle_script_name"], string),
             status,
             result:
               status == Success
-                ? Some(packetDetail |> at(["value", "result"], string) |> JsBuffer.fromHex)
-                : None,
+                ? Some(packetDetail |> at(["result"], string) |> JsBuffer.fromHex) : None,
           },
         );
+      | _ => Unknown
       },
   };
 
