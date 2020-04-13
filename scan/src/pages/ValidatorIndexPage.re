@@ -80,7 +80,6 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
     let%Sub validator = validatorSub;
     let%Sub bondedTokenCount = bondedTokenCountSub;
 
-    Js.Console.log(bondedTokenCount);
     <>
       <Row justify=Row.Between>
         <Col>
@@ -181,7 +180,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
         currentRoute={Route.ValidatorIndexPage(address, hashtag)}>
         {switch (hashtag) {
          | ProposedBlocks => <ProposedBlocksTable />
-         | Delegators => <DelegatorsTable />
+         | Delegators => <DelegatorsTable address />
          | Reports => <ReportsTable address />
          }}
       </Tab>
