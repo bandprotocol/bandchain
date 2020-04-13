@@ -42,7 +42,7 @@ func handleResolveRequest(
 	if err != nil { // should never happen
 		keeper.SetResolve(ctx, requestID, types.Failure)
 		return newRequestExecuteEvent(requestID, types.Failure),
-			NewOracleResponsePacketData(requestID, request.ClientID, types.Failure, ""),
+			NewOracleResponsePacketData(request.ClientID, requestID, int64(len(request.ReceivedValidators)), request.RequestTime, ctx.BlockTime().Unix(), types.Failure, ""),
 			false
 	}
 
@@ -53,7 +53,7 @@ func handleResolveRequest(
 	if executeGas > resolveContext.endBlockExecuteGasLimit {
 		keeper.SetResolve(ctx, requestID, types.Failure)
 		return newRequestExecuteEvent(requestID, types.Failure),
-			NewOracleResponsePacketData(requestID, request.ClientID, types.Failure, ""),
+			NewOracleResponsePacketData(request.ClientID, requestID, int64(len(request.ReceivedValidators)), request.RequestTime, ctx.BlockTime().Unix(), types.Failure, ""),
 			false
 	}
 
@@ -68,7 +68,7 @@ func handleResolveRequest(
 	if err != nil { // should never happen
 		keeper.SetResolve(ctx, requestID, types.Failure)
 		return newRequestExecuteEvent(requestID, types.Failure),
-			NewOracleResponsePacketData(requestID, request.ClientID, types.Failure, ""),
+			NewOracleResponsePacketData(request.ClientID, requestID, int64(len(request.ReceivedValidators)), request.RequestTime, ctx.BlockTime().Unix(), types.Failure, ""),
 			false
 	}
 
@@ -76,7 +76,7 @@ func handleResolveRequest(
 	if err != nil { // should never happen
 		keeper.SetResolve(ctx, requestID, types.Failure)
 		return newRequestExecuteEvent(requestID, types.Failure),
-			NewOracleResponsePacketData(requestID, request.ClientID, types.Failure, ""),
+			NewOracleResponsePacketData(request.ClientID, requestID, int64(len(request.ReceivedValidators)), request.RequestTime, ctx.BlockTime().Unix(), types.Failure, ""),
 			false
 	}
 
@@ -84,7 +84,7 @@ func handleResolveRequest(
 	if err != nil { // should never happen
 		keeper.SetResolve(ctx, requestID, types.Failure)
 		return newRequestExecuteEvent(requestID, types.Failure),
-			NewOracleResponsePacketData(requestID, request.ClientID, types.Failure, ""),
+			NewOracleResponsePacketData(request.ClientID, requestID, int64(len(request.ReceivedValidators)), request.RequestTime, ctx.BlockTime().Unix(), types.Failure, ""),
 			false
 	}
 
@@ -106,7 +106,7 @@ func handleResolveRequest(
 	if errOwasm != nil {
 		keeper.SetResolve(ctx, requestID, types.Failure)
 		return newRequestExecuteEvent(requestID, types.Failure),
-			NewOracleResponsePacketData(requestID, request.ClientID, types.Failure, ""),
+			NewOracleResponsePacketData(request.ClientID, requestID, int64(len(request.ReceivedValidators)), request.RequestTime, ctx.BlockTime().Unix(), types.Failure, ""),
 			false
 	}
 
@@ -114,7 +114,7 @@ func handleResolveRequest(
 	if errResult != nil {
 		keeper.SetResolve(ctx, requestID, types.Failure)
 		return newRequestExecuteEvent(requestID, types.Failure),
-			NewOracleResponsePacketData(requestID, request.ClientID, types.Failure, ""),
+			NewOracleResponsePacketData(request.ClientID, requestID, int64(len(request.ReceivedValidators)), request.RequestTime, ctx.BlockTime().Unix(), types.Failure, ""),
 			false
 	}
 
@@ -122,7 +122,7 @@ func handleResolveRequest(
 	event := newRequestExecuteEvent(requestID, types.Success)
 	event.AppendAttributes(sdk.NewAttribute(types.AttributeKeyResult, string(result)))
 	return event,
-		NewOracleResponsePacketData(requestID, request.ClientID, types.Success, hex.EncodeToString(result)),
+		NewOracleResponsePacketData(request.ClientID, requestID, int64(len(request.ReceivedValidators)), request.RequestTime, ctx.BlockTime().Unix(), types.Success, hex.EncodeToString(result)),
 		false
 
 }
