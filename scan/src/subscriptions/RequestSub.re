@@ -251,11 +251,21 @@ module Mini = {
              {
                id: y##id,
                requester: y##requester,
-               oracleScriptID: y##oracle_script.id,
-               oracleScriptName: y##oracle_script.name,
+               oracleScriptID: y##oracleScript.id,
+               oracleScriptName: y##oracleScript.name,
                txHash: y##transaction.txHash,
                blockHeight: y##transaction.blockHeight,
                timestamp: y##transaction.timestamp,
+               reportsCount:
+                 y##reportsAggregate.aggregate
+                 ->Belt_Option.map(({count}) => count)
+                 ->Belt_Option.getExn,
+               sufficientValidatorCount: y##sufficientValidatorCount,
+               requestedValidatorsCount:
+                 y##requestedValidatorsAgregate.aggregate
+                 ->Belt_Option.map(({count}) => count)
+                 ->Belt_Option.getExn,
+               result: y##result,
              }
            )
        );
