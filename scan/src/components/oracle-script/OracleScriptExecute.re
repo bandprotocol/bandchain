@@ -223,17 +223,13 @@ module ExecutionPart = {
 
 [@react.component]
 let make = (~id: ID.OracleScript.t, ~schemaOpt: option(string)) => {
-  switch (
-    {
-      let%Opt schema = schemaOpt;
-      let%Opt paramsInput = schema->Borsh.extractFields("Input");
-      Some(<ExecutionPart id schema paramsInput />);
-    }
-  ) {
-  | Some(dom) => dom
-  | None =>
-    <div className={Styles.withPadding(20, 20)}>
-      <Text value="Schema not found" color=Colors.gray7 />
-    </div>
-  };
+  let%Opt schema = schemaOpt;
+  let%Opt paramsInput = schema->Borsh.extractFields("Input");
+  Some(<ExecutionPart id schema paramsInput />);
 };
+Belt.Option.getWithDefault(
+  _,
+  <div className={Styles.withPadding(20, 20)}>
+    <Text value="Schema not found" color=Colors.gray7 />
+  </div>,
+);
