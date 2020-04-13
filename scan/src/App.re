@@ -60,63 +60,69 @@ module Styles = {
 module TopBar = {
   [@react.component]
   let make = () =>
-    <div className=Styles.topBarContainer>
-      <div className={Css.merge([Styles.topBarInner, Styles.pageWidth])}>
-        <div className=Styles.logoContainer onClick={_ => Route.redirect(Route.HomePage)}>
-          <Row>
-            <Col> <img src=Images.bandLogo className=Styles.bandLogo /> </Col>
-            <Col> <HSpacing size=Spacing.sm /> </Col>
-            <Col>
-              <Text
-                value="BandChain"
-                size=Text.Xxl
-                weight=Text.Bold
-                nowrap=true
-                color=Colors.gray8
-                spacing={Text.Em(0.05)}
-              />
-              <VSpacing size=Spacing.xs />
-              <div className=Styles.rFlex>
+    {
+      let metadataSub = MetadataSub.use();
+      let%Sub metadata = metadataSub;
+      <div className=Styles.topBarContainer>
+        <div className={Css.merge([Styles.topBarInner, Styles.pageWidth])}>
+          <div className=Styles.logoContainer onClick={_ => Route.redirect(Route.HomePage)}>
+            <Row>
+              <Col> <img src=Images.bandLogo className=Styles.bandLogo /> </Col>
+              <Col> <HSpacing size=Spacing.sm /> </Col>
+              <Col>
                 <Text
-                  value="EXPLORER"
+                  value="BandChain"
+                  size=Text.Xxl
+                  weight=Text.Bold
                   nowrap=true
-                  size=Text.Sm
-                  weight=Text.Semibold
-                  color={Css.hex("777777")}
-                  spacing={Text.Em(0.03)}
+                  color=Colors.gray8
+                  spacing={Text.Em(0.05)}
                 />
-                <HSpacing size=Spacing.xs />
-                <div className=Styles.version>
+                <VSpacing size=Spacing.xs />
+                <div className=Styles.rFlex>
                   <Text
-                    value="v1.0 TESTNET"
-                    size=Text.Xs
-                    color={Css.hex("535BBF")}
+                    value="EXPLORER"
                     nowrap=true
+                    size=Text.Sm
                     weight=Text.Semibold
+                    color={Css.hex("777777")}
                     spacing={Text.Em(0.03)}
                   />
+                  <HSpacing size=Spacing.xs />
+                  <div className=Styles.version>
+                    <Text
+                      value={metadata.chainID}
+                      size=Text.Xs
+                      color={Css.hex("535BBF")}
+                      nowrap=true
+                      weight=Text.Semibold
+                      spacing={Text.Em(0.03)}
+                    />
+                  </div>
                 </div>
-              </div>
-            </Col>
-            <Col alignSelf=Col.End>
-              <div className=Styles.rFlex>
-                <div className=Styles.socialLink>
-                  <a href="https://twitter.com/bandprotocol" target="_blank" rel="noopener">
-                    <img src=Images.twitterLogo className=Styles.twitterLogo />
-                  </a>
+              </Col>
+              <Col alignSelf=Col.End>
+                <div className=Styles.rFlex>
+                  <div className=Styles.socialLink>
+                    <a href="https://twitter.com/bandprotocol" target="_blank" rel="noopener">
+                      <img src=Images.twitterLogo className=Styles.twitterLogo />
+                    </a>
+                  </div>
+                  <div className=Styles.socialLink>
+                    <a href="https://t.me/bandprotocol" target="_blank" rel="noopener">
+                      <img src=Images.telegramLogo className=Styles.telegramLogo />
+                    </a>
+                  </div>
                 </div>
-                <div className=Styles.socialLink>
-                  <a href="https://t.me/bandprotocol" target="_blank" rel="noopener">
-                    <img src=Images.telegramLogo className=Styles.telegramLogo />
-                  </a>
-                </div>
-              </div>
-            </Col>
-          </Row>
+              </Col>
+            </Row>
+          </div>
+          <SearchBar />
         </div>
-        <SearchBar />
       </div>
-    </div>;
+      |> Sub.resolve;
+    }
+    |> Sub.default(_, React.null);
 };
 
 [@react.component]
