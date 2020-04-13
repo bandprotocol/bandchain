@@ -43,10 +43,10 @@ module ValidatorReport = {
       |}
   ];
 
-  module DataSourcesCountConfig = [%graphql
+  module ReportCountConfig = [%graphql
     {|
-    subscription ReportsCount {
-      reports_aggregate{
+    subscription ReportsCount ($validator: String!) {
+      reports_aggregate(where: {validator: {_eq: $validator}}) {
         aggregate{
           count @bsDecoder(fn: "Belt_Option.getExn")
         }
@@ -65,8 +65,12 @@ module ValidatorReport = {
     result |> Sub.map(_, x => x##reports);
   };
 
-  let count = () => {
-    let (result, _) = ApolloHooks.useSubscription(DataSourcesCountConfig.definition);
+  let count = validator => {
+    let (result, _) =
+      ApolloHooks.useSubscription(
+        ReportCountConfig.definition,
+        ~variables=ReportCountConfig.makeVariables(~validator, ()),
+      );
     result
     |> Sub.map(_, x => x##reports_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
   };

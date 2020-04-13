@@ -179,7 +179,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
         |]
         currentRoute={Route.ValidatorIndexPage(address, hashtag)}>
         {switch (hashtag) {
-         | ProposedBlocks => <ProposedBlocksTable />
+         | ProposedBlocks => <ProposedBlocksTable consensusAddress={validator.consensusAddress} />
          | Delegators => <DelegatorsTable address />
          | Reports => <ReportsTable address />
          }}
