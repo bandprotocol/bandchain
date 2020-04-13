@@ -89,9 +89,6 @@ let renderBody = (rank, validator: ValidatorSub.t, bondedTokenCount) => {
   let token = validator.tokens;
   let commission = validator.commission;
   let uptime = validator.nodeStatus.uptime;
-  let allRequestCount =
-    validator.completedRequestCount + validator.missedRequestCount |> float_of_int;
-  let reportRate = (validator.completedRequestCount |> float_of_int) /. allRequestCount *. 100.;
 
   <TBody key={rank |> string_of_int}>
     <div className=Styles.fullWidth>
@@ -216,7 +213,7 @@ let make = () =>
     // TODO: Update once bonding status is available
     let bondedValidatorCountSub = ValidatorSub.count();
     let bondedTokenCountSub = ValidatorSub.getTotalBondedAmount();
-    let pastDayBlockCountSub = BlockSub.pastDayCount(lastDay);
+    let pastDayBlockCountSub = BlockSub.pastDayCount(prevDay |> Js.Json.number);
     let metadataSub = MetadataSub.use();
 
     let%Sub validators = validatorsSub;
@@ -232,9 +229,6 @@ let make = () =>
     let unbondingValidatorCount = 0;
     let allValidatorCount =
       bondedValidatorCount + unbondedValidatorCount + unbondingValidatorCount;
-
-    //TODO: Replace with real value
-    let allBondedAmount = 400;
 
     let pastDayAvgBlockTime = (pastDayBlockCount |> float_of_int) /. 86_400_000.00;
 
