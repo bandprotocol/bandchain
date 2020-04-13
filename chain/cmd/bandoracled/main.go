@@ -26,12 +26,14 @@ const (
 	flagPrivKey          = "priv-key"
 	flagSandboxMode      = "sandbox"
 	flagExecuteEndPoint  = "execute-endpoint"
+	flagChainID          = "chain-id"
 )
 
 var (
 	bandClient bandlib.BandStatefulClient
 	gasFlagVar = flags.GasSetting{Gas: flags.DefaultGasLimit}
 	logger     log.Logger
+	chainID    string
 )
 
 func getLatestRequestID() (oracle.RequestID, error) {
@@ -52,7 +54,6 @@ func main() {
 	config := sdk.GetConfig()
 	app.SetBech32AddressPrefixesAndBip44CoinType(config)
 	config.Seal()
-
 	cmd := &cobra.Command{
 		Use:   "bandoracled",
 		Short: "Band oracle Daemon",
@@ -76,7 +77,7 @@ $ bandoracled --node tcp://localhost:26657 --priv-key 06be35b56b048c5a6810a47e2e
 			copy(priv[:], privB)
 
 			bandClient, err = bandlib.NewBandStatefulClient(
-				viper.GetString(flags.FlagNode), priv, 100, 10, "Bandoracled reports",
+				viper.GetString(flags.FlagNode), priv, 100, 10, "Bandoracled reports", chainID,
 			)
 			if err != nil {
 				logger.Error(fmt.Sprintf("%v", err))
@@ -135,6 +136,9 @@ $ bandoracled --node tcp://localhost:26657 --priv-key 06be35b56b048c5a6810a47e2e
 		"The URL of execution end-point which will receive 3 parameters (executable, timeout, calldata)",
 	)
 	viper.BindPFlag(flagExecuteEndPoint, cmd.Flags().Lookup(flagExecuteEndPoint))
+
+	cmd.Flags().String(flagChainID, "bandchain", "ID of the chain to use")
+	viper.BindPFlag(flagChainID, cmd.Flags().Lookup(flagChainID))
 
 	err := cmd.Execute()
 	if err != nil {
