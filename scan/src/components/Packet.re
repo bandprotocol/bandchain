@@ -46,17 +46,17 @@ let make = (~packet: IBCSub.packet_t, ~oracleScriptID: ID.OracleScript.t) => {
         </div>
       </div>
       <VSpacing size=Spacing.lg />
-      {let calldataRender =
+      {let calldataHeadRender =
          <div className=Styles.hFlex>
            <Text value="CALLDATA" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
            <HSpacing size=Spacing.md />
            <CopyButton data={request.calldata} />
          </div>;
        switch (outputKVsOpt) {
-       | Some(_) => calldataRender
+       | Some(_) => calldataHeadRender
        | None =>
          <div className=Styles.topicContainer>
-           calldataRender
+           calldataHeadRender
            <div className={Styles.maxWidth(250)}>
              <Text value={request.calldata |> JsBuffer.toHex} code=true ellipsis=true block=true />
            </div>
