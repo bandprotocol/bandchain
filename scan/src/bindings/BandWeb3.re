@@ -5,11 +5,19 @@ type wrapped_msg_t;
 type signed_msg_t;
 
 type account_result_t = {
-  accountNumber: string,
-  sequence: string,
+  accountNumber: int,
+  sequence: int,
 };
 
-type response_t = {txHash: Hash.t};
+type tx_response_t = {
+  txHash: Hash.t,
+  rawLog: string,
+  success: bool,
+};
+
+type response_t =
+  | Tx(tx_response_t)
+  | Unknown;
 
 [@bs.module "@cosmostation/cosmosjs"] external network: (string, string) => t = "network";
 
@@ -27,7 +35,7 @@ type response_t = {txHash: Hash.t};
 
 [@bs.send] external newStdMsgRequest: (t, StdMsgRequest.t) => wrapped_msg_t = "newStdMsg";
 
-[@bs.send] external sign: (t, wrapped_msg_t, JsBuffer.t) => signed_msg_t = "sign";
+[@bs.send] external sign: (t, wrapped_msg_t, JsBuffer.t, string) => signed_msg_t = "sign";
 
 [@bs.send] external _broadcast: (t, signed_msg_t) => Js.Promise.t(Js.Json.t) = "broadcast";
 
@@ -36,8 +44,8 @@ let getAccounts = (instance, address) => {
 
   Promise.ret(
     JsonUtils.Decode.{
-      accountNumber: rawResult |> at(["result", "value", "account_number"], string),
-      sequence: rawResult |> at(["result", "value", "sequence"], string),
+      accountNumber: rawResult |> at(["result", "value", "account_number"], int),
+      sequence: rawResult |> at(["result", "value", "sequence"], int),
     },
   );
 };
@@ -61,7 +69,13 @@ let broadcast = (instance, signedMsg) => {
   let%Promise rawResponse = instance->_broadcast(signedMsg);
 
   Promise.ret(
-    JsonUtils.Decode.{txHash: rawResponse |> at(["txhash"], string) |> Hash.fromHex},
+    Tx(
+      JsonUtils.Decode.{
+        txHash: rawResponse |> at(["txhash"], string) |> Hash.fromHex,
+        rawLog: rawResponse |> at(["raw_log"], string),
+        success: rawResponse |> optional(field("logs", _ => ())) |> Belt_Option.isSome,
+      },
+    ),
   );
 };
 

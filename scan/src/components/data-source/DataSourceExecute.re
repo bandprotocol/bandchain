@@ -54,7 +54,7 @@ module Styles = {
       alignItems(`center),
     ]);
 
-  let resultWrapper = (w, h, overflow_choice) =>
+  let resultWrapper = (w, h, overflowChioce) =>
     style([
       width(w),
       height(h),
@@ -63,7 +63,7 @@ module Styles = {
       justifyContent(`center),
       backgroundColor(Colors.white),
       borderRadius(`px(4)),
-      overflow(overflow_choice),
+      overflow(overflowChioce),
     ]);
 };
 
