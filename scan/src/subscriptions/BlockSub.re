@@ -141,7 +141,8 @@ let pastDayCount = timestamp => {
   let (result, _) =
     ApolloHooks.useSubscription(
       PastDayBlockCountConfig.definition,
-      ~variables=PastDayBlockCountConfig.makeVariables(~timestamp, ()),
+      ~variables=
+        PastDayBlockCountConfig.makeVariables(~timestamp=timestamp |> Js.Json.number, ()),
     );
   result
   |> Sub.map(_, x => x##blocks_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));

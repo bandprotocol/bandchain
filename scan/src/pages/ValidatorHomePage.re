@@ -213,7 +213,7 @@ let make = () =>
     // TODO: Update once bonding status is available
     let bondedValidatorCountSub = ValidatorSub.count();
     let bondedTokenCountSub = ValidatorSub.getTotalBondedAmount();
-    let pastDayBlockCountSub = BlockSub.pastDayCount(prevDay |> Js.Json.number);
+    let pastDayBlockCountSub = BlockSub.pastDayCount(prevDay);
     let metadataSub = MetadataSub.use();
 
     let%Sub validators = validatorsSub;
@@ -230,7 +230,7 @@ let make = () =>
     let allValidatorCount =
       bondedValidatorCount + unbondedValidatorCount + unbondingValidatorCount;
 
-    let pastDayAvgBlockTime = (pastDayBlockCount |> float_of_int) /. 86_400_000.00;
+    let pastDayAvgBlockTime = (pastDayBlockCount |> float_of_int) /. 86_400.00;
 
     <>
       <Row justify=Row.Between>
@@ -275,7 +275,7 @@ let make = () =>
           </Col>
           <Col size=0.51>
             <InfoHL
-              info={InfoHL.FloatWithSuffix(pastDayAvgBlockTime, "  secs", 6)}
+              info={InfoHL.FloatWithSuffix(pastDayAvgBlockTime, "  secs", 2)}
               header="24 HOUR AVG BLOCK TIME"
             />
           </Col>
