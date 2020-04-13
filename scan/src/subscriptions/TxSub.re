@@ -39,7 +39,7 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
-        id: json |> field("dataSourceID", ID.DataSource.fromJson),
+        id: json |> field("data_source_id", ID.DataSource.fromJson),
         owner: json |> field("owner", string) |> Address.fromBech32,
         name: json |> field("name", string),
         fee: json |> field("fee", list(Coin.decodeCoin)),
@@ -60,7 +60,7 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
-        id: json |> field("dataSourceID", ID.DataSource.fromJson),
+        id: json |> field("data_source_id", ID.DataSource.fromJson),
         owner: json |> field("owner", string) |> Address.fromBech32,
         name: json |> field("name", string),
         fee: json |> field("fee", list(Coin.decodeCoin)),
