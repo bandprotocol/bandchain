@@ -1,40 +1,31 @@
-use owasm::oei;
+use borsh::{BorshDeserialize, BorshSerialize};
+use owasm::{execute_entry_point, ext, oei, prepare_entry_point};
 
-fn parse_float(data: String) -> Option<f64> {
-    data.parse::<f64>().ok()
+#[derive(BorshDeserialize)]
+struct Input {
+    symbol: String,
+    multiplier: u64,
+}
+
+#[derive(BorshSerialize)]
+struct Output {
+    px: u64,
 }
 
 #[no_mangle]
-pub fn prepare() {
-    let calldata = oei::get_calldata();
+fn prepare_impl(input: Input) {
     // Gold price data source
-    oei::request_external_data(5, 1, &calldata);
+    oei::request_external_data(5, 1, input.symbol.as_bytes());
+    // Binance data source
+    oei::request_external_data(6, 2, input.symbol.as_bytes());
 }
 
 #[no_mangle]
-pub fn execute() {
-    let validator_count = oei::get_requested_validator_count();
-    let mut sum: f64 = 0.0;
-    let mut count: u64 = 0;
-    for validator_index in 0..validator_count {
-        let mut val = 0.0;
-        let mut fail = false;
-
-        let data = oei::get_external_data(5, validator_index);
-        if data.is_none() {
-            fail = true;
-        }
-        let num = parse_float(data.unwrap());
-        if num.is_none() {
-            fail = true;
-        }
-        val += num.unwrap();
-
-        if !fail {
-            sum += val;
-            count += 1;
-        }
-    }
-    let result = (sum / (count as f64) * 100.0) as u64;
-    oei::save_return_data(&result.to_be_bytes())
+fn execute_impl(input: Input) -> Output {
+    let avg_gold: f64 = ext::load_average(1);
+    let avg_atom: f64 = ext::load_average(2);
+    Output { px: (avg_gold * input.multiplier as f64 / avg_atom) as u64 }
 }
+
+prepare_entry_point!(prepare_impl);
+execute_entry_point!(execute_impl);

@@ -98,9 +98,14 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			"./datasources/open_weather_map.sh",
 		},
 		{
-			"Gold Price",
+			"Gold price",
 			"The script that queries current gold price",
 			"./datasources/gold_price.sh",
+		},
+		{
+			"Atom price from binance",
+			"The Script that queries Atom price from https://coingecko.com",
+			"./datasources/binance_atom_price.sh",
 		},
 	}
 
