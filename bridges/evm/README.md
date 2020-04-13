@@ -38,6 +38,6 @@
 
 - The reason we support Celo is that Celo is an open platform that makes financial tools accessible to anyone with a mobile phone.
 
-- We have deployed our Bridge contract (0x9D0E05f4e777d18ea26F397e343501fBC3197F2d) on the Celo Alfajores test network.
+- We have deployed our Bridge contract ([0x0A2acDeA5d23e45d2b5919d5aBdF7CA1088d907b](https://baklava-blockscout.celo-testnet.org/address/0x0a2acdea5d23e45d2b5919d5abdf7ca1088d907b/transactions)) on the Celo Baklava test network.
 
 - Please see this [`example`](integration_examples/celo) for more details about Bridge contract deployment and interaction on the Alfajores test network .
