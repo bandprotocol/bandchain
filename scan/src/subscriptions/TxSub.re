@@ -290,6 +290,7 @@ module Msg = {
   module Packet = {
     type t = {
       sender: Address.t,
+      data: string,
       sequence: int,
       sourcePort: string,
       sourceChannel: string,
@@ -299,8 +300,10 @@ module Msg = {
       chainID: string,
     };
     let decode = json => {
+      Js.Console.log(json);
       JsonUtils.Decode.{
         sender: json |> field("signer", string) |> Address.fromBech32,
+        data: json |> at(["packet", "data"], string) |> Js.String.toUpperCase,
         sequence: json |> at(["packet", "sequence"], int),
         sourcePort: json |> at(["packet", "source_port"], string),
         sourceChannel: json |> at(["packet", "source_channel"], string),
@@ -320,7 +323,7 @@ module Msg = {
       sourceChannel: string,
       destinationPort: string,
       destinationChannel: string,
-      timeoutHeight: string,
+      timeoutHeight: int,
       acknowledgement: string,
       chainID: string,
     };
@@ -332,7 +335,7 @@ module Msg = {
         sourceChannel: "gjdojfpjfp",
         destinationPort: "gjdojfpjfp",
         destinationChannel: "gjdojfpjfp",
-        timeoutHeight: "gjdojfpjfp",
+        timeoutHeight: 12345,
         acknowledgement: "iKQAmKzSud29geE5che9C8bVuQyG02FJJ7LM...",
         chainID: "band-consumer",
       };
@@ -388,7 +391,7 @@ module Msg = {
       chainID: string,
       connectionID: string,
       clientID: string,
-      consensusHeight: ID.Block.t,
+      consensusHeight: int,
     };
     let decode = json =>
       JsonUtils.Decode.{
@@ -396,7 +399,7 @@ module Msg = {
         clientID: json |> field("client_id", string),
         chainID: "band-consumer",
         connectionID: json |> field("connection_id", string),
-        consensusHeight: json |> field("consensus_height", ID.Block.fromJson),
+        consensusHeight: json |> field("consensus_height", int),
       };
   };
 
