@@ -87,7 +87,7 @@ type RequestQuerierInfo struct {
 	Request         Request                        `json:"request"`
 	RawDataRequests []RawDataRequestWithExternalID `json:"rawDataRequests"`
 	Reports         []ReportWithValidator          `json:"reports"`
-	Result          Result                         `json:"result"`
+	Result          []byte                         `json:"result"`
 }
 
 func NewRequestQuerierInfo(
@@ -95,7 +95,7 @@ func NewRequestQuerierInfo(
 	request Request,
 	rawDataRequests []RawDataRequestWithExternalID,
 	reports []ReportWithValidator,
-	result Result,
+	result []byte,
 ) RequestQuerierInfo {
 	return RequestQuerierInfo{
 		ID:              id,

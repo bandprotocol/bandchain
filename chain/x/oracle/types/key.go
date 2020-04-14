@@ -66,6 +66,11 @@ func ResultStoreKey(requestID RequestID, oracleScriptID OracleScriptID, calldata
 	return buf
 }
 
+func PacketHashStoreKey(requestID RequestID) []byte {
+	buf := append(ResultStoreKeyPrefix, int64ToBytes(int64(requestID))...)
+	return buf
+}
+
 // RawDataRequestStoreKey is a function to generate key for each raw data request in store
 func RawDataRequestStoreKey(requestID RequestID, externalID ExternalID) []byte {
 	buf := append(RawDataRequestStoreKeyPrefix, int64ToBytes(int64(requestID))...)

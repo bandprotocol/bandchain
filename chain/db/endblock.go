@@ -1,6 +1,7 @@
 package db
 
 import (
+	"encoding/hex"
 	"encoding/json"
 	"strconv"
 
@@ -36,16 +37,11 @@ func (b *BandDB) HandleEndblockEvent(event abci.Event) {
 			var rawResult []byte
 			rawResult = nil
 			if resolveStatus == 1 {
-				id := oracle.RequestID(requestID)
-				request, sdkErr := b.OracleKeeper.GetRequest(b.ctx, id)
-				if sdkErr != nil {
+				resultHex := kvMap[oracle.AttributeKeyResult]
+				rawResult, err = hex.DecodeString(resultHex[:])
+				if err != nil {
 					panic(err)
 				}
-				result, sdkErr := b.OracleKeeper.GetResult(b.ctx, id, request.OracleScriptID, request.Calldata)
-				if sdkErr != nil {
-					panic(err)
-				}
-				rawResult = result.Data
 			}
 			err = b.ResolveRequest(requestID, resolveStatus, rawResult)
 			if err != nil {

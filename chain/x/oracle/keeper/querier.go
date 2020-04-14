@@ -73,13 +73,10 @@ func buildRequestQuerierInfo(
 			))
 		}
 	}
-	var result types.Result
-	if keeper.HasResult(ctx, id, request.OracleScriptID, request.Calldata) {
-		var sdkErr error
-		result, sdkErr = keeper.GetResult(ctx, id, request.OracleScriptID, request.Calldata)
-		if sdkErr != nil {
-			return types.RequestQuerierInfo{}, sdkErr
-		}
+	var result []byte
+	result, sdkErr = keeper.GetPacketHash(ctx, id)
+	if sdkErr != nil {
+		return types.RequestQuerierInfo{}, sdkErr
 	}
 
 	return types.NewRequestQuerierInfo(

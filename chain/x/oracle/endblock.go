@@ -110,7 +110,22 @@ func handleResolveRequest(
 			false
 	}
 
-	errResult := keeper.AddResult(ctx, requestID, request.OracleScriptID, request.Calldata, result)
+	requestPacket := NewOracleRequestPacketData(
+		request.ClientID,
+		request.OracleScriptID,
+		string(request.Calldata),
+		request.SufficientValidatorCount,
+		int64(len(request.RequestedValidators)),
+	)
+	responsePacket := NewOracleResponsePacketData(
+		request.ClientID,
+		requestID,
+		int64(len(request.ReceivedValidators)),
+		request.RequestTime, ctx.BlockTime().Unix(),
+		types.Success, hex.EncodeToString(result),
+	)
+	errResult := keeper.AddPacketHash(ctx, requestID, requestPacket, responsePacket)
+	// errResult := keeper.AddResult(ctx, requestID, request.OracleScriptID, request.Calldata, result)
 	if errResult != nil {
 		keeper.SetResolve(ctx, requestID, types.Failure)
 		return newRequestExecuteEvent(requestID, types.Failure),
@@ -119,10 +134,14 @@ func handleResolveRequest(
 	}
 
 	keeper.SetResolve(ctx, requestID, types.Success)
-	event := newRequestExecuteEvent(requestID, types.Success)
-	event.AppendAttributes(sdk.NewAttribute(types.AttributeKeyResult, string(result)))
+	event := sdk.NewEvent(
+		types.EventTypeRequestExecute,
+		sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", requestID)),
+		sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", types.Success)),
+		sdk.NewAttribute(types.AttributeKeyResult, fmt.Sprintf("%s", hex.EncodeToString(result))),
+	)
 	return event,
-		NewOracleResponsePacketData(request.ClientID, requestID, int64(len(request.ReceivedValidators)), request.RequestTime, ctx.BlockTime().Unix(), types.Success, hex.EncodeToString(result)),
+		responsePacket,
 		false
 
 }
