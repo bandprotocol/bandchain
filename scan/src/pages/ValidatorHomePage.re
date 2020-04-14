@@ -230,7 +230,7 @@ let make = () =>
     let allValidatorCount =
       bondedValidatorCount + unbondedValidatorCount + unbondingValidatorCount;
 
-    let pastDayAvgBlockTime = (pastDayBlockCount |> float_of_int) /. 86_400.00;
+    let pastDayAvgBlockTime = 86_400.00 /. (pastDayBlockCount |> float_of_int);
 
     <>
       <Row justify=Row.Between>
