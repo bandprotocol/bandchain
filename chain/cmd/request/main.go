@@ -97,7 +97,7 @@ func main() {
 				oracle.NewMsgCreateOracleScript(
 					tx.Sender(), "Crypto price script",
 					"Oracle script for getting an average crypto price from many sources.",
-					oracleBytes, tx.Sender(),
+					oracleBytes, tx.Sender(), "placeholder schema", "placeholder url",
 				),
 				3000000, "", "",
 			))
@@ -224,7 +224,7 @@ func main() {
 
 			fmt.Println(tx.SendTransaction(
 				oracle.NewMsgCreateOracleScript(
-					tx.Sender(), "Silly script", "Test oracle script", bytes, tx.Sender()),
+					tx.Sender(), "Silly script", "Test oracle script", bytes, tx.Sender(), "placeholder schema", "placeholder url"),
 				3000000, "", "",
 			))
 
@@ -257,7 +257,7 @@ func main() {
 				fmt.Println(tx.SendTransaction(
 					oracle.NewMsgCreateOracleScript(
 						tx.Sender(), fmt.Sprintf("Silly script %d", i), "Test oracle script",
-						bytes, tx.Sender(),
+						bytes, tx.Sender(), "placeholder schema", "placeholder url",
 					), 1000000, "", "",
 				))
 				time.Sleep(100 * time.Millisecond)

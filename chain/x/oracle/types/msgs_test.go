@@ -316,7 +316,7 @@ func TestMsgEditDataSourceGetSignBytes(t *testing.T) {
 func TestMsgCreateOracleScript(t *testing.T) {
 	owner := sdk.AccAddress([]byte("owner"))
 	sender := sdk.AccAddress([]byte("sender"))
-	msg := NewMsgCreateOracleScript(owner, "oracle_script_1", "description", []byte("code"), sender)
+	msg := NewMsgCreateOracleScript(owner, "oracle_script_1", "description", []byte("code"), sender, "placeholder schema", "placeholder url")
 	require.Equal(t, RouterKey, msg.Route())
 	require.Equal(t, "create_oracle_script", msg.Type())
 	require.Equal(t, owner, msg.Owner)
@@ -331,28 +331,30 @@ func TestMsgCreateOracleScriptValidation(t *testing.T) {
 	sender := sdk.AccAddress([]byte("sender"))
 	name := "oracle_script_1"
 	code := []byte("code")
+	schema := "placeholder schema"
+	sourceCodeURL := "placeholder url"
 
 	cases := []struct {
 		valid bool
 		tx    MsgCreateOracleScript
 	}{
 		{
-			true, NewMsgCreateOracleScript(owner, name, description, code, sender),
+			true, NewMsgCreateOracleScript(owner, name, description, code, sender, schema, sourceCodeURL),
 		},
 		{
-			false, NewMsgCreateOracleScript(nil, name, description, code, sender),
+			false, NewMsgCreateOracleScript(nil, name, description, code, sender, schema, sourceCodeURL),
 		},
 		{
-			false, NewMsgCreateOracleScript(owner, "", description, code, sender),
+			false, NewMsgCreateOracleScript(owner, "", description, code, sender, schema, sourceCodeURL),
 		},
 		{
-			false, NewMsgCreateOracleScript(owner, name, description, []byte{}, sender),
+			false, NewMsgCreateOracleScript(owner, name, description, []byte{}, sender, schema, sourceCodeURL),
 		},
 		{
-			false, NewMsgCreateOracleScript(owner, name, description, nil, sender),
+			false, NewMsgCreateOracleScript(owner, name, description, nil, sender, schema, sourceCodeURL),
 		},
 		{
-			false, NewMsgCreateOracleScript(owner, name, description, code, nil),
+			false, NewMsgCreateOracleScript(owner, name, description, code, nil, schema, sourceCodeURL),
 		},
 	}
 
@@ -372,10 +374,10 @@ func TestMsgCreateOracleScriptGetSignBytes(t *testing.T) {
 
 	owner := sdk.AccAddress([]byte("owner"))
 	sender := sdk.AccAddress([]byte("sender"))
-	msg := NewMsgCreateOracleScript(owner, "oracle_script_1", "description", []byte("code"), sender)
+	msg := NewMsgCreateOracleScript(owner, "oracle_script_1", "description", []byte("code"), sender, "placeholder schema", "placeholder url")
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"oracle/CreateOracleScript","value":{"code":"Y29kZQ==","description":"description","name":"oracle_script_1","owner":"band1damkuetjcw3c0d","sender":"band1wdjkuer9wgvz7c4y"}}`
+	expected := `{"type":"oracle/CreateOracleScript","value":{"code":"Y29kZQ==","description":"description","name":"oracle_script_1","owner":"band1damkuetjcw3c0d","schema":"placeholder schema","sender":"band1wdjkuer9wgvz7c4y","sourceCodeURL":"placeholder url"}}`
 
 	require.Equal(t, expected, string(res))
 }
@@ -383,7 +385,7 @@ func TestMsgCreateOracleScriptGetSignBytes(t *testing.T) {
 func TestMsgEditOracleScript(t *testing.T) {
 	owner := sdk.AccAddress([]byte("owner"))
 	sender := sdk.AccAddress([]byte("sender"))
-	msg := NewMsgEditOracleScript(1, owner, "oracle_script_1", "description", []byte("code"), sender)
+	msg := NewMsgEditOracleScript(1, owner, "oracle_script_1", "description", []byte("code"), sender, "placeholder schema", "placeholder url")
 	require.Equal(t, RouterKey, msg.Route())
 	require.Equal(t, "edit_oracle_script", msg.Type())
 	require.Equal(t, OracleScriptID(1), msg.OracleScriptID)
@@ -399,31 +401,33 @@ func TestMsgEditOracleScriptValidation(t *testing.T) {
 	name := "oracle_script_1"
 	description := "description"
 	code := []byte("code")
+	schema := "placeholder schema"
+	sourceCodeURL := "placeholder url"
 
 	cases := []struct {
 		valid bool
 		tx    MsgEditOracleScript
 	}{
 		{
-			true, NewMsgEditOracleScript(1, owner, name, description, code, sender),
+			true, NewMsgEditOracleScript(1, owner, name, description, code, sender, schema, sourceCodeURL),
 		},
 		{
-			false, NewMsgEditOracleScript(0, nil, name, description, code, sender),
+			false, NewMsgEditOracleScript(0, nil, name, description, code, sender, schema, sourceCodeURL),
 		},
 		{
-			false, NewMsgEditOracleScript(1, nil, name, description, code, sender),
+			false, NewMsgEditOracleScript(1, nil, name, description, code, sender, schema, sourceCodeURL),
 		},
 		{
-			false, NewMsgEditOracleScript(1, owner, "", description, code, sender),
+			false, NewMsgEditOracleScript(1, owner, "", description, code, sender, schema, sourceCodeURL),
 		},
 		{
-			false, NewMsgEditOracleScript(1, owner, name, description, []byte{}, sender),
+			false, NewMsgEditOracleScript(1, owner, name, description, []byte{}, sender, schema, sourceCodeURL),
 		},
 		{
-			false, NewMsgEditOracleScript(1, owner, name, description, nil, sender),
+			false, NewMsgEditOracleScript(1, owner, name, description, nil, sender, schema, sourceCodeURL),
 		},
 		{
-			false, NewMsgEditOracleScript(1, owner, name, description, code, nil),
+			false, NewMsgEditOracleScript(1, owner, name, description, code, nil, schema, sourceCodeURL),
 		},
 	}
 
@@ -443,10 +447,10 @@ func TestMsgEditOracleScriptGetSignBytes(t *testing.T) {
 
 	owner := sdk.AccAddress([]byte("owner"))
 	sender := sdk.AccAddress([]byte("sender"))
-	msg := NewMsgEditOracleScript(1, owner, "oracle_script_1", "description", []byte("code"), sender)
+	msg := NewMsgEditOracleScript(1, owner, "oracle_script_1", "description", []byte("code"), sender, "placeholder schema", "placeholder url")
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"oracle/EditOracleScript","value":{"code":"Y29kZQ==","description":"description","name":"oracle_script_1","oracleScriptID":"1","owner":"band1damkuetjcw3c0d","sender":"band1wdjkuer9wgvz7c4y"}}`
+	expected := `{"type":"oracle/EditOracleScript","value":{"code":"Y29kZQ==","description":"description","name":"oracle_script_1","oracleScriptID":"1","owner":"band1damkuetjcw3c0d","schema":"placeholder schema","sender":"band1wdjkuer9wgvz7c4y","sourceCodeURL":"placeholder url"}}`
 
 	require.Equal(t, expected, string(res))
 }

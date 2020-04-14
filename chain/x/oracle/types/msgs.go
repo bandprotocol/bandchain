@@ -289,11 +289,13 @@ func (msg MsgEditDataSource) GetSignBytes() []byte {
 
 // MsgCreateOracleScript is a message for creating an oracle script.
 type MsgCreateOracleScript struct {
-	Owner       sdk.AccAddress `json:"owner"`
-	Name        string         `json:"name"`
-	Description string         `json:"description"`
-	Code        []byte         `json:"code"`
-	Sender      sdk.AccAddress `json:"sender"`
+	Owner         sdk.AccAddress `json:"owner"`
+	Name          string         `json:"name"`
+	Description   string         `json:"description"`
+	Code          []byte         `json:"code"`
+	Sender        sdk.AccAddress `json:"sender"`
+	Schema        string         `json:"schema"`
+	SourceCodeURL string         `json:"sourceCodeURL"`
 }
 
 // NewMsgCreateOracleScript creates a new MsgCreateOracleScript instance.
@@ -303,13 +305,17 @@ func NewMsgCreateOracleScript(
 	description string,
 	code []byte,
 	sender sdk.AccAddress,
+	schema string,
+	sourceCodeURL string,
 ) MsgCreateOracleScript {
 	return MsgCreateOracleScript{
-		Owner:       owner,
-		Name:        name,
-		Description: description,
-		Code:        code,
-		Sender:      sender,
+		Owner:         owner,
+		Name:          name,
+		Description:   description,
+		Code:          code,
+		Sender:        sender,
+		Schema:        schema,
+		SourceCodeURL: sourceCodeURL,
 	}
 }
 
@@ -358,6 +364,8 @@ type MsgEditOracleScript struct {
 	Description    string         `json:"description"`
 	Code           []byte         `json:"code"`
 	Sender         sdk.AccAddress `json:"sender"`
+	Schema         string         `json:"schema"`
+	SourceCodeURL  string         `json:"sourceCodeURL"`
 }
 
 // NewMsgEditOracleScript creates a new MsgEditOracleScript instance.
@@ -368,6 +376,8 @@ func NewMsgEditOracleScript(
 	description string,
 	code []byte,
 	sender sdk.AccAddress,
+	schema string,
+	sourceCodeURL string,
 ) MsgEditOracleScript {
 	return MsgEditOracleScript{
 		OracleScriptID: oracleScriptID,
@@ -376,6 +386,8 @@ func NewMsgEditOracleScript(
 		Description:    description,
 		Code:           code,
 		Sender:         sender,
+		Schema:         schema,
+		SourceCodeURL:  sourceCodeURL,
 	}
 }
 

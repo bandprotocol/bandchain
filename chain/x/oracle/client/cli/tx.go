@@ -414,6 +414,8 @@ $ %s tx oracle create-oracle-script --name eth-price --description "Oracle scrip
 				description,
 				scriptCode,
 				cliCtx.GetFromAddress(),
+				"placeholder schema",
+				"placeholder url",
 			)
 
 			err = msg.ValidateBasic()
@@ -491,6 +493,8 @@ $ %s tx oracle edit-oracle-script 1 --name eth-price --description "Oracle scrip
 				description,
 				scriptCode,
 				cliCtx.GetFromAddress(),
+				"placeholder schema",
+				"placeholder url",
 			)
 
 			err = msg.ValidateBasic()

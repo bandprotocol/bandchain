@@ -92,12 +92,14 @@ type DataSourceRevision struct {
 }
 
 type OracleScript struct {
-	ID          int64  `gorm:"primary_key;auto_increment:false"`
-	Name        string `gorm:"not null"`
-	Description string `gorm:"not null"`
-	Owner       string `gorm:"not null"`
-	CodeHash    []byte `gorm:"not null"`
-	LastUpdated int64  `gorm:"not null"`
+	ID            int64  `gorm:"primary_key;auto_increment:false"`
+	Name          string `gorm:"not null"`
+	Description   string `gorm:"not null"`
+	Owner         string `gorm:"not null"`
+	CodeHash      []byte `gorm:"not null"`
+	LastUpdated   int64  `gorm:"not null"`
+	Schema        string `gorm:"not null"`
+	SourceCodeURL string `gorm:"not null"`
 }
 
 type OracleScriptRevision struct {
