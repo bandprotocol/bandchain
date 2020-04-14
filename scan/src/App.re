@@ -23,32 +23,6 @@ module Styles = {
   let topBarInner =
     style([display(`flex), width(`percent(100.)), justifyContent(`spaceBetween)]);
 
-  let version =
-    style([
-      display(`flex),
-      borderRadius(`px(10)),
-      backgroundColor(Colors.blue1),
-      padding2(~v=`pxFloat(4.3), ~h=`px(8)),
-      justifyContent(`center),
-      alignItems(`center),
-      marginLeft(Spacing.xs),
-      marginTop(`px(1)),
-    ]);
-
-  let versionLoading =
-    style([
-      display(`flex),
-      borderRadius(`px(10)),
-      backgroundColor(Colors.blue1),
-      overflow(`hidden),
-      height(`px(16)),
-      width(`px(60)),
-      justifyContent(`center),
-      alignItems(`center),
-      marginLeft(Spacing.xs),
-      marginTop(`px(1)),
-    ]);
-
   let rFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
   let bandLogo = style([width(`px(40))]);
@@ -74,7 +48,6 @@ module Styles = {
 module TopBar = {
   [@react.component]
   let make = () => {
-    let metadataSub = MetadataSub.use();
     <div className=Styles.topBarContainer>
       <div className={Css.merge([Styles.topBarInner, Styles.pageWidth])}>
         <div className=Styles.logoContainer onClick={_ => Route.redirect(Route.HomePage)}>
@@ -101,28 +74,7 @@ module TopBar = {
                   spacing={Text.Em(0.03)}
                 />
                 <HSpacing size=Spacing.xs />
-                {switch (metadataSub) {
-                 | Data(metadata) =>
-                   <div className=Styles.version>
-                     <Text
-                       value={metadata.chainID}
-                       size=Text.Xs
-                       color=Colors.blue6
-                       nowrap=true
-                       weight=Text.Semibold
-                       spacing={Text.Em(0.03)}
-                     />
-                   </div>
-                 | _ =>
-                   <div className=Styles.versionLoading>
-                     <LoadingCensorBar
-                       width=80
-                       height=16
-                       colorBase=Colors.blue1
-                       colorLighter=Colors.white
-                     />
-                   </div>
-                 }}
+                <MetadataBadge />
               </div>
             </Col>
             <Col alignSelf=Col.End>
