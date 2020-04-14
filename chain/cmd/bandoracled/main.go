@@ -76,6 +76,8 @@ $ bandoracled --node tcp://localhost:26657 --priv-key 06be35b56b048c5a6810a47e2e
 			var priv secp256k1.PrivKeySecp256k1
 			copy(priv[:], privB)
 
+			viper.GetString(flags.FlagChainID)
+
 			bandClient, err = bandlib.NewBandStatefulClient(
 				viper.GetString(flags.FlagNode), priv, 100, 10, "Bandoracled reports", chainID,
 			)
