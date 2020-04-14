@@ -33,7 +33,6 @@ var (
 	bandClient bandlib.BandStatefulClient
 	gasFlagVar = flags.GasSetting{Gas: flags.DefaultGasLimit}
 	logger     log.Logger
-	chainID    string
 )
 
 func getLatestRequestID() (oracle.RequestID, error) {
@@ -76,10 +75,8 @@ $ bandoracled --node tcp://localhost:26657 --priv-key 06be35b56b048c5a6810a47e2e
 			var priv secp256k1.PrivKeySecp256k1
 			copy(priv[:], privB)
 
-			chainID = viper.GetString(flags.FlagChainID)
-
 			bandClient, err = bandlib.NewBandStatefulClient(
-				viper.GetString(flags.FlagNode), priv, 100, 10, "Bandoracled reports", chainID,
+				viper.GetString(flags.FlagNode), priv, 100, 10, "Bandoracled reports", viper.GetString(flags.FlagChainID),
 			)
 			if err != nil {
 				logger.Error(fmt.Sprintf("%v", err))
