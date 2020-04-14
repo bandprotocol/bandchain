@@ -35,11 +35,11 @@ func NewCLIContext(nodeURI string, fromAddress sdk.AccAddress) context.CLIContex
 	}
 }
 
-func NewTxBuilder(txEncoder sdk.TxEncoder) authtypes.TxBuilder {
+func NewTxBuilder(txEncoder sdk.TxEncoder, chainID string) authtypes.TxBuilder {
 	fee, _ := sdk.ParseCoins("")
 	gasPrices, _ := sdk.ParseDecCoins("")
 	// TODO: Remove hard code gas limit and gas adjustment
-	return authtypes.NewTxBuilder(txEncoder, 0, 0, 20000000, 1, false, "bandchain", "", fee, gasPrices)
+	return authtypes.NewTxBuilder(txEncoder, 0, 0, 20000000, 1, false, chainID, "", fee, gasPrices)
 }
 
 func completeAndBroadcastTxCLI(
