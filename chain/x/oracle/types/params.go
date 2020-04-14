@@ -90,8 +90,8 @@ type Params struct {
 	MaxDescriptionLength             uint64 `json:"max_description_length" yaml:"max_description_length"`
 	GasPerRawDataRequestPerValidator uint64 `json:"gas_per_raw_data_request" yaml:"gas_per_raw_data_request"`
 	ExpirationBlockCount             uint64 `json:"expiration_block_count"`
-	ExecuteGas                       uint64 `json:"ExecuteGas"`
-	PrepareGas                       uint64 `json:"PrepareGas"`
+	ExecuteGas                       uint64 `json:"execute_gas"`
+	PrepareGas                       uint64 `json:"prepare_gas"`
 }
 
 // NewParams creates a new Params object.
