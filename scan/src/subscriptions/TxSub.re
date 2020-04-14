@@ -240,7 +240,6 @@ module Msg = {
         address: json |> field("address", string) |> Address.fromBech32,
         clientID: json |> field("client_id", string),
         chainID: "band-consumer",
-        // TODO: Change to use MomentRe
         trustingPeriod:
           (json |> field("trusting_period", float)) /. 1_000_000. |> MomentRe.durationMillis,
         unbondingPeriod:
@@ -291,23 +290,23 @@ module Msg = {
   module Packet = {
     type t = {
       sender: Address.t,
-      sequence: float,
+      sequence: int,
       sourcePort: string,
       sourceChannel: string,
       destinationPort: string,
       destinationChannel: string,
-      timeoutHeight: float,
+      timeoutHeight: int,
       chainID: string,
     };
     let decode = json => {
       JsonUtils.Decode.{
         sender: json |> field("signer", string) |> Address.fromBech32,
-        sequence: json |> at(["packet", "sequence"], float),
+        sequence: json |> at(["packet", "sequence"], int),
         sourcePort: json |> at(["packet", "source_port"], string),
         sourceChannel: json |> at(["packet", "source_channel"], string),
         destinationPort: json |> at(["packet", "destination_port"], string),
         destinationChannel: json |> at(["packet", "destination_channel"], string),
-        timeoutHeight: json |> at(["packet", "timeout_height"], float),
+        timeoutHeight: json |> at(["packet", "timeout_height"], int),
         chainID: "band-consumer",
       };
     };
@@ -342,26 +341,26 @@ module Msg = {
   module Timeout = {
     type t = {
       sender: Address.t,
-      sequence: float,
+      sequence: int,
       sourcePort: string,
       sourceChannel: string,
       destinationPort: string,
       destinationChannel: string,
-      timeoutHeight: float,
-      nextSequenceReceive: float,
+      timeoutHeight: int,
+      nextSequenceReceive: int,
       chainID: string,
     };
     let decode = json =>
       JsonUtils.Decode.{
         sender: json |> field("signer", string) |> Address.fromBech32,
-        sequence: json |> at(["packet", "sequence"], float),
+        sequence: json |> at(["packet", "sequence"], int),
         sourcePort: json |> at(["packet", "source_port"], string),
         sourceChannel: json |> at(["packet", "source_channel"], string),
         destinationPort: json |> at(["packet", "destination_port"], string),
         destinationChannel: json |> at(["packet", "destination_channel"], string),
-        timeoutHeight: json |> at(["packet", "timeout_height"], float),
+        timeoutHeight: json |> at(["packet", "timeout_height"], int),
         chainID: "band-consumer",
-        nextSequenceReceive: json |> at(["packet", "next_sequence_receive"], float),
+        nextSequenceReceive: json |> at(["packet", "next_sequence_receive"], int),
       };
   };
 
@@ -636,6 +635,7 @@ module Msg = {
       | "channel_close_confirm" => ChannelCloseConfirm(json |> ChannelCloseConfirm.decode)
       | "ics04/opaque" => Packet(json |> Packet.decode)
       | "ics04/timeout" => Timeout(json |> Timeout.decode)
+      // TODO: handle case correctly
       | "acknowledgement" => Acknowledgement(json |> Acknowledgement.decode)
       | _ => Unknown
       }
