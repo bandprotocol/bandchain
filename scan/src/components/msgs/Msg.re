@@ -443,7 +443,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | ConnectionOpenAck({signer, connectionID, chainID}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
-      <div className={Styles.withBg(Colors.blue1, 85)}>
+      <div className={Styles.withBg(Colors.blue1,130)}>
         <Text
           value="CONNECTION OPEN ACK"
           size=Text.Xs
@@ -575,7 +575,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | ChannelOpenAck({signer, channelID, chainID}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
-      <div className={Styles.withBg(Colors.blue1, 85)}>
+      <div className={Styles.withBg(Colors.blue1, 100)}>
         <Text
           value="CHANNEL OPEN ACK"
           size=Text.Xs
@@ -837,7 +837,22 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
        | "remove_oracle_address" =>
          makeBadge("REMOVE ORACLE ADDRESS", 133, Colors.purple1, Colors.purple6)
        | "create_validator" => makeBadge("CREATE VALIDATOR", 97, Colors.purple1, Colors.purple6)
-       | "edit_validator" => makeBadge("EDIT VALIDATOR", 85, Colors.blue1, Colors.blue7)
+       | "edit_validator" => makeBadge("EDIT VALIDATOR", 85, Colors.purple1, Colors.purple6)
+       | "create_client" => makeBadge("CREATE CLIENT",85, Colors.blue1, Colors.blue7)
+       | "update_client" => makeBadge("UPDATE CLIENT",85, Colors.blue1, Colors.blue7)
+       | "submit_client_behaviour" => makeBadge("SUBMIT CLIENT BEHAVIOUR",140, Colors.blue1, Colors.blue7)
+       | "connection_open_init" => makeBadge("CONNECTION OPEN INIT", 140, Colors.blue1, Colors.blue7)
+       | "connection_open_try" => makeBadge("CONNECTION OPEN TRY", 130, Colors.blue1, Colors.blue7)
+       | "connection_open_ack" => makeBadge("CONNECTION OPEN ACK",130, Colors.blue1, Colors.blue7)
+       | "connection_open_confirm" => makeBadge("CONNECTION OPEN CONFIRM ", 140, Colors.blue1, Colors.blue7)
+       | "channel_open_init" => makeBadge("CHANNEL OPEN INIT",100,Colors.blue1, Colors.blue7)
+       | "channel_open_try" => makeBadge("CHANNEL OPEN TRY",100,Colors.blue1,Colors.blue7)
+       | "channel_open_ack" => makeBadge("CHANNEL OPEN ACK",100,Colors.blue1,Colors.blue7)
+       | "channel_open_confirm" => makeBadge("CHANNEL OPEN CONFIRM",130,Colors.blue1,Colors.blue7)
+       | "channel_close_init" => makeBadge("CHANNEL CLOSE INIT",85,Colors.blue1,Colors.blue7)
+       | "channel_close_confirm" => makeBadge("CHANNEL CLOSE CONFIRM",100,Colors.blue1,Colors.blue7)
+       | "ics04/opaque" => makeBadge("PACKET",50,Colors.blue1,Colors.blue7)
+       | "ics04/timeout" => makeBadge("TIMEOUT",50,Colors.blue1,Colors.blue7)
        | _ => makeBadge("UNKNOWN", 70, Colors.gray1, Colors.gray6)
        }}
     </div>
