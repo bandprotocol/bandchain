@@ -46,11 +46,12 @@ type value_row_t =
   | VAddress(Address.t)
   | VValidatorAddress(Address.t)
   | VText(string)
+  | VDetail(string)
   | VExtLink(string)
   | VCode(string);
 
 let kvRow = (k, v: value_row_t) => {
-  <Row>
+  <Row alignItems=`flexStart>
     <Col size=1.>
       <div className={Styles.fullWidth(`row)}> <Text value=k weight=Text.Thin /> </div>
     </Col>
@@ -61,6 +62,7 @@ let kvRow = (k, v: value_row_t) => {
          | VAddress(address) => <AddressRender address />
          | VValidatorAddress(address) => <AddressRender address validator=true />
          | VText(value) => <Text value nowrap=true />
+         | VDetail(value) => <Text value align=Text.Right />
          | VExtLink(value) =>
            <a href=value target="_blank" rel="noopener">
              <div className=Styles.underline> <Text value nowrap=true /> </div>
@@ -141,7 +143,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
         <VSpacing size=Spacing.lg />
         {kvRow("WEBSITE", VExtLink(validator.website))}
         <VSpacing size=Spacing.lg />
-        {kvRow("DETAILS", VText(validator.details))}
+        {kvRow("DETAILS", VDetail(validator.details))}
         <div className=Styles.longLine />
         <div className={Styles.fullWidth(`row)}>
           <Col size=1.>
