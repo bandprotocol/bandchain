@@ -25,6 +25,12 @@ func (k Keeper) GetRequest(ctx sdk.Context, id types.RequestID) (types.Request, 
 	return request, nil
 }
 
+// DeleteRequest removes the given data request from the store.
+func (k Keeper) DeleteRequest(ctx sdk.Context, id types.RequestID) {
+	store := ctx.KVStore(k.storeKey)
+	store.Delete(types.RequestStoreKey(id))
+}
+
 // AddRequest attempts to create and save a new request. Returns error some conditions failed.
 func (k Keeper) AddRequest(
 	ctx sdk.Context, oracleScriptID types.OracleScriptID, calldata []byte,
@@ -73,6 +79,85 @@ func (k Keeper) AddRequest(
 	return requestID, nil
 }
 
+// ProcessOracleResponse takes a
+func (k Keeper) ProcessOracleResponse(
+	ctx sdk.Context, reqID types.RequestID, resolveStatus types.ResolveStatus, result []byte,
+) {
+	request, err := k.GetRequest(ctx, reqID)
+	if err != nil {
+		panic(err)
+	}
+
+	// TODO: Send IBC packets + save data to result tree
+	reqPacketData := types.OracleRequestPacketData{}
+	resPacketData := types.OracleResponsePacketData{}
+
+	_ = request
+	_ = reqPacketData
+	_ = resPacketData
+
+	// SOME OLD CODE FOR YOU!
+	// 	event, packet := handleResolveRequest(ctx, keeper, requestID)
+	// 	// TODO: Refactor this packet code
+	// 	request, err := keeper.GetRequest(ctx, requestID)
+	// 	events = append(events, event)
+	// 	sourceChannelEnd, found := keeper.ChannelKeeper.GetChannel(ctx, request.SourcePort, request.SourceChannel)
+	// 	if !found {
+	// 		fmt.Println("SOURCE NOT FOUND", request.SourcePort, request.SourceChannel)
+	// 		continue
+	// 	}
+
+	// 	destinationPort := sourceChannelEnd.Counterparty.PortID
+	// 	destinationChannel := sourceChannelEnd.Counterparty.ChannelID
+
+	// 	// get the next sequence
+	// 	sequence, found := keeper.ChannelKeeper.GetNextSequenceSend(ctx, request.SourcePort, request.SourceChannel)
+	// 	if !found {
+	// 		fmt.Println("SEQUENCE NOT FOUND", request.SourcePort, request.SourceChannel)
+	// 		continue
+	// 	}
+
+	// 	err = keeper.ChannelKeeper.SendPacket(ctx, channel.NewPacket(packet.GetBytes(),
+	// 		sequence, request.SourcePort, request.SourceChannel, destinationPort, destinationChannel,
+	// 		1000000000, // Arbitrarily high timeout for now
+	// 	))
+
+	// 	if err != nil {
+	// 		fmt.Println("SEND PACKET ERROR", err)
+	// 	}
+}
+
+// ProcessExpiredRequests removes all expired data requests from the store, and
+// sends oracle response packets for the ones that have never been resolved.
+func (k Keeper) ProcessExpiredRequests(ctx sdk.Context) {
+	currentReqID := k.GetRequestBeginID(ctx)
+	lastReqID := types.RequestID(k.GetRequestCount(ctx))
+	expirationBlockCount := int64(k.GetParam(ctx, types.KeyExpirationBlockCount))
+	// Loop through all data requests in chronological order. If a request reaches its
+	// expiration time, it will be removed from the storage. Note that we will need to
+	// send oracle response packets with status EXPIRED for those that are not yet resolved.
+	for ; currentReqID <= lastReqID; currentReqID++ {
+		request, err := k.GetRequest(ctx, currentReqID)
+		if err != nil {
+			panic(err)
+		}
+		// This request is not yet expired, so there's nothing to do here. Ditto for
+		// all other requests that come after this. Thus we can just break the loop.
+		if request.RequestHeight+expirationBlockCount > ctx.BlockHeight() {
+			break
+		}
+		// If the number of reports still don't reach the minimum, that means this request
+		// is never resolved. Here we process the response as EXPIRED.
+		if int64(len(request.ReceivedValidators)) < request.SufficientValidatorCount {
+			k.ProcessOracleResponse(ctx, currentReqID, types.Expired, nil)
+		}
+		// We are done with this request. Now it's time to remove it from the store.
+		k.DeleteRequest(ctx, currentReqID)
+	}
+	// Lastly, we update RequestBeginID to reflect the most up-to-date ID for open requests.
+	k.SetRequestBeginID(ctx, currentReqID)
+}
+
 // ValidateDataSourceCount returns whether the number of raw data requests exceeds the maximum
 // allowed value, as specified by `MaxDataSourceCountPerRequest` parameter.
 func (k Keeper) ValidateDataSourceCount(ctx sdk.Context, id types.RequestID) error {
@@ -107,20 +192,6 @@ func (k Keeper) PayDataSourceFees(
 			return err
 		}
 	}
-	return nil
-}
-
-// SetResolve updates the resolve status of the given request as specified by id.
-func (k Keeper) SetResolve(
-	ctx sdk.Context, id types.RequestID, resolveStatus types.ResolveStatus,
-) error {
-	request, err := k.GetRequest(ctx, id)
-	if err != nil {
-		return err
-	}
-
-	request.ResolveStatus = resolveStatus
-	k.SetRequest(ctx, id, request)
 	return nil
 }
 
