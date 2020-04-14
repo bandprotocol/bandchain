@@ -39,7 +39,7 @@ func (k Keeper) SetOracleScript(ctx sdk.Context, id types.OID, oracleScript type
 
 // AddOracleScript adds the given oracle script to the storage. Returns error if validation fails.
 func (k Keeper) AddOracleScript(
-	ctx sdk.Context, owner sdk.AccAddress, name string, description string, code []byte,
+	ctx sdk.Context, owner sdk.AccAddress, name string, description string, code []byte, schema string, sourceCodeURL string,
 ) (types.OID, error) {
 	if err := AnyError(
 		k.EnsureMaxValue(ctx, types.KeyMaxNameLength, uint64(len(name))),
@@ -49,7 +49,7 @@ func (k Keeper) AddOracleScript(
 		return 0, err
 	}
 	id := k.GetNextOracleScriptID(ctx)
-	k.SetOracleScript(ctx, id, types.NewOracleScript(owner, name, description, code))
+	k.SetOracleScript(ctx, id, types.NewOracleScript(owner, name, description, code, schema, sourceCodeURL))
 	return id, nil
 }
 

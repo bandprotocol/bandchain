@@ -153,6 +153,8 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			oracleScript.name,
 			oracleScript.description,
 			code,
+			"schema",
+			"sourceCodeURL",
 		)
 	}
 	return oracle.ModuleCdc.MustMarshalJSON(state)
