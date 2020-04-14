@@ -232,8 +232,8 @@ module Msg = {
       address: Address.t,
       clientID: string,
       chainID: string,
-      trustingPeriod: float,
-      unbondingPeriod: float,
+      trustingPeriod: MomentRe.Duration.t,
+      unbondingPeriod: MomentRe.Duration.t,
     };
     let decode = json => {
       JsonUtils.Decode.{
@@ -241,8 +241,10 @@ module Msg = {
         clientID: json |> field("client_id", string),
         chainID: "band-consumer",
         // TODO: Change to use MomentRe
-        trustingPeriod: json |> field("trusting_period", float),
-        unbondingPeriod: json |> field("unbonding_period", float),
+        trustingPeriod:
+          (json |> field("trusting_period", float)) /. 1_000_000. |> MomentRe.durationMillis,
+        unbondingPeriod:
+          (json |> field("unbonding_period", float)) /. 1_000_000. |> MomentRe.durationMillis,
       };
     };
   };
@@ -276,8 +278,6 @@ module Msg = {
       validatorHash: Hash.t,
     };
     let decode = json => {
-      Js.Console.log(json);
-
       JsonUtils.Decode.{
         address: json |> field("address", string) |> Address.fromBech32,
         clientID: json |> field("client_id", string),
@@ -291,25 +291,26 @@ module Msg = {
   module Packet = {
     type t = {
       sender: Address.t,
-      sequence: int,
+      sequence: float,
       sourcePort: string,
       sourceChannel: string,
       destinationPort: string,
       destinationChannel: string,
-      timeoutHeight: string,
+      timeoutHeight: float,
       chainID: string,
     };
-    let decode = json =>
+    let decode = json => {
       JsonUtils.Decode.{
-        sender: json |> field("address", string) |> Address.fromBech32,
-        sequence: 999,
-        sourcePort: "gjdojfpjfp",
-        sourceChannel: "gjdojfpjfp",
-        destinationPort: "gjdojfpjfp",
-        destinationChannel: "gjdojfpjfp",
-        timeoutHeight: "gjdojfpjfp",
+        sender: json |> field("signer", string) |> Address.fromBech32,
+        sequence: json |> at(["packet", "sequence"], float),
+        sourcePort: json |> at(["packet", "source_port"], string),
+        sourceChannel: json |> at(["packet", "source_channel"], string),
+        destinationPort: json |> at(["packet", "destination_port"], string),
+        destinationChannel: json |> at(["packet", "destination_channel"], string),
+        timeoutHeight: json |> at(["packet", "timeout_height"], float),
         chainID: "band-consumer",
       };
+    };
   };
 
   module Acknowledgement = {
@@ -341,26 +342,44 @@ module Msg = {
   module Timeout = {
     type t = {
       sender: Address.t,
-      sequence: int,
+      sequence: float,
       sourcePort: string,
       sourceChannel: string,
       destinationPort: string,
       destinationChannel: string,
-      timeoutHeight: string,
-      nextSequenceReceive: int,
+      timeoutHeight: float,
+      nextSequenceReceive: float,
       chainID: string,
     };
     let decode = json =>
       JsonUtils.Decode.{
-        sender: json |> field("address", string) |> Address.fromBech32,
-        sequence: 999,
-        sourcePort: "gjdojfpjfp",
-        sourceChannel: "gjdojfpjfp",
-        destinationPort: "gjdojfpjfp",
-        destinationChannel: "gjdojfpjfp",
-        timeoutHeight: "gjdojfpjfp",
-        nextSequenceReceive: 3413,
+        sender: json |> field("signer", string) |> Address.fromBech32,
+        sequence: json |> at(["packet", "sequence"], float),
+        sourcePort: json |> at(["packet", "source_port"], string),
+        sourceChannel: json |> at(["packet", "source_channel"], string),
+        destinationPort: json |> at(["packet", "destination_port"], string),
+        destinationChannel: json |> at(["packet", "destination_channel"], string),
+        timeoutHeight: json |> at(["packet", "timeout_height"], float),
         chainID: "band-consumer",
+        nextSequenceReceive: json |> at(["packet", "next_sequence_receive"], float),
+      };
+  };
+
+  module ConnectionOpenInit = {
+    type t = {
+      signer: Address.t,
+      chainID: string,
+      connectionID: string,
+      clientID: string,
+      consensusHeight: ID.Block.t,
+    };
+    let decode = json =>
+      JsonUtils.Decode.{
+        signer: json |> field("signer", string) |> Address.fromBech32,
+        clientID: json |> field("client_id", string),
+        chainID: "band-consumer",
+        connectionID: json |> field("connection_id", string),
+        consensusHeight: json |> field("consensus_height", ID.Block.fromJson),
       };
   };
 
@@ -545,6 +564,7 @@ module Msg = {
     | CreateClient(CreateClient.t)
     | UpdateClient(UpdateClient.t)
     | SubmitClientMisbehaviour(SubmitClientMisbehaviour.t)
+    | ConnectionOpenInit(ConnectionOpenInit.t)
     | ConnectionOpenTry(ConnectionOpenTry.t)
     | ConnectionOpenAck(ConnectionOpenAck.t)
     | ConnectionOpenConfirm(ConnectionOpenConfirm.t)
@@ -577,6 +597,7 @@ module Msg = {
     | CreateClient(client) => client.address
     | UpdateClient(client) => client.address
     | SubmitClientMisbehaviour(client) => client.address
+    | ConnectionOpenInit(connection) => connection.signer
     | ConnectionOpenTry(connection) => connection.signer
     | ConnectionOpenAck(connection) => connection.signer
     | ConnectionOpenConfirm(connection) => connection.signer
@@ -590,7 +611,7 @@ module Msg = {
     | Acknowledgement(ack) => ack.sender
     | Timeout(timeout) => timeout.sender
     | ICS04(creator) => creator.signer
-    | Unknown => "" |> Address.fromHex
+    | _ => "" |> Address.fromHex
     };
   };
 
@@ -612,6 +633,7 @@ module Msg = {
       | "update_client" => UpdateClient(json |> UpdateClient.decode)
       | "submit_client_misbehaviour" =>
         SubmitClientMisbehaviour(json |> SubmitClientMisbehaviour.decode)
+      | "connection_open_init" => ConnectionOpenInit(json |> ConnectionOpenInit.decode)
       | "connection_open_try" => ConnectionOpenTry(json |> ConnectionOpenTry.decode)
       | "connection_open_ack" => ConnectionOpenAck(json |> ConnectionOpenAck.decode)
       | "connection_open_confirm" => ConnectionOpenConfirm(json |> ConnectionOpenConfirm.decode)
@@ -621,10 +643,9 @@ module Msg = {
       | "channel_open_confirm" => ChannelOpenConfirm(json |> ChannelOpenConfirm.decode)
       | "channel_close_init" => ChannelCloseInit(json |> ChannelCloseInit.decode)
       | "channel_close_confirm" => ChannelCloseConfirm(json |> ChannelCloseConfirm.decode)
-      | "packet" => Packet(json |> Packet.decode)
+      | "ics04/opaque" => Packet(json |> Packet.decode)
+      | "ics04/timeout" => Timeout(json |> Timeout.decode)
       | "acknowledgement" => Acknowledgement(json |> Acknowledgement.decode)
-      | "timeout" => Timeout(json |> Timeout.decode)
-      | "ics04/opaque" => ICS04(json |> ICS04.decode)
       | _ => Unknown
       }
     );

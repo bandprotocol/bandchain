@@ -374,6 +374,39 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         ellipsis=true
       />
     </div>
+  | ConnectionOpenInit({signer, connectionID, chainID}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
+      <div className={Styles.withBg(Colors.blue1, 140)}>
+        <Text
+          value="CONNECTION OPEN INIT"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.blue7
+        />
+      </div>
+      <HSpacing size=Spacing.sm />
+      <Text
+        value=connectionID
+        color=Colors.gray7
+        weight=Text.Regular
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+      <Text value={j|||j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+      <Text
+        value=chainID
+        color=Colors.gray7
+        weight=Text.Regular
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+    </div>
   | ConnectionOpenTry({signer, connectionID, chainID}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
@@ -674,7 +707,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | Packet({sender, chainID}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
-      <div className={Styles.withBg(Colors.blue1, 85)}>
+      <div className={Styles.withBg(Colors.blue1, 50)}>
         <Text
           value="PACKET"
           size=Text.Xs
