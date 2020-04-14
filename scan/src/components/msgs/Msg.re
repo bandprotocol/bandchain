@@ -841,29 +841,6 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
        | _ => makeBadge("UNKNOWN", 70, Colors.gray1, Colors.gray6)
        }}
     </div>
-  | ICS04({signer}) =>
-    <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
-      <div className={Styles.withBg(Colors.blue1, 40)}>
-        <Text
-          value="ICS04"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.blue7
-        />
-      </div>
-      <HSpacing size=Spacing.sm />
-      <Text
-        value={signer |> Address.toBech32}
-        color=Colors.gray7
-        weight=Text.Regular
-        code=true
-        nowrap=true
-        block=true
-        ellipsis=true
-      />
-    </div>
   | Unknown => React.null
   };
 };

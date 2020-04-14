@@ -529,13 +529,6 @@ module Msg = {
       };
   };
 
-  module ICS04 = {
-    type t = {signer: Address.t};
-
-    let decode = json =>
-      JsonUtils.Decode.{signer: json |> field("signer", string) |> Address.fromBech32};
-  };
-
   module FailMessage = {
     type t = {
       sender: Address.t,
@@ -577,7 +570,6 @@ module Msg = {
     | Packet(Packet.t)
     | Acknowledgement(Acknowledgement.t)
     | Timeout(Timeout.t)
-    | ICS04(ICS04.t)
     | FailMessage(FailMessage.t);
 
   let getCreator = msg => {
@@ -610,7 +602,6 @@ module Msg = {
     | Packet(packet) => packet.sender
     | Acknowledgement(ack) => ack.sender
     | Timeout(timeout) => timeout.sender
-    | ICS04(creator) => creator.signer
     | _ => "" |> Address.fromHex
     };
   };
