@@ -137,7 +137,7 @@ $ bandoracled --node tcp://localhost:26657 --priv-key 06be35b56b048c5a6810a47e2e
 	)
 	viper.BindPFlag(flagExecuteEndPoint, cmd.Flags().Lookup(flagExecuteEndPoint))
 
-	cmd.Flags().String(flagChainID, "bandchain", "ID of the chain to use")
+	cmd.Flags().String(flagChainID, "", "ID of the chain to use")
 	viper.BindPFlag(flagChainID, cmd.Flags().Lookup(flagChainID))
 
 	err := cmd.Execute()
