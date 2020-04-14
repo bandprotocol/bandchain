@@ -275,6 +275,517 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         />
       </div>
     </div>
+  | CreateClient({address, clientID, chainID}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address /> </div>
+      <div className={Styles.withBg(Colors.blue1, 85)}>
+        <Text
+          value="CREATE CLIENT"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.blue7
+        />
+      </div>
+      <HSpacing size=Spacing.sm />
+      <Text
+        value=clientID
+        color=Colors.gray7
+        weight=Text.Regular
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+      <Text value={j|||j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+      <Text
+        value=chainID
+        color=Colors.gray7
+        weight=Text.Regular
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+    </div>
+  | UpdateClient({address, clientID, chainID}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address /> </div>
+      <div className={Styles.withBg(Colors.blue1, 85)}>
+        <Text
+          value="UPDATE CLIENT"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.blue7
+        />
+      </div>
+      <HSpacing size=Spacing.sm />
+      <Text
+        value=clientID
+        color=Colors.gray7
+        weight=Text.Regular
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+      <Text value={j|||j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+      <Text
+        value=chainID
+        color=Colors.gray7
+        weight=Text.Regular
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+    </div>
+  | SubmitClientMisbehaviour({address, clientID, chainID}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address /> </div>
+      <div className={Styles.withBg(Colors.blue1, 85)}>
+        <Text
+          value="SUBMIT CLIENT MISBEHAVIOUR"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.blue7
+        />
+      </div>
+      <HSpacing size=Spacing.sm />
+      <Text
+        value=clientID
+        color=Colors.gray7
+        weight=Text.Regular
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+      <Text value={j|||j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+      <Text
+        value=chainID
+        color=Colors.gray7
+        weight=Text.Regular
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+    </div>
+  | ConnectionOpenTry({signer, connectionID, chainID}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
+      <div className={Styles.withBg(Colors.blue1, 120)}>
+        <Text
+          value="CONNECTION OPEN TRY"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.blue7
+        />
+      </div>
+      <HSpacing size=Spacing.sm />
+      <Text
+        value=connectionID
+        color=Colors.gray7
+        weight=Text.Regular
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+      <Text value={j|||j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+      <Text
+        value=chainID
+        color=Colors.gray7
+        weight=Text.Regular
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+    </div>
+  | ConnectionOpenAck({signer, connectionID, chainID}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
+      <div className={Styles.withBg(Colors.blue1, 85)}>
+        <Text
+          value="CONNECTION OPEN ACK"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.blue7
+        />
+      </div>
+      <HSpacing size=Spacing.sm />
+      <Text
+        value=connectionID
+        color=Colors.gray7
+        weight=Text.Regular
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+      <Text value={j|||j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+      <Text
+        value=chainID
+        color=Colors.gray7
+        weight=Text.Regular
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+    </div>
+  | ConnectionOpenConfirm({signer, connectionID, chainID}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
+      <div className={Styles.withBg(Colors.blue1, 140)}>
+        <Text
+          value="CONNECTION OPEN CONFIRM"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.blue7
+        />
+      </div>
+      <HSpacing size=Spacing.sm />
+      <Text
+        value=connectionID
+        color=Colors.gray7
+        weight=Text.Regular
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+      <Text value={j|||j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+      <Text
+        value=chainID
+        color=Colors.gray7
+        weight=Text.Regular
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+    </div>
+  | ChannelOpenInit({signer, channelID, chainID}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
+      <div className={Styles.withBg(Colors.blue1, 100)}>
+        <Text
+          value="CHANNEL OPEN INIT"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.blue7
+        />
+      </div>
+      <HSpacing size=Spacing.sm />
+      <Text
+        value=channelID
+        color=Colors.gray7
+        weight=Text.Regular
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+      <Text value={j|||j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+      <Text
+        value=chainID
+        color=Colors.gray7
+        weight=Text.Regular
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+    </div>
+  | ChannelOpenTry({signer, channelID, chainID}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
+      <div className={Styles.withBg(Colors.blue1, 100)}>
+        <Text
+          value="CHANNEL OPEN TRY"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.blue7
+        />
+      </div>
+      <HSpacing size=Spacing.sm />
+      <Text
+        value=channelID
+        color=Colors.gray7
+        weight=Text.Regular
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+      <Text value={j|||j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+      <Text
+        value=chainID
+        color=Colors.gray7
+        weight=Text.Regular
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+    </div>
+  | ChannelOpenAck({signer, channelID, chainID}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
+      <div className={Styles.withBg(Colors.blue1, 85)}>
+        <Text
+          value="CHANNEL OPEN ACK"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.blue7
+        />
+      </div>
+      <HSpacing size=Spacing.sm />
+      <Text
+        value=channelID
+        color=Colors.gray7
+        weight=Text.Regular
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+      <Text value={j|||j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+      <Text
+        value=chainID
+        color=Colors.gray7
+        weight=Text.Regular
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+    </div>
+  | ChannelOpenConfirm({signer, channelID, chainID}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
+      <div className={Styles.withBg(Colors.blue1, 130)}>
+        <Text
+          value="CHANNEL OPEN CONFIRM"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.blue7
+        />
+      </div>
+      <HSpacing size=Spacing.sm />
+      <Text
+        value=channelID
+        color=Colors.gray7
+        weight=Text.Regular
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+      <Text value={j|||j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+      <Text
+        value=chainID
+        color=Colors.gray7
+        weight=Text.Regular
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+    </div>
+  | ChannelCloseInit({signer, channelID, chainID}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
+      <div className={Styles.withBg(Colors.blue1, 85)}>
+        <Text
+          value="CHANNEL CLOSE INIT"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.blue7
+        />
+      </div>
+      <HSpacing size=Spacing.sm />
+      <Text
+        value=channelID
+        color=Colors.gray7
+        weight=Text.Regular
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+      <Text value={j|||j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+      <Text
+        value=chainID
+        color=Colors.gray7
+        weight=Text.Regular
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+    </div>
+  | ChannelCloseConfirm({signer, channelID, chainID}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
+      <div className={Styles.withBg(Colors.blue1, 100)}>
+        <Text
+          value="CHANNEL CLOSE CONFIRM"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.blue7
+        />
+      </div>
+      <HSpacing size=Spacing.sm />
+      <Text
+        value=channelID
+        color=Colors.gray7
+        weight=Text.Regular
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+      <Text value={j|||j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+      <Text
+        value=chainID
+        color=Colors.gray7
+        weight=Text.Regular
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+    </div>
+  | Packet({sender, chainID}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
+      <div className={Styles.withBg(Colors.blue1, 85)}>
+        <Text
+          value="PACKET"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.blue7
+        />
+      </div>
+      <HSpacing size=Spacing.sm />
+      <Text
+        value="data"
+        color=Colors.gray7
+        weight=Text.Semibold
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+      <Text
+        value="E31E1EEB53AC3..."
+        color=Colors.gray7
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+      <Text value={j|||j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+      <Text
+        value=chainID
+        color=Colors.gray7
+        weight=Text.Regular
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+    </div>
+  | Acknowledgement({sender, chainID}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
+      <div className={Styles.withBg(Colors.blue1, 85)}>
+        <Text
+          value="ACKNOWLEDGEMENT"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.blue7
+        />
+      </div>
+      <HSpacing size=Spacing.sm />
+      <Text
+        value="ack"
+        color=Colors.gray7
+        weight=Text.Semibold
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+      <Text
+        value="BF3D40B5..."
+        color=Colors.gray7
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+      <Text value={j|||j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+      <Text
+        value=chainID
+        color=Colors.gray7
+        weight=Text.Regular
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+    </div>
+  | Timeout({sender, chainID}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
+      <div className={Styles.withBg(Colors.blue1, 85)}>
+        <Text
+          value="TIMEOUT"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.blue7
+        />
+      </div>
+      <HSpacing size=Spacing.sm />
+      <Text
+        value="at"
+        color=Colors.gray7
+        weight=Text.Regular
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+      <Text value={j|||j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+      <Text
+        value=chainID
+        color=Colors.gray7
+        weight=Text.Regular
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
+    </div>
   | FailMessage({sender, message}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
@@ -293,9 +804,32 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
        | "remove_oracle_address" =>
          makeBadge("REMOVE ORACLE ADDRESS", 133, Colors.purple1, Colors.purple6)
        | "create_validator" => makeBadge("CREATE VALIDATOR", 97, Colors.purple1, Colors.purple6)
-       | "edit_validator" => makeBadge("EDIT VALIDATOR", 85, Colors.purple1, Colors.purple6)
+       | "edit_validator" => makeBadge("EDIT VALIDATOR", 85, Colors.blue1, Colors.blue7)
        | _ => makeBadge("UNKNOWN", 70, Colors.gray1, Colors.gray6)
        }}
+    </div>
+  | ICS04({signer}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
+      <div className={Styles.withBg(Colors.blue1, 40)}>
+        <Text
+          value="ICS04"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.blue7
+        />
+      </div>
+      <HSpacing size=Spacing.sm />
+      <Text
+        value={signer |> Address.toBech32}
+        color=Colors.gray7
+        weight=Text.Regular
+        code=true
+        nowrap=true
+        block=true
+        ellipsis=true
+      />
     </div>
   | Unknown => React.null
   };

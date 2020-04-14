@@ -677,7 +677,7 @@ let renderBody = (msg: TxSub.Msg.t) => {
   | CreateValidator(validator) => renderCreateValidator(msg, validator)
   | EditValidator(validator) => renderEditValidator(msg, validator)
   | FailMessage(_) => "Failed msg" |> React.string
-  | Unknown => React.null
+  | _ => React.null
   };
 };
 
