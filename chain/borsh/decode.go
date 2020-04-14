@@ -71,28 +71,40 @@ func (decoder *BorshDecoder) DecodeU64() (uint64, error) {
 // DecodeSigned8 deodes the input bytes and returns the corresponding signed
 // `int8` value and any errors
 func (decoder *BorshDecoder) DecodeSigned8() (int8, error) {
-	unsigned, _ := decoder.DecodeU8()
+	unsigned, err := decoder.DecodeU8()
+	if err != nil {
+		return 0, err
+	}
 	return int8(unsigned), nil
 }
 
 // DecodeSigned16 deodes the input bytes and returns the corresponding signed
 // `int16` value and any errors
 func (decoder *BorshDecoder) DecodeSigned16() (int16, error) {
-	unsigned, _ := decoder.DecodeU16()
+	unsigned, err := decoder.DecodeU16()
+	if err != nil {
+		return 0, err
+	}
 	return int16(unsigned), nil
 }
 
 // DecodeSigned32 deodes the input bytes and returns the corresponding signed
 // `int32` value and any errors
 func (decoder *BorshDecoder) DecodeSigned32() (int32, error) {
-	unsigned, _ := decoder.DecodeU32()
+	unsigned, err := decoder.DecodeU32()
+	if err != nil {
+		return 0, err
+	}
 	return int32(unsigned), nil
 }
 
 // DecodeSigned64 deodes the input bytes and returns the corresponding signed
 // `int64` value and any errors
 func (decoder *BorshDecoder) DecodeSigned64() (int64, error) {
-	unsigned, _ := decoder.DecodeU64()
+	unsigned, err := decoder.DecodeU64()
+	if err != nil {
+		return 0, err
+	}
 	return int64(unsigned), nil
 }
 
@@ -101,7 +113,7 @@ func (decoder *BorshDecoder) DecodeSigned64() (int64, error) {
 func (decoder *BorshDecoder) DecodeBytes() ([]byte, error) {
 	length, err := decoder.DecodeU32()
 	if err != nil {
-		return []byte{}, err
+		return nil, err
 	}
 	if uint32(len(decoder.data)) < decoder.offset+length {
 		return []byte{}, errors.New("Borsh: out of range")
