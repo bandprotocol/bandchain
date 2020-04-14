@@ -70,7 +70,10 @@ func updateValidators(rpcURI string, address string, node string, privateKey str
 	if err != nil {
 		panic(err)
 	}
-	evmClient, _ := ethclient.Dial(rpcURI)
+	evmClient, err := ethclient.Dial(rpcURI)
+	if err != nil {
+		panic(err)
+	}
 	abiJson, err := abi.JSON(bytes.NewReader(rawABI))
 	if err != nil {
 		panic(err)
