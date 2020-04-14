@@ -43,7 +43,7 @@ func NewHandler(keeper Keeper) sdk.Handler {
 				newMsg := NewMsgRequestData(
 					requestData.OracleScriptID, calldata, requestData.AskCount,
 					requestData.MinCount, requestData.ClientID,
-					sdk.AccAddress([]byte("NOT_IMPORTANT")),
+					msg.Signer,
 				)
 				return handleMsgRequestData(
 					ctx, keeper, newMsg, msg.GetDestPort(), msg.GetDestChannel(),
