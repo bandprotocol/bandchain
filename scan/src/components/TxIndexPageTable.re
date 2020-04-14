@@ -20,6 +20,14 @@ module Styles = {
 
   let detailContainer = style([display(`flex), maxWidth(`px(360)), justifyContent(`flexEnd)]);
 
+  let hashContainer =
+    style([
+      display(`flex),
+      maxWidth(`px(360)),
+      justifyContent(`flexEnd),
+      wordBreak(`breakAll),
+    ]);
+
   let firstCol = 0.45;
   let secondCol = 0.50;
   let thirdCol = 1.20;
@@ -663,6 +671,114 @@ let renderEditValidator = (msg, validator: TxSub.Msg.EditValidator.t) => {
   </Row>;
 };
 
+let renderCreateClient = (msg, createClient: TxSub.Msg.CreateClient.t) => {
+  <Row>
+    <Col> <HSpacing size=Spacing.md /> </Col>
+    <Col size=Styles.firstCol alignSelf=Col.Start>
+      <div className=Styles.badgeContainer>
+        <div className={Styles.badge(Colors.purple1)}>
+          <Text value="CREATE CLIENT" size=Text.Sm spacing={Text.Em(0.07)} color=Colors.purple6 />
+        </div>
+      </div>
+    </Col>
+    <Col size=Styles.secondCol alignSelf=Col.Start>
+      <VSpacing size=Spacing.sm />
+      <div className={Styles.addressContainer(170)}>
+        <AddressRender address={msg |> TxSub.Msg.getCreator} />
+      </div>
+    </Col>
+    <Col size=Styles.thirdCol alignSelf=Col.Start>
+      <VSpacing size=Spacing.sm />
+      <div className=Styles.topicContainer>
+        <Text value="CLIENT ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <Text value={createClient.clientID} code=true />
+      </div>
+      <VSpacing size=Spacing.md />
+      <div className=Styles.topicContainer>
+        <Text value="CHAIN ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <Text value={createClient.chainID} code=true />
+      </div>
+      <VSpacing size=Spacing.md />
+      <div className=Styles.topicContainer>
+        <Text value="TRUSTING PERIOD" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <Text value={createClient.trustingPeriod |> MomentRe.Duration.toISOString} code=true />
+      </div>
+      <VSpacing size=Spacing.md />
+      <div className=Styles.topicContainer>
+        <Text value="UNBOUNDING PERIOD" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <Text value={createClient.unbondingPeriod |> MomentRe.Duration.toISOString} code=true />
+      </div>
+    </Col>
+  </Row>;
+};
+
+let renderUpdateClient = (msg, updateClient: TxSub.Msg.UpdateClient.t) => {
+  <Row>
+    <Col> <HSpacing size=Spacing.md /> </Col>
+    <Col size=Styles.firstCol alignSelf=Col.Start>
+      <div className=Styles.badgeContainer>
+        <div className={Styles.badge(Colors.purple1)}>
+          <Text value="UPDATE CLIENT" size=Text.Sm spacing={Text.Em(0.07)} color=Colors.purple6 />
+        </div>
+      </div>
+    </Col>
+    <Col size=Styles.secondCol alignSelf=Col.Start>
+      <VSpacing size=Spacing.sm />
+      <div className={Styles.addressContainer(170)}>
+        <AddressRender address={msg |> TxSub.Msg.getCreator} />
+      </div>
+    </Col>
+    <Col size=Styles.thirdCol alignSelf=Col.Start>
+      <VSpacing size=Spacing.sm />
+      <div className=Styles.topicContainer>
+        <Text value="CLIENT ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <Text value={updateClient.clientID} code=true />
+      </div>
+      <VSpacing size=Spacing.md />
+      <div className=Styles.topicContainer>
+        <Text value="CHAIN ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <Text value={updateClient.chainID} code=true />
+      </div>
+      <VSpacing size=Spacing.md />
+      <div className=Styles.topicContainer>
+        <Text
+          value="VALIDATOR HASH"
+          size=Text.Sm
+          weight=Text.Thin
+          height={Text.Px(16)}
+          spacing={Text.Em(0.06)}
+        />
+        <div className=Styles.hashContainer>
+          <Text
+            value={updateClient.validatorHash |> Hash.toHex}
+            code=true
+            height={Text.Px(16)}
+            align=Text.Right
+          />
+        </div>
+      </div>
+      <VSpacing size=Spacing.md />
+      <div className=Styles.topicContainer>
+        <Text
+          value="PREVIOUS VALIDATOR HASH"
+          size=Text.Sm
+          weight=Text.Thin
+          height={Text.Px(16)}
+          spacing={Text.Em(0.06)}
+        />
+        <div className=Styles.hashContainer>
+          <Text
+            value={updateClient.prevValidatorHash |> Hash.toHex}
+            code=true
+            height={Text.Px(16)}
+            align=Text.Right
+          />
+        </div>
+      </div>
+    </Col>
+  </Row>;
+};
+
 let renderBody = (msg: TxSub.Msg.t) => {
   switch (msg) {
   | Send(send) => renderSend(msg, send)
@@ -676,6 +792,22 @@ let renderBody = (msg: TxSub.Msg.t) => {
   | RemoveOracleAddress(address) => renderRemoveOracleAddress(msg, address)
   | CreateValidator(validator) => renderCreateValidator(msg, validator)
   | EditValidator(validator) => renderEditValidator(msg, validator)
+  | CreateClient(info) => renderCreateClient(msg, info)
+  | UpdateClient(info) => renderUpdateClient(msg, info)
+  | SubmitClientMisbehaviour(info) => React.null
+  | ConnectionOpenInit(info) => React.null
+  | ConnectionOpenTry(info) => React.null
+  | ConnectionOpenAck(info) => React.null
+  | ConnectionOpenConfirm(info) => React.null
+  | ChannelOpenInit(info) => React.null
+  | ChannelOpenTry(info) => React.null
+  | ChannelOpenAck(info) => React.null
+  | ChannelOpenConfirm(info) => React.null
+  | ChannelCloseInit(info) => React.null
+  | ChannelCloseConfirm(info) => React.null
+  | Packet(info) => React.null
+  | Acknowledgement(info) => React.null
+  | Timeout(info) => React.null
   | FailMessage(_) => "Failed msg" |> React.string
   | _ => React.null
   };
