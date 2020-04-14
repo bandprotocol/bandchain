@@ -50,8 +50,6 @@ let make = (~reqID) =>
     let%Sub request = requestSub;
     let%Sub blockCount = blockCountSub;
 
-    Js.Console.log(request.id);
-
     let numReport = request.reports |> Belt_Array.size;
     let remainingBlock =
       blockCount >= request.expirationHeight ? 0 : request.expirationHeight - blockCount;
