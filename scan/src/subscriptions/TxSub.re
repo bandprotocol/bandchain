@@ -80,7 +80,7 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
-        id: json |> field("oracleScriptID", ID.OracleScript.fromJson),
+        id: json |> field("oracle_script_id", ID.OracleScript.fromJson),
         owner: json |> field("owner", string) |> Address.fromBech32,
         name: json |> field("name", string),
         code: json |> field("code", string) |> JsBuffer.fromBase64,
@@ -99,7 +99,7 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
-        id: json |> field("oracleScriptID", ID.OracleScript.fromJson),
+        id: json |> field("oracle_script_id", ID.OracleScript.fromJson),
         owner: json |> field("owner", string) |> Address.fromBech32,
         name: json |> field("name", string),
         code: json |> field("code", string) |> JsBuffer.fromBase64,
@@ -157,7 +157,7 @@ module Msg = {
       JsonUtils.Decode.{
         validator: json |> field("validator", string) |> Address.fromBech32,
         reporter: json |> field("reporter", string) |> Address.fromBech32,
-        validatorMoniker: json |> field("validatorMoniker", string),
+        validatorMoniker: json |> field("validator_moniker", string),
       };
   };
 
@@ -171,7 +171,7 @@ module Msg = {
       JsonUtils.Decode.{
         validator: json |> field("validator", string) |> Address.fromBech32,
         reporter: json |> field("reporter", string) |> Address.fromBech32,
-        validatorMoniker: json |> field("validatorMoniker", string),
+        validatorMoniker: json |> field("validator_moniker", string),
       };
   };
 
