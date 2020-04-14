@@ -137,10 +137,10 @@ let make = (~info, ~header, ~isLeft=true) => {
          <div className=Styles.datasourcesContainer>
            {ids
             ->Belt.List.map(id =>
-                <>
+                <React.Fragment key={id |> ID.DataSource.toString}>
                   <TypeID.DataSource id position=TypeID.Subtitle />
                   <HSpacing size=Spacing.sm />
-                </>
+                </React.Fragment>
               )
             ->Array.of_list
             ->React.array}

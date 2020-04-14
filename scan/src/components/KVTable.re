@@ -157,6 +157,7 @@ let renderField = (field, maxWidth, isRight) => {
       <ValidatorMonikerLink
         size=Text.Sm
         validatorAddress={validator.operatorAddress}
+        width={`px(maxWidth)}
         moniker={validator.moniker}
       />
     </div>

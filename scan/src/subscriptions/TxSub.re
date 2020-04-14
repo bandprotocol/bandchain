@@ -39,7 +39,7 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
-        id: json |> field("dataSourceID", ID.DataSource.fromJson),
+        id: json |> field("data_source_id", ID.DataSource.fromJson),
         owner: json |> field("owner", string) |> Address.fromBech32,
         name: json |> field("name", string),
         fee: json |> field("fee", list(Coin.decodeCoin)),
@@ -60,7 +60,7 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
-        id: json |> field("dataSourceID", ID.DataSource.fromJson),
+        id: json |> field("data_source_id", ID.DataSource.fromJson),
         owner: json |> field("owner", string) |> Address.fromBech32,
         name: json |> field("name", string),
         fee: json |> field("fee", list(Coin.decodeCoin)),
@@ -80,7 +80,7 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
-        id: json |> field("oracleScriptID", ID.OracleScript.fromJson),
+        id: json |> field("oracle_script_id", ID.OracleScript.fromJson),
         owner: json |> field("owner", string) |> Address.fromBech32,
         name: json |> field("name", string),
         code: json |> field("code", string) |> JsBuffer.fromBase64,
@@ -99,7 +99,7 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
-        id: json |> field("oracleScriptID", ID.OracleScript.fromJson),
+        id: json |> field("oracle_script_id", ID.OracleScript.fromJson),
         owner: json |> field("owner", string) |> Address.fromBech32,
         name: json |> field("name", string),
         code: json |> field("code", string) |> JsBuffer.fromBase64,
@@ -120,9 +120,9 @@ module Msg = {
 
     let decode = json => {
       JsonUtils.Decode.{
-        id: json |> field("requestID", ID.Request.fromJson),
+        id: json |> field("request_id", ID.Request.fromJson),
         oracleScriptID: json |> field("oracleScriptID", ID.OracleScript.fromJson),
-        oracleScriptName: json |> field("oracleScriptName", string),
+        oracleScriptName: json |> field("oracle_script_name", string),
         calldata: json |> field("calldata", string) |> JsBuffer.fromBase64,
         requestedValidatorCount: json |> field("requestedValidatorCount", int),
         sufficientValidatorCount: json |> field("sufficientValidatorCount", int),
@@ -157,7 +157,7 @@ module Msg = {
       JsonUtils.Decode.{
         validator: json |> field("validator", string) |> Address.fromBech32,
         reporter: json |> field("reporter", string) |> Address.fromBech32,
-        validatorMoniker: json |> field("validatorMoniker", string),
+        validatorMoniker: json |> field("validator_moniker", string),
       };
   };
 
@@ -171,7 +171,7 @@ module Msg = {
       JsonUtils.Decode.{
         validator: json |> field("validator", string) |> Address.fromBech32,
         reporter: json |> field("reporter", string) |> Address.fromBech32,
-        validatorMoniker: json |> field("validatorMoniker", string),
+        validatorMoniker: json |> field("validator_moniker", string),
       };
   };
 
