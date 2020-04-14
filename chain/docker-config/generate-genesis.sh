@@ -6,7 +6,7 @@ DIR=`dirname "$0"`
 rm -rf ~/.band*
 
 # initial new node
-bandd init node-validator --chain-id bandchain --oracle band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs
+bandd init node-validator --chain-id ibc-bandchain --oracle band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs
 
 # create acccounts
 expect $DIR/add-account.exp \
@@ -42,7 +42,7 @@ bandd add-genesis-account validator4 10000000000000uband --keyring-backend test
 bandd add-genesis-account requester 10000000000000uband --keyring-backend test
 
 # genesis configurations
-bandcli config chain-id bandchain
+bandcli config chain-id ibc-bandchain
 bandcli config output json
 bandcli config indent true
 bandcli config trust-node true
