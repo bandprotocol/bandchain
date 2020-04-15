@@ -1,4 +1,4 @@
-package keeper
+package keeper_test
 
 import (
 	"testing"
@@ -6,10 +6,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
+	me "github.com/bandprotocol/bandchain/chain/x/oracle/keeper"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
-func mockDataSource(ctx sdk.Context, keeper Keeper) error {
+func mockDataSource(ctx sdk.Context, keeper me.Keeper) error {
 	owner := sdk.AccAddress([]byte("owner"))
 	name := "data_source"
 	description := "description"
@@ -22,7 +23,8 @@ func mockDataSource(ctx sdk.Context, keeper Keeper) error {
 }
 
 func TestGetterSetterDataSource(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
+	app, ctx := createTestInput()
+	keeper := app.OracleKeeper
 
 	_, err := keeper.GetDataSource(ctx, 1)
 	require.NotNil(t, err)
@@ -39,7 +41,8 @@ func TestGetterSetterDataSource(t *testing.T) {
 }
 
 func TestAddDataSourceMustReturnCorrectID(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
+	app, ctx := createTestInput()
+	keeper := app.OracleKeeper
 
 	_, err := keeper.GetDataSource(ctx, 1)
 	require.NotNil(t, err)
@@ -60,7 +63,8 @@ func TestAddDataSourceMustReturnCorrectID(t *testing.T) {
 }
 
 func TestAddTooLongDataSource(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
+	app, ctx := createTestInput()
+	keeper := app.OracleKeeper
 
 	_, err := keeper.GetDataSource(ctx, 1)
 	require.NotNil(t, err)
@@ -79,7 +83,8 @@ func TestAddTooLongDataSource(t *testing.T) {
 }
 
 func TestAddTooLongDataSourceName(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
+	app, ctx := createTestInput()
+	keeper := app.OracleKeeper
 
 	_, err := keeper.GetDataSource(ctx, 1)
 	require.NotNil(t, err)
@@ -98,7 +103,8 @@ func TestAddTooLongDataSourceName(t *testing.T) {
 }
 
 func TestAddTooLongDataSourceDescription(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
+	app, ctx := createTestInput()
+	keeper := app.OracleKeeper
 
 	_, err := keeper.GetDataSource(ctx, 1)
 	require.NotNil(t, err)
@@ -116,7 +122,8 @@ func TestAddTooLongDataSourceDescription(t *testing.T) {
 	require.NotNil(t, err)
 }
 func TestEditDataSource(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
+	app, ctx := createTestInput()
+	keeper := app.OracleKeeper
 
 	err := mockDataSource(ctx, keeper)
 	require.Nil(t, err)
@@ -140,7 +147,8 @@ func TestEditDataSource(t *testing.T) {
 }
 
 func TestEditTooLongDataSource(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
+	app, ctx := createTestInput()
+	keeper := app.OracleKeeper
 
 	// Set MaxDataSourceExecutableSize to 20
 	keeper.SetParam(ctx, types.KeyMaxDataSourceExecutableSize, 20)
@@ -158,7 +166,8 @@ func TestEditTooLongDataSource(t *testing.T) {
 }
 
 func TestEditTooLongDataSourceName(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
+	app, ctx := createTestInput()
+	keeper := app.OracleKeeper
 
 	//SetMaxNameLength to 20
 	keeper.SetParam(ctx, types.KeyMaxNameLength, 20)
@@ -176,7 +185,8 @@ func TestEditTooLongDataSourceName(t *testing.T) {
 }
 
 func TestEditTooLongDataSourceDescription(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
+	app, ctx := createTestInput()
+	keeper := app.OracleKeeper
 
 	//Set MaxDescriptionLength to 20
 	keeper.SetParam(ctx, types.KeyMaxDescriptionLength, 20)
@@ -194,7 +204,8 @@ func TestEditTooLongDataSourceDescription(t *testing.T) {
 }
 
 func TestGetAllDataSources(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
+	app, ctx := createTestInput()
+	keeper := app.OracleKeeper
 
 	dataSources := []types.DataSource{
 		types.NewDataSource(
