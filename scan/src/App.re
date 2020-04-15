@@ -74,7 +74,7 @@ module TopBar = {
                   spacing={Text.Em(0.03)}
                 />
                 <HSpacing size=Spacing.xs />
-                <MetadataBadge />
+                <ChainIDBadge />
               </div>
             </Col>
             <Col alignSelf=Col.End>
