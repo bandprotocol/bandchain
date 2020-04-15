@@ -241,9 +241,13 @@ module Msg = {
         clientID: json |> field("client_id", string),
         chainID: "band-consumer",
         trustingPeriod:
-          (json |> field("trusting_period", float)) /. 1_000_000. |> MomentRe.durationMillis,
+          (json |> field("trusting_period", JsonUtils.Decode.float))
+          /. 1_000_000.
+          |> MomentRe.durationMillis,
         unbondingPeriod:
-          (json |> field("unbonding_period", float)) /. 1_000_000. |> MomentRe.durationMillis,
+          (json |> field("unbonding_period", JsonUtils.Decode.float))
+          /. 1_000_000.
+          |> MomentRe.durationMillis,
       };
     };
   };
