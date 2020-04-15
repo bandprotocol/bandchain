@@ -112,10 +112,16 @@ module BlockCountConfig = [%graphql
 
 module PastDayBlockCountConfig = [%graphql
   {|
-  subscription AvgDayBlocksCount($timestamp: bigint!) {
-    blocks_aggregate(where: {timestamp: {_gte: $timestamp}}){
+  subscription AvgDayBlocksCount($greater: bigint!, $less: bigint!) {
+    blocks_aggregate(where: {timestamp: {_gte: $greater}, _and: {timestamp: {_lte: $less}}}){
       aggregate{
         count @bsDecoder(fn: "Belt_Option.getExn")
+        max {
+          timestamp @bsDecoder(fn: "GraphQLParser.floatExn")
+        }
+        min {
+          timestamp @bsDecoder(fn: "GraphQLParser.floatExn")
+        }
       }
     }
   }
@@ -187,17 +193,38 @@ let count = () => {
   |> Sub.map(_, x => x##blocks_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
 };
 
-let pastDayCount = timestamp => {
+let getAvgBlockTime = (greater, less) => {
   let (result, _) =
     ApolloHooks.useSubscription(
       PastDayBlockCountConfig.definition,
       ~variables=
-        PastDayBlockCountConfig.makeVariables(~timestamp=timestamp |> Js.Json.number, 
-          ()
-      ),
+        PastDayBlockCountConfig.makeVariables(
+          ~greater=greater |> Js.Json.number,
+          ~less=less |> Js.Json.number,
+          (),
+        ),
     );
-  result
-  |> Sub.map(_, x => x##blocks_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
+  let timestampMinSub =
+    result
+    |> Sub.map(_, a => a##blocks_aggregate##aggregate |> Belt_Option.getExn)
+    |> Sub.map(_, b => b##min |> Belt_Option.getExn)
+    |> Sub.map(_, c => c##timestamp);
+  let timestampMaxSub =
+    result
+    |> Sub.map(_, a => a##blocks_aggregate##aggregate |> Belt_Option.getExn)
+    |> Sub.map(_, b => b##max |> Belt_Option.getExn)
+    |> Sub.map(_, c => c##timestamp);
+  let blockCountSub =
+    result
+    |> Sub.map(_, x => x##blocks_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
+
+  let%Sub timestampMin = timestampMinSub;
+  let%Sub timestampMax = timestampMaxSub;
+  let%Sub blockCount = blockCountSub;
+
+  let secondsPassed = (timestampMax -. timestampMin) /. 1000.;
+
+  secondsPassed /. (blockCount |> float_of_int) |> Sub.resolve;
 };
 
 let countByConsensusAddress = (~address, ()) => {

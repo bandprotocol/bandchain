@@ -195,15 +195,28 @@ let getPrevDay = _ => {
   *. 1000.;
 };
 
+let getCurrentDay = _ => {
+  (MomentRe.momentNow() |> MomentRe.Moment.toUnix |> float_of_int) *. 1000.;
+};
+
 [@react.component]
 let make = () =>
   {
     let (page, setPage) = React.useState(_ => 1);
 
-    let (prevDay, setPrevDay) = React.useState(getPrevDay);
+    let (prevDayTime, setPrevDayTime) = React.useState(getPrevDay);
+    let (currentTime, setCurrentTime) = React.useState(getCurrentDay);
+
     React.useEffect0(() => {
-      let timeOutId = Js.Global.setInterval(() => setPrevDay(getPrevDay), 60_000);
-      Some(() => Js.Global.clearInterval(timeOutId));
+      let timeOutId = Js.Global.setInterval(() => setPrevDayTime(getPrevDay), 60_000);
+      let currentTimeTimeoutId =
+        Js.Global.setInterval(() => setCurrentTime(getCurrentDay), 60_000);
+      Some(
+        () => {
+          Js.Global.clearInterval(timeOutId);
+          Js.Global.clearInterval(currentTimeTimeoutId);
+        },
+      );
     });
 
     let pageSize = 10;
@@ -213,14 +226,14 @@ let make = () =>
     // TODO: Update once bonding status is available
     let bondedValidatorCountSub = ValidatorSub.count();
     let bondedTokenCountSub = ValidatorSub.getTotalBondedAmount();
-    let pastDayBlockCountSub = BlockSub.pastDayCount(prevDay);
+    let avgBlockTimeSub = BlockSub.getAvgBlockTime(prevDayTime, currentTime);
     let metadataSub = MetadataSub.use();
 
     let%Sub validators = validatorsSub;
     let%Sub validatorCount = validatorsCountSub;
     let%Sub bondedValidatorCount = bondedValidatorCountSub;
     let%Sub bondedTokenCount = bondedTokenCountSub;
-    let%Sub pastDayBlockCount = pastDayBlockCountSub;
+    let%Sub avgBlockTime = avgBlockTimeSub;
     let%Sub metadata = metadataSub;
 
     let pageCount = Page.getPageCount(validatorCount, pageSize);
@@ -229,8 +242,6 @@ let make = () =>
     let unbondingValidatorCount = 0;
     let allValidatorCount =
       bondedValidatorCount + unbondedValidatorCount + unbondingValidatorCount;
-
-    let pastDayAvgBlockTime = 86_400.00 /. (pastDayBlockCount |> float_of_int);
 
     <>
       <Row justify=Row.Between>
@@ -275,7 +286,7 @@ let make = () =>
           </Col>
           <Col size=0.51>
             <InfoHL
-              info={InfoHL.FloatWithSuffix(pastDayAvgBlockTime, "  secs", 2)}
+              info={InfoHL.FloatWithSuffix(avgBlockTime, "  secs", 2)}
               header="24 HOUR AVG BLOCK TIME"
             />
           </Col>
