@@ -25,7 +25,7 @@ var (
 )
 
 // NewBandProvider creates new BandProvider create new cliCtx and txBldr
-func NewBandProvider(nodeURI string, privKey crypto.PrivKey) (BandProvider, error) {
+func NewBandProvider(nodeURI string, privKey crypto.PrivKey, chainID string) (BandProvider, error) {
 	// TODO: This is a mess from Cosmos
 	authclient.Codec = appCodec
 
@@ -38,7 +38,7 @@ func NewBandProvider(nodeURI string, privKey crypto.PrivKey) (BandProvider, erro
 
 	return BandProvider{
 		cliCtx:  cliCtx,
-		txBldr:  NewTxBuilder(authclient.GetTxEncoder(cdc)).WithAccountNumber(num),
+		txBldr:  NewTxBuilder(authclient.GetTxEncoder(cdc), chainID).WithAccountNumber(num),
 		addr:    addr,
 		privKey: privKey,
 	}, nil
