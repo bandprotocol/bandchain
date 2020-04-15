@@ -192,7 +192,7 @@ let get = operator_address => {
   };
 };
 
-let getList = (~page=1, ~pageSize=10, ~isActive, ()) => {
+let getList = (~page, ~pageSize, ~isActive, ()) => {
   let offset = (page - 1) * pageSize;
   let (result, _) =
     ApolloHooks.useSubscription(
