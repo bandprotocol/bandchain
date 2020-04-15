@@ -96,7 +96,14 @@ let make = (~blocksSub: ApolloHooks.Subscription.variant(_)) => {
         {switch (blocksSub) {
          | Data(blocks) =>
            let {BlockSub.height: ID.Block.ID(blocksCount)} = blocks->Belt_Array.getExn(0);
-           <span className=Styles.amount> {blocksCount |> Format.iPretty |> React.string} </span>;
+           <Text
+             value={blocksCount |> Format.iPretty}
+             size=Text.Xxl
+             height={Text.Px(24)}
+             color=Colors.gray8
+             block=true
+             weight=Text.Bold
+           />;
          | _ => <LoadingCensorBar width=90 height=24 />
          }}
         <VSpacing size=Spacing.xs />
