@@ -6,7 +6,8 @@ type t = {
 type a =
   | Connect(string)
   | Disconnect
-  | SendRequest(ID.OracleScript.t, JsBuffer.t, Js.Promise.t(BandWeb3.response_t) => unit);
+  | SendRequest(ID.OracleScript.t, JsBuffer.t, Js.Promise.t(BandWeb3.response_t) => unit)
+  | SendRequestWithLedger;
 
 let bandchain = BandWeb3.network(Env.rpc, "bandchain");
 bandchain->BandWeb3.setPath("m/44'/494'/0'/0/0");
@@ -50,6 +51,42 @@ let reducer = state =>
     | None =>
       callback(Promise.ret(BandWeb3.Unknown));
       state;
+    }
+  | SendRequestWithLedger =>
+    switch (state) {
+    | Some(_) =>
+      let _ = {
+        // TODO: 1. save address to state
+        //       2. handle error when ledger doesn't connect.
+        let%Promise {address, pubKey} = Ledger.getAddressAndPubKey();
+        let%Promise {accountNumber, sequence} =
+          bandchain->BandWeb3.getAccounts(address |> Address.toBech32);
+        let msgRequest =
+          StdMsgRequest.create(
+            ID.OracleScript.ID(2),
+            ~calldata=JsBuffer.fromBase64("AwAAAEJUQ2QAAAAAAAAA"),
+            ~requestedValidatorCount=4,
+            ~sufficientValidatorCount=4,
+            ~sender=address,
+            ~feeAmount=1000000,
+            ~gas=3000000,
+            ~accountNumber=accountNumber |> string_of_int,
+            ~sequence=sequence |> string_of_int,
+          );
+        let stringifiedMsg = msgRequest |> StdMsgRequest.sortAndStringify;
+        let%Promise signature = Ledger.sign(stringifiedMsg);
+
+        let signBase64 = signature |> JsBuffer.toBase64;
+
+        let signedMsg = BandWeb3.createSignedMsgRequest(msgRequest, signBase64, pubKey, "block");
+        Js.Console.log2("signedMsg", signedMsg);
+        let%Promise res = bandchain->BandWeb3.broadcast(signedMsg);
+        Js.Console.log(res);
+
+        Promise.ret();
+      };
+      state;
+    | None => state
     };
 
 let context = React.createContext(ContextHelper.default);
