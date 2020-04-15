@@ -27,7 +27,7 @@ func resolveRequest(ctx sdk.Context, keeper Keeper, reqID types.RequestID) {
 	}
 
 	// TODO: Refactor this code. For now we hardcode execute gas to 100k
-	executeGas := uint64(100000)
+	executeGas := keeper.GetParam(ctx, KeyExecuteGas)
 	result, _, err := owasm.Execute(&env, script.Code, "execute", request.Calldata, executeGas)
 
 	var resolveStatus types.ResolveStatus
