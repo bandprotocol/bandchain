@@ -15,7 +15,7 @@
     "bech32": "^1.1.3",
     "borsh": "^0.2.6",
     "bs-axios": "^0.0.43",
-    "bs-css-emotion": "^1.1.0",
+    "bs-css-emotion": "^1.2.0",
     "bs-let": "^0.1.14",
     "bs-moment": "^0.4.5",
     "change-case": "^4.1.1",
