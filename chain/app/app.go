@@ -18,6 +18,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/cosmos/cosmos-sdk/x/capability"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/evidence"
@@ -34,8 +35,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 
-	bandsupply "github.com/bandprotocol/bandchain/chain/x/supply"
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
+	bandsupply "github.com/bandprotocol/bandchain/chain/x/supply"
 )
 
 const (
@@ -83,8 +84,8 @@ var (
 	}
 )
 
-// bandApp extended ABCI application
-type bandApp struct {
+// BandApp extended ABCI application
+type BandApp struct {
 	*bam.BaseApp
 	cdc *codec.Codec
 
@@ -98,20 +99,21 @@ type bandApp struct {
 	subspaces map[string]params.Subspace
 
 	// keepers
-	AccountKeeper  auth.AccountKeeper
-	BankKeeper     bank.Keeper
-	SupplyKeeper   supply.Keeper
-	StakingKeeper  staking.Keeper
-	SlashingKeeper slashing.Keeper
-	MintKeeper     mint.Keeper
-	DistrKeeper    distr.Keeper
-	GovKeeper      gov.Keeper
-	CrisisKeeper   crisis.Keeper
-	ParamsKeeper   params.Keeper
-	UpgradeKeeper  upgrade.Keeper
-	EvidenceKeeper evidence.Keeper
-	IBCKeeper      ibc.Keeper
-	OracleKeeper  oracle.Keeper
+	AccountKeeper    auth.AccountKeeper
+	BankKeeper       bank.Keeper
+	SupplyKeeper     supply.Keeper
+	StakingKeeper    staking.Keeper
+	CapabilityKeeper *capability.Keeper
+	SlashingKeeper   slashing.Keeper
+	MintKeeper       mint.Keeper
+	DistrKeeper      distr.Keeper
+	GovKeeper        gov.Keeper
+	CrisisKeeper     crisis.Keeper
+	ParamsKeeper     params.Keeper
+	UpgradeKeeper    upgrade.Keeper
+	EvidenceKeeper   evidence.Keeper
+	IBCKeeper        *ibc.Keeper
+	OracleKeeper     oracle.Keeper
 
 	// Decoder for unmarshaling []byte into sdk.Tx
 	TxDecoder sdk.TxDecoder
@@ -143,7 +145,7 @@ func NewBandApp(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool,
 	invCheckPeriod uint, skipUpgradeHeights map[int64]bool, home string,
 	baseAppOptions ...func(*bam.BaseApp),
-) *bandApp {
+) *BandApp {
 
 	// TODO: Remove cdc in favor of appCodec once all modules are migrated.
 	cdc := codecstd.MakeCodec(ModuleBasics)
@@ -153,14 +155,14 @@ func NewBandApp(
 	bApp.SetCommitMultiStoreTracer(traceStore)
 	bApp.SetAppVersion(version.Version)
 	keys := sdk.NewKVStoreKeys(
-		bam.MainStoreKey, auth.StoreKey, bank.StoreKey, staking.StoreKey,
+		bam.MainStoreKey, capability.StoreKey, auth.StoreKey, bank.StoreKey, staking.StoreKey,
 		supply.StoreKey, mint.StoreKey, distr.StoreKey, slashing.StoreKey,
 		gov.StoreKey, params.StoreKey, ibc.StoreKey, evidence.StoreKey,
 		upgrade.StoreKey, oracle.StoreKey,
 	)
-	tKeys := sdk.NewTransientStoreKeys(staking.TStoreKey, params.TStoreKey)
+	tKeys := sdk.NewTransientStoreKeys(params.TStoreKey)
 
-	app := &bandApp{
+	app := &BandApp{
 		BaseApp:        bApp,
 		cdc:            cdc,
 		invCheckPeriod: invCheckPeriod,
@@ -182,6 +184,11 @@ func NewBandApp(
 	app.subspaces[crisis.ModuleName] = app.ParamsKeeper.Subspace(crisis.DefaultParamspace)
 	app.subspaces[evidence.ModuleName] = app.ParamsKeeper.Subspace(evidence.DefaultParamspace)
 	app.subspaces[oracle.ModuleName] = app.ParamsKeeper.Subspace(oracle.DefaultParamspace)
+
+	// add capability keeper and ScopeToModule for ibc module
+	app.CapabilityKeeper = capability.NewKeeper(appCodec, keys[capability.StoreKey])
+	scopedIBCKeeper := app.CapabilityKeeper.ScopeToModule(ibc.ModuleName)
+	scopedOracleKeeper := app.CapabilityKeeper.ScopeToModule(oracle.ModuleName)
 
 	// add keepers
 	app.AccountKeeper = auth.NewAccountKeeper(
@@ -251,7 +258,7 @@ func NewBandApp(
 		staking.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks()),
 	)
 
-	app.IBCKeeper = ibc.NewKeeper(app.cdc, keys[ibc.StoreKey], stakingKeeper)
+	app.IBCKeeper = ibc.NewKeeper(app.cdc, keys[ibc.StoreKey], stakingKeeper, scopedIBCKeeper)
 
 	app.OracleKeeper = oracle.NewKeeper(
 		cdc,
@@ -260,6 +267,7 @@ func NewBandApp(
 		app.StakingKeeper,
 		app.IBCKeeper.ChannelKeeper,
 		app.subspaces[oracle.ModuleName],
+		scopedOracleKeeper,
 	)
 
 	// NOTE: Any module instantiated in the module manager that is later modified
@@ -305,7 +313,7 @@ func NewBandApp(
 	// initialize BaseApp
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
-	app.SetAnteHandler(ante.NewAnteHandler(app.AccountKeeper, app.SupplyKeeper, app.IBCKeeper, ante.DefaultSigVerificationGasConsumer))
+	app.SetAnteHandler(ante.NewAnteHandler(app.AccountKeeper, app.SupplyKeeper, *app.IBCKeeper, ante.DefaultSigVerificationGasConsumer))
 	app.SetEndBlocker(app.EndBlocker)
 
 	if loadLatest {
@@ -319,16 +327,16 @@ func NewBandApp(
 }
 
 // Name returns the name of the App
-func (app *bandApp) Name() string { return app.BaseApp.Name() }
+func (app *BandApp) Name() string { return app.BaseApp.Name() }
 
 // BeginBlocker application updates every begin block
-func (app *bandApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
+func (app *BandApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	app.DeliverContext = ctx
 	return app.mm.BeginBlock(ctx, req)
 }
 
 // DeliverTx application updates every transction
-func (app *bandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliverTx) {
+func (app *BandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliverTx) {
 	response := app.BaseApp.DeliverTx(req)
 
 	if response.IsOK() {
@@ -364,29 +372,29 @@ func (app *bandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliv
 }
 
 // EndBlocker application updates every end block
-func (app *bandApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
+func (app *BandApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
 	return app.mm.EndBlock(ctx, req)
 }
 
-func (app *bandApp) Commit() (res abci.ResponseCommit) {
+func (app *BandApp) Commit() (res abci.ResponseCommit) {
 	app.DeliverContext = sdk.Context{}
 	return app.BaseApp.Commit()
 }
 
 // InitChainer application update at chain initialization
-func (app *bandApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
+func (app *BandApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	var genesisState GenesisState
 	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
 	return app.mm.InitGenesis(ctx, app.cdc, genesisState)
 }
 
 // LoadHeight loads a particular height
-func (app *bandApp) LoadHeight(height int64) error {
+func (app *BandApp) LoadHeight(height int64) error {
 	return app.LoadVersion(height, app.keys[bam.MainStoreKey])
 }
 
 // ModuleAccountAddrs returns all the app's module account addresses.
-func (app *bandApp) ModuleAccountAddrs() map[string]bool {
+func (app *BandApp) ModuleAccountAddrs() map[string]bool {
 	modAccAddrs := make(map[string]bool)
 	for acc := range maccPerms {
 		modAccAddrs[supply.NewModuleAddress(acc).String()] = true
@@ -396,7 +404,7 @@ func (app *bandApp) ModuleAccountAddrs() map[string]bool {
 }
 
 // Codec returns the application's sealed codec.
-func (app *bandApp) Codec() *codec.Codec {
+func (app *BandApp) Codec() *codec.Codec {
 	return app.cdc
 }
 

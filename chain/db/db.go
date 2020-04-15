@@ -35,7 +35,7 @@ type BandDB struct {
 	DistrKeeper   distribution.Keeper
 	StakingKeeper staking.Keeper
 	OracleKeeper  oracle.Keeper
-	IBCKeeper     ibc.Keeper
+	IBCKeeper     *ibc.Keeper
 }
 
 func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {

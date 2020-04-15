@@ -10,10 +10,10 @@
     ts-invariant "^0.4.4"
     tslib "^1.10.0"
 
-"@apollo/react-hooks@^3.1.4":
-  version "3.1.4"
-  resolved "https://registry.yarnpkg.com/@apollo/react-hooks/-/react-hooks-3.1.4.tgz#2d966ed4fdf01729113850a72698faee490fd429"
-  integrity sha512-yamD5a1Gu9fGQjZYEQn2nSG+BRyde4dy055agtYOvP/5/njJBSJ25tRFbjxKf7+YW9fsu2Xguib3anoQTuesNg==
+"@apollo/react-hooks@^3.1.5":
+  version "3.1.5"
+  resolved "https://registry.yarnpkg.com/@apollo/react-hooks/-/react-hooks-3.1.5.tgz#7e710be52461255ae7fc0b3b9c2ece64299c10e6"
+  integrity sha512-y0CJ393DLxIIkksRup4nt+vSjxalbZBXnnXxYbviq/woj+zKa431zy0yT4LqyRKpFy9ahMIwxBnBwfwIoupqLQ==
   dependencies:
     "@apollo/react-common" "^3.1.4"
     "@wry/equality" "^0.1.9"
@@ -776,14 +776,7 @@
     "@babel/types" "^7.4.4"
     esutils "^2.0.2"
 
-"@babel/runtime@7.7.6":
-  version "7.7.6"
-  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.7.6.tgz#d18c511121aff1b4f2cd1d452f1bac9601dd830f"
-  integrity sha512-BWAJxpNVa0QlE5gZdWjSxXtemZyZ9RmrmVozxt3NUXeZhVIJ5ANyqmMc0JDrivBZyxUuQvFxlvH4OWWOogGfUw==
-  dependencies:
-    regenerator-runtime "^0.13.2"
-
-"@babel/runtime@^7.4.4", "@babel/runtime@^7.7.2", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7":
+"@babel/runtime@7.9.2", "@babel/runtime@^7.4.4", "@babel/runtime@^7.7.2", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7":
   version "7.9.2"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.9.2.tgz#d90df0583a3a252f09aaa619665367bae518db06"
   integrity sha512-NE2DtOdufG7R5vnfQUTehdTfNycfUANEtCa9PssN9O/xmTzP4E08UI797ixaei6hBEVL9BI/PsdJS5x7mWoB9Q==
@@ -1903,12 +1896,12 @@ axios-hook@^0.0.6:
     react "^16.8.1"
     react-dom "^16.8.1"
 
-axios-hooks@^1.9.0:
-  version "1.9.0"
-  resolved "https://registry.yarnpkg.com/axios-hooks/-/axios-hooks-1.9.0.tgz#a06fc9fb3a6c317be6867e97107778c09be43695"
-  integrity sha512-qvVeEHaLq9ueAlRT1A+MWeyC9d9/JqI7/unXmBwJsUe9XB9zX+9KJG/dmFVfw/tB+GIqOP6CFpWPfLh5T+ra2w==
+axios-hooks@^1.10.0:
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/axios-hooks/-/axios-hooks-1.10.0.tgz#73f857b8c6ddc365e8c08db9f05c184b48328139"
+  integrity sha512-kh9FNRFxE7P1t+4SM4yKZNhDo+NYdws1Mt/bUTnmzBh2qVQzfDObwmHklw2zZ+9QDaSyEHlyMHzboWk5joVVWg==
   dependencies:
-    "@babel/runtime" "7.7.6"
+    "@babel/runtime" "7.9.2"
     lru-cache "5.1.1"
 
 axios@^0.19.0, axios@^0.19.2:
@@ -2337,18 +2330,18 @@ bs-axios@^0.0.43:
   dependencies:
     axios "^0.19.2"
 
-bs-css-emotion@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/bs-css-emotion/-/bs-css-emotion-1.1.0.tgz#0accc326fc2c9aff094582c766837373ec436ac1"
-  integrity sha512-G/y3HpM0NIgjkPEDT7fe3fWpP80ZhUpuiyDqL2esM9fueNiU+IcZ5S6g02tD4lp5UQZPCF+5KlzxOmSbKOhn4w==
+bs-css-emotion@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/bs-css-emotion/-/bs-css-emotion-1.2.0.tgz#44c0b74123744d231bc36ac821cd6269f29649a3"
+  integrity sha512-mcydi8OdmwvwutlEYYe1x4K9lGC3fYXxIeNcXvICesyZ8tWZQNIVbdSbUkL/gRSbz+vBcFKQDQ53TY/y7mIYQw==
   dependencies:
-    bs-css "12.1.0"
+    bs-css "12.2.0"
     emotion "^10.0.7"
 
-bs-css@12.1.0:
-  version "12.1.0"
-  resolved "https://registry.yarnpkg.com/bs-css/-/bs-css-12.1.0.tgz#8bea8970d31cd133bb81e2aeb78b187a807d003c"
-  integrity sha512-cKxVoPe1PtVTYAUYp81lleRwawd/OhdgDINx8V1/AOUuHkan6g23Jh6b+WACJXrOn4vVJmSgVdBfMqaeHMoi8g==
+bs-css@12.2.0:
+  version "12.2.0"
+  resolved "https://registry.yarnpkg.com/bs-css/-/bs-css-12.2.0.tgz#926e758d7f95c02f516505ecdcd855e1d9dcb2a0"
+  integrity sha512-JDaJAc8XKYZA05G8xVuDhB184yGKgNajdUloPC+OK+J8gGTnv8pfrhWKsFFKry87eJN4kKHhgsbXaN5U70g+3Q==
 
 bs-let@^0.1.14:
   version "0.1.16"
@@ -7947,7 +7940,7 @@ regenerator-runtime@^0.11.0:
   resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.11.1.tgz#be05ad7f9bf7d22e056f9726cee5017fbf19e2e9"
   integrity sha512-MguG95oij0fC3QV3URf4V2SDYGJhJnJGqvIIgdECeODCT98wSWDAJ94SSuVpYQUoTcGUIL6L4yNB7j1DFFHSBg==
 
-regenerator-runtime@^0.13.2, regenerator-runtime@^0.13.4:
+regenerator-runtime@^0.13.4:
   version "0.13.5"
   resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.13.5.tgz#d878a1d094b4306d10b9096484b33ebd55e26697"
   integrity sha512-ZS5w8CpKFinUzOwW3c83oPeVXoNsrLsaCoLtJvAClH135j/R77RuymhiSErhm2lKcwSCIpmvIWSbDkIfAqKQlA==

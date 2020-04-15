@@ -17,23 +17,11 @@ module Styles = {
       paddingTop(Spacing.lg),
       paddingBottom(Spacing.lg),
       backgroundColor(Colors.white),
-      border(`px(1), `solid, hex("F9F7FA")),
+      border(`px(2), `solid, Colors.blueGray1),
     ]);
 
   let topBarInner =
     style([display(`flex), width(`percent(100.)), justifyContent(`spaceBetween)]);
-
-  let version =
-    style([
-      display(`flex),
-      borderRadius(`px(10)),
-      backgroundColor(`hex("EBECFF")),
-      padding2(~v=`pxFloat(4.3), ~h=`px(8)),
-      justifyContent(`center),
-      alignItems(`center),
-      marginLeft(Spacing.xs),
-      marginTop(`px(1)),
-    ]);
 
   let rFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
@@ -59,7 +47,7 @@ module Styles = {
 
 module TopBar = {
   [@react.component]
-  let make = () =>
+  let make = () => {
     <div className=Styles.topBarContainer>
       <div className={Css.merge([Styles.topBarInner, Styles.pageWidth])}>
         <div className=Styles.logoContainer onClick={_ => Route.redirect(Route.HomePage)}>
@@ -82,20 +70,11 @@ module TopBar = {
                   nowrap=true
                   size=Text.Sm
                   weight=Text.Semibold
-                  color={Css.hex("777777")}
+                  color=Colors.gray6
                   spacing={Text.Em(0.03)}
                 />
                 <HSpacing size=Spacing.xs />
-                <div className=Styles.version>
-                  <Text
-                    value="v1.0 TESTNET"
-                    size=Text.Xs
-                    color={Css.hex("535BBF")}
-                    nowrap=true
-                    weight=Text.Semibold
-                    spacing={Text.Em(0.03)}
-                  />
-                </div>
+                <ChainIDBadge />
               </div>
             </Col>
             <Col alignSelf=Col.End>
@@ -117,6 +96,7 @@ module TopBar = {
         <SearchBar />
       </div>
     </div>;
+  };
 };
 
 [@react.component]

@@ -20,7 +20,7 @@ import (
 )
 
 type dbBandApp struct {
-	*bandApp
+	*BandApp
 	dbBand *db.BandDB
 	txNum  int64
 }
@@ -38,7 +38,7 @@ func NewDBBandApp(
 	dbBand.StakingKeeper = app.StakingKeeper
 	dbBand.OracleKeeper = app.OracleKeeper
 	dbBand.IBCKeeper = app.IBCKeeper
-	return &dbBandApp{bandApp: app, dbBand: dbBand}
+	return &dbBandApp{BandApp: app, dbBand: dbBand}
 }
 
 func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
@@ -140,12 +140,12 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 
 	app.dbBand.Commit()
 
-	return app.bandApp.InitChain(req)
+	return app.BandApp.InitChain(req)
 }
 
 func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliverTx) {
 	app.txNum++
-	res = app.bandApp.DeliverTx(req)
+	res = app.BandApp.DeliverTx(req)
 	lastProcessHeight, err := app.dbBand.GetLastProcessedHeight()
 	if err != nil {
 		panic(err)
@@ -209,7 +209,7 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 
 func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseBeginBlock) {
 	app.txNum = 0
-	res = app.bandApp.BeginBlock(req)
+	res = app.BandApp.BeginBlock(req)
 	// Begin transaction
 	app.dbBand.BeginTransaction()
 	app.dbBand.SetContext(app.DeliverContext)
@@ -256,8 +256,8 @@ func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseB
 }
 
 func (app *dbBandApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBlock) {
-	res = app.bandApp.EndBlock(req)
-	inflation := app.bandApp.MintKeeper.GetMinter(app.bandApp.DeliverContext).Inflation.String()
+	res = app.BandApp.EndBlock(req)
+	inflation := app.BandApp.MintKeeper.GetMinter(app.BandApp.DeliverContext).Inflation.String()
 	err := app.dbBand.SetInflationRate(inflation)
 	if err != nil {
 		panic(err)
@@ -277,7 +277,7 @@ func (app *dbBandApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBl
 }
 
 func (app *dbBandApp) Commit() (res abci.ResponseCommit) {
-	res = app.bandApp.Commit()
+	res = app.BandApp.Commit()
 
 	app.dbBand.Commit()
 	return res

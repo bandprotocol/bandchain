@@ -65,6 +65,8 @@ var (
 	KeyEndBlockExecuteGasLimit          = types.KeyEndBlockExecuteGasLimit
 	KeyGasPerRawDataRequestPerValidator = types.KeyGasPerRawDataRequestPerValidator
 	KeyExpirationBlockCount             = types.KeyExpirationBlockCount
+	KeyExecuteGas                       = types.KeyExecuteGas
+	KeyPrepareGas                       = types.KeyPrepareGas
 
 	QueryRequestByID    = types.QueryRequestByID
 	QueryRequests       = types.QueryRequests
