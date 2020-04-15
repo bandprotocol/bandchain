@@ -288,99 +288,106 @@ module Msg = {
   };
 
   module Packet = {
-    type t = {
-      sender: Address.t,
-      data: string,
+    type common_t = {
       sequence: int,
       sourcePort: string,
       sourceChannel: string,
       destinationPort: string,
       destinationChannel: string,
-      timeoutHeight: int,
+      timeoutHeight: ID.Block.t,
       chainID: string,
     };
+
+    type t = {
+      sender: Address.t,
+      data: string,
+      common: common_t,
+    };
     let decode = json => {
-      Js.Console.log(json);
       JsonUtils.Decode.{
         sender: json |> field("signer", string) |> Address.fromBech32,
         data: json |> at(["packet", "data"], string) |> Js.String.toUpperCase,
-        sequence: json |> at(["packet", "sequence"], int),
-        sourcePort: json |> at(["packet", "source_port"], string),
-        sourceChannel: json |> at(["packet", "source_channel"], string),
-        destinationPort: json |> at(["packet", "destination_port"], string),
-        destinationChannel: json |> at(["packet", "destination_channel"], string),
-        timeoutHeight: json |> at(["packet", "timeout_height"], int),
-        chainID: "band-consumer",
+        common: {
+          sequence: json |> at(["packet", "sequence"], int),
+          sourcePort: json |> at(["packet", "source_port"], string),
+          sourceChannel: json |> at(["packet", "source_channel"], string),
+          destinationPort: json |> at(["packet", "destination_port"], string),
+          destinationChannel: json |> at(["packet", "destination_channel"], string),
+          timeoutHeight: json |> at(["packet", "timeout_height"], ID.Block.fromJson),
+          chainID: "band-consumer",
+        },
       };
     };
   };
 
   module Acknowledgement = {
     type t = {
+      common: Packet.common_t,
       sender: Address.t,
-      sequence: int,
-      sourcePort: string,
-      sourceChannel: string,
-      destinationPort: string,
-      destinationChannel: string,
-      timeoutHeight: int,
       acknowledgement: string,
-      chainID: string,
     };
     let decode = json =>
       JsonUtils.Decode.{
+        common: {
+          sequence: 999,
+          sourcePort: "gjdojfpjfp",
+          sourceChannel: "gjdojfpjfp",
+          destinationPort: "gjdojfpjfp",
+          destinationChannel: "gjdojfpjfp",
+          timeoutHeight: ID.Block.ID(999999),
+          chainID: "band-consumer",
+        },
         sender: json |> field("address", string) |> Address.fromBech32,
-        sequence: 999,
-        sourcePort: "gjdojfpjfp",
-        sourceChannel: "gjdojfpjfp",
-        destinationPort: "gjdojfpjfp",
-        destinationChannel: "gjdojfpjfp",
-        timeoutHeight: 12345,
         acknowledgement: "iKQAmKzSud29geE5che9C8bVuQyG02FJJ7LM...",
-        chainID: "band-consumer",
       };
   };
 
   module Timeout = {
     type t = {
       sender: Address.t,
-      sequence: int,
-      sourcePort: string,
-      sourceChannel: string,
-      destinationPort: string,
-      destinationChannel: string,
-      timeoutHeight: int,
+      common: Packet.common_t,
       nextSequenceReceive: int,
-      chainID: string,
     };
     let decode = json =>
       JsonUtils.Decode.{
         sender: json |> field("signer", string) |> Address.fromBech32,
-        sequence: json |> at(["packet", "sequence"], int),
-        sourcePort: json |> at(["packet", "source_port"], string),
-        sourceChannel: json |> at(["packet", "source_channel"], string),
-        destinationPort: json |> at(["packet", "destination_port"], string),
-        destinationChannel: json |> at(["packet", "destination_channel"], string),
-        timeoutHeight: json |> at(["packet", "timeout_height"], int),
-        chainID: "band-consumer",
+        common: {
+          sequence: json |> at(["packet", "sequence"], int),
+          sourcePort: json |> at(["packet", "source_port"], string),
+          sourceChannel: json |> at(["packet", "source_channel"], string),
+          destinationPort: json |> at(["packet", "destination_port"], string),
+          destinationChannel: json |> at(["packet", "destination_channel"], string),
+          timeoutHeight: json |> at(["packet", "timeout_height"], ID.Block.fromJson),
+          chainID: "band-consumer",
+        },
         nextSequenceReceive: json |> at(["packet", "next_sequence_receive"], int),
+      };
+  };
+
+  module ConnectionCommon = {
+    type t = {
+      chainID: string,
+      connectionID: string,
+    };
+    let decode = json =>
+      JsonUtils.Decode.{
+        chainID: "band-consumer",
+        connectionID: json |> field("connection_id", string),
       };
   };
 
   module ConnectionOpenInit = {
     type t = {
       signer: Address.t,
-      chainID: string,
-      connectionID: string,
+      common: ConnectionCommon.t,
       clientID: string,
       consensusHeight: ID.Block.t,
     };
     let decode = json =>
       JsonUtils.Decode.{
         signer: json |> field("signer", string) |> Address.fromBech32,
+        common: json |> ConnectionCommon.decode,
         clientID: json |> field("client_id", string),
-        chainID: "band-consumer",
-        connectionID: json |> field("connection_id", string),
         consensusHeight: json |> field("consensus_height", ID.Block.fromJson),
       };
   };
@@ -388,33 +395,29 @@ module Msg = {
   module ConnectionOpenTry = {
     type t = {
       signer: Address.t,
-      chainID: string,
-      connectionID: string,
+      common: ConnectionCommon.t,
       clientID: string,
-      consensusHeight: int,
+      consensusHeight: ID.Block.t,
     };
     let decode = json =>
       JsonUtils.Decode.{
         signer: json |> field("signer", string) |> Address.fromBech32,
         clientID: json |> field("client_id", string),
-        chainID: "band-consumer",
-        connectionID: json |> field("connection_id", string),
-        consensusHeight: json |> field("consensus_height", int),
+        common: json |> ConnectionCommon.decode,
+        consensusHeight: json |> field("consensus_height", ID.Block.fromJson),
       };
   };
 
   module ConnectionOpenAck = {
     type t = {
       signer: Address.t,
-      chainID: string,
-      connectionID: string,
+      common: ConnectionCommon.t,
       consensusHeight: ID.Block.t,
     };
     let decode = json =>
       JsonUtils.Decode.{
         signer: json |> field("signer", string) |> Address.fromBech32,
-        chainID: "band-consumer",
-        connectionID: json |> field("connection_id", string),
+        common: json |> ConnectionCommon.decode,
         consensusHeight: json |> field("consensus_height", ID.Block.fromJson),
       };
   };
@@ -422,30 +425,40 @@ module Msg = {
   module ConnectionOpenConfirm = {
     type t = {
       signer: Address.t,
-      chainID: string,
-      connectionID: string,
+      common: ConnectionCommon.t,
     };
     let decode = json =>
       JsonUtils.Decode.{
         signer: json |> field("signer", string) |> Address.fromBech32,
-        chainID: "band-consumer",
-        connectionID: json |> field("connection_id", string),
+        common: json |> ConnectionCommon.decode,
       };
+  };
+
+  module ChannelCommon = {
+    type t = {
+      chainID: string,
+      portID: string,
+      channelID: string,
+    };
+
+    let decode = json => {
+      JsonUtils.Decode.{
+        chainID: "band-consumer",
+        portID: json |> field("port_id", string),
+        channelID: json |> field("channel_id", string),
+      };
+    };
   };
 
   module ChannelOpenInit = {
     type t = {
       signer: Address.t,
-      chainID: string,
-      portID: string,
-      channelID: string,
+      common: ChannelCommon.t,
     };
     let decode = json => {
       JsonUtils.Decode.{
         signer: json |> field("signer", string) |> Address.fromBech32,
-        chainID: "band-consumer",
-        portID: json |> field("port_id", string),
-        channelID: json |> field("channel_id", string),
+        common: json |> ChannelCommon.decode,
       };
     };
   };
@@ -453,16 +466,12 @@ module Msg = {
   module ChannelOpenTry = {
     type t = {
       signer: Address.t,
-      chainID: string,
-      portID: string,
-      channelID: string,
+      common: ChannelCommon.t,
     };
     let decode = json => {
       JsonUtils.Decode.{
         signer: json |> field("signer", string) |> Address.fromBech32,
-        chainID: "band-consumer",
-        portID: json |> field("port_id", string),
-        channelID: json |> field("channel_id", string),
+        common: json |> ChannelCommon.decode,
       };
     };
   };
@@ -470,65 +479,53 @@ module Msg = {
   module ChannelOpenAck = {
     type t = {
       signer: Address.t,
-      chainID: string,
-      portID: string,
-      channelID: string,
+      common: ChannelCommon.t,
     };
-    let decode = json =>
+    let decode = json => {
       JsonUtils.Decode.{
         signer: json |> field("signer", string) |> Address.fromBech32,
-        chainID: "band-consumer",
-        portID: json |> field("port_id", string),
-        channelID: json |> field("channel_id", string),
+        common: json |> ChannelCommon.decode,
       };
+    };
   };
 
   module ChannelOpenConfirm = {
     type t = {
       signer: Address.t,
-      chainID: string,
-      portID: string,
-      channelID: string,
+      common: ChannelCommon.t,
     };
-    let decode = json =>
+    let decode = json => {
       JsonUtils.Decode.{
         signer: json |> field("signer", string) |> Address.fromBech32,
-        chainID: "band-consumer",
-        portID: json |> field("port_id", string),
-        channelID: json |> field("channel_id", string),
+        common: json |> ChannelCommon.decode,
       };
+    };
   };
 
   module ChannelCloseInit = {
     type t = {
       signer: Address.t,
-      chainID: string,
-      portID: string,
-      channelID: string,
+      common: ChannelCommon.t,
     };
-    let decode = json =>
+    let decode = json => {
       JsonUtils.Decode.{
         signer: json |> field("signer", string) |> Address.fromBech32,
-        chainID: "band-consumer",
-        portID: json |> field("port_id", string),
-        channelID: json |> field("channel_id", string),
+        common: json |> ChannelCommon.decode,
       };
+    };
   };
 
   module ChannelCloseConfirm = {
     type t = {
       signer: Address.t,
-      chainID: string,
-      portID: string,
-      channelID: string,
+      common: ChannelCommon.t,
     };
-    let decode = json =>
+    let decode = json => {
       JsonUtils.Decode.{
         signer: json |> field("signer", string) |> Address.fromBech32,
-        chainID: "band-consumer",
-        portID: json |> field("port_id", string),
-        channelID: json |> field("channel_id", string),
+        common: json |> ChannelCommon.decode,
       };
+    };
   };
 
   module FailMessage = {
@@ -605,6 +602,126 @@ module Msg = {
     | Acknowledgement(ack) => ack.sender
     | Timeout(timeout) => timeout.sender
     | _ => "" |> Address.fromHex
+    };
+  };
+
+  type badge_theme_t = {
+    text: string,
+    textColor: Css.Types.Color.t,
+    bgColor: Css.Types.Color.t,
+  };
+
+  let getBadgeTheme = msg => {
+    switch (msg) {
+    | Send(_) => {text: "SEND TOKEN", textColor: Colors.blue7, bgColor: Colors.blue1}
+    | CreateDataSource(_) => {
+        text: "CREATE DATA SOURCE",
+        textColor: Colors.yellow5,
+        bgColor: Colors.yellow1,
+      }
+    | EditDataSource(_) => {
+        text: "EDIT DATA SOURCE",
+        textColor: Colors.yellow5,
+        bgColor: Colors.yellow1,
+      }
+    | CreateOracleScript(_) => {
+        text: "CREATE ORACLE SCRIPT",
+        textColor: Colors.pink6,
+        bgColor: Colors.pink1,
+      }
+    | EditOracleScript(_) => {
+        text: "EDIT ORACLE SCRIPT",
+        textColor: Colors.pink6,
+        bgColor: Colors.pink1,
+      }
+    | Request(_) => {text: "REQUEST", textColor: Colors.orange6, bgColor: Colors.orange1}
+    | Report(_) => {text: "REPORT", textColor: Colors.orange6, bgColor: Colors.orange1}
+    | AddOracleAddress(_) => {
+        text: "ADD ORACLE ADDRESS",
+        textColor: Colors.purple6,
+        bgColor: Colors.purple1,
+      }
+    | RemoveOracleAddress(_) => {
+        text: "REMOVE ORACLE ADDRESS",
+        textColor: Colors.purple6,
+        bgColor: Colors.purple1,
+      }
+    | CreateValidator(_) => {
+        text: "CREATE VALIDATOR",
+        textColor: Colors.purple6,
+        bgColor: Colors.purple1,
+      }
+    | EditValidator(_) => {
+        text: "EDIT VALIDATOR",
+        textColor: Colors.purple6,
+        bgColor: Colors.purple1,
+      }
+    | FailMessage(_) => {text: "FAIL", textColor: Colors.red5, bgColor: Colors.red1}
+    | CreateClient(_) => {text: "CREATE CLIENT", textColor: Colors.blue7, bgColor: Colors.blue1}
+    | UpdateClient(_) => {text: "UPDATE CLIENT", textColor: Colors.blue7, bgColor: Colors.blue1}
+    | SubmitClientMisbehaviour(_) => {
+        text: "SUBMIT CLIENT MISBEHAVIOUR",
+        textColor: Colors.blue7,
+        bgColor: Colors.blue1,
+      }
+    | ConnectionOpenInit(_) => {
+        text: "CONNECTION OPEN INIT",
+        textColor: Colors.blue7,
+        bgColor: Colors.blue1,
+      }
+    | ConnectionOpenTry(_) => {
+        text: "CONNECTION OPEN TRY",
+        textColor: Colors.blue7,
+        bgColor: Colors.blue1,
+      }
+    | ConnectionOpenAck(_) => {
+        text: "CONNECTION OPEN ACK",
+        textColor: Colors.blue7,
+        bgColor: Colors.blue1,
+      }
+    | ConnectionOpenConfirm(_) => {
+        text: "CONNECTION OPEN CONFIRM",
+        textColor: Colors.blue7,
+        bgColor: Colors.blue1,
+      }
+    | ChannelOpenInit(_) => {
+        text: "CHANNEL OPEN INIT",
+        textColor: Colors.blue7,
+        bgColor: Colors.blue1,
+      }
+    | ChannelOpenTry(_) => {
+        text: "CHANNEL OPEN TRY",
+        textColor: Colors.blue7,
+        bgColor: Colors.blue1,
+      }
+    | ChannelOpenAck(_) => {
+        text: "CHANNEL OPEN ACK",
+        textColor: Colors.blue7,
+        bgColor: Colors.blue1,
+      }
+    | ChannelOpenConfirm(_) => {
+        text: "CHANNEL OPEN CONFIRM",
+        textColor: Colors.blue7,
+        bgColor: Colors.blue1,
+      }
+    | ChannelCloseInit(_) => {
+        text: "CHANNEL CLOSE INIT",
+        textColor: Colors.blue7,
+        bgColor: Colors.blue1,
+      }
+    | ChannelCloseConfirm(_) => {
+        text: "CHANNEL CLOSE CONFIRM",
+        textColor: Colors.blue7,
+        bgColor: Colors.blue1,
+      }
+    | Packet(_) => {text: "PACKET", textColor: Colors.blue7, bgColor: Colors.blue1}
+    | Acknowledgement(_) => {
+        text: "ACKNOWLEDGEMENT",
+        textColor: Colors.blue7,
+        bgColor: Colors.blue1,
+      }
+    | Timeout(_) => {text: "TIMEOUT", textColor: Colors.blue7, bgColor: Colors.blue1}
+    | _ => {text: "UNKNOWN", textColor: Colors.gray7, bgColor: Colors.gray4}
     };
   };
 
