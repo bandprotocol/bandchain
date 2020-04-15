@@ -10,10 +10,10 @@
     ts-invariant "^0.4.4"
     tslib "^1.10.0"
 
-"@apollo/react-hooks@^3.1.4":
-  version "3.1.4"
-  resolved "https://registry.yarnpkg.com/@apollo/react-hooks/-/react-hooks-3.1.4.tgz#2d966ed4fdf01729113850a72698faee490fd429"
-  integrity sha512-yamD5a1Gu9fGQjZYEQn2nSG+BRyde4dy055agtYOvP/5/njJBSJ25tRFbjxKf7+YW9fsu2Xguib3anoQTuesNg==
+"@apollo/react-hooks@^3.1.5":
+  version "3.1.5"
+  resolved "https://registry.yarnpkg.com/@apollo/react-hooks/-/react-hooks-3.1.5.tgz#7e710be52461255ae7fc0b3b9c2ece64299c10e6"
+  integrity sha512-y0CJ393DLxIIkksRup4nt+vSjxalbZBXnnXxYbviq/woj+zKa431zy0yT4LqyRKpFy9ahMIwxBnBwfwIoupqLQ==
   dependencies:
     "@apollo/react-common" "^3.1.4"
     "@wry/equality" "^0.1.9"
@@ -2330,18 +2330,18 @@ bs-axios@^0.0.43:
   dependencies:
     axios "^0.19.2"
 
-bs-css-emotion@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/bs-css-emotion/-/bs-css-emotion-1.1.0.tgz#0accc326fc2c9aff094582c766837373ec436ac1"
-  integrity sha512-G/y3HpM0NIgjkPEDT7fe3fWpP80ZhUpuiyDqL2esM9fueNiU+IcZ5S6g02tD4lp5UQZPCF+5KlzxOmSbKOhn4w==
+bs-css-emotion@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/bs-css-emotion/-/bs-css-emotion-1.2.0.tgz#44c0b74123744d231bc36ac821cd6269f29649a3"
+  integrity sha512-mcydi8OdmwvwutlEYYe1x4K9lGC3fYXxIeNcXvICesyZ8tWZQNIVbdSbUkL/gRSbz+vBcFKQDQ53TY/y7mIYQw==
   dependencies:
-    bs-css "12.1.0"
+    bs-css "12.2.0"
     emotion "^10.0.7"
 
-bs-css@12.1.0:
-  version "12.1.0"
-  resolved "https://registry.yarnpkg.com/bs-css/-/bs-css-12.1.0.tgz#8bea8970d31cd133bb81e2aeb78b187a807d003c"
-  integrity sha512-cKxVoPe1PtVTYAUYp81lleRwawd/OhdgDINx8V1/AOUuHkan6g23Jh6b+WACJXrOn4vVJmSgVdBfMqaeHMoi8g==
+bs-css@12.2.0:
+  version "12.2.0"
+  resolved "https://registry.yarnpkg.com/bs-css/-/bs-css-12.2.0.tgz#926e758d7f95c02f516505ecdcd855e1d9dcb2a0"
+  integrity sha512-JDaJAc8XKYZA05G8xVuDhB184yGKgNajdUloPC+OK+J8gGTnv8pfrhWKsFFKry87eJN4kKHhgsbXaN5U70g+3Q==
 
 bs-let@^0.1.14:
   version "0.1.16"
