@@ -76,3 +76,75 @@ func TestEncodeDecodeBytes(t *testing.T) {
 		t.Errorf(`Incorrect decoded fifth bytes, expected "%s" got "%s" `, fifthBytes, decodedBytes)
 	}
 }
+
+func TestEncodeDecodeString(t *testing.T) {
+	// Declare strings to use to encode/decode
+	firstString := "BAND"
+	secondString := "BTC"
+	thirdString := "ETH"
+	fourthString := ""
+	fifthString := "!@#$%^&*(ERTEYRUTIKJ!$#@%^&*&("
+
+	encoder := NewBorshEncoder()
+
+	// Test strings returned from encode functions
+	returnString := encoder.EncodeString(firstString)
+	if bytes.Compare(returnString, []byte(firstString)) == 1 {
+		t.Errorf(`Incorrect return first string, expected "%s" got "%s" `, firstString, returnString)
+	}
+	returnString = encoder.EncodeString(secondString)
+	if bytes.Compare(returnString, []byte(secondString)) == 1 {
+		t.Errorf(`Incorrect return second string, expected "%s" got "%s" `, firstString, returnString)
+	}
+	returnString = encoder.EncodeString(thirdString)
+	if bytes.Compare(returnString, []byte(thirdString)) == 1 {
+		t.Errorf(`Incorrect return third string, expected "%s" got "%s" `, firstString, returnString)
+	}
+	returnString = encoder.EncodeString(fourthString)
+	if bytes.Compare(returnString, []byte(thirdString)) == 1 {
+		t.Errorf(`Incorrect return fourth string, expected "%s" got "%s" `, firstString, returnString)
+	}
+	returnString = encoder.EncodeString(fifthString)
+	if bytes.Compare(returnString, []byte(fifthString)) == 1 {
+		t.Errorf(`Incorrect return fifth string, expected "%s" got "%s" `, firstString, returnString)
+	}
+
+	decoder := NewBorshDecoder(encoder.data)
+
+	// Test strings returned when passing encoded data into decoder
+	decodedString, err :=decoder.DecodeString()
+	if err != nil {
+		t.Errorf(`Incorrect decoded error type, expected "%v" got "%v" `, nil, err)
+	}
+	if decodedString != firstString {
+		t.Errorf(`Incorrect decoded first string, expected "%s" got "%s" `, firstString, decodedString)
+	}
+	decodedString, err =decoder.DecodeString()
+	if err != nil {
+		t.Errorf(`Incorrect decoded error type, expected "%v" got "%v" `, nil, err)
+	}
+	if decodedString != secondString {
+		t.Errorf(`Incorrect decoded second string, expected "%s" got "%s" `, secondString, decodedString)
+	}
+	decodedString, err =decoder.DecodeString()
+	if err != nil {
+		t.Errorf(`Incorrect decoded error type, expected "%v" got "%v" `, nil, err)
+	}
+	if decodedString != thirdString {
+		t.Errorf(`Incorrect decoded third string, expected "%s" got "%s" `, thirdString, decodedString)
+	}
+	decodedString, err =decoder.DecodeString()
+	if err != nil {
+		t.Errorf(`Incorrect decoded error type, expected "%v" got "%v" `, nil, err)
+	}
+	if decodedString != fourthString {
+		t.Errorf(`Incorrect decoded fourth string, expected "%s" got "%s" `, fourthString, decodedString)
+	}
+	decodedString, err =decoder.DecodeString()
+	if err != nil {
+		t.Errorf(`Incorrect decoded error type, expected "%v" got "%v" `, nil, err)
+	}
+	if decodedString != fifthString {
+		t.Errorf(`Incorrect decoded fourth string, expected "%s" got "%s" `, fifthString, decodedString)
+	}
+}
