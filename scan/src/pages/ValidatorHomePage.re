@@ -90,7 +90,7 @@ let renderBody = (rank, validator: ValidatorSub.t, bondedTokenCount) => {
   let commission = validator.commission;
   let uptime = validator.nodeStatus.uptime;
 
-  <TBody key={rank |> string_of_int}>
+  <TBody key={validator.operatorAddress |> Address.toOperatorBech32}>
     <div className=Styles.fullWidth>
       <Row>
         <Col size=0.8 alignSelf=Col.Start>
@@ -208,15 +208,15 @@ let make = () =>
     let (currentTime, setCurrentTime) = React.useState(getCurrentDay);
 
     React.useEffect0(() => {
-      let timeOutId = Js.Global.setInterval(() => setPrevDayTime(getPrevDay), 60_000);
-      let currentTimeTimeoutId =
-        Js.Global.setInterval(() => setCurrentTime(getCurrentDay), 60_000);
-      Some(
-        () => {
-          Js.Global.clearInterval(timeOutId);
-          Js.Global.clearInterval(currentTimeTimeoutId);
-        },
-      );
+      let timeOutID =
+        Js.Global.setInterval(
+          () => {
+            setPrevDayTime(getPrevDay);
+            setCurrentTime(getCurrentDay);
+          },
+          60_000,
+        );
+      Some(() => {Js.Global.clearInterval(timeOutID)});
     });
 
     let pageSize = 10;
