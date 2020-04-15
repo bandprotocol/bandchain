@@ -227,6 +227,310 @@ module Msg = {
       };
   };
 
+  module CreateClient = {
+    type t = {
+      address: Address.t,
+      clientID: string,
+      chainID: string,
+      trustingPeriod: MomentRe.Duration.t,
+      unbondingPeriod: MomentRe.Duration.t,
+    };
+    let decode = json => {
+      JsonUtils.Decode.{
+        address: json |> field("address", string) |> Address.fromBech32,
+        clientID: json |> field("client_id", string),
+        chainID: "band-consumer",
+        trustingPeriod:
+          (json |> field("trusting_period", float)) /. 1_000_000. |> MomentRe.durationMillis,
+        unbondingPeriod:
+          (json |> field("unbonding_period", float)) /. 1_000_000. |> MomentRe.durationMillis,
+      };
+    };
+  };
+
+  module UpdateClient = {
+    type t = {
+      address: Address.t,
+      clientID: string,
+      chainID: string,
+      validatorHash: Hash.t,
+      prevValidatorHash: Hash.t,
+    };
+    let decode = json => {
+      JsonUtils.Decode.{
+        address: json |> field("address", string) |> Address.fromBech32,
+        clientID: json |> field("client_id", string),
+        chainID: "band-consumer",
+        validatorHash:
+          "88A40098ACD2B9DDBD81E1397217BD0BC6D5B90C86D3614927B2CCDF4A3023BD" |> Hash.fromBase64,
+        prevValidatorHash:
+          "88A40098ACD2B9DDBD81E1397217BD0BC6D5B90C86D3614927B2CCDF4A3023BD" |> Hash.fromBase64,
+      };
+    };
+  };
+
+  module SubmitClientMisbehaviour = {
+    type t = {
+      address: Address.t,
+      clientID: string,
+      chainID: string,
+      validatorHash: Hash.t,
+    };
+    let decode = json => {
+      JsonUtils.Decode.{
+        address: json |> field("address", string) |> Address.fromBech32,
+        clientID: json |> field("client_id", string),
+        chainID: "band-consumer",
+        validatorHash:
+          "88A40098ACD2B9DDBD81E1397217BD0BC6D5B90C86D3614927B2CCDF4A3023BD" |> Hash.fromBase64,
+      };
+    };
+  };
+
+  module Packet = {
+    type t = {
+      sender: Address.t,
+      data: string,
+      sequence: int,
+      sourcePort: string,
+      sourceChannel: string,
+      destinationPort: string,
+      destinationChannel: string,
+      timeoutHeight: int,
+      chainID: string,
+    };
+    let decode = json => {
+      Js.Console.log(json);
+      JsonUtils.Decode.{
+        sender: json |> field("signer", string) |> Address.fromBech32,
+        data: json |> at(["packet", "data"], string) |> Js.String.toUpperCase,
+        sequence: json |> at(["packet", "sequence"], int),
+        sourcePort: json |> at(["packet", "source_port"], string),
+        sourceChannel: json |> at(["packet", "source_channel"], string),
+        destinationPort: json |> at(["packet", "destination_port"], string),
+        destinationChannel: json |> at(["packet", "destination_channel"], string),
+        timeoutHeight: json |> at(["packet", "timeout_height"], int),
+        chainID: "band-consumer",
+      };
+    };
+  };
+
+  module Acknowledgement = {
+    type t = {
+      sender: Address.t,
+      sequence: int,
+      sourcePort: string,
+      sourceChannel: string,
+      destinationPort: string,
+      destinationChannel: string,
+      timeoutHeight: int,
+      acknowledgement: string,
+      chainID: string,
+    };
+    let decode = json =>
+      JsonUtils.Decode.{
+        sender: json |> field("address", string) |> Address.fromBech32,
+        sequence: 999,
+        sourcePort: "gjdojfpjfp",
+        sourceChannel: "gjdojfpjfp",
+        destinationPort: "gjdojfpjfp",
+        destinationChannel: "gjdojfpjfp",
+        timeoutHeight: 12345,
+        acknowledgement: "iKQAmKzSud29geE5che9C8bVuQyG02FJJ7LM...",
+        chainID: "band-consumer",
+      };
+  };
+
+  module Timeout = {
+    type t = {
+      sender: Address.t,
+      sequence: int,
+      sourcePort: string,
+      sourceChannel: string,
+      destinationPort: string,
+      destinationChannel: string,
+      timeoutHeight: int,
+      nextSequenceReceive: int,
+      chainID: string,
+    };
+    let decode = json =>
+      JsonUtils.Decode.{
+        sender: json |> field("signer", string) |> Address.fromBech32,
+        sequence: json |> at(["packet", "sequence"], int),
+        sourcePort: json |> at(["packet", "source_port"], string),
+        sourceChannel: json |> at(["packet", "source_channel"], string),
+        destinationPort: json |> at(["packet", "destination_port"], string),
+        destinationChannel: json |> at(["packet", "destination_channel"], string),
+        timeoutHeight: json |> at(["packet", "timeout_height"], int),
+        chainID: "band-consumer",
+        nextSequenceReceive: json |> at(["packet", "next_sequence_receive"], int),
+      };
+  };
+
+  module ConnectionOpenInit = {
+    type t = {
+      signer: Address.t,
+      chainID: string,
+      connectionID: string,
+      clientID: string,
+      consensusHeight: ID.Block.t,
+    };
+    let decode = json =>
+      JsonUtils.Decode.{
+        signer: json |> field("signer", string) |> Address.fromBech32,
+        clientID: json |> field("client_id", string),
+        chainID: "band-consumer",
+        connectionID: json |> field("connection_id", string),
+        consensusHeight: json |> field("consensus_height", ID.Block.fromJson),
+      };
+  };
+
+  module ConnectionOpenTry = {
+    type t = {
+      signer: Address.t,
+      chainID: string,
+      connectionID: string,
+      clientID: string,
+      consensusHeight: int,
+    };
+    let decode = json =>
+      JsonUtils.Decode.{
+        signer: json |> field("signer", string) |> Address.fromBech32,
+        clientID: json |> field("client_id", string),
+        chainID: "band-consumer",
+        connectionID: json |> field("connection_id", string),
+        consensusHeight: json |> field("consensus_height", int),
+      };
+  };
+
+  module ConnectionOpenAck = {
+    type t = {
+      signer: Address.t,
+      chainID: string,
+      connectionID: string,
+      consensusHeight: ID.Block.t,
+    };
+    let decode = json =>
+      JsonUtils.Decode.{
+        signer: json |> field("signer", string) |> Address.fromBech32,
+        chainID: "band-consumer",
+        connectionID: json |> field("connection_id", string),
+        consensusHeight: json |> field("consensus_height", ID.Block.fromJson),
+      };
+  };
+
+  module ConnectionOpenConfirm = {
+    type t = {
+      signer: Address.t,
+      chainID: string,
+      connectionID: string,
+    };
+    let decode = json =>
+      JsonUtils.Decode.{
+        signer: json |> field("signer", string) |> Address.fromBech32,
+        chainID: "band-consumer",
+        connectionID: json |> field("connection_id", string),
+      };
+  };
+
+  module ChannelOpenInit = {
+    type t = {
+      signer: Address.t,
+      chainID: string,
+      portID: string,
+      channelID: string,
+    };
+    let decode = json => {
+      JsonUtils.Decode.{
+        signer: json |> field("signer", string) |> Address.fromBech32,
+        chainID: "band-consumer",
+        portID: json |> field("port_id", string),
+        channelID: json |> field("channel_id", string),
+      };
+    };
+  };
+
+  module ChannelOpenTry = {
+    type t = {
+      signer: Address.t,
+      chainID: string,
+      portID: string,
+      channelID: string,
+    };
+    let decode = json => {
+      JsonUtils.Decode.{
+        signer: json |> field("signer", string) |> Address.fromBech32,
+        chainID: "band-consumer",
+        portID: json |> field("port_id", string),
+        channelID: json |> field("channel_id", string),
+      };
+    };
+  };
+
+  module ChannelOpenAck = {
+    type t = {
+      signer: Address.t,
+      chainID: string,
+      portID: string,
+      channelID: string,
+    };
+    let decode = json =>
+      JsonUtils.Decode.{
+        signer: json |> field("signer", string) |> Address.fromBech32,
+        chainID: "band-consumer",
+        portID: json |> field("port_id", string),
+        channelID: json |> field("channel_id", string),
+      };
+  };
+
+  module ChannelOpenConfirm = {
+    type t = {
+      signer: Address.t,
+      chainID: string,
+      portID: string,
+      channelID: string,
+    };
+    let decode = json =>
+      JsonUtils.Decode.{
+        signer: json |> field("signer", string) |> Address.fromBech32,
+        chainID: "band-consumer",
+        portID: json |> field("port_id", string),
+        channelID: json |> field("channel_id", string),
+      };
+  };
+
+  module ChannelCloseInit = {
+    type t = {
+      signer: Address.t,
+      chainID: string,
+      portID: string,
+      channelID: string,
+    };
+    let decode = json =>
+      JsonUtils.Decode.{
+        signer: json |> field("signer", string) |> Address.fromBech32,
+        chainID: "band-consumer",
+        portID: json |> field("port_id", string),
+        channelID: json |> field("channel_id", string),
+      };
+  };
+
+  module ChannelCloseConfirm = {
+    type t = {
+      signer: Address.t,
+      chainID: string,
+      portID: string,
+      channelID: string,
+    };
+    let decode = json =>
+      JsonUtils.Decode.{
+        signer: json |> field("signer", string) |> Address.fromBech32,
+        chainID: "band-consumer",
+        portID: json |> field("port_id", string),
+        channelID: json |> field("channel_id", string),
+      };
+  };
+
   module FailMessage = {
     type t = {
       sender: Address.t,
@@ -252,6 +556,22 @@ module Msg = {
     | RemoveOracleAddress(RemoveOracleAddress.t)
     | CreateValidator(CreateValidator.t)
     | EditValidator(EditValidator.t)
+    | CreateClient(CreateClient.t)
+    | UpdateClient(UpdateClient.t)
+    | SubmitClientMisbehaviour(SubmitClientMisbehaviour.t)
+    | ConnectionOpenInit(ConnectionOpenInit.t)
+    | ConnectionOpenTry(ConnectionOpenTry.t)
+    | ConnectionOpenAck(ConnectionOpenAck.t)
+    | ConnectionOpenConfirm(ConnectionOpenConfirm.t)
+    | ChannelOpenInit(ChannelOpenInit.t)
+    | ChannelOpenTry(ChannelOpenTry.t)
+    | ChannelOpenAck(ChannelOpenAck.t)
+    | ChannelOpenConfirm(ChannelOpenConfirm.t)
+    | ChannelCloseInit(ChannelCloseInit.t)
+    | ChannelCloseConfirm(ChannelCloseConfirm.t)
+    | Packet(Packet.t)
+    | Acknowledgement(Acknowledgement.t)
+    | Timeout(Timeout.t)
     | FailMessage(FailMessage.t);
 
   let getCreator = msg => {
@@ -268,7 +588,23 @@ module Msg = {
     | CreateValidator(validator) => validator.delegatorAddress
     | EditValidator(validator) => validator.sender
     | FailMessage(fail) => fail.sender
-    | Unknown => "" |> Address.fromHex
+    | CreateClient(client) => client.address
+    | UpdateClient(client) => client.address
+    | SubmitClientMisbehaviour(client) => client.address
+    | ConnectionOpenInit(connection) => connection.signer
+    | ConnectionOpenTry(connection) => connection.signer
+    | ConnectionOpenAck(connection) => connection.signer
+    | ConnectionOpenConfirm(connection) => connection.signer
+    | ChannelOpenInit(channel) => channel.signer
+    | ChannelOpenTry(channel) => channel.signer
+    | ChannelOpenAck(channel) => channel.signer
+    | ChannelOpenConfirm(channel) => channel.signer
+    | ChannelCloseInit(channel) => channel.signer
+    | ChannelCloseConfirm(channel) => channel.signer
+    | Packet(packet) => packet.sender
+    | Acknowledgement(ack) => ack.sender
+    | Timeout(timeout) => timeout.sender
+    | _ => "" |> Address.fromHex
     };
   };
 
@@ -286,6 +622,24 @@ module Msg = {
       | "remove_oracle_address" => RemoveOracleAddress(json |> RemoveOracleAddress.decode)
       | "create_validator" => CreateValidator(json |> CreateValidator.decode)
       | "edit_validator" => EditValidator(json |> EditValidator.decode)
+      | "create_client" => CreateClient(json |> CreateClient.decode)
+      | "update_client" => UpdateClient(json |> UpdateClient.decode)
+      | "submit_client_misbehaviour" =>
+        SubmitClientMisbehaviour(json |> SubmitClientMisbehaviour.decode)
+      | "connection_open_init" => ConnectionOpenInit(json |> ConnectionOpenInit.decode)
+      | "connection_open_try" => ConnectionOpenTry(json |> ConnectionOpenTry.decode)
+      | "connection_open_ack" => ConnectionOpenAck(json |> ConnectionOpenAck.decode)
+      | "connection_open_confirm" => ConnectionOpenConfirm(json |> ConnectionOpenConfirm.decode)
+      | "channel_open_init" => ChannelOpenInit(json |> ChannelOpenInit.decode)
+      | "channel_open_try" => ChannelOpenTry(json |> ChannelOpenTry.decode)
+      | "channel_open_ack" => ChannelOpenAck(json |> ChannelOpenAck.decode)
+      | "channel_open_confirm" => ChannelOpenConfirm(json |> ChannelOpenConfirm.decode)
+      | "channel_close_init" => ChannelCloseInit(json |> ChannelCloseInit.decode)
+      | "channel_close_confirm" => ChannelCloseConfirm(json |> ChannelCloseConfirm.decode)
+      | "ics04/opaque" => Packet(json |> Packet.decode)
+      | "ics04/timeout" => Timeout(json |> Timeout.decode)
+      // TODO: handle case correctly
+      | "acknowledgement" => Acknowledgement(json |> Acknowledgement.decode)
       | _ => Unknown
       }
     );
@@ -298,7 +652,7 @@ module Msg = {
     [];
   };
 
-  let decodeActions = json =>
+  let decodeActions = json => {
     JsonUtils.Decode.(
       switch (json |> field("status", string)) {
       | "success" => json |> field("messages", list(decodeAction))
@@ -306,28 +660,7 @@ module Msg = {
       | _ => json |> field("messages", decodeUnknowStatus)
       }
     );
-
-  let getRoute = msg =>
-    switch (msg) {
-    | Send(account) =>
-      Some(Route.AccountIndexPage(account.fromAddress, Route.AccountTransactions))
-    | CreateDataSource(dataSource) => Some(dataSource.id |> ID.DataSource.getRoute)
-    | EditDataSource(dataSource) => Some(dataSource.id |> ID.DataSource.getRoute)
-    | CreateOracleScript(oracleScript) => Some(oracleScript.id |> ID.OracleScript.getRoute)
-    | EditOracleScript(oracleScript) => Some(oracleScript.id |> ID.OracleScript.getRoute)
-    | Request(request) => Some(request.id |> ID.Request.getRoute)
-    | Report(report) => Some(report.requestID |> ID.Request.getRoute)
-    | AddOracleAddress(account) =>
-      Some(Route.AccountIndexPage(account.validator, Route.AccountTransactions))
-    | RemoveOracleAddress(account) =>
-      Some(Route.AccountIndexPage(account.validator, Route.AccountTransactions))
-    | CreateValidator(validator) =>
-      Some(Route.ValidatorIndexPage(validator.validatorAddress, Route.Delegators))
-    | EditValidator(validator) =>
-      Some(Route.ValidatorIndexPage(validator.sender, Route.Delegators))
-    | FailMessage(_) => None
-    | Unknown => None
-    };
+  };
 };
 
 type t = {

@@ -21,5 +21,6 @@ members = [
     "chaintests/moresilly",
     "chaintests/silly",
     "chaintests/get_env",
+    "chaintests/gold_price",
     "chaindebugtests/allocate",
 ]
