@@ -42,7 +42,7 @@ let toExternal =
 module MultiConfig = [%graphql
   {|
   subscription OracleScripts($limit: Int!, $offset: Int!) {
-    oracle_scripts(limit: $limit, offset: $offset) @bsRecord {
+    oracle_scripts(limit: $limit, offset: $offset, order_by: {last_updated: desc}) @bsRecord {
       id @bsDecoder(fn: "ID.OracleScript.fromJson")
       owner @bsDecoder(fn: "Address.fromBech32")
       name
