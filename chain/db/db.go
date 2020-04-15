@@ -13,6 +13,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
+	"github.com/cosmos/cosmos-sdk/x/distribution"
 	dist "github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/evidence"
 	"github.com/cosmos/cosmos-sdk/x/gov"
@@ -31,6 +32,7 @@ type BandDB struct {
 	tx  *gorm.DB
 	ctx sdk.Context
 
+	DistrKeeper   distribution.Keeper
 	StakingKeeper staking.Keeper
 	OracleKeeper  oracle.Keeper
 	IBCKeeper     *ibc.Keeper
@@ -67,6 +69,7 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 	db.Exec(`CREATE VIEW delegations_view AS
 			SELECT CAST(shares AS DECIMAL) * CAST(tokens AS DECIMAL) / CAST(delegator_shares AS DECIMAL) as amount,
 			CAST(shares AS DECIMAL) /  CAST(delegator_shares AS DECIMAL) * 100 as share_percentage,
+			CAST(shares AS DECIMAL) * CAST(current_reward AS DECIMAL) /  CAST(delegator_shares AS DECIMAL) + (CAST(current_ratio AS DECIMAL) - CAST(last_ratio AS DECIMAL)) * CAST(shares AS DECIMAL) as reward,
 			validator_address,
 			delegator_address
 			FROM delegations JOIN validators ON validator_address = operator_address;
@@ -436,6 +439,10 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		}
 	case dist.MsgSetWithdrawAddress:
 	case dist.MsgWithdrawDelegatorReward:
+		err := b.handleMsgWithdrawDelegatorReward(msg)
+		if err != nil {
+			return nil, err
+		}
 	case dist.MsgWithdrawValidatorCommission:
 	case gov.MsgDeposit:
 	case gov.MsgSubmitProposal:
@@ -509,7 +516,7 @@ func (b *BandDB) GetInvolvedAccountsFromTx(tx auth.StdTx) []sdk.AccAddress {
 			involvedAccounts = append(involvedAccounts, msg.DelegatorAddress)
 		case dist.MsgSetWithdrawAddress:
 		case dist.MsgWithdrawDelegatorReward:
-			involvedAccounts = append(involvedAccounts, msg.DelegatorAddress)
+			involvedAccounts = append(involvedAccounts, b.DistrKeeper.GetDelegatorWithdrawAddr(b.ctx, msg.DelegatorAddress))
 		case dist.MsgWithdrawValidatorCommission:
 			involvedAccounts = append(involvedAccounts, sdk.AccAddress(msg.ValidatorAddress))
 		case gov.MsgDeposit:
