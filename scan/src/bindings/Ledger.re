@@ -34,37 +34,23 @@ let getApp = () => {
 };
 
 let getAddress = () => {
-  getApp()
-  |> Js.Promise.then_(app => {
-       //  TODO: remove hard-coded path later
-       let path = [|44, 118, 4, 0, 2|];
-       let prefix = "cosmos";
-       let responsePromise = getAddressAndPubKey(app, path, prefix);
-       let%Promise response = responsePromise;
-       Js.Console.log(response.bech32_address);
+  let%Promise app = getApp();
 
-       Js.Promise.resolve();
-     })
-  |> Js.Promise.catch(e => {
-       Js.Console.log2("failed", e);
-       Js.Promise.resolve();
-     });
+  // TODO: remove hard-coded later
+  let path = [|44, 118, 4, 0, 2|];
+  let prefix = "cosmos";
+  let responsePromise = getAddressAndPubKey(app, path, prefix);
+  let%Promise response = responsePromise;
+  Js.Promise.resolve(response.bech32_address);
 };
 
 let signExampleTx = () => {
-  getApp()
-  |> Js.Promise.then_(app => {
-       //  TODO: remove hard-coded path later
-       let path = [|44, 118, 0, 0, 0|];
-       let message = {f|{"account_number":"6571","chain_id":"cosmoshub-2","fee":{"amount":[{"amount":"5000","denom":"uatom"}],"gas":"200000"},"memo":"Delegated with Ledger from union.market","msgs":[{"type":"cosmos-sdk/MsgDelegate","value":{"amount":{"amount":"1000000","denom":"uatom"},"delegator_address":"cosmos102hty0jv2s29lyc4u0tv97z9v298e24t3vwtpl","validator_address":"cosmosvaloper1grgelyng2v6v3t8z87wu3sxgt9m5s03xfytvz7"}}],"sequence":"0"}|f};
-       let responsePromise = sign(app, path, message);
-       let%Promise response = responsePromise;
-       Js.Console.log(response);
+  let%Promise app = getApp();
 
-       Js.Promise.resolve();
-     })
-  |> Js.Promise.catch(e => {
-       Js.Console.log2("failed", e);
-       Js.Promise.resolve();
-     });
+  //  TODO: remove hard-coded path later
+  let path = [|44, 118, 0, 0, 0|];
+  let message = {f|{"account_number":"6571","chain_id":"cosmoshub-2","fee":{"amount":[{"amount":"5000","denom":"uatom"}],"gas":"200000"},"memo":"Delegated with Ledger from union.market","msgs":[{"type":"cosmos-sdk/MsgDelegate","value":{"amount":{"amount":"1000000","denom":"uatom"},"delegator_address":"cosmos102hty0jv2s29lyc4u0tv97z9v298e24t3vwtpl","validator_address":"cosmosvaloper1grgelyng2v6v3t8z87wu3sxgt9m5s03xfytvz7"}}],"sequence":"0"}|f};
+  let responsePromise = sign(app, path, message);
+  let%Promise response = responsePromise;
+  Js.Promise.resolve(response);
 };
