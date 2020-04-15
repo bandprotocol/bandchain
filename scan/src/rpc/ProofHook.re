@@ -12,6 +12,6 @@ module Proof = {
 };
 
 let get = (requestId: ID.Request.t) => {
-  let json = AxiosHooks.use({j|bandchain/proof/$requestId|j});
-  json |> Belt.Option.map(_, Proof.decodeProof);
+  let (json, reload) = AxiosHooks.useWithReload({j|bandchain/proof/$requestId|j});
+  (json |> Belt.Option.map(_, Proof.decodeProof), reload);
 };

@@ -356,7 +356,7 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		if err != nil {
 			return nil, err
 		}
-		jsonMap["dataSourceID"] = dataSourceID
+		jsonMap["data_source_id"] = dataSourceID
 	case oracle.MsgEditDataSource:
 		err = b.handleMsgEditDataSource(txHash, msg, events)
 		if err != nil {
@@ -371,7 +371,7 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		if err != nil {
 			return nil, err
 		}
-		jsonMap["oracleScriptID"] = oracleScriptID
+		jsonMap["oracle_script_id"] = oracleScriptID
 	case oracle.MsgEditOracleScript:
 		err = b.handleMsgEditOracleScript(txHash, msg, events)
 		if err != nil {
@@ -394,8 +394,8 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 			return nil, err
 		}
 
-		jsonMap["oracleScriptName"] = oracleScript.Name
-		jsonMap["requestID"] = requestID
+		jsonMap["oracle_script_name"] = oracleScript.Name
+		jsonMap["request_id"] = requestID
 	case oracle.MsgReportData:
 		err = b.handleMsgReportData(txHash, msg, events)
 		if err != nil {
@@ -403,10 +403,10 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		}
 	case oracle.MsgAddOracleAddress:
 		val, _ := b.StakingKeeper.GetValidator(b.ctx, msg.Validator)
-		jsonMap["validatorMoniker"] = val.Description.Moniker
+		jsonMap["validator_moniker"] = val.Description.Moniker
 	case oracle.MsgRemoveOracleAddress:
 		val, _ := b.StakingKeeper.GetValidator(b.ctx, msg.Validator)
-		jsonMap["validatorMoniker"] = val.Description.Moniker
+		jsonMap["validator_moniker"] = val.Description.Moniker
 	case bank.MsgSend:
 	case bank.MsgMultiSend:
 	case staking.MsgCreateValidator:

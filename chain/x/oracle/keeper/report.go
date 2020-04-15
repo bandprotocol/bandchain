@@ -18,12 +18,14 @@ func (k Keeper) AddReport(
 		return err
 	}
 
-	if request.ResolveStatus != types.Open {
-		return sdkerrors.Wrapf(types.ErrInvalidState,
-			"AddReport: Request ID %d: Resolve status (%d) is not Open (%d).",
-			requestID, request.ResolveStatus, types.Open,
-		)
-	}
+	// TODO: Make sure we handle this correctly. We basically want to allow reporters to report
+	// even after a request is resolved so they get to keep their stats.
+	// if request.ResolveStatus != types.Open {
+	// 	return sdkerrors.Wrapf(types.ErrInvalidState,
+	// 		"AddReport: Request ID %d: Resolve status (%d) is not Open (%d).",
+	// 		requestID, request.ResolveStatus, types.Open,
+	// 	)
+	// }
 	if request.ExpirationHeight < ctx.BlockHeight() {
 		return sdkerrors.Wrapf(types.ErrInvalidState,
 			"AddReport: Request ID %d: Request already expired at height %d. Current height is %d.",

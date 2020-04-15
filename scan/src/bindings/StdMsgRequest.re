@@ -9,6 +9,7 @@ type request_value_t = {
   requestedValidatorCount: string,
   sufficientValidatorCount: string,
   sender: string,
+  clientID: string,
 };
 
 type msg_t = {
@@ -33,7 +34,7 @@ type t = {
 
 let create =
     (
-      ~oracleScriptID,
+      ID.OracleScript.ID(oracleScriptID),
       ~calldata,
       ~requestedValidatorCount,
       ~sufficientValidatorCount,
@@ -53,6 +54,7 @@ let create =
           requestedValidatorCount: requestedValidatorCount |> string_of_int,
           sufficientValidatorCount: sufficientValidatorCount |> string_of_int,
           sender: sender |> Address.toBech32,
+          clientID: "",
         },
       },
     |],

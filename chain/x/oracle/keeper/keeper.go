@@ -67,6 +67,25 @@ func (k Keeper) GetParams(ctx sdk.Context) types.Params {
 	)
 }
 
+// GetRequestBeginID TODO
+func (k Keeper) GetRequestBeginID(ctx sdk.Context) types.RequestID {
+	var requestBeginID int64
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.RequestBeginStoreKey)
+	if bz == nil {
+		return types.RequestID(1)
+	}
+	k.cdc.MustUnmarshalBinaryLengthPrefixed(bz, &requestBeginID)
+	return types.RequestID(requestBeginID)
+}
+
+// SetRequestBeginID TODO
+func (k Keeper) SetRequestBeginID(ctx sdk.Context, id types.RequestID) {
+	store := ctx.KVStore(k.storeKey)
+	bz := k.cdc.MustMarshalBinaryLengthPrefixed(id)
+	store.Set(types.RequestBeginStoreKey, bz)
+}
+
 // GetRequestCount returns the current number of all requests ever exist.
 func (k Keeper) GetRequestCount(ctx sdk.Context) int64 {
 	var requestNumber int64

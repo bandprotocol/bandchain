@@ -11,7 +11,7 @@
     "@glennsl/bs-json": "^5.0.2",
     "axios": "^0.19.2",
     "axios-hook": "^0.0.6",
-    "axios-hooks": "^1.9.0",
+    "axios-hooks": "^1.10.0",
     "bech32": "^1.1.3",
     "borsh": "^0.2.6",
     "bs-axios": "^0.0.43",
@@ -22,6 +22,7 @@
     "clipboard-copy": "^3.1.0",
     "js-sha256": "^0.9.0",
     "moment": "^2.24.0",
+    "parcel-plugin-custom-dist-structure": "^1.1.3",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-highlight": "^0.12.0",
@@ -42,5 +43,17 @@
     "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.10.3"
+  },
+  "customDistStructure": {
+    "config": {
+      "assets": [
+        ".js",
+        ".css",
+        ".jpg",
+        ".svg",
+        ".png",
+        ".gif"
+      ]
+    }
   }
 }

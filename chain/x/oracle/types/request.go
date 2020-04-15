@@ -10,23 +10,23 @@ const (
 	Open ResolveStatus = iota
 	Success
 	Failure
+	Expired
 )
 
 // Request is a data structure that stores the detail of a request to an oracle script.
 type Request struct {
-	OracleScriptID           OracleScriptID   `json:"oracleScriptID"`
+	OracleScriptID           OracleScriptID   `json:"oracle_script_id"`
 	Calldata                 []byte           `json:"calldata"`
-	RequestedValidators      []sdk.ValAddress `json:"requestedValidators"`
-	SufficientValidatorCount int64            `json:"sufficientValidatorCount"`
-	ReceivedValidators       []sdk.ValAddress `json:"receivedValidators"`
-	RequestHeight            int64            `json:"requestHeight"`
-	RequestTime              int64            `json:"requestTime"`
-	ExpirationHeight         int64            `json:"expirationHeight"`
-	ResolveStatus            ResolveStatus    `json:"resolveStatus"`
-	ClientID                 string           `json:"clientID"`
+	RequestedValidators      []sdk.ValAddress `json:"requested_validators"`
+	SufficientValidatorCount int64            `json:"sufficient_validator_count"`
+	ReceivedValidators       []sdk.ValAddress `json:"received_validators"`
+	RequestHeight            int64            `json:"request_height"`
+	RequestTime              int64            `json:"request_time"`
+	ExpirationHeight         int64            `json:"expiration_height"`
+	ClientID                 string           `json:"client_id"`
 
-	SourcePort    string `json:"soucePort"`
-	SourceChannel string `json:"sourceChannel"`
+	SourcePort    string `json:"source_port"`
+	SourceChannel string `json:"source_channel"`
 }
 
 // NewRequest creates a new Request instance.
@@ -48,7 +48,6 @@ func NewRequest(
 		RequestHeight:            requestHeight,
 		RequestTime:              requestTime,
 		ExpirationHeight:         expirationHeight,
-		ResolveStatus:            Open,
 		SourcePort:               "",
 		SourceChannel:            "",
 		ClientID:                 clientID,
