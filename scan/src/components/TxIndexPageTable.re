@@ -625,6 +625,7 @@ let renderConnectionVariant = (msg: TxSub.Msg.t, common: TxSub.Msg.ConnectionCom
            <Text value="CLIENT ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
            <Text value=clientID code=true />
          </div>
+         <VSpacing size=Spacing.md />
          <div className=Styles.topicContainer>
            <Text value="CONSENSUS HEIGHT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
            <TypeID.Block id=consensusHeight />
@@ -636,6 +637,7 @@ let renderConnectionVariant = (msg: TxSub.Msg.t, common: TxSub.Msg.ConnectionCom
            <Text value="CLIENT ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
            <Text value=clientID code=true />
          </div>
+         <VSpacing size=Spacing.md />
          <div className=Styles.topicContainer>
            <Text value="CONSENSUS HEIGHT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
            <TypeID.Block id=consensusHeight />
