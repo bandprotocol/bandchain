@@ -3,9 +3,9 @@
 //! TODO
 use crate::oei;
 
-pub fn load_average<T>(external_id: i64) -> T
+fn load_input<T>(external_id: i64) -> Vec<T>
 where
-    T: std::str::FromStr + num::Num + num::NumCast + std::marker::Copy,
+    T: std::str::FromStr,
 {
     let mut vals: Vec<T> = Vec::new();
     for idx in 0..oei::get_requested_validator_count() {
@@ -15,6 +15,14 @@ where
             None => (),
         }
     }
+    return vals;
+}
+
+pub fn load_average<T>(external_id: i64) -> T
+where
+    T: std::str::FromStr + num::Num + num::NumCast + std::marker::Copy,
+{
+    let vals = load_input(external_id);
     if vals.len() == 0 {
         T::zero()
     } else {
@@ -45,15 +53,7 @@ pub fn load_median<T>(external_id: i64) -> Option<T>
 where
     T: std::str::FromStr + std::cmp::PartialOrd + std::marker::Copy + num::Num + num::NumCast,
 {
-    let mut vals: Vec<T> = Vec::new();
-    for idx in 0..oei::get_requested_validator_count() {
-        let external_data = oei::get_external_data(external_id, idx);
-        match external_data.and_then(|x| x.parse::<T>().ok()) {
-            Some(v) => vals.push(v),
-            None => (),
-        }
-    }
-
+    let mut vals = load_input(external_id);
     if vals.len() == 0 {
         None
     } else {
