@@ -1,12 +1,12 @@
 module Styles = {
   open Css;
 
-  let main = (w, h) =>
+  let main = (w, h, r) =>
     style([
       display(`flex),
       width(`px(w)),
       height(`px(h)),
-      borderRadius(`px(4)),
+      borderRadius(`px(r)),
       backgroundColor(Colors.blueGray2),
       overflow(`hidden),
       position(`relative),
@@ -43,6 +43,6 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~width, ~height) => {
-  <div className={Styles.main(width, height)} />;
+let make = (~width, ~height, ~radius=4) => {
+  <div className={Styles.main(width, height, radius)} />;
 };
