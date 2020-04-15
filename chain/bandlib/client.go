@@ -35,9 +35,9 @@ type BandStatefulClient struct {
 
 // NewBandStatefulClient creates new instance of BandStatefulClient.
 func NewBandStatefulClient(
-	nodeURI string, privKey crypto.PrivKey, msgCap, maximumMsgPerTx int, memo string,
+	nodeURI string, privKey crypto.PrivKey, msgCap, maximumMsgPerTx int, memo string, chainID string,
 ) (BandStatefulClient, error) {
-	provider, err := NewBandProvider(nodeURI, privKey)
+	provider, err := NewBandProvider(nodeURI, privKey, chainID)
 	if err != nil {
 		return BandStatefulClient{}, err
 	}
