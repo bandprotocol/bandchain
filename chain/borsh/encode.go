@@ -60,7 +60,7 @@ func (encoder *BorshEncoder) EncodeSigned16(value int16) []byte {
 }
 
 // EncodeSigned32 takes a `int32` variable and encodes it into a byte array
-func (encoder *BorshEncoder) EncodeSigned32(value uint32) []byte {
+func (encoder *BorshEncoder) EncodeSigned32(value int32) []byte {
 	uintValue := uint32(value)
 	return encoder.EncodeU32(uintValue)
 }
@@ -73,6 +73,7 @@ func (encoder *BorshEncoder) EncodeSigned64(value int64) []byte {
 
 // EncodeBytes takes a `[]byte` variable and encodes it into a byte array
 func (encoder *BorshEncoder) EncodeBytes(value []byte) []byte {
+	encoder.EncodeU32(uint32(len(value)))
 	encoder.data = append(encoder.data, value...)
 	return value
 }
@@ -80,6 +81,7 @@ func (encoder *BorshEncoder) EncodeBytes(value []byte) []byte {
 // EncodeString takes a `string` variable and encodes it into a byte array
 func (encoder *BorshEncoder) EncodeString(value string) []byte {
 	stringBytes := []byte(value)
+	encoder.EncodeU32(uint32(len(stringBytes)))
 	encoder.data = append(encoder.data, stringBytes...)
 	return stringBytes
 }
