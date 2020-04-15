@@ -90,8 +90,8 @@ func TestAddReportFailed(t *testing.T) {
 
 	// Send report on resolved request.
 	request := newDefaultRequest()
-	request.ResolveStatus = types.Success
-	keeper.SetRequest(ctx, 1, request)
+	// request.ResolveStatus = types.Success
+	// keeper.SetRequest(ctx, 1, request)
 
 	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata1")))
 	keeper.SetRawDataRequest(ctx, 1, 10, types.NewRawDataRequest(2, []byte("calldata2")))
