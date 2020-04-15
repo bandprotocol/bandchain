@@ -439,6 +439,10 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		}
 	case dist.MsgSetWithdrawAddress:
 	case dist.MsgWithdrawDelegatorReward:
+		err := b.handleMsgWithdrawDelegatorReward(msg)
+		if err != nil {
+			return nil, err
+		}
 	case dist.MsgWithdrawValidatorCommission:
 	case gov.MsgDeposit:
 	case gov.MsgSubmitProposal:
@@ -512,7 +516,7 @@ func (b *BandDB) GetInvolvedAccountsFromTx(tx auth.StdTx) []sdk.AccAddress {
 			involvedAccounts = append(involvedAccounts, msg.DelegatorAddress)
 		case dist.MsgSetWithdrawAddress:
 		case dist.MsgWithdrawDelegatorReward:
-			involvedAccounts = append(involvedAccounts, msg.DelegatorAddress)
+			involvedAccounts = append(involvedAccounts, b.DistrKeeper.GetDelegatorWithdrawAddr(b.ctx, msg.DelegatorAddress))
 		case dist.MsgWithdrawValidatorCommission:
 			involvedAccounts = append(involvedAccounts, sdk.AccAddress(msg.ValidatorAddress))
 		case gov.MsgDeposit:
