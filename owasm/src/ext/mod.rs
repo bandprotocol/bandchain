@@ -71,6 +71,8 @@ where
     let mut count = 1;
     let len = vec.len();
 
+    // Find majority by Boyer–Moore majority vote algorithm
+    // https://en.wikipedia.org/wiki/Boyer%E2%80%93Moore_majority_vote_algorithm
     for idx in 1..len {
         if candidate == vec[idx] {
             count = count + 1;
