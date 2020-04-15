@@ -16,6 +16,7 @@ import (
 	dist "github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/evidence"
 	"github.com/cosmos/cosmos-sdk/x/gov"
+	"github.com/cosmos/cosmos-sdk/x/ibc"
 	connection "github.com/cosmos/cosmos-sdk/x/ibc/03-connection"
 	channel "github.com/cosmos/cosmos-sdk/x/ibc/04-channel"
 	tclient "github.com/cosmos/cosmos-sdk/x/ibc/07-tendermint/types"
@@ -32,6 +33,7 @@ type BandDB struct {
 
 	StakingKeeper staking.Keeper
 	OracleKeeper  oracle.Keeper
+	IBCKeeper     ibc.Keeper
 }
 
 func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
@@ -59,12 +61,14 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		&RawDataRequests{},
 		&Report{},
 		&ReportDetail{},
+		&Packet{},
 	)
 
-	db.Exec(`CREATE VIEW delegations_view AS 
-			SELECT CAST(shares AS DECIMAL) * CAST(tokens AS DECIMAL) / CAST(delegator_shares AS DECIMAL) as amount, 
-			validator_address, 
-			delegator_address 
+	db.Exec(`CREATE VIEW delegations_view AS
+			SELECT CAST(shares AS DECIMAL) * CAST(tokens AS DECIMAL) / CAST(delegator_shares AS DECIMAL) as amount,
+			CAST(shares AS DECIMAL) /  CAST(delegator_shares AS DECIMAL) * 100 as share_percentage,
+			validator_address,
+			delegator_address
 			FROM delegations JOIN validators ON validator_address = operator_address;
 	`)
 
@@ -229,6 +233,13 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		"RESTRICT",
 	)
 
+	db.Model(&Packet{}).AddForeignKey(
+		"block_height",
+		"blocks(height)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
 	for key, value := range metadata {
 		err := db.Where(Metadata{Key: key}).
 			Assign(Metadata{Value: value}).
@@ -345,7 +356,7 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		if err != nil {
 			return nil, err
 		}
-		jsonMap["dataSourceID"] = dataSourceID
+		jsonMap["data_source_id"] = dataSourceID
 	case oracle.MsgEditDataSource:
 		err = b.handleMsgEditDataSource(txHash, msg, events)
 		if err != nil {
@@ -360,7 +371,7 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		if err != nil {
 			return nil, err
 		}
-		jsonMap["oracleScriptID"] = oracleScriptID
+		jsonMap["oracle_script_id"] = oracleScriptID
 	case oracle.MsgEditOracleScript:
 		err = b.handleMsgEditOracleScript(txHash, msg, events)
 		if err != nil {
@@ -383,8 +394,8 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 			return nil, err
 		}
 
-		jsonMap["oracleScriptName"] = oracleScript.Name
-		jsonMap["requestID"] = requestID
+		jsonMap["oracle_script_name"] = oracleScript.Name
+		jsonMap["request_id"] = requestID
 	case oracle.MsgReportData:
 		err = b.handleMsgReportData(txHash, msg, events)
 		if err != nil {
@@ -392,10 +403,10 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		}
 	case oracle.MsgAddOracleAddress:
 		val, _ := b.StakingKeeper.GetValidator(b.ctx, msg.Validator)
-		jsonMap["validatorMoniker"] = val.Description.Moniker
+		jsonMap["validator_moniker"] = val.Description.Moniker
 	case oracle.MsgRemoveOracleAddress:
 		val, _ := b.StakingKeeper.GetValidator(b.ctx, msg.Validator)
-		jsonMap["validatorMoniker"] = val.Description.Moniker
+		jsonMap["validator_moniker"] = val.Description.Moniker
 	case bank.MsgSend:
 	case bank.MsgMultiSend:
 	case staking.MsgCreateValidator:

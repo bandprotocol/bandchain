@@ -1,7 +1,7 @@
 module Styles = {
   open Css;
 
-  let container = style([display(`flex), cursor(`pointer)]);
+  let container = w => style([display(`flex), cursor(`pointer), width(w)]);
 };
 
 [@react.component]
@@ -12,9 +12,10 @@ let make =
       ~weight=Text.Regular,
       ~size=Text.Md,
       ~underline=false,
+      ~width=`auto,
     ) => {
   <div
-    className={Css.merge([Styles.container])}
+    className={Styles.container(width)}
     onClick={_ => Route.redirect(Route.ValidatorIndexPage(validatorAddress, ProposedBlocks))}>
     <Text
       value=moniker

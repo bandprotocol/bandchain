@@ -63,7 +63,29 @@ func (k Keeper) GetParams(ctx sdk.Context) types.Params {
 		k.GetParam(ctx, types.KeyMaxNameLength),
 		k.GetParam(ctx, types.KeyMaxDescriptionLength),
 		k.GetParam(ctx, types.KeyGasPerRawDataRequestPerValidator),
+		k.GetParam(ctx, types.KeyExpirationBlockCount),
+		k.GetParam(ctx, types.KeyExecuteGas),
+		k.GetParam(ctx, types.KeyPrepareGas),
 	)
+}
+
+// GetRequestBeginID TODO
+func (k Keeper) GetRequestBeginID(ctx sdk.Context) types.RequestID {
+	var requestBeginID int64
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.RequestBeginStoreKey)
+	if bz == nil {
+		return types.RequestID(1)
+	}
+	k.cdc.MustUnmarshalBinaryLengthPrefixed(bz, &requestBeginID)
+	return types.RequestID(requestBeginID)
+}
+
+// SetRequestBeginID TODO
+func (k Keeper) SetRequestBeginID(ctx sdk.Context, id types.RequestID) {
+	store := ctx.KVStore(k.storeKey)
+	bz := k.cdc.MustMarshalBinaryLengthPrefixed(id)
+	store.Set(types.RequestBeginStoreKey, bz)
 }
 
 // GetRequestCount returns the current number of all requests ever exist.

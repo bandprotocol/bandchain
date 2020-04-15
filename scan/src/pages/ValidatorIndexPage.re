@@ -46,11 +46,12 @@ type value_row_t =
   | VAddress(Address.t)
   | VValidatorAddress(Address.t)
   | VText(string)
+  | VDetail(string)
   | VExtLink(string)
   | VCode(string);
 
 let kvRow = (k, v: value_row_t) => {
-  <Row>
+  <Row alignItems=`flexStart>
     <Col size=1.>
       <div className={Styles.fullWidth(`row)}> <Text value=k weight=Text.Thin /> </div>
     </Col>
@@ -61,6 +62,7 @@ let kvRow = (k, v: value_row_t) => {
          | VAddress(address) => <AddressRender address />
          | VValidatorAddress(address) => <AddressRender address validator=true />
          | VText(value) => <Text value nowrap=true />
+         | VDetail(value) => <Text value align=Text.Right />
          | VExtLink(value) =>
            <a href=value target="_blank" rel="noopener">
              <div className=Styles.underline> <Text value nowrap=true /> </div>
@@ -76,12 +78,9 @@ let kvRow = (k, v: value_row_t) => {
 let make = (~address, ~hashtag: Route.validator_tab_t) =>
   {
     let validatorSub = ValidatorSub.get(address);
+    let bondedTokenCountSub = ValidatorSub.getTotalBondedAmount();
     let%Sub validator = validatorSub;
-
-    //TODO: Update to use real value from sub
-    let totalPower = 100.00;
-
-    Js.Console.log(totalPower);
+    let%Sub bondedTokenCount = bondedTokenCountSub;
 
     <>
       <Row justify=Row.Between>
@@ -130,7 +129,8 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
         {kvRow(
            "VOTING POWER",
            VCode(
-             (totalPower > 0. ? validator.votingPower *. 100. /. totalPower : 0.)->Format.fPretty
+             (bondedTokenCount > 0. ? validator.votingPower *. 100. /. bondedTokenCount : 0.)
+             ->Format.fPretty
              ++ "% ("
              ++ validator.votingPower->Format.fPretty
              ++ " BAND)",
@@ -143,13 +143,13 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
         <VSpacing size=Spacing.lg />
         {kvRow("WEBSITE", VExtLink(validator.website))}
         <VSpacing size=Spacing.lg />
-        {kvRow("DETAILS", VText(validator.details))}
+        {kvRow("DETAILS", VDetail(validator.details))}
         <div className=Styles.longLine />
         <div className={Styles.fullWidth(`row)}>
           <Col size=1.>
             <Text value="NODE STATUS" size=Text.Lg weight=Text.Semibold />
             <VSpacing size=Spacing.lg />
-            {kvRow("UPTIME", VCode(validator.uptime->Format.fPretty ++ "%"))}
+            {kvRow("UPTIME", VCode(validator.nodeStatus.uptime->Format.fPretty ++ "%"))}
             <VSpacing size=Spacing.lg />
             {kvRow(
                "AVG. RESPONSE TIME",
@@ -181,8 +181,8 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
         |]
         currentRoute={Route.ValidatorIndexPage(address, hashtag)}>
         {switch (hashtag) {
-         | ProposedBlocks => <ProposedBlocksTable />
-         | Delegators => <DelegatorsTable />
+         | ProposedBlocks => <ProposedBlocksTable consensusAddress={validator.consensusAddress} />
+         | Delegators => <DelegatorsTable address />
          | Reports => <ReportsTable address />
          }}
       </Tab>

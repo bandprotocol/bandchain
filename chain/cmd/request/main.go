@@ -17,16 +17,13 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 )
 
-const (
-	prepareGas = 10000
-	executeGas = 150000
-)
-
 // File to send new request to bandchain
 func main() {
 	config := sdk.GetConfig()
 	app.SetBech32AddressPrefixesAndBip44CoinType(config)
 	config.Seal()
+
+	chainID := "bandchain"
 
 	// Get environment variable
 	privS, ok := os.LookupEnv("PRIVATE_KEY")
@@ -44,7 +41,7 @@ func main() {
 	var priv secp256k1.PrivKeySecp256k1
 	copy(priv[:], privB)
 
-	tx, err := bandlib.NewBandStatefulClient(nodeURI, priv, 10, 5, "Request script txs")
+	tx, err := bandlib.NewBandStatefulClient(nodeURI, priv, 10, 5, "Request script txs", chainID)
 	if err != nil {
 		panic(err)
 	}
@@ -122,7 +119,7 @@ func main() {
 				{
 					fmt.Println(tx.SendTransaction(
 						oracle.NewMsgRequestData(
-							1, []byte("BTC"), 4, 4, 100000, prepareGas, executeGas, "request BTC", tx.Sender(),
+							1, []byte("BTC"), 4, 4, "request BTC", tx.Sender(),
 						), 0, "", "",
 					))
 				}
@@ -130,7 +127,7 @@ func main() {
 				{
 					fmt.Println(tx.SendTransaction(
 						oracle.NewMsgRequestData(
-							1, []byte("ETH"), 4, 4, 100000, prepareGas, executeGas, "request ETH", tx.Sender(),
+							1, []byte("ETH"), 4, 4, "request ETH", tx.Sender(),
 						), 1000000, "", "",
 					))
 				}
@@ -143,7 +140,7 @@ func main() {
 			go func() {
 				txRes, err := tx.SendTransaction(
 					oracle.NewMsgRequestData(
-						1, []byte("BTC"), 4, 4, 100000, prepareGas, executeGas, "request BTC", tx.Sender(),
+						1, []byte("BTC"), 4, 4, "request BTC", tx.Sender(),
 					), 1000000, "", "",
 				)
 
@@ -155,7 +152,7 @@ func main() {
 			go func() {
 				txRes, err := tx.SendTransaction(
 					oracle.NewMsgRequestData(
-						1, []byte("ETH"), 4, 4, 100000, prepareGas, executeGas, "request ETH", tx.Sender(),
+						1, []byte("ETH"), 4, 4, "request ETH", tx.Sender(),
 					), 1000000, "", "",
 				)
 
@@ -184,7 +181,7 @@ func main() {
 			go func() {
 				txRes, err := tx.SendTransaction(
 					oracle.NewMsgRequestData(
-						1, []byte("BTC"), 1, 1, 100000, prepareGas, executeGas, "request BTC", tx.Sender(),
+						1, []byte("BTC"), 1, 1, "request BTC", tx.Sender(),
 					), 1000000, "", "",
 				)
 
@@ -196,7 +193,7 @@ func main() {
 			go func() {
 				txRes, err := tx.SendTransaction(
 					oracle.NewMsgRequestData(
-						1, []byte("ETH"), 1, 1, 100000, prepareGas, executeGas, "request ETH", tx.Sender(),
+						1, []byte("ETH"), 1, 1, "request ETH", tx.Sender(),
 					), 1000000, "", "",
 				)
 
@@ -239,7 +236,7 @@ func main() {
 			))
 
 			fmt.Println(tx.SendTransaction(
-				oracle.NewMsgRequestData(2, []byte("calldata"), 1, 1, 100, prepareGas, executeGas, "clientID", tx.Sender()),
+				oracle.NewMsgRequestData(2, []byte("calldata"), 1, 1, "clientID", tx.Sender()),
 				1000000, "", "",
 			))
 

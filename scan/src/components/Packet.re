@@ -15,12 +15,23 @@ module Styles = {
   let statusContainer = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
   let logo = style([width(`px(20))]);
+
+  let maxWidth = w => style([maxWidth(`px(w))]);
 };
 
 [@react.component]
-let make = (~packet: IBCSub.packet_t) => {
+let make = (~packet: IBCSub.packet_t, ~oracleScriptID: ID.OracleScript.t) => {
+  // TODO: If we can get the schema out of IBCSub directly then this sub is not necessary any more.
+  let schemaSub = OracleScriptCodeSub.getSchemaByOracleScriptID(oracleScriptID);
+
   switch (packet) {
   | IBCSub.Request(request) =>
+    // TODO: support loading state, no data later
+    let outputKVsOpt =
+      switch (schemaSub) {
+      | Data(schema) => Borsh.decode(schema, "Input", request.calldata)
+      | _ => None
+      };
     <>
       <div className=Styles.topicContainer>
         <Text value="REQUEST ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
@@ -36,25 +47,40 @@ let make = (~packet: IBCSub.packet_t) => {
         </div>
       </div>
       <VSpacing size=Spacing.lg />
-      <div className=Styles.hFlex>
-        <Text value="CALLDATA" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-        <HSpacing size=Spacing.md />
-        <CopyButton data={request.calldata} />
-      </div>
-      <VSpacing size=Spacing.md />
-      // TODO: Mock calldata
-      <KVTable
-        tableWidth=470
-        rows=[
-          [KVTable.Value("crypto_symbol"), KVTable.Value("BTC")],
-          [KVTable.Value("aggregation_method"), KVTable.Value("mean")],
-          [
-            KVTable.Value("data_sources"),
-            KVTable.Value("Binance v1, coingecko v1, coinmarketcap v1, band-validator"),
-          ],
-        ]
-      />
-      <VSpacing size=Spacing.xl />
+      {let calldataHeadRender =
+         <div className=Styles.hFlex>
+           <Text value="CALLDATA" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+           <HSpacing size=Spacing.md />
+           <CopyButton data={request.calldata} />
+         </div>;
+       switch (outputKVsOpt) {
+       | Some(_) => calldataHeadRender
+       | None =>
+         <div className=Styles.topicContainer>
+           calldataHeadRender
+           <div className={Styles.maxWidth(250)}>
+             <Text value={request.calldata |> JsBuffer.toHex} code=true ellipsis=true block=true />
+           </div>
+         </div>
+       }}
+      {switch (outputKVsOpt) {
+       | Some(outputKVs) =>
+         <>
+           <VSpacing size=Spacing.md />
+           <KVTable
+             tableWidth=470
+             rows={
+               outputKVs
+               ->Belt_Array.map(({fieldName, fieldValue}) =>
+                   [KVTable.Value(fieldName), KVTable.Value(fieldValue)]
+                 )
+               ->Belt_List.fromArray
+             }
+           />
+           <VSpacing size=Spacing.xl />
+         </>
+       | None => <VSpacing size=Spacing.lg />
+       }}
       <div className=Styles.topicContainer>
         <Text
           value="REQUEST VALIDATOR COUNT"
@@ -74,17 +100,9 @@ let make = (~packet: IBCSub.packet_t) => {
         />
         <Text value={request.sufficientValidatorCount |> string_of_int} weight=Text.Bold />
       </div>
-      <VSpacing size=Spacing.md />
-      <div className=Styles.topicContainer>
-        <Text value="REPORT PERIOD" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-        <div className=Styles.hFlex>
-          <Text value={request.expiration |> string_of_int} weight=Text.Bold code=true />
-          <HSpacing size=Spacing.sm />
-          <Text value="Blocks" code=true />
-        </div>
-      </div>
-    </>
+    </>;
   | IBCSub.Response(response) =>
+    // TODO: support loading state, no data later
     <>
       <div className=Styles.topicContainer>
         <Text value="REQUEST ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
@@ -122,24 +140,48 @@ let make = (~packet: IBCSub.packet_t) => {
       </div>
       {switch (response.status, response.result) {
        | (IBCSub.Response.Success, Some(result)) =>
+         let outputKVsOpt =
+           switch (schemaSub) {
+           | Data(schema) => Borsh.decode(schema, "Output", result)
+           | _ => None
+           };
          <>
            <VSpacing size=Spacing.lg />
-           <div className=Styles.hFlex>
-             <Text value="CALLDATA" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-             <HSpacing size=Spacing.md />
-             <CopyButton data=result />
-           </div>
+           {let resultHeadRender =
+              <div className=Styles.hFlex>
+                <Text value="RESULT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+                <HSpacing size=Spacing.md />
+                <CopyButton data=result />
+              </div>;
+            switch (outputKVsOpt) {
+            | Some(_) => resultHeadRender
+            | None =>
+              <div className=Styles.topicContainer>
+                resultHeadRender
+                <div className={Styles.maxWidth(250)}>
+                  <Text value={result |> JsBuffer.toHex} code=true ellipsis=true block=true />
+                </div>
+              </div>
+            }}
            <VSpacing size=Spacing.md />
-           // TODO: Mock calldata
-           <KVTable
-             tableWidth=470
-             rows=[
-               [KVTable.Value("px"), KVTable.Value("70000")],
-               [KVTable.Value("timestamp"), KVTable.Value("1586319310")],
-             ]
-           />
-           <VSpacing size=Spacing.md />
-         </>
+           {switch (outputKVsOpt) {
+            | Some(outputKVs) =>
+              <>
+                <KVTable
+                  tableWidth=470
+                  rows={
+                    outputKVs
+                    ->Belt_Array.map(({fieldName, fieldValue}) =>
+                        [KVTable.Value(fieldName), KVTable.Value(fieldValue)]
+                      )
+                    ->Belt_List.fromArray
+                  }
+                />
+                <VSpacing size=Spacing.md />
+              </>
+            | None => <VSpacing size=Spacing.md />
+            }}
+         </>;
        | _ => React.null
        }}
     </>

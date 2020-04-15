@@ -1,8 +1,18 @@
-let extractFields: (string, string) => option(array((string, string))) = [%bs.raw
+type field_key_type_t = {
+  fieldName: string,
+  fieldType: string,
+};
+
+type field_key_value_t = {
+  fieldName: string,
+  fieldValue: string,
+};
+
+let extractFields: (string, string) => option(array(field_key_type_t)) = [%bs.raw
   {|
   function(_schema, cls) {
     try {
-      return JSON.parse(JSON.parse(_schema)[cls])["fields"]
+      return JSON.parse(JSON.parse(_schema)[cls])["fields"].map(([fieldName, fieldType]) => ({fieldName, fieldType}));
     } catch(err) {
       return undefined
     }
@@ -10,7 +20,7 @@ let extractFields: (string, string) => option(array((string, string))) = [%bs.ra
 |}
 ];
 
-let decode: (string, string, JsBuffer.t) => option(array((string, string))) = [%bs.raw
+let decode: (string, string, JsBuffer.t) => option(array(field_key_value_t)) = [%bs.raw
   {|
 function(_schema, cls, data) {
   const borsh = require('borsh')
@@ -40,7 +50,7 @@ function(_schema, cls, data) {
     let model = window[cls]
     let newValue = borsh.deserialize(schemaMap, model, data)
     return schemaMap.get(model).fields.map(([fieldName, _]) => {
-      return [fieldName, newValue[fieldName].toString()]
+      return {fieldName, fieldValue: newValue[fieldName].toString()};
     });
   } catch(err) {
     return undefined
@@ -49,7 +59,7 @@ function(_schema, cls, data) {
 |}
 ];
 
-let encode: (string, string, array((string, string))) => option(JsBuffer.t) = [%bs.raw
+let encode: (string, string, array(field_key_value_t)) => option(JsBuffer.t) = [%bs.raw
   {|
 function(_schema, cls, data) {
   const borsh = require('borsh')
@@ -83,10 +93,10 @@ function(_schema, cls, data) {
     if (!specs.fields) return undefined
 
     for (let i in data) {
-      let isFound = specs.fields.some(x => x[0] == data[i][0])
+      let isFound = specs.fields.some(x => x[0] == data[i].fieldName)
       if (!isFound) return undefined
 
-      rawValue[data[i][0]] = data[i][1]
+      rawValue[data[i].fieldName] = data[i].fieldValue
     }
     let value = new window[cls](rawValue)
 
@@ -112,9 +122,9 @@ type field_t = {
   varType: variable_t,
 };
 
-let parse = ((name, varType)) => {
+let parse = ({fieldName, fieldType}) => {
   let v =
-    switch (varType |> String.lowercase_ascii) {
+    switch (fieldType |> ChangeCase.camelCase) {
     | "string" => Some(String)
     | "u64" => Some(U64)
     | "u32" => Some(U32)
@@ -123,10 +133,10 @@ let parse = ((name, varType)) => {
     };
 
   let%Opt varType' = v;
-  Some({name, varType: varType'});
+  Some({name: fieldName, varType: varType'});
 };
 
-let declare = ({name, varType}) => {
+let declareSolidity = ({name, varType}) => {
   switch (varType) {
   | String => {j|string $name;|j}
   | U64 => {j|uint64 $name;|j}
@@ -135,7 +145,7 @@ let declare = ({name, varType}) => {
   };
 };
 
-let assign = ({name, varType}) => {
+let assignSolidity = ({name, varType}) => {
   switch (varType) {
   | String => {j|result.$name = string(data.decodeBytes());|j}
   | U64 => {j|result.$name = data.decodeU64();|j}
@@ -182,8 +192,76 @@ library ResultDecoder {
   let indent = "\n        ";
   Some(
     template(
-      fields |> Belt_Array.map(_, declare) |> Js.Array.joinWith(indent),
-      fields |> Belt_Array.map(_, assign) |> Js.Array.joinWith(indent),
+      fields |> Belt_Array.map(_, declareSolidity) |> Js.Array.joinWith(indent),
+      fields |> Belt_Array.map(_, assignSolidity) |> Js.Array.joinWith(indent),
+    ),
+  );
+};
+
+let declareGo = ({name, varType}) => {
+  let capitalizedName = name |> ChangeCase.pascalCase;
+  switch (varType) {
+  | String => {j|$capitalizedName string|j}
+  | U64 => {j|$capitalizedName uint64|j}
+  | U32 => {j|$capitalizedName uint32|j}
+  | U8 => {j|$capitalizedName uint8|j}
+  };
+};
+
+let assignGo = ({name, varType}) => {
+  switch (varType) {
+  | String => {j|$name, err := decoder.DecodeString()
+	if err != nil {
+		return Result{}, err
+	}|j}
+  | U64 => {j|$name, err := decoder.DecodeU64()
+	if err != nil {
+		return Result{}, err
+	}|j}
+  | U32 => {j|$name, err := decoder.DecodeU32()
+	if err != nil {
+		return Result{}, err
+	}|j}
+  | U8 => {j|$name, err := decoder.DecodeU8()
+	if err != nil {
+		return Result{}, err
+	}|j}
+  };
+};
+
+let resultGo = ({name}) => {
+  let capitalizedName = name |> ChangeCase.pascalCase;
+  {j|$capitalizedName: $name|j};
+};
+
+let generateGo = (packageName, schema, name) => {
+  let template = (structs, functions, results) => {j|package $packageName
+
+type Result struct {
+\t$structs
+}
+
+func DecodeResult(data []byte) (Result, error) {
+\tdecoder := NewBorshDecoder(data)
+
+\t$functions
+
+\tif !decoder.Finished() {
+\t\treturn Result{}, errors.New("Borsh: bytes left when decode result")
+\t}
+
+\treturn Result{
+\t\t$results
+\t}, nil
+}|j};
+
+  let%Opt fieldsPair = extractFields(schema, name);
+  let%Opt fields = fieldsPair |> Belt_Array.map(_, parse) |> optionsAll;
+  Some(
+    template(
+      fields |> Belt_Array.map(_, declareGo) |> Js.Array.joinWith("\n\t"),
+      fields |> Belt_Array.map(_, assignGo) |> Js.Array.joinWith("\n\t"),
+      fields |> Belt_Array.map(_, resultGo) |> Js.Array.joinWith("\n\t\t"),
     ),
   );
 };

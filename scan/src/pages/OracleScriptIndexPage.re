@@ -14,6 +14,8 @@ module Styles = {
       marginRight(`px(10)),
       backgroundColor(Colors.gray7),
     ]);
+
+  let withPadding = (h, v) => style([padding2(~h=`px(h), ~v=`px(v))]);
 };
 
 [@react.component]
@@ -25,31 +27,30 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) =>
       <Row justify=Row.Between>
         <Col>
           <div className=Styles.vFlex>
-
-              <img src=Images.oracleScriptLogo className=Styles.logo />
-              <Text
-                value="ORACLE SCRIPT"
-                weight=Text.Medium
-                size=Text.Md
-                spacing={Text.Em(0.06)}
-                height={Text.Px(15)}
-                nowrap=true
-                color=Colors.gray7
-                block=true
-              />
-            </div>
-            // <div className=Styles.seperatedLine />
-            // <TimeAgos
-            //   time={oracleScript.timestamp}
-            //   prefix="Last updated "
-            //   size=Text.Md
-            //   weight=Text.Thin
-            //   spacing={Text.Em(0.06)}
-            //   height={Text.Px(18)}
-            //   upper=true
-            // />
+            <img src=Images.oracleScriptLogo className=Styles.logo />
+            <Text
+              value="ORACLE SCRIPT"
+              weight=Text.Medium
+              size=Text.Md
+              spacing={Text.Em(0.06)}
+              height={Text.Px(15)}
+              nowrap=true
+              color=Colors.gray7
+              block=true
+            />
+          </div>
         </Col>
       </Row>
+      // <div className=Styles.seperatedLine />
+      // <TimeAgos
+      //   time={oracleScript.timestamp}
+      //   prefix="Last updated "
+      //   size=Text.Md
+      //   weight=Text.Thin
+      //   spacing={Text.Em(0.06)}
+      //   height={Text.Px(18)}
+      //   upper=true
+      // />
       <VSpacing size=Spacing.xl />
       <div className=Styles.vFlex>
         <TypeID.OracleScript id={oracleScript.id} position=TypeID.Title />
@@ -89,8 +90,13 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) =>
               oracleScriptID |> ID.OracleScript.getRouteWithTab(_, Route.OracleScriptExecute),
           },
           {
-            name: "CODE",
+            name: "OWASM CODE",
             route: oracleScriptID |> ID.OracleScript.getRouteWithTab(_, Route.OracleScriptCode),
+          },
+          {
+            name: "BRIDGE CODE",
+            route:
+              oracleScriptID |> ID.OracleScript.getRouteWithTab(_, Route.OracleScriptBridgeCode),
           },
           {
             name: "REQUESTS",
@@ -105,8 +111,10 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) =>
         |]
         currentRoute={oracleScriptID |> ID.OracleScript.getRouteWithTab(_, hashtag)}>
         {switch (hashtag) {
-         | OracleScriptExecute => <OracleScriptExecute code={oracleScript.codeHash} />
+         | OracleScriptExecute =>
+           <OracleScriptExecute id=oracleScriptID schemaOpt={oracleScript.schema} />
          | OracleScriptCode => <OracleScriptCode code={oracleScript.codeHash} />
+         | OracleScriptBridgeCode => <OracleScriptBridgeCode />
          | OracleScriptRequests => <OracleScriptRequestTable oracleScriptID />
          | OracleScriptRevisions => <OracleScriptRevisionTable id=oracleScriptID />
          }}

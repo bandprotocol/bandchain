@@ -40,7 +40,7 @@ func (b *BandDB) delegate(
 	err := b.UpdateValidator(
 		validatorAddress,
 		&Validator{
-			Tokens:          validator.Tokens.String(),
+			Tokens:          validator.Tokens.Uint64(),
 			DelegatorShares: validator.DelegatorShares.String(),
 		},
 	)
@@ -85,7 +85,7 @@ func (b *BandDB) undelegate(
 		return b.UpdateValidator(
 			validatorAddress,
 			&Validator{
-				Tokens:          validator.Tokens.String(),
+				Tokens:          validator.Tokens.Uint64(),
 				DelegatorShares: validator.DelegatorShares.String(),
 				Jailed:          validator.Jailed,
 			},

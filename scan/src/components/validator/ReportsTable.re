@@ -3,7 +3,7 @@ module Styles = {
 
   let vFlex = align => style([display(`flex), flexDirection(`row), alignItems(align)]);
 
-  let tableWrapper = style([padding2(~v=`px(9), ~h=`px(15))]);
+  let tableWrapper = style([padding2(~v=`px(20), ~h=`px(15))]);
 
   let icon = style([width(`px(80)), height(`px(80))]);
   let iconWrapper =
@@ -35,7 +35,7 @@ let make = (~address) =>
           address |> Address.toOperatorBech32;
         },
       );
-    let totalReportsSub = ReportSub.ValidatorReport.count();
+    let totalReportsSub = ReportSub.ValidatorReport.count(address |> Address.toOperatorBech32);
 
     let%Sub totalReports = totalReportsSub;
     let%Sub reports = reportsSub;
@@ -45,7 +45,7 @@ let make = (~address) =>
     <div className=Styles.tableWrapper>
       <Row>
         <HSpacing size={`px(25)} />
-        <Text value={reports |> Belt_Array.length |> string_of_int} weight=Text.Bold />
+        <Text value={totalReports |> string_of_int} weight=Text.Bold />
         <HSpacing size={`px(5)} />
         <Text value="Reports" />
       </Row>
@@ -205,6 +205,12 @@ let make = (~address) =>
                   </TBody>
                 })
               ->React.array}
+             <VSpacing size=Spacing.lg />
+             <Pagination
+               currentPage=page
+               pageCount
+               onPageChange={newPage => setPage(_ => newPage)}
+             />
            </>
          : <div className=Styles.iconWrapper>
              <VSpacing size={`px(30)} />
@@ -213,9 +219,6 @@ let make = (~address) =>
              <Text block=true value="NO REPORTS" weight=Text.Regular color=Colors.blue4 />
              <VSpacing size={`px(15)} />
            </div>}
-      <VSpacing size=Spacing.xl />
-      <VSpacing size=Spacing.sm />
-      <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
     </div>
     |> Sub.resolve;
   }

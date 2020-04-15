@@ -66,7 +66,7 @@ func NewDefaultGenesisState() GenesisState {
 		upgrade.ModuleName:  upgrade.AppModuleBasic{}.DefaultGenesis(cdc),
 		evidence.ModuleName: evidence.AppModuleBasic{}.DefaultGenesis(cdc),
 		transfer.ModuleName: transfer.AppModuleBasic{}.DefaultGenesis(cdc),
-		oracle.ModuleName:  oracle.AppModuleBasic{}.DefaultGenesis(cdc),
+		oracle.ModuleName:   oracle.AppModuleBasic{}.DefaultGenesis(cdc),
 	}
 }
 
@@ -80,7 +80,7 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 		{
 			"Coingecko script",
 			"The Script that queries crypto price from https://coingecko.com",
-			"./datasources/coingecko_price.sh",
+			"./datasources/coingecko_price.py",
 		},
 		{
 			"Crypto compare script",
@@ -96,6 +96,11 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			"Open weather",
 			"The script that queries current weather",
 			"./datasources/open_weather_map.sh",
+		},
+		{
+			"Gold price",
+			"The script that queries current gold price",
+			"./datasources/gold_price.sh",
 		},
 	}
 
@@ -130,6 +135,11 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			"Crypto price script (Borsh version)",
 			"Oracle script for getting an average crypto price from many sources encoding parameter by borsh.",
 			"./owasm/res/crypto_price_borsh.wasm",
+		},
+		{
+			"Gold price script",
+			"Oracle script for getting an average gold price in ATOM",
+			"./owasm/res/gold_price.wasm",
 		},
 	}
 	state.OracleScripts = make([]oracle.OracleScript, len(oracleScripts))

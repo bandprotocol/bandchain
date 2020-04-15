@@ -139,14 +139,6 @@ let renderRequest = (msg, request: TxSub.Msg.Request.t) => {
         <Text value={request.sufficientValidatorCount |> string_of_int} weight=Text.Bold />
       </div>
       <VSpacing size=Spacing.lg />
-      <div className=Styles.topicContainer>
-        <Text value="REPORT PERIOD" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-        <div className=Styles.hFlex>
-          <Text value={request.expiration |> string_of_int} weight=Text.Bold code=true />
-          <HSpacing size=Spacing.sm />
-          <Text value="Blocks" code=true />
-        </div>
-      </div>
       <VSpacing size=Spacing.lg />
     </Col>
     <Col> <HSpacing size=Spacing.md /> </Col>
@@ -685,7 +677,7 @@ let renderBody = (msg: TxSub.Msg.t) => {
   | CreateValidator(validator) => renderCreateValidator(msg, validator)
   | EditValidator(validator) => renderEditValidator(msg, validator)
   | FailMessage(_) => "Failed msg" |> React.string
-  | Unknown => React.null
+  | _ => React.null
   };
 };
 

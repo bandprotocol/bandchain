@@ -1,13 +1,13 @@
 module Styles = {
   open Css;
 
-  let main = (w, h) =>
+  let main = (w, h, r, colorBase, colorLighter) =>
     style([
       display(`flex),
       width(`px(w)),
       height(`px(h)),
-      borderRadius(`px(4)),
-      backgroundColor(Colors.blueGray2),
+      borderRadius(`px(r)),
+      backgroundColor(colorBase),
       overflow(`hidden),
       position(`relative),
       before([
@@ -16,16 +16,16 @@ module Styles = {
         left(`percent(-250.)),
         width(`percent(500.)),
         height(`percent(100.)),
-        backgroundColor(Colors.blueGray2),
+        backgroundColor(colorBase),
         backgroundImage(
           `linearGradient((
             `deg(90.),
             [
-              (`percent(0.), Colors.blueGray2),
-              (`percent(25.), Colors.blueGray2),
-              (`percent(50.), Colors.blueGray1),
-              (`percent(75.), Colors.blueGray2),
-              (`percent(100.), Colors.blueGray2),
+              (`percent(0.), colorBase),
+              (`percent(25.), colorBase),
+              (`percent(50.), colorLighter),
+              (`percent(75.), colorBase),
+              (`percent(100.), colorBase),
             ],
           )),
         ),
@@ -43,6 +43,7 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~width, ~height) => {
-  <div className={Styles.main(width, height)} />;
+let make =
+    (~width, ~height, ~radius=4, ~colorBase=Colors.blueGray2, ~colorLighter=Colors.blueGray1) => {
+  <div className={Styles.main(width, height, radius, colorBase, colorLighter)} />;
 };

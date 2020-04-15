@@ -41,10 +41,9 @@ func NewHandler(keeper Keeper) sdk.Handler {
 					return nil, err
 				}
 				newMsg := NewMsgRequestData(
-					requestData.OracleScriptID, calldata, requestData.RequestedValidatorCount,
-					requestData.SufficientValidatorCount, requestData.Expiration,
-					requestData.PrepareGas, requestData.ExecuteGas, requestData.ClientID,
-					sdk.AccAddress([]byte("NOT_IMPORTANT")),
+					requestData.OracleScriptID, calldata, requestData.AskCount,
+					requestData.MinCount, requestData.ClientID,
+					msg.Signer,
 				)
 				return handleMsgRequestData(
 					ctx, keeper, newMsg, msg.GetDestPort(), msg.GetDestChannel(),
@@ -145,7 +144,7 @@ func handleMsgRequestData(
 ) (*sdk.Result, error) {
 	id, err := keeper.AddRequest(
 		ctx, msg.OracleScriptID, msg.Calldata, msg.RequestedValidatorCount,
-		msg.SufficientValidatorCount, msg.Expiration, msg.ExecuteGas, msg.ClientID,
+		msg.SufficientValidatorCount, msg.ClientID,
 	)
 	// TODO: HACK AREA!
 	if len(ibcData) == 2 {
@@ -170,8 +169,10 @@ func handleMsgRequestData(
 		return nil, err
 	}
 
-	ctx.GasMeter().ConsumeGas(msg.PrepareGas, "PrepareRequest")
-	_, _, errOwasm := owasm.Execute(&env, script.Code, "prepare", msg.Calldata, msg.PrepareGas)
+	gasPrepare := keeper.GetParam(ctx, types.KeyPrepareGas)
+	ctx.GasMeter().ConsumeGas(gasPrepare, "PrepareRequest")
+	_, _, errOwasm := owasm.Execute(&env, script.Code, "prepare", msg.Calldata, 100000)
+
 	if errOwasm != nil {
 		return nil, sdkerrors.Wrapf(types.ErrBadWasmExecution,
 			"handleMsgRequestData: An error occurred while running Owasm prepare.",
