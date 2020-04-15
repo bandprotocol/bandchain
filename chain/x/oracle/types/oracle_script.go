@@ -6,12 +6,12 @@ import (
 
 // OracleScript is a type to store detail of oracle script.
 type OracleScript struct {
-	Owner         sdk.AccAddress `json:"owner"`       // Address authorized to edit this script.
-	Name          string         `json:"name"`        // Short string explaining this oracle script.
-	Description   string         `json:"description"` // Longer string explaining what this does.
-	Code          []byte         `json:"code"`        // Owasm bytecode to be run on-chain.
-	Schema        string         `json:"schema"`
-	SourceCodeURL string         `json:"source_code_url"`
+	Owner         sdk.AccAddress `json:"owner"`           // Address authorized to edit this script.
+	Name          string         `json:"name"`            // Short string explaining this oracle script.
+	Description   string         `json:"description"`     // Longer string explaining what this does.
+	Code          []byte         `json:"code"`            // Owasm bytecode to be run on-chain.
+	Schema        string         `json:"schema"`          // Schema outlining the script's input/output types
+	SourceCodeURL string         `json:"source_code_url"` // Source URL of the script
 }
 
 // NewOracleScript creates a new OracleScript instance.

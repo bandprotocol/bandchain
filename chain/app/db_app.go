@@ -132,8 +132,8 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 			time.Now(),
 			0,
 			nil,
-			"schema",
-			"SourceCodeURL",
+			oracleScript.Schema,
+			oracleScript.SourceCodeURL,
 		)
 		if err != nil {
 			panic(err)

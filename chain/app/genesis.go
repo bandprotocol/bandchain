@@ -122,24 +122,32 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 
 	// TODO: Find a better way to specify path to oracle scripts
 	oracleScripts := []struct {
-		name        string
-		description string
-		path        string
+		name          string
+		description   string
+		path          string
+		schema        string
+		sourceCodeURL string
 	}{
 		{
 			"Crypto price script",
 			"Oracle script for getting an average crypto price from many sources.",
 			"./owasm/res/crypto_price.wasm",
+			`{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }`,
+			`https://bandprotocol.com`,
 		},
 		{
 			"Crypto price script (Borsh version)",
 			"Oracle script for getting an average crypto price from many sources encoding parameter by borsh.",
 			"./owasm/res/crypto_price_borsh.wasm",
+			`{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }`,
+			`https://bandprotocol.com`,
 		},
 		{
 			"Gold price script",
 			"Oracle script for getting an average gold price in ATOM",
 			"./owasm/res/gold_price.wasm",
+			`{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }`,
+			`https://bandprotocol.com`,
 		},
 	}
 	state.OracleScripts = make([]oracle.OracleScript, len(oracleScripts))
@@ -153,8 +161,8 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			oracleScript.name,
 			oracleScript.description,
 			code,
-			"schema",
-			"sourceCodeURL",
+			oracleScript.schema,
+			oracleScript.sourceCodeURL,
 		)
 	}
 	return oracle.ModuleCdc.MustMarshalJSON(state)
