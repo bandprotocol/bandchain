@@ -62,10 +62,8 @@ func (k Keeper) AddNewRawDataRequest(
 		return err
 	}
 
-	if !k.CheckDataSourceExists(ctx, dataSourceID) {
-		return sdkerrors.Wrapf(types.ErrItemNotFound,
-			"AddNewRawDataRequest: Data source ID %d does not exist.", dataSourceID,
-		)
+	if !k.HasDataSource(ctx, dataSourceID) {
+		return sdkerrors.Wrapf(types.ErrDataSourceNotFound, "id: %d", dataSourceID)
 	}
 
 	if k.CheckRawDataRequestExists(ctx, requestID, externalID) {

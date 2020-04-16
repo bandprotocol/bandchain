@@ -32,10 +32,10 @@ func TestGetNextRequestID(t *testing.T) {
 
 func TestGetSetMaxDataSourceExecutableSize(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
-	keeper.SetParam(ctx, types.KeyMaxDataSourceExecutableSize, 1)
-	require.Equal(t, uint64(1), keeper.GetParam(ctx, types.KeyMaxDataSourceExecutableSize))
-	keeper.SetParam(ctx, types.KeyMaxDataSourceExecutableSize, 2)
-	require.Equal(t, uint64(2), keeper.GetParam(ctx, types.KeyMaxDataSourceExecutableSize))
+	keeper.SetParam(ctx, types.KeyMaxExecutableSize, 1)
+	require.Equal(t, uint64(1), keeper.GetParam(ctx, types.KeyMaxExecutableSize))
+	keeper.SetParam(ctx, types.KeyMaxExecutableSize, 2)
+	require.Equal(t, uint64(2), keeper.GetParam(ctx, types.KeyMaxExecutableSize))
 }
 
 func TestGetSetMaxOracleScriptCodeSize(t *testing.T) {
@@ -97,7 +97,7 @@ func TestGetSetGasPerRawDataRequestPerValidator(t *testing.T) {
 func TestGetSetParams(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
-	keeper.SetParam(ctx, types.KeyMaxDataSourceExecutableSize, 1)
+	keeper.SetParam(ctx, types.KeyMaxExecutableSize, 1)
 	keeper.SetParam(ctx, types.KeyMaxOracleScriptCodeSize, 1)
 	keeper.SetParam(ctx, types.KeyMaxCalldataSize, 1)
 	keeper.SetParam(ctx, types.KeyMaxDataSourceCountPerRequest, 1)
@@ -112,7 +112,7 @@ func TestGetSetParams(t *testing.T) {
 	keeper.SetParam(ctx, types.KeyPrepareGas, 10000)
 	require.Equal(t, types.NewParams(1, 1, 1, 1, 1, 1, 200000, 1, 1, 1000, 30, 100000, 10000), keeper.GetParams(ctx))
 
-	keeper.SetParam(ctx, types.KeyMaxDataSourceExecutableSize, 2)
+	keeper.SetParam(ctx, types.KeyMaxExecutableSize, 2)
 	keeper.SetParam(ctx, types.KeyMaxOracleScriptCodeSize, 2)
 	keeper.SetParam(ctx, types.KeyMaxCalldataSize, 2)
 	keeper.SetParam(ctx, types.KeyMaxDataSourceCountPerRequest, 2)
