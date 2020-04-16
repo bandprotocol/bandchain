@@ -89,11 +89,8 @@ let renderBody = (rank, validator: ValidatorSub.t, bondedTokenCount) => {
   let token = validator.tokens;
   let commission = validator.commission;
   let uptime = validator.nodeStatus.uptime;
-  // let allRequestCount =
-  //   validator.completedRequestCount + validator.missedRequestCount |> float_of_int;
-  // let reportRate = (validator.completedRequestCount |> float_of_int) /. allRequestCount *. 100.;
 
-  <TBody key={validator.operatorAddress |> Address.toBech32}>
+  <TBody key={validator.operatorAddress |> Address.toOperatorBech32}>
     <div className=Styles.fullWidth>
       <Row>
         <Col size=0.8 alignSelf=Col.Start>
@@ -188,10 +185,40 @@ let renderBody = (rank, validator: ValidatorSub.t, bondedTokenCount) => {
   // </Col>
 };
 
+let getPrevDay = _ => {
+  (
+    MomentRe.momentNow()
+    |> MomentRe.Moment.subtract(~duration=MomentRe.duration(1., `days))
+    |> MomentRe.Moment.toUnix
+    |> float_of_int
+  )
+  *. 1000.;
+};
+
+let getCurrentDay = _ => {
+  (MomentRe.momentNow() |> MomentRe.Moment.toUnix |> float_of_int) *. 1000.;
+};
+
 [@react.component]
 let make = () =>
   {
     let (page, setPage) = React.useState(_ => 1);
+
+    let (prevDayTime, setPrevDayTime) = React.useState(getPrevDay);
+    let (currentTime, setCurrentTime) = React.useState(getCurrentDay);
+
+    React.useEffect0(() => {
+      let timeOutID =
+        Js.Global.setInterval(
+          () => {
+            setPrevDayTime(getPrevDay);
+            setCurrentTime(getCurrentDay);
+          },
+          60_000,
+        );
+      Some(() => {Js.Global.clearInterval(timeOutID)});
+    });
+
     let pageSize = 10;
 
     let (isActive, setIsActive) = React.useState(_ => true);
@@ -201,11 +228,15 @@ let make = () =>
     // TODO: Update once bonding status is available
     let bondedValidatorCountSub = ValidatorSub.count();
     let bondedTokenCountSub = ValidatorSub.getTotalBondedAmount();
+    let avgBlockTimeSub = BlockSub.getAvgBlockTime(prevDayTime, currentTime);
+    let metadataSub = MetadataSub.use();
 
     let%Sub validators = validatorsSub;
     let%Sub validatorCount = validatorsCountSub;
     let%Sub bondedValidatorCount = bondedValidatorCountSub;
     let%Sub bondedTokenCount = bondedTokenCountSub;
+    let%Sub avgBlockTime = avgBlockTimeSub;
+    let%Sub metadata = metadataSub;
 
     let pageCount = Page.getPageCount(validatorCount, pageSize);
     let globalInfo = ValidatorSub.GlobalInfo.getGlobalInfo();
@@ -251,13 +282,13 @@ let make = () =>
           </Col>
           <Col size=0.9>
             <InfoHL
-              info={InfoHL.FloatWithSuffix(globalInfo.inflationRate, "  %")}
+              info={InfoHL.FloatWithSuffix(metadata.inflationRate *. 100., "  %", 2)}
               header="INFLATION RATE"
             />
           </Col>
           <Col size=0.51>
             <InfoHL
-              info={InfoHL.FloatWithSuffix(globalInfo.avgBlockTime, "  secs")}
+              info={InfoHL.FloatWithSuffix(avgBlockTime, "  secs", 2)}
               header="24 HOUR AVG BLOCK TIME"
             />
           </Col>
