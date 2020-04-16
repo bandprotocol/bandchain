@@ -97,7 +97,6 @@ let getStakeList = (delegatorAddress, ~page, ~pageSize, ()) => {
           (),
         ),
     );
-  Js.Console.log(result);
   result |> Sub.map(_, x => x##delegations_view);
 };
 
@@ -111,7 +110,6 @@ let getTotalStakeByDelegator = delegatorAddress => {
           (),
         ),
     );
-  Js.Console.log(result);
   let amountSub =
     result
     |> Sub.map(_, a =>
