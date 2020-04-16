@@ -8,8 +8,7 @@ import (
 
 // HasOracleScript checks if the oracle script of this ID exists in the storage.
 func (k Keeper) HasOracleScript(ctx sdk.Context, id types.OID) bool {
-	store := ctx.KVStore(k.storeKey)
-	return store.Has(types.OracleScriptStoreKey(id))
+	return ctx.KVStore(k.storeKey).Has(types.OracleScriptStoreKey(id))
 }
 
 // GetOracleScript returns the oracle script struct for the given ID or error if not exists.

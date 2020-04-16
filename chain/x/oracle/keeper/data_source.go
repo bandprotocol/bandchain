@@ -8,8 +8,7 @@ import (
 
 // HasDataSource checks if the data source of this ID exists in the storage.
 func (k Keeper) HasDataSource(ctx sdk.Context, id types.DID) bool {
-	store := ctx.KVStore(k.storeKey)
-	return store.Has(types.DataSourceStoreKey(id))
+	return ctx.KVStore(k.storeKey).Has(types.DataSourceStoreKey(id))
 }
 
 // GetDataSource returns the data source struct for the given ID or error if not exists.
