@@ -24,7 +24,7 @@ func (decoder *BorshDecoder) Finished() bool {
 	return decoder.offset == uint32(len(decoder.data))
 }
 
-// DecodeU8 deodes the input bytes and returns the corresponding
+// DecodeU8 decodes the input bytes and returns the corresponding
 // `uint8` value and any errors
 func (decoder *BorshDecoder) DecodeU8() (uint8, error) {
 	if uint32(len(decoder.data)) < decoder.offset+1 {
@@ -35,7 +35,7 @@ func (decoder *BorshDecoder) DecodeU8() (uint8, error) {
 	return val, nil
 }
 
-// DecodeU16 deodes the input bytes and returns the corresponding
+// DecodeU16 decodes the input bytes and returns the corresponding
 // `uint8` value and any errors
 func (decoder *BorshDecoder) DecodeU16() (uint16, error) {
 	if uint32(len(decoder.data)) < decoder.offset+2 {
@@ -46,7 +46,7 @@ func (decoder *BorshDecoder) DecodeU16() (uint16, error) {
 	return val, nil
 }
 
-// DecodeU32 deodes the input bytes and returns the corresponding
+// DecodeU32 decodes the input bytes and returns the corresponding
 // `uint32` value and any errors
 func (decoder *BorshDecoder) DecodeU32() (uint32, error) {
 	if uint32(len(decoder.data)) < decoder.offset+4 {
@@ -57,7 +57,7 @@ func (decoder *BorshDecoder) DecodeU32() (uint32, error) {
 	return val, nil
 }
 
-// DecodeU64 deodes the input bytes and returns the corresponding
+// DecodeU64 decodes the input bytes and returns the corresponding
 // `uint64` value and any errors
 func (decoder *BorshDecoder) DecodeU64() (uint64, error) {
 	if uint32(len(decoder.data)) < decoder.offset+8 {
@@ -68,50 +68,62 @@ func (decoder *BorshDecoder) DecodeU64() (uint64, error) {
 	return val, nil
 }
 
-// DecodeSigned8 deodes the input bytes and returns the corresponding signed
+// DecodeI8 decodes the input bytes and returns the corresponding signed
 // `int8` value and any errors
-func (decoder *BorshDecoder) DecodeSigned8() (int8, error) {
-	unsigned, _ := decoder.DecodeU8()
+func (decoder *BorshDecoder) DecodeI8() (int8, error) {
+	unsigned, err := decoder.DecodeU8()
+	if err != nil {
+		return 0, err
+	}
 	return int8(unsigned), nil
 }
 
-// DecodeSigned16 deodes the input bytes and returns the corresponding signed
+// DecodeI16 decodes the input bytes and returns the corresponding signed
 // `int16` value and any errors
-func (decoder *BorshDecoder) DecodeSigned16() (int16, error) {
-	unsigned, _ := decoder.DecodeU16()
+func (decoder *BorshDecoder) DecodeI16() (int16, error) {
+	unsigned, err := decoder.DecodeU16()
+	if err != nil {
+		return 0, err
+	}
 	return int16(unsigned), nil
 }
 
-// DecodeSigned32 deodes the input bytes and returns the corresponding signed
+// DecodeI32 decodes the input bytes and returns the corresponding signed
 // `int32` value and any errors
-func (decoder *BorshDecoder) DecodeSigned32() (int32, error) {
-	unsigned, _ := decoder.DecodeU32()
+func (decoder *BorshDecoder) DecodeI32() (int32, error) {
+	unsigned, err := decoder.DecodeU32()
+	if err != nil {
+		return 0, err
+	}
 	return int32(unsigned), nil
 }
 
-// DecodeSigned64 deodes the input bytes and returns the corresponding signed
+// DecodeI64 decodes the input bytes and returns the corresponding signed
 // `int64` value and any errors
-func (decoder *BorshDecoder) DecodeSigned64() (int64, error) {
-	unsigned, _ := decoder.DecodeU64()
+func (decoder *BorshDecoder) DecodeI64() (int64, error) {
+	unsigned, err := decoder.DecodeU64()
+	if err != nil {
+		return 0, err
+	}
 	return int64(unsigned), nil
 }
 
-// DecodeBytes deodes the input bytes and returns the corresponding
+// DecodeBytes decodes the input bytes and returns the corresponding
 // `[]bytes` slice and any errors
 func (decoder *BorshDecoder) DecodeBytes() ([]byte, error) {
 	length, err := decoder.DecodeU32()
 	if err != nil {
-		return []byte{}, err
+		return nil, err
 	}
 	if uint32(len(decoder.data)) < decoder.offset+length {
-		return []byte{}, errors.New("Borsh: out of range")
+		return nil, errors.New("Borsh: out of range")
 	}
 	val := decoder.data[decoder.offset : decoder.offset+uint32(length)]
 	decoder.offset += length
 	return val, nil
 }
 
-// DecodeString deodes the input bytes and returns the corresponding
+// DecodeString decodes the input bytes and returns the corresponding
 // `string` and any errors
 func (decoder *BorshDecoder) DecodeString() (string, error) {
 	length, err := decoder.DecodeU32()

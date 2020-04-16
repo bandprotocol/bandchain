@@ -143,108 +143,108 @@ func TestDecodeU64Error(t *testing.T) {
 	}
 }
 
-func TestDecodeSigned8Positive(t *testing.T) {
-	var expectedSigned64 int8 = 112
+func TestDecodeI8Positive(t *testing.T) {
+	var expectedI64 int8 = 112
 	decoder := getDecoder("70")
-	resultSigned8, err := decoder.DecodeSigned8()
+	resultI8, err := decoder.DecodeI8()
 
 	if err != nil {
 		t.Errorf(`Incorrect return error type: expected "%v" got "%v"`, nil, err)
 	}
-	if resultSigned8 != expectedSigned64 {
-		t.Errorf(`Incorrect decoded int8: expected "%d" got "%d"`, expectedSigned64, resultSigned8)
+	if resultI8 != expectedI64 {
+		t.Errorf(`Incorrect decoded int8: expected "%d" got "%d"`, expectedI64, resultI8)
 	}
 }
 
-func TestDecodeSigned8Negative(t *testing.T) {
-	var expectedSigned64 int8 = -2
+func TestDecodeI8Negative(t *testing.T) {
+	var expectedI64 int8 = -2
 	decoder := getDecoder("FE")
-	resultSigned8, err := decoder.DecodeSigned8()
+	resultI8, err := decoder.DecodeI8()
 
 	if err != nil {
 		t.Errorf(`Incorrect return error type: expected "%v" got "%v"`, nil, err)
 	}
-	if resultSigned8 != expectedSigned64 {
-		t.Errorf(`Incorrect decoded int8: expected "%d" got "%d"`, expectedSigned64, resultSigned8)
+	if resultI8 != expectedI64 {
+		t.Errorf(`Incorrect decoded int8: expected "%d" got "%d"`, expectedI64, resultI8)
 	}
 }
 
-func TestDecodeSigned16Positive(t *testing.T) {
-	var expectedSigned16 int16 = 2345
+func TestDecodeI16Positive(t *testing.T) {
+	var expectedI16 int16 = 2345
 	decoder := getDecoder("2909")
-	resultSigned16, err := decoder.DecodeSigned16()
+	resultI16, err := decoder.DecodeI16()
 
 	if err != nil {
 		t.Errorf(`Incorrect return error type: expected "%v" got "%v"`, nil, err)
 	}
-	if resultSigned16 != expectedSigned16 {
-		t.Errorf(`Incorrect decoded int16: expected "%d" got "%d"`, expectedSigned16, resultSigned16)
+	if resultI16 != expectedI16 {
+		t.Errorf(`Incorrect decoded int16: expected "%d" got "%d"`, expectedI16, resultI16)
 	}
 
 }
 
-func TestDecodeSigned16Negative(t *testing.T) {
-	var expectedSigned16 int16 = -2
+func TestDecodeI16Negative(t *testing.T) {
+	var expectedI16 int16 = -2
 	decoder := getDecoder("FEFF")
-	resultSigned16, err := decoder.DecodeSigned16()
+	resultI16, err := decoder.DecodeI16()
 
 	if err != nil {
 		t.Errorf(`Incorrect return error type: expected "%v" got "%v"`, nil, err)
 	}
-	if resultSigned16 != expectedSigned16 {
-		t.Errorf(`Incorrect decoded int16: expected "%d" got "%d"`, expectedSigned16, resultSigned16)
+	if resultI16 != expectedI16 {
+		t.Errorf(`Incorrect decoded int16: expected "%d" got "%d"`, expectedI16, resultI16)
 	}
 }
 
-func TestDecodeSigned32Positive(t *testing.T) {
-	var expectedSigned32 int32 = 12345
+func TestDecodeI32Positive(t *testing.T) {
+	var expectedI32 int32 = 12345
 	decoder := getDecoder("39300000")
-	resultSigned32, err := decoder.DecodeSigned32()
+	resultI32, err := decoder.DecodeI32()
 
 	if err != nil {
 		t.Errorf(`Incorrect return error type: expected "%v" got "%v"`, nil, err)
 	}
-	if resultSigned32 != expectedSigned32 {
-		t.Errorf(`Incorrect decoded int32: expected "%d" got "%d"`, expectedSigned32, resultSigned32)
+	if resultI32 != expectedI32 {
+		t.Errorf(`Incorrect decoded int32: expected "%d" got "%d"`, expectedI32, resultI32)
 	}
 }
 
-func TestDecodeSigned32Negative(t *testing.T) {
-	var expectedSigned32 int32 = -70
+func TestDecodeI32Negative(t *testing.T) {
+	var expectedI32 int32 = -70
 	decoder := getDecoder("BAFFFFFF")
-	resultSigned32, err := decoder.DecodeSigned32()
+	resultI32, err := decoder.DecodeI32()
 
 	if err != nil {
 		t.Errorf(`Incorrect return error type: expected "%v" got "%v"`, nil, err)
 	}
-	if resultSigned32 != expectedSigned32 {
-		t.Errorf(`Incorrect decoded int32: expected "%d" got "%d"`, expectedSigned32, resultSigned32)
+	if resultI32 != expectedI32 {
+		t.Errorf(`Incorrect decoded int32: expected "%d" got "%d"`, expectedI32, resultI32)
 	}
 }
 
-func TestDecodeSigned64Positive(t *testing.T) {
-	var expectedSigned64 int64 = 50
+func TestDecodeI64Positive(t *testing.T) {
+	var expectedI64 int64 = 50
 	decoder := getDecoder("3200000000000000")
-	resultSigned64, err := decoder.DecodeSigned64()
+	resultI64, err := decoder.DecodeI64()
 
 	if err != nil {
 		t.Errorf(`Incorrect return error type: expected "%v" got "%v"`, nil, err)
 	}
-	if resultSigned64 != expectedSigned64 {
-		t.Errorf(`Incorrect decoded int64: expected "%d" got "%d"`, expectedSigned64, resultSigned64)
+	if resultI64 != expectedI64 {
+		t.Errorf(`Incorrect decoded int64: expected "%d" got "%d"`, expectedI64, resultI64)
 	}
 }
 
-func TestDecodeSigned64Negative(t *testing.T) {
-	var expectedSigned64 int64 = -20486
+func TestDecodeI64Negative(t *testing.T) {
+	var expectedI64 int64 = -20486
 	decoder := getDecoder("FAAFFFFFFFFFFFFF")
-	resultSigned64, err := decoder.DecodeSigned64()
+	resultI64, err := decoder.DecodeI64()
 
 	if err != nil {
 		t.Errorf(`Incorrect return error type: expected "%v" got "%v"`, nil, err)
 	}
-	if resultSigned64 != expectedSigned64 {
-		t.Errorf(`Incorrect decoded int64: expected "%d" got "%d"`, expectedSigned64, resultSigned64)
+	if resultI64 != expectedI64 {
+		t.Errorf(`Incorrect decoded int64: expected "%d" got "%d"`, expectedI64, resultI64)
 	}
 }
 
