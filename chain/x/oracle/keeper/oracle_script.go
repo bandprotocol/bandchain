@@ -78,7 +78,7 @@ func (k Keeper) EditOracleScript(
 	return nil
 }
 
-// GetAllOracleScripts returns the list of all oracle scripts in the store.
+// GetAllOracleScripts returns the list of all oracle scripts in the store, or nil if there is none.
 func (k Keeper) GetAllOracleScripts(ctx sdk.Context) (oracleScripts []types.OracleScript) {
 	store := ctx.KVStore(k.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, types.OracleScriptStoreKeyPrefix)

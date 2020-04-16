@@ -80,7 +80,7 @@ func (k Keeper) EditDataSource(
 	return nil
 }
 
-// GetAllDataSources returns the list of all data sources in the store.
+// GetAllDataSources returns the list of all data sources in the store, or nil if there is none.
 func (k Keeper) GetAllDataSources(ctx sdk.Context) (dataSources []types.DataSource) {
 	store := ctx.KVStore(k.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, types.DataSourceStoreKeyPrefix)
