@@ -570,10 +570,39 @@ func (b *BandDB) GetInvolvedAccountsFromTransferEvents(logs sdk.ABCIMessageLogs)
 	return involvedAccounts
 }
 
-func (b *BandDB) ResolveRequest(id int64, resolveStatus oracle.ResolveStatus, result []byte) error {
+func (b *BandDB) ResolveRequest(kvMap map[string]string) error {
+	id, err := strconv.ParseInt(kvMap[oracle.AttributeKeyRequestID], 10, 64)
+	if err != nil {
+		panic(err)
+	}
+
+	numResolveStatus, err := strconv.ParseInt(kvMap[oracle.AttributeKeyResolveStatus], 10, 8)
+	if err != nil {
+		panic(err)
+	}
+
+	resolveStatus := oracle.ResolveStatus(numResolveStatus)
 	if resolveStatus == 1 {
+		requestTime, err := strconv.ParseInt(kvMap[oracle.AttributeKeyRequestTime], 10, 64)
+		if err != nil {
+			return err
+		}
+		expirationTime, err := strconv.ParseInt(kvMap[oracle.AttributrKeyExpirationHeight], 10, 64)
+		if err != nil {
+			return err
+		}
+		resolvedTime, err := strconv.ParseInt(kvMap[oracle.AttributeKeyResolvedTime], 10, 64)
+		if err != nil {
+			return err
+		}
 		return b.tx.Model(&Request{}).Where(Request{ID: id}).
-			Update(Request{ResolveStatus: parseResolveStatus(resolveStatus), Result: result}).Error
+			Update(
+				Request{ResolveStatus: parseResolveStatus(resolveStatus),
+					Result:         []byte(kvMap[oracle.AttributeKeyResult]),
+					RequestTime:    requestTime,
+					ExpirationTime: expirationTime,
+					ResolveTime:    resolvedTime,
+				}).Error
 	}
 	return b.tx.Model(&Request{}).Where(Request{ID: id}).
 		Update(Request{ResolveStatus: parseResolveStatus(resolveStatus)}).Error

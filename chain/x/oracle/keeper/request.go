@@ -84,18 +84,34 @@ func (k Keeper) AddRequest(
 	return requestID, nil
 }
 
-// ProcessOracleResponse takes a
-func (k Keeper) ProcessOracleResponse(
+func (k Keeper) handleResolveRequest(
 	ctx sdk.Context, reqID types.RequestID, resolveStatus types.ResolveStatus, result []byte,
 ) {
+
+	if resolveStatus != types.Success {
+		ctx.EventManager().EmitEvents(sdk.Events{
+			sdk.NewEvent(
+				types.EventTypeRequestExecute,
+				sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", reqID)),
+				sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", resolveStatus)),
+			)})
+		return
+	}
+
 	request, err := k.GetRequest(ctx, reqID)
 	if err != nil {
-		panic(err)
+		ctx.EventManager().EmitEvents(sdk.Events{
+			sdk.NewEvent(
+				types.EventTypeRequestExecute,
+				sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", reqID)),
+				sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", resolveStatus)),
+			)})
+		return
 	}
 
 	reqPacketData := types.NewOracleRequestPacketData(
 		request.ClientID, request.OracleScriptID,
-		string(request.Calldata), request.SufficientValidatorCount,
+		hex.EncodeToString(request.Calldata), request.SufficientValidatorCount,
 		int64(len(request.RequestedValidators)),
 	)
 	resPacketData := types.NewOracleResponsePacketData(
@@ -105,12 +121,53 @@ func (k Keeper) ProcessOracleResponse(
 		request.RequestTime, ctx.BlockTime().Unix(),
 		types.Success, hex.EncodeToString(result),
 	)
+	err = k.AddResult(ctx, reqID, reqPacketData, resPacketData)
+	if err != nil {
+		ctx.EventManager().EmitEvents(sdk.Events{
+			sdk.NewEvent(
+				types.EventTypeRequestExecute,
+				sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", reqID)),
+				sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", types.Failure)),
+			)})
+		return
+	}
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeRequestExecute,
+			sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", reqID)),
+			sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", types.Success)),
+			sdk.NewAttribute(types.AttributeKeyResult, fmt.Sprintf("%s", hex.EncodeToString(result))),
+			sdk.NewAttribute(types.AttributeKeyRequestTime, fmt.Sprintf("%d", request.RequestTime)),
+			sdk.NewAttribute(types.AttributeKeyResolvedTime, fmt.Sprintf("%d", resPacketData.ResolveTime)),
+			sdk.NewAttribute(types.AttributrKeyExpirationHeight, fmt.Sprintf("%d", request.ExpirationHeight)),
+		)})
+}
 
-	k.AddResult(ctx, reqID, reqPacketData, resPacketData)
+// ProcessOracleResponse takes a
+func (k Keeper) ProcessOracleResponse(
+	ctx sdk.Context, reqID types.RequestID, resolveStatus types.ResolveStatus, result []byte,
+) {
+	k.handleResolveRequest(ctx, reqID, resolveStatus, result)
+	if resolveStatus == types.Expired {
+		return
+	}
+
+	request, err := k.GetRequest(ctx, reqID)
+	if err != nil {
+		return
+	}
+
+	resPacketData := types.NewOracleResponsePacketData(
+		request.ClientID,
+		reqID,
+		int64(len(request.ReceivedValidators)),
+		request.RequestTime, ctx.BlockTime().Unix(),
+		types.Success, hex.EncodeToString(result),
+	)
 
 	sourceChannelEnd, found := k.ChannelKeeper.GetChannel(ctx, request.SourcePort, request.SourceChannel)
 	if !found {
-		fmt.Println("SOURCE NOT FOUND1", request.SourcePort, request.SourceChannel)
+		fmt.Println("SOURCE NOT FOUND", request.SourcePort, request.SourceChannel)
 		return
 	}
 
@@ -119,14 +176,14 @@ func (k Keeper) ProcessOracleResponse(
 
 	sequence, found := k.ChannelKeeper.GetNextSequenceSend(ctx, request.SourcePort, request.SourceChannel)
 	if !found {
-		fmt.Println("SEQUENCE NOT FOUND2", request.SourcePort, request.SourceChannel)
-		panic(err)
-
+		fmt.Println("SEQUENCE NOT FOUND", request.SourcePort, request.SourceChannel)
+		return
 	}
 
 	channelCap, ok := k.scopedKeeper.GetCapability(ctx, ibctypes.ChannelCapabilityPath(destinationPort, destinationChannel))
 	if !ok {
-		panic(err)
+		fmt.Println("GET CAPABILITY ERROR", request.SourcePort, request.SourceChannel)
+		return
 	}
 	err = k.ChannelKeeper.SendPacket(ctx, channelCap, channel.NewPacket(resPacketData.GetBytes(),
 		sequence, request.SourcePort, request.SourceChannel, destinationPort, destinationChannel,
@@ -135,9 +192,8 @@ func (k Keeper) ProcessOracleResponse(
 
 	if err != nil {
 		fmt.Println("SEND PACKET ERROR", err)
-		panic(err)
+		return
 	}
-
 }
 
 // ProcessExpiredRequests removes all expired data requests from the store, and

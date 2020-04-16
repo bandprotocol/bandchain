@@ -14,6 +14,8 @@ func parseResolveStatus(resolveStatus oracle.ResolveStatus) string {
 		return "Success"
 	case 2:
 		return "Failure"
+	case 3:
+		return "Expired"
 	default:
 		return "Unknown"
 	}

@@ -21,30 +21,7 @@ func (b *BandDB) HandleEndblockEvent(event abci.Event) {
 	switch event.Type {
 	case oracle.EventTypeRequestExecute:
 		{
-			requestID, err := strconv.ParseInt(kvMap[oracle.AttributeKeyRequestID], 10, 64)
-			if err != nil {
-				panic(err)
-			}
-
-			numResolveStatus, err := strconv.ParseInt(kvMap[oracle.AttributeKeyResolveStatus], 10, 8)
-			if err != nil {
-				panic(err)
-			}
-			resolveStatus := oracle.ResolveStatus(numResolveStatus)
-
-			// Get result from keeper
-			var rawResult []byte
-			rawResult = nil
-			if resolveStatus == 1 {
-				id := oracle.RequestID(requestID)
-
-				result, sdkErr := b.OracleKeeper.GetResult(b.ctx, id)
-				if sdkErr != nil {
-					panic(err)
-				}
-				rawResult = result
-			}
-			err = b.ResolveRequest(requestID, resolveStatus, rawResult)
+			err := b.ResolveRequest(kvMap)
 			if err != nil {
 				panic(err)
 			}

@@ -131,6 +131,9 @@ type Request struct {
 	TxHash                   []byte `gorm:"not null"`
 	ClientID                 string `gorm:"not null"`
 	Result                   []byte `sql:"default:null"`
+	RequestTime              int64  `sql:"default:null"`
+	ResolveTime              int64  `sql:"default:null"`
+	ExpirationTime           int64  `sql:"default:null"`
 }
 
 type RequestedValidator struct {
