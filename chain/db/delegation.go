@@ -10,12 +10,17 @@ func (b *BandDB) SetDelegation(
 	delegatorAddress sdk.AccAddress,
 	validatorAddress sdk.ValAddress,
 	shares string,
+	lastRatio sdk.DecCoins,
 ) error {
+	value := "0"
+	if !lastRatio.IsZero() {
+		value = lastRatio[0].Amount.String()
+	}
 	return b.tx.Where(Delegation{
 		DelegatorAddress: delegatorAddress.String(),
 		ValidatorAddress: validatorAddress.String(),
 	}).
-		Assign(Delegation{Shares: shares}).
+		Assign(Delegation{Shares: shares, LastRatio: value}).
 		FirstOrCreate(&Delegation{}).Error
 }
 
@@ -37,11 +42,16 @@ func (b *BandDB) delegate(
 	if !found {
 		return errors.New("Not found validator")
 	}
+	info := b.DistrKeeper.GetDelegatorStartingInfo(b.ctx, validatorAddress, delegatorAddress)
+	latestReward := b.DistrKeeper.GetValidatorHistoricalRewards(b.ctx, validatorAddress, info.PreviousPeriod)
+	// CurrentReward must be reset after delegation.
 	err := b.UpdateValidator(
 		validatorAddress,
 		&Validator{
 			Tokens:          validator.Tokens.Uint64(),
 			DelegatorShares: validator.DelegatorShares.String(),
+			CurrentReward:   "0",
+			CurrentRatio:    latestReward.CumulativeRewardRatio[0].Amount.String(),
 		},
 	)
 	if err != nil {
@@ -54,7 +64,7 @@ func (b *BandDB) delegate(
 	if !found {
 		return errors.New("Not found delegation")
 	}
-	return b.SetDelegation(delegatorAddress, validatorAddress, delegation.Shares.String())
+	return b.SetDelegation(delegatorAddress, validatorAddress, delegation.Shares.String(), latestReward.CumulativeRewardRatio)
 }
 
 func (b *BandDB) undelegate(
@@ -65,10 +75,13 @@ func (b *BandDB) undelegate(
 		b.ctx, delegatorAddress, validatorAddress,
 	)
 	if found {
+		info := b.DistrKeeper.GetDelegatorStartingInfo(b.ctx, validatorAddress, delegatorAddress)
+		latestReward := b.DistrKeeper.GetValidatorHistoricalRewards(b.ctx, validatorAddress, info.PreviousPeriod)
 		err := b.SetDelegation(
 			delegatorAddress,
 			validatorAddress,
 			delegation.Shares.String(),
+			latestReward.CumulativeRewardRatio,
 		)
 		if err != nil {
 			return err
@@ -82,12 +95,16 @@ func (b *BandDB) undelegate(
 
 	validator, found := b.StakingKeeper.GetValidator(b.ctx, validatorAddress)
 	if found {
+		reward := b.DistrKeeper.GetValidatorCurrentRewards(b.ctx, validatorAddress)
+		latestReward := b.DistrKeeper.GetValidatorHistoricalRewards(b.ctx, validatorAddress, reward.Period-1)
 		return b.UpdateValidator(
 			validatorAddress,
 			&Validator{
 				Tokens:          validator.Tokens.Uint64(),
 				DelegatorShares: validator.DelegatorShares.String(),
 				Jailed:          validator.Jailed,
+				CurrentReward:   "0",
+				CurrentRatio:    latestReward.CumulativeRewardRatio[0].Amount.String(),
 			},
 		)
 	} else {

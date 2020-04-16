@@ -60,8 +60,8 @@ func (k Keeper) AddRequest(
 		validators[i] = validatorsByPower[i].GetOperator()
 	}
 
-	// TODO: Remove this hardcode (and KeyEndBlockExecuteGasLimit param)!
-	executeGas := uint64(100000)
+	// TODO: Remove KeyEndBlockExecuteGasLimit param
+	executeGas := k.GetParam(ctx, types.KeyExecuteGas)
 	if executeGas > k.GetParam(ctx, types.KeyEndBlockExecuteGasLimit) {
 		return 0, sdkerrors.Wrapf(types.ErrBadDataValue,
 			"AddRequest: Execute gas (%d) exceeds the maximum limit (%d).",
