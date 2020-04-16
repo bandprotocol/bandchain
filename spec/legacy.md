@@ -167,20 +167,20 @@ As for issue 3), D3N cannot solve the problem directly. We, however, introduce t
 # Development Phases
 D3N development is publicly available on [Github](https://github.com/bandprotocol/d3n) for public inspection. The technical development is breaking down into different phases. The content below is provided for informational purpose and may change in the future as the software gets developed. Also note that apart from the core protocol, the foundation will also develop related supporting tools, including client side libraries, Owasm IDE, block explorer, etc.
 
-**Phase 0** (Q1 2020)
+**Phase 0**
 - Supports token staking.
 - Supports on-chain governance parameters.
 - Supports asset transfers.
 
-**Phase 1** (tentatively Q2 2020)
+**Phase 1**
 - Supports querying public and permissionless data sources.
 - Supports gas metering on WebAssembly scripts on-chain.
 
-**Phase 2** (tentatively Q3 2020)
+**Phase 2**
 - Supports querying data sources while collecting fees to data source owners.
 - Supports function invokes between different oracle scripts.
 
-**Phase 3** (tentatively Q4 2020)
+**Phase 3**
 - Supports stablecoins in the ecosystem.
 - Supports peer-to-peer authentication gateway.
 
