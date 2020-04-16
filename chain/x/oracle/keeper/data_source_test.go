@@ -102,7 +102,7 @@ func TestAddDataSourceDataSourceMustReturnCorrectID(t *testing.T) {
 
 func TestEditDataSourceNonExistentDataSource(t *testing.T) {
 	_, ctx, k := createTestInput()
-	// Editing a non-existent data should return error.
+	// Editing a non-existent data source should return error.
 	err := k.EditDataSource(ctx, types.DID(42),
 		Owner.Address, BasicName, BasicDesc, Coins10uband, BasicExec,
 	)

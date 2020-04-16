@@ -86,7 +86,7 @@ func TestAddOracleScriptMustReturnCorrectID(t *testing.T) {
 
 func TestEditNonExistentOracleScript(t *testing.T) {
 	_, ctx, k := createTestInput()
-	// Editing a non-existent data should return error.
+	// Editing a non-existent oracle script should return error.
 	err := k.EditOracleScript(ctx, types.OID(42),
 		Owner.Address, BasicName, BasicDesc, BasicCode,
 	)
