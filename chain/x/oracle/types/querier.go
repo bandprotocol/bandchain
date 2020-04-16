@@ -64,8 +64,8 @@ type OracleScriptQuerierInfo struct {
 	Name        string         `json:"name"`
 	Description string         `json:"description"`
 	Code        []byte         `json:"code"`
-	Schema     string `json:"schema"`
-	SourceCodeURL string `json:"source_code_url"`
+	Schema     string          `json:"schema"`
+	SourceCodeURL string       `json:"source_code_url"`
 }
 
 func NewOracleScriptQuerierInfo(

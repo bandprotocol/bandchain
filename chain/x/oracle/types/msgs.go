@@ -293,9 +293,9 @@ type MsgCreateOracleScript struct {
 	Name          string         `json:"name"`
 	Description   string         `json:"description"`
 	Code          []byte         `json:"code"`
-	Sender        sdk.AccAddress `json:"sender"`
 	Schema        string         `json:"schema"`
-	SourceCodeURL string         `json:"sourceCodeURL"`
+	SourceCodeURL string         `json:"source_code_url"`
+	Sender        sdk.AccAddress `json:"sender"`
 }
 
 // NewMsgCreateOracleScript creates a new MsgCreateOracleScript instance.
@@ -304,18 +304,18 @@ func NewMsgCreateOracleScript(
 	name string,
 	description string,
 	code []byte,
-	sender sdk.AccAddress,
 	schema string,
 	sourceCodeURL string,
+	sender sdk.AccAddress,
 ) MsgCreateOracleScript {
 	return MsgCreateOracleScript{
 		Owner:         owner,
 		Name:          name,
 		Description:   description,
 		Code:          code,
-		Sender:        sender,
 		Schema:        schema,
 		SourceCodeURL: sourceCodeURL,
+		Sender:        sender,
 	}
 }
 
@@ -375,9 +375,9 @@ func NewMsgEditOracleScript(
 	name string,
 	description string,
 	code []byte,
-	sender sdk.AccAddress,
 	schema string,
 	sourceCodeURL string,
+	sender sdk.AccAddress,
 ) MsgEditOracleScript {
 	return MsgEditOracleScript{
 		OracleScriptID: oracleScriptID,
@@ -385,9 +385,9 @@ func NewMsgEditOracleScript(
 		Name:           name,
 		Description:    description,
 		Code:           code,
-		Sender:         sender,
 		Schema:         schema,
 		SourceCodeURL:  sourceCodeURL,
+		Sender:         sender,
 	}
 }
 
