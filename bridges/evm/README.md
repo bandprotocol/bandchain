@@ -33,3 +33,11 @@
 - We have deployed Bridge (0x5e71f1E61B1Dc88e39011cBE304A927532c1E4d0) contract and SimplePriceDatabase(0x83Ed93D864115F1457611e2f644dECeebdF32474) contract on Fantom testnet.
 
 - We have interact with the testnet by adding Fantom testnet RPC to Metamask. Next we use an account which already have Fantom native currency to deploy both of our contracts. After testing our contracts by submit a bunch of data points to SimplePriceDatabase contract, we have conclude that things work fine on the testnet.
+
+### [Celo](https://celo.org/)
+
+- The reason we support Celo is that Celo is an open platform that makes financial tools accessible to anyone with a mobile phone.
+
+- We have deployed our Bridge contract ([0x0A2acDeA5d23e45d2b5919d5aBdF7CA1088d907b](https://baklava-blockscout.celo-testnet.org/address/0x0a2acdea5d23e45d2b5919d5abdf7ca1088d907b/transactions)) on the Celo Baklava test network.
+
+- Please see this [`example`](integration_examples/celo) for more details about Bridge contract deployment and interaction on the Baklava test network .
