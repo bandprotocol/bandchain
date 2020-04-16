@@ -10,13 +10,9 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
-var BASIC_DS_NAME = "DS_NAME"
-var BASIC_DS_DESC = "DS_DESCRIPTION"
-var BASIC_DS_EXEC = []byte("DS_EXECUTABLE")
-
 func addBasicDataSource(ctx sdk.Context, k me.Keeper) types.DID {
 	id, err := k.AddDataSource(ctx,
-		Owner.Address, BASIC_DS_NAME, BASIC_DS_DESC, Coins10uband, BASIC_DS_EXEC,
+		Owner.Address, BasicName, BasicDesc, Coins10uband, BasicExec,
 	)
 	if err != nil {
 		panic(err)
@@ -89,13 +85,13 @@ func TestAddDataSourceDataSourceMustReturnCorrectID(t *testing.T) {
 	require.Equal(t, count, int64(0))
 	// Every new data source we add should return a new ID.
 	id1, err := k.AddDataSource(ctx,
-		Owner.Address, BASIC_DS_NAME, BASIC_DS_DESC, Coins10uband, BASIC_DS_EXEC,
+		Owner.Address, BasicName, BasicDesc, Coins10uband, BasicExec,
 	)
 	require.Nil(t, err)
 	require.Equal(t, id1, types.DID(1))
 	// Adds another data source so now ID should be 2.
 	id2, err := k.AddDataSource(ctx,
-		Owner.Address, BASIC_DS_NAME, BASIC_DS_DESC, Coins10uband, BASIC_DS_EXEC,
+		Owner.Address, BasicName, BasicDesc, Coins10uband, BasicExec,
 	)
 	require.Nil(t, err)
 	require.Equal(t, id2, types.DID(2))
@@ -108,7 +104,7 @@ func TestEditDataSourceNonExistentDataSource(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// Editing a non-existent data should return error.
 	err := k.EditDataSource(ctx, types.DID(42),
-		Owner.Address, BASIC_DS_NAME, BASIC_DS_DESC, Coins10uband, BASIC_DS_EXEC,
+		Owner.Address, BasicName, BasicDesc, Coins10uband, BasicExec,
 	)
 	require.Error(t, err)
 }
@@ -118,13 +114,13 @@ func TestAddDataSourceTooLongName(t *testing.T) {
 	// Sets max name length to 9. We should fail to add data source with name length 10.
 	k.SetParam(ctx, types.KeyMaxNameLength, 9)
 	_, err := k.AddDataSource(ctx,
-		Owner.Address, "0123456789", BASIC_DS_DESC, Coins10uband, BASIC_DS_EXEC,
+		Owner.Address, "0123456789", BasicDesc, Coins10uband, BasicExec,
 	)
 	require.Error(t, err)
 	// Sets max name length to 10. We should now be able to add the data source.
 	k.SetParam(ctx, types.KeyMaxNameLength, 10)
 	_, err = k.AddDataSource(ctx,
-		Owner.Address, "0123456789", BASIC_DS_DESC, Coins10uband, BASIC_DS_EXEC,
+		Owner.Address, "0123456789", BasicDesc, Coins10uband, BasicExec,
 	)
 	require.Nil(t, err)
 }
@@ -154,15 +150,15 @@ func TestAddDataSourceTooLongDescription(t *testing.T) {
 	// Sets max desc length to 41. We should fail to add data source with desc length 42.
 	k.SetParam(ctx, types.KeyMaxDescriptionLength, 41)
 	_, err := k.AddDataSource(ctx,
-		Owner.Address, BASIC_DS_NAME, "________THIS_STRING_HAS_SIZE_OF_42________",
-		Coins10uband, BASIC_DS_EXEC,
+		Owner.Address, BasicName, "________THIS_STRING_HAS_SIZE_OF_42________",
+		Coins10uband, BasicExec,
 	)
 	require.Error(t, err)
 	// Sets max desc length to 42. We should now be able to add the data source.
 	k.SetParam(ctx, types.KeyMaxDescriptionLength, 42)
 	_, err = k.AddDataSource(ctx,
-		Owner.Address, BASIC_DS_NAME, "________THIS_STRING_HAS_SIZE_OF_42________",
-		Coins10uband, BASIC_DS_EXEC,
+		Owner.Address, BasicName, "________THIS_STRING_HAS_SIZE_OF_42________",
+		Coins10uband, BasicExec,
 	)
 	require.Nil(t, err)
 }
@@ -192,14 +188,14 @@ func TestAddDataSourceTooBigExecutable(t *testing.T) {
 	// Sets max executable size to 40. We should fail to add data source with exec size 42.
 	k.SetParam(ctx, types.KeyMaxExecutableSize, 40)
 	_, err := k.AddDataSource(ctx,
-		Owner.Address, BASIC_DS_NAME, BASIC_DS_DESC, Coins10uband,
+		Owner.Address, BasicName, BasicDesc, Coins10uband,
 		[]byte("________THIS_STRING_HAS_SIZE_OF_42________"),
 	)
 	require.Error(t, err)
 	// Sets max executable size to 50. We should now be able to add the data source.
 	k.SetParam(ctx, types.KeyMaxExecutableSize, 50)
 	_, err = k.AddDataSource(ctx,
-		Owner.Address, BASIC_DS_NAME, BASIC_DS_DESC, Coins10uband,
+		Owner.Address, BasicName, BasicDesc, Coins10uband,
 		[]byte("________THIS_STRING_HAS_SIZE_OF_42________"),
 	)
 	require.Nil(t, err)

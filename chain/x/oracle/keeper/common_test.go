@@ -30,6 +30,11 @@ var Carol account
 var Coins10uband = sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
 var Coins20uband = sdk.NewCoins(sdk.NewInt64Coin("uband", 20))
 
+var BasicName = "BASIC_NAME"
+var BasicDesc = "BASIC_DESCRIPTION"
+var BasicCode = []byte("BASIC_WASM_CODE")
+var BasicExec = []byte("BASIC_EXECUTABLE")
+
 func init() {
 	r := rand.New(rand.NewSource(time.Now().Unix()))
 	Owner = createArbitraryAccount(r)
