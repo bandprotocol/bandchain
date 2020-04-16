@@ -38,7 +38,7 @@ func (k Keeper) SetOracleScript(ctx sdk.Context, id types.OID, oracleScript type
 	store.Set(types.OracleScriptStoreKey(id), k.cdc.MustMarshalBinaryBare(oracleScript))
 }
 
-// AddDataSource adds the given data source to the storage. Returns error if validation fails.
+// AddOracleScript adds the given oracle script to the storage. Returns error if validation fails.
 func (k Keeper) AddOracleScript(
 	ctx sdk.Context, owner sdk.AccAddress, name string, description string, code []byte,
 ) (types.OID, error) {
