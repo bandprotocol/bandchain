@@ -29,10 +29,12 @@ func (b *BandDB) handleMsgCreateValidator(msg staking.MsgCreateValidator) error 
 	if err != nil {
 		return err
 	}
+
 	return b.SetDelegation(
-		sdk.AccAddress(msg.ValidatorAddress),
+		msg.DelegatorAddress,
 		msg.ValidatorAddress,
 		msg.Value.Amount.String(),
+		sdk.NewDecCoins(),
 	)
 }
 

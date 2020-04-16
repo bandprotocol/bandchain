@@ -34,6 +34,7 @@ func NewDBBandApp(
 		logger, db, traceStore, loadLatest, invCheckPeriod,
 		skipUpgradeHeights, home, baseAppOptions...,
 	)
+	dbBand.DistrKeeper = app.DistrKeeper
 	dbBand.StakingKeeper = app.StakingKeeper
 	dbBand.OracleKeeper = app.OracleKeeper
 	dbBand.IBCKeeper = app.IBCKeeper
@@ -222,6 +223,14 @@ func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseB
 			val.GetValidator().Address,
 			req.Header.GetHeight()-1,
 			val.GetSignedLastBlock(),
+		)
+		validator := app.StakingKeeper.ValidatorByConsAddr(app.DeliverContext, val.GetValidator().Address)
+		reward := app.DistrKeeper.GetValidatorCurrentRewards(app.DeliverContext, validator.GetOperator())
+		app.dbBand.UpdateValidator(
+			validator.GetOperator(),
+			&db.Validator{
+				CurrentReward: reward.Rewards[0].Amount.String(),
+			},
 		)
 	}
 
