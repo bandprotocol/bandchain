@@ -108,6 +108,8 @@ func (b *BandDB) CreateValidator(
 		Tokens:              value.Amount.Uint64(),
 		DelegatorShares:     value.Amount.String(),
 		BondedHeight:        bondedHeight,
+		CurrentReward:       "0",
+		CurrentRatio:        "0",
 	}).Error
 }
 

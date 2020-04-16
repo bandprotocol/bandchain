@@ -55,6 +55,8 @@ type Validator struct {
 	Tokens              uint64 `gorm:"not null"`
 	DelegatorShares     string `gorm:"not null"`
 	BondedHeight        int64  `gorm:"not null"`
+	CurrentReward       string `gorm:"not null"`
+	CurrentRatio        string `gorm:"not null"`
 }
 
 type ValidatorVote struct {
@@ -67,6 +69,7 @@ type Delegation struct {
 	DelegatorAddress string `gorm:"primary_key"`
 	ValidatorAddress string `gorm:"primary_key"`
 	Shares           string `gorm:"not null"`
+	LastRatio        string `gorm:"not null"`
 }
 
 type DataSource struct {
