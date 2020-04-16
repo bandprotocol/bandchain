@@ -17,10 +17,8 @@ func TestRequestStoreKey(t *testing.T) {
 
 func TestResultStoreKey(t *testing.T) {
 	requestID := RequestID(20)
-	oracleScriptID := OracleScriptID(3)
-	calldata := []byte("calldata")
-	expectKeyByte, _ := hex.DecodeString("ff0000000000000014000000000000000363616c6c64617461")
-	require.Equal(t, expectKeyByte, ResultStoreKey(requestID, oracleScriptID, calldata))
+	expectKeyByte, _ := hex.DecodeString("ff0000000000000014")
+	require.Equal(t, expectKeyByte, ResultStoreKey(requestID))
 }
 
 func TestRawDataRequestStoreKey(t *testing.T) {

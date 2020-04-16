@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"encoding/hex"
 	"strconv"
 	"testing"
 
@@ -163,245 +162,245 @@ func TestQueryDataSourcesFailBecauseInvalidNumberOfDataSource(t *testing.T) {
 	require.NotNil(t, err)
 }
 
-func TestQueryRequestById(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
+// func TestQueryRequestById(t *testing.T) {
+// 	ctx, keeper := CreateTestInput(t, false)
 
-	// Create variable "querier" which is a function
-	querier := NewQuerier(keeper)
+// 	// Create variable "querier" which is a function
+// 	querier := NewQuerier(keeper)
 
-	// query before set new request
-	_, err := querier(
-		ctx,
-		[]string{"request", "1"},
-		abci.RequestQuery{},
-	)
-	// It must return error request not found
-	require.NotNil(t, err)
+// 	// query before set new request
+// 	_, err := querier(
+// 		ctx,
+// 		[]string{"request", "1"},
+// 		abci.RequestQuery{},
+// 	)
+// 	// It must return error request not found
+// 	require.NotNil(t, err)
 
-	request := newDefaultRequest()
-	keeper.SetRequest(ctx, 1, request)
+// 	request := newDefaultRequest()
+// 	keeper.SetRequest(ctx, 1, request)
 
-	keeper.SetRawDataRequest(ctx, 1, 1, types.NewRawDataRequest(0, []byte("calldata1")))
-	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata2")))
+// 	keeper.SetRawDataRequest(ctx, 1, 1, types.NewRawDataRequest(0, []byte("calldata1")))
+// 	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata2")))
 
-	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[0], types.NewRawDataReport(0, []byte("report1")))
-	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[0], types.NewRawDataReport(0, []byte("report2")))
+// 	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[0], types.NewRawDataReport(0, []byte("report1")))
+// 	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[0], types.NewRawDataReport(0, []byte("report2")))
 
-	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[1], types.NewRawDataReport(0, []byte("report1-2")))
-	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[1], types.NewRawDataReport(0, []byte("report2-2")))
+// 	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[1], types.NewRawDataReport(0, []byte("report1-2")))
+// 	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[1], types.NewRawDataReport(0, []byte("report2-2")))
 
-	data, _ := hex.DecodeString("0000000000002710")
-	keeper.SetResult(ctx, 1, request.OracleScriptID, request.Calldata, types.NewResult(1, 2, 3, 2, 2, data))
+// 	data, _ := hex.DecodeString("0000000000002710")
+// 	keeper.SetResult(ctx, 1, request.OracleScriptID, request.Calldata, types.NewResult(1, 2, 3, 2, 2, data))
 
-	// create query
-	acsBytes, err := querier(
-		ctx,
-		[]string{"request", "1"},
-		abci.RequestQuery{},
-	)
-	require.Nil(t, err)
+// 	// create query
+// 	acsBytes, err := querier(
+// 		ctx,
+// 		[]string{"request", "1"},
+// 		abci.RequestQuery{},
+// 	)
+// 	require.Nil(t, err)
 
-	// Use bytes format for comparison
-	acs, errJSON := codec.MarshalJSONIndent(
-		keeper.cdc,
-		types.NewRequestQuerierInfo(
-			1,
-			request,
-			[]types.RawDataRequestWithExternalID{
-				types.NewRawDataRequestWithExternalID(
-					1,
-					types.NewRawDataRequest(0, []byte("calldata1")),
-				),
-				types.NewRawDataRequestWithExternalID(
-					2,
-					types.NewRawDataRequest(1, []byte("calldata2")),
-				),
-			},
-			[]types.ReportWithValidator{
-				types.NewReportWithValidator([]types.RawDataReportWithID{
-					types.NewRawDataReportWithID(1, 0, []byte("report1")),
-					types.NewRawDataReportWithID(2, 0, []byte("report2")),
-				}, request.RequestedValidators[0]),
-				types.NewReportWithValidator([]types.RawDataReportWithID{
-					types.NewRawDataReportWithID(1, 0, []byte("report1-2")),
-					types.NewRawDataReportWithID(2, 0, []byte("report2-2")),
-				}, request.RequestedValidators[1]),
-			},
-			types.Result{
-				RequestTime:              1,
-				AggregationTime:          2,
-				RequestedValidatorsCount: 3,
-				SufficientValidatorCount: 2,
-				ReportedValidatorsCount:  2,
-				Data:                     data,
-			},
-		),
-	)
-	require.Nil(t, errJSON)
-	require.Equal(t, acs, acsBytes)
-}
+// 	// Use bytes format for comparison
+// 	acs, errJSON := codec.MarshalJSONIndent(
+// 		keeper.cdc,
+// 		types.NewRequestQuerierInfo(
+// 			1,
+// 			request,
+// 			[]types.RawDataRequestWithExternalID{
+// 				types.NewRawDataRequestWithExternalID(
+// 					1,
+// 					types.NewRawDataRequest(0, []byte("calldata1")),
+// 				),
+// 				types.NewRawDataRequestWithExternalID(
+// 					2,
+// 					types.NewRawDataRequest(1, []byte("calldata2")),
+// 				),
+// 			},
+// 			[]types.ReportWithValidator{
+// 				types.NewReportWithValidator([]types.RawDataReportWithID{
+// 					types.NewRawDataReportWithID(1, 0, []byte("report1")),
+// 					types.NewRawDataReportWithID(2, 0, []byte("report2")),
+// 				}, request.RequestedValidators[0]),
+// 				types.NewReportWithValidator([]types.RawDataReportWithID{
+// 					types.NewRawDataReportWithID(1, 0, []byte("report1-2")),
+// 					types.NewRawDataReportWithID(2, 0, []byte("report2-2")),
+// 				}, request.RequestedValidators[1]),
+// 			},
+// 			types.Result{
+// 				RequestTime:              1,
+// 				AggregationTime:          2,
+// 				RequestedValidatorsCount: 3,
+// 				SufficientValidatorCount: 2,
+// 				ReportedValidatorsCount:  2,
+// 				Data:                     data,
+// 			},
+// 		),
+// 	)
+// 	require.Nil(t, errJSON)
+// 	require.Equal(t, acs, acsBytes)
+// }
 
-func TestQueryRequestIncompleteValidator(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
+// func TestQueryRequestIncompleteValidator(t *testing.T) {
+// 	ctx, keeper := CreateTestInput(t, false)
 
-	// Create variable "querier" which is a function
-	querier := NewQuerier(keeper)
+// 	// Create variable "querier" which is a function
+// 	querier := NewQuerier(keeper)
 
-	// query before set new request
-	_, err := querier(
-		ctx,
-		[]string{"request", "1"},
-		abci.RequestQuery{},
-	)
-	// It must return error request not found
-	require.NotNil(t, err)
+// 	// query before set new request
+// 	_, err := querier(
+// 		ctx,
+// 		[]string{"request", "1"},
+// 		abci.RequestQuery{},
+// 	)
+// 	// It must return error request not found
+// 	require.NotNil(t, err)
 
-	request := newDefaultRequest()
-	keeper.SetRequest(ctx, 1, request)
+// 	request := newDefaultRequest()
+// 	keeper.SetRequest(ctx, 1, request)
 
-	keeper.SetRawDataRequest(ctx, 1, 1, types.NewRawDataRequest(0, []byte("calldata1")))
-	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata2")))
+// 	keeper.SetRawDataRequest(ctx, 1, 1, types.NewRawDataRequest(0, []byte("calldata1")))
+// 	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata2")))
 
-	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[1], types.NewRawDataReport(0, []byte("report1-2")))
-	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[1], types.NewRawDataReport(0, []byte("report2-2")))
+// 	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[1], types.NewRawDataReport(0, []byte("report1-2")))
+// 	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[1], types.NewRawDataReport(0, []byte("report2-2")))
 
-	// create query
-	acsBytes, err := querier(
-		ctx,
-		[]string{"request", "1"},
-		abci.RequestQuery{},
-	)
-	require.Nil(t, err)
+// 	// create query
+// 	acsBytes, err := querier(
+// 		ctx,
+// 		[]string{"request", "1"},
+// 		abci.RequestQuery{},
+// 	)
+// 	require.Nil(t, err)
 
-	// Use bytes format for comparison
-	acs, errJSON := codec.MarshalJSONIndent(
-		keeper.cdc,
-		types.NewRequestQuerierInfo(
-			1,
-			request,
-			[]types.RawDataRequestWithExternalID{
-				types.NewRawDataRequestWithExternalID(
-					1,
-					types.NewRawDataRequest(0, []byte("calldata1")),
-				),
-				types.NewRawDataRequestWithExternalID(
-					2,
-					types.NewRawDataRequest(1, []byte("calldata2")),
-				),
-			},
-			[]types.ReportWithValidator{
-				types.NewReportWithValidator([]types.RawDataReportWithID{
-					types.NewRawDataReportWithID(1, 0, []byte("report1-2")),
-					types.NewRawDataReportWithID(2, 0, []byte("report2-2")),
-				}, request.RequestedValidators[1]),
-			},
-			types.Result{},
-		),
-	)
-	require.Nil(t, errJSON)
-	require.Equal(t, acs, acsBytes)
-}
+// 	// Use bytes format for comparison
+// 	acs, errJSON := codec.MarshalJSONIndent(
+// 		keeper.cdc,
+// 		types.NewRequestQuerierInfo(
+// 			1,
+// 			request,
+// 			[]types.RawDataRequestWithExternalID{
+// 				types.NewRawDataRequestWithExternalID(
+// 					1,
+// 					types.NewRawDataRequest(0, []byte("calldata1")),
+// 				),
+// 				types.NewRawDataRequestWithExternalID(
+// 					2,
+// 					types.NewRawDataRequest(1, []byte("calldata2")),
+// 				),
+// 			},
+// 			[]types.ReportWithValidator{
+// 				types.NewReportWithValidator([]types.RawDataReportWithID{
+// 					types.NewRawDataReportWithID(1, 0, []byte("report1-2")),
+// 					types.NewRawDataReportWithID(2, 0, []byte("report2-2")),
+// 				}, request.RequestedValidators[1]),
+// 			},
+// 			types.Result{},
+// 		),
+// 	)
+// 	require.Nil(t, errJSON)
+// 	require.Equal(t, acs, acsBytes)
+// }
 
-func TestQueryRequests(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
+// func TestQueryRequests(t *testing.T) {
+// 	ctx, keeper := CreateTestInput(t, false)
 
-	// Create variable "querier" which is a function
-	querier := NewQuerier(keeper)
+// 	// Create variable "querier" which is a function
+// 	querier := NewQuerier(keeper)
 
-	// query before set new request
-	acsBytes, err := querier(
-		ctx,
-		[]string{"requests", "1", "3"},
-		abci.RequestQuery{},
-	)
-	// It must return empty array of requests
-	require.Nil(t, err)
-	require.Equal(t, []byte("[]"), acsBytes)
+// 	// query before set new request
+// 	acsBytes, err := querier(
+// 		ctx,
+// 		[]string{"requests", "1", "3"},
+// 		abci.RequestQuery{},
+// 	)
+// 	// It must return empty array of requests
+// 	require.Nil(t, err)
+// 	require.Equal(t, []byte("[]"), acsBytes)
 
-	request := newDefaultRequest()
-	keeper.SetRequest(ctx, 1, request)
+// 	request := newDefaultRequest()
+// 	keeper.SetRequest(ctx, 1, request)
 
-	keeper.SetRawDataRequest(ctx, 1, 1, types.NewRawDataRequest(0, []byte("calldata1")))
-	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata2")))
+// 	keeper.SetRawDataRequest(ctx, 1, 1, types.NewRawDataRequest(0, []byte("calldata1")))
+// 	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata2")))
 
-	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[0], types.NewRawDataReport(0, []byte("report1")))
-	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[0], types.NewRawDataReport(0, []byte("report2")))
+// 	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[0], types.NewRawDataReport(0, []byte("report1")))
+// 	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[0], types.NewRawDataReport(0, []byte("report2")))
 
-	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[1], types.NewRawDataReport(0, []byte("report1-2")))
-	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[1], types.NewRawDataReport(0, []byte("report2-2")))
+// 	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[1], types.NewRawDataReport(0, []byte("report1-2")))
+// 	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[1], types.NewRawDataReport(0, []byte("report2-2")))
 
-	data, _ := hex.DecodeString("0000000000002710")
-	result := types.Result{
-		RequestTime:              1,
-		AggregationTime:          2,
-		RequestedValidatorsCount: 3,
-		SufficientValidatorCount: 2,
-		ReportedValidatorsCount:  2,
-		Data:                     data,
-	}
-	keeper.SetResult(ctx, 1, request.OracleScriptID, request.Calldata, result)
-	keeper.GetNextRequestID(ctx)
+// 	data, _ := hex.DecodeString("0000000000002710")
+// 	result := types.Result{
+// 		RequestTime:              1,
+// 		AggregationTime:          2,
+// 		RequestedValidatorsCount: 3,
+// 		SufficientValidatorCount: 2,
+// 		ReportedValidatorsCount:  2,
+// 		Data:                     data,
+// 	}
+// 	keeper.SetResult(ctx, 1, request.OracleScriptID, request.Calldata, result)
+// 	keeper.GetNextRequestID(ctx)
 
-	// request 2
-	keeper.SetRequest(ctx, 2, request)
+// 	// request 2
+// 	keeper.SetRequest(ctx, 2, request)
 
-	keeper.SetRawDataRequest(ctx, 2, 100, types.NewRawDataRequest(1, []byte("only calldata")))
-	keeper.GetNextRequestID(ctx)
+// 	keeper.SetRawDataRequest(ctx, 2, 100, types.NewRawDataRequest(1, []byte("only calldata")))
+// 	keeper.GetNextRequestID(ctx)
 
-	// create query
-	acsBytes, err = querier(
-		ctx,
-		[]string{"requests", "1", "3"},
-		abci.RequestQuery{},
-	)
-	require.Nil(t, err)
+// 	// create query
+// 	acsBytes, err = querier(
+// 		ctx,
+// 		[]string{"requests", "1", "3"},
+// 		abci.RequestQuery{},
+// 	)
+// 	require.Nil(t, err)
 
-	// Use bytes format for comparison
-	acs, errJSON := codec.MarshalJSONIndent(
-		keeper.cdc,
-		[]types.RequestQuerierInfo{
-			types.NewRequestQuerierInfo(
-				1,
-				request,
-				[]types.RawDataRequestWithExternalID{
-					types.NewRawDataRequestWithExternalID(
-						1,
-						types.NewRawDataRequest(0, []byte("calldata1")),
-					),
-					types.NewRawDataRequestWithExternalID(
-						2,
-						types.NewRawDataRequest(1, []byte("calldata2")),
-					),
-				},
-				[]types.ReportWithValidator{
-					types.NewReportWithValidator([]types.RawDataReportWithID{
-						types.NewRawDataReportWithID(1, 0, []byte("report1")),
-						types.NewRawDataReportWithID(2, 0, []byte("report2")),
-					}, request.RequestedValidators[0]),
-					types.NewReportWithValidator([]types.RawDataReportWithID{
-						types.NewRawDataReportWithID(1, 0, []byte("report1-2")),
-						types.NewRawDataReportWithID(2, 0, []byte("report2-2")),
-					}, request.RequestedValidators[1]),
-				},
-				result,
-			),
-			types.NewRequestQuerierInfo(
-				2,
-				request,
-				[]types.RawDataRequestWithExternalID{
-					types.NewRawDataRequestWithExternalID(
-						100,
-						types.NewRawDataRequest(1, []byte("only calldata")),
-					),
-				},
-				[]types.ReportWithValidator{},
-				types.Result{},
-			),
-		},
-	)
-	require.Nil(t, errJSON)
-	require.Equal(t, acs, acsBytes)
-}
+// 	// Use bytes format for comparison
+// 	acs, errJSON := codec.MarshalJSONIndent(
+// 		keeper.cdc,
+// 		[]types.RequestQuerierInfo{
+// 			types.NewRequestQuerierInfo(
+// 				1,
+// 				request,
+// 				[]types.RawDataRequestWithExternalID{
+// 					types.NewRawDataRequestWithExternalID(
+// 						1,
+// 						types.NewRawDataRequest(0, []byte("calldata1")),
+// 					),
+// 					types.NewRawDataRequestWithExternalID(
+// 						2,
+// 						types.NewRawDataRequest(1, []byte("calldata2")),
+// 					),
+// 				},
+// 				[]types.ReportWithValidator{
+// 					types.NewReportWithValidator([]types.RawDataReportWithID{
+// 						types.NewRawDataReportWithID(1, 0, []byte("report1")),
+// 						types.NewRawDataReportWithID(2, 0, []byte("report2")),
+// 					}, request.RequestedValidators[0]),
+// 					types.NewReportWithValidator([]types.RawDataReportWithID{
+// 						types.NewRawDataReportWithID(1, 0, []byte("report1-2")),
+// 						types.NewRawDataReportWithID(2, 0, []byte("report2-2")),
+// 					}, request.RequestedValidators[1]),
+// 				},
+// 				result,
+// 			),
+// 			types.NewRequestQuerierInfo(
+// 				2,
+// 				request,
+// 				[]types.RawDataRequestWithExternalID{
+// 					types.NewRawDataRequestWithExternalID(
+// 						100,
+// 						types.NewRawDataRequest(1, []byte("only calldata")),
+// 					),
+// 				},
+// 				[]types.ReportWithValidator{},
+// 				types.Result{},
+// 			),
+// 		},
+// 	)
+// 	require.Nil(t, errJSON)
+// 	require.Equal(t, acs, acsBytes)
+// }
 
 func TestQueryOracleScriptById(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)

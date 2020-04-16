@@ -1,9 +1,14 @@
 package keeper
 
 import (
+	"encoding/hex"
+	"fmt"
+
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	channel "github.com/cosmos/cosmos-sdk/x/ibc/04-channel"
+	ibctypes "github.com/cosmos/cosmos-sdk/x/ibc/types"
 )
 
 // SetRequest saves the given data request to the store without performing any validation.
@@ -88,43 +93,51 @@ func (k Keeper) ProcessOracleResponse(
 		panic(err)
 	}
 
-	// TODO: Send IBC packets + save data to result tree
-	reqPacketData := types.OracleRequestPacketData{}
-	resPacketData := types.OracleResponsePacketData{}
+	reqPacketData := types.NewOracleRequestPacketData(
+		request.ClientID, request.OracleScriptID,
+		string(request.Calldata), request.SufficientValidatorCount,
+		int64(len(request.RequestedValidators)),
+	)
+	resPacketData := types.NewOracleResponsePacketData(
+		request.ClientID,
+		reqID,
+		int64(len(request.ReceivedValidators)),
+		request.RequestTime, ctx.BlockTime().Unix(),
+		types.Success, hex.EncodeToString(result),
+	)
 
-	_ = request
-	_ = reqPacketData
-	_ = resPacketData
+	k.AddResult(ctx, reqID, reqPacketData, resPacketData)
 
-	// SOME OLD CODE FOR YOU!
-	// 	event, packet := handleResolveRequest(ctx, keeper, requestID)
-	// 	// TODO: Refactor this packet code
-	// 	request, err := keeper.GetRequest(ctx, requestID)
-	// 	events = append(events, event)
-	// 	sourceChannelEnd, found := keeper.ChannelKeeper.GetChannel(ctx, request.SourcePort, request.SourceChannel)
-	// 	if !found {
-	// 		fmt.Println("SOURCE NOT FOUND", request.SourcePort, request.SourceChannel)
-	// 		continue
-	// 	}
+	sourceChannelEnd, found := k.ChannelKeeper.GetChannel(ctx, request.SourcePort, request.SourceChannel)
+	if !found {
+		fmt.Println("SOURCE NOT FOUND1", request.SourcePort, request.SourceChannel)
+		return
+	}
 
-	// 	destinationPort := sourceChannelEnd.Counterparty.PortID
-	// 	destinationChannel := sourceChannelEnd.Counterparty.ChannelID
+	destinationPort := sourceChannelEnd.Counterparty.PortID
+	destinationChannel := sourceChannelEnd.Counterparty.ChannelID
 
-	// 	// get the next sequence
-	// 	sequence, found := keeper.ChannelKeeper.GetNextSequenceSend(ctx, request.SourcePort, request.SourceChannel)
-	// 	if !found {
-	// 		fmt.Println("SEQUENCE NOT FOUND", request.SourcePort, request.SourceChannel)
-	// 		continue
-	// 	}
+	sequence, found := k.ChannelKeeper.GetNextSequenceSend(ctx, request.SourcePort, request.SourceChannel)
+	if !found {
+		fmt.Println("SEQUENCE NOT FOUND2", request.SourcePort, request.SourceChannel)
+		panic(err)
 
-	// 	err = keeper.ChannelKeeper.SendPacket(ctx, channel.NewPacket(packet.GetBytes(),
-	// 		sequence, request.SourcePort, request.SourceChannel, destinationPort, destinationChannel,
-	// 		1000000000, // Arbitrarily high timeout for now
-	// 	))
+	}
 
-	// 	if err != nil {
-	// 		fmt.Println("SEND PACKET ERROR", err)
-	// 	}
+	channelCap, ok := k.scopedKeeper.GetCapability(ctx, ibctypes.ChannelCapabilityPath(destinationPort, destinationChannel))
+	if !ok {
+		panic(err)
+	}
+	err = k.ChannelKeeper.SendPacket(ctx, channelCap, channel.NewPacket(resPacketData.GetBytes(),
+		sequence, request.SourcePort, request.SourceChannel, destinationPort, destinationChannel,
+		1000000000, // Arbitrarily high timeout for now
+	))
+
+	if err != nil {
+		fmt.Println("SEND PACKET ERROR", err)
+		panic(err)
+	}
+
 }
 
 // ProcessExpiredRequests removes all expired data requests from the store, and

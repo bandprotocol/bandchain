@@ -37,15 +37,12 @@ func (b *BandDB) HandleEndblockEvent(event abci.Event) {
 			rawResult = nil
 			if resolveStatus == 1 {
 				id := oracle.RequestID(requestID)
-				request, sdkErr := b.OracleKeeper.GetRequest(b.ctx, id)
+
+				result, sdkErr := b.OracleKeeper.GetResult(b.ctx, id)
 				if sdkErr != nil {
 					panic(err)
 				}
-				result, sdkErr := b.OracleKeeper.GetResult(b.ctx, id, request.OracleScriptID, request.Calldata)
-				if sdkErr != nil {
-					panic(err)
-				}
-				rawResult = result.Data
+				rawResult = result
 			}
 			err = b.ResolveRequest(requestID, resolveStatus, rawResult)
 			if err != nil {
