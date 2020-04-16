@@ -53,7 +53,7 @@ module ToggleButton = {
         className={style([
           display(`flex),
           justifyContent(isActive ? `flexStart : `flexEnd),
-          backgroundColor(Colors.purple1),
+          backgroundColor(Colors.gray2),
           borderRadius(`px(15)),
           padding2(~v=`px(2), ~h=`px(3)),
           width(`px(45)),
@@ -221,8 +221,10 @@ let make = () =>
 
     let pageSize = 10;
 
+    let (isActive, setIsActive) = React.useState(_ => true);
+
     let validatorsCountSub = ValidatorSub.count();
-    let validatorsSub = ValidatorSub.getList(~page, ~pageSize, ());
+    let validatorsSub = ValidatorSub.getList(~page, ~pageSize, ~isActive, ());
     // TODO: Update once bonding status is available
     let bondedValidatorCountSub = ValidatorSub.count();
     let bondedTokenCountSub = ValidatorSub.getTotalBondedAmount();
@@ -260,8 +262,8 @@ let make = () =>
             <Text value={(allValidatorCount |> string_of_int) ++ " In total"} />
           </div>
         </Col>
+        <Col> <ToggleButton isActive setIsActive /> </Col>
       </Row>
-      // <Col> <ToggleButton isActive setIsActive /> </Col>
       <div className=Styles.highlight>
         <Row>
           <Col size=0.7>
