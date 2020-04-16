@@ -12,7 +12,7 @@ type t =
   | Hash(Hash.t, Css.Types.Color.t)
   | Address(Address.t, int)
   | Fraction(int, int, bool)
-  | FloatWithSuffix(float, string)
+  | FloatWithSuffix(float, string, int)
   | ValidatorsMini(array(ValidatorSub.Mini.t))
   | Validators(array(ValidatorSub.t));
 
@@ -66,9 +66,9 @@ let make = (~info, ~header, ~isLeft=true) => {
          spacing={Text.Em(0.02)}
          code=true
        />
-     | FloatWithSuffix(value, suffix) =>
+     | FloatWithSuffix(value, suffix, digits) =>
        <Text
-         value={(value |> Js.Float.toString) ++ suffix}
+         value={(value |> Js.Float.toFixedWithPrecision(_, ~digits)) ++ suffix}
          size=Text.Lg
          weight=Text.Semibold
          spacing={Text.Em(0.02)}
