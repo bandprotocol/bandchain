@@ -66,7 +66,7 @@ func (k Keeper) EditDataSource(
 	if err != nil {
 		return err
 	}
-	dataSource.Owner = owner // ALLOW: NOT_MODIFY or NIL IN THESE FIELDS
+	dataSource.Owner = owner // TODO: Allow NOT_MODIFY or nil in these fields.
 	dataSource.Name = name
 	dataSource.Description = description
 	dataSource.Fee = fee
