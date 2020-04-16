@@ -26,7 +26,7 @@ func TestSetterGetterDataSource(t *testing.T) {
 	_, err := k.GetDataSource(ctx, 42)
 	require.Error(t, err)
 	require.Panics(t, func() { _ = k.MustGetDataSource(ctx, 42) })
-	// Creates some basic data sources
+	// Creates some basic data sources.
 	dataSource1 := types.NewDataSource(
 		Alice.Address, "NAME1", "DESCRIPTION1", Coins10uband, []byte("executable1"),
 	)
@@ -53,7 +53,7 @@ func TestSetterGetterDataSource(t *testing.T) {
 
 func TestAddDataSourceEditDataSourceBasic(t *testing.T) {
 	_, ctx, k := createTestInput()
-	// Creates some basic data sources
+	// Creates some basic data sources.
 	dataSource1 := types.NewDataSource(
 		Alice.Address, "NAME1", "DESCRIPTION1", Coins10uband, []byte("executable1"),
 	)

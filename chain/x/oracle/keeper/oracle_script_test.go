@@ -24,7 +24,7 @@ func TestSetterGetterOracleScript(t *testing.T) {
 	_, err := k.GetOracleScript(ctx, 42)
 	require.Error(t, err)
 	require.Panics(t, func() { _ = k.MustGetOracleScript(ctx, 42) })
-	// Creates some basic oracle scripts
+	// Creates some basic oracle scripts.
 	oracleScript1 := types.NewOracleScript(Alice.Address, "NAME1", "DESCRIPTION1", []byte("code1"))
 	oracleScript2 := types.NewOracleScript(Bob.Address, "NAME2", "DESCRIPTION2", []byte("code2"))
 	// Sets id 42 with oracle script 1 and id 42 with oracle script 2.
@@ -47,7 +47,7 @@ func TestSetterGetterOracleScript(t *testing.T) {
 
 func TestAddEditOracleScriptBasic(t *testing.T) {
 	_, ctx, k := createTestInput()
-	// Creates some basic oracle scripts
+	// Creates some basic oracle scripts.
 	oracleScript1 := types.NewOracleScript(Alice.Address, "NAME1", "DESCRIPTION1", []byte("code1"))
 	oracleScript2 := types.NewOracleScript(Bob.Address, "NAME2", "DESCRIPTION2", []byte("code2"))
 	// Adds a new oracle script to the store. We should be able to retreive it back.
