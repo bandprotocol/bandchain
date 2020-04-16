@@ -151,7 +151,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
       <VSpacing size=Spacing.xxl />
       <Row justify=Row.Between alignItems=`flexStart>
         <Col size=0.75>
-          <PieChart size=187 availableBalance balanceAtStake={balanceAtStake.amount} />
+          <PieChart size=187 availableBalance balanceAtStake={balanceAtStake.amount} reward={balanceAtStake.reward} />
         </Col>
         <Col size=1.>
           <VSpacing size=Spacing.md />
