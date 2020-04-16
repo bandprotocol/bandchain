@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"crypto/sha256"
+
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -21,11 +23,19 @@ func (k Keeper) AddResult(
 	}
 	store := ctx.KVStore(k.storeKey)
 
-	result := k.cdc.MustMarshalBinaryBare(requestPacket)
-	result = append(result, k.cdc.MustMarshalBinaryBare(responsePacket)...)
+	h := sha256.New()
+	h.Write(k.cdc.MustMarshalBinaryBare(requestPacket))
+	reqPacketHash := h.Sum(nil)
+
+	h = sha256.New()
+	h.Write(k.cdc.MustMarshalBinaryBare(responsePacket))
+	resPacketHash := h.Sum(nil)
+
+	h = sha256.New()
+	h.Write(append(reqPacketHash, resPacketHash...))
 	store.Set(
 		types.ResultStoreKey(requestID),
-		k.cdc.MustMarshalBinaryBare(result),
+		h.Sum(nil),
 	)
 	return nil
 }
