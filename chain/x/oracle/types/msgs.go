@@ -363,9 +363,9 @@ type MsgEditOracleScript struct {
 	Name           string         `json:"name"`
 	Description    string         `json:"description"`
 	Code           []byte         `json:"code"`
-	Sender         sdk.AccAddress `json:"sender"`
 	Schema         string         `json:"schema"`
-	SourceCodeURL  string         `json:"sourceCodeURL"`
+	SourceCodeURL  string         `json:"source_code_url"`
+	Sender         sdk.AccAddress `json:"sender"`
 }
 
 // NewMsgEditOracleScript creates a new MsgEditOracleScript instance.
