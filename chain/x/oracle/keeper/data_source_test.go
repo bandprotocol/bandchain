@@ -10,11 +10,11 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
-var BASIC_DS_NAME = "NAME"
-var BASIC_DS_DESC = "DESCRIPTION"
-var BASIC_DS_EXEC = []byte("EXECUTABLE")
+var BASIC_DS_NAME = "DS_NAME"
+var BASIC_DS_DESC = "DS_DESCRIPTION"
+var BASIC_DS_EXEC = []byte("DS_EXECUTABLE")
 
-func addBasicDataSource(ctx sdk.Context, k me.Keeper) types.DataSourceID {
+func addBasicDataSource(ctx sdk.Context, k me.Keeper) types.DID {
 	id, err := k.AddDataSource(ctx,
 		OWNER.Address, BASIC_DS_NAME, BASIC_DS_DESC, COINS_10_UBAND, BASIC_DS_EXEC,
 	)
@@ -55,7 +55,7 @@ func TestSetterGetterDataSource(t *testing.T) {
 	require.Equal(t, dataSource2, k.MustGetDataSource(ctx, 42))
 }
 
-func TestAddEditDataSourceBasic(t *testing.T) {
+func TestAddDataSourceEditDataSourceBasic(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// Creates some basic data sources
 	dataSource1 := types.NewDataSource(
@@ -82,7 +82,7 @@ func TestAddEditDataSourceBasic(t *testing.T) {
 	require.Equal(t, dataSource2, k.MustGetDataSource(ctx, id))
 }
 
-func TestAddDataSourceMustReturnCorrectID(t *testing.T) {
+func TestAddDataSourceDataSourceMustReturnCorrectID(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// Initially we expect the data source count to be zero.
 	count := k.GetDataSourceCount(ctx)
@@ -92,28 +92,28 @@ func TestAddDataSourceMustReturnCorrectID(t *testing.T) {
 		OWNER.Address, BASIC_DS_NAME, BASIC_DS_DESC, COINS_10_UBAND, BASIC_DS_EXEC,
 	)
 	require.Nil(t, err)
-	require.Equal(t, id1, types.DataSourceID(1))
+	require.Equal(t, id1, types.DID(1))
 	// Adds another data source so now ID should be 2.
 	id2, err := k.AddDataSource(ctx,
 		OWNER.Address, BASIC_DS_NAME, BASIC_DS_DESC, COINS_10_UBAND, BASIC_DS_EXEC,
 	)
 	require.Nil(t, err)
-	require.Equal(t, id2, types.DataSourceID(2))
+	require.Equal(t, id2, types.DID(2))
 	// Finally we expect the data source to increase to 2 since we added two data sources.
 	count = k.GetDataSourceCount(ctx)
 	require.Equal(t, count, int64(2))
 }
 
-func TestEditNonExistentDataSource(t *testing.T) {
+func TestEditDataSourceNonExistentDataSource(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// Editing a non-existent data should return error.
-	err := k.EditDataSource(ctx, types.DataSourceID(42),
+	err := k.EditDataSource(ctx, types.DID(42),
 		OWNER.Address, BASIC_DS_NAME, BASIC_DS_DESC, COINS_10_UBAND, BASIC_DS_EXEC,
 	)
 	require.Error(t, err)
 }
 
-func TestAddTooLongName(t *testing.T) {
+func TestAddDataSourceTooLongName(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// Sets max name length to 9. We should fail to add data source with name length 10.
 	k.SetParam(ctx, types.KeyMaxNameLength, 9)
@@ -129,7 +129,7 @@ func TestAddTooLongName(t *testing.T) {
 	require.Nil(t, err)
 }
 
-func TestEditTooLongName(t *testing.T) {
+func TestEditDataSourceTooLongName(t *testing.T) {
 	_, ctx, k := createTestInput()
 	id := addBasicDataSource(ctx, k)
 	dataSource := k.MustGetDataSource(ctx, id)
@@ -149,7 +149,7 @@ func TestEditTooLongName(t *testing.T) {
 	require.Nil(t, err)
 }
 
-func TestAddTooLongDescription(t *testing.T) {
+func TestAddDataSourceTooLongDescription(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// Sets max desc length to 41. We should fail to add data source with desc length 42.
 	k.SetParam(ctx, types.KeyMaxDescriptionLength, 41)
@@ -167,7 +167,7 @@ func TestAddTooLongDescription(t *testing.T) {
 	require.Nil(t, err)
 }
 
-func TestEditTooLongDescription(t *testing.T) {
+func TestEditDataSourceTooLongDescription(t *testing.T) {
 	_, ctx, k := createTestInput()
 	id := addBasicDataSource(ctx, k)
 	dataSource := k.MustGetDataSource(ctx, id)
@@ -187,7 +187,7 @@ func TestEditTooLongDescription(t *testing.T) {
 	require.Nil(t, err)
 }
 
-func TestAddTooBigExecutable(t *testing.T) {
+func TestAddDataSourceTooBigExecutable(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// Sets max executable size to 40. We should fail to add data source with exec size 42.
 	k.SetParam(ctx, types.KeyMaxExecutableSize, 40)
@@ -205,7 +205,7 @@ func TestAddTooBigExecutable(t *testing.T) {
 	require.Nil(t, err)
 }
 
-func TestEditTooBigExecutable(t *testing.T) {
+func TestEditDataSourceTooBigExecutable(t *testing.T) {
 	_, ctx, k := createTestInput()
 	id := addBasicDataSource(ctx, k)
 	dataSource := k.MustGetDataSource(ctx, id)
