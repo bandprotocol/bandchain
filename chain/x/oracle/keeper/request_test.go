@@ -134,31 +134,31 @@ func TestRequestExceedEndBlockExecuteGasLimit(t *testing.T) {
 	require.Nil(t, err)
 }
 
-// TestSetResolved tests keeper can set resolved status to request
-func TestSetResolved(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-	request := newDefaultRequest()
+// // TestSetResolved tests keeper can set resolved status to request
+// func TestSetResolved(t *testing.T) {
+// 	ctx, keeper := CreateTestInput(t, false)
+// 	request := newDefaultRequest()
 
-	keeper.SetRequest(ctx, 1, request)
+// 	keeper.SetRequest(ctx, 1, request)
 
-	err := keeper.SetResolve(ctx, 1, types.Success)
-	require.Nil(t, err)
+// 	err := keeper.SetResolve(ctx, 1, types.Success)
+// 	require.Nil(t, err)
 
-	actualRequest, err := keeper.GetRequest(ctx, 1)
-	request.ResolveStatus = types.Success
-	require.Nil(t, err)
-	require.Equal(t, request, actualRequest)
-}
+// 	actualRequest, err := keeper.GetRequest(ctx, 1)
+// 	request.ResolveStatus = types.Success
+// 	require.Nil(t, err)
+// 	require.Equal(t, request, actualRequest)
+// }
 
-// TestSetResolvedOnInvalidRequest tests keeper must return if set on invalid request
-func TestSetResolvedOnInvalidRequest(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-	request := newDefaultRequest()
+// // TestSetResolvedOnInvalidRequest tests keeper must return if set on invalid request
+// func TestSetResolvedOnInvalidRequest(t *testing.T) {
+// 	ctx, keeper := CreateTestInput(t, false)
+// 	request := newDefaultRequest()
 
-	keeper.SetRequest(ctx, 1, request)
-	err := keeper.SetResolve(ctx, 2, types.Success)
-	require.NotNil(t, err)
-}
+// 	keeper.SetRequest(ctx, 1, request)
+// 	err := keeper.SetResolve(ctx, 2, types.Success)
+// 	require.NotNil(t, err)
+// }
 
 // Can get/set pending request correctly and set empty case
 func TestGetSetPendingRequests(t *testing.T) {

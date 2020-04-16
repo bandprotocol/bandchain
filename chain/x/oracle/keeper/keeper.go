@@ -5,6 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/cosmos/cosmos-sdk/x/capability"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
@@ -17,12 +18,14 @@ type Keeper struct {
 	StakingKeeper staking.Keeper
 	ChannelKeeper types.ChannelKeeper
 	ParamSpace    params.Subspace
+	scopedKeeper  capability.ScopedKeeper
 }
 
 // NewKeeper creates a new oracle Keeper instance.
 func NewKeeper(
 	cdc *codec.Codec, key sdk.StoreKey, coinKeeper bank.Keeper,
 	stakingKeeper staking.Keeper, channelKeeper types.ChannelKeeper, paramSpace params.Subspace,
+	scopedKeeper capability.ScopedKeeper,
 ) Keeper {
 	return Keeper{
 		storeKey:      key,
@@ -31,6 +34,7 @@ func NewKeeper(
 		StakingKeeper: stakingKeeper,
 		ChannelKeeper: channelKeeper,
 		ParamSpace:    paramSpace.WithKeyTable(ParamKeyTable()),
+		scopedKeeper:  scopedKeeper,
 	}
 }
 
@@ -64,7 +68,28 @@ func (k Keeper) GetParams(ctx sdk.Context) types.Params {
 		k.GetParam(ctx, types.KeyMaxDescriptionLength),
 		k.GetParam(ctx, types.KeyGasPerRawDataRequestPerValidator),
 		k.GetParam(ctx, types.KeyExpirationBlockCount),
+		k.GetParam(ctx, types.KeyExecuteGas),
+		k.GetParam(ctx, types.KeyPrepareGas),
 	)
+}
+
+// GetRequestBeginID TODO
+func (k Keeper) GetRequestBeginID(ctx sdk.Context) types.RequestID {
+	var requestBeginID int64
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.RequestBeginStoreKey)
+	if bz == nil {
+		return types.RequestID(1)
+	}
+	k.cdc.MustUnmarshalBinaryLengthPrefixed(bz, &requestBeginID)
+	return types.RequestID(requestBeginID)
+}
+
+// SetRequestBeginID TODO
+func (k Keeper) SetRequestBeginID(ctx sdk.Context, id types.RequestID) {
+	store := ctx.KVStore(k.storeKey)
+	bz := k.cdc.MustMarshalBinaryLengthPrefixed(id)
+	store.Set(types.RequestBeginStoreKey, bz)
 }
 
 // GetRequestCount returns the current number of all requests ever exist.

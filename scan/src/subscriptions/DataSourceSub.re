@@ -11,7 +11,7 @@ type t = {
 module MultiConfig = [%graphql
   {|
   subscription DataSources($limit: Int!, $offset: Int!) {
-    data_sources(limit: $limit, offset: $offset) @bsRecord {
+    data_sources(limit: $limit, offset: $offset, order_by: {last_updated: desc}) @bsRecord {
       id @bsDecoder(fn: "ID.DataSource.fromJson")
       owner @bsDecoder(fn: "Address.fromBech32")
       name

@@ -422,7 +422,7 @@ module SingleRequestConfig = [%graphql
 module MultiRequestConfig = [%graphql
   {|
     subscription Requests($limit: Int!, $offset: Int!) {
-      requests(limit: $limit, offset: $offset) @bsRecord {
+      requests(limit: $limit, offset: $offset, order_by: {id: desc}) @bsRecord {
         id @bsDecoder(fn: "ID.Request.fromJson")
         oracleScript: oracle_script @bsRecord {
           oracleScriptID:id @bsDecoder(fn: "ID.OracleScript.fromJson")

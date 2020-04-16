@@ -12,7 +12,7 @@ type t =
   | Hash(Hash.t, Css.Types.Color.t)
   | Address(Address.t, int)
   | Fraction(int, int, bool)
-  | FloatWithSuffix(float, string)
+  | FloatWithSuffix(float, string, int)
   | ValidatorsMini(array(ValidatorSub.Mini.t))
   | Validators(array(ValidatorSub.t));
 
@@ -28,6 +28,7 @@ module Styles = {
   let vFlex = style([display(`flex), alignItems(`center)]);
   let addressContainer = maxwidth_ => style([alignItems(`center), maxWidth(`px(maxwidth_))]);
   let datasourcesContainer = style([display(`flex), alignItems(`center), flexWrap(`wrap)]);
+  let validatorsContainer = style([display(`flex), flexDirection(`column), flexWrap(`wrap)]);
   let headerContainer = style([lineHeight(`px(25))]);
   let sourceContainer =
     style([
@@ -65,9 +66,9 @@ let make = (~info, ~header, ~isLeft=true) => {
          spacing={Text.Em(0.02)}
          code=true
        />
-     | FloatWithSuffix(value, suffix) =>
+     | FloatWithSuffix(value, suffix, digits) =>
        <Text
-         value={(value |> Js.Float.toString) ++ suffix}
+         value={(value |> Js.Float.toFixedWithPrecision(_, ~digits)) ++ suffix}
          size=Text.Lg
          weight=Text.Semibold
          spacing={Text.Em(0.02)}
@@ -173,17 +174,16 @@ let make = (~info, ~header, ~isLeft=true) => {
          <AddressRender address position=AddressRender.Subtitle />
        </div>
      | ValidatorsMini(validators) =>
-       <div className=Styles.datasourcesContainer>
+       <div className=Styles.validatorsContainer>
          {validators
           ->Belt_Array.map(validator =>
-              <div
-                key={validator.operatorAddress |> Address.toBech32}
-                className={Styles.marginRightOnly(10)}>
+              <div key={validator.operatorAddress |> Address.toBech32} className=Styles.vFlex>
+                <Text value={j|●|j} />
+                <HSpacing size=Spacing.md />
                 <ValidatorMonikerLink
                   validatorAddress={validator.operatorAddress}
                   moniker={validator.moniker}
                   size=Text.Lg
-                  underline=true
                 />
               </div>
             )

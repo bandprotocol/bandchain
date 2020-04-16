@@ -17,23 +17,11 @@ module Styles = {
       paddingTop(Spacing.lg),
       paddingBottom(Spacing.lg),
       backgroundColor(Colors.white),
-      border(`px(1), `solid, hex("F9F7FA")),
+      border(`px(2), `solid, Colors.blueGray1),
     ]);
 
   let topBarInner =
     style([display(`flex), width(`percent(100.)), justifyContent(`spaceBetween)]);
-
-  let version =
-    style([
-      display(`flex),
-      borderRadius(`px(10)),
-      backgroundColor(`hex("EBECFF")),
-      padding2(~v=`pxFloat(4.3), ~h=`px(8)),
-      justifyContent(`center),
-      alignItems(`center),
-      marginLeft(Spacing.xs),
-      marginTop(`px(1)),
-    ]);
 
   let rFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
@@ -59,70 +47,56 @@ module Styles = {
 
 module TopBar = {
   [@react.component]
-  let make = () =>
-    {
-      let metadataSub = MetadataSub.use();
-      let%Sub metadata = metadataSub;
-      <div className=Styles.topBarContainer>
-        <div className={Css.merge([Styles.topBarInner, Styles.pageWidth])}>
-          <div className=Styles.logoContainer onClick={_ => Route.redirect(Route.HomePage)}>
-            <Row>
-              <Col> <img src=Images.bandLogo className=Styles.bandLogo /> </Col>
-              <Col> <HSpacing size=Spacing.sm /> </Col>
-              <Col>
+  let make = () => {
+    <div className=Styles.topBarContainer>
+      <div className={Css.merge([Styles.topBarInner, Styles.pageWidth])}>
+        <div className=Styles.logoContainer onClick={_ => Route.redirect(Route.HomePage)}>
+          <Row>
+            <Col> <img src=Images.bandLogo className=Styles.bandLogo /> </Col>
+            <Col> <HSpacing size=Spacing.sm /> </Col>
+            <Col>
+              <Text
+                value="BandChain"
+                size=Text.Xxl
+                weight=Text.Bold
+                nowrap=true
+                color=Colors.gray8
+                spacing={Text.Em(0.05)}
+              />
+              <VSpacing size=Spacing.xs />
+              <div className=Styles.rFlex>
                 <Text
-                  value="BandChain"
-                  size=Text.Xxl
-                  weight=Text.Bold
+                  value="EXPLORER"
                   nowrap=true
-                  color=Colors.gray8
-                  spacing={Text.Em(0.05)}
+                  size=Text.Sm
+                  weight=Text.Semibold
+                  color=Colors.gray6
+                  spacing={Text.Em(0.03)}
                 />
-                <VSpacing size=Spacing.xs />
-                <div className=Styles.rFlex>
-                  <Text
-                    value="EXPLORER"
-                    nowrap=true
-                    size=Text.Sm
-                    weight=Text.Semibold
-                    color={Css.hex("777777")}
-                    spacing={Text.Em(0.03)}
-                  />
-                  <HSpacing size=Spacing.xs />
-                  <div className=Styles.version>
-                    <Text
-                      value={metadata.chainID}
-                      size=Text.Xs
-                      color={Css.hex("535BBF")}
-                      nowrap=true
-                      weight=Text.Semibold
-                      spacing={Text.Em(0.03)}
-                    />
-                  </div>
+                <HSpacing size=Spacing.xs />
+                <ChainIDBadge />
+              </div>
+            </Col>
+            <Col alignSelf=Col.End>
+              <div className=Styles.rFlex>
+                <div className=Styles.socialLink>
+                  <a href="https://twitter.com/bandprotocol" target="_blank" rel="noopener">
+                    <img src=Images.twitterLogo className=Styles.twitterLogo />
+                  </a>
                 </div>
-              </Col>
-              <Col alignSelf=Col.End>
-                <div className=Styles.rFlex>
-                  <div className=Styles.socialLink>
-                    <a href="https://twitter.com/bandprotocol" target="_blank" rel="noopener">
-                      <img src=Images.twitterLogo className=Styles.twitterLogo />
-                    </a>
-                  </div>
-                  <div className=Styles.socialLink>
-                    <a href="https://t.me/bandprotocol" target="_blank" rel="noopener">
-                      <img src=Images.telegramLogo className=Styles.telegramLogo />
-                    </a>
-                  </div>
+                <div className=Styles.socialLink>
+                  <a href="https://t.me/bandprotocol" target="_blank" rel="noopener">
+                    <img src=Images.telegramLogo className=Styles.telegramLogo />
+                  </a>
                 </div>
-              </Col>
-            </Row>
-          </div>
-          <SearchBar />
+              </div>
+            </Col>
+          </Row>
         </div>
+        <SearchBar />
       </div>
-      |> Sub.resolve;
-    }
-    |> Sub.default(_, React.null);
+    </div>;
+  };
 };
 
 [@react.component]
