@@ -129,13 +129,6 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 		sourceCodeURL string
 	}{
 		{
-			"Crypto price script",
-			"Oracle script for getting an average crypto price from many sources.",
-			"./owasm/res/crypto_price.wasm",
-			`{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }`,
-			`https://bandprotocol.com`,
-		},
-		{
 			"Crypto price script (Borsh version)",
 			"Oracle script for getting an average crypto price from many sources encoding parameter by borsh.",
 			"./owasm/res/crypto_price_borsh.wasm",
@@ -146,7 +139,7 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			"Gold price script",
 			"Oracle script for getting an average gold price in ATOM",
 			"./owasm/res/gold_price.wasm",
-			`{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }`,
+			`{"Input": "{ \"kind\": \"struct\", \"fields\": [ [\"multiplier\", \"u64\"] ] }", "Output": "{ \"kind\": \"struct\", \"fields\": [ [\"px\", \"u64\"] ] }`,
 			`https://bandprotocol.com`,
 		},
 	}

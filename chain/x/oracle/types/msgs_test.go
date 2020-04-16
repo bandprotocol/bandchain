@@ -316,15 +316,15 @@ func TestMsgEditDataSourceGetSignBytes(t *testing.T) {
 func TestMsgCreateOracleScript(t *testing.T) {
 	owner := sdk.AccAddress([]byte("owner"))
 	sender := sdk.AccAddress([]byte("sender"))
-	msg := NewMsgCreateOracleScript(owner, "oracle_script_1", "description", []byte("code"), sender, "schema", `{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }`)
+	msg := NewMsgCreateOracleScript(owner, "oracle_script_1", "description", []byte("code"), sender, `{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }`, `https://bandprotocol.com`)
 	require.Equal(t, RouterKey, msg.Route())
 	require.Equal(t, "create_oracle_script", msg.Type())
 	require.Equal(t, owner, msg.Owner)
 	require.Equal(t, "oracle_script_1", msg.Name)
 	require.Equal(t, []byte("code"), msg.Code)
 	require.Equal(t, sender, msg.Sender)
-	require.Equal(t, "schema", msg.Schema)
-	require.Equal(t, `{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }`, msg.SourceCodeURL)
+	require.Equal(t, `{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }`, msg.Schema)
+	require.Equal(t, `https://bandprotocol.com`, msg.SourceCodeURL)
 }
 
 func TestMsgCreateOracleScriptValidation(t *testing.T) {

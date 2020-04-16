@@ -174,6 +174,8 @@ func queryOracleScriptByID(ctx sdk.Context, path []string, req abci.RequestQuery
 		oracleScript.Name,
 		oracleScript.Description,
 		oracleScript.Code,
+		oracleScript.Schema,
+		oracleScript.SourceCodeURL,
 	)), nil
 }
 
@@ -208,6 +210,8 @@ func queryOracleScripts(ctx sdk.Context, path []string, req abci.RequestQuery, k
 			oracleScript.Name,
 			oracleScript.Description,
 			oracleScript.Code,
+			oracleScript.Schema,
+			oracleScript.SourceCodeURL,
 		))
 	}
 

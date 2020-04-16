@@ -423,7 +423,7 @@ func TestQueryOracleScriptById(t *testing.T) {
 	code := []byte("code")
 	schema := "schema"
 	sourceCodeURL := "sourceCodeURL"
-	expectedResult := types.NewOracleScriptQuerierInfo(1, owner, name, description, code)
+	expectedResult := types.NewOracleScriptQuerierInfo(1, owner, name, description, code, schema, sourceCodeURL)
 
 	keeper.SetOracleScript(ctx, 1, types.NewOracleScript(owner, name, description, code, schema, sourceCodeURL))
 
@@ -454,11 +454,11 @@ func TestQueryOracleScriptsByStartIdAndNumberOfOracleScripts(t *testing.T) {
 		name := "oracle_script_" + strconv.Itoa(i)
 		description := "description_" + strconv.Itoa(i)
 		code := []byte("code" + strconv.Itoa(i))
-		schema := "schema"
-		sourceCodeURL := "sourceCodeURL"
-		eachOracleScript := types.NewOracleScriptQuerierInfo(types.OracleScriptID(i), owner, name, description, code)
+		schema := "schema" + strconv.Itoa(i)
+		sourceCodeURL := "sourceCodeURL" + strconv.Itoa(i)
+		eachOracleScript := types.NewOracleScriptQuerierInfo(types.OracleScriptID(i), owner, name, description, code, schema, sourceCodeURL)
 
-		_, err := keeper.AddOracleScript(ctx, eachOracleScript.Owner, eachOracleScript.Name, eachOracleScript.Description, eachOracleScript.Code, schema, sourceCodeURL)
+		_, err := keeper.AddOracleScript(ctx, eachOracleScript.Owner, eachOracleScript.Name, eachOracleScript.Description, eachOracleScript.Code, eachOracleScript.Schema, eachOracleScript.SourceCodeURL)
 		require.Nil(t, err)
 
 		expectedResult = append(expectedResult, eachOracleScript)
