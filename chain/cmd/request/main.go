@@ -97,7 +97,7 @@ func main() {
 				oracle.NewMsgCreateOracleScript(
 					tx.Sender(), "Crypto price script",
 					"Oracle script for getting an average crypto price from many sources.",
-					oracleBytes, tx.Sender(), `{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }`, "sourceCodeURL",
+					oracleBytes, `{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }`, "sourceCodeURL",tx.Sender(),
 				),
 				3000000, "", "",
 			))
@@ -224,7 +224,7 @@ func main() {
 
 			fmt.Println(tx.SendTransaction(
 				oracle.NewMsgCreateOracleScript(
-					tx.Sender(), "Silly script", "Test oracle script", bytes, tx.Sender(), `{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }`, "sourceCodeURL"),
+					tx.Sender(), "Silly script", "Test oracle script", bytes, `{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }`, "sourceCodeURL", tx.Sender(),),
 				3000000, "", "",
 			))
 
@@ -257,7 +257,7 @@ func main() {
 				fmt.Println(tx.SendTransaction(
 					oracle.NewMsgCreateOracleScript(
 						tx.Sender(), fmt.Sprintf("Silly script %d", i), "Test oracle script",
-						bytes, tx.Sender(), `{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }`, "sourceCodeURL",
+						bytes, `{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }`, "sourceCodeURL",tx.Sender(),
 					), 1000000, "", "",
 				))
 				time.Sleep(100 * time.Millisecond)
