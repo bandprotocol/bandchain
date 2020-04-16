@@ -16,6 +16,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/levigross/grequests"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
+
 	cmn "github.com/tendermint/tendermint/libs/common"
 	rpc "github.com/tendermint/tendermint/rpc/client"
 

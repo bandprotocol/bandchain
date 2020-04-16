@@ -7,7 +7,8 @@ import (
 	"math/big"
 	"net/http"
 	"sort"
-	"strconv"
+
+	// "strconv"
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -17,13 +18,15 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/gorilla/mux"
-	"github.com/tendermint/iavl"
+
+	//"github.com/gorilla/mux"
+	//"github.com/tendermint/iavl"
 	"github.com/tendermint/tendermint/crypto/merkle"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 	"github.com/tendermint/tendermint/crypto/tmhash"
 	cmn "github.com/tendermint/tendermint/libs/common"
-	rpcclient "github.com/tendermint/tendermint/rpc/client"
+
+	// rpcclient "github.com/tendermint/tendermint/rpc/client"
 	"github.com/tendermint/tendermint/types"
 
 	"github.com/bandprotocol/bandchain/chain/x/zoracle"
@@ -384,153 +387,154 @@ func MakeOtherStoresMerkleHash(mspo rootmulti.MultiStoreProofOp) (cmn.HexBytes, 
 
 func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		intRequestID, err := strconv.ParseUint(vars[requestIDTag], 10, 64)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-		requestID := zoracle.RequestID(intRequestID)
+		// vars := mux.Vars(r)
+		// intRequestID, err := strconv.ParseUint(vars[requestIDTag], 10, 64)
+		// if err != nil {
+		// 	rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		// 	return
+		// }
+		// requestID := zoracle.RequestID(intRequestID)
 
-		rc, err := cliCtx.Client.Commit(nil)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+		// rc, err := cliCtx.Client.Commit(nil)
+		// if err != nil {
+		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		// 	return
+		// }
 
-		brp, err := GetBlockRelayProof(cliCtx, uint64(rc.Height))
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+		// brp, err := GetBlockRelayProof(cliCtx, uint64(rc.Height))
+		// if err != nil {
+		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		// 	return
+		// }
 
-		var queryRequest zoracle.RequestQuerierInfo
-		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/zoracle/request/%d", requestID), nil)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
+		// var queryRequest zoracle.RequestQuerierInfo
+		// res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/zoracle/request/%d", requestID), nil)
+		// if err != nil {
+		// 	rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		// 	return
+		// }
 
-		err = cliCtx.Codec.UnmarshalJSON(res, &queryRequest)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+		// err = cliCtx.Codec.UnmarshalJSON(res, &queryRequest)
+		// if err != nil {
+		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		// 	return
+		// }
 
-		key := zoracle.ResultStoreKey(requestID, queryRequest.Request.OracleScriptID, queryRequest.Request.Calldata)
+		// key := zoracle.ResultStoreKey(requestID, queryRequest.Request.OracleScriptID, queryRequest.Request.Calldata)
 
-		resp, err := cliCtx.Client.ABCIQueryWithOptions(
-			"/store/zoracle/key",
-			key,
-			rpcclient.ABCIQueryOptions{Height: rc.Height - 1, Prove: true},
-		)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+		// resp, err := cliCtx.Client.ABCIQueryWithOptions(
+		// 	"/store/zoracle/key",
+		// 	key,
+		// 	rpcclient.ABCIQueryOptions{Height: rc.Height - 1, Prove: true},
+		// )
+		// if err != nil {
+		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		// 	return
+		// }
 
-		proof := resp.Response.GetProof()
-		if proof == nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, "proof not found")
-			return
-		}
+		// proof := resp.Response.GetProof()
+		// if proof == nil {
+		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, "proof not found")
+		// 	return
+		// }
 
-		ops := proof.GetOps()
-		if ops == nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, "proof ops not found")
-			return
-		}
+		// ops := proof.GetOps()
+		// if ops == nil {
+		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, "proof ops not found")
+		// 	return
+		// }
 
-		var iavlOpData []byte
-		var multistoreOpData []byte
-		for _, op := range ops {
-			opType := op.GetType()
-			if opType == "iavl:v" {
-				iavlOpData = op.GetData()
-			} else if opType == "multistore" {
-				multistoreOpData = op.GetData()
-			}
-		}
-		if iavlOpData == nil || multistoreOpData == nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, "proof was corrupted")
-			return
-		}
+		// var iavlOpData []byte
+		// var multistoreOpData []byte
+		// for _, op := range ops {
+		// 	opType := op.GetType()
+		// 	if opType == "iavl:v" {
+		// 		iavlOpData = op.GetData()
+		// 	} else if opType == "multistore" {
+		// 		multistoreOpData = op.GetData()
+		// 	}
+		// }
+		// if iavlOpData == nil || multistoreOpData == nil {
+		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, "proof was corrupted")
+		// 	return
+		// }
 
-		var opiavl iavl.IAVLValueOp
-		err = cliCtx.Codec.UnmarshalBinaryLengthPrefixed(iavlOpData, &opiavl)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+		// var opiavl iavl.IAVLValueOp
+		// err = cliCtx.Codec.UnmarshalBinaryLengthPrefixed(iavlOpData, &opiavl)
+		// if err != nil {
+		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		// 	return
+		// }
 
-		odp := OracleDataProof{}
-		odp.RequestID = requestID
-		odp.Data = resp.Response.GetValue()
-		odp.OracleScriptID = queryRequest.Request.OracleScriptID
-		odp.Calldata = queryRequest.Request.Calldata
-		odp.Version = uint64(opiavl.Proof.Leaves[0].Version)
+		// odp := OracleDataProof{}
+		// odp.RequestID = requestID
+		// odp.Data = resp.Response.GetValue()
+		// odp.OracleScriptID = queryRequest.Request.OracleScriptID
+		// odp.Calldata = queryRequest.Request.Calldata
+		// odp.Version = uint64(opiavl.Proof.Leaves[0].Version)
 
-		for i := len(opiavl.Proof.LeftPath) - 1; i >= 0; i-- {
-			path := opiavl.Proof.LeftPath[i]
-			imp := IAVLMerklePath{}
-			imp.SubtreeHeight = uint8(path.Height)
-			imp.SubtreeSize = uint64(path.Size)
-			imp.SubtreeVersion = uint64(path.Version)
-			if len(path.Right) == 0 {
-				imp.SiblingHash = path.Left
-				imp.IsDataOnRight = true
-			} else {
-				imp.SiblingHash = path.Right
-				imp.IsDataOnRight = false
-			}
-			odp.MerklePaths = append(odp.MerklePaths, imp)
-		}
+		// for i := len(opiavl.Proof.LeftPath) - 1; i >= 0; i-- {
+		// 	path := opiavl.Proof.LeftPath[i]
+		// 	imp := IAVLMerklePath{}
+		// 	imp.SubtreeHeight = uint8(path.Height)
+		// 	imp.SubtreeSize = uint64(path.Size)
+		// 	imp.SubtreeVersion = uint64(path.Version)
+		// 	if len(path.Right) == 0 {
+		// 		imp.SiblingHash = path.Left
+		// 		imp.IsDataOnRight = true
+		// 	} else {
+		// 		imp.SiblingHash = path.Right
+		// 		imp.IsDataOnRight = false
+		// 	}
+		// 	odp.MerklePaths = append(odp.MerklePaths, imp)
+		// }
 
-		var opms rootmulti.MultiStoreProofOp
-		err = cliCtx.Codec.UnmarshalBinaryLengthPrefixed(multistoreOpData, &opms)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+		// var opms rootmulti.MultiStoreProofOp
+		// err = cliCtx.Codec.UnmarshalBinaryLengthPrefixed(multistoreOpData, &opms)
+		// if err != nil {
+		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		// 	return
+		// }
 
-		ssmh, osmh, oiavlsh := MakeOtherStoresMerkleHash(opms)
+		// ssmh, osmh, oiavlsh := MakeOtherStoresMerkleHash(opms)
 
-		brp.OtherStoresMerkleHash = osmh
-		brp.SupplyStoresMerkleHash = ssmh
-		brp.OracleIAVLStateHash = oiavlsh
+		// brp.OtherStoresMerkleHash = osmh
+		// brp.SupplyStoresMerkleHash = ssmh
+		// brp.OracleIAVLStateHash = oiavlsh
 
-		// Calculate byte for proofbytes
-		var relayAndVerifyArguments abi.Arguments
-		format := `[{"type":"bytes"},{"type":"bytes"}]`
-		err = json.Unmarshal([]byte(format), &relayAndVerifyArguments)
-		if err != nil {
-			panic(err)
-		}
+		// // Calculate byte for proofbytes
+		// var relayAndVerifyArguments abi.Arguments
+		// format := `[{"type":"bytes"},{"type":"bytes"}]`
+		// err = json.Unmarshal([]byte(format), &relayAndVerifyArguments)
+		// if err != nil {
+		// 	panic(err)
+		// }
 
-		blockRelayBytes, err := brp.encodeToEthData(uint64(rc.Height))
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+		// blockRelayBytes, err := brp.encodeToEthData(uint64(rc.Height))
+		// if err != nil {
+		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		// 	return
+		// }
 
-		oracleDataBytes, err := odp.encodeToEthData(uint64(rc.Height))
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+		// oracleDataBytes, err := odp.encodeToEthData(uint64(rc.Height))
+		// if err != nil {
+		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		// 	return
+		// }
 
-		evmProofBytes, err := relayAndVerifyArguments.Pack(blockRelayBytes, oracleDataBytes)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+		// evmProofBytes, err := relayAndVerifyArguments.Pack(blockRelayBytes, oracleDataBytes)
+		// if err != nil {
+		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		// 	return
+		// }
 
-		rest.PostProcessResponse(w, cliCtx, Proof{
-			JsonProof: JsonProof{
-				BlockHeight:     uint64(rc.Height),
-				OracleDataProof: odp,
-				BlockRelayProof: brp},
-			EVMProofBytes: evmProofBytes,
-		})
+		// rest.PostProcessResponse(w, cliCtx, Proof{
+		// 	JsonProof: JsonProof{
+		// 		BlockHeight:     uint64(rc.Height),
+		// 		OracleDataProof: odp,
+		// 		BlockRelayProof: brp},
+		// 	EVMProofBytes: evmProofBytes,
+		// })
+		rest.PostProcessResponse(w, cliCtx, nil)
 	}
 }

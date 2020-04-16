@@ -18,6 +18,7 @@ type Block struct {
 }
 
 type Transaction struct {
+	Index       int64           `gorm:"not null"`
 	TxHash      []byte          `gorm:"primary_key"`
 	Timestamp   int64           `gorm:"not null"`
 	GasUsed     int64           `gorm:"not null"`
@@ -38,6 +39,7 @@ type Account struct {
 type Validator struct {
 	OperatorAddress     string `gorm:"primary_key"`
 	ConsensusAddress    string `gorm:"unique;not null"`
+	ConsensusPubkey     string `gorm:"not null"`
 	ElectedCount        uint   `gorm:"not null"`
 	VotedCount          uint   `gorm:"not null"`
 	MissedCount         uint   `gorm:"not null"`
@@ -49,13 +51,25 @@ type Validator struct {
 	CommissionMaxRate   string `gorm:"not null"`
 	CommissionMaxChange string `gorm:"not null"`
 	MinSelfDelegation   string `gorm:"not null"`
-	SelfDelegation      string `gorm:"not null"`
+	Jailed              bool   `gorm:"not null"`
+	Tokens              uint64 `gorm:"not null"`
+	DelegatorShares     string `gorm:"not null"`
+	BondedHeight        int64  `gorm:"not null"`
+	CurrentReward       string `gorm:"not null"`
+	CurrentRatio        string `gorm:"not null"`
 }
 
 type ValidatorVote struct {
 	ConsensusAddress string `gorm:"primary_key"`
 	BlockHeight      int64  `gorm:"primary_key;auto_increment:false"`
 	Voted            bool   `gorm:"not null"`
+}
+
+type Delegation struct {
+	DelegatorAddress string `gorm:"primary_key"`
+	ValidatorAddress string `gorm:"primary_key"`
+	Shares           string `gorm:"not null"`
+	LastRatio        string `gorm:"not null"`
 }
 
 type DataSource struct {
@@ -115,6 +129,7 @@ type Request struct {
 	ResolveStatus            string `gorm:"not null"`
 	Requester                string `gorm:"not null"`
 	TxHash                   []byte `gorm:"not null"`
+	ClientID                 string `gorm:"not null"`
 	Result                   []byte `sql:"default:null"`
 }
 
@@ -145,3 +160,16 @@ type ReportDetail struct {
 	Data         []byte `gorm:"not null"`
 	Exitcode     uint8  `gorm:"not null"`
 }
+
+// type Packet struct {
+// 	Type        string          `gorm:"not null"`
+// 	Sequence    uint64          `gorm:"primary_key;auto_increment:false"`
+// 	MyChannel   string          `gorm:"primary_key"`
+// 	MyPort      string          `gorm:"primary_key"`
+// 	YourChainID string          `gorm:"not null"`
+// 	YourChannel string          `gorm:"not null"`
+// 	YourPort    string          `gorm:"not null"`
+// 	BlockHeight int64           `gorm:"not null"`
+// 	IsIncoming  *bool           `gorm:"primary_key"`
+// 	Detail      json.RawMessage `sql:"json;not null"`
+// }

@@ -1,167 +1,186 @@
 package db
 
-import (
-	"strconv"
+// import (
+// 	"github.com/bandprotocol/bandchain/chain/x/oracle"
+// )
 
-	"github.com/bandprotocol/bandchain/chain/x/zoracle"
-)
+// func parseResolveStatus(resolveStatus oracle.ResolveStatus) string {
+// 	switch resolveStatus {
+// 	case 0:
+// 		return "Pending"
+// 	case 1:
+// 		return "Success"
+// 	case 2:
+// 		return "Failure"
+// 	default:
+// 		return "Unknown"
+// 	}
+// }
 
-func createRequest(
-	id int64,
-	oracleScriptID int64,
-	calldata []byte,
-	sufficientValidatorCount int64,
-	expirationHeight int64,
-	resolveStatus string,
-	requester string,
-	txHash []byte,
-	result []byte,
-) Request {
-	return Request{
-		ID:                       id,
-		OracleScriptID:           oracleScriptID,
-		Calldata:                 calldata,
-		SufficientValidatorCount: sufficientValidatorCount,
-		ExpirationHeight:         expirationHeight,
-		ResolveStatus:            resolveStatus,
-		Requester:                requester,
-		TxHash:                   txHash,
-		Result:                   result,
-	}
-}
+// func createRequest(
+// 	id int64,
+// 	oracleScriptID int64,
+// 	calldata []byte,
+// 	sufficientValidatorCount int64,
+// 	expirationHeight int64,
+// 	resolveStatus string,
+// 	requester string,
+// 	clientID string,
+// 	txHash []byte,
+// 	result []byte,
+// ) Request {
+// 	return Request{
+// 		ID:                       id,
+// 		OracleScriptID:           oracleScriptID,
+// 		Calldata:                 calldata,
+// 		SufficientValidatorCount: sufficientValidatorCount,
+// 		ExpirationHeight:         expirationHeight,
+// 		ResolveStatus:            resolveStatus,
+// 		Requester:                requester,
+// 		ClientID:                 clientID,
+// 		TxHash:                   txHash,
+// 		Result:                   result,
+// 	}
+// }
 
-func (b *BandDB) AddRequest(
-	id int64,
-	oracleScriptID int64,
-	calldata []byte,
-	sufficientValidatorCount int64,
-	expirationHeight int64,
-	resolveStatus string,
-	requester string,
-	txHash []byte,
-	result []byte,
-) error {
-	request := createRequest(
-		id,
-		oracleScriptID,
-		calldata,
-		sufficientValidatorCount,
-		expirationHeight,
-		resolveStatus,
-		requester,
-		txHash,
-		result,
-	)
-	err := b.tx.Create(&request).Error
-	return err
-}
+// func (b *BandDB) AddNewRequest(
+// 	id int64,
+// 	oracleScriptID int64,
+// 	calldata []byte,
+// 	sufficientValidatorCount int64,
+// 	expirationHeight int64,
+// 	resolveStatus string,
+// 	requester string,
+// 	clientID string,
+// 	txHash []byte,
+// 	result []byte,
+// ) error {
+// 	request := createRequest(
+// 		id,
+// 		oracleScriptID,
+// 		calldata,
+// 		sufficientValidatorCount,
+// 		expirationHeight,
+// 		resolveStatus,
+// 		requester,
+// 		clientID,
+// 		txHash,
+// 		result,
+// 	)
+// 	err := b.tx.Create(&request).Error
+// 	if err != nil {
+// 		return err
+// 	}
 
-func createRequestedValidator(
-	requestID int64,
-	validatorAddress string,
-) RequestedValidator {
-	return RequestedValidator{
-		RequestID:        requestID,
-		ValidatorAddress: validatorAddress,
-	}
-}
+// 	req, err := b.OracleKeeper.GetRequest(b.ctx, oracle.RequestID(id))
+// 	if err != nil {
+// 		return err
+// 	}
 
-func (b *BandDB) AddRequestedValidator(
-	requestID int64,
-	validatorAddress string,
-) error {
-	requestValidator := createRequestedValidator(
-		requestID,
-		validatorAddress,
-	)
-	err := b.tx.Create(&requestValidator).Error
-	return err
-}
+// 	for _, validatorAddress := range req.RequestedValidators {
+// 		err := b.AddRequestedValidator(id, validatorAddress.String())
+// 		if err != nil {
+// 			return err
+// 		}
+// 	}
 
-func createRawDataRequests(
-	requestID int64,
-	externalID int64,
-	dataSourceID int64,
-	calldata []byte,
-) RawDataRequests {
-	return RawDataRequests{
-		RequestID:    requestID,
-		ExternalID:   externalID,
-		DataSourceID: dataSourceID,
-		Calldata:     calldata,
-	}
-}
+// 	for _, raw := range b.OracleKeeper.GetRawDataRequestWithExternalIDs(b.ctx, oracle.RequestID(id)) {
+// 		err := b.AddRawDataRequest(
+// 			id,
+// 			int64(raw.ExternalID),
+// 			int64(raw.RawDataRequest.DataSourceID),
+// 			raw.RawDataRequest.Calldata,
+// 		)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		err = b.tx.FirstOrCreate(&RelatedDataSources{
+// 			DataSourceID:   int64(raw.RawDataRequest.DataSourceID),
+// 			OracleScriptID: int64(oracleScriptID),
+// 		}).Error
+// 		if err != nil {
+// 			return err
+// 		}
+// 	}
 
-func (b *BandDB) AddRawDataRequests(
-	requestID int64,
-	externalID int64,
-	dataSourceID int64,
-	calldata []byte,
-) error {
-	rawDataRequests := createRawDataRequests(
-		requestID,
-		externalID,
-		dataSourceID,
-		calldata,
-	)
-	err := b.tx.Create(&rawDataRequests).Error
-	return err
-}
+// 	return nil
+// }
 
-func (b *BandDB) handleMsgRequestData(
-	txHash []byte,
-	msg zoracle.MsgRequestData,
-	events map[string]string,
-) error {
+// func createRequestedValidator(
+// 	requestID int64,
+// 	validatorAddress string,
+// ) RequestedValidator {
+// 	return RequestedValidator{
+// 		RequestID:        requestID,
+// 		ValidatorAddress: validatorAddress,
+// 	}
+// }
 
-	id, err := strconv.ParseInt(events[zoracle.EventTypeRequest+"."+zoracle.AttributeKeyID], 10, 64)
-	if err != nil {
-		return err
-	}
+// func (b *BandDB) AddRequestedValidator(
+// 	requestID int64,
+// 	validatorAddress string,
+// ) error {
+// 	requestValidator := createRequestedValidator(
+// 		requestID,
+// 		validatorAddress,
+// 	)
+// 	err := b.tx.Create(&requestValidator).Error
+// 	return err
+// }
 
-	request := createRequest(
-		id,
-		int64(msg.OracleScriptID),
-		msg.Calldata,
-		msg.SufficientValidatorCount,
-		msg.Expiration,
-		"Pending",
-		msg.Sender.String(),
-		txHash,
-		nil,
-	)
+// func createRawDataRequests(
+// 	requestID int64,
+// 	externalID int64,
+// 	dataSourceID int64,
+// 	calldata []byte,
+// ) RawDataRequests {
+// 	return RawDataRequests{
+// 		RequestID:    requestID,
+// 		ExternalID:   externalID,
+// 		DataSourceID: dataSourceID,
+// 		Calldata:     calldata,
+// 	}
+// }
 
-	err = b.tx.Save(&request).Error
-	if err != nil {
-		return err
-	}
+// func (b *BandDB) AddRawDataRequest(
+// 	requestID int64,
+// 	externalID int64,
+// 	dataSourceID int64,
+// 	calldata []byte,
+// ) error {
+// 	rawDataRequests := createRawDataRequests(
+// 		requestID,
+// 		externalID,
+// 		dataSourceID,
+// 		calldata,
+// 	)
+// 	err := b.tx.Create(&rawDataRequests).Error
+// 	return err
+// }
 
-	// req, err := b.ZoracleKeeper.GetRequest(b.ctx, zoracle.RequestID(id))
-	// if err != nil {
-	// 	return err
-	// }
-
-	// for _, validatorAddress := range req.RequestedValidators {
-	// 	requestedValidator := createRequestedValidator(id, validatorAddress.String())
-	// 	err = b.tx.Save(&requestedValidator).Error
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// }
-
-	// for _, raw := range b.ZoracleKeeper.GetRawDataRequestWithExternalIDs(b.ctx, zoracle.RequestID(id)) {
-	// 	rawDataRequests := createRawDataRequests(id, int64(raw.ExternalID), int64(raw.RawDataRequest.DataSourceID), raw.RawDataRequest.Calldata)
-	// 	err = b.tx.Save(&rawDataRequests).Error
-	// 	if err != nil {
-	// 		return err
-	// 	}
-
-	// 	b.tx.FirstOrCreate(&RelatedDataSources{
-	// 		DataSourceID:   int64(raw.RawDataRequest.DataSourceID),
-	// 		OracleScriptID: int64(msg.OracleScriptID),
-	// 	})
-
-	// }
-
-	return nil
-}
+// func (b *BandDB) handleMsgRequestData(
+// 	txHash []byte,
+// 	msg oracle.MsgRequestData,
+// 	events map[string]string,
+// ) error {
+// 	id, err := strconv.ParseInt(events[oracle.EventTypeRequest+"."+oracle.AttributeKeyID], 10, 64)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	request, err := b.OracleKeeper.GetRequest(b.ctx, oracle.RequestID(id))
+// 	if err != nil {
+// 		return err
+// 	}
+// 	return b.AddNewRequest(
+// 		id,
+// 		int64(msg.OracleScriptID),
+// 		msg.Calldata,
+// 		msg.SufficientValidatorCount,
+// 		request.ExpirationHeight,
+// 		"Pending",
+// 		msg.Sender.String(),
+// 		msg.ClientID,
+// 		txHash,
+// 		nil,
+// 	)
+// }

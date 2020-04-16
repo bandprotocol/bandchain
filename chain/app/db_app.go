@@ -15,11 +15,13 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/bandprotocol/bandchain/chain/db"
+	// "github.com/bandprotocol/bandchain/chain/x/oracle"
 )
 
 type dbBandApp struct {
 	*bandApp
 	dbBand *db.BandDB
+	txNum  int64
 }
 
 func NewDBBandApp(
@@ -27,15 +29,16 @@ func NewDBBandApp(
 	invCheckPeriod uint, dbBand *db.BandDB, baseAppOptions ...func(*bam.BaseApp),
 ) *dbBandApp {
 	app := NewBandApp(logger, db, traceStore, loadLatest, invCheckPeriod, baseAppOptions...)
-
+	dbBand.BankKeeper = app.BankKeeper
+	dbBand.DistrKeeper = app.DistrKeeper
 	dbBand.StakingKeeper = app.StakingKeeper
-	// dbBand.ZoracleKeeper = app.ZoracleKeeper
+	// dbBand.OracleKeeper = app.OracleKeeper
+	// dbBand.IBCKeeper = app.IBCKeeper
 	return &dbBandApp{bandApp: app, dbBand: dbBand}
 }
 
 func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
 	app.dbBand.BeginTransaction()
-
 	err := app.dbBand.SaveChainID(req.GetChainId())
 	if err != nil {
 		panic(err)
@@ -72,11 +75,11 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 
 	// Genutil genesis
 	var genutilState genutil.GenesisState
-	genutil.ModuleCdc.MustUnmarshalJSON(genesisState[genutil.ModuleName], &genutilState)
+	app.cdc.MustUnmarshalJSON(genesisState[genutil.ModuleName], &genutilState)
 
 	for _, genTx := range genutilState.GenTxs {
 		var tx auth.StdTx
-		genutil.ModuleCdc.MustUnmarshalJSON(genTx, &tx)
+		app.cdc.MustUnmarshalJSON(genTx, &tx)
 		for _, msg := range tx.Msgs {
 			if createMsg, ok := msg.(staking.MsgCreateValidator); ok {
 				app.dbBand.HandleMessage(nil, createMsg, nil)
@@ -92,12 +95,12 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 		}
 	}
 
-	// Zoracle genesis
-	// var zoracleState zoracle.GenesisState
-	// zoracle.ModuleCdc.MustUnmarshalJSON(genesisState[zoracle.ModuleName], &zoracleState)
+	// // Oracle genesis
+	// var oracleState oracle.GenesisState
+	// app.cdc.MustUnmarshalJSON(genesisState[oracle.ModuleName], &oracleState)
 
-	// Save data source
-	// for idx, dataSource := range zoracleState.DataSources {
+	// // Save data source
+	// for idx, dataSource := range oracleState.DataSources {
 	// 	err := app.dbBand.AddDataSource(
 	// 		int64(idx+1),
 	// 		dataSource.Name,
@@ -114,8 +117,8 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 	// 	}
 	// }
 
-	// Save oracle script
-	// for idx, oracleScript := range zoracleState.OracleScripts {
+	// // Save oracle script
+	// for idx, oracleScript := range oracleState.OracleScripts {
 	// 	err := app.dbBand.AddOracleScript(
 	// 		int64(idx+1),
 	// 		oracleScript.Name,
@@ -137,6 +140,7 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 }
 
 func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliverTx) {
+	app.txNum++
 	res = app.bandApp.DeliverTx(req)
 	lastProcessHeight, err := app.dbBand.GetLastProcessedHeight()
 	if err != nil {
@@ -153,25 +157,25 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 	if stdTx, ok := tx.(auth.StdTx); ok {
 		// Add involved accounts
 		involvedAccounts := stdTx.GetSigners()
+		txHash := tmhash.Sum(req.Tx)
+		app.dbBand.AddTransaction(
+			app.txNum,
+			txHash,
+			app.DeliverContext.BlockTime(),
+			res.GasUsed,
+			stdTx.Fee.Gas,
+			stdTx.Fee.Amount,
+			stdTx.GetSigners()[0],
+			res.IsOK(),
+			app.DeliverContext.BlockHeight(),
+		)
 		if !res.IsOK() {
-			// TODO: We should not completely ignore failed transactions.
+			app.dbBand.HandleTransactionFail(stdTx, txHash)
 		} else {
 			logs, err := sdk.ParseABCILogs(res.Log)
 			if err != nil {
 				panic(err)
 			}
-			txHash := tmhash.Sum(req.Tx)
-
-			app.dbBand.AddTransaction(
-				txHash,
-				app.DeliverContext.BlockTime(),
-				res.GasUsed,
-				stdTx.Fee.Gas,
-				stdTx.Fee.Amount,
-				stdTx.GetSigners()[0],
-				true,
-				app.DeliverContext.BlockHeight(),
-			)
 
 			app.dbBand.HandleTransaction(stdTx, txHash, logs)
 			involvedAccounts = append(
@@ -187,7 +191,7 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 				updatedAccounts[account.String()] = true
 				err := app.dbBand.SetAccountBalance(
 					account,
-					app.BankKeeper.GetCoins(app.DeliverContext, account),
+					app.dbBand.BankKeeper.GetCoins(app.DeliverContext, account),
 					app.DeliverContext.BlockHeight(),
 				)
 				if err != nil {
@@ -200,6 +204,7 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 }
 
 func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseBeginBlock) {
+	app.txNum = 0
 	res = app.bandApp.BeginBlock(req)
 	// Begin transaction
 	app.dbBand.BeginTransaction()
@@ -215,6 +220,14 @@ func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseB
 			req.Header.GetHeight()-1,
 			val.GetSignedLastBlock(),
 		)
+		validator := app.StakingKeeper.ValidatorByConsAddr(app.DeliverContext, val.GetValidator().Address)
+		reward := app.DistrKeeper.GetValidatorCurrentRewards(app.DeliverContext, validator.GetOperator())
+		app.dbBand.UpdateValidator(
+			validator.GetOperator(),
+			&db.Validator{
+				CurrentReward: reward.Rewards[0].Amount.String(),
+			},
+		)
 	}
 
 	err = app.dbBand.ClearOldVotes(req.Header.GetHeight() - 1)
@@ -229,17 +242,32 @@ func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseB
 		req.GetHash(),
 	)
 
+	// Handle Begin block event
+	events := res.GetEvents()
+	for _, event := range events {
+		app.dbBand.HandleBeginblockEvent(event)
+	}
+
 	return res
 }
 
 func (app *dbBandApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBlock) {
 	res = app.bandApp.EndBlock(req)
-
-	err := app.dbBand.SetLastProcessedHeight(req.GetHeight())
+	inflation := app.bandApp.MintKeeper.GetMinter(app.bandApp.DeliverContext).Inflation.String()
+	err := app.dbBand.SetInflationRate(inflation)
 	if err != nil {
 		panic(err)
 	}
-	// Do other logic
+	err = app.dbBand.SetLastProcessedHeight(req.GetHeight())
+	if err != nil {
+		panic(err)
+	}
+
+	events := res.GetEvents()
+	for _, event := range events {
+		app.dbBand.HandleEndblockEvent(event)
+	}
+
 	app.dbBand.SetContext(sdk.Context{})
 	return res
 }
