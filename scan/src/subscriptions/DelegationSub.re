@@ -6,9 +6,15 @@ type t = {
 
 type stake_t = {
   amount: float,
+  reward: float,
   sharePercentage: float,
   delegatorAddress: Address.t,
   validatorAddress: Address.t,
+};
+
+type stake_aggregate_t = {
+  amount: float,
+  reward: float,
 };
 
 module StakeConfig = [%graphql
@@ -16,6 +22,7 @@ module StakeConfig = [%graphql
   subscription Stake($limit: Int!, $offset: Int!, $delegator_address: String!)  {
     delegations_view(offset: $offset, limit: $limit, order_by: {amount: desc}, where: {delegator_address: {_eq: $delegator_address}}) @bsRecord  {
       amount @bsDecoder(fn: "GraphQLParser.numberExn")
+      reward @bsDecoder(fn: "GraphQLParser.numberExn")
       sharePercentage: share_percentage @bsDecoder(fn: "GraphQLParser.floatExn")
       delegatorAddress: delegator_address @bsDecoder(fn: "GraphQLParser.addressExn")
       validatorAddress: validator_address @bsDecoder(fn: "GraphQLParser.addressExn")
@@ -31,6 +38,7 @@ module TotalStakeByDelegatorConfig = [%graphql
       aggregate{
         sum{
           amount @bsDecoder(fn: "GraphQLParser.numberWithDefault")
+          reward @bsDecoder(fn: "GraphQLParser.numberWithDefault")
         }
       }
     }
@@ -55,6 +63,7 @@ module DelegatorsByValidatorConfig = [%graphql
   subscription Stake($limit: Int!, $offset: Int!, $validator_address: String!)  {
     delegations_view(offset: $offset, limit: $limit, order_by: {amount: desc}, where: {validator_address: {_eq: $validator_address}}) @bsRecord  {
       amount @bsDecoder(fn: "GraphQLParser.numberExn")
+      reward @bsDecoder(fn: "GraphQLParser.numberExn")
       sharePercentage: share_percentage @bsDecoder(fn: "GraphQLParser.floatExn")
       delegatorAddress: delegator_address @bsDecoder(fn: "GraphQLParser.addressExn")
       validatorAddress: validator_address @bsDecoder(fn: "GraphQLParser.addressExn")
@@ -88,6 +97,7 @@ let getStakeList = (delegatorAddress, ~page, ~pageSize, ()) => {
           (),
         ),
     );
+  Js.Console.log(result);
   result |> Sub.map(_, x => x##delegations_view);
 };
 
@@ -101,12 +111,27 @@ let getTotalStakeByDelegator = delegatorAddress => {
           (),
         ),
     );
-  result
-  |> Sub.map(_, a =>
-       (
-         (a##delegations_view_aggregate##aggregate |> Belt_Option.getExn)##sum |> Belt_Option.getExn
-       )##amount
-     );
+  Js.Console.log(result);
+  let amountSub =
+    result
+    |> Sub.map(_, a =>
+         (
+           (a##delegations_view_aggregate##aggregate |> Belt_Option.getExn)##sum
+           |> Belt_Option.getExn
+         )##amount
+       );
+  let rewardSub =
+    result
+    |> Sub.map(_, a =>
+         (
+           (a##delegations_view_aggregate##aggregate |> Belt_Option.getExn)##sum
+           |> Belt_Option.getExn
+         )##reward
+       );
+  let%Sub amount = amountSub;
+  let%Sub reward = rewardSub;
+
+  {amount, reward} |> Sub.resolve;
 };
 
 let getStakeCountByDelegator = delegatorAddress => {
