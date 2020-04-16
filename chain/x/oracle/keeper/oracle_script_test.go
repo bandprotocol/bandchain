@@ -15,7 +15,7 @@ var BASIC_OS_DESC = "OS_DESCRIPTION"
 var BASIC_OS_CODE = []byte("OS_WASM_CODE")
 
 func addBasicOracleScript(ctx sdk.Context, k me.Keeper) types.OID {
-	id, err := k.AddOracleScript(ctx, OWNER.Address, BASIC_OS_NAME, BASIC_OS_DESC, BASIC_OS_CODE)
+	id, err := k.AddOracleScript(ctx, Owner.Address, BASIC_OS_NAME, BASIC_OS_DESC, BASIC_OS_CODE)
 	if err != nil {
 		panic(err)
 	}
@@ -29,8 +29,8 @@ func TestSetterGetterOracleScript(t *testing.T) {
 	require.Error(t, err)
 	require.Panics(t, func() { _ = k.MustGetOracleScript(ctx, 42) })
 	// Creates some basic oracle scripts
-	oracleScript1 := types.NewOracleScript(ALICE.Address, "NAME1", "DESCRIPTION1", []byte("code1"))
-	oracleScript2 := types.NewOracleScript(BOB.Address, "NAME2", "DESCRIPTION2", []byte("code2"))
+	oracleScript1 := types.NewOracleScript(Alice.Address, "NAME1", "DESCRIPTION1", []byte("code1"))
+	oracleScript2 := types.NewOracleScript(Bob.Address, "NAME2", "DESCRIPTION2", []byte("code2"))
 	// Sets id 42 with oracle script 1 and id 42 with oracle script 2.
 	k.SetOracleScript(ctx, 42, oracleScript1)
 	k.SetOracleScript(ctx, 43, oracleScript2)
@@ -52,8 +52,8 @@ func TestSetterGetterOracleScript(t *testing.T) {
 func TestAddEditOracleScriptBasic(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// Creates some basic oracle scripts
-	oracleScript1 := types.NewOracleScript(ALICE.Address, "NAME1", "DESCRIPTION1", []byte("code1"))
-	oracleScript2 := types.NewOracleScript(BOB.Address, "NAME2", "DESCRIPTION2", []byte("code2"))
+	oracleScript1 := types.NewOracleScript(Alice.Address, "NAME1", "DESCRIPTION1", []byte("code1"))
+	oracleScript2 := types.NewOracleScript(Bob.Address, "NAME2", "DESCRIPTION2", []byte("code2"))
 	// Adds a new oracle script to the store. We should be able to retreive it back.
 	id, err := k.AddOracleScript(ctx,
 		oracleScript1.Owner, oracleScript1.Name, oracleScript1.Description, oracleScript1.Code,
@@ -76,11 +76,11 @@ func TestAddOracleScriptMustReturnCorrectID(t *testing.T) {
 	count := k.GetOracleScriptCount(ctx)
 	require.Equal(t, count, int64(0))
 	// Every new oracle script we add should return a new ID.
-	id1, err := k.AddOracleScript(ctx, OWNER.Address, BASIC_OS_NAME, BASIC_OS_DESC, BASIC_OS_CODE)
+	id1, err := k.AddOracleScript(ctx, Owner.Address, BASIC_OS_NAME, BASIC_OS_DESC, BASIC_OS_CODE)
 	require.Nil(t, err)
 	require.Equal(t, id1, types.OID(1))
 	// Adds another oracle script so now ID should be 2.
-	id2, err := k.AddOracleScript(ctx, OWNER.Address, BASIC_OS_NAME, BASIC_OS_DESC, BASIC_OS_CODE)
+	id2, err := k.AddOracleScript(ctx, Owner.Address, BASIC_OS_NAME, BASIC_OS_DESC, BASIC_OS_CODE)
 	require.Nil(t, err)
 	require.Equal(t, id2, types.OID(2))
 	// Finally we expect the oracle script to increase to 2 since we added two oracle scripts.
@@ -92,7 +92,7 @@ func TestEditNonExistentOracleScript(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// Editing a non-existent data should return error.
 	err := k.EditOracleScript(ctx, types.OID(42),
-		OWNER.Address, BASIC_OS_NAME, BASIC_OS_DESC, BASIC_OS_CODE,
+		Owner.Address, BASIC_OS_NAME, BASIC_OS_DESC, BASIC_OS_CODE,
 	)
 	require.Error(t, err)
 }
@@ -101,11 +101,11 @@ func TestAddOracleScriptTooLongName(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// Sets max name length to 9. We should fail to add oracle script with name length 10.
 	k.SetParam(ctx, types.KeyMaxNameLength, 9)
-	_, err := k.AddOracleScript(ctx, OWNER.Address, "0123456789", BASIC_OS_DESC, BASIC_OS_CODE)
+	_, err := k.AddOracleScript(ctx, Owner.Address, "0123456789", BASIC_OS_DESC, BASIC_OS_CODE)
 	require.Error(t, err)
 	// Sets max name length to 10. We should now be able to add the oracle script.
 	k.SetParam(ctx, types.KeyMaxNameLength, 10)
-	_, err = k.AddOracleScript(ctx, OWNER.Address, "0123456789", BASIC_OS_DESC, BASIC_OS_CODE)
+	_, err = k.AddOracleScript(ctx, Owner.Address, "0123456789", BASIC_OS_DESC, BASIC_OS_CODE)
 	require.Nil(t, err)
 }
 
@@ -132,13 +132,13 @@ func TestAddOracleScriptTooLongDescription(t *testing.T) {
 	// Sets max desc length to 41. We should fail to add oracle script with desc length 42.
 	k.SetParam(ctx, types.KeyMaxDescriptionLength, 41)
 	_, err := k.AddOracleScript(ctx,
-		OWNER.Address, BASIC_OS_NAME, "________THIS_STRING_HAS_SIZE_OF_42________", BASIC_OS_CODE,
+		Owner.Address, BASIC_OS_NAME, "________THIS_STRING_HAS_SIZE_OF_42________", BASIC_OS_CODE,
 	)
 	require.Error(t, err)
 	// Sets max desc length to 42. We should now be able to add the oracle script.
 	k.SetParam(ctx, types.KeyMaxDescriptionLength, 42)
 	_, err = k.AddOracleScript(ctx,
-		OWNER.Address, BASIC_OS_NAME, "________THIS_STRING_HAS_SIZE_OF_42________", BASIC_OS_CODE,
+		Owner.Address, BASIC_OS_NAME, "________THIS_STRING_HAS_SIZE_OF_42________", BASIC_OS_CODE,
 	)
 	require.Nil(t, err)
 }
@@ -168,14 +168,14 @@ func TestAddOracleScriptTooBigCode(t *testing.T) {
 	// Sets max code size to 40. We should fail to add oracle script with exec size 42.
 	k.SetParam(ctx, types.KeyMaxOracleScriptCodeSize, 40)
 	_, err := k.AddOracleScript(ctx,
-		OWNER.Address, BASIC_OS_NAME, BASIC_OS_DESC,
+		Owner.Address, BASIC_OS_NAME, BASIC_OS_DESC,
 		[]byte("________THIS_STRING_HAS_SIZE_OF_42________"),
 	)
 	require.Error(t, err)
 	// Sets max code size to 50. We should now be able to add the oracle script.
 	k.SetParam(ctx, types.KeyMaxOracleScriptCodeSize, 50)
 	_, err = k.AddOracleScript(ctx,
-		OWNER.Address, BASIC_OS_NAME, BASIC_OS_DESC,
+		Owner.Address, BASIC_OS_NAME, BASIC_OS_DESC,
 		[]byte("________THIS_STRING_HAS_SIZE_OF_42________"),
 	)
 	require.Nil(t, err)
@@ -205,8 +205,8 @@ func TestGetAllOracleScripts(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// Sets the oracle scripts to the storage.
 	oracleScripts := []types.OracleScript{
-		types.NewOracleScript(ALICE.Address, "NAME1", "DESCRIPTION1", []byte("code1")),
-		types.NewOracleScript(BOB.Address, "NAME2", "DESCRIPTION2", []byte("code2")),
+		types.NewOracleScript(Alice.Address, "NAME1", "DESCRIPTION1", []byte("code1")),
+		types.NewOracleScript(Bob.Address, "NAME2", "DESCRIPTION2", []byte("code2")),
 	}
 	k.SetOracleScript(ctx, 1, oracleScripts[0])
 	k.SetOracleScript(ctx, 2, oracleScripts[1])

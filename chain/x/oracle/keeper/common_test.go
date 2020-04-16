@@ -22,20 +22,20 @@ type account struct {
 	Address sdk.AccAddress
 }
 
-var OWNER account
-var ALICE account
-var BOB account
-var CAROL account
+var Owner account
+var Alice account
+var Bob account
+var Carol account
 
-var COINS_10_UBAND = sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
-var COINS_20_UBAND = sdk.NewCoins(sdk.NewInt64Coin("uband", 20))
+var Coins10uband = sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
+var Coins20uband = sdk.NewCoins(sdk.NewInt64Coin("uband", 20))
 
 func init() {
 	r := rand.New(rand.NewSource(time.Now().Unix()))
-	OWNER = createArbitraryAccount(r)
-	ALICE = createArbitraryAccount(r)
-	BOB = createArbitraryAccount(r)
-	CAROL = createArbitraryAccount(r)
+	Owner = createArbitraryAccount(r)
+	Alice = createArbitraryAccount(r)
+	Bob = createArbitraryAccount(r)
+	Carol = createArbitraryAccount(r)
 }
 
 func createArbitraryAccount(r *rand.Rand) account {
