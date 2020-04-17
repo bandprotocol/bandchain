@@ -57,7 +57,7 @@ func (k Keeper) SetParam(ctx sdk.Context, key []byte, value uint64) {
 // GetParams returns all current parameters as a types.Params instance.
 func (k Keeper) GetParams(ctx sdk.Context) types.Params {
 	return types.NewParams(
-		k.GetParam(ctx, types.KeyMaxDataSourceExecutableSize),
+		k.GetParam(ctx, types.KeyMaxExecutableSize),
 		k.GetParam(ctx, types.KeyMaxOracleScriptCodeSize),
 		k.GetParam(ctx, types.KeyMaxCalldataSize),
 		k.GetParam(ctx, types.KeyMaxDataSourceCountPerRequest),
