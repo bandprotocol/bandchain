@@ -45,13 +45,17 @@ func (b *BandDB) delegate(
 	info := b.DistrKeeper.GetDelegatorStartingInfo(b.ctx, validatorAddress, delegatorAddress)
 	latestReward := b.DistrKeeper.GetValidatorHistoricalRewards(b.ctx, validatorAddress, info.PreviousPeriod)
 	// CurrentReward must be reset after delegation.
+	cumulativeRewardRatio := "0"
+	if !latestReward.CumulativeRewardRatio.IsZero() {
+		cumulativeRewardRatio = latestReward.CumulativeRewardRatio[0].Amount.String()
+	}
 	err := b.UpdateValidator(
 		validatorAddress,
 		&Validator{
 			Tokens:          validator.Tokens.Uint64(),
 			DelegatorShares: validator.DelegatorShares.String(),
 			CurrentReward:   "0",
-			CurrentRatio:    latestReward.CumulativeRewardRatio[0].Amount.String(),
+			CurrentRatio:    cumulativeRewardRatio,
 		},
 	)
 	if err != nil {
@@ -97,6 +101,11 @@ func (b *BandDB) undelegate(
 	if found {
 		reward := b.DistrKeeper.GetValidatorCurrentRewards(b.ctx, validatorAddress)
 		latestReward := b.DistrKeeper.GetValidatorHistoricalRewards(b.ctx, validatorAddress, reward.Period-1)
+
+		cumulativeRewardRatio := "0"
+		if !latestReward.CumulativeRewardRatio.IsZero() {
+			cumulativeRewardRatio = latestReward.CumulativeRewardRatio[0].Amount.String()
+		}
 		return b.UpdateValidator(
 			validatorAddress,
 			&Validator{
@@ -104,7 +113,7 @@ func (b *BandDB) undelegate(
 				DelegatorShares: validator.DelegatorShares.String(),
 				Jailed:          validator.Jailed,
 				CurrentReward:   "0",
-				CurrentRatio:    latestReward.CumulativeRewardRatio[0].Amount.String(),
+				CurrentRatio:    cumulativeRewardRatio,
 			},
 		)
 	} else {

@@ -226,10 +226,16 @@ func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseB
 		)
 		validator := app.StakingKeeper.ValidatorByConsAddr(app.DeliverContext, val.GetValidator().Address)
 		reward := app.DistrKeeper.GetValidatorCurrentRewards(app.DeliverContext, validator.GetOperator())
+
+		rewardValue := "0"
+		if !reward.Rewards.IsZero() {
+			rewardValue = reward.Rewards[0].Amount.String()
+		}
+
 		app.dbBand.UpdateValidator(
 			validator.GetOperator(),
 			&db.Validator{
-				CurrentReward: reward.Rewards[0].Amount.String(),
+				CurrentReward: rewardValue,
 			},
 		)
 	}
