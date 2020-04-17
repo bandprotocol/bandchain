@@ -28,7 +28,9 @@ func mockOracleScript(ctx sdk.Context, keeper Keeper) (*sdk.Result, error) {
 	description := "description"
 	code := []byte("code")
 	sender := sdk.AccAddress([]byte("sender"))
-	msg := types.NewMsgCreateOracleScript(owner, name, description, code, sender)
+	schema := "schema"
+	sourceCodeURL := "sourceCodeURL"
+	msg := types.NewMsgCreateOracleScript(owner, name, description, code, schema, sourceCodeURL,sender)
 	return handleMsgCreateOracleScript(ctx, keeper, msg)
 }
 
@@ -135,8 +137,10 @@ func TestEditOracleScriptSuccess(t *testing.T) {
 	newDescription := "description_2"
 	newCode := []byte("code_2")
 	sender := sdk.AccAddress([]byte("owner"))
+	schema := "schema"
+	sourceCodeURL := "sourceCodeURL"
 
-	msg := types.NewMsgEditOracleScript(1, newOwner, newName, newDescription, newCode, sender)
+	msg := types.NewMsgEditOracleScript(1, newOwner, newName, newDescription, newCode, schema, sourceCodeURL, sender)
 	_, err = handleMsgEditOracleScript(ctx, keeper, msg)
 	require.Nil(t, err)
 
@@ -168,8 +172,10 @@ func TestEditOracleScriptByNotOwner(t *testing.T) {
 	newDescription := "description_2"
 	newCode := []byte("code_2")
 	sender := sdk.AccAddress([]byte("not_owner"))
+	schema := "schema"
+	soureCodeURL := "sourceCodeURL"
 
-	msg := types.NewMsgEditOracleScript(1, newOwner, newName, newDescription, newCode, sender)
+	msg := types.NewMsgEditOracleScript(1, newOwner, newName, newDescription, newCode, schema, soureCodeURL, sender)
 	_, err = handleMsgEditOracleScript(ctx, keeper, msg)
 	require.NotNil(t, err)
 }
