@@ -108,23 +108,23 @@ let make = () => {
       <div className=Styles.routeContainer>
         {switch (ReasonReactRouter.useUrl() |> Route.fromUrl) {
          | HomePage => <HomePage />
-         | DataSourceHomePage => <DataSourceHomePage />
-         | DataSourceIndexPage(dataSourceID, hashtag) =>
-           <DataSourceIndexPage dataSourceID={ID.DataSource.ID(dataSourceID)} hashtag />
-         | OracleScriptHomePage => <OracleScriptHomePage />
-         | OracleScriptIndexPage(oracleScriptID, hashtag) =>
-           <OracleScriptIndexPage oracleScriptID={ID.OracleScript.ID(oracleScriptID)} hashtag />
+         //  | DataSourceHomePage => <DataSourceHomePage />
+         //  | DataSourceIndexPage(dataSourceID, hashtag) =>
+         //  <DataSourceIndexPage dataSourceID={ID.DataSource.ID(dataSourceID)} hashtag />
+         //  | OracleScriptHomePage => <OracleScriptHomePage />
+         //  | OracleScriptIndexPage(oracleScriptID, hashtag) =>
+         //    <OracleScriptIndexPage oracleScriptID={ID.OracleScript.ID(oracleScriptID)} hashtag />
          | TxHomePage => <TxHomePage />
          | TxIndexPage(txHash) => <TxIndexPage txHash />
          | BlockHomePage => <BlockHomePage />
          | BlockIndexPage(height) => <BlockIndexPage height={ID.Block.ID(height)} />
          | ValidatorHomePage => <ValidatorHomePage />
          | ValidatorIndexPage(address, hashtag) => <ValidatorIndexPage address hashtag />
-         | RequestHomePage => <RequestHomePage />
-         | RequestIndexPage(reqID) => <RequestIndexPage reqID={ID.Request.ID(reqID)} />
+         //  | RequestHomePage => <RequestHomePage />
+         //  | RequestIndexPage(reqID) => <RequestIndexPage reqID={ID.Request.ID(reqID)} />
          | AccountIndexPage(address, hashtag) => <AccountIndexPage address hashtag />
-         | IBCHomePage => <IBCHomePage />
-         | NotFound => <NotFound />
+         //  | IBCHomePage => <IBCHomePage />
+         | _ => <NotFound />
          }}
       </div>
     </div>

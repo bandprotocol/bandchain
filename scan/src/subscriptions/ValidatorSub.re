@@ -242,6 +242,6 @@ module GlobalInfo = {
   };
 
   let getGlobalInfo = _ => {
-    {totalSupply: 10849023, inflationRate: 12.45, avgBlockTime: 2.59};
+    {totalSupply: 300849023, inflationRate: 12.45, avgBlockTime: 2.59};
   };
 };
