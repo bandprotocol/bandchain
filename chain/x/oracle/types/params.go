@@ -62,7 +62,7 @@ const (
 
 // Parameter store keys.
 var (
-	KeyMaxDataSourceExecutableSize      = []byte("MaxDataSourceExecutableSize")
+	KeyMaxExecutableSize                = []byte("MaxExecutableSize")
 	KeyMaxOracleScriptCodeSize          = []byte("MaxOracleScriptCodeSize")
 	KeyMaxCalldataSize                  = []byte("MaxCalldataSize")
 	KeyMaxDataSourceCountPerRequest     = []byte("MaxDataSourceCountPerRequest")
@@ -165,7 +165,7 @@ func validateNoOp(_ interface{}) error { return nil }
 func (p *Params) ParamSetPairs() params.ParamSetPairs {
 	// TODO: Make validation real. Not just noop
 	return params.ParamSetPairs{
-		paramtypes.NewParamSetPair(KeyMaxDataSourceExecutableSize, &p.MaxDataSourceExecutableSize, validateNoOp),
+		paramtypes.NewParamSetPair(KeyMaxExecutableSize, &p.MaxDataSourceExecutableSize, validateNoOp),
 		paramtypes.NewParamSetPair(KeyMaxOracleScriptCodeSize, &p.MaxOracleScriptCodeSize, validateNoOp),
 		paramtypes.NewParamSetPair(KeyMaxCalldataSize, &p.MaxCalldataSize, validateNoOp),
 		paramtypes.NewParamSetPair(KeyMaxDataSourceCountPerRequest, &p.MaxDataSourceCountPerRequest, validateNoOp),

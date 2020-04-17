@@ -36,8 +36,8 @@ func (k Keeper) AddRequest(
 	ctx sdk.Context, oracleScriptID types.OracleScriptID, calldata []byte,
 	requestedValidatorCount, sufficientValidatorCount int64, clientID string,
 ) (types.RequestID, error) {
-	if !k.CheckOracleScriptExists(ctx, oracleScriptID) {
-		return 0, sdkerrors.Wrapf(types.ErrItemNotFound, "AddRequest: Unknown oracle script ID %d.", oracleScriptID)
+	if !k.HasOracleScript(ctx, oracleScriptID) {
+		return 0, sdkerrors.Wrapf(types.ErrOracleScriptNotFound, "id: %d", oracleScriptID)
 	}
 
 	if uint64(len(calldata)) > k.GetParam(ctx, types.KeyMaxCalldataSize) {

@@ -10,7 +10,6 @@ function(data) {
   |}];
 
 let request = (data: t) => {
-  let%Promise response =
-    Axios.postData("https://d3n.bandprotocol.com/faucet/request", convert(data));
+  let%Promise response = Axios.postData(Env.faucet, convert(data));
   Promise.ret(response);
 };
