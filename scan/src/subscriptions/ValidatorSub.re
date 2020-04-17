@@ -1,8 +1,3 @@
-type status_t =
-  | Bonded
-  | Unbonded
-  | Unbonding;
-
 module Mini = {
   type t = {
     consensusAddress: string,
@@ -10,6 +5,7 @@ module Mini = {
     moniker: string,
   };
 };
+
 type node_status_t = {
   uptime: float,
   avgResponseTime: int,
@@ -175,6 +171,18 @@ module ValidatorCountConfig = [%graphql
   |}
 ];
 
+module ValidatorCountByJailedConfig = [%graphql
+  {|
+    subscription Validator($jailed: Boolean!) {
+      validators_aggregate(where: {jailed: {_eq: $jailed}}) {
+        aggregate{
+          count @bsDecoder(fn: "Belt_Option.getExn")
+        }
+      }
+    }
+  |}
+];
+
 let get = operator_address => {
   let (result, _) =
     ApolloHooks.useSubscription(
@@ -204,6 +212,16 @@ let getList = (~page, ~pageSize, ~isActive, ()) => {
 
 let count = () => {
   let (result, _) = ApolloHooks.useSubscription(ValidatorCountConfig.definition);
+  result
+  |> Sub.map(_, x => x##validators_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
+};
+
+let countByActive = isActive => {
+  let (result, _) =
+    ApolloHooks.useSubscription(
+      ValidatorCountByJailedConfig.definition,
+      ~variables=ValidatorCountByJailedConfig.makeVariables(~jailed=!isActive, ()),
+    );
   result
   |> Sub.map(_, x => x##validators_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
 };
