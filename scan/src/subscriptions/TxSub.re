@@ -300,7 +300,6 @@ module Msg = {
       chainID: string,
     };
     let decode = json => {
-      Js.Console.log(json);
       JsonUtils.Decode.{
         sender: json |> field("signer", string) |> Address.fromBech32,
         data: json |> at(["packet", "data"], string) |> Js.String.toUpperCase,

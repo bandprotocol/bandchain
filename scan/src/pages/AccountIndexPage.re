@@ -125,7 +125,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
 
     let availableBalance = account.balance->Coin.getBandAmountFromCoins;
     let usdPrice = info.financial.usdPrice;
-    let totalBalance = availableBalance +. balanceAtStake;
+    let totalBalance = availableBalance +. balanceAtStake.amount +. balanceAtStake.reward;
 
     <>
       <Row justify=Row.Between>
@@ -150,7 +150,9 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
       <div className=Styles.vFlex> <AddressRender address position=AddressRender.Title /> </div>
       <VSpacing size=Spacing.xxl />
       <Row justify=Row.Between alignItems=`flexStart>
-        <Col size=0.75> <PieChart size=187 availableBalance balanceAtStake /> </Col>
+        <Col size=0.75>
+          <PieChart size=187 availableBalance balanceAtStake={balanceAtStake.amount} reward={balanceAtStake.reward} />
+        </Col>
         <Col size=1.>
           <VSpacing size=Spacing.md />
           {balanceDetail(
@@ -163,23 +165,19 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
           <VSpacing size=Spacing.md />
           {balanceDetail(
              "BALANCE AT STAKE",
-             balanceAtStake |> Format.fPretty,
-             balanceAtStake *. usdPrice |> Format.fPretty,
+             balanceAtStake.amount |> Format.fPretty,
+             balanceAtStake.amount *. usdPrice |> Format.fPretty,
              Colors.chartBalanceAtStake,
            )}
+          <VSpacing size=Spacing.xl />
+          <VSpacing size=Spacing.md />
+          {balanceDetail(
+             "REWARD",
+             balanceAtStake.reward |> Format.fPretty,
+             balanceAtStake.reward *. usdPrice |> Format.fPretty,
+             Colors.chartReward,
+           )}
         </Col>
-        // <VSpacing size=Spacing.xl />
-        // <VSpacing size=Spacing.md />
-        // {switch (accountOpt, priceOpt) {
-        //  | (Some(account), Some(price)) =>
-        //    balanceDetail(
-        //      "REWARD",
-        //      account.reward |> Format.fPretty,
-        //      account.reward *. usdPrice |> Format.fPretty,
-        //      Colors.chartReward,
-        //    )
-        //  | _ => balanceDetail("REWARD", "?", "?", Colors.chartReward)
-        //  }}
         <div className=Styles.separatorLine />
         <Col size=1. alignSelf=Col.Start>
           <div className=Styles.totalContainer>
