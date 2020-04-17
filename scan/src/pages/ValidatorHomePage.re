@@ -6,7 +6,7 @@ module Styles = {
   let validatorsLogo = style([marginRight(`px(10))]);
   let highlight = style([margin2(~v=`px(28), ~h=`zero)]);
   let valueContainer = style([display(`flex), justifyContent(`flexStart)]);
-  let monikerContainer = style([maxWidth(`px(180))]);
+  let monikerContainer = style([maxWidth(`px(250))]);
 
   let emptyContainer =
     style([
@@ -225,25 +225,20 @@ let make = () =>
 
     let validatorsCountSub = ValidatorSub.count();
     let validatorsSub = ValidatorSub.getList(~page, ~pageSize, ~isActive, ());
-    // TODO: Update once bonding status is available
-    let bondedValidatorCountSub = ValidatorSub.count();
+    let isActiveValidatorCountSub = ValidatorSub.countByActive(isActive);
     let bondedTokenCountSub = ValidatorSub.getTotalBondedAmount();
     let avgBlockTimeSub = BlockSub.getAvgBlockTime(prevDayTime, currentTime);
     let metadataSub = MetadataSub.use();
 
     let%Sub validators = validatorsSub;
     let%Sub validatorCount = validatorsCountSub;
-    let%Sub bondedValidatorCount = bondedValidatorCountSub;
+    let%Sub isActiveValidatorCount = isActiveValidatorCountSub;
     let%Sub bondedTokenCount = bondedTokenCountSub;
     let%Sub avgBlockTime = avgBlockTimeSub;
     let%Sub metadata = metadataSub;
 
     let pageCount = Page.getPageCount(validatorCount, pageSize);
     let globalInfo = ValidatorSub.GlobalInfo.getGlobalInfo();
-    let unbondedValidatorCount = 0;
-    let unbondingValidatorCount = 0;
-    let allValidatorCount =
-      bondedValidatorCount + unbondedValidatorCount + unbondingValidatorCount;
 
     <>
       <Row justify=Row.Between>
@@ -259,7 +254,7 @@ let make = () =>
               spacing={Text.Em(0.06)}
             />
             <div className=Styles.seperatedLine />
-            <Text value={(allValidatorCount |> string_of_int) ++ " In total"} />
+            <Text value={(validatorCount |> string_of_int) ++ " In total"} />
           </div>
         </Col>
         <Col> <ToggleButton isActive setIsActive /> </Col>
@@ -268,7 +263,7 @@ let make = () =>
         <Row>
           <Col size=0.7>
             <InfoHL
-              info={InfoHL.Fraction(validators->Belt.Array.size, allValidatorCount, false)}
+              info={InfoHL.Fraction(isActiveValidatorCount, validatorCount, false)}
               header="VALIDATORS"
             />
           </Col>
