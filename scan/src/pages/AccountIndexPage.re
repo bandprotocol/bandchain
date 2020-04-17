@@ -125,7 +125,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
 
     let availableBalance = account.balance->Coin.getBandAmountFromCoins;
     let usdPrice = info.financial.usdPrice;
-    let totalBalance = availableBalance +. balanceAtStake.amount;
+    let totalBalance = availableBalance +. balanceAtStake.amount +. balanceAtStake.reward;
 
     <>
       <Row justify=Row.Between>
