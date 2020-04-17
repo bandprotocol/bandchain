@@ -16,4 +16,5 @@ var (
 	ErrBadDataLength        = sdkerrors.Register(ModuleName, 10, "bad data length")
 	ErrDataSourceNotFound   = sdkerrors.Register(ModuleName, 11, "data source not found")
 	ErrOracleScriptNotFound = sdkerrors.Register(ModuleName, 12, "oracle script not found")
+	ErrRawRequestNotFound   = sdkerrors.Register(ModuleName, 13, "raw request not found")
 )
