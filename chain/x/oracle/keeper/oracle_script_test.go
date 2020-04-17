@@ -26,10 +26,8 @@ func TestSetterGetterOracleScript(t *testing.T) {
 	require.Panics(t, func() { _ = k.MustGetOracleScript(ctx, 42) })
 	// Creates some basic oracle scripts.
 	oracleScript1 := types.NewOracleScript(Alice.Address, "NAME1", "DESCRIPTION1", []byte("code1"),
-		`{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }`,
-		"https://bandprotocol.com")
-	oracleScript2 := types.NewOracleScript(Bob.Address, "NAME2", "DESCRIPTION2", []byte("code2"), `{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }`,
-		"https://bandprotocol.com")
+		BasicSchema, BasicSourceCodeURL)
+	oracleScript2 := types.NewOracleScript(Bob.Address, "NAME2", "DESCRIPTION2", []byte("code2"), BasicSchema, BasicSourceCodeURL)
 	// Sets id 42 with oracle script 1 and id 42 with oracle script 2.
 	k.SetOracleScript(ctx, 42, oracleScript1)
 	k.SetOracleScript(ctx, 43, oracleScript2)
@@ -51,8 +49,8 @@ func TestSetterGetterOracleScript(t *testing.T) {
 func TestAddEditOracleScriptBasic(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// Creates some basic oracle scripts.
-	oracleScript1 := types.NewOracleScript(Alice.Address, "NAME1", "DESCRIPTION1", []byte("code1"), `{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }`, "https://bandprotocol.com")
-	oracleScript2 := types.NewOracleScript(Bob.Address, "NAME2", "DESCRIPTION2", []byte("code2"), `{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }`, "https://bandprotocol.com")
+	oracleScript1 := types.NewOracleScript(Alice.Address, "NAME1", "DESCRIPTION1", []byte("code1"), BasicSchema, BasicSourceCodeURL)
+	oracleScript2 := types.NewOracleScript(Bob.Address, "NAME2", "DESCRIPTION2", []byte("code2"), BasicSchema, BasicSourceCodeURL)
 	// Adds a new oracle script to the store. We should be able to retreive it back.
 	id, err := k.AddOracleScript(ctx,
 		oracleScript1.Owner, oracleScript1.Name, oracleScript1.Description, oracleScript1.Code, oracleScript1.Schema, oracleScript1.SourceCodeURL,
@@ -132,16 +130,14 @@ func TestAddOracleScriptTooLongDescription(t *testing.T) {
 	k.SetParam(ctx, types.KeyMaxDescriptionLength, 41)
 	_, err := k.AddOracleScript(ctx,
 		Owner.Address, BasicName, "________THIS_STRING_HAS_SIZE_OF_42________", BasicCode,
-		`{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }`,
-		"https://bandprotocol.com",
+		BasicSchema, BasicSourceCodeURL,
 	)
 	require.Error(t, err)
 	// Sets max desc length to 42. We should now be able to add the oracle script.
 	k.SetParam(ctx, types.KeyMaxDescriptionLength, 42)
 	_, err = k.AddOracleScript(ctx,
 		Owner.Address, BasicName, "________THIS_STRING_HAS_SIZE_OF_42________", BasicCode,
-		`{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }`,
-		"https://bandprotocol.com",
+		BasicSchema, BasicSourceCodeURL,
 	)
 	require.Nil(t, err)
 }
@@ -177,8 +173,7 @@ func TestAddOracleScriptTooBigCode(t *testing.T) {
 	_, err := k.AddOracleScript(ctx,
 		Owner.Address, BasicName, BasicDesc,
 		[]byte("________THIS_STRING_HAS_SIZE_OF_42________"),
-		`{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }`,
-		"https://bandprotocol.com",
+		BasicSchema, BasicSourceCodeURL,
 	)
 	require.Error(t, err)
 	// Sets max code size to 50. We should now be able to add the oracle script.
@@ -186,8 +181,7 @@ func TestAddOracleScriptTooBigCode(t *testing.T) {
 	_, err = k.AddOracleScript(ctx,
 		Owner.Address, BasicName, BasicDesc,
 		[]byte("________THIS_STRING_HAS_SIZE_OF_42________"),
-		`{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }`,
-		"https://bandprotocol.com",
+		BasicSchema, BasicSourceCodeURL,
 	)
 	require.Nil(t, err)
 }
@@ -218,8 +212,8 @@ func TestGetAllOracleScripts(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// Sets the oracle scripts to the storage.
 	oracleScripts := []types.OracleScript{
-		types.NewOracleScript(Alice.Address, "NAME1", "DESCRIPTION1", []byte("code1"), `{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }`, "https://bandprotocol.com"),
-		types.NewOracleScript(Bob.Address, "NAME2", "DESCRIPTION2", []byte("code2"), `{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }`, "https://bandprotocol.com"),
+		types.NewOracleScript(Alice.Address, "NAME1", "DESCRIPTION1", []byte("code1"), BasicSchema, BasicSourceCodeURL),
+		types.NewOracleScript(Bob.Address, "NAME2", "DESCRIPTION2", []byte("code2"), BasicSchema, BasicSourceCodeURL),
 	}
 	k.SetOracleScript(ctx, 1, oracleScripts[0])
 	k.SetOracleScript(ctx, 2, oracleScripts[1])
