@@ -22,7 +22,7 @@ func (k Keeper) AddResult(
 	if uint64(len(result)) > k.GetParam(ctx, types.KeyMaxResultSize) {
 		return sdkerrors.Wrapf(types.ErrBadDataValue,
 			"AddResult: Result size (%d) exceeds the maximum size (%d).",
-			len([]byte(responsePacket.Result)), k.GetParam(ctx, types.KeyMaxResultSize),
+			len(result), k.GetParam(ctx, types.KeyMaxResultSize),
 		)
 	}
 	store := ctx.KVStore(k.storeKey)

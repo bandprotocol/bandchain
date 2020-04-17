@@ -86,29 +86,12 @@ func (k Keeper) AddRequest(
 
 func (k Keeper) handleResolveRequest(
 	ctx sdk.Context, reqID types.RequestID, resolveStatus types.ResolveStatus, result []byte,
-) {
-
-	if resolveStatus != types.Success {
-		ctx.EventManager().EmitEvents(sdk.Events{
-			sdk.NewEvent(
-				types.EventTypeRequestExecute,
-				sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", reqID)),
-				sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", resolveStatus)),
-			)})
-		return
-	}
+) types.OracleResponsePacketData {
 
 	request, err := k.GetRequest(ctx, reqID)
-	if err != nil {
-		ctx.EventManager().EmitEvents(sdk.Events{
-			sdk.NewEvent(
-				types.EventTypeRequestExecute,
-				sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", reqID)),
-				sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", resolveStatus)),
-			)})
-		return
+	if err != nil { // should never happen
+		panic(err)
 	}
-
 	reqPacketData := types.NewOracleRequestPacketData(
 		request.ClientID, request.OracleScriptID,
 		hex.EncodeToString(request.Calldata), request.SufficientValidatorCount,
@@ -121,6 +104,17 @@ func (k Keeper) handleResolveRequest(
 		request.RequestTime, ctx.BlockTime().Unix(),
 		types.Success, hex.EncodeToString(result),
 	)
+
+	if resolveStatus != types.Success {
+		ctx.EventManager().EmitEvents(sdk.Events{
+			sdk.NewEvent(
+				types.EventTypeRequestExecute,
+				sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", reqID)),
+				sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", resolveStatus)),
+			)})
+		return resPacketData
+	}
+
 	err = k.AddResult(ctx, reqID, reqPacketData, resPacketData)
 	if err != nil {
 		ctx.EventManager().EmitEvents(sdk.Events{
@@ -129,7 +123,7 @@ func (k Keeper) handleResolveRequest(
 				sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", reqID)),
 				sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", types.Failure)),
 			)})
-		return
+		return resPacketData
 	}
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
@@ -141,13 +135,14 @@ func (k Keeper) handleResolveRequest(
 			sdk.NewAttribute(types.AttributeKeyResolvedTime, fmt.Sprintf("%d", resPacketData.ResolveTime)),
 			sdk.NewAttribute(types.AttributrKeyExpirationHeight, fmt.Sprintf("%d", request.ExpirationHeight)),
 		)})
+	return resPacketData
 }
 
 // ProcessOracleResponse takes a
 func (k Keeper) ProcessOracleResponse(
 	ctx sdk.Context, reqID types.RequestID, resolveStatus types.ResolveStatus, result []byte,
 ) {
-	k.handleResolveRequest(ctx, reqID, resolveStatus, result)
+	resPacketData := k.handleResolveRequest(ctx, reqID, resolveStatus, result)
 	if resolveStatus == types.Expired {
 		return
 	}
@@ -156,14 +151,6 @@ func (k Keeper) ProcessOracleResponse(
 	if err != nil {
 		return
 	}
-
-	resPacketData := types.NewOracleResponsePacketData(
-		request.ClientID,
-		reqID,
-		int64(len(request.ReceivedValidators)),
-		request.RequestTime, ctx.BlockTime().Unix(),
-		types.Success, hex.EncodeToString(result),
-	)
 
 	sourceChannelEnd, found := k.ChannelKeeper.GetChannel(ctx, request.SourcePort, request.SourceChannel)
 	if !found {
