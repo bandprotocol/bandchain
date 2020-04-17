@@ -10505,6 +10505,22 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "last_ratio",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "shares",
             "type": {
               "kind": "NON_NULL",
@@ -10819,6 +10835,16 @@
             "description": null
           },
           {
+            "name": "last_ratio",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "String_comparison_exp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "shares",
             "defaultValue": null,
             "type": {
@@ -10897,6 +10923,16 @@
             "description": null
           },
           {
+            "name": "last_ratio",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "shares",
             "defaultValue": null,
             "type": {
@@ -10960,6 +10996,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "last_ratio",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "shares",
             "type": {
               "kind": "SCALAR",
@@ -10986,6 +11034,16 @@
         "inputFields": [
           {
             "name": "delegator_address",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "last_ratio",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -11048,6 +11106,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "last_ratio",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "shares",
             "type": {
               "kind": "SCALAR",
@@ -11074,6 +11144,16 @@
         "inputFields": [
           {
             "name": "delegator_address",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "last_ratio",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -11277,6 +11357,16 @@
             "description": null
           },
           {
+            "name": "last_ratio",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "shares",
             "defaultValue": null,
             "type": {
@@ -11331,6 +11421,12 @@
           {
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "last_ratio",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "shares",
             "description": "column name"
           },
@@ -11348,6 +11444,16 @@
         "inputFields": [
           {
             "name": "delegator_address",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "last_ratio",
             "defaultValue": null,
             "type": {
               "kind": "SCALAR",
@@ -11401,6 +11507,12 @@
           {
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "last_ratio",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "shares",
             "description": "column name"
           },
@@ -11443,6 +11555,18 @@
             "type": {
               "kind": "SCALAR",
               "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "reward",
+            "type": {
+              "kind": "SCALAR",
+              "name": "numeric",
               "ofType": null
             },
             "description": null
@@ -11838,6 +11962,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "reward",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "share_percentage",
             "type": {
               "kind": "SCALAR",
@@ -11852,6 +11988,16 @@
         "inputFields": [
           {
             "name": "amount",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "reward",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -11940,6 +12086,16 @@
             "description": null
           },
           {
+            "name": "reward",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "numeric_comparison_exp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "share_percentage",
             "defaultValue": null,
             "type": {
@@ -12005,6 +12161,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "reward",
+            "type": {
+              "kind": "SCALAR",
+              "name": "numeric",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "share_percentage",
             "type": {
               "kind": "SCALAR",
@@ -12041,6 +12209,16 @@
           },
           {
             "name": "delegator_address",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "reward",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -12115,6 +12293,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "reward",
+            "type": {
+              "kind": "SCALAR",
+              "name": "numeric",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "share_percentage",
             "type": {
               "kind": "SCALAR",
@@ -12151,6 +12341,16 @@
           },
           {
             "name": "delegator_address",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "reward",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -12211,6 +12411,16 @@
             "description": null
           },
           {
+            "name": "reward",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "share_percentage",
             "defaultValue": null,
             "type": {
@@ -12261,6 +12471,12 @@
           {
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "reward",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "share_percentage",
             "description": "column name"
           },
@@ -12299,6 +12515,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "reward",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "share_percentage",
             "type": {
               "kind": "SCALAR",
@@ -12313,6 +12541,16 @@
         "inputFields": [
           {
             "name": "amount",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "reward",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -12365,6 +12603,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "reward",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "share_percentage",
             "type": {
               "kind": "SCALAR",
@@ -12379,6 +12629,16 @@
         "inputFields": [
           {
             "name": "amount",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "reward",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -12431,6 +12691,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "reward",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "share_percentage",
             "type": {
               "kind": "SCALAR",
@@ -12445,6 +12717,16 @@
         "inputFields": [
           {
             "name": "amount",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "reward",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -12497,6 +12779,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "reward",
+            "type": {
+              "kind": "SCALAR",
+              "name": "numeric",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "share_percentage",
             "type": {
               "kind": "SCALAR",
@@ -12511,6 +12805,16 @@
         "inputFields": [
           {
             "name": "amount",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "reward",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -12563,6 +12867,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "reward",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "share_percentage",
             "type": {
               "kind": "SCALAR",
@@ -12577,6 +12893,16 @@
         "inputFields": [
           {
             "name": "amount",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "reward",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -12629,6 +12955,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "reward",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "share_percentage",
             "type": {
               "kind": "SCALAR",
@@ -12643,6 +12981,16 @@
         "inputFields": [
           {
             "name": "amount",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "reward",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -12695,6 +13043,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "reward",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "share_percentage",
             "type": {
               "kind": "SCALAR",
@@ -12709,6 +13069,16 @@
         "inputFields": [
           {
             "name": "amount",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "reward",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -50816,6 +51186,38 @@
             "description": null
           },
           {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "current_ratio",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "current_reward",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "description": null
+          },
+          {
             "args": [
               {
                 "name": "distinct_on",
@@ -52331,6 +52733,26 @@
             "description": null
           },
           {
+            "name": "current_ratio",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "String_comparison_exp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "current_reward",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "String_comparison_exp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "delegations",
             "defaultValue": null,
             "type": {
@@ -52656,6 +53078,26 @@
             "description": null
           },
           {
+            "name": "current_ratio",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "current_reward",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "delegations",
             "defaultValue": null,
             "type": {
@@ -52909,6 +53351,30 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "current_ratio",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "current_reward",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "delegator_shares",
             "type": {
               "kind": "SCALAR",
@@ -53093,6 +53559,26 @@
           },
           {
             "name": "consensus_pubkey",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "current_ratio",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "current_reward",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -53305,6 +53791,30 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "current_ratio",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "current_reward",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "delegator_shares",
             "type": {
               "kind": "SCALAR",
@@ -53489,6 +53999,26 @@
           },
           {
             "name": "consensus_pubkey",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "current_ratio",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "current_reward",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -53832,6 +54362,26 @@
             "description": null
           },
           {
+            "name": "current_ratio",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "current_reward",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "delegations_aggregate",
             "defaultValue": null,
             "type": {
@@ -54046,6 +54596,18 @@
           {
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "current_ratio",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "current_reward",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "delegator_shares",
             "description": "column name"
           },
@@ -54173,6 +54735,26 @@
           },
           {
             "name": "consensus_pubkey",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "current_ratio",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "current_reward",
             "defaultValue": null,
             "type": {
               "kind": "SCALAR",
@@ -54879,6 +55461,18 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "consensus_pubkey",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "current_ratio",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "current_reward",
             "description": "column name"
           },
           {

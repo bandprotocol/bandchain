@@ -150,7 +150,6 @@ let make = (~dataSourceID: ID.DataSource.t) =>
            </div>}
       <VSpacing size=Spacing.lg />
       <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
-      <VSpacing size=Spacing.lg />
     </div>
     |> Sub.resolve;
   }

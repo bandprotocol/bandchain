@@ -24,7 +24,7 @@ let addressFontSize =
 
 let lineHeight =
   fun
-  | Title => Text.Px(23)
+  | Title => Text.Px(24)
   | Subtitle => Text.Px(18)
   | Text(_) => Text.Px(16)
   | Nav => Text.Px(14);
@@ -69,6 +69,7 @@ let make = (~address, ~position=Text(Pointer), ~validator=false) => {
       weight=Text.Semibold
       code=true
       spacing={position |> letterSpacing}
+      height={position |> lineHeight}
     />
     <Text
       value=noPrefixAddress
@@ -79,6 +80,7 @@ let make = (~address, ~position=Text(Pointer), ~validator=false) => {
       nowrap=true
       block=true
       ellipsis=true
+      height={position |> lineHeight}
     />
   </div>;
 };
