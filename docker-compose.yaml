@@ -125,17 +125,6 @@ services:
     restart: always
     command: bandoracled --node tcp://172.18.0.14:26657 --priv-key 7db94d3b30dca300ed8f60f3f7b506b51bd150ed518f997ba0ce81be73b90c15 --gas 100000 --gas-prices 5.0uband --execute-endpoint https://dmptasv4j8.execute-api.ap-southeast-1.amazonaws.com/bash-execute
 
-  query-node:
-    image: band-validator:latest
-    ports:
-      - 26657:26657
-    volumes:
-      - chain_config:/root/.bandd/config/
-    networks:
-      bandchain:
-        ipv4_address: 172.18.0.15
-    command: sh -c "chmod +x ./docker-config/run.sh && ./docker-config/run.sh query-node"
-
   rest-server:
     image: band-validator:latest
     networks:
@@ -145,6 +134,30 @@ services:
     ports:
       - 1317:1317
     command: bandcli rest-server --laddr tcp://0.0.0.0:1317 --node tcp://172.18.0.15:26657 --chain-id bandchain --trust-node
+
+  wenchang-testnet:
+    image: tianon/true
+    restart: "no"
+    networks:
+      bandchain:
+    depends_on:
+      - query-node
+      - proxy-server
+      - graphql-engine
+
+  query-node:
+    build:
+      context: chain
+      dockerfile: Dockerfile
+    image: band-validator:latest
+    ports:
+      - 26657:26657
+    volumes:
+      - chain_config:/root/.bandd/config/
+    networks:
+      bandchain:
+        ipv4_address: 172.18.0.15
+    command: sh -c "sleep 30 && chmod +x ./docker-config/run.sh && ./docker-config/run.sh query-node"
 
   proxy-server:
     build:
