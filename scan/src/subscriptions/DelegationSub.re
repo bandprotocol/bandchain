@@ -119,7 +119,6 @@ let getTotalStakeByDelegator = delegatorAddress => {
        );
 
   let%Sub delegatorInfo = delegatorInfoSub;
-  // And then return
   {amount: delegatorInfo##amount, reward: delegatorInfo##reward} |> Sub.resolve;
 };
 
