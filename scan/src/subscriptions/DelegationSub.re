@@ -110,26 +110,17 @@ let getTotalStakeByDelegator = delegatorAddress => {
           (),
         ),
     );
-  let amountSub =
-    result
-    |> Sub.map(_, a =>
-         (
-           (a##delegations_view_aggregate##aggregate |> Belt_Option.getExn)##sum
-           |> Belt_Option.getExn
-         )##amount
-       );
-  let rewardSub =
-    result
-    |> Sub.map(_, a =>
-         (
-           (a##delegations_view_aggregate##aggregate |> Belt_Option.getExn)##sum
-           |> Belt_Option.getExn
-         )##reward
-       );
-  let%Sub amount = amountSub;
-  let%Sub reward = rewardSub;
 
-  {amount, reward} |> Sub.resolve;
+  let delegatorInfoSub =
+    result
+    |> Sub.map(_, a =>
+         (a##delegations_view_aggregate##aggregate |> Belt_Option.getExn)##sum
+         |> Belt_Option.getExn
+       );
+
+  let%Sub delegatorInfo = delegatorInfoSub;
+  // And then return
+  {amount: delegatorInfo##amount, reward: delegatorInfo##reward} |> Sub.resolve;
 };
 
 let getStakeCountByDelegator = delegatorAddress => {
