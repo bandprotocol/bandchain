@@ -13,26 +13,26 @@ import (
 )
 
 // NewHandler creates the msg handler of this module, as required by Cosmos-SDK standard.
-func NewHandler(keeper Keeper) sdk.Handler {
+func NewHandler(k Keeper) sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 		switch msg := msg.(type) {
 		case MsgCreateDataSource:
-			return handleMsgCreateDataSource(ctx, keeper, msg)
+			return handleMsgCreateDataSource(ctx, k, msg)
 		case MsgEditDataSource:
-			return handleMsgEditDataSource(ctx, keeper, msg)
+			return handleMsgEditDataSource(ctx, k, msg)
 		case MsgCreateOracleScript:
-			return handleMsgCreateOracleScript(ctx, keeper, msg)
+			return handleMsgCreateOracleScript(ctx, k, msg)
 		case MsgEditOracleScript:
-			return handleMsgEditOracleScript(ctx, keeper, msg)
+			return handleMsgEditOracleScript(ctx, k, msg)
 		case MsgRequestData:
-			return handleMsgRequestData(ctx, keeper, msg)
+			return handleMsgRequestData(ctx, k, msg)
 		case MsgReportData:
-			return handleMsgReportData(ctx, keeper, msg)
+			return handleMsgReportData(ctx, k, msg)
 		case MsgAddOracleAddress:
-			return handleMsgAddOracleAddress(ctx, keeper, msg)
+			return handleMsgAddOracleAddress(ctx, k, msg)
 		case MsgRemoveOracleAddress:
-			return handleMsgRemoveOracleAddress(ctx, keeper, msg)
+			return handleMsgRemoveOracleAddress(ctx, k, msg)
 		case channeltypes.MsgPacket:
 			var requestData OracleRequestPacketData
 			if err := types.ModuleCdc.UnmarshalJSON(msg.GetData(), &requestData); err == nil {
@@ -46,7 +46,7 @@ func NewHandler(keeper Keeper) sdk.Handler {
 					msg.Signer,
 				)
 				return handleMsgRequestData(
-					ctx, keeper, newMsg, msg.GetDestPort(), msg.GetDestChannel(),
+					ctx, k, newMsg, msg.GetDestPort(), msg.GetDestChannel(),
 				)
 			}
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal oracle packet data")
@@ -56,10 +56,8 @@ func NewHandler(keeper Keeper) sdk.Handler {
 	}
 }
 
-func handleMsgCreateDataSource(
-	ctx sdk.Context, keeper Keeper, msg MsgCreateDataSource,
-) (*sdk.Result, error) {
-	dataSourceID, err := keeper.AddDataSource(
+func handleMsgCreateDataSource(ctx sdk.Context, k Keeper, msg MsgCreateDataSource) (*sdk.Result, error) {
+	dataSourceID, err := k.AddDataSource(
 		ctx, msg.Owner, msg.Name, msg.Description, msg.Fee, msg.Executable,
 	)
 	if err != nil {
@@ -72,10 +70,8 @@ func handleMsgCreateDataSource(
 	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
 
-func handleMsgEditDataSource(
-	ctx sdk.Context, keeper Keeper, msg MsgEditDataSource,
-) (*sdk.Result, error) {
-	dataSource, err := keeper.GetDataSource(ctx, msg.DataSourceID)
+func handleMsgEditDataSource(ctx sdk.Context, k Keeper, msg MsgEditDataSource) (*sdk.Result, error) {
+	dataSource, err := k.GetDataSource(ctx, msg.DataSourceID)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +80,7 @@ func handleMsgEditDataSource(
 			"%s is not authorized to edit this data source", msg.Sender.String(),
 		)
 	}
-	err = keeper.EditDataSource(
+	err = k.EditDataSource(
 		ctx, msg.DataSourceID, msg.Owner, msg.Name, msg.Description,
 		msg.Fee, msg.Executable,
 	)
@@ -112,10 +108,8 @@ func handleMsgCreateOracleScript(
 	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
 
-func handleMsgEditOracleScript(
-	ctx sdk.Context, keeper Keeper, msg MsgEditOracleScript,
-) (*sdk.Result, error) {
-	oracleScript, err := keeper.GetOracleScript(ctx, msg.OracleScriptID)
+func handleMsgEditOracleScript(ctx sdk.Context, k Keeper, msg MsgEditOracleScript) (*sdk.Result, error) {
+	oracleScript, err := k.GetOracleScript(ctx, msg.OracleScriptID)
 	if err != nil {
 		return nil, err
 	}
@@ -135,19 +129,17 @@ func handleMsgEditOracleScript(
 	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
 
-func handleMsgRequestData(
-	ctx sdk.Context, keeper Keeper, msg MsgRequestData, ibcData ...string,
-) (*sdk.Result, error) {
-	id, err := keeper.AddRequest(
+func handleMsgRequestData(ctx sdk.Context, k Keeper, msg MsgRequestData, ibcData ...string) (*sdk.Result, error) {
+	id, err := k.AddRequest(
 		ctx, msg.OracleScriptID, msg.Calldata, msg.RequestedValidatorCount,
 		msg.SufficientValidatorCount, msg.ClientID,
 	)
 	// TODO: HACK AREA!
 	if len(ibcData) == 2 {
-		request, _ := keeper.GetRequest(ctx, id)
+		request, _ := k.GetRequest(ctx, id)
 		request.SourcePort = ibcData[0]
 		request.SourceChannel = ibcData[1]
-		keeper.SetRequest(ctx, id, request)
+		k.SetRequest(ctx, id, request)
 	}
 	// END HACK AREA!
 
@@ -155,17 +147,17 @@ func handleMsgRequestData(
 		return nil, err
 	}
 
-	env, err := NewExecutionEnvironment(ctx, keeper, id)
+	env, err := NewExecutionEnvironment(ctx, k, id)
 	if err != nil {
 		return nil, err
 	}
 
-	script, err := keeper.GetOracleScript(ctx, msg.OracleScriptID)
+	script, err := k.GetOracleScript(ctx, msg.OracleScriptID)
 	if err != nil {
 		return nil, err
 	}
 
-	gasPrepare := keeper.GetParam(ctx, types.KeyPrepareGas)
+	gasPrepare := k.GetParam(ctx, types.KeyPrepareGas)
 	ctx.GasMeter().ConsumeGas(gasPrepare, "PrepareRequest")
 	_, _, errOwasm := owasm.Execute(&env, script.Code, "prepare", msg.Calldata, 100000)
 
@@ -175,16 +167,16 @@ func handleMsgRequestData(
 		)
 	}
 
-	err = env.SaveRawDataRequests(ctx, keeper)
+	err = env.SaveRawDataRequests(ctx, k)
 	if err != nil {
 		return nil, err
 	}
 
-	err = keeper.ValidateDataSourceCount(ctx, id)
+	err = k.ValidateDataSourceCount(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-	err = keeper.PayDataSourceFees(ctx, id, msg.Sender)
+	err = k.PayDataSourceFees(ctx, id, msg.Sender)
 	if err != nil {
 		return nil, err
 	}
@@ -195,10 +187,8 @@ func handleMsgRequestData(
 	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
 
-func handleMsgReportData(
-	ctx sdk.Context, keeper Keeper, msg MsgReportData,
-) (*sdk.Result, error) {
-	err := keeper.AddReport(ctx, msg.RequestID, msg.DataSet, msg.Validator, msg.Reporter)
+func handleMsgReportData(ctx sdk.Context, k Keeper, msg MsgReportData) (*sdk.Result, error) {
+	err := k.AddReport(ctx, msg.RequestID, msg.DataSet, msg.Validator, msg.Reporter)
 	if err != nil {
 		return nil, err
 	}
@@ -210,10 +200,8 @@ func handleMsgReportData(
 	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
 
-func handleMsgAddOracleAddress(
-	ctx sdk.Context, keeper Keeper, msg MsgAddOracleAddress,
-) (*sdk.Result, error) {
-	err := keeper.AddReporter(ctx, msg.Validator, msg.Reporter)
+func handleMsgAddOracleAddress(ctx sdk.Context, k Keeper, msg MsgAddOracleAddress) (*sdk.Result, error) {
+	err := k.AddReporter(ctx, msg.Validator, msg.Reporter)
 	if err != nil {
 		return nil, err
 	}
@@ -225,10 +213,8 @@ func handleMsgAddOracleAddress(
 	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
 
-func handleMsgRemoveOracleAddress(
-	ctx sdk.Context, keeper Keeper, msg MsgRemoveOracleAddress,
-) (*sdk.Result, error) {
-	err := keeper.RemoveReporter(ctx, msg.Validator, msg.Reporter)
+func handleMsgRemoveOracleAddress(ctx sdk.Context, k Keeper, msg MsgRemoveOracleAddress) (*sdk.Result, error) {
+	err := k.RemoveReporter(ctx, msg.Validator, msg.Reporter)
 	if err != nil {
 		return nil, err
 	}
