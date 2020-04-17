@@ -561,7 +561,7 @@ let renderPacketVariant = (msg: TxSub.Msg.t, common: TxSub.Msg.Packet.common_t) 
     <VSpacing size=Spacing.md />
     <div className=Styles.topicContainer>
       <Text value="TIMEOUT HEIGHT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <TypeID.Block id={common.timeoutHeight} />
+      <Text value={common.timeoutHeight |> string_of_int} code=true />
     </div>
     {switch (msg) {
      | Acknowledgement({acknowledgement}) =>
