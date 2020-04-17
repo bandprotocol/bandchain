@@ -298,7 +298,7 @@ module Msg = {
       sourceChannel: string,
       destinationPort: string,
       destinationChannel: string,
-      timeoutHeight: ID.Block.t,
+      timeoutHeight: int,
       chainID: string,
     };
 
@@ -317,7 +317,7 @@ module Msg = {
           sourceChannel: json |> at(["packet", "source_channel"], string),
           destinationPort: json |> at(["packet", "destination_port"], string),
           destinationChannel: json |> at(["packet", "destination_channel"], string),
-          timeoutHeight: json |> at(["packet", "timeout_height"], ID.Block.fromJson),
+          timeoutHeight: json |> at(["packet", "timeout_height"], int),
           chainID: "band-consumer",
         },
       };
@@ -338,7 +338,7 @@ module Msg = {
           sourceChannel: "gjdojfpjfp",
           destinationPort: "gjdojfpjfp",
           destinationChannel: "gjdojfpjfp",
-          timeoutHeight: ID.Block.ID(999999),
+          timeoutHeight: 999999,
           chainID: "band-consumer",
         },
         sender: json |> field("address", string) |> Address.fromBech32,
@@ -361,7 +361,7 @@ module Msg = {
           sourceChannel: json |> at(["packet", "source_channel"], string),
           destinationPort: json |> at(["packet", "destination_port"], string),
           destinationChannel: json |> at(["packet", "destination_channel"], string),
-          timeoutHeight: json |> at(["packet", "timeout_height"], ID.Block.fromJson),
+          timeoutHeight: json |> at(["packet", "timeout_height"], int),
           chainID: "band-consumer",
         },
         nextSequenceReceive: json |> at(["packet", "next_sequence_receive"], int),
