@@ -201,6 +201,33 @@ let make = (~reqID) =>
           <Col size=1.>
             <div className=Styles.hFlex>
               <Text
+                value="CALLDATA"
+                size=Text.Sm
+                weight=Text.Semibold
+                spacing={Text.Em(0.06)}
+                color=Colors.gray6
+              />
+              <HSpacing size=Spacing.md />
+              <CopyButton data={request.calldata} />
+            </div>
+          </Col>
+        </div>
+        <KVTable
+          tableWidth=880
+          theme=KVTable.RequestMiniTable
+          rows={
+            calldataKVs
+            ->Belt_Array.map(({fieldName, fieldValue}) =>
+                [KVTable.Value(fieldName), KVTable.Value(fieldValue)]
+              )
+            ->Belt_List.fromArray
+          }
+        />
+        <VSpacing size=Spacing.lg />
+        <div className={Styles.topicContainer(40)}>
+          <Col size=1.>
+            <div className=Styles.hFlex>
+              <Text
                 value="EXTERNAL DATA"
                 size=Text.Sm
                 weight=Text.Semibold
@@ -223,33 +250,6 @@ let make = (~reqID) =>
                   KVTable.DataSource(dataSource.dataSourceID, dataSource.name),
                   KVTable.Value(calldata |> JsBuffer.toUTF8),
                 ]
-              )
-            ->Belt_List.fromArray
-          }
-        />
-        <VSpacing size=Spacing.lg />
-        <div className={Styles.topicContainer(40)}>
-          <Col size=1.>
-            <div className=Styles.hFlex>
-              <Text
-                value="CALLDATA"
-                size=Text.Sm
-                weight=Text.Semibold
-                spacing={Text.Em(0.06)}
-                color=Colors.gray6
-              />
-              <HSpacing size=Spacing.md />
-              <CopyButton data={request.calldata} />
-            </div>
-          </Col>
-        </div>
-        <KVTable
-          tableWidth=880
-          theme=KVTable.RequestMiniTable
-          rows={
-            calldataKVs
-            ->Belt_Array.map(({fieldName, fieldValue}) =>
-                [KVTable.Value(fieldName), KVTable.Value(fieldValue)]
               )
             ->Belt_List.fromArray
           }
