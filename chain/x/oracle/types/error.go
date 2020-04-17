@@ -12,4 +12,8 @@ var (
 	ErrItemNotFound           = sdkerrors.Register(ModuleName, 5, "ItemNotFound")
 	ErrInvalidState           = sdkerrors.Register(ModuleName, 6, "InvalidState")
 	ErrBadWasmExecution       = sdkerrors.Register(ModuleName, 7, "BadWasmExecution")
+
+	ErrBadDataLength        = sdkerrors.Register(ModuleName, 10, "bad data length")
+	ErrDataSourceNotFound   = sdkerrors.Register(ModuleName, 11, "data source not found")
+	ErrOracleScriptNotFound = sdkerrors.Register(ModuleName, 12, "oracle script not found")
 )

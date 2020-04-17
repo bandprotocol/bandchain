@@ -57,7 +57,7 @@ var (
 	NewRawDataReport       = types.NewRawDataReport
 	NewRawDataReportWithID = types.NewRawDataReportWithID
 
-	KeyMaxDataSourceExecutableSize      = types.KeyMaxDataSourceExecutableSize
+	KeyMaxExecutableSize                = types.KeyMaxExecutableSize
 	KeyMaxOracleScriptCodeSize          = types.KeyMaxOracleScriptCodeSize
 	KeyMaxCalldataSize                  = types.KeyMaxCalldataSize
 	KeyMaxDataSourceCountPerRequest     = types.KeyMaxDataSourceCountPerRequest
