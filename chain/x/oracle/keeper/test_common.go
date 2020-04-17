@@ -152,7 +152,7 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 
 	ibcKeeper := ibc.NewKeeper(cdc, keyIBC, sk, scopedIBCKeeper)
 
-	keeper := NewKeeper(cdc, keyRequest, bk, sk, ibcKeeper.ChannelKeeper, pk.Subspace(types.DefaultParamspace), scopedOracleKeeper)
+	keeper := NewKeeper(cdc, keyRequest, pk.Subspace(types.DefaultParamspace), bk, sk, ibcKeeper.ChannelKeeper, scopedOracleKeeper)
 	require.Equal(t, account.GetAddress(), addr)
 	accountKeeper.SetAccount(ctx, account)
 

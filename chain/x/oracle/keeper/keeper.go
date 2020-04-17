@@ -14,26 +14,29 @@ import (
 type Keeper struct {
 	storeKey      sdk.StoreKey
 	cdc           *codec.Codec
+	ParamSpace    params.Subspace
 	CoinKeeper    bank.Keeper
 	StakingKeeper staking.Keeper
 	ChannelKeeper types.ChannelKeeper
-	ParamSpace    params.Subspace
 	scopedKeeper  capability.ScopedKeeper
 }
 
 // NewKeeper creates a new oracle Keeper instance.
 func NewKeeper(
-	cdc *codec.Codec, key sdk.StoreKey, coinKeeper bank.Keeper,
-	stakingKeeper staking.Keeper, channelKeeper types.ChannelKeeper, paramSpace params.Subspace,
-	scopedKeeper capability.ScopedKeeper,
+	cdc *codec.Codec, key sdk.StoreKey, paramSpace params.Subspace,
+	coinKeeper bank.Keeper, stakingKeeper staking.Keeper,
+	channelKeeper types.ChannelKeeper, scopedKeeper capability.ScopedKeeper,
 ) Keeper {
+	if !paramSpace.HasKeyTable() {
+		paramSpace = paramSpace.WithKeyTable(ParamKeyTable())
+	}
 	return Keeper{
 		storeKey:      key,
 		cdc:           cdc,
+		ParamSpace:    paramSpace,
 		CoinKeeper:    coinKeeper,
 		StakingKeeper: stakingKeeper,
 		ChannelKeeper: channelKeeper,
-		ParamSpace:    paramSpace.WithKeyTable(ParamKeyTable()),
 		scopedKeeper:  scopedKeeper,
 	}
 }
@@ -46,7 +49,7 @@ func ParamKeyTable() params.KeyTable {
 // GetParam returns the parameter as specified by key as an uint64.
 func (k Keeper) GetParam(ctx sdk.Context, key []byte) (res uint64) {
 	k.ParamSpace.Get(ctx, key, &res)
-	return
+	return res
 }
 
 // SetParam saves the given key-value parameter to the store.
@@ -55,22 +58,9 @@ func (k Keeper) SetParam(ctx sdk.Context, key []byte, value uint64) {
 }
 
 // GetParams returns all current parameters as a types.Params instance.
-func (k Keeper) GetParams(ctx sdk.Context) types.Params {
-	return types.NewParams(
-		k.GetParam(ctx, types.KeyMaxExecutableSize),
-		k.GetParam(ctx, types.KeyMaxOracleScriptCodeSize),
-		k.GetParam(ctx, types.KeyMaxCalldataSize),
-		k.GetParam(ctx, types.KeyMaxDataSourceCountPerRequest),
-		k.GetParam(ctx, types.KeyMaxRawDataReportSize),
-		k.GetParam(ctx, types.KeyMaxResultSize),
-		k.GetParam(ctx, types.KeyEndBlockExecuteGasLimit),
-		k.GetParam(ctx, types.KeyMaxNameLength),
-		k.GetParam(ctx, types.KeyMaxDescriptionLength),
-		k.GetParam(ctx, types.KeyGasPerRawDataRequestPerValidator),
-		k.GetParam(ctx, types.KeyExpirationBlockCount),
-		k.GetParam(ctx, types.KeyExecuteGas),
-		k.GetParam(ctx, types.KeyPrepareGas),
-	)
+func (k Keeper) GetParams(ctx sdk.Context) (params types.Params) {
+	k.ParamSpace.GetParamSet(ctx, &params)
+	return params
 }
 
 // GetRequestBeginID TODO
