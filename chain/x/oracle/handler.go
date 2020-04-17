@@ -118,7 +118,7 @@ func handleMsgEditOracleScript(ctx sdk.Context, k Keeper, msg MsgEditOracleScrip
 			"%s is not authorized to edit this oracle script", msg.Sender.String(),
 		)
 	}
-	err = keeper.EditOracleScript(ctx, msg.OracleScriptID, msg.Owner, msg.Name, msg.Description, msg.Code, msg.Schema, msg.SourceCodeURL)
+	err = k.EditOracleScript(ctx, msg.OracleScriptID, msg.Owner, msg.Name, msg.Description, msg.Code, msg.Schema, msg.SourceCodeURL)
 	if err != nil {
 		return nil, err
 	}
