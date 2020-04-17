@@ -44,7 +44,7 @@ module Mini = {
     {|
       subscription RequestsMiniByDataSource($id: bigint!, $limit: Int!, $offset: Int!) {
         raw_data_requests(
-          where: {data_source_id: $id}
+          where: {data_source_id: {_eq: $id}}
           limit: $limit
           offset: $offset
           order_by: {request_id: desc}
@@ -83,7 +83,7 @@ module Mini = {
     {|
       subscription RequestsMiniByOracleScript($id: bigint!, $limit: Int!, $offset: Int!) {
         requests(
-          where: {oracle_script_id: $id}
+          where: {oracle_script_id: {_eq: $id}}
           limit: $limit
           offset: $offset
           order_by: {id: desc}
@@ -275,7 +275,7 @@ module Mini = {
 module RequestCountByDataSourceConfig = [%graphql
   {|
     subscription RequestsMiniCountByDataSource($id: bigint!) {
-      raw_data_requests_aggregate(where: {data_source_id: $id}) {
+      raw_data_requests_aggregate(where: {data_source_id: {_eq: $id}}) {
         aggregate {
           count @bsDecoder(fn: "Belt_Option.getExn")
         }
@@ -287,7 +287,7 @@ module RequestCountByDataSourceConfig = [%graphql
 module RequestCountByOracleScriptConfig = [%graphql
   {|
     subscription RequestsCountMiniByOracleScript($id: bigint!) {
-      requests_aggregate(where: {oracle_script_id: $id}) {
+      requests_aggregate(where: {oracle_script_id: {_eq: $id}}) {
         aggregate {
           count @bsDecoder(fn: "Belt_Option.getExn")
         }
