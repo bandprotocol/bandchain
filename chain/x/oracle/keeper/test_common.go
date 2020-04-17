@@ -245,6 +245,8 @@ func GetTestOracleScript(path string) types.OracleScript {
 		"silly script",
 		"description",
 		code,
+		"schema",
+		"sourceCodeURL",
 	)
 }
 

@@ -30,6 +30,8 @@ const (
 	flagRequestedValidatorCount  = "requested-validator-count"
 	flagSufficientValidatorCount = "sufficient-validator-count"
 	flagClientID                 = "client-id"
+	flagSchema                   = "schema"
+	flagSourceCodeURL            = "url"
 )
 
 // GetTxCmd returns the transaction commands for this module
@@ -365,7 +367,7 @@ $ %s tx oracle edit-data-source 1 --name coingecko-price --description The scrip
 // GetCmdCreateOracleScript implements the create oracle script command handler.
 func GetCmdCreateOracleScript(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-oracle-script (--name [name]) (--description [description]) (--script [path-to-script]) (--owner [owner])",
+		Use:   "create-oracle-script (--name [name]) (--description [description]) (--script [path-to-script]) (--owner [owner]) (--schema [schema]) (--url [source-code-url])",
 		Short: "Create a new oracle script that will be used by data requests.",
 		Args:  cobra.NoArgs,
 		Long: strings.TrimSpace(
@@ -408,11 +410,23 @@ $ %s tx oracle create-oracle-script --name eth-price --description "Oracle scrip
 				return err
 			}
 
+			schema, err := cmd.Flags().GetString(flagSchema)
+			if err != nil {
+				return err
+			}
+
+			sourceCodeURL, err := cmd.Flags().GetString(flagSourceCodeURL)
+			if err != nil {
+				return err
+			}
+
 			msg := types.NewMsgCreateOracleScript(
 				owner,
 				name,
 				description,
 				scriptCode,
+				schema,
+				sourceCodeURL,
 				cliCtx.GetFromAddress(),
 			)
 
@@ -428,6 +442,8 @@ $ %s tx oracle create-oracle-script --name eth-price --description "Oracle scrip
 	cmd.Flags().String(flagDescription, "", "Description of this oracle script")
 	cmd.Flags().String(flagScript, "", "Path to this oracle script")
 	cmd.Flags().String(flagOwner, "", "Owner of this oracle script")
+	cmd.Flags().String(flagSchema, "", "Schema of this oracle script")
+	cmd.Flags().String(flagSourceCodeURL, "", "URL for the source code of this oracle script")
 
 	return cmd
 }
@@ -435,7 +451,7 @@ $ %s tx oracle create-oracle-script --name eth-price --description "Oracle scrip
 // GetCmdEditOracleScript implements the editing of oracle script command handler.
 func GetCmdEditOracleScript(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "edit-oracle-script [id] (--name [name]) (--description [description]) (--script [path-to-script]) (--owner [owner])",
+		Use:   "edit-oracle-script [id] (--name [name]) (--description [description]) (--script [path-to-script]) (--owner [owner]) (--schema [schema]) (--url [source-code-url])",
 		Short: "Edit an existing oracle script that will be used by data requests.",
 		Args:  cobra.ExactArgs(1),
 		Long: strings.TrimSpace(
@@ -484,12 +500,24 @@ $ %s tx oracle edit-oracle-script 1 --name eth-price --description "Oracle scrip
 				return err
 			}
 
+			schema, err := cmd.Flags().GetString(flagSchema)
+			if err != nil {
+				return err
+			}
+
+			sourceCodeURL, err := cmd.Flags().GetString(flagSourceCodeURL)
+			if err != nil {
+				return err
+			}
+
 			msg := types.NewMsgEditOracleScript(
 				oracleScriptID,
 				owner,
 				name,
 				description,
 				scriptCode,
+				schema,
+				sourceCodeURL,
 				cliCtx.GetFromAddress(),
 			)
 
@@ -505,6 +533,8 @@ $ %s tx oracle edit-oracle-script 1 --name eth-price --description "Oracle scrip
 	cmd.Flags().String(flagDescription, "", "Description of this oracle script")
 	cmd.Flags().String(flagScript, "", "Path to this oracle script")
 	cmd.Flags().String(flagOwner, "", "Owner of this oracle script")
+	cmd.Flags().String(flagSchema, "", "Schema of this oracle script")
+	cmd.Flags().String(flagSourceCodeURL, "", "URL for the source code of this oracle script")
 
 	return cmd
 }

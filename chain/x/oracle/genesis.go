@@ -68,8 +68,7 @@ func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorU
 
 	for _, oracleScript := range data.OracleScripts {
 		_, err := k.AddOracleScript(
-			ctx, oracleScript.Owner, oracleScript.Name, oracleScript.Description, oracleScript.Code,
-		)
+			ctx, oracleScript.Owner, oracleScript.Name, oracleScript.Description, oracleScript.Code, oracleScript.Schema, oracleScript.SourceCodeURL)
 		if err != nil {
 			panic(err)
 		}

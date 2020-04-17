@@ -94,10 +94,10 @@ func handleMsgEditDataSource(ctx sdk.Context, k Keeper, msg MsgEditDataSource) (
 	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
 
-func handleMsgCreateOracleScript(ctx sdk.Context, k Keeper, msg MsgCreateOracleScript) (*sdk.Result, error) {
-	oracleScriptID, err := k.AddOracleScript(
-		ctx, msg.Owner, msg.Name, msg.Description, msg.Code,
-	)
+func handleMsgCreateOracleScript(
+	ctx sdk.Context, keeper Keeper, msg MsgCreateOracleScript,
+) (*sdk.Result, error) {
+	oracleScriptID, err := keeper.AddOracleScript(ctx, msg.Owner, msg.Name, msg.Description, msg.Code, msg.Schema, msg.SourceCodeURL)
 	if err != nil {
 		return nil, err
 	}
@@ -118,9 +118,7 @@ func handleMsgEditOracleScript(ctx sdk.Context, k Keeper, msg MsgEditOracleScrip
 			"%s is not authorized to edit this oracle script", msg.Sender.String(),
 		)
 	}
-	err = k.EditOracleScript(
-		ctx, msg.OracleScriptID, msg.Owner, msg.Name, msg.Description, msg.Code,
-	)
+	err = k.EditOracleScript(ctx, msg.OracleScriptID, msg.Owner, msg.Name, msg.Description, msg.Code, msg.Schema, msg.SourceCodeURL)
 	if err != nil {
 		return nil, err
 	}

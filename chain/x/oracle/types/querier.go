@@ -59,11 +59,13 @@ func NewDataSourceQuerierInfo(
 }
 
 type OracleScriptQuerierInfo struct {
-	ID          OracleScriptID `json:"id"`
-	Owner       sdk.AccAddress `json:"owner"`
-	Name        string         `json:"name"`
-	Description string         `json:"description"`
-	Code        []byte         `json:"code"`
+	ID            OracleScriptID `json:"id"`
+	Owner         sdk.AccAddress `json:"owner"`
+	Name          string         `json:"name"`
+	Description   string         `json:"description"`
+	Code          []byte         `json:"code"`
+	Schema        string         `json:"schema"`
+	SourceCodeURL string         `json:"source_code_url"`
 }
 
 func NewOracleScriptQuerierInfo(
@@ -72,13 +74,17 @@ func NewOracleScriptQuerierInfo(
 	name string,
 	description string,
 	code []byte,
+	schema string,
+	sourceCodeURL string,
 ) OracleScriptQuerierInfo {
 	return OracleScriptQuerierInfo{
-		ID:          id,
-		Owner:       owner,
-		Description: description,
-		Name:        name,
-		Code:        code,
+		ID:            id,
+		Owner:         owner,
+		Description:   description,
+		Name:          name,
+		Code:          code,
+		Schema:        schema,
+		SourceCodeURL: sourceCodeURL,
 	}
 }
 
