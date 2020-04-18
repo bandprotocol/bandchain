@@ -14,14 +14,15 @@ import (
 func TestNewExecutionEnvironment(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
 
-	_, err := NewExecutionEnvironment(ctx, keeper, 1, false, keeper.GetReportCount(ctx, 1))
-	require.NotNil(t, err)
+	require.Panics(t, func() {
+		NewExecutionEnvironment(ctx, keeper, 1, false, keeper.GetReportCount(ctx, 1))
+	})
 
 	keeper.SetRequest(ctx, 1, types.NewRequest(
 		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))}, 1, 0, 0, 100, "clientID",
 	))
 
-	_, err = NewExecutionEnvironment(ctx, keeper, 1, false, keeper.GetReportCount(ctx, 1))
+	_, err := NewExecutionEnvironment(ctx, keeper, 1, false, keeper.GetReportCount(ctx, 1))
 	require.Nil(t, err)
 }
 

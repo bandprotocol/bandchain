@@ -84,10 +84,7 @@ func (k Keeper) AddRequest(
 func (k Keeper) ProcessOracleResponse(
 	ctx sdk.Context, reqID types.RequestID, resolveStatus types.ResolveStatus, result []byte,
 ) {
-	request, err := k.GetRequest(ctx, reqID)
-	if err != nil {
-		panic(err)
-	}
+	request := k.MustGetRequest(ctx, reqID)
 
 	// TODO: Send IBC packets + save data to result tree
 	reqPacketData := types.OracleRequestPacketData{}
@@ -138,10 +135,7 @@ func (k Keeper) ProcessExpiredRequests(ctx sdk.Context) {
 	// expiration time, it will be removed from the storage. Note that we will need to
 	// send oracle response packets with status EXPIRED for those that are not yet resolved.
 	for ; currentReqID <= lastReqID; currentReqID++ {
-		request, err := k.GetRequest(ctx, currentReqID)
-		if err != nil {
-			panic(err)
-		}
+		request := k.MustGetRequest(ctx, currentReqID)
 		// This request is not yet expired, so there's nothing to do here. Ditto for
 		// all other requests that come after this. Thus we can just break the loop.
 		if request.RequestHeight+expirationBlockCount > ctx.BlockHeight() {
@@ -175,22 +169,17 @@ func (k Keeper) ValidateDataSourceCount(ctx sdk.Context, id types.RequestID) err
 }
 
 // PayDataSourceFees sends fees from the sender to the owner of the requested data source.
-func (k Keeper) PayDataSourceFees(
-	ctx sdk.Context, id types.RequestID, sender sdk.AccAddress,
-) error {
+func (k Keeper) PayDataSourceFees(ctx sdk.Context, id types.RID, sender sdk.AccAddress) error {
 	rawDataRequests := k.GetRawRequests(ctx, id)
 	for _, rawDataRequest := range rawDataRequests {
-		dataSource, err := k.GetDataSource(ctx, rawDataRequest.DataSourceID)
-		if err != nil {
-			return err
-		}
+		dataSource := k.MustGetDataSource(ctx, rawDataRequest.DataSourceID)
 		if dataSource.Owner.Equals(sender) {
 			continue
 		}
 		if dataSource.Fee.IsZero() {
 			continue
 		}
-		err = k.CoinKeeper.SendCoins(ctx, sender, dataSource.Owner, dataSource.Fee)
+		err := k.CoinKeeper.SendCoins(ctx, sender, dataSource.Owner, dataSource.Fee)
 		if err != nil {
 			return err
 		}
@@ -202,10 +191,7 @@ func (k Keeper) PayDataSourceFees(
 // pending resolve list, which will be resolved during the EndBlock call. The move will happen
 // exactly once will the request receives sufficient raw reports from the validators.
 func (k Keeper) ShouldBecomePendingResolve(ctx sdk.Context, id types.RequestID) bool {
-	request, err := k.GetRequest(ctx, id)
-	if err != nil {
-		return false
-	}
+	request := k.MustGetRequest(ctx, id)
 	return k.GetReportCount(ctx, id) == request.SufficientValidatorCount
 }
 

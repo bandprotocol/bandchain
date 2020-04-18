@@ -26,16 +26,11 @@ type ExecutionEnvironment struct {
 func NewExecutionEnvironment(
 	ctx sdk.Context, keeper Keeper, requestID types.RequestID, isPrepare bool, receivedCount int64,
 ) (ExecutionEnvironment, error) {
-	request, err := keeper.GetRequest(ctx, requestID)
-	if err != nil {
-		return ExecutionEnvironment{}, err
-	}
 	return ExecutionEnvironment{
-		isPrepare:     isPrepare,
-		receivedCount: receivedCount,
-
+		isPrepare:              isPrepare,
+		receivedCount:          receivedCount,
 		requestID:              requestID,
-		request:                request,
+		request:                keeper.MustGetRequest(ctx, requestID),
 		now:                    ctx.BlockTime().Unix(),
 		maxResultSize:          int64(keeper.GetParam(ctx, KeyMaxResultSize)),
 		maxCalldataSize:        int64(keeper.GetParam(ctx, KeyMaxCalldataSize)),

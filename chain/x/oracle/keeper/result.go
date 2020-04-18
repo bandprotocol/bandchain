@@ -18,10 +18,7 @@ func (k Keeper) AddResult(
 		)
 	}
 
-	request, err := k.GetRequest(ctx, requestID)
-	if err != nil {
-		return err
-	}
+	request := k.MustGetRequest(ctx, requestID)
 
 	k.SetResult(ctx, requestID, oracleScriptID, calldata, types.NewResult(
 		request.RequestTime, ctx.BlockTime().Unix(), int64(len(request.RequestedValidators)),

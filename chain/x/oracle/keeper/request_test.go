@@ -164,7 +164,7 @@ func TestAddPendingRequest(t *testing.T) {
 func TestHasToPutInPendingList(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
-	require.False(t, keeper.ShouldBecomePendingResolve(ctx, 1))
+	require.Panics(t, func() { _ = keeper.ShouldBecomePendingResolve(ctx, 1) })
 	request := newDefaultRequest()
 	request.SufficientValidatorCount = 1
 	keeper.SetRequest(ctx, 1, request)

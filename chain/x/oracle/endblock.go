@@ -9,10 +9,7 @@ import (
 // resolveRequest resolves the given request, sends response packet out (if applicable),
 // and saves result hash to the store. Assumes that the given request is in a resolvable state.
 func resolveRequest(ctx sdk.Context, keeper Keeper, reqID types.RequestID) {
-	request, err := keeper.GetRequest(ctx, reqID)
-	if err != nil {
-		panic(err)
-	}
+	request := keeper.MustGetRequest(ctx, reqID)
 	env, err := NewExecutionEnvironment(ctx, keeper, reqID, false, keeper.GetReportCount(ctx, reqID))
 	if err != nil {
 		panic(err)
