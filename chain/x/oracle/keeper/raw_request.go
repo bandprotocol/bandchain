@@ -48,6 +48,7 @@ func (k Keeper) GetRawRequestIterator(ctx sdk.Context, rid types.RequestID) sdk.
 // GetRawRequestCount returns the number of raw requests for the given request ID.
 func (k Keeper) GetRawRequestCount(ctx sdk.Context, rid types.RequestID) (count int64) {
 	iterator := k.GetRawRequestIterator(ctx, rid)
+	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		count++
 	}
@@ -57,10 +58,24 @@ func (k Keeper) GetRawRequestCount(ctx sdk.Context, rid types.RequestID) (count 
 // GetRawRequests returns all raw requests for the given request ID, or nil if there is none.
 func (k Keeper) GetRawRequests(ctx sdk.Context, rid types.RID) (res []types.RawRequest) {
 	iterator := k.GetRawRequestIterator(ctx, rid)
+	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var rawRequest types.RawRequest
 		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &rawRequest)
 		res = append(res, rawRequest)
 	}
 	return res
+}
+
+// DeleteRawRequests removes all raw requests for the given request ID.
+func (k Keeper) DeleteRawRequests(ctx sdk.Context, rid types.RID) {
+	var keys [][]byte
+	iterator := k.GetRawRequestIterator(ctx, rid)
+	defer iterator.Close()
+	for ; iterator.Valid(); iterator.Next() {
+		keys = append(keys, iterator.Key())
+	}
+	for _, key := range keys {
+		ctx.KVStore(k.storeKey).Delete(key)
+	}
 }
