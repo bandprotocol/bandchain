@@ -33,31 +33,30 @@ func (k Keeper) AddRawRequest(ctx sdk.Context, rid types.RID, data types.RawRequ
 			types.ErrRawRequestAlreadyExists, "reqID: %d, extID: %d", rid, data.ExternalID,
 		)
 	}
-	// TODO: Make sure we consume gas for adding raw requests. That should be done in handler level.
+	// TODO: Make sure we consume gas for adding raw requests in handler.
 	// TODO: Validate data source count. Also should be done in handler level.
 	k.SetRawRequest(ctx, rid, data)
 	return nil
 }
 
+// GetRawRequestIterator returns the iterator for all raw requests of the given request ID.
+func (k Keeper) GetRawRequestIterator(ctx sdk.Context, rid types.RequestID) sdk.Iterator {
+	prefix := types.GetIteratorPrefix(types.RawRequestStoreKeyPrefix, rid)
+	return sdk.KVStorePrefixIterator(ctx.KVStore(k.storeKey), prefix)
+}
+
 // GetRawRequestCount returns the number of raw requests for the given request ID.
-func (k Keeper) GetRawRequestCount(ctx sdk.Context, rid types.RequestID) int64 {
-	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store,
-		types.GetIteratorPrefix(types.RawRequestStoreKeyPrefix, rid),
-	)
-	count := 0
+func (k Keeper) GetRawRequestCount(ctx sdk.Context, rid types.RequestID) (count int64) {
+	iterator := k.GetRawRequestIterator(ctx, rid)
 	for ; iterator.Valid(); iterator.Next() {
 		count++
 	}
-	return int64(count)
+	return count
 }
 
-// GetRawRequestsByRID returns all raw requests for the given request ID, or nil if there is none.
-func (k Keeper) GetRawRequestsByRID(ctx sdk.Context, rid types.RID) (res []types.RawRequest) {
-	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store,
-		types.GetIteratorPrefix(types.RawRequestStoreKeyPrefix, rid),
-	)
+// GetRawRequests returns all raw requests for the given request ID, or nil if there is none.
+func (k Keeper) GetRawRequests(ctx sdk.Context, rid types.RID) (res []types.RawRequest) {
+	iterator := k.GetRawRequestIterator(ctx, rid)
 	for ; iterator.Valid(); iterator.Next() {
 		var rawRequest types.RawRequest
 		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &rawRequest)

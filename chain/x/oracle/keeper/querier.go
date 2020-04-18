@@ -45,7 +45,7 @@ func buildRequestQuerierInfo(
 		return types.RequestQuerierInfo{}, sdkErr
 	}
 
-	rawRequests := keeper.GetRawRequestsByRID(ctx, id)
+	rawRequests := keeper.GetRawRequests(ctx, id)
 
 	iterator := keeper.GetRawDataReportsIterator(ctx, id)
 	reportMap := make(map[string]([]types.RawDataReportWithID))

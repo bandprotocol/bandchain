@@ -86,7 +86,7 @@ func (b *BandDB) AddNewRequest(
 		}
 	}
 
-	for _, raw := range b.OracleKeeper.GetRawRequestsByRID(b.ctx, oracle.RequestID(id)) {
+	for _, raw := range b.OracleKeeper.GetRawRequests(b.ctx, oracle.RequestID(id)) {
 		err := b.AddRawDataRequest(
 			id,
 			int64(raw.ExternalID),

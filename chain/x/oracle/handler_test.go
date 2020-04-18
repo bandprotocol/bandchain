@@ -240,7 +240,7 @@ func TestRequestSuccess(t *testing.T) {
 	// rawRequests := []types.RawDataRequest{
 	// 	types.NewRawRequest(1, []byte("band-protocol")), types.NewRawRequest(2, []byte("band-chain")),
 	// }
-	// require.Equal(t, rawRequests, keeper.GetRawRequestsByRID(ctx, 1))
+	// require.Equal(t, rawRequests, keeper.GetRawRequests(ctx, 1))
 	// check consumed gas must more than 100000
 	// TODO: Write a better test than just checking number comparison
 	require.GreaterOrEqual(t, afterGas-beforeGas, uint64(100000))
