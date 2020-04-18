@@ -12,14 +12,14 @@ func (k Keeper) HasReport(ctx sdk.Context, rid types.RID, val sdk.ValAddress) bo
 }
 
 // SetDataReport saves the report to the storage without performing validation.
-func (k Keeper) SetReport(ctx sdk.Context, rid types.RID, report types.Report) {
-	key := types.RawDataReportStoreKey(rid, report.Validator)
-	ctx.KVStore(k.storeKey).Set(key, k.cdc.MustMarshalBinaryBare(report))
+func (k Keeper) SetReport(ctx sdk.Context, rid types.RID, rep types.Report) {
+	key := types.RawDataReportStoreKey(rid, rep.Validator)
+	ctx.KVStore(k.storeKey).Set(key, k.cdc.MustMarshalBinaryBare(rep))
 }
 
 // AddReports performs sanity checks and adds a new batch from one validator to one request
 // to the store. Note that we expect each validator to report to all raw data requests at once.
-func (k Keeper) AddReport(ctx sdk.Context, rid types.RID, report types.Report) error {
+func (k Keeper) AddReport(ctx sdk.Context, rid types.RID, rep types.Report) error {
 	req, err := k.GetRequest(ctx, rid)
 	if err != nil {
 		return err
@@ -27,19 +27,19 @@ func (k Keeper) AddReport(ctx sdk.Context, rid types.RID, report types.Report) e
 
 	// TODO: Keep statistics of validator reports, so we can jail inactive validators!
 
-	if !ContainsVal(req.RequestedValidators, report.Validator) {
+	if !ContainsVal(req.RequestedValidators, rep.Validator) {
 		return sdkerrors.Wrapf(
-			types.ErrValidatorNotRequested, "reqID: %d, val: %s", rid, report.Validator.String())
+			types.ErrValidatorNotRequested, "reqID: %d, val: %s", rid, rep.Validator.String())
 	}
-	if k.HasReport(ctx, rid, report.Validator) {
+	if k.HasReport(ctx, rid, rep.Validator) {
 		return sdkerrors.Wrapf(
-			types.ErrValidatorAlreadyReported, "reqID: %d, val: %s", rid, report.Validator.String())
+			types.ErrValidatorAlreadyReported, "reqID: %d, val: %s", rid, rep.Validator.String())
 	}
-	if int64(len(report.RawDataReports)) != k.GetRawRequestCount(ctx, rid) {
+	if int64(len(rep.RawDataReports)) != k.GetRawRequestCount(ctx, rid) {
 		return types.ErrInvalidDataSourceCount
 	}
 
-	for _, rep := range report.RawDataReports {
+	for _, rep := range rep.RawDataReports {
 		// Here we can safely assume that external IDs are unique, as this has already been
 		// checked by ValidateBasic performed in baseapp's runTx function.
 		if !k.HasRawRequest(ctx, rid, rep.ExternalID) {
@@ -51,7 +51,7 @@ func (k Keeper) AddReport(ctx sdk.Context, rid types.RID, report types.Report) e
 		}
 	}
 
-	k.SetReport(ctx, rid, report)
+	k.SetReport(ctx, rid, rep)
 	return nil
 }
 
@@ -72,13 +72,13 @@ func (k Keeper) GetReportCount(ctx sdk.Context, rid types.RID) (count int64) {
 }
 
 // GetReports returns all reports for the given request ID, or nil if there is none.
-func (k Keeper) GetReports(ctx sdk.Context, rid types.RID) (res []types.Report) {
+func (k Keeper) GetReports(ctx sdk.Context, rid types.RID) (reports []types.Report) {
 	iterator := k.GetReportIterator(ctx, rid)
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
-		var report types.Report
-		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &report)
-		res = append(res, report)
+		var rep types.Report
+		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &rep)
+		reports = append(reports, rep)
 	}
-	return res
+	return reports
 }
