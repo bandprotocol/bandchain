@@ -32,7 +32,7 @@ func (k Keeper) AddReport(
 			requestID, request.ExpirationHeight, ctx.BlockHeight(),
 		)
 	}
-	if !k.CheckReporter(ctx, validator, reporter) {
+	if !k.IsReporter(ctx, validator, reporter) {
 		return sdkerrors.Wrapf(types.ErrUnauthorizedPermission,
 			"AddReport: Request ID %d: %s is not an authorized reporter of %s.",
 			requestID, reporter.String(), validator.String(),

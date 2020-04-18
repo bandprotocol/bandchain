@@ -17,9 +17,10 @@ import (
 )
 
 type account struct {
-	PrivKey crypto.PrivKey
-	PubKey  crypto.PubKey
-	Address sdk.AccAddress
+	PrivKey    crypto.PrivKey
+	PubKey     crypto.PubKey
+	Address    sdk.AccAddress
+	ValAddress sdk.ValAddress
 }
 
 var Owner account
@@ -50,9 +51,10 @@ func createArbitraryAccount(r *rand.Rand) account {
 	r.Read(privkeySeed)
 	privKey := secp256k1.GenPrivKeySecp256k1(privkeySeed)
 	return account{
-		PrivKey: privKey,
-		PubKey:  privKey.PubKey(),
-		Address: sdk.AccAddress(privKey.PubKey().Address()),
+		PrivKey:    privKey,
+		PubKey:     privKey.PubKey(),
+		Address:    sdk.AccAddress(privKey.PubKey().Address()),
+		ValAddress: sdk.ValAddress(privKey.PubKey().Address()),
 	}
 }
 
