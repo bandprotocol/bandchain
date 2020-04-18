@@ -178,7 +178,7 @@ $ %s tx oracle report 1 1:172.5 2:HELLOWORLD --from mykey
 
 			// Sort data reports by external ID
 			sort.Slice(dataset, func(i, j int) bool {
-				return dataset[i].ExternalDataID < dataset[j].ExternalDataID
+				return dataset[i].ExternalID < dataset[j].ExternalID
 			})
 
 			msg := types.NewMsgReportData(requestID, dataset, sdk.ValAddress(cliCtx.GetFromAddress()), cliCtx.GetFromAddress())

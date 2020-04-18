@@ -117,10 +117,10 @@ func (msg MsgReportData) ValidateBasic() error {
 	}
 	uniqueMap := make(map[ExternalID]bool)
 	for _, rawReport := range msg.DataSet {
-		if _, found := uniqueMap[rawReport.ExternalDataID]; found {
+		if _, found := uniqueMap[rawReport.ExternalID]; found {
 			return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgReportData: External IDs in dataset must be unique.")
 		}
-		uniqueMap[rawReport.ExternalDataID] = true
+		uniqueMap[rawReport.ExternalID] = true
 	}
 	if msg.Validator.Empty() {
 		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgReportData: Validator address must not be empty.")

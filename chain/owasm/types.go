@@ -46,7 +46,7 @@ type ExecutionEnvironment interface {
 	// only be called during the *preparation* phase of an oracle script.
 	RequestExternalData(
 		dataSourceID int64,
-		externalDataID int64,
+		externalID int64,
 		calldata []byte,
 	) error
 
@@ -54,7 +54,7 @@ type ExecutionEnvironment interface {
 	// data report for the specified external data ID from the specified validator.
 	// The function must only be called during the *aggregation* phase.
 	GetExternalData(
-		externalDataID int64,
+		externalID int64,
 		validatorIndex int64,
 	) ([]byte, uint8, error)
 }

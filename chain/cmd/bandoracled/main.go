@@ -241,7 +241,7 @@ func handleRequest(requestID oracle.RequestID) {
 	}
 
 	sort.Slice(reports, func(i, j int) bool {
-		return reports[i].ExternalDataID < reports[j].ExternalDataID
+		return reports[i].ExternalID < reports[j].ExternalID
 	})
 
 	if err != nil {

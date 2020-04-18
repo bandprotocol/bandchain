@@ -73,10 +73,10 @@ func (k Keeper) AddReport(
 	for _, rawReport := range dataSet {
 		// Here we can safely assume that external IDs are unique, as this has already been
 		// checked by ValidateBasic performed in baseapp's runTx function.
-		if !k.HasRawRequest(ctx, requestID, rawReport.ExternalDataID) {
+		if !k.HasRawRequest(ctx, requestID, rawReport.ExternalID) {
 			return sdkerrors.Wrapf(types.ErrBadDataValue,
 				"AddReport: RequestID %d: Unknown external data ID %d",
-				requestID, rawReport.ExternalDataID,
+				requestID, rawReport.ExternalID,
 			)
 		}
 		if uint64(len(rawReport.Data)) > k.GetParam(ctx, types.KeyMaxRawDataReportSize) {
@@ -86,7 +86,7 @@ func (k Keeper) AddReport(
 			)
 		}
 		k.SetRawDataReport(
-			ctx, requestID, rawReport.ExternalDataID, validator,
+			ctx, requestID, rawReport.ExternalID, validator,
 			types.RawDataReport{
 				ExitCode: rawReport.ExitCode,
 				Data:     rawReport.Data,

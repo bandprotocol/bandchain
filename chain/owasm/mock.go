@@ -56,26 +56,26 @@ func (m *mockExecutionEnvironment) GetMaximumCalldataOfDataSourceSize() int64 {
 
 func (m *mockExecutionEnvironment) RequestExternalData(
 	dataSourceID int64,
-	externalDataID int64,
+	externalID int64,
 	calldata []byte,
 ) error {
 	// TODO: Figure out how to mock this elegantly.
-	fmt.Printf("RequestExternalData: DataSourceID = %d, ExternalDataID = %d\n", dataSourceID, externalDataID)
+	fmt.Printf("RequestExternalData: DataSourceID = %d, ExternalID = %d\n", dataSourceID, externalID)
 	return nil
 }
 
 func (m *mockExecutionEnvironment) GetExternalData(
-	externalDataID int64,
+	externalID int64,
 	validatorIndex int64,
 ) ([]byte, uint8, error) {
-	if int64(len(m.requestExternalDataResultsCounter)) <= externalDataID {
-		return nil, 0, fmt.Errorf("externalDataID is out of range")
+	if int64(len(m.requestExternalDataResultsCounter)) <= externalID {
+		return nil, 0, fmt.Errorf("externalID is out of range")
 	}
 
-	if int64(len(m.requestExternalDataResultsCounter[externalDataID])) <= validatorIndex {
+	if int64(len(m.requestExternalDataResultsCounter[externalID])) <= validatorIndex {
 		return nil, 0, fmt.Errorf("validatorIndex is out of range")
 	}
 
-	m.requestExternalDataResultsCounter[externalDataID][validatorIndex]++
-	return m.externalDataResults[externalDataID][validatorIndex], 0, nil
+	m.requestExternalDataResultsCounter[externalID][validatorIndex]++
+	return m.externalDataResults[externalID][validatorIndex], 0, nil
 }

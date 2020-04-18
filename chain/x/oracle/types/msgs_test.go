@@ -141,7 +141,7 @@ func TestMsgReportDataGetSignBytes(t *testing.T) {
 	msg := NewMsgReportData(requestID, data, validator, reporter)
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"oracle/Report","value":{"dataSet":[{"data":"ZGF0YTE=","exitCode":1,"externalDataID":"1"},{"data":"ZGF0YTI=","exitCode":2,"externalDataID":"2"}],"reporter":"band1hq8j5h0h64csk9tz95df783cxr0dt0dg3jw4p0","requestID":"3","validator":"bandvaloper1hq8j5h0h64csk9tz95df783cxr0dt0dgay2kyy"}}`
+	expected := `{"type":"oracle/Report","value":{"dataSet":[{"data":"ZGF0YTE=","exitCode":1,"externalID":"1"},{"data":"ZGF0YTI=","exitCode":2,"externalID":"2"}],"reporter":"band1hq8j5h0h64csk9tz95df783cxr0dt0dg3jw4p0","requestID":"3","validator":"bandvaloper1hq8j5h0h64csk9tz95df783cxr0dt0dgay2kyy"}}`
 
 	require.Equal(t, expected, string(res))
 }

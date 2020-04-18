@@ -114,7 +114,7 @@ func (r *resolver) resolveSaveReturnData(vm *exec.VirtualMachine) int64 {
 
 func (r *resolver) resolveRequestExternalData(vm *exec.VirtualMachine) int64 {
 	dataSourceID := GetLocalInt64(vm, 0)
-	externalDataID := GetLocalInt64(vm, 1)
+	externalID := GetLocalInt64(vm, 1)
 	dataOffset := int(GetLocalInt64(vm, 2))
 	dataLength := int(GetLocalInt64(vm, 3))
 	if dataLength > int(r.env.GetMaximumCalldataOfDataSourceSize()) {
@@ -122,7 +122,7 @@ func (r *resolver) resolveRequestExternalData(vm *exec.VirtualMachine) int64 {
 	}
 	data := make([]byte, dataLength)
 	copy(data, vm.Memory[dataOffset:dataOffset+dataLength])
-	err := r.env.RequestExternalData(dataSourceID, externalDataID, data)
+	err := r.env.RequestExternalData(dataSourceID, externalID, data)
 	if err != nil {
 		return -1
 	}
@@ -130,9 +130,9 @@ func (r *resolver) resolveRequestExternalData(vm *exec.VirtualMachine) int64 {
 }
 
 func (r *resolver) resolveGetExternalDataStatusCode(vm *exec.VirtualMachine) int64 {
-	externalDataID := GetLocalInt64(vm, 0)
+	externalID := GetLocalInt64(vm, 0)
 	validatorIndex := GetLocalInt64(vm, 1)
-	_, statusCode, err := r.env.GetExternalData(externalDataID, validatorIndex)
+	_, statusCode, err := r.env.GetExternalData(externalID, validatorIndex)
 	if err != nil {
 		return -1
 	}
@@ -140,9 +140,9 @@ func (r *resolver) resolveGetExternalDataStatusCode(vm *exec.VirtualMachine) int
 }
 
 func (r *resolver) resolveGetExternalDataSize(vm *exec.VirtualMachine) int64 {
-	externalDataID := GetLocalInt64(vm, 0)
+	externalID := GetLocalInt64(vm, 0)
 	validatorIndex := GetLocalInt64(vm, 1)
-	externalData, _, err := r.env.GetExternalData(externalDataID, validatorIndex)
+	externalData, _, err := r.env.GetExternalData(externalID, validatorIndex)
 	if err != nil {
 		return -1
 	}
@@ -150,12 +150,12 @@ func (r *resolver) resolveGetExternalDataSize(vm *exec.VirtualMachine) int64 {
 }
 
 func (r *resolver) resolveReadExternalData(vm *exec.VirtualMachine) int64 {
-	externalDataID := GetLocalInt64(vm, 0)
+	externalID := GetLocalInt64(vm, 0)
 	validatorIndex := GetLocalInt64(vm, 1)
 	resultOffset := int(GetLocalInt64(vm, 2))
 	seekOffset := int(GetLocalInt64(vm, 3))
 	resultSize := int(GetLocalInt64(vm, 4))
-	externalData, _, err := r.env.GetExternalData(externalDataID, validatorIndex)
+	externalData, _, err := r.env.GetExternalData(externalID, validatorIndex)
 	if err != nil {
 		return -1
 	}

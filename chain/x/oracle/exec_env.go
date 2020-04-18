@@ -118,7 +118,7 @@ func (env *ExecutionEnvironment) GetValidatorAddress(validatorIndex int64) ([]by
 
 func (env *ExecutionEnvironment) RequestExternalData(
 	dataSourceID int64,
-	externalDataID int64,
+	externalID int64,
 	calldata []byte,
 ) error {
 	if int64(len(calldata)) > env.maxCalldataSize {
@@ -129,7 +129,7 @@ func (env *ExecutionEnvironment) RequestExternalData(
 	}
 
 	env.rawDataRequests = append(env.rawDataRequests, types.NewRawRequest(
-		types.ExternalID(externalDataID),
+		types.ExternalID(externalID),
 		types.DataSourceID(dataSourceID),
 		calldata,
 	))
@@ -137,19 +137,19 @@ func (env *ExecutionEnvironment) RequestExternalData(
 }
 
 func (env *ExecutionEnvironment) GetExternalData(
-	externalDataID int64,
+	externalID int64,
 	validatorIndex int64,
 ) ([]byte, uint8, error) {
 	if validatorIndex < 0 || validatorIndex >= int64(len(env.request.RequestedValidators)) {
 		return nil, 0, errors.New("validator out of range")
 	}
 	validatorAddress := env.request.RequestedValidators[validatorIndex]
-	key := string(types.RawDataReportStoreKey(env.requestID, types.ExternalID(externalDataID), validatorAddress))
+	key := string(types.RawDataReportStoreKey(env.requestID, types.ExternalID(externalID), validatorAddress))
 
 	rawDataReport, ok := env.rawDataReports[key]
 
 	if !ok {
-		return nil, 0, sdkerrors.Wrapf(types.ErrItemNotFound, "Unable to find raw data report with request ID (%d) external ID (%d) from (%s)", env.requestID, externalDataID, validatorAddress.String())
+		return nil, 0, sdkerrors.Wrapf(types.ErrItemNotFound, "Unable to find raw data report with request ID (%d) external ID (%d) from (%s)", env.requestID, externalID, validatorAddress.String())
 	}
 
 	return rawDataReport.Data, rawDataReport.ExitCode, nil

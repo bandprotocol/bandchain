@@ -23,12 +23,12 @@ func (b *BandDB) handleMsgReportData(
 
 	for _, data := range msg.DataSet {
 		// rawDataRequest, errSdk := b.OracleKeeper.GetRawRequest(
-		// 	b.ctx, msg.RequestID, data.ExternalDataID,
+		// 	b.ctx, msg.RequestID, data.ExternalID,
 		// )
 		err := b.tx.Create(&ReportDetail{
 			RequestID:  int64(msg.RequestID),
 			Validator:  msg.Validator.String(),
-			ExternalID: int64(data.ExternalDataID),
+			ExternalID: int64(data.ExternalID),
 			// DataSourceID: 0, // TODO: FIX ME: Remove this col. Frontend can dig this itself.
 			Data:     data.Data,
 			Exitcode: data.ExitCode,

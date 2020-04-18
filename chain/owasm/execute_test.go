@@ -56,7 +56,7 @@ func TestExecuteEndToEnd(t *testing.T) {
 		maximumCalldataOfDataSourceSize:   1024,
 	}
 
-	// It should log "RequestExternalData: DataSourceID = 1, ExternalDataID = 1"
+	// It should log "RequestExternalData: DataSourceID = 1, ExternalID = 1"
 	_, _, err = Execute(env, code, "prepare", []byte{}, 10000)
 	require.Nil(t, err)
 
@@ -112,7 +112,7 @@ func TestExecuteInvalidGetMaximumCalldataOfDataSourceSize(t *testing.T) {
 	_, _, err = Execute(env, code, "prepare", []byte{}, 10000)
 	require.NotNil(t, err)
 
-	// It should print "RequestExternalData: DataSourceID = 1, ExternalDataID = 1"
+	// It should print "RequestExternalData: DataSourceID = 1, ExternalID = 1"
 	// and not return error.
 	_, _, err = Execute(&mockExecutionEnvironment{
 		maximumCalldataOfDataSourceSize: 13,
