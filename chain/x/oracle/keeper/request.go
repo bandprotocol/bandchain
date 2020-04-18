@@ -196,12 +196,6 @@ func (k Keeper) PayDataSourceFees(
 	return nil
 }
 
-// CheckRequestExists checks if the request at this id is present in the store or not.
-func (k Keeper) CheckRequestExists(ctx sdk.Context, id types.RequestID) bool {
-	store := ctx.KVStore(k.storeKey)
-	return store.Has(types.RequestStoreKey(id))
-}
-
 // ShouldBecomePendingResolve checks and returns whether the given request should be moved to the
 // pending resolve list, which will be resolved during the EndBlock call. The move will happen
 // exactly once will the request receives sufficient raw reports from the validators.
