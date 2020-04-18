@@ -196,10 +196,15 @@ func handleMsgReportData(ctx sdk.Context, k Keeper, msg MsgReportData) (*sdk.Res
 		)
 	}
 
-	err := k.AddBatchReport(ctx, msg.RequestID, types.NewBatchReport(msg.DataSet, msg.Validator))
+	err := k.AddReport(ctx, msg.RequestID, types.NewBatchReport(msg.DataSet, msg.Validator))
 	if err != nil {
 		return nil, err
 	}
+
+	if k.ShouldBecomePendingResolve(ctx, msg.RequestID) {
+		k.AddPendingRequest(ctx, msg.RequestID)
+	}
+
 	ctx.EventManager().EmitEvents(sdk.Events{sdk.NewEvent(
 		types.EventTypeReport,
 		sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", msg.RequestID)),

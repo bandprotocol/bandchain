@@ -22,4 +22,9 @@ var (
 
 	ErrRawRequestAlreadyExists = sdkerrors.Register(ModuleName, 20, "raw request already exists")
 	ErrReporterAlreadyExists   = sdkerrors.Register(ModuleName, 21, "reporter already exists")
+
+	ErrValidatorNotRequested    = sdkerrors.Register(ModuleName, 30, "validator not requested")
+	ErrValidatorAlreadyReported = sdkerrors.Register(ModuleName, 31, "validator already reported")
+
+	ErrInvalidDataSourceCount = sdkerrors.Register(ModuleName, 40, "invalid data source count")
 )

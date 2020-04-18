@@ -77,7 +77,14 @@ func RawRequestStoreKey(requestID RequestID, externalID ExternalID) []byte {
 }
 
 // RawDataReportStoreKey is a function to generate key for each raw data report in store.
-func RawDataReportStoreKey(requestID RequestID, externalID ExternalID, validatorAddress sdk.ValAddress) []byte {
+func RawDataReportStoreKey(requestID RequestID, validatorAddress sdk.ValAddress) []byte {
+	buf := append(RawDataReportStoreKeyPrefix, int64ToBytes(int64(requestID))...)
+	buf = append(buf, validatorAddress.Bytes()...)
+	return buf
+}
+
+// RawDataReportStoreKeyUnique is a function to generate key for each raw data report in store.
+func RawDataReportStoreKeyUnique(requestID RequestID, externalID ExternalID, validatorAddress sdk.ValAddress) []byte {
 	buf := append(RawDataReportStoreKeyPrefix, int64ToBytes(int64(requestID))...)
 	buf = append(buf, int64ToBytes(int64(externalID))...)
 	buf = append(buf, validatorAddress.Bytes()...)

@@ -54,25 +54,13 @@ func (env *ExecutionEnvironment) LoadRawDataReports(
 	ctx sdk.Context,
 	keeper Keeper,
 ) error {
+	for _, report := range keeper.GetReports(ctx, env.requestID) {
+		for _, reportv1 := range report.RawDataReports {
 
-	for iterator := keeper.GetRawDataReportsIterator(ctx, env.requestID); iterator.Valid(); iterator.Next() {
-		validatorAddress, externalID := types.GetValidatorAddressAndExternalID(iterator.Key(), env.requestID)
-
-		rawDataReport, err := keeper.GetRawDataReport(
-			ctx,
-			env.requestID,
-			externalID,
-			validatorAddress,
-		)
-		if err != nil { // should never happen
-			return err
+			key := string(types.RawDataReportStoreKeyUnique(env.requestID, reportv1.ExternalID, report.Validator))
+			env.rawDataReports[key] = types.NewRawDataReport(reportv1.ExitCode, reportv1.Data)
 		}
-
-		key := string(types.RawDataReportStoreKey(env.requestID, externalID, validatorAddress))
-
-		env.rawDataReports[key] = rawDataReport
 	}
-
 	return nil
 }
 
@@ -144,7 +132,8 @@ func (env *ExecutionEnvironment) GetExternalData(
 		return nil, 0, errors.New("validator out of range")
 	}
 	validatorAddress := env.request.RequestedValidators[validatorIndex]
-	key := string(types.RawDataReportStoreKey(env.requestID, types.ExternalID(externalID), validatorAddress))
+
+	key := string(types.RawDataReportStoreKeyUnique(env.requestID, types.EID(externalID), validatorAddress))
 
 	rawDataReport, ok := env.rawDataReports[key]
 

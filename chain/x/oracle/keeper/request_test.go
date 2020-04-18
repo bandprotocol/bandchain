@@ -156,13 +156,7 @@ func TestAddPendingRequest(t *testing.T) {
 	require.Equal(t, []types.RequestID{}, reqIDs)
 
 	keeper.SetPendingResolveList(ctx, []types.RequestID{1, 2})
-	err := keeper.AddPendingRequest(ctx, 3)
-	require.Nil(t, err)
-	reqIDs = keeper.GetPendingResolveList(ctx)
-	require.Equal(t, []types.RequestID{1, 2, 3}, reqIDs)
-
-	err = keeper.AddPendingRequest(ctx, 3)
-	require.NotNil(t, err)
+	keeper.AddPendingRequest(ctx, 3)
 	reqIDs = keeper.GetPendingResolveList(ctx)
 	require.Equal(t, []types.RequestID{1, 2, 3}, reqIDs)
 }
@@ -176,11 +170,11 @@ func TestHasToPutInPendingList(t *testing.T) {
 	keeper.SetRequest(ctx, 1, request)
 	require.False(t, keeper.ShouldBecomePendingResolve(ctx, 1))
 
-	err := keeper.AddBatchReport(ctx, 1, types.NewBatchReport([]types.RawDataReportWithID{}, sdk.ValAddress([]byte("validator1"))))
+	err := keeper.AddReport(ctx, 1, types.NewBatchReport([]types.RawDataReportWithID{}, sdk.ValAddress([]byte("validator1"))))
 	require.Nil(t, err)
 	require.True(t, keeper.ShouldBecomePendingResolve(ctx, 1))
 
-	err = keeper.AddBatchReport(ctx, 1, types.NewBatchReport([]types.RawDataReportWithID{}, sdk.ValAddress([]byte("validator2"))))
+	err = keeper.AddReport(ctx, 1, types.NewBatchReport([]types.RawDataReportWithID{}, sdk.ValAddress([]byte("validator2"))))
 	require.Nil(t, err)
 	require.False(t, keeper.ShouldBecomePendingResolve(ctx, 1))
 }

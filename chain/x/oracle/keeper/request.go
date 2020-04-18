@@ -207,21 +207,11 @@ func (k Keeper) ShouldBecomePendingResolve(ctx sdk.Context, id types.RequestID) 
 	return int64(len(request.ReceivedValidators)) == request.SufficientValidatorCount
 }
 
-// AddPendingRequest appends the given request to the pending list. Returns error if the request
-// already exists in the list.
-func (k Keeper) AddPendingRequest(ctx sdk.Context, requestID types.RequestID) error {
+// AddPendingRequest adds the request to the pending list. DO NOT add same request more than once.
+func (k Keeper) AddPendingRequest(ctx sdk.Context, requestID types.RequestID) {
 	pendingList := k.GetPendingResolveList(ctx)
-	for _, entry := range pendingList {
-		if requestID == entry {
-			return sdkerrors.Wrapf(types.ErrItemDuplication,
-				"AddPendingRequest: Request ID %d already exists in the pending list",
-				requestID,
-			)
-		}
-	}
 	pendingList = append(pendingList, requestID)
 	k.SetPendingResolveList(ctx, pendingList)
-	return nil
 }
 
 // SetPendingResolveList saves the list of pending request that will be resolved at end block.
