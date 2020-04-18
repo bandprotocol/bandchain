@@ -41,6 +41,26 @@ func (k Keeper) DeleteRequest(ctx sdk.Context, id types.RequestID) {
 	ctx.KVStore(k.storeKey).Delete(types.RequestStoreKey(id))
 }
 
+// GetRandomValidators returns a pseudorandom set of active validators of the given size, based
+// on a given seed value plus current block time. The chance of a validator getting selected
+// is directly proportional to the amount of voting power he has.
+func (k Keeper) GetRandomValidators(ctx sdk.Context, seed, size int) ([]sdk.ValAddress, error) {
+	// TODO: Make this function actually return random validators.
+	validatorsByPower := k.StakingKeeper.GetBondedValidatorsByPower(ctx)
+	if len(validatorsByPower) < size {
+		return nil, sdkerrors.Wrapf(types.ErrBadDataValue,
+			"AddRequest: Requested validator count (%d) exceeds the number of validators (%d).",
+			size, len(validatorsByPower),
+		)
+	}
+
+	validators := make([]sdk.ValAddress, size)
+	for i := 0; i < size; i++ {
+		validators[i] = validatorsByPower[i].GetOperator()
+	}
+	return validators, nil
+}
+
 // AddRequest attempts to create and save a new request. Returns error some conditions failed.
 func (k Keeper) AddRequest(
 	ctx sdk.Context, oracleScriptID types.OracleScriptID, calldata []byte,
@@ -57,17 +77,9 @@ func (k Keeper) AddRequest(
 		)
 	}
 
-	validatorsByPower := k.StakingKeeper.GetBondedValidatorsByPower(ctx)
-	if int64(len(validatorsByPower)) < requestedValidatorCount {
-		return 0, sdkerrors.Wrapf(types.ErrBadDataValue,
-			"AddRequest: Requested validator count (%d) exceeds the number of validators (%d).",
-			requestedValidatorCount, len(validatorsByPower),
-		)
-	}
-
-	validators := make([]sdk.ValAddress, requestedValidatorCount)
-	for i := int64(0); i < requestedValidatorCount; i++ {
-		validators[i] = validatorsByPower[i].GetOperator()
+	validators, err := k.GetRandomValidators(ctx, 0, int(requestedValidatorCount))
+	if err != nil {
+		return 0, err
 	}
 
 	expirationHeight := ctx.BlockHeight() + int64(k.GetParam(ctx, types.KeyExpirationBlockCount))
