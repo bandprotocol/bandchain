@@ -18,10 +18,7 @@ func resolveRequest(ctx sdk.Context, keeper Keeper, reqID types.RequestID) {
 	if err != nil {
 		panic(err)
 	}
-	script, err := keeper.GetOracleScript(ctx, request.OracleScriptID)
-	if err != nil {
-		panic(err)
-	}
+	script := keeper.MustGetOracleScript(ctx, request.OracleScriptID)
 
 	// TODO: Refactor this code. For now we hardcode execute gas to 100k
 	executeGas := keeper.GetParam(ctx, KeyExecuteGas)

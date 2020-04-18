@@ -152,10 +152,7 @@ func handleMsgRequestData(ctx sdk.Context, k Keeper, msg MsgRequestData, ibcData
 		return nil, err
 	}
 
-	script, err := k.GetOracleScript(ctx, msg.OracleScriptID)
-	if err != nil {
-		return nil, err
-	}
+	script := k.MustGetOracleScript(ctx, msg.OracleScriptID)
 
 	gasPrepare := k.GetParam(ctx, types.KeyPrepareGas)
 	ctx.GasMeter().ConsumeGas(gasPrepare, "PrepareRequest")
