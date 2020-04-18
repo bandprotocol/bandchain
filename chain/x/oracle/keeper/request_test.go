@@ -102,38 +102,6 @@ func TestRequestCallDataSizeTooBig(t *testing.T) {
 	require.Nil(t, err)
 }
 
-func TestRequestExceedEndBlockExecuteGasLimit(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-
-	script := GetTestOracleScript("../../../owasm/res/silly.wasm")
-	keeper.SetOracleScript(ctx, 1, script)
-
-	SetupTestValidator(
-		ctx,
-		keeper,
-		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
-		10,
-	)
-	SetupTestValidator(
-		ctx,
-		keeper,
-		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
-		100,
-	)
-
-	// Set EndBlockExecuteGasLimit to 10000
-	keeper.SetParam(ctx, types.KeyEndBlockExecuteGasLimit, 10000)
-	// Should fail because required execute gas is > 10000
-	_, err := keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, "clientID")
-	require.NotNil(t, err)
-
-	// Set EndBlockExecuteGasLimit to 120000
-	keeper.SetParam(ctx, types.KeyEndBlockExecuteGasLimit, 120000)
-	// Should fail because required execute gas is < 120000
-	_, err = keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, "clientID")
-	require.Nil(t, err)
-}
-
 // // TestSetResolved tests keeper can set resolved status to request
 // func TestSetResolved(t *testing.T) {
 // 	ctx, keeper := CreateTestInput(t, false)
