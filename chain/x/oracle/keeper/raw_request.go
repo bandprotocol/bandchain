@@ -50,7 +50,7 @@ func (k Keeper) AddRawRequest(ctx sdk.Context, rid types.RID, eid types.EID, did
 	return nil
 }
 
-// GetRawRequestCount returns the number of raw requests for the given request.
+// GetRawRequestCount returns the number of raw requests for the given request ID.
 func (k Keeper) GetRawRequestCount(ctx sdk.Context, rid types.RequestID) int64 {
 	store := ctx.KVStore(k.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store,
