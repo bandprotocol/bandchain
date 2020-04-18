@@ -13,7 +13,7 @@ func resolveRequest(ctx sdk.Context, keeper Keeper, reqID types.RequestID) {
 	if err != nil {
 		panic(err)
 	}
-	env, err := NewExecutionEnvironment(ctx, keeper, reqID)
+	env, err := NewExecutionEnvironment(ctx, keeper, reqID, false, keeper.GetReportCount(ctx, reqID))
 	if err != nil {
 		panic(err)
 	}

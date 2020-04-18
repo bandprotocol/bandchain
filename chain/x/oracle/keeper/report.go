@@ -31,7 +31,7 @@ func (k Keeper) AddReport(ctx sdk.Context, rid types.RID, report types.Report) e
 		return sdkerrors.Wrapf(
 			types.ErrValidatorNotRequested, "reqID: %d, val: %s", rid, report.Validator.String())
 	}
-	if ContainsVal(req.ReceivedValidators, report.Validator) {
+	if k.HasReport(ctx, rid, report.Validator) {
 		return sdkerrors.Wrapf(
 			types.ErrValidatorAlreadyReported, "reqID: %d, val: %s", rid, report.Validator.String())
 	}
@@ -52,8 +52,6 @@ func (k Keeper) AddReport(ctx sdk.Context, rid types.RID, report types.Report) e
 	}
 
 	k.SetReport(ctx, rid, report)
-	req.ReceivedValidators = append(req.ReceivedValidators, report.Validator)
-	k.SetRequest(ctx, rid, req)
 	return nil
 }
 

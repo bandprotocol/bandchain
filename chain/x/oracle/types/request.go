@@ -19,7 +19,6 @@ type Request struct {
 	Calldata                 []byte           `json:"calldata"`
 	RequestedValidators      []sdk.ValAddress `json:"requested_validators"`
 	SufficientValidatorCount int64            `json:"sufficient_validator_count"`
-	ReceivedValidators       []sdk.ValAddress `json:"received_validators"`
 	RequestHeight            int64            `json:"request_height"`
 	RequestTime              int64            `json:"request_time"`
 	ExpirationHeight         int64            `json:"expiration_height"`

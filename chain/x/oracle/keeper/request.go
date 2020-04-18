@@ -147,9 +147,9 @@ func (k Keeper) ProcessExpiredRequests(ctx sdk.Context) {
 		if request.RequestHeight+expirationBlockCount > ctx.BlockHeight() {
 			break
 		}
-		// If the number of reports still don't reach the minimum, that means this request
+		// If the number of reports still doesn't reach the minimum, that means this request
 		// is never resolved. Here we process the response as EXPIRED.
-		if int64(len(request.ReceivedValidators)) < request.SufficientValidatorCount {
+		if k.GetReportCount(ctx, currentReqID) < request.SufficientValidatorCount {
 			k.ProcessOracleResponse(ctx, currentReqID, types.Expired, nil)
 		}
 		// We are done with this request. Now it's time to remove it from the store.
@@ -204,7 +204,7 @@ func (k Keeper) ShouldBecomePendingResolve(ctx sdk.Context, id types.RequestID) 
 	if err != nil {
 		return false
 	}
-	return int64(len(request.ReceivedValidators)) == request.SufficientValidatorCount
+	return k.GetReportCount(ctx, id) == request.SufficientValidatorCount
 }
 
 // AddPendingRequest adds the request to the pending list. DO NOT add same request more than once.

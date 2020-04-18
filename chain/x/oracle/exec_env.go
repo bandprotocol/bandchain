@@ -9,6 +9,10 @@ import (
 )
 
 type ExecutionEnvironment struct {
+	// TODO: SWIT CLEAN UP
+	isPrepare     bool
+	receivedCount int64
+
 	requestID              types.RequestID
 	request                types.Request
 	now                    int64
@@ -20,13 +24,16 @@ type ExecutionEnvironment struct {
 }
 
 func NewExecutionEnvironment(
-	ctx sdk.Context, keeper Keeper, requestID types.RequestID,
+	ctx sdk.Context, keeper Keeper, requestID types.RequestID, isPrepare bool, receivedCount int64,
 ) (ExecutionEnvironment, error) {
 	request, err := keeper.GetRequest(ctx, requestID)
 	if err != nil {
 		return ExecutionEnvironment{}, err
 	}
 	return ExecutionEnvironment{
+		isPrepare:     isPrepare,
+		receivedCount: receivedCount,
+
 		requestID:              requestID,
 		request:                request,
 		now:                    ctx.BlockTime().Unix(),
@@ -77,7 +84,7 @@ func (env *ExecutionEnvironment) GetSufficientValidatorCount() int64 {
 }
 
 func (env *ExecutionEnvironment) GetReceivedValidatorCount() int64 {
-	return int64(len(env.request.ReceivedValidators))
+	return env.receivedCount
 }
 
 func (env *ExecutionEnvironment) GetPrepareBlockTime() int64 {
@@ -91,7 +98,7 @@ func (env *ExecutionEnvironment) GetMaximumCalldataOfDataSourceSize() int64 {
 	return env.maxCalldataSize
 }
 func (env *ExecutionEnvironment) GetAggregateBlockTime() int64 {
-	if int64(len(env.request.ReceivedValidators)) >= env.request.SufficientValidatorCount {
+	if !env.isPrepare {
 		return env.now
 	}
 	return 0

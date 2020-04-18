@@ -147,7 +147,7 @@ func handleMsgRequestData(ctx sdk.Context, k Keeper, msg MsgRequestData, ibcData
 		return nil, err
 	}
 
-	env, err := NewExecutionEnvironment(ctx, k, id)
+	env, err := NewExecutionEnvironment(ctx, k, id, true, 0)
 	if err != nil {
 		return nil, err
 	}
