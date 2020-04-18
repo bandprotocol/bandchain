@@ -263,10 +263,10 @@ func NewBandApp(
 	app.OracleKeeper = oracle.NewKeeper(
 		cdc,
 		keys[oracle.StoreKey],
+		app.subspaces[oracle.ModuleName],
 		app.BankKeeper,
 		app.StakingKeeper,
 		app.IBCKeeper.ChannelKeeper,
-		app.subspaces[oracle.ModuleName],
 		scopedOracleKeeper,
 	)
 

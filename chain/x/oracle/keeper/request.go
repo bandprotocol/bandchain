@@ -60,15 +60,6 @@ func (k Keeper) AddRequest(
 		validators[i] = validatorsByPower[i].GetOperator()
 	}
 
-	// TODO: Remove KeyEndBlockExecuteGasLimit param
-	executeGas := k.GetParam(ctx, types.KeyExecuteGas)
-	if executeGas > k.GetParam(ctx, types.KeyEndBlockExecuteGasLimit) {
-		return 0, sdkerrors.Wrapf(types.ErrBadDataValue,
-			"AddRequest: Execute gas (%d) exceeds the maximum limit (%d).",
-			executeGas, k.GetParam(ctx, types.KeyEndBlockExecuteGasLimit),
-		)
-	}
-
 	expirationHeight := ctx.BlockHeight() + int64(k.GetParam(ctx, types.KeyExpirationBlockCount))
 	requestID := k.GetNextRequestID(ctx)
 	k.SetRequest(ctx, requestID, types.NewRequest(

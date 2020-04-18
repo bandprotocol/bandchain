@@ -44,7 +44,6 @@ func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorU
 	k.SetParam(ctx, KeyMaxDataSourceCountPerRequest, data.Params.MaxDataSourceCountPerRequest)
 	k.SetParam(ctx, KeyMaxRawDataReportSize, data.Params.MaxRawDataReportSize)
 	k.SetParam(ctx, KeyMaxResultSize, data.Params.MaxResultSize)
-	k.SetParam(ctx, KeyEndBlockExecuteGasLimit, data.Params.EndBlockExecuteGasLimit)
 	k.SetParam(ctx, KeyMaxNameLength, data.Params.MaxNameLength)
 	k.SetParam(ctx, KeyMaxDescriptionLength, data.Params.MaxDescriptionLength)
 	k.SetParam(ctx, KeyGasPerRawDataRequestPerValidator, data.Params.GasPerRawDataRequestPerValidator)
@@ -68,8 +67,7 @@ func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorU
 
 	for _, oracleScript := range data.OracleScripts {
 		_, err := k.AddOracleScript(
-			ctx, oracleScript.Owner, oracleScript.Name, oracleScript.Description, oracleScript.Code,
-		)
+			ctx, oracleScript.Owner, oracleScript.Name, oracleScript.Description, oracleScript.Code, oracleScript.Schema, oracleScript.SourceCodeURL)
 		if err != nil {
 			panic(err)
 		}

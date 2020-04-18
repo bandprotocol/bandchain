@@ -6,43 +6,30 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
+// HasRawDataRequest checks if the raw data request of this ID exists in the storage.
+func (k Keeper) HasRawDataRequest(ctx sdk.Context, requestID types.RID, externalID types.EID) bool {
+	return ctx.KVStore(k.storeKey).Has(types.RawDataRequestStoreKey(requestID, externalID))
+}
+
 // SetRawDataRequest saves the raw data request to the store without performing validation.
-func (k Keeper) SetRawDataRequest(
-	ctx sdk.Context, requestID types.RequestID, externalID types.ExternalID,
-	rawDataRequest types.RawDataRequest,
-) {
-	store := ctx.KVStore(k.storeKey)
-	store.Set(
+func (k Keeper) SetRawDataRequest(ctx sdk.Context, requestID types.RID, externalID types.EID, rawDataRequest types.RawDataRequest) {
+	ctx.KVStore(k.storeKey).Set(
 		types.RawDataRequestStoreKey(requestID, externalID),
 		k.cdc.MustMarshalBinaryBare(rawDataRequest),
 	)
 }
 
-// GetRawDataRequest returns the raw data request detail by the given request ID and external ID.
-func (k Keeper) GetRawDataRequest(
-	ctx sdk.Context, requestID types.RequestID, externalID types.ExternalID,
-) (types.RawDataRequest, error) {
-	store := ctx.KVStore(k.storeKey)
-	if !k.CheckRawDataRequestExists(ctx, requestID, externalID) {
-		return types.RawDataRequest{}, sdkerrors.Wrapf(types.ErrItemNotFound,
-			"GetRawDataRequest: Unknown raw data request for request ID %d external ID %d.",
-			requestID, externalID,
+// GetRawDataRequest returns the raw data request struct or error if not exists.
+func (k Keeper) GetRawDataRequest(ctx sdk.Context, requestID types.RID, externalID types.EID) (types.RawDataRequest, error) {
+	bz := ctx.KVStore(k.storeKey).Get(types.RawDataRequestStoreKey(requestID, externalID))
+	if bz == nil {
+		return types.RawDataRequest{}, sdkerrors.Wrapf(
+			types.ErrRawRequestNotFound, "reqID: %d, extID: %d", requestID, externalID,
 		)
 	}
-
-	bz := store.Get(types.RawDataRequestStoreKey(requestID, externalID))
-	var requestDetail types.RawDataRequest
-	k.cdc.MustUnmarshalBinaryBare(bz, &requestDetail)
-	return requestDetail, nil
-}
-
-// CheckRawDataRequestExists checks if the raw data request at this request ID and external ID
-// exists in the store or not.
-func (k Keeper) CheckRawDataRequestExists(
-	ctx sdk.Context, requestID types.RequestID, externalID types.ExternalID,
-) bool {
-	store := ctx.KVStore(k.storeKey)
-	return store.Has(types.RawDataRequestStoreKey(requestID, externalID))
+	var rawRequest types.RawDataRequest
+	k.cdc.MustUnmarshalBinaryBare(bz, &rawRequest)
+	return rawRequest, nil
 }
 
 // AddNewRawDataRequest performs all sanity checks and adds a new raw data request to the store.
@@ -66,7 +53,7 @@ func (k Keeper) AddNewRawDataRequest(
 		return sdkerrors.Wrapf(types.ErrDataSourceNotFound, "id: %d", dataSourceID)
 	}
 
-	if k.CheckRawDataRequestExists(ctx, requestID, externalID) {
+	if k.HasRawDataRequest(ctx, requestID, externalID) {
 		return sdkerrors.Wrapf(types.ErrItemDuplication,
 			"AddNewRawDataRequest: Request ID %d: Raw data with external ID %d already exists.",
 			requestID, externalID,

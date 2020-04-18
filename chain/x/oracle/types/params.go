@@ -35,10 +35,6 @@ const (
 	// Default value is set 1 kB.
 	DefaultMaxResultSize = uint64(1 * 1024)
 
-	// The maximum gas that can be used to resolve requests at endblock time
-	// Default value is 1000000
-	DefaultEndBlockExecuteGasLimit = uint64(1000000)
-
 	// The maximum size of name length.
 	// Default value is 280
 	DefaultMaxNameLength = uint64(280)
@@ -68,7 +64,6 @@ var (
 	KeyMaxDataSourceCountPerRequest     = []byte("MaxDataSourceCountPerRequest")
 	KeyMaxRawDataReportSize             = []byte("MaxRawDataReportSize")
 	KeyMaxResultSize                    = []byte("MaxResultSize")
-	KeyEndBlockExecuteGasLimit          = []byte("EndBlockExecuteGasLimit")
 	KeyMaxNameLength                    = []byte("MaxNameLength")
 	KeyMaxDescriptionLength             = []byte("MaxDescriptionLength")
 	KeyGasPerRawDataRequestPerValidator = []byte("GasPerRawDataRequestPerValidator")
@@ -85,7 +80,6 @@ type Params struct {
 	MaxDataSourceCountPerRequest     uint64 `json:"max_data_source_count_per_request" yaml:"max_data_source_count_per_request"`
 	MaxRawDataReportSize             uint64 `json:"max_raw_data_report_size" yaml:"max_raw_data_report_size"`
 	MaxResultSize                    uint64 `json:"max_result_size" yaml:"max_result_size"`
-	EndBlockExecuteGasLimit          uint64 `json:"end_block_execute_gas_limit" yaml:"end_block_execute_gas_limit"`
 	MaxNameLength                    uint64 `json:"max_name_length" yaml:"max_name_length"`
 	MaxDescriptionLength             uint64 `json:"max_description_length" yaml:"max_description_length"`
 	GasPerRawDataRequestPerValidator uint64 `json:"gas_per_raw_data_request" yaml:"gas_per_raw_data_request"`
@@ -102,7 +96,6 @@ func NewParams(
 	maxDataSourceCountPerRequest uint64,
 	maxRawDataReportSize uint64,
 	maxResultSize uint64,
-	endBlockExecuteGasLimit uint64,
 	maxNameLength uint64,
 	maxDescriptionLength uint64,
 	gasPerRawDataRequestPerValidator uint64,
@@ -117,7 +110,6 @@ func NewParams(
 		MaxDataSourceCountPerRequest:     maxDataSourceCountPerRequest,
 		MaxRawDataReportSize:             maxRawDataReportSize,
 		MaxResultSize:                    maxResultSize,
-		EndBlockExecuteGasLimit:          endBlockExecuteGasLimit,
 		MaxNameLength:                    maxNameLength,
 		MaxDescriptionLength:             maxDescriptionLength,
 		GasPerRawDataRequestPerValidator: gasPerRawDataRequestPerValidator,
@@ -136,7 +128,6 @@ func (p Params) String() string {
   MaxDataSourceCountPerRequest:     %d
   MaxRawDataReportSize:             %d
   MaxResultSize:                    %d
-  EndBlockExecuteGasLimit:          %d
   MaxNameLength:                    %d
   MaxDescriptionLength:             %d
   GasPerRawDataRequestPerValidator: %d
@@ -149,7 +140,6 @@ func (p Params) String() string {
 		p.MaxDataSourceCountPerRequest,
 		p.MaxRawDataReportSize,
 		p.MaxResultSize,
-		p.EndBlockExecuteGasLimit,
 		p.MaxNameLength,
 		p.MaxDescriptionLength,
 		p.GasPerRawDataRequestPerValidator,
@@ -171,7 +161,6 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyMaxDataSourceCountPerRequest, &p.MaxDataSourceCountPerRequest, validateNoOp),
 		paramtypes.NewParamSetPair(KeyMaxRawDataReportSize, &p.MaxRawDataReportSize, validateNoOp),
 		paramtypes.NewParamSetPair(KeyMaxResultSize, &p.MaxResultSize, validateNoOp),
-		paramtypes.NewParamSetPair(KeyEndBlockExecuteGasLimit, &p.EndBlockExecuteGasLimit, validateNoOp),
 		paramtypes.NewParamSetPair(KeyMaxNameLength, &p.MaxNameLength, validateNoOp),
 		paramtypes.NewParamSetPair(KeyMaxDescriptionLength, &p.MaxDescriptionLength, validateNoOp),
 		paramtypes.NewParamSetPair(KeyGasPerRawDataRequestPerValidator, &p.GasPerRawDataRequestPerValidator, validateNoOp),
@@ -190,7 +179,6 @@ func DefaultParams() Params {
 		DefaultMaxDataSourceCountPerRequest,
 		DefaultMaxRawDataReportSize,
 		DefaultMaxResultSize,
-		DefaultEndBlockExecuteGasLimit,
 		DefaultMaxNameLength,
 		DefaultDescriptionLength,
 		DefaultGasPerRawDataRequestPerValidator,

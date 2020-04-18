@@ -152,7 +152,7 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 
 	ibcKeeper := ibc.NewKeeper(cdc, keyIBC, sk, scopedIBCKeeper)
 
-	keeper := NewKeeper(cdc, keyRequest, bk, sk, ibcKeeper.ChannelKeeper, pk.Subspace(types.DefaultParamspace), scopedOracleKeeper)
+	keeper := NewKeeper(cdc, keyRequest, pk.Subspace(types.DefaultParamspace), bk, sk, ibcKeeper.ChannelKeeper, scopedOracleKeeper)
 	require.Equal(t, account.GetAddress(), addr)
 	accountKeeper.SetAccount(ctx, account)
 
@@ -165,7 +165,6 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 	keeper.SetParam(ctx, types.KeyMaxDataSourceCountPerRequest, types.DefaultMaxDataSourceCountPerRequest)
 	keeper.SetParam(ctx, types.KeyMaxRawDataReportSize, types.DefaultMaxRawDataReportSize)
 	keeper.SetParam(ctx, types.KeyMaxResultSize, types.DefaultMaxResultSize)
-	keeper.SetParam(ctx, types.KeyEndBlockExecuteGasLimit, types.DefaultEndBlockExecuteGasLimit)
 	keeper.SetParam(ctx, types.KeyMaxNameLength, types.DefaultMaxNameLength)
 	keeper.SetParam(ctx, types.KeyMaxDescriptionLength, types.DefaultDescriptionLength)
 	keeper.SetParam(ctx, types.KeyGasPerRawDataRequestPerValidator, types.DefaultGasPerRawDataRequestPerValidator)
@@ -245,6 +244,8 @@ func GetTestOracleScript(path string) types.OracleScript {
 		"silly script",
 		"description",
 		code,
+		"schema",
+		"sourceCodeURL",
 	)
 }
 

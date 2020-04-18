@@ -113,7 +113,7 @@ module BlockCountConfig = [%graphql
 module PastDayBlockCountConfig = [%graphql
   {|
   subscription AvgDayBlocksCount($greater: bigint!, $less: bigint!) {
-    blocks_aggregate(where: {timestamp: {_gte: $greater}, _and: {timestamp: {_lte: $less}}}){
+    blocks_aggregate(where: {timestamp: {_lte: $less, _gte: $greater}}) {
       aggregate{
         count @bsDecoder(fn: "Belt_Option.getExn")
         max {

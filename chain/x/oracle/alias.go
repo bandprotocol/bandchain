@@ -62,7 +62,6 @@ var (
 	KeyMaxResultSize                    = types.KeyMaxResultSize
 	KeyMaxNameLength                    = types.KeyMaxNameLength
 	KeyMaxDescriptionLength             = types.KeyMaxDescriptionLength
-	KeyEndBlockExecuteGasLimit          = types.KeyEndBlockExecuteGasLimit
 	KeyGasPerRawDataRequestPerValidator = types.KeyGasPerRawDataRequestPerValidator
 	KeyExpirationBlockCount             = types.KeyExpirationBlockCount
 	KeyExecuteGas                       = types.KeyExecuteGas
