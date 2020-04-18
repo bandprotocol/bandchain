@@ -42,9 +42,9 @@ func (k Keeper) AddOracleScript(
 	ctx sdk.Context, owner sdk.AccAddress, name string, description string, code []byte, schema string, sourceCodeURL string,
 ) (types.OID, error) {
 	if err := AnyError(
-		k.EnsureMax(ctx, types.KeyMaxNameLength, uint64(len(name))),
-		k.EnsureMax(ctx, types.KeyMaxDescriptionLength, uint64(len(description))),
-		k.EnsureMax(ctx, types.KeyMaxOracleScriptCodeSize, uint64(len(code))),
+		k.EnsureLength(ctx, types.KeyMaxNameLength, len(name)),
+		k.EnsureLength(ctx, types.KeyMaxDescriptionLength, len(description)),
+		k.EnsureLength(ctx, types.KeyMaxOracleScriptCodeSize, len(code)),
 	); err != nil {
 		return 0, err
 	}
@@ -69,9 +69,9 @@ func (k Keeper) EditOracleScript(
 	oracleScript.Schema = schema
 	oracleScript.SourceCodeURL = sourceCodeURL
 	if err := AnyError(
-		k.EnsureMax(ctx, types.KeyMaxNameLength, uint64(len(oracleScript.Name))),
-		k.EnsureMax(ctx, types.KeyMaxDescriptionLength, uint64(len(oracleScript.Description))),
-		k.EnsureMax(ctx, types.KeyMaxOracleScriptCodeSize, uint64(len(oracleScript.Code))),
+		k.EnsureLength(ctx, types.KeyMaxNameLength, len(oracleScript.Name)),
+		k.EnsureLength(ctx, types.KeyMaxDescriptionLength, len(oracleScript.Description)),
+		k.EnsureLength(ctx, types.KeyMaxOracleScriptCodeSize, len(oracleScript.Code)),
 	); err != nil {
 		return err
 	}

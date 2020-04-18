@@ -43,9 +43,9 @@ func (k Keeper) AddDataSource(
 	fee sdk.Coins, executable []byte,
 ) (types.DID, error) {
 	if err := AnyError(
-		k.EnsureMax(ctx, types.KeyMaxNameLength, uint64(len(name))),
-		k.EnsureMax(ctx, types.KeyMaxDescriptionLength, uint64(len(description))),
-		k.EnsureMax(ctx, types.KeyMaxExecutableSize, uint64(len(executable))),
+		k.EnsureLength(ctx, types.KeyMaxNameLength, len(name)),
+		k.EnsureLength(ctx, types.KeyMaxDescriptionLength, len(description)),
+		k.EnsureLength(ctx, types.KeyMaxExecutableSize, len(executable)),
 	); err != nil {
 		return 0, err
 	}
@@ -69,9 +69,9 @@ func (k Keeper) EditDataSource(
 	dataSource.Fee = fee
 	dataSource.Executable = executable
 	if err := AnyError(
-		k.EnsureMax(ctx, types.KeyMaxNameLength, uint64(len(dataSource.Name))),
-		k.EnsureMax(ctx, types.KeyMaxDescriptionLength, uint64(len(dataSource.Description))),
-		k.EnsureMax(ctx, types.KeyMaxExecutableSize, uint64(len(dataSource.Executable))),
+		k.EnsureLength(ctx, types.KeyMaxNameLength, len(dataSource.Name)),
+		k.EnsureLength(ctx, types.KeyMaxDescriptionLength, len(dataSource.Description)),
+		k.EnsureLength(ctx, types.KeyMaxExecutableSize, len(dataSource.Executable)),
 	); err != nil {
 		return err
 	}

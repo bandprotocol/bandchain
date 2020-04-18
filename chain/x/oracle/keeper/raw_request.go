@@ -19,8 +19,7 @@ func (k Keeper) SetRawRequest(ctx sdk.Context, rid types.RID, data types.RawRequ
 
 // AddRawRequest performs all sanity checks and adds a new raw request to the store.
 func (k Keeper) AddRawRequest(ctx sdk.Context, rid types.RID, data types.RawRequest) error {
-	err := k.EnsureMax(ctx, types.KeyMaxCalldataSize, uint64(len(data.Calldata)))
-	if err != nil {
+	if err := k.EnsureLength(ctx, types.KeyMaxCalldataSize, len(data.Calldata)); err != nil {
 		return err
 	}
 	if !k.HasRequest(ctx, rid) {
@@ -30,8 +29,8 @@ func (k Keeper) AddRawRequest(ctx sdk.Context, rid types.RID, data types.RawRequ
 		return sdkerrors.Wrapf(types.ErrDataSourceNotFound, "id: %d", data.DataSourceID)
 	}
 	if k.HasRawRequest(ctx, rid, data.ExternalID) {
-		return sdkerrors.Wrapf(types.ErrRawRequestAlreadyExists,
-			"reqID: %d, extID: %d", rid, data.ExternalID,
+		return sdkerrors.Wrapf(
+			types.ErrRawRequestAlreadyExists, "reqID: %d, extID: %d", rid, data.ExternalID,
 		)
 	}
 	// TODO: Make sure we consume gas for adding raw requests. That should be done in handler level.

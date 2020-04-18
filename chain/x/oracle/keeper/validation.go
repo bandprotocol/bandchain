@@ -17,8 +17,8 @@ func AnyError(errs ...error) error {
 	return nil
 }
 
-// EnsureMaxValue checks whether the given value exceeds the max limit as specified by param.
-func (k Keeper) EnsureMaxValue(ctx sdk.Context, param []byte, val uint64) error {
+// EnsureMax checks whether the given uint64 value exceeds the max limit as specified by param.
+func (k Keeper) EnsureMax(ctx sdk.Context, param []byte, val uint64) error {
 	maxVal := k.GetParam(ctx, param)
 	if val > maxVal {
 		return sdkerrors.Wrapf(types.ErrBadDataLength,
@@ -26,4 +26,9 @@ func (k Keeper) EnsureMaxValue(ctx sdk.Context, param []byte, val uint64) error 
 		)
 	}
 	return nil
+}
+
+// EnsureLength checks whether the given int value exceeds the max limit as specified by param.
+func (k Keeper) EnsureLength(ctx sdk.Context, param []byte, len int) error {
+	return k.EnsureMax(ctx, param, uint64(len))
 }
