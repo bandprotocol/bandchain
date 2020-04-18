@@ -166,9 +166,9 @@ func (k Keeper) ValidateDataSourceCount(ctx sdk.Context, id types.RequestID) err
 func (k Keeper) PayDataSourceFees(
 	ctx sdk.Context, id types.RequestID, sender sdk.AccAddress,
 ) error {
-	rawDataRequests := k.GetRawDataRequests(ctx, id)
+	rawDataRequests := k.GetRawRequestsByRID(ctx, id)
 	for _, rawDataRequest := range rawDataRequests {
-		dataSource, err := k.GetDataSource(ctx, rawDataRequest.DataSourceID)
+		dataSource, err := k.GetDataSource(ctx, rawDataRequest.RawDataRequest.DataSourceID)
 		if err != nil {
 			return err
 		}

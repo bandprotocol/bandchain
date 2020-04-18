@@ -30,7 +30,7 @@ func mockOracleScript(ctx sdk.Context, keeper Keeper) (*sdk.Result, error) {
 	sender := sdk.AccAddress([]byte("sender"))
 	schema := "schema"
 	sourceCodeURL := "sourceCodeURL"
-	msg := types.NewMsgCreateOracleScript(owner, name, description, code, schema, sourceCodeURL,sender)
+	msg := types.NewMsgCreateOracleScript(owner, name, description, code, schema, sourceCodeURL, sender)
 	return handleMsgCreateOracleScript(ctx, keeper, msg)
 }
 
@@ -237,10 +237,10 @@ func TestRequestSuccess(t *testing.T) {
 
 	require.Equal(t, int64(2), keeper.GetRawDataRequestCount(ctx, 1))
 
-	rawRequests := []types.RawDataRequest{
-		types.NewRawDataRequest(1, []byte("band-protocol")), types.NewRawDataRequest(2, []byte("band-chain")),
-	}
-	require.Equal(t, rawRequests, keeper.GetRawDataRequests(ctx, 1))
+	// rawRequests := []types.RawDataRequest{
+	// 	types.NewRawDataRequest(1, []byte("band-protocol")), types.NewRawDataRequest(2, []byte("band-chain")),
+	// }
+	// require.Equal(t, rawRequests, keeper.GetRawRequestsByRID(ctx, 1))
 	// check consumed gas must more than 100000
 	// TODO: Write a better test than just checking number comparison
 	require.GreaterOrEqual(t, afterGas-beforeGas, uint64(100000))

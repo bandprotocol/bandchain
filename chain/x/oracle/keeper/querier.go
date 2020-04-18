@@ -45,7 +45,7 @@ func buildRequestQuerierInfo(
 		return types.RequestQuerierInfo{}, sdkErr
 	}
 
-	rawRequests := keeper.GetRawDataRequestWithExternalIDs(ctx, id)
+	// rawRequests := keeper.GetRawDataRequestWithExternalIDs(ctx, id)
 
 	iterator := keeper.GetRawDataReportsIterator(ctx, id)
 	reportMap := make(map[string]([]types.RawDataReportWithID))
@@ -85,7 +85,7 @@ func buildRequestQuerierInfo(
 	return types.NewRequestQuerierInfo(
 		id,
 		request,
-		rawRequests,
+		nil,
 		reports,
 		result,
 	), nil

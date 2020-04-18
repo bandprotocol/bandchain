@@ -60,6 +60,8 @@ type RawDataRequest struct {
 	Calldata     []byte       `json:"calldata"`
 }
 
+type RawRequest = RawDataRequest
+
 // NewRawDataRequest creates a new RawDataRequest instance
 func NewRawDataRequest(dataSourceID DataSourceID, calldata []byte) RawDataRequest {
 	return RawDataRequest{

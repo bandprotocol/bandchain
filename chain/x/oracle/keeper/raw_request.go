@@ -7,15 +7,15 @@ import (
 )
 
 // HasRawDataRequest checks if the raw data request of this ID exists in the storage.
-func (k Keeper) HasRawDataRequest(ctx sdk.Context, requestID types.RID, externalID types.EID) bool {
-	return ctx.KVStore(k.storeKey).Has(types.RawDataRequestStoreKey(requestID, externalID))
+func (k Keeper) HasRawDataRequest(ctx sdk.Context, rid types.RID, eid types.EID) bool {
+	return ctx.KVStore(k.storeKey).Has(types.RawDataRequestStoreKey(rid, eid))
 }
 
 // SetRawDataRequest saves the raw data request to the store without performing validation.
-func (k Keeper) SetRawDataRequest(ctx sdk.Context, requestID types.RID, externalID types.EID, rawDataRequest types.RawDataRequest) {
+func (k Keeper) SetRawDataRequest(ctx sdk.Context, rid types.RID, eid types.EID, data types.RawRequest) {
 	ctx.KVStore(k.storeKey).Set(
-		types.RawDataRequestStoreKey(requestID, externalID),
-		k.cdc.MustMarshalBinaryBare(rawDataRequest),
+		types.RawDataRequestStoreKey(rid, eid),
+		k.cdc.MustMarshalBinaryBare(data),
 	)
 }
 
@@ -71,17 +71,12 @@ func (k Keeper) AddNewRawDataRequest(
 	return k.ValidateDataSourceCount(ctx, requestID)
 }
 
-// GetRawDataRequestIterator is a function to get iterator on all raw data request that belong to
-// given request id
-func (k Keeper) GetRawDataRequestIterator(ctx sdk.Context, requestID types.RequestID) sdk.Iterator {
-	prefix := types.GetIteratorPrefix(types.RawDataRequestStoreKeyPrefix, requestID)
-	store := ctx.KVStore(k.storeKey)
-	return sdk.KVStorePrefixIterator(store, prefix)
-}
-
 // GetRawDataRequestCount returns the number of raw data requests for the given request.
-func (k Keeper) GetRawDataRequestCount(ctx sdk.Context, requestID types.RequestID) int64 {
-	iterator := k.GetRawDataRequestIterator(ctx, requestID)
+func (k Keeper) GetRawDataRequestCount(ctx sdk.Context, rid types.RequestID) int64 {
+	store := ctx.KVStore(k.storeKey)
+	iterator := sdk.KVStorePrefixIterator(store,
+		types.GetIteratorPrefix(types.RawDataRequestStoreKeyPrefix, rid),
+	)
 	count := 0
 	for ; iterator.Valid(); iterator.Next() {
 		count++
@@ -89,36 +84,19 @@ func (k Keeper) GetRawDataRequestCount(ctx sdk.Context, requestID types.RequestI
 	return int64(count)
 }
 
-// GetRawDataRequests returns a list of raw data requests for the given request.
-func (k Keeper) GetRawDataRequests(
-	ctx sdk.Context, requestID types.RequestID,
-) []types.RawDataRequest {
-	iterator := k.GetRawDataRequestIterator(ctx, requestID)
-	rawRequests := make([]types.RawDataRequest, 0)
+// GetRawRequestsByRID returns all raw requests for the given request ID, or nil if there is none.
+func (k Keeper) GetRawRequestsByRID(ctx sdk.Context, rid types.RID) (res []types.RawDataRequestWithExternalID) {
+	store := ctx.KVStore(k.storeKey)
+	iterator := sdk.KVStorePrefixIterator(store,
+		types.GetIteratorPrefix(types.RawDataRequestStoreKeyPrefix, rid),
+	)
 	for ; iterator.Valid(); iterator.Next() {
-		var rawRequest types.RawDataRequest
+		var rawRequest types.RawRequest
 		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &rawRequest)
-		rawRequests = append(rawRequests, rawRequest)
+		res = append(res, types.NewRawDataRequestWithExternalID(
+			types.GetExternalIDFromRawDataRequestKey(iterator.Key()),
+			rawRequest,
+		))
 	}
-	return rawRequests
-}
-
-// GetRawDataRequestWithExternalIDs returns a list of raw data requests bundled with external IDs
-// for the given request.
-func (k Keeper) GetRawDataRequestWithExternalIDs(
-	ctx sdk.Context, requestID types.RequestID,
-) []types.RawDataRequestWithExternalID {
-	iterator := k.GetRawDataRequestIterator(ctx, requestID)
-	rawRequests := make([]types.RawDataRequestWithExternalID, 0)
-	for ; iterator.Valid(); iterator.Next() {
-		var rawRequest types.RawDataRequest
-		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &rawRequest)
-		rawRequests = append(rawRequests,
-			types.NewRawDataRequestWithExternalID(
-				types.GetExternalIDFromRawDataRequestKey(iterator.Key()),
-				rawRequest,
-			),
-		)
-	}
-	return rawRequests
+	return res
 }
