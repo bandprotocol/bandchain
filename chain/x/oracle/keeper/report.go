@@ -82,3 +82,16 @@ func (k Keeper) GetReports(ctx sdk.Context, rid types.RID) (reports []types.Repo
 	}
 	return reports
 }
+
+// DeleteReports removes all reports for the given request ID.
+func (k Keeper) DeleteReports(ctx sdk.Context, rid types.RID) {
+	var keys [][]byte
+	iterator := k.GetReportIterator(ctx, rid)
+	defer iterator.Close()
+	for ; iterator.Valid(); iterator.Next() {
+		keys = append(keys, iterator.Key())
+	}
+	for _, key := range keys {
+		ctx.KVStore(k.storeKey).Delete(key)
+	}
+}

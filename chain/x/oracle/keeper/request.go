@@ -152,8 +152,10 @@ func (k Keeper) ProcessExpiredRequests(ctx sdk.Context) {
 		if k.GetReportCount(ctx, currentReqID) < request.SufficientValidatorCount {
 			k.ProcessOracleResponse(ctx, currentReqID, types.Expired, nil)
 		}
-		// We are done with this request. Now it's time to remove it from the store.
+		// We are done with this request. Remove it and its dependencies from the store.
 		k.DeleteRequest(ctx, currentReqID)
+		k.DeleteRawRequests(ctx, currentReqID)
+		k.DeleteReports(ctx, currentReqID)
 	}
 	// Lastly, we update RequestBeginID to reflect the most up-to-date ID for open requests.
 	k.SetRequestBeginID(ctx, currentReqID)
