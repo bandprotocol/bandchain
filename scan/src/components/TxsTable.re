@@ -6,12 +6,6 @@ module Styles = {
   let statusContainer =
     style([maxWidth(`px(95)), display(`flex), flexDirection(`row), alignItems(`center)]);
   let logo = style([width(`px(20)), marginLeft(`auto), marginRight(`px(15))]);
-
-  let heightByMsgsNum = (numMsgs, mt) =>
-    style([
-      minHeight(numMsgs <= 1 ? `auto : `px(numMsgs * hScale)),
-      marginTop(`px(numMsgs <= 1 ? 0 : mt)),
-    ]);
 };
 
 [@react.component]
@@ -82,49 +76,38 @@ let make = (~txs: array(TxSub.t)) => {
     </THead>
     {txs
      ->Belt_Array.map(({blockHeight, txHash, gasFee, messages, success}) => {
-         let numMsgs = messages->Belt_List.size;
          <TBody key={txHash |> Hash.toHex}>
-           <Row minHeight={`px(30)}>
+           <Row minHeight={`px(30)} alignItems=`flexStart>
              <HSpacing size={`px(20)} />
-             <Col size=1.67>
-               <div className={Styles.heightByMsgsNum(numMsgs, 0)}>
-                 <TxLink txHash width=140 />
-               </div>
-             </Col>
-             <Col size=0.88>
-               <div className={Styles.heightByMsgsNum(numMsgs, -4)}>
-                 <TypeID.Block id=blockHeight />
-               </div>
-             </Col>
+             <Col size=1.67> <VSpacing size=Spacing.sm /> <TxLink txHash width=140 /> </Col>
+             <Col size=0.88> <VSpacing size=Spacing.sm /> <TypeID.Block id=blockHeight /> </Col>
              <Col size=1.>
-               <div className={Styles.heightByMsgsNum(numMsgs, -8)}>
-                 <div className=Styles.statusContainer>
-                   <Text
-                     block=true
-                     code=true
-                     spacing={Text.Em(0.02)}
-                     value={success ? "success" : "fail"}
-                     weight=Text.Medium
-                     ellipsis=true
-                   />
-                   <img src={success ? Images.success : Images.fail} className=Styles.logo />
-                 </div>
+               <VSpacing size={`px(4)} />
+               <div className=Styles.statusContainer>
+                 <Text
+                   block=true
+                   code=true
+                   spacing={Text.Em(0.02)}
+                   value={success ? "success" : "fail"}
+                   weight=Text.Medium
+                   ellipsis=true
+                 />
+                 <img src={success ? Images.success : Images.fail} className=Styles.logo />
                </div>
              </Col>
              <Col size=1.25>
-               <div className={Styles.heightByMsgsNum(numMsgs, 0)}>
-                 <div className=Styles.fullWidth>
-                   <AutoSpacing dir="left" />
-                   <Text
-                     block=true
-                     code=true
-                     spacing={Text.Em(0.02)}
-                     value={gasFee->Coin.getBandAmountFromCoins->Format.fPretty}
-                     weight=Text.Medium
-                     ellipsis=true
-                   />
-                   <HSpacing size={`px(20)} />
-                 </div>
+               <VSpacing size={`px(7)} />
+               <div className=Styles.fullWidth>
+                 <AutoSpacing dir="left" />
+                 <Text
+                   block=true
+                   code=true
+                   spacing={Text.Em(0.02)}
+                   value={gasFee->Coin.getBandAmountFromCoins->Format.fPretty}
+                   weight=Text.Medium
+                   ellipsis=true
+                 />
+                 <HSpacing size={`px(20)} />
                </div>
              </Col>
              <Col size=5.>
@@ -133,7 +116,6 @@ let make = (~txs: array(TxSub.t)) => {
                 ->Belt_Array.mapWithIndex((i, msg) =>
                     <React.Fragment key={(txHash |> Hash.toHex) ++ (i |> string_of_int)}>
                       <VSpacing size=Spacing.sm />
-                      <VSpacing size=Spacing.xs />
                       <Msg msg width=450 />
                       <VSpacing size=Spacing.sm />
                     </React.Fragment>
@@ -142,7 +124,7 @@ let make = (~txs: array(TxSub.t)) => {
              </Col>
              <HSpacing size={`px(20)} />
            </Row>
-         </TBody>;
+         </TBody>
        })
      ->React.array}
   </>;
