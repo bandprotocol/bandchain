@@ -35,8 +35,8 @@ func TestAddReportSuccess(t *testing.T) {
 	request := newDefaultRequest()
 	keeper.SetRequest(ctx, 1, request)
 
-	keeper.SetRawRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata1")))
-	keeper.SetRawRequest(ctx, 1, 10, types.NewRawDataRequest(2, []byte("calldata2")))
+	keeper.SetRawRequest(ctx, 1, types.NewRawRequest(2, 1, []byte("calldata1")))
+	keeper.SetRawRequest(ctx, 1, types.NewRawRequest(10, 2, []byte("calldata2")))
 
 	err := keeper.AddReport(ctx, 1, []types.RawDataReportWithID{
 		types.NewRawDataReportWithID(2, 1, []byte("data1/1")),
@@ -93,8 +93,8 @@ func TestAddReportFailed(t *testing.T) {
 	// request.ResolveStatus = types.Success
 	// keeper.SetRequest(ctx, 1, request)
 
-	keeper.SetRawRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata1")))
-	keeper.SetRawRequest(ctx, 1, 10, types.NewRawDataRequest(2, []byte("calldata2")))
+	keeper.SetRawRequest(ctx, 1, types.NewRawRequest(2, 1, []byte("calldata1")))
+	keeper.SetRawRequest(ctx, 1, types.NewRawRequest(10, 2, []byte("calldata2")))
 
 	err = keeper.AddReport(ctx, 1, []types.RawDataReportWithID{
 		types.NewRawDataReportWithID(2, 0, []byte("data1/1")),
@@ -106,8 +106,8 @@ func TestAddReportFailed(t *testing.T) {
 	request = newDefaultRequest()
 	keeper.SetRequest(ctx, 1, request)
 
-	keeper.SetRawRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata1")))
-	keeper.SetRawRequest(ctx, 1, 10, types.NewRawDataRequest(2, []byte("calldata2")))
+	keeper.SetRawRequest(ctx, 1, types.NewRawRequest(2, 1, []byte("calldata1")))
+	keeper.SetRawRequest(ctx, 1, types.NewRawRequest(10, 2, []byte("calldata2")))
 
 	err = keeper.AddReport(ctx, 1, []types.RawDataReportWithID{
 		types.NewRawDataReportWithID(2, 0, []byte("data1/1")),
@@ -120,8 +120,8 @@ func TestAddReportFailed(t *testing.T) {
 	request.ExpirationHeight = 5
 	keeper.SetRequest(ctx, 1, request)
 
-	keeper.SetRawRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata1")))
-	keeper.SetRawRequest(ctx, 1, 10, types.NewRawDataRequest(2, []byte("calldata2")))
+	keeper.SetRawRequest(ctx, 1, types.NewRawRequest(2, 1, []byte("calldata1")))
+	keeper.SetRawRequest(ctx, 1, types.NewRawRequest(10, 2, []byte("calldata2")))
 
 	ctx = ctx.WithBlockHeight(6)
 	err = keeper.AddReport(ctx, 1, []types.RawDataReportWithID{
@@ -134,8 +134,8 @@ func TestAddReportFailed(t *testing.T) {
 	request = newDefaultRequest()
 	keeper.SetRequest(ctx, 1, request)
 
-	keeper.SetRawRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata1")))
-	keeper.SetRawRequest(ctx, 1, 10, types.NewRawDataRequest(2, []byte("calldata2")))
+	keeper.SetRawRequest(ctx, 1, types.NewRawRequest(2, 1, []byte("calldata1")))
+	keeper.SetRawRequest(ctx, 1, types.NewRawRequest(10, 2, []byte("calldata2")))
 
 	ctx = ctx.WithBlockHeight(2)
 	err = keeper.AddReport(ctx, 1, []types.RawDataReportWithID{
@@ -147,15 +147,15 @@ func TestAddReportFailed(t *testing.T) {
 	request = newDefaultRequest()
 	keeper.SetRequest(ctx, 1, request)
 
-	keeper.SetRawRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata1")))
-	keeper.SetRawRequest(ctx, 1, 10, types.NewRawDataRequest(2, []byte("calldata2")))
+	keeper.SetRawRequest(ctx, 1, types.NewRawRequest(2, 1, []byte("calldata1")))
+	keeper.SetRawRequest(ctx, 1, types.NewRawRequest(10, 2, []byte("calldata2")))
 
 	// Send invalid external id.
 	request = newDefaultRequest()
 	keeper.SetRequest(ctx, 1, request)
 
-	keeper.SetRawRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata1")))
-	keeper.SetRawRequest(ctx, 1, 10, types.NewRawDataRequest(2, []byte("calldata2")))
+	keeper.SetRawRequest(ctx, 1, types.NewRawRequest(2, 1, []byte("calldata1")))
+	keeper.SetRawRequest(ctx, 1, types.NewRawRequest(10, 2, []byte("calldata2")))
 
 	ctx = ctx.WithBlockHeight(2)
 	err = keeper.AddReport(ctx, 1, []types.RawDataReportWithID{
@@ -168,8 +168,8 @@ func TestAddReportFailed(t *testing.T) {
 	request = newDefaultRequest()
 	keeper.SetRequest(ctx, 1, request)
 
-	keeper.SetRawRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata1")))
-	keeper.SetRawRequest(ctx, 1, 10, types.NewRawDataRequest(2, []byte("calldata2")))
+	keeper.SetRawRequest(ctx, 1, types.NewRawRequest(2, 1, []byte("calldata1")))
+	keeper.SetRawRequest(ctx, 1, types.NewRawRequest(10, 2, []byte("calldata2")))
 
 	ctx = ctx.WithBlockHeight(2)
 	err = keeper.AddReport(ctx, 1, []types.RawDataReportWithID{
@@ -202,13 +202,13 @@ func TestAddRawRequestCallDataSizeTooBig(t *testing.T) {
 	// Set MaxCalldataSize to 0
 	// AddRawRequest should fail because size of "calldata" is > 0
 	keeper.SetParam(ctx, types.KeyMaxCalldataSize, 0)
-	err := keeper.AddRawRequest(ctx, 1, 1, 1, []byte("calldata"))
+	err := keeper.AddRawRequest(ctx, 1, types.NewRawRequest(1, 1, []byte("calldata")))
 	require.NotNil(t, err)
 
 	// Set MaxCalldataSize to 20
 	// AddRawRequest should pass because size of "calldata" is < 20
 	keeper.SetParam(ctx, types.KeyMaxCalldataSize, 20)
-	err = keeper.AddRawRequest(ctx, 1, 1, 1, []byte("calldata"))
+	err = keeper.AddRawRequest(ctx, 1, types.NewRawRequest(1, 1, []byte("calldata")))
 	require.Nil(t, err)
 }
 
@@ -219,7 +219,7 @@ func TestAddReportReportSizeExceedMaxRawDataReportSize(t *testing.T) {
 	request := newDefaultRequest()
 	keeper.SetRequest(ctx, 1, request)
 
-	keeper.SetRawRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata")))
+	keeper.SetRawRequest(ctx, 1, types.NewRawRequest(2, 1, []byte("calldata")))
 
 	// Size of "short report" is 12 bytes which is shorter than 20 bytes.
 	err := keeper.AddReport(ctx, 1, []types.RawDataReportWithID{
@@ -241,8 +241,8 @@ func TestInvalidReport(t *testing.T) {
 	request := newDefaultRequest()
 	keeper.SetRequest(ctx, 1, request)
 
-	keeper.SetRawRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata1")))
-	keeper.SetRawRequest(ctx, 1, 10, types.NewRawDataRequest(2, []byte("calldata2")))
+	keeper.SetRawRequest(ctx, 1, types.NewRawRequest(2, 1, []byte("calldata1")))
+	keeper.SetRawRequest(ctx, 1, types.NewRawRequest(10, 2, []byte("calldata2")))
 
 	err := keeper.AddReport(ctx, 1, []types.RawDataReportWithID{
 		types.NewRawDataReportWithID(2, 1, []byte("data1/1")),

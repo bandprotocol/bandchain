@@ -90,14 +90,14 @@ func (b *BandDB) AddNewRequest(
 		err := b.AddRawDataRequest(
 			id,
 			int64(raw.ExternalID),
-			int64(raw.RawDataRequest.DataSourceID),
-			raw.RawDataRequest.Calldata,
+			int64(raw.DataSourceID),
+			raw.Calldata,
 		)
 		if err != nil {
 			return err
 		}
 		err = b.tx.FirstOrCreate(&RelatedDataSources{
-			DataSourceID:   int64(raw.RawDataRequest.DataSourceID),
+			DataSourceID:   int64(raw.DataSourceID),
 			OracleScriptID: int64(oracleScriptID),
 		}).Error
 		if err != nil {

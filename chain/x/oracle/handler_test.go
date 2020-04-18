@@ -238,7 +238,7 @@ func TestRequestSuccess(t *testing.T) {
 	require.Equal(t, int64(2), keeper.GetRawRequestCount(ctx, 1))
 
 	// rawRequests := []types.RawDataRequest{
-	// 	types.NewRawDataRequest(1, []byte("band-protocol")), types.NewRawDataRequest(2, []byte("band-chain")),
+	// 	types.NewRawRequest(1, []byte("band-protocol")), types.NewRawRequest(2, []byte("band-chain")),
 	// }
 	// require.Equal(t, rawRequests, keeper.GetRawRequestsByRID(ctx, 1))
 	// check consumed gas must more than 100000
@@ -387,7 +387,7 @@ func TestReportSuccess(t *testing.T) {
 		2, 1581589790, 102, "clientID",
 	)
 	keeper.SetRequest(ctx, 1, request)
-	keeper.SetRawRequest(ctx, 1, 42, types.NewRawDataRequest(1, []byte("calldata1")))
+	keeper.SetRawRequest(ctx, 1, types.NewRawRequest(42, 1, []byte("calldata1")))
 
 	ctx = ctx.WithBlockHeight(5)
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589800), 0))
@@ -444,7 +444,7 @@ func TestReportFailed(t *testing.T) {
 		2, 1581589790, 102, "clientID",
 	)
 	keeper.SetRequest(ctx, 1, request)
-	keeper.SetRawRequest(ctx, 1, 42, types.NewRawDataRequest(1, []byte("calldata1")))
+	keeper.SetRawRequest(ctx, 1, types.NewRawRequest(42, 1, []byte("calldata1")))
 
 	ctx = ctx.WithBlockHeight(5)
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589800), 0))
@@ -551,7 +551,7 @@ func TestAddAndRemoveOracleAddress(t *testing.T) {
 		2, 1581589790, 102, "clientID",
 	)
 	keeper.SetRequest(ctx, 1, request)
-	keeper.SetRawRequest(ctx, 1, 42, types.NewRawDataRequest(1, []byte("calldata1")))
+	keeper.SetRawRequest(ctx, 1, types.NewRawRequest(42, 1, []byte("calldata1")))
 
 	ctx = ctx.WithBlockHeight(5)
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589800), 0))

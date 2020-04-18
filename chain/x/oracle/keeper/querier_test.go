@@ -207,12 +207,12 @@ package keeper
 // 		types.NewRequestQuerierInfo(
 // 			1,
 // 			request,
-// 			[]types.RawDataRequestWithExternalID{
-// 				types.NewRawDataRequestWithExternalID(
+// 			[]types.RawRequest{
+// 				types.NewRawRequest(
 // 					1,
 // 					types.NewRawDataRequest(0, []byte("calldata1")),
 // 				),
-// 				types.NewRawDataRequestWithExternalID(
+// 				types.NewRawRequest(
 // 					2,
 // 					types.NewRawDataRequest(1, []byte("calldata2")),
 // 				),
@@ -279,12 +279,12 @@ package keeper
 // 		types.NewRequestQuerierInfo(
 // 			1,
 // 			request,
-// 			[]types.RawDataRequestWithExternalID{
-// 				types.NewRawDataRequestWithExternalID(
+// 			[]types.RawRequest{
+// 				types.NewRawRequest(
 // 					1,
 // 					types.NewRawDataRequest(0, []byte("calldata1")),
 // 				),
-// 				types.NewRawDataRequestWithExternalID(
+// 				types.NewRawRequest(
 // 					2,
 // 					types.NewRawDataRequest(1, []byte("calldata2")),
 // 				),
@@ -363,12 +363,12 @@ package keeper
 // 			types.NewRequestQuerierInfo(
 // 				1,
 // 				request,
-// 				[]types.RawDataRequestWithExternalID{
-// 					types.NewRawDataRequestWithExternalID(
+// 				[]types.RawRequest{
+// 					types.NewRawRequest(
 // 						1,
 // 						types.NewRawDataRequest(0, []byte("calldata1")),
 // 					),
-// 					types.NewRawDataRequestWithExternalID(
+// 					types.NewRawRequest(
 // 						2,
 // 						types.NewRawDataRequest(1, []byte("calldata2")),
 // 					),
@@ -388,8 +388,8 @@ package keeper
 // 			types.NewRequestQuerierInfo(
 // 				2,
 // 				request,
-// 				[]types.RawDataRequestWithExternalID{
-// 					types.NewRawDataRequestWithExternalID(
+// 				[]types.RawRequest{
+// 					types.NewRawRequest(
 // 						100,
 // 						types.NewRawDataRequest(1, []byte("only calldata")),
 // 					),

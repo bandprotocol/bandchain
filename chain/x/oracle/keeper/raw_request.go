@@ -11,42 +11,32 @@ func (k Keeper) HasRawRequest(ctx sdk.Context, rid types.RID, eid types.EID) boo
 	return ctx.KVStore(k.storeKey).Has(types.RawRequestStoreKey(rid, eid))
 }
 
-// GetRawRequest returns the raw request struct for the given ID tuple or error if not exists.
-func (k Keeper) GetRawRequest(ctx sdk.Context, rid types.RID, eid types.EID) (types.RawRequest, error) {
-	bz := ctx.KVStore(k.storeKey).Get(types.RawRequestStoreKey(rid, eid))
-	if bz == nil {
-		return types.RawRequest{}, sdkerrors.Wrapf(
-			types.ErrRawRequestNotFound, "reqID: %d, extID: %d", rid, eid,
-		)
-	}
-	var rawRequest types.RawRequest
-	k.cdc.MustUnmarshalBinaryBare(bz, &rawRequest)
-	return rawRequest, nil
-}
-
 // SetRawRequest saves the raw request to the storage without performing validation.
-func (k Keeper) SetRawRequest(ctx sdk.Context, rid types.RID, eid types.EID, data types.RawRequest) {
+func (k Keeper) SetRawRequest(ctx sdk.Context, rid types.RID, data types.RawRequest) {
 	bz := k.cdc.MustMarshalBinaryBare(data)
-	ctx.KVStore(k.storeKey).Set(types.RawRequestStoreKey(rid, eid), bz)
+	ctx.KVStore(k.storeKey).Set(types.RawRequestStoreKey(rid, data.ExternalID), bz)
 }
 
 // AddRawRequest performs all sanity checks and adds a new raw request to the store.
-func (k Keeper) AddRawRequest(ctx sdk.Context, rid types.RID, eid types.EID, did types.DID, calldata []byte) error {
-	if err := k.EnsureMaxValue(ctx, types.KeyMaxCalldataSize, uint64(len(calldata))); err != nil {
+func (k Keeper) AddRawRequest(ctx sdk.Context, rid types.RID, data types.RawRequest) error {
+	err := k.EnsureMax(ctx, types.KeyMaxCalldataSize, uint64(len(data.Calldata)))
+	if err != nil {
 		return err
 	}
 	if !k.HasRequest(ctx, rid) {
 		return sdkerrors.Wrapf(types.ErrRequestNotFound, "id: %d", rid)
 	}
-	if !k.HasDataSource(ctx, did) {
-		return sdkerrors.Wrapf(types.ErrDataSourceNotFound, "id: %d", did)
+	if !k.HasDataSource(ctx, data.DataSourceID) {
+		return sdkerrors.Wrapf(types.ErrDataSourceNotFound, "id: %d", data.DataSourceID)
 	}
-	if k.HasRawRequest(ctx, rid, eid) {
-		return sdkerrors.Wrapf(types.ErrRawRequestAlreadyExists, "reqID: %d, extID: %d", rid, eid)
+	if k.HasRawRequest(ctx, rid, data.ExternalID) {
+		return sdkerrors.Wrapf(types.ErrRawRequestAlreadyExists,
+			"reqID: %d, extID: %d", rid, data.ExternalID,
+		)
 	}
 	// TODO: Make sure we consume gas for adding raw requests. That should be done in handler level.
 	// TODO: Validate data source count. Also should be done in handler level.
-	k.SetRawRequest(ctx, rid, eid, types.NewRawDataRequest(did, calldata))
+	k.SetRawRequest(ctx, rid, data)
 	return nil
 }
 
@@ -64,7 +54,7 @@ func (k Keeper) GetRawRequestCount(ctx sdk.Context, rid types.RequestID) int64 {
 }
 
 // GetRawRequestsByRID returns all raw requests for the given request ID, or nil if there is none.
-func (k Keeper) GetRawRequestsByRID(ctx sdk.Context, rid types.RID) (res []types.RawRequestWithExternalID) {
+func (k Keeper) GetRawRequestsByRID(ctx sdk.Context, rid types.RID) (res []types.RawRequest) {
 	store := ctx.KVStore(k.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store,
 		types.GetIteratorPrefix(types.RawRequestStoreKeyPrefix, rid),
@@ -72,10 +62,7 @@ func (k Keeper) GetRawRequestsByRID(ctx sdk.Context, rid types.RID) (res []types
 	for ; iterator.Valid(); iterator.Next() {
 		var rawRequest types.RawRequest
 		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &rawRequest)
-		res = append(res, types.NewRawDataRequestWithExternalID(
-			types.GetExternalIDFromRawDataRequestKey(iterator.Key()),
-			rawRequest,
-		))
+		res = append(res, rawRequest)
 	}
 	return res
 }

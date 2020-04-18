@@ -155,12 +155,11 @@ type Report struct {
 }
 
 type ReportDetail struct {
-	RequestID    int64  `gorm:"primary_key;auto_increment:false"`
-	Validator    string `gorm:"primary_key"`
-	ExternalID   int64  `gorm:"primary_key;auto_increment:false"`
-	DataSourceID int64  `gorm:"not null"`
-	Data         []byte `gorm:"not null"`
-	Exitcode     uint8  `gorm:"not null"`
+	RequestID  int64  `gorm:"primary_key;auto_increment:false"`
+	Validator  string `gorm:"primary_key"`
+	ExternalID int64  `gorm:"primary_key;auto_increment:false"`
+	Data       []byte `gorm:"not null"`
+	Exitcode   uint8  `gorm:"not null"`
 }
 
 type Packet struct {

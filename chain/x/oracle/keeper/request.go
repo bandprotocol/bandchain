@@ -178,7 +178,7 @@ func (k Keeper) PayDataSourceFees(
 ) error {
 	rawDataRequests := k.GetRawRequestsByRID(ctx, id)
 	for _, rawDataRequest := range rawDataRequests {
-		dataSource, err := k.GetDataSource(ctx, rawDataRequest.RawDataRequest.DataSourceID)
+		dataSource, err := k.GetDataSource(ctx, rawDataRequest.DataSourceID)
 		if err != nil {
 			return err
 		}

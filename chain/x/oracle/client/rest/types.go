@@ -22,7 +22,7 @@ type RequestRESTInfo struct {
 	ResolveStatus            types.ResolveStatus                  `json:"resolveStatus"`
 	Requester                sdk.AccAddress                       `json:"requester"`
 	RequestTx                TxDetail                             `json:"requestTx,omitempty"`
-	RawDataRequests          []types.RawDataRequestWithExternalID `json:"rawDataRequests"`
+	RawDataRequests          []types.RawRequest `json:"rawDataRequests"`
 	Reports                  []ReportDetail                       `json:"reports"`
 	Result                   types.Result                         `json:"result"`
 }

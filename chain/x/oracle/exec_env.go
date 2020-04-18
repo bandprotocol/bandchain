@@ -15,7 +15,7 @@ type ExecutionEnvironment struct {
 	maxResultSize          int64
 	maxCalldataSize        int64
 	maxRawDataRequestCount int64
-	rawDataRequests        []types.RawDataRequestWithExternalID
+	rawDataRequests        []types.RawRequest
 	rawDataReports         map[string]types.RawDataReport
 }
 
@@ -33,7 +33,7 @@ func NewExecutionEnvironment(
 		maxResultSize:          int64(keeper.GetParam(ctx, KeyMaxResultSize)),
 		maxCalldataSize:        int64(keeper.GetParam(ctx, KeyMaxCalldataSize)),
 		maxRawDataRequestCount: int64(keeper.GetParam(ctx, KeyMaxDataSourceCountPerRequest)),
-		rawDataRequests:        []types.RawDataRequestWithExternalID{},
+		rawDataRequests:        []types.RawRequest{},
 		rawDataReports:         make(map[string]types.RawDataReport),
 	}, nil
 }
@@ -41,8 +41,7 @@ func NewExecutionEnvironment(
 func (env *ExecutionEnvironment) SaveRawDataRequests(ctx sdk.Context, keeper Keeper) error {
 	for _, r := range env.rawDataRequests {
 		err := keeper.AddRawRequest(
-			ctx, env.requestID, r.ExternalID,
-			r.RawDataRequest.DataSourceID, r.RawDataRequest.Calldata,
+			ctx, env.requestID, types.NewRawRequest(r.ExternalID, r.DataSourceID, r.Calldata),
 		)
 		if err != nil {
 			return err
@@ -129,9 +128,10 @@ func (env *ExecutionEnvironment) RequestExternalData(
 		return errors.New("cannot request more than maxRawDataRequestCount")
 	}
 
-	env.rawDataRequests = append(env.rawDataRequests, types.NewRawDataRequestWithExternalID(
+	env.rawDataRequests = append(env.rawDataRequests, types.NewRawRequest(
 		types.ExternalID(externalDataID),
-		types.NewRawDataRequest(types.DataSourceID(dataSourceID), calldata),
+		types.DataSourceID(dataSourceID),
+		calldata,
 	))
 	return nil
 }

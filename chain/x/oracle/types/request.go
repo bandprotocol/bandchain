@@ -54,36 +54,20 @@ func NewRequest(
 	}
 }
 
-// RawDataRequest is a data structure that store what datasource and calldata will be used in request.
-type RawDataRequest struct {
+// RawRequest is a raw data request that contain external id.
+type RawRequest struct {
+	ExternalID   ExternalID   `json:"externalID"`
 	DataSourceID DataSourceID `json:"dataSourceID"`
 	Calldata     []byte       `json:"calldata"`
 }
 
-type RawRequest = RawDataRequest
+type RawRequestWithExternalID = RawRequest
 
-// NewRawDataRequest creates a new RawDataRequest instance
-func NewRawDataRequest(dataSourceID DataSourceID, calldata []byte) RawDataRequest {
-	return RawDataRequest{
-		DataSourceID: dataSourceID,
+// NewRawRequest creates a new RawRequest instance.
+func NewRawRequest(externalID ExternalID, did DataSourceID, calldata []byte) RawRequest {
+	return RawRequest{
+		ExternalID:   externalID,
+		DataSourceID: did,
 		Calldata:     calldata,
-	}
-}
-
-var NewRawRequest = NewRawDataRequest
-
-// RawDataRequestWithExternalID is a raw data request that contain external id.
-type RawDataRequestWithExternalID struct {
-	ExternalID     ExternalID     `json:"externalID"`
-	RawDataRequest RawDataRequest `json:"detail"`
-}
-
-type RawRequestWithExternalID = RawDataRequestWithExternalID
-
-// NewRawDataRequestWithExternalID creates a new RawDataRequestWithExternalID instance.
-func NewRawDataRequestWithExternalID(externalID ExternalID, rawDataRequest RawDataRequest) RawDataRequestWithExternalID {
-	return RawDataRequestWithExternalID{
-		ExternalID:     externalID,
-		RawDataRequest: rawDataRequest,
 	}
 }

@@ -227,10 +227,7 @@ func handleRequest(requestID oracle.RequestID) {
 
 			info.answer = []byte(strings.TrimSpace(string(result)))
 			chanQueryParallelInfo <- info
-		}(rawRequest.ExternalID,
-			rawRequest.RawDataRequest.DataSourceID,
-			rawRequest.RawDataRequest.Calldata,
-		)
+		}(rawRequest.ExternalID, rawRequest.DataSourceID, rawRequest.Calldata)
 	}
 
 	reports := make([]oracle.RawDataReportWithID, 0)
