@@ -35,6 +35,9 @@ func (k Keeper) AddRawRequest(ctx sdk.Context, rid types.RID, eid types.EID, did
 	if err := k.EnsureMaxValue(ctx, types.KeyMaxCalldataSize, uint64(len(calldata))); err != nil {
 		return err
 	}
+	if !k.HasRequest(ctx, rid) {
+		return sdkerrors.Wrapf(types.ErrRequestNotFound, "id: %d", rid)
+	}
 	if !k.HasDataSource(ctx, did) {
 		return sdkerrors.Wrapf(types.ErrDataSourceNotFound, "id: %d", did)
 	}

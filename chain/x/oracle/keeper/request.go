@@ -6,29 +6,39 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// SetRequest saves the given data request to the store without performing any validation.
-func (k Keeper) SetRequest(ctx sdk.Context, id types.RequestID, request types.Request) {
-	store := ctx.KVStore(k.storeKey)
-	store.Set(types.RequestStoreKey(id), k.cdc.MustMarshalBinaryBare(request))
+// HasRequest checks if the request of this ID exists in the storage.
+func (k Keeper) HasRequest(ctx sdk.Context, id types.RID) bool {
+	return ctx.KVStore(k.storeKey).Has(types.RequestStoreKey(id))
 }
 
-// GetRequest returns the entire Request metadata struct from the store.
+// GetRequest returns the request struct for the given ID or error if not exists.
 func (k Keeper) GetRequest(ctx sdk.Context, id types.RequestID) (types.Request, error) {
-	store := ctx.KVStore(k.storeKey)
-	if !k.CheckRequestExists(ctx, id) {
-		return types.Request{}, sdkerrors.Wrapf(types.ErrItemNotFound, "GetRequest: Unknown request ID %d.", id)
+	bz := ctx.KVStore(k.storeKey).Get(types.RequestStoreKey(id))
+	if bz == nil {
+		return types.Request{}, sdkerrors.Wrapf(types.ErrRequestNotFound, "id: %d", id)
 	}
-
-	bz := store.Get(types.RequestStoreKey(id))
 	var request types.Request
 	k.cdc.MustUnmarshalBinaryBare(bz, &request)
 	return request, nil
 }
 
+// MustGetRequest returns the request struct for the given ID. Panics error if not exists.
+func (k Keeper) MustGetRequest(ctx sdk.Context, id types.RequestID) types.Request {
+	request, err := k.GetRequest(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return request
+}
+
+// SetRequest saves the given data request to the store without performing any validation.
+func (k Keeper) SetRequest(ctx sdk.Context, id types.RequestID, request types.Request) {
+	ctx.KVStore(k.storeKey).Set(types.RequestStoreKey(id), k.cdc.MustMarshalBinaryBare(request))
+}
+
 // DeleteRequest removes the given data request from the store.
 func (k Keeper) DeleteRequest(ctx sdk.Context, id types.RequestID) {
-	store := ctx.KVStore(k.storeKey)
-	store.Delete(types.RequestStoreKey(id))
+	ctx.KVStore(k.storeKey).Delete(types.RequestStoreKey(id))
 }
 
 // AddRequest attempts to create and save a new request. Returns error some conditions failed.
