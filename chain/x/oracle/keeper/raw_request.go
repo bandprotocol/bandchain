@@ -13,8 +13,8 @@ func (k Keeper) HasRawRequest(ctx sdk.Context, rid types.RID, eid types.EID) boo
 
 // SetRawRequest saves the raw request to the storage without performing validation.
 func (k Keeper) SetRawRequest(ctx sdk.Context, rid types.RID, data types.RawRequest) {
-	bz := k.cdc.MustMarshalBinaryBare(data)
-	ctx.KVStore(k.storeKey).Set(types.RawRequestStoreKey(rid, data.ExternalID), bz)
+	key := types.RawRequestStoreKey(rid, data.ExternalID)
+	ctx.KVStore(k.storeKey).Set(key, k.cdc.MustMarshalBinaryBare(data))
 }
 
 // AddRawRequest performs all sanity checks and adds a new raw request to the store.

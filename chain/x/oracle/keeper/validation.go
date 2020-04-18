@@ -7,6 +7,16 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
+// ContainsVal returns whether the given slice of validators contains the target validator.
+func ContainsVal(vals []sdk.ValAddress, target sdk.ValAddress) bool {
+	for _, val := range vals {
+		if val.Equals(target) {
+			return true
+		}
+	}
+	return false
+}
+
 // AnyError returns the first error found in the given error list, or nil if none exists.
 func AnyError(errs ...error) error {
 	for _, err := range errs {

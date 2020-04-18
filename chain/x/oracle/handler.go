@@ -188,7 +188,15 @@ func handleMsgRequestData(ctx sdk.Context, k Keeper, msg MsgRequestData, ibcData
 }
 
 func handleMsgReportData(ctx sdk.Context, k Keeper, msg MsgReportData) (*sdk.Result, error) {
-	err := k.AddReport(ctx, msg.RequestID, msg.DataSet, msg.Validator, msg.Reporter)
+
+	if !k.IsReporter(ctx, msg.Validator, msg.Reporter) {
+		return nil, sdkerrors.Wrapf(types.ErrUnauthorizedPermission,
+			"AddReport: Request ID %d: %s is not an authorized reporter of %s.",
+			msg.RequestID, msg.Reporter.String(), msg.Validator.String(),
+		)
+	}
+
+	err := k.AddBatchReport(ctx, msg.RequestID, types.NewBatchReport(msg.DataSet, msg.Validator))
 	if err != nil {
 		return nil, err
 	}

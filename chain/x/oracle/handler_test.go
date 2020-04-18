@@ -484,8 +484,8 @@ func TestReportFailed(t *testing.T) {
 
 // 	handleMsgRequestData(ctx, keeper, msg)
 
-// 	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress1, types.NewRawDataReport(0, []byte("answer1")))
-// 	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress2, types.NewRawDataReport(0, []byte("answer2")))
+// 	keeper.SetReport(ctx, 1, 1, validatorAddress1, types.NewRawDataReport(0, []byte("answer1")))
+// 	keeper.SetReport(ctx, 1, 1, validatorAddress2, types.NewRawDataReport(0, []byte("answer2")))
 
 // 	keeper.SetPendingResolveList(ctx, []types.RequestID{1})
 

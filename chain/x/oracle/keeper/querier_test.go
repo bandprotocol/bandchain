@@ -184,11 +184,11 @@ package keeper
 // 	keeper.SetRawRequest(ctx, 1, 1, types.NewRawDataRequest(0, []byte("calldata1")))
 // 	keeper.SetRawRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata2")))
 
-// 	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[0], types.NewRawDataReport(0, []byte("report1")))
-// 	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[0], types.NewRawDataReport(0, []byte("report2")))
+// 	keeper.SetReport(ctx, 1, 1, request.RequestedValidators[0], types.NewRawDataReport(0, []byte("report1")))
+// 	keeper.SetReport(ctx, 1, 2, request.RequestedValidators[0], types.NewRawDataReport(0, []byte("report2")))
 
-// 	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[1], types.NewRawDataReport(0, []byte("report1-2")))
-// 	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[1], types.NewRawDataReport(0, []byte("report2-2")))
+// 	keeper.SetReport(ctx, 1, 1, request.RequestedValidators[1], types.NewRawDataReport(0, []byte("report1-2")))
+// 	keeper.SetReport(ctx, 1, 2, request.RequestedValidators[1], types.NewRawDataReport(0, []byte("report2-2")))
 
 // 	data, _ := hex.DecodeString("0000000000002710")
 // 	keeper.SetResult(ctx, 1, request.OracleScriptID, request.Calldata, types.NewResult(1, 2, 3, 2, 2, data))
@@ -262,8 +262,8 @@ package keeper
 // 	keeper.SetRawRequest(ctx, 1, 1, types.NewRawDataRequest(0, []byte("calldata1")))
 // 	keeper.SetRawRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata2")))
 
-// 	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[1], types.NewRawDataReport(0, []byte("report1-2")))
-// 	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[1], types.NewRawDataReport(0, []byte("report2-2")))
+// 	keeper.SetReport(ctx, 1, 1, request.RequestedValidators[1], types.NewRawDataReport(0, []byte("report1-2")))
+// 	keeper.SetReport(ctx, 1, 2, request.RequestedValidators[1], types.NewRawDataReport(0, []byte("report2-2")))
 
 // 	// create query
 // 	acsBytes, err := querier(
@@ -324,11 +324,11 @@ package keeper
 // 	keeper.SetRawRequest(ctx, 1, 1, types.NewRawDataRequest(0, []byte("calldata1")))
 // 	keeper.SetRawRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata2")))
 
-// 	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[0], types.NewRawDataReport(0, []byte("report1")))
-// 	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[0], types.NewRawDataReport(0, []byte("report2")))
+// 	keeper.SetReport(ctx, 1, 1, request.RequestedValidators[0], types.NewRawDataReport(0, []byte("report1")))
+// 	keeper.SetReport(ctx, 1, 2, request.RequestedValidators[0], types.NewRawDataReport(0, []byte("report2")))
 
-// 	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[1], types.NewRawDataReport(0, []byte("report1-2")))
-// 	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[1], types.NewRawDataReport(0, []byte("report2-2")))
+// 	keeper.SetReport(ctx, 1, 1, request.RequestedValidators[1], types.NewRawDataReport(0, []byte("report1-2")))
+// 	keeper.SetReport(ctx, 1, 2, request.RequestedValidators[1], types.NewRawDataReport(0, []byte("report2-2")))
 
 // 	data, _ := hex.DecodeString("0000000000002710")
 // 	result := types.Result{
