@@ -20,6 +20,17 @@ func addBasicDataSource(ctx sdk.Context, k me.Keeper) types.DID {
 	return id
 }
 
+func TestHasDataSource(t *testing.T) {
+	_, ctx, k := createTestInput()
+	// We should not have a data source ID 42 without setting it.
+	require.False(t, k.HasDataSource(ctx, 42))
+	// After we set it, we should be able to find it.
+	k.SetDataSource(ctx, 42, types.NewDataSource(
+		Owner.Address, BasicName, BasicDesc, Coins10uband, BasicExec,
+	))
+	require.True(t, k.HasDataSource(ctx, 42))
+}
+
 func TestSetterGetterDataSource(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// Getting a non-existent data source should return error.

@@ -152,7 +152,7 @@ func (k Keeper) ProcessExpiredRequests(ctx sdk.Context) {
 // ValidateDataSourceCount returns whether the number of raw data requests exceeds the maximum
 // allowed value, as specified by `MaxDataSourceCountPerRequest` parameter.
 func (k Keeper) ValidateDataSourceCount(ctx sdk.Context, id types.RequestID) error {
-	dataSourceCount := k.GetRawDataRequestCount(ctx, id)
+	dataSourceCount := k.GetRawRequestCount(ctx, id)
 	if uint64(dataSourceCount) > k.GetParam(ctx, types.KeyMaxDataSourceCountPerRequest) {
 		return sdkerrors.Wrapf(types.ErrBadDataValue,
 			"ValidateDataSourceCount: Data source count (%d) exceeds the limit (%d).",

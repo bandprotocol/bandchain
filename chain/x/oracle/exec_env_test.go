@@ -187,7 +187,7 @@ func TestRequestExternalData(t *testing.T) {
 	err = env.SaveRawDataRequests(ctx, keeper)
 	require.Nil(t, err)
 
-	rawRequest, err := keeper.GetRawDataRequest(ctx, 1, 42)
+	rawRequest, err := keeper.GetRawRequest(ctx, 1, 42)
 	require.Nil(t, err)
 	require.Equal(t, types.NewRawDataRequest(1, []byte("prepare32")), rawRequest)
 }

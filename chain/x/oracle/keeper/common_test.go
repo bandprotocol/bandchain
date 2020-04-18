@@ -34,9 +34,10 @@ var Coins20uband = sdk.NewCoins(sdk.NewInt64Coin("uband", 20))
 var BasicName = "BASIC_NAME"
 var BasicDesc = "BASIC_DESCRIPTION"
 var BasicCode = []byte("BASIC_WASM_CODE")
-var BasicSchema = `{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }`
-var BasicSourceCodeURL = "https://bandprotocol.com"
+var BasicSchema = "BASIC_SCHEMA"
+var BasicSourceCodeURL = "BASIC_SOURCE_CODE_URL"
 var BasicExec = []byte("BASIC_EXECUTABLE")
+var BasicCalldata = []byte("BASIC_CALLDATA")
 
 func init() {
 	r := rand.New(rand.NewSource(time.Now().Unix()))

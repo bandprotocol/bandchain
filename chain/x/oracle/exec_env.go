@@ -40,7 +40,7 @@ func NewExecutionEnvironment(
 
 func (env *ExecutionEnvironment) SaveRawDataRequests(ctx sdk.Context, keeper Keeper) error {
 	for _, r := range env.rawDataRequests {
-		err := keeper.AddNewRawDataRequest(
+		err := keeper.AddRawRequest(
 			ctx, env.requestID, r.ExternalID,
 			r.RawDataRequest.DataSourceID, r.RawDataRequest.Calldata,
 		)

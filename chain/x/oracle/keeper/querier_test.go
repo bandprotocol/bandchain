@@ -181,8 +181,8 @@ package keeper
 // 	request := newDefaultRequest()
 // 	keeper.SetRequest(ctx, 1, request)
 
-// 	keeper.SetRawDataRequest(ctx, 1, 1, types.NewRawDataRequest(0, []byte("calldata1")))
-// 	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata2")))
+// 	keeper.SetRawRequest(ctx, 1, 1, types.NewRawDataRequest(0, []byte("calldata1")))
+// 	keeper.SetRawRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata2")))
 
 // 	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[0], types.NewRawDataReport(0, []byte("report1")))
 // 	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[0], types.NewRawDataReport(0, []byte("report2")))
@@ -259,8 +259,8 @@ package keeper
 // 	request := newDefaultRequest()
 // 	keeper.SetRequest(ctx, 1, request)
 
-// 	keeper.SetRawDataRequest(ctx, 1, 1, types.NewRawDataRequest(0, []byte("calldata1")))
-// 	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata2")))
+// 	keeper.SetRawRequest(ctx, 1, 1, types.NewRawDataRequest(0, []byte("calldata1")))
+// 	keeper.SetRawRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata2")))
 
 // 	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[1], types.NewRawDataReport(0, []byte("report1-2")))
 // 	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[1], types.NewRawDataReport(0, []byte("report2-2")))
@@ -321,8 +321,8 @@ package keeper
 // 	request := newDefaultRequest()
 // 	keeper.SetRequest(ctx, 1, request)
 
-// 	keeper.SetRawDataRequest(ctx, 1, 1, types.NewRawDataRequest(0, []byte("calldata1")))
-// 	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata2")))
+// 	keeper.SetRawRequest(ctx, 1, 1, types.NewRawDataRequest(0, []byte("calldata1")))
+// 	keeper.SetRawRequest(ctx, 1, 2, types.NewRawDataRequest(1, []byte("calldata2")))
 
 // 	keeper.SetRawDataReport(ctx, 1, 1, request.RequestedValidators[0], types.NewRawDataReport(0, []byte("report1")))
 // 	keeper.SetRawDataReport(ctx, 1, 2, request.RequestedValidators[0], types.NewRawDataReport(0, []byte("report2")))
@@ -345,7 +345,7 @@ package keeper
 // 	// request 2
 // 	keeper.SetRequest(ctx, 2, request)
 
-// 	keeper.SetRawDataRequest(ctx, 2, 100, types.NewRawDataRequest(1, []byte("only calldata")))
+// 	keeper.SetRawRequest(ctx, 2, 100, types.NewRawDataRequest(1, []byte("only calldata")))
 // 	keeper.GetNextRequestID(ctx)
 
 // 	// create query

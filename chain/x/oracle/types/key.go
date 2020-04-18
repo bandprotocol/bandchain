@@ -40,8 +40,8 @@ var (
 	// ResultStoreKeyPrefix is a prefix for storing result
 	ResultStoreKeyPrefix = []byte{0xff}
 
-	// RawDataRequestStoreKeyPrefix is a prefix for storing raw data request detail.
-	RawDataRequestStoreKeyPrefix = []byte{0x02}
+	// RawRequestStoreKeyPrefix is a prefix for storing raw data request detail.
+	RawRequestStoreKeyPrefix = []byte{0x02}
 
 	// RawDataReportStoreKeyPrefix is a prefix for report store
 	RawDataReportStoreKeyPrefix = []byte{0x03}
@@ -69,9 +69,9 @@ func ResultStoreKey(requestID RequestID, oracleScriptID OracleScriptID, calldata
 	return buf
 }
 
-// RawDataRequestStoreKey is a function to generate key for each raw data request in store
-func RawDataRequestStoreKey(requestID RequestID, externalID ExternalID) []byte {
-	buf := append(RawDataRequestStoreKeyPrefix, int64ToBytes(int64(requestID))...)
+// RawRequestStoreKey is a function to generate key for each raw data request in store
+func RawRequestStoreKey(requestID RequestID, externalID ExternalID) []byte {
+	buf := append(RawRequestStoreKeyPrefix, int64ToBytes(int64(requestID))...)
 	buf = append(buf, int64ToBytes(int64(externalID))...)
 	return buf
 }
@@ -108,7 +108,7 @@ func GetIteratorPrefix(prefix []byte, requestID RequestID) []byte {
 
 // GetExternalIDFromRawDataRequestKey is a function to get external id from raw data request key.
 func GetExternalIDFromRawDataRequestKey(key []byte) ExternalID {
-	prefixLength := len(RawDataRequestStoreKeyPrefix)
+	prefixLength := len(RawRequestStoreKeyPrefix)
 	externalIDBytes := key[prefixLength+8 : prefixLength+16]
 	return ExternalID(binary.BigEndian.Uint64(externalIDBytes))
 }

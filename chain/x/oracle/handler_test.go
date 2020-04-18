@@ -235,7 +235,7 @@ func TestRequestSuccess(t *testing.T) {
 	)
 	require.Equal(t, expectRequest, actualRequest)
 
-	require.Equal(t, int64(2), keeper.GetRawDataRequestCount(ctx, 1))
+	require.Equal(t, int64(2), keeper.GetRawRequestCount(ctx, 1))
 
 	// rawRequests := []types.RawDataRequest{
 	// 	types.NewRawDataRequest(1, []byte("band-protocol")), types.NewRawDataRequest(2, []byte("band-chain")),
@@ -387,7 +387,7 @@ func TestReportSuccess(t *testing.T) {
 		2, 1581589790, 102, "clientID",
 	)
 	keeper.SetRequest(ctx, 1, request)
-	keeper.SetRawDataRequest(ctx, 1, 42, types.NewRawDataRequest(1, []byte("calldata1")))
+	keeper.SetRawRequest(ctx, 1, 42, types.NewRawDataRequest(1, []byte("calldata1")))
 
 	ctx = ctx.WithBlockHeight(5)
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589800), 0))
@@ -444,7 +444,7 @@ func TestReportFailed(t *testing.T) {
 		2, 1581589790, 102, "clientID",
 	)
 	keeper.SetRequest(ctx, 1, request)
-	keeper.SetRawDataRequest(ctx, 1, 42, types.NewRawDataRequest(1, []byte("calldata1")))
+	keeper.SetRawRequest(ctx, 1, 42, types.NewRawDataRequest(1, []byte("calldata1")))
 
 	ctx = ctx.WithBlockHeight(5)
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589800), 0))
@@ -551,7 +551,7 @@ func TestAddAndRemoveOracleAddress(t *testing.T) {
 		2, 1581589790, 102, "clientID",
 	)
 	keeper.SetRequest(ctx, 1, request)
-	keeper.SetRawDataRequest(ctx, 1, 42, types.NewRawDataRequest(1, []byte("calldata1")))
+	keeper.SetRawRequest(ctx, 1, 42, types.NewRawDataRequest(1, []byte("calldata1")))
 
 	ctx = ctx.WithBlockHeight(5)
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589800), 0))

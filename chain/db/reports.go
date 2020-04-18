@@ -22,7 +22,7 @@ func (b *BandDB) handleMsgReportData(
 	}
 
 	for _, data := range msg.DataSet {
-		rawDataRequest, errSdk := b.OracleKeeper.GetRawDataRequest(
+		rawDataRequest, errSdk := b.OracleKeeper.GetRawRequest(
 			b.ctx, msg.RequestID, data.ExternalDataID,
 		)
 		if errSdk != nil {

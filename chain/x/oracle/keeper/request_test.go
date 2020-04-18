@@ -193,20 +193,20 @@ func TestValidateDataSourceCount(t *testing.T) {
 	request := newDefaultRequest()
 	keeper.SetRequest(ctx, 1, request)
 
-	keeper.SetRawDataRequest(ctx, 1, 101, types.NewRawDataRequest(0, []byte("calldata1")))
+	keeper.SetRawRequest(ctx, 1, 101, types.NewRawDataRequest(0, []byte("calldata1")))
 	err := keeper.ValidateDataSourceCount(ctx, 1)
 	require.Nil(t, err)
 
-	keeper.SetRawDataRequest(ctx, 1, 102, types.NewRawDataRequest(0, []byte("calldata2")))
+	keeper.SetRawRequest(ctx, 1, 102, types.NewRawDataRequest(0, []byte("calldata2")))
 	err = keeper.ValidateDataSourceCount(ctx, 1)
 	require.Nil(t, err)
 
-	keeper.SetRawDataRequest(ctx, 1, 103, types.NewRawDataRequest(0, []byte("calldata3")))
+	keeper.SetRawRequest(ctx, 1, 103, types.NewRawDataRequest(0, []byte("calldata3")))
 	err = keeper.ValidateDataSourceCount(ctx, 1)
 	require.Nil(t, err)
 
 	// Validation of "104" will return an error because MaxDataSourceCountPerRequest was set to 3.
-	keeper.SetRawDataRequest(ctx, 1, 104, types.NewRawDataRequest(0, []byte("calldata4")))
+	keeper.SetRawRequest(ctx, 1, 104, types.NewRawDataRequest(0, []byte("calldata4")))
 	err = keeper.ValidateDataSourceCount(ctx, 1)
 	require.NotNil(t, err)
 }
@@ -242,8 +242,8 @@ func TestPayDataSourceFees(t *testing.T) {
 	request := newDefaultRequest()
 	keeper.SetRequest(ctx, 1, request)
 
-	keeper.SetRawDataRequest(ctx, 1, 1, types.NewRawDataRequest(1, []byte("calldata")))
-	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(2, []byte("calldata")))
+	keeper.SetRawRequest(ctx, 1, 1, types.NewRawDataRequest(1, []byte("calldata")))
+	keeper.SetRawRequest(ctx, 1, 2, types.NewRawDataRequest(2, []byte("calldata")))
 
 	err = keeper.PayDataSourceFees(ctx, 1, sender)
 	require.Nil(t, err)
