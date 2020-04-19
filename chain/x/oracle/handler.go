@@ -124,18 +124,18 @@ func handleMsgEditOracleScript(ctx sdk.Context, k Keeper, msg MsgEditOracleScrip
 }
 
 func handleMsgRequestData(ctx sdk.Context, k Keeper, msg MsgRequestData, ibcData ...string) (*sdk.Result, error) {
-
 	validators, err := k.GetRandomValidators(ctx, int(msg.RequestedValidatorCount))
 	if err != nil {
 		return nil, err
 	}
-	// req.RequestedValidators = validators
-	expirationHeight := ctx.BlockHeight() + int64(k.GetParam(ctx, types.KeyExpirationBlockCount))
-
 	id, err := k.AddRequest(ctx, types.NewRequest(
 		msg.OracleScriptID, msg.Calldata, validators, msg.SufficientValidatorCount,
-		ctx.BlockHeight(), ctx.BlockTime().Unix(), expirationHeight, msg.ClientID,
+		ctx.BlockHeight(), ctx.BlockTime().Unix(),
+		ctx.BlockHeight()+int64(k.GetParam(ctx, types.KeyExpirationBlockCount)), msg.ClientID,
 	))
+	if err != nil {
+		return nil, err
+	}
 
 	// TODO: HACK AREA!
 	if len(ibcData) == 2 {
@@ -146,14 +146,7 @@ func handleMsgRequestData(ctx sdk.Context, k Keeper, msg MsgRequestData, ibcData
 	}
 	// END HACK AREA!
 
-	if err != nil {
-		return nil, err
-	}
-
-	env, err := NewExecutionEnvironment(ctx, k, id, true, 0)
-	if err != nil {
-		return nil, err
-	}
+	env := NewExecutionEnvironment(ctx, k, id, true, 0)
 
 	script := k.MustGetOracleScript(ctx, msg.OracleScriptID)
 

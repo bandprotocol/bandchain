@@ -25,7 +25,7 @@ type ExecutionEnvironment struct {
 
 func NewExecutionEnvironment(
 	ctx sdk.Context, keeper Keeper, requestID types.RequestID, isPrepare bool, receivedCount int64,
-) (ExecutionEnvironment, error) {
+) ExecutionEnvironment {
 	return ExecutionEnvironment{
 		isPrepare:              isPrepare,
 		receivedCount:          receivedCount,
@@ -37,7 +37,7 @@ func NewExecutionEnvironment(
 		maxRawDataRequestCount: int64(keeper.GetParam(ctx, KeyMaxDataSourceCountPerRequest)),
 		rawDataRequests:        []types.RawRequest{},
 		rawDataReports:         make(map[string]types.RawDataReport),
-	}, nil
+	}
 }
 
 func (env *ExecutionEnvironment) SaveRawDataRequests(ctx sdk.Context, keeper Keeper) error {
