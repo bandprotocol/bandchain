@@ -6,6 +6,7 @@ const (
 	EventTypeEditDataSource      = "edit_data_source"
 	EventTypeCreateOracleScript  = "create_oracle_script"
 	EventTypeEditOracleScript    = "edit_oracle_script"
+	EventTypeRawRequest          = "raw_request"
 	EventTypeRequest             = "request"
 	EventTypeReport              = "report"
 	EventTypeAddOracleAddress    = "add_oracle_address"
@@ -14,6 +15,9 @@ const (
 
 	AttributeKeyID               = "id"
 	AttributeKeyRequestID        = "request_id"
+	AttributeKeyDataSourceID     = "data_source_id"
+	AttributeKeyExternalID       = "external_id"
+	AttributeKeyCalldata         = "calldata"
 	AttributeKeyValidator        = "validator"
 	AttributeKeyReporter         = "reporter"
 	AttributeKeyResolveStatus    = "resolve_status"

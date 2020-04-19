@@ -1,51 +1,36 @@
 package oracle
 
 import (
-	"github.com/bandprotocol/bandchain/chain/owasm"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // resolveRequest resolves the given request, sends response packet out (if applicable),
 // and saves result hash to the store. Assumes that the given request is in a resolvable state.
-func resolveRequest(ctx sdk.Context, keeper Keeper, reqID types.RequestID) {
-	request, err := keeper.GetRequest(ctx, reqID)
-	if err != nil {
-		panic(err)
-	}
-	env, err := NewExecutionEnvironment(ctx, keeper, reqID)
-	if err != nil {
-		panic(err)
-	}
-	err = env.LoadRawDataReports(ctx, keeper)
-	if err != nil {
-		panic(err)
-	}
-	script, err := keeper.GetOracleScript(ctx, request.OracleScriptID)
-	if err != nil {
-		panic(err)
-	}
-
-	executeGas := keeper.GetParam(ctx, KeyExecuteGas)
-	result, _, err := owasm.Execute(&env, script.Code, "execute", request.Calldata, executeGas)
-
+func resolveRequest(ctx sdk.Context, k Keeper, reqID types.RequestID) {
+	req := k.MustGetRequest(ctx, reqID)
+	env := NewExecEnv(ctx, k, req)
+	env.SetReports(k.GetReports(ctx, reqID))
+	script := k.MustGetOracleScript(ctx, req.OracleScriptID)
+	executeGas := k.GetParam(ctx, KeyExecuteGas)
+	result, _, err := k.OwasmExecute(env, script.Code, "execute", req.Calldata, executeGas)
 	var resolveStatus types.ResolveStatus
 	if err != nil {
 		resolveStatus = types.Failure
 	} else {
 		resolveStatus = types.Success
 	}
-	keeper.ProcessOracleResponse(ctx, reqID, resolveStatus, result)
+	k.ProcessOracleResponse(ctx, reqID, resolveStatus, result)
 }
 
 // handleEndBlock cleans up the state during end block. See comment in the implementation!
-func handleEndBlock(ctx sdk.Context, keeper Keeper) {
+func handleEndBlock(ctx sdk.Context, k Keeper) {
 	// Loops through all requests in the resolvable list to resolve all of them!
-	for _, reqID := range keeper.GetPendingResolveList(ctx) {
-		resolveRequest(ctx, keeper, reqID)
+	for _, reqID := range k.GetPendingResolveList(ctx) {
+		resolveRequest(ctx, k, reqID)
 	}
 	// Once all the requests are resolved, we can clear the list.
-	keeper.SetPendingResolveList(ctx, []types.RequestID{})
+	k.SetPendingResolveList(ctx, []types.RequestID{})
 	// Lastly, we clean up old data requests from the primary storage.
-	keeper.ProcessExpiredRequests(ctx)
+	k.ProcessExpiredRequests(ctx)
 }

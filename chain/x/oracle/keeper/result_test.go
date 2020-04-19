@@ -1,5 +1,14 @@
 package keeper
 
+// import (
+// 	"testing"
+// 	"time"
+
+// 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+// 	sdk "github.com/cosmos/cosmos-sdk/types"
+// 	"github.com/stretchr/testify/require"
+// )
+
 // func TestGetterSetterResult(t *testing.T) {
 // 	ctx, keeper := CreateTestInput(t, false)
 
@@ -26,7 +35,7 @@ package keeper
 // 	require.NotNil(t, err)
 
 // 	keeper.SetRequest(ctx, 1, types.NewRequest(
-// 		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))}, 1, 0, 0, 100, "clientID",
+// 		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))}, 1, 0, 0, "clientID",
 // 	))
 
 // 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589999), 0))

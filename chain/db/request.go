@@ -88,18 +88,18 @@ func (b *BandDB) AddNewRequest(
 		}
 	}
 
-	for _, raw := range b.OracleKeeper.GetRawDataRequestWithExternalIDs(b.ctx, oracle.RequestID(id)) {
+	for _, raw := range b.OracleKeeper.GetRawRequests(b.ctx, oracle.RequestID(id)) {
 		err := b.AddRawDataRequest(
 			id,
 			int64(raw.ExternalID),
-			int64(raw.RawDataRequest.DataSourceID),
-			raw.RawDataRequest.Calldata,
+			int64(raw.DataSourceID),
+			raw.Calldata,
 		)
 		if err != nil {
 			return err
 		}
 		err = b.tx.FirstOrCreate(&RelatedDataSources{
-			DataSourceID:   int64(raw.RawDataRequest.DataSourceID),
+			DataSourceID:   int64(raw.DataSourceID),
 			OracleScriptID: int64(oracleScriptID),
 		}).Error
 		if err != nil {
@@ -180,7 +180,7 @@ func (b *BandDB) handleMsgRequestData(
 		int64(msg.OracleScriptID),
 		msg.Calldata,
 		msg.SufficientValidatorCount,
-		request.ExpirationHeight,
+		request.RequestHeight+20, // TODO: REMOVE THIS. HACK!!!
 		"Pending",
 		msg.Sender.String(),
 		msg.ClientID,

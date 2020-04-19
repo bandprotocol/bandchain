@@ -7,24 +7,23 @@ import (
 )
 
 type ReportDetail struct {
-	Reporter sdk.ValAddress              `json:"reporter"`
-	Value    []types.RawDataReportWithID `json:"value"`
-	Tx       TxDetail                    `json:"tx,omitempty"`
+	Reporter sdk.ValAddress    `json:"reporter"`
+	Value    []types.RawReport `json:"value"`
+	Tx       TxDetail          `json:"tx,omitempty"`
 }
 
 type RequestRESTInfo struct {
-	ID                       types.RequestID                      `json:"id"`
-	OracleScriptID           types.OracleScriptID                 `json:"oracleScriptID"`
-	Calldata                 []byte                               `json:"calldata"`
-	RequestedValidators      []sdk.ValAddress                     `json:"requestedValidators"`
-	SufficientValidatorCount int64                                `json:"sufficientValidatorCount"`
-	ExpirationHeight         int64                                `json:"expirationHeight"`
-	ResolveStatus            types.ResolveStatus                  `json:"resolveStatus"`
-	Requester                sdk.AccAddress                       `json:"requester"`
-	RequestTx                TxDetail                             `json:"requestTx,omitempty"`
-	RawDataRequests          []types.RawDataRequestWithExternalID `json:"rawDataRequests"`
-	Reports                  []ReportDetail                       `json:"reports"`
-	Result                   []byte                               `json:"result"`
+	ID                       types.RequestID      `json:"id"`
+	OracleScriptID           types.OracleScriptID `json:"oracleScriptID"`
+	Calldata                 []byte               `json:"calldata"`
+	RequestedValidators      []sdk.ValAddress     `json:"requestedValidators"`
+	SufficientValidatorCount int64                `json:"sufficientValidatorCount"`
+	ResolveStatus            types.ResolveStatus  `json:"resolveStatus"`
+	Requester                sdk.AccAddress       `json:"requester"`
+	RequestTx                TxDetail             `json:"requestTx,omitempty"`
+	RawDataRequests          []types.RawRequest   `json:"rawDataRequests"`
+	Reports                  []ReportDetail       `json:"reports"`
+	Result                   []byte               `json:"result"`
 }
 
 type TxDetail struct {
