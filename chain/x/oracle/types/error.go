@@ -30,4 +30,7 @@ var (
 
 	ErrReporterNotAuthorized = sdkerrors.Register(ModuleName, 50, "reporter not authorized")
 	ErrEditorNotAuthorized   = sdkerrors.Register(ModuleName, 51, "editor not authorized")
+
+	ErrValidatorOutOfRange = sdkerrors.Register(ModuleName, 60, "validator out of range")
+	ErrTooManyRawRequests  = sdkerrors.Register(ModuleName, 61, "too many raw requests")
 )
