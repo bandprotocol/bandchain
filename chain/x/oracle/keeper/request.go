@@ -148,14 +148,6 @@ func (k Keeper) ProcessExpiredRequests(ctx sdk.Context) {
 	k.SetRequestBeginID(ctx, currentReqID)
 }
 
-// ShouldBecomePendingResolve checks and returns whether the given request should be moved to the
-// pending resolve list, which will be resolved during the EndBlock call. The move will happen
-// exactly once will the request receives sufficient raw reports from the validators.
-func (k Keeper) ShouldBecomePendingResolve(ctx sdk.Context, id types.RequestID) bool {
-	request := k.MustGetRequest(ctx, id)
-	return k.GetReportCount(ctx, id) == request.SufficientValidatorCount
-}
-
 // AddPendingRequest adds the request to the pending list. DO NOT add same request more than once.
 func (k Keeper) AddPendingRequest(ctx sdk.Context, requestID types.RequestID) {
 	pendingList := k.GetPendingResolveList(ctx)

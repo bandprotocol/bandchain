@@ -186,7 +186,10 @@ func handleMsgReportData(ctx sdk.Context, k Keeper, m MsgReportData) (*sdk.Resul
 	if err != nil {
 		return nil, err
 	}
-	if k.ShouldBecomePendingResolve(ctx, m.RequestID) {
+	req := k.MustGetRequest(ctx, m.RequestID)
+	if k.GetReportCount(ctx, m.RequestID) == req.SufficientValidatorCount {
+		// At the exact moment when the number of reports is sufficient, we add the request to
+		// the pending resolve list. This can happen at most one time for any request.
 		k.AddPendingRequest(ctx, m.RequestID)
 	}
 	ctx.EventManager().EmitEvents(sdk.Events{sdk.NewEvent(
