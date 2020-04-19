@@ -165,23 +165,19 @@ func (k Keeper) AddPendingRequest(ctx sdk.Context, requestID types.RequestID) {
 
 // SetPendingResolveList saves the list of pending request that will be resolved at end block.
 func (k Keeper) SetPendingResolveList(ctx sdk.Context, reqIDs []types.RequestID) {
-	store := ctx.KVStore(k.storeKey)
-	encoded := k.cdc.MustMarshalBinaryBare(reqIDs)
-	if encoded == nil {
-		encoded = []byte{}
+	bz := k.cdc.MustMarshalBinaryBare(reqIDs)
+	if bz == nil {
+		bz = []byte{}
 	}
-	store.Set(types.PendingResolveListStoreKey, encoded)
+	ctx.KVStore(k.storeKey).Set(types.PendingResolveListStoreKey, bz)
 }
 
 // GetPendingResolveList returns the list of pending requests to be executed during EndBlock.
-func (k Keeper) GetPendingResolveList(ctx sdk.Context) []types.RequestID {
-	store := ctx.KVStore(k.storeKey)
-	reqIDsBytes := store.Get(types.PendingResolveListStoreKey)
-	if len(reqIDsBytes) == 0 {
-		// Return an empty list if the key does not exist in the store.
+func (k Keeper) GetPendingResolveList(ctx sdk.Context) (reqIDs []types.RequestID) {
+	bz := ctx.KVStore(k.storeKey).Get(types.PendingResolveListStoreKey)
+	if len(bz) == 0 { // Return an empty list if the key does not exist in the store.
 		return []types.RequestID{}
 	}
-	var reqIDs []types.RequestID
-	k.cdc.MustUnmarshalBinaryBare(reqIDsBytes, &reqIDs)
+	k.cdc.MustUnmarshalBinaryBare(bz, &reqIDs)
 	return reqIDs
 }

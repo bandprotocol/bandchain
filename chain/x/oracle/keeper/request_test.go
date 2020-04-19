@@ -1,4 +1,40 @@
-package keeper
+package keeper_test
+
+import (
+	"testing"
+
+	// sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/require"
+
+	// me "github.com/bandprotocol/bandchain/chain/x/oracle/keeper"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+)
+
+func TestSetterGettterPendingResolveList(t *testing.T) {
+	_, ctx, k := createTestInput()
+	// Initially, we should get an empty list of pending resolves.
+	require.Equal(t, k.GetPendingResolveList(ctx), []types.RID{})
+	// After we set something, we should get that thing back.
+	k.SetPendingResolveList(ctx, []types.RID{5, 6, 7, 8})
+	require.Equal(t, k.GetPendingResolveList(ctx), []types.RID{5, 6, 7, 8})
+	// Let's also try setting it back to empty list.
+	k.SetPendingResolveList(ctx, []types.RID{})
+	require.Equal(t, k.GetPendingResolveList(ctx), []types.RID{})
+	// Nil should also works.
+	k.SetPendingResolveList(ctx, nil)
+	require.Equal(t, k.GetPendingResolveList(ctx), []types.RID{})
+}
+
+func TestAddPendingResolveList(t *testing.T) {
+	_, ctx, k := createTestInput()
+	// Initially, we should get an empty list of pending resolves.
+	require.Equal(t, k.GetPendingResolveList(ctx), []types.RID{})
+	// Everytime we append a new request ID, it should show up.
+	k.AddPendingRequest(ctx, 42)
+	require.Equal(t, k.GetPendingResolveList(ctx), []types.RID{42})
+	k.AddPendingRequest(ctx, 43)
+	require.Equal(t, k.GetPendingResolveList(ctx), []types.RID{42, 43})
+}
 
 // import (
 // 	"testing"

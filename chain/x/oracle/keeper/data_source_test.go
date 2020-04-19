@@ -3,22 +3,10 @@ package keeper_test
 import (
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	me "github.com/bandprotocol/bandchain/chain/x/oracle/keeper"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
-
-func addBasicDataSource(ctx sdk.Context, k me.Keeper) types.DID {
-	id, err := k.AddDataSource(ctx, types.NewDataSource(
-		Owner.Address, BasicName, BasicDesc, Coins10uband, BasicExec,
-	))
-	if err != nil {
-		panic(err)
-	}
-	return id
-}
 
 func TestHasDataSource(t *testing.T) {
 	_, ctx, k := createTestInput()
@@ -138,11 +126,14 @@ func TestAddDataSourceTooLongName(t *testing.T) {
 
 func TestEditDataSourceTooLongName(t *testing.T) {
 	_, ctx, k := createTestInput()
-	id := addBasicDataSource(ctx, k)
+	id, err := k.AddDataSource(ctx, types.NewDataSource(
+		Owner.Address, BasicName, BasicDesc, Coins10uband, BasicExec,
+	))
+	require.Nil(t, err)
 	dataSource := k.MustGetDataSource(ctx, id)
 	// Sets max name length to 9. We should fail to edit data source with name length 10.
 	k.SetParam(ctx, types.KeyMaxNameLength, 9)
-	err := k.EditDataSource(ctx, id, types.NewDataSource(
+	err = k.EditDataSource(ctx, id, types.NewDataSource(
 		dataSource.Owner, "0123456789", dataSource.Description,
 		dataSource.Fee, dataSource.Executable,
 	))
@@ -176,11 +167,14 @@ func TestAddDataSourceTooLongDescription(t *testing.T) {
 
 func TestEditDataSourceTooLongDescription(t *testing.T) {
 	_, ctx, k := createTestInput()
-	id := addBasicDataSource(ctx, k)
+	id, err := k.AddDataSource(ctx, types.NewDataSource(
+		Owner.Address, BasicName, BasicDesc, Coins10uband, BasicExec,
+	))
+	require.Nil(t, err)
 	dataSource := k.MustGetDataSource(ctx, id)
 	// Sets max desc length to 41. We should fail to edit data source with name length 42.
 	k.SetParam(ctx, types.KeyMaxDescriptionLength, 41)
-	err := k.EditDataSource(ctx, id, types.NewDataSource(
+	err = k.EditDataSource(ctx, id, types.NewDataSource(
 		dataSource.Owner, dataSource.Name, "________THIS_STRING_HAS_SIZE_OF_42________",
 		dataSource.Fee, dataSource.Executable,
 	))
@@ -214,11 +208,14 @@ func TestAddDataSourceTooBigExecutable(t *testing.T) {
 
 func TestEditDataSourceTooBigExecutable(t *testing.T) {
 	_, ctx, k := createTestInput()
-	id := addBasicDataSource(ctx, k)
+	id, err := k.AddDataSource(ctx, types.NewDataSource(
+		Owner.Address, BasicName, BasicDesc, Coins10uband, BasicExec,
+	))
+	require.Nil(t, err)
 	dataSource := k.MustGetDataSource(ctx, id)
 	// Sets max executable size to 40. We should fail to edit data source with exec size 42.
 	k.SetParam(ctx, types.KeyMaxExecutableSize, 40)
-	err := k.EditDataSource(ctx, id, types.NewDataSource(
+	err = k.EditDataSource(ctx, id, types.NewDataSource(
 		dataSource.Owner, dataSource.Name, dataSource.Description, dataSource.Fee,
 		[]byte("________THIS_STRING_HAS_SIZE_OF_42________"),
 	))

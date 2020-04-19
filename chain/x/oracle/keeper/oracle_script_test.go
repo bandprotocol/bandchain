@@ -3,22 +3,10 @@ package keeper_test
 import (
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	me "github.com/bandprotocol/bandchain/chain/x/oracle/keeper"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
-
-func addBasicOracleScript(ctx sdk.Context, k me.Keeper) types.OID {
-	id, err := k.AddOracleScript(ctx, types.NewOracleScript(
-		Owner.Address, BasicName, BasicDesc, BasicCode, BasicSchema, BasicSourceCodeURL,
-	))
-	if err != nil {
-		panic(err)
-	}
-	return id
-}
 
 func TestHasOracleScript(t *testing.T) {
 	_, ctx, k := createTestInput()
@@ -30,6 +18,7 @@ func TestHasOracleScript(t *testing.T) {
 	))
 	require.True(t, k.HasOracleScript(ctx, 42))
 }
+
 func TestSetterGetterOracleScript(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// Getting a non-existent oracle script should return error.
@@ -137,11 +126,14 @@ func TestAddOracleScriptTooLongName(t *testing.T) {
 
 func TestEditOracleScriptTooLongName(t *testing.T) {
 	_, ctx, k := createTestInput()
-	id := addBasicOracleScript(ctx, k)
+	id, err := k.AddOracleScript(ctx, types.NewOracleScript(
+		Owner.Address, BasicName, BasicDesc, BasicCode, BasicSchema, BasicSourceCodeURL,
+	))
+	require.Nil(t, err)
 	oracleScript := k.MustGetOracleScript(ctx, id)
 	// Sets max name length to 9. We should fail to edit oracle script with name length 10.
 	k.SetParam(ctx, types.KeyMaxNameLength, 9)
-	err := k.EditOracleScript(ctx, id, types.NewOracleScript(
+	err = k.EditOracleScript(ctx, id, types.NewOracleScript(
 		oracleScript.Owner, "0123456789", oracleScript.Description, oracleScript.Code,
 		oracleScript.Schema, oracleScript.SourceCodeURL,
 	))
@@ -175,11 +167,14 @@ func TestAddOracleScriptTooLongDescription(t *testing.T) {
 
 func TestEditOracleScriptTooLongDescription(t *testing.T) {
 	_, ctx, k := createTestInput()
-	id := addBasicOracleScript(ctx, k)
+	id, err := k.AddOracleScript(ctx, types.NewOracleScript(
+		Owner.Address, BasicName, BasicDesc, BasicCode, BasicSchema, BasicSourceCodeURL,
+	))
+	require.Nil(t, err)
 	oracleScript := k.MustGetOracleScript(ctx, id)
 	// Sets max desc length to 41. We should fail to edit oracle script with name length 42.
 	k.SetParam(ctx, types.KeyMaxDescriptionLength, 41)
-	err := k.EditOracleScript(ctx, id, types.NewOracleScript(
+	err = k.EditOracleScript(ctx, id, types.NewOracleScript(
 		oracleScript.Owner, oracleScript.Name, "________THIS_STRING_HAS_SIZE_OF_42________",
 		oracleScript.Code, oracleScript.Schema, oracleScript.SourceCodeURL,
 	))
@@ -215,11 +210,14 @@ func TestAddOracleScriptTooBigCode(t *testing.T) {
 
 func TestEditOracleScriptTooBigCode(t *testing.T) {
 	_, ctx, k := createTestInput()
-	id := addBasicOracleScript(ctx, k)
+	id, err := k.AddOracleScript(ctx, types.NewOracleScript(
+		Owner.Address, BasicName, BasicDesc, BasicCode, BasicSchema, BasicSourceCodeURL,
+	))
+	require.Nil(t, err)
 	oracleScript := k.MustGetOracleScript(ctx, id)
 	// Sets max code size to 40. We should fail to edit oracle script with exec size 42.
 	k.SetParam(ctx, types.KeyMaxOracleScriptCodeSize, 40)
-	err := k.EditOracleScript(ctx, id, types.NewOracleScript(
+	err = k.EditOracleScript(ctx, id, types.NewOracleScript(
 		oracleScript.Owner, oracleScript.Name, oracleScript.Description,
 		[]byte("________THIS_STRING_HAS_SIZE_OF_42________"),
 		oracleScript.Schema, oracleScript.SourceCodeURL,
