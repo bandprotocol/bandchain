@@ -36,6 +36,14 @@ func TestAddPendingResolveList(t *testing.T) {
 	require.Equal(t, k.GetPendingResolveList(ctx), []types.RID{42, 43})
 }
 
+func TestGetRandomValidatorsSuccess(t *testing.T) {
+	// TODO: Update this test once GetRandomValidators is actually random
+}
+
+func TestGetRandomValidatorsTooBigSize(t *testing.T) {
+	// TODO: Update this test once GetRandomValidators is actually random
+}
+
 // import (
 // 	"testing"
 // 	"time"
