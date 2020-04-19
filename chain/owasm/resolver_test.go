@@ -10,7 +10,7 @@ import (
 
 func TestResolveGetCallDataSizet(t *testing.T) {
 
-	env := &mockExecutionEnvironment{
+	env := &mockExecEnv{
 		requestedValidatorCount: 2,
 	}
 	gasLimit := uint64(10000)
@@ -40,7 +40,7 @@ func TestResolveGetCallDataSizet(t *testing.T) {
 
 func TestResolveReadExternalDataSuccess(t *testing.T) {
 
-	env := &mockExecutionEnvironment{
+	env := &mockExecEnv{
 		requestedValidatorCount:           2,
 		externalDataResults:               [][][]byte{{[]byte("RETURN_DATA"), nil}},
 		requestExternalDataResultsCounter: [][]int64{{0, 0}, {0, 0}},
@@ -89,7 +89,7 @@ func TestResolveReadExternalDataSuccess(t *testing.T) {
 func TestGetExternalDataSize(t *testing.T) {
 
 	externalData := "RETURN_DATA"
-	env := &mockExecutionEnvironment{
+	env := &mockExecEnv{
 		requestedValidatorCount:           2,
 		externalDataResults:               [][][]byte{{[]byte(externalData), nil}},
 		requestExternalDataResultsCounter: [][]int64{{0, 0}, {0, 0}},
@@ -139,7 +139,7 @@ func TestGetExternalDataSize(t *testing.T) {
 func TestReadExternalData(t *testing.T) {
 
 	externalData := "RETURN_DATA"
-	env := &mockExecutionEnvironment{
+	env := &mockExecEnv{
 		requestedValidatorCount:           2,
 		externalDataResults:               [][][]byte{{[]byte(externalData), nil}},
 		requestExternalDataResultsCounter: [][]int64{{0, 0}, {0, 0}},

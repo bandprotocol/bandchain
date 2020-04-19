@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-type mockExecutionEnvironment struct {
+type mockExecEnv struct {
 	requestedValidatorCount           int64
 	sufficientValidatorCount          int64
 	receivedValidatorCount            int64
@@ -17,39 +17,39 @@ type mockExecutionEnvironment struct {
 	requestExternalDataResultsCounter [][]int64
 }
 
-func (m *mockExecutionEnvironment) GetRequestedValidatorCount() int64 {
+func (m *mockExecEnv) GetRequestedValidatorCount() int64 {
 	return m.requestedValidatorCount
 }
 
-func (m *mockExecutionEnvironment) GetSufficientValidatorCount() int64 {
+func (m *mockExecEnv) GetSufficientValidatorCount() int64 {
 	return m.sufficientValidatorCount
 }
 
-func (m *mockExecutionEnvironment) GetReceivedValidatorCount() int64 {
+func (m *mockExecEnv) GetReceivedValidatorCount() int64 {
 	return m.receivedValidatorCount
 }
 
-func (m *mockExecutionEnvironment) GetPrepareBlockTime() int64 {
+func (m *mockExecEnv) GetPrepareBlockTime() int64 {
 	return m.prepareBlockTime
 }
 
-func (m *mockExecutionEnvironment) GetAggregateBlockTime() int64 {
+func (m *mockExecEnv) GetAggregateBlockTime() int64 {
 	return m.aggregateBlockTime
 }
 
-func (m *mockExecutionEnvironment) GetValidatorAddress(validatorIndex int64) ([]byte, error) {
+func (m *mockExecEnv) GetValidatorAddress(validatorIndex int64) ([]byte, error) {
 	return m.validatorAddresses[validatorIndex], nil
 }
 
-func (m *mockExecutionEnvironment) GetMaximumResultSize() int64 {
+func (m *mockExecEnv) GetMaximumResultSize() int64 {
 	return m.maximumResultSize
 }
 
-func (m *mockExecutionEnvironment) GetMaximumCalldataOfDataSourceSize() int64 {
+func (m *mockExecEnv) GetMaximumCalldataOfDataSourceSize() int64 {
 	return m.maximumCalldataOfDataSourceSize
 }
 
-func (m *mockExecutionEnvironment) RequestExternalData(
+func (m *mockExecEnv) RequestExternalData(
 	dataSourceID int64,
 	externalID int64,
 	calldata []byte,
@@ -59,7 +59,7 @@ func (m *mockExecutionEnvironment) RequestExternalData(
 	return nil
 }
 
-func (m *mockExecutionEnvironment) GetExternalData(
+func (m *mockExecEnv) GetExternalData(
 	externalID int64,
 	validatorIndex int64,
 ) ([]byte, uint8, error) {

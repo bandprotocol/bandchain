@@ -5,7 +5,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-type ExecutionEnvironment struct {
+type ExecEnv struct {
 	request            types.Request
 	now                int64
 	maxResultSize      int64
@@ -15,8 +15,8 @@ type ExecutionEnvironment struct {
 	reports            map[string]map[types.EID]types.RawReport
 }
 
-func NewExecutionEnvironment(ctx sdk.Context, k Keeper, req types.Request) *ExecutionEnvironment {
-	return &ExecutionEnvironment{
+func NewExecEnv(ctx sdk.Context, k Keeper, req types.Request) *ExecEnv {
+	return &ExecEnv{
 		request:            req,
 		now:                ctx.BlockTime().Unix(),
 		maxResultSize:      int64(k.GetParam(ctx, KeyMaxResultSize)),
@@ -28,12 +28,12 @@ func NewExecutionEnvironment(ctx sdk.Context, k Keeper, req types.Request) *Exec
 }
 
 // GetRawRequests returns the list of raw requests made during Owasm prepare run.
-func (env *ExecutionEnvironment) GetRawRequests() []types.RawRequest {
+func (env *ExecEnv) GetRawRequests() []types.RawRequest {
 	return env.rawRequests
 }
 
 // SetReports loads the reports to the environment. Must be called prior to Owasm execute run.
-func (env *ExecutionEnvironment) SetReports(reports []types.Report) {
+func (env *ExecEnv) SetReports(reports []types.Report) {
 	for _, report := range reports {
 		valReports := make(map[types.EID]types.RawReport)
 		for _, each := range report.RawReports {
@@ -43,54 +43,54 @@ func (env *ExecutionEnvironment) SetReports(reports []types.Report) {
 	}
 }
 
-// GetRequestedValidatorCount implements Owasm ExecutionEnvironment interface.
-func (env *ExecutionEnvironment) GetRequestedValidatorCount() int64 {
+// GetRequestedValidatorCount implements Owasm ExecEnv interface.
+func (env *ExecEnv) GetRequestedValidatorCount() int64 {
 	return int64(len(env.request.RequestedValidators))
 }
 
-// GetSufficientValidatorCount implements Owasm ExecutionEnvironment interface.
-func (env *ExecutionEnvironment) GetSufficientValidatorCount() int64 {
+// GetSufficientValidatorCount implements Owasm ExecEnv interface.
+func (env *ExecEnv) GetSufficientValidatorCount() int64 {
 	return env.request.SufficientValidatorCount
 }
 
-// GetReceivedValidatorCount implements Owasm ExecutionEnvironment interface.
-func (env *ExecutionEnvironment) GetReceivedValidatorCount() int64 {
+// GetReceivedValidatorCount implements Owasm ExecEnv interface.
+func (env *ExecEnv) GetReceivedValidatorCount() int64 {
 	return int64(len(env.reports))
 }
 
-// GetPrepareBlockTime implements Owasm ExecutionEnvironment interface.
-func (env *ExecutionEnvironment) GetPrepareBlockTime() int64 {
+// GetPrepareBlockTime implements Owasm ExecEnv interface.
+func (env *ExecEnv) GetPrepareBlockTime() int64 {
 	return env.request.RequestTime
 }
 
-// GetAggregateBlockTime implements Owasm ExecutionEnvironment interface.
-func (env *ExecutionEnvironment) GetAggregateBlockTime() int64 {
+// GetAggregateBlockTime implements Owasm ExecEnv interface.
+func (env *ExecEnv) GetAggregateBlockTime() int64 {
 	if len(env.reports) == 0 { // Size of reports must be zero during prepare.
 		return 0
 	}
 	return env.now
 }
 
-// GetMaximumResultSize implements Owasm ExecutionEnvironment interface.
-func (env *ExecutionEnvironment) GetMaximumResultSize() int64 {
+// GetMaximumResultSize implements Owasm ExecEnv interface.
+func (env *ExecEnv) GetMaximumResultSize() int64 {
 	return env.maxResultSize
 }
 
-// GetMaximumCalldataOfDataSourceSize implements Owasm ExecutionEnvironment interface.
-func (env *ExecutionEnvironment) GetMaximumCalldataOfDataSourceSize() int64 {
+// GetMaximumCalldataOfDataSourceSize implements Owasm ExecEnv interface.
+func (env *ExecEnv) GetMaximumCalldataOfDataSourceSize() int64 {
 	return env.maxCalldataSize
 }
 
-// RequestedValidators implements Owasm ExecutionEnvironment interface.
-func (env *ExecutionEnvironment) GetValidatorAddress(validatorIndex int64) ([]byte, error) {
+// RequestedValidators implements Owasm ExecEnv interface.
+func (env *ExecEnv) GetValidatorAddress(validatorIndex int64) ([]byte, error) {
 	if validatorIndex < 0 || validatorIndex >= int64(len(env.request.RequestedValidators)) {
 		return nil, types.ErrValidatorOutOfRange
 	}
 	return env.request.RequestedValidators[validatorIndex], nil
 }
 
-// RequestExternalData implements Owasm ExecutionEnvironment interface.
-func (env *ExecutionEnvironment) RequestExternalData(did int64, eid int64, calldata []byte) error {
+// RequestExternalData implements Owasm ExecEnv interface.
+func (env *ExecEnv) RequestExternalData(did int64, eid int64, calldata []byte) error {
 	if int64(len(calldata)) > env.maxCalldataSize {
 		return types.ErrValidatorOutOfRange
 	}
@@ -103,8 +103,8 @@ func (env *ExecutionEnvironment) RequestExternalData(did int64, eid int64, calld
 	return nil
 }
 
-// GetExternalData implements Owasm ExecutionEnvironment interface.
-func (env *ExecutionEnvironment) GetExternalData(eid int64, valIdx int64) ([]byte, uint8, error) {
+// GetExternalData implements Owasm ExecEnv interface.
+func (env *ExecEnv) GetExternalData(eid int64, valIdx int64) ([]byte, uint8, error) {
 	if valIdx < 0 || valIdx >= int64(len(env.request.RequestedValidators)) {
 		return nil, 0, types.ErrValidatorOutOfRange
 	}

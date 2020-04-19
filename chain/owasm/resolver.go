@@ -7,7 +7,7 @@ import (
 )
 
 type resolver struct {
-	env      ExecutionEnvironment
+	env      ExecEnv
 	calldata []byte
 	result   []byte
 }
@@ -157,7 +157,7 @@ func (r *resolver) resolveReadExternalData(vm *exec.VirtualMachine) int64 {
 	return 0
 }
 
-func NewResolver(env ExecutionEnvironment, calldata []byte) *resolver {
+func NewResolver(env ExecEnv, calldata []byte) *resolver {
 	return &resolver{
 		env:      env,
 		calldata: calldata,

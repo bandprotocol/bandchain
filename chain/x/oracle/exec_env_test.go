@@ -11,18 +11,18 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
-func TestNewExecutionEnvironment(t *testing.T) {
+func TestNewExecEnv(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
 
 	require.Panics(t, func() {
-		NewExecutionEnvironment(ctx, keeper, keeper.MustGetRequest(ctx, 1))
+		NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
 	})
 
 	keeper.SetRequest(ctx, 1, types.NewRequest(
 		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))}, 1, 0, 0, "clientID",
 	))
 
-	_ = NewExecutionEnvironment(ctx, keeper, keeper.MustGetRequest(ctx, 1))
+	_ = NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
 }
 
 func TestGetRequestedValidatorCount(t *testing.T) {
@@ -33,7 +33,7 @@ func TestGetRequestedValidatorCount(t *testing.T) {
 		1, 0, 0, "clientID",
 	))
 
-	env := NewExecutionEnvironment(ctx, keeper, keeper.MustGetRequest(ctx, 1))
+	env := NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
 	require.Equal(t, int64(2), env.GetRequestedValidatorCount())
 }
 
@@ -50,7 +50,7 @@ func TestGetSufficientValidatorCount(t *testing.T) {
 		3, 0, 0, "clientID",
 	))
 
-	env := NewExecutionEnvironment(ctx, keeper, keeper.MustGetRequest(ctx, 1))
+	env := NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
 	require.Equal(t, int64(3), env.GetSufficientValidatorCount())
 }
 
@@ -62,12 +62,12 @@ func TestGetSufficientValidatorCount(t *testing.T) {
 // 		1, 0, 0, 100, "clientID",
 // 	))
 
-// 	env := NewExecutionEnvironment(ctx, keeper, keeper.MustGetRequest(ctx, 1))
+// 	env := NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
 // 	require.Equal(t, int64(0), env.GetReceivedValidatorCount())
 
 // 	keeper.AddReport(ctx, 1, types.NewReport(sdk.ValAddress([]byte("val1")), []types.RawReport{}))
 
-// 	env = NewExecutionEnvironment(ctx, keeper, keeper.MustGetRequest(ctx, 1))
+// 	env = NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
 // 	require.Equal(t, int64(1), env.GetReceivedValidatorCount())
 
 // }
@@ -79,7 +79,7 @@ func TestGetPrepareBlockTime(t *testing.T) {
 		1, 20, 1581589790, "clientID",
 	))
 
-	env := NewExecutionEnvironment(ctx, keeper, keeper.MustGetRequest(ctx, 1))
+	env := NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
 	require.Equal(t, int64(1581589790), env.GetPrepareBlockTime())
 }
 
@@ -91,7 +91,7 @@ func TestGetAggregateBlockTime(t *testing.T) {
 	))
 
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
-	env := NewExecutionEnvironment(ctx, keeper, keeper.MustGetRequest(ctx, 1))
+	env := NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
 	require.Equal(t, int64(0), env.GetAggregateBlockTime())
 
 	// Add received validator
@@ -99,7 +99,7 @@ func TestGetAggregateBlockTime(t *testing.T) {
 	require.Nil(t, err)
 
 	// After report is greater or equal SufficientValidatorCount, it will resolve in current block time.
-	env = NewExecutionEnvironment(ctx, keeper, keeper.MustGetRequest(ctx, 1))
+	env = NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
 	env.SetReports(keeper.GetReports(ctx, 1))
 
 	require.Equal(t, int64(1581589790), env.GetAggregateBlockTime())
@@ -128,7 +128,7 @@ func TestGetValidatorPubKey(t *testing.T) {
 		1, 0, 0, "clientID",
 	))
 
-	env := NewExecutionEnvironment(ctx, keeper, keeper.MustGetRequest(ctx, 1))
+	env := NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
 
 	addr1, err := env.GetValidatorAddress(0)
 	require.Nil(t, err)
@@ -163,7 +163,7 @@ func TestRequestExternalData(t *testing.T) {
 	)
 	keeper.SetDataSource(ctx, 1, dataSource)
 
-	env := NewExecutionEnvironment(ctx, keeper, keeper.MustGetRequest(ctx, 1))
+	env := NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
 	envErr := env.RequestExternalData(1, 42, []byte("prepare32"))
 	require.Nil(t, envErr)
 	// err := env.SaveRawDataRequests(ctx, keeper)
@@ -195,7 +195,7 @@ func TestRequestExternalDataExceedMaxRawRequestCount(t *testing.T) {
 
 	// Set MaxRawRequestCount to 5
 	keeper.SetParam(ctx, KeyMaxRawRequestCount, 5)
-	env := NewExecutionEnvironment(ctx, keeper, keeper.MustGetRequest(ctx, 1))
+	env := NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
 
 	reqErr := env.RequestExternalData(1, 41, []byte("prepare32"))
 	require.Nil(t, reqErr)
@@ -230,7 +230,7 @@ func TestRequestExternalDataExceedMaxRawRequestCount(t *testing.T) {
 // 		types.NewRawDataReport(42, []byte("data42")),
 // 	)
 
-// 	env, err := NewExecutionEnvironment(ctx, keeper, keeper.MustGetRequest(ctx, 1))
+// 	env, err := NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
 // 	require.Nil(t, err)
 
 // 	err = env.LoadRawDataReports(ctx, keeper)

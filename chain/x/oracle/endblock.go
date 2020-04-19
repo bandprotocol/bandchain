@@ -9,7 +9,7 @@ import (
 // and saves result hash to the store. Assumes that the given request is in a resolvable state.
 func resolveRequest(ctx sdk.Context, k Keeper, reqID types.RequestID) {
 	req := k.MustGetRequest(ctx, reqID)
-	env := NewExecutionEnvironment(ctx, k, req)
+	env := NewExecEnv(ctx, k, req)
 	env.SetReports(k.GetReports(ctx, reqID))
 	script := k.MustGetOracleScript(ctx, req.OracleScriptID)
 	executeGas := k.GetParam(ctx, KeyExecuteGas)

@@ -8,13 +8,13 @@ import (
 
 // Executor is the type of any function that supports Owasm execution.
 type Executor func(
-	env ExecutionEnvironment, code []byte, entry string, calldata []byte, gasLimit uint64,
+	env ExecEnv, code []byte, entry string, calldata []byte, gasLimit uint64,
 ) (result []byte, gasUsed uint64, err error)
 
 // Execute runs an Owasm script code by via the script's entryID. Note that result will be an
 // empty byte slice if the function terminates successfully without saveReturnData getting called.
 func Execute(
-	env ExecutionEnvironment, code []byte, entry string, calldata []byte, gasLimit uint64,
+	env ExecEnv, code []byte, entry string, calldata []byte, gasLimit uint64,
 ) (result []byte, gasUsed uint64, err error) {
 	resolver := NewResolver(env, calldata)
 	vm, err := exec.NewVirtualMachine(code, exec.VMConfig{

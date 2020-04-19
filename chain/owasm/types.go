@@ -1,9 +1,9 @@
 package owasm
 
-// ExecutionEnvironment encapsulates the operations that an Owasm script
+// ExecEnv encapsulates the operations that an Owasm script
 // can call to interact with the external world. An operation can fail and
 // when that occurs, the whole function call will fail.
-type ExecutionEnvironment interface {
+type ExecEnv interface {
 	// GetRequestedValidatorCount returns the number of validators that the current
 	// data request specifies for the oracle query.
 	GetRequestedValidatorCount() int64

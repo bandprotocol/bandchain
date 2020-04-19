@@ -11,7 +11,7 @@ import (
 // func TestExecuteCanCallEnv(t *testing.T) {
 // 	code, err := ioutil.ReadFile("./res/main.wasm")
 // 	require.Nil(t, err)
-// 	result, gasUsed, err := Execute(&mockExecutionEnvironment{
+// 	result, gasUsed, err := Execute(&mockExecEnv{
 // 		requestedValidatorCount:         2,
 // 		maximumResultSize:               1024,
 // 		maximumCalldataOfDataSourceSize: 1024,
@@ -26,7 +26,7 @@ func TestGetSufficientValidatorCount(t *testing.T) {
 	code, err := ioutil.ReadFile("./res/get_env.wasm")
 	require.Nil(t, err)
 
-	result, _, errExecute := Execute(&mockExecutionEnvironment{
+	result, _, errExecute := Execute(&mockExecEnv{
 		sufficientValidatorCount:        99,
 		maximumResultSize:               1024,
 		maximumCalldataOfDataSourceSize: 1024,
@@ -38,7 +38,7 @@ func TestGetSufficientValidatorCount(t *testing.T) {
 func TestExecuteOutOfGas(t *testing.T) {
 	code, err := ioutil.ReadFile("./res/main.wasm")
 	require.Nil(t, err)
-	_, _, err = Execute(&mockExecutionEnvironment{
+	_, _, err = Execute(&mockExecEnv{
 		maximumResultSize:               1024,
 		maximumCalldataOfDataSourceSize: 1024,
 	}, code, "execute", []byte{}, 10)
@@ -48,7 +48,7 @@ func TestExecuteOutOfGas(t *testing.T) {
 func TestExecuteEndToEnd(t *testing.T) {
 	code, err := ioutil.ReadFile("./res/silly.wasm")
 	require.Nil(t, err)
-	env := &mockExecutionEnvironment{
+	env := &mockExecEnv{
 		externalDataResults:               [][][]byte{nil, {[]byte("RETURN_DATA")}},
 		requestExternalDataResultsCounter: [][]int64{nil, []int64{0}},
 		maximumResultSize:                 1024,
@@ -78,7 +78,7 @@ func TestAllocateSuccess(t *testing.T) {
 	size := make([]byte, 8)
 	binary.LittleEndian.PutUint64(size, uint64(5000000))
 
-	_, _, err = Execute(&mockExecutionEnvironment{
+	_, _, err = Execute(&mockExecEnv{
 		maximumResultSize:               1024,
 		maximumCalldataOfDataSourceSize: 1024,
 	}, code, "execute", size, 100000000000000000)
@@ -93,7 +93,7 @@ func TestAllocateFailWithExceedMemory(t *testing.T) {
 	size := make([]byte, 8)
 	binary.LittleEndian.PutUint64(size, uint64(8500000))
 
-	_, _, errExecute := Execute(&mockExecutionEnvironment{
+	_, _, errExecute := Execute(&mockExecEnv{
 		maximumResultSize:               1024,
 		maximumCalldataOfDataSourceSize: 1024,
 	}, code, "execute", size, 100000000000000000)
@@ -103,7 +103,7 @@ func TestAllocateFailWithExceedMemory(t *testing.T) {
 func TestExecuteInvalidGetMaximumCalldataOfDataSourceSize(t *testing.T) {
 	code, err := ioutil.ReadFile("./res/silly.wasm")
 	require.Nil(t, err)
-	env := &mockExecutionEnvironment{
+	env := &mockExecEnv{
 		maximumCalldataOfDataSourceSize: 12,
 	}
 
@@ -113,7 +113,7 @@ func TestExecuteInvalidGetMaximumCalldataOfDataSourceSize(t *testing.T) {
 
 	// It should print "RequestExternalData: DataSourceID = 1, ExternalID = 1"
 	// and not return error.
-	_, _, err = Execute(&mockExecutionEnvironment{
+	_, _, err = Execute(&mockExecEnv{
 		maximumCalldataOfDataSourceSize: 13,
 	}, code, "prepare", []byte{}, 10000)
 	require.Nil(t, err)
@@ -122,7 +122,7 @@ func TestExecuteInvalidGetMaximumCalldataOfDataSourceSize(t *testing.T) {
 func TestExecuteInvalidGetMaximumResultSize(t *testing.T) {
 	code, err := ioutil.ReadFile("./res/silly.wasm")
 	require.Nil(t, err)
-	env := &mockExecutionEnvironment{
+	env := &mockExecEnv{
 		externalDataResults:               [][][]byte{nil, {[]byte("RETURN_DATA")}},
 		requestExternalDataResultsCounter: [][]int64{nil, []int64{0}},
 		maximumResultSize:                 10,
@@ -132,7 +132,7 @@ func TestExecuteInvalidGetMaximumResultSize(t *testing.T) {
 	_, _, err = Execute(env, code, "execute", []byte{}, 10000)
 	require.NotNil(t, err)
 
-	env2 := &mockExecutionEnvironment{
+	env2 := &mockExecEnv{
 		externalDataResults:               [][][]byte{nil, {[]byte("RETURN_DATA")}},
 		requestExternalDataResultsCounter: [][]int64{nil, []int64{0}},
 		maximumResultSize:                 11,
