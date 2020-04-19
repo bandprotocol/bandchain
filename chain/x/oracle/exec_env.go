@@ -52,18 +52,13 @@ func (env *ExecutionEnvironment) SaveRawDataRequests(ctx sdk.Context, keeper Kee
 	return nil
 }
 
-func (env *ExecutionEnvironment) LoadRawDataReports(
-	ctx sdk.Context,
-	keeper Keeper,
-) error {
-	for _, report := range keeper.GetReports(ctx, env.requestID) {
+func (env *ExecutionEnvironment) LoadDataReports(ctx sdk.Context, k Keeper) {
+	for _, report := range k.GetReports(ctx, env.requestID) {
 		for _, reportv1 := range report.RawDataReports {
-
 			key := string(types.RawDataReportStoreKeyUnique(env.requestID, reportv1.ExternalID, report.Validator))
 			env.rawDataReports[key] = types.NewRawDataReport(reportv1.ExitCode, reportv1.Data)
 		}
 	}
-	return nil
 }
 
 func (env *ExecutionEnvironment) GetCurrentRequestID() int64 {
