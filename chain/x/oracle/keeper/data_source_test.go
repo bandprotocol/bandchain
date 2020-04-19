@@ -80,10 +80,10 @@ func TestAddDataSourceEditDataSourceBasic(t *testing.T) {
 	require.Equal(t, dataSource1, k.MustGetDataSource(ctx, id))
 	require.NotEqual(t, dataSource2, k.MustGetDataSource(ctx, id))
 	// Edits the data source. We should get the updated data source.
-	err = k.EditDataSource(ctx, id,
+	err = k.EditDataSource(ctx, id, types.NewDataSource(
 		dataSource2.Owner, dataSource2.Name, dataSource2.Description,
 		dataSource2.Fee, dataSource2.Executable,
-	)
+	))
 	require.Nil(t, err)
 	require.NotEqual(t, dataSource1, k.MustGetDataSource(ctx, id))
 	require.Equal(t, dataSource2, k.MustGetDataSource(ctx, id))
@@ -114,9 +114,9 @@ func TestAddDataSourceDataSourceMustReturnCorrectID(t *testing.T) {
 func TestEditDataSourceNonExistentDataSource(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// Editing a non-existent data source should return error.
-	err := k.EditDataSource(ctx, types.DID(42),
+	err := k.EditDataSource(ctx, 42, types.NewDataSource(
 		Owner.Address, BasicName, BasicDesc, Coins10uband, BasicExec,
-	)
+	))
 	require.Error(t, err)
 }
 
@@ -142,17 +142,17 @@ func TestEditDataSourceTooLongName(t *testing.T) {
 	dataSource := k.MustGetDataSource(ctx, id)
 	// Sets max name length to 9. We should fail to edit data source with name length 10.
 	k.SetParam(ctx, types.KeyMaxNameLength, 9)
-	err := k.EditDataSource(ctx, id,
+	err := k.EditDataSource(ctx, id, types.NewDataSource(
 		dataSource.Owner, "0123456789", dataSource.Description,
 		dataSource.Fee, dataSource.Executable,
-	)
+	))
 	require.Error(t, err)
 	// Sets max name length to 10. We should now be able to edit the data source.
 	k.SetParam(ctx, types.KeyMaxNameLength, 10)
-	err = k.EditDataSource(ctx, id,
+	err = k.EditDataSource(ctx, id, types.NewDataSource(
 		dataSource.Owner, "0123456789", dataSource.Description,
 		dataSource.Fee, dataSource.Executable,
-	)
+	))
 	require.Nil(t, err)
 }
 
@@ -180,17 +180,17 @@ func TestEditDataSourceTooLongDescription(t *testing.T) {
 	dataSource := k.MustGetDataSource(ctx, id)
 	// Sets max desc length to 41. We should fail to edit data source with name length 42.
 	k.SetParam(ctx, types.KeyMaxDescriptionLength, 41)
-	err := k.EditDataSource(ctx, id,
+	err := k.EditDataSource(ctx, id, types.NewDataSource(
 		dataSource.Owner, dataSource.Name, "________THIS_STRING_HAS_SIZE_OF_42________",
 		dataSource.Fee, dataSource.Executable,
-	)
+	))
 	require.Error(t, err)
 	// Sets max desc length to 42. We should now be able to edit the data source.
 	k.SetParam(ctx, types.KeyMaxDescriptionLength, 42)
-	err = k.EditDataSource(ctx, id,
+	err = k.EditDataSource(ctx, id, types.NewDataSource(
 		dataSource.Owner, dataSource.Name, "________THIS_STRING_HAS_SIZE_OF_42________",
 		dataSource.Fee, dataSource.Executable,
-	)
+	))
 	require.Nil(t, err)
 }
 
@@ -218,17 +218,17 @@ func TestEditDataSourceTooBigExecutable(t *testing.T) {
 	dataSource := k.MustGetDataSource(ctx, id)
 	// Sets max executable size to 40. We should fail to edit data source with exec size 42.
 	k.SetParam(ctx, types.KeyMaxExecutableSize, 40)
-	err := k.EditDataSource(ctx, id,
+	err := k.EditDataSource(ctx, id, types.NewDataSource(
 		dataSource.Owner, dataSource.Name, dataSource.Description, dataSource.Fee,
 		[]byte("________THIS_STRING_HAS_SIZE_OF_42________"),
-	)
+	))
 	require.Error(t, err)
 	// Sets max executable size to 50. We should now be able to edit the data source.
 	k.SetParam(ctx, types.KeyMaxExecutableSize, 50)
-	err = k.EditDataSource(ctx, id,
+	err = k.EditDataSource(ctx, id, types.NewDataSource(
 		dataSource.Owner, dataSource.Name, dataSource.Description, dataSource.Fee,
 		[]byte("________THIS_STRING_HAS_SIZE_OF_42________"),
-	)
+	))
 	require.Nil(t, err)
 }
 

@@ -79,10 +79,10 @@ func TestAddEditOracleScriptBasic(t *testing.T) {
 	require.Equal(t, oracleScript1, k.MustGetOracleScript(ctx, id))
 	require.NotEqual(t, oracleScript2, k.MustGetOracleScript(ctx, id))
 	// Edits the oracle script. We should get the updated oracle script.
-	err = k.EditOracleScript(ctx, id,
+	err = k.EditOracleScript(ctx, id, types.NewOracleScript(
 		oracleScript2.Owner, oracleScript2.Name, oracleScript2.Description, oracleScript2.Code,
 		oracleScript2.Schema, oracleScript2.SourceCodeURL,
-	)
+	))
 	require.Nil(t, err)
 	require.NotEqual(t, oracleScript1, k.MustGetOracleScript(ctx, id))
 	require.Equal(t, oracleScript2, k.MustGetOracleScript(ctx, id))
@@ -113,9 +113,9 @@ func TestAddOracleScriptMustReturnCorrectID(t *testing.T) {
 func TestEditNonExistentOracleScript(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// Editing a non-existent oracle script should return error.
-	err := k.EditOracleScript(ctx, types.OID(42),
+	err := k.EditOracleScript(ctx, 42, types.NewOracleScript(
 		Owner.Address, BasicName, BasicDesc, BasicCode, BasicSchema, BasicSourceCodeURL,
-	)
+	))
 	require.Error(t, err)
 }
 
@@ -141,17 +141,17 @@ func TestEditOracleScriptTooLongName(t *testing.T) {
 	oracleScript := k.MustGetOracleScript(ctx, id)
 	// Sets max name length to 9. We should fail to edit oracle script with name length 10.
 	k.SetParam(ctx, types.KeyMaxNameLength, 9)
-	err := k.EditOracleScript(ctx, id,
+	err := k.EditOracleScript(ctx, id, types.NewOracleScript(
 		oracleScript.Owner, "0123456789", oracleScript.Description, oracleScript.Code,
 		oracleScript.Schema, oracleScript.SourceCodeURL,
-	)
+	))
 	require.Error(t, err)
 	// Sets max name length to 10. We should now be able to edit the oracle script.
 	k.SetParam(ctx, types.KeyMaxNameLength, 10)
-	err = k.EditOracleScript(ctx, id,
+	err = k.EditOracleScript(ctx, id, types.NewOracleScript(
 		oracleScript.Owner, "0123456789", oracleScript.Description, oracleScript.Code,
 		oracleScript.Schema, oracleScript.SourceCodeURL,
-	)
+	))
 	require.Nil(t, err)
 }
 
@@ -179,17 +179,17 @@ func TestEditOracleScriptTooLongDescription(t *testing.T) {
 	oracleScript := k.MustGetOracleScript(ctx, id)
 	// Sets max desc length to 41. We should fail to edit oracle script with name length 42.
 	k.SetParam(ctx, types.KeyMaxDescriptionLength, 41)
-	err := k.EditOracleScript(ctx, id,
+	err := k.EditOracleScript(ctx, id, types.NewOracleScript(
 		oracleScript.Owner, oracleScript.Name, "________THIS_STRING_HAS_SIZE_OF_42________",
 		oracleScript.Code, oracleScript.Schema, oracleScript.SourceCodeURL,
-	)
+	))
 	require.Error(t, err)
 	// Sets max desc length to 42. We should now be able to edit the oracle script.
 	k.SetParam(ctx, types.KeyMaxDescriptionLength, 42)
-	err = k.EditOracleScript(ctx, id,
+	err = k.EditOracleScript(ctx, id, types.NewOracleScript(
 		oracleScript.Owner, oracleScript.Name, "________THIS_STRING_HAS_SIZE_OF_42________",
 		oracleScript.Code, oracleScript.Schema, oracleScript.SourceCodeURL,
-	)
+	))
 	require.Nil(t, err)
 }
 
@@ -219,19 +219,19 @@ func TestEditOracleScriptTooBigCode(t *testing.T) {
 	oracleScript := k.MustGetOracleScript(ctx, id)
 	// Sets max code size to 40. We should fail to edit oracle script with exec size 42.
 	k.SetParam(ctx, types.KeyMaxOracleScriptCodeSize, 40)
-	err := k.EditOracleScript(ctx, id,
+	err := k.EditOracleScript(ctx, id, types.NewOracleScript(
 		oracleScript.Owner, oracleScript.Name, oracleScript.Description,
 		[]byte("________THIS_STRING_HAS_SIZE_OF_42________"),
 		oracleScript.Schema, oracleScript.SourceCodeURL,
-	)
+	))
 	require.Error(t, err)
 	// Sets max code size to 50. We should now be able to edit the oracle script.
 	k.SetParam(ctx, types.KeyMaxOracleScriptCodeSize, 50)
-	err = k.EditOracleScript(ctx, id,
+	err = k.EditOracleScript(ctx, id, types.NewOracleScript(
 		oracleScript.Owner, oracleScript.Name, oracleScript.Description,
 		[]byte("________THIS_STRING_HAS_SIZE_OF_42________"),
 		oracleScript.Schema, oracleScript.SourceCodeURL,
-	)
+	))
 	require.Nil(t, err)
 }
 

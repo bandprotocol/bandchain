@@ -52,19 +52,16 @@ func (k Keeper) AddDataSource(ctx sdk.Context, dataSource types.DataSource) (typ
 }
 
 // EditDataSource edits the given data source by id and flushes it to the storage.
-func (k Keeper) EditDataSource(
-	ctx sdk.Context, id types.DID, owner sdk.AccAddress, name string,
-	description string, fee sdk.Coins, executable []byte,
-) error {
+func (k Keeper) EditDataSource(ctx sdk.Context, id types.DID, new types.DataSource) error {
 	dataSource, err := k.GetDataSource(ctx, id)
 	if err != nil {
 		return err
 	}
-	dataSource.Owner = owner // TODO: Allow NOT_MODIFY or nil in these fields.
-	dataSource.Name = name
-	dataSource.Description = description
-	dataSource.Fee = fee
-	dataSource.Executable = executable
+	dataSource.Owner = new.Owner // TODO: Allow NOT_MODIFY or nil in these fields.
+	dataSource.Name = new.Name
+	dataSource.Description = new.Description
+	dataSource.Fee = new.Fee
+	dataSource.Executable = new.Executable
 	if err := AnyError(
 		k.EnsureLength(ctx, types.KeyMaxNameLength, len(dataSource.Name)),
 		k.EnsureLength(ctx, types.KeyMaxDescriptionLength, len(dataSource.Description)),

@@ -52,20 +52,17 @@ func (k Keeper) AddOracleScript(ctx sdk.Context, oracleScript types.OracleScript
 }
 
 // EditOracleScript edits the given oracle script by id and flushes it to the storage.
-func (k Keeper) EditOracleScript(
-	ctx sdk.Context, id types.OID, owner sdk.AccAddress, name string,
-	description string, code []byte, schema string, sourceCodeURL string,
-) error {
+func (k Keeper) EditOracleScript(ctx sdk.Context, id types.OID, new types.OracleScript) error {
 	oracleScript, err := k.GetOracleScript(ctx, id)
 	if err != nil {
 		return err
 	}
-	oracleScript.Owner = owner // TODO: Allow NOT_MODIFY or nil in these fields.
-	oracleScript.Name = name
-	oracleScript.Description = description
-	oracleScript.Code = code
-	oracleScript.Schema = schema
-	oracleScript.SourceCodeURL = sourceCodeURL
+	oracleScript.Owner = new.Owner // TODO: Allow NOT_MODIFY or nil in these fields.
+	oracleScript.Name = new.Name
+	oracleScript.Description = new.Description
+	oracleScript.Code = new.Code
+	oracleScript.Schema = new.Schema
+	oracleScript.SourceCodeURL = new.SourceCodeURL
 	if err := AnyError(
 		k.EnsureLength(ctx, types.KeyMaxNameLength, len(oracleScript.Name)),
 		k.EnsureLength(ctx, types.KeyMaxDescriptionLength, len(oracleScript.Description)),
