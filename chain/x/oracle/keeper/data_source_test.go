@@ -11,9 +11,9 @@ import (
 )
 
 func addBasicDataSource(ctx sdk.Context, k me.Keeper) types.DID {
-	id, err := k.AddDataSource(ctx,
+	id, err := k.AddDataSource(ctx, types.NewDataSource(
 		Owner.Address, BasicName, BasicDesc, Coins10uband, BasicExec,
-	)
+	))
 	if err != nil {
 		panic(err)
 	}
@@ -72,10 +72,10 @@ func TestAddDataSourceEditDataSourceBasic(t *testing.T) {
 		Bob.Address, "NAME2", "DESCRIPTION2", Coins10uband, []byte("executable2"),
 	)
 	// Adds a new data source to the store. We should be able to retreive it back.
-	id, err := k.AddDataSource(ctx,
+	id, err := k.AddDataSource(ctx, types.NewDataSource(
 		dataSource1.Owner, dataSource1.Name, dataSource1.Description,
 		dataSource1.Fee, dataSource1.Executable,
-	)
+	))
 	require.Nil(t, err)
 	require.Equal(t, dataSource1, k.MustGetDataSource(ctx, id))
 	require.NotEqual(t, dataSource2, k.MustGetDataSource(ctx, id))
@@ -95,15 +95,15 @@ func TestAddDataSourceDataSourceMustReturnCorrectID(t *testing.T) {
 	count := k.GetDataSourceCount(ctx)
 	require.Equal(t, count, int64(0))
 	// Every new data source we add should return a new ID.
-	id1, err := k.AddDataSource(ctx,
+	id1, err := k.AddDataSource(ctx, types.NewDataSource(
 		Owner.Address, BasicName, BasicDesc, Coins10uband, BasicExec,
-	)
+	))
 	require.Nil(t, err)
 	require.Equal(t, id1, types.DID(1))
 	// Adds another data source so now ID should be 2.
-	id2, err := k.AddDataSource(ctx,
+	id2, err := k.AddDataSource(ctx, types.NewDataSource(
 		Owner.Address, BasicName, BasicDesc, Coins10uband, BasicExec,
-	)
+	))
 	require.Nil(t, err)
 	require.Equal(t, id2, types.DID(2))
 	// Finally we expect the data source to increase to 2 since we added two data sources.
@@ -124,15 +124,15 @@ func TestAddDataSourceTooLongName(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// Sets max name length to 9. We should fail to add data source with name length 10.
 	k.SetParam(ctx, types.KeyMaxNameLength, 9)
-	_, err := k.AddDataSource(ctx,
+	_, err := k.AddDataSource(ctx, types.NewDataSource(
 		Owner.Address, "0123456789", BasicDesc, Coins10uband, BasicExec,
-	)
+	))
 	require.Error(t, err)
 	// Sets max name length to 10. We should now be able to add the data source.
 	k.SetParam(ctx, types.KeyMaxNameLength, 10)
-	_, err = k.AddDataSource(ctx,
+	_, err = k.AddDataSource(ctx, types.NewDataSource(
 		Owner.Address, "0123456789", BasicDesc, Coins10uband, BasicExec,
-	)
+	))
 	require.Nil(t, err)
 }
 
@@ -160,17 +160,17 @@ func TestAddDataSourceTooLongDescription(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// Sets max desc length to 41. We should fail to add data source with desc length 42.
 	k.SetParam(ctx, types.KeyMaxDescriptionLength, 41)
-	_, err := k.AddDataSource(ctx,
+	_, err := k.AddDataSource(ctx, types.NewDataSource(
 		Owner.Address, BasicName, "________THIS_STRING_HAS_SIZE_OF_42________",
 		Coins10uband, BasicExec,
-	)
+	))
 	require.Error(t, err)
 	// Sets max desc length to 42. We should now be able to add the data source.
 	k.SetParam(ctx, types.KeyMaxDescriptionLength, 42)
-	_, err = k.AddDataSource(ctx,
+	_, err = k.AddDataSource(ctx, types.NewDataSource(
 		Owner.Address, BasicName, "________THIS_STRING_HAS_SIZE_OF_42________",
 		Coins10uband, BasicExec,
-	)
+	))
 	require.Nil(t, err)
 }
 
@@ -198,17 +198,17 @@ func TestAddDataSourceTooBigExecutable(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// Sets max executable size to 40. We should fail to add data source with exec size 42.
 	k.SetParam(ctx, types.KeyMaxExecutableSize, 40)
-	_, err := k.AddDataSource(ctx,
+	_, err := k.AddDataSource(ctx, types.NewDataSource(
 		Owner.Address, BasicName, BasicDesc, Coins10uband,
 		[]byte("________THIS_STRING_HAS_SIZE_OF_42________"),
-	)
+	))
 	require.Error(t, err)
 	// Sets max executable size to 50. We should now be able to add the data source.
 	k.SetParam(ctx, types.KeyMaxExecutableSize, 50)
-	_, err = k.AddDataSource(ctx,
+	_, err = k.AddDataSource(ctx, types.NewDataSource(
 		Owner.Address, BasicName, BasicDesc, Coins10uband,
 		[]byte("________THIS_STRING_HAS_SIZE_OF_42________"),
-	)
+	))
 	require.Nil(t, err)
 }
 

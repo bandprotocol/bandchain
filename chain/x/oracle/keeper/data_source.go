@@ -38,19 +38,16 @@ func (k Keeper) SetDataSource(ctx sdk.Context, id types.DID, dataSource types.Da
 }
 
 // AddDataSource adds the given data source to the storage. Returns error if validation fails.
-func (k Keeper) AddDataSource(
-	ctx sdk.Context, owner sdk.AccAddress, name string, description string,
-	fee sdk.Coins, executable []byte,
-) (types.DID, error) {
+func (k Keeper) AddDataSource(ctx sdk.Context, dataSource types.DataSource) (types.DID, error) {
 	if err := AnyError(
-		k.EnsureLength(ctx, types.KeyMaxNameLength, len(name)),
-		k.EnsureLength(ctx, types.KeyMaxDescriptionLength, len(description)),
-		k.EnsureLength(ctx, types.KeyMaxExecutableSize, len(executable)),
+		k.EnsureLength(ctx, types.KeyMaxNameLength, len(dataSource.Name)),
+		k.EnsureLength(ctx, types.KeyMaxDescriptionLength, len(dataSource.Description)),
+		k.EnsureLength(ctx, types.KeyMaxExecutableSize, len(dataSource.Executable)),
 	); err != nil {
 		return 0, err
 	}
 	id := k.GetNextDataSourceID(ctx)
-	k.SetDataSource(ctx, id, types.NewDataSource(owner, name, description, fee, executable))
+	k.SetDataSource(ctx, id, dataSource)
 	return id, nil
 }
 

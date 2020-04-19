@@ -57,9 +57,9 @@ func NewHandler(k Keeper) sdk.Handler {
 }
 
 func handleMsgCreateDataSource(ctx sdk.Context, k Keeper, msg MsgCreateDataSource) (*sdk.Result, error) {
-	id, err := k.AddDataSource(
-		ctx, msg.Owner, msg.Name, msg.Description, msg.Fee, msg.Executable,
-	)
+	id, err := k.AddDataSource(ctx, types.NewDataSource(
+		msg.Owner, msg.Name, msg.Description, msg.Fee, msg.Executable,
+	))
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +93,9 @@ func handleMsgEditDataSource(ctx sdk.Context, k Keeper, msg MsgEditDataSource) (
 }
 
 func handleMsgCreateOracleScript(ctx sdk.Context, k Keeper, msg MsgCreateOracleScript) (*sdk.Result, error) {
-	id, err := k.AddOracleScript(ctx, msg.Owner, msg.Name, msg.Description, msg.Code, msg.Schema, msg.SourceCodeURL)
+	id, err := k.AddOracleScript(ctx, types.NewOracleScript(
+		msg.Owner, msg.Name, msg.Description, msg.Code, msg.Schema, msg.SourceCodeURL,
+	))
 	if err != nil {
 		return nil, err
 	}

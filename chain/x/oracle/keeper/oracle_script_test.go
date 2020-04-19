@@ -11,9 +11,9 @@ import (
 )
 
 func addBasicOracleScript(ctx sdk.Context, k me.Keeper) types.OID {
-	id, err := k.AddOracleScript(ctx,
+	id, err := k.AddOracleScript(ctx, types.NewOracleScript(
 		Owner.Address, BasicName, BasicDesc, BasicCode, BasicSchema, BasicSourceCodeURL,
-	)
+	))
 	if err != nil {
 		panic(err)
 	}
@@ -71,10 +71,10 @@ func TestAddEditOracleScriptBasic(t *testing.T) {
 		Bob.Address, "NAME2", "DESCRIPTION2", []byte("code2"), BasicSchema, BasicSourceCodeURL,
 	)
 	// Adds a new oracle script to the store. We should be able to retreive it back.
-	id, err := k.AddOracleScript(ctx,
+	id, err := k.AddOracleScript(ctx, types.NewOracleScript(
 		oracleScript1.Owner, oracleScript1.Name, oracleScript1.Description, oracleScript1.Code,
 		oracleScript1.Schema, oracleScript1.SourceCodeURL,
-	)
+	))
 	require.Nil(t, err)
 	require.Equal(t, oracleScript1, k.MustGetOracleScript(ctx, id))
 	require.NotEqual(t, oracleScript2, k.MustGetOracleScript(ctx, id))
@@ -94,15 +94,15 @@ func TestAddOracleScriptMustReturnCorrectID(t *testing.T) {
 	count := k.GetOracleScriptCount(ctx)
 	require.Equal(t, count, int64(0))
 	// Every new oracle script we add should return a new ID.
-	id1, err := k.AddOracleScript(ctx,
+	id1, err := k.AddOracleScript(ctx, types.NewOracleScript(
 		Owner.Address, BasicName, BasicDesc, BasicCode, BasicSchema, BasicSourceCodeURL,
-	)
+	))
 	require.Nil(t, err)
 	require.Equal(t, id1, types.OID(1))
 	// Adds another oracle script so now ID should be 2.
-	id2, err := k.AddOracleScript(ctx,
+	id2, err := k.AddOracleScript(ctx, types.NewOracleScript(
 		Owner.Address, BasicName, BasicDesc, BasicCode, BasicSchema, BasicSourceCodeURL,
-	)
+	))
 	require.Nil(t, err)
 	require.Equal(t, id2, types.OID(2))
 	// Finally we expect the oracle script to increase to 2 since we added two oracle scripts.
@@ -123,15 +123,15 @@ func TestAddOracleScriptTooLongName(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// Sets max name length to 9. We should fail to add oracle script with name length 10.
 	k.SetParam(ctx, types.KeyMaxNameLength, 9)
-	_, err := k.AddOracleScript(ctx,
+	_, err := k.AddOracleScript(ctx, types.NewOracleScript(
 		Owner.Address, "0123456789", BasicDesc, BasicCode, BasicSchema, BasicSourceCodeURL,
-	)
+	))
 	require.Error(t, err)
 	// Sets max name length to 10. We should now be able to add the oracle script.
 	k.SetParam(ctx, types.KeyMaxNameLength, 10)
-	_, err = k.AddOracleScript(ctx,
+	_, err = k.AddOracleScript(ctx, types.NewOracleScript(
 		Owner.Address, "0123456789", BasicDesc, BasicCode, BasicSchema, BasicSourceCodeURL,
-	)
+	))
 	require.Nil(t, err)
 }
 
@@ -159,17 +159,17 @@ func TestAddOracleScriptTooLongDescription(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// Sets max desc length to 41. We should fail to add oracle script with desc length 42.
 	k.SetParam(ctx, types.KeyMaxDescriptionLength, 41)
-	_, err := k.AddOracleScript(ctx,
+	_, err := k.AddOracleScript(ctx, types.NewOracleScript(
 		Owner.Address, BasicName, "________THIS_STRING_HAS_SIZE_OF_42________", BasicCode,
 		BasicSchema, BasicSourceCodeURL,
-	)
+	))
 	require.Error(t, err)
 	// Sets max desc length to 42. We should now be able to add the oracle script.
 	k.SetParam(ctx, types.KeyMaxDescriptionLength, 42)
-	_, err = k.AddOracleScript(ctx,
+	_, err = k.AddOracleScript(ctx, types.NewOracleScript(
 		Owner.Address, BasicName, "________THIS_STRING_HAS_SIZE_OF_42________", BasicCode,
 		BasicSchema, BasicSourceCodeURL,
-	)
+	))
 	require.Nil(t, err)
 }
 
@@ -197,19 +197,19 @@ func TestAddOracleScriptTooBigCode(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// Sets max code size to 40. We should fail to add oracle script with exec size 42.
 	k.SetParam(ctx, types.KeyMaxOracleScriptCodeSize, 40)
-	_, err := k.AddOracleScript(ctx,
+	_, err := k.AddOracleScript(ctx, types.NewOracleScript(
 		Owner.Address, BasicName, BasicDesc,
 		[]byte("________THIS_STRING_HAS_SIZE_OF_42________"),
 		BasicSchema, BasicSourceCodeURL,
-	)
+	))
 	require.Error(t, err)
 	// Sets max code size to 50. We should now be able to add the oracle script.
 	k.SetParam(ctx, types.KeyMaxOracleScriptCodeSize, 50)
-	_, err = k.AddOracleScript(ctx,
+	_, err = k.AddOracleScript(ctx, types.NewOracleScript(
 		Owner.Address, BasicName, BasicDesc,
 		[]byte("________THIS_STRING_HAS_SIZE_OF_42________"),
 		BasicSchema, BasicSourceCodeURL,
-	)
+	))
 	require.Nil(t, err)
 }
 

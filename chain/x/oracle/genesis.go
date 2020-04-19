@@ -52,22 +52,20 @@ func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorU
 	k.SetParam(ctx, KeyPrepareGas, data.Params.PrepareGas)
 
 	for _, dataSource := range data.DataSources {
-		_, err := k.AddDataSource(
-			ctx,
-			dataSource.Owner,
-			dataSource.Name,
-			dataSource.Description,
-			dataSource.Fee,
-			dataSource.Executable,
-		)
+		_, err := k.AddDataSource(ctx, types.NewDataSource(
+			dataSource.Owner, dataSource.Name, dataSource.Description,
+			dataSource.Fee, dataSource.Executable,
+		))
 		if err != nil {
 			panic(err)
 		}
 	}
 
 	for _, oracleScript := range data.OracleScripts {
-		_, err := k.AddOracleScript(
-			ctx, oracleScript.Owner, oracleScript.Name, oracleScript.Description, oracleScript.Code, oracleScript.Schema, oracleScript.SourceCodeURL)
+		_, err := k.AddOracleScript(ctx, types.NewOracleScript(
+			oracleScript.Owner, oracleScript.Name, oracleScript.Description,
+			oracleScript.Code, oracleScript.Schema, oracleScript.SourceCodeURL,
+		))
 		if err != nil {
 			panic(err)
 		}
