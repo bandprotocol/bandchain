@@ -133,8 +133,7 @@ func handleMsgRequestData(ctx sdk.Context, k Keeper, m MsgRequestData, ibcData .
 
 	req := types.NewRequest(
 		m.OracleScriptID, m.Calldata, validators, m.SufficientValidatorCount,
-		ctx.BlockHeight(), ctx.BlockTime().Unix(),
-		ctx.BlockHeight()+int64(k.GetParam(ctx, types.KeyExpirationBlockCount)), m.ClientID,
+		ctx.BlockHeight(), ctx.BlockTime().Unix(), m.ClientID,
 	)
 
 	// TODO: HACK AREA!
@@ -162,18 +161,27 @@ func handleMsgRequestData(ctx sdk.Context, k Keeper, m MsgRequestData, ibcData .
 		return nil, err
 	}
 
-	for _, rawRequest := range env.GetRawRequests() {
-		err := k.PayDataSourceFee(ctx, rawRequest.DataSourceID, m.Sender)
-		if err != nil {
+	ctx.EventManager().EmitEvents(sdk.Events{sdk.NewEvent(
+		types.EventTypeRequest,
+		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
+	)})
+	for _, raw := range env.GetRawRequests() {
+		err := k.PayDataSourceFee(ctx, raw.DataSourceID, m.Sender)
+		if err != nil { // We should fail here if the request tries to use an unknown data source.
 			return nil, err
 		}
-		// TODO: Emit raw request event and remove raw request keeper.
-		err = k.AddRawRequest(ctx, id, rawRequest)
+		ctx.EventManager().EmitEvents(sdk.Events{sdk.NewEvent(
+			types.EventTypeRawRequest,
+			sdk.NewAttribute(types.AttributeKeyDataSourceID, fmt.Sprintf("%d", raw.DataSourceID)),
+			sdk.NewAttribute(types.AttributeKeyExternalID, fmt.Sprintf("%d", raw.ExternalID)),
+			sdk.NewAttribute(types.AttributeKeyCalldata, string(raw.Calldata)),
+		)})
+		// TODO: Remove raw request keeper. Make cacher and bandoracled parse from events.
+		err = k.AddRawRequest(ctx, id, raw)
 		if err != nil {
 			return nil, err
 		}
 	}
-
 	ctx.EventManager().EmitEvents(sdk.Events{sdk.NewEvent(
 		types.EventTypeRequest,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),

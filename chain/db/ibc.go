@@ -67,7 +67,7 @@ func (b *BandDB) handleMsgPacket(
 			int64(requestPacket.OracleScriptID),
 			calldata,
 			requestPacket.MinCount,
-			request.ExpirationHeight,
+			request.RequestHeight+20, // TODO: REMOVE THIS. HACK!!!!
 			"Pending",
 			msg.Signer.String(),
 			requestPacket.ClientID,

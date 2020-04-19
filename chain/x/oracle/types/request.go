@@ -21,7 +21,6 @@ type Request struct {
 	SufficientValidatorCount int64            `json:"sufficient_validator_count"`
 	RequestHeight            int64            `json:"request_height"`
 	RequestTime              int64            `json:"request_time"`
-	ExpirationHeight         int64            `json:"expiration_height"`
 	ClientID                 string           `json:"client_id"`
 
 	SourcePort    string `json:"source_port"`
@@ -36,7 +35,6 @@ func NewRequest(
 	sufficientValidatorCount int64,
 	requestHeight int64,
 	requestTime int64,
-	expirationHeight int64,
 	clientID string,
 ) Request {
 	return Request{
@@ -46,7 +44,6 @@ func NewRequest(
 		SufficientValidatorCount: sufficientValidatorCount,
 		RequestHeight:            requestHeight,
 		RequestTime:              requestTime,
-		ExpirationHeight:         expirationHeight,
 		SourcePort:               "",
 		SourceChannel:            "",
 		ClientID:                 clientID,

@@ -178,7 +178,7 @@ func (b *BandDB) handleMsgRequestData(
 		int64(msg.OracleScriptID),
 		msg.Calldata,
 		msg.SufficientValidatorCount,
-		request.ExpirationHeight,
+		request.RequestHeight+20, // TODO: REMOVE THIS. HACK!!!
 		"Pending",
 		msg.Sender.String(),
 		msg.ClientID,

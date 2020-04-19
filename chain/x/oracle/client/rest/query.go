@@ -33,7 +33,7 @@ func buildRequestRESTInfo(
 	request.Calldata = queryRequest.Request.Calldata
 	request.RequestedValidators = queryRequest.Request.RequestedValidators
 	request.SufficientValidatorCount = queryRequest.Request.SufficientValidatorCount
-	request.ExpirationHeight = queryRequest.Request.ExpirationHeight
+	// request.ExpirationHeight = queryRequest.Request.ExpirationHeight
 	// request.ResolveStatus = queryRequest.Request.ResolveStatus
 	request.RawDataRequests = queryRequest.RawDataRequests
 
