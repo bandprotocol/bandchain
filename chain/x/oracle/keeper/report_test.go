@@ -1,4 +1,21 @@
-package keeper
+package keeper_test
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/require"
+
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+)
+
+func TestHasReport(t *testing.T) {
+	_, ctx, k := createTestInput()
+	// We should not have a report to request ID 42 from Alice without setting it.
+	require.False(t, k.HasReport(ctx, 42, Alice.ValAddress))
+	// After we set it, we should be able to find it.
+	k.SetReport(ctx, 42, types.NewReport(nil, Alice.ValAddress))
+	require.True(t, k.HasReport(ctx, 42, Alice.ValAddress))
+}
 
 // import (
 // 	"testing"
@@ -197,7 +214,7 @@ package keeper
 // 	description := "description"
 // 	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
 // 	executable := []byte("executable")
-// 	keeper.AddDataSource(ctx, owner, name, description, fee, executable)
+// 	keeper.AddReport(ctx, owner, name, description, fee, executable)
 
 // 	// Set MaxCalldataSize to 0
 // 	// AddRawRequest should fail because size of "calldata" is > 0
