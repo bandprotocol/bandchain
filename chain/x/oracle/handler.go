@@ -151,6 +151,7 @@ func handleMsgRequestData(ctx sdk.Context, k Keeper, m MsgRequestData, ibcData .
 	gasPrepare := k.GetParam(ctx, types.KeyPrepareGas)
 	ctx.GasMeter().ConsumeGas(gasPrepare, "PrepareRequest")
 
+	// TODO: We will need to also validate call data size here
 	_, _, err = k.OwasmExecute(env, script.Code, "prepare", m.Calldata, 100000)
 	if err != nil {
 		return nil, sdkerrors.Wrapf(types.ErrBadWasmExecution, err.Error())
