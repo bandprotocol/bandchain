@@ -47,9 +47,9 @@ func buildRequestQuerierInfo(
 
 	rawRequests := keeper.GetRawRequests(ctx, id)
 
-	reportMap := make(map[string]([]types.RawDataReportWithID))
+	reportMap := make(map[string]([]types.RawReport))
 	for _, report := range keeper.GetReports(ctx, id) {
-		reportMap[string(report.Validator)] = report.RawDataReports
+		reportMap[string(report.Validator)] = report.RawReports
 	}
 
 	reports := make([]types.Report, 0)

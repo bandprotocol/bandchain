@@ -51,8 +51,7 @@ var (
 	NewDataSource          = types.NewDataSource
 	NewOracleScript        = types.NewOracleScript
 	DefaultParams          = types.DefaultParams
-	NewRawDataReport       = types.NewRawDataReport
-	NewRawDataReportWithID = types.NewRawDataReportWithID
+	NewRawReport = types.NewRawReport
 
 	KeyMaxExecutableSize                = types.KeyMaxExecutableSize
 	KeyMaxOracleScriptCodeSize          = types.KeyMaxOracleScriptCodeSize
@@ -91,8 +90,7 @@ type (
 	OracleRequestPacketData  = types.OracleRequestPacketData
 	OracleResponsePacketData = types.OracleResponsePacketData
 
-	RawDataReport         = types.RawDataReport
-	RawDataReportWithID   = types.RawDataReportWithID
+	RawReport   = types.RawReport
 	RequestQuerierInfo    = types.RequestQuerierInfo
 	DataSourceQuerierInfo = types.DataSourceQuerierInfo
 

@@ -218,13 +218,13 @@ package keeper
 // 				),
 // 			},
 // 			[]types.Report{
-// 				types.NewReport([]types.RawDataReportWithID{
-// 					types.NewRawDataReportWithID(1, 0, []byte("report1")),
-// 					types.NewRawDataReportWithID(2, 0, []byte("report2")),
+// 				types.NewReport([]types.RawReport{
+// 					types.NewRawReport(1, 0, []byte("report1")),
+// 					types.NewRawReport(2, 0, []byte("report2")),
 // 				}, request.RequestedValidators[0]),
-// 				types.NewReport([]types.RawDataReportWithID{
-// 					types.NewRawDataReportWithID(1, 0, []byte("report1-2")),
-// 					types.NewRawDataReportWithID(2, 0, []byte("report2-2")),
+// 				types.NewReport([]types.RawReport{
+// 					types.NewRawReport(1, 0, []byte("report1-2")),
+// 					types.NewRawReport(2, 0, []byte("report2-2")),
 // 				}, request.RequestedValidators[1]),
 // 			},
 // 			types.Result{
@@ -290,9 +290,9 @@ package keeper
 // 				),
 // 			},
 // 			[]types.Report{
-// 				types.NewReport([]types.RawDataReportWithID{
-// 					types.NewRawDataReportWithID(1, 0, []byte("report1-2")),
-// 					types.NewRawDataReportWithID(2, 0, []byte("report2-2")),
+// 				types.NewReport([]types.RawReport{
+// 					types.NewRawReport(1, 0, []byte("report1-2")),
+// 					types.NewRawReport(2, 0, []byte("report2-2")),
 // 				}, request.RequestedValidators[1]),
 // 			},
 // 			types.Result{},
@@ -374,13 +374,13 @@ package keeper
 // 					),
 // 				},
 // 				[]types.Report{
-// 					types.NewReport([]types.RawDataReportWithID{
-// 						types.NewRawDataReportWithID(1, 0, []byte("report1")),
-// 						types.NewRawDataReportWithID(2, 0, []byte("report2")),
+// 					types.NewReport([]types.RawReport{
+// 						types.NewRawReport(1, 0, []byte("report1")),
+// 						types.NewRawReport(2, 0, []byte("report2")),
 // 					}, request.RequestedValidators[0]),
-// 					types.NewReport([]types.RawDataReportWithID{
-// 						types.NewRawDataReportWithID(1, 0, []byte("report1-2")),
-// 						types.NewRawDataReportWithID(2, 0, []byte("report2-2")),
+// 					types.NewReport([]types.RawReport{
+// 						types.NewRawReport(1, 0, []byte("report1-2")),
+// 						types.NewRawReport(2, 0, []byte("report2-2")),
 // 					}, request.RequestedValidators[1]),
 // 				},
 // 				result,

@@ -8,7 +8,7 @@ import (
 
 type ReportDetail struct {
 	Reporter sdk.ValAddress              `json:"reporter"`
-	Value    []types.RawDataReportWithID `json:"value"`
+	Value    []types.RawReport `json:"value"`
 	Tx       TxDetail                    `json:"tx,omitempty"`
 }
 

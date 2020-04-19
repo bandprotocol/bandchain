@@ -32,10 +32,10 @@ func (k Keeper) AddReport(ctx sdk.Context, rid types.RID, rep types.Report) erro
 		return sdkerrors.Wrapf(
 			types.ErrValidatorAlreadyReported, "reqID: %d, val: %s", rid, rep.Validator.String())
 	}
-	if int64(len(rep.RawDataReports)) != k.GetRawRequestCount(ctx, rid) {
+	if int64(len(rep.RawReports)) != k.GetRawRequestCount(ctx, rid) {
 		return types.ErrInvalidDataSourceCount
 	}
-	for _, rep := range rep.RawDataReports {
+	for _, rep := range rep.RawReports {
 		// Here we can safely assume that external IDs are unique, as this has already been
 		// checked by ValidateBasic performed in baseapp's runTx function.
 		if !k.HasRawRequest(ctx, rid, rep.ExternalID) {

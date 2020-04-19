@@ -14,7 +14,7 @@ type ExecutionEnvironment struct {
 	maxCalldataSize        int64
 	maxRawDataRequestCount int64
 	rawDataRequests        []types.RawRequest
-	rawDataReports         map[string]map[types.EID]types.RawDataReport
+	rawDataReports         map[string]map[types.EID]types.RawReport
 }
 
 func NewExecutionEnvironment(ctx sdk.Context, k Keeper, req types.Request) *ExecutionEnvironment {
@@ -25,7 +25,7 @@ func NewExecutionEnvironment(ctx sdk.Context, k Keeper, req types.Request) *Exec
 		maxCalldataSize:        int64(k.GetParam(ctx, KeyMaxCalldataSize)),
 		maxRawDataRequestCount: int64(k.GetParam(ctx, KeyMaxDataSourceCountPerRequest)),
 		rawDataRequests:        []types.RawRequest{},
-		rawDataReports:         make(map[string]map[types.EID]types.RawDataReport),
+		rawDataReports:         make(map[string]map[types.EID]types.RawReport),
 	}
 }
 
@@ -35,9 +35,9 @@ func (env *ExecutionEnvironment) GetRawRequests() []types.RawRequest {
 
 func (env *ExecutionEnvironment) SetReports(reports []types.Report) {
 	for _, report := range reports {
-		valReports := make(map[types.EID]types.RawDataReport)
-		for _, each := range report.RawDataReports {
-			valReports[each.ExternalID] = types.NewRawDataReport(each.ExitCode, each.Data)
+		valReports := make(map[types.EID]types.RawReport)
+		for _, each := range report.RawReports {
+			valReports[each.ExternalID] = each
 		}
 		env.rawDataReports[report.Validator.String()] = valReports
 	}

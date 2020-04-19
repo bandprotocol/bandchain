@@ -392,8 +392,8 @@ func TestReportSuccess(t *testing.T) {
 	ctx = ctx.WithBlockHeight(5)
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589800), 0))
 
-	msg := types.NewMsgReportData(1, []types.RawDataReportWithID{
-		types.NewRawDataReportWithID(42, 0, []byte("data1")),
+	msg := types.NewMsgReportData(1, []types.RawReport{
+		types.NewRawReport(42, 0, []byte("data1")),
 	}, validatorAddress1, reporterAddress1)
 
 	_, err = handleMsgReportData(ctx, keeper, msg)
@@ -401,8 +401,8 @@ func TestReportSuccess(t *testing.T) {
 	list := keeper.GetPendingResolveList(ctx)
 	require.Equal(t, []types.RequestID{}, list)
 
-	msg = types.NewMsgReportData(1, []types.RawDataReportWithID{
-		types.NewRawDataReportWithID(42, 0, []byte("data2")),
+	msg = types.NewMsgReportData(1, []types.RawReport{
+		types.NewRawReport(42, 0, []byte("data2")),
 	}, validatorAddress2, reporterAddress2)
 
 	_, err = handleMsgReportData(ctx, keeper, msg)
@@ -449,8 +449,8 @@ func TestReportFailed(t *testing.T) {
 	ctx = ctx.WithBlockHeight(5)
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589800), 0))
 
-	msg := types.NewMsgReportData(1, []types.RawDataReportWithID{
-		types.NewRawDataReportWithID(41, 0, []byte("data1")),
+	msg := types.NewMsgReportData(1, []types.RawReport{
+		types.NewRawReport(41, 0, []byte("data1")),
 	}, validatorAddress1, reporterAddress1)
 
 	// Test only 1 failed case, other case tested in keeper/report_test.go
@@ -561,8 +561,8 @@ func TestAddAndRemoveOracleAddress(t *testing.T) {
 
 	require.NotNil(t, err)
 
-	msg := types.NewMsgReportData(1, []types.RawDataReportWithID{
-		types.NewRawDataReportWithID(42, 0, []byte("data1")),
+	msg := types.NewMsgReportData(1, []types.RawReport{
+		types.NewRawReport(42, 0, []byte("data1")),
 	}, validatorAddress1, reporterAddress2)
 
 	_, err = handleMsgReportData(ctx, keeper, msg)
@@ -574,8 +574,8 @@ func TestAddAndRemoveOracleAddress(t *testing.T) {
 	err = keeper.RemoveReporter(ctx, validatorAddress1, reporterAddress2)
 	require.NotNil(t, err)
 
-	msg = types.NewMsgReportData(1, []types.RawDataReportWithID{
-		types.NewRawDataReportWithID(42, 0, []byte("data2")),
+	msg = types.NewMsgReportData(1, []types.RawReport{
+		types.NewRawReport(42, 0, []byte("data2")),
 	}, validatorAddress1, reporterAddress2)
 
 	_, err = handleMsgReportData(ctx, keeper, msg)

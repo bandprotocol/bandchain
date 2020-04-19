@@ -99,7 +99,7 @@ func buildRequestRESTInfo(
 			request.Reports,
 			ReportDetail{
 				Reporter: queryReport.Validator,
-				Value:    queryReport.RawDataReports,
+				Value:    queryReport.RawReports,
 				Tx:       report,
 			},
 		)
