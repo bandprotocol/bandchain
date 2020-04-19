@@ -5,36 +5,27 @@ import (
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 type ExecutionEnvironment struct {
-	// TODO: SWIT CLEAN UP
-	isPrepare     bool
-	receivedCount int64
-
 	request                types.Request
 	now                    int64
 	maxResultSize          int64
 	maxCalldataSize        int64
 	maxRawDataRequestCount int64
 	rawDataRequests        []types.RawRequest
-	rawDataReports         map[string]types.RawDataReport
+	rawDataReports         map[string]map[types.EID]types.RawDataReport
 }
 
-func NewExecutionEnvironment(
-	ctx sdk.Context, keeper Keeper, req types.Request, isPrepare bool, receivedCount int64,
-) *ExecutionEnvironment {
+func NewExecutionEnvironment(ctx sdk.Context, k Keeper, req types.Request) *ExecutionEnvironment {
 	return &ExecutionEnvironment{
-		isPrepare:              isPrepare,
-		receivedCount:          receivedCount,
 		request:                req,
 		now:                    ctx.BlockTime().Unix(),
-		maxResultSize:          int64(keeper.GetParam(ctx, KeyMaxResultSize)),
-		maxCalldataSize:        int64(keeper.GetParam(ctx, KeyMaxCalldataSize)),
-		maxRawDataRequestCount: int64(keeper.GetParam(ctx, KeyMaxDataSourceCountPerRequest)),
+		maxResultSize:          int64(k.GetParam(ctx, KeyMaxResultSize)),
+		maxCalldataSize:        int64(k.GetParam(ctx, KeyMaxCalldataSize)),
+		maxRawDataRequestCount: int64(k.GetParam(ctx, KeyMaxDataSourceCountPerRequest)),
 		rawDataRequests:        []types.RawRequest{},
-		rawDataReports:         make(map[string]types.RawDataReport),
+		rawDataReports:         make(map[string]map[types.EID]types.RawDataReport),
 	}
 }
 
@@ -42,18 +33,15 @@ func (env *ExecutionEnvironment) GetRawRequests() []types.RawRequest {
 	return env.rawDataRequests
 }
 
-// func (env *ExecutionEnvironment) LoadDataReports(ctx sdk.Context, k Keeper) {
-// 	for _, report := range k.GetReports(ctx, env.requestID) {
-// 		for _, reportv1 := range report.RawDataReports {
-// 			key := string(types.RawDataReportStoreKeyUnique(env.requestID, reportv1.ExternalID, report.Validator))
-// 			env.rawDataReports[key] = types.NewRawDataReport(reportv1.ExitCode, reportv1.Data)
-// 		}
-// 	}
-// }
-
-// func (env *ExecutionEnvironment) GetCurrentRequestID() int64 {
-// 	return int64(env.requestID)
-// }
+func (env *ExecutionEnvironment) SetReports(reports []types.Report) {
+	for _, report := range reports {
+		valReports := make(map[types.EID]types.RawDataReport)
+		for _, each := range report.RawDataReports {
+			valReports[each.ExternalID] = types.NewRawDataReport(each.ExitCode, each.Data)
+		}
+		env.rawDataReports[report.Validator.String()] = valReports
+	}
+}
 
 func (env *ExecutionEnvironment) GetRequestedValidatorCount() int64 {
 	return int64(len(env.request.RequestedValidators))
@@ -64,7 +52,7 @@ func (env *ExecutionEnvironment) GetSufficientValidatorCount() int64 {
 }
 
 func (env *ExecutionEnvironment) GetReceivedValidatorCount() int64 {
-	return env.receivedCount
+	return int64(len(env.rawDataReports))
 }
 
 func (env *ExecutionEnvironment) GetPrepareBlockTime() int64 {
@@ -79,10 +67,10 @@ func (env *ExecutionEnvironment) GetMaximumCalldataOfDataSourceSize() int64 {
 	return env.maxCalldataSize
 }
 func (env *ExecutionEnvironment) GetAggregateBlockTime() int64 {
-	if !env.isPrepare {
-		return env.now
+	if len(env.rawDataReports) == 0 { // Size of reports must be zero during prepare.
+		return 0
 	}
-	return 0
+	return env.now
 }
 
 func (env *ExecutionEnvironment) GetValidatorAddress(validatorIndex int64) ([]byte, error) {
@@ -110,16 +98,14 @@ func (env *ExecutionEnvironment) GetExternalData(eid int64, valIdx int64) ([]byt
 	if valIdx < 0 || valIdx >= int64(len(env.request.RequestedValidators)) {
 		return nil, 0, errors.New("validator out of range")
 	}
-	validatorAddress := env.request.RequestedValidators[valIdx]
-
-	// TODO: SWIT FIX THIS
-	key := string(types.RawDataReportStoreKeyUnique(123, types.EID(eid), validatorAddress))
-
-	rawDataReport, ok := env.rawDataReports[key]
-
+	valAddr := env.request.RequestedValidators[valIdx].String()
+	valReports, ok := env.rawDataReports[valAddr]
 	if !ok {
-		return nil, 0, sdkerrors.Wrapf(types.ErrItemNotFound, "Unable to find raw data report with request ID (%d) external ID (%d) from (%s)", 123, eid, validatorAddress.String())
+		return nil, 0, types.ErrItemNotFound
 	}
-
-	return rawDataReport.Data, rawDataReport.ExitCode, nil
+	valReport, ok := valReports[types.EID(eid)]
+	if !ok {
+		return nil, 0, types.ErrItemNotFound
+	}
+	return valReport.Data, valReport.ExitCode, nil
 }

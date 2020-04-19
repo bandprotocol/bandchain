@@ -144,7 +144,7 @@ func handleMsgRequestData(ctx sdk.Context, k Keeper, m MsgRequestData, ibcData .
 	}
 	// END HACK AREA!
 
-	env := NewExecutionEnvironment(ctx, k, req, true, 0)
+	env := NewExecutionEnvironment(ctx, k, req)
 	script, err := k.GetOracleScript(ctx, m.OracleScriptID)
 	if err != nil {
 		return nil, sdkerrors.Wrapf(types.ErrOracleScriptNotFound, "id: %d", m.OracleScriptID)
