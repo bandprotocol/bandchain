@@ -94,10 +94,8 @@ func handleMsgEditDataSource(ctx sdk.Context, k Keeper, msg MsgEditDataSource) (
 	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
 
-func handleMsgCreateOracleScript(
-	ctx sdk.Context, keeper Keeper, msg MsgCreateOracleScript,
-) (*sdk.Result, error) {
-	oracleScriptID, err := keeper.AddOracleScript(ctx, msg.Owner, msg.Name, msg.Description, msg.Code, msg.Schema, msg.SourceCodeURL)
+func handleMsgCreateOracleScript(ctx sdk.Context, k Keeper, msg MsgCreateOracleScript) (*sdk.Result, error) {
+	oracleScriptID, err := k.AddOracleScript(ctx, msg.Owner, msg.Name, msg.Description, msg.Code, msg.Schema, msg.SourceCodeURL)
 	if err != nil {
 		return nil, err
 	}
@@ -130,10 +128,19 @@ func handleMsgEditOracleScript(ctx sdk.Context, k Keeper, msg MsgEditOracleScrip
 }
 
 func handleMsgRequestData(ctx sdk.Context, k Keeper, msg MsgRequestData, ibcData ...string) (*sdk.Result, error) {
-	id, err := k.AddRequest(
-		ctx, msg.OracleScriptID, msg.Calldata, msg.RequestedValidatorCount,
-		msg.SufficientValidatorCount, msg.ClientID,
-	)
+
+	validators, err := k.GetRandomValidators(ctx, int(msg.RequestedValidatorCount))
+	if err != nil {
+		return nil, err
+	}
+	// req.RequestedValidators = validators
+	expirationHeight := ctx.BlockHeight() + int64(k.GetParam(ctx, types.KeyExpirationBlockCount))
+
+	id, err := k.AddRequest(ctx, types.NewRequest(
+		msg.OracleScriptID, msg.Calldata, validators, msg.SufficientValidatorCount,
+		ctx.BlockHeight(), ctx.BlockTime().Unix(), expirationHeight, msg.ClientID,
+	))
+
 	// TODO: HACK AREA!
 	if len(ibcData) == 2 {
 		request, _ := k.GetRequest(ctx, id)

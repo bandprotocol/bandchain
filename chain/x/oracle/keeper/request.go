@@ -41,10 +41,9 @@ func (k Keeper) DeleteRequest(ctx sdk.Context, id types.RequestID) {
 	ctx.KVStore(k.storeKey).Delete(types.RequestStoreKey(id))
 }
 
-// GetRandomValidators returns a pseudorandom set of active validators of the given size, based
-// on a given seed value plus current block time. The chance of a validator getting selected
-// is directly proportional to the amount of voting power he has.
-func (k Keeper) GetRandomValidators(ctx sdk.Context, seed, size int) ([]sdk.ValAddress, error) {
+// GetRandomValidators returns a pseudorandom list of active validators. Each validator has
+// chance of getting selected directly proportional to the amount of voting power it has.
+func (k Keeper) GetRandomValidators(ctx sdk.Context, size int) ([]sdk.ValAddress, error) {
 	// TODO: Make this function actually return random validators.
 	validatorsByPower := k.StakingKeeper.GetBondedValidatorsByPower(ctx)
 	if len(validatorsByPower) < size {
@@ -61,35 +60,17 @@ func (k Keeper) GetRandomValidators(ctx sdk.Context, seed, size int) ([]sdk.ValA
 	return validators, nil
 }
 
-// AddRequest attempts to create and save a new request. Returns error some conditions failed.
-func (k Keeper) AddRequest(
-	ctx sdk.Context, oracleScriptID types.OracleScriptID, calldata []byte,
-	requestedValidatorCount, sufficientValidatorCount int64, clientID string,
-) (types.RequestID, error) {
-	if !k.HasOracleScript(ctx, oracleScriptID) {
-		return 0, sdkerrors.Wrapf(types.ErrOracleScriptNotFound, "id: %d", oracleScriptID)
+// AddRequest attempts to create and save a new request. Returns error if some conditions failed.
+func (k Keeper) AddRequest(ctx sdk.Context, req types.Request) (types.RequestID, error) {
+	if !k.HasOracleScript(ctx, req.OracleScriptID) {
+		return 0, sdkerrors.Wrapf(types.ErrOracleScriptNotFound, "id: %d", req.OracleScriptID)
 	}
-
-	if uint64(len(calldata)) > k.GetParam(ctx, types.KeyMaxCalldataSize) {
-		return 0, sdkerrors.Wrapf(types.ErrBadDataValue,
-			"AddRequest: Calldata size (%d) exceeds the maximum size (%d).",
-			len(calldata), k.GetParam(ctx, types.KeyMaxCalldataSize),
-		)
-	}
-
-	validators, err := k.GetRandomValidators(ctx, 0, int(requestedValidatorCount))
-	if err != nil {
+	if err := k.EnsureLength(ctx, types.KeyMaxCalldataSize, len(req.Calldata)); err != nil {
 		return 0, err
 	}
-
-	expirationHeight := ctx.BlockHeight() + int64(k.GetParam(ctx, types.KeyExpirationBlockCount))
-	requestID := k.GetNextRequestID(ctx)
-	k.SetRequest(ctx, requestID, types.NewRequest(
-		oracleScriptID, calldata, validators, sufficientValidatorCount, ctx.BlockHeight(),
-		ctx.BlockTime().Unix(), expirationHeight, clientID,
-	))
-
-	return requestID, nil
+	id := k.GetNextRequestID(ctx)
+	k.SetRequest(ctx, id, req)
+	return id, nil
 }
 
 // ProcessOracleResponse takes a

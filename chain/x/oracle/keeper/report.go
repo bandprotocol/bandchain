@@ -24,9 +24,6 @@ func (k Keeper) AddReport(ctx sdk.Context, rid types.RID, rep types.Report) erro
 	if err != nil {
 		return err
 	}
-
-	// TODO: Keep statistics of validator reports, so we can jail inactive validators!
-
 	if !ContainsVal(req.RequestedValidators, rep.Validator) {
 		return sdkerrors.Wrapf(
 			types.ErrValidatorNotRequested, "reqID: %d, val: %s", rid, rep.Validator.String())
@@ -38,7 +35,6 @@ func (k Keeper) AddReport(ctx sdk.Context, rid types.RID, rep types.Report) erro
 	if int64(len(rep.RawDataReports)) != k.GetRawRequestCount(ctx, rid) {
 		return types.ErrInvalidDataSourceCount
 	}
-
 	for _, rep := range rep.RawDataReports {
 		// Here we can safely assume that external IDs are unique, as this has already been
 		// checked by ValidateBasic performed in baseapp's runTx function.
@@ -50,7 +46,6 @@ func (k Keeper) AddReport(ctx sdk.Context, rid types.RID, rep types.Report) erro
 			return err
 		}
 	}
-
 	k.SetReport(ctx, rid, rep)
 	return nil
 }
