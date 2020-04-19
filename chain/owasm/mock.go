@@ -5,7 +5,6 @@ import (
 )
 
 type mockExecutionEnvironment struct {
-	requestID                         int64
 	requestedValidatorCount           int64
 	sufficientValidatorCount          int64
 	receivedValidatorCount            int64
@@ -16,10 +15,6 @@ type mockExecutionEnvironment struct {
 	maximumResultSize                 int64
 	maximumCalldataOfDataSourceSize   int64
 	requestExternalDataResultsCounter [][]int64
-}
-
-func (m *mockExecutionEnvironment) GetCurrentRequestID() int64 {
-	return m.requestID
 }
 
 func (m *mockExecutionEnvironment) GetRequestedValidatorCount() int64 {

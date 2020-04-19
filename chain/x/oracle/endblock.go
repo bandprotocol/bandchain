@@ -8,12 +8,12 @@ import (
 // resolveRequest resolves the given request, sends response packet out (if applicable),
 // and saves result hash to the store. Assumes that the given request is in a resolvable state.
 func resolveRequest(ctx sdk.Context, k Keeper, reqID types.RequestID) {
-	request := k.MustGetRequest(ctx, reqID)
-	env := NewExecutionEnvironment(ctx, k, reqID, false, k.GetReportCount(ctx, reqID))
-	env.LoadDataReports(ctx, k)
-	script := k.MustGetOracleScript(ctx, request.OracleScriptID)
+	req := k.MustGetRequest(ctx, reqID)
+	env := NewExecutionEnvironment(ctx, k, req, false, k.GetReportCount(ctx, reqID))
+	// env.LoadDataReports(ctx, k)
+	script := k.MustGetOracleScript(ctx, req.OracleScriptID)
 	executeGas := k.GetParam(ctx, KeyExecuteGas)
-	result, _, err := k.OwasmExecute(env, script.Code, "execute", request.Calldata, executeGas)
+	result, _, err := k.OwasmExecute(env, script.Code, "execute", req.Calldata, executeGas)
 	var resolveStatus types.ResolveStatus
 	if err != nil {
 		resolveStatus = types.Failure

@@ -17,8 +17,6 @@ func (r *resolver) ResolveFunc(module, field string) exec.FunctionImport {
 		panic(fmt.Errorf("ResolveFunc: unknown module: %s", module))
 	}
 	switch field {
-	case "getCurrentRequestID":
-		return r.resolveGetCurrentRequestID
 	case "getRequestedValidatorCount":
 		return r.resolveGetRequestedValidatorCount
 	case "getSufficientValidatorCount":
@@ -52,10 +50,6 @@ func (r *resolver) ResolveFunc(module, field string) exec.FunctionImport {
 
 func (r *resolver) ResolveGlobal(module, field string) int64 {
 	panic(fmt.Errorf("ResolveGlobal is not supported by owasm!"))
-}
-
-func (r *resolver) resolveGetCurrentRequestID(vm *exec.VirtualMachine) int64 {
-	return r.env.GetCurrentRequestID()
 }
 
 func (r *resolver) resolveGetRequestedValidatorCount(vm *exec.VirtualMachine) int64 {

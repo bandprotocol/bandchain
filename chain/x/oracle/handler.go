@@ -130,32 +130,36 @@ func handleMsgRequestData(ctx sdk.Context, k Keeper, m MsgRequestData, ibcData .
 	if err != nil {
 		return nil, err
 	}
-	id, err := k.AddRequest(ctx, types.NewRequest(
+
+	req := types.NewRequest(
 		m.OracleScriptID, m.Calldata, validators, m.SufficientValidatorCount,
 		ctx.BlockHeight(), ctx.BlockTime().Unix(),
 		ctx.BlockHeight()+int64(k.GetParam(ctx, types.KeyExpirationBlockCount)), m.ClientID,
-	))
-	if err != nil {
-		return nil, err
-	}
+	)
 
 	// TODO: HACK AREA!
 	if len(ibcData) == 2 {
-		request, _ := k.GetRequest(ctx, id)
-		request.SourcePort = ibcData[0]
-		request.SourceChannel = ibcData[1]
-		k.SetRequest(ctx, id, request)
+		req.SourcePort = ibcData[0]
+		req.SourceChannel = ibcData[1]
 	}
 	// END HACK AREA!
 
-	env := NewExecutionEnvironment(ctx, k, id, true, 0)
-	script := k.MustGetOracleScript(ctx, m.OracleScriptID)
+	env := NewExecutionEnvironment(ctx, k, req, true, 0)
+	script, err := k.GetOracleScript(ctx, m.OracleScriptID)
+	if err != nil {
+		return nil, sdkerrors.Wrapf(types.ErrOracleScriptNotFound, "id: %d", m.OracleScriptID)
+	}
 	gasPrepare := k.GetParam(ctx, types.KeyPrepareGas)
 	ctx.GasMeter().ConsumeGas(gasPrepare, "PrepareRequest")
 
 	_, _, err = k.OwasmExecute(env, script.Code, "prepare", m.Calldata, 100000)
 	if err != nil {
 		return nil, sdkerrors.Wrapf(types.ErrBadWasmExecution, err.Error())
+	}
+
+	id, err := k.AddRequest(ctx, req)
+	if err != nil {
+		return nil, err
 	}
 
 	for _, rawRequest := range env.GetRawRequests() {

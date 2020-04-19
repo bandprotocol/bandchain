@@ -13,7 +13,6 @@ type ExecutionEnvironment struct {
 	isPrepare     bool
 	receivedCount int64
 
-	requestID              types.RequestID
 	request                types.Request
 	now                    int64
 	maxResultSize          int64
@@ -24,13 +23,12 @@ type ExecutionEnvironment struct {
 }
 
 func NewExecutionEnvironment(
-	ctx sdk.Context, keeper Keeper, requestID types.RequestID, isPrepare bool, receivedCount int64,
+	ctx sdk.Context, keeper Keeper, req types.Request, isPrepare bool, receivedCount int64,
 ) *ExecutionEnvironment {
 	return &ExecutionEnvironment{
 		isPrepare:              isPrepare,
 		receivedCount:          receivedCount,
-		requestID:              requestID,
-		request:                keeper.MustGetRequest(ctx, requestID),
+		request:                req,
 		now:                    ctx.BlockTime().Unix(),
 		maxResultSize:          int64(keeper.GetParam(ctx, KeyMaxResultSize)),
 		maxCalldataSize:        int64(keeper.GetParam(ctx, KeyMaxCalldataSize)),
@@ -44,18 +42,18 @@ func (env *ExecutionEnvironment) GetRawRequests() []types.RawRequest {
 	return env.rawDataRequests
 }
 
-func (env *ExecutionEnvironment) LoadDataReports(ctx sdk.Context, k Keeper) {
-	for _, report := range k.GetReports(ctx, env.requestID) {
-		for _, reportv1 := range report.RawDataReports {
-			key := string(types.RawDataReportStoreKeyUnique(env.requestID, reportv1.ExternalID, report.Validator))
-			env.rawDataReports[key] = types.NewRawDataReport(reportv1.ExitCode, reportv1.Data)
-		}
-	}
-}
+// func (env *ExecutionEnvironment) LoadDataReports(ctx sdk.Context, k Keeper) {
+// 	for _, report := range k.GetReports(ctx, env.requestID) {
+// 		for _, reportv1 := range report.RawDataReports {
+// 			key := string(types.RawDataReportStoreKeyUnique(env.requestID, reportv1.ExternalID, report.Validator))
+// 			env.rawDataReports[key] = types.NewRawDataReport(reportv1.ExitCode, reportv1.Data)
+// 		}
+// 	}
+// }
 
-func (env *ExecutionEnvironment) GetCurrentRequestID() int64 {
-	return int64(env.requestID)
-}
+// func (env *ExecutionEnvironment) GetCurrentRequestID() int64 {
+// 	return int64(env.requestID)
+// }
 
 func (env *ExecutionEnvironment) GetRequestedValidatorCount() int64 {
 	return int64(len(env.request.RequestedValidators))
@@ -114,12 +112,13 @@ func (env *ExecutionEnvironment) GetExternalData(eid int64, valIdx int64) ([]byt
 	}
 	validatorAddress := env.request.RequestedValidators[valIdx]
 
-	key := string(types.RawDataReportStoreKeyUnique(env.requestID, types.EID(eid), validatorAddress))
+	// TODO: SWIT FIX THIS
+	key := string(types.RawDataReportStoreKeyUnique(123, types.EID(eid), validatorAddress))
 
 	rawDataReport, ok := env.rawDataReports[key]
 
 	if !ok {
-		return nil, 0, sdkerrors.Wrapf(types.ErrItemNotFound, "Unable to find raw data report with request ID (%d) external ID (%d) from (%s)", env.requestID, eid, validatorAddress.String())
+		return nil, 0, sdkerrors.Wrapf(types.ErrItemNotFound, "Unable to find raw data report with request ID (%d) external ID (%d) from (%s)", 123, eid, validatorAddress.String())
 	}
 
 	return rawDataReport.Data, rawDataReport.ExitCode, nil
