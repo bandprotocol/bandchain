@@ -4,7 +4,6 @@ import (
 	"encoding/hex"
 	"fmt"
 
-	"github.com/bandprotocol/bandchain/chain/owasm"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -155,7 +154,7 @@ func handleMsgRequestData(ctx sdk.Context, k Keeper, m MsgRequestData, ibcData .
 
 	gasPrepare := k.GetParam(ctx, types.KeyPrepareGas)
 	ctx.GasMeter().ConsumeGas(gasPrepare, "PrepareRequest")
-	_, _, errOwasm := owasm.Execute(&env, script.Code, "prepare", m.Calldata, 100000)
+	_, _, errOwasm := k.OwasmExecute(env, script.Code, "prepare", m.Calldata, 100000)
 
 	if errOwasm != nil {
 		return nil, sdkerrors.Wrapf(types.ErrBadWasmExecution,

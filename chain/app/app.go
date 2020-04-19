@@ -35,6 +35,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 
+	"github.com/bandprotocol/bandchain/chain/owasm"
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 	bandsupply "github.com/bandprotocol/bandchain/chain/x/supply"
 )
@@ -263,6 +264,7 @@ func NewBandApp(
 	app.OracleKeeper = oracle.NewKeeper(
 		cdc,
 		keys[oracle.StoreKey],
+		owasm.Execute,
 		app.subspaces[oracle.ModuleName],
 		app.BankKeeper,
 		app.StakingKeeper,

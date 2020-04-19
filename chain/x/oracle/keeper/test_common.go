@@ -27,6 +27,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/supply"
 
+	"github.com/bandprotocol/bandchain/chain/owasm"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
@@ -152,7 +153,7 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 
 	ibcKeeper := ibc.NewKeeper(cdc, keyIBC, sk, scopedIBCKeeper)
 
-	keeper := NewKeeper(cdc, keyRequest, pk.Subspace(types.DefaultParamspace), bk, sk, ibcKeeper.ChannelKeeper, scopedOracleKeeper)
+	keeper := NewKeeper(cdc, keyRequest, owasm.Execute, pk.Subspace(types.DefaultParamspace), bk, sk, ibcKeeper.ChannelKeeper, scopedOracleKeeper)
 	require.Equal(t, account.GetAddress(), addr)
 	accountKeeper.SetAccount(ctx, account)
 

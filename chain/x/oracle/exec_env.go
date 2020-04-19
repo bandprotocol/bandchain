@@ -25,8 +25,8 @@ type ExecutionEnvironment struct {
 
 func NewExecutionEnvironment(
 	ctx sdk.Context, keeper Keeper, requestID types.RequestID, isPrepare bool, receivedCount int64,
-) ExecutionEnvironment {
-	return ExecutionEnvironment{
+) *ExecutionEnvironment {
+	return &ExecutionEnvironment{
 		isPrepare:              isPrepare,
 		receivedCount:          receivedCount,
 		requestID:              requestID,
@@ -80,6 +80,7 @@ func (env *ExecutionEnvironment) GetReceivedValidatorCount() int64 {
 func (env *ExecutionEnvironment) GetPrepareBlockTime() int64 {
 	return env.request.RequestTime
 }
+
 func (env *ExecutionEnvironment) GetMaximumResultSize() int64 {
 	return env.maxResultSize
 }
@@ -101,11 +102,7 @@ func (env *ExecutionEnvironment) GetValidatorAddress(validatorIndex int64) ([]by
 	return env.request.RequestedValidators[validatorIndex], nil
 }
 
-func (env *ExecutionEnvironment) RequestExternalData(
-	dataSourceID int64,
-	externalID int64,
-	calldata []byte,
-) error {
+func (env *ExecutionEnvironment) RequestExternalData(did int64, eid int64, calldata []byte) error {
 	if int64(len(calldata)) > env.maxCalldataSize {
 		return errors.New("calldata size limit exceeded")
 	}
@@ -114,28 +111,23 @@ func (env *ExecutionEnvironment) RequestExternalData(
 	}
 
 	env.rawDataRequests = append(env.rawDataRequests, types.NewRawRequest(
-		types.ExternalID(externalID),
-		types.DataSourceID(dataSourceID),
-		calldata,
+		types.ExternalID(eid), types.DataSourceID(did), calldata,
 	))
 	return nil
 }
 
-func (env *ExecutionEnvironment) GetExternalData(
-	externalID int64,
-	validatorIndex int64,
-) ([]byte, uint8, error) {
-	if validatorIndex < 0 || validatorIndex >= int64(len(env.request.RequestedValidators)) {
+func (env *ExecutionEnvironment) GetExternalData(eid int64, valIdx int64) ([]byte, uint8, error) {
+	if valIdx < 0 || valIdx >= int64(len(env.request.RequestedValidators)) {
 		return nil, 0, errors.New("validator out of range")
 	}
-	validatorAddress := env.request.RequestedValidators[validatorIndex]
+	validatorAddress := env.request.RequestedValidators[valIdx]
 
-	key := string(types.RawDataReportStoreKeyUnique(env.requestID, types.EID(externalID), validatorAddress))
+	key := string(types.RawDataReportStoreKeyUnique(env.requestID, types.EID(eid), validatorAddress))
 
 	rawDataReport, ok := env.rawDataReports[key]
 
 	if !ok {
-		return nil, 0, sdkerrors.Wrapf(types.ErrItemNotFound, "Unable to find raw data report with request ID (%d) external ID (%d) from (%s)", env.requestID, externalID, validatorAddress.String())
+		return nil, 0, sdkerrors.Wrapf(types.ErrItemNotFound, "Unable to find raw data report with request ID (%d) external ID (%d) from (%s)", env.requestID, eid, validatorAddress.String())
 	}
 
 	return rawDataReport.Data, rawDataReport.ExitCode, nil

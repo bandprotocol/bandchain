@@ -167,5 +167,6 @@ func NewResolver(env ExecutionEnvironment, calldata []byte) *resolver {
 	return &resolver{
 		env:      env,
 		calldata: calldata,
+		result:   []byte{},
 	}
 }
