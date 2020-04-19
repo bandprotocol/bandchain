@@ -38,45 +38,52 @@ func (k Keeper) SetDataSource(ctx sdk.Context, id types.DID, dataSource types.Da
 }
 
 // AddDataSource adds the given data source to the storage. Returns error if validation fails.
-func (k Keeper) AddDataSource(
-	ctx sdk.Context, owner sdk.AccAddress, name string, description string,
-	fee sdk.Coins, executable []byte,
-) (types.DID, error) {
+func (k Keeper) AddDataSource(ctx sdk.Context, dataSource types.DataSource) (types.DID, error) {
 	if err := AnyError(
-		k.EnsureMaxValue(ctx, types.KeyMaxNameLength, uint64(len(name))),
-		k.EnsureMaxValue(ctx, types.KeyMaxDescriptionLength, uint64(len(description))),
-		k.EnsureMaxValue(ctx, types.KeyMaxExecutableSize, uint64(len(executable))),
+		k.EnsureLength(ctx, types.KeyMaxNameLength, len(dataSource.Name)),
+		k.EnsureLength(ctx, types.KeyMaxDescriptionLength, len(dataSource.Description)),
+		k.EnsureLength(ctx, types.KeyMaxExecutableSize, len(dataSource.Executable)),
 	); err != nil {
 		return 0, err
 	}
 	id := k.GetNextDataSourceID(ctx)
-	k.SetDataSource(ctx, id, types.NewDataSource(owner, name, description, fee, executable))
+	k.SetDataSource(ctx, id, dataSource)
 	return id, nil
 }
 
 // EditDataSource edits the given data source by id and flushes it to the storage.
-func (k Keeper) EditDataSource(
-	ctx sdk.Context, id types.DID, owner sdk.AccAddress, name string,
-	description string, fee sdk.Coins, executable []byte,
-) error {
+func (k Keeper) EditDataSource(ctx sdk.Context, id types.DID, new types.DataSource) error {
 	dataSource, err := k.GetDataSource(ctx, id)
 	if err != nil {
 		return err
 	}
-	dataSource.Owner = owner // TODO: Allow NOT_MODIFY or nil in these fields.
-	dataSource.Name = name
-	dataSource.Description = description
-	dataSource.Fee = fee
-	dataSource.Executable = executable
+	dataSource.Owner = new.Owner // TODO: Allow NOT_MODIFY or nil in these fields.
+	dataSource.Name = new.Name
+	dataSource.Description = new.Description
+	dataSource.Fee = new.Fee
+	dataSource.Executable = new.Executable
 	if err := AnyError(
-		k.EnsureMaxValue(ctx, types.KeyMaxNameLength, uint64(len(dataSource.Name))),
-		k.EnsureMaxValue(ctx, types.KeyMaxDescriptionLength, uint64(len(dataSource.Description))),
-		k.EnsureMaxValue(ctx, types.KeyMaxExecutableSize, uint64(len(dataSource.Executable))),
+		k.EnsureLength(ctx, types.KeyMaxNameLength, len(dataSource.Name)),
+		k.EnsureLength(ctx, types.KeyMaxDescriptionLength, len(dataSource.Description)),
+		k.EnsureLength(ctx, types.KeyMaxExecutableSize, len(dataSource.Executable)),
 	); err != nil {
 		return err
 	}
 	k.SetDataSource(ctx, id, dataSource)
 	return nil
+}
+
+// PayDataSourceFee sends fee from sender to data source owner. Returns error on failure.
+func (k Keeper) PayDataSourceFee(ctx sdk.Context, id types.DID, sender sdk.AccAddress) error {
+	dataSource, err := k.GetDataSource(ctx, id)
+	if err != nil {
+		return err
+	}
+	if dataSource.Owner.Equals(sender) || dataSource.Fee.IsZero() {
+		// If you are the owner or it's free, no payment action is needed.
+		return nil
+	}
+	return k.CoinKeeper.SendCoins(ctx, sender, dataSource.Owner, dataSource.Fee)
 }
 
 // GetAllDataSources returns the list of all data sources in the store, or nil if there is none.

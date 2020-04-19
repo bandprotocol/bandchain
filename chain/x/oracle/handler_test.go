@@ -30,7 +30,7 @@ func mockOracleScript(ctx sdk.Context, keeper Keeper) (*sdk.Result, error) {
 	sender := sdk.AccAddress([]byte("sender"))
 	schema := "schema"
 	sourceCodeURL := "sourceCodeURL"
-	msg := types.NewMsgCreateOracleScript(owner, name, description, code, schema, sourceCodeURL,sender)
+	msg := types.NewMsgCreateOracleScript(owner, name, description, code, schema, sourceCodeURL, sender)
 	return handleMsgCreateOracleScript(ctx, keeper, msg)
 }
 
@@ -231,16 +231,16 @@ func TestRequestSuccess(t *testing.T) {
 	require.Nil(t, err)
 	expectRequest := types.NewRequest(1, calldata,
 		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
-		2, 1581589790, 22, "clientID",
+		2, 1581589790, "clientID",
 	)
 	require.Equal(t, expectRequest, actualRequest)
 
-	require.Equal(t, int64(2), keeper.GetRawDataRequestCount(ctx, 1))
+	require.Equal(t, int64(2), keeper.GetRawRequestCount(ctx, 1))
 
-	rawRequests := []types.RawDataRequest{
-		types.NewRawDataRequest(1, []byte("band-protocol")), types.NewRawDataRequest(2, []byte("band-chain")),
-	}
-	require.Equal(t, rawRequests, keeper.GetRawDataRequests(ctx, 1))
+	// rawRequests := []types.RawDataRequest{
+	// 	types.NewRawRequest(1, []byte("band-protocol")), types.NewRawRequest(2, []byte("band-chain")),
+	// }
+	// require.Equal(t, rawRequests, keeper.GetRawRequests(ctx, 1))
 	// check consumed gas must more than 100000
 	// TODO: Write a better test than just checking number comparison
 	require.GreaterOrEqual(t, afterGas-beforeGas, uint64(100000))
@@ -384,16 +384,16 @@ func TestReportSuccess(t *testing.T) {
 
 	request := types.NewRequest(1, calldata,
 		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
-		2, 1581589790, 102, "clientID",
+		2, 1581589790, "clientID",
 	)
 	keeper.SetRequest(ctx, 1, request)
-	keeper.SetRawDataRequest(ctx, 1, 42, types.NewRawDataRequest(1, []byte("calldata1")))
+	keeper.SetRawRequest(ctx, 1, types.NewRawRequest(42, 1, []byte("calldata1")))
 
 	ctx = ctx.WithBlockHeight(5)
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589800), 0))
 
-	msg := types.NewMsgReportData(1, []types.RawDataReportWithID{
-		types.NewRawDataReportWithID(42, 0, []byte("data1")),
+	msg := types.NewMsgReportData(1, []types.RawReport{
+		types.NewRawReport(42, 0, []byte("data1")),
 	}, validatorAddress1, reporterAddress1)
 
 	_, err = handleMsgReportData(ctx, keeper, msg)
@@ -401,8 +401,8 @@ func TestReportSuccess(t *testing.T) {
 	list := keeper.GetPendingResolveList(ctx)
 	require.Equal(t, []types.RequestID{}, list)
 
-	msg = types.NewMsgReportData(1, []types.RawDataReportWithID{
-		types.NewRawDataReportWithID(42, 0, []byte("data2")),
+	msg = types.NewMsgReportData(1, []types.RawReport{
+		types.NewRawReport(42, 0, []byte("data2")),
 	}, validatorAddress2, reporterAddress2)
 
 	_, err = handleMsgReportData(ctx, keeper, msg)
@@ -441,16 +441,16 @@ func TestReportFailed(t *testing.T) {
 
 	request := types.NewRequest(1, calldata,
 		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
-		2, 1581589790, 102, "clientID",
+		2, 1581589790, "clientID",
 	)
 	keeper.SetRequest(ctx, 1, request)
-	keeper.SetRawDataRequest(ctx, 1, 42, types.NewRawDataRequest(1, []byte("calldata1")))
+	keeper.SetRawRequest(ctx, 1, types.NewRawRequest(42, 1, []byte("calldata1")))
 
 	ctx = ctx.WithBlockHeight(5)
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589800), 0))
 
-	msg := types.NewMsgReportData(1, []types.RawDataReportWithID{
-		types.NewRawDataReportWithID(41, 0, []byte("data1")),
+	msg := types.NewMsgReportData(1, []types.RawReport{
+		types.NewRawReport(41, 0, []byte("data1")),
 	}, validatorAddress1, reporterAddress1)
 
 	// Test only 1 failed case, other case tested in keeper/report_test.go
@@ -484,8 +484,8 @@ func TestReportFailed(t *testing.T) {
 
 // 	handleMsgRequestData(ctx, keeper, msg)
 
-// 	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress1, types.NewRawDataReport(0, []byte("answer1")))
-// 	keeper.SetRawDataReport(ctx, 1, 1, validatorAddress2, types.NewRawDataReport(0, []byte("answer2")))
+// 	keeper.SetReport(ctx, 1, 1, validatorAddress1, types.NewRawDataReport(0, []byte("answer1")))
+// 	keeper.SetReport(ctx, 1, 1, validatorAddress2, types.NewRawDataReport(0, []byte("answer2")))
 
 // 	keeper.SetPendingResolveList(ctx, []types.RequestID{1})
 
@@ -548,10 +548,10 @@ func TestAddAndRemoveOracleAddress(t *testing.T) {
 
 	request := types.NewRequest(1, calldata,
 		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
-		2, 1581589790, 102, "clientID",
+		2, 1581589790, "clientID",
 	)
 	keeper.SetRequest(ctx, 1, request)
-	keeper.SetRawDataRequest(ctx, 1, 42, types.NewRawDataRequest(1, []byte("calldata1")))
+	keeper.SetRawRequest(ctx, 1, types.NewRawRequest(42, 1, []byte("calldata1")))
 
 	ctx = ctx.WithBlockHeight(5)
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589800), 0))
@@ -561,8 +561,8 @@ func TestAddAndRemoveOracleAddress(t *testing.T) {
 
 	require.NotNil(t, err)
 
-	msg := types.NewMsgReportData(1, []types.RawDataReportWithID{
-		types.NewRawDataReportWithID(42, 0, []byte("data1")),
+	msg := types.NewMsgReportData(1, []types.RawReport{
+		types.NewRawReport(42, 0, []byte("data1")),
 	}, validatorAddress1, reporterAddress2)
 
 	_, err = handleMsgReportData(ctx, keeper, msg)
@@ -574,8 +574,8 @@ func TestAddAndRemoveOracleAddress(t *testing.T) {
 	err = keeper.RemoveReporter(ctx, validatorAddress1, reporterAddress2)
 	require.NotNil(t, err)
 
-	msg = types.NewMsgReportData(1, []types.RawDataReportWithID{
-		types.NewRawDataReportWithID(42, 0, []byte("data2")),
+	msg = types.NewMsgReportData(1, []types.RawReport{
+		types.NewRawReport(42, 0, []byte("data2")),
 	}, validatorAddress1, reporterAddress2)
 
 	_, err = handleMsgReportData(ctx, keeper, msg)

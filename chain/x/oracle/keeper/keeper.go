@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"github.com/bandprotocol/bandchain/chain/owasm"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -14,6 +15,7 @@ import (
 type Keeper struct {
 	storeKey      sdk.StoreKey
 	cdc           *codec.Codec
+	OwasmExecute  owasm.Executor
 	ParamSpace    params.Subspace
 	CoinKeeper    bank.Keeper
 	StakingKeeper staking.Keeper
@@ -23,8 +25,8 @@ type Keeper struct {
 
 // NewKeeper creates a new oracle Keeper instance.
 func NewKeeper(
-	cdc *codec.Codec, key sdk.StoreKey, paramSpace params.Subspace,
-	coinKeeper bank.Keeper, stakingKeeper staking.Keeper,
+	cdc *codec.Codec, key sdk.StoreKey, owasmExecute owasm.Executor,
+	paramSpace params.Subspace, coinKeeper bank.Keeper, stakingKeeper staking.Keeper,
 	channelKeeper types.ChannelKeeper, scopedKeeper capability.ScopedKeeper,
 ) Keeper {
 	if !paramSpace.HasKeyTable() {
@@ -33,6 +35,7 @@ func NewKeeper(
 	return Keeper{
 		storeKey:      key,
 		cdc:           cdc,
+		OwasmExecute:  owasmExecute,
 		ParamSpace:    paramSpace,
 		CoinKeeper:    coinKeeper,
 		StakingKeeper: stakingKeeper,

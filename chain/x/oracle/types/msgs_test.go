@@ -90,7 +90,7 @@ func TestMsgRequestDataGetSignBytes(t *testing.T) {
 
 func TestMsgReportData(t *testing.T) {
 	requestID := RequestID(3)
-	data := []RawDataReportWithID{NewRawDataReportWithID(1, 1, []byte("data1")), NewRawDataReportWithID(2, 2, []byte("data2"))}
+	data := []RawReport{NewRawReport(1, 1, []byte("data1")), NewRawReport(2, 2, []byte("data2"))}
 	provider, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
 	reporter := sdk.AccAddress(provider)
 
@@ -102,7 +102,7 @@ func TestMsgReportData(t *testing.T) {
 
 func TestMsgReportDataValidation(t *testing.T) {
 	requestID := RequestID(3)
-	data := []RawDataReportWithID{NewRawDataReportWithID(1, 1, []byte("data1")), NewRawDataReportWithID(2, 2, []byte("data2"))}
+	data := []RawReport{NewRawReport(1, 1, []byte("data1")), NewRawReport(2, 2, []byte("data2"))}
 	validator, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
 	reporter := sdk.AccAddress(validator)
 	failValidator, _ := sdk.ValAddressFromHex("")
@@ -113,11 +113,11 @@ func TestMsgReportDataValidation(t *testing.T) {
 	}{
 		{true, NewMsgReportData(requestID, data, validator, reporter)},
 		{false, NewMsgReportData(-1, data, validator, reporter)},
-		{false, NewMsgReportData(requestID, []RawDataReportWithID{}, validator, reporter)},
+		{false, NewMsgReportData(requestID, []RawReport{}, validator, reporter)},
 		{false, NewMsgReportData(requestID, nil, validator, reporter)},
 		{false, NewMsgReportData(requestID, data, failValidator, reporter)},
 		{false, NewMsgReportData(requestID, data, failValidator, nil)},
-		{false, NewMsgReportData(requestID, []RawDataReportWithID{NewRawDataReportWithID(1, 1, []byte("data1")), NewRawDataReportWithID(1, 2, []byte("data2"))}, validator, reporter)},
+		{false, NewMsgReportData(requestID, []RawReport{NewRawReport(1, 1, []byte("data1")), NewRawReport(1, 2, []byte("data2"))}, validator, reporter)},
 	}
 
 	for _, tc := range cases {
@@ -135,13 +135,13 @@ func TestMsgReportDataGetSignBytes(t *testing.T) {
 	config.SetBech32PrefixForValidator("band"+sdk.PrefixValidator+sdk.PrefixOperator, "band"+sdk.PrefixValidator+sdk.PrefixOperator+sdk.PrefixPublic)
 
 	requestID := RequestID(3)
-	data := []RawDataReportWithID{NewRawDataReportWithID(1, 1, []byte("data1")), NewRawDataReportWithID(2, 2, []byte("data2"))}
+	data := []RawReport{NewRawReport(1, 1, []byte("data1")), NewRawReport(2, 2, []byte("data2"))}
 	validator, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
 	reporter := sdk.AccAddress(validator)
 	msg := NewMsgReportData(requestID, data, validator, reporter)
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"oracle/Report","value":{"dataSet":[{"data":"ZGF0YTE=","exitCode":1,"externalDataID":"1"},{"data":"ZGF0YTI=","exitCode":2,"externalDataID":"2"}],"reporter":"band1hq8j5h0h64csk9tz95df783cxr0dt0dg3jw4p0","requestID":"3","validator":"bandvaloper1hq8j5h0h64csk9tz95df783cxr0dt0dgay2kyy"}}`
+	expected := `{"type":"oracle/Report","value":{"dataSet":[{"data":"ZGF0YTE=","exitCode":1,"externalID":"1"},{"data":"ZGF0YTI=","exitCode":2,"externalID":"2"}],"reporter":"band1hq8j5h0h64csk9tz95df783cxr0dt0dg3jw4p0","requestID":"3","validator":"bandvaloper1hq8j5h0h64csk9tz95df783cxr0dt0dgay2kyy"}}`
 
 	require.Equal(t, expected, string(res))
 }
