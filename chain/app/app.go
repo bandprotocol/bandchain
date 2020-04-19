@@ -202,7 +202,7 @@ func NewBandApp(
 		appCodec, keys[supply.StoreKey], app.AccountKeeper, app.BankKeeper, maccPerms,
 	)
 
-	// Wrapped supply keeper allows burned tokens to be transfered to community pool
+	// Wrapped supply keeper allows burned tokens to be transferred to community pool
 	wrappedSupplyKeeper := bandsupply.WrapSupplyKeeperBurnToCommunityPool(app.SupplyKeeper)
 
 	stakingKeeper := staking.NewKeeper(

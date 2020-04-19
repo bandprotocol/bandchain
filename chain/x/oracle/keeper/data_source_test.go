@@ -232,6 +232,73 @@ func TestEditDataSourceTooBigExecutable(t *testing.T) {
 	require.Nil(t, err)
 }
 
+func TestPayDataSourceFeeSuccess(t *testing.T) {
+	app, ctx, k := createTestInput()
+	id, err := k.AddDataSource(ctx, types.NewDataSource(
+		Owner.Address, BasicName, BasicDesc, Coins10uband, BasicExec,
+	))
+	require.Nil(t, err)
+	// If we pay from Alice, funds 10uband should be transferred from Alice to Owner
+	ownerCoins := app.BankKeeper.GetAllBalances(ctx, Owner.Address)
+	aliceCoins := app.BankKeeper.GetAllBalances(ctx, Alice.Address)
+	err = k.PayDataSourceFee(ctx, id, Alice.Address)
+	require.Nil(t, err)
+	ownerNewCoins := app.BankKeeper.GetAllBalances(ctx, Owner.Address)
+	aliceNewCoins := app.BankKeeper.GetAllBalances(ctx, Alice.Address)
+	require.Equal(t, ownerCoins.Add(Coins10uband...), ownerNewCoins)
+	require.Equal(t, aliceCoins.Sub(Coins10uband), aliceNewCoins)
+}
+
+func TestPayDataSourceTooExpensive(t *testing.T) {
+	_, ctx, k := createTestInput()
+	id, err := k.AddDataSource(ctx, types.NewDataSource(
+		Owner.Address, BasicName, BasicDesc, Coins10uband.Add(Coins1000000uband...), BasicExec,
+	))
+	require.Nil(t, err)
+	// Alice should not have enough coins to pay for this.
+	err = k.PayDataSourceFee(ctx, id, Alice.Address)
+	require.Error(t, err)
+}
+
+func TestPayDataSourceFeeFromOwner(t *testing.T) {
+	app, ctx, k := createTestInput()
+	id, err := k.AddDataSource(ctx, types.NewDataSource(
+		Owner.Address, BasicName, BasicDesc, Coins10uband.Add(Coins1000000uband...), BasicExec,
+	))
+	require.Nil(t, err)
+	// Even though it's extremely expensive, the owner should not have any problem.
+	ownerCoins := app.BankKeeper.GetAllBalances(ctx, Owner.Address)
+	err = k.PayDataSourceFee(ctx, id, Owner.Address)
+	require.Nil(t, err)
+	ownerNewCoins := app.BankKeeper.GetAllBalances(ctx, Owner.Address)
+	// And his balance should not change at all.
+	require.Equal(t, ownerCoins, ownerNewCoins)
+}
+
+func TestPayDataSourceFeeFree(t *testing.T) {
+	app, ctx, k := createTestInput()
+	id, err := k.AddDataSource(ctx, types.NewDataSource(
+		Owner.Address, BasicName, BasicDesc, CoinsZero, BasicExec,
+	))
+	require.Nil(t, err)
+	// If the fee is zero, no one should have their balances changed.
+	ownerCoins := app.BankKeeper.GetAllBalances(ctx, Owner.Address)
+	aliceCoins := app.BankKeeper.GetAllBalances(ctx, Alice.Address)
+	err = k.PayDataSourceFee(ctx, id, Alice.Address)
+	require.Nil(t, err)
+	ownerNewCoins := app.BankKeeper.GetAllBalances(ctx, Owner.Address)
+	aliceNewCoins := app.BankKeeper.GetAllBalances(ctx, Alice.Address)
+	require.Equal(t, ownerCoins, ownerNewCoins)
+	require.Equal(t, aliceCoins, aliceNewCoins)
+}
+
+func TestPayDataSourceFeeNotExistent(t *testing.T) {
+	_, ctx, k := createTestInput()
+	// Paying fee using a non-existent data source should fail.
+	err := k.PayDataSourceFee(ctx, 42, Alice.Address)
+	require.Error(t, err)
+}
+
 func TestGetAllDataSources(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// Sets the data sources to the storage.

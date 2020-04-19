@@ -77,7 +77,7 @@ func (k Keeper) EditDataSource(ctx sdk.Context, id types.DID, new types.DataSour
 func (k Keeper) PayDataSourceFee(ctx sdk.Context, id types.DID, sender sdk.AccAddress) error {
 	dataSource, err := k.GetDataSource(ctx, id)
 	if err != nil {
-		return nil
+		return err
 	}
 	if dataSource.Owner.Equals(sender) || dataSource.Fee.IsZero() {
 		// If you are the owner or it's free, no payment action is needed.
