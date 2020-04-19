@@ -149,32 +149,27 @@ func handleMsgRequestData(ctx sdk.Context, k Keeper, m MsgRequestData, ibcData .
 	// END HACK AREA!
 
 	env := NewExecutionEnvironment(ctx, k, id, true, 0)
-
 	script := k.MustGetOracleScript(ctx, m.OracleScriptID)
-
 	gasPrepare := k.GetParam(ctx, types.KeyPrepareGas)
 	ctx.GasMeter().ConsumeGas(gasPrepare, "PrepareRequest")
-	_, _, errOwasm := k.OwasmExecute(env, script.Code, "prepare", m.Calldata, 100000)
 
-	if errOwasm != nil {
-		return nil, sdkerrors.Wrapf(types.ErrBadWasmExecution,
-			"handleMsgRequestData: An error occurred while running Owasm prepare.",
-		)
+	_, _, err = k.OwasmExecute(env, script.Code, "prepare", m.Calldata, 100000)
+	if err != nil {
+		return nil, sdkerrors.Wrapf(types.ErrBadWasmExecution, err.Error())
 	}
 
-	err = env.SaveRawDataRequests(ctx, k)
-	if err != nil {
-		return nil, err
+	for _, rawRequest := range env.GetRawRequests() {
+		err := k.PayDataSourceFee(ctx, rawRequest.DataSourceID, m.Sender)
+		if err != nil {
+			return nil, err
+		}
+		// TODO: Emit raw request event and remove raw request keeper.
+		err = k.AddRawRequest(ctx, id, rawRequest)
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	err = k.ValidateDataSourceCount(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-	err = k.PayDataSourceFees(ctx, id, m.Sender)
-	if err != nil {
-		return nil, err
-	}
 	ctx.EventManager().EmitEvents(sdk.Events{sdk.NewEvent(
 		types.EventTypeRequest,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),

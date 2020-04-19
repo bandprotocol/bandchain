@@ -73,6 +73,19 @@ func (k Keeper) EditDataSource(ctx sdk.Context, id types.DID, new types.DataSour
 	return nil
 }
 
+// PayDataSourceFee sends fee from sender to data source owner. Returns error on failure.
+func (k Keeper) PayDataSourceFee(ctx sdk.Context, id types.DID, sender sdk.AccAddress) error {
+	dataSource, err := k.GetDataSource(ctx, id)
+	if err != nil {
+		return nil
+	}
+	if dataSource.Owner.Equals(sender) || dataSource.Fee.IsZero() {
+		// If you are the owner or it's free, no payment action is needed.
+		return nil
+	}
+	return k.CoinKeeper.SendCoins(ctx, sender, dataSource.Owner, dataSource.Fee)
+}
+
 // GetAllDataSources returns the list of all data sources in the store, or nil if there is none.
 func (k Keeper) GetAllDataSources(ctx sdk.Context) (dataSources []types.DataSource) {
 	store := ctx.KVStore(k.storeKey)

@@ -174,8 +174,8 @@ func TestRequestExternalData(t *testing.T) {
 	env := NewExecutionEnvironment(ctx, keeper, 1, false, keeper.GetReportCount(ctx, 1))
 	envErr := env.RequestExternalData(1, 42, []byte("prepare32"))
 	require.Nil(t, envErr)
-	err := env.SaveRawDataRequests(ctx, keeper)
-	require.Nil(t, err)
+	// err := env.SaveRawDataRequests(ctx, keeper)
+	// require.Nil(t, err)
 
 	// rawRequest, err := keeper.GetRawRequest(ctx, 1, 42)
 	// require.Nil(t, err)
@@ -218,8 +218,8 @@ func TestRequestExternalDataExceedMaxDataSourceCountPerRequest(t *testing.T) {
 	reqErr = env.RequestExternalData(1, 46, []byte("prepare32"))
 	require.NotNil(t, reqErr)
 
-	envErr := env.SaveRawDataRequests(ctx, keeper)
-	require.Nil(t, envErr)
+	// envErr := env.SaveRawDataRequests(ctx, keeper)
+	// require.Nil(t, envErr)
 }
 
 // func TestGetExternalData(t *testing.T) {

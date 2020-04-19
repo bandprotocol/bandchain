@@ -148,38 +148,6 @@ func (k Keeper) ProcessExpiredRequests(ctx sdk.Context) {
 	k.SetRequestBeginID(ctx, currentReqID)
 }
 
-// ValidateDataSourceCount returns whether the number of raw data requests exceeds the maximum
-// allowed value, as specified by `MaxDataSourceCountPerRequest` parameter.
-func (k Keeper) ValidateDataSourceCount(ctx sdk.Context, id types.RequestID) error {
-	dataSourceCount := k.GetRawRequestCount(ctx, id)
-	if uint64(dataSourceCount) > k.GetParam(ctx, types.KeyMaxDataSourceCountPerRequest) {
-		return sdkerrors.Wrapf(types.ErrBadDataValue,
-			"ValidateDataSourceCount: Data source count (%d) exceeds the limit (%d).",
-			dataSourceCount, k.GetParam(ctx, types.KeyMaxDataSourceCountPerRequest),
-		)
-	}
-	return nil
-}
-
-// PayDataSourceFees sends fees from the sender to the owner of the requested data source.
-func (k Keeper) PayDataSourceFees(ctx sdk.Context, id types.RID, sender sdk.AccAddress) error {
-	rawDataRequests := k.GetRawRequests(ctx, id)
-	for _, rawDataRequest := range rawDataRequests {
-		dataSource := k.MustGetDataSource(ctx, rawDataRequest.DataSourceID)
-		if dataSource.Owner.Equals(sender) {
-			continue
-		}
-		if dataSource.Fee.IsZero() {
-			continue
-		}
-		err := k.CoinKeeper.SendCoins(ctx, sender, dataSource.Owner, dataSource.Fee)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 // ShouldBecomePendingResolve checks and returns whether the given request should be moved to the
 // pending resolve list, which will be resolved during the EndBlock call. The move will happen
 // exactly once will the request receives sufficient raw reports from the validators.

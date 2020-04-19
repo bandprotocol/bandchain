@@ -12,11 +12,8 @@ func resolveRequest(ctx sdk.Context, k Keeper, reqID types.RequestID) {
 	env := NewExecutionEnvironment(ctx, k, reqID, false, k.GetReportCount(ctx, reqID))
 	env.LoadDataReports(ctx, k)
 	script := k.MustGetOracleScript(ctx, request.OracleScriptID)
-
-	// TODO: Refactor this code. For now we hardcode execute gas to 100k
 	executeGas := k.GetParam(ctx, KeyExecuteGas)
 	result, _, err := k.OwasmExecute(env, script.Code, "execute", request.Calldata, executeGas)
-
 	var resolveStatus types.ResolveStatus
 	if err != nil {
 		resolveStatus = types.Failure

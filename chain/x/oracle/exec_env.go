@@ -40,16 +40,8 @@ func NewExecutionEnvironment(
 	}
 }
 
-func (env *ExecutionEnvironment) SaveRawDataRequests(ctx sdk.Context, keeper Keeper) error {
-	for _, r := range env.rawDataRequests {
-		err := keeper.AddRawRequest(
-			ctx, env.requestID, types.NewRawRequest(r.ExternalID, r.DataSourceID, r.Calldata),
-		)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
+func (env *ExecutionEnvironment) GetRawRequests() []types.RawRequest {
+	return env.rawDataRequests
 }
 
 func (env *ExecutionEnvironment) LoadDataReports(ctx sdk.Context, k Keeper) {
