@@ -52,14 +52,12 @@ func buildRequestQuerierInfo(
 		reportMap[string(report.Validator)] = report.RawDataReports
 	}
 
-	reports := make([]types.ReportWithValidator, 0)
+	reports := make([]types.Report, 0)
 
 	for _, validator := range request.RequestedValidators {
 		valReport, ok := reportMap[string(validator)]
 		if ok {
-			reports = append(reports, types.NewReportWithValidator(
-				valReport, validator,
-			))
+			reports = append(reports, types.NewReport(validator, valReport))
 		}
 	}
 	var result types.Result

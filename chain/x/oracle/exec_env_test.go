@@ -65,7 +65,7 @@ func TestGetSufficientValidatorCount(t *testing.T) {
 // 	env := NewExecutionEnvironment(ctx, keeper, keeper.MustGetRequest(ctx, 1))
 // 	require.Equal(t, int64(0), env.GetReceivedValidatorCount())
 
-// 	keeper.AddReport(ctx, 1, types.NewReport([]types.RawDataReportWithID{}, sdk.ValAddress([]byte("val1"))))
+// 	keeper.AddReport(ctx, 1, types.NewReport(sdk.ValAddress([]byte("val1")), []types.RawDataReportWithID{}))
 
 // 	env = NewExecutionEnvironment(ctx, keeper, keeper.MustGetRequest(ctx, 1))
 // 	require.Equal(t, int64(1), env.GetReceivedValidatorCount())
@@ -95,7 +95,7 @@ func TestGetAggregateBlockTime(t *testing.T) {
 	require.Equal(t, int64(0), env.GetAggregateBlockTime())
 
 	// Add received validator
-	err := keeper.AddReport(ctx, 1, types.NewReport([]types.RawDataReportWithID{}, sdk.ValAddress([]byte("val1"))))
+	err := keeper.AddReport(ctx, 1, types.NewReport(sdk.ValAddress([]byte("val1")), []types.RawDataReportWithID{}))
 	require.Nil(t, err)
 
 	// After report is greater or equal SufficientValidatorCount, it will resolve in current block time.

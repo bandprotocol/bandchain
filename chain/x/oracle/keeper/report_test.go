@@ -13,7 +13,7 @@ func TestHasReport(t *testing.T) {
 	// We should not have a report to request ID 42 from Alice without setting it.
 	require.False(t, k.HasReport(ctx, 42, Alice.ValAddress))
 	// After we set it, we should be able to find it.
-	k.SetReport(ctx, 42, types.NewReport(nil, Alice.ValAddress))
+	k.SetReport(ctx, 42, types.NewReport(Alice.ValAddress, nil))
 	require.True(t, k.HasReport(ctx, 42, Alice.ValAddress))
 }
 

@@ -32,24 +32,16 @@ func NewRawDataReportWithID(externalID ExternalID, exitCode uint8, data []byte) 
 	}
 }
 
-// ReportWithValidator is a report that contains operator address in struct
-type ReportWithValidator struct {
+// Report is a report that contains operator address in struct
+type Report struct {
 	RawDataReports []RawDataReportWithID `json:"detail"`
 	Validator      sdk.ValAddress        `json:"validator"`
 }
 
-// NewReportWithValidator is a contructor of ReportWithValidator
-func NewReportWithValidator(
-	reports []RawDataReportWithID,
-	valAddress sdk.ValAddress,
-
-) ReportWithValidator {
-	return ReportWithValidator{
+// NewReport is a contructor of Report
+func NewReport(validator sdk.ValAddress, reports []RawDataReportWithID) Report {
+	return Report{
 		RawDataReports: reports,
-		Validator:      valAddress,
+		Validator:      validator,
 	}
 }
-
-type Report = ReportWithValidator
-
-var NewReport = NewReportWithValidator

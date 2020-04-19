@@ -217,12 +217,12 @@ package keeper
 // 					types.NewRawDataRequest(1, []byte("calldata2")),
 // 				),
 // 			},
-// 			[]types.ReportWithValidator{
-// 				types.NewReportWithValidator([]types.RawDataReportWithID{
+// 			[]types.Report{
+// 				types.NewReport([]types.RawDataReportWithID{
 // 					types.NewRawDataReportWithID(1, 0, []byte("report1")),
 // 					types.NewRawDataReportWithID(2, 0, []byte("report2")),
 // 				}, request.RequestedValidators[0]),
-// 				types.NewReportWithValidator([]types.RawDataReportWithID{
+// 				types.NewReport([]types.RawDataReportWithID{
 // 					types.NewRawDataReportWithID(1, 0, []byte("report1-2")),
 // 					types.NewRawDataReportWithID(2, 0, []byte("report2-2")),
 // 				}, request.RequestedValidators[1]),
@@ -289,8 +289,8 @@ package keeper
 // 					types.NewRawDataRequest(1, []byte("calldata2")),
 // 				),
 // 			},
-// 			[]types.ReportWithValidator{
-// 				types.NewReportWithValidator([]types.RawDataReportWithID{
+// 			[]types.Report{
+// 				types.NewReport([]types.RawDataReportWithID{
 // 					types.NewRawDataReportWithID(1, 0, []byte("report1-2")),
 // 					types.NewRawDataReportWithID(2, 0, []byte("report2-2")),
 // 				}, request.RequestedValidators[1]),
@@ -373,12 +373,12 @@ package keeper
 // 						types.NewRawDataRequest(1, []byte("calldata2")),
 // 					),
 // 				},
-// 				[]types.ReportWithValidator{
-// 					types.NewReportWithValidator([]types.RawDataReportWithID{
+// 				[]types.Report{
+// 					types.NewReport([]types.RawDataReportWithID{
 // 						types.NewRawDataReportWithID(1, 0, []byte("report1")),
 // 						types.NewRawDataReportWithID(2, 0, []byte("report2")),
 // 					}, request.RequestedValidators[0]),
-// 					types.NewReportWithValidator([]types.RawDataReportWithID{
+// 					types.NewReport([]types.RawDataReportWithID{
 // 						types.NewRawDataReportWithID(1, 0, []byte("report1-2")),
 // 						types.NewRawDataReportWithID(2, 0, []byte("report2-2")),
 // 					}, request.RequestedValidators[1]),
@@ -394,7 +394,7 @@ package keeper
 // 						types.NewRawDataRequest(1, []byte("only calldata")),
 // 					),
 // 				},
-// 				[]types.ReportWithValidator{},
+// 				[]types.Report{},
 // 				types.Result{},
 // 			),
 // 		},
