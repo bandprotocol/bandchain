@@ -174,7 +174,7 @@ func TestRequestExternalData(t *testing.T) {
 	// require.Equal(t, types.NewRawDataRequest(1, []byte("prepare32")), rawRequest)
 }
 
-func TestRequestExternalDataExceedMaxDataSourceCountPerRequest(t *testing.T) {
+func TestRequestExternalDataExceedMaxRawRequestCount(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
 
 	// Set Request
@@ -193,8 +193,8 @@ func TestRequestExternalDataExceedMaxDataSourceCountPerRequest(t *testing.T) {
 	)
 	keeper.SetDataSource(ctx, 1, dataSource)
 
-	// Set MaxDataSourceCountPerRequest to 5
-	keeper.SetParam(ctx, KeyMaxDataSourceCountPerRequest, 5)
+	// Set MaxRawRequestCount to 5
+	keeper.SetParam(ctx, KeyMaxRawRequestCount, 5)
 	env := NewExecutionEnvironment(ctx, keeper, keeper.MustGetRequest(ctx, 1))
 
 	reqErr := env.RequestExternalData(1, 41, []byte("prepare32"))
