@@ -1,60 +1,44 @@
-package keeper
+package keeper_test
 
 import (
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 )
 
 func TestCheckSelfReporter(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-
-	validatorAddress1 := sdk.ValAddress([]byte("validator1"))
-
-	ac := keeper.CheckReporter(ctx, validatorAddress1, sdk.AccAddress(validatorAddress1))
-
-	require.True(t, ac)
+	_, ctx, k := createTestInput()
+	// Owner must always be a reporter of himself.
+	require.True(t, k.IsReporter(ctx, Owner.ValAddress, Owner.Address))
 }
 
-func TestAddReporterSuccess(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-
-	validatorAddress1 := sdk.ValAddress([]byte("validator1"))
-	reporterAddress1 := sdk.AccAddress([]byte("reporter1"))
-
-	err := keeper.AddReporter(ctx, validatorAddress1, reporterAddress1)
+func TestAddReporter(t *testing.T) {
+	_, ctx, k := createTestInput()
+	// Before we do anything, Bob and Carol must not be a reporter of Alice.
+	require.False(t, k.IsReporter(ctx, Alice.ValAddress, Bob.Address))
+	// Adds Bob as a reporter Alice. IsReporter should return true for Bob, false for Carol.
+	err := k.AddReporter(ctx, Alice.ValAddress, Bob.Address)
 	require.Nil(t, err)
-
-	err = keeper.AddReporter(ctx, validatorAddress1, reporterAddress1)
+	require.True(t, k.IsReporter(ctx, Alice.ValAddress, Bob.Address))
+	require.False(t, k.IsReporter(ctx, Alice.ValAddress, Carol.Address))
+	// We should get an error if we try to add Bob again.
+	err = k.AddReporter(ctx, Alice.ValAddress, Bob.Address)
 	require.NotNil(t, err)
-
-	reporter := keeper.CheckReporter(ctx, validatorAddress1, reporterAddress1)
-	require.True(t, reporter)
 }
 
-func TestRemoveReporterSuccess(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-
-	validatorAddress1 := sdk.ValAddress([]byte("validator1"))
-	reporterAddress1 := sdk.AccAddress([]byte("reporter1"))
-
-	err := keeper.AddReporter(ctx, validatorAddress1, reporterAddress1)
-	require.Nil(t, err)
-
-	err = keeper.RemoveReporter(ctx, validatorAddress1, reporterAddress1)
-	require.Nil(t, err)
-
-	reporter := keeper.CheckReporter(ctx, validatorAddress1, reporterAddress1)
-	require.False(t, reporter)
-}
-
-func TestRemoveReporterFail(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-
-	validatorAddress1 := sdk.ValAddress([]byte("validator1"))
-	reporterAddress1 := sdk.AccAddress([]byte("reporter1"))
-
-	err := keeper.RemoveReporter(ctx, validatorAddress1, reporterAddress1)
+func TestRemoveReporter(t *testing.T) {
+	_, ctx, k := createTestInput()
+	// Removing Bob from Alice's reporter list should error as Bob is not a reporter of Alice.
+	err := k.RemoveReporter(ctx, Alice.ValAddress, Bob.Address)
 	require.NotNil(t, err)
+	// Adds Bob as the reporter of Alice. We now should be able to remove Bob, but not Carol.
+	err = k.AddReporter(ctx, Alice.ValAddress, Bob.Address)
+	require.Nil(t, err)
+	err = k.RemoveReporter(ctx, Alice.ValAddress, Bob.Address)
+	require.Nil(t, err)
+	err = k.RemoveReporter(ctx, Alice.ValAddress, Carol.Address)
+	require.NotNil(t, err)
+	// By the end of everything, no one should be a reporter of Alice.
+	require.False(t, k.IsReporter(ctx, Alice.ValAddress, Bob.Address))
+	require.False(t, k.IsReporter(ctx, Alice.ValAddress, Carol.Address))
 }
