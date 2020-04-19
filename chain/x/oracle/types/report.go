@@ -32,8 +32,6 @@ func NewRawDataReportWithID(externalID ExternalID, exitCode uint8, data []byte) 
 	}
 }
 
-var NewReport = NewRawDataReportWithID
-
 // ReportWithValidator is a report that contains operator address in struct
 type ReportWithValidator struct {
 	RawDataReports []RawDataReportWithID `json:"detail"`
@@ -53,6 +51,5 @@ func NewReportWithValidator(
 }
 
 type Report = ReportWithValidator
-type BatchReport = ReportWithValidator
 
-var NewBatchReport = NewReportWithValidator
+var NewReport = NewReportWithValidator

@@ -5,13 +5,12 @@ import (
 )
 
 var (
-	ErrInvalidBasicMsg        = sdkerrors.Register(ModuleName, 1, "InvalidBasicMsg")
-	ErrBadDataValue           = sdkerrors.Register(ModuleName, 2, "BadDataValue")
-	ErrUnauthorizedPermission = sdkerrors.Register(ModuleName, 3, "UnauthorizedPermission")
-	ErrItemDuplication        = sdkerrors.Register(ModuleName, 4, "ItemDuplication")
-	ErrItemNotFound           = sdkerrors.Register(ModuleName, 5, "ItemNotFound")
-	ErrInvalidState           = sdkerrors.Register(ModuleName, 6, "InvalidState")
-	ErrBadWasmExecution       = sdkerrors.Register(ModuleName, 7, "BadWasmExecution")
+	ErrInvalidBasicMsg  = sdkerrors.Register(ModuleName, 1, "InvalidBasicMsg")
+	ErrBadDataValue     = sdkerrors.Register(ModuleName, 2, "BadDataValue")
+	ErrItemDuplication  = sdkerrors.Register(ModuleName, 4, "ItemDuplication")
+	ErrItemNotFound     = sdkerrors.Register(ModuleName, 5, "ItemNotFound")
+	ErrInvalidState     = sdkerrors.Register(ModuleName, 6, "InvalidState")
+	ErrBadWasmExecution = sdkerrors.Register(ModuleName, 7, "BadWasmExecution")
 
 	ErrBadDataLength        = sdkerrors.Register(ModuleName, 10, "bad data length")
 	ErrDataSourceNotFound   = sdkerrors.Register(ModuleName, 11, "data source not found")
@@ -27,4 +26,7 @@ var (
 	ErrValidatorAlreadyReported = sdkerrors.Register(ModuleName, 31, "validator already reported")
 
 	ErrInvalidDataSourceCount = sdkerrors.Register(ModuleName, 40, "invalid data source count")
+
+	ErrReporterNotAuthorized = sdkerrors.Register(ModuleName, 50, "reporter not authorized")
+	ErrEditorNotAuthorized   = sdkerrors.Register(ModuleName, 51, "editor not authorized")
 )

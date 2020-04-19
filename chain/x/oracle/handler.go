@@ -57,7 +57,7 @@ func NewHandler(k Keeper) sdk.Handler {
 }
 
 func handleMsgCreateDataSource(ctx sdk.Context, k Keeper, msg MsgCreateDataSource) (*sdk.Result, error) {
-	dataSourceID, err := k.AddDataSource(
+	id, err := k.AddDataSource(
 		ctx, msg.Owner, msg.Name, msg.Description, msg.Fee, msg.Executable,
 	)
 	if err != nil {
@@ -65,7 +65,7 @@ func handleMsgCreateDataSource(ctx sdk.Context, k Keeper, msg MsgCreateDataSourc
 	}
 	ctx.EventManager().EmitEvents(sdk.Events{sdk.NewEvent(
 		types.EventTypeCreateDataSource,
-		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", dataSourceID)),
+		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
 	)})
 	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
@@ -76,9 +76,7 @@ func handleMsgEditDataSource(ctx sdk.Context, k Keeper, msg MsgEditDataSource) (
 		return nil, err
 	}
 	if !dataSource.Owner.Equals(msg.Sender) {
-		return nil, sdkerrors.Wrapf(types.ErrUnauthorizedPermission,
-			"%s is not authorized to edit this data source", msg.Sender.String(),
-		)
+		return nil, types.ErrEditorNotAuthorized
 	}
 	err = k.EditDataSource(
 		ctx, msg.DataSourceID, msg.Owner, msg.Name, msg.Description,
@@ -95,13 +93,13 @@ func handleMsgEditDataSource(ctx sdk.Context, k Keeper, msg MsgEditDataSource) (
 }
 
 func handleMsgCreateOracleScript(ctx sdk.Context, k Keeper, msg MsgCreateOracleScript) (*sdk.Result, error) {
-	oracleScriptID, err := k.AddOracleScript(ctx, msg.Owner, msg.Name, msg.Description, msg.Code, msg.Schema, msg.SourceCodeURL)
+	id, err := k.AddOracleScript(ctx, msg.Owner, msg.Name, msg.Description, msg.Code, msg.Schema, msg.SourceCodeURL)
 	if err != nil {
 		return nil, err
 	}
 	ctx.EventManager().EmitEvents(sdk.Events{sdk.NewEvent(
 		types.EventTypeCreateOracleScript,
-		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", oracleScriptID)),
+		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
 	)})
 	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
@@ -112,9 +110,7 @@ func handleMsgEditOracleScript(ctx sdk.Context, k Keeper, msg MsgEditOracleScrip
 		return nil, err
 	}
 	if !oracleScript.Owner.Equals(msg.Sender) {
-		return nil, sdkerrors.Wrapf(types.ErrUnauthorizedPermission,
-			"%s is not authorized to edit this oracle script", msg.Sender.String(),
-		)
+		return nil, types.ErrEditorNotAuthorized
 	}
 	err = k.EditOracleScript(ctx, msg.OracleScriptID, msg.Owner, msg.Name, msg.Description, msg.Code, msg.Schema, msg.SourceCodeURL)
 	if err != nil {
@@ -192,23 +188,17 @@ func handleMsgRequestData(ctx sdk.Context, k Keeper, msg MsgRequestData, ibcData
 }
 
 func handleMsgReportData(ctx sdk.Context, k Keeper, msg MsgReportData) (*sdk.Result, error) {
-
 	if !k.IsReporter(ctx, msg.Validator, msg.Reporter) {
-		return nil, sdkerrors.Wrapf(types.ErrUnauthorizedPermission,
-			"AddReport: Request ID %d: %s is not an authorized reporter of %s.",
-			msg.RequestID, msg.Reporter.String(), msg.Validator.String(),
-		)
+		return nil, sdkerrors.Wrapf(types.ErrReporterNotAuthorized,
+			"val: %s, addr: %s", msg.Reporter.String(), msg.Validator.String())
 	}
-
-	err := k.AddReport(ctx, msg.RequestID, types.NewBatchReport(msg.DataSet, msg.Validator))
+	err := k.AddReport(ctx, msg.RequestID, types.NewReport(msg.DataSet, msg.Validator))
 	if err != nil {
 		return nil, err
 	}
-
 	if k.ShouldBecomePendingResolve(ctx, msg.RequestID) {
 		k.AddPendingRequest(ctx, msg.RequestID)
 	}
-
 	ctx.EventManager().EmitEvents(sdk.Events{sdk.NewEvent(
 		types.EventTypeReport,
 		sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", msg.RequestID)),
