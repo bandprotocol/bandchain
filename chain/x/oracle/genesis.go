@@ -41,7 +41,7 @@ func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorU
 	k.SetParam(ctx, KeyMaxExecutableSize, data.Params.MaxDataSourceExecutableSize)
 	k.SetParam(ctx, KeyMaxOracleScriptCodeSize, data.Params.MaxOracleScriptCodeSize)
 	k.SetParam(ctx, KeyMaxCalldataSize, data.Params.MaxCalldataSize)
-	k.SetParam(ctx, KeyMaxDataSourceCountPerRequest, data.Params.MaxDataSourceCountPerRequest)
+	k.SetParam(ctx, KeyMaxRawRequestCount, data.Params.MaxRawRequestCount)
 	k.SetParam(ctx, KeyMaxRawDataReportSize, data.Params.MaxRawDataReportSize)
 	k.SetParam(ctx, KeyMaxResultSize, data.Params.MaxResultSize)
 	k.SetParam(ctx, KeyMaxNameLength, data.Params.MaxNameLength)
@@ -52,22 +52,20 @@ func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorU
 	k.SetParam(ctx, KeyPrepareGas, data.Params.PrepareGas)
 
 	for _, dataSource := range data.DataSources {
-		_, err := k.AddDataSource(
-			ctx,
-			dataSource.Owner,
-			dataSource.Name,
-			dataSource.Description,
-			dataSource.Fee,
-			dataSource.Executable,
-		)
+		_, err := k.AddDataSource(ctx, types.NewDataSource(
+			dataSource.Owner, dataSource.Name, dataSource.Description,
+			dataSource.Fee, dataSource.Executable,
+		))
 		if err != nil {
 			panic(err)
 		}
 	}
 
 	for _, oracleScript := range data.OracleScripts {
-		_, err := k.AddOracleScript(
-			ctx, oracleScript.Owner, oracleScript.Name, oracleScript.Description, oracleScript.Code, oracleScript.Schema, oracleScript.SourceCodeURL)
+		_, err := k.AddOracleScript(ctx, types.NewOracleScript(
+			oracleScript.Owner, oracleScript.Name, oracleScript.Description,
+			oracleScript.Code, oracleScript.Schema, oracleScript.SourceCodeURL,
+		))
 		if err != nil {
 			panic(err)
 		}

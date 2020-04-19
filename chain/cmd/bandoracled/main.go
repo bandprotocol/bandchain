@@ -227,24 +227,21 @@ func handleRequest(requestID oracle.RequestID) {
 
 			info.answer = []byte(strings.TrimSpace(string(result)))
 			chanQueryParallelInfo <- info
-		}(rawRequest.ExternalID,
-			rawRequest.RawDataRequest.DataSourceID,
-			rawRequest.RawDataRequest.Calldata,
-		)
+		}(rawRequest.ExternalID, rawRequest.DataSourceID, rawRequest.Calldata)
 	}
 
-	reports := make([]oracle.RawDataReportWithID, 0)
+	reports := make([]oracle.RawReport, 0)
 	for i := 0; i < len(request.RawDataRequests); i++ {
 		info := <-chanQueryParallelInfo
 		if info.err != nil {
 			logger.Error(fmt.Sprintf("Report fail on request #%d. Error: %v", requestID, info.err))
 			return
 		}
-		reports = append(reports, oracle.NewRawDataReportWithID(info.externalID, 0, info.answer))
+		reports = append(reports, oracle.NewRawReport(info.externalID, 0, info.answer))
 	}
 
 	sort.Slice(reports, func(i, j int) bool {
-		return reports[i].ExternalDataID < reports[j].ExternalDataID
+		return reports[i].ExternalID < reports[j].ExternalID
 	})
 
 	if err != nil {
