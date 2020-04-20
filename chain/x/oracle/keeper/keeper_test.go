@@ -54,12 +54,12 @@ func TestGetSetMaxCalldataSize(t *testing.T) {
 	require.Equal(t, uint64(2), keeper.GetParam(ctx, types.KeyMaxCalldataSize))
 }
 
-func TestGetSetMaxDataSourceCountPerRequest(t *testing.T) {
+func TestGetSetMaxRawRequestCount(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
-	keeper.SetParam(ctx, types.KeyMaxDataSourceCountPerRequest, 1)
-	require.Equal(t, uint64(1), keeper.GetParam(ctx, types.KeyMaxDataSourceCountPerRequest))
-	keeper.SetParam(ctx, types.KeyMaxDataSourceCountPerRequest, 2)
-	require.Equal(t, uint64(2), keeper.GetParam(ctx, types.KeyMaxDataSourceCountPerRequest))
+	keeper.SetParam(ctx, types.KeyMaxRawRequestCount, 1)
+	require.Equal(t, uint64(1), keeper.GetParam(ctx, types.KeyMaxRawRequestCount))
+	keeper.SetParam(ctx, types.KeyMaxRawRequestCount, 2)
+	require.Equal(t, uint64(2), keeper.GetParam(ctx, types.KeyMaxRawRequestCount))
 }
 
 func TestGetSetMaxRawDataReportSize(t *testing.T) {
@@ -92,7 +92,7 @@ func TestGetSetParams(t *testing.T) {
 	keeper.SetParam(ctx, types.KeyMaxExecutableSize, 1)
 	keeper.SetParam(ctx, types.KeyMaxOracleScriptCodeSize, 1)
 	keeper.SetParam(ctx, types.KeyMaxCalldataSize, 1)
-	keeper.SetParam(ctx, types.KeyMaxDataSourceCountPerRequest, 1)
+	keeper.SetParam(ctx, types.KeyMaxRawRequestCount, 1)
 	keeper.SetParam(ctx, types.KeyMaxRawDataReportSize, 1)
 	keeper.SetParam(ctx, types.KeyMaxResultSize, 1)
 	keeper.SetParam(ctx, types.KeyMaxNameLength, 1)
@@ -106,7 +106,7 @@ func TestGetSetParams(t *testing.T) {
 	keeper.SetParam(ctx, types.KeyMaxExecutableSize, 2)
 	keeper.SetParam(ctx, types.KeyMaxOracleScriptCodeSize, 2)
 	keeper.SetParam(ctx, types.KeyMaxCalldataSize, 2)
-	keeper.SetParam(ctx, types.KeyMaxDataSourceCountPerRequest, 2)
+	keeper.SetParam(ctx, types.KeyMaxRawRequestCount, 2)
 	keeper.SetParam(ctx, types.KeyMaxRawDataReportSize, 2)
 	keeper.SetParam(ctx, types.KeyMaxResultSize, 2)
 	keeper.SetParam(ctx, types.KeyMaxNameLength, 2)

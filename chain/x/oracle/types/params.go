@@ -23,9 +23,9 @@ const (
 	// Default value is set 1 kB.
 	DefaultMaxCalldataSize = uint64(1 * 1024)
 
-	// The maximum number of data sources a request can make.
+	// The maximum number of raw requests that a request can make.
 	// Default value is set to 16.
-	DefaultMaxDataSourceCountPerRequest = uint64(16)
+	DefaultMaxRawRequestCount = uint64(16)
 
 	// The maximum size of raw data report per data source.
 	// Default value is set to 1 kB.
@@ -61,7 +61,7 @@ var (
 	KeyMaxExecutableSize                = []byte("MaxExecutableSize")
 	KeyMaxOracleScriptCodeSize          = []byte("MaxOracleScriptCodeSize")
 	KeyMaxCalldataSize                  = []byte("MaxCalldataSize")
-	KeyMaxDataSourceCountPerRequest     = []byte("MaxDataSourceCountPerRequest")
+	KeyMaxRawRequestCount               = []byte("MaxRawRequestCount")
 	KeyMaxRawDataReportSize             = []byte("MaxRawDataReportSize")
 	KeyMaxResultSize                    = []byte("MaxResultSize")
 	KeyMaxNameLength                    = []byte("MaxNameLength")
@@ -77,7 +77,7 @@ type Params struct {
 	MaxDataSourceExecutableSize      uint64 `json:"max_data_source_executable_size" yaml:"max_data_source_executable_size"`
 	MaxOracleScriptCodeSize          uint64 `json:"max_oracle_script_code_size" yaml:"max_oracle_script_code_size"`
 	MaxCalldataSize                  uint64 `json:"max_calldata_size" yaml:"max_calldata_size"`
-	MaxDataSourceCountPerRequest     uint64 `json:"max_data_source_count_per_request" yaml:"max_data_source_count_per_request"`
+	MaxRawRequestCount               uint64 `json:"max_raw_request_count" yaml:"max_raw_request_count%"`
 	MaxRawDataReportSize             uint64 `json:"max_raw_data_report_size" yaml:"max_raw_data_report_size"`
 	MaxResultSize                    uint64 `json:"max_result_size" yaml:"max_result_size"`
 	MaxNameLength                    uint64 `json:"max_name_length" yaml:"max_name_length"`
@@ -107,7 +107,7 @@ func NewParams(
 		MaxDataSourceExecutableSize:      maxDataSourceExecutableSize,
 		MaxOracleScriptCodeSize:          maxOracleScriptCodeSize,
 		MaxCalldataSize:                  maxCalldataSize,
-		MaxDataSourceCountPerRequest:     maxDataSourceCountPerRequest,
+		MaxRawRequestCount:               maxDataSourceCountPerRequest,
 		MaxRawDataReportSize:             maxRawDataReportSize,
 		MaxResultSize:                    maxResultSize,
 		MaxNameLength:                    maxNameLength,
@@ -125,7 +125,7 @@ func (p Params) String() string {
   MaxDataSourceExecutableSize:      %d
   MaxOracleScriptCodeSize:          %d
   MaxCalldataSize:                  %d
-  MaxDataSourceCountPerRequest:     %d
+  MaxRawRequestCount:               %d
   MaxRawDataReportSize:             %d
   MaxResultSize:                    %d
   MaxNameLength:                    %d
@@ -137,7 +137,7 @@ func (p Params) String() string {
 `, p.MaxDataSourceExecutableSize,
 		p.MaxOracleScriptCodeSize,
 		p.MaxCalldataSize,
-		p.MaxDataSourceCountPerRequest,
+		p.MaxRawRequestCount,
 		p.MaxRawDataReportSize,
 		p.MaxResultSize,
 		p.MaxNameLength,
@@ -158,7 +158,7 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyMaxExecutableSize, &p.MaxDataSourceExecutableSize, validateNoOp),
 		paramtypes.NewParamSetPair(KeyMaxOracleScriptCodeSize, &p.MaxOracleScriptCodeSize, validateNoOp),
 		paramtypes.NewParamSetPair(KeyMaxCalldataSize, &p.MaxCalldataSize, validateNoOp),
-		paramtypes.NewParamSetPair(KeyMaxDataSourceCountPerRequest, &p.MaxDataSourceCountPerRequest, validateNoOp),
+		paramtypes.NewParamSetPair(KeyMaxRawRequestCount, &p.MaxRawRequestCount, validateNoOp),
 		paramtypes.NewParamSetPair(KeyMaxRawDataReportSize, &p.MaxRawDataReportSize, validateNoOp),
 		paramtypes.NewParamSetPair(KeyMaxResultSize, &p.MaxResultSize, validateNoOp),
 		paramtypes.NewParamSetPair(KeyMaxNameLength, &p.MaxNameLength, validateNoOp),
@@ -176,7 +176,7 @@ func DefaultParams() Params {
 		DefaultMaxDataSourceExecutableSize,
 		DefaultMaxOracleScriptCodeSize,
 		DefaultMaxCalldataSize,
-		DefaultMaxDataSourceCountPerRequest,
+		DefaultMaxRawRequestCount,
 		DefaultMaxRawDataReportSize,
 		DefaultMaxResultSize,
 		DefaultMaxNameLength,
