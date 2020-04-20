@@ -1,8 +1,5 @@
 package rpc
 
-// TODO: Revive this! It's commented because we upgrade to Cosmos 0.38.*.
-// Proof structure will need to change now that we have more modules + the header structure changes.
-
 import (
 	"encoding/hex"
 	"encoding/json"
@@ -151,7 +148,7 @@ func GetMultiStoreProof(proof rootmulti.MultiStoreProofOp) MultiStoreProof {
 // 	m := map[string][]byte{}
 // 	for _, si := range mspo.Proof.StoreInfos {
 // 		m[si.Name] = tmhash.Sum(tmhash.Sum(si.Core.CommitID.Hash))
-// 		if si.Name == "oracle" {
+// 		if si.Name == oracle.ModuleName {
 // 			oracleHash = si.Core.CommitID.Hash
 // 		}
 // 	}
