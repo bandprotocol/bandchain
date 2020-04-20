@@ -350,3 +350,82 @@ func DecodeResult(data []byte) (Result, error) {
        )
   });
 });
+
+describe("should be able to generate encode go code correctly", () => {
+  test("should be able to generate encode go code 1", () => {
+    expect(
+      Some(
+        {j|package main
+
+type Result struct {
+	Symbol string
+	Multiplier uint64
+	What uint8
+}
+
+func(result *Result) EncodeResult() []byte {
+	encoder := NewBorshEncoder()
+
+	encoder.EncodeString(result.symbol)
+	encoder.EncodeU64(result.multiplier)
+	encoder.EncodeU8(result.what)
+
+	return encoder.data
+}|j},
+      ),
+    )
+    |> toEqual(
+         generateEncodeGo(
+           "main",
+           {j|{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"], [\\"what\\", \\"u8\\"] ] }"}|j},
+           "Input",
+         ),
+       )
+  });
+  test("should be able to generate encode go code 2", () => {
+    expect(
+      Some(
+        {j|package test
+
+type Result struct {
+	Px uint64
+}
+
+func(result *Result) EncodeResult() []byte {
+	encoder := NewBorshEncoder()
+
+	encoder.EncodeU64(result.px)
+
+	return encoder.data
+}|j},
+      ),
+    )
+    |> toEqual(
+         generateEncodeGo(
+           "test",
+           {j|{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"], [\\"what\\", \\"u8\\"] ] }","Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }"}|j},
+           "Output",
+         ),
+       )
+  });
+  test("should return None if invalid class (go)", () => {
+    expect(None)
+    |> toEqual(
+         generateEncodeGo(
+           "main",
+           {j|{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"], [\\"what\\", \\"u8\\"] ] }"}|j},
+           "Input2",
+         ),
+       )
+  });
+  test("should return None if invalid type (go)", () => {
+    expect(None)
+    |> toEqual(
+         generateEncodeGo(
+           "main",
+           {j|{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"bytes\\"], [\\"multiplier\\", \\"u64\\"], [\\"what\\", \\"u8\\"] ] }"}|j},
+           "Input",
+         ),
+       )
+  });
+});
