@@ -1,291 +1,137 @@
-package keeper
+package keeper_test
 
 import (
 	"testing"
-	"time"
+
+	"github.com/stretchr/testify/require"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/require"
 )
 
-func TestGetterSetterRequest(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-
-	_, err := keeper.GetRequest(ctx, 1)
-	require.NotNil(t, err)
-
-	request := newDefaultRequest()
-
-	keeper.SetRequest(ctx, 1, request)
-	actualRequest, err := keeper.GetRequest(ctx, 1)
-	require.Nil(t, err)
-	require.Equal(t, request, actualRequest)
+func TestHasRequest(t *testing.T) {
+	_, ctx, k := createTestInput()
+	// We should not have a request ID 42 without setting it.
+	require.False(t, k.HasRequest(ctx, 42))
+	// After we set it, we should be able to find it.
+	k.SetRequest(ctx, 42, types.NewRequest(1, BasicCalldata, nil, 1, 1, 1, ""))
+	require.True(t, k.HasRequest(ctx, 42))
 }
 
-func TestRequest(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-
-	ctx = ctx.WithBlockHeight(2)
-	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
-	calldata := []byte("calldata")
-	_, err := keeper.AddRequest(ctx, 1, calldata, 2, 2, "clientID")
-	require.NotNil(t, err)
-
-	script := GetTestOracleScript("../../../owasm/res/silly.wasm")
-	keeper.SetOracleScript(ctx, 1, script)
-	_, err = keeper.AddRequest(ctx, 1, calldata, 2, 2, "clientID")
-	require.NotNil(t, err)
-
-	pubStr := []string{
-		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
-		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
-	}
-
-	validatorAddress1 := SetupTestValidator(
-		ctx,
-		keeper,
-		pubStr[0],
-		10,
-	)
-	_, err = keeper.AddRequest(ctx, 1, calldata, 2, 2, "clientID")
-	require.NotNil(t, err)
-
-	validatorAddress2 := SetupTestValidator(
-		ctx,
-		keeper,
-		pubStr[1],
-		100,
-	)
-	requestID, err := keeper.AddRequest(ctx, 1, calldata, 2, 2, "clientID")
-	require.Nil(t, err)
-	require.Equal(t, types.RequestID(1), requestID)
-
-	actualRequest, err := keeper.GetRequest(ctx, 1)
-	require.Nil(t, err)
-	expectRequest := types.NewRequest(1, calldata,
-		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
-		2, 1581589790, 22, "clientID",
-	)
-	require.Equal(t, expectRequest, actualRequest)
+func TestDeleteRequest(t *testing.T) {
+	_, ctx, k := createTestInput()
+	// After we set it, we should be able to find it.
+	k.SetRequest(ctx, 42, types.NewRequest(1, BasicCalldata, nil, 1, 1, 1, ""))
+	require.True(t, k.HasRequest(ctx, 42))
+	// After we delete it, we should not find it anymore.
+	k.DeleteRequest(ctx, 42)
+	require.False(t, k.HasRequest(ctx, 42))
+	_, err := k.GetRequest(ctx, 42)
+	require.Error(t, err)
+	require.Panics(t, func() { _ = k.MustGetRequest(ctx, 42) })
 }
 
-func TestRequestCallDataSizeTooBig(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-
-	script := GetTestOracleScript("../../../owasm/res/silly.wasm")
-	keeper.SetOracleScript(ctx, 1, script)
-
-	SetupTestValidator(
-		ctx,
-		keeper,
-		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
-		10,
-	)
-	SetupTestValidator(
-		ctx,
-		keeper,
-		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
-		100,
-	)
-
-	// Set MaxCalldataSize to 0
-	keeper.SetParam(ctx, types.KeyMaxCalldataSize, 0)
-	// Should fail because size of "calldata" is > 0
-	_, err := keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, "clientID")
-	require.NotNil(t, err)
-
-	// Set MaxCalldataSize to 20
-	keeper.SetParam(ctx, types.KeyMaxCalldataSize, 20)
-	// Should pass because size of "calldata" is < 20
-	_, err = keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, "clientID")
+func TestSetterGetterRequest(t *testing.T) {
+	_, ctx, k := createTestInput()
+	// Getting a non-existent request should return error.
+	_, err := k.GetRequest(ctx, 42)
+	require.Error(t, err)
+	require.Panics(t, func() { _ = k.MustGetRequest(ctx, 42) })
+	// Creates some basic requests.
+	req1 := types.NewRequest(1, BasicCalldata, nil, 1, 1, 1, "")
+	req2 := types.NewRequest(2, BasicCalldata, nil, 1, 1, 1, "")
+	// Sets id 42 with request 1 and id 42 with request 2.
+	k.SetRequest(ctx, 42, req1)
+	k.SetRequest(ctx, 43, req2)
+	// Checks that Get and MustGet perform correctly.
+	req1Res, err := k.GetRequest(ctx, 42)
 	require.Nil(t, err)
+	require.Equal(t, req1, req1Res)
+	require.Equal(t, req1, k.MustGetRequest(ctx, 42))
+	req2Res, err := k.GetRequest(ctx, 43)
+	require.Nil(t, err)
+	require.Equal(t, req2, req2Res)
+	require.Equal(t, req2, k.MustGetRequest(ctx, 43))
+	// Replaces id 42 with another request.
+	k.SetRequest(ctx, 42, req2)
+	require.NotEqual(t, req1, k.MustGetRequest(ctx, 42))
+	require.Equal(t, req2, k.MustGetRequest(ctx, 42))
 }
 
-func TestRequestExceedEndBlockExecuteGasLimit(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
+func TestSetterGettterPendingResolveList(t *testing.T) {
+	_, ctx, k := createTestInput()
+	// Initially, we should get an empty list of pending resolves.
+	require.Equal(t, k.GetPendingResolveList(ctx), []types.RID{})
+	// After we set something, we should get that thing back.
+	k.SetPendingResolveList(ctx, []types.RID{5, 6, 7, 8})
+	require.Equal(t, k.GetPendingResolveList(ctx), []types.RID{5, 6, 7, 8})
+	// Let's also try setting it back to empty list.
+	k.SetPendingResolveList(ctx, []types.RID{})
+	require.Equal(t, k.GetPendingResolveList(ctx), []types.RID{})
+	// Nil should also works.
+	k.SetPendingResolveList(ctx, nil)
+	require.Equal(t, k.GetPendingResolveList(ctx), []types.RID{})
+}
 
-	script := GetTestOracleScript("../../../owasm/res/silly.wasm")
-	keeper.SetOracleScript(ctx, 1, script)
+func TestAddDataSourceBasic(t *testing.T) {
+	_, ctx, k := createTestInput()
+	// We start by setting an oracle request available at ID 42.
+	k.SetOracleScript(ctx, 42, types.NewOracleScript(
+		Owner.Address, BasicName, BasicDesc, BasicCode, BasicSchema, BasicSourceCodeURL,
+	))
+	// Adding the first request should return ID 1.
+	id, err := k.AddRequest(ctx, types.NewRequest(42, BasicCalldata, nil, 1, 1, 1, ""))
+	require.Nil(t, err)
+	require.Equal(t, id, types.RID(1))
+	// Adding another request should return ID 2.
+	id, err = k.AddRequest(ctx, types.NewRequest(42, BasicCalldata, nil, 1, 1, 1, ""))
+	require.Nil(t, err)
+	require.Equal(t, id, types.RID(2))
+}
 
-	SetupTestValidator(
-		ctx,
-		keeper,
-		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
-		10,
+func TestAddRequestNoOracleScript(t *testing.T) {
+	_, ctx, k := createTestInput()
+	// Adding a new request that refers a non-existent oracle script should fail.
+	require.False(t, k.HasOracleScript(ctx, 42))
+	_, err := k.AddRequest(ctx, types.NewRequest(42, BasicCalldata, nil, 1, 1, 1, ""))
+	require.Error(t, err)
+}
+
+func TestAddRequestTooBigCalldata(t *testing.T) {
+	_, ctx, k := createTestInput()
+	// We start by setting an oracle request available at ID 42.
+	k.SetOracleScript(ctx, 42, types.NewOracleScript(
+		Owner.Address, BasicName, BasicDesc, BasicCode, BasicSchema, BasicSourceCodeURL,
+	))
+	require.True(t, k.HasOracleScript(ctx, 42))
+	// We set max calldata sie to 41, so adding a request with calldata size 42 should fail.
+	k.SetParam(ctx, types.KeyMaxCalldataSize, 41)
+	_, err := k.AddRequest(ctx, types.NewRequest(42,
+		[]byte("________THIS_STRING_HAS_SIZE_OF_42________"), nil, 1, 1, 1, ""),
 	)
-	SetupTestValidator(
-		ctx,
-		keeper,
-		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
-		100,
+	require.Error(t, err)
+	// We now change max calldata size to 42, so it should be fine.
+	k.SetParam(ctx, types.KeyMaxCalldataSize, 42)
+	_, err = k.AddRequest(ctx, types.NewRequest(42,
+		[]byte("________THIS_STRING_HAS_SIZE_OF_42________"), nil, 1, 1, 1, ""),
 	)
-
-	// Set EndBlockExecuteGasLimit to 10000
-	keeper.SetParam(ctx, types.KeyEndBlockExecuteGasLimit, 10000)
-	// Should fail because required execute gas is > 10000
-	_, err := keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, "clientID")
-	require.NotNil(t, err)
-
-	// Set EndBlockExecuteGasLimit to 120000
-	keeper.SetParam(ctx, types.KeyEndBlockExecuteGasLimit, 120000)
-	// Should fail because required execute gas is < 120000
-	_, err = keeper.AddRequest(ctx, 1, []byte("calldata"), 2, 2, "clientID")
 	require.Nil(t, err)
 }
 
-// // TestSetResolved tests keeper can set resolved status to request
-// func TestSetResolved(t *testing.T) {
-// 	ctx, keeper := CreateTestInput(t, false)
-// 	request := newDefaultRequest()
-
-// 	keeper.SetRequest(ctx, 1, request)
-
-// 	err := keeper.SetResolve(ctx, 1, types.Success)
-// 	require.Nil(t, err)
-
-// 	actualRequest, err := keeper.GetRequest(ctx, 1)
-// 	request.ResolveStatus = types.Success
-// 	require.Nil(t, err)
-// 	require.Equal(t, request, actualRequest)
-// }
-
-// // TestSetResolvedOnInvalidRequest tests keeper must return if set on invalid request
-// func TestSetResolvedOnInvalidRequest(t *testing.T) {
-// 	ctx, keeper := CreateTestInput(t, false)
-// 	request := newDefaultRequest()
-
-// 	keeper.SetRequest(ctx, 1, request)
-// 	err := keeper.SetResolve(ctx, 2, types.Success)
-// 	require.NotNil(t, err)
-// }
-
-// Can get/set pending request correctly and set empty case
-func TestGetSetPendingRequests(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-
-	reqIDs := keeper.GetPendingResolveList(ctx)
-
-	require.Equal(t, []types.RequestID{}, reqIDs)
-
-	keeper.SetPendingResolveList(ctx, []types.RequestID{1, 2, 3})
-
-	reqIDs = keeper.GetPendingResolveList(ctx)
-	require.Equal(t, []types.RequestID{1, 2, 3}, reqIDs)
-
-	keeper.SetPendingResolveList(ctx, []types.RequestID{})
-	reqIDs = keeper.GetPendingResolveList(ctx)
-	require.Equal(t, []types.RequestID{}, reqIDs)
+func TestAddPendingResolveList(t *testing.T) {
+	_, ctx, k := createTestInput()
+	// Initially, we should get an empty list of pending resolves.
+	require.Equal(t, k.GetPendingResolveList(ctx), []types.RID{})
+	// Everytime we append a new request ID, it should show up.
+	k.AddPendingRequest(ctx, 42)
+	require.Equal(t, k.GetPendingResolveList(ctx), []types.RID{42})
+	k.AddPendingRequest(ctx, 43)
+	require.Equal(t, k.GetPendingResolveList(ctx), []types.RID{42, 43})
 }
 
-// Can add new pending request if request doesn't exist in list,
-// and return error if request has already existed in list.
-func TestAddPendingRequest(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-
-	reqIDs := keeper.GetPendingResolveList(ctx)
-
-	require.Equal(t, []types.RequestID{}, reqIDs)
-
-	keeper.SetPendingResolveList(ctx, []types.RequestID{1, 2})
-	err := keeper.AddPendingRequest(ctx, 3)
-	require.Nil(t, err)
-	reqIDs = keeper.GetPendingResolveList(ctx)
-	require.Equal(t, []types.RequestID{1, 2, 3}, reqIDs)
-
-	err = keeper.AddPendingRequest(ctx, 3)
-	require.NotNil(t, err)
-	reqIDs = keeper.GetPendingResolveList(ctx)
-	require.Equal(t, []types.RequestID{1, 2, 3}, reqIDs)
+func TestGetRandomValidatorsSuccess(t *testing.T) {
+	// TODO: Update this test once GetRandomValidators is actually random
 }
 
-func TestHasToPutInPendingList(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-
-	require.False(t, keeper.ShouldBecomePendingResolve(ctx, 1))
-	request := newDefaultRequest()
-	request.SufficientValidatorCount = 1
-	keeper.SetRequest(ctx, 1, request)
-	require.False(t, keeper.ShouldBecomePendingResolve(ctx, 1))
-
-	err := keeper.AddReport(ctx, 1, []types.RawDataReportWithID{}, sdk.ValAddress([]byte("validator1")), sdk.AccAddress([]byte("validator1")))
-	require.Nil(t, err)
-	require.True(t, keeper.ShouldBecomePendingResolve(ctx, 1))
-
-	err = keeper.AddReport(ctx, 1, []types.RawDataReportWithID{}, sdk.ValAddress([]byte("validator2")), sdk.AccAddress([]byte("validator2")))
-	require.Nil(t, err)
-	require.False(t, keeper.ShouldBecomePendingResolve(ctx, 1))
-}
-
-func TestValidateDataSourceCount(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-	// Set MaxDataSourceCountPerRequest to 3
-	keeper.SetParam(ctx, types.KeyMaxDataSourceCountPerRequest, 3)
-
-	request := newDefaultRequest()
-	keeper.SetRequest(ctx, 1, request)
-
-	keeper.SetRawDataRequest(ctx, 1, 101, types.NewRawDataRequest(0, []byte("calldata1")))
-	err := keeper.ValidateDataSourceCount(ctx, 1)
-	require.Nil(t, err)
-
-	keeper.SetRawDataRequest(ctx, 1, 102, types.NewRawDataRequest(0, []byte("calldata2")))
-	err = keeper.ValidateDataSourceCount(ctx, 1)
-	require.Nil(t, err)
-
-	keeper.SetRawDataRequest(ctx, 1, 103, types.NewRawDataRequest(0, []byte("calldata3")))
-	err = keeper.ValidateDataSourceCount(ctx, 1)
-	require.Nil(t, err)
-
-	// Validation of "104" will return an error because MaxDataSourceCountPerRequest was set to 3.
-	keeper.SetRawDataRequest(ctx, 1, 104, types.NewRawDataRequest(0, []byte("calldata4")))
-	err = keeper.ValidateDataSourceCount(ctx, 1)
-	require.NotNil(t, err)
-}
-
-func TestPayDataSourceFees(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-
-	sender := sdk.AccAddress([]byte("sender"))
-	_, err := keeper.CoinKeeper.AddCoins(ctx, sender, NewUBandCoins(100))
-	require.Nil(t, err)
-
-	owner1 := sdk.AccAddress([]byte("owner1"))
-	owner2 := sdk.AccAddress([]byte("owner2"))
-
-	dataSource1 := types.NewDataSource(
-		sdk.AccAddress([]byte("owner1")),
-		"data_source1",
-		"description1",
-		sdk.NewCoins(sdk.NewInt64Coin("uband", 40)),
-		[]byte("executable1"),
-	)
-	keeper.SetDataSource(ctx, 1, dataSource1)
-
-	dataSource2 := types.NewDataSource(
-		sdk.AccAddress([]byte("owner2")),
-		"data_source2",
-		"description2",
-		sdk.NewCoins(sdk.NewInt64Coin("uband", 50)),
-		[]byte("executable2"),
-	)
-	keeper.SetDataSource(ctx, 2, dataSource2)
-
-	request := newDefaultRequest()
-	keeper.SetRequest(ctx, 1, request)
-
-	keeper.SetRawDataRequest(ctx, 1, 1, types.NewRawDataRequest(1, []byte("calldata")))
-	keeper.SetRawDataRequest(ctx, 1, 2, types.NewRawDataRequest(2, []byte("calldata")))
-
-	err = keeper.PayDataSourceFees(ctx, 1, sender)
-	require.Nil(t, err)
-
-	balance := keeper.CoinKeeper.GetAllBalances(ctx, sender)
-	require.Equal(t, NewUBandCoins(10), balance)
-
-	owner1Balance := keeper.CoinKeeper.GetAllBalances(ctx, owner1)
-	require.Equal(t, NewUBandCoins(40), owner1Balance)
-
-	owner2Balance := keeper.CoinKeeper.GetAllBalances(ctx, owner2)
-	require.Equal(t, NewUBandCoins(50), owner2Balance)
+func TestGetRandomValidatorsTooBigSize(t *testing.T) {
+	// TODO: Update this test once GetRandomValidators is actually random
 }

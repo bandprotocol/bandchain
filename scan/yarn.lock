@@ -4384,11 +4384,6 @@ glob@^7.0.3, glob@^7.1.1, glob@^7.1.2, glob@^7.1.3, glob@^7.1.4, glob@^7.1.6:
     once "^1.3.0"
     path-is-absolute "^1.0.0"
 
-global-modules-path@^2.3.1:
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/global-modules-path/-/global-modules-path-2.3.1.tgz#e541f4c800a1a8514a990477b267ac67525b9931"
-  integrity sha512-y+shkf4InI7mPRHSo2b/k6ix6+NLDtyccYv86whhxrSGX9wjPX1VMITmrDbE1eh7zkzhiWtW2sHklJYoQ62Cxg==
-
 global-modules@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/global-modules/-/global-modules-2.0.0.tgz#997605ad2345f27f51539bea26574421215c7780"
@@ -6944,14 +6939,13 @@ parcel-bundler@^1.12.4:
     v8-compile-cache "^2.0.0"
     ws "^5.1.1"
 
-parcel-plugin-custom-dist-structure@^1.1.8:
-  version "1.1.8"
-  resolved "https://registry.yarnpkg.com/parcel-plugin-custom-dist-structure/-/parcel-plugin-custom-dist-structure-1.1.8.tgz#d6b20079f17f35cc0043ddaea367dd40cbb1f632"
-  integrity sha512-Uc3JJn34etDaJBS22eGXvASoaTOR2Jwbt5suuNMPXLn1Nkcm4aFxwu84+kDxLODjxkbSeBRqpf0crXfPmtHy+A==
+parcel-plugin-custom-dist-structure@^1.1.9:
+  version "1.1.9"
+  resolved "https://registry.yarnpkg.com/parcel-plugin-custom-dist-structure/-/parcel-plugin-custom-dist-structure-1.1.9.tgz#e02d388b5aed52517badf43c1b1c38f42ffecad7"
+  integrity sha512-MbWRSJD76L8ubRoJE8QQg6SSMd169OglC/qIAEVivh4sSisjzwSko1kF6nTn8m5oY0WO2mTYd/b5QCQErGvYSA==
   dependencies:
     dependency-graph "^0.9.0"
     glob "^7.1.6"
-    global-modules-path "^2.3.1"
     move-file "^1.2.0"
     regex-escape "^3.4.9"
     replace-in-file "^5.0.2"

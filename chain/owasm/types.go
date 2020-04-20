@@ -1,13 +1,9 @@
 package owasm
 
-// ExecutionEnvironment encapsulates the operations that an Owasm script
+// ExecEnv encapsulates the operations that an Owasm script
 // can call to interact with the external world. An operation can fail and
 // when that occurs, the whole function call will fail.
-type ExecutionEnvironment interface {
-	// GetCurrentRequestID returns the unique identifier that is the reference
-	// to the current data request.
-	GetCurrentRequestID() int64
-
+type ExecEnv interface {
 	// GetRequestedValidatorCount returns the number of validators that the current
 	// data request specifies for the oracle query.
 	GetRequestedValidatorCount() int64
@@ -46,7 +42,7 @@ type ExecutionEnvironment interface {
 	// only be called during the *preparation* phase of an oracle script.
 	RequestExternalData(
 		dataSourceID int64,
-		externalDataID int64,
+		externalID int64,
 		calldata []byte,
 	) error
 
@@ -54,7 +50,7 @@ type ExecutionEnvironment interface {
 	// data report for the specified external data ID from the specified validator.
 	// The function must only be called during the *aggregation* phase.
 	GetExternalData(
-		externalDataID int64,
+		externalID int64,
 		validatorIndex int64,
 	) ([]byte, uint8, error)
 }

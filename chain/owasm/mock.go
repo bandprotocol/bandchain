@@ -4,8 +4,7 @@ import (
 	"fmt"
 )
 
-type mockExecutionEnvironment struct {
-	requestID                         int64
+type mockExecEnv struct {
 	requestedValidatorCount           int64
 	sufficientValidatorCount          int64
 	receivedValidatorCount            int64
@@ -18,64 +17,60 @@ type mockExecutionEnvironment struct {
 	requestExternalDataResultsCounter [][]int64
 }
 
-func (m *mockExecutionEnvironment) GetCurrentRequestID() int64 {
-	return m.requestID
-}
-
-func (m *mockExecutionEnvironment) GetRequestedValidatorCount() int64 {
+func (m *mockExecEnv) GetRequestedValidatorCount() int64 {
 	return m.requestedValidatorCount
 }
 
-func (m *mockExecutionEnvironment) GetSufficientValidatorCount() int64 {
+func (m *mockExecEnv) GetSufficientValidatorCount() int64 {
 	return m.sufficientValidatorCount
 }
 
-func (m *mockExecutionEnvironment) GetReceivedValidatorCount() int64 {
+func (m *mockExecEnv) GetReceivedValidatorCount() int64 {
 	return m.receivedValidatorCount
 }
 
-func (m *mockExecutionEnvironment) GetPrepareBlockTime() int64 {
+func (m *mockExecEnv) GetPrepareBlockTime() int64 {
 	return m.prepareBlockTime
 }
 
-func (m *mockExecutionEnvironment) GetAggregateBlockTime() int64 {
+func (m *mockExecEnv) GetAggregateBlockTime() int64 {
 	return m.aggregateBlockTime
 }
 
-func (m *mockExecutionEnvironment) GetValidatorAddress(validatorIndex int64) ([]byte, error) {
+func (m *mockExecEnv) GetValidatorAddress(validatorIndex int64) ([]byte, error) {
 	return m.validatorAddresses[validatorIndex], nil
 }
 
-func (m *mockExecutionEnvironment) GetMaximumResultSize() int64 {
+func (m *mockExecEnv) GetMaximumResultSize() int64 {
 	return m.maximumResultSize
 }
 
-func (m *mockExecutionEnvironment) GetMaximumCalldataOfDataSourceSize() int64 {
+func (m *mockExecEnv) GetMaximumCalldataOfDataSourceSize() int64 {
 	return m.maximumCalldataOfDataSourceSize
 }
 
-func (m *mockExecutionEnvironment) RequestExternalData(
+func (m *mockExecEnv) RequestExternalData(
 	dataSourceID int64,
-	externalDataID int64,
+	externalID int64,
 	calldata []byte,
 ) error {
 	// TODO: Figure out how to mock this elegantly.
-	fmt.Printf("RequestExternalData: DataSourceID = %d, ExternalDataID = %d\n", dataSourceID, externalDataID)
+	fmt.Printf("RequestExternalData: DataSourceID = %d, ExternalID = %d\n", dataSourceID, externalID)
 	return nil
 }
 
-func (m *mockExecutionEnvironment) GetExternalData(
-	externalDataID int64,
+func (m *mockExecEnv) GetExternalData(
+	externalID int64,
 	validatorIndex int64,
 ) ([]byte, uint8, error) {
-	if int64(len(m.requestExternalDataResultsCounter)) <= externalDataID {
-		return nil, 0, fmt.Errorf("externalDataID is out of range")
+	if int64(len(m.requestExternalDataResultsCounter)) <= externalID {
+		return nil, 0, fmt.Errorf("externalID is out of range")
 	}
 
-	if int64(len(m.requestExternalDataResultsCounter[externalDataID])) <= validatorIndex {
+	if int64(len(m.requestExternalDataResultsCounter[externalID])) <= validatorIndex {
 		return nil, 0, fmt.Errorf("validatorIndex is out of range")
 	}
 
-	m.requestExternalDataResultsCounter[externalDataID][validatorIndex]++
-	return m.externalDataResults[externalDataID][validatorIndex], 0, nil
+	m.requestExternalDataResultsCounter[externalID][validatorIndex]++
+	return m.externalDataResults[externalID][validatorIndex], 0, nil
 }
