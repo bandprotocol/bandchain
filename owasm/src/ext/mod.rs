@@ -41,12 +41,53 @@ where
     sum / num::cast(vals.len()).unwrap()
 }
 
-pub fn load_majority<T>(external_id: i64) -> T
+pub fn load_majority<T>(external_id: i64) -> Option<T>
 where
-    T: std::str::FromStr,
+    T: std::str::FromStr + std::cmp::PartialEq + std::marker::Copy,
 {
-    // TODO
-    oei::get_external_data(external_id, 0).unwrap().parse::<T>().ok().unwrap()
+    let vec: Vec<T> = load_input(external_id);
+
+    if vec.len() == 0 {
+        None
+    } else {
+        majority(vec)
+    }
+}
+
+fn majority<T>(vec: Vec<T>) -> Option<T>
+where
+    T: std::str::FromStr + std::cmp::PartialEq + std::marker::Copy,
+{
+    let mut candidate = vec[0];
+    let mut count = 1;
+    let len = vec.len();
+
+    // Find majority by Boyer–Moore majority vote algorithm
+    // https://en.wikipedia.org/wiki/Boyer%E2%80%93Moore_majority_vote_algorithm
+    for idx in 1..len {
+        if candidate == vec[idx] {
+            count = count + 1;
+        } else {
+            count = count - 1;
+        }
+        if count == 0 {
+            candidate = vec[idx];
+            count = 1;
+        }
+    }
+
+    count = 0;
+    for idx in 0..len {
+        if candidate == vec[idx] {
+            count = count + 1;
+        }
+    }
+
+    if 2 * count > len {
+        Some(candidate)
+    } else {
+        None
+    }
 }
 
 pub fn load_median<T>(external_id: i64) -> Option<T>
@@ -115,5 +156,41 @@ mod tests {
 
         let mut vals = vec![13.0, 36.0, 45.0, 33.0];
         assert_eq!(median(&mut vals), 34.5);
+    }
+
+    #[test]
+    fn test_majority_int() {
+        let vals = vec![1, 2, 3, 1, 3, 1, 1];
+        assert_eq!(majority(vals), Some(1));
+    }
+
+    #[test]
+    fn test_majority_int_result_none() {
+        let vals = vec![1, 2, 3, 1, 3, 1, 1, 3];
+        assert_eq!(majority(vals), None);
+    }
+
+    #[test]
+    fn test_majority_float() {
+        let vals = vec![0.3, 1.0, 0.3, 0.4, 1.0, 1.0, 1.0];
+        assert_eq!(majority(vals), Some(1.0));
+    }
+
+    #[test]
+    fn test_majority_float_result_none() {
+        let vals = vec![0.3, 1.0, 0.3, 0.4, 4.0, 1.0, 99.99, 1.0, 1.0];
+        assert_eq!(majority(vals), None);
+    }
+
+    #[test]
+    fn test_majority_char() {
+        let vals = vec!['a', 'b', 'a', 'b', 'b'];
+        assert_eq!(majority(vals), Some('b'));
+    }
+
+    #[test]
+    fn test_majority_char_result_none() {
+        let vals = vec!['a', 'b', 'a', 'b', 'c', 'b'];
+        assert_eq!(majority(vals), None);
     }
 }
