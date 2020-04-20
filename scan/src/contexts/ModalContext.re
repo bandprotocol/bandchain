@@ -7,9 +7,7 @@ type a =
 
 let reducer = _ =>
   fun
-  | OpenModal(m) => {
-      Some(m);
-    }
+  | OpenModal(m) => Some(m)
   | CloseModal => None;
 
 let context = React.createContext(ContextHelper.default: (option(t), a => unit));
