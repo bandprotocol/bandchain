@@ -1,16 +1,35 @@
 pragma solidity 0.5.14;
 pragma experimental ABIEncoderV2;
 
+
 interface IBridge {
+    struct RequestPacket {
+        string clientId;
+        uint64 oracleScriptId;
+        string calldata;
+        uint64 askCount;
+        uint64 minCount;
+    }
+
+    struct ResponsePacket {
+        string clientId;
+        uint64 requestId;
+        uint64 ansCount;
+        uint64 prepareTime;
+        uint64 resolveTime;
+        uint8 resolveStatus;
+        string data;
+    }
+
     /// Helper struct to help the function caller to decode oracle data.
     struct VerifyOracleDataResult {
         uint64 oracleScriptId;
-        uint64 requestTime;
-        uint64 aggregationTime;
-        uint64 requestedValidatorsCount;
-        uint64 sufficientValidatorCount;
-        uint64 reportedValidatorsCount;
-        bytes params;
+        uint64 prepareTime;
+        uint64 resolveTime;
+        uint64 askCount;
+        uint64 minCount;
+        uint64 ansCount;
+        bytes calldata;
         bytes data;
     }
 
