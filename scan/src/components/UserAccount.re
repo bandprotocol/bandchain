@@ -162,6 +162,7 @@ module Balance = {
 [@react.component]
 let make = () => {
   let (addressOpt, dispatch) = React.useContext(AccountContext.context);
+  let (_, dispatchModal) = React.useContext(ModalContext.context);
 
   let connect = () => {
     let mnemonicOpt = Window.prompt("Please enter your mnemonic.", "") |> Js.Nullable.toOption;
@@ -183,7 +184,19 @@ let make = () => {
            <Col> <HSpacing size={`px(27)} /> </Col>
            <Col> <DisconnectBtn disconnect /> </Col>
          </>
-       | None => <Col> <ConnectBtn connect /> </Col>
+       | None =>
+         <Col>
+           <ConnectBtn connect />
+           // TODO: remove later 
+           <button
+             onClick={_ => {
+               Js.Console.log("Click");
+               dispatchModal(OpenModal(Connect("Test")));
+               ();
+             }}>
+             {"modal" |> React.string}
+           </button>
+         </Col>
        }}
     </Row>
     {switch (addressOpt) {
