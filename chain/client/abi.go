@@ -1,6 +1,6 @@
 package rpc
 
-// It will be changed after update new bridge contract
+// TODO: It will be changed after update new bridge contract
 var relayFormat = []byte(`
 [
   {

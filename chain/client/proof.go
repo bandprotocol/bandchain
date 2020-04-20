@@ -103,107 +103,6 @@ func (blockHeader *BlockHeaderMerkleParts) encodeToEthFormat() BlockHeaderMerkle
 	}
 }
 
-type BlockRelayProof struct {
-	OracleIAVLStateHash    tmbytes.HexBytes       `json:"oracleIAVLStateHash"`
-	OtherStoresMerkleHash  tmbytes.HexBytes       `json:"otherStoresMerkleHash"`
-	SupplyStoresMerkleHash tmbytes.HexBytes       `json:"supplyStoresMerkleHash"`
-	BlockHeaderMerkleParts BlockHeaderMerkleParts `json:"blockHeaderMerkleParts"`
-	SignedDataPrefix       tmbytes.HexBytes       `json:"signedDataPrefix"`
-	Signatures             []TMSignature          `json:"signatures"`
-}
-
-func (blockRelay *BlockRelayProof) encodeToEthData(blockHeight uint64) ([]byte, error) {
-	parseSignatures := make([]TMSignatureEthereum, len(blockRelay.Signatures))
-	for i, sig := range blockRelay.Signatures {
-		parseSignatures[i] = sig.encodeToEthFormat()
-	}
-	return relayArguments.Pack(
-		big.NewInt(int64(blockHeight)),
-		common.BytesToHash(blockRelay.OracleIAVLStateHash),
-		common.BytesToHash(blockRelay.OtherStoresMerkleHash),
-		common.BytesToHash(blockRelay.SupplyStoresMerkleHash),
-		blockRelay.BlockHeaderMerkleParts.encodeToEthFormat(),
-		blockRelay.SignedDataPrefix,
-		parseSignatures,
-	)
-}
-
-type OracleDataProof struct {
-	Version        uint64                `json:"version"`
-	RequestID      oracle.RequestID      `json:"requestID"`
-	OracleScriptID oracle.OracleScriptID `json:"oracleScriptID"`
-	Calldata       tmbytes.HexBytes      `json:"calldata"`
-	Data           tmbytes.HexBytes      `json:"data"`
-	MerklePaths    []IAVLMerklePath      `json:"merklePaths"`
-}
-
-func (oracleData *OracleDataProof) encodeToEthData(blockHeight uint64) ([]byte, error) {
-	parsePaths := make([]IAVLMerklePathEthereum, len(oracleData.MerklePaths))
-	for i, path := range oracleData.MerklePaths {
-		parsePaths[i] = path.encodeToEthFormat()
-	}
-	return verifyArguments.Pack(
-		big.NewInt(int64(blockHeight)),
-		oracleData.Data,
-		uint64(oracleData.RequestID),
-		uint64(oracleData.OracleScriptID),
-		oracleData.Calldata,
-		big.NewInt(int64(oracleData.Version)),
-		parsePaths,
-	)
-}
-
-type TMSignature struct {
-	R                tmbytes.HexBytes `json:"r"`
-	S                tmbytes.HexBytes `json:"s"`
-	V                uint8            `json:"v"`
-	SignedDataSuffix tmbytes.HexBytes `json:"signedDataSuffix"`
-}
-
-type TMSignatureEthereum struct {
-	R                common.Hash
-	S                common.Hash
-	V                uint8
-	SignedDataSuffix []byte
-}
-
-func (signature *TMSignature) encodeToEthFormat() TMSignatureEthereum {
-	return TMSignatureEthereum{
-		common.BytesToHash(signature.R),
-		common.BytesToHash(signature.S),
-		signature.V,
-		signature.SignedDataSuffix,
-	}
-}
-
-type Proof struct {
-	JsonProof     JsonProof        `json:"jsonProof"`
-	EVMProofBytes tmbytes.HexBytes `json:"evmProofBytes"`
-}
-
-type JsonProof struct {
-	BlockHeight     uint64          `json:"blockHeight"`
-	OracleDataProof OracleDataProof `json:"oracleDataProof"`
-	BlockRelayProof BlockRelayProof `json:"blockRelayProof"`
-}
-
-func RecoverETHAddress(msg, sig, signer []byte) ([]byte, uint8, error) {
-	for i := uint8(0); i < 2; i++ {
-		pubuc, err := crypto.SigToPub(tmhash.Sum(msg), append(sig, byte(i)))
-		if err != nil {
-			return nil, 0, err
-		}
-		pub := crypto.CompressPubkey(pubuc)
-		var tmp [33]byte
-
-		copy(tmp[:], pub)
-		if string(signer) == string(secp256k1.PubKeySecp256k1(tmp).Address()) {
-			return crypto.PubkeyToAddress(*pubuc).Bytes(), 27 + i, nil
-		}
-	}
-	return nil, 0, fmt.Errorf("No match address found")
-}
-
 func GetBlockHeaderMerkleParts(codec *codec.Codec, block *tmtypes.Header) BlockHeaderMerkleParts {
 	bhmp := BlockHeaderMerkleParts{}
 	bhmp.VersionAndChainIdHash = merkle.SimpleHashFromByteSlices([][]byte{
@@ -234,6 +133,192 @@ func GetBlockHeaderMerkleParts(codec *codec.Codec, block *tmtypes.Header) BlockH
 	return bhmp
 }
 
+// TODO: It will be fixed on #1324
+type MultiStoreProof struct{}
+
+type MultiStoreProofEthereum struct{}
+
+func (multiStoreProof *MultiStoreProof) encodeToEthFormat() MultiStoreProofEthereum {
+	return MultiStoreProofEthereum{}
+}
+
+func GetMultiStoreProof(proof rootmulti.MultiStoreProofOp) MultiStoreProof {
+	return MultiStoreProof{}
+}
+
+// func MakeOtherStoresMerkleHash(mspo rootmulti.MultiStoreProofOp) (tmbytes.HexBytes, tmbytes.HexBytes, tmbytes.HexBytes) {
+// 	var oracleHash []byte
+// 	m := map[string][]byte{}
+// 	for _, si := range mspo.Proof.StoreInfos {
+// 		m[si.Name] = tmhash.Sum(tmhash.Sum(si.Core.CommitID.Hash))
+// 		if si.Name == "oracle" {
+// 			oracleHash = si.Core.CommitID.Hash
+// 		}
+// 	}
+
+// 	keys := []string{}
+// 	for k := range m {
+// 		if k != "oracle" {
+// 			keys = append(keys, k)
+// 		}
+// 	}
+// 	sort.Strings(keys)
+
+// 	bs := [][]byte{}
+// 	for _, k := range keys {
+// 		bs = append(bs, m[k])
+// 	}
+
+// 	h1 := tmhash.Sum(
+// 		append(
+// 			[]byte{1},
+// 			append(
+// 				tmhash.Sum(append([]byte{0}, append(append([]byte{3}, []byte("acc")...), append([]byte{32}, m["acc"]...)...)...)),
+// 				tmhash.Sum(append([]byte{0}, append(append([]byte{12}, []byte("distribution")...), append([]byte{32}, m["distribution"]...)...)...))...,
+// 			)...,
+// 		),
+// 	)
+
+// 	h2 := tmhash.Sum(
+// 		append(
+// 			[]byte{1},
+// 			append(
+// 				tmhash.Sum(append([]byte{0}, append(append([]byte{3}, []byte("gov")...), append([]byte{32}, m["gov"]...)...)...)),
+// 				tmhash.Sum(append([]byte{0}, append(append([]byte{4}, []byte("main")...), append([]byte{32}, m["main"]...)...)...))...,
+// 			)...,
+// 		),
+// 	)
+
+// 	h3 := tmhash.Sum(
+// 		append(
+// 			[]byte{1},
+// 			append(
+// 				tmhash.Sum(append([]byte{0}, append(append([]byte{4}, []byte("mint")...), append([]byte{32}, m["mint"]...)...)...)),
+// 				tmhash.Sum(append([]byte{0}, append(append([]byte{6}, []byte("params")...), append([]byte{32}, m["params"]...)...)...))...,
+// 			)...,
+// 		),
+// 	)
+
+// 	h4 := tmhash.Sum(
+// 		append(
+// 			[]byte{1},
+// 			append(
+// 				tmhash.Sum(append([]byte{0}, append(append([]byte{8}, []byte("slashing")...), append([]byte{32}, m["slashing"]...)...)...)),
+// 				tmhash.Sum(append([]byte{0}, append(append([]byte{7}, []byte("staking")...), append([]byte{32}, m["staking"]...)...)...))...,
+// 			)...,
+// 		),
+// 	)
+
+// 	h5 := tmhash.Sum(append([]byte{0}, append(append([]byte{6}, []byte("supply")...), append([]byte{32}, m["supply"]...)...)...))
+
+// 	h6 := tmhash.Sum(append([]byte{1}, append(h1, h2...)...))
+
+// 	h7 := tmhash.Sum(append([]byte{1}, append(h3, h4...)...))
+
+// 	h8 := tmhash.Sum(append([]byte{1}, append(h6, h7...)...))
+
+// 	return h5, h8, oracleHash
+// }
+
+type TMSignature struct {
+	R                tmbytes.HexBytes `json:"r"`
+	S                tmbytes.HexBytes `json:"s"`
+	V                uint8            `json:"v"`
+	SignedDataSuffix tmbytes.HexBytes `json:"signedDataSuffix"`
+}
+
+type TMSignatureEthereum struct {
+	R                common.Hash
+	S                common.Hash
+	V                uint8
+	SignedDataSuffix []byte
+}
+
+func (signature *TMSignature) encodeToEthFormat() TMSignatureEthereum {
+	return TMSignatureEthereum{
+		common.BytesToHash(signature.R),
+		common.BytesToHash(signature.S),
+		signature.V,
+		signature.SignedDataSuffix,
+	}
+}
+
+type BlockRelayProof struct {
+	MultiStoreProof        MultiStoreProof        `json:"multiStoreProof"`
+	BlockHeaderMerkleParts BlockHeaderMerkleParts `json:"blockHeaderMerkleParts"`
+	SignedDataPrefix       tmbytes.HexBytes       `json:"signedDataPrefix"`
+	Signatures             []TMSignature          `json:"signatures"`
+}
+
+func (blockRelay *BlockRelayProof) encodeToEthData(blockHeight uint64) ([]byte, error) {
+	parseSignatures := make([]TMSignatureEthereum, len(blockRelay.Signatures))
+	for i, sig := range blockRelay.Signatures {
+		parseSignatures[i] = sig.encodeToEthFormat()
+	}
+	return relayArguments.Pack(
+		big.NewInt(int64(blockHeight)),
+		blockRelay.MultiStoreProof.encodeToEthFormat(),
+		blockRelay.BlockHeaderMerkleParts.encodeToEthFormat(),
+		blockRelay.SignedDataPrefix,
+		parseSignatures,
+	)
+}
+
+// TODO: It will be fixed on #1325
+type OracleDataProof struct {
+	Version        uint64                `json:"version"`
+	RequestID      oracle.RequestID      `json:"requestID"`
+	OracleScriptID oracle.OracleScriptID `json:"oracleScriptID"`
+	Calldata       tmbytes.HexBytes      `json:"calldata"`
+	Data           tmbytes.HexBytes      `json:"data"`
+	MerklePaths    []IAVLMerklePath      `json:"merklePaths"`
+}
+
+func (oracleData *OracleDataProof) encodeToEthData(blockHeight uint64) ([]byte, error) {
+	parsePaths := make([]IAVLMerklePathEthereum, len(oracleData.MerklePaths))
+	for i, path := range oracleData.MerklePaths {
+		parsePaths[i] = path.encodeToEthFormat()
+	}
+	return verifyArguments.Pack(
+		big.NewInt(int64(blockHeight)),
+		oracleData.Data,
+		uint64(oracleData.RequestID),
+		uint64(oracleData.OracleScriptID),
+		oracleData.Calldata,
+		big.NewInt(int64(oracleData.Version)),
+		parsePaths,
+	)
+}
+
+type Proof struct {
+	JsonProof     JsonProof        `json:"jsonProof"`
+	EVMProofBytes tmbytes.HexBytes `json:"evmProofBytes"`
+}
+
+type JsonProof struct {
+	BlockHeight     uint64          `json:"blockHeight"`
+	OracleDataProof OracleDataProof `json:"oracleDataProof"`
+	BlockRelayProof BlockRelayProof `json:"blockRelayProof"`
+}
+
+func RecoverETHAddress(msg, sig, signer []byte) ([]byte, uint8, error) {
+	for i := uint8(0); i < 2; i++ {
+		pubuc, err := crypto.SigToPub(tmhash.Sum(msg), append(sig, byte(i)))
+		if err != nil {
+			return nil, 0, err
+		}
+		pub := crypto.CompressPubkey(pubuc)
+		var tmp [33]byte
+
+		copy(tmp[:], pub)
+		if string(signer) == string(secp256k1.PubKeySecp256k1(tmp).Address()) {
+			return crypto.PubkeyToAddress(*pubuc).Bytes(), 27 + i, nil
+		}
+	}
+	return nil, 0, fmt.Errorf("No match address found")
+}
+
+// Combine MultiStoreProof + BlockHeaderMerkleParts
 func GetBlockRelayProof(cliCtx context.CLIContext, blockId uint64) (BlockRelayProof, error) {
 	bp := BlockRelayProof{}
 	_blockId := int64(blockId)
@@ -300,80 +385,7 @@ func GetBlockRelayProof(cliCtx context.CLIContext, blockId uint64) (BlockRelayPr
 	return bp, nil
 }
 
-func MakeOtherStoresMerkleHash(mspo rootmulti.MultiStoreProofOp) (tmbytes.HexBytes, tmbytes.HexBytes, tmbytes.HexBytes) {
-	var oracleHash []byte
-	m := map[string][]byte{}
-	for _, si := range mspo.Proof.StoreInfos {
-		m[si.Name] = tmhash.Sum(tmhash.Sum(si.Core.CommitID.Hash))
-		if si.Name == "oracle" {
-			oracleHash = si.Core.CommitID.Hash
-		}
-	}
-
-	keys := []string{}
-	for k := range m {
-		if k != "oracle" {
-			keys = append(keys, k)
-		}
-	}
-	sort.Strings(keys)
-
-	bs := [][]byte{}
-	for _, k := range keys {
-		bs = append(bs, m[k])
-	}
-
-	h1 := tmhash.Sum(
-		append(
-			[]byte{1},
-			append(
-				tmhash.Sum(append([]byte{0}, append(append([]byte{3}, []byte("acc")...), append([]byte{32}, m["acc"]...)...)...)),
-				tmhash.Sum(append([]byte{0}, append(append([]byte{12}, []byte("distribution")...), append([]byte{32}, m["distribution"]...)...)...))...,
-			)...,
-		),
-	)
-
-	h2 := tmhash.Sum(
-		append(
-			[]byte{1},
-			append(
-				tmhash.Sum(append([]byte{0}, append(append([]byte{3}, []byte("gov")...), append([]byte{32}, m["gov"]...)...)...)),
-				tmhash.Sum(append([]byte{0}, append(append([]byte{4}, []byte("main")...), append([]byte{32}, m["main"]...)...)...))...,
-			)...,
-		),
-	)
-
-	h3 := tmhash.Sum(
-		append(
-			[]byte{1},
-			append(
-				tmhash.Sum(append([]byte{0}, append(append([]byte{4}, []byte("mint")...), append([]byte{32}, m["mint"]...)...)...)),
-				tmhash.Sum(append([]byte{0}, append(append([]byte{6}, []byte("params")...), append([]byte{32}, m["params"]...)...)...))...,
-			)...,
-		),
-	)
-
-	h4 := tmhash.Sum(
-		append(
-			[]byte{1},
-			append(
-				tmhash.Sum(append([]byte{0}, append(append([]byte{8}, []byte("slashing")...), append([]byte{32}, m["slashing"]...)...)...)),
-				tmhash.Sum(append([]byte{0}, append(append([]byte{7}, []byte("staking")...), append([]byte{32}, m["staking"]...)...)...))...,
-			)...,
-		),
-	)
-
-	h5 := tmhash.Sum(append([]byte{0}, append(append([]byte{6}, []byte("supply")...), append([]byte{32}, m["supply"]...)...)...))
-
-	h6 := tmhash.Sum(append([]byte{1}, append(h1, h2...)...))
-
-	h7 := tmhash.Sum(append([]byte{1}, append(h3, h4...)...))
-
-	h8 := tmhash.Sum(append([]byte{1}, append(h6, h7...)...))
-
-	return h5, h8, oracleHash
-}
-
+// TODO: It will be fixed #1326
 func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -478,18 +490,14 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			odp.MerklePaths = append(odp.MerklePaths, imp)
 		}
 
-		var opms rootmulti.MultiStoreProofOp
-		err = cliCtx.Codec.UnmarshalBinaryLengthPrefixed(multistoreOpData, &opms)
+		var multiStoreProof rootmulti.MultiStoreProofOp
+		err = cliCtx.Codec.UnmarshalBinaryLengthPrefixed(multistoreOpData, &multiStoreProof)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		ssmh, osmh, oiavlsh := MakeOtherStoresMerkleHash(opms)
-
-		brp.OtherStoresMerkleHash = osmh
-		brp.SupplyStoresMerkleHash = ssmh
-		brp.OracleIAVLStateHash = oiavlsh
+		brp.MultiStoreProof = GetMultiStoreProof(multiStoreProof)
 
 		// Calculate byte for proofbytes
 		var relayAndVerifyArguments abi.Arguments
