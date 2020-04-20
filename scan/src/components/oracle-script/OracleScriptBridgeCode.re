@@ -60,22 +60,20 @@ module Styles = {
 
 let renderCode = content => {
   <div className=Styles.scriptContainer>
-    <ReactHighlight>
-      <div className=Styles.padding> {content |> React.string} </div>
-    </ReactHighlight>
+    <ReactHighlight className=Styles.padding> {content |> React.string} </ReactHighlight>
   </div>;
 };
 
 type target_platform_t =
   | Ethereum
-  | CosmosIBC
-  | Kadena;
+  | CosmosIBC;
+/*   | Kadena; */
 
 type language_t =
   | Solidity
-  | Vyper
-  | Go
-  | PACT;
+  /*   | Vyper */
+  | Go;
+/*   | PACT; */
 
 exception WrongLanugageChoice(string);
 exception WrongPlatformChoice(string);
@@ -83,36 +81,37 @@ exception WrongPlatformChoice(string);
 let toLanguageVariant =
   fun
   | "Solidity" => Solidity
-  | "Vyper" => Vyper
+  /* | "Vyper" => Vyper */
   | "Go" => Go
-  | "PACT" => PACT
+  /*   | "PACT" => PACT */
   | _ => raise(WrongLanugageChoice("Chosen language does not exist"));
 
 let toPlatformVariant =
   fun
   | "Ethereum" => Ethereum
   | "Cosmos IBC" => CosmosIBC
-  | "Kadena" => Kadena
+  /*   | "Kadena" => Kadena */
   | _ => raise(WrongPlatformChoice("Chosen platform does not exist"));
 
 let toLanguageString =
   fun
   | Solidity => "Solidity"
-  | Vyper => "Vyper"
-  | Go => "Go"
-  | PACT => "PACT";
+  /*   | Vyper => "Vyper" */
+  | Go => "Go";
+/*  | PACT => "PACT"; */
 
 let toPlatformString =
   fun
   | Ethereum => "Ethereum"
-  | CosmosIBC => "Cosmos IBC"
-  | Kadena => "Kadena";
+  | CosmosIBC => "Cosmos IBC";
+/*   | Kadena => "Kadena"; */
 
 let getLanguagesByPlatform =
   fun
-  | Ethereum => [|Solidity, Vyper|]
-  | CosmosIBC => [|Go|]
-  | Kadena => [|PACT|];
+  //TODO: Add back Vyper
+  | Ethereum => [|Solidity|]
+  | CosmosIBC => [|Go|];
+/*   | Kadena => [|PACT|]; */
 
 module TargetPlatformIcon = {
   [@react.component]
@@ -124,7 +123,7 @@ module TargetPlatformIcon = {
           switch (icon) {
           | Ethereum => Images.ethereumIcon
           | CosmosIBC => Images.cosmosIBCIcon
-          | Kadena => Images.kadenaIcon
+          /*           | Kadena => Images.kadenaIcon */
           }
         }
       />
@@ -141,9 +140,9 @@ module LanguageIcon = {
         src={
           switch (icon) {
           | Solidity => Images.solidityIcon
-          | Vyper => Images.vyperIcon
+          /*           | Vyper => Images.vyperIcon */
           | Go => Images.golangIcon
-          | PACT => Images.pactIcon
+          /*           | PACT => Images.pactIcon */
           }
         }
       />
@@ -151,35 +150,28 @@ module LanguageIcon = {
   };
 };
 
+let getFileNameFromLanguage = (~language) => {
+  switch (language) {
+  | Solidity => "ResultDecoder.sol"
+  | Go => "ResultDecoder.go"
+  };
+};
+
+let getCodeFromSchema = (~schemaOpt, ~language) => {
+  {
+    let%Opt schema = schemaOpt;
+    let code =
+      switch (language) {
+      | Solidity => Borsh.generateSolidity(schema, "Output") |> Belt_Option.getWithDefault(_, "")
+      | Go => Borsh.generateGo("main", schema, "Output") |> Belt_Option.getWithDefault(_, "")
+      };
+    Some(code);
+  }
+  |> Belt_Option.getWithDefault(_, "");
+};
+
 [@react.component]
-let make = () => {
-  let description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent aliquet tempor imperdiet. Morbi tincidunt molestie tortor a finibus. Nulla hendrerit iaculis metus, in laoreet tellus eleifend vel. Aliquam pretium porta mi, a efficitur justo ullamcorper sed. Donec interdum accumsan nibh, sed tempor lectus rutrum ac. Morbi et magna in magna varius iaculis. Praesent mollis nulla non arcu ullamcorper, at bibendum nibh pellentesque. Aenean ac quam eget turpis euismod lacinia. Phasellus libero lectus, pulvinar at ipsum non, ullamcorper commodo felis.";
-  let codetest = {j|
-    pragma solidity ^0.5.0;
-
-    import "./Borsch.sol";
-
-    library ResultDecoder {
-      using Borsh for Borsh.Data;
-
-      struct Result {
-        string symbol;
-        uint64 multiplier;
-        uint8 what;
-      }
-
-      function decodeResult(bytes memory _data)
-        internal
-        pure
-        returns (Result memory result)
-      {
-          Borsh.Data memory data = Borsh.from(_data);
-          result.symbol = string(data.decodeBytes());
-          result.multiplier = data.decodeU64();
-          result.what = data.decodeU8();
-      }
-    }|j};
-
+let make = (~schemaOpt: option(string)) => {
   let (targetPlatform, setTargetPlatform) = React.useState(_ => Ethereum);
   let (language, setLanguage) = React.useState(_ => Solidity);
   <div className=Styles.tableWrapper>
@@ -197,19 +189,21 @@ let make = () => {
           <select
             className=Styles.selectContent
             onChange={event => {
-              let platform = ReactEvent.Form.target(event)##value |> toPlatformVariant;
-              setTargetPlatform(_ => platform);
-              let language = platform |> getLanguagesByPlatform |> Belt_Array.getExn(_, 0);
-              setLanguage(_ => language);
+              let newPlatform = ReactEvent.Form.target(event)##value |> toPlatformVariant;
+              setTargetPlatform(_ => newPlatform);
+              let newLanguage = newPlatform |> getLanguagesByPlatform |> Belt_Array.getExn(_, 0);
+              setLanguage(_ => newLanguage);
             }}>
-            {[|Ethereum, CosmosIBC, Kadena|]
-             ->Belt_Array.map(symbol =>
-                 <option value={symbol |> toPlatformString}>
-                   {symbol |> toPlatformString |> React.string}
-                 </option>
-               )
-             |> React.array}
-          </select>
+            // TODO: Add back Kadena
+
+              {[|Ethereum, CosmosIBC|]
+               ->Belt_Array.map(symbol =>
+                   <option value={symbol |> toPlatformString}>
+                     {symbol |> toPlatformString |> React.string}
+                   </option>
+                 )
+               |> React.array}
+            </select>
         </div>
       </Col>
       <Col size=1.>
@@ -221,8 +215,8 @@ let make = () => {
             <select
               className=Styles.selectContent
               onChange={event => {
-                let language = ReactEvent.Form.target(event)##value |> toLanguageVariant;
-                setLanguage(_ => language);
+                let newLanguage = ReactEvent.Form.target(event)##value |> toLanguageVariant;
+                setLanguage(_ => newLanguage);
               }}>
               {targetPlatform
                |> getLanguagesByPlatform
@@ -238,21 +232,22 @@ let make = () => {
       </Col>
     </Row>
     <VSpacing size={`px(35)} />
-    <div className=Styles.tableLowerContainer>
-      <div className=Styles.vFlex>
-        <Text value="Description" size=Text.Lg color=Colors.gray7 spacing={Text.Em(0.03)} />
-      </div>
-      <VSpacing size=Spacing.lg />
-      <Text value=description size=Text.Lg weight=Text.Thin spacing={Text.Em(0.03)} />
-    </div>
-    <VSpacing size={`px(35)} />
+    /*     <div className=Styles.tableLowerContainer>
+             <div className=Styles.vFlex>
+               <Text value="Description" size=Text.Lg color=Colors.gray7 spacing={Text.Em(0.03)} />
+             </div>
+             <VSpacing size=Spacing.lg />
+             <Text value=description size=Text.Lg weight=Text.Thin spacing={Text.Em(0.03)} />
+           </div>
+           <VSpacing size={`px(35)} /> */
     <div className=Styles.tableLowerContainer>
       <div className=Styles.vFlex>
         <img src=Images.code className=Styles.codeImage />
-        <Text value="ResultDecoder.sol" size=Text.Lg color=Colors.gray7 />
+        <Text value={getFileNameFromLanguage(~language)} size=Text.Lg color=Colors.gray7 />
       </div>
       <VSpacing size=Spacing.lg />
-      codetest->renderCode
+      {let code = getCodeFromSchema(~schemaOpt, ~language);
+       code->renderCode}
     </div>
   </div>;
 };
