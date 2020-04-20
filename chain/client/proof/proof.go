@@ -1,4 +1,4 @@
-package rpc
+package proof
 
 import (
 	"encoding/hex"
@@ -11,7 +11,6 @@ import (
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
-	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/rootmulti"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -19,12 +18,10 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/gorilla/mux"
 	"github.com/tendermint/iavl"
-	"github.com/tendermint/tendermint/crypto/merkle"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 	"github.com/tendermint/tendermint/crypto/tmhash"
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
-	tmtypes "github.com/tendermint/tendermint/types"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 )
@@ -32,6 +29,11 @@ import (
 var (
 	relayArguments  abi.Arguments
 	verifyArguments abi.Arguments
+)
+
+// TODO: Remove this variable
+const (
+	requestIDTag = "requestID"
 )
 
 func init() {
@@ -69,65 +71,6 @@ func (merklePath *IAVLMerklePath) encodeToEthFormat() IAVLMerklePathEthereum {
 		big.NewInt(int64(merklePath.SubtreeVersion)),
 		common.BytesToHash(merklePath.SiblingHash),
 	}
-}
-
-type BlockHeaderMerkleParts struct {
-	VersionAndChainIdHash             tmbytes.HexBytes `json:"versionAndChainIdHash"`
-	TimeHash                          tmbytes.HexBytes `json:"timeHash"`
-	LastBlockIDAndOther               tmbytes.HexBytes `json:"lastBlockIDAndOther"`
-	NextValidatorHashAndConsensusHash tmbytes.HexBytes `json:"nextValidatorHashAndConsensusHash"`
-	LastResultsHash                   tmbytes.HexBytes `json:"lastResultsHash"`
-	EvidenceAndProposerHash           tmbytes.HexBytes `json:"evidenceAndProposerHash"`
-}
-
-type BlockHeaderMerklePartsEthereum struct {
-	VersionAndChainIdHash             common.Hash
-	TimeHash                          common.Hash
-	LastBlockIDAndOther               common.Hash
-	NextValidatorHashAndConsensusHash common.Hash
-	LastResultsHash                   common.Hash
-	EvidenceAndProposerHash           common.Hash
-}
-
-func (blockHeader *BlockHeaderMerkleParts) encodeToEthFormat() BlockHeaderMerklePartsEthereum {
-	return BlockHeaderMerklePartsEthereum{
-		common.BytesToHash(blockHeader.VersionAndChainIdHash),
-		common.BytesToHash(blockHeader.TimeHash),
-		common.BytesToHash(blockHeader.LastBlockIDAndOther),
-		common.BytesToHash(blockHeader.NextValidatorHashAndConsensusHash),
-		common.BytesToHash(blockHeader.LastResultsHash),
-		common.BytesToHash(blockHeader.EvidenceAndProposerHash),
-	}
-}
-
-func GetBlockHeaderMerkleParts(codec *codec.Codec, block *tmtypes.Header) BlockHeaderMerkleParts {
-	bhmp := BlockHeaderMerkleParts{}
-	bhmp.VersionAndChainIdHash = merkle.SimpleHashFromByteSlices([][]byte{
-		cdcEncode(codec, block.Version),
-		cdcEncode(codec, block.ChainID),
-	})
-	bhmp.TimeHash = merkle.SimpleHashFromByteSlices([][]byte{
-		cdcEncode(codec, block.Time),
-	})
-	bhmp.LastBlockIDAndOther = merkle.SimpleHashFromByteSlices([][]byte{
-		cdcEncode(codec, block.LastBlockID),
-		cdcEncode(codec, block.LastCommitHash),
-		cdcEncode(codec, block.DataHash),
-		cdcEncode(codec, block.ValidatorsHash),
-	})
-	bhmp.NextValidatorHashAndConsensusHash = merkle.SimpleHashFromByteSlices([][]byte{
-		cdcEncode(codec, block.NextValidatorsHash),
-		cdcEncode(codec, block.ConsensusHash),
-	})
-	bhmp.LastResultsHash = merkle.SimpleHashFromByteSlices([][]byte{
-		cdcEncode(codec, block.LastResultsHash),
-	})
-	bhmp.EvidenceAndProposerHash = merkle.SimpleHashFromByteSlices([][]byte{
-		cdcEncode(codec, block.EvidenceHash),
-		cdcEncode(codec, block.ProposerAddress),
-	})
-
-	return bhmp
 }
 
 // TODO: It will be fixed on #1324

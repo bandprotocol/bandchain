@@ -1,18 +1,12 @@
-package rpc
+package proof
 
 // TODO: Revive this! It's commented because we upgrade to Cosmos 0.38.*.
 // Proof structure will need to change now that we have more modules + the header structure changes.
 
 import (
 	"encoding/hex"
-	"testing"
-	"time"
 
-	"github.com/stretchr/testify/require"
-	"github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/crypto/tmhash"
-	tmtypes "github.com/tendermint/tendermint/types"
-	"github.com/tendermint/tendermint/version"
 )
 
 func hexToBytes(hexstr string) []byte {
@@ -21,6 +15,16 @@ func hexToBytes(hexstr string) []byte {
 		panic(err)
 	}
 	return b
+}
+
+func leafHash(item []byte) []byte {
+	// leaf prefix is 0
+	return tmhash.Sum(append([]byte{0}, item...))
+}
+
+func branchHash(left, right []byte) []byte {
+	// branch prefix is 1
+	return tmhash.Sum(append([]byte{1}, append(left, right...)...))
 }
 
 // func TestEncodeRelay(t *testing.T) {
@@ -94,72 +98,3 @@ func hexToBytes(hexstr string) []byte {
 // 	expect := hexToBytes("00000000000000000000000000000000000000000000000000000000000026ac00000000000000000000000000000000000000000000000000000000000000e000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000012000000000000000000000000000000000000000000000000000000000000001fd00000000000000000000000000000000000000000000000000000000000001600000000000000000000000000000000000000000000000000000000000000010746573745f726573756c745f6d756d7500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000e63616c6c5f646174615f6d756d75000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000001fdb10a692f3521517375a9651c9af5b4fdc7c2cbf7a45315571a714967ca29d9d000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000000000000000000000000000000000026ab3746bfca65a331cade3fccaba30a294e72a73a65289f348a5f61628edd5af625")
 // 	require.Equal(t, expect, result)
 // }
-
-func leafHash(item []byte) []byte {
-	// leaf prefix is 0
-	return tmhash.Sum(append([]byte{0}, item...))
-}
-
-func branchHash(left, right []byte) []byte {
-	// branch prefix is 1
-	return tmhash.Sum(append([]byte{1}, append(left, right...)...))
-}
-
-func TestBlockHeaderMerkleParts(t *testing.T) {
-	layout := "2006-01-02T15:04:05.000000000Z"
-	str := "2020-04-20T03:30:30.143851745Z"
-	blockTime, _ := time.Parse(layout, str)
-
-	// Copy block header Merkle Part here
-	header := tmtypes.Header{
-		Version: version.Consensus{Block: 10, App: 0},
-		ChainID: "bandchain",
-		Height:  381837,
-		Time:    blockTime,
-		LastBlockID: tmtypes.BlockID{
-			Hash: hexToBytes("F633B30D4FBEC862F4A041311E2CB7DFAD63D57930B065A563299449D25BD9CE"),
-			PartsHeader: tmtypes.PartSetHeader{
-				Total: 1,
-				Hash:  hexToBytes("7F334B7EE4F8AAC5E70F07FEB9A58A72F120E9AC046167851FC94BC4F2729550"),
-			},
-		},
-		LastCommitHash:     hexToBytes("561D0BB2B6A6E58E20A6BED0F16C8FF5E333BB5A93C69A8E7F3C13542A84DB60"),
-		DataHash:           nil,
-		ValidatorsHash:     hexToBytes("3AEB137B43144B229F0CA7AC43033E03FCEE25877A3661E88848E436C3D6DD65"),
-		NextValidatorsHash: hexToBytes("3AEB137B43144B229F0CA7AC43033E03FCEE25877A3661E88848E436C3D6DD65"),
-		ConsensusHash:      hexToBytes("AD82B220C509602720D74FD75BCE7CFE9B148039958F236D8894E00EB1599E04"),
-		AppHash:            hexToBytes("1CCD765C80D0DC1705BB7B6BE616DAD3CF2E6439BB9A9B776D5BD183F89CA141"),
-		LastResultsHash:    nil,
-		EvidenceHash:       nil,
-		ProposerAddress:    hexToBytes("F23391B5DBF982E37FB7DADEA64AAE21CAE4C172"),
-	}
-	blockMerkleParts := GetBlockHeaderMerkleParts(amino.NewCodec(), &header)
-	expectBlockHash := hexToBytes("A35617A81409CE46F1F820450B8AD4B217D99AE38AAA719B33C4FC52DCA99B22")
-	appHash := hexToBytes("1CCD765C80D0DC1705BB7B6BE616DAD3CF2E6439BB9A9B776D5BD183F89CA141")
-	blockHeight := 381837
-
-	// Verify code
-	blockHash := branchHash(
-		branchHash(
-			branchHash(
-				blockMerkleParts.VersionAndChainIdHash,
-				branchHash(
-					leafHash(cdcEncode(amino.NewCodec(), blockHeight)),
-					blockMerkleParts.TimeHash,
-				),
-			),
-			blockMerkleParts.LastBlockIDAndOther,
-		),
-		branchHash(
-			branchHash(
-				blockMerkleParts.NextValidatorHashAndConsensusHash,
-				branchHash(
-					leafHash(cdcEncode(amino.NewCodec(), appHash)),
-					blockMerkleParts.LastResultsHash,
-				),
-			),
-			blockMerkleParts.EvidenceAndProposerHash,
-		),
-	)
-	require.Equal(t, expectBlockHash, blockHash)
-}
