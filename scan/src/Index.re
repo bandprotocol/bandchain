@@ -11,7 +11,7 @@ TimeAgos.setMomentRelativeTimeThreshold();
 ReactDOMRe.render(
   <ApolloClient>
     <GlobalContext>
-      <AccountContext> <ModalContext> <App /> </ModalContext> </AccountContext>
+      <ModalContext> <AccountContext> <App /> </AccountContext> </ModalContext>
     </GlobalContext>
   </ApolloClient>,
   document##getElementById("root"),
