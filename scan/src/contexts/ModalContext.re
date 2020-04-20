@@ -1,5 +1,5 @@
 type t =
-  | Connect(string);
+  | Connect(React.element);
 
 type a =
   | OpenModal(t)

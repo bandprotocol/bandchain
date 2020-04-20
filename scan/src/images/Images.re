@@ -53,3 +53,6 @@
 [@bs.module] external pactIcon: string = "./pact.svg";
 [@bs.module] external ibcLogo: string = "./ibcLogo.svg";
 [@bs.module] external ibcDirArrow: string = "./ibcDirArrow.svg";
+[@bs.module] external modalBg: string = "./modalbg.png";
+[@bs.module] external ledgerIconActive: string = "./ledgerIconActive.svg";
+[@bs.module] external ledgerIconInactive: string = "./ledgerIconInactive.svg";

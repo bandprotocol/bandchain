@@ -12,5 +12,5 @@ module Styles = {
 
 [@react.component]
 let make = (~value) => {
-  <div className=Styles.container> <Text value /> </div>;
+  <div className=Styles.container> value </div>;
 };
