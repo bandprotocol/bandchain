@@ -197,6 +197,7 @@ func prepareRequest(ctx sdk.Context, k Keeper, m MsgRequestData, req types.Reque
 			return nil, err
 		}
 	}
+
 	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
 
