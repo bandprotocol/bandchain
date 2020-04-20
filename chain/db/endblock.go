@@ -21,9 +21,53 @@ func (b *BandDB) HandleEndblockEvent(event abci.Event) {
 	switch event.Type {
 	case oracle.EventTypeRequestExecute:
 		{
-			err := b.ResolveRequest(kvMap)
+			id, err := strconv.ParseInt(kvMap[oracle.AttributeKeyRequestID], 10, 64)
 			if err != nil {
 				panic(err)
+			}
+
+			numResolveStatus, err := strconv.ParseInt(kvMap[oracle.AttributeKeyResolveStatus], 10, 8)
+			if err != nil {
+				panic(err)
+			}
+
+			resolveStatus := oracle.ResolveStatus(numResolveStatus)
+
+			if parseResolveStatus(resolveStatus) == Success {
+				requestTime, err := strconv.ParseInt(kvMap[oracle.AttributeKeyRequestTime], 10, 64)
+				if err != nil {
+					panic(err)
+
+				}
+				expirationTime, err := strconv.ParseInt(kvMap[oracle.AttributrKeyExpirationHeight], 10, 64)
+				if err != nil {
+					panic(err)
+
+				}
+				resolvedTime, err := strconv.ParseInt(kvMap[oracle.AttributeKeyResolvedTime], 10, 64)
+				if err != nil {
+					panic(err)
+
+				}
+				err = b.tx.Model(&Request{}).Where(Request{ID: id}).
+					Update(
+						Request{ResolveStatus: parseResolveStatus(resolveStatus),
+							Result:         []byte(kvMap[oracle.AttributeKeyResult]),
+							RequestTime:    requestTime,
+							ExpirationTime: expirationTime,
+							ResolveTime:    resolvedTime,
+						}).Error
+				if err != nil {
+					panic(err)
+
+				}
+			} else {
+				err = b.tx.Model(&Request{}).Where(Request{ID: id}).
+					Update(Request{ResolveStatus: parseResolveStatus(resolveStatus)}).Error
+				if err != nil {
+					panic(err)
+
+				}
 			}
 		}
 	case staking.EventTypeCompleteUnbonding:

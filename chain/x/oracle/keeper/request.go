@@ -78,7 +78,7 @@ func (k Keeper) AddRequest(ctx sdk.Context, req types.Request) (types.RequestID,
 	return id, nil
 }
 
-func (k Keeper) handleResolveRequest(
+func (k Keeper) resolveRequest(
 	ctx sdk.Context, reqID types.RequestID, resolveStatus types.ResolveStatus, result []byte,
 ) types.OracleResponsePacketData {
 
@@ -136,7 +136,7 @@ func (k Keeper) handleResolveRequest(
 func (k Keeper) ProcessOracleResponse(
 	ctx sdk.Context, reqID types.RequestID, resolveStatus types.ResolveStatus, result []byte,
 ) {
-	resPacketData := k.handleResolveRequest(ctx, reqID, resolveStatus, result)
+	resPacketData := k.resolveRequest(ctx, reqID, resolveStatus, result)
 	if resolveStatus == types.Expired {
 		return
 	}
