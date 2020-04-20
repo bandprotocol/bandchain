@@ -190,7 +190,6 @@ let make = () => {
            // TODO: remove later 
            <button
              onClick={_ => {
-               Js.Console.log("Click");
                dispatchModal(OpenModal(Connect("Test")));
                ();
              }}>
