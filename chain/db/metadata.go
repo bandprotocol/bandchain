@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 const (
@@ -11,6 +13,7 @@ const (
 	KeyLastProcessedHeight    = "last_processed_height"
 	KeyUptimeLookBackDuration = "uptime_look_back_duration"
 	KeyInflationRate          = "inflation_rate"
+	KeyTotalSupply            = "total_supply"
 )
 
 func (b *BandDB) GetMetadataValue(key string) (string, error) {
@@ -85,4 +88,16 @@ func (b *BandDB) GetInflationRate() (string, error) {
 		return "", err
 	}
 	return rawString, nil
+}
+
+func (b *BandDB) SetTotalSupply(totalSupply sdk.Coins) error {
+	return b.SetMetadataValue(KeyTotalSupply, totalSupply.String())
+}
+
+func (b *BandDB) GetTotalSupply() (sdk.Coins, error) {
+	rawString, err := b.GetMetadataValue(KeyTotalSupply)
+	if err != nil {
+		return sdk.Coins{}, err
+	}
+	return sdk.ParseCoins(rawString)
 }
