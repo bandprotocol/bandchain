@@ -2,8 +2,9 @@ type t =
   | Mnemonic(Mnemonic.t)
   | Ledger(Ledger.t);
 
-let createFromMnemonic = (rpcUrl, mnemonic) => {
-  let bandChain = BandWeb3.network(rpcUrl, "bandchain");
+let createFromMnemonic = mnemonic => {
+  // Just use arbitrary rpcUrl, chainID beacuase they didn't use in BandWeb3
+  let bandChain = BandWeb3.network("rpcUrl", "chainID");
   bandChain->BandWeb3.setPath("m/44'/494'/0'/0/0");
   bandChain->BandWeb3.setBech32MainPrefix("band");
   Mnemonic({bandChain, mnemonic});
