@@ -24,9 +24,9 @@ package rpc
 // 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 // )
 
-// const (
-// 	requestIDTag = "requestID"
-// )
+const (
+	requestIDTag = "requestID"
+)
 
 // func getLatestBlocks(cliCtx context.CLIContext, page, limit int) ([]byte, error) {
 // 	node, err := cliCtx.GetNode()
