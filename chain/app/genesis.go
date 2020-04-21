@@ -247,8 +247,7 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			"Open weather map",
 			"Oracle script for getting weather information",
 			"./owasm/res/open_weather_map.wasm",
-			// TODO: Add schema
-			``,
+			`{"Input":"{ \"kind\": \"struct\", \"fields\": [ [\"country\", \"string\"],[\"main_field\", \"string\"],[\"sub_field\", \"string\"],[\"multiplier\", \"u64\"] ] }","Output":"{ \"kind\": \"struct\", \"fields\": [ [\"value\", \"u64\"] ] }"}`,
 			`https://bandprotocol.com`,
 		},
 		{
