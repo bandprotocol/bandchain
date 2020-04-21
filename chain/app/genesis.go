@@ -239,8 +239,7 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			"Open sky network",
 			"Oracle script for getting the verification of a flight",
 			"./owasm/res/open_sky_network.wasm",
-			// TODO: Add schema
-			``,
+			`{"Input":"{ \"kind\": \"struct\", \"fields\": [ [\"flight_op\", \"string\"],[\"airport\", \"string\"],[\"icao24\", \"string\"],[\"begin\", \"string\"], [\"end\", \"string\"] ] }","Output":"{ \"kind\": \"struct\", \"fields\": [ [\"flight_existence\", \"u8\"] ] }"}`,
 			`https://bandprotocol.com`,
 		},
 		{
