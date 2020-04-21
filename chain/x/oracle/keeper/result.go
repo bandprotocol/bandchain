@@ -14,13 +14,13 @@ func (k Keeper) AddResult(
 	ctx sdk.Context, requestID types.RequestID,
 	requestPacket types.OracleRequestPacketData,
 	responsePacket types.OracleResponsePacketData,
-) error {
+) ([]byte, error) {
 	result, err := hex.DecodeString(responsePacket.Result)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if uint64(len(result)) > k.GetParam(ctx, types.KeyMaxResultSize) {
-		return sdkerrors.Wrapf(types.ErrBadDataValue,
+		return nil, sdkerrors.Wrapf(types.ErrBadDataValue,
 			"AddResult: Result size (%d) exceeds the maximum size (%d).",
 			len(result), k.GetParam(ctx, types.KeyMaxResultSize),
 		)
@@ -37,11 +37,12 @@ func (k Keeper) AddResult(
 
 	h = sha256.New()
 	h.Write(append(reqPacketHash, resPacketHash...))
+	resultHash := h.Sum(nil)
 	store.Set(
 		types.ResultStoreKey(requestID),
-		h.Sum(nil),
+		resultHash,
 	)
-	return nil
+	return resultHash, nil
 }
 
 // GetResult returns the result bytes in the store.

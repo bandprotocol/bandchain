@@ -39,7 +39,7 @@ func (b *BandDB) HandleEndblockEvent(event abci.Event) {
 					panic(err)
 
 				}
-				resolvedTime, err := strconv.ParseInt(kvMap[oracle.AttributeKeyResolvedTime], 10, 64)
+				resolveTime, err := strconv.ParseInt(kvMap[oracle.AttributeKeyResolveTime], 10, 64)
 				if err != nil {
 					panic(err)
 
@@ -49,7 +49,7 @@ func (b *BandDB) HandleEndblockEvent(event abci.Event) {
 						Request{ResolveStatus: parseResolveStatus(resolveStatus),
 							Result:      []byte(kvMap[oracle.AttributeKeyResult]),
 							RequestTime: requestTime,
-							ResolveTime: resolvedTime,
+							ResolveTime: resolveTime,
 						}).Error
 				if err != nil {
 					panic(err)

@@ -105,7 +105,7 @@ func (k Keeper) resolveRequest(
 		return resPacketData
 	}
 
-	err := k.AddResult(ctx, reqID, reqPacketData, resPacketData)
+	resultHash, err := k.AddResult(ctx, reqID, reqPacketData, resPacketData)
 	if err != nil {
 		ctx.EventManager().EmitEvents(sdk.Events{
 			sdk.NewEvent(
@@ -118,11 +118,18 @@ func (k Keeper) resolveRequest(
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeRequestExecute,
-			sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", reqID)),
+			sdk.NewAttribute(types.AttributeKeyClientID, reqPacketData.ClientID),
+			sdk.NewAttribute(types.AttributeKeyOracleScriptID, fmt.Sprintf("%d", reqPacketData.OracleScriptID)),
+			sdk.NewAttribute(types.AttributeKeyCalldata, reqPacketData.Calldata),
+			sdk.NewAttribute(types.AttributeKeyAskCount, fmt.Sprintf("%d", reqPacketData.AskCount)),
+			sdk.NewAttribute(types.AttributeKeyMinCount, fmt.Sprintf("%d", reqPacketData.MinCount)),
+			sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", resPacketData.RequestID)),
 			sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", types.Success)),
-			sdk.NewAttribute(types.AttributeKeyResult, fmt.Sprintf("%s", hex.EncodeToString(result))),
+			sdk.NewAttribute(types.AttributeKeyAnsCount, fmt.Sprintf("%d", resPacketData.AnsCount)),
 			sdk.NewAttribute(types.AttributeKeyRequestTime, fmt.Sprintf("%d", request.RequestTime)),
-			sdk.NewAttribute(types.AttributeKeyResolvedTime, fmt.Sprintf("%d", resPacketData.ResolveTime)),
+			sdk.NewAttribute(types.AttributeKeyResolveTime, fmt.Sprintf("%d", resPacketData.ResolveTime)),
+			sdk.NewAttribute(types.AttributeKeyResult, resPacketData.Result),
+			sdk.NewAttribute(types.AttributeKeyResultHash, hex.EncodeToString(resultHash)),
 		)})
 	return resPacketData
 }
