@@ -207,8 +207,7 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			"Bitcoin block hash",
 			"Oracle script for getting Bitcoin latest block hash",
 			"./owasm/res/bitcoin_block_hash.wasm",
-			// TODO: Add schema
-			``,
+			`{"Input":"{ \"kind\": \"struct\", \"fields\": [ [\"block_height\", \"u64\"] ] }","Output":"{ \"kind\": \"struct\", \"fields\": [ [\"block_hash\", \"string\"] ] }"}`,
 			`https://bandprotocol.com`,
 		},
 		{
