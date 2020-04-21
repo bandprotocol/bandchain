@@ -97,7 +97,7 @@ func (b *BandDB) SetTotalSupply(totalSupply sdk.Coins) error {
 func (b *BandDB) GetTotalSupply() (sdk.Coins, error) {
 	rawString, err := b.GetMetadataValue(KeyTotalSupply)
 	if err != nil {
-		return sdk.Coins{}, err
+		return nil, err
 	}
 	return sdk.ParseCoins(rawString)
 }
