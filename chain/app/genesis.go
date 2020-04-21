@@ -215,8 +215,7 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			"Coingecko crypto volume",
 			"Oracle script for getting an average crypto price from Coingecko",
 			"./owasm/res/coingecko_volume.wasm",
-			// TODO: Add schema
-			``,
+			`{"Input":"{ \"kind\": \"struct\", \"fields\": [ [\"symbol\", \"string\"], [\"multiplier\", \"u64\"] ] }","Output":"{ \"kind\": \"struct\", \"fields\": [ [\"volume\", \"u64\"] ] }"}`,
 			`https://bandprotocol.com`,
 		},
 		{
