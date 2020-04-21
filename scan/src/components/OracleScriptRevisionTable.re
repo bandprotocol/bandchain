@@ -5,6 +5,8 @@ module Styles = {
 
   let txContainer = style([width(`px(300)), cursor(`pointer)]);
 
+  let nameContainer = style([width(`px(160))]);
+
   let icon = style([width(`px(80)), height(`px(80))]);
   let iconWrapper =
     style([
@@ -90,7 +92,16 @@ let make = (~id) =>
                     <Row>
                       <Col> <HSpacing size=Spacing.md /> </Col>
                       <Col size=2.5>
-                        <Text block=true value=name weight=Text.Medium color=Colors.gray7 />
+                        <div className=Styles.nameContainer>
+                          <Text
+                            block=true
+                            value=name
+                            weight=Text.Medium
+                            color=Colors.gray7
+                            nowrap=true
+                            ellipsis=true
+                          />
+                        </div>
                       </Col>
                       <Col size=3.5>
                         {switch (transaction) {

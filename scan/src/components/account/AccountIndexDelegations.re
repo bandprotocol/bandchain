@@ -56,18 +56,18 @@ let make = (~address) =>
                 />
               </div>
             </Col>
-            // <Col size=0.6>
-            //   <div className=Styles.alignRight>
-            //     <Text
-            //       block=true
-            //       value="REWARD (BAND)"
-            //       size=Text.Sm
-            //       spacing={Text.Em(0.05)}
-            //       weight=Text.Bold
-            //       color=Colors.gray6
-            //     />
-            //   </div>
-            // </Col>
+            <Col size=0.6>
+              <div className=Styles.alignRight>
+                <Text
+                  block=true
+                  value="REWARD (BAND)"
+                  size=Text.Sm
+                  spacing={Text.Em(0.05)}
+                  weight=Text.Bold
+                  color=Colors.gray6
+                />
+              </div>
+            </Col>
             <Col> <HSpacing size=Spacing.lg /> </Col>
           </Row>
         </THead>
@@ -86,11 +86,11 @@ let make = (~address) =>
                      <Text value={delegation.amount |> Format.fPretty} code=true />
                    </div>
                  </Col>
-                 //  <Col size=0.6>
-                 //    <div className=Styles.alignRight>
-                 //      <Text value={0.00 |> Format.fPretty} code=true />
-                 //    </div>
-                 //  </Col>
+                 <Col size=0.6>
+                   <div className=Styles.alignRight>
+                     <Text value={delegation.reward |> Format.fPretty} code=true />
+                   </div>
+                 </Col>
                  <Col> <HSpacing size=Spacing.lg /> </Col>
                </Row>
              </TBody>

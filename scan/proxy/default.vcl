@@ -31,6 +31,9 @@ sub vcl_recv {
   } else if (req.url ~ "^/rest/") {
     set req.url = regsub(req.url, "^/rest/", "/");
     set req.backend_hint = rest;
+    if (req.url ~ "^/auth/accounts/") {
+      return (pass);
+    }
   } else if (req.url ~ "^/faucet/"){
     set req.url = regsub(req.url, "^/faucet/", "/");
     set req.backend_hint = faucet;

@@ -10,6 +10,8 @@ type OID = OracleScriptID
 
 // RequestID is the type-safe unique identifier type for data requests.
 type RequestID int64
+type RID = RequestID
 
 // ExternalID is the type-safe unique identifier type for raw data requests.
 type ExternalID int64
+type EID = ExternalID

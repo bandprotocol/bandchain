@@ -45,32 +45,19 @@ func buildRequestQuerierInfo(
 		return types.RequestQuerierInfo{}, sdkErr
 	}
 
-	rawRequests := keeper.GetRawDataRequestWithExternalIDs(ctx, id)
+	rawRequests := keeper.GetRawRequests(ctx, id)
 
-	iterator := keeper.GetRawDataReportsIterator(ctx, id)
-	reportMap := make(map[string]([]types.RawDataReportWithID))
-	for ; iterator.Valid(); iterator.Next() {
-		validator, externalID := types.GetValidatorAddressAndExternalID(iterator.Key(), id)
-		if _, ok := reportMap[string(validator)]; !ok {
-			reportMap[string(validator)] = make([]types.RawDataReportWithID, 0)
-		}
-
-		var rawReport types.RawDataReport
-		keeper.cdc.MustUnmarshalBinaryBare(iterator.Value(), &rawReport)
-		reportMap[string(validator)] = append(
-			reportMap[string(validator)],
-			types.NewRawDataReportWithID(externalID, rawReport.ExitCode, rawReport.Data),
-		)
+	reportMap := make(map[string]([]types.RawReport))
+	for _, report := range keeper.GetReports(ctx, id) {
+		reportMap[string(report.Validator)] = report.RawReports
 	}
 
-	reports := make([]types.ReportWithValidator, 0)
+	reports := make([]types.Report, 0)
 
 	for _, validator := range request.RequestedValidators {
 		valReport, ok := reportMap[string(validator)]
 		if ok {
-			reports = append(reports, types.NewReportWithValidator(
-				valReport, validator,
-			))
+			reports = append(reports, types.NewReport(validator, valReport))
 		}
 	}
 	var result types.Result
@@ -174,6 +161,8 @@ func queryOracleScriptByID(ctx sdk.Context, path []string, req abci.RequestQuery
 		oracleScript.Name,
 		oracleScript.Description,
 		oracleScript.Code,
+		oracleScript.Schema,
+		oracleScript.SourceCodeURL,
 	)), nil
 }
 
@@ -208,6 +197,8 @@ func queryOracleScripts(ctx sdk.Context, path []string, req abci.RequestQuery, k
 			oracleScript.Name,
 			oracleScript.Description,
 			oracleScript.Code,
+			oracleScript.Schema,
+			oracleScript.SourceCodeURL,
 		))
 	}
 

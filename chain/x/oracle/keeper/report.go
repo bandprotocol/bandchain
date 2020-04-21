@@ -6,145 +6,87 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// AddReport adds a new data report from the given reporter on behalf of the given validator
-// for a specific data request to the store. The function performs validations to make sure
-// that the report is valid and saves it to the store.
-func (k Keeper) AddReport(
-	ctx sdk.Context, requestID types.RequestID, dataSet []types.RawDataReportWithID,
-	validator sdk.ValAddress, reporter sdk.AccAddress,
-) error {
-	request, err := k.GetRequest(ctx, requestID)
+// HasReport checks if the report of this ID triple exists in the storage.
+func (k Keeper) HasReport(ctx sdk.Context, rid types.RID, val sdk.ValAddress) bool {
+	return ctx.KVStore(k.storeKey).Has(types.RawDataReportStoreKey(rid, val))
+}
+
+// SetDataReport saves the report to the storage without performing validation.
+func (k Keeper) SetReport(ctx sdk.Context, rid types.RID, rep types.Report) {
+	key := types.RawDataReportStoreKey(rid, rep.Validator)
+	ctx.KVStore(k.storeKey).Set(key, k.cdc.MustMarshalBinaryBare(rep))
+}
+
+// AddReports performs sanity checks and adds a new batch from one validator to one request
+// to the store. Note that we expect each validator to report to all raw data requests at once.
+func (k Keeper) AddReport(ctx sdk.Context, rid types.RID, rep types.Report) error {
+	req, err := k.GetRequest(ctx, rid)
 	if err != nil {
 		return err
 	}
-
-	// TODO: Make sure we handle this correctly. We basically want to allow reporters to report
-	// even after a request is resolved so they get to keep their stats.
-	// if request.ResolveStatus != types.Open {
-	// 	return sdkerrors.Wrapf(types.ErrInvalidState,
-	// 		"AddReport: Request ID %d: Resolve status (%d) is not Open (%d).",
-	// 		requestID, request.ResolveStatus, types.Open,
-	// 	)
-	// }
-	if request.ExpirationHeight < ctx.BlockHeight() {
-		return sdkerrors.Wrapf(types.ErrInvalidState,
-			"AddReport: Request ID %d: Request already expired at height %d. Current height is %d.",
-			requestID, request.ExpirationHeight, ctx.BlockHeight(),
-		)
+	if !ContainsVal(req.RequestedValidators, rep.Validator) {
+		return sdkerrors.Wrapf(
+			types.ErrValidatorNotRequested, "reqID: %d, val: %s", rid, rep.Validator.String())
 	}
-	if !k.CheckReporter(ctx, validator, reporter) {
-		return sdkerrors.Wrapf(types.ErrUnauthorizedPermission,
-			"AddReport: Request ID %d: %s is not an authorized reporter of %s.",
-			requestID, reporter.String(), validator.String(),
-		)
+	if k.HasReport(ctx, rid, rep.Validator) {
+		return sdkerrors.Wrapf(
+			types.ErrValidatorAlreadyReported, "reqID: %d, val: %s", rid, rep.Validator.String())
 	}
-
-	found := false
-	for _, validValidator := range request.RequestedValidators {
-		if validator.Equals(validValidator) {
-			found = true
-			break
-		}
+	if int64(len(rep.RawReports)) != k.GetRawRequestCount(ctx, rid) {
+		return types.ErrInvalidDataSourceCount
 	}
-	if !found {
-		return sdkerrors.Wrapf(types.ErrUnauthorizedPermission,
-			"AddReport: Request ID %d: %s is not one of the requested validators.",
-			requestID, validator.String(),
-		)
-	}
-
-	for _, submittedValidator := range request.ReceivedValidators {
-		if validator.Equals(submittedValidator) {
-			return sdkerrors.Wrapf(types.ErrItemDuplication,
-				"AddReport: Duplicate report to request ID %d from validator %s.",
-				requestID, submittedValidator.String(),
-			)
-		}
-	}
-
-	rawDataRequestCount := k.GetRawDataRequestCount(ctx, requestID)
-	if int64(len(dataSet)) != rawDataRequestCount {
-		return sdkerrors.Wrapf(types.ErrBadDataValue,
-			"AddReport: Request ID %d: Incorrect number (%d) of raw data reports. Expect %d.",
-			requestID, len(dataSet), rawDataRequestCount,
-		)
-	}
-
-	for _, rawReport := range dataSet {
+	for _, rep := range rep.RawReports {
 		// Here we can safely assume that external IDs are unique, as this has already been
 		// checked by ValidateBasic performed in baseapp's runTx function.
-		if !k.CheckRawDataRequestExists(ctx, requestID, rawReport.ExternalDataID) {
-			return sdkerrors.Wrapf(types.ErrBadDataValue,
-				"AddReport: RequestID %d: Unknown external data ID %d",
-				requestID, rawReport.ExternalDataID,
-			)
+		if !k.HasRawRequest(ctx, rid, rep.ExternalID) {
+			return sdkerrors.Wrapf(
+				types.ErrRawRequestNotFound, "reqID: %d, extID: %d", rid, rep.ExternalID)
 		}
-		if uint64(len(rawReport.Data)) > k.GetParam(ctx, types.KeyMaxRawDataReportSize) {
-			return sdkerrors.Wrapf(types.ErrBadDataValue,
-				"AddReport: RequestID %d: Raw report data size (%d) exceeds the limit (%d).",
-				requestID, len(rawReport.Data), k.GetParam(ctx, types.KeyMaxRawDataReportSize),
-			)
-		}
-		k.SetRawDataReport(
-			ctx, requestID, rawReport.ExternalDataID, validator,
-			types.RawDataReport{
-				ExitCode: rawReport.ExitCode,
-				Data:     rawReport.Data,
-			},
-		)
-	}
-
-	request.ReceivedValidators = append(request.ReceivedValidators, validator)
-	k.SetRequest(ctx, requestID, request)
-	if k.ShouldBecomePendingResolve(ctx, requestID) {
-		err := k.AddPendingRequest(ctx, requestID)
-		if err != nil {
-			// Should never happen because we already perform ShouldBecomePendingResolve check.
+		if err := k.EnsureLength(ctx, types.KeyMaxRawDataReportSize, len(rep.Data)); err != nil {
 			return err
 		}
 	}
+	k.SetReport(ctx, rid, rep)
 	return nil
 }
 
-// SetRawDataReport is a function that saves a raw data report to store.
-func (k Keeper) SetRawDataReport(
-	ctx sdk.Context,
-	requestID types.RequestID, externalID types.ExternalID,
-	validatorAddress sdk.ValAddress,
-	rawDataReport types.RawDataReport,
-) {
-	key := types.RawDataReportStoreKey(requestID, externalID, validatorAddress)
-	store := ctx.KVStore(k.storeKey)
-	store.Set(key, k.cdc.MustMarshalBinaryBare(rawDataReport))
+// GetReportIterator returns the iterator for all reports of the given request ID.
+func (k Keeper) GetReportIterator(ctx sdk.Context, rid types.RequestID) sdk.Iterator {
+	prefix := types.GetIteratorPrefix(types.RawDataReportStoreKeyPrefix, rid)
+	return sdk.KVStorePrefixIterator(ctx.KVStore(k.storeKey), prefix)
 }
 
-// GetRawDataReport returns the raw data report from the store for a specific combination of
-// request ID, external ID, and validator address.
-func (k Keeper) GetRawDataReport(
-	ctx sdk.Context,
-	requestID types.RequestID, externalID types.ExternalID,
-	validatorAddress sdk.ValAddress,
-) (types.RawDataReport, error) {
-	key := types.RawDataReportStoreKey(requestID, externalID, validatorAddress)
-	store := ctx.KVStore(k.storeKey)
-	if !store.Has(key) {
-		return types.RawDataReport{}, sdkerrors.Wrapf(types.ErrItemNotFound,
-			"GetRawDataReport: No raw data report with request ID %d external ID %d from %s",
-			requestID,
-			externalID,
-			validatorAddress.String(),
-		)
+// GetReportCount returns the number of reports for the given request ID.
+func (k Keeper) GetReportCount(ctx sdk.Context, rid types.RID) (count int64) {
+	iterator := k.GetReportIterator(ctx, rid)
+	defer iterator.Close()
+	for ; iterator.Valid(); iterator.Next() {
+		count++
 	}
-	var rawDataReport types.RawDataReport
-	k.cdc.MustUnmarshalBinaryBare(store.Get(key), &rawDataReport)
-	return rawDataReport, nil
+	return count
 }
 
-// GetRawDataReportsIterator returns an iterator for all reports for a specific request ID.
-func (k Keeper) GetRawDataReportsIterator(
-	ctx sdk.Context, requestID types.RequestID,
-) sdk.Iterator {
-	prefix := types.GetIteratorPrefix(types.RawDataReportStoreKeyPrefix, requestID)
-	store := ctx.KVStore(k.storeKey)
-	return sdk.KVStorePrefixIterator(store, prefix)
+// GetReports returns all reports for the given request ID, or nil if there is none.
+func (k Keeper) GetReports(ctx sdk.Context, rid types.RID) (reports []types.Report) {
+	iterator := k.GetReportIterator(ctx, rid)
+	defer iterator.Close()
+	for ; iterator.Valid(); iterator.Next() {
+		var rep types.Report
+		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &rep)
+		reports = append(reports, rep)
+	}
+	return reports
+}
+
+// DeleteReports removes all reports for the given request ID.
+func (k Keeper) DeleteReports(ctx sdk.Context, rid types.RID) {
+	var keys [][]byte
+	iterator := k.GetReportIterator(ctx, rid)
+	defer iterator.Close()
+	for ; iterator.Valid(); iterator.Next() {
+		keys = append(keys, iterator.Key())
+	}
+	for _, key := range keys {
+		ctx.KVStore(k.storeKey).Delete(key)
+	}
 }

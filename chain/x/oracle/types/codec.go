@@ -15,7 +15,7 @@ func init() {
 	commitmenttypes.RegisterCodec(ModuleCdc)
 }
 
-// RegisterCodec registers concrete types on the Amino codec.
+// RegisterCodec registers the module's concrete types on the codec.
 func RegisterCodec(cdc *codec.Codec) {
 	cdc.RegisterConcrete(MsgRequestData{}, "oracle/Request", nil)
 	cdc.RegisterConcrete(MsgReportData{}, "oracle/Report", nil)
