@@ -47,7 +47,6 @@ module Styles = {
       width(`px(226)),
       height(`px(50)),
       marginLeft(`px(34)),
-      borderLeft(`px(6), `solid, active ? Colors.bandBlue : Colors.white),
       borderRadius(`px(8)),
       backgroundColor(Colors.white),
       boxShadow(
@@ -56,6 +55,7 @@ module Styles = {
           : Shadow.box(~x=`zero, ~y=`px(0), ~blur=`px(0), Css.rgba(0, 0, 0, 0.)),
       ),
       cursor(`pointer),
+      overflow(`hidden),
     ]);
   let seperatedLongLine =
     style([
@@ -67,6 +67,9 @@ module Styles = {
 
   let ledgerIcon = style([height(`px(30)), width(`px(30)), display(`flex)]);
   let ledgerImageContainer = active => style([opacity(active ? 1.0 : 0.5)]);
+
+  let activeBar = active =>
+    style([backgroundColor(active ? Colors.bandBlue : Colors.white), width(`px(15))]);
 };
 
 type login_method_t =
@@ -84,6 +87,7 @@ module LoginMethod = {
   [@react.component]
   let make = (~name, ~active, ~onClick) => {
     <div className={Styles.buttonContainer(active)} onClick>
+      <div className={Styles.activeBar(active)} />
       <div className={Styles.header(active)}>
         <Text value={name |> toLoginMethodString} weight=Text.Medium size=Text.Md />
         {switch (name) {
