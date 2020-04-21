@@ -24,19 +24,19 @@ func TestEncodeDecodeBytes(t *testing.T) {
 
 	// Test bytes returned when passing encoded data into decoder
 	decodedBytes, err := decoder.DecodeBytes()
-	require.Equal(t, err, nil, "Incorrect decoded error type")
+	require.Nil(t, err, "Incorrect decoded error type")
 	require.Equal(t, firstBytes, decodedBytes, "Incorrect decoded first bytes")
 
 	decodedBytes, err = decoder.DecodeBytes()
-	require.Equal(t, err, nil, "Incorrect decoded error type")
+	require.Nil(t, err, "Incorrect decoded error type")
 	require.Equal(t, secondBytes, decodedBytes, "Incorrect decoded second bytes")
 
 	decodedBytes, err = decoder.DecodeBytes()
-	require.Equal(t, err, nil, "Incorrect decoded error type")
+	require.Nil(t, err, "Incorrect decoded error type")
 	require.Equal(t, thirdBytes, decodedBytes, "Incorrect decoded third bytes")
 
 	decodedBytes, err = decoder.DecodeBytes()
-	require.Equal(t, err, nil, "Incorrect decoded error type")
+	require.Nil(t, err, "Incorrect decoded error type")
 	require.Equal(t, fourthBytes, decodedBytes, "Incorrect decoded fourth bytes")
 }
 
@@ -61,22 +61,22 @@ func TestEncodeDecodeString(t *testing.T) {
 
 	// Test strings returned when passing encoded data into decoder
 	decodedString, err := decoder.DecodeString()
-	require.Equal(t, err, nil, "Incorrect decoded error type")
+	require.Nil(t, err, "Incorrect decoded error type")
 	require.Equal(t, firstString, decodedString, "Incorrect decoded first string")
 
 	decodedString, err = decoder.DecodeString()
-	require.Equal(t, err, nil, "Incorrect decoded error type")
+	require.Nil(t, err, "Incorrect decoded error type")
 	require.Equal(t, secondString, decodedString, "Incorrect decoded second string")
 
 	decodedString, err = decoder.DecodeString()
-	require.Equal(t, err, nil, "Incorrect decoded error type")
+	require.Nil(t, err, "Incorrect decoded error type")
 	require.Equal(t, thirdString, decodedString, "Incorrect decoded third string")
 
 	decodedString, err = decoder.DecodeString()
-	require.Equal(t, err, nil, "Incorrect decoded error type")
+	require.Nil(t, err, "Incorrect decoded error type")
 	require.Equal(t, fourthString, decodedString, "Incorrect decoded fourth string")
 
 	decodedString, err = decoder.DecodeString()
-	require.Equal(t, err, nil, "Incorrect decoded error type")
+	require.Nil(t, err, "Incorrect decoded error type")
 	require.Equal(t, fifthString, decodedString, "Incorrect decoded fifth string")
 }
