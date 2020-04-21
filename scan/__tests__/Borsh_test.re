@@ -252,6 +252,8 @@ describe("should be able to generate go code correctly", () => {
       Some(
         {j|package main
 
+import "github.com/bandchain/chain/borsh"
+
 type Result struct {
 	Symbol string
 	Multiplier uint64
@@ -259,7 +261,7 @@ type Result struct {
 }
 
 func DecodeResult(data []byte) (Result, error) {
-	decoder := NewBorshDecoder(data)
+	decoder := borsh.NewBorshDecoder(data)
 
 	symbol, err := decoder.DecodeString()
 	if err != nil {
@@ -299,12 +301,14 @@ func DecodeResult(data []byte) (Result, error) {
       Some(
         {j|package test
 
+import "github.com/bandchain/chain/borsh"
+
 type Result struct {
 	Px uint64
 }
 
 func DecodeResult(data []byte) (Result, error) {
-	decoder := NewBorshDecoder(data)
+	decoder := borsh.NewBorshDecoder(data)
 
 	px, err := decoder.DecodeU64()
 	if err != nil {
@@ -357,6 +361,8 @@ describe("should be able to generate encode go code correctly", () => {
       Some(
         {j|package main
 
+import "github.com/bandchain/chain/borsh"
+
 type Result struct {
 	Symbol string
 	Multiplier uint64
@@ -364,7 +370,7 @@ type Result struct {
 }
 
 func(result *Result) EncodeResult() []byte {
-	encoder := NewBorshEncoder()
+	encoder := borsh.NewBorshEncoder()
 
 	encoder.EncodeString(result.symbol)
 	encoder.EncodeU64(result.multiplier)
@@ -387,12 +393,14 @@ func(result *Result) EncodeResult() []byte {
       Some(
         {j|package test
 
+import "github.com/bandchain/chain/borsh"
+
 type Result struct {
 	Px uint64
 }
 
 func(result *Result) EncodeResult() []byte {
-	encoder := NewBorshEncoder()
+	encoder := borsh.NewBorshEncoder()
 
 	encoder.EncodeU64(result.px)
 
