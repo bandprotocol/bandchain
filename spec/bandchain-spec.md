@@ -132,15 +132,15 @@ What is unique about D3N is that it natively supports external data queries. All
 
 # Token Economics
 
-Below is the proposed token economics of D3N. Note that the blockchain will be implemented in such the way that all the numbers are adjustable through on-chain governance.
+Below is the proposed token economics of D3N. Note that the blockchain will be implemented in such a way that all the numbers are adjustable through on-chain governance.
 
 ## BAND Token
 
-D3N utilizes is native token BAND to incentivize the block validators to produce new blocks and submit responses to data requests. BAND token holders will be able to stake to become a block validators or delegate their staking power to another block validator to earn portion of the collected fees and inflationary rewards. Additionally, BAND token holders can participate in the governance of D3N blockchain.
+D3N utilizes is native token BAND to incentivize the block validators to produce new blocks and submit responses to data requests. BAND token holders will be able to stake to become a block validator or delegate their staking power to another block validator to earn a portion of the collected fees and inflationary rewards. Additionally, BAND token holders can participate in the governance of D3N blockchain.
 
 ## Inflationary Rewards
 
-As a sovereign blockchain, D3N uses inflationary model to incentivize participants to stake and contribute to the security of the network. Anyone can apply to become block validators given sufficient votes from the community in terms of bonded tokens. Stakers that support active validators enjoy the inflated supply of Band tokens. Inflation rate ranges from 7% to 20% with the staking target of 70% of the total BAND supply.
+As a sovereign blockchain, D3N uses an inflationary model to incentivize participants to stake and contribute to the security of the network. Anyone can apply to become block validators given sufficient votes from the community in terms of bonded tokens. Stakers that support active validators enjoy the inflated supply of Band tokens. Inflation rate ranges from 7% to 20% with the staking target of 70% of the total BAND supply.
 
 ## Transaction Fees
 
@@ -169,7 +169,7 @@ For data that is public available for free, such as Bitcoin transaction formatio
 
 ## Payment Gateway
 
-For API endpoints that require paying fee to access. D3N supports this by allowing data source owners to set fees that will be paid when an oracle script asks for the data. Once the fee is collected, the blockchain will emit an unforgeable _payment receipt_ as a record. Block validators can show the receipt to the API provider to retrieve data. API provider will be able to withdraw the collected fees anytime. Note that the system relies on the API provider acknowledging the payment and serving the data properly. It is putting its reputation at stake and risk losing future revenue if it acts maliciously.
+For API endpoints that require paying fees to access. D3N supports this by allowing data source owners to set fees that will be paid when an oracle script asks for the data. Once the fee is collected, the blockchain will emit an unforgeable _payment receipt_ as a record. Block validators can show the receipt to the API provider to retrieve data. API providers will be able to withdraw the collected fees anytime. Note that the system relies on the API provider acknowledging the payment and serving the data properly. It is putting its reputation at stake and risk losing future revenue if it acts maliciously.
 
 ## P2P Authentication Gateway
 
@@ -185,7 +185,7 @@ As for issue 3), D3N cannot solve the problem directly. We, however, introduce t
 
 # Development Phases
 
-D3N development is publicly available on [Github](https://github.com/bandprotocol/d3n) for public inspection. The technical development is breaking down into different phases. The content below is provided for informational purpose and may change in the future as the software gets developed. Also note that apart from the core protocol, the foundation will also develop related supporting tools, including client side libraries, Owasm IDE, block explorer, etc.
+D3N development is publicly available on [Github](https://github.com/bandprotocol/d3n) for public inspection. The technical development is breaking down into different phases. The content below is provided for informational purpose and may change in the future as the software gets developed. Also note that apart from the core protocol, the foundation will also develop related supporting tools, including client-side libraries, Owasm IDE, block explorer, etc.
 
 **Phase 0**
 
@@ -222,7 +222,7 @@ Deploys a new data source to D3N network. Once deployed a data source is assigne
 
 **Parameters**
 
-- `Owner: sdk.AccAddress` - The address responsible for maintaining the data source. The owner will be able to withdraw query fees and update.
+- `Owner: sdk.AccAddress` - The address responsible for maintaining the data source. The owner will be able to withdraw query fees and update the data source.
 - `Name: string` - The human-readable string name for this data source.
 - `Fee: sdk.Coins` - The fee that data requester needs to pay per one data query.
 - `Executable: []byte` - The content of executable to be run by block validators upon receiving a data request for this data source. The executable can be in any format, as long as it is accepted by the general public.
@@ -270,7 +270,7 @@ Edits an existing oracle script given the unique `int64` identifier. The sender 
 
 [sec:msg-request-data]: #MsgRequestData
 
-Requests a new data based on an existing oracle script. A data request will be assigned a unique identifier once the transaction is confirmed. After sufficient block validators report raw data points. The result of data request will be written permanently to the blockchain for further uses.
+Requests a new data based on an existing oracle script. A data request will be assigned a unique identifier once the transaction is confirmed. After sufficient block validators report raw data points. The results of data requests will be written permanently to the blockchain for further uses.
 
 **Parameters**
 
@@ -291,7 +291,7 @@ Reports raw data points for the given data request. Each data point corresponds 
 
 - `RequestId: int64` - The unique identifier of the data request.
 - `Data: []struct{ externalDataId: int64, data: []byte }` - The array of raw data points. Each element corresponds to a data source query.
-- `Sender: sdk.ValAddress` - The sender of this transaction. Must be one of the block validators that are entitied to report data to the data request.
+- `Sender: sdk.ValAddress` - The sender of this transaction. Must be one of the block validators that are entitled to report data to the data request.
 
 ## Gas Fee
 
@@ -301,9 +301,9 @@ Each transaction broadcasted to D3N consumes certain amount of gas, depending on
 - **Instruction count** - The number of WebAssembly operations required to complete the transaction.
 - **Memory** - The amount of storage that the transaction uses to store data persistently.
 
-A transaction must specify the maximum gas it intends to spend with the transaction. The transaction is considered failed if it runs out of gas before the transaction is complete. Each block has a maximum gas limit, thus limitting the number of transactions the network can process in a block.
+A transaction must specify the maximum gas it intends to spend with the transaction. The transaction is considered failed if it runs out of gas before the transaction is complete. Each block has a maximum gas limit, thus limiting the number of transactions the network can process in a block.
 
-Note that memory is different from the other two in the sense that it continously costs block validators to store the data while the gas is being paid only once. D3N may change gas model by incorporating state rent mechanics to incentivize participants to clean-up unused memory slots in future iterations.
+Note that memory is different from the other two in the sense that it continuously costs block validators to store the data while the gas is being paid only once. D3N may change gas model by incorporating state rent mechanics to incentivize participants to clean-up unused memory slots in future iterations.
 
 # Inter-Chain Architecture
 
@@ -315,7 +315,7 @@ The goal of D3N is to eventually pass over data requested and aggregated on the 
 
 Data requests and their corresponding final responses are stored persistently in D3N's storage on one [Merkle tree](https://en.wikipedia.org/wiki/Merkle_tree) of D3N's multistore app state. The hash of D3N app state on every block is signed by the block validators. Bridges on other blockchains keep track of D3N's validator sets and can verify the validity of app hash. Once the app hash is verified, one can provide proof path to show that a specific piece of information is curated inside of D3N.
 
-The set of validators on D3N blockchain may be continuously changing, and thus must be updated on the target blockchain periodically. Since the signatures of the previous block validators and the merkle root to the state tree that shows the set of current validators are both included in a block header, anyone can relay the information to the target blockchain without relying on a centralized relayer. Due to 21-day unbonding period, the target blockchain must update D3N validator set at least every 21 day.
+The set of validators on D3N blockchain may be continuously changing, and thus must be updated on the target blockchain periodically. Since the signatures of the previous block validators and the merkle root to the state tree that shows the set of current validators are both included in a block header, anyone can relay the information to the target blockchain without relying on a centralized relayer. Due to 21-day unbonding period, the target blockchain must update D3N validator set at least every 21-day.
 
 For the details on how to traverse the iAVL state tree, please see [Merkle proof section on Cosmos whitepaper](https://github.com/cosmos/cosmos/blob/master/WHITEPAPER.md#merkle-tree--proof-specification).
 
