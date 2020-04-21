@@ -255,16 +255,14 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			"Quantum random number generator",
 			"Oracle script for getting a big random number from quantum computer",
 			"./owasm/res/qrng.wasm",
-			// TODO: Add schema
-			``,
+			`{"Input":"{ \"kind\": \"struct\", \"fields\": [ [\"size\", \"u64\"] ] }","Output":"{ \"kind\": \"struct\", \"fields\": [ [\"random_bytes\", \"string\"] ] }"}`,
 			`https://bandprotocol.com`,
 		},
 		{
 			"Yahoo stock price",
 			"Oracle script for getting stock price from Yahoo",
 			"./owasm/res/yahoo_price.wasm",
-			// TODO: Add schema
-			``,
+			`{"Input":"{ \"kind\": \"struct\", \"fields\": [ [\"symbol\", \"string\"], [\"multiplier\", \"u64\"] ] }","Output":"{ \"kind\": \"struct\", \"fields\": [ [\"px\", \"u64\"] ] }"}`,
 			`https://bandprotocol.com`,
 		},
 	}
