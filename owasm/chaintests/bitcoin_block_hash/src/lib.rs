@@ -14,7 +14,7 @@ struct Output {
 #[no_mangle]
 fn prepare_impl(input: Input) {
     // Bitcoin hash data source
-    oei::request_external_data(7, 1, input.block_height.to_string().as_bytes());
+    oei::request_external_data(8, 1, input.block_height.to_string().as_bytes());
 }
 
 #[no_mangle]
