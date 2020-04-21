@@ -93,14 +93,59 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			"./datasources/binance_price.sh",
 		},
 		{
-			"Open weather",
-			"The script that queries current weather",
-			"./datasources/open_weather_map.sh",
-		},
-		{
 			"Gold price",
 			"The script that queries current gold price",
 			"./datasources/gold_price.sh",
+		},
+		{
+			"Alphavantage",
+			"The script that queries stock price from Alphavantage",
+			"./datasources/alphavantage.sh",
+		},
+		{
+			"Bitcoin block count",
+			"The script that queries latest block height of Bitcoin",
+			"./datasources/bitcoin_count.sh",
+		},
+		{
+			"Bitcoin block hash",
+			"The script that queries block hash of Bitcoin",
+			"./datasources/bitcoin_hash.sh",
+		},
+		{
+			"Coingecko volume script",
+			"The Script that queries crypto volume from https://coingecko.com",
+			"./datasources/coingecko_volume.sh",
+		},
+		{
+			"Crypto compare volume script",
+			"The Script that queries crypto volume from https://cryptocompare.com",
+			"./datasources/crypto_compare_volume.sh",
+		},
+		{
+			"ETH gas station",
+			"The Script that queries current Ethereum gas price https://ethgasstation.info",
+			"./datasources/ethgasstation.sh",
+		},
+		{
+			"Open sky network",
+			"The Script that queries flight information from https://opensky-network.org",
+			"./datasources/open_sky_network.sh",
+		},
+		{
+			"Open weather map",
+			"The Script that queries weather information from https://api.openweathermap.org",
+			"./datasources/open_weather_map.sh",
+		},
+		{
+			"Quantum random numbers",
+			"The Script that queries array of random number from https://qrng.anu.edu.au",
+			"./datasources/qrng_anu.sh",
+		},
+		{
+			"Yahoo finance",
+			"The Script that queries stock price from https://finance.yahoo.com",
+			"./datasources/yahoo_finance.sh",
 		},
 	}
 
@@ -141,6 +186,86 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			"./owasm/res/gold_price.wasm",
 			`{"Input": "{ \"kind\": \"struct\", \"fields\": [ [\"multiplier\", \"u64\"] ] }","Output": "{ \"kind\": \"struct\", \"fields\": [ [\"px\", \"u64\"] ] }"}`,
 			`https://ipfs.io/ipfs/QmPheBfYjM4fZ6ngSHYrnDgmapZi9r1i4x5hGFUUyZiP5y`,
+		},
+		{
+			"Alphavantage stock price script",
+			"Oracle script for getting an average stock price from Alphavantage",
+			"./owasm/res/alphavantage.wasm",
+			// TODO: Add schema
+			`{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"api_key\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }"}`,
+			`https://bandprotocol.com`,
+		},
+		{
+			"Bitcoin block count",
+			"Oracle script for getting Bitcoin latest block height",
+			"./owasm/res/bitcoin_block_count.wasm",
+			// TODO: Add schema
+			``,
+			`https://bandprotocol.com`,
+		},
+		{
+			"Bitcoin block hash",
+			"Oracle script for getting Bitcoin latest block hash",
+			"./owasm/res/bitcoin_block_hash.wasm",
+			// TODO: Add schema
+			``,
+			`https://bandprotocol.com`,
+		},
+		{
+			"Coingecko crypto volume",
+			"Oracle script for getting an average crypto price from Coingecko",
+			"./owasm/res/coingecko_volume.wasm",
+			// TODO: Add schema
+			``,
+			`https://bandprotocol.com`,
+		},
+		{
+			"Crypto compare crypto volume",
+			"Oracle script for getting an average crypto price from Crypto compare",
+			"./owasm/res/crypto_compare_volume.wasm",
+			// TODO: Add schema
+			``,
+			`https://bandprotocol.com`,
+		},
+		{
+			"Ethereum gas price",
+			"Oracle script for getting gas price from ETH gas station",
+			"./owasm/res/eth_gas_station.wasm",
+			// TODO: Add schema
+			``,
+			`https://bandprotocol.com`,
+		},
+		{
+			"Open sky network",
+			"Oracle script for getting the verification of a flight",
+			"./owasm/res/open_sky_network.wasm",
+			// TODO: Add schema
+			``,
+			`https://bandprotocol.com`,
+		},
+		{
+			"Open weather map",
+			"Oracle script for getting weather information",
+			"./owasm/res/open_weather_map.wasm",
+			// TODO: Add schema
+			``,
+			`https://bandprotocol.com`,
+		},
+		{
+			"Quantum random number generator",
+			"Oracle script for getting a big random number from quantum computer",
+			"./owasm/res/qrng.wasm",
+			// TODO: Add schema
+			``,
+			`https://bandprotocol.com`,
+		},
+		{
+			"Yahoo stock price",
+			"Oracle script for getting stock price from Yahoo",
+			"./owasm/res/yahoo_price.wasm",
+			// TODO: Add schema
+			``,
+			`https://bandprotocol.com`,
 		},
 	}
 	state.OracleScripts = make([]oracle.OracleScript, len(oracleScripts))
