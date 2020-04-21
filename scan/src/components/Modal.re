@@ -46,7 +46,7 @@ let make = () => {
   | Some(m) =>
     let body =
       switch (m) {
-      | Connect(value) => <ConnectModal value />
+      | Connect => <ConnectModal />
       };
     <div className=Styles.overlay onClick={_ => dispatchModal(CloseModal)}>
       <div className=Styles.content onClick={e => ReactEvent.Mouse.stopPropagation(e)}>
