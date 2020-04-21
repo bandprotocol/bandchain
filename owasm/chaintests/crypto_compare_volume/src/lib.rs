@@ -15,7 +15,7 @@ struct Output {
 #[no_mangle]
 fn prepare_impl(input: Input) {
     // Crypto compare volume data source
-    oei::request_external_data(9, 1, &input.symbol.as_bytes());
+    oei::request_external_data(10, 1, &input.symbol.as_bytes());
 }
 
 #[no_mangle]
