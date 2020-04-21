@@ -93,6 +93,11 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			"./datasources/binance_price.sh",
 		},
 		{
+			"Open weather map",
+			"The Script that queries weather information from https://api.openweathermap.org",
+			"./datasources/open_weather_map.sh",
+		},
+		{
 			"Gold price",
 			"The script that queries current gold price",
 			"./datasources/gold_price.sh",
@@ -131,11 +136,6 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			"Open sky network",
 			"The Script that queries flight information from https://opensky-network.org",
 			"./datasources/open_sky_network.sh",
-		},
-		{
-			"Open weather map",
-			"The Script that queries weather information from https://api.openweathermap.org",
-			"./datasources/open_weather_map.sh",
 		},
 		{
 			"Quantum random numbers",
