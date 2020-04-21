@@ -1,11 +1,11 @@
 package goborsh
 
 import (
-	"bytes"
 	"encoding/hex"
 	"errors"
-	"fmt"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func getDecoder(inputString string) BorshDecoder {
@@ -18,34 +18,24 @@ func TestFinishedExpectFalse(t *testing.T) {
 	decoder := NewBorshDecoder(data)
 	decodeFinished := decoder.Finished()
 
-	if decodeFinished {
-		t.Errorf(`Incorrect result for Finished bool: expected "%t" got "%t"`, false, decodeFinished)
-	}
+	require.Equal(t, decodeFinished, false, `Incorrect result for Finished boolean: expected "false"`)
 }
 
 func TestFinishedExpectTrue(t *testing.T) {
 	data, _ := hex.DecodeString("10")
 	decoder := BorshDecoder{data, 1}
-	fmt.Println(len(decoder.data))
 	decodeFinished := decoder.Finished()
 
-	if !decodeFinished {
-		t.Errorf(`Incorrect result for Finished bool: expected "%t" got "%t"`, true, decodeFinished)
-	}
+	require.Equal(t, decodeFinished, true, `Incorrect result for Finished boolean: expected "true"`)
 }
 
 func TestDecodeU8(t *testing.T) {
-	var expectedU8 uint8 = 112
+	var expectedU8 uint8 = uint8(112)
 	decoder := getDecoder("70")
 	resultU8, err := decoder.DecodeU8()
 
-	if err != nil {
-		t.Errorf(`Incorrect return error type: expected "%v" got "%v"`, nil, err)
-	}
-	if resultU8 != expectedU8 {
-		t.Errorf(`Incorrect decoded uint8: expected "%d" got "%d"`, expectedU8, resultU8)
-	}
-
+	require.Equal(t, err, nil, `Incorrect result for return error: expected "nil"`)
+	require.Equal(t, expectedU8, resultU8, `Incorrect result for decoded uint8: expected "112"`)
 }
 
 func TestDecodeU8Error(t *testing.T) {
@@ -54,25 +44,16 @@ func TestDecodeU8Error(t *testing.T) {
 	decoder := BorshDecoder{data, 8}
 	_, err := decoder.DecodeU8()
 
-	if err == nil {
-		t.Errorf(`Incorrect return error type: expected "%v" got "%v"`, nil, err)
-	}
-	if err.Error() != expectedErr.Error() {
-		t.Errorf(`Incorrect return error message: expected "%v" got "%v"`, err.Error(), expectedErr.Error())
-	}
+	require.Equal(t, expectedErr.Error(), err.Error(), `Incorrect result for result message`)
 }
 
 func TestDecodeU16(t *testing.T) {
-	var expectedU16 uint16 = 2345
+	var expectedU16 uint16 = uint16(2345)
 	decoder := getDecoder("2909")
 	resultU16, err := decoder.DecodeU16()
 
-	if err != nil {
-		t.Errorf(`Incorrect return error type: expected "%v" got "%v"`, nil, err)
-	}
-	if resultU16 != expectedU16 {
-		t.Errorf(`Incorrect decoded uint16: expected "%d" got "%d"`, expectedU16, resultU16)
-	}
+	require.Equal(t, err, nil, `Incorrect result for return error: expected "nil"`)
+	require.Equal(t, expectedU16, resultU16, `Incorrect result for decoded uint16: expected "2345"`)
 }
 
 func TestDecodeU16Error(t *testing.T) {
@@ -81,25 +62,16 @@ func TestDecodeU16Error(t *testing.T) {
 	decoder := BorshDecoder{data, 16}
 	_, err := decoder.DecodeU16()
 
-	if err == nil {
-		t.Errorf(`Incorrect return error type: expected "%v" got "%v"`, nil, err)
-	}
-	if err.Error() != expectedErr.Error() {
-		t.Errorf(`Incorrect return error message: expected "%v" got "%v"`, err.Error(), expectedErr.Error())
-	}
+	require.Equal(t, expectedErr.Error(), err.Error(), `Incorrect result for result message`)
 }
 
 func TestDecodeU32(t *testing.T) {
-	var expectedU32 uint32 = 12345
+	var expectedU32 uint32 = uint32(12345)
 	decoder := getDecoder("39300000")
 	resultU32, err := decoder.DecodeU32()
 
-	if err != nil {
-		t.Errorf(`Incorrect return error type: expected "%v" got "%v"`, nil, err)
-	}
-	if resultU32 != expectedU32 {
-		t.Errorf(`Incorrect decoded uint32: expected "%d" got "%d"`, expectedU32, resultU32)
-	}
+	require.Equal(t, err, nil, `Incorrect result for return error: expected "nil"`)
+	require.Equal(t, expectedU32, resultU32, `Incorrect result for decoded uint32: expected "12345"`)
 }
 
 func TestDecodeU32Error(t *testing.T) {
@@ -108,25 +80,16 @@ func TestDecodeU32Error(t *testing.T) {
 	decoder := BorshDecoder{data, 32}
 	_, err := decoder.DecodeU32()
 
-	if err == nil {
-		t.Errorf(`Incorrect return error type: expected "%v" got "%v"`, nil, err)
-	}
-	if err.Error() != expectedErr.Error() {
-		t.Errorf(`Incorrect return error message: expected "%v" got "%v"`, err.Error(), expectedErr.Error())
-	}
+	require.Equal(t, expectedErr.Error(), err.Error(), `Incorrect result for result message`)
 }
 
 func TestDecodeU64(t *testing.T) {
-	var expectedU64 uint64 = 50
+	var expectedU64 uint64 = uint64(50)
 	decoder := getDecoder("3200000000000000")
 	resultU64, err := decoder.DecodeU64()
 
-	if err != nil {
-		t.Errorf(`Incorrect return error type: expected "%v" got "%v"`, nil, err)
-	}
-	if resultU64 != expectedU64 {
-		t.Errorf(`Incorrect decoded uint64: expected "%d" got "%d"`, expectedU64, resultU64)
-	}
+	require.Equal(t, err, nil, `Incorrect result for return error: expected "nil"`)
+	require.Equal(t, expectedU64, resultU64, `Incorrect result for decoded uint64: expected "50"`)
 }
 
 func TestDecodeU64Error(t *testing.T) {
@@ -135,117 +98,79 @@ func TestDecodeU64Error(t *testing.T) {
 	decoder := BorshDecoder{data, 64}
 	_, err := decoder.DecodeU64()
 
-	if err == nil {
-		t.Errorf(`Incorrect return error type: expected "%v" got "%v"`, nil, err)
-	}
-	if err.Error() != expectedErr.Error() {
-		t.Errorf(`Incorrect return error message: expected "%v" got "%v"`, err.Error(), expectedErr.Error())
-	}
+	require.Equal(t, expectedErr.Error(), err.Error(), `Incorrect result for result message`)
 }
 
 func TestDecodeI8Positive(t *testing.T) {
-	var expectedI64 int8 = 112
+	var expectedI8 int8 = int8(112)
 	decoder := getDecoder("70")
 	resultI8, err := decoder.DecodeI8()
 
-	if err != nil {
-		t.Errorf(`Incorrect return error type: expected "%v" got "%v"`, nil, err)
-	}
-	if resultI8 != expectedI64 {
-		t.Errorf(`Incorrect decoded int8: expected "%d" got "%d"`, expectedI64, resultI8)
-	}
+	require.Equal(t, err, nil, `Incorrect result for return error: expected "nil"`)
+	require.Equal(t, expectedI8, resultI8, `Incorrect result for decoded int8: expected "112"`)
 }
 
 func TestDecodeI8Negative(t *testing.T) {
-	var expectedI64 int8 = -2
+	var expectedI8 int8 = int8(-2)
 	decoder := getDecoder("FE")
-	resultI8, err := decoder.DecodeI8()
 
-	if err != nil {
-		t.Errorf(`Incorrect return error type: expected "%v" got "%v"`, nil, err)
-	}
-	if resultI8 != expectedI64 {
-		t.Errorf(`Incorrect decoded int8: expected "%d" got "%d"`, expectedI64, resultI8)
-	}
+	resultI8, err := decoder.DecodeI8()
+	require.Equal(t, err, nil, `Incorrect result for return error: expected "nil"`)
+	require.Equal(t, expectedI8, resultI8, `Incorrect result for decoded int8: expected "-2"`)
 }
 
 func TestDecodeI16Positive(t *testing.T) {
-	var expectedI16 int16 = 2345
+	var expectedI16 int16 = int16(2345)
 	decoder := getDecoder("2909")
 	resultI16, err := decoder.DecodeI16()
 
-	if err != nil {
-		t.Errorf(`Incorrect return error type: expected "%v" got "%v"`, nil, err)
-	}
-	if resultI16 != expectedI16 {
-		t.Errorf(`Incorrect decoded int16: expected "%d" got "%d"`, expectedI16, resultI16)
-	}
-
+	require.Equal(t, err, nil, `Incorrect result for return error: expected "nil"`)
+	require.Equal(t, expectedI16, resultI16, `Incorrect result for decoded int16: expected "2345"`)
 }
 
 func TestDecodeI16Negative(t *testing.T) {
-	var expectedI16 int16 = -2
+	var expectedI16 int16 = int16(-2)
 	decoder := getDecoder("FEFF")
 	resultI16, err := decoder.DecodeI16()
 
-	if err != nil {
-		t.Errorf(`Incorrect return error type: expected "%v" got "%v"`, nil, err)
-	}
-	if resultI16 != expectedI16 {
-		t.Errorf(`Incorrect decoded int16: expected "%d" got "%d"`, expectedI16, resultI16)
-	}
+	require.Equal(t, err, nil, `Incorrect result for return error: expected "nil"`)
+	require.Equal(t, expectedI16, resultI16, `Incorrect result for decoded int16: expected "-2"`)
 }
 
 func TestDecodeI32Positive(t *testing.T) {
-	var expectedI32 int32 = 12345
+	var expectedI32 int32 = int32(12345)
 	decoder := getDecoder("39300000")
 	resultI32, err := decoder.DecodeI32()
 
-	if err != nil {
-		t.Errorf(`Incorrect return error type: expected "%v" got "%v"`, nil, err)
-	}
-	if resultI32 != expectedI32 {
-		t.Errorf(`Incorrect decoded int32: expected "%d" got "%d"`, expectedI32, resultI32)
-	}
+	require.Equal(t, err, nil, `Incorrect result for return error: expected "nil"`)
+	require.Equal(t, expectedI32, resultI32, `Incorrect result for decoded int32: expected "12345"`)
 }
 
 func TestDecodeI32Negative(t *testing.T) {
-	var expectedI32 int32 = -70
+	var expectedI32 int32 = int32(-70)
 	decoder := getDecoder("BAFFFFFF")
 	resultI32, err := decoder.DecodeI32()
 
-	if err != nil {
-		t.Errorf(`Incorrect return error type: expected "%v" got "%v"`, nil, err)
-	}
-	if resultI32 != expectedI32 {
-		t.Errorf(`Incorrect decoded int32: expected "%d" got "%d"`, expectedI32, resultI32)
-	}
+	require.Equal(t, err, nil, `Incorrect result for return error: expected "nil"`)
+	require.Equal(t, expectedI32, resultI32, `Incorrect result for decoded int32: expected "-70"`)
 }
 
 func TestDecodeI64Positive(t *testing.T) {
-	var expectedI64 int64 = 50
+	var expectedI64 int64 = int64(50)
 	decoder := getDecoder("3200000000000000")
 	resultI64, err := decoder.DecodeI64()
 
-	if err != nil {
-		t.Errorf(`Incorrect return error type: expected "%v" got "%v"`, nil, err)
-	}
-	if resultI64 != expectedI64 {
-		t.Errorf(`Incorrect decoded int64: expected "%d" got "%d"`, expectedI64, resultI64)
-	}
+	require.Equal(t, err, nil, `Incorrect result for return error: expected "nil"`)
+	require.Equal(t, expectedI64, resultI64, `Incorrect result for decoded int364: expected "50"`)
 }
 
 func TestDecodeI64Negative(t *testing.T) {
-	var expectedI64 int64 = -20486
+	var expectedI64 int64 = int64(-20486)
 	decoder := getDecoder("FAAFFFFFFFFFFFFF")
 	resultI64, err := decoder.DecodeI64()
 
-	if err != nil {
-		t.Errorf(`Incorrect return error type: expected "%v" got "%v"`, nil, err)
-	}
-	if resultI64 != expectedI64 {
-		t.Errorf(`Incorrect decoded int64: expected "%d" got "%d"`, expectedI64, resultI64)
-	}
+	require.Equal(t, err, nil, `Incorrect result for return error: expected "nil"`)
+	require.Equal(t, expectedI64, resultI64, `Incorrect result for decoded int64: expected "-20486"`)
 }
 
 func TestDecodeBytes(t *testing.T) {
@@ -254,30 +179,19 @@ func TestDecodeBytes(t *testing.T) {
 	decoder := NewBorshDecoder(data)
 	resultBytes, err := decoder.DecodeBytes()
 
-	if err != nil {
-		t.Errorf(`Incorrect return error type: expected "%v" got "%v"`, nil, err)
-	}
-	if bytes.Compare(expectedBytes, resultBytes) == 1 {
-		t.Errorf(`Incorrect decoded bytes: expected "%v" got "%v"`, expectedBytes, resultBytes)
-	}
+	require.Equal(t, err, nil, `Incorrect result for return error: expected "nil"`)
+	require.Equal(t, expectedBytes, resultBytes, `Incorrect result for decoded bytes: expected "{66, 84, 67}"`)
 }
 
 func TestDecodeBytesErrorDecodeU32(t *testing.T) {
 	expectedErr := errors.New("Borsh: out of range")
-	expectedBytes := []byte{}
+	var expectedBytes []byte
 	data, _ := hex.DecodeString("03000000425443")
 	decoder := BorshDecoder{data, 64}
 	resultBytes, err := decoder.DecodeBytes()
 
-	if err == nil {
-		t.Errorf(`Incorrect return error type: expected "%v" got "%v"`, nil, err)
-	}
-	if bytes.Compare(expectedBytes, resultBytes) == 1 {
-		t.Errorf(`Incorrect decoded bytes: expected "%v" got "%v"`, expectedBytes, resultBytes)
-	}
-	if err.Error() != expectedErr.Error() {
-		t.Errorf(`Incorrect return error message: expected "%v" got "%v"`, err.Error(), expectedErr.Error())
-	}
+	require.Equal(t, err.Error(), expectedErr.Error(), `Incorrect result for return error: expected "Borsh: out of range"`)
+	require.Equal(t, expectedBytes, resultBytes, `Incorrect result for decoded bytes: expected "{}"`)
 }
 
 func TestDecodeString(t *testing.T) {
@@ -286,12 +200,8 @@ func TestDecodeString(t *testing.T) {
 	decoder := NewBorshDecoder(data)
 	resultString, err := decoder.DecodeString()
 
-	if err != nil {
-		t.Errorf(`Incorrect return error type: expected "%v" got "%v"`, nil, err)
-	}
-	if resultString != expectedString {
-		t.Errorf(`Incorrect decoded string: expected "%s" got "%s"`, expectedString, resultString)
-	}
+	require.Equal(t, err, nil, `Incorrect result for return error: expected "nil"`)
+	require.Equal(t, expectedString, resultString, `Incorrect result for decoded bytes: expected "BTC"`)
 }
 
 func TestDecodeStringErrorDecodeU32(t *testing.T) {
@@ -301,13 +211,6 @@ func TestDecodeStringErrorDecodeU32(t *testing.T) {
 	decoder := BorshDecoder{data, 64}
 	resultString, err := decoder.DecodeString()
 
-	if err == nil {
-		t.Errorf(`Incorrect return error type: expected "%v" got "%v"`, nil, err)
-	}
-	if resultString != expectedString {
-		t.Errorf(`Incorrect decoded string: expected "%s" got "%s"`, expectedString, resultString)
-	}
-	if err.Error() != expectedErr.Error() {
-		t.Errorf(`Incorrect return error message: expected "%v" got "%v"`, err.Error(), expectedErr.Error())
-	}
+	require.Equal(t, err.Error(), expectedErr.Error(), `Incorrect result for return error:`)
+	require.Equal(t, expectedString, resultString, `Incorrect result for decoded bytes: expected ""`)
 }
