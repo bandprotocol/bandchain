@@ -231,8 +231,7 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			"Ethereum gas price",
 			"Oracle script for getting gas price from ETH gas station",
 			"./owasm/res/eth_gas_station.wasm",
-			// TODO: Add schema
-			``,
+			`{"Input":"{ \"kind\": \"struct\", \"fields\": [ [\"gas_option\", \"string\"] ] }","Output":"{ \"kind\": \"struct\", \"fields\": [ [\"gweix10\", \"u64\"] ] }"}`,
 			`https://bandprotocol.com`,
 		},
 		{
