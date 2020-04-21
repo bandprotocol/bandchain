@@ -191,16 +191,14 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			"Alphavantage stock price script",
 			"Oracle script for getting an average stock price from Alphavantage",
 			"./owasm/res/alphavantage.wasm",
-			// TODO: Add schema
-			`{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"api_key\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }"}`,
+			`{"Input":"{ \"kind\": \"struct\", \"fields\": [ [\"symbol\", \"string\"],[\"api_key\", \"string\"], [\"multiplier\", \"u64\"] ] }","Output":"{ \"kind\": \"struct\", \"fields\": [ [\"px\", \"u64\"] ] }"}`,
 			`https://bandprotocol.com`,
 		},
 		{
 			"Bitcoin block count",
 			"Oracle script for getting Bitcoin latest block height",
 			"./owasm/res/bitcoin_block_count.wasm",
-			// TODO: Add schema
-			``,
+			`{"Input":"{ \"kind\": \"struct\", \"fields\": [ [\"_unused\", \"u8\"] ] }","Output":"{ \"kind\": \"struct\", \"fields\": [ [\"block_count\", \"u64\"] ] }"}`,
 			`https://bandprotocol.com`,
 		},
 		{
