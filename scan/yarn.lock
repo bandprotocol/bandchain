@@ -7917,10 +7917,10 @@ reason-apollo@^0.18.0:
     react-apollo "^2.5.8"
     subscriptions-transport-ws "^0.9.16"
 
-reason-react@>=0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/reason-react/-/reason-react-0.7.0.tgz#46a975c321e81cd51310d7b1a02418ca7667b0d6"
-  integrity sha512-czR/f0lY5iyLCki9gwftOFF5Zs40l7ZSFmpGK/Z6hx2jBVeFDmIiXB8bAQW/cO6IvtuEt97OmsYueiuOYG9XjQ==
+reason-react@>=0.7.1:
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/reason-react/-/reason-react-0.7.1.tgz#e6acea88542cd44398cd980093b8a2ab2722744e"
+  integrity sha512-Ssx4jZYohMHW9ZiW893IfbYdZw/muSmPFKigAgL+AORUgyiaphb0PP4yRGlx9A7JAxR3EeBn294XKUaClJQhbA==
   dependencies:
     react ">=16.8.1"
     react-dom ">=16.8.1"
