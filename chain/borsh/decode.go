@@ -1,4 +1,4 @@
-package goborsh
+package borsh
 
 import (
 	"encoding/binary"
