@@ -24,7 +24,7 @@ module Styles = {
       height(`px(480)),
       backgroundColor(Css_Colors.white),
       borderRadius(`px(5)),
-      boxShadow(Css.Shadow.box(~x=`zero, ~y=`px(-10), ~blur=`px(100), `rgba((0, 0, 0, 0.3)))),
+      boxShadow(Shadow.box(~x=`zero, ~y=`px(8), ~blur=`px(32), Css.rgba(0, 0, 0, 0.5))),
       animation(
         ~duration=500,
         ~timingFunction=`cubicBezier((0.25, 0.46, 0.45, 0.94)),
