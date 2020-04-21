@@ -8,7 +8,7 @@
 
 This live document outlines implementation plans and research directions for [Band Protocol](https://bandprotocol.com)'s decentralized data delivery network. The implementations of the core protocol and its supporting tools are available for public inspection on [Github](https://github.com/bandprotocol/bandchain).
 
-We are in the process of ramping a new spec. For the previous version, see [here](./legacy.md).
+We are in the process of re-writing BandChain into sections. For the previous version, see [here](./bandchain-spec.md).
 
 # Introduction
 
