@@ -24,7 +24,6 @@ echo "unfair beyond material banner okay genre camera dumb grit balcony permit r
 echo "smile stem oven genius cave resource better lunar nasty moon company ridge brass rather supply used horn three panic put venue analyst leader comic" \
     | bandcli keys add requester --recover --keyring-backend test  --coin-type 494
 
-
 # add accounts to genesis
 bandd add-genesis-account validator1 10000000000000uband --keyring-backend test
 bandd add-genesis-account validator2 10000000000000uband --keyring-backend test
