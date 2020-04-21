@@ -187,10 +187,10 @@ let make = () => {
        | None =>
          <Col>
            <ConnectBtn connect />
-           // TODO: remove later 
+           // TODO: remove later
            <button
              onClick={_ => {
-               dispatchModal(OpenModal(Connect("Test")));
+               dispatchModal(OpenModal(Connect));
                ();
              }}>
              {"modal" |> React.string}
