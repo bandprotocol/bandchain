@@ -12,7 +12,8 @@ func TestEncodeDecodeBytes(t *testing.T) {
 	secondBytes := []byte{0, 5}
 	thirdBytes := []byte{123, 0, 0, 43, 12, 0, 123}
 	fourthBytes := []byte{}
-	encoder := NewBorshEncoder()
+
+	encoder := NewEncoder()
 
 	// Test bytes returned from encode functions
 	encoder.EncodeBytes(firstBytes)
@@ -20,7 +21,7 @@ func TestEncodeDecodeBytes(t *testing.T) {
 	encoder.EncodeBytes(thirdBytes)
 	encoder.EncodeBytes(fourthBytes)
 
-	decoder := NewBorshDecoder(encoder.data)
+	decoder := NewDecoder(encoder.data)
 
 	// Test bytes returned when passing encoded data into decoder
 	decodedBytes, err := decoder.DecodeBytes()
@@ -48,7 +49,7 @@ func TestEncodeDecodeString(t *testing.T) {
 	fourthString := ""
 	fifthString := "!@#$%^&*(ERTEYRUTIKJ!$#@%^&*&("
 
-	encoder := NewBorshEncoder()
+	encoder := NewEncoder()
 
 	// Test strings returned from encode functions
 	encoder.EncodeString(firstString)
@@ -57,7 +58,7 @@ func TestEncodeDecodeString(t *testing.T) {
 	encoder.EncodeString(fourthString)
 	encoder.EncodeString(fifthString)
 
-	decoder := NewBorshDecoder(encoder.data)
+	decoder := NewDecoder(encoder.data)
 
 	// Test strings returned when passing encoded data into decoder
 	decodedString, err := decoder.DecodeString()

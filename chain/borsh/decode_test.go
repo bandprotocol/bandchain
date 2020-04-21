@@ -2,31 +2,30 @@ package borsh
 
 import (
 	"encoding/hex"
-	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
-func getDecoder(inputString string) BorshDecoder {
+func getDecoder(inputString string) Decoder {
 	data, _ := hex.DecodeString(inputString)
-	return NewBorshDecoder(data)
+	return NewDecoder(data)
 }
 
 func TestFinishedExpectFalse(t *testing.T) {
 	data, _ := hex.DecodeString("03000000425443")
-	decoder := NewBorshDecoder(data)
+	decoder := NewDecoder(data)
 	decodeFinished := decoder.Finished()
 
-	require.Equal(t, decodeFinished, false, `Incorrect result for Finished boolean: expected "false"`)
+	require.False(t, decodeFinished, `Incorrect result for Finished boolean: expected "false"`)
 }
 
 func TestFinishedExpectTrue(t *testing.T) {
 	data, _ := hex.DecodeString("10")
-	decoder := BorshDecoder{data, 1}
+	decoder := Decoder{data, 1}
 	decodeFinished := decoder.Finished()
 
-	require.Equal(t, decodeFinished, true, `Incorrect result for Finished boolean: expected "true"`)
+	require.True(t, decodeFinished, `Incorrect result for Finished boolean: expected "true"`)
 }
 
 func TestDecodeU8(t *testing.T) {
@@ -40,10 +39,10 @@ func TestDecodeU8(t *testing.T) {
 
 func TestDecodeU8Error(t *testing.T) {
 	data, _ := hex.DecodeString("70")
-	decoder := BorshDecoder{data, 8}
+	decoder := Decoder{data, 8}
 	_, err := decoder.DecodeU8()
 
-	require.NotNil(t, err.Error(), `Incorrect result for result message`)
+	require.Error(t, err, `Incorrect result for result message`)
 }
 
 func TestDecodeU16(t *testing.T) {
@@ -56,12 +55,11 @@ func TestDecodeU16(t *testing.T) {
 }
 
 func TestDecodeU16Error(t *testing.T) {
-	expectedErr := errors.New("Borsh: out of range")
 	data, _ := hex.DecodeString("2909")
-	decoder := BorshDecoder{data, 16}
+	decoder := Decoder{data, 16}
 	_, err := decoder.DecodeU16()
 
-	require.Equal(t, expectedErr.Error(), err.Error(), `Incorrect result for result message`)
+	require.Error(t, err, `Incorrect result for result message`)
 }
 
 func TestDecodeU32(t *testing.T) {
@@ -75,10 +73,10 @@ func TestDecodeU32(t *testing.T) {
 
 func TestDecodeU32Error(t *testing.T) {
 	data, _ := hex.DecodeString("39300000")
-	decoder := BorshDecoder{data, 32}
+	decoder := Decoder{data, 32}
 	_, err := decoder.DecodeU32()
 
-	require.NotNil(t, err.Error(), `Incorrect result for result message`)
+	require.Error(t, err, `Incorrect result for result message`)
 }
 
 func TestDecodeU64(t *testing.T) {
@@ -92,10 +90,10 @@ func TestDecodeU64(t *testing.T) {
 
 func TestDecodeU64Error(t *testing.T) {
 	data, _ := hex.DecodeString("3200000000000000")
-	decoder := BorshDecoder{data, 64}
+	decoder := Decoder{data, 64}
 	_, err := decoder.DecodeU64()
 
-	require.NotNil(t, err.Error(), `Incorrect result for result message`)
+	require.Error(t, err, `Incorrect result for result message`)
 }
 
 func TestDecodeI8Positive(t *testing.T) {
@@ -173,7 +171,7 @@ func TestDecodeI64Negative(t *testing.T) {
 func TestDecodeBytes(t *testing.T) {
 	var expectedBytes []byte = []byte{66, 84, 67}
 	data, _ := hex.DecodeString("03000000425443")
-	decoder := NewBorshDecoder(data)
+	decoder := NewDecoder(data)
 	resultBytes, err := decoder.DecodeBytes()
 
 	require.Nil(t, err, `Incorrect result for return error: expected "nil"`)
@@ -183,17 +181,17 @@ func TestDecodeBytes(t *testing.T) {
 func TestDecodeBytesErrorDecodeU32(t *testing.T) {
 	var expectedBytes []byte
 	data, _ := hex.DecodeString("03000000425443")
-	decoder := BorshDecoder{data, 64}
+	decoder := Decoder{data, 64}
 	resultBytes, err := decoder.DecodeBytes()
 
-	require.NotNil(t, err.Error(), `Incorrect result for return error: expected "Borsh: out of range"`)
+	require.Error(t, err, `Incorrect result for return error: expected "Borsh: out of range"`)
 	require.Equal(t, expectedBytes, resultBytes, `Incorrect result for decoded bytes: expected "{}"`)
 }
 
 func TestDecodeString(t *testing.T) {
 	expectedString := "BTC"
 	data, _ := hex.DecodeString("03000000425443")
-	decoder := NewBorshDecoder(data)
+	decoder := NewDecoder(data)
 	resultString, err := decoder.DecodeString()
 
 	require.Nil(t, err, `Incorrect result for return error: expected "nil"`)
@@ -203,9 +201,9 @@ func TestDecodeString(t *testing.T) {
 func TestDecodeStringErrorDecodeU32(t *testing.T) {
 	expectedString := ""
 	data, _ := hex.DecodeString("03000000425443")
-	decoder := BorshDecoder{data, 64}
+	decoder := Decoder{data, 64}
 	resultString, err := decoder.DecodeString()
 
-	require.NotNil(t, err.Error(), `Incorrect result for return error:`)
+	require.Error(t, err, `Incorrect result for return error:`)
 	require.Equal(t, expectedString, resultString, `Incorrect result for decoded bytes: expected ""`)
 }

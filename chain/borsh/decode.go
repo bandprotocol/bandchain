@@ -5,28 +5,28 @@ import (
 	"errors"
 )
 
-// BorshDecoder stores the information necessary for the decoding functions
-type BorshDecoder struct {
+// Decoder stores the information necessary for the decoding functions
+type Decoder struct {
 	data   []byte
 	offset uint32
 }
 
-// NewBorshDecoder returns an empty BorshDecoder struct
-func NewBorshDecoder(data []byte) BorshDecoder {
-	return BorshDecoder{
+// NewDecoder returns an empty Decoder struct
+func NewDecoder(data []byte) Decoder {
+	return Decoder{
 		data:   data,
 		offset: 0,
 	}
 }
 
 // Finished returns a bool on whether the decoding has finished
-func (decoder *BorshDecoder) Finished() bool {
+func (decoder *Decoder) Finished() bool {
 	return decoder.offset == uint32(len(decoder.data))
 }
 
 // DecodeU8 decodes the input bytes and returns the corresponding
 // `uint8` value and any errors
-func (decoder *BorshDecoder) DecodeU8() (uint8, error) {
+func (decoder *Decoder) DecodeU8() (uint8, error) {
 	if uint32(len(decoder.data)) < decoder.offset+1 {
 		return 0, errors.New("Borsh: out of range")
 	}
@@ -37,7 +37,7 @@ func (decoder *BorshDecoder) DecodeU8() (uint8, error) {
 
 // DecodeU16 decodes the input bytes and returns the corresponding
 // `uint8` value and any errors
-func (decoder *BorshDecoder) DecodeU16() (uint16, error) {
+func (decoder *Decoder) DecodeU16() (uint16, error) {
 	if uint32(len(decoder.data)) < decoder.offset+2 {
 		return 0, errors.New("Borsh: out of range")
 	}
@@ -48,7 +48,7 @@ func (decoder *BorshDecoder) DecodeU16() (uint16, error) {
 
 // DecodeU32 decodes the input bytes and returns the corresponding
 // `uint32` value and any errors
-func (decoder *BorshDecoder) DecodeU32() (uint32, error) {
+func (decoder *Decoder) DecodeU32() (uint32, error) {
 	if uint32(len(decoder.data)) < decoder.offset+4 {
 		return 0, errors.New("Borsh: out of range")
 	}
@@ -59,7 +59,7 @@ func (decoder *BorshDecoder) DecodeU32() (uint32, error) {
 
 // DecodeU64 decodes the input bytes and returns the corresponding
 // `uint64` value and any errors
-func (decoder *BorshDecoder) DecodeU64() (uint64, error) {
+func (decoder *Decoder) DecodeU64() (uint64, error) {
 	if uint32(len(decoder.data)) < decoder.offset+8 {
 		return 0, errors.New("Borsh: out of range")
 	}
@@ -70,7 +70,7 @@ func (decoder *BorshDecoder) DecodeU64() (uint64, error) {
 
 // DecodeI8 decodes the input bytes and returns the corresponding signed
 // `int8` value and any errors
-func (decoder *BorshDecoder) DecodeI8() (int8, error) {
+func (decoder *Decoder) DecodeI8() (int8, error) {
 	unsigned, err := decoder.DecodeU8()
 	if err != nil {
 		return 0, err
@@ -80,7 +80,7 @@ func (decoder *BorshDecoder) DecodeI8() (int8, error) {
 
 // DecodeI16 decodes the input bytes and returns the corresponding signed
 // `int16` value and any errors
-func (decoder *BorshDecoder) DecodeI16() (int16, error) {
+func (decoder *Decoder) DecodeI16() (int16, error) {
 	unsigned, err := decoder.DecodeU16()
 	if err != nil {
 		return 0, err
@@ -90,7 +90,7 @@ func (decoder *BorshDecoder) DecodeI16() (int16, error) {
 
 // DecodeI32 decodes the input bytes and returns the corresponding signed
 // `int32` value and any errors
-func (decoder *BorshDecoder) DecodeI32() (int32, error) {
+func (decoder *Decoder) DecodeI32() (int32, error) {
 	unsigned, err := decoder.DecodeU32()
 	if err != nil {
 		return 0, err
@@ -100,7 +100,7 @@ func (decoder *BorshDecoder) DecodeI32() (int32, error) {
 
 // DecodeI64 decodes the input bytes and returns the corresponding signed
 // `int64` value and any errors
-func (decoder *BorshDecoder) DecodeI64() (int64, error) {
+func (decoder *Decoder) DecodeI64() (int64, error) {
 	unsigned, err := decoder.DecodeU64()
 	if err != nil {
 		return 0, err
@@ -110,7 +110,7 @@ func (decoder *BorshDecoder) DecodeI64() (int64, error) {
 
 // DecodeBytes decodes the input bytes and returns the corresponding
 // `[]bytes` slice and any errors
-func (decoder *BorshDecoder) DecodeBytes() ([]byte, error) {
+func (decoder *Decoder) DecodeBytes() ([]byte, error) {
 	length, err := decoder.DecodeU32()
 	if err != nil {
 		return nil, err
@@ -125,7 +125,7 @@ func (decoder *BorshDecoder) DecodeBytes() ([]byte, error) {
 
 // DecodeString decodes the input bytes and returns the corresponding
 // `string` and any errors
-func (decoder *BorshDecoder) DecodeString() (string, error) {
+func (decoder *Decoder) DecodeString() (string, error) {
 	length, err := decoder.DecodeU32()
 	if err != nil {
 		return "", err
