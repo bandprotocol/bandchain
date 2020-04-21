@@ -39,11 +39,6 @@ func (b *BandDB) HandleEndblockEvent(event abci.Event) {
 					panic(err)
 
 				}
-				expirationTime, err := strconv.ParseInt(kvMap[oracle.AttributrKeyExpirationHeight], 10, 64)
-				if err != nil {
-					panic(err)
-
-				}
 				resolvedTime, err := strconv.ParseInt(kvMap[oracle.AttributeKeyResolvedTime], 10, 64)
 				if err != nil {
 					panic(err)
@@ -52,10 +47,9 @@ func (b *BandDB) HandleEndblockEvent(event abci.Event) {
 				err = b.tx.Model(&Request{}).Where(Request{ID: id}).
 					Update(
 						Request{ResolveStatus: parseResolveStatus(resolveStatus),
-							Result:         []byte(kvMap[oracle.AttributeKeyResult]),
-							RequestTime:    requestTime,
-							ExpirationTime: expirationTime,
-							ResolveTime:    resolvedTime,
+							Result:      []byte(kvMap[oracle.AttributeKeyResult]),
+							RequestTime: requestTime,
+							ResolveTime: resolvedTime,
 						}).Error
 				if err != nil {
 					panic(err)

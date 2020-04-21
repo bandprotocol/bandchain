@@ -81,11 +81,7 @@ func (k Keeper) AddRequest(ctx sdk.Context, req types.Request) (types.RequestID,
 func (k Keeper) resolveRequest(
 	ctx sdk.Context, reqID types.RequestID, resolveStatus types.ResolveStatus, result []byte,
 ) types.OracleResponsePacketData {
-
-	request, err := k.GetRequest(ctx, reqID)
-	if err != nil { // should never happen
-		panic(err)
-	}
+	request := k.MustGetRequest(ctx, reqID)
 	reqPacketData := types.NewOracleRequestPacketData(
 		request.ClientID, request.OracleScriptID,
 		hex.EncodeToString(request.Calldata), request.SufficientValidatorCount,
@@ -109,7 +105,7 @@ func (k Keeper) resolveRequest(
 		return resPacketData
 	}
 
-	err = k.AddResult(ctx, reqID, reqPacketData, resPacketData)
+	err := k.AddResult(ctx, reqID, reqPacketData, resPacketData)
 	if err != nil {
 		ctx.EventManager().EmitEvents(sdk.Events{
 			sdk.NewEvent(
@@ -127,7 +123,6 @@ func (k Keeper) resolveRequest(
 			sdk.NewAttribute(types.AttributeKeyResult, fmt.Sprintf("%s", hex.EncodeToString(result))),
 			sdk.NewAttribute(types.AttributeKeyRequestTime, fmt.Sprintf("%d", request.RequestTime)),
 			sdk.NewAttribute(types.AttributeKeyResolvedTime, fmt.Sprintf("%d", resPacketData.ResolveTime)),
-			sdk.NewAttribute(types.AttributrKeyExpirationHeight, fmt.Sprintf("%d", 10)), // TODO: REMOVE THIS
 		)})
 	return resPacketData
 }
