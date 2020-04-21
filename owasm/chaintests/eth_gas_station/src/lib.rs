@@ -14,7 +14,7 @@ struct Output {
 #[no_mangle]
 fn prepare_impl(input: Input) {
     // ETH gas station data source
-    oei::request_external_data(10, 1, &input.gas_option.as_bytes());
+    oei::request_external_data(11, 1, &input.gas_option.as_bytes());
 }
 
 #[no_mangle]
