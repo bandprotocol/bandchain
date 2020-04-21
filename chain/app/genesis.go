@@ -145,7 +145,7 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 		{
 			"Yahoo finance",
 			"The Script that queries stock price from https://finance.yahoo.com",
-			"./datasources/yahoo_finance.sh",
+			"./datasources/yahoo_finance.py",
 		},
 	}
 
