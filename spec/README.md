@@ -32,6 +32,6 @@ The specification is split into multiple sub-documents. See the following for th
 4. [Blockchain Parameters](./4_blockchain_parameters.md) - Global parameters and the proposed initial values.
 5. [Protocol Messages](./5_protocol_messages.md) - List of BandChain-specific messages.
 6. [IBC Packets](./6_ibc_packets.md) - Complete list of packets recognized by Bandchain.
-7. [Lite-Client Protocol](./7_lite_client_protocol.md) - TODO
-8. [Oracle WebAssembly (Owasm)](./8_oracle_webassembly.md) - TODO
-9. [Input/Output Encoding](./9_input_output_encoding.md) - TODO
+7. [Lite-Client Protocol](./7_lite_client_protocol.md) - Protocol for verifying data on BandChain on other blockchains.
+8. [Oracle WebAssembly (Owasm)](./8_oracle_webassembly.md) - Domain-specific language for writing oracle scripts.
+9. [Input/Output Encoding](./9_input_output_encoding.md) - Encoding and decoding scheme for Owasm input and output data.
