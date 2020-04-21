@@ -139,7 +139,7 @@ let make = _ => {
         <HSpacing size=Spacing.sm />
         <div className=Styles.itemCol>
           {switch (loginMethod) {
-           | Mnemonic => "Mnemonic Phrase" |> React.string
+           | Mnemonic => <ConnectMnemonic />
            | Ledger => "Ledger" |> React.string
            }}
         </div>
