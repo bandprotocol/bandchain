@@ -158,16 +158,13 @@ let getFileNameFromLanguage = (~language) => {
 };
 
 let getCodeFromSchema = (~schemaOpt, ~language) => {
-  {
-    let%Opt schema = schemaOpt;
-    let code =
-      switch (language) {
-      | Solidity => Borsh.generateSolidity(schema, "Output") |> Belt_Option.getWithDefault(_, "")
-      | Go => Borsh.generateGo("main", schema, "Output") |> Belt_Option.getWithDefault(_, "")
-      };
-    Some(code);
-  }
-  |> Belt_Option.getWithDefault(_, "");
+  let%Opt schema = schemaOpt;
+  let codeOpt =
+    switch (language) {
+    | Solidity => Borsh.generateSolidity(schema, "Output") |> Belt_Option.getWithDefault(_, "")
+    | Go => Borsh.generateGo("main", schema, "Output") |> Belt_Option.getWithDefault(_, "")
+    };
+  Some(codeOpt);
 };
 
 [@react.component]
@@ -246,8 +243,11 @@ let make = (~schemaOpt: option(string)) => {
         <Text value={getFileNameFromLanguage(~language)} size=Text.Lg color=Colors.gray7 />
       </div>
       <VSpacing size=Spacing.lg />
-      {let code = getCodeFromSchema(~schemaOpt, ~language);
-       code->renderCode}
+      {let codeOpt = getCodeFromSchema(~schemaOpt, ~language);
+       switch (codeOpt) {
+       | Some(code) => code->renderCode
+       | None => {j|"Code is not verified"|j}->renderCode
+       }}
     </div>
   </div>;
 };
