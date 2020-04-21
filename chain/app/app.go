@@ -35,6 +35,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 
+	"github.com/bandprotocol/bandchain/chain/owasm"
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 	bandsupply "github.com/bandprotocol/bandchain/chain/x/supply"
 )
@@ -201,7 +202,7 @@ func NewBandApp(
 		appCodec, keys[supply.StoreKey], app.AccountKeeper, app.BankKeeper, maccPerms,
 	)
 
-	// Wrapped supply keeper allows burned tokens to be transfered to community pool
+	// Wrapped supply keeper allows burned tokens to be transferred to community pool
 	wrappedSupplyKeeper := bandsupply.WrapSupplyKeeperBurnToCommunityPool(app.SupplyKeeper)
 
 	stakingKeeper := staking.NewKeeper(
@@ -263,10 +264,11 @@ func NewBandApp(
 	app.OracleKeeper = oracle.NewKeeper(
 		cdc,
 		keys[oracle.StoreKey],
+		owasm.Execute,
+		app.subspaces[oracle.ModuleName],
 		app.BankKeeper,
 		app.StakingKeeper,
 		app.IBCKeeper.ChannelKeeper,
-		app.subspaces[oracle.ModuleName],
 		scopedOracleKeeper,
 	)
 

@@ -1,0 +1,15 @@
+{
+  "name": "josh_hello_world",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@celo/contractkit": "^0.3.0",
+    "web3": "^1.2.6"
+  }
+}

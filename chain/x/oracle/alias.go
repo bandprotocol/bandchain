@@ -47,22 +47,20 @@ var (
 	DataSourceStoreKey   = types.DataSourceStoreKey
 	OracleScriptStoreKey = types.OracleScriptStoreKey
 
-	NewParams              = types.NewParams
-	NewDataSource          = types.NewDataSource
-	NewOracleScript        = types.NewOracleScript
-	DefaultParams          = types.DefaultParams
-	NewRawDataReport       = types.NewRawDataReport
-	NewRawDataReportWithID = types.NewRawDataReportWithID
+	NewParams       = types.NewParams
+	NewDataSource   = types.NewDataSource
+	NewOracleScript = types.NewOracleScript
+	DefaultParams   = types.DefaultParams
+	NewRawReport    = types.NewRawReport
 
-	KeyMaxDataSourceExecutableSize      = types.KeyMaxDataSourceExecutableSize
+	KeyMaxExecutableSize                = types.KeyMaxExecutableSize
 	KeyMaxOracleScriptCodeSize          = types.KeyMaxOracleScriptCodeSize
 	KeyMaxCalldataSize                  = types.KeyMaxCalldataSize
-	KeyMaxDataSourceCountPerRequest     = types.KeyMaxDataSourceCountPerRequest
+	KeyMaxRawRequestCount               = types.KeyMaxRawRequestCount
 	KeyMaxRawDataReportSize             = types.KeyMaxRawDataReportSize
 	KeyMaxResultSize                    = types.KeyMaxResultSize
 	KeyMaxNameLength                    = types.KeyMaxNameLength
 	KeyMaxDescriptionLength             = types.KeyMaxDescriptionLength
-	KeyEndBlockExecuteGasLimit          = types.KeyEndBlockExecuteGasLimit
 	KeyGasPerRawDataRequestPerValidator = types.KeyGasPerRawDataRequestPerValidator
 	KeyExpirationBlockCount             = types.KeyExpirationBlockCount
 	KeyExecuteGas                       = types.KeyExecuteGas
@@ -92,8 +90,7 @@ type (
 	OracleRequestPacketData  = types.OracleRequestPacketData
 	OracleResponsePacketData = types.OracleResponsePacketData
 
-	RawDataReport         = types.RawDataReport
-	RawDataReportWithID   = types.RawDataReportWithID
+	RawReport             = types.RawReport
 	RequestQuerierInfo    = types.RequestQuerierInfo
 	DataSourceQuerierInfo = types.DataSourceQuerierInfo
 

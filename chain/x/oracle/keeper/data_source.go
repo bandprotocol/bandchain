@@ -6,111 +6,92 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
+// HasDataSource checks if the data source of this ID exists in the storage.
+func (k Keeper) HasDataSource(ctx sdk.Context, id types.DID) bool {
+	return ctx.KVStore(k.storeKey).Has(types.DataSourceStoreKey(id))
+}
+
+// GetDataSource returns the data source struct for the given ID or error if not exists.
+func (k Keeper) GetDataSource(ctx sdk.Context, id types.DID) (types.DataSource, error) {
+	bz := ctx.KVStore(k.storeKey).Get(types.DataSourceStoreKey(id))
+	if bz == nil {
+		return types.DataSource{}, sdkerrors.Wrapf(types.ErrDataSourceNotFound, "id: %d", id)
+	}
+	var dataSource types.DataSource
+	k.cdc.MustUnmarshalBinaryBare(bz, &dataSource)
+	return dataSource, nil
+}
+
+// MustGetDataSource returns the data source struct for the given ID. Panic if not exists.
+func (k Keeper) MustGetDataSource(ctx sdk.Context, id types.DID) types.DataSource {
+	dataSource, err := k.GetDataSource(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return dataSource
+}
+
 // SetDataSource saves the given data source to the storage without performing validation.
-func (k Keeper) SetDataSource(
-	ctx sdk.Context, id types.DataSourceID, dataSource types.DataSource,
-) {
+func (k Keeper) SetDataSource(ctx sdk.Context, id types.DID, dataSource types.DataSource) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.DataSourceStoreKey(id), k.cdc.MustMarshalBinaryBare(dataSource))
 }
 
-// AddDataSource adds the given data source to the storage.
-func (k Keeper) AddDataSource(
-	ctx sdk.Context, owner sdk.AccAddress, name string, description string,
-	fee sdk.Coins, executable []byte,
-) (types.DataSourceID, error) {
-	if uint64(len(executable)) > k.GetParam(ctx, types.KeyMaxDataSourceExecutableSize) {
-		return 0, sdkerrors.Wrapf(types.ErrBadDataValue,
-			"AddDataSource: Executable size (%d) exceeds the maximum size (%d).",
-			len(executable), k.GetParam(ctx, types.KeyMaxDataSourceExecutableSize),
-		)
+// AddDataSource adds the given data source to the storage. Returns error if validation fails.
+func (k Keeper) AddDataSource(ctx sdk.Context, dataSource types.DataSource) (types.DID, error) {
+	if err := AnyError(
+		k.EnsureLength(ctx, types.KeyMaxNameLength, len(dataSource.Name)),
+		k.EnsureLength(ctx, types.KeyMaxDescriptionLength, len(dataSource.Description)),
+		k.EnsureLength(ctx, types.KeyMaxExecutableSize, len(dataSource.Executable)),
+	); err != nil {
+		return 0, err
 	}
-	if uint64(len(name)) > k.GetParam(ctx, types.KeyMaxNameLength) {
-		return 0, sdkerrors.Wrapf(types.ErrBadDataValue,
-			"AddDataSource: Name length (%d) exceeds the maximum length (%d).",
-			len(name), k.GetParam(ctx, types.KeyMaxNameLength),
-		)
-	}
-	if uint64(len(description)) > k.GetParam(ctx, types.KeyMaxDescriptionLength) {
-		return 0, sdkerrors.Wrapf(types.ErrBadDataValue,
-			"AddDataSource: Description length (%d) exceeds the maximum length (%d).",
-			len(description), k.GetParam(ctx, types.KeyMaxDescriptionLength),
-		)
-	}
-
-	newDataSourceID := k.GetNextDataSourceID(ctx)
-	newDataSource := types.NewDataSource(owner, name, description, fee, executable)
-	k.SetDataSource(ctx, newDataSourceID, newDataSource)
-	return newDataSourceID, nil
+	id := k.GetNextDataSourceID(ctx)
+	k.SetDataSource(ctx, id, dataSource)
+	return id, nil
 }
 
-// EditDataSource edits the given data source by given data source id to the storage.
-func (k Keeper) EditDataSource(
-	ctx sdk.Context, dataSourceID types.DataSourceID, owner sdk.AccAddress, name string,
-	description string, fee sdk.Coins, executable []byte,
-) error {
-	if !k.CheckDataSourceExists(ctx, dataSourceID) {
-		return sdkerrors.Wrapf(types.ErrItemNotFound, "EditDataSource: Unknown data source ID %d.", dataSourceID)
+// EditDataSource edits the given data source by id and flushes it to the storage.
+func (k Keeper) EditDataSource(ctx sdk.Context, id types.DID, new types.DataSource) error {
+	dataSource, err := k.GetDataSource(ctx, id)
+	if err != nil {
+		return err
 	}
-
-	if uint64(len(executable)) > k.GetParam(ctx, types.KeyMaxDataSourceExecutableSize) {
-		return sdkerrors.Wrapf(types.ErrBadDataValue,
-			"EditDataSource: Executable size (%d) exceeds the maximum size (%d).",
-			len(executable), k.GetParam(ctx, types.KeyMaxDataSourceExecutableSize),
-		)
+	dataSource.Owner = new.Owner // TODO: Allow NOT_MODIFY or nil in these fields.
+	dataSource.Name = new.Name
+	dataSource.Description = new.Description
+	dataSource.Fee = new.Fee
+	dataSource.Executable = new.Executable
+	if err := AnyError(
+		k.EnsureLength(ctx, types.KeyMaxNameLength, len(dataSource.Name)),
+		k.EnsureLength(ctx, types.KeyMaxDescriptionLength, len(dataSource.Description)),
+		k.EnsureLength(ctx, types.KeyMaxExecutableSize, len(dataSource.Executable)),
+	); err != nil {
+		return err
 	}
-	if uint64(len(name)) > k.GetParam(ctx, types.KeyMaxNameLength) {
-		return sdkerrors.Wrapf(types.ErrBadDataValue,
-			"EditDataSource: Name length (%d) exceeds the maximum length (%d).",
-			len(name), k.GetParam(ctx, types.KeyMaxNameLength),
-		)
-	}
-	if uint64(len(description)) > k.GetParam(ctx, types.KeyMaxDescriptionLength) {
-		return sdkerrors.Wrapf(types.ErrBadDataValue,
-			"EditDataSource: Description length (%d) exceeds the maximum length (%d).",
-			len(description), k.GetParam(ctx, types.KeyMaxDescriptionLength),
-		)
-	}
-
-	updatedDataSource := types.NewDataSource(owner, name, description, fee, executable)
-	k.SetDataSource(ctx, dataSourceID, updatedDataSource)
+	k.SetDataSource(ctx, id, dataSource)
 	return nil
 }
 
-// GetDataSource returns the entire DataSource struct for the given ID.
-func (k Keeper) GetDataSource(
-	ctx sdk.Context, id types.DataSourceID,
-) (types.DataSource, error) {
-	store := ctx.KVStore(k.storeKey)
-	if !k.CheckDataSourceExists(ctx, id) {
-		return types.DataSource{}, sdkerrors.Wrapf(types.ErrItemNotFound,
-			"GetDataSource: Unknown data source ID %d.", id,
-		)
+// PayDataSourceFee sends fee from sender to data source owner. Returns error on failure.
+func (k Keeper) PayDataSourceFee(ctx sdk.Context, id types.DID, sender sdk.AccAddress) error {
+	dataSource, err := k.GetDataSource(ctx, id)
+	if err != nil {
+		return err
 	}
-
-	var dataSource types.DataSource
-	k.cdc.MustUnmarshalBinaryBare(store.Get(types.DataSourceStoreKey(id)), &dataSource)
-	return dataSource, nil
+	if dataSource.Owner.Equals(sender) || dataSource.Fee.IsZero() {
+		// If you are the owner or it's free, no payment action is needed.
+		return nil
+	}
+	return k.CoinKeeper.SendCoins(ctx, sender, dataSource.Owner, dataSource.Fee)
 }
 
-// CheckDataSourceExists checks if the data source of this ID exists in the storage.
-func (k Keeper) CheckDataSourceExists(ctx sdk.Context, id types.DataSourceID) bool {
+// GetAllDataSources returns the list of all data sources in the store, or nil if there is none.
+func (k Keeper) GetAllDataSources(ctx sdk.Context) (dataSources []types.DataSource) {
 	store := ctx.KVStore(k.storeKey)
-	return store.Has(types.DataSourceStoreKey(id))
-}
-
-// GetDataSourceIterator returns an iterator for all data sources in the store.
-func (k Keeper) GetDataSourceIterator(ctx sdk.Context) sdk.Iterator {
-	store := ctx.KVStore(k.storeKey)
-	return sdk.KVStorePrefixIterator(store, types.DataSourceStoreKeyPrefix)
-}
-
-// GetAllDataSources returns list of all data sources.
-func (k Keeper) GetAllDataSources(ctx sdk.Context) []types.DataSource {
-	var dataSource types.DataSource
-	dataSources := []types.DataSource{}
-	iterator := k.GetDataSourceIterator(ctx)
+	iterator := sdk.KVStorePrefixIterator(store, types.DataSourceStoreKeyPrefix)
 	for ; iterator.Valid(); iterator.Next() {
+		var dataSource types.DataSource
 		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &dataSource)
 		dataSources = append(dataSources, dataSource)
 	}

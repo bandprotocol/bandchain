@@ -1,202 +1,253 @@
-package keeper
+package keeper_test
 
 import (
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
-func mockOracleScript(ctx sdk.Context, keeper Keeper) error {
-	owner := sdk.AccAddress([]byte("owner"))
-	name := "oracle_script"
-	description := "description"
-	code := []byte("code")
-	_, err := keeper.AddOracleScript(ctx, owner, name, description, code)
-	return err
+func TestHasOracleScript(t *testing.T) {
+	_, ctx, k := createTestInput()
+	// We should not have a oracle script ID 42 without setting it.
+	require.False(t, k.HasOracleScript(ctx, 42))
+	// After we set it, we should be able to find it.
+	k.SetOracleScript(ctx, 42, types.NewOracleScript(
+		Owner.Address, BasicName, BasicDesc, BasicCode, BasicSchema, BasicSourceCodeURL,
+	))
+	require.True(t, k.HasOracleScript(ctx, 42))
 }
 
-func TestGetterSetterOracleScript(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-
-	_, err := keeper.GetOracleScript(ctx, 1)
-	require.NotNil(t, err)
-
-	err = mockOracleScript(ctx, keeper)
+func TestSetterGetterOracleScript(t *testing.T) {
+	_, ctx, k := createTestInput()
+	// Getting a non-existent oracle script should return error.
+	_, err := k.GetOracleScript(ctx, 42)
+	require.Error(t, err)
+	require.Panics(t, func() { _ = k.MustGetOracleScript(ctx, 42) })
+	// Creates some basic oracle scripts.
+	oracleScript1 := types.NewOracleScript(
+		Alice.Address, "NAME1", "DESCRIPTION1", []byte("code1"), BasicSchema, BasicSourceCodeURL,
+	)
+	oracleScript2 := types.NewOracleScript(
+		Bob.Address, "NAME2", "DESCRIPTION2", []byte("code2"), BasicSchema, BasicSourceCodeURL,
+	)
+	// Sets id 42 with oracle script 1 and id 42 with oracle script 2.
+	k.SetOracleScript(ctx, 42, oracleScript1)
+	k.SetOracleScript(ctx, 43, oracleScript2)
+	// Checks that Get and MustGet perform correctly.
+	oracleScript1Res, err := k.GetOracleScript(ctx, 42)
 	require.Nil(t, err)
-
-	actualOracleScript, err := keeper.GetOracleScript(ctx, 1)
+	require.Equal(t, oracleScript1, oracleScript1Res)
+	require.Equal(t, oracleScript1, k.MustGetOracleScript(ctx, 42))
+	oracleScript2Res, err := k.GetOracleScript(ctx, 43)
 	require.Nil(t, err)
-	require.Equal(t, sdk.AccAddress([]byte("owner")), actualOracleScript.Owner)
-	require.Equal(t, "oracle_script", actualOracleScript.Name)
-	require.Equal(t, []byte("code"), actualOracleScript.Code)
+	require.Equal(t, oracleScript2, oracleScript2Res)
+	require.Equal(t, oracleScript2, k.MustGetOracleScript(ctx, 43))
+	// Replaces id 42 with another oracle script.
+	k.SetOracleScript(ctx, 42, oracleScript2)
+	require.NotEqual(t, oracleScript1, k.MustGetOracleScript(ctx, 42))
+	require.Equal(t, oracleScript2, k.MustGetOracleScript(ctx, 42))
+}
+
+func TestAddEditOracleScriptBasic(t *testing.T) {
+	_, ctx, k := createTestInput()
+	// Creates some basic oracle scripts.
+	oracleScript1 := types.NewOracleScript(
+		Alice.Address, "NAME1", "DESCRIPTION1", []byte("code1"), BasicSchema, BasicSourceCodeURL,
+	)
+	oracleScript2 := types.NewOracleScript(
+		Bob.Address, "NAME2", "DESCRIPTION2", []byte("code2"), BasicSchema, BasicSourceCodeURL,
+	)
+	// Adds a new oracle script to the store. We should be able to retreive it back.
+	id, err := k.AddOracleScript(ctx, types.NewOracleScript(
+		oracleScript1.Owner, oracleScript1.Name, oracleScript1.Description, oracleScript1.Code,
+		oracleScript1.Schema, oracleScript1.SourceCodeURL,
+	))
+	require.Nil(t, err)
+	require.Equal(t, oracleScript1, k.MustGetOracleScript(ctx, id))
+	require.NotEqual(t, oracleScript2, k.MustGetOracleScript(ctx, id))
+	// Edits the oracle script. We should get the updated oracle script.
+	err = k.EditOracleScript(ctx, id, types.NewOracleScript(
+		oracleScript2.Owner, oracleScript2.Name, oracleScript2.Description, oracleScript2.Code,
+		oracleScript2.Schema, oracleScript2.SourceCodeURL,
+	))
+	require.Nil(t, err)
+	require.NotEqual(t, oracleScript1, k.MustGetOracleScript(ctx, id))
+	require.Equal(t, oracleScript2, k.MustGetOracleScript(ctx, id))
 }
 
 func TestAddOracleScriptMustReturnCorrectID(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-
-	_, err := keeper.GetDataSource(ctx, 1)
-	require.NotNil(t, err)
-
-	owner := sdk.AccAddress([]byte("owner"))
-	name := "oracle_script"
-	description := "description"
-	code := []byte("code")
-
-	id, err := keeper.AddOracleScript(ctx, owner, name, description, code)
+	_, ctx, k := createTestInput()
+	// Initially we expect the oracle script count to be zero.
+	count := k.GetOracleScriptCount(ctx)
+	require.Equal(t, count, int64(0))
+	// Every new oracle script we add should return a new ID.
+	id1, err := k.AddOracleScript(ctx, types.NewOracleScript(
+		Owner.Address, BasicName, BasicDesc, BasicCode, BasicSchema, BasicSourceCodeURL,
+	))
 	require.Nil(t, err)
-	require.Equal(t, types.OracleScriptID(1), id)
-
-	id, err = keeper.AddOracleScript(ctx, owner, name, description, code)
+	require.Equal(t, id1, types.OID(1))
+	// Adds another oracle script so now ID should be 2.
+	id2, err := k.AddOracleScript(ctx, types.NewOracleScript(
+		Owner.Address, BasicName, BasicDesc, BasicCode, BasicSchema, BasicSourceCodeURL,
+	))
 	require.Nil(t, err)
-	require.Equal(t, types.OracleScriptID(2), id)
+	require.Equal(t, id2, types.OID(2))
+	// Finally we expect the oracle script to increase to 2 since we added two oracle scripts.
+	count = k.GetOracleScriptCount(ctx)
+	require.Equal(t, count, int64(2))
 }
 
-func TestAddTooLongOracleScript(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-
-	_, err := keeper.GetOracleScript(ctx, 1)
-	require.NotNil(t, err)
-
-	// Set MaxOracleScriptCodeSize to 20
-	keeper.SetParam(ctx, types.KeyMaxOracleScriptCodeSize, 20)
-
-	owner := sdk.AccAddress([]byte("owner"))
-	name := "oracle_script"
-	description := "description"
-	code := []byte("The number of bytes of this oracle script is 82 which is obviously longer than 20.")
-
-	_, err = keeper.AddOracleScript(ctx, owner, name, description, code)
-	require.NotNil(t, err)
+func TestEditNonExistentOracleScript(t *testing.T) {
+	_, ctx, k := createTestInput()
+	// Editing a non-existent oracle script should return error.
+	err := k.EditOracleScript(ctx, 42, types.NewOracleScript(
+		Owner.Address, BasicName, BasicDesc, BasicCode, BasicSchema, BasicSourceCodeURL,
+	))
+	require.Error(t, err)
 }
 
-func TestAddTooLongOracleScriptName(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-
-	_, err := keeper.GetOracleScript(ctx, 1)
-	require.NotNil(t, err)
-
-	// Set MaxNameLength to 5
-	keeper.SetParam(ctx, types.KeyMaxNameLength, 5)
-
-	owner := sdk.AccAddress([]byte("owner"))
-	tooLongName := "oracle_script"
-	description := "description"
-	code := []byte("code")
-
-	_, err = keeper.AddOracleScript(ctx, owner, tooLongName, description, code)
-	require.NotNil(t, err)
-}
-
-func TestAddTooLongOracleScriptDescription(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-
-	_, err := keeper.GetOracleScript(ctx, 1)
-	require.NotNil(t, err)
-
-	// Set MaxNameLength to 5
-	keeper.SetParam(ctx, types.KeyMaxDescriptionLength, 5)
-
-	owner := sdk.AccAddress([]byte("owner"))
-	name := "oracle_script"
-	tooLongDescription := "description"
-	code := []byte("code")
-
-	_, err = keeper.AddOracleScript(ctx, owner, name, tooLongDescription, code)
-	require.NotNil(t, err)
-}
-func TestEditOracleScript(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-
-	err := mockOracleScript(ctx, keeper)
+func TestAddOracleScriptTooLongName(t *testing.T) {
+	_, ctx, k := createTestInput()
+	// Sets max name length to 9. We should fail to add oracle script with name length 10.
+	k.SetParam(ctx, types.KeyMaxNameLength, 9)
+	_, err := k.AddOracleScript(ctx, types.NewOracleScript(
+		Owner.Address, "0123456789", BasicDesc, BasicCode, BasicSchema, BasicSourceCodeURL,
+	))
+	require.Error(t, err)
+	// Sets max name length to 10. We should now be able to add the oracle script.
+	k.SetParam(ctx, types.KeyMaxNameLength, 10)
+	_, err = k.AddOracleScript(ctx, types.NewOracleScript(
+		Owner.Address, "0123456789", BasicDesc, BasicCode, BasicSchema, BasicSourceCodeURL,
+	))
 	require.Nil(t, err)
-
-	newOwner := sdk.AccAddress([]byte("owner2"))
-	newName := "oracle_script_2"
-	newDescription := "description_2"
-	newCode := []byte("code_2")
-
-	err = keeper.EditOracleScript(ctx, 1, newOwner, newName, newDescription, newCode)
-	require.Nil(t, err)
-
-	expect, err := keeper.GetOracleScript(ctx, 1)
-	require.Nil(t, err)
-	require.Equal(t, newOwner, expect.Owner)
-	require.Equal(t, newName, expect.Name)
-	require.Equal(t, newDescription, expect.Description)
-	require.Equal(t, newCode, expect.Code)
 }
 
-func TestEditTooLongOracleScript(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-
-	// Set MaxOracleScriptCodeSize to 20
-	keeper.SetParam(ctx, types.KeyMaxOracleScriptCodeSize, 20)
-	err := mockOracleScript(ctx, keeper)
-	require.Nil(t, err)
-
-	newOwner := sdk.AccAddress([]byte("owner2"))
-	newName := "oracle_script_2"
-	newDescription := "description_2"
-	newTooLongCode := []byte("The number of bytes of this oracle script is 82 which is obviously longer than 20.")
-
-	err = keeper.EditOracleScript(ctx, 1, newOwner, newName, newDescription, newTooLongCode)
-	require.NotNil(t, err)
-}
 func TestEditOracleScriptTooLongName(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-
-	// Set MaxOracleScriptCodeSize to 20
-	keeper.SetParam(ctx, types.KeyMaxNameLength, 20)
-	err := mockOracleScript(ctx, keeper)
+	_, ctx, k := createTestInput()
+	id, err := k.AddOracleScript(ctx, types.NewOracleScript(
+		Owner.Address, BasicName, BasicDesc, BasicCode, BasicSchema, BasicSourceCodeURL,
+	))
 	require.Nil(t, err)
-
-	newOwner := sdk.AccAddress([]byte("owner2"))
-	newTooLongName := "Tooooo Looooooong Nameeeee"
-	tooLongDescription := "description"
-	newCode := []byte("code")
-
-	err = keeper.EditOracleScript(ctx, 1, newOwner, newTooLongName, tooLongDescription, newCode)
-	require.NotNil(t, err)
+	oracleScript := k.MustGetOracleScript(ctx, id)
+	// Sets max name length to 9. We should fail to edit oracle script with name length 10.
+	k.SetParam(ctx, types.KeyMaxNameLength, 9)
+	err = k.EditOracleScript(ctx, id, types.NewOracleScript(
+		oracleScript.Owner, "0123456789", oracleScript.Description, oracleScript.Code,
+		oracleScript.Schema, oracleScript.SourceCodeURL,
+	))
+	require.Error(t, err)
+	// Sets max name length to 10. We should now be able to edit the oracle script.
+	k.SetParam(ctx, types.KeyMaxNameLength, 10)
+	err = k.EditOracleScript(ctx, id, types.NewOracleScript(
+		oracleScript.Owner, "0123456789", oracleScript.Description, oracleScript.Code,
+		oracleScript.Schema, oracleScript.SourceCodeURL,
+	))
+	require.Nil(t, err)
 }
-func TestEditOracleScriptTooLongDescription(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
 
-	// Set MaxDescriptionLength to 11
-	keeper.SetParam(ctx, types.KeyMaxDescriptionLength, 11)
-	err := mockOracleScript(ctx, keeper)
+func TestAddOracleScriptTooLongDescription(t *testing.T) {
+	_, ctx, k := createTestInput()
+	// Sets max desc length to 41. We should fail to add oracle script with desc length 42.
+	k.SetParam(ctx, types.KeyMaxDescriptionLength, 41)
+	_, err := k.AddOracleScript(ctx, types.NewOracleScript(
+		Owner.Address, BasicName, "________THIS_STRING_HAS_SIZE_OF_42________", BasicCode,
+		BasicSchema, BasicSourceCodeURL,
+	))
+	require.Error(t, err)
+	// Sets max desc length to 42. We should now be able to add the oracle script.
+	k.SetParam(ctx, types.KeyMaxDescriptionLength, 42)
+	_, err = k.AddOracleScript(ctx, types.NewOracleScript(
+		Owner.Address, BasicName, "________THIS_STRING_HAS_SIZE_OF_42________", BasicCode,
+		BasicSchema, BasicSourceCodeURL,
+	))
 	require.Nil(t, err)
+}
 
-	newOwner := sdk.AccAddress([]byte("owner2"))
-	newName := "oracle_script_2"
-	tooLongDescription := "too long description"
-	newCode := []byte("code")
+func TestEditOracleScriptTooLongDescription(t *testing.T) {
+	_, ctx, k := createTestInput()
+	id, err := k.AddOracleScript(ctx, types.NewOracleScript(
+		Owner.Address, BasicName, BasicDesc, BasicCode, BasicSchema, BasicSourceCodeURL,
+	))
+	require.Nil(t, err)
+	oracleScript := k.MustGetOracleScript(ctx, id)
+	// Sets max desc length to 41. We should fail to edit oracle script with name length 42.
+	k.SetParam(ctx, types.KeyMaxDescriptionLength, 41)
+	err = k.EditOracleScript(ctx, id, types.NewOracleScript(
+		oracleScript.Owner, oracleScript.Name, "________THIS_STRING_HAS_SIZE_OF_42________",
+		oracleScript.Code, oracleScript.Schema, oracleScript.SourceCodeURL,
+	))
+	require.Error(t, err)
+	// Sets max desc length to 42. We should now be able to edit the oracle script.
+	k.SetParam(ctx, types.KeyMaxDescriptionLength, 42)
+	err = k.EditOracleScript(ctx, id, types.NewOracleScript(
+		oracleScript.Owner, oracleScript.Name, "________THIS_STRING_HAS_SIZE_OF_42________",
+		oracleScript.Code, oracleScript.Schema, oracleScript.SourceCodeURL,
+	))
+	require.Nil(t, err)
+}
 
-	err = keeper.EditOracleScript(ctx, 1, newOwner, newName, tooLongDescription, newCode)
-	require.NotNil(t, err)
+func TestAddOracleScriptTooBigCode(t *testing.T) {
+	_, ctx, k := createTestInput()
+	// Sets max code size to 40. We should fail to add oracle script with exec size 42.
+	k.SetParam(ctx, types.KeyMaxOracleScriptCodeSize, 40)
+	_, err := k.AddOracleScript(ctx, types.NewOracleScript(
+		Owner.Address, BasicName, BasicDesc,
+		[]byte("________THIS_STRING_HAS_SIZE_OF_42________"),
+		BasicSchema, BasicSourceCodeURL,
+	))
+	require.Error(t, err)
+	// Sets max code size to 50. We should now be able to add the oracle script.
+	k.SetParam(ctx, types.KeyMaxOracleScriptCodeSize, 50)
+	_, err = k.AddOracleScript(ctx, types.NewOracleScript(
+		Owner.Address, BasicName, BasicDesc,
+		[]byte("________THIS_STRING_HAS_SIZE_OF_42________"),
+		BasicSchema, BasicSourceCodeURL,
+	))
+	require.Nil(t, err)
+}
+
+func TestEditOracleScriptTooBigCode(t *testing.T) {
+	_, ctx, k := createTestInput()
+	id, err := k.AddOracleScript(ctx, types.NewOracleScript(
+		Owner.Address, BasicName, BasicDesc, BasicCode, BasicSchema, BasicSourceCodeURL,
+	))
+	require.Nil(t, err)
+	oracleScript := k.MustGetOracleScript(ctx, id)
+	// Sets max code size to 40. We should fail to edit oracle script with exec size 42.
+	k.SetParam(ctx, types.KeyMaxOracleScriptCodeSize, 40)
+	err = k.EditOracleScript(ctx, id, types.NewOracleScript(
+		oracleScript.Owner, oracleScript.Name, oracleScript.Description,
+		[]byte("________THIS_STRING_HAS_SIZE_OF_42________"),
+		oracleScript.Schema, oracleScript.SourceCodeURL,
+	))
+	require.Error(t, err)
+	// Sets max code size to 50. We should now be able to edit the oracle script.
+	k.SetParam(ctx, types.KeyMaxOracleScriptCodeSize, 50)
+	err = k.EditOracleScript(ctx, id, types.NewOracleScript(
+		oracleScript.Owner, oracleScript.Name, oracleScript.Description,
+		[]byte("________THIS_STRING_HAS_SIZE_OF_42________"),
+		oracleScript.Schema, oracleScript.SourceCodeURL,
+	))
+	require.Nil(t, err)
 }
 
 func TestGetAllOracleScripts(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-
+	_, ctx, k := createTestInput()
+	// Sets the oracle scripts to the storage.
 	oracleScripts := []types.OracleScript{
 		types.NewOracleScript(
-			sdk.AccAddress([]byte("owner1")),
-			"name1",
-			"description1",
-			[]byte("code1"),
+			Alice.Address, "NAME1", "DESCRIPTION1", []byte("code1"),
+			BasicSchema, BasicSourceCodeURL,
 		),
 		types.NewOracleScript(
-			sdk.AccAddress([]byte("owner2")),
-			"name2",
-			"description2",
-			[]byte("code2"),
+			Bob.Address, "NAME2", "DESCRIPTION2", []byte("code2"),
+			BasicSchema, BasicSourceCodeURL,
 		),
 	}
-	keeper.SetOracleScript(ctx, 1, oracleScripts[0])
-	keeper.SetOracleScript(ctx, 2, oracleScripts[1])
-
-	require.Equal(t, oracleScripts, keeper.GetAllOracleScripts(ctx))
+	k.SetOracleScript(ctx, 1, oracleScripts[0])
+	k.SetOracleScript(ctx, 2, oracleScripts[1])
+	// We should now be able to get all the existing oracle scripts.
+	require.Equal(t, oracleScripts, k.GetAllOracleScripts(ctx))
 }

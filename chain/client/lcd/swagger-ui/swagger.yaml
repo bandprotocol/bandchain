@@ -2379,7 +2379,7 @@ definitions:
               items:
                 type: object
                 properties:
-                  externalDataID:
+                  externalID:
                     type: integer
                     example: 1
                   data:

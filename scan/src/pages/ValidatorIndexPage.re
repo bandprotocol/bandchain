@@ -141,34 +141,36 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
         <VSpacing size=Spacing.lg />
         {kvRow("BONDED HEIGHT", VCode(validator.bondedHeight->Format.iPretty))}
         <VSpacing size=Spacing.lg />
+        {kvRow("UPTIME", VCode(validator.nodeStatus.uptime->Format.fPretty ++ "%"))}
+        <VSpacing size=Spacing.lg />
         {kvRow("WEBSITE", VExtLink(validator.website))}
         <VSpacing size=Spacing.lg />
         {kvRow("DETAILS", VDetail(validator.details))}
-        <div className=Styles.longLine />
-        <div className={Styles.fullWidth(`row)}>
-          <Col size=1.>
-            <Text value="NODE STATUS" size=Text.Lg weight=Text.Semibold />
-            <VSpacing size=Spacing.lg />
-            {kvRow("UPTIME", VCode(validator.nodeStatus.uptime->Format.fPretty ++ "%"))}
-            <VSpacing size=Spacing.lg />
-            {kvRow(
-               "AVG. RESPONSE TIME",
-               VCode(
-                 validator.avgResponseTime->Format.iPretty
-                 ++ (validator.avgResponseTime <= 1 ? " block" : " blocks"),
-               ),
-             )}
-          </Col>
-          <HSpacing size=Spacing.lg />
-          <Col size=1.>
-            <Text value="REQUEST RESPONSE" size=Text.Lg weight=Text.Semibold />
-            <VSpacing size=Spacing.lg />
-            {kvRow("COMPLETED REQUESTS", VCode(validator.completedRequestCount->Format.iPretty))}
-            <VSpacing size=Spacing.lg />
-            {kvRow("MISSED REQUESTS", VCode(validator.missedRequestCount->Format.iPretty))}
-          </Col>
-        </div>
       </div>
+      // <div className=Styles.longLine />
+      // <div className={Styles.fullWidth(`row)}>
+      //   <Col size=1.>
+      //     <Text value="NODE STATUS" size=Text.Lg weight=Text.Semibold />
+      //     <VSpacing size=Spacing.lg />
+      //     {kvRow("UPTIME", VCode(validator.nodeStatus.uptime->Format.fPretty ++ "%"))}
+      //     <VSpacing size=Spacing.lg />
+      //     {kvRow(
+      //        "AVG. RESPONSE TIME",
+      //        VCode(
+      //          validator.avgResponseTime->Format.iPretty
+      //          ++ (validator.avgResponseTime <= 1 ? " block" : " blocks"),
+      //        ),
+      //      )}
+      //   </Col>
+      //   <HSpacing size=Spacing.lg />
+      //   <Col size=1.>
+      //     <Text value="REQUEST RESPONSE" size=Text.Lg weight=Text.Semibold />
+      //     <VSpacing size=Spacing.lg />
+      //     {kvRow("COMPLETED REQUESTS", VCode(validator.completedRequestCount->Format.iPretty))}
+      //     <VSpacing size=Spacing.lg />
+      //     {kvRow("MISSED REQUESTS", VCode(validator.missedRequestCount->Format.iPretty))}
+      //   </Col>
+      // </div>
       <VSpacing size=Spacing.md />
       <Tab
         tabs=[|
