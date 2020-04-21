@@ -1,5 +1,5 @@
 type t =
-  | Connect(string);
+  | Connect;
 
 type a =
   | OpenModal(t)
