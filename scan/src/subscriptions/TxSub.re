@@ -211,9 +211,9 @@ module Msg = {
       identity: string,
       website: string,
       details: string,
-      commissionRate: float,
+      commissionRate: option(float),
       sender: Address.t,
-      minSelfDelegation: float,
+      minSelfDelegation: option(float),
     };
     let decode = json =>
       JsonUtils.Decode.{
@@ -221,9 +221,9 @@ module Msg = {
         identity: json |> field("identity", string),
         website: json |> field("website", string),
         details: json |> field("details", string),
-        commissionRate: json |> field("commission_rate", floatstr),
+        commissionRate: json |> optional(field("commission_rate", floatstr)),
         sender: json |> field("address", string) |> Address.fromBech32,
-        minSelfDelegation: json |> field("min_self_delegation", floatstr),
+        minSelfDelegation: json |> optional(field("min_self_delegation", floatstr)),
       };
   };
 

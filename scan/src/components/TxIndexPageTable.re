@@ -396,7 +396,12 @@ let renderEditValidator = (validator: TxSub.Msg.EditValidator.t) => {
     <div className=Styles.topicContainer>
       <Text value="COMMISSION RATE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <Text
-        value={validator.commissionRate->Js.Float.toFixedWithPrecision(~digits=4) ++ "%"}
+        value={
+          switch (validator.commissionRate) {
+          | Some(rate) => rate->Js.Float.toFixedWithPrecision(~digits=4) ++ "%"
+          | None => "NULL"
+          }
+        }
         code=true
       />
     </div>
