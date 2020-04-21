@@ -198,7 +198,7 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			"Bitcoin block count",
 			"Oracle script for getting Bitcoin latest block height",
 			"./owasm/res/bitcoin_block_count.wasm",
-			`{"Input":"{ \"kind\": \"struct\", \"fields\": [ [\"_unused\", \"u8\"] ] }","Output":"{ \"kind\": \"struct\", \"fields\": [ [\"block_count\", \"u64\"] ] }"}`,
+			`{"Input":"{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"_unused\\", \\"u8\\"] ] }","Output":"{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"block_count\\", \\"u64\\"] ] }"}`,
 			`https://bandprotocol.com`,
 		},
 		{
