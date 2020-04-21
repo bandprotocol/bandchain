@@ -35,7 +35,6 @@ module Styles = {
       alignSelf(`center),
       alignItems(`center),
       justifyContent(`spaceBetween),
-      cursor(`pointer),
       width(`px(480)),
       padding2(~v=`zero, ~h=`px(20)),
       color(active ? Colors.gray8 : Colors.gray6),
@@ -56,9 +55,15 @@ module Styles = {
           ? Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(8), Css.rgba(11, 29, 142, 0.1))
           : Shadow.box(~x=`zero, ~y=`px(0), ~blur=`px(0), Css.rgba(0, 0, 0, 0.)),
       ),
+      cursor(`pointer),
     ]);
   let seperatedLongLine =
-    style([height(`px(275)), width(`px(2)), backgroundColor(Colors.gray4)]);
+    style([
+      height(`px(275)),
+      width(`px(2)),
+      backgroundColor(Colors.gray4),
+      marginLeft(`px(24)),
+    ]);
 
   let ledgerIcon = style([height(`px(30)), width(`px(30)), display(`flex)]);
   let ledgerImageContainer = active => style([opacity(active ? 1.0 : 0.5)]);
@@ -77,8 +82,8 @@ let toLoginMethodString = method => {
 
 module LoginMethod = {
   [@react.component]
-  let make = (~name, ~active) => {
-    <div className={Styles.buttonContainer(active)}>
+  let make = (~name, ~active, ~onClick) => {
+    <div className={Styles.buttonContainer(active)} onClick>
       <div className={Styles.header(active)}>
         <Text value={name |> toLoginMethodString} weight=Text.Medium size=Text.Md />
         {switch (name) {
@@ -114,9 +119,11 @@ let make = _ => {
                <div>
                  <VSpacing size=Spacing.md />
                  <VSpacing size=Spacing.xs />
-                 <div onClick={_ => setLoginMethod(_ => method)}>
-                   <LoginMethod name=method active={loginMethod == method} />
-                 </div>
+                 <LoginMethod
+                   name=method
+                   active={loginMethod == method}
+                   onClick={_ => setLoginMethod(_ => method)}
+                 />
                </div>
              )
            ->React.array}
