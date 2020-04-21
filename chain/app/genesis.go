@@ -119,12 +119,12 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 		},
 		{
 			"Coingecko volume script",
-			"The Script that queries crypto volume from https://coingecko.com",
+			"The Script that queries crypto volume from Coingecko",
 			"./datasources/coingecko_volume.sh",
 		},
 		{
 			"Crypto compare volume script",
-			"The Script that queries crypto volume from https://cryptocompare.com",
+			"The Script that queries crypto volume from Crypto compare",
 			"./datasources/crypto_compare_volume.sh",
 		},
 		{
