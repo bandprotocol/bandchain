@@ -1,17 +1,24 @@
 module Styles = {
   open Css;
 
-  let outer = style([marginTop(`px(27))]);
+  let container =
+    style([
+      display(`flex),
+      flexDirection(`column),
+      width(`percent(100.)),
+      padding4(~top=`px(45), ~left=`px(18), ~right=`px(20), ~bottom=`px(0)),
+    ]);
 
   let inputBar =
     style([
-      width(`px(290)),
+      width(`percent(100.)),
       height(`px(30)),
       paddingLeft(`px(9)),
       borderRadius(`px(8)),
       boxShadow(
-        Shadow.box(~inset=true, ~x=`zero, ~y=`px(4), ~blur=`px(8), Css.rgba(11, 29, 142, 0.1)),
+        Shadow.box(~inset=true, ~x=`zero, ~y=`px(3), ~blur=`px(4), Css.rgba(11, 29, 142, 0.1)),
       ),
+      focus([outlineColor(Colors.white)]),
     ]);
 
   let mnemonicHelper =
@@ -35,20 +42,13 @@ module Styles = {
       backgroundImage(
         `linearGradient((
           `deg(90.),
-          [(`percent(0.), Css.hex("142ABB")), (`percent(100.), Css.hex("5269FF"))],
+          [(`percent(0.), Colors.blue7), (`percent(100.), Colors.bandBlue)],
         )),
       ),
       boxShadow(Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(8), Css.rgba(82, 105, 255, 0.25))),
       borderRadius(`px(4)),
       cursor(`pointer),
-    ]);
-
-  let bottom =
-    style([
-      width(`px(290)),
-      display(`flex),
-      justifyContent(`spaceBetween),
-      alignItems(`center),
+      alignSelf(`flexEnd),
     ]);
 };
 
@@ -79,33 +79,25 @@ let make = () => {
       ();
     };
 
-  <div className=Styles.outer>
-    <Row> <Text value="Enter Your Mnemonic" size=Text.Md weight=Text.Medium /> </Row>
+  <div className=Styles.container>
+    <Text value="Enter Your Mnemonic" size=Text.Md weight=Text.Medium />
     <VSpacing size=Spacing.sm />
-    <Row>
-      <input
-        value=mnemonic
-        className=Styles.inputBar
-        onChange={event => setMnemonic(ReactEvent.Form.target(event)##value)}
-      />
-    </Row>
+    <input
+      value=mnemonic
+      className=Styles.inputBar
+      onChange={event => setMnemonic(ReactEvent.Form.target(event)##value)}
+    />
     <VSpacing size={`px(35)} />
-    <Row>
-      <div className=Styles.bottom>
-        <Col>
-          <div className=Styles.mnemonicHelper>
-            <Text value="What is Mnemonic" />
-            <img src=Images.linkIcon />
-          </div>
-        </Col>
-        <Col>
-          <div className=Styles.connectBtn onClick={_ => createMnemonic()}>
-            <Text value="Connect" weight=Text.Bold size=Text.Md color=Colors.white />
-          </div>
-        </Col>
-      </div>
-    </Row>
+    <div className=Styles.connectBtn onClick={_ => createMnemonic()}>
+      <Text value="Connect" weight=Text.Bold size=Text.Md color=Colors.white />
+    </div>
     <VSpacing size=Spacing.lg />
     <Text value=errMsg color=Colors.red6 />
   </div>;
+  // </Col>
+  //   </div>
+  //     <img src=Images.linkIcon />
+  //     <Text value="What is Mnemonic" />
+  //   <div className=Styles.mnemonicHelper>
+  // <Col>
 };
