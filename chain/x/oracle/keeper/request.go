@@ -1,9 +1,14 @@
 package keeper
 
 import (
+	"encoding/hex"
+	"fmt"
+
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	channel "github.com/cosmos/cosmos-sdk/x/ibc/04-channel"
+	ibctypes "github.com/cosmos/cosmos-sdk/x/ibc/types"
 )
 
 // HasRequest checks if the request of this ID exists in the storage.
@@ -73,49 +78,102 @@ func (k Keeper) AddRequest(ctx sdk.Context, req types.Request) (types.RequestID,
 	return id, nil
 }
 
+func (k Keeper) resolveRequest(
+	ctx sdk.Context, reqID types.RequestID, resolveStatus types.ResolveStatus, result []byte,
+) types.OracleResponsePacketData {
+	request := k.MustGetRequest(ctx, reqID)
+	reqPacketData := types.NewOracleRequestPacketData(
+		request.ClientID, request.OracleScriptID,
+		hex.EncodeToString(request.Calldata), request.SufficientValidatorCount,
+		int64(len(request.RequestedValidators)),
+	)
+	resPacketData := types.NewOracleResponsePacketData(
+		request.ClientID,
+		reqID,
+		int64(k.GetReportCount(ctx, reqID)),
+		request.RequestTime, ctx.BlockTime().Unix(),
+		types.Success, hex.EncodeToString(result),
+	)
+
+	if resolveStatus != types.Success {
+		ctx.EventManager().EmitEvents(sdk.Events{
+			sdk.NewEvent(
+				types.EventTypeRequestExecute,
+				sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", reqID)),
+				sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", resolveStatus)),
+			)})
+		return resPacketData
+	}
+
+	resultHash, err := k.AddResult(ctx, reqID, reqPacketData, resPacketData)
+	if err != nil {
+		ctx.EventManager().EmitEvents(sdk.Events{
+			sdk.NewEvent(
+				types.EventTypeRequestExecute,
+				sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", reqID)),
+				sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", types.Failure)),
+			)})
+		return resPacketData
+	}
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeRequestExecute,
+			sdk.NewAttribute(types.AttributeKeyClientID, reqPacketData.ClientID),
+			sdk.NewAttribute(types.AttributeKeyOracleScriptID, fmt.Sprintf("%d", reqPacketData.OracleScriptID)),
+			sdk.NewAttribute(types.AttributeKeyCalldata, reqPacketData.Calldata),
+			sdk.NewAttribute(types.AttributeKeyAskCount, fmt.Sprintf("%d", reqPacketData.AskCount)),
+			sdk.NewAttribute(types.AttributeKeyMinCount, fmt.Sprintf("%d", reqPacketData.MinCount)),
+			sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", resPacketData.RequestID)),
+			sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", types.Success)),
+			sdk.NewAttribute(types.AttributeKeyAnsCount, fmt.Sprintf("%d", resPacketData.AnsCount)),
+			sdk.NewAttribute(types.AttributeKeyRequestTime, fmt.Sprintf("%d", request.RequestTime)),
+			sdk.NewAttribute(types.AttributeKeyResolveTime, fmt.Sprintf("%d", resPacketData.ResolveTime)),
+			sdk.NewAttribute(types.AttributeKeyResult, resPacketData.Result),
+			sdk.NewAttribute(types.AttributeKeyResultHash, hex.EncodeToString(resultHash)),
+		)})
+	return resPacketData
+}
+
 // ProcessOracleResponse takes a
 func (k Keeper) ProcessOracleResponse(
 	ctx sdk.Context, reqID types.RequestID, resolveStatus types.ResolveStatus, result []byte,
 ) {
+	resPacketData := k.resolveRequest(ctx, reqID, resolveStatus, result)
+	if resolveStatus == types.Expired {
+		return
+	}
+
 	request := k.MustGetRequest(ctx, reqID)
 
-	// TODO: Send IBC packets + save data to result tree
-	reqPacketData := types.OracleRequestPacketData{}
-	resPacketData := types.OracleResponsePacketData{}
+	sourceChannelEnd, found := k.ChannelKeeper.GetChannel(ctx, request.SourcePort, request.SourceChannel)
+	if !found {
+		fmt.Println("SOURCE NOT FOUND", request.SourcePort, request.SourceChannel)
+		return
+	}
 
-	_ = request
-	_ = reqPacketData
-	_ = resPacketData
+	destinationPort := sourceChannelEnd.Counterparty.PortID
+	destinationChannel := sourceChannelEnd.Counterparty.ChannelID
 
-	// SOME OLD CODE FOR YOU!
-	// 	event, packet := handleResolveRequest(ctx, keeper, requestID)
-	// 	// TODO: Refactor this packet code
-	// 	request, err := keeper.GetRequest(ctx, requestID)
-	// 	events = append(events, event)
-	// 	sourceChannelEnd, found := keeper.ChannelKeeper.GetChannel(ctx, request.SourcePort, request.SourceChannel)
-	// 	if !found {
-	// 		fmt.Println("SOURCE NOT FOUND", request.SourcePort, request.SourceChannel)
-	// 		continue
-	// 	}
+	sequence, found := k.ChannelKeeper.GetNextSequenceSend(ctx, request.SourcePort, request.SourceChannel)
+	if !found {
+		fmt.Println("SEQUENCE NOT FOUND", request.SourcePort, request.SourceChannel)
+		return
+	}
 
-	// 	destinationPort := sourceChannelEnd.Counterparty.PortID
-	// 	destinationChannel := sourceChannelEnd.Counterparty.ChannelID
+	channelCap, ok := k.scopedKeeper.GetCapability(ctx, ibctypes.ChannelCapabilityPath(destinationPort, destinationChannel))
+	if !ok {
+		fmt.Println("GET CAPABILITY ERROR", request.SourcePort, request.SourceChannel)
+		return
+	}
+	err := k.ChannelKeeper.SendPacket(ctx, channelCap, channel.NewPacket(resPacketData.GetBytes(),
+		sequence, request.SourcePort, request.SourceChannel, destinationPort, destinationChannel,
+		1000000000, // Arbitrarily high timeout for now
+	))
 
-	// 	// get the next sequence
-	// 	sequence, found := keeper.ChannelKeeper.GetNextSequenceSend(ctx, request.SourcePort, request.SourceChannel)
-	// 	if !found {
-	// 		fmt.Println("SEQUENCE NOT FOUND", request.SourcePort, request.SourceChannel)
-	// 		continue
-	// 	}
-
-	// 	err = keeper.ChannelKeeper.SendPacket(ctx, channel.NewPacket(packet.GetBytes(),
-	// 		sequence, request.SourcePort, request.SourceChannel, destinationPort, destinationChannel,
-	// 		1000000000, // Arbitrarily high timeout for now
-	// 	))
-
-	// 	if err != nil {
-	// 		fmt.Println("SEND PACKET ERROR", err)
-	// 	}
+	if err != nil {
+		fmt.Println("SEND PACKET ERROR", err)
+		return
+	}
 }
 
 // ProcessExpiredRequests removes all expired data requests from the store, and

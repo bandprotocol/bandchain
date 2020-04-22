@@ -21,7 +21,7 @@ func (b *BandDB) HandleEndblockEvent(event abci.Event) {
 	switch event.Type {
 	case oracle.EventTypeRequestExecute:
 		{
-			requestID, err := strconv.ParseInt(kvMap[oracle.AttributeKeyRequestID], 10, 64)
+			id, err := strconv.ParseInt(kvMap[oracle.AttributeKeyRequestID], 10, 64)
 			if err != nil {
 				panic(err)
 			}
@@ -30,26 +30,38 @@ func (b *BandDB) HandleEndblockEvent(event abci.Event) {
 			if err != nil {
 				panic(err)
 			}
+
 			resolveStatus := oracle.ResolveStatus(numResolveStatus)
 
-			// Get result from keeper
-			var rawResult []byte
-			rawResult = nil
-			if resolveStatus == 1 {
-				id := oracle.RequestID(requestID)
-				request, sdkErr := b.OracleKeeper.GetRequest(b.ctx, id)
-				if sdkErr != nil {
+			if parseResolveStatus(resolveStatus) == Success {
+				requestTime, err := strconv.ParseInt(kvMap[oracle.AttributeKeyRequestTime], 10, 64)
+				if err != nil {
 					panic(err)
+
 				}
-				result, sdkErr := b.OracleKeeper.GetResult(b.ctx, id, request.OracleScriptID, request.Calldata)
-				if sdkErr != nil {
+				resolveTime, err := strconv.ParseInt(kvMap[oracle.AttributeKeyResolveTime], 10, 64)
+				if err != nil {
 					panic(err)
+
 				}
-				rawResult = result.Data
-			}
-			err = b.ResolveRequest(requestID, resolveStatus, rawResult)
-			if err != nil {
-				panic(err)
+				err = b.tx.Model(&Request{}).Where(Request{ID: id}).
+					Update(
+						Request{ResolveStatus: parseResolveStatus(resolveStatus),
+							Result:      []byte(kvMap[oracle.AttributeKeyResult]),
+							RequestTime: requestTime,
+							ResolveTime: resolveTime,
+						}).Error
+				if err != nil {
+					panic(err)
+
+				}
+			} else {
+				err = b.tx.Model(&Request{}).Where(Request{ID: id}).
+					Update(Request{ResolveStatus: parseResolveStatus(resolveStatus)}).Error
+				if err != nil {
+					panic(err)
+
+				}
 			}
 		}
 	case staking.EventTypeCompleteUnbonding:
