@@ -306,7 +306,7 @@ func TestRequestIBCSuccess(t *testing.T) {
 	require.Equal(t, int64(1), keeper.GetRequestCount(ctx))
 	actualRequest, err := keeper.GetRequest(ctx, 1)
 	require.Nil(t, err)
-	expectRequest := types.NewRequestWithRequstIBC(1, calldata,
+	expectRequest := types.NewRequestWithRequestIBC(1, calldata,
 		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
 		2, 1581589790, "clientID", sourcePort, sourceChannel,
 	)

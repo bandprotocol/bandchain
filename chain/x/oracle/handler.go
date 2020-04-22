@@ -144,7 +144,7 @@ func handleMsgRequestDataIBC(ctx sdk.Context, k Keeper, m MsgRequestData, source
 		return nil, err
 	}
 
-	req := types.NewRequestWithRequstIBC(
+	req := types.NewRequestWithRequestIBC(
 		m.OracleScriptID, m.Calldata, validators, m.SufficientValidatorCount,
 		ctx.BlockHeight(), ctx.BlockTime().Unix(), m.ClientID, sourcePort, sourceChannel,
 	)

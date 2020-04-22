@@ -53,7 +53,7 @@ func NewRequest(
 	}
 }
 
-func NewRequestWithRequstIBC(
+func NewRequestWithRequestIBC(
 	oracleScriptID OracleScriptID,
 	calldata []byte,
 	requestedValidators []sdk.ValAddress,
