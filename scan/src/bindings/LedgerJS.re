@@ -49,5 +49,3 @@ external getAddressAndPubKey: (t, array(int), string) => Js.Promise.t(addr_pukey
 [@bs.send] external sign: (t, array(int), string) => Js.Promise.t(sign_response_t) = "sign";
 [@bs.send] external getVersion: t => Js.Promise.t(version_t) = "getVersion";
 [@bs.send] external appInfo: t => Js.Promise.t(app_info_t) = "appInfo";
-
-[@bs.module "secp256k1"] external signatureImport: array(int) => array(int) = "signatureImport";

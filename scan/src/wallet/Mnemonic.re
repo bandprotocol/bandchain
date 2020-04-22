@@ -1,13 +1,13 @@
 type t = {
-  bandChain: BandWeb3.t,
+  bandChain: CosmosJS.t,
   mnemonic: string,
   privKey: JsBuffer.t,
 };
 
 let getAddressAndPubKey = x => {
   (
-    x.bandChain |> BandWeb3.getAddress(_, x.mnemonic) |> Address.fromBech32,
-    BandWeb3.publicKeyCreate(x.privKey, true) |> JsBuffer.toBase64 |> PubKey.fromBase64,
+    x.bandChain |> CosmosJS.getAddress(_, x.mnemonic) |> Address.fromBech32,
+    Secp256k1.publicKeyCreate(x.privKey, true) |> JsBuffer.toBase64 |> PubKey.fromBase64,
   );
 };
 

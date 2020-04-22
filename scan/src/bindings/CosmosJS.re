@@ -65,9 +65,6 @@ type response_t =
 
 [@bs.send] external _broadcast: (t, signed_msg_t) => Js.Promise.t(Js.Json.t) = "broadcast";
 
-[@bs.module "secp256k1"]
-external publicKeyCreate: (JsBuffer.t, bool) => JsBuffer.t = "publicKeyCreate";
-
 let getAccounts = (instance, address) => {
   let%Promise rawResult = instance->_getAccounts(address);
 

@@ -7,12 +7,12 @@ type t = {
 type a =
   | Connect(Wallet.t, Address.t, PubKey.t)
   | Disconnect
-  | SendRequest(ID.OracleScript.t, JsBuffer.t, Js.Promise.t(BandWeb3.response_t) => unit)
+  | SendRequest(ID.OracleScript.t, JsBuffer.t, Js.Promise.t(CosmosJS.response_t) => unit)
   | SendRequestWithLedger;
 
-let bandchain = BandWeb3.network(Env.rpc, "bandchain");
-bandchain->BandWeb3.setPath("m/44'/494'/0'/0/0");
-bandchain->BandWeb3.setBech32MainPrefix("band");
+let bandchain = CosmosJS.network(Env.rpc, "bandchain");
+bandchain->CosmosJS.setPath("m/44'/494'/0'/0/0");
+bandchain->CosmosJS.setBech32MainPrefix("band");
 
 let reducer = state =>
   fun
@@ -26,7 +26,7 @@ let reducer = state =>
         callback(
           {
             let%Promise {accountNumber, sequence} =
-              bandchain->BandWeb3.getAccounts(address |> Address.toBech32);
+              bandchain->CosmosJS.getAccounts(address |> Address.toBech32);
             let msgRequest =
               StdMsgRequest.create(
                 oracleScriptID,
@@ -39,9 +39,9 @@ let reducer = state =>
                 ~accountNumber=accountNumber |> string_of_int,
                 ~sequence=sequence |> string_of_int,
               );
-            let wrappedMsg = bandchain->BandWeb3.newStdMsgRequest(msgRequest);
-            let signedMsg = bandchain->BandWeb3.sign(wrappedMsg, privKey, "block");
-            let%Promise res = bandchain->BandWeb3.broadcast(signedMsg);
+            let wrappedMsg = bandchain->CosmosJS.newStdMsgRequest(msgRequest);
+            let signedMsg = bandchain->CosmosJS.sign(wrappedMsg, privKey, "block");
+            let%Promise res = bandchain->CosmosJS.broadcast(signedMsg);
 
             Promise.ret(res);
           },
@@ -51,7 +51,7 @@ let reducer = state =>
 
       state;
     | None =>
-      callback(Promise.ret(BandWeb3.Unknown));
+      callback(Promise.ret(CosmosJS.Unknown));
       state;
     }
   | SendRequestWithLedger =>
@@ -62,7 +62,7 @@ let reducer = state =>
       //   //       2. handle error when ledger doesn't connect.
       //   let%Promise {address, pubKey} = LedgerJS.getAddressAndPubKey();
       //   let%Promise {accountNumber, sequence} =
-      //     bandchain->BandWeb3.getAccounts(address |> Address.toBech32);
+      //     bandchain->CosmosJS.getAccounts(address |> Address.toBech32);
       //   let msgRequest =
       //     StdMsgRequest.create(
       //       ID.OracleScript.ID(2),
@@ -80,9 +80,9 @@ let reducer = state =>
 
       //   let signBase64 = signature |> JsBuffer.toBase64;
 
-      //   let signedMsg = BandWeb3.createSignedMsgRequest(msgRequest, signBase64, pubKey, "block");
+      //   let signedMsg = CosmosJS.createSignedMsgRequest(msgRequest, signBase64, pubKey, "block");
       //   Js.Console.log2("signedMsg", signedMsg);
-      //   let%Promise res = bandchain->BandWeb3.broadcast(signedMsg);
+      //   let%Promise res = bandchain->CosmosJS.broadcast(signedMsg);
       //   Js.Console.log(res);
 
       //   Promise.ret();

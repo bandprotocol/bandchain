@@ -3,11 +3,11 @@ type t =
   | Ledger(Ledger.t);
 
 let createFromMnemonic = mnemonic => {
-  // Just use arbitrary rpcUrl, chainID beacuase they didn't use in BandWeb3
-  let bandChain = BandWeb3.network("rpcUrl", "chainID");
-  bandChain->BandWeb3.setPath("m/44'/494'/0'/0/0");
-  bandChain->BandWeb3.setBech32MainPrefix("band");
-  let privKey = bandChain |> BandWeb3.getECPairPriv(_, mnemonic);
+  // Just use arbitrary rpcUrl, chainID beacuase they didn't use in CosmosJS
+  let bandChain = CosmosJS.network("rpcUrl", "chainID");
+  bandChain->CosmosJS.setPath("m/44'/494'/0'/0/0");
+  bandChain->CosmosJS.setBech32MainPrefix("band");
+  let privKey = bandChain |> CosmosJS.getECPairPriv(_, mnemonic);
   Mnemonic({bandChain, mnemonic, privKey});
 };
 
