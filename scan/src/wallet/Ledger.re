@@ -1,38 +1,25 @@
-type t = {path: array(int)};
+type t = {
+  app: LedgerJS.t,
+  path: array(int),
+  prefix: string,
+};
 
 let getApp = () => {
-  let%Promise transport = LedgerJS.createTransportU2F();
+  // TODO: handle interaction timeout later
+  let timeout = 10000;
+  let%Promise transport = LedgerJS.createTransportWebUSB(timeout);
   Promise.ret(LedgerJS.createApp(transport));
 };
 
-let getAddress = x => {
-  let%Promise app = getApp();
-
-  //  TODO: remove hard-coded path later
-  // let path = [|44, 118, 0, 0, 0|];
-
-  let prefix = "band";
-  let responsePromise = LedgerJS.getAddressAndPubKey(app, x.path, prefix);
-  let%Promise response = responsePromise;
-
-  Promise.ret(response.bech32_address |> Address.fromBech32);
-};
-
 let getAddressAndPubKey = x => {
-  let%Promise app = getApp();
-
-  //  TODO: remove hard-coded path later
-  // let path = [|44, 118, 0, 0, 0|];
   let prefix = "band";
-  let responsePromise = LedgerJS.getAddressAndPubKey(app, x.path, prefix);
+  let responsePromise = LedgerJS.getAddressAndPubKey(x.app, x.path, prefix);
   let%Promise response = responsePromise;
 
-  Promise.ret(
-    LedgerJS.{
-      address: response.bech32_address |> Address.fromBech32,
-      pubKey: response.compressed_pk |> JsBuffer.from |> JsBuffer.toHex,
-    },
-  );
+  Promise.ret((
+    response.bech32_address |> Address.fromBech32,
+    response.compressed_pk |> JsBuffer.from |> JsBuffer.toHex |> PubKey.fromHex,
+  ));
 };
 
 // TODO:

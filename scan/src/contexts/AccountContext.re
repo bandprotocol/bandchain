@@ -1,10 +1,11 @@
 type t = {
   address: Address.t,
-  privKey: JsBuffer.t,
+  pubKey: PubKey.t,
+  wallet: Wallet.t,
 };
 
 type a =
-  | Connect(string)
+  | Connect(Wallet.t, Address.t, PubKey.t)
   | Disconnect
   | SendRequest(ID.OracleScript.t, JsBuffer.t, Js.Promise.t(BandWeb3.response_t) => unit)
   | SendRequestWithLedger;
@@ -15,38 +16,39 @@ bandchain->BandWeb3.setBech32MainPrefix("band");
 
 let reducer = state =>
   fun
-  | Connect(mnemonic) => {
-      let newAddress = bandchain |> BandWeb3.getAddress(_, mnemonic) |> Address.fromBech32;
-      let newPrivKey = bandchain |> BandWeb3.getECPairPriv(_, mnemonic);
-      Some({address: newAddress, privKey: newPrivKey});
-    }
+  | Connect(wallet, address, pubKey) => Some({wallet, pubKey, address})
   | Disconnect => None
   | SendRequest(oracleScriptID, calldata, callback) =>
     switch (state) {
-    | Some({address, privKey}) =>
-      callback(
-        {
-          let%Promise {accountNumber, sequence} =
-            bandchain->BandWeb3.getAccounts(address |> Address.toBech32);
-          let msgRequest =
-            StdMsgRequest.create(
-              oracleScriptID,
-              ~calldata,
-              ~requestedValidatorCount=4,
-              ~sufficientValidatorCount=4,
-              ~sender=address,
-              ~feeAmount=1000000,
-              ~gas=3000000,
-              ~accountNumber=accountNumber |> string_of_int,
-              ~sequence=sequence |> string_of_int,
-            );
-          let wrappedMsg = bandchain->BandWeb3.newStdMsgRequest(msgRequest);
-          let signedMsg = bandchain->BandWeb3.sign(wrappedMsg, privKey, "block");
-          let%Promise res = bandchain->BandWeb3.broadcast(signedMsg);
+    | Some({address, wallet}) =>
+      switch (wallet) {
+      | Mnemonic({privKey}) =>
+        callback(
+          {
+            let%Promise {accountNumber, sequence} =
+              bandchain->BandWeb3.getAccounts(address |> Address.toBech32);
+            let msgRequest =
+              StdMsgRequest.create(
+                oracleScriptID,
+                ~calldata,
+                ~requestedValidatorCount=4,
+                ~sufficientValidatorCount=4,
+                ~sender=address,
+                ~feeAmount=1000000,
+                ~gas=3000000,
+                ~accountNumber=accountNumber |> string_of_int,
+                ~sequence=sequence |> string_of_int,
+              );
+            let wrappedMsg = bandchain->BandWeb3.newStdMsgRequest(msgRequest);
+            let signedMsg = bandchain->BandWeb3.sign(wrappedMsg, privKey, "block");
+            let%Promise res = bandchain->BandWeb3.broadcast(signedMsg);
 
-          Promise.ret(res);
-        },
-      );
+            Promise.ret(res);
+          },
+        )
+      | Ledger(_) => Js.Console.log("Send request via ledger on WIP")
+      };
+
       state;
     | None =>
       callback(Promise.ret(BandWeb3.Unknown));
