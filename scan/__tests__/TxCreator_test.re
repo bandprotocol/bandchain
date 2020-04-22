@@ -57,20 +57,9 @@ describe("expect TxCreator to give the correct message", () => {
                gas: "1000000",
              },
              memo: "",
-             signatures: [|
-               {
-                 pub_key: {
-                   type_: "tendermint/PubKeySecp256k1",
-                   value: pubKey |> PubKey.toHex |> JsBuffer.fromHex |> JsBuffer.toBase64,
-                 },
-                 public_key:
-                   "eb5ae98721"
-                   ++ (pubKey |> PubKey.toHex)
-                   |> JsBuffer.fromHex
-                   |> JsBuffer.toBase64,
-                 signature,
-               },
-             |],
+             chain_id: "bandchain",
+             account_number: "2",
+             sequence: "2",
              msgs: [|
                {
                  type_: "cosmos-sdk/MsgSend",
@@ -138,20 +127,9 @@ describe("expect TxCreator to give the correct message", () => {
                gas: "1000000",
              },
              memo: "",
-             signatures: [|
-               {
-                 pub_key: {
-                   type_: "tendermint/PubKeySecp256k1",
-                   value: pubKey |> PubKey.toHex |> JsBuffer.fromHex |> JsBuffer.toBase64,
-                 },
-                 public_key:
-                   "eb5ae98721"
-                   ++ (pubKey |> PubKey.toHex)
-                   |> JsBuffer.fromHex
-                   |> JsBuffer.toBase64,
-                 signature,
-               },
-             |],
+             chain_id: "bandchain",
+             account_number: "2",
+             sequence: "2",
              msgs: [|
                {
                  type_: "oracle/Request",

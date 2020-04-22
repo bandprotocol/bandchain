@@ -27,7 +27,7 @@ type msg_input_t =
   | Send(Address.t, Address.t, Coin.t)
   | Request(ID.OracleScript.t, JsBuffer.t, string, string, Address.t, string);
 
-type tx_t = {
+type msg_payload_t = {
   [@bs.as "type"]
   type_: string,
   value: Js.Json.t,
@@ -50,8 +50,8 @@ type signature_t = {
   signature: string,
 };
 
-type std_msg_t = {
-  msgs: array(tx_t),
+type raw_tx_t = {
+  msgs: array(msg_payload_t),
   chain_id: string,
   fee: fee_t,
   memo: string,
@@ -62,7 +62,7 @@ type std_msg_t = {
 type signed_tx_t = {
   fee: fee_t,
   memo: string,
-  msgs: array(tx_t),
+  msgs: array(msg_payload_t),
   signatures: array(signature_t),
 };
 
@@ -82,7 +82,7 @@ let getAccountInfo = address => {
   );
 };
 
-let createMsg = (msg: msg_input_t): tx_t => {
+let createMsg = (msg: msg_input_t): msg_payload_t => {
   let msgType =
     switch (msg) {
     | Send(_) => "cosmos-sdk/MsgSend"
@@ -122,7 +122,7 @@ let createMsg = (msg: msg_input_t): tx_t => {
 };
 
 // TODO: Reme hardcoded values
-let createTx = (address, msgs) => {
+let createRawTx = (address, msgs) => {
   let%Promise accountInfo = getAccountInfo(address);
   Promise.ret({
     msgs: msgs->Belt_Array.map(createMsg),
@@ -137,7 +137,7 @@ let createTx = (address, msgs) => {
   });
 };
 
-let createSignedTx = (~signature, ~pubKey, ~tx, ~mode, ()) => {
+let createSignedTx = (~signature, ~pubKey, ~tx: raw_tx_t, ~mode, ()) => {
   // TODO: Add toBase64 in PubKey.re
   let oldPubKey = {
     type_: "tendermint/PubKeySecp256k1",
