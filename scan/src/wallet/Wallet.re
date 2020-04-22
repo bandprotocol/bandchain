@@ -41,7 +41,7 @@ let getAddressAndPubKey =
   | Mnemonic(x) => x |> Mnemonic.getAddressAndPubKey |> Promise.ret
   | Ledger(x) => x |> Ledger.getAddressAndPubKey;
 
-// (string) => JsBuffer.t
+// TODO: (string) => JsBuffer.t
 // let sign = msg =>
 //   fun
 //   | Mnemonic(x) => JsBuffer.from([||]) |> Promise.ret
