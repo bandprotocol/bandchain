@@ -25,12 +25,12 @@ func getParentHash(path IAVLMerklePath, subtreeHash []byte) []byte {
 }
 func TestGetIAVLMerklePaths(t *testing.T) {
 	var iavlProof iavl.ValueOp
-	iavlOpData := base64ToBytes("twIKtAIKKQgOEDwYj04qIAqVHc4yEL3Lr0lZ0cQPJ+nMt/TaT+H5Cd/pZOcdWmWZCikIDBAdGI9OKiAOo7imPYU0LXqSghAX34+evA8tHUnu6SI3mWqUAS5rcAopCAgQDBiPTiIgVtRzIyliF58RDwWGYJIy88CWFYN1L9BiuTV3IJPnCnUKKQgGEAgY8ikqIIQMVU13Mxhj2pnxGywAfwoRaRX7qIeWcSAqI/ot7OwsCikIBBAEGIoiKiCe4B7tdcsF0tG2W+f+nMvQdzjOsQkIvqNxbNHXfpL69gopCAIQAhiNDSog/tzkcYxC546anyOplbnELEARIvc8NNk990HEd3X4dZ0aMAoJAQAAAAAAAAABEiBF01aMSserjw6ZditfkKaR1q0SHsDI0mptE2Nzxud0RBioAQ==")
+	iavlOpData := base64ToBytes("4QEK3gEKKQgIEA0YlwUiINVGvQopIqUP0YSDHayhCOdCoUw9M5ySp0Z9MbzXsNrSCikIBhAIGNcEIiBwnhxzURsk792bjTzXF6UhC6IOJBGoUp6LZCxU+wAtxAopCAQQBBjXBCIgW3C/rdFuyVQJBy+zaGvyv+xIET+WysqIOXiDEQxnLxMKKQgCEAIY1wQiIBRZu8fbf/zOPezuo98GKWj049KyBrk9WfqTbjNLnsQ0GjAKCf8AAAAAAAAAARIgyy49YoXIcCE9OvooX05O2waYLsKbzjnA9Y9KhRBC0ZwY1wQ=")
 	amino.NewCodec().MustUnmarshalBinaryLengthPrefixed(iavlOpData, &iavlProof)
 	paths := GetIAVLMerklePaths(&iavlProof)
-	expectOracleMerkleHash := hexToBytes("7FE96AED930927C822457CF88835505EC3533A0B6FB590FC34D9E0175A184B2C")
-	key := base64ToBytes("AQAAAAAAAAAB")
-	value := base64ToBytes("CAMSCGQAAAAAAAAAGhQNXkvEVt3wx+cADHeOiIeMO08NEhoUkVlvUlJZHqz+7gAlm/YBTD/c7OEaFMIVrZXki61HhK2Zw5304t96pQfmGhTfX4M2rg4BaNheSM5tPKMG0AQwYSAEKhTCFa2V5IutR4StmcOd9OLfeqUH5ioUDV5LxFbd8MfnAAx3joiHjDtPDRIqFJFZb1JSWR6s/u4AJZv2AUw/3OzhKhTfX4M2rg4BaNheSM5tPKMG0AQwYTCkATi6o9T0BUC4AUgC")
+	expectOracleMerkleHash := hexToBytes("D0EE29EDB1A80F80B6DC2C058B07E85846E2A1D4EC49FCE1DD0CF1B946CCF456")
+	key := base64ToBytes("/wAAAAAAAAAB")                                            //key to result of request#1
+	value := base64ToBytes("pStdspbXz/kj9zcT3FLdqRewtPW9azeI/0hs0H7x5lE=")          // result hash
 	leafNode := []byte{0}                                                           // Height
 	leafNode = append(leafNode, 2)                                                  // subtree size = 1 * 2
 	leafNode = append(leafNode, encodeVarint(iavlProof.Proof.Leaves[0].Version)...) // version

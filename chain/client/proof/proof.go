@@ -2,7 +2,7 @@ package proof
 
 import (
 	"encoding/json"
-	"math/big"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -19,8 +19,8 @@ import (
 )
 
 var (
-	relayArguments  abi.Arguments
-	verifyArguments abi.Arguments
+// relayArguments  abi.Arguments
+// verifyArguments abi.Arguments
 )
 
 const (
@@ -28,14 +28,14 @@ const (
 )
 
 func init() {
-	err := json.Unmarshal(relayFormat, &relayArguments)
-	if err != nil {
-		panic(err)
-	}
-	err = json.Unmarshal(verifyFormat, &verifyArguments)
-	if err != nil {
-		panic(err)
-	}
+	// err := json.Unmarshal(relayFormat, &relayArguments)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// err = json.Unmarshal(verifyFormat, &verifyArguments)
+	// if err != nil {
+	// 	panic(err)
+	// }
 }
 
 type BlockRelayProof struct {
@@ -45,19 +45,19 @@ type BlockRelayProof struct {
 	Signatures             []TMSignature          `json:"signatures"`
 }
 
-func (blockRelay *BlockRelayProof) encodeToEthData(blockHeight uint64) ([]byte, error) {
-	parseSignatures := make([]TMSignatureEthereum, len(blockRelay.Signatures))
-	for i, sig := range blockRelay.Signatures {
-		parseSignatures[i] = sig.encodeToEthFormat()
-	}
-	return relayArguments.Pack(
-		big.NewInt(int64(blockHeight)),
-		blockRelay.MultiStoreProof.encodeToEthFormat(),
-		blockRelay.BlockHeaderMerkleParts.encodeToEthFormat(),
-		blockRelay.SignedDataPrefix,
-		parseSignatures,
-	)
-}
+// func (blockRelay *BlockRelayProof) encodeToEthData(blockHeight uint64) ([]byte, error) {
+// 	parseSignatures := make([]TMSignatureEthereum, len(blockRelay.Signatures))
+// 	for i, sig := range blockRelay.Signatures {
+// 		parseSignatures[i] = sig.encodeToEthFormat()
+// 	}
+// 	return relayArguments.Pack(
+// 		big.NewInt(int64(blockHeight)),
+// 		blockRelay.MultiStoreProof.encodeToEthFormat(),
+// 		blockRelay.BlockHeaderMerkleParts.encodeToEthFormat(),
+// 		blockRelay.SignedDataPrefix,
+// 		parseSignatures,
+// 	)
+// }
 
 type OracleDataProof struct {
 	Version        uint64                          `json:"version"`
@@ -66,18 +66,18 @@ type OracleDataProof struct {
 	MerklePaths    []IAVLMerklePath                `json:"merklePaths"`
 }
 
-func (o *OracleDataProof) encodeToEthData(blockHeight uint64) ([]byte, error) {
-	parsePaths := make([]IAVLMerklePathEthereum, len(o.MerklePaths))
-	for i, path := range o.MerklePaths {
-		parsePaths[i] = path.encodeToEthFormat()
-	}
-	return verifyArguments.Pack(
-		big.NewInt(int64(o.Version)),
-		transformRequestPacket(o.RequestPacket),
-		transformResponsePacket(o.ResponsePacket),
-		parsePaths,
-	)
-}
+// func (o *OracleDataProof) encodeToEthData(blockHeight uint64) ([]byte, error) {
+// 	parsePaths := make([]IAVLMerklePathEthereum, len(o.MerklePaths))
+// 	for i, path := range o.MerklePaths {
+// 		parsePaths[i] = path.encodeToEthFormat()
+// 	}
+// 	return verifyArguments.Pack(
+// 		big.NewInt(int64(o.Version)),
+// 		transformRequestPacket(o.RequestPacket),
+// 		transformResponsePacket(o.ResponsePacket),
+// 		parsePaths,
+// 	)
+// }
 
 type JsonProof struct {
 	BlockHeight     uint64          `json:"blockHeight"`
@@ -86,8 +86,8 @@ type JsonProof struct {
 }
 
 type Proof struct {
-	JsonProof     JsonProof        `json:"jsonProof"`
-	EVMProofBytes tmbytes.HexBytes `json:"evmProofBytes"`
+	JsonProof JsonProof `json:"jsonProof"`
+	// EVMProofBytes tmbytes.HexBytes `json:"evmProofBytes"`
 }
 
 func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
@@ -135,13 +135,18 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			if opType == "iavl:v" {
 				err := cliCtx.Codec.UnmarshalBinaryLengthPrefixed(op.GetData(), &iavlProof)
 				if err != nil {
-					rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+					rest.WriteErrorResponse(w, http.StatusInternalServerError,
+						fmt.Sprintf("iavl: %s", err.Error()),
+					)
 					return
 				}
 			} else if opType == "multistore" {
-				err := cliCtx.Codec.UnmarshalBinaryLengthPrefixed(op.GetData(), &multiStoreProof)
+				mp, err := rootmulti.MultiStoreProofOpDecoder(op)
+				multiStoreProof = mp.(rootmulti.MultiStoreProofOp)
 				if err != nil {
-					rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+					rest.WriteErrorResponse(w, http.StatusInternalServerError,
+						fmt.Sprintf("multiStore: %s", err.Error()),
+					)
 					return
 				}
 			}
@@ -215,23 +220,24 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			panic(err)
 		}
 
-		blockRelayBytes, err := blockRelay.encodeToEthData(uint64(commit.Height))
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+		// TODO: Add evm proof when contract completed
+		// blockRelayBytes, err := blockRelay.encodeToEthData(uint64(commit.Height))
+		// if err != nil {
+		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		// 	return
+		// }
 
-		oracleDataBytes, err := oracleData.encodeToEthData(uint64(commit.Height))
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+		// oracleDataBytes, err := oracleData.encodeToEthData(uint64(commit.Height))
+		// if err != nil {
+		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		// 	return
+		// }
 
-		evmProofBytes, err := relayAndVerifyArguments.Pack(blockRelayBytes, oracleDataBytes)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+		// evmProofBytes, err := relayAndVerifyArguments.Pack(blockRelayBytes, oracleDataBytes)
+		// if err != nil {
+		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		// 	return
+		// }
 
 		rest.PostProcessResponse(w, cliCtx, Proof{
 			JsonProof: JsonProof{
@@ -239,7 +245,7 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 				OracleDataProof: oracleData,
 				BlockRelayProof: blockRelay,
 			},
-			EVMProofBytes: evmProofBytes,
+			// EVMProofBytes: evmProofBytes,
 		})
 	}
 }
