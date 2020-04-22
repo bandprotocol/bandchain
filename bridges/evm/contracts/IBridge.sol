@@ -3,14 +3,16 @@ pragma experimental ABIEncoderV2;
 
 
 interface IBridge {
+    /// Request packet struct is similar packet on Bandchain using to re-calculate result hash.
     struct RequestPacket {
         string clientId;
         uint64 oracleScriptId;
-        string calldata;
+        string params;
         uint64 askCount;
         uint64 minCount;
     }
 
+    /// Response packet struct is similar packet on Bandchain using to re-calculate result hash.
     struct ResponsePacket {
         string clientId;
         uint64 requestId;
@@ -29,7 +31,7 @@ interface IBridge {
         uint64 askCount;
         uint64 minCount;
         uint64 ansCount;
-        bytes calldata;
+        bytes params;
         bytes data;
     }
 
