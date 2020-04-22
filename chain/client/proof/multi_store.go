@@ -1,6 +1,7 @@
 package proof
 
 import (
+	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/store/rootmulti"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
@@ -60,7 +61,7 @@ func GetMultiStoreProof(proof rootmulti.MultiStoreProofOp) MultiStoreProof {
 			encodeStoreMerkleHash(evidence.StoreKey, m[evidence.StoreKey]),
 			encodeStoreMerkleHash(gov.StoreKey, m[gov.StoreKey]),
 			encodeStoreMerkleHash(ibc.StoreKey, m[ibc.StoreKey]),
-			encodeStoreMerkleHash("main", m["main"]),
+			encodeStoreMerkleHash(baseapp.MainStoreKey, m[baseapp.MainStoreKey]),
 			encodeStoreMerkleHash(mint.StoreKey, m[mint.StoreKey]),
 		}),
 		OracleIAVLStateHash: m[oracle.StoreKey],
