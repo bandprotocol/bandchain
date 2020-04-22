@@ -159,12 +159,10 @@ let getFileNameFromLanguage = (~language) => {
 
 let getCodeFromSchema = (~schemaOpt, ~language) => {
   let%Opt schema = schemaOpt;
-  let codeOpt =
-    switch (language) {
-    | Solidity => Borsh.generateSolidity(schema, "Output")
-    | Go => Borsh.generateGo("main", schema, "Output")
-    };
-  codeOpt;
+  switch (language) {
+  | Solidity => Borsh.generateSolidity(schema, "Output")
+  | Go => Borsh.generateGo("main", schema, "Output")
+  };
 };
 
 [@react.component]
