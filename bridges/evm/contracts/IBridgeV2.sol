@@ -1,4 +1,7 @@
 pragma solidity 0.5.14;
+pragma experimental ABIEncoderV2;
+
+import {IBridge} from "./IBridge.sol";
 
 
 interface IBridgeV2 {
@@ -12,12 +15,9 @@ interface IBridgeV2 {
     );
 
     /// Requests a new oracle script to bandchain by emit request event.
-    function requestOracle(
-        uint64 oracleScriptId,
-        bytes calldata params,
-        uint64 askCount,
-        uint64 minCount
-    ) external returns (bytes32);
+    function requestOracle(IBridge.RequestPacket calldata request)
+        external
+        returns (bytes32);
 
     /// Performs oracle state relay, oracle data verification and contract function calling
     /// The caller submits the encoded proof and target contract will receive the decoded data,
