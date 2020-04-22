@@ -16,7 +16,7 @@ module Styles = {
       paddingLeft(`px(9)),
       borderRadius(`px(8)),
       boxShadow(
-        Shadow.box(~inset=true, ~x=`zero, ~y=`px(4), ~blur=`px(8), Css.rgba(11, 29, 142, 0.1)),
+        Shadow.box(~inset=true, ~x=`zero, ~y=`px(3), ~blur=`px(4), Css.rgba(11, 29, 142, 0.1)),
       ),
     ]);
 
@@ -90,6 +90,8 @@ let make = () => {
     <div className=Styles.connectBtn onClick={_ => createMnemonic()}>
       <Text value="Connect" weight=Text.Bold size=Text.Md color=Colors.white />
     </div>
+    <VSpacing size=Spacing.lg />
+    <Text value=errMsg color=Colors.red6 />
   </div>;
   // </Col>
   //   </div>
