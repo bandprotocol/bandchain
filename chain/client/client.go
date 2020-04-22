@@ -1,5 +1,11 @@
 package rpc
 
+import (
+	"github.com/gorilla/mux"
+
+	"github.com/cosmos/cosmos-sdk/client/context"
+)
+
 // TODO: Revive this! It's commented because we upgrade to Cosmos 0.38.*.
 // Proof structure will need to change now that we have more modules + the header structure changes.
 
@@ -245,3 +251,7 @@ package rpc
 // 	r.HandleFunc("/bandchain/provider_status", GetProviderStatus(cliCtx)).Methods("GET")
 // 	r.PathPrefix("/swagger-ui/").Handler(ServeSwaggerUI())
 // }
+
+func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router) {
+	r.HandleFunc("/bandchain/result/{id}", GetResult(cliCtx)).Methods("GET")
+}

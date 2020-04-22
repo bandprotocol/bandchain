@@ -25,6 +25,7 @@ import (
 	"github.com/tendermint/tendermint/libs/cli"
 
 	"github.com/bandprotocol/bandchain/chain/app"
+	bandclient "github.com/bandprotocol/bandchain/chain/client"
 )
 
 var (
@@ -149,8 +150,7 @@ func txCmd(cdc *amino.Codec) *cobra.Command {
 // NOTE: details on the routes added for each module are in the module documentation
 // NOTE: If making updates here you also need to update the test helper in client/lcd/test_helper.go
 func registerRoutes(rs *lcd.RestServer) {
-	// TODO: Bring back bandclient from client folder
-	// bandclient.RegisterRoutes(rs.CliCtx, rs.Mux)
+	bandclient.RegisterRoutes(rs.CliCtx, rs.Mux)
 	client.RegisterRoutes(rs.CliCtx, rs.Mux)
 	authrest.RegisterTxRoutes(rs.CliCtx, rs.Mux)
 	app.ModuleBasics.RegisterRESTRoutes(rs.CliCtx, rs.Mux)
