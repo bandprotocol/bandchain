@@ -23,7 +23,7 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~txResponse: BandWeb3.tx_response_t, ~schema: string) =>
+let make = (~txResponse: CosmosJS.tx_response_t, ~schema: string) =>
   {
     let requestsByTxHashSub = RequestSub.Mini.getListByTxHash(txResponse.txHash);
     let%Sub requestsByTxHash = requestsByTxHashSub;

@@ -1,9 +1,11 @@
 package proof
 
 import (
+	"encoding/base64"
 	"reflect"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/tendermint/tendermint/crypto/tmhash"
 )
 
 // Copied from https://github.com/tendermint/tendermint/blob/master/types/utils.go
@@ -38,4 +40,18 @@ func isEmpty(o interface{}) bool {
 	default:
 		return false
 	}
+}
+func base64ToBytes(s string) []byte {
+	decodedString, err := base64.StdEncoding.DecodeString(s)
+	if err != nil {
+		panic(err)
+	}
+	return decodedString
+}
+
+func encodeStoreMerkleHash(key string, value []byte) []byte {
+	bytesKey := []byte(key)
+	keyBytes := append([]byte{uint8(len(bytesKey))}, bytesKey...)
+	valueBytes := append([]byte{32}, tmhash.Sum(tmhash.Sum(value))...)
+	return append(keyBytes, valueBytes...)
 }
