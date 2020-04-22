@@ -6,16 +6,26 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 )
 
+const (
+	Open    = "Pending"
+	Success = "Success"
+	Failure = "Failure"
+	Expired = "Expired"
+	Unknown = "Unknown"
+)
+
 func parseResolveStatus(resolveStatus oracle.ResolveStatus) string {
 	switch resolveStatus {
 	case 0:
-		return "Pending"
+		return Open
 	case 1:
-		return "Success"
+		return Success
 	case 2:
-		return "Failure"
+		return Failure
+	case 3:
+		return Expired
 	default:
-		return "Unknown"
+		return Unknown
 	}
 }
 

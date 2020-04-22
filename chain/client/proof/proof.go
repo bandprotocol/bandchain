@@ -361,7 +361,7 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		key := oracle.ResultStoreKey(requestID, queryRequest.Request.OracleScriptID, queryRequest.Request.Calldata)
+		key := oracle.ResultStoreKey(requestID)
 
 		resp, err := cliCtx.Client.ABCIQueryWithOptions(
 			"/store/oracle/key",
