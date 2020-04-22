@@ -93,10 +93,8 @@ let make = (~requestID: ID.Request.t) => {
          ? <>
              <VSpacing size=Spacing.lg />
              <div className=Styles.scriptContainer>
-               <ReactHighlight>
-                 <div className=Styles.padding>
-                   {proof.jsonProof |> Js.Json.stringifyWithSpace(_, 2) |> React.string}
-                 </div>
+               <ReactHighlight className=Styles.padding>
+                 {proof.jsonProof |> Js.Json.stringifyWithSpace(_, 2) |> React.string}
                </ReactHighlight>
              </div>
            </>
