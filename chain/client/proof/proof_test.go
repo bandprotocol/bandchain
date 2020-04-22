@@ -1,23 +1,32 @@
-package rpc
+package proof
 
 // TODO: Revive this! It's commented because we upgrade to Cosmos 0.38.*.
 // Proof structure will need to change now that we have more modules + the header structure changes.
 
-// import (
-// 	"encoding/hex"
-// 	"testing"
+import (
+	"encoding/hex"
 
-// 	"github.com/bandprotocol/bandchain/chain/x/oracle"
-// 	"github.com/stretchr/testify/require"
-// )
+	"github.com/tendermint/tendermint/crypto/tmhash"
+)
 
-// func hexToBytes(hexstr string) []byte {
-// 	b, err := hex.DecodeString(hexstr)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// 	return b
-// }
+func hexToBytes(hexstr string) []byte {
+	b, err := hex.DecodeString(hexstr)
+	if err != nil {
+		panic(err)
+	}
+	return b
+}
+
+func leafHash(item []byte) []byte {
+	// leaf prefix is 0
+	return tmhash.Sum(append([]byte{0}, item...))
+}
+
+func branchHash(left, right []byte) []byte {
+	// branch prefix is 1
+	return tmhash.Sum(append([]byte{1}, append(left, right...)...))
+}
+
 // func TestEncodeRelay(t *testing.T) {
 // 	block := BlockRelayProof{
 // 		OracleIAVLStateHash:    hexToBytes("8B1809D0516C7390C44A5EC4257A851875178D2944D12F2E26813918B8EEFC42"),
