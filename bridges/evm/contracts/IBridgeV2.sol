@@ -1,9 +1,7 @@
 pragma solidity 0.5.14;
 
-import {IBridge} from "./IBridge.sol";
 
-
-interface IBridegeV2 {
+interface IBridgeV2 {
     /// Event to broadcast oracle request event.
     event OracleRequest(
         string clientId,

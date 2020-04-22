@@ -17,7 +17,7 @@ interface IBridge {
         string clientId;
         uint64 requestId;
         uint64 ansCount;
-        uint64 prepareTime;
+        uint64 requestTime;
         uint64 resolveTime;
         uint8 resolveStatus;
         string data;
@@ -26,7 +26,7 @@ interface IBridge {
     /// Helper struct to help the function caller to decode oracle data.
     struct VerifyOracleDataResult {
         uint64 oracleScriptId;
-        uint64 prepareTime;
+        uint64 requestTime;
         uint64 resolveTime;
         uint64 askCount;
         uint64 minCount;
