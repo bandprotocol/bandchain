@@ -2,7 +2,33 @@ type t;
 
 type wrapped_msg_t;
 
-type signed_msg_t;
+// type signed_msg_t;
+
+// Start of TODO: abstract out later (hard-coded for MsgRequest for now)
+type pub_key_t = {
+  [@bs.as "type"]
+  type_: string,
+  value: string,
+};
+
+type signature_t = {
+  pub_key: pub_key_t,
+  public_key: string,
+  signature: string,
+};
+
+type tx_t = {
+  fee: StdMsgRequest.fee_t,
+  memo: string,
+  msg: array(StdMsgRequest.msg_t),
+  signatures: array(signature_t),
+};
+
+type signed_msg_t = {
+  mode: string,
+  tx: tx_t,
+};
+// End of TODO
 
 type account_result_t = {
   accountNumber: int,
@@ -77,6 +103,28 @@ let broadcast = (instance, signedMsg) => {
       },
     ),
   );
+};
+
+// TODO: abstract out later
+let createSignedMsgRequest = (msgRequest: StdMsgRequest.t, signature, pubKey, mode) => {
+  {
+    mode,
+    tx: {
+      fee: msgRequest.fee,
+      memo: msgRequest.memo,
+      msg: msgRequest.msgs,
+      signatures: [|
+        {
+          pub_key: {
+            type_: "tendermint/PubKeySecp256k1",
+            value: pubKey |> JsBuffer.fromHex |> JsBuffer.toBase64,
+          },
+          public_key: "eb5ae98721" ++ pubKey |> JsBuffer.fromHex |> JsBuffer.toBase64,
+          signature,
+        },
+      |],
+    },
+  };
 };
 
 // //EXAMPLE
