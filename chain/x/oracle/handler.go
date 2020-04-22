@@ -39,14 +39,14 @@ func NewHandler(k Keeper) sdk.Handler {
 				if err != nil {
 					return nil, err
 				}
-				newMsg := NewMsgRequestData(
+				newMsg := types.NewMsgRequestDataIBC(
 					requestData.OracleScriptID, calldata, requestData.AskCount,
 					requestData.MinCount, requestData.ClientID,
+					msg.GetDestChannel(),
+					msg.GetDestChannel(),
 					msg.Signer,
 				)
-				return handleMsgRequestData(
-					ctx, k, newMsg, msg.GetDestPort(), msg.GetDestChannel(),
-				)
+				return handleMsgRequestData(ctx, k, newMsg)
 			}
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal oracle packet data")
 		default:
@@ -125,7 +125,7 @@ func handleMsgEditOracleScript(ctx sdk.Context, k Keeper, m MsgEditOracleScript)
 	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
 
-func handleMsgRequestData(ctx sdk.Context, k Keeper, m MsgRequestData, ibcData ...string) (*sdk.Result, error) {
+func handleMsgRequestData(ctx sdk.Context, k Keeper, m MsgRequestData) (*sdk.Result, error) {
 	validators, err := k.GetRandomValidators(ctx, int(m.RequestedValidatorCount))
 	if err != nil {
 		return nil, err
@@ -136,12 +136,9 @@ func handleMsgRequestData(ctx sdk.Context, k Keeper, m MsgRequestData, ibcData .
 		ctx.BlockHeight(), ctx.BlockTime().Unix(), m.ClientID,
 	)
 
-	// TODO: HACK AREA!
-	if len(ibcData) == 2 {
-		req.SourcePort = ibcData[0]
-		req.SourceChannel = ibcData[1]
+	if m.RequestIBC != nil {
+		req.RequestIBC = m.RequestIBC
 	}
-	// END HACK AREA!
 
 	env := NewExecEnv(ctx, k, req)
 	script, err := k.GetOracleScript(ctx, m.OracleScriptID)

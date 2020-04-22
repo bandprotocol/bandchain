@@ -23,8 +23,7 @@ type Request struct {
 	RequestTime              int64            `json:"request_time"`
 	ClientID                 string           `json:"client_id"`
 
-	SourcePort    string `json:"source_port"`
-	SourceChannel string `json:"source_channel"`
+	*RequestIBC `json:"request_ibc"`
 }
 
 // NewRequest creates a new Request instance.
@@ -44,8 +43,6 @@ func NewRequest(
 		SufficientValidatorCount: sufficientValidatorCount,
 		RequestHeight:            requestHeight,
 		RequestTime:              requestTime,
-		SourcePort:               "",
-		SourceChannel:            "",
 		ClientID:                 clientID,
 	}
 }

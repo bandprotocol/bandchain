@@ -15,7 +15,23 @@ type MsgRequestData struct {
 	RequestedValidatorCount  int64          `json:"requestedValidatorCount"`
 	SufficientValidatorCount int64          `json:"sufficientValidatorCount"`
 	ClientID                 string         `json:"clientID"`
+	*RequestIBC              `json:"requestIBC"`
 	Sender                   sdk.AccAddress `json:"sender"`
+}
+
+type RequestIBC struct {
+	SourcePort    string `json:"sourcePort"`
+	SourceChannel string `json:"sourceChannel"`
+}
+
+func NewRequestIBC(
+	sourcePort string,
+	sourceChannel string,
+) *RequestIBC {
+	return &RequestIBC{
+		SourcePort:    sourcePort,
+		SourceChannel: sourceChannel,
+	}
 }
 
 // NewMsgRequestData creates a new MsgRequestData instance.
@@ -34,6 +50,27 @@ func NewMsgRequestData(
 		SufficientValidatorCount: sufficientValidatorCount,
 		ClientID:                 clientID,
 		Sender:                   sender,
+	}
+}
+
+func NewMsgRequestDataIBC(
+	oracleScriptID OracleScriptID,
+	calldata []byte,
+	requestedValidatorCount int64,
+	sufficientValidatorCount int64,
+	clientID string,
+	sourcePort string,
+	sourceChannel string,
+	sender sdk.AccAddress,
+) MsgRequestData {
+	return MsgRequestData{
+		OracleScriptID:           oracleScriptID,
+		Calldata:                 calldata,
+		RequestedValidatorCount:  requestedValidatorCount,
+		SufficientValidatorCount: sufficientValidatorCount,
+		ClientID:                 clientID,
+		Sender:                   sender,
+		RequestIBC:               NewRequestIBC(sourcePort, sourceChannel),
 	}
 }
 
@@ -80,10 +117,10 @@ func (msg MsgRequestData) GetSignBytes() []byte {
 
 // MsgReportData is a message sent by each of the block validators to respond to a data request.
 type MsgReportData struct {
-	RequestID RequestID             `json:"requestID"`
-	DataSet   []RawReport `json:"dataSet"`
-	Validator sdk.ValAddress        `json:"validator"`
-	Reporter  sdk.AccAddress        `json:"reporter"`
+	RequestID RequestID      `json:"requestID"`
+	DataSet   []RawReport    `json:"dataSet"`
+	Validator sdk.ValAddress `json:"validator"`
+	Reporter  sdk.AccAddress `json:"reporter"`
 }
 
 // NewMsgReportData creates a new MsgReportData instance.

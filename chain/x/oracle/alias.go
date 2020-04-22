@@ -44,6 +44,8 @@ var (
 	ModuleCdc                   = types.ModuleCdc
 	RegisterCodec               = types.RegisterCodec
 	NewMsgRequestData           = types.NewMsgRequestData
+	NewRequestIBC               = types.NewRequestIBC
+	NewMsgRequestDataIBC        = types.NewMsgRequestDataIBC
 	NewMsgReportData            = types.NewMsgReportData
 	NewMsgCreateOracleScript    = types.NewMsgCreateOracleScript
 	NewMsgEditOracleScript      = types.NewMsgEditOracleScript

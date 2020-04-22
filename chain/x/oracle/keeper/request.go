@@ -145,6 +145,10 @@ func (k Keeper) ProcessOracleResponse(
 
 	request := k.MustGetRequest(ctx, reqID)
 
+	if request.RequestIBC == nil {
+		return
+	}
+
 	sourceChannelEnd, found := k.ChannelKeeper.GetChannel(ctx, request.SourcePort, request.SourceChannel)
 	if !found {
 		fmt.Println("SOURCE NOT FOUND", request.SourcePort, request.SourceChannel)

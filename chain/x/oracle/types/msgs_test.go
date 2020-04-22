@@ -19,6 +19,20 @@ func TestMsgRequestData(t *testing.T) {
 	require.Equal(t, sender, msg.Sender)
 }
 
+func TestMsgRequestDataIBC(t *testing.T) {
+	sender := sdk.AccAddress([]byte("sender"))
+	msg := NewMsgRequestDataIBC(1, []byte("calldata"), 10, 5, "clientID", "sourcePort", "sourceChannel", sender)
+	require.Equal(t, RouterKey, msg.Route())
+	require.Equal(t, "request", msg.Type())
+	require.Equal(t, OracleScriptID(1), msg.OracleScriptID)
+	require.Equal(t, []byte("calldata"), msg.Calldata)
+	require.Equal(t, int64(10), msg.RequestedValidatorCount)
+	require.Equal(t, int64(5), msg.SufficientValidatorCount)
+	require.Equal(t, "sourcePort", msg.SourcePort)
+	require.Equal(t, "sourceChannel", msg.SourceChannel)
+	require.Equal(t, sender, msg.Sender)
+}
+
 func TestMsgRequestDataValidation(t *testing.T) {
 	sender := sdk.AccAddress([]byte("sender"))
 	requestedValidatorCount := int64(10)
@@ -75,6 +89,63 @@ func TestMsgRequestDataValidation(t *testing.T) {
 	}
 }
 
+func TestMsgRequestDataIBCValidation(t *testing.T) {
+	sender := sdk.AccAddress([]byte("sender"))
+	requestedValidatorCount := int64(10)
+	sufficientValidatorCount := int64(5)
+	clientID := "clientID"
+	sourcePort := "sourcePort"
+	sourceChannel := "sourceChannel"
+	cases := []struct {
+		valid bool
+		tx    MsgRequestData
+	}{
+		{
+			true, NewMsgRequestDataIBC(
+				1, []byte("calldata"), requestedValidatorCount, sufficientValidatorCount, clientID, sourcePort, sourceChannel, sender,
+			),
+		},
+		{
+			false, NewMsgRequestDataIBC(
+				0, []byte("calldata"), requestedValidatorCount, sufficientValidatorCount, clientID, sourcePort, sourceChannel, sender,
+			),
+		},
+		{
+			true, NewMsgRequestDataIBC(
+				1, nil, requestedValidatorCount, sufficientValidatorCount, clientID, sourcePort, sourceChannel, sender,
+			),
+		},
+		{
+			false, NewMsgRequestDataIBC(
+				1, []byte("calldata"), 0, sufficientValidatorCount, clientID, sourcePort, sourceChannel, sender,
+			),
+		},
+		{
+			false, NewMsgRequestDataIBC(
+				1, []byte("calldata"), requestedValidatorCount, -1, clientID, sourcePort, sourceChannel, sender,
+			),
+		},
+		{
+			false, NewMsgRequestDataIBC(
+				1, []byte("calldata"), 6, 8, clientID, sourcePort, sourceChannel, sender,
+			),
+		},
+		{
+			false, NewMsgRequestDataIBC(
+				1, []byte("calldata"), requestedValidatorCount, sufficientValidatorCount, clientID, sourcePort, sourceChannel, nil,
+			),
+		},
+	}
+
+	for _, tc := range cases {
+		err := tc.tx.ValidateBasic()
+		if tc.valid {
+			require.Nil(t, err)
+		} else {
+			require.NotNil(t, err)
+		}
+	}
+}
 func TestMsgRequestDataGetSignBytes(t *testing.T) {
 	config := sdk.GetConfig()
 	config.SetBech32PrefixForAccount("band", "band"+sdk.PrefixPublic)
@@ -83,8 +154,13 @@ func TestMsgRequestDataGetSignBytes(t *testing.T) {
 	msg := NewMsgRequestData(1, []byte("calldata"), 10, 5, "clientID", sender)
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"oracle/Request","value":{"calldata":"Y2FsbGRhdGE=","clientID":"clientID","oracleScriptID":"1","requestedValidatorCount":"10","sender":"band1wdjkuer9wgvz7c4y","sufficientValidatorCount":"5"}}`
+	expected := `{"type":"oracle/Request","value":{"calldata":"Y2FsbGRhdGE=","clientID":"clientID","oracleScriptID":"1","requestIBC":null,"requestedValidatorCount":"10","sender":"band1wdjkuer9wgvz7c4y","sufficientValidatorCount":"5"}}`
+	require.Equal(t, expected, string(res))
 
+	msg = NewMsgRequestDataIBC(1, []byte("calldata"), 10, 5, "clientID", "sourcePort", "sourceChannel", sender)
+	res = msg.GetSignBytes()
+
+	expected = `{"type":"oracle/Request","value":{"calldata":"Y2FsbGRhdGE=","clientID":"clientID","oracleScriptID":"1","requestIBC":{"sourceChannel":"sourceChannel","sourcePort":"sourcePort"},"requestedValidatorCount":"10","sender":"band1wdjkuer9wgvz7c4y","sufficientValidatorCount":"5"}}`
 	require.Equal(t, expected, string(res))
 }
 
@@ -344,7 +420,7 @@ func TestMsgCreateOracleScriptValidation(t *testing.T) {
 			true, NewMsgCreateOracleScript(owner, name, description, code, schema, sourceCodeURL, sender),
 		},
 		{
-			false, NewMsgCreateOracleScript(nil, name, description, code , schema, sourceCodeURL, sender),
+			false, NewMsgCreateOracleScript(nil, name, description, code, schema, sourceCodeURL, sender),
 		},
 		{
 			false, NewMsgCreateOracleScript(owner, "", description, code, schema, sourceCodeURL, sender),
