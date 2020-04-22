@@ -89,11 +89,11 @@ func NewOracleScriptQuerierInfo(
 }
 
 type RequestQuerierInfo struct {
-	ID              RequestID                      `json:"id"`
-	Request         Request                        `json:"request"`
+	ID              RequestID    `json:"id"`
+	Request         Request      `json:"request"`
 	RawDataRequests []RawRequest `json:"rawDataRequests"`
-	Reports         []Report          `json:"reports"`
-	Result          Result                         `json:"result"`
+	Reports         []Report     `json:"reports"`
+	Result          []byte       `json:"result"`
 }
 
 func NewRequestQuerierInfo(
@@ -101,7 +101,7 @@ func NewRequestQuerierInfo(
 	request Request,
 	rawDataRequests []RawRequest,
 	reports []Report,
-	result Result,
+	result []byte,
 ) RequestQuerierInfo {
 	return RequestQuerierInfo{
 		ID:              id,

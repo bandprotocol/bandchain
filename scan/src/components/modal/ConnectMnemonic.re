@@ -54,7 +54,31 @@ module Styles = {
 
 [@react.component]
 let make = () => {
+  let (_, dispatchAccount) = React.useContext(AccountContext.context);
+  let (_, dispatchModal) = React.useContext(ModalContext.context);
   let (mnemonic, setMnemonic) = React.useState(_ => "");
+  let (errMsg, setErrMsg) = React.useState(_ => "");
+
+  let createMnemonic = () =>
+    if (mnemonic->Js.String.trim == "") {
+      setErrMsg(_ => "Invalid mnemonic");
+    } else {
+      let wallet = Wallet.createFromMnemonic(mnemonic);
+      let _ =
+        wallet->Wallet.getAddressAndPubKey
+        |> Js.Promise.then_(((address, pubKey)) => {
+             dispatchAccount(Connect(wallet, address, pubKey));
+             dispatchModal(CloseModal);
+             Promise.ret();
+           })
+        |> Js.Promise.catch(err => {
+             Js.Console.log(err);
+             setErrMsg(_ => "An error occurred.");
+             Promise.ret();
+           });
+      ();
+    };
+
   <div className=Styles.outer>
     <Row> <Text value="Enter Your Mnemonic" size=Text.Md weight=Text.Medium /> </Row>
     <VSpacing size=Spacing.sm />
@@ -75,11 +99,13 @@ let make = () => {
           </div>
         </Col>
         <Col>
-          <div className=Styles.connectBtn>
+          <div className=Styles.connectBtn onClick={_ => createMnemonic()}>
             <Text value="Connect" weight=Text.Bold size=Text.Md color=Colors.white />
           </div>
         </Col>
       </div>
     </Row>
+    <VSpacing size=Spacing.lg />
+    <Text value=errMsg color=Colors.red6 />
   </div>;
 };
