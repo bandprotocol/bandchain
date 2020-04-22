@@ -44,7 +44,7 @@ func NewHandler(k Keeper) sdk.Handler {
 					requestData.MinCount, requestData.ClientID,
 					msg.Signer,
 				)
-				return handleMsgRequestData(
+				return handleMsgRequestDataIBC(
 					ctx, k, newMsg, msg.GetDestPort(), msg.GetDestChannel(),
 				)
 			}
@@ -125,7 +125,7 @@ func handleMsgEditOracleScript(ctx sdk.Context, k Keeper, m MsgEditOracleScript)
 	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
 
-func handleMsgRequestData(ctx sdk.Context, k Keeper, m MsgRequestData, ibcData ...string) (*sdk.Result, error) {
+func handleMsgRequestData(ctx sdk.Context, k Keeper, m MsgRequestData) (*sdk.Result, error) {
 	validators, err := k.GetRandomValidators(ctx, int(m.RequestedValidatorCount))
 	if err != nil {
 		return nil, err
@@ -135,14 +135,24 @@ func handleMsgRequestData(ctx sdk.Context, k Keeper, m MsgRequestData, ibcData .
 		m.OracleScriptID, m.Calldata, validators, m.SufficientValidatorCount,
 		ctx.BlockHeight(), ctx.BlockTime().Unix(), m.ClientID,
 	)
+	return prepareRequest(ctx, k, m, req)
+}
 
-	// TODO: HACK AREA!
-	if len(ibcData) == 2 {
-		req.SourcePort = ibcData[0]
-		req.SourceChannel = ibcData[1]
+func handleMsgRequestDataIBC(ctx sdk.Context, k Keeper, m MsgRequestData, sourcePort string, sourceChannel string) (*sdk.Result, error) {
+	validators, err := k.GetRandomValidators(ctx, int(m.RequestedValidatorCount))
+	if err != nil {
+		return nil, err
 	}
-	// END HACK AREA!
 
+	req := types.NewRequestWithRequstIBC(
+		m.OracleScriptID, m.Calldata, validators, m.SufficientValidatorCount,
+		ctx.BlockHeight(), ctx.BlockTime().Unix(), m.ClientID, sourcePort, sourceChannel,
+	)
+
+	return prepareRequest(ctx, k, m, req)
+}
+
+func prepareRequest(ctx sdk.Context, k Keeper, m MsgRequestData, req types.Request) (*sdk.Result, error) {
 	env := NewExecEnv(ctx, k, req)
 	script, err := k.GetOracleScript(ctx, m.OracleScriptID)
 	if err != nil {

@@ -23,6 +23,10 @@ type Request struct {
 	RequestTime              int64            `json:"request_time"`
 	ClientID                 string           `json:"client_id"`
 
+	RequestIBC *RequestIBC `json:"request_ibc"`
+}
+
+type RequestIBC struct {
 	SourcePort    string `json:"source_port"`
 	SourceChannel string `json:"source_channel"`
 }
@@ -44,9 +48,34 @@ func NewRequest(
 		SufficientValidatorCount: sufficientValidatorCount,
 		RequestHeight:            requestHeight,
 		RequestTime:              requestTime,
-		SourcePort:               "",
-		SourceChannel:            "",
 		ClientID:                 clientID,
+		RequestIBC:               nil,
+	}
+}
+
+func NewRequestWithRequstIBC(
+	oracleScriptID OracleScriptID,
+	calldata []byte,
+	requestedValidators []sdk.ValAddress,
+	sufficientValidatorCount int64,
+	requestHeight int64,
+	requestTime int64,
+	clientID string,
+	sourcePort string,
+	sourceChannel string,
+) Request {
+	return Request{
+		OracleScriptID:           oracleScriptID,
+		Calldata:                 calldata,
+		RequestedValidators:      requestedValidators,
+		SufficientValidatorCount: sufficientValidatorCount,
+		RequestHeight:            requestHeight,
+		RequestTime:              requestTime,
+		ClientID:                 clientID,
+		RequestIBC: &RequestIBC{
+			SourcePort:    sourcePort,
+			SourceChannel: sourceChannel,
+		},
 	}
 }
 
