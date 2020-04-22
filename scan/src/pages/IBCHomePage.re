@@ -131,7 +131,6 @@ let make = () =>
              i,
              {
                direction,
-               chainID,
                channel,
                port,
                yourChainID,
@@ -185,13 +184,7 @@ let make = () =>
                      height={Text.Px(16)}
                    />
                    <Text
-                     value={
-                       switch (packet) {
-                       | Request(_) => chainID
-                       | Response(_) => yourChainID
-                       | Unknown => "Unknown"
-                       }
-                     }
+                     value=yourChainID
                      size=Text.Sm
                      code=true
                      height={Text.Px(16)}
