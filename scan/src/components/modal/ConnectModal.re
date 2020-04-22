@@ -105,6 +105,7 @@ module LoginMethod = {
 [@react.component]
 let make = _ => {
   let (loginMethod, setLoginMethod) = React.useState(_ => Mnemonic);
+
   <div className=Styles.loginContainer>
     <div className=Styles.modalLogin>
       <VSpacing size=Spacing.xxl />
