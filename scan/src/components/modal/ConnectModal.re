@@ -17,9 +17,9 @@ module Styles = {
       height(`percent(100.)),
       backgroundColor(Css.rgb(249, 249, 251)),
       backgroundImage(`url(Images.modalBg)),
+      backgroundRepeat(`noRepeat),
       borderRadius(`px(8)),
       zIndex(-1),
-      marginTop(`px(-18)),
     ]);
 
   let innerContainer = style([display(`flex), flexDirection(`column), width(`percent(100.))]);
