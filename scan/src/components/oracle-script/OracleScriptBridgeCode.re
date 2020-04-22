@@ -161,14 +161,14 @@ let getCodeFromSchema = (~schemaOpt, ~language) => {
   let%Opt schema = schemaOpt;
   let codeOpt =
     switch (language) {
-    | Solidity => Borsh.generateSolidity(schema, "Output") |> Belt_Option.getWithDefault(_, "")
-    | Go => Borsh.generateGo("main", schema, "Output") |> Belt_Option.getWithDefault(_, "")
+    | Solidity => Borsh.generateSolidity(schema, "Output")
+    | Go => Borsh.generateGo("main", schema, "Output")
     };
-  Some(codeOpt);
+  codeOpt;
 };
 
 [@react.component]
-let make = (~schemaOpt: option(string)) => {
+let make = (~schemaOpt) => {
   let (targetPlatform, setTargetPlatform) = React.useState(_ => Ethereum);
   let (language, setLanguage) = React.useState(_ => Solidity);
   <div className=Styles.tableWrapper>
@@ -246,7 +246,7 @@ let make = (~schemaOpt: option(string)) => {
       {let codeOpt = getCodeFromSchema(~schemaOpt, ~language);
        switch (codeOpt) {
        | Some(code) => code->renderCode
-       | None => {j|"Code is not verified"|j}->renderCode
+       | None => {j|"Code is not available."|j}->renderCode
        }}
     </div>
   </div>;
