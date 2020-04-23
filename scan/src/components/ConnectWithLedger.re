@@ -38,7 +38,19 @@ module Styles = {
     ]);
 
   let rFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
+
+  let resultContainer =
+    style([
+      display(`flex),
+      flexDirection(`row),
+      alignItems(`center),
+      justifyContent(`spaceBetween),
+      height(`px(60)),
+    ]);
+
   let ledgerGuide = style([width(`px(106)), height(`px(25))]);
+
+  let loading = style([width(`px(100))]);
 
   let connectBtn =
     style([
@@ -83,14 +95,56 @@ module InstructionCard = {
   };
 };
 
+type result_t =
+  | Nothing
+  | Loading
+  | Error(string);
+
 [@react.component]
 let make = () => {
+  let (_, dispatchAccount) = React.useContext(AccountContext.context);
+  let (_, dispatchModal) = React.useContext(ModalContext.context);
+  let (result, setResult) = React.useState(_ => Nothing);
+
+  let createLedger = () => {
+    setResult(_ => Loading);
+    let _ =
+      Wallet.createFromLedger()
+      |> Js.Promise.then_(wallet => {
+           let%Promise (address, pubKey) = wallet->Wallet.getAddressAndPubKey;
+           dispatchAccount(Connect(wallet, address, pubKey));
+           dispatchModal(CloseModal);
+           Promise.ret();
+         })
+      |> Js.Promise.catch(err => {
+           Js.Console.log(err);
+           setResult(_ => Error("An error occured"));
+           Promise.ret();
+         });
+    ();
+  };
+
   <div className=Styles.container>
     <InstructionCard idx=1 title="Enter Pin Code" url=Images.ledgerStep1 />
     <VSpacing size=Spacing.md />
     <InstructionCard idx=2 title="Open Cosmos" url=Images.ledgerStep2 />
-    <VSpacing size={`px(35)} />
-    <div className=Styles.connectBtn>
+    <div className=Styles.resultContainer>
+      {switch (result) {
+       | Loading =>
+         <>
+           <Text
+             value="Please accept with ledger"
+             color=Colors.bandBlue
+             spacing={Text.Em(0.03)}
+             weight=Text.Medium
+           />
+           <img src=Images.loadingCircles className=Styles.loading />
+         </>
+       | Error(err) => <Text value=err color=Colors.red6 />
+       | Nothing => React.null
+       }}
+    </div>
+    <div className=Styles.connectBtn onClick={_ => createLedger()}>
       <Text value="Connect To Ledger" weight=Text.Bold size=Text.Md color=Colors.white />
     </div>
   </div>;
