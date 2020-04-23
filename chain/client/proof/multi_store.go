@@ -5,6 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/rootmulti"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/cosmos/cosmos-sdk/x/capability"
 	"github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/evidence"
 	"github.com/cosmos/cosmos-sdk/x/gov"
@@ -23,28 +24,28 @@ import (
 )
 
 type MultiStoreProof struct {
-	AccToMintStoresMerkleHash          tmbytes.HexBytes `json:"accToMintStoresMerkleHash"`
-	OracleIAVLStateHash                tmbytes.HexBytes `json:"oracleIAVLStateHash"`
-	ParamsStoresMerkleHash             tmbytes.HexBytes `json:"paramsStoresMerkleHash"`
-	SlashingAndStakingStoresMerkleHash tmbytes.HexBytes `json:"slashingAndStakingStoresMerkleHash"`
-	SupplyAndUpgradeStoresMerkleHash   tmbytes.HexBytes `json:"supplyAndUpgradeStoresMerkleHash"`
+	AccToMainStoresMerkleHash         tmbytes.HexBytes `json:"accToMainStoresMerkleHash"`
+	MintStoresMerkleHash              tmbytes.HexBytes `json:"mintStoresMerkleHash"`
+	OracleIAVLStateHash               tmbytes.HexBytes `json:"oracleIAVLStateHash"`
+	ParamsAndSlashingStoresMerkleHash tmbytes.HexBytes `json:"paramsAndSlashingStoresMerkleHash"`
+	StakingToUpgradeStoresMerkleHash  tmbytes.HexBytes `json:"stakingToUpgradeStoresMerkleHash"`
 }
 
 type MultiStoreProofEthereum struct {
-	AccToMintStoresMerkleHash          common.Hash
-	OracleStoresMerkleHash             common.Hash
-	ParamsStoresMerkleHash             common.Hash
-	SlashingAndStakingStoresMerkleHash common.Hash
-	SupplyAndUpgradeStoresMerkleHash   common.Hash
+	AccToMainStoresMerkleHash         common.Hash
+	MintStoresMerkleHash              common.Hash
+	OracleIAVLStateHash               common.Hash
+	ParamsAndSlashingStoresMerkleHash common.Hash
+	StakingToUpgradeStoresMerkleHash  common.Hash
 }
 
 func (m *MultiStoreProof) encodeToEthFormat() MultiStoreProofEthereum {
 	return MultiStoreProofEthereum{
-		AccToMintStoresMerkleHash:          common.BytesToHash(m.AccToMintStoresMerkleHash),
-		OracleStoresMerkleHash:             common.BytesToHash(m.OracleIAVLStateHash),
-		ParamsStoresMerkleHash:             common.BytesToHash(m.ParamsStoresMerkleHash),
-		SlashingAndStakingStoresMerkleHash: common.BytesToHash(m.SlashingAndStakingStoresMerkleHash),
-		SupplyAndUpgradeStoresMerkleHash:   common.BytesToHash(m.SupplyAndUpgradeStoresMerkleHash),
+		AccToMainStoresMerkleHash:         common.BytesToHash(m.AccToMainStoresMerkleHash),
+		MintStoresMerkleHash:              common.BytesToHash(m.MintStoresMerkleHash),
+		OracleIAVLStateHash:               common.BytesToHash(m.OracleIAVLStateHash),
+		ParamsAndSlashingStoresMerkleHash: common.BytesToHash(m.ParamsAndSlashingStoresMerkleHash),
+		StakingToUpgradeStoresMerkleHash:  common.BytesToHash(m.StakingToUpgradeStoresMerkleHash),
 	}
 }
 
@@ -54,25 +55,26 @@ func GetMultiStoreProof(proof rootmulti.MultiStoreProofOp) MultiStoreProof {
 		m[info.Name] = info.Core.CommitID.Hash
 	}
 	return MultiStoreProof{
-		AccToMintStoresMerkleHash: merkle.SimpleHashFromByteSlices([][]byte{
+		AccToMainStoresMerkleHash: merkle.SimpleHashFromByteSlices([][]byte{
 			encodeStoreMerkleHash(auth.StoreKey, m[auth.StoreKey]),
 			encodeStoreMerkleHash(bank.StoreKey, m[bank.StoreKey]),
+			encodeStoreMerkleHash(capability.StoreKey, m[capability.StoreKey]),
 			encodeStoreMerkleHash(distribution.StoreKey, m[distribution.StoreKey]),
 			encodeStoreMerkleHash(evidence.StoreKey, m[evidence.StoreKey]),
 			encodeStoreMerkleHash(gov.StoreKey, m[gov.StoreKey]),
 			encodeStoreMerkleHash(ibc.StoreKey, m[ibc.StoreKey]),
 			encodeStoreMerkleHash(baseapp.MainStoreKey, m[baseapp.MainStoreKey]),
+		}),
+		MintStoresMerkleHash: merkle.SimpleHashFromByteSlices([][]byte{
 			encodeStoreMerkleHash(mint.StoreKey, m[mint.StoreKey]),
 		}),
 		OracleIAVLStateHash: m[oracle.StoreKey],
-		ParamsStoresMerkleHash: merkle.SimpleHashFromByteSlices([][]byte{
+		ParamsAndSlashingStoresMerkleHash: merkle.SimpleHashFromByteSlices([][]byte{
 			encodeStoreMerkleHash(params.StoreKey, m[params.StoreKey]),
-		}),
-		SlashingAndStakingStoresMerkleHash: merkle.SimpleHashFromByteSlices([][]byte{
 			encodeStoreMerkleHash(slashing.StoreKey, m[slashing.StoreKey]),
-			encodeStoreMerkleHash(staking.StoreKey, m[staking.StoreKey]),
 		}),
-		SupplyAndUpgradeStoresMerkleHash: merkle.SimpleHashFromByteSlices([][]byte{
+		StakingToUpgradeStoresMerkleHash: merkle.SimpleHashFromByteSlices([][]byte{
+			encodeStoreMerkleHash(staking.StoreKey, m[staking.StoreKey]),
 			encodeStoreMerkleHash(supply.StoreKey, m[supply.StoreKey]),
 			encodeStoreMerkleHash(upgrade.StoreKey, m[upgrade.StoreKey]),
 		}),
