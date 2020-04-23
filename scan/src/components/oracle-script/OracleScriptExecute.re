@@ -146,7 +146,7 @@ module ExecutionPart = {
                  Js.Promise.resolve();
                | _ =>
                  setResult(_ =>
-                   Error("Fail to sign message, please connect with mnemonic first")
+                   Error("Fail to sign message, please connect with mnemonic or ledger first")
                  );
                  Js.Promise.resolve();
                }
