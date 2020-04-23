@@ -20,28 +20,26 @@ let reducer = state =>
   | Disconnect => None
   | SendRequest(oracleScriptID, calldata, callback) =>
     switch (state) {
-    | Some({address, wallet}) =>
+    | Some({address, wallet, pubKey}) =>
       switch (wallet) {
-      | Mnemonic({privKey}) =>
+      | Mnemonic(_) =>
         callback(
           {
-            let%Promise {accountNumber, sequence} =
-              bandchain->CosmosJS.getAccounts(address |> Address.toBech32);
-            let msgRequest =
-              StdMsgRequest.create(
-                oracleScriptID,
-                ~calldata,
-                ~requestedValidatorCount=4,
-                ~sufficientValidatorCount=4,
-                ~sender=address,
-                ~feeAmount=1000000,
-                ~gas=3000000,
-                ~accountNumber=accountNumber |> string_of_int,
-                ~sequence=sequence |> string_of_int,
+            let%Promise rawTx =
+              TxCreator.createRawTx(
+                address,
+                [|Request(oracleScriptID, calldata, "4", "4", address, "")|],
               );
-            let wrappedMsg = bandchain->CosmosJS.newStdMsgRequest(msgRequest);
-            let signedMsg = bandchain->CosmosJS.sign(wrappedMsg, privKey, "block");
-            let%Promise res = bandchain->CosmosJS.broadcast(signedMsg);
+            let%Promise signature = Wallet.sign(TxCreator.sortAndStringify(rawTx), wallet);
+            let signedTx =
+              TxCreator.createSignedTx(
+                ~signature=signature |> JsBuffer.toBase64,
+                ~pubKey,
+                ~tx=rawTx,
+                ~mode="block",
+                (),
+              );
+            let%Promise res = bandchain->CosmosJS.broadcast(signedTx);
 
             Promise.ret(res);
           },

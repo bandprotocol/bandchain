@@ -16,8 +16,13 @@ let create = mnemonic => {
 let getAddressAndPubKey = x => {
   (
     x.bandChain |> CosmosJS.getAddress(_, x.mnemonic) |> Address.fromBech32,
-    Secp256k1.publicKeyCreate(x.privKey, true) |> JsBuffer.toBase64 |> PubKey.fromBase64,
+    Secp256k1.publicKeyCreate(x.privKey, true) |> JsBuffer.arrayToBase64 |> PubKey.fromBase64,
   );
 };
 
-// TODO: sign message
+let sign = (x, message) => {
+  let hash =
+    Crypto.createHash("sha256") |> Crypto.update(_, message) |> Crypto.digest(_, "hex");
+  let signInfo = Secp256k1.ecdsaSign(hash |> JsBuffer.fromHex, x.privKey);
+  signInfo.signature |> JsBuffer.from;
+};
