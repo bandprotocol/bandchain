@@ -154,8 +154,7 @@ describe("should be able to generate solidity correctly", () => {
   test("should be able to generate solidity", () => {
     expect(
       Some(
-        {j|
-pragma solidity ^0.5.0;
+        {j|pragma solidity ^0.5.0;
 
 import "./Borsh.sol";
 
@@ -193,8 +192,7 @@ library ResultDecoder {
   test("should be able to generate solidity 2", () => {
     expect(
       Some(
-        {j|
-pragma solidity ^0.5.0;
+        {j|pragma solidity ^0.5.0;
 
 import "./Borsh.sol";
 

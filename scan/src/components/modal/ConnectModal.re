@@ -1,32 +1,32 @@
 module Styles = {
   open Css;
 
-  let loginContainer =
+  let container =
     style([
       display(`flex),
       justifyContent(`center),
       width(`percent(100.)),
       height(`percent(100.)),
+      position(`relative),
     ]);
 
-  let modalLogin =
+  let bg =
     style([
-      width(`px(640)),
-      height(`px(480)),
+      position(`absolute),
+      width(`percent(100.)),
+      height(`percent(100.)),
       backgroundColor(Css.rgb(249, 249, 251)),
       backgroundImage(`url(Images.modalBg)),
+      backgroundRepeat(`noRepeat),
       borderRadius(`px(8)),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(8), ~blur=`px(32), Css.rgba(0, 0, 0, 0.5))),
+      zIndex(-1),
     ]);
 
+  let innerContainer = style([display(`flex), flexDirection(`column), width(`percent(100.))]);
+
+  let loginSelectionContainer = style([margin2(~v=`zero, ~h=`px(24))]);
+
   let modalTitle = style([display(`flex), justifyContent(`center)]);
-
-  let modalSelectText = style([display(`flex), marginLeft(`px(34))]);
-
-  let itemCol =
-    style([height(`px(275)), display(`flex), flexDirection(`column), verticalAlign(`top)]);
-
-  let container = style([backgroundColor(Colors.transparent)]);
 
   let header = active =>
     style([
@@ -41,12 +41,11 @@ module Styles = {
       backgroundColor(Colors.white),
     ]);
 
-  let buttonContainer = active =>
+  let loginList = active =>
     style([
       display(`flex),
       width(`px(226)),
       height(`px(50)),
-      marginLeft(`px(34)),
       borderRadius(`px(8)),
       backgroundColor(Colors.white),
       boxShadow(
@@ -57,13 +56,9 @@ module Styles = {
       cursor(`pointer),
       overflow(`hidden),
     ]);
+
   let seperatedLongLine =
-    style([
-      height(`px(275)),
-      width(`px(2)),
-      backgroundColor(Colors.gray4),
-      marginLeft(`px(24)),
-    ]);
+    style([height(`px(275)), width(`px(2)), backgroundColor(Colors.gray4)]);
 
   let ledgerIcon = style([height(`px(30)), width(`px(30)), display(`flex)]);
   let ledgerImageContainer = active => style([opacity(active ? 1.0 : 0.5)]);
@@ -86,7 +81,7 @@ let toLoginMethodString = method => {
 module LoginMethod = {
   [@react.component]
   let make = (~name, ~active, ~onClick) => {
-    <div className={Styles.buttonContainer(active)} onClick>
+    <div className={Styles.loginList(active)} onClick>
       <div className={Styles.activeBar(active)} />
       <div className={Styles.header(active)}>
         <Text value={name |> toLoginMethodString} weight=Text.Medium size=Text.Md />
@@ -105,44 +100,45 @@ module LoginMethod = {
 [@react.component]
 let make = _ => {
   let (loginMethod, setLoginMethod) = React.useState(_ => Mnemonic);
-  <div className=Styles.loginContainer>
-    <div className=Styles.modalLogin>
+  <div className=Styles.container>
+    <div className=Styles.bg />
+    <div className=Styles.innerContainer>
       <VSpacing size=Spacing.xxl />
       <div className=Styles.modalTitle>
         <Text value="Connect With Your Wallet" weight=Text.Bold size=Text.Xxxl />
       </div>
       <VSpacing size=Spacing.xxl />
-      <VSpacing size=Spacing.sm />
-      <div className=Styles.modalSelectText>
-        <Text value="Select your connection method" size=Text.Lg weight=Text.Medium />
-      </div>
-      <Row>
-        <div className=Styles.itemCol>
-          {[|Mnemonic, Ledger|]
-           ->Belt_Array.map(method =>
-               <div>
-                 <VSpacing size=Spacing.md />
-                 <VSpacing size=Spacing.xs />
-                 <LoginMethod
-                   name=method
-                   active={loginMethod == method}
-                   onClick={_ => setLoginMethod(_ => method)}
-                 />
-               </div>
-             )
-           ->React.array}
-        </div>
-        <HSpacing size=Spacing.lg />
-        <HSpacing size=Spacing.sm />
-        <div className=Styles.itemCol> <div className=Styles.seperatedLongLine /> </div>
-        <HSpacing size=Spacing.lg />
-        <HSpacing size=Spacing.sm />
-        <div className=Styles.itemCol>
+      <VSpacing size=Spacing.xl />
+      <Row alignItems=`flexStart>
+        <Col>
+          <div className=Styles.loginSelectionContainer>
+            <Text
+              value="Select your connection method"
+              size=Text.Lg
+              weight=Text.Medium
+              color=Colors.gray7
+            />
+            {[|Mnemonic, Ledger|]
+             ->Belt_Array.map(method =>
+                 <>
+                   <VSpacing size=Spacing.lg />
+                   <LoginMethod
+                     name=method
+                     active={loginMethod == method}
+                     onClick={_ => setLoginMethod(_ => method)}
+                   />
+                 </>
+               )
+             ->React.array}
+          </div>
+        </Col>
+        <Col> <div className=Styles.seperatedLongLine /> </Col>
+        <Col size=1.>
           {switch (loginMethod) {
-           | Mnemonic => <ConnectMnemonic />
-           | Ledger => "Ledger" |> React.string
+           | Mnemonic => <ConnectWithMnemonic />
+           | Ledger => <ConnectWithLedger />
            }}
-        </div>
+        </Col>
       </Row>
     </div>
   </div>;

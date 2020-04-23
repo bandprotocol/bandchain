@@ -34,8 +34,8 @@ type OracleResponsePacketData struct {
 	// AnsCount is the number of validators among to the asked validators that actually
 	// responded to this oracle request prior to this oracle request being resolved.
 	AnsCount int64 `json:"ans_count" yaml:"ans_count"`
-	// PrepareTime is the UNIX epoch time at which the request was sent to BandChain.
-	PrepareTime int64 `json:"prepare_time" yaml:"prepare_time"`
+	// RequestTime is the UNIX epoch time at which the request was sent to BandChain.
+	RequestTime int64 `json:"request_time" yaml:"request_time"`
 	// ResolveTime is the UNIX epoch time at which the request was resolved to the final result.
 	ResolveTime int64 `json:"resolve_time" yaml:"resolve_time"`
 	// ResolveStatus is the status of this oracle request, which can be OK, ERROR, or EXPIRED.
@@ -83,14 +83,14 @@ func (p OracleRequestPacketData) GetBytes() []byte {
 }
 
 func NewOracleResponsePacketData(
-	clientID string, requestID RequestID, ansCount int64, prepareTime int64, resolveTime int64,
+	clientID string, requestID RequestID, ansCount int64, requestTime int64, resolveTime int64,
 	resolveStatus ResolveStatus, result string,
 ) OracleResponsePacketData {
 	return OracleResponsePacketData{
 		ClientID:      clientID,
 		RequestID:     requestID,
 		AnsCount:      ansCount,
-		PrepareTime:   prepareTime,
+		RequestTime:   requestTime,
 		ResolveTime:   resolveTime,
 		ResolveStatus: resolveStatus,
 		Result:        result,
@@ -102,14 +102,14 @@ func (p OracleResponsePacketData) String() string {
 	ClientID: %s
 	RequestID: %d
 	AnsCount: %d
-	PrepareTime: %d
+	RequestTime: %d
 	ResolveTime: %d
 	ResolveStatus: %d
 	Result: %s`,
 		p.ClientID,
 		p.RequestID,
 		p.AnsCount,
-		p.PrepareTime,
+		p.RequestTime,
 		p.ResolveTime,
 		p.ResolveStatus,
 		p.Result,

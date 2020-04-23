@@ -164,8 +164,7 @@ let optionsAll = options =>
      });
 
 let generateSolidity = (schema, name) => {
-  let template = (structs, functions) => {j|
-pragma solidity ^0.5.0;
+  let template = (structs, functions) => {j|pragma solidity ^0.5.0;
 
 import "./Borsh.sol";
 
