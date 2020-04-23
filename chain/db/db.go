@@ -292,7 +292,6 @@ func (b *BandDB) HandleTransaction(tx auth.StdTx, txHash []byte, logs sdk.ABCIMe
 	}
 
 	messages := make([]map[string]interface{}, 0)
-
 	for idx, msg := range msgs {
 		events := logs[idx].Events
 		kvMap := make(map[string]string)
@@ -390,6 +389,7 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		}
 
 		jsonMap["oracle_script_name"] = oracleScript.Name
+		jsonMap["schema"] = oracleScript.Schema
 		jsonMap["request_id"] = requestID
 	case oracle.MsgReportData:
 		err = b.handleMsgReportData(txHash, msg, events)
