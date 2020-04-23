@@ -37,10 +37,9 @@ describe("expect TxCreator to give the correct message", () => {
           {
             pub_key: {
               type_: "tendermint/PubKeySecp256k1",
-              value: pubKey |> PubKey.toHex |> JsBuffer.fromHex |> JsBuffer.toBase64,
+              value: pubKey |> PubKey.toBase64,
             },
-            public_key:
-              "eb5ae98721" ++ (pubKey |> PubKey.toHex) |> JsBuffer.fromHex |> JsBuffer.toBase64,
+            public_key: "eb5ae98721" ++ (pubKey |> PubKey.toHex) |> JsBuffer.hexToBase64,
             signature,
           },
         |],
@@ -107,10 +106,9 @@ describe("expect TxCreator to give the correct message", () => {
           {
             pub_key: {
               type_: "tendermint/PubKeySecp256k1",
-              value: pubKey |> PubKey.toHex |> JsBuffer.fromHex |> JsBuffer.toBase64,
+              value: pubKey |> PubKey.toBase64,
             },
-            public_key:
-              "eb5ae98721" ++ (pubKey |> PubKey.toHex) |> JsBuffer.fromHex |> JsBuffer.toBase64,
+            public_key: "eb5ae98721" ++ (pubKey |> PubKey.toHex) |> JsBuffer.hexToBase64,
             signature,
           },
         |],

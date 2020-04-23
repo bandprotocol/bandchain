@@ -138,13 +138,8 @@ let createRawTx = (address, msgs) => {
 };
 
 let createSignedTx = (~signature, ~pubKey, ~tx: raw_tx_t, ~mode, ()) => {
-  // TODO: Add toBase64 in PubKey.re
-  let oldPubKey = {
-    type_: "tendermint/PubKeySecp256k1",
-    value: pubKey |> PubKey.toHex |> JsBuffer.fromHex |> JsBuffer.toBase64,
-  };
-  let newPubKey =
-    "eb5ae98721" ++ (pubKey |> PubKey.toHex) |> JsBuffer.fromHex |> JsBuffer.toBase64;
+  let oldPubKey = {type_: "tendermint/PubKeySecp256k1", value: pubKey |> PubKey.toBase64};
+  let newPubKey = "eb5ae98721" ++ (pubKey |> PubKey.toHex) |> JsBuffer.hexToBase64;
   let signedTx = {
     fee: tx.fee,
     memo: tx.memo,

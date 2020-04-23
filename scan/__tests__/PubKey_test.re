@@ -103,4 +103,17 @@ describe("Expect PubKey to work correctly", () => {
          "bandvalconspub1addwnpepq0grwz83v8g4s06fusnq5s4jkzxnhgvx67qr5g7v8tx39ur5m8tk7rg2nxj",
        )
   );
+
+  test("should be able to convert self to base64", () =>
+    expect(
+      PubKey("eb5ae9872103d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f")
+      |> toBase64,
+    )
+    |> toEqual(
+         PubKey("eb5ae9872103d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f")
+         |> PubKey.toHex
+         |> JsBuffer.fromHex
+         |> JsBuffer.toBase64,
+       )
+  );
 });
