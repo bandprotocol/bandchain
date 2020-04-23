@@ -62,6 +62,10 @@ func (b *BandDB) handleMsgPacket(
 		if err != nil {
 			return err
 		}
+		oracleScript, err := b.OracleKeeper.GetOracleScript(b.ctx, requestPacket.OracleScriptID)
+		if err != nil {
+			return err
+		}
 		err = b.AddNewRequest(
 			id,
 			int64(requestPacket.OracleScriptID),
@@ -72,13 +76,9 @@ func (b *BandDB) handleMsgPacket(
 			msg.Signer.String(),
 			requestPacket.ClientID,
 			txHash,
+			oracleScript.Schema,
 			nil,
 		)
-		if err != nil {
-			return err
-		}
-
-		oracleScript, err := b.OracleKeeper.GetOracleScript(b.ctx, requestPacket.OracleScriptID)
 		if err != nil {
 			return err
 		}

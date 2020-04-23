@@ -39,6 +39,7 @@ func createRequest(
 	requester string,
 	clientID string,
 	txHash []byte,
+	schema string,
 	result []byte,
 ) Request {
 	return Request{
@@ -51,6 +52,7 @@ func createRequest(
 		Requester:                requester,
 		ClientID:                 clientID,
 		TxHash:                   txHash,
+		Schema:                   schema,
 		Result:                   result,
 	}
 }
@@ -65,6 +67,7 @@ func (b *BandDB) AddNewRequest(
 	requester string,
 	clientID string,
 	txHash []byte,
+	schema string,
 	result []byte,
 ) error {
 	request := createRequest(
@@ -77,6 +80,7 @@ func (b *BandDB) AddNewRequest(
 		requester,
 		clientID,
 		txHash,
+		schema,
 		result,
 	)
 	err := b.tx.Create(&request).Error
@@ -183,6 +187,10 @@ func (b *BandDB) handleMsgRequestData(
 	if err != nil {
 		return err
 	}
+	oracleScript, err := b.OracleKeeper.GetOracleScript(b.ctx, msg.OracleScriptID)
+	if err != nil {
+		return err
+	}
 	return b.AddNewRequest(
 		id,
 		int64(msg.OracleScriptID),
@@ -193,6 +201,7 @@ func (b *BandDB) handleMsgRequestData(
 		msg.Sender.String(),
 		msg.ClientID,
 		txHash,
+		oracleScript.Schema,
 		nil,
 	)
 }

@@ -124,6 +124,7 @@ type Request struct {
 	Requester                string `gorm:"not null"`
 	TxHash                   []byte `gorm:"not null"`
 	ClientID                 string `gorm:"not null"`
+	Schema                   string `gorm:"not null"`
 	Result                   []byte `sql:"default:null"`
 	RequestTime              int64  `sql:"default:null"`
 	ResolveTime              int64  `sql:"default:null"`
