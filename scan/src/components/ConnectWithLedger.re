@@ -140,7 +140,8 @@ let make = () => {
            />
            <img src=Images.loadingCircles className=Styles.loading />
          </>
-       | Error(err) => <Text value=err color=Colors.red6 />
+       | Error(err) =>
+         <Text value=err color=Colors.red5 weight=Text.Medium spacing={Text.Em(0.03)} />
        | Nothing => React.null
        }}
     </div>
