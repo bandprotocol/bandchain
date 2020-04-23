@@ -7989,10 +7989,10 @@ reason-apollo-hooks@^6.0.0:
   resolved "https://registry.yarnpkg.com/reason-apollo-hooks/-/reason-apollo-hooks-6.0.0.tgz#0fa68c9eccc375b3d7b6508fd821204ad95303a1"
   integrity sha512-fY7i/zysetNFnamzGCJJGmFzIPC+Auzf/B8zNyVehNsri7sCY3itTmFl540I+ZEAxYOXQEsZzP+BgafuQpF3aA==
 
-reason-apollo@^0.18.0:
-  version "0.18.0"
-  resolved "https://registry.yarnpkg.com/reason-apollo/-/reason-apollo-0.18.0.tgz#cc970da88de7ac603753eed68984c8492f0665c6"
-  integrity sha512-lw+IoIZ8qoX3iGOFFK//yMVC+Xmf+OcSyKkRgbBn0uG5GomLLMLiKRgjkhUsjAqJ4b3Se7H9JFnso5nL+GFEMA==
+reason-apollo@^0.20.0:
+  version "0.20.0"
+  resolved "https://registry.yarnpkg.com/reason-apollo/-/reason-apollo-0.20.0.tgz#102e6047bfc37d9f30462799e7f813d17dd4758a"
+  integrity sha512-L0y1mCcViRX6yhdo9dUQAhuDazE1ZbMb3IPuBnlTvQffvecmtDfl0RQ+BCzoCJEP3u8nwb88z2JDoURnaFDSkQ==
   dependencies:
     apollo-cache-inmemory "^1.6.0"
     apollo-client "^2.6.3"
