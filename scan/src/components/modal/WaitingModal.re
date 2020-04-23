@@ -53,7 +53,14 @@ type result_t =
 
 [@react.component]
 let make = _ => {
-  let result = Loading;
+  // TODO: remove later
+  let x = Js.Math.random_int(0, 3);
+  let result =
+    switch (x) {
+    | 0 => Loading
+    | 1 => Error
+    | _ => Success
+    };
 
   <div className=Styles.container>
     <div className=Styles.bg />
