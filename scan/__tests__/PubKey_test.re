@@ -106,14 +106,8 @@ describe("Expect PubKey to work correctly", () => {
 
   test("should be able to convert self to base64", () =>
     expect(
-      PubKey("eb5ae9872103d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f")
-      |> toBase64,
+      PubKey("0235b618ab0f0e9f48b1af32f56b78d955c432279893714737a937035024b83c58") |> toBase64,
     )
-    |> toEqual(
-         PubKey("eb5ae9872103d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f")
-         |> PubKey.toHex
-         |> JsBuffer.fromHex
-         |> JsBuffer.toBase64,
-       )
+    |> toEqual("AjW2GKsPDp9Isa8y9Wt42VXEMieYk3FHN6k3A1AkuDxY")
   );
 });
