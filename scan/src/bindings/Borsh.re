@@ -290,7 +290,7 @@ func(result *Result) EncodeResult() []byte {
 
 \t$functions
 
-\treturn encoder.data
+\treturn encoder.GetEncodedData()
 }|j};
 
   let%Opt fieldsPair = extractFields(schema, name);

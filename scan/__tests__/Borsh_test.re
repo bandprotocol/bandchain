@@ -374,7 +374,7 @@ func(result *Result) EncodeResult() []byte {
 	encoder.EncodeU64(result.multiplier)
 	encoder.EncodeU8(result.what)
 
-	return encoder.data
+	return encoder.GetEncodedData()
 }|j},
       ),
     )
@@ -402,7 +402,7 @@ func(result *Result) EncodeResult() []byte {
 
 	encoder.EncodeU64(result.px)
 
-	return encoder.data
+	return encoder.GetEncodedData()
 }|j},
       ),
     )
