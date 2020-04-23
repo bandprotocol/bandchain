@@ -1,5 +1,6 @@
 type t =
-  | Connect;
+  | Connect
+  | Waiting;
 
 type a =
   | OpenModal(t)
