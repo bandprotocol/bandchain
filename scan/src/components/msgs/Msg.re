@@ -374,7 +374,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         ellipsis=true
       />
     </div>
-  | ConnectionOpenInit({signer, connectionID, chainID}) =>
+  | ConnectionOpenInit({signer, common: {connectionID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
       <div className={Styles.withBg(Colors.blue1, 140)}>
@@ -407,7 +407,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         ellipsis=true
       />
     </div>
-  | ConnectionOpenTry({signer, connectionID, chainID}) =>
+  | ConnectionOpenTry({signer, common: {connectionID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
       <div className={Styles.withBg(Colors.blue1, 120)}>
@@ -440,7 +440,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         ellipsis=true
       />
     </div>
-  | ConnectionOpenAck({signer, connectionID, chainID}) =>
+  | ConnectionOpenAck({signer, common: {connectionID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
       <div className={Styles.withBg(Colors.blue1, 130)}>
@@ -473,7 +473,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         ellipsis=true
       />
     </div>
-  | ConnectionOpenConfirm({signer, connectionID, chainID}) =>
+  | ConnectionOpenConfirm({signer, common: {connectionID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
       <div className={Styles.withBg(Colors.blue1, 140)}>
@@ -506,7 +506,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         ellipsis=true
       />
     </div>
-  | ChannelOpenInit({signer, channelID, chainID}) =>
+  | ChannelOpenInit({signer, common: {channelID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
       <div className={Styles.withBg(Colors.blue1, 100)}>
@@ -539,7 +539,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         ellipsis=true
       />
     </div>
-  | ChannelOpenTry({signer, channelID, chainID}) =>
+  | ChannelOpenTry({signer, common: {channelID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
       <div className={Styles.withBg(Colors.blue1, 100)}>
@@ -572,7 +572,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         ellipsis=true
       />
     </div>
-  | ChannelOpenAck({signer, channelID, chainID}) =>
+  | ChannelOpenAck({signer, common: {channelID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
       <div className={Styles.withBg(Colors.blue1, 100)}>
@@ -605,7 +605,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         ellipsis=true
       />
     </div>
-  | ChannelOpenConfirm({signer, channelID, chainID}) =>
+  | ChannelOpenConfirm({signer, common: {channelID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
       <div className={Styles.withBg(Colors.blue1, 130)}>
@@ -638,7 +638,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         ellipsis=true
       />
     </div>
-  | ChannelCloseInit({signer, channelID, chainID}) =>
+  | ChannelCloseInit({signer, common: {channelID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
       <div className={Styles.withBg(Colors.blue1, 85)}>
@@ -671,7 +671,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         ellipsis=true
       />
     </div>
-  | ChannelCloseConfirm({signer, channelID, chainID}) =>
+  | ChannelCloseConfirm({signer, common: {channelID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
       <div className={Styles.withBg(Colors.blue1, 100)}>
@@ -704,7 +704,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         ellipsis=true
       />
     </div>
-  | Packet({sender, chainID, data}) =>
+  | Packet({sender, data, common: {chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
       <div className={Styles.withBg(Colors.blue1, 50)}>
@@ -741,7 +741,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         ellipsis=true
       />
     </div>
-  | Timeout({sender, chainID}) =>
+  | Timeout({sender, common: {chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
       <div className={Styles.withBg(Colors.blue1, 85)}>

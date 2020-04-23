@@ -35,7 +35,6 @@ type packet_t =
 
 type t = {
   direction: packet_direction_t,
-  chainID: string,
   channel: string,
   port: string,
   yourChainID: string,
@@ -73,7 +72,6 @@ module Internal = {
         },
       ) => {
     direction: isIncoming ? Incoming : Outgoing,
-    chainID: "bandchain",
     channel,
     port,
     yourChainID,

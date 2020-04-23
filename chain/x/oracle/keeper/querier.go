@@ -60,10 +60,10 @@ func buildRequestQuerierInfo(
 			reports = append(reports, types.NewReport(validator, valReport))
 		}
 	}
-	var result types.Result
-	if keeper.HasResult(ctx, id, request.OracleScriptID, request.Calldata) {
+	var result []byte
+	if keeper.HasResult(ctx, id) {
 		var sdkErr error
-		result, sdkErr = keeper.GetResult(ctx, id, request.OracleScriptID, request.Calldata)
+		result, sdkErr = keeper.GetResult(ctx, id)
 		if sdkErr != nil {
 			return types.RequestQuerierInfo{}, sdkErr
 		}
