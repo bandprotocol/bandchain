@@ -19,11 +19,23 @@ const (
 	EventTypeReport             = types.EventTypeReport
 	EventTypeRequestExecute     = types.EventTypeRequestExecute
 
-	AttributeKeyID            = types.AttributeKeyID
-	AttributeKeyRequestID     = types.AttributeKeyRequestID
-	AttributeKeyValidator     = types.AttributeKeyValidator
-	AttributeKeyResolveStatus = types.AttributeKeyResolveStatus
-	AttributeKeyResult        = types.AttributeKeyResult
+	AttributeKeyID             = types.AttributeKeyID
+	AttributeKeyRequestID      = types.AttributeKeyRequestID
+	AttributeKeyDataSourceID   = types.AttributeKeyDataSourceID
+	AttributeKeyOracleScriptID = types.AttributeKeyOracleScriptID
+	AttributeKeyExternalID     = types.AttributeKeyExternalID
+	AttributeKeyCalldata       = types.AttributeKeyCalldata
+	AttributeKeyValidator      = types.AttributeKeyValidator
+	AttributeKeyReporter       = types.AttributeKeyReporter
+	AttributeKeyClientID       = types.AttributeKeyClientID
+	AttributeKeyAskCount       = types.AttributeKeyAskCount
+	AttributeKeyMinCount       = types.AttributeKeyMinCount
+	AttributeKeyAnsCount       = types.AttributeKeyAnsCount
+	AttributeKeyRequestTime    = types.AttributeKeyRequestTime
+	AttributeKeyResolveTime    = types.AttributeKeyResolveTime
+	AttributeKeyResolveStatus  = types.AttributeKeyResolveStatus
+	AttributeKeyResult         = types.AttributeKeyResult
+	AttributeKeyResultHash     = types.AttributeKeyResultHash
 )
 
 var (

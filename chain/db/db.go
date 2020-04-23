@@ -55,7 +55,6 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		&DataSource{},
 		&DataSourceRevision{},
 		&OracleScript{},
-		&OracleScriptCode{},
 		&OracleScriptRevision{},
 		&RelatedDataSources{},
 		&Request{},
@@ -127,13 +126,6 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 	db.Model(&DataSourceRevision{}).AddForeignKey(
 		"tx_hash",
 		"transactions(tx_hash)",
-		"RESTRICT",
-		"RESTRICT",
-	)
-
-	db.Model(&OracleScript{}).AddForeignKey(
-		"code_hash",
-		"oracle_script_codes(code_hash)",
 		"RESTRICT",
 		"RESTRICT",
 	)
@@ -568,13 +560,4 @@ func (b *BandDB) GetInvolvedAccountsFromTransferEvents(logs sdk.ABCIMessageLogs)
 		}
 	}
 	return involvedAccounts
-}
-
-func (b *BandDB) ResolveRequest(id int64, resolveStatus oracle.ResolveStatus, result []byte) error {
-	if resolveStatus == 1 {
-		return b.tx.Model(&Request{}).Where(Request{ID: id}).
-			Update(Request{ResolveStatus: parseResolveStatus(resolveStatus), Result: result}).Error
-	}
-	return b.tx.Model(&Request{}).Where(Request{ID: id}).
-		Update(Request{ResolveStatus: parseResolveStatus(resolveStatus)}).Error
 }
