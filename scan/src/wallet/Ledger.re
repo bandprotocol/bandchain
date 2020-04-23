@@ -16,10 +16,15 @@ let getAddressAndPubKey = x => {
   let responsePromise = LedgerJS.getAddressAndPubKey(x.app, x.path, prefix);
   let%Promise response = responsePromise;
 
-  Promise.ret((
-    response.bech32_address |> Address.fromBech32,
-    response.compressed_pk |> JsBuffer.from |> JsBuffer.toHex |> PubKey.fromHex,
-  ));
+  if (response.return_code != 36864) {
+    Js.Console.log(response.error_message);
+    Js.Promise.reject(Not_found);
+  } else {
+    Promise.ret((
+      response.bech32_address |> Address.fromBech32,
+      response.compressed_pk |> JsBuffer.from |> JsBuffer.toHex |> PubKey.fromHex,
+    ));
+  };
 };
 
 // TODO:
