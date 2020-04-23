@@ -21,3 +21,9 @@ let execute = (data: t) => {
   let%Promise response = Axios.postData(Env.lambda, convert(data));
   Promise.ret(response);
 };
+
+let accountInfo = address => {
+  let url = Env.rpc ++ "/auth/accounts/" ++ (address |> Address.toBech32);
+  let%Promise response = Axios.get(url);
+  Promise.ret(response);
+};

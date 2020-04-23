@@ -2,7 +2,10 @@ package proof
 
 import (
 	"encoding/base64"
+	"encoding/binary"
+	"encoding/hex"
 	"reflect"
+	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/tendermint/tendermint/crypto/tmhash"
@@ -54,4 +57,26 @@ func encodeStoreMerkleHash(key string, value []byte) []byte {
 	keyBytes := append([]byte{uint8(len(bytesKey))}, bytesKey...)
 	valueBytes := append([]byte{32}, tmhash.Sum(tmhash.Sum(value))...)
 	return append(keyBytes, valueBytes...)
+}
+
+func encodeVarint(value int64) []byte {
+	buf := make([]byte, binary.MaxVarintLen64)
+	n := binary.PutVarint(buf, value)
+	return buf[:n]
+}
+
+func mustParseInt64(b []byte) int64 {
+	i64, err := strconv.ParseInt(string(b), 10, 64)
+	if err != nil {
+		panic(err)
+	}
+	return i64
+}
+
+func mustDecodeString(hexstr string) []byte {
+	b, err := hex.DecodeString(hexstr)
+	if err != nil {
+		panic(err)
+	}
+	return b
 }
