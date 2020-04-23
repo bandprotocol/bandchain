@@ -120,14 +120,14 @@ let make = _ => {
             />
             {[|Mnemonic, Ledger|]
              ->Belt_Array.map(method =>
-                 <>
+                 <React.Fragment key={method |> toLoginMethodString}>
                    <VSpacing size=Spacing.lg />
                    <LoginMethod
                      name=method
                      active={loginMethod == method}
                      onClick={_ => setLoginMethod(_ => method)}
                    />
-                 </>
+                 </React.Fragment>
                )
              ->React.array}
           </div>
