@@ -6,7 +6,7 @@ module Styles = {
       display(`flex),
       justifyContent(`center),
       width(`px(640)),
-      height(`px(280)),
+      height(`px(275)),
       position(`relative),
     ]);
 
