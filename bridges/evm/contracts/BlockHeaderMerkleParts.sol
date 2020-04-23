@@ -1,6 +1,7 @@
 pragma solidity 0.5.14;
 import {Utils} from "./Utils.sol";
 
+
 /// @dev Library for computing Tendermint's block header hash from app hash, time, and height.
 ///
 /// In Tendermint, a block header hash is the Merkle hash of a binary tree with 16 leaf nodes.
@@ -30,8 +31,8 @@ library BlockHeaderMerkleParts {
     struct Data {
         bytes32 versionAndChainIdHash; // [1A]
         bytes32 timeHash; // [3]
-        bytes32 txCountAndLastBlockInfoHash; // [2B]
-        bytes32 consensusDataHash; // [2C]
+        bytes32 lastBlockIDAndOther; // [2B]
+        bytes32 nextValidatorHashAndConsensusHash; // [2C]
         bytes32 lastResultsHash; // [D]
         bytes32 evidenceAndProposerHash; // [1H]
     }
@@ -45,31 +46,31 @@ library BlockHeaderMerkleParts {
         uint256 _blockHeight
     ) internal pure returns (bytes32) {
         return
-            Utils.merkleInnerHash( // [BlockHeader]
-                Utils.merkleInnerHash( // [3A]
-                    Utils.merkleInnerHash( // [2A]
-                        _self.versionAndChainIdHash, // [1A]
-                        Utils.merkleInnerHash( // [1B]
+            Utils.merkleInnerHash(
+                Utils.merkleInnerHash(
+                    Utils.merkleInnerHash(
+                        _self.versionAndChainIdHash,
+                        Utils.merkleInnerHash(
                             Utils.merkleLeafHash(
                                 Utils.encodeVarintUnsigned(_blockHeight)
-                            ), // [2]
+                            ),
                             _self.timeHash
                         )
-                    ), // [3]
-                    _self.txCountAndLastBlockInfoHash
-                ), // [2B]
-                Utils.merkleInnerHash( // [3B]
-                    _self.consensusDataHash, // [2C]
-                    Utils.merkleInnerHash( // [2D]
-                        Utils.merkleInnerHash( // [1G]
+                    ),
+                    _self.lastBlockIDAndOther
+                ),
+                Utils.merkleInnerHash(
+                    Utils.merkleInnerHash(
+                        _self.nextValidatorHashAndConsensusHash,
+                        Utils.merkleInnerHash(
                             Utils.merkleLeafHash(
                                 abi.encodePacked(uint8(32), _appHash)
-                            ), // [C]
+                            ),
                             _self.lastResultsHash
-                        ), // [D]
-                        _self.evidenceAndProposerHash
-                    )
+                        )
+                    ),
+                    _self.evidenceAndProposerHash
                 )
-            ); // [1H]
+            );
     }
 }
