@@ -14,6 +14,7 @@ module Styles = {
       right(`zero),
       zIndex(10),
       backgroundColor(`rgba((0, 0, 0, 0.5))),
+      position(`fixed),
     ]);
 
   let content =
