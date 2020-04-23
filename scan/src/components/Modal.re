@@ -18,10 +18,8 @@ module Styles = {
 
   let content =
     style([
-      display(`flex),
+      display(`table),
       marginTop(`vw(10.)),
-      width(`px(640)),
-      height(`px(480)),
       backgroundColor(Css_Colors.white),
       borderRadius(`px(5)),
       boxShadow(Shadow.box(~x=`zero, ~y=`px(8), ~blur=`px(32), Css.rgba(0, 0, 0, 0.5))),
@@ -47,6 +45,7 @@ let make = () => {
     let body =
       switch (m) {
       | Connect => <ConnectModal />
+      | Waiting => <WaitingModal />
       };
     <div className=Styles.overlay onClick={_ => dispatchModal(CloseModal)}>
       <div className=Styles.content onClick={e => ReactEvent.Mouse.stopPropagation(e)}>

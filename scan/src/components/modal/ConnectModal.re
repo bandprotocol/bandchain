@@ -5,9 +5,9 @@ module Styles = {
     style([
       display(`flex),
       justifyContent(`center),
-      width(`percent(100.)),
-      height(`percent(100.)),
       position(`relative),
+      width(`px(640)),
+      height(`px(480)),
     ]);
 
   let bg =
