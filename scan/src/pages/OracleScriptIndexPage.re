@@ -114,7 +114,7 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) =>
          | OracleScriptExecute =>
            <OracleScriptExecute id=oracleScriptID schemaOpt={oracleScript.schema} />
          | OracleScriptCode => <OracleScriptCode code={oracleScript.codeHash} />
-         | OracleScriptBridgeCode => <OracleScriptBridgeCode />
+         | OracleScriptBridgeCode => <OracleScriptBridgeCode schemaOpt={oracleScript.schema} />
          | OracleScriptRequests => <OracleScriptRequestTable oracleScriptID />
          | OracleScriptRevisions => <OracleScriptRevisionTable id=oracleScriptID />
          }}

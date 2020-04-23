@@ -22,6 +22,10 @@ let toHex = (~with0x=false) =>
   fun
   | PubKey(hexstr) => (with0x ? "0x" : "") ++ hexstr;
 
+let toBase64 =
+  fun
+  | PubKey(hexstr) => hexstr |> JsBuffer.hexToBase64;
+
 let toPubKeyHexOnly = (~with0x=false) =>
   fun
   | PubKey(hexstr) =>

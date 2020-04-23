@@ -28,9 +28,7 @@ module Styles = {
 
 let renderCode = content => {
   <div className=Styles.scriptContainer>
-    <ReactHighlight>
-      <div className=Styles.padding> {content |> React.string} </div>
-    </ReactHighlight>
+    <ReactHighlight className=Styles.padding> {content |> React.string} </ReactHighlight>
   </div>;
 };
 
