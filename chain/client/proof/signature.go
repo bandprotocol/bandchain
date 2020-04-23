@@ -59,14 +59,20 @@ func GetSignaturesAndPrefix(info *types.SignedHeader) ([]TMSignature, []byte, er
 	addrs := []string{}
 	mapAddrs := map[string]TMSignature{}
 	for i, vote := range info.Commit.Signatures {
+		if vote.Signature == nil {
+			continue
+		}
 		msg := info.Commit.VoteSignBytes(info.ChainID, i)
-		lr := strings.Split(hex.EncodeToString(msg), hex.EncodeToString(info.Hash()))
+		lr := strings.Split(hex.EncodeToString(msg), hex.EncodeToString(info.Commit.BlockID.Hash))
+
+		if len(lr) != 2 {
+			return nil, nil, fmt.Errorf("Split block hash failed")
+		}
 
 		if prefix != "" && prefix != lr[0] {
 			return nil, nil, fmt.Errorf("Inconsistent prefix signature bytes")
 		}
 		prefix = lr[0]
-		suffix := mustDecodeString(lr[1])
 		addr, v, err := recoverETHAddress(msg, vote.Signature, vote.ValidatorAddress)
 		if err != nil {
 			return nil, nil, err
@@ -76,7 +82,7 @@ func GetSignaturesAndPrefix(info *types.SignedHeader) ([]TMSignature, []byte, er
 			vote.Signature[:32],
 			vote.Signature[32:],
 			v,
-			suffix,
+			mustDecodeString(lr[1]),
 		}
 	}
 	if len(addrs) == 0 {
