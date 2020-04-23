@@ -34,7 +34,7 @@ let createFromLedger = () => {
       Js.Console.log2("appInfo", appInfo);
       Js.Promise.reject(Not_found);
     } else {
-      Js.Console.log("unknown error");
+      Js.Console.log(pubKeyInfo.error_message);
       Js.Promise.reject(Not_found);
     };
   } else {
