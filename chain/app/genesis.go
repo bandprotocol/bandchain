@@ -132,14 +132,14 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			"Crypto price script (Borsh version)",
 			"Oracle script for getting an average crypto price from many sources encoding parameter by borsh.",
 			"./owasm/res/crypto_price_borsh.wasm",
-			`{"Input": "{\\"kind\\": \\"struct\\", \\"fields\\": [ [\\"multiplier\\", \\"u64\\"] ] }","Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ]}"}`,
+			`{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }"}`,
 			`https://ipfs.io/ipfs/QmUrYgDKXT8V8DPdCYMEwPM6n82r6zxbvBf6p4gb4m1RA5`,
 		},
 		{
 			"Gold price script",
 			"Oracle script for getting an average gold price in ATOM",
 			"./owasm/res/gold_price.wasm",
-			`{"Input": "{\\"kind\\": \\"struct\\", \\"fields\\": [ [\\"multiplier\\", \\"u64\\"] ] }","Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ]}"}`,
+			`{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"multiplier\\", \\"u64\\"] ] }","Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }"}`,
 			`https://ipfs.io/ipfs/QmPheBfYjM4fZ6ngSHYrnDgmapZi9r1i4x5hGFUUyZiP5y`,
 		},
 	}
