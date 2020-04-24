@@ -5,6 +5,7 @@ import {SafeMath} from "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import {Ownable} from "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import {IBridge} from "../IBridge.sol";
 
+
 contract DEX is Ownable {
     using SafeMath for uint256;
 
@@ -69,48 +70,48 @@ contract DEX is Ownable {
         return (ethPrice, otherPrice);
     }
 
-    function buy(bytes memory _reportPrice) public payable {
-        IBridge.VerifyOracleDataResult memory result = bridge.relayAndVerify(
-            _reportPrice
-        );
+    // function buy(bytes memory _reportPrice) public payable {
+    //     IBridge.VerifyOracleDataResult memory result = bridge.relayAndVerify(
+    //         _reportPrice
+    //     );
 
-        require(
-            result.oracleScriptId == oracleScriptId,
-            "INVALID_ORACLE_SCRIPT"
-        );
+    //     require(
+    //         result.oracleScriptId == oracleScriptId,
+    //         "INVALID_ORACLE_SCRIPT"
+    //     );
 
-        (uint256 ethPrice, uint256 otherPrice) = bytesToPrices(result.data);
+    //     (uint256 ethPrice, uint256 otherPrice) = bytesToPrices(result.data);
 
-        uint256 tokenEarn = msg.value.mul(ethPrice).div(otherPrice);
+    //     uint256 tokenEarn = msg.value.mul(ethPrice).div(otherPrice);
 
-        _balances[msg.sender][result.params] = _balances[msg.sender][result
-            .params]
-            .add(tokenEarn);
-    }
+    //     _balances[msg.sender][result.params] = _balances[msg.sender][result
+    //         .params]
+    //         .add(tokenEarn);
+    // }
 
-    function sell(uint256 _amount, bytes memory _reportPrice) public {
-        IBridge.VerifyOracleDataResult memory result = bridge.relayAndVerify(
-            _reportPrice
-        );
+    // function sell(uint256 _amount, bytes memory _reportPrice) public {
+    //     IBridge.VerifyOracleDataResult memory result = bridge.relayAndVerify(
+    //         _reportPrice
+    //     );
 
-        require(
-            result.oracleScriptId == oracleScriptId,
-            "INVALID_ORACLE_SCRIPT"
-        );
-        require(
-            _amount <= _balances[msg.sender][result.params],
-            "INSUFFICIENT_TOKENS"
-        );
+    //     require(
+    //         result.oracleScriptId == oracleScriptId,
+    //         "INVALID_ORACLE_SCRIPT"
+    //     );
+    //     require(
+    //         _amount <= _balances[msg.sender][result.params],
+    //         "INSUFFICIENT_TOKENS"
+    //     );
 
-        (uint256 ethPrice, uint256 otherPrice) = bytesToPrices(result.data);
+    //     (uint256 ethPrice, uint256 otherPrice) = bytesToPrices(result.data);
 
-        uint256 ethEarn = _amount.mul(otherPrice).div(ethPrice);
+    //     uint256 ethEarn = _amount.mul(otherPrice).div(ethPrice);
 
-        _balances[msg.sender][result.params] = _balances[msg.sender][result
-            .params]
-            .sub(_amount);
-        msg.sender.transfer(ethEarn);
-    }
+    //     _balances[msg.sender][result.params] = _balances[msg.sender][result
+    //         .params]
+    //         .sub(_amount);
+    //     msg.sender.transfer(ethEarn);
+    // }
 
     function withdraw() public onlyOwner {
         msg.sender.transfer(address(this).balance);
