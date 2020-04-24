@@ -8,6 +8,7 @@ import {TMSignature} from "./TMSignature.sol";
 import {Utils} from "./Utils.sol";
 import {IBridge} from "./IBridge.sol";
 
+
 /// @title Bridge <3 BandChain D3N
 /// @author Band Protocol Team
 contract Bridge is IBridge, Ownable {
@@ -134,53 +135,53 @@ contract Bridge is IBridge, Ownable {
         bytes32 dataHash;
     }
 
-    /// Decodes the encoded result and returns back the decoded data which is the data and its context.
-    /// @param _encodedData The encoded of result and its context.
-    function decodeResult(bytes memory _encodedData)
-        public
-        pure
-        returns (VerifyOracleDataResult memory)
-    {
-        require(_encodedData.length > 40, "INPUT_MUST_BE_LONGER_THAN_40_BYTES");
+    // /// Decodes the encoded result and returns back the decoded data which is the data and its context.
+    // /// @param _encodedData The encoded of result and its context.
+    // function decodeResult(bytes memory _encodedData)
+    //     public
+    //     pure
+    //     returns (VerifyOracleDataResult memory)
+    // {
+    //     require(_encodedData.length > 40, "INPUT_MUST_BE_LONGER_THAN_40_BYTES");
 
-        VerifyOracleDataResult memory result;
-        assembly {
-            mstore(
-                add(result, 0x20),
-                and(mload(add(_encodedData, 0x08)), 0xffffffffffffffff)
-            )
-            mstore(
-                add(result, 0x40),
-                and(mload(add(_encodedData, 0x10)), 0xffffffffffffffff)
-            )
-            mstore(
-                add(result, 0x60),
-                and(mload(add(_encodedData, 0x18)), 0xffffffffffffffff)
-            )
-            mstore(
-                add(result, 0x80),
-                and(mload(add(_encodedData, 0x20)), 0xffffffffffffffff)
-            )
-            mstore(
-                add(result, 0xa0),
-                and(mload(add(_encodedData, 0x28)), 0xffffffffffffffff)
-            )
-        }
+    //     VerifyOracleDataResult memory result;
+    //     assembly {
+    //         mstore(
+    //             add(result, 0x20),
+    //             and(mload(add(_encodedData, 0x08)), 0xffffffffffffffff)
+    //         )
+    //         mstore(
+    //             add(result, 0x40),
+    //             and(mload(add(_encodedData, 0x10)), 0xffffffffffffffff)
+    //         )
+    //         mstore(
+    //             add(result, 0x60),
+    //             and(mload(add(_encodedData, 0x18)), 0xffffffffffffffff)
+    //         )
+    //         mstore(
+    //             add(result, 0x80),
+    //             and(mload(add(_encodedData, 0x20)), 0xffffffffffffffff)
+    //         )
+    //         mstore(
+    //             add(result, 0xa0),
+    //             and(mload(add(_encodedData, 0x28)), 0xffffffffffffffff)
+    //         )
+    //     }
 
-        bytes memory data = new bytes(_encodedData.length - 40);
-        uint256 dataLengthInWords = ((data.length - 1) / 32) + 1;
-        for (uint256 i = 0; i < dataLengthInWords; i++) {
-            assembly {
-                mstore(
-                    add(data, add(0x20, mul(i, 0x20))),
-                    mload(add(_encodedData, add(0x48, mul(i, 0x20))))
-                )
-            }
-        }
-        result.data = data;
+    //     bytes memory data = new bytes(_encodedData.length - 40);
+    //     uint256 dataLengthInWords = ((data.length - 1) / 32) + 1;
+    //     for (uint256 i = 0; i < dataLengthInWords; i++) {
+    //         assembly {
+    //             mstore(
+    //                 add(data, add(0x20, mul(i, 0x20))),
+    //                 mload(add(_encodedData, add(0x48, mul(i, 0x20))))
+    //             )
+    //         }
+    //     }
+    //     result.data = data;
 
-        return result;
-    }
+    //     return result;
+    // }
 
     /// Verifies that the given data is a valid data on BandChain as of the given block height.
     /// @param _blockHeight The block height. Someone must already relay this block.
@@ -196,7 +197,7 @@ contract Bridge is IBridge, Ownable {
         bytes memory _params,
         uint256 _version,
         IAVLMerklePath.Data[] memory _merklePaths
-    ) public view returns (VerifyOracleDataResult memory) {
+    ) public view returns (RequestPacket memory, ResponsePacket memory) {
         bytes32 oracleStateRoot = oracleStates[_blockHeight];
         require(
             oracleStateRoot != bytes32(uint256(0)),
@@ -232,11 +233,16 @@ contract Bridge is IBridge, Ownable {
             "INVALID_ORACLE_DATA_PROOF"
         );
 
-        VerifyOracleDataResult memory result = decodeResult(_data);
-        result.params = _params;
-        result.oracleScriptId = _oracleScriptId;
+        // VerifyOracleDataResult memory result = decodeResult(_data);
+        // result.params = _params;
+        // result.oracleScriptId = _oracleScriptId;
 
-        return result;
+        // TODO: Return request and respond packet
+        // return result;
+        RequestPacket memory req;
+        ResponsePacket memory res;
+
+        return (req, res);
     }
 
     /// Performs oracle state relay and oracle data verification in one go. The caller submits
@@ -244,7 +250,7 @@ contract Bridge is IBridge, Ownable {
     /// @param _data The encoded data for oracle state relay and data verification.
     function relayAndVerify(bytes calldata _data)
         external
-        returns (VerifyOracleDataResult memory result)
+        returns (RequestPacket memory, ResponsePacket memory)
     {
         (bytes memory relayData, bytes memory verifyData) = abi.decode(
             _data,
@@ -258,6 +264,6 @@ contract Bridge is IBridge, Ownable {
             abi.encodePacked(this.verifyOracleData.selector, verifyData)
         );
         require(verifyOk, "VERIFY_ORACLE_DATA_FAILED");
-        return abi.decode(verifyResult, (VerifyOracleDataResult));
+        return abi.decode(verifyResult, (RequestPacket, ResponsePacket));
     }
 }

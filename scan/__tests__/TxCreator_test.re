@@ -15,7 +15,7 @@ describe("expect TxCreator to give the correct message", () => {
     expect({
       mode: "block",
       tx: {
-        msgs: [|
+        msg: [|
           {
             type_: "cosmos-sdk/MsgSend",
             value:
@@ -81,7 +81,7 @@ describe("expect TxCreator to give the correct message", () => {
     expect({
       mode: "block",
       tx: {
-        msgs: [|
+        msg: [|
           {
             type_: "oracle/Request",
             value:

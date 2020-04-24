@@ -176,18 +176,7 @@ let make = () => {
            <Col> <HSpacing size={`px(27)} /> </Col>
            <Col> <DisconnectBtn disconnect /> </Col>
          </>
-       | None =>
-         <Col>
-           <ConnectBtn connect />
-           //  TODO: it will remove later
-           <button
-             onClick={_ => {
-               dispatchModal(OpenModal(Waiting));
-               ();
-             }}>
-             {"waiting" |> React.string}
-           </button>
-         </Col>
+       | None => <Col> <ConnectBtn connect /> </Col>
        }}
     </Row>
     {switch (addressOpt) {
