@@ -96,26 +96,26 @@ func (k Keeper) resolveRequest(
 	)
 
 	if resolveStatus != types.Success {
-		ctx.EventManager().EmitEvents(sdk.Events{
+		ctx.EventManager().EmitEvent(
 			sdk.NewEvent(
 				types.EventTypeRequestExecute,
 				sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", reqID)),
 				sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", resolveStatus)),
-			)})
+			))
 		return resPacketData
 	}
 
 	resultHash, err := k.AddResult(ctx, reqID, reqPacketData, resPacketData)
 	if err != nil {
-		ctx.EventManager().EmitEvents(sdk.Events{
+		ctx.EventManager().EmitEvent(
 			sdk.NewEvent(
 				types.EventTypeRequestExecute,
 				sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", reqID)),
 				sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", types.Failure)),
-			)})
+			))
 		return resPacketData
 	}
-	ctx.EventManager().EmitEvents(sdk.Events{
+	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			types.EventTypeRequestExecute,
 			sdk.NewAttribute(types.AttributeKeyClientID, reqPacketData.ClientID),
@@ -130,7 +130,7 @@ func (k Keeper) resolveRequest(
 			sdk.NewAttribute(types.AttributeKeyResolveTime, fmt.Sprintf("%d", resPacketData.ResolveTime)),
 			sdk.NewAttribute(types.AttributeKeyResult, resPacketData.Result),
 			sdk.NewAttribute(types.AttributeKeyResultHash, hex.EncodeToString(resultHash)),
-		)})
+		))
 	return resPacketData
 }
 

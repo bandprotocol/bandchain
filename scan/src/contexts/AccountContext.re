@@ -7,12 +7,7 @@ type t = {
 type a =
   | Connect(Wallet.t, Address.t, PubKey.t)
   | Disconnect
-  | SendRequest(ID.OracleScript.t, JsBuffer.t, Js.Promise.t(CosmosJS.response_t) => unit)
-  | SendRequestWithLedger;
-
-let bandchain = CosmosJS.network(Env.rpc, "bandchain");
-bandchain->CosmosJS.setPath("m/44'/494'/0'/0/0");
-bandchain->CosmosJS.setBech32MainPrefix("band");
+  | SendRequest(ID.OracleScript.t, JsBuffer.t, Js.Promise.t(TxCreator.response_t) => unit);
 
 let reducer = state =>
   fun
@@ -20,75 +15,31 @@ let reducer = state =>
   | Disconnect => None
   | SendRequest(oracleScriptID, calldata, callback) =>
     switch (state) {
-    | Some({address, wallet}) =>
-      switch (wallet) {
-      | Mnemonic({privKey}) =>
-        callback(
-          {
-            let%Promise {accountNumber, sequence} =
-              bandchain->CosmosJS.getAccounts(address |> Address.toBech32);
-            let msgRequest =
-              StdMsgRequest.create(
-                oracleScriptID,
-                ~calldata,
-                ~requestedValidatorCount=4,
-                ~sufficientValidatorCount=4,
-                ~sender=address,
-                ~feeAmount=1000000,
-                ~gas=3000000,
-                ~accountNumber=accountNumber |> string_of_int,
-                ~sequence=sequence |> string_of_int,
-              );
-            let wrappedMsg = bandchain->CosmosJS.newStdMsgRequest(msgRequest);
-            let signedMsg = bandchain->CosmosJS.sign(wrappedMsg, privKey, "block");
-            let%Promise res = bandchain->CosmosJS.broadcast(signedMsg);
-
-            Promise.ret(res);
-          },
-        )
-      | Ledger(_) => Js.Console.log("Send request via ledger on WIP")
-      };
+    | Some({address, wallet, pubKey}) =>
+      callback(
+        {
+          let%Promise rawTx =
+            TxCreator.createRawTx(
+              address,
+              [|Request(oracleScriptID, calldata, "4", "4", address, "")|],
+            );
+          let%Promise signature = Wallet.sign(TxCreator.sortAndStringify(rawTx), wallet);
+          let signedTx =
+            TxCreator.createSignedTx(
+              ~signature=signature |> JsBuffer.toBase64,
+              ~pubKey,
+              ~tx=rawTx,
+              ~mode="block",
+              (),
+            );
+          TxCreator.broadcast(signedTx);
+        },
+      );
 
       state;
     | None =>
-      callback(Promise.ret(CosmosJS.Unknown));
+      callback(Promise.ret(TxCreator.Unknown));
       state;
-    }
-  | SendRequestWithLedger =>
-    switch (state) {
-    | Some(_) =>
-      // let _ = {
-      //   // TODO: 1. save address to state
-      //   //       2. handle error when ledger doesn't connect.
-      //   let%Promise {address, pubKey} = LedgerJS.getAddressAndPubKey();
-      //   let%Promise {accountNumber, sequence} =
-      //     bandchain->CosmosJS.getAccounts(address |> Address.toBech32);
-      //   let msgRequest =
-      //     StdMsgRequest.create(
-      //       ID.OracleScript.ID(2),
-      //       ~calldata=JsBuffer.fromBase64("AwAAAEJUQ2QAAAAAAAAA"),
-      //       ~requestedValidatorCount=4,
-      //       ~sufficientValidatorCount=4,
-      //       ~sender=address,
-      //       ~feeAmount=1000000,
-      //       ~gas=3000000,
-      //       ~accountNumber=accountNumber |> string_of_int,
-      //       ~sequence=sequence |> string_of_int,
-      //     );
-      //   let stringifiedMsg = msgRequest |> StdMsgRequest.sortAndStringify;
-      //   let%Promise signature = LedgerJS.sign(stringifiedMsg);
-
-      //   let signBase64 = signature |> JsBuffer.toBase64;
-
-      //   let signedMsg = CosmosJS.createSignedMsgRequest(msgRequest, signBase64, pubKey, "block");
-      //   Js.Console.log2("signedMsg", signedMsg);
-      //   let%Promise res = bandchain->CosmosJS.broadcast(signedMsg);
-      //   Js.Console.log(res);
-
-      //   Promise.ret();
-      // };
-      state
-    | None => state
     };
 
 let context = React.createContext(ContextHelper.default);
