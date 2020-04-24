@@ -9,10 +9,6 @@ type a =
   | Disconnect
   | SendRequest(ID.OracleScript.t, JsBuffer.t, Js.Promise.t(TxCreator.response_t) => unit);
 
-let bandchain = CosmosJS.network(Env.rpc, "bandchain");
-bandchain->CosmosJS.setPath("m/44'/494'/0'/0/0");
-bandchain->CosmosJS.setBech32MainPrefix("band");
-
 let reducer = state =>
   fun
   | Connect(wallet, address, pubKey) => Some({wallet, pubKey, address})
