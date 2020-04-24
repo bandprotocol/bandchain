@@ -174,7 +174,7 @@ func prepareRequest(ctx sdk.Context, k Keeper, m MsgRequestData, req types.Reque
 
 	event := sdk.NewEvent(types.EventTypeRequest)
 	event = event.AppendAttributes(sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)))
-	for _, val := range validators {
+	for _, val := range req.RequestedValidators {
 		event = event.AppendAttributes(sdk.NewAttribute(types.AttributeKeyValidator, val.String()))
 	}
 	ctx.EventManager().EmitEvent(event)
