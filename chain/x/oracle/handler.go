@@ -62,10 +62,10 @@ func handleMsgCreateDataSource(ctx sdk.Context, k Keeper, m MsgCreateDataSource)
 	if err != nil {
 		return nil, err
 	}
-	ctx.EventManager().EmitEvents(sdk.Events{sdk.NewEvent(
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeCreateDataSource,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
-	)})
+	))
 	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
 
@@ -83,10 +83,10 @@ func handleMsgEditDataSource(ctx sdk.Context, k Keeper, m MsgEditDataSource) (*s
 	if err != nil {
 		return nil, err
 	}
-	ctx.EventManager().EmitEvents(sdk.Events{sdk.NewEvent(
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeEditDataSource,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", m.DataSourceID)),
-	)})
+	))
 	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
 
@@ -97,10 +97,10 @@ func handleMsgCreateOracleScript(ctx sdk.Context, k Keeper, m MsgCreateOracleScr
 	if err != nil {
 		return nil, err
 	}
-	ctx.EventManager().EmitEvents(sdk.Events{sdk.NewEvent(
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeCreateOracleScript,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
-	)})
+	))
 	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
 
@@ -118,10 +118,10 @@ func handleMsgEditOracleScript(ctx sdk.Context, k Keeper, m MsgEditOracleScript)
 	if err != nil {
 		return nil, err
 	}
-	ctx.EventManager().EmitEvents(sdk.Events{sdk.NewEvent(
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeEditOracleScript,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", m.OracleScriptID)),
-	)})
+	))
 	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
 
@@ -172,31 +172,31 @@ func prepareRequest(ctx sdk.Context, k Keeper, m MsgRequestData, req types.Reque
 		return nil, err
 	}
 
-	ctx.EventManager().EmitEvents(sdk.Events{sdk.NewEvent(
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeRequest,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
-	)})
+	))
 	for _, raw := range env.GetRawRequests() {
 		err := k.PayDataSourceFee(ctx, raw.DataSourceID, m.Sender)
 		if err != nil { // We should fail here if the request tries to use an unknown data source.
 			return nil, err
 		}
-		ctx.EventManager().EmitEvents(sdk.Events{sdk.NewEvent(
+		ctx.EventManager().EmitEvent(sdk.NewEvent(
 			types.EventTypeRawRequest,
 			sdk.NewAttribute(types.AttributeKeyDataSourceID, fmt.Sprintf("%d", raw.DataSourceID)),
 			sdk.NewAttribute(types.AttributeKeyExternalID, fmt.Sprintf("%d", raw.ExternalID)),
 			sdk.NewAttribute(types.AttributeKeyCalldata, string(raw.Calldata)),
-		)})
+		))
 		// TODO: Remove raw request keeper. Make cacher and bandoracled parse from events.
 		err = k.AddRawRequest(ctx, id, raw)
 		if err != nil {
 			return nil, err
 		}
 	}
-	ctx.EventManager().EmitEvents(sdk.Events{sdk.NewEvent(
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeRequest,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
-	)})
+	))
 	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
 
@@ -215,11 +215,11 @@ func handleMsgReportData(ctx sdk.Context, k Keeper, m MsgReportData) (*sdk.Resul
 		// the pending resolve list. This can happen at most one time for any request.
 		k.AddPendingRequest(ctx, m.RequestID)
 	}
-	ctx.EventManager().EmitEvents(sdk.Events{sdk.NewEvent(
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeReport,
 		sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", m.RequestID)),
 		sdk.NewAttribute(types.AttributeKeyValidator, m.Validator.String()),
-	)})
+	))
 	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
 
@@ -228,11 +228,11 @@ func handleMsgAddOracleAddress(ctx sdk.Context, k Keeper, m MsgAddOracleAddress)
 	if err != nil {
 		return nil, err
 	}
-	ctx.EventManager().EmitEvents(sdk.Events{sdk.NewEvent(
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeAddOracleAddress,
 		sdk.NewAttribute(types.AttributeKeyValidator, m.Validator.String()),
 		sdk.NewAttribute(types.AttributeKeyReporter, m.Reporter.String()),
-	)})
+	))
 	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
 
@@ -241,10 +241,10 @@ func handleMsgRemoveOracleAddress(ctx sdk.Context, k Keeper, m MsgRemoveOracleAd
 	if err != nil {
 		return nil, err
 	}
-	ctx.EventManager().EmitEvents(sdk.Events{sdk.NewEvent(
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeRemoveOracleAddress,
 		sdk.NewAttribute(types.AttributeKeyValidator, m.Validator.String()),
 		sdk.NewAttribute(types.AttributeKeyReporter, m.Reporter.String()),
-	)})
+	))
 	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
