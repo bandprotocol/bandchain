@@ -46,7 +46,7 @@ library BlockHeaderMerkleParts {
         uint256 _blockHeight
     ) internal pure returns (bytes32) {
         return
-            Utils.merkleInnerHash( // [Block Header]
+            Utils.merkleInnerHash( // [BlockHeader]
                 Utils.merkleInnerHash( // [3A]
                     Utils.merkleInnerHash( // [2A]
                         _self.versionAndChainIdHash, // [1A]
