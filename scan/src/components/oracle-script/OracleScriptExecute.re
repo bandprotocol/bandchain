@@ -96,7 +96,7 @@ type result_t =
   | Nothing
   | Loading
   | Error(string)
-  | Success(TxCreator.tx_response_t, string);
+  | Success(TxCreator.tx_response_t);
 
 let loadingRender = (wDiv, wImg, h) => {
   <div className={Styles.withWH(wDiv, h)}>
@@ -104,7 +104,7 @@ let loadingRender = (wDiv, wImg, h) => {
   </div>;
 };
 
-let resultRender = result => {
+let resultRender = (result, schema) => {
   switch (result) {
   | Nothing => React.null
   | Loading =>
@@ -120,7 +120,7 @@ let resultRender = result => {
         <Text value=err />
       </div>
     </>
-  | Success(txResponse, schema) => <OracleScriptExecuteResponse txResponse schema />
+  | Success(txResponse) => <OracleScriptExecuteResponse txResponse schema />
   };
 };
 
@@ -142,7 +142,7 @@ module ExecutionPart = {
           |> Js.Promise.then_(res =>
                switch (res) {
                | TxCreator.Tx(txResponse) =>
-                 setResult(_ => Success(txResponse, schema));
+                 setResult(_ => Success(txResponse));
                  Js.Promise.resolve();
                | _ =>
                  setResult(_ =>
@@ -216,7 +216,7 @@ module ExecutionPart = {
           {(result == Loading ? "Sending Request ... " : "Request") |> React.string}
         </button>
       </div>
-      {resultRender(result)}
+      {resultRender(result, schema)}
     </div>;
   };
 };
