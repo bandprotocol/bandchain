@@ -172,15 +172,19 @@ func prepareRequest(ctx sdk.Context, k Keeper, m MsgRequestData, req types.Reque
 		return nil, err
 	}
 
-	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeRequest,
-		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
-	))
+	event := sdk.NewEvent(types.EventTypeRequest)
+	event = event.AppendAttributes(sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)))
+	for _, val := range req.RequestedValidators {
+		event = event.AppendAttributes(sdk.NewAttribute(types.AttributeKeyValidator, val.String()))
+	}
+	ctx.EventManager().EmitEvent(event)
+
 	for _, raw := range env.GetRawRequests() {
 		err := k.PayDataSourceFee(ctx, raw.DataSourceID, m.Sender)
 		if err != nil { // We should fail here if the request tries to use an unknown data source.
 			return nil, err
 		}
+		// TODO: Consume more gas if using more raw requests.
 		ctx.EventManager().EmitEvent(sdk.NewEvent(
 			types.EventTypeRawRequest,
 			sdk.NewAttribute(types.AttributeKeyDataSourceID, fmt.Sprintf("%d", raw.DataSourceID)),
@@ -193,17 +197,13 @@ func prepareRequest(ctx sdk.Context, k Keeper, m MsgRequestData, req types.Reque
 			return nil, err
 		}
 	}
-	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeRequest,
-		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
-	))
+
 	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
 
 func handleMsgReportData(ctx sdk.Context, k Keeper, m MsgReportData) (*sdk.Result, error) {
 	if !k.IsReporter(ctx, m.Validator, m.Reporter) {
-		return nil, sdkerrors.Wrapf(types.ErrReporterNotAuthorized,
-			"val: %s, addr: %s", m.Reporter.String(), m.Validator.String())
+		return nil, types.ErrReporterNotAuthorized
 	}
 	err := k.AddReport(ctx, m.RequestID, types.NewReport(m.Validator, m.DataSet))
 	if err != nil {
