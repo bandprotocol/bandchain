@@ -59,7 +59,7 @@ func GetSignaturesAndPrefix(info *types.SignedHeader) ([]TMSignature, []byte, er
 	addrs := []string{}
 	mapAddrs := map[string]TMSignature{}
 	for i, vote := range info.Commit.Signatures {
-		if vote.Signature == nil {
+		if !vote.ForBlock() {
 			continue
 		}
 		msg := info.Commit.VoteSignBytes(info.ChainID, i)
