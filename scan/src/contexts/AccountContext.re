@@ -7,7 +7,7 @@ type t = {
 type a =
   | Connect(Wallet.t, Address.t, PubKey.t)
   | Disconnect
-  | SendRequest(ID.OracleScript.t, JsBuffer.t, Js.Promise.t(CosmosJS.response_t) => unit);
+  | SendRequest(ID.OracleScript.t, JsBuffer.t, Js.Promise.t(TxCreator.response_t) => unit);
 
 let bandchain = CosmosJS.network(Env.rpc, "bandchain");
 bandchain->CosmosJS.setPath("m/44'/494'/0'/0/0");
@@ -36,7 +36,7 @@ let reducer = state =>
               ~mode="block",
               (),
             );
-          let%Promise res = bandchain->CosmosJS.broadcast(signedTx);
+          let%Promise res = TxCreator.broadcast(signedTx);
 
           Promise.ret(res);
         },
@@ -44,7 +44,7 @@ let reducer = state =>
 
       state;
     | None =>
-      callback(Promise.ret(CosmosJS.Unknown));
+      callback(Promise.ret(TxCreator.Unknown));
       state;
     };
 

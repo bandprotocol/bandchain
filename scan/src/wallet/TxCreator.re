@@ -71,8 +71,19 @@ type t = {
   tx: signed_tx_t,
 };
 
+type tx_response_t = {
+  txHash: Hash.t,
+  rawLog: string,
+  success: bool,
+};
+
+type response_t =
+  | Tx(tx_response_t)
+  | Unknown;
+
 let getAccountInfo = address => {
-  let%Promise info = AxiosRequest.accountInfo(address);
+  let url = Env.rpc ++ "/auth/accounts/" ++ (address |> Address.toBech32);
+  let%Promise info = Axios.get(url);
   let data = info##data;
   Promise.ret(
     JsonUtils.Decode.{
@@ -167,4 +178,23 @@ let createSignedTx = (~signature, ~pubKey, ~tx: raw_tx_t, ~mode, ()) => {
     signatures: [|{pub_key: oldPubKey, public_key: newPubKey, signature}|],
   };
   {mode, tx: signedTx};
+};
+
+let broadcast = signedTx => {
+  /* TODO: FIX THIS MESS */
+  let convert: t => Js.t('a) = [%bs.raw {|
+function(data) {return {...data};}
+  |}];
+
+  let%Promise rawResponse = Axios.postData(Env.rpc ++ "/txs", convert(signedTx));
+  let response = rawResponse##data;
+  Promise.ret(
+    Tx(
+      JsonUtils.Decode.{
+        txHash: response |> at(["txhash"], string) |> Hash.fromHex,
+        rawLog: response |> at(["raw_log"], string),
+        success: response |> optional(field("logs", _ => ())) |> Belt_Option.isSome,
+      },
+    ),
+  );
 };

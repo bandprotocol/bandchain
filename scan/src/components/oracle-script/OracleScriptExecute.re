@@ -96,7 +96,7 @@ type result_t =
   | Nothing
   | Loading
   | Error(string)
-  | Success(CosmosJS.tx_response_t, string);
+  | Success(TxCreator.tx_response_t, string);
 
 let loadingRender = (wDiv, wImg, h) => {
   <div className={Styles.withWH(wDiv, h)}>
@@ -141,7 +141,7 @@ module ExecutionPart = {
           requestPromise
           |> Js.Promise.then_(res =>
                switch (res) {
-               | CosmosJS.Tx(txResponse) =>
+               | TxCreator.Tx(txResponse) =>
                  setResult(_ => Success(txResponse, schema));
                  Js.Promise.resolve();
                | _ =>
