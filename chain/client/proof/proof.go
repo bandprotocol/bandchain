@@ -10,7 +10,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/rootmulti"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/ethereum/go-ethereum/accounts/abi"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/gorilla/mux"
 	"github.com/tendermint/iavl"
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
@@ -247,7 +246,7 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 				BlockRelayProof: blockRelay,
 			},
 			// TODO: Mock for scan
-			EVMProofBytes: common.Hex2Bytes("aaaa"),
+			EVMProofBytes: mustDecodeString("aaaa"),
 		})
 	}
 }
