@@ -11,7 +11,6 @@
 [@bs.module] external pendingIcon: string = "./pending-icon.svg";
 [@bs.module] external source: string = "./source.svg";
 [@bs.module] external sendCoin: string = "./send-coin.png";
-[@bs.module] external sendCoin: string = "./send-coin.png";
 [@bs.module] external report: string = "./report.png";
 [@bs.module] external copy: string = "./copy.svg";
 [@bs.module] external loadingSpinner: string = "./loading_spinner.gif";
@@ -21,7 +20,9 @@
 [@bs.module] external txLogo: string = "./txLogo.svg";
 [@bs.module] external accountLogo: string = "./account-icon.png";
 [@bs.module] external success: string = "./success.svg";
+[@bs.module] external success2: string = "./success2.svg";
 [@bs.module] external fail: string = "./fail.svg";
+[@bs.module] external fail2: string = "./fail2.svg";
 [@bs.module] external pending: string = "./pending.svg";
 [@bs.module] external unknown: string = "./unknown.svg";
 [@bs.module] external noRequestIcon: string = "./noRequest.png";
@@ -54,6 +55,7 @@
 [@bs.module] external ibcLogo: string = "./ibcLogo.svg";
 [@bs.module] external ibcDirArrow: string = "./ibcDirArrow.svg";
 [@bs.module] external modalBg: string = "./modal-bg.svg";
+[@bs.module] external waitingModalBg: string = "./waiting-modal-bg.svg";
 [@bs.module] external ledgerIconActive: string = "./ledgerIconActive.svg";
 [@bs.module] external linkIcon: string = "./linkIcon.svg";
 [@bs.module] external ledgerStep1: string = "./ledger-step1.svg";
