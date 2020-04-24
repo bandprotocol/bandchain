@@ -10,6 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/rootmulti"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/gorilla/mux"
 	"github.com/tendermint/iavl"
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
@@ -86,8 +87,8 @@ type JsonProof struct {
 }
 
 type Proof struct {
-	JsonProof JsonProof `json:"jsonProof"`
-	// EVMProofBytes tmbytes.HexBytes `json:"evmProofBytes"`
+	JsonProof     JsonProof        `json:"jsonProof"`
+	EVMProofBytes tmbytes.HexBytes `json:"evmProofBytes"`
 }
 
 func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
@@ -245,7 +246,8 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 				OracleDataProof: oracleData,
 				BlockRelayProof: blockRelay,
 			},
-			// EVMProofBytes: evmProofBytes,
+			// TODO: Mock for scan
+			EVMProofBytes: common.Hex2Bytes("aaaa"),
 		})
 	}
 }
