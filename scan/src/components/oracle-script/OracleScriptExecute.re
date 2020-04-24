@@ -223,8 +223,16 @@ module ExecutionPart = {
 
 [@react.component]
 let make = (~id: ID.OracleScript.t, ~schema: string) =>
+  // let schema2 = {j|{"Input":"{ \"kind\": \"struct\", \"fields\": [ [\"multiplier\", \"u64\"] ] }", "Output": "{ \"kind\": \"struct\", \"fields\": [ [\"px\", \"u64\"] ] }|j};
+  // let schema2 = {f|{"Input": "{ \"kind\": \"struct\", \"fields\": [ [\"multiplier\", \"u64\"] ] }", "Output": "{ \"kind\": \"struct\", \"fields\": [ [\"px\", \"u64\"] ] }|f};
   {
-    let%Opt paramsInput = schema->Borsh.extractFields("Input");
+    let schema2 = {j|{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }”}|j};
+
+    Js.Console.log2("schema1", schema);
+    Js.Console.log2("schema2", schema2);
+
+    let%Opt paramsInput = schema2->Borsh.extractFields("Input");
+    // Js.Console.log2("yo", paramsInput);
     Some(<ExecutionPart id schema paramsInput />);
   }
   |> Belt.Option.getWithDefault(
