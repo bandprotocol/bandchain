@@ -32,9 +32,7 @@ let reducer = state =>
               ~mode="block",
               (),
             );
-          let%Promise res = TxCreator.broadcast(signedTx);
-
-          Promise.ret(res);
+          TxCreator.broadcast(signedTx);
         },
       );
 
