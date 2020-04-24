@@ -159,8 +159,8 @@ let createRawTx = (address, msgs) => {
     msgs: msgs->Belt_Array.map(createMsg),
     chain_id: "bandchain",
     fee: {
-      amount: [|{amount: "1000000", denom: "uband"}|],
-      gas: "3000000",
+      amount: [|{amount: "100", denom: "uband"}|],
+      gas: "700000",
     },
     memo: "",
     account_number: accountInfo.accountNumber |> string_of_int,
