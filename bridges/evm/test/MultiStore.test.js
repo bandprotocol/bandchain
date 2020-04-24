@@ -1,8 +1,8 @@
-const MultiStoreMerkleParts = artifacts.require("MultiStoreMerklePartsMock");
+const MultiStore = artifacts.require("MultiStoreMock");
 
-contract("MultiStoreMerkleParts", () => {
+contract("MultiStore", () => {
     beforeEach(async () => {
-        this.contract = await MultiStoreMerkleParts.new();
+        this.contract = await MultiStore.new();
     });
 
     context("getAppHash", () => {
@@ -15,8 +15,7 @@ contract("MultiStoreMerkleParts", () => {
                         "0xD0EE29EDB1A80F80B6DC2C058B07E85846E2A1D4EC49FCE1DD0CF1B946CCF456",
                         "0x7C42CE4D440B05F9B1019577C43BE61C2E00FCEE065CC04945DA2B967B70F501",
                         "0x1F1F381B147866B258B3F9B57B79BCEA8C8B42E66EA8FE02A663C7D768B4DFC8"
-                    ],
-                    "0x066f7261636c6520"
+                    ]
                 )
             )
                 .toString()

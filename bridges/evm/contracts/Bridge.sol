@@ -1,6 +1,7 @@
 pragma solidity 0.5.14;
 pragma experimental ABIEncoderV2;
 import {BlockHeaderMerkleParts} from "./BlockHeaderMerkleParts.sol";
+import {MultiStore} from "./MultiStore.sol";
 import {SafeMath} from "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import {Ownable} from "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import {IAVLMerklePath} from "./IAVLMerklePath.sol";
@@ -13,6 +14,7 @@ import {IBridge} from "./IBridge.sol";
 /// @author Band Protocol Team
 contract Bridge is IBridge, Ownable {
     using BlockHeaderMerkleParts for BlockHeaderMerkleParts.Data;
+    using MultiStore for MultiStore.Data;
     using IAVLMerklePath for IAVLMerklePath.Data;
     using TMSignature for TMSignature.Data;
     using SafeMath for uint256;
@@ -61,49 +63,18 @@ contract Bridge is IBridge, Ownable {
 
     /// Relays a new oracle state to the bridge contract.
     /// @param _blockHeight The height of block to relay to this bridge contract.
-    /// @param _oracleIAVLStateHash Hash of iAVL Merkle that represents the state of oracle store.
-    /// @param _otherStoresMerkleHash Hash of internal Merkle node for other Tendermint storages.
+    /// @param _multiStore Extra multi store to compute app hash. See MultiStore lib.
     /// @param _merkleParts Extra merkle parts to compute block hash. See BlockHeaderMerkleParts lib.
     /// @param _signedDataPrefix Prefix data prepended prior to signing block hash.
     /// @param _signatures The signatures signed on this block, sorted alphabetically by address.
     function relayOracleState(
         uint256 _blockHeight,
-        bytes32 _oracleIAVLStateHash,
-        bytes32 _otherStoresMerkleHash,
-        bytes32 _supplyStoresMerkleHash,
+        MultiStore.Data memory _multiStore,
         BlockHeaderMerkleParts.Data memory _merkleParts,
         bytes memory _signedDataPrefix,
         TMSignature.Data[] memory _signatures
     ) public {
-        // Computes Tendermint's application state hash at this given block. AppHash is actually a
-        // Merkle hash on muliple stores. Luckily, we only care about "zoracle" tree and all other
-        // stores can just be combined into one bytes32 hash off-chain.
-        //
-        //                                            ____________appHash_________
-        //                                          /                              \
-        //                   ____otherStoresMerkleHash ____                         ___innerHash___
-        //                 /                                \                     /                  \
-        //         _____ h5 ______                    ______ h6 _______        supply              zoracle
-        //       /                \                 /                  \
-        //     h1                  h2             h3                    h4
-        //     /\                  /\             /\                    /\
-        //  acc  distribution   gov  main     mint  params     slashing   staking
-        bytes32 appHash = Utils.merkleInnerHash(
-            _otherStoresMerkleHash,
-            Utils.merkleInnerHash(
-                _supplyStoresMerkleHash,
-                Utils.merkleLeafHash(
-                    abi.encodePacked(
-                        hex"077a6f7261636c6520", // uint8(7) + "zoracle" + uint8(32)
-                        sha256(
-                            abi.encodePacked(
-                                sha256(abi.encodePacked(_oracleIAVLStateHash))
-                            )
-                        )
-                    )
-                )
-            )
-        );
+        bytes32 appHash = _multiStore.getAppHash();
         // Computes Tendermint's block header hash at this given block.
         bytes32 blockHeader = _merkleParts.getBlockHeader(
             appHash,
@@ -126,7 +97,7 @@ contract Bridge is IBridge, Ownable {
             sumVotingPower.mul(3) > totalValidatorPower.mul(2),
             "INSUFFICIENT_VALIDATOR_SIGNATURES"
         );
-        oracleStates[_blockHeight] = _oracleIAVLStateHash;
+        oracleStates[_blockHeight] = _multiStore.oracleIAVLStateHash;
     }
 
     /// Helper struct to workaround Solidity's "stack too deep" problem.
