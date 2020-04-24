@@ -20,8 +20,6 @@ type response_t =
 
 [@bs.send] external getECPairPriv: (t, string) => JsBuffer.t = "getECPairPriv";
 
-[@bs.send] external _getAccounts: (t, string) => Js.Promise.t(Js.Json.t) = "getAccounts";
-
 [@bs.send] external _broadcast: (t, TxCreator.t) => Js.Promise.t(Js.Json.t) = "broadcast";
 
 let broadcast = (instance, signedMsg) => {
