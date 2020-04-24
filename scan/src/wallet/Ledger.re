@@ -58,13 +58,8 @@ let getAddressAndPubKey = x => {
   };
 };
 
-// TODO:
-// let sign = message => {
-//   let%Promise app = getApp();
-
-//   //  TODO: remove hard-coded path later
-//   let path = [|44, 118, 0, 0, 0|];
-//   let responsePromise = LedgerJS.sign(app, path, message);
-//   let%Promise response = responsePromise;
-//   response.signature |> LedgerJS.signatureImport |> JsBuffer.from |> Promise.ret;
-// };
+let sign = (x, message) => {
+  let responsePromise = LedgerJS.sign(x.app, x.path, message);
+  let%Promise response = responsePromise;
+  response.signature |> Secp256k1.signatureImport |> JsBuffer.from |> Promise.ret;
+};
