@@ -61,8 +61,7 @@ let renderSend = (send: TxSub.Msg.Send.t) => {
 };
 // TODO: move it to file later.
 let renderRequest = (request: TxSub.Msg.Request.t) => {
-  let calldataKVs =
-    Borsh.decode(request.schema, "Input", request.calldata)->Belt_Option.getWithDefault([||]);
+  let calldataKVsOpt = Borsh.decode(request.schema, "Input", request.calldata);
   <Col size=Styles.thirdCol alignSelf=Col.Start>
     <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
@@ -81,17 +80,20 @@ let renderRequest = (request: TxSub.Msg.Request.t) => {
       <CopyButton data={request.calldata} />
     </div>
     <VSpacing size=Spacing.md />
-    // TODO: Mock calldata
-    <KVTable
-      tableWidth=480
-      rows={
-        calldataKVs
-        ->Belt_Array.map(({fieldName, fieldValue}) =>
-            [KVTable.Value(fieldName), KVTable.Value(fieldValue)]
-          )
-        ->Belt_List.fromArray
-      }
-    />
+    {switch (calldataKVsOpt) {
+     | Some(calldataKVs) =>
+       <KVTable
+         tableWidth=480
+         rows={
+           calldataKVs
+           ->Belt_Array.map(({fieldName, fieldValue}) =>
+               [KVTable.Value(fieldName), KVTable.Value(fieldValue)]
+             )
+           ->Belt_List.fromArray
+         }
+       />
+     | None => React.null
+     }}
     <VSpacing size=Spacing.xl />
     <div className=Styles.topicContainer>
       <Text
