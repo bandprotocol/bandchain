@@ -20,7 +20,7 @@ The majority of existing smart contract platforms, while support trustless execu
 
 3. **Data Flexibility:** The system must be generic and able to support different ways to fetch and aggregate data, including both permissionless, publicly available data and information guarded by centralized parties.
 
-BandChain archives the aforementioned goals with a blockchain specifically built for off-chain data curation. The blockchain supports generic data requests and on-chain aggregations with WebAssembly-powered oracle scripts. Oracle results on BandChain blockchain can be sent across to other blockchains via the [Inter-Blockchain Communication protocol (IBC)](https://cosmos.network/ibc/) or customized one-way bridges with minimal latency.
+BandChain achieves the aforementioned goals with a blockchain specifically built for off-chain data curation. The blockchain supports generic data requests and on-chain aggregations with WebAssembly-powered oracle scripts. Oracle results on BandChain blockchain can be sent across to other blockchains via the [Inter-Blockchain Communication protocol (IBC)](https://cosmos.network/ibc/) or customized one-way bridges with minimal latency.
 
 # Table of Contents
 
