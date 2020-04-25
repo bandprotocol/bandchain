@@ -7,6 +7,7 @@ module Mini = {
   type oracle_script_internal_t = {
     id: ID.OracleScript.t,
     name: string,
+    schema: string,
   };
 
   type aggregate_internal_t = {count: int};
@@ -55,6 +56,7 @@ module Mini = {
             oracleScript: oracle_script @bsRecord {
               id @bsDecoder(fn: "ID.OracleScript.fromJson")
               name
+              schema
             }
             transaction @bsRecord {
               txHash: tx_hash @bsDecoder(fn: "GraphQLParser.hash")
@@ -93,6 +95,7 @@ module Mini = {
           oracleScript: oracle_script @bsRecord {
             id @bsDecoder(fn: "ID.OracleScript.fromJson")
             name
+            schema
           }
           transaction @bsRecord {
             txHash: tx_hash @bsDecoder(fn: "GraphQLParser.hash")
@@ -125,6 +128,7 @@ module Mini = {
           oracle_script @bsRecord {
             id @bsDecoder(fn: "ID.OracleScript.fromJson")
             name
+            schema
           }
           transaction @bsRecord {
             txHash: tx_hash @bsDecoder(fn: "GraphQLParser.hash")
@@ -313,12 +317,10 @@ type data_source_internal_t = {
   name: string,
 };
 
-type oracle_script_code_internal_t = {schema: string};
-
 type oracle_script_internal_t = {
   oracleScriptID: ID.OracleScript.t,
   name: string,
-  oracleScriptCode: oracle_script_code_internal_t,
+  schema: string,
 };
 
 type raw_data_request_t = {
@@ -367,9 +369,7 @@ module SingleRequestConfig = [%graphql
         oracleScript: oracle_script @bsRecord {
           oracleScriptID:id @bsDecoder(fn: "ID.OracleScript.fromJson")
           name
-          oracleScriptCode: oracle_script_code  @bsRecord {
-            schema @bsDecoder(fn: "Belt_Option.getExn")
-          }
+          schema
         }
         calldata @bsDecoder(fn: "GraphQLParser.buffer")
         requestedValidators: requested_validators @bsRecord {
@@ -427,9 +427,7 @@ module MultiRequestConfig = [%graphql
         oracleScript: oracle_script @bsRecord {
           oracleScriptID:id @bsDecoder(fn: "ID.OracleScript.fromJson")
           name
-          oracleScriptCode: oracle_script_code  @bsRecord {
-            schema @bsDecoder(fn: "Belt_Option.getExn")
-          }
+          schema
         }
         calldata @bsDecoder(fn: "GraphQLParser.buffer")
         requestedValidators: requested_validators @bsRecord {

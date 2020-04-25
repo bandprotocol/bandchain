@@ -54,7 +54,7 @@ let make = (~reqID) =>
     let remainingBlock =
       blockCount >= request.expirationHeight ? 0 : request.expirationHeight - blockCount;
     let calldataKVs =
-      Borsh.decode(request.oracleScript.oracleScriptCode.schema, "Input", request.calldata)
+      Borsh.decode(request.oracleScript.schema, "Input", request.calldata)
       ->Belt_Option.getWithDefault([||]);
 
     <>
@@ -257,7 +257,7 @@ let make = (~reqID) =>
         {switch (request.result) {
          | Some(result) =>
            let resultKVs =
-             Borsh.decode(request.oracleScript.oracleScriptCode.schema, "Output", result)
+             Borsh.decode(request.oracleScript.schema, "Output", result)
              ->Belt_Option.getWithDefault([||]);
            <>
              <VSpacing size=Spacing.lg />
