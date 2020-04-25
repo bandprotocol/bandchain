@@ -1,3 +1,5 @@
+// TODO: remove later
+
 type amount_t = {
   amount: string,
   denom: string,

@@ -86,8 +86,8 @@ type JsonProof struct {
 }
 
 type Proof struct {
-	JsonProof JsonProof `json:"jsonProof"`
-	// EVMProofBytes tmbytes.HexBytes `json:"evmProofBytes"`
+	JsonProof     JsonProof        `json:"jsonProof"`
+	EVMProofBytes tmbytes.HexBytes `json:"evmProofBytes"`
 }
 
 func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
@@ -245,7 +245,8 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 				OracleDataProof: oracleData,
 				BlockRelayProof: blockRelay,
 			},
-			// EVMProofBytes: evmProofBytes,
+			// TODO: Mock for scan
+			EVMProofBytes: mustDecodeString("aaaa"),
 		})
 	}
 }
