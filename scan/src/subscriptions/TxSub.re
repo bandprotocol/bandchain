@@ -6,7 +6,7 @@ module RawDataReport = {
 
   let decode = json =>
     JsonUtils.Decode.{
-      externalDataID: json |> field("externalDataID", int),
+      externalDataID: json |> field("externalID", int),
       data: json |> field("data", string) |> JsBuffer.fromBase64,
     };
 };
