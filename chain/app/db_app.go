@@ -270,6 +270,12 @@ func (app *dbBandApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBl
 	if err != nil {
 		panic(err)
 	}
+
+	totalSupply := app.BandApp.SupplyKeeper.GetSupply(app.DeliverContext).GetTotal()
+	err = app.dbBand.SetTotalSupply(totalSupply)
+	if err != nil {
+		panic(err)
+	}
 	err = app.dbBand.SetLastProcessedHeight(req.GetHeight())
 	if err != nil {
 		panic(err)

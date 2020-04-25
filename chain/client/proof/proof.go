@@ -1,25 +1,17 @@
 package proof
 
 import (
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"math/big"
 	"net/http"
-	"sort"
 	"strconv"
-	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/store/rootmulti"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/ethereum/go-ethereum/accounts/abi"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/gorilla/mux"
 	"github.com/tendermint/iavl"
-	"github.com/tendermint/tendermint/crypto/secp256k1"
-	"github.com/tendermint/tendermint/crypto/tmhash"
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
 
@@ -27,73 +19,23 @@ import (
 )
 
 var (
-	relayArguments  abi.Arguments
-	verifyArguments abi.Arguments
+// relayArguments  abi.Arguments
+// verifyArguments abi.Arguments
 )
 
-// TODO: Remove this variable
 const (
-	requestIDTag = "requestID"
+	RequestIDTag = "requestID"
 )
 
 func init() {
-	err := json.Unmarshal(relayFormat, &relayArguments)
-	if err != nil {
-		panic(err)
-	}
-	err = json.Unmarshal(verifyFormat, &verifyArguments)
-	if err != nil {
-		panic(err)
-	}
-}
-
-type IAVLMerklePath struct {
-	IsDataOnRight  bool             `json:"isDataOnRight"`
-	SubtreeHeight  uint8            `json:"subtreeHeight"`
-	SubtreeSize    uint64           `json:"subtreeSize"`
-	SubtreeVersion uint64           `json:"subtreeVersion"`
-	SiblingHash    tmbytes.HexBytes `json:"siblingHash"`
-}
-
-type IAVLMerklePathEthereum struct {
-	IsDataOnRight  bool
-	SubtreeHeight  uint8
-	SubtreeSize    *big.Int
-	SubtreeVersion *big.Int
-	SiblingHash    common.Hash
-}
-
-func (merklePath *IAVLMerklePath) encodeToEthFormat() IAVLMerklePathEthereum {
-	return IAVLMerklePathEthereum{
-		merklePath.IsDataOnRight,
-		merklePath.SubtreeHeight,
-		big.NewInt(int64(merklePath.SubtreeSize)),
-		big.NewInt(int64(merklePath.SubtreeVersion)),
-		common.BytesToHash(merklePath.SiblingHash),
-	}
-}
-
-type TMSignature struct {
-	R                tmbytes.HexBytes `json:"r"`
-	S                tmbytes.HexBytes `json:"s"`
-	V                uint8            `json:"v"`
-	SignedDataSuffix tmbytes.HexBytes `json:"signedDataSuffix"`
-}
-
-type TMSignatureEthereum struct {
-	R                common.Hash
-	S                common.Hash
-	V                uint8
-	SignedDataSuffix []byte
-}
-
-func (signature *TMSignature) encodeToEthFormat() TMSignatureEthereum {
-	return TMSignatureEthereum{
-		common.BytesToHash(signature.R),
-		common.BytesToHash(signature.S),
-		signature.V,
-		signature.SignedDataSuffix,
-	}
+	// err := json.Unmarshal(relayFormat, &relayArguments)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// err = json.Unmarshal(verifyFormat, &verifyArguments)
+	// if err != nil {
+	// 	panic(err)
+	// }
 }
 
 type BlockRelayProof struct {
@@ -103,50 +45,39 @@ type BlockRelayProof struct {
 	Signatures             []TMSignature          `json:"signatures"`
 }
 
-func (blockRelay *BlockRelayProof) encodeToEthData(blockHeight uint64) ([]byte, error) {
-	parseSignatures := make([]TMSignatureEthereum, len(blockRelay.Signatures))
-	for i, sig := range blockRelay.Signatures {
-		parseSignatures[i] = sig.encodeToEthFormat()
-	}
-	return relayArguments.Pack(
-		big.NewInt(int64(blockHeight)),
-		blockRelay.MultiStoreProof.encodeToEthFormat(),
-		blockRelay.BlockHeaderMerkleParts.encodeToEthFormat(),
-		blockRelay.SignedDataPrefix,
-		parseSignatures,
-	)
-}
+// func (blockRelay *BlockRelayProof) encodeToEthData(blockHeight uint64) ([]byte, error) {
+// 	parseSignatures := make([]TMSignatureEthereum, len(blockRelay.Signatures))
+// 	for i, sig := range blockRelay.Signatures {
+// 		parseSignatures[i] = sig.encodeToEthFormat()
+// 	}
+// 	return relayArguments.Pack(
+// 		big.NewInt(int64(blockHeight)),
+// 		blockRelay.MultiStoreProof.encodeToEthFormat(),
+// 		blockRelay.BlockHeaderMerkleParts.encodeToEthFormat(),
+// 		blockRelay.SignedDataPrefix,
+// 		parseSignatures,
+// 	)
+// }
 
-// TODO: It will be fixed on #1325
 type OracleDataProof struct {
-	Version        uint64                `json:"version"`
-	RequestID      oracle.RequestID      `json:"requestID"`
-	OracleScriptID oracle.OracleScriptID `json:"oracleScriptID"`
-	Calldata       tmbytes.HexBytes      `json:"calldata"`
-	Data           tmbytes.HexBytes      `json:"data"`
-	MerklePaths    []IAVLMerklePath      `json:"merklePaths"`
+	Version        uint64                          `json:"version"`
+	RequestPacket  oracle.OracleRequestPacketData  `json:"requestPacket"`
+	ResponsePacket oracle.OracleResponsePacketData `json:"responsePacket"`
+	MerklePaths    []IAVLMerklePath                `json:"merklePaths"`
 }
 
-func (oracleData *OracleDataProof) encodeToEthData(blockHeight uint64) ([]byte, error) {
-	parsePaths := make([]IAVLMerklePathEthereum, len(oracleData.MerklePaths))
-	for i, path := range oracleData.MerklePaths {
-		parsePaths[i] = path.encodeToEthFormat()
-	}
-	return verifyArguments.Pack(
-		big.NewInt(int64(blockHeight)),
-		oracleData.Data,
-		uint64(oracleData.RequestID),
-		uint64(oracleData.OracleScriptID),
-		oracleData.Calldata,
-		big.NewInt(int64(oracleData.Version)),
-		parsePaths,
-	)
-}
-
-type Proof struct {
-	JsonProof     JsonProof        `json:"jsonProof"`
-	EVMProofBytes tmbytes.HexBytes `json:"evmProofBytes"`
-}
+// func (o *OracleDataProof) encodeToEthData(blockHeight uint64) ([]byte, error) {
+// 	parsePaths := make([]IAVLMerklePathEthereum, len(o.MerklePaths))
+// 	for i, path := range o.MerklePaths {
+// 		parsePaths[i] = path.encodeToEthFormat()
+// 	}
+// 	return verifyArguments.Pack(
+// 		big.NewInt(int64(o.Version)),
+// 		transformRequestPacket(o.RequestPacket),
+// 		transformResponsePacket(o.ResponsePacket),
+// 		parsePaths,
+// 	)
+// }
 
 type JsonProof struct {
 	BlockHeight     uint64          `json:"blockHeight"`
@@ -154,132 +85,31 @@ type JsonProof struct {
 	BlockRelayProof BlockRelayProof `json:"blockRelayProof"`
 }
 
-func RecoverETHAddress(msg, sig, signer []byte) ([]byte, uint8, error) {
-	for i := uint8(0); i < 2; i++ {
-		pubuc, err := crypto.SigToPub(tmhash.Sum(msg), append(sig, byte(i)))
-		if err != nil {
-			return nil, 0, err
-		}
-		pub := crypto.CompressPubkey(pubuc)
-		var tmp [33]byte
-
-		copy(tmp[:], pub)
-		if string(signer) == string(secp256k1.PubKeySecp256k1(tmp).Address()) {
-			return crypto.PubkeyToAddress(*pubuc).Bytes(), 27 + i, nil
-		}
-	}
-	return nil, 0, fmt.Errorf("No match address found")
+type Proof struct {
+	JsonProof     JsonProof        `json:"jsonProof"`
+	EVMProofBytes tmbytes.HexBytes `json:"evmProofBytes"`
 }
 
-// Combine MultiStoreProof + BlockHeaderMerkleParts
-func GetBlockRelayProof(cliCtx context.CLIContext, blockId uint64) (BlockRelayProof, error) {
-	bp := BlockRelayProof{}
-	_blockId := int64(blockId)
-	rc, err := cliCtx.Client.Commit(&_blockId)
-	if err != nil {
-		return BlockRelayProof{}, err
-	}
-	sh := rc.SignedHeader
-
-	block := *sh.Header
-	commit := *sh.Commit
-
-	bp.BlockHeaderMerkleParts = GetBlockHeaderMerkleParts(cliCtx.Codec, sh.Header)
-
-	leftMsg := ""
-	bp.Signatures = []TMSignature{}
-	addrs := []string{}
-	mapAddrs := map[string]TMSignature{}
-	for i, vote := range commit.Signatures {
-		msg := commit.VoteSignBytes(block.ChainID, i)
-		lr := strings.Split(hex.EncodeToString(msg), hex.EncodeToString(block.Hash()))
-
-		if leftMsg != "" && leftMsg != lr[0] {
-			return BlockRelayProof{}, fmt.Errorf("Inconsistent prefix signature bytes")
-		}
-		leftMsg = lr[0]
-
-		lr1, err := hex.DecodeString(lr[1])
-		if err != nil {
-			continue
-		}
-
-		addr, v, err := RecoverETHAddress(msg, vote.Signature, vote.ValidatorAddress)
-		if err != nil {
-			continue
-		}
-		addrs = append(addrs, string(addr))
-		mapAddrs[string(addr)] = TMSignature{
-			vote.Signature[:32],
-			vote.Signature[32:],
-			v,
-			lr1,
-		}
-	}
-	if len(addrs) == 0 {
-		return BlockRelayProof{}, fmt.Errorf("Too many invalid precommits")
-	}
-
-	sort.Strings(addrs)
-	for _, addr := range addrs {
-		bp.Signatures = append(bp.Signatures, mapAddrs[addr])
-	}
-
-	kb, err := hex.DecodeString(leftMsg)
-	if err != nil {
-		return BlockRelayProof{}, err
-	}
-	bp.SignedDataPrefix = kb
-
-	if err != nil {
-		return BlockRelayProof{}, err
-	}
-
-	return bp, nil
-}
-
-// TODO: It will be fixed #1326
 func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		intRequestID, err := strconv.ParseUint(vars[requestIDTag], 10, 64)
+		intRequestID, err := strconv.ParseUint(vars[RequestIDTag], 10, 64)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 		requestID := oracle.RequestID(intRequestID)
 
-		rc, err := cliCtx.Client.Commit(nil)
+		commit, err := cliCtx.Client.Commit(nil)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-
-		brp, err := GetBlockRelayProof(cliCtx, uint64(rc.Height))
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		var queryRequest oracle.RequestQuerierInfo
-		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/oracle/request/%d", requestID), nil)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		err = cliCtx.Codec.UnmarshalJSON(res, &queryRequest)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		key := oracle.ResultStoreKey(requestID)
 
 		resp, err := cliCtx.Client.ABCIQueryWithOptions(
 			"/store/oracle/key",
-			key,
-			rpcclient.ABCIQueryOptions{Height: rc.Height - 1, Prove: true},
+			oracle.ResultStoreKey(requestID),
+			rpcclient.ABCIQueryOptions{Height: commit.Height - 1, Prove: true},
 		)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
@@ -298,59 +128,89 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		var iavlOpData []byte
-		var multistoreOpData []byte
+		var iavlProof iavl.ValueOp
+		var multiStoreProof rootmulti.MultiStoreProofOp
 		for _, op := range ops {
 			opType := op.GetType()
 			if opType == "iavl:v" {
-				iavlOpData = op.GetData()
+				err := cliCtx.Codec.UnmarshalBinaryLengthPrefixed(op.GetData(), &iavlProof)
+				if err != nil {
+					rest.WriteErrorResponse(w, http.StatusInternalServerError,
+						fmt.Sprintf("iavl: %s", err.Error()),
+					)
+					return
+				}
 			} else if opType == "multistore" {
-				multistoreOpData = op.GetData()
+				mp, err := rootmulti.MultiStoreProofOpDecoder(op)
+				multiStoreProof = mp.(rootmulti.MultiStoreProofOp)
+				if err != nil {
+					rest.WriteErrorResponse(w, http.StatusInternalServerError,
+						fmt.Sprintf("multiStore: %s", err.Error()),
+					)
+					return
+				}
 			}
 		}
-		if iavlOpData == nil || multistoreOpData == nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, "proof was corrupted")
-			return
-		}
 
-		var opiavl iavl.ValueOp
-		err = cliCtx.Codec.UnmarshalBinaryLengthPrefixed(iavlOpData, &opiavl)
+		eventHeight := iavlProof.Proof.Leaves[0].Version
+		blockResults, err := cliCtx.Client.BlockResults(&eventHeight)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-
-		odp := OracleDataProof{}
-		odp.RequestID = requestID
-		odp.Data = resp.Response.GetValue()
-		odp.OracleScriptID = queryRequest.Request.OracleScriptID
-		odp.Calldata = queryRequest.Request.Calldata
-		odp.Version = uint64(opiavl.Proof.Leaves[0].Version)
-
-		for i := len(opiavl.Proof.LeftPath) - 1; i >= 0; i-- {
-			path := opiavl.Proof.LeftPath[i]
-			imp := IAVLMerklePath{}
-			imp.SubtreeHeight = uint8(path.Height)
-			imp.SubtreeSize = uint64(path.Size)
-			imp.SubtreeVersion = uint64(path.Version)
-			if len(path.Right) == 0 {
-				imp.SiblingHash = path.Left
-				imp.IsDataOnRight = true
-			} else {
-				imp.SiblingHash = path.Right
-				imp.IsDataOnRight = false
-			}
-			odp.MerklePaths = append(odp.MerklePaths, imp)
-		}
-
-		var multiStoreProof rootmulti.MultiStoreProofOp
-		err = cliCtx.Codec.UnmarshalBinaryLengthPrefixed(multistoreOpData, &multiStoreProof)
+		signatures, prefix, err := GetSignaturesAndPrefix(&commit.SignedHeader)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
+		blockRelay := BlockRelayProof{
+			MultiStoreProof:        GetMultiStoreProof(multiStoreProof),
+			BlockHeaderMerkleParts: GetBlockHeaderMerkleParts(cliCtx.Codec, commit.Header),
+			Signatures:             signatures,
+			SignedDataPrefix:       prefix,
+		}
 
-		brp.MultiStoreProof = GetMultiStoreProof(multiStoreProof)
+		var reqPacket oracle.OracleRequestPacketData
+		var resPacket oracle.OracleResponsePacketData
+		for _, ev := range blockResults.EndBlockEvents {
+			if ev.GetType() != oracle.EventTypeRequestExecute {
+				continue
+			}
+			for _, kv := range ev.GetAttributes() {
+				switch string(kv.Key) {
+				case oracle.AttributeKeyRequestID:
+					resPacket.RequestID = oracle.RequestID(mustParseInt64(kv.Value))
+				case oracle.AttributeKeyClientID:
+					reqPacket.ClientID = string(kv.Value)
+					resPacket.ClientID = string(kv.Value)
+				case oracle.AttributeKeyOracleScriptID:
+					reqPacket.OracleScriptID = oracle.OracleScriptID(mustParseInt64(kv.Value))
+				case oracle.AttributeKeyCalldata:
+					reqPacket.Calldata = string(kv.Value)
+				case oracle.AttributeKeyAskCount:
+					reqPacket.AskCount = mustParseInt64(kv.Value)
+				case oracle.AttributeKeyMinCount:
+					reqPacket.MinCount = mustParseInt64(kv.Value)
+				case oracle.AttributeKeyAnsCount:
+					resPacket.AnsCount = mustParseInt64(kv.Value)
+				case oracle.AttributeKeyRequestTime:
+					resPacket.RequestTime = mustParseInt64(kv.Value)
+				case oracle.AttributeKeyResolveTime:
+					resPacket.ResolveTime = mustParseInt64(kv.Value)
+				case oracle.AttributeKeyResolveStatus:
+					resPacket.ResolveStatus = oracle.ResolveStatus(mustParseInt64(kv.Value))
+				case oracle.AttributeKeyResult:
+					resPacket.Result = string(kv.Value)
+				}
+			}
+		}
+
+		oracleData := OracleDataProof{
+			Version:        uint64(eventHeight),
+			RequestPacket:  reqPacket,
+			ResponsePacket: resPacket,
+			MerklePaths:    GetIAVLMerklePaths(&iavlProof),
+		}
 
 		// Calculate byte for proofbytes
 		var relayAndVerifyArguments abi.Arguments
@@ -360,30 +220,33 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			panic(err)
 		}
 
-		blockRelayBytes, err := brp.encodeToEthData(uint64(rc.Height))
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+		// TODO: Add evm proof when contract completed
+		// blockRelayBytes, err := blockRelay.encodeToEthData(uint64(commit.Height))
+		// if err != nil {
+		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		// 	return
+		// }
 
-		oracleDataBytes, err := odp.encodeToEthData(uint64(rc.Height))
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+		// oracleDataBytes, err := oracleData.encodeToEthData(uint64(commit.Height))
+		// if err != nil {
+		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		// 	return
+		// }
 
-		evmProofBytes, err := relayAndVerifyArguments.Pack(blockRelayBytes, oracleDataBytes)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
+		// evmProofBytes, err := relayAndVerifyArguments.Pack(blockRelayBytes, oracleDataBytes)
+		// if err != nil {
+		// 	rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		// 	return
+		// }
 
 		rest.PostProcessResponse(w, cliCtx, Proof{
 			JsonProof: JsonProof{
-				BlockHeight:     uint64(rc.Height),
-				OracleDataProof: odp,
-				BlockRelayProof: brp},
-			EVMProofBytes: evmProofBytes,
+				BlockHeight:     uint64(commit.Height),
+				OracleDataProof: oracleData,
+				BlockRelayProof: blockRelay,
+			},
+			// TODO: Mock for scan
+			EVMProofBytes: mustDecodeString("aaaa"),
 		})
 	}
 }

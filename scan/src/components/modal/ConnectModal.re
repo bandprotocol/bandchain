@@ -5,9 +5,9 @@ module Styles = {
     style([
       display(`flex),
       justifyContent(`center),
-      width(`percent(100.)),
-      height(`percent(100.)),
       position(`relative),
+      width(`px(640)),
+      height(`px(480)),
     ]);
 
   let bg =
@@ -120,14 +120,14 @@ let make = _ => {
             />
             {[|Mnemonic, Ledger|]
              ->Belt_Array.map(method =>
-                 <>
+                 <React.Fragment key={method |> toLoginMethodString}>
                    <VSpacing size=Spacing.lg />
                    <LoginMethod
                      name=method
                      active={loginMethod == method}
                      onClick={_ => setLoginMethod(_ => method)}
                    />
-                 </>
+                 </React.Fragment>
                )
              ->React.array}
           </div>

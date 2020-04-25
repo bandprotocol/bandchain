@@ -4,6 +4,7 @@ pragma experimental ABIEncoderV2;
 import {Ownable} from "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import {IBridge} from "../IBridge.sol";
 
+
 contract LuckyNumber is Ownable {
     uint64 public oracleScriptId;
     uint64 public maxNumber;
@@ -33,20 +34,20 @@ contract LuckyNumber is Ownable {
         return number;
     }
 
-    function guess(bytes memory _reportPrice) public {
-        IBridge.VerifyOracleDataResult memory result = bridge.relayAndVerify(
-            _reportPrice
-        );
+    // function guess(bytes memory _reportPrice) public {
+    //     IBridge.VerifyOracleDataResult memory result = bridge.relayAndVerify(
+    //         _reportPrice
+    //     );
 
-        require(
-            result.oracleScriptId == oracleScriptId,
-            "INVALID_ORACLE_SCRIPT"
-        );
+    //     require(
+    //         result.oracleScriptId == oracleScriptId,
+    //         "INVALID_ORACLE_SCRIPT"
+    //     );
 
-        require(maxNumber == bytesToU64(result.params), "INVALID_MAX_NUM");
-        require(target == bytesToU64(result.data), "WRONG_GUESS");
-        msg.sender.transfer(address(this).balance);
-    }
+    //     require(maxNumber == bytesToU64(result.params), "INVALID_MAX_NUM");
+    //     require(target == bytesToU64(result.data), "WRONG_GUESS");
+    //     msg.sender.transfer(address(this).balance);
+    // }
 
     function withdraw() public onlyOwner {
         msg.sender.transfer(address(this).balance);

@@ -4,6 +4,7 @@ pragma experimental ABIEncoderV2;
 import {BandChainLib} from "../BandChainLib.sol";
 import {IBridge} from "../IBridge.sol";
 
+
 contract SimplePriceDatabase {
     using BandChainLib for bytes;
 
@@ -22,28 +23,28 @@ contract SimplePriceDatabase {
         bridge = _bridge;
     }
 
-    function update(bytes memory _reportPrice) public {
-        IBridge.VerifyOracleDataResult memory result = bridge.relayAndVerify(
-            _reportPrice
-        );
+    // function update(bytes memory _reportPrice) public {
+    //     IBridge.VerifyOracleDataResult memory result = bridge.relayAndVerify(
+    //         _reportPrice
+    //     );
 
-        require(
-            result.oracleScriptId == oracleScriptId,
-            "INVALID_ORACLE_SCRIPT"
-        );
-        require(
-            keccak256(result.params) == keccak256(params),
-            "INVALID_PARAMS"
-        );
+    //     require(
+    //         result.oracleScriptId == oracleScriptId,
+    //         "INVALID_ORACLE_SCRIPT"
+    //     );
+    //     require(
+    //         keccak256(result.params) == keccak256(params),
+    //         "INVALID_PARAMS"
+    //     );
 
-        uint64[] memory decodedInfo = result.data.toUint64List();
+    //     uint64[] memory decodedInfo = result.data.toUint64List();
 
-        require(
-            uint256(decodedInfo[1]) > lastUpdate,
-            "TIMESTAMP_IS_OLDER_THAN_THE_LAST_UPDATE"
-        );
+    //     require(
+    //         uint256(decodedInfo[1]) > lastUpdate,
+    //         "TIMESTAMP_IS_OLDER_THAN_THE_LAST_UPDATE"
+    //     );
 
-        latestETHPrice = uint256(decodedInfo[0]);
-        lastUpdate = uint256(decodedInfo[1]);
-    }
+    //     latestETHPrice = uint256(decodedInfo[0]);
+    //     lastUpdate = uint256(decodedInfo[1]);
+    // }
 }

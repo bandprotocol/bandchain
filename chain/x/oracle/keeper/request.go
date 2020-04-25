@@ -96,26 +96,26 @@ func (k Keeper) resolveRequest(
 	)
 
 	if resolveStatus != types.Success {
-		ctx.EventManager().EmitEvents(sdk.Events{
+		ctx.EventManager().EmitEvent(
 			sdk.NewEvent(
 				types.EventTypeRequestExecute,
 				sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", reqID)),
 				sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", resolveStatus)),
-			)})
+			))
 		return resPacketData
 	}
 
 	resultHash, err := k.AddResult(ctx, reqID, reqPacketData, resPacketData)
 	if err != nil {
-		ctx.EventManager().EmitEvents(sdk.Events{
+		ctx.EventManager().EmitEvent(
 			sdk.NewEvent(
 				types.EventTypeRequestExecute,
 				sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", reqID)),
 				sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", types.Failure)),
-			)})
+			))
 		return resPacketData
 	}
-	ctx.EventManager().EmitEvents(sdk.Events{
+	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			types.EventTypeRequestExecute,
 			sdk.NewAttribute(types.AttributeKeyClientID, reqPacketData.ClientID),
@@ -130,7 +130,7 @@ func (k Keeper) resolveRequest(
 			sdk.NewAttribute(types.AttributeKeyResolveTime, fmt.Sprintf("%d", resPacketData.ResolveTime)),
 			sdk.NewAttribute(types.AttributeKeyResult, resPacketData.Result),
 			sdk.NewAttribute(types.AttributeKeyResultHash, hex.EncodeToString(resultHash)),
-		)})
+		))
 	return resPacketData
 }
 
@@ -145,28 +145,32 @@ func (k Keeper) ProcessOracleResponse(
 
 	request := k.MustGetRequest(ctx, reqID)
 
-	sourceChannelEnd, found := k.ChannelKeeper.GetChannel(ctx, request.SourcePort, request.SourceChannel)
+	if request.RequestIBC == nil {
+		return
+	}
+
+	sourceChannelEnd, found := k.ChannelKeeper.GetChannel(ctx, request.RequestIBC.SourcePort, request.RequestIBC.SourceChannel)
 	if !found {
-		fmt.Println("SOURCE NOT FOUND", request.SourcePort, request.SourceChannel)
+		fmt.Println("SOURCE NOT FOUND", request.RequestIBC.SourcePort, request.RequestIBC.SourceChannel)
 		return
 	}
 
 	destinationPort := sourceChannelEnd.Counterparty.PortID
 	destinationChannel := sourceChannelEnd.Counterparty.ChannelID
 
-	sequence, found := k.ChannelKeeper.GetNextSequenceSend(ctx, request.SourcePort, request.SourceChannel)
+	sequence, found := k.ChannelKeeper.GetNextSequenceSend(ctx, request.RequestIBC.SourcePort, request.RequestIBC.SourceChannel)
 	if !found {
-		fmt.Println("SEQUENCE NOT FOUND", request.SourcePort, request.SourceChannel)
+		fmt.Println("SEQUENCE NOT FOUND", request.RequestIBC.SourcePort, request.RequestIBC.SourceChannel)
 		return
 	}
 
 	channelCap, ok := k.scopedKeeper.GetCapability(ctx, ibctypes.ChannelCapabilityPath(destinationPort, destinationChannel))
 	if !ok {
-		fmt.Println("GET CAPABILITY ERROR", request.SourcePort, request.SourceChannel)
+		fmt.Println("GET CAPABILITY ERROR", request.RequestIBC.SourcePort, request.RequestIBC.SourceChannel)
 		return
 	}
 	err := k.ChannelKeeper.SendPacket(ctx, channelCap, channel.NewPacket(resPacketData.GetBytes(),
-		sequence, request.SourcePort, request.SourceChannel, destinationPort, destinationChannel,
+		sequence, request.RequestIBC.SourcePort, request.RequestIBC.SourceChannel, destinationPort, destinationChannel,
 		1000000000, // Arbitrarily high timeout for now
 	))
 
