@@ -18,19 +18,22 @@ fn prepare_impl(input: Input) {
     oei::request_external_data(13, 1, input.size.to_string().as_bytes());
 }
 
+fn accumulate_hex_strings(strings: Vec<String>, input_size: usize) -> String {
+    hex::encode(
+        strings
+            .iter()
+            .map(|x1| x1.split(",").map(|x2| x2.parse::<u8>().unwrap()).collect::<Vec<_>>())
+            .fold(vec![0; input_size], |acc, x1| {
+                acc.iter().zip(x1.iter()).map(|x2| x2.0 ^ x2.1).collect::<Vec<_>>()
+            }),
+    )
+}
+
 #[no_mangle]
-fn execute_impl(_: Input) -> Output {
-    let outputs = (ext::load_input::<String>(1))
-        .iter()
-        .map(|x1| x1.split(",").map(|x2| x2.parse::<u8>().unwrap()).collect::<Vec<_>>())
-        .collect::<Vec<_>>();
-
-    let mut acc = outputs[0].clone();
-    for i in 1..(outputs.len()) {
-        acc = acc.iter().zip(outputs[i].iter()).map(|x| x.0 ^ x.1).collect::<Vec<_>>();
+fn execute_impl(input: Input) -> Output {
+    Output {
+        random_bytes: accumulate_hex_strings(ext::load_input::<String>(1), input.size as usize),
     }
-
-    Output { random_bytes: hex::encode(acc) }
 }
 
 prepare_entry_point!(prepare_impl);
