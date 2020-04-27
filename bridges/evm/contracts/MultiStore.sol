@@ -14,7 +14,7 @@ import {Utils} from "./Utils.sol";
 //    [I1]       [I2]     [I3]        [I4]       [I5]        [I6]       [I7]          [E]
 //   /   \      /   \    /    \      /    \     /    \       /   \     /    \
 // [0]   [1]  [2]   [3] [4]   [5]  [6]    [7] [8]    [9]   [A]   [B] [C]    [D]
-// [0] - acc     [1] - bank      [2] - capbility  [3] - distribution  [4] - evidence
+// [0] - acc     [1] - bank      [2] - capability [3] - distribution  [4] - evidence
 // [5] - gov     [6] - ibc       [7] - main       [8] - mint          [9] - oracle
 // [A] - params  [B] - slashing  [C] - staking    [D] - supply        [E] - upgrade
 
@@ -37,7 +37,7 @@ library MultiStore {
                             _self.mintStoresMerkleHash, // [8]
                             Utils.merkleLeafHash( // [9]
                                 abi.encodePacked(
-                                    hex"066f7261636c6520", // oracle prefix
+                                    hex"066f7261636c6520", // oracle prefix (uint8(6) + "oracle" + uint8(32))
                                     sha256(
                                         abi.encodePacked(
                                             sha256(
