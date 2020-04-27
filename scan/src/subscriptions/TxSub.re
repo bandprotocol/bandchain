@@ -603,8 +603,6 @@ module Msg = {
       amount: list(Coin.t),
     };
     let decode = json => {
-      Js.Console.log(json);
-
       JsonUtils.Decode.{
         validatorAddress: json |> field("validator_address", string) |> Address.fromBech32,
         delegatorAddress: json |> field("delegator_address", string) |> Address.fromBech32,
