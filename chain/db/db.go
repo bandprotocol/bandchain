@@ -442,6 +442,7 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		if err != nil {
 			return nil, err
 		}
+		jsonMap["reward_amount"] = events[dist.EventTypeWithdrawRewards+"."+sdk.AttributeKeyAmount]
 	case dist.MsgWithdrawValidatorCommission:
 	case gov.MsgDeposit:
 	case gov.MsgSubmitProposal:
