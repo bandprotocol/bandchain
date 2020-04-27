@@ -435,9 +435,7 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		if err != nil {
 			return nil, err
 		}
-		info := b.DistrKeeper.GetDelegatorStartingInfo(b.ctx, msg.ValidatorAddress, msg.DelegatorAddress)
-		reward := b.DistrKeeper.GetValidatorHistoricalRewards(b.ctx, msg.ValidatorAddress, info.PreviousPeriod)
-		jsonMap["reward_amount"] = reward.CumulativeRewardRatio.AmountOf("uband").String()
+		jsonMap["reward_amount"] = events["withdraw_rewards.amount"]
 	case dist.MsgWithdrawValidatorCommission:
 	case gov.MsgDeposit:
 	case gov.MsgSubmitProposal:
