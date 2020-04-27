@@ -153,18 +153,20 @@ let make = (~address) =>
                         </Row>
                       </Col>
                       <Col size=1.>
-                        //TODO: MOCK DATA SOURCE ID
-
-                          {reportDetails
-                           ->Belt_Array.map(_ => {
-                               <>
-                                 <Row> <TypeID.DataSource id={ID.DataSource.ID(1)} /> </Row>
-                                 <VSpacing size=Spacing.sm />
-                                 <VSpacing size=Spacing.xs />
-                               </>
-                             })
-                           ->React.array}
-                        </Col>
+                        {reportDetails
+                         ->Belt_Array.map(reportDetail => {
+                             <>
+                               <Row>
+                                 <TypeID.DataSource
+                                   id={ID.DataSource.ID(reportDetail.dataSourceID)}
+                                 />
+                               </Row>
+                               <VSpacing size=Spacing.sm />
+                               <VSpacing size=Spacing.xs />
+                             </>
+                           })
+                         ->React.array}
+                      </Col>
                       <Col size=1.5>
                         {reportDetails
                          ->Belt_Array.map(({externalID}) => externalID)

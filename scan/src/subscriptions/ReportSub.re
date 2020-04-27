@@ -10,6 +10,7 @@ module ValidatorReport = {
   };
 
   type report_details_t = {
+    dataSourceID: int,
     externalID: int,
     data: JsBuffer.t,
   };
@@ -33,6 +34,7 @@ module ValidatorReport = {
             }
             txHash: tx_hash @bsDecoder (fn: "GraphQLParser.hash")
             reportDetails: report_details @bsRecord {
+              dataSourceID: data_source_id @bsDecoder (fn: "GraphQLParser.int64")
               externalID: external_id @bsDecoder (fn: "GraphQLParser.int64")
               data @bsDecoder (fn: "GraphQLParser.buffer")
             }
