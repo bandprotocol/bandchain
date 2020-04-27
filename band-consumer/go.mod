@@ -4,7 +4,7 @@ go 1.13
 
 require (
 	github.com/bandprotocol/bandchain/chain v0.0.0-20200413032603-6ae7f6e32df7
-	github.com/cosmos/cosmos-sdk v0.34.4-0.20200406170659-df5badaf4c2b
+	github.com/cosmos/cosmos-sdk v0.34.4-0.20200410083150-b7397d6df548
 	github.com/gorilla/mux v1.7.4
 	github.com/otiai10/copy v1.1.1
 	github.com/pkg/errors v0.9.1
@@ -16,5 +16,11 @@ require (
 	github.com/tendermint/tendermint v0.33.3
 	github.com/tendermint/tm-db v0.5.1
 )
+
+replace github.com/bandprotocol/bandchain/chain => ../chain
+
+replace github.com/tendermint/tendermint => ../chain
+
+replace github.com/cosmos/cosmos-sdk => ../chain
 
 replace github.com/keybase/go-keychain => github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4
