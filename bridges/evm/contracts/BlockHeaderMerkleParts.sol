@@ -4,8 +4,8 @@ import {Utils} from "./Utils.sol";
 
 /// @dev Library for computing Tendermint's block header hash from app hash, time, and height.
 ///
-/// In Tendermint, a block header hash is the Merkle hash of a binary tree with 16 leaf nodes.
-/// Each node encodes a data piece of the blockchain. The notable data leaves are: [C] app_hash,
+/// In Tendermint, a block header hash is the Merkle hash of a binary tree with 14 leaf nodes.
+/// Each node encodes a data piece of the blockchain. The notable data leaves are: [A] app_hash,
 /// [2] height, and [3] - time. All data pieces are combined into one 32-byte hash to be signed
 /// by block validators. The structure of the Merkle tree is shown below.
 ///
