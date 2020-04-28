@@ -799,6 +799,119 @@ module Msg = {
     bgColor: Css.Types.Color.t,
   };
 
+  let getFailedMessageBadge = msg => {
+    switch (msg) {
+    | "send" => {text: "SEND TOKEN", textColor: Colors.blue7, bgColor: Colors.blue1}
+    | "create_data_source" => {
+        text: "CREATE DATA SOURCE",
+        textColor: Colors.yellow5,
+        bgColor: Colors.yellow1,
+      }
+    | "edit_data_source" => {
+        text: "EDIT DATA SOURCE",
+        textColor: Colors.yellow5,
+        bgColor: Colors.yellow1,
+      }
+    | "create_oracle_script" => {
+        text: "CREATE ORACLE SCRIPT",
+        textColor: Colors.pink6,
+        bgColor: Colors.pink1,
+      }
+    | "edit_oracle_script" => {
+        text: "EDIT ORACLE SCRIPT",
+        textColor: Colors.pink6,
+        bgColor: Colors.pink1,
+      }
+    | "request" => {text: "REQUEST", textColor: Colors.orange6, bgColor: Colors.orange1}
+    | "report" => {text: "REPORT", textColor: Colors.orange6, bgColor: Colors.orange1}
+    | "add_oracle_address" => {
+        text: "ADD ORACLE ADDRESS",
+        textColor: Colors.purple6,
+        bgColor: Colors.purple1,
+      }
+    | "remove_oracle_address" => {
+        text: "REMOVE ORACLE ADDRESS",
+        textColor: Colors.purple6,
+        bgColor: Colors.purple1,
+      }
+    | "create_validator" => {
+        text: "CREATE VALIDATOR",
+        textColor: Colors.purple6,
+        bgColor: Colors.purple1,
+      }
+    | "edit_validator" => {
+        text: "EDIT VALIDATOR",
+        textColor: Colors.purple6,
+        bgColor: Colors.purple1,
+      }
+    | "create_client" => {text: "CREATE CLIENT", textColor: Colors.blue7, bgColor: Colors.blue1}
+    | "update_client" => {text: "UPDATE CLIENT", textColor: Colors.blue7, bgColor: Colors.blue1}
+    | "submit_client_misbehaviour" => {
+        text: "SUBMIT CLIENT MISBEHAVIOUR",
+        textColor: Colors.blue7,
+        bgColor: Colors.blue1,
+      }
+    | "connection_open_init" => {
+        text: "CONNECTION OPEN INIT",
+        textColor: Colors.blue7,
+        bgColor: Colors.blue1,
+      }
+    | "connection_open_try" => {
+        text: "CONNECTION OPEN TRY",
+        textColor: Colors.blue7,
+        bgColor: Colors.blue1,
+      }
+    | "connection_open_ack" => {
+        text: "CONNECTION OPEN ACK",
+        textColor: Colors.blue7,
+        bgColor: Colors.blue1,
+      }
+    | "connection_open_confirm" => {
+        text: "CONNECTION OPEN CONFIRM",
+        textColor: Colors.blue7,
+        bgColor: Colors.blue1,
+      }
+    | "channel_open_init" => {
+        text: "CHANNEL OPEN INIT",
+        textColor: Colors.blue7,
+        bgColor: Colors.blue1,
+      }
+    | "channel_open_try" => {
+        text: "CHANNEL OPEN TRY",
+        textColor: Colors.blue7,
+        bgColor: Colors.blue1,
+      }
+    | "channel_open_ack" => {
+        text: "CHANNEL OPEN ACK",
+        textColor: Colors.blue7,
+        bgColor: Colors.blue1,
+      }
+    | "channel_open_confirm" => {
+        text: "CHANNEL OPEN CONFIRM",
+        textColor: Colors.blue7,
+        bgColor: Colors.blue1,
+      }
+    | "channel_close_init" => {
+        text: "CHANNEL CLOSE INIT",
+        textColor: Colors.blue7,
+        bgColor: Colors.blue1,
+      }
+    | "channel_close_confirm" => {
+        text: "CHANNEL CLOSE CONFIRM",
+        textColor: Colors.blue7,
+        bgColor: Colors.blue1,
+      }
+    | "ics04/opaque" => {text: "PACKET", textColor: Colors.blue7, bgColor: Colors.blue1}
+    | "ics04/timeout" => {text: "TIMEOUT", textColor: Colors.blue7, bgColor: Colors.blue1}
+    | "acknowledgement" => {
+        text: "ACKNOWLEDGEMENT",
+        textColor: Colors.blue7,
+        bgColor: Colors.blue1,
+      }
+    | _ => {text: "UNKNOWN", textColor: Colors.gray7, bgColor: Colors.gray4}
+    };
+  };
+
   let getBadgeTheme = msg => {
     switch (msg) {
     | Send(_) => {text: "SEND TOKEN", textColor: Colors.blue7, bgColor: Colors.blue1}
@@ -844,7 +957,6 @@ module Msg = {
         textColor: Colors.purple6,
         bgColor: Colors.purple1,
       }
-    | FailMessage(_) => {text: "FAIL", textColor: Colors.red5, bgColor: Colors.red1}
     | CreateClient(_) => {text: "CREATE CLIENT", textColor: Colors.blue7, bgColor: Colors.blue1}
     | UpdateClient(_) => {text: "UPDATE CLIENT", textColor: Colors.blue7, bgColor: Colors.blue1}
     | SubmitClientMisbehaviour(_) => {

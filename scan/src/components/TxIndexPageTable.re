@@ -36,6 +36,8 @@ module Styles = {
   let firstCol = 0.45;
   let secondCol = 0.50;
   let thirdCol = 1.20;
+
+  let failIcon = style([width(`px(16)), height(`px(16))]);
 };
 
 let renderSend = (send: TxSub.Msg.Send.t) => {
@@ -969,6 +971,15 @@ let renderMultiSend = (tx: TxSub.Msg.MultiSend.t) => {
        )
      ->Belt_List.toArray
      ->React.array}
+  </Col>;
+};
+let renderFailMessage = () => {
+  <Col size=Styles.thirdCol alignSelf=Col.Start>
+    <VSpacing size=Spacing.sm />
+    <div className=Styles.topicContainer>
+      <Text value="MESSAGE FAILED" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <img src=Images.fail className=Styles.failIcon />
+    </div>
   </Col>;
 };
 
