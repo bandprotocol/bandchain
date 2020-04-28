@@ -20,7 +20,7 @@ library Packets {
                 uint8(16), // (2 << 3) | 0
                 Utils.encodeVarintUnsigned(_self.oracleScriptId),
                 uint8(26), // (3 << 3) | 2
-                Utils.encodeVarintUnsigned(bytes(_self.params).length),
+                getEncodeLength(_self.params),
                 _self.params,
                 uint8(32), // (4 << 3) | 0
                 Utils.encodeVarintUnsigned(_self.askCount),
