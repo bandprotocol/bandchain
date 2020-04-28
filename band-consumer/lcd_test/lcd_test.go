@@ -17,7 +17,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	mintkey "github.com/cosmos/cosmos-sdk/crypto"
-	mintkey "github.com/cosmos/cosmos-sdk/crypto/"
 	keys "github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/tests"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -44,8 +43,8 @@ func init() {
 	version.Version = os.Getenv("VERSION")
 }
 
-func newKeybase() (keys.Keybase, error) {
-	return keys.NewKeyring(
+func newKeybase() (keys.Keyring, error) {
+	return keys.New(
 		sdk.KeyringServiceName(),
 		viper.GetString(flags.FlagKeyringBackend),
 		InitClientHome(""),

@@ -5,22 +5,26 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/x/capability"
+	transfertypes "github.com/cosmos/cosmos-sdk/x/ibc/20-transfer/types"
 
 	"github.com/bandprotocol/band-consumer/x/consuming/types"
 )
 
 type Keeper struct {
-	storeKey      sdk.StoreKey
-	cdc           codec.Marshaler
-	ChannelKeeper types.ChannelKeeper
+	storeKey        sdk.StoreKey
+	cdc             codec.Marshaler
+	ChannelKeeper   transfertypes.ChannelKeeper
+	ScopedIBCKeeper capability.ScopedKeeper
 }
 
 // NewKeeper creates a new band consumer Keeper instance.
-func NewKeeper(cdc codec.Marshaler, key sdk.StoreKey, channelKeeper types.ChannelKeeper) Keeper {
+func NewKeeper(cdc codec.Marshaler, key sdk.StoreKey, channelKeeper transfertypes.ChannelKeeper, scopedIBCKeeper capability.ScopedKeeper) Keeper {
 	return Keeper{
-		storeKey:      key,
-		cdc:           cdc,
-		ChannelKeeper: channelKeeper,
+		storeKey:        key,
+		cdc:             cdc,
+		ChannelKeeper:   channelKeeper,
+		ScopedIBCKeeper: scopedIBCKeeper,
 	}
 }
 
