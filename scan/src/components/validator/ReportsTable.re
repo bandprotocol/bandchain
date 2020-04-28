@@ -156,11 +156,7 @@ let make = (~address) =>
                         {reportDetails
                          ->Belt_Array.map(reportDetail => {
                              <>
-                               <Row>
-                                 <TypeID.DataSource
-                                   id={ID.DataSource.ID(reportDetail.dataSourceID)}
-                                 />
-                               </Row>
+                               <Row> <TypeID.DataSource id={reportDetail.dataSourceID} /> </Row>
                                <VSpacing size=Spacing.sm />
                                <VSpacing size=Spacing.xs />
                              </>
