@@ -19,8 +19,4 @@ require (
 
 replace github.com/bandprotocol/bandchain/chain => ../chain
 
-replace github.com/tendermint/tendermint => ../chain
-
-replace github.com/cosmos/cosmos-sdk => ../chain
-
 replace github.com/keybase/go-keychain => github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4

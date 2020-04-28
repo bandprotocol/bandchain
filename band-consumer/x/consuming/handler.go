@@ -10,6 +10,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	channel "github.com/cosmos/cosmos-sdk/x/ibc/04-channel"
 	channeltypes "github.com/cosmos/cosmos-sdk/x/ibc/04-channel/types"
+	ibctypes "github.com/cosmos/cosmos-sdk/x/ibc/types"
 )
 
 // NewHandler creates the msg handler of this module, as required by Cosmos-SDK standard.
@@ -42,9 +43,13 @@ func NewHandler(keeper Keeper) sdk.Handler {
 				msg.ClientID, msg.OracleScriptID, hex.EncodeToString(msg.Calldata),
 				msg.AskCount, msg.MinCount,
 			)
-			err := keeper.ChannelKeeper.SendPacket(ctx, channel.NewPacket(packet.GetBytes(),
+			chanCap, err := keeper.ScopedIBCKeeper.NewCapability(ctx, ibctypes.ChannelCapabilityPath(destinationPort, destinationChannel))
+			if err != nil {
+				return nil, err
+			}
+			err = keeper.ChannelKeeper.SendPacket(ctx, chanCap, channel.NewPacket(packet.GetBytes(),
 				sequence, "consuming", msg.SourceChannel, destinationPort, destinationChannel,
-				1000000000, // Arbitrarily high timeout for now
+				10000000, // Arbitrarily high timeout for now
 			))
 			if err != nil {
 				return nil, err

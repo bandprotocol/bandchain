@@ -19,6 +19,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/cosmos/cosmos-sdk/x/capability"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/evidence"
@@ -101,22 +102,23 @@ type BandConsumerApp struct {
 	subspaces map[string]params.Subspace
 
 	// keepers
-	accountKeeper   auth.AccountKeeper
-	bankKeeper      bank.Keeper
-	supplyKeeper    supply.Keeper
-	stakingKeeper   staking.Keeper
-	slashingKeeper  slashing.Keeper
-	mintKeeper      mint.Keeper
-	distrKeeper     distr.Keeper
-	govKeeper       gov.Keeper
-	crisisKeeper    crisis.Keeper
-	paramsKeeper    params.Keeper
-	upgradeKeeper   upgrade.Keeper
-	evidenceKeeper  evidence.Keeper
-	ibcKeeper       ibc.Keeper
-	transferKeeper  transfer.Keeper
-	consumingKeeper consuming.Keeper
-
+	accountKeeper    auth.AccountKeeper
+	bankKeeper       bank.Keeper
+	supplyKeeper     supply.Keeper
+	stakingKeeper    staking.Keeper
+	CapabilityKeeper *capability.Keeper
+	slashingKeeper   slashing.Keeper
+	mintKeeper       mint.Keeper
+	distrKeeper      distr.Keeper
+	govKeeper        gov.Keeper
+	crisisKeeper     crisis.Keeper
+	paramsKeeper     params.Keeper
+	upgradeKeeper    upgrade.Keeper
+	evidenceKeeper   evidence.Keeper
+	ibcKeeper        *ibc.Keeper
+	transferKeeper   transfer.Keeper
+	consumingKeeper  consuming.Keeper
+	scopedIBCKeeper  capability.ScopedKeeper
 	// the module manager
 	mm *module.Manager
 
@@ -144,7 +146,7 @@ func NewBandConsumerApp(
 		gov.StoreKey, params.StoreKey, ibc.StoreKey, transfer.StoreKey,
 		evidence.StoreKey, upgrade.StoreKey, consuming.StoreKey,
 	)
-	tKeys := sdk.NewTransientStoreKeys(staking.TStoreKey, params.TStoreKey)
+	tKeys := sdk.NewTransientStoreKeys(params.TStoreKey)
 
 	app := &BandConsumerApp{
 		BaseApp:        bApp,
@@ -221,15 +223,23 @@ func NewBandConsumerApp(
 		app.supplyKeeper, &stakingKeeper, govRouter,
 	)
 
+	// add capability keeper and ScopeToModule for ibc module
+	app.CapabilityKeeper = capability.NewKeeper(appCodec, keys[capability.StoreKey])
+	scopedIBCKeeper := app.CapabilityKeeper.ScopeToModule(ibc.ModuleName)
+	app.scopedIBCKeeper = scopedIBCKeeper
+	scopedTransferKeeper := app.CapabilityKeeper.ScopeToModule(transfer.ModuleName)
 	// create IBC keeper
-	app.ibcKeeper = ibc.NewKeeper(app.cdc, keys[ibc.StoreKey], stakingKeeper)
+	app.ibcKeeper = ibc.NewKeeper(app.cdc, keys[ibc.StoreKey], stakingKeeper, scopedIBCKeeper)
 
-	transferCapKey := app.ibcKeeper.PortKeeper.BindPort(bank.ModuleName)
-	app.transferKeeper = transfer.NewKeeper(app.cdc, keys[transfer.StoreKey], transferCapKey,
-		app.ibcKeeper.ChannelKeeper, app.bankKeeper, app.supplyKeeper)
-
+	// Create Transfer Keepers
+	app.transferKeeper = transfer.NewKeeper(
+		app.cdc, keys[transfer.StoreKey],
+		app.ibcKeeper.ChannelKeeper, &app.ibcKeeper.PortKeeper,
+		app.bankKeeper, app.supplyKeeper,
+		scopedTransferKeeper,
+	)
 	app.consumingKeeper = consuming.NewKeeper(
-		appCodec, keys[consuming.StoreKey], app.ibcKeeper.ChannelKeeper,
+		appCodec, keys[consuming.StoreKey], app.ibcKeeper.ChannelKeeper, scopedIBCKeeper,
 	)
 
 	// register the staking hooks
@@ -299,7 +309,7 @@ func NewBandConsumerApp(
 	// initialize BaseApp
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
-	app.SetAnteHandler(ante.NewAnteHandler(app.accountKeeper, app.supplyKeeper, app.ibcKeeper, ante.DefaultSigVerificationGasConsumer))
+	app.SetAnteHandler(ante.NewAnteHandler(app.accountKeeper, app.supplyKeeper, *app.ibcKeeper, ante.DefaultSigVerificationGasConsumer))
 	app.SetEndBlocker(app.EndBlocker)
 
 	if loadLatest {
