@@ -3,43 +3,12 @@ type t =
   | Ledger(Ledger.t);
 
 let createFromMnemonic = mnemonic => {
-  // Just use arbitrary rpcUrl, chainID beacuase they didn't use in CosmosJS
-  let bandChain = CosmosJS.network("rpcUrl", "chainID");
-  bandChain->CosmosJS.setPath("m/44'/494'/0'/0/0");
-  bandChain->CosmosJS.setBech32MainPrefix("band");
-  let privKey = bandChain |> CosmosJS.getECPairPriv(_, mnemonic);
-  Mnemonic({bandChain, mnemonic, privKey});
+  Mnemonic(Mnemonic.create(mnemonic));
 };
 
 let createFromLedger = () => {
-  // TODO: handle interaction timeout later
-  let timeout = 10000;
-  let path = [|44, 118, 0, 0, 0|];
-  let prefix = "band";
-  let%Promise transport = LedgerJS.createTransportWebUSB(timeout);
-
-  let app = LedgerJS.createApp(transport);
-  let%Promise pubKeyInfo = LedgerJS.publicKey(app, path);
-  let%Promise appInfo = LedgerJS.appInfo(app);
-  // TODO: check version
-  // let%Promise version = LedgerJS.getVersion(app);
-
-  // 36864(0x9000) will return if there is no error.
-  // TODO: improve handle error
-  if (pubKeyInfo.return_code != 36864) {
-    if (pubKeyInfo.return_code == 28160) {
-      Js.Console.log2("pubKeyInfo", pubKeyInfo);
-      Js.Promise.reject(Not_found);
-    } else if (appInfo.appName != "Cosmos") {
-      Js.Console.log2("appInfo", appInfo);
-      Js.Promise.reject(Not_found);
-    } else {
-      Js.Console.log("unknown error");
-      Js.Promise.reject(Not_found);
-    };
-  } else {
-    Promise.ret(Ledger({app, path, prefix}));
-  };
+  let%Promise ledger = Ledger.create();
+  Promise.ret(Ledger(ledger));
 };
 
 let getAddressAndPubKey =
@@ -47,8 +16,7 @@ let getAddressAndPubKey =
   | Mnemonic(x) => x |> Mnemonic.getAddressAndPubKey |> Promise.ret
   | Ledger(x) => x |> Ledger.getAddressAndPubKey;
 
-// TODO: (string) => JsBuffer.t
-// let sign = msg =>
-//   fun
-//   | Mnemonic(x) => JsBuffer.from([||]) |> Promise.ret
-//   | Ledger => msg |> JsBuffer.fromHex |> Promise.ret;
+let sign = msg =>
+  fun
+  | Mnemonic(x) => x |> Mnemonic.sign(_, msg) |> Promise.ret
+  | Ledger(x) => x |> Ledger.sign(_, msg);

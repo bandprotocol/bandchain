@@ -62,7 +62,7 @@ type raw_tx_t = {
 type signed_tx_t = {
   fee: fee_t,
   memo: string,
-  msgs: array(msg_payload_t),
+  msg: array(msg_payload_t),
   signatures: array(signature_t),
 };
 
@@ -71,8 +71,19 @@ type t = {
   tx: signed_tx_t,
 };
 
+type tx_response_t = {
+  txHash: Hash.t,
+  rawLog: string,
+  success: bool,
+};
+
+type response_t =
+  | Tx(tx_response_t)
+  | Unknown;
+
 let getAccountInfo = address => {
-  let%Promise info = AxiosRequest.accountInfo(address);
+  let url = Env.rpc ++ "/auth/accounts/" ++ (address |> Address.toBech32);
+  let%Promise info = Axios.get(url);
   let data = info##data;
   Promise.ret(
     JsonUtils.Decode.{
@@ -81,6 +92,26 @@ let getAccountInfo = address => {
     },
   );
 };
+
+let sortAndStringify: raw_tx_t => string = [%bs.raw
+  {|
+  function sortAndStringify(obj) {
+    function sortObject(obj) {
+      if (obj === null) return null;
+      if (typeof obj !== "object") return obj;
+      if (Array.isArray(obj)) return obj.map(sortObject);
+      const sortedKeys = Object.keys(obj).sort();
+      const result = {};
+      sortedKeys.forEach(key => {
+        result[key] = sortObject(obj[key])
+      });
+      return result;
+    }
+
+    return JSON.stringify(sortObject(obj));
+  }
+|}
+];
 
 let createMsg = (msg: msg_input_t): msg_payload_t => {
   let msgType =
@@ -129,7 +160,7 @@ let createRawTx = (address, msgs) => {
     chain_id: "bandchain",
     fee: {
       amount: [|{amount: "100", denom: "uband"}|],
-      gas: "300000",
+      gas: "700000",
     },
     memo: "",
     account_number: accountInfo.accountNumber |> string_of_int,
@@ -143,8 +174,27 @@ let createSignedTx = (~signature, ~pubKey, ~tx: raw_tx_t, ~mode, ()) => {
   let signedTx = {
     fee: tx.fee,
     memo: tx.memo,
-    msgs: tx.msgs,
+    msg: tx.msgs,
     signatures: [|{pub_key: oldPubKey, public_key: newPubKey, signature}|],
   };
   {mode, tx: signedTx};
+};
+
+let broadcast = signedTx => {
+  /* TODO: FIX THIS MESS */
+  let convert: t => Js.t('a) = [%bs.raw {|
+function(data) {return {...data};}
+  |}];
+
+  let%Promise rawResponse = Axios.postData(Env.rpc ++ "/txs", convert(signedTx));
+  let response = rawResponse##data;
+  Promise.ret(
+    Tx(
+      JsonUtils.Decode.{
+        txHash: response |> at(["txhash"], string) |> Hash.fromHex,
+        rawLog: response |> at(["raw_log"], string),
+        success: response |> optional(field("logs", _ => ())) |> Belt_Option.isSome,
+      },
+    ),
+  );
 };

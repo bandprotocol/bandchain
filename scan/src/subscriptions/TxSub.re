@@ -6,7 +6,7 @@ module RawDataReport = {
 
   let decode = json =>
     JsonUtils.Decode.{
-      externalDataID: json |> field("externalDataID", int),
+      externalDataID: json |> field("externalID", int),
       data: json |> field("data", string) |> JsBuffer.fromBase64,
     };
 };
@@ -115,6 +115,7 @@ module Msg = {
       calldata: JsBuffer.t,
       requestedValidatorCount: int,
       sufficientValidatorCount: int,
+      schema: string,
       sender: Address.t,
     };
 
@@ -126,6 +127,7 @@ module Msg = {
         calldata: json |> field("calldata", string) |> JsBuffer.fromBase64,
         requestedValidatorCount: json |> field("requestedValidatorCount", int),
         sufficientValidatorCount: json |> field("sufficientValidatorCount", int),
+        schema: json |> field("schema", string),
         sender: json |> field("sender", string) |> Address.fromBech32,
       };
     };

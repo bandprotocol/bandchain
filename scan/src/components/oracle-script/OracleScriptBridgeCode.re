@@ -157,8 +157,7 @@ let getFileNameFromLanguage = (~language) => {
   };
 };
 
-let getCodeFromSchema = (~schemaOpt, ~language) => {
-  let%Opt schema = schemaOpt;
+let getCodeFromSchema = (~schema, ~language) => {
   switch (language) {
   | Solidity => Borsh.generateSolidity(schema, "Output")
   | Go => Borsh.generateGo("main", schema, "Output")
@@ -166,7 +165,7 @@ let getCodeFromSchema = (~schemaOpt, ~language) => {
 };
 
 [@react.component]
-let make = (~schemaOpt) => {
+let make = (~schema) => {
   let (targetPlatform, setTargetPlatform) = React.useState(_ => Ethereum);
   let (language, setLanguage) = React.useState(_ => Solidity);
   <div className=Styles.tableWrapper>
@@ -241,7 +240,7 @@ let make = (~schemaOpt) => {
         <Text value={getFileNameFromLanguage(~language)} size=Text.Lg color=Colors.gray7 />
       </div>
       <VSpacing size=Spacing.lg />
-      {let codeOpt = getCodeFromSchema(~schemaOpt, ~language);
+      {let codeOpt = getCodeFromSchema(~schema, ~language);
        switch (codeOpt) {
        | Some(code) => code->renderCode
        | None => {j|"Code is not available."|j}->renderCode

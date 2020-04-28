@@ -55,7 +55,6 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		&DataSource{},
 		&DataSourceRevision{},
 		&OracleScript{},
-		&OracleScriptCode{},
 		&OracleScriptRevision{},
 		&RelatedDataSources{},
 		&Request{},
@@ -127,13 +126,6 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 	db.Model(&DataSourceRevision{}).AddForeignKey(
 		"tx_hash",
 		"transactions(tx_hash)",
-		"RESTRICT",
-		"RESTRICT",
-	)
-
-	db.Model(&OracleScript{}).AddForeignKey(
-		"code_hash",
-		"oracle_script_codes(code_hash)",
 		"RESTRICT",
 		"RESTRICT",
 	)
@@ -300,7 +292,6 @@ func (b *BandDB) HandleTransaction(tx auth.StdTx, txHash []byte, logs sdk.ABCIMe
 	}
 
 	messages := make([]map[string]interface{}, 0)
-
 	for idx, msg := range msgs {
 		events := logs[idx].Events
 		kvMap := make(map[string]string)
@@ -398,6 +389,7 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		}
 
 		jsonMap["oracle_script_name"] = oracleScript.Name
+		jsonMap["schema"] = oracleScript.Schema
 		jsonMap["request_id"] = requestID
 	case oracle.MsgReportData:
 		err = b.handleMsgReportData(txHash, msg, events)
@@ -443,6 +435,7 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		if err != nil {
 			return nil, err
 		}
+		jsonMap["reward_amount"] = events[dist.EventTypeWithdrawRewards+"."+sdk.AttributeKeyAmount]
 	case dist.MsgWithdrawValidatorCommission:
 	case gov.MsgDeposit:
 	case gov.MsgSubmitProposal:

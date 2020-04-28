@@ -13,23 +13,23 @@ func TestGetMultiStoreProof(t *testing.T) {
 	multiStoreProofOp, err := rootmulti.MultiStoreProofOpDecoder(merkle.ProofOp{
 		Type: "multistore",
 		Key:  base64ToBytes("b3JhY2xl"), // oracle
-		Data: base64ToBytes("CoMFCjEKBnBhcmFtcxInCiUIj04SIMbe1bnhlZ/QXKhwt2bBDkuECSyXjQJR9i163emjYerLChEKCGV2aWRlbmNlEgUKAwiPTgovCgRtaW50EicKJQiPThIgHRIn/1HjJPruCU+0YCbGTMQdN3H8zPYSnG3BcM50HVQKLgoDaWJjEicKJQiPThIg2FdO5TPqLPUPb0eDKyz75v8F8tKYibGUk1v9291o/0wKMwoIc2xhc2hpbmcSJwolCI9OEiBlMr4w0+p/W2a2IsZN2j2r+eM3dO6T1ljzYyJHFF+ywwovCgRiYW5rEicKJQiPThIgIWl08l6pVCVCwTUOupBADhftNG9IR22d+7zKSMhWZEoKLgoDYWNjEicKJQiPThIgUtwTVqGGzhyrdXk50KSnftCBxHYMsAckSCFS3yQ618AKMQoGb3JhY2xlEicKJQiPThIgf+lq7ZMJJ8giRXz4iDVQXsNTOgtvtZD8NNngF1oYSywKNwoMZGlzdHJpYnV0aW9uEicKJQiPThIgeOvxhU5e2CiVjzs+y1MOQtZDJ3iK7JAwwKar4XXzRywKEAoHdXBncmFkZRIFCgMIj04KLwoEbWFpbhInCiUIj04SICOZd9vZgMqqD9fkR5Xfzpik2gT1mvTUmon2eg92gsm7Ci4KA2dvdhInCiUIj04SIGDNE3wZYuysYWOJ1oA0gz8pIVCcLShapfUVOZfOlop0CjIKB3N0YWtpbmcSJwolCI9OEiBFTY5j3HlY+MCENXlCrvRVhnB0kmTuHldZStDNU8yCsQoxCgZzdXBwbHkSJwolCI9OEiDql6ROudqdJXyzgcLKjpQ57Ov6JleivMlj3C2rH5wPqA=="),
+		Data: base64ToBytes("CvYEChAKB3VwZ3JhZGUSBQoDCJcFChMKCmNhcGFiaWxpdHkSBQoDCJcFCi8KBGJhbmsSJwolCJcFEiAH4idukNC6oNbM2oVMWC2p+Sy6yPOEGWJJFnqogL0omQovCgRtaW50EicKJQiXBRIgLvOu+wCxtoTxBkQcVejiXt9HE6a+JY7TlMn4Vccav3EKMQoGc3VwcGx5EicKJQiXBRIg7lXJWNUTysK0qF4YGY1LOf8ZMBs5eI9ViehyzGTqbdQKNwoMZGlzdHJpYnV0aW9uEicKJQiXBRIgVAY5wSAUnHco8s2vBueJj3Es5p49YzbHd16SJoKntIoKLwoEbWFpbhInCiUIlwUSICOZd9vZgMqqD9fkR5Xfzpik2gT1mvTUmon2eg92gsm7CjEKBnBhcmFtcxInCiUIlwUSIItCIwSHU2bIQ8Ggtr1rJ2ZBvDhlzprR1ObYiQGIRgDzCjEKBm9yYWNsZRInCiUIlwUSINDuKe2xqA+AttwsBYsH6FhG4qHU7En84d0M8blGzPRWCi4KA2FjYxInCiUIlwUSIMKNnINAAgLun6gVLILvB/6oUDxkenAiZLf1in6tD4qMChEKCGV2aWRlbmNlEgUKAwiXBQouCgNnb3YSJwolCJcFEiBgzRN8GWLsrGFjidaANIM/KSFQnC0oWqX1FTmXzpaKdAoMCgNpYmMSBQoDCJcFCjIKB3N0YWtpbmcSJwolCJcFEiACWdb3d8lIViqQ8ySrrEN9/3o2f3Z5p/L5396OhiGE/gozCghzbGFzaGluZxInCiUIlwUSIFa61WCgLNn11FrW2g4xYzGbYmWfuP32bQywySwABY7m"),
 	})
 	require.Nil(t, err)
 	mp := GetMultiStoreProof(multiStoreProofOp.(rootmulti.MultiStoreProofOp))
-	expectAppHash := hexToBytes("9592EB9B13206F557F123FB98E9B4BC9B4963F9F8A2FA46A67BB421944FB2B08")
+	expectAppHash := hexToBytes("2F3BEAC1586C205052B74E1CF3D284CD022F739200B74CB51B910D0F3D0BF13D")
 	oraclePrefix := hexToBytes("066f7261636c6520")
 	appHash := branchHash(
-		mp.AccToMintStoresMerkleHash,
+		mp.AccToMainStoresMerkleHash,
 		branchHash(
 			branchHash(
 				branchHash(
+					mp.MintStoresMerkleHash,
 					leafHash(append(oraclePrefix, tmhash.Sum(tmhash.Sum(mp.OracleIAVLStateHash))...)),
-					mp.ParamsStoresMerkleHash,
 				),
-				mp.SlashingAndStakingStoresMerkleHash,
+				mp.ParamsAndSlashingStoresMerkleHash,
 			),
-			mp.SupplyAndUpgradeStoresMerkleHash,
+			mp.StakingToUpgradeStoresMerkleHash,
 		),
 	)
 	require.Equal(t, expectAppHash, appHash)

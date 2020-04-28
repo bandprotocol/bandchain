@@ -1,5 +1,14 @@
 package rpc
 
+import (
+	"fmt"
+
+	"github.com/cosmos/cosmos-sdk/client/context"
+	"github.com/gorilla/mux"
+
+	"github.com/bandprotocol/bandchain/chain/client/proof"
+)
+
 // TODO: Revive this! It's commented because we upgrade to Cosmos 0.38.*.
 // Proof structure will need to change now that we have more modules + the header structure changes.
 
@@ -236,12 +245,12 @@ package rpc
 // 	return http.StripPrefix("/swagger-ui/", staticServer)
 // }
 
-// func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router) {
-// 	r.HandleFunc("/bandchain/blocks/latest", LatestBlocksRequestHandlerFn(cliCtx)).Methods("GET")
-// 	r.HandleFunc("/bandchain/txs/latest", LatestTxsRequestHandlerFn(cliCtx)).Methods("GET")
-// 	r.HandleFunc("/bandchain/evm-validators", GetEVMValidators(cliCtx)).Methods("GET")
-// 	r.HandleFunc(fmt.Sprintf("/bandchain/proof/{%s}", requestIDTag), GetProofHandlerFn(cliCtx)).Methods("GET")
-// 	r.HandleFunc("/bandchain/health_check", GetHealthStatus(cliCtx)).Methods("GET")
-// 	r.HandleFunc("/bandchain/provider_status", GetProviderStatus(cliCtx)).Methods("GET")
-// 	r.PathPrefix("/swagger-ui/").Handler(ServeSwaggerUI())
-// }
+func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router) {
+	// r.HandleFunc("/bandchain/blocks/latest", LatestBlocksRequestHandlerFn(cliCtx)).Methods("GET")
+	// r.HandleFunc("/bandchain/txs/latest", LatestTxsRequestHandlerFn(cliCtx)).Methods("GET")
+	// r.HandleFunc("/bandchain/evm-validators", GetEVMValidators(cliCtx)).Methods("GET")
+	r.HandleFunc(fmt.Sprintf("/bandchain/proof/{%s}", proof.RequestIDTag), proof.GetProofHandlerFn(cliCtx)).Methods("GET")
+	// r.HandleFunc("/bandchain/health_check", GetHealthStatus(cliCtx)).Methods("GET")
+	// r.HandleFunc("/bandchain/provider_status", GetProviderStatus(cliCtx)).Methods("GET")
+	// r.PathPrefix("/swagger-ui/").Handler(ServeSwaggerUI())
+}

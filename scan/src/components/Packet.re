@@ -22,14 +22,13 @@ module Styles = {
 [@react.component]
 let make = (~packet: IBCSub.packet_t, ~oracleScriptID: ID.OracleScript.t) => {
   // TODO: If we can get the schema out of IBCSub directly then this sub is not necessary any more.
-  let schemaSub = OracleScriptCodeSub.getSchemaByOracleScriptID(oracleScriptID);
-
+  let oracleScriptSub = OracleScriptSub.get(oracleScriptID);
   switch (packet) {
   | IBCSub.Request(request) =>
     // TODO: support loading state, no data later
     let outputKVsOpt =
-      switch (schemaSub) {
-      | Data(schema) => Borsh.decode(schema, "Input", request.calldata)
+      switch (oracleScriptSub) {
+      | Data(oracleScript) => Borsh.decode(oracleScript.schema, "Input", request.calldata)
       | _ => None
       };
     <>
@@ -141,8 +140,8 @@ let make = (~packet: IBCSub.packet_t, ~oracleScriptID: ID.OracleScript.t) => {
       {switch (response.status, response.result) {
        | (IBCSub.Response.Success, Some(result)) =>
          let outputKVsOpt =
-           switch (schemaSub) {
-           | Data(schema) => Borsh.decode(schema, "Output", result)
+           switch (oracleScriptSub) {
+           | Data(oracleScript) => Borsh.decode(oracleScript.schema, "Output", result)
            | _ => None
            };
          <>

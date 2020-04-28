@@ -1102,13 +1102,13 @@
     "@ledgerhq/logs" "^4.72.0"
     rxjs "^6.5.3"
 
-"@ledgerhq/devices@^5.13.0":
-  version "5.13.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/devices/-/devices-5.13.0.tgz#94666aff933d5bc5a98a6c190ff1749b37a65dba"
-  integrity sha512-jx3qX4dOkJpOL/TlnuzAwVcOm/IDCFvhXvfIAxu7F9dhafHDqYP0+8uHKBeJtkLyA4wd63SbHXVo16xmsAHp4Q==
+"@ledgerhq/devices@^5.13.1":
+  version "5.13.1"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/devices/-/devices-5.13.1.tgz#1d65fcbcc470874968e2e74f7e87e3f350c4b332"
+  integrity sha512-E3zgmA51+esMkczM9xLddVz0myXTauJaT5g4bbwGxxeHQyHyvaJNyOhMmcuxZN/aa/lfRmxYGthcN2JBUPju5A==
   dependencies:
-    "@ledgerhq/errors" "^5.13.0"
-    "@ledgerhq/logs" "^5.13.0"
+    "@ledgerhq/errors" "^5.13.1"
+    "@ledgerhq/logs" "^5.13.1"
     rxjs "^6.5.5"
 
 "@ledgerhq/errors@^4.78.0":
@@ -1116,20 +1116,20 @@
   resolved "https://registry.yarnpkg.com/@ledgerhq/errors/-/errors-4.78.0.tgz#23daf3af54d03b1bda3e616002b555da1bdb705a"
   integrity sha512-FX6zHZeiNtegBvXabK6M5dJ+8OV8kQGGaGtuXDeK/Ss5EmG4Ltxc6Lnhe8hiHpm9pCHtktOsnUVL7IFBdHhYUg==
 
-"@ledgerhq/errors@^5.13.0":
-  version "5.13.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/errors/-/errors-5.13.0.tgz#8e9aa9d2326dfaceee7d00d3411e49505837f8aa"
-  integrity sha512-I+13snTaDZQbhnbxe3Hwud3bkmDqDSe/s8z0dzkhbchFdXvmtp77IbQrbJZ2m4L5W2bOBHAhv6Dz2SZv5Ll/VA==
+"@ledgerhq/errors@^5.13.1":
+  version "5.13.1"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/errors/-/errors-5.13.1.tgz#1df73a8084609888fabcefbdb9edfd4c11ab3a22"
+  integrity sha512-IuEw9a70K3C3AZV4yVGk75HlwmKmJaR6EjMIxBAupiCw0G6rBP0d62MA1Vx4dg082LKKNXKafWcDstLG4ySpBA==
 
-"@ledgerhq/hw-transport-webusb@^5.13.0":
-  version "5.13.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-webusb/-/hw-transport-webusb-5.13.0.tgz#4bd3e79d4e7ad1fa259184a745ce7d88729e17fb"
-  integrity sha512-tzZFmayRVNFj2aNmRqM5YD/l3RPHXSe7rbTxAi2D5NnBN5bOXMZ4sKxAb8MIygeZJH3hzieOsL+tRgoP+OM/rg==
+"@ledgerhq/hw-transport-webusb@^5.13.1":
+  version "5.13.1"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-webusb/-/hw-transport-webusb-5.13.1.tgz#b779ffc23d69fd257494568a403b876cb187cb79"
+  integrity sha512-HMSddoZqcmKRxeGwbFf+PX1HY1UsRb9xF1Qq0M1xm6PHokiXFpgycfql+EpctcaRyZnEniCbvDzs6/i8RvEeQQ==
   dependencies:
-    "@ledgerhq/devices" "^5.13.0"
-    "@ledgerhq/errors" "^5.13.0"
-    "@ledgerhq/hw-transport" "^5.13.0"
-    "@ledgerhq/logs" "^5.13.0"
+    "@ledgerhq/devices" "^5.13.1"
+    "@ledgerhq/errors" "^5.13.1"
+    "@ledgerhq/hw-transport" "^5.13.1"
+    "@ledgerhq/logs" "^5.13.1"
 
 "@ledgerhq/hw-transport@^4.77.0":
   version "4.78.0"
@@ -1140,13 +1140,13 @@
     "@ledgerhq/errors" "^4.78.0"
     events "^3.0.0"
 
-"@ledgerhq/hw-transport@^5.13.0":
-  version "5.13.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport/-/hw-transport-5.13.0.tgz#dac69b9cd17d9260fe9bad5594cd88370cdb5933"
-  integrity sha512-IUwmW3YTULWZyuw5JNgGCTmPZs80XJRq5vLi6nH53Ouvgz1yVy+ktNALOcaOxyR2WRA1flwRTRiss/OtJrCDjQ==
+"@ledgerhq/hw-transport@^5.13.1":
+  version "5.13.1"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport/-/hw-transport-5.13.1.tgz#b0fb8208b0fb383f3984c1af26a9b9e7a3ad3d75"
+  integrity sha512-TQJJY10ZoToYjaGK+u9wud0W2dK+6TBA753FGlHgptydSaRmep0uc4A2TxOLPexdVlbHXmkMa1skd3w4ZrKKdA==
   dependencies:
-    "@ledgerhq/devices" "^5.13.0"
-    "@ledgerhq/errors" "^5.13.0"
+    "@ledgerhq/devices" "^5.13.1"
+    "@ledgerhq/errors" "^5.13.1"
     events "^3.1.0"
 
 "@ledgerhq/logs@^4.72.0":
@@ -1154,10 +1154,10 @@
   resolved "https://registry.yarnpkg.com/@ledgerhq/logs/-/logs-4.72.0.tgz#43df23af013ad1135407e5cf33ca6e4c4c7708d5"
   integrity sha512-o+TYF8vBcyySRsb2kqBDv/KMeme8a2nwWoG+lAWzbDmWfb2/MrVWYCVYDYvjXdSoI/Cujqy1i0gIDrkdxa9chA==
 
-"@ledgerhq/logs@^5.13.0":
-  version "5.13.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/logs/-/logs-5.13.0.tgz#42e848f7c6f662387dfc5f3e86e3e5b4e07a5fae"
-  integrity sha512-yMvzQiMjWDMRma3HPxQQibhvEqMaEdXXkNBk1+eaW+N47Y3neYSSyCJlyihzzMBeeoin4ChlP/5uKQaABwBeTg==
+"@ledgerhq/logs@^5.13.1":
+  version "5.13.1"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/logs/-/logs-5.13.1.tgz#80a13031c9e0a9b874b96b6636f3f6df603ec1b2"
+  integrity sha512-ag2wX5VcAqPMKooCn/S6kKblVlsn74ixtagpwR+6GdFqYa/bspH8mWw+zwcdzSwa/wbOQRuY75zH52qBonfXBA==
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
@@ -3120,6 +3120,11 @@ crypto-browserify@^3.11.0:
     randombytes "^2.0.0"
     randomfill "^1.0.3"
 
+crypto@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/crypto/-/crypto-1.0.1.tgz#2af1b7cad8175d24c8a1b0778255794a21803037"
+  integrity sha512-VxBKmeNcqQdiUQUW2Tzq0t377b54N2bMtXO/qiLa+6eRRmmC4qT3D4OnTGoT/U6O9aklQ/jTwbOtRMTTY8G0Ig==
+
 css-color-names@0.0.4, css-color-names@^0.0.4:
   version "0.0.4"
   resolved "https://registry.yarnpkg.com/css-color-names/-/css-color-names-0.0.4.tgz#808adc2e79cf84738069b646cb20ec27beb629e0"
@@ -3133,10 +3138,10 @@ css-declaration-sorter@^4.0.1:
     postcss "^7.0.1"
     timsort "^0.3.0"
 
-css-loader@^3.5.2:
-  version "3.5.2"
-  resolved "https://registry.yarnpkg.com/css-loader/-/css-loader-3.5.2.tgz#6483ae56f48a7f901fbe07dde2fc96b01eafab3c"
-  integrity sha512-hDL0DPopg6zQQSRlZm0hyeaqIRnL0wbWjay9BZxoiJBpbfOW4WHfbaYQhwnDmEa0kZUc1CJ3IFo15ot1yULMIQ==
+css-loader@^3.5.3:
+  version "3.5.3"
+  resolved "https://registry.yarnpkg.com/css-loader/-/css-loader-3.5.3.tgz#95ac16468e1adcd95c844729e0bb167639eb0bcf"
+  integrity sha512-UEr9NH5Lmi7+dguAm+/JSPovNjYbm2k3TK58EiwQHzOHH5Jfq1Y+XoP2bQO6TMn7PptMd0opxxedAWcaSTRKHw==
   dependencies:
     camelcase "^5.3.1"
     cssesc "^3.0.0"
@@ -3149,7 +3154,7 @@ css-loader@^3.5.2:
     postcss-modules-scope "^2.2.0"
     postcss-modules-values "^3.0.0"
     postcss-value-parser "^4.0.3"
-    schema-utils "^2.6.5"
+    schema-utils "^2.6.6"
     semver "^6.3.0"
 
 css-modules-loader-core@^1.1.0:
@@ -8381,10 +8386,10 @@ schema-utils@^1.0.0:
     ajv-errors "^1.0.0"
     ajv-keywords "^3.1.0"
 
-schema-utils@^2.6.5:
-  version "2.6.5"
-  resolved "https://registry.yarnpkg.com/schema-utils/-/schema-utils-2.6.5.tgz#c758f0a7e624263073d396e29cd40aa101152d8a"
-  integrity sha512-5KXuwKziQrTVHh8j/Uxz+QUbxkaLW9X/86NBlx/gnKgtsZA2GIVMUn17qWhRFwF8jdYb3Dig5hRO/W5mZqy6SQ==
+schema-utils@^2.6.6:
+  version "2.6.6"
+  resolved "https://registry.yarnpkg.com/schema-utils/-/schema-utils-2.6.6.tgz#299fe6bd4a3365dc23d99fd446caff8f1d6c330c"
+  integrity sha512-wHutF/WPSbIi9x6ctjGGk2Hvl0VOz5l3EKEuKbjPlB30mKZUzb9A5k9yEXRX3pwyqVLPvpfZZEllaFq/M718hA==
   dependencies:
     ajv "^6.12.0"
     ajv-keywords "^3.4.1"
@@ -8990,13 +8995,13 @@ strip-json-comments@~2.0.1:
   resolved "https://registry.yarnpkg.com/strip-json-comments/-/strip-json-comments-2.0.1.tgz#3c531942e908c2697c0ec344858c286c7ca0a60a"
   integrity sha1-PFMZQukIwml8DsNEhYwobHygpgo=
 
-style-loader@^1.1.4:
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/style-loader/-/style-loader-1.1.4.tgz#1ad81283cefe51096756fd62697258edad933230"
-  integrity sha512-SbBHRD8fwK3pX+4UDF4ETxUF0+rCvk29LWTTI7Rt0cgsDjAj3SWM76ByTe6u2+4IlJ/WwluB7wuslWETCoPQdg==
+style-loader@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/style-loader/-/style-loader-1.2.0.tgz#f78e4d49caf5018f7c03ae1886e1270124feeb0a"
+  integrity sha512-HC8WcGnjwNrKji7HSBqFOhGNUSt7UDU/jHxT6bA83Gk+JWJBmgitWlGihc0V1w6ZvwlzcX5LJOsofZzSP7b1tQ==
   dependencies:
     loader-utils "^2.0.0"
-    schema-utils "^2.6.5"
+    schema-utils "^2.6.6"
 
 stylehacks@^4.0.0:
   version "4.0.3"
