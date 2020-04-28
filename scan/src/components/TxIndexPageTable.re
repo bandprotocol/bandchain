@@ -38,6 +38,14 @@ module Styles = {
   let thirdCol = 1.20;
 
   let failIcon = style([width(`px(16)), height(`px(16))]);
+
+  let failedMessageDetails =
+    style([
+      display(`flex),
+      width(`px(120)),
+      alignItems(`center),
+      justifyContent(`spaceBetween),
+    ]);
 };
 
 let renderSend = (send: TxSub.Msg.Send.t) => {
@@ -647,6 +655,18 @@ let renderConnectionVariant = (msg: TxSub.Msg.t, common: TxSub.Msg.ConnectionCom
   </Col>;
 };
 
+let renderFailMessage = () => {
+  <Col size=Styles.thirdCol alignSelf=Col.Start>
+    <VSpacing size=Spacing.sm />
+    <div className=Styles.topicContainer>
+      <div className=Styles.failedMessageDetails>
+        <Text value="MESSAGE FAILED" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <img src=Images.fail className=Styles.failIcon />
+      </div>
+    </div>
+  </Col>;
+};
+
 let renderDelegate = (delegation: TxSub.Msg.Delegate.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
     <VSpacing size=Spacing.sm />
@@ -1073,7 +1093,7 @@ let make = (~messages: list(TxSub.Msg.t)) => {
     </THead>
     {messages
      ->Belt.List.mapWithIndex((index, msg) => {
-         let theme = msg |> TxSub.Msg.getBadgeTheme;
+         let theme = msg |> TxSub.Msg.getMsgBadgeTheme;
          <TBody key={index |> string_of_int}>
            <Row>
              <Col> <HSpacing size=Spacing.md /> </Col>

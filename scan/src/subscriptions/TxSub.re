@@ -799,7 +799,7 @@ module Msg = {
     bgColor: Css.Types.Color.t,
   };
 
-  let getFailedMessageBadge = msg => {
+  let getBadge = msg => {
     switch (msg) {
     | "send" => {text: "SEND TOKEN", textColor: Colors.blue7, bgColor: Colors.blue1}
     | "create_data_source" => {
@@ -908,47 +908,14 @@ module Msg = {
         textColor: Colors.blue7,
         bgColor: Colors.blue1,
       }
-    | _ => {text: "UNKNOWN", textColor: Colors.gray7, bgColor: Colors.gray4}
-    };
-  };
-
-  let getBadgeTheme = msg => {
-    switch (msg) {
-    | Send(_) => {text: "SEND TOKEN", textColor: Colors.blue7, bgColor: Colors.blue1}
-    | CreateDataSource(_) => {
-        text: "CREATE DATA SOURCE",
-        textColor: Colors.yellow5,
-        bgColor: Colors.yellow1,
-      }
-    | EditDataSource(_) => {
-        text: "EDIT DATA SOURCE",
-        textColor: Colors.yellow5,
-        bgColor: Colors.yellow1,
-      }
-    | CreateOracleScript(_) => {
-        text: "CREATE ORACLE SCRIPT",
-        textColor: Colors.pink6,
-        bgColor: Colors.pink1,
-      }
-    | EditOracleScript(_) => {
-        text: "EDIT ORACLE SCRIPT",
-        textColor: Colors.pink6,
-        bgColor: Colors.pink1,
-      }
-    | Request(_) => {text: "REQUEST", textColor: Colors.orange6, bgColor: Colors.orange1}
-    | Report(_) => {text: "REPORT", textColor: Colors.orange6, bgColor: Colors.orange1}
-    | AddOracleAddress(_) => {
-        text: "ADD ORACLE ADDRESS",
+    | "delegate" => {text: "DELEGATE", textColor: Colors.purple6, bgColor: Colors.purple1}
+    | "begin_unbonding" => {
+        text: "UNDELEGATE",
         textColor: Colors.purple6,
         bgColor: Colors.purple1,
       }
-    | RemoveOracleAddress(_) => {
-        text: "REMOVE ORACLE ADDRESS",
-        textColor: Colors.purple6,
-        bgColor: Colors.purple1,
-      }
-    | CreateValidator(_) => {
-        text: "CREATE VALIDATOR",
+    | "begin_redelegate" => {
+        text: "REDELEGATE",
         textColor: Colors.purple6,
         bgColor: Colors.purple1,
       }
@@ -1048,6 +1015,44 @@ module Msg = {
         bgColor: Colors.purple1,
       }
     | MultiSend(_) => {text: "MULTI SEND", textColor: Colors.blue7, bgColor: Colors.blue1}
+    | _ => {text: "UNKNOWN", textColor: Colors.gray7, bgColor: Colors.gray4}
+    };
+  };
+
+  let getMsgBadgeTheme = msg => {
+    switch (msg) {
+    | Send(_) => getBadge("send")
+    | CreateDataSource(_) => getBadge("create_data_source")
+    | EditDataSource(_) => getBadge("edit_data_source")
+    | CreateOracleScript(_) => getBadge("create_oracle_script")
+    | EditOracleScript(_) => getBadge("edit_oracle_script")
+    | Request(_) => getBadge("request")
+    | Report(_) => getBadge("report")
+    | AddOracleAddress(_) => getBadge("add_oracle_address")
+    | RemoveOracleAddress(_) => getBadge("remove_oracle_address")
+    | CreateValidator(_) => getBadge("create_validator")
+    | EditValidator(_) => getBadge("edit_validator")
+    | CreateClient(_) => getBadge("create_client")
+    | UpdateClient(_) => getBadge("edit_client")
+    | SubmitClientMisbehaviour(_) => getBadge("submit_client_misbehaviour")
+    | ConnectionOpenInit(_) => getBadge("connection_open_init")
+    | ConnectionOpenTry(_) => getBadge("connection_open_try")
+    | ConnectionOpenAck(_) => getBadge("connection_open_ack")
+    | ConnectionOpenConfirm(_) => getBadge("connection_open_confirm")
+    | ChannelOpenInit(_) => getBadge("channel_open_init")
+    | ChannelOpenTry(_) => getBadge("channel_open_try")
+    | ChannelOpenAck(_) => getBadge("channel_open_ack")
+    | ChannelOpenConfirm(_) => getBadge("channel_open_confirm")
+    | ChannelCloseInit(_) => getBadge("channel_close_init")
+    | ChannelCloseConfirm(_) => getBadge("channel_close_confirm")
+    | Packet(_) => getBadge("ics04/opaque")
+    | Acknowledgement(_) => getBadge("acknowledgement")
+    | Timeout(_) => getBadge("ics04/timeout")
+    | Delegate(_) => getBadge("delegate")
+    | Undelegate(_) => getBadge("begin_unbonding")
+    | Redelegate(_) => getBadge("begin_redelegate")
+    | WithdrawReward(_) => getBadge("withdraw_delegator_reward")
+    | FailMessage(msg) => getBadge(msg.message)
     | _ => {text: "UNKNOWN", textColor: Colors.gray7, bgColor: Colors.gray4}
     };
   };
