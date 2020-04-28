@@ -13,7 +13,7 @@ library Packets {
     {
         return
             abi.encodePacked(
-                hex"d9c58927",
+                hex"d9c58927", // Amino codec info for RequestPacket type
                 uint8(10), // (1 << 3) | 2
                 Utils.encodeVarintUnsigned(bytes(_self.clientId).length),
                 _self.clientId,
@@ -81,7 +81,7 @@ library Packets {
     {
         return
             abi.encodePacked(
-                hex"79b5957c",
+                hex"79b5957c", // Amino codec info for ResponsePacket type
                 getReponsePart1(
                     _self.clientId,
                     _self.requestId,
