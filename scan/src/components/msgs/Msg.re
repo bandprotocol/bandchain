@@ -920,6 +920,5 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
        }}
     </div>
   | Unknown => React.null
-  | _ => <div />
   };
 };
