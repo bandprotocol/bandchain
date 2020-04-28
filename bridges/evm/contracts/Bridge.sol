@@ -138,8 +138,8 @@ contract Bridge is IBridge, Ownable {
 
     /// Verifies that the given data is a valid data on BandChain as of the given block height.
     /// @param _blockHeight The block height. Someone must already relay this block.
-    /// @param _requestPacket The request packet contain detail of request.
-    /// @param _responsePacket The response packet of this request contain metadata of result.
+    /// @param _requestPacket The request packet is this request.
+    /// @param _responsePacket The response packet of this request.
     /// @param _version Lastest block height that the data node was updated.
     /// @param _merklePaths Merkle proof that shows how the data leave is part of the oracle iAVL.
     function verifyOracleData(

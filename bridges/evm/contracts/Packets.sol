@@ -15,7 +15,7 @@ library Packets {
             abi.encodePacked(
                 hex"d9c58927", // Amino codec info for RequestPacket type
                 uint8(10), // (1 << 3) | 2
-                Utils.encodeVarintUnsigned(bytes(_self.clientId).length),
+                getEncodeLength(_self.clientId),
                 _self.clientId,
                 uint8(16), // (2 << 3) | 0
                 Utils.encodeVarintUnsigned(_self.oracleScriptId),
