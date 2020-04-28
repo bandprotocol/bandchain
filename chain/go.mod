@@ -5,6 +5,7 @@ go 1.13
 require (
 	github.com/btcsuite/btcd v0.0.0-20190213025234-306aecffea32 // indirect
 	github.com/cosmos/cosmos-sdk v0.37.11
+	github.com/cosmos/ledger-cosmos-go v0.11.1 // indirect
 	github.com/ethereum/go-ethereum v1.9.12
 	github.com/gin-gonic/gin v1.6.2
 	github.com/gorilla/mux v1.7.4
