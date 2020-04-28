@@ -655,6 +655,123 @@ let renderConnectionVariant = (msg: TxSub.Msg.t, common: TxSub.Msg.ConnectionCom
   </Col>;
 };
 
+let renderDelegate = (delegation: TxSub.Msg.Delegate.t) => {
+  <Col size=Styles.thirdCol alignSelf=Col.Start>
+    <VSpacing size=Spacing.sm />
+    <div className=Styles.topicContainer>
+      <Text value="DELEGATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <div className={Styles.addressContainer(300)}>
+        <AddressRender address={delegation.delegatorAddress} />
+      </div>
+    </div>
+    <VSpacing size=Spacing.lg />
+    <div className=Styles.topicContainer>
+      <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <div className={Styles.addressContainer(300)}>
+        <AddressRender address={delegation.validatorAddress} validator=true />
+      </div>
+    </div>
+    <VSpacing size=Spacing.lg />
+    <div className=Styles.topicContainer>
+      <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <div className=Styles.hFlex>
+        <Text value={delegation.amount |> Coin.getDescription} weight=Text.Semibold code=true />
+      </div>
+    </div>
+  </Col>;
+};
+
+let renderUndelegate = (delegation: TxSub.Msg.Undelegate.t) => {
+  <Col size=Styles.thirdCol alignSelf=Col.Start>
+    <VSpacing size=Spacing.sm />
+    <div className=Styles.topicContainer>
+      <Text value="DELEGATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <div className={Styles.addressContainer(300)}>
+        <AddressRender address={delegation.delegatorAddress} />
+      </div>
+    </div>
+    <VSpacing size=Spacing.lg />
+    <div className=Styles.topicContainer>
+      <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <div className={Styles.addressContainer(300)}>
+        <AddressRender address={delegation.validatorAddress} validator=true />
+      </div>
+    </div>
+    <VSpacing size=Spacing.lg />
+    <div className=Styles.topicContainer>
+      <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <div className=Styles.hFlex>
+        <Text value={delegation.amount |> Coin.getDescription} weight=Text.Semibold code=true />
+      </div>
+    </div>
+  </Col>;
+};
+
+let renderRedelegate = (delegation: TxSub.Msg.Redelegate.t) => {
+  <Col size=Styles.thirdCol alignSelf=Col.Start>
+    <VSpacing size=Spacing.sm />
+    <div className=Styles.topicContainer>
+      <Text value="DELEGATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <div className={Styles.addressContainer(300)}>
+        <AddressRender address={delegation.delegatorAddress} />
+      </div>
+    </div>
+    <VSpacing size=Spacing.lg />
+    <div className=Styles.topicContainer>
+      <Text value="SOURCE ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <div className={Styles.addressContainer(300)}>
+        <AddressRender address={delegation.validatorSourceAddress} validator=true />
+      </div>
+    </div>
+    <VSpacing size=Spacing.lg />
+    <div className=Styles.topicContainer>
+      <Text value="DESTINATION ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <div className={Styles.addressContainer(300)}>
+        <AddressRender address={delegation.validatorDestinationAddress} validator=true />
+      </div>
+    </div>
+    <VSpacing size=Spacing.lg />
+    <div className=Styles.topicContainer>
+      <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <div className=Styles.hFlex>
+        <Text value={delegation.amount |> Coin.getDescription} weight=Text.Semibold code=true />
+      </div>
+    </div>
+  </Col>;
+};
+
+let renderWithdrawReward = (withdrawal: TxSub.Msg.WithdrawReward.t) => {
+  <Col size=Styles.thirdCol alignSelf=Col.Start>
+    <VSpacing size=Spacing.sm />
+    <div className=Styles.topicContainer>
+      <Text value="DELEGATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <div className={Styles.addressContainer(300)}>
+        <AddressRender address={withdrawal.delegatorAddress} />
+      </div>
+    </div>
+    <VSpacing size=Spacing.lg />
+    <div className=Styles.topicContainer>
+      <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <div className={Styles.addressContainer(300)}>
+        <AddressRender address={withdrawal.validatorAddress} validator=true />
+      </div>
+    </div>
+    <VSpacing size=Spacing.lg />
+    <div className=Styles.topicContainer>
+      <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <div className=Styles.hFlex>
+        <Text
+          value={withdrawal.amount |> Coin.getBandAmountFromCoins |> Js.Float.toString}
+          weight=Text.Semibold
+          code=true
+        />
+        <HSpacing size=Spacing.sm />
+        <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
+      </div>
+    </div>
+  </Col>;
+};
+
 let renderBody = (msg: TxSub.Msg.t) => {
   switch (msg) {
   | Send(send) => renderSend(send)
@@ -684,6 +801,10 @@ let renderBody = (msg: TxSub.Msg.t) => {
   | Packet(info) => renderPacketVariant(msg, info.common)
   | Acknowledgement(info) => renderPacketVariant(msg, info.common)
   | Timeout(info) => renderPacketVariant(msg, info.common)
+  | Delegate(delegation) => renderDelegate(delegation)
+  | Undelegate(delegation) => renderUndelegate(delegation)
+  | Redelegate(delegation) => renderRedelegate(delegation)
+  | WithdrawReward(withdrawal) => renderWithdrawReward(withdrawal)
   | FailMessage(_) => "Failed msg" |> React.string
   | _ => React.null
   };
