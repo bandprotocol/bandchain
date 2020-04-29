@@ -46,7 +46,7 @@ func handleTransaction(client *rpchttp.HTTP, key keyring.Info, tx tmtypes.TxResu
 func handleRequestLog(client *rpchttp.HTTP, key keyring.Info, log sdk.ABCIMessageLog) {
 	idStr, err := GetEventValue(log, "request", "id")
 	if err != nil {
-		logger.Error("❌ Failed parse request id with error: %s", err.Error())
+		logger.Error("❌ Failed to parse request id with error: %s", err.Error())
 		return
 	}
 	id, err := strconv.Atoi(idStr)
