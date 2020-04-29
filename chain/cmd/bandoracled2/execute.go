@@ -1,52 +1,72 @@
 package main
 
 import (
-	"encoding/hex"
 	"fmt"
 
+	sdkCtx "github.com/cosmos/cosmos-sdk/client/context"
+	ckeys "github.com/cosmos/cosmos-sdk/client/keys"
+	codecstd "github.com/cosmos/cosmos-sdk/codec/std"
+	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tendermint/tendermint/crypto/secp256k1"
+	"github.com/cosmos/cosmos-sdk/x/auth"
+	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
+	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
 
 	"github.com/bandprotocol/bandchain/chain/app"
-	"github.com/bandprotocol/bandchain/chain/bandlib"
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 )
 
-var bandClient bandlib.BandStatefulClient
+var (
+	cdc      = codecstd.MakeCodec(app.ModuleBasics)
+	appCodec = codecstd.NewAppCodec(cdc)
+)
 
 func init() {
-	// TODO: Cleanup
-	config := sdk.GetConfig()
-	app.SetBech32AddressPrefixesAndBip44CoinType(config)
-	config.Seal()
-
-	priv, err := hex.DecodeString(
-		"6b0b8909eadbbc220797dc0aada9558030d4a89972e51de8de525fc9de42bd40",
-	)
-	var privSecp256k1 secp256k1.PrivKeySecp256k1
-	copy(privSecp256k1[:], priv)
-	bandClient, err = bandlib.NewBandStatefulClient(
-		"tcp://localhost:26657", privSecp256k1, 100, 10, "Bandoracled reports", "bandchain",
-	)
-	if err != nil {
-		panic(err)
-	}
+	authclient.Codec = appCodec
 }
 
-func GetExecutable(dataSourceID int) ([]byte, error) {
-	cliCtx := bandClient.GetContext()
-	res, _, err := cliCtx.Query(
-		fmt.Sprintf("custom/oracle/%s/%d", oracle.QueryDataSourceByID, dataSourceID),
-	)
+func BroadCastMsgs(client *rpchttp.HTTP, key keyring.Info, msgs []sdk.Msg) {
+	// TODO: Make this a queue. Make it better.
+	cliCtx := sdkCtx.CLIContext{Client: client}
+	acc, err := auth.NewAccountRetriever(appCodec, cliCtx).GetAccount(key.GetAddress())
+	if err != nil {
+		fmt.Println("ERR1", err)
+		return
+	}
 
+	out, err := auth.NewTxBuilder(
+		auth.DefaultTxEncoder(cdc), acc.GetAccountNumber(), acc.GetSequence(),
+		1000000, 1, false, chainID, "", sdk.NewCoins(), sdk.NewDecCoins(),
+	).WithKeybase(keybase).BuildAndSign(key.GetName(), ckeys.DefaultKeyPass, msgs)
+	if err != nil {
+		fmt.Println("ERR2", err)
+		return
+	}
+
+	res, err := cliCtx.BroadcastTxCommit(out)
+	if err != nil {
+		fmt.Println("ERR3", err)
+		return
+	}
+
+	fmt.Println("EZ", res)
+}
+
+// GetExecutable fetches data source executable using the provided client.
+func GetExecutable(client *rpchttp.HTTP, id int) ([]byte, error) {
+	logger.Debug("⛏ Fetching data source #%d from the remote node", id)
+	res, _, err := sdkCtx.CLIContext{Client: client}.Query(
+		fmt.Sprintf("custom/oracle/%s/%d", oracle.QueryDataSourceByID, id),
+	)
 	if err != nil {
 		return nil, err
 	}
 
 	var dataSource oracle.DataSourceQuerierInfo
-	err = cliCtx.Codec.UnmarshalJSON(res, &dataSource)
+	err = cdc.UnmarshalJSON(res, &dataSource)
 	if err != nil {
 		return nil, err
 	}
+	logger.Debug("👀 Received data source #%d content: 0x%X...", id, dataSource.Executable[:32])
 	return dataSource.Executable, nil
 }

@@ -6,7 +6,10 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
+
+	"github.com/bandprotocol/bandchain/chain/app"
 )
 
 var (
@@ -17,6 +20,10 @@ var (
 )
 
 func main() {
+	config := sdk.GetConfig()
+	app.SetBech32AddressPrefixesAndBip44CoinType(config)
+	config.Seal()
+
 	rootCmd := &cobra.Command{
 		Use:   "oracled",
 		Short: "🔮 BandChain oracle daemon to subscribe and response to oracle requests",

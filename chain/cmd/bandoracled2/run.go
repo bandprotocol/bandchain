@@ -4,87 +4,56 @@ import (
 	"context"
 	"time"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/spf13/cobra"
-	rpcclient "github.com/tendermint/tendermint/rpc/client"
-	libclient "github.com/tendermint/tendermint/rpc/lib/client"
+	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
 	tmtypes "github.com/tendermint/tendermint/types"
 )
 
-func newRPCClient(addr string) (*rpcclient.HTTP, error) {
-	httpClient, err := libclient.DefaultHTTPClient(addr)
+func runImpl(client *rpchttp.HTTP, key keyring.Info) error {
+	logger.Info("🚀 Starting WebSocket subscriber")
+	err := client.Start()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	rpcClient, err := rpcclient.NewHTTPWithClient(addr, "/websocket", httpClient)
+	ctx, cxl := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cxl()
+
+	// TODO: We can subscribe only for txs that contain request messages
+	query := "tm.event = 'Tx'"
+	logger.Info("👂 Subscribing to events with query: %s...", query)
+	eventChan, err := client.Subscribe(ctx, "", query)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return rpcClient, nil
+	for {
+		select {
+		case ev := <-eventChan:
+			go handleTransaction(client, key, ev.Data.(tmtypes.EventDataTx).TxResult)
+		}
+	}
 }
 
 func runCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "run",
-		Short: "Run the oracle process",
+		Use:     "run [key-name]",
+		Aliases: []string{"r"},
+		Short:   "Run the oracle process",
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// TODO: Read URL from chain configuration
-			client, err := newRPCClient("tcp://localhost:26657")
+			key, err := keybase.Key(args[0])
 			if err != nil {
 				return err
 			}
 
-			err = client.Start()
+			logger.Info("⭐️ Creating HTTP client with node URI %s", nodeURI)
+			client, err := rpchttp.New(nodeURI, "/websocket")
 			if err != nil {
 				return err
 			}
-
-			ctx, cxl := context.WithTimeout(context.Background(), 5*time.Second)
-			defer cxl()
-
-			// TODO: We can subscribe only for txs that contain request messages
-			eventChan, err := client.Subscribe(ctx, "", "tm.event = 'Tx'")
-			if err != nil {
-				return err
-			}
-
-			logger.Info("👂 Start listening to transaction events...")
-			for {
-				select {
-				case ev := <-eventChan:
-					tx := ev.Data.(tmtypes.EventDataTx).TxResult
-					// TODO: Get real transaction hash here
-					logger.Debug("👀 Inspecting transaction %s", "HASH")
-
-					logs, err := sdk.ParseABCILogs(tx.Result.Log)
-					if err != nil {
-						logger.Error("❌ Failed to parse transaction logs: %s", err.Error())
-						return err
-					}
-
-					for _, log := range logs {
-						// TODO: Remove magic string
-						messageType, err := GetEventValue(log, "message", "action")
-						if err != nil {
-							logger.Error("❌ Failed to get message type: %s", err.Error())
-						}
-
-						if messageType != "request" {
-							logger.Debug("⏭️ Skipping non-request message type: %s", messageType)
-							continue
-						}
-
-						go func(log sdk.ABCIMessageLog) {
-							err := handleRequestLog(log)
-							if err != nil {
-								logger.Error("❌ Failed to handle request: %s", err.Error())
-							}
-						}(log)
-					}
-				}
-			}
+			return runImpl(client, key)
 		},
 	}
 	return cmd
