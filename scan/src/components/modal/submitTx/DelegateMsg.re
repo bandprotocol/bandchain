@@ -36,7 +36,7 @@ let make = (~setMsgsOpt) => {
       inputData=amount
       setInputData=setAmount
       parse=int_of_string_opt
-      msg="Amount (BAND)"
+      msg="Amount (UBAND)"
       errMsg="Invalid amount"
     />
   </>;
