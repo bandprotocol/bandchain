@@ -22,7 +22,7 @@ import (
 )
 
 type MultiStoreProof struct {
-	AccToMainStoresMerkleHash         tmbytes.HexBytes `json:"accToMainStoresMerkleHash"`
+	AccToMemCapStoresMerkleHash       tmbytes.HexBytes `json:"accToMemCapStoresMerkleHash"`
 	MintStoresMerkleHash              tmbytes.HexBytes `json:"mintStoresMerkleHash"`
 	OracleIAVLStateHash               tmbytes.HexBytes `json:"oracleIAVLStateHash"`
 	ParamsAndSlashingStoresMerkleHash tmbytes.HexBytes `json:"paramsAndSlashingStoresMerkleHash"`
@@ -30,7 +30,7 @@ type MultiStoreProof struct {
 }
 
 type MultiStoreProofEthereum struct {
-	AccToMainStoresMerkleHash         common.Hash
+	AccToMemCapStoresMerkleHash       common.Hash
 	MintStoresMerkleHash              common.Hash
 	OracleIAVLStateHash               common.Hash
 	ParamsAndSlashingStoresMerkleHash common.Hash
@@ -39,7 +39,7 @@ type MultiStoreProofEthereum struct {
 
 func (m *MultiStoreProof) encodeToEthFormat() MultiStoreProofEthereum {
 	return MultiStoreProofEthereum{
-		AccToMainStoresMerkleHash:         common.BytesToHash(m.AccToMainStoresMerkleHash),
+		AccToMemCapStoresMerkleHash:       common.BytesToHash(m.AccToMemCapStoresMerkleHash),
 		MintStoresMerkleHash:              common.BytesToHash(m.MintStoresMerkleHash),
 		OracleIAVLStateHash:               common.BytesToHash(m.OracleIAVLStateHash),
 		ParamsAndSlashingStoresMerkleHash: common.BytesToHash(m.ParamsAndSlashingStoresMerkleHash),
@@ -53,7 +53,7 @@ func GetMultiStoreProof(proof rootmulti.MultiStoreProofOp) MultiStoreProof {
 		m[info.Name] = info.Core.CommitID.Hash
 	}
 	return MultiStoreProof{
-		AccToMainStoresMerkleHash: merkle.SimpleHashFromByteSlices([][]byte{
+		AccToMemCapStoresMerkleHash: merkle.SimpleHashFromByteSlices([][]byte{
 			encodeStoreMerkleHash(auth.StoreKey, m[auth.StoreKey]),
 			encodeStoreMerkleHash(bank.StoreKey, m[bank.StoreKey]),
 			encodeStoreMerkleHash(capability.StoreKey, m[capability.StoreKey]),
