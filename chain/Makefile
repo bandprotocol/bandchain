@@ -1,7 +1,12 @@
 PACKAGES=$(shell go list ./... | grep -v '/simulation')
 VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
+LEDGER_ENABLED ?= true
 BINDIR ?= $(GOPATH)/bin
+
+ifeq ($(LEDGER_ENABLED),true)
+	build_tags += ledger
+endif
 
 ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=bandchain \
 	-X github.com/cosmos/cosmos-sdk/version.ServerName=bandd \

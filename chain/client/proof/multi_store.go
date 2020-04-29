@@ -1,7 +1,6 @@
 package proof
 
 import (
-	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/store/rootmulti"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
@@ -14,7 +13,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-	"github.com/cosmos/cosmos-sdk/x/supply"
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/tendermint/tendermint/crypto/merkle"
@@ -28,7 +26,7 @@ type MultiStoreProof struct {
 	MintStoresMerkleHash              tmbytes.HexBytes `json:"mintStoresMerkleHash"`
 	OracleIAVLStateHash               tmbytes.HexBytes `json:"oracleIAVLStateHash"`
 	ParamsAndSlashingStoresMerkleHash tmbytes.HexBytes `json:"paramsAndSlashingStoresMerkleHash"`
-	StakingToUpgradeStoresMerkleHash  tmbytes.HexBytes `json:"stakingToUpgradeStoresMerkleHash"`
+	StakingAndUpgradeStoresMerkleHash tmbytes.HexBytes `json:"stakingAndUpgradeStoresMerkleHash"`
 }
 
 type MultiStoreProofEthereum struct {
@@ -36,7 +34,7 @@ type MultiStoreProofEthereum struct {
 	MintStoresMerkleHash              common.Hash
 	OracleIAVLStateHash               common.Hash
 	ParamsAndSlashingStoresMerkleHash common.Hash
-	StakingToUpgradeStoresMerkleHash  common.Hash
+	StakingAndUpgradeStoresMerkleHash common.Hash
 }
 
 func (m *MultiStoreProof) encodeToEthFormat() MultiStoreProofEthereum {
@@ -45,7 +43,7 @@ func (m *MultiStoreProof) encodeToEthFormat() MultiStoreProofEthereum {
 		MintStoresMerkleHash:              common.BytesToHash(m.MintStoresMerkleHash),
 		OracleIAVLStateHash:               common.BytesToHash(m.OracleIAVLStateHash),
 		ParamsAndSlashingStoresMerkleHash: common.BytesToHash(m.ParamsAndSlashingStoresMerkleHash),
-		StakingToUpgradeStoresMerkleHash:  common.BytesToHash(m.StakingToUpgradeStoresMerkleHash),
+		StakingAndUpgradeStoresMerkleHash: common.BytesToHash(m.StakingAndUpgradeStoresMerkleHash),
 	}
 }
 
@@ -63,7 +61,7 @@ func GetMultiStoreProof(proof rootmulti.MultiStoreProofOp) MultiStoreProof {
 			encodeStoreMerkleHash(evidence.StoreKey, m[evidence.StoreKey]),
 			encodeStoreMerkleHash(gov.StoreKey, m[gov.StoreKey]),
 			encodeStoreMerkleHash(ibc.StoreKey, m[ibc.StoreKey]),
-			encodeStoreMerkleHash(baseapp.MainStoreKey, m[baseapp.MainStoreKey]),
+			encodeStoreMerkleHash(capability.MemStoreKey, m[capability.MemStoreKey]),
 		}),
 		MintStoresMerkleHash: merkle.SimpleHashFromByteSlices([][]byte{
 			encodeStoreMerkleHash(mint.StoreKey, m[mint.StoreKey]),
@@ -73,9 +71,8 @@ func GetMultiStoreProof(proof rootmulti.MultiStoreProofOp) MultiStoreProof {
 			encodeStoreMerkleHash(params.StoreKey, m[params.StoreKey]),
 			encodeStoreMerkleHash(slashing.StoreKey, m[slashing.StoreKey]),
 		}),
-		StakingToUpgradeStoresMerkleHash: merkle.SimpleHashFromByteSlices([][]byte{
+		StakingAndUpgradeStoresMerkleHash: merkle.SimpleHashFromByteSlices([][]byte{
 			encodeStoreMerkleHash(staking.StoreKey, m[staking.StoreKey]),
-			encodeStoreMerkleHash(supply.StoreKey, m[supply.StoreKey]),
 			encodeStoreMerkleHash(upgrade.StoreKey, m[upgrade.StoreKey]),
 		}),
 	}

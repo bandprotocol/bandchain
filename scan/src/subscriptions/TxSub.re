@@ -546,6 +546,71 @@ module Msg = {
       };
   };
 
+  module Delegate = {
+    type t = {
+      validatorAddress: Address.t,
+      delegatorAddress: Address.t,
+      amount: Coin.t,
+    };
+
+    let decode = json => {
+      JsonUtils.Decode.{
+        delegatorAddress: json |> field("delegator_address", string) |> Address.fromBech32,
+        validatorAddress: json |> field("validator_address", string) |> Address.fromBech32,
+        amount: json |> field("amount", Coin.decodeCoin),
+      };
+    };
+  };
+
+  module Undelegate = {
+    type t = {
+      validatorAddress: Address.t,
+      delegatorAddress: Address.t,
+      amount: Coin.t,
+    };
+    let decode = json => {
+      JsonUtils.Decode.{
+        delegatorAddress: json |> field("delegator_address", string) |> Address.fromBech32,
+        validatorAddress: json |> field("validator_address", string) |> Address.fromBech32,
+        amount: json |> field("amount", Coin.decodeCoin),
+      };
+    };
+  };
+
+  module Redelegate = {
+    type t = {
+      validatorSourceAddress: Address.t,
+      validatorDestinationAddress: Address.t,
+      delegatorAddress: Address.t,
+      amount: Coin.t,
+    };
+    let decode = json => {
+      JsonUtils.Decode.{
+        validatorSourceAddress:
+          json |> field("validator_src_address", string) |> Address.fromBech32,
+        validatorDestinationAddress:
+          json |> field("validator_dst_address", string) |> Address.fromBech32,
+        delegatorAddress: json |> field("delegator_address", string) |> Address.fromBech32,
+        amount: json |> field("amount", Coin.decodeCoin),
+      };
+    };
+  };
+
+  module WithdrawReward = {
+    type t = {
+      validatorAddress: Address.t,
+      delegatorAddress: Address.t,
+      amount: list(Coin.t),
+    };
+    let decode = json => {
+      JsonUtils.Decode.{
+        validatorAddress: json |> field("validator_address", string) |> Address.fromBech32,
+        delegatorAddress: json |> field("delegator_address", string) |> Address.fromBech32,
+        amount: json |> field("reward_amount", string) |> GraphQLParser.coins,
+      };
+    };
+  };
+
   type t =
     | Unknown
     | Send(Send.t)
@@ -575,7 +640,11 @@ module Msg = {
     | Packet(Packet.t)
     | Acknowledgement(Acknowledgement.t)
     | Timeout(Timeout.t)
-    | FailMessage(FailMessage.t);
+    | FailMessage(FailMessage.t)
+    | Delegate(Delegate.t)
+    | Undelegate(Undelegate.t)
+    | Redelegate(Redelegate.t)
+    | WithdrawReward(WithdrawReward.t);
 
   let getCreator = msg => {
     switch (msg) {
@@ -607,6 +676,10 @@ module Msg = {
     | Packet(packet) => packet.sender
     | Acknowledgement(ack) => ack.sender
     | Timeout(timeout) => timeout.sender
+    | Delegate(delegation) => delegation.delegatorAddress
+    | Undelegate(delegation) => delegation.delegatorAddress
+    | Redelegate(delegation) => delegation.delegatorAddress
+    | WithdrawReward(withdrawal) => withdrawal.delegatorAddress
     | _ => "" |> Address.fromHex
     };
   };
@@ -727,6 +800,14 @@ module Msg = {
         bgColor: Colors.blue1,
       }
     | Timeout(_) => {text: "TIMEOUT", textColor: Colors.blue7, bgColor: Colors.blue1}
+    | Delegate(_) => {text: "DELEGATE", textColor: Colors.purple6, bgColor: Colors.purple1}
+    | Undelegate(_) => {text: "UNDELEGATE", textColor: Colors.purple6, bgColor: Colors.purple1}
+    | Redelegate(_) => {text: "REDELEGATE", textColor: Colors.purple6, bgColor: Colors.purple1}
+    | WithdrawReward(_) => {
+        text: "WITHDRAW REWARD",
+        textColor: Colors.purple6,
+        bgColor: Colors.purple1,
+      }
     | _ => {text: "UNKNOWN", textColor: Colors.gray7, bgColor: Colors.gray4}
     };
   };
@@ -763,6 +844,10 @@ module Msg = {
       | "ics04/timeout" => Timeout(json |> Timeout.decode)
       // TODO: handle case correctly
       | "acknowledgement" => Acknowledgement(json |> Acknowledgement.decode)
+      | "delegate" => Delegate(json |> Delegate.decode)
+      | "begin_unbonding" => Undelegate(json |> Undelegate.decode)
+      | "begin_redelegate" => Redelegate(json |> Redelegate.decode)
+      | "withdraw_delegator_reward" => WithdrawReward(json |> WithdrawReward.decode)
       | _ => Unknown
       }
     );
