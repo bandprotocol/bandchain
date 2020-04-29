@@ -9,7 +9,7 @@ module Styles = {
       padding2(~v=`px(50), ~h=`px(50)),
       backgroundColor(rgb(249, 249, 251)),
       borderRadius(`px(5)),
-      justifyContent(`center),
+      justifyContent(`flexStart),
     ]);
 
   let disable = isActive => style([display(isActive ? `flex : `none)]);
@@ -109,7 +109,6 @@ module SubmitTxStep = {
   let make = (~account: AccountContext.t, ~setRawTx, ~isActive) => {
     let (msgType, setMsgType) = React.useState(_ => Delegate);
     let (msgsOpt, setMsgsOpt) = React.useState(_ => None);
-    // TODO: add gas, fee, memo when create tx later
     let (gas, setGas) =
       React.useState(_ => EnhanceTxInput.{text: "200000", value: Some(200000)});
     let (fee, setFee) = React.useState(_ => EnhanceTxInput.{text: "100", value: Some(100)});
@@ -144,7 +143,6 @@ module SubmitTxStep = {
        | Undelegate => <div />
        }}
       <VSpacing size=Spacing.md />
-      // TODO: add gas, fee, memo when create tx later
       <EnhanceTxInput
         width=115
         inputData=gas
@@ -175,16 +173,33 @@ module SubmitTxStep = {
       <div
         className=Styles.nextBtn
         onClick={_ => {
-          switch (msgsOpt) {
-          | Some(msgs) =>
-            let _ = {
-              let%Promise rawTx = TxCreator.createRawTx(account.address, msgs);
+          let rawTxOpt =
+            {let%Opt fee' = fee.value;
+             let%Opt gas' = gas.value;
+             let%Opt memo' = memo.value;
+             let%Opt msgs = msgsOpt;
+
+             Some(
+               TxCreator.createRawTx(
+                 ~address=account.address,
+                 ~msgs,
+                 ~feeAmount=fee' |> string_of_int,
+                 ~gas=gas' |> string_of_int,
+                 ~memo=memo',
+                 (),
+               ),
+             )};
+          let _ =
+            switch (rawTxOpt) {
+            | Some(rawTxPromise) =>
+              let%Promise rawTx = rawTxPromise;
               setRawTx(_ => Some(rawTx));
               Promise.ret();
+            | None =>
+              Window.alert("invalid msgs");
+              Promise.ret();
             };
-            ();
-          | None => Window.alert("invalid msgs")
-          }
+          ();
         }}>
         <Text value="Next" weight=Text.Bold size=Text.Md color=Colors.white />
       </div>

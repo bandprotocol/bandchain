@@ -176,16 +176,16 @@ let createMsg = (sender, msg: msg_input_t): msg_payload_t => {
   {type_: msgType, value: msgValue};
 };
 
-let createRawTx = (address, msgs) => {
+let createRawTx = (~address, ~msgs, ~feeAmount, ~gas, ~memo, ()) => {
   let%Promise accountInfo = getAccountInfo(address);
   Promise.ret({
     msgs: msgs->Belt_Array.map(createMsg(address)),
     chain_id: "bandchain",
     fee: {
-      amount: [|{amount: "100", denom: "uband"}|],
-      gas: "700000",
+      amount: [|{amount: feeAmount, denom: "uband"}|],
+      gas,
     },
-    memo: "",
+    memo,
     account_number: accountInfo.accountNumber |> string_of_int,
     sequence: accountInfo.sequence |> string_of_int,
   });

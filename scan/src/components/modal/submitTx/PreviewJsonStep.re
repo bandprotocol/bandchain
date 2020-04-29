@@ -151,7 +151,6 @@ let make = (~rawTx, ~onBack, ~account: AccountContext.t) => {
                     setState(_ => Error("Failed to sign message"));
                     Promise.ret();
                   });
-
              ();
            }}>
            <Text value="Broadcast" weight=Text.Bold size=Text.Md color=Colors.white />
