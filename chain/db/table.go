@@ -155,7 +155,7 @@ type ReportDetail struct {
 	ExternalID   int64  `gorm:"primary_key;auto_increment:false"`
 	DataSourceID int64  `gorm:"not null"`
 	Data         []byte `gorm:"not null"`
-	Exitcode     uint8  `gorm:"not null"`
+	Exitcode     uint32 `gorm:"not null"`
 }
 
 type Packet struct {

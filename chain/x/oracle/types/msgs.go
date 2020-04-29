@@ -8,16 +8,6 @@ import (
 // RouterKey is they name of the bank module
 const RouterKey = ModuleName
 
-// MsgRequestData is a message for requesting a new data request to an existing oracle script.
-type MsgRequestData struct {
-	OracleScriptID           OracleScriptID `json:"oracleScriptID"`
-	Calldata                 []byte         `json:"calldata"`
-	RequestedValidatorCount  int64          `json:"requestedValidatorCount"`
-	SufficientValidatorCount int64          `json:"sufficientValidatorCount"`
-	ClientID                 string         `json:"clientID"`
-	Sender                   sdk.AccAddress `json:"sender"`
-}
-
 // NewMsgRequestData creates a new MsgRequestData instance.
 func NewMsgRequestData(
 	oracleScriptID OracleScriptID,
@@ -78,14 +68,6 @@ func (msg MsgRequestData) GetSignBytes() []byte {
 	return sdk.MustSortJSON(bz)
 }
 
-// MsgReportData is a message sent by each of the block validators to respond to a data request.
-type MsgReportData struct {
-	RequestID RequestID      `json:"requestID"`
-	DataSet   []RawReport    `json:"dataSet"`
-	Validator sdk.ValAddress `json:"validator"`
-	Reporter  sdk.AccAddress `json:"reporter"`
-}
-
 // NewMsgReportData creates a new MsgReportData instance.
 func NewMsgReportData(
 	requestID RequestID,
@@ -140,16 +122,6 @@ func (msg MsgReportData) GetSigners() []sdk.AccAddress {
 func (msg MsgReportData) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
-}
-
-// MsgCreateDataSource is a message for creating a new data source.
-type MsgCreateDataSource struct {
-	Owner       sdk.AccAddress `json:"owner"`
-	Name        string         `json:"name"`
-	Description string         `json:"description"`
-	Fee         sdk.Coins      `json:"fee"`
-	Executable  []byte         `json:"executable"`
-	Sender      sdk.AccAddress `json:"sender"`
 }
 
 // NewMsgCreateDataSource creates a new MsgCreateDataSource instance.
@@ -209,17 +181,6 @@ func (msg MsgCreateDataSource) GetSigners() []sdk.AccAddress {
 func (msg MsgCreateDataSource) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
-}
-
-// MsgEditDataSource is a message for editing an existing data source.
-type MsgEditDataSource struct {
-	DataSourceID DataSourceID   `json:"dataSourceID"`
-	Owner        sdk.AccAddress `json:"owner"`
-	Name         string         `json:"name"`
-	Description  string         `json:"description"`
-	Fee          sdk.Coins      `json:"fee"`
-	Executable   []byte         `json:"executable"`
-	Sender       sdk.AccAddress `json:"sender"`
 }
 
 // NewMsgEditDataSource creates a new MsgEditDataSource instance.
@@ -287,17 +248,6 @@ func (msg MsgEditDataSource) GetSignBytes() []byte {
 	return sdk.MustSortJSON(bz)
 }
 
-// MsgCreateOracleScript is a message for creating an oracle script.
-type MsgCreateOracleScript struct {
-	Owner         sdk.AccAddress `json:"owner"`
-	Name          string         `json:"name"`
-	Description   string         `json:"description"`
-	Code          []byte         `json:"code"`
-	Schema        string         `json:"schema"`
-	SourceCodeURL string         `json:"source_code_url"`
-	Sender        sdk.AccAddress `json:"sender"`
-}
-
 // NewMsgCreateOracleScript creates a new MsgCreateOracleScript instance.
 func NewMsgCreateOracleScript(
 	owner sdk.AccAddress,
@@ -354,18 +304,6 @@ func (msg MsgCreateOracleScript) GetSigners() []sdk.AccAddress {
 func (msg MsgCreateOracleScript) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
-}
-
-// MsgEditOracleScript is a message for editing an existing oracle script.
-type MsgEditOracleScript struct {
-	OracleScriptID OracleScriptID `json:"oracleScriptID"`
-	Owner          sdk.AccAddress `json:"owner"`
-	Name           string         `json:"name"`
-	Description    string         `json:"description"`
-	Code           []byte         `json:"code"`
-	Schema         string         `json:"schema"`
-	SourceCodeURL  string         `json:"source_code_url"`
-	Sender         sdk.AccAddress `json:"sender"`
 }
 
 // NewMsgEditOracleScript creates a new MsgEditOracleScript instance.
@@ -428,12 +366,6 @@ func (msg MsgEditOracleScript) GetSignBytes() []byte {
 	return sdk.MustSortJSON(bz)
 }
 
-// MsgAddOracleAddress is a message for adding an agent authorized to submit report transactions.
-type MsgAddOracleAddress struct {
-	Validator sdk.ValAddress `json:"validator"`
-	Reporter  sdk.AccAddress `json:"reporter"`
-}
-
 // NewMsgAddOracleAddress creates a new MsgAddOracleAddress instance.
 func NewMsgAddOracleAddress(
 	validator sdk.ValAddress,
@@ -471,12 +403,6 @@ func (msg MsgAddOracleAddress) GetSigners() []sdk.AccAddress {
 func (msg MsgAddOracleAddress) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
-}
-
-// MsgRemoveOracleAddress is a message for removing an agent from the list of authorized reporters.
-type MsgRemoveOracleAddress struct {
-	Validator sdk.ValAddress `json:"validator"`
-	Reporter  sdk.AccAddress `json:"reporter"`
 }
 
 // NewMsgRemoveOracleAddress creates a new MsgRemoveOracleAddress instance.
