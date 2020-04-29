@@ -9,9 +9,11 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
+	"github.com/cosmos/cosmos-sdk/baseapp"
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codecstd "github.com/cosmos/cosmos-sdk/codec/std"
+	"github.com/cosmos/cosmos-sdk/std"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
@@ -31,13 +33,11 @@ import (
 	paramsproposal "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-	"github.com/cosmos/cosmos-sdk/x/supply"
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 
 	"github.com/bandprotocol/bandchain/chain/owasm"
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
-	bandsupply "github.com/bandprotocol/bandchain/chain/x/supply"
 )
 
 const (
@@ -67,7 +67,6 @@ var (
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
 		slashing.AppModuleBasic{},
-		supply.AppModuleBasic{},
 		ibc.AppModuleBasic{},
 		upgrade.AppModuleBasic{},
 		evidence.AppModuleBasic{},
@@ -78,10 +77,10 @@ var (
 	maccPerms = map[string][]string{
 		auth.FeeCollectorName:     nil,
 		distr.ModuleName:          nil,
-		mint.ModuleName:           {supply.Minter},
-		staking.BondedPoolName:    {supply.Burner, supply.Staking},
-		staking.NotBondedPoolName: {supply.Burner, supply.Staking},
-		gov.ModuleName:            {supply.Burner},
+		mint.ModuleName:           {auth.Minter},
+		staking.BondedPoolName:    {auth.Burner, auth.Staking},
+		staking.NotBondedPoolName: {auth.Burner, auth.Staking},
+		gov.ModuleName:            {auth.Burner},
 	}
 )
 
@@ -93,8 +92,9 @@ type BandApp struct {
 	invCheckPeriod uint
 
 	// keys to access the substores
-	keys  map[string]*sdk.KVStoreKey
-	tKeys map[string]*sdk.TransientStoreKey
+	keys    map[string]*sdk.KVStoreKey
+	tKeys   map[string]*sdk.TransientStoreKey
+	memKeys map[string]*sdk.MemoryStoreKey
 
 	// subspaces
 	subspaces map[string]params.Subspace
@@ -102,7 +102,6 @@ type BandApp struct {
 	// keepers
 	AccountKeeper    auth.AccountKeeper
 	BankKeeper       bank.Keeper
-	SupplyKeeper     supply.Keeper
 	StakingKeeper    staking.Keeper
 	CapabilityKeeper *capability.Keeper
 	SlashingKeeper   slashing.Keeper
@@ -156,12 +155,13 @@ func NewBandApp(
 	bApp.SetCommitMultiStoreTracer(traceStore)
 	bApp.SetAppVersion(version.Version)
 	keys := sdk.NewKVStoreKeys(
-		bam.MainStoreKey, capability.StoreKey, auth.StoreKey, bank.StoreKey, staking.StoreKey,
-		supply.StoreKey, mint.StoreKey, distr.StoreKey, slashing.StoreKey,
-		gov.StoreKey, params.StoreKey, ibc.StoreKey, evidence.StoreKey,
-		upgrade.StoreKey, oracle.StoreKey,
+		auth.StoreKey, bank.StoreKey, staking.StoreKey,
+		mint.StoreKey, distr.StoreKey, slashing.StoreKey,
+		gov.StoreKey, params.StoreKey, ibc.StoreKey, upgrade.StoreKey,
+		evidence.StoreKey, capability.StoreKey, oracle.StoreKey,
 	)
 	tKeys := sdk.NewTransientStoreKeys(params.TStoreKey)
+	memKeys := sdk.NewMemoryStoreKeys(capability.MemStoreKey)
 
 	app := &BandApp{
 		BaseApp:        bApp,
@@ -169,6 +169,7 @@ func NewBandApp(
 		invCheckPeriod: invCheckPeriod,
 		keys:           keys,
 		tKeys:          tKeys,
+		memKeys:        memKeys,
 		subspaces:      make(map[string]params.Subspace),
 		TxDecoder:      auth.DefaultTxDecoder(cdc),
 	}
@@ -183,57 +184,54 @@ func NewBandApp(
 	app.subspaces[slashing.ModuleName] = app.ParamsKeeper.Subspace(slashing.DefaultParamspace)
 	app.subspaces[gov.ModuleName] = app.ParamsKeeper.Subspace(gov.DefaultParamspace).WithKeyTable(gov.ParamKeyTable())
 	app.subspaces[crisis.ModuleName] = app.ParamsKeeper.Subspace(crisis.DefaultParamspace)
-	app.subspaces[evidence.ModuleName] = app.ParamsKeeper.Subspace(evidence.DefaultParamspace)
 	app.subspaces[oracle.ModuleName] = app.ParamsKeeper.Subspace(oracle.DefaultParamspace)
 
+	// set the BaseApp's parameter store
+	bApp.SetParamStore(app.ParamsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(std.ConsensusParamsKeyTable()))
+
 	// add capability keeper and ScopeToModule for ibc module
-	app.CapabilityKeeper = capability.NewKeeper(appCodec, keys[capability.StoreKey])
+	app.CapabilityKeeper = capability.NewKeeper(appCodec, keys[capability.StoreKey], memKeys[capability.MemStoreKey])
 	scopedIBCKeeper := app.CapabilityKeeper.ScopeToModule(ibc.ModuleName)
 	scopedOracleKeeper := app.CapabilityKeeper.ScopeToModule(oracle.ModuleName)
 
 	// add keepers
 	app.AccountKeeper = auth.NewAccountKeeper(
-		appCodec, keys[auth.StoreKey], app.subspaces[auth.ModuleName], auth.ProtoBaseAccount,
+		appCodec, keys[auth.StoreKey], app.subspaces[auth.ModuleName], auth.ProtoBaseAccount, maccPerms,
 	)
 	app.BankKeeper = bank.NewBaseKeeper(
 		appCodec, keys[bank.StoreKey], app.AccountKeeper, app.subspaces[bank.ModuleName], app.ModuleAccountAddrs(),
 	)
-	app.SupplyKeeper = supply.NewKeeper(
-		appCodec, keys[supply.StoreKey], app.AccountKeeper, app.BankKeeper, maccPerms,
-	)
 
 	// Wrapped supply keeper allows burned tokens to be transferred to community pool
-	wrappedSupplyKeeper := bandsupply.WrapSupplyKeeperBurnToCommunityPool(app.SupplyKeeper)
+	// wrappedSupplyKeeper := bandsupply.WrapSupplyKeeperBurnToCommunityPool(app.SupplyKeeper)
 
 	stakingKeeper := staking.NewKeeper(
-		appCodec, keys[staking.StoreKey], app.BankKeeper, wrappedSupplyKeeper, app.subspaces[staking.ModuleName],
+		appCodec, keys[staking.StoreKey], app.AccountKeeper, app.BankKeeper, app.subspaces[staking.ModuleName],
 	)
 	app.MintKeeper = mint.NewKeeper(
 		appCodec, keys[mint.StoreKey], app.subspaces[mint.ModuleName], &stakingKeeper,
-		app.SupplyKeeper, auth.FeeCollectorName,
+		app.AccountKeeper, app.BankKeeper, auth.FeeCollectorName,
 	)
 	app.DistrKeeper = distr.NewKeeper(
-		appCodec, keys[distr.StoreKey], app.subspaces[distr.ModuleName], app.BankKeeper, &stakingKeeper,
-		app.SupplyKeeper, auth.FeeCollectorName, app.ModuleAccountAddrs(),
+		appCodec, keys[distr.StoreKey], app.subspaces[distr.ModuleName], app.AccountKeeper, app.BankKeeper,
+		&stakingKeeper, auth.FeeCollectorName, app.ModuleAccountAddrs(),
 	)
 
 	// DistrKeeper must be set afterward due to the circular reference of supply-staking-distr
-	wrappedSupplyKeeper.SetDistrKeeper(&app.DistrKeeper)
+	// wrappedSupplyKeeper.SetDistrKeeper(&app.DistrKeeper)
 
-	app.MintKeeper = mint.NewKeeper(appCodec, keys[mint.StoreKey], app.subspaces[mint.ModuleName], &stakingKeeper, app.SupplyKeeper, auth.FeeCollectorName)
-	app.DistrKeeper = distr.NewKeeper(appCodec, keys[distr.StoreKey], app.subspaces[distr.ModuleName], app.BankKeeper, &stakingKeeper, app.SupplyKeeper, auth.FeeCollectorName, app.ModuleAccountAddrs())
 	app.SlashingKeeper = slashing.NewKeeper(
 		appCodec, keys[slashing.StoreKey], &stakingKeeper, app.subspaces[slashing.ModuleName],
 	)
 
 	app.CrisisKeeper = crisis.NewKeeper(
-		app.subspaces[crisis.ModuleName], invCheckPeriod, app.SupplyKeeper, auth.FeeCollectorName,
+		app.subspaces[crisis.ModuleName], invCheckPeriod, app.BankKeeper, auth.FeeCollectorName,
 	)
 	app.UpgradeKeeper = upgrade.NewKeeper(skipUpgradeHeights, keys[upgrade.StoreKey], appCodec, home)
 
 	// create evidence keeper with evidence router
 	evidenceKeeper := evidence.NewKeeper(
-		appCodec, keys[evidence.StoreKey], app.subspaces[evidence.ModuleName], &stakingKeeper, app.SlashingKeeper,
+		appCodec, keys[evidence.StoreKey], &stakingKeeper, app.SlashingKeeper,
 	)
 	evidenceRouter := evidence.NewRouter()
 
@@ -250,7 +248,7 @@ func NewBandApp(
 		AddRoute(upgrade.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper))
 	app.GovKeeper = gov.NewKeeper(
 		appCodec, keys[gov.StoreKey], app.subspaces[gov.ModuleName],
-		app.SupplyKeeper, &stakingKeeper, govRouter,
+		app.AccountKeeper, app.BankKeeper, &stakingKeeper, govRouter,
 	)
 
 	// register the staking hooks
@@ -276,33 +274,37 @@ func NewBandApp(
 	// must be passed by reference here.
 	app.mm = module.NewManager(
 		genutil.NewAppModule(app.AccountKeeper, app.StakingKeeper, app.DeliverTx),
-		auth.NewAppModule(app.AccountKeeper, app.SupplyKeeper),
-		bank.NewAppModule(app.BankKeeper, app.AccountKeeper),
+		auth.NewAppModule(appCodec, app.AccountKeeper),
+		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper),
+		capability.NewAppModule(*app.CapabilityKeeper),
 		crisis.NewAppModule(&app.CrisisKeeper),
-		supply.NewAppModule(app.SupplyKeeper, app.BankKeeper, app.AccountKeeper),
-		gov.NewAppModule(app.GovKeeper, app.AccountKeeper, app.BankKeeper, app.SupplyKeeper),
-		mint.NewAppModule(app.MintKeeper, app.SupplyKeeper),
-		slashing.NewAppModule(app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
-		distr.NewAppModule(app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.SupplyKeeper, app.StakingKeeper),
-		staking.NewAppModule(app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.SupplyKeeper),
+		gov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper),
+		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper),
+		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
+		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
+		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
 		upgrade.NewAppModule(app.UpgradeKeeper),
-		evidence.NewAppModule(app.EvidenceKeeper),
+		evidence.NewAppModule(appCodec, app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
+		params.NewAppModule(app.ParamsKeeper),
 		oracle.NewAppModule(app.OracleKeeper),
 	)
 	// During begin block slashing happens after distr.BeginBlocker so that
 	// there is nothing left over in the validator fee pool, so as to keep the
 	// CanWithdrawInvariant invariant.
 
-	app.mm.SetOrderBeginBlockers(upgrade.ModuleName, mint.ModuleName, distr.ModuleName, slashing.ModuleName, staking.ModuleName)
+	app.mm.SetOrderBeginBlockers(
+		upgrade.ModuleName, mint.ModuleName, distr.ModuleName,
+		slashing.ModuleName, staking.ModuleName, ibc.ModuleName,
+	)
 	app.mm.SetOrderEndBlockers(crisis.ModuleName, gov.ModuleName, oracle.ModuleName, staking.ModuleName)
 
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
 	app.mm.SetOrderInitGenesis(
-		distr.ModuleName, staking.ModuleName, auth.ModuleName, bank.ModuleName,
-		slashing.ModuleName, gov.ModuleName, mint.ModuleName, supply.ModuleName,
-		crisis.ModuleName, genutil.ModuleName, evidence.ModuleName, oracle.ModuleName,
+		capability.ModuleName, auth.ModuleName, distr.ModuleName, staking.ModuleName, bank.ModuleName,
+		slashing.ModuleName, gov.ModuleName, mint.ModuleName, crisis.ModuleName,
+		ibc.ModuleName, genutil.ModuleName, evidence.ModuleName, oracle.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -311,15 +313,21 @@ func NewBandApp(
 	// initialize stores
 	app.MountKVStores(keys)
 	app.MountTransientStores(tKeys)
+	app.MountMemoryStores(memKeys)
 
 	// initialize BaseApp
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
-	app.SetAnteHandler(ante.NewAnteHandler(app.AccountKeeper, app.SupplyKeeper, *app.IBCKeeper, ante.DefaultSigVerificationGasConsumer))
+	app.SetAnteHandler(
+		ante.NewAnteHandler(
+			app.AccountKeeper, app.BankKeeper, *app.IBCKeeper,
+			ante.DefaultSigVerificationGasConsumer,
+		),
+	)
 	app.SetEndBlocker(app.EndBlocker)
 
 	if loadLatest {
-		err := app.LoadLatestVersion(app.keys[bam.MainStoreKey])
+		err := app.LoadLatestVersion()
 		if err != nil {
 			tmos.Exit(err.Error())
 		}
@@ -356,7 +364,7 @@ func (app *BandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliv
 				}
 			}
 			if isAllReportTxs && !stdTx.Fee.Amount.IsZero() {
-				err := app.SupplyKeeper.SendCoinsFromModuleToAccount(
+				err := app.BankKeeper.SendCoinsFromModuleToAccount(
 					app.DeliverContext,
 					auth.FeeCollectorName,
 					stdTx.GetSigners()[0],
@@ -392,14 +400,14 @@ func (app *BandApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci
 
 // LoadHeight loads a particular height
 func (app *BandApp) LoadHeight(height int64) error {
-	return app.LoadVersion(height, app.keys[bam.MainStoreKey])
+	return app.LoadVersion(height)
 }
 
 // ModuleAccountAddrs returns all the app's module account addresses.
 func (app *BandApp) ModuleAccountAddrs() map[string]bool {
 	modAccAddrs := make(map[string]bool)
 	for acc := range maccPerms {
-		modAccAddrs[supply.NewModuleAddress(acc).String()] = true
+		modAccAddrs[auth.NewModuleAddress(acc).String()] = true
 	}
 
 	return modAccAddrs
