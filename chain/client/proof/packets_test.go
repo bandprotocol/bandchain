@@ -9,27 +9,26 @@ import (
 )
 
 func TestCalculateResultHash(t *testing.T) {
-	// RawByte is d9c589270a0962616e64207465737410011a1e30333030303030303432353434333634303030303030303030303030303020012801
+	// RawByte is d9c589270a0962616e64207465737410011a1e30333030303030303432353434333634303030303030303030303030303020042804
 	reqPacket := oracle.OracleRequestPacketData{
 		ClientID:       "band test",
 		OracleScriptID: 1,
 		Calldata:       "030000004254436400000000000000",
-		AskCount:       1,
-		MinCount:       1,
+		AskCount:       4,
+		MinCount:       4,
 	}
-	// RawByte is 79b5957c0a0962616e6420746573741006180120d3d482f50528d6d482f50530023a1032316438306130303030303030303030
+	// RawByte is 79b5957c0a0962616e6420746573741001180420f8cb8bf50528fccb8bf50530023a1064383732306230303030303030303030
 	resPacket := oracle.OracleResponsePacketData{
 		ClientID:      "band test",
-		RequestID:     6,
-		RequestTime:   1587587667,
-		ResolveTime:   1587587670,
+		RequestID:     1,
+		AnsCount:      4,
+		RequestTime:   1587734008,
+		ResolveTime:   1587734012,
 		ResolveStatus: oracle.ResolveStatus(1),
-		AnsCount:      1,
-		Result:        "21d80a0000000000",
+		Result:        "d8720b0000000000",
 	}
-	expectedResultHash := hexToBytes("eed54e012643cecb617e9530fa251c92fbf1fe8db6bb5134d57efd421297b74b")
+	expectedResultHash := hexToBytes("090dcd42c7a6729dfbe719a9cc6c78ed94a88f720420d5614e92918ff3567077")
 
-	// TODO: Find a way to encode protobuf to chain
 	require.Equal(t, expectedResultHash, tmhash.Sum(
 		append(
 			tmhash.Sum(oracle.ModuleCdc.MustMarshalBinaryBare(reqPacket)),
