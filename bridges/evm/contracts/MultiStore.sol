@@ -26,7 +26,7 @@ library MultiStore {
         bytes32 mintStoresMerkleHash; // [8]
         bytes32 oracleIAVLStateHash; // [9]
         bytes32 paramsAndSlashingStoresMerkleHash; // [I6]
-        bytes32 stakingToUpgradeStoresMerkleHash; // [I10]
+        bytes32 StakingAndUpgradeStoresMerkleHash; // [I10]
     }
 
     function getAppHash(Data memory _self) internal pure returns (bytes32) {
@@ -54,7 +54,7 @@ library MultiStore {
                         ),
                         _self.paramsAndSlashingStoresMerkleHash // [I6]
                     ),
-                    _self.stakingToUpgradeStoresMerkleHash // [I10]
+                    _self.StakingAndUpgradeStoresMerkleHash // [I10]
                 )
             );
     }
