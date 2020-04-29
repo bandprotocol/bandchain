@@ -33,7 +33,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-	"github.com/cosmos/cosmos-sdk/x/supply"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	tmcfg "github.com/tendermint/tendermint/config"
@@ -173,11 +172,14 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 
 	totalSupply := sdk.ZeroInt()
 
+	var pubKey crypto.PubKey
 	for i := 0; i < nValidators; i++ {
 		operPrivKey := secp256k1.GenPrivKey()
 		operAddr := operPrivKey.PubKey().Address()
-		pubKey := privVal.GetPubKey()
-
+		pubKey, err = privVal.GetPubKey()
+		if err != nil {
+			return
+		}
 		power := int64(100)
 		if i > 0 {
 			pubKey = ed25519.GenPrivKey().PubKey()
@@ -264,13 +266,6 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 	commPoolAmt := sdk.NewInt(10)
 	distrData.FeePool.CommunityPool = sdk.DecCoins{sdk.NewDecCoin(sdk.DefaultBondDenom, commPoolAmt)}
 	genesisState[distr.ModuleName] = cdc.MustMarshalJSON(distrData)
-
-	// supply data
-	var supplyData supply.GenesisState
-	cdc.MustUnmarshalJSON(genesisState[supply.ModuleName], &supplyData)
-
-	supplyData.Supply = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, totalSupply.Add(commPoolAmt)))
-	genesisState[supply.ModuleName] = cdc.MustMarshalJSON(supplyData)
 
 	// mint genesis (none set within genesisState)
 	mintData := mint.DefaultGenesisState()
