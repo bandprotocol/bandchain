@@ -7,6 +7,7 @@ import {Ownable} from "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import {IAVLMerklePath} from "./IAVLMerklePath.sol";
 import {TMSignature} from "./TMSignature.sol";
 import {Utils} from "./Utils.sol";
+import {Packets} from "./Packets.sol";
 import {IBridge} from "./IBridge.sol";
 
 
@@ -106,66 +107,16 @@ contract Bridge is IBridge, Ownable {
         bytes32 dataHash;
     }
 
-    // /// Decodes the encoded result and returns back the decoded data which is the data and its context.
-    // /// @param _encodedData The encoded of result and its context.
-    // function decodeResult(bytes memory _encodedData)
-    //     public
-    //     pure
-    //     returns (VerifyOracleDataResult memory)
-    // {
-    //     require(_encodedData.length > 40, "INPUT_MUST_BE_LONGER_THAN_40_BYTES");
-
-    //     VerifyOracleDataResult memory result;
-    //     assembly {
-    //         mstore(
-    //             add(result, 0x20),
-    //             and(mload(add(_encodedData, 0x08)), 0xffffffffffffffff)
-    //         )
-    //         mstore(
-    //             add(result, 0x40),
-    //             and(mload(add(_encodedData, 0x10)), 0xffffffffffffffff)
-    //         )
-    //         mstore(
-    //             add(result, 0x60),
-    //             and(mload(add(_encodedData, 0x18)), 0xffffffffffffffff)
-    //         )
-    //         mstore(
-    //             add(result, 0x80),
-    //             and(mload(add(_encodedData, 0x20)), 0xffffffffffffffff)
-    //         )
-    //         mstore(
-    //             add(result, 0xa0),
-    //             and(mload(add(_encodedData, 0x28)), 0xffffffffffffffff)
-    //         )
-    //     }
-
-    //     bytes memory data = new bytes(_encodedData.length - 40);
-    //     uint256 dataLengthInWords = ((data.length - 1) / 32) + 1;
-    //     for (uint256 i = 0; i < dataLengthInWords; i++) {
-    //         assembly {
-    //             mstore(
-    //                 add(data, add(0x20, mul(i, 0x20))),
-    //                 mload(add(_encodedData, add(0x48, mul(i, 0x20))))
-    //             )
-    //         }
-    //     }
-    //     result.data = data;
-
-    //     return result;
-    // }
-
     /// Verifies that the given data is a valid data on BandChain as of the given block height.
     /// @param _blockHeight The block height. Someone must already relay this block.
-    /// @param _data The data to verify, with the format similar to what on the blockchain store.
-    /// @param _requestId The ID of request for this data piece.
+    /// @param _requestPacket The request packet is this request.
+    /// @param _responsePacket The response packet of this request.
     /// @param _version Lastest block height that the data node was updated.
     /// @param _merklePaths Merkle proof that shows how the data leave is part of the oracle iAVL.
     function verifyOracleData(
         uint256 _blockHeight,
-        bytes memory _data,
-        uint64 _requestId,
-        uint64 _oracleScriptId,
-        bytes memory _params,
+        RequestPacket memory _requestPacket,
+        ResponsePacket memory _responsePacket,
         uint256 _version,
         IAVLMerklePath.Data[] memory _merklePaths
     ) public view returns (RequestPacket memory, ResponsePacket memory) {
@@ -177,17 +128,19 @@ contract Bridge is IBridge, Ownable {
         // Computes the hash of leaf node for iAVL oracle tree.
         VerifyOracleDataLocalVariables memory vars;
         vars.encodedVarint = Utils.encodeVarintSigned(_version);
-        vars.dataHash = sha256(_data);
+        vars.dataHash = sha256(
+            abi.encodePacked(
+                Packets.getResultHash(_requestPacket, _responsePacket)
+            )
+        );
         bytes32 currentMerkleHash = sha256(
             abi.encodePacked(
                 uint8(0), // Height of tree (only leaf node) is 0 (signed-varint encode)
                 uint8(2), // Size of subtree is 1 (signed-varint encode)
                 vars.encodedVarint,
-                uint8(17 + _params.length), // Size of data key (1-byte constant 0x01 + 8-byte request ID + 8-byte oracleScriptId + length of params)
+                uint8(9), // Size of data key (1-byte constant 0x01 + 8-byte request ID)
                 uint8(255), // Constant 0xff prefix data request info storage key
-                _requestId,
-                _oracleScriptId,
-                _params,
+                _responsePacket.requestId,
                 uint8(32), // Size of data hash
                 vars.dataHash
             )
@@ -204,16 +157,7 @@ contract Bridge is IBridge, Ownable {
             "INVALID_ORACLE_DATA_PROOF"
         );
 
-        // VerifyOracleDataResult memory result = decodeResult(_data);
-        // result.params = _params;
-        // result.oracleScriptId = _oracleScriptId;
-
-        // TODO: Return request and respond packet
-        // return result;
-        RequestPacket memory req;
-        ResponsePacket memory res;
-
-        return (req, res);
+        return (_requestPacket, _responsePacket);
     }
 
     /// Performs oracle state relay and oracle data verification in one go. The caller submits
