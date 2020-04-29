@@ -50,9 +50,6 @@ let make = (~children) => {
 
   React.createElement(
     React.Context.provider(context),
-    {
-      "value": (state->Belt.Option.map(({address}) => address), dispatch),
-      "children": children,
-    },
+    {"value": (state, dispatch), "children": children},
   );
 };

@@ -1,7 +1,23 @@
+type amount_t = {
+  amount: string,
+  denom: string,
+};
+
+type fee_t = {
+  amount: array(amount_t),
+  gas: string,
+};
+
 type msg_send_t = {
   to_address: string,
   from_address: string,
   amount: array(Coin.t),
+};
+
+type msg_delegate_t = {
+  delegator_address: string,
+  validator_address: string,
+  amount: amount_t,
 };
 
 type msg_request_t = {
@@ -13,18 +29,9 @@ type msg_request_t = {
   clientID: string,
 };
 
-type amount_t = {
-  amount: string,
-  denom: string,
-};
-
-type fee_t = {
-  amount: array(amount_t),
-  gas: string,
-};
-
 type msg_input_t =
   | Send(Address.t, Address.t, Coin.t)
+  | Delegate(Address.t, amount_t)
   | Request(ID.OracleScript.t, JsBuffer.t, string, string, Address.t, string);
 
 type msg_payload_t = {
@@ -93,6 +100,14 @@ let getAccountInfo = address => {
   );
 };
 
+let stringifyWithSpaces: raw_tx_t => string = [%bs.raw
+  {|
+  function stringifyWithSpaces(obj) {
+    return JSON.stringify(obj, undefined, 4);
+  }
+|}
+];
+
 let sortAndStringify: raw_tx_t => string = [%bs.raw
   {|
   function sortAndStringify(obj) {
@@ -113,10 +128,11 @@ let sortAndStringify: raw_tx_t => string = [%bs.raw
 |}
 ];
 
-let createMsg = (msg: msg_input_t): msg_payload_t => {
+let createMsg = (sender, msg: msg_input_t): msg_payload_t => {
   let msgType =
     switch (msg) {
     | Send(_) => "cosmos-sdk/MsgSend"
+    | Delegate(_) => "cosmos-sdk/MsgDelegate"
     | Request(_) => "oracle/Request"
     };
 
@@ -127,6 +143,14 @@ let createMsg = (msg: msg_input_t): msg_payload_t => {
         to_address: toAddress |> Address.toBech32,
         from_address: fromAddress |> Address.toBech32,
         amount: [|coins|],
+      })
+      |> Belt_Option.getExn
+      |> Js.Json.parseExn
+    | Delegate(validator, amount) =>
+      Js.Json.stringifyAny({
+        delegator_address: sender |> Address.toBech32,
+        validator_address: validator |> Address.toOperatorBech32,
+        amount,
       })
       |> Belt_Option.getExn
       |> Js.Json.parseExn
@@ -152,11 +176,10 @@ let createMsg = (msg: msg_input_t): msg_payload_t => {
   {type_: msgType, value: msgValue};
 };
 
-// TODO: Reme hardcoded values
 let createRawTx = (address, msgs) => {
   let%Promise accountInfo = getAccountInfo(address);
   Promise.ret({
-    msgs: msgs->Belt_Array.map(createMsg),
+    msgs: msgs->Belt_Array.map(createMsg(address)),
     chain_id: "bandchain",
     fee: {
       amount: [|{amount: "100", denom: "uband"}|],

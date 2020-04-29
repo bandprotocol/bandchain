@@ -130,6 +130,24 @@ module FaucetBtn = {
   };
 };
 
+module SubmitTxBtn = {
+  [@react.component]
+  let make = (~submitTx) => {
+    <div className=Styles.faucetBtn onClick={_ => {submitTx()}}>
+      <Text
+        value="Submit Transaction"
+        size=Text.Xs
+        weight=Text.Medium
+        color=Colors.blue7
+        nowrap=true
+        height={Text.Px(10)}
+        spacing={Text.Em(0.03)}
+        block=true
+      />
+    </div>;
+  };
+};
+
 module Balance = {
   [@react.component]
   let make = (~address) =>
@@ -161,35 +179,30 @@ module Balance = {
 
 [@react.component]
 let make = () => {
-  let (addressOpt, dispatchAccount) = React.useContext(AccountContext.context);
+  let (accountOpt, dispatchAccount) = React.useContext(AccountContext.context);
   let (_, dispatchModal) = React.useContext(ModalContext.context);
 
   let connect = () => dispatchModal(OpenModal(Connect));
   let disconnect = () => dispatchAccount(Disconnect);
+  let submitTx = () => dispatchModal(OpenModal(SubmitTx));
 
-  <>
-    <Row justify=Row.Right>
-      {switch (addressOpt) {
-       | Some(address) =>
-         <>
-           <Col> <AddressRender address position=AddressRender.Nav /> </Col>
-           <Col> <HSpacing size={`px(27)} /> </Col>
-           <Col> <DisconnectBtn disconnect /> </Col>
-         </>
-       | None => <Col> <ConnectBtn connect /> </Col>
-       }}
-    </Row>
-    {switch (addressOpt) {
-     | Some(address) =>
-       <>
-         <VSpacing size=Spacing.md />
-         <Row justify=Row.Right>
-           <Col> <Balance address /> </Col>
-           <Col> <HSpacing size={`px(5)} /> </Col>
-           <Col> <FaucetBtn address={addressOpt->Belt_Option.getExn->Address.toBech32} /> </Col>
-         </Row>
-       </>
-     | None => React.null
-     }}
-  </>;
+  switch (accountOpt) {
+  | Some({address}) =>
+    <>
+      <Row justify=Row.Right>
+        <Col> <AddressRender address position=AddressRender.Nav /> </Col>
+        <Col> <HSpacing size={`px(27)} /> </Col>
+        <Col> <DisconnectBtn disconnect /> </Col>
+      </Row>
+      <VSpacing size=Spacing.md />
+      <Row justify=Row.Right>
+        <Col> <Balance address /> </Col>
+        <Col> <HSpacing size={`px(5)} /> </Col>
+        <Col> <FaucetBtn address={address->Address.toBech32} /> </Col>
+      </Row>
+      <VSpacing size=Spacing.md />
+      <Row justify=Row.Right> <Col> <SubmitTxBtn submitTx /> </Col> </Row>
+    </>
+  | None => <Col> <ConnectBtn connect /> </Col>
+  };
 };
