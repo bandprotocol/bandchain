@@ -3,36 +3,38 @@ import {Utils} from "./Utils.sol";
 
 
 // Computes Tendermint's application state hash at this given block. AppHash is actually a
-// Merkle hash on muliple stores. Luckily, we only care about "oracle" tree and all other
-// stores can just be combined into one bytes32 hash off-chain.
+// Merkle hash on muliple stores.
 //                         ________________[AppHash]_______________
 //                        /                                        \
-//             _______[I12]______                         ________[I13]________
+//             _______[I11]______                         ________[I12]________
 //            /                  \                       /                     \
-//       __[I8]__             __[I9]__              __[I10]__               __[I11]__
+//       __[I7]__             __[I8]__              __[I9]__               __[I10]__
 //      /         \          /         \           /         \            /           \
-//    [I1]       [I2]     [I3]        [I4]       [I5]        [I6]       [I7]          [E]
-//   /   \      /   \    /    \      /    \     /    \       /   \     /    \
-// [0]   [1]  [2]   [3] [4]   [5]  [6]    [7] [8]    [9]   [A]   [B] [C]    [D]
+//    [I1]       [I2]     [I3]        [I4]       [I5]        [I6]       [C]          [D]
+//   /   \      /   \    /    \      /    \     /    \       /   \
+// [0]   [1]  [2]   [3] [4]   [5]  [6]    [7] [8]    [9]   [A]   [B]
 // [0] - acc     [1] - bank      [2] - capability [3] - distribution  [4] - evidence
-// [5] - gov     [6] - ibc       [7] - main       [8] - mint          [9] - oracle
-// [A] - params  [B] - slashing  [C] - staking    [D] - supply        [E] - upgrade
+// [5] - gov     [6] - ibc       [7] - mem_cap    [8] - mint          [9] - oracle
+// [A] - params  [B] - slashing  [C] - staking    [D] - upgrade
+// Notice that NOT all leaves of the Merkle tree are needed in order to compute the Merkle
+// root hash, since we only want to validate the correctness of [9] In fact, only
+// [I11], [8], [9], [I6], and [I10] are needed in order to compute [AppHash].
 
 library MultiStore {
     struct Data {
-        bytes32 accToMainStoresMerkleHash; // [I12]
+        bytes32 accToMemCapStoresMerkleHash; // [I11]
         bytes32 mintStoresMerkleHash; // [8]
         bytes32 oracleIAVLStateHash; // [9]
         bytes32 paramsAndSlashingStoresMerkleHash; // [I6]
-        bytes32 stakingToUpgradeStoresMerkleHash; // [I11]
+        bytes32 stakingToUpgradeStoresMerkleHash; // [I10]
     }
 
     function getAppHash(Data memory _self) internal pure returns (bytes32) {
         return
             Utils.merkleInnerHash( // [AppHash]
-                _self.accToMainStoresMerkleHash, // [I12]
-                Utils.merkleInnerHash( // [I13]
-                    Utils.merkleInnerHash( // [I10]
+                _self.accToMemCapStoresMerkleHash, // [I11]
+                Utils.merkleInnerHash( // [I12]
+                    Utils.merkleInnerHash( // [I9]
                         Utils.merkleInnerHash( // [I5]
                             _self.mintStoresMerkleHash, // [8]
                             Utils.merkleLeafHash( // [9]
@@ -52,7 +54,7 @@ library MultiStore {
                         ),
                         _self.paramsAndSlashingStoresMerkleHash // [I6]
                     ),
-                    _self.stakingToUpgradeStoresMerkleHash // [I11]
+                    _self.stakingToUpgradeStoresMerkleHash // [I10]
                 )
             );
     }
