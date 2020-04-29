@@ -4,30 +4,47 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/spf13/cobra"
 )
 
-func configCmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "config",
-		Short: "Configure oracle environment",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			logger.Info("TODO ~~~")
-			return nil
-		},
-	}
-	return cmd
-}
+var (
+	keybase  keyring.Keyring
+	homePath string
+	chainID  string
+	nodeURI  string
+)
 
 func main() {
 	rootCmd := &cobra.Command{
 		Use:   "oracled",
-		Short: "PLACEHOLDER FOR ORACLED SHORT EXPLANATION",
+		Short: "🔮 BandChain oracle daemon to subscribe and response to oracle requests",
 	}
 
 	rootCmd.AddCommand(
 		configCmd(),
+		keysCmd(),
 		runCmd(),
+	)
+
+	rootCmd.PersistentPreRunE = func(_ *cobra.Command, _ []string) error {
+		var err error
+		keybase, err = keyring.New("band", "test", homePath, nil)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
+	rootCmd.PersistentFlags().StringVar(
+		&homePath, flags.FlagHome, os.ExpandEnv("$HOME/.oracled"), "home directory",
+	)
+	rootCmd.PersistentFlags().StringVar(
+		&chainID, flags.FlagChainID, "bandchain-dev", "chain ID of BandChain network",
+	)
+	rootCmd.PersistentFlags().StringVar(
+		&nodeURI, flags.FlagNode, "tcp://localhost:26657", "RPC url to BandChain node",
 	)
 
 	if err := rootCmd.Execute(); err != nil {

@@ -6,6 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+// GetEventValues returns the list of all values in the given log with the given type and key.
 func GetEventValues(log sdk.ABCIMessageLog, evType string, evKey string) (res []string) {
 	for _, ev := range log.Events {
 		if ev.Type != evType {
@@ -21,6 +22,7 @@ func GetEventValues(log sdk.ABCIMessageLog, evType string, evKey string) (res []
 	return res
 }
 
+// GetEventValue checks and returns the exact value in the given log with the given type and key.
 func GetEventValue(log sdk.ABCIMessageLog, evType string, evKey string) (string, error) {
 	values := GetEventValues(log, evType, evKey)
 	if len(values) == 0 {
