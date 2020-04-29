@@ -19,7 +19,8 @@ module Styles = {
       alignItems(`center),
       justifyContent(`spaceBetween),
       paddingTop(`px(20)),
-      height(`px(50)),
+      minHeight(`px(70)),
+      maxHeight(`px(70)),
     ]);
 
   let resultContainer =
@@ -28,8 +29,17 @@ module Styles = {
       flexDirection(`column),
       alignItems(`center),
       justifyContent(`center),
-      paddingTop(`px(20)),
-      height(`px(50)),
+      paddingTop(`px(15)),
+      minHeight(`px(70)),
+      maxHeight(`px(70)),
+    ]);
+
+  let rFlex =
+    style([
+      display(`flex),
+      flexDirection(`row),
+      alignItems(`center),
+      justifyContent(`center),
     ]);
 
   let btn =
@@ -53,7 +63,12 @@ module Styles = {
     ]);
 
   let jsonDisplay =
-    style([resize(`none), width(`percent(100.)), height(`px(300)), overflowY(`scroll)]);
+    style([
+      resize(`none),
+      width(`percent(100.)),
+      height(`percent(100.)),
+      overflowY(`scroll),
+    ]);
 
   let loading = style([width(`px(100))]);
 
@@ -144,9 +159,13 @@ let make = (~rawTx, ~onBack, ~account: AccountContext.t) => {
        </div>
      | Success(txHash) =>
        <div className=Styles.resultContainer>
-         <img src=Images.checkIcon className=Styles.resultIcon />
+         <div className=Styles.rFlex>
+           <img src=Images.success2 className=Styles.resultIcon />
+           <HSpacing size=Spacing.md />
+           <Text value="Broadcast Transaction Success" weight=Text.Semibold />
+         </div>
          <VSpacing size=Spacing.md />
-         <TxLink txHash width=350 size=Text.Sm />
+         <TxLink txHash width=450 size=Text.Sm />
        </div>
      | Signing =>
        <div className=Styles.resultContainer>
@@ -170,9 +189,13 @@ let make = (~rawTx, ~onBack, ~account: AccountContext.t) => {
        </div>
      | Error(err) =>
        <div className=Styles.resultContainer>
-         <img src=Images.fail2 className=Styles.resultIcon />
+         <div className=Styles.rFlex>
+           <img src=Images.fail2 className=Styles.resultIcon />
+           <HSpacing size=Spacing.md />
+           <Text value="Broadcast Transaction Failed" weight=Text.Semibold />
+         </div>
          <VSpacing size=Spacing.md />
-         <Text value=err color=Colors.red3 />
+         <Text value=err color=Colors.red3 align=Text.Center />
        </div>
      }}
   </div>;
