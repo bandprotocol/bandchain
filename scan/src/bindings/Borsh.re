@@ -236,12 +236,14 @@ let resultGo = ({name}) => {
 let generateGo = (packageName, schema, name) => {
   let template = (structs, functions, results) => {j|package $packageName
 
+import "github.com/bandchain/chain/borsh"
+
 type Result struct {
 \t$structs
 }
 
 func DecodeResult(data []byte) (Result, error) {
-\tdecoder := NewBorshDecoder(data)
+\tdecoder := borsh.NewBorshDecoder(data)
 
 \t$functions
 
@@ -261,6 +263,42 @@ func DecodeResult(data []byte) (Result, error) {
       fields |> Belt_Array.map(_, declareGo) |> Js.Array.joinWith("\n\t"),
       fields |> Belt_Array.map(_, assignGo) |> Js.Array.joinWith("\n\t"),
       fields |> Belt_Array.map(_, resultGo) |> Js.Array.joinWith("\n\t\t"),
+    ),
+  );
+};
+
+let encodeStructGo = ({name, varType}) => {
+  switch (varType) {
+  | U8 => {j|encoder.EncodeU8(result.$name)|j}
+  | U32 => {j|encoder.EncodeU32(result.$name)|j}
+  | U64 => {j|encoder.EncodeU64(result.$name)|j}
+  | String => {j|encoder.EncodeString(result.$name)|j}
+  };
+};
+
+let generateEncodeGo = (packageName, schema, name) => {
+  let template = (structs, functions) => {j|package $packageName
+
+import "github.com/bandchain/chain/borsh"
+
+type Result struct {
+\t$structs
+}
+
+func(result *Result) EncodeResult() []byte {
+\tencoder := borsh.NewBorshEncoder()
+
+\t$functions
+
+\treturn encoder.GetEncodedData()
+}|j};
+
+  let%Opt fieldsPair = extractFields(schema, name);
+  let%Opt fields = fieldsPair |> Belt_Array.map(_, parse) |> optionsAll;
+  Some(
+    template(
+      fields |> Belt_Array.map(_, declareGo) |> Js.Array.joinWith("\n\t"),
+      fields |> Belt_Array.map(_, encodeStructGo) |> Js.Array.joinWith("\n\t"),
     ),
   );
 };
