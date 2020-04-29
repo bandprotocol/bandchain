@@ -91,7 +91,7 @@ library Packets {
                 getReponsePart2(
                     _self.resolveTime,
                     _self.resolveStatus,
-                    _self.data
+                    _self.result
                 )
             );
     }
