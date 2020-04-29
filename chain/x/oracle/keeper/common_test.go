@@ -96,7 +96,7 @@ func createTestInput() (*bandapp.BandApp, sdk.Context, me.Keeper) {
 			Address: Carol.Address,
 			Coins:   Coins1000000uband,
 		},
-	})
+	}, sdk.NewCoins(sdk.NewInt64Coin("uband", 4000000)))
 	genesis[bank.ModuleName] = app.Codec().MustMarshalJSON(bankGenesis)
 	// Initialize the sim blockchain. We are ready for testing!
 	app.InitChain(abci.RequestInitChain{
