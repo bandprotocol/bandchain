@@ -12,7 +12,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
-	"github.com/cosmos/cosmos-sdk/x/distribution"
 	dist "github.com/cosmos/cosmos-sdk/x/distribution"
 
 	//"github.com/cosmos/cosmos-sdk/x/evidence"
@@ -32,7 +31,7 @@ type BandDB struct {
 	ctx sdk.Context
 
 	BankKeeper    bank.Keeper
-	DistrKeeper   distribution.Keeper
+	DistrKeeper   dist.Keeper
 	StakingKeeper staking.Keeper
 	//OracleKeeper  oracle.Keeper
 	//IBCKeeper     *ibc.Keeper
@@ -525,8 +524,8 @@ func (b *BandDB) GetInvolvedAccountsFromTx(tx auth.StdTx) []sdk.AccAddress {
 			involvedAccounts = append(involvedAccounts, msg.Proposer)
 		case gov.MsgVote:
 		// case evidence.MsgSubmitEvidenceBase:
-		// case crisis.MsgVerifyInvariant:
-		// case slashing.MsgUnjail:
+		case crisis.MsgVerifyInvariant:
+		case slashing.MsgUnjail:
 		// case connection.MsgConnectionOpenInit:
 		// case connection.MsgConnectionOpenTry:
 		// case connection.MsgConnectionOpenAck:
