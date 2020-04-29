@@ -1,0 +1,21 @@
+syntax = "proto3";
+package bandchain.chain.x.oracle.v1;
+
+import "third_party/proto/gogoproto/gogo.proto";
+
+option go_package = "github.com/bandprotocol/bandchain/chain/x/oracle/types";
+
+message MsgRequestData {
+  option (gogoproto.equal) = true;
+  int64 oracle_script_id = 1 [
+    (gogoproto.customtype) =
+        "github.com/bandprotocol/bandchain/chain/x/oracle/types.OracleScriptID",
+    (gogoproto.nullable) = false
+  ];
+  bytes calldata = 2 [ (gogoproto.nullable) = false ];
+  int64 requested_validator_count = 3 [ (gogoproto.nullable) = false ];
+  int64 sufficient_validator_count = 4 [ (gogoproto.nullable) = false ];
+  string client_id = 5;
+  bytes sender = 6 [ (gogoproto.casttype) =
+                         "github.com/cosmos/cosmos-sdk/types.AccAddress" ];
+}
