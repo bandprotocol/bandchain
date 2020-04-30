@@ -112,7 +112,7 @@ module SubmitTxStep = {
     let (gas, setGas) =
       React.useState(_ => EnhanceTxInput.{text: "200000", value: Some(200000)});
     let (fee, setFee) = React.useState(_ => EnhanceTxInput.{text: "100", value: Some(100)});
-    let (memo, setMemo) = React.useState(_ => EnhanceTxInput.{text: "", value: None});
+    let (memo, setMemo) = React.useState(_ => EnhanceTxInput.empty);
 
     <div className={Css.merge([Styles.container, Styles.disable(isActive)])}>
       <div className=Styles.modalTitle>
@@ -165,7 +165,7 @@ module SubmitTxStep = {
         width=300
         inputData=memo
         setInputData=setMemo
-        parse={newVal => {newVal->Js.String.length <= 20 ? Some(newVal) : None}}
+        parse={newVal => {newVal->Js.String.length <= 32 ? Some(newVal) : None}}
         msg="Memo"
         errMsg="Exceed limit length"
       />
