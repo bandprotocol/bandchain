@@ -136,13 +136,13 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 
 func exportAppStateAndTMValidators(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, height int64, forZeroHeight bool, jailWhiteList []string,
-) (json.RawMessage, []tmtypes.GenesisValidator, error) {
+) (json.RawMessage, []tmtypes.GenesisValidator, *abci.ConsensusParams, error) {
 
 	if height != -1 {
 		bandApp := app.NewBandApp(logger, db, traceStore, false, uint(1), map[int64]bool{}, "")
 		err := bandApp.LoadHeight(height)
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, nil, err
 		}
 
 		return bandApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)

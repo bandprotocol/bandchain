@@ -9,13 +9,26 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
+// HasReport checks if the result of this request ID exists in the storage.
+func (k Keeper) HasResult(ctx sdk.Context, id types.RID) bool {
+	return ctx.KVStore(k.storeKey).Has(types.ResultStoreKey(id))
+}
+
+// GetDataSource returns the result bytes for the given request ID or error if not exists.
+func (k Keeper) GetResult(ctx sdk.Context, id types.RID) ([]byte, error) {
+	bz := ctx.KVStore(k.storeKey).Get(types.ResultStoreKey(id))
+	if bz == nil {
+		return nil, sdkerrors.Wrapf(types.ErrResultNotFound, "id: %d", id)
+	}
+	return bz, nil
+}
+
 // AddResult validates the result's size and saves it to the store.
 func (k Keeper) AddResult(
-	ctx sdk.Context, requestID types.RequestID,
-	requestPacket types.OracleRequestPacketData,
-	responsePacket types.OracleResponsePacketData,
+	ctx sdk.Context, id types.RID,
+	req types.OracleRequestPacketData, res types.OracleResponsePacketData,
 ) ([]byte, error) {
-	result, err := hex.DecodeString(responsePacket.Result)
+	result, err := hex.DecodeString(res.Result)
 	if err != nil {
 		return nil, err
 	}
@@ -28,40 +41,17 @@ func (k Keeper) AddResult(
 	store := ctx.KVStore(k.storeKey)
 
 	h := sha256.New()
-	h.Write(k.cdc.MustMarshalBinaryBare(requestPacket))
+	h.Write(k.cdc.MustMarshalBinaryBare(req))
 	reqPacketHash := h.Sum(nil)
 
 	h = sha256.New()
-	h.Write(k.cdc.MustMarshalBinaryBare(responsePacket))
+	h.Write(k.cdc.MustMarshalBinaryBare(res))
 	resPacketHash := h.Sum(nil)
 
 	h = sha256.New()
 	h.Write(append(reqPacketHash, resPacketHash...))
 	resultHash := h.Sum(nil)
-	store.Set(
-		types.ResultStoreKey(requestID),
-		resultHash,
-	)
+
+	store.Set(types.ResultStoreKey(id), resultHash)
 	return resultHash, nil
-}
-
-// GetResult returns the result bytes in the store.
-func (k Keeper) GetResult(
-	ctx sdk.Context, requestID types.RequestID,
-) ([]byte, error) {
-	if !k.HasResult(ctx, requestID) {
-		return nil, sdkerrors.Wrapf(types.ErrItemNotFound,
-			"GetResult: Result for request ID %d is not available.", requestID,
-		)
-	}
-	store := ctx.KVStore(k.storeKey)
-	return store.Get(types.ResultStoreKey(requestID)), nil
-}
-
-// HasResult checks whether the result at this request id exists in the store.
-func (k Keeper) HasResult(
-	ctx sdk.Context, requestID types.RequestID,
-) bool {
-	store := ctx.KVStore(k.storeKey)
-	return store.Has(types.ResultStoreKey(requestID))
 }

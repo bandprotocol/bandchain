@@ -19,6 +19,7 @@ var (
 	ErrRequestNotFound      = sdkerrors.Register(ModuleName, 13, "request not found")
 	ErrRawRequestNotFound   = sdkerrors.Register(ModuleName, 14, "raw request not found")
 	ErrReporterNotFound     = sdkerrors.Register(ModuleName, 15, "reporter not found")
+	ErrResultNotFound       = sdkerrors.Register(ModuleName, 16, "result not found")
 
 	ErrRawRequestAlreadyExists = sdkerrors.Register(ModuleName, 20, "raw request already exists")
 	ErrReporterAlreadyExists   = sdkerrors.Register(ModuleName, 21, "reporter already exists")

@@ -8,11 +8,11 @@ import (
 	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/tendermint/tendermint/crypto"
-	rpcclient "github.com/tendermint/tendermint/rpc/client"
+	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
 )
 
 func NewCLIContext(nodeURI string, fromAddress sdk.AccAddress) context.CLIContext {
-	rpc, err := rpcclient.NewHTTP(nodeURI, "/websocket")
+	rpc, err := rpchttp.New(nodeURI, "/websocket")
 	if err != nil {
 		panic(err)
 	}
