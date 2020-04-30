@@ -41,7 +41,7 @@
     "bs-platform": "^7.0.1",
     "bsb-js": "^1.1.7",
     "css-loader": "^3.5.3",
-    "html-webpack-plugin": "^4.2.1",
+    "html-webpack-plugin": "^4.2.2",
     "parcel-bundler": "^1.12.4",
     "style-loader": "^1.2.1",
     "webpack": "^4.43.0",
