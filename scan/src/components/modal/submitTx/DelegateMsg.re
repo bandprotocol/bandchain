@@ -1,7 +1,7 @@
 [@react.component]
 let make = (~setMsgsOpt) => {
-  let (validator, setValidator) = React.useState(_ => EnhanceTxInput.{text: "", value: None});
-  let (amount, setAmount) = React.useState(_ => EnhanceTxInput.{text: "", value: None});
+  let (validator, setValidator) = React.useState(_ => EnhanceTxInput.empty);
+  let (amount, setAmount) = React.useState(_ => EnhanceTxInput.empty);
 
   React.useEffect2(
     _ => {

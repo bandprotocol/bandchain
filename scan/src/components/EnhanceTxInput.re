@@ -42,6 +42,8 @@ type status =
   | Ok
   | Error;
 
+let empty = {text: "", value: None};
+
 [@react.component]
 let make = (~inputData, ~setInputData, ~msg, ~errMsg, ~parse, ~width) => {
   let (status, setStatus) = React.useState(_ => Ok);
