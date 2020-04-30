@@ -33,7 +33,7 @@
     "reason-apollo-hooks": "^6.0.0",
     "reason-react": ">=0.7.1",
     "ripemd160": "^2.0.2",
-    "secp256k1": "^4.0.0"
+    "secp256k1": "^4.0.1"
   },
   "devDependencies": {
     "@baransu/graphql_ppx_re": "^0.7.1",
