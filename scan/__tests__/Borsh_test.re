@@ -154,8 +154,7 @@ describe("should be able to generate solidity correctly", () => {
   test("should be able to generate solidity", () => {
     expect(
       Some(
-        {j|
-pragma solidity ^0.5.0;
+        {j|pragma solidity ^0.5.0;
 
 import "./Borsh.sol";
 
@@ -193,8 +192,7 @@ library ResultDecoder {
   test("should be able to generate solidity 2", () => {
     expect(
       Some(
-        {j|
-pragma solidity ^0.5.0;
+        {j|pragma solidity ^0.5.0;
 
 import "./Borsh.sol";
 
@@ -252,6 +250,8 @@ describe("should be able to generate go code correctly", () => {
       Some(
         {j|package main
 
+import "github.com/bandchain/chain/borsh"
+
 type Result struct {
 	Symbol string
 	Multiplier uint64
@@ -259,7 +259,7 @@ type Result struct {
 }
 
 func DecodeResult(data []byte) (Result, error) {
-	decoder := NewBorshDecoder(data)
+	decoder := borsh.NewBorshDecoder(data)
 
 	symbol, err := decoder.DecodeString()
 	if err != nil {
@@ -299,12 +299,14 @@ func DecodeResult(data []byte) (Result, error) {
       Some(
         {j|package test
 
+import "github.com/bandchain/chain/borsh"
+
 type Result struct {
 	Px uint64
 }
 
 func DecodeResult(data []byte) (Result, error) {
-	decoder := NewBorshDecoder(data)
+	decoder := borsh.NewBorshDecoder(data)
 
 	px, err := decoder.DecodeU64()
 	if err != nil {
@@ -343,6 +345,89 @@ func DecodeResult(data []byte) (Result, error) {
     expect(None)
     |> toEqual(
          generateGo(
+           "main",
+           {j|{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"bytes\\"], [\\"multiplier\\", \\"u64\\"], [\\"what\\", \\"u8\\"] ] }"}|j},
+           "Input",
+         ),
+       )
+  });
+});
+
+describe("should be able to generate encode go code correctly", () => {
+  test("should be able to generate encode go code 1", () => {
+    expect(
+      Some(
+        {j|package main
+
+import "github.com/bandchain/chain/borsh"
+
+type Result struct {
+	Symbol string
+	Multiplier uint64
+	What uint8
+}
+
+func(result *Result) EncodeResult() []byte {
+	encoder := borsh.NewBorshEncoder()
+
+	encoder.EncodeString(result.symbol)
+	encoder.EncodeU64(result.multiplier)
+	encoder.EncodeU8(result.what)
+
+	return encoder.GetEncodedData()
+}|j},
+      ),
+    )
+    |> toEqual(
+         generateEncodeGo(
+           "main",
+           {j|{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"], [\\"what\\", \\"u8\\"] ] }"}|j},
+           "Input",
+         ),
+       )
+  });
+  test("should be able to generate encode go code 2", () => {
+    expect(
+      Some(
+        {j|package test
+
+import "github.com/bandchain/chain/borsh"
+
+type Result struct {
+	Px uint64
+}
+
+func(result *Result) EncodeResult() []byte {
+	encoder := borsh.NewBorshEncoder()
+
+	encoder.EncodeU64(result.px)
+
+	return encoder.GetEncodedData()
+}|j},
+      ),
+    )
+    |> toEqual(
+         generateEncodeGo(
+           "test",
+           {j|{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"], [\\"what\\", \\"u8\\"] ] }","Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }"}|j},
+           "Output",
+         ),
+       )
+  });
+  test("should return None if invalid class (go)", () => {
+    expect(None)
+    |> toEqual(
+         generateEncodeGo(
+           "main",
+           {j|{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"], [\\"what\\", \\"u8\\"] ] }"}|j},
+           "Input2",
+         ),
+       )
+  });
+  test("should return None if invalid type (go)", () => {
+    expect(None)
+    |> toEqual(
+         generateEncodeGo(
            "main",
            {j|{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"bytes\\"], [\\"multiplier\\", \\"u64\\"], [\\"what\\", \\"u8\\"] ] }"}|j},
            "Input",

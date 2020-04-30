@@ -80,16 +80,16 @@ func (msg MsgRequestData) GetSignBytes() []byte {
 
 // MsgReportData is a message sent by each of the block validators to respond to a data request.
 type MsgReportData struct {
-	RequestID RequestID             `json:"requestID"`
-	DataSet   []RawDataReportWithID `json:"dataSet"`
-	Validator sdk.ValAddress        `json:"validator"`
-	Reporter  sdk.AccAddress        `json:"reporter"`
+	RequestID RequestID      `json:"requestID"`
+	DataSet   []RawReport    `json:"dataSet"`
+	Validator sdk.ValAddress `json:"validator"`
+	Reporter  sdk.AccAddress `json:"reporter"`
 }
 
 // NewMsgReportData creates a new MsgReportData instance.
 func NewMsgReportData(
 	requestID RequestID,
-	dataSet []RawDataReportWithID,
+	dataSet []RawReport,
 	validator sdk.ValAddress,
 	reporter sdk.AccAddress,
 ) MsgReportData {
@@ -117,10 +117,10 @@ func (msg MsgReportData) ValidateBasic() error {
 	}
 	uniqueMap := make(map[ExternalID]bool)
 	for _, rawReport := range msg.DataSet {
-		if _, found := uniqueMap[rawReport.ExternalDataID]; found {
+		if _, found := uniqueMap[rawReport.ExternalID]; found {
 			return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgReportData: External IDs in dataset must be unique.")
 		}
-		uniqueMap[rawReport.ExternalDataID] = true
+		uniqueMap[rawReport.ExternalID] = true
 	}
 	if msg.Validator.Empty() {
 		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgReportData: Validator address must not be empty.")

@@ -25,8 +25,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/ibc"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-	"github.com/cosmos/cosmos-sdk/x/supply"
 
+	"github.com/bandprotocol/bandchain/chain/owasm"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
@@ -35,7 +35,6 @@ const Bip44CoinType = 494
 
 func createTestCodec() *codec.Codec {
 	var cdc = codec.New()
-	supply.RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)
 	auth.RegisterCodec(cdc)
 	return cdc
@@ -65,10 +64,11 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 	keyAcc := sdk.NewKVStoreKey(auth.StoreKey)
 	keyParams := sdk.NewKVStoreKey(params.StoreKey)
 	tkeyParams := sdk.NewTransientStoreKey(params.TStoreKey)
-	keySupply := sdk.NewKVStoreKey(supply.StoreKey)
 	keyBank := sdk.NewKVStoreKey(bank.StoreKey)
 	keyIBC := sdk.NewKVStoreKey(ibc.StoreKey)
 	keyCap := sdk.NewKVStoreKey(capability.StoreKey)
+
+	memKeys := sdk.NewMemoryStoreKeys(capability.MemStoreKey)
 
 	config := sdk.GetConfig()
 	SetBech32AddressPrefixesAndBip44CoinType(config)
@@ -80,7 +80,6 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 	ms.MountStoreWithDB(keyAcc, sdk.StoreTypeIAVL, db)
 	ms.MountStoreWithDB(keyParams, sdk.StoreTypeIAVL, db)
 	ms.MountStoreWithDB(tkeyParams, sdk.StoreTypeTransient, db)
-	ms.MountStoreWithDB(keySupply, sdk.StoreTypeIAVL, db)
 	ms.MountStoreWithDB(keyBank, sdk.StoreTypeIAVL, db)
 	ms.MountStoreWithDB(keyIBC, sdk.StoreTypeIAVL, db)
 	ms.MountStoreWithDB(keyCap, sdk.StoreTypeIAVL, db)
@@ -92,16 +91,23 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 	cdc := createTestCodec()
 	appCodec := codecstd.NewAppCodec(cdc)
 
-	notBondedPool := supply.NewEmptyModuleAccount(staking.NotBondedPoolName, supply.Burner, supply.Staking)
-	bondPool := supply.NewEmptyModuleAccount(staking.BondedPoolName, supply.Burner, supply.Staking)
+	notBondedPool := auth.NewEmptyModuleAccount(staking.NotBondedPoolName, auth.Burner, auth.Staking)
+	bondPool := auth.NewEmptyModuleAccount(staking.BondedPoolName, auth.Burner, auth.Staking)
 
 	pk := params.NewKeeper(appCodec, keyParams, tkeyParams)
+
+	maccPerms := map[string][]string{
+		auth.FeeCollectorName:     nil,
+		staking.NotBondedPoolName: {auth.Burner, auth.Staking},
+		staking.BondedPoolName:    {auth.Burner, auth.Staking},
+	}
 
 	accountKeeper = auth.NewAccountKeeper(
 		appCodec, // amino codec
 		keyAcc,   // account store key
 		pk.Subspace(auth.DefaultParamspace),
 		auth.ProtoBaseAccount, // prototype
+		maccPerms,
 	)
 
 	addr, _ := sdk.AccAddressFromBech32("band1q8ysvjkslxdkhap2zqd2n5shhay606ru3cdjwr")
@@ -124,35 +130,28 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 		blacklistedAddrs,
 	)
 
-	maccPerms := map[string][]string{
-		auth.FeeCollectorName:     nil,
-		staking.NotBondedPoolName: {supply.Burner, supply.Staking},
-		staking.BondedPoolName:    {supply.Burner, supply.Staking},
-	}
-	supplyKeeper := supply.NewKeeper(appCodec, keySupply, accountKeeper, bk, maccPerms)
-
 	initTokens := sdk.TokensFromConsensusPower(10)                                       // 10^7 for staking
 	totalSupply := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, initTokens.MulRaw(2))) // 2 = total validator address
 
-	supplyKeeper.SetSupply(ctx, supply.NewSupply(totalSupply))
+	bk.SetSupply(ctx, bank.NewSupply(totalSupply))
 
-	sk := staking.NewKeeper(appCodec, keyRequest, bk, supplyKeeper, pk.Subspace(staking.DefaultParamspace))
+	sk := staking.NewKeeper(appCodec, keyRequest, accountKeeper, bk, pk.Subspace(staking.DefaultParamspace))
 	sk.SetParams(ctx, staking.DefaultParams())
 
 	// set module accounts
 	err = bk.SetBalances(ctx, notBondedPool.GetAddress(), totalSupply)
 	require.NoError(t, err)
 
-	supplyKeeper.SetModuleAccount(ctx, bondPool)
-	supplyKeeper.SetModuleAccount(ctx, notBondedPool)
+	accountKeeper.SetModuleAccount(ctx, bondPool)
+	accountKeeper.SetModuleAccount(ctx, notBondedPool)
 
-	capabilityKeeper := capability.NewKeeper(appCodec, keyCap)
+	capabilityKeeper := capability.NewKeeper(appCodec, keyCap, memKeys[capability.MemStoreKey])
 	scopedIBCKeeper := capabilityKeeper.ScopeToModule(ibc.ModuleName)
 	scopedOracleKeeper := capabilityKeeper.ScopeToModule(types.ModuleName)
 
 	ibcKeeper := ibc.NewKeeper(cdc, keyIBC, sk, scopedIBCKeeper)
 
-	keeper := NewKeeper(cdc, keyRequest, pk.Subspace(types.DefaultParamspace), bk, sk, ibcKeeper.ChannelKeeper, scopedOracleKeeper)
+	keeper := NewKeeper(cdc, keyRequest, owasm.Execute, pk.Subspace(types.DefaultParamspace), bk, sk, ibcKeeper.ChannelKeeper, scopedOracleKeeper)
 	require.Equal(t, account.GetAddress(), addr)
 	accountKeeper.SetAccount(ctx, account)
 
@@ -162,10 +161,9 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 	keeper.SetParam(ctx, types.KeyMaxExecutableSize, types.DefaultMaxDataSourceExecutableSize)
 	keeper.SetParam(ctx, types.KeyMaxOracleScriptCodeSize, types.DefaultMaxOracleScriptCodeSize)
 	keeper.SetParam(ctx, types.KeyMaxCalldataSize, types.DefaultMaxCalldataSize)
-	keeper.SetParam(ctx, types.KeyMaxDataSourceCountPerRequest, types.DefaultMaxDataSourceCountPerRequest)
+	keeper.SetParam(ctx, types.KeyMaxRawRequestCount, types.DefaultMaxRawRequestCount)
 	keeper.SetParam(ctx, types.KeyMaxRawDataReportSize, types.DefaultMaxRawDataReportSize)
 	keeper.SetParam(ctx, types.KeyMaxResultSize, types.DefaultMaxResultSize)
-	keeper.SetParam(ctx, types.KeyEndBlockExecuteGasLimit, types.DefaultEndBlockExecuteGasLimit)
 	keeper.SetParam(ctx, types.KeyMaxNameLength, types.DefaultMaxNameLength)
 	keeper.SetParam(ctx, types.KeyMaxDescriptionLength, types.DefaultDescriptionLength)
 	keeper.SetParam(ctx, types.KeyGasPerRawDataRequestPerValidator, types.DefaultGasPerRawDataRequestPerValidator)
@@ -229,7 +227,6 @@ func newDefaultRequest() types.Request {
 		2,
 		0,
 		1581503227,
-		100,
 		"clientID",
 	)
 }

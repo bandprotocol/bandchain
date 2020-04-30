@@ -11,29 +11,18 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
-func TestNewExecutionEnvironment(t *testing.T) {
+func TestNewExecEnv(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
 
-	_, err := NewExecutionEnvironment(ctx, keeper, 1)
-	require.NotNil(t, err)
+	require.Panics(t, func() {
+		NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
+	})
 
 	keeper.SetRequest(ctx, 1, types.NewRequest(
-		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))}, 1, 0, 0, 100, "clientID",
+		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))}, 1, 0, 0, "clientID",
 	))
 
-	_, err = NewExecutionEnvironment(ctx, keeper, 1)
-	require.Nil(t, err)
-}
-
-func TestGetCurrentRequestID(t *testing.T) {
-	ctx, keeper := keep.CreateTestInput(t, false)
-	keeper.SetRequest(ctx, 1, types.NewRequest(
-		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))}, 1, 0, 0, 100, "clientID",
-	))
-
-	env, err := NewExecutionEnvironment(ctx, keeper, 1)
-	require.Nil(t, err)
-	require.Equal(t, int64(1), env.GetCurrentRequestID())
+	_ = NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
 }
 
 func TestGetRequestedValidatorCount(t *testing.T) {
@@ -41,11 +30,10 @@ func TestGetRequestedValidatorCount(t *testing.T) {
 	keeper.SetRequest(ctx, 1, types.NewRequest(
 		1, []byte("calldata"),
 		[]sdk.ValAddress{sdk.ValAddress([]byte("val1")), sdk.ValAddress([]byte("val2"))},
-		1, 0, 0, 100, "clientID",
+		1, 0, 0, "clientID",
 	))
 
-	env, err := NewExecutionEnvironment(ctx, keeper, 1)
-	require.Nil(t, err)
+	env := NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
 	require.Equal(t, int64(2), env.GetRequestedValidatorCount())
 }
 
@@ -59,43 +47,39 @@ func TestGetSufficientValidatorCount(t *testing.T) {
 			sdk.ValAddress([]byte("val3")),
 			sdk.ValAddress([]byte("val4")),
 		},
-		3, 0, 0, 100, "clientID",
+		3, 0, 0, "clientID",
 	))
 
-	env, err := NewExecutionEnvironment(ctx, keeper, 1)
-	require.Nil(t, err)
+	env := NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
 	require.Equal(t, int64(3), env.GetSufficientValidatorCount())
 }
 
-func TestGetReceivedValidatorCount(t *testing.T) {
-	ctx, keeper := keep.CreateTestInput(t, false)
-	keeper.SetRequest(ctx, 1, types.NewRequest(
-		1, []byte("calldata"),
-		[]sdk.ValAddress{sdk.ValAddress([]byte("val1")), sdk.ValAddress([]byte("val2"))},
-		1, 0, 0, 100, "clientID",
-	))
+// func TestGetReceivedValidatorCount(t *testing.T) {
+// 	ctx, keeper := keep.CreateTestInput(t, false)
+// 	keeper.SetRequest(ctx, 1, types.NewRequest(
+// 		1, []byte("calldata"),
+// 		[]sdk.ValAddress{sdk.ValAddress([]byte("val1")), sdk.ValAddress([]byte("val2"))},
+// 		1, 0, 0, 100, "clientID",
+// 	))
 
-	env, err := NewExecutionEnvironment(ctx, keeper, 1)
-	require.Nil(t, err)
-	require.Equal(t, int64(0), env.GetReceivedValidatorCount())
+// 	env := NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
+// 	require.Equal(t, int64(0), env.GetReceivedValidatorCount())
 
-	keeper.AddReport(ctx, 1, []types.RawDataReportWithID{}, sdk.ValAddress([]byte("val1")), sdk.AccAddress([]byte("val1")))
+// 	keeper.AddReport(ctx, 1, types.NewReport(sdk.ValAddress([]byte("val1")), []types.RawReport{}))
 
-	env, err = NewExecutionEnvironment(ctx, keeper, 1)
-	require.Nil(t, err)
-	require.Equal(t, int64(1), env.GetReceivedValidatorCount())
+// 	env = NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
+// 	require.Equal(t, int64(1), env.GetReceivedValidatorCount())
 
-}
+// }
 
 func TestGetPrepareBlockTime(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
 	keeper.SetRequest(ctx, 1, types.NewRequest(
 		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))},
-		1, 20, 1581589790, 100, "clientID",
+		1, 20, 1581589790, "clientID",
 	))
 
-	env, err := NewExecutionEnvironment(ctx, keeper, 1)
-	require.Nil(t, err)
+	env := NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
 	require.Equal(t, int64(1581589790), env.GetPrepareBlockTime())
 }
 
@@ -103,21 +87,21 @@ func TestGetAggregateBlockTime(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
 	keeper.SetRequest(ctx, 1, types.NewRequest(
 		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))},
-		1, 0, 0, 100, "clientID",
+		1, 0, 0, "clientID",
 	))
 
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
-	env, err := NewExecutionEnvironment(ctx, keeper, 1)
-	require.Nil(t, err)
+	env := NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
 	require.Equal(t, int64(0), env.GetAggregateBlockTime())
 
 	// Add received validator
-	err = keeper.AddReport(ctx, 1, []types.RawDataReportWithID{}, sdk.ValAddress([]byte("val1")), sdk.AccAddress([]byte("val1")))
+	err := keeper.AddReport(ctx, 1, types.NewReport(sdk.ValAddress([]byte("val1")), []types.RawReport{}))
 	require.Nil(t, err)
 
 	// After report is greater or equal SufficientValidatorCount, it will resolve in current block time.
-	env, err = NewExecutionEnvironment(ctx, keeper, 1)
-	require.Nil(t, err)
+	env = NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
+	env.SetReports(keeper.GetReports(ctx, 1))
+
 	require.Equal(t, int64(1581589790), env.GetAggregateBlockTime())
 }
 
@@ -141,11 +125,10 @@ func TestGetValidatorPubKey(t *testing.T) {
 	)
 	keeper.SetRequest(ctx, 1, types.NewRequest(
 		1, []byte("calldata"), []sdk.ValAddress{validatorAddress1, validatorAddress2},
-		1, 0, 0, 100, "clientID",
+		1, 0, 0, "clientID",
 	))
 
-	env, errSDK := NewExecutionEnvironment(ctx, keeper, 1)
-	require.Nil(t, errSDK)
+	env := NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
 
 	addr1, err := env.GetValidatorAddress(0)
 	require.Nil(t, err)
@@ -167,7 +150,7 @@ func TestRequestExternalData(t *testing.T) {
 	// Set Request
 	keeper.SetRequest(ctx, 1, types.NewRequest(
 		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))},
-		1, 0, 0, 100, "clientID",
+		1, 0, 0, "clientID",
 	))
 
 	// Set Datasource
@@ -180,25 +163,24 @@ func TestRequestExternalData(t *testing.T) {
 	)
 	keeper.SetDataSource(ctx, 1, dataSource)
 
-	env, err := NewExecutionEnvironment(ctx, keeper, 1)
-	require.Nil(t, err)
+	env := NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
 	envErr := env.RequestExternalData(1, 42, []byte("prepare32"))
 	require.Nil(t, envErr)
-	err = env.SaveRawDataRequests(ctx, keeper)
-	require.Nil(t, err)
+	// err := env.SaveRawDataRequests(ctx, keeper)
+	// require.Nil(t, err)
 
-	rawRequest, err := keeper.GetRawDataRequest(ctx, 1, 42)
-	require.Nil(t, err)
-	require.Equal(t, types.NewRawDataRequest(1, []byte("prepare32")), rawRequest)
+	// rawRequest, err := keeper.GetRawRequest(ctx, 1, 42)
+	// require.Nil(t, err)
+	// require.Equal(t, types.NewRawDataRequest(1, []byte("prepare32")), rawRequest)
 }
 
-func TestRequestExternalDataExceedMaxDataSourceCountPerRequest(t *testing.T) {
+func TestRequestExternalDataExceedMaxRawRequestCount(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
 
 	// Set Request
 	keeper.SetRequest(ctx, 1, types.NewRequest(
 		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))},
-		1, 0, 0, 100, "clientID",
+		1, 0, 0, "clientID",
 	))
 
 	// Set Datasource
@@ -211,10 +193,9 @@ func TestRequestExternalDataExceedMaxDataSourceCountPerRequest(t *testing.T) {
 	)
 	keeper.SetDataSource(ctx, 1, dataSource)
 
-	// Set MaxDataSourceCountPerRequest to 5
-	keeper.SetParam(ctx, KeyMaxDataSourceCountPerRequest, 5)
-	env, err := NewExecutionEnvironment(ctx, keeper, 1)
-	require.Nil(t, err)
+	// Set MaxRawRequestCount to 5
+	keeper.SetParam(ctx, KeyMaxRawRequestCount, 5)
+	env := NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
 
 	reqErr := env.RequestExternalData(1, 41, []byte("prepare32"))
 	require.Nil(t, reqErr)
@@ -229,47 +210,47 @@ func TestRequestExternalDataExceedMaxDataSourceCountPerRequest(t *testing.T) {
 	reqErr = env.RequestExternalData(1, 46, []byte("prepare32"))
 	require.NotNil(t, reqErr)
 
-	envErr := env.SaveRawDataRequests(ctx, keeper)
-	require.Nil(t, envErr)
+	// envErr := env.SaveRawDataRequests(ctx, keeper)
+	// require.Nil(t, envErr)
 }
 
-func TestGetExternalData(t *testing.T) {
-	ctx, keeper := keep.CreateTestInput(t, false)
-	keeper.SetRequest(ctx, 1, types.NewRequest(
-		1, []byte("calldata"),
-		[]sdk.ValAddress{sdk.ValAddress([]byte("val1")), sdk.ValAddress([]byte("val2"))},
-		1, 0, 0, 100, "clientID",
-	))
+// func TestGetExternalData(t *testing.T) {
+// 	ctx, keeper := keep.CreateTestInput(t, false)
+// 	keeper.SetRequest(ctx, 1, types.NewRequest(
+// 		1, []byte("calldata"),
+// 		[]sdk.ValAddress{sdk.ValAddress([]byte("val1")), sdk.ValAddress([]byte("val2"))},
+// 		1, 0, 0, 100, "clientID",
+// 	))
 
-	keeper.SetRawDataReport(
-		ctx,
-		1,
-		42,
-		sdk.ValAddress([]byte("val1")),
-		types.NewRawDataReport(42, []byte("data42")),
-	)
+// 	keeper.SetReport(
+// 		ctx,
+// 		1,
+// 		42,
+// 		sdk.ValAddress([]byte("val1")),
+// 		types.NewRawDataReport(42, []byte("data42")),
+// 	)
 
-	env, err := NewExecutionEnvironment(ctx, keeper, 1)
-	require.Nil(t, err)
+// 	env, err := NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
+// 	require.Nil(t, err)
 
-	err = env.LoadRawDataReports(ctx, keeper)
-	require.Nil(t, err)
-	// Get report from reported validator
-	report, statusCode, envErr := env.GetExternalData(42, 0)
-	require.Nil(t, envErr)
-	require.Equal(t, []byte("data42"), report)
-	require.Equal(t, uint8(42), statusCode)
+// 	err = env.LoadRawDataReports(ctx, keeper)
+// 	require.Nil(t, err)
+// 	// Get report from reported validator
+// 	report, statusCode, envErr := env.GetExternalData(42, 0)
+// 	require.Nil(t, envErr)
+// 	require.Equal(t, []byte("data42"), report)
+// 	require.Equal(t, uint8(42), statusCode)
 
-	// Get report from missing validator
-	_, _, envErr = env.GetExternalData(42, 1)
-	require.NotNil(t, envErr)
-	require.EqualError(t, envErr, "Unable to find raw data report with request ID (1) external ID (42) from (bandvaloper1weskcvsfgndm9): ItemNotFound")
+// 	// Get report from missing validator
+// 	_, _, envErr = env.GetExternalData(42, 1)
+// 	require.NotNil(t, envErr)
+// 	require.EqualError(t, envErr, "Unable to find raw data report with request ID (1) external ID (42) from (bandvaloper1weskcvsfgndm9): ItemNotFound")
 
-	// Get report from invalid validator index
-	_, _, envErr = env.GetExternalData(42, 2)
-	require.NotNil(t, envErr, "validator out of range")
+// 	// Get report from invalid validator index
+// 	_, _, envErr = env.GetExternalData(42, 2)
+// 	require.NotNil(t, envErr, "validator out of range")
 
-	// Get report from invalid validator index
-	_, _, envErr = env.GetExternalData(42, -2)
-	require.NotNil(t, envErr, "validator out of range")
-}
+// 	// Get report from invalid validator index
+// 	_, _, envErr = env.GetExternalData(42, -2)
+// 	require.NotNil(t, envErr, "validator out of range")
+// }

@@ -1,8 +1,6 @@
 package db
 
 import (
-	"crypto/sha256"
-	"database/sql"
 	"errors"
 	"strconv"
 	"time"
@@ -15,7 +13,6 @@ func createOracleScript(
 	id int64,
 	name, description string,
 	owner sdk.AccAddress,
-	codeHash []byte,
 	blockTime time.Time,
 	schema string,
 	sourceCodeURL string,
@@ -26,7 +23,6 @@ func createOracleScript(
 		Name:          name,
 		Description:   description,
 		Owner:         owner.String(),
-		CodeHash:      codeHash,
 		LastUpdated:   blockTime.UnixNano() / int64(time.Millisecond),
 		Schema:        schema,
 		SourceCodeURL: sourceCodeURL,
@@ -45,33 +41,16 @@ func (b *BandDB) AddOracleScript(
 	sourceCodeURL string,
 ) error {
 
-	h := sha256.New()
-	h.Write(code)
-	codeHash := h.Sum(nil)
-	oracleScriptCode := OracleScriptCode{
-		CodeHash: codeHash,
-		CodeText: sql.NullString{},
-		Schema:   sql.NullString{},
-	}
-
-	err := b.tx.Where(OracleScriptCode{CodeHash: codeHash}).
-		Assign(oracleScriptCode).
-		FirstOrCreate(&OracleScriptCode{}).Error
-	if err != nil {
-		return err
-	}
-
 	oracleScript := createOracleScript(
 		id,
 		name,
 		description,
 		owner,
-		codeHash,
 		blockTime,
 		schema,
 		sourceCodeURL,
 	)
-	err = b.tx.Create(&oracleScript).Error
+	err := b.tx.Create(&oracleScript).Error
 	if err != nil {
 		return err
 	}
@@ -109,26 +88,12 @@ func (b *BandDB) handleMsgEditOracleScript(
 	msg oracle.MsgEditOracleScript,
 	events map[string]string,
 ) error {
-	h := sha256.New()
-	h.Write(msg.Code)
-	codeHash := h.Sum(nil)
-
-	err := b.tx.Where(&OracleScriptCode{CodeHash: codeHash}).
-		Assign(OracleScriptCode{
-			CodeText: sql.NullString{},
-			Schema:   sql.NullString{},
-		}).FirstOrCreate(&OracleScriptCode{}).Error
-
-	if err != nil {
-		return err
-	}
-
 	oracleScript := createOracleScript(
 		int64(msg.OracleScriptID), msg.Name, msg.Description,
-		msg.Owner, codeHash, b.ctx.BlockTime(), msg.Schema, msg.SourceCodeURL,
+		msg.Owner, b.ctx.BlockTime(), msg.Schema, msg.SourceCodeURL,
 	)
 
-	err = b.tx.Save(&oracleScript).Error
+	err := b.tx.Save(&oracleScript).Error
 	if err != nil {
 		return err
 	}

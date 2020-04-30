@@ -19,11 +19,23 @@ const (
 	EventTypeReport             = types.EventTypeReport
 	EventTypeRequestExecute     = types.EventTypeRequestExecute
 
-	AttributeKeyID            = types.AttributeKeyID
-	AttributeKeyRequestID     = types.AttributeKeyRequestID
-	AttributeKeyValidator     = types.AttributeKeyValidator
-	AttributeKeyResolveStatus = types.AttributeKeyResolveStatus
-	AttributeKeyResult        = types.AttributeKeyResult
+	AttributeKeyID             = types.AttributeKeyID
+	AttributeKeyRequestID      = types.AttributeKeyRequestID
+	AttributeKeyDataSourceID   = types.AttributeKeyDataSourceID
+	AttributeKeyOracleScriptID = types.AttributeKeyOracleScriptID
+	AttributeKeyExternalID     = types.AttributeKeyExternalID
+	AttributeKeyCalldata       = types.AttributeKeyCalldata
+	AttributeKeyValidator      = types.AttributeKeyValidator
+	AttributeKeyReporter       = types.AttributeKeyReporter
+	AttributeKeyClientID       = types.AttributeKeyClientID
+	AttributeKeyAskCount       = types.AttributeKeyAskCount
+	AttributeKeyMinCount       = types.AttributeKeyMinCount
+	AttributeKeyAnsCount       = types.AttributeKeyAnsCount
+	AttributeKeyRequestTime    = types.AttributeKeyRequestTime
+	AttributeKeyResolveTime    = types.AttributeKeyResolveTime
+	AttributeKeyResolveStatus  = types.AttributeKeyResolveStatus
+	AttributeKeyResult         = types.AttributeKeyResult
+	AttributeKeyResultHash     = types.AttributeKeyResultHash
 )
 
 var (
@@ -47,22 +59,20 @@ var (
 	DataSourceStoreKey   = types.DataSourceStoreKey
 	OracleScriptStoreKey = types.OracleScriptStoreKey
 
-	NewParams              = types.NewParams
-	NewDataSource          = types.NewDataSource
-	NewOracleScript        = types.NewOracleScript
-	DefaultParams          = types.DefaultParams
-	NewRawDataReport       = types.NewRawDataReport
-	NewRawDataReportWithID = types.NewRawDataReportWithID
+	NewParams       = types.NewParams
+	NewDataSource   = types.NewDataSource
+	NewOracleScript = types.NewOracleScript
+	DefaultParams   = types.DefaultParams
+	NewRawReport    = types.NewRawReport
 
 	KeyMaxExecutableSize                = types.KeyMaxExecutableSize
 	KeyMaxOracleScriptCodeSize          = types.KeyMaxOracleScriptCodeSize
 	KeyMaxCalldataSize                  = types.KeyMaxCalldataSize
-	KeyMaxDataSourceCountPerRequest     = types.KeyMaxDataSourceCountPerRequest
+	KeyMaxRawRequestCount               = types.KeyMaxRawRequestCount
 	KeyMaxRawDataReportSize             = types.KeyMaxRawDataReportSize
 	KeyMaxResultSize                    = types.KeyMaxResultSize
 	KeyMaxNameLength                    = types.KeyMaxNameLength
 	KeyMaxDescriptionLength             = types.KeyMaxDescriptionLength
-	KeyEndBlockExecuteGasLimit          = types.KeyEndBlockExecuteGasLimit
 	KeyGasPerRawDataRequestPerValidator = types.KeyGasPerRawDataRequestPerValidator
 	KeyExpirationBlockCount             = types.KeyExpirationBlockCount
 	KeyExecuteGas                       = types.KeyExecuteGas
@@ -92,8 +102,7 @@ type (
 	OracleRequestPacketData  = types.OracleRequestPacketData
 	OracleResponsePacketData = types.OracleResponsePacketData
 
-	RawDataReport         = types.RawDataReport
-	RawDataReportWithID   = types.RawDataReportWithID
+	RawReport             = types.RawReport
 	RequestQuerierInfo    = types.RequestQuerierInfo
 	DataSourceQuerierInfo = types.DataSourceQuerierInfo
 

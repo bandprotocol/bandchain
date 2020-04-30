@@ -128,5 +128,6 @@ let make = () => {
          }}
       </div>
     </div>
+    <Modal />
   </div>;
 };

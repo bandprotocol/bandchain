@@ -1,7 +1,6 @@
 package db
 
 import (
-	"database/sql"
 	"encoding/json"
 )
 
@@ -24,6 +23,7 @@ type Transaction struct {
 	GasUsed     int64           `gorm:"not null"`
 	GasLimit    uint64          `gorm:"not null"`
 	GasFee      string          `gorm:"not null"`
+	RawLog      string          `gorm:"not null"`
 	Sender      string          `gorm:"not null"`
 	Success     bool            `gorm:"not null"`
 	BlockHeight int64           `gorm:"not null"`
@@ -96,7 +96,6 @@ type OracleScript struct {
 	Name          string `gorm:"not null"`
 	Description   string `gorm:"not null"`
 	Owner         string `gorm:"not null"`
-	CodeHash      []byte `gorm:"not null"`
 	LastUpdated   int64  `gorm:"not null"`
 	Schema        string `gorm:"not null"`
 	SourceCodeURL string `gorm:"not null"`
@@ -109,12 +108,6 @@ type OracleScriptRevision struct {
 	Timestamp      int64  `gorm:"not null"`
 	BlockHeight    int64  `gorm:"not null"`
 	TxHash         []byte `sql:"default:null"`
-}
-
-type OracleScriptCode struct {
-	CodeHash []byte         `gorm:"primary_key"`
-	CodeText sql.NullString `sql:"default:null"`
-	Schema   sql.NullString `sql:"default:null"`
 }
 
 type RelatedDataSources struct {
@@ -133,6 +126,8 @@ type Request struct {
 	TxHash                   []byte `gorm:"not null"`
 	ClientID                 string `gorm:"not null"`
 	Result                   []byte `sql:"default:null"`
+	RequestTime              int64  `sql:"default:null"`
+	ResolveTime              int64  `sql:"default:null"`
 }
 
 type RequestedValidator struct {

@@ -25,12 +25,6 @@ module Styles = {
     ]);
 
   let logo = style([width(`px(20))]);
-
-  let heightByMsgsNum = (numMsgs, mt) =>
-    style([
-      minHeight(numMsgs <= 1 ? `auto : `px(numMsgs * hScale)),
-      marginTop(`px(numMsgs <= 1 ? 0 : mt)),
-    ]);
 };
 
 let txBodyRender = (reserveIndex: int, txSub: ApolloHooks.Subscription.variant(TxSub.t)) => {
@@ -41,38 +35,31 @@ let txBodyRender = (reserveIndex: int, txSub: ApolloHooks.Subscription.variant(T
       | _ => reserveIndex |> string_of_int
       }
     }>
-    <Row minHeight={`px(30)}>
+    <Row minHeight={`px(30)} alignItems=`flexStart>
       <Col> <HSpacing size={`px(12)} /> </Col>
       <Col size=1.2>
+        <VSpacing size=Spacing.sm />
         {switch (txSub) {
-         | Data({messages, txHash}) =>
-           <div className={Styles.heightByMsgsNum(messages->Belt_List.size, 0)}>
-             <TxLink txHash width=110 />
-           </div>
+         | Data({txHash}) => <TxLink txHash width=110 />
          | _ => <LoadingCensorBar width=100 height=10 />
          }}
       </Col>
       <Col size=0.68>
+        <VSpacing size=Spacing.sm />
         {switch (txSub) {
-         | Data({messages, blockHeight}) =>
-           <div
-             className={Css.merge([
-               Styles.heightByMsgsNum(messages->Belt_List.size, -4),
-               Styles.blockContainer,
-             ])}>
-             <TypeID.Block id=blockHeight />
-           </div>
+         | Data({blockHeight}) =>
+           <div className=Styles.blockContainer> <TypeID.Block id=blockHeight /> </div>
          | _ => <LoadingCensorBar width=50 height=10 />
          }}
       </Col>
       <Col size=1.>
+        <VSpacing size=Spacing.xs />
         {switch (txSub) {
-         | Data({messages, success}) =>
-           <div className={Styles.heightByMsgsNum(messages->Belt_List.size, -8)}>
-             <div className=Styles.statusContainer>
-               <img src={success ? Images.success : Images.fail} className=Styles.logo />
-             </div>
+         | Data({success}) =>
+           <div className=Styles.statusContainer>
+             <img src={success ? Images.success : Images.fail} className=Styles.logo />
            </div>
+
          | _ =>
            <div className=Styles.statusContainer>
              <LoadingCensorBar width=20 height=20 radius=20 />
@@ -92,7 +79,7 @@ let txBodyRender = (reserveIndex: int, txSub: ApolloHooks.Subscription.variant(T
                </React.Fragment>
              )
            ->React.array
-         | _ => <LoadingCensorBar width=360 height=10 />
+         | _ => <> <VSpacing size=Spacing.sm /> <LoadingCensorBar width=360 height=10 /> </>
          }}
       </Col>
       <Col> <HSpacing size={`px(12)} /> </Col>

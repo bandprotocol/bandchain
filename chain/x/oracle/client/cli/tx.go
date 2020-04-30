@@ -160,7 +160,7 @@ $ %s tx oracle report 1 1:172.5 2:HELLOWORLD --from mykey
 				return err
 			}
 
-			var dataset []types.RawDataReportWithID
+			var dataset []types.RawReport
 			for _, arg := range args[1:] {
 				reportRaw := strings.SplitN(arg, ":", 2)
 				if len(reportRaw) != 2 {
@@ -173,12 +173,12 @@ $ %s tx oracle report 1 1:172.5 2:HELLOWORLD --from mykey
 				externalID := types.ExternalID(int64ExternalID)
 
 				// TODO: Do not hardcode exit code
-				dataset = append(dataset, types.NewRawDataReportWithID(externalID, 0, []byte(reportRaw[1])))
+				dataset = append(dataset, types.NewRawReport(externalID, 0, []byte(reportRaw[1])))
 			}
 
 			// Sort data reports by external ID
 			sort.Slice(dataset, func(i, j int) bool {
-				return dataset[i].ExternalDataID < dataset[j].ExternalDataID
+				return dataset[i].ExternalID < dataset[j].ExternalID
 			})
 
 			msg := types.NewMsgReportData(requestID, dataset, sdk.ValAddress(cliCtx.GetFromAddress()), cliCtx.GetFromAddress())

@@ -38,40 +38,35 @@ func (k Keeper) SetOracleScript(ctx sdk.Context, id types.OID, oracleScript type
 }
 
 // AddOracleScript adds the given oracle script to the storage. Returns error if validation fails.
-func (k Keeper) AddOracleScript(
-	ctx sdk.Context, owner sdk.AccAddress, name string, description string, code []byte, schema string, sourceCodeURL string,
-) (types.OID, error) {
+func (k Keeper) AddOracleScript(ctx sdk.Context, oracleScript types.OracleScript) (types.OID, error) {
 	if err := AnyError(
-		k.EnsureMaxValue(ctx, types.KeyMaxNameLength, uint64(len(name))),
-		k.EnsureMaxValue(ctx, types.KeyMaxDescriptionLength, uint64(len(description))),
-		k.EnsureMaxValue(ctx, types.KeyMaxOracleScriptCodeSize, uint64(len(code))),
+		k.EnsureLength(ctx, types.KeyMaxNameLength, len(oracleScript.Name)),
+		k.EnsureLength(ctx, types.KeyMaxDescriptionLength, len(oracleScript.Description)),
+		k.EnsureLength(ctx, types.KeyMaxOracleScriptCodeSize, len(oracleScript.Code)),
 	); err != nil {
 		return 0, err
 	}
 	id := k.GetNextOracleScriptID(ctx)
-	k.SetOracleScript(ctx, id, types.NewOracleScript(owner, name, description, code, schema, sourceCodeURL))
+	k.SetOracleScript(ctx, id, oracleScript)
 	return id, nil
 }
 
 // EditOracleScript edits the given oracle script by id and flushes it to the storage.
-func (k Keeper) EditOracleScript(
-	ctx sdk.Context, id types.OID, owner sdk.AccAddress, name string,
-	description string, code []byte, schema string, sourceCodeURL string,
-) error {
+func (k Keeper) EditOracleScript(ctx sdk.Context, id types.OID, new types.OracleScript) error {
 	oracleScript, err := k.GetOracleScript(ctx, id)
 	if err != nil {
 		return err
 	}
-	oracleScript.Owner = owner // TODO: Allow NOT_MODIFY or nil in these fields.
-	oracleScript.Name = name
-	oracleScript.Description = description
-	oracleScript.Code = code
-	oracleScript.Schema = schema
-	oracleScript.SourceCodeURL = sourceCodeURL
+	oracleScript.Owner = new.Owner // TODO: Allow NOT_MODIFY or nil in these fields.
+	oracleScript.Name = new.Name
+	oracleScript.Description = new.Description
+	oracleScript.Code = new.Code
+	oracleScript.Schema = new.Schema
+	oracleScript.SourceCodeURL = new.SourceCodeURL
 	if err := AnyError(
-		k.EnsureMaxValue(ctx, types.KeyMaxNameLength, uint64(len(oracleScript.Name))),
-		k.EnsureMaxValue(ctx, types.KeyMaxDescriptionLength, uint64(len(oracleScript.Description))),
-		k.EnsureMaxValue(ctx, types.KeyMaxOracleScriptCodeSize, uint64(len(oracleScript.Code))),
+		k.EnsureLength(ctx, types.KeyMaxNameLength, len(oracleScript.Name)),
+		k.EnsureLength(ctx, types.KeyMaxDescriptionLength, len(oracleScript.Description)),
+		k.EnsureLength(ctx, types.KeyMaxOracleScriptCodeSize, len(oracleScript.Code)),
 	); err != nil {
 		return err
 	}

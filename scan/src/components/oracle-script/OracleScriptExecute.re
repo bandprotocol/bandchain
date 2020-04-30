@@ -96,7 +96,7 @@ type result_t =
   | Nothing
   | Loading
   | Error(string)
-  | Success(BandWeb3.tx_response_t, string);
+  | Success(TxCreator.tx_response_t);
 
 let loadingRender = (wDiv, wImg, h) => {
   <div className={Styles.withWH(wDiv, h)}>
@@ -104,7 +104,7 @@ let loadingRender = (wDiv, wImg, h) => {
   </div>;
 };
 
-let resultRender = result => {
+let resultRender = (result, schema) => {
   switch (result) {
   | Nothing => React.null
   | Loading =>
@@ -120,7 +120,7 @@ let resultRender = result => {
         <Text value=err />
       </div>
     </>
-  | Success(txResponse, schema) => <OracleScriptExecuteResponse txResponse schema />
+  | Success(txResponse) => <OracleScriptExecuteResponse txResponse schema />
   };
 };
 
@@ -141,12 +141,12 @@ module ExecutionPart = {
           requestPromise
           |> Js.Promise.then_(res =>
                switch (res) {
-               | BandWeb3.Tx(txResponse) =>
-                 setResult(_ => Success(txResponse, schema));
+               | TxCreator.Tx(txResponse) =>
+                 setResult(_ => Success(txResponse));
                  Js.Promise.resolve();
                | _ =>
                  setResult(_ =>
-                   Error("Fail to sign message, please connect with mnemonic first")
+                   Error("Fail to sign message, please connect with mnemonic or ledger first")
                  );
                  Js.Promise.resolve();
                }
@@ -216,15 +216,14 @@ module ExecutionPart = {
           {(result == Loading ? "Sending Request ... " : "Request") |> React.string}
         </button>
       </div>
-      {resultRender(result)}
+      {resultRender(result, schema)}
     </div>;
   };
 };
 
 [@react.component]
-let make = (~id: ID.OracleScript.t, ~schemaOpt: option(string)) =>
+let make = (~id: ID.OracleScript.t, ~schema: string) =>
   {
-    let%Opt schema = schemaOpt;
     let%Opt paramsInput = schema->Borsh.extractFields("Input");
     Some(<ExecutionPart id schema paramsInput />);
   }

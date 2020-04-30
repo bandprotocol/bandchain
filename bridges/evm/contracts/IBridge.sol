@@ -1,17 +1,26 @@
 pragma solidity 0.5.14;
 pragma experimental ABIEncoderV2;
 
+
 interface IBridge {
-    /// Helper struct to help the function caller to decode oracle data.
-    struct VerifyOracleDataResult {
+    /// Request packet struct is similar packet on Bandchain using to re-calculate result hash.
+    struct RequestPacket {
+        string clientId;
         uint64 oracleScriptId;
+        string params;
+        uint64 askCount;
+        uint64 minCount;
+    }
+
+    /// Response packet struct is similar packet on Bandchain using to re-calculate result hash.
+    struct ResponsePacket {
+        string clientId;
+        uint64 requestId;
+        uint64 ansCount;
         uint64 requestTime;
-        uint64 aggregationTime;
-        uint64 requestedValidatorsCount;
-        uint64 sufficientValidatorCount;
-        uint64 reportedValidatorsCount;
-        bytes params;
-        bytes data;
+        uint64 resolveTime;
+        uint8 resolveStatus;
+        string result;
     }
 
     /// Performs oracle state relay and oracle data verification in one go. The caller submits
@@ -19,5 +28,5 @@ interface IBridge {
     /// @param _data The encoded data for oracle state relay and data verification.
     function relayAndVerify(bytes calldata _data)
         external
-        returns (VerifyOracleDataResult memory result);
+        returns (RequestPacket memory, ResponsePacket memory);
 }

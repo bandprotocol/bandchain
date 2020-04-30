@@ -9,6 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/cosmos/cosmos-sdk/x/capability"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/evidence"
@@ -19,7 +20,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-	"github.com/cosmos/cosmos-sdk/x/supply"
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
@@ -52,21 +52,21 @@ func NewDefaultGenesisState() GenesisState {
 	slashingGenesis.Params.SlashFractionDowntime = sdk.NewDecWithPrec(1, 4)   // 0.01%
 
 	return GenesisState{
-		genutil.ModuleName:  genutil.AppModuleBasic{}.DefaultGenesis(cdc),
-		auth.ModuleName:     auth.AppModuleBasic{}.DefaultGenesis(cdc),
-		bank.ModuleName:     bank.AppModuleBasic{}.DefaultGenesis(cdc),
-		staking.ModuleName:  cdc.MustMarshalJSON(stakingGenesis),
-		mint.ModuleName:     cdc.MustMarshalJSON(mintGenesis),
-		distr.ModuleName:    distr.AppModuleBasic{}.DefaultGenesis(cdc),
-		gov.ModuleName:      cdc.MustMarshalJSON(govGenesis),
-		crisis.ModuleName:   cdc.MustMarshalJSON(crisisGenesis),
-		slashing.ModuleName: cdc.MustMarshalJSON(slashingGenesis),
-		supply.ModuleName:   supply.AppModuleBasic{}.DefaultGenesis(cdc),
-		ibc.ModuleName:      ibc.AppModuleBasic{}.DefaultGenesis(cdc),
-		upgrade.ModuleName:  upgrade.AppModuleBasic{}.DefaultGenesis(cdc),
-		evidence.ModuleName: evidence.AppModuleBasic{}.DefaultGenesis(cdc),
-		transfer.ModuleName: transfer.AppModuleBasic{}.DefaultGenesis(cdc),
-		oracle.ModuleName:   oracle.AppModuleBasic{}.DefaultGenesis(cdc),
+		genutil.ModuleName:    genutil.AppModuleBasic{}.DefaultGenesis(cdc),
+		auth.ModuleName:       auth.AppModuleBasic{}.DefaultGenesis(cdc),
+		bank.ModuleName:       bank.AppModuleBasic{}.DefaultGenesis(cdc),
+		staking.ModuleName:    cdc.MustMarshalJSON(stakingGenesis),
+		mint.ModuleName:       cdc.MustMarshalJSON(mintGenesis),
+		distr.ModuleName:      distr.AppModuleBasic{}.DefaultGenesis(cdc),
+		gov.ModuleName:        cdc.MustMarshalJSON(govGenesis),
+		crisis.ModuleName:     cdc.MustMarshalJSON(crisisGenesis),
+		slashing.ModuleName:   cdc.MustMarshalJSON(slashingGenesis),
+		ibc.ModuleName:        ibc.AppModuleBasic{}.DefaultGenesis(cdc),
+		capability.ModuleName: capability.AppModuleBasic{}.DefaultGenesis(cdc),
+		upgrade.ModuleName:    upgrade.AppModuleBasic{}.DefaultGenesis(cdc),
+		evidence.ModuleName:   evidence.AppModuleBasic{}.DefaultGenesis(cdc),
+		transfer.ModuleName:   transfer.AppModuleBasic{}.DefaultGenesis(cdc),
+		oracle.ModuleName:     oracle.AppModuleBasic{}.DefaultGenesis(cdc),
 	}
 }
 
@@ -132,15 +132,15 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			"Crypto price script (Borsh version)",
 			"Oracle script for getting an average crypto price from many sources encoding parameter by borsh.",
 			"./owasm/res/crypto_price_borsh.wasm",
-			`{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }`,
-			`https://bandprotocol.com`,
+			`{"Input": "{ \"kind\": \"struct\", \"fields\": [ [\"symbol\", \"string\"], [\"multiplier\", \"u64\"] ] }", "Output": "{ \"kind\": \"struct\", \"fields\": [ [\"px\", \"u64\"] ] }"}`,
+			`https://ipfs.io/ipfs/QmUrYgDKXT8V8DPdCYMEwPM6n82r6zxbvBf6p4gb4m1RA5`,
 		},
 		{
 			"Gold price script",
 			"Oracle script for getting an average gold price in ATOM",
 			"./owasm/res/gold_price.wasm",
-			`{"Input": "{ \"kind\": \"struct\", \"fields\": [ [\"multiplier\", \"u64\"] ] }", "Output": "{ \"kind\": \"struct\", \"fields\": [ [\"px\", \"u64\"] ] }`,
-			`https://bandprotocol.com`,
+			`{"Input": "{ \"kind\": \"struct\", \"fields\": [ [\"multiplier\", \"u64\"] ] }","Output": "{ \"kind\": \"struct\", \"fields\": [ [\"px\", \"u64\"] ] }"}`,
+			`https://ipfs.io/ipfs/QmPheBfYjM4fZ6ngSHYrnDgmapZi9r1i4x5hGFUUyZiP5y`,
 		},
 	}
 	state.OracleScripts = make([]oracle.OracleScript, len(oracleScripts))

@@ -9,30 +9,20 @@ rm -rf ~/.band*
 bandd init node-validator --chain-id bandchain --oracle band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs
 
 # create acccounts
-expect $DIR/add-account.exp \
-    validator1 \
-    12345678 \
-    "lock nasty suffer dirt dream fine fall deal curtain plate husband sound tower mom crew crawl guard rack snake before fragile course bacon range" \
+echo "lock nasty suffer dirt dream fine fall deal curtain plate husband sound tower mom crew crawl guard rack snake before fragile course bacon range" \
+    | bandcli keys add validator1 --recover --keyring-backend test
 
-expect $DIR/add-account.exp \
-    validator2 \
-    12345678 \
-    "loyal damage diet label ability huge dad dash mom design method busy notable cash vast nerve congress drip chunk cheese blur stem dawn fatigue" \
+echo "loyal damage diet label ability huge dad dash mom design method busy notable cash vast nerve congress drip chunk cheese blur stem dawn fatigue" \
+    | bandcli keys add validator2 --recover --keyring-backend test
 
-expect $DIR/add-account.exp \
-    validator3 \
-    12345678 \
-    "whip desk enemy only canal swear help walnut cannon great arm onion oval doctor twice dish comfort team meat junior blind city mask aware" \
+echo "whip desk enemy only canal swear help walnut cannon great arm onion oval doctor twice dish comfort team meat junior blind city mask aware" \
+    | bandcli keys add validator3 --recover --keyring-backend test
 
-expect $DIR/add-account.exp \
-    validator4 \
-    12345678 \
-    "unfair beyond material banner okay genre camera dumb grit balcony permit room intact code degree execute twin flip half salt script cause demand recipe" \
+echo "unfair beyond material banner okay genre camera dumb grit balcony permit room intact code degree execute twin flip half salt script cause demand recipe" \
+    | bandcli keys add validator4 --recover --keyring-backend test
 
-expect $DIR/add-account.exp \
-    requester \
-    12345678 \
-    "smile stem oven genius cave resource better lunar nasty moon company ridge brass rather supply used horn three panic put venue analyst leader comic" \
+echo "smile stem oven genius cave resource better lunar nasty moon company ridge brass rather supply used horn three panic put venue analyst leader comic" \
+    | bandcli keys add requester --recover --keyring-backend test
 
 # add accounts to genesis
 bandd add-genesis-account validator1 10000000000000uband --keyring-backend test

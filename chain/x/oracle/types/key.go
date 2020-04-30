@@ -40,8 +40,8 @@ var (
 	// ResultStoreKeyPrefix is a prefix for storing result
 	ResultStoreKeyPrefix = []byte{0xff}
 
-	// RawDataRequestStoreKeyPrefix is a prefix for storing raw data request detail.
-	RawDataRequestStoreKeyPrefix = []byte{0x02}
+	// RawRequestStoreKeyPrefix is a prefix for storing raw data request detail.
+	RawRequestStoreKeyPrefix = []byte{0x02}
 
 	// RawDataReportStoreKeyPrefix is a prefix for report store
 	RawDataReportStoreKeyPrefix = []byte{0x03}
@@ -62,22 +62,26 @@ func RequestStoreKey(requestID RequestID) []byte {
 }
 
 // ResultStoreKey is a function to generate key for each result in store
-func ResultStoreKey(requestID RequestID, oracleScriptID OracleScriptID, calldata []byte) []byte {
-	buf := append(ResultStoreKeyPrefix, int64ToBytes(int64(requestID))...)
-	buf = append(buf, int64ToBytes(int64(oracleScriptID))...)
-	buf = append(buf, calldata...)
-	return buf
+func ResultStoreKey(requestID RequestID) []byte {
+	return append(ResultStoreKeyPrefix, int64ToBytes(int64(requestID))...)
 }
 
-// RawDataRequestStoreKey is a function to generate key for each raw data request in store
-func RawDataRequestStoreKey(requestID RequestID, externalID ExternalID) []byte {
-	buf := append(RawDataRequestStoreKeyPrefix, int64ToBytes(int64(requestID))...)
+// RawRequestStoreKey is a function to generate key for each raw data request in store
+func RawRequestStoreKey(requestID RequestID, externalID ExternalID) []byte {
+	buf := append(RawRequestStoreKeyPrefix, int64ToBytes(int64(requestID))...)
 	buf = append(buf, int64ToBytes(int64(externalID))...)
 	return buf
 }
 
 // RawDataReportStoreKey is a function to generate key for each raw data report in store.
-func RawDataReportStoreKey(requestID RequestID, externalID ExternalID, validatorAddress sdk.ValAddress) []byte {
+func RawDataReportStoreKey(requestID RequestID, validatorAddress sdk.ValAddress) []byte {
+	buf := append(RawDataReportStoreKeyPrefix, int64ToBytes(int64(requestID))...)
+	buf = append(buf, validatorAddress.Bytes()...)
+	return buf
+}
+
+// RawDataReportStoreKeyUnique is a function to generate key for each raw data report in store.
+func RawDataReportStoreKeyUnique(requestID RequestID, externalID ExternalID, validatorAddress sdk.ValAddress) []byte {
 	buf := append(RawDataReportStoreKeyPrefix, int64ToBytes(int64(requestID))...)
 	buf = append(buf, int64ToBytes(int64(externalID))...)
 	buf = append(buf, validatorAddress.Bytes()...)
@@ -104,13 +108,6 @@ func ReporterStoreKey(validatorAddress sdk.ValAddress, reporterAddress sdk.AccAd
 // GetIteratorPrefix is a function to get specific prefix
 func GetIteratorPrefix(prefix []byte, requestID RequestID) []byte {
 	return append(prefix, int64ToBytes(int64(requestID))...)
-}
-
-// GetExternalIDFromRawDataRequestKey is a function to get external id from raw data request key.
-func GetExternalIDFromRawDataRequestKey(key []byte) ExternalID {
-	prefixLength := len(RawDataRequestStoreKeyPrefix)
-	externalIDBytes := key[prefixLength+8 : prefixLength+16]
-	return ExternalID(binary.BigEndian.Uint64(externalIDBytes))
 }
 
 // GetValidatorAddressAndExternalID is a function to get validator address and external id from raw data report key.

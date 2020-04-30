@@ -6,16 +6,26 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 )
 
+const (
+	Open    = "Pending"
+	Success = "Success"
+	Failure = "Failure"
+	Expired = "Expired"
+	Unknown = "Unknown"
+)
+
 func parseResolveStatus(resolveStatus oracle.ResolveStatus) string {
 	switch resolveStatus {
 	case 0:
-		return "Pending"
+		return Open
 	case 1:
-		return "Success"
+		return Success
 	case 2:
-		return "Failure"
+		return Failure
+	case 3:
+		return Expired
 	default:
-		return "Unknown"
+		return Unknown
 	}
 }
 
@@ -86,18 +96,18 @@ func (b *BandDB) AddNewRequest(
 		}
 	}
 
-	for _, raw := range b.OracleKeeper.GetRawDataRequestWithExternalIDs(b.ctx, oracle.RequestID(id)) {
+	for _, raw := range b.OracleKeeper.GetRawRequests(b.ctx, oracle.RequestID(id)) {
 		err := b.AddRawDataRequest(
 			id,
 			int64(raw.ExternalID),
-			int64(raw.RawDataRequest.DataSourceID),
-			raw.RawDataRequest.Calldata,
+			int64(raw.DataSourceID),
+			raw.Calldata,
 		)
 		if err != nil {
 			return err
 		}
 		err = b.tx.FirstOrCreate(&RelatedDataSources{
-			DataSourceID:   int64(raw.RawDataRequest.DataSourceID),
+			DataSourceID:   int64(raw.DataSourceID),
 			OracleScriptID: int64(oracleScriptID),
 		}).Error
 		if err != nil {
@@ -178,7 +188,7 @@ func (b *BandDB) handleMsgRequestData(
 		int64(msg.OracleScriptID),
 		msg.Calldata,
 		msg.SufficientValidatorCount,
-		request.ExpirationHeight,
+		request.RequestHeight+20, // TODO: REMOVE THIS. HACK!!!
 		"Pending",
 		msg.Sender.String(),
 		msg.ClientID,

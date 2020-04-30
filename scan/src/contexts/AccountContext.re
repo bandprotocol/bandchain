@@ -1,54 +1,48 @@
 type t = {
   address: Address.t,
-  privKey: JsBuffer.t,
+  pubKey: PubKey.t,
+  wallet: Wallet.t,
 };
 
 type a =
-  | Connect(string)
+  | Connect(Wallet.t, Address.t, PubKey.t)
   | Disconnect
-  | SendRequest(ID.OracleScript.t, JsBuffer.t, Js.Promise.t(BandWeb3.response_t) => unit);
-
-let bandchain = BandWeb3.network(Env.rpc, "bandchain");
-bandchain->BandWeb3.setPath("m/44'/494'/0'/0/0");
-bandchain->BandWeb3.setBech32MainPrefix("band");
+  | SendRequest(ID.OracleScript.t, JsBuffer.t, Js.Promise.t(TxCreator.response_t) => unit);
 
 let reducer = state =>
   fun
-  | Connect(mnemonic) => {
-      let newAddress = bandchain |> BandWeb3.getAddress(_, mnemonic) |> Address.fromBech32;
-      let newPrivKey = bandchain |> BandWeb3.getECPairPriv(_, mnemonic);
-      Some({address: newAddress, privKey: newPrivKey});
-    }
+  | Connect(wallet, address, pubKey) => Some({wallet, pubKey, address})
   | Disconnect => None
   | SendRequest(oracleScriptID, calldata, callback) =>
     switch (state) {
-    | Some({address, privKey}) =>
+    | Some({address, wallet, pubKey}) =>
       callback(
         {
-          let%Promise {accountNumber, sequence} =
-            bandchain->BandWeb3.getAccounts(address |> Address.toBech32);
-          let msgRequest =
-            StdMsgRequest.create(
-              oracleScriptID,
-              ~calldata,
-              ~requestedValidatorCount=4,
-              ~sufficientValidatorCount=4,
-              ~sender=address,
-              ~feeAmount=1000000,
-              ~gas=3000000,
-              ~accountNumber=accountNumber |> string_of_int,
-              ~sequence=sequence |> string_of_int,
+          let%Promise rawTx =
+            TxCreator.createRawTx(
+              ~address,
+              ~msgs=[|Request(oracleScriptID, calldata, "4", "4", address, "")|],
+              ~gas="700000",
+              ~feeAmount="100",
+              ~memo="send via scan",
+              (),
             );
-          let wrappedMsg = bandchain->BandWeb3.newStdMsgRequest(msgRequest);
-          let signedMsg = bandchain->BandWeb3.sign(wrappedMsg, privKey, "block");
-          let%Promise res = bandchain->BandWeb3.broadcast(signedMsg);
-
-          Promise.ret(res);
+          let%Promise signature = Wallet.sign(TxCreator.sortAndStringify(rawTx), wallet);
+          let signedTx =
+            TxCreator.createSignedTx(
+              ~signature=signature |> JsBuffer.toBase64,
+              ~pubKey,
+              ~tx=rawTx,
+              ~mode="block",
+              (),
+            );
+          TxCreator.broadcast(signedTx);
         },
       );
+
       state;
     | None =>
-      callback(Promise.ret(BandWeb3.Unknown));
+      callback(Promise.ret(TxCreator.Unknown));
       state;
     };
 
@@ -60,9 +54,6 @@ let make = (~children) => {
 
   React.createElement(
     React.Context.provider(context),
-    {
-      "value": (state->Belt.Option.map(({address}) => address), dispatch),
-      "children": children,
-    },
+    {"value": (state, dispatch), "children": children},
   );
 };

@@ -17,26 +17,23 @@ func TestRequestStoreKey(t *testing.T) {
 
 func TestResultStoreKey(t *testing.T) {
 	requestID := RequestID(20)
-	oracleScriptID := OracleScriptID(3)
-	calldata := []byte("calldata")
-	expectKeyByte, _ := hex.DecodeString("ff0000000000000014000000000000000363616c6c64617461")
-	require.Equal(t, expectKeyByte, ResultStoreKey(requestID, oracleScriptID, calldata))
+	expectKeyByte, _ := hex.DecodeString("ff0000000000000014")
+	require.Equal(t, expectKeyByte, ResultStoreKey(requestID))
 }
 
-func TestRawDataRequestStoreKey(t *testing.T) {
+func TestRawRequestStoreKey(t *testing.T) {
 	requestID := RequestID(20)
 	externalID := ExternalID(947313)
 	expectKeyByte, _ := hex.DecodeString("02000000000000001400000000000E7471")
-	require.Equal(t, expectKeyByte, RawDataRequestStoreKey(requestID, externalID))
+	require.Equal(t, expectKeyByte, RawRequestStoreKey(requestID, externalID))
 }
 
 func TestRawDataReportStoreKey(t *testing.T) {
 	requestID := RequestID(20)
-	externalID := ExternalID(6)
 	validator, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
 
-	expectKeyByte, _ := hex.DecodeString("0300000000000000140000000000000006b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
-	require.Equal(t, expectKeyByte, RawDataReportStoreKey(requestID, externalID, validator))
+	expectKeyByte, _ := hex.DecodeString("030000000000000014b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
+	require.Equal(t, expectKeyByte, RawDataReportStoreKey(requestID, validator))
 }
 
 func TestDataSourceStoreKey(t *testing.T) {
@@ -51,13 +48,6 @@ func TestOracleScriptStoreKey(t *testing.T) {
 	expectKeyByte, _ := hex.DecodeString("05000000000000007b")
 
 	require.Equal(t, expectKeyByte, OracleScriptStoreKey(oracleScriptID))
-}
-
-func TestGetExternalIDFromRawDataRequestKey(t *testing.T) {
-	key, _ := hex.DecodeString("02000000000000001400000000000E7471")
-	externalID := GetExternalIDFromRawDataRequestKey(key)
-
-	require.Equal(t, ExternalID(947313), externalID)
 }
 
 func TestGetValidatorAddressAndExternalID(t *testing.T) {

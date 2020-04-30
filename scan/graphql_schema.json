@@ -14230,33 +14230,6 @@
                   "name": null,
                   "ofType": {
                     "kind": "INPUT_OBJECT",
-                    "name": "oracle_script_codes_bool_exp",
-                    "ofType": null
-                  }
-                },
-                "description": "filter the rows which have to be deleted"
-              }
-            ],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "delete_oracle_script_codes",
-            "type": {
-              "kind": "OBJECT",
-              "name": "oracle_script_codes_mutation_response",
-              "ofType": null
-            },
-            "description": "delete data from the table: \"oracle_script_codes\""
-          },
-          {
-            "args": [
-              {
-                "name": "where",
-                "defaultValue": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "INPUT_OBJECT",
                     "name": "oracle_script_revisions_bool_exp",
                     "ofType": null
                   }
@@ -14840,51 +14813,6 @@
               "ofType": null
             },
             "description": "insert data into the table: \"metadata\""
-          },
-          {
-            "args": [
-              {
-                "name": "objects",
-                "defaultValue": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "LIST",
-                    "name": null,
-                    "ofType": {
-                      "kind": "NON_NULL",
-                      "name": null,
-                      "ofType": {
-                        "kind": "INPUT_OBJECT",
-                        "name": "oracle_script_codes_insert_input",
-                        "ofType": null
-                      }
-                    }
-                  }
-                },
-                "description": "the rows to be inserted"
-              },
-              {
-                "name": "on_conflict",
-                "defaultValue": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "oracle_script_codes_on_conflict",
-                  "ofType": null
-                },
-                "description": "on conflict condition"
-              }
-            ],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "insert_oracle_script_codes",
-            "type": {
-              "kind": "OBJECT",
-              "name": "oracle_script_codes_mutation_response",
-              "ofType": null
-            },
-            "description": "insert data into the table: \"oracle_script_codes\""
           },
           {
             "args": [
@@ -15691,43 +15619,6 @@
           {
             "args": [
               {
-                "name": "_set",
-                "defaultValue": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "oracle_script_codes_set_input",
-                  "ofType": null
-                },
-                "description": "sets the columns of the filtered rows to the given values"
-              },
-              {
-                "name": "where",
-                "defaultValue": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "INPUT_OBJECT",
-                    "name": "oracle_script_codes_bool_exp",
-                    "ofType": null
-                  }
-                },
-                "description": "filter the rows which have to be updated"
-              }
-            ],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "update_oracle_script_codes",
-            "type": {
-              "kind": "OBJECT",
-              "name": "oracle_script_codes_mutation_response",
-              "ofType": null
-            },
-            "description": "update data of the table: \"oracle_script_codes\""
-          },
-          {
-            "args": [
-              {
                 "name": "_inc",
                 "defaultValue": null,
                 "type": {
@@ -16516,1020 +16407,6 @@
         "name": "numeric_comparison_exp",
         "enumValues": null,
         "description": "expression to compare columns of type numeric. All fields are combined with logical 'AND'.",
-        "fields": null
-      },
-      {
-        "inputFields": null,
-        "kind": "OBJECT",
-        "possibleTypes": null,
-        "interfaces": [],
-        "name": "oracle_script_codes",
-        "enumValues": null,
-        "description": "columns and relationships of \"oracle_script_codes\"",
-        "fields": [
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "code_hash",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "bytea",
-                "ofType": null
-              }
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "code_text",
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [
-              {
-                "name": "distinct_on",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "ENUM",
-                      "name": "oracle_scripts_select_column",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "distinct select on columns"
-              },
-              {
-                "name": "limit",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "limit the number of rows returned"
-              },
-              {
-                "name": "offset",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "skip the first n rows. Use only with order_by"
-              },
-              {
-                "name": "order_by",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "INPUT_OBJECT",
-                      "name": "oracle_scripts_order_by",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "sort the rows by one or more columns"
-              },
-              {
-                "name": "where",
-                "defaultValue": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "oracle_scripts_bool_exp",
-                  "ofType": null
-                },
-                "description": "filter the rows returned"
-              }
-            ],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "oracle_scripts",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "oracle_scripts",
-                    "ofType": null
-                  }
-                }
-              }
-            },
-            "description": "An array relationship"
-          },
-          {
-            "args": [
-              {
-                "name": "distinct_on",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "ENUM",
-                      "name": "oracle_scripts_select_column",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "distinct select on columns"
-              },
-              {
-                "name": "limit",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "limit the number of rows returned"
-              },
-              {
-                "name": "offset",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "skip the first n rows. Use only with order_by"
-              },
-              {
-                "name": "order_by",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "INPUT_OBJECT",
-                      "name": "oracle_scripts_order_by",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "sort the rows by one or more columns"
-              },
-              {
-                "name": "where",
-                "defaultValue": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "oracle_scripts_bool_exp",
-                  "ofType": null
-                },
-                "description": "filter the rows returned"
-              }
-            ],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "oracle_scripts_aggregate",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "oracle_scripts_aggregate",
-                "ofType": null
-              }
-            },
-            "description": "An aggregated array relationship"
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "schema",
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "description": null
-          }
-        ]
-      },
-      {
-        "inputFields": null,
-        "kind": "OBJECT",
-        "possibleTypes": null,
-        "interfaces": [],
-        "name": "oracle_script_codes_aggregate",
-        "enumValues": null,
-        "description": "aggregated selection of \"oracle_script_codes\"",
-        "fields": [
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "aggregate",
-            "type": {
-              "kind": "OBJECT",
-              "name": "oracle_script_codes_aggregate_fields",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "nodes",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "oracle_script_codes",
-                    "ofType": null
-                  }
-                }
-              }
-            },
-            "description": null
-          }
-        ]
-      },
-      {
-        "inputFields": null,
-        "kind": "OBJECT",
-        "possibleTypes": null,
-        "interfaces": [],
-        "name": "oracle_script_codes_aggregate_fields",
-        "enumValues": null,
-        "description": "aggregate fields of \"oracle_script_codes\"",
-        "fields": [
-          {
-            "args": [
-              {
-                "name": "columns",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "ENUM",
-                      "name": "oracle_script_codes_select_column",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": null
-              },
-              {
-                "name": "distinct",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Boolean",
-                  "ofType": null
-                },
-                "description": null
-              }
-            ],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "count",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "max",
-            "type": {
-              "kind": "OBJECT",
-              "name": "oracle_script_codes_max_fields",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "min",
-            "type": {
-              "kind": "OBJECT",
-              "name": "oracle_script_codes_min_fields",
-              "ofType": null
-            },
-            "description": null
-          }
-        ]
-      },
-      {
-        "inputFields": [
-          {
-            "name": "count",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "max",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "oracle_script_codes_max_order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "min",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "oracle_script_codes_min_order_by",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "oracle_script_codes_aggregate_order_by",
-        "enumValues": null,
-        "description": "order by aggregate values of table \"oracle_script_codes\"",
-        "fields": null
-      },
-      {
-        "inputFields": [
-          {
-            "name": "data",
-            "defaultValue": null,
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "INPUT_OBJECT",
-                    "name": "oracle_script_codes_insert_input",
-                    "ofType": null
-                  }
-                }
-              }
-            },
-            "description": null
-          },
-          {
-            "name": "on_conflict",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "oracle_script_codes_on_conflict",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "oracle_script_codes_arr_rel_insert_input",
-        "enumValues": null,
-        "description": "input type for inserting array relation for remote table \"oracle_script_codes\"",
-        "fields": null
-      },
-      {
-        "inputFields": [
-          {
-            "name": "_and",
-            "defaultValue": null,
-            "type": {
-              "kind": "LIST",
-              "name": null,
-              "ofType": {
-                "kind": "INPUT_OBJECT",
-                "name": "oracle_script_codes_bool_exp",
-                "ofType": null
-              }
-            },
-            "description": null
-          },
-          {
-            "name": "_not",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "oracle_script_codes_bool_exp",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "_or",
-            "defaultValue": null,
-            "type": {
-              "kind": "LIST",
-              "name": null,
-              "ofType": {
-                "kind": "INPUT_OBJECT",
-                "name": "oracle_script_codes_bool_exp",
-                "ofType": null
-              }
-            },
-            "description": null
-          },
-          {
-            "name": "code_hash",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "bytea_comparison_exp",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "code_text",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "String_comparison_exp",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "oracle_scripts",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "oracle_scripts_bool_exp",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "schema",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "String_comparison_exp",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "oracle_script_codes_bool_exp",
-        "enumValues": null,
-        "description": "Boolean expression to filter rows from the table \"oracle_script_codes\". All fields are combined with a logical 'AND'.",
-        "fields": null
-      },
-      {
-        "inputFields": null,
-        "kind": "ENUM",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "oracle_script_codes_constraint",
-        "enumValues": [
-          {
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "oracle_script_codes_pkey",
-            "description": "unique or primary key constraint"
-          }
-        ],
-        "description": "unique or primary key constraints on table \"oracle_script_codes\"",
-        "fields": null
-      },
-      {
-        "inputFields": [
-          {
-            "name": "code_hash",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "bytea",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "code_text",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "oracle_scripts",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "oracle_scripts_arr_rel_insert_input",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "schema",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "oracle_script_codes_insert_input",
-        "enumValues": null,
-        "description": "input type for inserting data into table \"oracle_script_codes\"",
-        "fields": null
-      },
-      {
-        "inputFields": null,
-        "kind": "OBJECT",
-        "possibleTypes": null,
-        "interfaces": [],
-        "name": "oracle_script_codes_max_fields",
-        "enumValues": null,
-        "description": "aggregate max on columns",
-        "fields": [
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "code_text",
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "schema",
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "description": null
-          }
-        ]
-      },
-      {
-        "inputFields": [
-          {
-            "name": "code_text",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "schema",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "oracle_script_codes_max_order_by",
-        "enumValues": null,
-        "description": "order by max() on columns of table \"oracle_script_codes\"",
-        "fields": null
-      },
-      {
-        "inputFields": null,
-        "kind": "OBJECT",
-        "possibleTypes": null,
-        "interfaces": [],
-        "name": "oracle_script_codes_min_fields",
-        "enumValues": null,
-        "description": "aggregate min on columns",
-        "fields": [
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "code_text",
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "schema",
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "description": null
-          }
-        ]
-      },
-      {
-        "inputFields": [
-          {
-            "name": "code_text",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "schema",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "oracle_script_codes_min_order_by",
-        "enumValues": null,
-        "description": "order by min() on columns of table \"oracle_script_codes\"",
-        "fields": null
-      },
-      {
-        "inputFields": null,
-        "kind": "OBJECT",
-        "possibleTypes": null,
-        "interfaces": [],
-        "name": "oracle_script_codes_mutation_response",
-        "enumValues": null,
-        "description": "response of any mutation on the table \"oracle_script_codes\"",
-        "fields": [
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "affected_rows",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Int",
-                "ofType": null
-              }
-            },
-            "description": "number of affected rows by the mutation"
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "returning",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "oracle_script_codes",
-                    "ofType": null
-                  }
-                }
-              }
-            },
-            "description": "data of the affected rows by the mutation"
-          }
-        ]
-      },
-      {
-        "inputFields": [
-          {
-            "name": "data",
-            "defaultValue": null,
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "INPUT_OBJECT",
-                "name": "oracle_script_codes_insert_input",
-                "ofType": null
-              }
-            },
-            "description": null
-          },
-          {
-            "name": "on_conflict",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "oracle_script_codes_on_conflict",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "oracle_script_codes_obj_rel_insert_input",
-        "enumValues": null,
-        "description": "input type for inserting object relation for remote table \"oracle_script_codes\"",
-        "fields": null
-      },
-      {
-        "inputFields": [
-          {
-            "name": "constraint",
-            "defaultValue": null,
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "ENUM",
-                "name": "oracle_script_codes_constraint",
-                "ofType": null
-              }
-            },
-            "description": null
-          },
-          {
-            "name": "update_columns",
-            "defaultValue": null,
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "ENUM",
-                    "name": "oracle_script_codes_update_column",
-                    "ofType": null
-                  }
-                }
-              }
-            },
-            "description": null
-          },
-          {
-            "name": "where",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "oracle_script_codes_bool_exp",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "oracle_script_codes_on_conflict",
-        "enumValues": null,
-        "description": "on conflict condition type for table \"oracle_script_codes\"",
-        "fields": null
-      },
-      {
-        "inputFields": [
-          {
-            "name": "code_hash",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "code_text",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "oracle_scripts_aggregate",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "oracle_scripts_aggregate_order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "schema",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "oracle_script_codes_order_by",
-        "enumValues": null,
-        "description": "ordering options when selecting data from \"oracle_script_codes\"",
-        "fields": null
-      },
-      {
-        "inputFields": null,
-        "kind": "ENUM",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "oracle_script_codes_select_column",
-        "enumValues": [
-          {
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "code_hash",
-            "description": "column name"
-          },
-          {
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "code_text",
-            "description": "column name"
-          },
-          {
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "schema",
-            "description": "column name"
-          }
-        ],
-        "description": "select columns of table \"oracle_script_codes\"",
-        "fields": null
-      },
-      {
-        "inputFields": [
-          {
-            "name": "code_hash",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "bytea",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "code_text",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "schema",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "oracle_script_codes_set_input",
-        "enumValues": null,
-        "description": "input type for updating data in table \"oracle_script_codes\"",
-        "fields": null
-      },
-      {
-        "inputFields": null,
-        "kind": "ENUM",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "oracle_script_codes_update_column",
-        "enumValues": [
-          {
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "code_hash",
-            "description": "column name"
-          },
-          {
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "code_text",
-            "description": "column name"
-          },
-          {
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "schema",
-            "description": "column name"
-          }
-        ],
-        "description": "update columns of table \"oracle_script_codes\"",
         "fields": null
       },
       {
@@ -19890,22 +18767,6 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "code_hash",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "bytea",
-                "ofType": null
-              }
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
             "name": "description",
             "type": {
               "kind": "NON_NULL",
@@ -19965,22 +18826,6 @@
               }
             },
             "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "oracle_script_code",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "oracle_script_codes",
-                "ofType": null
-              }
-            },
-            "description": "An object relationship"
           },
           {
             "args": [
@@ -20519,6 +19364,38 @@
               }
             },
             "description": "An aggregated array relationship"
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "schema",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "source_code_url",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "description": null
           }
         ]
       },
@@ -21012,16 +19889,6 @@
             "description": null
           },
           {
-            "name": "code_hash",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "bytea_comparison_exp",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
             "name": "description",
             "defaultValue": null,
             "type": {
@@ -21062,16 +19929,6 @@
             "description": null
           },
           {
-            "name": "oracle_script_code",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "oracle_script_codes_bool_exp",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
             "name": "oracle_script_revisions",
             "defaultValue": null,
             "type": {
@@ -21107,6 +19964,26 @@
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "requests_bool_exp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "schema",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "String_comparison_exp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "source_code_url",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "String_comparison_exp",
               "ofType": null
             },
             "description": null
@@ -21171,16 +20048,6 @@
       {
         "inputFields": [
           {
-            "name": "code_hash",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "bytea",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
             "name": "description",
             "defaultValue": null,
             "type": {
@@ -21221,16 +20088,6 @@
             "description": null
           },
           {
-            "name": "oracle_script_code",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "oracle_script_codes_obj_rel_insert_input",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
             "name": "oracle_script_revisions",
             "defaultValue": null,
             "type": {
@@ -21266,6 +20123,26 @@
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "requests_arr_rel_insert_input",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "schema",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "source_code_url",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
               "ofType": null
             },
             "description": null
@@ -21347,6 +20224,30 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "schema",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "source_code_url",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
           }
         ]
       },
@@ -21394,6 +20295,26 @@
           },
           {
             "name": "owner",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "schema",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "source_code_url",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -21479,6 +20400,30 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "schema",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "source_code_url",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
           }
         ]
       },
@@ -21526,6 +20471,26 @@
           },
           {
             "name": "owner",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "schema",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "source_code_url",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -21689,16 +20654,6 @@
       {
         "inputFields": [
           {
-            "name": "code_hash",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
             "name": "description",
             "defaultValue": null,
             "type": {
@@ -21734,16 +20689,6 @@
             "type": {
               "kind": "ENUM",
               "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "oracle_script_code",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "oracle_script_codes_order_by",
               "ofType": null
             },
             "description": null
@@ -21787,6 +20732,26 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "name": "schema",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "source_code_url",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
           }
         ],
         "kind": "INPUT_OBJECT",
@@ -21807,12 +20772,6 @@
           {
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "code_hash",
-            "description": "column name"
-          },
-          {
-            "isDeprecated": false,
-            "deprecationReason": null,
             "name": "description",
             "description": "column name"
           },
@@ -21838,6 +20797,18 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "owner",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "schema",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "source_code_url",
             "description": "column name"
           }
         ],
@@ -21847,16 +20818,6 @@
       {
         "inputFields": [
           {
-            "name": "code_hash",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "bytea",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
             "name": "description",
             "defaultValue": null,
             "type": {
@@ -21898,6 +20859,26 @@
           },
           {
             "name": "owner",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "schema",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "source_code_url",
             "defaultValue": null,
             "type": {
               "kind": "SCALAR",
@@ -22189,12 +21170,6 @@
           {
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "code_hash",
-            "description": "column name"
-          },
-          {
-            "isDeprecated": false,
-            "deprecationReason": null,
             "name": "description",
             "description": "column name"
           },
@@ -22220,6 +21195,18 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "owner",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "schema",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "source_code_url",
             "description": "column name"
           }
         ],
@@ -26346,207 +25333,6 @@
               "ofType": null
             },
             "description": "fetch data from the table: \"metadata\" using primary key columns"
-          },
-          {
-            "args": [
-              {
-                "name": "distinct_on",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "ENUM",
-                      "name": "oracle_script_codes_select_column",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "distinct select on columns"
-              },
-              {
-                "name": "limit",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "limit the number of rows returned"
-              },
-              {
-                "name": "offset",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "skip the first n rows. Use only with order_by"
-              },
-              {
-                "name": "order_by",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "INPUT_OBJECT",
-                      "name": "oracle_script_codes_order_by",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "sort the rows by one or more columns"
-              },
-              {
-                "name": "where",
-                "defaultValue": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "oracle_script_codes_bool_exp",
-                  "ofType": null
-                },
-                "description": "filter the rows returned"
-              }
-            ],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "oracle_script_codes",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "oracle_script_codes",
-                    "ofType": null
-                  }
-                }
-              }
-            },
-            "description": "fetch data from the table: \"oracle_script_codes\""
-          },
-          {
-            "args": [
-              {
-                "name": "distinct_on",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "ENUM",
-                      "name": "oracle_script_codes_select_column",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "distinct select on columns"
-              },
-              {
-                "name": "limit",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "limit the number of rows returned"
-              },
-              {
-                "name": "offset",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "skip the first n rows. Use only with order_by"
-              },
-              {
-                "name": "order_by",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "INPUT_OBJECT",
-                      "name": "oracle_script_codes_order_by",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "sort the rows by one or more columns"
-              },
-              {
-                "name": "where",
-                "defaultValue": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "oracle_script_codes_bool_exp",
-                  "ofType": null
-                },
-                "description": "filter the rows returned"
-              }
-            ],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "oracle_script_codes_aggregate",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "oracle_script_codes_aggregate",
-                "ofType": null
-              }
-            },
-            "description": "fetch aggregated fields from the table: \"oracle_script_codes\""
-          },
-          {
-            "args": [
-              {
-                "name": "code_hash",
-                "defaultValue": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "bytea",
-                    "ofType": null
-                  }
-                },
-                "description": null
-              }
-            ],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "oracle_script_codes_by_pk",
-            "type": {
-              "kind": "OBJECT",
-              "name": "oracle_script_codes",
-              "ofType": null
-            },
-            "description": "fetch data from the table: \"oracle_script_codes\" using primary key columns"
           },
           {
             "args": [
@@ -38605,6 +37391,18 @@
             "description": "An aggregated array relationship"
           },
           {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "request_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "bigint",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "args": [
               {
                 "name": "distinct_on",
@@ -38807,6 +37605,18 @@
                 "name": "String",
                 "ofType": null
               }
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "resolve_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "bigint",
+              "ofType": null
             },
             "description": null
           },
@@ -39304,6 +38114,30 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "request_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "resolve_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "sufficient_validator_count",
             "type": {
               "kind": "SCALAR",
@@ -39338,6 +38172,26 @@
           },
           {
             "name": "oracle_script_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "request_time",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "resolve_time",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -39486,6 +38340,16 @@
             "description": null
           },
           {
+            "name": "request_time",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "bigint_comparison_exp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "requested_validators",
             "defaultValue": null,
             "type": {
@@ -39511,6 +38375,16 @@
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "String_comparison_exp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "resolve_time",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "bigint_comparison_exp",
               "ofType": null
             },
             "description": null
@@ -39605,6 +38479,26 @@
           },
           {
             "name": "oracle_script_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "bigint",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "request_time",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "bigint",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "resolve_time",
             "defaultValue": null,
             "type": {
               "kind": "SCALAR",
@@ -39715,6 +38609,16 @@
             "description": null
           },
           {
+            "name": "request_time",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "bigint",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "requested_validators",
             "defaultValue": null,
             "type": {
@@ -39740,6 +38644,16 @@
             "type": {
               "kind": "SCALAR",
               "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "resolve_time",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "bigint",
               "ofType": null
             },
             "description": null
@@ -39854,6 +38768,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "request_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "bigint",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "requester",
             "type": {
               "kind": "SCALAR",
@@ -39870,6 +38796,18 @@
             "type": {
               "kind": "SCALAR",
               "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "resolve_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "bigint",
               "ofType": null
             },
             "description": null
@@ -39931,6 +38869,16 @@
             "description": null
           },
           {
+            "name": "request_time",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "requester",
             "defaultValue": null,
             "type": {
@@ -39942,6 +38890,16 @@
           },
           {
             "name": "resolve_status",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "resolve_time",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -40030,6 +38988,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "request_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "bigint",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "requester",
             "type": {
               "kind": "SCALAR",
@@ -40046,6 +39016,18 @@
             "type": {
               "kind": "SCALAR",
               "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "resolve_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "bigint",
               "ofType": null
             },
             "description": null
@@ -40107,6 +39089,16 @@
             "description": null
           },
           {
+            "name": "request_time",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "requester",
             "defaultValue": null,
             "type": {
@@ -40118,6 +39110,16 @@
           },
           {
             "name": "resolve_status",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "resolve_time",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -40371,6 +39373,16 @@
             "description": null
           },
           {
+            "name": "request_time",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "requested_validators_aggregate",
             "defaultValue": null,
             "type": {
@@ -40392,6 +39404,16 @@
           },
           {
             "name": "resolve_status",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "resolve_time",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -40489,6 +39511,12 @@
           {
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "request_time",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "requester",
             "description": "column name"
           },
@@ -40496,6 +39524,12 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "resolve_status",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "resolve_time",
             "description": "column name"
           },
           {
@@ -40573,6 +39607,16 @@
             "description": null
           },
           {
+            "name": "request_time",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "bigint",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "requester",
             "defaultValue": null,
             "type": {
@@ -40588,6 +39632,16 @@
             "type": {
               "kind": "SCALAR",
               "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "resolve_time",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "bigint",
               "ofType": null
             },
             "description": null
@@ -40680,6 +39734,30 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "request_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "resolve_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "sufficient_validator_count",
             "type": {
               "kind": "SCALAR",
@@ -40714,6 +39792,26 @@
           },
           {
             "name": "oracle_script_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "request_time",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "resolve_time",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -40790,6 +39888,30 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "request_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "resolve_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "sufficient_validator_count",
             "type": {
               "kind": "SCALAR",
@@ -40824,6 +39946,26 @@
           },
           {
             "name": "oracle_script_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "request_time",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "resolve_time",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -40900,6 +40042,30 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "request_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "resolve_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "sufficient_validator_count",
             "type": {
               "kind": "SCALAR",
@@ -40934,6 +40100,26 @@
           },
           {
             "name": "oracle_script_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "request_time",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "resolve_time",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -41010,6 +40196,30 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "request_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "bigint",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "resolve_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "bigint",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "sufficient_validator_count",
             "type": {
               "kind": "SCALAR",
@@ -41044,6 +40254,26 @@
           },
           {
             "name": "oracle_script_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "request_time",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "resolve_time",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -41111,6 +40341,12 @@
           {
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "request_time",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "requester",
             "description": "column name"
           },
@@ -41118,6 +40354,12 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "resolve_status",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "resolve_time",
             "description": "column name"
           },
           {
@@ -41191,6 +40433,30 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "request_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "resolve_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "sufficient_validator_count",
             "type": {
               "kind": "SCALAR",
@@ -41225,6 +40491,26 @@
           },
           {
             "name": "oracle_script_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "request_time",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "resolve_time",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -41301,6 +40587,30 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "request_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "resolve_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "sufficient_validator_count",
             "type": {
               "kind": "SCALAR",
@@ -41335,6 +40645,26 @@
           },
           {
             "name": "oracle_script_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "request_time",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "resolve_time",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -41411,6 +40741,30 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "request_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "resolve_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "sufficient_validator_count",
             "type": {
               "kind": "SCALAR",
@@ -41445,6 +40799,26 @@
           },
           {
             "name": "oracle_script_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "request_time",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "resolve_time",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -42888,207 +42262,6 @@
               "ofType": null
             },
             "description": "fetch data from the table: \"metadata\" using primary key columns"
-          },
-          {
-            "args": [
-              {
-                "name": "distinct_on",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "ENUM",
-                      "name": "oracle_script_codes_select_column",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "distinct select on columns"
-              },
-              {
-                "name": "limit",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "limit the number of rows returned"
-              },
-              {
-                "name": "offset",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "skip the first n rows. Use only with order_by"
-              },
-              {
-                "name": "order_by",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "INPUT_OBJECT",
-                      "name": "oracle_script_codes_order_by",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "sort the rows by one or more columns"
-              },
-              {
-                "name": "where",
-                "defaultValue": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "oracle_script_codes_bool_exp",
-                  "ofType": null
-                },
-                "description": "filter the rows returned"
-              }
-            ],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "oracle_script_codes",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "oracle_script_codes",
-                    "ofType": null
-                  }
-                }
-              }
-            },
-            "description": "fetch data from the table: \"oracle_script_codes\""
-          },
-          {
-            "args": [
-              {
-                "name": "distinct_on",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "ENUM",
-                      "name": "oracle_script_codes_select_column",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "distinct select on columns"
-              },
-              {
-                "name": "limit",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "limit the number of rows returned"
-              },
-              {
-                "name": "offset",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "skip the first n rows. Use only with order_by"
-              },
-              {
-                "name": "order_by",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "INPUT_OBJECT",
-                      "name": "oracle_script_codes_order_by",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "sort the rows by one or more columns"
-              },
-              {
-                "name": "where",
-                "defaultValue": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "oracle_script_codes_bool_exp",
-                  "ofType": null
-                },
-                "description": "filter the rows returned"
-              }
-            ],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "oracle_script_codes_aggregate",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "oracle_script_codes_aggregate",
-                "ofType": null
-              }
-            },
-            "description": "fetch aggregated fields from the table: \"oracle_script_codes\""
-          },
-          {
-            "args": [
-              {
-                "name": "code_hash",
-                "defaultValue": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "bytea",
-                    "ofType": null
-                  }
-                },
-                "description": null
-              }
-            ],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "oracle_script_codes_by_pk",
-            "type": {
-              "kind": "OBJECT",
-              "name": "oracle_script_codes",
-              "ofType": null
-            },
-            "description": "fetch data from the table: \"oracle_script_codes\" using primary key columns"
           },
           {
             "args": [

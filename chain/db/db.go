@@ -55,7 +55,6 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 		&DataSource{},
 		&DataSourceRevision{},
 		&OracleScript{},
-		&OracleScriptCode{},
 		&OracleScriptRevision{},
 		&RelatedDataSources{},
 		&Request{},
@@ -127,13 +126,6 @@ func NewDB(dialect, path string, metadata map[string]string) (*BandDB, error) {
 	db.Model(&DataSourceRevision{}).AddForeignKey(
 		"tx_hash",
 		"transactions(tx_hash)",
-		"RESTRICT",
-		"RESTRICT",
-	)
-
-	db.Model(&OracleScript{}).AddForeignKey(
-		"code_hash",
-		"oracle_script_codes(code_hash)",
 		"RESTRICT",
 		"RESTRICT",
 	)
@@ -300,7 +292,6 @@ func (b *BandDB) HandleTransaction(tx auth.StdTx, txHash []byte, logs sdk.ABCIMe
 	}
 
 	messages := make([]map[string]interface{}, 0)
-
 	for idx, msg := range msgs {
 		events := logs[idx].Events
 		kvMap := make(map[string]string)
@@ -398,6 +389,7 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		}
 
 		jsonMap["oracle_script_name"] = oracleScript.Name
+		jsonMap["schema"] = oracleScript.Schema
 		jsonMap["request_id"] = requestID
 	case oracle.MsgReportData:
 		err = b.handleMsgReportData(txHash, msg, events)
@@ -443,9 +435,13 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		if err != nil {
 			return nil, err
 		}
+		jsonMap["reward_amount"] = events[dist.EventTypeWithdrawRewards+"."+sdk.AttributeKeyAmount]
 	case dist.MsgWithdrawValidatorCommission:
 	case gov.MsgDeposit:
-	case gov.MsgSubmitProposal:
+	// TODO: MsgSubmitProposal has been changed in new version of cosmos-sdk
+	// case gov.MsgSubmitProposal:
+	// case gov.MsgSubmitProposalBase:
+	case gov.MsgSubmitProposalI:
 	case gov.MsgVote:
 	case evidence.MsgSubmitEvidenceBase:
 	case crisis.MsgVerifyInvariant:
@@ -521,8 +517,11 @@ func (b *BandDB) GetInvolvedAccountsFromTx(tx auth.StdTx) []sdk.AccAddress {
 			involvedAccounts = append(involvedAccounts, sdk.AccAddress(msg.ValidatorAddress))
 		case gov.MsgDeposit:
 			involvedAccounts = append(involvedAccounts, msg.Depositor)
-		case gov.MsgSubmitProposal:
-			involvedAccounts = append(involvedAccounts, msg.Proposer)
+		// TODO: MsgSubmitProposal has been changed in new version of cosmos-sdk
+		// case gov.MsgSubmitProposal:
+		// case gov.MsgSubmitProposalBase:
+		case gov.MsgSubmitProposalI:
+			involvedAccounts = append(involvedAccounts, msg.GetProposer())
 		case gov.MsgVote:
 		case evidence.MsgSubmitEvidenceBase:
 		case crisis.MsgVerifyInvariant:
@@ -568,13 +567,4 @@ func (b *BandDB) GetInvolvedAccountsFromTransferEvents(logs sdk.ABCIMessageLogs)
 		}
 	}
 	return involvedAccounts
-}
-
-func (b *BandDB) ResolveRequest(id int64, resolveStatus oracle.ResolveStatus, result []byte) error {
-	if resolveStatus == 1 {
-		return b.tx.Model(&Request{}).Where(Request{ID: id}).
-			Update(Request{ResolveStatus: parseResolveStatus(resolveStatus), Result: result}).Error
-	}
-	return b.tx.Model(&Request{}).Where(Request{ID: id}).
-		Update(Request{ResolveStatus: parseResolveStatus(resolveStatus)}).Error
 }

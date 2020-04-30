@@ -67,7 +67,7 @@ func (b *BandDB) handleMsgPacket(
 			int64(requestPacket.OracleScriptID),
 			calldata,
 			requestPacket.MinCount,
-			request.ExpirationHeight,
+			request.RequestHeight+20, // TODO: REMOVE THIS. HACK!!!!
 			"Pending",
 			msg.Signer.String(),
 			requestPacket.ClientID,
@@ -86,6 +86,7 @@ func (b *BandDB) handleMsgPacket(
 		jsonMap["type"] = "oracle/OracleRequestPacketData"
 		jsonMap["request_id"] = id
 		jsonMap["oracle_script_name"] = oracleScript.Name
+		jsonMap["schema"] = oracleScript.Schema
 	}
 	if packetType == "" {
 		return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized oracle package type: %T", msg.Packet)
