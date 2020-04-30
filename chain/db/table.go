@@ -24,6 +24,7 @@ type Transaction struct {
 	GasUsed     int64           `gorm:"not null"`
 	GasLimit    uint64          `gorm:"not null"`
 	GasFee      string          `gorm:"not null"`
+	RawLog      string          `gorm:"not null"`
 	Sender      string          `gorm:"not null"`
 	Success     bool            `gorm:"not null"`
 	BlockHeight int64           `gorm:"not null"`
