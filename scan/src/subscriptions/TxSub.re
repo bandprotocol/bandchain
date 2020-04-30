@@ -625,16 +625,16 @@ module Msg = {
   };
   module SubmitProposal = {
     type t = {
+      proposer: Address.t,
       title: string,
       description: string,
-      proposer: Address.t,
       initialDeposit: list(Coin.t),
     };
     let decode = json => {
       JsonUtils.Decode.{
+        proposer: json |> field("proposer", string) |> Address.fromBech32,
         title: json |> at(["content", "title"], string),
         description: json |> at(["content", "description"], string),
-        proposer: json |> field("proposer", string) |> Address.fromBech32,
         initialDeposit: json |> field("initial_deposit", list(Coin.decodeCoin)),
       };
     };
