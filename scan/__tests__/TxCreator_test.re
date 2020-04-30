@@ -20,7 +20,7 @@ describe("expect TxCreator to give the correct message", () => {
             type_: "cosmos-sdk/MsgSend",
             value:
               Js.Json.stringifyAny({
-                amount: [|{amount: 100., denom: "uband"}|],
+                amount: [|{amount: "100.", denom: "uband"}|],
                 from_address: "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs",
                 to_address: "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs",
               })

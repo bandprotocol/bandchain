@@ -11,7 +11,7 @@ type fee_t = {
 type msg_send_t = {
   to_address: string,
   from_address: string,
-  amount: array(Coin.t),
+  amount: array(amount_t),
 };
 
 type msg_delegate_t = {
@@ -30,8 +30,9 @@ type msg_request_t = {
 };
 
 type msg_input_t =
-  | Send(Address.t, Address.t, Coin.t)
+  | Send(Address.t, amount_t)
   | Delegate(Address.t, amount_t)
+  | Undelegate(Address.t, amount_t)
   | Request(ID.OracleScript.t, JsBuffer.t, string, string, Address.t, string);
 
 type msg_payload_t = {
@@ -52,7 +53,7 @@ type pub_key_t = {
 };
 
 type signature_t = {
-  pub_key: pub_key_t,
+  pub_key: Js.Json.t,
   public_key: string,
   signature: string,
 };
@@ -94,8 +95,11 @@ let getAccountInfo = address => {
   let data = info##data;
   Promise.ret(
     JsonUtils.Decode.{
-      accountNumber: data |> at(["result", "value", "account_number"], int),
-      sequence: data |> at(["result", "value", "sequence"], int),
+      accountNumber: data |> at(["result", "value", "account_number"], intstr),
+      sequence:
+        data
+        |> optional(at(["result", "value", "sequence"], intstr))
+        |> Belt_Option.getWithDefault(_, 0),
     },
   );
 };
@@ -133,25 +137,38 @@ let createMsg = (sender, msg: msg_input_t): msg_payload_t => {
     switch (msg) {
     | Send(_) => "cosmos-sdk/MsgSend"
     | Delegate(_) => "cosmos-sdk/MsgDelegate"
+    | Undelegate(_) => "cosmos-sdk/MsgUndelegate"
     | Request(_) => "oracle/Request"
     };
 
   let msgValue =
     switch (msg) {
-    | Send(fromAddress, toAddress, coins) =>
+    | Send(toAddress, coins) =>
       Js.Json.stringifyAny({
+        from_address: sender |> Address.toBech32,
         to_address: toAddress |> Address.toBech32,
-        from_address: fromAddress |> Address.toBech32,
         amount: [|coins|],
       })
       |> Belt_Option.getExn
       |> Js.Json.parseExn
     | Delegate(validator, amount) =>
-      Js.Json.stringifyAny({
-        delegator_address: sender |> Address.toBech32,
-        validator_address: validator |> Address.toOperatorBech32,
-        amount,
-      })
+      {
+        Js.Json.stringifyAny({
+          delegator_address: sender |> Address.toBech32,
+          validator_address: validator |> Address.toOperatorBech32,
+          amount,
+        });
+      }
+      |> Belt_Option.getExn
+      |> Js.Json.parseExn
+    | Undelegate(validator, amount) =>
+      {
+        Js.Json.stringifyAny({
+          delegator_address: sender |> Address.toBech32,
+          validator_address: validator |> Address.toOperatorBech32,
+          amount,
+        });
+      }
       |> Belt_Option.getExn
       |> Js.Json.parseExn
     | Request(
@@ -192,13 +209,26 @@ let createRawTx = (~address, ~msgs, ~feeAmount, ~gas, ~memo, ()) => {
 };
 
 let createSignedTx = (~signature, ~pubKey, ~tx: raw_tx_t, ~mode, ()) => {
-  let oldPubKey = {type_: "tendermint/PubKeySecp256k1", value: pubKey |> PubKey.toBase64};
   let newPubKey = "eb5ae98721" ++ (pubKey |> PubKey.toHex) |> JsBuffer.hexToBase64;
   let signedTx = {
     fee: tx.fee,
     memo: tx.memo,
     msg: tx.msgs,
-    signatures: [|{pub_key: oldPubKey, public_key: newPubKey, signature}|],
+    signatures: [|
+      {
+        pub_key:
+          Env.network == "guanyu"
+            ? Js.Json.string(newPubKey)
+            : Js.Json.object_(
+                Js.Dict.fromList([
+                  ("type", Js.Json.string("tendermint/PubKeySecp256k1")),
+                  ("value", Js.Json.string(pubKey |> PubKey.toBase64)),
+                ]),
+              ),
+        public_key: newPubKey,
+        signature,
+      },
+    |],
   };
   {mode, tx: signedTx};
 };

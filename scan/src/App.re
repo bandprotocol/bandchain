@@ -48,6 +48,11 @@ module Styles = {
 module TopBar = {
   [@react.component]
   let make = () => {
+    exception WrongNetwork(string);
+    if (String.compare(Env.network, "guanyu") != 0
+        && String.compare(Env.network, "wenchang") != 0) {
+      raise(WrongNetwork("wrong or incorrect NETWORK environment variable"));
+    };
     <div className=Styles.topBarContainer>
       <div className={Css.merge([Styles.topBarInner, Styles.pageWidth])}>
         <div className=Styles.logoContainer onClick={_ => Route.redirect(Route.HomePage)}>
