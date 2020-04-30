@@ -35,10 +35,13 @@ describe("expect TxCreator to give the correct message", () => {
         memo: "",
         signatures: [|
           {
-            pub_key: {
-              type_: "tendermint/PubKeySecp256k1",
-              value: pubKey |> PubKey.toBase64,
-            },
+            pub_key:
+              Js.Json.object_(
+                Js.Dict.fromList([
+                  ("type", Js.Json.string("tendermint/PubKeySecp256k1")),
+                  ("value", Js.Json.string(pubKey |> PubKey.toBase64)),
+                ]),
+              ),
             public_key: "eb5ae98721" ++ (pubKey |> PubKey.toHex) |> JsBuffer.hexToBase64,
             signature,
           },
@@ -64,7 +67,7 @@ describe("expect TxCreator to give the correct message", () => {
                  type_: "cosmos-sdk/MsgSend",
                  value:
                    Js.Json.stringifyAny({
-                     amount: [|{amount: 100., denom: "uband"}|],
+                     amount: [|{amount: "100.", denom: "uband"}|],
                      from_address: "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs",
                      to_address: "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs",
                    })
@@ -104,10 +107,13 @@ describe("expect TxCreator to give the correct message", () => {
         memo: "",
         signatures: [|
           {
-            pub_key: {
-              type_: "tendermint/PubKeySecp256k1",
-              value: pubKey |> PubKey.toBase64,
-            },
+            pub_key:
+              Js.Json.object_(
+                Js.Dict.fromList([
+                  ("type", Js.Json.string("tendermint/PubKeySecp256k1")),
+                  ("value", Js.Json.string(pubKey |> PubKey.toBase64)),
+                ]),
+              ),
             public_key: "eb5ae98721" ++ (pubKey |> PubKey.toHex) |> JsBuffer.hexToBase64,
             signature,
           },
