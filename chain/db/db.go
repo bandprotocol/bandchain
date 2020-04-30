@@ -438,7 +438,10 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		jsonMap["reward_amount"] = events[dist.EventTypeWithdrawRewards+"."+sdk.AttributeKeyAmount]
 	case dist.MsgWithdrawValidatorCommission:
 	case gov.MsgDeposit:
-	case gov.MsgSubmitProposal:
+	// TODO: MsgSubmitProposal has been changed in new version of cosmos-sdk
+	// case gov.MsgSubmitProposal:
+	// case gov.MsgSubmitProposalBase:
+	case gov.MsgSubmitProposalI:
 	case gov.MsgVote:
 	case evidence.MsgSubmitEvidenceBase:
 	case crisis.MsgVerifyInvariant:
@@ -514,8 +517,11 @@ func (b *BandDB) GetInvolvedAccountsFromTx(tx auth.StdTx) []sdk.AccAddress {
 			involvedAccounts = append(involvedAccounts, sdk.AccAddress(msg.ValidatorAddress))
 		case gov.MsgDeposit:
 			involvedAccounts = append(involvedAccounts, msg.Depositor)
-		case gov.MsgSubmitProposal:
-			involvedAccounts = append(involvedAccounts, msg.Proposer)
+		// TODO: MsgSubmitProposal has been changed in new version of cosmos-sdk
+		// case gov.MsgSubmitProposal:
+		// case gov.MsgSubmitProposalBase:
+		case gov.MsgSubmitProposalI:
+			involvedAccounts = append(involvedAccounts, msg.GetProposer())
 		case gov.MsgVote:
 		case evidence.MsgSubmitEvidenceBase:
 		case crisis.MsgVerifyInvariant:
