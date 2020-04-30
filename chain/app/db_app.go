@@ -171,6 +171,7 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 			res.GasUsed,
 			stdTx.Fee.Gas,
 			stdTx.Fee.Amount,
+			res.Log,
 			stdTx.GetSigners()[0],
 			res.IsOK(),
 			app.DeliverContext.BlockHeight(),
