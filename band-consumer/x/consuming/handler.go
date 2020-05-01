@@ -49,7 +49,7 @@ func NewHandler(keeper Keeper) sdk.Handler {
 			}
 			err := keeper.ChannelKeeper.SendPacket(ctx, chanCap, channel.NewPacket(packet.GetBytes(),
 				sequence, "consuming", msg.SourceChannel, destinationPort, destinationChannel,
-				10000000, 1746114147, // Arbitrarily high timeout and timeout stamp for now
+				10000000, 1746114147000000, // Arbitrarily high timeout and timeout stamp for now
 			))
 			if err != nil {
 				return nil, err
