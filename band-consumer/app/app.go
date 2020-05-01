@@ -249,9 +249,10 @@ func NewBandConsumerApp(
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := port.NewRouter()
 	ibcRouter.AddRoute(transfer.ModuleName, transferModule)
+	scopedConsumingKeeper := app.capabilityKeeper.ScopeToModule(consuming.ModuleName)
 
 	app.consumingKeeper = consuming.NewKeeper(
-		appCodec, keys[consuming.StoreKey], app.ibcKeeper.ChannelKeeper, scopedIBCKeeper,
+		appCodec, keys[consuming.StoreKey], app.ibcKeeper.ChannelKeeper, scopedIBCKeeper, scopedConsumingKeeper, &app.ibcKeeper.PortKeeper,
 	)
 
 	consumingModule := consuming.NewAppModule(app.consumingKeeper)
