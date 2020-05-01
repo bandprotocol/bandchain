@@ -171,6 +171,7 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 			res.GasUsed,
 			stdTx.Fee.Gas,
 			stdTx.Fee.Amount,
+			res.Log,
 			stdTx.GetSigners()[0],
 			res.IsOK(),
 			app.DeliverContext.BlockHeight(),
@@ -271,7 +272,7 @@ func (app *dbBandApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBl
 		panic(err)
 	}
 
-	totalSupply := app.BandApp.SupplyKeeper.GetSupply(app.DeliverContext).GetTotal()
+	totalSupply := app.BandApp.BankKeeper.GetSupply(app.DeliverContext).GetTotal()
 	err = app.dbBand.SetTotalSupply(totalSupply)
 	if err != nil {
 		panic(err)

@@ -18,7 +18,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 	"github.com/tendermint/tendermint/libs/log"
-	rpcclient "github.com/tendermint/tendermint/rpc/client"
+	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
 )
 
 var (
@@ -31,7 +31,7 @@ type ValidatorWithPower struct {
 }
 
 func getValidators(nodeURI string) []ValidatorWithPower {
-	node, err := rpcclient.NewHTTP(nodeURI, "/websocket")
+	node, err := rpchttp.New(nodeURI, "/websocket")
 	if err != nil {
 		panic(err)
 	}

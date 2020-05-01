@@ -9,6 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/cosmos/cosmos-sdk/x/capability"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/evidence"
@@ -19,7 +20,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-	"github.com/cosmos/cosmos-sdk/x/supply"
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
@@ -52,21 +52,21 @@ func NewDefaultGenesisState() GenesisState {
 	slashingGenesis.Params.SlashFractionDowntime = sdk.NewDecWithPrec(1, 4)   // 0.01%
 
 	return GenesisState{
-		genutil.ModuleName:  genutil.AppModuleBasic{}.DefaultGenesis(cdc),
-		auth.ModuleName:     auth.AppModuleBasic{}.DefaultGenesis(cdc),
-		bank.ModuleName:     bank.AppModuleBasic{}.DefaultGenesis(cdc),
-		staking.ModuleName:  cdc.MustMarshalJSON(stakingGenesis),
-		mint.ModuleName:     cdc.MustMarshalJSON(mintGenesis),
-		distr.ModuleName:    distr.AppModuleBasic{}.DefaultGenesis(cdc),
-		gov.ModuleName:      cdc.MustMarshalJSON(govGenesis),
-		crisis.ModuleName:   cdc.MustMarshalJSON(crisisGenesis),
-		slashing.ModuleName: cdc.MustMarshalJSON(slashingGenesis),
-		supply.ModuleName:   supply.AppModuleBasic{}.DefaultGenesis(cdc),
-		ibc.ModuleName:      ibc.AppModuleBasic{}.DefaultGenesis(cdc),
-		upgrade.ModuleName:  upgrade.AppModuleBasic{}.DefaultGenesis(cdc),
-		evidence.ModuleName: evidence.AppModuleBasic{}.DefaultGenesis(cdc),
-		transfer.ModuleName: transfer.AppModuleBasic{}.DefaultGenesis(cdc),
-		oracle.ModuleName:   oracle.AppModuleBasic{}.DefaultGenesis(cdc),
+		genutil.ModuleName:    genutil.AppModuleBasic{}.DefaultGenesis(cdc),
+		auth.ModuleName:       auth.AppModuleBasic{}.DefaultGenesis(cdc),
+		bank.ModuleName:       bank.AppModuleBasic{}.DefaultGenesis(cdc),
+		staking.ModuleName:    cdc.MustMarshalJSON(stakingGenesis),
+		mint.ModuleName:       cdc.MustMarshalJSON(mintGenesis),
+		distr.ModuleName:      distr.AppModuleBasic{}.DefaultGenesis(cdc),
+		gov.ModuleName:        cdc.MustMarshalJSON(govGenesis),
+		crisis.ModuleName:     cdc.MustMarshalJSON(crisisGenesis),
+		slashing.ModuleName:   cdc.MustMarshalJSON(slashingGenesis),
+		ibc.ModuleName:        ibc.AppModuleBasic{}.DefaultGenesis(cdc),
+		capability.ModuleName: capability.AppModuleBasic{}.DefaultGenesis(cdc),
+		upgrade.ModuleName:    upgrade.AppModuleBasic{}.DefaultGenesis(cdc),
+		evidence.ModuleName:   evidence.AppModuleBasic{}.DefaultGenesis(cdc),
+		transfer.ModuleName:   transfer.AppModuleBasic{}.DefaultGenesis(cdc),
+		oracle.ModuleName:     oracle.AppModuleBasic{}.DefaultGenesis(cdc),
 	}
 }
 

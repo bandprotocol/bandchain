@@ -774,6 +774,102 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         ellipsis=true
       />
     </div>
+  | Delegate({amount, delegatorAddress}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=delegatorAddress /> </div>
+      <div className={Styles.withBg(Colors.purple1, 60)}>
+        <Text
+          value="DELEGATE"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.purple6
+        />
+      </div>
+      <div className={Styles.rowWithWidth(200)}>
+        <Text
+          value={amount.amount |> Format.fPretty}
+          weight=Text.Semibold
+          code=true
+          nowrap=true
+          block=true
+        />
+        <HSpacing size=Spacing.sm />
+        <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
+      </div>
+    </div>
+  | Undelegate({amount, delegatorAddress}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=delegatorAddress /> </div>
+      <div className={Styles.withBg(Colors.purple1, 73)}>
+        <Text
+          value="UNDELEGATE"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.purple6
+        />
+      </div>
+      <div className={Styles.rowWithWidth(200)}>
+        <Text
+          value={amount.amount |> Format.fPretty}
+          weight=Text.Semibold
+          code=true
+          nowrap=true
+          block=true
+        />
+        <HSpacing size=Spacing.sm />
+        <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
+      </div>
+    </div>
+  | Redelegate({amount, delegatorAddress}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=delegatorAddress /> </div>
+      <div className={Styles.withBg(Colors.purple1, 73)}>
+        <Text
+          value="REDELEGATE"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.purple6
+        />
+      </div>
+      <div className={Styles.rowWithWidth(200)}>
+        <Text
+          value={amount.amount |> Format.fPretty}
+          weight=Text.Semibold
+          code=true
+          nowrap=true
+          block=true
+        />
+        <HSpacing size=Spacing.sm />
+        <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
+      </div>
+    </div>
+  | WithdrawReward({delegatorAddress, amount}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=delegatorAddress /> </div>
+      <div className={Styles.withBg(Colors.purple1, 100)}>
+        <Text
+          value="WITHDRAW REWARD"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.purple6
+        />
+      </div>
+      <div className={Styles.rowWithWidth(200)}>
+        <Text
+          value={amount |> Coin.getBandAmountFromCoins |> Js.Float.toString}
+          weight=Text.Semibold
+          code=true
+          nowrap=true
+          block=true
+        />
+        <HSpacing size=Spacing.sm />
+        <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
+      </div>
+    </div>
   | FailMessage({sender, message}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
@@ -815,6 +911,11 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
          makeBadge("CHANNEL CLOSE CONFIRM", 100, Colors.blue1, Colors.blue7)
        | "ics04/opaque" => makeBadge("PACKET", 50, Colors.blue1, Colors.blue7)
        | "ics04/timeout" => makeBadge("TIMEOUT", 50, Colors.blue1, Colors.blue7)
+       | "delegate" => makeBadge("DELEGATE", 60, Colors.purple1, Colors.purple6)
+       | "begin_unbonding" => makeBadge("UNDELEGATE", 73, Colors.purple1, Colors.purple6)
+       | "begin_redelegate" => makeBadge("REDELEGATE", 73, Colors.purple1, Colors.purple6)
+       | "withdraw_delegator_reward" =>
+         makeBadge("WITHDRAW REWARD", 100, Colors.purple1, Colors.purple6)
        | _ => makeBadge("UNKNOWN", 70, Colors.gray1, Colors.gray6)
        }}
     </div>
