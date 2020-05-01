@@ -255,7 +255,7 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			"Oracle script for getting stock price from Yahoo",
 			"./owasm/res/yahoo_price.wasm",
 			`{"Input":"{ \"kind\": \"struct\", \"fields\": [ [\"symbol\", \"string\"], [\"multiplier\", \"u64\"] ] }","Output":"{ \"kind\": \"struct\", \"fields\": [ [\"px\", \"u64\"] ] }"}`,
-			`https://ipfs.io/ipfs/`,
+			`https://ipfs.io/ipfs/QmbgUQq82ra3bnxu8Jg89uonKQFpuiXx1xecXUBun2AcjF`,
 		},
 	}
 	state.OracleScripts = make([]oracle.OracleScript, len(oracleScripts))
