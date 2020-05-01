@@ -12,8 +12,6 @@ import (
 	channel "github.com/cosmos/cosmos-sdk/x/ibc/04-channel"
 	channelexported "github.com/cosmos/cosmos-sdk/x/ibc/04-channel/exported"
 	channeltypes "github.com/cosmos/cosmos-sdk/x/ibc/04-channel/types"
-	porttypes "github.com/cosmos/cosmos-sdk/x/ibc/05-port/types"
-	"github.com/cosmos/cosmos-sdk/x/ibc/20-transfer/types"
 	ibctypes "github.com/cosmos/cosmos-sdk/x/ibc/types"
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
@@ -126,11 +124,11 @@ func (am AppModule) OnChanOpenInit(
 	counterparty channeltypes.Counterparty,
 	version string,
 ) error {
-	// TODO: Enforce ordering, currently relayers use ORDERED channels
+	// // TODO: Enforce ordering, currently relayers use ORDERED channels
 
-	if version != types.Version {
-		return sdkerrors.Wrapf(porttypes.ErrInvalidPort, "invalid version: %s, expected %s", version, "ics20-1")
-	}
+	// if version != types.Version {
+	// 	return sdkerrors.Wrapf(porttypes.ErrInvalidPort, "invalid version: %s, expected %s", version, "ics20-1")
+	// }
 
 	// Claim channel capability passed back by IBC module
 	if err := am.keeper.ScopedKeeper.ClaimCapability(ctx, chanCap, ibctypes.ChannelCapabilityPath(portID, channelID)); err != nil {
@@ -154,13 +152,13 @@ func (am AppModule) OnChanOpenTry(
 ) error {
 	// TODO: Enforce ordering, currently relayers use ORDERED channels
 
-	if version != types.Version {
-		return sdkerrors.Wrapf(porttypes.ErrInvalidPort, "invalid version: %s, expected %s", version, "ics20-1")
-	}
+	// if version != types.Version {
+	// 	return sdkerrors.Wrapf(porttypes.ErrInvalidPort, "invalid version: %s, expected %s", version, "ics20-1")
+	// }
 
-	if counterpartyVersion != types.Version {
-		return sdkerrors.Wrapf(porttypes.ErrInvalidPort, "invalid counterparty version: %s, expected %s", counterpartyVersion, "ics20-1")
-	}
+	// if counterpartyVersion != types.Version {
+	// 	return sdkerrors.Wrapf(porttypes.ErrInvalidPort, "invalid counterparty version: %s, expected %s", counterpartyVersion, "ics20-1")
+	// }
 
 	// Claim channel capability passed back by IBC module
 	if err := am.keeper.ScopedKeeper.ClaimCapability(ctx, chanCap, ibctypes.ChannelCapabilityPath(portID, channelID)); err != nil {
@@ -177,9 +175,9 @@ func (am AppModule) OnChanOpenAck(
 	channelID string,
 	counterpartyVersion string,
 ) error {
-	if counterpartyVersion != types.Version {
-		return sdkerrors.Wrapf(porttypes.ErrInvalidPort, "invalid counterparty version: %s, expected %s", counterpartyVersion, "ics20-1")
-	}
+	// if counterpartyVersion != types.Version {
+	// 	return sdkerrors.Wrapf(porttypes.ErrInvalidPort, "invalid counterparty version: %s, expected %s", counterpartyVersion, "ics20-1")
+	// }
 	return nil
 }
 
@@ -213,7 +211,7 @@ func (am AppModule) OnRecvPacket(
 	packet channeltypes.Packet,
 ) (*sdk.Result, error) {
 	var responseData oracle.OracleResponsePacketData
-	if err := types.ModuleCdc.UnmarshalJSON(packet.GetData(), &responseData); err == nil {
+	if err := oracle.ModuleCdc.UnmarshalJSON(packet.GetData(), &responseData); err == nil {
 		fmt.Println("I GOT DATA", responseData.Result, responseData.ResolveTime)
 	}
 	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
