@@ -63,7 +63,7 @@ let make = (~txResponse: TxCreator.tx_response_t, ~schema: string) =>
         </div>
         <VSpacing size=Spacing.lg />
         {switch (requestOpt) {
-         | Some({result: Some(result)}) =>
+         | Some({result: Some(result), id}) =>
            let outputKVsOpt = Borsh.decode(schema, "Output", result);
            <>
              <div className={Styles.hFlex(`auto)}>
@@ -107,15 +107,15 @@ let make = (~txResponse: TxCreator.tx_response_t, ~schema: string) =>
                   }}
                </div>
              </div>
-             // <VSpacing size=Spacing.lg />
-             // <OracleScriptExecuteProof id />
+             <VSpacing size=Spacing.lg />
+             <OracleScriptExecuteProof id />
            </>;
          | Some(request) =>
            <div className={Styles.hFlex(`auto)}>
              <HSpacing size=Spacing.lg />
              <div className={Styles.resultWrapper(`px(220), `px(12), `zero, `auto)}>
                <Text
-                 value="WAITING FOR OUTPUT AND PROOF"
+                 value="WAITING FOR OUTPUT AND `PROOF`"
                  size=Text.Sm
                  color=Colors.gray6
                  weight=Text.Semibold
