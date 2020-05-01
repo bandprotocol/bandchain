@@ -213,7 +213,7 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			"Oracle script for getting an average crypto price from Coingecko",
 			"./owasm/res/coingecko_volume.wasm",
 			`{"Input":"{ \"kind\": \"struct\", \"fields\": [ [\"symbol\", \"string\"], [\"multiplier\", \"u64\"] ] }","Output":"{ \"kind\": \"struct\", \"fields\": [ [\"volume\", \"u64\"] ] }"}`,
-			`https://ipfs.io/ipfs/`,
+			`https://ipfs.io/ipfs/QmNSKWfAgairPCKjypZsueStztrP1tBmtWEukmi2Udejx2`,
 		},
 		{
 			"Crypto compare crypto volume",
