@@ -234,7 +234,7 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			"Oracle script for getting the verification of a flight",
 			"./owasm/res/open_sky_network.wasm",
 			`{"Input":"{ \"kind\": \"struct\", \"fields\": [ [\"flight_op\", \"string\"],[\"airport\", \"string\"],[\"icao24\", \"string\"],[\"begin\", \"string\"], [\"end\", \"string\"] ] }","Output":"{ \"kind\": \"struct\", \"fields\": [ [\"flight_existence\", \"u8\"] ] }"}`,
-			`https://ipfs.io/ipfs/`,
+			`https://ipfs.io/ipfs/QmTGWmf69iQp8XecRcxvzxXmRXyfNTgscudtwRH7pLy8TF`,
 		},
 		{
 			"Open weather map",
