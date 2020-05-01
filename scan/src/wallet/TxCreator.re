@@ -53,7 +53,7 @@ type pub_key_t = {
 };
 
 type signature_t = {
-  pub_key: pub_key_t,
+  pub_key: Js.Json.t,
   public_key: string,
   signature: string,
 };
@@ -95,8 +95,11 @@ let getAccountInfo = address => {
   let data = info##data;
   Promise.ret(
     JsonUtils.Decode.{
-      accountNumber: data |> at(["result", "value", "account_number"], int),
-      sequence: data |> at(["result", "value", "sequence"], int),
+      accountNumber: data |> at(["result", "value", "account_number"], intstr),
+      sequence:
+        data
+        |> optional(at(["result", "value", "sequence"], intstr))
+        |> Belt_Option.getWithDefault(_, 0),
     },
   );
 };
@@ -205,14 +208,32 @@ let createRawTx = (~address, ~msgs, ~feeAmount, ~gas, ~memo, ()) => {
   });
 };
 
-let createSignedTx = (~signature, ~pubKey, ~tx: raw_tx_t, ~mode, ()) => {
-  let oldPubKey = {type_: "tendermint/PubKeySecp256k1", value: pubKey |> PubKey.toBase64};
+let createSignedTx = (~network, ~signature, ~pubKey, ~tx: raw_tx_t, ~mode, ()) => {
   let newPubKey = "eb5ae98721" ++ (pubKey |> PubKey.toHex) |> JsBuffer.hexToBase64;
   let signedTx = {
     fee: tx.fee,
     memo: tx.memo,
     msg: tx.msgs,
-    signatures: [|{pub_key: oldPubKey, public_key: newPubKey, signature}|],
+    signatures: [|
+      {
+        pub_key: {
+          exception WrongNetwork(string);
+          switch (network) {
+          | "GUANYU" => Js.Json.string(newPubKey)
+          | "WENCHANG" =>
+            Js.Json.object_(
+              Js.Dict.fromList([
+                ("type", Js.Json.string("tendermint/PubKeySecp256k1")),
+                ("value", Js.Json.string(pubKey |> PubKey.toBase64)),
+              ]),
+            )
+          | _ => raise(WrongNetwork("Incorrect or unspecified NETWORK environment variable"))
+          };
+        },
+        public_key: newPubKey,
+        signature,
+      },
+    |],
   };
   {mode, tx: signedTx};
 };
