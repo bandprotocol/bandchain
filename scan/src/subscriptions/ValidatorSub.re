@@ -233,15 +233,3 @@ let getTotalBondedAmount = () => {
        ((a##validators_aggregate##aggregate |> Belt_Option.getExn)##sum |> Belt_Option.getExn)##tokens
      );
 };
-
-module GlobalInfo = {
-  type t = {
-    totalSupply: int,
-    inflationRate: float,
-    avgBlockTime: float,
-  };
-
-  let getGlobalInfo = _ => {
-    {totalSupply: 10849023, inflationRate: 12.45, avgBlockTime: 2.59};
-  };
-};
