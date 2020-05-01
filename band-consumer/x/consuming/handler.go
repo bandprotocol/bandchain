@@ -43,11 +43,11 @@ func NewHandler(keeper Keeper) sdk.Handler {
 				msg.ClientID, msg.OracleScriptID, hex.EncodeToString(msg.Calldata),
 				msg.AskCount, msg.MinCount,
 			)
-			chanCap, err := keeper.ScopedKeeper.NewCapability(ctx, ibctypes.ChannelCapabilityPath(destinationPort, destinationChannel))
-			if err != nil {
-				return nil, err
+			chanCap, ok := keeper.ScopedKeeper.GetCapability(ctx, ibctypes.ChannelCapabilityPath("consuming", msg.SourceChannel))
+			if !ok {
+				return nil, sdkerrors.Wrap(channel.ErrChannelCapabilityNotFound, "module does not own channel capability")
 			}
-			err = keeper.ChannelKeeper.SendPacket(ctx, chanCap, channel.NewPacket(packet.GetBytes(),
+			err := keeper.ChannelKeeper.SendPacket(ctx, chanCap, channel.NewPacket(packet.GetBytes(),
 				sequence, "consuming", msg.SourceChannel, destinationPort, destinationChannel,
 				10000000, 10000000, // Arbitrarily high timeout and timeout stamp for now
 			))
