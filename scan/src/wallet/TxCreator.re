@@ -208,7 +208,7 @@ let createRawTx = (~address, ~msgs, ~feeAmount, ~gas, ~memo, ()) => {
   });
 };
 
-let createSignedTx = (~signature, ~pubKey, ~tx: raw_tx_t, ~mode, ()) => {
+let createSignedTx = (~network, ~signature, ~pubKey, ~tx: raw_tx_t, ~mode, ()) => {
   let newPubKey = "eb5ae98721" ++ (pubKey |> PubKey.toHex) |> JsBuffer.hexToBase64;
   let signedTx = {
     fee: tx.fee,
@@ -218,7 +218,7 @@ let createSignedTx = (~signature, ~pubKey, ~tx: raw_tx_t, ~mode, ()) => {
       {
         pub_key: {
           exception WrongNetwork(string);
-          switch (Env.network) {
+          switch (network) {
           | "GUANYU" => Js.Json.string(newPubKey)
           | "WENCHANG" =>
             Js.Json.object_(
