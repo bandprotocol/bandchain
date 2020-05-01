@@ -227,7 +227,7 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			"Oracle script for getting gas price from ETH gas station",
 			"./owasm/res/eth_gas_station.wasm",
 			`{"Input":"{ \"kind\": \"struct\", \"fields\": [ [\"gas_option\", \"string\"] ] }","Output":"{ \"kind\": \"struct\", \"fields\": [ [\"gweix10\", \"u64\"] ] }"}`,
-			`https://ipfs.io/ipfs/`,
+			`https://ipfs.io/ipfs/QmQjSzHx4YkfdaSs7uAnJu9qhCXZtTKRxv1mn3v7Z27hS6`,
 		},
 		{
 			"Open sky network",
