@@ -217,7 +217,7 @@ let createSignedTx = (~signature, ~pubKey, ~tx: raw_tx_t, ~mode, ()) => {
     signatures: [|
       {
         pub_key:
-          Env.network == "guanyu"
+          Env.network == "GUANYU"
             ? Js.Json.string(newPubKey)
             : Js.Json.object_(
                 Js.Dict.fromList([

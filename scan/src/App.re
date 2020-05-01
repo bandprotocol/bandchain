@@ -49,8 +49,8 @@ module TopBar = {
   [@react.component]
   let make = () => {
     exception WrongNetwork(string);
-    if (String.compare(Env.network, "guanyu") != 0
-        && String.compare(Env.network, "wenchang") != 0) {
+    if (String.compare(Env.network, "GUANYU") != 0
+        && String.compare(Env.network, "WENCHANG") != 0) {
       raise(WrongNetwork("wrong or incorrect NETWORK environment variable"));
     };
     <div className=Styles.topBarContainer>
