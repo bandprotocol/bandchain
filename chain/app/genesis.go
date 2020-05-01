@@ -199,14 +199,14 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			"Oracle script for getting Bitcoin latest block height",
 			"./owasm/res/bitcoin_block_count.wasm",
 			`{"Input":"{ \"kind\": \"struct\", \"fields\": [ [\"_unused\", \"u8\"] ] }","Output":"{ \"kind\": \"struct\", \"fields\": [ [\"block_count\", \"u64\"] ] }"}`,
-			`https://ipfs.io/ipfs/`,
+			`https://ipfs.io/ipfs/QmZpccMgt1gbcmv1ahK727xUpH1NHex3J22kQua1SNGVkN`,
 		},
 		{
 			"Bitcoin block hash",
 			"Oracle script for getting Bitcoin latest block hash",
 			"./owasm/res/bitcoin_block_hash.wasm",
 			`{"Input":"{ \"kind\": \"struct\", \"fields\": [ [\"block_height\", \"u64\"] ] }","Output":"{ \"kind\": \"struct\", \"fields\": [ [\"block_hash\", \"string\"] ] }"}`,
-			`https://ipfs.io/ipfs/`,
+			`https://ipfs.io/ipfs/Qmcgv1vHLVNQPKkkAB9ftG33142E8Ufbm9GUpGznbh5NzW`,
 		},
 		{
 			"Coingecko crypto volume",
