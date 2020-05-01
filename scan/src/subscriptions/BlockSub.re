@@ -117,10 +117,10 @@ module PastDayBlockCountConfig = [%graphql
       aggregate{
         count @bsDecoder(fn: "Belt_Option.getExn")
         max {
-          timestamp @bsDecoder(fn: "GraphQLParser.floatExn")
+          timestamp @bsDecoder(fn: "GraphQLParser.floatWithDefault")
         }
         min {
-          timestamp @bsDecoder(fn: "GraphQLParser.floatExn")
+          timestamp @bsDecoder(fn: "GraphQLParser.floatWithDefault")
         }
       }
     }
