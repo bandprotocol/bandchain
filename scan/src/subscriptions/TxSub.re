@@ -533,13 +533,11 @@ module Msg = {
       sender: Address.t,
       message: string,
     };
-    let decode = json => {
-      Js.Console.log(json);
+    let decode = json =>
       JsonUtils.Decode.{
         sender: json |> field("sender", string) |> Address.fromBech32,
         message: json |> field("type", string),
       };
-    };
   };
 
   module Delegate = {
