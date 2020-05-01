@@ -28,6 +28,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/ibc"
+	port "github.com/cosmos/cosmos-sdk/x/ibc/05-port"
 	transfer "github.com/cosmos/cosmos-sdk/x/ibc/20-transfer"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/params"
@@ -243,6 +244,13 @@ func NewBandConsumerApp(
 		app.accountKeeper, app.bankKeeper,
 		scopedTransferKeeper,
 	)
+	transferModule := transfer.NewAppModule(app.transferKeeper)
+
+	// Create static IBC router, add transfer route, then set and seal it
+	ibcRouter := port.NewRouter()
+	ibcRouter.AddRoute(transfer.ModuleName, transferModule)
+	app.ibcKeeper.SetRouter(ibcRouter)
+
 	app.consumingKeeper = consuming.NewKeeper(
 		appCodec, keys[consuming.StoreKey], app.ibcKeeper.ChannelKeeper, scopedIBCKeeper,
 	)
