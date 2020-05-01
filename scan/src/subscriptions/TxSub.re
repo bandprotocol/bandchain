@@ -807,7 +807,6 @@ module Msg = {
   };
 
   let decodeAction = json => {
-    Js.Console.log(json);
     JsonUtils.Decode.(
       switch (json |> field("type", string)) {
       | "send" => Send(json |> Send.decode)
