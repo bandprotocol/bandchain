@@ -15,14 +15,13 @@ num = "*"
 
 [workspace]
 members = [
-    "chaintests/gold_price",
     "chaintests/crypto_price",
     "chaintests/crypto_price_borsh",
     "chaintests/main",
     "chaintests/moresilly",
     "chaintests/silly",
     "chaintests/get_env",
-    "chaindebugtests/allocate",
+    "chaintests/gold_price",
     "chaintests/alphavantage",
     "chaintests/bitcoin_block_count",
     "chaintests/bitcoin_block_hash",
@@ -33,4 +32,5 @@ members = [
     "chaintests/open_weather_map",
     "chaintests/qrng",
     "chaintests/yahoo_price",
+    "chaindebugtests/allocate",
 ]
