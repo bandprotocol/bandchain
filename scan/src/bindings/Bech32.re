@@ -9,3 +9,9 @@ type decoded_t = {
 
 [@bs.module "bech32"] [@bs.val] external decode: string => decoded_t = "decode";
 [@bs.module "bech32"] [@bs.val] external encode: (string, array(int)) => string = "encode";
+
+let decodeOpt = str =>
+  switch (str->decode) {
+  | result => Some(result)
+  | exception _ => None
+  };

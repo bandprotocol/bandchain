@@ -1,6 +1,6 @@
 type t =
   | Connect
-  | Waiting;
+  | SubmitTx;
 
 type a =
   | OpenModal(t)

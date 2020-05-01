@@ -20,8 +20,12 @@ let reducer = state =>
         {
           let%Promise rawTx =
             TxCreator.createRawTx(
-              address,
-              [|Request(oracleScriptID, calldata, "4", "4", address, "")|],
+              ~address,
+              ~msgs=[|Request(oracleScriptID, calldata, "4", "4", address, "")|],
+              ~gas="700000",
+              ~feeAmount="100",
+              ~memo="send via scan",
+              (),
             );
           let%Promise signature = Wallet.sign(TxCreator.sortAndStringify(rawTx), wallet);
           let signedTx =
@@ -50,9 +54,6 @@ let make = (~children) => {
 
   React.createElement(
     React.Context.provider(context),
-    {
-      "value": (state->Belt.Option.map(({address}) => address), dispatch),
-      "children": children,
-    },
+    {"value": (state, dispatch), "children": children},
   );
 };
