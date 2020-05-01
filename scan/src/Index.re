@@ -1,3 +1,11 @@
+exception WrongNetwork(string);
+
+switch (Env.network) {
+| "GUANYU" => ()
+| "WENCHANG" => ()
+| _ => raise(WrongNetwork("Incorrect or unspecified NETWORK environment variable"))
+};
+
 [@bs.val] external document: Js.t({..}) = "document";
 
 let style = document##createElement("style");
