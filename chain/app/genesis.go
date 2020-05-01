@@ -248,7 +248,7 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			"Oracle script for getting a big random number from quantum computer",
 			"./owasm/res/qrng.wasm",
 			`{"Input":"{ \"kind\": \"struct\", \"fields\": [ [\"size\", \"u64\"] ] }","Output":"{ \"kind\": \"struct\", \"fields\": [ [\"random_bytes\", \"string\"] ] }"}`,
-			`https://ipfs.io/ipfs/`,
+			`https://ipfs.io/ipfs/QmbUCBoWvKiHGktpdhUPMEm6hvQnM7xgWfUm2HVDfwcCgS`,
 		},
 		{
 			"Yahoo stock price",
