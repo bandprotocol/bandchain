@@ -241,7 +241,7 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			"Oracle script for getting weather information",
 			"./owasm/res/open_weather_map.wasm",
 			`{"Input":"{ \"kind\": \"struct\", \"fields\": [ [\"country\", \"string\"],[\"main_field\", \"string\"],[\"sub_field\", \"string\"],[\"multiplier\", \"u64\"] ] }","Output":"{ \"kind\": \"struct\", \"fields\": [ [\"value\", \"u64\"] ] }"}`,
-			`https://ipfs.io/ipfs/`,
+			`https://ipfs.io/ipfs/QmbJ9csujaPFdY58aXjK7vfSRYLAhN3rNH1vSPdUF4mXyv`,
 		},
 		{
 			"Quantum random number generator",
