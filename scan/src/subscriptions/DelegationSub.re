@@ -23,7 +23,7 @@ module StakeConfig = [%graphql
     delegations_view(offset: $offset, limit: $limit, order_by: {amount: desc}, where: {delegator_address: {_eq: $delegator_address}}) @bsRecord  {
       amount @bsDecoder(fn: "GraphQLParser.numberExn")
       reward @bsDecoder(fn: "GraphQLParser.numberExn")
-      sharePercentage: share_percentage @bsDecoder(fn: "GraphQLParser.floatExn")
+      sharePercentage: share_percentage @bsDecoder(fn: "GraphQLParser.floatWithDefault")
       delegatorAddress: delegator_address @bsDecoder(fn: "GraphQLParser.addressExn")
       validatorAddress: validator_address @bsDecoder(fn: "GraphQLParser.addressExn")
     }
@@ -64,7 +64,7 @@ module DelegatorsByValidatorConfig = [%graphql
     delegations_view(offset: $offset, limit: $limit, order_by: {amount: desc}, where: {validator_address: {_eq: $validator_address}}) @bsRecord  {
       amount @bsDecoder(fn: "GraphQLParser.numberExn")
       reward @bsDecoder(fn: "GraphQLParser.numberExn")
-      sharePercentage: share_percentage @bsDecoder(fn: "GraphQLParser.floatExn")
+      sharePercentage: share_percentage @bsDecoder(fn: "GraphQLParser.floatWithDefault")
       delegatorAddress: delegator_address @bsDecoder(fn: "GraphQLParser.addressExn")
       validatorAddress: validator_address @bsDecoder(fn: "GraphQLParser.addressExn")
     }
