@@ -13,23 +13,21 @@ import (
 )
 
 type Keeper struct {
-	storeKey        sdk.StoreKey
-	cdc             codec.Marshaler
-	ChannelKeeper   transfertypes.ChannelKeeper
-	ScopedIBCKeeper capability.ScopedKeeper
-	ScopedKeeper    capability.ScopedKeeper
-	PortKeeper      types.PortKeeper
+	storeKey      sdk.StoreKey
+	cdc           codec.Marshaler
+	ChannelKeeper transfertypes.ChannelKeeper
+	ScopedKeeper  capability.ScopedKeeper
+	PortKeeper    types.PortKeeper
 }
 
 // NewKeeper creates a new band consumer Keeper instance.
-func NewKeeper(cdc codec.Marshaler, key sdk.StoreKey, channelKeeper transfertypes.ChannelKeeper, scopedIBCKeeper, scopedKeeper capability.ScopedKeeper, portKeeper types.PortKeeper) Keeper {
+func NewKeeper(cdc codec.Marshaler, key sdk.StoreKey, channelKeeper transfertypes.ChannelKeeper, scopedKeeper capability.ScopedKeeper, portKeeper types.PortKeeper) Keeper {
 	return Keeper{
-		storeKey:        key,
-		cdc:             cdc,
-		ChannelKeeper:   channelKeeper,
-		ScopedIBCKeeper: scopedIBCKeeper,
-		ScopedKeeper:    scopedKeeper,
-		PortKeeper:      portKeeper,
+		storeKey:      key,
+		cdc:           cdc,
+		ChannelKeeper: channelKeeper,
+		ScopedKeeper:  scopedKeeper,
+		PortKeeper:    portKeeper,
 	}
 }
 
