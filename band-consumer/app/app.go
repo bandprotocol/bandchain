@@ -249,12 +249,14 @@ func NewBandConsumerApp(
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := port.NewRouter()
 	ibcRouter.AddRoute(transfer.ModuleName, transferModule)
-	app.ibcKeeper.SetRouter(ibcRouter)
 
 	app.consumingKeeper = consuming.NewKeeper(
 		appCodec, keys[consuming.StoreKey], app.ibcKeeper.ChannelKeeper, scopedIBCKeeper,
 	)
 
+	consumingModule := consuming.NewAppModule(app.consumingKeeper)
+	ibcRouter.AddRoute(consuming.ModuleName, consumingModule)
+	app.ibcKeeper.SetRouter(ibcRouter)
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
 	app.stakingKeeper = *stakingKeeper.SetHooks(
