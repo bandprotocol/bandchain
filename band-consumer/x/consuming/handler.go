@@ -43,7 +43,7 @@ func NewHandler(keeper Keeper) sdk.Handler {
 				msg.ClientID, msg.OracleScriptID, hex.EncodeToString(msg.Calldata),
 				msg.AskCount, msg.MinCount,
 			)
-			chanCap, err := keeper.ScopedIBCKeeper.NewCapability(ctx, ibctypes.ChannelCapabilityPath(destinationPort, destinationChannel))
+			chanCap, err := keeper.ScopedKeeper.NewCapability(ctx, ibctypes.ChannelCapabilityPath(destinationPort, destinationChannel))
 			if err != nil {
 				return nil, err
 			}

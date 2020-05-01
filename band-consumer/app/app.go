@@ -252,7 +252,7 @@ func NewBandConsumerApp(
 	scopedConsumingKeeper := app.capabilityKeeper.ScopeToModule(consuming.ModuleName)
 
 	app.consumingKeeper = consuming.NewKeeper(
-		appCodec, keys[consuming.StoreKey], app.ibcKeeper.ChannelKeeper, scopedIBCKeeper, scopedConsumingKeeper, &app.ibcKeeper.PortKeeper,
+		appCodec, keys[consuming.StoreKey], app.ibcKeeper.ChannelKeeper, scopedConsumingKeeper, &app.ibcKeeper.PortKeeper,
 	)
 
 	consumingModule := consuming.NewAppModule(app.consumingKeeper)

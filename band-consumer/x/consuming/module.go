@@ -133,7 +133,7 @@ func (am AppModule) OnChanOpenInit(
 	}
 
 	// Claim channel capability passed back by IBC module
-	if err := am.keeper.ScopedIBCKeeper.ClaimCapability(ctx, chanCap, ibctypes.ChannelCapabilityPath(portID, channelID)); err != nil {
+	if err := am.keeper.ScopedKeeper.ClaimCapability(ctx, chanCap, ibctypes.ChannelCapabilityPath(portID, channelID)); err != nil {
 		return sdkerrors.Wrap(channel.ErrChannelCapabilityNotFound, err.Error())
 	}
 
@@ -163,7 +163,7 @@ func (am AppModule) OnChanOpenTry(
 	}
 
 	// Claim channel capability passed back by IBC module
-	if err := am.keeper.ScopedIBCKeeper.ClaimCapability(ctx, chanCap, ibctypes.ChannelCapabilityPath(portID, channelID)); err != nil {
+	if err := am.keeper.ScopedKeeper.ClaimCapability(ctx, chanCap, ibctypes.ChannelCapabilityPath(portID, channelID)); err != nil {
 		return sdkerrors.Wrap(channel.ErrChannelCapabilityNotFound, err.Error())
 	}
 
