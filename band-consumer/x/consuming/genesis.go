@@ -1,6 +1,8 @@
 package consuming
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
@@ -23,6 +25,11 @@ func DefaultGenesisState() GenesisState {
 }
 
 func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorUpdate {
+	// TODO: revisit this code
+	err := k.BindPort(ctx, "consuming")
+	if err != nil {
+		panic(fmt.Sprintf("could not claim port capability: %v", err))
+	}
 	return []abci.ValidatorUpdate{}
 }
 
