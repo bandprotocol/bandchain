@@ -1,5 +1,4 @@
 exception WrongNetwork(string);
-
 switch (Env.network) {
 | "GUANYU" => ()
 | "WENCHANG" => ()
