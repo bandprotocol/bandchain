@@ -387,14 +387,12 @@ module Msg = {
       signer: Address.t,
       common: ConnectionCommon.t,
       clientID: string,
-      consensusHeight: ID.Block.t,
     };
     let decode = json =>
       JsonUtils.Decode.{
         signer: json |> field("signer", string) |> Address.fromBech32,
         common: json |> ConnectionCommon.decode,
         clientID: json |> field("client_id", string),
-        consensusHeight: json |> field("consensus_height", ID.Block.fromJson),
       };
   };
 
@@ -403,14 +401,12 @@ module Msg = {
       signer: Address.t,
       common: ConnectionCommon.t,
       clientID: string,
-      consensusHeight: ID.Block.t,
     };
     let decode = json =>
       JsonUtils.Decode.{
         signer: json |> field("signer", string) |> Address.fromBech32,
         clientID: json |> field("client_id", string),
         common: json |> ConnectionCommon.decode,
-        consensusHeight: json |> field("consensus_height", ID.Block.fromJson),
       };
   };
 
@@ -418,13 +414,11 @@ module Msg = {
     type t = {
       signer: Address.t,
       common: ConnectionCommon.t,
-      consensusHeight: ID.Block.t,
     };
     let decode = json =>
       JsonUtils.Decode.{
         signer: json |> field("signer", string) |> Address.fromBech32,
         common: json |> ConnectionCommon.decode,
-        consensusHeight: json |> field("consensus_height", ID.Block.fromJson),
       };
   };
 
@@ -813,6 +807,7 @@ module Msg = {
   };
 
   let decodeAction = json => {
+    Js.Console.log(json);
     JsonUtils.Decode.(
       switch (json |> field("type", string)) {
       | "send" => Send(json |> Send.decode)
