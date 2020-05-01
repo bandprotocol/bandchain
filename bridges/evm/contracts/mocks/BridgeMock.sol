@@ -19,14 +19,15 @@ contract BridgeMock is Bridge {
 
 
 contract ReceiverMock {
-    // Bridge.VerifyOracleDataResult public latestResult;
+    Bridge.RequestPacket public latestReq;
+    Bridge.ResponsePacket public latestRes;
     IBridge public bridge;
 
     constructor(IBridge _bridge) public {
         bridge = _bridge;
     }
 
-    // function relayAndSafe(bytes calldata _data) external {
-    //     latestResult = bridge.relayAndVerify(_data);
-    // }
+    function relayAndSafe(bytes calldata _data) external {
+        (latestReq, latestRes) = bridge.relayAndVerify(_data);
+    }
 }
