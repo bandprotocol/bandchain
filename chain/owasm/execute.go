@@ -1,6 +1,7 @@
 package owasm
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/perlin-network/life/exec"
@@ -36,6 +37,20 @@ func Execute(
 	if !ok {
 		return nil, 0, fmt.Errorf("Execute: invalid owasm entry: %s", entry)
 	}
+	defer func() {
+		if r := recover(); r != nil {
+			switch x := r.(type) {
+			case string:
+				err = errors.New(x)
+			case error:
+				err = x
+			default:
+				err = errors.New("Unknown panic")
+			}
+			result = nil
+			gasUsed = 0
+		}
+	}()
 	_, err = vm.Run(int(entryID))
 	return resolver.result, vm.Gas, err
 }
