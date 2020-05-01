@@ -121,6 +121,8 @@ type BandApp struct {
 	IBCKeeper        *ibc.Keeper
 	OracleKeeper     oracle.Keeper
 
+	scopedIBCKeeper    capability.ScopedKeeper
+	scopedOracleKeeper capability.ScopedKeeper
 	// Decoder for unmarshaling []byte into sdk.Tx
 	TxDecoder sdk.TxDecoder
 	// Deliver Context that is set during BeginBlock and unset during EndBlock; primarily for gas refund
@@ -353,6 +355,9 @@ func NewBandApp(
 	// that in-memory capabilities get regenerated on app restart
 	ctx := app.BaseApp.NewContext(true, abci.Header{})
 	app.CapabilityKeeper.InitializeAndSeal(ctx)
+
+	app.scopedIBCKeeper = scopedIBCKeeper
+	app.scopedOracleKeeper = scopedOracleKeeper
 
 	return app
 }
