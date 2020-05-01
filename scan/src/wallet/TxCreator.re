@@ -216,15 +216,20 @@ let createSignedTx = (~signature, ~pubKey, ~tx: raw_tx_t, ~mode, ()) => {
     msg: tx.msgs,
     signatures: [|
       {
-        pub_key:
-          Env.network == "GUANYU"
-            ? Js.Json.string(newPubKey)
-            : Js.Json.object_(
-                Js.Dict.fromList([
-                  ("type", Js.Json.string("tendermint/PubKeySecp256k1")),
-                  ("value", Js.Json.string(pubKey |> PubKey.toBase64)),
-                ]),
-              ),
+        pub_key: {
+          exception WrongNetwork(string);
+          switch (Env.network) {
+          | "GUANYU" => Js.Json.string(newPubKey)
+          | "WENCHANG" =>
+            Js.Json.object_(
+              Js.Dict.fromList([
+                ("type", Js.Json.string("tendermint/PubKeySecp256k1")),
+                ("value", Js.Json.string(pubKey |> PubKey.toBase64)),
+              ]),
+            )
+          | _ => raise(WrongNetwork("Incorrect or unspecified NETWORK environment variable"))
+          };
+        },
         public_key: newPubKey,
         signature,
       },
