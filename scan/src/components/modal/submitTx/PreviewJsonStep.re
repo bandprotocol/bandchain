@@ -132,7 +132,7 @@ let make = (~rawTx, ~onBack, ~account: AccountContext.t) => {
 
                              Js.Promise.resolve();
                            | _ =>
-                             setState(_ => Error("Fail to braodcast"));
+                             setState(_ => Error("Fail to broadcast"));
                              Js.Promise.resolve();
                            }
                          )

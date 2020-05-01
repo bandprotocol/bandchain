@@ -107,12 +107,12 @@ let toString =
 module SubmitTxStep = {
   [@react.component]
   let make = (~account: AccountContext.t, ~setRawTx, ~isActive) => {
-    let (msgType, setMsgType) = React.useState(_ => Delegate);
+    let (msgType, setMsgType) = React.useState(_ => Send);
     let (msgsOpt, setMsgsOpt) = React.useState(_ => None);
     let (gas, setGas) =
       React.useState(_ => EnhanceTxInput.{text: "200000", value: Some(200000)});
     let (fee, setFee) = React.useState(_ => EnhanceTxInput.{text: "100", value: Some(100)});
-    let (memo, setMemo) = React.useState(_ => EnhanceTxInput.empty);
+    let (memo, setMemo) = React.useState(_ => EnhanceTxInput.{text: "", value: Some("")});
 
     <div className={Css.merge([Styles.container, Styles.disable(isActive)])}>
       <div className=Styles.modalTitle>
@@ -128,7 +128,7 @@ module SubmitTxStep = {
               let newMsg = ReactEvent.Form.target(event)##value |> toVariant;
               setMsgType(_ => newMsg);
             }}>
-            {[|Delegate, Undelegate|]
+            {[|Send, Delegate, Undelegate|]
              ->Belt_Array.map(symbol =>
                  <option value={symbol |> toString}> {symbol |> toString |> React.string} </option>
                )
@@ -138,9 +138,9 @@ module SubmitTxStep = {
       </div>
       <VSpacing size=Spacing.md />
       {switch (msgType) {
-       | Send => <div />
+       | Send => <SendMsg setMsgsOpt />
        | Delegate => <DelegateMsg setMsgsOpt />
-       | Undelegate => <div />
+       | Undelegate => <UndelegateMsg setMsgsOpt />
        }}
       <VSpacing size=Spacing.md />
       <EnhanceTxInput
