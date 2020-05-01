@@ -533,11 +533,13 @@ module Msg = {
       sender: Address.t,
       message: string,
     };
-    let decode = json =>
+    let decode = json => {
+      Js.Console.log(json);
       JsonUtils.Decode.{
         sender: json |> field("sender", string) |> Address.fromBech32,
         message: json |> field("type", string),
       };
+    };
   };
 
   module Delegate = {
@@ -1133,6 +1135,7 @@ type t = {
   sender: Address.t,
   timestamp: MomentRe.Moment.t,
   messages: list(Msg.t),
+  rawLog: string,
 };
 
 module Mini = {
@@ -1156,6 +1159,7 @@ module SingleConfig = [%graphql
       sender  @bsDecoder(fn: "Address.fromBech32")
       timestamp  @bsDecoder(fn: "GraphQLParser.time")
       messages @bsDecoder(fn: "Msg.decodeActions")
+      rawLog: raw_log
     }
   },
 |}
@@ -1174,6 +1178,7 @@ module MultiConfig = [%graphql
       sender  @bsDecoder(fn: "Address.fromBech32")
       timestamp  @bsDecoder(fn: "GraphQLParser.time")
       messages @bsDecoder(fn: "Msg.decodeActions")
+      rawLog: raw_log
     }
   }
 |}
@@ -1192,6 +1197,7 @@ module MultiByHeightConfig = [%graphql
       sender  @bsDecoder(fn: "Address.fromBech32")
       timestamp  @bsDecoder(fn: "GraphQLParser.time")
       messages @bsDecoder(fn: "Msg.decodeActions")
+      rawLog: raw_log
     }
   }
 |}
@@ -1215,6 +1221,7 @@ module MultiBySenderConfig = [%graphql
       sender  @bsDecoder(fn: "Address.fromBech32")
       timestamp  @bsDecoder(fn: "GraphQLParser.time")
       messages @bsDecoder(fn: "Msg.decodeActions")
+      rawLog: raw_log
     }
   }
 |}
