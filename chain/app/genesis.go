@@ -192,7 +192,7 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			"Oracle script for getting an average stock price from Alphavantage",
 			"./owasm/res/alphavantage.wasm",
 			`{"Input":"{ \"kind\": \"struct\", \"fields\": [ [\"symbol\", \"string\"],[\"api_key\", \"string\"], [\"multiplier\", \"u64\"] ] }","Output":"{ \"kind\": \"struct\", \"fields\": [ [\"px\", \"u64\"] ] }"}`,
-			`https://bandprotocol.com`,
+			`https://ipfs.io/ipfs/QmSnkymmSw4Ho46xazbJ3CJ5kp2hw2ZUfqNc7GJzuv7GCZ`,
 		},
 		{
 			"Bitcoin block count",
