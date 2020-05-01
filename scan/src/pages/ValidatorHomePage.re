@@ -238,7 +238,6 @@ let make = () =>
     let%Sub metadata = metadataSub;
 
     let pageCount = Page.getPageCount(validatorCount, pageSize);
-    let globalInfo = ValidatorSub.GlobalInfo.getGlobalInfo();
 
     <>
       <Row justify=Row.Between>
@@ -270,7 +269,11 @@ let make = () =>
           <Col size=1.1>
             <InfoHL
               info={
-                InfoHL.Fraction(bondedTokenCount |> int_of_float, globalInfo.totalSupply, true)
+                InfoHL.Fraction(
+                  bondedTokenCount |> int_of_float,
+                  metadata.totalSupply->Coin.getBandAmountFromCoins |> int_of_float,
+                  true,
+                )
               }
               header="BONDED TOKENS"
             />
