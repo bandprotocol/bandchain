@@ -220,7 +220,7 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			"Oracle script for getting an average crypto price from Crypto compare",
 			"./owasm/res/crypto_compare_volume.wasm",
 			`{"Input":"{ \"kind\": \"struct\", \"fields\": [ [\"symbol\", \"string\"], [\"multiplier\", \"u64\"] ] }","Output":"{ \"kind\": \"struct\", \"fields\": [ [\"volume\", \"u64\"] ] }"}`,
-			`https://ipfs.io/ipfs/`,
+			`https://ipfs.io/ipfs/QmQD5bvn8esMj8ajJYii6U6d34g4b9vaNJRG5zw42Yf1NC`,
 		},
 		{
 			"Ethereum gas price",
