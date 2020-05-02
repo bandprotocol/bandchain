@@ -1,4 +1,5 @@
-let checker = (str: string) => {
+// shell version
+let shellChecker = str => {
   let reg = ".*=[$][1-9][0-9]*" |> Js.Re.fromString;
   let t =
     reg
@@ -35,14 +36,37 @@ let checkValid = pairs => {
   len > 0 && len == getElementInList(nums, len - 1) && 1 == getElementInList(nums, 0);
 };
 
-let getVariables = str => {
-  let pairs =
-    String.split_on_char('\n', str)
-    |> List.filter(checker)
-    |> List.map(splitToPair)
-    |> List.sort(comparePair);
+// python version
+let pythonMatch = str => {
+  let reg = "def main\(\s*([^)]+?)\s*\)" |> Js.Re.fromString;
+  let rawResult =
+    reg |> Js.Re.exec_(_, str) |> Belt_Option.mapWithDefault(_, [||], Js.Re.captures);
 
-  pairs |> checkValid ? Some(pairs |> List.map(((x, _)) => x)) : None;
+  switch (rawResult->Belt.Array.get(1)) {
+  | Some(result) =>
+    switch (result->Js.Nullable.toOption) {
+    | Some(result') =>
+      Some(result' |> String.split_on_char(',') |> Belt.List.map(_, String.trim))
+    | None => None
+    }
+  | None => None
+  };
+};
+
+let getVariables = str => {
+  let splitedStr = String.split_on_char('\n', str);
+  let%Opt program = splitedStr->Belt.List.get(0);
+
+  switch (program) {
+  | "#!/bin/bash"
+  | "#!/bin/sh" =>
+    let pairs =
+      splitedStr |> List.filter(shellChecker) |> List.map(splitToPair) |> List.sort(comparePair);
+
+    pairs |> checkValid ? Some(pairs |> List.map(((x, _)) => x)) : None;
+  | "#!/usr/bin/env python3" => str |> pythonMatch
+  | _ => None
+  };
 };
 
 let parseExecutableScript = (buff: JsBuffer.t) => {
