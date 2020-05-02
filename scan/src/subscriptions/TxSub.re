@@ -668,6 +668,14 @@ module Msg = {
       };
     };
   };
+  module WithdrawCommission = {
+    type t = {validatorAddress: Address.t};
+    let decode = json => {
+      JsonUtils.Decode.{
+        validatorAddress: json |> field("validator_address", string) |> Address.fromBech32,
+      };
+    };
+  };
 
   type t =
     | Unknown
@@ -707,7 +715,8 @@ module Msg = {
     | SetWithdrawAddress(SetWithdrawAddress.t)
     | SubmitProposal(SubmitProposal.t)
     | Deposit(Deposit.t)
-    | Vote(Vote.t);
+    | Vote(Vote.t)
+    | WithdrawCommission(WithdrawCommission.t);
 
   let getCreator = msg => {
     switch (msg) {
@@ -748,6 +757,7 @@ module Msg = {
     | SubmitProposal(proposal) => proposal.proposer
     | Deposit(deposit) => deposit.depositor
     | Vote(vote) => vote.voterAddress
+    | WithdrawCommission(withdrawal) => withdrawal.validatorAddress
     | _ => "" |> Address.fromHex
     };
   };
@@ -889,6 +899,11 @@ module Msg = {
         bgColor: Colors.blue1,
       }
     | Deposit(_) => {text: "DEPOSIT", textColor: Colors.blue7, bgColor: Colors.blue1}
+    | WithdrawCommission(_) => {
+        text: "WITHDRAW COMMISSION",
+        textColor: Colors.purple6,
+        bgColor: Colors.purple1,
+      }
     | _ => {text: "UNKNOWN", textColor: Colors.gray7, bgColor: Colors.gray4}
     };
   };
@@ -934,6 +949,7 @@ module Msg = {
       | "submit_proposal" => SubmitProposal(json |> SubmitProposal.decode)
       | "deposit" => Deposit(json |> Deposit.decode)
       | "vote" => Vote(json |> Vote.decode)
+      | "withdraw_validator_commission" => WithdrawCommission(json |> WithdrawCommission.decode)
       | _ => Unknown
       }
     );

@@ -854,6 +854,17 @@ let renderSetWithdrawAddress = (set: TxSub.Msg.SetWithdrawAddress.t) => {
     </div>
   </Col>;
 };
+let renderWithdrawCommission = (withdrawal: TxSub.Msg.WithdrawCommission.t) => {
+  <Col size=Styles.thirdCol alignSelf=Col.Start>
+  <VSpacing size=Spacing.sm />
+      <div className=Styles.topicContainer>
+      <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <div className={Styles.addressContainer(300)}>
+        <AddressRender address={withdrawal.validatorAddress} validator=true />
+      </div>
+    </div>
+  </Col>;
+}
 
 let renderVote = (vote: TxSub.Msg.Vote.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
@@ -910,6 +921,7 @@ let renderBody = (msg: TxSub.Msg.t) => {
   | Undelegate(delegation) => renderUndelegate(delegation)
   | Redelegate(delegation) => renderRedelegate(delegation)
   | WithdrawReward(withdrawal) => renderWithdrawReward(withdrawal)
+  | WithdrawCommission(withdrawal) => renderWithdrawCommission(withdrawal)
   | Unjail(unjail) => renderUnjail(unjail)
   | SetWithdrawAddress(set) => renderSetWithdrawAddress(set)
   | SubmitProposal(proposal) => renderSubmitProposal(proposal)
