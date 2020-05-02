@@ -870,6 +870,20 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
       </div>
     </div>
+  | Unjail({address}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address /> </div>
+      <div className={Styles.withBg(Colors.blue1, 50)}>
+        <Text
+          value="UNJAIL"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.blue7
+        />
+      </div>
+      <div className={Styles.withWidth(300)}> <AddressRender address validator=true /> </div>
+    </div>
   | FailMessage({sender, message}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
