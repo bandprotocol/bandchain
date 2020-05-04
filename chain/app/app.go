@@ -116,8 +116,6 @@ type BandApp struct {
 	IBCKeeper        *ibc.Keeper
 	OracleKeeper     oracle.Keeper
 
-	scopedIBCKeeper    capability.ScopedKeeper
-	scopedOracleKeeper capability.ScopedKeeper
 	// Decoder for unmarshaling []byte into sdk.Tx
 	TxDecoder sdk.TxDecoder
 	// Deliver Context that is set during BeginBlock and unset during EndBlock; primarily for gas refund
@@ -216,6 +214,9 @@ func NewBandApp(
 		appCodec, keys[mint.StoreKey], app.subspaces[mint.ModuleName], &stakingKeeper,
 		app.AccountKeeper, app.BankKeeper, auth.FeeCollectorName,
 	)
+	app.CrisisKeeper = crisis.NewKeeper(
+		app.subspaces[crisis.ModuleName], invCheckPeriod, app.BankKeeper, auth.FeeCollectorName,
+	)
 	app.DistrKeeper = distr.NewKeeper(
 		appCodec, keys[distr.StoreKey], app.subspaces[distr.ModuleName], app.AccountKeeper, app.BankKeeper,
 		&stakingKeeper, auth.FeeCollectorName, app.ModuleAccountAddrs(),
@@ -227,22 +228,7 @@ func NewBandApp(
 	app.SlashingKeeper = slashing.NewKeeper(
 		appCodec, keys[slashing.StoreKey], &stakingKeeper, app.subspaces[slashing.ModuleName],
 	)
-
-	app.CrisisKeeper = crisis.NewKeeper(
-		app.subspaces[crisis.ModuleName], invCheckPeriod, app.BankKeeper, auth.FeeCollectorName,
-	)
 	app.UpgradeKeeper = upgrade.NewKeeper(skipUpgradeHeights, keys[upgrade.StoreKey], appCodec, home)
-
-	// create evidence keeper with evidence router
-	evidenceKeeper := evidence.NewKeeper(
-		appCodec, keys[evidence.StoreKey], &stakingKeeper, app.SlashingKeeper,
-	)
-	evidenceRouter := evidence.NewRouter()
-
-	// TODO: register evidence routes
-	evidenceKeeper.SetRouter(evidenceRouter)
-
-	app.EvidenceKeeper = *evidenceKeeper
 
 	// register the proposal types
 	govRouter := gov.NewRouter()
@@ -262,6 +248,17 @@ func NewBandApp(
 	)
 
 	app.IBCKeeper = ibc.NewKeeper(app.cdc, keys[ibc.StoreKey], stakingKeeper, scopedIBCKeeper)
+
+	// create evidence keeper with evidence router
+	evidenceKeeper := evidence.NewKeeper(
+		appCodec, keys[evidence.StoreKey], &stakingKeeper, app.SlashingKeeper,
+	)
+	evidenceRouter := evidence.NewRouter()
+
+	// TODO: register evidence routes
+	evidenceKeeper.SetRouter(evidenceRouter)
+
+	app.EvidenceKeeper = *evidenceKeeper
 
 	app.OracleKeeper = oracle.NewKeeper(
 		cdc,
@@ -351,9 +348,6 @@ func NewBandApp(
 	// that in-memory capabilities get regenerated on app restart
 	ctx := app.BaseApp.NewContext(true, abci.Header{})
 	app.CapabilityKeeper.InitializeAndSeal(ctx)
-
-	app.scopedIBCKeeper = scopedIBCKeeper
-	app.scopedOracleKeeper = scopedOracleKeeper
 
 	return app
 }
