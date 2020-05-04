@@ -16,7 +16,12 @@ module Styles = {
   let hFlex = style([display(`flex), alignItems(`center)]);
 
   let topicContainer =
-    style([display(`flex), justifyContent(`spaceBetween), width(`percent(100.))]);
+    style([
+      display(`flex),
+      justifyContent(`spaceBetween),
+      width(`percent(100.)),
+      lineHeight(`px(16)),
+    ]);
 
   let detailContainer = style([display(`flex), maxWidth(`px(360)), justifyContent(`flexEnd)]);
 
