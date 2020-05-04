@@ -259,41 +259,6 @@ func (am AppModule) OnAcknowledgementPacket(
 	packet channeltypes.Packet,
 	acknowledgement []byte,
 ) (*sdk.Result, error) {
-	// var ack FungibleTokenPacketAcknowledgement
-	// if err := types.ModuleCdc.UnmarshalJSON(acknowledgement, &ack); err != nil {
-	// 	return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal ICS-20 transfer packet acknowledgement: %v", err)
-	// }
-	// var data FungibleTokenPacketData
-	// if err := types.ModuleCdc.UnmarshalJSON(packet.GetData(), &data); err != nil {
-	// 	return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal ICS-20 transfer packet data: %s", err.Error())
-	// }
-
-	// if err := am.keeper.OnAcknowledgementPacket(ctx, packet, data, ack); err != nil {
-	// 	return nil, err
-	// }
-
-	// ctx.EventManager().EmitEvent(
-	// 	sdk.NewEvent(
-	// 		EventTypePacket,
-	// 		sdk.NewAttribute(sdk.AttributeKeyModule, AttributeValueCategory),
-	// 		sdk.NewAttribute(AttributeKeyReceiver, data.Receiver),
-	// 		sdk.NewAttribute(AttributeKeyValue, data.Amount.String()),
-	// 		sdk.NewAttribute(AttributeKeyAckSuccess, fmt.Sprintf("%t", ack.Success)),
-	// 	),
-	// )
-
-	// if !ack.Success {
-	// 	ctx.EventManager().EmitEvent(
-	// 		sdk.NewEvent(
-	// 			EventTypePacket,
-	// 			sdk.NewAttribute(AttributeKeyAckError, ack.Error),
-	// 		),
-	// 	)
-	// }
-
-	// return &sdk.Result{
-	// 	Events: ctx.EventManager().Events().ToABCIEvents(),
-	// }, nil
 	return nil, nil
 }
 
@@ -301,26 +266,5 @@ func (am AppModule) OnTimeoutPacket(
 	ctx sdk.Context,
 	packet channeltypes.Packet,
 ) (*sdk.Result, error) {
-	// var data FungibleTokenPacketData
-	// if err := types.ModuleCdc.UnmarshalBinaryBare(packet.GetData(), &data); err != nil {
-	// 	return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal ICS-20 transfer packet data: %s", err.Error())
-	// }
-	// // refund tokens
-	// if err := am.keeper.OnTimeoutPacket(ctx, packet, data); err != nil {
-	// 	return nil, err
-	// }
-
-	// ctx.EventManager().EmitEvent(
-	// 	sdk.NewEvent(
-	// 		EventTypeTimeout,
-	// 		sdk.NewAttribute(AttributeKeyRefundReceiver, data.Sender),
-	// 		sdk.NewAttribute(AttributeKeyRefundValue, data.Amount.String()),
-	// 		sdk.NewAttribute(sdk.AttributeKeyModule, AttributeValueCategory),
-	// 	),
-	// )
-
-	// return &sdk.Result{
-	// 	Events: ctx.EventManager().Events().ToABCIEvents(),
-	// }, nil
 	return nil, nil
 }
