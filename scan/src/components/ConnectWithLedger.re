@@ -161,10 +161,10 @@ let make = () => {
           setDeviation(_ => newDeviation);
         }}>
         {[|0, 1, 2, 3, 4, 5|]
-         |> Belt.Array.map(_, symbol =>
-              <option value={symbol |> string_of_int}>
+         |> Belt.Array.map(_, deviation =>
+              <option value={deviation |> string_of_int}>
                 {{
-                   "44/118/0/0/" ++ (symbol |> string_of_int);
+                   "44/118/0/0/" ++ (deviation |> string_of_int);
                  }
                  |> React.string}
               </option>
