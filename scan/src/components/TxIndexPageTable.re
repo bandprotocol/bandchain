@@ -757,6 +757,23 @@ let renderWithdrawReward = (withdrawal: TxSub.Msg.WithdrawReward.t) => {
   </Col>;
 };
 
+let renderUnjail = (unjail: TxSub.Msg.Unjail.t) => {
+  <Col size=Styles.thirdCol alignSelf=Col.Start>
+    <VSpacing size=Spacing.sm />
+    <div className=Styles.topicContainer>
+      <Text
+        value="VALIDATOR ADDRESS"
+        size=Text.Sm
+        weight=Text.Thin
+        spacing={Text.Em(0.06)}
+      />
+      <div className={Styles.addressContainer(300)}>
+        <AddressRender address={unjail.address} validator=true />
+      </div>
+    </div>
+  </Col>;
+};
+
 let renderBody = (msg: TxSub.Msg.t) => {
   switch (msg) {
   | Send(send) => renderSend(send)
@@ -790,6 +807,7 @@ let renderBody = (msg: TxSub.Msg.t) => {
   | Undelegate(delegation) => renderUndelegate(delegation)
   | Redelegate(delegation) => renderRedelegate(delegation)
   | WithdrawReward(withdrawal) => renderWithdrawReward(withdrawal)
+  | Unjail(unjail) => renderUnjail(unjail)
   | FailMessage(_) => "Failed msg" |> React.string
   | _ => React.null
   };
