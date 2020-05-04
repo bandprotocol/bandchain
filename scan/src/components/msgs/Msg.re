@@ -900,8 +900,9 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         <AddressRender address=withdrawAddress />
       </div>
     </div>
-  | SubmitProposal({title}) =>
+  | SubmitProposal({proposer, title}) =>
     <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=proposer /> </div>
       <div className={Styles.withBg(Colors.blue1, 100)}>
         <Text
           value="SUBMIT PROPOSAL"
@@ -917,6 +918,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | Deposit({depositor}) =>
     <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=depositor /> </div>
       <div className={Styles.withBg(Colors.blue1, 50)}>
         <Text
           value="DEPOSIT"
@@ -926,7 +928,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
           color=Colors.blue7
         />
       </div>
-      <div className={Styles.withWidth(width)}> <AddressRender address=depositor /> </div>
+      <div className={Styles.withWidth(width / 2)}> <AddressRender address=depositor /> </div>
     </div>
   | FailMessage({sender, message}) =>
     <div className={Styles.rowWithWidth(width)}>
