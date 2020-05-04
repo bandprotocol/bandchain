@@ -133,18 +133,21 @@ let make = (~chainID) => {
   let (accountIndex, setAccountIndex) = React.useState(_ => 0);
 
   let createLedger = accountIndex => {
+    dispatchModal(DisableExit);
     setResult(_ => Loading);
     let _ =
       Wallet.createFromLedger(accountIndex)
       |> Js.Promise.then_(wallet => {
            let%Promise (address, pubKey) = wallet->Wallet.getAddressAndPubKey;
            dispatchAccount(Connect(wallet, address, pubKey, chainID));
+           dispatchModal(EnableExit);
            dispatchModal(CloseModal);
            Promise.ret();
          })
       |> Js.Promise.catch(err => {
            Js.Console.log(err);
            setResult(_ => Error("An error occured"));
+           dispatchModal(EnableExit);
            Promise.ret();
          });
     ();
