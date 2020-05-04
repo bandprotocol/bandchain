@@ -236,12 +236,12 @@ func (am AppModule) OnAcknowledgementPacket(
 	packet channeltypes.Packet,
 	acknowledgement []byte,
 ) (*sdk.Result, error) {
-	return nil, nil
+	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
 
 func (am AppModule) OnTimeoutPacket(
 	ctx sdk.Context,
 	packet channeltypes.Packet,
 ) (*sdk.Result, error) {
-	return nil, nil
+	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
