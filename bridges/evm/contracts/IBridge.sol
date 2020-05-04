@@ -7,7 +7,7 @@ interface IBridge {
     struct RequestPacket {
         string clientId;
         uint64 oracleScriptId;
-        string params;
+        bytes params;
         uint64 askCount;
         uint64 minCount;
     }

@@ -15,19 +15,12 @@ contract BridgeV2 is Bridge, IBridgeV2 {
     }
 
     mapping(bytes32 => PendingRequest) public pendingRequest;
-    event RequestOracle(
-        string clientId,
-        uint256 oracleScriptId,
-        string params,
-        uint64 askCount,
-        uint64 minCount
-    );
 
     function requestOracle(IBridge.RequestPacket calldata request)
         external
         returns (bytes32)
     {
-        emit RequestOracle(
+        emit OracleRequest(
             request.clientId,
             request.oracleScriptId,
             request.params,
@@ -35,15 +28,9 @@ contract BridgeV2 is Bridge, IBridgeV2 {
             request.minCount
         );
         bytes32 key = keccak256(abi.encodePacked(msg.sender, request.clientId));
-        if (pendingRequest[key].isValue) revert();
-        IBridge.RequestPacket memory r = IBridge.RequestPacket(
-            request.clientId,
-            request.oracleScriptId,
-            request.params,
-            request.askCount,
-            request.minCount
-        );
-        pendingRequest[key] = PendingRequest(r, msg.sender, true);
+        require(!pendingRequest[key].isValue, "DUPLICATE_PENDING_REQUEST");
+        IBridge.RequestPacket memory temp = request;
+        pendingRequest[key] = PendingRequest(temp, msg.sender, true);
         return key;
     }
 }
