@@ -13,7 +13,7 @@ const (
 	StoreKey = ModuleName
 	// Key to store portID in our store
 	PortKey = "portID"
-	// Default PortID that transfer module binds to
+	// Default PortID that oracle module binds to
 	PortID = "oracle"
 )
 
