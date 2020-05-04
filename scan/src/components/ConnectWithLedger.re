@@ -130,12 +130,12 @@ let make = () => {
   let (_, dispatchAccount) = React.useContext(AccountContext.context);
   let (_, dispatchModal) = React.useContext(ModalContext.context);
   let (result, setResult) = React.useState(_ => Nothing);
-  let (hdPath, setHDPath) = React.useState(_ => 0);
+  let (deviation, setDeviation) = React.useState(_ => 0);
 
-  let createLedger = selectedPath => {
+  let createLedger = deviation => {
     setResult(_ => Loading);
     let _ =
-      Wallet.createFromLedger(selectedPath)
+      Wallet.createFromLedger(deviation)
       |> Js.Promise.then_(wallet => {
            let%Promise (address, pubKey) = wallet->Wallet.getAddressAndPubKey;
            dispatchAccount(Connect(wallet, address, pubKey));
@@ -157,8 +157,8 @@ let make = () => {
       <select
         className=Styles.selectContent
         onChange={event => {
-          let newPath = ReactEvent.Form.target(event)##value |> int_of_string;
-          setHDPath(_ => newPath);
+          let newDeviation = ReactEvent.Form.target(event)##value |> int_of_string;
+          setDeviation(_ => newDeviation);
         }}>
         {[|0, 1, 2, 3, 4, 5|]
          |> Belt.Array.map(_, symbol =>
@@ -195,7 +195,7 @@ let make = () => {
        | Nothing => React.null
        }}
     </div>
-    <div className=Styles.connectBtn onClick={_ => createLedger(hdPath)}>
+    <div className=Styles.connectBtn onClick={_ => createLedger(deviation)}>
       <Text value="Connect To Ledger" weight=Text.Bold size=Text.Md color=Colors.white />
     </div>
   </div>;
