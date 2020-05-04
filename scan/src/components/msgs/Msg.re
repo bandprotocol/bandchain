@@ -916,7 +916,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         <Text value=title weight=Text.Regular code=true nowrap=true block=true />
       </div>
     </div>
-  | Deposit({depositor}) =>
+  | Deposit({depositor, amount, proposalID}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=depositor /> </div>
       <div className={Styles.withBg(Colors.blue1, 50)}>
@@ -928,7 +928,33 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
           color=Colors.blue7
         />
       </div>
-      <div className={Styles.withWidth(width / 2)}> <AddressRender address=depositor /> </div>
+      <div className={Styles.rowWithWidth(200)}>
+        <Text
+          value={
+            amount->Belt_List.get(0)->Belt_Option.getWithDefault(Coin.newCoin("uband", 0.0)).
+              amount
+            |> Format.fPretty
+          }
+          weight=Text.Semibold
+          code=true
+          nowrap=true
+          block=true
+        />
+        <HSpacing size=Spacing.sm />
+        <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
+        <HSpacing size=Spacing.sm />
+        <Text value={j|➜|j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+        <HSpacing size=Spacing.sm />
+        <div className={Styles.rowWithWidth(200)}>
+          <Text
+            value={"Proposal " ++ (proposalID |> string_of_int)}
+            weight=Text.Regular
+            code=true
+            nowrap=true
+            block=true
+          />
+        </div>
+      </div>
     </div>
   | FailMessage({sender, message}) =>
     <div className={Styles.rowWithWidth(width)}>
