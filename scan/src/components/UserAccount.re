@@ -187,27 +187,31 @@ let make = () => {
   let disconnect = () => dispatchAccount(Disconnect);
   let submitTx = () => dispatchModal(OpenModal(SubmitTx));
 
-  switch (metadataSub) {
-  | Data({chainID}) =>
-    switch (accountOpt) {
-    | Some({address}) =>
-      <>
-        <Row justify=Row.Right>
-          <Col> <AddressRender address position=AddressRender.Nav /> </Col>
-          <Col> <HSpacing size={`px(27)} /> </Col>
-          <Col> <DisconnectBtn disconnect /> </Col>
-        </Row>
-        <VSpacing size=Spacing.md />
-        <Row justify=Row.Right>
-          <Col> <Balance address /> </Col>
-          <Col> <HSpacing size={`px(5)} /> </Col>
-          <Col> <FaucetBtn address={address->Address.toBech32} /> </Col>
-        </Row>
-        <VSpacing size=Spacing.md />
-        <Row justify=Row.Right> <Col> <SubmitTxBtn submitTx /> </Col> </Row>
-      </>
-    | None => <Col> <ConnectBtn connect={_ => connect(chainID)} /> </Col>
+  switch (accountOpt) {
+  | Some({address}) =>
+    <>
+      <Row justify=Row.Right>
+        <Col> <AddressRender address position=AddressRender.Nav /> </Col>
+        <Col> <HSpacing size={`px(27)} /> </Col>
+        <Col> <DisconnectBtn disconnect /> </Col>
+      </Row>
+      <VSpacing size=Spacing.md />
+      <Row justify=Row.Right>
+        <Col> <Balance address /> </Col>
+        <Col> <HSpacing size={`px(5)} /> </Col>
+        <Col> <FaucetBtn address={address->Address.toBech32} /> </Col>
+      </Row>
+      <VSpacing size=Spacing.md />
+      <Row justify=Row.Right> <Col> <SubmitTxBtn submitTx /> </Col> </Row>
+    </>
+  | None =>
+    switch (metadataSub) {
+    | Data({chainID}) => <Col> <ConnectBtn connect={_ => connect(chainID)} /> </Col>
+    | Error(err) =>
+      // log for err details
+      Js.Console.log(err);
+      <Text value="chain id not found" />;
+    | _ => <img src=Images.loadingCircles className={Styles.withWH(`px(65), `px(18))} />
     }
-  | _ => React.null
   };
 };
