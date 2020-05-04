@@ -42,15 +42,10 @@ let pythonMatch = str => {
   let rawResult =
     reg |> Js.Re.exec_(_, str) |> Belt_Option.mapWithDefault(_, [||], Js.Re.captures);
 
-  switch (rawResult->Belt.Array.get(1)) {
-  | Some(result) =>
-    switch (result->Js.Nullable.toOption) {
-    | Some(result') =>
-      Some(result' |> String.split_on_char(',') |> Belt.List.map(_, String.trim))
-    | None => None
-    }
-  | None => None
-  };
+  let%Opt resultNullable = rawResult->Belt.Array.get(1);
+  let%Opt result = resultNullable->Js.Nullable.toOption;
+
+  Some(result |> String.split_on_char(',') |> Belt.List.map(_, String.trim));
 };
 
 let getVariables = str => {
