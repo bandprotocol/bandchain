@@ -132,10 +132,10 @@ let make = () => {
   let (result, setResult) = React.useState(_ => Nothing);
   let (hdPath, setHDPath) = React.useState(_ => 0);
 
-  let createLedger = path => {
+  let createLedger = selectedPath => {
     setResult(_ => Loading);
     let _ =
-      Wallet.createFromLedger(path)
+      Wallet.createFromLedger(selectedPath)
       |> Js.Promise.then_(wallet => {
            let%Promise (address, pubKey) = wallet->Wallet.getAddressAndPubKey;
            dispatchAccount(Connect(wallet, address, pubKey));
