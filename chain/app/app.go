@@ -255,9 +255,7 @@ func NewBandApp(
 	)
 	evidenceRouter := evidence.NewRouter()
 
-	// TODO: register evidence routes
 	evidenceKeeper.SetRouter(evidenceRouter)
-
 	app.EvidenceKeeper = *evidenceKeeper
 
 	app.OracleKeeper = oracle.NewKeeper(
