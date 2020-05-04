@@ -11,6 +11,10 @@ const (
 	ModuleName = "oracle"
 	// StoreKey to be used when creating the KVStore
 	StoreKey = ModuleName
+	// Key to store portID in our store
+	PortKey = "portID"
+	// Default PortID that transfer module binds to
+	PortID = "transfer"
 )
 
 var (

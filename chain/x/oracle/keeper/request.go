@@ -164,14 +164,14 @@ func (k Keeper) ProcessOracleResponse(
 		return
 	}
 
-	channelCap, ok := k.scopedKeeper.GetCapability(ctx, ibctypes.ChannelCapabilityPath(destinationPort, destinationChannel))
+	channelCap, ok := k.ScopedKeeper.GetCapability(ctx, ibctypes.ChannelCapabilityPath(request.RequestIBC.SourcePort, request.RequestIBC.SourceChannel))
 	if !ok {
 		fmt.Println("GET CAPABILITY ERROR", request.RequestIBC.SourcePort, request.RequestIBC.SourceChannel)
 		return
 	}
 	err := k.ChannelKeeper.SendPacket(ctx, channelCap, channel.NewPacket(resPacketData.GetBytes(),
 		sequence, request.RequestIBC.SourcePort, request.RequestIBC.SourceChannel, destinationPort, destinationChannel,
-		1000000000, 1000000000, // Arbitrarily height and timestamp timeout for now
+		1000000000, 1746114147000000000, // Arbitrarily height and timestamp timeout for now
 	))
 
 	if err != nil {
