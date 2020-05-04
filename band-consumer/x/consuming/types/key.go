@@ -7,10 +7,27 @@ import (
 )
 
 const (
-	// ModuleName is the name of the module
+	// ModuleName defines the IBC transfer name
 	ModuleName = "consuming"
-	// StoreKey to be used when creating the KVStore
+
+	// Version defines the current version the IBC tranfer
+	// module supports
+	Version = "ics20-1"
+
+	// Default PortID that transfer module binds to
+	PortID = "consuming"
+
+	// StoreKey is the store key string for IBC transfer
 	StoreKey = ModuleName
+
+	// RouterKey is the message route for IBC transfer
+	RouterKey = ModuleName
+
+	// Key to store portID in our store
+	PortKey = "portID"
+
+	// QuerierRoute is the querier route for IBC transfer
+	QuerierRoute = ModuleName
 )
 
 var (

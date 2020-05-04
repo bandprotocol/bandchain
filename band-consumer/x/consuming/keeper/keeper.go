@@ -51,7 +51,8 @@ func (k Keeper) HasResult(ctx sdk.Context, requestID oracle.RequestID) bool {
 	return store.Has(types.ResultStoreKey(requestID))
 }
 
-// TODO: Hack for use
+// BindPort defines a wrapper function for the ort Keeper's function in
+// order to expose it to module's InitGenesis function
 func (k Keeper) BindPort(ctx sdk.Context, portID string) error {
 	// Set the portID into our store so we can retrieve it later
 	store := ctx.KVStore(k.storeKey)
