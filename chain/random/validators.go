@@ -49,11 +49,11 @@ func luckyDraw(seed []byte, vals Validators, randomRange int64) (Validator, Vali
 	return luckyVal, vals
 }
 
-func getRandomRange(vals Validators, round, algo int) int64 {
+func getRandomRange(vals Validators, round, amount, algo int) int64 {
 	var randomRange int64
 	switch algo {
 	case 0:
-		randomRange = int64(len(vals.ValidatorSet) - 10*round)
+		randomRange = int64(len(vals.ValidatorSet) - len(vals.ValidatorSet)*round/amount)
 		if randomRange < 0 {
 			randomRange = 0
 		}
@@ -73,7 +73,7 @@ func randomValidators(seed []byte, vals Validators, amount int, algo int) Valida
 	var val Validator
 	for round := 0; round < amount; round++ {
 		seed = nextSeed(seed)
-		randomRange := getRandomRange(vals, round, algo)
+		randomRange := getRandomRange(vals, round, amount, algo)
 		val, vals = luckyDraw(seed, vals, randomRange)
 		luckyVal.ValidatorSet = append(luckyVal.ValidatorSet, val)
 	}
