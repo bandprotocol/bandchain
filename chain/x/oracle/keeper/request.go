@@ -171,7 +171,7 @@ func (k Keeper) ProcessOracleResponse(
 	}
 	err := k.ChannelKeeper.SendPacket(ctx, channelCap, channel.NewPacket(resPacketData.GetBytes(),
 		sequence, request.RequestIBC.SourcePort, request.RequestIBC.SourceChannel, destinationPort, destinationChannel,
-		1000000000, 1746114147000000000, // Arbitrarily height and timestamp timeout for now
+		0, 0, // Arbitrarily height and timestamp timeout for now
 	))
 
 	if err != nil {
