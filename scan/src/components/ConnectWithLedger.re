@@ -130,12 +130,12 @@ let make = () => {
   let (_, dispatchAccount) = React.useContext(AccountContext.context);
   let (_, dispatchModal) = React.useContext(ModalContext.context);
   let (result, setResult) = React.useState(_ => Nothing);
-  let (deviation, setDeviation) = React.useState(_ => 0);
+  let (accountIndex, setAccountIndex) = React.useState(_ => 0);
 
-  let createLedger = deviation => {
+  let createLedger = accountIndex => {
     setResult(_ => Loading);
     let _ =
-      Wallet.createFromLedger(deviation)
+      Wallet.createFromLedger(accountIndex)
       |> Js.Promise.then_(wallet => {
            let%Promise (address, pubKey) = wallet->Wallet.getAddressAndPubKey;
            dispatchAccount(Connect(wallet, address, pubKey));
@@ -157,14 +157,14 @@ let make = () => {
       <select
         className=Styles.selectContent
         onChange={event => {
-          let newDeviation = ReactEvent.Form.target(event)##value |> int_of_string;
-          setDeviation(_ => newDeviation);
+          let newAccountIndex = ReactEvent.Form.target(event)##value |> int_of_string;
+          setAccountIndex(_ => newAccountIndex);
         }}>
         {[|0, 1, 2, 3, 4, 5|]
-         |> Belt.Array.map(_, deviation =>
-              <option value={deviation |> string_of_int}>
+         |> Belt.Array.map(_, index =>
+              <option value={index |> string_of_int}>
                 {{
-                   "44/118/0/0/" ++ (deviation |> string_of_int);
+                   "44/118/0/0/" ++ (index |> string_of_int);
                  }
                  |> React.string}
               </option>
@@ -195,7 +195,7 @@ let make = () => {
        | Nothing => React.null
        }}
     </div>
-    <div className=Styles.connectBtn onClick={_ => createLedger(deviation)}>
+    <div className=Styles.connectBtn onClick={_ => createLedger(accountIndex)}>
       <Text value="Connect To Ledger" weight=Text.Bold size=Text.Md color=Colors.white />
     </div>
   </div>;
