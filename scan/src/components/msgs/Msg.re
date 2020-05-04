@@ -952,6 +952,32 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         </div>
       </div>
     </div>
+  | Vote({voterAddress, proposalID, option}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=voterAddress /> </div>
+      <div className={Styles.withBg(Colors.blue1, 40)}>
+        <Text
+          value="VOTE"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.blue7
+        />
+      </div>
+      <Text value=option weight=Text.Regular code=true nowrap=true block=true />
+      <HSpacing size=Spacing.sm />
+      <Text value={j|➜|j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+      <HSpacing size=Spacing.sm />
+      <div className={Styles.rowWithWidth(200)}>
+        <Text
+          value={"Proposal " ++ (proposalID |> string_of_int)}
+          weight=Text.Regular
+          code=true
+          nowrap=true
+          block=true
+        />
+      </div>
+    </div>
   | FailMessage({sender, message}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
