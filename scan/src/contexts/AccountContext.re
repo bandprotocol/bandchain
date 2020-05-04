@@ -21,7 +21,9 @@ let reducer = state =>
           let%Promise rawTx =
             TxCreator.createRawTx(
               ~address,
-              ~msgs=[|Request(oracleScriptID, calldata, "4", "4", address, "")|],
+              // Client id can't be an empty string (""), so we need to add "from_scan"
+              // TODO: Make this more intuitive
+              ~msgs=[|Request(oracleScriptID, calldata, "4", "4", address, "from_scan")|],
               ~gas="700000",
               ~feeAmount="100",
               ~memo="send via scan",
