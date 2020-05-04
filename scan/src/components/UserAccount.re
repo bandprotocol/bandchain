@@ -211,7 +211,7 @@ let make = () => {
       // log for err details
       Js.Console.log(err);
       <Text value="chain id not found" />;
-    | _ => <img src=Images.loadingCircles className={Styles.withWH(`px(65), `px(18))} />
+    | _ => <LoadingCensorBar width=60 height=18 />
     }
   };
 };
