@@ -20,6 +20,18 @@ type msg_delegate_t = {
   amount: amount_t,
 };
 
+type msg_redelegate_t = {
+  delegator_address: string,
+  validator_src_address: string,
+  validator_dst_address: string,
+  amount: amount_t,
+};
+
+type msg_withdraw_reward_t = {
+  delegator_address: string,
+  validator_address: string,
+};
+
 type msg_request_t = {
   oracleScriptID: string,
   calldata: string,
@@ -33,6 +45,8 @@ type msg_input_t =
   | Send(Address.t, amount_t)
   | Delegate(Address.t, amount_t)
   | Undelegate(Address.t, amount_t)
+  | Redelegate(Address.t, Address.t, amount_t)
+  | WithdrawReward(Address.t)
   | Request(ID.OracleScript.t, JsBuffer.t, string, string, Address.t, string);
 
 type msg_payload_t = {
@@ -138,6 +152,8 @@ let createMsg = (sender, msg: msg_input_t): msg_payload_t => {
     | Send(_) => "cosmos-sdk/MsgSend"
     | Delegate(_) => "cosmos-sdk/MsgDelegate"
     | Undelegate(_) => "cosmos-sdk/MsgUndelegate"
+    | Redelegate(_) => "cosmos-sdk/MsgBeginRedelegate"
+    | WithdrawReward(_) => "cosmos-sdk/MsgWithdrawDelegationReward"
     | Request(_) => "oracle/Request"
     };
 
@@ -167,6 +183,26 @@ let createMsg = (sender, msg: msg_input_t): msg_payload_t => {
           delegator_address: sender |> Address.toBech32,
           validator_address: validator |> Address.toOperatorBech32,
           amount,
+        });
+      }
+      |> Belt_Option.getExn
+      |> Js.Json.parseExn
+    | Redelegate(fromValidator, toValidator, amount) =>
+      {
+        Js.Json.stringifyAny({
+          delegator_address: sender |> Address.toBech32,
+          validator_src_address: fromValidator |> Address.toOperatorBech32,
+          validator_dst_address: toValidator |> Address.toOperatorBech32,
+          amount,
+        });
+      }
+      |> Belt_Option.getExn
+      |> Js.Json.parseExn
+    | WithdrawReward(validator) =>
+      {
+        Js.Json.stringifyAny({
+          delegator_address: sender |> Address.toBech32,
+          validator_address: validator |> Address.toOperatorBech32,
         });
       }
       |> Belt_Option.getExn
