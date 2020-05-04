@@ -12,7 +12,7 @@ type Metadata struct {
 
 type Block struct {
 	Height    int64  `gorm:"primary_key;auto_increment:false"`
-	Timestamp int64  `gorm:"not null"`
+	Timestamp int64  `gorm:"not null;index"`
 	Proposer  string `gorm:"not null"`
 	BlockHash []byte `gorm:"not null"`
 }
