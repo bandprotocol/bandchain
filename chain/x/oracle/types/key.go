@@ -14,7 +14,7 @@ const (
 	// Key to store portID in our store
 	PortKey = "portID"
 	// Default PortID that transfer module binds to
-	PortID = "transfer"
+	PortID = "oracle"
 )
 
 var (
