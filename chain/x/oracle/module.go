@@ -216,6 +216,7 @@ func (am AppModule) OnRecvPacket(
 		if err != nil {
 			return nil, err
 		}
+		// TODO: Mock data source fee payer
 		newMsg := NewMsgRequestData(
 			requestData.OracleScriptID, calldata, requestData.AskCount,
 			requestData.MinCount, requestData.ClientID,
@@ -225,30 +226,6 @@ func (am AppModule) OnRecvPacket(
 			ctx, am.keeper, newMsg, packet.GetDestPort(), packet.GetDestChannel(),
 		)
 	}
-	// acknowledgement := FungibleTokenPacketAcknowledgement{
-	// 	Success: true,
-	// 	Error:   "",
-	// }
-	// if err := am.keeper.OnRecvPacket(ctx, packet, data); err != nil {
-	// 	acknowledgement = FungibleTokenPacketAcknowledgement{
-	// 		Success: false,
-	// 		Error:   err.Error(),
-	// 	}
-	// }
-
-	// if err := am.keeper.ChannelKeeper.PacketExecuted(ctx, ,packet, acknowledgement.GetBytes()); err != nil {
-	// 	return nil, err
-	// }
-
-	// ctx.EventManager().EmitEvent(
-	// 	sdk.NewEvent(
-	// 		types.EventTypePacket,
-	// 		sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-	// 		// sdk.NewAttribute(types.AttributeKeyReceiver, data.Receiver),
-	// 		// sdk.NewAttribute(types.AttributeKeyValue, data.Amount.String()),
-	// 	),
-	// )
-
 	return &sdk.Result{
 		Events: ctx.EventManager().Events().ToABCIEvents(),
 	}, nil
