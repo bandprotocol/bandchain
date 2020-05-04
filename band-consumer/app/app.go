@@ -125,7 +125,6 @@ type BandConsumerApp struct {
 	ibcKeeper        *ibc.Keeper
 	transferKeeper   transfer.Keeper
 	consumingKeeper  consuming.Keeper
-	scopedIBCKeeper  capability.ScopedKeeper
 	// the module manager
 	mm *module.Manager
 
@@ -280,8 +279,8 @@ func NewBandConsumerApp(
 		upgrade.NewAppModule(app.upgradeKeeper),
 		evidence.NewAppModule(appCodec, app.evidenceKeeper),
 		ibc.NewAppModule(app.ibcKeeper),
-		transfer.NewAppModule(app.transferKeeper),
-		consuming.NewAppModule(app.consumingKeeper),
+		transferModule,
+		consumingModule,
 	)
 	// During begin block slashing happens after distr.BeginBlocker so that
 	// there is nothing left over in the validator fee pool, so as to keep the

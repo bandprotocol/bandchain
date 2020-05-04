@@ -26,7 +26,7 @@ func DefaultGenesisState() GenesisState {
 
 func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorUpdate {
 	// TODO: revisit this code
-	err := k.BindPort(ctx, "consuming")
+	err := k.BindPort(ctx, PortID)
 	if err != nil {
 		panic(fmt.Sprintf("could not claim port capability: %v", err))
 	}

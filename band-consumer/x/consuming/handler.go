@@ -2,14 +2,11 @@ package consuming
 
 import (
 	"encoding/hex"
-	"fmt"
 
-	"github.com/bandprotocol/band-consumer/x/consuming/types"
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	channel "github.com/cosmos/cosmos-sdk/x/ibc/04-channel"
-	channeltypes "github.com/cosmos/cosmos-sdk/x/ibc/04-channel/types"
 	ibctypes "github.com/cosmos/cosmos-sdk/x/ibc/types"
 )
 
@@ -55,13 +52,6 @@ func NewHandler(keeper Keeper) sdk.Handler {
 				return nil, err
 			}
 			return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
-		case channeltypes.MsgPacket:
-			var responseData oracle.OracleResponsePacketData
-			if err := types.ModuleCdc.UnmarshalJSON(msg.GetData(), &responseData); err == nil {
-				fmt.Println("I GOT DATA", responseData.Result, responseData.ResolveTime)
-				return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
-			}
-			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal oracle packet data")
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized %s message type: %T", ModuleName, msg)
 		}

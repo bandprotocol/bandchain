@@ -6,9 +6,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// RouterKey is they name of the bank module
-const RouterKey = ModuleName
-
 // MsgRequestData is a message for requesting a new data request to an existing oracle script.
 type MsgRequestData struct {
 	OracleScriptID oracle.OracleScriptID `json:"oracleScriptID"`
