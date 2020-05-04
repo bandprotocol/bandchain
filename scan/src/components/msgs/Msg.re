@@ -969,6 +969,12 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
       <Text value={j|➜|j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
       <HSpacing size=Spacing.sm />
       <div className={Styles.rowWithWidth(200)}>
+        <Text value=option weight=Text.Regular code=true nowrap=true block=true />
+      </div>
+      <HSpacing size=Spacing.sm />
+      <Text value={j|➜|j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+      <HSpacing size=Spacing.sm />
+      <div className={Styles.rowWithWidth(200)}>
         <Text
           value={"Proposal " ++ (proposalID |> string_of_int)}
           weight=Text.Regular
