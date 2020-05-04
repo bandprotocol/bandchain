@@ -4,10 +4,11 @@ type t = {
   prefix: string,
 };
 
-let create = () => {
+let create = path => {
   // TODO: handle interaction timeout later
   let timeout = 10000;
-  let path = [|44, 118, 0, 0, 0|];
+  let path = [|44, 118, 0, 0, path|];
+  Js.Console.log(path);
   let prefix = "band";
   let%Promise transport = LedgerJS.createTransportWebUSB(timeout);
 
