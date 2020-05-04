@@ -50,7 +50,7 @@ func TestExecuteEndToEnd(t *testing.T) {
 	require.Nil(t, err)
 	env := &mockExecEnv{
 		externalDataResults:               [][][]byte{nil, {[]byte("RETURN_DATA")}},
-		requestExternalDataResultsCounter: [][]int64{nil, []int64{0}},
+		requestExternalDataResultsCounter: [][]int64{nil, {0}},
 		maximumResultSize:                 1024,
 		maximumCalldataOfDataSourceSize:   1024,
 	}
@@ -124,7 +124,7 @@ func TestExecuteInvalidGetMaximumResultSize(t *testing.T) {
 	require.Nil(t, err)
 	env := &mockExecEnv{
 		externalDataResults:               [][][]byte{nil, {[]byte("RETURN_DATA")}},
-		requestExternalDataResultsCounter: [][]int64{nil, []int64{0}},
+		requestExternalDataResultsCounter: [][]int64{nil, {0}},
 		maximumResultSize:                 10,
 	}
 
@@ -134,7 +134,7 @@ func TestExecuteInvalidGetMaximumResultSize(t *testing.T) {
 
 	env2 := &mockExecEnv{
 		externalDataResults:               [][][]byte{nil, {[]byte("RETURN_DATA")}},
-		requestExternalDataResultsCounter: [][]int64{nil, []int64{0}},
+		requestExternalDataResultsCounter: [][]int64{nil, {0}},
 		maximumResultSize:                 11,
 	}
 	// It should return "RETURN_DATA" and not return error.
@@ -144,3 +144,16 @@ func TestExecuteInvalidGetMaximumResultSize(t *testing.T) {
 }
 
 // TODO: Add more tests for MaxTableSize, MaxValueSlots and MaxCallStackDepth.
+
+func TestNotPanicFromWasm(t *testing.T) {
+	code, err := ioutil.ReadFile("./res/wrong_args.wasm")
+	require.Nil(t, err)
+	env := &mockExecEnv{
+		requestExternalDataResultsCounter: [][]int64{nil, {0}},
+		maximumResultSize:                 1024,
+		maximumCalldataOfDataSourceSize:   1024,
+	}
+
+	_, _, err = Execute(env, code, "prepare", []byte{}, 10000)
+	require.EqualError(t, err, "param count mismatch")
+}
