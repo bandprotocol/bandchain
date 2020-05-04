@@ -796,7 +796,7 @@ let renderSubmitProposal = (proposal: TxSub.Msg.SubmitProposal.t) => {
       <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className=Styles.hFlex>
         <Text
-          value={proposal.initialDeposit |> Coin.getBandAmountFromCoins |> Js.Float.toString}
+          value={proposal.initialDeposit |> Coin.getBandAmountNoDivision |> Js.Float.toString}
           weight=Text.Semibold
           code=true
         />
@@ -825,7 +825,7 @@ let renderDeposit = (deposit: TxSub.Msg.Deposit.t) => {
       <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className=Styles.hFlex>
         <Text
-          value={deposit.amount |> Coin.getBandAmountFromCoins |> Js.Float.toString}
+          value={deposit.amount |> Coin.getBandAmountNoDivision |> Js.Float.toString}
           weight=Text.Semibold
           code=true
         />
