@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"time"
+
 	"github.com/bandprotocol/bandchain/chain/owasm"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -11,6 +13,15 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/params"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
+)
+
+const (
+	// DefaultPacketTimeoutHeight is the default packet timeout height relative
+	// to the current block height. The timeout is disabled when set to 0.
+	DefaultPacketTimeoutHeight = 0 // NOTE: in blocks
+
+	// DefaultPacketTimeoutTimestampDuration is the default packet timeout duration
+	DefaultPacketTimeoutTimestampDuration = uint64(600 * time.Second) // NOTE: in nanoseconds
 )
 
 type Keeper struct {
