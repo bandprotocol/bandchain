@@ -54,7 +54,7 @@ module Styles = {
 
   let loading = style([width(`px(100))]);
 
-  let connectBtn =
+  let connectBtn = isLoading =>
     style([
       width(`px(140)),
       height(`px(30)),
@@ -62,15 +62,22 @@ module Styles = {
       justifySelf(`right),
       justifyContent(`center),
       alignItems(`center),
+      backgroundColor(isLoading ? Colors.blueGray3 : Css.rgba(0, 0, 0, 0.)),
       backgroundImage(
-        `linearGradient((
-          `deg(90.),
-          [(`percent(0.), Colors.blue7), (`percent(100.), Colors.bandBlue)],
-        )),
+        isLoading
+          ? `none
+          : `linearGradient((
+              `deg(90.),
+              [(`percent(0.), Colors.blue7), (`percent(100.), Colors.bandBlue)],
+            )),
       ),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(8), Css.rgba(82, 105, 255, 0.25))),
+      boxShadow(
+        isLoading
+          ? `none : Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(8), Css.rgba(82, 105, 255, 0.25)),
+      ),
       borderRadius(`px(4)),
-      cursor(`pointer),
+      cursor(isLoading ? `default : `pointer),
+      pointerEvents(isLoading ? `none : `auto),
       alignSelf(`flexEnd),
     ]);
 
@@ -195,8 +202,11 @@ let make = (~chainID) => {
        | Nothing => React.null
        }}
     </div>
-    <div className=Styles.connectBtn onClick={_ => createLedger(accountIndex)}>
-      <Text value="Connect To Ledger" weight=Text.Bold size=Text.Md color=Colors.white />
+    <div
+      className={Styles.connectBtn(result == Loading)} onClick={_ => createLedger(accountIndex)}>
+      {result == Loading
+         ? <Text value="Connecting..." weight=Text.Bold size=Text.Md color=Colors.blueGray7 />
+         : <Text value="Connect To Ledger" weight=Text.Bold size=Text.Md color=Colors.white />}
     </div>
   </div>;
 };
