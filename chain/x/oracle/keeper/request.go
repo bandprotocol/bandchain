@@ -3,6 +3,7 @@ package keeper
 import (
 	"encoding/hex"
 	"fmt"
+	"time"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -171,7 +172,7 @@ func (k Keeper) ProcessOracleResponse(
 	}
 	err := k.ChannelKeeper.SendPacket(ctx, channelCap, channel.NewPacket(resPacketData.GetBytes(),
 		sequence, request.RequestIBC.SourcePort, request.RequestIBC.SourceChannel, destinationPort, destinationChannel,
-		0, 0, // Arbitrarily height and timestamp timeout for now
+		0, uint64(ctx.BlockTime().UnixNano())+uint64(600*time.Second), // we ignore timeout height and set timeout timestamp to 10 minutes
 	))
 
 	if err != nil {
