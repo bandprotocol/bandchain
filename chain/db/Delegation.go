@@ -49,10 +49,11 @@ func (b *BandDB) delegate(
 	if !latestReward.CumulativeRewardRatio.IsZero() {
 		cumulativeRewardRatio = latestReward.CumulativeRewardRatio[0].Amount.String()
 	}
+	token := validator.Tokens.BigInt().Uint64()
 	err := b.UpdateValidator(
 		validatorAddress,
 		&Validator{
-			Tokens:          validator.Tokens.BigInt().Uint64(),
+			Tokens:          &token,
 			DelegatorShares: validator.DelegatorShares.String(),
 			CurrentReward:   "0",
 			CurrentRatio:    cumulativeRewardRatio,
@@ -106,12 +107,14 @@ func (b *BandDB) undelegate(
 		if !latestReward.CumulativeRewardRatio.IsZero() {
 			cumulativeRewardRatio = latestReward.CumulativeRewardRatio[0].Amount.String()
 		}
+		token := validator.Tokens.BigInt().Uint64()
+		jailed := validator.Jailed
 		return b.UpdateValidator(
 			validatorAddress,
 			&Validator{
-				Tokens:          validator.Tokens.BigInt().Uint64(),
+				Tokens:          &token,
 				DelegatorShares: validator.DelegatorShares.String(),
-				Jailed:          validator.Jailed,
+				Jailed:          &jailed,
 				CurrentReward:   "0",
 				CurrentRatio:    cumulativeRewardRatio,
 			},
