@@ -126,7 +126,7 @@ type result_t =
   | Error(string);
 
 [@react.component]
-let make = () => {
+let make = (~chainID) => {
   let (_, dispatchAccount) = React.useContext(AccountContext.context);
   let (_, dispatchModal) = React.useContext(ModalContext.context);
   let (result, setResult) = React.useState(_ => Nothing);
@@ -138,7 +138,7 @@ let make = () => {
       Wallet.createFromLedger(accountIndex)
       |> Js.Promise.then_(wallet => {
            let%Promise (address, pubKey) = wallet->Wallet.getAddressAndPubKey;
-           dispatchAccount(Connect(wallet, address, pubKey));
+           dispatchAccount(Connect(wallet, address, pubKey, chainID));
            dispatchModal(CloseModal);
            Promise.ret();
          })
