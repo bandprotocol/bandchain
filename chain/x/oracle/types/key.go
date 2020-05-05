@@ -113,9 +113,7 @@ func GetIteratorPrefix(prefix []byte, requestID RequestID) []byte {
 }
 
 // GetValidatorAddressAndExternalID is a function to get validator address and external id from raw data report key.
-func GetValidatorAddressAndExternalID(
-	key []byte, requestID RequestID,
-) (sdk.ValAddress, ExternalID) {
+func GetValidatorAddressAndExternalID(key []byte, requestID RequestID) (sdk.ValAddress, ExternalID) {
 	prefixLength := len(RawDataReportStoreKeyPrefix)
 	externalIDBytes := key[prefixLength+8 : prefixLength+16]
 	externalID := ExternalID(sdk.BigEndianToUint64(externalIDBytes))
