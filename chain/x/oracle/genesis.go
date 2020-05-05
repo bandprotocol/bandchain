@@ -1,6 +1,8 @@
 package oracle
 
 import (
+	"fmt"
+
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -70,7 +72,10 @@ func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorU
 			panic(err)
 		}
 	}
-
+	err := k.BindPort(ctx, PortID)
+	if err != nil {
+		panic(fmt.Sprintf("could not claim port capability: %v", err))
+	}
 	return []abci.ValidatorUpdate{}
 }
 

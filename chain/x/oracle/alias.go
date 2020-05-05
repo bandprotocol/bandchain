@@ -10,6 +10,7 @@ const (
 	DefaultParamspace = types.DefaultParamspace
 	RouterKey         = types.RouterKey
 	StoreKey          = types.StoreKey
+	PortID            = types.PortID
 
 	EventTypeCreateDataSource   = types.EventTypeCreateDataSource
 	EventTypeEditDataSource     = types.EventTypeEditDataSource
