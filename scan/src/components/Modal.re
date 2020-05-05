@@ -45,7 +45,7 @@ let make = () => {
   | Some(m) =>
     let body =
       switch (m) {
-      | Connect => <ConnectModal />
+      | Connect(chainID) => <ConnectModal chainID />
       | SubmitTx => <SubmitTxModal />
       };
     <div className=Styles.overlay onClick={_ => dispatchModal(CloseModal)}>
