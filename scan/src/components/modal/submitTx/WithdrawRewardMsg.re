@@ -2,7 +2,7 @@
 let make = (~setMsgsOpt) => {
   let (validator, setValidator) = React.useState(_ => EnhanceTxInput.empty);
 
-  React.useEffect2(
+  React.useEffect1(
     _ => {
       let msgsOpt = {
         let%Opt validatorValue = validator.value;
@@ -11,7 +11,7 @@ let make = (~setMsgsOpt) => {
       setMsgsOpt(_ => msgsOpt);
       None;
     },
-    (validator, 0),
+    validator |> Belt.Array.make(1, _),
   );
 
   <>

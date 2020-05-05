@@ -4,7 +4,7 @@ let make = (~setMsgsOpt) => {
   let (dstValidator, setDstValidator) = React.useState(_ => EnhanceTxInput.empty);
   let (amount, setAmount) = React.useState(_ => EnhanceTxInput.empty);
 
-  React.useEffect2(
+  React.useEffect3(
     _ => {
       let msgsOpt = {
         let%Opt srcValidatorValue = srcValidator.value;
@@ -21,7 +21,7 @@ let make = (~setMsgsOpt) => {
       setMsgsOpt(_ => msgsOpt);
       None;
     },
-    (dstValidator, amount),
+    (srcValidator, dstValidator, amount),
   );
 
   <>
