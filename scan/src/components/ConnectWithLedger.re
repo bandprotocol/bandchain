@@ -162,7 +162,7 @@ let make = (~chainID) => {
         }}>
         {[|0, 1, 2, 3, 4, 5|]
          |> Belt.Array.map(_, index =>
-              <option value={index |> string_of_int}>
+              <option key={index |> string_of_int} value={index |> string_of_int}>
                 {{
                    "44/118/0/0/" ++ (index |> string_of_int);
                  }
