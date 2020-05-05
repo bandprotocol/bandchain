@@ -54,8 +54,9 @@ module Styles = {
 
   let loading = style([width(`px(100))]);
 
-  let connectBtn = isLoading =>
+  let connectBtn = (~isLoading, ()) =>
     style([
+      marginTop(`px(10)),
       width(`px(140)),
       height(`px(30)),
       display(`flex),
@@ -202,11 +203,16 @@ let make = (~chainID) => {
        | Nothing => React.null
        }}
     </div>
-    <div
-      className={Styles.connectBtn(result == Loading)} onClick={_ => createLedger(accountIndex)}>
-      {result == Loading
-         ? <Text value="Connecting..." weight=Text.Bold size=Text.Md color=Colors.blueGray7 />
-         : <Text value="Connect To Ledger" weight=Text.Bold size=Text.Md color=Colors.white />}
-    </div>
+    {result == Loading
+       ? <div
+           className={Styles.connectBtn(~isLoading=true, ())}
+           onClick={_ => createLedger(accountIndex)}>
+           <Text value="Connecting..." weight=Text.Bold size=Text.Md color=Colors.blueGray7 />
+         </div>
+       : <div
+           className={Styles.connectBtn(~isLoading=false, ())}
+           onClick={_ => createLedger(accountIndex)}>
+           <Text value="Connect To Ledger" weight=Text.Bold size=Text.Md color=Colors.white />
+         </div>}
   </div>;
 };
