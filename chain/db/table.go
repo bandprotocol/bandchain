@@ -31,32 +31,32 @@ type Transaction struct {
 }
 
 type Account struct {
-	Address       string `gorm:"primary_key"`
-	Balance       string `gorm:"not null"`
-	UpdatedHeight int64  `gorm:"not null"`
+	Address       string  `gorm:"primary_key"`
+	Balance       *string `gorm:"not null"`
+	UpdatedHeight int64   `gorm:"not null"`
 }
 
 type Validator struct {
-	OperatorAddress     string `gorm:"primary_key"`
-	ConsensusAddress    string `gorm:"unique;not null"`
-	ConsensusPubkey     string `gorm:"not null"`
-	ElectedCount        uint   `gorm:"not null"`
-	VotedCount          uint   `gorm:"not null"`
-	MissedCount         uint   `gorm:"not null"`
-	Moniker             string `gorm:"not null"`
-	Identity            string `gorm:"not null"`
-	Website             string `gorm:"not null"`
-	Details             string `gorm:"not null"`
-	CommissionRate      string `gorm:"not null"`
-	CommissionMaxRate   string `gorm:"not null"`
-	CommissionMaxChange string `gorm:"not null"`
-	MinSelfDelegation   string `gorm:"not null"`
-	Jailed              bool   `gorm:"not null"`
-	Tokens              uint64 `gorm:"not null"`
-	DelegatorShares     string `gorm:"not null"`
-	BondedHeight        int64  `gorm:"not null"`
-	CurrentReward       string `gorm:"not null"`
-	CurrentRatio        string `gorm:"not null"`
+	OperatorAddress     string  `gorm:"primary_key"`
+	ConsensusAddress    string  `gorm:"unique;not null"`
+	ConsensusPubkey     string  `gorm:"not null"`
+	ElectedCount        uint    `gorm:"not null"`
+	VotedCount          uint    `gorm:"not null"`
+	MissedCount         uint    `gorm:"not null"`
+	Moniker             string  `gorm:"not null"`
+	Identity            string  `gorm:"not null"`
+	Website             string  `gorm:"not null"`
+	Details             string  `gorm:"not null"`
+	CommissionRate      string  `gorm:"not null"`
+	CommissionMaxRate   string  `gorm:"not null"`
+	CommissionMaxChange string  `gorm:"not null"`
+	MinSelfDelegation   string  `gorm:"not null"`
+	Jailed              *bool   `gorm:"not null"`
+	Tokens              *uint64 `gorm:"not null"`
+	DelegatorShares     string  `gorm:"not null"`
+	BondedHeight        int64   `gorm:"not null"`
+	CurrentReward       string  `gorm:"not null"`
+	CurrentRatio        string  `gorm:"not null"`
 }
 
 type ValidatorVote struct {
