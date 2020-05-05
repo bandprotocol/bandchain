@@ -98,7 +98,7 @@ module LoginMethod = {
 };
 
 [@react.component]
-let make = _ => {
+let make = (~chainID) => {
   let (loginMethod, setLoginMethod) = React.useState(_ => Mnemonic);
   <div className=Styles.container>
     <div className=Styles.bg />
@@ -135,8 +135,8 @@ let make = _ => {
         <Col> <div className=Styles.seperatedLongLine /> </Col>
         <Col size=1.>
           {switch (loginMethod) {
-           | Mnemonic => <ConnectWithMnemonic />
-           | Ledger => <ConnectWithLedger />
+           | Mnemonic => <ConnectWithMnemonic chainID />
+           | Ledger => <ConnectWithLedger chainID />
            }}
         </Col>
       </Row>
