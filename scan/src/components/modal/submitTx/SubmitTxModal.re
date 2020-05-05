@@ -192,6 +192,7 @@ module SubmitTxStep = {
                TxCreator.createRawTx(
                  ~address=account.address,
                  ~msgs,
+                 ~chainID=account.chainID,
                  ~feeAmount=fee' |> string_of_int,
                  ~gas=gas' |> string_of_int,
                  ~memo=memo',

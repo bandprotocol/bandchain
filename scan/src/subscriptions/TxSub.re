@@ -605,6 +605,13 @@ module Msg = {
     };
   };
 
+  module Unjail = {
+    type t = {address: Address.t};
+
+    let decode = json =>
+      JsonUtils.Decode.{address: json |> field("address", string) |> Address.fromBech32};
+  };
+
   type t =
     | Unknown
     | Send(Send.t)
@@ -638,7 +645,8 @@ module Msg = {
     | Delegate(Delegate.t)
     | Undelegate(Undelegate.t)
     | Redelegate(Redelegate.t)
-    | WithdrawReward(WithdrawReward.t);
+    | WithdrawReward(WithdrawReward.t)
+    | Unjail(Unjail.t);
 
   let getCreator = msg => {
     switch (msg) {
@@ -674,6 +682,7 @@ module Msg = {
     | Undelegate(delegation) => delegation.delegatorAddress
     | Redelegate(delegation) => delegation.delegatorAddress
     | WithdrawReward(withdrawal) => withdrawal.delegatorAddress
+    | Unjail(validator) => validator.address
     | _ => "" |> Address.fromHex
     };
   };
@@ -802,6 +811,7 @@ module Msg = {
         textColor: Colors.purple6,
         bgColor: Colors.purple1,
       }
+    | Unjail(_) => {text: "UNJAIL", textColor: Colors.blue7, bgColor: Colors.blue1}
     | _ => {text: "UNKNOWN", textColor: Colors.gray7, bgColor: Colors.gray4}
     };
   };
@@ -842,6 +852,7 @@ module Msg = {
       | "begin_unbonding" => Undelegate(json |> Undelegate.decode)
       | "begin_redelegate" => Redelegate(json |> Redelegate.decode)
       | "withdraw_delegator_reward" => WithdrawReward(json |> WithdrawReward.decode)
+      | "unjail" => Unjail(json |> Unjail.decode)
       | _ => Unknown
       }
     );

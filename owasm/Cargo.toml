@@ -33,4 +33,5 @@ members = [
     "chaintests/qrng",
     "chaintests/yahoo_price",
     "chaindebugtests/allocate",
+    "chaindebugtests/wrong_args",
 ]
