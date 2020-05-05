@@ -14,13 +14,16 @@ func resolveRequest(ctx sdk.Context, k Keeper, reqID types.RequestID) {
 	script := k.MustGetOracleScript(ctx, req.OracleScriptID)
 	executeGas := k.GetParam(ctx, KeyExecuteGas)
 	result, _, err := k.OwasmExecute(env, script.Code, "execute", req.Calldata, executeGas)
-	var resolveStatus types.ResolveStatus
+
+	var res types.OracleResponsePacketData
 	if err != nil {
-		resolveStatus = types.Failure
+		res = k.ResolveRequest(ctx, reqID, types.Failure, []byte(err.Error()))
 	} else {
-		resolveStatus = types.Success
+		res = k.ResolveRequest(ctx, reqID, types.Success, result)
 	}
-	k.ProcessOracleResponse(ctx, reqID, resolveStatus, result)
+	if req.IBC != nil {
+		k.SendOracleResponse(ctx, req.IBC.SourcePort, req.IBC.SourceChannel, res)
+	}
 }
 
 // handleEndBlock cleans up the state during end block. See comment in the implementation!

@@ -7,8 +7,6 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	channel "github.com/cosmos/cosmos-sdk/x/ibc/04-channel"
-	ibctypes "github.com/cosmos/cosmos-sdk/x/ibc/types"
 )
 
 // HasRequest checks if the request of this ID exists in the storage.
@@ -78,110 +76,60 @@ func (k Keeper) AddRequest(ctx sdk.Context, req types.Request) (types.RequestID,
 	return id, nil
 }
 
-func (k Keeper) resolveRequest(
-	ctx sdk.Context, reqID types.RequestID, resolveStatus types.ResolveStatus, result []byte,
+func (k Keeper) ResolveRequest(
+	ctx sdk.Context, id types.RequestID, resolveStatus types.ResolveStatus, result []byte,
 ) types.OracleResponsePacketData {
-	request := k.MustGetRequest(ctx, reqID)
-	reqPacketData := types.NewOracleRequestPacketData(
+	request := k.MustGetRequest(ctx, id)
+
+	req := types.NewOracleRequestPacketData(
 		request.ClientID, request.OracleScriptID,
 		hex.EncodeToString(request.Calldata), request.SufficientValidatorCount,
 		int64(len(request.RequestedValidators)),
 	)
-	resPacketData := types.NewOracleResponsePacketData(
-		request.ClientID,
-		reqID,
-		int64(k.GetReportCount(ctx, reqID)),
-		request.RequestTime, ctx.BlockTime().Unix(),
-		types.Success, hex.EncodeToString(result),
+	res := types.NewOracleResponsePacketData(
+		request.ClientID, id, int64(k.GetReportCount(ctx, id)), request.RequestTime,
+		ctx.BlockTime().Unix(), types.Success, hex.EncodeToString(result),
 	)
 
 	if resolveStatus != types.Success {
 		ctx.EventManager().EmitEvent(
 			sdk.NewEvent(
 				types.EventTypeRequestExecute,
-				sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", reqID)),
+				sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", id)),
 				sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", resolveStatus)),
 			))
-		return resPacketData
+		return res
 	}
 
-	resultHash, err := k.AddResult(ctx, reqID, reqPacketData, resPacketData)
+	resultHash, err := k.AddResult(ctx, id, req, res)
 	if err != nil {
-		ctx.EventManager().EmitEvent(
-			sdk.NewEvent(
-				types.EventTypeRequestExecute,
-				sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", reqID)),
-				sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", types.Failure)),
-			))
-		return resPacketData
-	}
-	ctx.EventManager().EmitEvent(
-		sdk.NewEvent(
+		ctx.EventManager().EmitEvent(sdk.NewEvent(
 			types.EventTypeRequestExecute,
-			sdk.NewAttribute(types.AttributeKeyClientID, reqPacketData.ClientID),
-			sdk.NewAttribute(types.AttributeKeyOracleScriptID, fmt.Sprintf("%d", reqPacketData.OracleScriptID)),
-			sdk.NewAttribute(types.AttributeKeyCalldata, reqPacketData.Calldata),
-			sdk.NewAttribute(types.AttributeKeyAskCount, fmt.Sprintf("%d", reqPacketData.AskCount)),
-			sdk.NewAttribute(types.AttributeKeyMinCount, fmt.Sprintf("%d", reqPacketData.MinCount)),
-			sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", resPacketData.RequestID)),
-			sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", types.Success)),
-			sdk.NewAttribute(types.AttributeKeyAnsCount, fmt.Sprintf("%d", resPacketData.AnsCount)),
-			sdk.NewAttribute(types.AttributeKeyRequestTime, fmt.Sprintf("%d", request.RequestTime)),
-			sdk.NewAttribute(types.AttributeKeyResolveTime, fmt.Sprintf("%d", resPacketData.ResolveTime)),
-			sdk.NewAttribute(types.AttributeKeyResult, resPacketData.Result),
-			sdk.NewAttribute(types.AttributeKeyResultHash, hex.EncodeToString(resultHash)),
+			sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", id)),
+			sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", types.Failure)),
 		))
-	return resPacketData
-}
-
-// ProcessOracleResponse takes a
-func (k Keeper) ProcessOracleResponse(
-	ctx sdk.Context, reqID types.RequestID, resolveStatus types.ResolveStatus, result []byte,
-) {
-	resPacketData := k.resolveRequest(ctx, reqID, resolveStatus, result)
-	if resolveStatus == types.Expired {
-		return
+		return res
 	}
-
-	request := k.MustGetRequest(ctx, reqID)
-
-	if request.RequestIBC == nil {
-		return
-	}
-
-	sourceChannelEnd, found := k.ChannelKeeper.GetChannel(ctx, request.RequestIBC.SourcePort, request.RequestIBC.SourceChannel)
-	if !found {
-		fmt.Println("SOURCE NOT FOUND", request.RequestIBC.SourcePort, request.RequestIBC.SourceChannel)
-		return
-	}
-
-	destinationPort := sourceChannelEnd.Counterparty.PortID
-	destinationChannel := sourceChannelEnd.Counterparty.ChannelID
-
-	sequence, found := k.ChannelKeeper.GetNextSequenceSend(ctx, request.RequestIBC.SourcePort, request.RequestIBC.SourceChannel)
-	if !found {
-		fmt.Println("SEQUENCE NOT FOUND", request.RequestIBC.SourcePort, request.RequestIBC.SourceChannel)
-		return
-	}
-
-	channelCap, ok := k.ScopedKeeper.GetCapability(ctx, ibctypes.ChannelCapabilityPath(request.RequestIBC.SourcePort, request.RequestIBC.SourceChannel))
-	if !ok {
-		fmt.Println("GET CAPABILITY ERROR", request.RequestIBC.SourcePort, request.RequestIBC.SourceChannel)
-		return
-	}
-	err := k.ChannelKeeper.SendPacket(ctx, channelCap, channel.NewPacket(resPacketData.GetBytes(),
-		sequence, request.RequestIBC.SourcePort, request.RequestIBC.SourceChannel, destinationPort, destinationChannel,
-		DefaultPacketTimeoutHeight, uint64(ctx.BlockTime().UnixNano())+DefaultPacketTimeoutTimestampDuration, // we ignore timeout height and set timeout timestamp to 10 minutes
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
+		types.EventTypeRequestExecute,
+		sdk.NewAttribute(types.AttributeKeyClientID, req.ClientID),
+		sdk.NewAttribute(types.AttributeKeyOracleScriptID, fmt.Sprintf("%d", req.OracleScriptID)),
+		sdk.NewAttribute(types.AttributeKeyCalldata, req.Calldata),
+		sdk.NewAttribute(types.AttributeKeyAskCount, fmt.Sprintf("%d", req.AskCount)),
+		sdk.NewAttribute(types.AttributeKeyMinCount, fmt.Sprintf("%d", req.MinCount)),
+		sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", res.RequestID)),
+		sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", types.Success)),
+		sdk.NewAttribute(types.AttributeKeyAnsCount, fmt.Sprintf("%d", res.AnsCount)),
+		sdk.NewAttribute(types.AttributeKeyRequestTime, fmt.Sprintf("%d", request.RequestTime)),
+		sdk.NewAttribute(types.AttributeKeyResolveTime, fmt.Sprintf("%d", res.ResolveTime)),
+		sdk.NewAttribute(types.AttributeKeyResult, res.Result),
+		sdk.NewAttribute(types.AttributeKeyResultHash, hex.EncodeToString(resultHash)),
 	))
-
-	if err != nil {
-		fmt.Println("SEND PACKET ERROR", err)
-		return
-	}
+	return res
 }
 
-// ProcessExpiredRequests removes all expired data requests from the store, and
-// sends oracle response packets for the ones that have never been resolved.
+// ProcessExpiredRequests removes all expired data requests from the store, and sends oracle
+// response packets for the ones that have never been resolved.
 func (k Keeper) ProcessExpiredRequests(ctx sdk.Context) {
 	currentReqID := k.GetRequestBeginID(ctx)
 	lastReqID := types.RequestID(k.GetRequestCount(ctx))
@@ -199,7 +147,10 @@ func (k Keeper) ProcessExpiredRequests(ctx sdk.Context) {
 		// If the number of reports still doesn't reach the minimum, that means this request
 		// is never resolved. Here we process the response as EXPIRED.
 		if k.GetReportCount(ctx, currentReqID) < request.SufficientValidatorCount {
-			k.ProcessOracleResponse(ctx, currentReqID, types.Expired, nil)
+			res := k.ResolveRequest(ctx, currentReqID, types.Expired, nil)
+			if request.IBC != nil {
+				k.SendOracleResponse(ctx, request.IBC.SourcePort, request.IBC.SourceChannel, res)
+			}
 		}
 		// We are done with this request. Remove it and its dependencies from the store.
 		k.DeleteRequest(ctx, currentReqID)
@@ -211,15 +162,15 @@ func (k Keeper) ProcessExpiredRequests(ctx sdk.Context) {
 }
 
 // AddPendingRequest adds the request to the pending list. DO NOT add same request more than once.
-func (k Keeper) AddPendingRequest(ctx sdk.Context, requestID types.RequestID) {
+func (k Keeper) AddPendingRequest(ctx sdk.Context, id types.RequestID) {
 	pendingList := k.GetPendingResolveList(ctx)
-	pendingList = append(pendingList, requestID)
+	pendingList = append(pendingList, id)
 	k.SetPendingResolveList(ctx, pendingList)
 }
 
 // SetPendingResolveList saves the list of pending request that will be resolved at end block.
-func (k Keeper) SetPendingResolveList(ctx sdk.Context, reqIDs []types.RequestID) {
-	bz := k.cdc.MustMarshalBinaryBare(reqIDs)
+func (k Keeper) SetPendingResolveList(ctx sdk.Context, ids []types.RequestID) {
+	bz := k.cdc.MustMarshalBinaryBare(ids)
 	if bz == nil {
 		bz = []byte{}
 	}
@@ -227,11 +178,11 @@ func (k Keeper) SetPendingResolveList(ctx sdk.Context, reqIDs []types.RequestID)
 }
 
 // GetPendingResolveList returns the list of pending requests to be executed during EndBlock.
-func (k Keeper) GetPendingResolveList(ctx sdk.Context) (reqIDs []types.RequestID) {
+func (k Keeper) GetPendingResolveList(ctx sdk.Context) (ids []types.RequestID) {
 	bz := ctx.KVStore(k.storeKey).Get(types.PendingResolveListStoreKey)
 	if len(bz) == 0 { // Return an empty list if the key does not exist in the store.
 		return []types.RequestID{}
 	}
-	k.cdc.MustUnmarshalBinaryBare(bz, &reqIDs)
-	return reqIDs
+	k.cdc.MustUnmarshalBinaryBare(bz, &ids)
+	return ids
 }
