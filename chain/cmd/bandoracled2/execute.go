@@ -30,26 +30,27 @@ func BroadCastMsgs(client *rpchttp.HTTP, key keyring.Info, msgs []sdk.Msg) {
 	cliCtx := sdkCtx.CLIContext{Client: client}
 	acc, err := auth.NewAccountRetriever(appCodec, cliCtx).GetAccount(key.GetAddress())
 	if err != nil {
-		fmt.Println("ERR1", err)
+		logger.Error("🤯 Failed to retreive account with error: %s", err.Error())
 		return
 	}
 
+	// TODO: Make gas limit and gas price configurable.
 	out, err := auth.NewTxBuilder(
 		auth.DefaultTxEncoder(cdc), acc.GetAccountNumber(), acc.GetSequence(),
 		1000000, 1, false, chainID, "", sdk.NewCoins(), sdk.NewDecCoins(),
 	).WithKeybase(keybase).BuildAndSign(key.GetName(), ckeys.DefaultKeyPass, msgs)
 	if err != nil {
-		fmt.Println("ERR2", err)
+		logger.Error("🤯 Failed to build tx with error: %s", err.Error())
 		return
 	}
 
 	res, err := cliCtx.BroadcastTxCommit(out)
 	if err != nil {
-		fmt.Println("ERR3", err)
+		logger.Error("🤯 Failed to broadcast tx with error: %s", err.Error())
 		return
 	}
 
-	fmt.Println("EZ", res)
+	logger.Info("🎉 Successfully broadcast tx with hash: %s", res.TxHash)
 }
 
 // GetExecutable fetches data source executable using the provided client.
