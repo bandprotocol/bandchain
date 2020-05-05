@@ -32,7 +32,7 @@ type Transaction struct {
 
 type Account struct {
 	Address       string  `gorm:"primary_key"`
-	Balance       *string `gorm:"not null"` // TODO: Update to pointer
+	Balance       *string `gorm:"not null"`
 	UpdatedHeight int64   `gorm:"not null"`
 }
 
@@ -51,8 +51,8 @@ type Validator struct {
 	CommissionMaxRate   string  `gorm:"not null"` // TODO: Update to pointer
 	CommissionMaxChange string  `gorm:"not null"` // TODO: Update to pointer
 	MinSelfDelegation   string  `gorm:"not null"` // TODO: Update to pointer
-	Jailed              *bool   `gorm:"not null"` // TODO: Update to pointer
-	Tokens              *uint64 `gorm:"not null"` // TODO: Update to pointer
+	Jailed              *bool   `gorm:"not null"`
+	Tokens              *uint64 `gorm:"not null"`
 	DelegatorShares     string  `gorm:"not null"` // TODO: Update to pointer
 	BondedHeight        int64   `gorm:"not null"` // TODO: Update to pointer
 	CurrentReward       string  `gorm:"not null"` // TODO: Update to pointer
