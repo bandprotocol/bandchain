@@ -11,7 +11,7 @@ let make = (~setMsgsOpt) => {
       setMsgsOpt(_ => msgsOpt);
       None;
     },
-    validator |> Belt.Array.make(1, _),
+    [|validator|],
   );
 
   <>
