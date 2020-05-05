@@ -38,7 +38,6 @@ func TestCalculateResultHash(t *testing.T) {
 
 func TestEmptyClientID(t *testing.T) {
 	// RawByte is d9c5892710011a20303430303030303034323431346534343430343230663030303030303030303020042804
-	//            d9c5892710011a20303430303030303034323431346534343430343230663030303030303030303020042804
 	reqPacket := oracle.OracleRequestPacketData{
 		ClientID:       "",
 		OracleScriptID: 1,
