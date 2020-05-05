@@ -884,6 +884,22 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
       </div>
       <div className={Styles.withWidth(300)}> <AddressRender address validator=true /> </div>
     </div>
+  | SetWithdrawAddress({delegatorAddress, withdrawAddress}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=delegatorAddress /> </div>
+      <div className={Styles.withBg(Colors.purple1, 130)}>
+        <Text
+          value="SET WITHDRAW ADDRESS"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.purple6
+        />
+      </div>
+      <div className={Styles.withWidth(width / 3)}>
+        <AddressRender address=withdrawAddress />
+      </div>
+    </div>
   | FailMessage({sender, message}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
@@ -930,6 +946,8 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
        | "begin_redelegate" => makeBadge("REDELEGATE", 73, Colors.purple1, Colors.purple6)
        | "withdraw_delegator_reward" =>
          makeBadge("WITHDRAW REWARD", 100, Colors.purple1, Colors.purple6)
+       | "set_withdraw_reward" =>
+         makeBadge("SET WITHDRAW ADDRESS", 170, Colors.purple1, Colors.purple6)
        | _ => makeBadge("UNKNOWN", 70, Colors.gray1, Colors.gray6)
        }}
     </div>
