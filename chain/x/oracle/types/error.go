@@ -5,9 +5,9 @@ import (
 )
 
 var (
-	ErrInvalidBasicMsg          = sdkerrors.Register(ModuleName, 1, "InvalidBasicMsg")
-	ErrBadDataValue             = sdkerrors.Register(ModuleName, 2, "BadDataValue")
-	ErrItemNotFound             = sdkerrors.Register(ModuleName, 3, "ItemNotFound")
+	ErrInvalidBasicMsg          = sdkerrors.Register(ModuleName, 1, "invalid basic message")
+	ErrBadDataValue             = sdkerrors.Register(ModuleName, 2, "bad data value")
+	ErrItemNotFound             = sdkerrors.Register(ModuleName, 3, "item not found")
 	ErrBadWasmExecution         = sdkerrors.Register(ModuleName, 4, "bad wasm execution")
 	ErrBadDataLength            = sdkerrors.Register(ModuleName, 5, "bad data length")
 	ErrDataSourceNotFound       = sdkerrors.Register(ModuleName, 6, "data source not found")
