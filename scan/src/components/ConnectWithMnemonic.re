@@ -53,7 +53,7 @@ module Styles = {
 };
 
 [@react.component]
-let make = () => {
+let make = (~chainID) => {
   let (_, dispatchAccount) = React.useContext(AccountContext.context);
   let (_, dispatchModal) = React.useContext(ModalContext.context);
   let (mnemonic, setMnemonic) = React.useState(_ => "");
@@ -67,7 +67,7 @@ let make = () => {
       let _ =
         wallet->Wallet.getAddressAndPubKey
         |> Js.Promise.then_(((address, pubKey)) => {
-             dispatchAccount(Connect(wallet, address, pubKey));
+             dispatchAccount(Connect(wallet, address, pubKey, chainID));
              dispatchModal(CloseModal);
              Promise.ret();
            })
