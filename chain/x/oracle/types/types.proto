@@ -201,6 +201,8 @@ enum ResolveStatus {
 // OracleRequestPacketData encodes an oracle request sent from other blockchains
 // to BandChain.
 message OracleRequestPacketData {
+  option (gogoproto.equal) = true;
+
   // ClientID is the unique identifier of this oracle request, as specified by
   // the client. This same unique ID will be sent back to the requester with the
   // oracle response.
@@ -226,6 +228,8 @@ message OracleRequestPacketData {
 // OracleResponsePacketData encodes an oracle response from BandChain to the
 // requester.
 message OracleResponsePacketData {
+  option (gogoproto.equal) = true;
+
   // ClientID is the unique identifier matched with that of the oracle request
   // packet.
   string client_id = 1 [(gogoproto.customname) = "ClientID"];
@@ -257,6 +261,8 @@ message OracleResponsePacketData {
 // Request is a data structure that stores the detail of a request to an oracle
 // script.
 message Request {
+  option (gogoproto.equal) = true;
+
   int64 oracle_script_id = 1 [
     (gogoproto.customname) = "OracleScriptID",
     (gogoproto.casttype) = "OracleScriptID"
@@ -272,6 +278,37 @@ message Request {
 }
 
 message RequestIBC {
+  option (gogoproto.equal) = true;
+
   string source_port = 1;
   string source_channel = 2;
+}
+
+// Report is a report that contains operator address in struct
+message Report {
+  option (gogoproto.equal) = true;
+
+  repeated RawReport raw_reports = 1
+      [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "RawReports"];
+  bytes validator = 2
+      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
+}
+
+// Params - used for initializing default parameter for oracle at genesis.
+message Params {
+  option (gogoproto.equal) = true;
+  option (gogoproto.goproto_stringer) = false;
+
+  uint64 max_data_source_executable_size = 1;
+  uint64 max_oracle_script_code_size = 2;
+  uint64 max_calldata_size = 3;
+  uint64 max_raw_request_count = 4;
+  uint64 max_raw_data_report_size = 5;
+  uint64 max_result_size = 6;
+  uint64 max_name_length = 7;
+  uint64 max_description_length = 8;
+  uint64 gas_per_raw_data_request_per_validator = 9;
+  uint64 expiration_block_count = 10;
+  uint64 execute_gas = 11;
+  uint64 prepare_gas = 12;
 }

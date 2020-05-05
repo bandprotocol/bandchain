@@ -15,12 +15,6 @@ func NewRawReport(externalID ExternalID, exitCode uint32, data []byte) RawReport
 
 type RawReports []RawReport
 
-// Report is a report that contains operator address in struct
-type Report struct {
-	RawReports []RawReport    `json:"detail"`
-	Validator  sdk.ValAddress `json:"validator"`
-}
-
 // NewReport is a contructor of Report
 func NewReport(validator sdk.ValAddress, reports []RawReport) Report {
 	return Report{
