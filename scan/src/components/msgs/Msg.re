@@ -930,11 +930,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
       </div>
       <div className={Styles.rowWithWidth(200)}>
         <Text
-          value={
-            amount->Belt_List.get(0)->Belt_Option.getWithDefault(Coin.newCoin("uband", 0.0)).
-              amount
-            |> Format.fPretty
-          }
+          value={amount->Coin.getBandAmountNoDivision |> Format.fPretty}
           weight=Text.Semibold
           code=true
           nowrap=true
