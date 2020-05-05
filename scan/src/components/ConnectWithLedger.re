@@ -14,9 +14,11 @@ module Styles = {
       display(`flex),
       flexDirection(`row),
       alignItems(`center),
+      height(`px(50)),
       width(`percent(100.)),
       justifyContent(`spaceBetween),
-      backgroundColor(Css.rgba(197, 199, 211, 0.3)),
+      backgroundColor(Css.rgb(255, 255, 255)),
+      border(`px(1), `solid, Colors.blueGray3),
       borderRadius(`px(8)),
       padding2(~v=`px(25), ~h=`px(18)),
     ]);
@@ -45,7 +47,7 @@ module Styles = {
       flexDirection(`row),
       alignItems(`center),
       justifyContent(`spaceBetween),
-      height(`px(60)),
+      height(`px(35)),
     ]);
 
   let ledgerGuide = style([width(`px(106)), height(`px(25))]);
@@ -70,6 +72,29 @@ module Styles = {
       borderRadius(`px(4)),
       cursor(`pointer),
       alignSelf(`flexEnd),
+    ]);
+
+  let selectWrapper =
+    style([
+      display(`flex),
+      padding2(~v=`px(3), ~h=`px(8)),
+      justifyContent(`center),
+      alignItems(`center),
+      width(`percent(100.)),
+      height(`px(30)),
+      left(`zero),
+      top(`px(32)),
+      background(rgba(255, 255, 255, 1.)),
+      border(`px(1), `solid, Colors.blueGray3),
+      borderRadius(`px(6)),
+      float(`left),
+    ]);
+
+  let selectContent =
+    style([
+      background(rgba(255, 255, 255, 1.)),
+      border(`px(0), `solid, hex("FFFFFF")),
+      width(`px(100)),
     ]);
 };
 
@@ -101,18 +126,19 @@ type result_t =
   | Error(string);
 
 [@react.component]
-let make = () => {
+let make = (~chainID) => {
   let (_, dispatchAccount) = React.useContext(AccountContext.context);
   let (_, dispatchModal) = React.useContext(ModalContext.context);
   let (result, setResult) = React.useState(_ => Nothing);
+  let (accountIndex, setAccountIndex) = React.useState(_ => 0);
 
-  let createLedger = () => {
+  let createLedger = accountIndex => {
     setResult(_ => Loading);
     let _ =
-      Wallet.createFromLedger()
+      Wallet.createFromLedger(accountIndex)
       |> Js.Promise.then_(wallet => {
            let%Promise (address, pubKey) = wallet->Wallet.getAddressAndPubKey;
-           dispatchAccount(Connect(wallet, address, pubKey));
+           dispatchAccount(Connect(wallet, address, pubKey, chainID));
            dispatchModal(CloseModal);
            Promise.ret();
          })
@@ -125,6 +151,30 @@ let make = () => {
   };
 
   <div className=Styles.container>
+    <Text value="1. Select HD Derivation Path" weight=Text.Semibold />
+    <VSpacing size=Spacing.sm />
+    <div className=Styles.selectWrapper>
+      <select
+        className=Styles.selectContent
+        onChange={event => {
+          let newAccountIndex = ReactEvent.Form.target(event)##value |> int_of_string;
+          setAccountIndex(_ => newAccountIndex);
+        }}>
+        {[|0, 1, 2, 3, 4, 5|]
+         |> Belt.Array.map(_, index =>
+              <option value={index |> string_of_int}>
+                {{
+                   "44/118/0/0/" ++ (index |> string_of_int);
+                 }
+                 |> React.string}
+              </option>
+            )
+         |> React.array}
+      </select>
+    </div>
+    <VSpacing size=Spacing.sm />
+    <Text value="2. On Your Ledger" weight=Text.Semibold />
+    <VSpacing size=Spacing.sm />
     <InstructionCard idx=1 title="Enter Pin Code" url=Images.ledgerStep1 />
     <VSpacing size=Spacing.md />
     <InstructionCard idx=2 title="Open Cosmos" url=Images.ledgerStep2 />
@@ -145,7 +195,7 @@ let make = () => {
        | Nothing => React.null
        }}
     </div>
-    <div className=Styles.connectBtn onClick={_ => createLedger()}>
+    <div className=Styles.connectBtn onClick={_ => createLedger(accountIndex)}>
       <Text value="Connect To Ledger" weight=Text.Bold size=Text.Md color=Colors.white />
     </div>
   </div>;

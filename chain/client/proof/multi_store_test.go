@@ -20,7 +20,7 @@ func TestGetMultiStoreProof(t *testing.T) {
 	expectAppHash := hexToBytes("396EC5A6D5D66C0EA13BB6D5BDE8A01D80F78F3BB73D62C2F71BC14DD8B18095")
 	oraclePrefix := hexToBytes("066f7261636c6520")
 	appHash := branchHash(
-		mp.AccToMainStoresMerkleHash,
+		mp.AccToMemCapStoresMerkleHash,
 		branchHash(
 			branchHash(
 				branchHash(

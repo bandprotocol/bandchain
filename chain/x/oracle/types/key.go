@@ -11,24 +11,21 @@ const (
 	ModuleName = "oracle"
 	// StoreKey to be used when creating the KVStore
 	StoreKey = ModuleName
+	// Default PortID that oracle module binds to
+	PortID = ModuleName
 )
 
 var (
 	// GlobalStoreKeyPrefix is a prefix for global primitive state variable
 	GlobalStoreKeyPrefix = []byte{0x00}
-
 	// RequestBeginStoreKey TODO
 	RequestBeginStoreKey = append(GlobalStoreKeyPrefix, []byte("RequestBeginStoreKey")...)
-
 	// RequestsCountStoreKey is a key that help getting to current requests count state variable
 	RequestsCountStoreKey = append(GlobalStoreKeyPrefix, []byte("RequestsCount")...)
-
 	// PendingResolveListStoreKey is a key that help getting pending request
 	PendingResolveListStoreKey = append(GlobalStoreKeyPrefix, []byte("PendingList")...)
-
 	// DataSourceCountStoreKey is a key that keeps the current data source count state variable.
 	DataSourceCountStoreKey = append(GlobalStoreKeyPrefix, []byte("DataSourceCount")...)
-
 	// OracleScriptCountStoreKey is a key that keeps the current oracle script count state variable.
 	OracleScriptCountStoreKey = append(GlobalStoreKeyPrefix, []byte("OracleScriptCount")...)
 
@@ -111,9 +108,7 @@ func GetIteratorPrefix(prefix []byte, requestID RequestID) []byte {
 }
 
 // GetValidatorAddressAndExternalID is a function to get validator address and external id from raw data report key.
-func GetValidatorAddressAndExternalID(
-	key []byte, requestID RequestID,
-) (sdk.ValAddress, ExternalID) {
+func GetValidatorAddressAndExternalID(key []byte, requestID RequestID) (sdk.ValAddress, ExternalID) {
 	prefixLength := len(RawDataReportStoreKeyPrefix)
 	externalIDBytes := key[prefixLength+8 : prefixLength+16]
 	externalID := ExternalID(binary.BigEndian.Uint64(externalIDBytes))

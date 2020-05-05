@@ -387,14 +387,12 @@ module Msg = {
       signer: Address.t,
       common: ConnectionCommon.t,
       clientID: string,
-      consensusHeight: ID.Block.t,
     };
     let decode = json =>
       JsonUtils.Decode.{
         signer: json |> field("signer", string) |> Address.fromBech32,
         common: json |> ConnectionCommon.decode,
         clientID: json |> field("client_id", string),
-        consensusHeight: json |> field("consensus_height", ID.Block.fromJson),
       };
   };
 
@@ -403,14 +401,12 @@ module Msg = {
       signer: Address.t,
       common: ConnectionCommon.t,
       clientID: string,
-      consensusHeight: ID.Block.t,
     };
     let decode = json =>
       JsonUtils.Decode.{
         signer: json |> field("signer", string) |> Address.fromBech32,
         clientID: json |> field("client_id", string),
         common: json |> ConnectionCommon.decode,
-        consensusHeight: json |> field("consensus_height", ID.Block.fromJson),
       };
   };
 
@@ -418,13 +414,11 @@ module Msg = {
     type t = {
       signer: Address.t,
       common: ConnectionCommon.t,
-      consensusHeight: ID.Block.t,
     };
     let decode = json =>
       JsonUtils.Decode.{
         signer: json |> field("signer", string) |> Address.fromBech32,
         common: json |> ConnectionCommon.decode,
-        consensusHeight: json |> field("consensus_height", ID.Block.fromJson),
       };
   };
 
@@ -611,6 +605,25 @@ module Msg = {
     };
   };
 
+  module Unjail = {
+    type t = {address: Address.t};
+
+    let decode = json =>
+      JsonUtils.Decode.{address: json |> field("address", string) |> Address.fromBech32};
+  };
+  module SetWithdrawAddress = {
+    type t = {
+      delegatorAddress: Address.t,
+      withdrawAddress: Address.t,
+    };
+    let decode = json => {
+      JsonUtils.Decode.{
+        delegatorAddress: json |> field("delegator_address", string) |> Address.fromBech32,
+        withdrawAddress: json |> field("withdraw_address", string) |> Address.fromBech32,
+      };
+    };
+  };
+
   type t =
     | Unknown
     | Send(Send.t)
@@ -644,7 +657,9 @@ module Msg = {
     | Delegate(Delegate.t)
     | Undelegate(Undelegate.t)
     | Redelegate(Redelegate.t)
-    | WithdrawReward(WithdrawReward.t);
+    | WithdrawReward(WithdrawReward.t)
+    | Unjail(Unjail.t)
+    | SetWithdrawAddress(SetWithdrawAddress.t);
 
   let getCreator = msg => {
     switch (msg) {
@@ -680,6 +695,8 @@ module Msg = {
     | Undelegate(delegation) => delegation.delegatorAddress
     | Redelegate(delegation) => delegation.delegatorAddress
     | WithdrawReward(withdrawal) => withdrawal.delegatorAddress
+    | Unjail(validator) => validator.address
+    | SetWithdrawAddress(set) => set.delegatorAddress
     | _ => "" |> Address.fromHex
     };
   };
@@ -808,6 +825,12 @@ module Msg = {
         textColor: Colors.purple6,
         bgColor: Colors.purple1,
       }
+    | Unjail(_) => {text: "UNJAIL", textColor: Colors.blue7, bgColor: Colors.blue1}
+    | SetWithdrawAddress(_) => {
+        text: "SET WITHDRAW ADDRESS",
+        textColor: Colors.purple6,
+        bgColor: Colors.purple1,
+      }
     | _ => {text: "UNKNOWN", textColor: Colors.gray7, bgColor: Colors.gray4}
     };
   };
@@ -848,6 +871,8 @@ module Msg = {
       | "begin_unbonding" => Undelegate(json |> Undelegate.decode)
       | "begin_redelegate" => Redelegate(json |> Redelegate.decode)
       | "withdraw_delegator_reward" => WithdrawReward(json |> WithdrawReward.decode)
+      | "unjail" => Unjail(json |> Unjail.decode)
+      | "set_withdraw_address" => SetWithdrawAddress(json |> SetWithdrawAddress.decode)
       | _ => Unknown
       }
     );

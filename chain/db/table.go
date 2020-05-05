@@ -11,7 +11,7 @@ type Metadata struct {
 
 type Block struct {
 	Height    int64  `gorm:"primary_key;auto_increment:false"`
-	Timestamp int64  `gorm:"not null"`
+	Timestamp int64  `gorm:"not null;index"`
 	Proposer  string `gorm:"not null"`
 	BlockHash []byte `gorm:"not null"`
 }
@@ -23,6 +23,7 @@ type Transaction struct {
 	GasUsed     int64           `gorm:"not null"`
 	GasLimit    uint64          `gorm:"not null"`
 	GasFee      string          `gorm:"not null"`
+	RawLog      string          `gorm:"not null"`
 	Sender      string          `gorm:"not null"`
 	Success     bool            `gorm:"not null"`
 	BlockHeight int64           `gorm:"not null"`
@@ -30,32 +31,32 @@ type Transaction struct {
 }
 
 type Account struct {
-	Address       string `gorm:"primary_key"`
-	Balance       string `gorm:"not null"`
-	UpdatedHeight int64  `gorm:"not null"`
+	Address       string  `gorm:"primary_key"`
+	Balance       *string `gorm:"not null"`
+	UpdatedHeight int64   `gorm:"not null"`
 }
 
 type Validator struct {
-	OperatorAddress     string `gorm:"primary_key"`
-	ConsensusAddress    string `gorm:"unique;not null"`
-	ConsensusPubkey     string `gorm:"not null"`
-	ElectedCount        uint   `gorm:"not null"`
-	VotedCount          uint   `gorm:"not null"`
-	MissedCount         uint   `gorm:"not null"`
-	Moniker             string `gorm:"not null"`
-	Identity            string `gorm:"not null"`
-	Website             string `gorm:"not null"`
-	Details             string `gorm:"not null"`
-	CommissionRate      string `gorm:"not null"`
-	CommissionMaxRate   string `gorm:"not null"`
-	CommissionMaxChange string `gorm:"not null"`
-	MinSelfDelegation   string `gorm:"not null"`
-	Jailed              bool   `gorm:"not null"`
-	Tokens              uint64 `gorm:"not null"`
-	DelegatorShares     string `gorm:"not null"`
-	BondedHeight        int64  `gorm:"not null"`
-	CurrentReward       string `gorm:"not null"`
-	CurrentRatio        string `gorm:"not null"`
+	OperatorAddress     string  `gorm:"primary_key"`
+	ConsensusAddress    string  `gorm:"unique;not null"`
+	ConsensusPubkey     string  `gorm:"not null"`
+	ElectedCount        uint    `gorm:"not null"`
+	VotedCount          uint    `gorm:"not null"`
+	MissedCount         uint    `gorm:"not null"`
+	Moniker             string  `gorm:"not null"`
+	Identity            string  `gorm:"not null"`
+	Website             string  `gorm:"not null"`
+	Details             string  `gorm:"not null"`
+	CommissionRate      string  `gorm:"not null"`
+	CommissionMaxRate   string  `gorm:"not null"`
+	CommissionMaxChange string  `gorm:"not null"`
+	MinSelfDelegation   string  `gorm:"not null"`
+	Jailed              *bool   `gorm:"not null"`
+	Tokens              *uint64 `gorm:"not null"`
+	DelegatorShares     string  `gorm:"not null"`
+	BondedHeight        int64   `gorm:"not null"`
+	CurrentReward       string  `gorm:"not null"`
+	CurrentRatio        string  `gorm:"not null"`
 }
 
 type ValidatorVote struct {
@@ -149,11 +150,12 @@ type Report struct {
 }
 
 type ReportDetail struct {
-	RequestID  int64  `gorm:"primary_key;auto_increment:false"`
-	Validator  string `gorm:"primary_key"`
-	ExternalID int64  `gorm:"primary_key;auto_increment:false"`
-	Data       []byte `gorm:"not null"`
-	Exitcode   uint8  `gorm:"not null"`
+	RequestID    int64  `gorm:"primary_key;auto_increment:false"`
+	Validator    string `gorm:"primary_key"`
+	ExternalID   int64  `gorm:"primary_key;auto_increment:false"`
+	DataSourceID int64  `gorm:"not null"`
+	Data         []byte `gorm:"not null"`
+	Exitcode     uint8  `gorm:"not null"`
 }
 
 type Packet struct {

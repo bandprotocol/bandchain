@@ -2,30 +2,39 @@ type t = {
   address: Address.t,
   pubKey: PubKey.t,
   wallet: Wallet.t,
+  chainID: string,
 };
 
 type a =
-  | Connect(Wallet.t, Address.t, PubKey.t)
+  | Connect(Wallet.t, Address.t, PubKey.t, string)
   | Disconnect
   | SendRequest(ID.OracleScript.t, JsBuffer.t, Js.Promise.t(TxCreator.response_t) => unit);
 
 let reducer = state =>
   fun
-  | Connect(wallet, address, pubKey) => Some({wallet, pubKey, address})
+  | Connect(wallet, address, pubKey, chainID) => Some({wallet, pubKey, address, chainID})
   | Disconnect => None
   | SendRequest(oracleScriptID, calldata, callback) =>
     switch (state) {
-    | Some({address, wallet, pubKey}) =>
+    | Some({address, wallet, pubKey, chainID}) =>
       callback(
         {
           let%Promise rawTx =
             TxCreator.createRawTx(
-              address,
-              [|Request(oracleScriptID, calldata, "4", "4", address, "")|],
+              ~address,
+              // Client id can't be an empty string (""), so we need to add "from_scan"
+              // TODO: Make this more intuitive
+              ~msgs=[|Request(oracleScriptID, calldata, "4", "4", address, "from_scan")|],
+              ~chainID,
+              ~gas="700000",
+              ~feeAmount="100",
+              ~memo="send via scan",
+              (),
             );
           let%Promise signature = Wallet.sign(TxCreator.sortAndStringify(rawTx), wallet);
           let signedTx =
             TxCreator.createSignedTx(
+              ~network=Env.network,
               ~signature=signature |> JsBuffer.toBase64,
               ~pubKey,
               ~tx=rawTx,
@@ -50,9 +59,6 @@ let make = (~children) => {
 
   React.createElement(
     React.Context.provider(context),
-    {
-      "value": (state->Belt.Option.map(({address}) => address), dispatch),
-      "children": children,
-    },
+    {"value": (state, dispatch), "children": children},
   );
 };

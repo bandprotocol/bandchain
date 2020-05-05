@@ -14,232 +14,189 @@ contract("Bridge", ([_, owner, alice, bob]) => {
           ["0xaAA22E077492CbaD414098EBD98AA8dc1C7AE8D9", 100],
           ["0xB956589b6fC5523eeD0d9eEcfF06262Ce84ff260", 100],
         ],
-        { from: owner }
+        { from: owner },
       );
     });
-    // TODO: implement new test for relay oracle state
-    // it("should accept correct state relay (All signatures)", async () => {
-    //   await this.bridge.relayOracleState(
-    //     "46", // _blockHeight,
-    //     "0xC2650A3B2CEE22FECB5A7A4DB2B17A7698D0E1C6D03FCCB423AFA050C3ACE32D", // _oracleIAVLStateHash
-    //     "0x4DFB1C5ABBA9B649F03828E8DBE19DF818F599497F9A370DD514F93B8009F734", // _otherStoresMerkleHash
-    //     "0xB3238075B0F786359DE6CDE3B1848C19F4998EC7B22F98BAD5E3266C5BB39807", // _supplyStoresMerkleHash
-    //     [
-    //       "0x32FA694879095840619F5E49380612BD296FF7E950EAFB66FF654D99CA70869E", // subtreeVersionAndChainIdHash
-    //       "0xD465F7F7BF5CF4B22767C9BE943AC822E9106D28CD80D25E2BCFF9CA5C03A230", // timeHash
-    //       "0xAAE6B809E30668B53AB99BA69D605FB16E74ECBDDFC33ECB91A203754EFD78FB", // txCountAndLastBlockInfoHash
-    //       "0xDEF482CDA986470C27374601EC716E9853DE47D72828AE0131CF8EF98E2972C5", // consensusDataHash
-    //       "0x6E340B9CFFB37A989CA544E6BB780A2C78901D3FB33738768511A30617AFA01D", // lastResultsHash
-    //       "0x7F4BE7E5A1EB872AD44103360DDC190410331280C42A54D829A5D752C796685D", // evidenceAndProposerHash
-    //     ],
-    //     "0x6E0802112E0000000000000022480A20", // _signedDataPrefix
-    //     [
-    //       [
-    //         "0xF5F2831EE0A9CE0C126F627037744A6F9966AE51434B77829E2988B52003468D", // r
-    //         "0x6D60442B41A1150353AB3D8687FDD81BA51EB8DCD5FFDEF88912668F0F06BC1E", // s
-    //         27, // v
-    //         "0x12240A203A88B5657ABEF8D8CAB1AD0FB84C4796B1106E68F60B20EAFDE282B92E5270AF10012A0C0884F4E3F20510B0EBACE601320962616E64636861696E", // _signedDataSuffix
-    //       ],
-    //       [
-    //         "0xAB0AFD1F7674D6AA12A0280B40D8A971EDC6691B9759E3EA4ADEB95C4E312E15", // r
-    //         "0x4B98EAF0C989915D1C58DD0B9A493A7D3D9C2F53D6C7483389DE19062FE742CA", // s
-    //         27, // v
-    //         "0x12240A203A88B5657ABEF8D8CAB1AD0FB84C4796B1106E68F60B20EAFDE282B92E5270AF10012A0C0884F4E3F20510EC90D6EB01320962616E64636861696E", // _signedDataSuffix
-    //       ],
-    //       [
-    //         "0xE2E24FD3CE6A046C45C9E82123173B75987F00CE76493FC63892AFCDDB6B4A18", // r
-    //         "0x799AEB7D947659E458ED9DB8AA18E2731CBCCB62668F214E26D932851E409482", // s
-    //         27, // v
-    //         "0x12240A203A88B5657ABEF8D8CAB1AD0FB84C4796B1106E68F60B20EAFDE282B92E5270AF10012A0C0884F4E3F2051088B9C4D901320962616E64636861696E", // _signedDataSuffix
-    //       ],
-    //       [
-    //         "0xD00816DFBD1B0F2766036DE5C312ABFB7AC24997D1F4B9013600CE40108B5A4E", // r
-    //         "0x108D2E618A5E3DACBD12FA882B9CD415E3D476149B81D29C37B6658051DB797C", // s
-    //         28, // v
-    //         "0x12240A203A88B5657ABEF8D8CAB1AD0FB84C4796B1106E68F60B20EAFDE282B92E5270AF10012A0C0884F4E3F20510CCE8E1E801320962616E64636861696E", // _signedDataSuffix
-    //       ],
-    //     ]
-    //   );
-    // });
 
-    // it("should accept correct state relay (validator power is more than 2/3)", async () => {
-    //   await this.bridge.relayOracleState(
-    //     "116", // _blockHeight,
-    //     "0xA816762B08E353BEBA284980AB3B70AD49E82D87210A25B8B6D3E44E4176BEA9", // _oracleIAVLStateHash
-    //     "0xE16097FC105B51A1D9E9747292A32BCBD540720C85641B1F3F433C4BA0857F27", // _otherStoresMerkleHash
-    //     "0xC664FA54FAFD567978CE77CCFD50E3DDBA762428560A5EC81B832FC523F09D11", // _supplyStoresMerkleHash
-    //     [
-    //       "0x32FA694879095840619F5E49380612BD296FF7E950EAFB66FF654D99CA70869E", // subtreeVersionAndChainIdHash
-    //       "0x4B66E47C08D7E683E0CA50DCBA88E50E3AFBDBF093422CFFCC744FF1A3915FF6", // timeHash
-    //       "0x1B9B36D6AB5080D28BB17B57EA5849A0EAEB627B85C569CC1A316BDFDC51C5C4", // txCountAndLastBlockInfoHash
-    //       "0xDEF482CDA986470C27374601EC716E9853DE47D72828AE0131CF8EF98E2972C5", // consensusDataHash
-    //       "0x6E340B9CFFB37A989CA544E6BB780A2C78901D3FB33738768511A30617AFA01D", // lastResultsHash
-    //       "0x0EFE3E12F46363C7779140D4CE659925DB52F19053E114D7CC4EFD666B37F79F", // evidenceAndProposerHash
-    //     ],
-    //     "0x6E080211740000000000000022480A20", // _signedDataPrefix
-    //     [
-    //       [
-    //         "0xA12BD35761EF283073504AF0C7E14B2EBB1B4A1692DCEC1ACA22D0C5D40D4AEC", // r
-    //         "0x6354DE9D9E0049ED701CAB266EA04E8C9B0ED0C5E11FC1C25AE7EDBBEC1B3DA3", // s
-    //         27, // v
-    //         "0x12240A20A16A17527AFDA8B3CC7EDE6E4A07446375E488FBEF828398FD807780319495A910012A0C08E1A7DFF20510DCFCAB9C03320962616E64636861696E", // _signedDataSuffix
-    //       ],
-    //       [
-    //         "0xCD1E54B549BF2B29CA455187EA427159270BE0C4C1684BE7A06666EB7ED9EEB9", // r
-    //         "0x59BB7676BACDC3ED61F14C5ADCC20DE94CEBE5A1CAA1867B53DAB54E945B617C", // s
-    //         27, // v
-    //         "0x12240A20A16A17527AFDA8B3CC7EDE6E4A07446375E488FBEF828398FD807780319495A910012A0C08E1A7DFF20510C8BEEBAB03320962616E64636861696E", // _signedDataSuffix
-    //       ],
-    //       [
-    //         "0xCAA628BA2EEDDE0DAFCA9A7ADC5270FADEC2CF0204635CCF8086FD9AA45E0C17", // r
-    //         "0x3F0C4BDC9C6580AD1D8276C7DB0CCFF69FF8124C6DD4C1FD794B93BD47693C9D", // s
-    //         27, // v
-    //         "0x12240A20A16A17527AFDA8B3CC7EDE6E4A07446375E488FBEF828398FD807780319495A910012A0C08E1A7DFF20510C8ADC7AB03320962616E64636861696E", // _signedDataSuffix
-    //       ],
-    //     ]
-    //   );
-    // });
+    it("should accept correct state relay (validator power is more than 2/3)", async () => {
+      await this.bridge.relayOracleState(
+        "63407", // _blockHeight,
+        [
+          "0x2B14E5AB19A88F23B3F6C694659374DF21E21935A7C0B8565C4E7B43AAB3BB43", // accToMemCapStoresMerkleHash
+          "0x06223635C7D081E76F30998DA7D601AB9AB8602C9AE7095E319C68F4CE2F5F73", // mintStoresMerkleHash
+          "0xC744B497E2569517AA2F053E2A4E09C67427DC0FD8840048C607AF8F17D9100C", // oracleIAVLStateHash
+          "0xAE658B0EA9B1C87323D0FA810ADBE9DB91BE0BAEA62D29F376488666ECA9BBEB", // paramsAndSlashingStoresMerkleHash
+          "0xAA66B682A3FE96C372A095A43F2E73B33E89D835DB3BBF2496546328A7BD4961", // stakingAndUpgradeStoresMerkleHash
+        ],
+        [
+          "0x32FA694879095840619F5E49380612BD296FF7E950EAFB66FF654D99CA70869E", // versionAndChainIdHash
+          "0x9F667F22196CFEBD590E3B178148942EF40C5B693336BF20608D5F21AA679ABC", // timeHash
+          "0xF665C04557D07EAACFC46F2E5B5D267C3B2C4EEAF395784F30CC84266816A89D", // lastBlockIDAndOther
+          "0xE3BB39F3B621939B734AF396D7CF5CCFDEDD4A3D16F139FD481874BC6F6E52B4", // nextValidatorHashAndConsensusHash
+          "0x6E340B9CFFB37A989CA544E6BB780A2C78901D3FB33738768511A30617AFA01D", // lastResultsHash
+          "0xD991DA4D4E69473CC75A4B819F9E07D4956671A6F4A74DF4CC16596FCBE68137", // evidenceAndProposerHash
+        ],
+        "0x6E080211AFF700000000000022480A20", // _signedDataPrefix
+        [
+          [
+            "0x62A900783D67A397A0CE36C82108122B97ACF88034CA917209937E2FF29EDB1C", // r
+            "0x378595FF3223971F63946D133DE29189497BC800F26370AF44512DDC3B02A1F1", // s
+            27, // v
+            "0x12240A205F339FD218803D4B7BCBEC09FB24D1BCEAE0938FA20FD028C2993D9731690CBB10012A0C08DFD6A0F50510D1E2E19103320962616E64636861696E", // signedDataSuffix
+          ],
+          [
+            "0x97009E1695FBD0FA6708C08C31EF92D28FA1AC64C6E6346193DE375AD377DE44", // r
+            "0x54DB42DFE62EC6B2C755DB707D7DF48EF49485EF8282C91054B728F052E452AC", // s
+            28, // v
+            "0x12240A205F339FD218803D4B7BCBEC09FB24D1BCEAE0938FA20FD028C2993D9731690CBB10012A0C08DFD6A0F5051084A2F89103320962616E64636861696E", // signedDataSuffix
+          ],
+          [
+            "0x950C0D5475AB4D2E7257811A4F304201D6CC52F7F5D06B8CDBB53922C4BCD140", // r
+            "0x4C747F4985569E59401E450F12F37933AED9EB9FB2F20CF022DAC9D31B9AADDC", // s
+            28, // v
+            "0x12240A205F339FD218803D4B7BCBEC09FB24D1BCEAE0938FA20FD028C2993D9731690CBB10012A0C08DFD6A0F505109685E29103320962616E64636861696E", // signedDataSuffix
+          ],
+        ],
+      );
+    });
 
-    // it("should revert if sum of validator powers is less than 2/3)", async () => {
-    //   await this.bridge.updateValidatorPowers(
-    //     [["0xaAA22E077492CbaD414098EBD98AA8dc1C7AE8D9", 300]],
-    //     { from: owner }
-    //   );
-    //   await expectRevert(
-    //     this.bridge.relayOracleState(
-    //       "46", // _blockHeight,
-    //       "0xC2650A3B2CEE22FECB5A7A4DB2B17A7698D0E1C6D03FCCB423AFA050C3ACE32D", // _oracleIAVLStateHash
-    //       "0x4DFB1C5ABBA9B649F03828E8DBE19DF818F599497F9A370DD514F93B8009F734", // _otherStoresMerkleHash
-    //       "0xB3238075B0F786359DE6CDE3B1848C19F4998EC7B22F98BAD5E3266C5BB39807", // _supplyStoresMerkleHash
-    //       [
-    //         "0x32FA694879095840619F5E49380612BD296FF7E950EAFB66FF654D99CA70869E", // subtreeVersionAndChainIdHash
-    //         "0xD465F7F7BF5CF4B22767C9BE943AC822E9106D28CD80D25E2BCFF9CA5C03A230", // timeHash
-    //         "0xAAE6B809E30668B53AB99BA69D605FB16E74ECBDDFC33ECB91A203754EFD78FB", // txCountAndLastBlockInfoHash
-    //         "0xDEF482CDA986470C27374601EC716E9853DE47D72828AE0131CF8EF98E2972C5", // consensusDataHash
-    //         "0x6E340B9CFFB37A989CA544E6BB780A2C78901D3FB33738768511A30617AFA01D", // lastResultsHash
-    //         "0x7F4BE7E5A1EB872AD44103360DDC190410331280C42A54D829A5D752C796685D", // evidenceAndProposerHash
-    //       ],
-    //       "0x6E0802112E0000000000000022480A20", // _signedDataPrefix
-    //       [
-    //         [
-    //           "0xF5F2831EE0A9CE0C126F627037744A6F9966AE51434B77829E2988B52003468D", // r
-    //           "0x6D60442B41A1150353AB3D8687FDD81BA51EB8DCD5FFDEF88912668F0F06BC1E", // s
-    //           27, // v
-    //           "0x12240A203A88B5657ABEF8D8CAB1AD0FB84C4796B1106E68F60B20EAFDE282B92E5270AF10012A0C0884F4E3F20510B0EBACE601320962616E64636861696E", // _signedDataSuffix
-    //         ],
-    //         [
-    //           "0xAB0AFD1F7674D6AA12A0280B40D8A971EDC6691B9759E3EA4ADEB95C4E312E15", // r
-    //           "0x4B98EAF0C989915D1C58DD0B9A493A7D3D9C2F53D6C7483389DE19062FE742CA", // s
-    //           27, // v
-    //           "0x12240A203A88B5657ABEF8D8CAB1AD0FB84C4796B1106E68F60B20EAFDE282B92E5270AF10012A0C0884F4E3F20510EC90D6EB01320962616E64636861696E", // _signedDataSuffix
-    //         ],
-    //         [
-    //           "0xD00816DFBD1B0F2766036DE5C312ABFB7AC24997D1F4B9013600CE40108B5A4E", // r
-    //           "0x108D2E618A5E3DACBD12FA882B9CD415E3D476149B81D29C37B6658051DB797C", // s
-    //           28, // v
-    //           "0x12240A203A88B5657ABEF8D8CAB1AD0FB84C4796B1106E68F60B20EAFDE282B92E5270AF10012A0C0884F4E3F20510CCE8E1E801320962616E64636861696E", // _signedDataSuffix
-    //         ],
-    //       ]
-    //     ),
-    //     "INSUFFICIENT_VALIDATOR_SIGNATURES"
-    //   );
-    // });
+    it("should revert if sum of validator powers is less than 2/3)", async () => {
+      await expectRevert(
+        this.bridge.relayOracleState(
+          "63407", // _blockHeight,
+          [
+            "0x2B14E5AB19A88F23B3F6C694659374DF21E21935A7C0B8565C4E7B43AAB3BB43", // accToMemCapStoresMerkleHash
+            "0x06223635C7D081E76F30998DA7D601AB9AB8602C9AE7095E319C68F4CE2F5F73", // mintStoresMerkleHash
+            "0xC744B497E2569517AA2F053E2A4E09C67427DC0FD8840048C607AF8F17D9100C", // oracleIAVLStateHash
+            "0xAE658B0EA9B1C87323D0FA810ADBE9DB91BE0BAEA62D29F376488666ECA9BBEB", // paramsAndSlashingStoresMerkleHash
+            "0xAA66B682A3FE96C372A095A43F2E73B33E89D835DB3BBF2496546328A7BD4961", // stakingAndUpgradeStoresMerkleHash
+          ],
+          [
+            "0x32FA694879095840619F5E49380612BD296FF7E950EAFB66FF654D99CA70869E", // versionAndChainIdHash
+            "0x9F667F22196CFEBD590E3B178148942EF40C5B693336BF20608D5F21AA679ABC", // timeHash
+            "0xF665C04557D07EAACFC46F2E5B5D267C3B2C4EEAF395784F30CC84266816A89D", // lastBlockIDAndOther
+            "0xE3BB39F3B621939B734AF396D7CF5CCFDEDD4A3D16F139FD481874BC6F6E52B4", // nextValidatorHashAndConsensusHash
+            "0x6E340B9CFFB37A989CA544E6BB780A2C78901D3FB33738768511A30617AFA01D", // lastResultsHash
+            "0xD991DA4D4E69473CC75A4B819F9E07D4956671A6F4A74DF4CC16596FCBE68137", // evidenceAndProposerHash
+          ],
+          "0x6E080211AFF700000000000022480A20", // _signedDataPrefix
+          [
+            [
+              "0x97009E1695FBD0FA6708C08C31EF92D28FA1AC64C6E6346193DE375AD377DE44", // r
+              "0x54DB42DFE62EC6B2C755DB707D7DF48EF49485EF8282C91054B728F052E452AC", // s
+              28, // v
+              "0x12240A205F339FD218803D4B7BCBEC09FB24D1BCEAE0938FA20FD028C2993D9731690CBB10012A0C08DFD6A0F5051084A2F89103320962616E64636861696E", // signedDataSuffix
+            ],
+            [
+              "0x950C0D5475AB4D2E7257811A4F304201D6CC52F7F5D06B8CDBB53922C4BCD140", // r
+              "0x4C747F4985569E59401E450F12F37933AED9EB9FB2F20CF022DAC9D31B9AADDC", // s
+              28, // v
+              "0x12240A205F339FD218803D4B7BCBEC09FB24D1BCEAE0938FA20FD028C2993D9731690CBB10012A0C08DFD6A0F505109685E29103320962616E64636861696E", // signedDataSuffix
+            ],
+          ],
+        ),
+        "INSUFFICIENT_VALIDATOR_SIGNATURES",
+      );
+    });
 
-    // it("should not accept out-of-order signatures", async () => {
-    //   await expectRevert(
-    //     this.bridge.relayOracleState(
-    //       "1160", // _blockHeight,
-    //       "0xACAB016EC9FB3AA28A6A4BE8A364AEDAA9A42866E2957C5C267E340CE67C55EE", // _oracleIAVLStateHash
-    //       "0x6ABB9CA0E0AC77A3B7C7F94D56E181DE954B92A19389829CE0E5A95B74BE0B7D", // _otherStoresMerkleHash
-    //       "0x2726178BFFB0D462C15AB546DE7B4CA86588A98FF0F629DB7CA7E318AA61A846", // _supplyStoresMerkleHash
-    //       [
-    //         "0x32FA694879095840619F5E49380612BD296FF7E950EAFB66FF654D99CA70869E", // subtreeVersionAndChainIdHash
-    //         "0x2157913D927F4249C52FAB326E9E0E83FACFAF167FA038A88173FA42ADF2452C", // timeHash
-    //         "0x7EECC6A0EE0136DE143C92370E4BE8FA6F545C02C23DAFA62CC4AA0A14701787", // txCountAndLastBlockInfoHash
-    //         "0xDEF482CDA986470C27374601EC716E9853DE47D72828AE0131CF8EF98E2972C5", // consensusDataHash
-    //         "0x6E340B9CFFB37A989CA544E6BB780A2C78901D3FB33738768511A30617AFA01D", // lastResultsHash
-    //         "0x0EFE3E12F46363C7779140D4CE659925DB52F19053E114D7CC4EFD666B37F79F", // evidenceAndProposerHash
-    //       ],
-    //       "0x6E080211880400000000000022480A20", // _signedDataPrefix
-    //       [
-    //         [
-    //           "0xB88E0A2054A96A6775A9F5D1FA23B6FFA41274DD35C6431DAB0977F8CE4FB480", // r
-    //           "0x3D759EFF85E17601624D560A8ACD70E782EA23B58C2E718FAC98EBF488750A86", // s
-    //           28, // v
-    //           "0x12240A20B0E9D07640EE2E758D01EA69E0733276D90946B0E7D11FE86067F97BAB1CC11B10012A0C08CBBAB8F00510B8C48F8902320962616E64636861696E", // _signedDataSuffix
-    //         ],
-    //         [
-    //           "0x174505557E61260C06C7FD8962FF485BEBAD68E91B00C225452962B1FCBF1114", // r
-    //           "0x39B37ACD1759D47B09D18C6C3144EAB5B2D2CA34347DC60A4D58B369730C0DB9", // s
-    //           27, // v
-    //           "0x12240A20B0E9D07640EE2E758D01EA69E0733276D90946B0E7D11FE86067F97BAB1CC11B10012A0C08CBBAB8F00510B8C48F8902320962616E64636861696E", // _signedDataSuffix
-    //         ],
-    //         [
-    //           "0x17A66FF70C81C6A9C3040C1037CCC4EE9319E184D40956DC0DC30C1318901D36", // r
-    //           "0x4A4C0C9BF150967CE25C724E613DF6BE0C401B84AA29DE8599963F52A7DFA940", // s
-    //           27, // v
-    //           "0x12240A20B0E9D07640EE2E758D01EA69E0733276D90946B0E7D11FE86067F97BAB1CC11B10012A0C08CBBAB8F00510B8C48F8902320962616E64636861696E", // _signedDataSuffix
-    //         ],
-    //         [
-    //           "0x453498042685AB34C627B5652E2F1FAD839C21DB3CEE4E01822F00885F1E0321", // r
-    //           "0x679781C8F2E3597ED3DF15E8E44B9CAF17D74894F0D4E22CD0F8C7CC1CB43963", // s
-    //           27, // v
-    //           "0x12240A20B0E9D07640EE2E758D01EA69E0733276D90946B0E7D11FE86067F97BAB1CC11B10012A0C08CBBAB8F00510B8C48F8902320962616E64636861696E", // _signedDataSuffix
-    //         ],
-    //       ]
-    //     ),
-    //     "INVALID_SIGNATURE_SIGNER_ORDER"
-    //   );
-    // });
+    it("should not accept out-of-order signatures", async () => {
+      await expectRevert(
+        this.bridge.relayOracleState(
+          "63407", // _blockHeight,
+          [
+            "0x2B14E5AB19A88F23B3F6C694659374DF21E21935A7C0B8565C4E7B43AAB3BB43", // accToMemCapStoresMerkleHash
+            "0x06223635C7D081E76F30998DA7D601AB9AB8602C9AE7095E319C68F4CE2F5F73", // mintStoresMerkleHash
+            "0xC744B497E2569517AA2F053E2A4E09C67427DC0FD8840048C607AF8F17D9100C", // oracleIAVLStateHash
+            "0xAE658B0EA9B1C87323D0FA810ADBE9DB91BE0BAEA62D29F376488666ECA9BBEB", // paramsAndSlashingStoresMerkleHash
+            "0xAA66B682A3FE96C372A095A43F2E73B33E89D835DB3BBF2496546328A7BD4961", // stakingAndUpgradeStoresMerkleHash
+          ],
+          [
+            "0x32FA694879095840619F5E49380612BD296FF7E950EAFB66FF654D99CA70869E", // versionAndChainIdHash
+            "0x9F667F22196CFEBD590E3B178148942EF40C5B693336BF20608D5F21AA679ABC", // timeHash
+            "0xF665C04557D07EAACFC46F2E5B5D267C3B2C4EEAF395784F30CC84266816A89D", // lastBlockIDAndOther
+            "0xE3BB39F3B621939B734AF396D7CF5CCFDEDD4A3D16F139FD481874BC6F6E52B4", // nextValidatorHashAndConsensusHash
+            "0x6E340B9CFFB37A989CA544E6BB780A2C78901D3FB33738768511A30617AFA01D", // lastResultsHash
+            "0xD991DA4D4E69473CC75A4B819F9E07D4956671A6F4A74DF4CC16596FCBE68137", // evidenceAndProposerHash
+          ],
+          "0x6E080211AFF700000000000022480A20", // _signedDataPrefix
+          [
+            [
+              "0x950C0D5475AB4D2E7257811A4F304201D6CC52F7F5D06B8CDBB53922C4BCD140", // r
+              "0x4C747F4985569E59401E450F12F37933AED9EB9FB2F20CF022DAC9D31B9AADDC", // s
+              28, // v
+              "0x12240A205F339FD218803D4B7BCBEC09FB24D1BCEAE0938FA20FD028C2993D9731690CBB10012A0C08DFD6A0F505109685E29103320962616E64636861696E", // signedDataSuffix
+            ],
+            [
+              "0x97009E1695FBD0FA6708C08C31EF92D28FA1AC64C6E6346193DE375AD377DE44", // r
+              "0x54DB42DFE62EC6B2C755DB707D7DF48EF49485EF8282C91054B728F052E452AC", // s
+              28, // v
+              "0x12240A205F339FD218803D4B7BCBEC09FB24D1BCEAE0938FA20FD028C2993D9731690CBB10012A0C08DFD6A0F5051084A2F89103320962616E64636861696E", // signedDataSuffix
+            ],
+            [
+              "0x62A900783D67A397A0CE36C82108122B97ACF88034CA917209937E2FF29EDB1C", // r
+              "0x378595FF3223971F63946D133DE29189497BC800F26370AF44512DDC3B02A1F1", // s
+              27, // v
+              "0x12240A205F339FD218803D4B7BCBEC09FB24D1BCEAE0938FA20FD028C2993D9731690CBB10012A0C08DFD6A0F50510D1E2E19103320962616E64636861696E", // signedDataSuffix
+            ],
+          ],
+        ),
+        "INVALID_SIGNATURE_SIGNER_ORDER",
+      );
+    });
 
-    // it("should not accept invalid signature", async () => {
-    //   await expectRevert(
-    //     this.bridge.relayOracleState(
-    //       "1160", // _blockHeight,
-    //       "0xACAB016EC9FB3AA28A6A4BE8A364AEDAA9A42866E2957C5C267E340CE67C55EE", // _oracleIAVLStateHash
-    //       "0x6ABB9CA0E0AC77A3B7C7F94D56E181DE954B92A19389829CE0E5A95B74BE0B7D", // _otherStoresMerkleHash
-    //       "0x2726178BFFB0D462C15AB546DE7B4CA86588A98FF0F629DB7CA7E318AA61A846", // _supplyStoresMerkleHash
-    //       [
-    //         "0x32FA694879095840619F5E49380612BD296FF7E950EAFB66FF654D99CA70869E", // subtreeVersionAndChainIdHash
-    //         "0x2157913D927F4249C52FAB326E9E0E83FACFAF167FA038A88173FA42ADF2452C", // timeHash
-    //         "0x7EECC6A0EE0136DE143C92370E4BE8FA6F545C02C23DAFA62CC4AA0A14701787", // txCountAndLastBlockInfoHash
-    //         "0xDEF482CDA986470C27374601EC716E9853DE47D72828AE0131CF8EF98E2972C5", // consensusDataHash
-    //         "0x6E340B9CFFB37A989CA544E6BB780A2C78901D3FB33738768511A30617AFA01D", // lastResultsHash
-    //         "0x0EFE3E12F46363C7779140D4CE659925DB52F19053E114D7CC4EFD666B37F79F", // evidenceAndProposerHash
-    //       ],
-    //       "0x6E080211880400000000000022480A20", // _signedDataPrefix
-    //       [
-    //         [
-    //           "0xE88E0A2054A96A6775A9F5D1FA23B6FFA41274DD35C6431DAB0977F8CE4FB480", // r INVALID HERE
-    //           "0x3D759EFF85E17601624D560A8ACD70E782EA23B58C2E718FAC98EBF488750A86", // s
-    //           28, // v
-    //           "0x12240A20B0E9D07640EE2E758D01EA69E0733276D90946B0E7D11FE86067F97BAB1CC11B10012A0C08CBBAB8F00510B8C48F8902320962616E64636861696E", // _signedDataSuffix
-    //         ],
-    //         [
-    //           "0x17A66FF70C81C6A9C3040C1037CCC4EE9319E184D40956DC0DC30C1318901D36", // r
-    //           "0x4A4C0C9BF150967CE25C724E613DF6BE0C401B84AA29DE8599963F52A7DFA940", // s
-    //           27, // v
-    //           "0x12240A20B0E9D07640EE2E758D01EA69E0733276D90946B0E7D11FE86067F97BAB1CC11B10012A0C08CBBAB8F00510B8C48F8902320962616E64636861696E", // _signedDataSuffix
-    //         ],
-    //         [
-    //           "0x453498042685AB34C627B5652E2F1FAD839C21DB3CEE4E01822F00885F1E0321", // r
-    //           "0x679781C8F2E3597ED3DF15E8E44B9CAF17D74894F0D4E22CD0F8C7CC1CB43963", // s
-    //           27, // v
-    //           "0x12240A20B0E9D07640EE2E758D01EA69E0733276D90946B0E7D11FE86067F97BAB1CC11B10012A0C08CBBAB8F00510B8C48F8902320962616E64636861696E", // _signedDataSuffix
-    //         ],
-    //       ]
-    //     ),
-    //     "INSUFFICIENT_VALIDATOR_SIGNATURES"
-    //   );
-    // });
+    it("should not accept invalid signature", async () => {
+      await expectRevert(
+        this.bridge.relayOracleState(
+          "63407", // _blockHeight,
+          [
+            "0x2B14E5AB19A88F23B3F6C694659374DF21E21935A7C0B8565C4E7B43AAB3BB43", // accToMemCapStoresMerkleHash
+            "0x06223635C7D081E76F30998DA7D601AB9AB8602C9AE7095E319C68F4CE2F5F73", // mintStoresMerkleHash
+            "0xC744B497E2569517AA2F053E2A4E09C67427DC0FD8840048C607AF8F17D9100C", // oracleIAVLStateHash
+            "0xAE658B0EA9B1C87323D0FA810ADBE9DB91BE0BAEA62D29F376488666ECA9BBEB", // paramsAndSlashingStoresMerkleHash
+            "0xAA66B682A3FE96C372A095A43F2E73B33E89D835DB3BBF2496546328A7BD4961", // stakingAndUpgradeStoresMerkleHash
+          ],
+          [
+            "0x32FA694879095840619F5E49380612BD296FF7E950EAFB66FF654D99CA70869E", // versionAndChainIdHash
+            "0x9F667F22196CFEBD590E3B178148942EF40C5B693336BF20608D5F21AA679ABC", // timeHash
+            "0xF665C04557D07EAACFC46F2E5B5D267C3B2C4EEAF395784F30CC84266816A89D", // lastBlockIDAndOther
+            "0xE3BB39F3B621939B734AF396D7CF5CCFDEDD4A3D16F139FD481874BC6F6E52B4", // nextValidatorHashAndConsensusHash
+            "0x6E340B9CFFB37A989CA544E6BB780A2C78901D3FB33738768511A30617AFA01D", // lastResultsHash
+            "0xD991DA4D4E69473CC75A4B819F9E07D4956671A6F4A74DF4CC16596FCBE68137", // evidenceAndProposerHash
+          ],
+          "0x6E080211AFF700000000000022480A20", // _signedDataPrefix
+          [
+            [
+              // This sigature is wrong
+              "0x62A900783D67A397A0CE36C82108122B97ACF88034CA917209937E2FF29EDB1C", // r
+              "0x378595FF3223971F63946D133DE29189497BC800F26370AF44512DDC3B02A1F1", // s
+              28, // v
+              "0x12240A205F339FD218803D4B7BCBEC09FB24D1BCEAE0938FA20FD028C2993D9731690CBB10012A0C08DFD6A0F50510D1E2E19103320962616E64636861696E", // signedDataSuffix
+            ],
+            [
+              "0x97009E1695FBD0FA6708C08C31EF92D28FA1AC64C6E6346193DE375AD377DE44", // r
+              "0x54DB42DFE62EC6B2C755DB707D7DF48EF49485EF8282C91054B728F052E452AC", // s
+              28, // v
+              "0x12240A205F339FD218803D4B7BCBEC09FB24D1BCEAE0938FA20FD028C2993D9731690CBB10012A0C08DFD6A0F5051084A2F89103320962616E64636861696E", // signedDataSuffix
+            ],
+            [
+              "0x950C0D5475AB4D2E7257811A4F304201D6CC52F7F5D06B8CDBB53922C4BCD140", // r
+              "0x4C747F4985569E59401E450F12F37933AED9EB9FB2F20CF022DAC9D31B9AADDC", // s
+              28, // v
+              "0x12240A205F339FD218803D4B7BCBEC09FB24D1BCEAE0938FA20FD028C2993D9731690CBB10012A0C08DFD6A0F505109685E29103320962616E64636861696E", // signedDataSuffix
+            ],
+          ],
+        ),
+        "INSUFFICIENT_VALIDATOR_SIGNATURES",
+      );
+    });
   });
 
   context("Checking data verification", () => {
     beforeEach(async () => {
       this.bridge = await Bridge.new([]);
       await this.bridge.setOracleState(
-        "46", // _blockHeight
-        "0xC2650A3B2CEE22FECB5A7A4DB2B17A7698D0E1C6D03FCCB423AFA050C3ACE32D" // _oracleIAVLStateHash
+        "178693", // _blockHeight
+        "0xD2F9BA8D5831B68F80002A1B1B205A054D39D835150D032FA247A7B7FA998DAE", // _oracleIAVLStateHash
       );
     });
 
@@ -247,158 +204,210 @@ contract("Bridge", ([_, owner, alice, bob]) => {
       await expectRevert(
         this.bridge.verifyOracleData(
           "9999", // _blockHeight
-          "0x000000005E58F9E6000000005E58F9F30000000000000001000000000000000100000000000000016461746131", // _data
-          "1", // _requestId
-          "1", // _oracleScriptId
-          "0x63616C6C64617461", // _params
-          "36", // _version
+          ["band test", 1, "030000004254436400000000000000", 4, 4], // _requestPacket
+          ["band test", 1, 4, 1587734008, 1587734012, 1, "d8720b0000000000"], // _responsePacket
+          "326", // _version
           [
             [
               true, // isDataOnRight
               "1", // subtreeHeight
               "2", // subtreeSize
-              "36", // subtreeVersion
-              "0xB181E1641589AFFC067E239E92CF07B6F1CEB13D5AA5B883F91BF62C70B0802E", // siblingHash
+              "54436", // subtreeVersion
+              "0xA44982084B5CBAC2EC1DFD2DA6E5C315F88041EE5187AB09011DF15CB1E4AD4F", // siblingHash
             ],
             [
               true, // isDataOnRight
               "2", // subtreeHeight
-              "3", // subtreeSize
-              "36", // subtreeVersion
-              "0xF65F8E790CBF4B6480B9ABE3AD2683AE27B631F46ABFF22E7B4996E2660040AC", // siblingHash
+              "4", // subtreeSize
+              "71881", // subtreeVersion
+              "0xA60467EDA72F9885397694062DCC799A1BBC62584B4DE87BE5812A3FC82FC867", // siblingHash
             ],
             [
               true, // isDataOnRight
-              "2", // subtreeHeight
-              "7", // subtreeSize
-              "36", // subtreeVersion
-              "0x6F04DDDD55DFAA857B8D9A04D9E1FCA2B5B5259E8FFC58C04B8052F1114BC8A9", // siblingHash
+              "3", // subtreeHeight
+              "8", // subtreeSize
+              "163458", // subtreeVersion
+              "0x709E1C73511B24EFDD9B8D3CD717A5210BA20E2411A8529E8B642C54FB002DC4", // siblingHash
             ],
             [
-              true, // isDataOnRight
+              false, // isDataOnRight
               "4", // subtreeHeight
-              "10", // subtreeSize
-              "45", // subtreeVersion
-              "0xEE5433A9AA1598E9B372176361063C5AF6FB4C3EA7A2162D0025F300498A4774", // siblingHash
+              "13", // subtreeSize
+              "163458", // subtreeVersion
+              "0x0BA6B3C6ACFAC5D66713F2B6963875489C4C8464E73DD2F953E188BEB3B9DD27", // siblingHash
             ],
-          ]
+            [
+              true, // isDataOnRight
+              "5", // subtreeHeight
+              "18", // subtreeSize
+              "178692", // subtreeVersion
+              "0xB8AE896FF4B0D7E8290AB1008D860251DA91AFCDA5EAA0C44295A3217C884B8F", // siblingHash
+            ],
+          ],
         ),
-        "NO_ORACLE_ROOT_STATE_DATA"
+        "NO_ORACLE_ROOT_STATE_DATA",
       );
     });
 
-    // TODO: Make test work after implement
-    // it("should accept correct data verification", async () => {
-    //   (
-    //     await this.bridge.verifyOracleData(
-    //       "46", // _blockHeight
-    //       "0x000000005E58F9E6000000005E58F9F30000000000000001000000000000000100000000000000016461746131", // _data
-    //       "1", // _requestId
-    //       "1", // _oracleScriptId
-    //       "0x63616C6C64617461", // _params
-    //       "36", // _version
-    //       [
-    //         [
-    //           true, // isDataOnRight
-    //           "1", // subtreeHeight
-    //           "2", // subtreeSize
-    //           "36", // subtreeVersion
-    //           "0xB181E1641589AFFC067E239E92CF07B6F1CEB13D5AA5B883F91BF62C70B0802E", // siblingHash
-    //         ],
-    //         [
-    //           true, // isDataOnRight
-    //           "2", // subtreeHeight
-    //           "3", // subtreeSize
-    //           "36", // subtreeVersion
-    //           "0xF65F8E790CBF4B6480B9ABE3AD2683AE27B631F46ABFF22E7B4996E2660040AC", // siblingHash
-    //         ],
-    //         [
-    //           true, // isDataOnRight
-    //           "3", // subtreeHeight
-    //           "7", // subtreeSize
-    //           "36", // subtreeVersion
-    //           "0x6F04DDDD55DFAA857B8D9A04D9E1FCA2B5B5259E8FFC58C04B8052F1114BC8A9", // siblingHash
-    //         ],
-    //         [
-    //           true, // isDataOnRight
-    //           "4", // subtreeHeight
-    //           "10", // subtreeSize
-    //           "45", // subtreeVersion
-    //           "0xEE5433A9AA1598E9B372176361063C5AF6FB4C3EA7A2162D0025F300498A4774", // siblingHash
-    //         ],
-    //       ]
-    //     )
-    //   )
-    //     .toString()
-    //     .should.eq(
-    //       [1, 1582889446, 1582889459, 1, 1, 1, "0x63616c6c64617461", "0x6461746131"].toString()
-    //     );
-    // });
+    it("should accept correct data verification", async () => {
+      const ret = await this.bridge.verifyOracleData(
+        "178693", // _blockHeight
+        ["band test", 1, "030000004254436400000000000000", 4, 4], // _requestPacket
+        ["band test", 1, 4, 1587734008, 1587734012, 1, "d8720b0000000000"], // _responsePacket
+        "326", // _version
+        [
+          [
+            true, // isDataOnRight
+            "1", // subtreeHeight
+            "2", // subtreeSize
+            "54436", // subtreeVersion
+            "0xA44982084B5CBAC2EC1DFD2DA6E5C315F88041EE5187AB09011DF15CB1E4AD4F", // siblingHash
+          ],
+          [
+            true, // isDataOnRight
+            "2", // subtreeHeight
+            "4", // subtreeSize
+            "71881", // subtreeVersion
+            "0xA60467EDA72F9885397694062DCC799A1BBC62584B4DE87BE5812A3FC82FC867", // siblingHash
+          ],
+          [
+            true, // isDataOnRight
+            "3", // subtreeHeight
+            "8", // subtreeSize
+            "163458", // subtreeVersion
+            "0x709E1C73511B24EFDD9B8D3CD717A5210BA20E2411A8529E8B642C54FB002DC4", // siblingHash
+          ],
+          [
+            false, // isDataOnRight
+            "4", // subtreeHeight
+            "13", // subtreeSize
+            "163458", // subtreeVersion
+            "0x0BA6B3C6ACFAC5D66713F2B6963875489C4C8464E73DD2F953E188BEB3B9DD27", // siblingHash
+          ],
+          [
+            true, // isDataOnRight
+            "5", // subtreeHeight
+            "18", // subtreeSize
+            "178692", // subtreeVersion
+            "0xB8AE896FF4B0D7E8290AB1008D860251DA91AFCDA5EAA0C44295A3217C884B8F", // siblingHash
+          ],
+        ],
+      );
+      // console.log(ret);
+      ret[0]
+        .toString()
+        .should.eq(
+          [
+            "band test",
+            "1",
+            "030000004254436400000000000000",
+            "4",
+            "4",
+          ].toString(),
+        );
+      ret[1]
+        .toString()
+        .should.eq(
+          [
+            "band test",
+            1,
+            4,
+            1587734008,
+            1587734012,
+            1,
+            "d8720b0000000000",
+          ].toString(),
+        );
+    });
 
     it("should not accept invalid data verification", async () => {
       await expectRevert(
         this.bridge.verifyOracleData(
-          "46", // _blockHeight
-          "0x000000005E58F9E6000000005E58F9F30000000000000001000000000000000100000000000000019999999999", // _data WRONG HERE
-          "1", // _requestId
-          "1", // _oracleScriptId
-          "0x63616C6C64617461", // _params
-          "36", // _version
+          "178693", // _blockHeight
+          ["band test", 1, "030000004254436400000000000000", 4, 4], // _requestPacket
+          ["band test", 1, 4, 1587734008, 1587734012, 1, "d7720b0000000000"], // wrong here
+          "326", // _version
           [
             [
               true, // isDataOnRight
               "1", // subtreeHeight
               "2", // subtreeSize
-              "36", // subtreeVersion
-              "0xB181E1641589AFFC067E239E92CF07B6F1CEB13D5AA5B883F91BF62C70B0802E", // siblingHash
+              "54436", // subtreeVersion
+              "0xA44982084B5CBAC2EC1DFD2DA6E5C315F88041EE5187AB09011DF15CB1E4AD4F", // siblingHash
             ],
             [
               true, // isDataOnRight
               "2", // subtreeHeight
-              "3", // subtreeSize
-              "36", // subtreeVersion
-              "0xF65F8E790CBF4B6480B9ABE3AD2683AE27B631F46ABFF22E7B4996E2660040AC", // siblingHash
+              "4", // subtreeSize
+              "71881", // subtreeVersion
+              "0xA60467EDA72F9885397694062DCC799A1BBC62584B4DE87BE5812A3FC82FC867", // siblingHash
             ],
             [
               true, // isDataOnRight
-              "2", // subtreeHeight
-              "7", // subtreeSize
-              "36", // subtreeVersion
-              "0x6F04DDDD55DFAA857B8D9A04D9E1FCA2B5B5259E8FFC58C04B8052F1114BC8A9", // siblingHash
+              "3", // subtreeHeight
+              "8", // subtreeSize
+              "163458", // subtreeVersion
+              "0x709E1C73511B24EFDD9B8D3CD717A5210BA20E2411A8529E8B642C54FB002DC4", // siblingHash
             ],
             [
-              true, // isDataOnRight
+              false, // isDataOnRight
               "4", // subtreeHeight
-              "10", // subtreeSize
-              "45", // subtreeVersion
-              "0xEE5433A9AA1598E9B372176361063C5AF6FB4C3EA7A2162D0025F300498A4774", // siblingHash
+              "13", // subtreeSize
+              "163458", // subtreeVersion
+              "0x0BA6B3C6ACFAC5D66713F2B6963875489C4C8464E73DD2F953E188BEB3B9DD27", // siblingHash
             ],
-          ]
+            [
+              true, // isDataOnRight
+              "5", // subtreeHeight
+              "18", // subtreeSize
+              "178692", // subtreeVersion
+              "0xB8AE896FF4B0D7E8290AB1008D860251DA91AFCDA5EAA0C44295A3217C884B8F", // siblingHash
+            ],
+          ],
         ),
-        "INVALID_ORACLE_DATA_PROOF"
+        "INVALID_ORACLE_DATA_PROOF",
       );
     });
 
     it("should not accept incomplete proof", async () => {
       await expectRevert(
         this.bridge.verifyOracleData(
-          "46", // _blockHeight
-          "0x000000005E58F9E6000000005E58F9F30000000000000001000000000000000100000000000000016461746131", // _data
-          "1", // _requestId
-          "1", // _oracleScriptId
-          "0x63616C6C64617461", // _params
-          "36", // _version
+          "178693", // _blockHeight
+          ["band test", 1, "030000004254436400000000000000", 4, 4], // _requestPacket
+          ["band test", 1, 4, 1587734008, 1587734012, 1, "d8720b0000000000"], // _responsePacket
+          "326", // _version
           [
             [
               true, // isDataOnRight
               "1", // subtreeHeight
               "2", // subtreeSize
-              "36", // subtreeVersion
-              "0xB181E1641589AFFC067E239E92CF07B6F1CEB13D5AA5B883F91BF62C70B0802E", // siblingHash
+              "54436", // subtreeVersion
+              "0xA44982084B5CBAC2EC1DFD2DA6E5C315F88041EE5187AB09011DF15CB1E4AD4F", // siblingHash
             ],
-          ]
+            [
+              true, // isDataOnRight
+              "2", // subtreeHeight
+              "4", // subtreeSize
+              "71881", // subtreeVersion
+              "0xA60467EDA72F9885397694062DCC799A1BBC62584B4DE87BE5812A3FC82FC867", // siblingHash
+            ],
+            [
+              true, // isDataOnRight
+              "3", // subtreeHeight
+              "8", // subtreeSize
+              "163458", // subtreeVersion
+              "0x709E1C73511B24EFDD9B8D3CD717A5210BA20E2411A8529E8B642C54FB002DC4", // siblingHash
+            ],
+            [
+              false, // isDataOnRight
+              "4", // subtreeHeight
+              "13", // subtreeSize
+              "163458", // subtreeVersion
+              "0x0BA6B3C6ACFAC5D66713F2B6963875489C4C8464E73DD2F953E188BEB3B9DD27", // siblingHash
+            ],
+          ],
         ),
-        "INVALID_ORACLE_DATA_PROOF"
+        "INVALID_ORACLE_DATA_PROOF",
       );
     });
   });
@@ -415,51 +424,71 @@ contract("Bridge", ([_, owner, alice, bob]) => {
       this.receiver = await ReceiverMock.new(this.bridge.address);
     });
 
-    // TODO: Add test after implementation complete
-    // it("should accept valid relay and verify", async () => {
-    //   await this.receiver.relayAndSafe(
-    //     "0x0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000054000000000000000000000000000000000000000000000000000000000000004E0000000000000000000000000000000000000000000000000000000000000043E1F8CCF68B355092FDF91B6B694EDBEBEE5DAD05E109C8160EB29462BDC995117937AE0536E33A2E7B9FCBFC0B28E25AE685532F5254C5203D70921A98AD6CB981060C95592D64D0536B79656A77EAC4F0EF4074A1FA634B03795B4FD60725F3B32FA694879095840619F5E49380612BD296FF7E950EAFB66FF654D99CA70869ECF8F212876BC79E8A95B695D05623B66363130654BCEF439D8C901EADD2478587513FFE6590484CA8BE5DC089F44E8DF323449D5BE57F4918EC0C4B8C568B3B565269FCFB0CC5557E5ECC5EA493900F7FD48AA99A255D49B38BBB0D1697C8E526E340B9CFFB37A989CA544E6BB780A2C78901D3FB33738768511A30617AFA01D7F4BE7E5A1EB872AD44103360DDC190410331280C42A54D829A5D752C796685D000000000000000000000000000000000000000000000000000000000000018000000000000000000000000000000000000000000000000000000000000001C000000000000000000000000000000000000000000000000000000000000000106E0802113E0400000000000022480A20000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000001400000000000000000000000000000000000000000000000000000000000000220C78CF546CFAA125473E81ADC773123FD6840D0F08DC52E8B9A829917E76444D348C64C8CCA117B0B2D751A1C20A9541F5372E3B2FAD2F53EC1FFC9E6B7167CE7000000000000000000000000000000000000000000000000000000000000001B0000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000003F12240A20CC19B175CCD7B0AD1C8CF7D9FB0FBEFD327FD09410E0E7926F11864DAD6D723710012A0C08A2C0BDF30510B1C482BA03320962616E64636861696E003CCD5BD8FE505ABDD8901A5C6F608AC91AAE266FB6254666D986C27E3D30E6857BF6E1637CE43E229D0E5322E8D55004D814FD23423E41F8392896D555875BDA000000000000000000000000000000000000000000000000000000000000001C0000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000003F12240A20CC19B175CCD7B0AD1C8CF7D9FB0FBEFD327FD09410E0E7926F11864DAD6D723710012A0C08A2C0BDF30510BBFADABA03320962616E64636861696E003ECB129F7BCDDEF6A6CF9C02B443F1F564242B9DC2B9CD0959E6649BAC8564BF5A4CB8503A0FFECA3404F1F865C7D4AA49D3272AA3DF39AFE07A8660029FDACB000000000000000000000000000000000000000000000000000000000000001C0000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000003F12240A20CC19B175CCD7B0AD1C8CF7D9FB0FBEFD327FD09410E0E7926F11864DAD6D723710012A0C08A2C0BDF30510F6A7EEBA03320962616E64636861696E000000000000000000000000000000000000000000000000000000000000000560000000000000000000000000000000000000000000000000000000000000043E00000000000000000000000000000000000000000000000000000000000000E000000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000014000000000000000000000000000000000000000000000000000000000000003A500000000000000000000000000000000000000000000000000000000000001800000000000000000000000000000000000000000000000000000000000000030000000005E6F5F15000000005E6F5F5500000000000000040000000000000004000000000000000400000000000029840000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000034554480000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000003A5B970D52C0D68A1741BC481581C245B3CA04B0596B1A0C8A113583ECF7CAD5C2B00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000003A58F137C3F314784DAD9866E0AC08543A7D0A9CF924F9FD6D71F36C7337C534D1100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000003A54D40A32F8DEB619363E5010C1A4E19F6137F321313777C1334A262B9F044728500000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000D00000000000000000000000000000000000000000000000000000000000003A557FE63EF72B1C2AF472E9F409FFC31540B13BD9553D736534DDC7F1041C36BCE00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000000000000001600000000000000000000000000000000000000000000000000000000000003A5580726819FA6A8CD409B12A6EBEC0FEC2754DDD3C6CAB874F10A684DB9C1117F00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000002C000000000000000000000000000000000000000000000000000000000000043D34B30F702E922512108A2416D25CBF3639D2F82B338A2F76B3F47073CA7D20C6"
-    //   );
-    //   (await this.bridge.oracleStates(1086))
-    //     .toString()
-    //     .should.eq("0x1f8ccf68b355092fdf91b6b694edbebee5dad05e109c8160eb29462bdc995117");
-    //   result = await this.receiver.latestResult();
-    //   result[0].toString().should.eq("1");
-    //   result[1].toString().should.eq("1584357141");
-    //   result[2].toString().should.eq("1584357205");
-    //   result[3].toString().should.eq("4");
-    //   result[4].toString().should.eq("4");
-    //   result[5].toString().should.eq("4");
-    //   result[6].toString().should.eq("0x455448");
-    //   result[7].toString().should.eq("0x0000000000002984");
-    // });
+    it("should accept valid relay and verify", async () => {
+      await this.receiver.relayAndSafe(
+        "0x000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000005800000000000000000000000000000000000000000000000000000000000000520000000000000000000000000000000000000000000000000000000000000001C98D5A295127BD633FE41A1A32694EFD02CC28BBEE3CE47D1252B83221004198738F6B13C2200FB17EEF5F64BE9A054D973BE7D9689649A0CFE870B238264B6A6D3707BEC5BF767C06D08E6AC3BB09A249D3C7A12CC5534D1010E7F5712F00F3859D16CB43E4CFD60FA4722A3AF0D8F785F8F5CD2D3C65AD920D9F93054EC609AD09D2B170DED61CB985677443047A71911D0C5817437EAF473766798C2D5025032FA694879095840619F5E49380612BD296FF7E950EAFB66FF654D99CA70869EBC48EB9E63C669D292008D1F286265A942B79B0B1744BC627A5CA0693B2ACFEF770103E37BCF669E84CA7787D9F19E669D7ECD4F4B80DA4A50477BBCC2AFE477004209A161040AB1778E2F2C00EE482F205B28EFBA439FCB04EA283F619478D94DEAC164A916C49F6591B2B05CC63FF5D8CF10D82F03F7ACC295EC4183FD37E90EFE3E12F46363C7779140D4CE659925DB52F19053E114D7CC4EFD666B37F79F00000000000000000000000000000000000000000000000000000000000001C0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000106D0802111C0000000000000022480A200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000014000000000000000000000000000000000000000000000000000000000000002205D0FDD871B479BA5E7C46EDF17FA6360E42C7231948443AFF1D72E9B996A957A662CD2E89090AEAB58CE7DC51A02F579418201DC38D4970614C4A88BD5677E24000000000000000000000000000000000000000000000000000000000000001C0000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000003E12240A209C7A986F99FF1BF3CFC599B57E608C48601478A300AA03F3DDE3E2A6275140BE10012A0B08AB8BA6F50510D4C3B51E320962616E64636861696E000062F89B3E7AB41F6FF71B1F097B055A8033089E4BFEAC0A42656BA4ECE4D370E66C3C01CBE588FEA9187FD06E07619DABC410155C41985A63C401F4D167820E3E000000000000000000000000000000000000000000000000000000000000001C0000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000003E12240A209C7A986F99FF1BF3CFC599B57E608C48601478A300AA03F3DDE3E2A6275140BE10012A0B08AB8BA6F50510C0DAE21F320962616E64636861696E000081CEC8B6B9D4A0F737DEF3EF29B3C4DAE24612C675AE17BF29C720AAC1C8B6AB2A34DE8F41BFEE200872FCECBED0C1351D2ED128BCCED61E940265014D7F7FFC000000000000000000000000000000000000000000000000000000000000001B0000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000003E12240A209C7A986F99FF1BF3CFC599B57E608C48601478A300AA03F3DDE3E2A6275140BE10012A0B08AB8BA6F50510D0D08C1F320962616E64636861696E000000000000000000000000000000000000000000000000000000000000000005C0000000000000000000000000000000000000000000000000000000000000001C00000000000000000000000000000000000000000000000000000000000000A000000000000000000000000000000000000000000000000000000000000001C0000000000000000000000000000000000000000000000000000000000000001B000000000000000000000000000000000000000000000000000000000000032000000000000000000000000000000000000000000000000000000000000000A0000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000E000000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000962616E6420746573740000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001E303330303030303034323534343336343030303030303030303030303030000000000000000000000000000000000000000000000000000000000000000000E000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000005EA985A2000000000000000000000000000000000000000000000000000000005EA985A800000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000120000000000000000000000000000000000000000000000000000000000000000962616E6420746573740000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001035636133306330303030303030303030000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000001BD1814868AB070BE64030D05681EBBAA8394251D3FD3A677AA839233CA6EC1C9D000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000001B48EAD2DE2ED08B9E45637904A213B3A92BB90C5F70D89E3EBEE8A369DA6C25AB000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000001B709E1C73511B24EFDD9B8D3CD717A5210BA20E2411A8529E8B642C54FB002DC4000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000050000000000000000000000000000000000000000000000000000000000000015000000000000000000000000000000000000000000000000000000000000001BE06E281DA7E25786B4997B6289D896E07E0F1A4EADDA7DFD9074F1D6BD7CC445",
+      );
+      (await this.bridge.oracleStates(28))
+        .toString()
+        .should.eq(
+          "0xd3707bec5bf767c06d08e6ac3bb09a249d3c7a12cc5534d1010e7f5712f00f38",
+        );
+      const req = await this.receiver.latestReq();
+      req[0].toString().should.eq("band test");
+      req[1].toString().should.eq("1");
+      req[2].toString().should.eq("030000004254436400000000000000");
+      req[3].toString().should.eq("4");
+      req[4].toString().should.eq("4");
+      const res = await this.receiver.latestRes();
+      res[0].toString().should.eq("band test");
+      res[1].toString().should.eq("1");
+      res[2].toString().should.eq("4");
+      res[3].toString().should.eq("1588168098");
+      res[4].toString().should.eq("1588168104");
+      res[5].toString().should.eq("1");
+      res[6].toString().should.eq("5ca30c0000000000");
+    });
 
-    // it("should accept valid relay and verify case 2", async () => {
-    //   await this.receiver.relayAndSafe(
-    //     "0x0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000054000000000000000000000000000000000000000000000000000000000000004E000000000000000000000000000000000000000000000000000000000000008723E71EB34C10E3DF166273A80CB328BD9671E3B5039BA0AE5BFC0B4DCF7A67B1964EE3C433B1E0B34ACB9FB24C69765F888A076EB970A0A10294776B520DB49842D1E2AF76CFC0C97036FE3467417115A90E4CF7E64CF550609C447C0FD349D1732FA694879095840619F5E49380612BD296FF7E950EAFB66FF654D99CA70869E72B4CEFA53DCECEC7AB08A9E53DC59E536FE21612A25E0E985C8E846EB216FA928E064863FE97255B13B33DBC1D2811CC8827B39A99D6BFB5670A5C8BECFDA4665269FCFB0CC5557E5ECC5EA493900F7FD48AA99A255D49B38BBB0D1697C8E526E340B9CFFB37A989CA544E6BB780A2C78901D3FB33738768511A30617AFA01D7F4BE7E5A1EB872AD44103360DDC190410331280C42A54D829A5D752C796685D000000000000000000000000000000000000000000000000000000000000018000000000000000000000000000000000000000000000000000000000000001C000000000000000000000000000000000000000000000000000000000000000106E080211720800000000000022480A20000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000001400000000000000000000000000000000000000000000000000000000000000220B48DF385528961C3041D577DD570A9A83D8ACE742EE29924D5B8AC2E65CC95E535E4597E43F2FFE07670951C1F6F29743AC3F2667C0AB9B68F87BE7D0249429A000000000000000000000000000000000000000000000000000000000000001B0000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000003F12240A207B9732B6973F57ABE1DADEC401E08948C7BAD84CB5CBF475025D8FA74D242F2410012A0C08D9CBBDF30510E7D18FC902320962616E64636861696E00F6435F3926D6711D44B438060FEDFED3840DE3771BC08F040AC1C691A3154B805308757CD472CBB7A32F0A0FDA48605271B85A142877D98CBDF77AE44D687308000000000000000000000000000000000000000000000000000000000000001C0000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000003F12240A207B9732B6973F57ABE1DADEC401E08948C7BAD84CB5CBF475025D8FA74D242F2410012A0C08D9CBBDF30510AA94D5CE02320962616E64636861696E00F1A8FF7651DF4C36E2344275503E65CDEAF91348E512F7A08980451130A76E11674EFFD2DFEE4753AB5E9F7ED00D50DFE1D9F9F0170048ACCFA5ED66FAFA7006000000000000000000000000000000000000000000000000000000000000001B0000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000003F12240A207B9732B6973F57ABE1DADEC401E08948C7BAD84CB5CBF475025D8FA74D242F2410012A0C08D9CBBDF3051098A0ECD502320962616E64636861696E000000000000000000000000000000000000000000000000000000000000000560000000000000000000000000000000000000000000000000000000000000087200000000000000000000000000000000000000000000000000000000000000E000000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000014000000000000000000000000000000000000000000000000000000000000003A400000000000000000000000000000000000000000000000000000000000001800000000000000000000000000000000000000000000000000000000000000030000000005E6F5F15000000005E6F5F5300000000000000040000000000000001000000000000000200000000000720EB0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000034254430000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000003A54A6274AF9564DCCBC8C607E8F51D1CAC031D57251504746A73C097202A3AB92300000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000003A58F137C3F314784DAD9866E0AC08543A7D0A9CF924F9FD6D71F36C7337C534D1100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000003A54D40A32F8DEB619363E5010C1A4E19F6137F321313777C1334A262B9F044728500000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000D00000000000000000000000000000000000000000000000000000000000003A557FE63EF72B1C2AF472E9F409FFC31540B13BD9553D736534DDC7F1041C36BCE00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000000000000001600000000000000000000000000000000000000000000000000000000000003A5580726819FA6A8CD409B12A6EBEC0FEC2754DDD3C6CAB874F10A684DB9C1117F00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000002C00000000000000000000000000000000000000000000000000000000000008712092248FD55D10DF1F9E699EBFCF8E9C52214C4F01682563E6872B63F84E526A"
-    //   );
-    //   (await this.bridge.oracleStates(2162))
-    //     .toString()
-    //     .should.eq("0x3e71eb34c10e3df166273a80cb328bd9671e3b5039ba0ae5bfc0b4dcf7a67b19");
-    //   result = await this.receiver.latestResult();
-    //   result[0].toString().should.eq("1");
-    //   result[1].toString().should.eq("1584357141");
-    //   result[2].toString().should.eq("1584357203");
-    //   result[3].toString().should.eq("4");
-    //   result[4].toString().should.eq("1");
-    //   result[5].toString().should.eq("2");
-    //   result[6].toString().should.eq("0x425443");
-    //   result[7].toString().should.eq("0x00000000000720eb");
-    // });
+    it("should accept valid relay and verify case 2", async () => {
+      await this.receiver.relayAndSafe(
+        "0x0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000058000000000000000000000000000000000000000000000000000000000000005200000000000000000000000000000000000000000000000000000000000000234E4AFD853694C8D904E7509C4E388D054D7FECA188CC2AA5F391CE2DE0C1DF753CE9D9F07EEB72C23C2F1DD0D8A19DE627686089917A7E5E8E22FF604DBD6E94BA198FCFAEBF1A6F499B330699B61C2557E8CCAEECDE3AEDD50192AAF87245E166D5B21D67B07D553861AD2BCA87CAE74491965249C30D248902F35AD90B9511C0AB8335CB1AD62163B743379D7292B32401F658713424DDADD38C3232F0224AF32FA694879095840619F5E49380612BD296FF7E950EAFB66FF654D99CA70869E49E1A01E4A705DAFCAD7013CB6A86D2D5505ED76D8F1665CFBBE279FFE000638FFD6B03A759B769DCAD0D02F9DE45A9CC546F947573C108414D456F1A7116059004209A161040AB1778E2F2C00EE482F205B28EFBA439FCB04EA283F619478D96E340B9CFFB37A989CA544E6BB780A2C78901D3FB33738768511A30617AFA01D0EFE3E12F46363C7779140D4CE659925DB52F19053E114D7CC4EFD666B37F79F00000000000000000000000000000000000000000000000000000000000001C0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000106E080211340200000000000022480A200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000014000000000000000000000000000000000000000000000000000000000000002200E103975CA4DFB90BB0E5A5C091767945978E3EBAB28735A83E8DAD09CA5F6913CA0A40EA5112DCD8A2E4B4E7871F095CB243BD91619090D01494396EEB7A611000000000000000000000000000000000000000000000000000000000000001B0000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000003F12240A2060ACC88D982DE2F0B60C7EC7B084B358EB33EFBD3B1F7CB78A07692DAAE5429F10012A0C08AC92A6F50510CCF58EB801320962616E64636861696E00CCC447AF4AB179B0CAF4F25BD5DDC5AC59E9F9D9F4BAA939CCB54CC8FBA643E674A2DA90D06869302F7790F36B7559C84A7702F35E7DE0096991756C42CC65B7000000000000000000000000000000000000000000000000000000000000001B0000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000003F12240A2060ACC88D982DE2F0B60C7EC7B084B358EB33EFBD3B1F7CB78A07692DAAE5429F10012A0C08AC92A6F50510EFE7E1B801320962616E64636861696E0090B7F346F8B2BF847CD4D05740A54FB73AB42C5D0190BF4E0795F2289C6489527EE33A5ED014E401361F29A84FC1708EA0FCE74D66FA2A0EE6D3CBE636585ADB000000000000000000000000000000000000000000000000000000000000001C0000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000003F12240A2060ACC88D982DE2F0B60C7EC7B084B358EB33EFBD3B1F7CB78A07692DAAE5429F10012A0C08AC92A6F50510A1CFCBB801320962616E64636861696E000000000000000000000000000000000000000000000000000000000000000660000000000000000000000000000000000000000000000000000000000000023400000000000000000000000000000000000000000000000000000000000000A000000000000000000000000000000000000000000000000000000000000001C00000000000000000000000000000000000000000000000000000000000000231000000000000000000000000000000000000000000000000000000000000032000000000000000000000000000000000000000000000000000000000000000A0000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000E00000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000057465737432000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001E303330303030303034323534343336343030303030303030303030303030000000000000000000000000000000000000000000000000000000000000000000E000000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000005EA98920000000000000000000000000000000000000000000000000000000005EA9892600000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000120000000000000000000000000000000000000000000000000000000000000000574657374320000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010653661313063303030303030303030300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000050000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000231F281D7270823933196D3AE4B0C418E92034944CA4E5972BA3A16D5260DC962500000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000231D1814868AB070BE64030D05681EBBAA8394251D3FD3A677AA839233CA6EC1C9D000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000000000000023148EAD2DE2ED08B9E45637904A213B3A92BB90C5F70D89E3EBEE8A369DA6C25AB0000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000090000000000000000000000000000000000000000000000000000000000000231709E1C73511B24EFDD9B8D3CD717A5210BA20E2411A8529E8B642C54FB002DC400000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000000000000001600000000000000000000000000000000000000000000000000000000000002336A7D1D56C342E6C24F69FE1CEEAE5D6F8BBDE2AC9A101F40FEBBA2CDFEB69C4A",
+      );
+      (await this.bridge.oracleStates(564))
+        .toString()
+        .should.eq(
+          "0xa198fcfaebf1a6f499b330699b61c2557e8ccaeecde3aedd50192aaf87245e16",
+        );
+      const req = await this.receiver.latestReq();
+      req[0].toString().should.eq("test2");
+      req[1].toString().should.eq("1");
+      req[2].toString().should.eq("030000004254436400000000000000");
+      req[3].toString().should.eq("4");
+      req[4].toString().should.eq("4");
+      const res = await this.receiver.latestRes();
+      res[0].toString().should.eq("test2");
+      res[1].toString().should.eq("2");
+      res[2].toString().should.eq("4");
+      res[3].toString().should.eq("1588168992");
+      res[4].toString().should.eq("1588168998");
+      res[5].toString().should.eq("1");
+      res[6].toString().should.eq("e6a10c0000000000");
+    });
 
-    // it("should revert invalid relay and verify", async () => {
-    //   await expectRevert(
-    //     this.receiver.relayAndSafe(
-    //       "0x0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000054000000000000000000000000000000000000000000000000000000000000004E000000000000000000000000000000000000000000000000000000000000008723E71EB34C10E3DF166273A80CB328BD9671E3B5039BA0AE5BFC0B4DCF7A67B1964EE3C433B1E0B34ACB9FB24C69765F888A076EB970A0A10294776B520DB49842D1E2BF76CFC0C97036FE3467417115A90E4CF7E64CF550609C447C0FD349D1732FA694879095840619F5E49380612BD296FF7E950EAFB66FF654D99CA70869E72B4CEFA53DCECEC7AB08A9E53DC59E536FE21612A25E0E985C8E846EB216FA928E064863FE97255B13B33DBC1D2811CC8827B39A99D6BFB5670A5C8BECFDA4665269FCFB0CC5557E5ECC5EA493900F7FD48AA99A255D49B38BBB0D1697C8E526E340B9CFFB37A989CA544E6BB780A2C78901D3FB33738768511A30617AFA01D7F4BE7E5A1EB872AD44103360DDC190410331280C42A54D829A5D752C796685D000000000000000000000000000000000000000000000000000000000000018000000000000000000000000000000000000000000000000000000000000001C000000000000000000000000000000000000000000000000000000000000000106E080211720800000000000022480A20000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000001400000000000000000000000000000000000000000000000000000000000000220B48DF385528961C3041D577DD570A9A83D8ACE742EE29924D5B8AC2E65CC95E535E4597E43F2FFE07670951C1F6F29743AC3F2667C0AB9B68F87BE7D0249429A000000000000000000000000000000000000000000000000000000000000001B0000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000003F12240A207B9732B6973F57ABE1DADEC401E08948C7BAD84CB5CBF475025D8FA74D242F2410012A0C08D9CBBDF30510E7D18FC902320962616E64636861696E00F6435F3926D6711D44B438060FEDFED3840DE3771BC08F040AC1C691A3154B805308757CD472CBB7A32F0A0FDA48605271B85A142877D98CBDF77AE44D687308000000000000000000000000000000000000000000000000000000000000001C0000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000003F12240A207B9732B6973F57ABE1DADEC401E08948C7BAD84CB5CBF475025D8FA74D242F2410012A0C08D9CBBDF30510AA94D5CE02320962616E64636861696E00F1A8FF7651DF4C36E2344275503E65CDEAF91348E512F7A08980451130A76E11674EFFD2DFEE4753AB5E9F7ED00D50DFE1D9F9F0170048ACCFA5ED66FAFA7006000000000000000000000000000000000000000000000000000000000000001B0000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000003F12240A207B9732B6973F57ABE1DADEC401E08948C7BAD84CB5CBF475025D8FA74D242F2410012A0C08D9CBBDF3051098A0ECD502320962616E64636861696E000000000000000000000000000000000000000000000000000000000000000560000000000000000000000000000000000000000000000000000000000000087200000000000000000000000000000000000000000000000000000000000000E000000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000014000000000000000000000000000000000000000000000000000000000000003A400000000000000000000000000000000000000000000000000000000000001800000000000000000000000000000000000000000000000000000000000000030000000005E6F5F15000000005E6F5F5300000000000000040000000000000001000000000000000200000000000720EB0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000034254430000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000003A54A6274AF9564DCCBC8C607E8F51D1CAC031D57251504746A73C097202A3AB92300000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000003A58F137C3F314784DAD9866E0AC08543A7D0A9CF924F9FD6D71F36C7337C534D1100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000003A54D40A32F8DEB619363E5010C1A4E19F6137F321313777C1334A262B9F044728500000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000D00000000000000000000000000000000000000000000000000000000000003A557FE63EF72B1C2AF472E9F409FFC31540B13BD9553D736534DDC7F1041C36BCE00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000000000000001600000000000000000000000000000000000000000000000000000000000003A5580726819FA6A8CD409B12A6EBEC0FEC2754DDD3C6CAB874F10A684DB9C1117F00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000002C00000000000000000000000000000000000000000000000000000000000008712092248FD55D10DF1F9E699EBFCF8E9C52214C4F01682563E6872B63F84E526A"
-    //     ),
-    //     "RELAY_ORACLE_STATE_FAILED."
-    //   );
-    // });
+    it("should revert invalid relay and verify", async () => {
+      await expectRevert(
+        this.receiver.relayAndSafe(
+          "0x0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000058000000000000000000000000000000000000000000000000000000000000005200000000000000000000000000000000000000000000000000000000000000234A4AFD853694C8D904E7509C4E388D054D7FECA188CC2AA5F391CE2DE0C1DF753CE9D9F07EEB72C23C2F1DD0D8A19DE627686089917A7E5E8E22FF604DBD6E94BA198FCFAEBF1A6F499B330699B61C2557E8CCAEECDE3AEDD50192AAF87245E166D5B21D67B07D553861AD2BCA87CAE74491965249C30D248902F35AD90B9511C0AB8335CB1AD62163B743379D7292B32401F658713424DDADD38C3232F0224AF32FA694879095840619F5E49380612BD296FF7E950EAFB66FF654D99CA70869E49E1A01E4A705DAFCAD7013CB6A86D2D5505ED76D8F1665CFBBE279FFE000638FFD6B03A759B769DCAD0D02F9DE45A9CC546F947573C108414D456F1A7116059004209A161040AB1778E2F2C00EE482F205B28EFBA439FCB04EA283F619478D96E340B9CFFB37A989CA544E6BB780A2C78901D3FB33738768511A30617AFA01D0EFE3E12F46363C7779140D4CE659925DB52F19053E114D7CC4EFD666B37F79F00000000000000000000000000000000000000000000000000000000000001C0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000106E080211340200000000000022480A200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000014000000000000000000000000000000000000000000000000000000000000002200E103975CA4DFB90BB0E5A5C091767945978E3EBAB28735A83E8DAD09CA5F6913CA0A40EA5112DCD8A2E4B4E7871F095CB243BD91619090D01494396EEB7A611000000000000000000000000000000000000000000000000000000000000001B0000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000003F12240A2060ACC88D982DE2F0B60C7EC7B084B358EB33EFBD3B1F7CB78A07692DAAE5429F10012A0C08AC92A6F50510CCF58EB801320962616E64636861696E00CCC447AF4AB179B0CAF4F25BD5DDC5AC59E9F9D9F4BAA939CCB54CC8FBA643E674A2DA90D06869302F7790F36B7559C84A7702F35E7DE0096991756C42CC65B7000000000000000000000000000000000000000000000000000000000000001B0000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000003F12240A2060ACC88D982DE2F0B60C7EC7B084B358EB33EFBD3B1F7CB78A07692DAAE5429F10012A0C08AC92A6F50510EFE7E1B801320962616E64636861696E0090B7F346F8B2BF847CD4D05740A54FB73AB42C5D0190BF4E0795F2289C6489527EE33A5ED014E401361F29A84FC1708EA0FCE74D66FA2A0EE6D3CBE636585ADB000000000000000000000000000000000000000000000000000000000000001C0000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000003F12240A2060ACC88D982DE2F0B60C7EC7B084B358EB33EFBD3B1F7CB78A07692DAAE5429F10012A0C08AC92A6F50510A1CFCBB801320962616E64636861696E000000000000000000000000000000000000000000000000000000000000000660000000000000000000000000000000000000000000000000000000000000023400000000000000000000000000000000000000000000000000000000000000A000000000000000000000000000000000000000000000000000000000000001C00000000000000000000000000000000000000000000000000000000000000231000000000000000000000000000000000000000000000000000000000000032000000000000000000000000000000000000000000000000000000000000000A0000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000E00000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000057465737432000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001E303330303030303034323534343336343030303030303030303030303030000000000000000000000000000000000000000000000000000000000000000000E000000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000005EA98920000000000000000000000000000000000000000000000000000000005EA9892600000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000120000000000000000000000000000000000000000000000000000000000000000574657374320000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010653661313063303030303030303030300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000050000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000231F281D7270823933196D3AE4B0C418E92034944CA4E5972BA3A16D5260DC962500000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000231D1814868AB070BE64030D05681EBBAA8394251D3FD3A677AA839233CA6EC1C9D000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000000000000023148EAD2DE2ED08B9E45637904A213B3A92BB90C5F70D89E3EBEE8A369DA6C25AB0000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000090000000000000000000000000000000000000000000000000000000000000231709E1C73511B24EFDD9B8D3CD717A5210BA20E2411A8529E8B642C54FB002DC400000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000000000000001600000000000000000000000000000000000000000000000000000000000002336A7D1D56C342E6C24F69FE1CEEAE5D6F8BBDE2AC9A101F40FEBBA2CDFEB69C4A",
+        ),
+        "RELAY_ORACLE_STATE_FAILED.",
+      );
+
+      await expectRevert(
+        this.receiver.relayAndSafe(
+          "0x0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000058000000000000000000000000000000000000000000000000000000000000005200000000000000000000000000000000000000000000000000000000000000234E4AFD853694C8D904E7509C4E388D054D7FECA188CC2AA5F391CE2DE0C1DF753CE9D9F07EEB72C23C2F1DD0D8A19DE627686089917A7E5E8E22FF604DBD6E94BA198FCFAEBF1A6F499B330699B61C2557E8CCAEECDE3AEDD50192AAF87245E166D5B21D67B07D553861AD2BCA87CAE74491965249C30D248902F35AD90B9511C0AB8335CB1AD62163B743379D7292B32401F658713424DDADD38C3232F0224AF32FA694879095840619F5E49380612BD296FF7E950EAFB66FF654D99CA70869E49E1A01E4A705DAFCAD7013CB6A86D2D5505ED76D8F1665CFBBE279FFE000638FFD6B03A759B769DCAD0D02F9DE45A9CC546F947573C108414D456F1A7116059004209A161040AB1778E2F2C00EE482F205B28EFBA439FCB04EA283F619478D96E340B9CFFB37A989CA544E6BB780A2C78901D3FB33738768511A30617AFA01D0EFE3E12F46363C7779140D4CE659925DB52F19053E114D7CC4EFD666B37F79F00000000000000000000000000000000000000000000000000000000000001C0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000106E080211340200000000000022480A200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000014000000000000000000000000000000000000000000000000000000000000002200E103975CA4DFB90BB0E5A5C091767945978E3EBAB28735A83E8DAD09CA5F6913CA0A40EA5112DCD8A2E4B4E7871F095CB243BD91619090D01494396EEB7A611000000000000000000000000000000000000000000000000000000000000001B0000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000003F12240A2060ACC88D982DE2F0B60C7EC7B084B358EB33EFBD3B1F7CB78A07692DAAE5429F10012A0C08AC92A6F50510CCF58EB801320962616E64636861696E00CCC447AF4AB179B0CAF4F25BD5DDC5AC59E9F9D9F4BAA939CCB54CC8FBA643E674A2DA90D06869302F7790F36B7559C84A7702F35E7DE0096991756C42CC65B7000000000000000000000000000000000000000000000000000000000000001B0000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000003F12240A2060ACC88D982DE2F0B60C7EC7B084B358EB33EFBD3B1F7CB78A07692DAAE5429F10012A0C08AC92A6F50510EFE7E1B801320962616E64636861696E0090B7F346F8B2BF847CD4D05740A54FB73AB42C5D0190BF4E0795F2289C6489527EE33A5ED014E401361F29A84FC1708EA0FCE74D66FA2A0EE6D3CBE636585ADB000000000000000000000000000000000000000000000000000000000000001C0000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000003F12240A2060ACC88D982DE2F0B60C7EC7B084B358EB33EFBD3B1F7CB78A07692DAAE5429F10012A0C08AC92A6F50510A1CFCBB801320962616E64636861696E000000000000000000000000000000000000000000000000000000000000000660000000000000000000000000000000000000000000000000000000000000023400000000000000000000000000000000000000000000000000000000000000A000000000000000000000000000000000000000000000000000000000000001C00000000000000000000000000000000000000000000000000000000000000231000000000000000000000000000000000000000000000000000000000000032000000000000000000000000000000000000000000000000000000000000000A0000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000E00000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000057465737432000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001E303330303030303034323534343336343030303030303030303030303030000000000000000000000000000000000000000000000000000000000000000000E000000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000005EA98920000000000000000000000000000000000000000000000000000000005EA9892600000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000120000000000000000000000000000000000000000000000000000000000000000574657374320000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010653661313063303030303030303030300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000050000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000231F281D7270823933196D3AE4B0C418E92034944CA4E5972BA3A16D5260DC962500000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000231D1814868AB070BE64030D05681EBBAA8394251D3FD3A677AA839233CA6EC1C9D000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000000000000023148EAD2DE2ED08B9E45637904A213B3A92BB90C5F70D89E3EBEE8A369DA6C25AB0000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000090000000000000000000000000000000000000000000000000000000000000231709E1C73511B24EFDD9B8D3CD717A5210BA20E2411A8529E8B642C54FB002DC400000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000000000000001600000000000000000000000000000000000000000000000000000000000002336A7D1D56C342E6C24F69FE1CEEAE5D6F8BBDE2AC9A101F40FEBBA2CDFEB69B4A",
+        ),
+        "VERIFY_ORACLE_DATA_FAILED.",
+      );
+    });
   });
 
   context("Update provider powers", () => {
@@ -471,26 +500,33 @@ contract("Bridge", ([_, owner, alice, bob]) => {
           ["0xaAA22E077492CbaD414098EBD98AA8dc1C7AE8D9", 100],
           ["0xB956589b6fC5523eeD0d9eEcfF06262Ce84ff260", 100],
         ],
-        { from: owner }
+        { from: owner },
       );
     });
 
     it("should revert if update validator power by non-onwer", async () => {
       await expectRevert(
-        this.bridge.updateValidatorPowers([["0x652D89a66Eb4eA55366c45b1f9ACfc8e2179E1c5", 150]], {
-          from: alice,
-        }),
-        "Ownable: caller is not the owner."
+        this.bridge.updateValidatorPowers(
+          [["0x652D89a66Eb4eA55366c45b1f9ACfc8e2179E1c5", 150]],
+          {
+            from: alice,
+          },
+        ),
+        "Ownable: caller is not the owner.",
       );
     });
 
     it("should update a validator power", async () => {
       await this.bridge.updateValidatorPowers(
         [["0x652D89a66Eb4eA55366c45b1f9ACfc8e2179E1c5", 150]],
-        { from: owner }
+        { from: owner },
       );
 
-      (await this.bridge.validatorPowers("0x652D89a66Eb4eA55366c45b1f9ACfc8e2179E1c5"))
+      (
+        await this.bridge.validatorPowers(
+          "0x652D89a66Eb4eA55366c45b1f9ACfc8e2179E1c5",
+        )
+      )
         .toString()
         .should.eq("150");
 
@@ -504,18 +540,30 @@ contract("Bridge", ([_, owner, alice, bob]) => {
           ["0x88e1cd00710495EEB93D4f522d16bC8B87Cb00FE", 0],
           ["0x85109F11A7E1385ee826FbF5dA97bB97dba0D76f", 200],
         ],
-        { from: owner }
+        { from: owner },
       );
 
-      (await this.bridge.validatorPowers("0x652D89a66Eb4eA55366c45b1f9ACfc8e2179E1c5"))
+      (
+        await this.bridge.validatorPowers(
+          "0x652D89a66Eb4eA55366c45b1f9ACfc8e2179E1c5",
+        )
+      )
         .toString()
         .should.eq("150");
 
-      (await this.bridge.validatorPowers("0x88e1cd00710495EEB93D4f522d16bC8B87Cb00FE"))
+      (
+        await this.bridge.validatorPowers(
+          "0x88e1cd00710495EEB93D4f522d16bC8B87Cb00FE",
+        )
+      )
         .toString()
         .should.eq("0");
 
-      (await this.bridge.validatorPowers("0x85109F11A7E1385ee826FbF5dA97bB97dba0D76f"))
+      (
+        await this.bridge.validatorPowers(
+          "0x85109F11A7E1385ee826FbF5dA97bB97dba0D76f",
+        )
+      )
         .toString()
         .should.eq("200");
 

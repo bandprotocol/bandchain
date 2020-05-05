@@ -1,7 +1,23 @@
+type amount_t = {
+  amount: string,
+  denom: string,
+};
+
+type fee_t = {
+  amount: array(amount_t),
+  gas: string,
+};
+
 type msg_send_t = {
   to_address: string,
   from_address: string,
-  amount: array(Coin.t),
+  amount: array(amount_t),
+};
+
+type msg_delegate_t = {
+  delegator_address: string,
+  validator_address: string,
+  amount: amount_t,
 };
 
 type msg_request_t = {
@@ -13,18 +29,10 @@ type msg_request_t = {
   clientID: string,
 };
 
-type amount_t = {
-  amount: string,
-  denom: string,
-};
-
-type fee_t = {
-  amount: array(amount_t),
-  gas: string,
-};
-
 type msg_input_t =
-  | Send(Address.t, Address.t, Coin.t)
+  | Send(Address.t, amount_t)
+  | Delegate(Address.t, amount_t)
+  | Undelegate(Address.t, amount_t)
   | Request(ID.OracleScript.t, JsBuffer.t, string, string, Address.t, string);
 
 type msg_payload_t = {
@@ -45,7 +53,7 @@ type pub_key_t = {
 };
 
 type signature_t = {
-  pub_key: pub_key_t,
+  pub_key: Js.Json.t,
   public_key: string,
   signature: string,
 };
@@ -87,11 +95,22 @@ let getAccountInfo = address => {
   let data = info##data;
   Promise.ret(
     JsonUtils.Decode.{
-      accountNumber: data |> at(["result", "value", "account_number"], int),
-      sequence: data |> at(["result", "value", "sequence"], int),
+      accountNumber: data |> at(["result", "value", "account_number"], intstr),
+      sequence:
+        data
+        |> optional(at(["result", "value", "sequence"], intstr))
+        |> Belt_Option.getWithDefault(_, 0),
     },
   );
 };
+
+let stringifyWithSpaces: raw_tx_t => string = [%bs.raw
+  {|
+  function stringifyWithSpaces(obj) {
+    return JSON.stringify(obj, undefined, 4);
+  }
+|}
+];
 
 let sortAndStringify: raw_tx_t => string = [%bs.raw
   {|
@@ -113,21 +132,43 @@ let sortAndStringify: raw_tx_t => string = [%bs.raw
 |}
 ];
 
-let createMsg = (msg: msg_input_t): msg_payload_t => {
+let createMsg = (sender, msg: msg_input_t): msg_payload_t => {
   let msgType =
     switch (msg) {
     | Send(_) => "cosmos-sdk/MsgSend"
+    | Delegate(_) => "cosmos-sdk/MsgDelegate"
+    | Undelegate(_) => "cosmos-sdk/MsgUndelegate"
     | Request(_) => "oracle/Request"
     };
 
   let msgValue =
     switch (msg) {
-    | Send(fromAddress, toAddress, coins) =>
+    | Send(toAddress, coins) =>
       Js.Json.stringifyAny({
+        from_address: sender |> Address.toBech32,
         to_address: toAddress |> Address.toBech32,
-        from_address: fromAddress |> Address.toBech32,
         amount: [|coins|],
       })
+      |> Belt_Option.getExn
+      |> Js.Json.parseExn
+    | Delegate(validator, amount) =>
+      {
+        Js.Json.stringifyAny({
+          delegator_address: sender |> Address.toBech32,
+          validator_address: validator |> Address.toOperatorBech32,
+          amount,
+        });
+      }
+      |> Belt_Option.getExn
+      |> Js.Json.parseExn
+    | Undelegate(validator, amount) =>
+      {
+        Js.Json.stringifyAny({
+          delegator_address: sender |> Address.toBech32,
+          validator_address: validator |> Address.toOperatorBech32,
+          amount,
+        });
+      }
       |> Belt_Option.getExn
       |> Js.Json.parseExn
     | Request(
@@ -152,30 +193,47 @@ let createMsg = (msg: msg_input_t): msg_payload_t => {
   {type_: msgType, value: msgValue};
 };
 
-// TODO: Reme hardcoded values
-let createRawTx = (address, msgs) => {
+let createRawTx = (~address, ~msgs, ~chainID, ~feeAmount, ~gas, ~memo, ()) => {
   let%Promise accountInfo = getAccountInfo(address);
   Promise.ret({
-    msgs: msgs->Belt_Array.map(createMsg),
-    chain_id: "bandchain",
+    msgs: msgs->Belt_Array.map(createMsg(address)),
+    chain_id: chainID,
     fee: {
-      amount: [|{amount: "100", denom: "uband"}|],
-      gas: "700000",
+      amount: [|{amount: feeAmount, denom: "uband"}|],
+      gas,
     },
-    memo: "",
+    memo,
     account_number: accountInfo.accountNumber |> string_of_int,
     sequence: accountInfo.sequence |> string_of_int,
   });
 };
 
-let createSignedTx = (~signature, ~pubKey, ~tx: raw_tx_t, ~mode, ()) => {
-  let oldPubKey = {type_: "tendermint/PubKeySecp256k1", value: pubKey |> PubKey.toBase64};
+let createSignedTx = (~network, ~signature, ~pubKey, ~tx: raw_tx_t, ~mode, ()) => {
   let newPubKey = "eb5ae98721" ++ (pubKey |> PubKey.toHex) |> JsBuffer.hexToBase64;
   let signedTx = {
     fee: tx.fee,
     memo: tx.memo,
     msg: tx.msgs,
-    signatures: [|{pub_key: oldPubKey, public_key: newPubKey, signature}|],
+    signatures: [|
+      {
+        pub_key: {
+          exception WrongNetwork(string);
+          switch (network) {
+          | "GUANYU" => Js.Json.string(newPubKey)
+          | "WENCHANG" =>
+            Js.Json.object_(
+              Js.Dict.fromList([
+                ("type", Js.Json.string("tendermint/PubKeySecp256k1")),
+                ("value", Js.Json.string(pubKey |> PubKey.toBase64)),
+              ]),
+            )
+          | _ => raise(WrongNetwork("Incorrect or unspecified NETWORK environment variable"))
+          };
+        },
+        public_key: newPubKey,
+        signature,
+      },
+    |],
   };
   {mode, tx: signedTx};
 };
