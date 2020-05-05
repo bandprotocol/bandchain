@@ -1,6 +1,8 @@
 package oracle
 
 import (
+	"fmt"
+
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -17,7 +19,10 @@ func resolveRequest(ctx sdk.Context, k Keeper, reqID types.RequestID) {
 
 	var res types.OracleResponsePacketData
 	if err != nil {
-		res = k.ResolveRequest(ctx, reqID, types.Failure, []byte(err.Error()))
+		k.Logger(ctx).Info(fmt.Sprintf(
+			"failed to execute request id: %d with error: %s", reqID, err.Error(),
+		))
+		res = k.ResolveRequest(ctx, reqID, types.Failure, nil)
 	} else {
 		res = k.ResolveRequest(ctx, reqID, types.Success, result)
 	}

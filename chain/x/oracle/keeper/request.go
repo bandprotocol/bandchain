@@ -76,11 +76,13 @@ func (k Keeper) AddRequest(ctx sdk.Context, req types.Request) (types.RequestID,
 	return id, nil
 }
 
+// ResolveRequest updates the request with resolve status and result, and saves the commitment
+// pair of oracle request/response packets to the store. Returns back the response packet.
 func (k Keeper) ResolveRequest(
-	ctx sdk.Context, id types.RequestID, resolveStatus types.ResolveStatus, result []byte,
+	ctx sdk.Context, id types.RID, status types.ResolveStatus, result []byte,
 ) types.OracleResponsePacketData {
-	request := k.MustGetRequest(ctx, id)
 
+	request := k.MustGetRequest(ctx, id)
 	req := types.NewOracleRequestPacketData(
 		request.ClientID, request.OracleScriptID,
 		hex.EncodeToString(request.Calldata), request.SufficientValidatorCount,
@@ -91,12 +93,12 @@ func (k Keeper) ResolveRequest(
 		ctx.BlockTime().Unix(), types.Success, hex.EncodeToString(result),
 	)
 
-	if resolveStatus != types.Success {
+	if status != types.Success {
 		ctx.EventManager().EmitEvent(
 			sdk.NewEvent(
 				types.EventTypeRequestExecute,
 				sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", id)),
-				sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", resolveStatus)),
+				sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", status)),
 			))
 		return res
 	}
