@@ -114,7 +114,7 @@ func handleMsgRequestData(ctx sdk.Context, k Keeper, m MsgRequestData) (*sdk.Res
 
 	req := types.NewRequest(
 		m.OracleScriptID, m.Calldata, validators, m.SufficientValidatorCount,
-		ctx.BlockHeight(), ctx.BlockTime().Unix(), m.ClientID,
+		ctx.BlockHeight(), ctx.BlockTime().Unix(), m.ClientID, nil,
 	)
 	return prepareRequest(ctx, k, m, req)
 }
@@ -125,9 +125,10 @@ func handleMsgRequestDataIBC(ctx sdk.Context, k Keeper, m MsgRequestData, source
 		return nil, err
 	}
 
-	req := types.NewRequestWithRequestIBC(
+	req := types.NewRequest(
 		m.OracleScriptID, m.Calldata, validators, m.SufficientValidatorCount,
-		ctx.BlockHeight(), ctx.BlockTime().Unix(), m.ClientID, sourcePort, sourceChannel,
+		ctx.BlockHeight(), ctx.BlockTime().Unix(), m.ClientID,
+		&types.RequestIBC{sourcePort, sourceChannel},
 	)
 
 	return prepareRequest(ctx, k, m, req)
