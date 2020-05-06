@@ -93,6 +93,8 @@ func (b *BandDB) CreateValidator(
 	value sdk.Coin,
 	bondedHeight int64,
 ) error {
+	tokens := value.Amount.Uint64()
+	jailed := false
 	return b.tx.Create(&Validator{
 		OperatorAddress:     validatorAddress.String(),
 		ConsensusAddress:    pubkey.Address().String(),
@@ -105,11 +107,12 @@ func (b *BandDB) CreateValidator(
 		CommissionMaxRate:   commissionMaxRate.String(),
 		CommissionMaxChange: commissionMaxChangeRate.String(),
 		MinSelfDelegation:   minSelfDelegation.String(),
-		Tokens:              value.Amount.Uint64(),
+		Tokens:              &tokens,
 		DelegatorShares:     value.Amount.String(),
 		BondedHeight:        bondedHeight,
 		CurrentReward:       "0",
 		CurrentRatio:        "0",
+		Jailed:              &jailed,
 	}).Error
 }
 

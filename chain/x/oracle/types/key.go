@@ -9,28 +9,21 @@ const (
 	ModuleName = "oracle"
 	// StoreKey to be used when creating the KVStore
 	StoreKey = ModuleName
-	// Key to store portID in our store
-	PortKey = "portID"
 	// Default PortID that oracle module binds to
-	PortID = "oracle"
+	PortID = ModuleName
 )
 
 var (
 	// GlobalStoreKeyPrefix is a prefix for global primitive state variable
 	GlobalStoreKeyPrefix = []byte{0x00}
-
 	// RequestBeginStoreKey TODO
 	RequestBeginStoreKey = append(GlobalStoreKeyPrefix, []byte("RequestBeginStoreKey")...)
-
 	// RequestsCountStoreKey is a key that help getting to current requests count state variable
 	RequestsCountStoreKey = append(GlobalStoreKeyPrefix, []byte("RequestsCount")...)
-
 	// PendingResolveListStoreKey is a key that help getting pending request
 	PendingResolveListStoreKey = append(GlobalStoreKeyPrefix, []byte("PendingList")...)
-
 	// DataSourceCountStoreKey is a key that keeps the current data source count state variable.
 	DataSourceCountStoreKey = append(GlobalStoreKeyPrefix, []byte("DataSourceCount")...)
-
 	// OracleScriptCountStoreKey is a key that keeps the current oracle script count state variable.
 	OracleScriptCountStoreKey = append(GlobalStoreKeyPrefix, []byte("OracleScriptCount")...)
 
