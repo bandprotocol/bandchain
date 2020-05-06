@@ -437,6 +437,7 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		}
 		jsonMap["reward_amount"] = events[dist.EventTypeWithdrawRewards+"."+sdk.AttributeKeyAmount]
 	case dist.MsgWithdrawValidatorCommission:
+		jsonMap["commission_amount"] = events[dist.EventTypeWithdrawCommission+"."+sdk.AttributeKeyAmount]
 	case gov.MsgDeposit:
 	// TODO: MsgSubmitProposal has been changed in new version of cosmos-sdk
 	// case gov.MsgSubmitProposal:
