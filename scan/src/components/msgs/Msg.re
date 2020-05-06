@@ -900,6 +900,84 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         <AddressRender address=withdrawAddress />
       </div>
     </div>
+  | SubmitProposal({proposer, title}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=proposer /> </div>
+      <div className={Styles.withBg(Colors.blue1, 100)}>
+        <Text
+          value="SUBMIT PROPOSAL"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.blue7
+        />
+      </div>
+      <div className={Styles.rowWithWidth(200)}>
+        <Text value=title weight=Text.Regular code=true nowrap=true block=true />
+      </div>
+    </div>
+  | Deposit({depositor, amount, proposalID}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=depositor /> </div>
+      <div className={Styles.withBg(Colors.blue1, 50)}>
+        <Text
+          value="DEPOSIT"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.blue7
+        />
+      </div>
+      <div className={Styles.rowWithWidth(200)}>
+        <Text
+          value={amount->Coin.getBandAmountNoDivision |> Format.fPretty}
+          weight=Text.Semibold
+          code=true
+          nowrap=true
+          block=true
+        />
+        <HSpacing size=Spacing.sm />
+        <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
+        <HSpacing size=Spacing.sm />
+        <Text value={j|➜|j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+        <HSpacing size=Spacing.sm />
+        <div className={Styles.rowWithWidth(200)}>
+          <Text
+            value={"Proposal " ++ (proposalID |> string_of_int)}
+            weight=Text.Regular
+            code=true
+            nowrap=true
+            block=true
+          />
+        </div>
+      </div>
+    </div>
+  | Vote({voterAddress, proposalID, option}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=voterAddress /> </div>
+      <div className={Styles.withBg(Colors.blue1, 40)}>
+        <Text
+          value="VOTE"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.blue7
+        />
+      </div>
+      <Text value=option weight=Text.Regular code=true nowrap=true block=true />
+      <HSpacing size=Spacing.sm />
+      <Text value={j|➜|j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+      <HSpacing size=Spacing.sm />
+      <div className={Styles.rowWithWidth(200)}>
+        <Text
+          value={"Proposal " ++ (proposalID |> string_of_int)}
+          weight=Text.Regular
+          code=true
+          nowrap=true
+          block=true
+        />
+      </div>
+    </div>
   | FailMessage({sender, message}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
@@ -948,6 +1026,10 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
          makeBadge("WITHDRAW REWARD", 100, Colors.purple1, Colors.purple6)
        | "set_withdraw_reward" =>
          makeBadge("SET WITHDRAW ADDRESS", 170, Colors.purple1, Colors.purple6)
+       | "submit_proposal" => makeBadge("SUBMIT PROPOSAL", 100, Colors.blue1, Colors.blue7)
+       | "deposit" => makeBadge("DEPOSIT", 50, Colors.blue1, Colors.blue7)
+       | "unjail" => makeBadge("UNJAIL", 130, Colors.blue1, Colors.blue7)
+       | "vote" => makeBadge("VOTE", 40, Colors.blue1, Colors.blue7)
        | _ => makeBadge("UNKNOWN", 70, Colors.gray1, Colors.gray6)
        }}
     </div>
