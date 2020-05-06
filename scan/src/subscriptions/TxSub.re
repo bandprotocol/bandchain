@@ -611,6 +611,49 @@ module Msg = {
     let decode = json =>
       JsonUtils.Decode.{address: json |> field("address", string) |> Address.fromBech32};
   };
+  module SetWithdrawAddress = {
+    type t = {
+      delegatorAddress: Address.t,
+      withdrawAddress: Address.t,
+    };
+    let decode = json => {
+      JsonUtils.Decode.{
+        delegatorAddress: json |> field("delegator_address", string) |> Address.fromBech32,
+        withdrawAddress: json |> field("withdraw_address", string) |> Address.fromBech32,
+      };
+    };
+  };
+  module SubmitProposal = {
+    type t = {
+      proposer: Address.t,
+      title: string,
+      description: string,
+      initialDeposit: list(Coin.t),
+    };
+    let decode = json => {
+      JsonUtils.Decode.{
+        proposer: json |> field("proposer", string) |> Address.fromBech32,
+        title: json |> at(["content", "title"], string),
+        description: json |> at(["content", "description"], string),
+        initialDeposit: json |> field("initial_deposit", list(Coin.decodeCoin)),
+      };
+    };
+  };
+
+  module Deposit = {
+    type t = {
+      depositor: Address.t,
+      proposalID: int,
+      amount: list(Coin.t),
+    };
+    let decode = json => {
+      JsonUtils.Decode.{
+        depositor: json |> field("depositor", string) |> Address.fromBech32,
+        proposalID: json |> field("proposal_id", int),
+        amount: json |> field("amount", list(Coin.decodeCoin)),
+      };
+    };
+  };
 
   type t =
     | Unknown
@@ -646,7 +689,10 @@ module Msg = {
     | Undelegate(Undelegate.t)
     | Redelegate(Redelegate.t)
     | WithdrawReward(WithdrawReward.t)
-    | Unjail(Unjail.t);
+    | Unjail(Unjail.t)
+    | SetWithdrawAddress(SetWithdrawAddress.t)
+    | SubmitProposal(SubmitProposal.t)
+    | Deposit(Deposit.t);
 
   let getCreator = msg => {
     switch (msg) {
@@ -683,6 +729,9 @@ module Msg = {
     | Redelegate(delegation) => delegation.delegatorAddress
     | WithdrawReward(withdrawal) => withdrawal.delegatorAddress
     | Unjail(validator) => validator.address
+    | SetWithdrawAddress(set) => set.delegatorAddress
+    | SubmitProposal(proposal) => proposal.proposer
+    | Deposit(deposit) => deposit.depositor
     | _ => "" |> Address.fromHex
     };
   };
@@ -812,6 +861,17 @@ module Msg = {
         bgColor: Colors.purple1,
       }
     | Unjail(_) => {text: "UNJAIL", textColor: Colors.blue7, bgColor: Colors.blue1}
+    | SetWithdrawAddress(_) => {
+        text: "SET WITHDRAW ADDRESS",
+        textColor: Colors.purple6,
+        bgColor: Colors.purple1,
+      }
+    | SubmitProposal(_) => {
+        text: "SUBMIT PROPOSAL",
+        textColor: Colors.blue7,
+        bgColor: Colors.blue1,
+      }
+    | Deposit(_) => {text: "DEPOSIT", textColor: Colors.blue7, bgColor: Colors.blue1}
     | _ => {text: "UNKNOWN", textColor: Colors.gray7, bgColor: Colors.gray4}
     };
   };
@@ -853,6 +913,9 @@ module Msg = {
       | "begin_redelegate" => Redelegate(json |> Redelegate.decode)
       | "withdraw_delegator_reward" => WithdrawReward(json |> WithdrawReward.decode)
       | "unjail" => Unjail(json |> Unjail.decode)
+      | "set_withdraw_address" => SetWithdrawAddress(json |> SetWithdrawAddress.decode)
+      | "submit_proposal" => SubmitProposal(json |> SubmitProposal.decode)
+      | "deposit" => Deposit(json |> Deposit.decode)
       | _ => Unknown
       }
     );
