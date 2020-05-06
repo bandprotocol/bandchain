@@ -1,14 +1,12 @@
 package oracle
 
 import (
-	"encoding/hex"
 	"fmt"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	_ "github.com/cosmos/cosmos-sdk/x/ibc/04-channel"
-	channeltypes "github.com/cosmos/cosmos-sdk/x/ibc/04-channel/types"
 )
 
 // NewHandler creates the msg handler of this module, as required by Cosmos-SDK standard.
@@ -32,23 +30,6 @@ func NewHandler(k Keeper) sdk.Handler {
 			return handleMsgAddOracleAddress(ctx, k, msg)
 		case MsgRemoveOracleAddress:
 			return handleMsgRemoveOracleAddress(ctx, k, msg)
-		case channeltypes.MsgPacket:
-			var requestData OracleRequestPacketData
-			if err := types.ModuleCdc.UnmarshalJSON(msg.GetData(), &requestData); err == nil {
-				calldata, err := hex.DecodeString(requestData.Calldata)
-				if err != nil {
-					return nil, err
-				}
-				newMsg := NewMsgRequestData(
-					requestData.OracleScriptID, calldata, requestData.AskCount,
-					requestData.MinCount, requestData.ClientID,
-					msg.Signer,
-				)
-				return handleMsgRequestDataIBC(
-					ctx, k, newMsg, msg.GetDestPort(), msg.GetDestChannel(),
-				)
-			}
-			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal oracle packet data")
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized %s message type: %T", ModuleName, msg)
 		}
@@ -133,7 +114,7 @@ func handleMsgRequestData(ctx sdk.Context, k Keeper, m MsgRequestData) (*sdk.Res
 
 	req := types.NewRequest(
 		m.OracleScriptID, m.Calldata, validators, m.SufficientValidatorCount,
-		ctx.BlockHeight(), ctx.BlockTime().Unix(), m.ClientID,
+		ctx.BlockHeight(), ctx.BlockTime().Unix(), m.ClientID, nil,
 	)
 	return prepareRequest(ctx, k, m, req)
 }
@@ -144,9 +125,10 @@ func handleMsgRequestDataIBC(ctx sdk.Context, k Keeper, m MsgRequestData, source
 		return nil, err
 	}
 
-	req := types.NewRequestWithRequestIBC(
+	req := types.NewRequest(
 		m.OracleScriptID, m.Calldata, validators, m.SufficientValidatorCount,
-		ctx.BlockHeight(), ctx.BlockTime().Unix(), m.ClientID, sourcePort, sourceChannel,
+		ctx.BlockHeight(), ctx.BlockTime().Unix(), m.ClientID,
+		&types.RequestIBC{sourcePort, sourceChannel},
 	)
 
 	return prepareRequest(ctx, k, m, req)

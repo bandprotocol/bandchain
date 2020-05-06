@@ -27,6 +27,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/ibc"
+	ibcclient "github.com/cosmos/cosmos-sdk/x/ibc/02-client"
+	port "github.com/cosmos/cosmos-sdk/x/ibc/05-port"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
@@ -213,6 +215,9 @@ func NewBandApp(
 		appCodec, keys[mint.StoreKey], app.subspaces[mint.ModuleName], &stakingKeeper,
 		app.AccountKeeper, app.BankKeeper, auth.FeeCollectorName,
 	)
+	app.CrisisKeeper = crisis.NewKeeper(
+		app.subspaces[crisis.ModuleName], invCheckPeriod, app.BankKeeper, auth.FeeCollectorName,
+	)
 	app.DistrKeeper = distr.NewKeeper(
 		appCodec, keys[distr.StoreKey], app.subspaces[distr.ModuleName], app.AccountKeeper, app.BankKeeper,
 		&stakingKeeper, auth.FeeCollectorName, app.ModuleAccountAddrs(),
@@ -224,22 +229,7 @@ func NewBandApp(
 	app.SlashingKeeper = slashing.NewKeeper(
 		appCodec, keys[slashing.StoreKey], &stakingKeeper, app.subspaces[slashing.ModuleName],
 	)
-
-	app.CrisisKeeper = crisis.NewKeeper(
-		app.subspaces[crisis.ModuleName], invCheckPeriod, app.BankKeeper, auth.FeeCollectorName,
-	)
 	app.UpgradeKeeper = upgrade.NewKeeper(skipUpgradeHeights, keys[upgrade.StoreKey], appCodec, home)
-
-	// create evidence keeper with evidence router
-	evidenceKeeper := evidence.NewKeeper(
-		appCodec, keys[evidence.StoreKey], &stakingKeeper, app.SlashingKeeper,
-	)
-	evidenceRouter := evidence.NewRouter()
-
-	// TODO: register evidence routes
-	evidenceKeeper.SetRouter(evidenceRouter)
-
-	app.EvidenceKeeper = *evidenceKeeper
 
 	// register the proposal types
 	govRouter := gov.NewRouter()
@@ -260,6 +250,16 @@ func NewBandApp(
 
 	app.IBCKeeper = ibc.NewKeeper(app.cdc, keys[ibc.StoreKey], stakingKeeper, scopedIBCKeeper)
 
+	// create evidence keeper with evidence router
+	evidenceKeeper := evidence.NewKeeper(
+		appCodec, keys[evidence.StoreKey], &stakingKeeper, app.SlashingKeeper,
+	)
+	evidenceRouter := evidence.NewRouter().
+		AddRoute(ibcclient.RouterKey, ibcclient.HandlerClientMisbehaviour(app.IBCKeeper.ClientKeeper))
+
+	evidenceKeeper.SetRouter(evidenceRouter)
+	app.EvidenceKeeper = *evidenceKeeper
+
 	app.OracleKeeper = oracle.NewKeeper(
 		cdc,
 		keys[oracle.StoreKey],
@@ -269,7 +269,14 @@ func NewBandApp(
 		app.StakingKeeper,
 		app.IBCKeeper.ChannelKeeper,
 		scopedOracleKeeper,
+		&app.IBCKeeper.PortKeeper,
 	)
+
+	oracleModule := oracle.NewAppModule(app.OracleKeeper)
+
+	ibcRouter := port.NewRouter()
+	ibcRouter.AddRoute(oracle.ModuleName, oracleModule)
+	app.IBCKeeper.SetRouter(ibcRouter)
 
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.
@@ -288,7 +295,7 @@ func NewBandApp(
 		evidence.NewAppModule(appCodec, app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
 		params.NewAppModule(app.ParamsKeeper),
-		oracle.NewAppModule(app.OracleKeeper),
+		oracleModule,
 	)
 	// During begin block slashing happens after distr.BeginBlocker so that
 	// there is nothing left over in the validator fee pool, so as to keep the

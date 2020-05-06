@@ -1,15 +1,20 @@
 package keeper
 
 import (
-	"github.com/bandprotocol/bandchain/chain/owasm"
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/capability"
+	porttypes "github.com/cosmos/cosmos-sdk/x/ibc/05-port/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
+	"github.com/tendermint/tendermint/libs/log"
+
+	"github.com/bandprotocol/bandchain/chain/owasm"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 type Keeper struct {
@@ -20,14 +25,15 @@ type Keeper struct {
 	CoinKeeper    bank.Keeper
 	StakingKeeper staking.Keeper
 	ChannelKeeper types.ChannelKeeper
-	scopedKeeper  capability.ScopedKeeper
+	ScopedKeeper  capability.ScopedKeeper
+	PortKeeper    types.PortKeeper
 }
 
 // NewKeeper creates a new oracle Keeper instance.
 func NewKeeper(
 	cdc *codec.Codec, key sdk.StoreKey, owasmExecute owasm.Executor,
 	paramSpace params.Subspace, coinKeeper bank.Keeper, stakingKeeper staking.Keeper,
-	channelKeeper types.ChannelKeeper, scopedKeeper capability.ScopedKeeper,
+	channelKeeper types.ChannelKeeper, scopedKeeper capability.ScopedKeeper, portKeeper types.PortKeeper,
 ) Keeper {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(ParamKeyTable())
@@ -40,8 +46,14 @@ func NewKeeper(
 		CoinKeeper:    coinKeeper,
 		StakingKeeper: stakingKeeper,
 		ChannelKeeper: channelKeeper,
-		scopedKeeper:  scopedKeeper,
+		ScopedKeeper:  scopedKeeper,
+		PortKeeper:    portKeeper,
 	}
+}
+
+// Logger returns a module-specific logger.
+func (k Keeper) Logger(ctx sdk.Context) log.Logger {
+	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 
 // ParamKeyTable returns the parameter key table for oracle module.
@@ -152,4 +164,11 @@ func (k Keeper) GetNextOracleScriptID(ctx sdk.Context) types.OracleScriptID {
 	bz := k.cdc.MustMarshalBinaryLengthPrefixed(oracleScriptCount + 1)
 	store.Set(types.OracleScriptCountStoreKey, bz)
 	return types.OracleScriptID(oracleScriptCount + 1)
+}
+
+// BindPort defines a wrapper function for the ort Keeper's function in
+// order to expose it to module's InitGenesis function
+func (k Keeper) BindPort(ctx sdk.Context, portID string) error {
+	cap := k.PortKeeper.BindPort(ctx, portID)
+	return k.ScopedKeeper.ClaimCapability(ctx, cap, porttypes.PortPath(portID))
 }

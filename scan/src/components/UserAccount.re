@@ -179,10 +179,11 @@ module Balance = {
 
 [@react.component]
 let make = () => {
+  let metadataSub = MetadataSub.use();
   let (accountOpt, dispatchAccount) = React.useContext(AccountContext.context);
   let (_, dispatchModal) = React.useContext(ModalContext.context);
 
-  let connect = () => dispatchModal(OpenModal(Connect));
+  let connect = chainID => dispatchModal(OpenModal(Connect(chainID)));
   let disconnect = () => dispatchAccount(Disconnect);
   let submitTx = () => dispatchModal(OpenModal(SubmitTx));
 
@@ -203,6 +204,14 @@ let make = () => {
       <VSpacing size=Spacing.md />
       <Row justify=Row.Right> <Col> <SubmitTxBtn submitTx /> </Col> </Row>
     </>
-  | None => <Col> <ConnectBtn connect /> </Col>
+  | None =>
+    switch (metadataSub) {
+    | Data({chainID}) => <Col> <ConnectBtn connect={_ => connect(chainID)} /> </Col>
+    | Error(err) =>
+      // log for err details
+      Js.Console.log(err);
+      <Text value="chain id not found" />;
+    | _ => <LoadingCensorBar width=60 height=18 />
+    }
   };
 };
