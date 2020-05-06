@@ -16,7 +16,12 @@ module Styles = {
   let hFlex = style([display(`flex), alignItems(`center)]);
 
   let topicContainer =
-    style([display(`flex), justifyContent(`spaceBetween), width(`percent(100.))]);
+    style([
+      display(`flex),
+      justifyContent(`spaceBetween),
+      width(`percent(100.)),
+      lineHeight(`px(16)),
+    ]);
 
   let detailContainer = style([display(`flex), maxWidth(`px(360)), justifyContent(`flexEnd)]);
 
@@ -761,14 +766,28 @@ let renderUnjail = (unjail: TxSub.Msg.Unjail.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
     <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
-      <Text
-        value="VALIDATOR ADDRESS"
-        size=Text.Sm
-        weight=Text.Thin
-        spacing={Text.Em(0.06)}
-      />
+      <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
         <AddressRender address={unjail.address} validator=true />
+      </div>
+    </div>
+  </Col>;
+};
+
+let renderSetWithdrawAddress = (set: TxSub.Msg.SetWithdrawAddress.t) => {
+  <Col size=Styles.thirdCol alignSelf=Col.Start>
+    <VSpacing size=Spacing.sm />
+    <div className=Styles.topicContainer>
+      <Text value="DELEGATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <div className={Styles.addressContainer(300)}>
+        <AddressRender address={set.delegatorAddress} />
+      </div>
+    </div>
+    <VSpacing size=Spacing.lg />
+    <div className=Styles.topicContainer>
+      <Text value="WITHDRAW ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <div className={Styles.addressContainer(300)}>
+        <AddressRender address={set.withdrawAddress} />
       </div>
     </div>
   </Col>;
@@ -808,6 +827,7 @@ let renderBody = (msg: TxSub.Msg.t) => {
   | Redelegate(delegation) => renderRedelegate(delegation)
   | WithdrawReward(withdrawal) => renderWithdrawReward(withdrawal)
   | Unjail(unjail) => renderUnjail(unjail)
+  | SetWithdrawAddress(set) => renderSetWithdrawAddress(set)
   | FailMessage(_) => "Failed msg" |> React.string
   | _ => React.null
   };

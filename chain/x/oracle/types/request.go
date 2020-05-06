@@ -22,8 +22,7 @@ type Request struct {
 	RequestHeight            int64            `json:"request_height"`
 	RequestTime              int64            `json:"request_time"`
 	ClientID                 string           `json:"client_id"`
-
-	RequestIBC *RequestIBC `json:"request_ibc"`
+	IBC                      *RequestIBC      `json:"ibc"`
 }
 
 type RequestIBC struct {
@@ -40,6 +39,7 @@ func NewRequest(
 	requestHeight int64,
 	requestTime int64,
 	clientID string,
+	ibc *RequestIBC,
 ) Request {
 	return Request{
 		OracleScriptID:           oracleScriptID,
@@ -49,33 +49,7 @@ func NewRequest(
 		RequestHeight:            requestHeight,
 		RequestTime:              requestTime,
 		ClientID:                 clientID,
-		RequestIBC:               nil,
-	}
-}
-
-func NewRequestWithRequestIBC(
-	oracleScriptID OracleScriptID,
-	calldata []byte,
-	requestedValidators []sdk.ValAddress,
-	sufficientValidatorCount int64,
-	requestHeight int64,
-	requestTime int64,
-	clientID string,
-	sourcePort string,
-	sourceChannel string,
-) Request {
-	return Request{
-		OracleScriptID:           oracleScriptID,
-		Calldata:                 calldata,
-		RequestedValidators:      requestedValidators,
-		SufficientValidatorCount: sufficientValidatorCount,
-		RequestHeight:            requestHeight,
-		RequestTime:              requestTime,
-		ClientID:                 clientID,
-		RequestIBC: &RequestIBC{
-			SourcePort:    sourcePort,
-			SourceChannel: sourceChannel,
-		},
+		IBC:                      ibc,
 	}
 }
 
