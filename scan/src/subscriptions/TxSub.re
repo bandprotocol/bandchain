@@ -669,10 +669,14 @@ module Msg = {
     };
   };
   module WithdrawCommission = {
-    type t = {validatorAddress: Address.t};
+    type t = {
+      validatorAddress: Address.t,
+      amount: list(Coin.t),
+    };
     let decode = json => {
       JsonUtils.Decode.{
         validatorAddress: json |> field("validator_address", string) |> Address.fromBech32,
+        amount: json |> field("commission_amount", string) |> GraphQLParser.coins,
       };
     };
   };

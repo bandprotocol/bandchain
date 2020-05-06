@@ -856,15 +856,28 @@ let renderSetWithdrawAddress = (set: TxSub.Msg.SetWithdrawAddress.t) => {
 };
 let renderWithdrawCommission = (withdrawal: TxSub.Msg.WithdrawCommission.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
-  <VSpacing size=Spacing.sm />
-      <div className=Styles.topicContainer>
+    <VSpacing size=Spacing.sm />
+    <div className=Styles.topicContainer>
       <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
         <AddressRender address={withdrawal.validatorAddress} validator=true />
       </div>
     </div>
+    <VSpacing size=Spacing.lg />
+    <div className=Styles.topicContainer>
+      <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <div className=Styles.hFlex>
+        <Text
+          value={withdrawal.amount |> Coin.getBandAmountFromCoins |> Js.Float.toString}
+          weight=Text.Semibold
+          code=true
+        />
+        <HSpacing size=Spacing.sm />
+        <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
+      </div>
+    </div>
   </Col>;
-}
+};
 
 let renderVote = (vote: TxSub.Msg.Vote.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
