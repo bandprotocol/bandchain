@@ -204,9 +204,7 @@ let make = (~chainID) => {
        }}
     </div>
     {result == Loading
-       ? <div
-           className={Styles.connectBtn(~isLoading=true, ())}
-           onClick={_ => createLedger(accountIndex)}>
+       ? <div className={Styles.connectBtn(~isLoading=true, ())}>
            <Text value="Connecting..." weight=Text.Bold size=Text.Md color=Colors.blueGray7 />
          </div>
        : <div
