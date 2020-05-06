@@ -4,6 +4,7 @@ go 1.13
 
 require (
 	github.com/cosmos/cosmos-sdk v0.34.4-0.20200423152229-f1fdde5d1b18
+	github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d
 	github.com/ethereum/go-ethereum v1.9.13
 	github.com/gin-gonic/gin v1.6.3
 	github.com/gorilla/mux v1.7.4

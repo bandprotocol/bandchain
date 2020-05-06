@@ -37,7 +37,7 @@ let toCoinsString = coins => {
     );
 };
 
-let getFeeAmount = coins => {
+let getBandAmountNoDivision = coins => {
   let coinOpt = coins->Belt_List.get(0);
   switch (coinOpt) {
   | Some(coin) => coin.amount
