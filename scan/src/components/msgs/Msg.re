@@ -1024,15 +1024,12 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
        | "begin_redelegate" => makeBadge("REDELEGATE", 73, Colors.purple1, Colors.purple6)
        | "withdraw_delegator_reward" =>
          makeBadge("WITHDRAW REWARD", 100, Colors.purple1, Colors.purple6)
-<<<<<<< HEAD
        | "set_withdraw_reward" =>
          makeBadge("SET WITHDRAW ADDRESS", 170, Colors.purple1, Colors.purple6)
        | "submit_proposal" => makeBadge("SUBMIT PROPOSAL", 100, Colors.blue1, Colors.blue7)
        | "deposit" => makeBadge("DEPOSIT", 50, Colors.blue1, Colors.blue7)
-=======
        | "unjail" => makeBadge("UNJAIL", 130, Colors.blue1, Colors.blue7)
-       | "vote" => makeBadge("VOTE", 130, Colors.blue1, Colors.blue7)
->>>>>>> f13c93e1... fixed: vote msg content spacing
+       | "vote" => makeBadge("VOTE", 40, Colors.blue1, Colors.blue7)
        | _ => makeBadge("UNKNOWN", 70, Colors.gray1, Colors.gray6)
        }}
     </div>
