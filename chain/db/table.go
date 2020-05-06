@@ -6,7 +6,7 @@ import (
 
 type Metadata struct {
 	Key   string `gorm:"primary_key"`
-	Value string `gorm:"not null"`
+	Value string `gorm:"not null"` // TODO: Update to pointer
 }
 
 type Block struct {
@@ -40,23 +40,23 @@ type Validator struct {
 	OperatorAddress     string  `gorm:"primary_key"`
 	ConsensusAddress    string  `gorm:"unique;not null"`
 	ConsensusPubkey     string  `gorm:"not null"`
-	ElectedCount        uint    `gorm:"not null"`
-	VotedCount          uint    `gorm:"not null"`
-	MissedCount         uint    `gorm:"not null"`
-	Moniker             string  `gorm:"not null"`
-	Identity            string  `gorm:"not null"`
-	Website             string  `gorm:"not null"`
-	Details             string  `gorm:"not null"`
-	CommissionRate      string  `gorm:"not null"`
-	CommissionMaxRate   string  `gorm:"not null"`
-	CommissionMaxChange string  `gorm:"not null"`
-	MinSelfDelegation   string  `gorm:"not null"`
+	ElectedCount        uint    `gorm:"not null"` // TODO: Update to pointer
+	VotedCount          uint    `gorm:"not null"` // TODO: Update to pointer
+	MissedCount         uint    `gorm:"not null"` // TODO: Update to pointer
+	Moniker             string  `gorm:"not null"` // TODO: Update to pointer
+	Identity            string  `gorm:"not null"` // TODO: Update to pointer
+	Website             string  `gorm:"not null"` // TODO: Update to pointer
+	Details             string  `gorm:"not null"` // TODO: Update to pointer
+	CommissionRate      string  `gorm:"not null"` // TODO: Update to pointer
+	CommissionMaxRate   string  `gorm:"not null"` // TODO: Update to pointer
+	CommissionMaxChange string  `gorm:"not null"` // TODO: Update to pointer
+	MinSelfDelegation   string  `gorm:"not null"` // TODO: Update to pointer
 	Jailed              *bool   `gorm:"not null"`
 	Tokens              *uint64 `gorm:"not null"`
-	DelegatorShares     string  `gorm:"not null"`
-	BondedHeight        int64   `gorm:"not null"`
-	CurrentReward       string  `gorm:"not null"`
-	CurrentRatio        string  `gorm:"not null"`
+	DelegatorShares     string  `gorm:"not null"` // TODO: Update to pointer
+	BondedHeight        int64   `gorm:"not null"` // TODO: Update to pointer
+	CurrentReward       string  `gorm:"not null"` // TODO: Update to pointer
+	CurrentRatio        string  `gorm:"not null"` // TODO: Update to pointer
 }
 
 type ValidatorVote struct {
@@ -68,17 +68,17 @@ type ValidatorVote struct {
 type Delegation struct {
 	DelegatorAddress string `gorm:"primary_key"`
 	ValidatorAddress string `gorm:"primary_key"`
-	Shares           string `gorm:"not null"`
-	LastRatio        string `gorm:"not null"`
+	Shares           string `gorm:"not null"` // TODO: Update to pointer
+	LastRatio        string `gorm:"not null"` // TODO: Update to pointer
 }
 
 type DataSource struct {
 	ID          int64  `gorm:"primary_key;auto_increment:false"`
-	Name        string `gorm:"not null"`
-	Description string `gorm:"not null"`
+	Name        string `gorm:"not null"` // TODO: Update to pointer
+	Description string `gorm:"not null"` // TODO: Update to pointer
 	Owner       string `gorm:"not null"`
 	Executable  []byte `gorm:"not null"`
-	Fee         string `gorm:"not null"`
+	Fee         string `gorm:"not null"` // TODO: Update to pointer
 	LastUpdated int64  `gorm:"not null"`
 }
 
@@ -93,12 +93,12 @@ type DataSourceRevision struct {
 
 type OracleScript struct {
 	ID            int64  `gorm:"primary_key;auto_increment:false"`
-	Name          string `gorm:"not null"`
-	Description   string `gorm:"not null"`
+	Name          string `gorm:"not null"` // TODO: Update to pointer
+	Description   string `gorm:"not null"` // TODO: Update to pointer
 	Owner         string `gorm:"not null"`
 	LastUpdated   int64  `gorm:"not null"`
-	Schema        string `gorm:"not null"`
-	SourceCodeURL string `gorm:"not null"`
+	Schema        string `gorm:"not null"` // TODO: Update to pointer
+	SourceCodeURL string `gorm:"not null"` // TODO: Update to pointer
 }
 
 type OracleScriptRevision struct {
