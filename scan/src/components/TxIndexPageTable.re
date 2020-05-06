@@ -855,6 +855,28 @@ let renderSetWithdrawAddress = (set: TxSub.Msg.SetWithdrawAddress.t) => {
   </Col>;
 };
 
+let renderVote = (vote: TxSub.Msg.Vote.t) => {
+  <Col size=Styles.thirdCol alignSelf=Col.Start>
+    <VSpacing size=Spacing.sm />
+    <div className=Styles.topicContainer>
+      <Text value="VOTER ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <div className={Styles.addressContainer(300)}>
+        <AddressRender address={vote.voterAddress} />
+      </div>
+    </div>
+    <VSpacing size=Spacing.lg />
+    <div className=Styles.topicContainer>
+      <Text value="PROPOSAL ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <div className=Styles.hFlex> <Text value={vote.proposalID |> string_of_int} /> </div>
+    </div>
+    <VSpacing size=Spacing.lg />
+    <div className=Styles.topicContainer>
+      <Text value="OPTION" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <div className=Styles.hFlex> <Text value={vote.option} /> </div>
+    </div>
+  </Col>;
+};
+
 let renderBody = (msg: TxSub.Msg.t) => {
   switch (msg) {
   | Send(send) => renderSend(send)
@@ -892,6 +914,7 @@ let renderBody = (msg: TxSub.Msg.t) => {
   | SetWithdrawAddress(set) => renderSetWithdrawAddress(set)
   | SubmitProposal(proposal) => renderSubmitProposal(proposal)
   | Deposit(deposit) => renderDeposit(deposit)
+  | Vote(vote) => renderVote(vote)
   | FailMessage(_) => "Failed msg" |> React.string
   | _ => React.null
   };

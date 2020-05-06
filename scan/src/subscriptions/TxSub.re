@@ -654,6 +654,20 @@ module Msg = {
       };
     };
   };
+  module Vote = {
+    type t = {
+      voterAddress: Address.t,
+      proposalID: int,
+      option: string,
+    };
+    let decode = json => {
+      JsonUtils.Decode.{
+        voterAddress: json |> field("voter", string) |> Address.fromBech32,
+        proposalID: json |> field("proposal_id", int),
+        option: json |> field("option", string),
+      };
+    };
+  };
 
   type t =
     | Unknown
@@ -692,7 +706,8 @@ module Msg = {
     | Unjail(Unjail.t)
     | SetWithdrawAddress(SetWithdrawAddress.t)
     | SubmitProposal(SubmitProposal.t)
-    | Deposit(Deposit.t);
+    | Deposit(Deposit.t)
+    | Vote(Vote.t);
 
   let getCreator = msg => {
     switch (msg) {
@@ -732,6 +747,7 @@ module Msg = {
     | SetWithdrawAddress(set) => set.delegatorAddress
     | SubmitProposal(proposal) => proposal.proposer
     | Deposit(deposit) => deposit.depositor
+    | Vote(vote) => vote.voterAddress
     | _ => "" |> Address.fromHex
     };
   };
@@ -855,6 +871,7 @@ module Msg = {
     | Delegate(_) => {text: "DELEGATE", textColor: Colors.purple6, bgColor: Colors.purple1}
     | Undelegate(_) => {text: "UNDELEGATE", textColor: Colors.purple6, bgColor: Colors.purple1}
     | Redelegate(_) => {text: "REDELEGATE", textColor: Colors.purple6, bgColor: Colors.purple1}
+    | Vote(_) => {text: "VOTE", textColor: Colors.blue7, bgColor: Colors.blue1}
     | WithdrawReward(_) => {
         text: "WITHDRAW REWARD",
         textColor: Colors.purple6,
@@ -916,6 +933,7 @@ module Msg = {
       | "set_withdraw_address" => SetWithdrawAddress(json |> SetWithdrawAddress.decode)
       | "submit_proposal" => SubmitProposal(json |> SubmitProposal.decode)
       | "deposit" => Deposit(json |> Deposit.decode)
+      | "vote" => Vote(json |> Vote.decode)
       | _ => Unknown
       }
     );
