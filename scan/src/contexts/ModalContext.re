@@ -1,5 +1,5 @@
 type t =
-  | Connect
+  | Connect(string)
   | SubmitTx;
 
 type a =
