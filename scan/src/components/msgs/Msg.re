@@ -1002,6 +1002,32 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
       </div>
     </div>
+  | MultiSend({inputs, outputs}) =>
+    let firstInput = inputs |> Belt_List.getExn(_, 0);
+    let firstSender = firstInput.address;
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=firstSender /> </div>
+      <div className={Styles.withBg(Colors.blue1, 70)}>
+        <Text
+          value="MULTI SEND"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.blue7
+        />
+      </div>
+      <div className={Styles.rowWithWidth(300)}>
+        <Text value={inputs |> Belt_List.length |> string_of_int} weight=Text.Semibold />
+        <HSpacing size=Spacing.sm />
+        <Text value="Inputs" />
+        <HSpacing size=Spacing.sm />
+        <Text value={j|➜|j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+        <HSpacing size=Spacing.sm />
+        <Text value={outputs |> Belt_List.length |> string_of_int} weight=Text.Semibold />
+        <HSpacing size=Spacing.sm />
+        <Text value="Outputs" />
+      </div>
+    </div>;
   | FailMessage({sender, message}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
@@ -1056,6 +1082,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
        | "vote" => makeBadge("VOTE", 40, Colors.blue1, Colors.blue7)
        | "withdraw_validator_commission" =>
          makeBadge("WITHDRAW COMMISSION", 100, Colors.purple1, Colors.purple6)
+       | "multisend" => makeBadge("MULTI SEND", 70, Colors.blue1, Colors.blue7)
        | _ => makeBadge("UNKNOWN", 70, Colors.gray1, Colors.gray6)
        }}
     </div>

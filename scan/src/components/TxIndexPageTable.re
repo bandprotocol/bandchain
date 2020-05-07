@@ -901,6 +901,77 @@ let renderVote = (vote: TxSub.Msg.Vote.t) => {
   </Col>;
 };
 
+let renderMultiSend = (tx: TxSub.Msg.MultiSend.t) => {
+  <Col size=Styles.thirdCol alignSelf=Col.Start>
+    <VSpacing size=Spacing.sm />
+    <div className=Styles.topicContainer>
+      <Text value="Inputs" size=Text.Md weight=Text.Semibold spacing={Text.Em(0.06)} />
+    </div>
+    <VSpacing size=Spacing.lg />
+    {tx.inputs
+     ->Belt_List.mapWithIndex((idx, input) =>
+         <div key={idx |> string_of_int}>
+           <div className=Styles.topicContainer>
+             <Text value="FROM" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+             <div className={Styles.addressContainer(300)}>
+               <AddressRender address={input.address} />
+             </div>
+           </div>
+           <VSpacing size=Spacing.lg />
+           <div className=Styles.topicContainer>
+             <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+             <div className=Styles.hFlex>
+               <Text
+                 value={input.coins |> Coin.getBandAmountNoDivision |> Js.Float.toString}
+                 weight=Text.Semibold
+                 code=true
+               />
+               <HSpacing size=Spacing.sm />
+               <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
+             </div>
+           </div>
+           <VSpacing size=Spacing.lg />
+           <VSpacing size=Spacing.md />
+         </div>
+       )
+     ->Belt_List.toArray
+     ->React.array}
+    <VSpacing size=Spacing.lg />
+    <div className=Styles.topicContainer>
+      <Text value="Outputs" size=Text.Md weight=Text.Semibold spacing={Text.Em(0.06)} />
+    </div>
+    <VSpacing size=Spacing.lg />
+    {tx.outputs
+     ->Belt_List.mapWithIndex((idx, output) =>
+         <div key={idx |> string_of_int}>
+           <div className=Styles.topicContainer>
+             <Text value="TO" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+             <div className={Styles.addressContainer(300)}>
+               <AddressRender address={output.address} />
+             </div>
+           </div>
+           <VSpacing size=Spacing.lg />
+           <div className=Styles.topicContainer>
+             <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+             <div className=Styles.hFlex>
+               <Text
+                 value={output.coins |> Coin.getBandAmountNoDivision |> Js.Float.toString}
+                 weight=Text.Semibold
+                 code=true
+               />
+               <HSpacing size=Spacing.sm />
+               <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
+             </div>
+           </div>
+           <VSpacing size=Spacing.lg />
+           <VSpacing size=Spacing.lg />
+         </div>
+       )
+     ->Belt_List.toArray
+     ->React.array}
+  </Col>;
+};
+
 let renderBody = (msg: TxSub.Msg.t) => {
   switch (msg) {
   | Send(send) => renderSend(send)
@@ -940,6 +1011,7 @@ let renderBody = (msg: TxSub.Msg.t) => {
   | SubmitProposal(proposal) => renderSubmitProposal(proposal)
   | Deposit(deposit) => renderDeposit(deposit)
   | Vote(vote) => renderVote(vote)
+  | MultiSend(tx) => renderMultiSend(tx)
   | FailMessage(_) => "Failed msg" |> React.string
   | _ => React.null
   };
