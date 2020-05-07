@@ -6,8 +6,8 @@ let createFromMnemonic = mnemonic => {
   Mnemonic(Mnemonic.create(mnemonic));
 };
 
-let createFromLedger = accountIndex => {
-  let%Promise ledger = Ledger.create(accountIndex);
+let createFromLedger = (ledgerApp, accountIndex) => {
+  let%Promise ledger = Ledger.create(ledgerApp, accountIndex);
   Promise.ret(Ledger(ledger));
 };
 

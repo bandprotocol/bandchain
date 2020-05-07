@@ -4,10 +4,32 @@ type t = {
   prefix: string,
 };
 
-let create = accountIndex => {
+type ledger_app_t =
+  | Cosmos
+  | BandChain;
+
+let getPath = (ledgerApp, accountIndex) => {
+  switch (ledgerApp) {
+  | Cosmos => [|44, 118, 0, 0, accountIndex|]
+  | BandChain => [|44, 494, 0, 0, accountIndex|]
+  };
+};
+
+let getAppName =
+  fun
+  | Cosmos => "Cosmos"
+  | BandChain => "BandChain";
+
+// TODO: hard-coded minimum version
+let getRequiredVersion =
+  fun
+  | Cosmos => "1.5.0"
+  | BandChain => "2.12.0";
+
+let create = (ledgerApp, accountIndex) => {
   // TODO: handle interaction timeout later
   let timeout = 10000;
-  let path = [|44, 118, 0, 0, accountIndex|];
+  let path = getPath(ledgerApp, accountIndex);
   let prefix = "band";
   let%Promise transport = LedgerJS.createTransportWebUSB(timeout);
 
@@ -18,18 +40,19 @@ let create = accountIndex => {
 
   let LedgerJS.{major, minor, patch, test_mode, device_locked} = version;
   let userVersion = {j|$major.$minor.$patch|j};
+  let requiredAppName = getAppName(ledgerApp);
+  let requiredVersion = getRequiredVersion(ledgerApp);
 
   // 36864(0x9000) will return if there is no error.
   // TODO: improve handle error
-  // TODO: hard-coded minimum version
   // Validatate step
   // 1. Check return code of pubKeyInfo
   // 2. If pass, then check app version
   // 3. If pass, then check test_mode
   if (pubKeyInfo.return_code != 36864) {
-    if (appInfo.appName != "Cosmos") {
+    if (appInfo.appName != requiredAppName) {
       let appName = appInfo.appName;
-      Js.Console.log({j|App name is not Cosmos. (Current is $appName)|j});
+      Js.Console.log({j|App name is not $requiredAppName. (Current is $appName)|j});
       Js.Promise.reject(Not_found);
     } else if (device_locked) {
       Js.Console.log3("Device is locked", pubKeyInfo, version);
@@ -38,8 +61,8 @@ let create = accountIndex => {
       Js.Console.log(pubKeyInfo.error_message);
       Js.Promise.reject(Not_found);
     };
-  } else if (!Semver.gte(userVersion, "1.5.0")) {
-    Js.Console.log({j|Cosmos app version must >= 1.5.0 (Current is $userVersion)|j});
+  } else if (!Semver.gte(userVersion, requiredVersion)) {
+    Js.Console.log({j|Cosmos app version must >= $requiredVersion (Current is $userVersion)|j});
     Js.Promise.reject(Not_found);
   } else if (test_mode) {
     Js.Console.log3("test mode is not supported", pubKeyInfo, version);
@@ -47,13 +70,6 @@ let create = accountIndex => {
   } else {
     Promise.ret({app, path, prefix});
   };
-};
-
-let getApp = () => {
-  // TODO: handle interaction timeout later
-  let timeout = 10000;
-  let%Promise transport = LedgerJS.createTransportWebUSB(timeout);
-  Promise.ret(LedgerJS.createApp(transport));
 };
 
 let getAddressAndPubKey = x => {
