@@ -32,8 +32,7 @@ message MsgReportData {
     (gogoproto.customname) = "RequestID",
     (gogoproto.casttype) = "RequestID"
   ];
-  repeated RawReport data_set = 2
-      [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "RawReports"];
+  repeated RawReport data_set = 2 [(gogoproto.nullable) = false];
   ;
   bytes validator = 3
       [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
@@ -288,8 +287,7 @@ message RequestIBC {
 message Report {
   option (gogoproto.equal) = true;
 
-  repeated RawReport raw_reports = 1
-      [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "RawReports"];
+  repeated RawReport raw_reports = 1 [(gogoproto.nullable) = false];
   bytes validator = 2
       [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
 }

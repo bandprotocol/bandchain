@@ -13,8 +13,6 @@ func NewRawReport(externalID ExternalID, exitCode uint32, data []byte) RawReport
 	}
 }
 
-type RawReports []RawReport
-
 // NewReport is a contructor of Report
 func NewReport(validator sdk.ValAddress, reports []RawReport) Report {
 	return Report{
