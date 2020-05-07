@@ -59,4 +59,5 @@
 [@bs.module] external ledgerIconActive: string = "./ledgerIconActive.svg";
 [@bs.module] external linkIcon: string = "./linkIcon.svg";
 [@bs.module] external ledgerStep1: string = "./ledger-step1.svg";
-[@bs.module] external ledgerStep2: string = "./ledger-step2.svg";
+[@bs.module] external ledgerStep2Cosmos: string = "./ledger-step2-cosmos.svg";
+[@bs.module] external ledgerStep2BandChain: string = "./ledger-step2-bandchain.svg";

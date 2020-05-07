@@ -69,12 +69,14 @@ module Styles = {
 
 type login_method_t =
   | Mnemonic
-  | Ledger;
+  | LedgerWithCosmos
+  | LedgerWithBandChain;
 
 let toLoginMethodString = method => {
   switch (method) {
   | Mnemonic => "Mnemonic Phrase"
-  | Ledger => "Ledger"
+  | LedgerWithCosmos => "Ledger (Cosmos)"
+  | LedgerWithBandChain => "Ledger (BandChain)"
   };
 };
 
@@ -86,7 +88,8 @@ module LoginMethod = {
       <div className={Styles.header(active)}>
         <Text value={name |> toLoginMethodString} weight=Text.Medium size=Text.Md />
         {switch (name) {
-         | Ledger =>
+         | LedgerWithCosmos
+         | LedgerWithBandChain =>
            <div className={Styles.ledgerImageContainer(active)}>
              <img src=Images.ledgerIconActive className=Styles.ledgerIcon />
            </div>
@@ -118,7 +121,7 @@ let make = (~chainID) => {
               weight=Text.Medium
               color=Colors.gray7
             />
-            {[|Mnemonic, Ledger|]
+            {[|Mnemonic, LedgerWithCosmos, LedgerWithBandChain|]
              ->Belt_Array.map(method =>
                  <React.Fragment key={method |> toLoginMethodString}>
                    <VSpacing size=Spacing.lg />
@@ -136,7 +139,8 @@ let make = (~chainID) => {
         <Col size=1.>
           {switch (loginMethod) {
            | Mnemonic => <ConnectWithMnemonic chainID />
-           | Ledger => <ConnectWithLedger chainID />
+           | LedgerWithCosmos => <ConnectWithLedger chainID ledgerApp={Ledger.Cosmos}/>
+           | LedgerWithBandChain => <ConnectWithLedger chainID ledgerApp={Ledger.BandChain}/>
            }}
         </Col>
       </Row>
