@@ -17,6 +17,7 @@ let create = accountIndex => {
   let%Promise version = LedgerJS.getVersion(app);
 
   let LedgerJS.{major, minor, patch, test_mode, device_locked} = version;
+  let userVersion = {j|$major.$minor.$patch|j};
 
   // 36864(0x9000) will return if there is no error.
   // TODO: improve handle error
@@ -31,17 +32,17 @@ let create = accountIndex => {
       Js.Console.log({j|App name is not Cosmos. (Current is $appName)|j});
       Js.Promise.reject(Not_found);
     } else if (device_locked) {
-      Js.Console.log("Device is locked");
+      Js.Console.log3("Device is locked", pubKeyInfo, version);
       Js.Promise.reject(Not_found);
     } else {
       Js.Console.log(pubKeyInfo.error_message);
       Js.Promise.reject(Not_found);
     };
-  } else if (!Semver.gte({j|$major.$minor.$patch|j}, "1.5.0")) {
-    Js.Console.log2("version", "Cosmos app version must >= 1.5.0");
+  } else if (!Semver.gte(userVersion, "1.5.0")) {
+    Js.Console.log({j|Cosmos app version must >= 1.5.0 (Current is $userVersion)|j});
     Js.Promise.reject(Not_found);
   } else if (test_mode) {
-    Js.Console.log("test mode is not supported");
+    Js.Console.log3("test mode is not supported", pubKeyInfo, version);
     Js.Promise.reject(Not_found);
   } else {
     Promise.ret({app, path, prefix});
