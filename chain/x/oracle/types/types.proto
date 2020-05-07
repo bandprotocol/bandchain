@@ -1,0 +1,312 @@
+syntax = "proto3";
+package bandchain.chain.x.oracle.v1;
+
+import "third_party/proto/gogoproto/gogo.proto";
+import "third_party/proto/cosmos-proto/sdk.proto";
+
+option go_package = "github.com/bandprotocol/bandchain/chain/x/oracle/types";
+
+// MsgRequestData is a message for requesting a new data request to an existing
+// oracle script.
+message MsgRequestData {
+  option (gogoproto.equal) = true;
+
+  int64 oracle_script_id = 1 [
+    (gogoproto.customname) = "OracleScriptID",
+    (gogoproto.casttype) = "OracleScriptID"
+  ];
+  bytes calldata = 2;
+  int64 requested_validator_count = 3;
+  int64 sufficient_validator_count = 4;
+  string client_id = 5 [(gogoproto.customname) = "ClientID"];
+  bytes sender = 6
+      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+}
+
+// MsgReportData is a message sent by each of the block validators to respond to
+// a data request.
+message MsgReportData {
+  option (gogoproto.equal) = true;
+
+  int64 request_id = 1 [
+    (gogoproto.customname) = "RequestID",
+    (gogoproto.casttype) = "RequestID"
+  ];
+  repeated RawReport data_set = 2 [(gogoproto.nullable) = false];
+  ;
+  bytes validator = 3
+      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
+  bytes reporter = 4
+      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+}
+
+// MsgCreateDataSource is a message for creating a new data source.
+message MsgCreateDataSource {
+  option (gogoproto.equal) = true;
+
+  bytes owner = 1
+      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  string name = 2;
+  string description = 3;
+  repeated cosmos_sdk.v1.Coin fee = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  bytes executable = 5;
+  bytes sender = 6
+      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+}
+
+// MsgEditDataSource is a message for editing an existing data source.
+message MsgEditDataSource {
+  option (gogoproto.equal) = true;
+
+  int64 data_source_id = 1 [
+    (gogoproto.customname) = "DataSourceID",
+    (gogoproto.casttype) = "DataSourceID"
+  ];
+  bytes owner = 2
+      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  string name = 3;
+  string description = 4;
+  repeated cosmos_sdk.v1.Coin fee = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  bytes executable = 6;
+  bytes sender = 7
+      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+}
+
+// MsgCreateOracleScript is a message for creating an oracle script.
+message MsgCreateOracleScript {
+  option (gogoproto.equal) = true;
+
+  bytes owner = 1
+      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  string name = 2;
+  string description = 3;
+  bytes code = 4;
+  string schema = 5;
+  string source_code_url = 6 [(gogoproto.customname) = "SourceCodeURL"];
+  bytes sender = 7
+      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+}
+
+// MsgEditOracleScript is a message for editing an existing oracle script.
+message MsgEditOracleScript {
+  option (gogoproto.equal) = true;
+
+  int64 oracle_script_id = 1 [
+    (gogoproto.customname) = "OracleScriptID",
+    (gogoproto.casttype) = "OracleScriptID"
+  ];
+  bytes owner = 2
+      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  string name = 3;
+  string description = 4;
+  bytes code = 5;
+  string schema = 6;
+  string source_code_url = 7 [(gogoproto.customname) = "SourceCodeURL"];
+  bytes sender = 8
+      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+}
+
+// MsgAddOracleAddress is a message for adding an agent authorized to submit
+// report transactions.
+message MsgAddOracleAddress {
+  option (gogoproto.equal) = true;
+
+  bytes validator = 1
+      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
+  bytes reporter = 2
+      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+}
+
+// MsgRemoveOracleAddress is a message for removing an agent from the list of
+// authorized reporters.
+message MsgRemoveOracleAddress {
+  option (gogoproto.equal) = true;
+
+  bytes validator = 1
+      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
+  bytes reporter = 2
+      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+}
+
+// DataSource is the data structure for storing data sources in the storage.
+message DataSource {
+  option (gogoproto.equal) = true;
+
+  bytes owner = 1
+      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  string name = 2;
+  string description = 3;
+  repeated cosmos_sdk.v1.Coin fee = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  bytes executable = 5;
+}
+
+// OracleScript is a type to store detail of oracle script.
+message OracleScript {
+  option (gogoproto.equal) = true;
+
+  bytes owner = 1
+      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  string name = 2;
+  string description = 3;
+  bytes code = 4;
+  string schema = 5;
+  string source_code_url = 6 [(gogoproto.customname) = "SourceCodeURL"];
+}
+
+// RawRequest is a raw data request that contain external id.
+message RawRequest {
+  option (gogoproto.equal) = true;
+
+  int64 external_id = 1 [
+    (gogoproto.customname) = "ExternalID",
+    (gogoproto.casttype) = "ExternalID"
+  ];
+  int64 data_source_id = 2 [
+    (gogoproto.customname) = "DataSourceID",
+    (gogoproto.casttype) = "DataSourceID"
+  ];
+  bytes calldata = 3;
+}
+
+// RawReport encapsulates a raw data report for an external data source from a
+// block validator.
+message RawReport {
+  option (gogoproto.equal) = true;
+
+  int64 external_id = 1 [
+    (gogoproto.customname) = "ExternalID",
+    (gogoproto.casttype) = "ExternalID"
+  ];
+  uint32 exit_code = 2;
+  bytes data = 3;
+}
+
+enum ResolveStatus {
+  Open = 0;
+  Success = 1;
+  Failure = 2;
+  Expired = 3;
+}
+
+// OracleRequestPacketData encodes an oracle request sent from other blockchains
+// to BandChain.
+message OracleRequestPacketData {
+  option (gogoproto.equal) = true;
+
+  // ClientID is the unique identifier of this oracle request, as specified by
+  // the client. This same unique ID will be sent back to the requester with the
+  // oracle response.
+  string client_id = 1 [(gogoproto.customname) = "ClientID"];
+  // OracleScriptID is the unique identifier of the oracle script to be
+  // executed.
+  int64 oracle_script_id = 2 [
+    (gogoproto.customname) = "OracleScriptID",
+    (gogoproto.casttype) = "OracleScriptID"
+  ];
+  // Calldata is the hex-encoded of the calldata bytes available for oracle
+  // execution during both preparation and execution phases.
+  string calldata = 3;
+  // AskCount is the number of validators that are requested to respond to this
+  // oracle request. Higher value means more security, at a higher gas cost.
+  int64 ask_count = 4;
+  // MinCount is the minimum number of validators necessary for the request to
+  // proceed to the execution phase. Higher value means more security, at the
+  // cost of liveness.
+  int64 min_count = 5;
+}
+
+// OracleResponsePacketData encodes an oracle response from BandChain to the
+// requester.
+message OracleResponsePacketData {
+  option (gogoproto.equal) = true;
+
+  // ClientID is the unique identifier matched with that of the oracle request
+  // packet.
+  string client_id = 1 [(gogoproto.customname) = "ClientID"];
+  // RequestID is BandChain's unique identifier for this oracle request.
+  // TODO: This is not actually needed, but is here to simplify DB. Should
+  // remove.
+  int64 request_id = 2 [
+    (gogoproto.customname) = "RequestID",
+    (gogoproto.casttype) = "RequestID"
+  ];
+  // AnsCount is the number of validators among to the asked validators that
+  // actually responded to this oracle request prior to this oracle request
+  // being resolved.
+  int64 ans_count = 3;
+  // RequestTime is the UNIX epoch time at which the request was sent to
+  // BandChain.
+  int64 request_time = 4;
+  // ResolveTime is the UNIX epoch time at which the request was resolved to the
+  // final result.
+  int64 resolve_time = 5;
+  // ResolveStatus is the status of this oracle request, which can be OK, ERROR,
+  // or EXPIRED.
+  ResolveStatus resolve_status = 6;
+  // Result is the hex-encoded of the final aggregated value only available if
+  // status if OK.
+  string result = 7;
+}
+
+// Request is a data structure that stores the detail of a request to an oracle
+// script.
+message Request {
+  option (gogoproto.equal) = true;
+
+  int64 oracle_script_id = 1 [
+    (gogoproto.customname) = "OracleScriptID",
+    (gogoproto.casttype) = "OracleScriptID"
+  ];
+  bytes calldata = 2;
+  repeated bytes requested_validators = 3
+      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
+  int64 sufficient_validator_count = 4;
+  int64 request_height = 5;
+  int64 request_time = 6;
+  string Client_id = 7 [(gogoproto.customname) = "ClientID"];
+  RequestIBC ibc = 8 [(gogoproto.customname) = "IBC"];
+}
+
+message RequestIBC {
+  option (gogoproto.equal) = true;
+
+  string source_port = 1;
+  string source_channel = 2;
+}
+
+// Report is a report that contains operator address in struct
+message Report {
+  option (gogoproto.equal) = true;
+
+  repeated RawReport raw_reports = 1 [(gogoproto.nullable) = false];
+  bytes validator = 2
+      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
+}
+
+// Params - used for initializing default parameter for oracle at genesis.
+message Params {
+  option (gogoproto.equal) = true;
+  option (gogoproto.goproto_stringer) = false;
+
+  uint64 max_data_source_executable_size = 1;
+  uint64 max_oracle_script_code_size = 2;
+  uint64 max_calldata_size = 3;
+  uint64 max_raw_request_count = 4;
+  uint64 max_raw_data_report_size = 5;
+  uint64 max_result_size = 6;
+  uint64 max_name_length = 7;
+  uint64 max_description_length = 8;
+  uint64 gas_per_raw_data_request_per_validator = 9;
+  uint64 expiration_block_count = 10;
+  uint64 execute_gas = 11;
+  uint64 prepare_gas = 12;
+}

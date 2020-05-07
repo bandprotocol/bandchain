@@ -239,7 +239,7 @@ func TestRequestExternalDataExceedMaxRawRequestCount(t *testing.T) {
 // 	report, statusCode, envErr := env.GetExternalData(42, 0)
 // 	require.Nil(t, envErr)
 // 	require.Equal(t, []byte("data42"), report)
-// 	require.Equal(t, uint8(42), statusCode)
+// 	require.Equal(t, uint32(42), statusCode)
 
 // 	// Get report from missing validator
 // 	_, _, envErr = env.GetExternalData(42, 1)

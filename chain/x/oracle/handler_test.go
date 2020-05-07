@@ -689,7 +689,7 @@ func TestReportFailed(t *testing.T) {
 
 // 	actualRequest, err := keeper.GetRequest(ctx, 1)
 // 	require.Nil(t, err)
-// 	require.Equal(t, types.Success, actualRequest.ResolveStatus)
+// 	require.Equal(t, types.ResolveStatus_Success, actualRequest.ResolveStatus)
 // }
 
 func TestEndBlockExecuteFailedIfExecuteGasLessThanGasUsed(t *testing.T) {
