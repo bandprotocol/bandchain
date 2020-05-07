@@ -952,6 +952,56 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         </div>
       </div>
     </div>
+  | Vote({voterAddress, proposalID, option}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=voterAddress /> </div>
+      <div className={Styles.withBg(Colors.blue1, 40)}>
+        <Text
+          value="VOTE"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.blue7
+        />
+      </div>
+      <Text value=option weight=Text.Regular code=true nowrap=true block=true />
+      <HSpacing size=Spacing.sm />
+      <Text value={j|➜|j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+      <HSpacing size=Spacing.sm />
+      <div className={Styles.rowWithWidth(200)}>
+        <Text
+          value={"Proposal " ++ (proposalID |> string_of_int)}
+          weight=Text.Regular
+          code=true
+          nowrap=true
+          block=true
+        />
+      </div>
+    </div>
+  | WithdrawCommission({validatorAddress, amount}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=validatorAddress /> </div>
+      <div className={Styles.withBg(Colors.purple1, 130)}>
+        <Text
+          value="WITHDRAW COMMISSION"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.purple6
+        />
+      </div>
+      <div className={Styles.rowWithWidth(200)}>
+        <Text
+          value={amount |> Coin.getBandAmountFromCoins |> Js.Float.toString}
+          weight=Text.Semibold
+          code=true
+          nowrap=true
+          block=true
+        />
+        <HSpacing size=Spacing.sm />
+        <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
+      </div>
+    </div>
   | FailMessage({sender, message}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
@@ -1002,6 +1052,10 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
          makeBadge("SET WITHDRAW ADDRESS", 170, Colors.purple1, Colors.purple6)
        | "submit_proposal" => makeBadge("SUBMIT PROPOSAL", 100, Colors.blue1, Colors.blue7)
        | "deposit" => makeBadge("DEPOSIT", 50, Colors.blue1, Colors.blue7)
+       | "unjail" => makeBadge("UNJAIL", 130, Colors.blue1, Colors.blue7)
+       | "vote" => makeBadge("VOTE", 40, Colors.blue1, Colors.blue7)
+       | "withdraw_validator_commission" =>
+         makeBadge("WITHDRAW COMMISSION", 100, Colors.purple1, Colors.purple6)
        | _ => makeBadge("UNKNOWN", 70, Colors.gray1, Colors.gray6)
        }}
     </div>
