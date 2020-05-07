@@ -104,7 +104,7 @@ func (env *ExecEnv) RequestExternalData(did int64, eid int64, calldata []byte) e
 }
 
 // GetExternalData implements Owasm ExecEnv interface.
-func (env *ExecEnv) GetExternalData(eid int64, valIdx int64) ([]byte, uint8, error) {
+func (env *ExecEnv) GetExternalData(eid int64, valIdx int64) ([]byte, uint32, error) {
 	if valIdx < 0 || valIdx >= int64(len(env.request.RequestedValidators)) {
 		return nil, 0, types.ErrValidatorOutOfRange
 	}

@@ -22,9 +22,9 @@ func resolveRequest(ctx sdk.Context, k Keeper, reqID types.RequestID) {
 		k.Logger(ctx).Info(fmt.Sprintf(
 			"failed to execute request id: %d with error: %s", reqID, err.Error(),
 		))
-		res = k.ResolveRequest(ctx, reqID, types.Failure, nil)
+		res = k.ResolveRequest(ctx, reqID, types.ResolveStatus_Failure, nil)
 	} else {
-		res = k.ResolveRequest(ctx, reqID, types.Success, result)
+		res = k.ResolveRequest(ctx, reqID, types.ResolveStatus_Success, result)
 	}
 	if req.IBC != nil {
 		k.SendOracleResponse(ctx, req.IBC.SourcePort, req.IBC.SourceChannel, res)

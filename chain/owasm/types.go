@@ -52,5 +52,5 @@ type ExecEnv interface {
 	GetExternalData(
 		externalID int64,
 		validatorIndex int64,
-	) ([]byte, uint8, error)
+	) ([]byte, uint32, error)
 }
