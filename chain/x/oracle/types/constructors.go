@@ -265,6 +265,20 @@ func NewReport(
 	}
 }
 
+func NewValidatorReportInfo(
+	Validator github_com_cosmos_cosmos_sdk_types.ValAddress,
+	IsFullTime bool,
+	IndexOffset uint64,
+	MissedReportsCounter uint64,
+) ValidatorReportInfo {
+	return ValidatorReportInfo{
+		Validator:            Validator,
+		IsFullTime:           IsFullTime,
+		IndexOffset:          IndexOffset,
+		MissedReportsCounter: MissedReportsCounter,
+	}
+}
+
 func NewParams(
 	MaxRawRequestCount uint64,
 	MaxResultSize uint64,

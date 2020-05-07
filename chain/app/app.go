@@ -246,12 +246,6 @@ func NewBandApp(
 		app.AccountKeeper, app.BankKeeper, &stakingKeeper, govRouter,
 	)
 
-	// register the staking hooks
-	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
-	app.StakingKeeper = *stakingKeeper.SetHooks(
-		staking.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks()),
-	)
-
 	app.IBCKeeper = ibc.NewKeeper(app.cdc, keys[ibc.StoreKey], stakingKeeper, scopedIBCKeeper)
 
 	// create evidence keeper with evidence router
@@ -271,10 +265,16 @@ func NewBandApp(
 		owasm.Execute,
 		app.subspaces[oracle.ModuleName],
 		app.BankKeeper,
-		app.StakingKeeper,
+		stakingKeeper,
 		app.IBCKeeper.ChannelKeeper,
 		scopedOracleKeeper,
 		&app.IBCKeeper.PortKeeper,
+	)
+
+	// register the staking hooks
+	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
+	app.StakingKeeper = *stakingKeeper.SetHooks(
+		staking.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks(), app.OracleKeeper.Hooks()),
 	)
 
 	oracleModule := oracle.NewAppModule(app.OracleKeeper)

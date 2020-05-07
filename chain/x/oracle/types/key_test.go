@@ -50,11 +50,11 @@ func TestOracleScriptStoreKey(t *testing.T) {
 	require.Equal(t, expectKeyByte, OracleScriptStoreKey(oracleScriptID))
 }
 
-func TestValidatorInfoStoreKey(t *testing.T) {
+func TestValidatorReportInfoStoreKey(t *testing.T) {
 	v, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
 	expectKeyByte, _ := hex.DecodeString("07b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
 
-	require.Equal(t, expectKeyByte, ValidatorInfoStoreKey(v))
+	require.Equal(t, expectKeyByte, ValidatorReportInfoStoreKey(v))
 }
 
 func TestValidatorMissedReportBitArrayPrefixKey(t *testing.T) {
@@ -66,7 +66,7 @@ func TestValidatorMissedReportBitArrayPrefixKey(t *testing.T) {
 
 func TestValidatorMissedReportBitArrayKey(t *testing.T) {
 	v, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
-	expectKeyByte, _ := hex.DecodeString("08b80f2a5df7d5710b15622d1a9f1e3830ded5bda86201000000000000")
+	expectKeyByte, _ := hex.DecodeString("08b80f2a5df7d5710b15622d1a9f1e3830ded5bda80000000000000162")
 
 	require.Equal(t, expectKeyByte, ValidatorMissedReportBitArrayKey(v, 354))
 }
