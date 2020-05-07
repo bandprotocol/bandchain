@@ -50,6 +50,26 @@ func TestOracleScriptStoreKey(t *testing.T) {
 	require.Equal(t, expectKeyByte, OracleScriptStoreKey(oracleScriptID))
 }
 
+func TestValidatorInfoStoreKey(t *testing.T) {
+	v, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
+	expectKeyByte, _ := hex.DecodeString("07b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
+
+	require.Equal(t, expectKeyByte, ValidatorInfoStoreKey(v))
+}
+
+func TestValidatorMissedReportBitArrayPrefixKey(t *testing.T) {
+	v, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
+	expectKeyByte, _ := hex.DecodeString("08b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
+
+	require.Equal(t, expectKeyByte, ValidatorMissedReportBitArrayPrefixKey(v))
+}
+
+func TestValidatorMissedReportBitArrayKey(t *testing.T) {
+	v, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
+	expectKeyByte, _ := hex.DecodeString("08b80f2a5df7d5710b15622d1a9f1e3830ded5bda86201000000000000")
+
+	require.Equal(t, expectKeyByte, ValidatorMissedReportBitArrayKey(v, 354))
+}
 func TestGetValidatorAddressAndExternalID(t *testing.T) {
 	key, _ := hex.DecodeString("0300000000000000140000000000000006b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
 	valAddress, externalID := GetValidatorAddressAndExternalID(key, 1)
