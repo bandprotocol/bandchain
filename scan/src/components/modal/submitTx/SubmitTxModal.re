@@ -66,6 +66,8 @@ module Styles = {
 
   let nextBtn =
     style([
+      position(`absolute),
+      bottom(`percent(11.)),
       width(`px(100)),
       height(`px(30)),
       display(`flex),
@@ -87,7 +89,9 @@ module Styles = {
 type selection_t =
   | Send
   | Delegate
-  | Undelegate;
+  | Undelegate
+  | Redelegate
+  | WithdrawReward;
 
 exception WrongMsgChoice(string);
 
@@ -96,13 +100,17 @@ let toVariant =
   | "Send" => Send
   | "Delegate" => Delegate
   | "Undelegate" => Undelegate
+  | "Redelegate" => Redelegate
+  | "Withdraw Reward" => WithdrawReward
   | _ => raise(WrongMsgChoice("Chosen message does not exist"));
 
 let toString =
   fun
   | Send => "Send"
   | Delegate => "Delegate"
-  | Undelegate => "Undelegate";
+  | Undelegate => "Undelegate"
+  | Redelegate => "Redelegate"
+  | WithdrawReward => "Withdraw Reward";
 
 module SubmitTxStep = {
   [@react.component]
@@ -110,7 +118,7 @@ module SubmitTxStep = {
     let (msgType, setMsgType) = React.useState(_ => Send);
     let (msgsOpt, setMsgsOpt) = React.useState(_ => None);
     let (gas, setGas) =
-      React.useState(_ => EnhanceTxInput.{text: "200000", value: Some(200000)});
+      React.useState(_ => EnhanceTxInput.{text: "300000", value: Some(300000)});
     let (fee, setFee) = React.useState(_ => EnhanceTxInput.{text: "100", value: Some(100)});
     let (memo, setMemo) = React.useState(_ => EnhanceTxInput.{text: "", value: Some("")});
 
@@ -128,7 +136,7 @@ module SubmitTxStep = {
               let newMsg = ReactEvent.Form.target(event)##value |> toVariant;
               setMsgType(_ => newMsg);
             }}>
-            {[|Send, Delegate, Undelegate|]
+            {[|Send, Delegate, Undelegate, Redelegate, WithdrawReward|]
              ->Belt_Array.map(symbol =>
                  <option value={symbol |> toString}> {symbol |> toString |> React.string} </option>
                )
@@ -141,6 +149,8 @@ module SubmitTxStep = {
        | Send => <SendMsg setMsgsOpt />
        | Delegate => <DelegateMsg setMsgsOpt />
        | Undelegate => <UndelegateMsg setMsgsOpt />
+       | Redelegate => <RedelegateMsg setMsgsOpt />
+       | WithdrawReward => <WithdrawRewardMsg setMsgsOpt />
        }}
       <VSpacing size=Spacing.md />
       <EnhanceTxInput
@@ -169,7 +179,6 @@ module SubmitTxStep = {
         msg="Memo"
         errMsg="Exceed limit length"
       />
-      <VSpacing size=Spacing.xxl />
       <div
         className=Styles.nextBtn
         onClick={_ => {

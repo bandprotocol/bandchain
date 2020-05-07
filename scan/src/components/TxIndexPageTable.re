@@ -773,6 +773,68 @@ let renderUnjail = (unjail: TxSub.Msg.Unjail.t) => {
     </div>
   </Col>;
 };
+let renderSubmitProposal = (proposal: TxSub.Msg.SubmitProposal.t) => {
+  <Col size=Styles.thirdCol alignSelf=Col.Start>
+    <div className=Styles.topicContainer>
+      <Text value="TITLE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <Text value={proposal.title} code=true />
+    </div>
+    <VSpacing size=Spacing.lg />
+    <div className=Styles.topicContainer>
+      <Text value="DESCRIPTION" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <Text value={proposal.description} code=true />
+    </div>
+    <VSpacing size=Spacing.lg />
+    <div className=Styles.topicContainer>
+      <Text value="PROPOSER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <div className={Styles.addressContainer(300)}>
+        <AddressRender address={proposal.proposer} />
+      </div>
+    </div>
+    <VSpacing size=Spacing.lg />
+    <div className=Styles.topicContainer>
+      <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <div className=Styles.hFlex>
+        <Text
+          value={proposal.initialDeposit |> Coin.getBandAmountNoDivision |> Js.Float.toString}
+          weight=Text.Semibold
+          code=true
+        />
+        <HSpacing size=Spacing.sm />
+        <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
+      </div>
+    </div>
+  </Col>;
+};
+
+let renderDeposit = (deposit: TxSub.Msg.Deposit.t) => {
+  <Col size=Styles.thirdCol alignSelf=Col.Start>
+    <div className=Styles.topicContainer>
+      <Text value="DEPOSITOR" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <div className={Styles.addressContainer(300)}>
+        <AddressRender address={deposit.depositor} />
+      </div>
+    </div>
+    <VSpacing size=Spacing.lg />
+    <div className=Styles.topicContainer>
+      <Text value="PROPOSAL ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <Text value={deposit.proposalID |> string_of_int} code=true />
+    </div>
+    <VSpacing size=Spacing.lg />
+    <div className=Styles.topicContainer>
+      <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <div className=Styles.hFlex>
+        <Text
+          value={deposit.amount |> Coin.getBandAmountNoDivision |> Js.Float.toString}
+          weight=Text.Semibold
+          code=true
+        />
+        <HSpacing size=Spacing.sm />
+        <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
+      </div>
+    </div>
+  </Col>;
+};
 
 let renderSetWithdrawAddress = (set: TxSub.Msg.SetWithdrawAddress.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
@@ -789,6 +851,52 @@ let renderSetWithdrawAddress = (set: TxSub.Msg.SetWithdrawAddress.t) => {
       <div className={Styles.addressContainer(300)}>
         <AddressRender address={set.withdrawAddress} />
       </div>
+    </div>
+  </Col>;
+};
+let renderWithdrawCommission = (withdrawal: TxSub.Msg.WithdrawCommission.t) => {
+  <Col size=Styles.thirdCol alignSelf=Col.Start>
+    <VSpacing size=Spacing.sm />
+    <div className=Styles.topicContainer>
+      <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <div className={Styles.addressContainer(300)}>
+        <AddressRender address={withdrawal.validatorAddress} validator=true />
+      </div>
+    </div>
+    <VSpacing size=Spacing.lg />
+    <div className=Styles.topicContainer>
+      <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <div className=Styles.hFlex>
+        <Text
+          value={withdrawal.amount |> Coin.getBandAmountFromCoins |> Js.Float.toString}
+          weight=Text.Semibold
+          code=true
+        />
+        <HSpacing size=Spacing.sm />
+        <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
+      </div>
+    </div>
+  </Col>;
+};
+
+let renderVote = (vote: TxSub.Msg.Vote.t) => {
+  <Col size=Styles.thirdCol alignSelf=Col.Start>
+    <VSpacing size=Spacing.sm />
+    <div className=Styles.topicContainer>
+      <Text value="VOTER ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <div className={Styles.addressContainer(300)}>
+        <AddressRender address={vote.voterAddress} />
+      </div>
+    </div>
+    <VSpacing size=Spacing.lg />
+    <div className=Styles.topicContainer>
+      <Text value="PROPOSAL ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <div className=Styles.hFlex> <Text value={vote.proposalID |> string_of_int} /> </div>
+    </div>
+    <VSpacing size=Spacing.lg />
+    <div className=Styles.topicContainer>
+      <Text value="OPTION" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <div className=Styles.hFlex> <Text value={vote.option} /> </div>
     </div>
   </Col>;
 };
@@ -826,8 +934,12 @@ let renderBody = (msg: TxSub.Msg.t) => {
   | Undelegate(delegation) => renderUndelegate(delegation)
   | Redelegate(delegation) => renderRedelegate(delegation)
   | WithdrawReward(withdrawal) => renderWithdrawReward(withdrawal)
+  | WithdrawCommission(withdrawal) => renderWithdrawCommission(withdrawal)
   | Unjail(unjail) => renderUnjail(unjail)
   | SetWithdrawAddress(set) => renderSetWithdrawAddress(set)
+  | SubmitProposal(proposal) => renderSubmitProposal(proposal)
+  | Deposit(deposit) => renderDeposit(deposit)
+  | Vote(vote) => renderVote(vote)
   | FailMessage(_) => "Failed msg" |> React.string
   | _ => React.null
   };
