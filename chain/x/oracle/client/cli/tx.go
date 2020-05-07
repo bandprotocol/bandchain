@@ -21,17 +21,17 @@ import (
 )
 
 const (
-	flagName                     = "name"
-	flagDescription              = "description"
-	flagScript                   = "script"
-	flagCallFee                  = "call-fee"
-	flagOwner                    = "owner"
-	flagCalldata                 = "calldata"
-	flagRequestedValidatorCount  = "requested-validator-count"
-	flagSufficientValidatorCount = "sufficient-validator-count"
-	flagClientID                 = "client-id"
-	flagSchema                   = "schema"
-	flagSourceCodeURL            = "url"
+	flagName          = "name"
+	flagDescription   = "description"
+	flagScript        = "script"
+	flagCallFee       = "call-fee"
+	flagOwner         = "owner"
+	flagCalldata      = "calldata"
+	flagAskCount      = "requested-validator-count"
+	flagMinCount      = "sufficient-validator-count"
+	flagClientID      = "client-id"
+	flagSchema        = "schema"
+	flagSourceCodeURL = "url"
 )
 
 // GetTxCmd returns the transaction commands for this module
@@ -88,12 +88,12 @@ $ %s tx oracle request 1 --calldata 1234abcdef --requested-validator-count 4 --s
 				return err
 			}
 
-			requestedValidatorCount, err := cmd.Flags().GetInt64(flagRequestedValidatorCount)
+			askCount, err := cmd.Flags().GetInt64(flagAskCount)
 			if err != nil {
 				return err
 			}
 
-			sufficientValidatorCount, err := cmd.Flags().GetInt64(flagSufficientValidatorCount)
+			minCount, err := cmd.Flags().GetInt64(flagMinCount)
 			if err != nil {
 				return err
 			}
@@ -106,8 +106,8 @@ $ %s tx oracle request 1 --calldata 1234abcdef --requested-validator-count 4 --s
 			msg := types.NewMsgRequestData(
 				oracleScriptID,
 				calldata,
-				requestedValidatorCount,
-				sufficientValidatorCount,
+				askCount,
+				minCount,
 				clientID,
 				cliCtx.GetFromAddress(),
 			)
@@ -122,10 +122,10 @@ $ %s tx oracle request 1 --calldata 1234abcdef --requested-validator-count 4 --s
 	}
 
 	cmd.Flags().BytesHexP(flagCalldata, "c", nil, "Calldata used in calling the oracle script")
-	cmd.Flags().Int64P(flagRequestedValidatorCount, "r", 0, "Number of top validators that need to report data for this request")
-	cmd.MarkFlagRequired(flagRequestedValidatorCount)
-	cmd.Flags().Int64P(flagSufficientValidatorCount, "v", 0, "Minimum number of reports sufficient to conclude the request's result")
-	cmd.MarkFlagRequired(flagSufficientValidatorCount)
+	cmd.Flags().Int64P(flagAskCount, "r", 0, "Number of top validators that need to report data for this request")
+	cmd.MarkFlagRequired(flagAskCount)
+	cmd.Flags().Int64P(flagMinCount, "v", 0, "Minimum number of reports sufficient to conclude the request's result")
+	cmd.MarkFlagRequired(flagMinCount)
 	cmd.Flags().StringP(flagClientID, "m", "", "Requester can match up the request with response by clientID")
 
 	return cmd

@@ -51,7 +51,7 @@ func TestCreateDataSourceSuccess(t *testing.T) {
 	require.Equal(t, 1, len(events))
 	require.Equal(t, sdk.Event{
 		Type:       EventTypeCreateDataSource,
-		Attributes: []tmkv.Pair{tmkv.Pair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
+		Attributes: []tmkv.Pair{{Key: []byte(AttributeKeyID), Value: []byte("1")}},
 	}, events[0])
 }
 
@@ -83,11 +83,11 @@ func TestEditDataSourceSuccess(t *testing.T) {
 	require.Equal(t, 2, len(events))
 	require.Equal(t, sdk.Event{
 		Type:       EventTypeCreateDataSource,
-		Attributes: []tmkv.Pair{tmkv.Pair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
+		Attributes: []tmkv.Pair{{Key: []byte(AttributeKeyID), Value: []byte("1")}},
 	}, events[0])
 	require.Equal(t, sdk.Event{
 		Type:       EventTypeEditDataSource,
-		Attributes: []tmkv.Pair{tmkv.Pair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
+		Attributes: []tmkv.Pair{{Key: []byte(AttributeKeyID), Value: []byte("1")}},
 	}, events[1])
 }
 
@@ -123,7 +123,7 @@ func TestCreateOracleScriptSuccess(t *testing.T) {
 	require.Equal(t, 1, len(events))
 	require.Equal(t, sdk.Event{
 		Type:       EventTypeCreateOracleScript,
-		Attributes: []tmkv.Pair{tmkv.Pair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
+		Attributes: []tmkv.Pair{{Key: []byte(AttributeKeyID), Value: []byte("1")}},
 	}, events[0])
 }
 
@@ -154,11 +154,11 @@ func TestEditOracleScriptSuccess(t *testing.T) {
 	require.Equal(t, 2, len(events))
 	require.Equal(t, sdk.Event{
 		Type:       EventTypeCreateOracleScript,
-		Attributes: []tmkv.Pair{tmkv.Pair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
+		Attributes: []tmkv.Pair{{Key: []byte(AttributeKeyID), Value: []byte("1")}},
 	}, events[0])
 	require.Equal(t, sdk.Event{
 		Type:       EventTypeEditOracleScript,
-		Attributes: []tmkv.Pair{tmkv.Pair{Key: []byte(AttributeKeyID), Value: []byte("1")}},
+		Attributes: []tmkv.Pair{{Key: []byte(AttributeKeyID), Value: []byte("1")}},
 	}, events[1])
 }
 
@@ -680,7 +680,7 @@ func TestReportFailed(t *testing.T) {
 // 			RequestTime:              1581589790,
 // 			AggregationTime:          1581589999,
 // 			RequestedValidatorsCount: 2,
-// 			SufficientValidatorCount: 2,
+// 			MinCount: 2,
 // 			ReportedValidatorsCount:  0,
 // 			Data:                     []byte("answer2"),
 // 		},
