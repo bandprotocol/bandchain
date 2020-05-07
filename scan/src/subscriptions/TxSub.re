@@ -681,6 +681,29 @@ module Msg = {
     };
   };
 
+  module MultiSend = {
+    type send_tx_t = {
+      address: Address.t,
+      coins: list(Coin.t),
+    };
+    type t = {
+      inputs: list(send_tx_t),
+      outputs: list(send_tx_t),
+    };
+    let decodeSendTx = json => {
+      JsonUtils.Decode.{
+        address: json |> field("address", string) |> Address.fromBech32,
+        coins: json |> field("coins", list(Coin.decodeCoin)),
+      };
+    };
+    let decode = json => {
+      JsonUtils.Decode.{
+        inputs: json |> field("inputs", list(decodeSendTx)),
+        outputs: json |> field("outputs", list(decodeSendTx)),
+      };
+    };
+  };
+
   type t =
     | Unknown
     | Send(Send.t)
@@ -720,7 +743,8 @@ module Msg = {
     | SubmitProposal(SubmitProposal.t)
     | Deposit(Deposit.t)
     | Vote(Vote.t)
-    | WithdrawCommission(WithdrawCommission.t);
+    | WithdrawCommission(WithdrawCommission.t)
+    | MultiSend(MultiSend.t);
 
   let getCreator = msg => {
     switch (msg) {
@@ -762,6 +786,9 @@ module Msg = {
     | Deposit(deposit) => deposit.depositor
     | Vote(vote) => vote.voterAddress
     | WithdrawCommission(withdrawal) => withdrawal.validatorAddress
+    | MultiSend(tx) =>
+      let firstInput = tx.inputs |> Belt_List.getExn(_, 0);
+      firstInput.address;
     | _ => "" |> Address.fromHex
     };
   };
@@ -908,6 +935,7 @@ module Msg = {
         textColor: Colors.purple6,
         bgColor: Colors.purple1,
       }
+    | MultiSend(_) => {text: "MULTI SEND", textColor: Colors.blue7, bgColor: Colors.blue1}
     | _ => {text: "UNKNOWN", textColor: Colors.gray7, bgColor: Colors.gray4}
     };
   };
@@ -954,6 +982,7 @@ module Msg = {
       | "deposit" => Deposit(json |> Deposit.decode)
       | "vote" => Vote(json |> Vote.decode)
       | "withdraw_validator_commission" => WithdrawCommission(json |> WithdrawCommission.decode)
+      | "multisend" => MultiSend(json |> MultiSend.decode)
       | _ => Unknown
       }
     );
