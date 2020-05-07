@@ -14,22 +14,36 @@ let create = accountIndex => {
   let app = LedgerJS.createApp(transport);
   let%Promise pubKeyInfo = LedgerJS.publicKey(app, path);
   let%Promise appInfo = LedgerJS.appInfo(app);
-  // TODO: check version
-  // let%Promise version = LedgerJS.getVersion(app);
+  let%Promise version = LedgerJS.getVersion(app);
+
+  let LedgerJS.{major, minor, patch, test_mode, device_locked} = version;
+  let userVersion = {j|$major.$minor.$patch|j};
 
   // 36864(0x9000) will return if there is no error.
   // TODO: improve handle error
+  // TODO: hard-coded minimum version
+  // Validatate step
+  // 1. Check return code of pubKeyInfo
+  // 2. If pass, then check app version
+  // 3. If pass, then check test_mode
   if (pubKeyInfo.return_code != 36864) {
-    if (pubKeyInfo.return_code == 28160) {
-      Js.Console.log2("pubKeyInfo", pubKeyInfo);
+    if (appInfo.appName != "Cosmos") {
+      let appName = appInfo.appName;
+      Js.Console.log({j|App name is not Cosmos. (Current is $appName)|j});
       Js.Promise.reject(Not_found);
-    } else if (appInfo.appName != "Cosmos") {
-      Js.Console.log2("appInfo", appInfo);
+    } else if (device_locked) {
+      Js.Console.log3("Device is locked", pubKeyInfo, version);
       Js.Promise.reject(Not_found);
     } else {
       Js.Console.log(pubKeyInfo.error_message);
       Js.Promise.reject(Not_found);
     };
+  } else if (!Semver.gte(userVersion, "1.5.0")) {
+    Js.Console.log({j|Cosmos app version must >= 1.5.0 (Current is $userVersion)|j});
+    Js.Promise.reject(Not_found);
+  } else if (test_mode) {
+    Js.Console.log3("test mode is not supported", pubKeyInfo, version);
+    Js.Promise.reject(Not_found);
   } else {
     Promise.ret({app, path, prefix});
   };

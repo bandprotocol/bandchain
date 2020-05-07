@@ -90,10 +90,10 @@ func (k Keeper) ResolveRequest(
 	)
 	res := types.NewOracleResponsePacketData(
 		request.ClientID, id, int64(k.GetReportCount(ctx, id)), request.RequestTime,
-		ctx.BlockTime().Unix(), types.Success, hex.EncodeToString(result),
+		ctx.BlockTime().Unix(), types.ResolveStatus_Success, hex.EncodeToString(result),
 	)
 
-	if status != types.Success {
+	if status != types.ResolveStatus_Success {
 		ctx.EventManager().EmitEvent(
 			sdk.NewEvent(
 				types.EventTypeRequestExecute,
@@ -108,7 +108,7 @@ func (k Keeper) ResolveRequest(
 		ctx.EventManager().EmitEvent(sdk.NewEvent(
 			types.EventTypeRequestExecute,
 			sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", id)),
-			sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", types.Failure)),
+			sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", types.ResolveStatus_Failure)),
 		))
 		return res
 	}
@@ -120,7 +120,7 @@ func (k Keeper) ResolveRequest(
 		sdk.NewAttribute(types.AttributeKeyAskCount, fmt.Sprintf("%d", req.AskCount)),
 		sdk.NewAttribute(types.AttributeKeyMinCount, fmt.Sprintf("%d", req.MinCount)),
 		sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", res.RequestID)),
-		sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", types.Success)),
+		sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", types.ResolveStatus_Success)),
 		sdk.NewAttribute(types.AttributeKeyAnsCount, fmt.Sprintf("%d", res.AnsCount)),
 		sdk.NewAttribute(types.AttributeKeyRequestTime, fmt.Sprintf("%d", request.RequestTime)),
 		sdk.NewAttribute(types.AttributeKeyResolveTime, fmt.Sprintf("%d", res.ResolveTime)),
@@ -149,7 +149,7 @@ func (k Keeper) ProcessExpiredRequests(ctx sdk.Context) {
 		// If the number of reports still doesn't reach the minimum, that means this request
 		// is never resolved. Here we process the response as EXPIRED.
 		if k.GetReportCount(ctx, currentReqID) < request.SufficientValidatorCount {
-			res := k.ResolveRequest(ctx, currentReqID, types.Expired, nil)
+			res := k.ResolveRequest(ctx, currentReqID, types.ResolveStatus_Expired, nil)
 			if request.IBC != nil {
 				k.SendOracleResponse(ctx, request.IBC.SourcePort, request.IBC.SourceChannel, res)
 			}
