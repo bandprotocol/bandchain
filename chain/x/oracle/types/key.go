@@ -1,8 +1,6 @@
 package types
 
 import (
-	"encoding/binary"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -108,8 +106,8 @@ func ReporterStoreKey(validatorAddress sdk.ValAddress, reporterAddress sdk.AccAd
 	return buff
 }
 
-// ValidatorInfoStoreKey is a function to generate key for report info in store.
-func ValidatorInfoStoreKey(v sdk.ValAddress) []byte {
+// ValidatorReportInfoStoreKey is a function to generate key for report info in store.
+func ValidatorReportInfoStoreKey(v sdk.ValAddress) []byte {
 	return append(ValidatorReportInfoKeyPrefix, v.Bytes()...)
 }
 
@@ -119,10 +117,8 @@ func ValidatorMissedReportBitArrayPrefixKey(v sdk.ValAddress) []byte {
 }
 
 // ValidatorMissedReportBitArrayKey is a function to generate key of missed report of validator.
-func ValidatorMissedReportBitArrayKey(v sdk.ValAddress, i int64) []byte {
-	b := make([]byte, 8)
-	binary.LittleEndian.PutUint64(b, uint64(i))
-	return append(ValidatorMissedReportBitArrayPrefixKey(v), b...)
+func ValidatorMissedReportBitArrayKey(v sdk.ValAddress, i uint64) []byte {
+	return append(ValidatorMissedReportBitArrayPrefixKey(v), sdk.Uint64ToBigEndian(i)...)
 }
 
 // GetIteratorPrefix is a function to get specific prefix

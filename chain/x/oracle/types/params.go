@@ -54,6 +54,12 @@ const (
 
 	// Prepare gas cost value is 100000
 	DefaultPrepareGas = uint64(100000)
+
+	// Reported window size is 100
+	DefaultReportedWindow = uint64(100)
+
+	// Minimum report per window
+	DefaultMinReportedPerWindow = uint64(70)
 )
 
 // Parameter store keys.
@@ -70,6 +76,8 @@ var (
 	KeyExpirationBlockCount             = []byte("ExpirationBlockCount")
 	KeyExecuteGas                       = []byte("ExecuteGas")
 	KeyPrepareGas                       = []byte("PrepareGas")
+	KeyReportedWindow                   = []byte("ReportedWindow")
+	KeyMinReportedPerWindow             = []byte("MinReportedPerWindow")
 )
 
 // NewParams creates a new Params object.
@@ -86,6 +94,8 @@ func NewParams(
 	expirationBlockCount uint64,
 	executeGas uint64,
 	prepareGas uint64,
+	reportedWindow uint64,
+	minReportedPerWindow uint64,
 ) Params {
 	return Params{
 		MaxDataSourceExecutableSize:      maxDataSourceExecutableSize,
@@ -100,6 +110,8 @@ func NewParams(
 		ExpirationBlockCount:             expirationBlockCount,
 		ExecuteGas:                       executeGas,
 		PrepareGas:                       prepareGas,
+		ReportedWindow:                   reportedWindow,
+		MinReportedPerWindow:             minReportedPerWindow,
 	}
 }
 
@@ -118,6 +130,8 @@ func (p Params) String() string {
   ExpirationBlockCount:             %d
   ExecuteGas:                       %d
   PrepareGas:                       %d
+  ReportedWindow:                   %d
+  MinReportedPerWindow:             %d
 `, p.MaxDataSourceExecutableSize,
 		p.MaxOracleScriptCodeSize,
 		p.MaxCalldataSize,
@@ -130,6 +144,8 @@ func (p Params) String() string {
 		p.ExpirationBlockCount,
 		p.ExecuteGas,
 		p.PrepareGas,
+		p.ReportedWindow,
+		p.MinReportedPerWindow,
 	)
 }
 
@@ -151,6 +167,8 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyExpirationBlockCount, &p.ExpirationBlockCount, validateNoOp),
 		paramtypes.NewParamSetPair(KeyExecuteGas, &p.ExecuteGas, validateNoOp),
 		paramtypes.NewParamSetPair(KeyPrepareGas, &p.PrepareGas, validateNoOp),
+		paramtypes.NewParamSetPair(KeyReportedWindow, &p.ReportedWindow, validateNoOp),
+		paramtypes.NewParamSetPair(KeyMinReportedPerWindow, &p.MinReportedPerWindow, validateNoOp),
 	}
 }
 
@@ -169,5 +187,7 @@ func DefaultParams() Params {
 		DefaultExpirationBlockCount,
 		DefaultExecuteGas,
 		DefaultPrepareGas,
+		DefaultReportedWindow,
+		DefaultMinReportedPerWindow,
 	)
 }

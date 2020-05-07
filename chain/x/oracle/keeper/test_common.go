@@ -170,6 +170,8 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 	keeper.SetParam(ctx, types.KeyExpirationBlockCount, types.DefaultExpirationBlockCount)
 	keeper.SetParam(ctx, types.KeyExecuteGas, types.DefaultExecuteGas)
 	keeper.SetParam(ctx, types.KeyPrepareGas, types.DefaultPrepareGas)
+	keeper.SetParam(ctx, types.KeyReportedWindow, types.DefaultReportedWindow)
+	keeper.SetParam(ctx, types.KeyMinReportedPerWindow, types.DefaultMinReportedPerWindow)
 
 	return ctx, keeper
 }
