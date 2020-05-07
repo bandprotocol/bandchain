@@ -72,22 +72,6 @@ var (
 	KeyPrepareGas                       = []byte("PrepareGas")
 )
 
-// Params - used for initializing default parameter for oracle at genesis.
-type Params struct {
-	MaxDataSourceExecutableSize      uint64 `json:"max_data_source_executable_size" yaml:"max_data_source_executable_size"`
-	MaxOracleScriptCodeSize          uint64 `json:"max_oracle_script_code_size" yaml:"max_oracle_script_code_size"`
-	MaxCalldataSize                  uint64 `json:"max_calldata_size" yaml:"max_calldata_size"`
-	MaxRawRequestCount               uint64 `json:"max_raw_request_count" yaml:"max_raw_request_count%"`
-	MaxRawDataReportSize             uint64 `json:"max_raw_data_report_size" yaml:"max_raw_data_report_size"`
-	MaxResultSize                    uint64 `json:"max_result_size" yaml:"max_result_size"`
-	MaxNameLength                    uint64 `json:"max_name_length" yaml:"max_name_length"`
-	MaxDescriptionLength             uint64 `json:"max_description_length" yaml:"max_description_length"`
-	GasPerRawDataRequestPerValidator uint64 `json:"gas_per_raw_data_request" yaml:"gas_per_raw_data_request"`
-	ExpirationBlockCount             uint64 `json:"expiration_block_count"`
-	ExecuteGas                       uint64 `json:"execute_gas"`
-	PrepareGas                       uint64 `json:"prepare_gas"`
-}
-
 // NewParams creates a new Params object.
 func NewParams(
 	maxDataSourceExecutableSize uint64,

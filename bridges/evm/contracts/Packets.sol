@@ -67,7 +67,7 @@ library Packets {
                 uint8(40), // (5 << 3) | 0
                 Utils.encodeVarintUnsigned(_resolveTime),
                 uint8(48), // (6 << 3) | 0
-                Utils.encodeVarintSigned(_resolveStatus),
+                Utils.encodeVarintUnsigned(_resolveStatus),
                 uint8(58), // (7 << 3) | 2
                 getEncodeLength(_result),
                 _result

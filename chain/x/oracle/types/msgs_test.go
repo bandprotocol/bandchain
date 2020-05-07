@@ -83,7 +83,7 @@ func TestMsgRequestDataGetSignBytes(t *testing.T) {
 	msg := NewMsgRequestData(1, []byte("calldata"), 10, 5, "clientID", sender)
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"oracle/Request","value":{"calldata":"Y2FsbGRhdGE=","clientID":"clientID","oracleScriptID":"1","requestedValidatorCount":"10","sender":"band1wdjkuer9wgvz7c4y","sufficientValidatorCount":"5"}}`
+	expected := `{"type":"oracle/Request","value":{"calldata":"Y2FsbGRhdGE=","client_id":"clientID","oracle_script_id":"1","requested_validator_count":"10","sender":"band1wdjkuer9wgvz7c4y","sufficient_validator_count":"5"}}`
 
 	require.Equal(t, expected, string(res))
 }
@@ -141,7 +141,7 @@ func TestMsgReportDataGetSignBytes(t *testing.T) {
 	msg := NewMsgReportData(requestID, data, validator, reporter)
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"oracle/Report","value":{"dataSet":[{"data":"ZGF0YTE=","exitCode":1,"externalID":"1"},{"data":"ZGF0YTI=","exitCode":2,"externalID":"2"}],"reporter":"band1hq8j5h0h64csk9tz95df783cxr0dt0dg3jw4p0","requestID":"3","validator":"bandvaloper1hq8j5h0h64csk9tz95df783cxr0dt0dgay2kyy"}}`
+	expected := `{"type":"oracle/Report","value":{"data_set":[{"data":"ZGF0YTE=","exit_code":1,"external_id":"1"},{"data":"ZGF0YTI=","exit_code":2,"external_id":"2"}],"reporter":"band1hq8j5h0h64csk9tz95df783cxr0dt0dg3jw4p0","request_id":"3","validator":"bandvaloper1hq8j5h0h64csk9tz95df783cxr0dt0dgay2kyy"}}`
 
 	require.Equal(t, expected, string(res))
 }
@@ -308,7 +308,7 @@ func TestMsgEditDataSourceGetSignBytes(t *testing.T) {
 	msg := NewMsgEditDataSource(1, owner, name, description, fee, []byte("executable"), sender)
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"oracle/EditDataSource","value":{"dataSourceID":"1","description":"description","executable":"ZXhlY3V0YWJsZQ==","fee":[{"amount":"10","denom":"uband"}],"name":"data_source_1","owner":"band1damkuetjcw3c0d","sender":"band1wdjkuer9wgvz7c4y"}}`
+	expected := `{"type":"oracle/EditDataSource","value":{"data_source_id":"1","description":"description","executable":"ZXhlY3V0YWJsZQ==","fee":[{"amount":"10","denom":"uband"}],"name":"data_source_1","owner":"band1damkuetjcw3c0d","sender":"band1wdjkuer9wgvz7c4y"}}`
 
 	require.Equal(t, expected, string(res))
 }
@@ -344,7 +344,7 @@ func TestMsgCreateOracleScriptValidation(t *testing.T) {
 			true, NewMsgCreateOracleScript(owner, name, description, code, schema, sourceCodeURL, sender),
 		},
 		{
-			false, NewMsgCreateOracleScript(nil, name, description, code , schema, sourceCodeURL, sender),
+			false, NewMsgCreateOracleScript(nil, name, description, code, schema, sourceCodeURL, sender),
 		},
 		{
 			false, NewMsgCreateOracleScript(owner, "", description, code, schema, sourceCodeURL, sender),
@@ -452,7 +452,7 @@ func TestMsgEditOracleScriptGetSignBytes(t *testing.T) {
 	msg := NewMsgEditOracleScript(1, owner, "oracle_script_1", "description", []byte("code"), "schema", "sourceCodeURL", sender)
 	res := msg.GetSignBytes()
 
-	expected := `{"type":"oracle/EditOracleScript","value":{"code":"Y29kZQ==","description":"description","name":"oracle_script_1","oracleScriptID":"1","owner":"band1damkuetjcw3c0d","schema":"schema","sender":"band1wdjkuer9wgvz7c4y","source_code_url":"sourceCodeURL"}}`
+	expected := `{"type":"oracle/EditOracleScript","value":{"code":"Y29kZQ==","description":"description","name":"oracle_script_1","oracle_script_id":"1","owner":"band1damkuetjcw3c0d","schema":"schema","sender":"band1wdjkuer9wgvz7c4y","source_code_url":"sourceCodeURL"}}`
 
 	require.Equal(t, expected, string(res))
 }

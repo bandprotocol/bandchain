@@ -7,6 +7,7 @@ require (
 	github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d
 	github.com/ethereum/go-ethereum v1.9.13
 	github.com/gin-gonic/gin v1.6.3
+	github.com/gogo/protobuf v1.3.1
 	github.com/gorilla/mux v1.7.4
 	github.com/jinzhu/gorm v1.9.12
 	github.com/levigross/grequests v0.0.0-20190908174114-253788527a1a
@@ -23,3 +24,5 @@ require (
 	github.com/tendermint/tendermint v0.33.4
 	github.com/tendermint/tm-db v0.5.1
 )
+
+replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.2-alpha.regen.1
