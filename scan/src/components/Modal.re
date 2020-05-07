@@ -38,17 +38,17 @@ module Styles = {
 
 [@react.component]
 let make = () => {
-  let (modal, dispatchModal) = React.useContext(ModalContext.context);
+  let (modalStateOpt, dispatchModal) = React.useContext(ModalContext.context);
 
-  switch (modal) {
+  switch (modalStateOpt) {
   | None => React.null
-  | Some(m) =>
+  | Some({modal, canExit}) =>
     let body =
-      switch (m) {
+      switch (modal) {
       | Connect(chainID) => <ConnectModal chainID />
       | SubmitTx => <SubmitTxModal />
       };
-    <div className=Styles.overlay onClick={_ => dispatchModal(CloseModal)}>
+    <div className=Styles.overlay onClick={_ => {canExit ? dispatchModal(CloseModal) : ()}}>
       <div className=Styles.content onClick={e => ReactEvent.Mouse.stopPropagation(e)}>
         body
       </div>
