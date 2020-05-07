@@ -905,20 +905,12 @@ let renderMultiSend = (tx: TxSub.Msg.MultiSend.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
     <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
-      <Text value="NUMBER OF MESSAGES" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className=Styles.hFlex>
-        <Text value={tx.inputs |> Belt_List.length |> string_of_int} code=true />
-      </div>
-    </div>
-    <VSpacing size=Spacing.lg />
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.topicContainer>
-      <Text value="Inputs" size=Text.Sm weight=Text.Semibold spacing={Text.Em(0.06)} />
+      <Text value="Inputs" size=Text.Md weight=Text.Semibold spacing={Text.Em(0.06)} />
     </div>
     <VSpacing size=Spacing.lg />
     {tx.inputs
-     ->Belt_List.map(input =>
-         <div>
+     ->Belt_List.mapWithIndex((idx, input) =>
+         <div key={idx |> string_of_int}>
            <div className=Styles.topicContainer>
              <Text value="FROM" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
              <div className={Styles.addressContainer(300)}>
@@ -939,18 +931,19 @@ let renderMultiSend = (tx: TxSub.Msg.MultiSend.t) => {
              </div>
            </div>
            <VSpacing size=Spacing.lg />
-           <VSpacing size=Spacing.lg />
+           <VSpacing size=Spacing.md />
          </div>
        )
      ->Belt_List.toArray
      ->React.array}
+    <VSpacing size=Spacing.lg />
     <div className=Styles.topicContainer>
-      <Text value="Outputs" size=Text.Sm weight=Text.Semibold spacing={Text.Em(0.06)} />
+      <Text value="Outputs" size=Text.Md weight=Text.Semibold spacing={Text.Em(0.06)} />
     </div>
     <VSpacing size=Spacing.lg />
     {tx.outputs
-     ->Belt_List.map(output =>
-         <div>
+     ->Belt_List.mapWithIndex((idx, output) =>
+         <div key={idx |> string_of_int}>
            <div className=Styles.topicContainer>
              <Text value="TO" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
              <div className={Styles.addressContainer(300)}>
