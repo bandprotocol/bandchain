@@ -60,7 +60,7 @@ module Styles = {
   let seperatedLongLine =
     style([height(`px(275)), width(`px(2)), backgroundColor(Colors.gray4)]);
 
-  let ledgerIcon = style([height(`px(30)), width(`px(30)), display(`flex)]);
+  let ledgerIcon = style([height(`px(40)), width(`px(40))]);
   let ledgerImageContainer = active => style([opacity(active ? 1.0 : 0.5)]);
 
   let activeBar = active =>
@@ -88,10 +88,13 @@ module LoginMethod = {
       <div className={Styles.header(active)}>
         <Text value={name |> toLoginMethodString} weight=Text.Medium size=Text.Md />
         {switch (name) {
-         | LedgerWithCosmos
+         | LedgerWithCosmos =>
+           <div className={Styles.ledgerImageContainer(active)}>
+             <img src=Images.ledgerCosmosIcon className=Styles.ledgerIcon />
+           </div>
          | LedgerWithBandChain =>
            <div className={Styles.ledgerImageContainer(active)}>
-             <img src=Images.ledgerIconActive className=Styles.ledgerIcon />
+             <img src=Images.ledgerBandChainIcon className=Styles.ledgerIcon />
            </div>
          | _ => <div />
          }}
@@ -139,8 +142,8 @@ let make = (~chainID) => {
         <Col size=1.>
           {switch (loginMethod) {
            | Mnemonic => <ConnectWithMnemonic chainID />
-           | LedgerWithCosmos => <ConnectWithLedger chainID ledgerApp={Ledger.Cosmos}/>
-           | LedgerWithBandChain => <ConnectWithLedger chainID ledgerApp={Ledger.BandChain}/>
+           | LedgerWithCosmos => <ConnectWithLedger chainID ledgerApp=Ledger.Cosmos />
+           | LedgerWithBandChain => <ConnectWithLedger chainID ledgerApp=Ledger.BandChain />
            }}
         </Col>
       </Row>
