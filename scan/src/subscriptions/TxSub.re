@@ -787,8 +787,8 @@ module Msg = {
     | Vote(vote) => vote.voterAddress
     | WithdrawCommission(withdrawal) => withdrawal.validatorAddress
     | MultiSend(tx) =>
-      let firstTx = tx.inputs |> Belt_List.getExn(_, 0);
-      firstTx.address;
+      let firstInput = tx.inputs |> Belt_List.getExn(_, 0);
+      firstInput.address;
     | _ => "" |> Address.fromHex
     };
   };

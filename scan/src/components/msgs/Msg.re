@@ -1003,8 +1003,8 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
       </div>
     </div>
   | MultiSend({inputs, outputs}) =>
-    let firstTx = inputs |> Belt_List.getExn(_, 0);
-    let firstSender = firstTx.address;
+    let firstInput = inputs |> Belt_List.getExn(_, 0);
+    let firstSender = firstInput.address;
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=firstSender /> </div>
       <div className={Styles.withBg(Colors.blue1, 70)}>
