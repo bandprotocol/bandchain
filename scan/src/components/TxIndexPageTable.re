@@ -33,16 +33,6 @@ module Styles = {
       wordBreak(`breakAll),
     ]);
 
-  let failIcon = style([width(`px(16)), height(`px(16))]);
-
-  let failedMessageDetails =
-    style([
-      display(`flex),
-      width(`px(120)),
-      alignItems(`center),
-      justifyContent(`spaceBetween),
-    ]);
-
   let firstCol = 0.45;
   let secondCol = 0.50;
   let thirdCol = 1.20;
@@ -1000,6 +990,16 @@ let renderFailMessage = () => {
   </Col>;
 };
 
+let renderUnknownMessage = () => {
+    <Col size=Styles.thirdCol alignSelf=Col.Start>
+    <VSpacing size=Spacing.sm />
+    <div className=Styles.topicContainer>
+      <Text value="UNKNOWN MESSAGE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <img src=Images.fail className=Styles.failIcon />
+    </div>
+  </Col>;
+};
+
 let renderBody = (msg: TxSub.Msg.t) => {
   switch (msg) {
   | SendMsg(send) => renderSend(send)
@@ -1041,7 +1041,7 @@ let renderBody = (msg: TxSub.Msg.t) => {
   | VoteMsg(vote) => renderVote(vote)
   | MultiSendMsg(tx) => renderMultiSend(tx)
   | FailMsg(_) => renderFailMessage()
-  | _ => React.null
+  | _ => renderUnknownMessage()
   };
 };
 
