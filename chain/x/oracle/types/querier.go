@@ -45,7 +45,6 @@ func NewDataSourceQuerierInfo(
 	owner sdk.AccAddress,
 	name string,
 	description string,
-	fee sdk.Coins,
 	executable []byte,
 ) DataSourceQuerierInfo {
 	return DataSourceQuerierInfo{
@@ -53,7 +52,6 @@ func NewDataSourceQuerierInfo(
 		Owner:       owner,
 		Name:        name,
 		Description: description,
-		Fee:         fee,
 		Executable:  executable,
 	}
 }

@@ -13,7 +13,6 @@ func createDataSource(
 	id int64,
 	name, description string,
 	owner sdk.AccAddress,
-	fee sdk.Coins,
 	executable []byte,
 	blockTime time.Time,
 ) DataSource {
@@ -22,7 +21,6 @@ func createDataSource(
 		Name:        name,
 		Description: description,
 		Owner:       owner.String(),
-		Fee:         fee.String(),
 		Executable:  executable,
 		LastUpdated: blockTime.UnixNano() / int64(time.Millisecond),
 	}
@@ -32,7 +30,6 @@ func (b *BandDB) AddDataSource(
 	id int64,
 	name, description string,
 	owner sdk.AccAddress,
-	fee sdk.Coins,
 	executable []byte,
 	blockTime time.Time,
 	blockHeight int64,
@@ -43,7 +40,6 @@ func (b *BandDB) AddDataSource(
 		name,
 		description,
 		owner,
-		fee,
 		executable,
 		blockTime,
 	)
@@ -75,7 +71,7 @@ func (b *BandDB) handleMsgCreateDataSource(
 		return err
 	}
 	return b.AddDataSource(
-		id, msg.Name, msg.Description, msg.Owner, msg.Fee, msg.Executable,
+		id, msg.Name, msg.Description, msg.Owner, msg.Executable,
 		b.ctx.BlockTime(), b.ctx.BlockHeight(), txHash,
 	)
 }
@@ -87,7 +83,7 @@ func (b *BandDB) handleMsgEditDataSource(
 ) error {
 	dataSource := createDataSource(
 		int64(msg.DataSourceID), msg.Name, msg.Description,
-		msg.Owner, msg.Fee, msg.Executable, b.ctx.BlockTime(),
+		msg.Owner, msg.Executable, b.ctx.BlockTime(),
 	)
 
 	err := b.tx.Save(&dataSource).Error

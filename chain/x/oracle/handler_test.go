@@ -15,10 +15,9 @@ func mockDataSource(ctx sdk.Context, keeper Keeper) (*sdk.Result, error) {
 	owner := sdk.AccAddress([]byte("owner"))
 	name := "data_source_1"
 	description := "description"
-	fee := sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
 	executable := []byte("executable")
 	sender := sdk.AccAddress([]byte("sender"))
-	msg := types.NewMsgCreateDataSource(owner, name, description, fee, executable, sender)
+	msg := types.NewMsgCreateDataSource(owner, name, description, executable, sender)
 	return handleMsgCreateDataSource(ctx, keeper, msg)
 }
 
@@ -44,7 +43,6 @@ func TestCreateDataSourceSuccess(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, sdk.AccAddress([]byte("owner")), dataSource.Owner)
 	require.Equal(t, "data_source_1", dataSource.Name)
-	require.Equal(t, sdk.NewCoins(sdk.NewInt64Coin("uband", 10)), dataSource.Fee)
 	require.Equal(t, []byte("executable"), dataSource.Executable)
 
 	events := ctx.EventManager().Events()
@@ -63,11 +61,10 @@ func TestEditDataSourceSuccess(t *testing.T) {
 	newOwner := sdk.AccAddress([]byte("anotherowner"))
 	newName := "data_source_2"
 	newDescription := "new_description"
-	newFee := sdk.NewCoins(sdk.NewInt64Coin("uband", 99))
 	newExecutable := []byte("executable_2")
 	sender := sdk.AccAddress([]byte("owner"))
 
-	msg := types.NewMsgEditDataSource(1, newOwner, newName, newDescription, newFee, newExecutable, sender)
+	msg := types.NewMsgEditDataSource(1, newOwner, newName, newDescription, newExecutable, sender)
 	_, err = handleMsgEditDataSource(ctx, keeper, msg)
 	require.Nil(t, err)
 
@@ -76,7 +73,6 @@ func TestEditDataSourceSuccess(t *testing.T) {
 	require.Equal(t, newOwner, dataSource.Owner)
 	require.Equal(t, newName, dataSource.Name)
 	require.Equal(t, newDescription, dataSource.Description)
-	require.Equal(t, newFee, dataSource.Fee)
 	require.Equal(t, newExecutable, dataSource.Executable)
 
 	events := ctx.EventManager().Events()
@@ -98,11 +94,10 @@ func TestEditDataSourceByNotOwner(t *testing.T) {
 	newOwner := sdk.AccAddress([]byte("anotherowner"))
 	newName := "data_source_2"
 	newDescription := "new_description"
-	newFee := sdk.NewCoins(sdk.NewInt64Coin("uband", 99))
 	newExecutable := []byte("executable_2")
 	sender := sdk.AccAddress([]byte("sender"))
 
-	msg := types.NewMsgEditDataSource(1, newOwner, newName, newDescription, newFee, newExecutable, sender)
+	msg := types.NewMsgEditDataSource(1, newOwner, newName, newDescription, newExecutable, sender)
 	_, err := handleMsgEditDataSource(ctx, keeper, msg)
 	require.NotNil(t, err)
 }
@@ -191,9 +186,6 @@ func TestRequestSuccess(t *testing.T) {
 	_, err := keeper.CoinKeeper.AddCoins(ctx, sender, keep.NewUBandCoins(410))
 	require.Nil(t, err)
 
-	owner := sdk.AccAddress([]byte("owner"))
-	owner2 := sdk.AccAddress([]byte("anotherowner"))
-
 	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
 	keeper.SetOracleScript(ctx, 1, script)
 
@@ -212,7 +204,6 @@ func TestRequestSuccess(t *testing.T) {
 		sdk.AccAddress([]byte("anotherowner")),
 		"data_source2",
 		"description2",
-		sdk.NewCoins(sdk.NewInt64Coin("uband", 400)),
 		[]byte("executable2"),
 	)
 	keeper.SetDataSource(ctx, 2, dataSource2)
@@ -244,15 +235,6 @@ func TestRequestSuccess(t *testing.T) {
 	// check consumed gas must more than 100000
 	// TODO: Write a better test than just checking number comparison
 	require.GreaterOrEqual(t, afterGas-beforeGas, uint64(100000))
-
-	senderBalance := keeper.CoinKeeper.GetAllBalances(ctx, sender)
-	require.Equal(t, sdk.Coins(nil), senderBalance)
-
-	ownerBalance := keeper.CoinKeeper.GetAllBalances(ctx, owner)
-	require.Equal(t, keep.NewUBandCoins(10), ownerBalance)
-
-	owner2Balance := keeper.CoinKeeper.GetAllBalances(ctx, owner2)
-	require.Equal(t, keep.NewUBandCoins(400), owner2Balance)
 }
 
 func TestRequestIBCSuccess(t *testing.T) {
@@ -266,8 +248,6 @@ func TestRequestIBCSuccess(t *testing.T) {
 	_, err := keeper.CoinKeeper.AddCoins(ctx, sender, keep.NewUBandCoins(410))
 	require.Nil(t, err)
 
-	owner := sdk.AccAddress([]byte("owner"))
-	owner2 := sdk.AccAddress([]byte("anotherowner"))
 	sourcePort := "sourcePort"
 	sourceChannel := "sourceChannel"
 
@@ -289,7 +269,6 @@ func TestRequestIBCSuccess(t *testing.T) {
 		sdk.AccAddress([]byte("anotherowner")),
 		"data_source2",
 		"description2",
-		sdk.NewCoins(sdk.NewInt64Coin("uband", 400)),
 		[]byte("executable2"),
 	)
 	keeper.SetDataSource(ctx, 2, dataSource2)
@@ -321,15 +300,6 @@ func TestRequestIBCSuccess(t *testing.T) {
 	// check consumed gas must more than 100000
 	// TODO: Write a better test than just checking number comparison
 	require.GreaterOrEqual(t, afterGas-beforeGas, uint64(100000))
-
-	senderBalance := keeper.CoinKeeper.GetAllBalances(ctx, sender)
-	require.Equal(t, sdk.Coins(nil), senderBalance)
-
-	ownerBalance := keeper.CoinKeeper.GetAllBalances(ctx, owner)
-	require.Equal(t, keep.NewUBandCoins(10), ownerBalance)
-
-	owner2Balance := keeper.CoinKeeper.GetAllBalances(ctx, owner2)
-	require.Equal(t, keep.NewUBandCoins(400), owner2Balance)
 }
 
 func TestRequestInvalidDataSource(t *testing.T) {
@@ -448,86 +418,6 @@ func TestRequestIBCWithPrepareGasExceed(t *testing.T) {
 	msg := types.NewMsgRequestData(1, calldata, 2, 2, "clientID", sender)
 
 	_, err := handleMsgRequestDataIBC(ctx, keeper, msg, sourcePort, sourceChannel)
-	require.NotNil(t, err)
-}
-
-func TestRequestWithInsufficientFee(t *testing.T) {
-	ctx, keeper := keep.CreateTestInput(t, false)
-
-	ctx = ctx.WithBlockHeight(2)
-	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
-	calldata := []byte("calldata")
-	sender := sdk.AccAddress([]byte("sender"))
-	_, err := keeper.CoinKeeper.AddCoins(ctx, sender, keep.NewUBandCoins(50))
-	require.Nil(t, err)
-
-	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
-	keeper.SetOracleScript(ctx, 1, script)
-
-	pubStr := []string{
-		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
-		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
-	}
-
-	keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
-	keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
-
-	dataSource := keep.GetTestDataSource()
-	keeper.SetDataSource(ctx, 1, dataSource)
-
-	dataSource2 := types.NewDataSource(
-		sdk.AccAddress([]byte("anotherowner")),
-		"data_source2",
-		"description2",
-		sdk.NewCoins(sdk.NewInt64Coin("uband", 300)),
-		[]byte("executable2"),
-	)
-	keeper.SetDataSource(ctx, 2, dataSource2)
-
-	msg := types.NewMsgRequestData(1, calldata, 2, 2, "clientID", sender)
-
-	_, err = handleMsgRequestData(ctx, keeper, msg)
-	require.NotNil(t, err)
-}
-
-func TestRequestIBCWithInsufficientFee(t *testing.T) {
-	ctx, keeper := keep.CreateTestInput(t, false)
-
-	ctx = ctx.WithBlockHeight(2)
-	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
-	calldata := []byte("calldata")
-	sender := sdk.AccAddress([]byte("sender"))
-	sourcePort := "sourcePort"
-	sourceChannel := "sourceChannel"
-	_, err := keeper.CoinKeeper.AddCoins(ctx, sender, keep.NewUBandCoins(50))
-	require.Nil(t, err)
-
-	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
-	keeper.SetOracleScript(ctx, 1, script)
-
-	pubStr := []string{
-		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
-		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
-	}
-
-	keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
-	keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
-
-	dataSource := keep.GetTestDataSource()
-	keeper.SetDataSource(ctx, 1, dataSource)
-
-	dataSource2 := types.NewDataSource(
-		sdk.AccAddress([]byte("anotherowner")),
-		"data_source2",
-		"description2",
-		sdk.NewCoins(sdk.NewInt64Coin("uband", 300)),
-		[]byte("executable2"),
-	)
-	keeper.SetDataSource(ctx, 2, dataSource2)
-
-	msg := types.NewMsgRequestData(1, calldata, 2, 2, "clientID", sender)
-
-	_, err = handleMsgRequestDataIBC(ctx, keeper, msg, sourcePort, sourceChannel)
 	require.NotNil(t, err)
 }
 

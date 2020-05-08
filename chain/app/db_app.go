@@ -110,7 +110,6 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 			dataSource.Name,
 			dataSource.Description,
 			dataSource.Owner,
-			dataSource.Fee,
 			dataSource.Executable,
 			time.Now(),
 			0,
@@ -241,11 +240,6 @@ func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseB
 				CurrentReward: rewardValue,
 			},
 		)
-	}
-
-	err = app.dbBand.ClearOldVotes(req.Header.GetHeight() - 1)
-	if err != nil {
-		panic(err)
 	}
 
 	app.dbBand.AddBlock(

@@ -160,7 +160,6 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			owner,
 			dataSource.name,
 			dataSource.description,
-			sdk.Coins{},
 			script,
 		)
 	}

@@ -58,7 +58,7 @@ func main() {
 				oracle.NewMsgCreateDataSource(
 					tx.Sender(), "Coingecko script",
 					"The Script that queries crypto price from https://cryptocompare.com",
-					sdk.Coins{}, coingecko, tx.Sender(),
+					coingecko, tx.Sender(),
 				),
 				1000000, "", "",
 			))
@@ -71,7 +71,7 @@ func main() {
 				oracle.NewMsgCreateDataSource(
 					tx.Sender(), "Crypto compare script",
 					"The Script that queries crypto price from https://cryptocompare.com",
-					sdk.Coins{}, cryptoCompare, tx.Sender(),
+					cryptoCompare, tx.Sender(),
 				),
 				1000000, "", "",
 			))
@@ -84,7 +84,7 @@ func main() {
 				oracle.NewMsgCreateDataSource(
 					tx.Sender(), "Binance script",
 					"The Script that queries crypto price from https://www.binance.com/en",
-					sdk.Coins{}, binance, tx.Sender(),
+					binance, tx.Sender(),
 				),
 				1000000, "", "",
 			))
@@ -231,7 +231,7 @@ func main() {
 			fmt.Println(tx.SendTransaction(
 				oracle.NewMsgCreateDataSource(
 					tx.Sender(), "Mock Data source", "Mock Script",
-					sdk.Coins{}, []byte("exec"), tx.Sender(),
+					[]byte("exec"), tx.Sender(),
 				), 1000000, "", "",
 			))
 

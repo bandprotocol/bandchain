@@ -75,7 +75,7 @@ let make = (~txs: array(TxSub.t)) => {
       </Row>
     </THead>
     {txs
-     ->Belt_Array.map(({blockHeight, txHash, gasFee, messages, success}) => {
+     ->Belt_Array.map(({blockHeight, txHash, gasFee, messages, success, rawLog}) => {
          <TBody key={txHash |> Hash.toHex}>
            <Row minHeight={`px(30)} alignItems=`flexStart>
              <HSpacing size={`px(20)} />
@@ -111,16 +111,21 @@ let make = (~txs: array(TxSub.t)) => {
                </div>
              </Col>
              <Col size=5.>
-               {messages
-                ->Belt_List.toArray
-                ->Belt_Array.mapWithIndex((i, msg) =>
-                    <React.Fragment key={(txHash |> Hash.toHex) ++ (i |> string_of_int)}>
-                      <VSpacing size=Spacing.sm />
-                      <Msg msg width=450 />
-                      <VSpacing size=Spacing.sm />
-                    </React.Fragment>
-                  )
-                ->React.array}
+               <div>
+                 {messages
+                  ->Belt_List.toArray
+                  ->Belt_Array.mapWithIndex((i, msg) =>
+                      <React.Fragment key={(txHash |> Hash.toHex) ++ (i |> string_of_int)}>
+                        <VSpacing size=Spacing.sm />
+                        <Msg msg width=450 />
+                        <VSpacing size=Spacing.sm />
+                      </React.Fragment>
+                    )
+                  ->React.array}
+                 {success
+                    ? React.null
+                    : <div> <Text value={"Error: " ++ rawLog} code=true size=Text.Sm /> </div>}
+               </div>
              </Col>
              <HSpacing size={`px(20)} />
            </Row>

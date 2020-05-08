@@ -40,9 +40,6 @@ type Validator struct {
 	OperatorAddress     string  `gorm:"primary_key"`
 	ConsensusAddress    string  `gorm:"unique;not null"`
 	ConsensusPubkey     string  `gorm:"not null"`
-	ElectedCount        uint    `gorm:"not null"` // TODO: Update to pointer
-	VotedCount          uint    `gorm:"not null"` // TODO: Update to pointer
-	MissedCount         uint    `gorm:"not null"` // TODO: Update to pointer
 	Moniker             string  `gorm:"not null"` // TODO: Update to pointer
 	Identity            string  `gorm:"not null"` // TODO: Update to pointer
 	Website             string  `gorm:"not null"` // TODO: Update to pointer
@@ -78,7 +75,6 @@ type DataSource struct {
 	Description string `gorm:"not null"` // TODO: Update to pointer
 	Owner       string `gorm:"not null"`
 	Executable  []byte `gorm:"not null"`
-	Fee         string `gorm:"not null"` // TODO: Update to pointer
 	LastUpdated int64  `gorm:"not null"`
 }
 

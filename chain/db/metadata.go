@@ -9,11 +9,10 @@ import (
 )
 
 const (
-	KeyChainID                = "chain_id"
-	KeyLastProcessedHeight    = "last_processed_height"
-	KeyUptimeLookBackDuration = "uptime_look_back_duration"
-	KeyInflationRate          = "inflation_rate"
-	KeyTotalSupply            = "total_supply"
+	KeyChainID             = "chain_id"
+	KeyLastProcessedHeight = "last_processed_height"
+	KeyInflationRate       = "inflation_rate"
+	KeyTotalSupply         = "total_supply"
 )
 
 func (b *BandDB) GetMetadataValue(key string) (string, error) {
@@ -68,14 +67,6 @@ func (b *BandDB) SetLastProcessedHeight(height int64) error {
 
 func (b *BandDB) GetLastProcessedHeight() (int64, error) {
 	return b.GetMetadataValueInt64(KeyLastProcessedHeight)
-}
-
-func (b *BandDB) SetUptimeLookBackDuration(duration int64) error {
-	return b.SetMetadataValueInt64(KeyUptimeLookBackDuration, duration)
-}
-
-func (b *BandDB) GetUptimeLookBackDuration() (int64, error) {
-	return b.GetMetadataValueInt64(KeyUptimeLookBackDuration)
 }
 
 func (b *BandDB) SetInflationRate(inflationRate string) error {

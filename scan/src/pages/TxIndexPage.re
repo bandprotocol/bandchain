@@ -25,6 +25,15 @@ module Styles = {
     ]);
 
   let logo = style([width(`px(50)), marginRight(`px(10))]);
+
+  let errorLog =
+    style([
+      padding(`px(10)),
+      color(Colors.red5),
+      backgroundColor(Colors.red1),
+      border(`px(1), `solid, Colors.red5),
+      borderRadius(`px(4)),
+    ]);
 };
 
 [@react.component]
@@ -96,6 +105,14 @@ let make = (~txHash) =>
           />
         </Col>
       </Row>
+      {tx.success
+         ? React.null
+         : <>
+             <VSpacing size=Spacing.xl />
+             <div className=Styles.errorLog>
+               <Text value={tx.rawLog} size=Text.Lg code=true spacing={Text.Em(0.02)} />
+             </div>
+           </>}
       <VSpacing size=Spacing.xxl />
       <div className=Styles.vFlex>
         <HSpacing size=Spacing.md />

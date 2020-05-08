@@ -6,14 +6,12 @@ import (
 
 // NewDataSource creates a new DataSource instance.
 func NewDataSource(
-	owner sdk.AccAddress, name string, description string,
-	fee sdk.Coins, executable []byte,
+	owner sdk.AccAddress, name string, description string, executable []byte,
 ) DataSource {
 	return DataSource{
 		Owner:       owner,
 		Name:        name,
 		Description: description,
-		Fee:         fee,
 		Executable:  executable,
 	}
 }
