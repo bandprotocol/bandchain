@@ -2,12 +2,10 @@ syntax = "proto3";
 package bandchain.chain.x.oracle.v1;
 
 import "third_party/proto/gogoproto/gogo.proto";
-import "third_party/proto/cosmos-proto/sdk.proto";
 
 option go_package = "github.com/bandprotocol/bandchain/chain/x/oracle/types";
 
-// MsgRequestData is a message for requesting a new data request to an existing
-// oracle script.
+// MsgRequestData is a message for sending a new data request.
 message MsgRequestData {
   option (gogoproto.equal) = true;
 
@@ -16,8 +14,8 @@ message MsgRequestData {
     (gogoproto.casttype) = "OracleScriptID"
   ];
   bytes calldata = 2;
-  int64 requested_validator_count = 3;
-  int64 sufficient_validator_count = 4;
+  int64 ask_count = 3;
+  int64 min_count = 4;
   string client_id = 5 [(gogoproto.customname) = "ClientID"];
   bytes sender = 6
       [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
@@ -48,12 +46,8 @@ message MsgCreateDataSource {
       [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
   string name = 2;
   string description = 3;
-  repeated cosmos_sdk.v1.Coin fee = 4 [
-    (gogoproto.nullable) = false,
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
-  ];
-  bytes executable = 5;
-  bytes sender = 6
+  bytes executable = 4;
+  bytes sender = 5
       [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
 }
 
@@ -69,12 +63,8 @@ message MsgEditDataSource {
       [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
   string name = 3;
   string description = 4;
-  repeated cosmos_sdk.v1.Coin fee = 5 [
-    (gogoproto.nullable) = false,
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
-  ];
-  bytes executable = 6;
-  bytes sender = 7
+  bytes executable = 5;
+  bytes sender = 6
       [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
 }
 
@@ -142,11 +132,7 @@ message DataSource {
       [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
   string name = 2;
   string description = 3;
-  repeated cosmos_sdk.v1.Coin fee = 4 [
-    (gogoproto.nullable) = false,
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
-  ];
-  bytes executable = 5;
+  bytes executable = 4;
 }
 
 // OracleScript is a type to store detail of oracle script.
@@ -269,7 +255,7 @@ message Request {
   bytes calldata = 2;
   repeated bytes requested_validators = 3
       [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
-  int64 sufficient_validator_count = 4;
+  int64 min_count = 4;
   int64 request_height = 5;
   int64 request_time = 6;
   string Client_id = 7 [(gogoproto.customname) = "ClientID"];

@@ -12,18 +12,18 @@ const RouterKey = ModuleName
 func NewMsgRequestData(
 	oracleScriptID OracleScriptID,
 	calldata []byte,
-	requestedValidatorCount int64,
-	sufficientValidatorCount int64,
+	askCount int64,
+	minCount int64,
 	clientID string,
 	sender sdk.AccAddress,
 ) MsgRequestData {
 	return MsgRequestData{
-		OracleScriptID:           oracleScriptID,
-		Calldata:                 calldata,
-		RequestedValidatorCount:  requestedValidatorCount,
-		SufficientValidatorCount: sufficientValidatorCount,
-		ClientID:                 clientID,
-		Sender:                   sender,
+		OracleScriptID: oracleScriptID,
+		Calldata:       calldata,
+		AskCount:       askCount,
+		MinCount:       minCount,
+		ClientID:       clientID,
+		Sender:         sender,
 	}
 }
 
@@ -41,17 +41,17 @@ func (msg MsgRequestData) ValidateBasic() error {
 	if msg.OracleScriptID <= 0 {
 		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgRequestData: Oracle script id (%d) must be positive.", msg.OracleScriptID)
 	}
-	if msg.SufficientValidatorCount <= 0 {
+	if msg.MinCount <= 0 {
 		return sdkerrors.Wrapf(ErrInvalidBasicMsg,
 			"MsgRequestData: Sufficient validator count (%d) must be positive.",
-			msg.SufficientValidatorCount,
+			msg.MinCount,
 		)
 	}
-	if msg.RequestedValidatorCount < msg.SufficientValidatorCount {
+	if msg.AskCount < msg.MinCount {
 		return sdkerrors.Wrapf(ErrInvalidBasicMsg,
 			"MsgRequestData: Request validator count (%d) must not be less than sufficient validator count (%d).",
-			msg.RequestedValidatorCount,
-			msg.SufficientValidatorCount,
+			msg.AskCount,
+			msg.MinCount,
 		)
 	}
 	return nil
@@ -129,7 +129,6 @@ func NewMsgCreateDataSource(
 	owner sdk.AccAddress,
 	name string,
 	description string,
-	fee sdk.Coins,
 	executable []byte,
 	sender sdk.AccAddress,
 ) MsgCreateDataSource {
@@ -137,7 +136,6 @@ func NewMsgCreateDataSource(
 		Owner:       owner,
 		Name:        name,
 		Description: description,
-		Fee:         fee,
 		Executable:  executable,
 		Sender:      sender,
 	}
@@ -159,9 +157,6 @@ func (msg MsgCreateDataSource) ValidateBasic() error {
 	}
 	if msg.Description == "" {
 		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgCreateDataSource: Description must not be empty.")
-	}
-	if !msg.Fee.IsValid() {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgCreateDataSource: Fee (%s) is not valid.", msg.Fee.String())
 	}
 	if msg.Executable == nil || len(msg.Executable) == 0 {
 		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgCreateDataSource: Executable must not be empty.")
@@ -189,7 +184,6 @@ func NewMsgEditDataSource(
 	owner sdk.AccAddress,
 	name string,
 	description string,
-	fee sdk.Coins,
 	executable []byte,
 	sender sdk.AccAddress,
 ) MsgEditDataSource {
@@ -198,7 +192,6 @@ func NewMsgEditDataSource(
 		Owner:        owner,
 		Name:         name,
 		Description:  description,
-		Fee:          fee,
 		Executable:   executable,
 		Sender:       sender,
 	}
@@ -223,9 +216,6 @@ func (msg MsgEditDataSource) ValidateBasic() error {
 	}
 	if msg.Description == "" {
 		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgEditDataSource: Description must not be empty.")
-	}
-	if !msg.Fee.IsValid() {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgEditDataSource: Fee (%s) is not valid.", msg.Fee.String())
 	}
 	if msg.Executable == nil || len(msg.Executable) == 0 {
 		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgEditDataSource: Executable must not be empty.")

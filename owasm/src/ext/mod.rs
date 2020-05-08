@@ -8,7 +8,7 @@ where
     T: std::str::FromStr,
 {
     let mut vals: Vec<T> = Vec::new();
-    for idx in 0..oei::get_requested_validator_count() {
+    for idx in 0..oei::get_ask_count() {
         let external_data = oei::get_external_data(external_id, idx);
         match external_data.and_then(|x| x.parse::<T>().ok()) {
             Some(v) => vals.push(v),

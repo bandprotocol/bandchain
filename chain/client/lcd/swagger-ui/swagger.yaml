@@ -2335,7 +2335,7 @@ definitions:
         items:
           type: string
           example: bandvaloper1r8u4m0wefrdyp7sdde7drtrt94qczggkq8r3xa
-      sufficientValidatorCount:
+      minCount:
         type: integer
         example: 1
       expirationHeight:

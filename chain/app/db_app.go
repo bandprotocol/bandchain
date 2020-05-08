@@ -110,7 +110,6 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 			dataSource.Name,
 			dataSource.Description,
 			dataSource.Owner,
-			dataSource.Fee,
 			dataSource.Executable,
 			time.Now(),
 			0,

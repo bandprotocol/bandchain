@@ -60,7 +60,6 @@ func (k Keeper) EditDataSource(ctx sdk.Context, id types.DID, new types.DataSour
 	dataSource.Owner = new.Owner // TODO: Allow NOT_MODIFY or nil in these fields.
 	dataSource.Name = new.Name
 	dataSource.Description = new.Description
-	dataSource.Fee = new.Fee
 	dataSource.Executable = new.Executable
 	if err := AnyError(
 		k.EnsureLength(ctx, types.KeyMaxNameLength, len(dataSource.Name)),
@@ -71,19 +70,6 @@ func (k Keeper) EditDataSource(ctx sdk.Context, id types.DID, new types.DataSour
 	}
 	k.SetDataSource(ctx, id, dataSource)
 	return nil
-}
-
-// PayDataSourceFee sends fee from sender to data source owner. Returns error on failure.
-func (k Keeper) PayDataSourceFee(ctx sdk.Context, id types.DID, sender sdk.AccAddress) error {
-	dataSource, err := k.GetDataSource(ctx, id)
-	if err != nil {
-		return err
-	}
-	if dataSource.Owner.Equals(sender) || dataSource.Fee.IsZero() {
-		// If you are the owner or it's free, no payment action is needed.
-		return nil
-	}
-	return k.CoinKeeper.SendCoins(ctx, sender, dataSource.Owner, dataSource.Fee)
 }
 
 // GetAllDataSources returns the list of all data sources in the store, or nil if there is none.
