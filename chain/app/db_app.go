@@ -242,11 +242,6 @@ func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseB
 		)
 	}
 
-	err = app.dbBand.ClearOldVotes(req.Header.GetHeight() - 1)
-	if err != nil {
-		panic(err)
-	}
-
 	app.dbBand.AddBlock(
 		req.Header.GetHeight(),
 		app.DeliverContext.BlockTime(),
