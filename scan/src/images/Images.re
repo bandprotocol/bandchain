@@ -56,7 +56,9 @@
 [@bs.module] external ibcDirArrow: string = "./ibcDirArrow.svg";
 [@bs.module] external modalBg: string = "./modal-bg.svg";
 [@bs.module] external waitingModalBg: string = "./waiting-modal-bg.svg";
-[@bs.module] external ledgerIconActive: string = "./ledgerIconActive.svg";
+[@bs.module] external ledgerCosmosIcon: string = "./ledger-cosmos.svg";
+[@bs.module] external ledgerBandChainIcon: string = "./ledger-bandchain.svg";
 [@bs.module] external linkIcon: string = "./linkIcon.svg";
 [@bs.module] external ledgerStep1: string = "./ledger-step1.svg";
-[@bs.module] external ledgerStep2: string = "./ledger-step2.svg";
+[@bs.module] external ledgerStep2Cosmos: string = "./ledger-step2-cosmos.svg";
+[@bs.module] external ledgerStep2BandChain: string = "./ledger-step2-bandchain.svg";

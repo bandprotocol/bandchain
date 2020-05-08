@@ -134,25 +134,28 @@ type result_t =
   | Error(string);
 
 [@react.component]
-let make = (~chainID) => {
+let make = (~chainID, ~ledgerApp) => {
   let (_, dispatchAccount) = React.useContext(AccountContext.context);
   let (_, dispatchModal) = React.useContext(ModalContext.context);
   let (result, setResult) = React.useState(_ => Nothing);
   let (accountIndex, setAccountIndex) = React.useState(_ => 0);
 
   let createLedger = accountIndex => {
+    dispatchModal(DisableExit);
     setResult(_ => Loading);
     let _ =
-      Wallet.createFromLedger(accountIndex)
+      Wallet.createFromLedger(ledgerApp, accountIndex)
       |> Js.Promise.then_(wallet => {
            let%Promise (address, pubKey) = wallet->Wallet.getAddressAndPubKey;
            dispatchAccount(Connect(wallet, address, pubKey, chainID));
+           dispatchModal(EnableExit);
            dispatchModal(CloseModal);
            Promise.ret();
          })
       |> Js.Promise.catch(err => {
            Js.Console.log(err);
            setResult(_ => Error("An error occured"));
+           dispatchModal(EnableExit);
            Promise.ret();
          });
     ();
@@ -171,10 +174,12 @@ let make = (~chainID) => {
         {[|0, 1, 2, 3, 4, 5|]
          |> Belt.Array.map(_, index =>
               <option key={index |> string_of_int} value={index |> string_of_int}>
-                {{
-                   "44/118/0/0/" ++ (index |> string_of_int);
-                 }
-                 |> React.string}
+                {let prefixPath =
+                   switch (ledgerApp) {
+                   | Ledger.Cosmos => "44/118/0/0/"
+                   | BandChain => "44/494/0/0/"
+                   };
+                 prefixPath ++ (index |> string_of_int) |> React.string}
               </option>
             )
          |> React.array}
@@ -185,7 +190,11 @@ let make = (~chainID) => {
     <VSpacing size=Spacing.sm />
     <InstructionCard idx=1 title="Enter Pin Code" url=Images.ledgerStep1 />
     <VSpacing size=Spacing.md />
-    <InstructionCard idx=2 title="Open Cosmos" url=Images.ledgerStep2 />
+    {switch (ledgerApp) {
+     | Ledger.Cosmos => <InstructionCard idx=2 title="Open Cosmos" url=Images.ledgerStep2Cosmos />
+     | BandChain =>
+       <InstructionCard idx=2 title="Open BandChain" url=Images.ledgerStep2BandChain />
+     }}
     <div className=Styles.resultContainer>
       {switch (result) {
        | Loading =>

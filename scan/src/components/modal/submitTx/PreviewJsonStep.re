@@ -73,6 +73,8 @@ module Styles = {
   let loading = style([width(`px(100))]);
 
   let resultIcon = style([width(`px(30))]);
+
+  let txhashContainer = style([cursor(`pointer)]);
 };
 
 type state_t =
@@ -84,6 +86,7 @@ type state_t =
 
 [@react.component]
 let make = (~rawTx, ~onBack, ~account: AccountContext.t) => {
+  let (_, dispatchModal) = React.useContext(ModalContext.context);
   let (state, setState) = React.useState(_ => Nothing);
   let jsonTx = TxCreator.sortAndStringify(rawTx);
 
@@ -104,6 +107,7 @@ let make = (~rawTx, ~onBack, ~account: AccountContext.t) => {
          <div
            className=Styles.btn
            onClick={_ => {
+             dispatchModal(DisableExit);
              setState(_ => Signing);
              let _ =
                Wallet.sign(jsonTx, account.wallet)
@@ -130,10 +134,11 @@ let make = (~rawTx, ~onBack, ~account: AccountContext.t) => {
                                : {
                                  setState(_ => Error(txResponse.rawLog));
                                };
-
+                             dispatchModal(EnableExit);
                              Js.Promise.resolve();
                            | _ =>
                              setState(_ => Error("Fail to broadcast"));
+                             dispatchModal(EnableExit);
                              Js.Promise.resolve();
                            }
                          )
@@ -142,6 +147,7 @@ let make = (~rawTx, ~onBack, ~account: AccountContext.t) => {
                            | Some(errorValue) => setState(_ => Error(errorValue))
                            | None => setState(_ => Error("Can not stringify error"))
                            };
+                           dispatchModal(EnableExit);
                            Js.Promise.resolve();
                          }),
                     );
@@ -150,6 +156,7 @@ let make = (~rawTx, ~onBack, ~account: AccountContext.t) => {
                   })
                |> Js.Promise.catch(_ => {
                     setState(_ => Error("Failed to sign message"));
+                    dispatchModal(EnableExit);
                     Promise.ret();
                   });
              ();
@@ -165,7 +172,22 @@ let make = (~rawTx, ~onBack, ~account: AccountContext.t) => {
            <Text value="Broadcast Transaction Success" weight=Text.Semibold />
          </div>
          <VSpacing size=Spacing.md />
-         <TxLink txHash width=450 size=Text.Sm />
+         <div
+           className=Styles.txhashContainer
+           onClick={_ => {
+             dispatchModal(CloseModal);
+             Route.redirect(Route.TxIndexPage(txHash));
+           }}>
+           <Text
+             block=true
+             code=true
+             spacing={Text.Em(0.02)}
+             value={txHash |> Hash.toHex(~upper=true)}
+             weight=Text.Medium
+             ellipsis=true
+             size=Text.Sm
+           />
+         </div>
        </div>
      | Signing =>
        <div className=Styles.resultContainer>
