@@ -179,9 +179,6 @@ func TestMsgCreateDataSourceValidation(t *testing.T) {
 			false, NewMsgCreateDataSource(owner, "", description, executable, sender),
 		},
 		{
-			true, NewMsgCreateDataSource(owner, name, description, executable, sender),
-		},
-		{
 			false, NewMsgCreateDataSource(owner, name, description, []byte(""), sender),
 		},
 		{
@@ -256,7 +253,7 @@ func TestMsgEditDataSourceValidation(t *testing.T) {
 			false, NewMsgEditDataSource(1, owner, "", description, executable, sender),
 		},
 		{
-			true, NewMsgEditDataSource(1, owner, name, description, executable, sender),
+			false, NewMsgEditDataSource(1, owner, name, description, []byte(""), sender),
 		},
 		{
 			false, NewMsgEditDataSource(1, owner, name, description, nil, sender),
