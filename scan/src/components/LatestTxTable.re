@@ -27,7 +27,7 @@ module Styles = {
   let logo = style([width(`px(20))]);
 };
 
-let txBodyRender = (reserveIndex: int, txSub: ApolloHooks.Subscription.variant(TxSub.t)) => {
+let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)) => {
   <TBody
     key={
       switch (txSub) {
@@ -185,10 +185,10 @@ let make = () => {
     </THead>
     {switch (allSub) {
      | Data((txs, _)) =>
-       txs->Belt_Array.mapWithIndex((i, e) => txBodyRender(i, Sub.resolve(e)))->React.array
+       txs->Belt_Array.mapWithIndex((i, e) => renderBody(i, Sub.resolve(e)))->React.array
      | _ =>
        Belt_Array.make(10, ApolloHooks.Subscription.NoData)
-       ->Belt_Array.mapWithIndex((i, noData) => txBodyRender(i, noData))
+       ->Belt_Array.mapWithIndex((i, noData) => renderBody(i, noData))
        ->React.array
      }}
   </>;

@@ -26,7 +26,6 @@ module Styles = {
   let datasourcesContainer = style([display(`flex), alignItems(`center), flexWrap(`wrap)]);
   let oracleScriptContainer = style([display(`flex), width(`px(240))]);
   let validatorsContainer = style([display(`flex), flexDirection(`column), flexWrap(`wrap)]);
-  let headerContainer = style([lineHeight(`px(25))]);
   let sourceContainer =
     style([
       display(`inlineFlex),
