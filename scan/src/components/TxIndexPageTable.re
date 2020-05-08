@@ -58,18 +58,6 @@ module Styles = {
     ]);
 };
 
-let renderFailMessage = () => {
-  <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <VSpacing size=Spacing.sm />
-    <div className=Styles.topicContainer>
-      <div className=Styles.failedMessageDetails>
-        <Text value="MESSAGE FAILED" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-        <img src=Images.fail className=Styles.failIcon />
-      </div>
-    </div>
-  </Col>;
-};
-
 let renderSend = (send: TxSub.Msg.Send.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
     <VSpacing size=Spacing.sm />
@@ -673,18 +661,6 @@ let renderConnectionVariant = (msg: TxSub.Msg.t, common: TxSub.Msg.ConnectionCom
        </>
      | _ => React.null
      }}
-  </Col>;
-};
-
-let renderFailMessage = () => {
-  <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <VSpacing size=Spacing.sm />
-    <div className=Styles.topicContainer>
-      <div className=Styles.failedMessageDetails>
-        <Text value="MESSAGE FAILED" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-        <img src=Images.fail className=Styles.failIcon />
-      </div>
-    </div>
   </Col>;
 };
 
