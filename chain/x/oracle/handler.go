@@ -38,7 +38,7 @@ func NewHandler(k Keeper) sdk.Handler {
 
 func handleMsgCreateDataSource(ctx sdk.Context, k Keeper, m MsgCreateDataSource) (*sdk.Result, error) {
 	id, err := k.AddDataSource(ctx, types.NewDataSource(
-		m.Owner, m.Name, m.Description, m.Fee, m.Executable,
+		m.Owner, m.Name, m.Description, m.Executable,
 	))
 	if err != nil {
 		return nil, err
@@ -59,7 +59,7 @@ func handleMsgEditDataSource(ctx sdk.Context, k Keeper, m MsgEditDataSource) (*s
 		return nil, types.ErrEditorNotAuthorized
 	}
 	err = k.EditDataSource(ctx, m.DataSourceID, types.NewDataSource(
-		m.Owner, m.Name, m.Description, m.Fee, m.Executable,
+		m.Owner, m.Name, m.Description, m.Executable,
 	))
 	if err != nil {
 		return nil, err
@@ -107,26 +107,26 @@ func handleMsgEditOracleScript(ctx sdk.Context, k Keeper, m MsgEditOracleScript)
 }
 
 func handleMsgRequestData(ctx sdk.Context, k Keeper, m MsgRequestData) (*sdk.Result, error) {
-	validators, err := k.GetRandomValidators(ctx, int(m.RequestedValidatorCount))
+	validators, err := k.GetRandomValidators(ctx, int(m.AskCount))
 	if err != nil {
 		return nil, err
 	}
 
 	req := types.NewRequest(
-		m.OracleScriptID, m.Calldata, validators, m.SufficientValidatorCount,
+		m.OracleScriptID, m.Calldata, validators, m.MinCount,
 		ctx.BlockHeight(), ctx.BlockTime().Unix(), m.ClientID, nil,
 	)
 	return prepareRequest(ctx, k, m, req)
 }
 
 func handleMsgRequestDataIBC(ctx sdk.Context, k Keeper, m MsgRequestData, sourcePort string, sourceChannel string) (*sdk.Result, error) {
-	validators, err := k.GetRandomValidators(ctx, int(m.RequestedValidatorCount))
+	validators, err := k.GetRandomValidators(ctx, int(m.AskCount))
 	if err != nil {
 		return nil, err
 	}
 
 	req := types.NewRequest(
-		m.OracleScriptID, m.Calldata, validators, m.SufficientValidatorCount,
+		m.OracleScriptID, m.Calldata, validators, m.MinCount,
 		ctx.BlockHeight(), ctx.BlockTime().Unix(), m.ClientID,
 		&types.RequestIBC{sourcePort, sourceChannel},
 	)
@@ -162,10 +162,6 @@ func prepareRequest(ctx sdk.Context, k Keeper, m MsgRequestData, req types.Reque
 	ctx.EventManager().EmitEvent(event)
 
 	for _, raw := range env.GetRawRequests() {
-		err := k.PayDataSourceFee(ctx, raw.DataSourceID, m.Sender)
-		if err != nil { // We should fail here if the request tries to use an unknown data source.
-			return nil, err
-		}
 		// TODO: Consume more gas if using more raw requests.
 		ctx.EventManager().EmitEvent(sdk.NewEvent(
 			types.EventTypeRawRequest,
@@ -192,7 +188,7 @@ func handleMsgReportData(ctx sdk.Context, k Keeper, m MsgReportData) (*sdk.Resul
 		return nil, err
 	}
 	req := k.MustGetRequest(ctx, m.RequestID)
-	if k.GetReportCount(ctx, m.RequestID) == req.SufficientValidatorCount {
+	if k.GetReportCount(ctx, m.RequestID) == req.MinCount {
 		// At the exact moment when the number of reports is sufficient, we add the request to
 		// the pending resolve list. This can happen at most one time for any request.
 		k.AddPendingRequest(ctx, m.RequestID)

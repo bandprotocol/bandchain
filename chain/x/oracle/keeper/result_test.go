@@ -22,7 +22,7 @@ package keeper
 // 		RequestTime:              1,
 // 		AggregationTime:          2,
 // 		RequestedValidatorsCount: 3,
-// 		SufficientValidatorCount: 2,
+// 		MinCount: 2,
 // 		ReportedValidatorsCount:  2,
 // 		Data:                     []byte("result"),
 // 	}, actualResult)
@@ -51,7 +51,7 @@ package keeper
 // 			RequestTime:              0,
 // 			AggregationTime:          1581589999,
 // 			RequestedValidatorsCount: 1,
-// 			SufficientValidatorCount: 1,
+// 			MinCount: 1,
 // 			ReportedValidatorsCount:  0,
 // 			Data:                     []byte("result"),
 // 		},

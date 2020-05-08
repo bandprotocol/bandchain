@@ -4,16 +4,16 @@ pub fn get_request_id() -> i64 {
     unsafe { raw::getCurrentRequestID() }
 }
 
-pub fn get_requested_validator_count() -> i64 {
-    unsafe { raw::getRequestedValidatorCount() }
+pub fn get_ask_count() -> i64 {
+    unsafe { raw::getAskCount() }
 }
 
-pub fn get_sufficient_validator_count() -> i64 {
-    unsafe { raw::getSufficientValidatorCount() }
+pub fn get_min_count() -> i64 {
+    unsafe { raw::getMinCount() }
 }
 
-pub fn get_received_validator_count() -> i64 {
-    unsafe { raw::getReceivedValidatorCount() }
+pub fn get_ans_count() -> i64 {
+    unsafe { raw::getAnsCount() }
 }
 
 pub fn get_prepare_block_time() -> i64 {

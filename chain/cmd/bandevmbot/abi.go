@@ -80,7 +80,7 @@ var rawABI = []byte(`
      },
      {
       "internalType": "uint64",
-      "name": "sufficientValidatorCount",
+      "name": "minCount",
       "type": "uint64"
      },
      {
@@ -293,7 +293,7 @@ var rawABI = []byte(`
      },
      {
       "internalType": "uint64",
-      "name": "sufficientValidatorCount",
+      "name": "minCount",
       "type": "uint64"
      },
      {
@@ -500,7 +500,7 @@ var rawABI = []byte(`
      },
      {
       "internalType": "uint64",
-      "name": "sufficientValidatorCount",
+      "name": "minCount",
       "type": "uint64"
      },
      {

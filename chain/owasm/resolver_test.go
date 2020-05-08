@@ -11,7 +11,7 @@ import (
 func TestResolveGetCallDataSizet(t *testing.T) {
 
 	env := &mockExecEnv{
-		requestedValidatorCount: 2,
+		askCount: 2,
 	}
 	gasLimit := uint64(10000)
 	code, err := ioutil.ReadFile("./res/allocate.wasm")
@@ -41,7 +41,7 @@ func TestResolveGetCallDataSizet(t *testing.T) {
 func TestResolveReadExternalDataSuccess(t *testing.T) {
 
 	env := &mockExecEnv{
-		requestedValidatorCount:           2,
+		askCount:                          2,
 		externalDataResults:               [][][]byte{{[]byte("RETURN_DATA"), nil}},
 		requestExternalDataResultsCounter: [][]int64{{0, 0}, {0, 0}},
 	}
@@ -90,7 +90,7 @@ func TestGetExternalDataSize(t *testing.T) {
 
 	externalData := "RETURN_DATA"
 	env := &mockExecEnv{
-		requestedValidatorCount:           2,
+		askCount:                          2,
 		externalDataResults:               [][][]byte{{[]byte(externalData), nil}},
 		requestExternalDataResultsCounter: [][]int64{{0, 0}, {0, 0}},
 	}
@@ -140,7 +140,7 @@ func TestReadExternalData(t *testing.T) {
 
 	externalData := "RETURN_DATA"
 	env := &mockExecEnv{
-		requestedValidatorCount:           2,
+		askCount:                          2,
 		externalDataResults:               [][][]byte{{[]byte(externalData), nil}},
 		requestExternalDataResultsCounter: [][]int64{{0, 0}, {0, 0}},
 	}
