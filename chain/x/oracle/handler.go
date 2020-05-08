@@ -38,7 +38,7 @@ func NewHandler(k Keeper) sdk.Handler {
 
 func handleMsgCreateDataSource(ctx sdk.Context, k Keeper, m MsgCreateDataSource) (*sdk.Result, error) {
 	id, err := k.AddDataSource(ctx, types.NewDataSource(
-		m.Owner, m.Name, m.Description, m.Fee, m.Executable,
+		m.Owner, m.Name, m.Description, m.Executable,
 	))
 	if err != nil {
 		return nil, err
@@ -59,7 +59,7 @@ func handleMsgEditDataSource(ctx sdk.Context, k Keeper, m MsgEditDataSource) (*s
 		return nil, types.ErrEditorNotAuthorized
 	}
 	err = k.EditDataSource(ctx, m.DataSourceID, types.NewDataSource(
-		m.Owner, m.Name, m.Description, m.Fee, m.Executable,
+		m.Owner, m.Name, m.Description, m.Executable,
 	))
 	if err != nil {
 		return nil, err
@@ -162,10 +162,6 @@ func prepareRequest(ctx sdk.Context, k Keeper, m MsgRequestData, req types.Reque
 	ctx.EventManager().EmitEvent(event)
 
 	for _, raw := range env.GetRawRequests() {
-		err := k.PayDataSourceFee(ctx, raw.DataSourceID, m.Sender)
-		if err != nil { // We should fail here if the request tries to use an unknown data source.
-			return nil, err
-		}
 		// TODO: Consume more gas if using more raw requests.
 		ctx.EventManager().EmitEvent(sdk.NewEvent(
 			types.EventTypeRawRequest,

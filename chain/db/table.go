@@ -78,7 +78,6 @@ type DataSource struct {
 	Description string `gorm:"not null"` // TODO: Update to pointer
 	Owner       string `gorm:"not null"`
 	Executable  []byte `gorm:"not null"`
-	Fee         string `gorm:"not null"` // TODO: Update to pointer
 	LastUpdated int64  `gorm:"not null"`
 }
 

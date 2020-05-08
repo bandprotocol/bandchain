@@ -158,7 +158,6 @@ func TestRequestExternalData(t *testing.T) {
 		sdk.AccAddress([]byte("owner")),
 		"data_source",
 		"description",
-		sdk.NewCoins(sdk.NewInt64Coin("uband", 10)),
 		[]byte("executable"),
 	)
 	keeper.SetDataSource(ctx, 1, dataSource)
@@ -188,7 +187,6 @@ func TestRequestExternalDataExceedMaxRawRequestCount(t *testing.T) {
 		sdk.AccAddress([]byte("owner")),
 		"data_source",
 		"description",
-		sdk.NewCoins(sdk.NewInt64Coin("uband", 10)),
 		[]byte("executable"),
 	)
 	keeper.SetDataSource(ctx, 1, dataSource)

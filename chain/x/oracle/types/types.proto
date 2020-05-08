@@ -2,7 +2,6 @@ syntax = "proto3";
 package bandchain.chain.x.oracle.v1;
 
 import "third_party/proto/gogoproto/gogo.proto";
-import "third_party/proto/cosmos-proto/sdk.proto";
 
 option go_package = "github.com/bandprotocol/bandchain/chain/x/oracle/types";
 
@@ -47,12 +46,8 @@ message MsgCreateDataSource {
       [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
   string name = 2;
   string description = 3;
-  repeated cosmos_sdk.v1.Coin fee = 4 [
-    (gogoproto.nullable) = false,
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
-  ];
-  bytes executable = 5;
-  bytes sender = 6
+  bytes executable = 4;
+  bytes sender = 5
       [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
 }
 
@@ -68,12 +63,8 @@ message MsgEditDataSource {
       [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
   string name = 3;
   string description = 4;
-  repeated cosmos_sdk.v1.Coin fee = 5 [
-    (gogoproto.nullable) = false,
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
-  ];
-  bytes executable = 6;
-  bytes sender = 7
+  bytes executable = 5;
+  bytes sender = 6
       [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
 }
 
@@ -141,11 +132,7 @@ message DataSource {
       [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
   string name = 2;
   string description = 3;
-  repeated cosmos_sdk.v1.Coin fee = 4 [
-    (gogoproto.nullable) = false,
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
-  ];
-  bytes executable = 5;
+  bytes executable = 4;
 }
 
 // OracleScript is a type to store detail of oracle script.
