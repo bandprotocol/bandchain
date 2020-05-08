@@ -45328,6 +45328,22 @@
             "description": "An aggregated array relationship"
           },
           {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "raw_log",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "description": null
+          },
+          {
             "args": [
               {
                 "name": "distinct_on",
@@ -46418,6 +46434,16 @@
             "description": null
           },
           {
+            "name": "raw_log",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "String_comparison_exp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "reports",
             "defaultValue": null,
             "type": {
@@ -46734,6 +46760,16 @@
             "description": null
           },
           {
+            "name": "raw_log",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "reports",
             "defaultValue": null,
             "type": {
@@ -46875,6 +46911,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "raw_log",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "sender",
             "type": {
               "kind": "SCALAR",
@@ -46941,6 +46989,16 @@
           },
           {
             "name": "index",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "raw_log",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -47051,6 +47109,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "raw_log",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "sender",
             "type": {
               "kind": "SCALAR",
@@ -47117,6 +47187,16 @@
           },
           {
             "name": "index",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "raw_log",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -47400,6 +47480,16 @@
             "description": null
           },
           {
+            "name": "raw_log",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "reports_aggregate",
             "defaultValue": null,
             "type": {
@@ -47535,6 +47625,12 @@
           {
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "raw_log",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "sender",
             "description": "column name"
           },
@@ -47618,6 +47714,16 @@
             "type": {
               "kind": "SCALAR",
               "name": "jsonb",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "raw_log",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
               "ofType": null
             },
             "description": null
@@ -48240,6 +48346,12 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "messages",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "raw_log",
             "description": "column name"
           },
           {

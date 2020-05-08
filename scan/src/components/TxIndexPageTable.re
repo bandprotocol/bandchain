@@ -36,6 +36,16 @@ module Styles = {
   let firstCol = 0.45;
   let secondCol = 0.50;
   let thirdCol = 1.20;
+
+  let failIcon = style([width(`px(16)), height(`px(16))]);
+
+  let failedMessageDetails =
+    style([
+      display(`flex),
+      width(`px(120)),
+      alignItems(`center),
+      justifyContent(`spaceBetween),
+    ]);
 };
 
 let renderSend = (send: TxSub.Msg.Send.t) => {
@@ -571,7 +581,7 @@ let renderPacketVariant = (msg: TxSub.Msg.t, common: TxSub.Msg.Packet.common_t) 
       <Text value={common.timeoutHeight |> string_of_int} code=true />
     </div>
     {switch (msg) {
-     | Acknowledgement({acknowledgement}) =>
+     | AcknowledgementMsg({acknowledgement}) =>
        <>
          <VSpacing size=Spacing.md />
          <div className=Styles.topicContainer>
@@ -579,7 +589,7 @@ let renderPacketVariant = (msg: TxSub.Msg.t, common: TxSub.Msg.Packet.common_t) 
            <Text value=acknowledgement code=true />
          </div>
        </>
-     | Timeout({nextSequenceReceive}) =>
+     | TimeoutMsg({nextSequenceReceive}) =>
        <>
          <VSpacing size=Spacing.md />
          <div className=Styles.topicContainer>
@@ -626,14 +636,14 @@ let renderConnectionVariant = (msg: TxSub.Msg.t, common: TxSub.Msg.ConnectionCom
     </div>
     <VSpacing size=Spacing.md />
     {switch (msg) {
-     | ConnectionOpenInit({clientID}) =>
+     | ConnectionOpenInitMsg({clientID}) =>
        <>
          <div className=Styles.topicContainer>
            <Text value="CLIENT ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
            <Text value=clientID code=true />
          </div>
        </>
-     | ConnectionOpenTry({clientID}) =>
+     | ConnectionOpenTryMsg({clientID}) =>
        <>
          <div className=Styles.topicContainer>
            <Text value="CLIENT ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
@@ -971,49 +981,68 @@ let renderMultiSend = (tx: TxSub.Msg.MultiSend.t) => {
      ->React.array}
   </Col>;
 };
+let renderFailMessage = () => {
+  <Col size=Styles.thirdCol alignSelf=Col.Start>
+    <VSpacing size=Spacing.sm />
+    <div className=Styles.topicContainer>
+      <Text value="MESSAGE FAILED" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <div className=Styles.hFlex> <img src=Images.fail className=Styles.failIcon /> </div>
+    </div>
+  </Col>;
+};
+
+let renderUnknownMessage = () => {
+  <Col size=Styles.thirdCol alignSelf=Col.Start>
+    <VSpacing size=Spacing.sm />
+    <div className=Styles.topicContainer>
+      <Text value="UNKNOWN MESSAGE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <img src=Images.fail className=Styles.failIcon />
+    </div>
+  </Col>;
+};
 
 let renderBody = (msg: TxSub.Msg.t) => {
   switch (msg) {
-  | Send(send) => renderSend(send)
-  | CreateDataSource(dataSource) => renderCreateDataSource(dataSource)
-  | EditDataSource(dataSource) => renderEditDataSource(dataSource)
-  | CreateOracleScript(oracleScript) => renderCreateOracleScript(oracleScript)
-  | EditOracleScript(oracleScript) => renderEditOracleScript(oracleScript)
-  | Request(request) => renderRequest(request)
-  | Report(report) => renderReport(report)
-  | AddOracleAddress(address) => renderAddOracleAddress(address)
-  | RemoveOracleAddress(address) => renderRemoveOracleAddress(address)
-  | CreateValidator(validator) => renderCreateValidator(validator)
-  | EditValidator(validator) => renderEditValidator(validator)
-  | CreateClient(info) => renderCreateClient(info)
-  | UpdateClient(info) => renderUpdateClient(info)
-  | SubmitClientMisbehaviour(info) => renderSubmitClientMisbehaviour(info)
-  | ConnectionOpenInit(info) => renderConnectionVariant(msg, info.common)
-  | ConnectionOpenTry(info) => renderConnectionVariant(msg, info.common)
-  | ConnectionOpenAck(info) => renderConnectionVariant(msg, info.common)
-  | ConnectionOpenConfirm(info) => renderConnectionVariant(msg, info.common)
-  | ChannelOpenInit(info) => renderChannelVariant(info.common)
-  | ChannelOpenTry(info) => renderChannelVariant(info.common)
-  | ChannelOpenAck(info) => renderChannelVariant(info.common)
-  | ChannelOpenConfirm(info) => renderChannelVariant(info.common)
-  | ChannelCloseInit(info) => renderChannelVariant(info.common)
-  | ChannelCloseConfirm(info) => renderChannelVariant(info.common)
-  | Packet(info) => renderPacketVariant(msg, info.common)
-  | Acknowledgement(info) => renderPacketVariant(msg, info.common)
-  | Timeout(info) => renderPacketVariant(msg, info.common)
-  | Delegate(delegation) => renderDelegate(delegation)
-  | Undelegate(delegation) => renderUndelegate(delegation)
-  | Redelegate(delegation) => renderRedelegate(delegation)
-  | WithdrawReward(withdrawal) => renderWithdrawReward(withdrawal)
-  | WithdrawCommission(withdrawal) => renderWithdrawCommission(withdrawal)
-  | Unjail(unjail) => renderUnjail(unjail)
-  | SetWithdrawAddress(set) => renderSetWithdrawAddress(set)
-  | SubmitProposal(proposal) => renderSubmitProposal(proposal)
-  | Deposit(deposit) => renderDeposit(deposit)
-  | Vote(vote) => renderVote(vote)
-  | MultiSend(tx) => renderMultiSend(tx)
-  | FailMessage(_) => "Failed msg" |> React.string
-  | _ => React.null
+  | SendMsg(send) => renderSend(send)
+  | CreateDataSourceMsg(dataSource) => renderCreateDataSource(dataSource)
+  | EditDataSourceMsg(dataSource) => renderEditDataSource(dataSource)
+  | CreateOracleScriptMsg(oracleScript) => renderCreateOracleScript(oracleScript)
+  | EditOracleScriptMsg(oracleScript) => renderEditOracleScript(oracleScript)
+  | RequestMsg(request) => renderRequest(request)
+  | ReportMsg(report) => renderReport(report)
+  | AddOracleAddressMsg(address) => renderAddOracleAddress(address)
+  | RemoveOracleAddressMsg(address) => renderRemoveOracleAddress(address)
+  | CreateValidatorMsg(validator) => renderCreateValidator(validator)
+  | EditValidatorMsg(validator) => renderEditValidator(validator)
+  | CreateClientMsg(info) => renderCreateClient(info)
+  | UpdateClientMsg(info) => renderUpdateClient(info)
+  | SubmitClientMisbehaviourMsg(info) => renderSubmitClientMisbehaviour(info)
+  | ConnectionOpenInitMsg(info) => renderConnectionVariant(msg, info.common)
+  | ConnectionOpenTryMsg(info) => renderConnectionVariant(msg, info.common)
+  | ConnectionOpenAckMsg(info) => renderConnectionVariant(msg, info.common)
+  | ConnectionOpenConfirmMsg(info) => renderConnectionVariant(msg, info.common)
+  | ChannelOpenInitMsg(info) => renderChannelVariant(info.common)
+  | ChannelOpenTryMsg(info) => renderChannelVariant(info.common)
+  | ChannelOpenAckMsg(info) => renderChannelVariant(info.common)
+  | ChannelOpenConfirmMsg(info) => renderChannelVariant(info.common)
+  | ChannelCloseInitMsg(info) => renderChannelVariant(info.common)
+  | ChannelCloseConfirmMsg(info) => renderChannelVariant(info.common)
+  | PacketMsg(info) => renderPacketVariant(msg, info.common)
+  | AcknowledgementMsg(info) => renderPacketVariant(msg, info.common)
+  | TimeoutMsg(info) => renderPacketVariant(msg, info.common)
+  | DelegateMsg(delegation) => renderDelegate(delegation)
+  | UndelegateMsg(delegation) => renderUndelegate(delegation)
+  | RedelegateMsg(delegation) => renderRedelegate(delegation)
+  | WithdrawRewardMsg(withdrawal) => renderWithdrawReward(withdrawal)
+  | WithdrawCommissionMsg(withdrawal) => renderWithdrawCommission(withdrawal)
+  | UnjailMsg(unjail) => renderUnjail(unjail)
+  | SetWithdrawAddressMsg(set) => renderSetWithdrawAddress(set)
+  | SubmitProposalMsg(proposal) => renderSubmitProposal(proposal)
+  | DepositMsg(deposit) => renderDeposit(deposit)
+  | VoteMsg(vote) => renderVote(vote)
+  | MultiSendMsg(tx) => renderMultiSend(tx)
+  | FailMsg(_) => renderFailMessage()
+  | UnknownMsg => renderUnknownMessage()
   };
 };
 
@@ -1078,23 +1107,23 @@ let make = (~messages: list(TxSub.Msg.t)) => {
                  </div>
                  <VSpacing size=Spacing.sm />
                  {switch (msg) {
-                  | CreateDataSource(dataSource) =>
+                  | CreateDataSourceMsg(dataSource) =>
                     <div className={Styles.badge(theme.bgColor)}>
                       <TypeID.DataSource id={dataSource.id} />
                     </div>
-                  | EditDataSource(dataSource) =>
+                  | EditDataSourceMsg(dataSource) =>
                     <div className={Styles.badge(theme.bgColor)}>
                       <TypeID.DataSource id={dataSource.id} />
                     </div>
-                  | CreateOracleScript(oracleScript) =>
+                  | CreateOracleScriptMsg(oracleScript) =>
                     <div className={Styles.badge(theme.bgColor)}>
                       <TypeID.OracleScript id={oracleScript.id} />
                     </div>
-                  | EditOracleScript(oracleScript) =>
+                  | EditOracleScriptMsg(oracleScript) =>
                     <div className={Styles.badge(theme.bgColor)}>
                       <TypeID.OracleScript id={oracleScript.id} />
                     </div>
-                  | Request(request) =>
+                  | RequestMsg(request) =>
                     <div className={Styles.badge(theme.bgColor)}>
                       <TypeID.Request id={request.id} />
                     </div>
