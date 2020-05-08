@@ -43,18 +43,18 @@ func (env *ExecEnv) SetReports(reports []types.Report) {
 	}
 }
 
-// GetRequestedValidatorCount implements Owasm ExecEnv interface.
-func (env *ExecEnv) GetRequestedValidatorCount() int64 {
+// GetAskCount implements Owasm ExecEnv interface.
+func (env *ExecEnv) GetAskCount() int64 {
 	return int64(len(env.request.RequestedValidators))
 }
 
-// GetSufficientValidatorCount implements Owasm ExecEnv interface.
-func (env *ExecEnv) GetSufficientValidatorCount() int64 {
-	return env.request.SufficientValidatorCount
+// GetMinCount implements Owasm ExecEnv interface.
+func (env *ExecEnv) GetMinCount() int64 {
+	return env.request.MinCount
 }
 
-// GetReceivedValidatorCount implements Owasm ExecEnv interface.
-func (env *ExecEnv) GetReceivedValidatorCount() int64 {
+// GetAnsCount implements Owasm ExecEnv interface.
+func (env *ExecEnv) GetAnsCount() int64 {
 	return int64(len(env.reports))
 }
 

@@ -9,8 +9,8 @@ pub fn execute() {
     let fn_name = std::str::from_utf8(&calldata).unwrap();
 
     match fn_name {
-        "getSufficientValidatorCount" => {
-            let data = oei::get_sufficient_validator_count() as u64;
+        "getMinCount" => {
+            let data = oei::get_min_count() as u64;
             oei::save_return_data(&data.to_be_bytes());
         }
         _ => oei::save_return_data(&[0u8; 8]),

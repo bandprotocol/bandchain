@@ -78,7 +78,6 @@ type DataSource struct {
 	Description string `gorm:"not null"` // TODO: Update to pointer
 	Owner       string `gorm:"not null"`
 	Executable  []byte `gorm:"not null"`
-	Fee         string `gorm:"not null"` // TODO: Update to pointer
 	LastUpdated int64  `gorm:"not null"`
 }
 
@@ -116,18 +115,18 @@ type RelatedDataSources struct {
 }
 
 type Request struct {
-	ID                       int64  `gorm:"primary_key;auto_increment:false"`
-	OracleScriptID           int64  `gorm:"not null"`
-	Calldata                 []byte `gorm:"not null"`
-	SufficientValidatorCount int64  `gorm:"not null"`
-	ExpirationHeight         int64  `gorm:"not null"`
-	ResolveStatus            string `gorm:"not null"`
-	Requester                string `gorm:"not null"`
-	TxHash                   []byte `gorm:"not null"`
-	ClientID                 string `gorm:"not null"`
-	Result                   []byte `sql:"default:null"`
-	RequestTime              int64  `sql:"default:null"`
-	ResolveTime              int64  `sql:"default:null"`
+	ID               int64  `gorm:"primary_key;auto_increment:false"`
+	OracleScriptID   int64  `gorm:"not null"`
+	Calldata         []byte `gorm:"not null"`
+	MinCount         int64  `gorm:"not null"`
+	ExpirationHeight int64  `gorm:"not null"`
+	ResolveStatus    string `gorm:"not null"`
+	Requester        string `gorm:"not null"`
+	TxHash           []byte `gorm:"not null"`
+	ClientID         string `gorm:"not null"`
+	Result           []byte `sql:"default:null"`
+	RequestTime      int64  `sql:"default:null"`
+	ResolveTime      int64  `sql:"default:null"`
 }
 
 type RequestedValidator struct {

@@ -17,12 +17,12 @@ func (r *resolver) ResolveFunc(module, field string) exec.FunctionImport {
 		panic(fmt.Errorf("ResolveFunc: unknown module: %s", module))
 	}
 	switch field {
-	case "getRequestedValidatorCount":
-		return r.resolveGetRequestedValidatorCount
-	case "getSufficientValidatorCount":
-		return r.resolveGetSufficientValidatorCount
-	case "getReceivedValidatorCount":
-		return r.resolveGetReceivedValidatorCount
+	case "getAskCount":
+		return r.resolveGetAskCount
+	case "getMinCount":
+		return r.resolveGetMinCount
+	case "getAnsCount":
+		return r.resolveGetAnsCount
 	case "getPrepareBlockTime":
 		return r.resolveGetPrepareBlockTime
 	case "getAggregateBlockTime":
@@ -52,16 +52,16 @@ func (r *resolver) ResolveGlobal(module, field string) int64 {
 	panic(fmt.Errorf("ResolveGlobal is not supported by owasm!"))
 }
 
-func (r *resolver) resolveGetRequestedValidatorCount(vm *exec.VirtualMachine) int64 {
-	return r.env.GetRequestedValidatorCount()
+func (r *resolver) resolveGetAskCount(vm *exec.VirtualMachine) int64 {
+	return r.env.GetAskCount()
 }
 
-func (r *resolver) resolveGetSufficientValidatorCount(vm *exec.VirtualMachine) int64 {
-	return r.env.GetSufficientValidatorCount()
+func (r *resolver) resolveGetMinCount(vm *exec.VirtualMachine) int64 {
+	return r.env.GetMinCount()
 }
 
-func (r *resolver) resolveGetReceivedValidatorCount(vm *exec.VirtualMachine) int64 {
-	return r.env.GetRequestedValidatorCount()
+func (r *resolver) resolveGetAnsCount(vm *exec.VirtualMachine) int64 {
+	return r.env.GetAskCount()
 }
 
 func (r *resolver) resolveGetPrepareBlockTime(vm *exec.VirtualMachine) int64 {

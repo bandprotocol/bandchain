@@ -5,9 +5,9 @@ import (
 )
 
 type mockExecEnv struct {
-	requestedValidatorCount           int64
-	sufficientValidatorCount          int64
-	receivedValidatorCount            int64
+	askCount                          int64
+	minCount                          int64
+	ansCount                          int64
 	prepareBlockTime                  int64
 	aggregateBlockTime                int64
 	validatorAddresses                [][]byte
@@ -17,16 +17,16 @@ type mockExecEnv struct {
 	requestExternalDataResultsCounter [][]int64
 }
 
-func (m *mockExecEnv) GetRequestedValidatorCount() int64 {
-	return m.requestedValidatorCount
+func (m *mockExecEnv) GetAskCount() int64 {
+	return m.askCount
 }
 
-func (m *mockExecEnv) GetSufficientValidatorCount() int64 {
-	return m.sufficientValidatorCount
+func (m *mockExecEnv) GetMinCount() int64 {
+	return m.minCount
 }
 
-func (m *mockExecEnv) GetReceivedValidatorCount() int64 {
-	return m.receivedValidatorCount
+func (m *mockExecEnv) GetAnsCount() int64 {
+	return m.ansCount
 }
 
 func (m *mockExecEnv) GetPrepareBlockTime() int64 {

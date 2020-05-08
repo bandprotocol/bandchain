@@ -55,8 +55,7 @@ func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorU
 
 	for _, dataSource := range data.DataSources {
 		_, err := k.AddDataSource(ctx, types.NewDataSource(
-			dataSource.Owner, dataSource.Name, dataSource.Description,
-			dataSource.Fee, dataSource.Executable,
+			dataSource.Owner, dataSource.Name, dataSource.Description, dataSource.Executable,
 		))
 		if err != nil {
 			panic(err)

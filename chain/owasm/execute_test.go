@@ -12,7 +12,7 @@ import (
 // 	code, err := ioutil.ReadFile("./res/main.wasm")
 // 	require.Nil(t, err)
 // 	result, gasUsed, err := Execute(&mockExecEnv{
-// 		requestedValidatorCount:         2,
+// 		askCount:         2,
 // 		maximumResultSize:               1024,
 // 		maximumCalldataOfDataSourceSize: 1024,
 // 	}, code, "execute", []byte{}, 10000)
@@ -22,15 +22,15 @@ import (
 // }
 
 // Test get number of sufficient validators from env
-func TestGetSufficientValidatorCount(t *testing.T) {
+func TestGetMinCount(t *testing.T) {
 	code, err := ioutil.ReadFile("./res/get_env.wasm")
 	require.Nil(t, err)
 
 	result, _, errExecute := Execute(&mockExecEnv{
-		sufficientValidatorCount:        99,
+		minCount:                        99,
 		maximumResultSize:               1024,
 		maximumCalldataOfDataSourceSize: 1024,
-	}, code, "execute", []byte("getSufficientValidatorCount"), 100000000000000000)
+	}, code, "execute", []byte("getMinCount"), 100000000000000000)
 	require.Nil(t, errExecute)
 	require.Equal(t, uint64(99), binary.BigEndian.Uint64(result))
 }
