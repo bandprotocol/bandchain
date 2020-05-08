@@ -231,7 +231,7 @@ func TestRequestSuccess(t *testing.T) {
 	require.Nil(t, err)
 	expectRequest := types.NewRequest(1, calldata,
 		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
-		2, 1581589790, "clientID",
+		2, 1581589790, "clientID", nil,
 	)
 	require.Equal(t, expectRequest, actualRequest)
 
@@ -306,9 +306,9 @@ func TestRequestIBCSuccess(t *testing.T) {
 	require.Equal(t, int64(1), keeper.GetRequestCount(ctx))
 	actualRequest, err := keeper.GetRequest(ctx, 1)
 	require.Nil(t, err)
-	expectRequest := types.NewRequestWithRequestIBC(1, calldata,
+	expectRequest := types.NewRequest(1, calldata,
 		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
-		2, 1581589790, "clientID", sourcePort, sourceChannel,
+		2, 1581589790, "clientID", &types.RequestIBC{sourcePort, sourceChannel},
 	)
 	require.Equal(t, expectRequest, actualRequest)
 
@@ -563,7 +563,7 @@ func TestReportSuccess(t *testing.T) {
 
 	request := types.NewRequest(1, calldata,
 		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
-		2, 1581589790, "clientID",
+		2, 1581589790, "clientID", nil,
 	)
 	keeper.SetRequest(ctx, 1, request)
 	keeper.SetRawRequest(ctx, 1, types.NewRawRequest(42, 1, []byte("calldata1")))
@@ -620,7 +620,7 @@ func TestReportFailed(t *testing.T) {
 
 	request := types.NewRequest(1, calldata,
 		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
-		2, 1581589790, "clientID",
+		2, 1581589790, "clientID", nil,
 	)
 	keeper.SetRequest(ctx, 1, request)
 	keeper.SetRawRequest(ctx, 1, types.NewRawRequest(42, 1, []byte("calldata1")))
@@ -689,7 +689,7 @@ func TestReportFailed(t *testing.T) {
 
 // 	actualRequest, err := keeper.GetRequest(ctx, 1)
 // 	require.Nil(t, err)
-// 	require.Equal(t, types.Success, actualRequest.ResolveStatus)
+// 	require.Equal(t, types.ResolveStatus_Success, actualRequest.ResolveStatus)
 // }
 
 func TestEndBlockExecuteFailedIfExecuteGasLessThanGasUsed(t *testing.T) {
@@ -727,7 +727,7 @@ func TestAddAndRemoveOracleAddress(t *testing.T) {
 
 	request := types.NewRequest(1, calldata,
 		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
-		2, 1581589790, "clientID",
+		2, 1581589790, "clientID", nil,
 	)
 	keeper.SetRequest(ctx, 1, request)
 	keeper.SetRawRequest(ctx, 1, types.NewRawRequest(42, 1, []byte("calldata1")))

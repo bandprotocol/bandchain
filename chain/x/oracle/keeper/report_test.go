@@ -107,7 +107,7 @@ func TestHasReport(t *testing.T) {
 
 // 	// Send report on resolved request.
 // 	request := newDefaultRequest()
-// 	// request.ResolveStatus = types.Success
+// 	// request.ResolveStatus = types.ResolveStatus_Success
 // 	// keeper.SetRequest(ctx, 1, request)
 
 // 	keeper.SetRawRequest(ctx, 1, types.NewRawRequest(2, 1, []byte("calldata1")))

@@ -54,23 +54,31 @@ module Styles = {
 
   let loading = style([width(`px(100))]);
 
-  let connectBtn =
+  let connectBtn = (~isLoading, ()) =>
     style([
+      marginTop(`px(10)),
       width(`px(140)),
       height(`px(30)),
       display(`flex),
       justifySelf(`right),
       justifyContent(`center),
       alignItems(`center),
+      backgroundColor(isLoading ? Colors.blueGray3 : Css.rgba(0, 0, 0, 0.)),
       backgroundImage(
-        `linearGradient((
-          `deg(90.),
-          [(`percent(0.), Colors.blue7), (`percent(100.), Colors.bandBlue)],
-        )),
+        isLoading
+          ? `none
+          : `linearGradient((
+              `deg(90.),
+              [(`percent(0.), Colors.blue7), (`percent(100.), Colors.bandBlue)],
+            )),
       ),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(8), Css.rgba(82, 105, 255, 0.25))),
+      boxShadow(
+        isLoading
+          ? `none : Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(8), Css.rgba(82, 105, 255, 0.25)),
+      ),
       borderRadius(`px(4)),
-      cursor(`pointer),
+      cursor(isLoading ? `default : `pointer),
+      pointerEvents(isLoading ? `none : `auto),
       alignSelf(`flexEnd),
     ]);
 
@@ -126,25 +134,28 @@ type result_t =
   | Error(string);
 
 [@react.component]
-let make = (~chainID) => {
+let make = (~chainID, ~ledgerApp) => {
   let (_, dispatchAccount) = React.useContext(AccountContext.context);
   let (_, dispatchModal) = React.useContext(ModalContext.context);
   let (result, setResult) = React.useState(_ => Nothing);
   let (accountIndex, setAccountIndex) = React.useState(_ => 0);
 
   let createLedger = accountIndex => {
+    dispatchModal(DisableExit);
     setResult(_ => Loading);
     let _ =
-      Wallet.createFromLedger(accountIndex)
+      Wallet.createFromLedger(ledgerApp, accountIndex)
       |> Js.Promise.then_(wallet => {
            let%Promise (address, pubKey) = wallet->Wallet.getAddressAndPubKey;
            dispatchAccount(Connect(wallet, address, pubKey, chainID));
+           dispatchModal(EnableExit);
            dispatchModal(CloseModal);
            Promise.ret();
          })
       |> Js.Promise.catch(err => {
            Js.Console.log(err);
            setResult(_ => Error("An error occured"));
+           dispatchModal(EnableExit);
            Promise.ret();
          });
     ();
@@ -162,11 +173,13 @@ let make = (~chainID) => {
         }}>
         {[|0, 1, 2, 3, 4, 5|]
          |> Belt.Array.map(_, index =>
-              <option value={index |> string_of_int}>
-                {{
-                   "44/118/0/0/" ++ (index |> string_of_int);
-                 }
-                 |> React.string}
+              <option key={index |> string_of_int} value={index |> string_of_int}>
+                {let prefixPath =
+                   switch (ledgerApp) {
+                   | Ledger.Cosmos => "44/118/0/0/"
+                   | BandChain => "44/494/0/0/"
+                   };
+                 prefixPath ++ (index |> string_of_int) |> React.string}
               </option>
             )
          |> React.array}
@@ -177,7 +190,11 @@ let make = (~chainID) => {
     <VSpacing size=Spacing.sm />
     <InstructionCard idx=1 title="Enter Pin Code" url=Images.ledgerStep1 />
     <VSpacing size=Spacing.md />
-    <InstructionCard idx=2 title="Open Cosmos" url=Images.ledgerStep2 />
+    {switch (ledgerApp) {
+     | Ledger.Cosmos => <InstructionCard idx=2 title="Open Cosmos" url=Images.ledgerStep2Cosmos />
+     | BandChain =>
+       <InstructionCard idx=2 title="Open BandChain" url=Images.ledgerStep2BandChain />
+     }}
     <div className=Styles.resultContainer>
       {switch (result) {
        | Loading =>
@@ -195,8 +212,14 @@ let make = (~chainID) => {
        | Nothing => React.null
        }}
     </div>
-    <div className=Styles.connectBtn onClick={_ => createLedger(accountIndex)}>
-      <Text value="Connect To Ledger" weight=Text.Bold size=Text.Md color=Colors.white />
-    </div>
+    {result == Loading
+       ? <div className={Styles.connectBtn(~isLoading=true, ())}>
+           <Text value="Connecting..." weight=Text.Bold size=Text.Md color=Colors.blueGray7 />
+         </div>
+       : <div
+           className={Styles.connectBtn(~isLoading=false, ())}
+           onClick={_ => createLedger(accountIndex)}>
+           <Text value="Connect To Ledger" weight=Text.Bold size=Text.Md color=Colors.white />
+         </div>}
   </div>;
 };
