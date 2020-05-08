@@ -16,7 +16,6 @@ This repository is a [monorepo] containing the reference implementation of D3N a
 | [`owasm`](owasm)     | 🔮 WebAssembly library for writing oracle scripts         |
 | [`scan`](scan)       | 🔍 Web interface to explore D3N network                   |
 | [`spec`](spec)       | 📖 D3N research and specification knowledge base          |
-| [`studio`](studio)   | 🎬 In-browser IDE for testing and deploying owasm scripts |
 
 ## Running with Docker
 
