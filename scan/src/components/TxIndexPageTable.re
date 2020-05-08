@@ -986,7 +986,7 @@ let renderFailMessage = () => {
     <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
       <Text value="MESSAGE FAILED" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <img src=Images.fail className=Styles.failIcon />
+      <div className=Styles.hFlex> <img src=Images.fail className=Styles.failIcon /> </div>
     </div>
   </Col>;
 };
