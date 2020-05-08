@@ -1028,6 +1028,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         <Text value="Outputs" />
       </div>
     </div>;
+  | UnknownMsg => makeBadge("UNKNOWN", 70, Colors.gray1, Colors.gray6)
   | FailMsg({sender, message}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
@@ -1086,6 +1087,5 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
        | UnknownBadge => makeBadge("UNKNOWN", 70, Colors.gray1, Colors.gray6)
        }}
     </div>
-  | UnknownMsg => React.null
   };
 };
