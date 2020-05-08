@@ -87,3 +87,21 @@ func (k Keeper) DeleteReports(ctx sdk.Context, rid types.RequestID) {
 		ctx.KVStore(k.storeKey).Delete(key)
 	}
 }
+
+// UpdateReportInfos updates validator report info for jail validator
+// that miss report more than threshold.
+func (k Keeper) UpdateReportInfos(ctx sdk.Context, rid types.RID) {
+	reportedMap := make(map[string]bool)
+	iterator := k.GetReportIterator(ctx, rid)
+	defer iterator.Close()
+	for ; iterator.Valid(); iterator.Next() {
+		var report types.Report
+		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &report)
+		reportedMap[report.Validator.String()] = true
+	}
+	request := k.MustGetRequest(ctx, rid)
+	for _, val := range request.RequestedValidators {
+		_, voted := reportedMap[val.String()]
+		k.HandleValidatorReport(ctx, rid, val, voted)
+	}
+}
