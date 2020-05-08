@@ -27,9 +27,8 @@ import (
 )
 
 const (
-	flagInvCheckPeriod         = "inv-check-period"
-	flagWithDB                 = "with-db"
-	flagUptimeLookBackDuration = "uptime-look-back"
+	flagInvCheckPeriod = "inv-check-period"
+	flagWithDB         = "with-db"
 )
 
 var (
@@ -70,10 +69,14 @@ func main() {
 
 	// prepare and add flags
 	executor := cli.PrepareBaseCmd(rootCmd, "BAND", app.DefaultNodeHome)
-	rootCmd.PersistentFlags().String(flagWithDB, "", "[Experimental] Flush blockchain state to SQL database")
-	rootCmd.PersistentFlags().Int64(flagUptimeLookBackDuration, 1000, "[Experimental] Historical node uptime lookback duration")
-	rootCmd.PersistentFlags().UintVar(&invCheckPeriod, flagInvCheckPeriod,
-		0, "Assert registered invariants every N blocks")
+
+	rootCmd.PersistentFlags().UintVar(
+		&invCheckPeriod, flagInvCheckPeriod, 0, "Assert registered invariants every N blocks",
+	)
+	rootCmd.PersistentFlags().String(
+		flagWithDB, "", "[Experimental] Flush blockchain state to SQL database",
+	)
+
 	err := executor.Execute()
 	if err != nil {
 		panic(err)
@@ -86,10 +89,7 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 		if len(dbSplit) != 2 {
 			panic("Invalid DB string format")
 		}
-		metadata := map[string]string{
-			banddb.KeyUptimeLookBackDuration: viper.GetString(flagUptimeLookBackDuration),
-		}
-		bandDB, err := banddb.NewDB(dbSplit[0], dbSplit[1], metadata)
+		bandDB, err := banddb.NewDB(dbSplit[0], dbSplit[1])
 		if err != nil {
 			panic(err)
 		}
