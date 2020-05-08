@@ -24,7 +24,7 @@ let makeBadge = (name, length, color1, color2) =>
 [@react.component]
 let make = (~msg: TxSub.Msg.t, ~width: int) => {
   switch (msg) {
-  | Send({fromAddress, toAddress, amount}) =>
+  | SendMsg({fromAddress, toAddress, amount}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=fromAddress /> </div>
       <div className={Styles.withBg(Colors.blue1, 40)}>
@@ -56,7 +56,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
       </div>
       <div className={Styles.withWidth(width / 3)}> <AddressRender address=toAddress /> </div>
     </div>
-  | CreateDataSource({id, sender, name}) =>
+  | CreateDataSourceMsg({id, sender, name}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
       <div className={Styles.withBg(Colors.yellow1, 110)}>
@@ -79,7 +79,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         ellipsis=true
       />
     </div>
-  | EditDataSource({id, sender, name}) =>
+  | EditDataSourceMsg({id, sender, name}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
       <div className={Styles.withBg(Colors.yellow1, 100)}>
@@ -102,7 +102,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         ellipsis=true
       />
     </div>
-  | CreateOracleScript({id, sender, name}) =>
+  | CreateOracleScriptMsg({id, sender, name}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
       <div className={Styles.withBg(Colors.pink1, 120)}>
@@ -127,7 +127,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         />
       </div>
     </div>
-  | EditOracleScript({id, sender, name}) =>
+  | EditOracleScriptMsg({id, sender, name}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
       <div className={Styles.withBg(Colors.pink1, 110)}>
@@ -152,7 +152,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         />
       </div>
     </div>
-  | Request({id, oracleScriptID, oracleScriptName, sender}) =>
+  | RequestMsg({id, oracleScriptID, oracleScriptName, sender}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
       <div className={Styles.withBg(Colors.orange1, 60)}>
@@ -179,7 +179,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         ellipsis=true
       />
     </div>
-  | Report({requestID, reporter}) =>
+  | ReportMsg({requestID, reporter}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(140)}> <AddressRender address=reporter /> </div>
       <div className={Styles.withBg(Colors.orange1, 50)}>
@@ -195,7 +195,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
       <HSpacing size=Spacing.sm />
       <TypeID.Request id=requestID />
     </div>
-  | AddOracleAddress({validator, reporter}) =>
+  | AddOracleAddressMsg({validator, reporter}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=validator /> </div>
       <div className={Styles.withBg(Colors.purple1, 114)}>
@@ -210,7 +210,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
       <HSpacing size=Spacing.sm />
       <div className={Styles.withWidth(120)}> <AddressRender address=reporter /> </div>
     </div>
-  | RemoveOracleAddress({validator, reporter}) =>
+  | RemoveOracleAddressMsg({validator, reporter}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=validator /> </div>
       <div className={Styles.withBg(Colors.purple1, 133)}>
@@ -225,7 +225,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
       <HSpacing size=Spacing.sm />
       <div className={Styles.withWidth(120)}> <AddressRender address=reporter /> </div>
     </div>
-  | CreateValidator({delegatorAddress, moniker}) =>
+  | CreateValidatorMsg({delegatorAddress, moniker}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=delegatorAddress /> </div>
       <div className={Styles.withBg(Colors.purple1, 97)}>
@@ -250,7 +250,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         />
       </div>
     </div>
-  | EditValidator({sender, moniker}) =>
+  | EditValidatorMsg({sender, moniker}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
       <div className={Styles.withBg(Colors.purple1, 85)}>
@@ -275,7 +275,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         />
       </div>
     </div>
-  | CreateClient({address, clientID, chainID}) =>
+  | CreateClientMsg({address, clientID, chainID}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address /> </div>
       <div className={Styles.withBg(Colors.blue1, 85)}>
@@ -308,7 +308,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         ellipsis=true
       />
     </div>
-  | UpdateClient({address, clientID, chainID}) =>
+  | UpdateClientMsg({address, clientID, chainID}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address /> </div>
       <div className={Styles.withBg(Colors.blue1, 85)}>
@@ -341,7 +341,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         ellipsis=true
       />
     </div>
-  | SubmitClientMisbehaviour({address, clientID, chainID}) =>
+  | SubmitClientMisbehaviourMsg({address, clientID, chainID}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address /> </div>
       <div className={Styles.withBg(Colors.blue1, 85)}>
@@ -374,7 +374,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         ellipsis=true
       />
     </div>
-  | ConnectionOpenInit({signer, common: {connectionID, chainID}}) =>
+  | ConnectionOpenInitMsg({signer, common: {connectionID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
       <div className={Styles.withBg(Colors.blue1, 140)}>
@@ -407,7 +407,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         ellipsis=true
       />
     </div>
-  | ConnectionOpenTry({signer, common: {connectionID, chainID}}) =>
+  | ConnectionOpenTryMsg({signer, common: {connectionID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
       <div className={Styles.withBg(Colors.blue1, 120)}>
@@ -440,7 +440,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         ellipsis=true
       />
     </div>
-  | ConnectionOpenAck({signer, common: {connectionID, chainID}}) =>
+  | ConnectionOpenAckMsg({signer, common: {connectionID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
       <div className={Styles.withBg(Colors.blue1, 130)}>
@@ -473,7 +473,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         ellipsis=true
       />
     </div>
-  | ConnectionOpenConfirm({signer, common: {connectionID, chainID}}) =>
+  | ConnectionOpenConfirmMsg({signer, common: {connectionID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
       <div className={Styles.withBg(Colors.blue1, 140)}>
@@ -506,7 +506,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         ellipsis=true
       />
     </div>
-  | ChannelOpenInit({signer, common: {channelID, chainID}}) =>
+  | ChannelOpenInitMsg({signer, common: {channelID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
       <div className={Styles.withBg(Colors.blue1, 100)}>
@@ -539,7 +539,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         ellipsis=true
       />
     </div>
-  | ChannelOpenTry({signer, common: {channelID, chainID}}) =>
+  | ChannelOpenTryMsg({signer, common: {channelID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
       <div className={Styles.withBg(Colors.blue1, 100)}>
@@ -572,7 +572,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         ellipsis=true
       />
     </div>
-  | ChannelOpenAck({signer, common: {channelID, chainID}}) =>
+  | ChannelOpenAckMsg({signer, common: {channelID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
       <div className={Styles.withBg(Colors.blue1, 100)}>
@@ -605,7 +605,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         ellipsis=true
       />
     </div>
-  | ChannelOpenConfirm({signer, common: {channelID, chainID}}) =>
+  | ChannelOpenConfirmMsg({signer, common: {channelID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
       <div className={Styles.withBg(Colors.blue1, 130)}>
@@ -638,7 +638,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         ellipsis=true
       />
     </div>
-  | ChannelCloseInit({signer, common: {channelID, chainID}}) =>
+  | ChannelCloseInitMsg({signer, common: {channelID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
       <div className={Styles.withBg(Colors.blue1, 85)}>
@@ -671,7 +671,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         ellipsis=true
       />
     </div>
-  | ChannelCloseConfirm({signer, common: {channelID, chainID}}) =>
+  | ChannelCloseConfirmMsg({signer, common: {channelID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
       <div className={Styles.withBg(Colors.blue1, 100)}>
@@ -704,7 +704,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         ellipsis=true
       />
     </div>
-  | Packet({sender, data, common: {chainID}}) =>
+  | PacketMsg({sender, data, common: {chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
       <div className={Styles.withBg(Colors.blue1, 50)}>
@@ -741,7 +741,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         ellipsis=true
       />
     </div>
-  | Timeout({sender, common: {chainID}}) =>
+  | TimeoutMsg({sender, common: {chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
       <div className={Styles.withBg(Colors.blue1, 85)}>
@@ -774,7 +774,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         ellipsis=true
       />
     </div>
-  | Delegate({amount, delegatorAddress}) =>
+  | DelegateMsg({amount, delegatorAddress}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=delegatorAddress /> </div>
       <div className={Styles.withBg(Colors.purple1, 60)}>
@@ -798,7 +798,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
       </div>
     </div>
-  | Undelegate({amount, delegatorAddress}) =>
+  | UndelegateMsg({amount, delegatorAddress}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=delegatorAddress /> </div>
       <div className={Styles.withBg(Colors.purple1, 73)}>
@@ -822,7 +822,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
       </div>
     </div>
-  | Redelegate({amount, delegatorAddress}) =>
+  | RedelegateMsg({amount, delegatorAddress}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=delegatorAddress /> </div>
       <div className={Styles.withBg(Colors.purple1, 73)}>
@@ -846,7 +846,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
       </div>
     </div>
-  | WithdrawReward({delegatorAddress, amount}) =>
+  | WithdrawRewardMsg({delegatorAddress, amount}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=delegatorAddress /> </div>
       <div className={Styles.withBg(Colors.purple1, 100)}>
@@ -870,7 +870,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
       </div>
     </div>
-  | Unjail({address}) =>
+  | UnjailMsg({address}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address /> </div>
       <div className={Styles.withBg(Colors.blue1, 50)}>
@@ -884,7 +884,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
       </div>
       <div className={Styles.withWidth(300)}> <AddressRender address validator=true /> </div>
     </div>
-  | SetWithdrawAddress({delegatorAddress, withdrawAddress}) =>
+  | SetWithdrawAddressMsg({delegatorAddress, withdrawAddress}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=delegatorAddress /> </div>
       <div className={Styles.withBg(Colors.purple1, 130)}>
@@ -900,7 +900,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         <AddressRender address=withdrawAddress />
       </div>
     </div>
-  | SubmitProposal({proposer, title}) =>
+  | SubmitProposalMsg({proposer, title}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=proposer /> </div>
       <div className={Styles.withBg(Colors.blue1, 100)}>
@@ -916,7 +916,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         <Text value=title weight=Text.Regular code=true nowrap=true block=true />
       </div>
     </div>
-  | Deposit({depositor, amount, proposalID}) =>
+  | DepositMsg({depositor, amount, proposalID}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=depositor /> </div>
       <div className={Styles.withBg(Colors.blue1, 50)}>
@@ -952,7 +952,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         </div>
       </div>
     </div>
-  | Vote({voterAddress, proposalID, option}) =>
+  | VoteMsg({voterAddress, proposalID, option}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=voterAddress /> </div>
       <div className={Styles.withBg(Colors.blue1, 40)}>
@@ -978,7 +978,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         />
       </div>
     </div>
-  | WithdrawCommission({validatorAddress, amount}) =>
+  | WithdrawCommissionMsg({validatorAddress, amount}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=validatorAddress /> </div>
       <div className={Styles.withBg(Colors.purple1, 130)}>
@@ -1002,7 +1002,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
       </div>
     </div>
-  | MultiSend({inputs, outputs}) =>
+  | MultiSendMsg({inputs, outputs}) =>
     let firstInput = inputs |> Belt_List.getExn(_, 0);
     let firstSender = firstInput.address;
     <div className={Styles.rowWithWidth(width)}>
@@ -1028,64 +1028,64 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         <Text value="Outputs" />
       </div>
     </div>;
-  | FailMessage({sender, message}) =>
+  | FailMsg({sender, message}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
       {switch (message) {
-       | "send" => makeBadge("SEND", 40, Colors.blue1, Colors.blue7)
-       | "create_data_source" =>
+       | SendBadge => makeBadge("SEND", 40, Colors.blue1, Colors.blue7)
+       | CreateDataSourceBadge =>
          makeBadge("CREATE DATASOURCE", 110, Colors.yellow1, Colors.yellow6)
-       | "edit_data_source" => makeBadge("EDIT DATASOURCE", 100, Colors.yellow1, Colors.yellow6)
-       | "create_oracle_script" =>
+       | EditDataSourceBadge => makeBadge("EDIT DATASOURCE", 100, Colors.yellow1, Colors.yellow6)
+       | CreateOracleScriptBadge =>
          makeBadge("CREATE ORACLE SCRIPT", 120, Colors.pink1, Colors.pink6)
-       | "edit_oracle_script" => makeBadge("EDIT ORACLE SCRIPT", 110, Colors.pink1, Colors.pink6)
-       | "request" => makeBadge("REQUEST", 60, Colors.orange1, Colors.orange6)
-       | "report" => makeBadge("REPORT", 50, Colors.orange1, Colors.orange6)
-       | "add_oracle_address" =>
+       | EditOracleScriptBadge => makeBadge("EDIT ORACLE SCRIPT", 110, Colors.pink1, Colors.pink6)
+       | RequestBadge => makeBadge("REQUEST", 60, Colors.orange1, Colors.orange6)
+       | ReportBadge => makeBadge("REPORT", 50, Colors.orange1, Colors.orange6)
+       | AddOracleAddressBadge =>
          makeBadge("ADD ORACLE ADDRESS", 114, Colors.purple1, Colors.purple6)
-       | "remove_oracle_address" =>
+       | RemoveOracleAddressBadge =>
          makeBadge("REMOVE ORACLE ADDRESS", 133, Colors.purple1, Colors.purple6)
-       | "create_validator" => makeBadge("CREATE VALIDATOR", 97, Colors.purple1, Colors.purple6)
-       | "edit_validator" => makeBadge("EDIT VALIDATOR", 85, Colors.purple1, Colors.purple6)
-       | "create_client" => makeBadge("CREATE CLIENT", 85, Colors.blue1, Colors.blue7)
-       | "update_client" => makeBadge("UPDATE CLIENT", 85, Colors.blue1, Colors.blue7)
-       | "submit_client_behaviour" =>
+       | CreateValidatorBadge => makeBadge("CREATE VALIDATOR", 97, Colors.purple1, Colors.purple6)
+       | EditValidatorBadge => makeBadge("EDIT VALIDATOR", 85, Colors.purple1, Colors.purple6)
+       | CreateClientBadge => makeBadge("CREATE CLIENT", 85, Colors.blue1, Colors.blue7)
+       | UpdateClientBadge => makeBadge("UPDATE CLIENT", 85, Colors.blue1, Colors.blue7)
+       | SubmitClientMisbehaviourBadge =>
          makeBadge("SUBMIT CLIENT BEHAVIOUR", 140, Colors.blue1, Colors.blue7)
-       | "connection_open_init" =>
+       | ConnectionOpenInitBadge =>
          makeBadge("CONNECTION OPEN INIT", 140, Colors.blue1, Colors.blue7)
-       | "connection_open_try" =>
+       | ConnectionOpenTryBadge =>
          makeBadge("CONNECTION OPEN TRY", 130, Colors.blue1, Colors.blue7)
-       | "connection_open_ack" =>
+       | ConnectionOpenAckBadge =>
          makeBadge("CONNECTION OPEN ACK", 130, Colors.blue1, Colors.blue7)
-       | "connection_open_confirm" =>
+       | ConnectionOpenConfirmBadge =>
          makeBadge("CONNECTION OPEN CONFIRM ", 140, Colors.blue1, Colors.blue7)
-       | "channel_open_init" => makeBadge("CHANNEL OPEN INIT", 100, Colors.blue1, Colors.blue7)
-       | "channel_open_try" => makeBadge("CHANNEL OPEN TRY", 100, Colors.blue1, Colors.blue7)
-       | "channel_open_ack" => makeBadge("CHANNEL OPEN ACK", 100, Colors.blue1, Colors.blue7)
-       | "channel_open_confirm" =>
+       | ChannelOpenInitBadge => makeBadge("CHANNEL OPEN INIT", 100, Colors.blue1, Colors.blue7)
+       | ChannelOpenTryBadge => makeBadge("CHANNEL OPEN TRY", 100, Colors.blue1, Colors.blue7)
+       | ChannelOpenAckBadge => makeBadge("CHANNEL OPEN ACK", 100, Colors.blue1, Colors.blue7)
+       | ChannelOpenConfirmBadge =>
          makeBadge("CHANNEL OPEN CONFIRM", 130, Colors.blue1, Colors.blue7)
-       | "channel_close_init" => makeBadge("CHANNEL CLOSE INIT", 85, Colors.blue1, Colors.blue7)
-       | "channel_close_confirm" =>
+       | ChannelCloseInitBadge => makeBadge("CHANNEL CLOSE INIT", 85, Colors.blue1, Colors.blue7)
+       | ChannelCloseConfirmBadge =>
          makeBadge("CHANNEL CLOSE CONFIRM", 100, Colors.blue1, Colors.blue7)
-       | "ics04/opaque" => makeBadge("PACKET", 50, Colors.blue1, Colors.blue7)
-       | "ics04/timeout" => makeBadge("TIMEOUT", 50, Colors.blue1, Colors.blue7)
-       | "delegate" => makeBadge("DELEGATE", 60, Colors.purple1, Colors.purple6)
-       | "begin_unbonding" => makeBadge("UNDELEGATE", 73, Colors.purple1, Colors.purple6)
-       | "begin_redelegate" => makeBadge("REDELEGATE", 73, Colors.purple1, Colors.purple6)
-       | "withdraw_delegator_reward" =>
-         makeBadge("WITHDRAW REWARD", 100, Colors.purple1, Colors.purple6)
-       | "set_withdraw_reward" =>
+       | PacketBadge => makeBadge("PACKET", 50, Colors.blue1, Colors.blue7)
+       | AcknowledgementBadge => makeBadge("ACKNOWLEDGEMENT", 100, Colors.blue1, Colors.blue7)
+       | TimeoutBadge => makeBadge("TIMEOUT", 50, Colors.blue1, Colors.blue7)
+       | DelegateBadge => makeBadge("DELEGATE", 60, Colors.purple1, Colors.purple6)
+       | UndelegateBadge => makeBadge("UNDELEGATE", 73, Colors.purple1, Colors.purple6)
+       | RedelegateBadge => makeBadge("REDELEGATE", 73, Colors.purple1, Colors.purple6)
+       | WithdrawRewardBadge => makeBadge("WITHDRAW REWARD", 100, Colors.purple1, Colors.purple6)
+       | SetWithdrawAddressBadge =>
          makeBadge("SET WITHDRAW ADDRESS", 170, Colors.purple1, Colors.purple6)
-       | "submit_proposal" => makeBadge("SUBMIT PROPOSAL", 100, Colors.blue1, Colors.blue7)
-       | "deposit" => makeBadge("DEPOSIT", 50, Colors.blue1, Colors.blue7)
-       | "unjail" => makeBadge("UNJAIL", 130, Colors.blue1, Colors.blue7)
-       | "vote" => makeBadge("VOTE", 40, Colors.blue1, Colors.blue7)
-       | "withdraw_validator_commission" =>
+       | SubmitProposalBadge => makeBadge("SUBMIT PROPOSAL", 100, Colors.blue1, Colors.blue7)
+       | DepositBadge => makeBadge("DEPOSIT", 50, Colors.blue1, Colors.blue7)
+       | UnjailBadge => makeBadge("UNJAIL", 130, Colors.blue1, Colors.blue7)
+       | VoteBadge => makeBadge("VOTE", 40, Colors.blue1, Colors.blue7)
+       | WithdrawCommissionBadge =>
          makeBadge("WITHDRAW COMMISSION", 100, Colors.purple1, Colors.purple6)
-       | "multisend" => makeBadge("MULTI SEND", 70, Colors.blue1, Colors.blue7)
-       | _ => makeBadge("UNKNOWN", 70, Colors.gray1, Colors.gray6)
+       | MultiSendBadge => makeBadge("MULTI SEND", 70, Colors.blue1, Colors.blue7)
+       | UnknownBadge => makeBadge("UNKNOWN", 70, Colors.gray1, Colors.gray6)
        }}
     </div>
-  | Unknown => React.null
+  | UnknownMsg => React.null
   };
 };
