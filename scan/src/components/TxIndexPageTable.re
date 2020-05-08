@@ -647,6 +647,7 @@ let renderConnectionVariant = (msg: TxSub.Msg.t, common: TxSub.Msg.ConnectionCom
        <>
          <div className=Styles.topicContainer>
            <Text value="CLIENT ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+           <Text value=clientID code=true />
          </div>
        </>
      | _ => React.null
@@ -991,7 +992,7 @@ let renderFailMessage = () => {
 };
 
 let renderUnknownMessage = () => {
-    <Col size=Styles.thirdCol alignSelf=Col.Start>
+  <Col size=Styles.thirdCol alignSelf=Col.Start>
     <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
       <Text value="UNKNOWN MESSAGE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
@@ -1041,7 +1042,7 @@ let renderBody = (msg: TxSub.Msg.t) => {
   | VoteMsg(vote) => renderVote(vote)
   | MultiSendMsg(tx) => renderMultiSend(tx)
   | FailMsg(_) => renderFailMessage()
-  | _ => renderUnknownMessage()
+  | UnknownMsg => renderUnknownMessage()
   };
 };
 
