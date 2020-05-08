@@ -27,8 +27,6 @@ const (
 	flagCallFee       = "call-fee"
 	flagOwner         = "owner"
 	flagCalldata      = "calldata"
-	flagAskCount      = "requested-validator-count"
-	flagMinCount      = "sufficient-validator-count"
 	flagClientID      = "client-id"
 	flagSchema        = "schema"
 	flagSourceCodeURL = "url"
@@ -60,14 +58,14 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 // GetCmdRequest implements the request command handler.
 func GetCmdRequest(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "request [oracle-script-id] (-c [calldata]) (-r [requested-validator-count]) (-v [sufficient-validator-count]) (-m [client-id])",
+		Use:   "request [oracle-script-id] [ask-count] [min-count] (-c [calldata]) (-m [client-id])",
 		Short: "Make a new data request via an existing oracle script",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(3),
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Make a new request via an existing oracle script with the configuration flags.
 Example:
-$ %s tx oracle request 1 -c 1234abcdef -r 4 -v 3 -x 20 -m client-id --from mykey
-$ %s tx oracle request 1 --calldata 1234abcdef --requested-validator-count 4 --sufficient-validator-count 3 --client-id cliend-id --from mykey
+$ %s tx oracle request 1 4 3 -c 1234abcdef -x 20 -m client-id --from mykey
+$ %s tx oracle request 1 4 3 --calldata 1234abcdef --client-id cliend-id --from mykey
 `,
 				version.ClientName, version.ClientName,
 			),
@@ -83,17 +81,17 @@ $ %s tx oracle request 1 --calldata 1234abcdef --requested-validator-count 4 --s
 			}
 			oracleScriptID := types.OracleScriptID(int64OracleScriptID)
 
+			askCount, err := strconv.ParseInt(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			minCount, err := strconv.ParseInt(args[2], 10, 64)
+			if err != nil {
+				return err
+			}
+
 			calldata, err := cmd.Flags().GetBytesHex(flagCalldata)
-			if err != nil {
-				return err
-			}
-
-			askCount, err := cmd.Flags().GetInt64(flagAskCount)
-			if err != nil {
-				return err
-			}
-
-			minCount, err := cmd.Flags().GetInt64(flagMinCount)
 			if err != nil {
 				return err
 			}
@@ -122,10 +120,6 @@ $ %s tx oracle request 1 --calldata 1234abcdef --requested-validator-count 4 --s
 	}
 
 	cmd.Flags().BytesHexP(flagCalldata, "c", nil, "Calldata used in calling the oracle script")
-	cmd.Flags().Int64P(flagAskCount, "r", 0, "Number of top validators that need to report data for this request")
-	cmd.MarkFlagRequired(flagAskCount)
-	cmd.Flags().Int64P(flagMinCount, "v", 0, "Minimum number of reports sufficient to conclude the request's result")
-	cmd.MarkFlagRequired(flagMinCount)
 	cmd.Flags().StringP(flagClientID, "m", "", "Requester can match up the request with response by clientID")
 
 	return cmd
