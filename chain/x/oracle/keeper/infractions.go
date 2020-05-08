@@ -13,6 +13,16 @@ import (
 func (k Keeper) HandleValidatorReport(ctx sdk.Context, requestID types.RequestID, address sdk.ValAddress, reported bool) {
 	logger := k.Logger(ctx)
 
+	// If validator not found or has been jailed, we will freeze his stat before jail.
+	// This assumption help validator to be jailed again when node up.
+	validator := k.StakingKeeper.Validator(ctx, address)
+	if validator == nil || validator.IsJailed() {
+		// Validator was (a) not found or (b) already jailed
+		logger.Info(
+			fmt.Sprintf("Validator %s missed report, but was either not found in store or already jailed", address),
+		)
+		return
+	}
 	// fetch report info
 	reportInfo := k.MustGetValidatorReportInfo(ctx, address)
 
@@ -65,38 +75,28 @@ func (k Keeper) HandleValidatorReport(ctx sdk.Context, requestID types.RequestID
 
 	// if we are past the window request and the validator has missed too many blocks, punish them
 	if reportInfo.IsFullTime && reportInfo.MissedReportsCounter > maxMissed {
-		validator := k.StakingKeeper.Validator(ctx, address)
-		if validator != nil && !validator.IsJailed() {
+		// Downtime confirmed: jail the validator
+		logger.Info(fmt.Sprintf("Validator %s missed report more than %d",
+			address, minReport))
 
-			// Downtime confirmed: jail the validator
-			logger.Info(fmt.Sprintf("Validator %s missed report more than %d",
-				address, minReport))
+		consAddr := validator.GetConsAddr()
 
-			consAddr := validator.GetConsAddr()
+		// Emit slash to notify jailed event
+		ctx.EventManager().EmitEvent(
+			sdk.NewEvent(
+				slashing.EventTypeSlash,
+				sdk.NewAttribute(slashing.AttributeKeyJailed, consAddr.String()),
+			),
+		)
 
-			// Emit slash to notify jailed event
-			ctx.EventManager().EmitEvent(
-				sdk.NewEvent(
-					slashing.EventTypeSlash,
-					sdk.NewAttribute(slashing.AttributeKeyJailed, consAddr.String()),
-				),
-			)
+		k.StakingKeeper.Jail(ctx, consAddr)
 
-			k.StakingKeeper.Jail(ctx, consAddr)
-
-			// We need to reset the counter & array so that the validator won't be immediately slashed for downtime upon rebonding.
-			reportInfo.MissedReportsCounter = 0
-			reportInfo.IndexOffset = 0
-			reportInfo.IsFullTime = false
-			k.clearValidatorMissedReportBitArray(ctx, address)
-		} else {
-			// Validator was (a) not found or (b) already jailed, don't slash
-			logger.Info(
-				fmt.Sprintf("Validator %s would have been slashed for downtime, but was either not found in store or already jailed", address),
-			)
-		}
+		// We need to reset the counter & array so that the validator won't be immediately slashed for downtime upon rebonding.
+		reportInfo.MissedReportsCounter = 0
+		reportInfo.IndexOffset = 0
+		reportInfo.IsFullTime = false
+		k.clearValidatorMissedReportBitArray(ctx, address)
 	}
-
 	// Set the updated report info
 	k.SetValidatorReportInfo(ctx, address, reportInfo)
 }

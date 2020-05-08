@@ -52,6 +52,8 @@ func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorU
 	k.SetParam(ctx, KeyExpirationBlockCount, data.Params.ExpirationBlockCount)
 	k.SetParam(ctx, KeyExecuteGas, data.Params.ExecuteGas)
 	k.SetParam(ctx, KeyPrepareGas, data.Params.PrepareGas)
+	k.SetParam(ctx, KeyReportedWindow, data.Params.ReportedWindow)
+	k.SetParam(ctx, KeyMinReportedPerWindow, data.Params.MinReportedPerWindow)
 
 	for _, dataSource := range data.DataSources {
 		_, err := k.AddDataSource(ctx, types.NewDataSource(

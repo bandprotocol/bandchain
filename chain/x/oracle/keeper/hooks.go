@@ -1,8 +1,6 @@
 package keeper
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
@@ -10,7 +8,6 @@ import (
 
 func (k Keeper) AfterValidatorBonded(ctx sdk.Context, _ sdk.ConsAddress, address sdk.ValAddress) {
 	// Create a new report info if not existed.
-	fmt.Println("DDDDDD")
 	found := k.HasValidatorReportInfo(ctx, address)
 	if !found {
 		reportInfo := types.NewValidatorReportInfo(

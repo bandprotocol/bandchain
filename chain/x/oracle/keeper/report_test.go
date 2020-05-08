@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"testing"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
@@ -323,3 +324,148 @@ func TestHasReport(t *testing.T) {
 // // 	}
 // // 	require.Equal(t, 2, i)
 // // }
+
+func TestUpdateReportInfos(t *testing.T) {
+	_, ctx, k := createTestInput()
+
+	ctx = ctx.WithBlockHeight(100)
+	request := types.NewRequest(
+		types.OracleScriptID(1), []byte("calldata"),
+		[]sdk.ValAddress{Validator1.ValAddress, Validator2.ValAddress},
+		2, 100, 100, "test", nil,
+	)
+	k.SetRequest(ctx, types.RequestID(1), request)
+
+	// 2 Validators report
+	k.SetReport(ctx, types.RequestID(1), types.NewReport(
+		Validator1.ValAddress, []types.RawReport{},
+	))
+
+	k.SetReport(ctx, types.RequestID(1), types.NewReport(
+		Validator2.ValAddress, []types.RawReport{},
+	))
+
+	// Update report info
+	k.UpdateReportInfos(ctx, types.RequestID(1))
+	cases := []struct {
+		validator account
+		info      types.ValidatorReportInfo
+	}{
+		{Validator1, types.NewValidatorReportInfo(Validator1.ValAddress, false, 1, 0)},
+		{Validator2, types.NewValidatorReportInfo(Validator2.ValAddress, false, 1, 0)},
+	}
+	for _, tc := range cases {
+		info, err := k.GetValidatorReportInfo(ctx, tc.validator.ValAddress)
+		require.Nil(t, err)
+		require.Equal(t, info, tc.info)
+	}
+
+	k.SetRequest(ctx, types.RequestID(2), request)
+
+	// Only Validator1 report
+	k.SetReport(ctx, types.RequestID(2), types.NewReport(
+		Validator1.ValAddress, []types.RawReport{},
+	))
+
+	// Update report info
+	k.UpdateReportInfos(ctx, types.RequestID(2))
+	cases = []struct {
+		validator account
+		info      types.ValidatorReportInfo
+	}{
+		{Validator1, types.NewValidatorReportInfo(Validator1.ValAddress, false, 2, 0)},
+		{Validator2, types.NewValidatorReportInfo(Validator2.ValAddress, false, 2, 1)},
+	}
+	for _, tc := range cases {
+		info, err := k.GetValidatorReportInfo(ctx, tc.validator.ValAddress)
+		require.Nil(t, err)
+		require.Equal(t, info, tc.info)
+	}
+
+	k.SetRequest(ctx, types.RequestID(3), request)
+	// Only Validator2 report
+	k.SetReport(ctx, types.RequestID(3), types.NewReport(
+		Validator2.ValAddress, []types.RawReport{},
+	))
+
+	// Update report info
+	k.UpdateReportInfos(ctx, types.RequestID(3))
+	cases = []struct {
+		validator account
+		info      types.ValidatorReportInfo
+	}{
+		{Validator1, types.NewValidatorReportInfo(Validator1.ValAddress, false, 3, 1)},
+		{Validator2, types.NewValidatorReportInfo(Validator2.ValAddress, false, 3, 1)},
+	}
+	for _, tc := range cases {
+		info, err := k.GetValidatorReportInfo(ctx, tc.validator.ValAddress)
+		require.Nil(t, err)
+		require.Equal(t, info, tc.info)
+	}
+
+	k.SetRequest(ctx, types.RequestID(4), request)
+	// Noone reports
+	k.UpdateReportInfos(ctx, types.RequestID(4))
+	cases = []struct {
+		validator account
+		info      types.ValidatorReportInfo
+	}{
+		{Validator1, types.NewValidatorReportInfo(Validator1.ValAddress, false, 4, 2)},
+		{Validator2, types.NewValidatorReportInfo(Validator2.ValAddress, false, 4, 2)},
+	}
+	for _, tc := range cases {
+		info, err := k.GetValidatorReportInfo(ctx, tc.validator.ValAddress)
+		require.Nil(t, err)
+		require.Equal(t, info, tc.info)
+	}
+}
+
+func TestGetJailedUpdateReportInfos(t *testing.T) {
+	app, ctx, k := createTestInput()
+	k.SetParam(ctx, types.KeyReportedWindow, 5)
+	k.SetParam(ctx, types.KeyMinReportedPerWindow, 2)
+
+	ctx = ctx.WithBlockHeight(100)
+	request := types.NewRequest(
+		types.OracleScriptID(1), []byte("calldata"),
+		[]sdk.ValAddress{Validator1.ValAddress, Validator2.ValAddress},
+		2, 100, 100, "test", nil,
+	)
+	k.SetRequest(ctx, types.RequestID(1), request)
+
+	// 2 Validators report
+	k.SetReport(ctx, types.RequestID(1), types.NewReport(
+		Validator1.ValAddress, []types.RawReport{},
+	))
+
+	k.SetReport(ctx, types.RequestID(1), types.NewReport(
+		Validator2.ValAddress, []types.RawReport{},
+	))
+	k.UpdateReportInfos(ctx, types.RequestID(1))
+
+	// Validator2 reported downed
+	for i := 2; i <= 5; i++ {
+		k.SetRequest(ctx, types.RequestID(i), request)
+		k.SetReport(ctx, types.RequestID(i), types.NewReport(
+			Validator1.ValAddress, []types.RawReport{},
+		))
+		k.UpdateReportInfos(ctx, types.RequestID(i))
+	}
+
+	cases := []struct {
+		validator account
+		info      types.ValidatorReportInfo
+		jailed    bool
+	}{
+		{Validator1, types.NewValidatorReportInfo(Validator1.ValAddress, true, 5, 0), false},
+		{Validator2, types.NewValidatorReportInfo(Validator2.ValAddress, false, 0, 0), true},
+	}
+	for _, tc := range cases {
+		info, err := k.GetValidatorReportInfo(ctx, tc.validator.ValAddress)
+		require.Nil(t, err)
+		require.Equal(t, info, tc.info)
+		validator := app.StakingKeeper.Validator(ctx, tc.validator.ValAddress)
+		require.Equal(t, tc.jailed, validator.IsJailed())
+	}
+
+}

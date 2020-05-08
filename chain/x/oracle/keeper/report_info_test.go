@@ -25,6 +25,8 @@ func TestGetSetValidatorReportInfo(t *testing.T) {
 	require.False(t, info.IsFullTime)
 	require.Equal(t, info.IndexOffset, uint64(3))
 	require.Equal(t, info.MissedReportsCounter, uint64(10))
+
+	require.Panics(t, func() { k.MustGetValidatorReportInfo(ctx, Bob.ValAddress) })
 }
 
 func TestGetSetValidatorMissedBlockBitArray(t *testing.T) {
@@ -35,4 +37,8 @@ func TestGetSetValidatorMissedBlockBitArray(t *testing.T) {
 	k.SetValidatorMissedReportBitArray(ctx, Alice.ValAddress, 0, true)
 	missed = k.GetValidatorMissedReportBitArray(ctx, Alice.ValAddress, 0)
 	require.True(t, missed) // now should be missed
+
+	k.SetValidatorMissedReportBitArray(ctx, Alice.ValAddress, 0, false)
+	missed = k.GetValidatorMissedReportBitArray(ctx, Alice.ValAddress, 0)
+	require.False(t, missed) // now should be not missed
 }

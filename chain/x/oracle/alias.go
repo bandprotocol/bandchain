@@ -78,6 +78,8 @@ var (
 	KeyExpirationBlockCount             = types.KeyExpirationBlockCount
 	KeyExecuteGas                       = types.KeyExecuteGas
 	KeyPrepareGas                       = types.KeyPrepareGas
+	KeyReportedWindow                   = types.KeyReportedWindow
+	KeyMinReportedPerWindow             = types.KeyMinReportedPerWindow
 
 	QueryRequestByID    = types.QueryRequestByID
 	QueryRequests       = types.QueryRequests
