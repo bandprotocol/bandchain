@@ -85,7 +85,7 @@ func (k Keeper) ResolveRequest(
 	request := k.MustGetRequest(ctx, id)
 	req := types.NewOracleRequestPacketData(
 		request.ClientID, request.OracleScriptID,
-		hex.EncodeToString(request.Calldata), request.SufficientValidatorCount,
+		hex.EncodeToString(request.Calldata), request.MinCount,
 		int64(len(request.RequestedValidators)),
 	)
 	res := types.NewOracleResponsePacketData(
@@ -148,7 +148,7 @@ func (k Keeper) ProcessExpiredRequests(ctx sdk.Context) {
 		}
 		// If the number of reports still doesn't reach the minimum, that means this request
 		// is never resolved. Here we process the response as EXPIRED.
-		if k.GetReportCount(ctx, currentReqID) < request.SufficientValidatorCount {
+		if k.GetReportCount(ctx, currentReqID) < request.MinCount {
 			res := k.ResolveRequest(ctx, currentReqID, types.ResolveStatus_Expired, nil)
 			if request.IBC != nil {
 				k.SendOracleResponse(ctx, request.IBC.SourcePort, request.IBC.SourceChannel, res)

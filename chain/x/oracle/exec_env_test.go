@@ -25,7 +25,7 @@ func TestNewExecEnv(t *testing.T) {
 	_ = NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
 }
 
-func TestGetRequestedValidatorCount(t *testing.T) {
+func TestGetAskCount(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
 	keeper.SetRequest(ctx, 1, types.NewRequest(
 		1, []byte("calldata"),
@@ -34,10 +34,10 @@ func TestGetRequestedValidatorCount(t *testing.T) {
 	))
 
 	env := NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
-	require.Equal(t, int64(2), env.GetRequestedValidatorCount())
+	require.Equal(t, int64(2), env.GetAskCount())
 }
 
-func TestGetSufficientValidatorCount(t *testing.T) {
+func TestGetMinCount(t *testing.T) {
 	ctx, keeper := keep.CreateTestInput(t, false)
 	keeper.SetRequest(ctx, 1, types.NewRequest(
 		1, []byte("calldata"),
@@ -51,10 +51,10 @@ func TestGetSufficientValidatorCount(t *testing.T) {
 	))
 
 	env := NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
-	require.Equal(t, int64(3), env.GetSufficientValidatorCount())
+	require.Equal(t, int64(3), env.GetMinCount())
 }
 
-// func TestGetReceivedValidatorCount(t *testing.T) {
+// func TestGetAnsCount(t *testing.T) {
 // 	ctx, keeper := keep.CreateTestInput(t, false)
 // 	keeper.SetRequest(ctx, 1, types.NewRequest(
 // 		1, []byte("calldata"),
@@ -63,12 +63,12 @@ func TestGetSufficientValidatorCount(t *testing.T) {
 // 	))
 
 // 	env := NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
-// 	require.Equal(t, int64(0), env.GetReceivedValidatorCount())
+// 	require.Equal(t, int64(0), env.GetAnsCount())
 
 // 	keeper.AddReport(ctx, 1, types.NewReport(sdk.ValAddress([]byte("val1")), []types.RawReport{}))
 
 // 	env = NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
-// 	require.Equal(t, int64(1), env.GetReceivedValidatorCount())
+// 	require.Equal(t, int64(1), env.GetAnsCount())
 
 // }
 
@@ -98,7 +98,7 @@ func TestGetAggregateBlockTime(t *testing.T) {
 	err := keeper.AddReport(ctx, 1, types.NewReport(sdk.ValAddress([]byte("val1")), []types.RawReport{}))
 	require.Nil(t, err)
 
-	// After report is greater or equal SufficientValidatorCount, it will resolve in current block time.
+	// After report is greater or equal MinCount, it will resolve in current block time.
 	env = NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
 	env.SetReports(keeper.GetReports(ctx, 1))
 

@@ -70,7 +70,7 @@ func handleRequestLog(client *rpchttp.HTTP, key keyring.Info, log sdk.ABCIMessag
 
 	reports := make([]oracle.RawReport, 0)
 	// TODO: Parallelize the work to get data from each source.
-	for idx, _ := range dataSourceIDs {
+	for idx := range dataSourceIDs {
 		dataSourceID, err := strconv.Atoi(dataSourceIDs[idx])
 		if err != nil {
 			logger.Error(

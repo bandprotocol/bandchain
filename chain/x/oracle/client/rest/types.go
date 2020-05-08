@@ -13,17 +13,17 @@ type ReportDetail struct {
 }
 
 type RequestRESTInfo struct {
-	ID                       types.RequestID      `json:"id"`
-	OracleScriptID           types.OracleScriptID `json:"oracleScriptID"`
-	Calldata                 []byte               `json:"calldata"`
-	RequestedValidators      []sdk.ValAddress     `json:"requestedValidators"`
-	SufficientValidatorCount int64                `json:"sufficientValidatorCount"`
-	ResolveStatus            types.ResolveStatus  `json:"resolveStatus"`
-	Requester                sdk.AccAddress       `json:"requester"`
-	RequestTx                TxDetail             `json:"requestTx,omitempty"`
-	RawDataRequests          []types.RawRequest   `json:"rawDataRequests"`
-	Reports                  []ReportDetail       `json:"reports"`
-	Result                   []byte               `json:"result"`
+	ID                  types.RequestID      `json:"id"`
+	OracleScriptID      types.OracleScriptID `json:"oracleScriptID"`
+	Calldata            []byte               `json:"calldata"`
+	RequestedValidators []sdk.ValAddress     `json:"requestedValidators"`
+	MinCount            int64                `json:"minCount"`
+	ResolveStatus       types.ResolveStatus  `json:"resolveStatus"`
+	Requester           sdk.AccAddress       `json:"requester"`
+	RequestTx           TxDetail             `json:"requestTx,omitempty"`
+	RawDataRequests     []types.RawRequest   `json:"rawDataRequests"`
+	Reports             []ReportDetail       `json:"reports"`
+	Result              []byte               `json:"result"`
 }
 
 type TxDetail struct {

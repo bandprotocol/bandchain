@@ -9,21 +9,21 @@ func NewRequest(
 	oracleScriptID OracleScriptID,
 	calldata []byte,
 	requestedValidators []sdk.ValAddress,
-	sufficientValidatorCount int64,
+	minCount int64,
 	requestHeight int64,
 	requestTime int64,
 	clientID string,
 	ibc *RequestIBC,
 ) Request {
 	return Request{
-		OracleScriptID:           oracleScriptID,
-		Calldata:                 calldata,
-		RequestedValidators:      requestedValidators,
-		SufficientValidatorCount: sufficientValidatorCount,
-		RequestHeight:            requestHeight,
-		RequestTime:              requestTime,
-		ClientID:                 clientID,
-		IBC:                      ibc,
+		OracleScriptID:      oracleScriptID,
+		Calldata:            calldata,
+		RequestedValidators: requestedValidators,
+		MinCount:            minCount,
+		RequestHeight:       requestHeight,
+		RequestTime:         requestTime,
+		ClientID:            clientID,
+		IBC:                 ibc,
 	}
 }
 

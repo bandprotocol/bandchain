@@ -12,18 +12,18 @@ const RouterKey = ModuleName
 func NewMsgRequestData(
 	oracleScriptID OracleScriptID,
 	calldata []byte,
-	requestedValidatorCount int64,
-	sufficientValidatorCount int64,
+	askCount int64,
+	minCount int64,
 	clientID string,
 	sender sdk.AccAddress,
 ) MsgRequestData {
 	return MsgRequestData{
-		OracleScriptID:           oracleScriptID,
-		Calldata:                 calldata,
-		RequestedValidatorCount:  requestedValidatorCount,
-		SufficientValidatorCount: sufficientValidatorCount,
-		ClientID:                 clientID,
-		Sender:                   sender,
+		OracleScriptID: oracleScriptID,
+		Calldata:       calldata,
+		AskCount:       askCount,
+		MinCount:       minCount,
+		ClientID:       clientID,
+		Sender:         sender,
 	}
 }
 
@@ -41,17 +41,17 @@ func (msg MsgRequestData) ValidateBasic() error {
 	if msg.OracleScriptID <= 0 {
 		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgRequestData: Oracle script id (%d) must be positive.", msg.OracleScriptID)
 	}
-	if msg.SufficientValidatorCount <= 0 {
+	if msg.MinCount <= 0 {
 		return sdkerrors.Wrapf(ErrInvalidBasicMsg,
 			"MsgRequestData: Sufficient validator count (%d) must be positive.",
-			msg.SufficientValidatorCount,
+			msg.MinCount,
 		)
 	}
-	if msg.RequestedValidatorCount < msg.SufficientValidatorCount {
+	if msg.AskCount < msg.MinCount {
 		return sdkerrors.Wrapf(ErrInvalidBasicMsg,
 			"MsgRequestData: Request validator count (%d) must not be less than sufficient validator count (%d).",
-			msg.RequestedValidatorCount,
-			msg.SufficientValidatorCount,
+			msg.AskCount,
+			msg.MinCount,
 		)
 	}
 	return nil
