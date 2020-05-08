@@ -17,7 +17,7 @@ pub fn prepare() {
 
 #[no_mangle]
 pub fn execute() {
-    let validator_count = oei::get_requested_validator_count();
+    let validator_count = oei::get_ask_count();
     let mut sum: f64 = 0.0;
     let mut count: u64 = 0;
     for validator_index in 0..validator_count {

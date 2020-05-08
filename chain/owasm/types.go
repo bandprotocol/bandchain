@@ -4,18 +4,18 @@ package owasm
 // can call to interact with the external world. An operation can fail and
 // when that occurs, the whole function call will fail.
 type ExecEnv interface {
-	// GetRequestedValidatorCount returns the number of validators that the current
+	// GetAskCount returns the number of validators that the current
 	// data request specifies for the oracle query.
-	GetRequestedValidatorCount() int64
+	GetAskCount() int64
 
-	// GetSufficientValidatorCount returns the number of validators
+	// GetMinCount returns the number of validators
 	// that is enough to push this data request into the aggregation phase.
-	GetSufficientValidatorCount() int64
+	GetMinCount() int64
 
-	// GetReceivedValidatorCount returns the number of validators among the
+	// GetAnsCount returns the number of validators among the
 	// requested ones that replied with raw data reports. Return zero during the
 	// *preparation* phase.
-	GetReceivedValidatorCount() int64
+	GetAnsCount() int64
 
 	// GetPrepareBlockTime returns the time at which the *preparation* phase of
 	// this data request was being run.

@@ -32,7 +32,7 @@ func buildRequestRESTInfo(
 	request.OracleScriptID = queryRequest.Request.OracleScriptID
 	request.Calldata = queryRequest.Request.Calldata
 	request.RequestedValidators = queryRequest.Request.RequestedValidators
-	request.SufficientValidatorCount = queryRequest.Request.SufficientValidatorCount
+	request.MinCount = queryRequest.Request.MinCount
 	// request.ExpirationHeight = queryRequest.Request.ExpirationHeight
 	// request.ResolveStatus = queryRequest.Request.ResolveStatus
 	request.RawDataRequests = queryRequest.RawDataRequests
