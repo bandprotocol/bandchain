@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
-    "@cosmostation/cosmosjs": "^0.5.5",
+    "@cosmostation/cosmosjs": "^0.5.6",
     "@glennsl/bs-json": "^5.0.2",
     "@ledgerhq/hw-transport-webusb": "^5.15.0",
     "axios": "^0.19.2",
