@@ -8,25 +8,6 @@ import (
 // RouterKey is they name of the bank module
 const RouterKey = ModuleName
 
-// NewMsgRequestData creates a new MsgRequestData instance.
-func NewMsgRequestData(
-	oracleScriptID OracleScriptID,
-	calldata []byte,
-	askCount int64,
-	minCount int64,
-	clientID string,
-	sender sdk.AccAddress,
-) MsgRequestData {
-	return MsgRequestData{
-		OracleScriptID: oracleScriptID,
-		Calldata:       calldata,
-		AskCount:       askCount,
-		MinCount:       minCount,
-		ClientID:       clientID,
-		Sender:         sender,
-	}
-}
-
 // Route implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgRequestData) Route() string { return RouterKey }
 
@@ -66,21 +47,6 @@ func (msg MsgRequestData) GetSigners() []sdk.AccAddress {
 func (msg MsgRequestData) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
-}
-
-// NewMsgReportData creates a new MsgReportData instance.
-func NewMsgReportData(
-	requestID RequestID,
-	dataSet []RawReport,
-	validator sdk.ValAddress,
-	reporter sdk.AccAddress,
-) MsgReportData {
-	return MsgReportData{
-		RequestID: requestID,
-		DataSet:   dataSet,
-		Validator: validator,
-		Reporter:  reporter,
-	}
 }
 
 // Route implements the sdk.Msg interface for MsgReportData.
@@ -124,23 +90,6 @@ func (msg MsgReportData) GetSignBytes() []byte {
 	return sdk.MustSortJSON(bz)
 }
 
-// NewMsgCreateDataSource creates a new MsgCreateDataSource instance.
-func NewMsgCreateDataSource(
-	owner sdk.AccAddress,
-	name string,
-	description string,
-	executable []byte,
-	sender sdk.AccAddress,
-) MsgCreateDataSource {
-	return MsgCreateDataSource{
-		Owner:       owner,
-		Name:        name,
-		Description: description,
-		Executable:  executable,
-		Sender:      sender,
-	}
-}
-
 // Route implements the sdk.Msg interface for MsgCreateDataSource.
 func (msg MsgCreateDataSource) Route() string { return RouterKey }
 
@@ -176,25 +125,6 @@ func (msg MsgCreateDataSource) GetSigners() []sdk.AccAddress {
 func (msg MsgCreateDataSource) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
-}
-
-// NewMsgEditDataSource creates a new MsgEditDataSource instance.
-func NewMsgEditDataSource(
-	dataSourceID DataSourceID,
-	owner sdk.AccAddress,
-	name string,
-	description string,
-	executable []byte,
-	sender sdk.AccAddress,
-) MsgEditDataSource {
-	return MsgEditDataSource{
-		DataSourceID: dataSourceID,
-		Owner:        owner,
-		Name:         name,
-		Description:  description,
-		Executable:   executable,
-		Sender:       sender,
-	}
 }
 
 // Route implements the sdk.Msg interface for MsgEditDataSource.
@@ -238,27 +168,6 @@ func (msg MsgEditDataSource) GetSignBytes() []byte {
 	return sdk.MustSortJSON(bz)
 }
 
-// NewMsgCreateOracleScript creates a new MsgCreateOracleScript instance.
-func NewMsgCreateOracleScript(
-	owner sdk.AccAddress,
-	name string,
-	description string,
-	code []byte,
-	schema string,
-	sourceCodeURL string,
-	sender sdk.AccAddress,
-) MsgCreateOracleScript {
-	return MsgCreateOracleScript{
-		Owner:         owner,
-		Name:          name,
-		Description:   description,
-		Code:          code,
-		Schema:        schema,
-		SourceCodeURL: sourceCodeURL,
-		Sender:        sender,
-	}
-}
-
 // Route implements the sdk.Msg interface for MsgCreateOracleScript.
 func (msg MsgCreateOracleScript) Route() string { return RouterKey }
 
@@ -294,29 +203,6 @@ func (msg MsgCreateOracleScript) GetSigners() []sdk.AccAddress {
 func (msg MsgCreateOracleScript) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
-}
-
-// NewMsgEditOracleScript creates a new MsgEditOracleScript instance.
-func NewMsgEditOracleScript(
-	oracleScriptID OracleScriptID,
-	owner sdk.AccAddress,
-	name string,
-	description string,
-	code []byte,
-	schema string,
-	sourceCodeURL string,
-	sender sdk.AccAddress,
-) MsgEditOracleScript {
-	return MsgEditOracleScript{
-		OracleScriptID: oracleScriptID,
-		Owner:          owner,
-		Name:           name,
-		Description:    description,
-		Code:           code,
-		Schema:         schema,
-		SourceCodeURL:  sourceCodeURL,
-		Sender:         sender,
-	}
 }
 
 // Route implements the sdk.Msg interface for MsgEditOracleScript.
@@ -356,17 +242,6 @@ func (msg MsgEditOracleScript) GetSignBytes() []byte {
 	return sdk.MustSortJSON(bz)
 }
 
-// NewMsgAddOracleAddress creates a new MsgAddOracleAddress instance.
-func NewMsgAddOracleAddress(
-	validator sdk.ValAddress,
-	reporter sdk.AccAddress,
-) MsgAddOracleAddress {
-	return MsgAddOracleAddress{
-		Validator: validator,
-		Reporter:  reporter,
-	}
-}
-
 // Route implements the sdk.Msg interface for MsgAddOracleAddress.
 func (msg MsgAddOracleAddress) Route() string { return RouterKey }
 
@@ -393,17 +268,6 @@ func (msg MsgAddOracleAddress) GetSigners() []sdk.AccAddress {
 func (msg MsgAddOracleAddress) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
-}
-
-// NewMsgRemoveOracleAddress creates a new MsgRemoveOracleAddress instance.
-func NewMsgRemoveOracleAddress(
-	validator sdk.ValAddress,
-	reporter sdk.AccAddress,
-) MsgRemoveOracleAddress {
-	return MsgRemoveOracleAddress{
-		Validator: validator,
-		Reporter:  reporter,
-	}
 }
 
 // Route implements the sdk.Msg interface for MsgRemoveOracleAddress.
