@@ -96,27 +96,6 @@ func TestAddRequestNoOracleScript(t *testing.T) {
 	require.Error(t, err)
 }
 
-func TestAddRequestTooBigCalldata(t *testing.T) {
-	_, ctx, k := createTestInput()
-	// We start by setting an oracle request available at ID 42.
-	k.SetOracleScript(ctx, 42, types.NewOracleScript(
-		Owner.Address, BasicName, BasicDesc, BasicCode, BasicSchema, BasicSourceCodeURL,
-	))
-	require.True(t, k.HasOracleScript(ctx, 42))
-	// We set max calldata sie to 41, so adding a request with calldata size 42 should fail.
-	k.SetParam(ctx, types.KeyMaxCalldataSize, 41)
-	_, err := k.AddRequest(ctx, types.NewRequest(42,
-		[]byte("________THIS_STRING_HAS_SIZE_OF_42________"), nil, 1, 1, 1, "", nil),
-	)
-	require.Error(t, err)
-	// We now change max calldata size to 42, so it should be fine.
-	k.SetParam(ctx, types.KeyMaxCalldataSize, 42)
-	_, err = k.AddRequest(ctx, types.NewRequest(42,
-		[]byte("________THIS_STRING_HAS_SIZE_OF_42________"), nil, 1, 1, 1, "", nil),
-	)
-	require.Nil(t, err)
-}
-
 func TestAddPendingResolveList(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// Initially, we should get an empty list of pending resolves.

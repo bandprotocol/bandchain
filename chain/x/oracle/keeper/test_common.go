@@ -158,14 +158,9 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 	require.Equal(t, account, accountKeeper.GetAccount(ctx, addr))
 
 	// Set default parameter
-	keeper.SetParam(ctx, types.KeyMaxExecutableSize, types.DefaultMaxDataSourceExecutableSize)
-	keeper.SetParam(ctx, types.KeyMaxOracleScriptCodeSize, types.DefaultMaxOracleScriptCodeSize)
-	keeper.SetParam(ctx, types.KeyMaxCalldataSize, types.DefaultMaxCalldataSize)
 	keeper.SetParam(ctx, types.KeyMaxRawRequestCount, types.DefaultMaxRawRequestCount)
 	keeper.SetParam(ctx, types.KeyMaxRawDataReportSize, types.DefaultMaxRawDataReportSize)
 	keeper.SetParam(ctx, types.KeyMaxResultSize, types.DefaultMaxResultSize)
-	keeper.SetParam(ctx, types.KeyMaxNameLength, types.DefaultMaxNameLength)
-	keeper.SetParam(ctx, types.KeyMaxDescriptionLength, types.DefaultDescriptionLength)
 	keeper.SetParam(ctx, types.KeyGasPerRawDataRequestPerValidator, types.DefaultGasPerRawDataRequestPerValidator)
 	keeper.SetParam(ctx, types.KeyExpirationBlockCount, types.DefaultExpirationBlockCount)
 	keeper.SetParam(ctx, types.KeyExecuteGas, types.DefaultExecuteGas)

@@ -20,7 +20,7 @@ func NewExecEnv(ctx sdk.Context, k Keeper, req types.Request) *ExecEnv {
 		request:            req,
 		now:                ctx.BlockTime().Unix(),
 		maxResultSize:      int64(k.GetParam(ctx, KeyMaxResultSize)),
-		maxCalldataSize:    int64(k.GetParam(ctx, KeyMaxCalldataSize)),
+		maxCalldataSize:    types.MaxCalldataSize,
 		maxRawRequestCount: int64(k.GetParam(ctx, KeyMaxRawRequestCount)),
 		rawRequests:        []types.RawRequest{},
 		reports:            make(map[string]map[types.ExternalID]types.RawReport),
