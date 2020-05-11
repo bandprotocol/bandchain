@@ -4,20 +4,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// NewOracleRequestPacketData creates a new OracleRequestPacketData instance.
-func NewOracleRequestPacketData(
-	clientID string, oracleScriptID OracleScriptID, calldata string,
-	askCount int64, minCount int64,
-) OracleRequestPacketData {
-	return OracleRequestPacketData{
-		ClientID:       clientID,
-		OracleScriptID: oracleScriptID,
-		Calldata:       calldata,
-		AskCount:       askCount,
-		MinCount:       minCount,
-	}
-}
-
 // func (p OracleRequestPacketData) String() string {
 // 	return fmt.Sprintf(`OracleRequestPacketData:
 //     ClientID:       %s
@@ -40,21 +26,6 @@ func (p OracleRequestPacketData) ValidateBasic() error {
 
 func (p OracleRequestPacketData) GetBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(p))
-}
-
-func NewOracleResponsePacketData(
-	clientID string, requestID RequestID, ansCount int64, requestTime int64, resolveTime int64,
-	resolveStatus ResolveStatus, result string,
-) OracleResponsePacketData {
-	return OracleResponsePacketData{
-		ClientID:      clientID,
-		RequestID:     requestID,
-		AnsCount:      ansCount,
-		RequestTime:   requestTime,
-		ResolveTime:   resolveTime,
-		ResolveStatus: resolveStatus,
-		Result:        result,
-	}
 }
 
 // func (p OracleResponsePacketData) String() string {

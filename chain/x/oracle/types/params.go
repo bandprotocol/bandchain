@@ -72,37 +72,6 @@ var (
 	KeyPrepareGas                       = []byte("PrepareGas")
 )
 
-// NewParams creates a new Params object.
-func NewParams(
-	maxDataSourceExecutableSize uint64,
-	maxOracleScriptCodeSize uint64,
-	maxCalldataSize uint64,
-	maxDataSourceCountPerRequest uint64,
-	maxRawDataReportSize uint64,
-	maxResultSize uint64,
-	maxNameLength uint64,
-	maxDescriptionLength uint64,
-	gasPerRawDataRequestPerValidator uint64,
-	expirationBlockCount uint64,
-	executeGas uint64,
-	prepareGas uint64,
-) Params {
-	return Params{
-		MaxDataSourceExecutableSize:      maxDataSourceExecutableSize,
-		MaxOracleScriptCodeSize:          maxOracleScriptCodeSize,
-		MaxCalldataSize:                  maxCalldataSize,
-		MaxRawRequestCount:               maxDataSourceCountPerRequest,
-		MaxRawDataReportSize:             maxRawDataReportSize,
-		MaxResultSize:                    maxResultSize,
-		MaxNameLength:                    maxNameLength,
-		MaxDescriptionLength:             maxDescriptionLength,
-		GasPerRawDataRequestPerValidator: gasPerRawDataRequestPerValidator,
-		ExpirationBlockCount:             expirationBlockCount,
-		ExecuteGas:                       executeGas,
-		PrepareGas:                       prepareGas,
-	}
-}
-
 // String implements the stringer interface for Params.
 func (p Params) String() string {
 	return fmt.Sprintf(`oracle Params:
