@@ -6,18 +6,18 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func keysCmd() *cobra.Command {
+func keysCmd(c *Context) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "keys",
 		Aliases: []string{"k"},
 		Short:   "Manage key held by the oracle process",
 	}
-	cmd.AddCommand(keysAddCmd())
-	cmd.AddCommand(keysListCmd())
+	cmd.AddCommand(keysAddCmd(c))
+	cmd.AddCommand(keysListCmd(c))
 	return cmd
 }
 
-func keysAddCmd() *cobra.Command {
+func keysAddCmd(c *Context) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "add [name]",
 		Aliases: []string{"a"},
@@ -35,7 +35,7 @@ func keysAddCmd() *cobra.Command {
 				return err
 			}
 
-			info, err := keybase.NewAccount(
+			info, err := c.keybase.NewAccount(
 				args[0], mnemonic, "", hd.CreateHDPath(494, 0, 0).String(), hd.Secp256k1,
 			)
 			if err != nil {
@@ -50,14 +50,14 @@ func keysAddCmd() *cobra.Command {
 	return cmd
 }
 
-func keysListCmd() *cobra.Command {
+func keysListCmd(c *Context) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "list",
 		Aliases: []string{"l"},
 		Short:   "List all the keys in the keychain",
 		Args:    cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			keys, err := keybase.List()
+			keys, err := c.keybase.List()
 			if err != nil {
 				return err
 			}
