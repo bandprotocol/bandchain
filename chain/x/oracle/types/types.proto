@@ -273,9 +273,9 @@ message RequestIBC {
 message Report {
   option (gogoproto.equal) = true;
 
-  repeated RawReport raw_reports = 1 [(gogoproto.nullable) = false];
-  bytes validator = 2
+  bytes validator = 1
       [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
+  repeated RawReport raw_reports = 2 [(gogoproto.nullable) = false];
 }
 
 // Params - used for initializing default parameter for oracle at genesis.
