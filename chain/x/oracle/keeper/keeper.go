@@ -3,6 +3,8 @@ package keeper
 import (
 	"fmt"
 
+	"github.com/peterbourgon/diskv"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
@@ -20,6 +22,7 @@ import (
 type Keeper struct {
 	storeKey      sdk.StoreKey
 	cdc           *codec.Codec
+	fileCache     *diskv.Diskv
 	OwasmExecute  owasm.Executor
 	ParamSpace    params.Subspace
 	CoinKeeper    bank.Keeper
@@ -31,7 +34,7 @@ type Keeper struct {
 
 // NewKeeper creates a new oracle Keeper instance.
 func NewKeeper(
-	cdc *codec.Codec, key sdk.StoreKey, owasmExecute owasm.Executor,
+	cdc *codec.Codec, key sdk.StoreKey, fileDir string, owasmExecute owasm.Executor,
 	paramSpace params.Subspace, coinKeeper bank.Keeper, stakingKeeper staking.Keeper,
 	channelKeeper types.ChannelKeeper, scopedKeeper capability.ScopedKeeper, portKeeper types.PortKeeper,
 ) Keeper {
@@ -39,8 +42,13 @@ func NewKeeper(
 		paramSpace = paramSpace.WithKeyTable(ParamKeyTable())
 	}
 	return Keeper{
-		storeKey:      key,
-		cdc:           cdc,
+		storeKey: key,
+		cdc:      cdc,
+		fileCache: diskv.New(diskv.Options{
+			BasePath:     fileDir,
+			Transform:    func(s string) []string { return []string{} },
+			CacheSizeMax: 32 * 1024 * 1024, // 32MB TODO: Make this configurable
+		}),
 		OwasmExecute:  owasmExecute,
 		ParamSpace:    paramSpace,
 		CoinKeeper:    coinKeeper,

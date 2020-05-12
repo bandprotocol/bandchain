@@ -15,6 +15,7 @@ require (
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
 	github.com/perlin-network/life v0.0.0-20191203030451-05c0e0f7eaea
+	github.com/peterbourgon/diskv v2.0.1+incompatible
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/viper v1.6.3
