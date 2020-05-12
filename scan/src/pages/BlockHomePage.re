@@ -3,6 +3,9 @@ module Styles = {
 
   let vFlex = align => style([display(`flex), flexDirection(`row), alignItems(align)]);
 
+  let header =
+    style([display(`flex), flexDirection(`row), alignItems(`center), height(`px(50))]);
+
   let logo = style([width(`px(50)), marginRight(`px(10))]);
 
   let seperatedLine =
@@ -76,7 +79,7 @@ let renderBody = (reserveIndex, blockSub: ApolloHooks.Subscription.variant(Block
           <div className=Styles.fillLeft />
           {switch (blockSub) {
            | Data({txn}) => <Text value={txn |> Format.iPretty} code=true weight=Text.Medium />
-           | _ => <LoadingCensorBar width=40 height=15 />
+           | _ => <LoadingCensorBar width=40 height=15 isRight=true />
            }}
         </Row>
       </Col>
@@ -94,36 +97,34 @@ let make = () => {
 
   <>
     <Row>
-      <Col>
-        <div className={Styles.vFlex(`center)}>
-          <img src=Images.blockLogo className=Styles.logo />
-          <Text
-            value="All BLOCKS"
-            weight=Text.Medium
-            size=Text.Md
-            spacing={Text.Em(0.06)}
-            height={Text.Px(15)}
-            nowrap=true
-            block=true
-            color=Colors.gray7
-          />
-          {switch (allSub) {
-           | Data((_, blocksCount)) =>
-             <>
-               <div className=Styles.seperatedLine />
-               <Text
-                 value={blocksCount->Format.iPretty ++ " in total"}
-                 size=Text.Md
-                 weight=Text.Thin
-                 spacing={Text.Em(0.06)}
-                 color=Colors.gray7
-                 nowrap=true
-               />
-             </>
-           | _ => React.null
-           }}
-        </div>
-      </Col>
+      <div className=Styles.header>
+        <img src=Images.blockLogo className=Styles.logo />
+        <Text
+          value="ALL BLOCKS"
+          weight=Text.Medium
+          size=Text.Md
+          spacing={Text.Em(0.06)}
+          height={Text.Px(15)}
+          nowrap=true
+          block=true
+          color=Colors.gray7
+        />
+        {switch (allSub) {
+         | Data((_, blocksCount)) =>
+           <>
+             <div className=Styles.seperatedLine />
+             <Text
+               value={blocksCount->Format.iPretty ++ " in total"}
+               size=Text.Md
+               weight=Text.Thin
+               spacing={Text.Em(0.06)}
+               color=Colors.gray7
+               nowrap=true
+             />
+           </>
+         | _ => React.null
+         }}
+      </div>
     </Row>
     <VSpacing size=Spacing.xl />
     <THead>

@@ -3,6 +3,9 @@ module Styles = {
 
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
+  let header =
+    style([display(`flex), flexDirection(`row), alignItems(`center), height(`px(50))]);
+
   let validatorsLogo = style([marginRight(`px(10))]);
   let highlight = style([margin2(~v=`px(28), ~h=`zero)]);
   let valueContainer = style([display(`flex), justifyContent(`flexStart)]);
@@ -301,27 +304,25 @@ let make = () => {
 
   <>
     <Row justify=Row.Between>
-      <Col>
-        <div className=Styles.vFlex>
-          <img src=Images.validators className=Styles.validatorsLogo />
-          <Text
-            value="ALL VALIDATORS"
-            weight=Text.Medium
-            size=Text.Md
-            nowrap=true
-            color=Colors.gray7
-            spacing={Text.Em(0.06)}
-          />
-          {switch (topPartAllSub) {
-           | Data((validatorCount, _, _, _, _)) =>
-             <>
-               <div className=Styles.seperatedLine />
-               <Text value={(validatorCount |> string_of_int) ++ " In total"} />
-             </>
-           | _ => React.null
-           }}
-        </div>
-      </Col>
+      <div className=Styles.header>
+        <img src=Images.validators className=Styles.validatorsLogo />
+        <Text
+          value="ALL VALIDATORS"
+          weight=Text.Medium
+          size=Text.Md
+          nowrap=true
+          color=Colors.gray7
+          spacing={Text.Em(0.06)}
+        />
+        {switch (topPartAllSub) {
+         | Data((validatorCount, _, _, _, _)) =>
+           <>
+             <div className=Styles.seperatedLine />
+             <Text value={(validatorCount |> string_of_int) ++ " In total"} />
+           </>
+         | _ => React.null
+         }}
+      </div>
       <Col>
         {switch (topPartAllSub) {
          | Data(_) => <ToggleButton isActive setIsActive />
