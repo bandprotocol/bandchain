@@ -9,6 +9,8 @@ let decodeCoin = json =>
     amount: json |> field("amount", uamount),
   };
 
+let newUBANDFromAmount = amount => {denom: "uband", amount};
+
 let newCoin = (denom, amount) => {denom, amount};
 
 let getBandAmountFromCoins = coins =>

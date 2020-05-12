@@ -274,7 +274,8 @@ module Msg = {
       delegatorAddress: Address.t,
       validatorAddress: Address.t,
       publicKey: PubKey.t,
-      minSelfDelegation: float,
+      minSelfDelegation: Coin.t,
+      selfDelegation: Coin.t,
     };
     let decode = json =>
       JsonUtils.Decode.{
@@ -288,7 +289,9 @@ module Msg = {
         delegatorAddress: json |> field("delegator_address", string) |> Address.fromBech32,
         validatorAddress: json |> field("validator_address", string) |> Address.fromBech32,
         publicKey: json |> field("pubkey", string) |> PubKey.fromBech32,
-        minSelfDelegation: json |> field("min_self_delegation", floatstr),
+        minSelfDelegation:
+          json |> field("min_self_delegation", floatstr) |> Coin.newUBANDFromAmount,
+        selfDelegation: json |> field("value", Coin.decodeCoin),
       };
   };
 
@@ -300,7 +303,7 @@ module Msg = {
       details: string,
       commissionRate: option(float),
       sender: Address.t,
-      minSelfDelegation: option(float),
+      minSelfDelegation: option(Coin.t),
     };
     let decode = json =>
       JsonUtils.Decode.{
@@ -310,7 +313,10 @@ module Msg = {
         details: json |> field("details", string),
         commissionRate: json |> optional(field("commission_rate", floatstr)),
         sender: json |> field("address", string) |> Address.fromBech32,
-        minSelfDelegation: json |> optional(field("min_self_delegation", floatstr)),
+        minSelfDelegation:
+          json
+          |> optional(field("min_self_delegation", floatstr))
+          |> Belt.Option.map(_, Coin.newUBANDFromAmount),
       };
   };
 

@@ -365,7 +365,7 @@ let renderCreateValidator = (validator: TxSub.Msg.CreateValidator.t) => {
       <Text value="MIN SELF DELEGATION" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className=Styles.hFlex>
         <Text
-          value={validator.minSelfDelegation |> Js.Float.toString}
+          value={validator.minSelfDelegation.amount |> Format.fPretty}
           weight=Text.Semibold
           code=true
         />
@@ -377,7 +377,11 @@ let renderCreateValidator = (validator: TxSub.Msg.CreateValidator.t) => {
     <div className=Styles.topicContainer>
       <Text value="SELF DELEGATION" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className=Styles.hFlex>
-        <Text value="150.00" weight=Text.Semibold code=true />
+        <Text
+          value={validator.selfDelegation.amount |> Format.fPretty}
+          weight=Text.Semibold
+          code=true
+        />
         <HSpacing size=Spacing.sm />
         <Text value="BAND" weight=Text.Thin code=true />
       </div>
@@ -430,11 +434,19 @@ let renderEditValidator = (validator: TxSub.Msg.EditValidator.t) => {
     <VSpacing size=Spacing.md />
     <div className=Styles.topicContainer>
       <Text value="MIN SELF DELEGATION" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className=Styles.hFlex>
-        <Text value="100.00" weight=Text.Semibold code=true />
-        <HSpacing size=Spacing.sm />
-        <Text value="BAND" weight=Text.Thin code=true />
-      </div>
+      {switch (validator.minSelfDelegation) {
+       | Some(minSelfDelegation') =>
+         <div className=Styles.hFlex>
+           <Text
+             value={minSelfDelegation'.amount |> Format.fPretty}
+             weight=Text.Semibold
+             code=true
+           />
+           <HSpacing size=Spacing.sm />
+           <Text value="BAND" weight=Text.Thin code=true />
+         </div>
+       | None => <Text value="Unchanged" code=true />
+       }}
     </div>
   </Col>;
 };
