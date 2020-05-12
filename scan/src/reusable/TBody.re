@@ -10,6 +10,7 @@ module Styles = {
       display(`flex),
       alignItems(`center),
       padding2(~v=pv, ~h=ph),
+      overflow(`hidden),
     ]);
 
   let minHeight = height => style([minHeight(`px(height))]);

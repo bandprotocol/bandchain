@@ -75,14 +75,16 @@ let txBodyRender = (reserveIndex: int, txSub: ApolloHooks.Subscription.variant(T
               ->Belt_Array.mapWithIndex((i, msg) =>
                   <React.Fragment key={(txHash |> Hash.toHex) ++ (i |> string_of_int)}>
                     <VSpacing size=Spacing.sm />
-                    <Msg msg width=250 />
+                    <Msg msg width=360 />
                     <VSpacing size=Spacing.sm />
                   </React.Fragment>
                 )
               ->React.array}
              {success
                 ? React.null
-                : <div> <Text value={"Error: " ++ rawLog} code=true size=Text.Sm /> </div>}
+                : <div>
+                    <Text value={"Error: " ++ rawLog} code=true size=Text.Sm breakAll=true />
+                  </div>}
            </div>
          | _ => <> <VSpacing size=Spacing.sm /> <LoadingCensorBar width=360 height=10 /> </>
          }}
