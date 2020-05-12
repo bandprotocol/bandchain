@@ -67,9 +67,7 @@ let renderSend = (send: TxSub.Msg.Send.t) => {
     <VSpacing size=Spacing.lg />
     <div className=Styles.topicContainer>
       <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className=Styles.hFlex>
-        <Text value={send.amount |> Coin.toCoinsString} weight=Text.Semibold code=true />
-      </div>
+      <AmountRender coins={send.amount} pos=AmountRender.TxIndex />
     </div>
     <VSpacing size=Spacing.lg />
   </Col>;
@@ -186,9 +184,7 @@ let renderCreateDataSource = (dataSource: TxSub.Msg.CreateDataSource.t) => {
     <VSpacing size=Spacing.md />
     <div className=Styles.topicContainer>
       <Text value="FEE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className=Styles.hFlex>
-        <Text value={dataSource.fee |> Coin.toCoinsString} weight=Text.Bold code=true />
-      </div>
+      <AmountRender coins={dataSource.fee} pos=AmountRender.TxIndex />
     </div>
     <VSpacing size=Spacing.md />
   </Col>;
@@ -215,9 +211,7 @@ let renderEditDataSource = (dataSource: TxSub.Msg.EditDataSource.t) => {
     <VSpacing size=Spacing.md />
     <div className=Styles.topicContainer>
       <Text value="FEE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className=Styles.hFlex>
-        <Text value={dataSource.fee |> Coin.toCoinsString} weight=Text.Bold code=true />
-      </div>
+      <AmountRender coins={dataSource.fee} pos=AmountRender.TxIndex />
     </div>
     <VSpacing size=Spacing.md />
   </Col>;
@@ -363,28 +357,12 @@ let renderCreateValidator = (validator: TxSub.Msg.CreateValidator.t) => {
     <VSpacing size=Spacing.md />
     <div className=Styles.topicContainer>
       <Text value="MIN SELF DELEGATION" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className=Styles.hFlex>
-        <Text
-          value={validator.minSelfDelegation.amount |> Format.fPretty}
-          weight=Text.Semibold
-          code=true
-        />
-        <HSpacing size=Spacing.sm />
-        <Text value="BAND" weight=Text.Thin code=true />
-      </div>
+      <AmountRender coins=[validator.minSelfDelegation] />
     </div>
     <VSpacing size=Spacing.md />
     <div className=Styles.topicContainer>
       <Text value="SELF DELEGATION" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className=Styles.hFlex>
-        <Text
-          value={validator.selfDelegation.amount |> Format.fPretty}
-          weight=Text.Semibold
-          code=true
-        />
-        <HSpacing size=Spacing.sm />
-        <Text value="BAND" weight=Text.Thin code=true />
-      </div>
+      <AmountRender coins=[validator.selfDelegation] />
     </div>
   </Col>;
 };
@@ -435,16 +413,7 @@ let renderEditValidator = (validator: TxSub.Msg.EditValidator.t) => {
     <div className=Styles.topicContainer>
       <Text value="MIN SELF DELEGATION" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       {switch (validator.minSelfDelegation) {
-       | Some(minSelfDelegation') =>
-         <div className=Styles.hFlex>
-           <Text
-             value={minSelfDelegation'.amount |> Format.fPretty}
-             weight=Text.Semibold
-             code=true
-           />
-           <HSpacing size=Spacing.sm />
-           <Text value="BAND" weight=Text.Thin code=true />
-         </div>
+       | Some(minSelfDelegation') => <AmountRender coins=[minSelfDelegation'] />
        | None => <Text value="Unchanged" code=true />
        }}
     </div>
@@ -691,9 +660,7 @@ let renderDelegate = (delegation: TxSub.Msg.Delegate.t) => {
     <VSpacing size=Spacing.lg />
     <div className=Styles.topicContainer>
       <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className=Styles.hFlex>
-        <Text value={delegation.amount |> Coin.getDescription} weight=Text.Semibold code=true />
-      </div>
+      <AmountRender coins={[delegation.amount]} pos=AmountRender.TxIndex />
     </div>
   </Col>;
 };
@@ -717,9 +684,7 @@ let renderUndelegate = (delegation: TxSub.Msg.Undelegate.t) => {
     <VSpacing size=Spacing.lg />
     <div className=Styles.topicContainer>
       <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className=Styles.hFlex>
-        <Text value={delegation.amount |> Coin.getDescription} weight=Text.Semibold code=true />
-      </div>
+      <AmountRender coins={[delegation.amount]} pos=AmountRender.TxIndex />
     </div>
   </Col>;
 };
@@ -750,9 +715,7 @@ let renderRedelegate = (delegation: TxSub.Msg.Redelegate.t) => {
     <VSpacing size=Spacing.lg />
     <div className=Styles.topicContainer>
       <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className=Styles.hFlex>
-        <Text value={delegation.amount |> Coin.getDescription} weight=Text.Semibold code=true />
-      </div>
+      <AmountRender coins={[delegation.amount]} pos=AmountRender.TxIndex />
     </div>
   </Col>;
 };
@@ -776,15 +739,7 @@ let renderWithdrawReward = (withdrawal: TxSub.Msg.WithdrawReward.t) => {
     <VSpacing size=Spacing.lg />
     <div className=Styles.topicContainer>
       <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className=Styles.hFlex>
-        <Text
-          value={withdrawal.amount |> Coin.getBandAmountFromCoins |> Js.Float.toString}
-          weight=Text.Semibold
-          code=true
-        />
-        <HSpacing size=Spacing.sm />
-        <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
-      </div>
+      <AmountRender coins={withdrawal.amount} pos=AmountRender.TxIndex />
     </div>
   </Col>;
 };
@@ -821,15 +776,7 @@ let renderSubmitProposal = (proposal: TxSub.Msg.SubmitProposal.t) => {
     <VSpacing size=Spacing.lg />
     <div className=Styles.topicContainer>
       <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className=Styles.hFlex>
-        <Text
-          value={proposal.initialDeposit |> Coin.getBandAmountNoDivision |> Js.Float.toString}
-          weight=Text.Semibold
-          code=true
-        />
-        <HSpacing size=Spacing.sm />
-        <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
-      </div>
+      <AmountRender coins={proposal.initialDeposit} pos=AmountRender.TxIndex />
     </div>
   </Col>;
 };
@@ -850,15 +797,7 @@ let renderDeposit = (deposit: TxSub.Msg.Deposit.t) => {
     <VSpacing size=Spacing.lg />
     <div className=Styles.topicContainer>
       <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className=Styles.hFlex>
-        <Text
-          value={deposit.amount |> Coin.getBandAmountNoDivision |> Js.Float.toString}
-          weight=Text.Semibold
-          code=true
-        />
-        <HSpacing size=Spacing.sm />
-        <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
-      </div>
+      <AmountRender coins={deposit.amount} pos=AmountRender.TxIndex />
     </div>
   </Col>;
 };
@@ -893,15 +832,7 @@ let renderWithdrawCommission = (withdrawal: TxSub.Msg.WithdrawCommission.t) => {
     <VSpacing size=Spacing.lg />
     <div className=Styles.topicContainer>
       <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className=Styles.hFlex>
-        <Text
-          value={withdrawal.amount |> Coin.getBandAmountFromCoins |> Js.Float.toString}
-          weight=Text.Semibold
-          code=true
-        />
-        <HSpacing size=Spacing.sm />
-        <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
-      </div>
+      <AmountRender coins={withdrawal.amount} pos=AmountRender.TxIndex />
     </div>
   </Col>;
 };
@@ -947,15 +878,7 @@ let renderMultiSend = (tx: TxSub.Msg.MultiSend.t) => {
            <VSpacing size=Spacing.lg />
            <div className=Styles.topicContainer>
              <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-             <div className=Styles.hFlex>
-               <Text
-                 value={input.coins |> Coin.getBandAmountNoDivision |> Js.Float.toString}
-                 weight=Text.Semibold
-                 code=true
-               />
-               <HSpacing size=Spacing.sm />
-               <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
-             </div>
+             <AmountRender coins={input.coins} pos=AmountRender.TxIndex />
            </div>
            <VSpacing size=Spacing.lg />
            <VSpacing size=Spacing.md />
@@ -980,15 +903,7 @@ let renderMultiSend = (tx: TxSub.Msg.MultiSend.t) => {
            <VSpacing size=Spacing.lg />
            <div className=Styles.topicContainer>
              <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-             <div className=Styles.hFlex>
-               <Text
-                 value={output.coins |> Coin.getBandAmountNoDivision |> Js.Float.toString}
-                 weight=Text.Semibold
-                 code=true
-               />
-               <HSpacing size=Spacing.sm />
-               <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
-             </div>
+             <AmountRender coins={output.coins} pos=AmountRender.TxIndex />
            </div>
            <VSpacing size=Spacing.lg />
            <VSpacing size=Spacing.lg />
