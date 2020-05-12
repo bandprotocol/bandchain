@@ -19,6 +19,7 @@ func (k Keeper) SetRawRequest(ctx sdk.Context, rid types.RequestID, data types.R
 
 // AddRawRequest performs all sanity checks and adds a new raw request to the store.
 func (k Keeper) AddRawRequest(ctx sdk.Context, rid types.RequestID, data types.RawRequest) error {
+	// TODO: This check will need to be performed in ExecEnv. Raw requests will be removed soon.
 	// if err := k.EnsureLength(ctx, types.KeyMaxCalldataSize, len(data.Calldata)); err != nil {
 	// 	return err
 	// }
