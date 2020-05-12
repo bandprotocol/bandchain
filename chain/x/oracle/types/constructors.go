@@ -267,15 +267,11 @@ func NewReport(
 
 func NewValidatorReportInfo(
 	Validator github_com_cosmos_cosmos_sdk_types.ValAddress,
-	IsFullTime bool,
-	IndexOffset uint64,
-	MissedReportsCounter uint64,
+	ConsecutiveMissed uint64,
 ) ValidatorReportInfo {
 	return ValidatorReportInfo{
-		Validator:            Validator,
-		IsFullTime:           IsFullTime,
-		IndexOffset:          IndexOffset,
-		MissedReportsCounter: MissedReportsCounter,
+		Validator:         Validator,
+		ConsecutiveMissed: ConsecutiveMissed,
 	}
 }
 
@@ -284,11 +280,13 @@ func NewParams(
 	MaxResultSize uint64,
 	GasPerRawDataRequestPerValidator uint64,
 	ExpirationBlockCount uint64,
+	MaxConsecutiveMisses uint64,
 ) Params {
 	return Params{
 		MaxRawRequestCount:               MaxRawRequestCount,
 		MaxResultSize:                    MaxResultSize,
 		GasPerRawDataRequestPerValidator: GasPerRawDataRequestPerValidator,
 		ExpirationBlockCount:             ExpirationBlockCount,
+		MaxConsecutiveMisses:             MaxConsecutiveMisses,
 	}
 }

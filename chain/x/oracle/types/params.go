@@ -24,6 +24,9 @@ const (
 
 	// Expiration block count value 20
 	DefaultExpirationBlockCount = uint64(20)
+
+	// Reported window size is 100
+	DefaulMaxConsecutiveMisses = uint64(10)
 )
 
 // Parameter store keys.
@@ -32,6 +35,7 @@ var (
 	KeyMaxResultSize                    = []byte("MaxResultSize")
 	KeyGasPerRawDataRequestPerValidator = []byte("GasPerRawDataRequestPerValidator")
 	KeyExpirationBlockCount             = []byte("ExpirationBlockCount")
+	KeyMaxConsecutiveMisses             = []byte("MaxConsecutiveMisses")
 )
 
 // String implements the stringer interface for Params.
@@ -41,11 +45,13 @@ func (p Params) String() string {
   MaxResultSize:                    %d
   GasPerRawDataRequestPerValidator: %d
   ExpirationBlockCount:             %d
+  MaxConsecutiveMisses:             %d
 `,
 		p.MaxRawRequestCount,
 		p.MaxResultSize,
 		p.GasPerRawDataRequestPerValidator,
 		p.ExpirationBlockCount,
+		p.MaxConsecutiveMisses,
 	)
 }
 
@@ -59,6 +65,7 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyMaxResultSize, &p.MaxResultSize, validateNoOp),
 		paramtypes.NewParamSetPair(KeyGasPerRawDataRequestPerValidator, &p.GasPerRawDataRequestPerValidator, validateNoOp),
 		paramtypes.NewParamSetPair(KeyExpirationBlockCount, &p.ExpirationBlockCount, validateNoOp),
+		paramtypes.NewParamSetPair(KeyMaxConsecutiveMisses, &p.MaxConsecutiveMisses, validateNoOp),
 	}
 }
 
@@ -69,5 +76,6 @@ func DefaultParams() Params {
 		DefaultMaxResultSize,
 		DefaultGasPerRawDataRequestPerValidator,
 		DefaultExpirationBlockCount,
+		DefaulMaxConsecutiveMisses,
 	)
 }

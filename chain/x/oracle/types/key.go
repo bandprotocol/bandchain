@@ -52,9 +52,6 @@ var (
 
 	// ValidatorReportInfoKeyPrefix is a prefix for report info store
 	ValidatorReportInfoKeyPrefix = []byte{0x07}
-
-	// ValidatorMissedReportBitArrayKeyPrefix is a prefix for boolean of validator report
-	ValidatorMissedReportBitArrayKeyPrefix = []byte{0x08}
 )
 
 // RequestStoreKey is a function to generate key for each request in store
@@ -109,16 +106,6 @@ func ReporterStoreKey(validatorAddress sdk.ValAddress, reporterAddress sdk.AccAd
 // ValidatorReportInfoStoreKey is a function to generate key for report info in store.
 func ValidatorReportInfoStoreKey(v sdk.ValAddress) []byte {
 	return append(ValidatorReportInfoKeyPrefix, v.Bytes()...)
-}
-
-// ValidatorMissedReportBitArrayPrefixKey is a function to generate prefix of bit array key.
-func ValidatorMissedReportBitArrayPrefixKey(v sdk.ValAddress) []byte {
-	return append(ValidatorMissedReportBitArrayKeyPrefix, v.Bytes()...)
-}
-
-// ValidatorMissedReportBitArrayKey is a function to generate key of missed report of validator.
-func ValidatorMissedReportBitArrayKey(v sdk.ValAddress, i uint64) []byte {
-	return append(ValidatorMissedReportBitArrayPrefixKey(v), sdk.Uint64ToBigEndian(i)...)
 }
 
 // GetIteratorPrefix is a function to get specific prefix

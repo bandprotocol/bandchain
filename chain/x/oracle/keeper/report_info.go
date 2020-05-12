@@ -43,35 +43,3 @@ func (k Keeper) MustGetValidatorReportInfo(
 func (k Keeper) SetValidatorReportInfo(ctx sdk.Context, address sdk.ValAddress, info types.ValidatorReportInfo) {
 	ctx.KVStore(k.storeKey).Set(types.ValidatorReportInfoStoreKey(address), k.cdc.MustMarshalBinaryBare(info))
 }
-
-// GetValidatorMissedReportBitArray gets the bit for the missed report array
-func (k Keeper) GetValidatorMissedReportBitArray(ctx sdk.Context, address sdk.ValAddress, index uint64) bool {
-	bz := ctx.KVStore(k.storeKey).Get(types.ValidatorMissedReportBitArrayKey(address, index))
-	var missed bool
-	if bz == nil {
-		// lazy: treat empty key as not missed
-		return false
-	}
-	k.cdc.MustUnmarshalBinaryBare(bz, &missed)
-
-	return missed
-}
-
-// SetValidatorMissedReportBitArray sets the bit that checks if the validator has
-// missed a report in the current window
-func (k Keeper) SetValidatorMissedReportBitArray(ctx sdk.Context, address sdk.ValAddress, index uint64, missed bool) {
-	ctx.KVStore(k.storeKey).Set(
-		types.ValidatorMissedReportBitArrayKey(address, index),
-		k.cdc.MustMarshalBinaryBare(missed),
-	)
-}
-
-// clearValidatorMissedReportBitArray deletes every instance of ValidatorMissedReportBitArray in the store
-func (k Keeper) clearValidatorMissedReportBitArray(ctx sdk.Context, address sdk.ValAddress) {
-	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, types.ValidatorMissedReportBitArrayPrefixKey(address))
-	defer iter.Close()
-	for ; iter.Valid(); iter.Next() {
-		store.Delete(iter.Key())
-	}
-}

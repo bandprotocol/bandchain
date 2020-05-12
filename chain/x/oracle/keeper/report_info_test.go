@@ -13,32 +13,14 @@ func TestGetSetValidatorReportInfo(t *testing.T) {
 
 	found := k.HasValidatorReportInfo(ctx, Alice.ValAddress)
 	require.False(t, found)
-	newInfo := types.NewValidatorReportInfo(
-		Alice.ValAddress,
-		false,
-		3,
-		10,
-	)
+	newInfo := types.NewValidatorReportInfo(Alice.ValAddress, 5)
 	k.SetValidatorReportInfo(ctx, Alice.ValAddress, newInfo)
 	info, err := k.GetValidatorReportInfo(ctx, Alice.ValAddress)
 	require.Nil(t, err)
-	require.False(t, info.IsFullTime)
-	require.Equal(t, info.IndexOffset, uint64(3))
-	require.Equal(t, info.MissedReportsCounter, uint64(10))
+	require.Equal(t, info.ConsecutiveMissed, uint64(5))
+
+	_, err = k.GetValidatorReportInfo(ctx, Bob.ValAddress)
+	require.Error(t, err)
 
 	require.Panics(t, func() { k.MustGetValidatorReportInfo(ctx, Bob.ValAddress) })
-}
-
-func TestGetSetValidatorMissedBlockBitArray(t *testing.T) {
-	_, ctx, k := createTestInput()
-
-	missed := k.GetValidatorMissedReportBitArray(ctx, Alice.ValAddress, 0)
-	require.False(t, missed) // treat empty key as not missed
-	k.SetValidatorMissedReportBitArray(ctx, Alice.ValAddress, 0, true)
-	missed = k.GetValidatorMissedReportBitArray(ctx, Alice.ValAddress, 0)
-	require.True(t, missed) // now should be missed
-
-	k.SetValidatorMissedReportBitArray(ctx, Alice.ValAddress, 0, false)
-	missed = k.GetValidatorMissedReportBitArray(ctx, Alice.ValAddress, 0)
-	require.False(t, missed) // now should be not missed
 }

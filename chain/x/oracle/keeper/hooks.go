@@ -12,8 +12,6 @@ func (k Keeper) AfterValidatorBonded(ctx sdk.Context, _ sdk.ConsAddress, address
 	if !found {
 		reportInfo := types.NewValidatorReportInfo(
 			address,
-			false,
-			0,
 			0,
 		)
 		k.SetValidatorReportInfo(ctx, address, reportInfo)

@@ -70,6 +70,7 @@ var (
 	KeyMaxResultSize                    = types.KeyMaxResultSize
 	KeyGasPerRawDataRequestPerValidator = types.KeyGasPerRawDataRequestPerValidator
 	KeyExpirationBlockCount             = types.KeyExpirationBlockCount
+	KeyMaxConsecutiveMisses             = types.KeyMaxConsecutiveMisses
 
 	QueryRequestByID    = types.QueryRequestByID
 	QueryRequests       = types.QueryRequests

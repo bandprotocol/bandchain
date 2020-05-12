@@ -284,12 +284,8 @@ message ValidatorReportInfo {
 
   bytes validator = 1
       [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
-  // field to check that validator can be jailed
-  bool is_full_time = 2;
-  // index offset into report block bit array
-  uint64 index_offset = 3;
-  // missed reports counter (to avoid scanning the array every time)
-  uint64 missed_reports_counter = 4;
+  // field to count consecutive missed report
+  uint64 consecutive_missed = 2;
 }
 
 // Params - used for initializing default parameter for oracle at genesis.
@@ -301,4 +297,5 @@ message Params {
   uint64 max_result_size = 2;
   uint64 gas_per_raw_data_request_per_validator = 3;
   uint64 expiration_block_count = 4;
+  uint64 max_consecutive_misses = 5;
 }

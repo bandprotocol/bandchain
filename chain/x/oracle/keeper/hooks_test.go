@@ -16,5 +16,5 @@ func TestAfterValidatorBonded(t *testing.T) {
 
 	info, err := k.GetValidatorReportInfo(ctx, Validator1.ValAddress)
 	require.Nil(t, err)
-	require.Equal(t, types.NewValidatorReportInfo(Validator1.ValAddress, false, 0, 0), info)
+	require.Equal(t, types.NewValidatorReportInfo(Validator1.ValAddress, 0), info)
 }
