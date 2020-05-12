@@ -23,10 +23,6 @@ const (
 	// Default value is set 1 kB.
 	DefaultMaxResultSize = uint64(1 * 1024)
 
-	// The maximum size of description length.
-	// Default value 4096
-	DefaultDescriptionLength = uint64(4096)
-
 	// Gas cost per validator for each raw data request.
 	DefaultGasPerRawDataRequestPerValidator = uint64(25000)
 
