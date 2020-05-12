@@ -23,12 +23,12 @@ func init() {
 	authclient.Codec = appCodec
 }
 
-func BroadCastMsgs(c *Context, msgs []sdk.Msg) {
+func BroadCastMsgs(c *Context, l *Logger, msgs []sdk.Msg) {
 	// TODO: Make this a queue. Make it better.
 	cliCtx := sdkCtx.CLIContext{Client: c.client}
 	acc, err := auth.NewAccountRetriever(appCodec, cliCtx).GetAccount(c.key.GetAddress())
 	if err != nil {
-		logger.Error("🤯 Failed to retreive account with error: %s", err.Error())
+		l.Error(":exploding_head: Failed to retreive account with error: %s", err.Error())
 		return
 	}
 
@@ -38,22 +38,22 @@ func BroadCastMsgs(c *Context, msgs []sdk.Msg) {
 		1000000, 1, false, c.chainID, "", sdk.NewCoins(), sdk.NewDecCoins(),
 	).WithKeybase(c.keybase).BuildAndSign(c.key.GetName(), ckeys.DefaultKeyPass, msgs)
 	if err != nil {
-		logger.Error("🤯 Failed to build tx with error: %s", err.Error())
+		l.Error(":exploding_head: Failed to build tx with error: %s", err.Error())
 		return
 	}
 
 	res, err := cliCtx.BroadcastTxCommit(out)
 	if err != nil {
-		logger.Error("🤯 Failed to broadcast tx with error: %s", err.Error())
+		l.Error(":exploding_head: Failed to broadcast tx with error: %s", err.Error())
 		return
 	}
 
-	logger.Info("🎉 Successfully broadcast tx with hash: %s", res.TxHash)
+	l.Info(":smiling_face_with_sunglasses: Successfully broadcast tx with hash: %s", res.TxHash)
 }
 
 // GetExecutable fetches data source executable using the provided client.
-func GetExecutable(c *Context, id int) ([]byte, error) {
-	logger.Debug("⛏ Fetching data source #%d from the remote node", id)
+func GetExecutable(c *Context, l *Logger, id int) ([]byte, error) {
+	l.Debug(":magnifying_glass_tilted_left: Fetching data source #%d from the remote node", id)
 	res, _, err := sdkCtx.CLIContext{Client: c.client}.Query(
 		fmt.Sprintf("custom/oracle/%s/%d", oracle.QueryDataSourceByID, id),
 	)
@@ -66,6 +66,6 @@ func GetExecutable(c *Context, id int) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	logger.Debug("👀 Received data source #%d content: 0x%X...", id, dataSource.Executable[:32])
+	l.Debug(":balloon: Received data source #%d content: 0x%X...", id, dataSource.Executable[:32])
 	return dataSource.Executable, nil
 }

@@ -9,7 +9,7 @@ func configCmd() *cobra.Command {
 		Use:   "config",
 		Short: "Configure oracle environment",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			logger.Info("TODO ~~~")
+			// logger.Info("TODO ~~~")
 			return nil
 		},
 	}

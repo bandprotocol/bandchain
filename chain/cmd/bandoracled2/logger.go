@@ -11,12 +11,6 @@ type Logger struct {
 	logger log.Logger
 }
 
-var logger Logger
-
-func init() {
-	logger = *NewLogger()
-}
-
 func NewLogger() *Logger {
 	return &Logger{logger: log.NewTMLogger(os.Stdout)}
 }

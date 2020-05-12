@@ -1,7 +1,6 @@
 package main
 
 import (
-	"sort"
 	"strconv"
 	"time"
 
@@ -9,14 +8,14 @@ import (
 	"github.com/tendermint/tendermint/crypto/tmhash"
 	tmtypes "github.com/tendermint/tendermint/types"
 
-	"github.com/bandprotocol/bandchain/chain/byteexec"
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
+	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 func handleTransaction(c *Context, l *Logger, tx tmtypes.TxResult) {
-	l.Debug(":eyes: Inspecting incoming transaction %X", tmhash.Sum(tx.Tx))
+	l.Debug(":eyes: Inspecting incoming transaction: %X", tmhash.Sum(tx.Tx))
 	if tx.Result.Code != 0 {
-		l.Debug(":alien: Skipping transaction with non-zero code %d", tx.Result.Code)
+		l.Debug(":alien: Skipping transaction with non-zero code: %d", tx.Result.Code)
 		return
 	}
 
@@ -42,7 +41,7 @@ func handleTransaction(c *Context, l *Logger, tx tmtypes.TxResult) {
 }
 
 func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
-	idStr, err := GetEventValue(log, "request", "id")
+	idStr, err := GetEventValue(log, otypes.EventTypeRequest, otypes.AttributeKeyID)
 	if err != nil {
 		l.Error(":cold_sweat: Failed to parse request id with error: %s", err.Error())
 		return
@@ -57,63 +56,40 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 	l = l.With("rid", id)
 	l.Info(":delivery_truck: Processing incoming request event")
 
-	dataSourceIDs := GetEventValues(log, "raw_request", "data_source_id")
-	externalIDs := GetEventValues(log, "raw_request", "external_id")
-	calldataList := GetEventValues(log, "raw_request", "calldata")
-	if len(dataSourceIDs) != len(externalIDs) {
-		l.Error(":skull: Inconsistent data source count and external ID count")
-		return
+	// TODO: Skip if not related to this validator
+	reqs, err := GetRawRequests(log)
+	if err != nil {
+		l.Error(":skull: Failed to parse raw requests with error: %s", err.Error())
 	}
-	if len(dataSourceIDs) != len(calldataList) {
-		l.Error(":skull: Inconsistent data source count and calldata count")
-		return
+
+	reportsChan := make(chan oracle.RawReport, len(reqs))
+	for _, req := range reqs {
+		go func(l *Logger, req rawRequest) {
+			exec, err := GetExecutable(c, l, int(req.dataSourceID))
+			if err != nil {
+				l.Error(":skull: Failed to load data source with error: %s", err.Error())
+				reportsChan <- oracle.NewRawReport(
+					req.externalID, 255, []byte("FAIL_TO_LOAD_DATA_SOURCE"),
+				)
+				return
+			}
+			executor := &lambdaExecutor{}
+			result, exitCode := executor.Execute(l, exec, 3*time.Second, req.calldata)
+			l.Debug(
+				":sparkles: Query data done with calldata: %q, result: %q, exitCode: %d",
+				req.calldata, result, exitCode,
+			)
+			reportsChan <- oracle.NewRawReport(req.externalID, exitCode, result)
+		}(l.With("did", req.dataSourceID, "eid", req.externalID), req)
 	}
 
 	reports := make([]oracle.RawReport, 0)
-	// TODO: Parallelize the work to get data from each source.
-	for idx := range dataSourceIDs {
-		dataSourceID, err := strconv.Atoi(dataSourceIDs[idx])
-		if err != nil {
-			l.Error(":cold_sweat: Failed to parse data source id with error: %s", err.Error())
-			return
-		}
-
-		externalID, err := strconv.Atoi(externalIDs[idx])
-		if err != nil {
-			l.Error(":cold_sweat: Failed to parse external id with error: %s", err.Error())
-			return
-		}
-
-		executable, err := GetExecutable(c, dataSourceID)
-		if err != nil {
-			l.Error(
-				":cold_sweat: Failed to get executable of data source id #%d with error: %s",
-				dataSourceID, err.Error(),
-			)
-			return
-		}
-
-		// TODO: Parallelize the work. Remove hardcode.
-		result, err := byteexec.RunOnAWSLambda(
-			executable, 3*time.Second, calldataList[idx],
-			"https://dmptasv4j8.execute-api.ap-southeast-1.amazonaws.com/bash-execute",
-		)
-		// TODO: Extract exit code.
-		if err != nil {
-			l.Error(
-				"❌ Request #%d: failed to run executable of data source id #%d with error: %d",
-				id, dataSourceID, err,
-			)
-			return
-		}
-		reports = append(reports, oracle.NewRawReport(oracle.ExternalID(externalID), 0, result))
+	for _ = range reqs {
+		reports = append(reports, <-reportsChan)
 	}
 
-	sort.Slice(reports, func(i, j int) bool {
-		return reports[i].ExternalID < reports[j].ExternalID
-	})
-
-	BroadCastMsgs(c, []sdk.Msg{
+	// TODO: Parallelize this and make sure we don't do multiple broadcasts at the same time.
+	BroadCastMsgs(c, l, []sdk.Msg{
 		oracle.NewMsgReportData(
 			oracle.RequestID(id), reports, sdk.ValAddress(c.key.GetAddress()), c.key.GetAddress(),
 		),
