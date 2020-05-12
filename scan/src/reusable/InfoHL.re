@@ -14,7 +14,8 @@ type t =
   | Fraction(int, int, bool)
   | FloatWithSuffix(float, string, int)
   | ValidatorsMini(array(ValidatorSub.Mini.t))
-  | Validators(array(ValidatorSub.t));
+  | Validators(array(ValidatorSub.t))
+  | Loading(int);
 
 module Styles = {
   open Css;
@@ -218,6 +219,7 @@ let make = (~info, ~header, ~isLeft=true) => {
             )
           ->React.array}
        </div>
+     | Loading(width) => <LoadingCensorBar width height=15 />
      }}
   </div>;
 };
