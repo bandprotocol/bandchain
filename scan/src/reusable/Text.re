@@ -101,6 +101,8 @@ module Styles = {
         `monospace,
       ]),
     ]);
+
+  let breakAll = style([wordBreak(`breakAll)]);
 };
 
 [@react.component]
@@ -117,6 +119,7 @@ let make =
       ~code=false,
       ~ellipsis=false,
       ~underline=false,
+      ~breakAll=false,
       ~value,
     ) => {
   <span
@@ -132,6 +135,7 @@ let make =
       color->Belt.Option.mapWithDefault("", c => Css.style([Css.color(c)])),
       ellipsis ? Styles.ellipsis : "",
       underline ? Styles.underline : "",
+      breakAll ? Styles.breakAll : "",
     ])}>
     {React.string(value)}
   </span>;
