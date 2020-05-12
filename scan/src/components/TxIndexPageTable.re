@@ -416,7 +416,7 @@ let renderEditValidator = (validator: TxSub.Msg.EditValidator.t) => {
         value={
           switch (validator.commissionRate) {
           | Some(rate) => rate->Js.Float.toFixedWithPrecision(~digits=4) ++ "%"
-          | None => "NULL"
+          | None => "Unchanged"
           }
         }
         code=true
