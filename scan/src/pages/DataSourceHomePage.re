@@ -20,8 +20,7 @@ module Styles = {
 
   let fullWidth = style([width(`percent(100.0)), display(`flex)]);
 
-  let feeContainer = style([display(`flex), justifyContent(`flexEnd), maxWidth(`px(150))]);
-
+  // let feeContainer = style([display(`flex), justifyContent(`flexEnd), maxWidth(`px(150))]);
   let loadingContainer =
     style([
       display(`flex),
@@ -111,23 +110,23 @@ let make = () =>
                 spacing={Text.Em(0.1)}
               />
             </Col>
-            <Col size=0.4>
-              <div className=Styles.feeContainer>
-                <Text
-                  block=true
-                  value="REQUEST FEE (BAND)"
-                  size=Text.Sm
-                  weight=Text.Semibold
-                  color=Colors.gray5
-                  spacing={Text.Em(0.1)}
-                />
-              </div>
-            </Col>
+            // <Col size=0.4>
+            //   <div className=Styles.feeContainer>
+            //     <Text
+            //       block=true
+            //       value="REQUEST FEE (BAND)"
+            //       size=Text.Sm
+            //       weight=Text.Semibold
+            //       color=Colors.gray5
+            //       spacing={Text.Em(0.1)}
+            //     />
+            //   </div>
+            // </Col>
             <Col> <HSpacing size=Spacing.xl /> </Col>
           </Row>
         </THead>
         {dataSources
-         ->Belt_Array.map(({id, name, timestamp, owner, fee}) => {
+         ->Belt_Array.map(({id, name, timestamp, owner}) => {
              <TBody key=name>
                <div className=Styles.fullWidth>
                  <Row>
@@ -135,9 +134,9 @@ let make = () =>
                    <Col size=0.5> <TElement elementType={TElement.DataSource(id, name)} /> </Col>
                    <Col size=0.5> <TElement elementType={timestamp->TElement.Timestamp} /> </Col>
                    <Col size=1.> <TElement elementType={owner->TElement.Address} /> </Col>
-                   <Col size=0.4>
-                     <TElement elementType={fee->Coin.getBandAmountFromCoins->TElement.Fee} />
-                   </Col>
+                   //  <Col size=0.4>
+                   //    <TElement elementType={fee->Coin.getBandAmountFromCoins->TElement.Fee} />
+                   //  </Col>
                    <Col> <HSpacing size=Spacing.xl /> </Col>
                  </Row>
                </div>

@@ -3,7 +3,6 @@ type t = {
   owner: Address.t,
   name: string,
   description: string,
-  fee: list(Coin.t),
   executable: JsBuffer.t,
   timestamp: MomentRe.Moment.t,
 };
@@ -16,7 +15,6 @@ module MultiConfig = [%graphql
       owner @bsDecoder(fn: "Address.fromBech32")
       name
       description
-      fee @bsDecoder(fn: "GraphQLParser.coins")
       executable @bsDecoder(fn: "GraphQLParser.buffer")
       timestamp: last_updated @bsDecoder(fn: "GraphQLParser.time")
     }
@@ -30,8 +28,7 @@ module SingleConfig = [%graphql
     data_sources_by_pk(id: $id) @bsRecord {
       id @bsDecoder(fn: "ID.DataSource.fromJson")
       owner @bsDecoder(fn: "Address.fromBech32")
-      name
-      fee @bsDecoder(fn: "GraphQLParser.coins")
+    name
       description
       executable @bsDecoder(fn: "GraphQLParser.buffer")
       timestamp: last_updated @bsDecoder(fn: "GraphQLParser.time")
