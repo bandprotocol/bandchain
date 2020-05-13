@@ -2,6 +2,8 @@ package types
 
 // nolint
 const (
+	DoNotModify = "[do-not-modify]"
+
 	MaxNameLength        = 128
 	MaxDescriptionLength = 4096
 	MaxClientIDLength    = 128

@@ -75,6 +75,36 @@ func TestAddDataSourceEditDataSourceBasic(t *testing.T) {
 	require.Equal(t, dataSource2, k.MustGetDataSource(ctx, id))
 }
 
+func TestEditDataSourceDoNotModify(t *testing.T) {
+	_, ctx, k := createTestInput()
+	// Creates some basic data sources.
+	dataSource1 := types.NewDataSource(
+		Alice.Address, "NAME1", "DESCRIPTION1", []byte("executable1"),
+	)
+	dataSource2 := types.NewDataSource(
+		Bob.Address, types.DoNotModify, types.DoNotModify, []byte("executable2"),
+	)
+	// Adds a new data source to the store. We should be able to retreive it back.
+	id, err := k.AddDataSource(ctx, types.NewDataSource(
+		dataSource1.Owner, dataSource1.Name, dataSource1.Description, dataSource1.Executable,
+	))
+	require.Nil(t, err)
+	require.Equal(t, dataSource1, k.MustGetDataSource(ctx, id))
+	require.NotEqual(t, dataSource2, k.MustGetDataSource(ctx, id))
+	// Edits the data source. We should get the updated data source.
+	err = k.EditDataSource(ctx, id, types.NewDataSource(
+		dataSource2.Owner, dataSource2.Name, dataSource2.Description, dataSource2.Executable,
+	))
+	require.Nil(t, err)
+	dataSourceRes := k.MustGetDataSource(ctx, id)
+	require.NotEqual(t, dataSourceRes, dataSource1)
+	require.NotEqual(t, dataSourceRes, dataSource2)
+	require.Equal(t, dataSourceRes.Owner, dataSource2.Owner)
+	require.Equal(t, dataSourceRes.Name, dataSource1.Name)
+	require.Equal(t, dataSourceRes.Description, dataSource1.Description)
+	require.Equal(t, dataSourceRes.Executable, dataSource2.Executable)
+}
+
 func TestAddDataSourceDataSourceMustReturnCorrectID(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// Initially we expect the data source count to be zero.
