@@ -108,7 +108,7 @@ func TestGetFileBadContent(t *testing.T) {
 	}()
 
 	f := filecache.New(dir)
-	filename := "b20727a9b7cc4198d8785b0ef1fa4c774eb9a360e1563dd4f095ddc7af02bd56" // Correct
+	filename := "b20727a9b7cc4198d8785b0ef1fa4c774eb9a360e1563dd4f095ddc7af02bd56" // Not correct
 	filepath := filepath.Join(dir, filename)
 	err = ioutil.WriteFile(filepath, []byte("NOT_LIKE_THIS"), 0666)
 	require.NoError(t, err)
