@@ -10,12 +10,12 @@ import (
 )
 
 // HasReport checks if the result of this request ID exists in the storage.
-func (k Keeper) HasResult(ctx sdk.Context, id types.RID) bool {
+func (k Keeper) HasResult(ctx sdk.Context, id types.RequestID) bool {
 	return ctx.KVStore(k.storeKey).Has(types.ResultStoreKey(id))
 }
 
 // GetDataSource returns the result bytes for the given request ID or error if not exists.
-func (k Keeper) GetResult(ctx sdk.Context, id types.RID) ([]byte, error) {
+func (k Keeper) GetResult(ctx sdk.Context, id types.RequestID) ([]byte, error) {
 	bz := ctx.KVStore(k.storeKey).Get(types.ResultStoreKey(id))
 	if bz == nil {
 		return nil, sdkerrors.Wrapf(types.ErrResultNotFound, "id: %d", id)
@@ -25,7 +25,7 @@ func (k Keeper) GetResult(ctx sdk.Context, id types.RID) ([]byte, error) {
 
 // AddResult validates the result's size and saves it to the store.
 func (k Keeper) AddResult(
-	ctx sdk.Context, id types.RID,
+	ctx sdk.Context, id types.RequestID,
 	req types.OracleRequestPacketData, res types.OracleResponsePacketData,
 ) ([]byte, error) {
 	result, err := hex.DecodeString(res.Result)
