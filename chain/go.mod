@@ -18,7 +18,7 @@ require (
 	github.com/peterbourgon/diskv v2.0.1+incompatible
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/cobra v1.0.0
-	github.com/spf13/viper v1.6.3
+	github.com/spf13/viper v1.7.0
 	github.com/stretchr/testify v1.5.1
 	github.com/tendermint/go-amino v0.15.1
 	github.com/tendermint/iavl v0.13.3
