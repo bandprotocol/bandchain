@@ -6,17 +6,6 @@ module Mini = {
   };
 };
 
-type node_status_t = {
-  uptime: float,
-  avgResponseTime: int,
-};
-
-type delegator_t = {
-  delegator: string,
-  sharePercentage: float,
-  amount: int,
-};
-
 type internal_t = {
   operatorAddress: Address.t,
   consensusAddress: Address.t,
@@ -28,8 +17,6 @@ type internal_t = {
   consensusPubKey: PubKey.t,
   bondedHeight: int,
   jailed: bool,
-  electedCount: float,
-  votedCount: float,
   details: string,
 };
 
@@ -39,7 +26,6 @@ type t = {
   operatorAddress: Address.t,
   consensusAddress: Address.t,
   consensusPubKey: PubKey.t,
-  rewardDestinationAddress: string,
   votingPower: float,
   moniker: string,
   identity: string,
@@ -50,8 +36,7 @@ type t = {
   bondedHeight: int,
   completedRequestCount: int,
   missedRequestCount: int,
-  nodeStatus: node_status_t,
-  delegators: list(delegator_t),
+  uptime: option(float),
 };
 
 let toExternal =
@@ -67,17 +52,13 @@ let toExternal =
         consensusPubKey,
         bondedHeight,
         jailed,
-        electedCount,
-        votedCount,
         details,
       }: internal_t,
     ) => {
-  avgResponseTime: 2,
   isActive: !jailed,
   operatorAddress,
   consensusAddress,
   consensusPubKey,
-  rewardDestinationAddress: "band17ljds2gj3kds234lkg",
   votingPower: tokens,
   moniker,
   identity,
@@ -86,19 +67,17 @@ let toExternal =
   tokens,
   commission: commissionRate *. 100.,
   bondedHeight,
+  // TODO: remove hardcoded when somewhere use it
+  avgResponseTime: 2,
   completedRequestCount: 23459,
   missedRequestCount: 20,
-  nodeStatus: {
-    uptime: votedCount /. electedCount *. 100.,
-    avgResponseTime: 2,
-  },
-  delegators: [
-    {
-      delegator: "bandvaloper1cg26m90y3wk50p9dn8pema8zmaa22plx3ensxr",
-      sharePercentage: 12.0,
-      amount: 12,
-    },
-  ],
+  uptime: None,
+};
+
+type validator_vote_t = {
+  consensusAddress: Address.t,
+  count: int,
+  voted: bool,
 };
 
 module SingleConfig = [%graphql
@@ -115,8 +94,6 @@ module SingleConfig = [%graphql
           consensusPubKey: consensus_pubkey @bsDecoder(fn: "PubKey.fromBech32")
           bondedHeight: bonded_height @bsDecoder(fn: "GraphQLParser.int64")
           jailed
-          votedCount: voted_count @bsDecoder(fn: "float_of_int")
-          electedCount: elected_count @bsDecoder(fn: "float_of_int")
           details
         }
       }
@@ -125,7 +102,7 @@ module SingleConfig = [%graphql
 
 module MultiConfig = [%graphql
   {|
-      subscription Validator($limit: Int!, $offset: Int!, $jailed: Boolean!) {
+      subscription Validators($limit: Int!, $offset: Int!, $jailed: Boolean!) {
         validators(limit: $limit, offset: $offset, where: {jailed: {_eq: $jailed}}, order_by: {tokens: desc}) @bsRecord {
           operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
           consensusAddress: consensus_address @bsDecoder(fn: "Address.fromHex")
@@ -137,8 +114,6 @@ module MultiConfig = [%graphql
           consensusPubKey: consensus_pubkey @bsDecoder(fn: "PubKey.fromBech32")
           bondedHeight: bonded_height @bsDecoder(fn: "GraphQLParser.int64")
           jailed
-          votedCount: voted_count @bsDecoder(fn: "float_of_int")
-          electedCount: elected_count @bsDecoder(fn: "float_of_int")
           details
         }
       }
@@ -161,7 +136,7 @@ module TotalBondedAmountConfig = [%graphql
 
 module ValidatorCountConfig = [%graphql
   {|
-    subscription Validator {
+    subscription ValidatorCount {
       validators_aggregate{
         aggregate{
           count @bsDecoder(fn: "Belt_Option.getExn")
@@ -173,7 +148,7 @@ module ValidatorCountConfig = [%graphql
 
 module ValidatorCountByJailedConfig = [%graphql
   {|
-    subscription Validator($jailed: Boolean!) {
+    subscription ValidatorCountByJailed($jailed: Boolean!) {
       validators_aggregate(where: {jailed: {_eq: $jailed}}) {
         aggregate{
           count @bsDecoder(fn: "Belt_Option.getExn")
@@ -181,6 +156,29 @@ module ValidatorCountByJailedConfig = [%graphql
       }
     }
   |}
+];
+
+module SingleLast250VotedConfig = [%graphql
+  {|
+  subscription ValidatorLast25Voted($consensusAddress: String!) {
+    validator_last_250_votes(where: {consensus_address: {_eq: $consensusAddress}}) {
+      count
+      voted
+    }
+  }
+|}
+];
+
+module MultiLast250VotedConfig = [%graphql
+  {|
+  subscription ValidatorsLast25Voted {
+    validator_last_250_votes {
+      consensus_address
+      count
+      voted
+    }
+  }
+|}
 ];
 
 let get = operator_address => {
@@ -232,4 +230,55 @@ let getTotalBondedAmount = () => {
   |> Sub.map(_, a =>
        ((a##validators_aggregate##aggregate |> Belt_Option.getExn)##sum |> Belt_Option.getExn)##tokens
      );
+};
+
+let getUptime = consensusAddress => {
+  let (result, _) =
+    ApolloHooks.useSubscription(
+      SingleLast250VotedConfig.definition,
+      ~variables=
+        SingleLast250VotedConfig.makeVariables(
+          ~consensusAddress=consensusAddress |> Address.toHex(~upper=true),
+          (),
+        ),
+    );
+
+  let%Sub x = result;
+  let validatorVotes = x##validator_last_250_votes;
+  let signedBlock =
+    validatorVotes
+    ->Belt.Array.keep(each => each##voted == Some(true))
+    ->Belt.Array.get(0)
+    ->Belt.Option.flatMap(each => each##count)
+    ->Belt.Option.mapWithDefault(0, GraphQLParser.int64)
+    |> float_of_int;
+
+  let missedBlock =
+    validatorVotes
+    ->Belt.Array.keep(each => each##voted == Some(false))
+    ->Belt.Array.get(0)
+    ->Belt.Option.flatMap(each => each##count)
+    ->Belt.Option.mapWithDefault(0, GraphQLParser.int64)
+    |> float_of_int;
+
+  let uptime = signedBlock /. (signedBlock +. missedBlock) *. 100.;
+  Sub.resolve(uptime);
+};
+
+// For computing uptime on Validator home page
+let getListVotesBlock = () => {
+  let (result, _) = ApolloHooks.useSubscription(MultiLast250VotedConfig.definition);
+
+  let%Sub x = result;
+  let validatorVotes =
+    x##validator_last_250_votes
+    ->Belt.Array.map(each =>
+        {
+          consensusAddress: each##consensus_address->Belt.Option.getExn->Address.fromHex,
+          count: each##count->Belt.Option.getExn->GraphQLParser.int64,
+          voted: each##voted->Belt.Option.getExn,
+        }
+      );
+
+  Sub.resolve(validatorVotes);
 };
