@@ -73,6 +73,7 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 				)
 				return
 			}
+			// TODO: Allow user to configure different executors
 			executor := &lambdaExecutor{}
 			result, exitCode := executor.Execute(l, exec, 3*time.Second, req.calldata)
 			l.Debug(
@@ -88,7 +89,7 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 		reports = append(reports, <-reportsChan)
 	}
 
-	// TODO: Parallelize this and make sure we don't do multiple broadcasts at the same time.
+	// TODO: Make sure sequence number do not mess up if multiple goroutines run the following code.
 	BroadCastMsgs(c, l, []sdk.Msg{
 		oracle.NewMsgReportData(
 			oracle.RequestID(id), reports, sdk.ValAddress(c.key.GetAddress()), c.key.GetAddress(),

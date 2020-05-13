@@ -44,8 +44,8 @@ func keysAddCmd(c *Context) *cobra.Command {
 				return err
 			}
 
-			fmt.Printf("📝 Mnemonic: %s\n", mnemonic)
-			fmt.Printf("📮 Address: %s", info.GetAddress().String())
+			fmt.Printf("Mnemonic: %s\n", mnemonic)
+			fmt.Printf("Address: %s", info.GetAddress().String())
 			return nil
 		},
 	}
@@ -65,7 +65,7 @@ func keysListCmd(c *Context) *cobra.Command {
 			}
 
 			for _, key := range keys {
-				fmt.Printf("👨‍⚖️ %s => %s\n", key.GetName(), key.GetAddress().String())
+				fmt.Printf("%s => %s\n", key.GetName(), key.GetAddress().String())
 			}
 			return nil
 		},
