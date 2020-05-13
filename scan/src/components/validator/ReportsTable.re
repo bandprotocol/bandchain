@@ -18,7 +18,8 @@ module Styles = {
 
   let fillLeft = style([marginLeft(`auto)]);
 
-  let hFlex = style([display(`flex), alignItems(`center)]);
+  let valueContainer =
+    style([display(`flex), flexDirection(`row), alignItems(`flexEnd), paddingLeft(`px(20))]);
 };
 
 [@react.component]
@@ -127,16 +128,12 @@ let make = (~address) =>
              {reports
               ->Belt.Array.map(({txHash, request, reportDetails}) => {
                   <TBody key={txHash |> Hash.toBase64}>
-                    <Row>
+                    <Row alignItems=`flexStart>
                       <Col> <HSpacing size=Spacing.md /> </Col>
                       <Col size=1. alignSelf=Col.Start> <TypeID.Request id={request.id} /> </Col>
                       <Col size=2. alignSelf=Col.Start>
-                        // TODO: Check TXHASH STYLINGS
-
-                          <div className={Styles.withWidth(140)}>
-                            <TxLink txHash width=110 />
-                          </div>
-                        </Col>
+                        <TxLink txHash width=150 weight=Text.Regular />
+                      </Col>
                       <Col size=2.3 alignSelf=Col.Start>
                         <Row>
                           <TypeID.OracleScript id={request.oracleScript.id} />
@@ -188,10 +185,15 @@ let make = (~address) =>
                          ->Belt_Array.map(({data}) => data)
                          ->Belt_Array.map(value => {
                              <>
-                               <div className={Styles.vFlex(`flexEnd)}>
+                               <div className=Styles.valueContainer>
                                  <Row>
                                    <div className=Styles.fillLeft />
-                                   <Text value={value |> JsBuffer.toUTF8} block=true code=true />
+                                   <Text
+                                     value={value |> JsBuffer.toUTF8}
+                                     block=true
+                                     code=true
+                                     breakAll=true
+                                   />
                                  </Row>
                                </div>
                                <VSpacing size=Spacing.md />

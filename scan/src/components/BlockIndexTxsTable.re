@@ -63,7 +63,6 @@ let make = (~txs: array(TxSub.t)) => {
                    spacing={Text.Em(0.02)}
                    value={gasFee->Coin.getBandAmountFromCoins->Format.fPretty}
                    weight=Text.Medium
-                   ellipsis=true
                  />
                  <HSpacing size={`px(20)} />
                </div>
