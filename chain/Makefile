@@ -27,20 +27,22 @@ install: go.sum
 release: go.sum
 	env GOOS=linux GOARCH=amd64 \
 		go build -mod=readonly -o ./build/bandd_linux_amd64 $(BUILD_FLAGS) ./cmd/bandd
-	env GOOS=linux GOARCH=arm \
-		go build -mod=readonly -o ./build/bandd_linux_arm $(BUILD_FLAGS) ./cmd/bandd
 	env GOOS=darwin GOARCH=amd64 \
 		go build -mod=readonly -o ./build/bandd_darwin_amd64 $(BUILD_FLAGS) ./cmd/bandd
 	env GOOS=windows GOARCH=amd64 \
 		go build -mod=readonly -o ./build/bandd_windows_amd64 $(BUILD_FLAGS) ./cmd/bandd
 	env GOOS=linux GOARCH=amd64 \
 		go build -mod=readonly -o ./build/bandcli_linux_amd64 $(BUILD_FLAGS) ./cmd/bandcli
-	env GOOS=linux GOARCH=arm \
-		go build -mod=readonly -o ./build/bandcli_linux_arm $(BUILD_FLAGS) ./cmd/bandcli
 	env GOOS=darwin GOARCH=amd64 \
 		go build -mod=readonly -o ./build/bandcli_darwin_amd64 $(BUILD_FLAGS) ./cmd/bandcli
 	env GOOS=windows GOARCH=amd64 \
 		go build -mod=readonly -o ./build/bandcli_windows_amd64 $(BUILD_FLAGS) ./cmd/bandcli
+	env GOOS=linux GOARCH=amd64 \
+		go build -mod=readonly -o ./build/bandoracled_linux_amd64 $(BUILD_FLAGS) ./cmd/bandoracled
+	env GOOS=darwin GOARCH=amd64 \
+		go build -mod=readonly -o ./build/bandoracled_darwin_amd64 $(BUILD_FLAGS) ./cmd/bandoracled
+	env GOOS=windows GOARCH=amd64 \
+		go build -mod=readonly -o ./build/bandoracled_windows_amd64 $(BUILD_FLAGS) ./cmd/bandoracled
 
 go.sum: go.mod
 	@echo "--> Ensure dependencies have not been modified"
