@@ -36,25 +36,11 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
           color=Colors.blue7
         />
       </div>
-      <div className={Styles.rowWithWidth(200)}>
-        <Text
-          value={
-            amount->Belt_List.get(0)->Belt_Option.getWithDefault(Coin.newCoin("uband", 0.0)).
-              amount
-            |> Format.fPretty
-          }
-          weight=Text.Semibold
-          code=true
-          nowrap=true
-          block=true
-        />
-        <HSpacing size=Spacing.sm />
-        <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
-        <HSpacing size=Spacing.sm />
-        <Text value={j|➜|j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
-        <HSpacing size=Spacing.sm />
-      </div>
-      <div className={Styles.withWidth(width / 3)}> <AddressRender address=toAddress /> </div>
+      <AmountRender coins=amount />
+      <HSpacing size=Spacing.sm />
+      <Text value={j|➜|j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+      <HSpacing size=Spacing.sm />
+      <div className={Styles.withWidth(width - 285)}> <AddressRender address=toAddress /> </div>
     </div>
   | CreateDataSourceMsg({id, sender, name}) =>
     <div className={Styles.rowWithWidth(width)}>
@@ -786,17 +772,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
           color=Colors.purple6
         />
       </div>
-      <div className={Styles.rowWithWidth(200)}>
-        <Text
-          value={amount.amount |> Format.fPretty}
-          weight=Text.Semibold
-          code=true
-          nowrap=true
-          block=true
-        />
-        <HSpacing size=Spacing.sm />
-        <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
-      </div>
+      <AmountRender coins=[amount] />
     </div>
   | UndelegateMsg({amount, delegatorAddress}) =>
     <div className={Styles.rowWithWidth(width)}>
@@ -810,17 +786,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
           color=Colors.purple6
         />
       </div>
-      <div className={Styles.rowWithWidth(200)}>
-        <Text
-          value={amount.amount |> Format.fPretty}
-          weight=Text.Semibold
-          code=true
-          nowrap=true
-          block=true
-        />
-        <HSpacing size=Spacing.sm />
-        <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
-      </div>
+      <AmountRender coins=[amount] />
     </div>
   | RedelegateMsg({amount, delegatorAddress}) =>
     <div className={Styles.rowWithWidth(width)}>
@@ -834,17 +800,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
           color=Colors.purple6
         />
       </div>
-      <div className={Styles.rowWithWidth(200)}>
-        <Text
-          value={amount.amount |> Format.fPretty}
-          weight=Text.Semibold
-          code=true
-          nowrap=true
-          block=true
-        />
-        <HSpacing size=Spacing.sm />
-        <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
-      </div>
+      <AmountRender coins=[amount] />
     </div>
   | WithdrawRewardMsg({delegatorAddress, amount}) =>
     <div className={Styles.rowWithWidth(width)}>
@@ -858,17 +814,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
           color=Colors.purple6
         />
       </div>
-      <div className={Styles.rowWithWidth(200)}>
-        <Text
-          value={amount |> Coin.getBandAmountFromCoins |> Js.Float.toString}
-          weight=Text.Semibold
-          code=true
-          nowrap=true
-          block=true
-        />
-        <HSpacing size=Spacing.sm />
-        <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
-      </div>
+      <AmountRender coins=amount />
     </div>
   | UnjailMsg({address}) =>
     <div className={Styles.rowWithWidth(width)}>
@@ -882,7 +828,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
           color=Colors.blue7
         />
       </div>
-      <div className={Styles.withWidth(300)}> <AddressRender address validator=true /> </div>
+      <div className={Styles.withWidth(width / 2)}> <AddressRender address validator=true /> </div>
     </div>
   | SetWithdrawAddressMsg({delegatorAddress, withdrawAddress}) =>
     <div className={Styles.rowWithWidth(width)}>
@@ -928,28 +874,18 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
           color=Colors.blue7
         />
       </div>
+      <AmountRender coins=amount />
+      <HSpacing size=Spacing.sm />
+      <Text value={j|➜|j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+      <HSpacing size=Spacing.sm />
       <div className={Styles.rowWithWidth(200)}>
         <Text
-          value={amount->Coin.getBandAmountNoDivision |> Format.fPretty}
-          weight=Text.Semibold
+          value={"Proposal " ++ (proposalID |> string_of_int)}
+          weight=Text.Regular
           code=true
           nowrap=true
           block=true
         />
-        <HSpacing size=Spacing.sm />
-        <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
-        <HSpacing size=Spacing.sm />
-        <Text value={j|➜|j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
-        <HSpacing size=Spacing.sm />
-        <div className={Styles.rowWithWidth(200)}>
-          <Text
-            value={"Proposal " ++ (proposalID |> string_of_int)}
-            weight=Text.Regular
-            code=true
-            nowrap=true
-            block=true
-          />
-        </div>
       </div>
     </div>
   | VoteMsg({voterAddress, proposalID, option}) =>
@@ -990,17 +926,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
           color=Colors.purple6
         />
       </div>
-      <div className={Styles.rowWithWidth(200)}>
-        <Text
-          value={amount |> Coin.getBandAmountFromCoins |> Js.Float.toString}
-          weight=Text.Semibold
-          code=true
-          nowrap=true
-          block=true
-        />
-        <HSpacing size=Spacing.sm />
-        <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
-      </div>
+      <AmountRender coins=amount />
     </div>
   | MultiSendMsg({inputs, outputs}) =>
     let firstInput = inputs |> Belt_List.getExn(_, 0);
