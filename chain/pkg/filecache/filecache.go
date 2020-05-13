@@ -11,6 +11,7 @@ type Cache struct {
 	fileCache *diskv.Diskv
 }
 
+// New creates and returns a new file-backed data caching instance.
 func New(basePath string) Cache {
 	return Cache{
 		fileCache: diskv.New(diskv.Options{
