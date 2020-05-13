@@ -6,6 +6,10 @@ module Styles = {
   let header =
     style([display(`flex), flexDirection(`row), alignItems(`center), height(`px(50))]);
 
+  let blockHash = style([height(`px(18)), display(`flex), alignItems(`center)]);
+
+  let blockLogo = style([minWidth(`px(50)), marginRight(`px(10))]);
+
   let seperatedLine =
     style([
       width(`px(13)),
@@ -14,11 +18,6 @@ module Styles = {
       marginRight(`px(10)),
       backgroundColor(Colors.gray7),
     ]);
-
-  let addressContainer = style([marginTop(`px(15))]);
-  let checkLogo = style([marginRight(`px(10))]);
-  let blockLogo = style([width(`px(50)), marginRight(`px(10))]);
-  let proposerContainer = style([maxWidth(`px(180))]);
 };
 
 [@react.component]
@@ -53,20 +52,22 @@ let make = (~height) => {
       </div>
     </Row>
     <VSpacing size=Spacing.lg />
-    {switch (blockSub) {
-     | Data({hash}) =>
-       <Text
-         value={hash |> Hash.toHex(~upper=true)}
-         size=Text.Xxl
-         weight=Text.Semibold
-         code=true
-         nowrap=true
-         ellipsis=true
-       />
-     | _ => <LoadingCensorBar width=700 height=15 />
-     }}
+    <div className=Styles.blockHash>
+      {switch (blockSub) {
+       | Data({hash}) =>
+         <Text
+           value={hash |> Hash.toHex(~upper=true)}
+           size=Text.Xxl
+           nowrap=true
+           ellipsis=true
+           code=true
+           weight=Text.Bold
+         />
+       | _ => <LoadingCensorBar width=700 height=15 />
+       }}
+    </div>
     <VSpacing size=Spacing.lg />
-    <Row>
+    <Row minHeight={`px(40)}>
       <Col size=1.8>
         {switch (blockSub) {
          | Data({txn}) => <InfoHL info={InfoHL.Count(txn)} header="TRANSACTIONS" />

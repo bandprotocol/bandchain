@@ -6,7 +6,7 @@ module Styles = {
   let header =
     style([display(`flex), flexDirection(`row), alignItems(`center), height(`px(50))]);
 
-  let logo = style([width(`px(50)), marginRight(`px(10))]);
+  let logo = style([minWidth(`px(50)), marginRight(`px(10))]);
 
   let seperatedLine =
     style([

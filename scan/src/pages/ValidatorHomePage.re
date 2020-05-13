@@ -6,7 +6,7 @@ module Styles = {
   let header =
     style([display(`flex), flexDirection(`row), alignItems(`center), height(`px(50))]);
 
-  let validatorsLogo = style([marginRight(`px(10))]);
+  let validatorsLogo = style([minWidth(`px(50)), marginRight(`px(10))]);
   let highlight = style([margin2(~v=`px(28), ~h=`zero)]);
   let valueContainer = style([display(`flex), justifyContent(`flexStart)]);
   let monikerContainer = style([maxWidth(`px(250))]);

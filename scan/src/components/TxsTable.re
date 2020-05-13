@@ -48,8 +48,7 @@ let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)
            </div>
          | _ =>
            <div className=Styles.statusContainer>
-             <LoadingCensorBar width=50 height=15 />
-             <HSpacing size=Spacing.sm />
+             <LoadingCensorBar width=45 height=15 />
              <LoadingCensorBar width=20 height=20 radius=20 />
            </div>
          }}
@@ -69,7 +68,7 @@ let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)
                ellipsis=true
              />
 
-           | _ => <LoadingCensorBar width=65 height=15 />
+           | _ => <LoadingCensorBar width=65 height=15 isRight=true />
            }}
           <HSpacing size={`px(20)} />
         </div>
