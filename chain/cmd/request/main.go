@@ -89,7 +89,7 @@ func main() {
 				1000000, "", "",
 			))
 
-			oracleBytes, err := ioutil.ReadFile("../../owasm/res/crypto_price.wasm")
+			oracleBytes, err := ioutil.ReadFile("../../pkg/owasm/res/crypto_price.wasm")
 			if err != nil {
 				panic(err)
 			}
@@ -217,7 +217,7 @@ func main() {
 		}
 	case "example-test":
 		{
-			bytes, err := ioutil.ReadFile("../../owasm/res/silly.wasm")
+			bytes, err := ioutil.ReadFile("../../pkg/owasm/res/silly.wasm")
 			if err != nil {
 				panic(err)
 			}
@@ -243,7 +243,7 @@ func main() {
 		}
 	case "deploy_oracle_scripts":
 		{
-			bytes, err := ioutil.ReadFile("../../owasm/res/silly/pkg/silly_bg.wasm")
+			bytes, err := ioutil.ReadFile("../../pkg/owasm/res/silly/pkg/silly_bg.wasm")
 			if err != nil {
 				panic(err)
 			}

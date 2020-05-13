@@ -186,7 +186,7 @@ func TestRequestSuccess(t *testing.T) {
 	_, err := keeper.CoinKeeper.AddCoins(ctx, sender, keep.NewUBandCoins(410))
 	require.Nil(t, err)
 
-	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
+	script := keep.GetTestOracleScript("../../pkg/owasm/res/silly.wasm")
 	keeper.SetOracleScript(ctx, 1, script)
 
 	pubStr := []string{
@@ -251,7 +251,7 @@ func TestRequestIBCSuccess(t *testing.T) {
 	sourcePort := "sourcePort"
 	sourceChannel := "sourceChannel"
 
-	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
+	script := keep.GetTestOracleScript("../../pkg/owasm/res/silly.wasm")
 	keeper.SetOracleScript(ctx, 1, script)
 
 	pubStr := []string{
@@ -316,7 +316,7 @@ func TestRequestInvalidDataSource(t *testing.T) {
 	_, err := handleMsgRequestData(ctx, keeper, msg)
 	require.NotNil(t, err)
 
-	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
+	script := keep.GetTestOracleScript("../../pkg/owasm/res/silly.wasm")
 	keeper.SetOracleScript(ctx, 1, script)
 
 	pubStr := []string{
@@ -347,7 +347,7 @@ func TestRequestIBCInvalidDataSource(t *testing.T) {
 	_, err := handleMsgRequestDataIBC(ctx, keeper, msg, sourcePort, sourceChannel)
 	require.NotNil(t, err)
 
-	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
+	script := keep.GetTestOracleScript("../../pkg/owasm/res/silly.wasm")
 	keeper.SetOracleScript(ctx, 1, script)
 
 	pubStr := []string{
@@ -371,7 +371,7 @@ func TestRequestWithPrepareGasExceed(t *testing.T) {
 	calldata := []byte("calldata")
 	sender := sdk.AccAddress([]byte("sender"))
 
-	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
+	script := keep.GetTestOracleScript("../../pkg/owasm/res/silly.wasm")
 	keeper.SetOracleScript(ctx, 1, script)
 
 	pubStr := []string{
@@ -401,7 +401,7 @@ func TestRequestIBCWithPrepareGasExceed(t *testing.T) {
 	sender := sdk.AccAddress([]byte("sender"))
 	sourcePort := "sourcePort"
 	sourceChannel := "sourceChannel"
-	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
+	script := keep.GetTestOracleScript("../../pkg/owasm/res/silly.wasm")
 	keeper.SetOracleScript(ctx, 1, script)
 
 	pubStr := []string{
@@ -429,7 +429,7 @@ func TestReportSuccess(t *testing.T) {
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
 	calldata := []byte("calldata")
 
-	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
+	script := keep.GetTestOracleScript("../../pkg/owasm/res/silly.wasm")
 	keeper.SetOracleScript(ctx, 1, script)
 
 	pubStr := []string{
@@ -488,7 +488,7 @@ func TestReportFailed(t *testing.T) {
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
 	calldata := []byte("calldata")
 
-	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
+	script := keep.GetTestOracleScript("../../pkg/owasm/res/silly.wasm")
 	keeper.SetOracleScript(ctx, 1, script)
 
 	pubStr := []string{
@@ -535,7 +535,7 @@ func TestReportFailed(t *testing.T) {
 // 	calldata := []byte("calldata")
 // 	sender := sdk.AccAddress([]byte("sender"))
 
-// 	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
+// 	script := keep.GetTestOracleScript("../../pkg/owasm/res/silly.wasm")
 // 	keeper.SetOracleScript(ctx, 1, script)
 
 // 	pubStr := []string{
@@ -594,7 +594,7 @@ func TestAddAndRemoveOracleAddress(t *testing.T) {
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
 	calldata := []byte("calldata")
 
-	script := keep.GetTestOracleScript("../../owasm/res/silly.wasm")
+	script := keep.GetTestOracleScript("../../pkg/owasm/res/silly.wasm")
 	keeper.SetOracleScript(ctx, 1, script)
 
 	pubStr := []string{
