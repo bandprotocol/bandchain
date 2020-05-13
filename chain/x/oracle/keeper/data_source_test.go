@@ -85,13 +85,13 @@ func TestAddDataSourceDataSourceMustReturnCorrectID(t *testing.T) {
 		Owner.Address, BasicName, BasicDesc, BasicExec,
 	))
 	require.Nil(t, err)
-	require.Equal(t, id1, types.DID(1))
+	require.Equal(t, id1, types.DataSourceID(1))
 	// Adds another data source so now ID should be 2.
 	id2, err := k.AddDataSource(ctx, types.NewDataSource(
 		Owner.Address, BasicName, BasicDesc, BasicExec,
 	))
 	require.Nil(t, err)
-	require.Equal(t, id2, types.DID(2))
+	require.Equal(t, id2, types.DataSourceID(2))
 	// Finally we expect the data source to increase to 2 since we added two data sources.
 	count = k.GetDataSourceCount(ctx)
 	require.Equal(t, count, int64(2))

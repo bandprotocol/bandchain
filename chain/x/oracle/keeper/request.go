@@ -10,7 +10,7 @@ import (
 )
 
 // HasRequest checks if the request of this ID exists in the storage.
-func (k Keeper) HasRequest(ctx sdk.Context, id types.RID) bool {
+func (k Keeper) HasRequest(ctx sdk.Context, id types.RequestID) bool {
 	return ctx.KVStore(k.storeKey).Has(types.RequestStoreKey(id))
 }
 
@@ -79,7 +79,7 @@ func (k Keeper) AddRequest(ctx sdk.Context, req types.Request) (types.RequestID,
 // ResolveRequest updates the request with resolve status and result, and saves the commitment
 // pair of oracle request/response packets to the store. Returns back the response packet.
 func (k Keeper) ResolveRequest(
-	ctx sdk.Context, id types.RID, status types.ResolveStatus, result []byte,
+	ctx sdk.Context, id types.RequestID, status types.ResolveStatus, result []byte,
 ) types.OracleResponsePacketData {
 
 	request := k.MustGetRequest(ctx, id)

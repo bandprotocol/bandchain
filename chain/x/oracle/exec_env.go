@@ -12,7 +12,7 @@ type ExecEnv struct {
 	maxCalldataSize    int64
 	maxRawRequestCount int64
 	rawRequests        []types.RawRequest
-	reports            map[string]map[types.EID]types.RawReport
+	reports            map[string]map[types.ExternalID]types.RawReport
 }
 
 func NewExecEnv(ctx sdk.Context, k Keeper, req types.Request) *ExecEnv {
@@ -23,7 +23,7 @@ func NewExecEnv(ctx sdk.Context, k Keeper, req types.Request) *ExecEnv {
 		maxCalldataSize:    int64(k.GetParam(ctx, KeyMaxCalldataSize)),
 		maxRawRequestCount: int64(k.GetParam(ctx, KeyMaxRawRequestCount)),
 		rawRequests:        []types.RawRequest{},
-		reports:            make(map[string]map[types.EID]types.RawReport),
+		reports:            make(map[string]map[types.ExternalID]types.RawReport),
 	}
 }
 
@@ -35,7 +35,7 @@ func (env *ExecEnv) GetRawRequests() []types.RawRequest {
 // SetReports loads the reports to the environment. Must be called prior to Owasm execute run.
 func (env *ExecEnv) SetReports(reports []types.Report) {
 	for _, report := range reports {
-		valReports := make(map[types.EID]types.RawReport)
+		valReports := make(map[types.ExternalID]types.RawReport)
 		for _, each := range report.RawReports {
 			valReports[each.ExternalID] = each
 		}
@@ -113,7 +113,7 @@ func (env *ExecEnv) GetExternalData(eid int64, valIdx int64) ([]byte, uint32, er
 	if !ok {
 		return nil, 0, types.ErrItemNotFound
 	}
-	valReport, ok := valReports[types.EID(eid)]
+	valReport, ok := valReports[types.ExternalID(eid)]
 	if !ok {
 		return nil, 0, types.ErrItemNotFound
 	}

@@ -60,16 +60,16 @@ func TestSetterGetterRequest(t *testing.T) {
 func TestSetterGettterPendingResolveList(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// Initially, we should get an empty list of pending resolves.
-	require.Equal(t, k.GetPendingResolveList(ctx), []types.RID{})
+	require.Equal(t, k.GetPendingResolveList(ctx), []types.RequestID{})
 	// After we set something, we should get that thing back.
-	k.SetPendingResolveList(ctx, []types.RID{5, 6, 7, 8})
-	require.Equal(t, k.GetPendingResolveList(ctx), []types.RID{5, 6, 7, 8})
+	k.SetPendingResolveList(ctx, []types.RequestID{5, 6, 7, 8})
+	require.Equal(t, k.GetPendingResolveList(ctx), []types.RequestID{5, 6, 7, 8})
 	// Let's also try setting it back to empty list.
-	k.SetPendingResolveList(ctx, []types.RID{})
-	require.Equal(t, k.GetPendingResolveList(ctx), []types.RID{})
+	k.SetPendingResolveList(ctx, []types.RequestID{})
+	require.Equal(t, k.GetPendingResolveList(ctx), []types.RequestID{})
 	// Nil should also works.
 	k.SetPendingResolveList(ctx, nil)
-	require.Equal(t, k.GetPendingResolveList(ctx), []types.RID{})
+	require.Equal(t, k.GetPendingResolveList(ctx), []types.RequestID{})
 }
 
 func TestAddDataSourceBasic(t *testing.T) {
@@ -81,11 +81,11 @@ func TestAddDataSourceBasic(t *testing.T) {
 	// Adding the first request should return ID 1.
 	id, err := k.AddRequest(ctx, types.NewRequest(42, BasicCalldata, nil, 1, 1, 1, "", nil))
 	require.Nil(t, err)
-	require.Equal(t, id, types.RID(1))
+	require.Equal(t, id, types.RequestID(1))
 	// Adding another request should return ID 2.
 	id, err = k.AddRequest(ctx, types.NewRequest(42, BasicCalldata, nil, 1, 1, 1, "", nil))
 	require.Nil(t, err)
-	require.Equal(t, id, types.RID(2))
+	require.Equal(t, id, types.RequestID(2))
 }
 
 func TestAddRequestNoOracleScript(t *testing.T) {
@@ -120,12 +120,12 @@ func TestAddRequestTooBigCalldata(t *testing.T) {
 func TestAddPendingResolveList(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// Initially, we should get an empty list of pending resolves.
-	require.Equal(t, k.GetPendingResolveList(ctx), []types.RID{})
+	require.Equal(t, k.GetPendingResolveList(ctx), []types.RequestID{})
 	// Everytime we append a new request ID, it should show up.
 	k.AddPendingRequest(ctx, 42)
-	require.Equal(t, k.GetPendingResolveList(ctx), []types.RID{42})
+	require.Equal(t, k.GetPendingResolveList(ctx), []types.RequestID{42})
 	k.AddPendingRequest(ctx, 43)
-	require.Equal(t, k.GetPendingResolveList(ctx), []types.RID{42, 43})
+	require.Equal(t, k.GetPendingResolveList(ctx), []types.RequestID{42, 43})
 }
 
 func TestGetRandomValidatorsSuccess(t *testing.T) {

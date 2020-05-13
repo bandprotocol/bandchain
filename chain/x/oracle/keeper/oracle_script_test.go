@@ -87,13 +87,13 @@ func TestAddOracleScriptMustReturnCorrectID(t *testing.T) {
 		Owner.Address, BasicName, BasicDesc, BasicCode, BasicSchema, BasicSourceCodeURL,
 	))
 	require.Nil(t, err)
-	require.Equal(t, id1, types.OID(1))
+	require.Equal(t, id1, types.OracleScriptID(1))
 	// Adds another oracle script so now ID should be 2.
 	id2, err := k.AddOracleScript(ctx, types.NewOracleScript(
 		Owner.Address, BasicName, BasicDesc, BasicCode, BasicSchema, BasicSourceCodeURL,
 	))
 	require.Nil(t, err)
-	require.Equal(t, id2, types.OID(2))
+	require.Equal(t, id2, types.OracleScriptID(2))
 	// Finally we expect the oracle script to increase to 2 since we added two oracle scripts.
 	count = k.GetOracleScriptCount(ctx)
 	require.Equal(t, count, int64(2))
