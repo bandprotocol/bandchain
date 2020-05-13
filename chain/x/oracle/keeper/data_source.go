@@ -7,12 +7,12 @@ import (
 )
 
 // HasDataSource checks if the data source of this ID exists in the storage.
-func (k Keeper) HasDataSource(ctx sdk.Context, id types.DID) bool {
+func (k Keeper) HasDataSource(ctx sdk.Context, id types.DataSourceID) bool {
 	return ctx.KVStore(k.storeKey).Has(types.DataSourceStoreKey(id))
 }
 
 // GetDataSource returns the data source struct for the given ID or error if not exists.
-func (k Keeper) GetDataSource(ctx sdk.Context, id types.DID) (types.DataSource, error) {
+func (k Keeper) GetDataSource(ctx sdk.Context, id types.DataSourceID) (types.DataSource, error) {
 	bz := ctx.KVStore(k.storeKey).Get(types.DataSourceStoreKey(id))
 	if bz == nil {
 		return types.DataSource{}, sdkerrors.Wrapf(types.ErrDataSourceNotFound, "id: %d", id)
@@ -23,7 +23,7 @@ func (k Keeper) GetDataSource(ctx sdk.Context, id types.DID) (types.DataSource, 
 }
 
 // MustGetDataSource returns the data source struct for the given ID. Panic if not exists.
-func (k Keeper) MustGetDataSource(ctx sdk.Context, id types.DID) types.DataSource {
+func (k Keeper) MustGetDataSource(ctx sdk.Context, id types.DataSourceID) types.DataSource {
 	dataSource, err := k.GetDataSource(ctx, id)
 	if err != nil {
 		panic(err)
@@ -32,13 +32,13 @@ func (k Keeper) MustGetDataSource(ctx sdk.Context, id types.DID) types.DataSourc
 }
 
 // SetDataSource saves the given data source to the storage without performing validation.
-func (k Keeper) SetDataSource(ctx sdk.Context, id types.DID, dataSource types.DataSource) {
+func (k Keeper) SetDataSource(ctx sdk.Context, id types.DataSourceID, dataSource types.DataSource) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.DataSourceStoreKey(id), k.cdc.MustMarshalBinaryBare(dataSource))
 }
 
 // AddDataSource adds the given data source to the storage. Returns error if validation fails.
-func (k Keeper) AddDataSource(ctx sdk.Context, dataSource types.DataSource) (types.DID, error) {
+func (k Keeper) AddDataSource(ctx sdk.Context, dataSource types.DataSource) (types.DataSourceID, error) {
 	if err := AnyError(
 		k.EnsureLength(ctx, types.KeyMaxNameLength, len(dataSource.Name)),
 		k.EnsureLength(ctx, types.KeyMaxDescriptionLength, len(dataSource.Description)),
@@ -52,7 +52,7 @@ func (k Keeper) AddDataSource(ctx sdk.Context, dataSource types.DataSource) (typ
 }
 
 // EditDataSource edits the given data source by id and flushes it to the storage.
-func (k Keeper) EditDataSource(ctx sdk.Context, id types.DID, new types.DataSource) error {
+func (k Keeper) EditDataSource(ctx sdk.Context, id types.DataSourceID, new types.DataSource) error {
 	dataSource, err := k.GetDataSource(ctx, id)
 	if err != nil {
 		return err

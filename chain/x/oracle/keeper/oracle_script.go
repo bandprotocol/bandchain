@@ -7,12 +7,12 @@ import (
 )
 
 // HasOracleScript checks if the oracle script of this ID exists in the storage.
-func (k Keeper) HasOracleScript(ctx sdk.Context, id types.OID) bool {
+func (k Keeper) HasOracleScript(ctx sdk.Context, id types.OracleScriptID) bool {
 	return ctx.KVStore(k.storeKey).Has(types.OracleScriptStoreKey(id))
 }
 
 // GetOracleScript returns the oracle script struct for the given ID or error if not exists.
-func (k Keeper) GetOracleScript(ctx sdk.Context, id types.OID) (types.OracleScript, error) {
+func (k Keeper) GetOracleScript(ctx sdk.Context, id types.OracleScriptID) (types.OracleScript, error) {
 	bz := ctx.KVStore(k.storeKey).Get(types.OracleScriptStoreKey(id))
 	if bz == nil {
 		return types.OracleScript{}, sdkerrors.Wrapf(types.ErrOracleScriptNotFound, "id: %d", id)
@@ -23,7 +23,7 @@ func (k Keeper) GetOracleScript(ctx sdk.Context, id types.OID) (types.OracleScri
 }
 
 // MustGetOracleScript returns the oracle script struct for the given ID. Panic if not exists.
-func (k Keeper) MustGetOracleScript(ctx sdk.Context, id types.OID) types.OracleScript {
+func (k Keeper) MustGetOracleScript(ctx sdk.Context, id types.OracleScriptID) types.OracleScript {
 	oracleScript, err := k.GetOracleScript(ctx, id)
 	if err != nil {
 		panic(err)
@@ -32,13 +32,13 @@ func (k Keeper) MustGetOracleScript(ctx sdk.Context, id types.OID) types.OracleS
 }
 
 // SetOracleScript saves the given oracle script to the storage without performing validation.
-func (k Keeper) SetOracleScript(ctx sdk.Context, id types.OID, oracleScript types.OracleScript) {
+func (k Keeper) SetOracleScript(ctx sdk.Context, id types.OracleScriptID, oracleScript types.OracleScript) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.OracleScriptStoreKey(id), k.cdc.MustMarshalBinaryBare(oracleScript))
 }
 
 // AddOracleScript adds the given oracle script to the storage. Returns error if validation fails.
-func (k Keeper) AddOracleScript(ctx sdk.Context, oracleScript types.OracleScript) (types.OID, error) {
+func (k Keeper) AddOracleScript(ctx sdk.Context, oracleScript types.OracleScript) (types.OracleScriptID, error) {
 	if err := AnyError(
 		k.EnsureLength(ctx, types.KeyMaxNameLength, len(oracleScript.Name)),
 		k.EnsureLength(ctx, types.KeyMaxDescriptionLength, len(oracleScript.Description)),
@@ -52,7 +52,7 @@ func (k Keeper) AddOracleScript(ctx sdk.Context, oracleScript types.OracleScript
 }
 
 // EditOracleScript edits the given oracle script by id and flushes it to the storage.
-func (k Keeper) EditOracleScript(ctx sdk.Context, id types.OID, new types.OracleScript) error {
+func (k Keeper) EditOracleScript(ctx sdk.Context, id types.OracleScriptID, new types.OracleScript) error {
 	oracleScript, err := k.GetOracleScript(ctx, id)
 	if err != nil {
 		return err

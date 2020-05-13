@@ -7,18 +7,18 @@ import (
 )
 
 // HasRawRequest checks if the raw request of this ID tuple exists in the storage.
-func (k Keeper) HasRawRequest(ctx sdk.Context, rid types.RID, eid types.EID) bool {
+func (k Keeper) HasRawRequest(ctx sdk.Context, rid types.RequestID, eid types.ExternalID) bool {
 	return ctx.KVStore(k.storeKey).Has(types.RawRequestStoreKey(rid, eid))
 }
 
 // SetRawRequest saves the raw request to the storage without performing validation.
-func (k Keeper) SetRawRequest(ctx sdk.Context, rid types.RID, data types.RawRequest) {
+func (k Keeper) SetRawRequest(ctx sdk.Context, rid types.RequestID, data types.RawRequest) {
 	key := types.RawRequestStoreKey(rid, data.ExternalID)
 	ctx.KVStore(k.storeKey).Set(key, k.cdc.MustMarshalBinaryBare(data))
 }
 
 // AddRawRequest performs all sanity checks and adds a new raw request to the store.
-func (k Keeper) AddRawRequest(ctx sdk.Context, rid types.RID, data types.RawRequest) error {
+func (k Keeper) AddRawRequest(ctx sdk.Context, rid types.RequestID, data types.RawRequest) error {
 	if err := k.EnsureLength(ctx, types.KeyMaxCalldataSize, len(data.Calldata)); err != nil {
 		return err
 	}
@@ -56,7 +56,7 @@ func (k Keeper) GetRawRequestCount(ctx sdk.Context, rid types.RequestID) (count 
 }
 
 // GetRawRequests returns all raw requests for the given request ID, or nil if there is none.
-func (k Keeper) GetRawRequests(ctx sdk.Context, rid types.RID) (res []types.RawRequest) {
+func (k Keeper) GetRawRequests(ctx sdk.Context, rid types.RequestID) (res []types.RawRequest) {
 	iterator := k.GetRawRequestIterator(ctx, rid)
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
@@ -68,7 +68,7 @@ func (k Keeper) GetRawRequests(ctx sdk.Context, rid types.RID) (res []types.RawR
 }
 
 // DeleteRawRequests removes all raw requests for the given request ID.
-func (k Keeper) DeleteRawRequests(ctx sdk.Context, rid types.RID) {
+func (k Keeper) DeleteRawRequests(ctx sdk.Context, rid types.RequestID) {
 	var keys [][]byte
 	iterator := k.GetRawRequestIterator(ctx, rid)
 	defer iterator.Close()
