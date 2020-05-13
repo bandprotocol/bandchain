@@ -228,8 +228,8 @@ let addUptimeOnValidators =
     {
       ...validator,
       uptime:
-        signedBlock != 0. && missedBlock != 0.
-          ? Some(signedBlock /. (signedBlock +. missedBlock) *. 100.) : None,
+        signedBlock == 0. && missedBlock == 0.
+          ? None : Some(signedBlock /. (signedBlock +. missedBlock) *. 100.),
     };
   });
 };
