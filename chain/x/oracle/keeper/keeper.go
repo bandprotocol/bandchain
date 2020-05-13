@@ -3,8 +3,6 @@ package keeper
 import (
 	"fmt"
 
-	"github.com/peterbourgon/diskv"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
@@ -16,13 +14,14 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/bandprotocol/bandchain/chain/owasm"
+	"github.com/bandprotocol/bandchain/chain/pkg/filecache"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 type Keeper struct {
 	storeKey      sdk.StoreKey
 	cdc           *codec.Codec
-	fileCache     *diskv.Diskv
+	fileCache     filecache.Cache
 	OwasmExecute  owasm.Executor
 	ParamSpace    params.Subspace
 	CoinKeeper    bank.Keeper
@@ -42,13 +41,9 @@ func NewKeeper(
 		paramSpace = paramSpace.WithKeyTable(ParamKeyTable())
 	}
 	return Keeper{
-		storeKey: key,
-		cdc:      cdc,
-		fileCache: diskv.New(diskv.Options{
-			BasePath:     fileDir,
-			Transform:    func(s string) []string { return []string{} },
-			CacheSizeMax: 32 * 1024 * 1024, // 32MB TODO: Make this configurable
-		}),
+		storeKey:      key,
+		cdc:           cdc,
+		fileCache:     filecache.New(fileDir),
 		OwasmExecute:  owasmExecute,
 		ParamSpace:    paramSpace,
 		CoinKeeper:    coinKeeper,
