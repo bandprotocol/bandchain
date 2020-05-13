@@ -25,7 +25,7 @@ const (
 	// Expiration block count value 20
 	DefaultExpirationBlockCount = uint64(20)
 
-	// Reported window size is 100
+	// The maximum consecutive misses allowance
 	DefaulMaxConsecutiveMisses = uint64(10)
 )
 

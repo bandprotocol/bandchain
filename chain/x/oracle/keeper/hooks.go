@@ -6,7 +6,7 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
-func (k Keeper) AfterValidatorBonded(ctx sdk.Context, _ sdk.ConsAddress, address sdk.ValAddress) {
+func (k Keeper) AfterValidatorBonded(ctx sdk.Context, address sdk.ValAddress) {
 	// Create a new report info if not existed.
 	found := k.HasValidatorReportInfo(ctx, address)
 	if !found {
@@ -33,8 +33,8 @@ func (k Keeper) Hooks() Hooks {
 }
 
 // Implements sdk.ValidatorHooks
-func (h Hooks) AfterValidatorBonded(ctx sdk.Context, consAddr sdk.ConsAddress, valAddr sdk.ValAddress) {
-	h.k.AfterValidatorBonded(ctx, consAddr, valAddr)
+func (h Hooks) AfterValidatorBonded(ctx sdk.Context, _ sdk.ConsAddress, valAddr sdk.ValAddress) {
+	h.k.AfterValidatorBonded(ctx, valAddr)
 }
 
 func (h Hooks) AfterValidatorRemoved(_ sdk.Context, _ sdk.ConsAddress, _ sdk.ValAddress)         {}

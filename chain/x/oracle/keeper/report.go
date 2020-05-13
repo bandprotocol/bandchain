@@ -90,7 +90,7 @@ func (k Keeper) DeleteReports(ctx sdk.Context, rid types.RequestID) {
 
 // UpdateReportInfos updates validator report info for jail validator
 // that miss report more than threshold.
-func (k Keeper) UpdateReportInfos(ctx sdk.Context, rid types.RID) {
+func (k Keeper) UpdateReportInfos(ctx sdk.Context, rid types.RequestID) {
 	reportedMap := make(map[string]bool)
 	iterator := k.GetReportIterator(ctx, rid)
 	defer iterator.Close()
