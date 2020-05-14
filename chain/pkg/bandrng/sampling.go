@@ -38,7 +38,7 @@ func ChooseOne(rng *Rng, weights []uint64) int {
 
 // GetCandidateSize return candidate size that base on current round and total round
 // currentRound must in range [0,totalRound)
-// totalCount must be more than 0
+// totalRound must be more than 0 and totalCount <= totalRound
 // if totalRound = 1 the function will return totalCount
 // candidate size will decrease every round
 // candidate size calculate by function
@@ -48,8 +48,11 @@ func GetCandidateSize(currentRound, totalRound, totalCount int) int {
 	if currentRound < 0 || currentRound >= totalRound {
 		panic("currentRound must in range [0,totalRound)")
 	}
-	if totalCount <= 0 {
-		panic("totalCount must be more than 0")
+	if totalRound <= 0 {
+		panic("totalRound must be more than 0")
+	}
+	if totalCount < totalRound {
+		panic("error: totalCount < totalRound")
 	}
 
 	if totalRound == 1 {
