@@ -35,3 +35,26 @@ func ChooseOne(rng *Rng, weights []uint64) int {
 	// Should never happen because the sum of weights is more than the lucky number
 	panic("error")
 }
+
+// GetCandidateSize return candidate random size in current round. currentRound must in range [0,totalRound).
+// Size of candidate will not exceed totalCount
+func GetCandidateSize(currentRound, totalRound, totalCount int) int {
+	if currentRound < 0 || currentRound >= totalRound {
+		panic("currentRound must in range [0,totalRound)")
+	}
+	if totalRound <= 0 { //Should never happen because if totalRound <= 0 it will panic before
+		panic("totalRound must more than 0")
+	}
+	if totalCount <= 2 {
+		panic("totalCount must more than 0")
+	}
+
+	if currentRound == 0 || totalRound == 1 || totalCount == 1 {
+		return totalCount
+	}
+	if totalCount == 2 && currentRound == 1 {
+		return 2
+	}
+
+	return int(math.Pow(float64(totalCount-2), float64(totalRound-currentRound-1)/float64(totalRound-1)) + 1)
+}

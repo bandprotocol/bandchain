@@ -44,3 +44,27 @@ func TestChooseOnePanic(t *testing.T) {
 	})
 
 }
+
+func TestGetCandidateSize(t *testing.T) {
+	expected := []int{93, 43, 20, 10, 5, 3, 2}
+	totalRound := 7
+	for currentRound := 0; currentRound < totalRound; currentRound++ {
+		require.Equal(t, bandrng.GetCandidateSize(currentRound, totalRound, 93-currentRound), expected[currentRound])
+	}
+
+	require.Equal(t, bandrng.GetCandidateSize(0, 1, 9999), 9999)
+	require.Equal(t, bandrng.GetCandidateSize(1, 2, 9999), 2)
+
+}
+
+func TestGetCandidateSizePanic(t *testing.T) {
+	require.Panics(t, func() {
+		bandrng.GetCandidateSize(10, 0, 99)
+	})
+	require.Panics(t, func() {
+		bandrng.GetCandidateSize(10, 10, 99)
+	})
+	require.Panics(t, func() {
+		bandrng.GetCandidateSize(9, 10, 0)
+	})
+}
