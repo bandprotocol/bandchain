@@ -46,7 +46,7 @@ func TestChooseOnePanic(t *testing.T) {
 }
 
 func TestGetCandidateSize(t *testing.T) {
-	expected := []int{93, 43, 20, 10, 5, 3, 2}
+	expected := []int{93, 43, 21, 10, 5, 3, 2}
 	totalRound := 7
 	for currentRound := 0; currentRound < totalRound; currentRound++ {
 		require.Equal(t, bandrng.GetCandidateSize(currentRound, totalRound, 93-currentRound), expected[currentRound])
