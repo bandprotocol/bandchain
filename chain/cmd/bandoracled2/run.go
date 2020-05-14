@@ -4,15 +4,19 @@ import (
 	"context"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/spf13/cobra"
 	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
 	tmtypes "github.com/tendermint/tendermint/types"
 )
 
-func runImpl(client *rpchttp.HTTP, key keyring.Info) error {
-	logger.Info("🚀 Starting WebSocket subscriber")
-	err := client.Start()
+const (
+	// TODO: We can subscribe only for txs that contain request messages
+	TxQuery = "tm.event = 'Tx'"
+)
+
+func runImpl(c *Context, l *Logger) error {
+	l.Info(":rocket: Starting WebSocket subscriber")
+	err := c.client.Start()
 	if err != nil {
 		return err
 	}
@@ -20,10 +24,8 @@ func runImpl(client *rpchttp.HTTP, key keyring.Info) error {
 	ctx, cxl := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cxl()
 
-	// TODO: We can subscribe only for txs that contain request messages
-	query := "tm.event = 'Tx'"
-	logger.Info("👂 Subscribing to events with query: %s...", query)
-	eventChan, err := client.Subscribe(ctx, "", query)
+	l.Info(":ear: Subscribing to events with query: %s...", TxQuery)
+	eventChan, err := c.client.Subscribe(ctx, "", TxQuery)
 	if err != nil {
 		return err
 	}
@@ -31,29 +33,31 @@ func runImpl(client *rpchttp.HTTP, key keyring.Info) error {
 	for {
 		select {
 		case ev := <-eventChan:
-			go handleTransaction(client, key, ev.Data.(tmtypes.EventDataTx).TxResult)
+			go handleTransaction(c, l, ev.Data.(tmtypes.EventDataTx).TxResult)
 		}
 	}
 }
 
-func runCmd() *cobra.Command {
+func runCmd(c *Context) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "run [key-name]",
 		Aliases: []string{"r"},
 		Short:   "Run the oracle process",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			key, err := keybase.Key(args[0])
+			var err error
+			c.key, err = c.keybase.Key(args[0])
 			if err != nil {
 				return err
 			}
 
-			logger.Info("⭐️ Creating HTTP client with node URI %s", nodeURI)
-			client, err := rpchttp.New(nodeURI, "/websocket")
+			l := NewLogger()
+			l.Info(":star: Creating HTTP client with node URI: %s", c.nodeURI)
+			c.client, err = rpchttp.New(c.nodeURI, "/websocket")
 			if err != nil {
 				return err
 			}
-			return runImpl(client, key)
+			return runImpl(c, l)
 		},
 	}
 	return cmd
