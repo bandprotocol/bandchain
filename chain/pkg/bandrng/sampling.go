@@ -12,11 +12,6 @@ func AddUint64Overflow(a, b uint64) (uint64, bool) {
 	return a + b, false
 }
 
-// SamplingGroup ez
-func SamplingGroup(rng *Rng, weights []uint64, amount int) []int {
-	return []int{1, 2, 3}
-}
-
 // SamplingOne sampling an index weighted by probability
 func SamplingOne(rng *Rng, weights []uint64) int {
 	sum := uint64(0)
@@ -42,9 +37,4 @@ func SamplingOne(rng *Rng, weights []uint64) int {
 	}
 	// Should never happen because the sum of weight is more than a lucky number
 	panic("error")
-}
-
-// GetCandidate ex
-func GetCandidate(round, num int) int {
-	return 0
 }
