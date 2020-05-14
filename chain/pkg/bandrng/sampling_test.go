@@ -11,7 +11,7 @@ import (
 
 func TestChooseOneOne(t *testing.T) {
 	r := bandrng.NewRng("SEED")
-	weights := []uint64{10, 13, 10, 25, 42} // prefix sum is 10,25,55,80,100
+	weights := []uint64{10, 13, 10, 25, 42} // prefix sum is 10,23,33,58,100
 
 	require.Equal(t, bandrng.ChooseOne(r, weights), 4) // rng NextUint64() will return 15735084640102210068
 	require.Equal(t, bandrng.ChooseOne(r, weights), 4) // rng NextUint64() will return 3485776390957061973

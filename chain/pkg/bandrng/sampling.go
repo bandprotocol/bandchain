@@ -28,7 +28,7 @@ func ChooseOne(rng *Rng, weights []uint64) int {
 	currentSum := uint64(0)
 	for idx, weight := range weights {
 		currentSum += weight
-		if count > luckyNumber {
+		if currentSum > luckyNumber {
 			return idx
 		}
 	}
