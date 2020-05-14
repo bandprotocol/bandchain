@@ -4,22 +4,16 @@ import subprocess
 import json
 
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
-EXAMPLE_DIR = CURRENT_PATH + "/../../owasm/examples/"
+EXAMPLE_DIR = CURRENT_PATH + "/../../pkg/owasm/examples/"
+
 
 scripts = []
 for script in os.listdir(EXAMPLE_DIR):
     if script.startswith(".") or script.startswith("yahoo"):
         continue
-    subprocess.call(
-        [CURRENT_PATH + "/build_wasm.sh %s" % EXAMPLE_DIR + script], shell=True
-    )
+    subprocess.call([CURRENT_PATH + "/build_wasm.sh %s" % EXAMPLE_DIR + script], shell=True)
     a = subprocess.check_output(
-        [
-            "xxd",
-            "-p",
-            "-c100000000000",
-            EXAMPLE_DIR + script + "/pkg/" + script + "_bg.wasm",
-        ]
+        ["xxd", "-p", "-c100000000000", EXAMPLE_DIR + script + "/pkg/" + script + "_bg.wasm",]
     )
     scripts.append(
         {

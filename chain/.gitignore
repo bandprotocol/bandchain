@@ -11,6 +11,6 @@ vendor
 /build
 
 **/target/
-/owasm/res/*.wasm
+/pkg/owasm/res/*.wasm
 /docker-config/genesis.json
 /docker-config/single-validator/genesis.json
