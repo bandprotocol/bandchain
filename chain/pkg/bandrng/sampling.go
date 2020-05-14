@@ -49,7 +49,7 @@ func GetCandidateSize(currentRound, totalRound, totalCount int) int {
 		panic("currentRound must in range [0,totalRound)")
 	}
 	if totalRound <= 0 {
-		panic("totalRound must be more than 0")
+		panic("error: totalRound <= 0")
 	}
 	if totalCount < totalRound {
 		panic("error: totalCount < totalRound")
