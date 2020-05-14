@@ -1,23 +1,25 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/go-bip39"
 	"github.com/spf13/cobra"
 )
 
-func keysCmd() *cobra.Command {
+func keysCmd(c *Context) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "keys",
 		Aliases: []string{"k"},
 		Short:   "Manage key held by the oracle process",
 	}
-	cmd.AddCommand(keysAddCmd())
-	cmd.AddCommand(keysListCmd())
+	cmd.AddCommand(keysAddCmd(c))
+	cmd.AddCommand(keysListCmd(c))
 	return cmd
 }
 
-func keysAddCmd() *cobra.Command {
+func keysAddCmd(c *Context) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "add [name]",
 		Aliases: []string{"a"},
@@ -35,35 +37,35 @@ func keysAddCmd() *cobra.Command {
 				return err
 			}
 
-			info, err := keybase.NewAccount(
+			info, err := c.keybase.NewAccount(
 				args[0], mnemonic, "", hd.CreateHDPath(494, 0, 0).String(), hd.Secp256k1,
 			)
 			if err != nil {
 				return err
 			}
 
-			logger.Info("📝 Mnemonic: %s", mnemonic)
-			logger.Info("📮 Address: %s", info.GetAddress().String())
+			fmt.Printf("Mnemonic: %s\n", mnemonic)
+			fmt.Printf("Address: %s", info.GetAddress().String())
 			return nil
 		},
 	}
 	return cmd
 }
 
-func keysListCmd() *cobra.Command {
+func keysListCmd(c *Context) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "list",
 		Aliases: []string{"l"},
 		Short:   "List all the keys in the keychain",
 		Args:    cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			keys, err := keybase.List()
+			keys, err := c.keybase.List()
 			if err != nil {
 				return err
 			}
 
 			for _, key := range keys {
-				logger.Info("👨‍⚖️ %s => %s", key.GetName(), key.GetAddress().String())
+				fmt.Printf("%s => %s\n", key.GetName(), key.GetAddress().String())
 			}
 			return nil
 		},
