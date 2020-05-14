@@ -274,7 +274,7 @@ func NewBandApp(
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
 	app.StakingKeeper = *stakingKeeper.SetHooks(
-		staking.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks(), app.OracleKeeper.Hooks()),
+		staking.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks()),
 	)
 
 	oracleModule := oracle.NewAppModule(app.OracleKeeper)

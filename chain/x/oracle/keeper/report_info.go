@@ -27,19 +27,19 @@ func (k Keeper) GetValidatorReportInfo(
 	return info, nil
 }
 
-// MustGetValidatorReportInfo returns the ValidatorReportInfo for the giver validator address.
-// Panics error if not exists.
-func (k Keeper) MustGetValidatorReportInfo(
-	ctx sdk.Context, address sdk.ValAddress,
-) types.ValidatorReportInfo {
-	info, err := k.GetValidatorReportInfo(ctx, address)
-	if err != nil {
-		panic(err)
-	}
-	return info
-}
-
 // SetValidatorReportInfo sets the validator report info to a validator address key
 func (k Keeper) SetValidatorReportInfo(ctx sdk.Context, address sdk.ValAddress, info types.ValidatorReportInfo) {
 	ctx.KVStore(k.storeKey).Set(types.ValidatorReportInfoStoreKey(address), k.cdc.MustMarshalBinaryBare(info))
+}
+
+// GetAllValidatorReportInfos returns the list of all validator report info in the store, or nil if there is none.
+func (k Keeper) GetAllValidatorReportInfos(ctx sdk.Context) (infos []types.ValidatorReportInfo) {
+	store := ctx.KVStore(k.storeKey)
+	iterator := sdk.KVStorePrefixIterator(store, types.ValidatorReportInfoKeyPrefix)
+	for ; iterator.Valid(); iterator.Next() {
+		var info types.ValidatorReportInfo
+		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &info)
+		infos = append(infos, info)
+	}
+	return infos
 }

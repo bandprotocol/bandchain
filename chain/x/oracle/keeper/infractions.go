@@ -28,7 +28,10 @@ func (k Keeper) HandleValidatorReport(ctx sdk.Context, requestID types.RequestID
 		return
 	}
 	// fetch report info
-	reportInfo := k.MustGetValidatorReportInfo(ctx, address)
+	reportInfo, err := k.GetValidatorReportInfo(ctx, address)
+	if err != nil {
+		reportInfo = types.NewValidatorReportInfo(address, 0)
+	}
 
 	maxMisses := k.GetParam(ctx, types.KeyMaxConsecutiveMisses)
 	if reported {
