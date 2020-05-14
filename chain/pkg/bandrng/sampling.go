@@ -12,29 +12,26 @@ func addUint64Overflow(a, b uint64) (uint64, bool) {
 	return a + b, false
 }
 
-// SamplingOne sampling an index weighted by probability
-func SamplingOne(rng *Rng, weights []uint64) int {
+// ChooseOne randomly picks an index between 0 and len(weights)-1 inclusively. Each index has
+// the probability of getting selected based on its weight.
+func ChooseOne(rng *Rng, weights []uint64) int {
 	sum := uint64(0)
 	var overflow bool
 	for _, weight := range weights {
 		sum, overflow = addUint64Overflow(sum, weight)
 		if overflow {
-			panic("a sum of weight is more than max uint64")
+			panic("sum of weights exceed max uint64")
 		}
 	}
 
 	luckyNumber := rng.NextUint64() % sum
-	count := uint64(0)
+	currentSum := uint64(0)
 	for idx, weight := range weights {
-		count, overflow = addUint64Overflow(count, weight)
-		if overflow {
-			panic("a um of weight is more than max uint64")
-
-		}
+		currentSum += weight
 		if count > luckyNumber {
 			return idx
 		}
 	}
-	// Should never happen because the sum of weight is more than a lucky number
+	// Should never happen because the sum of weights is more than the lucky number
 	panic("error")
 }
