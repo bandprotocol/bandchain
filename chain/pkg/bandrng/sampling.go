@@ -42,7 +42,7 @@ func ChooseOne(rng *Rng, weights []uint64) int {
 // if totalRound = 1 the function will return totalCount
 // candidate size will decrease every round
 // candidate size calculate by function
-// size = floor((totalCount - 1)**((totalRound-currentRound-1)/(totalRound-1))) + 1
+// size = floor((totalCount-1)**((totalRound-currentRound-1)/(totalRound-1))) + 1
 // so size must in range [2,totalCount]
 func GetCandidateSize(currentRound, totalRound, totalCount int) int {
 	if currentRound < 0 || currentRound >= totalRound {
@@ -56,6 +56,9 @@ func GetCandidateSize(currentRound, totalRound, totalCount int) int {
 		return totalCount
 	}
 
-	size := math.Pow(float64(totalCount-1), float64(totalRound-currentRound-1)/float64(totalRound-1)) + float64(1)
-	return int(size)
+	base := float64(totalCount - 1)                                        // base > 0
+	exponent := float64(totalRound-1-currentRound) / float64(totalRound-1) // 0 <= exponent <= 1
+
+	size := int(math.Pow(base, exponent)) + 1
+	return size
 }
