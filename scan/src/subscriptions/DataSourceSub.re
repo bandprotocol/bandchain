@@ -28,7 +28,7 @@ module SingleConfig = [%graphql
     data_sources_by_pk(id: $id) @bsRecord {
       id @bsDecoder(fn: "ID.DataSource.fromJson")
       owner @bsDecoder(fn: "Address.fromBech32")
-    name
+      name
       description
       executable @bsDecoder(fn: "GraphQLParser.buffer")
       timestamp: last_updated @bsDecoder(fn: "GraphQLParser.time")

@@ -56,7 +56,7 @@ type msg_payload_t = {
 };
 
 type account_result_t = {
-  account_number: int,
+  accountNumber: int,
   sequence: int,
 };
 
@@ -109,7 +109,7 @@ let getAccountInfo = address => {
   let data = info##data;
   Promise.ret(
     JsonUtils.Decode.{
-      account_number: data |> at(["result", "value", "account_number"], intstr),
+      accountNumber: data |> at(["result", "value", "account_number"], intstr),
       sequence:
         data
         |> optional(at(["result", "value", "sequence"], intstr))
@@ -232,7 +232,7 @@ let createRawTx = (~address, ~msgs, ~chainID, ~feeAmount, ~gas, ~memo, ()) => {
       gas,
     },
     memo,
-    account_number: accountInfo.account_number |> string_of_int,
+    account_number: accountInfo.accountNumber |> string_of_int,
     sequence: accountInfo.sequence |> string_of_int,
   });
 };
