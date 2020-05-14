@@ -37,30 +37,3 @@ func TestSamplingOnePanic(t *testing.T) {
 	})
 
 }
-
-func TestaddUint64Overflow(t *testing.T) {
-
-	sum, overflow := bandrng.AddUint64Overflow(1, 2)
-	require.False(t, overflow)
-	require.Equal(t, sum, uint64(3))
-
-	sum, overflow = bandrng.AddUint64Overflow(math.MaxUint64, 0)
-	require.False(t, overflow)
-	require.Equal(t, sum, uint64(math.MaxUint64))
-
-	sum, overflow = bandrng.AddUint64Overflow(0, math.MaxUint64)
-	require.False(t, overflow)
-	require.Equal(t, sum, uint64(math.MaxUint64))
-
-	sum, overflow = bandrng.AddUint64Overflow(math.MaxUint64, math.MaxUint64)
-	require.True(t, overflow)
-	require.Equal(t, sum, uint64(0))
-
-	sum, overflow = bandrng.AddUint64Overflow(math.MaxUint64, 1)
-	require.True(t, overflow)
-	require.Equal(t, sum, uint64(0))
-
-	sum, overflow = bandrng.AddUint64Overflow(uint64(1), math.MaxUint64)
-	require.True(t, overflow)
-	require.Equal(t, sum, uint64(0))
-}
