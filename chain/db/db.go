@@ -74,6 +74,13 @@ func NewDB(dialect, path string) (*BandDB, error) {
 			FROM delegations JOIN validators ON validator_address = operator_address;
 	`)
 
+	db.Exec(`CREATE VIEW validator_last_250_votes AS
+			SELECT COUNT(*), consensus_address, voted
+			FROM validator_votes 
+			WHERE block_height > (SELECT MAX(height) from blocks) - 250
+			GROUP BY consensus_address, voted;
+	`)
+
 	db.Model(&Block{}).AddForeignKey(
 		"proposer",
 		"validators(consensus_address)",
