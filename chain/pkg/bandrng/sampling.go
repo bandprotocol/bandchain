@@ -45,7 +45,7 @@ func GetCandidateSize(currentRound, totalRound, totalCount int) int {
 	if totalRound <= 0 { //Should never happen because if totalRound <= 0 it will panic before
 		panic("totalRound must more than 0")
 	}
-	if totalCount <= 2 {
+	if totalCount <= 0 {
 		panic("totalCount must more than 0")
 	}
 
