@@ -88,7 +88,7 @@ let renderBody = (rank, validator: ValidatorSub.t, bondedTokenCount) => {
   let votingPower = validator.votingPower;
   let token = validator.tokens;
   let commission = validator.commission;
-  let uptime = validator.nodeStatus.uptime;
+  let uptimeOpt = validator.uptime;
 
   <TBody key={validator.operatorAddress |> Address.toOperatorBech32}>
     <div className=Styles.fullWidth>
@@ -158,7 +158,12 @@ let renderBody = (rank, validator: ValidatorSub.t, bondedTokenCount) => {
         </Col>
         <Col size=1.1 alignSelf=Col.Start>
           <Text
-            value={uptime->Js.Float.toFixedWithPrecision(~digits=2)}
+            value={
+              switch (uptimeOpt) {
+              | Some(uptime) => uptime->Js.Float.toFixedWithPrecision(~digits=2)
+              | None => "N/A"
+              }
+            }
             color=Colors.gray7
             code=true
             weight=Text.Regular
@@ -199,6 +204,36 @@ let getCurrentDay = _ => {
   (MomentRe.momentNow() |> MomentRe.Moment.toUnix |> float_of_int) *. 1000.;
 };
 
+let addUptimeOnValidators =
+    (validators: array(ValidatorSub.t), votesBlock: array(ValidatorSub.validator_vote_t)) => {
+  validators->Belt.Array.map(validator => {
+    let signedBlock =
+      votesBlock
+      ->Belt.Array.keep(({consensusAddress, voted}) =>
+          validator.consensusAddress == consensusAddress && voted == true
+        )
+      ->Belt.Array.get(0)
+      ->Belt.Option.mapWithDefault(0, ({count}) => count)
+      |> float_of_int;
+
+    let missedBlock =
+      votesBlock
+      ->Belt.Array.keep(({consensusAddress, voted}) =>
+          validator.consensusAddress == consensusAddress && voted == false
+        )
+      ->Belt.Array.get(0)
+      ->Belt.Option.mapWithDefault(0, ({count}) => count)
+      |> float_of_int;
+
+    {
+      ...validator,
+      uptime:
+        signedBlock == 0. && missedBlock == 0.
+          ? None : Some(signedBlock /. (signedBlock +. missedBlock) *. 100.),
+    };
+  });
+};
+
 [@react.component]
 let make = () =>
   {
@@ -229,14 +264,17 @@ let make = () =>
     let bondedTokenCountSub = ValidatorSub.getTotalBondedAmount();
     let avgBlockTimeSub = BlockSub.getAvgBlockTime(prevDayTime, currentTime);
     let metadataSub = MetadataSub.use();
+    let votesBlockSub = ValidatorSub.getListVotesBlock();
 
-    let%Sub validators = validatorsSub;
+    let%Sub rawValidators = validatorsSub;
     let%Sub validatorCount = validatorsCountSub;
     let%Sub isActiveValidatorCount = isActiveValidatorCountSub;
     let%Sub bondedTokenCount = bondedTokenCountSub;
     let%Sub avgBlockTime = avgBlockTimeSub;
     let%Sub metadata = metadataSub;
+    let%Sub votesBlock = votesBlockSub;
 
+    let validators = addUptimeOnValidators(rawValidators, votesBlock);
     let pageCount = Page.getPageCount(validatorCount, pageSize);
 
     <>

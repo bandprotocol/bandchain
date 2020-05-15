@@ -81,23 +81,13 @@ let make = (~packet: IBCSub.packet_t, ~oracleScriptID: ID.OracleScript.t) => {
        | None => <VSpacing size=Spacing.lg />
        }}
       <div className=Styles.topicContainer>
-        <Text
-          value="REQUEST VALIDATOR COUNT"
-          size=Text.Sm
-          weight=Text.Thin
-          spacing={Text.Em(0.06)}
-        />
-        <Text value={request.requestedValidatorCount |> string_of_int} weight=Text.Bold />
+        <Text value="ASK COUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <Text value={request.askCount |> string_of_int} weight=Text.Bold />
       </div>
       <VSpacing size=Spacing.md />
       <div className=Styles.topicContainer>
-        <Text
-          value="SUFFICIENT VALIDATOR COUNT"
-          size=Text.Sm
-          weight=Text.Thin
-          spacing={Text.Em(0.06)}
-        />
-        <Text value={request.sufficientValidatorCount |> string_of_int} weight=Text.Bold />
+        <Text value="MIN COUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+        <Text value={request.minCount |> string_of_int} weight=Text.Bold />
       </div>
     </>;
   | IBCSub.Response(response) =>

@@ -131,7 +131,7 @@ let make = (~reqID) =>
           <Col size=5.>
             <ProgressBar
               reportedValidators=numReport
-              minimumValidators={request.sufficientValidatorCount}
+              minimumValidators={request.minCount}
               requestValidators={request.requestedValidators->Belt_Array.size}
             />
           </Col>
@@ -290,7 +290,7 @@ let make = (~reqID) =>
            </>;
          | None => React.null
          }}
-        {numReport >= request.sufficientValidatorCount
+        {numReport >= request.minCount
            ? {
              <RequestProof requestID={request.id} />;
            }
@@ -314,7 +314,7 @@ let make = (~reqID) =>
               />
               <HSpacing size=Spacing.sm />
               <Text
-                value={request.sufficientValidatorCount > 1 ? "Validators" : "Validator"}
+                value={request.minCount > 1 ? "Validators" : "Validator"}
                 weight=Text.Regular
                 color=Colors.gray7
               />
@@ -325,10 +325,7 @@ let make = (~reqID) =>
               <div className=Styles.fillRight />
               <Text
                 value={
-                  (
-                    numReport < request.sufficientValidatorCount
-                      ? request.sufficientValidatorCount - numReport : 0
-                  )
+                  (numReport < request.minCount ? request.minCount - numReport : 0)
                   |> Format.iPretty
                 }
                 weight=Text.Semibold
@@ -336,10 +333,7 @@ let make = (~reqID) =>
               />
               <HSpacing size=Spacing.sm />
               <Text
-                value={
-                  request.sufficientValidatorCount > 1
-                    ? "Validators Required" : "Validator Required"
-                }
+                value={request.minCount > 1 ? "Validators Required" : "Validator Required"}
                 weight=Text.Regular
                 color=Colors.gray7
               />
