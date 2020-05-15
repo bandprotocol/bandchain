@@ -1,537 +1,194 @@
 package types
 
 import (
+	"strings"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 )
 
-func TestMsgRequestData(t *testing.T) {
-	sender := sdk.AccAddress([]byte("sender"))
-	msg := NewMsgRequestData(1, []byte("calldata"), 10, 5, "clientID", sender)
-	require.Equal(t, RouterKey, msg.Route())
-	require.Equal(t, "request", msg.Type())
-	require.Equal(t, OracleScriptID(1), msg.OracleScriptID)
-	require.Equal(t, []byte("calldata"), msg.Calldata)
-	require.Equal(t, int64(10), msg.AskCount)
-	require.Equal(t, int64(5), msg.MinCount)
-	require.Equal(t, sender, msg.Sender)
+var (
+	GoodTestAddr    = sdk.AccAddress(make([]byte, 20))
+	BadTestAddr     = sdk.AccAddress([]byte("BAD_ADDR"))
+	GoodTestValAddr = sdk.ValAddress(make([]byte, 20))
+	BadTestValAddr  = sdk.ValAddress([]byte("BAD_ADDR"))
+)
+
+type validateTestCase struct {
+	valid bool
+	msg   sdk.Msg
 }
 
-func TestMsgRequestDataValidation(t *testing.T) {
-	sender := sdk.AccAddress([]byte("sender"))
-	askCount := int64(10)
-	minCount := int64(5)
-	clientID := "clientID"
-	cases := []struct {
-		valid bool
-		tx    MsgRequestData
-	}{
-		{
-			true, NewMsgRequestData(
-				1, []byte("calldata"), askCount, minCount, clientID, sender,
-			),
-		},
-		{
-			false, NewMsgRequestData(
-				0, []byte("calldata"), askCount, minCount, clientID, sender,
-			),
-		},
-		{
-			true, NewMsgRequestData(
-				1, nil, askCount, minCount, clientID, sender,
-			),
-		},
-		{
-			false, NewMsgRequestData(
-				1, []byte("calldata"), 0, minCount, clientID, sender,
-			),
-		},
-		{
-			false, NewMsgRequestData(
-				1, []byte("calldata"), askCount, -1, clientID, sender,
-			),
-		},
-		{
-			false, NewMsgRequestData(
-				1, []byte("calldata"), 6, 8, clientID, sender,
-			),
-		},
-		{
-			false, NewMsgRequestData(
-				1, []byte("calldata"), askCount, minCount, clientID, nil,
-			),
-		},
-	}
-
+func performValidateTests(t *testing.T, cases []validateTestCase) {
 	for _, tc := range cases {
-		err := tc.tx.ValidateBasic()
+		err := tc.msg.ValidateBasic()
 		if tc.valid {
-			require.Nil(t, err)
+			require.NoError(t, err)
 		} else {
-			require.NotNil(t, err)
+			require.Error(t, err)
 		}
 	}
 }
 
-func TestMsgRequestDataGetSignBytes(t *testing.T) {
-	config := sdk.GetConfig()
-	config.SetBech32PrefixForAccount("band", "band"+sdk.PrefixPublic)
-
-	sender := sdk.AccAddress([]byte("sender"))
-	msg := NewMsgRequestData(1, []byte("calldata"), 10, 5, "clientID", sender)
-	res := msg.GetSignBytes()
-
-	expected := `{"type":"oracle/Request","value":{"ask_count":"10","calldata":"Y2FsbGRhdGE=","client_id":"clientID","min_count":"5","oracle_script_id":"1","sender":"band1wdjkuer9wgvz7c4y"}}`
-
-	require.Equal(t, expected, string(res))
+func TestMsgRoute(t *testing.T) {
+	require.Equal(t, "oracle", MsgCreateDataSource{}.Route())
+	require.Equal(t, "oracle", MsgEditDataSource{}.Route())
+	require.Equal(t, "oracle", MsgCreateOracleScript{}.Route())
+	require.Equal(t, "oracle", MsgEditOracleScript{}.Route())
+	require.Equal(t, "oracle", MsgRequestData{}.Route())
+	require.Equal(t, "oracle", MsgReportData{}.Route())
+	require.Equal(t, "oracle", MsgAddOracleAddress{}.Route())
+	require.Equal(t, "oracle", MsgRemoveOracleAddress{}.Route())
 }
 
-func TestMsgReportData(t *testing.T) {
-	requestID := RequestID(3)
-	data := []RawReport{NewRawReport(1, 1, []byte("data1")), NewRawReport(2, 2, []byte("data2"))}
-	provider, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
-	reporter := sdk.AccAddress(provider)
-
-	msg := NewMsgReportData(requestID, data, provider, reporter)
-
-	require.Equal(t, RouterKey, msg.Route())
-	require.Equal(t, "report", msg.Type())
+func TestMsgType(t *testing.T) {
+	require.Equal(t, "create_data_source", MsgCreateDataSource{}.Type())
+	require.Equal(t, "edit_data_source", MsgEditDataSource{}.Type())
+	require.Equal(t, "create_oracle_script", MsgCreateOracleScript{}.Type())
+	require.Equal(t, "edit_oracle_script", MsgEditOracleScript{}.Type())
+	require.Equal(t, "request", MsgRequestData{}.Type())
+	require.Equal(t, "report", MsgReportData{}.Type())
+	require.Equal(t, "add_oracle_address", MsgAddOracleAddress{}.Type())
+	require.Equal(t, "remove_oracle_address", MsgRemoveOracleAddress{}.Type())
 }
 
-func TestMsgReportDataValidation(t *testing.T) {
-	requestID := RequestID(3)
-	data := []RawReport{NewRawReport(1, 1, []byte("data1")), NewRawReport(2, 2, []byte("data2"))}
-	validator, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
-	reporter := sdk.AccAddress(validator)
-	failValidator, _ := sdk.ValAddressFromHex("")
-
-	cases := []struct {
-		valid bool
-		tx    MsgReportData
-	}{
-		{true, NewMsgReportData(requestID, data, validator, reporter)},
-		{false, NewMsgReportData(-1, data, validator, reporter)},
-		{false, NewMsgReportData(requestID, []RawReport{}, validator, reporter)},
-		{false, NewMsgReportData(requestID, nil, validator, reporter)},
-		{false, NewMsgReportData(requestID, data, failValidator, reporter)},
-		{false, NewMsgReportData(requestID, data, failValidator, nil)},
-		{false, NewMsgReportData(requestID, []RawReport{NewRawReport(1, 1, []byte("data1")), NewRawReport(1, 2, []byte("data2"))}, validator, reporter)},
-	}
-
-	for _, tc := range cases {
-		err := tc.tx.ValidateBasic()
-		if tc.valid {
-			require.Nil(t, err)
-		} else {
-			require.NotNil(t, err)
-		}
-	}
+func TestMsgGetSigners(t *testing.T) {
+	signerAcc := sdk.AccAddress([]byte("01234567890123456789"))
+	signerVal := sdk.ValAddress([]byte("01234567890123456789"))
+	anotherAcc := sdk.AccAddress([]byte("98765432109876543210"))
+	anotherVal := sdk.ValAddress([]byte("98765432109876543210"))
+	signers := []sdk.AccAddress{signerAcc}
+	require.Equal(t, signers, NewMsgCreateDataSource(anotherAcc, "name", "desc", []byte("exec"), signerAcc).GetSigners())
+	require.Equal(t, signers, NewMsgEditDataSource(1, anotherAcc, "name", "desc", []byte("exec"), signerAcc).GetSigners())
+	require.Equal(t, signers, NewMsgCreateOracleScript(anotherAcc, "name", "desc", []byte("code"), "schema", "url", signerAcc).GetSigners())
+	require.Equal(t, signers, NewMsgEditOracleScript(1, anotherAcc, "name", "desc", []byte("code"), "schema", "url", signerAcc).GetSigners())
+	require.Equal(t, signers, NewMsgReportData(1, []RawReport{{1, 1, []byte("data1")}, {2, 2, []byte("data2")}}, anotherVal, signerAcc).GetSigners())
+	require.Equal(t, signers, NewMsgAddOracleAddress(signerVal, anotherAcc).GetSigners())
+	require.Equal(t, signers, NewMsgRemoveOracleAddress(signerVal, anotherAcc).GetSigners())
 }
 
-func TestMsgReportDataGetSignBytes(t *testing.T) {
-	config := sdk.GetConfig()
-	config.SetBech32PrefixForValidator("band"+sdk.PrefixValidator+sdk.PrefixOperator, "band"+sdk.PrefixValidator+sdk.PrefixOperator+sdk.PrefixPublic)
-
-	requestID := RequestID(3)
-	data := []RawReport{NewRawReport(1, 1, []byte("data1")), NewRawReport(2, 2, []byte("data2"))}
-	validator, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
-	reporter := sdk.AccAddress(validator)
-	msg := NewMsgReportData(requestID, data, validator, reporter)
-	res := msg.GetSignBytes()
-
-	expected := `{"type":"oracle/Report","value":{"data_set":[{"data":"ZGF0YTE=","exit_code":1,"external_id":"1"},{"data":"ZGF0YTI=","exit_code":2,"external_id":"2"}],"reporter":"band1hq8j5h0h64csk9tz95df783cxr0dt0dg3jw4p0","request_id":"3","validator":"bandvaloper1hq8j5h0h64csk9tz95df783cxr0dt0dgay2kyy"}}`
-
-	require.Equal(t, expected, string(res))
-}
-
-func TestMsgCreateDataSource(t *testing.T) {
-	owner := sdk.AccAddress([]byte("owner"))
-	sender := sdk.AccAddress([]byte("sender"))
-	msg := NewMsgCreateDataSource(owner, "data_source_1", "description", []byte("executable"), sender)
-	require.Equal(t, RouterKey, msg.Route())
-	require.Equal(t, "create_data_source", msg.Type())
-	require.Equal(t, owner, msg.Owner)
-	require.Equal(t, "data_source_1", msg.Name)
-	require.Equal(t, []byte("executable"), msg.Executable)
-	require.Equal(t, sender, msg.Sender)
+func TestMsgGetSignBytes(t *testing.T) {
+	sdk.GetConfig().SetBech32PrefixForAccount("band", "band"+sdk.PrefixPublic)
+	require.Equal(t,
+		`{"type":"oracle/CreateDataSource","value":{"description":"desc","executable":"ZXhlYw==","name":"name","owner":"band1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq2vqal4","sender":"band1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq2vqal4"}}`,
+		string(NewMsgCreateDataSource(GoodTestAddr, "name", "desc", []byte("exec"), GoodTestAddr).GetSignBytes()),
+	)
+	require.Equal(t,
+		`{"type":"oracle/EditDataSource","value":{"data_source_id":"1","description":"desc","executable":"ZXhlYw==","name":"name","owner":"band1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq2vqal4","sender":"band1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq2vqal4"}}`,
+		string(NewMsgEditDataSource(1, GoodTestAddr, "name", "desc", []byte("exec"), GoodTestAddr).GetSignBytes()),
+	)
+	require.Equal(t,
+		`{"type":"oracle/CreateOracleScript","value":{"code":"Y29kZQ==","description":"desc","name":"name","owner":"band1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq2vqal4","schema":"schema","sender":"band1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq2vqal4","source_code_url":"url"}}`,
+		string(NewMsgCreateOracleScript(GoodTestAddr, "name", "desc", []byte("code"), "schema", "url", GoodTestAddr).GetSignBytes()),
+	)
+	require.Equal(t,
+		`{"type":"oracle/EditOracleScript","value":{"code":"Y29kZQ==","description":"desc","name":"name","oracle_script_id":"1","owner":"band1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq2vqal4","schema":"schema","sender":"band1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq2vqal4","source_code_url":"url"}}`,
+		string(NewMsgEditOracleScript(1, GoodTestAddr, "name", "desc", []byte("code"), "schema", "url", GoodTestAddr).GetSignBytes()),
+	)
+	require.Equal(t,
+		`{"type":"oracle/Request","value":{"ask_count":"10","calldata":"Y2FsbGRhdGE=","client_id":"client-id","min_count":"5","oracle_script_id":"1","sender":"band1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq2vqal4"}}`,
+		string(NewMsgRequestData(1, []byte("calldata"), 10, 5, "client-id", GoodTestAddr).GetSignBytes()),
+	)
+	require.Equal(t,
+		`{"type":"oracle/Report","value":{"data_set":[{"data":"ZGF0YTE=","exit_code":1,"external_id":"1"},{"data":"ZGF0YTI=","exit_code":2,"external_id":"2"}],"reporter":"band1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq2vqal4","request_id":"1","validator":"cosmosvaloper1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqkh52tw"}}`,
+		string(NewMsgReportData(1, []RawReport{{1, 1, []byte("data1")}, {2, 2, []byte("data2")}}, GoodTestValAddr, GoodTestAddr).GetSignBytes()),
+	)
+	require.Equal(t,
+		`{"type":"oracle/AddOracleAddress","value":{"reporter":"band1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq2vqal4","validator":"cosmosvaloper1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqkh52tw"}}`,
+		string(NewMsgAddOracleAddress(GoodTestValAddr, GoodTestAddr).GetSignBytes()),
+	)
+	require.Equal(t,
+		`{"type":"oracle/RemoveOracleAddress","value":{"reporter":"band1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq2vqal4","validator":"cosmosvaloper1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqkh52tw"}}`,
+		string(NewMsgRemoveOracleAddress(GoodTestValAddr, GoodTestAddr).GetSignBytes()),
+	)
 }
 
 func TestMsgCreateDataSourceValidation(t *testing.T) {
-	owner := sdk.AccAddress([]byte("owner"))
-	sender := sdk.AccAddress([]byte("sender"))
-	name := "data_source_1"
-	description := "description"
-	executable := []byte("executable")
-
-	cases := []struct {
-		valid bool
-		tx    MsgCreateDataSource
-	}{
-		{
-			true, NewMsgCreateDataSource(owner, name, description, executable, sender),
-		},
-		{
-			false, NewMsgCreateDataSource(nil, name, description, executable, sender),
-		},
-		{
-			false, NewMsgCreateDataSource(owner, "", description, executable, sender),
-		},
-		{
-			false, NewMsgCreateDataSource(owner, name, description, []byte(""), sender),
-		},
-		{
-			false, NewMsgCreateDataSource(owner, name, description, nil, sender),
-		},
-		{
-			false, NewMsgCreateDataSource(owner, name, description, executable, nil),
-		},
-		{
-			false, NewMsgCreateDataSource(owner, name, "", executable, nil),
-		},
-	}
-
-	for _, tc := range cases {
-		err := tc.tx.ValidateBasic()
-		if tc.valid {
-			require.Nil(t, err)
-		} else {
-			require.NotNil(t, err)
-		}
-	}
-}
-
-func TestMsgCreateDataSourceGetSignBytes(t *testing.T) {
-	config := sdk.GetConfig()
-	config.SetBech32PrefixForAccount("band", "band"+sdk.PrefixPublic)
-
-	owner := sdk.AccAddress([]byte("owner"))
-	sender := sdk.AccAddress([]byte("sender"))
-	msg := NewMsgCreateDataSource(owner, "data_source_1", "description", []byte("executable"), sender)
-	res := msg.GetSignBytes()
-
-	expected := `{"type":"oracle/CreateDataSource","value":{"description":"description","executable":"ZXhlY3V0YWJsZQ==","name":"data_source_1","owner":"band1damkuetjcw3c0d","sender":"band1wdjkuer9wgvz7c4y"}}`
-
-	require.Equal(t, expected, string(res))
-}
-
-func TestMsgEditDataSource(t *testing.T) {
-	owner := sdk.AccAddress([]byte("owner"))
-	sender := sdk.AccAddress([]byte("sender"))
-	msg := NewMsgEditDataSource(1, owner, "data_source_1", "description", []byte("executable"), sender)
-	require.Equal(t, RouterKey, msg.Route())
-	require.Equal(t, "edit_data_source", msg.Type())
-	require.Equal(t, DataSourceID(1), msg.DataSourceID)
-	require.Equal(t, owner, msg.Owner)
-	require.Equal(t, "data_source_1", msg.Name)
-	require.Equal(t, []byte("executable"), msg.Executable)
-	require.Equal(t, sender, msg.Sender)
+	performValidateTests(t, []validateTestCase{
+		{true, NewMsgCreateDataSource(GoodTestAddr, "name", "desc", []byte("exec"), GoodTestAddr)},
+		{false, NewMsgCreateDataSource(BadTestAddr, "name", "desc", []byte("exec"), GoodTestAddr)},
+		{false, NewMsgCreateDataSource(GoodTestAddr, strings.Repeat("x", 200), "desc", []byte("exec"), GoodTestAddr)},
+		{false, NewMsgCreateDataSource(GoodTestAddr, "name", strings.Repeat("x", 5000), []byte("exec"), GoodTestAddr)},
+		{false, NewMsgCreateDataSource(GoodTestAddr, "name", "desc", []byte{}, GoodTestAddr)},
+		{false, NewMsgCreateDataSource(GoodTestAddr, "name", "desc", []byte(strings.Repeat("x", 20000)), GoodTestAddr)},
+		{false, NewMsgCreateDataSource(GoodTestAddr, "name", "desc", []byte("exec"), BadTestAddr)},
+	})
 }
 
 func TestMsgEditDataSourceValidation(t *testing.T) {
-	owner := sdk.AccAddress([]byte("owner"))
-	sender := sdk.AccAddress([]byte("sender"))
-	name := "data_source_1"
-	description := "description"
-	executable := []byte("executable")
-
-	cases := []struct {
-		valid bool
-		tx    MsgEditDataSource
-	}{
-		{
-			true, NewMsgEditDataSource(1, owner, name, description, executable, sender),
-		},
-		{
-			false, NewMsgEditDataSource(0, owner, name, description, executable, sender),
-		},
-		{
-			false, NewMsgEditDataSource(1, nil, name, description, executable, sender),
-		},
-		{
-			false, NewMsgEditDataSource(1, owner, "", description, executable, sender),
-		},
-		{
-			false, NewMsgEditDataSource(1, owner, name, description, []byte(""), sender),
-		},
-		{
-			false, NewMsgEditDataSource(1, owner, name, description, nil, sender),
-		},
-		{
-			false, NewMsgEditDataSource(1, owner, name, description, executable, nil),
-		},
-		{
-			false, NewMsgEditDataSource(1, owner, name, "", executable, sender),
-		},
-	}
-
-	for _, tc := range cases {
-		err := tc.tx.ValidateBasic()
-		if tc.valid {
-			require.Nil(t, err)
-		} else {
-			require.NotNil(t, err)
-		}
-	}
-}
-
-func TestMsgEditDataSourceGetSignBytes(t *testing.T) {
-	config := sdk.GetConfig()
-	config.SetBech32PrefixForAccount("band", "band"+sdk.PrefixPublic)
-	owner := sdk.AccAddress([]byte("owner"))
-	name := "data_source_1"
-	description := "description"
-	sender := sdk.AccAddress([]byte("sender"))
-	msg := NewMsgEditDataSource(1, owner, name, description, []byte("executable"), sender)
-	res := msg.GetSignBytes()
-
-	expected := `{"type":"oracle/EditDataSource","value":{"data_source_id":"1","description":"description","executable":"ZXhlY3V0YWJsZQ==","name":"data_source_1","owner":"band1damkuetjcw3c0d","sender":"band1wdjkuer9wgvz7c4y"}}`
-
-	require.Equal(t, expected, string(res))
-}
-
-func TestMsgCreateOracleScript(t *testing.T) {
-	owner := sdk.AccAddress([]byte("owner"))
-	sender := sdk.AccAddress([]byte("sender"))
-	msg := NewMsgCreateOracleScript(owner, "oracle_script_1", "description", []byte("code"), `{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }`, `https://bandprotocol.com`, sender)
-	require.Equal(t, RouterKey, msg.Route())
-	require.Equal(t, "create_oracle_script", msg.Type())
-	require.Equal(t, owner, msg.Owner)
-	require.Equal(t, "oracle_script_1", msg.Name)
-	require.Equal(t, []byte("code"), msg.Code)
-	require.Equal(t, sender, msg.Sender)
-	require.Equal(t, `{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }`, msg.Schema)
-	require.Equal(t, `https://bandprotocol.com`, msg.SourceCodeURL)
+	performValidateTests(t, []validateTestCase{
+		{true, NewMsgEditDataSource(1, GoodTestAddr, "name", "desc", []byte("exec"), GoodTestAddr)},
+		{false, NewMsgEditDataSource(1, BadTestAddr, "name", "desc", []byte("exec"), GoodTestAddr)},
+		{false, NewMsgEditDataSource(1, GoodTestAddr, strings.Repeat("x", 200), "desc", []byte("exec"), GoodTestAddr)},
+		{false, NewMsgEditDataSource(1, GoodTestAddr, "name", strings.Repeat("x", 5000), []byte("exec"), GoodTestAddr)},
+		{false, NewMsgEditDataSource(1, GoodTestAddr, "name", "desc", []byte{}, GoodTestAddr)},
+		{false, NewMsgEditDataSource(1, GoodTestAddr, "name", "desc", []byte(strings.Repeat("x", 20000)), GoodTestAddr)},
+		{false, NewMsgEditDataSource(1, GoodTestAddr, "name", "desc", []byte("exec"), BadTestAddr)},
+	})
 }
 
 func TestMsgCreateOracleScriptValidation(t *testing.T) {
-	owner := sdk.AccAddress([]byte("owner"))
-	description := "description"
-	sender := sdk.AccAddress([]byte("sender"))
-	name := "oracle_script_1"
-	code := []byte("code")
-	schema := "schema"
-	sourceCodeURL := "sourceCodeURL"
-
-	cases := []struct {
-		valid bool
-		tx    MsgCreateOracleScript
-	}{
-		{
-			true, NewMsgCreateOracleScript(owner, name, description, code, schema, sourceCodeURL, sender),
-		},
-		{
-			false, NewMsgCreateOracleScript(nil, name, description, code, schema, sourceCodeURL, sender),
-		},
-		{
-			false, NewMsgCreateOracleScript(owner, "", description, code, schema, sourceCodeURL, sender),
-		},
-		{
-			false, NewMsgCreateOracleScript(owner, name, description, []byte{}, schema, sourceCodeURL, sender),
-		},
-		{
-			false, NewMsgCreateOracleScript(owner, name, description, nil, schema, sourceCodeURL, sender),
-		},
-		{
-			false, NewMsgCreateOracleScript(owner, name, description, code, schema, sourceCodeURL, nil),
-		},
-	}
-
-	for _, tc := range cases {
-		err := tc.tx.ValidateBasic()
-		if tc.valid {
-			require.Nil(t, err)
-		} else {
-			require.NotNil(t, err)
-		}
-	}
-}
-
-func TestMsgCreateOracleScriptGetSignBytes(t *testing.T) {
-	config := sdk.GetConfig()
-	config.SetBech32PrefixForAccount("band", "band"+sdk.PrefixPublic)
-
-	owner := sdk.AccAddress([]byte("owner"))
-	sender := sdk.AccAddress([]byte("sender"))
-	msg := NewMsgCreateOracleScript(owner, "oracle_script_1", "description", []byte("code"), "schema", "sourceCodeURL", sender)
-	res := msg.GetSignBytes()
-
-	expected := `{"type":"oracle/CreateOracleScript","value":{"code":"Y29kZQ==","description":"description","name":"oracle_script_1","owner":"band1damkuetjcw3c0d","schema":"schema","sender":"band1wdjkuer9wgvz7c4y","source_code_url":"sourceCodeURL"}}`
-
-	require.Equal(t, expected, string(res))
-}
-
-func TestMsgEditOracleScript(t *testing.T) {
-	owner := sdk.AccAddress([]byte("owner"))
-	sender := sdk.AccAddress([]byte("sender"))
-	msg := NewMsgEditOracleScript(1, owner, "oracle_script_1", "description", []byte("code"), "schema", "sourceCodeURL", sender)
-	require.Equal(t, RouterKey, msg.Route())
-	require.Equal(t, "edit_oracle_script", msg.Type())
-	require.Equal(t, OracleScriptID(1), msg.OracleScriptID)
-	require.Equal(t, owner, msg.Owner)
-	require.Equal(t, "oracle_script_1", msg.Name)
-	require.Equal(t, []byte("code"), msg.Code)
-	require.Equal(t, sender, msg.Sender)
+	performValidateTests(t, []validateTestCase{
+		{true, NewMsgCreateOracleScript(GoodTestAddr, "name", "desc", []byte("code"), "schema", "url", GoodTestAddr)},
+		{false, NewMsgCreateOracleScript(BadTestAddr, "name", "desc", []byte("code"), "schema", "url", GoodTestAddr)},
+		{false, NewMsgCreateOracleScript(GoodTestAddr, strings.Repeat("x", 200), "desc", []byte("code"), "schema", "url", GoodTestAddr)},
+		{false, NewMsgCreateOracleScript(GoodTestAddr, "name", strings.Repeat("x", 5000), []byte("code"), "schema", "url", GoodTestAddr)},
+		{false, NewMsgCreateOracleScript(GoodTestAddr, "name", "desc", []byte("code"), strings.Repeat("x", 1000), "url", GoodTestAddr)},
+		{false, NewMsgCreateOracleScript(GoodTestAddr, "name", "desc", []byte("code"), "schema", strings.Repeat("x", 200), GoodTestAddr)},
+		{false, NewMsgCreateOracleScript(GoodTestAddr, "name", "desc", []byte{}, "schema", "url", GoodTestAddr)},
+		{false, NewMsgCreateOracleScript(GoodTestAddr, "name", "desc", []byte(strings.Repeat("x", 600000)), "schema", "url", GoodTestAddr)},
+		{false, NewMsgCreateOracleScript(GoodTestAddr, "name", "desc", []byte("code"), "schema", "url", BadTestAddr)},
+	})
 }
 
 func TestMsgEditOracleScriptValidation(t *testing.T) {
-	owner := sdk.AccAddress([]byte("owner"))
-	sender := sdk.AccAddress([]byte("sender"))
-	name := "oracle_script_1"
-	description := "description"
-	code := []byte("code")
-	schema := "schema"
-	sourceCodeURL := "sourceCodeURL"
-
-	cases := []struct {
-		valid bool
-		tx    MsgEditOracleScript
-	}{
-		{
-			true, NewMsgEditOracleScript(1, owner, name, description, code, schema, sourceCodeURL, sender),
-		},
-		{
-			false, NewMsgEditOracleScript(0, nil, name, description, code, schema, sourceCodeURL, sender),
-		},
-		{
-			false, NewMsgEditOracleScript(1, nil, name, description, code, schema, sourceCodeURL, sender),
-		},
-		{
-			false, NewMsgEditOracleScript(1, owner, "", description, code, schema, sourceCodeURL, sender),
-		},
-		{
-			false, NewMsgEditOracleScript(1, owner, name, description, []byte{}, schema, sourceCodeURL, sender),
-		},
-		{
-			false, NewMsgEditOracleScript(1, owner, name, description, nil, schema, sourceCodeURL, sender),
-		},
-		{
-			false, NewMsgEditOracleScript(1, owner, name, description, code, schema, sourceCodeURL, nil),
-		},
-	}
-
-	for _, tc := range cases {
-		err := tc.tx.ValidateBasic()
-		if tc.valid {
-			require.Nil(t, err)
-		} else {
-			require.NotNil(t, err)
-		}
-	}
+	performValidateTests(t, []validateTestCase{
+		{true, NewMsgEditOracleScript(1, GoodTestAddr, "name", "desc", []byte("code"), "schema", "url", GoodTestAddr)},
+		{false, NewMsgEditOracleScript(1, BadTestAddr, "name", "desc", []byte("code"), "schema", "url", GoodTestAddr)},
+		{false, NewMsgEditOracleScript(1, GoodTestAddr, strings.Repeat("x", 200), "desc", []byte("code"), "schema", "url", GoodTestAddr)},
+		{false, NewMsgEditOracleScript(1, GoodTestAddr, "name", strings.Repeat("x", 5000), []byte("code"), "schema", "url", GoodTestAddr)},
+		{false, NewMsgEditOracleScript(1, GoodTestAddr, "name", "desc", []byte("code"), strings.Repeat("x", 1000), "url", GoodTestAddr)},
+		{false, NewMsgEditOracleScript(1, GoodTestAddr, "name", "desc", []byte("code"), "schema", strings.Repeat("x", 200), GoodTestAddr)},
+		{false, NewMsgEditOracleScript(1, GoodTestAddr, "name", "desc", []byte{}, "schema", "url", GoodTestAddr)},
+		{false, NewMsgEditOracleScript(1, GoodTestAddr, "name", "desc", []byte(strings.Repeat("x", 600000)), "schema", "url", GoodTestAddr)},
+		{false, NewMsgEditOracleScript(1, GoodTestAddr, "name", "desc", []byte("code"), "schema", "url", BadTestAddr)},
+	})
 }
 
-func TestMsgEditOracleScriptGetSignBytes(t *testing.T) {
-	config := sdk.GetConfig()
-	config.SetBech32PrefixForAccount("band", "band"+sdk.PrefixPublic)
-
-	owner := sdk.AccAddress([]byte("owner"))
-	sender := sdk.AccAddress([]byte("sender"))
-	msg := NewMsgEditOracleScript(1, owner, "oracle_script_1", "description", []byte("code"), "schema", "sourceCodeURL", sender)
-	res := msg.GetSignBytes()
-
-	expected := `{"type":"oracle/EditOracleScript","value":{"code":"Y29kZQ==","description":"description","name":"oracle_script_1","oracle_script_id":"1","owner":"band1damkuetjcw3c0d","schema":"schema","sender":"band1wdjkuer9wgvz7c4y","source_code_url":"sourceCodeURL"}}`
-
-	require.Equal(t, expected, string(res))
+func TestMsgRequestDataValidation(t *testing.T) {
+	performValidateTests(t, []validateTestCase{
+		{true, NewMsgRequestData(1, []byte("calldata"), 10, 5, "client-id", GoodTestAddr)},
+		{false, NewMsgRequestData(1, []byte(strings.Repeat("x", 2000)), 10, 5, "client-id", GoodTestAddr)},
+		{false, NewMsgRequestData(1, []byte("calldata"), 2, 5, "client-id", GoodTestAddr)},
+		{false, NewMsgRequestData(1, []byte("calldata"), 0, 0, "client-id", GoodTestAddr)},
+		{false, NewMsgRequestData(1, []byte("calldata"), 10, 5, strings.Repeat("x", 300), GoodTestAddr)},
+		{false, NewMsgRequestData(1, []byte("calldata"), 10, 5, "client-id", BadTestAddr)},
+	})
 }
 
-func TestMsgAddOracleAddress(t *testing.T) {
-	validator := sdk.ValAddress([]byte("validator"))
-	reporter := sdk.AccAddress([]byte("reporter"))
-	msg := NewMsgAddOracleAddress(validator, reporter)
-	require.Equal(t, RouterKey, msg.Route())
-	require.Equal(t, "add_oracle_address", msg.Type())
-	require.Equal(t, validator, msg.Validator)
-	require.Equal(t, reporter, msg.Reporter)
+func TestMsgReportDataValidation(t *testing.T) {
+	performValidateTests(t, []validateTestCase{
+		{true, NewMsgReportData(1, []RawReport{{1, 1, []byte("data1")}, {2, 2, []byte("data2")}}, GoodTestValAddr, GoodTestAddr)},
+		{false, NewMsgReportData(1, []RawReport{}, GoodTestValAddr, GoodTestAddr)},
+		{false, NewMsgReportData(1, []RawReport{{1, 1, []byte("data1")}, {1, 1, []byte("data2")}}, GoodTestValAddr, GoodTestAddr)},
+		{false, NewMsgReportData(1, []RawReport{{1, 1, []byte("data1")}, {2, 2, []byte("data2")}}, BadTestValAddr, GoodTestAddr)},
+		{false, NewMsgReportData(1, []RawReport{{1, 1, []byte("data1")}, {2, 2, []byte("data2")}}, GoodTestValAddr, BadTestAddr)},
+	})
 }
 
 func TestMsgAddOracleAddressValidation(t *testing.T) {
-	validator := sdk.ValAddress([]byte("validator"))
-	reporter := sdk.AccAddress([]byte("reporter"))
-
-	cases := []struct {
-		valid bool
-		tx    MsgAddOracleAddress
-	}{
-		{
-			true, NewMsgAddOracleAddress(validator, reporter),
-		},
-		{
-			false, NewMsgAddOracleAddress(nil, reporter),
-		},
-		{
-			false, NewMsgAddOracleAddress(validator, nil),
-		},
-	}
-
-	for _, tc := range cases {
-		err := tc.tx.ValidateBasic()
-		if tc.valid {
-			require.Nil(t, err)
-		} else {
-			require.NotNil(t, err)
-		}
-	}
-}
-func TestMsgAddOracleAddressGetSignBytes(t *testing.T) {
-	validator := sdk.ValAddress([]byte("validator"))
-	reporter := sdk.AccAddress([]byte("reporter"))
-	msg := NewMsgAddOracleAddress(validator, reporter)
-	res := msg.GetSignBytes()
-
-	expected := `{"type":"oracle/AddOracleAddress","value":{"reporter":"band1wfjhqmmjw3jhyy3as6w","validator":"bandvaloper1weskc6tyv96x7usd82k92"}}`
-
-	require.Equal(t, expected, string(res))
-
-}
-
-func TestMsgRemoveOracleAddress(t *testing.T) {
-	validator := sdk.ValAddress([]byte("validator"))
-	reporter := sdk.AccAddress([]byte("reporter"))
-	msg := NewMsgRemoveOracleAddress(validator, reporter)
-	require.Equal(t, RouterKey, msg.Route())
-	require.Equal(t, "remove_oracle_address", msg.Type())
-	require.Equal(t, validator, msg.Validator)
-	require.Equal(t, reporter, msg.Reporter)
+	performValidateTests(t, []validateTestCase{
+		{true, NewMsgAddOracleAddress(GoodTestValAddr, GoodTestAddr)},
+		{false, NewMsgAddOracleAddress(BadTestValAddr, GoodTestAddr)},
+		{false, NewMsgAddOracleAddress(GoodTestValAddr, BadTestAddr)},
+	})
 }
 
 func TestMsgRemoveOracleAddressValidation(t *testing.T) {
-	validator := sdk.ValAddress([]byte("validator"))
-	reporter := sdk.AccAddress([]byte("reporter"))
-
-	cases := []struct {
-		valid bool
-		tx    MsgRemoveOracleAddress
-	}{
-		{
-			true, NewMsgRemoveOracleAddress(validator, reporter),
-		},
-		{
-			false, NewMsgRemoveOracleAddress(nil, reporter),
-		},
-		{
-			false, NewMsgRemoveOracleAddress(validator, nil),
-		},
-	}
-
-	for _, tc := range cases {
-		err := tc.tx.ValidateBasic()
-		if tc.valid {
-			require.Nil(t, err)
-		} else {
-			require.NotNil(t, err)
-		}
-	}
-}
-
-func TestMsgRemoveOracleAddressGetSignBytes(t *testing.T) {
-	validator := sdk.ValAddress([]byte("validator"))
-	reporter := sdk.AccAddress([]byte("reporter"))
-	msg := NewMsgRemoveOracleAddress(validator, reporter)
-	res := msg.GetSignBytes()
-
-	expected := `{"type":"oracle/RemoveOracleAddress","value":{"reporter":"band1wfjhqmmjw3jhyy3as6w","validator":"bandvaloper1weskc6tyv96x7usd82k92"}}`
-
-	require.Equal(t, expected, string(res))
-
+	performValidateTests(t, []validateTestCase{
+		{true, NewMsgRemoveOracleAddress(GoodTestValAddr, GoodTestAddr)},
+		{false, NewMsgRemoveOracleAddress(BadTestValAddr, GoodTestAddr)},
+		{false, NewMsgRemoveOracleAddress(GoodTestValAddr, BadTestAddr)},
+	})
 }

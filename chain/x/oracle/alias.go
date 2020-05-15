@@ -66,14 +66,9 @@ var (
 	DefaultParams   = types.DefaultParams
 	NewRawReport    = types.NewRawReport
 
-	KeyMaxExecutableSize                = types.KeyMaxExecutableSize
-	KeyMaxOracleScriptCodeSize          = types.KeyMaxOracleScriptCodeSize
-	KeyMaxCalldataSize                  = types.KeyMaxCalldataSize
 	KeyMaxRawRequestCount               = types.KeyMaxRawRequestCount
 	KeyMaxRawDataReportSize             = types.KeyMaxRawDataReportSize
 	KeyMaxResultSize                    = types.KeyMaxResultSize
-	KeyMaxNameLength                    = types.KeyMaxNameLength
-	KeyMaxDescriptionLength             = types.KeyMaxDescriptionLength
 	KeyGasPerRawDataRequestPerValidator = types.KeyGasPerRawDataRequestPerValidator
 	KeyExpirationBlockCount             = types.KeyExpirationBlockCount
 	KeyExecuteGas                       = types.KeyExecuteGas

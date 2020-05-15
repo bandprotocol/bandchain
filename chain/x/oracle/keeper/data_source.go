@@ -39,13 +39,6 @@ func (k Keeper) SetDataSource(ctx sdk.Context, id types.DataSourceID, dataSource
 
 // AddDataSource adds the given data source to the storage. Returns error if validation fails.
 func (k Keeper) AddDataSource(ctx sdk.Context, dataSource types.DataSource) (types.DataSourceID, error) {
-	if err := AnyError(
-		k.EnsureLength(ctx, types.KeyMaxNameLength, len(dataSource.Name)),
-		k.EnsureLength(ctx, types.KeyMaxDescriptionLength, len(dataSource.Description)),
-		k.EnsureLength(ctx, types.KeyMaxExecutableSize, len(dataSource.Executable)),
-	); err != nil {
-		return 0, err
-	}
 	id := k.GetNextDataSourceID(ctx)
 	k.SetDataSource(ctx, id, dataSource)
 	return id, nil
@@ -61,13 +54,6 @@ func (k Keeper) EditDataSource(ctx sdk.Context, id types.DataSourceID, new types
 	dataSource.Name = new.Name
 	dataSource.Description = new.Description
 	dataSource.Executable = new.Executable
-	if err := AnyError(
-		k.EnsureLength(ctx, types.KeyMaxNameLength, len(dataSource.Name)),
-		k.EnsureLength(ctx, types.KeyMaxDescriptionLength, len(dataSource.Description)),
-		k.EnsureLength(ctx, types.KeyMaxExecutableSize, len(dataSource.Executable)),
-	); err != nil {
-		return err
-	}
 	k.SetDataSource(ctx, id, dataSource)
 	return nil
 }

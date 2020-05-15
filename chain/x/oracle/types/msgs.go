@@ -5,7 +5,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// RouterKey is they name of the bank module
+// RouterKey is the name of the oracle module
 const RouterKey = ModuleName
 
 // Route implements the sdk.Msg interface for MsgRequestData.
@@ -16,24 +16,20 @@ func (msg MsgRequestData) Type() string { return "request" }
 
 // ValidateBasic implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgRequestData) ValidateBasic() error {
-	if msg.Sender.Empty() {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgRequestData: Sender address must not be empty.")
+	if err := sdk.VerifyAddressFormat(msg.Sender); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "sender: %s", msg.Sender)
 	}
-	if msg.OracleScriptID <= 0 {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgRequestData: Oracle script id (%d) must be positive.", msg.OracleScriptID)
+	if len(msg.Calldata) > MaxCalldataSize {
+		return WrapMaxError(ErrTooLargeCalldata, len(msg.Calldata), MaxCalldataSize)
 	}
 	if msg.MinCount <= 0 {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg,
-			"MsgRequestData: Sufficient validator count (%d) must be positive.",
-			msg.MinCount,
-		)
+		return sdkerrors.Wrapf(ErrInvalidMinCount, "got: %d", msg.MinCount)
 	}
 	if msg.AskCount < msg.MinCount {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg,
-			"MsgRequestData: Request validator count (%d) must not be less than sufficient validator count (%d).",
-			msg.AskCount,
-			msg.MinCount,
-		)
+		return sdkerrors.Wrapf(ErrAskCountLessThanMinCount, "%d < %d", msg.AskCount, msg.MinCount)
+	}
+	if len(msg.ClientID) > MaxClientIDLength {
+		return WrapMaxError(ErrTooLongClientID, len(msg.ClientID), MaxClientIDLength)
 	}
 	return nil
 }
@@ -45,8 +41,7 @@ func (msg MsgRequestData) GetSigners() []sdk.AccAddress {
 
 // GetSignBytes implements the sdk.Msg interface for MsgRequestData.
 func (msg MsgRequestData) GetSignBytes() []byte {
-	bz := ModuleCdc.MustMarshalJSON(msg)
-	return sdk.MustSortJSON(bz)
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
 }
 
 // Route implements the sdk.Msg interface for MsgReportData.
@@ -57,24 +52,21 @@ func (msg MsgReportData) Type() string { return "report" }
 
 // ValidateBasic implements the sdk.Msg interface for MsgReportData.
 func (msg MsgReportData) ValidateBasic() error {
-	if msg.RequestID <= 0 {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgReportData: Request id (%d) must be positive.", msg.RequestID)
+	if err := sdk.VerifyAddressFormat(msg.Validator); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "validator: %s", msg.Validator)
 	}
-	if msg.DataSet == nil || len(msg.DataSet) == 0 {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgReportData: Data set must not be empty.")
+	if err := sdk.VerifyAddressFormat(msg.Reporter); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "reporter: %s", msg.Reporter)
+	}
+	if len(msg.DataSet) == 0 {
+		return ErrEmptyReport
 	}
 	uniqueMap := make(map[ExternalID]bool)
-	for _, rawReport := range msg.DataSet {
-		if _, found := uniqueMap[rawReport.ExternalID]; found {
-			return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgReportData: External IDs in dataset must be unique.")
+	for _, r := range msg.DataSet {
+		if _, found := uniqueMap[r.ExternalID]; found {
+			return sdkerrors.Wrapf(ErrDuplicateExternalID, "external id: %d", r.ExternalID)
 		}
-		uniqueMap[rawReport.ExternalID] = true
-	}
-	if msg.Validator.Empty() {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgReportData: Validator address must not be empty.")
-	}
-	if msg.Reporter.Empty() {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgReportData: Reporter address must not be empty.")
+		uniqueMap[r.ExternalID] = true
 	}
 	return nil
 }
@@ -86,8 +78,7 @@ func (msg MsgReportData) GetSigners() []sdk.AccAddress {
 
 // GetSignBytes implements the sdk.Msg interface for MsgReportData.
 func (msg MsgReportData) GetSignBytes() []byte {
-	bz := ModuleCdc.MustMarshalJSON(msg)
-	return sdk.MustSortJSON(bz)
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
 }
 
 // Route implements the sdk.Msg interface for MsgCreateDataSource.
@@ -98,20 +89,23 @@ func (msg MsgCreateDataSource) Type() string { return "create_data_source" }
 
 // ValidateBasic implements the sdk.Msg interface for MsgCreateDataSource.
 func (msg MsgCreateDataSource) ValidateBasic() error {
-	if msg.Owner.Empty() {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgCreateDataSource: Owner address must not be empty.")
+	if err := sdk.VerifyAddressFormat(msg.Owner); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "owner: %s", msg.Owner)
 	}
-	if msg.Name == "" {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgCreateDataSource: Name must not be empty.")
+	if err := sdk.VerifyAddressFormat(msg.Sender); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "sender: %s", msg.Sender)
 	}
-	if msg.Description == "" {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgCreateDataSource: Description must not be empty.")
+	if len(msg.Name) > MaxNameLength {
+		return WrapMaxError(ErrTooLongName, len(msg.Name), MaxNameLength)
 	}
-	if msg.Executable == nil || len(msg.Executable) == 0 {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgCreateDataSource: Executable must not be empty.")
+	if len(msg.Description) > MaxDescriptionLength {
+		return WrapMaxError(ErrTooLongDescription, len(msg.Description), MaxDescriptionLength)
 	}
-	if msg.Sender.Empty() {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgCreateDataSource: Sender address must not be empty.")
+	if len(msg.Executable) == 0 {
+		return ErrEmptyExecutable
+	}
+	if len(msg.Executable) > MaxExecutableSize {
+		return WrapMaxError(ErrTooLargeExecutable, len(msg.Executable), MaxExecutableSize)
 	}
 	return nil
 }
@@ -123,8 +117,7 @@ func (msg MsgCreateDataSource) GetSigners() []sdk.AccAddress {
 
 // GetSignBytes implements the sdk.Msg interface for MsgCreateDataSource.
 func (msg MsgCreateDataSource) GetSignBytes() []byte {
-	bz := ModuleCdc.MustMarshalJSON(msg)
-	return sdk.MustSortJSON(bz)
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
 }
 
 // Route implements the sdk.Msg interface for MsgEditDataSource.
@@ -135,25 +128,24 @@ func (msg MsgEditDataSource) Type() string { return "edit_data_source" }
 
 // ValidateBasic implements the sdk.Msg interface for MsgEditDataSource.
 func (msg MsgEditDataSource) ValidateBasic() error {
-	if msg.DataSourceID <= 0 {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgEditDataSource: Data source id (%d) must be positive.", msg.DataSourceID)
+	if err := sdk.VerifyAddressFormat(msg.Owner); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "owner: %s", msg.Owner)
 	}
-	if msg.Owner.Empty() {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgEditDataSource: Owner address must not be empty.")
+	if err := sdk.VerifyAddressFormat(msg.Sender); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "sender: %s", msg.Sender)
 	}
-	if msg.Name == "" {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgEditDataSource: Name must not be empty.")
+	if len(msg.Name) > MaxNameLength {
+		return WrapMaxError(ErrTooLongName, len(msg.Name), MaxNameLength)
 	}
-	if msg.Description == "" {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgEditDataSource: Description must not be empty.")
+	if len(msg.Description) > MaxDescriptionLength {
+		return WrapMaxError(ErrTooLongDescription, len(msg.Description), MaxDescriptionLength)
 	}
-	if msg.Executable == nil || len(msg.Executable) == 0 {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgEditDataSource: Executable must not be empty.")
+	if len(msg.Executable) == 0 {
+		return ErrEmptyExecutable
 	}
-	if msg.Sender.Empty() {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgEditDataSource: Sender address must not be empty.")
+	if len(msg.Executable) > MaxExecutableSize {
+		return WrapMaxError(ErrTooLargeExecutable, len(msg.Executable), MaxExecutableSize)
 	}
-
 	return nil
 }
 
@@ -164,8 +156,7 @@ func (msg MsgEditDataSource) GetSigners() []sdk.AccAddress {
 
 // GetSignBytes implements the sdk.Msg interface for MsgEditDataSource.
 func (msg MsgEditDataSource) GetSignBytes() []byte {
-	bz := ModuleCdc.MustMarshalJSON(msg)
-	return sdk.MustSortJSON(bz)
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
 }
 
 // Route implements the sdk.Msg interface for MsgCreateOracleScript.
@@ -176,20 +167,29 @@ func (msg MsgCreateOracleScript) Type() string { return "create_oracle_script" }
 
 // ValidateBasic implements the sdk.Msg interface for MsgCreateOracleScript.
 func (msg MsgCreateOracleScript) ValidateBasic() error {
-	if msg.Owner.Empty() {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgCreateOracleScript: Owner address must not be empty.")
+	if err := sdk.VerifyAddressFormat(msg.Owner); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "owner: %s", msg.Owner)
 	}
-	if msg.Sender.Empty() {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgCreateOracleScript: Sender address must not be empty.")
+	if err := sdk.VerifyAddressFormat(msg.Sender); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "sender: %s", msg.Sender)
 	}
-	if msg.Name == "" {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgCreateOracleScript: Name must not be empty.")
+	if len(msg.Name) > MaxNameLength {
+		return WrapMaxError(ErrTooLongName, len(msg.Name), MaxNameLength)
 	}
-	if msg.Description == "" {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgCreateOracleScript: Description must not be empty.")
+	if len(msg.Description) > MaxDescriptionLength {
+		return WrapMaxError(ErrTooLongDescription, len(msg.Description), MaxDescriptionLength)
 	}
-	if msg.Code == nil || len(msg.Code) == 0 {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgCreateOracleScript: Code must not be empty.")
+	if len(msg.Schema) > MaxSchemaLength {
+		return WrapMaxError(ErrTooLongSchema, len(msg.Schema), MaxSchemaLength)
+	}
+	if len(msg.SourceCodeURL) > MaxURLLength {
+		return WrapMaxError(ErrTooLongURL, len(msg.SourceCodeURL), MaxURLLength)
+	}
+	if len(msg.Code) == 0 {
+		return ErrEmptyWasmCode
+	}
+	if len(msg.Code) > MaxWasmCodeSize {
+		return WrapMaxError(ErrTooLargeWasmCode, len(msg.Code), MaxWasmCodeSize)
 	}
 	return nil
 }
@@ -201,8 +201,7 @@ func (msg MsgCreateOracleScript) GetSigners() []sdk.AccAddress {
 
 // GetSignBytes implements the sdk.Msg interface for MsgCreateOracleScript.
 func (msg MsgCreateOracleScript) GetSignBytes() []byte {
-	bz := ModuleCdc.MustMarshalJSON(msg)
-	return sdk.MustSortJSON(bz)
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
 }
 
 // Route implements the sdk.Msg interface for MsgEditOracleScript.
@@ -213,20 +212,29 @@ func (msg MsgEditOracleScript) Type() string { return "edit_oracle_script" }
 
 // ValidateBasic implements the sdk.Msg interface for MsgEditOracleScript.
 func (msg MsgEditOracleScript) ValidateBasic() error {
-	if msg.OracleScriptID <= 0 {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgEditOracleScript: Oracle script id (%d) must be positive.", msg.OracleScriptID)
+	if err := sdk.VerifyAddressFormat(msg.Owner); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "owner: %s", msg.Owner)
 	}
-	if msg.Owner.Empty() {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgEditOracleScript: Owner address must not be empty.")
+	if err := sdk.VerifyAddressFormat(msg.Sender); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "sender: %s", msg.Sender)
 	}
-	if msg.Sender.Empty() {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgEditOracleScript: Sender address must not be empty.")
+	if len(msg.Name) > MaxNameLength {
+		return WrapMaxError(ErrTooLongName, len(msg.Name), MaxNameLength)
 	}
-	if msg.Name == "" {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgEditOracleScript: Name must not be empty.")
+	if len(msg.Description) > MaxDescriptionLength {
+		return WrapMaxError(ErrTooLongDescription, len(msg.Description), MaxDescriptionLength)
 	}
-	if msg.Code == nil || len(msg.Code) == 0 {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgEditOracleScript: Code must not be empty.")
+	if len(msg.Schema) > MaxSchemaLength {
+		return WrapMaxError(ErrTooLongSchema, len(msg.Schema), MaxSchemaLength)
+	}
+	if len(msg.SourceCodeURL) > MaxURLLength {
+		return WrapMaxError(ErrTooLongURL, len(msg.SourceCodeURL), MaxURLLength)
+	}
+	if len(msg.Code) == 0 {
+		return ErrEmptyWasmCode
+	}
+	if len(msg.Code) > MaxWasmCodeSize {
+		return WrapMaxError(ErrTooLargeWasmCode, len(msg.Code), MaxWasmCodeSize)
 	}
 	return nil
 }
@@ -238,8 +246,7 @@ func (msg MsgEditOracleScript) GetSigners() []sdk.AccAddress {
 
 // GetSignBytes implements the sdk.Msg interface for MsgEditOracleScript.
 func (msg MsgEditOracleScript) GetSignBytes() []byte {
-	bz := ModuleCdc.MustMarshalJSON(msg)
-	return sdk.MustSortJSON(bz)
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
 }
 
 // Route implements the sdk.Msg interface for MsgAddOracleAddress.
@@ -250,11 +257,11 @@ func (msg MsgAddOracleAddress) Type() string { return "add_oracle_address" }
 
 // ValidateBasic implements the sdk.Msg interface for MsgAddOracleAddress.
 func (msg MsgAddOracleAddress) ValidateBasic() error {
-	if msg.Validator.Empty() {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgAddOracleAddress: Validator address must not be empty.")
+	if err := sdk.VerifyAddressFormat(msg.Validator); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "validator: %s", msg.Validator)
 	}
-	if msg.Reporter.Empty() {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgAddOracleAddress: Reporter address must not be empty.")
+	if err := sdk.VerifyAddressFormat(msg.Reporter); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "reporter: %s", msg.Reporter)
 	}
 	return nil
 }
@@ -266,8 +273,7 @@ func (msg MsgAddOracleAddress) GetSigners() []sdk.AccAddress {
 
 // GetSignBytes implements the sdk.Msg interface for MsgAddOracleAddress.
 func (msg MsgAddOracleAddress) GetSignBytes() []byte {
-	bz := ModuleCdc.MustMarshalJSON(msg)
-	return sdk.MustSortJSON(bz)
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
 }
 
 // Route implements the sdk.Msg interface for MsgRemoveOracleAddress.
@@ -278,11 +284,11 @@ func (msg MsgRemoveOracleAddress) Type() string { return "remove_oracle_address"
 
 // ValidateBasic implements the sdk.Msg interface for MsgRemoveOracleAddress.
 func (msg MsgRemoveOracleAddress) ValidateBasic() error {
-	if msg.Validator.Empty() {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgRemoveOracleAddress: Validator address must not be empty.")
+	if err := sdk.VerifyAddressFormat(msg.Validator); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "validator: %s", msg.Validator)
 	}
-	if msg.Reporter.Empty() {
-		return sdkerrors.Wrapf(ErrInvalidBasicMsg, "MsgRemoveOracleAddress: Reporter address must not be empty.")
+	if err := sdk.VerifyAddressFormat(msg.Reporter); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "reporter: %s", msg.Reporter)
 	}
 	return nil
 }
@@ -294,6 +300,5 @@ func (msg MsgRemoveOracleAddress) GetSigners() []sdk.AccAddress {
 
 // GetSignBytes implements the sdk.Msg interface for MsgRemoveOracleAddress.
 func (msg MsgRemoveOracleAddress) GetSignBytes() []byte {
-	bz := ModuleCdc.MustMarshalJSON(msg)
-	return sdk.MustSortJSON(bz)
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
 }

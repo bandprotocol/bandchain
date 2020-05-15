@@ -26,7 +26,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 
-	"github.com/bandprotocol/bandchain/chain/owasm"
+	"github.com/bandprotocol/bandchain/chain/pkg/owasm"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
@@ -151,21 +151,16 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 
 	ibcKeeper := ibc.NewKeeper(cdc, keyIBC, sk, scopedIBCKeeper)
 
-	keeper := NewKeeper(cdc, keyRequest, owasm.Execute, pk.Subspace(types.DefaultParamspace), bk, sk, ibcKeeper.ChannelKeeper, scopedOracleKeeper, &ibcKeeper.PortKeeper)
+	keeper := NewKeeper(cdc, keyRequest, "/tmp", owasm.Execute, pk.Subspace(types.DefaultParamspace), bk, sk, ibcKeeper.ChannelKeeper, scopedOracleKeeper, &ibcKeeper.PortKeeper)
 	require.Equal(t, account.GetAddress(), addr)
 	accountKeeper.SetAccount(ctx, account)
 
 	require.Equal(t, account, accountKeeper.GetAccount(ctx, addr))
 
 	// Set default parameter
-	keeper.SetParam(ctx, types.KeyMaxExecutableSize, types.DefaultMaxDataSourceExecutableSize)
-	keeper.SetParam(ctx, types.KeyMaxOracleScriptCodeSize, types.DefaultMaxOracleScriptCodeSize)
-	keeper.SetParam(ctx, types.KeyMaxCalldataSize, types.DefaultMaxCalldataSize)
 	keeper.SetParam(ctx, types.KeyMaxRawRequestCount, types.DefaultMaxRawRequestCount)
 	keeper.SetParam(ctx, types.KeyMaxRawDataReportSize, types.DefaultMaxRawDataReportSize)
 	keeper.SetParam(ctx, types.KeyMaxResultSize, types.DefaultMaxResultSize)
-	keeper.SetParam(ctx, types.KeyMaxNameLength, types.DefaultMaxNameLength)
-	keeper.SetParam(ctx, types.KeyMaxDescriptionLength, types.DefaultDescriptionLength)
 	keeper.SetParam(ctx, types.KeyGasPerRawDataRequestPerValidator, types.DefaultGasPerRawDataRequestPerValidator)
 	keeper.SetParam(ctx, types.KeyExpirationBlockCount, types.DefaultExpirationBlockCount)
 	keeper.SetParam(ctx, types.KeyExecuteGas, types.DefaultExecuteGas)

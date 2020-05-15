@@ -3,8 +3,12 @@ package app
 import (
 	"io"
 	"os"
+	"path/filepath"
+
+	"github.com/spf13/viper"
 
 	abci "github.com/tendermint/tendermint/abci/types"
+	"github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/log"
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
@@ -38,7 +42,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 
-	"github.com/bandprotocol/bandchain/chain/owasm"
+	"github.com/bandprotocol/bandchain/chain/pkg/owasm"
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 )
 
@@ -263,6 +267,7 @@ func NewBandApp(
 	app.OracleKeeper = oracle.NewKeeper(
 		cdc,
 		keys[oracle.StoreKey],
+		filepath.Join(viper.GetString(cli.HomeFlag), "files"),
 		owasm.Execute,
 		app.subspaces[oracle.ModuleName],
 		app.BankKeeper,

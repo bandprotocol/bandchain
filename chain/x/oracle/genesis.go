@@ -40,14 +40,9 @@ func DefaultGenesisState() GenesisState {
 }
 
 func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorUpdate {
-	k.SetParam(ctx, KeyMaxExecutableSize, data.Params.MaxDataSourceExecutableSize)
-	k.SetParam(ctx, KeyMaxOracleScriptCodeSize, data.Params.MaxOracleScriptCodeSize)
-	k.SetParam(ctx, KeyMaxCalldataSize, data.Params.MaxCalldataSize)
 	k.SetParam(ctx, KeyMaxRawRequestCount, data.Params.MaxRawRequestCount)
 	k.SetParam(ctx, KeyMaxRawDataReportSize, data.Params.MaxRawDataReportSize)
 	k.SetParam(ctx, KeyMaxResultSize, data.Params.MaxResultSize)
-	k.SetParam(ctx, KeyMaxNameLength, data.Params.MaxNameLength)
-	k.SetParam(ctx, KeyMaxDescriptionLength, data.Params.MaxDescriptionLength)
 	k.SetParam(ctx, KeyGasPerRawDataRequestPerValidator, data.Params.GasPerRawDataRequestPerValidator)
 	k.SetParam(ctx, KeyExpirationBlockCount, data.Params.ExpirationBlockCount)
 	k.SetParam(ctx, KeyExecuteGas, data.Params.ExecuteGas)

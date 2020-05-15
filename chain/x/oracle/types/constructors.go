@@ -266,28 +266,18 @@ func NewReport(
 }
 
 func NewParams(
-	MaxDataSourceExecutableSize uint64,
-	MaxOracleScriptCodeSize uint64,
-	MaxCalldataSize uint64,
 	MaxRawRequestCount uint64,
 	MaxRawDataReportSize uint64,
 	MaxResultSize uint64,
-	MaxNameLength uint64,
-	MaxDescriptionLength uint64,
 	GasPerRawDataRequestPerValidator uint64,
 	ExpirationBlockCount uint64,
 	ExecuteGas uint64,
 	PrepareGas uint64,
 ) Params {
 	return Params{
-		MaxDataSourceExecutableSize:      MaxDataSourceExecutableSize,
-		MaxOracleScriptCodeSize:          MaxOracleScriptCodeSize,
-		MaxCalldataSize:                  MaxCalldataSize,
 		MaxRawRequestCount:               MaxRawRequestCount,
 		MaxRawDataReportSize:             MaxRawDataReportSize,
 		MaxResultSize:                    MaxResultSize,
-		MaxNameLength:                    MaxNameLength,
-		MaxDescriptionLength:             MaxDescriptionLength,
 		GasPerRawDataRequestPerValidator: GasPerRawDataRequestPerValidator,
 		ExpirationBlockCount:             ExpirationBlockCount,
 		ExecuteGas:                       ExecuteGas,

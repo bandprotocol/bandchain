@@ -68,9 +68,6 @@ func (k Keeper) AddRequest(ctx sdk.Context, req types.Request) (types.RequestID,
 	if !k.HasOracleScript(ctx, req.OracleScriptID) {
 		return 0, sdkerrors.Wrapf(types.ErrOracleScriptNotFound, "id: %d", req.OracleScriptID)
 	}
-	if err := k.EnsureLength(ctx, types.KeyMaxCalldataSize, len(req.Calldata)); err != nil {
-		return 0, err
-	}
 	id := k.GetNextRequestID(ctx)
 	k.SetRequest(ctx, id, req)
 	return id, nil
