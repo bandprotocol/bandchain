@@ -430,9 +430,9 @@ let make = () => {
       </div>
     </THead>
     {switch (allSub) {
-     | Data(((validatorCount, _, bondedTokenCount, _, _), rawValidators, votesBlock)) =>
+     | Data(((_, isActiveValidatorCount, bondedTokenCount, _, _), rawValidators, votesBlock)) =>
        let validators = addUptimeOnValidators(rawValidators, votesBlock);
-       let pageCount = Page.getPageCount(validatorCount, pageSize);
+       let pageCount = Page.getPageCount(isActiveValidatorCount, pageSize);
        <>
          {validators->Belt_Array.size > 0
             ? validators
