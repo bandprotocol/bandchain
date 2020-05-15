@@ -2,9 +2,51 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 
+	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
+
+type rawRequest struct {
+	dataSourceID otypes.DataSourceID
+	externalID   otypes.ExternalID
+	calldata     string
+}
+
+// GetRawRequests returns the list of all raw data requests in the given log.
+func GetRawRequests(log sdk.ABCIMessageLog) ([]rawRequest, error) {
+	dataSourceIDs := GetEventValues(log, otypes.EventTypeRawRequest, otypes.AttributeKeyDataSourceID)
+	externalIDs := GetEventValues(log, otypes.EventTypeRawRequest, otypes.AttributeKeyExternalID)
+	calldataList := GetEventValues(log, otypes.EventTypeRawRequest, otypes.AttributeKeyCalldata)
+
+	if len(dataSourceIDs) != len(externalIDs) {
+		return nil, fmt.Errorf("Inconsistent data source count and external ID count")
+	}
+	if len(dataSourceIDs) != len(calldataList) {
+		return nil, fmt.Errorf("Inconsistent data source count and calldata count")
+	}
+
+	var reqs []rawRequest
+	for idx := range dataSourceIDs {
+		dataSourceID, err := strconv.Atoi(dataSourceIDs[idx])
+		if err != nil {
+			return nil, fmt.Errorf("Failed to parse data source id: %s", err.Error())
+		}
+
+		externalID, err := strconv.Atoi(externalIDs[idx])
+		if err != nil {
+			return nil, fmt.Errorf("Failed to parse external id: %s", err.Error())
+		}
+
+		reqs = append(reqs, rawRequest{
+			dataSourceID: otypes.DataSourceID(dataSourceID),
+			externalID:   otypes.ExternalID(externalID),
+			calldata:     calldataList[idx],
+		})
+	}
+	return reqs, nil
+}
 
 // GetEventValues returns the list of all values in the given log with the given type and key.
 func GetEventValues(log sdk.ABCIMessageLog, evType string, evKey string) (res []string) {

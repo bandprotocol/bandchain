@@ -10,7 +10,7 @@ import (
 )
 
 // HasRequest checks if the request of this ID exists in the storage.
-func (k Keeper) HasRequest(ctx sdk.Context, id types.RID) bool {
+func (k Keeper) HasRequest(ctx sdk.Context, id types.RequestID) bool {
 	return ctx.KVStore(k.storeKey).Has(types.RequestStoreKey(id))
 }
 
@@ -68,9 +68,6 @@ func (k Keeper) AddRequest(ctx sdk.Context, req types.Request) (types.RequestID,
 	if !k.HasOracleScript(ctx, req.OracleScriptID) {
 		return 0, sdkerrors.Wrapf(types.ErrOracleScriptNotFound, "id: %d", req.OracleScriptID)
 	}
-	if err := k.EnsureLength(ctx, types.KeyMaxCalldataSize, len(req.Calldata)); err != nil {
-		return 0, err
-	}
 	id := k.GetNextRequestID(ctx)
 	k.SetRequest(ctx, id, req)
 	return id, nil
@@ -79,7 +76,7 @@ func (k Keeper) AddRequest(ctx sdk.Context, req types.Request) (types.RequestID,
 // ResolveRequest updates the request with resolve status and result, and saves the commitment
 // pair of oracle request/response packets to the store. Returns back the response packet.
 func (k Keeper) ResolveRequest(
-	ctx sdk.Context, id types.RID, status types.ResolveStatus, result []byte,
+	ctx sdk.Context, id types.RequestID, status types.ResolveStatus, result []byte,
 ) types.OracleResponsePacketData {
 
 	request := k.MustGetRequest(ctx, id)
