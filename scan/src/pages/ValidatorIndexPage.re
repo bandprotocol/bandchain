@@ -74,6 +74,20 @@ let kvRow = (k, v: value_row_t) => {
   </Row>;
 };
 
+module Uptime = {
+  [@react.component]
+  let make = (~consensusAddress) =>
+    {
+      let%Sub uptimeOpt = ValidatorSub.getUptime(consensusAddress);
+
+      switch (uptimeOpt) {
+      | Some(uptime) => kvRow("UPTIME", VCode(uptime->Format.fPretty ++ "%")) |> Sub.resolve
+      | None => kvRow("UPTIME", VText("N/A")) |> Sub.resolve
+      };
+    }
+    |> Sub.default(_, React.null);
+};
+
 [@react.component]
 let make = (~address, ~hashtag: Route.validator_tab_t) =>
   {
@@ -141,7 +155,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
         <VSpacing size=Spacing.lg />
         {kvRow("BONDED HEIGHT", VCode(validator.bondedHeight->Format.iPretty))}
         <VSpacing size=Spacing.lg />
-        {kvRow("UPTIME", VCode(validator.nodeStatus.uptime->Format.fPretty ++ "%"))}
+        <Uptime consensusAddress={validator.consensusAddress} />
         <VSpacing size=Spacing.lg />
         {kvRow("WEBSITE", VExtLink(validator.website))}
         <VSpacing size=Spacing.lg />

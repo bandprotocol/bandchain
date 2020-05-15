@@ -129,7 +129,7 @@ let make = () =>
                  transaction,
                  oracleScript,
                  requestedValidators,
-                 sufficientValidatorCount,
+                 minCount,
                  reports,
                  resolveStatus,
                },
@@ -153,7 +153,7 @@ let make = () =>
                      <div className=Styles.progressBarContainer>
                        <ProgressBar
                          reportedValidators={reports |> Belt_Array.size}
-                         minimumValidators=sufficientValidatorCount
+                         minimumValidators=minCount
                          requestValidators={requestedValidators |> Belt_Array.size}
                        />
                      </div>

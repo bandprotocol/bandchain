@@ -6,7 +6,7 @@ module RawDataReport = {
 
   let decode = json =>
     JsonUtils.Decode.{
-      externalDataID: json |> field("externalID", int),
+      externalDataID: json |> field("external_id", int),
       data: json |> field("data", string) |> JsBuffer.fromBase64,
     };
 };
@@ -145,7 +145,7 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
-        id: json |> field("dataSourceID", ID.DataSource.fromJson),
+        id: json |> field("data_source_id", ID.DataSource.fromJson),
         owner: json |> field("owner", string) |> Address.fromBech32,
         name: json |> field("name", string),
         fee: json |> field("fee", list(Coin.decodeCoin)),
@@ -184,7 +184,7 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
-        id: json |> field("oracleScriptID", ID.OracleScript.fromJson),
+        id: json |> field("oracle_script_id", ID.OracleScript.fromJson),
         owner: json |> field("owner", string) |> Address.fromBech32,
         name: json |> field("name", string),
         code: json |> field("code", string) |> JsBuffer.fromBase64,
@@ -198,8 +198,8 @@ module Msg = {
       oracleScriptID: ID.OracleScript.t,
       oracleScriptName: string,
       calldata: JsBuffer.t,
-      requestedValidatorCount: int,
-      sufficientValidatorCount: int,
+      askCount: int,
+      minCount: int,
       schema: string,
       sender: Address.t,
     };
@@ -207,11 +207,11 @@ module Msg = {
     let decode = json => {
       JsonUtils.Decode.{
         id: json |> field("request_id", ID.Request.fromJson),
-        oracleScriptID: json |> field("oracleScriptID", ID.OracleScript.fromJson),
+        oracleScriptID: json |> field("oracle_script_id", ID.OracleScript.fromJson),
         oracleScriptName: json |> field("oracle_script_name", string),
         calldata: json |> field("calldata", string) |> JsBuffer.fromBase64,
-        requestedValidatorCount: json |> field("requestedValidatorCount", int),
-        sufficientValidatorCount: json |> field("sufficientValidatorCount", int),
+        askCount: json |> field("ask_count", int),
+        minCount: json |> field("min_count", int),
         schema: json |> field("schema", string),
         sender: json |> field("sender", string) |> Address.fromBech32,
       };
@@ -228,8 +228,8 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
-        requestID: json |> field("requestID", ID.Request.fromJson),
-        dataSet: json |> field("dataSet", list(RawDataReport.decode)),
+        requestID: json |> field("request_id", ID.Request.fromJson),
+        dataSet: json |> field("data_set", list(RawDataReport.decode)),
         validator: json |> field("validator", string) |> Address.fromBech32,
         reporter: json |> field("reporter", string) |> Address.fromBech32,
       };

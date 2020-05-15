@@ -252,7 +252,7 @@ func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseB
 	// Handle Begin block event
 	events := res.GetEvents()
 	for _, event := range events {
-		app.dbBand.HandleBeginblockEvent(event)
+		app.dbBand.HandleBeginAndEndblockEvent(event)
 	}
 
 	return res
@@ -278,7 +278,7 @@ func (app *dbBandApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBl
 
 	events := res.GetEvents()
 	for _, event := range events {
-		app.dbBand.HandleEndblockEvent(event)
+		app.dbBand.HandleBeginAndEndblockEvent(event)
 	}
 
 	app.dbBand.SetContext(sdk.Context{})
