@@ -73,11 +73,16 @@ func (b *BandDB) HandleBeginAndEndblockEvent(event abci.Event) {
 		if err != nil {
 			panic(err)
 		}
+		validatorAddress, err := sdk.ValAddressFromBech32(kvMap[staking.AttributeKeyValidator])
 		err = b.SetAccountBalance(
 			delegatorAddress,
 			b.BankKeeper.GetCoins(b.ctx, delegatorAddress),
 			b.ctx.BlockHeight(),
 		)
+		if err != nil {
+			panic(err)
+		}
+		err = b.updateUnbondingDelegations(delegatorAddress, validatorAddress)
 		if err != nil {
 			panic(err)
 		}
@@ -169,6 +174,10 @@ func (b *BandDB) HandleBeginAndEndblockEvent(event abci.Event) {
 					Tokens: &token,
 					Jailed: &jailed,
 				}).Error
+			if err != nil {
+				panic(err)
+			}
+			err = b.updateUnbondingDelegationsOfValidator(validator.OperatorAddress)
 			if err != nil {
 				panic(err)
 			}

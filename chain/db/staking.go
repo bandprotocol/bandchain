@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
@@ -71,7 +72,11 @@ func (b *BandDB) handleMsgDelegate(msg staking.MsgDelegate) error {
 }
 
 func (b *BandDB) handleMsgUndelegate(msg staking.MsgUndelegate) error {
-	return b.undelegate(msg.DelegatorAddress, msg.ValidatorAddress)
+	err := b.undelegate(msg.DelegatorAddress, msg.ValidatorAddress)
+	if err != nil {
+		return err
+	}
+	return b.updateUnbondingDelegations(msg.DelegatorAddress, msg.ValidatorAddress)
 }
 
 func (b *BandDB) handleMsgBeginRedelegate(msg staking.MsgBeginRedelegate) error {
@@ -80,4 +85,49 @@ func (b *BandDB) handleMsgBeginRedelegate(msg staking.MsgBeginRedelegate) error 
 		return err
 	}
 	return b.delegate(msg.DelegatorAddress, msg.ValidatorDstAddress)
+}
+
+func (b *BandDB) updateUnbondingDelegations(del sdk.AccAddress, val sdk.ValAddress) error {
+	// Delete all records
+	err := b.db.Delete(
+		&UnbondingDelegation{},
+		"delegator_address = ? AND validator_address = ?",
+		del.String(), val.String(),
+	).Error
+	if err != nil {
+		return err
+	}
+
+	unbondingList, found := b.StakingKeeper.GetUnbondingDelegation(b.ctx, del, val)
+	if !found {
+		// All unbonding delegation have been unbonded
+		return nil
+	}
+	for _, ud := range unbondingList.Entries {
+		balance := ud.Balance.Uint64()
+		initBalance := ud.InitialBalance.Uint64()
+		err := b.db.Create(&UnbondingDelegation{
+			DelegatorAddress: del.String(),
+			ValidatorAddress: val.String(),
+			Balance:          &balance,
+			InitialBalance:   &initBalance,
+			CompletionTime:   ud.CompletionTime.UnixNano() / int64(time.Millisecond),
+			CreationHeight:   ud.CreationHeight,
+		}).Error
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (b *BandDB) updateUnbondingDelegationsOfValidator(val sdk.ValAddress) error {
+	dels := b.StakingKeeper.GetUnbondingDelegationsFromValidator(b.ctx, val)
+	for _, del := range dels {
+		err := b.updateUnbondingDelegations(del.DelegatorAddress, val)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
