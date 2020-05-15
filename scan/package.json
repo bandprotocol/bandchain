@@ -31,7 +31,7 @@
     "react-highlight": "^0.12.0",
     "reason-apollo": "^0.18.0",
     "reason-apollo-hooks": "^6.0.0",
-    "reason-react": ">=0.7.1",
+    "reason-react": ">=0.8.0",
     "ripemd160": "^2.0.2",
     "secp256k1": "^4.0.1",
     "semver": "^7.3.2"
