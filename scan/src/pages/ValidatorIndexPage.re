@@ -78,8 +78,12 @@ module Uptime = {
   [@react.component]
   let make = (~consensusAddress) =>
     {
-      let%Sub uptime = ValidatorSub.getUptime(consensusAddress);
-      kvRow("UPTIME", VCode(uptime->Format.fPretty ++ "%")) |> Sub.resolve;
+      let%Sub uptimeOpt = ValidatorSub.getUptime(consensusAddress);
+
+      switch (uptimeOpt) {
+      | Some(uptime) => kvRow("UPTIME", VCode(uptime->Format.fPretty ++ "%")) |> Sub.resolve
+      | None => kvRow("UPTIME", VText("N/A")) |> Sub.resolve
+      };
     }
     |> Sub.default(_, React.null);
 };

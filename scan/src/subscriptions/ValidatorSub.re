@@ -261,8 +261,12 @@ let getUptime = consensusAddress => {
     ->Belt.Option.mapWithDefault(0, GraphQLParser.int64)
     |> float_of_int;
 
-  let uptime = signedBlock /. (signedBlock +. missedBlock) *. 100.;
-  Sub.resolve(uptime);
+  if (signedBlock == 0. && missedBlock == 0.) {
+    Sub.resolve(None);
+  } else {
+    let uptime = signedBlock /. (signedBlock +. missedBlock) *. 100.;
+    Sub.resolve(Some(uptime));
+  };
 };
 
 // For computing uptime on Validator home page
