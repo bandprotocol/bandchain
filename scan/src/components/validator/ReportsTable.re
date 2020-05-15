@@ -19,7 +19,15 @@ module Styles = {
   let fillLeft = style([marginLeft(`auto)]);
 
   let valueContainer =
-    style([display(`flex), flexDirection(`row), alignItems(`flexEnd), paddingLeft(`px(20))]);
+    style([
+      display(`flex),
+      flexDirection(`row),
+      alignItems(`flexEnd),
+      paddingLeft(`px(20)),
+      width(`percent(100.)),
+      maxWidth(`px(170)),
+      marginLeft(`auto),
+    ]);
 };
 
 [@react.component]
@@ -186,15 +194,14 @@ let make = (~address) =>
                          ->Belt_Array.map(value => {
                              <>
                                <div className=Styles.valueContainer>
-                                 <Row>
-                                   <div className=Styles.fillLeft />
-                                   <Text
-                                     value={value |> JsBuffer.toUTF8}
-                                     block=true
-                                     code=true
-                                     breakAll=true
-                                   />
-                                 </Row>
+                                 <div className=Styles.fillLeft />
+                                 <Text
+                                   value={value |> JsBuffer.toUTF8}
+                                   block=true
+                                   code=true
+                                   ellipsis=true
+                                   align=Text.Right
+                                 />
                                </div>
                                <VSpacing size=Spacing.md />
                              </>
