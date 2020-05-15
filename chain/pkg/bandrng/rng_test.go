@@ -15,4 +15,6 @@ func TestRngRandom(t *testing.T) {
 	require.Equal(t, r.NextUint64(), uint64(17609118114147816341))
 	require.Equal(t, r.NextUint64(), uint64(15960811988050104523))
 	require.Equal(t, r.NextUint64(), uint64(11919533627209787235))
+	require.Equal(t, r.NextUint64(), uint64(1371552714025041832))
+	require.Equal(t, r.NextUint64(), uint64(1582662084421402041))
 }

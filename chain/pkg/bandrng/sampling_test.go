@@ -46,11 +46,14 @@ func TestChooseOnePanic(t *testing.T) {
 }
 
 func TestGetCandidateSize(t *testing.T) {
-	expected := []int{93, 43, 21, 10, 5, 3, 2}
 	totalRound := 7
-	for currentRound := 0; currentRound < totalRound; currentRound++ {
-		require.Equal(t, bandrng.GetCandidateSize(currentRound, totalRound, 93-currentRound), expected[currentRound])
-	}
+	require.Equal(t, bandrng.GetCandidateSize(0, totalRound, 93), 93)
+	require.Equal(t, bandrng.GetCandidateSize(1, totalRound, 92), 43)
+	require.Equal(t, bandrng.GetCandidateSize(2, totalRound, 91), 21)
+	require.Equal(t, bandrng.GetCandidateSize(3, totalRound, 90), 10)
+	require.Equal(t, bandrng.GetCandidateSize(4, totalRound, 89), 5)
+	require.Equal(t, bandrng.GetCandidateSize(5, totalRound, 88), 3)
+	require.Equal(t, bandrng.GetCandidateSize(6, totalRound, 87), 2)
 
 	require.Equal(t, bandrng.GetCandidateSize(0, 1, 9999), 9999)
 	require.Equal(t, bandrng.GetCandidateSize(1, 2, 9999), 2)
@@ -67,4 +70,17 @@ func TestGetCandidateSizePanic(t *testing.T) {
 	require.Panics(t, func() {
 		bandrng.GetCandidateSize(9, 10, 0)
 	})
+}
+
+func TestChoosK(t *testing.T) {
+	r := bandrng.NewRng("SEED")
+	length := 93
+	weights := make([]uint64, length)
+	for idx := 0; idx < length; idx++ {
+		weights[idx] = 1
+	}
+
+	acc := bandrng.ChooseK(r, weights, 7)
+	require.Equal(t, acc, []int{84, 33, 8, 3, 0, 2, 4})
+
 }
