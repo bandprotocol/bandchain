@@ -109,23 +109,13 @@ let renderRequest = (request: TxSub.Msg.Request.t) => {
      }}
     <VSpacing size=Spacing.xl />
     <div className=Styles.topicContainer>
-      <Text
-        value="REQUEST VALIDATOR COUNT"
-        size=Text.Sm
-        weight=Text.Thin
-        spacing={Text.Em(0.06)}
-      />
-      <Text value={request.requestedValidatorCount |> string_of_int} weight=Text.Bold />
+      <Text value="ASK COUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <Text value={request.askCount |> string_of_int} weight=Text.Bold />
     </div>
     <VSpacing size=Spacing.lg />
     <div className=Styles.topicContainer>
-      <Text
-        value="SUFFICIENT VALIDATOR COUNT"
-        size=Text.Sm
-        weight=Text.Thin
-        spacing={Text.Em(0.06)}
-      />
-      <Text value={request.sufficientValidatorCount |> string_of_int} weight=Text.Bold />
+      <Text value="MIN COUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <Text value={request.minCount |> string_of_int} weight=Text.Bold />
     </div>
     <VSpacing size=Spacing.lg />
     <VSpacing size=Spacing.lg />
@@ -660,7 +650,7 @@ let renderDelegate = (delegation: TxSub.Msg.Delegate.t) => {
     <VSpacing size=Spacing.lg />
     <div className=Styles.topicContainer>
       <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <AmountRender coins={[delegation.amount]} pos=AmountRender.TxIndex />
+      <AmountRender coins=[delegation.amount] pos=AmountRender.TxIndex />
     </div>
   </Col>;
 };
@@ -684,7 +674,7 @@ let renderUndelegate = (delegation: TxSub.Msg.Undelegate.t) => {
     <VSpacing size=Spacing.lg />
     <div className=Styles.topicContainer>
       <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <AmountRender coins={[delegation.amount]} pos=AmountRender.TxIndex />
+      <AmountRender coins=[delegation.amount] pos=AmountRender.TxIndex />
     </div>
   </Col>;
 };
@@ -715,7 +705,7 @@ let renderRedelegate = (delegation: TxSub.Msg.Redelegate.t) => {
     <VSpacing size=Spacing.lg />
     <div className=Styles.topicContainer>
       <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <AmountRender coins={[delegation.amount]} pos=AmountRender.TxIndex />
+      <AmountRender coins=[delegation.amount] pos=AmountRender.TxIndex />
     </div>
   </Col>;
 };
