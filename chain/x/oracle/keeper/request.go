@@ -1,4 +1,4 @@
-åpackage keeper
+package keeper
 
 import (
 	"encoding/hex"
