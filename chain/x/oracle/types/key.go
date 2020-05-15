@@ -16,8 +16,6 @@ const (
 var (
 	// GlobalStoreKeyPrefix is a prefix for global primitive state variable
 	GlobalStoreKeyPrefix = []byte{0x00}
-	// RequestBeginStoreKey TODO
-	RequestBeginStoreKey = append(GlobalStoreKeyPrefix, []byte("RequestBeginStoreKey")...)
 	// RequestsCountStoreKey is a key that help getting to current requests count state variable
 	RequestsCountStoreKey = append(GlobalStoreKeyPrefix, []byte("RequestsCount")...)
 	// PendingResolveListStoreKey is a key that help getting pending request
