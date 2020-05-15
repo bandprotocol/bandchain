@@ -60,14 +60,12 @@ func (b *BandDB) HandleBeginAndEndblockEvent(event abci.Event) {
 					}).Error
 			if err != nil {
 				panic(err)
-
 			}
 		} else {
 			err = b.tx.Model(&Request{}).Where(Request{ID: id}).
 				Update(Request{ResolveStatus: parseResolveStatus(resolveStatus)}).Error
 			if err != nil {
 				panic(err)
-
 			}
 		}
 	case staking.EventTypeCompleteUnbonding:
