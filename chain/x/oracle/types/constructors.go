@@ -190,7 +190,7 @@ func NewRawReport(
 func NewOracleRequestPacketData(
 	ClientID string,
 	OracleScriptID OracleScriptID,
-	Calldata string,
+	Calldata []byte,
 	AskCount int64,
 	MinCount int64,
 ) OracleRequestPacketData {
@@ -210,7 +210,7 @@ func NewOracleResponsePacketData(
 	RequestTime int64,
 	ResolveTime int64,
 	ResolveStatus ResolveStatus,
-	Result string,
+	Result []byte,
 ) OracleResponsePacketData {
 	return OracleResponsePacketData{
 		ClientID:      ClientID,
