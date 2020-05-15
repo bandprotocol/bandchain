@@ -104,8 +104,8 @@ func (b *BandDB) updateUnbondingDelegations(del sdk.AccAddress, val sdk.ValAddre
 		return nil
 	}
 	for _, ud := range unbondingList.Entries {
-		balance := ud.Balance.Uint64()
-		initBalance := ud.InitialBalance.Uint64()
+		balance := ud.Balance.BigInt().Uint64()
+		initBalance := ud.InitialBalance.BigInt().Uint64()
 		err := b.db.Create(&UnbondingDelegation{
 			DelegatorAddress: del.String(),
 			ValidatorAddress: val.String(),
