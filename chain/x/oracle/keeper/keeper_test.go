@@ -70,16 +70,12 @@ func TestGetSetParams(t *testing.T) {
 	keeper.SetParam(ctx, types.KeyMaxResultSize, 1)
 	keeper.SetParam(ctx, types.KeyGasPerRawDataRequestPerValidator, 1000)
 	keeper.SetParam(ctx, types.KeyExpirationBlockCount, 30)
-	keeper.SetParam(ctx, types.KeyExecuteGas, 100000)
-	keeper.SetParam(ctx, types.KeyPrepareGas, 10000)
-	require.Equal(t, types.NewParams(1, 1, 1, 1000, 30, 100000, 10000), keeper.GetParams(ctx))
+	require.Equal(t, types.NewParams(1, 1, 1, 1000, 30), keeper.GetParams(ctx))
 
 	keeper.SetParam(ctx, types.KeyMaxRawRequestCount, 2)
 	keeper.SetParam(ctx, types.KeyMaxRawDataReportSize, 2)
 	keeper.SetParam(ctx, types.KeyMaxResultSize, 2)
 	keeper.SetParam(ctx, types.KeyGasPerRawDataRequestPerValidator, 2000)
 	keeper.SetParam(ctx, types.KeyExpirationBlockCount, 40)
-	keeper.SetParam(ctx, types.KeyExecuteGas, 200000)
-	keeper.SetParam(ctx, types.KeyPrepareGas, 20000)
-	require.Equal(t, types.NewParams(2, 2, 2, 2000, 40, 200000, 20000), keeper.GetParams(ctx))
+	require.Equal(t, types.NewParams(2, 2, 2, 2000, 40), keeper.GetParams(ctx))
 }

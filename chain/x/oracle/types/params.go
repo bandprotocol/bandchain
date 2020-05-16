@@ -28,12 +28,6 @@ const (
 
 	// Expiration block count value 20
 	DefaultExpirationBlockCount = uint64(20)
-
-	// Execute gas cost value is 100000
-	DefaultExecuteGas = uint64(100000)
-
-	// Prepare gas cost value is 100000
-	DefaultPrepareGas = uint64(100000)
 )
 
 // Parameter store keys.
@@ -43,8 +37,6 @@ var (
 	KeyMaxResultSize                    = []byte("MaxResultSize")
 	KeyGasPerRawDataRequestPerValidator = []byte("GasPerRawDataRequestPerValidator")
 	KeyExpirationBlockCount             = []byte("ExpirationBlockCount")
-	KeyExecuteGas                       = []byte("ExecuteGas")
-	KeyPrepareGas                       = []byte("PrepareGas")
 )
 
 // String implements the stringer interface for Params.
@@ -55,16 +47,12 @@ func (p Params) String() string {
   MaxResultSize:                    %d
   GasPerRawDataRequestPerValidator: %d
   ExpirationBlockCount:             %d
-  ExecuteGas:                       %d
-  PrepareGas:                       %d
 `,
 		p.MaxRawRequestCount,
 		p.MaxRawDataReportSize,
 		p.MaxResultSize,
 		p.GasPerRawDataRequestPerValidator,
 		p.ExpirationBlockCount,
-		p.ExecuteGas,
-		p.PrepareGas,
 	)
 }
 
@@ -79,8 +67,6 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyMaxResultSize, &p.MaxResultSize, validateNoOp),
 		paramtypes.NewParamSetPair(KeyGasPerRawDataRequestPerValidator, &p.GasPerRawDataRequestPerValidator, validateNoOp),
 		paramtypes.NewParamSetPair(KeyExpirationBlockCount, &p.ExpirationBlockCount, validateNoOp),
-		paramtypes.NewParamSetPair(KeyExecuteGas, &p.ExecuteGas, validateNoOp),
-		paramtypes.NewParamSetPair(KeyPrepareGas, &p.PrepareGas, validateNoOp),
 	}
 }
 
@@ -92,7 +78,5 @@ func DefaultParams() Params {
 		DefaultMaxResultSize,
 		DefaultGasPerRawDataRequestPerValidator,
 		DefaultExpirationBlockCount,
-		DefaultExecuteGas,
-		DefaultPrepareGas,
 	)
 }
