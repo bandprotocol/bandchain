@@ -67,6 +67,9 @@ func (msg MsgReportData) ValidateBasic() error {
 			return sdkerrors.Wrapf(ErrDuplicateExternalID, "external id: %d", r.ExternalID)
 		}
 		uniqueMap[r.ExternalID] = true
+		if len(r.Data) > MaxRawReportDataSize {
+			return WrapMaxError(ErrTooLargeRawReportData, len(r.Data), MaxCalldataSize)
+		}
 	}
 	return nil
 }
