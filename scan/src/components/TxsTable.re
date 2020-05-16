@@ -17,7 +17,7 @@ let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)
     }>
     <Row minHeight={`px(30)} alignItems=`flexStart>
       <HSpacing size={`px(20)} />
-      <Col size=1.67>
+      <Col size=1.6>
         <VSpacing size=Spacing.sm />
         {switch (txSub) {
          | Data({txHash}) => <TxLink txHash width=140 />
@@ -48,7 +48,8 @@ let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)
            </div>
          | _ =>
            <div className=Styles.statusContainer>
-             <LoadingCensorBar width=45 height=15 />
+             <LoadingCensorBar width=55 height=15 />
+             <HSpacing size=Spacing.sm />
              <LoadingCensorBar width=20 height=20 radius=20 />
            </div>
          }}
@@ -65,7 +66,6 @@ let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)
                spacing={Text.Em(0.02)}
                value={gasFee->Coin.getBandAmountFromCoins->Format.fPretty}
                weight=Text.Medium
-               ellipsis=true
              />
 
            | _ => <LoadingCensorBar width=65 height=15 isRight=true />
@@ -82,7 +82,7 @@ let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)
               ->Belt_Array.mapWithIndex((i, msg) =>
                   <React.Fragment key={(txHash |> Hash.toHex) ++ (i |> string_of_int)}>
                     <VSpacing size=Spacing.sm />
-                    <Msg msg width=460 />
+                    <Msg msg width=450 />
                     <VSpacing size=Spacing.sm />
                   </React.Fragment>
                 )
@@ -93,7 +93,7 @@ let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)
                     <Text value={"Error: " ++ rawLog} code=true size=Text.Sm breakAll=true />
                   </div>}
            </>
-         | _ => <> <VSpacing size=Spacing.sm /> <LoadingCensorBar width=460 height=15 /> </>
+         | _ => <> <VSpacing size=Spacing.sm /> <LoadingCensorBar width=450 height=15 /> </>
          }}
       </Col>
       <HSpacing size={`px(20)} />

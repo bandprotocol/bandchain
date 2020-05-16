@@ -42,16 +42,14 @@ module Styles = {
 let make = (~info, ~header, ~isLeft=true) => {
   let infoSub = React.useContext(GlobalContext.context);
   <div className=Styles.mainContainer>
-    <div className=Styles.headerContainer>
-      <Text
-        value=header
-        color=Colors.gray7
-        size=Text.Sm
-        weight=Text.Thin
-        height={Text.Px(13)}
-        spacing={Text.Em(0.03)}
-      />
-    </div>
+    <Text
+      value=header
+      color=Colors.gray7
+      size=Text.Sm
+      weight=Text.Thin
+      height={Text.Px(18)}
+      spacing={Text.Em(0.03)}
+    />
     {switch (info) {
      | Height(height) =>
        <div className=Styles.vFlex> <TypeID.Block id=height position=TypeID.Subtitle /> </div>

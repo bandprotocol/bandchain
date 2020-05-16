@@ -41,7 +41,6 @@ module Styles = {
       ]),
     ]);
 
-  let alignLeft = style([marginRight(`auto)]);
   let alignRight = style([marginLeft(`auto)]);
 };
 
@@ -58,7 +57,7 @@ let make =
   <div
     className={Css.merge([
       Styles.main(~w=width, ~h=height, ~r=radius, ~colorBase, ~colorLighter, ()),
-      isRight ? Styles.alignRight : Styles.alignLeft,
+      isRight ? Styles.alignRight : "",
     ])}
   />;
 };

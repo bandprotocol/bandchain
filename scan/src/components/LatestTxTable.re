@@ -54,17 +54,14 @@ let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)
       </Col>
       <Col size=1.>
         <VSpacing size=Spacing.xs />
-        {switch (txSub) {
-         | Data({success}) =>
-           <div className=Styles.statusContainer>
+        <div className=Styles.statusContainer>
+          {switch (txSub) {
+           | Data({success}) =>
              <img src={success ? Images.success : Images.fail} className=Styles.logo />
-           </div>
 
-         | _ =>
-           <div className=Styles.statusContainer>
-             <LoadingCensorBar width=20 height=20 radius=20 />
-           </div>
-         }}
+           | _ => <LoadingCensorBar width=20 height=20 radius=20 />
+           }}
+        </div>
       </Col>
       <Col size=3.8>
         {switch (txSub) {
