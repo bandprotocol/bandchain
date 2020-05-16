@@ -45,8 +45,6 @@ func buildRequestQuerierInfo(
 		return types.RequestQuerierInfo{}, sdkErr
 	}
 
-	rawRequests := keeper.GetRawRequests(ctx, id)
-
 	reportMap := make(map[string]([]types.RawReport))
 	for _, report := range keeper.GetReports(ctx, id) {
 		reportMap[string(report.Validator)] = report.RawReports
@@ -72,7 +70,7 @@ func buildRequestQuerierInfo(
 	return types.NewRequestQuerierInfo(
 		id,
 		request,
-		rawRequests,
+		nil,
 		reports,
 		result,
 	), nil

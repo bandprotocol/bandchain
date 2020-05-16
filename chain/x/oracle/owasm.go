@@ -60,11 +60,6 @@ func prepareRequest(ctx sdk.Context, k Keeper, r types.RequestSpec, ibcInfo *typ
 			sdk.NewAttribute(types.AttributeKeyExternalID, fmt.Sprintf("%d", rawReq.ExternalID)),
 			sdk.NewAttribute(types.AttributeKeyCalldata, string(rawReq.Calldata)),
 		))
-		// TODO: Remove raw request keeper. Make cacher and bandoracled parse from events.
-		err = k.AddRawRequest(ctx, id, rawReq)
-		if err != nil {
-			return err
-		}
 	}
 	return nil
 }

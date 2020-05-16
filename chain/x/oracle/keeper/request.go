@@ -72,10 +72,7 @@ func (k Keeper) AddRequest(ctx sdk.Context, req types.Request) types.RequestID {
 
 // ResolveRequest updates the request with resolve status and result, and saves the commitment
 // pair of oracle request/response packets to the store. Returns back the response packet.
-func (k Keeper) ResolveRequest(
-	ctx sdk.Context, id types.RequestID, status types.ResolveStatus, result []byte,
-) types.OracleResponsePacketData {
-
+func (k Keeper) ResolveRequest(ctx sdk.Context, id types.RequestID, status types.ResolveStatus, result []byte) types.OracleResponsePacketData {
 	r := k.MustGetRequest(ctx, id)
 	req := types.NewOracleRequestPacketData(
 		r.ClientID, r.OracleScriptID, r.Calldata, r.MinCount, int64(len(r.RequestedValidators)),
@@ -135,7 +132,6 @@ func (k Keeper) ProcessExpiredRequests(ctx sdk.Context) {
 		k.UpdateReportInfos(ctx, currentReqID)
 		// We are done with this request. Remove it and its dependencies from the store.
 		k.DeleteRequest(ctx, currentReqID)
-		k.DeleteRawRequests(ctx, currentReqID)
 		k.DeleteReports(ctx, currentReqID)
 	}
 }
