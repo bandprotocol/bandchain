@@ -17,21 +17,17 @@ func (k Keeper) HandleValidatorReport(ctx sdk.Context, requestID types.RequestID
 	validator := k.StakingKeeper.Validator(ctx, address)
 	if validator == nil || validator.IsJailed() {
 		// Validator was (a) not found or (b) already jailed
-		reportInfo, err := k.GetValidatorReportInfo(ctx, address)
-		if err == nil {
-			reportInfo.ConsecutiveMissed = 0
-			k.SetValidatorReportInfo(ctx, address, reportInfo)
-		}
+		reportInfo := k.GetValidatorReportInfoWithDefault(ctx, address)
+		reportInfo.ConsecutiveMissed = 0
+		k.SetValidatorReportInfo(ctx, address, reportInfo)
+
 		logger.Info(
 			fmt.Sprintf("Validator %s missed report, but was either not found in store or already jailed", address),
 		)
 		return
 	}
 	// fetch report info
-	reportInfo, err := k.GetValidatorReportInfo(ctx, address)
-	if err != nil {
-		reportInfo = types.NewValidatorReportInfo(address, 0)
-	}
+	reportInfo := k.GetValidatorReportInfoWithDefault(ctx, address)
 
 	maxMisses := k.GetParam(ctx, types.KeyMaxConsecutiveMisses)
 	if reported {

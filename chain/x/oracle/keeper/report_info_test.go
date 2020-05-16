@@ -17,12 +17,11 @@ func TestGetSetValidatorReportInfo(t *testing.T) {
 	require.False(t, found)
 	newInfo := types.NewValidatorReportInfo(Alice.ValAddress, 5)
 	k.SetValidatorReportInfo(ctx, Alice.ValAddress, newInfo)
-	info, err := k.GetValidatorReportInfo(ctx, Alice.ValAddress)
-	require.Nil(t, err)
-	require.Equal(t, info.ConsecutiveMissed, uint64(5))
+	info := k.GetValidatorReportInfoWithDefault(ctx, Alice.ValAddress)
+	require.Equal(t, uint64(5), info.ConsecutiveMissed)
 
-	_, err = k.GetValidatorReportInfo(ctx, Bob.ValAddress)
-	require.Error(t, err)
+	info = k.GetValidatorReportInfoWithDefault(ctx, Bob.ValAddress)
+	require.Equal(t, types.NewValidatorReportInfo(Bob.ValAddress, 0), info)
 }
 
 func TestGetAllValidatorReportInfos(t *testing.T) {
