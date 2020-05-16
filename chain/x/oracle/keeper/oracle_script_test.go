@@ -60,10 +60,7 @@ func TestAddEditOracleScriptBasic(t *testing.T) {
 		Bob.Address, "NAME2", "DESCRIPTION2", []byte("code2"), BasicSchema, BasicSourceCodeURL,
 	)
 	// Adds a new oracle script to the store. We should be able to retreive it back.
-	id, err := k.AddOracleScript(ctx, types.NewOracleScript(
-		oracleScript1.Owner, oracleScript1.Name, oracleScript1.Description, oracleScript1.Code,
-		oracleScript1.Schema, oracleScript1.SourceCodeURL,
-	))
+	id, err := k.AddOracleScript(ctx, oracleScript1)
 	require.Nil(t, err)
 	require.Equal(t, oracleScript1, k.MustGetOracleScript(ctx, id))
 	require.NotEqual(t, oracleScript2, k.MustGetOracleScript(ctx, id))
@@ -88,18 +85,12 @@ func TestAddEditOracleScriptDoNotModify(t *testing.T) {
 		types.DoNotModify, types.DoNotModify,
 	)
 	// Adds a new oracle script to the store. We should be able to retreive it back.
-	id, err := k.AddOracleScript(ctx, types.NewOracleScript(
-		oracleScript1.Owner, oracleScript1.Name, oracleScript1.Description, oracleScript1.Code,
-		oracleScript1.Schema, oracleScript1.SourceCodeURL,
-	))
+	id, err := k.AddOracleScript(ctx, oracleScript1)
 	require.Nil(t, err)
 	require.Equal(t, oracleScript1, k.MustGetOracleScript(ctx, id))
 	require.NotEqual(t, oracleScript2, k.MustGetOracleScript(ctx, id))
 	// Edits the oracle script. We should get the updated oracle script.
-	err = k.EditOracleScript(ctx, id, types.NewOracleScript(
-		oracleScript2.Owner, oracleScript2.Name, oracleScript2.Description, oracleScript2.Code,
-		oracleScript2.Schema, oracleScript2.SourceCodeURL,
-	))
+	err = k.EditOracleScript(ctx, id, oracleScript2)
 	require.Nil(t, err)
 	oracleScriptRes := k.MustGetOracleScript(ctx, id)
 	require.NotEqual(t, oracleScriptRes, oracleScript1)
