@@ -271,8 +271,6 @@ func NewParams(
 	MaxResultSize uint64,
 	GasPerRawDataRequestPerValidator uint64,
 	ExpirationBlockCount uint64,
-	ExecuteGas uint64,
-	PrepareGas uint64,
 ) Params {
 	return Params{
 		MaxRawRequestCount:               MaxRawRequestCount,
@@ -280,7 +278,5 @@ func NewParams(
 		MaxResultSize:                    MaxResultSize,
 		GasPerRawDataRequestPerValidator: GasPerRawDataRequestPerValidator,
 		ExpirationBlockCount:             ExpirationBlockCount,
-		ExecuteGas:                       ExecuteGas,
-		PrepareGas:                       PrepareGas,
 	}
 }

@@ -288,6 +288,4 @@ message Params {
   uint64 max_result_size = 3;
   uint64 gas_per_raw_data_request_per_validator = 4;
   uint64 expiration_block_count = 5;
-  uint64 execute_gas = 6;
-  uint64 prepare_gas = 7;
 }

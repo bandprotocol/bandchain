@@ -45,8 +45,6 @@ func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorU
 	k.SetParam(ctx, KeyMaxResultSize, data.Params.MaxResultSize)
 	k.SetParam(ctx, KeyGasPerRawDataRequestPerValidator, data.Params.GasPerRawDataRequestPerValidator)
 	k.SetParam(ctx, KeyExpirationBlockCount, data.Params.ExpirationBlockCount)
-	k.SetParam(ctx, KeyExecuteGas, data.Params.ExecuteGas)
-	k.SetParam(ctx, KeyPrepareGas, data.Params.PrepareGas)
 
 	for _, dataSource := range data.DataSources {
 		_, err := k.AddDataSource(ctx, types.NewDataSource(
