@@ -41,7 +41,6 @@ func DefaultGenesisState() GenesisState {
 
 func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorUpdate {
 	k.SetParam(ctx, KeyMaxRawRequestCount, data.Params.MaxRawRequestCount)
-	k.SetParam(ctx, KeyMaxRawDataReportSize, data.Params.MaxRawDataReportSize)
 	k.SetParam(ctx, KeyMaxResultSize, data.Params.MaxResultSize)
 	k.SetParam(ctx, KeyGasPerRawDataRequestPerValidator, data.Params.GasPerRawDataRequestPerValidator)
 	k.SetParam(ctx, KeyExpirationBlockCount, data.Params.ExpirationBlockCount)

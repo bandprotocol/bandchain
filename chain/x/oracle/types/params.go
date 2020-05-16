@@ -15,10 +15,6 @@ const (
 	// Default value is set to 16.
 	DefaultMaxRawRequestCount = uint64(16)
 
-	// The maximum size of raw data report per data source.
-	// Default value is set to 1 kB.
-	DefaultMaxRawDataReportSize = uint64(1 * 1024)
-
 	// The maximum size of result after execution.
 	// Default value is set 1 kB.
 	DefaultMaxResultSize = uint64(1 * 1024)
@@ -33,7 +29,6 @@ const (
 // Parameter store keys.
 var (
 	KeyMaxRawRequestCount               = []byte("MaxRawRequestCount")
-	KeyMaxRawDataReportSize             = []byte("MaxRawDataReportSize")
 	KeyMaxResultSize                    = []byte("MaxResultSize")
 	KeyGasPerRawDataRequestPerValidator = []byte("GasPerRawDataRequestPerValidator")
 	KeyExpirationBlockCount             = []byte("ExpirationBlockCount")
@@ -43,13 +38,11 @@ var (
 func (p Params) String() string {
 	return fmt.Sprintf(`oracle Params:
   MaxRawRequestCount:               %d
-  MaxRawDataReportSize:             %d
   MaxResultSize:                    %d
   GasPerRawDataRequestPerValidator: %d
   ExpirationBlockCount:             %d
 `,
 		p.MaxRawRequestCount,
-		p.MaxRawDataReportSize,
 		p.MaxResultSize,
 		p.GasPerRawDataRequestPerValidator,
 		p.ExpirationBlockCount,
@@ -63,7 +56,6 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 	// TODO: Make validation real. Not just noop
 	return params.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyMaxRawRequestCount, &p.MaxRawRequestCount, validateNoOp),
-		paramtypes.NewParamSetPair(KeyMaxRawDataReportSize, &p.MaxRawDataReportSize, validateNoOp),
 		paramtypes.NewParamSetPair(KeyMaxResultSize, &p.MaxResultSize, validateNoOp),
 		paramtypes.NewParamSetPair(KeyGasPerRawDataRequestPerValidator, &p.GasPerRawDataRequestPerValidator, validateNoOp),
 		paramtypes.NewParamSetPair(KeyExpirationBlockCount, &p.ExpirationBlockCount, validateNoOp),
@@ -74,7 +66,6 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 func DefaultParams() Params {
 	return NewParams(
 		DefaultMaxRawRequestCount,
-		DefaultMaxRawDataReportSize,
 		DefaultMaxResultSize,
 		DefaultGasPerRawDataRequestPerValidator,
 		DefaultExpirationBlockCount,
