@@ -92,11 +92,8 @@ func (k Keeper) DeleteReports(ctx sdk.Context, rid types.RequestID) {
 // that miss report more than threshold.
 func (k Keeper) UpdateReportInfos(ctx sdk.Context, rid types.RequestID) {
 	reportedMap := make(map[string]bool)
-	iterator := k.GetReportIterator(ctx, rid)
-	defer iterator.Close()
-	for ; iterator.Valid(); iterator.Next() {
-		var report types.Report
-		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &report)
+	reports := k.GetReports(ctx, rid)
+	for _, report := range reports {
 		reportedMap[report.Validator.String()] = true
 	}
 	request := k.MustGetRequest(ctx, rid)
