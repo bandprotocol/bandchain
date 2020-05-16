@@ -248,7 +248,7 @@ message OracleResponsePacketData {
 message Request {
   option (gogoproto.equal) = true;
 
-  int64 oracle_script_id =1 [
+  int64 oracle_script_id = 1 [
     (gogoproto.customname) = "OracleScriptID",
     (gogoproto.casttype) = "OracleScriptID"
   ];
