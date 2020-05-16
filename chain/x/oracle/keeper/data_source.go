@@ -37,11 +37,11 @@ func (k Keeper) SetDataSource(ctx sdk.Context, id types.DataSourceID, dataSource
 	store.Set(types.DataSourceStoreKey(id), k.cdc.MustMarshalBinaryBare(dataSource))
 }
 
-// AddDataSource adds the given data source to the storage. Returns error if validation fails.
-func (k Keeper) AddDataSource(ctx sdk.Context, dataSource types.DataSource) (types.DataSourceID, error) {
+// AddDataSource adds the given data source to the storage.
+func (k Keeper) AddDataSource(ctx sdk.Context, dataSource types.DataSource) types.DataSourceID {
 	id := k.GetNextDataSourceID(ctx)
 	k.SetDataSource(ctx, id, dataSource)
-	return id, nil
+	return id
 }
 
 // EditDataSource edits the given data source by id and flushes it to the storage.

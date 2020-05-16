@@ -49,28 +49,21 @@ func DefaultGenesisState() GenesisState {
 
 func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorUpdate {
 	k.SetParam(ctx, types.KeyMaxRawRequestCount, data.Params.MaxRawRequestCount)
-	k.SetParam(ctx, types.KeyMaxResultSize, data.Params.MaxResultSize)
 	k.SetParam(ctx, types.KeyGasPerRawDataRequestPerValidator, data.Params.GasPerRawDataRequestPerValidator)
 	k.SetParam(ctx, types.KeyExpirationBlockCount, data.Params.ExpirationBlockCount)
 	k.SetParam(ctx, types.KeyMaxConsecutiveMisses, data.Params.MaxConsecutiveMisses)
 
 	for _, dataSource := range data.DataSources {
-		_, err := k.AddDataSource(ctx, types.NewDataSource(
+		_ = k.AddDataSource(ctx, types.NewDataSource(
 			dataSource.Owner, dataSource.Name, dataSource.Description, dataSource.Executable,
 		))
-		if err != nil {
-			panic(err)
-		}
 	}
 
 	for _, oracleScript := range data.OracleScripts {
-		_, err := k.AddOracleScript(ctx, types.NewOracleScript(
+		_ = k.AddOracleScript(ctx, types.NewOracleScript(
 			oracleScript.Owner, oracleScript.Name, oracleScript.Description,
 			oracleScript.Code, oracleScript.Schema, oracleScript.SourceCodeURL,
 		))
-		if err != nil {
-			panic(err)
-		}
 	}
 
 	for _, info := range data.ReportInfos {

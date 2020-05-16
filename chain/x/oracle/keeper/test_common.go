@@ -159,7 +159,6 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 
 	// Set default parameter
 	keeper.SetParam(ctx, types.KeyMaxRawRequestCount, types.DefaultMaxRawRequestCount)
-	keeper.SetParam(ctx, types.KeyMaxResultSize, types.DefaultMaxResultSize)
 	keeper.SetParam(ctx, types.KeyGasPerRawDataRequestPerValidator, types.DefaultGasPerRawDataRequestPerValidator)
 	keeper.SetParam(ctx, types.KeyExpirationBlockCount, types.DefaultExpirationBlockCount)
 	keeper.SetParam(ctx, types.KeyMaxConsecutiveMisses, types.DefaultMaxConsecutiveMisses)
@@ -221,6 +220,7 @@ func newDefaultRequest() types.Request {
 		0,
 		1581503227,
 		"clientID",
+		nil,
 		nil,
 	)
 }

@@ -8,8 +8,6 @@ import (
 type ExecEnv struct {
 	request            types.Request
 	now                int64
-	maxResultSize      int64
-	maxCalldataSize    int64
 	maxRawRequestCount int64
 	rawRequests        []types.RawRequest
 	reports            map[string]map[types.ExternalID]types.RawReport
@@ -19,8 +17,6 @@ func NewExecEnv(ctx sdk.Context, k Keeper, req types.Request) *ExecEnv {
 	return &ExecEnv{
 		request:            req,
 		now:                ctx.BlockTime().Unix(),
-		maxResultSize:      int64(k.GetParam(ctx, types.KeyMaxResultSize)),
-		maxCalldataSize:    types.MaxCalldataSize,
 		maxRawRequestCount: int64(k.GetParam(ctx, types.KeyMaxRawRequestCount)),
 		rawRequests:        []types.RawRequest{},
 		reports:            make(map[string]map[types.ExternalID]types.RawReport),
@@ -73,12 +69,12 @@ func (env *ExecEnv) GetAggregateBlockTime() int64 {
 
 // GetMaximumResultSize implements Owasm ExecEnv interface.
 func (env *ExecEnv) GetMaximumResultSize() int64 {
-	return env.maxResultSize
+	return types.MaxResultSize
 }
 
 // GetMaximumCalldataOfDataSourceSize implements Owasm ExecEnv interface.
 func (env *ExecEnv) GetMaximumCalldataOfDataSourceSize() int64 {
-	return env.maxCalldataSize
+	return types.MaxRawRequestDataSize
 }
 
 // RequestedValidators implements Owasm ExecEnv interface.
@@ -91,7 +87,7 @@ func (env *ExecEnv) GetValidatorAddress(validatorIndex int64) ([]byte, error) {
 
 // RequestExternalData implements Owasm ExecEnv interface.
 func (env *ExecEnv) RequestExternalData(did int64, eid int64, calldata []byte) error {
-	if int64(len(calldata)) > env.maxCalldataSize {
+	if int64(len(calldata)) > types.MaxRawRequestDataSize {
 		return types.ErrTooLargeCalldata
 	}
 	if int64(len(env.rawRequests)) >= env.maxRawRequestCount {

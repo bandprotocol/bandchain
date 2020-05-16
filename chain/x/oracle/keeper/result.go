@@ -32,28 +32,18 @@ func (k Keeper) GetResult(ctx sdk.Context, id types.RequestID) ([]byte, error) {
 func (k Keeper) AddResult(
 	ctx sdk.Context, id types.RequestID,
 	req types.OracleRequestPacketData, res types.OracleResponsePacketData,
-) ([]byte, error) {
-	if uint64(len(res.Result)) > k.GetParam(ctx, types.KeyMaxResultSize) {
-		return nil, sdkerrors.Wrapf(types.ErrBadDataValue,
-			"AddResult: Result size (%d) exceeds the maximum size (%d).",
-			len(res.Result), k.GetParam(ctx, types.KeyMaxResultSize),
-		)
-	}
-
+) []byte {
 	h := sha256.New()
 	h.Write(k.cdc.MustMarshalBinaryBare(req))
 	reqPacketHash := h.Sum(nil)
-
 	h = sha256.New()
 	h.Write(k.cdc.MustMarshalBinaryBare(res))
 	resPacketHash := h.Sum(nil)
-
 	h = sha256.New()
 	h.Write(append(reqPacketHash, resPacketHash...))
 	resultHash := h.Sum(nil)
-
-	k.SetResult(ctx, types.RequestID(id), resultHash)
-	return resultHash, nil
+	k.SetResult(ctx, id, resultHash)
+	return resultHash
 }
 
 // GetAllResults returns the list of all results in the store. Nil will be added for skipped results.

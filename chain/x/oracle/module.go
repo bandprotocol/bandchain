@@ -176,6 +176,7 @@ func (am AppModule) OnRecvPacket(ctx sdk.Context, packet channeltypes.Packet) (*
 	if err := types.ModuleCdc.UnmarshalJSON(packet.GetData(), &req); err != nil {
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal request packet data: %s", err.Error())
 	}
+<<<<<<< HEAD
 
 	// TODO: Mock data source fee payer
 	newMsg := types.NewMsgRequestData(
@@ -185,6 +186,14 @@ func (am AppModule) OnRecvPacket(ctx sdk.Context, packet channeltypes.Packet) (*
 	return handleMsgRequestDataIBC(
 		ctx, am.keeper, newMsg, packet.GetDestPort(), packet.GetDestChannel(),
 	)
+=======
+	ibcInfo := types.NewIBCInfo(packet.GetDestPort(), packet.GetDestChannel())
+	err := prepareRequest(ctx, am.keeper, &req, &ibcInfo)
+	if err != nil {
+		return nil, err
+	}
+	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
+>>>>>>> chain: Refactor prepare request flow
 }
 
 // OnAcknowledgementPacket implements ics-26 IBCModule interface.

@@ -63,14 +63,11 @@ func (k Keeper) GetRandomValidators(ctx sdk.Context, size int) ([]sdk.ValAddress
 	return validators, nil
 }
 
-// AddRequest attempts to create and save a new request. Returns error if some conditions failed.
-func (k Keeper) AddRequest(ctx sdk.Context, req types.Request) (types.RequestID, error) {
-	if !k.HasOracleScript(ctx, req.OracleScriptID) {
-		return 0, sdkerrors.Wrapf(types.ErrOracleScriptNotFound, "id: %d", req.OracleScriptID)
-	}
+// AddRequest attempts to create and save a new request.
+func (k Keeper) AddRequest(ctx sdk.Context, req types.Request) types.RequestID {
 	id := k.GetNextRequestID(ctx)
 	k.SetRequest(ctx, id, req)
-	return id, nil
+	return id
 }
 
 // ResolveRequest updates the request with resolve status and result, and saves the commitment
@@ -79,36 +76,15 @@ func (k Keeper) ResolveRequest(
 	ctx sdk.Context, id types.RequestID, status types.ResolveStatus, result []byte,
 ) types.OracleResponsePacketData {
 
-	request := k.MustGetRequest(ctx, id)
+	r := k.MustGetRequest(ctx, id)
 	req := types.NewOracleRequestPacketData(
-		request.ClientID, request.OracleScriptID,
-		request.Calldata, request.MinCount,
-		int64(len(request.RequestedValidators)),
+		r.ClientID, r.OracleScriptID, r.Calldata, r.MinCount, int64(len(r.RequestedValidators)),
 	)
 	res := types.NewOracleResponsePacketData(
-		request.ClientID, id, int64(k.GetReportCount(ctx, id)), request.RequestTime,
+		r.ClientID, id, int64(k.GetReportCount(ctx, id)), r.RequestTime,
 		ctx.BlockTime().Unix(), types.ResolveStatus_Success, result,
 	)
-
-	if status != types.ResolveStatus_Success {
-		ctx.EventManager().EmitEvent(
-			sdk.NewEvent(
-				types.EventTypeRequestExecute,
-				sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", id)),
-				sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", status)),
-			))
-		return res
-	}
-
-	resultHash, err := k.AddResult(ctx, id, req, res)
-	if err != nil {
-		ctx.EventManager().EmitEvent(sdk.NewEvent(
-			types.EventTypeRequestExecute,
-			sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", id)),
-			sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", types.ResolveStatus_Failure)),
-		))
-		return res
-	}
+	resultHash := k.AddResult(ctx, id, req, res)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeRequestExecute,
 		sdk.NewAttribute(types.AttributeKeyClientID, req.ClientID),
@@ -117,9 +93,9 @@ func (k Keeper) ResolveRequest(
 		sdk.NewAttribute(types.AttributeKeyAskCount, fmt.Sprintf("%d", req.AskCount)),
 		sdk.NewAttribute(types.AttributeKeyMinCount, fmt.Sprintf("%d", req.MinCount)),
 		sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", res.RequestID)),
-		sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", types.ResolveStatus_Success)),
+		sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", status)),
 		sdk.NewAttribute(types.AttributeKeyAnsCount, fmt.Sprintf("%d", res.AnsCount)),
-		sdk.NewAttribute(types.AttributeKeyRequestTime, fmt.Sprintf("%d", request.RequestTime)),
+		sdk.NewAttribute(types.AttributeKeyRequestTime, fmt.Sprintf("%d", res.RequestTime)),
 		sdk.NewAttribute(types.AttributeKeyResolveTime, fmt.Sprintf("%d", res.ResolveTime)),
 		sdk.NewAttribute(types.AttributeKeyResult, string(res.Result)),
 		sdk.NewAttribute(types.AttributeKeyResultHash, hex.EncodeToString(resultHash)),
@@ -141,18 +117,18 @@ func (k Keeper) ProcessExpiredRequests(ctx sdk.Context) {
 	// expiration time, it will be removed from the storage. Note that we will need to
 	// send oracle response packets with status EXPIRED for those that are not yet resolved.
 	for ; currentReqID <= lastReqID; currentReqID++ {
-		request := k.MustGetRequest(ctx, currentReqID)
+		req := k.MustGetRequest(ctx, currentReqID)
 		// This request is not yet expired, so there's nothing to do here. Ditto for
 		// all other requests that come after this. Thus we can just break the loop.
-		if request.RequestHeight+expirationBlockCount > ctx.BlockHeight() {
+		if req.RequestHeight+expirationBlockCount > ctx.BlockHeight() {
 			break
 		}
 		// If the number of reports still doesn't reach the minimum, that means this request
 		// is never resolved. Here we process the response as EXPIRED.
-		if k.GetReportCount(ctx, currentReqID) < request.MinCount {
+		if k.GetReportCount(ctx, currentReqID) < req.MinCount {
 			res := k.ResolveRequest(ctx, currentReqID, types.ResolveStatus_Expired, nil)
-			if request.IBC != nil {
-				k.SendOracleResponse(ctx, request.IBC.SourcePort, request.IBC.SourceChannel, res)
+			if req.IBCInfo != nil {
+				k.SendOracleResponse(ctx, req.IBCInfo.SourcePort, req.IBCInfo.SourceChannel, res)
 			}
 		}
 		// Update report info for requested validators.

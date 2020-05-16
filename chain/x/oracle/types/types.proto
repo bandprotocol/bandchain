@@ -258,10 +258,14 @@ message Request {
   int64 request_height = 5;
   int64 request_time = 6;
   string client_id = 7 [(gogoproto.customname) = "ClientID"];
-  RequestIBC ibc = 8 [(gogoproto.customname) = "IBC"];
+  IBCInfo ibc_info = 8 [(gogoproto.customname) = "IBCInfo"];
+  repeated int64 raw_request_ids = 9 [
+    (gogoproto.customname) = "RawRequestIDs",
+    (gogoproto.casttype) = "ExternalID"
+  ];
 }
 
-message RequestIBC {
+message IBCInfo {
   option (gogoproto.equal) = true;
 
   string source_port = 1;
@@ -293,8 +297,7 @@ message Params {
   option (gogoproto.goproto_stringer) = false;
 
   uint64 max_raw_request_count = 1;
-  uint64 max_result_size = 2;
-  uint64 gas_per_raw_data_request_per_validator = 3;
-  uint64 expiration_block_count = 4;
-  uint64 max_consecutive_misses = 5;
+  uint64 gas_per_raw_data_request_per_validator = 2;
+  uint64 expiration_block_count = 3;
+  uint64 max_consecutive_misses = 4;
 }

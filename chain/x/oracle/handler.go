@@ -37,12 +37,9 @@ func NewHandler(k Keeper) sdk.Handler {
 }
 
 func handleMsgCreateDataSource(ctx sdk.Context, k Keeper, m MsgCreateDataSource) (*sdk.Result, error) {
-	id, err := k.AddDataSource(ctx, types.NewDataSource(
+	id := k.AddDataSource(ctx, types.NewDataSource(
 		m.Owner, m.Name, m.Description, m.Executable,
 	))
-	if err != nil {
-		return nil, err
-	}
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeCreateDataSource,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
@@ -72,12 +69,9 @@ func handleMsgEditDataSource(ctx sdk.Context, k Keeper, m MsgEditDataSource) (*s
 }
 
 func handleMsgCreateOracleScript(ctx sdk.Context, k Keeper, m MsgCreateOracleScript) (*sdk.Result, error) {
-	id, err := k.AddOracleScript(ctx, types.NewOracleScript(
+	id := k.AddOracleScript(ctx, types.NewOracleScript(
 		m.Owner, m.Name, m.Description, m.Code, m.Schema, m.SourceCodeURL,
 	))
-	if err != nil {
-		return nil, err
-	}
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeCreateOracleScript,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
@@ -107,76 +101,10 @@ func handleMsgEditOracleScript(ctx sdk.Context, k Keeper, m MsgEditOracleScript)
 }
 
 func handleMsgRequestData(ctx sdk.Context, k Keeper, m MsgRequestData) (*sdk.Result, error) {
-	validators, err := k.GetRandomValidators(ctx, int(m.AskCount))
+	err := prepareRequest(ctx, k, &m, nil)
 	if err != nil {
 		return nil, err
 	}
-
-	req := types.NewRequest(
-		m.OracleScriptID, m.Calldata, validators, m.MinCount,
-		ctx.BlockHeight(), ctx.BlockTime().Unix(), m.ClientID, nil,
-	)
-	return prepareRequest(ctx, k, m, req)
-}
-
-func handleMsgRequestDataIBC(ctx sdk.Context, k Keeper, m MsgRequestData, sourcePort string, sourceChannel string) (*sdk.Result, error) {
-	validators, err := k.GetRandomValidators(ctx, int(m.AskCount))
-	if err != nil {
-		return nil, err
-	}
-
-	req := types.NewRequest(
-		m.OracleScriptID, m.Calldata, validators, m.MinCount,
-		ctx.BlockHeight(), ctx.BlockTime().Unix(), m.ClientID,
-		&types.RequestIBC{sourcePort, sourceChannel},
-	)
-
-	return prepareRequest(ctx, k, m, req)
-}
-
-func prepareRequest(ctx sdk.Context, k Keeper, m MsgRequestData, req types.Request) (*sdk.Result, error) {
-	env := NewExecEnv(ctx, k, req)
-	script, err := k.GetOracleScript(ctx, m.OracleScriptID)
-	if err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrOracleScriptNotFound, "id: %d", m.OracleScriptID)
-	}
-	// gasPrepare := k.GetParam(ctx, types.KeyPrepareGas)
-	// ctx.GasMeter().ConsumeGas(gasPrepare, "PrepareRequest")
-	// TODO: Consume gas for request fixed size portion
-
-	// TODO: We will need to also validate call data size here
-	_, _, err = k.OwasmExecute(env, script.Code, "prepare", m.Calldata, types.WasmPrepareGas)
-	if err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrBadWasmExecution, err.Error())
-	}
-
-	id, err := k.AddRequest(ctx, req)
-	if err != nil {
-		return nil, err
-	}
-
-	event := sdk.NewEvent(types.EventTypeRequest)
-	event = event.AppendAttributes(sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)))
-	for _, val := range req.RequestedValidators {
-		event = event.AppendAttributes(sdk.NewAttribute(types.AttributeKeyValidator, val.String()))
-	}
-	ctx.EventManager().EmitEvent(event)
-
-	for _, raw := range env.GetRawRequests() {
-		// TODO: Consume more gas if using more raw requests.
-		ctx.EventManager().EmitEvent(sdk.NewEvent(
-			types.EventTypeRawRequest,
-			sdk.NewAttribute(types.AttributeKeyDataSourceID, fmt.Sprintf("%d", raw.DataSourceID)),
-			sdk.NewAttribute(types.AttributeKeyExternalID, fmt.Sprintf("%d", raw.ExternalID)),
-			sdk.NewAttribute(types.AttributeKeyCalldata, string(raw.Calldata)),
-		))
-		// TODO: Remove raw request keeper. Make cacher and bandoracled parse from events.
-		err = k.AddRawRequest(ctx, id, raw)
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
 

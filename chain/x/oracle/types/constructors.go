@@ -231,7 +231,8 @@ func NewRequest(
 	RequestHeight int64,
 	RequestTime int64,
 	ClientID string,
-	IBC *RequestIBC,
+	IBCInfo *IBCInfo,
+	RawRequestIDs []ExternalID,
 ) Request {
 	return Request{
 		OracleScriptID:      OracleScriptID,
@@ -241,15 +242,16 @@ func NewRequest(
 		RequestHeight:       RequestHeight,
 		RequestTime:         RequestTime,
 		ClientID:            ClientID,
-		IBC:                 IBC,
+		IBCInfo:             IBCInfo,
+		RawRequestIDs:       RawRequestIDs,
 	}
 }
 
-func NewRequestIBC(
+func NewIBCInfo(
 	SourcePort string,
 	SourceChannel string,
-) RequestIBC {
-	return RequestIBC{
+) IBCInfo {
+	return IBCInfo{
 		SourcePort:    SourcePort,
 		SourceChannel: SourceChannel,
 	}
@@ -277,14 +279,12 @@ func NewValidatorReportInfo(
 
 func NewParams(
 	MaxRawRequestCount uint64,
-	MaxResultSize uint64,
 	GasPerRawDataRequestPerValidator uint64,
 	ExpirationBlockCount uint64,
 	MaxConsecutiveMisses uint64,
 ) Params {
 	return Params{
 		MaxRawRequestCount:               MaxRawRequestCount,
-		MaxResultSize:                    MaxResultSize,
 		GasPerRawDataRequestPerValidator: GasPerRawDataRequestPerValidator,
 		ExpirationBlockCount:             ExpirationBlockCount,
 		MaxConsecutiveMisses:             MaxConsecutiveMisses,
