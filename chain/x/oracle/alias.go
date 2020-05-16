@@ -50,8 +50,8 @@ var (
 	NewMsgEditOracleScript      = types.NewMsgEditOracleScript
 	NewMsgCreateDataSource      = types.NewMsgCreateDataSource
 	NewMsgEditDataSource        = types.NewMsgEditDataSource
-	NewMsgAddOracleAddress      = types.NewMsgAddOracleAddress
-	NewMsgRemoveOracleAddress   = types.NewMsgRemoveOracleAddress
+	NewMsgAddReporter           = types.NewMsgAddReporter
+	NewMsgRemoveReporter        = types.NewMsgRemoveReporter
 	NewOracleRequestPacketData  = types.NewOracleRequestPacketData
 	NewOracleResponsePacketData = types.NewOracleResponsePacketData
 
@@ -93,8 +93,8 @@ type (
 	MsgEditDataSource        = types.MsgEditDataSource
 	MsgCreateOracleScript    = types.MsgCreateOracleScript
 	MsgEditOracleScript      = types.MsgEditOracleScript
-	MsgAddOracleAddress      = types.MsgAddOracleAddress
-	MsgRemoveOracleAddress   = types.MsgRemoveOracleAddress
+	MsgAddReporter           = types.MsgAddReporter
+	MsgRemoveReporter        = types.MsgRemoveReporter
 	OracleRequestPacketData  = types.OracleRequestPacketData
 	OracleResponsePacketData = types.OracleResponsePacketData
 

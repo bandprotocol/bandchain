@@ -85,7 +85,7 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 	}
 
 	reports := make([]oracle.RawReport, 0)
-	for _ = range reqs {
+	for range reqs {
 		reports = append(reports, <-reportsChan)
 	}
 

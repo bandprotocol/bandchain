@@ -102,9 +102,9 @@ message MsgEditOracleScript {
       [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
 }
 
-// MsgAddOracleAddress is a message for adding an agent authorized to submit
+// MsgAddReporter is a message for adding an agent authorized to submit
 // report transactions.
-message MsgAddOracleAddress {
+message MsgAddReporter {
   option (gogoproto.equal) = true;
 
   bytes validator = 1
@@ -113,9 +113,9 @@ message MsgAddOracleAddress {
       [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
 }
 
-// MsgRemoveOracleAddress is a message for removing an agent from the list of
+// MsgRemoveReporter is a message for removing an agent from the list of
 // authorized reporters.
-message MsgRemoveOracleAddress {
+message MsgRemoveReporter {
   option (gogoproto.equal) = true;
 
   bytes validator = 1

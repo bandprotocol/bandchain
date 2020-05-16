@@ -567,25 +567,25 @@ func (m *MsgEditOracleScript) GetSender() github_com_cosmos_cosmos_sdk_types.Acc
 	return nil
 }
 
-// MsgAddOracleAddress is a message for adding an agent authorized to submit
+// MsgAddReporter is a message for adding an agent authorized to submit
 // report transactions.
-type MsgAddOracleAddress struct {
+type MsgAddReporter struct {
 	Validator github_com_cosmos_cosmos_sdk_types.ValAddress `protobuf:"bytes,1,opt,name=validator,proto3,casttype=github.com/cosmos/cosmos-sdk/types.ValAddress" json:"validator,omitempty"`
 	Reporter  github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,opt,name=reporter,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"reporter,omitempty"`
 }
 
-func (m *MsgAddOracleAddress) Reset()         { *m = MsgAddOracleAddress{} }
-func (m *MsgAddOracleAddress) String() string { return proto.CompactTextString(m) }
-func (*MsgAddOracleAddress) ProtoMessage()    {}
-func (*MsgAddOracleAddress) Descriptor() ([]byte, []int) {
+func (m *MsgAddReporter) Reset()         { *m = MsgAddReporter{} }
+func (m *MsgAddReporter) String() string { return proto.CompactTextString(m) }
+func (*MsgAddReporter) ProtoMessage()    {}
+func (*MsgAddReporter) Descriptor() ([]byte, []int) {
 	return fileDescriptor_53e65fd95a58412c, []int{6}
 }
-func (m *MsgAddOracleAddress) XXX_Unmarshal(b []byte) error {
+func (m *MsgAddReporter) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgAddOracleAddress) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgAddReporter) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgAddOracleAddress.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgAddReporter.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -595,51 +595,51 @@ func (m *MsgAddOracleAddress) XXX_Marshal(b []byte, deterministic bool) ([]byte,
 		return b[:n], nil
 	}
 }
-func (m *MsgAddOracleAddress) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgAddOracleAddress.Merge(m, src)
+func (m *MsgAddReporter) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAddReporter.Merge(m, src)
 }
-func (m *MsgAddOracleAddress) XXX_Size() int {
+func (m *MsgAddReporter) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgAddOracleAddress) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgAddOracleAddress.DiscardUnknown(m)
+func (m *MsgAddReporter) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAddReporter.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgAddOracleAddress proto.InternalMessageInfo
+var xxx_messageInfo_MsgAddReporter proto.InternalMessageInfo
 
-func (m *MsgAddOracleAddress) GetValidator() github_com_cosmos_cosmos_sdk_types.ValAddress {
+func (m *MsgAddReporter) GetValidator() github_com_cosmos_cosmos_sdk_types.ValAddress {
 	if m != nil {
 		return m.Validator
 	}
 	return nil
 }
 
-func (m *MsgAddOracleAddress) GetReporter() github_com_cosmos_cosmos_sdk_types.AccAddress {
+func (m *MsgAddReporter) GetReporter() github_com_cosmos_cosmos_sdk_types.AccAddress {
 	if m != nil {
 		return m.Reporter
 	}
 	return nil
 }
 
-// MsgRemoveOracleAddress is a message for removing an agent from the list of
+// MsgRemoveReporter is a message for removing an agent from the list of
 // authorized reporters.
-type MsgRemoveOracleAddress struct {
+type MsgRemoveReporter struct {
 	Validator github_com_cosmos_cosmos_sdk_types.ValAddress `protobuf:"bytes,1,opt,name=validator,proto3,casttype=github.com/cosmos/cosmos-sdk/types.ValAddress" json:"validator,omitempty"`
 	Reporter  github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,opt,name=reporter,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"reporter,omitempty"`
 }
 
-func (m *MsgRemoveOracleAddress) Reset()         { *m = MsgRemoveOracleAddress{} }
-func (m *MsgRemoveOracleAddress) String() string { return proto.CompactTextString(m) }
-func (*MsgRemoveOracleAddress) ProtoMessage()    {}
-func (*MsgRemoveOracleAddress) Descriptor() ([]byte, []int) {
+func (m *MsgRemoveReporter) Reset()         { *m = MsgRemoveReporter{} }
+func (m *MsgRemoveReporter) String() string { return proto.CompactTextString(m) }
+func (*MsgRemoveReporter) ProtoMessage()    {}
+func (*MsgRemoveReporter) Descriptor() ([]byte, []int) {
 	return fileDescriptor_53e65fd95a58412c, []int{7}
 }
-func (m *MsgRemoveOracleAddress) XXX_Unmarshal(b []byte) error {
+func (m *MsgRemoveReporter) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgRemoveOracleAddress) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgRemoveReporter) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgRemoveOracleAddress.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgRemoveReporter.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -649,26 +649,26 @@ func (m *MsgRemoveOracleAddress) XXX_Marshal(b []byte, deterministic bool) ([]by
 		return b[:n], nil
 	}
 }
-func (m *MsgRemoveOracleAddress) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgRemoveOracleAddress.Merge(m, src)
+func (m *MsgRemoveReporter) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgRemoveReporter.Merge(m, src)
 }
-func (m *MsgRemoveOracleAddress) XXX_Size() int {
+func (m *MsgRemoveReporter) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgRemoveOracleAddress) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgRemoveOracleAddress.DiscardUnknown(m)
+func (m *MsgRemoveReporter) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgRemoveReporter.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgRemoveOracleAddress proto.InternalMessageInfo
+var xxx_messageInfo_MsgRemoveReporter proto.InternalMessageInfo
 
-func (m *MsgRemoveOracleAddress) GetValidator() github_com_cosmos_cosmos_sdk_types.ValAddress {
+func (m *MsgRemoveReporter) GetValidator() github_com_cosmos_cosmos_sdk_types.ValAddress {
 	if m != nil {
 		return m.Validator
 	}
 	return nil
 }
 
-func (m *MsgRemoveOracleAddress) GetReporter() github_com_cosmos_cosmos_sdk_types.AccAddress {
+func (m *MsgRemoveReporter) GetReporter() github_com_cosmos_cosmos_sdk_types.AccAddress {
 	if m != nil {
 		return m.Reporter
 	}
@@ -1459,8 +1459,8 @@ func init() {
 	proto.RegisterType((*MsgEditDataSource)(nil), "bandchain.chain.x.oracle.v1.MsgEditDataSource")
 	proto.RegisterType((*MsgCreateOracleScript)(nil), "bandchain.chain.x.oracle.v1.MsgCreateOracleScript")
 	proto.RegisterType((*MsgEditOracleScript)(nil), "bandchain.chain.x.oracle.v1.MsgEditOracleScript")
-	proto.RegisterType((*MsgAddOracleAddress)(nil), "bandchain.chain.x.oracle.v1.MsgAddOracleAddress")
-	proto.RegisterType((*MsgRemoveOracleAddress)(nil), "bandchain.chain.x.oracle.v1.MsgRemoveOracleAddress")
+	proto.RegisterType((*MsgAddReporter)(nil), "bandchain.chain.x.oracle.v1.MsgAddReporter")
+	proto.RegisterType((*MsgRemoveReporter)(nil), "bandchain.chain.x.oracle.v1.MsgRemoveReporter")
 	proto.RegisterType((*DataSource)(nil), "bandchain.chain.x.oracle.v1.DataSource")
 	proto.RegisterType((*OracleScript)(nil), "bandchain.chain.x.oracle.v1.OracleScript")
 	proto.RegisterType((*RawRequest)(nil), "bandchain.chain.x.oracle.v1.RawRequest")
@@ -1805,14 +1805,14 @@ func (this *MsgEditOracleScript) Equal(that interface{}) bool {
 	}
 	return true
 }
-func (this *MsgAddOracleAddress) Equal(that interface{}) bool {
+func (this *MsgAddReporter) Equal(that interface{}) bool {
 	if that == nil {
 		return this == nil
 	}
 
-	that1, ok := that.(*MsgAddOracleAddress)
+	that1, ok := that.(*MsgAddReporter)
 	if !ok {
-		that2, ok := that.(MsgAddOracleAddress)
+		that2, ok := that.(MsgAddReporter)
 		if ok {
 			that1 = &that2
 		} else {
@@ -1832,14 +1832,14 @@ func (this *MsgAddOracleAddress) Equal(that interface{}) bool {
 	}
 	return true
 }
-func (this *MsgRemoveOracleAddress) Equal(that interface{}) bool {
+func (this *MsgRemoveReporter) Equal(that interface{}) bool {
 	if that == nil {
 		return this == nil
 	}
 
-	that1, ok := that.(*MsgRemoveOracleAddress)
+	that1, ok := that.(*MsgRemoveReporter)
 	if !ok {
-		that2, ok := that.(MsgRemoveOracleAddress)
+		that2, ok := that.(MsgRemoveReporter)
 		if ok {
 			that1 = &that2
 		} else {
@@ -2605,7 +2605,7 @@ func (m *MsgEditOracleScript) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgAddOracleAddress) Marshal() (dAtA []byte, err error) {
+func (m *MsgAddReporter) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -2615,12 +2615,12 @@ func (m *MsgAddOracleAddress) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgAddOracleAddress) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgAddReporter) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgAddOracleAddress) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgAddReporter) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -2642,7 +2642,7 @@ func (m *MsgAddOracleAddress) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgRemoveOracleAddress) Marshal() (dAtA []byte, err error) {
+func (m *MsgRemoveReporter) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -2652,12 +2652,12 @@ func (m *MsgRemoveOracleAddress) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgRemoveOracleAddress) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgRemoveReporter) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgRemoveOracleAddress) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgRemoveReporter) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -3411,7 +3411,7 @@ func (m *MsgEditOracleScript) Size() (n int) {
 	return n
 }
 
-func (m *MsgAddOracleAddress) Size() (n int) {
+func (m *MsgAddReporter) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -3428,7 +3428,7 @@ func (m *MsgAddOracleAddress) Size() (n int) {
 	return n
 }
 
-func (m *MsgRemoveOracleAddress) Size() (n int) {
+func (m *MsgRemoveReporter) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -5136,7 +5136,7 @@ func (m *MsgEditOracleScript) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgAddOracleAddress) Unmarshal(dAtA []byte) error {
+func (m *MsgAddReporter) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -5159,10 +5159,10 @@ func (m *MsgAddOracleAddress) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgAddOracleAddress: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgAddReporter: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgAddOracleAddress: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgAddReporter: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -5257,7 +5257,7 @@ func (m *MsgAddOracleAddress) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgRemoveOracleAddress) Unmarshal(dAtA []byte) error {
+func (m *MsgRemoveReporter) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -5280,10 +5280,10 @@ func (m *MsgRemoveOracleAddress) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgRemoveOracleAddress: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgRemoveReporter: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgRemoveOracleAddress: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgRemoveReporter: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

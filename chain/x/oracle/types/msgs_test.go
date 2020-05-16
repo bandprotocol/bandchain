@@ -38,8 +38,8 @@ func TestMsgRoute(t *testing.T) {
 	require.Equal(t, "oracle", MsgEditOracleScript{}.Route())
 	require.Equal(t, "oracle", MsgRequestData{}.Route())
 	require.Equal(t, "oracle", MsgReportData{}.Route())
-	require.Equal(t, "oracle", MsgAddOracleAddress{}.Route())
-	require.Equal(t, "oracle", MsgRemoveOracleAddress{}.Route())
+	require.Equal(t, "oracle", MsgAddReporter{}.Route())
+	require.Equal(t, "oracle", MsgRemoveReporter{}.Route())
 }
 
 func TestMsgType(t *testing.T) {
@@ -49,8 +49,8 @@ func TestMsgType(t *testing.T) {
 	require.Equal(t, "edit_oracle_script", MsgEditOracleScript{}.Type())
 	require.Equal(t, "request", MsgRequestData{}.Type())
 	require.Equal(t, "report", MsgReportData{}.Type())
-	require.Equal(t, "add_oracle_address", MsgAddOracleAddress{}.Type())
-	require.Equal(t, "remove_oracle_address", MsgRemoveOracleAddress{}.Type())
+	require.Equal(t, "add_reporter", MsgAddReporter{}.Type())
+	require.Equal(t, "remove_reporter", MsgRemoveReporter{}.Type())
 }
 
 func TestMsgGetSigners(t *testing.T) {
@@ -64,8 +64,8 @@ func TestMsgGetSigners(t *testing.T) {
 	require.Equal(t, signers, NewMsgCreateOracleScript(anotherAcc, "name", "desc", []byte("code"), "schema", "url", signerAcc).GetSigners())
 	require.Equal(t, signers, NewMsgEditOracleScript(1, anotherAcc, "name", "desc", []byte("code"), "schema", "url", signerAcc).GetSigners())
 	require.Equal(t, signers, NewMsgReportData(1, []RawReport{{1, 1, []byte("data1")}, {2, 2, []byte("data2")}}, anotherVal, signerAcc).GetSigners())
-	require.Equal(t, signers, NewMsgAddOracleAddress(signerVal, anotherAcc).GetSigners())
-	require.Equal(t, signers, NewMsgRemoveOracleAddress(signerVal, anotherAcc).GetSigners())
+	require.Equal(t, signers, NewMsgAddReporter(signerVal, anotherAcc).GetSigners())
+	require.Equal(t, signers, NewMsgRemoveReporter(signerVal, anotherAcc).GetSigners())
 }
 
 func TestMsgGetSignBytes(t *testing.T) {
@@ -95,12 +95,12 @@ func TestMsgGetSignBytes(t *testing.T) {
 		string(NewMsgReportData(1, []RawReport{{1, 1, []byte("data1")}, {2, 2, []byte("data2")}}, GoodTestValAddr, GoodTestAddr).GetSignBytes()),
 	)
 	require.Equal(t,
-		`{"type":"oracle/AddOracleAddress","value":{"reporter":"band1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq2vqal4","validator":"cosmosvaloper1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqkh52tw"}}`,
-		string(NewMsgAddOracleAddress(GoodTestValAddr, GoodTestAddr).GetSignBytes()),
+		`{"type":"oracle/AddReporter","value":{"reporter":"band1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq2vqal4","validator":"cosmosvaloper1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqkh52tw"}}`,
+		string(NewMsgAddReporter(GoodTestValAddr, GoodTestAddr).GetSignBytes()),
 	)
 	require.Equal(t,
-		`{"type":"oracle/RemoveOracleAddress","value":{"reporter":"band1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq2vqal4","validator":"cosmosvaloper1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqkh52tw"}}`,
-		string(NewMsgRemoveOracleAddress(GoodTestValAddr, GoodTestAddr).GetSignBytes()),
+		`{"type":"oracle/RemoveReporter","value":{"reporter":"band1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq2vqal4","validator":"cosmosvaloper1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqkh52tw"}}`,
+		string(NewMsgRemoveReporter(GoodTestValAddr, GoodTestAddr).GetSignBytes()),
 	)
 }
 
@@ -177,18 +177,18 @@ func TestMsgReportDataValidation(t *testing.T) {
 	})
 }
 
-func TestMsgAddOracleAddressValidation(t *testing.T) {
+func TestMsgAddReporterValidation(t *testing.T) {
 	performValidateTests(t, []validateTestCase{
-		{true, NewMsgAddOracleAddress(GoodTestValAddr, GoodTestAddr)},
-		{false, NewMsgAddOracleAddress(BadTestValAddr, GoodTestAddr)},
-		{false, NewMsgAddOracleAddress(GoodTestValAddr, BadTestAddr)},
+		{true, NewMsgAddReporter(GoodTestValAddr, GoodTestAddr)},
+		{false, NewMsgAddReporter(BadTestValAddr, GoodTestAddr)},
+		{false, NewMsgAddReporter(GoodTestValAddr, BadTestAddr)},
 	})
 }
 
-func TestMsgRemoveOracleAddressValidation(t *testing.T) {
+func TestMsgRemoveReporterValidation(t *testing.T) {
 	performValidateTests(t, []validateTestCase{
-		{true, NewMsgRemoveOracleAddress(GoodTestValAddr, GoodTestAddr)},
-		{false, NewMsgRemoveOracleAddress(BadTestValAddr, GoodTestAddr)},
-		{false, NewMsgRemoveOracleAddress(GoodTestValAddr, BadTestAddr)},
+		{true, NewMsgRemoveReporter(GoodTestValAddr, GoodTestAddr)},
+		{false, NewMsgRemoveReporter(BadTestValAddr, GoodTestAddr)},
+		{false, NewMsgRemoveReporter(GoodTestValAddr, BadTestAddr)},
 	})
 }

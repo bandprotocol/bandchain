@@ -26,10 +26,10 @@ func NewHandler(k Keeper) sdk.Handler {
 			return handleMsgRequestData(ctx, k, msg)
 		case MsgReportData:
 			return handleMsgReportData(ctx, k, msg)
-		case MsgAddOracleAddress:
-			return handleMsgAddOracleAddress(ctx, k, msg)
-		case MsgRemoveOracleAddress:
-			return handleMsgRemoveOracleAddress(ctx, k, msg)
+		case MsgAddReporter:
+			return handleMsgAddReporter(ctx, k, msg)
+		case MsgRemoveReporter:
+			return handleMsgRemoveReporter(ctx, k, msg)
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized %s message type: %T", ModuleName, msg)
 		}
@@ -201,26 +201,26 @@ func handleMsgReportData(ctx sdk.Context, k Keeper, m MsgReportData) (*sdk.Resul
 	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
 
-func handleMsgAddOracleAddress(ctx sdk.Context, k Keeper, m MsgAddOracleAddress) (*sdk.Result, error) {
+func handleMsgAddReporter(ctx sdk.Context, k Keeper, m MsgAddReporter) (*sdk.Result, error) {
 	err := k.AddReporter(ctx, m.Validator, m.Reporter)
 	if err != nil {
 		return nil, err
 	}
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeAddOracleAddress,
+		types.EventTypeAddReporter,
 		sdk.NewAttribute(types.AttributeKeyValidator, m.Validator.String()),
 		sdk.NewAttribute(types.AttributeKeyReporter, m.Reporter.String()),
 	))
 	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
 }
 
-func handleMsgRemoveOracleAddress(ctx sdk.Context, k Keeper, m MsgRemoveOracleAddress) (*sdk.Result, error) {
+func handleMsgRemoveReporter(ctx sdk.Context, k Keeper, m MsgRemoveReporter) (*sdk.Result, error) {
 	err := k.RemoveReporter(ctx, m.Validator, m.Reporter)
 	if err != nil {
 		return nil, err
 	}
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeRemoveOracleAddress,
+		types.EventTypeRemoveReporter,
 		sdk.NewAttribute(types.AttributeKeyValidator, m.Validator.String()),
 		sdk.NewAttribute(types.AttributeKeyReporter, m.Reporter.String()),
 	))

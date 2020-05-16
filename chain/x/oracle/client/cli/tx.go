@@ -48,8 +48,8 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		GetCmdEditOracleScript(cdc),
 		GetCmdRequest(cdc),
 		GetCmdReport(cdc),
-		GetCmdAddOracleAddress(cdc),
-		GetCmdRemoveOracleAddress(cdc),
+		GetCmdAddReporter(cdc),
+		GetCmdRemoveReporter(cdc),
 	)...)
 
 	return oracleCmd
@@ -509,16 +509,16 @@ $ %s tx oracle edit-oracle-script 1 --name eth-price --description "Oracle scrip
 	return cmd
 }
 
-// GetCmdAddOracleAddress implements the adding of oracle address command handler.
-func GetCmdAddOracleAddress(cdc *codec.Codec) *cobra.Command {
+// GetCmdAddReporter implements the adding of oracle address command handler.
+func GetCmdAddReporter(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-oracle-address [reporter]",
+		Use:   "add-reporter [reporter]",
 		Short: "Add an agent authorized to submit report transactions.",
 		Args:  cobra.ExactArgs(1),
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Add an agent authorized to submit report transactions.
 Example:
-$ %s tx oracle add-oracle-address band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun --from mykey
+$ %s tx oracle add-reporter band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun --from mykey
 `,
 				version.ClientName,
 			),
@@ -533,7 +533,7 @@ $ %s tx oracle add-oracle-address band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun --
 			if err != nil {
 				return err
 			}
-			msg := types.NewMsgAddOracleAddress(
+			msg := types.NewMsgAddReporter(
 				validator,
 				reporter,
 			)
@@ -548,16 +548,16 @@ $ %s tx oracle add-oracle-address band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun --
 	return cmd
 }
 
-// GetCmdRemoveOracleAddress implements the Removing of oracle address command handler.
-func GetCmdRemoveOracleAddress(cdc *codec.Codec) *cobra.Command {
+// GetCmdRemoveReporter implements the Removing of oracle address command handler.
+func GetCmdRemoveReporter(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "remove-oracle-address [reporter]",
+		Use:   "remove-reporter [reporter]",
 		Short: "Remove an agent from the list of authorized reporters.",
 		Args:  cobra.ExactArgs(1),
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Remove an agent from the list of authorized reporters.
 Example:
-$ %s tx oracle remove-oracle-address band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun --from mykey
+$ %s tx oracle remove-reporter band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun --from mykey
 `,
 				version.ClientName,
 			),
@@ -571,7 +571,7 @@ $ %s tx oracle remove-oracle-address band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun
 			if err != nil {
 				return err
 			}
-			msg := types.NewMsgRemoveOracleAddress(
+			msg := types.NewMsgRemoveReporter(
 				validator,
 				reporter,
 			)

@@ -111,21 +111,21 @@ func NewMsgEditOracleScript(
 	}
 }
 
-func NewMsgAddOracleAddress(
+func NewMsgAddReporter(
 	Validator github_com_cosmos_cosmos_sdk_types.ValAddress,
 	Reporter github_com_cosmos_cosmos_sdk_types.AccAddress,
-) MsgAddOracleAddress {
-	return MsgAddOracleAddress{
+) MsgAddReporter {
+	return MsgAddReporter{
 		Validator: Validator,
 		Reporter:  Reporter,
 	}
 }
 
-func NewMsgRemoveOracleAddress(
+func NewMsgRemoveReporter(
 	Validator github_com_cosmos_cosmos_sdk_types.ValAddress,
 	Reporter github_com_cosmos_cosmos_sdk_types.AccAddress,
-) MsgRemoveOracleAddress {
-	return MsgRemoveOracleAddress{
+) MsgRemoveReporter {
+	return MsgRemoveReporter{
 		Validator: Validator,
 		Reporter:  Reporter,
 	}
