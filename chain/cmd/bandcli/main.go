@@ -23,15 +23,12 @@ import (
 	"github.com/tendermint/tendermint/libs/cli"
 )
 
+const flagCosmosHDPath = "cosmos-hd-path"
+
 func main() {
 	cobra.EnableCommandSorting = false
 
 	cdc := app.MakeCodec()
-
-	// Read in the configuration file for the sdk
-	config := sdk.GetConfig()
-	app.SetBech32AddressPrefixesAndBip44CoinType(config)
-	config.Seal()
 
 	rootCmd := &cobra.Command{
 		Use:   "bandcli",
@@ -40,7 +37,17 @@ func main() {
 
 	// Add --chain-id to persistent flags and mark it required
 	rootCmd.PersistentFlags().String(client.FlagChainID, "", "Chain ID of tendermint node")
+	rootCmd.PersistentFlags().Bool(flagCosmosHDPath, false, fmt.Sprintf("Use Cosmos BIP-44 coin type (%d)", sdk.CoinType))
+
 	rootCmd.PersistentPreRunE = func(_ *cobra.Command, _ []string) error {
+		// Read in the configuration file for the sdk
+		config := sdk.GetConfig()
+		app.SetBech32AddressPrefixesAndBip44CoinType(config)
+		if viper.GetBool(flagCosmosHDPath) {
+			fmt.Println("HERE!")
+			config.SetCoinType(sdk.CoinType)
+		}
+		config.Seal()
 		return initConfig(rootCmd)
 	}
 
