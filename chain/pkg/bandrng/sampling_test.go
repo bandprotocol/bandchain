@@ -72,7 +72,7 @@ func TestGetCandidateSizePanic(t *testing.T) {
 	})
 }
 
-func TestChoosK(t *testing.T) {
+func TestChooseK(t *testing.T) {
 	r := bandrng.NewRng("SEED")
 	length := 93
 	weights := make([]uint64, length)
