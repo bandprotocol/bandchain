@@ -17,7 +17,7 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~id: ID.Request.t) => {
+let make = (~id: ID.Request.t, ~result: JsBuffer.t) => {
   let (proofOpt, reload) = ProofHook.get(id);
 
   React.useEffect1(
@@ -52,7 +52,7 @@ let make = (~id: ID.Request.t) => {
          <div className={Styles.hFlex(`auto)}>
            <CopyButton data={proof.evmProofBytes} title="Copy EVM proof" />
            <HSpacing size=Spacing.md />
-           <CopyButton data={proof.evmProofBytes} title="Copy Solana proof" />
+           <CopyButton data={result |> Solana.createProofFromResult} title="Copy Solana proof" />
            <HSpacing size=Spacing.lg />
            <ExtLinkButton link="https://docs.bandchain.org/" description="What is proof ?" />
          </div>
