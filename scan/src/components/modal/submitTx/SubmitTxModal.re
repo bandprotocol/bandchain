@@ -112,14 +112,41 @@ let toString =
   | Redelegate => "Redelegate"
   | WithdrawReward => "Withdraw Reward";
 
+let getMsgGasLimit =
+  fun
+  | Send => 70000
+  | Delegate => 140000
+  | Undelegate => 180000
+  | Redelegate => 210000
+  | WithdrawReward => 110000;
+
+let getGasConfig = msgType => {
+  let gasLimit = getMsgGasLimit(msgType);
+  EnhanceTxInput.{
+    text: {
+      gasLimit |> string_of_int;
+    },
+    value: Some(gasLimit),
+  };
+};
+
+let getFeeConfig = msgType => {
+  let fee = (getMsgGasLimit(msgType) |> float_of_int) *. 0.01 |> int_of_float;
+  EnhanceTxInput.{
+    text: {
+      fee |> string_of_int;
+    },
+    value: Some(fee),
+  };
+};
+
 module SubmitTxStep = {
   [@react.component]
   let make = (~account: AccountContext.t, ~setRawTx, ~isActive) => {
     let (msgType, setMsgType) = React.useState(_ => Send);
     let (msgsOpt, setMsgsOpt) = React.useState(_ => None);
-    let (gas, setGas) =
-      React.useState(_ => EnhanceTxInput.{text: "300000", value: Some(300000)});
-    let (fee, setFee) = React.useState(_ => EnhanceTxInput.{text: "100", value: Some(100)});
+    let (gas, setGas) = React.useState(_ => getGasConfig(msgType));
+    let (fee, setFee) = React.useState(_ => getFeeConfig(msgType));
     let (memo, setMemo) = React.useState(_ => EnhanceTxInput.{text: "", value: Some("")});
 
     <div className={Css.merge([Styles.container, Styles.disable(isActive)])}>
@@ -135,6 +162,8 @@ module SubmitTxStep = {
             onChange={event => {
               let newMsg = ReactEvent.Form.target(event)##value |> toVariant;
               setMsgType(_ => newMsg);
+              setGas(_ => getGasConfig(newMsg));
+              setFee(_ => getFeeConfig(newMsg));
             }}>
             {[|Send, Delegate, Undelegate, Redelegate, WithdrawReward|]
              ->Belt_Array.map(symbol =>
