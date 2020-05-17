@@ -49,13 +49,12 @@ let make = (~id: ID.Request.t) => {
       </div>
       {switch (proofOpt) {
        | Some(proof) =>
-         <div className={Styles.vFlex(`px(660), `auto)}>
-           <Text
-             value={proof.evmProofBytes |> JsBuffer.toHex}
-             height={Text.Px(15)}
-             code=true
-             ellipsis=true
-           />
+         <div className={Styles.hFlex(`auto)}>
+           <CopyButton data={proof.evmProofBytes} title="Copy EVM proof" />
+           <HSpacing size=Spacing.md />
+           <CopyButton data={proof.evmProofBytes} title="Copy Solana proof" />
+           <HSpacing size=Spacing.lg />
+           <ExtLinkButton link="https://docs.bandchain.org/" description="What is proof ?" />
          </div>
        | None =>
          <div className={Styles.withWH(`percent(100.), `auto)}>
@@ -63,17 +62,5 @@ let make = (~id: ID.Request.t) => {
          </div>
        }}
     </div>
-    <VSpacing size=Spacing.md />
-    {switch (proofOpt) {
-     | Some(proof) =>
-       <div className={Styles.hFlex(`auto)}>
-         <HSpacing size=Spacing.lg />
-         <div className={Styles.vFlex(`px(220), `auto)} />
-         <CopyButton data={proof.evmProofBytes} />
-         <HSpacing size=Spacing.lg />
-         <ExtLinkButton link="https://docs.bandchain.org/" description="What is proof ?" />
-       </div>
-     | None => React.null
-     }}
   </>;
 };
