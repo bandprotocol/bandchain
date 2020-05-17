@@ -134,7 +134,7 @@ services:
     networks:
       bandchain:
         ipv4_address: 172.18.0.15
-    command: sh -c "chmod +x ./docker-config/run.sh && ./docker-config/run.sh query-node"
+    command: sh -c "sleep 20 && chmod +x ./docker-config/run.sh && ./docker-config/run.sh query-node"
 
   rest-server:
     image: band-validator:latest

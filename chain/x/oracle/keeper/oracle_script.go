@@ -50,12 +50,12 @@ func (k Keeper) EditOracleScript(ctx sdk.Context, id types.OracleScriptID, new t
 	if err != nil {
 		return err
 	}
-	oracleScript.Owner = new.Owner // TODO: Allow NOT_MODIFY or nil in these fields.
-	oracleScript.Name = new.Name
-	oracleScript.Description = new.Description
-	oracleScript.Code = new.Code
-	oracleScript.Schema = new.Schema
-	oracleScript.SourceCodeURL = new.SourceCodeURL
+	oracleScript.Owner = new.Owner
+	oracleScript.Name = modify(oracleScript.Name, new.Name)
+	oracleScript.Description = modify(oracleScript.Description, new.Description)
+	oracleScript.Code = new.Code // TODO: Revisit this after file cache is done.
+	oracleScript.Schema = modify(oracleScript.Schema, new.Schema)
+	oracleScript.SourceCodeURL = modify(oracleScript.SourceCodeURL, new.SourceCodeURL)
 	k.SetOracleScript(ctx, id, oracleScript)
 	return nil
 }

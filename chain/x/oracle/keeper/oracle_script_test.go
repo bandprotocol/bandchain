@@ -60,10 +60,7 @@ func TestAddEditOracleScriptBasic(t *testing.T) {
 		Bob.Address, "NAME2", "DESCRIPTION2", []byte("code2"), BasicSchema, BasicSourceCodeURL,
 	)
 	// Adds a new oracle script to the store. We should be able to retreive it back.
-	id, err := k.AddOracleScript(ctx, types.NewOracleScript(
-		oracleScript1.Owner, oracleScript1.Name, oracleScript1.Description, oracleScript1.Code,
-		oracleScript1.Schema, oracleScript1.SourceCodeURL,
-	))
+	id, err := k.AddOracleScript(ctx, oracleScript1)
 	require.Nil(t, err)
 	require.Equal(t, oracleScript1, k.MustGetOracleScript(ctx, id))
 	require.NotEqual(t, oracleScript2, k.MustGetOracleScript(ctx, id))
@@ -75,6 +72,35 @@ func TestAddEditOracleScriptBasic(t *testing.T) {
 	require.Nil(t, err)
 	require.NotEqual(t, oracleScript1, k.MustGetOracleScript(ctx, id))
 	require.Equal(t, oracleScript2, k.MustGetOracleScript(ctx, id))
+}
+
+func TestAddEditOracleScriptDoNotModify(t *testing.T) {
+	_, ctx, k := createTestInput()
+	// Creates some basic oracle scripts.
+	oracleScript1 := types.NewOracleScript(
+		Alice.Address, "NAME1", "DESCRIPTION1", []byte("code1"), BasicSchema, BasicSourceCodeURL,
+	)
+	oracleScript2 := types.NewOracleScript(
+		Bob.Address, types.DoNotModify, types.DoNotModify, []byte("code2"),
+		types.DoNotModify, types.DoNotModify,
+	)
+	// Adds a new oracle script to the store. We should be able to retreive it back.
+	id, err := k.AddOracleScript(ctx, oracleScript1)
+	require.Nil(t, err)
+	require.Equal(t, oracleScript1, k.MustGetOracleScript(ctx, id))
+	require.NotEqual(t, oracleScript2, k.MustGetOracleScript(ctx, id))
+	// Edits the oracle script. We should get the updated oracle script.
+	err = k.EditOracleScript(ctx, id, oracleScript2)
+	require.Nil(t, err)
+	oracleScriptRes := k.MustGetOracleScript(ctx, id)
+	require.NotEqual(t, oracleScriptRes, oracleScript1)
+	require.NotEqual(t, oracleScriptRes, oracleScript2)
+	require.Equal(t, oracleScriptRes.Owner, oracleScript2.Owner)
+	require.Equal(t, oracleScriptRes.Name, oracleScript1.Name)
+	require.Equal(t, oracleScriptRes.Description, oracleScript1.Description)
+	require.Equal(t, oracleScriptRes.Code, oracleScript2.Code)
+	require.Equal(t, oracleScriptRes.Schema, oracleScript1.Schema)
+	require.Equal(t, oracleScriptRes.SourceCodeURL, oracleScript1.SourceCodeURL)
 }
 
 func TestAddOracleScriptMustReturnCorrectID(t *testing.T) {
