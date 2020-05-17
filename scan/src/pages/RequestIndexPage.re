@@ -292,7 +292,7 @@ let make = (~reqID) =>
          }}
         {numReport >= request.minCount
            ? {
-             <RequestProof requestID={request.id} />;
+             <RequestProof requestID={request.id} resultOpt={request.result} />;
            }
            : React.null}
         <VSpacing size=Spacing.xl />
