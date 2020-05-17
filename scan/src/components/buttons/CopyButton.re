@@ -16,10 +16,10 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~data) => {
+let make = (~data, ~title) => {
   <div className=Styles.button onClick={_ => {Copy.copy(data |> JsBuffer.toHex(~with0x=false))}}>
     <img src=Images.copy className=Styles.withHeight />
     <HSpacing size=Spacing.sm />
-    <Text value="Copy as bytes" size=Text.Sm block=true color=Colors.bandBlue nowrap=true />
+    <Text value=title size=Text.Sm block=true color=Colors.bandBlue nowrap=true />
   </div>;
 };
