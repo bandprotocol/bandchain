@@ -1,6 +1,7 @@
 package proof
 
 import (
+	"encoding/hex"
 	"testing"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
@@ -9,25 +10,34 @@ import (
 )
 
 func TestCalculateResultHash(t *testing.T) {
-	// RawByte is d9c589270a0962616e64207465737410011a1e30333030303030303432353434333634303030303030303030303030303020042804
+	// RawByte is d9c589270a046265656210011a0f03000000425443640000000000000020012801
+	var err error
+	calldata, err := hex.DecodeString("030000004254436400000000000000")
+	if err != nil {
+		panic(err)
+	}
+	result, err := hex.DecodeString("4bb10e0000000000")
+	if err != nil {
+		panic(err)
+	}
 	reqPacket := oracle.OracleRequestPacketData{
-		ClientID:       "band test",
+		ClientID:       "beeb",
 		OracleScriptID: 1,
-		Calldata:       "030000004254436400000000000000",
-		AskCount:       4,
-		MinCount:       4,
+		Calldata:       calldata,
+		AskCount:       1,
+		MinCount:       1,
 	}
-	// RawByte is 79b5957c0a0962616e6420746573741001180420f8cb8bf50528fccb8bf50530013a1064383732306230303030303030303030
+	// RawByte is 79b5957c0a04626565621003180120acc2f9f50528aec2f9f50530013a084bb10e0000000000
 	resPacket := oracle.OracleResponsePacketData{
-		ClientID:      "band test",
-		RequestID:     1,
-		AnsCount:      4,
-		RequestTime:   1587734008,
-		ResolveTime:   1587734012,
+		ClientID:      "beeb",
+		RequestID:     3,
+		AnsCount:      1,
+		RequestTime:   1589535020,
+		ResolveTime:   1589535022,
 		ResolveStatus: oracle.ResolveStatus(1),
-		Result:        "d8720b0000000000",
+		Result:        result,
 	}
-	expectedResultHash := hexToBytes("63d30f34c4b3439a95386912ec9ee2e9c01666685b6a25b11c96d46d47f37a42")
+	expectedResultHash := hexToBytes("dbbbf5596a975c50c601bdd6ae26a5007e8483344afd7d2ae41e37891cb81b86")
 
 	require.Equal(t, expectedResultHash, tmhash.Sum(
 		append(
@@ -37,25 +47,34 @@ func TestCalculateResultHash(t *testing.T) {
 }
 
 func TestEmptyClientID(t *testing.T) {
-	// RawByte is d9c5892710011a20303430303030303034323431346534343430343230663030303030303030303020042804
+	var err error
+	calldata, err := hex.DecodeString("030000004254436400000000000000")
+	if err != nil {
+		panic(err)
+	}
+	result, err := hex.DecodeString("0aae0e0000000000")
+	if err != nil {
+		panic(err)
+	}
+	// RawByte is d9c5892710011a0f03000000425443640000000000000020012801
 	reqPacket := oracle.OracleRequestPacketData{
 		ClientID:       "",
 		OracleScriptID: 1,
-		Calldata:       "0400000042414e4440420f0000000000",
-		AskCount:       4,
-		MinCount:       4,
+		Calldata:       calldata,
+		AskCount:       1,
+		MinCount:       1,
 	}
-	// RawByte is 79b5957c1008180420f0d0b0f50528f4d0b0f50530013a1063653730313330303030303030303030
+	// RawByte is 79b5957c1004180120f3caf9f50528f7caf9f50530013a080aae0e0000000000
 	resPacket := oracle.OracleResponsePacketData{
 		ClientID:      "",
-		RequestID:     8,
-		AnsCount:      4,
-		RequestTime:   1588340848,
-		ResolveTime:   1588340852,
+		RequestID:     4,
+		AnsCount:      1,
+		RequestTime:   1589536115,
+		ResolveTime:   1589536119,
 		ResolveStatus: oracle.ResolveStatus(1),
-		Result:        "ce70130000000000",
+		Result:        result,
 	}
-	expectedResultHash := hexToBytes("d1f7ae1f21a04d5500b30ccfffe58a10f2376790edd617e563c8607cea0cd1c5")
+	expectedResultHash := hexToBytes("37ca0d67535481e7575785dc828b730279f5620ba373c667c22a512cc48ae6dc")
 
 	require.Equal(t, expectedResultHash, tmhash.Sum(
 		append(

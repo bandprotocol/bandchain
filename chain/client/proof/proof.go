@@ -188,7 +188,7 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 				case oracle.AttributeKeyOracleScriptID:
 					reqPacket.OracleScriptID = oracle.OracleScriptID(mustParseInt64(kv.Value))
 				case oracle.AttributeKeyCalldata:
-					reqPacket.Calldata = string(kv.Value)
+					reqPacket.Calldata = mustDecodeString(string(kv.Value))
 				case oracle.AttributeKeyAskCount:
 					reqPacket.AskCount = mustParseInt64(kv.Value)
 				case oracle.AttributeKeyMinCount:
@@ -202,7 +202,7 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 				case oracle.AttributeKeyResolveStatus:
 					resPacket.ResolveStatus = oracle.ResolveStatus(mustParseInt64(kv.Value))
 				case oracle.AttributeKeyResult:
-					resPacket.Result = string(kv.Value)
+					resPacket.Result = mustDecodeString(string(kv.Value))
 				}
 			}
 		}

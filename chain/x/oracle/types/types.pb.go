@@ -964,7 +964,7 @@ type OracleRequestPacketData struct {
 	OracleScriptID OracleScriptID `protobuf:"varint,2,opt,name=oracle_script_id,json=oracleScriptId,proto3,casttype=OracleScriptID" json:"oracle_script_id,omitempty"`
 	// Calldata is the hex-encoded of the calldata bytes available for oracle
 	// execution during both preparation and execution phases.
-	Calldata string `protobuf:"bytes,3,opt,name=calldata,proto3" json:"calldata,omitempty"`
+	Calldata []byte `protobuf:"bytes,3,opt,name=calldata,proto3" json:"calldata,omitempty"`
 	// AskCount is the number of validators that are requested to respond to this
 	// oracle request. Higher value means more security, at a higher gas cost.
 	AskCount int64 `protobuf:"varint,4,opt,name=ask_count,json=askCount,proto3" json:"ask_count,omitempty"`
@@ -1021,11 +1021,11 @@ func (m *OracleRequestPacketData) GetOracleScriptID() OracleScriptID {
 	return 0
 }
 
-func (m *OracleRequestPacketData) GetCalldata() string {
+func (m *OracleRequestPacketData) GetCalldata() []byte {
 	if m != nil {
 		return m.Calldata
 	}
-	return ""
+	return nil
 }
 
 func (m *OracleRequestPacketData) GetAskCount() int64 {
@@ -1067,7 +1067,7 @@ type OracleResponsePacketData struct {
 	ResolveStatus ResolveStatus `protobuf:"varint,6,opt,name=resolve_status,json=resolveStatus,proto3,enum=bandchain.chain.x.oracle.v1.ResolveStatus" json:"resolve_status,omitempty"`
 	// Result is the hex-encoded of the final aggregated value only available if
 	// status if OK.
-	Result string `protobuf:"bytes,7,opt,name=result,proto3" json:"result,omitempty"`
+	Result []byte `protobuf:"bytes,7,opt,name=result,proto3" json:"result,omitempty"`
 }
 
 func (m *OracleResponsePacketData) Reset()         { *m = OracleResponsePacketData{} }
@@ -1145,11 +1145,11 @@ func (m *OracleResponsePacketData) GetResolveStatus() ResolveStatus {
 	return ResolveStatus_Open
 }
 
-func (m *OracleResponsePacketData) GetResult() string {
+func (m *OracleResponsePacketData) GetResult() []byte {
 	if m != nil {
 		return m.Result
 	}
-	return ""
+	return nil
 }
 
 // Request is a data structure that stores the detail of a request to an oracle
@@ -2055,7 +2055,7 @@ func (this *OracleRequestPacketData) Equal(that interface{}) bool {
 	if this.OracleScriptID != that1.OracleScriptID {
 		return false
 	}
-	if this.Calldata != that1.Calldata {
+	if !bytes.Equal(this.Calldata, that1.Calldata) {
 		return false
 	}
 	if this.AskCount != that1.AskCount {
@@ -2103,7 +2103,7 @@ func (this *OracleResponsePacketData) Equal(that interface{}) bool {
 	if this.ResolveStatus != that1.ResolveStatus {
 		return false
 	}
-	if this.Result != that1.Result {
+	if !bytes.Equal(this.Result, that1.Result) {
 		return false
 	}
 	return true
@@ -6241,7 +6241,7 @@ func (m *OracleRequestPacketData) Unmarshal(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Calldata", wireType)
 			}
-			var stringLen uint64
+			var byteLen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTypes
@@ -6251,23 +6251,25 @@ func (m *OracleRequestPacketData) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				byteLen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if byteLen < 0 {
 				return ErrInvalidLengthTypes
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + byteLen
 			if postIndex < 0 {
 				return ErrInvalidLengthTypes
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Calldata = string(dAtA[iNdEx:postIndex])
+			m.Calldata = append(m.Calldata[:0], dAtA[iNdEx:postIndex]...)
+			if m.Calldata == nil {
+				m.Calldata = []byte{}
+			}
 			iNdEx = postIndex
 		case 4:
 			if wireType != 0 {
@@ -6491,7 +6493,7 @@ func (m *OracleResponsePacketData) Unmarshal(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Result", wireType)
 			}
-			var stringLen uint64
+			var byteLen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTypes
@@ -6501,23 +6503,25 @@ func (m *OracleResponsePacketData) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				byteLen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if byteLen < 0 {
 				return ErrInvalidLengthTypes
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + byteLen
 			if postIndex < 0 {
 				return ErrInvalidLengthTypes
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Result = string(dAtA[iNdEx:postIndex])
+			m.Result = append(m.Result[:0], dAtA[iNdEx:postIndex]...)
+			if m.Result == nil {
+				m.Result = []byte{}
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
