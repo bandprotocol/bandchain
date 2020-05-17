@@ -108,7 +108,7 @@ let make = (~txResponse: TxCreator.tx_response_t, ~schema: string) =>
                </div>
              </div>
              <VSpacing size=Spacing.lg />
-             <OracleScriptExecuteProof id />
+             <OracleScriptExecuteProof id result />
            </>;
          | Some(request) =>
            <div className={Styles.hFlex(`auto)}>
