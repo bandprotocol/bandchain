@@ -278,6 +278,16 @@ message Report {
   repeated RawReport raw_reports = 2 [(gogoproto.nullable) = false];
 }
 
+// ValidatorReportInfo defines the report info for a validator
+message ValidatorReportInfo {
+  option (gogoproto.equal) = true;
+
+  bytes validator = 1
+      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
+  // field to count consecutive missed report
+  uint64 consecutive_missed = 2;
+}
+
 // Params - used for initializing default parameter for oracle at genesis.
 message Params {
   option (gogoproto.equal) = true;
@@ -287,4 +297,5 @@ message Params {
   uint64 max_result_size = 2;
   uint64 gas_per_raw_data_request_per_validator = 3;
   uint64 expiration_block_count = 4;
+  uint64 max_consecutive_misses = 5;
 }

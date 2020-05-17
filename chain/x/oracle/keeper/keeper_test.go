@@ -61,11 +61,13 @@ func TestGetSetParams(t *testing.T) {
 	keeper.SetParam(ctx, types.KeyMaxResultSize, 1)
 	keeper.SetParam(ctx, types.KeyGasPerRawDataRequestPerValidator, 1000)
 	keeper.SetParam(ctx, types.KeyExpirationBlockCount, 30)
-	require.Equal(t, types.NewParams(1, 1, 1000, 30), keeper.GetParams(ctx))
+	keeper.SetParam(ctx, types.KeyMaxConsecutiveMisses, 10)
+	require.Equal(t, types.NewParams(1, 1, 1000, 30, 10), keeper.GetParams(ctx))
 
 	keeper.SetParam(ctx, types.KeyMaxRawRequestCount, 2)
 	keeper.SetParam(ctx, types.KeyMaxResultSize, 2)
 	keeper.SetParam(ctx, types.KeyGasPerRawDataRequestPerValidator, 2000)
 	keeper.SetParam(ctx, types.KeyExpirationBlockCount, 40)
-	require.Equal(t, types.NewParams(2, 2, 2000, 40), keeper.GetParams(ctx))
+	keeper.SetParam(ctx, types.KeyMaxConsecutiveMisses, 20)
+	require.Equal(t, types.NewParams(2, 2, 2000, 40, 20), keeper.GetParams(ctx))
 }
