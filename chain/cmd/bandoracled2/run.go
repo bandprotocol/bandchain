@@ -46,14 +46,14 @@ func runCmd(c *Context) *cobra.Command {
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var err error
-			c.key, err = c.keybase.Key(args[0])
+			c.key, err = keybase.Key(args[0])
 			if err != nil {
 				return err
 			}
 
 			l := NewLogger()
-			l.Info(":star: Creating HTTP client with node URI: %s", c.nodeURI)
-			c.client, err = rpchttp.New(c.nodeURI, "/websocket")
+			l.Info(":star: Creating HTTP client with node URI: %s", cfg.NodeURI)
+			c.client, err = rpchttp.New(cfg.NodeURI, "/websocket")
 			if err != nil {
 				return err
 			}

@@ -35,8 +35,8 @@ func BroadCastMsgs(c *Context, l *Logger, msgs []sdk.Msg) {
 	// TODO: Make gas limit and gas price configurable.
 	out, err := auth.NewTxBuilder(
 		auth.DefaultTxEncoder(cdc), acc.GetAccountNumber(), acc.GetSequence(),
-		1000000, 1, false, c.chainID, "", sdk.NewCoins(), sdk.NewDecCoins(),
-	).WithKeybase(c.keybase).BuildAndSign(c.key.GetName(), ckeys.DefaultKeyPass, msgs)
+		1000000, 1, false, cfg.ChainID, "", sdk.NewCoins(), sdk.NewDecCoins(),
+	).WithKeybase(keybase).BuildAndSign(c.key.GetName(), ckeys.DefaultKeyPass, msgs)
 	if err != nil {
 		l.Error(":exploding_head: Failed to build tx with error: %s", err.Error())
 		return

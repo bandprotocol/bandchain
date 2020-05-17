@@ -6,11 +6,6 @@ import (
 )
 
 type Context struct {
-	// Global context
-	keybase  keyring.Keyring
-	homePath string
-	chainID  string
-	nodeURI  string
 	// Run context
 	key    keyring.Info
 	client *rpchttp.HTTP
