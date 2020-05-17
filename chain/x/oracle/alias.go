@@ -67,12 +67,9 @@ var (
 	NewRawReport    = types.NewRawReport
 
 	KeyMaxRawRequestCount               = types.KeyMaxRawRequestCount
-	KeyMaxRawDataReportSize             = types.KeyMaxRawDataReportSize
 	KeyMaxResultSize                    = types.KeyMaxResultSize
 	KeyGasPerRawDataRequestPerValidator = types.KeyGasPerRawDataRequestPerValidator
 	KeyExpirationBlockCount             = types.KeyExpirationBlockCount
-	KeyExecuteGas                       = types.KeyExecuteGas
-	KeyPrepareGas                       = types.KeyPrepareGas
 
 	QueryRequestByID    = types.QueryRequestByID
 	QueryRequests       = types.QueryRequests

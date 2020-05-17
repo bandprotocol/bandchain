@@ -42,9 +42,6 @@ func (k Keeper) AddReport(ctx sdk.Context, rid types.RequestID, rep types.Report
 			return sdkerrors.Wrapf(
 				types.ErrRawRequestNotFound, "reqID: %d, extID: %d", rid, rep.ExternalID)
 		}
-		if err := k.EnsureLength(ctx, types.KeyMaxRawDataReportSize, len(rep.Data)); err != nil {
-			return err
-		}
 	}
 	k.SetReport(ctx, rid, rep)
 	return nil
