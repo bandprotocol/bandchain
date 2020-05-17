@@ -208,7 +208,7 @@ let make = (~reqID) =>
                 color=Colors.gray6
               />
               <HSpacing size=Spacing.md />
-              <CopyButton data={request.calldata} />
+              <CopyButton data={request.calldata} title="Copy as bytes" />
             </div>
           </Col>
         </div>
@@ -272,7 +272,7 @@ let make = (~reqID) =>
                      color=Colors.gray6
                    />
                    <HSpacing size=Spacing.md />
-                   <CopyButton data=result />
+                   <CopyButton data=result title="Copy as bytes" />
                  </div>
                </Col>
              </div>
