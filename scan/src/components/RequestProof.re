@@ -29,7 +29,7 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~requestID: ID.Request.t) => {
+let make = (~requestID: ID.Request.t, ~resultOpt: option(JsBuffer.t)) => {
   let (proofOpt, reload) = ProofHook.get(requestID);
   let (showProof, setShowProof) = React.useState(_ => false);
 
@@ -71,7 +71,15 @@ let make = (~requestID: ID.Request.t) => {
               <HSpacing size=Spacing.md />
               <CopyButton data={proof.evmProofBytes} title="Copy EVM proof" />
               <HSpacing size=Spacing.md />
-              <CopyButton data={proof.evmProofBytes} title="Copy Solana proof" />
+              <CopyButton
+                data={
+                  switch (resultOpt) {
+                  | Some(result) => result |> Solana.createProofFromResult
+                  | None => "" |> JsBuffer.fromHex
+                  }
+                }
+                title="Copy Solana proof"
+              />
               <HSpacing size=Spacing.md />
               <ExtLinkButton link="https://docs.bandchain.org/" description="What is proof ?" />
             </div>
