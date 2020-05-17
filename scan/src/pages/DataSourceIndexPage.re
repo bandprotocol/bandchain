@@ -65,13 +65,13 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) =>
           <Col size=1.>
             <InfoHL header="OWNER" info={InfoHL.Address(dataSource.owner, 380)} />
           </Col>
-          <Col size=0.8>
-            <InfoHL
-              info={InfoHL.Fee(dataSource.fee->Coin.getBandAmountFromCoins)}
-              header="REQUEST FEE"
-            />
-          </Col>
         </Row>
+        // <Col size=0.8>
+        //   <InfoHL
+        //     info={InfoHL.Fee(dataSource.fee->Coin.getBandAmountFromCoins)}
+        //     header="REQUEST FEE"
+        //   />
+        // </Col>
         <VSpacing size=Spacing.sm />
         <Row>
           <Col size=1.>

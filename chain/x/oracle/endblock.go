@@ -14,8 +14,7 @@ func resolveRequest(ctx sdk.Context, k Keeper, reqID types.RequestID) {
 	env := NewExecEnv(ctx, k, req)
 	env.SetReports(k.GetReports(ctx, reqID))
 	script := k.MustGetOracleScript(ctx, req.OracleScriptID)
-	executeGas := k.GetParam(ctx, KeyExecuteGas)
-	result, _, err := k.OwasmExecute(env, script.Code, "execute", req.Calldata, executeGas)
+	result, _, err := k.OwasmExecute(env, script.Code, "execute", req.Calldata, types.WasmExecuteGas)
 
 	var res types.OracleResponsePacketData
 	if err != nil {

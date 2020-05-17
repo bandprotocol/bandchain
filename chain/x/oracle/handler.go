@@ -140,11 +140,12 @@ func prepareRequest(ctx sdk.Context, k Keeper, m MsgRequestData, req types.Reque
 	if err != nil {
 		return nil, sdkerrors.Wrapf(types.ErrOracleScriptNotFound, "id: %d", m.OracleScriptID)
 	}
-	gasPrepare := k.GetParam(ctx, types.KeyPrepareGas)
-	ctx.GasMeter().ConsumeGas(gasPrepare, "PrepareRequest")
+	// gasPrepare := k.GetParam(ctx, types.KeyPrepareGas)
+	// ctx.GasMeter().ConsumeGas(gasPrepare, "PrepareRequest")
+	// TODO: Consume gas for request fixed size portion
 
 	// TODO: We will need to also validate call data size here
-	_, _, err = k.OwasmExecute(env, script.Code, "prepare", m.Calldata, 100000)
+	_, _, err = k.OwasmExecute(env, script.Code, "prepare", m.Calldata, types.WasmPrepareGas)
 	if err != nil {
 		return nil, sdkerrors.Wrapf(types.ErrBadWasmExecution, err.Error())
 	}

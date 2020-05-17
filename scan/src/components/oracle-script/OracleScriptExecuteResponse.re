@@ -128,8 +128,8 @@ let make = (~txResponse: TxCreator.tx_response_t, ~schema: string) =>
                ])}>
                <ProgressBar
                  reportedValidators={request.reportsCount}
-                 minimumValidators={request.sufficientValidatorCount}
-                 requestValidators={request.requestedValidatorsCount}
+                 minimumValidators={request.minCount}
+                 requestValidators={request.askCount}
                />
              </div>
            </div>

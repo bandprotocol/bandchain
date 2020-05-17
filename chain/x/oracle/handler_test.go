@@ -234,7 +234,7 @@ func TestRequestSuccess(t *testing.T) {
 	// require.Equal(t, rawRequests, keeper.GetRawRequests(ctx, 1))
 	// check consumed gas must more than 100000
 	// TODO: Write a better test than just checking number comparison
-	require.GreaterOrEqual(t, afterGas-beforeGas, uint64(100000))
+	require.GreaterOrEqual(t, afterGas-beforeGas, uint64(50000))
 }
 
 func TestRequestIBCSuccess(t *testing.T) {
@@ -299,7 +299,7 @@ func TestRequestIBCSuccess(t *testing.T) {
 	// require.Equal(t, rawRequests, keeper.GetRawRequests(ctx, 1))
 	// check consumed gas must more than 100000
 	// TODO: Write a better test than just checking number comparison
-	require.GreaterOrEqual(t, afterGas-beforeGas, uint64(100000))
+	require.GreaterOrEqual(t, afterGas-beforeGas, uint64(50000))
 }
 
 func TestRequestInvalidDataSource(t *testing.T) {

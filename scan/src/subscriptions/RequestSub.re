@@ -20,7 +20,7 @@ module Mini = {
     oracleScript: oracle_script_internal_t,
     transaction: TxSub.Mini.t,
     reportsAggregate: aggregate_wrapper_intenal_t,
-    sufficientValidatorCount: int,
+    minCount: int,
     requestedValidatorsAgregate: aggregate_wrapper_intenal_t,
     result: option(JsBuffer.t),
   };
@@ -34,8 +34,8 @@ module Mini = {
     blockHeight: ID.Block.t,
     timestamp: MomentRe.Moment.t,
     reportsCount: int,
-    sufficientValidatorCount: int,
-    requestedValidatorsCount: int,
+    minCount: int,
+    askCount: int,
     result: option(JsBuffer.t),
   };
 
@@ -68,7 +68,7 @@ module Mini = {
                 count @bsDecoder(fn: "Belt_Option.getExn")
               }
             }
-            sufficientValidatorCount: sufficient_validator_count @bsDecoder(fn: "GraphQLParser.int64")
+            minCount: min_count @bsDecoder(fn: "GraphQLParser.int64")
             requestedValidatorsAgregate: requested_validators_aggregate @bsRecord {
               aggregate @bsRecord {
                 count @bsDecoder(fn: "Belt_Option.getExn")
@@ -107,7 +107,7 @@ module Mini = {
               count @bsDecoder(fn: "Belt_Option.getExn")
             }
           }
-          sufficientValidatorCount: sufficient_validator_count @bsDecoder(fn: "GraphQLParser.int64")
+          minCount: min_count @bsDecoder(fn: "GraphQLParser.int64")
           requestedValidatorsAgregate: requested_validators_aggregate @bsRecord {
             aggregate @bsRecord {
               count @bsDecoder(fn: "Belt_Option.getExn")
@@ -140,7 +140,7 @@ module Mini = {
               count @bsDecoder(fn: "Belt_Option.getExn")
             }
           }
-          sufficientValidatorCount: sufficient_validator_count @bsDecoder(fn: "GraphQLParser.int64")
+          minCount: min_count @bsDecoder(fn: "GraphQLParser.int64")
           requestedValidatorsAgregate: requested_validators_aggregate @bsRecord {
             aggregate @bsRecord {
               count @bsDecoder(fn: "Belt_Option.getExn")
@@ -160,7 +160,7 @@ module Mini = {
           oracleScript,
           transaction: {txHash, blockHeight, timestamp},
           reportsAggregate,
-          sufficientValidatorCount,
+          minCount,
           requestedValidatorsAgregate,
           result,
         },
@@ -174,8 +174,8 @@ module Mini = {
     timestamp,
     reportsCount:
       reportsAggregate.aggregate->Belt_Option.map(({count}) => count)->Belt_Option.getExn,
-    sufficientValidatorCount,
-    requestedValidatorsCount:
+    minCount,
+    askCount:
       requestedValidatorsAgregate.aggregate
       ->Belt_Option.map(({count}) => count)
       ->Belt_Option.getExn,
@@ -208,8 +208,8 @@ module Mini = {
                  y##reportsAggregate.aggregate
                  ->Belt_Option.map(({count}) => count)
                  ->Belt_Option.getExn,
-               sufficientValidatorCount: y##sufficientValidatorCount,
-               requestedValidatorsCount:
+               minCount: y##minCount,
+               askCount:
                  y##requestedValidatorsAgregate.aggregate
                  ->Belt_Option.map(({count}) => count)
                  ->Belt_Option.getExn,
@@ -264,8 +264,8 @@ module Mini = {
                  y##reportsAggregate.aggregate
                  ->Belt_Option.map(({count}) => count)
                  ->Belt_Option.getExn,
-               sufficientValidatorCount: y##sufficientValidatorCount,
-               requestedValidatorsCount:
+               minCount: y##minCount,
+               askCount:
                  y##requestedValidatorsAgregate.aggregate
                  ->Belt_Option.map(({count}) => count)
                  ->Belt_Option.getExn,
@@ -342,7 +342,7 @@ type t = {
   oracleScript: oracle_script_internal_t,
   calldata: JsBuffer.t,
   requestedValidators: array(requested_validator_internal_t),
-  sufficientValidatorCount: int,
+  minCount: int,
   expirationHeight: int,
   resolveStatus: resolve_status_t,
   requester: Address.t,
@@ -379,7 +379,7 @@ module SingleRequestConfig = [%graphql
             moniker
           }
         }
-        sufficientValidatorCount: sufficient_validator_count @bsDecoder(fn: "GraphQLParser.int64")
+        minCount: min_count @bsDecoder(fn: "GraphQLParser.int64")
         expirationHeight: expiration_height @bsDecoder(fn: "GraphQLParser.int64")
         resolveStatus: resolve_status  @bsDecoder(fn: "parseResolveStatus")
         requester @bsDecoder(fn: "Address.fromBech32")
@@ -437,7 +437,7 @@ module MultiRequestConfig = [%graphql
             moniker
           }
         }
-        sufficientValidatorCount: sufficient_validator_count @bsDecoder(fn: "GraphQLParser.int64")
+        minCount: min_count @bsDecoder(fn: "GraphQLParser.int64")
         expirationHeight: expiration_height @bsDecoder(fn: "GraphQLParser.int64")
         resolveStatus: resolve_status  @bsDecoder(fn: "parseResolveStatus")
         requester @bsDecoder(fn: "Address.fromBech32")

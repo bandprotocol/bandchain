@@ -26,8 +26,7 @@ module Styles = {
       boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, 0.05))),
       backgroundColor(white),
     ]);
-  let proposerContainer = style([maxWidth(`px(180))]);
-
+  let proposerContainer = style([width(`px(300))]);
 };
 
 [@react.component]

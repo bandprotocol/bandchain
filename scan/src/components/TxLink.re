@@ -4,7 +4,7 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~txHash: Hash.t, ~width: int, ~size=Text.Md) => {
+let make = (~txHash: Hash.t, ~width: int, ~size=Text.Md, ~weight=Text.Medium) => {
   <div
     className={Styles.withWidth(width)}
     onClick={_ => Route.redirect(Route.TxIndexPage(txHash))}>
@@ -13,7 +13,7 @@ let make = (~txHash: Hash.t, ~width: int, ~size=Text.Md) => {
       code=true
       spacing={Text.Em(0.02)}
       value={txHash |> Hash.toHex(~upper=true)}
-      weight=Text.Medium
+      weight
       ellipsis=true
       size
     />

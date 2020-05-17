@@ -52,6 +52,7 @@ func NewDB(dialect, path string) (*BandDB, error) {
 		&Validator{},
 		&ValidatorVote{},
 		&Delegation{},
+		&UnbondingDelegation{},
 		&DataSource{},
 		&DataSourceRevision{},
 		&OracleScript{},
@@ -131,6 +132,20 @@ func NewDB(dialect, path string) (*BandDB, error) {
 	)
 
 	db.Model(&Delegation{}).AddForeignKey(
+		"validator_address",
+		"validators(operator_address)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&UnbondingDelegation{}).AddForeignKey(
+		"delegator_address",
+		"accounts(address)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&UnbondingDelegation{}).AddForeignKey(
 		"validator_address",
 		"validators(operator_address)",
 		"RESTRICT",

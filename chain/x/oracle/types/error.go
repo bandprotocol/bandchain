@@ -40,6 +40,7 @@ var (
 	ErrDuplicateExternalID      = sdkerrors.Register(ModuleName, 42, "duplicate external id")
 	ErrTooLongSchema            = sdkerrors.Register(ModuleName, 43, "too long schema")
 	ErrTooLongURL               = sdkerrors.Register(ModuleName, 44, "too long url")
+	ErrTooLargeRawReportData    = sdkerrors.Register(ModuleName, 45, "too large raw report data")
 )
 
 // WrapMaxError wraps an error message with additional info of the current and max values.
