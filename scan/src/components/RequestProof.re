@@ -62,27 +62,16 @@ let make = (~requestID: ID.Request.t) => {
             color=Colors.gray6
           />
         </Col>
-        <Col size=1.>
-          <div className={Styles.withWidth(700)}>
-            <Text
-              value={proof.evmProofBytes |> JsBuffer.toHex}
-              weight=Text.Medium
-              color=Colors.gray7
-              block=true
-              code=true
-              ellipsis=true
-            />
-          </div>
-        </Col>
       </div>
       <div className={Styles.topicContainer(20)}>
-        <Col size=1.> React.null </Col>
         <Col size=1.>
           <div className={Styles.withWidth(700)}>
             <div className=Styles.hFlex>
               <ShowProofButton showProof setShowProof />
               <HSpacing size=Spacing.md />
-              <CopyButton data={proof.evmProofBytes} />
+              <CopyButton data={proof.evmProofBytes} title="Copy EVM proof" />
+              <HSpacing size=Spacing.md />
+              <CopyButton data={proof.evmProofBytes} title="Copy Solana proof" />
               <HSpacing size=Spacing.md />
               <ExtLinkButton link="https://docs.bandchain.org/" description="What is proof ?" />
             </div>
