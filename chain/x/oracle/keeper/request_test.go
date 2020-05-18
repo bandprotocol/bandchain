@@ -107,6 +107,24 @@ func TestAddPendingResolveList(t *testing.T) {
 	require.Equal(t, k.GetPendingResolveList(ctx), []types.RequestID{42, 43})
 }
 
+func TestGetAllRequests(t *testing.T) {
+	_, ctx, k := createTestInput()
+
+	// Set request to the storage.
+	requests := []types.Request{
+		types.NewRequest(1, BasicCalldata, nil, 1, 1, 1, "", nil),
+		types.NewRequest(2, BasicCalldata, nil, 1, 1, 1, "", nil),
+		types.NewRequest(3, BasicCalldata, nil, 1, 1, 1, "", nil),
+	}
+
+	k.SetRequest(ctx, 1, requests[0])
+	k.SetRequest(ctx, 2, requests[1])
+	k.SetRequest(ctx, 3, requests[2])
+
+	// Should now be able to get all the existing oracle scripts.
+	require.Equal(t, requests, k.GetAllRequests(ctx))
+}
+
 func TestGetRandomValidatorsSuccess(t *testing.T) {
 	// TODO: Update this test once GetRandomValidators is actually random
 }
