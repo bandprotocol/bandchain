@@ -69,6 +69,15 @@ type Delegation struct {
 	LastRatio        string `gorm:"not null"` // TODO: Update to pointer
 }
 
+type UnbondingDelegation struct {
+	DelegatorAddress string  `gorm:"not null"`
+	ValidatorAddress string  `gorm:"not null"`
+	CreationHeight   int64   `gorm:"not null"`
+	CompletionTime   int64   `gorm:"not null"`
+	InitialBalance   *uint64 `gorm:"not null"`
+	Balance          *uint64 `gorm:"not null"`
+}
+
 type DataSource struct {
 	ID          int64  `gorm:"primary_key;auto_increment:false"`
 	Name        string `gorm:"not null"` // TODO: Update to pointer

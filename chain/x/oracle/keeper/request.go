@@ -155,6 +155,8 @@ func (k Keeper) ProcessExpiredRequests(ctx sdk.Context) {
 				k.SendOracleResponse(ctx, request.IBC.SourcePort, request.IBC.SourceChannel, res)
 			}
 		}
+		// Update report info for requested validators.
+		k.UpdateReportInfos(ctx, currentReqID)
 		// We are done with this request. Remove it and its dependencies from the store.
 		k.DeleteRequest(ctx, currentReqID)
 		k.DeleteRawRequests(ctx, currentReqID)

@@ -13,6 +13,8 @@ module Styles = {
   let proposerBox = style([maxWidth(`px(270)), display(`flex), flexDirection(`column)]);
   let idContainer = style([display(`flex), maxWidth(`px(200))]);
   let dataSourcesContainer = style([display(`flex)]);
+  let dataSourceContainer = style([display(`flex), width(`px(170))]);
+  let oracleScriptContainer = style([display(`flex), width(`px(170))]);
   let resolveStatusContainer =
     style([display(`flex), alignItems(`center), justifyContent(`flexEnd)]);
 };
@@ -115,18 +117,32 @@ let renderProposer = (moniker, proposer) => {
 };
 
 let renderDataSource = (id, name) => {
-  <div className=Styles.idContainer>
+  <div className=Styles.dataSourceContainer>
     <TypeID.DataSource id position=TypeID.Text />
     <HSpacing size=Spacing.xs />
-    <Text value=name block=true height={Text.Px(16)} spacing={Text.Em(0.02)} />
+    <Text
+      value=name
+      block=true
+      height={Text.Px(16)}
+      spacing={Text.Em(0.02)}
+      nowrap=true
+      ellipsis=true
+    />
   </div>;
 };
 
 let renderOracleScript = (id, name) => {
-  <div className=Styles.idContainer>
+  <div className=Styles.oracleScriptContainer>
     <TypeID.OracleScript id position=TypeID.Text />
     <HSpacing size=Spacing.xs />
-    <Text value=name block=true height={Text.Px(16)} spacing={Text.Em(0.02)} ellipsis=true />
+    <Text
+      value=name
+      block=true
+      height={Text.Px(16)}
+      spacing={Text.Em(0.02)}
+      ellipsis=true
+      nowrap=true
+    />
   </div>;
 };
 

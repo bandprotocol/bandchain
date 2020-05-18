@@ -15,10 +15,6 @@ const (
 	// Default value is set to 16.
 	DefaultMaxRawRequestCount = uint64(16)
 
-	// The maximum size of raw data report per data source.
-	// Default value is set to 1 kB.
-	DefaultMaxRawDataReportSize = uint64(1 * 1024)
-
 	// The maximum size of result after execution.
 	// Default value is set 1 kB.
 	DefaultMaxResultSize = uint64(1 * 1024)
@@ -29,42 +25,33 @@ const (
 	// Expiration block count value 20
 	DefaultExpirationBlockCount = uint64(20)
 
-	// Execute gas cost value is 100000
-	DefaultExecuteGas = uint64(100000)
-
-	// Prepare gas cost value is 100000
-	DefaultPrepareGas = uint64(100000)
+	// The maximum consecutive misses allowance
+	DefaulMaxConsecutiveMisses = uint64(10)
 )
 
 // Parameter store keys.
 var (
 	KeyMaxRawRequestCount               = []byte("MaxRawRequestCount")
-	KeyMaxRawDataReportSize             = []byte("MaxRawDataReportSize")
 	KeyMaxResultSize                    = []byte("MaxResultSize")
 	KeyGasPerRawDataRequestPerValidator = []byte("GasPerRawDataRequestPerValidator")
 	KeyExpirationBlockCount             = []byte("ExpirationBlockCount")
-	KeyExecuteGas                       = []byte("ExecuteGas")
-	KeyPrepareGas                       = []byte("PrepareGas")
+	KeyMaxConsecutiveMisses             = []byte("MaxConsecutiveMisses")
 )
 
 // String implements the stringer interface for Params.
 func (p Params) String() string {
 	return fmt.Sprintf(`oracle Params:
   MaxRawRequestCount:               %d
-  MaxRawDataReportSize:             %d
   MaxResultSize:                    %d
   GasPerRawDataRequestPerValidator: %d
   ExpirationBlockCount:             %d
-  ExecuteGas:                       %d
-  PrepareGas:                       %d
+  MaxConsecutiveMisses:             %d
 `,
 		p.MaxRawRequestCount,
-		p.MaxRawDataReportSize,
 		p.MaxResultSize,
 		p.GasPerRawDataRequestPerValidator,
 		p.ExpirationBlockCount,
-		p.ExecuteGas,
-		p.PrepareGas,
+		p.MaxConsecutiveMisses,
 	)
 }
 
@@ -75,12 +62,10 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 	// TODO: Make validation real. Not just noop
 	return params.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyMaxRawRequestCount, &p.MaxRawRequestCount, validateNoOp),
-		paramtypes.NewParamSetPair(KeyMaxRawDataReportSize, &p.MaxRawDataReportSize, validateNoOp),
 		paramtypes.NewParamSetPair(KeyMaxResultSize, &p.MaxResultSize, validateNoOp),
 		paramtypes.NewParamSetPair(KeyGasPerRawDataRequestPerValidator, &p.GasPerRawDataRequestPerValidator, validateNoOp),
 		paramtypes.NewParamSetPair(KeyExpirationBlockCount, &p.ExpirationBlockCount, validateNoOp),
-		paramtypes.NewParamSetPair(KeyExecuteGas, &p.ExecuteGas, validateNoOp),
-		paramtypes.NewParamSetPair(KeyPrepareGas, &p.PrepareGas, validateNoOp),
+		paramtypes.NewParamSetPair(KeyMaxConsecutiveMisses, &p.MaxConsecutiveMisses, validateNoOp),
 	}
 }
 
@@ -88,11 +73,9 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 func DefaultParams() Params {
 	return NewParams(
 		DefaultMaxRawRequestCount,
-		DefaultMaxRawDataReportSize,
 		DefaultMaxResultSize,
 		DefaultGasPerRawDataRequestPerValidator,
 		DefaultExpirationBlockCount,
-		DefaultExecuteGas,
-		DefaultPrepareGas,
+		DefaulMaxConsecutiveMisses,
 	)
 }

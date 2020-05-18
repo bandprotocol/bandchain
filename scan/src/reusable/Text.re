@@ -76,7 +76,13 @@ module Styles = {
 
   let noWrap = style([whiteSpace(`nowrap)]);
   let block = style([display(`block)]);
-  let ellipsis = style([overflow(`hidden), textOverflow(`ellipsis), whiteSpace(`nowrap)]);
+  let ellipsis =
+    style([
+      overflow(`hidden),
+      textOverflow(`ellipsis),
+      whiteSpace(`nowrap),
+      width(`percent(100.)),
+    ]);
   let underline = style([textDecoration(`underline)]);
   let textAlign =
     mapWithDefault(

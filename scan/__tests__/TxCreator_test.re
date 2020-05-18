@@ -90,12 +90,12 @@ describe("expect TxCreator to give the correct message", () => {
             type_: "oracle/Request",
             value:
               Js.Json.stringifyAny({
-                oracleScriptID: "1",
+                oracle_script_id: "1",
                 calldata: "RVRI",
-                requestedValidatorCount: "4",
-                sufficientValidatorCount: "4",
+                ask_count: "4",
+                min_count: "4",
                 sender: "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs",
-                clientID: "",
+                client_id: "",
               })
               |> Belt_Option.getExn
               |> Js.Json.parseExn,
@@ -136,12 +136,12 @@ describe("expect TxCreator to give the correct message", () => {
                  type_: "oracle/Request",
                  value:
                    Js.Json.stringifyAny({
-                     oracleScriptID: "1",
+                     oracle_script_id: "1",
                      calldata: "RVRI",
-                     requestedValidatorCount: "4",
-                     sufficientValidatorCount: "4",
+                     ask_count: "4",
+                     min_count: "4",
                      sender: "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs",
-                     clientID: "",
+                     client_id: "",
                    })
                    |> Belt_Option.getExn
                    |> Js.Json.parseExn,
