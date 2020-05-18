@@ -131,7 +131,8 @@ let getGasConfig = msgType => {
 };
 
 let getFeeConfig = msgType => {
-  let fee = (getMsgGasLimit(msgType) |> float_of_int) *. 0.1 /. 1e6;
+  let gasPrice = 0.1;
+  let fee = (getMsgGasLimit(msgType) |> float_of_int) *. gasPrice /. 1e6;
   EnhanceTxInput.{
     text: {
       fee |> Js.Float.toString;
