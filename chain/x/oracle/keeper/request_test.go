@@ -72,7 +72,7 @@ func TestSetterGettterPendingResolveList(t *testing.T) {
 	require.Equal(t, k.GetPendingResolveList(ctx), []types.RequestID{})
 }
 
-func TestAddDataSourceBasic(t *testing.T) {
+func TestAddRequestBasic(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// We start by setting an oracle request available at ID 42.
 	k.SetOracleScript(ctx, 42, types.NewOracleScript(
