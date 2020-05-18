@@ -1,9 +1,11 @@
 package app
 
 import (
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/spf13/viper"
 
@@ -368,8 +370,22 @@ func (app *BandApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) ab
 
 // DeliverTx application updates every transction
 func (app *BandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliverTx) {
+	//
+	file, err := os.OpenFile(os.ExpandEnv("$HOME/gg.txt"), os.O_CREATE|os.O_WRONLY|os.O_APPEND, os.ModePerm)
+	if err != nil {
+		panic(err)
+	}
+	start := time.Now()
 	response := app.BaseApp.DeliverTx(req)
-
+	end := time.Now()
+	elapsed := end.Sub(start)
+	_, err = file.WriteString(fmt.Sprint(elapsed.Nanoseconds()))
+	if err != nil {
+		panic(err)
+	}
+	file.Close()
+	fmt.Println(elapsed.Nanoseconds())
+	//
 	if response.IsOK() {
 		// Refund 100% of gas fee for any successful transaction that only contains MsgReportData
 		tx, err := app.TxDecoder(req.Tx)
