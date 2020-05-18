@@ -147,11 +147,18 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
       </Row>
       <VSpacing size=Spacing.lg />
       <VSpacing size=Spacing.sm />
-      <div className=Styles.vFlex> <AddressRender address position=AddressRender.Title copy=true/> </div>
+      <div className=Styles.vFlex>
+        <AddressRender address position=AddressRender.Title copy=true />
+      </div>
       <VSpacing size=Spacing.xxl />
       <Row justify=Row.Between alignItems=`flexStart>
         <Col size=0.75>
-          <PieChart size=187 availableBalance balanceAtStake={balanceAtStake.amount} reward={balanceAtStake.reward} />
+          <PieChart
+            size=187
+            availableBalance
+            balanceAtStake={balanceAtStake.amount}
+            reward={balanceAtStake.reward}
+          />
         </Col>
         <Col size=1.>
           <VSpacing size=Spacing.md />
