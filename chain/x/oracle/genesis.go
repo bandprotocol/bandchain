@@ -14,23 +14,18 @@ type GenesisState struct {
 	DataSources   []types.DataSource          `json:"data_sources"  yaml:"data_sources"`
 	OracleScripts []types.OracleScript        `json:"oracle_scripts"  yaml:"oracle_scripts"`
 	ReportInfos   []types.ValidatorReportInfo `json:"report_infos" yaml:"report_infos"`
-	Requests      []types.Request             `json:"request" yaml:"requests"`
-	Reports       []types.Report              `json:"report" yaml:"reports"`
 }
 
 // NewGenesisState creates a new genesis state.
 func NewGenesisState(
 	params types.Params, dataSources []types.DataSource,
 	oracleScripts []types.OracleScript, reportInfos []types.ValidatorReportInfo,
-	requests []types.Request, reports []types.Report,
 ) GenesisState {
 	return GenesisState{
 		Params:        params,
 		DataSources:   dataSources,
 		OracleScripts: oracleScripts,
 		ReportInfos:   reportInfos,
-		Requests:      requests,
-		Reports:       reports,
 	}
 }
 
@@ -45,8 +40,6 @@ func DefaultGenesisState() GenesisState {
 		DataSources:   []types.DataSource{},
 		OracleScripts: []types.OracleScript{},
 		ReportInfos:   []types.ValidatorReportInfo{},
-		Requests:      []types.Request{},
-		Reports:       []types.Report{},
 	}
 }
 
@@ -93,7 +86,5 @@ func ExportGenesis(ctx sdk.Context, k Keeper) GenesisState {
 		DataSources:   k.GetAllDataSources(ctx),
 		OracleScripts: k.GetAllOracleScripts(ctx),
 		ReportInfos:   k.GetAllValidatorReportInfos(ctx),
-		Requests:      k.GetAllRequests(ctx),
-		Reports:       k.GetAllReports(ctx),
 	}
 }
