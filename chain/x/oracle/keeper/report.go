@@ -7,19 +7,19 @@ import (
 )
 
 // HasReport checks if the report of this ID triple exists in the storage.
-func (k Keeper) HasReport(ctx sdk.Context, rid types.RID, val sdk.ValAddress) bool {
+func (k Keeper) HasReport(ctx sdk.Context, rid types.RequestID, val sdk.ValAddress) bool {
 	return ctx.KVStore(k.storeKey).Has(types.RawDataReportStoreKey(rid, val))
 }
 
 // SetDataReport saves the report to the storage without performing validation.
-func (k Keeper) SetReport(ctx sdk.Context, rid types.RID, rep types.Report) {
+func (k Keeper) SetReport(ctx sdk.Context, rid types.RequestID, rep types.Report) {
 	key := types.RawDataReportStoreKey(rid, rep.Validator)
 	ctx.KVStore(k.storeKey).Set(key, k.cdc.MustMarshalBinaryBare(rep))
 }
 
 // AddReports performs sanity checks and adds a new batch from one validator to one request
 // to the store. Note that we expect each validator to report to all raw data requests at once.
-func (k Keeper) AddReport(ctx sdk.Context, rid types.RID, rep types.Report) error {
+func (k Keeper) AddReport(ctx sdk.Context, rid types.RequestID, rep types.Report) error {
 	req, err := k.GetRequest(ctx, rid)
 	if err != nil {
 		return err
@@ -42,9 +42,6 @@ func (k Keeper) AddReport(ctx sdk.Context, rid types.RID, rep types.Report) erro
 			return sdkerrors.Wrapf(
 				types.ErrRawRequestNotFound, "reqID: %d, extID: %d", rid, rep.ExternalID)
 		}
-		if err := k.EnsureLength(ctx, types.KeyMaxRawDataReportSize, len(rep.Data)); err != nil {
-			return err
-		}
 	}
 	k.SetReport(ctx, rid, rep)
 	return nil
@@ -57,7 +54,7 @@ func (k Keeper) GetReportIterator(ctx sdk.Context, rid types.RequestID) sdk.Iter
 }
 
 // GetReportCount returns the number of reports for the given request ID.
-func (k Keeper) GetReportCount(ctx sdk.Context, rid types.RID) (count int64) {
+func (k Keeper) GetReportCount(ctx sdk.Context, rid types.RequestID) (count int64) {
 	iterator := k.GetReportIterator(ctx, rid)
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
@@ -67,7 +64,7 @@ func (k Keeper) GetReportCount(ctx sdk.Context, rid types.RID) (count int64) {
 }
 
 // GetReports returns all reports for the given request ID, or nil if there is none.
-func (k Keeper) GetReports(ctx sdk.Context, rid types.RID) (reports []types.Report) {
+func (k Keeper) GetReports(ctx sdk.Context, rid types.RequestID) (reports []types.Report) {
 	iterator := k.GetReportIterator(ctx, rid)
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
@@ -79,7 +76,7 @@ func (k Keeper) GetReports(ctx sdk.Context, rid types.RID) (reports []types.Repo
 }
 
 // DeleteReports removes all reports for the given request ID.
-func (k Keeper) DeleteReports(ctx sdk.Context, rid types.RID) {
+func (k Keeper) DeleteReports(ctx sdk.Context, rid types.RequestID) {
 	var keys [][]byte
 	iterator := k.GetReportIterator(ctx, rid)
 	defer iterator.Close()
@@ -88,5 +85,20 @@ func (k Keeper) DeleteReports(ctx sdk.Context, rid types.RID) {
 	}
 	for _, key := range keys {
 		ctx.KVStore(k.storeKey).Delete(key)
+	}
+}
+
+// UpdateReportInfos updates validator report info for jail validator
+// that miss report more than threshold.
+func (k Keeper) UpdateReportInfos(ctx sdk.Context, rid types.RequestID) {
+	reportedMap := make(map[string]bool)
+	reports := k.GetReports(ctx, rid)
+	for _, report := range reports {
+		reportedMap[report.Validator.String()] = true
+	}
+	request := k.MustGetRequest(ctx, rid)
+	for _, val := range request.RequestedValidators {
+		_, voted := reportedMap[val.String()]
+		k.HandleValidatorReport(ctx, rid, val, voted)
 	}
 }

@@ -52,6 +52,7 @@ func NewDB(dialect, path string) (*BandDB, error) {
 		&Validator{},
 		&ValidatorVote{},
 		&Delegation{},
+		&UnbondingDelegation{},
 		&DataSource{},
 		&DataSourceRevision{},
 		&OracleScript{},
@@ -72,6 +73,27 @@ func NewDB(dialect, path string) (*BandDB, error) {
 			validator_address,
 			delegator_address
 			FROM delegations JOIN validators ON validator_address = operator_address;
+	`)
+
+	db.Exec(`CREATE VIEW validator_last_250_votes AS
+			SELECT COUNT(*), consensus_address, voted
+			FROM validator_votes
+			WHERE block_height > (SELECT MAX(height) from blocks) - 250
+			GROUP BY consensus_address, voted;
+	`)
+
+	db.Exec(`CREATE VIEW validator_last_1000_votes AS
+			SELECT COUNT(*), consensus_address, voted
+			FROM validator_votes
+			WHERE block_height > (SELECT MAX(height) from blocks) - 1000
+			GROUP BY consensus_address, voted;
+	`)
+
+	db.Exec(`CREATE VIEW validator_last_10000_votes AS
+			SELECT COUNT(*), consensus_address, voted
+			FROM validator_votes
+			WHERE block_height > (SELECT MAX(height) from blocks) - 10000
+			GROUP BY consensus_address, voted;
 	`)
 
 	db.Model(&Block{}).AddForeignKey(
@@ -110,6 +132,20 @@ func NewDB(dialect, path string) (*BandDB, error) {
 	)
 
 	db.Model(&Delegation{}).AddForeignKey(
+		"validator_address",
+		"validators(operator_address)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&UnbondingDelegation{}).AddForeignKey(
+		"delegator_address",
+		"accounts(address)",
+		"RESTRICT",
+		"RESTRICT",
+	)
+
+	db.Model(&UnbondingDelegation{}).AddForeignKey(
 		"validator_address",
 		"validators(operator_address)",
 		"RESTRICT",

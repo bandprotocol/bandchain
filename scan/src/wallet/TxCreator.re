@@ -33,12 +33,12 @@ type msg_withdraw_reward_t = {
 };
 
 type msg_request_t = {
-  oracleScriptID: string,
+  oracle_script_id: string,
   calldata: string,
-  requestedValidatorCount: string,
-  sufficientValidatorCount: string,
+  ask_count: string,
+  min_count: string,
   sender: string,
-  clientID: string,
+  client_id: string,
 };
 
 type msg_input_t =
@@ -207,21 +207,14 @@ let createMsg = (sender, msg: msg_input_t): msg_payload_t => {
       }
       |> Belt_Option.getExn
       |> Js.Json.parseExn
-    | Request(
-        ID.OracleScript.ID(oracleScriptID),
-        calldata,
-        requestedValidatorCount,
-        sufficientValidatorCount,
-        sender,
-        clientID,
-      ) =>
+    | Request(ID.OracleScript.ID(oracleScriptID), calldata, askCount, minCount, sender, clientID) =>
       Js.Json.stringifyAny({
-        oracleScriptID: oracleScriptID |> string_of_int,
+        oracle_script_id: oracleScriptID |> string_of_int,
         calldata: calldata |> JsBuffer.toBase64,
-        requestedValidatorCount,
-        sufficientValidatorCount,
+        ask_count: askCount,
+        min_count: minCount,
         sender: sender |> Address.toBech32,
-        clientID,
+        client_id: clientID,
       })
       |> Belt_Option.getExn
       |> Js.Json.parseExn

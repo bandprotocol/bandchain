@@ -217,123 +217,6 @@
         "fields": null
       },
       {
-        "inputFields": [
-          {
-            "name": "_eq",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "_gt",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "_gte",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "_in",
-            "defaultValue": null,
-            "type": {
-              "kind": "LIST",
-              "name": null,
-              "ofType": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                }
-              }
-            },
-            "description": null
-          },
-          {
-            "name": "_is_null",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Boolean",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "_lt",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "_lte",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "_neq",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "_nin",
-            "defaultValue": null,
-            "type": {
-              "kind": "LIST",
-              "name": null,
-              "ofType": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                }
-              }
-            },
-            "description": null
-          }
-        ],
-        "kind": "INPUT_OBJECT",
-        "possibleTypes": null,
-        "interfaces": null,
-        "name": "Int_comparison_exp",
-        "enumValues": null,
-        "description": "expression to compare columns of type Int. All fields are combined with logical 'AND'.",
-        "fields": null
-      },
-      {
         "inputFields": null,
         "kind": "SCALAR",
         "possibleTypes": null,
@@ -8066,22 +7949,6 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "fee",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              }
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
             "name": "id",
             "type": {
               "kind": "NON_NULL",
@@ -9012,16 +8879,6 @@
             "description": null
           },
           {
-            "name": "fee",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "String_comparison_exp",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
             "name": "id",
             "defaultValue": null,
             "type": {
@@ -9171,16 +9028,6 @@
             "description": null
           },
           {
-            "name": "fee",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
             "name": "id",
             "defaultValue": null,
             "type": {
@@ -9274,18 +9121,6 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "fee",
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
             "name": "id",
             "type": {
               "kind": "SCALAR",
@@ -9336,16 +9171,6 @@
         "inputFields": [
           {
             "name": "description",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "fee",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -9428,18 +9253,6 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "fee",
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
             "name": "id",
             "type": {
               "kind": "SCALAR",
@@ -9490,16 +9303,6 @@
         "inputFields": [
           {
             "name": "description",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "fee",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -9733,16 +9536,6 @@
             "description": null
           },
           {
-            "name": "fee",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
             "name": "id",
             "defaultValue": null,
             "type": {
@@ -9833,12 +9626,6 @@
           {
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "fee",
-            "description": "column name"
-          },
-          {
-            "isDeprecated": false,
-            "deprecationReason": null,
             "name": "id",
             "description": "column name"
           },
@@ -9882,16 +9669,6 @@
             "type": {
               "kind": "SCALAR",
               "name": "bytea",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "fee",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
               "ofType": null
             },
             "description": null
@@ -10226,12 +10003,6 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "executable",
-            "description": "column name"
-          },
-          {
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "fee",
             "description": "column name"
           },
           {
@@ -27497,6 +27268,354 @@
                     "name": null,
                     "ofType": {
                       "kind": "ENUM",
+                      "name": "validator_last_1000_votes_select_column",
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": "distinct select on columns"
+              },
+              {
+                "name": "limit",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "description": "limit the number of rows returned"
+              },
+              {
+                "name": "offset",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "description": "skip the first n rows. Use only with order_by"
+              },
+              {
+                "name": "order_by",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "validator_last_1000_votes_order_by",
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": "sort the rows by one or more columns"
+              },
+              {
+                "name": "where",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "validator_last_1000_votes_bool_exp",
+                  "ofType": null
+                },
+                "description": "filter the rows returned"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "validator_last_1000_votes",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "validator_last_1000_votes",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "description": "fetch data from the table: \"validator_last_1000_votes\""
+          },
+          {
+            "args": [
+              {
+                "name": "distinct_on",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "ENUM",
+                      "name": "validator_last_1000_votes_select_column",
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": "distinct select on columns"
+              },
+              {
+                "name": "limit",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "description": "limit the number of rows returned"
+              },
+              {
+                "name": "offset",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "description": "skip the first n rows. Use only with order_by"
+              },
+              {
+                "name": "order_by",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "validator_last_1000_votes_order_by",
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": "sort the rows by one or more columns"
+              },
+              {
+                "name": "where",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "validator_last_1000_votes_bool_exp",
+                  "ofType": null
+                },
+                "description": "filter the rows returned"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "validator_last_1000_votes_aggregate",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "validator_last_1000_votes_aggregate",
+                "ofType": null
+              }
+            },
+            "description": "fetch aggregated fields from the table: \"validator_last_1000_votes\""
+          },
+          {
+            "args": [
+              {
+                "name": "distinct_on",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "ENUM",
+                      "name": "validator_last_250_votes_select_column",
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": "distinct select on columns"
+              },
+              {
+                "name": "limit",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "description": "limit the number of rows returned"
+              },
+              {
+                "name": "offset",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "description": "skip the first n rows. Use only with order_by"
+              },
+              {
+                "name": "order_by",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "validator_last_250_votes_order_by",
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": "sort the rows by one or more columns"
+              },
+              {
+                "name": "where",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "validator_last_250_votes_bool_exp",
+                  "ofType": null
+                },
+                "description": "filter the rows returned"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "validator_last_250_votes",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "validator_last_250_votes",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "description": "fetch data from the table: \"validator_last_250_votes\""
+          },
+          {
+            "args": [
+              {
+                "name": "distinct_on",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "ENUM",
+                      "name": "validator_last_250_votes_select_column",
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": "distinct select on columns"
+              },
+              {
+                "name": "limit",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "description": "limit the number of rows returned"
+              },
+              {
+                "name": "offset",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "description": "skip the first n rows. Use only with order_by"
+              },
+              {
+                "name": "order_by",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "validator_last_250_votes_order_by",
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": "sort the rows by one or more columns"
+              },
+              {
+                "name": "where",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "validator_last_250_votes_bool_exp",
+                  "ofType": null
+                },
+                "description": "filter the rows returned"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "validator_last_250_votes_aggregate",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "validator_last_250_votes_aggregate",
+                "ofType": null
+              }
+            },
+            "description": "fetch aggregated fields from the table: \"validator_last_250_votes\""
+          },
+          {
+            "args": [
+              {
+                "name": "distinct_on",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "ENUM",
                       "name": "validator_votes_select_column",
                       "ofType": null
                     }
@@ -31473,7 +31592,7 @@
               "name": null,
               "ofType": {
                 "kind": "SCALAR",
-                "name": "Int",
+                "name": "bigint",
                 "ofType": null
               }
             },
@@ -32099,7 +32218,7 @@
             "defaultValue": null,
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "Int_comparison_exp",
+              "name": "bigint_comparison_exp",
               "ofType": null
             },
             "description": null
@@ -32187,7 +32306,7 @@
             "defaultValue": null,
             "type": {
               "kind": "SCALAR",
-              "name": "Int",
+              "name": "bigint",
               "ofType": null
             },
             "description": null
@@ -32248,7 +32367,7 @@
             "defaultValue": null,
             "type": {
               "kind": "SCALAR",
-              "name": "Int",
+              "name": "bigint",
               "ofType": null
             },
             "description": null
@@ -32330,7 +32449,7 @@
             "name": "exitcode",
             "type": {
               "kind": "SCALAR",
-              "name": "Int",
+              "name": "bigint",
               "ofType": null
             },
             "description": null
@@ -32462,7 +32581,7 @@
             "name": "exitcode",
             "type": {
               "kind": "SCALAR",
-              "name": "Int",
+              "name": "bigint",
               "ofType": null
             },
             "description": null
@@ -32864,7 +32983,7 @@
             "defaultValue": null,
             "type": {
               "kind": "SCALAR",
-              "name": "Int",
+              "name": "bigint",
               "ofType": null
             },
             "description": null
@@ -33266,7 +33385,7 @@
             "name": "exitcode",
             "type": {
               "kind": "SCALAR",
-              "name": "Int",
+              "name": "bigint",
               "ofType": null
             },
             "description": null
@@ -37014,6 +37133,22 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "min_count",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "bigint",
+                "ofType": null
+              }
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "oracle_script",
             "type": {
               "kind": "NON_NULL",
@@ -37636,22 +37771,6 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "sufficient_validator_count",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "bigint",
-                "ofType": null
-              }
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
             "name": "transaction",
             "type": {
               "kind": "NON_NULL",
@@ -38102,6 +38221,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "min_count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "oracle_script_id",
             "type": {
               "kind": "SCALAR",
@@ -38127,18 +38258,6 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "resolve_time",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "sufficient_validator_count",
             "type": {
               "kind": "SCALAR",
               "name": "Float",
@@ -38171,6 +38290,16 @@
             "description": null
           },
           {
+            "name": "min_count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "oracle_script_id",
             "defaultValue": null,
             "type": {
@@ -38192,16 +38321,6 @@
           },
           {
             "name": "resolve_time",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "sufficient_validator_count",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -38291,6 +38410,16 @@
           },
           {
             "name": "id",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "bigint_comparison_exp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "min_count",
             "defaultValue": null,
             "type": {
               "kind": "INPUT_OBJECT",
@@ -38400,16 +38529,6 @@
             "description": null
           },
           {
-            "name": "sufficient_validator_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "bigint_comparison_exp",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
             "name": "transaction",
             "defaultValue": null,
             "type": {
@@ -38478,6 +38597,16 @@
             "description": null
           },
           {
+            "name": "min_count",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "bigint",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "oracle_script_id",
             "defaultValue": null,
             "type": {
@@ -38499,16 +38628,6 @@
           },
           {
             "name": "resolve_time",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "bigint",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "sufficient_validator_count",
             "defaultValue": null,
             "type": {
               "kind": "SCALAR",
@@ -38560,6 +38679,16 @@
           },
           {
             "name": "id",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "bigint",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "min_count",
             "defaultValue": null,
             "type": {
               "kind": "SCALAR",
@@ -38669,16 +38798,6 @@
             "description": null
           },
           {
-            "name": "sufficient_validator_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "bigint",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
             "name": "transaction",
             "defaultValue": null,
             "type": {
@@ -38756,6 +38875,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "min_count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "bigint",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "oracle_script_id",
             "type": {
               "kind": "SCALAR",
@@ -38805,18 +38936,6 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "resolve_time",
-            "type": {
-              "kind": "SCALAR",
-              "name": "bigint",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "sufficient_validator_count",
             "type": {
               "kind": "SCALAR",
               "name": "bigint",
@@ -38859,6 +38978,16 @@
             "description": null
           },
           {
+            "name": "min_count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "oracle_script_id",
             "defaultValue": null,
             "type": {
@@ -38900,16 +39029,6 @@
           },
           {
             "name": "resolve_time",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "sufficient_validator_count",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -38976,6 +39095,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "min_count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "bigint",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "oracle_script_id",
             "type": {
               "kind": "SCALAR",
@@ -39025,18 +39156,6 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "resolve_time",
-            "type": {
-              "kind": "SCALAR",
-              "name": "bigint",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "sufficient_validator_count",
             "type": {
               "kind": "SCALAR",
               "name": "bigint",
@@ -39079,6 +39198,16 @@
             "description": null
           },
           {
+            "name": "min_count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "oracle_script_id",
             "defaultValue": null,
             "type": {
@@ -39120,16 +39249,6 @@
           },
           {
             "name": "resolve_time",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "sufficient_validator_count",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -39333,6 +39452,16 @@
             "description": null
           },
           {
+            "name": "min_count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "oracle_script",
             "defaultValue": null,
             "type": {
@@ -39433,16 +39562,6 @@
             "description": null
           },
           {
-            "name": "sufficient_validator_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
             "name": "transaction",
             "defaultValue": null,
             "type": {
@@ -39505,6 +39624,12 @@
           {
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "min_count",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "oracle_script_id",
             "description": "column name"
           },
@@ -39536,12 +39661,6 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "result",
-            "description": "column name"
-          },
-          {
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "sufficient_validator_count",
             "description": "column name"
           },
           {
@@ -39597,6 +39716,16 @@
             "description": null
           },
           {
+            "name": "min_count",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "bigint",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "oracle_script_id",
             "defaultValue": null,
             "type": {
@@ -39652,16 +39781,6 @@
             "type": {
               "kind": "SCALAR",
               "name": "bytea",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "sufficient_validator_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "bigint",
               "ofType": null
             },
             "description": null
@@ -39722,6 +39841,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "min_count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "oracle_script_id",
             "type": {
               "kind": "SCALAR",
@@ -39747,18 +39878,6 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "resolve_time",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "sufficient_validator_count",
             "type": {
               "kind": "SCALAR",
               "name": "Float",
@@ -39791,6 +39910,16 @@
             "description": null
           },
           {
+            "name": "min_count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "oracle_script_id",
             "defaultValue": null,
             "type": {
@@ -39812,16 +39941,6 @@
           },
           {
             "name": "resolve_time",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "sufficient_validator_count",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -39876,6 +39995,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "min_count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "oracle_script_id",
             "type": {
               "kind": "SCALAR",
@@ -39901,18 +40032,6 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "resolve_time",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "sufficient_validator_count",
             "type": {
               "kind": "SCALAR",
               "name": "Float",
@@ -39945,6 +40064,16 @@
             "description": null
           },
           {
+            "name": "min_count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "oracle_script_id",
             "defaultValue": null,
             "type": {
@@ -39966,16 +40095,6 @@
           },
           {
             "name": "resolve_time",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "sufficient_validator_count",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -40030,6 +40149,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "min_count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "oracle_script_id",
             "type": {
               "kind": "SCALAR",
@@ -40055,18 +40186,6 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "resolve_time",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "sufficient_validator_count",
             "type": {
               "kind": "SCALAR",
               "name": "Float",
@@ -40099,6 +40218,16 @@
             "description": null
           },
           {
+            "name": "min_count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "oracle_script_id",
             "defaultValue": null,
             "type": {
@@ -40120,16 +40249,6 @@
           },
           {
             "name": "resolve_time",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "sufficient_validator_count",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -40184,6 +40303,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "min_count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "bigint",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "oracle_script_id",
             "type": {
               "kind": "SCALAR",
@@ -40209,18 +40340,6 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "resolve_time",
-            "type": {
-              "kind": "SCALAR",
-              "name": "bigint",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "sufficient_validator_count",
             "type": {
               "kind": "SCALAR",
               "name": "bigint",
@@ -40253,6 +40372,16 @@
             "description": null
           },
           {
+            "name": "min_count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "oracle_script_id",
             "defaultValue": null,
             "type": {
@@ -40274,16 +40403,6 @@
           },
           {
             "name": "resolve_time",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "sufficient_validator_count",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -40335,6 +40454,12 @@
           {
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "min_count",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "oracle_script_id",
             "description": "column name"
           },
@@ -40366,12 +40491,6 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "result",
-            "description": "column name"
-          },
-          {
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "sufficient_validator_count",
             "description": "column name"
           },
           {
@@ -40421,6 +40540,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "min_count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "oracle_script_id",
             "type": {
               "kind": "SCALAR",
@@ -40446,18 +40577,6 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "resolve_time",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "sufficient_validator_count",
             "type": {
               "kind": "SCALAR",
               "name": "Float",
@@ -40490,6 +40609,16 @@
             "description": null
           },
           {
+            "name": "min_count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "oracle_script_id",
             "defaultValue": null,
             "type": {
@@ -40511,16 +40640,6 @@
           },
           {
             "name": "resolve_time",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "sufficient_validator_count",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -40575,6 +40694,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "min_count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "oracle_script_id",
             "type": {
               "kind": "SCALAR",
@@ -40600,18 +40731,6 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "resolve_time",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "sufficient_validator_count",
             "type": {
               "kind": "SCALAR",
               "name": "Float",
@@ -40644,6 +40763,16 @@
             "description": null
           },
           {
+            "name": "min_count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "oracle_script_id",
             "defaultValue": null,
             "type": {
@@ -40665,16 +40794,6 @@
           },
           {
             "name": "resolve_time",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "sufficient_validator_count",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -40729,6 +40848,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "min_count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "oracle_script_id",
             "type": {
               "kind": "SCALAR",
@@ -40754,18 +40885,6 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "resolve_time",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "sufficient_validator_count",
             "type": {
               "kind": "SCALAR",
               "name": "Float",
@@ -40798,6 +40917,16 @@
             "description": null
           },
           {
+            "name": "min_count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "oracle_script_id",
             "defaultValue": null,
             "type": {
@@ -40819,16 +40948,6 @@
           },
           {
             "name": "resolve_time",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "sufficient_validator_count",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -44412,6 +44531,354 @@
               "ofType": null
             },
             "description": "fetch data from the table: \"transactions\" using primary key columns"
+          },
+          {
+            "args": [
+              {
+                "name": "distinct_on",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "ENUM",
+                      "name": "validator_last_1000_votes_select_column",
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": "distinct select on columns"
+              },
+              {
+                "name": "limit",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "description": "limit the number of rows returned"
+              },
+              {
+                "name": "offset",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "description": "skip the first n rows. Use only with order_by"
+              },
+              {
+                "name": "order_by",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "validator_last_1000_votes_order_by",
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": "sort the rows by one or more columns"
+              },
+              {
+                "name": "where",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "validator_last_1000_votes_bool_exp",
+                  "ofType": null
+                },
+                "description": "filter the rows returned"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "validator_last_1000_votes",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "validator_last_1000_votes",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "description": "fetch data from the table: \"validator_last_1000_votes\""
+          },
+          {
+            "args": [
+              {
+                "name": "distinct_on",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "ENUM",
+                      "name": "validator_last_1000_votes_select_column",
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": "distinct select on columns"
+              },
+              {
+                "name": "limit",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "description": "limit the number of rows returned"
+              },
+              {
+                "name": "offset",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "description": "skip the first n rows. Use only with order_by"
+              },
+              {
+                "name": "order_by",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "validator_last_1000_votes_order_by",
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": "sort the rows by one or more columns"
+              },
+              {
+                "name": "where",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "validator_last_1000_votes_bool_exp",
+                  "ofType": null
+                },
+                "description": "filter the rows returned"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "validator_last_1000_votes_aggregate",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "validator_last_1000_votes_aggregate",
+                "ofType": null
+              }
+            },
+            "description": "fetch aggregated fields from the table: \"validator_last_1000_votes\""
+          },
+          {
+            "args": [
+              {
+                "name": "distinct_on",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "ENUM",
+                      "name": "validator_last_250_votes_select_column",
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": "distinct select on columns"
+              },
+              {
+                "name": "limit",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "description": "limit the number of rows returned"
+              },
+              {
+                "name": "offset",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "description": "skip the first n rows. Use only with order_by"
+              },
+              {
+                "name": "order_by",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "validator_last_250_votes_order_by",
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": "sort the rows by one or more columns"
+              },
+              {
+                "name": "where",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "validator_last_250_votes_bool_exp",
+                  "ofType": null
+                },
+                "description": "filter the rows returned"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "validator_last_250_votes",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "validator_last_250_votes",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "description": "fetch data from the table: \"validator_last_250_votes\""
+          },
+          {
+            "args": [
+              {
+                "name": "distinct_on",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "ENUM",
+                      "name": "validator_last_250_votes_select_column",
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": "distinct select on columns"
+              },
+              {
+                "name": "limit",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "description": "limit the number of rows returned"
+              },
+              {
+                "name": "offset",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "description": "skip the first n rows. Use only with order_by"
+              },
+              {
+                "name": "order_by",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "validator_last_250_votes_order_by",
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": "sort the rows by one or more columns"
+              },
+              {
+                "name": "where",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "validator_last_250_votes_bool_exp",
+                  "ofType": null
+                },
+                "description": "filter the rows returned"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "validator_last_250_votes_aggregate",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "validator_last_250_votes_aggregate",
+                "ofType": null
+              }
+            },
+            "description": "fetch aggregated fields from the table: \"validator_last_250_votes\""
           },
           {
             "args": [
@@ -48783,6 +49250,2046 @@
         "kind": "OBJECT",
         "possibleTypes": null,
         "interfaces": [],
+        "name": "validator_last_1000_votes",
+        "enumValues": null,
+        "description": "columns and relationships of \"validator_last_1000_votes\"",
+        "fields": [
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "consensus_address",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "bigint",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "voted",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "description": null
+          }
+        ]
+      },
+      {
+        "inputFields": null,
+        "kind": "OBJECT",
+        "possibleTypes": null,
+        "interfaces": [],
+        "name": "validator_last_1000_votes_aggregate",
+        "enumValues": null,
+        "description": "aggregated selection of \"validator_last_1000_votes\"",
+        "fields": [
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "aggregate",
+            "type": {
+              "kind": "OBJECT",
+              "name": "validator_last_1000_votes_aggregate_fields",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "nodes",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "validator_last_1000_votes",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "description": null
+          }
+        ]
+      },
+      {
+        "inputFields": null,
+        "kind": "OBJECT",
+        "possibleTypes": null,
+        "interfaces": [],
+        "name": "validator_last_1000_votes_aggregate_fields",
+        "enumValues": null,
+        "description": "aggregate fields of \"validator_last_1000_votes\"",
+        "fields": [
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "avg",
+            "type": {
+              "kind": "OBJECT",
+              "name": "validator_last_1000_votes_avg_fields",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [
+              {
+                "name": "columns",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "ENUM",
+                      "name": "validator_last_1000_votes_select_column",
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": null
+              },
+              {
+                "name": "distinct",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "max",
+            "type": {
+              "kind": "OBJECT",
+              "name": "validator_last_1000_votes_max_fields",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "min",
+            "type": {
+              "kind": "OBJECT",
+              "name": "validator_last_1000_votes_min_fields",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "stddev",
+            "type": {
+              "kind": "OBJECT",
+              "name": "validator_last_1000_votes_stddev_fields",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "stddev_pop",
+            "type": {
+              "kind": "OBJECT",
+              "name": "validator_last_1000_votes_stddev_pop_fields",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "stddev_samp",
+            "type": {
+              "kind": "OBJECT",
+              "name": "validator_last_1000_votes_stddev_samp_fields",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "sum",
+            "type": {
+              "kind": "OBJECT",
+              "name": "validator_last_1000_votes_sum_fields",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "var_pop",
+            "type": {
+              "kind": "OBJECT",
+              "name": "validator_last_1000_votes_var_pop_fields",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "var_samp",
+            "type": {
+              "kind": "OBJECT",
+              "name": "validator_last_1000_votes_var_samp_fields",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "variance",
+            "type": {
+              "kind": "OBJECT",
+              "name": "validator_last_1000_votes_variance_fields",
+              "ofType": null
+            },
+            "description": null
+          }
+        ]
+      },
+      {
+        "inputFields": [
+          {
+            "name": "avg",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "validator_last_1000_votes_avg_order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "max",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "validator_last_1000_votes_max_order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "min",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "validator_last_1000_votes_min_order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "stddev",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "validator_last_1000_votes_stddev_order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "stddev_pop",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "validator_last_1000_votes_stddev_pop_order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "stddev_samp",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "validator_last_1000_votes_stddev_samp_order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "sum",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "validator_last_1000_votes_sum_order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "var_pop",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "validator_last_1000_votes_var_pop_order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "var_samp",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "validator_last_1000_votes_var_samp_order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "variance",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "validator_last_1000_votes_variance_order_by",
+              "ofType": null
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "validator_last_1000_votes_aggregate_order_by",
+        "enumValues": null,
+        "description": "order by aggregate values of table \"validator_last_1000_votes\"",
+        "fields": null
+      },
+      {
+        "inputFields": null,
+        "kind": "OBJECT",
+        "possibleTypes": null,
+        "interfaces": [],
+        "name": "validator_last_1000_votes_avg_fields",
+        "enumValues": null,
+        "description": "aggregate avg on columns",
+        "fields": [
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          }
+        ]
+      },
+      {
+        "inputFields": [
+          {
+            "name": "count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "validator_last_1000_votes_avg_order_by",
+        "enumValues": null,
+        "description": "order by avg() on columns of table \"validator_last_1000_votes\"",
+        "fields": null
+      },
+      {
+        "inputFields": [
+          {
+            "name": "_and",
+            "defaultValue": null,
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "INPUT_OBJECT",
+                "name": "validator_last_1000_votes_bool_exp",
+                "ofType": null
+              }
+            },
+            "description": null
+          },
+          {
+            "name": "_not",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "validator_last_1000_votes_bool_exp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "_or",
+            "defaultValue": null,
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "INPUT_OBJECT",
+                "name": "validator_last_1000_votes_bool_exp",
+                "ofType": null
+              }
+            },
+            "description": null
+          },
+          {
+            "name": "consensus_address",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "String_comparison_exp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "count",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "bigint_comparison_exp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "voted",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "Boolean_comparison_exp",
+              "ofType": null
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "validator_last_1000_votes_bool_exp",
+        "enumValues": null,
+        "description": "Boolean expression to filter rows from the table \"validator_last_1000_votes\". All fields are combined with a logical 'AND'.",
+        "fields": null
+      },
+      {
+        "inputFields": null,
+        "kind": "OBJECT",
+        "possibleTypes": null,
+        "interfaces": [],
+        "name": "validator_last_1000_votes_max_fields",
+        "enumValues": null,
+        "description": "aggregate max on columns",
+        "fields": [
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "consensus_address",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "bigint",
+              "ofType": null
+            },
+            "description": null
+          }
+        ]
+      },
+      {
+        "inputFields": [
+          {
+            "name": "consensus_address",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "validator_last_1000_votes_max_order_by",
+        "enumValues": null,
+        "description": "order by max() on columns of table \"validator_last_1000_votes\"",
+        "fields": null
+      },
+      {
+        "inputFields": null,
+        "kind": "OBJECT",
+        "possibleTypes": null,
+        "interfaces": [],
+        "name": "validator_last_1000_votes_min_fields",
+        "enumValues": null,
+        "description": "aggregate min on columns",
+        "fields": [
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "consensus_address",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "bigint",
+              "ofType": null
+            },
+            "description": null
+          }
+        ]
+      },
+      {
+        "inputFields": [
+          {
+            "name": "consensus_address",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "validator_last_1000_votes_min_order_by",
+        "enumValues": null,
+        "description": "order by min() on columns of table \"validator_last_1000_votes\"",
+        "fields": null
+      },
+      {
+        "inputFields": [
+          {
+            "name": "consensus_address",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "voted",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "validator_last_1000_votes_order_by",
+        "enumValues": null,
+        "description": "ordering options when selecting data from \"validator_last_1000_votes\"",
+        "fields": null
+      },
+      {
+        "inputFields": null,
+        "kind": "ENUM",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "validator_last_1000_votes_select_column",
+        "enumValues": [
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "consensus_address",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "count",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "voted",
+            "description": "column name"
+          }
+        ],
+        "description": "select columns of table \"validator_last_1000_votes\"",
+        "fields": null
+      },
+      {
+        "inputFields": null,
+        "kind": "OBJECT",
+        "possibleTypes": null,
+        "interfaces": [],
+        "name": "validator_last_1000_votes_stddev_fields",
+        "enumValues": null,
+        "description": "aggregate stddev on columns",
+        "fields": [
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          }
+        ]
+      },
+      {
+        "inputFields": [
+          {
+            "name": "count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "validator_last_1000_votes_stddev_order_by",
+        "enumValues": null,
+        "description": "order by stddev() on columns of table \"validator_last_1000_votes\"",
+        "fields": null
+      },
+      {
+        "inputFields": null,
+        "kind": "OBJECT",
+        "possibleTypes": null,
+        "interfaces": [],
+        "name": "validator_last_1000_votes_stddev_pop_fields",
+        "enumValues": null,
+        "description": "aggregate stddev_pop on columns",
+        "fields": [
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          }
+        ]
+      },
+      {
+        "inputFields": [
+          {
+            "name": "count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "validator_last_1000_votes_stddev_pop_order_by",
+        "enumValues": null,
+        "description": "order by stddev_pop() on columns of table \"validator_last_1000_votes\"",
+        "fields": null
+      },
+      {
+        "inputFields": null,
+        "kind": "OBJECT",
+        "possibleTypes": null,
+        "interfaces": [],
+        "name": "validator_last_1000_votes_stddev_samp_fields",
+        "enumValues": null,
+        "description": "aggregate stddev_samp on columns",
+        "fields": [
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          }
+        ]
+      },
+      {
+        "inputFields": [
+          {
+            "name": "count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "validator_last_1000_votes_stddev_samp_order_by",
+        "enumValues": null,
+        "description": "order by stddev_samp() on columns of table \"validator_last_1000_votes\"",
+        "fields": null
+      },
+      {
+        "inputFields": null,
+        "kind": "OBJECT",
+        "possibleTypes": null,
+        "interfaces": [],
+        "name": "validator_last_1000_votes_sum_fields",
+        "enumValues": null,
+        "description": "aggregate sum on columns",
+        "fields": [
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "bigint",
+              "ofType": null
+            },
+            "description": null
+          }
+        ]
+      },
+      {
+        "inputFields": [
+          {
+            "name": "count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "validator_last_1000_votes_sum_order_by",
+        "enumValues": null,
+        "description": "order by sum() on columns of table \"validator_last_1000_votes\"",
+        "fields": null
+      },
+      {
+        "inputFields": null,
+        "kind": "OBJECT",
+        "possibleTypes": null,
+        "interfaces": [],
+        "name": "validator_last_1000_votes_var_pop_fields",
+        "enumValues": null,
+        "description": "aggregate var_pop on columns",
+        "fields": [
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          }
+        ]
+      },
+      {
+        "inputFields": [
+          {
+            "name": "count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "validator_last_1000_votes_var_pop_order_by",
+        "enumValues": null,
+        "description": "order by var_pop() on columns of table \"validator_last_1000_votes\"",
+        "fields": null
+      },
+      {
+        "inputFields": null,
+        "kind": "OBJECT",
+        "possibleTypes": null,
+        "interfaces": [],
+        "name": "validator_last_1000_votes_var_samp_fields",
+        "enumValues": null,
+        "description": "aggregate var_samp on columns",
+        "fields": [
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          }
+        ]
+      },
+      {
+        "inputFields": [
+          {
+            "name": "count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "validator_last_1000_votes_var_samp_order_by",
+        "enumValues": null,
+        "description": "order by var_samp() on columns of table \"validator_last_1000_votes\"",
+        "fields": null
+      },
+      {
+        "inputFields": null,
+        "kind": "OBJECT",
+        "possibleTypes": null,
+        "interfaces": [],
+        "name": "validator_last_1000_votes_variance_fields",
+        "enumValues": null,
+        "description": "aggregate variance on columns",
+        "fields": [
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          }
+        ]
+      },
+      {
+        "inputFields": [
+          {
+            "name": "count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "validator_last_1000_votes_variance_order_by",
+        "enumValues": null,
+        "description": "order by variance() on columns of table \"validator_last_1000_votes\"",
+        "fields": null
+      },
+      {
+        "inputFields": null,
+        "kind": "OBJECT",
+        "possibleTypes": null,
+        "interfaces": [],
+        "name": "validator_last_250_votes",
+        "enumValues": null,
+        "description": "columns and relationships of \"validator_last_250_votes\"",
+        "fields": [
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "consensus_address",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "bigint",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "voted",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "description": null
+          }
+        ]
+      },
+      {
+        "inputFields": null,
+        "kind": "OBJECT",
+        "possibleTypes": null,
+        "interfaces": [],
+        "name": "validator_last_250_votes_aggregate",
+        "enumValues": null,
+        "description": "aggregated selection of \"validator_last_250_votes\"",
+        "fields": [
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "aggregate",
+            "type": {
+              "kind": "OBJECT",
+              "name": "validator_last_250_votes_aggregate_fields",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "nodes",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "validator_last_250_votes",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "description": null
+          }
+        ]
+      },
+      {
+        "inputFields": null,
+        "kind": "OBJECT",
+        "possibleTypes": null,
+        "interfaces": [],
+        "name": "validator_last_250_votes_aggregate_fields",
+        "enumValues": null,
+        "description": "aggregate fields of \"validator_last_250_votes\"",
+        "fields": [
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "avg",
+            "type": {
+              "kind": "OBJECT",
+              "name": "validator_last_250_votes_avg_fields",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [
+              {
+                "name": "columns",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "ENUM",
+                      "name": "validator_last_250_votes_select_column",
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": null
+              },
+              {
+                "name": "distinct",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "max",
+            "type": {
+              "kind": "OBJECT",
+              "name": "validator_last_250_votes_max_fields",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "min",
+            "type": {
+              "kind": "OBJECT",
+              "name": "validator_last_250_votes_min_fields",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "stddev",
+            "type": {
+              "kind": "OBJECT",
+              "name": "validator_last_250_votes_stddev_fields",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "stddev_pop",
+            "type": {
+              "kind": "OBJECT",
+              "name": "validator_last_250_votes_stddev_pop_fields",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "stddev_samp",
+            "type": {
+              "kind": "OBJECT",
+              "name": "validator_last_250_votes_stddev_samp_fields",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "sum",
+            "type": {
+              "kind": "OBJECT",
+              "name": "validator_last_250_votes_sum_fields",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "var_pop",
+            "type": {
+              "kind": "OBJECT",
+              "name": "validator_last_250_votes_var_pop_fields",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "var_samp",
+            "type": {
+              "kind": "OBJECT",
+              "name": "validator_last_250_votes_var_samp_fields",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "variance",
+            "type": {
+              "kind": "OBJECT",
+              "name": "validator_last_250_votes_variance_fields",
+              "ofType": null
+            },
+            "description": null
+          }
+        ]
+      },
+      {
+        "inputFields": [
+          {
+            "name": "avg",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "validator_last_250_votes_avg_order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "max",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "validator_last_250_votes_max_order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "min",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "validator_last_250_votes_min_order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "stddev",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "validator_last_250_votes_stddev_order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "stddev_pop",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "validator_last_250_votes_stddev_pop_order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "stddev_samp",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "validator_last_250_votes_stddev_samp_order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "sum",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "validator_last_250_votes_sum_order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "var_pop",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "validator_last_250_votes_var_pop_order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "var_samp",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "validator_last_250_votes_var_samp_order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "variance",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "validator_last_250_votes_variance_order_by",
+              "ofType": null
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "validator_last_250_votes_aggregate_order_by",
+        "enumValues": null,
+        "description": "order by aggregate values of table \"validator_last_250_votes\"",
+        "fields": null
+      },
+      {
+        "inputFields": null,
+        "kind": "OBJECT",
+        "possibleTypes": null,
+        "interfaces": [],
+        "name": "validator_last_250_votes_avg_fields",
+        "enumValues": null,
+        "description": "aggregate avg on columns",
+        "fields": [
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          }
+        ]
+      },
+      {
+        "inputFields": [
+          {
+            "name": "count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "validator_last_250_votes_avg_order_by",
+        "enumValues": null,
+        "description": "order by avg() on columns of table \"validator_last_250_votes\"",
+        "fields": null
+      },
+      {
+        "inputFields": [
+          {
+            "name": "_and",
+            "defaultValue": null,
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "INPUT_OBJECT",
+                "name": "validator_last_250_votes_bool_exp",
+                "ofType": null
+              }
+            },
+            "description": null
+          },
+          {
+            "name": "_not",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "validator_last_250_votes_bool_exp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "_or",
+            "defaultValue": null,
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "INPUT_OBJECT",
+                "name": "validator_last_250_votes_bool_exp",
+                "ofType": null
+              }
+            },
+            "description": null
+          },
+          {
+            "name": "consensus_address",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "String_comparison_exp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "count",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "bigint_comparison_exp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "voted",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "Boolean_comparison_exp",
+              "ofType": null
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "validator_last_250_votes_bool_exp",
+        "enumValues": null,
+        "description": "Boolean expression to filter rows from the table \"validator_last_250_votes\". All fields are combined with a logical 'AND'.",
+        "fields": null
+      },
+      {
+        "inputFields": null,
+        "kind": "OBJECT",
+        "possibleTypes": null,
+        "interfaces": [],
+        "name": "validator_last_250_votes_max_fields",
+        "enumValues": null,
+        "description": "aggregate max on columns",
+        "fields": [
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "consensus_address",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "bigint",
+              "ofType": null
+            },
+            "description": null
+          }
+        ]
+      },
+      {
+        "inputFields": [
+          {
+            "name": "consensus_address",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "validator_last_250_votes_max_order_by",
+        "enumValues": null,
+        "description": "order by max() on columns of table \"validator_last_250_votes\"",
+        "fields": null
+      },
+      {
+        "inputFields": null,
+        "kind": "OBJECT",
+        "possibleTypes": null,
+        "interfaces": [],
+        "name": "validator_last_250_votes_min_fields",
+        "enumValues": null,
+        "description": "aggregate min on columns",
+        "fields": [
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "consensus_address",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "bigint",
+              "ofType": null
+            },
+            "description": null
+          }
+        ]
+      },
+      {
+        "inputFields": [
+          {
+            "name": "consensus_address",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "validator_last_250_votes_min_order_by",
+        "enumValues": null,
+        "description": "order by min() on columns of table \"validator_last_250_votes\"",
+        "fields": null
+      },
+      {
+        "inputFields": [
+          {
+            "name": "consensus_address",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "voted",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "validator_last_250_votes_order_by",
+        "enumValues": null,
+        "description": "ordering options when selecting data from \"validator_last_250_votes\"",
+        "fields": null
+      },
+      {
+        "inputFields": null,
+        "kind": "ENUM",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "validator_last_250_votes_select_column",
+        "enumValues": [
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "consensus_address",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "count",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "voted",
+            "description": "column name"
+          }
+        ],
+        "description": "select columns of table \"validator_last_250_votes\"",
+        "fields": null
+      },
+      {
+        "inputFields": null,
+        "kind": "OBJECT",
+        "possibleTypes": null,
+        "interfaces": [],
+        "name": "validator_last_250_votes_stddev_fields",
+        "enumValues": null,
+        "description": "aggregate stddev on columns",
+        "fields": [
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          }
+        ]
+      },
+      {
+        "inputFields": [
+          {
+            "name": "count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "validator_last_250_votes_stddev_order_by",
+        "enumValues": null,
+        "description": "order by stddev() on columns of table \"validator_last_250_votes\"",
+        "fields": null
+      },
+      {
+        "inputFields": null,
+        "kind": "OBJECT",
+        "possibleTypes": null,
+        "interfaces": [],
+        "name": "validator_last_250_votes_stddev_pop_fields",
+        "enumValues": null,
+        "description": "aggregate stddev_pop on columns",
+        "fields": [
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          }
+        ]
+      },
+      {
+        "inputFields": [
+          {
+            "name": "count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "validator_last_250_votes_stddev_pop_order_by",
+        "enumValues": null,
+        "description": "order by stddev_pop() on columns of table \"validator_last_250_votes\"",
+        "fields": null
+      },
+      {
+        "inputFields": null,
+        "kind": "OBJECT",
+        "possibleTypes": null,
+        "interfaces": [],
+        "name": "validator_last_250_votes_stddev_samp_fields",
+        "enumValues": null,
+        "description": "aggregate stddev_samp on columns",
+        "fields": [
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          }
+        ]
+      },
+      {
+        "inputFields": [
+          {
+            "name": "count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "validator_last_250_votes_stddev_samp_order_by",
+        "enumValues": null,
+        "description": "order by stddev_samp() on columns of table \"validator_last_250_votes\"",
+        "fields": null
+      },
+      {
+        "inputFields": null,
+        "kind": "OBJECT",
+        "possibleTypes": null,
+        "interfaces": [],
+        "name": "validator_last_250_votes_sum_fields",
+        "enumValues": null,
+        "description": "aggregate sum on columns",
+        "fields": [
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "bigint",
+              "ofType": null
+            },
+            "description": null
+          }
+        ]
+      },
+      {
+        "inputFields": [
+          {
+            "name": "count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "validator_last_250_votes_sum_order_by",
+        "enumValues": null,
+        "description": "order by sum() on columns of table \"validator_last_250_votes\"",
+        "fields": null
+      },
+      {
+        "inputFields": null,
+        "kind": "OBJECT",
+        "possibleTypes": null,
+        "interfaces": [],
+        "name": "validator_last_250_votes_var_pop_fields",
+        "enumValues": null,
+        "description": "aggregate var_pop on columns",
+        "fields": [
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          }
+        ]
+      },
+      {
+        "inputFields": [
+          {
+            "name": "count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "validator_last_250_votes_var_pop_order_by",
+        "enumValues": null,
+        "description": "order by var_pop() on columns of table \"validator_last_250_votes\"",
+        "fields": null
+      },
+      {
+        "inputFields": null,
+        "kind": "OBJECT",
+        "possibleTypes": null,
+        "interfaces": [],
+        "name": "validator_last_250_votes_var_samp_fields",
+        "enumValues": null,
+        "description": "aggregate var_samp on columns",
+        "fields": [
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          }
+        ]
+      },
+      {
+        "inputFields": [
+          {
+            "name": "count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "validator_last_250_votes_var_samp_order_by",
+        "enumValues": null,
+        "description": "order by var_samp() on columns of table \"validator_last_250_votes\"",
+        "fields": null
+      },
+      {
+        "inputFields": null,
+        "kind": "OBJECT",
+        "possibleTypes": null,
+        "interfaces": [],
+        "name": "validator_last_250_votes_variance_fields",
+        "enumValues": null,
+        "description": "aggregate variance on columns",
+        "fields": [
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "count",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          }
+        ]
+      },
+      {
+        "inputFields": [
+          {
+            "name": "count",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "validator_last_250_votes_variance_order_by",
+        "enumValues": null,
+        "description": "order by variance() on columns of table \"validator_last_250_votes\"",
+        "fields": null
+      },
+      {
+        "inputFields": null,
+        "kind": "OBJECT",
+        "possibleTypes": null,
+        "interfaces": [],
         "name": "validator_votes",
         "enumValues": null,
         "description": "columns and relationships of \"validator_votes\"",
@@ -50712,22 +53219,6 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "elected_count",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Int",
-                "ofType": null
-              }
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
             "name": "identity",
             "type": {
               "kind": "NON_NULL",
@@ -50767,22 +53258,6 @@
               "ofType": {
                 "kind": "SCALAR",
                 "name": "String",
-                "ofType": null
-              }
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "missed_count",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Int",
                 "ofType": null
               }
             },
@@ -51362,22 +53837,6 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "voted_count",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Int",
-                "ofType": null
-              }
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
             "name": "website",
             "type": {
               "kind": "NON_NULL",
@@ -51800,43 +54259,7 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "elected_count",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "missed_count",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
             "name": "tokens",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "voted_count",
             "type": {
               "kind": "SCALAR",
               "name": "Float",
@@ -51859,37 +54282,7 @@
             "description": null
           },
           {
-            "name": "elected_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "missed_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
             "name": "tokens",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "voted_count",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -52068,16 +54461,6 @@
             "description": null
           },
           {
-            "name": "elected_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "Int_comparison_exp",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
             "name": "identity",
             "defaultValue": null,
             "type": {
@@ -52103,16 +54486,6 @@
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "String_comparison_exp",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "missed_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "Int_comparison_exp",
               "ofType": null
             },
             "description": null
@@ -52178,16 +54551,6 @@
             "description": null
           },
           {
-            "name": "voted_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "Int_comparison_exp",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
             "name": "website",
             "defaultValue": null,
             "type": {
@@ -52242,41 +54605,11 @@
             "description": null
           },
           {
-            "name": "elected_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "missed_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
             "name": "tokens",
             "defaultValue": null,
             "type": {
               "kind": "SCALAR",
               "name": "bigint",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "voted_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
               "ofType": null
             },
             "description": null
@@ -52413,16 +54746,6 @@
             "description": null
           },
           {
-            "name": "elected_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
             "name": "identity",
             "defaultValue": null,
             "type": {
@@ -52448,16 +54771,6 @@
             "type": {
               "kind": "SCALAR",
               "name": "String",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "missed_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
               "ofType": null
             },
             "description": null
@@ -52518,16 +54831,6 @@
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "validator_votes_arr_rel_insert_input",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "voted_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
               "ofType": null
             },
             "description": null
@@ -52684,18 +54987,6 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "elected_count",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
             "name": "identity",
             "type": {
               "kind": "SCALAR",
@@ -52712,18 +55003,6 @@
             "type": {
               "kind": "SCALAR",
               "name": "String",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "missed_count",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
               "ofType": null
             },
             "description": null
@@ -52760,18 +55039,6 @@
             "type": {
               "kind": "SCALAR",
               "name": "bigint",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "voted_count",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
               "ofType": null
             },
             "description": null
@@ -52893,16 +55160,6 @@
             "description": null
           },
           {
-            "name": "elected_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
             "name": "identity",
             "defaultValue": null,
             "type": {
@@ -52914,16 +55171,6 @@
           },
           {
             "name": "min_self_delegation",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "missed_count",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -52954,16 +55201,6 @@
           },
           {
             "name": "tokens",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "voted_count",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -53124,18 +55361,6 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "elected_count",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
             "name": "identity",
             "type": {
               "kind": "SCALAR",
@@ -53152,18 +55377,6 @@
             "type": {
               "kind": "SCALAR",
               "name": "String",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "missed_count",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
               "ofType": null
             },
             "description": null
@@ -53200,18 +55413,6 @@
             "type": {
               "kind": "SCALAR",
               "name": "bigint",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "voted_count",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
               "ofType": null
             },
             "description": null
@@ -53333,16 +55534,6 @@
             "description": null
           },
           {
-            "name": "elected_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
             "name": "identity",
             "defaultValue": null,
             "type": {
@@ -53354,16 +55545,6 @@
           },
           {
             "name": "min_self_delegation",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "missed_count",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -53394,16 +55575,6 @@
           },
           {
             "name": "tokens",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "voted_count",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -53697,16 +55868,6 @@
             "description": null
           },
           {
-            "name": "elected_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
             "name": "identity",
             "defaultValue": null,
             "type": {
@@ -53728,16 +55889,6 @@
           },
           {
             "name": "min_self_delegation",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "missed_count",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -53802,16 +55953,6 @@
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "validator_votes_aggregate_order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "voted_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
               "ofType": null
             },
             "description": null
@@ -53905,12 +56046,6 @@
           {
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "elected_count",
-            "description": "column name"
-          },
-          {
-            "isDeprecated": false,
-            "deprecationReason": null,
             "name": "identity",
             "description": "column name"
           },
@@ -53929,12 +56064,6 @@
           {
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "missed_count",
-            "description": "column name"
-          },
-          {
-            "isDeprecated": false,
-            "deprecationReason": null,
             "name": "moniker",
             "description": "column name"
           },
@@ -53948,12 +56077,6 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "tokens",
-            "description": "column name"
-          },
-          {
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "voted_count",
             "description": "column name"
           },
           {
@@ -54069,16 +56192,6 @@
             "description": null
           },
           {
-            "name": "elected_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
             "name": "identity",
             "defaultValue": null,
             "type": {
@@ -54109,16 +56222,6 @@
             "description": null
           },
           {
-            "name": "missed_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
             "name": "moniker",
             "defaultValue": null,
             "type": {
@@ -54144,16 +56247,6 @@
             "type": {
               "kind": "SCALAR",
               "name": "bigint",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "voted_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
               "ofType": null
             },
             "description": null
@@ -54202,43 +56295,7 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "elected_count",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "missed_count",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
             "name": "tokens",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "voted_count",
             "type": {
               "kind": "SCALAR",
               "name": "Float",
@@ -54261,37 +56318,7 @@
             "description": null
           },
           {
-            "name": "elected_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "missed_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
             "name": "tokens",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "voted_count",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -54334,43 +56361,7 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "elected_count",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "missed_count",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
             "name": "tokens",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "voted_count",
             "type": {
               "kind": "SCALAR",
               "name": "Float",
@@ -54393,37 +56384,7 @@
             "description": null
           },
           {
-            "name": "elected_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "missed_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
             "name": "tokens",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "voted_count",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -54466,43 +56427,7 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "elected_count",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "missed_count",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
             "name": "tokens",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "voted_count",
             "type": {
               "kind": "SCALAR",
               "name": "Float",
@@ -54525,37 +56450,7 @@
             "description": null
           },
           {
-            "name": "elected_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "missed_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
             "name": "tokens",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "voted_count",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -54598,46 +56493,10 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "elected_count",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "missed_count",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
             "name": "tokens",
             "type": {
               "kind": "SCALAR",
               "name": "bigint",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "voted_count",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Int",
               "ofType": null
             },
             "description": null
@@ -54657,37 +56516,7 @@
             "description": null
           },
           {
-            "name": "elected_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "missed_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
             "name": "tokens",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "voted_count",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -54775,12 +56604,6 @@
           {
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "elected_count",
-            "description": "column name"
-          },
-          {
-            "isDeprecated": false,
-            "deprecationReason": null,
             "name": "identity",
             "description": "column name"
           },
@@ -54799,12 +56622,6 @@
           {
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "missed_count",
-            "description": "column name"
-          },
-          {
-            "isDeprecated": false,
-            "deprecationReason": null,
             "name": "moniker",
             "description": "column name"
           },
@@ -54818,12 +56635,6 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "tokens",
-            "description": "column name"
-          },
-          {
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "voted_count",
             "description": "column name"
           },
           {
@@ -54861,43 +56672,7 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "elected_count",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "missed_count",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
             "name": "tokens",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "voted_count",
             "type": {
               "kind": "SCALAR",
               "name": "Float",
@@ -54920,37 +56695,7 @@
             "description": null
           },
           {
-            "name": "elected_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "missed_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
             "name": "tokens",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "voted_count",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -54993,43 +56738,7 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "elected_count",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "missed_count",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
             "name": "tokens",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "voted_count",
             "type": {
               "kind": "SCALAR",
               "name": "Float",
@@ -55052,37 +56761,7 @@
             "description": null
           },
           {
-            "name": "elected_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "missed_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
             "name": "tokens",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "voted_count",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -55125,43 +56804,7 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "elected_count",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "missed_count",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
             "name": "tokens",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "args": [],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "voted_count",
             "type": {
               "kind": "SCALAR",
               "name": "Float",
@@ -55184,37 +56827,7 @@
             "description": null
           },
           {
-            "name": "elected_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "missed_count",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
             "name": "tokens",
-            "defaultValue": null,
-            "type": {
-              "kind": "ENUM",
-              "name": "order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "voted_count",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",

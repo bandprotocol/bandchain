@@ -5,8 +5,8 @@ module Request = {
     oracleScriptName: string,
     clientID: string,
     calldata: JsBuffer.t,
-    requestedValidatorCount: int,
-    sufficientValidatorCount: int,
+    askCount: int,
+    minCount: int,
   };
 };
 
@@ -88,8 +88,8 @@ module Internal = {
             oracleScriptName: packetDetail |> at(["oracle_script_name"], string),
             clientID: packetDetail |> at(["client_id"], string),
             calldata: packetDetail |> at(["calldata"], string) |> JsBuffer.fromHex,
-            requestedValidatorCount: packetDetail |> at(["ask_count"], int),
-            sufficientValidatorCount: packetDetail |> at(["min_count"], int),
+            askCount: packetDetail |> at(["ask_count"], int),
+            minCount: packetDetail |> at(["min_count"], int),
           },
         )
       | "ORACLE RESPONSE" =>

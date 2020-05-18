@@ -11,6 +11,8 @@ let time = json => {
   json |> Js.Json.decodeNumber |> Belt.Option.getExn |> MomentRe.momentWithTimestampMS;
 };
 
+let bool = json => json |> Js.Json.decodeBoolean |> Belt.Option.getExn;
+
 let hash = json =>
   json |> Js.Json.decodeString |> Belt.Option.getExn |> Js.String.substr(~from=2) |> Hash.fromHex;
 
@@ -33,6 +35,7 @@ let coins = str =>
 
 let addressExn = jsonOpt => jsonOpt |> Belt_Option.getExn |> Address.fromBech32;
 
+// TODO: remove 1e6.
 let numberExn = jsonOpt =>
   (jsonOpt |> Belt_Option.flatMap(_, Js.Json.decodeNumber) |> Belt.Option.getExn) /. 1_000_000.;
 

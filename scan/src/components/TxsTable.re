@@ -105,7 +105,6 @@ let make = (~txs: array(TxSub.t)) => {
                    spacing={Text.Em(0.02)}
                    value={gasFee->Coin.getBandAmountFromCoins->Format.fPretty}
                    weight=Text.Medium
-                   ellipsis=true
                  />
                  <HSpacing size={`px(20)} />
                </div>
@@ -117,7 +116,7 @@ let make = (~txs: array(TxSub.t)) => {
                   ->Belt_Array.mapWithIndex((i, msg) =>
                       <React.Fragment key={(txHash |> Hash.toHex) ++ (i |> string_of_int)}>
                         <VSpacing size=Spacing.sm />
-                        <Msg msg width=460 />
+                        <Msg msg width=450 />
                         <VSpacing size=Spacing.sm />
                       </React.Fragment>
                     )
