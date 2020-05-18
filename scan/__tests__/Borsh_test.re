@@ -250,7 +250,7 @@ describe("should be able to generate go code correctly", () => {
       Some(
         {j|package main
 
-import "github.com/bandchain/chain/borsh"
+import "github.com/bandchain/chain/pkg/borsh"
 
 type Result struct {
 	Symbol string
@@ -299,7 +299,7 @@ func DecodeResult(data []byte) (Result, error) {
       Some(
         {j|package test
 
-import "github.com/bandchain/chain/borsh"
+import "github.com/bandchain/chain/pkg/borsh"
 
 type Result struct {
 	Px uint64
@@ -359,7 +359,7 @@ describe("should be able to generate encode go code correctly", () => {
       Some(
         {j|package main
 
-import "github.com/bandchain/chain/borsh"
+import "github.com/bandchain/chain/pkg/borsh"
 
 type Result struct {
 	Symbol string
@@ -391,7 +391,7 @@ func(result *Result) EncodeResult() []byte {
       Some(
         {j|package test
 
-import "github.com/bandchain/chain/borsh"
+import "github.com/bandchain/chain/pkg/borsh"
 
 type Result struct {
 	Px uint64

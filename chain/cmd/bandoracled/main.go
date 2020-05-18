@@ -17,7 +17,7 @@ import (
 
 	"github.com/bandprotocol/bandchain/chain/app"
 	"github.com/bandprotocol/bandchain/chain/bandlib"
-	"github.com/bandprotocol/bandchain/chain/byteexec"
+	"github.com/bandprotocol/bandchain/chain/pkg/byteexec"
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 )
 

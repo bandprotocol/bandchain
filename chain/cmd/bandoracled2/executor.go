@@ -3,7 +3,7 @@ package main
 import (
 	"time"
 
-	"github.com/bandprotocol/bandchain/chain/byteexec"
+	"github.com/bandprotocol/bandchain/chain/pkg/byteexec"
 )
 
 type executor interface {
