@@ -12,7 +12,7 @@ module Styles = {
   let separatorLine =
     style([
       width(`px(1)),
-      height(`px(200)),
+      height(`px(275)),
       backgroundColor(Colors.gray7),
       marginLeft(`px(20)),
       opacity(0.3),
@@ -34,14 +34,14 @@ module Styles = {
       flexDirection(`column),
       justifyContent(`spaceBetween),
       alignItems(`flexEnd),
-      height(`px(190)),
+      height(`px(200)),
       padding2(~v=`px(12), ~h=`zero),
     ]);
 
   let totalBalance = style([display(`flex), flexDirection(`column), alignItems(`flexEnd)]);
 };
 
-let balanceDetail = (title, amount, amountUsd, color) => {
+let balanceDetail = (title, amount, usdPrice, color) => {
   <Row alignItems=Css.flexStart>
     <Col size=0.25> <div className={Styles.ovalIcon(color)} /> </Col>
     <Col size=1.2>
@@ -51,7 +51,7 @@ let balanceDetail = (title, amount, amountUsd, color) => {
       <div className=Styles.cFlex>
         <div className=Styles.rFlex>
           <Text
-            value=amount
+            value={amount |> Format.fPretty}
             size=Text.Lg
             weight=Text.Semibold
             spacing={Text.Em(0.02)}
@@ -71,7 +71,7 @@ let balanceDetail = (title, amount, amountUsd, color) => {
         <VSpacing size=Spacing.xs />
         <div className={Css.merge([Styles.rFlex, Styles.balance])}>
           <Text
-            value=amountUsd
+            value={amount *. usdPrice |> Format.fPretty}
             size=Text.Sm
             spacing={Text.Em(0.02)}
             weight=Text.Thin
@@ -118,14 +118,21 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
     let accountSub = AccountSub.get(address);
     let infoSub = React.useContext(GlobalContext.context);
     let balanceAtStakeSub = DelegationSub.getTotalStakeByDelegator(address);
+    let unbondingSub = UnbondingSub.getUnbondingBalance(address);
 
     let%Sub info = infoSub;
     let%Sub account = accountSub;
     let%Sub balanceAtStake = balanceAtStakeSub;
+    let%Sub unbonding = unbondingSub;
 
     let availableBalance = account.balance->Coin.getBandAmountFromCoins;
     let usdPrice = info.financial.usdPrice;
-    let totalBalance = availableBalance +. balanceAtStake.amount +. balanceAtStake.reward;
+
+    let balanceAtStakeAmount = balanceAtStake.amount->Coin.getBandAmountFromCoin;
+    let rewardAmount = balanceAtStake.reward->Coin.getBandAmountFromCoin;
+    let unbondingAmount = unbonding->Coin.getBandAmountFromCoin;
+
+    let totalBalance = availableBalance +. balanceAtStakeAmount +. rewardAmount +. unbondingAmount;
 
     <>
       <Row justify=Row.Between>
@@ -156,34 +163,28 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
           <PieChart
             size=187
             availableBalance
-            balanceAtStake={balanceAtStake.amount}
-            reward={balanceAtStake.reward}
+            balanceAtStake=balanceAtStakeAmount
+            reward=rewardAmount
+            unbonding=unbondingAmount
           />
         </Col>
         <Col size=1.>
           <VSpacing size=Spacing.md />
-          {balanceDetail(
-             "AVAILABLE BALANCE",
-             availableBalance |> Format.fPretty,
-             availableBalance *. usdPrice |> Format.fPretty,
-             Colors.bandBlue,
-           )}
-          <VSpacing size=Spacing.xl />
+          {balanceDetail("AVAILABLE BALANCE", availableBalance, usdPrice, Colors.bandBlue)}
+          <VSpacing size=Spacing.lg />
           <VSpacing size=Spacing.md />
           {balanceDetail(
              "BALANCE AT STAKE",
-             balanceAtStake.amount |> Format.fPretty,
-             balanceAtStake.amount *. usdPrice |> Format.fPretty,
+             balanceAtStakeAmount,
+             usdPrice,
              Colors.chartBalanceAtStake,
            )}
-          <VSpacing size=Spacing.xl />
+          <VSpacing size=Spacing.lg />
           <VSpacing size=Spacing.md />
-          {balanceDetail(
-             "REWARD",
-             balanceAtStake.reward |> Format.fPretty,
-             balanceAtStake.reward *. usdPrice |> Format.fPretty,
-             Colors.chartReward,
-           )}
+          {balanceDetail("UNBONDING AMOUNT", unbondingAmount, usdPrice, Colors.blue4)}
+          <VSpacing size=Spacing.lg />
+          <VSpacing size=Spacing.md />
+          {balanceDetail("REWARD", rewardAmount, usdPrice, Colors.chartReward)}
         </Col>
         <div className=Styles.separatorLine />
         <Col size=1. alignSelf=Col.Start>

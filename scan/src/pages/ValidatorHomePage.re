@@ -128,7 +128,7 @@ let renderBody =
              | Data({tokens, votingPower}) =>
                <div>
                  <Text
-                   value={tokens |> Format.fPretty}
+                   value={tokens |> Coin.getBandAmountFromCoin |> Format.fPretty}
                    color=Colors.gray7
                    code=true
                    weight=Text.Regular
@@ -353,7 +353,7 @@ let make = () => {
              <InfoHL
                info={
                  InfoHL.Fraction(
-                   bondedTokenCount |> int_of_float,
+                   bondedTokenCount |> Coin.getBandAmountFromCoin |> int_of_float,
                    metadata.totalSupply->Coin.getBandAmountFromCoins |> int_of_float,
                    true,
                  )
@@ -437,7 +437,11 @@ let make = () => {
          {validators->Belt_Array.size > 0
             ? validators
               ->Belt_Array.mapWithIndex((i, e) =>
-                  renderBody(i + 1 + (page - 1) * pageSize, Sub.resolve(e), bondedTokenCount)
+                  renderBody(
+                    i + 1 + (page - 1) * pageSize,
+                    Sub.resolve(e),
+                    bondedTokenCount.amount,
+                  )
                 )
               ->React.array
             : <div className=Styles.emptyContainer>

@@ -12,7 +12,7 @@ type internal_t = {
   moniker: string,
   identity: string,
   website: string,
-  tokens: float,
+  tokens: Coin.t,
   commissionRate: float,
   consensusPubKey: PubKey.t,
   bondedHeight: int,
@@ -31,7 +31,7 @@ type t = {
   identity: string,
   website: string,
   details: string,
-  tokens: float,
+  tokens: Coin.t,
   commission: float,
   bondedHeight: int,
   completedRequestCount: int,
@@ -59,7 +59,7 @@ let toExternal =
   operatorAddress,
   consensusAddress,
   consensusPubKey,
-  votingPower: tokens,
+  votingPower: tokens.amount,
   moniker,
   identity,
   website,
@@ -89,7 +89,7 @@ module SingleConfig = [%graphql
           moniker
           identity
           website
-          tokens @bsDecoder(fn: "GraphQLParser.floatWithMillionDivision")
+          tokens @bsDecoder(fn: "GraphQLParser.coin")
           commissionRate: commission_rate @bsDecoder(fn: "float_of_string")
           consensusPubKey: consensus_pubkey @bsDecoder(fn: "PubKey.fromBech32")
           bondedHeight: bonded_height @bsDecoder(fn: "GraphQLParser.int64")
@@ -109,7 +109,7 @@ module MultiConfig = [%graphql
           moniker
           identity
           website
-          tokens @bsDecoder(fn: "GraphQLParser.floatWithMillionDivision")
+          tokens @bsDecoder(fn: "GraphQLParser.coin")
           commissionRate: commission_rate @bsDecoder(fn: "float_of_string")
           consensusPubKey: consensus_pubkey @bsDecoder(fn: "PubKey.fromBech32")
           bondedHeight: bonded_height @bsDecoder(fn: "GraphQLParser.int64")
@@ -126,7 +126,7 @@ module TotalBondedAmountConfig = [%graphql
     validators_aggregate{
       aggregate{
         sum{
-          tokens @bsDecoder(fn: "GraphQLParser.numberWithDefault")
+          tokens @bsDecoder(fn: "GraphQLParser.coinWithDefault")
         }
       }
     }
