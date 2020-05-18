@@ -110,7 +110,7 @@ func TestAddPendingResolveList(t *testing.T) {
 func TestGetAllRequests(t *testing.T) {
 	_, ctx, k := createTestInput()
 
-	// Set request to the storage.
+	// Set requests to the storage.
 	requests := []types.Request{
 		types.NewRequest(1, BasicCalldata, nil, 1, 1, 1, "", nil),
 		types.NewRequest(2, BasicCalldata, nil, 1, 1, 1, "", nil),
