@@ -143,7 +143,10 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
         {kvRow(
            "VOTING POWER",
            VCode(
-             (bondedTokenCount > 0. ? validator.votingPower *. 100. /. bondedTokenCount : 0.)
+             (
+               bondedTokenCount.amount > 0.
+                 ? validator.votingPower *. 100. /. bondedTokenCount.amount : 0.
+             )
              ->Format.fPretty
              ++ "% ("
              ++ validator.votingPower->Format.fPretty

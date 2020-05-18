@@ -41,7 +41,7 @@ module Styles = {
   let totalBalance = style([display(`flex), flexDirection(`column), alignItems(`flexEnd)]);
 };
 
-let balanceDetail = (title, amount, amountUsd, color) => {
+let balanceDetail = (title, amount, usdPrice, color) => {
   <Row alignItems=Css.flexStart>
     <Col size=0.25> <div className={Styles.ovalIcon(color)} /> </Col>
     <Col size=1.2>
@@ -51,7 +51,7 @@ let balanceDetail = (title, amount, amountUsd, color) => {
       <div className=Styles.cFlex>
         <div className=Styles.rFlex>
           <Text
-            value=amount
+            value={amount |> Format.fPretty}
             size=Text.Lg
             weight=Text.Semibold
             spacing={Text.Em(0.02)}
@@ -71,7 +71,7 @@ let balanceDetail = (title, amount, amountUsd, color) => {
         <VSpacing size=Spacing.xs />
         <div className={Css.merge([Styles.rFlex, Styles.balance])}>
           <Text
-            value=amountUsd
+            value={amount *. usdPrice |> Format.fPretty}
             size=Text.Sm
             spacing={Text.Em(0.02)}
             weight=Text.Thin
@@ -127,10 +127,8 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
     let usdPrice = info.financial.usdPrice;
     let totalBalance =
       availableBalance
-      +. balanceAtStake.amount
-      /. 1_000_000.
-      +. balanceAtStake.reward
-      /. 1_000_000.;
+      +. balanceAtStake.amount->Coin.getBandAmountFromCoin
+      +. balanceAtStake.reward->Coin.getBandAmountFromCoin;
 
     <>
       <Row justify=Row.Between>
@@ -161,32 +159,27 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
           <PieChart
             size=187
             availableBalance
-            balanceAtStake={balanceAtStake.amount /. 1_000_000.}
-            reward={balanceAtStake.reward /. 1_000_000.}
+            balanceAtStake={balanceAtStake.amount->Coin.getBandAmountFromCoin}
+            reward={balanceAtStake.reward->Coin.getBandAmountFromCoin}
           />
         </Col>
         <Col size=1.>
           <VSpacing size=Spacing.md />
-          {balanceDetail(
-             "AVAILABLE BALANCE",
-             availableBalance |> Format.fPretty,
-             availableBalance *. usdPrice |> Format.fPretty,
-             Colors.bandBlue,
-           )}
+          {balanceDetail("AVAILABLE BALANCE", availableBalance, usdPrice, Colors.bandBlue)}
           <VSpacing size=Spacing.xl />
           <VSpacing size=Spacing.md />
           {balanceDetail(
              "BALANCE AT STAKE",
-             balanceAtStake.amount /. 1_000_000. |> Format.fPretty,
-             balanceAtStake.amount /. 1_000_000. *. usdPrice |> Format.fPretty,
+             balanceAtStake.amount->Coin.getBandAmountFromCoin,
+             usdPrice,
              Colors.chartBalanceAtStake,
            )}
           <VSpacing size=Spacing.xl />
           <VSpacing size=Spacing.md />
           {balanceDetail(
              "REWARD",
-             balanceAtStake.reward /. 1_000_000. |> Format.fPretty,
-             balanceAtStake.reward /. 1_000_000. *. usdPrice |> Format.fPretty,
+             balanceAtStake.reward->Coin.getBandAmountFromCoin,
+             usdPrice,
              Colors.chartReward,
            )}
         </Col>

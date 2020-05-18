@@ -110,7 +110,7 @@ let make = (~address) =>
                           <div className=Styles.fillLeft />
                           <Text
                             block=true
-                            value={amount |> Format.fPretty}
+                            value={amount |> Coin.getBandAmountFromCoin |> Format.fPretty}
                             size=Text.Md
                             weight=Text.Regular
                             color=Colors.gray7

@@ -83,12 +83,18 @@ let make = (~address) =>
                  </Col>
                  <Col size=0.6>
                    <div className=Styles.alignRight>
-                     <Text value={delegation.amount /. 1_000_000. |> Format.fPretty} code=true />
+                     <Text
+                       value={delegation.amount |> Coin.getBandAmountFromCoin |> Format.fPretty}
+                       code=true
+                     />
                    </div>
                  </Col>
                  <Col size=0.6>
                    <div className=Styles.alignRight>
-                     <Text value={delegation.reward /. 1_000_000. |> Format.fPretty} code=true />
+                     <Text
+                       value={delegation.reward |> Coin.getBandAmountFromCoin |> Format.fPretty}
+                       code=true
+                     />
                    </div>
                  </Col>
                  <Col> <HSpacing size=Spacing.lg /> </Col>
