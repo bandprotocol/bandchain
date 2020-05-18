@@ -3,7 +3,10 @@ module Styles = {
 
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
-  let logo = style([width(`px(50)), marginRight(`px(10))]);
+  let header =
+    style([display(`flex), flexDirection(`row), alignItems(`center), height(`px(50))]);
+
+  let logo = style([minWidth(`px(50)), marginRight(`px(10))]);
 
   let seperatedLine =
     style([
@@ -20,40 +23,51 @@ let make = () => {
   let (page, setPage) = React.useState(_ => 1);
   let pageSize = 10;
 
-  {
-    let txsSub = TxSub.getList(~pageSize, ~page, ());
-    let numTotalTxsSub = TxSub.count();
+  let txsSub = TxSub.getList(~pageSize, ~page, ());
+  let txsCountSub = TxSub.count();
 
-    let%Sub txs = txsSub;
-    let%Sub numTotalTxs = numTotalTxsSub;
-
-    // TODO: add loading state later.
-    let pageCount = Page.getPageCount(numTotalTxs, pageSize);
-
-    <>
-      <Row>
-        <Col> <img src=Images.txLogo className=Styles.logo /> </Col>
-        <Col>
-          <div className=Styles.vFlex>
-            <Text
-              value="ALL TRANSACTIONS"
-              weight=Text.Semibold
-              color=Colors.gray7
-              nowrap=true
-              spacing={Text.Em(0.06)}
-            />
-            <div className=Styles.seperatedLine />
-            <Text value={(numTotalTxs |> Format.iPretty) ++ " in total"} />
-          </div>
-        </Col>
-      </Row>
-      <VSpacing size=Spacing.xl />
-      <TxsTable txs />
-      <VSpacing size=Spacing.lg />
-      <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
-      <VSpacing size=Spacing.lg />
-    </>
-    |> Sub.resolve;
-  }
-  |> Sub.default(_, React.null);
+  <>
+    <Row>
+      <div className=Styles.header>
+        <img src=Images.txLogo className=Styles.logo />
+        <Text
+          value="ALL TRANSACTIONS"
+          weight=Text.Medium
+          size=Text.Md
+          spacing={Text.Em(0.06)}
+          height={Text.Px(15)}
+          nowrap=true
+          block=true
+          color=Colors.gray7
+        />
+        {switch (txsCountSub) {
+         | Data(txsCount) =>
+           <>
+             <div className=Styles.seperatedLine />
+             <Text
+               value={txsCount->Format.iPretty ++ " in total"}
+               size=Text.Md
+               weight=Text.Thin
+               spacing={Text.Em(0.06)}
+               color=Colors.gray7
+               nowrap=true
+             />
+           </>
+         | _ => React.null
+         }}
+      </div>
+    </Row>
+    <VSpacing size=Spacing.xl />
+    <TxsTable txsSub />
+    {switch (txsCountSub) {
+     | Data(txsCount) =>
+       let pageCount = Page.getPageCount(txsCount, pageSize);
+       <>
+         <VSpacing size=Spacing.lg />
+         <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
+         <VSpacing size=Spacing.lg />
+       </>;
+     | _ => React.null
+     }}
+  </>;
 };
