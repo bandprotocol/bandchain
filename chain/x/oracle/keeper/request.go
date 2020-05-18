@@ -113,7 +113,7 @@ func (k Keeper) ResolveRequest(
 		types.EventTypeRequestExecute,
 		sdk.NewAttribute(types.AttributeKeyClientID, req.ClientID),
 		sdk.NewAttribute(types.AttributeKeyOracleScriptID, fmt.Sprintf("%d", req.OracleScriptID)),
-		sdk.NewAttribute(types.AttributeKeyCalldata, hex.EncodeToString(req.Calldata)),
+		sdk.NewAttribute(types.AttributeKeyCalldata, string(req.Calldata)),
 		sdk.NewAttribute(types.AttributeKeyAskCount, fmt.Sprintf("%d", req.AskCount)),
 		sdk.NewAttribute(types.AttributeKeyMinCount, fmt.Sprintf("%d", req.MinCount)),
 		sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", res.RequestID)),
@@ -121,7 +121,7 @@ func (k Keeper) ResolveRequest(
 		sdk.NewAttribute(types.AttributeKeyAnsCount, fmt.Sprintf("%d", res.AnsCount)),
 		sdk.NewAttribute(types.AttributeKeyRequestTime, fmt.Sprintf("%d", request.RequestTime)),
 		sdk.NewAttribute(types.AttributeKeyResolveTime, fmt.Sprintf("%d", res.ResolveTime)),
-		sdk.NewAttribute(types.AttributeKeyResult, hex.EncodeToString(res.Result)),
+		sdk.NewAttribute(types.AttributeKeyResult, string(res.Result)),
 		sdk.NewAttribute(types.AttributeKeyResultHash, hex.EncodeToString(resultHash)),
 	))
 	return res
