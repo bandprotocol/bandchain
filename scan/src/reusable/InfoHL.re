@@ -14,22 +14,19 @@ type t =
   | Fraction(int, int, bool)
   | FloatWithSuffix(float, string, int)
   | ValidatorsMini(array(ValidatorSub.Mini.t))
-  | Validators(array(ValidatorSub.t));
+  | Validators(array(ValidatorSub.t))
+  | Loading(int);
 
 module Styles = {
   open Css;
 
-  let hFlex = isLeft =>
-    style([
-      display(`flex),
-      flexDirection(`column),
-      alignItems(isLeft ? `flexStart : `flexEnd),
-    ]);
+  let mainContainer =
+    style([display(`flex), flexDirection(`column), alignItems(`flexStart), minWidth(`zero)]);
   let vFlex = style([display(`flex), alignItems(`center)]);
   let addressContainer = maxwidth_ => style([alignItems(`center), maxWidth(`px(maxwidth_))]);
   let datasourcesContainer = style([display(`flex), alignItems(`center), flexWrap(`wrap)]);
+  let oracleScriptContainer = style([display(`flex), width(`px(240))]);
   let validatorsContainer = style([display(`flex), flexDirection(`column), flexWrap(`wrap)]);
-  let headerContainer = style([lineHeight(`px(25))]);
   let sourceContainer =
     style([
       display(`inlineFlex),
@@ -44,17 +41,15 @@ module Styles = {
 [@react.component]
 let make = (~info, ~header, ~isLeft=true) => {
   let infoSub = React.useContext(GlobalContext.context);
-  <div className={Styles.hFlex(isLeft)}>
-    <div className=Styles.headerContainer>
-      <Text
-        value=header
-        color=Colors.gray7
-        size=Text.Sm
-        weight=Text.Thin
-        height={Text.Px(13)}
-        spacing={Text.Em(0.03)}
-      />
-    </div>
+  <div className=Styles.mainContainer>
+    <Text
+      value=header
+      color=Colors.gray7
+      size=Text.Sm
+      weight=Text.Thin
+      height={Text.Px(18)}
+      spacing={Text.Em(0.03)}
+    />
     {switch (info) {
      | Height(height) =>
        <div className=Styles.vFlex> <TypeID.Block id=height position=TypeID.Subtitle /> </div>
@@ -83,7 +78,15 @@ let make = (~info, ~header, ~isLeft=true) => {
          code=true
        />
      | Text(text) =>
-       <Text value=text size=Text.Lg weight=Text.Semibold code=true spacing={Text.Em(0.02)} />
+       <Text
+         value=text
+         size=Text.Lg
+         weight=Text.Semibold
+         code=true
+         spacing={Text.Em(0.02)}
+         nowrap=true
+         ellipsis=true
+       />
      | Description(text) =>
        <Text value=text size=Text.Lg weight=Text.Thin spacing={Text.Em(0.)} />
      | Timestamp(time) =>
@@ -148,10 +151,18 @@ let make = (~info, ~header, ~isLeft=true) => {
          </div>
        }
      | OracleScript(id, name) =>
-       <div className=Styles.datasourcesContainer>
+       <div className=Styles.oracleScriptContainer>
          <TypeID.OracleScript id position=TypeID.Subtitle />
          <HSpacing size=Spacing.sm />
-         <Text value=name size=Text.Lg weight=Text.Regular spacing={Text.Em(0.02)} code=true />
+         <Text
+           value=name
+           size=Text.Lg
+           weight=Text.Regular
+           spacing={Text.Em(0.02)}
+           code=true
+           nowrap=true
+           ellipsis=true
+         />
        </div>
      | TxHash(txHash, width) => <TxLink txHash width size=Text.Lg />
      | Hash(hash, textColor) =>
@@ -206,6 +217,7 @@ let make = (~info, ~header, ~isLeft=true) => {
             )
           ->React.array}
        </div>
+     | Loading(width) => <LoadingCensorBar width height=15 />
      }}
   </div>;
 };

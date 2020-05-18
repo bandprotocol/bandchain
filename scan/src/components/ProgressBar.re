@@ -34,7 +34,7 @@ module Styles = {
       flexDirection(`column),
       position(`absolute),
       width(`px(w)),
-      top(`px(-18)),
+      top(`px(-22)),
       left(`calc((`sub, `percent(p), `px(w / 2)))),
       alignItems(`center),
     ]);

@@ -1,7 +1,7 @@
 module Styles = {
   open Css;
 
-  let main = (w, h, r, colorBase, colorLighter) =>
+  let main = (~w, ~h, ~r, ~colorBase, ~colorLighter, ()) =>
     style([
       display(`flex),
       width(`px(w)),
@@ -40,10 +40,24 @@ module Styles = {
         ),
       ]),
     ]);
+
+  let alignRight = style([marginLeft(`auto)]);
 };
 
 [@react.component]
 let make =
-    (~width, ~height, ~radius=4, ~colorBase=Colors.blueGray2, ~colorLighter=Colors.blueGray1) => {
-  <div className={Styles.main(width, height, radius, colorBase, colorLighter)} />;
+    (
+      ~width,
+      ~height,
+      ~radius=4,
+      ~colorBase=Colors.blueGray2,
+      ~colorLighter=Colors.blueGray1,
+      ~isRight=false,
+    ) => {
+  <div
+    className={Css.merge([
+      Styles.main(~w=width, ~h=height, ~r=radius, ~colorBase, ~colorLighter, ()),
+      isRight ? Styles.alignRight : "",
+    ])}
+  />;
 };

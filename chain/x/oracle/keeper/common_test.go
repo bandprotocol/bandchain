@@ -8,7 +8,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authexported "github.com/cosmos/cosmos-sdk/x/auth/exported"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/cosmos/cosmos-sdk/x/genutil"
+	"github.com/cosmos/cosmos-sdk/x/staking"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
@@ -27,32 +30,38 @@ type account struct {
 }
 
 var (
-	Owner account
-	Alice account
-	Bob   account
-	Carol account
+	Owner      account
+	Alice      account
+	Bob        account
+	Carol      account
+	Validator1 account
+	Validator2 account
 )
 
 var (
-	BasicName          = "BASIC_NAME"
-	BasicDesc          = "BASIC_DESCRIPTION"
-	BasicCode          = []byte("BASIC_WASM_CODE")
-	BasicSchema        = "BASIC_SCHEMA"
-	BasicSourceCodeURL = "BASIC_SOURCE_CODE_URL"
-	BasicExec          = []byte("BASIC_EXECUTABLE")
-	BasicCalldata      = []byte("BASIC_CALLDATA")
-	CoinsZero          = sdk.NewCoins()
-	Coins10uband       = sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
-	Coins20uband       = sdk.NewCoins(sdk.NewInt64Coin("uband", 20))
-	Coins1000000uband  = sdk.NewCoins(sdk.NewInt64Coin("uband", 1000000))
+	BasicName           = "BASIC_NAME"
+	BasicDesc           = "BASIC_DESCRIPTION"
+	BasicCode           = []byte("BASIC_WASM_CODE")
+	BasicSchema         = "BASIC_SCHEMA"
+	BasicSourceCodeURL  = "BASIC_SOURCE_CODE_URL"
+	BasicExec           = []byte("BASIC_EXECUTABLE")
+	BasicCalldata       = []byte("BASIC_CALLDATA")
+	CoinsZero           = sdk.NewCoins()
+	Coins10uband        = sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
+	Coins20uband        = sdk.NewCoins(sdk.NewInt64Coin("uband", 20))
+	Coins1000000uband   = sdk.NewCoins(sdk.NewInt64Coin("uband", 1000000))
+	Coins100000000uband = sdk.NewCoins(sdk.NewInt64Coin("uband", 100000000))
 )
 
 func init() {
+	bandapp.SetBech32AddressPrefixesAndBip44CoinType(sdk.GetConfig())
 	r := rand.New(rand.NewSource(time.Now().Unix()))
 	Owner = createArbitraryAccount(r)
 	Alice = createArbitraryAccount(r)
 	Bob = createArbitraryAccount(r)
 	Carol = createArbitraryAccount(r)
+	Validator1 = createArbitraryAccount(r)
+	Validator2 = createArbitraryAccount(r)
 }
 
 func createArbitraryAccount(r *rand.Rand) account {
@@ -67,6 +76,33 @@ func createArbitraryAccount(r *rand.Rand) account {
 	}
 }
 
+func createValidatorTx(acc account, moniker string) authtypes.StdTx {
+	msg := staking.NewMsgCreateValidator(
+		acc.ValAddress, acc.PubKey, Coins100000000uband[0],
+		staking.NewDescription(moniker, "", "", "", ""),
+		staking.NewCommissionRates(sdk.MustNewDecFromStr("0.125"), sdk.MustNewDecFromStr("0.3"), sdk.MustNewDecFromStr("0.01")),
+		sdk.NewInt(1),
+	)
+	txMsg := authtypes.StdSignMsg{
+		ChainID:       "bandchain",
+		AccountNumber: 0,
+		Sequence:      0,
+		Fee:           auth.NewStdFee(200000, sdk.Coins{}),
+		Msgs:          []sdk.Msg{msg},
+		Memo:          "",
+	}
+	sigBytes, err := acc.PrivKey.Sign(txMsg.Bytes())
+	if err != nil {
+		panic(err)
+	}
+
+	sigs := []authtypes.StdSignature{{
+		PubKey:    acc.PubKey.Bytes(),
+		Signature: sigBytes,
+	}}
+	return authtypes.NewStdTx([]sdk.Msg{msg}, auth.NewStdFee(200000, sdk.Coins{}), sigs, "")
+}
+
 func createTestInput() (*bandapp.BandApp, sdk.Context, me.Keeper) {
 	db := dbm.NewMemDB()
 	app := bandapp.NewBandApp(log.NewNopLogger(), db, nil, true, 0, map[int64]bool{}, "")
@@ -77,6 +113,8 @@ func createTestInput() (*bandapp.BandApp, sdk.Context, me.Keeper) {
 		&auth.BaseAccount{Address: Alice.Address},
 		&auth.BaseAccount{Address: Bob.Address},
 		&auth.BaseAccount{Address: Carol.Address},
+		&auth.BaseAccount{Address: Validator1.Address},
+		&auth.BaseAccount{Address: Validator2.Address},
 	})
 	genesis[auth.ModuleName] = app.Codec().MustMarshalJSON(authGenesis)
 	bankGenesis := bank.NewGenesisState(bank.DefaultGenesisState().SendEnabled, []bank.Balance{
@@ -96,10 +134,24 @@ func createTestInput() (*bandapp.BandApp, sdk.Context, me.Keeper) {
 			Address: Carol.Address,
 			Coins:   Coins1000000uband,
 		},
-	}, sdk.NewCoins(sdk.NewInt64Coin("uband", 4000000)))
+		{
+			Address: Validator1.Address,
+			Coins:   Coins100000000uband,
+		},
+		{
+			Address: Validator2.Address,
+			Coins:   Coins100000000uband,
+		},
+	}, sdk.NewCoins(sdk.NewInt64Coin("uband", 204000000)))
 	genesis[bank.ModuleName] = app.Codec().MustMarshalJSON(bankGenesis)
+	genutilGenesis := genutil.NewGenesisStateFromStdTx([]authtypes.StdTx{
+		createValidatorTx(Validator1, "validator1"),
+		createValidatorTx(Validator2, "validator2"),
+	})
+	genesis[genutil.ModuleName] = app.Codec().MustMarshalJSON(genutilGenesis)
 	// Initialize the sim blockchain. We are ready for testing!
 	app.InitChain(abci.RequestInitChain{
+		ChainId:       "bandchain",
 		Validators:    []abci.ValidatorUpdate{},
 		AppStateBytes: codec.MustMarshalJSONIndent(app.Codec(), genesis),
 	})

@@ -3,6 +3,13 @@ module Styles = {
 
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
+  let header =
+    style([display(`flex), flexDirection(`row), alignItems(`center), height(`px(50))]);
+
+  let blockHash = style([height(`px(18)), display(`flex), alignItems(`center)]);
+
+  let blockLogo = style([minWidth(`px(50)), marginRight(`px(10))]);
+
   let seperatedLine =
     style([
       width(`px(13)),
@@ -12,22 +19,7 @@ module Styles = {
       backgroundColor(Colors.gray7),
     ]);
 
-  let addressContainer = style([marginTop(`px(15))]);
-
-  let checkLogo = style([marginRight(`px(10))]);
-  let blockLogo = style([width(`px(50)), marginRight(`px(10))]);
-  let noTransactionLogo = style([width(`px(160))]);
-  let emptyContainer =
-    style([
-      height(`px(300)),
-      display(`flex),
-      justifyContent(`center),
-      alignItems(`center),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, 0.05))),
-      backgroundColor(white),
-    ]);
-  let proposerContainer = style([maxWidth(`px(180))]);
-
+      let proposerContainer = style([width(`px(300))]);
 };
 
 [@react.component]
@@ -35,79 +27,82 @@ let make = (~height) => {
   let (page, setPage) = React.useState(_ => 1);
   let pageSize = 10;
 
-  {
-    let blockSub = BlockSub.get(height);
-    let txsSub = TxSub.getListByBlockHeight(height, ~pageSize, ~page, ());
+  let blockSub = BlockSub.get(height);
+  let txsSub = TxSub.getListByBlockHeight(height, ~pageSize, ~page, ());
 
-    let%Sub block = blockSub;
-    let%Sub txs = txsSub;
-
-    let pageCount = Page.getPageCount(block.txn, pageSize);
-
-    <>
-      <Row justify=Row.Between>
-        <Col>
-          <div className=Styles.vFlex>
-            <img src=Images.blockLogo className=Styles.blockLogo />
-            <Text
-              value="BLOCK"
-              weight=Text.Medium
-              size=Text.Md
-              nowrap=true
-              color=Colors.gray7
-              block=true
-              spacing={Text.Em(0.06)}
-            />
-            <div className=Styles.seperatedLine />
-            <Text value={height |> ID.Block.toString} weight=Text.Thin spacing={Text.Em(0.06)} />
-          </div>
-        </Col>
-      </Row>
-      <VSpacing size=Spacing.lg />
-      <div className=Styles.vFlex> <HSpacing size=Spacing.xs /> </div>
-      <Text
-        value={block.hash |> Hash.toHex(~upper=true)}
-        size=Text.Xxl
-        weight=Text.Semibold
-        code=true
-        nowrap=true
-        ellipsis=true
-      />
-      <VSpacing size=Spacing.lg />
-      <Row>
-        <Col size=1.8> <InfoHL info={InfoHL.Count(block.txn)} header="TRANSACTIONS" /> </Col>
-        <Col size=4.6>
-          <div className=Styles.vFlex>
-            <InfoHL info={InfoHL.Timestamp(block.timestamp)} header="TIMESTAMP" />
-          </div>
-        </Col>
-        <Col size=3.2>
-          <div className=Styles.proposerContainer>
-            <InfoHL info={InfoHL.Text(block.validator.moniker)} header="PROPOSED BY" />
-          </div>
-        </Col>
-      </Row>
-      {txs->Belt_Array.size == 0
-         ? <>
-             <VSpacing size=Spacing.xl />
-             <BlockIndexTxsTable txs />
-             <div className=Styles.emptyContainer>
-               <img src=Images.noTransaction className=Styles.noTransactionLogo />
-             </div>
+  <>
+    <Row justify=Row.Between>
+      <div className=Styles.header>
+        <img src=Images.blockLogo className=Styles.blockLogo />
+        <Text
+          value="BLOCK"
+          weight=Text.Medium
+          size=Text.Md
+          nowrap=true
+          color=Colors.gray7
+          block=true
+          spacing={Text.Em(0.06)}
+        />
+        {switch (blockSub) {
+         | Data({height}) =>
+           <>
+             <div className=Styles.seperatedLine />
+             <Text value={height |> ID.Block.toString} weight=Text.Thin spacing={Text.Em(0.06)} />
            </>
-         : <>
-             <VSpacing size=Spacing.xl />
-             <BlockIndexTxsTable txs />
-             <VSpacing size=Spacing.lg />
-             <Pagination
-               currentPage=page
-               pageCount
-               onPageChange={newPage => setPage(_ => newPage)}
-             />
-             <VSpacing size=Spacing.xl />
-           </>}
-    </>
-    |> Sub.resolve;
-  }
-  |> Sub.default(_, React.null);
+         | _ => React.null
+         }}
+      </div>
+    </Row>
+    <VSpacing size=Spacing.lg />
+    <div className=Styles.blockHash>
+      {switch (blockSub) {
+       | Data({hash}) =>
+         <Text
+           value={hash |> Hash.toHex(~upper=true)}
+           size=Text.Xxl
+           nowrap=true
+           ellipsis=true
+           code=true
+           weight=Text.Bold
+         />
+       | _ => <LoadingCensorBar width=700 height=15 />
+       }}
+    </div>
+    <VSpacing size=Spacing.lg />
+    <Row minHeight={`px(40)}>
+      <Col size=1.8>
+        {switch (blockSub) {
+         | Data({txn}) => <InfoHL info={InfoHL.Count(txn)} header="TRANSACTIONS" />
+         | _ => <InfoHL info={InfoHL.Loading(75)} header="TRANSACTIONS" />
+         }}
+      </Col>
+      <Col size=4.6>
+        {switch (blockSub) {
+         | Data({timestamp}) => <InfoHL info={InfoHL.Timestamp(timestamp)} header="TIMESTAMP" />
+         | _ => <InfoHL info={InfoHL.Loading(370)} header="TIMESTAMP" />
+         }}
+      </Col>
+      <Col size=3.2>
+        {switch (blockSub) {
+         | Data({validator}) =>
+            <div className=Styles.proposerContainer>
+           <InfoHL info={InfoHL.Text(validator.moniker)} header="PROPOSED BY" />
+           </div>
+         | _ => <InfoHL info={InfoHL.Loading(80)} header="PROPOSED BY" />
+         }}
+      </Col>
+    </Row>
+    <VSpacing size=Spacing.xl />
+    <BlockIndexTxsTable txsSub />
+    {switch (blockSub) {
+     | Data({txn}) =>
+       let pageCount = Page.getPageCount(txn, pageSize);
+       <>
+         <VSpacing size=Spacing.lg />
+         <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
+         <VSpacing size=Spacing.lg />
+       </>;
+     | _ => React.null
+     }}
+  </>;
 };
