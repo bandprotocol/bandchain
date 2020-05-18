@@ -5,9 +5,11 @@ import (
 	"errors"
 	"time"
 
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
 	tmtypes "github.com/tendermint/tendermint/types"
 )
@@ -48,6 +50,9 @@ func runCmd(c *Context) *cobra.Command {
 		Short:   "Run the oracle process",
 		Args:    cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if cfg.ChainID == "" {
+				return errors.New("Chain ID must not be empty")
+			}
 			keys, err := keybase.List()
 			if err != nil {
 				return err
@@ -76,5 +81,11 @@ func runCmd(c *Context) *cobra.Command {
 			return runImpl(c, l)
 		},
 	}
+	cmd.Flags().String(flags.FlagChainID, "", "chain ID of BandChain network")
+	cmd.Flags().String(flags.FlagNode, "tcp://localhost:26657", "RPC url to BandChain node")
+	cmd.Flags().String(flagValidator, "", "validator address")
+	viper.BindPFlag(flags.FlagChainID, cmd.Flags().Lookup(flags.FlagChainID))
+	viper.BindPFlag(flags.FlagNode, cmd.Flags().Lookup(flags.FlagNode))
+	viper.BindPFlag(flagValidator, cmd.Flags().Lookup(flagValidator))
 	return cmd
 }

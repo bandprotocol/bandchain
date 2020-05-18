@@ -1,11 +1,20 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 
+	"github.com/cosmos/cosmos-sdk/client/input"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/go-bip39"
 	"github.com/spf13/cobra"
+)
+
+const (
+	flagAccount  = "account"
+	flagIndex    = "index"
+	flagCoinType = "coin-type"
+	flagRecover  = "recover"
 )
 
 func keysCmd(c *Context) *cobra.Command {
@@ -15,6 +24,7 @@ func keysCmd(c *Context) *cobra.Command {
 		Short:   "Manage key held by the oracle process",
 	}
 	cmd.AddCommand(keysAddCmd(c))
+	cmd.AddCommand(keysDeleteCmd(c))
 	cmd.AddCommand(keysListCmd(c))
 	return cmd
 }
@@ -26,26 +36,66 @@ func keysAddCmd(c *Context) *cobra.Command {
 		Short:   "Add a new key to the keychain",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// TODO: Allow mnemonic import
-			seed, err := bip39.NewEntropy(256)
+			var mnemonic string
+			recover, err := cmd.Flags().GetBool(flagRecover)
 			if err != nil {
 				return err
 			}
+			if recover {
+				inBuf := bufio.NewReader(cmd.InOrStdin())
+				var err error
+				mnemonic, err = input.GetString("Enter your bip39 mnemonic", inBuf)
+				if err != nil {
+					return err
+				}
+			} else {
+				seed, err := bip39.NewEntropy(256)
+				if err != nil {
+					return err
+				}
+				mnemonic, err = bip39.NewMnemonic(seed)
+				if err != nil {
+					return err
+				}
+				fmt.Printf("Mnemonic: %s\n", mnemonic)
+			}
 
-			mnemonic, err := bip39.NewMnemonic(seed)
+			coinType, err := cmd.Flags().GetUint32(flagCoinType)
 			if err != nil {
 				return err
 			}
-
-			info, err := keybase.NewAccount(
-				args[0], mnemonic, "", hd.CreateHDPath(494, 0, 0).String(), hd.Secp256k1,
-			)
+			account, err := cmd.Flags().GetUint32(flagAccount)
 			if err != nil {
 				return err
 			}
+			index, err := cmd.Flags().GetUint32(flagIndex)
+			if err != nil {
+				return err
+			}
+			hdPath := hd.CreateHDPath(coinType, account, index)
+			info, err := keybase.NewAccount(args[0], mnemonic, "", hdPath.String(), hd.Secp256k1)
+			if err != nil {
+				return err
+			}
+			fmt.Printf("Address: %s\n", info.GetAddress().String())
+			return nil
+		},
+	}
+	cmd.Flags().Bool(flagRecover, false, "Provide seed phrase to recover existing key instead of creating")
+	cmd.Flags().Uint32(flagCoinType, 494, "coin type number for HD derivation")
+	cmd.Flags().Uint32(flagAccount, 0, "Account number for HD derivation")
+	cmd.Flags().Uint32(flagIndex, 0, "Address index number for HD derivation")
+	return cmd
+}
 
-			fmt.Printf("Mnemonic: %s\n", mnemonic)
-			fmt.Printf("Address: %s", info.GetAddress().String())
+func keysDeleteCmd(c *Context) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "delete [name]",
+		Aliases: []string{"d"},
+		Short:   "Delete a key from the keychain",
+		Args:    cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			// TODO: !!!
 			return nil
 		},
 	}
