@@ -82,12 +82,8 @@ func (k Keeper) GetAllReports(ctx sdk.Context) (reports []types.Report) {
 	lastReqID := k.GetRequestCount(ctx)
 
 	for reqID := int64(firstReqID); reqID <= lastReqID; reqID++ {
-		iterator := k.GetReportIterator(ctx, types.RequestID(reqID))
-		for ; iterator.Valid(); iterator.Next() {
-			var report types.Report
-			k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &report)
-			reports = append(reports, report)
-		}
+		reportsReq := k.GetReports(ctx, types.RequestID(reqID))
+		reports = append(reports, reportsReq...)
 	}
 
 	return reports
