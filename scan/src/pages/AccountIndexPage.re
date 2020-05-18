@@ -12,7 +12,7 @@ module Styles = {
   let separatorLine =
     style([
       width(`px(1)),
-      height(`px(200)),
+      height(`px(275)),
       backgroundColor(Colors.gray7),
       marginLeft(`px(20)),
       opacity(0.3),
@@ -34,7 +34,7 @@ module Styles = {
       flexDirection(`column),
       justifyContent(`spaceBetween),
       alignItems(`flexEnd),
-      height(`px(190)),
+      height(`px(200)),
       padding2(~v=`px(12), ~h=`zero),
     ]);
 
@@ -118,17 +118,20 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
     let accountSub = AccountSub.get(address);
     let infoSub = React.useContext(GlobalContext.context);
     let balanceAtStakeSub = DelegationSub.getTotalStakeByDelegator(address);
+    let unbondingAmountSub = UnbondingSub.getUnBondingBalance(address);
 
     let%Sub info = infoSub;
     let%Sub account = accountSub;
     let%Sub balanceAtStake = balanceAtStakeSub;
+    let%Sub unbondingAmount = unbondingAmountSub;
 
     let availableBalance = account.balance->Coin.getBandAmountFromCoins;
     let usdPrice = info.financial.usdPrice;
     let totalBalance =
       availableBalance
       +. balanceAtStake.amount->Coin.getBandAmountFromCoin
-      +. balanceAtStake.reward->Coin.getBandAmountFromCoin;
+      +. balanceAtStake.reward->Coin.getBandAmountFromCoin
+      +. unbondingAmount->Coin.getBandAmountFromCoin;
 
     <>
       <Row justify=Row.Between>
@@ -161,12 +164,13 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
             availableBalance
             balanceAtStake={balanceAtStake.amount->Coin.getBandAmountFromCoin}
             reward={balanceAtStake.reward->Coin.getBandAmountFromCoin}
+            unbonding={unbondingAmount->Coin.getBandAmountFromCoin}
           />
         </Col>
         <Col size=1.>
           <VSpacing size=Spacing.md />
           {balanceDetail("AVAILABLE BALANCE", availableBalance, usdPrice, Colors.bandBlue)}
-          <VSpacing size=Spacing.xl />
+          <VSpacing size=Spacing.lg />
           <VSpacing size=Spacing.md />
           {balanceDetail(
              "BALANCE AT STAKE",
@@ -174,7 +178,15 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
              usdPrice,
              Colors.chartBalanceAtStake,
            )}
-          <VSpacing size=Spacing.xl />
+          <VSpacing size=Spacing.lg />
+          <VSpacing size=Spacing.md />
+          {balanceDetail(
+             "UNBONDING AMOUNT",
+             unbondingAmount->Coin.getBandAmountFromCoin,
+             usdPrice,
+             Colors.blue4,
+           )}
+          <VSpacing size=Spacing.lg />
           <VSpacing size=Spacing.md />
           {balanceDetail(
              "REWARD",
