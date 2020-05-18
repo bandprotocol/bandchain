@@ -159,12 +159,10 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper) {
 
 	// Set default parameter
 	keeper.SetParam(ctx, types.KeyMaxRawRequestCount, types.DefaultMaxRawRequestCount)
-	keeper.SetParam(ctx, types.KeyMaxRawDataReportSize, types.DefaultMaxRawDataReportSize)
 	keeper.SetParam(ctx, types.KeyMaxResultSize, types.DefaultMaxResultSize)
 	keeper.SetParam(ctx, types.KeyGasPerRawDataRequestPerValidator, types.DefaultGasPerRawDataRequestPerValidator)
 	keeper.SetParam(ctx, types.KeyExpirationBlockCount, types.DefaultExpirationBlockCount)
-	keeper.SetParam(ctx, types.KeyExecuteGas, types.DefaultExecuteGas)
-	keeper.SetParam(ctx, types.KeyPrepareGas, types.DefaultPrepareGas)
+	keeper.SetParam(ctx, types.KeyMaxConsecutiveMisses, types.DefaulMaxConsecutiveMisses)
 
 	return ctx, keeper
 }
