@@ -118,20 +118,21 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
     let accountSub = AccountSub.get(address);
     let infoSub = React.useContext(GlobalContext.context);
     let balanceAtStakeSub = DelegationSub.getTotalStakeByDelegator(address);
-    let unbondingAmountSub = UnbondingSub.getUnBondingBalance(address);
+    let unbondingSub = UnbondingSub.getUnbondingBalance(address);
 
     let%Sub info = infoSub;
     let%Sub account = accountSub;
     let%Sub balanceAtStake = balanceAtStakeSub;
-    let%Sub unbondingAmount = unbondingAmountSub;
+    let%Sub unbonding = unbondingSub;
 
     let availableBalance = account.balance->Coin.getBandAmountFromCoins;
     let usdPrice = info.financial.usdPrice;
-    let totalBalance =
-      availableBalance
-      +. balanceAtStake.amount->Coin.getBandAmountFromCoin
-      +. balanceAtStake.reward->Coin.getBandAmountFromCoin
-      +. unbondingAmount->Coin.getBandAmountFromCoin;
+
+    let balanceAtStakeAmount = balanceAtStake.amount->Coin.getBandAmountFromCoin;
+    let rewardAmount = balanceAtStake.reward->Coin.getBandAmountFromCoin;
+    let unbondingAmount = unbonding->Coin.getBandAmountFromCoin;
+
+    let totalBalance = availableBalance +. balanceAtStakeAmount +. rewardAmount +. unbondingAmount;
 
     <>
       <Row justify=Row.Between>
@@ -162,9 +163,9 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
           <PieChart
             size=187
             availableBalance
-            balanceAtStake={balanceAtStake.amount->Coin.getBandAmountFromCoin}
-            reward={balanceAtStake.reward->Coin.getBandAmountFromCoin}
-            unbonding={unbondingAmount->Coin.getBandAmountFromCoin}
+            balanceAtStake=balanceAtStakeAmount
+            reward=rewardAmount
+            unbonding=unbondingAmount
           />
         </Col>
         <Col size=1.>
@@ -174,26 +175,16 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
           <VSpacing size=Spacing.md />
           {balanceDetail(
              "BALANCE AT STAKE",
-             balanceAtStake.amount->Coin.getBandAmountFromCoin,
+             balanceAtStakeAmount,
              usdPrice,
              Colors.chartBalanceAtStake,
            )}
           <VSpacing size=Spacing.lg />
           <VSpacing size=Spacing.md />
-          {balanceDetail(
-             "UNBONDING AMOUNT",
-             unbondingAmount->Coin.getBandAmountFromCoin,
-             usdPrice,
-             Colors.blue4,
-           )}
+          {balanceDetail("UNBONDING AMOUNT", unbondingAmount, usdPrice, Colors.blue4)}
           <VSpacing size=Spacing.lg />
           <VSpacing size=Spacing.md />
-          {balanceDetail(
-             "REWARD",
-             balanceAtStake.reward->Coin.getBandAmountFromCoin,
-             usdPrice,
-             Colors.chartReward,
-           )}
+          {balanceDetail("REWARD", rewardAmount, usdPrice, Colors.chartReward)}
         </Col>
         <div className=Styles.separatorLine />
         <Col size=1. alignSelf=Col.Start>

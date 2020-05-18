@@ -20,6 +20,12 @@ let coinRegEx = "([0-9]+)([a-z][a-z0-9/]{2,31})" |> Js.Re.fromString;
 let coin = str => {
   str |> Js.Json.decodeNumber |> Belt_Option.getExn |> Coin.newUBANDFromAmount;
 };
+let coinExn = jsonOpt => {
+  jsonOpt
+  |> Belt_Option.flatMap(_, Js.Json.decodeNumber)
+  |> Belt.Option.getExn
+  |> Coin.newUBANDFromAmount;
+};
 let coinWithDefault = jsonOpt => {
   jsonOpt
   |> Belt_Option.flatMap(_, Js.Json.decodeNumber)

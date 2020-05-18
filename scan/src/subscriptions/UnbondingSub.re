@@ -14,7 +14,7 @@ module SingleConfig = [%graphql
 |}
 ];
 
-let getUnBondingBalance = delegatorAddress => {
+let getUnbondingBalance = delegatorAddress => {
   let (result, _) =
     ApolloHooks.useSubscription(
       SingleConfig.definition,
