@@ -1,7 +1,6 @@
 package proof
 
 import (
-	"encoding/hex"
 	"testing"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
@@ -38,20 +37,11 @@ func TestCalculateResultHash(t *testing.T) {
 }
 
 func TestEmptyClientID(t *testing.T) {
-	var err error
-	calldata, err := hex.DecodeString("030000004254436400000000000000")
-	if err != nil {
-		panic(err)
-	}
-	result, err := hex.DecodeString("0aae0e0000000000")
-	if err != nil {
-		panic(err)
-	}
 	// RawByte is d9c5892710011a0f03000000425443640000000000000020012801
 	reqPacket := oracle.OracleRequestPacketData{
 		ClientID:       "",
 		OracleScriptID: 1,
-		Calldata:       calldata,
+		Calldata:       mustDecodeString("030000004254436400000000000000"),
 		AskCount:       1,
 		MinCount:       1,
 	}
@@ -63,7 +53,7 @@ func TestEmptyClientID(t *testing.T) {
 		RequestTime:   1589536115,
 		ResolveTime:   1589536119,
 		ResolveStatus: oracle.ResolveStatus(1),
-		Result:        result,
+		Result:        mustDecodeString("0aae0e0000000000"),
 	}
 	expectedResultHash := hexToBytes("37ca0d67535481e7575785dc828b730279f5620ba373c667c22a512cc48ae6dc")
 
