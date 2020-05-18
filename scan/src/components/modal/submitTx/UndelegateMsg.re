@@ -41,6 +41,7 @@ let make = (~setMsgsOpt) => {
     <div className=Styles.warning>
       <Text value="Note: Undelegated balance are locked for 21 days" />
     </div>
+    <VSpacing size=Spacing.md />
     <EnhanceTxInput
       width=360
       inputData=validator
