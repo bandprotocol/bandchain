@@ -55,17 +55,15 @@ func (p Params) String() string {
 	)
 }
 
-func validateNoOp(_ interface{}) error { return nil }
-
 // ParamSetPairs implements the params.ParamSet interface for Params.
 func (p *Params) ParamSetPairs() params.ParamSetPairs {
 	// TODO: Make validation real. Not just noop
 	return params.ParamSetPairs{
-		paramtypes.NewParamSetPair(KeyMaxRawRequestCount, &p.MaxRawRequestCount, validateNoOp),
-		paramtypes.NewParamSetPair(KeyMaxResultSize, &p.MaxResultSize, validateNoOp),
-		paramtypes.NewParamSetPair(KeyGasPerRawDataRequestPerValidator, &p.GasPerRawDataRequestPerValidator, validateNoOp),
-		paramtypes.NewParamSetPair(KeyExpirationBlockCount, &p.ExpirationBlockCount, validateNoOp),
-		paramtypes.NewParamSetPair(KeyMaxConsecutiveMisses, &p.MaxConsecutiveMisses, validateNoOp),
+		paramtypes.NewParamSetPair(KeyMaxRawRequestCount, &p.MaxRawRequestCount, validateMaxRawRequestCount),
+		paramtypes.NewParamSetPair(KeyMaxResultSize, &p.MaxResultSize, validateMaxResultSize),
+		paramtypes.NewParamSetPair(KeyGasPerRawDataRequestPerValidator, &p.GasPerRawDataRequestPerValidator, validateGasPerRawDataRequestPerValidator),
+		paramtypes.NewParamSetPair(KeyExpirationBlockCount, &p.ExpirationBlockCount, validateExpirationBlockCount),
+		paramtypes.NewParamSetPair(KeyMaxConsecutiveMisses, &p.MaxConsecutiveMisses, validateMaxConsecutiveMisses),
 	}
 }
 
@@ -78,4 +76,63 @@ func DefaultParams() Params {
 		DefaultExpirationBlockCount,
 		DefaulMaxConsecutiveMisses,
 	)
+}
+
+func validateMaxRawRequestCount(i interface{}) error {
+	v, ok := i.(uint64)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+	if v <= 0 {
+		return fmt.Errorf("max raw request count must be positive: %d", v)
+	}
+	return nil
+}
+
+func validateMaxResultSize(i interface{}) error {
+	v, ok := i.(uint64)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if v <= 0 {
+		return fmt.Errorf("max result size must be positive: %d", v)
+	}
+	return nil
+}
+
+func validateGasPerRawDataRequestPerValidator(i interface{}) error {
+	v, ok := i.(uint64)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if v <= 0 {
+		return fmt.Errorf("gas per raw data request per validator must be positive: %d", v)
+	}
+	return nil
+}
+
+func validateExpirationBlockCount(i interface{}) error {
+	v, ok := i.(uint64)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if v <= 0 {
+		return fmt.Errorf("expiration block count must be positive: %d", v)
+	}
+	return nil
+}
+
+func validateMaxConsecutiveMisses(i interface{}) error {
+	v, ok := i.(uint64)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if v <= 0 {
+		return fmt.Errorf("max consecutive misses must be positive: %d", v)
+	}
+	return nil
 }
