@@ -182,7 +182,7 @@ module SubmitTxStep = {
        | Send => <SendMsg setMsgsOpt />
        | Delegate => <DelegateMsg setMsgsOpt />
        | Undelegate => <UndelegateMsg setMsgsOpt />
-       //| Redelegate => <RedelegateMsg setMsgsOpt />
+       | Redelegate => <RedelegateMsg setMsgsOpt />
        | WithdrawReward => <WithdrawRewardMsg setMsgsOpt />
        }}
       <VSpacing size=Spacing.md />
