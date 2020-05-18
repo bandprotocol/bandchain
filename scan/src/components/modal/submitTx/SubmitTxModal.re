@@ -207,7 +207,7 @@ module SubmitTxStep = {
           | None => None
           };
         }}
-        msg="Fee (UBAND)"
+        msg="Fee (BAND)"
         errMsg="Invalid amount"
         code=true
       />
