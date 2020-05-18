@@ -14,8 +14,8 @@ type GenesisState struct {
 	DataSources   []types.DataSource          `json:"data_sources"  yaml:"data_sources"`
 	OracleScripts []types.OracleScript        `json:"oracle_scripts"  yaml:"oracle_scripts"`
 	ReportInfos   []types.ValidatorReportInfo `json:"report_infos" yaml:"report_infos"`
-	Requests      []types.Request             `json:"request" yaml:"requests"`
-	Reports       []types.Report              `json:"report" yaml:"reports"`
+	Requests      []types.Request             `json:"requests" yaml:"requests"`
+	Reports       []types.Report              `json:"reports" yaml:"reports"`
 }
 
 // NewGenesisState creates a new genesis state.
