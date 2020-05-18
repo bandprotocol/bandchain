@@ -115,7 +115,7 @@ let toString =
 let getMsgGasLimit =
   fun
   | Send => 70000
-  | Delegate => 140000
+  | Delegate => 160000
   | Undelegate => 180000
   | Redelegate => 210000
   | WithdrawReward => 110000;
@@ -131,12 +131,12 @@ let getGasConfig = msgType => {
 };
 
 let getFeeConfig = msgType => {
-  let fee = (getMsgGasLimit(msgType) |> float_of_int) *. 0.01 |> int_of_float;
+  let fee = (getMsgGasLimit(msgType) |> float_of_int) *. 0.1 /. 1e6;
   EnhanceTxInput.{
     text: {
-      fee |> string_of_int;
+      fee |> Js.Float.toString;
     },
-    value: Some(fee),
+    value: Some(fee *. 1e6),
   };
 };
 
@@ -178,7 +178,7 @@ module SubmitTxStep = {
        | Send => <SendMsg setMsgsOpt />
        | Delegate => <DelegateMsg setMsgsOpt />
        | Undelegate => <UndelegateMsg setMsgsOpt />
-       | Redelegate => <RedelegateMsg setMsgsOpt />
+       //| Redelegate => <RedelegateMsg setMsgsOpt />
        | WithdrawReward => <WithdrawRewardMsg setMsgsOpt />
        }}
       <VSpacing size=Spacing.md />
@@ -195,8 +195,14 @@ module SubmitTxStep = {
         width=115
         inputData=fee
         setInputData=setFee
-        parse=int_of_string_opt
-        msg="Fee"
+        parse={newVal => {
+          let xOpt = float_of_string_opt(newVal);
+          switch (xOpt) {
+          | Some(x) => Some(x *. 1e6)
+          | None => None
+          };
+        }}
+        msg="Fee (UBAND)"
         errMsg="Invalid amount"
       />
       <VSpacing size=Spacing.md />
@@ -222,7 +228,7 @@ module SubmitTxStep = {
                  ~address=account.address,
                  ~msgs,
                  ~chainID=account.chainID,
-                 ~feeAmount=fee' |> string_of_int,
+                 ~feeAmount=fee' |> Js.Float.toString,
                  ~gas=gas' |> string_of_int,
                  ~memo=memo',
                  (),

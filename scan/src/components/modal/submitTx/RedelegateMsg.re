@@ -14,7 +14,7 @@ let make = (~setMsgsOpt) => {
           TxCreator.Redelegate(
             srcValidatorValue,
             dstValidatorValue,
-            {amount: amountValue |> string_of_int, denom: "uband"},
+            {amount: amountValue *. 1e6 |> Js.Float.toString, denom: "uband"},
           ),
         |]);
       };
@@ -47,8 +47,8 @@ let make = (~setMsgsOpt) => {
       width=115
       inputData=amount
       setInputData=setAmount
-      parse=int_of_string_opt
-      msg="Amount (UBAND)"
+      parse=float_of_string_opt
+      msg="Amount (BAND)"
       errMsg="Invalid amount"
     />
   </>;

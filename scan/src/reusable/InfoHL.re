@@ -57,7 +57,7 @@ let make = (~info, ~header, ~isLeft=true) => {
        <div className=Styles.vFlex> <TypeID.Block id=height position=TypeID.Subtitle /> </div>
      | Float(value) =>
        <Text
-         value={value |> Js.Float.toString}
+         value={value |> Format.fPretty}
          size=Text.Lg
          weight=Text.Semibold
          spacing={Text.Em(0.02)}
