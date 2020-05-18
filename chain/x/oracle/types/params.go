@@ -26,7 +26,7 @@ const (
 	DefaultExpirationBlockCount = uint64(20)
 
 	// The maximum consecutive misses allowance
-	DefaulMaxConsecutiveMisses = uint64(10)
+	DefaultMaxConsecutiveMisses = uint64(10)
 )
 
 // Parameter store keys.
@@ -76,6 +76,6 @@ func DefaultParams() Params {
 		DefaultMaxResultSize,
 		DefaultGasPerRawDataRequestPerValidator,
 		DefaultExpirationBlockCount,
-		DefaulMaxConsecutiveMisses,
+		DefaultMaxConsecutiveMisses,
 	)
 }
