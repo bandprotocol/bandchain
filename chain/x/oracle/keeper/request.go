@@ -82,12 +82,12 @@ func (k Keeper) ResolveRequest(
 	request := k.MustGetRequest(ctx, id)
 	req := types.NewOracleRequestPacketData(
 		request.ClientID, request.OracleScriptID,
-		hex.EncodeToString(request.Calldata), request.MinCount,
+		request.Calldata, request.MinCount,
 		int64(len(request.RequestedValidators)),
 	)
 	res := types.NewOracleResponsePacketData(
 		request.ClientID, id, int64(k.GetReportCount(ctx, id)), request.RequestTime,
-		ctx.BlockTime().Unix(), types.ResolveStatus_Success, hex.EncodeToString(result),
+		ctx.BlockTime().Unix(), types.ResolveStatus_Success, result,
 	)
 
 	if status != types.ResolveStatus_Success {
@@ -113,7 +113,7 @@ func (k Keeper) ResolveRequest(
 		types.EventTypeRequestExecute,
 		sdk.NewAttribute(types.AttributeKeyClientID, req.ClientID),
 		sdk.NewAttribute(types.AttributeKeyOracleScriptID, fmt.Sprintf("%d", req.OracleScriptID)),
-		sdk.NewAttribute(types.AttributeKeyCalldata, req.Calldata),
+		sdk.NewAttribute(types.AttributeKeyCalldata, string(req.Calldata)),
 		sdk.NewAttribute(types.AttributeKeyAskCount, fmt.Sprintf("%d", req.AskCount)),
 		sdk.NewAttribute(types.AttributeKeyMinCount, fmt.Sprintf("%d", req.MinCount)),
 		sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", res.RequestID)),
@@ -121,7 +121,7 @@ func (k Keeper) ResolveRequest(
 		sdk.NewAttribute(types.AttributeKeyAnsCount, fmt.Sprintf("%d", res.AnsCount)),
 		sdk.NewAttribute(types.AttributeKeyRequestTime, fmt.Sprintf("%d", request.RequestTime)),
 		sdk.NewAttribute(types.AttributeKeyResolveTime, fmt.Sprintf("%d", res.ResolveTime)),
-		sdk.NewAttribute(types.AttributeKeyResult, res.Result),
+		sdk.NewAttribute(types.AttributeKeyResult, string(res.Result)),
 		sdk.NewAttribute(types.AttributeKeyResultHash, hex.EncodeToString(resultHash)),
 	))
 	return res

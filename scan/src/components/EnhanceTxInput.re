@@ -18,6 +18,7 @@ module Styles = {
       borderRadius(`px(8)),
       fontSize(`px(12)),
       textAlign(`right),
+      fontSize(`px(11)),
       boxShadow(
         Shadow.box(
           ~inset=false,
@@ -28,6 +29,21 @@ module Styles = {
         ),
       ),
       focus([outlineColor(Colors.white)]),
+    ]);
+
+  let code =
+    style([
+      fontFamilies([
+        `custom("IBM Plex Mono"),
+        `custom("cousine"),
+        `custom("sfmono-regular"),
+        `custom("Consolas"),
+        `custom("Menlo"),
+        `custom("liberation mono"),
+        `custom("ubuntu mono"),
+        `custom("Courier"),
+        `monospace,
+      ]),
     ]);
 
   let errMsg = style([position(`absolute), top(`px(20))]);
@@ -45,14 +61,14 @@ type status =
 let empty = {text: "", value: None};
 
 [@react.component]
-let make = (~inputData, ~setInputData, ~msg, ~errMsg, ~parse, ~width) => {
+let make = (~inputData, ~setInputData, ~msg, ~errMsg, ~parse, ~width, ~code=false) => {
   let (status, setStatus) = React.useState(_ => Ok);
 
   <div className=Styles.rowContainer>
     <Text value=msg size=Text.Lg spacing={Text.Em(0.03)} nowrap=true block=true />
     <input
       value={inputData.text}
-      className={Styles.input(width)}
+      className={Css.merge([Styles.input(width), code ? Styles.code : ""])}
       onChange={event => {
         let newText = ReactEvent.Form.target(event)##value;
         let newVal = parse(newText);

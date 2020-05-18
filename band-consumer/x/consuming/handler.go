@@ -1,7 +1,6 @@
 package consuming
 
 import (
-	"encoding/hex"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -37,7 +36,7 @@ func NewHandler(keeper Keeper) sdk.Handler {
 				)
 			}
 			packet := oracle.NewOracleRequestPacketData(
-				msg.ClientID, msg.OracleScriptID, hex.EncodeToString(msg.Calldata),
+				msg.ClientID, msg.OracleScriptID, msg.Calldata,
 				msg.AskCount, msg.MinCount,
 			)
 			chanCap, ok := keeper.ScopedKeeper.GetCapability(ctx, ibctypes.ChannelCapabilityPath("consuming", msg.SourceChannel))
