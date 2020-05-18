@@ -12,7 +12,7 @@ type Metadata struct {
 type Block struct {
 	Height    int64  `gorm:"primary_key;auto_increment:false"`
 	Timestamp int64  `gorm:"not null;index"`
-	Proposer  string `gorm:"not null"`
+	Proposer  string `gorm:"not null;index"`
 	BlockHash []byte `gorm:"not null"`
 }
 
@@ -58,7 +58,7 @@ type Validator struct {
 
 type ValidatorVote struct {
 	ConsensusAddress string `gorm:"primary_key"`
-	BlockHeight      int64  `gorm:"primary_key;auto_increment:false"`
+	BlockHeight      int64  `gorm:"primary_key;auto_increment:false;index"`
 	Voted            bool   `gorm:"not null"`
 }
 
