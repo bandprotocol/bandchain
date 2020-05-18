@@ -25,6 +25,18 @@ func (k Keeper) GetRequest(ctx sdk.Context, id types.RequestID) (types.Request, 
 	return request, nil
 }
 
+// GetAllRequests return the list of all requests in the store, or nil if there is none.
+func (k Keeper) GetAllRequests(ctx sdk.Context) (requests []types.Request) {
+	store := ctx.KVStore(k.storeKey)
+	iterator := sdk.KVStorePrefixIterator(store, types.RequestStoreKeyPrefix)
+	for ; iterator.Valid(); iterator.Next() {
+		var request types.Request
+		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &request)
+		requests = append(requests, request)
+	}
+	return requests
+}
+
 // MustGetRequest returns the request struct for the given ID. Panics error if not exists.
 func (k Keeper) MustGetRequest(ctx sdk.Context, id types.RequestID) types.Request {
 	request, err := k.GetRequest(ctx, id)

@@ -75,6 +75,18 @@ func (k Keeper) GetReports(ctx sdk.Context, rid types.RequestID) (reports []type
 	return reports
 }
 
+// GetAllReports return the list of all reports in the store, or nil if there is none.
+func (k Keeper) GetAllReports(ctx sdk.Context) (reports []types.Report) {
+	store := ctx.KVStore(k.storeKey)
+	iterator := sdk.KVStorePrefixIterator(store, types.ReporterStoreKeyPrefix)
+	for ; iterator.Valid(); iterator.Next() {
+		var report types.Report
+		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &report)
+		reports = append(reports, report)
+	}
+	return reports
+}
+
 // DeleteReports removes all reports for the given request ID.
 func (k Keeper) DeleteReports(ctx sdk.Context, rid types.RequestID) {
 	var keys [][]byte
