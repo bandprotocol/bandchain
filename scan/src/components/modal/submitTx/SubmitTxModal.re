@@ -67,7 +67,7 @@ module Styles = {
   let nextBtn =
     style([
       position(`absolute),
-      bottom(`percent(11.)),
+      bottom(`percent(8.)),
       width(`px(100)),
       height(`px(30)),
       display(`flex),
@@ -201,13 +201,7 @@ module SubmitTxStep = {
         width=115
         inputData=fee
         setInputData=setFee
-        parse={newVal => {
-          let xOpt = float_of_string_opt(newVal);
-          switch (xOpt) {
-          | Some(x) => Some(Js.Math.floor_float(x *. 1e6))
-          | None => None
-          };
-        }}
+        parse=Parse.parseBandAmount
         msg="Fee (BAND)"
         errMsg="Invalid amount"
         code=true
