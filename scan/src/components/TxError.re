@@ -33,7 +33,7 @@ let parseErr = msg => {
       let log = logJson |> decodeLog;
       Opt.ret(log.message);
     }
-    |> Belt.Option.getWithDefault(_, {j|ERROR: $msg"|j})
+    |> Belt.Option.getWithDefault(_, msg)
   | _ => raise(WrongNetwork("Incorrect or unspecified NETWORK environment variable"))
   };
 };
