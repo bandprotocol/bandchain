@@ -463,3 +463,37 @@ func TestGetJailedUpdateReportInfos(t *testing.T) {
 	}
 
 }
+
+func TestGetAllReports(t *testing.T) {
+	_, ctx, k := createTestInput()
+
+	k.SetOracleScript(ctx, 1, types.NewOracleScript(
+		Owner.Address, BasicName, BasicDesc, BasicCode, BasicSchema, BasicSourceCodeURL,
+	))
+
+	// Set requests to the storage.
+	requests := []types.Request{
+		types.NewRequest(1, BasicCalldata, nil, 1, 1, 1, "", nil),
+		types.NewRequest(1, BasicCalldata, nil, 1, 1, 1, "", nil),
+	}
+
+	_, err := k.AddRequest(ctx, requests[0])
+	require.NoError(t, err)
+
+	_, err = k.AddRequest(ctx, requests[1])
+	require.NoError(t, err)
+
+	// Set reports to the storage.
+	reports := []types.Report{
+		types.NewReport(sdk.ValAddress([]byte("validator1")), nil),
+		types.NewReport(sdk.ValAddress([]byte("validator2")), nil),
+		types.NewReport(sdk.ValAddress([]byte("validator3")), nil),
+	}
+
+	k.SetReport(ctx, types.RequestID(1), reports[0])
+	k.SetReport(ctx, types.RequestID(1), reports[1])
+	k.SetReport(ctx, types.RequestID(2), reports[2])
+
+	// Should now be able to get all the existing reports.
+	require.Equal(t, reports, k.GetAllReports(ctx))
+}
