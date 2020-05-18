@@ -57,7 +57,6 @@ func (p Params) String() string {
 
 // ParamSetPairs implements the params.ParamSet interface for Params.
 func (p *Params) ParamSetPairs() params.ParamSetPairs {
-	// TODO: Make validation real. Not just noop
 	return params.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyMaxRawRequestCount, &p.MaxRawRequestCount, validateMaxRawRequestCount),
 		paramtypes.NewParamSetPair(KeyMaxResultSize, &p.MaxResultSize, validateMaxResultSize),
