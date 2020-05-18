@@ -125,7 +125,12 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
 
     let availableBalance = account.balance->Coin.getBandAmountFromCoins;
     let usdPrice = info.financial.usdPrice;
-    let totalBalance = availableBalance +. balanceAtStake.amount +. balanceAtStake.reward;
+    let totalBalance =
+      availableBalance
+      +. balanceAtStake.amount
+      /. 1_000_000.
+      +. balanceAtStake.reward
+      /. 1_000_000.;
 
     <>
       <Row justify=Row.Between>
@@ -147,11 +152,18 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
       </Row>
       <VSpacing size=Spacing.lg />
       <VSpacing size=Spacing.sm />
-      <div className=Styles.vFlex> <AddressRender address position=AddressRender.Title copy=true/> </div>
+      <div className=Styles.vFlex>
+        <AddressRender address position=AddressRender.Title copy=true />
+      </div>
       <VSpacing size=Spacing.xxl />
       <Row justify=Row.Between alignItems=`flexStart>
         <Col size=0.75>
-          <PieChart size=187 availableBalance balanceAtStake={balanceAtStake.amount} reward={balanceAtStake.reward} />
+          <PieChart
+            size=187
+            availableBalance
+            balanceAtStake={balanceAtStake.amount /. 1_000_000.}
+            reward={balanceAtStake.reward /. 1_000_000.}
+          />
         </Col>
         <Col size=1.>
           <VSpacing size=Spacing.md />
@@ -165,16 +177,16 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
           <VSpacing size=Spacing.md />
           {balanceDetail(
              "BALANCE AT STAKE",
-             balanceAtStake.amount |> Format.fPretty,
-             balanceAtStake.amount *. usdPrice |> Format.fPretty,
+             balanceAtStake.amount /. 1_000_000. |> Format.fPretty,
+             balanceAtStake.amount /. 1_000_000. *. usdPrice |> Format.fPretty,
              Colors.chartBalanceAtStake,
            )}
           <VSpacing size=Spacing.xl />
           <VSpacing size=Spacing.md />
           {balanceDetail(
              "REWARD",
-             balanceAtStake.reward |> Format.fPretty,
-             balanceAtStake.reward *. usdPrice |> Format.fPretty,
+             balanceAtStake.reward /. 1_000_000. |> Format.fPretty,
+             balanceAtStake.reward /. 1_000_000. *. usdPrice |> Format.fPretty,
              Colors.chartReward,
            )}
         </Col>

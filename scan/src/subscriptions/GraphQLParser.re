@@ -37,15 +37,14 @@ let addressExn = jsonOpt => jsonOpt |> Belt_Option.getExn |> Address.fromBech32;
 
 // TODO: remove 1e6.
 let numberExn = jsonOpt =>
-  (jsonOpt |> Belt_Option.flatMap(_, Js.Json.decodeNumber) |> Belt.Option.getExn) /. 1_000_000.;
+  jsonOpt |> Belt_Option.flatMap(_, Js.Json.decodeNumber) |> Belt.Option.getExn;
 
 let numberWithDefault = jsonOpt =>
-  (jsonOpt |> Belt_Option.flatMap(_, Js.Json.decodeNumber) |> Belt.Option.getWithDefault(_, 0.0))
-  /. 1_000_000.;
+  jsonOpt |> Belt_Option.flatMap(_, Js.Json.decodeNumber) |> Belt.Option.getWithDefault(_, 0.0);
 
 let floatWithDefault = jsonOpt =>
   jsonOpt |> Belt_Option.flatMap(_, Js.Json.decodeNumber) |> Belt.Option.getWithDefault(_, 0.);
 
-let floatWithMillionDivision = json => {
-  (json |> Js.Json.decodeNumber |> Belt.Option.getExn) /. 1_000_000.;
+let floatExn = json => {
+  json |> Js.Json.decodeNumber |> Belt.Option.getExn;
 };

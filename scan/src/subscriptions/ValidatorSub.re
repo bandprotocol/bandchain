@@ -89,7 +89,7 @@ module SingleConfig = [%graphql
           moniker
           identity
           website
-          tokens @bsDecoder(fn: "GraphQLParser.floatWithMillionDivision")
+          tokens @bsDecoder(fn: "GraphQLParser.floatExn")
           commissionRate: commission_rate @bsDecoder(fn: "float_of_string")
           consensusPubKey: consensus_pubkey @bsDecoder(fn: "PubKey.fromBech32")
           bondedHeight: bonded_height @bsDecoder(fn: "GraphQLParser.int64")
@@ -109,7 +109,7 @@ module MultiConfig = [%graphql
           moniker
           identity
           website
-          tokens @bsDecoder(fn: "GraphQLParser.floatWithMillionDivision")
+          tokens @bsDecoder(fn: "GraphQLParser.floatExn")
           commissionRate: commission_rate @bsDecoder(fn: "float_of_string")
           consensusPubKey: consensus_pubkey @bsDecoder(fn: "PubKey.fromBech32")
           bondedHeight: bonded_height @bsDecoder(fn: "GraphQLParser.int64")
