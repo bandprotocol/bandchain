@@ -17,8 +17,8 @@ let hash = json =>
   json |> Js.Json.decodeString |> Belt.Option.getExn |> Js.String.substr(~from=2) |> Hash.fromHex;
 
 let coinRegEx = "([0-9]+)([a-z][a-z0-9/]{2,31})" |> Js.Re.fromString;
-let coin = str => {
-  str |> Js.Json.decodeNumber |> Belt_Option.getExn |> Coin.newUBANDFromAmount;
+let coin = json => {
+  json |> Js.Json.decodeNumber |> Belt_Option.getExn |> Coin.newUBANDFromAmount;
 };
 let coinExn = jsonOpt => {
   jsonOpt
