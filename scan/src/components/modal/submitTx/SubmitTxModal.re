@@ -165,12 +165,16 @@ module SubmitTxStep = {
               setGas(_ => getGasConfig(newMsg));
               setFee(_ => getFeeConfig(newMsg));
             }}>
-            {[|Send, Delegate, Undelegate, Redelegate, WithdrawReward|]
-             ->Belt_Array.map(symbol =>
-                 <option value={symbol |> toString}> {symbol |> toString |> React.string} </option>
-               )
-             |> React.array}
-          </select>
+            // TODO: Add back Redelegate
+
+              {[|Send, Delegate, Undelegate, WithdrawReward|]
+               ->Belt_Array.map(symbol =>
+                   <option value={symbol |> toString}>
+                     {symbol |> toString |> React.string}
+                   </option>
+                 )
+               |> React.array}
+            </select>
         </div>
       </div>
       <VSpacing size=Spacing.md />
