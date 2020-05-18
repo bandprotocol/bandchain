@@ -52,7 +52,7 @@ let renderSegment = (offset, angle, color) =>
 
 [@react.component]
 let make = (~size, ~availableBalance, ~balanceAtStake, ~reward, ~unbonding) => {
-  let totalBalance = availableBalance +. balanceAtStake +. unbonding;
+  let totalBalance = availableBalance +. balanceAtStake +. unbonding +. reward;
   let balanceAtStakeAngle = totalBalance == 0. ? 0. : 360. *. balanceAtStake /. totalBalance;
   let unbondingAngle = totalBalance == 0. ? 0. : 360. *. unbonding /. totalBalance;
   let rewardAngle = totalBalance == 0. ? 0. : 360. *. reward /. totalBalance;
