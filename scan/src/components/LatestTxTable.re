@@ -65,19 +65,7 @@ let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)
       <Col size=3.8>
         {switch (txSub) {
          | Data({messages, txHash, success, rawLog}) =>
-           <div>
-             {messages
-              ->Belt_List.toArray
-              ->Belt_Array.mapWithIndex((i, msg) =>
-                  <React.Fragment key={(txHash |> Hash.toHex) ++ (i |> string_of_int)}>
-                    <VSpacing size=Spacing.sm />
-                    <Msg msg width=360 />
-                    <VSpacing size=Spacing.sm />
-                  </React.Fragment>
-                )
-              ->React.array}
-             {success ? React.null : <TxError.Mini msg=rawLog />}
-           </div>
+           <TxMessages txHash messages success rawLog width=360 />
          | _ => <> <VSpacing size=Spacing.sm /> <LoadingCensorBar width=360 height=10 /> </>
          }}
       </Col>
