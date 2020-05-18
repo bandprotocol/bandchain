@@ -24,7 +24,10 @@ let make = (~setMsgsOpt) => {
         Some([|
           TxCreator.Undelegate(
             validatorValue,
-            {amount: amountValue *. 1e6 |> Js.Float.toString, denom: "uband"},
+            {
+              amount: amountValue *. 1e6 |> Js.Math.floor_float |> Js.Float.toString,
+              denom: "uband",
+            },
           ),
         |]);
       };
