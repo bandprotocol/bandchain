@@ -126,7 +126,7 @@ module TotalBondedAmountConfig = [%graphql
     validators_aggregate{
       aggregate{
         sum{
-          tokens @bsDecoder(fn: "GraphQLParser.coinOpt")
+          tokens @bsDecoder(fn: "GraphQLParser.coinWithDefault")
         }
       }
     }
