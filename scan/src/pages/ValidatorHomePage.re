@@ -128,7 +128,7 @@ let renderBody =
              | Data({tokens, votingPower}) =>
                <div>
                  <Text
-                   value={tokens |> Format.fPretty}
+                   value={tokens /. 1_000_000. |> Format.fPretty}
                    color=Colors.gray7
                    code=true
                    weight=Text.Regular
@@ -353,7 +353,7 @@ let make = () => {
              <InfoHL
                info={
                  InfoHL.Fraction(
-                   bondedTokenCount |> int_of_float,
+                   bondedTokenCount /. 1_000_000. |> int_of_float,
                    metadata.totalSupply->Coin.getBandAmountFromCoins |> int_of_float,
                    true,
                  )
