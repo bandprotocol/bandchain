@@ -11,19 +11,10 @@ import (
 
 func TestCalculateResultHash(t *testing.T) {
 	// RawByte is d9c589270a046265656210011a0f03000000425443640000000000000020012801
-	var err error
-	calldata, err := hex.DecodeString("030000004254436400000000000000")
-	if err != nil {
-		panic(err)
-	}
-	result, err := hex.DecodeString("4bb10e0000000000")
-	if err != nil {
-		panic(err)
-	}
 	reqPacket := oracle.OracleRequestPacketData{
 		ClientID:       "beeb",
 		OracleScriptID: 1,
-		Calldata:       calldata,
+		Calldata:       mustDecodeString("030000004254436400000000000000"),
 		AskCount:       1,
 		MinCount:       1,
 	}
@@ -35,7 +26,7 @@ func TestCalculateResultHash(t *testing.T) {
 		RequestTime:   1589535020,
 		ResolveTime:   1589535022,
 		ResolveStatus: oracle.ResolveStatus(1),
-		Result:        result,
+		Result:        mustDecodeString("4bb10e0000000000"),
 	}
 	expectedResultHash := hexToBytes("dbbbf5596a975c50c601bdd6ae26a5007e8483344afd7d2ae41e37891cb81b86")
 
