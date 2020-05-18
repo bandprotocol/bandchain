@@ -29,6 +29,7 @@ let make = (~setMsgsOpt) => {
       parse=Address.fromBech32Opt
       msg="Delegate to"
       errMsg="Invalid Address"
+      code=true
     />
     <VSpacing size=Spacing.md />
     <EnhanceTxInput
@@ -38,6 +39,7 @@ let make = (~setMsgsOpt) => {
       parse=float_of_string_opt
       msg="Amount (BAND)"
       errMsg="Invalid amount"
+      code=true
     />
   </>;
 };

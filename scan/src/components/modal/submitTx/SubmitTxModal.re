@@ -189,6 +189,7 @@ module SubmitTxStep = {
         parse=int_of_string_opt
         msg="Gas"
         errMsg="Invalid amount"
+        code=true
       />
       <VSpacing size=Spacing.md />
       <EnhanceTxInput
@@ -204,6 +205,7 @@ module SubmitTxStep = {
         }}
         msg="Fee (UBAND)"
         errMsg="Invalid amount"
+        code=true
       />
       <VSpacing size=Spacing.md />
       <EnhanceTxInput
