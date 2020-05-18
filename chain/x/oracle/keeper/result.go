@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"crypto/sha256"
-	"encoding/hex"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -28,14 +27,10 @@ func (k Keeper) AddResult(
 	ctx sdk.Context, id types.RequestID,
 	req types.OracleRequestPacketData, res types.OracleResponsePacketData,
 ) ([]byte, error) {
-	result, err := hex.DecodeString(res.Result)
-	if err != nil {
-		return nil, err
-	}
-	if uint64(len(result)) > k.GetParam(ctx, types.KeyMaxResultSize) {
+	if uint64(len(res.Result)) > k.GetParam(ctx, types.KeyMaxResultSize) {
 		return nil, sdkerrors.Wrapf(types.ErrBadDataValue,
 			"AddResult: Result size (%d) exceeds the maximum size (%d).",
-			len(result), k.GetParam(ctx, types.KeyMaxResultSize),
+			len(res.Result), k.GetParam(ctx, types.KeyMaxResultSize),
 		)
 	}
 	store := ctx.KVStore(k.storeKey)

@@ -198,9 +198,9 @@ message OracleRequestPacketData {
     (gogoproto.customname) = "OracleScriptID",
     (gogoproto.casttype) = "OracleScriptID"
   ];
-  // Calldata is the hex-encoded of the calldata bytes available for oracle
+  // Calldata is the calldata bytes available for oracle
   // execution during both preparation and execution phases.
-  string calldata = 3;
+  bytes calldata = 3;
   // AskCount is the number of validators that are requested to respond to this
   // oracle request. Higher value means more security, at a higher gas cost.
   int64 ask_count = 4;
@@ -238,9 +238,8 @@ message OracleResponsePacketData {
   // ResolveStatus is the status of this oracle request, which can be OK, ERROR,
   // or EXPIRED.
   ResolveStatus resolve_status = 6;
-  // Result is the hex-encoded of the final aggregated value only available if
-  // status if OK.
-  string result = 7;
+  // Result is the final aggregated value only available if status if OK.
+  bytes result = 7;
 }
 
 // Request is a data structure that stores the detail of a request to an oracle

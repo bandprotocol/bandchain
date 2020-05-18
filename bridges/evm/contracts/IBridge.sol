@@ -7,7 +7,7 @@ interface IBridge {
     struct RequestPacket {
         string clientId;
         uint64 oracleScriptId;
-        string params;
+        bytes params;
         uint64 askCount;
         uint64 minCount;
     }
@@ -20,7 +20,7 @@ interface IBridge {
         uint64 requestTime;
         uint64 resolveTime;
         uint8 resolveStatus;
-        string result;
+        bytes result;
     }
 
     /// Performs oracle state relay and oracle data verification in one go. The caller submits
