@@ -14,12 +14,15 @@ import (
 	"github.com/bandprotocol/bandchain/chain/app"
 )
 
+const (
+	flagValidator = "validator"
+)
+
 // Config data structure for bandoracled daemon.
 type Config struct {
-	ChainID   string   `mapstructure:"chain-id"`  // ChainID of the target chain
-	NodeURI   string   `mapstructure:"node"`      // Remote RPC URI of BandChain node to connect to
-	Validator string   `mapstructure:"validator"` // The validator address that I'm responsible for
-	Keys      []string `mapstructure:"keys"`      // Keyring keys of the data reporters
+	ChainID   string `mapstructure:"chain-id"`  // ChainID of the target chain
+	NodeURI   string `mapstructure:"node"`      // Remote RPC URI of BandChain node to connect to
+	Validator string `mapstructure:"validator"` // The validator address that I'm responsible for
 }
 
 // Global instances.
@@ -69,8 +72,10 @@ func main() {
 	rootCmd.PersistentFlags().String(flags.FlagHome, os.ExpandEnv("$HOME/.oracled"), "home directory")
 	rootCmd.PersistentFlags().String(flags.FlagChainID, "bandchain-dev", "chain ID of BandChain network")
 	rootCmd.PersistentFlags().String(flags.FlagNode, "tcp://localhost:26657", "RPC url to BandChain node")
+	rootCmd.PersistentFlags().String(flagValidator, "", "validator address")
 	viper.BindPFlag(flags.FlagChainID, rootCmd.PersistentFlags().Lookup(flags.FlagChainID))
 	viper.BindPFlag(flags.FlagNode, rootCmd.PersistentFlags().Lookup(flags.FlagNode))
+	viper.BindPFlag(flagValidator, rootCmd.PersistentFlags().Lookup(flagValidator))
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)

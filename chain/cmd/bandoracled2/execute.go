@@ -23,10 +23,20 @@ func init() {
 	authclient.Codec = appCodec
 }
 
-func BroadCastMsgs(c *Context, l *Logger, msgs []sdk.Msg) {
-	// TODO: Make this a queue. Make it better.
+func SubmitReport(c *Context, l *Logger, id oracle.RequestID, reps []oracle.RawReport) {
+	key := <-c.keys
+	defer func() {
+		c.keys <- key
+	}()
+
+	msg := oracle.NewMsgReportData(oracle.RequestID(id), reps, c.validator, key.GetAddress())
+	if err := msg.ValidateBasic(); err != nil {
+		l.Error(":exploding_head: Failed to validate basic with error: %s", err.Error())
+		return
+	}
+
 	cliCtx := sdkCtx.CLIContext{Client: c.client}
-	acc, err := auth.NewAccountRetriever(appCodec, cliCtx).GetAccount(c.key.GetAddress())
+	acc, err := auth.NewAccountRetriever(appCodec, cliCtx).GetAccount(key.GetAddress())
 	if err != nil {
 		l.Error(":exploding_head: Failed to retreive account with error: %s", err.Error())
 		return
@@ -36,7 +46,7 @@ func BroadCastMsgs(c *Context, l *Logger, msgs []sdk.Msg) {
 	out, err := auth.NewTxBuilder(
 		auth.DefaultTxEncoder(cdc), acc.GetAccountNumber(), acc.GetSequence(),
 		1000000, 1, false, cfg.ChainID, "", sdk.NewCoins(), sdk.NewDecCoins(),
-	).WithKeybase(keybase).BuildAndSign(c.key.GetName(), ckeys.DefaultKeyPass, msgs)
+	).WithKeybase(keybase).BuildAndSign(key.GetName(), ckeys.DefaultKeyPass, []sdk.Msg{msg})
 	if err != nil {
 		l.Error(":exploding_head: Failed to build tx with error: %s", err.Error())
 		return
@@ -47,7 +57,10 @@ func BroadCastMsgs(c *Context, l *Logger, msgs []sdk.Msg) {
 		l.Error(":exploding_head: Failed to broadcast tx with error: %s", err.Error())
 		return
 	}
-
+	if res.Code != 0 {
+		l.Error(":exploding_head: Tx returned nonzero code %d with log %s", res.Code, res.RawLog)
+		return
+	}
 	l.Info(":smiling_face_with_sunglasses: Successfully broadcast tx with hash: %s", res.TxHash)
 }
 
@@ -66,6 +79,6 @@ func GetExecutable(c *Context, l *Logger, id int) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	l.Debug(":balloon: Received data source #%d content: 0x%X...", id, dataSource.Executable[:32])
+	l.Debug(":balloon: Received data source #%d content: %q", id, dataSource.Executable[:32])
 	return dataSource.Executable, nil
 }
