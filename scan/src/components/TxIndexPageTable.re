@@ -186,7 +186,10 @@ let renderEditDataSource = (dataSource: TxSub.Msg.EditDataSource.t) => {
     <div className=Styles.topicContainer>
       <Text value="OWNER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
-        <AddressRender address={dataSource.owner} />
+        {switch (dataSource.owner) {
+         | Some(owner) => <AddressRender address=owner />
+         | None => <Text value="Unchanged" code=true />
+         }}
       </div>
     </div>
     <VSpacing size=Spacing.lg />
@@ -235,7 +238,10 @@ let renderEditOracleScript = (oracleScript: TxSub.Msg.EditOracleScript.t) => {
     <div className=Styles.topicContainer>
       <Text value="OWNER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
-        <AddressRender address={oracleScript.owner} />
+        {switch (oracleScript.owner) {
+         | Some(owner) => <AddressRender address=owner />
+         | None => <Text value="Unchanged" code=true />
+         }}
       </div>
     </div>
     <VSpacing size=Spacing.lg />
@@ -362,23 +368,37 @@ let renderEditValidator = (validator: TxSub.Msg.EditValidator.t) => {
     <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
       <Text value="MONIKER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <Text value={validator.moniker} code=true />
+      <Text
+        value={validator.moniker == "[do-not-modify]" ? "Unchanged" : validator.moniker}
+        code=true
+      />
     </div>
     <VSpacing size=Spacing.md />
     <div className=Styles.topicContainer>
       <Text value="IDENTITY" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <Text value={validator.identity} code=true />
+      <Text
+        value={validator.identity == "[do-not-modify]" ? "Unchanged" : validator.identity}
+        code=true
+      />
     </div>
     <VSpacing size=Spacing.md />
     <div className=Styles.topicContainer>
       <Text value="WEBSITE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <Text value={validator.website} code=true />
+      <Text
+        value={validator.website == "[do-not-modify]" ? "Unchanged" : validator.website}
+        code=true
+      />
     </div>
     <VSpacing size=Spacing.md />
     <div className=Styles.topicContainer>
       <Text value="DETAILS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className=Styles.detailContainer>
-        <Text value={validator.details} code=true height={Text.Px(16)} align=Text.Right />
+        <Text
+          value={validator.details == "[do-not-modify]" ? "Unchanged" : validator.details}
+          code=true
+          height={Text.Px(16)}
+          align=Text.Right
+        />
       </div>
     </div>
     <VSpacing size=Spacing.md />
