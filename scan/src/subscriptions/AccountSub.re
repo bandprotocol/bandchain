@@ -16,9 +16,5 @@ let get = address => {
       SingleConfig.definition,
       ~variables=SingleConfig.makeVariables(~address=address |> Address.toBech32, ()),
     );
-  let%Sub x = result;
-  switch (x##accounts_by_pk) {
-  | Some(data) => Sub.resolve(data)
-  | None => NoData
-  };
+  result |> Sub.map(_, x => x##accounts_by_pk |> Belt_Option.getWithDefault(_, {balance: []}));
 };

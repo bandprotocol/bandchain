@@ -1,40 +1,22 @@
 package owasm
 
-// ExecEnv encapsulates the operations that an Owasm script
-// can call to interact with the external world. An operation can fail and
-// when that occurs, the whole function call will fail.
+// ExecEnv encapsulates the operations that an Owasm script can interact with BandChain.
 type ExecEnv interface {
-	// GetAskCount returns the number of validators that the current
-	// data request specifies for the oracle query.
+	// GetAskCount returns the number of validators asked to work for this oracle query.
 	GetAskCount() int64
-
-	// GetMinCount returns the number of validators
-	// that is enough to push this data request into the aggregation phase.
+	// GetMinCount returns the minimum number of validators to move to aggregation phase.
 	GetMinCount() int64
-
-	// GetAnsCount returns the number of validators among the
-	// requested ones that replied with raw data reports. Return zero during the
-	// *preparation* phase.
+	// GetAnsCount returns the number of validators that submit answers. Zero during preparation.
 	GetAnsCount() int64
-
-	// GetPrepareBlockTime returns the time at which the *preparation* phase of
-	// this data request was being run.
+	// GetPrepareBlockTime returns the time of *preparation* phase was run.
 	GetPrepareBlockTime() int64
-
-	// GetAggregateBlockTime returns the time at which the *aggregation* phase of
-	// this data request was being run. Return zero during the *preparation* phase.
+	// GetAggregateBlockTime returns the time of *aggregation* phase. Zero during preparation.
 	GetAggregateBlockTime() int64
-
-	// GetValidatorPublic returns the 20-byte address of the block validator
-	// at the specified index.
+	// GetValidatorAddress returns the 20-byte validator address at the specified index.
 	GetValidatorAddress(validatorIndex int64) ([]byte, error)
-
-	// GetMaximumResultSize returns the maxixmum size of result data that returns from
-	// execute function.
+	// GetMaximumResultSize returns the maxixmum size of aggregation result.
 	GetMaximumResultSize() int64
-
-	// GetMaximumCalldataOfDataSourceSize returns the maximum size of call data using in
-	// data source execution.
+	// GetMaximumCalldataOfDataSourceSize returns the maximum size of data source's calldata.
 	GetMaximumCalldataOfDataSourceSize() int64
 
 	// RequestExternalData performs a request to the specified data source
