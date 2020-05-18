@@ -14,7 +14,8 @@ type t =
   | Fraction(int, int, bool)
   | FloatWithSuffix(float, string, int)
   | ValidatorsMini(array(ValidatorSub.Mini.t))
-  | Validators(array(ValidatorSub.t));
+  | Validators(array(ValidatorSub.t))
+  | Loading(int);
 
 module Styles = {
   open Css;
@@ -26,7 +27,6 @@ module Styles = {
   let datasourcesContainer = style([display(`flex), alignItems(`center), flexWrap(`wrap)]);
   let oracleScriptContainer = style([display(`flex), width(`px(240))]);
   let validatorsContainer = style([display(`flex), flexDirection(`column), flexWrap(`wrap)]);
-  let headerContainer = style([lineHeight(`px(25))]);
   let sourceContainer =
     style([
       display(`inlineFlex),
@@ -42,16 +42,14 @@ module Styles = {
 let make = (~info, ~header, ~isLeft=true) => {
   let infoSub = React.useContext(GlobalContext.context);
   <div className=Styles.mainContainer>
-    <div className=Styles.headerContainer>
-      <Text
-        value=header
-        color=Colors.gray7
-        size=Text.Sm
-        weight=Text.Thin
-        height={Text.Px(13)}
-        spacing={Text.Em(0.03)}
-      />
-    </div>
+    <Text
+      value=header
+      color=Colors.gray7
+      size=Text.Sm
+      weight=Text.Thin
+      height={Text.Px(18)}
+      spacing={Text.Em(0.03)}
+    />
     {switch (info) {
      | Height(height) =>
        <div className=Styles.vFlex> <TypeID.Block id=height position=TypeID.Subtitle /> </div>
@@ -219,6 +217,7 @@ let make = (~info, ~header, ~isLeft=true) => {
             )
           ->React.array}
        </div>
+     | Loading(width) => <LoadingCensorBar width height=15 />
      }}
   </div>;
 };
