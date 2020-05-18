@@ -36,7 +36,7 @@ let make = (~setMsgsOpt) => {
       width=115
       inputData=amount
       setInputData=setAmount
-      parse=Parse.parseBandAmount
+      parse=Parse.getBandAmount
       msg="Amount (BAND)"
       errMsg="Invalid amount"
       code=true
