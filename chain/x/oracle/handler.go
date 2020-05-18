@@ -3,6 +3,7 @@ package oracle
 import (
 	"fmt"
 
+	gzip "github.com/bandprotocol/bandchain/chain/pkg/gzip"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -37,9 +38,15 @@ func NewHandler(k Keeper) sdk.Handler {
 }
 
 func handleMsgCreateDataSource(ctx sdk.Context, k Keeper, m MsgCreateDataSource) (*sdk.Result, error) {
-	filename := k.AddFile(m.Executable)
+	var err error
+	if gzip.IsGzip(m.Executable) {
+		m.Executable, err = gzip.Uncompress(m.Executable, types.MaxExecutableSize)
+		if err != nil {
+			return nil, err
+		}
+	}
 	id := k.AddDataSource(ctx, types.NewDataSource(
-		m.Owner, m.Name, m.Description, filename,
+		m.Owner, m.Name, m.Description, k.AddFile(m.Executable),
 	))
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeCreateDataSource,
@@ -56,9 +63,14 @@ func handleMsgEditDataSource(ctx sdk.Context, k Keeper, m MsgEditDataSource) (*s
 	if !dataSource.Owner.Equals(m.Sender) {
 		return nil, types.ErrEditorNotAuthorized
 	}
-	filename := k.AddFile(m.Executable)
+	if gzip.IsGzip(m.Executable) {
+		m.Executable, err = gzip.Uncompress(m.Executable, types.MaxExecutableSize)
+		if err != nil {
+			return nil, err
+		}
+	}
 	err = k.EditDataSource(ctx, m.DataSourceID, types.NewDataSource(
-		m.Owner, m.Name, m.Description, filename,
+		m.Owner, m.Name, m.Description, k.AddFile(m.Executable),
 	))
 	if err != nil {
 		return nil, err
@@ -71,9 +83,17 @@ func handleMsgEditDataSource(ctx sdk.Context, k Keeper, m MsgEditDataSource) (*s
 }
 
 func handleMsgCreateOracleScript(ctx sdk.Context, k Keeper, m MsgCreateOracleScript) (*sdk.Result, error) {
+	var err error
+	if gzip.IsGzip(m.Code) {
+		m.Code, err = gzip.Uncompress(m.Code, types.MaxWasmCodeSize)
+		if err != nil {
+			return nil, err
+		}
+	}
 	id := k.AddOracleScript(ctx, types.NewOracleScript(
 		m.Owner, m.Name, m.Description, k.AddFile(m.Code), m.Schema, m.SourceCodeURL,
 	))
+
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeCreateOracleScript,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
@@ -82,6 +102,13 @@ func handleMsgCreateOracleScript(ctx sdk.Context, k Keeper, m MsgCreateOracleScr
 }
 
 func handleMsgEditOracleScript(ctx sdk.Context, k Keeper, m MsgEditOracleScript) (*sdk.Result, error) {
+	var err error
+	if gzip.IsGzip(m.Code) {
+		m.Code, err = gzip.Uncompress(m.Code, types.MaxWasmCodeSize)
+		if err != nil {
+			return nil, err
+		}
+	}
 	oracleScript, err := k.GetOracleScript(ctx, m.OracleScriptID)
 	if err != nil {
 		return nil, err
