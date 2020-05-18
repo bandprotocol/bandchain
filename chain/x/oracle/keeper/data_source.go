@@ -50,10 +50,10 @@ func (k Keeper) EditDataSource(ctx sdk.Context, id types.DataSourceID, new types
 	if err != nil {
 		return err
 	}
-	dataSource.Owner = new.Owner // TODO: Allow NOT_MODIFY or nil in these fields.
-	dataSource.Name = new.Name
-	dataSource.Description = new.Description
-	dataSource.Executable = new.Executable
+	dataSource.Owner = new.Owner
+	dataSource.Name = modify(dataSource.Name, new.Name)
+	dataSource.Description = modify(dataSource.Description, new.Description)
+	dataSource.Executable = new.Executable // TODO: Revisit this after file cache is done.
 	k.SetDataSource(ctx, id, dataSource)
 	return nil
 }

@@ -258,7 +258,7 @@ message Request {
   int64 min_count = 4;
   int64 request_height = 5;
   int64 request_time = 6;
-  string Client_id = 7 [(gogoproto.customname) = "ClientID"];
+  string client_id = 7 [(gogoproto.customname) = "ClientID"];
   RequestIBC ibc = 8 [(gogoproto.customname) = "IBC"];
 }
 
@@ -278,16 +278,24 @@ message Report {
   repeated RawReport raw_reports = 2 [(gogoproto.nullable) = false];
 }
 
+// ValidatorReportInfo defines the report info for a validator
+message ValidatorReportInfo {
+  option (gogoproto.equal) = true;
+
+  bytes validator = 1
+      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
+  // field to count consecutive missed report
+  uint64 consecutive_missed = 2;
+}
+
 // Params - used for initializing default parameter for oracle at genesis.
 message Params {
   option (gogoproto.equal) = true;
   option (gogoproto.goproto_stringer) = false;
 
   uint64 max_raw_request_count = 1;
-  uint64 max_raw_data_report_size = 2;
-  uint64 max_result_size = 3;
-  uint64 gas_per_raw_data_request_per_validator = 4;
-  uint64 expiration_block_count = 5;
-  uint64 execute_gas = 6;
-  uint64 prepare_gas = 7;
+  uint64 max_result_size = 2;
+  uint64 gas_per_raw_data_request_per_validator = 3;
+  uint64 expiration_block_count = 4;
+  uint64 max_consecutive_misses = 5;
 }

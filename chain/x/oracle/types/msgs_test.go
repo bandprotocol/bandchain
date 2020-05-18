@@ -63,6 +63,7 @@ func TestMsgGetSigners(t *testing.T) {
 	require.Equal(t, signers, NewMsgEditDataSource(1, anotherAcc, "name", "desc", []byte("exec"), signerAcc).GetSigners())
 	require.Equal(t, signers, NewMsgCreateOracleScript(anotherAcc, "name", "desc", []byte("code"), "schema", "url", signerAcc).GetSigners())
 	require.Equal(t, signers, NewMsgEditOracleScript(1, anotherAcc, "name", "desc", []byte("code"), "schema", "url", signerAcc).GetSigners())
+	require.Equal(t, signers, NewMsgRequestData(1, []byte("calldata"), 10, 5, "client-id", signerAcc).GetSigners())
 	require.Equal(t, signers, NewMsgReportData(1, []RawReport{{1, 1, []byte("data1")}, {2, 2, []byte("data2")}}, anotherVal, signerAcc).GetSigners())
 	require.Equal(t, signers, NewMsgAddOracleAddress(signerVal, anotherAcc).GetSigners())
 	require.Equal(t, signers, NewMsgRemoveOracleAddress(signerVal, anotherAcc).GetSigners())
@@ -171,6 +172,7 @@ func TestMsgReportDataValidation(t *testing.T) {
 	performValidateTests(t, []validateTestCase{
 		{true, NewMsgReportData(1, []RawReport{{1, 1, []byte("data1")}, {2, 2, []byte("data2")}}, GoodTestValAddr, GoodTestAddr)},
 		{false, NewMsgReportData(1, []RawReport{}, GoodTestValAddr, GoodTestAddr)},
+		{false, NewMsgReportData(1, []RawReport{{1, 1, []byte(strings.Repeat("x", 2000))}, {2, 2, []byte("data2")}}, GoodTestValAddr, GoodTestAddr)},
 		{false, NewMsgReportData(1, []RawReport{{1, 1, []byte("data1")}, {1, 1, []byte("data2")}}, GoodTestValAddr, GoodTestAddr)},
 		{false, NewMsgReportData(1, []RawReport{{1, 1, []byte("data1")}, {2, 2, []byte("data2")}}, BadTestValAddr, GoodTestAddr)},
 		{false, NewMsgReportData(1, []RawReport{{1, 1, []byte("data1")}, {2, 2, []byte("data2")}}, GoodTestValAddr, BadTestAddr)},
