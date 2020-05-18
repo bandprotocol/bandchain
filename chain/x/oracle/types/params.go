@@ -125,13 +125,10 @@ func validateExpirationBlockCount(i interface{}) error {
 }
 
 func validateMaxConsecutiveMisses(i interface{}) error {
-	v, ok := i.(uint64)
+	_, ok := i.(uint64)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	if v < 0 {
-		return fmt.Errorf("max consecutive misses must be positive: %d", v)
-	}
 	return nil
 }
