@@ -962,7 +962,7 @@ type OracleRequestPacketData struct {
 	// OracleScriptID is the unique identifier of the oracle script to be
 	// executed.
 	OracleScriptID OracleScriptID `protobuf:"varint,2,opt,name=oracle_script_id,json=oracleScriptId,proto3,casttype=OracleScriptID" json:"oracle_script_id,omitempty"`
-	// Calldata is the hex-encoded of the calldata bytes available for oracle
+	// Calldata is the calldata bytes available for oracle
 	// execution during both preparation and execution phases.
 	Calldata []byte `protobuf:"bytes,3,opt,name=calldata,proto3" json:"calldata,omitempty"`
 	// AskCount is the number of validators that are requested to respond to this
@@ -1065,8 +1065,7 @@ type OracleResponsePacketData struct {
 	// ResolveStatus is the status of this oracle request, which can be OK, ERROR,
 	// or EXPIRED.
 	ResolveStatus ResolveStatus `protobuf:"varint,6,opt,name=resolve_status,json=resolveStatus,proto3,enum=bandchain.chain.x.oracle.v1.ResolveStatus" json:"resolve_status,omitempty"`
-	// Result is the hex-encoded of the final aggregated value only available if
-	// status if OK.
+	// Result is the final aggregated value only available if status if OK.
 	Result []byte `protobuf:"bytes,7,opt,name=result,proto3" json:"result,omitempty"`
 }
 

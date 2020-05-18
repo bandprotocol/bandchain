@@ -238,8 +238,7 @@ message OracleResponsePacketData {
   // ResolveStatus is the status of this oracle request, which can be OK, ERROR,
   // or EXPIRED.
   ResolveStatus resolve_status = 6;
-  // Result is the final aggregated value only available if
-  // status if OK.
+  // Result is the final aggregated value only available if status if OK.
   bytes result = 7;
 }
 
