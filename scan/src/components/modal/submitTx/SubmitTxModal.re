@@ -203,7 +203,7 @@ module SubmitTxStep = {
         parse={newVal => {
           let xOpt = float_of_string_opt(newVal);
           switch (xOpt) {
-          | Some(x) => Some(x *. 1e6)
+          | Some(x) => Some(Js.Math.floor_float(x *. 1e6))
           | None => None
           };
         }}
