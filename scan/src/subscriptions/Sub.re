@@ -31,3 +31,10 @@ let all3 = (s1, s2, s3) =>
 
 let all4 = (s1, s2, s3, s4) =>
   let_(s1, s1' => let_(s2, s2' => let_(s3, s3' => let_(s4, s4' => Data((s1', s2', s3', s4'))))));
+
+let all5 = (s1, s2, s3, s4, s5) =>
+  let_(s1, s1' =>
+    let_(s2, s2' =>
+      let_(s3, s3' => let_(s4, s4' => let_(s5, s5' => Data((s1', s2', s3', s4', s5')))))
+    )
+  );
