@@ -94,7 +94,9 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
     let validatorSub = ValidatorSub.get(address);
     let bondedTokenCountSub = ValidatorSub.getTotalBondedAmount();
     let%Sub validator = validatorSub;
-    let%Sub bondedTokenCount = bondedTokenCountSub;
+    let%Sub rawBondedTokenCount = bondedTokenCountSub;
+
+    let bondedTokenCount = rawBondedTokenCount.amount;
 
     <>
       <Row justify=Row.Between>
@@ -143,10 +145,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
         {kvRow(
            "VOTING POWER",
            VCode(
-             (
-               bondedTokenCount.amount > 0.
-                 ? validator.votingPower *. 100. /. bondedTokenCount.amount : 0.
-             )
+             (bondedTokenCount > 0. ? validator.votingPower *. 100. /. bondedTokenCount : 0.)
              ->Format.fPretty
              ++ "% ("
              ++ validator.votingPower->Format.fPretty
