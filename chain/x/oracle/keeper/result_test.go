@@ -100,7 +100,7 @@ func TestGetAllResults(t *testing.T) {
 		Result:        BasicCalldata,
 	}
 
-	_, err := k.AddResult(ctx, types.RequestID(1), reqPacket1, resPacket1)
+	resultHashReqID1, err := k.AddResult(ctx, types.RequestID(1), reqPacket1, resPacket1)
 	require.NoError(t, err)
 
 	reqPacket4 := oracle.OracleRequestPacketData{
@@ -121,17 +121,17 @@ func TestGetAllResults(t *testing.T) {
 		Result:        BasicCalldata,
 	}
 
-	_, err = k.AddResult(ctx, types.RequestID(4), reqPacket4, resPacket4)
+	resultHashReqID4, err := k.AddResult(ctx, types.RequestID(4), reqPacket4, resPacket4)
 	require.NoError(t, err)
 
 	results := k.GetAllResults(ctx)
 
 	require.Equal(t, 4, len(results))
-	require.NotEmpty(t, results[0])
+	require.Equal(t, resultHashReqID1, results[0])
 
 	// result of reqID 2 and 3 should be empty byte array
 	require.Empty(t, results[1])
 	require.Empty(t, results[2])
 
-	require.NotEmpty(t, results[3])
+	require.Equal(t, resultHashReqID4, results[3])
 }
