@@ -236,7 +236,7 @@ let resultGo = ({name}) => {
 let generateGo = (packageName, schema, name) => {
   let template = (structs, functions, results) => {j|package $packageName
 
-import "github.com/bandchain/chain/borsh"
+import "github.com/bandchain/chain/pkg/borsh"
 
 type Result struct {
 \t$structs
@@ -279,7 +279,7 @@ let encodeStructGo = ({name, varType}) => {
 let generateEncodeGo = (packageName, schema, name) => {
   let template = (structs, functions) => {j|package $packageName
 
-import "github.com/bandchain/chain/borsh"
+import "github.com/bandchain/chain/pkg/borsh"
 
 type Result struct {
 \t$structs

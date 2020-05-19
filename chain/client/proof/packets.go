@@ -7,7 +7,7 @@ import (
 type RequestPacketEthereum struct {
 	ClientId       string
 	OracleScriptId uint64
-	Params         string
+	Params         []byte
 	AskCount       uint64
 	MinCount       uint64
 }
@@ -29,7 +29,7 @@ type ResponsePacketEthereum struct {
 	RequestTime   uint64
 	ResolveTime   uint64
 	ResolveStatus uint8
-	Result        string
+	Result        []byte
 }
 
 func transformResponsePacket(p oracle.OracleResponsePacketData) ResponsePacketEthereum {

@@ -37,7 +37,7 @@ func keysAddCmd(c *Context) *cobra.Command {
 				return err
 			}
 
-			info, err := c.keybase.NewAccount(
+			info, err := keybase.NewAccount(
 				args[0], mnemonic, "", hd.CreateHDPath(494, 0, 0).String(), hd.Secp256k1,
 			)
 			if err != nil {
@@ -59,11 +59,10 @@ func keysListCmd(c *Context) *cobra.Command {
 		Short:   "List all the keys in the keychain",
 		Args:    cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			keys, err := c.keybase.List()
+			keys, err := keybase.List()
 			if err != nil {
 				return err
 			}
-
 			for _, key := range keys {
 				fmt.Printf("%s => %s\n", key.GetName(), key.GetAddress().String())
 			}

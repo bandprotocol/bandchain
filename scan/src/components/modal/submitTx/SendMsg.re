@@ -9,7 +9,10 @@ let make = (~setMsgsOpt) => {
         let%Opt toAddressValue = toAddress.value;
         let%Opt amountValue = amount.value;
         Some([|
-          TxCreator.Send(toAddressValue, {amount: amountValue |> string_of_int, denom: "uband"}),
+          TxCreator.Send(
+            toAddressValue,
+            {amount: amountValue |> Js.Float.toString, denom: "uband"},
+          ),
         |]);
       };
       setMsgsOpt(_ => msgsOpt);
@@ -26,15 +29,17 @@ let make = (~setMsgsOpt) => {
       parse=Address.fromBech32Opt
       msg="To"
       errMsg="Invalid Address"
+      code=true
     />
     <VSpacing size=Spacing.md />
     <EnhanceTxInput
       width=115
       inputData=amount
       setInputData=setAmount
-      parse=int_of_string_opt
-      msg="Amount (UBAND)"
+      parse=Parse.getBandAmount
+      msg="Amount (BAND)"
       errMsg="Invalid amount"
+      code=true
     />
   </>;
 };

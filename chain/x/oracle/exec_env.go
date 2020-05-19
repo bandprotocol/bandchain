@@ -92,7 +92,7 @@ func (env *ExecEnv) GetValidatorAddress(validatorIndex int64) ([]byte, error) {
 // RequestExternalData implements Owasm ExecEnv interface.
 func (env *ExecEnv) RequestExternalData(did int64, eid int64, calldata []byte) error {
 	if int64(len(calldata)) > env.maxCalldataSize {
-		return types.ErrValidatorOutOfRange
+		return types.ErrTooLargeCalldata
 	}
 	if int64(len(env.rawRequests)) >= env.maxRawRequestCount {
 		return types.ErrTooManyRawRequests

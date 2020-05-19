@@ -1,7 +1,6 @@
 package db
 
 import (
-	"encoding/hex"
 	"encoding/json"
 	"strconv"
 
@@ -47,10 +46,8 @@ func (b *BandDB) HandleBeginAndEndblockEvent(event abci.Event) {
 				panic(err)
 
 			}
-			result, err := hex.DecodeString(kvMap[oracle.AttributeKeyResult])
-			if err != nil {
-				panic(err)
-			}
+			result := []byte(kvMap[oracle.AttributeKeyResult])
+
 			err = b.tx.Model(&Request{}).Where(Request{ID: id}).
 				Update(
 					Request{ResolveStatus: parseResolveStatus(resolveStatus),

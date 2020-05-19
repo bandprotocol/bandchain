@@ -77,24 +77,26 @@ func NewDB(dialect, path string) (*BandDB, error) {
 
 	db.Exec(`CREATE VIEW validator_last_250_votes AS
 			SELECT COUNT(*), consensus_address, voted
-			FROM validator_votes
-			WHERE block_height > (SELECT MAX(height) from blocks) - 250
+			FROM validator_votes 
+			WHERE block_height > (SELECT MAX(height) from blocks) - 251
 			GROUP BY consensus_address, voted;
 	`)
 
 	db.Exec(`CREATE VIEW validator_last_1000_votes AS
 			SELECT COUNT(*), consensus_address, voted
-			FROM validator_votes
-			WHERE block_height > (SELECT MAX(height) from blocks) - 1000
+			FROM validator_votes 
+			WHERE block_height > (SELECT MAX(height) from blocks) - 1001
 			GROUP BY consensus_address, voted;
 	`)
 
 	db.Exec(`CREATE VIEW validator_last_10000_votes AS
 			SELECT COUNT(*), consensus_address, voted
-			FROM validator_votes
-			WHERE block_height > (SELECT MAX(height) from blocks) - 10000
+			FROM validator_votes 
+			WHERE block_height > (SELECT MAX(height) from blocks) - 10001
 			GROUP BY consensus_address, voted;
 	`)
+
+	db.Exec(`CREATE INDEX ON blocks (proposer, height);`)
 
 	db.Model(&Block{}).AddForeignKey(
 		"proposer",
@@ -423,10 +425,10 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		if err != nil {
 			return nil, err
 		}
-	case oracle.MsgAddOracleAddress:
+	case oracle.MsgAddReporter:
 		val, _ := b.StakingKeeper.GetValidator(b.ctx, msg.Validator)
 		jsonMap["validator_moniker"] = val.Description.Moniker
-	case oracle.MsgRemoveOracleAddress:
+	case oracle.MsgRemoveReporter:
 		val, _ := b.StakingKeeper.GetValidator(b.ctx, msg.Validator)
 		jsonMap["validator_moniker"] = val.Description.Moniker
 	case bank.MsgSend:
@@ -514,8 +516,8 @@ func (b *BandDB) GetInvolvedAccountsFromTx(tx auth.StdTx) []sdk.AccAddress {
 		case oracle.MsgEditDataSource:
 		case oracle.MsgCreateOracleScript:
 		case oracle.MsgEditOracleScript:
-		case oracle.MsgAddOracleAddress:
-		case oracle.MsgRemoveOracleAddress:
+		case oracle.MsgAddReporter:
+		case oracle.MsgRemoveReporter:
 		case oracle.MsgRequestData:
 			involvedAccounts = append(involvedAccounts, msg.Sender)
 		case oracle.MsgReportData:

@@ -586,7 +586,7 @@ func TestEndBlockExecuteFailedIfExecuteGasLessThanGasUsed(t *testing.T) {
 	// TODO: Write this test properly. Pending on having owasm that can easily control gas usage.
 }
 
-func TestAddAndRemoveOracleAddress(t *testing.T) {
+func TestAddAndRemoveReporter(t *testing.T) {
 	// Setup test environment
 	ctx, keeper := keep.CreateTestInput(t, false)
 

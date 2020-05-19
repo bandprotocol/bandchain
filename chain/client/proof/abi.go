@@ -131,9 +131,9 @@ var verifyFormat = []byte(`
         "type": "uint64"
       },
       {
-        "internalType": "string",
+        "internalType": "bytes",
         "name": "params",
-        "type": "string"
+        "type": "bytes"
       },
       {
         "internalType": "uint64",
@@ -183,9 +183,9 @@ var verifyFormat = []byte(`
         "type": "uint8"
       },
       {
-        "internalType": "string",
+        "internalType": "bytes",
         "name": "result",
-        "type": "string"
+        "type": "bytes"
       }
     ],
     "internalType": "struct IBridge.ResponsePacket",
