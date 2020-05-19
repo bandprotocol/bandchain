@@ -87,11 +87,7 @@ let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)
                   </React.Fragment>
                 )
               ->React.array}
-             {success
-                ? React.null
-                : <div>
-                    <Text value={"Error: " ++ rawLog} code=true size=Text.Sm breakAll=true />
-                  </div>}
+             {success ? React.null : <TxError.Mini msg=rawLog />}
            </>
          | _ => <> <VSpacing size=Spacing.sm /> <LoadingCensorBar width=450 height=15 /> </>
          }}
