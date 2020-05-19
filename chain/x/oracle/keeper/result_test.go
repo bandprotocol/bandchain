@@ -127,11 +127,11 @@ func TestGetAllResults(t *testing.T) {
 	results := k.GetAllResults(ctx)
 
 	require.Equal(t, 4, len(results))
-	require.NotEqual(t, 0, len(results[0]))
+	require.NotEmpty(t, results[0])
 
 	// result of reqID 2 and 3 should be empty byte array
-	require.Equal(t, 0, len(results[1]))
-	require.Equal(t, 0, len(results[2]))
+	require.Empty(t, results[1])
+	require.Empty(t, results[2])
 
-	require.NotEqual(t, 0, len(results[3]))
+	require.NotEmpty(t, results[3])
 }
