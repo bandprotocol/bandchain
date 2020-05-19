@@ -64,11 +64,10 @@ func (k Keeper) GetAllResults(ctx sdk.Context) (results [][]byte) {
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		currentReqID := types.RequestID(sdk.BigEndianToUint64(iterator.Key()[1:]))
-		diffReqIDCount := currentReqID - previousReqID
+		diffReqIDCount := int(currentReqID - previousReqID)
 
 		// Insert nil for each request without result.
-		diffReqIDCountInt := int(diffReqIDCount)
-		for i := 0; i < diffReqIDCountInt-1; i++ {
+		for i := 0; i < diffReqIDCount-1; i++ {
 			results = append(results, nil)
 		}
 
