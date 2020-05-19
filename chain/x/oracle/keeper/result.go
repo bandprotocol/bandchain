@@ -13,6 +13,12 @@ func (k Keeper) HasResult(ctx sdk.Context, id types.RequestID) bool {
 	return ctx.KVStore(k.storeKey).Has(types.ResultStoreKey(id))
 }
 
+// SetResult set result to the store.
+func (k Keeper) SetResult(ctx sdk.Context, reqID types.RequestID, result []byte) {
+	store := ctx.KVStore(k.storeKey)
+	store.Set(types.ResultStoreKey(reqID), result)
+}
+
 // GetDataSource returns the result bytes for the given request ID or error if not exists.
 func (k Keeper) GetResult(ctx sdk.Context, id types.RequestID) ([]byte, error) {
 	bz := ctx.KVStore(k.storeKey).Get(types.ResultStoreKey(id))
@@ -49,12 +55,6 @@ func (k Keeper) AddResult(
 
 	store.Set(types.ResultStoreKey(id), resultHash)
 	return resultHash, nil
-}
-
-// SetResult set result to the store.
-func (k Keeper) SetResult(ctx sdk.Context, reqID types.RequestID, result []byte) {
-	store := ctx.KVStore(k.storeKey)
-	store.Set(types.ResultStoreKey(reqID), result)
 }
 
 // GetAllResults returns the list of all results in the store. Nil will be added for skipped results.
