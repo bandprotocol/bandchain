@@ -1,7 +1,3 @@
-<div align="center">
-  <img width="300" src="assets/d3n_banner.png" />
-</div>
-
 # BandChain - Decentralized Data Delivery Network
 
 This repository is a [monorepo] containing the reference implementation of BandChain and its various supporting tools. See below for the breakdown and explanation of each module. README for each of the modules.
