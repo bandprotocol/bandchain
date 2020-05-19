@@ -52,9 +52,9 @@ func (k Keeper) AddResult(
 }
 
 // SetResult set result to the store.
-func (k Keeper) SetResult(ctx sdk.Context, regID types.RequestID, result []byte) {
+func (k Keeper) SetResult(ctx sdk.Context, reqID types.RequestID, result []byte) {
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.ResultStoreKey(regID), result)
+	store.Set(types.ResultStoreKey(reqID), result)
 }
 
 // GetAllResults returns the list of all results in the store. Nil will be added for skipped results.
