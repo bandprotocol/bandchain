@@ -509,7 +509,7 @@ $ %s tx oracle edit-oracle-script 1 --name eth-price --description "Oracle scrip
 	return cmd
 }
 
-// GetCmdAddReporter implements the adding of oracle address command handler.
+// GetCmdAddReporter implements the add reporter command handler.
 func GetCmdAddReporter(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add-reporter [reporter]",
@@ -548,7 +548,7 @@ $ %s tx oracle add-reporter band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun --from m
 	return cmd
 }
 
-// GetCmdRemoveReporter implements the Removing of oracle address command handler.
+// GetCmdRemoveReporter implements the remove reporter command handler.
 func GetCmdRemoveReporter(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "remove-reporter [reporter]",
