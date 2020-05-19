@@ -78,7 +78,9 @@ func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorU
 	}
 
 	for i, result := range data.Results {
-		k.SetResult(ctx, types.RequestID(i+1), result)
+		if result != nil {
+			k.SetResult(ctx, types.RequestID(i+1), result)
+		}
 	}
 
 	err := k.BindPort(ctx, PortID)
