@@ -53,21 +53,22 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 		return
 	}
 
+	l = l.With("rid", id)
+
 	// Skip if not related to this validator
-	validatorAddr := GetEventValues(log, otypes.EventTypeRequest, otypes.AttributeKeyValidator)
-	isFoundValidator := false
-	for _, validator := range validatorAddr {
+	validators := GetEventValues(log, otypes.EventTypeRequest, otypes.AttributeKeyValidator)
+	hasMe := false
+	for _, validator := range validators {
 		if validator == c.validator.String() {
-			isFoundValidator = true
+			hasMe = true
 		}
 	}
 
-	if !isFoundValidator {
-		l.Debug(":next_track_button: skip request not related to this validator")
+	if !hasMe {
+		l.Debug(":next_track_button: Skip request not related to this validator")
 		return
 	}
 
-	l = l.With("rid", id)
 	l.Info(":delivery_truck: Processing incoming request event")
 
 	reqs, err := GetRawRequests(log)
