@@ -39,7 +39,6 @@ func (k Keeper) AddResult(
 			len(res.Result), k.GetParam(ctx, types.KeyMaxResultSize),
 		)
 	}
-	store := ctx.KVStore(k.storeKey)
 
 	h := sha256.New()
 	h.Write(k.cdc.MustMarshalBinaryBare(req))
@@ -53,7 +52,7 @@ func (k Keeper) AddResult(
 	h.Write(append(reqPacketHash, resPacketHash...))
 	resultHash := h.Sum(nil)
 
-	store.Set(types.ResultStoreKey(id), resultHash)
+	k.SetResult(ctx, types.RequestID(id), resultHash)
 	return resultHash, nil
 }
 

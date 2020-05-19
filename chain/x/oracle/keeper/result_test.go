@@ -113,6 +113,9 @@ func TestSetResult(t *testing.T) {
 	resultHash, err := k.AddResult(ctx, types.RequestID(1), reqPacket, resPacket)
 	require.NoError(t, err)
 
+	resultHashReqID1, err := k.GetResult(ctx, types.RequestID(1))
+	require.Equal(t, resultHash, resultHashReqID1)
+
 	// Set result for request ID 2
 	k.SetResult(ctx, types.RequestID(2), resultHash)
 	resultHashReqID2, err := k.GetResult(ctx, types.RequestID(2))
