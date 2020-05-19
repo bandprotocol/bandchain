@@ -1,4 +1,13 @@
-package keeper
+package keeper_test
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/require"
+
+	"github.com/bandprotocol/bandchain/chain/x/oracle"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+)
 
 // import (
 // 	"testing"
@@ -69,3 +78,60 @@ package keeper
 // 	err = keeper.AddResult(ctx, 1, 1, []byte("calldata"), []byte("result"))
 // 	require.NotNil(t, err)
 // }
+
+func TestGetAllResults(t *testing.T) {
+	_, ctx, k := createTestInput()
+
+	reqPacket1 := oracle.OracleRequestPacketData{
+		ClientID:       "alice",
+		OracleScriptID: 1,
+		Calldata:       BasicCalldata,
+		AskCount:       1,
+		MinCount:       1,
+	}
+
+	resPacket1 := oracle.OracleResponsePacketData{
+		ClientID:      "alice",
+		RequestID:     1,
+		AnsCount:      1,
+		RequestTime:   1589535020,
+		ResolveTime:   1589535022,
+		ResolveStatus: 1,
+		Result:        BasicCalldata,
+	}
+
+	_, err := k.AddResult(ctx, types.RequestID(1), reqPacket1, resPacket1)
+	require.NoError(t, err)
+
+	reqPacket4 := oracle.OracleRequestPacketData{
+		ClientID:       "bob",
+		OracleScriptID: 1,
+		Calldata:       BasicCalldata,
+		AskCount:       1,
+		MinCount:       1,
+	}
+
+	resPacket4 := oracle.OracleResponsePacketData{
+		ClientID:      "bob",
+		RequestID:     4,
+		AnsCount:      1,
+		RequestTime:   1589535020,
+		ResolveTime:   1589535022,
+		ResolveStatus: 1,
+		Result:        BasicCalldata,
+	}
+
+	_, err = k.AddResult(ctx, types.RequestID(4), reqPacket4, resPacket4)
+	require.NoError(t, err)
+
+	results := k.GetAllResults(ctx)
+
+	require.Equal(t, 4, len(results))
+	require.NotEqual(t, 0, len(results[0]))
+
+	// result of reqID 2 and 3 should be empty byte array
+	require.Equal(t, 0, len(results[1]))
+	require.Equal(t, 0, len(results[2]))
+
+	require.NotEqual(t, 0, len(results[3]))
+}
