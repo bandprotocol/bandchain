@@ -2,15 +2,18 @@ package main
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func configCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "config",
-		Short: "Configure oracle environment",
+		Use:     "config [key] [value]",
+		Aliases: []string{"c"},
+		Short:   "Set oracled configuration environment",
+		Args:    cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// logger.Info("TODO ~~~")
-			return nil
+			viper.Set(args[0], args[1])
+			return viper.WriteConfig()
 		},
 	}
 	return cmd

@@ -36,10 +36,8 @@ func initConfig(cmd *cobra.Command) error {
 	if err != nil {
 		return err
 	}
-	viper.SetConfigFile(path.Join(home, "config", "config.yaml"))
-	if err := viper.ReadInConfig(); err != nil {
-		return err
-	}
+	viper.SetConfigFile(path.Join(home, "config.yaml"))
+	_ = viper.ReadInConfig() // If we fail to read config file, we'll just rely on cmd flags.
 	if err := viper.Unmarshal(&cfg); err != nil {
 		return err
 	}
@@ -63,6 +61,9 @@ func main() {
 		if err != nil {
 			return err
 		}
+		if err := os.MkdirAll(home, os.ModePerm); err != nil {
+			return err
+		}
 		keybase, err = keyring.New("band", "test", home, nil)
 		if err != nil {
 			return err
@@ -70,13 +71,6 @@ func main() {
 		return initConfig(rootCmd)
 	}
 	rootCmd.PersistentFlags().String(flags.FlagHome, os.ExpandEnv("$HOME/.oracled"), "home directory")
-	rootCmd.PersistentFlags().String(flags.FlagChainID, "bandchain-dev", "chain ID of BandChain network")
-	rootCmd.PersistentFlags().String(flags.FlagNode, "tcp://localhost:26657", "RPC url to BandChain node")
-	rootCmd.PersistentFlags().String(flagValidator, "", "validator address")
-	viper.BindPFlag(flags.FlagChainID, rootCmd.PersistentFlags().Lookup(flags.FlagChainID))
-	viper.BindPFlag(flags.FlagNode, rootCmd.PersistentFlags().Lookup(flags.FlagNode))
-	viper.BindPFlag(flagValidator, rootCmd.PersistentFlags().Lookup(flagValidator))
-
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
