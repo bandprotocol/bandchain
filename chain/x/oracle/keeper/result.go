@@ -67,8 +67,9 @@ func (k Keeper) GetAllResults(ctx sdk.Context) (results [][]byte) {
 		currentReqID := types.RequestID(sdk.BigEndianToUint64(iterator.Key()[1:]))
 		diffReqIDCount := currentReqID - previousReqID
 
-		// Insert nil for the request that result is empty
-		for i := int64(0); i < int64(diffReqIDCount)-1; i++ {
+		// Insert nil for each request without result.
+		diffReqIDCountInt := int(diffReqIDCount)
+		for i := 0; i < diffReqIDCountInt-1; i++ {
 			results = append(results, nil)
 		}
 
