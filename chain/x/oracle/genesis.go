@@ -77,6 +77,10 @@ func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorU
 		k.SetValidatorReportInfo(ctx, info.Validator, info)
 	}
 
+	for i, result := range data.Results {
+		k.SetResult(ctx, types.RequestID(i+1), result)
+	}
+
 	err := k.BindPort(ctx, PortID)
 	if err != nil {
 		panic(fmt.Sprintf("could not claim port capability: %v", err))
