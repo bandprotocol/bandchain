@@ -33,7 +33,6 @@ let make = (~txHash: Hash.t, ~messages, ~width: int, ~success: bool, ~rawLog: st
   React.useEffect0(_ => {
     let x = ReactDOMRe._getElementById(divID) |> Belt.Option.getExn;
     let divHeight = ReactDOMRe.domElementToObj(x)##clientHeight;
-    Js.Console.log(divHeight);
     divHeight > 60 ? setOverflowed(_ => true) : ();
     None;
   });
