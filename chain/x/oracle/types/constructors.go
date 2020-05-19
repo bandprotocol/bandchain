@@ -190,7 +190,7 @@ func NewRawReport(
 func NewOracleRequestPacketData(
 	ClientID string,
 	OracleScriptID OracleScriptID,
-	Calldata string,
+	Calldata []byte,
 	AskCount int64,
 	MinCount int64,
 ) OracleRequestPacketData {
@@ -210,7 +210,7 @@ func NewOracleResponsePacketData(
 	RequestTime int64,
 	ResolveTime int64,
 	ResolveStatus ResolveStatus,
-	Result string,
+	Result []byte,
 ) OracleResponsePacketData {
 	return OracleResponsePacketData{
 		ClientID:      ClientID,
@@ -265,16 +265,28 @@ func NewReport(
 	}
 }
 
+func NewValidatorReportInfo(
+	Validator github_com_cosmos_cosmos_sdk_types.ValAddress,
+	ConsecutiveMissed uint64,
+) ValidatorReportInfo {
+	return ValidatorReportInfo{
+		Validator:         Validator,
+		ConsecutiveMissed: ConsecutiveMissed,
+	}
+}
+
 func NewParams(
 	MaxRawRequestCount uint64,
 	MaxResultSize uint64,
 	GasPerRawDataRequestPerValidator uint64,
 	ExpirationBlockCount uint64,
+	MaxConsecutiveMisses uint64,
 ) Params {
 	return Params{
 		MaxRawRequestCount:               MaxRawRequestCount,
 		MaxResultSize:                    MaxResultSize,
 		GasPerRawDataRequestPerValidator: GasPerRawDataRequestPerValidator,
 		ExpirationBlockCount:             ExpirationBlockCount,
+		MaxConsecutiveMisses:             MaxConsecutiveMisses,
 	}
 }

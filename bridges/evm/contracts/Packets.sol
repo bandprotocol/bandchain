@@ -20,7 +20,7 @@ library Packets {
                 uint8(16), // (2 << 3) | 0
                 Utils.encodeVarintUnsigned(_self.oracleScriptId),
                 uint8(26), // (3 << 3) | 2
-                getEncodeLength(_self.params),
+                Utils.encodeVarintUnsigned(_self.params.length),
                 _self.params,
                 uint8(32), // (4 << 3) | 0
                 Utils.encodeVarintUnsigned(_self.askCount),
@@ -60,7 +60,7 @@ library Packets {
     function getReponsePart2(
         uint64 _resolveTime,
         uint8 _resolveStatus,
-        string memory _result
+        bytes memory _result
     ) internal pure returns (bytes memory) {
         return
             abi.encodePacked(
@@ -69,7 +69,7 @@ library Packets {
                 uint8(48), // (6 << 3) | 0
                 Utils.encodeVarintUnsigned(_resolveStatus),
                 uint8(58), // (7 << 3) | 2
-                getEncodeLength(_result),
+                Utils.encodeVarintUnsigned(_result.length),
                 _result
             );
     }

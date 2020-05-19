@@ -77,24 +77,26 @@ func NewDB(dialect, path string) (*BandDB, error) {
 
 	db.Exec(`CREATE VIEW validator_last_250_votes AS
 			SELECT COUNT(*), consensus_address, voted
-			FROM validator_votes
-			WHERE block_height > (SELECT MAX(height) from blocks) - 250
+			FROM validator_votes 
+			WHERE block_height > (SELECT MAX(height) from blocks) - 251
 			GROUP BY consensus_address, voted;
 	`)
 
 	db.Exec(`CREATE VIEW validator_last_1000_votes AS
 			SELECT COUNT(*), consensus_address, voted
-			FROM validator_votes
-			WHERE block_height > (SELECT MAX(height) from blocks) - 1000
+			FROM validator_votes 
+			WHERE block_height > (SELECT MAX(height) from blocks) - 1001
 			GROUP BY consensus_address, voted;
 	`)
 
 	db.Exec(`CREATE VIEW validator_last_10000_votes AS
 			SELECT COUNT(*), consensus_address, voted
-			FROM validator_votes
-			WHERE block_height > (SELECT MAX(height) from blocks) - 10000
+			FROM validator_votes 
+			WHERE block_height > (SELECT MAX(height) from blocks) - 10001
 			GROUP BY consensus_address, voted;
 	`)
+
+	db.Exec(`CREATE INDEX ON blocks (proposer, height);`)
 
 	db.Model(&Block{}).AddForeignKey(
 		"proposer",

@@ -1,7 +1,6 @@
 package db
 
 import (
-	"encoding/hex"
 	"encoding/json"
 	"strconv"
 
@@ -47,10 +46,8 @@ func (b *BandDB) HandleBeginAndEndblockEvent(event abci.Event) {
 				panic(err)
 
 			}
-			result, err := hex.DecodeString(kvMap[oracle.AttributeKeyResult])
-			if err != nil {
-				panic(err)
-			}
+			result := []byte(kvMap[oracle.AttributeKeyResult])
+
 			err = b.tx.Model(&Request{}).Where(Request{ID: id}).
 				Update(
 					Request{ResolveStatus: parseResolveStatus(resolveStatus),
@@ -69,21 +66,17 @@ func (b *BandDB) HandleBeginAndEndblockEvent(event abci.Event) {
 			}
 		}
 	case staking.EventTypeCompleteUnbonding:
+
 		// Recalculate delegator account
 		delegatorAddress, err := sdk.AccAddressFromBech32(kvMap[staking.AttributeKeyDelegator])
 		if err != nil {
 			panic(err)
 		}
-		validatorAddress, err := sdk.ValAddressFromBech32(kvMap[staking.AttributeKeyValidator])
 		err = b.SetAccountBalance(
 			delegatorAddress,
 			b.OracleKeeper.CoinKeeper.GetAllBalances(b.ctx, delegatorAddress),
 			b.ctx.BlockHeight(),
 		)
-		if err != nil {
-			panic(err)
-		}
-		err = b.updateUnbondingDelegations(delegatorAddress, validatorAddress)
 		if err != nil {
 			panic(err)
 		}
@@ -175,10 +168,6 @@ func (b *BandDB) HandleBeginAndEndblockEvent(event abci.Event) {
 					Tokens: &token,
 					Jailed: &jailed,
 				}).Error
-			if err != nil {
-				panic(err)
-			}
-			err = b.updateUnbondingDelegationsOfValidator(validator.OperatorAddress)
 			if err != nil {
 				panic(err)
 			}

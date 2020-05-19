@@ -82,12 +82,12 @@ func (k Keeper) ResolveRequest(
 	request := k.MustGetRequest(ctx, id)
 	req := types.NewOracleRequestPacketData(
 		request.ClientID, request.OracleScriptID,
-		hex.EncodeToString(request.Calldata), request.MinCount,
+		request.Calldata, request.MinCount,
 		int64(len(request.RequestedValidators)),
 	)
 	res := types.NewOracleResponsePacketData(
 		request.ClientID, id, int64(k.GetReportCount(ctx, id)), request.RequestTime,
-		ctx.BlockTime().Unix(), types.ResolveStatus_Success, hex.EncodeToString(result),
+		ctx.BlockTime().Unix(), types.ResolveStatus_Success, result,
 	)
 
 	if status != types.ResolveStatus_Success {
@@ -113,7 +113,7 @@ func (k Keeper) ResolveRequest(
 		types.EventTypeRequestExecute,
 		sdk.NewAttribute(types.AttributeKeyClientID, req.ClientID),
 		sdk.NewAttribute(types.AttributeKeyOracleScriptID, fmt.Sprintf("%d", req.OracleScriptID)),
-		sdk.NewAttribute(types.AttributeKeyCalldata, req.Calldata),
+		sdk.NewAttribute(types.AttributeKeyCalldata, string(req.Calldata)),
 		sdk.NewAttribute(types.AttributeKeyAskCount, fmt.Sprintf("%d", req.AskCount)),
 		sdk.NewAttribute(types.AttributeKeyMinCount, fmt.Sprintf("%d", req.MinCount)),
 		sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", res.RequestID)),
@@ -121,7 +121,7 @@ func (k Keeper) ResolveRequest(
 		sdk.NewAttribute(types.AttributeKeyAnsCount, fmt.Sprintf("%d", res.AnsCount)),
 		sdk.NewAttribute(types.AttributeKeyRequestTime, fmt.Sprintf("%d", request.RequestTime)),
 		sdk.NewAttribute(types.AttributeKeyResolveTime, fmt.Sprintf("%d", res.ResolveTime)),
-		sdk.NewAttribute(types.AttributeKeyResult, res.Result),
+		sdk.NewAttribute(types.AttributeKeyResult, string(res.Result)),
 		sdk.NewAttribute(types.AttributeKeyResultHash, hex.EncodeToString(resultHash)),
 	))
 	return res
@@ -130,7 +130,11 @@ func (k Keeper) ResolveRequest(
 // ProcessExpiredRequests removes all expired data requests from the store, and sends oracle
 // response packets for the ones that have never been resolved.
 func (k Keeper) ProcessExpiredRequests(ctx sdk.Context) {
-	currentReqID := k.GetRequestBeginID(ctx)
+	iter := sdk.KVStorePrefixIterator(ctx.KVStore(k.storeKey), types.RequestStoreKeyPrefix)
+	if !iter.Valid() { // No request currently in the store.
+		return
+	}
+	currentReqID := types.RequestID(sdk.BigEndianToUint64(iter.Key()[1:])) // First available request ID
 	lastReqID := types.RequestID(k.GetRequestCount(ctx))
 	expirationBlockCount := int64(k.GetParam(ctx, types.KeyExpirationBlockCount))
 	// Loop through all data requests in chronological order. If a request reaches its
@@ -151,13 +155,13 @@ func (k Keeper) ProcessExpiredRequests(ctx sdk.Context) {
 				k.SendOracleResponse(ctx, request.IBC.SourcePort, request.IBC.SourceChannel, res)
 			}
 		}
+		// Update report info for requested validators.
+		k.UpdateReportInfos(ctx, currentReqID)
 		// We are done with this request. Remove it and its dependencies from the store.
 		k.DeleteRequest(ctx, currentReqID)
 		k.DeleteRawRequests(ctx, currentReqID)
 		k.DeleteReports(ctx, currentReqID)
 	}
-	// Lastly, we update RequestBeginID to reflect the most up-to-date ID for open requests.
-	k.SetRequestBeginID(ctx, currentReqID)
 }
 
 // AddPendingRequest adds the request to the pending list. DO NOT add same request more than once.

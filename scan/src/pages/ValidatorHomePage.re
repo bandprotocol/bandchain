@@ -3,7 +3,10 @@ module Styles = {
 
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
-  let validatorsLogo = style([marginRight(`px(10))]);
+  let header =
+    style([display(`flex), flexDirection(`row), alignItems(`center), height(`px(50))]);
+
+  let validatorsLogo = style([minWidth(`px(50)), marginRight(`px(10))]);
   let highlight = style([margin2(~v=`px(28), ~h=`zero)]);
   let valueContainer = style([display(`flex), justifyContent(`flexStart)]);
   let monikerContainer = style([maxWidth(`px(250))]);
@@ -84,110 +87,133 @@ module ToggleButton = {
   };
 };
 
-let renderBody = (rank, validator: ValidatorSub.t, bondedTokenCount) => {
-  let votingPower = validator.votingPower;
-  let token = validator.tokens;
-  let commission = validator.commission;
-  let uptimeOpt = validator.uptime;
+let renderBody =
+    (rank, validatorSub: ApolloHooks.Subscription.variant(ValidatorSub.t), bondedTokenCount) => {
+  <TBody
+    key={
+      switch (validatorSub) {
+      | Data({operatorAddress}) => operatorAddress |> Address.toOperatorBech32
+      | _ => rank |> string_of_int
+      }
+    }>
 
-  <TBody key={validator.operatorAddress |> Address.toOperatorBech32}>
-    <div className=Styles.fullWidth>
-      <Row>
-        <Col size=0.8 alignSelf=Col.Start>
-          <Col size=1.6 alignSelf=Col.Start>
-            <Text
-              value={rank |> string_of_int}
-              color=Colors.gray7
-              code=true
-              weight=Text.Regular
-              spacing={Text.Em(0.02)}
-              block=true
-              size=Text.Md
-            />
+      <div className=Styles.fullWidth>
+        <Row>
+          <Col size=0.8>
+            {switch (validatorSub) {
+             | Data(_) =>
+               <Text
+                 value={rank |> string_of_int}
+                 color=Colors.gray7
+                 code=true
+                 weight=Text.Regular
+                 spacing={Text.Em(0.02)}
+                 block=true
+                 size=Text.Md
+               />
+             | _ => <LoadingCensorBar width=20 height=15 />
+             }}
           </Col>
-        </Col>
-        <Col size=1.9 alignSelf=Col.Start>
-          <div className=Styles.monikerContainer>
-            <ValidatorMonikerLink
-              validatorAddress={validator.operatorAddress}
-              moniker={validator.moniker}
-            />
-          </div>
-        </Col>
-        <Col size=1.4 alignSelf=Col.Start>
-          <div>
-            <Text
-              value={token |> Format.fPretty}
-              color=Colors.gray7
-              code=true
-              weight=Text.Regular
-              spacing={Text.Em(0.02)}
-              block=true
-              align=Text.Right
-              size=Text.Md
-            />
-            <VSpacing size=Spacing.sm />
-            <Text
-              value={
-                "("
-                ++ (votingPower /. bondedTokenCount *. 100.)
-                   ->Js.Float.toFixedWithPrecision(~digits=2)
-                ++ "%)"
-              }
-              color=Colors.gray6
-              code=true
-              weight=Text.Thin
-              spacing={Text.Em(0.02)}
-              block=true
-              align=Text.Right
-              size=Text.Md
-            />
-          </div>
-        </Col>
-        <Col size=1.2 alignSelf=Col.Start>
-          <Text
-            value={commission->Js.Float.toFixedWithPrecision(~digits=2)}
-            color=Colors.gray7
-            code=true
-            weight=Text.Regular
-            spacing={Text.Em(0.02)}
-            block=true
-            align=Text.Right
-            size=Text.Md
-          />
-        </Col>
-        <Col size=1.1 alignSelf=Col.Start>
-          <Text
-            value={
-              switch (uptimeOpt) {
-              | Some(uptime) => uptime->Js.Float.toFixedWithPrecision(~digits=2)
-              | None => "N/A"
-              }
-            }
-            color=Colors.gray7
-            code=true
-            weight=Text.Regular
-            spacing={Text.Em(0.02)}
-            block=true
-            align=Text.Right
-            size=Text.Md
-          />
-        </Col>
-      </Row>
-    </div>
-  </TBody>;
-  // <Col size=1.2 alignSelf=Col.Start>
-  //   <Text
-  //     value={reportRate->Js.Float.toFixedWithPrecision(~digits=2)}
-  //     color=Colors.gray7
-  //     code=true
-  //     weight=Text.Regular
-  //     spacing={Text.Em(0.02)}
-  //     block=true
-  //     align=Text.Right
-  //     size=Text.Md
-  //   />
-  // </Col>
+          <Col size=1.9>
+            {switch (validatorSub) {
+             | Data({operatorAddress, moniker}) =>
+               <div className=Styles.monikerContainer>
+                 <ValidatorMonikerLink validatorAddress=operatorAddress moniker />
+               </div>
+             | _ => <LoadingCensorBar width=150 height=15 />
+             }}
+          </Col>
+          <Col size=1.4>
+            {switch (validatorSub) {
+             | Data({tokens, votingPower}) =>
+               <div>
+                 <Text
+                   value={tokens |> Coin.getBandAmountFromCoin |> Format.fPretty}
+                   color=Colors.gray7
+                   code=true
+                   weight=Text.Regular
+                   spacing={Text.Em(0.02)}
+                   block=true
+                   align=Text.Right
+                   size=Text.Md
+                 />
+                 <VSpacing size=Spacing.sm />
+                 <Text
+                   value={
+                     "("
+                     ++ (votingPower /. bondedTokenCount *. 100.)
+                        ->Js.Float.toFixedWithPrecision(~digits=2)
+                     ++ "%)"
+                   }
+                   color=Colors.gray6
+                   code=true
+                   weight=Text.Thin
+                   spacing={Text.Em(0.02)}
+                   block=true
+                   align=Text.Right
+                   size=Text.Md
+                 />
+               </div>
+             | _ =>
+               <>
+                 <LoadingCensorBar width=100 height=15 isRight=true />
+                 <VSpacing size=Spacing.sm />
+                 <LoadingCensorBar width=40 height=15 isRight=true />
+               </>
+             }}
+          </Col>
+          <Col size=1.2>
+            {switch (validatorSub) {
+             | Data({commission}) =>
+               <Text
+                 value={commission->Js.Float.toFixedWithPrecision(~digits=2)}
+                 color=Colors.gray7
+                 code=true
+                 weight=Text.Regular
+                 spacing={Text.Em(0.02)}
+                 block=true
+                 align=Text.Right
+                 size=Text.Md
+               />
+             | _ => <LoadingCensorBar width=70 height=15 isRight=true />
+             }}
+          </Col>
+          <Col size=1.1>
+            {switch (validatorSub) {
+             | Data({uptime}) =>
+               <Text
+                 value={
+                   switch (uptime) {
+                   | Some(uptime') => uptime'->Js.Float.toFixedWithPrecision(~digits=2)
+                   | None => "N/A"
+                   }
+                 }
+                 color=Colors.gray7
+                 code=true
+                 weight=Text.Regular
+                 spacing={Text.Em(0.02)}
+                 block=true
+                 align=Text.Right
+                 size=Text.Md
+               />
+             | _ => <LoadingCensorBar width=70 height=15 isRight=true />
+             }}
+          </Col>
+        </Row>
+      </div>
+    </TBody>;
+    // <Col size=1.2>
+    //   <Text
+    //     value={reportRate->Js.Float.toFixedWithPrecision(~digits=2)}
+    //     color=Colors.gray7
+    //     code=true
+    //     weight=Text.Regular
+    //     spacing={Text.Em(0.02)}
+    //     block=true
+    //     align=Text.Right
+    //     size=Text.Md
+    //   />
+    // </Col>
 };
 
 let getPrevDay = _ => {
@@ -235,143 +261,200 @@ let addUptimeOnValidators =
 };
 
 [@react.component]
-let make = () =>
-  {
-    let (page, setPage) = React.useState(_ => 1);
+let make = () => {
+  let (page, setPage) = React.useState(_ => 1);
 
-    let (prevDayTime, setPrevDayTime) = React.useState(getPrevDay);
-    let (currentTime, setCurrentTime) = React.useState(getCurrentDay);
+  let (prevDayTime, setPrevDayTime) = React.useState(getPrevDay);
+  let (currentTime, setCurrentTime) = React.useState(getCurrentDay);
 
-    React.useEffect0(() => {
-      let timeOutID =
-        Js.Global.setInterval(
-          () => {
-            setPrevDayTime(getPrevDay);
-            setCurrentTime(getCurrentDay);
-          },
-          60_000,
-        );
-      Some(() => {Js.Global.clearInterval(timeOutID)});
-    });
+  React.useEffect0(() => {
+    let timeOutID =
+      Js.Global.setInterval(
+        () => {
+          setPrevDayTime(getPrevDay);
+          setCurrentTime(getCurrentDay);
+        },
+        60_000,
+      );
+    Some(() => {Js.Global.clearInterval(timeOutID)});
+  });
 
-    let pageSize = 10;
+  let pageSize = 10;
 
-    let (isActive, setIsActive) = React.useState(_ => true);
+  let (isActive, setIsActive) = React.useState(_ => true);
 
-    let validatorsCountSub = ValidatorSub.count();
-    let validatorsSub = ValidatorSub.getList(~page, ~pageSize, ~isActive, ());
-    let isActiveValidatorCountSub = ValidatorSub.countByActive(isActive);
-    let bondedTokenCountSub = ValidatorSub.getTotalBondedAmount();
-    let avgBlockTimeSub = BlockSub.getAvgBlockTime(prevDayTime, currentTime);
-    let metadataSub = MetadataSub.use();
-    let votesBlockSub = ValidatorSub.getListVotesBlock();
+  let validatorsSub = ValidatorSub.getList(~page, ~pageSize, ~isActive, ());
+  let validatorsCountSub = ValidatorSub.count();
+  let isActiveValidatorCountSub = ValidatorSub.countByActive(isActive);
+  let bondedTokenCountSub = ValidatorSub.getTotalBondedAmount();
+  let avgBlockTimeSub = BlockSub.getAvgBlockTime(prevDayTime, currentTime);
+  let metadataSub = MetadataSub.use();
+  let votesBlockSub = ValidatorSub.getListVotesBlock();
 
-    let%Sub rawValidators = validatorsSub;
-    let%Sub validatorCount = validatorsCountSub;
-    let%Sub isActiveValidatorCount = isActiveValidatorCountSub;
-    let%Sub bondedTokenCount = bondedTokenCountSub;
-    let%Sub avgBlockTime = avgBlockTimeSub;
-    let%Sub metadata = metadataSub;
-    let%Sub votesBlock = votesBlockSub;
+  let topPartAllSub =
+    Sub.all5(
+      validatorsCountSub,
+      isActiveValidatorCountSub,
+      bondedTokenCountSub,
+      avgBlockTimeSub,
+      metadataSub,
+    );
 
-    let validators = addUptimeOnValidators(rawValidators, votesBlock);
-    let pageCount = Page.getPageCount(validatorCount, pageSize);
+  let allSub = Sub.all3(topPartAllSub, validatorsSub, votesBlockSub);
 
-    <>
-      <Row justify=Row.Between>
-        <Col>
-          <div className=Styles.vFlex>
-            <img src=Images.validators className=Styles.validatorsLogo />
-            <Text
-              value="ALL VALIDATORS"
-              weight=Text.Medium
-              size=Text.Md
-              nowrap=true
-              color=Colors.gray7
-              spacing={Text.Em(0.06)}
-            />
-            <div className=Styles.seperatedLine />
-            <Text value={(validatorCount |> string_of_int) ++ " In total"} />
-          </div>
+  <>
+    <Row justify=Row.Between>
+      <div className=Styles.header>
+        <img src=Images.validators className=Styles.validatorsLogo />
+        <Text
+          value="ALL VALIDATORS"
+          weight=Text.Medium
+          size=Text.Md
+          nowrap=true
+          color=Colors.gray7
+          spacing={Text.Em(0.06)}
+        />
+        {switch (topPartAllSub) {
+         | Data((validatorCount, _, _, _, _)) =>
+           <>
+             <div className=Styles.seperatedLine />
+             <Text value={(validatorCount |> string_of_int) ++ " In total"} />
+           </>
+         | _ => React.null
+         }}
+      </div>
+      <Col>
+        {switch (topPartAllSub) {
+         | Data(_) => <ToggleButton isActive setIsActive />
+         | _ => React.null
+         }}
+      </Col>
+    </Row>
+    <div className=Styles.highlight>
+      <Row>
+        <Col size=0.7>
+          {switch (topPartAllSub) {
+           | Data((validatorCount, isActiveValidatorCount, _, _, _)) =>
+             <InfoHL
+               info={InfoHL.Fraction(isActiveValidatorCount, validatorCount, false)}
+               header="VALIDATORS"
+             />
+           | _ =>
+             <>
+               <LoadingCensorBar width=105 height=15 />
+               <VSpacing size=Spacing.sm />
+               <LoadingCensorBar width=45 height=15 />
+             </>
+           }}
         </Col>
-        <Col> <ToggleButton isActive setIsActive /> </Col>
+        <Col size=1.1>
+          {switch (topPartAllSub) {
+           | Data((_, _, bondedTokenCount, _, metadata)) =>
+             <InfoHL
+               info={
+                 InfoHL.Fraction(
+                   bondedTokenCount |> Coin.getBandAmountFromCoin |> int_of_float,
+                   metadata.totalSupply->Coin.getBandAmountFromCoins |> int_of_float,
+                   true,
+                 )
+               }
+               header="BONDED TOKENS"
+             />
+           | _ =>
+             <>
+               <LoadingCensorBar width=105 height=15 />
+               <VSpacing size=Spacing.sm />
+               <LoadingCensorBar width=45 height=15 />
+             </>
+           }}
+        </Col>
+        <Col size=0.9>
+          {switch (topPartAllSub) {
+           | Data((_, _, _, _, metadata)) =>
+             <InfoHL
+               info={InfoHL.FloatWithSuffix(metadata.inflationRate *. 100., "  %", 2)}
+               header="INFLATION RATE"
+             />
+           | _ =>
+             <>
+               <LoadingCensorBar width=105 height=15 />
+               <VSpacing size=Spacing.sm />
+               <LoadingCensorBar width=45 height=15 />
+             </>
+           }}
+        </Col>
+        <Col size=0.51>
+          {switch (topPartAllSub) {
+           | Data((_, _, _, avgBlockTime, _)) =>
+             <InfoHL
+               info={InfoHL.FloatWithSuffix(avgBlockTime, "  secs", 2)}
+               header="24 HOUR AVG BLOCK TIME"
+             />
+           | _ =>
+             <>
+               <LoadingCensorBar width=105 height=15 />
+               <VSpacing size=Spacing.sm />
+               <LoadingCensorBar width=45 height=15 />
+             </>
+           }}
+        </Col>
       </Row>
-      <div className=Styles.highlight>
+    </div>
+    <THead>
+      <div className=Styles.fullWidth>
         <Row>
-          <Col size=0.7>
-            <InfoHL
-              info={InfoHL.Fraction(isActiveValidatorCount, validatorCount, false)}
-              header="VALIDATORS"
-            />
-          </Col>
-          <Col size=1.1>
-            <InfoHL
-              info={
-                InfoHL.Fraction(
-                  bondedTokenCount |> int_of_float,
-                  metadata.totalSupply->Coin.getBandAmountFromCoins |> int_of_float,
-                  true,
-                )
-              }
-              header="BONDED TOKENS"
-            />
-          </Col>
-          <Col size=0.9>
-            <InfoHL
-              info={InfoHL.FloatWithSuffix(metadata.inflationRate *. 100., "  %", 2)}
-              header="INFLATION RATE"
-            />
-          </Col>
-          <Col size=0.51>
-            <InfoHL
-              info={InfoHL.FloatWithSuffix(avgBlockTime, "  secs", 2)}
-              header="24 HOUR AVG BLOCK TIME"
-            />
-          </Col>
+          {[
+             ("RANK", 0.8),
+             ("VALIDATOR", 1.9),
+             ("VOTING POWER (BAND)", 1.4),
+             ("COMMISSION (%)", 1.2),
+             ("UPTIME (%)", 1.1),
+             //  ("REPORT RATE (%)", 1.2),
+           ]
+           ->Belt.List.mapWithIndex((idx, (title, size)) => {
+               <Col size key=title>
+                 <Text
+                   block=true
+                   value=title
+                   size=Text.Sm
+                   weight=Text.Semibold
+                   align=?{idx > 1 ? Some(Text.Right) : None}
+                   color=Colors.gray6
+                   spacing={Text.Em(0.1)}
+                 />
+               </Col>
+             })
+           ->Array.of_list
+           ->React.array}
         </Row>
       </div>
-      <THead>
-        <div className=Styles.fullWidth>
-          <Row>
-            {[
-               ("RANK", 0.8),
-               ("VALIDATOR", 1.9),
-               ("VOTING POWER (BAND)", 1.4),
-               ("COMMISSION (%)", 1.2),
-               ("UPTIME (%)", 1.1),
-               //  ("REPORT RATE (%)", 1.2),
-             ]
-             ->Belt.List.mapWithIndex((idx, (title, size)) => {
-                 <Col size key=title>
-                   <Text
-                     block=true
-                     value=title
-                     size=Text.Sm
-                     weight=Text.Semibold
-                     align=?{idx > 1 ? Some(Text.Right) : None}
-                     color=Colors.gray6
-                     spacing={Text.Em(0.1)}
-                   />
-                 </Col>
-               })
-             ->Array.of_list
-             ->React.array}
-          </Row>
-        </div>
-      </THead>
-      {if (validators->Belt_Array.size > 0) {
-         validators
-         ->Belt_Array.mapWithIndex((idx, validator) =>
-             renderBody(idx + 1 + (page - 1) * pageSize, validator, bondedTokenCount)
-           )
-         ->React.array;
-       } else {
-         <div className=Styles.emptyContainer> <Text value="No Validators" size=Text.Xxl /> </div>;
-       }}
-      <VSpacing size=Spacing.lg />
-      <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
-      <VSpacing size=Spacing.lg />
-    </>
-    |> Sub.resolve;
-  }
-  |> Sub.default(_, React.null);
+    </THead>
+    {switch (allSub) {
+     | Data(((_, isActiveValidatorCount, bondedTokenCount, _, _), rawValidators, votesBlock)) =>
+       let validators = addUptimeOnValidators(rawValidators, votesBlock);
+       let pageCount = Page.getPageCount(isActiveValidatorCount, pageSize);
+       <>
+         {validators->Belt_Array.size > 0
+            ? validators
+              ->Belt_Array.mapWithIndex((i, e) =>
+                  renderBody(
+                    i + 1 + (page - 1) * pageSize,
+                    Sub.resolve(e),
+                    bondedTokenCount.amount,
+                  )
+                )
+              ->React.array
+            : <div className=Styles.emptyContainer>
+                <Text value="No Validators" size=Text.Xxl />
+              </div>}
+         <VSpacing size=Spacing.lg />
+         <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
+       </>;
+     | _ =>
+       Belt_Array.make(10, ApolloHooks.Subscription.NoData)
+       ->Belt_Array.mapWithIndex((i, noData) => renderBody(i, noData, 1.0))
+       ->React.array
+     }}
+    <VSpacing size=Spacing.lg />
+  </>;
+};

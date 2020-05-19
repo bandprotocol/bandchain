@@ -1,7 +1,6 @@
 package oracle
 
 import (
-	"encoding/hex"
 	"encoding/json"
 
 	"github.com/gorilla/mux"
@@ -178,14 +177,9 @@ func (am AppModule) OnRecvPacket(ctx sdk.Context, packet channeltypes.Packet) (*
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal request packet data: %s", err.Error())
 	}
 
-	calldata, err := hex.DecodeString(req.Calldata)
-	if err != nil {
-		return nil, err
-	}
-
 	// TODO: Mock data source fee payer
 	newMsg := NewMsgRequestData(
-		req.OracleScriptID, calldata, req.AskCount, req.MinCount, req.ClientID,
+		req.OracleScriptID, req.Calldata, req.AskCount, req.MinCount, req.ClientID,
 		sdk.AccAddress([]byte("Unknown")),
 	)
 	return handleMsgRequestDataIBC(

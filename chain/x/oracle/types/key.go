@@ -16,8 +16,6 @@ const (
 var (
 	// GlobalStoreKeyPrefix is a prefix for global primitive state variable
 	GlobalStoreKeyPrefix = []byte{0x00}
-	// RequestBeginStoreKey TODO
-	RequestBeginStoreKey = append(GlobalStoreKeyPrefix, []byte("RequestBeginStoreKey")...)
 	// RequestsCountStoreKey is a key that help getting to current requests count state variable
 	RequestsCountStoreKey = append(GlobalStoreKeyPrefix, []byte("RequestsCount")...)
 	// PendingResolveListStoreKey is a key that help getting pending request
@@ -49,6 +47,9 @@ var (
 
 	// ReporterStoreKeyPrefix is a prefix for reporter store.
 	ReporterStoreKeyPrefix = []byte{0x06}
+
+	// ValidatorReportInfoKeyPrefix is a prefix for report info store
+	ValidatorReportInfoKeyPrefix = []byte{0x07}
 )
 
 // RequestStoreKey is a function to generate key for each request in store
@@ -98,6 +99,11 @@ func ReporterStoreKey(validatorAddress sdk.ValAddress, reporterAddress sdk.AccAd
 	buff := append(ReporterStoreKeyPrefix, []byte(validatorAddress)...)
 	buff = append(buff, []byte(reporterAddress)...)
 	return buff
+}
+
+// ValidatorReportInfoStoreKey is a function to generate key for report info in store.
+func ValidatorReportInfoStoreKey(v sdk.ValAddress) []byte {
+	return append(ValidatorReportInfoKeyPrefix, v.Bytes()...)
 }
 
 // GetIteratorPrefix is a function to get specific prefix

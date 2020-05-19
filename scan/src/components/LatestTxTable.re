@@ -27,7 +27,7 @@ module Styles = {
   let logo = style([width(`px(20))]);
 };
 
-let txBodyRender = (reserveIndex: int, txSub: ApolloHooks.Subscription.variant(TxSub.t)) => {
+let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)) => {
   <TBody
     key={
       switch (txSub) {
@@ -54,17 +54,14 @@ let txBodyRender = (reserveIndex: int, txSub: ApolloHooks.Subscription.variant(T
       </Col>
       <Col size=1.>
         <VSpacing size=Spacing.xs />
-        {switch (txSub) {
-         | Data({success}) =>
-           <div className=Styles.statusContainer>
+        <div className=Styles.statusContainer>
+          {switch (txSub) {
+           | Data({success}) =>
              <img src={success ? Images.success : Images.fail} className=Styles.logo />
-           </div>
 
-         | _ =>
-           <div className=Styles.statusContainer>
-             <LoadingCensorBar width=20 height=20 radius=20 />
-           </div>
-         }}
+           | _ => <LoadingCensorBar width=20 height=20 radius=20 />
+           }}
+        </div>
       </Col>
       <Col size=3.8>
         {switch (txSub) {
@@ -185,10 +182,10 @@ let make = () => {
     </THead>
     {switch (allSub) {
      | Data((txs, _)) =>
-       txs->Belt_Array.mapWithIndex((i, e) => txBodyRender(i, Sub.resolve(e)))->React.array
+       txs->Belt_Array.mapWithIndex((i, e) => renderBody(i, Sub.resolve(e)))->React.array
      | _ =>
        Belt_Array.make(10, ApolloHooks.Subscription.NoData)
-       ->Belt_Array.mapWithIndex((i, noData) => txBodyRender(i, noData))
+       ->Belt_Array.mapWithIndex((i, noData) => renderBody(i, noData))
        ->React.array
      }}
   </>;

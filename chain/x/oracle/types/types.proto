@@ -198,9 +198,9 @@ message OracleRequestPacketData {
     (gogoproto.customname) = "OracleScriptID",
     (gogoproto.casttype) = "OracleScriptID"
   ];
-  // Calldata is the hex-encoded of the calldata bytes available for oracle
+  // Calldata is the calldata bytes available for oracle
   // execution during both preparation and execution phases.
-  string calldata = 3;
+  bytes calldata = 3;
   // AskCount is the number of validators that are requested to respond to this
   // oracle request. Higher value means more security, at a higher gas cost.
   int64 ask_count = 4;
@@ -238,9 +238,8 @@ message OracleResponsePacketData {
   // ResolveStatus is the status of this oracle request, which can be OK, ERROR,
   // or EXPIRED.
   ResolveStatus resolve_status = 6;
-  // Result is the hex-encoded of the final aggregated value only available if
-  // status if OK.
-  string result = 7;
+  // Result is the final aggregated value only available if status if OK.
+  bytes result = 7;
 }
 
 // Request is a data structure that stores the detail of a request to an oracle
@@ -278,6 +277,16 @@ message Report {
   repeated RawReport raw_reports = 2 [(gogoproto.nullable) = false];
 }
 
+// ValidatorReportInfo defines the report info for a validator
+message ValidatorReportInfo {
+  option (gogoproto.equal) = true;
+
+  bytes validator = 1
+      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
+  // field to count consecutive missed report
+  uint64 consecutive_missed = 2;
+}
+
 // Params - used for initializing default parameter for oracle at genesis.
 message Params {
   option (gogoproto.equal) = true;
@@ -287,4 +296,5 @@ message Params {
   uint64 max_result_size = 2;
   uint64 gas_per_raw_data_request_per_validator = 3;
   uint64 expiration_block_count = 4;
+  uint64 max_consecutive_misses = 5;
 }

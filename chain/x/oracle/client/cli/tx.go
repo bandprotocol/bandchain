@@ -326,8 +326,8 @@ $ %s tx oracle edit-data-source 1 --name coingecko-price --description The scrip
 			return authclient.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
 		},
 	}
-	cmd.Flags().String(flagName, "", "Name of this data source")
-	cmd.Flags().String(flagDescription, "", "Description of this data source")
+	cmd.Flags().String(flagName, types.DoNotModify, "Name of this data source")
+	cmd.Flags().String(flagDescription, types.DoNotModify, "Description of this data source")
 	cmd.Flags().String(flagScript, "", "Path to this data source script")
 	cmd.Flags().String(flagOwner, "", "Owner of this data source")
 
@@ -499,12 +499,12 @@ $ %s tx oracle edit-oracle-script 1 --name eth-price --description "Oracle scrip
 			return authclient.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
 		},
 	}
-	cmd.Flags().String(flagName, "", "Name of this oracle script")
-	cmd.Flags().String(flagDescription, "", "Description of this oracle script")
+	cmd.Flags().String(flagName, types.DoNotModify, "Name of this oracle script")
+	cmd.Flags().String(flagDescription, types.DoNotModify, "Description of this oracle script")
 	cmd.Flags().String(flagScript, "", "Path to this oracle script")
 	cmd.Flags().String(flagOwner, "", "Owner of this oracle script")
-	cmd.Flags().String(flagSchema, "", "Schema of this oracle script")
-	cmd.Flags().String(flagSourceCodeURL, "", "URL for the source code of this oracle script")
+	cmd.Flags().String(flagSchema, types.DoNotModify, "Schema of this oracle script")
+	cmd.Flags().String(flagSourceCodeURL, types.DoNotModify, "URL for the source code of this oracle script")
 
 	return cmd
 }
