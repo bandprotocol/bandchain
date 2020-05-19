@@ -18,7 +18,7 @@ func TestUncompress(t *testing.T) {
 	gzipFile := buf.Bytes()
 
 	accFile, err := gzip.Uncompress(gzipFile, 10)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	require.Equal(t, file1, accFile)
 
 	accFile, err = gzip.Uncompress(gzipFile, 2)
