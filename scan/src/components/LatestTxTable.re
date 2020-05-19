@@ -58,7 +58,6 @@ let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)
           {switch (txSub) {
            | Data({success}) =>
              <img src={success ? Images.success : Images.fail} className=Styles.logo />
-
            | _ => <LoadingCensorBar width=20 height=20 radius=20 />
            }}
         </div>
@@ -77,11 +76,7 @@ let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)
                   </React.Fragment>
                 )
               ->React.array}
-             {success
-                ? React.null
-                : <div>
-                    <Text value={"Error: " ++ rawLog} code=true size=Text.Sm breakAll=true />
-                  </div>}
+             {success ? React.null : <TxError.Mini msg=rawLog />}
            </div>
          | _ => <> <VSpacing size=Spacing.sm /> <LoadingCensorBar width=360 height=10 /> </>
          }}
