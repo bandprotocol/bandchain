@@ -3,7 +3,7 @@ package oracle
 import (
 	"fmt"
 
-	gzip "github.com/bandprotocol/bandchain/chain/pkg/gzip"
+	"github.com/bandprotocol/bandchain/chain/pkg/gzip"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -39,7 +39,7 @@ func NewHandler(k Keeper) sdk.Handler {
 
 func handleMsgCreateDataSource(ctx sdk.Context, k Keeper, m MsgCreateDataSource) (*sdk.Result, error) {
 	var err error
-	if gzip.IsGzip(m.Executable) {
+	if gzip.IsGzipped(m.Executable) {
 		m.Executable, err = gzip.Uncompress(m.Executable, types.MaxExecutableSize)
 		if err != nil {
 			return nil, err
@@ -63,7 +63,7 @@ func handleMsgEditDataSource(ctx sdk.Context, k Keeper, m MsgEditDataSource) (*s
 	if !dataSource.Owner.Equals(m.Sender) {
 		return nil, types.ErrEditorNotAuthorized
 	}
-	if gzip.IsGzip(m.Executable) {
+	if gzip.IsGzipped(m.Executable) {
 		m.Executable, err = gzip.Uncompress(m.Executable, types.MaxExecutableSize)
 		if err != nil {
 			return nil, err
@@ -84,12 +84,13 @@ func handleMsgEditDataSource(ctx sdk.Context, k Keeper, m MsgEditDataSource) (*s
 
 func handleMsgCreateOracleScript(ctx sdk.Context, k Keeper, m MsgCreateOracleScript) (*sdk.Result, error) {
 	var err error
-	if gzip.IsGzip(m.Code) {
+	if gzip.IsGzipped(m.Code) {
 		m.Code, err = gzip.Uncompress(m.Code, types.MaxWasmCodeSize)
 		if err != nil {
 			return nil, err
 		}
 	}
+
 	id := k.AddOracleScript(ctx, types.NewOracleScript(
 		m.Owner, m.Name, m.Description, k.AddFile(m.Code), m.Schema, m.SourceCodeURL,
 	))
@@ -103,7 +104,7 @@ func handleMsgCreateOracleScript(ctx sdk.Context, k Keeper, m MsgCreateOracleScr
 
 func handleMsgEditOracleScript(ctx sdk.Context, k Keeper, m MsgEditOracleScript) (*sdk.Result, error) {
 	var err error
-	if gzip.IsGzip(m.Code) {
+	if gzip.IsGzipped(m.Code) {
 		m.Code, err = gzip.Uncompress(m.Code, types.MaxWasmCodeSize)
 		if err != nil {
 			return nil, err

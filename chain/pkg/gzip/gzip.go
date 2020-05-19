@@ -1,8 +1,8 @@
-package oracle
+package gzip
 
 import (
 	"bytes"
-	"compress/gzip"
+	gz "compress/gzip"
 	"errors"
 	"io"
 	"io/ioutil"
@@ -13,25 +13,27 @@ import (
 // and https://github.com/golang/go/blob/master/src/net/http/sniff.go#L186
 var gzipIdent = []byte("\x1F\x8B\x08")
 
-func IsGzip(src []byte) bool {
+// IsGzip returns true if the input file is gzipped file.
+func IsGzipped(src []byte) bool {
 	return bytes.Equal(gzipIdent, src[0:3])
 }
 
-// uncompress returns gzip uncompressed content or given src when not gzip.
+// Uncompress returns gzip uncompressed.
+// If the file is not gzipped file this function will return an error.
 func Uncompress(src []byte, maxSize int64) ([]byte, error) {
-	zr, err := gzip.NewReader(bytes.NewReader(src))
+	zr, err := gz.NewReader(bytes.NewReader(src))
 	if err != nil {
 		return nil, err
 	}
 	zr.Multistream(false)
 
-	uncompressFile, err := ioutil.ReadAll(io.LimitReader(zr, maxSize+1))
+	uncompressed, err := ioutil.ReadAll(io.LimitReader(zr, maxSize+1))
 	if err != nil {
 		return nil, err
 	}
-	if len(uncompressFile) > int(maxSize) {
-		return nil, errors.New("uncompress file exeed maxsize")
+	if len(uncompressed) > int(maxSize) {
+		return uncompressed, errors.New("uncompressed file exceed maxSize")
 	}
 
-	return uncompressFile, nil
+	return uncompressed, nil
 }
