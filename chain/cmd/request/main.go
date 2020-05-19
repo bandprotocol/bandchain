@@ -263,11 +263,11 @@ func main() {
 				time.Sleep(100 * time.Millisecond)
 			}
 		}
-	case "add_oracle_address":
+	case "add_reporter":
 		{
 			acc, _ := sdk.AccAddressFromBech32("band13zmknvkq2sj920spz90g4r9zjan8g584x8qalj")
 			fmt.Println(tx.SendTransaction(
-				oracle.NewMsgAddOracleAddress(
+				oracle.NewMsgAddReporter(
 					sdk.ValAddress(tx.Sender()),
 					acc),
 				1000000, "", ""))

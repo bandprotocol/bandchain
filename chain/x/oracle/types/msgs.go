@@ -252,14 +252,14 @@ func (msg MsgEditOracleScript) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
 }
 
-// Route implements the sdk.Msg interface for MsgAddOracleAddress.
-func (msg MsgAddOracleAddress) Route() string { return RouterKey }
+// Route implements the sdk.Msg interface for MsgAddReporter.
+func (msg MsgAddReporter) Route() string { return RouterKey }
 
-// Type implements the sdk.Msg interface for MsgAddOracleAddress.
-func (msg MsgAddOracleAddress) Type() string { return "add_oracle_address" }
+// Type implements the sdk.Msg interface for MsgAddReporter.
+func (msg MsgAddReporter) Type() string { return "add_reporter" }
 
-// ValidateBasic implements the sdk.Msg interface for MsgAddOracleAddress.
-func (msg MsgAddOracleAddress) ValidateBasic() error {
+// ValidateBasic implements the sdk.Msg interface for MsgAddReporter.
+func (msg MsgAddReporter) ValidateBasic() error {
 	if err := sdk.VerifyAddressFormat(msg.Validator); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "validator: %s", msg.Validator)
 	}
@@ -269,24 +269,24 @@ func (msg MsgAddOracleAddress) ValidateBasic() error {
 	return nil
 }
 
-// GetSigners implements the sdk.Msg interface for MsgAddOracleAddress.
-func (msg MsgAddOracleAddress) GetSigners() []sdk.AccAddress {
+// GetSigners implements the sdk.Msg interface for MsgAddReporter.
+func (msg MsgAddReporter) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{sdk.AccAddress(msg.Validator)}
 }
 
-// GetSignBytes implements the sdk.Msg interface for MsgAddOracleAddress.
-func (msg MsgAddOracleAddress) GetSignBytes() []byte {
+// GetSignBytes implements the sdk.Msg interface for MsgAddReporter.
+func (msg MsgAddReporter) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
 }
 
-// Route implements the sdk.Msg interface for MsgRemoveOracleAddress.
-func (msg MsgRemoveOracleAddress) Route() string { return RouterKey }
+// Route implements the sdk.Msg interface for MsgRemoveReporter.
+func (msg MsgRemoveReporter) Route() string { return RouterKey }
 
-// Type implements the sdk.Msg interface for MsgRemoveOracleAddress.
-func (msg MsgRemoveOracleAddress) Type() string { return "remove_oracle_address" }
+// Type implements the sdk.Msg interface for MsgRemoveReporter.
+func (msg MsgRemoveReporter) Type() string { return "remove_reporter" }
 
-// ValidateBasic implements the sdk.Msg interface for MsgRemoveOracleAddress.
-func (msg MsgRemoveOracleAddress) ValidateBasic() error {
+// ValidateBasic implements the sdk.Msg interface for MsgRemoveReporter.
+func (msg MsgRemoveReporter) ValidateBasic() error {
 	if err := sdk.VerifyAddressFormat(msg.Validator); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "validator: %s", msg.Validator)
 	}
@@ -296,12 +296,12 @@ func (msg MsgRemoveOracleAddress) ValidateBasic() error {
 	return nil
 }
 
-// GetSigners implements the sdk.Msg interface for MsgRemoveOracleAddress.
-func (msg MsgRemoveOracleAddress) GetSigners() []sdk.AccAddress {
+// GetSigners implements the sdk.Msg interface for MsgRemoveReporter.
+func (msg MsgRemoveReporter) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{sdk.AccAddress(msg.Validator)}
 }
 
-// GetSignBytes implements the sdk.Msg interface for MsgRemoveOracleAddress.
-func (msg MsgRemoveOracleAddress) GetSignBytes() []byte {
+// GetSignBytes implements the sdk.Msg interface for MsgRemoveReporter.
+func (msg MsgRemoveReporter) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
 }
