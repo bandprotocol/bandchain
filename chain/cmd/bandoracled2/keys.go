@@ -109,7 +109,7 @@ func keysDeleteCmd(c *Context) *cobra.Command {
 			}
 
 			if confirmInput != "y" {
-				fmt.Printf("Cancel\n")
+				fmt.Println("Cancel")
 				return nil
 			}
 
