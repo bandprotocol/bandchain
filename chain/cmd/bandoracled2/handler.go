@@ -60,7 +60,7 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 	validatorAddr := GetEventValues(log, otypes.EventTypeRequest, otypes.AttributeKeyValidator)
 	isFoundValidator := false
 	for _, validator := range validatorAddr {
-		if validator == cfg.Validator {
+		if validator == c.validator.String() {
 			isFoundValidator = true
 		}
 	}
