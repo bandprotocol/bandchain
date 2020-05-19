@@ -69,20 +69,20 @@ func GetCandidateSize(currentRound, totalRound, totalCount int) int {
 // the probability of getting selected based on its weight.
 func ChooseK(rng *Rng, weights []uint64, k int) []int {
 	var luckies []int
-	ws := make([]uint64, len(weights))
-	copy(ws, weights)
-	availableIndex := make([]int, len(weights))
-	for idx := range availableIndex {
-		availableIndex[idx] = idx
+	weightValues := make([]uint64, len(weights))
+	copy(weightValues, weights)
+	weightIndexes := make([]int, len(weights))
+	for idx := range weightIndexes {
+		weightIndexes[idx] = idx
 	}
 
 	for round := 0; round < k; round++ {
-		candidateSize := GetCandidateSize(round, k, len(ws))
-		luckyNumber := ChooseOne(rng, ws[:candidateSize])
-		luckies = append(luckies, availableIndex[luckyNumber])
+		candidateSize := GetCandidateSize(round, k, len(weightValues))
+		luckyNumber := ChooseOne(rng, weightValues[:candidateSize])
+		luckies = append(luckies, weightIndexes[luckyNumber])
 
-		availableIndex = append(availableIndex[:luckyNumber], availableIndex[luckyNumber+1:]...)
-		ws = append(ws[:luckyNumber], ws[luckyNumber+1:]...)
+		weightIndexes = append(weightIndexes[:luckyNumber], weightIndexes[luckyNumber+1:]...)
+		weightValues = append(weightValues[:luckyNumber], weightValues[luckyNumber+1:]...)
 	}
 
 	return luckies
