@@ -379,7 +379,7 @@ func (app *BandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliv
 	response := app.BaseApp.DeliverTx(req)
 	end := time.Now()
 	elapsed := end.Sub(start)
-	_, err = file.WriteString(fmt.Sprint(elapsed.Nanoseconds()))
+	_, err = file.WriteString(fmt.Sprint(elapsed.Nanoseconds()) + ",")
 	if err != nil {
 		panic(err)
 	}
