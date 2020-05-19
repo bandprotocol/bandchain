@@ -16,20 +16,42 @@ let withCommas = value =>
      )
   |> Js.Array.reduce((a, b) => a ++ b, "");
 
-let fPretty = value =>
-  withCommas(
-    if (value > 1000000.) {
-      value->Js.Float.toFixedWithPrecision(~digits=0);
-    } else if (value > 100.) {
-      value->Js.Float.toFixedWithPrecision(~digits=2);
-    } else if (value > 1.) {
-      value->Js.Float.toFixedWithPrecision(~digits=4);
-    } else {
-      value->Js.Float.toFixedWithPrecision(~digits=6);
-    },
-  );
+let fPretty = (~digits=?, value) => {
+  switch (digits) {
+  | Some(digits') => withCommas(value->Js.Float.toFixedWithPrecision(~digits=digits'))
+  | None =>
+    withCommas(
+      if (value >= 1000000.) {
+        value->Js.Float.toFixedWithPrecision(~digits=0);
+      } else if (value > 100.) {
+        value->Js.Float.toFixedWithPrecision(~digits=2);
+      } else if (value > 1.) {
+        value->Js.Float.toFixedWithPrecision(~digits=4);
+      } else {
+        value->Js.Float.toFixedWithPrecision(~digits=6);
+      },
+    )
+  };
+};
 
-let fPercent = value =>
+let fPercentChange = value =>
   (value > 0. ? "+" : "") ++ value->Js.Float.toFixedWithPrecision(~digits=2) ++ "%";
+
+let fPercent = (~digits=?, value) => {
+  (
+    switch (digits) {
+    | Some(digits') => withCommas(value->Js.Float.toFixedWithPrecision(~digits=digits'))
+    | None =>
+      withCommas(
+        if (value > 1.) {
+          value->Js.Float.toFixedWithPrecision(~digits=2);
+        } else {
+          value->Js.Float.toFixedWithPrecision(~digits=6);
+        },
+      )
+    }
+  )
+  ++ "%";
+};
 
 let iPretty = value => withCommas(value->string_of_int);
