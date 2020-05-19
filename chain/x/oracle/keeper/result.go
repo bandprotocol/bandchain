@@ -57,7 +57,7 @@ func (k Keeper) SetResult(ctx sdk.Context, regID types.RequestID, result []byte)
 	store.Set(types.ResultStoreKey(regID), result)
 }
 
-// GetAllResults return the list of all results in the store, or nil if there is none
+// GetAllResults returns the list of all results in the store. Nil will be added for skipped results.
 func (k Keeper) GetAllResults(ctx sdk.Context) (results [][]byte) {
 	store := ctx.KVStore(k.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, types.ResultStoreKeyPrefix)
