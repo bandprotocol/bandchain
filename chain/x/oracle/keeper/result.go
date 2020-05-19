@@ -51,6 +51,12 @@ func (k Keeper) AddResult(
 	return resultHash, nil
 }
 
+// SetResult set result to the store.
+func (k Keeper) SetResult(ctx sdk.Context, regID types.RequestID, result []byte) {
+	store := ctx.KVStore(k.storeKey)
+	store.Set(types.ResultStoreKey(regID), result)
+}
+
 // GetAllResults return the list of all results in the store, or nil if there is none
 func (k Keeper) GetAllResults(ctx sdk.Context) (results [][]byte) {
 	store := ctx.KVStore(k.storeKey)

@@ -3,10 +3,8 @@ package keeper_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
-
-	"github.com/bandprotocol/bandchain/chain/x/oracle"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	"github.com/stretchr/testify/require"
 )
 
 // import (
@@ -82,7 +80,7 @@ import (
 func TestGetAllResults(t *testing.T) {
 	_, ctx, k := createTestInput()
 
-	reqPacket1 := oracle.OracleRequestPacketData{
+	reqPacket1 := types.OracleRequestPacketData{
 		ClientID:       "alice",
 		OracleScriptID: 1,
 		Calldata:       BasicCalldata,
@@ -90,7 +88,7 @@ func TestGetAllResults(t *testing.T) {
 		MinCount:       1,
 	}
 
-	resPacket1 := oracle.OracleResponsePacketData{
+	resPacket1 := types.OracleResponsePacketData{
 		ClientID:      "alice",
 		RequestID:     1,
 		AnsCount:      1,
@@ -103,7 +101,7 @@ func TestGetAllResults(t *testing.T) {
 	resultHashReqID1, err := k.AddResult(ctx, types.RequestID(1), reqPacket1, resPacket1)
 	require.NoError(t, err)
 
-	reqPacket4 := oracle.OracleRequestPacketData{
+	reqPacket4 := types.OracleRequestPacketData{
 		ClientID:       "bob",
 		OracleScriptID: 1,
 		Calldata:       BasicCalldata,
@@ -111,7 +109,7 @@ func TestGetAllResults(t *testing.T) {
 		MinCount:       1,
 	}
 
-	resPacket4 := oracle.OracleResponsePacketData{
+	resPacket4 := types.OracleResponsePacketData{
 		ClientID:      "bob",
 		RequestID:     4,
 		AnsCount:      1,
@@ -134,4 +132,36 @@ func TestGetAllResults(t *testing.T) {
 	require.Empty(t, results[2])
 
 	require.Equal(t, resultHashReqID4, results[3])
+}
+
+func TestSetResult(t *testing.T) {
+	_, ctx, k := createTestInput()
+
+	reqPacket := types.OracleRequestPacketData{
+		ClientID:       "alice",
+		OracleScriptID: 1,
+		Calldata:       BasicCalldata,
+		AskCount:       1,
+		MinCount:       1,
+	}
+
+	resPacket := types.OracleResponsePacketData{
+		ClientID:      "alice",
+		RequestID:     1,
+		AnsCount:      1,
+		RequestTime:   1589535020,
+		ResolveTime:   1589535022,
+		ResolveStatus: 1,
+		Result:        BasicCalldata,
+	}
+
+	resultHash, err := k.AddResult(ctx, types.RequestID(1), reqPacket, resPacket)
+	require.NoError(t, err)
+
+	// Set result for request ID 2
+	k.SetResult(ctx, types.RequestID(2), resultHash)
+	resultHashReqID2, err := k.GetResult(ctx, types.RequestID(2))
+	require.NoError(t, err)
+
+	require.Equal(t, resultHash, resultHashReqID2)
 }
