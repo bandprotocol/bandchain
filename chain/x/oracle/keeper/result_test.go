@@ -97,7 +97,7 @@ func TestGetAllResults(t *testing.T) {
 	require.Equal(t, 4, len(results))
 	require.Equal(t, resultHashReqID1, results[0])
 
-	// result of reqID 2 and 3 should be empty byte array
+	// result of reqID 2 and 3 should be nil
 	require.Empty(t, results[1])
 	require.Empty(t, results[2])
 
