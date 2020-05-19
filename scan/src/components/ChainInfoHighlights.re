@@ -115,7 +115,7 @@ let make = (~latestBlockSub: Sub.t(BlockSub.t)) => {
                   <Text value="BTC" color=Colors.gray7 weight=Text.Thin spacing={Text.Em(0.01)} />
                 </div>
                 <Text
-                  value={usd24HrChange->Format.fPercent}
+                  value={usd24HrChange->Format.fPercentChange}
                   color={usd24HrChange >= 0. ? Colors.green4 : Colors.red5}
                   weight=Text.Semibold
                   code=true
