@@ -148,7 +148,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
              (bondedTokenCount > 0. ? validator.votingPower *. 100. /. bondedTokenCount : 0.)
              ->Format.fPretty
              ++ "% ("
-             ++ (validator.votingPower /. 1e6 |> Format.fPretty(~digits=0))
+             ++ (validator.votingPower /. 1e6 |> Format.fPretty)
              ++ " BAND)",
            ),
          )}
