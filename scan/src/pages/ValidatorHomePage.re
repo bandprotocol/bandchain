@@ -44,10 +44,13 @@ module ToggleButton = {
   open Css;
 
   [@react.component]
-  let make = (~isActive, ~setIsActive) => {
+  let make = (~isActive, ~setIsActive, ~resetPage) => {
     <div className={style([display(`flex), alignItems(`center)])}>
       <div
-        onClick={_ => setIsActive(_ => true)}
+        onClick={_ => {
+          setIsActive(_ => true);
+          resetPage();
+        }}
         className={style([display(`flex), cursor(`pointer)])}>
         <Text value="Active" color=Colors.purple8 />
       </div>
@@ -71,7 +74,10 @@ module ToggleButton = {
             ),
           ),
         ])}
-        onClick={_ => setIsActive(oldVal => !oldVal)}>
+        onClick={_ => {
+          setIsActive(oldVal => !oldVal);
+          resetPage();
+        }}>
         <img
           src={isActive ? Images.activeValidatorLogo : Images.inactiveValidatorLogo}
           className={style([width(`px(15))])}
@@ -79,7 +85,10 @@ module ToggleButton = {
       </div>
       <HSpacing size=Spacing.sm />
       <div
-        onClick={_ => setIsActive(_ => false)}
+        onClick={_ => {
+          setIsActive(_ => false);
+          resetPage();
+        }}
         className={style([display(`flex), cursor(`pointer)])}>
         <Text value="Inactive" />
       </div>
@@ -128,7 +137,7 @@ let renderBody =
              | Data({tokens, votingPower}) =>
                <div>
                  <Text
-                   value={tokens |> Coin.getBandAmountFromCoin |> Format.fPretty}
+                   value={tokens |> Coin.getBandAmountFromCoin |> Format.fPretty(~digits=0)}
                    color=Colors.gray7
                    code=true
                    weight=Text.Regular
@@ -141,9 +150,8 @@ let renderBody =
                  <Text
                    value={
                      "("
-                     ++ (votingPower /. bondedTokenCount *. 100.)
-                        ->Js.Float.toFixedWithPrecision(~digits=2)
-                     ++ "%)"
+                     ++ (votingPower /. bondedTokenCount *. 100. |> Format.fPercent(~digits=2))
+                     ++ ")"
                    }
                    color=Colors.gray6
                    code=true
@@ -325,7 +333,7 @@ let make = () => {
       </div>
       <Col>
         {switch (topPartAllSub) {
-         | Data(_) => <ToggleButton isActive setIsActive />
+         | Data(_) => <ToggleButton isActive setIsActive resetPage={_ => setPage(_ => 1)} />
          | _ => React.null
          }}
       </Col>
