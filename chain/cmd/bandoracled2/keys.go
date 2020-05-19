@@ -95,7 +95,29 @@ func keysDeleteCmd(c *Context) *cobra.Command {
 		Short:   "Delete a key from the keychain",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// TODO: !!!
+			name := args[0]
+
+			_, err := keybase.Key(name)
+			if err != nil {
+				return err
+			}
+
+			inBuf := bufio.NewReader(cmd.InOrStdin())
+			confirmInput, err := input.GetString("Key will be deleted. Continue?[y/N]", inBuf)
+			if err != nil {
+				return err
+			}
+
+			if confirmInput != "y" {
+				fmt.Printf("Cancel\n")
+				return nil
+			}
+
+			if err := keybase.Delete(name); err != nil {
+				return err
+			}
+
+			fmt.Printf("Deleted key: %s\n", name)
 			return nil
 		},
 	}
