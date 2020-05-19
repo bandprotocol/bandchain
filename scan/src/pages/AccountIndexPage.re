@@ -125,9 +125,9 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
     let%Sub balanceAtStake = balanceAtStakeSub;
     let%Sub unbonding = unbondingSub;
 
-    let availableBalance = account.balance->Coin.getBandAmountFromCoins;
     let usdPrice = info.financial.usdPrice;
 
+    let availableBalance = account.balance->Coin.getBandAmountFromCoins;
     let balanceAtStakeAmount = balanceAtStake.amount->Coin.getBandAmountFromCoin;
     let rewardAmount = balanceAtStake.reward->Coin.getBandAmountFromCoin;
     let unbondingAmount = unbonding->Coin.getBandAmountFromCoin;
