@@ -81,7 +81,7 @@ module Uptime = {
       let%Sub uptimeOpt = ValidatorSub.getUptime(consensusAddress);
 
       switch (uptimeOpt) {
-      | Some(uptime) => kvRow("UPTIME", VCode(uptime->Format.fPretty ++ "%")) |> Sub.resolve
+      | Some(uptime) => kvRow("UPTIME", VCode(uptime->Format.fPercent)) |> Sub.resolve
       | None => kvRow("UPTIME", VText("N/A")) |> Sub.resolve
       };
     }
@@ -148,12 +148,12 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
              (bondedTokenCount > 0. ? validator.votingPower *. 100. /. bondedTokenCount : 0.)
              ->Format.fPretty
              ++ "% ("
-             ++ validator.votingPower->Format.fPretty
+             ++ (validator.votingPower /. 1e6 |> Format.fPretty(~digits=0))
              ++ " BAND)",
            ),
          )}
         <VSpacing size=Spacing.lg />
-        {kvRow("COMMISSION", VCode(validator.commission->Format.fPretty ++ "%"))}
+        {kvRow("COMMISSION", VCode(validator.commission->Format.fPercent))}
         <VSpacing size=Spacing.lg />
         {kvRow("BONDED HEIGHT", VCode(validator.bondedHeight->Format.iPretty))}
         <VSpacing size=Spacing.lg />
