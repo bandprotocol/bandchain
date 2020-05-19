@@ -13,7 +13,7 @@ func (k Keeper) HasResult(ctx sdk.Context, id types.RequestID) bool {
 	return ctx.KVStore(k.storeKey).Has(types.ResultStoreKey(id))
 }
 
-// SetResult set result to the store.
+// SetResult sets result to the store.
 func (k Keeper) SetResult(ctx sdk.Context, reqID types.RequestID, result []byte) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.ResultStoreKey(reqID), result)
