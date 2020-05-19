@@ -1,7 +1,6 @@
 package db
 
 import (
-	"encoding/hex"
 	"encoding/json"
 	"strconv"
 
@@ -54,10 +53,6 @@ func (b *BandDB) handleMsgPacket(
 		if err != nil {
 			return err
 		}
-		calldata, err := hex.DecodeString(requestPacket.Calldata)
-		if err != nil {
-			return err
-		}
 		request, err := b.OracleKeeper.GetRequest(b.ctx, oracle.RequestID(id))
 		if err != nil {
 			return err
@@ -65,7 +60,7 @@ func (b *BandDB) handleMsgPacket(
 		err = b.AddNewRequest(
 			id,
 			int64(requestPacket.OracleScriptID),
-			calldata,
+			requestPacket.Calldata,
 			requestPacket.MinCount,
 			request.RequestHeight+20, // TODO: REMOVE THIS. HACK!!!!
 			"Pending",

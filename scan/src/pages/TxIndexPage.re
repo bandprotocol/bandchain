@@ -90,10 +90,10 @@ let make = (~txHash) =>
           <InfoHL
             info={
               InfoHL.Float(
-                (tx.gasFee |> Coin.getBandAmountFromCoins) /. (tx.gasLimit |> float_of_int),
+                (tx.gasFee |> Coin.getBandAmountFromCoins) /. (tx.gasLimit |> float_of_int) *. 1e6,
               )
             }
-            header="GAS PRICE (BAND)"
+            header="GAS PRICE (UBAND)"
             isLeft=false
           />
         </Col>
