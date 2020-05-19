@@ -50,3 +50,24 @@ func (k Keeper) AddResult(
 	store.Set(types.ResultStoreKey(id), resultHash)
 	return resultHash, nil
 }
+
+// GetAllResults return the list of all results in the store, or nil if there is none
+func (k Keeper) GetAllResults(ctx sdk.Context) (results [][]byte) {
+	store := ctx.KVStore(k.storeKey)
+	iterator := sdk.KVStorePrefixIterator(store, types.ResultStoreKeyPrefix)
+	var previousReqID types.RequestID
+	defer iterator.Close()
+	for ; iterator.Valid(); iterator.Next() {
+		currentReqID := types.RequestID(sdk.BigEndianToUint64(iterator.Key()[1:]))
+		diffReqIDCount := currentReqID - previousReqID
+
+		// Insert nil for the request that result is empty
+		for i := int64(0); i < int64(diffReqIDCount)-1; i++ {
+			results = append(results, nil)
+		}
+
+		results = append(results, iterator.Value())
+		previousReqID = currentReqID
+	}
+	return results
+}
