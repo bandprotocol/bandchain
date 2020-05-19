@@ -80,44 +80,14 @@ import (
 func TestGetAllResults(t *testing.T) {
 	_, ctx, k := createTestInput()
 
-	reqPacket1 := types.OracleRequestPacketData{
-		ClientID:       "alice",
-		OracleScriptID: 1,
-		Calldata:       BasicCalldata,
-		AskCount:       1,
-		MinCount:       1,
-	}
-
-	resPacket1 := types.OracleResponsePacketData{
-		ClientID:      "alice",
-		RequestID:     1,
-		AnsCount:      1,
-		RequestTime:   1589535020,
-		ResolveTime:   1589535022,
-		ResolveStatus: 1,
-		Result:        BasicCalldata,
-	}
+	reqPacket1 := types.NewOracleRequestPacketData("alice", 1, BasicCalldata, 1, 1)
+	resPacket1 := types.NewOracleResponsePacketData("alice", 1, 1, 1589535020, 1589535022, 1, BasicCalldata)
 
 	resultHashReqID1, err := k.AddResult(ctx, types.RequestID(1), reqPacket1, resPacket1)
 	require.NoError(t, err)
 
-	reqPacket4 := types.OracleRequestPacketData{
-		ClientID:       "bob",
-		OracleScriptID: 1,
-		Calldata:       BasicCalldata,
-		AskCount:       1,
-		MinCount:       1,
-	}
-
-	resPacket4 := types.OracleResponsePacketData{
-		ClientID:      "bob",
-		RequestID:     4,
-		AnsCount:      1,
-		RequestTime:   1589535020,
-		ResolveTime:   1589535022,
-		ResolveStatus: 1,
-		Result:        BasicCalldata,
-	}
+	reqPacket4 := types.NewOracleRequestPacketData("bob", 1, BasicCalldata, 1, 1)
+	resPacket4 := types.NewOracleResponsePacketData("bob", 4, 1, 1589535020, 1589535022, 1, BasicCalldata)
 
 	resultHashReqID4, err := k.AddResult(ctx, types.RequestID(4), reqPacket4, resPacket4)
 	require.NoError(t, err)
@@ -137,23 +107,8 @@ func TestGetAllResults(t *testing.T) {
 func TestSetResult(t *testing.T) {
 	_, ctx, k := createTestInput()
 
-	reqPacket := types.OracleRequestPacketData{
-		ClientID:       "alice",
-		OracleScriptID: 1,
-		Calldata:       BasicCalldata,
-		AskCount:       1,
-		MinCount:       1,
-	}
-
-	resPacket := types.OracleResponsePacketData{
-		ClientID:      "alice",
-		RequestID:     1,
-		AnsCount:      1,
-		RequestTime:   1589535020,
-		ResolveTime:   1589535022,
-		ResolveStatus: 1,
-		Result:        BasicCalldata,
-	}
+	reqPacket := types.NewOracleRequestPacketData("alice", 1, BasicCalldata, 1, 1)
+	resPacket := types.NewOracleResponsePacketData("alice", 1, 1, 1589535020, 1589535022, 1, BasicCalldata)
 
 	resultHash, err := k.AddResult(ctx, types.RequestID(1), reqPacket, resPacket)
 	require.NoError(t, err)
