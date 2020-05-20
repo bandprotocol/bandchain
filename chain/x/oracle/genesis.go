@@ -14,18 +14,21 @@ type GenesisState struct {
 	DataSources   []types.DataSource          `json:"data_sources"  yaml:"data_sources"`
 	OracleScripts []types.OracleScript        `json:"oracle_scripts"  yaml:"oracle_scripts"`
 	ReportInfos   []types.ValidatorReportInfo `json:"report_infos" yaml:"report_infos"`
+	Results       [][]byte                    `json:"results" yaml:"results"`
 }
 
 // NewGenesisState creates a new genesis state.
 func NewGenesisState(
 	params types.Params, dataSources []types.DataSource,
 	oracleScripts []types.OracleScript, reportInfos []types.ValidatorReportInfo,
+	results [][]byte,
 ) GenesisState {
 	return GenesisState{
 		Params:        params,
 		DataSources:   dataSources,
 		OracleScripts: oracleScripts,
 		ReportInfos:   reportInfos,
+		Results:       results,
 	}
 }
 
@@ -40,6 +43,7 @@ func DefaultGenesisState() GenesisState {
 		DataSources:   []types.DataSource{},
 		OracleScripts: []types.OracleScript{},
 		ReportInfos:   []types.ValidatorReportInfo{},
+		Results:       [][]byte{},
 	}
 }
 
@@ -73,6 +77,12 @@ func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorU
 		k.SetValidatorReportInfo(ctx, info.Validator, info)
 	}
 
+	for i, result := range data.Results {
+		if result != nil {
+			k.SetResult(ctx, types.RequestID(i+1), result)
+		}
+	}
+
 	err := k.BindPort(ctx, PortID)
 	if err != nil {
 		panic(fmt.Sprintf("could not claim port capability: %v", err))
@@ -86,5 +96,6 @@ func ExportGenesis(ctx sdk.Context, k Keeper) GenesisState {
 		DataSources:   k.GetAllDataSources(ctx),
 		OracleScripts: k.GetAllOracleScripts(ctx),
 		ReportInfos:   k.GetAllValidatorReportInfos(ctx),
+		Results:       k.GetAllResults(ctx),
 	}
 }

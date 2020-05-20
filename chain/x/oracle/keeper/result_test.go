@@ -1,4 +1,11 @@
-package keeper
+package keeper_test
+
+import (
+	"testing"
+
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	"github.com/stretchr/testify/require"
+)
 
 // import (
 // 	"testing"
@@ -69,3 +76,50 @@ package keeper
 // 	err = keeper.AddResult(ctx, 1, 1, []byte("calldata"), []byte("result"))
 // 	require.NotNil(t, err)
 // }
+
+func TestGetAllResults(t *testing.T) {
+	_, ctx, k := createTestInput()
+
+	reqPacket1 := types.NewOracleRequestPacketData("alice", 1, BasicCalldata, 1, 1)
+	resPacket1 := types.NewOracleResponsePacketData("alice", 1, 1, 1589535020, 1589535022, 1, BasicCalldata)
+
+	resultHashReqID1, err := k.AddResult(ctx, types.RequestID(1), reqPacket1, resPacket1)
+	require.NoError(t, err)
+
+	reqPacket4 := types.NewOracleRequestPacketData("bob", 1, BasicCalldata, 1, 1)
+	resPacket4 := types.NewOracleResponsePacketData("bob", 4, 1, 1589535020, 1589535022, 1, BasicCalldata)
+
+	resultHashReqID4, err := k.AddResult(ctx, types.RequestID(4), reqPacket4, resPacket4)
+	require.NoError(t, err)
+
+	results := k.GetAllResults(ctx)
+
+	require.Equal(t, 4, len(results))
+	require.Equal(t, resultHashReqID1, results[0])
+
+	// result of reqID 2 and 3 should be nil
+	require.Empty(t, results[1])
+	require.Empty(t, results[2])
+
+	require.Equal(t, resultHashReqID4, results[3])
+}
+
+func TestSetResult(t *testing.T) {
+	_, ctx, k := createTestInput()
+
+	reqPacket := types.NewOracleRequestPacketData("alice", 1, BasicCalldata, 1, 1)
+	resPacket := types.NewOracleResponsePacketData("alice", 1, 1, 1589535020, 1589535022, 1, BasicCalldata)
+
+	resultHash, err := k.AddResult(ctx, types.RequestID(1), reqPacket, resPacket)
+	require.NoError(t, err)
+
+	resultHashReqID1, err := k.GetResult(ctx, types.RequestID(1))
+	require.Equal(t, resultHash, resultHashReqID1)
+
+	// Set result for request ID 2
+	k.SetResult(ctx, types.RequestID(2), resultHash)
+	resultHashReqID2, err := k.GetResult(ctx, types.RequestID(2))
+	require.NoError(t, err)
+
+	require.Equal(t, resultHash, resultHashReqID2)
+}
