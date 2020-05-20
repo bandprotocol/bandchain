@@ -1,0 +1,6 @@
+{
+  symbol: string,
+  multiplier: u8
+} / {
+  px: u64
+}
