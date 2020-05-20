@@ -61,6 +61,7 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 	for _, validator := range validators {
 		if validator == c.validator.String() {
 			hasMe = true
+			break
 		}
 	}
 
