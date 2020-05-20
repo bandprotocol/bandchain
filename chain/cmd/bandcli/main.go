@@ -44,7 +44,6 @@ func main() {
 		config := sdk.GetConfig()
 		app.SetBech32AddressPrefixesAndBip44CoinType(config)
 		if viper.GetBool(flagCosmosHDPath) {
-			fmt.Println("HERE!")
 			config.SetCoinType(sdk.CoinType)
 		}
 		config.Seal()
