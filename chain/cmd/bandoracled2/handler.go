@@ -26,16 +26,25 @@ func handleTransaction(c *Context, l *Logger, tx tmtypes.TxResult) {
 
 	for _, log := range logs {
 		// TODO: Also handle IBC request packet here
-		messageType, err := GetEventValue(log, "message", "action")
+		messageType, err := GetEventValue(log, otypes.EventTypeMessage, otypes.AttributeKeyAction)
 		if err != nil {
 			l.Error(":cold_sweat: Failed to get message action type with error: %s", err.Error())
 			continue
 		}
-		if messageType != "request" {
+
+		if messageType == otypes.MessageTypeRequest {
+			go handleRequestLog(c, l, log)
+		} else if messageType == otypes.MessageTypeOraclePacket {
+			// Try to get request id from packet
+			_, err := GetEventValue(log, otypes.EventTypeRequest, otypes.AttributeKeyID)
+			if err != nil {
+				l.Error(":cold_sweat: Failed to parse request id from oracle packet with error: %s", err.Error())
+				return
+			}
+			go handleRequestLog(c, l, log)
+		} else {
 			l.Debug(":ghost: Skipping non-request message type: %s", messageType)
-			continue
 		}
-		go handleRequestLog(c, l, log)
 	}
 }
 
