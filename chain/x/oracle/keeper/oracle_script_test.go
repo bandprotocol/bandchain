@@ -61,7 +61,6 @@ func TestAddEditOracleScriptBasic(t *testing.T) {
 	)
 	// Adds a new oracle script to the store. We should be able to retreive it back.
 	id := k.AddOracleScript(ctx, oracleScript1)
-	require.Nil(t, err)
 	require.Equal(t, oracleScript1, k.MustGetOracleScript(ctx, id))
 	require.NotEqual(t, oracleScript2, k.MustGetOracleScript(ctx, id))
 	// Edits the oracle script. We should get the updated oracle script.
@@ -85,12 +84,11 @@ func TestAddEditOracleScriptDoNotModify(t *testing.T) {
 		types.DoNotModify, types.DoNotModify,
 	)
 	// Adds a new oracle script to the store. We should be able to retreive it back.
-	id, err := k.AddOracleScript(ctx, oracleScript1)
-	require.Nil(t, err)
+	id := k.AddOracleScript(ctx, oracleScript1)
 	require.Equal(t, oracleScript1, k.MustGetOracleScript(ctx, id))
 	require.NotEqual(t, oracleScript2, k.MustGetOracleScript(ctx, id))
 	// Edits the oracle script. We should get the updated oracle script.
-	err = k.EditOracleScript(ctx, id, oracleScript2)
+	err := k.EditOracleScript(ctx, id, oracleScript2)
 	require.Nil(t, err)
 	oracleScriptRes := k.MustGetOracleScript(ctx, id)
 	require.NotEqual(t, oracleScriptRes, oracleScript1)

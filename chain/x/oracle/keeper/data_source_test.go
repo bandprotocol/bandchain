@@ -61,7 +61,6 @@ func TestAddDataSourceEditDataSourceBasic(t *testing.T) {
 	)
 	// Adds a new data source to the store. We should be able to retreive it back.
 	id := k.AddDataSource(ctx, dataSource1)
-	require.Nil(t, err)
 	require.Equal(t, dataSource1, k.MustGetDataSource(ctx, id))
 	require.NotEqual(t, dataSource2, k.MustGetDataSource(ctx, id))
 	// Edits the data source. We should get the updated data source.
@@ -83,12 +82,11 @@ func TestEditDataSourceDoNotModify(t *testing.T) {
 		Bob.Address, types.DoNotModify, types.DoNotModify, []byte("executable2"),
 	)
 	// Adds a new data source to the store. We should be able to retreive it back.
-	id, err := k.AddDataSource(ctx, dataSource1)
-	require.Nil(t, err)
+	id := k.AddDataSource(ctx, dataSource1)
 	require.Equal(t, dataSource1, k.MustGetDataSource(ctx, id))
 	require.NotEqual(t, dataSource2, k.MustGetDataSource(ctx, id))
 	// Edits the data source. We should get the updated data source.
-	err = k.EditDataSource(ctx, id, dataSource2)
+	err := k.EditDataSource(ctx, id, dataSource2)
 	require.Nil(t, err)
 	dataSourceRes := k.MustGetDataSource(ctx, id)
 	require.NotEqual(t, dataSourceRes, dataSource1)

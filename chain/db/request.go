@@ -97,24 +97,25 @@ func (b *BandDB) AddNewRequest(
 		}
 	}
 
-	for _, raw := range b.OracleKeeper.GetRawRequests(b.ctx, otypes.RequestID(id)) {
-		err := b.AddRawDataRequest(
-			id,
-			int64(raw.ExternalID),
-			int64(raw.DataSourceID),
-			raw.Calldata,
-		)
-		if err != nil {
-			return err
-		}
-		err = b.tx.FirstOrCreate(&RelatedDataSources{
-			DataSourceID:   int64(raw.DataSourceID),
-			OracleScriptID: int64(oracleScriptID),
-		}).Error
-		if err != nil {
-			return err
-		}
-	}
+	// TODO: FIX ME. Bun please take care of this
+	// for _, raw := range b.OracleKeeper.GetRawRequests(b.ctx, otypes.RequestID(id)) {
+	// 	err := b.AddRawDataRequest(
+	// 		id,
+	// 		int64(raw.ExternalID),
+	// 		int64(raw.DataSourceID),
+	// 		raw.Calldata,
+	// 	)
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// 	err = b.tx.FirstOrCreate(&RelatedDataSources{
+	// 		DataSourceID:   int64(raw.DataSourceID),
+	// 		OracleScriptID: int64(oracleScriptID),
+	// 	}).Error
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// }
 
 	return nil
 }
