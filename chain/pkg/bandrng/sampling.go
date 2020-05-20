@@ -1,6 +1,8 @@
 package bandrng
 
-import "math"
+import (
+	"math"
+)
 
 // addUint64Overflow performs the addition operation on two uint64 integers and
 // returns a boolean on whether or not the result overflows.
@@ -34,4 +36,54 @@ func ChooseOne(rng *Rng, weights []uint64) int {
 	}
 	// Should never happen because the sum of weights is more than the lucky number
 	panic("error")
+}
+
+// GetCandidateSize return candidate size that base on current round and total round
+// currentRound must in range [0,totalRound)
+// totalRound must be more than 0 and totalCount <= totalRound
+// if currentRound is 0 the function will return totalCount
+// candidate size will decrease every round
+// candidate size calculate by function
+// size = floor((totalCount-1)**((totalRound-currentRound-1)/(totalRound-1))) + 1
+// so size must in range [2,totalCount]
+func GetCandidateSize(currentRound, totalRound, totalCount int) int {
+	if currentRound < 0 || currentRound >= totalRound {
+		panic("currentRound must in range [0,totalRound)")
+	}
+	if totalCount < totalRound {
+		panic("error: totalCount < totalRound")
+	}
+
+	if currentRound == 0 {
+		return totalCount
+	}
+
+	base := float64(totalCount - 1)                                        // base > 0
+	exponent := float64(totalRound-1-currentRound) / float64(totalRound-1) // 0 <= exponent <= 1
+
+	size := int(math.Pow(base, exponent)) + 1
+	return size
+}
+
+// ChooseK randomly picks an array of index(size=k) between 0 and len(weights)-1 inclusively. Each index has
+// the probability of getting selected based on its weight.
+func ChooseK(rng *Rng, weights []uint64, k int) []int {
+	var luckies []int
+	weightValues := make([]uint64, len(weights))
+	copy(weightValues, weights)
+	weightIndexes := make([]int, len(weights))
+	for idx := range weightIndexes {
+		weightIndexes[idx] = idx
+	}
+
+	for round := 0; round < k; round++ {
+		candidateSize := GetCandidateSize(round, k, len(weightValues))
+		luckyNumber := ChooseOne(rng, weightValues[:candidateSize])
+		luckies = append(luckies, weightIndexes[luckyNumber])
+
+		weightIndexes = append(weightIndexes[:luckyNumber], weightIndexes[luckyNumber+1:]...)
+		weightValues = append(weightValues[:luckyNumber], weightValues[luckyNumber+1:]...)
+	}
+
+	return luckies
 }
