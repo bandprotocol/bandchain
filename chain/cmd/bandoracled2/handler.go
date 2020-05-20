@@ -35,7 +35,7 @@ func handleTransaction(c *Context, l *Logger, tx tmtypes.TxResult) {
 		if messageType == otypes.MessageTypeRequest {
 			go handleRequestLog(c, l, log)
 		} else if messageType == otypes.MessageTypeOraclePacket {
-			// Try to get request id from packet
+			// Try to get request id from packet. If not then return error.
 			_, err := GetEventValue(log, otypes.EventTypeRequest, otypes.AttributeKeyID)
 			if err != nil {
 				l.Error(":cold_sweat: Failed to parse request id from oracle packet with error: %s", err.Error())
