@@ -21,8 +21,3 @@ type ChannelKeeper interface {
 	ChanCloseInit(ctx sdk.Context, portID, channelID string, chanCap *capability.Capability) error
 	TimeoutExecuted(ctx sdk.Context, chanCap *capability.Capability, packet channelexported.PacketI) error
 }
-
-// StakingHooks event hooks for staking validator object (noalias)
-type StakingHooks interface {
-	AfterValidatorBonded(ctx sdk.Context, consAddr sdk.ConsAddress, valAddr sdk.ValAddress) // Must be called when a validator is bonded
-}
