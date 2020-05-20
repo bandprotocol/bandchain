@@ -72,19 +72,17 @@ func runCmd(c *Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			if cfg.GasPrices != "" {
-				gasPrice, err := sdk.ParseDecCoin(cfg.GasPrices)
-				if err != nil {
-					return err
-				}
-				c.gasPrices = sdk.NewDecCoins(gasPrice)
-			} else {
-				gasPrice, err := sdk.ParseDecCoin("0.0uband")
-				if err != nil {
-					return err
-				}
-				c.gasPrices = sdk.NewDecCoins(gasPrice)
+
+			gasPricesStr := cfg.GasPrices
+			if gasPricesStr == "" {
+				gasPricesStr = "0.0uband"
 			}
+			gasPrice, err := sdk.ParseDecCoin(gasPricesStr)
+			if err != nil {
+				return err
+			}
+			c.gasPrices = sdk.NewDecCoins(gasPrice)
+
 			l := NewLogger()
 			l.Info(":star: Creating HTTP client with node URI: %s", cfg.NodeURI)
 			c.client, err = rpchttp.New(cfg.NodeURI, "/websocket")
