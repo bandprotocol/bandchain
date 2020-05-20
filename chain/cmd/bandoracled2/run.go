@@ -72,6 +72,19 @@ func runCmd(c *Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			if cfg.GasPrices != "" {
+				gasPrice, err := sdk.ParseDecCoin(cfg.GasPrices)
+				if err != nil {
+					return err
+				}
+				c.gasPrices = sdk.NewDecCoins(gasPrice)
+			} else {
+				gasPrice, err := sdk.ParseDecCoin("0.0uband")
+				if err != nil {
+					return err
+				}
+				c.gasPrices = sdk.NewDecCoins(gasPrice)
+			}
 			l := NewLogger()
 			l.Info(":star: Creating HTTP client with node URI: %s", cfg.NodeURI)
 			c.client, err = rpchttp.New(cfg.NodeURI, "/websocket")
@@ -84,8 +97,10 @@ func runCmd(c *Context) *cobra.Command {
 	cmd.Flags().String(flags.FlagChainID, "", "chain ID of BandChain network")
 	cmd.Flags().String(flags.FlagNode, "tcp://localhost:26657", "RPC url to BandChain node")
 	cmd.Flags().String(flagValidator, "", "validator address")
+	cmd.Flags().String(flags.FlagGasPrices, "", "gas prices")
 	viper.BindPFlag(flags.FlagChainID, cmd.Flags().Lookup(flags.FlagChainID))
 	viper.BindPFlag(flags.FlagNode, cmd.Flags().Lookup(flags.FlagNode))
 	viper.BindPFlag(flagValidator, cmd.Flags().Lookup(flagValidator))
+	viper.BindPFlag(flags.FlagGasPrices, cmd.Flags().Lookup(flags.FlagGasPrices))
 	return cmd
 }

@@ -20,9 +20,10 @@ const (
 
 // Config data structure for bandoracled daemon.
 type Config struct {
-	ChainID   string `mapstructure:"chain-id"`  // ChainID of the target chain
-	NodeURI   string `mapstructure:"node"`      // Remote RPC URI of BandChain node to connect to
-	Validator string `mapstructure:"validator"` // The validator address that I'm responsible for
+	ChainID   string `mapstructure:"chain-id"`   // ChainID of the target chain
+	NodeURI   string `mapstructure:"node"`       // Remote RPC URI of BandChain node to connect to
+	Validator string `mapstructure:"validator"`  // The validator address that I'm responsible for
+	GasPrices string `mapstructure:"gas-prices"` // Gas prices of the transaction
 }
 
 // Global instances.

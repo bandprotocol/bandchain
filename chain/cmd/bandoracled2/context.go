@@ -9,5 +9,6 @@ import (
 type Context struct {
 	client    *rpchttp.HTTP
 	validator sdk.ValAddress
+	gasPrices sdk.DecCoins
 	keys      chan keyring.Info
 }
