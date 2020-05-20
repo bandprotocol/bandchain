@@ -34,6 +34,7 @@ func (k Keeper) SetValidatorReportInfo(ctx sdk.Context, address sdk.ValAddress, 
 func (k Keeper) GetAllValidatorReportInfos(ctx sdk.Context) (infos []types.ValidatorReportInfo) {
 	store := ctx.KVStore(k.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, types.ValidatorReportInfoKeyPrefix)
+	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var info types.ValidatorReportInfo
 		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &info)

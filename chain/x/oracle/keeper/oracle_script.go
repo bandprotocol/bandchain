@@ -64,6 +64,7 @@ func (k Keeper) EditOracleScript(ctx sdk.Context, id types.OracleScriptID, new t
 func (k Keeper) GetAllOracleScripts(ctx sdk.Context) (oracleScripts []types.OracleScript) {
 	store := ctx.KVStore(k.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, types.OracleScriptStoreKeyPrefix)
+	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var oracleScript types.OracleScript
 		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &oracleScript)

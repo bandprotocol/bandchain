@@ -62,6 +62,7 @@ func (k Keeper) EditDataSource(ctx sdk.Context, id types.DataSourceID, new types
 func (k Keeper) GetAllDataSources(ctx sdk.Context) (dataSources []types.DataSource) {
 	store := ctx.KVStore(k.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, types.DataSourceStoreKeyPrefix)
+	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		var dataSource types.DataSource
 		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &dataSource)
