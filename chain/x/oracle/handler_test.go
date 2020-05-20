@@ -48,8 +48,8 @@ func TestCreateDataSourceSuccess(t *testing.T) {
 	events := ctx.EventManager().Events()
 	require.Equal(t, 1, len(events))
 	require.Equal(t, sdk.Event{
-		Type:       EventTypeCreateDataSource,
-		Attributes: []tmkv.Pair{{Key: []byte(AttributeKeyID), Value: []byte("1")}},
+		Type:       types.EventTypeCreateDataSource,
+		Attributes: []tmkv.Pair{{Key: []byte(types.AttributeKeyID), Value: []byte("1")}},
 	}, events[0])
 }
 
@@ -78,12 +78,12 @@ func TestEditDataSourceSuccess(t *testing.T) {
 	events := ctx.EventManager().Events()
 	require.Equal(t, 2, len(events))
 	require.Equal(t, sdk.Event{
-		Type:       EventTypeCreateDataSource,
-		Attributes: []tmkv.Pair{{Key: []byte(AttributeKeyID), Value: []byte("1")}},
+		Type:       types.EventTypeCreateDataSource,
+		Attributes: []tmkv.Pair{{Key: []byte(types.AttributeKeyID), Value: []byte("1")}},
 	}, events[0])
 	require.Equal(t, sdk.Event{
-		Type:       EventTypeEditDataSource,
-		Attributes: []tmkv.Pair{{Key: []byte(AttributeKeyID), Value: []byte("1")}},
+		Type:       types.EventTypeEditDataSource,
+		Attributes: []tmkv.Pair{{Key: []byte(types.AttributeKeyID), Value: []byte("1")}},
 	}, events[1])
 }
 
@@ -117,8 +117,8 @@ func TestCreateOracleScriptSuccess(t *testing.T) {
 	events := ctx.EventManager().Events()
 	require.Equal(t, 1, len(events))
 	require.Equal(t, sdk.Event{
-		Type:       EventTypeCreateOracleScript,
-		Attributes: []tmkv.Pair{{Key: []byte(AttributeKeyID), Value: []byte("1")}},
+		Type:       types.EventTypeCreateOracleScript,
+		Attributes: []tmkv.Pair{{Key: []byte(types.AttributeKeyID), Value: []byte("1")}},
 	}, events[0])
 }
 
@@ -148,12 +148,12 @@ func TestEditOracleScriptSuccess(t *testing.T) {
 	events := ctx.EventManager().Events()
 	require.Equal(t, 2, len(events))
 	require.Equal(t, sdk.Event{
-		Type:       EventTypeCreateOracleScript,
-		Attributes: []tmkv.Pair{{Key: []byte(AttributeKeyID), Value: []byte("1")}},
+		Type:       types.EventTypeCreateOracleScript,
+		Attributes: []tmkv.Pair{{Key: []byte(types.AttributeKeyID), Value: []byte("1")}},
 	}, events[0])
 	require.Equal(t, sdk.Event{
-		Type:       EventTypeEditOracleScript,
-		Attributes: []tmkv.Pair{{Key: []byte(AttributeKeyID), Value: []byte("1")}},
+		Type:       types.EventTypeEditOracleScript,
+		Attributes: []tmkv.Pair{{Key: []byte(types.AttributeKeyID), Value: []byte("1")}},
 	}, events[1])
 }
 

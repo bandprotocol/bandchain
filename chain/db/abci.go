@@ -12,6 +12,7 @@ import (
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
+	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 // HandleBeginAndEndblockEvent handles Beginblock and Endblock events.
@@ -22,31 +23,31 @@ func (b *BandDB) HandleBeginAndEndblockEvent(event abci.Event) {
 	}
 
 	switch event.Type {
-	case oracle.EventTypeRequestExecute:
-		id, err := strconv.ParseInt(kvMap[oracle.AttributeKeyRequestID], 10, 64)
+	case otypes.EventTypeRequestExecute:
+		id, err := strconv.ParseInt(kvMap[otypes.AttributeKeyRequestID], 10, 64)
 		if err != nil {
 			panic(err)
 		}
 
-		numResolveStatus, err := strconv.ParseInt(kvMap[oracle.AttributeKeyResolveStatus], 10, 8)
+		numResolveStatus, err := strconv.ParseInt(kvMap[otypes.AttributeKeyResolveStatus], 10, 8)
 		if err != nil {
 			panic(err)
 		}
 
-		resolveStatus := oracle.ResolveStatus(numResolveStatus)
+		resolveStatus := otypes.ResolveStatus(numResolveStatus)
 
 		if parseResolveStatus(resolveStatus) == Success {
-			requestTime, err := strconv.ParseInt(kvMap[oracle.AttributeKeyRequestTime], 10, 64)
+			requestTime, err := strconv.ParseInt(kvMap[otypes.AttributeKeyRequestTime], 10, 64)
 			if err != nil {
 				panic(err)
 
 			}
-			resolveTime, err := strconv.ParseInt(kvMap[oracle.AttributeKeyResolveTime], 10, 64)
+			resolveTime, err := strconv.ParseInt(kvMap[otypes.AttributeKeyResolveTime], 10, 64)
 			if err != nil {
 				panic(err)
 
 			}
-			result := []byte(kvMap[oracle.AttributeKeyResult])
+			result := []byte(kvMap[otypes.AttributeKeyResult])
 
 			err = b.tx.Model(&Request{}).Where(Request{ID: id}).
 				Update(

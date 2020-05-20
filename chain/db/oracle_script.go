@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
+	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -69,7 +70,7 @@ func (b *BandDB) handleMsgCreateOracleScript(
 	msg oracle.MsgCreateOracleScript,
 	events map[string]string,
 ) error {
-	rawID, ok := events[oracle.EventTypeCreateOracleScript+"."+oracle.AttributeKeyID]
+	rawID, ok := events[otypes.EventTypeCreateOracleScript+"."+otypes.AttributeKeyID]
 	if !ok {
 		return errors.New("handleMsgCreateOracleScript: cannot find oracle script id")
 	}

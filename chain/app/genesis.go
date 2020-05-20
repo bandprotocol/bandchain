@@ -23,6 +23,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
+	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 // GenesisState defines a type alias for the Band genesis application state.
@@ -150,13 +151,13 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 	}
 
 	// TODO: Find a better way to specify path to data sources
-	state.DataSources = make([]oracle.DataSource, len(dataSources))
+	state.DataSources = make([]otypes.DataSource, len(dataSources))
 	for i, dataSource := range dataSources {
 		script, err := ioutil.ReadFile(dataSource.path)
 		if err != nil {
 			panic(err)
 		}
-		state.DataSources[i] = oracle.NewDataSource(
+		state.DataSources[i] = otypes.NewDataSource(
 			owner,
 			dataSource.name,
 			dataSource.description,
@@ -257,13 +258,13 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			`https://ipfs.io/ipfs/QmbgUQq82ra3bnxu8Jg89uonKQFpuiXx1xecXUBun2AcjF`,
 		},
 	}
-	state.OracleScripts = make([]oracle.OracleScript, len(oracleScripts))
+	state.OracleScripts = make([]otypes.OracleScript, len(oracleScripts))
 	for i, oracleScript := range oracleScripts {
 		code, err := ioutil.ReadFile(oracleScript.path)
 		if err != nil {
 			panic(err)
 		}
-		state.OracleScripts[i] = oracle.NewOracleScript(
+		state.OracleScripts[i] = otypes.NewOracleScript(
 			owner,
 			oracleScript.name,
 			oracleScript.description,

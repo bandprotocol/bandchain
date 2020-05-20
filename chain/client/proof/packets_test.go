@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
+	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/crypto/tmhash"
 )
@@ -24,7 +25,7 @@ func TestCalculateResultHash(t *testing.T) {
 		AnsCount:      1,
 		RequestTime:   1589535020,
 		ResolveTime:   1589535022,
-		ResolveStatus: oracle.ResolveStatus(1),
+		ResolveStatus: otypes.ResolveStatus(1),
 		Result:        mustDecodeString("4bb10e0000000000"),
 	}
 	expectedResultHash := hexToBytes("dbbbf5596a975c50c601bdd6ae26a5007e8483344afd7d2ae41e37891cb81b86")
@@ -52,7 +53,7 @@ func TestEmptyClientID(t *testing.T) {
 		AnsCount:      1,
 		RequestTime:   1589536115,
 		ResolveTime:   1589536119,
-		ResolveStatus: oracle.ResolveStatus(1),
+		ResolveStatus: otypes.ResolveStatus(1),
 		Result:        mustDecodeString("0aae0e0000000000"),
 	}
 	expectedResultHash := hexToBytes("37ca0d67535481e7575785dc828b730279f5620ba373c667c22a512cc48ae6dc")

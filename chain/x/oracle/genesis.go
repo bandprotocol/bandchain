@@ -39,7 +39,7 @@ func ValidateGenesis(data GenesisState) error {
 // DefaultGenesisState returns the default genesis state.
 func DefaultGenesisState() GenesisState {
 	return GenesisState{
-		Params:        DefaultParams(),
+		Params:        types.DefaultParams(),
 		DataSources:   []types.DataSource{},
 		OracleScripts: []types.OracleScript{},
 		ReportInfos:   []types.ValidatorReportInfo{},
@@ -48,11 +48,11 @@ func DefaultGenesisState() GenesisState {
 }
 
 func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorUpdate {
-	k.SetParam(ctx, KeyMaxRawRequestCount, data.Params.MaxRawRequestCount)
-	k.SetParam(ctx, KeyMaxResultSize, data.Params.MaxResultSize)
-	k.SetParam(ctx, KeyGasPerRawDataRequestPerValidator, data.Params.GasPerRawDataRequestPerValidator)
-	k.SetParam(ctx, KeyExpirationBlockCount, data.Params.ExpirationBlockCount)
-	k.SetParam(ctx, KeyMaxConsecutiveMisses, data.Params.MaxConsecutiveMisses)
+	k.SetParam(ctx, types.KeyMaxRawRequestCount, data.Params.MaxRawRequestCount)
+	k.SetParam(ctx, types.KeyMaxResultSize, data.Params.MaxResultSize)
+	k.SetParam(ctx, types.KeyGasPerRawDataRequestPerValidator, data.Params.GasPerRawDataRequestPerValidator)
+	k.SetParam(ctx, types.KeyExpirationBlockCount, data.Params.ExpirationBlockCount)
+	k.SetParam(ctx, types.KeyMaxConsecutiveMisses, data.Params.MaxConsecutiveMisses)
 
 	for _, dataSource := range data.DataSources {
 		_, err := k.AddDataSource(ctx, types.NewDataSource(

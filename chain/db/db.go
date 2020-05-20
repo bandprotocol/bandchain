@@ -25,6 +25,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
+	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 type BandDB struct {
@@ -77,21 +78,21 @@ func NewDB(dialect, path string) (*BandDB, error) {
 
 	db.Exec(`CREATE VIEW validator_last_250_votes AS
 			SELECT COUNT(*), consensus_address, voted
-			FROM validator_votes 
+			FROM validator_votes
 			WHERE block_height > (SELECT MAX(height) from blocks) - 251
 			GROUP BY consensus_address, voted;
 	`)
 
 	db.Exec(`CREATE VIEW validator_last_1000_votes AS
 			SELECT COUNT(*), consensus_address, voted
-			FROM validator_votes 
+			FROM validator_votes
 			WHERE block_height > (SELECT MAX(height) from blocks) - 1001
 			GROUP BY consensus_address, voted;
 	`)
 
 	db.Exec(`CREATE VIEW validator_last_10000_votes AS
 			SELECT COUNT(*), consensus_address, voted
-			FROM validator_votes 
+			FROM validator_votes
 			WHERE block_height > (SELECT MAX(height) from blocks) - 10001
 			GROUP BY consensus_address, voted;
 	`)
@@ -375,7 +376,7 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 			return nil, err
 		}
 
-		dataSourceID, err := strconv.ParseInt(events[oracle.EventTypeCreateDataSource+"."+oracle.AttributeKeyID], 10, 64)
+		dataSourceID, err := strconv.ParseInt(events[otypes.EventTypeCreateDataSource+"."+otypes.AttributeKeyID], 10, 64)
 		if err != nil {
 			return nil, err
 		}
@@ -390,7 +391,7 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		if err != nil {
 			return nil, err
 		}
-		oracleScriptID, err := strconv.ParseInt(events[oracle.EventTypeCreateOracleScript+"."+oracle.AttributeKeyID], 10, 64)
+		oracleScriptID, err := strconv.ParseInt(events[otypes.EventTypeCreateOracleScript+"."+otypes.AttributeKeyID], 10, 64)
 		if err != nil {
 			return nil, err
 		}
@@ -412,7 +413,7 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 			return nil, err
 		}
 
-		requestID, err := strconv.ParseInt(events[oracle.EventTypeRequest+"."+oracle.AttributeKeyID], 10, 64)
+		requestID, err := strconv.ParseInt(events[otypes.EventTypeRequest+"."+otypes.AttributeKeyID], 10, 64)
 		if err != nil {
 			return nil, err
 		}

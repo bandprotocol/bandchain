@@ -17,6 +17,7 @@ import (
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
+	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 var (
@@ -100,7 +101,7 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
-		requestID := oracle.RequestID(intRequestID)
+		requestID := otypes.RequestID(intRequestID)
 
 		commit, err := cliCtx.Client.Commit(nil)
 		if err != nil {
@@ -110,7 +111,7 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 
 		resp, err := cliCtx.Client.ABCIQueryWithOptions(
 			"/store/oracle/key",
-			oracle.ResultStoreKey(requestID),
+			otypes.ResultStoreKey(requestID),
 			rpcclient.ABCIQueryOptions{Height: commit.Height - 1, Prove: true},
 		)
 		if err != nil {
@@ -175,33 +176,33 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		var reqPacket oracle.OracleRequestPacketData
 		var resPacket oracle.OracleResponsePacketData
 		for _, ev := range blockResults.EndBlockEvents {
-			if ev.GetType() != oracle.EventTypeRequestExecute {
+			if ev.GetType() != otypes.EventTypeRequestExecute {
 				continue
 			}
 			for _, kv := range ev.GetAttributes() {
 				switch string(kv.Key) {
-				case oracle.AttributeKeyRequestID:
-					resPacket.RequestID = oracle.RequestID(mustParseInt64(kv.Value))
-				case oracle.AttributeKeyClientID:
+				case otypes.AttributeKeyRequestID:
+					resPacket.RequestID = otypes.RequestID(mustParseInt64(kv.Value))
+				case otypes.AttributeKeyClientID:
 					reqPacket.ClientID = string(kv.Value)
 					resPacket.ClientID = string(kv.Value)
-				case oracle.AttributeKeyOracleScriptID:
-					reqPacket.OracleScriptID = oracle.OracleScriptID(mustParseInt64(kv.Value))
-				case oracle.AttributeKeyCalldata:
+				case otypes.AttributeKeyOracleScriptID:
+					reqPacket.OracleScriptID = otypes.OracleScriptID(mustParseInt64(kv.Value))
+				case otypes.AttributeKeyCalldata:
 					reqPacket.Calldata = kv.Value
-				case oracle.AttributeKeyAskCount:
+				case otypes.AttributeKeyAskCount:
 					reqPacket.AskCount = mustParseInt64(kv.Value)
-				case oracle.AttributeKeyMinCount:
+				case otypes.AttributeKeyMinCount:
 					reqPacket.MinCount = mustParseInt64(kv.Value)
-				case oracle.AttributeKeyAnsCount:
+				case otypes.AttributeKeyAnsCount:
 					resPacket.AnsCount = mustParseInt64(kv.Value)
-				case oracle.AttributeKeyRequestTime:
+				case otypes.AttributeKeyRequestTime:
 					resPacket.RequestTime = mustParseInt64(kv.Value)
-				case oracle.AttributeKeyResolveTime:
+				case otypes.AttributeKeyResolveTime:
 					resPacket.ResolveTime = mustParseInt64(kv.Value)
-				case oracle.AttributeKeyResolveStatus:
-					resPacket.ResolveStatus = oracle.ResolveStatus(mustParseInt64(kv.Value))
-				case oracle.AttributeKeyResult:
+				case otypes.AttributeKeyResolveStatus:
+					resPacket.ResolveStatus = otypes.ResolveStatus(mustParseInt64(kv.Value))
+				case otypes.AttributeKeyResult:
 					resPacket.Result = kv.Value
 				}
 			}

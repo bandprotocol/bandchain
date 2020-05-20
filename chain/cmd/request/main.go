@@ -14,7 +14,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 
-	"github.com/bandprotocol/bandchain/chain/x/oracle"
+	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 // File to send new request to bandchain
@@ -55,7 +55,7 @@ func main() {
 				panic(err)
 			}
 			fmt.Println(tx.SendTransaction(
-				oracle.NewMsgCreateDataSource(
+				otypes.NewMsgCreateDataSource(
 					tx.Sender(), "Coingecko script",
 					"The Script that queries crypto price from https://cryptocompare.com",
 					coingecko, tx.Sender(),
@@ -68,7 +68,7 @@ func main() {
 				panic(err)
 			}
 			fmt.Println(tx.SendTransaction(
-				oracle.NewMsgCreateDataSource(
+				otypes.NewMsgCreateDataSource(
 					tx.Sender(), "Crypto compare script",
 					"The Script that queries crypto price from https://cryptocompare.com",
 					cryptoCompare, tx.Sender(),
@@ -81,7 +81,7 @@ func main() {
 				panic(err)
 			}
 			fmt.Println(tx.SendTransaction(
-				oracle.NewMsgCreateDataSource(
+				otypes.NewMsgCreateDataSource(
 					tx.Sender(), "Binance script",
 					"The Script that queries crypto price from https://www.binance.com/en",
 					binance, tx.Sender(),
@@ -94,7 +94,7 @@ func main() {
 				panic(err)
 			}
 			fmt.Println(tx.SendTransaction(
-				oracle.NewMsgCreateOracleScript(
+				otypes.NewMsgCreateOracleScript(
 					tx.Sender(), "Crypto price script",
 					"Oracle script for getting an average crypto price from many sources.",
 					oracleBytes, `{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }`, "sourceCodeURL", tx.Sender(),
@@ -118,7 +118,7 @@ func main() {
 			case "BTC":
 				{
 					fmt.Println(tx.SendTransaction(
-						oracle.NewMsgRequestData(
+						otypes.NewMsgRequestData(
 							1, []byte("BTC"), 4, 4, "request BTC", tx.Sender(),
 						), 0, "", "",
 					))
@@ -126,7 +126,7 @@ func main() {
 			case "ETH":
 				{
 					fmt.Println(tx.SendTransaction(
-						oracle.NewMsgRequestData(
+						otypes.NewMsgRequestData(
 							1, []byte("ETH"), 4, 4, "request ETH", tx.Sender(),
 						), 1000000, "", "",
 					))
@@ -139,7 +139,7 @@ func main() {
 			errResponses := make(chan error, 2)
 			go func() {
 				txRes, err := tx.SendTransaction(
-					oracle.NewMsgRequestData(
+					otypes.NewMsgRequestData(
 						1, []byte("BTC"), 4, 4, "request BTC", tx.Sender(),
 					), 1000000, "", "",
 				)
@@ -151,7 +151,7 @@ func main() {
 			}()
 			go func() {
 				txRes, err := tx.SendTransaction(
-					oracle.NewMsgRequestData(
+					otypes.NewMsgRequestData(
 						1, []byte("ETH"), 4, 4, "request ETH", tx.Sender(),
 					), 1000000, "", "",
 				)
@@ -180,7 +180,7 @@ func main() {
 			errResponses := make(chan error, 2)
 			go func() {
 				txRes, err := tx.SendTransaction(
-					oracle.NewMsgRequestData(
+					otypes.NewMsgRequestData(
 						1, []byte("BTC"), 1, 1, "request BTC", tx.Sender(),
 					), 1000000, "", "",
 				)
@@ -192,7 +192,7 @@ func main() {
 			}()
 			go func() {
 				txRes, err := tx.SendTransaction(
-					oracle.NewMsgRequestData(
+					otypes.NewMsgRequestData(
 						1, []byte("ETH"), 1, 1, "request ETH", tx.Sender(),
 					), 1000000, "", "",
 				)
@@ -223,20 +223,20 @@ func main() {
 			}
 
 			fmt.Println(tx.SendTransaction(
-				oracle.NewMsgCreateOracleScript(
+				otypes.NewMsgCreateOracleScript(
 					tx.Sender(), "Silly script", "Test oracle script", bytes, `{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }`, "sourceCodeURL", tx.Sender()),
 				3000000, "", "",
 			))
 
 			fmt.Println(tx.SendTransaction(
-				oracle.NewMsgCreateDataSource(
+				otypes.NewMsgCreateDataSource(
 					tx.Sender(), "Mock Data source", "Mock Script",
 					[]byte("exec"), tx.Sender(),
 				), 1000000, "", "",
 			))
 
 			fmt.Println(tx.SendTransaction(
-				oracle.NewMsgRequestData(2, []byte("calldata"), 1, 1, "clientID", tx.Sender()),
+				otypes.NewMsgRequestData(2, []byte("calldata"), 1, 1, "clientID", tx.Sender()),
 				1000000, "", "",
 			))
 
@@ -255,7 +255,7 @@ func main() {
 
 			for i := uint64(0); i < round; i++ {
 				fmt.Println(tx.SendTransaction(
-					oracle.NewMsgCreateOracleScript(
+					otypes.NewMsgCreateOracleScript(
 						tx.Sender(), fmt.Sprintf("Silly script %d", i), "Test oracle script",
 						bytes, `{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"] ] }", "Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }`, "sourceCodeURL", tx.Sender(),
 					), 1000000, "", "",
@@ -267,7 +267,7 @@ func main() {
 		{
 			acc, _ := sdk.AccAddressFromBech32("band13zmknvkq2sj920spz90g4r9zjan8g584x8qalj")
 			fmt.Println(tx.SendTransaction(
-				oracle.NewMsgAddReporter(
+				otypes.NewMsgAddReporter(
 					sdk.ValAddress(tx.Sender()),
 					acc),
 				1000000, "", ""))

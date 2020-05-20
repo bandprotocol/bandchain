@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
+	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	channel "github.com/cosmos/cosmos-sdk/x/ibc/04-channel"
 )
@@ -49,11 +50,11 @@ func (b *BandDB) handleMsgPacket(
 		if err != nil {
 			return err
 		}
-		id, err := strconv.ParseInt(events[oracle.EventTypeRequest+"."+oracle.AttributeKeyID], 10, 64)
+		id, err := strconv.ParseInt(events[otypes.EventTypeRequest+"."+otypes.AttributeKeyID], 10, 64)
 		if err != nil {
 			return err
 		}
-		request, err := b.OracleKeeper.GetRequest(b.ctx, oracle.RequestID(id))
+		request, err := b.OracleKeeper.GetRequest(b.ctx, otypes.RequestID(id))
 		if err != nil {
 			return err
 		}
