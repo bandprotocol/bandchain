@@ -30,5 +30,4 @@ const (
 	AttributeKeyResolveStatus  = "resolve_status"
 	AttributeKeyResult         = "result"
 	AttributeKeyResultHash     = "result_hash"
-	AttributeKeyAction         = "action"
 )
