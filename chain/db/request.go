@@ -1,6 +1,7 @@
 package db
 
 import (
+	"encoding/hex"
 	"strconv"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
@@ -67,6 +68,9 @@ func (b *BandDB) AddNewRequest(
 	clientID string,
 	txHash []byte,
 	result []byte,
+	rawExternalIDs []string,
+	rawDataSourceIDs []string,
+	rawCalldatas []string,
 ) error {
 	request := createRequest(
 		id,
@@ -97,25 +101,36 @@ func (b *BandDB) AddNewRequest(
 		}
 	}
 
-	// TODO: FIX ME. Bun please take care of this
-	// for _, raw := range b.OracleKeeper.GetRawRequests(b.ctx, otypes.RequestID(id)) {
-	// 	err := b.AddRawDataRequest(
-	// 		id,
-	// 		int64(raw.ExternalID),
-	// 		int64(raw.DataSourceID),
-	// 		raw.Calldata,
-	// 	)
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// 	err = b.tx.FirstOrCreate(&RelatedDataSources{
-	// 		DataSourceID:   int64(raw.DataSourceID),
-	// 		OracleScriptID: int64(oracleScriptID),
-	// 	}).Error
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// }
+	for i := range rawExternalIDs {
+		externalID, err := strconv.ParseInt(rawExternalIDs[i], 10, 64)
+		if err != nil {
+			return err
+		}
+		dataSourceID, err := strconv.ParseInt(rawDataSourceIDs[i], 10, 64)
+		if err != nil {
+			return err
+		}
+		calldata, err := hex.DecodeString(rawCalldatas[i])
+		if err != nil {
+			return err
+		}
+		err = b.AddRawDataRequest(
+			id,
+			externalID,
+			dataSourceID,
+			calldata,
+		)
+		if err != nil {
+			return err
+		}
+		err = b.tx.FirstOrCreate(&RelatedDataSources{
+			DataSourceID:   dataSourceID,
+			OracleScriptID: oracleScriptID,
+		}).Error
+		if err != nil {
+			return err
+		}
+	}
 
 	return nil
 }
@@ -175,9 +190,9 @@ func (b *BandDB) AddRawDataRequest(
 func (b *BandDB) handleMsgRequestData(
 	txHash []byte,
 	msg oracle.MsgRequestData,
-	events map[string]string,
+	events map[string]interface{},
 ) error {
-	id, err := strconv.ParseInt(events[otypes.EventTypeRequest+"."+otypes.AttributeKeyID], 10, 64)
+	id, err := strconv.ParseInt(events[otypes.EventTypeRequest+"."+otypes.AttributeKeyID].(string), 10, 64)
 	if err != nil {
 		return err
 	}
@@ -196,5 +211,8 @@ func (b *BandDB) handleMsgRequestData(
 		msg.ClientID,
 		txHash,
 		nil,
+		events[otypes.EventTypeRequest+"."+otypes.AttributeKeyExternalID].([]string),
+		events[otypes.EventTypeRequest+"."+otypes.AttributeKeyDataSourceID].([]string),
+		events[otypes.EventTypeRequest+"."+otypes.AttributeKeyCalldata].([]string),
 	)
 }

@@ -324,10 +324,22 @@ func (b *BandDB) HandleTransaction(tx auth.StdTx, txHash []byte, logs sdk.ABCIMe
 	messages := make([]map[string]interface{}, 0)
 	for idx, msg := range msgs {
 		events := logs[idx].Events
-		kvMap := make(map[string]string)
+		kvMap := make(map[string]interface{})
 		for _, event := range events {
 			for _, kv := range event.Attributes {
-				kvMap[event.Type+"."+kv.Key] = kv.Value
+				if v, found := kvMap[event.Type+"."+kv.Key]; found {
+					switch old := v.(type) {
+					case string:
+						kvMap[event.Type+"."+kv.Key] = []string{old, kv.Value}
+					case []string:
+						kvMap[event.Type+"."+kv.Key] = append(old, kv.Value)
+					default:
+						panic("Unknown type")
+					}
+				} else {
+					kvMap[event.Type+"."+kv.Key] = kv.Value
+				}
+
 			}
 		}
 
@@ -357,7 +369,7 @@ func (b *BandDB) HandleTransactionFail(tx auth.StdTx, txHash []byte) {
 	b.UpdateTransaction(txHash, wrapedMsg)
 }
 
-func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]string) (map[string]interface{}, error) {
+func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]interface{}) (map[string]interface{}, error) {
 	jsonMap := make(map[string]interface{})
 	rawBytes, err := json.Marshal(msg)
 	if err != nil {
@@ -376,13 +388,13 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 			return nil, err
 		}
 
-		dataSourceID, err := strconv.ParseInt(events[otypes.EventTypeCreateDataSource+"."+otypes.AttributeKeyID], 10, 64)
+		dataSourceID, err := strconv.ParseInt((events[otypes.EventTypeCreateDataSource+"."+otypes.AttributeKeyID]).(string), 10, 64)
 		if err != nil {
 			return nil, err
 		}
 		jsonMap["data_source_id"] = dataSourceID
 	case oracle.MsgEditDataSource:
-		err = b.handleMsgEditDataSource(txHash, msg, events)
+		err = b.handleMsgEditDataSource(txHash, msg)
 		if err != nil {
 			return nil, err
 		}
@@ -391,13 +403,13 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		if err != nil {
 			return nil, err
 		}
-		oracleScriptID, err := strconv.ParseInt(events[otypes.EventTypeCreateOracleScript+"."+otypes.AttributeKeyID], 10, 64)
+		oracleScriptID, err := strconv.ParseInt(events[otypes.EventTypeCreateOracleScript+"."+otypes.AttributeKeyID].(string), 10, 64)
 		if err != nil {
 			return nil, err
 		}
 		jsonMap["oracle_script_id"] = oracleScriptID
 	case oracle.MsgEditOracleScript:
-		err = b.handleMsgEditOracleScript(txHash, msg, events)
+		err = b.handleMsgEditOracleScript(txHash, msg)
 		if err != nil {
 			return nil, err
 		}
@@ -413,7 +425,7 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 			return nil, err
 		}
 
-		requestID, err := strconv.ParseInt(events[otypes.EventTypeRequest+"."+otypes.AttributeKeyID], 10, 64)
+		requestID, err := strconv.ParseInt(events[otypes.EventTypeRequest+"."+otypes.AttributeKeyID].(string), 10, 64)
 		if err != nil {
 			return nil, err
 		}
@@ -422,7 +434,7 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]str
 		jsonMap["schema"] = oracleScript.Schema
 		jsonMap["request_id"] = requestID
 	case oracle.MsgReportData:
-		err = b.handleMsgReportData(txHash, msg, events)
+		err = b.handleMsgReportData(txHash, msg)
 		if err != nil {
 			return nil, err
 		}
