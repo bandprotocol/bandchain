@@ -53,9 +53,24 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 	}
 
 	l = l.With("rid", id)
+
+	// Skip if not related to this validator
+	validators := GetEventValues(log, otypes.EventTypeRequest, otypes.AttributeKeyValidator)
+	hasMe := false
+	for _, validator := range validators {
+		if validator == c.validator.String() {
+			hasMe = true
+			break
+		}
+	}
+
+	if !hasMe {
+		l.Debug(":next_track_button: Skip request not related to this validator")
+		return
+	}
+
 	l.Info(":delivery_truck: Processing incoming request event")
 
-	// TODO: Skip if not related to this validator
 	reqs, err := GetRawRequests(log)
 	if err != nil {
 		l.Error(":skull: Failed to parse raw requests with error: %s", err.Error())
