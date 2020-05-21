@@ -42,10 +42,9 @@ func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawR
 		return
 	}
 
-	// TODO: Make gas limit and gas price configurable.
 	txBldr := auth.NewTxBuilder(
 		auth.DefaultTxEncoder(cdc), acc.GetAccountNumber(), acc.GetSequence(),
-		1000000, 1, false, cfg.ChainID, "", sdk.NewCoins(), c.gasPrices,
+		0, 1, false, cfg.ChainID, "", sdk.NewCoins(), c.gasPrices,
 	)
 	txBldr, err = authclient.EnrichWithGas(txBldr, cliCtx, []sdk.Msg{msg})
 	if err != nil {
