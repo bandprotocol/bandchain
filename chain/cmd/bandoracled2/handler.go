@@ -26,7 +26,7 @@ func handleTransaction(c *Context, l *Logger, tx tmtypes.TxResult) {
 	}
 
 	for _, log := range logs {
-		messageType, err := GetEventValue(log, sdk.EventTypeMessage, otypes.AttributeKeyAction)
+		messageType, err := GetEventValue(log, sdk.EventTypeMessage, sdk.AttributeKeyAction)
 		if err != nil {
 			l.Error(":cold_sweat: Failed to get message action type with error: %s", err.Error())
 			continue
@@ -38,7 +38,7 @@ func handleTransaction(c *Context, l *Logger, tx tmtypes.TxResult) {
 			// Try to get request id from packet. If not then return error.
 			_, err := GetEventValue(log, otypes.EventTypeRequest, otypes.AttributeKeyID)
 			if err != nil {
-				l.Debug(":ghost: Skipping non-request packet type: %s", messageType)
+				l.Debug(":ghost: Skipping non-request packet")
 				return
 			}
 			go handleRequestLog(c, l, log)
