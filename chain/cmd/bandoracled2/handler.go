@@ -32,7 +32,7 @@ func handleTransaction(c *Context, l *Logger, tx tmtypes.TxResult) {
 			continue
 		}
 
-		if messageType == otypes.EventTypeRequest {
+		if messageType == (otypes.MsgRequestData{}).Type() {
 			go handleRequestLog(c, l, log)
 		} else if messageType == (ibc.MsgPacket{}).Type() {
 			// Try to get request id from packet. If not then return error.
