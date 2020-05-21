@@ -38,12 +38,12 @@ func handleTransaction(c *Context, l *Logger, tx tmtypes.TxResult) {
 			// Try to get request id from packet. If not then return error.
 			_, err := GetEventValue(log, otypes.EventTypeRequest, otypes.AttributeKeyID)
 			if err != nil {
-				l.Error(":cold_sweat: Failed to parse request id from oracle packet with error: %s", err.Error())
+				l.Debug(":ghost: Skipping non-request packet type: %s", messageType)
 				return
 			}
 			go handleRequestLog(c, l, log)
 		} else {
-			l.Debug(":ghost: Skipping non-request message type: %s", messageType)
+			l.Debug(":ghost: Skipping non-{request/packet} type: %s", messageType)
 		}
 	}
 }
