@@ -16,6 +16,7 @@ import (
 
 const (
 	flagValidator = "validator"
+	flagLogLevel  = "log-level"
 )
 
 // Config data structure for bandoracled daemon.
@@ -24,6 +25,7 @@ type Config struct {
 	NodeURI   string `mapstructure:"node"`       // Remote RPC URI of BandChain node to connect to
 	Validator string `mapstructure:"validator"`  // The validator address that I'm responsible for
 	GasPrices string `mapstructure:"gas-prices"` // Gas prices of the transaction
+	LogLevel  string `mapstructure:"log-level"`  // Log level of the logger
 }
 
 // Global instances.
