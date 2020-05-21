@@ -78,9 +78,6 @@ func runCmd(c *Context) *cobra.Command {
 				return err
 			}
 			logLevel := cfg.LogLevel
-			if cfg.LogLevel == "" {
-				logLevel = "info"
-			}
 			allowLevel, err := log.AllowLevel(logLevel)
 			if err != nil {
 				return err
@@ -98,7 +95,7 @@ func runCmd(c *Context) *cobra.Command {
 	cmd.Flags().String(flags.FlagNode, "tcp://localhost:26657", "RPC url to BandChain node")
 	cmd.Flags().String(flagValidator, "", "validator address")
 	cmd.Flags().String(flags.FlagGasPrices, "", "gas prices for report transaction")
-	cmd.Flags().String(flagLogLevel, "", "set the logger level")
+	cmd.Flags().String(flagLogLevel, "info", "set the logger level")
 	viper.BindPFlag(flags.FlagChainID, cmd.Flags().Lookup(flags.FlagChainID))
 	viper.BindPFlag(flags.FlagNode, cmd.Flags().Lookup(flags.FlagNode))
 	viper.BindPFlag(flagValidator, cmd.Flags().Lookup(flagValidator))
