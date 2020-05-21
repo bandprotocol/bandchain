@@ -42,10 +42,16 @@ func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawR
 		return
 	}
 
-	out, err := auth.NewTxBuilder(
+	txBldr := auth.NewTxBuilder(
 		auth.DefaultTxEncoder(cdc), acc.GetAccountNumber(), acc.GetSequence(),
-		1000000, 1, false, cfg.ChainID, "", sdk.NewCoins(), c.gasPrices,
-	).WithKeybase(keybase).BuildAndSign(key.GetName(), ckeys.DefaultKeyPass, []sdk.Msg{msg})
+		0, 1, false, cfg.ChainID, "", sdk.NewCoins(), c.gasPrices,
+	)
+	txBldr, err = authclient.EnrichWithGas(txBldr, cliCtx, []sdk.Msg{msg})
+	if err != nil {
+		l.Error(":exploding_head: Failed to enrich with gas with error: %s", err.Error())
+		return
+	}
+	out, err := txBldr.WithKeybase(keybase).BuildAndSign(key.GetName(), ckeys.DefaultKeyPass, []sdk.Msg{msg})
 	if err != nil {
 		l.Error(":exploding_head: Failed to build tx with error: %s", err.Error())
 		return
