@@ -42,10 +42,9 @@ func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawR
 		return
 	}
 
-	// TODO: Make gas limit and gas price configurable.
 	out, err := auth.NewTxBuilder(
 		auth.DefaultTxEncoder(cdc), acc.GetAccountNumber(), acc.GetSequence(),
-		1000000, 1, false, cfg.ChainID, "", sdk.NewCoins(), sdk.NewDecCoins(),
+		1000000, 1, false, cfg.ChainID, "", sdk.NewCoins(), c.gasPrices,
 	).WithKeybase(keybase).BuildAndSign(key.GetName(), ckeys.DefaultKeyPass, []sdk.Msg{msg})
 	if err != nil {
 		l.Error(":exploding_head: Failed to build tx with error: %s", err.Error())
