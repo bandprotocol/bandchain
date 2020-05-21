@@ -52,17 +52,16 @@ func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorU
 	k.SetParam(ctx, types.KeyGasPerRawDataRequestPerValidator, data.Params.GasPerRawDataRequestPerValidator)
 	k.SetParam(ctx, types.KeyExpirationBlockCount, data.Params.ExpirationBlockCount)
 	k.SetParam(ctx, types.KeyMaxConsecutiveMisses, data.Params.MaxConsecutiveMisses)
-
 	for _, dataSource := range data.DataSources {
 		_ = k.AddDataSource(ctx, types.NewDataSource(
-			dataSource.Owner, dataSource.Name, dataSource.Description, dataSource.Executable,
+			dataSource.Owner, dataSource.Name, dataSource.Description, dataSource.Filename,
 		))
 	}
 
 	for _, oracleScript := range data.OracleScripts {
 		_ = k.AddOracleScript(ctx, types.NewOracleScript(
 			oracleScript.Owner, oracleScript.Name, oracleScript.Description,
-			oracleScript.Code, oracleScript.Schema, oracleScript.SourceCodeURL,
+			oracleScript.Filename, oracleScript.Schema, oracleScript.SourceCodeURL,
 		))
 	}
 

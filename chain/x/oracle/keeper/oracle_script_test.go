@@ -14,7 +14,7 @@ func TestHasOracleScript(t *testing.T) {
 	require.False(t, k.HasOracleScript(ctx, 42))
 	// After we set it, we should be able to find it.
 	k.SetOracleScript(ctx, 42, types.NewOracleScript(
-		Owner.Address, BasicName, BasicDesc, BasicCode, BasicSchema, BasicSourceCodeURL,
+		Owner.Address, BasicName, BasicDesc, BasicFilename, BasicSchema, BasicSourceCodeURL,
 	))
 	require.True(t, k.HasOracleScript(ctx, 42))
 }
@@ -27,10 +27,10 @@ func TestSetterGetterOracleScript(t *testing.T) {
 	require.Panics(t, func() { _ = k.MustGetOracleScript(ctx, 42) })
 	// Creates some basic oracle scripts.
 	oracleScript1 := types.NewOracleScript(
-		Alice.Address, "NAME1", "DESCRIPTION1", []byte("code1"), BasicSchema, BasicSourceCodeURL,
+		Alice.Address, "NAME1", "DESCRIPTION1", "FILENAME1", BasicSchema, BasicSourceCodeURL,
 	)
 	oracleScript2 := types.NewOracleScript(
-		Bob.Address, "NAME2", "DESCRIPTION2", []byte("code2"), BasicSchema, BasicSourceCodeURL,
+		Bob.Address, "NAME2", "DESCRIPTION2", "FILENAME2", BasicSchema, BasicSourceCodeURL,
 	)
 	// Sets id 42 with oracle script 1 and id 42 with oracle script 2.
 	k.SetOracleScript(ctx, 42, oracleScript1)
@@ -54,10 +54,10 @@ func TestAddEditOracleScriptBasic(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// Creates some basic oracle scripts.
 	oracleScript1 := types.NewOracleScript(
-		Alice.Address, "NAME1", "DESCRIPTION1", []byte("code1"), BasicSchema, BasicSourceCodeURL,
+		Alice.Address, "NAME1", "DESCRIPTION1", "FILENAME1", BasicSchema, BasicSourceCodeURL,
 	)
 	oracleScript2 := types.NewOracleScript(
-		Bob.Address, "NAME2", "DESCRIPTION2", []byte("code2"), BasicSchema, BasicSourceCodeURL,
+		Bob.Address, "NAME2", "DESCRIPTION2", "FILENAME2", BasicSchema, BasicSourceCodeURL,
 	)
 	// Adds a new oracle script to the store. We should be able to retreive it back.
 	id := k.AddOracleScript(ctx, oracleScript1)
@@ -65,7 +65,7 @@ func TestAddEditOracleScriptBasic(t *testing.T) {
 	require.NotEqual(t, oracleScript2, k.MustGetOracleScript(ctx, id))
 	// Edits the oracle script. We should get the updated oracle script.
 	err := k.EditOracleScript(ctx, id, types.NewOracleScript(
-		oracleScript2.Owner, oracleScript2.Name, oracleScript2.Description, oracleScript2.Code,
+		oracleScript2.Owner, oracleScript2.Name, oracleScript2.Description, oracleScript2.Filename,
 		oracleScript2.Schema, oracleScript2.SourceCodeURL,
 	))
 	require.Nil(t, err)
@@ -77,10 +77,10 @@ func TestAddEditOracleScriptDoNotModify(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// Creates some basic oracle scripts.
 	oracleScript1 := types.NewOracleScript(
-		Alice.Address, "NAME1", "DESCRIPTION1", []byte("code1"), BasicSchema, BasicSourceCodeURL,
+		Alice.Address, "NAME1", "DESCRIPTION1", "FILENAME1", BasicSchema, BasicSourceCodeURL,
 	)
 	oracleScript2 := types.NewOracleScript(
-		Bob.Address, types.DoNotModify, types.DoNotModify, []byte("code2"),
+		Bob.Address, types.DoNotModify, types.DoNotModify, "FILENAME2",
 		types.DoNotModify, types.DoNotModify,
 	)
 	// Adds a new oracle script to the store. We should be able to retreive it back.
@@ -96,7 +96,7 @@ func TestAddEditOracleScriptDoNotModify(t *testing.T) {
 	require.Equal(t, oracleScriptRes.Owner, oracleScript2.Owner)
 	require.Equal(t, oracleScriptRes.Name, oracleScript1.Name)
 	require.Equal(t, oracleScriptRes.Description, oracleScript1.Description)
-	require.Equal(t, oracleScriptRes.Code, oracleScript2.Code)
+	require.Equal(t, oracleScriptRes.Filename, oracleScript2.Filename)
 	require.Equal(t, oracleScriptRes.Schema, oracleScript1.Schema)
 	require.Equal(t, oracleScriptRes.SourceCodeURL, oracleScript1.SourceCodeURL)
 }
@@ -108,12 +108,12 @@ func TestAddOracleScriptMustReturnCorrectID(t *testing.T) {
 	require.Equal(t, count, int64(0))
 	// Every new oracle script we add should return a new ID.
 	id1 := k.AddOracleScript(ctx, types.NewOracleScript(
-		Owner.Address, BasicName, BasicDesc, BasicCode, BasicSchema, BasicSourceCodeURL,
+		Owner.Address, BasicName, BasicDesc, BasicFilename, BasicSchema, BasicSourceCodeURL,
 	))
 	require.Equal(t, id1, types.OracleScriptID(1))
 	// Adds another oracle script so now ID should be 2.
 	id2 := k.AddOracleScript(ctx, types.NewOracleScript(
-		Owner.Address, BasicName, BasicDesc, BasicCode, BasicSchema, BasicSourceCodeURL,
+		Owner.Address, BasicName, BasicDesc, BasicFilename, BasicSchema, BasicSourceCodeURL,
 	))
 	require.Equal(t, id2, types.OracleScriptID(2))
 	// Finally we expect the oracle script to increase to 2 since we added two oracle scripts.
@@ -125,7 +125,7 @@ func TestEditNonExistentOracleScript(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// Editing a non-existent oracle script should return error.
 	err := k.EditOracleScript(ctx, 42, types.NewOracleScript(
-		Owner.Address, BasicName, BasicDesc, BasicCode, BasicSchema, BasicSourceCodeURL,
+		Owner.Address, BasicName, BasicDesc, BasicFilename, BasicSchema, BasicSourceCodeURL,
 	))
 	require.Error(t, err)
 }
@@ -135,11 +135,11 @@ func TestGetAllOracleScripts(t *testing.T) {
 	// Sets the oracle scripts to the storage.
 	oracleScripts := []types.OracleScript{
 		types.NewOracleScript(
-			Alice.Address, "NAME1", "DESCRIPTION1", []byte("code1"),
+			Alice.Address, "NAME1", "DESCRIPTION1", "FileName1",
 			BasicSchema, BasicSourceCodeURL,
 		),
 		types.NewOracleScript(
-			Bob.Address, "NAME2", "DESCRIPTION2", []byte("code2"),
+			Bob.Address, "NAME2", "DESCRIPTION2", "FileName2",
 			BasicSchema, BasicSourceCodeURL,
 		),
 	}

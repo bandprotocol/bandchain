@@ -3,6 +3,7 @@ package keeper
 import (
 	"encoding/hex"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"testing"
 	"time"
@@ -26,6 +27,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 
+	"github.com/bandprotocol/bandchain/chain/pkg/filecache"
 	"github.com/bandprotocol/bandchain/chain/pkg/owasm"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
@@ -224,28 +226,47 @@ func newDefaultRequest() types.Request {
 		nil,
 	)
 }
-
-func GetTestOracleScript(path string) types.OracleScript {
+func GetTestOracleScript(path string) (types.OracleScript, string) {
 	absPath, _ := filepath.Abs(path)
 	code, err := ioutil.ReadFile(absPath)
 	if err != nil {
 		panic(err)
 	}
+	dir, err := ioutil.TempDir("/tmp", "filecache")
+	if err != nil {
+		panic(err)
+	}
+	f := filecache.New(dir)
+	filename := f.AddFile(code)
 	return types.NewOracleScript(
 		sdk.AccAddress([]byte("owner")),
 		"silly script",
 		"description",
-		code,
+		filename,
 		"schema",
 		"sourceCodeURL",
-	)
+	), filepath.Join(dir, filename)
 }
 
-func GetTestDataSource() types.DataSource {
+func GetTestDataSource() (types.DataSource, string) {
+	dir, err := ioutil.TempDir("/tmp", "filecache")
+	if err != nil {
+		panic(err)
+	}
+	f := filecache.New(dir)
+	filename := f.AddFile([]byte("executable"))
 	return types.NewDataSource(
 		sdk.AccAddress([]byte("owner")),
 		"data_source",
 		"description",
-		[]byte("executable"),
-	)
+		filename,
+	), filepath.Join(dir, filename)
+}
+
+// Will be deleted
+func DeleteFile(path string) {
+	err := os.Remove(path)
+	if err != nil {
+		panic(err)
+	}
 }

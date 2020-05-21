@@ -135,13 +135,13 @@ func NewDataSource(
 	Owner github_com_cosmos_cosmos_sdk_types.AccAddress,
 	Name string,
 	Description string,
-	Executable []byte,
+	Filename string,
 ) DataSource {
 	return DataSource{
 		Owner:       Owner,
 		Name:        Name,
 		Description: Description,
-		Executable:  Executable,
+		Filename:    Filename,
 	}
 }
 
@@ -149,7 +149,7 @@ func NewOracleScript(
 	Owner github_com_cosmos_cosmos_sdk_types.AccAddress,
 	Name string,
 	Description string,
-	Code []byte,
+	Filename string,
 	Schema string,
 	SourceCodeURL string,
 ) OracleScript {
@@ -157,7 +157,7 @@ func NewOracleScript(
 		Owner:         Owner,
 		Name:          Name,
 		Description:   Description,
-		Code:          Code,
+		Filename:      Filename,
 		Schema:        Schema,
 		SourceCodeURL: SourceCodeURL,
 	}
