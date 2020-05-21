@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
+	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 const (
@@ -14,7 +15,7 @@ const (
 	Unknown = "Unknown"
 )
 
-func parseResolveStatus(resolveStatus oracle.ResolveStatus) string {
+func parseResolveStatus(resolveStatus otypes.ResolveStatus) string {
 	switch resolveStatus {
 	case 0:
 		return Open
@@ -84,7 +85,7 @@ func (b *BandDB) AddNewRequest(
 		return err
 	}
 
-	req, err := b.OracleKeeper.GetRequest(b.ctx, oracle.RequestID(id))
+	req, err := b.OracleKeeper.GetRequest(b.ctx, otypes.RequestID(id))
 	if err != nil {
 		return err
 	}
@@ -96,7 +97,7 @@ func (b *BandDB) AddNewRequest(
 		}
 	}
 
-	for _, raw := range b.OracleKeeper.GetRawRequests(b.ctx, oracle.RequestID(id)) {
+	for _, raw := range b.OracleKeeper.GetRawRequests(b.ctx, otypes.RequestID(id)) {
 		err := b.AddRawDataRequest(
 			id,
 			int64(raw.ExternalID),
@@ -175,11 +176,11 @@ func (b *BandDB) handleMsgRequestData(
 	msg oracle.MsgRequestData,
 	events map[string]string,
 ) error {
-	id, err := strconv.ParseInt(events[oracle.EventTypeRequest+"."+oracle.AttributeKeyID], 10, 64)
+	id, err := strconv.ParseInt(events[otypes.EventTypeRequest+"."+otypes.AttributeKeyID], 10, 64)
 	if err != nil {
 		return err
 	}
-	request, err := b.OracleKeeper.GetRequest(b.ctx, oracle.RequestID(id))
+	request, err := b.OracleKeeper.GetRequest(b.ctx, otypes.RequestID(id))
 	if err != nil {
 		return err
 	}

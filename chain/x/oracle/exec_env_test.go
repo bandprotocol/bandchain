@@ -192,7 +192,7 @@ func TestRequestExternalDataExceedMaxRawRequestCount(t *testing.T) {
 	keeper.SetDataSource(ctx, 1, dataSource)
 
 	// Set MaxRawRequestCount to 5
-	keeper.SetParam(ctx, KeyMaxRawRequestCount, 5)
+	keeper.SetParam(ctx, types.KeyMaxRawRequestCount, 5)
 	env := NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
 
 	reqErr := env.RequestExternalData(1, 41, []byte("prepare32"))

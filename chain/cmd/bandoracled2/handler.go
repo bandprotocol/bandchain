@@ -8,7 +8,6 @@ import (
 	"github.com/tendermint/tendermint/crypto/tmhash"
 	tmtypes "github.com/tendermint/tendermint/types"
 
-	"github.com/bandprotocol/bandchain/chain/x/oracle"
 	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
@@ -62,13 +61,13 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 		l.Error(":skull: Failed to parse raw requests with error: %s", err.Error())
 	}
 
-	reportsChan := make(chan oracle.RawReport, len(reqs))
+	reportsChan := make(chan otypes.RawReport, len(reqs))
 	for _, req := range reqs {
 		go func(l *Logger, req rawRequest) {
 			exec, err := GetExecutable(c, l, int(req.dataSourceID))
 			if err != nil {
 				l.Error(":skull: Failed to load data source with error: %s", err.Error())
-				reportsChan <- oracle.NewRawReport(
+				reportsChan <- otypes.NewRawReport(
 					req.externalID, 255, []byte("FAIL_TO_LOAD_DATA_SOURCE"),
 				)
 				return
@@ -80,14 +79,14 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 				":sparkles: Query data done with calldata: %q, result: %q, exitCode: %d",
 				req.calldata, result, exitCode,
 			)
-			reportsChan <- oracle.NewRawReport(req.externalID, exitCode, result)
+			reportsChan <- otypes.NewRawReport(req.externalID, exitCode, result)
 		}(l.With("did", req.dataSourceID, "eid", req.externalID), req)
 	}
 
-	reports := make([]oracle.RawReport, 0)
+	reports := make([]otypes.RawReport, 0)
 	for range reqs {
 		reports = append(reports, <-reportsChan)
 	}
 
-	SubmitReport(c, l, oracle.RequestID(id), reports)
+	SubmitReport(c, l, otypes.RequestID(id), reports)
 }

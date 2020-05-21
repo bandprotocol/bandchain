@@ -11,7 +11,7 @@ import (
 	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
 
 	"github.com/bandprotocol/bandchain/chain/app"
-	"github.com/bandprotocol/bandchain/chain/x/oracle"
+	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 var (
@@ -23,13 +23,13 @@ func init() {
 	authclient.Codec = appCodec
 }
 
-func SubmitReport(c *Context, l *Logger, id oracle.RequestID, reps []oracle.RawReport) {
+func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawReport) {
 	key := <-c.keys
 	defer func() {
 		c.keys <- key
 	}()
 
-	msg := oracle.NewMsgReportData(oracle.RequestID(id), reps, c.validator, key.GetAddress())
+	msg := otypes.NewMsgReportData(otypes.RequestID(id), reps, c.validator, key.GetAddress())
 	if err := msg.ValidateBasic(); err != nil {
 		l.Error(":exploding_head: Failed to validate basic with error: %s", err.Error())
 		return
@@ -68,13 +68,13 @@ func SubmitReport(c *Context, l *Logger, id oracle.RequestID, reps []oracle.RawR
 func GetExecutable(c *Context, l *Logger, id int) ([]byte, error) {
 	l.Debug(":magnifying_glass_tilted_left: Fetching data source #%d from the remote node", id)
 	res, _, err := sdkCtx.CLIContext{Client: c.client}.Query(
-		fmt.Sprintf("custom/oracle/%s/%d", oracle.QueryDataSourceByID, id),
+		fmt.Sprintf("custom/oracle/%s/%d", otypes.QueryDataSourceByID, id),
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	var dataSource oracle.DataSourceQuerierInfo
+	var dataSource otypes.DataSourceQuerierInfo
 	err = cdc.UnmarshalJSON(res, &dataSource)
 	if err != nil {
 		return nil, err

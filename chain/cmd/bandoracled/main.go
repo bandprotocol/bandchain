@@ -18,7 +18,7 @@ import (
 	"github.com/bandprotocol/bandchain/chain/app"
 	"github.com/bandprotocol/bandchain/chain/bandlib"
 	"github.com/bandprotocol/bandchain/chain/pkg/byteexec"
-	"github.com/bandprotocol/bandchain/chain/x/oracle"
+	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 const (
@@ -35,13 +35,13 @@ var (
 	logger     log.Logger
 )
 
-func getLatestRequestID() (oracle.RequestID, error) {
+func getLatestRequestID() (otypes.RequestID, error) {
 	cliCtx := bandClient.GetContext()
 	res, _, err := cliCtx.Query("custom/oracle/request_number")
 	if err != nil {
 		return 0, err
 	}
-	var requestID oracle.RequestID
+	var requestID otypes.RequestID
 	err = cliCtx.Codec.UnmarshalJSON(res, &requestID)
 	if err != nil {
 		return 0, err
@@ -146,14 +146,14 @@ $ bandoracled --node tcp://localhost:26657 --priv-key 06be35b56b048c5a6810a47e2e
 	}
 }
 
-func handleRequest(requestID oracle.RequestID) {
+func handleRequest(requestID otypes.RequestID) {
 	cliCtx := bandClient.GetContext()
 	res, _, err := cliCtx.Query(fmt.Sprintf("custom/oracle/request/%d", requestID))
 	if err != nil {
 		logger.Error(fmt.Sprintf("Cannot get request #%d. Error: %v", requestID, err))
 		return
 	}
-	var request oracle.RequestQuerierInfo
+	var request otypes.RequestQuerierInfo
 	err = cliCtx.Codec.UnmarshalJSON(res, &request)
 	if err != nil {
 		logger.Error(fmt.Sprintf("Report fail on request #%d. Error: %v", requestID, err))
@@ -171,17 +171,17 @@ func handleRequest(requestID oracle.RequestID) {
 	}
 
 	type queryParallelInfo struct {
-		externalID oracle.ExternalID
+		externalID otypes.ExternalID
 		answer     []byte
 		err        error
 	}
 
 	chanQueryParallelInfo := make(chan queryParallelInfo, len(request.RawDataRequests))
 	for _, rawRequest := range request.RawDataRequests {
-		go func(externalID oracle.ExternalID, dataSourceID oracle.DataSourceID, calldata []byte) {
+		go func(externalID otypes.ExternalID, dataSourceID otypes.DataSourceID, calldata []byte) {
 			info := queryParallelInfo{externalID: externalID, answer: []byte{}, err: nil}
 			res, _, err := cliCtx.Query(
-				fmt.Sprintf("custom/oracle/%s/%d", oracle.QueryDataSourceByID, dataSourceID),
+				fmt.Sprintf("custom/oracle/%s/%d", otypes.QueryDataSourceByID, dataSourceID),
 			)
 
 			if err != nil {
@@ -192,7 +192,7 @@ func handleRequest(requestID oracle.RequestID) {
 				return
 			}
 
-			var dataSource oracle.DataSourceQuerierInfo
+			var dataSource otypes.DataSourceQuerierInfo
 			err = cliCtx.Codec.UnmarshalJSON(res, &dataSource)
 			if err != nil {
 				info.err = err
@@ -230,14 +230,14 @@ func handleRequest(requestID oracle.RequestID) {
 		}(rawRequest.ExternalID, rawRequest.DataSourceID, rawRequest.Calldata)
 	}
 
-	reports := make([]oracle.RawReport, 0)
+	reports := make([]otypes.RawReport, 0)
 	for i := 0; i < len(request.RawDataRequests); i++ {
 		info := <-chanQueryParallelInfo
 		if info.err != nil {
 			logger.Error(fmt.Sprintf("Report fail on request #%d. Error: %v", requestID, info.err))
 			return
 		}
-		reports = append(reports, oracle.NewRawReport(info.externalID, 0, info.answer))
+		reports = append(reports, otypes.NewRawReport(info.externalID, 0, info.answer))
 	}
 
 	sort.Slice(reports, func(i, j int) bool {
@@ -249,7 +249,7 @@ func handleRequest(requestID oracle.RequestID) {
 		return
 	}
 	tx, err := bandClient.SendTransaction(
-		oracle.NewMsgReportData(requestID, reports, sdk.ValAddress(bandClient.Sender()), bandClient.Sender()),
+		otypes.NewMsgReportData(requestID, reports, sdk.ValAddress(bandClient.Sender()), bandClient.Sender()),
 		gasFlagVar.Gas, viper.GetString(flags.FlagFees), viper.GetString(flags.FlagGasPrices),
 	)
 

@@ -8,8 +8,9 @@ import (
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/client/cli"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/client/rest"
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/capability"
@@ -18,10 +19,9 @@ import (
 	channeltypes "github.com/cosmos/cosmos-sdk/x/ibc/04-channel/types"
 	port "github.com/cosmos/cosmos-sdk/x/ibc/05-port"
 	ibctypes "github.com/cosmos/cosmos-sdk/x/ibc/types"
-
-	"github.com/cosmos/cosmos-sdk/client/context"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
+
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 var (
@@ -178,7 +178,7 @@ func (am AppModule) OnRecvPacket(ctx sdk.Context, packet channeltypes.Packet) (*
 	}
 
 	// TODO: Mock data source fee payer
-	newMsg := NewMsgRequestData(
+	newMsg := types.NewMsgRequestData(
 		req.OracleScriptID, req.Calldata, req.AskCount, req.MinCount, req.ClientID,
 		sdk.AccAddress([]byte("Unknown")),
 	)

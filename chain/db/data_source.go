@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
+	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -62,7 +63,7 @@ func (b *BandDB) handleMsgCreateDataSource(
 	msg oracle.MsgCreateDataSource,
 	events map[string]string,
 ) error {
-	rawID, ok := events[oracle.EventTypeCreateDataSource+"."+oracle.AttributeKeyID]
+	rawID, ok := events[otypes.EventTypeCreateDataSource+"."+otypes.AttributeKeyID]
 	if !ok {
 		return errors.New("handleMsgCreateDataSource: cannot find data source id")
 	}
