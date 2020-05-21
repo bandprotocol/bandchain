@@ -12,7 +12,6 @@ const (
 	EventTypeAddReporter        = "add_reporter"
 	EventTypeRemoveReporter     = "remove_reporter"
 	EventTypeRequestExecute     = "request_execute"
-	EventTypeMessage            = "message"
 
 	AttributeKeyID             = "id"
 	AttributeKeyRequestID      = "request_id"
@@ -32,7 +31,4 @@ const (
 	AttributeKeyResult         = "result"
 	AttributeKeyResultHash     = "result_hash"
 	AttributeKeyAction         = "action"
-
-	MessageTypeRequest      = "request"
-	MessageTypeOraclePacket = "ics04/opaque"
 )

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	ibc "github.com/cosmos/cosmos-sdk/x/ibc/04-channel/types"
 	"github.com/tendermint/tendermint/crypto/tmhash"
 	tmtypes "github.com/tendermint/tendermint/types"
 
@@ -25,16 +26,15 @@ func handleTransaction(c *Context, l *Logger, tx tmtypes.TxResult) {
 	}
 
 	for _, log := range logs {
-		// TODO: Also handle IBC request packet here
-		messageType, err := GetEventValue(log, otypes.EventTypeMessage, otypes.AttributeKeyAction)
+		messageType, err := GetEventValue(log, sdk.EventTypeMessage, otypes.AttributeKeyAction)
 		if err != nil {
 			l.Error(":cold_sweat: Failed to get message action type with error: %s", err.Error())
 			continue
 		}
 
-		if messageType == otypes.MessageTypeRequest {
+		if messageType == otypes.EventTypeRequest {
 			go handleRequestLog(c, l, log)
-		} else if messageType == otypes.MessageTypeOraclePacket {
+		} else if messageType == (ibc.MsgPacket{}).Type() {
 			// Try to get request id from packet. If not then return error.
 			_, err := GetEventValue(log, otypes.EventTypeRequest, otypes.AttributeKeyID)
 			if err != nil {
