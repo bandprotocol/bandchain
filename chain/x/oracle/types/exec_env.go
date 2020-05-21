@@ -1,37 +1,32 @@
-package oracle
-
-import (
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-)
+package types
 
 type ExecEnv struct {
-	request            types.Request
+	request            Request
 	now                int64
 	maxRawRequestCount int64
-	rawRequests        []types.RawRequest
-	reports            map[string]map[types.ExternalID]types.RawReport
+	rawRequests        []RawRequest
+	reports            map[string]map[ExternalID]RawReport
 }
 
-func NewExecEnv(ctx sdk.Context, k Keeper, req types.Request) *ExecEnv {
+func NewExecEnv(req Request, now, maxRawRequestCount int64) *ExecEnv {
 	return &ExecEnv{
 		request:            req,
-		now:                ctx.BlockTime().Unix(),
-		maxRawRequestCount: int64(k.GetParam(ctx, types.KeyMaxRawRequestCount)),
-		rawRequests:        []types.RawRequest{},
-		reports:            make(map[string]map[types.ExternalID]types.RawReport),
+		now:                now,
+		maxRawRequestCount: maxRawRequestCount,
+		rawRequests:        []RawRequest{},
+		reports:            make(map[string]map[ExternalID]RawReport),
 	}
 }
 
 // GetRawRequests returns the list of raw requests made during Owasm prepare run.
-func (env *ExecEnv) GetRawRequests() []types.RawRequest {
+func (env *ExecEnv) GetRawRequests() []RawRequest {
 	return env.rawRequests
 }
 
 // SetReports loads the reports to the environment. Must be called prior to Owasm execute run.
-func (env *ExecEnv) SetReports(reports []types.Report) {
+func (env *ExecEnv) SetReports(reports []Report) {
 	for _, report := range reports {
-		valReports := make(map[types.ExternalID]types.RawReport)
+		valReports := make(map[ExternalID]RawReport)
 		for _, each := range report.RawReports {
 			valReports[each.ExternalID] = each
 		}
@@ -69,32 +64,32 @@ func (env *ExecEnv) GetAggregateBlockTime() int64 {
 
 // GetMaximumResultSize implements Owasm ExecEnv interface.
 func (env *ExecEnv) GetMaximumResultSize() int64 {
-	return types.MaxResultSize
+	return MaxResultSize
 }
 
 // GetMaximumCalldataOfDataSourceSize implements Owasm ExecEnv interface.
 func (env *ExecEnv) GetMaximumCalldataOfDataSourceSize() int64 {
-	return types.MaxRawRequestDataSize
+	return MaxRawRequestDataSize
 }
 
 // RequestedValidators implements Owasm ExecEnv interface.
 func (env *ExecEnv) GetValidatorAddress(validatorIndex int64) ([]byte, error) {
 	if validatorIndex < 0 || validatorIndex >= int64(len(env.request.RequestedValidators)) {
-		return nil, types.ErrValidatorOutOfRange
+		return nil, ErrValidatorOutOfRange
 	}
 	return env.request.RequestedValidators[validatorIndex], nil
 }
 
 // RequestExternalData implements Owasm ExecEnv interface.
 func (env *ExecEnv) RequestExternalData(did int64, eid int64, calldata []byte) error {
-	if int64(len(calldata)) > types.MaxRawRequestDataSize {
-		return types.ErrTooLargeCalldata
+	if int64(len(calldata)) > MaxRawRequestDataSize {
+		return ErrTooLargeCalldata
 	}
 	if int64(len(env.rawRequests)) >= env.maxRawRequestCount {
-		return types.ErrTooManyRawRequests
+		return ErrTooManyRawRequests
 	}
-	env.rawRequests = append(env.rawRequests, types.NewRawRequest(
-		types.ExternalID(eid), types.DataSourceID(did), calldata,
+	env.rawRequests = append(env.rawRequests, NewRawRequest(
+		ExternalID(eid), DataSourceID(did), calldata,
 	))
 	return nil
 }
@@ -102,16 +97,16 @@ func (env *ExecEnv) RequestExternalData(did int64, eid int64, calldata []byte) e
 // GetExternalData implements Owasm ExecEnv interface.
 func (env *ExecEnv) GetExternalData(eid int64, valIdx int64) ([]byte, uint32, error) {
 	if valIdx < 0 || valIdx >= int64(len(env.request.RequestedValidators)) {
-		return nil, 0, types.ErrValidatorOutOfRange
+		return nil, 0, ErrValidatorOutOfRange
 	}
 	valAddr := env.request.RequestedValidators[valIdx].String()
 	valReports, ok := env.reports[valAddr]
 	if !ok {
-		return nil, 0, types.ErrItemNotFound
+		return nil, 0, ErrItemNotFound
 	}
-	valReport, ok := valReports[types.ExternalID(eid)]
+	valReport, ok := valReports[ExternalID(eid)]
 	if !ok {
-		return nil, 0, types.ErrItemNotFound
+		return nil, 0, ErrItemNotFound
 	}
 	return valReport.Data, valReport.ExitCode, nil
 }

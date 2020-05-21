@@ -9,7 +9,7 @@ import (
 func handleEndBlock(ctx sdk.Context, k Keeper) {
 	// Loops through all requests in the resolvable list to resolve all of them!
 	for _, reqID := range k.GetPendingResolveList(ctx) {
-		resolveRequest(ctx, k, reqID)
+		k.ResolveRequest(ctx, reqID)
 	}
 	// Once all the requests are resolved, we can clear the list.
 	k.SetPendingResolveList(ctx, []types.RequestID{})

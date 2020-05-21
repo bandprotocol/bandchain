@@ -1,4 +1,4 @@
-package oracle
+package keeper
 
 import (
 	"fmt"
@@ -13,10 +13,10 @@ const (
 	ExecuteFunc = "execute"
 )
 
-// prepareRequest takes an request specification object, performs the prepare call, and saves
+// PrepareRequest takes an request specification object, performs the prepare call, and saves
 // the request object to store. Also emits events related to the request.
-func prepareRequest(ctx sdk.Context, k Keeper, r types.RequestSpec, ibcInfo *types.IBCInfo) error {
-	// TODO: FIXME! Consume a fixed gas amount for processing oracle request.
+func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec, ibcInfo *types.IBCInfo) error {
+	// TODO: FIX ME! Consume a fixed gas amount for processing oracle request.
 	// Get a random validator set to perform this request.
 	validators, err := k.GetRandomValidators(ctx, int(r.GetAskCount()))
 	if err != nil {
@@ -28,7 +28,7 @@ func prepareRequest(ctx sdk.Context, k Keeper, r types.RequestSpec, ibcInfo *typ
 		ctx.BlockHeight(), ctx.BlockTime().Unix(), r.GetClientID(), ibcInfo, nil,
 	)
 	// Create an execution environment and call Owasm prepare function.
-	env := NewExecEnv(ctx, k, req)
+	env := types.NewExecEnv(req, ctx.BlockTime().Unix(), int64(k.GetParam(ctx, types.KeyMaxRawRequestCount)))
 	script, err := k.GetOracleScript(ctx, req.OracleScriptID)
 	if err != nil {
 		return err
@@ -64,11 +64,11 @@ func prepareRequest(ctx sdk.Context, k Keeper, r types.RequestSpec, ibcInfo *typ
 	return nil
 }
 
-// resolveRequest resolves the given request, sends response packet out (if applicable),
+// ResolveRequest resolves the given request, sends response packet out (if applicable),
 // and saves result hash to the store. Assumes that the given request is in a resolvable state.
-func resolveRequest(ctx sdk.Context, k Keeper, reqID types.RequestID) {
+func (k Keeper) ResolveRequest(ctx sdk.Context, reqID types.RequestID) {
 	req := k.MustGetRequest(ctx, reqID)
-	env := NewExecEnv(ctx, k, req)
+	env := types.NewExecEnv(req, ctx.BlockTime().Unix(), int64(k.GetParam(ctx, types.KeyMaxRawRequestCount)))
 	env.SetReports(k.GetReports(ctx, reqID))
 	script := k.MustGetOracleScript(ctx, req.OracleScriptID)
 	result, _, err := k.OwasmExecute(env, script.Code, ExecuteFunc, req.Calldata, types.WasmExecuteGas)
@@ -77,9 +77,9 @@ func resolveRequest(ctx sdk.Context, k Keeper, reqID types.RequestID) {
 		k.Logger(ctx).Info(fmt.Sprintf(
 			"failed to execute request id: %d with error: %s", reqID, err.Error(),
 		))
-		res = k.ResolveRequest(ctx, reqID, types.ResolveStatus_Failure, nil)
+		res = k.SaveResult(ctx, reqID, types.ResolveStatus_Failure, nil)
 	} else {
-		res = k.ResolveRequest(ctx, reqID, types.ResolveStatus_Success, result)
+		res = k.SaveResult(ctx, reqID, types.ResolveStatus_Success, result)
 	}
 	if req.IBCInfo != nil {
 		k.SendOracleResponse(ctx, req.IBCInfo.SourcePort, req.IBCInfo.SourceChannel, res)

@@ -177,7 +177,7 @@ func (am AppModule) OnRecvPacket(ctx sdk.Context, packet channeltypes.Packet) (*
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal request packet data: %s", err.Error())
 	}
 	ibcInfo := types.NewIBCInfo(packet.GetDestPort(), packet.GetDestChannel())
-	err := prepareRequest(ctx, am.keeper, &req, &ibcInfo)
+	err := am.keeper.PrepareRequest(ctx, &req, &ibcInfo)
 	if err != nil {
 		return nil, err
 	}

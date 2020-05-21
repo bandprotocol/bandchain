@@ -70,9 +70,9 @@ func (k Keeper) AddRequest(ctx sdk.Context, req types.Request) types.RequestID {
 	return id
 }
 
-// ResolveRequest updates the request with resolve status and result, and saves the commitment
+// SaveResult updates the request with resolve status and result, and saves the commitment
 // pair of oracle request/response packets to the store. Returns back the response packet.
-func (k Keeper) ResolveRequest(ctx sdk.Context, id types.RequestID, status types.ResolveStatus, result []byte) types.OracleResponsePacketData {
+func (k Keeper) SaveResult(ctx sdk.Context, id types.RequestID, status types.ResolveStatus, result []byte) types.OracleResponsePacketData {
 	r := k.MustGetRequest(ctx, id)
 	req := types.NewOracleRequestPacketData(
 		r.ClientID, r.OracleScriptID, r.Calldata, r.MinCount, int64(len(r.RequestedValidators)),
@@ -123,7 +123,7 @@ func (k Keeper) ProcessExpiredRequests(ctx sdk.Context) {
 		// If the number of reports still doesn't reach the minimum, that means this request
 		// is never resolved. Here we process the response as EXPIRED.
 		if k.GetReportCount(ctx, currentReqID) < req.MinCount {
-			res := k.ResolveRequest(ctx, currentReqID, types.ResolveStatus_Expired, nil)
+			res := k.SaveResult(ctx, currentReqID, types.ResolveStatus_Expired, nil)
 			if req.IBCInfo != nil {
 				k.SendOracleResponse(ctx, req.IBCInfo.SourcePort, req.IBCInfo.SourceChannel, res)
 			}

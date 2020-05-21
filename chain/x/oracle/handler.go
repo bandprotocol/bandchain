@@ -101,7 +101,7 @@ func handleMsgEditOracleScript(ctx sdk.Context, k Keeper, m MsgEditOracleScript)
 }
 
 func handleMsgRequestData(ctx sdk.Context, k Keeper, m MsgRequestData) (*sdk.Result, error) {
-	err := prepareRequest(ctx, k, &m, nil)
+	err := k.PrepareRequest(ctx, &m, nil)
 	if err != nil {
 		return nil, err
 	}
