@@ -47,7 +47,7 @@ func (k Keeper) DeleteRequest(ctx sdk.Context, id types.RequestID) {
 
 // GetRandomValidators returns a pseudorandom list of active validators. Each validator has
 // chance of getting selected directly proportional to the amount of voting power it has.
-func (k Keeper) GetRandomValidators(ctx sdk.Context, size int) ([]sdk.ValAddress, error) {
+func (k Keeper) GetRandomValidators(ctx sdk.Context, size int, nextReqID int64) ([]sdk.ValAddress, error) {
 	validatorsByPower := k.StakingKeeper.GetBondedValidatorsByPower(ctx)
 	if len(validatorsByPower) < size {
 		return nil, sdkerrors.Wrapf(types.ErrBadDataValue,
@@ -59,13 +59,12 @@ func (k Keeper) GetRandomValidators(ctx sdk.Context, size int) ([]sdk.ValAddress
 	for i, val := range validatorsByPower {
 		votingPowers[i] = val.Tokens.Uint64()
 	}
-	blockHash := ctx.BlockHeader().DataHash
-	rng := bandrng.NewRng(string(blockHash))
+	seed := fmt.Sprintf("%x%d%d", ctx.BlockHeader().LastBlockId.Hash, ctx.BlockHeader().Time.Nanosecond(), nextReqID)
+	rng := bandrng.NewRng(seed)
 	luckyValidatorIndexes := bandrng.ChooseK(rng, votingPowers, size)
-
 	validators := make([]sdk.ValAddress, size)
-	for _, idx := range luckyValidatorIndexes {
-		validators[idx] = validatorsByPower[idx].GetOperator()
+	for i, idx := range luckyValidatorIndexes {
+		validators[i] = validatorsByPower[idx].GetOperator()
 	}
 	return validators, nil
 }

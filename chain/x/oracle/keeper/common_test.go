@@ -76,9 +76,9 @@ func createArbitraryAccount(r *rand.Rand) account {
 	}
 }
 
-func createValidatorTx(acc account, moniker string) authtypes.StdTx {
+func createValidatorTx(acc account, moniker string, selfDelegation sdk.Coin) authtypes.StdTx {
 	msg := staking.NewMsgCreateValidator(
-		acc.ValAddress, acc.PubKey, Coins100000000uband[0],
+		acc.ValAddress, acc.PubKey, selfDelegation,
 		staking.NewDescription(moniker, "", "", "", ""),
 		staking.NewCommissionRates(sdk.MustNewDecFromStr("0.125"), sdk.MustNewDecFromStr("0.3"), sdk.MustNewDecFromStr("0.01")),
 		sdk.NewInt(1),
@@ -145,8 +145,8 @@ func createTestInput() (*bandapp.BandApp, sdk.Context, me.Keeper) {
 	}, sdk.NewCoins(sdk.NewInt64Coin("uband", 204000000)))
 	genesis[bank.ModuleName] = app.Codec().MustMarshalJSON(bankGenesis)
 	genutilGenesis := genutil.NewGenesisStateFromStdTx([]authtypes.StdTx{
-		createValidatorTx(Validator1, "validator1"),
-		createValidatorTx(Validator2, "validator2"),
+		createValidatorTx(Validator1, "validator1", Coins100000000uband[0]),
+		createValidatorTx(Validator2, "validator2", Coins1000000uband[0]),
 	})
 	genesis[genutil.ModuleName] = app.Codec().MustMarshalJSON(genutilGenesis)
 	// Initialize the sim blockchain. We are ready for testing!

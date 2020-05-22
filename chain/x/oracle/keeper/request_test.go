@@ -1,10 +1,13 @@
 package keeper_test
 
 import (
+	"crypto/sha256"
 	"testing"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
+	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
@@ -100,19 +103,24 @@ func TestAddPendingResolveList(t *testing.T) {
 
 func TestGetRandomValidatorsSuccess(t *testing.T) {
 	_, ctx, k := createTestInput()
-	vals, err := k.GetRandomValidators(ctx, 2)
-	expect := []sdk.ValAddress{Validator2.ValAddress, Validator1.ValAddress}
+	hash := sha256.Sum256([]byte("Hello"))
+	ctx = ctx.WithBlockHeader(abci.Header{
+		LastBlockId: abci.BlockID{Hash: hash[:32]},
+	})
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	vals, err := k.GetRandomValidators(ctx, 2, int64(1))
+	expect := []sdk.ValAddress{Validator1.ValAddress, Validator2.ValAddress}
 	require.NoError(t, err)
 	require.Equal(t, vals, expect)
 
-	vals, err = k.GetRandomValidators(ctx, 1)
-	expect = []sdk.ValAddress{Validator2.ValAddress}
+	vals, err = k.GetRandomValidators(ctx, 1, int64(2))
+	expect = []sdk.ValAddress{Validator1.ValAddress}
 	require.NoError(t, err)
 	require.Equal(t, vals, expect)
 }
 
 func TestGetRandomValidatorsTooBigSize(t *testing.T) {
 	_, ctx, k := createTestInput()
-	_, err := k.GetRandomValidators(ctx, 9999)
+	_, err := k.GetRandomValidators(ctx, 9999, int64(1))
 	require.Error(t, err)
 }

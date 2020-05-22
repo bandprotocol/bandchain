@@ -17,8 +17,9 @@ const (
 // the request object to store. Also emits events related to the request.
 func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec, ibcInfo *types.IBCInfo) error {
 	// TODO: FIX ME! Consume a fixed gas amount for processing oracle request.
+	nextID := k.GetRequestCount(ctx) + 1
 	// Get a random validator set to perform this request.
-	validators, err := k.GetRandomValidators(ctx, int(r.GetAskCount()))
+	validators, err := k.GetRandomValidators(ctx, int(r.GetAskCount()), nextID)
 	if err != nil {
 		return err
 	}
