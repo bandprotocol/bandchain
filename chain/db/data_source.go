@@ -19,8 +19,8 @@ func createDataSource(
 ) DataSource {
 	return DataSource{
 		ID:          id,
-		Name:        name,
-		Description: description,
+		Name:        &name,
+		Description: &description,
 		Owner:       owner.String(),
 		Executable:  executable,
 		LastUpdated: blockTime.UnixNano() / int64(time.Millisecond),

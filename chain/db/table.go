@@ -79,12 +79,12 @@ type UnbondingDelegation struct {
 }
 
 type DataSource struct {
-	ID          int64  `gorm:"primary_key;auto_increment:false"`
-	Name        string `gorm:"not null"` // TODO: Update to pointer
-	Description string `gorm:"not null"` // TODO: Update to pointer
-	Owner       string `gorm:"not null"`
-	Executable  []byte `gorm:"not null"`
-	LastUpdated int64  `gorm:"not null"`
+	ID          int64   `gorm:"primary_key;auto_increment:false"`
+	Name        *string `gorm:"not null"` // TODO: Update to pointer
+	Description *string `gorm:"not null"` // TODO: Update to pointer
+	Owner       string  `gorm:"not null"`
+	Executable  []byte  `gorm:"not null"`
+	LastUpdated int64   `gorm:"not null"`
 }
 
 type DataSourceRevision struct {
@@ -97,13 +97,13 @@ type DataSourceRevision struct {
 }
 
 type OracleScript struct {
-	ID            int64  `gorm:"primary_key;auto_increment:false"`
-	Name          string `gorm:"not null"` // TODO: Update to pointer
-	Description   string `gorm:"not null"` // TODO: Update to pointer
-	Owner         string `gorm:"not null"`
-	LastUpdated   int64  `gorm:"not null"`
-	Schema        string `gorm:"not null"` // TODO: Update to pointer
-	SourceCodeURL string `gorm:"not null"` // TODO: Update to pointer
+	ID            int64   `gorm:"primary_key;auto_increment:false"`
+	Name          *string `gorm:"not null"`
+	Description   *string `gorm:"not null"`
+	Owner         string  `gorm:"not null"`
+	LastUpdated   int64   `gorm:"not null"`
+	Schema        *string `gorm:"not null"`
+	SourceCodeURL *string `gorm:"not null"`
 }
 
 type OracleScriptRevision struct {
