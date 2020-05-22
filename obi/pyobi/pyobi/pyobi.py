@@ -33,11 +33,11 @@ class PyObiInteger(PyObiSpec):
         self.size_in_bytes = int(spec[1:]) // 8
 
     def encode(self, value):
-        return value.to_bytes(self.size_in_bytes, byteorder="big", signed=self.is_signed)
+        return value.to_bytes(self.size_in_bytes, byteorder="little", signed=self.is_signed)
 
     def decode(self, data):
         return (
-            int.from_bytes(data[: self.size_in_bytes], byteorder="big", signed=self.is_signed,),
+            int.from_bytes(data[: self.size_in_bytes], byteorder="little", signed=self.is_signed,),
             data[self.size_in_bytes :],
         )
 
@@ -68,10 +68,21 @@ class PyObiStruct(PyObiSpec):
 
     def __init__(self, spec):
         self.intl_obi_kvs = []
-        for each in spec[1:-1].split(","):
-            tokens = each.split(":")
+        fields = ['']
+        curly_count = 0
+        for c in spec[1:-1]:
+            if c == ',' and curly_count == 0:
+                fields.append('')
+            else:
+                fields[-1] = fields[-1] + c
+                if c == '{':
+                    curly_count += 1
+                if c == '}':
+                    curly_count -= 1
+        for each in fields:
+            tokens = each.split(":", 1)
             if len(tokens) != 2:
-                raise ValueError("Expect one colon for each struct field")
+                raise ValueError("Expect at least one colon for each struct field")
             self.intl_obi_kvs.append((tokens[0], self.from_spec(tokens[1])))
 
     def encode(self, value):
