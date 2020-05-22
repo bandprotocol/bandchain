@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"fmt"
 
+	"github.com/bandprotocol/bandchain/chain/pkg/bandrng"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -47,7 +48,6 @@ func (k Keeper) DeleteRequest(ctx sdk.Context, id types.RequestID) {
 // GetRandomValidators returns a pseudorandom list of active validators. Each validator has
 // chance of getting selected directly proportional to the amount of voting power it has.
 func (k Keeper) GetRandomValidators(ctx sdk.Context, size int) ([]sdk.ValAddress, error) {
-	// TODO: Make this function actually return random validators.
 	validatorsByPower := k.StakingKeeper.GetBondedValidatorsByPower(ctx)
 	if len(validatorsByPower) < size {
 		return nil, sdkerrors.Wrapf(types.ErrBadDataValue,
@@ -55,10 +55,17 @@ func (k Keeper) GetRandomValidators(ctx sdk.Context, size int) ([]sdk.ValAddress
 			size, len(validatorsByPower),
 		)
 	}
+	votingPowers := make([]uint64, len(validatorsByPower))
+	for i, val := range validatorsByPower {
+		votingPowers[i] = val.Tokens.Uint64()
+	}
+	blockHash := ctx.BlockHeader().DataHash
+	rng := bandrng.NewRng(string(blockHash))
+	luckyValidatorIndexes := bandrng.ChooseK(rng, votingPowers, size)
 
 	validators := make([]sdk.ValAddress, size)
-	for i := 0; i < size; i++ {
-		validators[i] = validatorsByPower[i].GetOperator()
+	for _, idx := range luckyValidatorIndexes {
+		validators[idx] = validatorsByPower[idx].GetOperator()
 	}
 	return validators, nil
 }

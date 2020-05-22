@@ -81,6 +81,6 @@ func TestChooseK(t *testing.T) {
 	}
 
 	acc := bandrng.ChooseK(r, weights, 7)
-	require.Equal(t, acc, []int{84, 33, 8, 3, 0, 2, 4})
+	require.Equal(t, acc, []int{84, 13, 8, 3, 0, 2, 4})
 
 }

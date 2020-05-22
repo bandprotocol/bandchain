@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"testing"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
@@ -98,9 +99,20 @@ func TestAddPendingResolveList(t *testing.T) {
 }
 
 func TestGetRandomValidatorsSuccess(t *testing.T) {
-	// TODO: Update this test once GetRandomValidators is actually random
+	_, ctx, k := createTestInput()
+	vals, err := k.GetRandomValidators(ctx, 2)
+	expect := []sdk.ValAddress{Validator2.ValAddress, Validator1.ValAddress}
+	require.NoError(t, err)
+	require.Equal(t, vals, expect)
+
+	vals, err = k.GetRandomValidators(ctx, 1)
+	expect = []sdk.ValAddress{Validator2.ValAddress}
+	require.NoError(t, err)
+	require.Equal(t, vals, expect)
 }
 
 func TestGetRandomValidatorsTooBigSize(t *testing.T) {
-	// TODO: Update this test once GetRandomValidators is actually random
+	_, ctx, k := createTestInput()
+	_, err := k.GetRandomValidators(ctx, 9999)
+	require.Error(t, err)
 }
