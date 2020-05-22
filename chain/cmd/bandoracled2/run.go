@@ -77,8 +77,7 @@ func runCmd(c *Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			logLevel := cfg.LogLevel
-			allowLevel, err := log.AllowLevel(logLevel)
+			allowLevel, err := log.AllowLevel(cfg.LogLevel)
 			if err != nil {
 				return err
 			}
