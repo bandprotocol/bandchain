@@ -15,18 +15,18 @@ const (
 	KeyTotalSupply         = "total_supply"
 )
 
-func (b *BandDB) GetMetadataValue(key string) (string, error) {
+func (b *BandDB) GetMetadataValue(key string) (*string, error) {
 	var data Metadata
 	err := b.tx.Where(Metadata{Key: key}).First(&data).Error
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	return data.Value, nil
 }
 
 func (b *BandDB) SetMetadataValue(key, value string) error {
 	return b.tx.Where(Metadata{Key: key}).
-		Assign(Metadata{Value: value}).
+		Assign(Metadata{Value: &value}).
 		FirstOrCreate(&Metadata{}).Error
 }
 
@@ -40,7 +40,7 @@ func (b *BandDB) GetMetadataValueInt64(key string) (int64, error) {
 		return 0, err
 	}
 
-	value, err := strconv.ParseInt(rawString, 10, 64)
+	value, err := strconv.ParseInt(*rawString, 10, 64)
 	if err != nil {
 		return 0, err
 	}
@@ -55,7 +55,7 @@ func (b *BandDB) ValidateChainID(chainID string) error {
 	if err != nil {
 		return err
 	}
-	if chainIDDB != chainID {
+	if *chainIDDB != chainID {
 		return errors.New("Chain id not match")
 	}
 	return nil
@@ -73,10 +73,10 @@ func (b *BandDB) SetInflationRate(inflationRate string) error {
 	return b.SetMetadataValue(KeyInflationRate, inflationRate)
 }
 
-func (b *BandDB) GetInflationRate() (string, error) {
+func (b *BandDB) GetInflationRate() (*string, error) {
 	rawString, err := b.GetMetadataValue(KeyInflationRate)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	return rawString, nil
 }
@@ -90,5 +90,5 @@ func (b *BandDB) GetTotalSupply() (sdk.Coins, error) {
 	if err != nil {
 		return nil, err
 	}
-	return sdk.ParseCoins(rawString)
+	return sdk.ParseCoins(*rawString)
 }

@@ -48,23 +48,30 @@ func (b *BandDB) CreateValidator(
 ) error {
 	tokens := value.Amount.Uint64()
 	jailed := false
+	comRate := commissionRate.String()
+	comMaxRate := commissionMaxRate.String()
+	comMaxChange := commissionMaxChangeRate.String()
+	minSelfDel := minSelfDelegation.String()
+	delegationShares := value.Amount.String()
+	currentReward := "0"
+	currentRatio := "0"
 	return b.tx.Create(&Validator{
 		OperatorAddress:     validatorAddress.String(),
 		ConsensusAddress:    pubkey.Address().String(),
 		ConsensusPubkey:     sdk.MustBech32ifyPubKey(sdk.Bech32PubKeyTypeConsPub, pubkey),
-		Moniker:             moniker,
-		Identity:            identity,
-		Website:             website,
-		Details:             details,
-		CommissionRate:      commissionRate.String(),
-		CommissionMaxRate:   commissionMaxRate.String(),
-		CommissionMaxChange: commissionMaxChangeRate.String(),
-		MinSelfDelegation:   minSelfDelegation.String(),
+		Moniker:             &moniker,
+		Identity:            &identity,
+		Website:             &website,
+		Details:             &details,
+		CommissionRate:      &comRate,
+		CommissionMaxRate:   &comMaxRate,
+		CommissionMaxChange: &comMaxChange,
+		MinSelfDelegation:   &minSelfDel,
 		Tokens:              &tokens,
-		DelegatorShares:     value.Amount.String(),
-		BondedHeight:        bondedHeight,
-		CurrentReward:       "0",
-		CurrentRatio:        "0",
+		DelegatorShares:     &delegationShares,
+		BondedHeight:        &bondedHeight,
+		CurrentReward:       &currentReward,
+		CurrentRatio:        &currentRatio,
 		Jailed:              &jailed,
 	}).Error
 }

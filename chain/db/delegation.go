@@ -20,7 +20,7 @@ func (b *BandDB) SetDelegation(
 		DelegatorAddress: delegatorAddress.String(),
 		ValidatorAddress: validatorAddress.String(),
 	}).
-		Assign(Delegation{Shares: shares, LastRatio: value}).
+		Assign(Delegation{Shares: &shares, LastRatio: &value}).
 		FirstOrCreate(&Delegation{}).Error
 }
 
@@ -50,13 +50,15 @@ func (b *BandDB) delegate(
 		cumulativeRewardRatio = latestReward.CumulativeRewardRatio[0].Amount.String()
 	}
 	token := validator.Tokens.Uint64()
+	delegatorShares := validator.DelegatorShares.String()
+	currentReward := "0"
 	err := b.UpdateValidator(
 		validatorAddress,
 		&Validator{
 			Tokens:          &token,
-			DelegatorShares: validator.DelegatorShares.String(),
-			CurrentReward:   "0",
-			CurrentRatio:    cumulativeRewardRatio,
+			DelegatorShares: &delegatorShares,
+			CurrentReward:   &currentReward,
+			CurrentRatio:    &cumulativeRewardRatio,
 		},
 	)
 	if err != nil {
@@ -108,15 +110,17 @@ func (b *BandDB) undelegate(
 			cumulativeRewardRatio = latestReward.CumulativeRewardRatio[0].Amount.String()
 		}
 		token := validator.Tokens.Uint64()
+		delegatorShares := validator.DelegatorShares.String()
 		jailed := validator.Jailed
+		currentReward := "0"
 		return b.UpdateValidator(
 			validatorAddress,
 			&Validator{
 				Tokens:          &token,
-				DelegatorShares: validator.DelegatorShares.String(),
+				DelegatorShares: &delegatorShares,
 				Jailed:          &jailed,
-				CurrentReward:   "0",
-				CurrentRatio:    cumulativeRewardRatio,
+				CurrentReward:   &currentReward,
+				CurrentRatio:    &cumulativeRewardRatio,
 			},
 		)
 	} else {

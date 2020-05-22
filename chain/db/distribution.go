@@ -8,6 +8,7 @@ func (b *BandDB) handleMsgWithdrawDelegatorReward(msg distribution.MsgWithdrawDe
 	info := b.DistrKeeper.GetDelegatorStartingInfo(b.ctx, msg.ValidatorAddress, msg.DelegatorAddress)
 	latestReward := b.DistrKeeper.GetValidatorHistoricalRewards(b.ctx, msg.ValidatorAddress, info.PreviousPeriod)
 	// CurrentReward must be reset after delegation.
+	currentReward := "0"
 	cumulativeRewardRatio := "0"
 	if !latestReward.CumulativeRewardRatio.IsZero() {
 		cumulativeRewardRatio = latestReward.CumulativeRewardRatio[0].Amount.String()
@@ -15,8 +16,8 @@ func (b *BandDB) handleMsgWithdrawDelegatorReward(msg distribution.MsgWithdrawDe
 	err := b.UpdateValidator(
 		msg.ValidatorAddress,
 		&Validator{
-			CurrentReward: "0",
-			CurrentRatio:  cumulativeRewardRatio,
+			CurrentReward: &currentReward,
+			CurrentRatio:  &cumulativeRewardRatio,
 		},
 	)
 	if err != nil {
@@ -30,6 +31,6 @@ func (b *BandDB) handleMsgWithdrawDelegatorReward(msg distribution.MsgWithdrawDe
 	if err != nil {
 		return err
 	}
-	delegation.LastRatio = cumulativeRewardRatio
+	delegation.LastRatio = &cumulativeRewardRatio
 	return b.tx.Save(&delegation).Error
 }
