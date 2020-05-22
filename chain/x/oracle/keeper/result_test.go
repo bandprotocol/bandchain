@@ -82,15 +82,10 @@ func TestGetAllResults(t *testing.T) {
 
 	reqPacket1 := types.NewOracleRequestPacketData("alice", 1, BasicCalldata, 1, 1)
 	resPacket1 := types.NewOracleResponsePacketData("alice", 1, 1, 1589535020, 1589535022, 1, BasicCalldata)
-
-	resultHashReqID1, err := k.AddResult(ctx, types.RequestID(1), reqPacket1, resPacket1)
-	require.NoError(t, err)
-
+	resultHashReqID1 := k.AddResult(ctx, types.RequestID(1), reqPacket1, resPacket1)
 	reqPacket4 := types.NewOracleRequestPacketData("bob", 1, BasicCalldata, 1, 1)
 	resPacket4 := types.NewOracleResponsePacketData("bob", 4, 1, 1589535020, 1589535022, 1, BasicCalldata)
-
-	resultHashReqID4, err := k.AddResult(ctx, types.RequestID(4), reqPacket4, resPacket4)
-	require.NoError(t, err)
+	resultHashReqID4 := k.AddResult(ctx, types.RequestID(4), reqPacket4, resPacket4)
 
 	results := k.GetAllResults(ctx)
 
@@ -110,8 +105,7 @@ func TestSetResult(t *testing.T) {
 	reqPacket := types.NewOracleRequestPacketData("alice", 1, BasicCalldata, 1, 1)
 	resPacket := types.NewOracleResponsePacketData("alice", 1, 1, 1589535020, 1589535022, 1, BasicCalldata)
 
-	resultHash, err := k.AddResult(ctx, types.RequestID(1), reqPacket, resPacket)
-	require.NoError(t, err)
+	resultHash := k.AddResult(ctx, types.RequestID(1), reqPacket, resPacket)
 
 	resultHashReqID1, err := k.GetResult(ctx, types.RequestID(1))
 	require.Equal(t, resultHash, resultHashReqID1)

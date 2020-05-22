@@ -7,7 +7,6 @@ import (
 func (b *BandDB) handleMsgReportData(
 	txHash []byte,
 	msg oracle.MsgReportData,
-	events map[string]string,
 ) error {
 
 	err := b.tx.Create(&Report{

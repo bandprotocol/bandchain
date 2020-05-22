@@ -61,9 +61,9 @@ func (b *BandDB) AddDataSource(
 func (b *BandDB) handleMsgCreateDataSource(
 	txHash []byte,
 	msg oracle.MsgCreateDataSource,
-	events map[string]string,
+	events map[string]interface{},
 ) error {
-	rawID, ok := events[otypes.EventTypeCreateDataSource+"."+otypes.AttributeKeyID]
+	rawID, ok := events[otypes.EventTypeCreateDataSource+"."+otypes.AttributeKeyID].(string)
 	if !ok {
 		return errors.New("handleMsgCreateDataSource: cannot find data source id")
 	}
@@ -80,7 +80,6 @@ func (b *BandDB) handleMsgCreateDataSource(
 func (b *BandDB) handleMsgEditDataSource(
 	txHash []byte,
 	msg oracle.MsgEditDataSource,
-	events map[string]string,
 ) error {
 	dataSource := createDataSource(
 		int64(msg.DataSourceID), msg.Name, msg.Description,

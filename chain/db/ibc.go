@@ -34,7 +34,7 @@ func (b *BandDB) getChainID(channelID, channelPort string) (string, error) {
 func (b *BandDB) handleMsgPacket(
 	txHash []byte,
 	msg channel.MsgPacket,
-	events map[string]string,
+	events map[string]interface{},
 ) error {
 	packetType := ""
 	jsonMap := make(map[string]interface{})
@@ -50,7 +50,7 @@ func (b *BandDB) handleMsgPacket(
 		if err != nil {
 			return err
 		}
-		id, err := strconv.ParseInt(events[otypes.EventTypeRequest+"."+otypes.AttributeKeyID], 10, 64)
+		id, err := strconv.ParseInt(events[otypes.EventTypeRequest+"."+otypes.AttributeKeyID].(string), 10, 64)
 		if err != nil {
 			return err
 		}
@@ -69,6 +69,9 @@ func (b *BandDB) handleMsgPacket(
 			requestPacket.ClientID,
 			txHash,
 			nil,
+			events[otypes.EventTypeRawRequest+"."+otypes.AttributeKeyExternalID].([]string),
+			events[otypes.EventTypeRawRequest+"."+otypes.AttributeKeyDataSourceID].([]string),
+			events[otypes.EventTypeRawRequest+"."+otypes.AttributeKeyCalldata].([]string),
 		)
 		if err != nil {
 			return err

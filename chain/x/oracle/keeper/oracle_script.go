@@ -37,11 +37,11 @@ func (k Keeper) SetOracleScript(ctx sdk.Context, id types.OracleScriptID, oracle
 	store.Set(types.OracleScriptStoreKey(id), k.cdc.MustMarshalBinaryBare(oracleScript))
 }
 
-// AddOracleScript adds the given oracle script to the storage. Returns error if validation fails.
-func (k Keeper) AddOracleScript(ctx sdk.Context, oracleScript types.OracleScript) (types.OracleScriptID, error) {
+// AddOracleScript adds the given oracle script to the storage.
+func (k Keeper) AddOracleScript(ctx sdk.Context, oracleScript types.OracleScript) types.OracleScriptID {
 	id := k.GetNextOracleScriptID(ctx)
 	k.SetOracleScript(ctx, id, oracleScript)
-	return id, nil
+	return id
 }
 
 // EditOracleScript edits the given oracle script by id and flushes it to the storage.

@@ -15,10 +15,6 @@ const (
 	// Default value is set to 16.
 	DefaultMaxRawRequestCount = uint64(16)
 
-	// The maximum size of result after execution.
-	// Default value is set 1 kB.
-	DefaultMaxResultSize = uint64(1 * 1024)
-
 	// Gas cost per validator for each raw data request.
 	DefaultGasPerRawDataRequestPerValidator = uint64(25000)
 
@@ -32,7 +28,6 @@ const (
 // Parameter store keys.
 var (
 	KeyMaxRawRequestCount               = []byte("MaxRawRequestCount")
-	KeyMaxResultSize                    = []byte("MaxResultSize")
 	KeyGasPerRawDataRequestPerValidator = []byte("GasPerRawDataRequestPerValidator")
 	KeyExpirationBlockCount             = []byte("ExpirationBlockCount")
 	KeyMaxConsecutiveMisses             = []byte("MaxConsecutiveMisses")
@@ -42,13 +37,11 @@ var (
 func (p Params) String() string {
 	return fmt.Sprintf(`oracle Params:
   MaxRawRequestCount:               %d
-  MaxResultSize:                    %d
   GasPerRawDataRequestPerValidator: %d
   ExpirationBlockCount:             %d
   MaxConsecutiveMisses:             %d
 `,
 		p.MaxRawRequestCount,
-		p.MaxResultSize,
 		p.GasPerRawDataRequestPerValidator,
 		p.ExpirationBlockCount,
 		p.MaxConsecutiveMisses,
@@ -59,7 +52,6 @@ func (p Params) String() string {
 func (p *Params) ParamSetPairs() params.ParamSetPairs {
 	return params.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyMaxRawRequestCount, &p.MaxRawRequestCount, validateMaxRawRequestCount),
-		paramtypes.NewParamSetPair(KeyMaxResultSize, &p.MaxResultSize, validateMaxResultSize),
 		paramtypes.NewParamSetPair(KeyGasPerRawDataRequestPerValidator, &p.GasPerRawDataRequestPerValidator, validateGasPerRawDataRequestPerValidator),
 		paramtypes.NewParamSetPair(KeyExpirationBlockCount, &p.ExpirationBlockCount, validateExpirationBlockCount),
 		paramtypes.NewParamSetPair(KeyMaxConsecutiveMisses, &p.MaxConsecutiveMisses, validateMaxConsecutiveMisses),
@@ -70,7 +62,6 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 func DefaultParams() Params {
 	return NewParams(
 		DefaultMaxRawRequestCount,
-		DefaultMaxResultSize,
 		DefaultGasPerRawDataRequestPerValidator,
 		DefaultExpirationBlockCount,
 		DefaultMaxConsecutiveMisses,
@@ -84,18 +75,6 @@ func validateMaxRawRequestCount(i interface{}) error {
 	}
 	if v <= 0 {
 		return fmt.Errorf("max raw request count must be positive: %d", v)
-	}
-	return nil
-}
-
-func validateMaxResultSize(i interface{}) error {
-	v, ok := i.(uint64)
-	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
-	}
-
-	if v <= 0 {
-		return fmt.Errorf("max result size must be positive: %d", v)
 	}
 	return nil
 }

@@ -2,7 +2,7 @@ use borsh::{BorshDeserialize, BorshSchema, BorshSerialize};
 use owasm::{execute_entry_point, oei, prepare_entry_point};
 
 fn parse_float(data: String) -> Option<f64> {
-    data.parse::<f64>().ok()
+    data.trim_end().parse::<f64>().ok()
 }
 
 #[derive(BorshDeserialize, BorshSchema)]

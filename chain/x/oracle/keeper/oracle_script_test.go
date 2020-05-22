@@ -60,12 +60,11 @@ func TestAddEditOracleScriptBasic(t *testing.T) {
 		Bob.Address, "NAME2", "DESCRIPTION2", []byte("code2"), BasicSchema, BasicSourceCodeURL,
 	)
 	// Adds a new oracle script to the store. We should be able to retreive it back.
-	id, err := k.AddOracleScript(ctx, oracleScript1)
-	require.Nil(t, err)
+	id := k.AddOracleScript(ctx, oracleScript1)
 	require.Equal(t, oracleScript1, k.MustGetOracleScript(ctx, id))
 	require.NotEqual(t, oracleScript2, k.MustGetOracleScript(ctx, id))
 	// Edits the oracle script. We should get the updated oracle script.
-	err = k.EditOracleScript(ctx, id, types.NewOracleScript(
+	err := k.EditOracleScript(ctx, id, types.NewOracleScript(
 		oracleScript2.Owner, oracleScript2.Name, oracleScript2.Description, oracleScript2.Code,
 		oracleScript2.Schema, oracleScript2.SourceCodeURL,
 	))
@@ -85,12 +84,11 @@ func TestAddEditOracleScriptDoNotModify(t *testing.T) {
 		types.DoNotModify, types.DoNotModify,
 	)
 	// Adds a new oracle script to the store. We should be able to retreive it back.
-	id, err := k.AddOracleScript(ctx, oracleScript1)
-	require.Nil(t, err)
+	id := k.AddOracleScript(ctx, oracleScript1)
 	require.Equal(t, oracleScript1, k.MustGetOracleScript(ctx, id))
 	require.NotEqual(t, oracleScript2, k.MustGetOracleScript(ctx, id))
 	// Edits the oracle script. We should get the updated oracle script.
-	err = k.EditOracleScript(ctx, id, oracleScript2)
+	err := k.EditOracleScript(ctx, id, oracleScript2)
 	require.Nil(t, err)
 	oracleScriptRes := k.MustGetOracleScript(ctx, id)
 	require.NotEqual(t, oracleScriptRes, oracleScript1)
@@ -109,16 +107,14 @@ func TestAddOracleScriptMustReturnCorrectID(t *testing.T) {
 	count := k.GetOracleScriptCount(ctx)
 	require.Equal(t, count, int64(0))
 	// Every new oracle script we add should return a new ID.
-	id1, err := k.AddOracleScript(ctx, types.NewOracleScript(
+	id1 := k.AddOracleScript(ctx, types.NewOracleScript(
 		Owner.Address, BasicName, BasicDesc, BasicCode, BasicSchema, BasicSourceCodeURL,
 	))
-	require.Nil(t, err)
 	require.Equal(t, id1, types.OracleScriptID(1))
 	// Adds another oracle script so now ID should be 2.
-	id2, err := k.AddOracleScript(ctx, types.NewOracleScript(
+	id2 := k.AddOracleScript(ctx, types.NewOracleScript(
 		Owner.Address, BasicName, BasicDesc, BasicCode, BasicSchema, BasicSourceCodeURL,
 	))
-	require.Nil(t, err)
 	require.Equal(t, id2, types.OracleScriptID(2))
 	// Finally we expect the oracle script to increase to 2 since we added two oracle scripts.
 	count = k.GetOracleScriptCount(ctx)

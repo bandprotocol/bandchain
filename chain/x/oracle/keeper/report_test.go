@@ -332,7 +332,7 @@ func TestUpdateReportInfos(t *testing.T) {
 	request := types.NewRequest(
 		types.OracleScriptID(1), []byte("calldata"),
 		[]sdk.ValAddress{Validator1.ValAddress, Validator2.ValAddress},
-		2, 100, 100, "test", nil,
+		2, 100, 100, "test", nil, nil,
 	)
 	k.SetRequest(ctx, types.RequestID(1), request)
 
@@ -424,7 +424,7 @@ func TestGetJailedUpdateReportInfos(t *testing.T) {
 	request := types.NewRequest(
 		types.OracleScriptID(1), []byte("calldata"),
 		[]sdk.ValAddress{Validator1.ValAddress, Validator2.ValAddress},
-		2, 100, 100, "test", nil,
+		2, 100, 100, "test", nil, nil,
 	)
 	k.SetRequest(ctx, types.RequestID(1), request)
 

@@ -38,14 +38,6 @@ func TestGetSetMaxRawRequestCount(t *testing.T) {
 	require.Equal(t, uint64(2), keeper.GetParam(ctx, types.KeyMaxRawRequestCount))
 }
 
-func TestGetSetMaxResultSize(t *testing.T) {
-	ctx, keeper := CreateTestInput(t, false)
-	keeper.SetParam(ctx, types.KeyMaxResultSize, 1)
-	require.Equal(t, uint64(1), keeper.GetParam(ctx, types.KeyMaxResultSize))
-	keeper.SetParam(ctx, types.KeyMaxResultSize, 2)
-	require.Equal(t, uint64(2), keeper.GetParam(ctx, types.KeyMaxResultSize))
-}
-
 func TestGetSetGasPerRawDataRequestPerValidator(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 	keeper.SetParam(ctx, types.KeyGasPerRawDataRequestPerValidator, uint64(3000))
@@ -58,16 +50,14 @@ func TestGetSetParams(t *testing.T) {
 	ctx, keeper := CreateTestInput(t, false)
 
 	keeper.SetParam(ctx, types.KeyMaxRawRequestCount, 1)
-	keeper.SetParam(ctx, types.KeyMaxResultSize, 1)
 	keeper.SetParam(ctx, types.KeyGasPerRawDataRequestPerValidator, 1000)
 	keeper.SetParam(ctx, types.KeyExpirationBlockCount, 30)
 	keeper.SetParam(ctx, types.KeyMaxConsecutiveMisses, 10)
-	require.Equal(t, types.NewParams(1, 1, 1000, 30, 10), keeper.GetParams(ctx))
+	require.Equal(t, types.NewParams(1, 1000, 30, 10), keeper.GetParams(ctx))
 
 	keeper.SetParam(ctx, types.KeyMaxRawRequestCount, 2)
-	keeper.SetParam(ctx, types.KeyMaxResultSize, 2)
 	keeper.SetParam(ctx, types.KeyGasPerRawDataRequestPerValidator, 2000)
 	keeper.SetParam(ctx, types.KeyExpirationBlockCount, 40)
 	keeper.SetParam(ctx, types.KeyMaxConsecutiveMisses, 20)
-	require.Equal(t, types.NewParams(2, 2, 2000, 40, 20), keeper.GetParams(ctx))
+	require.Equal(t, types.NewParams(2, 2000, 40, 20), keeper.GetParams(ctx))
 }
