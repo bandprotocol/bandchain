@@ -102,7 +102,6 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 	// Oracle genesis
 	var oracleState oracle.GenesisState
 	app.cdc.MustUnmarshalJSON(genesisState[oracle.ModuleName], &oracleState)
-
 	// Save data source
 	for idx, dataSource := range oracleState.DataSources {
 		err := app.dbBand.AddDataSource(
@@ -110,7 +109,7 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 			dataSource.Name,
 			dataSource.Description,
 			dataSource.Owner,
-			dataSource.Executable,
+			app.OracleKeeper.GetFile(dataSource.Filename),
 			time.Now(),
 			0,
 			nil,
@@ -127,7 +126,7 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 			oracleScript.Name,
 			oracleScript.Description,
 			oracleScript.Owner,
-			oracleScript.Code,
+			app.OracleKeeper.GetFile(oracleScript.Filename),
 			time.Now(),
 			0,
 			nil,

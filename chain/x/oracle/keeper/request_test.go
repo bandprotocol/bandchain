@@ -76,7 +76,7 @@ func TestAddDataSourceBasic(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// We start by setting an oracle request available at ID 42.
 	k.SetOracleScript(ctx, 42, types.NewOracleScript(
-		Owner.Address, BasicName, BasicDesc, BasicCode, BasicSchema, BasicSourceCodeURL,
+		Owner.Address, BasicName, BasicDesc, BasicFilename, BasicSchema, BasicSourceCodeURL,
 	))
 	// Adding the first request should return ID 1.
 	id := k.AddRequest(ctx, types.NewRequest(42, BasicCalldata, nil, 1, 1, 1, "", nil, nil))

@@ -3,6 +3,7 @@ package app
 import (
 	"encoding/json"
 	"io/ioutil"
+	"path/filepath"
 	"time"
 
 	codecstd "github.com/cosmos/cosmos-sdk/codec/std"
@@ -21,7 +22,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
+	"github.com/spf13/viper"
+	"github.com/tendermint/tendermint/libs/cli"
 
+	"github.com/bandprotocol/bandchain/chain/pkg/filecache"
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
@@ -157,11 +161,13 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 		if err != nil {
 			panic(err)
 		}
+		f := filecache.New(filepath.Join(viper.GetString(cli.HomeFlag), "files"))
+		filename := f.AddFile(script)
 		state.DataSources[i] = otypes.NewDataSource(
 			owner,
 			dataSource.name,
 			dataSource.description,
-			script,
+			filename,
 		)
 	}
 
@@ -264,11 +270,13 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 		if err != nil {
 			panic(err)
 		}
+		f := filecache.New(filepath.Join(viper.GetString(cli.HomeFlag), "files"))
+		filename := f.AddFile(code)
 		state.OracleScripts[i] = otypes.NewOracleScript(
 			owner,
 			oracleScript.name,
 			oracleScript.description,
-			code,
+			filename,
 			oracleScript.schema,
 			oracleScript.sourceCodeURL,
 		)

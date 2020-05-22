@@ -132,7 +132,7 @@ message DataSource {
       [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
   string name = 2;
   string description = 3;
-  bytes executable = 4;
+  string filename = 4;
 }
 
 // OracleScript is a type to store detail of oracle script.
@@ -143,7 +143,7 @@ message OracleScript {
       [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
   string name = 2;
   string description = 3;
-  bytes code = 4;
+  string filename = 4;
   string schema = 5;
   string source_code_url = 6 [(gogoproto.customname) = "SourceCodeURL"];
 }

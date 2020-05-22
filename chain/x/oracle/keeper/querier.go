@@ -90,12 +90,13 @@ func queryDataSourceByID(ctx sdk.Context, path []string, req abci.RequestQuery, 
 		return nil, sdkErr
 	}
 
+	executable := keeper.GetFile(dataSource.Filename)
 	return codec.MustMarshalJSONIndent(keeper.cdc, types.NewDataSourceQuerierInfo(
 		id,
 		dataSource.Owner,
 		dataSource.Name,
 		dataSource.Description,
-		dataSource.Executable,
+		executable,
 	)), nil
 }
 
@@ -124,13 +125,14 @@ func queryDataSources(ctx sdk.Context, path []string, req abci.RequestQuery, kee
 		if sdkErr != nil {
 			return nil, sdkErr
 		}
+		executable := keeper.GetFile(dataSource.Filename)
 
 		dataSources = append(dataSources, types.NewDataSourceQuerierInfo(
 			id,
 			dataSource.Owner,
 			dataSource.Name,
 			dataSource.Description,
-			dataSource.Executable,
+			executable,
 		))
 	}
 
@@ -150,13 +152,12 @@ func queryOracleScriptByID(ctx sdk.Context, path []string, req abci.RequestQuery
 	if sdkErr != nil {
 		return nil, sdkErr
 	}
-
 	return codec.MustMarshalJSONIndent(keeper.cdc, types.NewOracleScriptQuerierInfo(
 		types.OracleScriptID(id),
 		oracleScript.Owner,
 		oracleScript.Name,
 		oracleScript.Description,
-		oracleScript.Code,
+		keeper.GetFile(oracleScript.Filename),
 		oracleScript.Schema,
 		oracleScript.SourceCodeURL,
 	)), nil
@@ -192,7 +193,7 @@ func queryOracleScripts(ctx sdk.Context, path []string, req abci.RequestQuery, k
 			oracleScript.Owner,
 			oracleScript.Name,
 			oracleScript.Description,
-			oracleScript.Code,
+			keeper.GetFile(oracleScript.Filename),
 			oracleScript.Schema,
 			oracleScript.SourceCodeURL,
 		))

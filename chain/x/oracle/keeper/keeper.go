@@ -156,3 +156,13 @@ func (k Keeper) BindPort(ctx sdk.Context, portID string) error {
 	cap := k.PortKeeper.BindPort(ctx, portID)
 	return k.ScopedKeeper.ClaimCapability(ctx, cap, porttypes.PortPath(portID))
 }
+
+// AddFile saves the given data to a file in HOME/files directory using sha256 sum as filename.
+func (k Keeper) AddFile(file []byte) string {
+	return k.fileCache.AddFile(file)
+}
+
+// GetFile loads the file from the file storage. Panics if the file does not exist.
+func (k Keeper) GetFile(name string) []byte {
+	return k.fileCache.GetFile(name)
+}

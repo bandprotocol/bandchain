@@ -37,8 +37,9 @@ func NewHandler(k Keeper) sdk.Handler {
 }
 
 func handleMsgCreateDataSource(ctx sdk.Context, k Keeper, m MsgCreateDataSource) (*sdk.Result, error) {
+	filename := k.AddFile(m.Executable)
 	id := k.AddDataSource(ctx, types.NewDataSource(
-		m.Owner, m.Name, m.Description, m.Executable,
+		m.Owner, m.Name, m.Description, filename,
 	))
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeCreateDataSource,
@@ -55,8 +56,9 @@ func handleMsgEditDataSource(ctx sdk.Context, k Keeper, m MsgEditDataSource) (*s
 	if !dataSource.Owner.Equals(m.Sender) {
 		return nil, types.ErrEditorNotAuthorized
 	}
+	filename := k.AddFile(m.Executable)
 	err = k.EditDataSource(ctx, m.DataSourceID, types.NewDataSource(
-		m.Owner, m.Name, m.Description, m.Executable,
+		m.Owner, m.Name, m.Description, filename,
 	))
 	if err != nil {
 		return nil, err
@@ -70,7 +72,7 @@ func handleMsgEditDataSource(ctx sdk.Context, k Keeper, m MsgEditDataSource) (*s
 
 func handleMsgCreateOracleScript(ctx sdk.Context, k Keeper, m MsgCreateOracleScript) (*sdk.Result, error) {
 	id := k.AddOracleScript(ctx, types.NewOracleScript(
-		m.Owner, m.Name, m.Description, m.Code, m.Schema, m.SourceCodeURL,
+		m.Owner, m.Name, m.Description, k.AddFile(m.Code), m.Schema, m.SourceCodeURL,
 	))
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeCreateOracleScript,
@@ -88,7 +90,7 @@ func handleMsgEditOracleScript(ctx sdk.Context, k Keeper, m MsgEditOracleScript)
 		return nil, types.ErrEditorNotAuthorized
 	}
 	err = k.EditOracleScript(ctx, m.OracleScriptID, types.NewOracleScript(
-		m.Owner, m.Name, m.Description, m.Code, m.Schema, m.SourceCodeURL,
+		m.Owner, m.Name, m.Description, k.AddFile(m.Code), m.Schema, m.SourceCodeURL,
 	))
 	if err != nil {
 		return nil, err

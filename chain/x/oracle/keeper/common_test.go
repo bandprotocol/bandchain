@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"math/rand"
+	"os"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -41,10 +42,9 @@ var (
 var (
 	BasicName           = "BASIC_NAME"
 	BasicDesc           = "BASIC_DESCRIPTION"
-	BasicCode           = []byte("BASIC_WASM_CODE")
 	BasicSchema         = "BASIC_SCHEMA"
 	BasicSourceCodeURL  = "BASIC_SOURCE_CODE_URL"
-	BasicExec           = []byte("BASIC_EXECUTABLE")
+	BasicFilename       = "BASIC_FILENAME"
 	BasicCalldata       = []byte("BASIC_CALLDATA")
 	CoinsZero           = sdk.NewCoins()
 	Coins10uband        = sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
@@ -158,4 +158,11 @@ func createTestInput() (*bandapp.BandApp, sdk.Context, me.Keeper) {
 	ctx := app.BaseApp.NewContext(false, abci.Header{})
 	// Funds all the seed accounts with 1000000uband initially.
 	return app, ctx, app.OracleKeeper
+}
+
+func deleteFile(path string) {
+	err := os.Remove(path)
+	if err != nil {
+		panic(err)
+	}
 }
