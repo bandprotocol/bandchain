@@ -59,7 +59,7 @@ func (k Keeper) GetRandomValidators(ctx sdk.Context, size int, nextReqID int64) 
 	for i, val := range validatorsByPower {
 		votingPowers[i] = val.Tokens.Uint64()
 	}
-	seed := fmt.Sprintf("%x%d%d", ctx.BlockHeader().LastBlockId.Hash, ctx.BlockHeader().Time.Nanosecond(), nextReqID)
+	seed := fmt.Sprintf("%x:%d:%d", ctx.BlockHeader().LastBlockId.Hash, ctx.BlockHeader().Time.Nanosecond(), nextReqID)
 	rng := bandrng.NewRng(seed)
 	luckyValidatorIndexes := bandrng.ChooseK(rng, votingPowers, size)
 	validators := make([]sdk.ValAddress, size)
