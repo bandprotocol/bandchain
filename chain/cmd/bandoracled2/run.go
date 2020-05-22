@@ -77,16 +77,19 @@ func runCmd(c *Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
-<<<<<<< HEAD
 			allowLevel, err := log.AllowLevel(cfg.LogLevel)
 			if err != nil {
 				return err
 			}
 			l := NewLogger(allowLevel)
-=======
-			c.executor = NewExecutor("lambda", "https://dmptasv4j8.execute-api.ap-southeast-1.amazonaws.com/bash-execute")
-			l := NewLogger()
->>>>>>> Use executer from context
+			executorName, executorURL, err := ParseExecutor(cfg.Executor)
+			if err != nil {
+				return err
+			}
+			c.executor, err = NewExecutor(executorName, executorURL)
+			if err != nil {
+				return err
+			}
 			l.Info(":star: Creating HTTP client with node URI: %s", cfg.NodeURI)
 			c.client, err = rpchttp.New(cfg.NodeURI, "/websocket")
 			if err != nil {
@@ -98,6 +101,7 @@ func runCmd(c *Context) *cobra.Command {
 	cmd.Flags().String(flags.FlagChainID, "", "chain ID of BandChain network")
 	cmd.Flags().String(flags.FlagNode, "tcp://localhost:26657", "RPC url to BandChain node")
 	cmd.Flags().String(flagValidator, "", "validator address")
+	cmd.Flags().String(flagExecutor, "lambda:https://dmptasv4j8.execute-api.ap-southeast-1.amazonaws.com/bash-execute", "executor")
 	cmd.Flags().String(flags.FlagGasPrices, "", "gas prices for report transaction")
 	cmd.Flags().String(flagLogLevel, "info", "set the logger level")
 	viper.BindPFlag(flags.FlagChainID, cmd.Flags().Lookup(flags.FlagChainID))
@@ -105,5 +109,6 @@ func runCmd(c *Context) *cobra.Command {
 	viper.BindPFlag(flagValidator, cmd.Flags().Lookup(flagValidator))
 	viper.BindPFlag(flags.FlagGasPrices, cmd.Flags().Lookup(flags.FlagGasPrices))
 	viper.BindPFlag(flagLogLevel, cmd.Flags().Lookup(flagLogLevel))
+	viper.BindPFlag(flagExecutor, cmd.Flags().Lookup(flagExecutor))
 	return cmd
 }

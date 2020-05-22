@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/bandprotocol/bandchain/chain/pkg/byteexec"
@@ -31,11 +33,20 @@ func (e *lambdaExecutor) Execute(
 }
 
 // NewExecutor returns executor by name and executer URL
-func NewExecutor(name string, url string) executor {
+func NewExecutor(name string, url string) (executor, error) {
 	switch name {
 	case "lambda":
-		return &lambdaExecutor{URL: url}
+		return &lambdaExecutor{URL: url}, nil
 	default:
-		return &lambdaExecutor{URL: url}
+		return nil, fmt.Errorf("Invalid executor name: %s, url: %s", name, url)
 	}
+}
+
+// ParseExecutor returns parsed executor string
+func ParseExecutor(executorStr string) (name string, url string, err error) {
+	executor := strings.SplitN(executorStr, ":", 2)
+	if len(executor) != 2 {
+		return "", "", fmt.Errorf("Invalid executor, cannot parse executor: %s", executorStr)
+	}
+	return executor[0], executor[1], nil
 }
