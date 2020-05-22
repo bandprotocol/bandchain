@@ -237,7 +237,7 @@ func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseB
 		app.dbBand.UpdateValidator(
 			validator.GetOperator(),
 			&db.Validator{
-				CurrentReward: rewardValue,
+				CurrentReward: &rewardValue,
 			},
 		)
 	}

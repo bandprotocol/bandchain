@@ -45,23 +45,25 @@ func (b *BandDB) handleMsgEditValidator(msg staking.MsgEditValidator) error {
 		return fmt.Errorf(fmt.Sprintf("validator %s does not exist.", msg.ValidatorAddress.String()))
 	}
 
+	commissionRate := msg.CommissionRate.String()
+	minSelfDelegation := msg.MinSelfDelegation.ToDec().String()
 	if msg.Description.Moniker != staking.DoNotModifyDesc {
-		validator.Moniker = msg.Description.Moniker
+		validator.Moniker = &msg.Description.Moniker
 	}
 	if msg.Description.Identity != staking.DoNotModifyDesc {
-		validator.Identity = msg.Description.Identity
+		validator.Identity = &msg.Description.Identity
 	}
 	if msg.Description.Website != staking.DoNotModifyDesc {
-		validator.Website = msg.Description.Website
+		validator.Website = &msg.Description.Website
 	}
 	if msg.Description.Details != staking.DoNotModifyDesc {
-		validator.Details = msg.Description.Details
+		validator.Details = &msg.Description.Details
 	}
 	if msg.CommissionRate != nil {
-		validator.CommissionRate = msg.CommissionRate.String()
+		validator.CommissionRate = &commissionRate
 	}
 	if msg.MinSelfDelegation != nil {
-		validator.MinSelfDelegation = msg.MinSelfDelegation.ToDec().String()
+		validator.MinSelfDelegation = &minSelfDelegation
 	}
 
 	return b.tx.Save(&validator).Error
