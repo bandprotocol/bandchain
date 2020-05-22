@@ -87,7 +87,6 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 				)
 				return
 			}
-			// TODO: Allow user to configure different executors
 			result, exitCode := c.executor.Execute(l, exec, 3*time.Second, req.calldata)
 			l.Debug(
 				":sparkles: Query data done with calldata: %q, result: %q, exitCode: %d",
