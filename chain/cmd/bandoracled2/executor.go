@@ -19,7 +19,6 @@ type lambdaExecutor struct {
 func (e *lambdaExecutor) Execute(
 	l *Logger, exec []byte, timeout time.Duration, arg string,
 ) ([]byte, uint32) {
-	// TODO: Make URL configurable
 	result, err := byteexec.RunOnAWSLambda(
 		exec, timeout, arg,
 		e.URL,
