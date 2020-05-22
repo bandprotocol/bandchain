@@ -25,9 +25,8 @@ func (b *BandDB) GetMetadataValue(key string) (*string, error) {
 }
 
 func (b *BandDB) SetMetadataValue(key, value string) error {
-	v := value
 	return b.tx.Where(Metadata{Key: key}).
-		Assign(Metadata{Value: &v}).
+		Assign(Metadata{Value: &value}).
 		FirstOrCreate(&Metadata{}).Error
 }
 
