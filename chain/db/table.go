@@ -80,8 +80,8 @@ type UnbondingDelegation struct {
 
 type DataSource struct {
 	ID          int64   `gorm:"primary_key;auto_increment:false"`
-	Name        *string `gorm:"not null"` // TODO: Update to pointer
-	Description *string `gorm:"not null"` // TODO: Update to pointer
+	Name        *string `gorm:"not null"`
+	Description *string `gorm:"not null"`
 	Owner       string  `gorm:"not null"`
 	Executable  []byte  `gorm:"not null"`
 	LastUpdated int64   `gorm:"not null"`
