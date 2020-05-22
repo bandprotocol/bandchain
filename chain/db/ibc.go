@@ -69,9 +69,9 @@ func (b *BandDB) handleMsgPacket(
 			requestPacket.ClientID,
 			txHash,
 			nil,
-			events[otypes.EventTypeRequest+"."+otypes.AttributeKeyExternalID].([]string),
-			events[otypes.EventTypeRequest+"."+otypes.AttributeKeyDataSourceID].([]string),
-			events[otypes.EventTypeRequest+"."+otypes.AttributeKeyCalldata].([]string),
+			events[otypes.EventTypeRawRequest+"."+otypes.AttributeKeyExternalID].([]string),
+			events[otypes.EventTypeRawRequest+"."+otypes.AttributeKeyDataSourceID].([]string),
+			events[otypes.EventTypeRawRequest+"."+otypes.AttributeKeyCalldata].([]string),
 		)
 		if err != nil {
 			return err

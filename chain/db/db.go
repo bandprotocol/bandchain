@@ -388,7 +388,9 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string]int
 			return nil, err
 		}
 
-		dataSourceID, err := strconv.ParseInt((events[otypes.EventTypeCreateDataSource+"."+otypes.AttributeKeyID]).(string), 10, 64)
+		dataSourceID, err := strconv.ParseInt(
+			events[otypes.EventTypeCreateDataSource+"."+otypes.AttributeKeyID].(string), 10, 64,
+		)
 		if err != nil {
 			return nil, err
 		}

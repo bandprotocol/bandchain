@@ -63,7 +63,7 @@ func (b *BandDB) handleMsgCreateDataSource(
 	msg oracle.MsgCreateDataSource,
 	events map[string]interface{},
 ) error {
-	rawID, ok := (events[otypes.EventTypeCreateDataSource+"."+otypes.AttributeKeyID]).(string)
+	rawID, ok := events[otypes.EventTypeCreateDataSource+"."+otypes.AttributeKeyID].(string)
 	if !ok {
 		return errors.New("handleMsgCreateDataSource: cannot find data source id")
 	}
