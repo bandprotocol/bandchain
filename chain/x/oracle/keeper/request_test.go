@@ -124,7 +124,7 @@ func TestGetRandomValidatorsSuccess(t *testing.T) {
 	require.Equal(t, vals, expect)
 
 	vals, err = k.GetRandomValidators(ctx, 1, int64(2))
-	expect = []sdk.ValAddress{Validator2.ValAddress}
+	expect = []sdk.ValAddress{Validator1.ValAddress}
 	require.NoError(t, err)
 	require.Equal(t, vals, expect)
 
