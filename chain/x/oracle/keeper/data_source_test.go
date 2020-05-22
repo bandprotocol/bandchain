@@ -76,10 +76,10 @@ func TestEditDataSourceDoNotModify(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// Creates some basic data sources.
 	dataSource1 := types.NewDataSource(
-		Alice.Address, "NAME1", "DESCRIPTION1", []byte("executable1"),
+		Alice.Address, "NAME1", "DESCRIPTION1", "FILENAME1",
 	)
 	dataSource2 := types.NewDataSource(
-		Bob.Address, types.DoNotModify, types.DoNotModify, []byte("executable2"),
+		Bob.Address, types.DoNotModify, types.DoNotModify, "FILENAME2",
 	)
 	// Adds a new data source to the store. We should be able to retreive it back.
 	id := k.AddDataSource(ctx, dataSource1)
@@ -94,7 +94,7 @@ func TestEditDataSourceDoNotModify(t *testing.T) {
 	require.Equal(t, dataSourceRes.Owner, dataSource2.Owner)
 	require.Equal(t, dataSourceRes.Name, dataSource1.Name)
 	require.Equal(t, dataSourceRes.Description, dataSource1.Description)
-	require.Equal(t, dataSourceRes.Executable, dataSource2.Executable)
+	require.Equal(t, dataSourceRes.Filename, dataSource2.Filename)
 }
 
 func TestAddDataSourceDataSourceMustReturnCorrectID(t *testing.T) {
@@ -103,10 +103,10 @@ func TestAddDataSourceDataSourceMustReturnCorrectID(t *testing.T) {
 	count := k.GetDataSourceCount(ctx)
 	require.Equal(t, count, int64(0))
 	// Every new data source we add should return a new ID.
-	id1 := k.AddDataSource(ctx, types.NewDataSource(Owner.Address, BasicName, BasicDesc, BasicExec))
+	id1 := k.AddDataSource(ctx, types.NewDataSource(Owner.Address, BasicName, BasicDesc, BasicFilename))
 	require.Equal(t, id1, types.DataSourceID(1))
 	// Adds another data source so now ID should be 2.
-	id2 := k.AddDataSource(ctx, types.NewDataSource(Owner.Address, BasicName, BasicDesc, BasicExec))
+	id2 := k.AddDataSource(ctx, types.NewDataSource(Owner.Address, BasicName, BasicDesc, BasicFilename))
 	require.Equal(t, id2, types.DataSourceID(2))
 	// Finally we expect the data source to increase to 2 since we added two data sources.
 	count = k.GetDataSourceCount(ctx)

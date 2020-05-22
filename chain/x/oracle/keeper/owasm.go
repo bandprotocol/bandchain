@@ -33,7 +33,8 @@ func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec, ibcInfo *ty
 	if err != nil {
 		return err
 	}
-	_, _, err = k.OwasmExecute(env, script.Code, PrepareFunc, req.Calldata, types.WasmPrepareGas)
+	code := k.GetFile(script.Filename)
+	_, _, err = k.OwasmExecute(env, code, PrepareFunc, req.Calldata, types.WasmPrepareGas)
 	if err != nil {
 		k.Logger(ctx).Info(fmt.Sprintf("failed to prepare request with error: %s", err.Error()))
 		return types.ErrBadWasmExecution
@@ -71,7 +72,8 @@ func (k Keeper) ResolveRequest(ctx sdk.Context, reqID types.RequestID) {
 	env := types.NewExecEnv(req, ctx.BlockTime().Unix(), int64(k.GetParam(ctx, types.KeyMaxRawRequestCount)))
 	env.SetReports(k.GetReports(ctx, reqID))
 	script := k.MustGetOracleScript(ctx, req.OracleScriptID)
-	result, _, err := k.OwasmExecute(env, script.Code, ExecuteFunc, req.Calldata, types.WasmExecuteGas)
+	code := k.GetFile(script.Filename)
+	result, _, err := k.OwasmExecute(env, code, ExecuteFunc, req.Calldata, types.WasmExecuteGas)
 	var res types.OracleResponsePacketData
 	if err != nil {
 		k.Logger(ctx).Info(fmt.Sprintf(
