@@ -1,7 +1,6 @@
 package db
 
 import (
-	"encoding/hex"
 	"strconv"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
@@ -110,15 +109,11 @@ func (b *BandDB) AddNewRequest(
 		if err != nil {
 			return err
 		}
-		calldata, err := hex.DecodeString(rawCalldatas[i])
-		if err != nil {
-			return err
-		}
 		err = b.AddRawDataRequest(
 			id,
 			externalID,
 			dataSourceID,
-			calldata,
+			[]byte(rawCalldatas[i]),
 		)
 		if err != nil {
 			return err
@@ -211,8 +206,8 @@ func (b *BandDB) handleMsgRequestData(
 		msg.ClientID,
 		txHash,
 		nil,
-		events[otypes.EventTypeRequest+"."+otypes.AttributeKeyExternalID].([]string),
-		events[otypes.EventTypeRequest+"."+otypes.AttributeKeyDataSourceID].([]string),
-		events[otypes.EventTypeRequest+"."+otypes.AttributeKeyCalldata].([]string),
+		events[otypes.EventTypeRawRequest+"."+otypes.AttributeKeyExternalID].([]string),
+		events[otypes.EventTypeRawRequest+"."+otypes.AttributeKeyDataSourceID].([]string),
+		events[otypes.EventTypeRawRequest+"."+otypes.AttributeKeyCalldata].([]string),
 	)
 }

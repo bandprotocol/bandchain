@@ -1,7 +1,7 @@
 use owasm::oei;
 
 fn parse_float(data: String) -> Option<f64> {
-    data.parse::<f64>().ok()
+    data.trim_end().parse::<f64>().ok()
 }
 
 #[no_mangle]
