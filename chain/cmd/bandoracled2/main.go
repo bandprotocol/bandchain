@@ -27,7 +27,7 @@ type Config struct {
 	Validator string `mapstructure:"validator"`  // The validator address that I'm responsible for
 	GasPrices string `mapstructure:"gas-prices"` // Gas prices of the transaction
 	LogLevel  string `mapstructure:"log-level"`  // Log level of the logger
-	Executor  string `mapstructure:"executor"`   // Executer and Executor URL
+	Executor  string `mapstructure:"executor"`   // Executer name and Executor URL (example: "Executor name:URL")
 }
 
 // Global instances.
