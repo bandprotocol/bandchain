@@ -1,4 +1,15 @@
-package oracle
+package oracle_test
+
+import (
+	"testing"
+	"time"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/require"
+
+	"github.com/bandprotocol/bandchain/chain/x/oracle"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+)
 
 // func mockDataSource(ctx sdk.Context, keeper Keeper) (*sdk.Result, error) {
 // 	owner := sdk.AccAddress([]byte("owner"))
@@ -410,111 +421,90 @@ package oracle
 // // 	require.NotNil(t, err)
 // // }
 
-// func TestReportSuccess(t *testing.T) {
-// 	// Setup test environment
-// 	ctx, keeper := keep.CreateTestInput(t, false)
+func TestReportSuccess(t *testing.T) {
+	// Setup test environment
+	_, ctx, k := createTestInput()
 
-// 	ctx = ctx.WithBlockHeight(2)
-// 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
-// 	calldata := []byte("calldata")
+	ctx = ctx.WithBlockHeight(2)
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	calldata := []byte("calldata")
 
-// 	script := keep.GetTestOracleScript("../../pkg/owasm/res/silly.wasm")
-// 	keeper.SetOracleScript(ctx, 1, script)
+	k.SetOracleScript(ctx, 1, types.NewOracleScript(
+		Alice.Address, "Test oracle script", "For testing only", nil, "", ""),
+	)
 
-// 	pubStr := []string{
-// 		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
-// 		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
-// 	}
+	k.SetDataSource(ctx, 1, types.NewDataSource(Alice.Address, "Test data source", "For testing only", nil))
 
-// 	validatorAddress1 := keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
-// 	reporterAddress1 := sdk.AccAddress(validatorAddress1)
+	request := types.NewRequest(1, calldata,
+		[]sdk.ValAddress{Validator1.ValAddress, Validator2.ValAddress}, 2,
+		2, 1581589790, "clientID", nil, []types.ExternalID{1, 42},
+	)
+	k.SetRequest(ctx, 1, request)
 
-// 	address1 := keep.GetAddressFromPub(pubStr[0])
+	ctx = ctx.WithBlockHeight(5)
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589800), 0))
 
-// 	validatorAddress2 := keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
-// 	reporterAddress2 := sdk.AccAddress(validatorAddress2)
+	msg := types.NewMsgReportData(1, []types.RawReport{
+		types.NewRawReport(1, 0, []byte("data1")),
+		types.NewRawReport(42, 0, []byte("data2")),
+	}, Validator1.ValAddress, Validator1.Address)
 
-// 	dataSource := keep.GetTestDataSource()
-// 	keeper.SetDataSource(ctx, 1, dataSource)
+	_, err := oracle.NewHandler(k)(ctx, msg)
+	require.NoError(t, err)
 
-// 	_, err := keeper.CoinKeeper.AddCoins(ctx, address1, keep.NewUBandCoins(1000000))
-// 	require.Nil(t, err)
+	list := k.GetPendingResolveList(ctx)
+	require.Equal(t, []types.RequestID{}, list)
 
-// 	request := types.NewRequest(1, calldata,
-// 		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
-// 		2, 1581589790, "clientID", nil, nil,
-// 	)
-// 	keeper.SetRequest(ctx, 1, request)
-// 	keeper.SetRawRequest(ctx, 1, types.NewRawRequest(42, 1, []byte("calldata1")))
+	msg = types.NewMsgReportData(1, []types.RawReport{
+		types.NewRawReport(1, 0, []byte("data3")),
+		types.NewRawReport(42, 0, []byte("data4")),
+	}, Validator2.ValAddress, Validator2.Address)
 
-// 	ctx = ctx.WithBlockHeight(5)
-// 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589800), 0))
+	_, err = oracle.NewHandler(k)(ctx, msg)
+	require.NoError(t, err)
 
-// 	msg := types.NewMsgReportData(1, []types.RawReport{
-// 		types.NewRawReport(42, 0, []byte("data1")),
-// 	}, validatorAddress1, reporterAddress1)
+	list = k.GetPendingResolveList(ctx)
+	require.Equal(t, []types.RequestID{1}, list)
+}
 
-// 	_, err = handleMsgReportData(ctx, keeper, msg)
-// 	require.Nil(t, err)
-// 	list := keeper.GetPendingResolveList(ctx)
-// 	require.Equal(t, []types.RequestID{}, list)
+func TestReportFailed(t *testing.T) {
+	// Setup test environment
+	_, ctx, k := createTestInput()
+	ctx = ctx.WithBlockHeight(2)
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	calldata := []byte("calldata")
 
-// 	msg = types.NewMsgReportData(1, []types.RawReport{
-// 		types.NewRawReport(42, 0, []byte("data2")),
-// 	}, validatorAddress2, reporterAddress2)
+	k.SetOracleScript(ctx, 1, types.NewOracleScript(
+		Alice.Address, "Test oracle script", "For testing only", nil, "", ""),
+	)
 
-// 	_, err = handleMsgReportData(ctx, keeper, msg)
-// 	require.Nil(t, err)
+	k.SetDataSource(ctx, 1, types.NewDataSource(Alice.Address, "Test data source", "For testing only", nil))
 
-// 	list = keeper.GetPendingResolveList(ctx)
-// 	require.Equal(t, []types.RequestID{1}, list)
-// }
+	request := types.NewRequest(1, calldata,
+		[]sdk.ValAddress{Validator1.ValAddress, Validator2.ValAddress}, 2,
+		2, 1581589790, "clientID", nil, []types.ExternalID{42},
+	)
+	k.SetRequest(ctx, 1, request)
 
-// func TestReportFailed(t *testing.T) {
-// 	// Setup test environment
-// 	ctx, keeper := keep.CreateTestInput(t, false)
-// 	ctx = ctx.WithBlockHeight(2)
-// 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
-// 	calldata := []byte("calldata")
+	ctx = ctx.WithBlockHeight(5)
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589800), 0))
 
-// 	script := keep.GetTestOracleScript("../../pkg/owasm/res/silly.wasm")
-// 	keeper.SetOracleScript(ctx, 1, script)
+	// Report by unauthorized reporter
+	msg := types.NewMsgReportData(1, []types.RawReport{
+		types.NewRawReport(42, 0, []byte("data1")),
+	}, Validator1.ValAddress, Alice.Address)
+	_, err := oracle.NewHandler(k)(ctx, msg)
+	require.Error(t, err)
 
-// 	pubStr := []string{
-// 		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
-// 		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
-// 	}
+	// Send wrong external ids
+	msg = types.NewMsgReportData(1, []types.RawReport{
+		types.NewRawReport(41, 0, []byte("data1")),
+	}, Validator1.ValAddress, Validator1.Address)
 
-// 	validatorAddress1 := keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
-// 	validatorAddress2 := keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
-
-// 	reporterAddress1 := sdk.AccAddress(validatorAddress1)
-
-// 	address1 := keep.GetAddressFromPub(pubStr[0])
-// 	_, err := keeper.CoinKeeper.AddCoins(ctx, address1, keep.NewUBandCoins(1000000))
-// 	require.Nil(t, err)
-
-// 	dataSource := keep.GetTestDataSource()
-// 	keeper.SetDataSource(ctx, 1, dataSource)
-
-// 	request := types.NewRequest(1, calldata,
-// 		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
-// 		2, 1581589790, "clientID", nil, nil,
-// 	)
-// 	keeper.SetRequest(ctx, 1, request)
-// 	keeper.SetRawRequest(ctx, 1, types.NewRawRequest(42, 1, []byte("calldata1")))
-
-// 	ctx = ctx.WithBlockHeight(5)
-// 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589800), 0))
-
-// 	msg := types.NewMsgReportData(1, []types.RawReport{
-// 		types.NewRawReport(41, 0, []byte("data1")),
-// 	}, validatorAddress1, reporterAddress1)
-
-// 	// Test only 1 failed case, other case tested in keeper/report_test.go
-// 	_, err = handleMsgReportData(ctx, keeper, msg)
-// 	require.NotNil(t, err)
-// }
+	// Test only 1 failed case, other case tested in keeper/report_test.go
+	_, err = oracle.NewHandler(k)(ctx, msg)
+	require.Error(t, err)
+}
 
 // // func TestEndBlock(t *testing.T) {
 // // 	ctx, keeper := keep.CreateTestInput(t, false)
