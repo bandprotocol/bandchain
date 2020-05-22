@@ -25,7 +25,11 @@ type Config struct {
 	NodeURI   string `mapstructure:"node"`       // Remote RPC URI of BandChain node to connect to
 	Validator string `mapstructure:"validator"`  // The validator address that I'm responsible for
 	GasPrices string `mapstructure:"gas-prices"` // Gas prices of the transaction
+<<<<<<< HEAD
 	LogLevel  string `mapstructure:"log-level"`  // Log level of the logger
+=======
+	Executor  string `mapstructure:"executor"`   // Executer and Executor URL
+>>>>>>> Use executer from context
 }
 
 // Global instances.

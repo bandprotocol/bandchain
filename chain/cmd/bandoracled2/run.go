@@ -77,11 +77,16 @@ func runCmd(c *Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
+<<<<<<< HEAD
 			allowLevel, err := log.AllowLevel(cfg.LogLevel)
 			if err != nil {
 				return err
 			}
 			l := NewLogger(allowLevel)
+=======
+			c.executor = NewExecutor("lambda", "https://dmptasv4j8.execute-api.ap-southeast-1.amazonaws.com/bash-execute")
+			l := NewLogger()
+>>>>>>> Use executer from context
 			l.Info(":star: Creating HTTP client with node URI: %s", cfg.NodeURI)
 			c.client, err = rpchttp.New(cfg.NodeURI, "/websocket")
 			if err != nil {

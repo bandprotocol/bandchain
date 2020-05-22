@@ -11,4 +11,5 @@ type Context struct {
 	validator sdk.ValAddress
 	gasPrices sdk.DecCoins
 	keys      chan keyring.Info
+	executor  executor
 }
