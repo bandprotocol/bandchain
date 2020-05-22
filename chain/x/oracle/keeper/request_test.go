@@ -108,15 +108,26 @@ func TestGetRandomValidatorsSuccess(t *testing.T) {
 		LastBlockId: abci.BlockID{Hash: hash[:32]},
 	})
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
-	vals, err := k.GetRandomValidators(ctx, 2, int64(1))
-	expect := []sdk.ValAddress{Validator1.ValAddress, Validator2.ValAddress}
+	vals, err := k.GetRandomValidators(ctx, 3, int64(1))
+	expect := []sdk.ValAddress{Validator1.ValAddress, Validator3.ValAddress, Validator2.ValAddress}
+
+	require.NoError(t, err)
+	require.Equal(t, vals, expect)
+
+	hash = sha256.Sum256([]byte("Ni Hao"))
+	ctx = ctx.WithBlockHeader(abci.Header{
+		LastBlockId: abci.BlockID{Hash: hash[:32]},
+	})
+	vals, err = k.GetRandomValidators(ctx, 3, int64(2))
+	expect = []sdk.ValAddress{Validator3.ValAddress, Validator1.ValAddress, Validator2.ValAddress}
 	require.NoError(t, err)
 	require.Equal(t, vals, expect)
 
 	vals, err = k.GetRandomValidators(ctx, 1, int64(2))
-	expect = []sdk.ValAddress{Validator1.ValAddress}
+	expect = []sdk.ValAddress{Validator3.ValAddress}
 	require.NoError(t, err)
 	require.Equal(t, vals, expect)
+
 }
 
 func TestGetRandomValidatorsTooBigSize(t *testing.T) {

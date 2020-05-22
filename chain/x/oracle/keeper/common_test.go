@@ -36,6 +36,7 @@ var (
 	Carol      account
 	Validator1 account
 	Validator2 account
+	Validator3 account
 )
 
 var (
@@ -51,6 +52,7 @@ var (
 	Coins20uband        = sdk.NewCoins(sdk.NewInt64Coin("uband", 20))
 	Coins1000000uband   = sdk.NewCoins(sdk.NewInt64Coin("uband", 1000000))
 	Coins100000000uband = sdk.NewCoins(sdk.NewInt64Coin("uband", 100000000))
+	Coins99999999uband  = sdk.NewCoins(sdk.NewInt64Coin("uband", 99999999))
 )
 
 func init() {
@@ -62,6 +64,7 @@ func init() {
 	Carol = createArbitraryAccount(r)
 	Validator1 = createArbitraryAccount(r)
 	Validator2 = createArbitraryAccount(r)
+	Validator3 = createArbitraryAccount(r)
 }
 
 func createArbitraryAccount(r *rand.Rand) account {
@@ -115,6 +118,7 @@ func createTestInput() (*bandapp.BandApp, sdk.Context, me.Keeper) {
 		&auth.BaseAccount{Address: Carol.Address},
 		&auth.BaseAccount{Address: Validator1.Address},
 		&auth.BaseAccount{Address: Validator2.Address},
+		&auth.BaseAccount{Address: Validator3.Address},
 	})
 	genesis[auth.ModuleName] = app.Codec().MustMarshalJSON(authGenesis)
 	bankGenesis := bank.NewGenesisState(bank.DefaultGenesisState().SendEnabled, []bank.Balance{
@@ -142,11 +146,16 @@ func createTestInput() (*bandapp.BandApp, sdk.Context, me.Keeper) {
 			Address: Validator2.Address,
 			Coins:   Coins100000000uband,
 		},
-	}, sdk.NewCoins(sdk.NewInt64Coin("uband", 204000000)))
+		{
+			Address: Validator3.Address,
+			Coins:   Coins100000000uband,
+		},
+	}, sdk.NewCoins(sdk.NewInt64Coin("uband", 304000000)))
 	genesis[bank.ModuleName] = app.Codec().MustMarshalJSON(bankGenesis)
 	genutilGenesis := genutil.NewGenesisStateFromStdTx([]authtypes.StdTx{
 		createValidatorTx(Validator1, "validator1", Coins100000000uband[0]),
 		createValidatorTx(Validator2, "validator2", Coins1000000uband[0]),
+		createValidatorTx(Validator3, "validator3", Coins99999999uband[0]),
 	})
 	genesis[genutil.ModuleName] = app.Codec().MustMarshalJSON(genutilGenesis)
 	// Initialize the sim blockchain. We are ready for testing!
