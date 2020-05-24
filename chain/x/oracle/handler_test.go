@@ -429,12 +429,6 @@ func TestReportSuccess(t *testing.T) {
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
 	calldata := []byte("calldata")
 
-	k.SetOracleScript(ctx, 1, types.NewOracleScript(
-		Alice.Address, "Test oracle script", "For testing only", nil, "", ""),
-	)
-
-	k.SetDataSource(ctx, 1, types.NewDataSource(Alice.Address, "Test data source", "For testing only", nil))
-
 	request := types.NewRequest(1, calldata,
 		[]sdk.ValAddress{Validator1.ValAddress, Validator2.ValAddress}, 2,
 		2, 1581589790, "clientID", nil, []types.ExternalID{1, 42},
@@ -473,12 +467,6 @@ func TestReportFailed(t *testing.T) {
 	ctx = ctx.WithBlockHeight(2)
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
 	calldata := []byte("calldata")
-
-	k.SetOracleScript(ctx, 1, types.NewOracleScript(
-		Alice.Address, "Test oracle script", "For testing only", nil, "", ""),
-	)
-
-	k.SetDataSource(ctx, 1, types.NewDataSource(Alice.Address, "Test data source", "For testing only", nil))
 
 	request := types.NewRequest(1, calldata,
 		[]sdk.ValAddress{Validator1.ValAddress, Validator2.ValAddress}, 2,

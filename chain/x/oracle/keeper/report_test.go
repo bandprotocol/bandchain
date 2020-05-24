@@ -123,7 +123,35 @@ func TestReportInvalidExternalIDs(t *testing.T) {
 	require.Error(t, err)
 }
 
-func TestGetReportCount(t *testing.T) {}
+func TestGetReportCount(t *testing.T) {
+	_, ctx, k := createTestInput()
+
+	k.SetReport(ctx, types.RequestID(1), types.NewReport(Validator1.ValAddress, []types.RawReport{}))
+	k.SetReport(ctx, types.RequestID(1), types.NewReport(Validator2.ValAddress, []types.RawReport{}))
+	k.SetReport(ctx, types.RequestID(2), types.NewReport(Alice.ValAddress, []types.RawReport{}))
+	k.SetReport(ctx, types.RequestID(2), types.NewReport(Bob.ValAddress, []types.RawReport{}))
+	k.SetReport(ctx, types.RequestID(2), types.NewReport(Carol.ValAddress, []types.RawReport{}))
+
+	require.Equal(t, 2, k.GetReportCount(ctx, types.RequestID(1)))
+	require.Equal(t, 3, k.GetReportCount(ctx, types.RequestID(2)))
+}
+
+func TestDeleteReports(t *testing.T) {
+	_, ctx, k := createTestInput()
+
+	k.SetReport(ctx, types.RequestID(1), types.NewReport(Validator1.ValAddress, []types.RawReport{}))
+	k.SetReport(ctx, types.RequestID(1), types.NewReport(Validator2.ValAddress, []types.RawReport{}))
+	k.SetReport(ctx, types.RequestID(2), types.NewReport(Alice.ValAddress, []types.RawReport{}))
+	k.SetReport(ctx, types.RequestID(2), types.NewReport(Bob.ValAddress, []types.RawReport{}))
+	k.SetReport(ctx, types.RequestID(2), types.NewReport(Carol.ValAddress, []types.RawReport{}))
+
+	require.True(t, k.HasReport(ctx, types.RequestID(1), Validator1.ValAddress))
+	require.True(t, k.HasReport(ctx, types.RequestID(2), Alice.ValAddress))
+
+	k.DeleteReports(ctx, types.RequestID(1))
+	require.False(t, k.HasReport(ctx, types.RequestID(1), Validator1.ValAddress))
+	require.True(t, k.HasReport(ctx, types.RequestID(2), Alice.ValAddress))
+}
 func TestUpdateReportInfos(t *testing.T) {
 	_, ctx, k := createTestInput()
 
@@ -260,5 +288,4 @@ func TestGetJailedUpdateReportInfos(t *testing.T) {
 		validator := app.StakingKeeper.Validator(ctx, tc.validator.ValAddress)
 		require.Equal(t, tc.jailed, validator.IsJailed())
 	}
-
 }
