@@ -43,7 +43,7 @@ func main() {
 	var priv secp256k1.PrivKeySecp256k1
 	copy(priv[:], privB)
 
-	tx, err := bandlib.NewBandStatefulClient(nodeURI, priv, 10, 5, "Request script txs", chainID)
+	tx, err := bandlib.NewBandStatefulClient(nodeURI, priv, 10, 1, "Request script txs", chainID)
 	if err != nil {
 		panic(err)
 	}
