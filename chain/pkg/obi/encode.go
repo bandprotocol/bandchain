@@ -49,7 +49,7 @@ func Encode(v interface{}) ([]byte, error) {
 		}
 		return res, nil
 	default:
-		return nil, fmt.Errorf("Unsupported value type: %s", rv.Kind())
+		return nil, fmt.Errorf("obi: unsupported value type: %s", rv.Kind())
 	}
 }
 

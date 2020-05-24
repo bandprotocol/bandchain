@@ -7,15 +7,15 @@ import (
 )
 
 type Inner struct {
-	A uint8
-	B uint8
+	A uint8 `obi:"a"`
+	B uint8 `obi:"b"`
 }
 
 type ExampleData struct {
-	Symbol string
-	Px     uint64
-	In     Inner
-	Arr    []int16
+	Symbol string  `obi:"symbol"`
+	Px     uint64  `obi:"px"`
+	In     Inner   `obi:"in"`
+	Arr    []int16 `obi:"arr"`
 }
 
 func TestEncodeBytes(t *testing.T) {
@@ -43,4 +43,8 @@ func TestDecode1(t *testing.T) {
 		},
 		Arr: []int16{10, 11},
 	})
+}
+
+func TestSchema(t *testing.T) {
+	require.Equal(t, MustGetSchema(ExampleData{}), "{symbol:string,px:u64,in:{a:u8,b:u8},arr:[i16]}")
 }
