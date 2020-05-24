@@ -12,6 +12,7 @@ import (
 	"github.com/bandprotocol/bandchain/chain/bandlib"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 
@@ -155,10 +156,8 @@ func main() {
 				panic(err)
 			}
 			t := 10000
-
 			txResponses := make(chan sdk.TxResponse, t)
 			errResponses := make(chan error, t)
-
 			for i := 0; i < t; i++ {
 				go func() {
 					txRes, err := tx.SendTransaction(staking.NewMsgDelegate(
@@ -167,6 +166,41 @@ func main() {
 						sdk.NewCoin("uband", sdk.NewInt(10))),
 						1000000, "", "")
 
+					if err != nil {
+						errResponses <- err
+					}
+					txResponses <- txRes
+				}()
+			}
+			for i := 0; i < t; i++ {
+				select {
+				case txResponse := <-txResponses:
+					fmt.Println(txResponse)
+					_, err = file.WriteString(fmt.Sprint(txResponse.GasUsed) + ",")
+					if err != nil {
+						panic(err)
+					}
+				case err := <-errResponses:
+					fmt.Println(err)
+				}
+			}
+			file.Close()
+		}
+	case "withdraw":
+		{
+			acc, _ := sdk.AccAddressFromBech32("band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun")
+
+			file, err := os.OpenFile(os.ExpandEnv("$HOME/gas.txt"), os.O_CREATE|os.O_WRONLY|os.O_APPEND, os.ModePerm)
+			if err != nil {
+				panic(err)
+			}
+			t := 10000
+			txResponses := make(chan sdk.TxResponse, t)
+			errResponses := make(chan error, t)
+			for i := 0; i < t; i++ {
+				go func() {
+					txRes, err := tx.SendTransaction(distribution.MsgWithdrawDelegatorReward{tx.Sender(), sdk.ValAddress(acc)},
+						1000000, "", "")
 					if err != nil {
 						errResponses <- err
 					}
