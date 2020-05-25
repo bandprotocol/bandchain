@@ -61,6 +61,7 @@ type chainID =
 let parseChainID =
   fun
   | "band-wenchang-testnet2" => WenchangTestnet
+  | "band-guanyu-devnet"
   | "bandchain" => GuanYuDevnet
   | _ => Unknown;
 
