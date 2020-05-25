@@ -12,7 +12,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
@@ -22,6 +21,7 @@ import (
 	bandapp "github.com/bandprotocol/bandchain/chain/app"
 )
 
+// Account is a data structure to store key of test account.
 type Account struct {
 	PrivKey    crypto.PrivKey
 	PubKey     crypto.PubKey
@@ -29,6 +29,7 @@ type Account struct {
 	ValAddress sdk.ValAddress
 }
 
+// nolint
 var (
 	Owner      Account
 	Alice      Account
@@ -39,6 +40,7 @@ var (
 	Validator3 Account
 )
 
+// nolint
 var (
 	Coins1000000uband   = sdk.NewCoins(sdk.NewInt64Coin("uband", 1000000))
 	Coins99999999uband  = sdk.NewCoins(sdk.NewInt64Coin("uband", 99999999))
@@ -96,11 +98,12 @@ func createValidatorTx(acc Account, moniker string, selfDelegation sdk.Coin) aut
 	return authtypes.NewStdTx([]sdk.Msg{msg}, auth.NewStdFee(200000, sdk.Coins{}), sigs, "")
 }
 
+// NewSimApp creates instance of our app using in test.
 func NewSimApp() *bandapp.BandApp {
 	db := dbm.NewMemDB()
 	app := bandapp.NewBandApp(log.NewNopLogger(), db, nil, true, 0, map[int64]bool{}, "")
 	genesis := bandapp.NewDefaultGenesisState()
-	// Funds all the seed Accounts with 1000000uband initially.
+	// Funds seed accounts and validators with 1000000uband, 100000000uband initially.
 	authGenesis := auth.NewGenesisState(auth.DefaultParams(), []authexported.GenesisAccount{
 		&auth.BaseAccount{Address: Owner.Address},
 		&auth.BaseAccount{Address: Alice.Address},
