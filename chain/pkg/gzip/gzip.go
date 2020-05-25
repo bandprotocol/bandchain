@@ -13,7 +13,7 @@ import (
 // and https://github.com/golang/go/blob/master/src/net/http/sniff.go#L186
 var gzipIdent = []byte("\x1F\x8B\x08")
 
-// IsGzipped returns true if the input is gzipped. (remove file)
+// IsGzipped returns true if the input is gzipped.
 func IsGzipped(src []byte) bool {
 	return bytes.Equal(gzipIdent, src[0:3])
 }
