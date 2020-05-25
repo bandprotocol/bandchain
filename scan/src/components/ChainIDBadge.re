@@ -85,7 +85,12 @@ let make = () =>
     let%Sub metadata = metadataSub;
     let currentChainID = metadata.chainID->parseChainID;
 
-    <div className=Styles.version onClick={_ => setShow(oldVal => !oldVal)}>
+    <div
+      className=Styles.version
+      onClick={event => {
+        setShow(oldVal => !oldVal);
+        ReactEvent.Mouse.stopPropagation(event);
+      }}>
       <Text
         value={currentChainID->getName}
         size=Text.Sm
