@@ -1,11 +1,12 @@
 package keeper
 
 import (
-	"crypto/sha256"
-
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/tendermint/tendermint/crypto/tmhash"
+
+	"github.com/bandprotocol/bandchain/chain/pkg/obi"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 // HasReport checks if the result of this request ID exists in the storage.
@@ -33,15 +34,9 @@ func (k Keeper) AddResult(
 	ctx sdk.Context, id types.RequestID,
 	req types.OracleRequestPacketData, res types.OracleResponsePacketData,
 ) []byte {
-	h := sha256.New()
-	h.Write(k.cdc.MustMarshalBinaryBare(req))
-	reqPacketHash := h.Sum(nil)
-	h = sha256.New()
-	h.Write(k.cdc.MustMarshalBinaryBare(res))
-	resPacketHash := h.Sum(nil)
-	h = sha256.New()
-	h.Write(append(reqPacketHash, resPacketHash...))
-	resultHash := h.Sum(nil)
+	reqPacketHash := tmhash.Sum(obi.MustEncode(req))
+	resPacketHash := tmhash.Sum(obi.MustEncode(res))
+	resultHash := tmhash.Sum(append(reqPacketHash, resPacketHash...))
 	k.SetResult(ctx, id, resultHash)
 	return resultHash
 }
