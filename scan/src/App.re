@@ -66,7 +66,7 @@ module TopBar = {
               <VSpacing size=Spacing.xs />
               <div className=Styles.rFlex>
                 <Text
-                  value="EXPLORER"
+                  value="CosmoScan"
                   nowrap=true
                   size=Text.Sm
                   weight=Text.Semibold
