@@ -38,12 +38,12 @@ func NewHandler(k Keeper) sdk.Handler {
 }
 
 func handleMsgCreateDataSource(ctx sdk.Context, k Keeper, m MsgCreateDataSource) (*sdk.Result, error) {
+	var err error
 	if gzip.IsGzipped(m.Executable) {
-		executable, err := gzip.Uncompress(m.Executable, types.MaxExecutableSize)
+		m.Executable, err = gzip.Uncompress(m.Executable, types.MaxExecutableSize)
 		if err != nil {
-			return nil, sdkerrors.Wrapf(types.ErrUncompressionFailed, "file: %x", m.Executable)
+			return nil, sdkerrors.Wrapf(types.ErrUncompressionFailed, err.Error())
 		}
-		m.Executable = executable
 	}
 	id := k.AddDataSource(ctx, types.NewDataSource(
 		m.Owner, m.Name, m.Description, k.AddFile(m.Executable),
@@ -64,11 +64,10 @@ func handleMsgEditDataSource(ctx sdk.Context, k Keeper, m MsgEditDataSource) (*s
 		return nil, types.ErrEditorNotAuthorized
 	}
 	if gzip.IsGzipped(m.Executable) {
-		executable, err := gzip.Uncompress(m.Executable, types.MaxExecutableSize)
+		m.Executable, err = gzip.Uncompress(m.Executable, types.MaxExecutableSize)
 		if err != nil {
-			return nil, sdkerrors.Wrapf(types.ErrUncompressionFailed, "file: %x", m.Executable)
+			return nil, sdkerrors.Wrapf(types.ErrUncompressionFailed, err.Error())
 		}
-		m.Executable = executable
 	}
 	err = k.EditDataSource(ctx, m.DataSourceID, types.NewDataSource(
 		m.Owner, m.Name, m.Description, k.AddFile(m.Executable),
@@ -84,14 +83,13 @@ func handleMsgEditDataSource(ctx sdk.Context, k Keeper, m MsgEditDataSource) (*s
 }
 
 func handleMsgCreateOracleScript(ctx sdk.Context, k Keeper, m MsgCreateOracleScript) (*sdk.Result, error) {
+	var err error
 	if gzip.IsGzipped(m.Code) {
-		code, err := gzip.Uncompress(m.Code, types.MaxWasmCodeSize)
+		m.Code, err = gzip.Uncompress(m.Code, types.MaxWasmCodeSize)
 		if err != nil {
-			return nil, sdkerrors.Wrapf(types.ErrUncompressionFailed, "file: %x", m.Code)
+			return nil, sdkerrors.Wrapf(types.ErrUncompressionFailed, err.Error())
 		}
-		m.Code = code
 	}
-
 	id := k.AddOracleScript(ctx, types.NewOracleScript(
 		m.Owner, m.Name, m.Description, k.AddFile(m.Code), m.Schema, m.SourceCodeURL,
 	))
@@ -103,19 +101,18 @@ func handleMsgCreateOracleScript(ctx sdk.Context, k Keeper, m MsgCreateOracleScr
 }
 
 func handleMsgEditOracleScript(ctx sdk.Context, k Keeper, m MsgEditOracleScript) (*sdk.Result, error) {
-	if gzip.IsGzipped(m.Code) {
-		code, err := gzip.Uncompress(m.Code, types.MaxWasmCodeSize)
-		if err != nil {
-			return nil, sdkerrors.Wrapf(types.ErrUncompressionFailed, "file: %x", m.Code)
-		}
-		m.Code = code
-	}
 	oracleScript, err := k.GetOracleScript(ctx, m.OracleScriptID)
 	if err != nil {
 		return nil, err
 	}
 	if !oracleScript.Owner.Equals(m.Sender) {
 		return nil, types.ErrEditorNotAuthorized
+	}
+	if gzip.IsGzipped(m.Code) {
+		m.Code, err = gzip.Uncompress(m.Code, types.MaxWasmCodeSize)
+		if err != nil {
+			return nil, sdkerrors.Wrapf(types.ErrUncompressionFailed, err.Error())
+		}
 	}
 	err = k.EditOracleScript(ctx, m.OracleScriptID, types.NewOracleScript(
 		m.Owner, m.Name, m.Description, k.AddFile(m.Code), m.Schema, m.SourceCodeURL,
