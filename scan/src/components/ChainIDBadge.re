@@ -126,6 +126,6 @@ let make = () =>
   |> Sub.default(
        _,
        <div className=Styles.versionLoading>
-         <LoadingCensorBar width=80 height=16 colorBase=Colors.blue1 colorLighter=Colors.white />
+         <LoadingCensorBar width=120 height=16 colorBase=Colors.blue1 colorLighter=Colors.white />
        </div>,
      );
