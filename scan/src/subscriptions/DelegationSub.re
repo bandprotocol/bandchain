@@ -46,6 +46,21 @@ module TotalStakeByDelegatorConfig = [%graphql
   |}
 ];
 
+module TotalStakeByDelegatorValidatorConfig = [%graphql
+  {|
+  subscription TotalStake($delegator_address: String!, $validator_address: String!) {
+      delegations_view_aggregate(where: {_and: {delegator_address: {_eq: $delegator_address}, validator_address: {_eq: $validator_address}}}) {
+      aggregate{
+        sum{
+          amount @bsDecoder(fn: "GraphQLParser.coinWithDefault")
+          reward @bsDecoder(fn: "GraphQLParser.coinWithDefault")
+        }
+      }
+      }
+  }
+  |}
+];
+
 module StakeCountByDelegatorConfig = [%graphql
   {|
   subscription CountByDelegator($delegator_address: String!) {
@@ -107,6 +122,29 @@ let getTotalStakeByDelegator = delegatorAddress => {
       ~variables=
         TotalStakeByDelegatorConfig.makeVariables(
           ~delegator_address=delegatorAddress |> Address.toBech32,
+          (),
+        ),
+    );
+
+  let delegatorInfoSub =
+    result
+    |> Sub.map(_, a =>
+         (a##delegations_view_aggregate##aggregate |> Belt_Option.getExn)##sum
+         |> Belt_Option.getExn
+       );
+
+  let%Sub delegatorInfo = delegatorInfoSub;
+  {amount: delegatorInfo##amount, reward: delegatorInfo##reward} |> Sub.resolve;
+};
+
+let getTotalStakeByDelegatorValidator = (delegatorAddress, validatorAddress) => {
+  let (result, _) =
+    ApolloHooks.useSubscription(
+      TotalStakeByDelegatorValidatorConfig.definition,
+      ~variables=
+        TotalStakeByDelegatorValidatorConfig.makeVariables(
+          ~delegator_address=delegatorAddress |> Address.toBech32,
+          ~validator_address=validatorAddress |> Address.toOperatorBech32,
           (),
         ),
     );
