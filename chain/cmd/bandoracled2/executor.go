@@ -19,10 +19,7 @@ type lambdaExecutor struct {
 func (e *lambdaExecutor) Execute(
 	l *Logger, exec []byte, timeout time.Duration, arg string,
 ) ([]byte, uint32) {
-	result, err := byteexec.RunOnAWSLambda(
-		exec, timeout, arg,
-		e.URL,
-	)
+	result, err := byteexec.RunOnAWSLambda(exec, timeout, arg, e.URL)
 	if err != nil {
 		l.Error(":skull: LambdaExecutor failed with error: %s", err.Error())
 		return []byte("EXECUTION_ERROR"), 255
