@@ -23,7 +23,6 @@ func GetFile() http.HandlerFunc {
 		file, err := fileCache.GetFile(filename)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-
 		}
 		w.Header().Set("Content-Disposition", "attachment;")
 		w.Header().Set("Content-Type", r.Header.Get("Content-Type"))
