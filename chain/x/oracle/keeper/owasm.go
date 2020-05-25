@@ -56,7 +56,11 @@ func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec, ibcInfo *ty
 	ctx.EventManager().EmitEvent(event)
 	// Emit an event for each of the raw data requests.
 	for _, rawReq := range env.GetRawRequests() {
-		ds := k.MustGetDataSource(ctx, rawReq.DataSourceID)
+		ds, err := k.GetDataSource(ctx, rawReq.DataSourceID)
+		if err != nil {
+			return err
+		}
+
 		ctx.EventManager().EmitEvent(sdk.NewEvent(
 			types.EventTypeRawRequest,
 			sdk.NewAttribute(types.AttributeKeyDataSourceID, fmt.Sprintf("%d", rawReq.DataSourceID)),
