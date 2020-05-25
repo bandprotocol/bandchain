@@ -61,6 +61,8 @@ func main() {
 		return initConfig(rootCmd)
 	}
 
+	lcdCmd := lcd.ServeCommand(cdc, registerRoutes)
+	lcdCmd.Flags().String(bandclient.FlagHomeDaemon, app.DefaultNodeHome, "daemond-flag")
 	// Construct Root Command
 	rootCmd.AddCommand(
 		rpc.StatusCommand(),
@@ -68,7 +70,7 @@ func main() {
 		queryCmd(cdc),
 		txCmd(cdc),
 		flags.LineBreak,
-		lcd.ServeCommand(cdc, registerRoutes),
+		lcdCmd,
 		flags.LineBreak,
 		keys.Commands(),
 		flags.LineBreak,
