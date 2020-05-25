@@ -29,7 +29,11 @@ func (e *lambdaExecutor) Execute(
 }
 
 // NewExecutor returns executor by name and executer URL
-func NewExecutor(name string, url string) (executor, error) {
+func NewExecutor(executer string) (executor, error) {
+	name, url, err := ParseExecutor(executer)
+	if err != nil {
+		return nil, err
+	}
 	switch name {
 	case "lambda":
 		return &lambdaExecutor{URL: url}, nil
