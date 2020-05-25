@@ -9,16 +9,13 @@ import (
 	"github.com/spf13/viper"
 )
 
-var (
-	fileCache = filecache.New(filepath.Join(viper.GetString(FlagHomeDaemon), "files"))
-)
-
 const (
 	Filename       = "filename"
 	FlagHomeDaemon = "daemon-home"
 )
 
 func GetFile() http.HandlerFunc {
+	fileCache := filecache.New(filepath.Join(viper.GetString(FlagHomeDaemon), "files"))
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		filename := vars[Filename]
