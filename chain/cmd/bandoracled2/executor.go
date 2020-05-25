@@ -28,7 +28,7 @@ func (e *lambdaExecutor) Execute(
 	return result, 0
 }
 
-// NewExecutor returns executor by name and executer URL
+// NewExecutor returns executor by name and executor URL
 func NewExecutor(executor string) (executor, error) {
 	name, url, err := parseExecutor(executor)
 	if err != nil {
