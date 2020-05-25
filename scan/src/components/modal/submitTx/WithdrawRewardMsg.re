@@ -20,7 +20,7 @@ let make = (~setMsgsOpt) => {
       inputData=validator
       setInputData=setValidator
       parse=Address.fromBech32Opt
-      msg="Undelegate from"
+      msg="Withdraw from"
       errMsg="Invalid Address"
     />
   </>;

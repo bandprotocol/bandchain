@@ -89,7 +89,7 @@ let make = (~latestBlockSub: Sub.t(BlockSub.t)) => {
         let%Sub (_, {financial}, _) = allSub;
         (
           {
-            let bandPriceInUSD = "$" ++ financial.usdPrice->Format.fPretty;
+            let bandPriceInUSD = "$" ++ (financial.usdPrice |> Format.fPretty(~digits=2));
             <Text
               value=bandPriceInUSD
               size=Text.Xxxl

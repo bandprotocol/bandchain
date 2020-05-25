@@ -119,7 +119,7 @@ let make = (~rawTx, ~onBack, ~account: AccountContext.t) => {
                         ~signature=signature |> JsBuffer.toBase64,
                         ~pubKey=account.pubKey,
                         ~tx=rawTx,
-                        ~mode="block",
+                        ~mode="sync",
                         (),
                       );
                     ignore(

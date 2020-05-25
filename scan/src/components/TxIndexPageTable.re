@@ -331,7 +331,7 @@ let renderCreateValidator = (validator: TxSub.Msg.CreateValidator.t) => {
     </div>
     <VSpacing size=Spacing.md />
     <div className=Styles.topicContainer>
-      <Text value="DELAGATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <Text value="DELEGATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <AddressRender address={validator.delegatorAddress} />
     </div>
     <VSpacing size=Spacing.md />
