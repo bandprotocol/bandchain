@@ -9,6 +9,10 @@ import (
 	"github.com/spf13/viper"
 )
 
+var (
+	fileCache = filecache.New(filepath.Join(viper.GetString(FlagHomeDaemon), "files"))
+)
+
 const (
 	Filename       = "filename"
 	FlagHomeDaemon = "daemon-home"
@@ -18,9 +22,7 @@ func GetFile() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		filename := vars[Filename]
-		dir := filepath.Join(viper.GetString(FlagHomeDaemon), "files")
-		f := filecache.New(dir)
-		file := f.GetFile(filename)
+		file := fileCache.GetFile(filename)
 		w.Header().Set("Content-Disposition", "attachment;")
 		w.Header().Set("Content-Type", r.Header.Get("Content-Type"))
 
