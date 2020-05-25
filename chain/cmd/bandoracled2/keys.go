@@ -26,6 +26,7 @@ func keysCmd(c *Context) *cobra.Command {
 	cmd.AddCommand(keysAddCmd(c))
 	cmd.AddCommand(keysDeleteCmd(c))
 	cmd.AddCommand(keysListCmd(c))
+	cmd.AddCommand(keysShowCmd(c))
 	return cmd
 }
 
@@ -138,6 +139,26 @@ func keysListCmd(c *Context) *cobra.Command {
 			for _, key := range keys {
 				fmt.Printf("%s => %s\n", key.GetName(), key.GetAddress().String())
 			}
+			return nil
+		},
+	}
+	return cmd
+}
+
+func keysShowCmd(c *Context) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "show [name]",
+		Aliases: []string{"s"},
+		Short:   "Show address from name in the keychain",
+		Args:    cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			name := args[0]
+
+			key, err := keybase.Key(name)
+			if err != nil {
+				return err
+			}
+			fmt.Println(key.GetAddress().String())
 			return nil
 		},
 	}
