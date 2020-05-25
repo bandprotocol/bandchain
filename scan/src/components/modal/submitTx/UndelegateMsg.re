@@ -46,6 +46,7 @@ let make = (~setMsgsOpt) => {
       parse=Address.fromBech32Opt
       msg="Undelegate from"
       errMsg="Invalid Address"
+      placeholder="E.g. bandvaloper1jp63..."
       code=true
     />
     <VSpacing size=Spacing.md />
@@ -56,6 +57,7 @@ let make = (~setMsgsOpt) => {
       parse=Parse.getBandAmount
       msg="Amount (BAND)"
       errMsg="Invalid amount"
+      placeholder="1.00"
       code=true
     />
   </>;

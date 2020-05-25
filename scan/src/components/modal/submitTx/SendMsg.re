@@ -29,6 +29,7 @@ let make = (~setMsgsOpt) => {
       parse=Address.fromBech32Opt
       msg="To"
       errMsg="Invalid Address"
+      placeholder="E.g. bandv1jp63..."
       code=true
     />
     <VSpacing size=Spacing.md />
@@ -39,6 +40,7 @@ let make = (~setMsgsOpt) => {
       parse=Parse.getBandAmount
       msg="Amount (BAND)"
       errMsg="Invalid amount"
+      placeholder="1.00"
       code=true
     />
   </>;

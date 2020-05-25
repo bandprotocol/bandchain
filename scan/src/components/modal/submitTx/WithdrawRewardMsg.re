@@ -22,6 +22,8 @@ let make = (~setMsgsOpt) => {
       parse=Address.fromBech32Opt
       msg="Withdraw from"
       errMsg="Invalid Address"
+      placeholder="E.g. bandvaloper1jp63..."
+      code=true
     />
   </>;
 };

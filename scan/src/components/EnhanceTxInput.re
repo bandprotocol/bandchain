@@ -61,7 +61,8 @@ type status =
 let empty = {text: "", value: None};
 
 [@react.component]
-let make = (~inputData, ~setInputData, ~msg, ~errMsg, ~parse, ~width, ~code=false) => {
+let make =
+    (~placeholder="", ~inputData, ~setInputData, ~msg, ~errMsg, ~parse, ~width, ~code=false) => {
   let (status, setStatus) = React.useState(_ => Ok);
 
   <div className=Styles.rowContainer>
@@ -69,6 +70,7 @@ let make = (~inputData, ~setInputData, ~msg, ~errMsg, ~parse, ~width, ~code=fals
     <input
       value={inputData.text}
       className={Css.merge([Styles.input(width), code ? Styles.code : ""])}
+      placeholder
       onChange={event => {
         let newText = ReactEvent.Form.target(event)##value;
         let newVal = parse(newText);

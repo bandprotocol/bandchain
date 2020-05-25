@@ -84,6 +84,15 @@ module Styles = {
       cursor(`pointer),
       alignSelf(`center),
     ]);
+  let topbar = style([backgroundColor(rgb(249, 249, 251))]);
+  let closeButton =
+    style([
+      width(`px(15)),
+      position(`relative),
+      top(`px(20)),
+      left(`px(605)),
+      cursor(`pointer),
+    ]);
 };
 
 type selection_t =
@@ -143,123 +152,132 @@ let getFeeConfig = msgType => {
 
 module SubmitTxStep = {
   [@react.component]
-  let make = (~account: AccountContext.t, ~setRawTx, ~isActive) => {
+  let make = (~account: AccountContext.t, ~setRawTx, ~isActive, ~canExit, ~dispatchModal) => {
     let (msgType, setMsgType) = React.useState(_ => Send);
     let (msgsOpt, setMsgsOpt) = React.useState(_ => None);
     let (gas, setGas) = React.useState(_ => getGasConfig(msgType));
     let (fee, setFee) = React.useState(_ => getFeeConfig(msgType));
     let (memo, setMemo) = React.useState(_ => EnhanceTxInput.{text: "", value: Some("")});
 
-    <div className={Css.merge([Styles.container, Styles.disable(isActive)])}>
-      <div className=Styles.modalTitle>
-        <Text value="Submit Transaction" weight=Text.Bold size=Text.Xxxl />
+    <>
+      <div className=Styles.topbar>
+        <img
+          src=Images.closeButton
+          className=Styles.closeButton
+          onClick={_ => {canExit ? dispatchModal(ModalContext.CloseModal) : ()}}
+        />
       </div>
-      <VSpacing size=Spacing.xl />
-      <div className=Styles.rowContainer>
-        <Text value="Message Type" size=Text.Lg spacing={Text.Em(0.03)} />
-        <div className=Styles.selectWrapper>
-          <select
-            className=Styles.selectContent
-            onChange={event => {
-              let newMsg = ReactEvent.Form.target(event)##value |> toVariant;
-              setMsgType(_ => newMsg);
-              setGas(_ => getGasConfig(newMsg));
-              setFee(_ => getFeeConfig(newMsg));
-            }}>
-            // TODO: Add back Redelegate
+      <div className={Css.merge([Styles.container, Styles.disable(isActive)])}>
+        <div className=Styles.modalTitle>
+          <Text value="Submit Transaction" weight=Text.Bold size=Text.Xxxl />
+        </div>
+        <VSpacing size=Spacing.xl />
+        <div className=Styles.rowContainer>
+          <Text value="Message Type" size=Text.Lg spacing={Text.Em(0.03)} />
+          <div className=Styles.selectWrapper>
+            <select
+              className=Styles.selectContent
+              onChange={event => {
+                let newMsg = ReactEvent.Form.target(event)##value |> toVariant;
+                setMsgType(_ => newMsg);
+                setGas(_ => getGasConfig(newMsg));
+                setFee(_ => getFeeConfig(newMsg));
+              }}>
+              // TODO: Add back Redelegate
 
-              {[|Send, Delegate, Undelegate, WithdrawReward|]
-               ->Belt_Array.map(symbol =>
-                   <option value={symbol |> toString}>
-                     {symbol |> toString |> React.string}
-                   </option>
-                 )
-               |> React.array}
-            </select>
+                {[|Send, Delegate, Undelegate, WithdrawReward|]
+                 ->Belt_Array.map(symbol =>
+                     <option value={symbol |> toString}>
+                       {symbol |> toString |> React.string}
+                     </option>
+                   )
+                 |> React.array}
+              </select>
+          </div>
+        </div>
+        <VSpacing size=Spacing.md />
+        {switch (msgType) {
+         | Send => <SendMsg setMsgsOpt />
+         | Delegate => <DelegateMsg setMsgsOpt />
+         | Undelegate => <UndelegateMsg setMsgsOpt />
+         | Redelegate => <RedelegateMsg setMsgsOpt />
+         | WithdrawReward => <WithdrawRewardMsg setMsgsOpt />
+         }}
+        <VSpacing size=Spacing.md />
+        <EnhanceTxInput
+          width=115
+          inputData=gas
+          setInputData=setGas
+          parse=int_of_string_opt
+          msg="Gas"
+          errMsg="Invalid amount"
+          code=true
+        />
+        <VSpacing size=Spacing.md />
+        <EnhanceTxInput
+          width=115
+          inputData=fee
+          setInputData=setFee
+          parse=Parse.getBandAmount
+          msg="Fee (BAND)"
+          errMsg="Invalid amount"
+          code=true
+        />
+        <VSpacing size=Spacing.md />
+        <EnhanceTxInput
+          width=300
+          inputData=memo
+          setInputData=setMemo
+          parse={newVal => {newVal->Js.String.length <= 32 ? Some(newVal) : None}}
+          msg="Memo (optional)"
+          errMsg="Exceed limit length"
+        />
+        <div
+          className=Styles.nextBtn
+          onClick={_ => {
+            let rawTxOpt =
+              {let%Opt fee' = fee.value;
+               let%Opt gas' = gas.value;
+               let%Opt memo' = memo.value;
+               let%Opt msgs = msgsOpt;
+
+               Some(
+                 TxCreator.createRawTx(
+                   ~address=account.address,
+                   ~msgs,
+                   ~chainID=account.chainID,
+                   ~feeAmount=fee' |> Js.Float.toString,
+                   ~gas=gas' |> string_of_int,
+                   ~memo=memo',
+                   (),
+                 ),
+               )};
+            let _ =
+              switch (rawTxOpt) {
+              | Some(rawTxPromise) =>
+                let%Promise rawTx = rawTxPromise;
+                setRawTx(_ => Some(rawTx));
+                Promise.ret();
+              | None =>
+                Window.alert("invalid msgs");
+                Promise.ret();
+              };
+            ();
+          }}>
+          <Text value="Next" weight=Text.Bold size=Text.Md color=Colors.white />
         </div>
       </div>
-      <VSpacing size=Spacing.md />
-      {switch (msgType) {
-       | Send => <SendMsg setMsgsOpt />
-       | Delegate => <DelegateMsg setMsgsOpt />
-       | Undelegate => <UndelegateMsg setMsgsOpt />
-       | Redelegate => <RedelegateMsg setMsgsOpt />
-       | WithdrawReward => <WithdrawRewardMsg setMsgsOpt />
-       }}
-      <VSpacing size=Spacing.md />
-      <EnhanceTxInput
-        width=115
-        inputData=gas
-        setInputData=setGas
-        parse=int_of_string_opt
-        msg="Gas"
-        errMsg="Invalid amount"
-        code=true
-      />
-      <VSpacing size=Spacing.md />
-      <EnhanceTxInput
-        width=115
-        inputData=fee
-        setInputData=setFee
-        parse=Parse.getBandAmount
-        msg="Fee (BAND)"
-        errMsg="Invalid amount"
-        code=true
-      />
-      <VSpacing size=Spacing.md />
-      <EnhanceTxInput
-        width=300
-        inputData=memo
-        setInputData=setMemo
-        parse={newVal => {newVal->Js.String.length <= 32 ? Some(newVal) : None}}
-        msg="Memo"
-        errMsg="Exceed limit length"
-      />
-      <div
-        className=Styles.nextBtn
-        onClick={_ => {
-          let rawTxOpt =
-            {let%Opt fee' = fee.value;
-             let%Opt gas' = gas.value;
-             let%Opt memo' = memo.value;
-             let%Opt msgs = msgsOpt;
-
-             Some(
-               TxCreator.createRawTx(
-                 ~address=account.address,
-                 ~msgs,
-                 ~chainID=account.chainID,
-                 ~feeAmount=fee' |> Js.Float.toString,
-                 ~gas=gas' |> string_of_int,
-                 ~memo=memo',
-                 (),
-               ),
-             )};
-          let _ =
-            switch (rawTxOpt) {
-            | Some(rawTxPromise) =>
-              let%Promise rawTx = rawTxPromise;
-              setRawTx(_ => Some(rawTx));
-              Promise.ret();
-            | None =>
-              Window.alert("invalid msgs");
-              Promise.ret();
-            };
-          ();
-        }}>
-        <Text value="Next" weight=Text.Bold size=Text.Md color=Colors.white />
-      </div>
-    </div>;
+    </>;
   };
 };
 
 module CreateTxFlow = {
   [@react.component]
-  let make = (~account) => {
+  let make = (~account, ~canExit, ~dispatchModal) => {
     let (rawTx, setRawTx) = React.useState(_ => None);
 
     <>
-      <SubmitTxStep account setRawTx isActive={rawTx == None} />
+      <SubmitTxStep account setRawTx isActive={rawTx == None} canExit dispatchModal />
       {switch (rawTx) {
        | None => React.null
        | Some(rawTx') =>
@@ -270,11 +288,11 @@ module CreateTxFlow = {
 };
 
 [@react.component]
-let make = () => {
+let make = (~canExit, ~dispatchModal) => {
   let (account, _) = React.useContext(AccountContext.context);
 
   switch (account) {
-  | Some(account') => <CreateTxFlow account=account' />
+  | Some(account') => <CreateTxFlow account=account' canExit dispatchModal />
   | None => <div className=Styles.container> <Text value="Please sign in" size=Text.Lg /> </div>
   };
 };

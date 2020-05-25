@@ -46,7 +46,7 @@ let make = () => {
     let body =
       switch (modal) {
       | Connect(chainID) => <ConnectModal chainID />
-      | SubmitTx => <SubmitTxModal />
+      | SubmitTx => <SubmitTxModal canExit dispatchModal />
       };
     <div className=Styles.overlay onClick={_ => {canExit ? dispatchModal(CloseModal) : ()}}>
       <div className=Styles.content onClick={e => ReactEvent.Mouse.stopPropagation(e)}>
