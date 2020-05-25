@@ -26,6 +26,7 @@ var (
 	ErrValidatorOutOfRange         = sdkerrors.Register(ModuleName, 19, "validator out of range")
 	ErrTooManyRawRequests          = sdkerrors.Register(ModuleName, 20, "too many raw requests")
 	ErrValidatorReportInfoNotFound = sdkerrors.Register(ModuleName, 21, "validator report info not found")
+	ErrUncompressionFailed         = sdkerrors.Register(ModuleName, 22, "uncompression failed")
 
 	ErrTooLongName              = sdkerrors.Register(ModuleName, 30, "too long name")
 	ErrTooLongDescription       = sdkerrors.Register(ModuleName, 31, "too long description")

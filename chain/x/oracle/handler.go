@@ -38,12 +38,12 @@ func NewHandler(k Keeper) sdk.Handler {
 }
 
 func handleMsgCreateDataSource(ctx sdk.Context, k Keeper, m MsgCreateDataSource) (*sdk.Result, error) {
-	var err error
 	if gzip.IsGzipped(m.Executable) {
-		m.Executable, err = gzip.Uncompress(m.Executable, types.MaxExecutableSize)
+		executable, err := gzip.Uncompress(m.Executable, types.MaxExecutableSize)
 		if err != nil {
-			return nil, err
+			return nil, sdkerrors.Wrapf(types.ErrUncompressionFailed, "file: %x", m.Executable)
 		}
+		m.Executable = executable
 	}
 	id := k.AddDataSource(ctx, types.NewDataSource(
 		m.Owner, m.Name, m.Description, k.AddFile(m.Executable),
@@ -64,10 +64,11 @@ func handleMsgEditDataSource(ctx sdk.Context, k Keeper, m MsgEditDataSource) (*s
 		return nil, types.ErrEditorNotAuthorized
 	}
 	if gzip.IsGzipped(m.Executable) {
-		m.Executable, err = gzip.Uncompress(m.Executable, types.MaxExecutableSize)
+		executable, err := gzip.Uncompress(m.Executable, types.MaxExecutableSize)
 		if err != nil {
-			return nil, err
+			return nil, sdkerrors.Wrapf(types.ErrUncompressionFailed, "file: %x", m.Executable)
 		}
+		m.Executable = executable
 	}
 	err = k.EditDataSource(ctx, m.DataSourceID, types.NewDataSource(
 		m.Owner, m.Name, m.Description, k.AddFile(m.Executable),
@@ -83,12 +84,12 @@ func handleMsgEditDataSource(ctx sdk.Context, k Keeper, m MsgEditDataSource) (*s
 }
 
 func handleMsgCreateOracleScript(ctx sdk.Context, k Keeper, m MsgCreateOracleScript) (*sdk.Result, error) {
-	var err error
 	if gzip.IsGzipped(m.Code) {
-		m.Code, err = gzip.Uncompress(m.Code, types.MaxWasmCodeSize)
+		code, err := gzip.Uncompress(m.Code, types.MaxWasmCodeSize)
 		if err != nil {
-			return nil, err
+			return nil, sdkerrors.Wrapf(types.ErrUncompressionFailed, "file: %x", m.Code)
 		}
+		m.Code = code
 	}
 
 	id := k.AddOracleScript(ctx, types.NewOracleScript(
@@ -102,12 +103,12 @@ func handleMsgCreateOracleScript(ctx sdk.Context, k Keeper, m MsgCreateOracleScr
 }
 
 func handleMsgEditOracleScript(ctx sdk.Context, k Keeper, m MsgEditOracleScript) (*sdk.Result, error) {
-	var err error
 	if gzip.IsGzipped(m.Code) {
-		m.Code, err = gzip.Uncompress(m.Code, types.MaxWasmCodeSize)
+		code, err := gzip.Uncompress(m.Code, types.MaxWasmCodeSize)
 		if err != nil {
-			return nil, err
+			return nil, sdkerrors.Wrapf(types.ErrUncompressionFailed, "file: %x", m.Code)
 		}
+		m.Code = code
 	}
 	oracleScript, err := k.GetOracleScript(ctx, m.OracleScriptID)
 	if err != nil {
