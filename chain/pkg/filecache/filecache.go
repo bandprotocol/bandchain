@@ -3,6 +3,7 @@ package filecache
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 
 	"github.com/peterbourgon/diskv"
 )
@@ -36,8 +37,8 @@ func (c Cache) AddFile(data []byte) string {
 	return filename
 }
 
-// GetFile loads the file from the file storage. Panics if the file does not exist.
-func (c Cache) GetFile(filename string) []byte {
+// MustGetFile loads the file from the file storage. Panics if the file does not exist.
+func (c Cache) MustGetFile(filename string) []byte {
 	data, err := c.fileCache.Read(filename)
 	if err != nil {
 		panic(err)
@@ -46,4 +47,16 @@ func (c Cache) GetFile(filename string) []byte {
 		panic("Inconsistent filecache content")
 	}
 	return data
+}
+
+// GetFile loads the file from the file storage. Returns error if the file does not exist.
+func (c Cache) GetFile(filename string) ([]byte, error) {
+	data, err := c.fileCache.Read(filename)
+	if err != nil {
+		return nil, err
+	}
+	if getFilename(data) != filename {
+		return nil, errors.New("Inconsistent filecache content")
+	}
+	return data, nil
 }
