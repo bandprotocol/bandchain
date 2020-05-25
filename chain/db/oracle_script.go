@@ -21,12 +21,12 @@ func createOracleScript(
 
 	return OracleScript{
 		ID:            id,
-		Name:          name,
-		Description:   description,
+		Name:          &name,
+		Description:   &description,
 		Owner:         owner.String(),
 		LastUpdated:   blockTime.UnixNano() / int64(time.Millisecond),
-		Schema:        schema,
-		SourceCodeURL: sourceCodeURL,
+		Schema:        &schema,
+		SourceCodeURL: &sourceCodeURL,
 	}
 }
 
