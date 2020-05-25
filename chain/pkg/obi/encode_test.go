@@ -6,8 +6,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+type ID uint8
+
 type Inner struct {
-	A uint8 `obi:"a"`
+	A ID    `obi:"a"`
 	B uint8 `obi:"b"`
 }
 

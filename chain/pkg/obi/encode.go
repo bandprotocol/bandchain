@@ -11,23 +11,23 @@ func Encode(v interface{}) ([]byte, error) {
 	rv := reflect.ValueOf(v)
 	switch rv.Kind() {
 	case reflect.Uint8:
-		return EncodeUnsigned8(v.(uint8)), nil
+		return EncodeUnsigned8(uint8(rv.Uint())), nil
 	case reflect.Uint16:
-		return EncodeUnsigned16(v.(uint16)), nil
+		return EncodeUnsigned16(uint16(rv.Uint())), nil
 	case reflect.Uint32:
-		return EncodeUnsigned32(v.(uint32)), nil
+		return EncodeUnsigned32(uint32(rv.Uint())), nil
 	case reflect.Uint64:
-		return EncodeUnsigned64(v.(uint64)), nil
+		return EncodeUnsigned64(uint64(rv.Uint())), nil
 	case reflect.Int8:
-		return EncodeSigned8(v.(int8)), nil
+		return EncodeSigned8(int8(rv.Int())), nil
 	case reflect.Int16:
-		return EncodeSigned16(v.(int16)), nil
+		return EncodeSigned16(int16(rv.Int())), nil
 	case reflect.Int32:
-		return EncodeSigned32(v.(int32)), nil
+		return EncodeSigned32(int32(rv.Int())), nil
 	case reflect.Int64:
-		return EncodeSigned64(v.(int64)), nil
+		return EncodeSigned64(int64(rv.Int())), nil
 	case reflect.String:
-		return EncodeString(v.(string)), nil
+		return EncodeString(rv.String()), nil
 	case reflect.Slice:
 		res := EncodeUnsigned32(uint32(rv.Len()))
 		for idx := 0; idx < rv.Len(); idx++ {
