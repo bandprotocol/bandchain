@@ -78,7 +78,7 @@ func GetExecutable(c *Context, l *Logger, hash string) ([]byte, error) {
 	res, err := grequests.Get(fmt.Sprintf(`%s/bandchain/getfile/%s`, c.chainRestServerURI, hash), nil)
 	if err != nil {
 		l.Error(":exploding_head: Failed to get data source with error: %s", err.Error())
-		return nil, nil
+		return nil, err
 	}
 
 	resBytes := res.Bytes()
