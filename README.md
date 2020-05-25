@@ -41,6 +41,10 @@ docker-compose up <single or multi> owasm-studio
 docker-compose down -v
 ```
 
+## Running a Validator Node
+
+[📚 Guide to Becoming a Validator](https://medium.com/bandprotocol/bandchain-wenchang-testnet-2-how-to-join-as-a-validator-76bc4180ddd7)
+
 ## License & Contributing
 
 All modules are licensed under the terms of the Apache 2.0 License unless otherwise specified in the LICENSE file at module's root.
