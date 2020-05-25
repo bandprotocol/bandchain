@@ -56,11 +56,13 @@ func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec, ibcInfo *ty
 	ctx.EventManager().EmitEvent(event)
 	// Emit an event for each of the raw data requests.
 	for _, rawReq := range env.GetRawRequests() {
+		ds := k.MustGetDataSource(ctx, rawReq.DataSourceID)
 		ctx.EventManager().EmitEvent(sdk.NewEvent(
 			types.EventTypeRawRequest,
 			sdk.NewAttribute(types.AttributeKeyDataSourceID, fmt.Sprintf("%d", rawReq.DataSourceID)),
 			sdk.NewAttribute(types.AttributeKeyExternalID, fmt.Sprintf("%d", rawReq.ExternalID)),
 			sdk.NewAttribute(types.AttributeKeyCalldata, string(rawReq.Calldata)),
+			sdk.NewAttribute(types.AttributeKeyDataSourceHash, ds.Filename),
 		))
 	}
 	return nil
