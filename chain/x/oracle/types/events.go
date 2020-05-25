@@ -30,5 +30,5 @@ const (
 	AttributeKeyResolveStatus  = "resolve_status"
 	AttributeKeyResult         = "result"
 	AttributeKeyResultHash     = "result_hash"
-	AttributeKeyDataSourceHash = "datasource_hash"
+	AttributeKeyDataSourceHash = "data_source_hash"
 )
