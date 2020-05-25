@@ -76,7 +76,7 @@ func decodeImpl(data []byte, v interface{}) ([]byte, error) {
 		}
 		return rem, nil
 	default:
-		return nil, fmt.Errorf("Unsupported value type: %s", ev.Kind())
+		return nil, fmt.Errorf("obi: unsupported value type: %s", ev.Kind())
 	}
 }
 
