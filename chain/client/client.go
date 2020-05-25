@@ -250,6 +250,7 @@ func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router) {
 	// r.HandleFunc("/bandchain/txs/latest", LatestTxsRequestHandlerFn(cliCtx)).Methods("GET")
 	r.HandleFunc("/bandchain/evm-validators", GetEVMValidators(cliCtx)).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/bandchain/proof/{%s}", proof.RequestIDTag), proof.GetProofHandlerFn(cliCtx)).Methods("GET")
+	r.HandleFunc(fmt.Sprintf("/bandchain/getfile/{%s}", Filename), GetFile()).Methods("GET")
 	// r.HandleFunc("/bandchain/health_check", GetHealthStatus(cliCtx)).Methods("GET")
 	// r.HandleFunc("/bandchain/provider_status", GetProviderStatus(cliCtx)).Methods("GET")
 	// r.PathPrefix("/swagger-ui/").Handler(ServeSwaggerUI())

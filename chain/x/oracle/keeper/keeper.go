@@ -164,5 +164,5 @@ func (k Keeper) AddFile(file []byte) string {
 
 // GetFile loads the file from the file storage. Panics if the file does not exist.
 func (k Keeper) GetFile(name string) []byte {
-	return k.fileCache.GetFile(name)
+	return k.fileCache.MustGetFile(name)
 }
