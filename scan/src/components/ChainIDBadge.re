@@ -64,7 +64,7 @@ let parseChainID =
   | "bandchain" => GuanYuDevnet
   | _ => Unknown;
 
-let getOrigin =
+let getLink =
   fun
   | WenchangTestnet => "https://scan-wenchang-testnet2.bandchain.org/"
   | GuanYuDevnet => "https://scan-master.bandprotocol.com/"
@@ -101,7 +101,7 @@ let make = () =>
          ->Belt.Array.map(chainID => {
              let name = chainID->getName;
              <a
-               href={getOrigin(chainID)}
+               href={getLink(chainID)}
                key=name
                className=Styles.link
                target="_blank"
