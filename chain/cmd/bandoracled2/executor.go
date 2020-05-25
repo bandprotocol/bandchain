@@ -30,7 +30,7 @@ func (e *lambdaExecutor) Execute(
 
 // NewExecutor returns executor by name and executer URL
 func NewExecutor(executor string) (executor, error) {
-	name, url, err := ParseExecutor(executer)
+	name, url, err := parseExecutor(executor)
 	if err != nil {
 		return nil, err
 	}
@@ -42,8 +42,8 @@ func NewExecutor(executor string) (executor, error) {
 	}
 }
 
-// ParseExecutor returns parsed executor string
-func ParseExecutor(executorStr string) (name string, url string, err error) {
+// parseExecutor splits the executor string in the form of "name:url" into parts.
+func parseExecutor(executorStr string) (name string, url string, err error) {
 	executor := strings.SplitN(executorStr, ":", 2)
 	if len(executor) != 2 {
 		return "", "", fmt.Errorf("Invalid executor, cannot parse executor: %s", executorStr)
