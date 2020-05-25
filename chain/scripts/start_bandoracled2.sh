@@ -1,5 +1,3 @@
-DIR=`dirname "$0"`
-
 # config chain id
 bandoracled2 config chain-id bandchain
 
