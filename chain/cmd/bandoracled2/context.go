@@ -8,6 +8,7 @@ import (
 
 type Context struct {
 	client    *rpchttp.HTTP
+	chainRestServerURI string
 	validator sdk.ValAddress
 	gasPrices sdk.DecCoins
 	keys      chan keyring.Info
