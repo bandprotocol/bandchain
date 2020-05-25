@@ -22,7 +22,7 @@ module SingleConfig = [%graphql
 module MultiConfig = [%graphql
   {|
   subscription Unbonding($delegator_address: String!, $validator_address: String!) {
-  unbonding_delegations(where: {_and: {delegator_address: {_eq: $delegator_address}, validator_address: {_eq: $validator_address}}}) @bsRecord {
+  unbonding_delegations(where: {_and: {delegator_address: {_eq: $delegator_address}, validator_address: {_eq: $validator_address}}}, order_by: {completion_time: desc}) @bsRecord {
     completionTime: completion_time @bsDecoder(fn: "GraphQLParser.time")
     balance @bsDecoder(fn: "GraphQLParser.coin")
   }

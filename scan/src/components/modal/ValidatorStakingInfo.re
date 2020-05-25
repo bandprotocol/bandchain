@@ -100,7 +100,7 @@ let make = (~delegatorAddress, ~validatorAddress) =>
     let usdPrice = info.financial.usdPrice;
 
     <div className=Styles.topPartWrapper>
-      <Text value="STAKING INFO FOR " size=Text.Lg weight=Text.Semibold />
+      <Text value="STAKING INFO FOR" size=Text.Lg weight=Text.Semibold />
       <VSpacing size=Spacing.md />
       <Row>
         <Col size=1.2>
@@ -127,23 +127,39 @@ let make = (~delegatorAddress, ~validatorAddress) =>
       {stakingBalanceDetail("BALANCE AT STAKE", balanceAtStakeAmount, usdPrice)}
       <VSpacing size=Spacing.lg />
       {stakingBalanceDetail("UNBONDING AMOUNT", unbondingAmount, usdPrice)}
-      <VSpacing size=Spacing.md />
-      <KVTable
-        tableWidth=470
-        headers=["AMOUNT (BAND)", "RECEIVED IN"]
-        rows={
-          unbondingList
-          ->Belt_Array.map(({completionTime, balance}) =>
-              [
-                KVTable.Value(balance |> Coin.getBandAmountFromCoin |> Format.fPretty),
-                KVTable.Value(
-                  completionTime |> MomentRe.Moment.fromNow(~withoutSuffix=Some(true)),
-                ),
-              ]
-            )
-          ->Belt_List.fromArray
-        }
-      />
+      {unbondingList |> Belt_Array.length > 0
+         ? <>
+             <VSpacing size=Spacing.md />
+             <Col size=1.2>
+               <Text
+                 value="Breakdown:"
+                 size=Text.Sm
+                 height={Text.Px(18)}
+                 spacing={Text.Em(0.03)}
+                 nowrap=true
+               />
+             </Col>
+             <VSpacing size=Spacing.md />
+             <KVTable
+               tableWidth=470
+               headers=["AMOUNT (BAND)", "UNBONDED AT"]
+               rows={
+                 unbondingList
+                 ->Belt_Array.map(({completionTime, balance}) =>
+                     [
+                       KVTable.Value(balance |> Coin.getBandAmountFromCoin |> Format.fPretty),
+                       KVTable.Value(
+                         completionTime
+                         |> MomentRe.Moment.format("MMM-DD-YYYY  hh:mm:ss A [+UTC]")
+                         |> String.uppercase_ascii,
+                       ),
+                     ]
+                   )
+                 ->Belt_List.fromArray
+               }
+             />
+           </>
+         : React.null}
       <VSpacing size=Spacing.lg />
       {stakingBalanceDetail("REWARD", rewardAmount, usdPrice)}
     </div>
