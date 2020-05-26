@@ -22,7 +22,7 @@ bandcli config indent true
 bandcli config trust-node true
 
 # register initial validators
-echo "12345678" | bandd gentx \
+bandd gentx \
     --amount 100000000uband \
     --node-id 11392b605378063b1c505c0ab123f04bd710d7d7 \
     --pubkey bandvalconspub1addwnpepq06h7wvh5n5pmrejr6t3pyn7ytpwd5c0kmv0wjdfujs847em8dusjl96sxg \
