@@ -20,3 +20,8 @@ const (
 	WasmPrepareGas = 100000
 	WasmExecuteGas = 100000
 )
+
+// nolint
+var (
+	DoNotModifyBytes = []byte(DoNotModify)
+)

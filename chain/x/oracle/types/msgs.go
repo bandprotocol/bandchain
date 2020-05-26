@@ -1,6 +1,8 @@
 package types
 
 import (
+	"bytes"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -110,6 +112,9 @@ func (msg MsgCreateDataSource) ValidateBasic() error {
 	if len(msg.Executable) > MaxExecutableSize {
 		return WrapMaxError(ErrTooLargeExecutable, len(msg.Executable), MaxExecutableSize)
 	}
+	if bytes.Equal(msg.Executable, DoNotModifyBytes) {
+		return ErrCreateWithDoNotModify
+	}
 	return nil
 }
 
@@ -193,6 +198,9 @@ func (msg MsgCreateOracleScript) ValidateBasic() error {
 	}
 	if len(msg.Code) > MaxWasmCodeSize {
 		return WrapMaxError(ErrTooLargeWasmCode, len(msg.Code), MaxWasmCodeSize)
+	}
+	if bytes.Equal(msg.Code, DoNotModifyBytes) {
+		return ErrCreateWithDoNotModify
 	}
 	return nil
 }

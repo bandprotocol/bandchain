@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"bytes"
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -155,7 +156,11 @@ func (k Keeper) BindPort(ctx sdk.Context, portID string) error {
 }
 
 // AddFile saves the given data to a file in HOME/files directory using sha256 sum as filename.
+// Returns do-not-modify symbol is the given input file is do-not-modify.
 func (k Keeper) AddFile(file []byte) string {
+	if bytes.Equal(file, types.DoNotModifyBytes) {
+		return types.DoNotModify
+	}
 	return k.fileCache.AddFile(file)
 }
 

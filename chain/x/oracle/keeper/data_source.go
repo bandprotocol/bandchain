@@ -53,7 +53,7 @@ func (k Keeper) EditDataSource(ctx sdk.Context, id types.DataSourceID, new types
 	dataSource.Owner = new.Owner
 	dataSource.Name = modify(dataSource.Name, new.Name)
 	dataSource.Description = modify(dataSource.Description, new.Description)
-	dataSource.Filename = new.Filename
+	dataSource.Filename = modify(dataSource.Filename, new.Filename)
 	k.SetDataSource(ctx, id, dataSource)
 	return nil
 }

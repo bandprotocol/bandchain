@@ -113,6 +113,7 @@ func TestMsgCreateDataSourceValidation(t *testing.T) {
 		{false, NewMsgCreateDataSource(GoodTestAddr, "name", strings.Repeat("x", 5000), []byte("exec"), GoodTestAddr)},
 		{false, NewMsgCreateDataSource(GoodTestAddr, "name", "desc", []byte{}, GoodTestAddr)},
 		{false, NewMsgCreateDataSource(GoodTestAddr, "name", "desc", []byte(strings.Repeat("x", 20000)), GoodTestAddr)},
+		{false, NewMsgCreateDataSource(GoodTestAddr, "name", "desc", DoNotModifyBytes, GoodTestAddr)},
 		{false, NewMsgCreateDataSource(GoodTestAddr, "name", "desc", []byte("exec"), BadTestAddr)},
 	})
 }
@@ -139,6 +140,7 @@ func TestMsgCreateOracleScriptValidation(t *testing.T) {
 		{false, NewMsgCreateOracleScript(GoodTestAddr, "name", "desc", []byte("code"), "schema", strings.Repeat("x", 200), GoodTestAddr)},
 		{false, NewMsgCreateOracleScript(GoodTestAddr, "name", "desc", []byte{}, "schema", "url", GoodTestAddr)},
 		{false, NewMsgCreateOracleScript(GoodTestAddr, "name", "desc", []byte(strings.Repeat("x", 600000)), "schema", "url", GoodTestAddr)},
+		{false, NewMsgCreateOracleScript(GoodTestAddr, "name", "desc", DoNotModifyBytes, "schema", "url", GoodTestAddr)},
 		{false, NewMsgCreateOracleScript(GoodTestAddr, "name", "desc", []byte("code"), "schema", "url", BadTestAddr)},
 	})
 }

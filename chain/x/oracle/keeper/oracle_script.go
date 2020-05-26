@@ -53,7 +53,7 @@ func (k Keeper) EditOracleScript(ctx sdk.Context, id types.OracleScriptID, new t
 	oracleScript.Owner = new.Owner
 	oracleScript.Name = modify(oracleScript.Name, new.Name)
 	oracleScript.Description = modify(oracleScript.Description, new.Description)
-	oracleScript.Filename = new.Filename
+	oracleScript.Filename = modify(oracleScript.Filename, new.Filename)
 	oracleScript.Schema = modify(oracleScript.Schema, new.Schema)
 	oracleScript.SourceCodeURL = modify(oracleScript.SourceCodeURL, new.SourceCodeURL)
 	k.SetOracleScript(ctx, id, oracleScript)
