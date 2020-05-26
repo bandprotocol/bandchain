@@ -1,6 +1,6 @@
 package types
 
-// Event types
+// nolint
 const (
 	EventTypeCreateDataSource   = "create_data_source"
 	EventTypeEditDataSource     = "edit_data_source"
@@ -18,6 +18,7 @@ const (
 	AttributeKeyDataSourceID   = "data_source_id"
 	AttributeKeyOracleScriptID = "oracle_script_id"
 	AttributeKeyExternalID     = "external_id"
+	AttributeKeyDataSourceHash = "data_source_hash"
 	AttributeKeyCalldata       = "calldata"
 	AttributeKeyValidator      = "validator"
 	AttributeKeyReporter       = "reporter"
@@ -30,5 +31,4 @@ const (
 	AttributeKeyResolveStatus  = "resolve_status"
 	AttributeKeyResult         = "result"
 	AttributeKeyResultHash     = "result_hash"
-	AttributeKeyDataSourceHash = "data_source_hash"
 )

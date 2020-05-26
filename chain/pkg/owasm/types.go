@@ -14,10 +14,10 @@ type ExecEnv interface {
 	GetAggregateBlockTime() int64
 	// GetValidatorAddress returns the 20-byte validator address at the specified index.
 	GetValidatorAddress(validatorIndex int64) ([]byte, error)
-	// GetMaximumResultSize returns the maxixmum size of aggregation result.
-	GetMaximumResultSize() int64
-	// GetMaximumCalldataOfDataSourceSize returns the maximum size of data source's calldata.
-	GetMaximumCalldataOfDataSourceSize() int64
+	// GetMaxResultSize returns the maxixmum size of aggregation result.
+	GetMaxResultSize() int64
+	// GetMaxRawRequestDataSize returns the maximum size of data source's calldata.
+	GetMaxRawRequestDataSize() int64
 
 	// RequestExternalData performs a request to the specified data source
 	// with and assigns the request with the external data ID. The function must

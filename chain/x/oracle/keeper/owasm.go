@@ -64,9 +64,9 @@ func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec, ibcInfo *ty
 		ctx.EventManager().EmitEvent(sdk.NewEvent(
 			types.EventTypeRawRequest,
 			sdk.NewAttribute(types.AttributeKeyDataSourceID, fmt.Sprintf("%d", rawReq.DataSourceID)),
+			sdk.NewAttribute(types.AttributeKeyDataSourceHash, ds.Filename),
 			sdk.NewAttribute(types.AttributeKeyExternalID, fmt.Sprintf("%d", rawReq.ExternalID)),
 			sdk.NewAttribute(types.AttributeKeyCalldata, string(rawReq.Calldata)),
-			sdk.NewAttribute(types.AttributeKeyDataSourceHash, ds.Filename),
 		))
 	}
 	return nil
@@ -76,7 +76,7 @@ func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec, ibcInfo *ty
 // and saves result hash to the store. Assumes that the given request is in a resolvable state.
 func (k Keeper) ResolveRequest(ctx sdk.Context, reqID types.RequestID) {
 	req := k.MustGetRequest(ctx, reqID)
-	env := types.NewExecEnv(req, ctx.BlockTime().Unix(), int64(k.GetParam(ctx, types.KeyMaxRawRequestCount)))
+	env := types.NewExecEnv(req, ctx.BlockTime().Unix(), 0)
 	env.SetReports(k.GetReports(ctx, reqID))
 	script := k.MustGetOracleScript(ctx, req.OracleScriptID)
 	code := k.GetFile(script.Filename)

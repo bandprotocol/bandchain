@@ -41,11 +41,11 @@ func (m *mockExecEnv) GetValidatorAddress(validatorIndex int64) ([]byte, error) 
 	return m.validatorAddresses[validatorIndex], nil
 }
 
-func (m *mockExecEnv) GetMaximumResultSize() int64 {
+func (m *mockExecEnv) GetMaxResultSize() int64 {
 	return m.maximumResultSize
 }
 
-func (m *mockExecEnv) GetMaximumCalldataOfDataSourceSize() int64 {
+func (m *mockExecEnv) GetMaxRawRequestDataSize() int64 {
 	return m.maximumCalldataOfDataSourceSize
 }
 
