@@ -186,7 +186,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
         <AddressRender address position=AddressRender.Title copy=true />
         <div className=Styles.button onClick={_ => {send()}}>
           <Text
-            value="Send"
+            value="Send BAND"
             size=Text.Lg
             block=true
             color=Colors.bandBlue
