@@ -1,18 +1,28 @@
+#!/bin/bash
+
+rm -rf ~/.oracled
+
 # config chain id
 bandoracled2 config chain-id bandchain
 
 # add validator to bandoracled2 config
 bandoracled2 config validator bandvaloper1p40yh3zkmhcv0ecqp3mcazy83sa57rgjde6wec
 
-# send band tokens to reporter
-echo "benefit select evidence crystal nature shell arm struggle sibling thank dish cruel immense erode coil inmate brave tackle gas rural giggle welcome next aspect"
-bandcli tx send validator band1r8sht7m0veaqgx2zpqydxmwy9f6v3c995cxh7n 1000000uband --keyring-backend test
+for i in $(eval echo {1..$1})
+do
+  bandoracled2 keys add reporter$i
+  # send band tokens to reporters
+  echo "y" | bandcli tx send validator $(bandoracled2 keys show reporter$i) 1000000uband --keyring-backend test
 
-# wait for sending transaction success
-sleep 2
+  # wait for sending transaction success
+  sleep 2
 
-# add reporter to bandchain
-bandcli tx oracle add-reporter band1r8sht7m0veaqgx2zpqydxmwy9f6v3c995cxh7n --from validator --keyring-backend test
+  # add reporter to bandchain
+  echo "y" | bandcli tx oracle add-reporter $(bandoracled2 keys show reporter$i) --from validator --keyring-backend test
+
+  # wait for addding reporter transaction success
+  sleep 2
+done
 
 # run bandoracled2
 bandoracled2 run
