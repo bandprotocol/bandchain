@@ -15,7 +15,6 @@ module Styles = {
       alignItems(`center),
       justifyContent(`center),
       fontSize(`px(10)),
-      alignItems(`center),
       cursor(`pointer),
       color(Colors.gray8),
       height(`px(20)),
@@ -28,16 +27,21 @@ let make = (~txHash: Hash.t, ~messages, ~width: int, ~success: bool, ~rawLog: st
   let (overflowed, setOverflowed) = React.useState(_ => false);
   let (expanded, setExpanded) = React.useState(_ => false);
 
-  let divID = "messageWrapper" ++ (txHash |> Hash.toHex);
+  let msgEl = React.useRef(Js.Nullable.null);
 
   React.useEffect0(_ => {
-    let x = ReactDOMRe._getElementById(divID) |> Belt.Option.getExn;
-    let divHeight = ReactDOMRe.domElementToObj(x)##clientHeight;
-    divHeight > 60 ? setOverflowed(_ => true) : ();
+    msgEl
+    ->React.Ref.current
+    ->Js.Nullable.toOption
+    ->Belt_Option.map(msgRef => {
+        let divHeight = ReactDOMRe.domElementToObj(msgRef)##clientHeight;
+        divHeight > 60 ? setOverflowed(_ => true) : ();
+      })
+    ->ignore;
     None;
   });
   <>
-    <div id=divID className={Styles.msgContainer(overflowed)}>
+    <div ref={ReactDOMRe.Ref.domRef(msgEl)} className={Styles.msgContainer(overflowed)}>
       {messages
        ->Belt_List.toArray
        ->Belt_Array.mapWithIndex((i, msg) =>
@@ -49,8 +53,7 @@ let make = (~txHash: Hash.t, ~messages, ~width: int, ~success: bool, ~rawLog: st
          )
        ->React.array}
       {success
-         ? React.null
-         : <div> <Text value={"Error: " ++ rawLog} code=true size=Text.Sm breakAll=true /> </div>}
+         ? React.null : <Text value={"Error: " ++ rawLog} code=true size=Text.Sm breakAll=true />}
     </div>
     {overflowed || expanded
        ? <div>
