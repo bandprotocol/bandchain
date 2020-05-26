@@ -50,10 +50,7 @@ func (k Keeper) DeleteRequest(ctx sdk.Context, id types.RequestID) {
 func (k Keeper) GetRandomValidators(ctx sdk.Context, size int, nextReqID int64) ([]sdk.ValAddress, error) {
 	validatorsByPower := k.StakingKeeper.GetBondedValidatorsByPower(ctx)
 	if len(validatorsByPower) < size {
-		return nil, sdkerrors.Wrapf(types.ErrBadDataValue,
-			"AddRequest: Requested validator count (%d) exceeds the number of validators (%d).",
-			size, len(validatorsByPower),
-		)
+		return nil, sdkerrors.Wrapf(types.ErrInsufficientValidators, "%d < %d", len(validatorsByPower), size)
 	}
 	votingPowers := make([]uint64, len(validatorsByPower))
 	for i, val := range validatorsByPower {

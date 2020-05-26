@@ -75,7 +75,7 @@ func (env *ExecEnv) GetMaximumCalldataOfDataSourceSize() int64 {
 // RequestedValidators implements Owasm ExecEnv interface.
 func (env *ExecEnv) GetValidatorAddress(validatorIndex int64) ([]byte, error) {
 	if validatorIndex < 0 || validatorIndex >= int64(len(env.request.RequestedValidators)) {
-		return nil, ErrValidatorOutOfRange
+		return nil, ErrItemNotFound
 	}
 	return env.request.RequestedValidators[validatorIndex], nil
 }
@@ -97,7 +97,7 @@ func (env *ExecEnv) RequestExternalData(did int64, eid int64, calldata []byte) e
 // GetExternalData implements Owasm ExecEnv interface.
 func (env *ExecEnv) GetExternalData(eid int64, valIdx int64) ([]byte, uint32, error) {
 	if valIdx < 0 || valIdx >= int64(len(env.request.RequestedValidators)) {
-		return nil, 0, ErrValidatorOutOfRange
+		return nil, 0, ErrItemNotFound
 	}
 	valAddr := env.request.RequestedValidators[valIdx].String()
 	valReports, ok := env.reports[valAddr]
