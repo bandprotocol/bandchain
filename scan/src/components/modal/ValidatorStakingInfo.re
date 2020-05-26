@@ -24,7 +24,11 @@ module Styles = {
       alignItems(`center),
       borderRadius(`px(4)),
       boxShadow(Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(4), rgba(11, 29, 142, 0.1))),
+      border(`zero, `solid, Colors.blueGray1),
+      color(Colors.purple7),
       cursor(`pointer),
+      disabled([backgroundColor(Colors.gray3), color(Colors.gray6), cursor(`default)]),
+      focus([outline(`zero, `none, Colors.white)]),
     ]);
   let logo = style([width(`px(10))]);
 
@@ -96,6 +100,8 @@ module StakingInfo = {
   [@react.component]
   let make = (~delegatorAddress, ~validatorAddress) =>
     {
+      let (_, dispatchModal) = React.useContext(ModalContext.context);
+
       let infoSub = React.useContext(GlobalContext.context);
       let balanceAtStakeSub =
         DelegationSub.getStakeByValiator(delegatorAddress, validatorAddress);
@@ -113,6 +119,13 @@ module StakingInfo = {
       let rewardAmount = balanceAtStake.reward;
       let usdPrice = info.financial.usdPrice;
 
+      let delegate = () =>
+        dispatchModal(OpenModal(SubmitTx(SubmitMsg.Delegate(validatorAddress))));
+      let undelegate = () =>
+        dispatchModal(OpenModal(SubmitTx(SubmitMsg.Undelegate(validatorAddress))));
+      let withdrawReward = () =>
+        dispatchModal(OpenModal(SubmitTx(SubmitMsg.WithdrawReward(validatorAddress))));
+
       <div>
         <VSpacing size=Spacing.md />
         <Row>
@@ -126,17 +139,23 @@ module StakingInfo = {
             />
           </Col>
           <HSpacing size=Spacing.md />
-          <div className={Styles.button(100)}>
-            <Text value="Delegate" color=Colors.purple7 />
-          </div>
+          <button className={Styles.button(100)} onClick={_ => {delegate()}}>
+            <Text value="Delegate" />
+          </button>
           <HSpacing size=Spacing.md />
-          <div className={Styles.button(100)}>
-            <Text value="Undelegate" color=Colors.purple7 />
-          </div>
+          <button
+            className={Styles.button(100)}
+            onClick={_ => {undelegate()}}
+            disabled={balanceAtStakeAmount.amount == 0.}>
+            <Text value="Undelegate" />
+          </button>
           <HSpacing size=Spacing.md />
-          <div className={Styles.button(150)}>
-            <Text value="Withdraw Reward" color=Colors.purple7 />
-          </div>
+          <button
+            className={Styles.button(150)}
+            onClick={_ => {withdrawReward()}}
+            disabled={rewardAmount.amount == 0.}>
+            <Text value="Withdraw Reward" />
+          </button>
         </Row>
         <VSpacing size=Spacing.lg />
         {stakingBalanceDetail("BALANCE AT STAKE", balanceAtStakeAmount, usdPrice)}

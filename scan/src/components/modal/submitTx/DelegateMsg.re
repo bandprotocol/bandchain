@@ -1,6 +1,9 @@
 [@react.component]
 let make = (~validator, ~setMsgsOpt) => {
-  let (validator, setValidator) = React.useState(_ => EnhanceTxInput.empty);
+  let (validator, setValidator) =
+    React.useState(_ =>
+      EnhanceTxInput.{text: validator |> Address.toOperatorBech32, value: Some(validator)}
+    );
   let (amount, setAmount) = React.useState(_ => EnhanceTxInput.empty);
 
   React.useEffect2(
