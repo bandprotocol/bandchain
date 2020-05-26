@@ -96,6 +96,8 @@ module StakingInfo = {
   [@react.component]
   let make = (~delegatorAddress, ~validatorAddress) =>
     {
+      Js.Console.log(validatorAddress |> Address.toOperatorBech32);
+      Js.Console.log(delegatorAddress |> Address.toBech32);
       let infoSub = React.useContext(GlobalContext.context);
       let balanceAtStakeSub =
         DelegationSub.getTotalStakeByDelegatorValidator(delegatorAddress, validatorAddress);
@@ -204,7 +206,7 @@ module ConnectBtn = {
 };
 
 [@react.component]
-let make = (~delegatorAddress, ~validatorAddress) => {
+let make = (~validatorAddress) => {
   let metadataSub = MetadataSub.use();
   let (accountOpt, _) = React.useContext(AccountContext.context);
   let (_, dispatchModal) = React.useContext(ModalContext.context);
@@ -215,7 +217,7 @@ let make = (~delegatorAddress, ~validatorAddress) => {
     <Text value="DELEGATION INFO" size=Text.Lg weight=Text.Semibold />
     <VSpacing size=Spacing.md />
     {switch (accountOpt) {
-     | Some(_) => <StakingInfo validatorAddress delegatorAddress />
+     | Some({address}) => <StakingInfo validatorAddress delegatorAddress=address />
      | None =>
        switch (metadataSub) {
        | Data({chainID}) =>

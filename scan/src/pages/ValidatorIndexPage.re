@@ -135,10 +135,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
         <Text value={validator.moniker} size=Text.Xxl weight=Text.Bold nowrap=true />
       </div>
       <VSpacing size=Spacing.xl />
-      <ValidatorStakingInfo
-        delegatorAddress=address
-        validatorAddress={validator.operatorAddress}
-      />
+      <ValidatorStakingInfo validatorAddress={validator.operatorAddress} />
       <VSpacing size=Spacing.md />
       <div className=Styles.topPartWrapper>
         <Text value="INFORMATION" size=Text.Lg weight=Text.Semibold />
