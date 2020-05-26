@@ -1,4 +1,4 @@
-### Band Oracle D2
+### Band Oracle 2
 
 ## Prepare environment
 
@@ -37,7 +37,7 @@ cd cd ../../../chain
 1. run `bandcli rest-server`
 
 ### Try to request data BandChain
-After we have `BandChain` and `Band Oracle D2` running, now we can request data on BandChain.
+After we have `BandChain` and `Band Oracle 2` running, now we can request data on BandChain.
 Example of requesting data on BandChain
 ```
 bandcli tx oracle request 1 -c 030000004254436400000000000000 1 1  --from requester --chain-id bandchain --gas 3000000 --keyring-backend test  --from requester
