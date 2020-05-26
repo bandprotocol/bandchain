@@ -7,25 +7,20 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
-// Default parameter namespace.
 const (
+	// DefaultParamspace is the default parameter namespace.
 	DefaultParamspace = ModuleName
-
-	// The maximum number of raw requests that a request can make.
-	// Default value is set to 16.
+	// DefaultMaxRawRequestCount is default max number of raw requests per data request.
 	DefaultMaxRawRequestCount = uint64(16)
-
-	// Gas cost per validator for each raw data request.
+	// DefaultGasPerRawDataRequestPerValidator is default gas cost per validator per data source.
 	DefaultGasPerRawDataRequestPerValidator = uint64(25000)
-
-	// Expiration block count value 20
+	// DefaultExpirationBlockCount is default expiration time (in blokcs) for each request.
 	DefaultExpirationBlockCount = uint64(20)
-
-	// The maximum consecutive misses allowance
+	// DefaultExpirationBlockCount is the default maximum of report misses before jailing a validator.
 	DefaultMaxConsecutiveMisses = uint64(10)
 )
 
-// Parameter store keys.
+// nolint
 var (
 	KeyMaxRawRequestCount               = []byte("MaxRawRequestCount")
 	KeyGasPerRawDataRequestPerValidator = []byte("GasPerRawDataRequestPerValidator")
@@ -84,7 +79,6 @@ func validateGasPerRawDataRequestPerValidator(i interface{}) error {
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
-
 	if v <= 0 {
 		return fmt.Errorf("gas per raw data request per validator must be positive: %d", v)
 	}
@@ -96,7 +90,6 @@ func validateExpirationBlockCount(i interface{}) error {
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
-
 	if v <= 0 {
 		return fmt.Errorf("expiration block count must be positive: %d", v)
 	}
@@ -108,6 +101,5 @@ func validateMaxConsecutiveMisses(i interface{}) error {
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
-
 	return nil
 }
