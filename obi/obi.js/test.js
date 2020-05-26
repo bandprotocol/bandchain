@@ -46,8 +46,8 @@ const check = (desc, fn) => console.log(`${fn() ? '✅' : '⛔️'} ${desc}`)
   const decode = new ObiBytes().decode(encode)[0]
   check(`Encode/decode bytes with ${data}`, () => data.equals(decode))
 })()
-
-const obi = new Obi(`
+;(() => {
+  const obi = new Obi(`
   {
     symbol: string,
     multiplier: u64
@@ -57,23 +57,24 @@ const obi = new Obi(`
   }
 `)
 
-check('Encode example output', () =>
-  Buffer.from(
-    '00abbaf16d0800000200000009000000436f696e4765636b6f3d22ca5e000000000d00000043727970746f436f6d706172655222ca5e00000000',
-    'hex',
-  ).equals(
-    obi.encodeOutput({
-      price: 9268300000000,
-      sources: [
-        { name: 'CoinGecko', time: 1590305341 },
-        { name: 'CryptoCompare', time: 1590305362 },
-      ],
-    }),
-  ),
-)
+  check('Encode example output', () =>
+    Buffer.from(
+      '00abbaf16d0800000200000009000000436f696e4765636b6f3d22ca5e000000000d00000043727970746f436f6d706172655222ca5e00000000',
+      'hex',
+    ).equals(
+      obi.encodeOutput({
+        price: 9268300000000,
+        sources: [
+          { name: 'CoinGecko', time: 1590305341 },
+          { name: 'CryptoCompare', time: 1590305362 },
+        ],
+      }),
+    ),
+  )
 
-check('Encode example input', () =>
-  Buffer.from('0300000042544300ca9a3b00000000', 'hex').equals(
-    obi.encodeInput({ symbol: 'BTC', multiplier: BigInt('1000000000') }),
-  ),
-)
+  check('Encode example input', () =>
+    Buffer.from('0300000042544300ca9a3b00000000', 'hex').equals(
+      obi.encodeInput({ symbol: 'BTC', multiplier: BigInt('1000000000') }),
+    ),
+  )
+})()
