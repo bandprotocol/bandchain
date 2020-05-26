@@ -44,15 +44,18 @@ class ObiInteger {
 
 class ObiVector {
   static REGEX = /^\[.*\]$/
+
   constructor(schema) {
     this.internalObi = ObiSpec.fromSpec(schema.slice(1, -1))
   }
+
   encode(value) {
     return Buffer.concat([
       new ObiInteger('u32').encode(value.length),
       ...value.map((item) => this.internalObi.encode(item)),
     ])
   }
+
   decode(buff) {
     let [length, remaining] = new ObiInteger('u32').decode(buff)
     let value = []
@@ -67,6 +70,7 @@ class ObiVector {
 
 class ObiStruct {
   static REGEX = /^{.*}$/
+
   constructor(schema) {
     this.internalObiKvs = []
 
@@ -90,11 +94,13 @@ class ObiStruct {
       kv[fill] += c
     }
   }
+
   encode(value) {
     return Buffer.concat(
       this.internalObiKvs.map(([k, obi]) => obi.encode(value[k])),
     )
   }
+
   decode(buff) {
     let value = {}
     let remaining = buff
@@ -110,7 +116,7 @@ class ObiStruct {
 
 class ObiString {
   static REGEX = /^string$/
-  constructor(schema) {}
+
   encode(value) {
     return Buffer.concat([
       new ObiInteger('u32').encode(value.length),
@@ -128,15 +134,14 @@ class ObiString {
 
 class ObiBytes {
   static REGEX = /^bytes$/
-  constructor(schema) {
-    this.internalObiKvs
-  }
+
   encode(value) {
     return Buffer.concat([
       new ObiInteger('u32').encode(value.length),
       Buffer.from(value),
     ])
   }
+
   decode(buff) {
     let [length, remaining] = new ObiInteger('u32').decode(buff)
     return [
