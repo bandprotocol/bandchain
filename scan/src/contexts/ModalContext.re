@@ -1,6 +1,6 @@
 type modal_t =
   | Connect(string)
-  | SubmitTx;
+  | SubmitTx(SubmitMsg.t);
 
 type t = {
   canExit: bool,

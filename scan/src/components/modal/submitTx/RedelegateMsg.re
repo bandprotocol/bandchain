@@ -1,5 +1,5 @@
 [@react.component]
-let make = (~setMsgsOpt) => {
+let make = (~validator, ~setMsgsOpt) => {
   let (srcValidator, setSrcValidator) = React.useState(_ => EnhanceTxInput.empty);
   let (dstValidator, setDstValidator) = React.useState(_ => EnhanceTxInput.empty);
   let (amount, setAmount) = React.useState(_ => EnhanceTxInput.empty);

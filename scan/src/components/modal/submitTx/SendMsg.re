@@ -1,6 +1,13 @@
 [@react.component]
-let make = (~setMsgsOpt) => {
-  let (toAddress, setToAddress) = React.useState(_ => EnhanceTxInput.empty);
+let make = (~receiver, ~setMsgsOpt) => {
+  let (toAddress, setToAddress) =
+    React.useState(_ => {
+      switch (receiver) {
+      | Some(receiver') =>
+        EnhanceTxInput.{text: receiver' |> Address.toBech32, value: Some(receiver')}
+      | None => EnhanceTxInput.empty
+      }
+    });
   let (amount, setAmount) = React.useState(_ => EnhanceTxInput.empty);
 
   React.useEffect2(
