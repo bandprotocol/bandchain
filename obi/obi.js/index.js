@@ -137,8 +137,7 @@ class ObiStruct {
   decode(buff) {
     let value = {}
     let remaining = buff
-    for (let i = 0; i < this.internalObiKvs.length; i++) {
-      const [k, obi] = this.internalObiKvs[i]
+    for (let [k, obi] of this.internalObiKvs) {
       const decodeInternalResult = obi.decode(remaining)
       value[k] = decodeInternalResult[0]
       remaining = decodeInternalResult[1]
