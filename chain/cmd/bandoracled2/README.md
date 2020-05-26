@@ -1,0 +1,31 @@
+### Band Oracle D2
+
+## Prepare environment
+1. Install PostgresSQL `brew install postgresql`
+
+## How to install and run Band Oracle D2
+1. Open first cmd tab for running the BandChain
+2. Open second cmd tab for running the Band Oracle D2
+3. Open third cmd tab for running the Band Chain Rest Server
+4. Open fourth cmd tab for running the BandChian CLI
+
+### How to run BandChain on development mode
+1. Go to chain directory
+2. Setup your PostgresSQL user, port and database name on `start_bandd.sh`
+2. run `chmod +x scripts/start_bandd.sh` to change the access permission of start_bandd.script
+3. run `./scripts/start_bandd.sh` to start BandChain
+
+### How to run Band Oracle D2
+1. Go to chain directory
+2. run `chmod +x scripts/start_bandoracled2.sh` to change the access permission of start_bandoracled2.script
+3. run `./scripts/start_bandoracled2.sh` to start Band Oracle D2
+
+### How to run BandChain REST Server
+1. run `bandcli rest-server`
+
+### Try to request data BandChain
+After we have `BandChain` and `Band Oracle D2` running, now we can request data on BandChain.
+Example of requesting data on BandChain
+```
+bandcli tx oracle request 1 -c 030000004254436400000000000000 1 1  --from requester --chain-id bandchain --gas 3000000 --keyring-backend test  --from requester
+``` 
