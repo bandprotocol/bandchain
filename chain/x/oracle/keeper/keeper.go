@@ -78,6 +78,12 @@ func (k Keeper) GetParams(ctx sdk.Context) (params types.Params) {
 	return params
 }
 
+// SetRequestCount sets the number of request count to the given value. Useful for genesis state.
+func (k Keeper) SetRequestCount(ctx sdk.Context, count int64) {
+	store := ctx.KVStore(k.storeKey)
+	store.Set(types.RequestsCountStoreKey, k.cdc.MustMarshalBinaryLengthPrefixed(count))
+}
+
 // GetRequestCount returns the current number of all requests ever exist.
 func (k Keeper) GetRequestCount(ctx sdk.Context) int64 {
 	var requestNumber int64
