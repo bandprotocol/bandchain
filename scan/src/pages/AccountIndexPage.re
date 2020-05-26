@@ -3,6 +3,14 @@ module Styles = {
 
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
+  let addressContainer =
+    style([
+      display(`flex),
+      flexDirection(`row),
+      justifyContent(`spaceBetween),
+      alignItems(`center),
+    ]);
+
   let logo = style([width(`px(50)), marginRight(`px(10))]);
 
   let cFlex = style([display(`flex), flexDirection(`column), alignItems(`flexEnd)]);
@@ -39,6 +47,16 @@ module Styles = {
     ]);
 
   let totalBalance = style([display(`flex), flexDirection(`column), alignItems(`flexEnd)]);
+
+  let button =
+    style([
+      backgroundColor(Colors.blue1),
+      padding2(~h=`px(8), ~v=`px(4)),
+      display(`flex),
+      borderRadius(`px(6)),
+      cursor(`pointer),
+      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), rgba(20, 32, 184, 0.2))),
+    ]);
 };
 
 let balanceDetail = (title, amount, usdPrice, color) => {
@@ -116,14 +134,18 @@ let totalBalanceRender = (title, amount, symbol) => {
 let make = (~address, ~hashtag: Route.account_tab_t) =>
   {
     let accountSub = AccountSub.get(address);
-    let infoSub = React.useContext(GlobalContext.context);
+    let metadataSub = MetadataSub.use();
     let balanceAtStakeSub = DelegationSub.getTotalStakeByDelegator(address);
     let unbondingSub = UnbondingSub.getUnbondingBalance(address);
+    let infoSub = React.useContext(GlobalContext.context);
+    let (_, dispatchModal) = React.useContext(ModalContext.context);
+    let (accountOpt, _) = React.useContext(AccountContext.context);
 
     let%Sub info = infoSub;
     let%Sub account = accountSub;
     let%Sub balanceAtStake = balanceAtStakeSub;
     let%Sub unbonding = unbondingSub;
+    let%Sub metadata = metadataSub;
 
     let usdPrice = info.financial.usdPrice;
 
@@ -133,6 +155,12 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
     let unbondingAmount = unbonding->Coin.getBandAmountFromCoin;
 
     let totalBalance = availableBalance +. balanceAtStakeAmount +. rewardAmount +. unbondingAmount;
+    let send = () => {
+      switch (accountOpt) {
+      | Some(_) => dispatchModal(OpenModal(SubmitTx(SubmitMsg.Send(Some(address)))))
+      | None => dispatchModal(OpenModal(Connect(metadata.chainID)))
+      };
+    };
 
     <>
       <Row justify=Row.Between>
@@ -154,8 +182,18 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
       </Row>
       <VSpacing size=Spacing.lg />
       <VSpacing size=Spacing.sm />
-      <div className=Styles.vFlex>
+      <div className=Styles.addressContainer>
         <AddressRender address position=AddressRender.Title copy=true />
+        <div className=Styles.button onClick={_ => {send()}}>
+          <Text
+            value="Send BAND"
+            size=Text.Lg
+            block=true
+            color=Colors.bandBlue
+            nowrap=true
+            weight=Text.Medium
+          />
+        </div>
       </div>
       <VSpacing size=Spacing.xxl />
       <Row justify=Row.Between alignItems=`flexStart>

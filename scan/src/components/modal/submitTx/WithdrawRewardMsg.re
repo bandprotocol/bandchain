@@ -1,5 +1,5 @@
 [@react.component]
-let make = (~setMsgsOpt) => {
+let make = (~validator, ~setMsgsOpt) => {
   let (validator, setValidator) = React.useState(_ => EnhanceTxInput.empty);
 
   React.useEffect1(
