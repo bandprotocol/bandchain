@@ -3,6 +3,7 @@ package owasm
 import (
 	"errors"
 	"fmt"
+	"os"
 
 	"github.com/perlin-network/life/exec"
 )
@@ -45,9 +46,8 @@ func Execute(
 			case error:
 				err = x
 			default:
-				err = errors.New("Unknown panic")
-				// TODO: Find a better way to handle unknown panic type
-				fmt.Println(x)
+				err = errors.New("owasm: unknown panic")
+				fmt.Fprintf(os.Stderr, "owasm: unknown panic: %s", r)
 			}
 			result = nil
 			gasUsed = 0

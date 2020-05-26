@@ -100,7 +100,7 @@ func TestAllocateFailWithExceedMemory(t *testing.T) {
 	require.NotNil(t, errExecute)
 }
 
-func TestExecuteInvalidGetMaximumCalldataOfDataSourceSize(t *testing.T) {
+func TestExecuteInvalidGetMaxRawRequestDataSize(t *testing.T) {
 	code, err := ioutil.ReadFile("./res/silly.wasm")
 	require.Nil(t, err)
 	env := &mockExecEnv{
@@ -119,7 +119,7 @@ func TestExecuteInvalidGetMaximumCalldataOfDataSourceSize(t *testing.T) {
 	require.Nil(t, err)
 }
 
-func TestExecuteInvalidGetMaximumResultSize(t *testing.T) {
+func TestExecuteInvalidGetMaxResultSize(t *testing.T) {
 	code, err := ioutil.ReadFile("./res/silly.wasm")
 	require.Nil(t, err)
 	env := &mockExecEnv{

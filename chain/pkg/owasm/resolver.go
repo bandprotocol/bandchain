@@ -98,7 +98,7 @@ func (r *resolver) resolveReadCallData(vm *exec.VirtualMachine) int64 {
 func (r *resolver) resolveSaveReturnData(vm *exec.VirtualMachine) int64 {
 	dataOffset := int(GetLocalInt64(vm, 0))
 	dataLength := int(GetLocalInt64(vm, 1))
-	if dataLength > int(r.env.GetMaximumResultSize()) {
+	if dataLength > int(r.env.GetMaxResultSize()) {
 		return -1
 	}
 	r.result = make([]byte, dataLength)
@@ -111,7 +111,7 @@ func (r *resolver) resolveRequestExternalData(vm *exec.VirtualMachine) int64 {
 	externalID := GetLocalInt64(vm, 1)
 	dataOffset := int(GetLocalInt64(vm, 2))
 	dataLength := int(GetLocalInt64(vm, 3))
-	if dataLength > int(r.env.GetMaximumCalldataOfDataSourceSize()) {
+	if dataLength > int(r.env.GetMaxRawRequestDataSize()) {
 		return -1
 	}
 	data := make([]byte, dataLength)
