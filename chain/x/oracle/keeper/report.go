@@ -99,6 +99,6 @@ func (k Keeper) UpdateReportInfos(ctx sdk.Context, rid types.RequestID) {
 	request := k.MustGetRequest(ctx, rid)
 	for _, val := range request.RequestedValidators {
 		_, voted := reportedMap[val.String()]
-		k.HandleValidatorReport(ctx, rid, val, voted)
+		k.HandleValidatorReport(ctx, val, voted)
 	}
 }
