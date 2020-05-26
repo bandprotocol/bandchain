@@ -181,41 +181,6 @@ func TestEditDataSourceFail(t *testing.T) {
 	require.Nil(t, res)
 }
 
-// func TestEditDataSourceByNotOwner(t *testing.T) {
-// 	ctx, keeper := keep.CreateTestInput(t, false)
-// 	mockDataSource(ctx, keeper)
-
-// 	newOwner := sdk.AccAddress([]byte("anotherowner"))
-// 	newName := "data_source_2"
-// 	newDescription := "new_description"
-// 	newExecutable := []byte("executable_2")
-// 	sender := sdk.AccAddress([]byte("sender"))
-
-// 	msg := types.NewMsgEditDataSource(1, newOwner, newName, newDescription, newExecutable, sender)
-// 	_, err := handleMsgEditDataSource(ctx, keeper, msg)
-// 	require.NotNil(t, err)
-// }
-
-// func TestCreateOracleScriptSuccess(t *testing.T) {
-// 	ctx, keeper := keep.CreateTestInput(t, false)
-
-// 	_, err := mockOracleScript(ctx, keeper)
-// 	require.Nil(t, err)
-
-// 	expect, err := keeper.GetOracleScript(ctx, 1)
-// 	require.Nil(t, err)
-// 	require.Equal(t, sdk.AccAddress([]byte("owner")), expect.Owner)
-// 	require.Equal(t, "oracle_script_1", expect.Name)
-// 	require.Equal(t, []byte("code"), expect.Code)
-
-// 	events := ctx.EventManager().Events()
-// 	require.Equal(t, 1, len(events))
-// 	require.Equal(t, sdk.Event{
-// 		Type:       EventTypeCreateOracleScript,
-// 		Attributes: []tmkv.Pair{{Key: []byte(AttributeKeyID), Value: []byte("1")}},
-// 	}, events[0])
-// }
-
 // func TestEditOracleScriptSuccess(t *testing.T) {
 // 	ctx, keeper := keep.CreateTestInput(t, false)
 // 	_, err := mockOracleScript(ctx, keeper)
