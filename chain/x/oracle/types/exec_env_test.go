@@ -33,17 +33,36 @@ func MockExecEnv() *types.ExecEnv {
 	ibcInfo := types.NewIBCInfo("source_port", "source_channel")
 	rawRequestID := []types.ExternalID{1, 2, 3}
 	request := types.NewRequest(oracleScriptID, calldata, valAddresses, minCount, requestHeight, requestTime, clientID, &ibcInfo, rawRequestID)
-	env := types.NewExecEnv(request, int64(1581589770), int64(2))
+	env := types.NewExecEnv(request, int64(1581589770), int64(0))
 	return env
 }
-func TestGetMaximumCalldataOfDataSourceSize(t *testing.T) {
+
+func MockPreparedExecEnv() *types.ExecEnv {
+	oracleScriptID := types.OracleScriptID(1)
+	calldata := []byte("CALLDATA")
+	valAddresses := []sdk.ValAddress{validatorAddress1, validatorAddress2, validatorAddress3}
+	minCount := int64(1)
+	requestHeight := int64(999)
+	requestTime := int64(1581589700)
+	clientID := "beeb"
+	ibcInfo := types.NewIBCInfo("source_port", "source_channel")
+	rawRequestID := []types.ExternalID{1, 2, 3}
+	request := types.NewRequest(oracleScriptID, calldata, valAddresses, minCount, requestHeight, requestTime, clientID, &ibcInfo, rawRequestID)
+	env := types.NewExecEnv(request, int64(1581589770), 3)
+	env.RequestExternalData(1, 0, []byte("CALLDATA1"))
+	env.RequestExternalData(2, 1, []byte("CALLDATA2"))
+	env.RequestExternalData(3, 0, []byte("CALLDATA3"))
+
+	return env
+}
+func TestGetMaxRawRequestDataSize(t *testing.T) {
 	env := MockExecEnv()
-	require.Equal(t, int64(types.MaxCalldataSize), env.GetMaximumCalldataOfDataSourceSize())
+	require.Equal(t, int64(types.MaxCalldataSize), env.GetMaxRawRequestDataSize())
 }
 
-func TestGetMaximumResultSize(t *testing.T) {
+func TestGetMaxResultSize(t *testing.T) {
 	env := MockExecEnv()
-	require.Equal(t, int64(types.MaxResultSize), env.GetMaximumResultSize())
+	require.Equal(t, int64(types.MaxResultSize), env.GetMaxResultSize())
 }
 
 func TestGetAskCount(t *testing.T) {
@@ -68,6 +87,11 @@ func TestGetAnsCount(t *testing.T) {
 
 	env.SetReports([]types.Report{report1, report2})
 	require.Equal(t, int64(2), env.GetAnsCount())
+
+	env = MockPreparedExecEnv()
+	require.Panics(t, func() {
+		env.SetReports([]types.Report{report1, report2})
+	})
 }
 
 func TestGetPrepareBlockTime(t *testing.T) {
@@ -77,17 +101,10 @@ func TestGetPrepareBlockTime(t *testing.T) {
 
 func TestGetAggregateBlockTime(t *testing.T) {
 	env := MockExecEnv()
-	require.Equal(t, int64(0), env.GetAggregateBlockTime())
-
-	rawReport1 := types.NewRawReport(1, 0, []byte("DATA"))
-	rawReport2 := types.NewRawReport(2, 0, []byte("DATA"))
-	rawReport3 := types.NewRawReport(3, 0, []byte("DATA"))
-
-	report1 := types.NewReport(validatorAddress1, []types.RawReport{rawReport1, rawReport2})
-	report2 := types.NewReport(validatorAddress2, []types.RawReport{rawReport3})
-
-	env.SetReports([]types.Report{report1, report2})
 	require.Equal(t, int64(1581589770), env.GetAggregateBlockTime())
+
+	env = MockPreparedExecEnv()
+	require.Equal(t, int64(0), env.GetAggregateBlockTime())
 
 }
 
@@ -111,9 +128,6 @@ func TestGetValidatorAddress(t *testing.T) {
 
 func TestGetExternalData(t *testing.T) {
 	env := MockExecEnv()
-
-	require.Equal(t, int64(0), env.GetAggregateBlockTime())
-
 	rawReport1 := types.NewRawReport(1, 0, []byte("DATA1"))
 	rawReport2 := types.NewRawReport(2, 1, []byte("DATA2"))
 	rawReport3 := types.NewRawReport(3, 0, []byte("DATA3"))
@@ -157,11 +171,7 @@ func TestRequestExternalData(t *testing.T) {
 	env := MockExecEnv()
 	calldata := []byte("CALLDATA")
 
-	err := env.RequestExternalData(1, 1, calldata)
-	require.NoError(t, err)
-	err = env.RequestExternalData(2, 1, calldata)
-	require.NoError(t, err)
-	err = env.RequestExternalData(2, 2, calldata)
+	err := env.RequestExternalData(2, 2, calldata)
 	require.Error(t, err)
 
 	calldata = make([]byte, 2000)
@@ -170,14 +180,16 @@ func TestRequestExternalData(t *testing.T) {
 }
 
 func TestGetRawRequests(t *testing.T) {
-	env := MockExecEnv()
-
-	env.RequestExternalData(1, 1, []byte("CALLDATA1"))
-	env.RequestExternalData(2, 2, []byte("CALLDATA2"))
-
+	env := MockPreparedExecEnv()
 	expect := []types.RawRequest{
-		types.NewRawRequest(1, 1, []byte("CALLDATA1")),
-		types.NewRawRequest(2, 2, []byte("CALLDATA2")),
+		types.NewRawRequest(0, 1, []byte("CALLDATA1")),
+		types.NewRawRequest(1, 2, []byte("CALLDATA2")),
+		types.NewRawRequest(0, 3, []byte("CALLDATA3")),
 	}
 	require.Equal(t, expect, env.GetRawRequests())
+
+	env = MockExecEnv()
+	require.Panics(t, func() {
+		env.GetRawRequests()
+	})
 }
