@@ -20,7 +20,17 @@ class ObiInteger {
     this.sizeInBytes = parseInt(schema.slice(1)) / 8
   }
 
+  /* TODO: Switch to BE */
   encode(value) {
+    return this.encodeLE(value)
+  }
+
+  /* TODO: Switch to BE */
+  decode(buff) {
+    return this.decodeLE(buff)
+  }
+
+  encodeLE(value) {
     value = BigInt(value)
     return Buffer.from(
       [...Array(this.sizeInBytes)].map(() => {
@@ -31,11 +41,34 @@ class ObiInteger {
     )
   }
 
-  decode(buff) {
+  decodeLE(buff) {
     let value = BigInt(0)
     let multiplier = BigInt(1)
     for (let i = 0; i < this.sizeInBytes; i++) {
       value += BigInt(buff.readUInt8(i)) * multiplier
+      multiplier = multiplier * BigInt(1 << 8)
+    }
+    return [value, buff.slice(this.sizeInBytes)]
+  }
+
+  encodeBE(value) {
+    value = BigInt(value)
+    return Buffer.from(
+      [...Array(this.sizeInBytes)]
+        .map(() => {
+          const byte = value % BigInt(1 << 8)
+          value /= BigInt(1 << 8)
+          return parseInt(byte)
+        })
+        .reverse(),
+    )
+  }
+
+  decodeBE(buff) {
+    let value = BigInt(0)
+    let multiplier = BigInt(1)
+    for (let i = 0; i < this.sizeInBytes; i++) {
+      value += BigInt(buff.readUInt8(this.sizeInBytes - i - 1)) * multiplier
       multiplier = multiplier * BigInt(1 << 8)
     }
     return [value, buff.slice(this.sizeInBytes)]
