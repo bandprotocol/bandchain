@@ -1,5 +1,19 @@
 DIR=`dirname "$0"`
 
+mkdir -p pkg/owasm/res
+
+# release mode
+cd ../owasm/chaintests
+
+for f in *; do
+    if [ -d "$f" ]; then
+        RUSTFLAGS='-C link-arg=-s' cargo build --target wasm32-unknown-unknown --release --package $f
+        cp ../target/wasm32-unknown-unknown/release/$f.wasm ../../chain/pkg/owasm/res
+    fi
+done
+cd ../../chain
+go test ./...
+
 rm -rf ~/.band*
 dropdb my_db
 createdb my_db
