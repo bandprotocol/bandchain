@@ -26,6 +26,15 @@ func MockExecEnv() *types.ExecEnv {
 	env := types.NewExecEnv(request, int64(1581589770), int64(2))
 	return env
 }
+func TestGetMaximumCalldataOfDataSourceSize(t *testing.T) {
+	env := MockExecEnv()
+	require.Equal(t, int64(types.MaxCalldataSize), env.GetMaximumCalldataOfDataSourceSize())
+}
+
+func TestGetMaximumResultSize(t *testing.T) {
+	env := MockExecEnv()
+	require.Equal(t, int64(types.MaxResultSize), env.GetMaximumResultSize())
+}
 
 func TestGetAskCount(t *testing.T) {
 	env := MockExecEnv()
@@ -35,16 +44,6 @@ func TestGetAskCount(t *testing.T) {
 func TestGetMinCount(t *testing.T) {
 	env := MockExecEnv()
 	require.Equal(t, int64(1), env.GetMinCount())
-}
-
-func TestGetMaxRawRequestDataSize(t *testing.T) {
-	env := MockExecEnv()
-	require.Equal(t, int64(types.MaxCalldataSize), env.GetMaxRawRequestDataSize())
-}
-
-func TestGetMaximumResultSize(t *testing.T) {
-	env := MockExecEnv()
-	require.Equal(t, int64(types.MaxResultSize), env.GetMaxResultSize())
 }
 
 func TestGetAnsCount(t *testing.T) {
