@@ -33,11 +33,11 @@ class PyObiInteger(PyObiSpec):
         self.size_in_bytes = int(spec[1:]) // 8
 
     def encode(self, value):
-        return value.to_bytes(self.size_in_bytes, byteorder="little", signed=self.is_signed)
+        return value.to_bytes(self.size_in_bytes, byteorder="big", signed=self.is_signed)
 
     def decode(self, data):
         return (
-            int.from_bytes(data[: self.size_in_bytes], byteorder="little", signed=self.is_signed,),
+            int.from_bytes(data[: self.size_in_bytes], byteorder="big", signed=self.is_signed,),
             data[self.size_in_bytes :],
         )
 
