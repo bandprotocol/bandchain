@@ -91,7 +91,6 @@ module Uptime = {
 [@react.component]
 let make = (~address, ~hashtag: Route.validator_tab_t) =>
   {
-    let (accountOpt, _) = React.useContext(AccountContext.context);
     let validatorSub = ValidatorSub.get(address);
     let bondedTokenCountSub = ValidatorSub.getTotalBondedAmount();
     let%Sub validator = validatorSub;
@@ -136,14 +135,10 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
         <Text value={validator.moniker} size=Text.Xxl weight=Text.Bold nowrap=true />
       </div>
       <VSpacing size=Spacing.xl />
-      {switch (accountOpt) {
-       | Some({address}) =>
-         <ValidatorStakingInfo
-           delegatorAddress=address
-           validatorAddress={validator.operatorAddress}
-         />
-       | None => React.null
-       }}
+      <ValidatorStakingInfo
+        delegatorAddress=address
+        validatorAddress={validator.operatorAddress}
+      />
       <VSpacing size=Spacing.md />
       <div className=Styles.topPartWrapper>
         <Text value="INFORMATION" size=Text.Lg weight=Text.Semibold />
