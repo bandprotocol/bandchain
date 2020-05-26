@@ -96,8 +96,6 @@ module StakingInfo = {
   [@react.component]
   let make = (~delegatorAddress, ~validatorAddress) =>
     {
-      Js.Console.log(validatorAddress |> Address.toOperatorBech32);
-      Js.Console.log(delegatorAddress |> Address.toBech32);
       let infoSub = React.useContext(GlobalContext.context);
       let balanceAtStakeSub =
         DelegationSub.getTotalStakeByDelegatorValidator(delegatorAddress, validatorAddress);
