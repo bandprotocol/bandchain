@@ -7,12 +7,12 @@ import (
 	channelexported "github.com/cosmos/cosmos-sdk/x/ibc/04-channel/exported"
 )
 
-// PortKeeper defines the expected IBC port keeper
+// PortKeeper defines the expected IBC port keeper.
 type PortKeeper interface {
 	BindPort(ctx sdk.Context, portID string) *capability.Capability
 }
 
-// ChannelKeeper defines the expected IBC channel keeper
+// ChannelKeeper defines the expected IBC channel keeper.
 type ChannelKeeper interface {
 	GetChannel(ctx sdk.Context, srcPort, srcChan string) (channel channel.Channel, found bool)
 	GetNextSequenceSend(ctx sdk.Context, portID, channelID string) (uint64, bool)

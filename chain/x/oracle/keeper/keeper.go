@@ -5,7 +5,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/capability"
 	porttypes "github.com/cosmos/cosmos-sdk/x/ibc/05-port/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
@@ -24,7 +23,6 @@ type Keeper struct {
 	fileCache     filecache.Cache
 	OwasmExecute  owasm.Executor
 	ParamSpace    params.Subspace
-	CoinKeeper    bank.Keeper
 	StakingKeeper staking.Keeper
 	ChannelKeeper types.ChannelKeeper
 	ScopedKeeper  capability.ScopedKeeper
@@ -34,8 +32,8 @@ type Keeper struct {
 // NewKeeper creates a new oracle Keeper instance.
 func NewKeeper(
 	cdc *codec.Codec, key sdk.StoreKey, fileDir string, owasmExecute owasm.Executor,
-	paramSpace params.Subspace, coinKeeper bank.Keeper, stakingKeeper staking.Keeper,
-	channelKeeper types.ChannelKeeper, scopedKeeper capability.ScopedKeeper, portKeeper types.PortKeeper,
+	paramSpace params.Subspace, stakingKeeper staking.Keeper, channelKeeper types.ChannelKeeper,
+	scopedKeeper capability.ScopedKeeper, portKeeper types.PortKeeper,
 ) Keeper {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(ParamKeyTable())
@@ -46,7 +44,6 @@ func NewKeeper(
 		fileCache:     filecache.New(fileDir),
 		OwasmExecute:  owasmExecute,
 		ParamSpace:    paramSpace,
-		CoinKeeper:    coinKeeper,
 		StakingKeeper: stakingKeeper,
 		ChannelKeeper: channelKeeper,
 		ScopedKeeper:  scopedKeeper,

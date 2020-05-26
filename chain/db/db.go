@@ -33,6 +33,7 @@ type BandDB struct {
 	tx  *gorm.DB
 	ctx sdk.Context
 
+	BankKeeper    bank.Keeper
 	DistrKeeper   distribution.Keeper
 	StakingKeeper staking.Keeper
 	OracleKeeper  oracle.Keeper

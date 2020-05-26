@@ -34,6 +34,7 @@ func NewDBBandApp(
 		logger, db, traceStore, loadLatest, invCheckPeriod,
 		skipUpgradeHeights, home, baseAppOptions...,
 	)
+	dbBand.BankKeeper = app.BankKeeper
 	dbBand.DistrKeeper = app.DistrKeeper
 	dbBand.StakingKeeper = app.StakingKeeper
 	dbBand.OracleKeeper = app.OracleKeeper

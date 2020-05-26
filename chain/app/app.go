@@ -265,7 +265,6 @@ func NewBandApp(
 		filepath.Join(viper.GetString(cli.HomeFlag), "files"),
 		owasm.Execute,
 		app.subspaces[oracle.ModuleName],
-		app.BankKeeper,
 		stakingKeeper,
 		app.IBCKeeper.ChannelKeeper,
 		scopedOracleKeeper,
