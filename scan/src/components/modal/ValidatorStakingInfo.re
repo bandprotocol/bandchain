@@ -37,7 +37,7 @@ let stakingBalanceDetail = (title, amount, usdPrice) => {
       <div className=Styles.cFlex>
         <div className=Styles.rFlex>
           <Text
-            value={amount |> Format.fPretty}
+            value={amount->Coin.getBandAmountFromCoin |> Format.fPretty}
             size=Text.Lg
             weight=Text.Semibold
             spacing={Text.Em(0.02)}
@@ -57,7 +57,7 @@ let stakingBalanceDetail = (title, amount, usdPrice) => {
         <VSpacing size=Spacing.xs />
         <div className={Css.merge([Styles.rFlex, Styles.balance])}>
           <Text
-            value={amount *. usdPrice |> Format.fPretty}
+            value={amount->Coin.getBandAmountFromCoin *. usdPrice |> Format.fPretty}
             size=Text.Sm
             spacing={Text.Em(0.02)}
             weight=Text.Thin
@@ -94,9 +94,9 @@ let make = (~delegatorAddress, ~validatorAddress) =>
     let%Sub unbonding = unbondingSub;
     let%Sub unbondingList = unbondingListSub;
 
-    let balanceAtStakeAmount = balanceAtStake.amount->Coin.getBandAmountFromCoin;
-    let unbondingAmount = unbonding->Coin.getBandAmountFromCoin;
-    let rewardAmount = balanceAtStake.reward->Coin.getBandAmountFromCoin;
+    let balanceAtStakeAmount = balanceAtStake.amount;
+    let unbondingAmount = unbonding;
+    let rewardAmount = balanceAtStake.reward;
     let usdPrice = info.financial.usdPrice;
 
     <div className=Styles.topPartWrapper>
