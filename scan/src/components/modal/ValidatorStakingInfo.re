@@ -98,7 +98,7 @@ module StakingInfo = {
     {
       let infoSub = React.useContext(GlobalContext.context);
       let balanceAtStakeSub =
-        DelegationSub.getTotalStakeByDelegatorValidator(delegatorAddress, validatorAddress);
+        DelegationSub.getStakeByValiator(delegatorAddress, validatorAddress);
       let unbondingSub =
         UnbondingSub.getUnbondingBalanceByValidator(delegatorAddress, validatorAddress);
       let unbondingListSub = UnbondingSub.getUnbondingList(delegatorAddress, validatorAddress);

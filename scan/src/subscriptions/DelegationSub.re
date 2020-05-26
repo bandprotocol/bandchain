@@ -46,19 +46,15 @@ module TotalStakeByDelegatorConfig = [%graphql
   |}
 ];
 
-module TotalStakeByDelegatorValidatorConfig = [%graphql
+module StakeByValidatorConfig = [%graphql
   {|
-  subscription TotalStake($delegator_address: String!, $validator_address: String!) {
-      delegations_view_aggregate(where: {_and: {delegator_address: {_eq: $delegator_address}, validator_address: {_eq: $validator_address}}}) {
-      aggregate{
-        sum{
-          amount @bsDecoder(fn: "GraphQLParser.coinWithDefault")
-          reward @bsDecoder(fn: "GraphQLParser.coinWithDefault")
-        }
-      }
-      }
+  subscription StakeByValidator($delegator_address: String!, $validator_address: String!) {
+    delegations_view(where: {_and: {delegator_address: {_eq: $delegator_address}, validator_address: {_eq: $validator_address}}}) @bsRecord {
+          amount @bsDecoder(fn: "GraphQLParser.coinExn")
+          reward @bsDecoder(fn: "GraphQLParser.coinExn")
+    }
   }
-  |}
+|}
 ];
 
 module StakeCountByDelegatorConfig = [%graphql
@@ -114,7 +110,6 @@ let getStakeList = (delegatorAddress, ~page, ~pageSize, ()) => {
     );
   result |> Sub.map(_, x => x##delegations_view);
 };
-
 let getTotalStakeByDelegator = delegatorAddress => {
   let (result, _) =
     ApolloHooks.useSubscription(
@@ -137,27 +132,27 @@ let getTotalStakeByDelegator = delegatorAddress => {
   {amount: delegatorInfo##amount, reward: delegatorInfo##reward} |> Sub.resolve;
 };
 
-let getTotalStakeByDelegatorValidator = (delegatorAddress, validatorAddress) => {
-  let (result, _) =
+let getStakeByValiator = (delegatorAddress, validatorAddress) => {
+  let (result, _) = {
     ApolloHooks.useSubscription(
-      TotalStakeByDelegatorValidatorConfig.definition,
+      StakeByValidatorConfig.definition,
       ~variables=
-        TotalStakeByDelegatorValidatorConfig.makeVariables(
-          ~delegator_address=delegatorAddress |> Address.toBech32,
+        StakeByValidatorConfig.makeVariables(
           ~validator_address=validatorAddress |> Address.toOperatorBech32,
+          ~delegator_address=delegatorAddress |> Address.toBech32,
           (),
         ),
     );
-
-  let delegatorInfoSub =
-    result
-    |> Sub.map(_, a =>
-         (a##delegations_view_aggregate##aggregate |> Belt_Option.getExn)##sum
-         |> Belt_Option.getExn
-       );
-
-  let%Sub delegatorInfo = delegatorInfoSub;
-  {amount: delegatorInfo##amount, reward: delegatorInfo##reward} |> Sub.resolve;
+  };
+  result
+  |> Sub.map(_, internal =>
+       internal##delegations_view
+       ->Belt_Array.get(0)
+       ->Belt_Option.getWithDefault({
+           amount: Coin.newUBANDFromAmount(0.),
+           reward: Coin.newUBANDFromAmount(0.),
+         })
+     );
 };
 
 let getStakeCountByDelegator = delegatorAddress => {
