@@ -64,10 +64,9 @@ func TestAddDataSourceEditDataSourceBasic(t *testing.T) {
 	require.Equal(t, dataSource1, k.MustGetDataSource(ctx, id))
 	require.NotEqual(t, dataSource2, k.MustGetDataSource(ctx, id))
 	// Edits the data source. We should get the updated data source.
-	err := k.EditDataSource(ctx, id, types.NewDataSource(
+	k.MustEditDataSource(ctx, id, types.NewDataSource(
 		dataSource2.Owner, dataSource2.Name, dataSource2.Description, dataSource2.Filename,
 	))
-	require.Nil(t, err)
 	require.NotEqual(t, dataSource1, k.MustGetDataSource(ctx, id))
 	require.Equal(t, dataSource2, k.MustGetDataSource(ctx, id))
 }
@@ -86,8 +85,7 @@ func TestEditDataSourceDoNotModify(t *testing.T) {
 	require.Equal(t, dataSource1, k.MustGetDataSource(ctx, id))
 	require.NotEqual(t, dataSource2, k.MustGetDataSource(ctx, id))
 	// Edits the data source. We should get the updated data source.
-	err := k.EditDataSource(ctx, id, dataSource2)
-	require.Nil(t, err)
+	k.MustEditDataSource(ctx, id, dataSource2)
 	dataSourceRes := k.MustGetDataSource(ctx, id)
 	require.NotEqual(t, dataSourceRes, dataSource1)
 	require.NotEqual(t, dataSourceRes, dataSource2)
