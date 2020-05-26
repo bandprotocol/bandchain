@@ -4,25 +4,35 @@ import (
 	"testing"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	"github.com/tendermint/tendermint/crypto/ed25519"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 )
 
+var (
+	pk1               = ed25519.GenPrivKey().PubKey()
+	pk2               = ed25519.GenPrivKey().PubKey()
+	pk3               = ed25519.GenPrivKey().PubKey()
+	addr1             = pk1.Address()
+	addr2             = pk2.Address()
+	addr3             = pk3.Address()
+	validatorAddress1 = sdk.ValAddress(addr1)
+	validatorAddress2 = sdk.ValAddress(addr2)
+	validatorAddress3 = sdk.ValAddress(addr3)
+)
+
 func MockExecEnv() *types.ExecEnv {
 	oracleScriptID := types.OracleScriptID(1)
 	calldata := []byte("CALLDATA")
-	validatorAddress1 := sdk.ValAddress([]byte("val1"))
-	validatorAddress2 := sdk.ValAddress([]byte("val2"))
-	validatorAddress3 := sdk.ValAddress([]byte("val3"))
 	valAddresses := []sdk.ValAddress{validatorAddress1, validatorAddress2, validatorAddress3}
 	minCount := int64(1)
 	requestHeight := int64(999)
 	requestTime := int64(1581589700)
-	cleintID := "beeb"
-	ibcInfo := types.IBCInfo{SourcePort: "source_port", SourceChannel: "source_channel"}
+	clientID := "beeb"
+	ibcInfo := types.NewIBCInfo("source_port", "source_channel")
 	rawRequestID := []types.ExternalID{1, 2, 3}
-	request := types.NewRequest(oracleScriptID, calldata, valAddresses, minCount, requestHeight, requestTime, cleintID, &ibcInfo, rawRequestID)
+	request := types.NewRequest(oracleScriptID, calldata, valAddresses, minCount, requestHeight, requestTime, clientID, &ibcInfo, rawRequestID)
 	env := types.NewExecEnv(request, int64(1581589770), int64(2))
 	return env
 }
@@ -53,8 +63,8 @@ func TestGetAnsCount(t *testing.T) {
 	rawReport2 := types.NewRawReport(2, 0, []byte("DATA"))
 	rawReport3 := types.NewRawReport(3, 0, []byte("DATA"))
 
-	report1 := types.NewReport(sdk.ValAddress([]byte("val1")), []types.RawReport{rawReport1, rawReport2})
-	report2 := types.NewReport(sdk.ValAddress([]byte("val2")), []types.RawReport{rawReport3})
+	report1 := types.NewReport(validatorAddress1, []types.RawReport{rawReport1, rawReport2})
+	report2 := types.NewReport(validatorAddress2, []types.RawReport{rawReport3})
 
 	env.SetReports([]types.Report{report1, report2})
 	require.Equal(t, int64(2), env.GetAnsCount())
@@ -73,8 +83,8 @@ func TestGetAggregateBlockTime(t *testing.T) {
 	rawReport2 := types.NewRawReport(2, 0, []byte("DATA"))
 	rawReport3 := types.NewRawReport(3, 0, []byte("DATA"))
 
-	report1 := types.NewReport(sdk.ValAddress([]byte("val1")), []types.RawReport{rawReport1, rawReport2})
-	report2 := types.NewReport(sdk.ValAddress([]byte("val2")), []types.RawReport{rawReport3})
+	report1 := types.NewReport(validatorAddress1, []types.RawReport{rawReport1, rawReport2})
+	report2 := types.NewReport(validatorAddress2, []types.RawReport{rawReport3})
 
 	env.SetReports([]types.Report{report1, report2})
 	require.Equal(t, int64(1581589770), env.GetAggregateBlockTime())
@@ -86,11 +96,11 @@ func TestGetValidatorAddress(t *testing.T) {
 
 	valAddrs, err := env.GetValidatorAddress(0)
 	require.NoError(t, err)
-	require.Equal(t, []byte(sdk.ValAddress([]byte("val1"))), valAddrs)
+	require.Equal(t, []byte(validatorAddress1), valAddrs)
 
 	valAddrs, err = env.GetValidatorAddress(1)
 	require.NoError(t, err)
-	require.Equal(t, []byte(sdk.ValAddress([]byte("val2"))), valAddrs)
+	require.Equal(t, []byte(validatorAddress2), valAddrs)
 
 	_, err = env.GetValidatorAddress(100)
 	require.Error(t, err)
@@ -108,8 +118,8 @@ func TestGetExternalData(t *testing.T) {
 	rawReport2 := types.NewRawReport(2, 1, []byte("DATA2"))
 	rawReport3 := types.NewRawReport(3, 0, []byte("DATA3"))
 
-	report1 := types.NewReport(sdk.ValAddress([]byte("val1")), []types.RawReport{rawReport1, rawReport2})
-	report2 := types.NewReport(sdk.ValAddress([]byte("val2")), []types.RawReport{rawReport3})
+	report1 := types.NewReport(validatorAddress1, []types.RawReport{rawReport1, rawReport2})
+	report2 := types.NewReport(validatorAddress2, []types.RawReport{rawReport3})
 	env.SetReports([]types.Report{report1, report2})
 
 	data, exitCode, err := env.GetExternalData(1, 0)
