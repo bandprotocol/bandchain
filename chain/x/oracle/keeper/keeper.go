@@ -23,7 +23,7 @@ type Keeper struct {
 	fileCache     filecache.Cache
 	OwasmExecute  owasm.Executor
 	ParamSpace    params.Subspace
-	StakingKeeper staking.Keeper
+	StakingKeeper types.StakingKeeper
 	ChannelKeeper types.ChannelKeeper
 	ScopedKeeper  capability.ScopedKeeper
 	PortKeeper    types.PortKeeper
