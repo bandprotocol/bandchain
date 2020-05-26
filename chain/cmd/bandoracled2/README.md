@@ -7,8 +7,8 @@
 3. Install Rust
 4. run `cd owasm/chaintests/bitcoin_block_count/`
 5. run `wasm-pack build .`
-7. `make install` in chain directory
-8. Open 4 tabs on cmd
+6. `make install` in chain directory
+7. Open 4 tabs on cmd
 
 ## How to install and run Band Oracle 2
 1. Open first cmd tab for running the BandChain
@@ -19,9 +19,9 @@
 ### How to run BandChain on development mode
 1. Go to chain directory
 2. Setup your PostgresSQL user, port and database name on `start_bandd.sh`
-2. run `chmod +x scripts/start_bandd.sh` to change the access permission of start_bandd.script
-3. run `./scripts/start_bandd.sh` to start BandChain
-4. If fail, try owasm pack build then run script again.
+3. run `chmod +x scripts/start_bandd.sh` to change the access permission of start_bandd.script
+4. run `./scripts/start_bandd.sh` to start BandChain
+5. If fail, try owasm pack build then run script again.
 ```
 cd ../owasm/chaintests/bitcoin_block_count/
 wasm-pack build .
