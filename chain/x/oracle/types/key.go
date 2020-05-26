@@ -5,116 +5,82 @@ import (
 )
 
 const (
-	// ModuleName is the name of the module
+	// ModuleName is the name of the module.
 	ModuleName = "oracle"
-	// StoreKey to be used when creating the KVStore
+	// StoreKey to be used when creating the KVStore.
 	StoreKey = ModuleName
-	// Default PortID that oracle module binds to
+	// Default PortID that oracle module binds to.
 	PortID = ModuleName
 )
 
 var (
-	// GlobalStoreKeyPrefix is a prefix for global primitive state variable
+	// GlobalStoreKeyPrefix is the prefix for global primitive state variables.
 	GlobalStoreKeyPrefix = []byte{0x00}
-	// RequestsCountStoreKey is a key that help getting to current requests count state variable
-	RequestsCountStoreKey = append(GlobalStoreKeyPrefix, []byte("RequestsCount")...)
-	// PendingResolveListStoreKey is a key that help getting pending request
+	// RequestCountStoreKey is the key that keeps the total request count.
+	RequestCountStoreKey = append(GlobalStoreKeyPrefix, []byte("RequestCount")...)
+	// PendingResolveListStoreKey is the key that keeps the list of pending-resolve requests.
 	PendingResolveListStoreKey = append(GlobalStoreKeyPrefix, []byte("PendingList")...)
-	// DataSourceCountStoreKey is a key that keeps the current data source count state variable.
+	// DataSourceCountStoreKey is the key that keeps the total data source count.
 	DataSourceCountStoreKey = append(GlobalStoreKeyPrefix, []byte("DataSourceCount")...)
-	// OracleScriptCountStoreKey is a key that keeps the current oracle script count state variable.
+	// OracleScriptCountStoreKey is the key that keeps the total oracle sciprt count.
 	OracleScriptCountStoreKey = append(GlobalStoreKeyPrefix, []byte("OracleScriptCount")...)
 
-	// ========================================================================
-
-	// RequestStoreKeyPrefix is a prefix for request store
+	// RequestStoreKeyPrefix is the prefix for request store.
 	RequestStoreKeyPrefix = []byte{0x01}
-
-	// ResultStoreKeyPrefix is a prefix for storing result
+	// ReportStoreKeyPrefix is the prefix for report store.
+	ReportStoreKeyPrefix = []byte{0x02}
+	// DataSourceStoreKeyPrefix is the prefix for data source store.
+	DataSourceStoreKeyPrefix = []byte{0x03}
+	// OracleScriptStoreKeyPrefix is the prefix for oracle script store.
+	OracleScriptStoreKeyPrefix = []byte{0x04}
+	// ReporterStoreKeyPrefix is the prefix for reporter store.
+	ReporterStoreKeyPrefix = []byte{0x05}
+	// ValidatorReportInfoKeyPrefix is the prefix for validator report info store.
+	ValidatorReportInfoKeyPrefix = []byte{0x06}
+	// ResultStoreKeyPrefix is the prefix for request result store.
 	ResultStoreKeyPrefix = []byte{0xff}
-
-	// RawRequestStoreKeyPrefix is a prefix for storing raw data request detail.
-	RawRequestStoreKeyPrefix = []byte{0x02}
-
-	// RawDataReportStoreKeyPrefix is a prefix for report store
-	RawDataReportStoreKeyPrefix = []byte{0x03}
-
-	// DataSourceStoreKeyPrefix is a prefix for data source store.
-	DataSourceStoreKeyPrefix = []byte{0x04}
-
-	// OracleScriptStoreKeyPrefix is a prefix for oracle script store.
-	OracleScriptStoreKeyPrefix = []byte{0x05}
-
-	// ReporterStoreKeyPrefix is a prefix for reporter store.
-	ReporterStoreKeyPrefix = []byte{0x06}
-
-	// ValidatorReportInfoKeyPrefix is a prefix for report info store
-	ValidatorReportInfoKeyPrefix = []byte{0x07}
 )
 
-// RequestStoreKey is a function to generate key for each request in store
+// RequestStoreKey returns the key to retrieve a specfic request from the store.
 func RequestStoreKey(requestID RequestID) []byte {
 	return append(RequestStoreKeyPrefix, sdk.Uint64ToBigEndian(uint64(requestID))...)
 }
 
-// ResultStoreKey is a function to generate key for each result in store
-func ResultStoreKey(requestID RequestID) []byte {
-	return append(ResultStoreKeyPrefix, sdk.Uint64ToBigEndian(uint64(requestID))...)
+// ReportStoreKey returns the key to retrieve all data reports for a request.
+func ReportStoreKey(requestID RequestID) []byte {
+	return append(ReportStoreKeyPrefix, sdk.Uint64ToBigEndian(uint64(requestID))...)
 }
 
-// RawRequestStoreKey is a function to generate key for each raw data request in store
-func RawRequestStoreKey(requestID RequestID, externalID ExternalID) []byte {
-	buf := append(RawRequestStoreKeyPrefix, sdk.Uint64ToBigEndian(uint64(requestID))...)
-	buf = append(buf, sdk.Uint64ToBigEndian(uint64(externalID))...)
+// ReportStoreKeyPerValidator returns the key to retrieve the data report from a validator to a request.
+func ReportStoreKeyPerValidator(reqID RequestID, val sdk.ValAddress) []byte {
+	buf := append(ReportStoreKeyPrefix, sdk.Uint64ToBigEndian(uint64(reqID))...)
+	buf = append(buf, val.Bytes()...)
 	return buf
 }
 
-// RawDataReportStoreKey is a function to generate key for each raw data report in store.
-func RawDataReportStoreKey(requestID RequestID, validatorAddress sdk.ValAddress) []byte {
-	buf := append(RawDataReportStoreKeyPrefix, sdk.Uint64ToBigEndian(uint64(requestID))...)
-	buf = append(buf, validatorAddress.Bytes()...)
-	return buf
-}
-
-// RawDataReportStoreKeyUnique is a function to generate key for each raw data report in store.
-func RawDataReportStoreKeyUnique(requestID RequestID, externalID ExternalID, validatorAddress sdk.ValAddress) []byte {
-	buf := append(RawDataReportStoreKeyPrefix, sdk.Uint64ToBigEndian(uint64(requestID))...)
-	buf = append(buf, sdk.Uint64ToBigEndian(uint64(externalID))...)
-	buf = append(buf, validatorAddress.Bytes()...)
-	return buf
-}
-
-// DataSourceStoreKey is a function to generate key for each data source in store.
+// DataSourceStoreKey returns the key to retrieve a specific data source from the store.
 func DataSourceStoreKey(dataSourceID DataSourceID) []byte {
 	return append(DataSourceStoreKeyPrefix, sdk.Uint64ToBigEndian(uint64(dataSourceID))...)
 }
 
-// OracleScriptStoreKey is a function to generate key for each oracle script in store.
+// DataSourceStoreKey returns the key to retrieve a specific oracle script from the store.
 func OracleScriptStoreKey(oracleScriptID OracleScriptID) []byte {
 	return append(OracleScriptStoreKeyPrefix, sdk.Uint64ToBigEndian(uint64(oracleScriptID))...)
 }
 
-// ReporterStoreKey is a function to generate key for each validator-reporter pair in store.
+// ReporterStoreKey returns the key to check whether an address is a reporter of a validator.
 func ReporterStoreKey(validatorAddress sdk.ValAddress, reporterAddress sdk.AccAddress) []byte {
-	buff := append(ReporterStoreKeyPrefix, []byte(validatorAddress)...)
-	buff = append(buff, []byte(reporterAddress)...)
-	return buff
+	buf := append(ReporterStoreKeyPrefix, []byte(validatorAddress)...)
+	buf = append(buf, []byte(reporterAddress)...)
+	return buf
 }
 
-// ValidatorReportInfoStoreKey is a function to generate key for report info in store.
+// ValidatorReportInfoStoreKey returns the key to a validator's report info.
 func ValidatorReportInfoStoreKey(v sdk.ValAddress) []byte {
 	return append(ValidatorReportInfoKeyPrefix, v.Bytes()...)
 }
 
-// GetIteratorPrefix is a function to get specific prefix
-func GetIteratorPrefix(prefix []byte, requestID RequestID) []byte {
-	return append(prefix, sdk.Uint64ToBigEndian(uint64(requestID))...)
-}
-
-// GetValidatorAddressAndExternalID is a function to get validator address and external id from raw data report key.
-func GetValidatorAddressAndExternalID(key []byte, requestID RequestID) (sdk.ValAddress, ExternalID) {
-	prefixLength := len(RawDataReportStoreKeyPrefix)
-	externalIDBytes := key[prefixLength+8 : prefixLength+16]
-	externalID := ExternalID(sdk.BigEndianToUint64(externalIDBytes))
-	return key[prefixLength+16:], externalID
+// ResultStoreKey returns the key to a request result in the store.
+func ResultStoreKey(requestID RequestID) []byte {
+	return append(ResultStoreKeyPrefix, sdk.Uint64ToBigEndian(uint64(requestID))...)
 }

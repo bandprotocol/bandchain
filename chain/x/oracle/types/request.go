@@ -5,6 +5,7 @@ var (
 	_ RequestSpec = &OracleRequestPacketData{}
 )
 
+// RequestSpec captures the essence of what it means to be a request-making object.
 type RequestSpec interface {
 	GetOracleScriptID() OracleScriptID
 	GetCalldata() []byte

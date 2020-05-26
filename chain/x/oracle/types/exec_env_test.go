@@ -214,13 +214,13 @@ package types
 // // 		1,
 // // 		42,
 // // 		sdk.ValAddress([]byte("val1")),
-// // 		types.NewRawDataReport(42, []byte("data42")),
+// // 		types.NewReport(42, []byte("data42")),
 // // 	)
 
 // // 	env, err := NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
 // // 	require.Nil(t, err)
 
-// // 	err = env.LoadRawDataReports(ctx, keeper)
+// // 	err = env.LoadReports(ctx, keeper)
 // // 	require.Nil(t, err)
 // // 	// Get report from reported validator
 // // 	report, statusCode, envErr := env.GetExternalData(42, 0)

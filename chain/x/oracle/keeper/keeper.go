@@ -82,7 +82,7 @@ func (k Keeper) GetParams(ctx sdk.Context) (params types.Params) {
 func (k Keeper) GetRequestCount(ctx sdk.Context) int64 {
 	var requestNumber int64
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.RequestsCountStoreKey)
+	bz := store.Get(types.RequestCountStoreKey)
 	if bz == nil {
 		return 0
 	}
@@ -97,7 +97,7 @@ func (k Keeper) GetNextRequestID(ctx sdk.Context) types.RequestID {
 	store := ctx.KVStore(k.storeKey)
 
 	bz := k.cdc.MustMarshalBinaryLengthPrefixed(requestNumber + 1)
-	store.Set(types.RequestsCountStoreKey, bz)
+	store.Set(types.RequestCountStoreKey, bz)
 	return types.RequestID(requestNumber + 1)
 }
 

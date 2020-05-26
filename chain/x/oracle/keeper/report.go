@@ -8,12 +8,12 @@ import (
 
 // HasReport checks if the report of this ID triple exists in the storage.
 func (k Keeper) HasReport(ctx sdk.Context, rid types.RequestID, val sdk.ValAddress) bool {
-	return ctx.KVStore(k.storeKey).Has(types.RawDataReportStoreKey(rid, val))
+	return ctx.KVStore(k.storeKey).Has(types.ReportStoreKeyPerValidator(rid, val))
 }
 
 // SetDataReport saves the report to the storage without performing validation.
 func (k Keeper) SetReport(ctx sdk.Context, rid types.RequestID, rep types.Report) {
-	key := types.RawDataReportStoreKey(rid, rep.Validator)
+	key := types.ReportStoreKeyPerValidator(rid, rep.Validator)
 	ctx.KVStore(k.storeKey).Set(key, k.cdc.MustMarshalBinaryBare(rep))
 }
 
@@ -49,8 +49,7 @@ func (k Keeper) AddReport(ctx sdk.Context, rid types.RequestID, rep types.Report
 
 // GetReportIterator returns the iterator for all reports of the given request ID.
 func (k Keeper) GetReportIterator(ctx sdk.Context, rid types.RequestID) sdk.Iterator {
-	prefix := types.GetIteratorPrefix(types.RawDataReportStoreKeyPrefix, rid)
-	return sdk.KVStorePrefixIterator(ctx.KVStore(k.storeKey), prefix)
+	return sdk.KVStorePrefixIterator(ctx.KVStore(k.storeKey), types.ReportStoreKey(rid))
 }
 
 // GetReportCount returns the number of reports for the given request ID.

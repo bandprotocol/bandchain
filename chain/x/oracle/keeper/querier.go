@@ -241,10 +241,10 @@ func queryRequests(
 	}
 
 	requests := make([]types.RequestQuerierInfo, 0)
-	allRequestsCount := keeper.GetRequestCount(ctx)
+	allRequestCount := keeper.GetRequestCount(ctx)
 	limit := startID + numberOfRequests - 1
-	if limit > allRequestsCount {
-		limit = allRequestsCount
+	if limit > allRequestCount {
+		limit = allRequestCount
 	}
 	for idx := types.RequestID(startID); idx <= types.RequestID(limit); idx++ {
 		request, err := buildRequestQuerierInfo(ctx, keeper, types.RequestID(idx))
