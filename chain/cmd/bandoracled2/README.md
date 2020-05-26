@@ -31,7 +31,7 @@ cd cd ../../../chain
 ### How to run Band Oracle 2
 1. Go to chain directory
 2. run `chmod +x scripts/start_bandoracled2.sh` to change the access permission of start_bandoracled2.script
-3. run `./scripts/start_bandoracled2.sh` to start Band Oracle D2
+3. run `./scripts/start_bandoracled2.sh [number of reporter]` to start Band Oracle D2
 
 ### How to run BandChain REST Server
 1. run `bandcli rest-server`
