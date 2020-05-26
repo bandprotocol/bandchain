@@ -44,13 +44,13 @@ func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawR
 
 	txBldr := auth.NewTxBuilder(
 		auth.DefaultTxEncoder(cdc), acc.GetAccountNumber(), acc.GetSequence(),
-		0, 1, false, cfg.ChainID, "", sdk.NewCoins(), c.gasPrices,
+		200000, 1, false, cfg.ChainID, "", sdk.NewCoins(), c.gasPrices,
 	)
-	txBldr, err = authclient.EnrichWithGas(txBldr, cliCtx, []sdk.Msg{msg})
-	if err != nil {
-		l.Error(":exploding_head: Failed to enrich with gas with error: %s", err.Error())
-		return
-	}
+	// txBldr, err = authclient.EnrichWithGas(txBldr, cliCtx, []sdk.Msg{msg})
+	// if err != nil {
+	// 	l.Error(":exploding_head: Failed to enrich with gas with error: %s", err.Error())
+	// 	return
+	// }
 	out, err := txBldr.WithKeybase(keybase).BuildAndSign(key.GetName(), ckeys.DefaultKeyPass, []sdk.Msg{msg})
 	if err != nil {
 		l.Error(":exploding_head: Failed to build tx with error: %s", err.Error())
@@ -63,7 +63,7 @@ func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawR
 		return
 	}
 	if res.Code != 0 {
-		l.Error(":exploding_head: Tx returned nonzero code %d with log %s", res.Code, res.RawLog)
+		l.Error(":exploding_head: Tx returned nonzero code %d with log %s, tx hash: %s", res.Code, res.RawLog, res.TxHash)
 		return
 	}
 	l.Info(":smiling_face_with_sunglasses: Successfully broadcast tx with hash: %s", res.TxHash)

@@ -17,6 +17,7 @@ import (
 const (
 	flagValidator = "validator"
 	flagLogLevel  = "log-level"
+	flagExecutor  = "executor"
 )
 
 // Config data structure for bandoracled daemon.
@@ -26,6 +27,7 @@ type Config struct {
 	Validator string `mapstructure:"validator"`  // The validator address that I'm responsible for
 	GasPrices string `mapstructure:"gas-prices"` // Gas prices of the transaction
 	LogLevel  string `mapstructure:"log-level"`  // Log level of the logger
+	Executor  string `mapstructure:"executor"`   // Executor name and URL (example: "Executor name:URL")
 }
 
 // Global instances.
