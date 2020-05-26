@@ -33,6 +33,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/ibc"
 	ibcclient "github.com/cosmos/cosmos-sdk/x/ibc/02-client"
 	port "github.com/cosmos/cosmos-sdk/x/ibc/05-port"
+
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
@@ -43,6 +44,7 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 
 	"github.com/bandprotocol/bandchain/chain/pkg/owasm"
+	bandbank "github.com/bandprotocol/bandchain/chain/x/bank"
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 )
 
@@ -208,12 +210,11 @@ func NewBandApp(
 		appCodec, keys[bank.StoreKey], app.AccountKeeper, app.subspaces[bank.ModuleName], app.ModuleAccountAddrs(),
 	)
 
-	// TODO: Revisit wrap supply of new version and test
-	// Wrapped supply keeper allows burned tokens to be transferred to community pool
-	// wrappedSupplyKeeper := bandsupply.WrapSupplyKeeperBurnToCommunityPool(app.SupplyKeeper)
+	// Wrapped bank keeper allows burned tokens to be transferred to community pool
+	wrappedBankKeeper := bandbank.WrapBankKeeperBurnToCommunityPool(app.BankKeeper, app.AccountKeeper)
 
 	stakingKeeper := staking.NewKeeper(
-		appCodec, keys[staking.StoreKey], app.AccountKeeper, app.BankKeeper, app.subspaces[staking.ModuleName],
+		appCodec, keys[staking.StoreKey], app.AccountKeeper, &wrappedBankKeeper, app.subspaces[staking.ModuleName],
 	)
 	app.MintKeeper = mint.NewKeeper(
 		appCodec, keys[mint.StoreKey], app.subspaces[mint.ModuleName], &stakingKeeper,
@@ -227,8 +228,8 @@ func NewBandApp(
 		&stakingKeeper, auth.FeeCollectorName, app.ModuleAccountAddrs(),
 	)
 
-	// DistrKeeper must be set afterward due to the circular reference of supply-staking-distr
-	// wrappedSupplyKeeper.SetDistrKeeper(&app.DistrKeeper)
+	// DistrKeeper must be set afterward due to the circular reference of bank-staking-distr
+	wrappedBankKeeper.SetDistrKeeper(&app.DistrKeeper)
 
 	app.SlashingKeeper = slashing.NewKeeper(
 		appCodec, keys[slashing.StoreKey], &stakingKeeper, app.subspaces[slashing.ModuleName],
