@@ -228,7 +228,7 @@ func NewBandApp(
 		&stakingKeeper, auth.FeeCollectorName, app.ModuleAccountAddrs(),
 	)
 
-	// DistrKeeper must be set afterward due to the circular reference of supply-staking-distr
+	// DistrKeeper must be set afterward due to the circular reference of bank-staking-distr
 	wrappedBankKeeper.SetDistrKeeper(&app.DistrKeeper)
 
 	app.SlashingKeeper = slashing.NewKeeper(
