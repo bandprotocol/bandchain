@@ -5,15 +5,11 @@ import (
 	gz "compress/gzip"
 	"crypto/sha256"
 	"encoding/hex"
-	"os"
-	"path/filepath"
 	"testing"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
-	"github.com/tendermint/tendermint/libs/cli"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
@@ -30,16 +26,6 @@ import (
 // 	msg := types.NewMsgCreateOracleScript(owner, name, description, code, schema, sourceCodeURL, sender)
 // 	return handleMsgCreateOracleScript(ctx, keeper, msg)
 // }
-
-func deleteFile(data []byte) {
-	hash := sha256.Sum256(data)
-	filename := hex.EncodeToString(hash[:])
-	path := filepath.Join(viper.GetString(cli.HomeFlag), "files", filename)
-	err := os.Remove(path)
-	if err != nil {
-		panic(err)
-	}
-}
 
 func TestCreateDataSourceSuccess(t *testing.T) {
 	_, ctx, keeper := createTestInput()
