@@ -21,9 +21,9 @@ createdb my_db
 # initial new node
 bandd init validator --chain-id bandchain --oracle band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs
 echo "lock nasty suffer dirt dream fine fall deal curtain plate husband sound tower mom crew crawl guard rack snake before fragile course bacon range" \
-    | bandcli keys add validator --recover --keyring-backend test  --coin-type 494
+    | bandcli keys add validator --recover --keyring-backend test
 echo "smile stem oven genius cave resource better lunar nasty moon company ridge brass rather supply used horn three panic put venue analyst leader comic" \
-    | bandcli keys add requester --recover --keyring-backend test  --coin-type 494
+    | bandcli keys add requester --recover --keyring-backend test
 
 # add accounts to genesis
 bandd add-genesis-account validator 10000000000000uband --keyring-backend test
