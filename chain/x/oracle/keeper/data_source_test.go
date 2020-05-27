@@ -113,6 +113,14 @@ func TestAddDataSourceDataSourceMustReturnCorrectID(t *testing.T) {
 	require.Equal(t, count, int64(2))
 }
 
+func TestEditDataSourceNonExistentDataSource(t *testing.T) {
+	_, ctx, k := createTestInput()
+	dataSource, clear := getTestDataSource()
+	defer clear()
+
+	err := k.EditDataSource(ctx, 9999, dataSource)
+	require.Error(t, err)
+}
 func TestGetAllDataSources(t *testing.T) {
 	_, ctx, k := createTestInput()
 	dataSource1, clear1 := getTestDataSource()
