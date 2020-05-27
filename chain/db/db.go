@@ -2,7 +2,6 @@ package db
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"strconv"
 
@@ -508,11 +507,9 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string][]s
 	default:
 		panic(fmt.Sprintf("Message %s does not support", msg.Type()))
 	}
-	if len(events["message.action"]) != 1 {
-		return nil, errors.New("Cannot find event type")
+	if len(events["message.action"]) == 1 {
+		jsonMap["type"] = events["message.action"][0]
 	}
-	jsonMap["type"] = events["message.action"][0]
-
 	return jsonMap, nil
 }
 
