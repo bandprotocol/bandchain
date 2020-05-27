@@ -11,12 +11,12 @@ services:
         ipv4_address: 172.18.0.11
     command: sh -c "chmod +x ./docker-config/run.sh && ./docker-config/run.sh validator1"
 
-  oracle1:
-    image: band-validator:latest
-    networks:
-      bandchain:
-    # restart: always
-    command: bandoracled2 r --node tcp://172.18.0.11:26657 --chain-id bandchain --home /oracle/oracled_config
+  # oracle1:
+  #   image: band-validator:latest
+  #   networks:
+  #     bandchain:
+  #   # restart: always
+  #   command: bandoracled2 r --node tcp://172.18.0.11:26657 --chain-id bandchain --home /oracle/oracled_config
 
   multi-validator2-node:
     image: band-validator:latest
@@ -25,14 +25,14 @@ services:
         ipv4_address: 172.18.0.12
     command: sh -c "chmod +x ./docker-config/run.sh && ./docker-config/run.sh validator2"
 
-  oracle2:
-    image: band-validator:latest
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      bandchain:
-    # restart: always
-    command: bandoracled2 r --node tcp://172.18.0.12:26657 --chain-id bandchain --home /oracle/oracled_config
+  # oracle2:
+  #   image: band-validator:latest
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   networks:
+  #     bandchain:
+  #   # restart: always
+  #   command: bandoracled2 r --node tcp://172.18.0.12:26657 --chain-id bandchain --home /oracle/oracled_config
 
   multi-validator3-node:
     image: band-validator:latest
@@ -41,14 +41,14 @@ services:
         ipv4_address: 172.18.0.13
     command: sh -c "chmod +x ./docker-config/run.sh && ./docker-config/run.sh validator3"
 
-  oracle3:
-    image: band-validator:latest
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      bandchain:
-    # restart: always
-    command: bandoracled2 r --node tcp://172.18.0.13:26657 --chain-id bandchain --home /oracle/oracled_config
+  # oracle3:
+  # image: band-validator:latest
+  # volumes:
+  #   - /var/run/docker.sock:/var/run/docker.sock
+  # networks:
+  #   bandchain:
+  # # restart: always
+  # command: bandoracled2 r --node tcp://172.18.0.13:26657 --chain-id bandchain --home /oracle/oracled_config
 
   multi-validator4-node:
     image: band-validator:latest
@@ -57,14 +57,14 @@ services:
         ipv4_address: 172.18.0.14
     command: sh -c "chmod +x ./docker-config/run.sh && ./docker-config/run.sh validator4"
 
-  oracle4:
-    image: band-validator:latest
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      bandchain:
-    # restart: always
-    command: bandoracled2 r --node tcp://172.18.0.14:26657 --chain-id bandchain --home /oracle/oracled_config
+  # oracle4:
+  #   image: band-validator:latest
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   networks:
+  #     bandchain:
+  #   # restart: always
+  #   command: bandoracled2 r --node tcp://172.18.0.14:26657 --chain-id bandchain --home /oracle/oracled_config
 
   query-node:
     image: band-validator:latest
