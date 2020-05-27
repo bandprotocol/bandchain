@@ -15,8 +15,8 @@ services:
     image: band-validator:latest
     networks:
       bandchain:
-    restart: always
-    command: bandoracled2 r --node tcp://172.18.0.11:26657 --chain-id bandchain
+    # restart: always
+    command: bandoracled2 r --node tcp://172.18.0.11:26657 --chain-id bandchain --home /oracle/oracled_config
 
   multi-validator2-node:
     image: band-validator:latest
@@ -31,8 +31,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       bandchain:
-    restart: always
-    command: bandoracled2 r --node tcp://172.18.0.12:26657 --chain-id bandchain
+    # restart: always
+    command: bandoracled2 r --node tcp://172.18.0.12:26657 --chain-id bandchain --home /oracle/oracled_config
 
   multi-validator3-node:
     image: band-validator:latest
@@ -47,8 +47,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       bandchain:
-    restart: always
-    command: bandoracled2 r --node tcp://172.18.0.13:26657 --chain-id bandchain
+    # restart: always
+    command: bandoracled2 r --node tcp://172.18.0.13:26657 --chain-id bandchain --home /oracle/oracled_config
 
   multi-validator4-node:
     image: band-validator:latest
@@ -63,8 +63,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       bandchain:
-    restart: always
-    command: bandoracled2 r --node tcp://172.18.0.14:26657 --chain-id bandchain
+    # restart: always
+    command: bandoracled2 r --node tcp://172.18.0.14:26657 --chain-id bandchain --home /oracle/oracled_config
 
   query-node:
     image: band-validator:latest
@@ -75,7 +75,7 @@ services:
     networks:
       bandchain:
         ipv4_address: 172.18.0.15
-    command: sh -c "sleep 20 && chmod +x ./docker-config/run.sh && ./docker-config/run.sh query-node"
+    command: sh -c "chmod +x ./docker-config/run.sh && ./docker-config/run.sh query-node"
 
   rest-server:
     image: band-validator:latest

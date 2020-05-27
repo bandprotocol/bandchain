@@ -121,10 +121,13 @@ cd ..
 
 docker-compose up -d --build
 
+sleep 15
+
 for v in {1..4}
 do
     rm -rf ~/.oracled
     bandoracled2 config chain-id bandchain
+    bandoracled2 config chain-rest-server http://172.18.0.20:1317
     bandoracled2 config validator $(bandcli keys show validator$v -a --bech val --keyring-backend test)
     for i in $(eval echo {1..5})
     do
@@ -144,6 +147,6 @@ do
     sleep 2
     done
 
-    docker cp ~/.oracled bandchain_oracle${v}_1:/root/.oracled
+    docker cp ~/.oracled bandchain_oracle${v}_1:/oracle/oracled_config
     docker restart bandchain_oracle${v}_1 -t 5
 done
