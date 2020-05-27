@@ -2,6 +2,7 @@ package db
 
 import (
 	"encoding/json"
+	"errors"
 	"strconv"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
@@ -34,7 +35,7 @@ func (b *BandDB) getChainID(channelID, channelPort string) (string, error) {
 func (b *BandDB) handleMsgPacket(
 	txHash []byte,
 	msg channel.MsgPacket,
-	events map[string]interface{},
+	events map[string][]string,
 ) error {
 	packetType := ""
 	jsonMap := make(map[string]interface{})
@@ -50,7 +51,11 @@ func (b *BandDB) handleMsgPacket(
 		if err != nil {
 			return err
 		}
-		id, err := strconv.ParseInt(events[otypes.EventTypeRequest+"."+otypes.AttributeKeyID].(string), 10, 64)
+		ids := events[otypes.EventTypeRequest+"."+otypes.AttributeKeyID]
+		if len(ids) != 1 {
+			return errors.New("Cannot find request id")
+		}
+		id, err := strconv.ParseInt(ids[0], 10, 64)
 		if err != nil {
 			return err
 		}
@@ -69,9 +74,9 @@ func (b *BandDB) handleMsgPacket(
 			requestPacket.ClientID,
 			txHash,
 			nil,
-			events[otypes.EventTypeRawRequest+"."+otypes.AttributeKeyExternalID].([]string),
-			events[otypes.EventTypeRawRequest+"."+otypes.AttributeKeyDataSourceID].([]string),
-			events[otypes.EventTypeRawRequest+"."+otypes.AttributeKeyCalldata].([]string),
+			events[otypes.EventTypeRawRequest+"."+otypes.AttributeKeyExternalID],
+			events[otypes.EventTypeRawRequest+"."+otypes.AttributeKeyDataSourceID],
+			events[otypes.EventTypeRawRequest+"."+otypes.AttributeKeyCalldata],
 		)
 		if err != nil {
 			return err

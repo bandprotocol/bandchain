@@ -68,13 +68,13 @@ func (b *BandDB) AddOracleScript(
 func (b *BandDB) handleMsgCreateOracleScript(
 	txHash []byte,
 	msg oracle.MsgCreateOracleScript,
-	events map[string]interface{},
+	events map[string][]string,
 ) error {
-	rawID, ok := events[otypes.EventTypeCreateOracleScript+"."+otypes.AttributeKeyID].(string)
-	if !ok {
+	ids := events[otypes.EventTypeCreateOracleScript+"."+otypes.AttributeKeyID]
+	if len(ids) != 1 {
 		return errors.New("handleMsgCreateOracleScript: cannot find oracle script id")
 	}
-	id, err := strconv.ParseInt(rawID, 10, 64)
+	id, err := strconv.ParseInt(ids[0], 10, 64)
 	if err != nil {
 		return err
 	}
