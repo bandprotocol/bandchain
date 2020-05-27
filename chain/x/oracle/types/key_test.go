@@ -54,7 +54,6 @@ func TestReportStoreKey(t *testing.T) {
 	requestID := RequestID(12)
 	expectKeyByte, _ := hex.DecodeString("02000000000000000c")
 	require.Equal(t, expectKeyByte, ReportStoreKey(requestID))
-
 }
 
 func TestReporterStoreKey(t *testing.T) {
