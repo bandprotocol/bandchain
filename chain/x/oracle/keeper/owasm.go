@@ -35,7 +35,7 @@ func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec, ibcInfo *ty
 		ctx.BlockHeight(), ctx.BlockTime().Unix(), r.GetClientID(), ibcInfo, nil,
 	)
 	// Create an execution environment and call Owasm prepare function.
-	env := types.NewExecEnv(req, ctx.BlockTime().Unix(), int64(k.GetParam(ctx, types.KeyMaxDataSourceCount)))
+	env := types.NewExecEnv(req, ctx.BlockTime().Unix(), int64(k.GetParam(ctx, types.KeyMaxRawRequestCount)))
 	script, err := k.GetOracleScript(ctx, req.OracleScriptID)
 	if err != nil {
 		return err

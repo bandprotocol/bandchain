@@ -278,7 +278,7 @@ func NewValidatorReportInfo(
 }
 
 func NewParams(
-	MaxDataSourceCount uint64,
+	MaxRawRequestCount uint64,
 	MaxAskCount uint64,
 	ExpirationBlockCount uint64,
 	MaxConsecutiveMisses uint64,
@@ -286,7 +286,7 @@ func NewParams(
 	PerValidatorRequestGas uint64,
 ) Params {
 	return Params{
-		MaxDataSourceCount:     MaxDataSourceCount,
+		MaxRawRequestCount:     MaxRawRequestCount,
 		MaxAskCount:            MaxAskCount,
 		ExpirationBlockCount:   ExpirationBlockCount,
 		MaxConsecutiveMisses:   MaxConsecutiveMisses,

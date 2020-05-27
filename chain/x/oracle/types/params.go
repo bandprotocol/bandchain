@@ -10,7 +10,7 @@ import (
 // nolint
 const (
 	DefaultParamspace             = ModuleName
-	DefaultMaxDataSourceCount     = uint64(16)
+	DefaultMaxRawRequestCount     = uint64(16)
 	DefaultMaxAskCount            = uint64(16)
 	DefaultExpirationBlockCount   = uint64(20)
 	DefaultMaxConsecutiveMisses   = uint64(10)
@@ -20,7 +20,7 @@ const (
 
 // nolint
 var (
-	KeyMaxDataSourceCount     = []byte("MaxDataSourceCount")
+	KeyMaxRawRequestCount     = []byte("MaxRawRequestCount")
 	KeyMaxAskCount            = []byte("MaxAskCount")
 	KeyExpirationBlockCount   = []byte("ExpirationBlockCount")
 	KeyMaxConsecutiveMisses   = []byte("MaxConsecutiveMisses")
@@ -31,14 +31,14 @@ var (
 // String implements the stringer interface for Params.
 func (p Params) String() string {
 	return fmt.Sprintf(`oracle Params:
-  MaxDataSourceCount:     %d
+  MaxRawRequestCount:     %d
   MaxAskCount:            %d
   ExpirationBlockCount:   %d
   MaxConsecutiveMisses:   %d
   BaseRequestGas          %d
   PerValidatorRequestGas: %d
 `,
-		p.MaxDataSourceCount,
+		p.MaxRawRequestCount,
 		p.MaxAskCount,
 		p.ExpirationBlockCount,
 		p.MaxConsecutiveMisses,
@@ -50,7 +50,7 @@ func (p Params) String() string {
 // ParamSetPairs implements the params.ParamSet interface for Params.
 func (p *Params) ParamSetPairs() params.ParamSetPairs {
 	return params.ParamSetPairs{
-		paramtypes.NewParamSetPair(KeyMaxDataSourceCount, &p.MaxDataSourceCount, validateUint64("max data source count", true)),
+		paramtypes.NewParamSetPair(KeyMaxRawRequestCount, &p.MaxRawRequestCount, validateUint64("max data source count", true)),
 		paramtypes.NewParamSetPair(KeyMaxAskCount, &p.MaxAskCount, validateUint64("max ask count", true)),
 		paramtypes.NewParamSetPair(KeyExpirationBlockCount, &p.ExpirationBlockCount, validateUint64("expiration block count", true)),
 		paramtypes.NewParamSetPair(KeyMaxConsecutiveMisses, &p.MaxConsecutiveMisses, validateUint64("max consecutive misses", false)),
@@ -62,7 +62,7 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 // DefaultParams defines the default parameters.
 func DefaultParams() Params {
 	return NewParams(
-		DefaultMaxDataSourceCount,
+		DefaultMaxRawRequestCount,
 		DefaultMaxAskCount,
 		DefaultExpirationBlockCount,
 		DefaultMaxConsecutiveMisses,

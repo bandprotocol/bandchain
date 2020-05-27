@@ -30,7 +30,7 @@ func DefaultGenesisState() GenesisState {
 
 // InitGenesis performs genesis initialization for the oracle module.
 func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorUpdate {
-	k.SetParam(ctx, types.KeyMaxDataSourceCount, data.Params.MaxDataSourceCount)
+	k.SetParam(ctx, types.KeyMaxRawRequestCount, data.Params.MaxRawRequestCount)
 	k.SetParam(ctx, types.KeyMaxAskCount, data.Params.MaxAskCount)
 	k.SetParam(ctx, types.KeyExpirationBlockCount, data.Params.ExpirationBlockCount)
 	k.SetParam(ctx, types.KeyMaxConsecutiveMisses, data.Params.MaxConsecutiveMisses)

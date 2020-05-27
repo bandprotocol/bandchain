@@ -296,7 +296,7 @@ message Params {
   option (gogoproto.equal) = true;
   option (gogoproto.goproto_stringer) = false;
 
-  uint64 max_data_source_count = 1;
+  uint64 max_raw_request_count = 1;
   uint64 max_ask_count = 2;
   uint64 expiration_block_count = 3;
   uint64 max_consecutive_misses = 4;

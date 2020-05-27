@@ -30,12 +30,12 @@ func TestGetNextRequestID(t *testing.T) {
 	require.Equal(t, int64(4), k.GetRequestCount(ctx))
 }
 
-func TestGetSetMaxDataSourceCount(t *testing.T) {
+func TestGetSetMaxRawRequestCount(t *testing.T) {
 	_, ctx, k := createTestInput()
-	k.SetParam(ctx, types.KeyMaxDataSourceCount, 1)
-	require.Equal(t, uint64(1), k.GetParam(ctx, types.KeyMaxDataSourceCount))
-	k.SetParam(ctx, types.KeyMaxDataSourceCount, 2)
-	require.Equal(t, uint64(2), k.GetParam(ctx, types.KeyMaxDataSourceCount))
+	k.SetParam(ctx, types.KeyMaxRawRequestCount, 1)
+	require.Equal(t, uint64(1), k.GetParam(ctx, types.KeyMaxRawRequestCount))
+	k.SetParam(ctx, types.KeyMaxRawRequestCount, 2)
+	require.Equal(t, uint64(2), k.GetParam(ctx, types.KeyMaxRawRequestCount))
 }
 
 // func TestGetSetGasPerRawDataRequestPerValidator(t *testing.T) {
@@ -49,12 +49,12 @@ func TestGetSetMaxDataSourceCount(t *testing.T) {
 // func TestGetSetParams(t *testing.T) {
 // 	_, ctx, k := createTestInput()
 
-// 	k.SetParam(ctx, types.KeyMaxDataSourceCount, 1)
+// 	k.SetParam(ctx, types.KeyMaxRawRequestCount, 1)
 // 	k.SetParam(ctx, types.KeyExpirationBlockCount, 30)
 // 	k.SetParam(ctx, types.KeyMaxConsecutiveMisses, 10)
 // 	require.Equal(t, types.NewParams(1, 1000, 30, 10), k.GetParams(ctx))
 
-// 	k.SetParam(ctx, types.KeyMaxDataSourceCount, 2)
+// 	k.SetParam(ctx, types.KeyMaxRawRequestCount, 2)
 // 	k.SetParam(ctx, types.KeyGasPerRawDataRequestPerValidator, 2000)
 // 	k.SetParam(ctx, types.KeyExpirationBlockCount, 40)
 // 	k.SetParam(ctx, types.KeyMaxConsecutiveMisses, 20)
