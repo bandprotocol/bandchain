@@ -3,15 +3,17 @@ package cli
 import (
 	"fmt"
 
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	"github.com/spf13/cobra"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/spf13/cobra"
+
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
-// GetQueryCmd returns
+// GetQueryCmd returns the cli query commands for this module.
 func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 	oracleCmd := &cobra.Command{
 		Use:                        types.ModuleName,
@@ -21,54 +23,81 @@ func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 	oracleCmd.AddCommand(flags.GetCommands(
-		GetCmdReadRequest(storeKey, cdc),
-		GetCmdPendingRequest(storeKey, cdc),
+		GetCmdParams(storeKey, cdc),
+		GetCmdCounts(storeKey, cdc),
+		GetCmdDataSource(storeKey, cdc),
+		GetCmdOracleScript(storeKey, cdc),
 	)...)
 
 	return oracleCmd
 }
 
-// GetCmdReadRequest queries request by reqID
-func GetCmdReadRequest(queryRoute string, cdc *codec.Codec) *cobra.Command {
+// GetCmdParams implements the query parameters command.
+func GetCmdParams(route string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:  "request",
-		Args: cobra.ExactArgs(1),
+		Use:  "params",
+		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
-			reqID := args[0]
-
-			res, _, err := cliCtx.QueryWithData(
-				fmt.Sprintf("custom/%s/request/%s", queryRoute, reqID),
-				nil,
-			)
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", route, types.QueryParams), nil)
 			if err != nil {
-				fmt.Printf("read request fail - %s \n", reqID)
-				return nil
+				return err
 			}
-			out := types.RawBytes(res)
+			var out types.Params
+			cdc.MustUnmarshalJSON(res, &out)
 			return cliCtx.PrintOutput(out)
 		},
 	}
 }
 
-// GetCmdPendingRequest queries request in pending state
-func GetCmdPendingRequest(queryRoute string, cdc *codec.Codec) *cobra.Command {
+// GetCmdCounts implements the query counts command.
+func GetCmdCounts(route string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:  "pending_request",
-		Args: cobra.ExactArgs(0),
+		Use:  "counts",
+		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
-
-			res, _, err := cliCtx.QueryWithData(
-				fmt.Sprintf("custom/%s/pending_request", queryRoute),
-				nil,
-			)
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", route, types.QueryCounts), nil)
 			if err != nil {
-				fmt.Printf("get pending request fail \n")
-				return nil
+				return err
 			}
+			var out types.QueryCountsResult
+			cdc.MustUnmarshalJSON(res, &out)
+			return cliCtx.PrintOutput(out)
+		},
+	}
+}
 
-			var out types.U64Array
+// GetCmdDataSource implements the query data source command.
+func GetCmdDataSource(route string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:  "data-source",
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryDataSources, args[0]), nil)
+			if err != nil {
+				return err
+			}
+			var out types.DataSource
+			cdc.MustUnmarshalJSON(res, &out)
+			return cliCtx.PrintOutput(out)
+		},
+	}
+}
+
+// GetCmdOracleScript implements the query oracle script command.
+func GetCmdOracleScript(route string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:  "oracle-script",
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryOracleScripts, args[0]), nil)
+			if err != nil {
+				return err
+			}
+			var out types.OracleScript
 			cdc.MustUnmarshalJSON(res, &out)
 			return cliCtx.PrintOutput(out)
 		},
