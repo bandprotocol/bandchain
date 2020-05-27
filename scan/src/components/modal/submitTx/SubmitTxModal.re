@@ -156,7 +156,7 @@ module SubmitTxStep = {
       <VSpacing size=Spacing.md />
       <div className=Styles.info>
         <Text
-          value="Available Balance"
+          value="Transaction Fee"
           size=Text.Lg
           spacing={Text.Em(0.03)}
           nowrap=true
