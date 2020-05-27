@@ -42,6 +42,7 @@ module Styles = {
       top(`px(20)),
       left(`px(605)),
       cursor(`pointer),
+      zIndex(3),
     ]);
 };
 

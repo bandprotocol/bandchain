@@ -88,33 +88,12 @@ module Styles = {
   let info = style([display(`flex), justifyContent(`spaceBetween)]);
 };
 
-let getGasConfig = msgType => {
-  let gasLimit = SubmitMsg.gasLimit(msgType);
-  EnhanceTxInput.{
-    text: {
-      gasLimit |> string_of_int;
-    },
-    value: Some(gasLimit),
-  };
-};
-
-let getFeeConfig = msgType => {
-  let gasPrice = 0.1;
-  let fee = (SubmitMsg.gasLimit(msgType) |> float_of_int) *. gasPrice /. 1e6;
-  EnhanceTxInput.{
-    text: {
-      fee |> Js.Float.toString;
-    },
-    value: Some(fee *. 1e6),
-  };
-};
-
 module SubmitTxStep = {
   [@react.component]
   let make = (~account: AccountContext.t, ~setRawTx, ~isActive, ~msg) => {
     let (msgsOpt, setMsgsOpt) = React.useState(_ => None);
 
-    let gas = getGasConfig(msg);
+    let gas = 200000;
     let fee = 5000.;
     let (memo, setMemo) = React.useState(_ => EnhanceTxInput.{text: "", value: Some("")});
 
@@ -170,8 +149,7 @@ module SubmitTxStep = {
         className=Styles.nextBtn
         onClick={_ => {
           let rawTxOpt =
-            {let%Opt gas' = gas.value;
-             let%Opt memo' = memo.value;
+            {let%Opt memo' = memo.value;
              let%Opt msgs = msgsOpt;
 
              Some(
@@ -180,7 +158,7 @@ module SubmitTxStep = {
                  ~msgs,
                  ~chainID=account.chainID,
                  ~feeAmount=fee |> Js.Float.toString,
-                 ~gas=gas' |> string_of_int,
+                 ~gas=gas |> string_of_int,
                  ~memo=memo',
                  (),
                ),
