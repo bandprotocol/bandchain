@@ -6,7 +6,9 @@ import (
 	"path/filepath"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/spf13/viper"
 	abci "github.com/tendermint/tendermint/abci/types"
+	"github.com/tendermint/tendermint/libs/cli"
 
 	bandapp "github.com/bandprotocol/bandchain/chain/app"
 	"github.com/bandprotocol/bandchain/chain/pkg/filecache"
@@ -65,10 +67,7 @@ func deleteFile(path string) {
 }
 
 func getTestDataSource() (ds types.DataSource, clear func()) {
-	dir, err := ioutil.TempDir("/tmp", "filecache")
-	if err != nil {
-		panic(err)
-	}
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
 	f := filecache.New(dir)
 	filename := f.AddFile([]byte("executable"))
 	return types.NewDataSource(Owner.Address, "Test data source", "For test only", filename),
@@ -76,14 +75,25 @@ func getTestDataSource() (ds types.DataSource, clear func()) {
 }
 
 func getTestOracleScript() (os types.OracleScript, clear func()) {
-	dir, err := ioutil.TempDir("/tmp", "filecache")
-	if err != nil {
-		panic(err)
-	}
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
 	f := filecache.New(dir)
 	filename := f.AddFile([]byte("code"))
 	return types.NewOracleScript(Owner.Address, "Test oracle script",
 		"For test only", filename, "", "test URL",
+	), func() { deleteFile(filepath.Join(dir, filename)) }
+}
+
+func loadDataSourceFromExecutable(path string) (os types.DataSource, clear func()) {
+	executable, err := ioutil.ReadFile(path)
+	if err != nil {
+		panic(err)
+	}
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
+	f := filecache.New(dir)
+	filename := f.AddFile(executable)
+	return types.NewDataSource(
+		Owner.Address, "imported data source", "description",
+		filename,
 	), func() { deleteFile(filepath.Join(dir, filename)) }
 }
 
@@ -93,14 +103,45 @@ func loadOracleScriptFromWasm(path string) (os types.OracleScript, clear func())
 	if err != nil {
 		panic(err)
 	}
-	dir, err := ioutil.TempDir("/tmp", "filecache")
-	if err != nil {
-		panic(err)
-	}
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
 	f := filecache.New(dir)
 	filename := f.AddFile(code)
 	return types.NewOracleScript(
 		Owner.Address, "imported script", "description",
-		filename, "schema", "sourceCodeURL",
+		filename,
+		"schema", "sourceCodeURL",
+	), func() { deleteFile(filepath.Join(dir, filename)) }
+}
+
+func loadOracleScriptFromWasmCryptoCompareBorsh() (os types.OracleScript, clear func()) {
+	absPath, _ := filepath.Abs("../../../pkg/owasm/res/crypto_price_borsh.wasm")
+	code, err := ioutil.ReadFile(absPath)
+	if err != nil {
+		panic(err)
+	}
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
+	f := filecache.New(dir)
+	filename := f.AddFile(code)
+	return types.NewOracleScript(
+		Owner.Address, "imported script", "description",
+		filename,
+		`{"Input": "{\"kind\": \"struct\", \"fields\": [ [\"symbol\", \"string\"], [\"multiplier\", \"u64\"] ] }","Output": "{ \"kind\": \"struct\", \"fields\": [ [\"px\", \"u64\"] ]}"}`,
+		"sourceCodeURL",
+	), func() { deleteFile(filepath.Join(dir, filename)) }
+}
+
+func loadBadOracleScript() (os types.OracleScript, clear func()) {
+	absPath, _ := filepath.Abs("../../../pkg/owasm/res/crypto_price_borsh.wasm")
+	code, err := ioutil.ReadFile(absPath)
+	if err != nil {
+		panic(err)
+	}
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
+	f := filecache.New(dir)
+	filename := f.AddFile(code)
+	return types.NewOracleScript(
+		Owner.Address, "imported script", "description",
+		filename,
+		"beeb", "sourceCodeURL",
 	), func() { deleteFile(filepath.Join(dir, filename)) }
 }
