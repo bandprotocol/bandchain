@@ -83,9 +83,18 @@ let make = (~chainID) => {
     <Text value="Enter Your Mnemonic" size=Text.Md weight=Text.Medium />
     <VSpacing size=Spacing.sm />
     <input
+      autoFocus=true
       value=mnemonic
       className=Styles.inputBar
       onChange={event => setMnemonic(ReactEvent.Form.target(event)##value)}
+      onKeyDown={event =>
+        switch (ReactEvent.Keyboard.key(event)) {
+        | "Enter" =>
+          createMnemonic();
+          ReactEvent.Keyboard.preventDefault(event);
+        | _ => ()
+        }
+      }
     />
     <VSpacing size={`px(35)} />
     <div className=Styles.connectBtn onClick={_ => createMnemonic()}>
