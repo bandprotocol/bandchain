@@ -136,7 +136,7 @@ module StakingInfo = {
         dispatchModal(OpenModal(SubmitTx(SubmitMsg.WithdrawReward(validatorAddress))));
       <div>
         <VSpacing size=Spacing.md />
-        {rewardAmount |> Coin.getBandAmountFromCoin > 0.
+        {rewardAmount.amount > 1000000.
            ? <div>
                <div className=Styles.warning>
                  <Text
