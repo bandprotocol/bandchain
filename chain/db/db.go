@@ -507,8 +507,9 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string][]s
 	default:
 		panic(fmt.Sprintf("Message %s does not support", msg.Type()))
 	}
-	jsonMap["type"] = events["message.action"][0]
-
+	if len(events["message.action"]) == 1 {
+		jsonMap["type"] = events["message.action"][0]
+	}
 	return jsonMap, nil
 }
 
