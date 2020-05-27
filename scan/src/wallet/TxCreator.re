@@ -280,7 +280,10 @@ function(data) {return {...data};}
       JsonUtils.Decode.{
         txHash: response |> at(["txhash"], string) |> Hash.fromHex,
         rawLog: response |> at(["raw_log"], string),
-        success: response |> optional(field("logs", _ => ())) |> Belt_Option.isSome,
+        success:
+          response
+          |> optional(field("code", int))
+          |> Belt.Option.mapWithDefault(_, true, code => code == 0),
       },
     ),
   );
