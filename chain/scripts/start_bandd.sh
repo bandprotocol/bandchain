@@ -12,7 +12,6 @@ for f in *; do
     fi
 done
 cd ../../chain
-go test ./...
 
 rm -rf ~/.band*
 dropdb my_db
