@@ -52,6 +52,8 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
            <Text
              value={balance |> Coin.getBandAmountFromCoins |> Format.fPretty(~digits=6)}
              code=true
+             size=Text.Lg
+             weight=Text.Semibold
            />
            <Text value=" BAND" code=true />
          </div>
@@ -77,7 +79,6 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
        }}
     </div>
     <VSpacing size=Spacing.lg />
-    <VSpacing size=Spacing.md />
     <EnhanceTxInput
       width=226
       inputData=amount

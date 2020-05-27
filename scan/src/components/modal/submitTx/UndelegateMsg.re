@@ -43,12 +43,11 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
   );
 
   <>
-    <VSpacing size=Spacing.lg />
+    <VSpacing size=Spacing.sm />
     <div className=Styles.warning>
       <Text value="Note: Undelegated balance are locked for 21 days" />
     </div>
     <VSpacing size=Spacing.lg />
-    <VSpacing size=Spacing.md />
     <div className=Styles.info>
       <Text value="Undelegate From" size=Text.Lg spacing={Text.Em(0.03)} nowrap=true block=true />
       {switch (allSub) {
@@ -75,6 +74,8 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
            <Text
              value={amount |> Coin.getBandAmountFromCoin |> Format.fPretty(~digits=6)}
              code=true
+             size=Text.Lg
+             weight=Text.Semibold
            />
            <Text value=" BAND" code=true />
          </div>
