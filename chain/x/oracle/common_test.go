@@ -19,6 +19,10 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
+const (
+	ChainID = "bandchain"
+)
+
 var (
 	Owner      = simapp.Owner
 	Alice      = simapp.Alice
@@ -29,7 +33,7 @@ var (
 )
 
 func createTestInput() (*bandapp.BandApp, sdk.Context, me.Keeper) {
-	app := simapp.NewSimApp()
+	app := simapp.NewSimApp(ChainID)
 	ctx := app.BaseApp.NewContext(false, abci.Header{})
 	return app, ctx, app.OracleKeeper
 }

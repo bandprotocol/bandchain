@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -13,6 +14,27 @@ import (
 	"github.com/bandprotocol/bandchain/chain/simapp"
 	me "github.com/bandprotocol/bandchain/chain/x/oracle/keeper"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	connectiontypes "github.com/cosmos/cosmos-sdk/x/ibc/03-connection/types"
+	channelexported "github.com/cosmos/cosmos-sdk/x/ibc/04-channel/exported"
+	channeltypes "github.com/cosmos/cosmos-sdk/x/ibc/04-channel/types"
+	ibctmtypes "github.com/cosmos/cosmos-sdk/x/ibc/07-tendermint/types"
+	commitmenttypes "github.com/cosmos/cosmos-sdk/x/ibc/23-commitment/types"
+	"github.com/tendermint/tendermint/libs/log"
+	tmtypes "github.com/tendermint/tendermint/types"
+)
+
+const (
+	ChainID         = "bandchain"
+	ChainIDA        = "chainA"
+	ChainIDB        = "chainB"
+	TestClientIDA   = "clientA"
+	TestClientIDB   = "clientB"
+	TestPortA       = "portA"
+	TestPortB       = "portB"
+	TestChannelA    = "channelA"
+	TestChannelB    = "channelB"
+	TestConnectionA = "connectionAtoB"
+	TestConnectionB = "connectionBtoA"
 )
 
 var (
@@ -38,9 +60,48 @@ var (
 )
 
 func createTestInput() (*bandapp.BandApp, sdk.Context, me.Keeper) {
-	app := simapp.NewSimApp()
+	app := simapp.NewSimApp(ChainID, log.NewNopLogger())
 	ctx := app.BaseApp.NewContext(false, abci.Header{})
 	return app, ctx, app.OracleKeeper
+}
+
+func createTestChains(logger log.Logger) (*bandapp.BandApp, *bandapp.BandApp) {
+	appA := simapp.NewSimApp(ChainIDA, logger)
+	appB := simapp.NewSimApp(ChainIDB, logger)
+	return appA, appB
+}
+
+func getContext(chain *bandapp.BandApp) sdk.Context {
+	now := time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC)
+
+	privVal := tmtypes.NewMockPV()
+	signers := []tmtypes.PrivValidator{privVal}
+	pubKey, err := privVal.GetPubKey()
+	if err != nil {
+		panic(err)
+	}
+	validator := tmtypes.NewValidator(pubKey, 1)
+	valSet := tmtypes.NewValidatorSet([]*tmtypes.Validator{validator})
+	header := ibctmtypes.CreateTestHeader(chain.Name(), 1, now, valSet, signers)
+
+	return chain.NewContext(false, abci.Header{
+		ChainID: header.ChainID,
+		Height:  header.Height,
+	})
+}
+
+func createTestChainConnection(chainA *bandapp.BandApp, chainB *bandapp.BandApp) {
+	counterParty := connectiontypes.NewCounterparty(TestConnectionA, TestConnectionB, commitmenttypes.NewMerklePrefix(chainA.IBCKeeper.ConnectionKeeper.GetCommitmentPrefix().Bytes()))
+	conn := connectiontypes.NewConnectionEnd(3, TestClientIDB, counterParty, connectiontypes.GetCompatibleVersions())
+	ctx := chainA.NewContext(false, abci.Header{})
+	chainA.IBCKeeper.ConnectionKeeper.SetConnection(ctx, TestConnectionA, conn)
+}
+
+func createTestChannel(chainA *bandapp.BandApp, chainB *bandapp.BandApp) {
+	counterpart := channeltypes.NewCounterparty(TestPortB, TestChannelB)
+	channel := channeltypes.NewChannel(channelexported.OPEN, channelexported.ORDERED, counterpart, []string{TestConnectionA}, "1.0")
+	ctx := chainA.NewContext(false, abci.Header{})
+	chainA.IBCKeeper.ChannelKeeper.SetChannel(ctx, TestPortA, TestChannelA, channel)
 }
 
 func newDefaultRequest() types.Request {
