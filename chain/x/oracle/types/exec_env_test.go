@@ -162,7 +162,7 @@ package types
 // 	// require.Equal(t, types.NewRawDataRequest(1, []byte("prepare32")), rawRequest)
 // }
 
-// func TestRequestExternalDataExceedMaxRawRequestCount(t *testing.T) {
+// func TestRequestExternalDataExceedMaxDataSourceCount(t *testing.T) {
 // 	ctx, keeper := keep.CreateTestInput(t, false)
 
 // 	// Set Request
@@ -180,8 +180,8 @@ package types
 // 	)
 // 	keeper.SetDataSource(ctx, 1, dataSource)
 
-// 	// Set MaxRawRequestCount to 5
-// 	keeper.SetParam(ctx, KeyMaxRawRequestCount, 5)
+// 	// Set MaxDataSourceCount to 5
+// 	keeper.SetParam(ctx, KeyMaxDataSourceCount, 5)
 // 	env := NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
 
 // 	reqErr := env.RequestExternalData(1, 41, []byte("prepare32"))

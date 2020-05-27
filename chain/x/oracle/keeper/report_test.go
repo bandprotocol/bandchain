@@ -132,8 +132,8 @@ func TestGetReportCount(t *testing.T) {
 	k.SetReport(ctx, types.RequestID(2), types.NewReport(Bob.ValAddress, []types.RawReport{}))
 	k.SetReport(ctx, types.RequestID(2), types.NewReport(Carol.ValAddress, []types.RawReport{}))
 
-	require.Equal(t, int64(2), k.GetReportCount(ctx, types.RequestID(1)))
-	require.Equal(t, int64(3), k.GetReportCount(ctx, types.RequestID(2)))
+	require.Equal(t, uint64(2), k.GetReportCount(ctx, types.RequestID(1)))
+	require.Equal(t, uint64(3), k.GetReportCount(ctx, types.RequestID(2)))
 }
 
 func TestDeleteReports(t *testing.T) {

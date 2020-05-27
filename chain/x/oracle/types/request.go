@@ -9,7 +9,7 @@ var (
 type RequestSpec interface {
 	GetOracleScriptID() OracleScriptID
 	GetCalldata() []byte
-	GetAskCount() int64
-	GetMinCount() int64
+	GetAskCount() uint64
+	GetMinCount() uint64
 	GetClientID() string
 }

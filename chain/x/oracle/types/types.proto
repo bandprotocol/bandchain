@@ -14,8 +14,8 @@ message MsgRequestData {
     (gogoproto.casttype) = "OracleScriptID"
   ];
   bytes calldata = 2;
-  int64 ask_count = 3;
-  int64 min_count = 4;
+  uint64 ask_count = 3;
+  uint64 min_count = 4;
   string client_id = 5 [(gogoproto.customname) = "ClientID"];
   bytes sender = 6
       [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
@@ -203,11 +203,11 @@ message OracleRequestPacketData {
   bytes calldata = 3;
   // AskCount is the number of validators that are requested to respond to this
   // oracle request. Higher value means more security, at a higher gas cost.
-  int64 ask_count = 4;
+  uint64 ask_count = 4;
   // MinCount is the minimum number of validators necessary for the request to
   // proceed to the execution phase. Higher value means more security, at the
   // cost of liveness.
-  int64 min_count = 5;
+  uint64 min_count = 5;
 }
 
 // OracleResponsePacketData encodes an oracle response from BandChain to the
@@ -228,7 +228,7 @@ message OracleResponsePacketData {
   // AnsCount is the number of validators among to the asked validators that
   // actually responded to this oracle request prior to this oracle request
   // being resolved.
-  int64 ans_count = 3;
+  uint64 ans_count = 3;
   // RequestTime is the UNIX epoch time at which the request was sent to
   // BandChain.
   int64 request_time = 4;
@@ -254,7 +254,7 @@ message Request {
   bytes calldata = 2;
   repeated bytes requested_validators = 3
       [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
-  int64 min_count = 4;
+  uint64 min_count = 4;
   int64 request_height = 5;
   int64 request_time = 6;
   string client_id = 7 [(gogoproto.customname) = "ClientID"];
@@ -296,8 +296,10 @@ message Params {
   option (gogoproto.equal) = true;
   option (gogoproto.goproto_stringer) = false;
 
-  uint64 max_raw_request_count = 1;
-  uint64 gas_per_raw_data_request_per_validator = 2;
+  uint64 max_data_source_count = 1;
+  uint64 max_ask_count = 2;
   uint64 expiration_block_count = 3;
   uint64 max_consecutive_misses = 4;
+  uint64 base_request_gas = 5;
+  uint64 per_validator_request_gas = 6;
 }

@@ -17,7 +17,7 @@ type RequestRESTInfo struct {
 	OracleScriptID      types.OracleScriptID `json:"oracleScriptID"`
 	Calldata            []byte               `json:"calldata"`
 	RequestedValidators []sdk.ValAddress     `json:"requestedValidators"`
-	MinCount            int64                `json:"minCount"`
+	MinCount            uint64               `json:"minCount"`
 	ResolveStatus       types.ResolveStatus  `json:"resolveStatus"`
 	Requester           sdk.AccAddress       `json:"requester"`
 	RequestTx           TxDetail             `json:"requestTx,omitempty"`

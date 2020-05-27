@@ -29,7 +29,7 @@ var (
 	ErrTooLargeExecutable          = sdkerrors.Register(ModuleName, 22, "too large executable")
 	ErrTooLargeWasmCode            = sdkerrors.Register(ModuleName, 23, "too large wasm code")
 	ErrInvalidMinCount             = sdkerrors.Register(ModuleName, 24, "invalid min count")
-	ErrAskCountLessThanMinCount    = sdkerrors.Register(ModuleName, 25, "ask count < min count")
+	ErrInvalidAskCount             = sdkerrors.Register(ModuleName, 25, "invalid ask count")
 	ErrTooLargeCalldata            = sdkerrors.Register(ModuleName, 26, "too large calldata")
 	ErrTooLongClientID             = sdkerrors.Register(ModuleName, 27, "too long client id")
 	ErrEmptyReport                 = sdkerrors.Register(ModuleName, 28, "empty report")

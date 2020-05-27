@@ -124,7 +124,7 @@ type Request struct {
 	ID               int64  `gorm:"primary_key;auto_increment:false"`
 	OracleScriptID   int64  `gorm:"not null"`
 	Calldata         []byte `gorm:"not null"`
-	MinCount         int64  `gorm:"not null"`
+	MinCount         uint64 `gorm:"not null"`
 	ExpirationHeight int64  `gorm:"not null"`
 	ResolveStatus    string `gorm:"not null"`
 	Requester        string `gorm:"not null"`

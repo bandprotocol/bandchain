@@ -82,10 +82,10 @@ func (k Keeper) AddRequest(ctx sdk.Context, req types.Request) types.RequestID {
 func (k Keeper) SaveResult(ctx sdk.Context, id types.RequestID, status types.ResolveStatus, result []byte) types.OracleResponsePacketData {
 	r := k.MustGetRequest(ctx, id)
 	req := types.NewOracleRequestPacketData(
-		r.ClientID, r.OracleScriptID, r.Calldata, r.MinCount, int64(len(r.RequestedValidators)),
+		r.ClientID, r.OracleScriptID, r.Calldata, r.MinCount, uint64(len(r.RequestedValidators)),
 	)
 	res := types.NewOracleResponsePacketData(
-		r.ClientID, id, int64(k.GetReportCount(ctx, id)), r.RequestTime,
+		r.ClientID, id, k.GetReportCount(ctx, id), r.RequestTime,
 		ctx.BlockTime().Unix(), types.ResolveStatus_Success, result,
 	)
 	resultHash := k.AddResult(ctx, id, req, res)

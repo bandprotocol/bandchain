@@ -51,7 +51,7 @@ func (env *ExecEnv) GetAskCount() int64 {
 
 // GetMinCount implements Owasm ExecEnv interface.
 func (env *ExecEnv) GetMinCount() int64 {
-	return env.request.MinCount
+	return int64(env.request.MinCount)
 }
 
 // GetAnsCount implements Owasm ExecEnv interface.

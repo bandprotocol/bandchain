@@ -5,6 +5,7 @@ import (
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // nolint
@@ -16,10 +17,15 @@ const (
 // PrepareRequest takes an request specification object, performs the prepare call, and saves
 // the request object to store. Also emits events related to the request.
 func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec, ibcInfo *types.IBCInfo) error {
-	// TODO: FIX ME! Consume a fixed gas amount for processing oracle request.
-	nextID := k.GetRequestCount(ctx) + 1
+	// First, we consume base request gas fee.
+	ctx.GasMeter().ConsumeGas(k.GetParam(ctx, types.KeyBaseRequestGas), "BASE_REQUEST_FEE")
 	// Get a random validator set to perform this request.
-	validators, err := k.GetRandomValidators(ctx, int(r.GetAskCount()), nextID)
+	askCount := r.GetAskCount()
+	if askCount > k.GetParam(ctx, types.KeyMaxAskCount) {
+		return sdkerrors.Wrapf(types.ErrInvalidAskCount,
+			"got: %d, max: %d", askCount, k.GetParam(ctx, types.KeyMaxAskCount))
+	}
+	validators, err := k.GetRandomValidators(ctx, int(askCount), k.GetRequestCount(ctx)+1)
 	if err != nil {
 		return err
 	}
@@ -29,7 +35,7 @@ func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec, ibcInfo *ty
 		ctx.BlockHeight(), ctx.BlockTime().Unix(), r.GetClientID(), ibcInfo, nil,
 	)
 	// Create an execution environment and call Owasm prepare function.
-	env := types.NewExecEnv(req, ctx.BlockTime().Unix(), int64(k.GetParam(ctx, types.KeyMaxRawRequestCount)))
+	env := types.NewExecEnv(req, ctx.BlockTime().Unix(), int64(k.GetParam(ctx, types.KeyMaxDataSourceCount)))
 	script, err := k.GetOracleScript(ctx, req.OracleScriptID)
 	if err != nil {
 		return err
@@ -40,9 +46,9 @@ func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec, ibcInfo *ty
 		k.Logger(ctx).Info(fmt.Sprintf("failed to prepare request with error: %s", err.Error()))
 		return types.ErrBadWasmExecution
 	}
-	// Preparation complete! It's time to collect raw request ids and ask for more gas.
+	// Preparation complete! It's time to collect raw request ids and charge more gas.
 	for _, rawReq := range env.GetRawRequests() {
-		// TODO: FIX ME! Consume more gas for each raw request
+		ctx.GasMeter().ConsumeGas(k.GetParam(ctx, types.KeyPerValidatorRequestGas), "PER_VALIDATOR_REQUEST_FEE")
 		req.RawRequestIDs = append(req.RawRequestIDs, rawReq.ExternalID)
 	}
 	// We now have everything we need to the request, so let's add it to the store.
