@@ -63,3 +63,4 @@
 [@bs.module] external ledgerStep2Cosmos: string = "./ledger-step2-cosmos.svg";
 [@bs.module] external ledgerStep2BandChain: string = "./ledger-step2-bandchain.svg";
 [@bs.module] external triangleDown: string = "./triangle-down.svg";
+[@bs.module] external closeButton: string = "./closeButton.svg";
