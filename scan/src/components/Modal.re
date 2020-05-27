@@ -34,6 +34,16 @@ module Styles = {
         ]),
       ),
     ]);
+
+  let closeButton =
+    style([
+      width(`px(15)),
+      position(`absolute),
+      top(`px(20)),
+      left(`px(605)),
+      cursor(`pointer),
+      zIndex(3),
+    ]);
 };
 
 [@react.component]
@@ -50,6 +60,11 @@ let make = () => {
       };
     <div className=Styles.overlay onClick={_ => {canExit ? dispatchModal(CloseModal) : ()}}>
       <div className=Styles.content onClick={e => ReactEvent.Mouse.stopPropagation(e)}>
+        <img
+          src=Images.closeButton
+          onClick={_ => {canExit ? dispatchModal(CloseModal) : ()}}
+          className=Styles.closeButton
+        />
         body
       </div>
     </div>;

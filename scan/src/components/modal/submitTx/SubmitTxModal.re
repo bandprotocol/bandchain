@@ -84,35 +84,17 @@ module Styles = {
       cursor(`pointer),
       alignSelf(`center),
     ]);
-};
 
-let getGasConfig = msgType => {
-  let gasLimit = SubmitMsg.gasLimit(msgType);
-  EnhanceTxInput.{
-    text: {
-      gasLimit |> string_of_int;
-    },
-    value: Some(gasLimit),
-  };
-};
-
-let getFeeConfig = msgType => {
-  let gasPrice = 0.1;
-  let fee = (SubmitMsg.gasLimit(msgType) |> float_of_int) *. gasPrice /. 1e6;
-  EnhanceTxInput.{
-    text: {
-      fee |> Js.Float.toString;
-    },
-    value: Some(fee *. 1e6),
-  };
+  let info = style([display(`flex), justifyContent(`spaceBetween)]);
 };
 
 module SubmitTxStep = {
   [@react.component]
   let make = (~account: AccountContext.t, ~setRawTx, ~isActive, ~msg) => {
     let (msgsOpt, setMsgsOpt) = React.useState(_ => None);
-    let (gas, setGas) = React.useState(_ => getGasConfig(msg));
-    let (fee, setFee) = React.useState(_ => getFeeConfig(msg));
+
+    let gas = 200000;
+    let fee = 5000.;
     let (memo, setMemo) = React.useState(_ => EnhanceTxInput.{text: "", value: Some("")});
 
     <div className={Css.merge([Styles.container, Styles.disable(isActive)])}>
@@ -126,7 +108,7 @@ module SubmitTxStep = {
           value={SubmitMsg.toString(msg)}
           size=Text.Md
           spacing={Text.Em(0.03)}
-          weight=Text.Bold
+          weight=Text.Semibold
         />
       </div>
       <VSpacing size=Spacing.md />
@@ -138,42 +120,36 @@ module SubmitTxStep = {
        | WithdrawReward(validator) =>
          <WithdrawRewardMsg validator setMsgsOpt address={account.address} />
        }}
-      <VSpacing size=Spacing.md />
-      <EnhanceTxInput
-        width=115
-        inputData=gas
-        setInputData=setGas
-        parse=int_of_string_opt
-        msg="Gas"
-        errMsg="Invalid amount"
-        code=true
-      />
-      <VSpacing size=Spacing.md />
-      <EnhanceTxInput
-        width=115
-        inputData=fee
-        setInputData=setFee
-        parse=Parse.getBandAmount
-        msg="Fee (BAND)"
-        errMsg="Invalid amount"
-        code=true
-      />
-      <VSpacing size=Spacing.md />
+      <VSpacing size=Spacing.sm />
       <EnhanceTxInput
         width=300
         inputData=memo
         setInputData=setMemo
         parse={newVal => {newVal->Js.String.length <= 32 ? Some(newVal) : None}}
-        msg="Memo"
+        msg="Memo (optional)"
         errMsg="Exceed limit length"
+        placeholder="Insert memo"
+        code=true
       />
+      <VSpacing size=Spacing.lg />
+      <VSpacing size=Spacing.md />
+      <div className=Styles.info>
+        <Text
+          value="Transaction Fee"
+          size=Text.Lg
+          spacing={Text.Em(0.03)}
+          nowrap=true
+          block=true
+        />
+        <Text value="0.005 BAND" code=true />
+      </div>
+      <VSpacing size=Spacing.lg />
+      <VSpacing size=Spacing.md />
       <div
         className=Styles.nextBtn
         onClick={_ => {
           let rawTxOpt =
-            {let%Opt fee' = fee.value;
-             let%Opt gas' = gas.value;
-             let%Opt memo' = memo.value;
+            {let%Opt memo' = memo.value;
              let%Opt msgs = msgsOpt;
 
              Some(
@@ -181,8 +157,8 @@ module SubmitTxStep = {
                  ~address=account.address,
                  ~msgs,
                  ~chainID=account.chainID,
-                 ~feeAmount=fee' |> Js.Float.toString,
-                 ~gas=gas' |> string_of_int,
+                 ~feeAmount=fee |> Js.Float.toString,
+                 ~gas=gas |> string_of_int,
                  ~memo=memo',
                  (),
                ),

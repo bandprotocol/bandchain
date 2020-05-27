@@ -52,6 +52,8 @@ let make = (~address, ~receiver, ~setMsgsOpt) => {
            <Text
              value={balance |> Coin.getBandAmountFromCoins |> Format.fPretty(~digits=6)}
              code=true
+             size=Text.Lg
+             weight=Text.Semibold
            />
            <Text value=" BAND" code=true />
          </div>

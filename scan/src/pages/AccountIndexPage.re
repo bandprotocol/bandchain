@@ -3,13 +3,7 @@ module Styles = {
 
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
-  let addressContainer =
-    style([
-      display(`flex),
-      flexDirection(`row),
-      justifyContent(`spaceBetween),
-      alignItems(`center),
-    ]);
+  let addressContainer = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
   let logo = style([width(`px(50)), marginRight(`px(10))]);
 
@@ -56,6 +50,7 @@ module Styles = {
       borderRadius(`px(6)),
       cursor(`pointer),
       boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), rgba(20, 32, 184, 0.2))),
+      borderRadius(`px(10)),
     ]);
 };
 
@@ -184,12 +179,13 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
       <VSpacing size=Spacing.sm />
       <div className=Styles.addressContainer>
         <AddressRender address position=AddressRender.Title copy=true />
+        <HSpacing size=Spacing.md />
         <div className=Styles.button onClick={_ => {send()}}>
           <Text
             value="Send BAND"
             size=Text.Lg
             block=true
-            color=Colors.bandBlue
+            color=Colors.blue7
             nowrap=true
             weight=Text.Medium
           />

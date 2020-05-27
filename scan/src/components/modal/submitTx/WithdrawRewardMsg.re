@@ -59,6 +59,8 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
            <Text
              value={reward |> Coin.getBandAmountFromCoin |> Format.fPretty(~digits=6)}
              code=true
+             size=Text.Lg
+             weight=Text.Semibold
            />
            <Text value=" BAND" code=true />
          </div>
