@@ -134,7 +134,6 @@ module StakingInfo = {
         dispatchModal(OpenModal(SubmitTx(SubmitMsg.Undelegate(validatorAddress))));
       let withdrawReward = () =>
         dispatchModal(OpenModal(SubmitTx(SubmitMsg.WithdrawReward(validatorAddress))));
-
       <div>
         <VSpacing size=Spacing.md />
         {rewardAmount |> Coin.getBandAmountFromCoin > 0.
@@ -172,7 +171,7 @@ module StakingInfo = {
           <button
             className={Styles.button(150)}
             onClick={_ => {withdrawReward()}}
-            disabled={rewardAmount.amount == 0.}>
+            disabled={rewardAmount.amount < 1000000.}>
             <Text value="Withdraw Reward" />
           </button>
         </Row>
