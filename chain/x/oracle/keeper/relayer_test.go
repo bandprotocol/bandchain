@@ -80,6 +80,20 @@ func TestSendOracleResponse(t *testing.T) {
 			false,
 			fmt.Sprintf("failed to get next sequence for channel id: %s, port: %s", TestChannelA, TestPortA),
 		},
+		{
+			"failed to get channel capability for id",
+			func(logger log.Logger) (*app.BandApp, *app.BandApp, sdk.Context) {
+				chainA, chainB := createTestChains(logger)
+				createTestChainConnection(chainA, chainB)
+				createTestChannel(chainA, chainB)
+
+				ctx := getContext(chainA)
+				chainA.IBCKeeper.ChannelKeeper.SetNextSequenceSend(ctx, TestPortA, TestChannelA, 1)
+				return chainA, chainB, ctx
+			},
+			false,
+			fmt.Sprintf("failed to get channel capability for id: %s, port: %s", TestChannelA, TestPortA),
+		},
 	}
 
 	for _, testcase := range testCases {
