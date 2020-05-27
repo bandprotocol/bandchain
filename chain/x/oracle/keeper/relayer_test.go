@@ -7,7 +7,10 @@ import (
 	"github.com/bandprotocol/bandchain/chain/app"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	channeltypes "github.com/cosmos/cosmos-sdk/x/ibc/04-channel/types"
 	"github.com/stretchr/testify/require"
+	abci "github.com/tendermint/tendermint/abci/types"
+	tmkv "github.com/tendermint/tendermint/libs/kv"
 	"github.com/tendermint/tendermint/libs/log"
 )
 
@@ -29,67 +32,72 @@ func (t *TestErrLogger) With(keyvals ...interface{}) log.Logger {
 
 func TestSendOracleResponse(t *testing.T) {
 
+	// capName := ibctypes.ChannelCapabilityPath(TestPortA, TestChannelA)
+
 	testCases := []struct {
 		description      string
-		exec             func(log.Logger) (*app.BandApp, *app.BandApp, sdk.Context)
+		exec             func(log.Logger) (*app.BandApp, sdk.Context)
 		expectedPass     bool
 		expectedErrorLog string
 	}{
 		{
-			"failed to get channel",
-			func(logger log.Logger) (*app.BandApp, *app.BandApp, sdk.Context) {
+			"success send IBC packet",
+			func(logger log.Logger) (*app.BandApp, sdk.Context) {
 
-				fmt.Println("start")
 				chainA, chainB := createTestChains(logger)
-				fmt.Println("test chain")
+				ctx := getContext(chainA)
+
+				// Error: failed to get channel capability for id: testchannela, port: testporta
+				// cap, err := chainA.OracleKeeper.ScopedKeeper.NewCapability(ctx, capName)
+				// require.NoError(t, err)
+				// err = chainA.OracleKeeper.ScopedKeeper.ClaimCapability(ctx, cap, capName)
+				// require.NoError(t, err)
 
 				createTestChainConnection(chainA, chainB)
-				fmt.Println("connection")
-				// createTestChannel(chainA, chainB)
-				fmt.Println("channel")
+				createTestChannel(chainA, chainB)
 
-				ctx := getContext(chainA)
+				ctx = getContext(chainA)
 				chainA.IBCKeeper.ChannelKeeper.SetNextSequenceSend(ctx, TestPortA, TestChannelA, 1)
 
-				return chainA, chainB, ctx
+				return chainA, ctx
 			},
-			false,
-			fmt.Sprintf("failed to get channel with id: %s, port: %s", TestChannelA, TestPortA),
+			true,
+			"",
 		},
 		{
 			"failed to get channel",
-			func(logger log.Logger) (*app.BandApp, *app.BandApp, sdk.Context) {
+			func(logger log.Logger) (*app.BandApp, sdk.Context) {
 				chainA, chainB := createTestChains(logger)
 				createTestChainConnection(chainA, chainB)
 				ctx := getContext(chainA)
 				chainA.IBCKeeper.ChannelKeeper.SetNextSequenceSend(ctx, TestPortA, TestChannelA, 1)
-				return chainA, chainB, ctx
+				return chainA, ctx
 			},
 			false,
 			fmt.Sprintf("failed to get channel with id: %s, port: %s", TestChannelA, TestPortA),
 		},
 		{
 			"failed to get next sequence for channel id",
-			func(logger log.Logger) (*app.BandApp, *app.BandApp, sdk.Context) {
+			func(logger log.Logger) (*app.BandApp, sdk.Context) {
 				chainA, chainB := createTestChains(logger)
 				createTestChainConnection(chainA, chainB)
 				createTestChannel(chainA, chainB)
 				ctx := getContext(chainA)
-				return chainA, chainB, ctx
+				return chainA, ctx
 			},
 			false,
 			fmt.Sprintf("failed to get next sequence for channel id: %s, port: %s", TestChannelA, TestPortA),
 		},
 		{
 			"failed to get channel capability for id",
-			func(logger log.Logger) (*app.BandApp, *app.BandApp, sdk.Context) {
+			func(logger log.Logger) (*app.BandApp, sdk.Context) {
 				chainA, chainB := createTestChains(logger)
 				createTestChainConnection(chainA, chainB)
 				createTestChannel(chainA, chainB)
 
 				ctx := getContext(chainA)
 				chainA.IBCKeeper.ChannelKeeper.SetNextSequenceSend(ctx, TestPortA, TestChannelA, 1)
-				return chainA, chainB, ctx
+				return chainA, ctx
 			},
 			false,
 			fmt.Sprintf("failed to get channel capability for id: %s, port: %s", TestChannelA, TestPortA),
@@ -98,7 +106,7 @@ func TestSendOracleResponse(t *testing.T) {
 
 	for _, testcase := range testCases {
 		logger := &TestErrLogger{}
-		chainA, _, ctx := testcase.exec(logger)
+		chainA, ctx := testcase.exec(logger)
 
 		res := types.OracleResponsePacketData{
 			ClientID:      "alice",
@@ -110,10 +118,20 @@ func TestSendOracleResponse(t *testing.T) {
 			Result:        []byte("4bb10e0000000000"),
 		}
 
-		fmt.Println("logger.errLog", logger.errLog)
 		chainA.OracleKeeper.SendOracleResponse(ctx, TestPortA, TestChannelA, res)
 		if !testcase.expectedPass {
 			require.Equal(t, testcase.expectedErrorLog, logger.errLog)
+		} else {
+			events := ctx.EventManager().ABCIEvents()
+
+			expectedEvent := sdk.Event{
+				Type:       channeltypes.EventTypeSendPacket,
+				Attributes: []tmkv.Pair{},
+			}
+
+			events = ctx.EventManager().ABCIEvents()
+			require.Equal(t, 1, len(events))
+			require.Equal(t, abci.Event(expectedEvent), events[0])
 		}
 	}
 }
