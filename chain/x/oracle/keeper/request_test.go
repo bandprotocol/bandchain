@@ -135,3 +135,124 @@ func TestGetRandomValidatorsTooBigSize(t *testing.T) {
 	_, err := k.GetRandomValidators(ctx, 9999, int64(1))
 	require.Error(t, err)
 }
+
+func TestSaveResult(t *testing.T) {
+	_, ctx, k := createTestInput()
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589090), 0))
+
+	oracleScriptID := types.OracleScriptID(1)
+	calldata := []byte("CALLDATA")
+	vals := []sdk.ValAddress{Validator1.ValAddress, Validator2.ValAddress, Validator3.ValAddress}
+	minCount := int64(1)
+	requestHeight := int64(999)
+	requestTime := int64(1581589700)
+	clientID := "beeb"
+	ibcInfo := types.NewIBCInfo("source_port", "source_channel")
+	rawRequestID := []types.ExternalID{1, 2, 3}
+	resolveStatus := types.ResolveStatus_Success
+	result := []byte("RESULT")
+	id := k.AddRequest(ctx, types.NewRequest(
+		oracleScriptID, calldata, vals, minCount, requestHeight,
+		requestTime, clientID, &ibcInfo, rawRequestID))
+
+	res := k.SaveResult(ctx, id, resolveStatus, result)
+
+	require.Equal(t, clientID, res.ClientID)
+	require.Equal(t, id, res.RequestID)
+	require.Equal(t, int64(0), res.AnsCount)
+	require.Equal(t, requestTime, res.RequestTime)
+	require.Equal(t, resolveStatus, res.ResolveStatus)
+	require.Equal(t, int64(1581589090), res.ResolveTime)
+	require.Equal(t, result, res.Result)
+}
+
+func TestProcessExpiredRequests(t *testing.T) {
+	_, ctx, k := createTestInput()
+	ctx = ctx.WithBlockHeight(5000)
+	k.SetValidatorReportInfo(ctx, Validator1.ValAddress, types.NewValidatorReportInfo(Validator1.ValAddress, 1))
+
+	oracleScriptID := types.OracleScriptID(1)
+	calldata := []byte("CALLDATA")
+	vals := []sdk.ValAddress{Validator1.ValAddress}
+	minCount := int64(1)
+	requestHeight := int64(4000)
+	requestTime := int64(1581589700)
+	clientID := "beeb"
+	ibcInfo := types.NewIBCInfo("source_port", "source_channel")
+	rawRequestID := []types.ExternalID{1, 2}
+
+	request1 := types.NewRequest(
+		oracleScriptID, calldata, vals, minCount, requestHeight,
+		requestTime, clientID, &ibcInfo, rawRequestID)
+	request2 := types.NewRequest(
+		oracleScriptID, calldata, vals, 999, requestHeight,
+		requestTime, clientID, &ibcInfo, rawRequestID)
+	request3 := types.NewRequest(
+		oracleScriptID, calldata, vals, minCount, 1000000,
+		requestTime, clientID, &ibcInfo, rawRequestID)
+
+	id1 := k.AddRequest(ctx, request1)
+	id2 := k.AddRequest(ctx, request2)
+	id3 := k.AddRequest(ctx, request3)
+
+	rq1, err := k.GetRequest(ctx, id1)
+	require.NoError(t, err)
+	require.Equal(t, rq1, request1)
+	rq2, err := k.GetRequest(ctx, id2)
+	require.NoError(t, err)
+	require.Equal(t, rq2, request2)
+	rq3, err := k.GetRequest(ctx, id3)
+	require.NoError(t, err)
+	require.Equal(t, rq3, request3)
+
+	reports1 := k.GetReports(ctx, id1)
+	reports2 := k.GetReports(ctx, id2)
+	reports3 := k.GetReports(ctx, id3)
+
+	require.Equal(t, []types.Report(nil), reports1)
+	require.Equal(t, []types.Report(nil), reports2)
+	require.Equal(t, []types.Report(nil), reports3)
+
+	rep := types.NewReport(
+		Validator1.ValAddress, []types.RawReport{
+			types.NewRawReport(1, 1, []byte("data1/1")),
+			types.NewRawReport(2, 0, []byte("data2/1")),
+		},
+	)
+
+	k.AddReport(ctx, id1, rep)
+	k.AddReport(ctx, id2, rep)
+	k.AddReport(ctx, id3, rep)
+
+	k.ProcessExpiredRequests(ctx)
+
+	reports1 = k.GetReports(ctx, id1)
+	reports2 = k.GetReports(ctx, id2)
+	reports3 = k.GetReports(ctx, id3)
+
+	info := k.GetValidatorReportInfoWithDefault(ctx, Validator1.ValAddress)
+	require.Equal(t, types.NewValidatorReportInfo(Validator1.ValAddress, 0), info)
+
+	require.Equal(t, []types.Report(nil), reports1)
+	require.Equal(t, []types.Report(nil), reports2)
+	require.Equal(t, []types.Report{rep}, reports3)
+
+	_, err = k.GetRequest(ctx, id1)
+	require.Error(t, err)
+	_, err = k.GetRequest(ctx, id2)
+	require.Error(t, err)
+	rq3, err = k.GetRequest(ctx, id3)
+	require.NoError(t, err)
+	require.Equal(t, rq3, request3)
+}
+
+// TODO: revisit this test
+func TestProcessExpiredRequestsNoRequestInStore(t *testing.T) {
+	_, ctx, k := createTestInput()
+
+	before := ctx.MultiStore()
+	k.ProcessExpiredRequests(ctx)
+	after := ctx.MultiStore()
+
+	require.Equal(t, before, after)
+}
