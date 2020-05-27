@@ -23,7 +23,7 @@ let make = (~address, ~validator, ~setMsgsOpt) =>
     let validatorInfoSub = ValidatorSub.get(validator);
     let delegationSub = DelegationSub.getStakeByValiator(address, validator);
 
-    let allSub = Sub.all3(accountSub, validatorInfoSub, delegationSub);
+    let allSub = Sub.all2(accountSub, validatorInfoSub);
 
     let (amount, setAmount) = React.useState(_ => EnhanceTxInput.empty);
 
@@ -55,7 +55,7 @@ let make = (~address, ~validator, ~setMsgsOpt) =>
           block=true
         />
         {switch (allSub) {
-         | Data(({balance}, _, _)) =>
+         | Data(({balance}, _)) =>
            <div>
              <Text
                value={balance |> Coin.getBandAmountFromCoins |> Format.fPretty(~digits=6)}
@@ -71,7 +71,7 @@ let make = (~address, ~validator, ~setMsgsOpt) =>
       <div className=Styles.info>
         <Text value="Delegate To" size=Text.Lg spacing={Text.Em(0.03)} nowrap=true block=true />
         {switch (allSub) {
-         | Data((_, {moniker}, _)) =>
+         | Data((_, {moniker})) =>
            <div className=Styles.validator>
              <Text value=moniker code=true ellipsis=true align=Text.Right />
              <Text
