@@ -69,12 +69,10 @@ func handleMsgEditDataSource(ctx sdk.Context, k Keeper, m MsgEditDataSource) (*s
 			return nil, sdkerrors.Wrapf(types.ErrUncompressionFailed, err.Error())
 		}
 	}
-	err = k.EditDataSource(ctx, m.DataSourceID, types.NewDataSource(
+	// Can safely use MustEdit here, as we already checked that the data source exists above.
+	k.MustEditDataSource(ctx, m.DataSourceID, types.NewDataSource(
 		m.Owner, m.Name, m.Description, k.AddFile(m.Executable),
 	))
-	if err != nil {
-		return nil, err
-	}
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeEditDataSource,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", m.DataSourceID)),

@@ -1,6 +1,10 @@
 package oracle_test
 
 import (
+	"bytes"
+	gz "compress/gzip"
+	"crypto/sha256"
+	"encoding/hex"
 	"testing"
 	"time"
 
@@ -10,16 +14,6 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
-
-// func mockDataSource(ctx sdk.Context, keeper Keeper) (*sdk.Result, error) {
-// 	owner := sdk.AccAddress([]byte("owner"))
-// 	name := "data_source_1"
-// 	description := "description"
-// 	executable := []byte("executable")
-// 	sender := sdk.AccAddress([]byte("sender"))
-// 	msg := types.NewMsgCreateDataSource(owner, name, description, executable, sender)
-// 	return handleMsgCreateDataSource(ctx, keeper, msg)
-// }
 
 // func mockOracleScript(ctx sdk.Context, keeper Keeper) (*sdk.Result, error) {
 // 	owner := sdk.AccAddress([]byte("owner"))
@@ -33,94 +27,145 @@ import (
 // 	return handleMsgCreateOracleScript(ctx, keeper, msg)
 // }
 
-// func TestCreateDataSourceSuccess(t *testing.T) {
-// 	ctx, keeper := keep.CreateTestInput(t, false)
+func TestCreateDataSourceSuccess(t *testing.T) {
+	_, ctx, keeper := createTestInput()
 
-// 	_, err := mockDataSource(ctx, keeper)
-// 	require.Nil(t, err)
+	owner := Owner.Address
+	name := "data_source_1"
+	description := "description"
+	executable := []byte("executable")
+	msg := types.NewMsgCreateDataSource(owner, name, description, executable, Alice.Address)
+	res, err := oracle.NewHandler(keeper)(ctx, msg)
+	defer deleteFile(executable)
+	require.Nil(t, err)
+	require.NotNil(t, res)
 
-// 	dataSource, err := keeper.GetDataSource(ctx, 1)
-// 	require.Nil(t, err)
-// 	require.Equal(t, sdk.AccAddress([]byte("owner")), dataSource.Owner)
-// 	require.Equal(t, "data_source_1", dataSource.Name)
-// 	require.Equal(t, []byte("executable"), dataSource.Executable)
+	dataSource, err := keeper.GetDataSource(ctx, 1)
+	require.Nil(t, err)
+	require.Equal(t, Owner.Address, dataSource.Owner)
+	require.Equal(t, name, dataSource.Name)
+	executableHash := sha256.Sum256(executable)
+	expectFilename := hex.EncodeToString(executableHash[:])
+	require.Equal(t, expectFilename, dataSource.Filename)
+}
 
-// 	events := ctx.EventManager().Events()
-// 	require.Equal(t, 1, len(events))
-// 	require.Equal(t, sdk.Event{
-// 		Type:       EventTypeCreateDataSource,
-// 		Attributes: []tmkv.Pair{{Key: []byte(AttributeKeyID), Value: []byte("1")}},
-// 	}, events[0])
-// }
+func TestCreateGzippedExecutableDataSourceSuccess(t *testing.T) {
+	_, ctx, keeper := createTestInput()
 
-// func TestEditDataSourceSuccess(t *testing.T) {
-// 	ctx, keeper := keep.CreateTestInput(t, false)
-// 	_, err := mockDataSource(ctx, keeper)
-// 	require.Nil(t, err)
+	owner := Owner.Address
+	name := "data_source_1"
+	description := "description"
+	executable := []byte("executable")
 
-// 	newOwner := sdk.AccAddress([]byte("anotherowner"))
-// 	newName := "data_source_2"
-// 	newDescription := "new_description"
-// 	newExecutable := []byte("executable_2")
-// 	sender := sdk.AccAddress([]byte("owner"))
+	// Gzipped executable file
+	var buf bytes.Buffer
+	zw := gz.NewWriter(&buf)
+	zw.Write(executable)
+	zw.Close()
+	gzippedExecutable := buf.Bytes()
 
-// 	msg := types.NewMsgEditDataSource(1, newOwner, newName, newDescription, newExecutable, sender)
-// 	_, err = handleMsgEditDataSource(ctx, keeper, msg)
-// 	require.Nil(t, err)
+	sender := Alice.Address
+	msg := types.NewMsgCreateDataSource(owner, name, description, gzippedExecutable, sender)
+	res, err := oracle.NewHandler(keeper)(ctx, msg)
+	defer deleteFile(executable)
+	require.NoError(t, err)
+	require.NotNil(t, res)
 
-// 	dataSource, err := keeper.GetDataSource(ctx, 1)
-// 	require.Nil(t, err)
-// 	require.Equal(t, newOwner, dataSource.Owner)
-// 	require.Equal(t, newName, dataSource.Name)
-// 	require.Equal(t, newDescription, dataSource.Description)
-// 	require.Equal(t, newExecutable, dataSource.Executable)
+	dataSource, err := keeper.GetDataSource(ctx, 1)
+	require.Nil(t, err)
+	require.Equal(t, Owner.Address, dataSource.Owner)
+	require.Equal(t, name, dataSource.Name)
+	executableHash := sha256.Sum256(executable)
+	expectFilename := hex.EncodeToString(executableHash[:])
+	require.Equal(t, expectFilename, dataSource.Filename)
+}
 
-// 	events := ctx.EventManager().Events()
-// 	require.Equal(t, 2, len(events))
-// 	require.Equal(t, sdk.Event{
-// 		Type:       EventTypeCreateDataSource,
-// 		Attributes: []tmkv.Pair{{Key: []byte(AttributeKeyID), Value: []byte("1")}},
-// 	}, events[0])
-// 	require.Equal(t, sdk.Event{
-// 		Type:       EventTypeEditDataSource,
-// 		Attributes: []tmkv.Pair{{Key: []byte(AttributeKeyID), Value: []byte("1")}},
-// 	}, events[1])
-// }
+func TestCreateGzippedExecutableDataSourceFail(t *testing.T) {
+	_, ctx, keeper := createTestInput()
 
-// func TestEditDataSourceByNotOwner(t *testing.T) {
-// 	ctx, keeper := keep.CreateTestInput(t, false)
-// 	mockDataSource(ctx, keeper)
+	owner := Owner.Address
+	name := "data_source_1"
+	description := "description"
+	executable := []byte("executable")
 
-// 	newOwner := sdk.AccAddress([]byte("anotherowner"))
-// 	newName := "data_source_2"
-// 	newDescription := "new_description"
-// 	newExecutable := []byte("executable_2")
-// 	sender := sdk.AccAddress([]byte("sender"))
+	// Gzipped executable file
+	var buf bytes.Buffer
+	zw := gz.NewWriter(&buf)
+	zw.Write(executable)
+	zw.Close()
+	gzippedExecutable := buf.Bytes()[:5]
 
-// 	msg := types.NewMsgEditDataSource(1, newOwner, newName, newDescription, newExecutable, sender)
-// 	_, err := handleMsgEditDataSource(ctx, keeper, msg)
-// 	require.NotNil(t, err)
-// }
+	sender := Alice.Address
+	msg := types.NewMsgCreateDataSource(owner, name, description, gzippedExecutable, sender)
+	res, err := oracle.NewHandler(keeper)(ctx, msg)
+	require.Error(t, err)
+	require.Nil(t, res)
+}
 
-// func TestCreateOracleScriptSuccess(t *testing.T) {
-// 	ctx, keeper := keep.CreateTestInput(t, false)
+func TestEditDataSourceSuccess(t *testing.T) {
+	_, ctx, keeper := createTestInput()
 
-// 	_, err := mockOracleScript(ctx, keeper)
-// 	require.Nil(t, err)
+	name := "data_source_1"
+	description := "description"
+	executable := []byte("executable")
+	msg := types.NewMsgCreateDataSource(Owner.Address, name, description, executable, Alice.Address)
+	defer deleteFile(executable)
+	oracle.NewHandler(keeper)(ctx, msg)
 
-// 	expect, err := keeper.GetOracleScript(ctx, 1)
-// 	require.Nil(t, err)
-// 	require.Equal(t, sdk.AccAddress([]byte("owner")), expect.Owner)
-// 	require.Equal(t, "oracle_script_1", expect.Name)
-// 	require.Equal(t, []byte("code"), expect.Code)
+	newName := "beeb"
+	newDescription := "new_description"
+	newExecutable := []byte("executable2")
+	msgEdit := types.NewMsgEditDataSource(1, Owner.Address, newName, newDescription, newExecutable, Owner.Address)
+	defer deleteFile(newExecutable)
+	res, err := oracle.NewHandler(keeper)(ctx, msgEdit)
+	require.NoError(t, err)
+	require.NotNil(t, res)
 
-// 	events := ctx.EventManager().Events()
-// 	require.Equal(t, 1, len(events))
-// 	require.Equal(t, sdk.Event{
-// 		Type:       EventTypeCreateOracleScript,
-// 		Attributes: []tmkv.Pair{{Key: []byte(AttributeKeyID), Value: []byte("1")}},
-// 	}, events[0])
-// }
+	dataSource, err := keeper.GetDataSource(ctx, 1)
+	require.Nil(t, err)
+	require.Equal(t, Owner.Address, dataSource.Owner)
+	require.Equal(t, newName, dataSource.Name)
+	executableHash := sha256.Sum256(newExecutable)
+	expectFilename := hex.EncodeToString(executableHash[:])
+	require.Equal(t, expectFilename, dataSource.Filename)
+}
+
+func TestEditDataSourceFail(t *testing.T) {
+	_, ctx, keeper := createTestInput()
+
+	name := "data_source_1"
+	description := "description"
+	executable := []byte("executable")
+	msg := types.NewMsgCreateDataSource(Owner.Address, name, description, executable, Alice.Address)
+	oracle.NewHandler(keeper)(ctx, msg)
+	defer deleteFile(executable)
+
+	newName := "beeb"
+	newDescription := "new_description"
+	newExecutable := []byte("executable2")
+	wrongDID := types.DataSourceID(99999)
+
+	msgEdit := types.NewMsgEditDataSource(wrongDID, Owner.Address, newName, newDescription, newExecutable, Owner.Address)
+	res, err := oracle.NewHandler(keeper)(ctx, msgEdit)
+	require.Error(t, err)
+	require.Nil(t, res)
+
+	wrongSender := Bob.Address
+	msgEdit = types.NewMsgEditDataSource(1, Owner.Address, newName, newDescription, newExecutable, wrongSender)
+	res, err = oracle.NewHandler(keeper)(ctx, msgEdit)
+	require.Error(t, err)
+	require.Nil(t, res)
+
+	var buf bytes.Buffer
+	zw := gz.NewWriter(&buf)
+	zw.Write(executable)
+	zw.Close()
+	wrongGzippedExecutable := buf.Bytes()[:5]
+	msgEdit = types.NewMsgEditDataSource(1, Owner.Address, newName, newDescription, wrongGzippedExecutable, Owner.Address)
+	res, err = oracle.NewHandler(keeper)(ctx, msgEdit)
+	require.Error(t, err)
+	require.Nil(t, res)
+}
 
 // func TestEditOracleScriptSuccess(t *testing.T) {
 // 	ctx, keeper := keep.CreateTestInput(t, false)

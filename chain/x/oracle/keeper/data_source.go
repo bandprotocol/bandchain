@@ -44,18 +44,14 @@ func (k Keeper) AddDataSource(ctx sdk.Context, dataSource types.DataSource) type
 	return id
 }
 
-// EditDataSource edits the given data source by id and flushes it to the storage.
-func (k Keeper) EditDataSource(ctx sdk.Context, id types.DataSourceID, new types.DataSource) error {
-	dataSource, err := k.GetDataSource(ctx, id)
-	if err != nil {
-		return err
-	}
+// MustEditDataSource edits the given data source by id and flushes it to the storage.
+func (k Keeper) MustEditDataSource(ctx sdk.Context, id types.DataSourceID, new types.DataSource) {
+	dataSource := k.MustGetDataSource(ctx, id)
 	dataSource.Owner = new.Owner
 	dataSource.Name = modify(dataSource.Name, new.Name)
 	dataSource.Description = modify(dataSource.Description, new.Description)
 	dataSource.Filename = modify(dataSource.Filename, new.Filename)
 	k.SetDataSource(ctx, id, dataSource)
-	return nil
 }
 
 // GetAllDataSources returns the list of all data sources in the store, or nil if there is none.
