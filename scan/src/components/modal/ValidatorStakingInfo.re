@@ -136,7 +136,7 @@ module StakingInfo = {
         dispatchModal(OpenModal(SubmitTx(SubmitMsg.WithdrawReward(validatorAddress))));
       <div>
         <VSpacing size=Spacing.md />
-        {rewardAmount.amount > 1000000.
+        {rewardAmount.amount > 1.
            ? <div>
                <div className=Styles.warning>
                  <Text
@@ -171,7 +171,7 @@ module StakingInfo = {
           <button
             className={Styles.button(150)}
             onClick={_ => {withdrawReward()}}
-            disabled={rewardAmount.amount < 1000000.}>
+            disabled={rewardAmount.amount < 1.}>
             <Text value="Withdraw Reward" />
           </button>
         </Row>
