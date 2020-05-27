@@ -7,9 +7,10 @@ import (
 )
 
 type Context struct {
-	client    *rpchttp.HTTP
-	validator sdk.ValAddress
-	gasPrices sdk.DecCoins
-	keys      chan keyring.Info
-	executor  executor
+	client             *rpchttp.HTTP
+	chainRestServerURI string
+	validator          sdk.ValAddress
+	gasPrices          sdk.DecCoins
+	keys               chan keyring.Info
+	executor           executor
 }

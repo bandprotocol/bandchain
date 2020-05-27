@@ -65,6 +65,7 @@ func runCmd(c *Context) *cobra.Command {
 			for _, key := range keys {
 				c.keys <- key
 			}
+			c.chainRestServerURI = cfg.ChainRestServerURI
 			c.validator, err = sdk.ValAddressFromBech32(cfg.Validator)
 			if err != nil {
 				return err
@@ -98,10 +99,12 @@ func runCmd(c *Context) *cobra.Command {
 	cmd.Flags().String(flags.FlagNode, "tcp://localhost:26657", "RPC url to BandChain node")
 	cmd.Flags().String(flagValidator, "", "validator address")
 	cmd.Flags().String(flagExecutor, "lambda:https://dmptasv4j8.execute-api.ap-southeast-1.amazonaws.com/bash-execute", "executor name and url for executing the data source script")
+	cmd.Flags().String(flagChainRestServerURI, "http://localhost:1317", "chain rest-server URI")
 	cmd.Flags().String(flags.FlagGasPrices, "", "gas prices for report transaction")
 	cmd.Flags().String(flagLogLevel, "info", "set the logger level")
 	viper.BindPFlag(flags.FlagChainID, cmd.Flags().Lookup(flags.FlagChainID))
 	viper.BindPFlag(flags.FlagNode, cmd.Flags().Lookup(flags.FlagNode))
+	viper.BindPFlag(flagChainRestServerURI, cmd.Flags().Lookup(flagChainRestServerURI))
 	viper.BindPFlag(flagValidator, cmd.Flags().Lookup(flagValidator))
 	viper.BindPFlag(flags.FlagGasPrices, cmd.Flags().Lookup(flags.FlagGasPrices))
 	viper.BindPFlag(flagLogLevel, cmd.Flags().Lookup(flagLogLevel))

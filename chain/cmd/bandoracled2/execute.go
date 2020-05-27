@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 
+	"github.com/levigross/grequests"
+
 	sdkCtx "github.com/cosmos/cosmos-sdk/client/context"
 	ckeys "github.com/cosmos/cosmos-sdk/client/keys"
 	codecstd "github.com/cosmos/cosmos-sdk/codec/std"
@@ -70,20 +72,17 @@ func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawR
 }
 
 // GetExecutable fetches data source executable using the provided client.
-func GetExecutable(c *Context, l *Logger, id int) ([]byte, error) {
-	l.Debug(":magnifying_glass_tilted_left: Fetching data source #%d from the remote node", id)
-	res, _, err := sdkCtx.CLIContext{Client: c.client}.Query(
-		fmt.Sprintf("custom/oracle/%s/%d", otypes.QueryDataSourceByID, id),
-	)
+func GetExecutable(c *Context, l *Logger, hash string) ([]byte, error) {
+	l.Debug(":magnifying_glass_tilted_left: Fetching data source hash: %s from the endpoint", hash)
+
+	res, err := grequests.Get(fmt.Sprintf(`%s/bandchain/getfile/%s`, c.chainRestServerURI, hash), nil)
 	if err != nil {
+		l.Error(":exploding_head: Failed to get data source with error: %s", err.Error())
 		return nil, err
 	}
 
-	var dataSource otypes.DataSourceQuerierInfo
-	err = cdc.UnmarshalJSON(res, &dataSource)
-	if err != nil {
-		return nil, err
-	}
-	l.Debug(":balloon: Received data source #%d content: %q", id, dataSource.Executable[:32])
-	return dataSource.Executable, nil
+	resBytes := res.Bytes()
+
+	l.Debug(":balloon: Received data source hash: %s content: %q", hash, resBytes[:32])
+	return resBytes, nil
 }

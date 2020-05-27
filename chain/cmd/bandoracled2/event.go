@@ -9,14 +9,16 @@ import (
 )
 
 type rawRequest struct {
-	dataSourceID otypes.DataSourceID
-	externalID   otypes.ExternalID
-	calldata     string
+	dataSourceID   otypes.DataSourceID
+	dataSourceHash string
+	externalID     otypes.ExternalID
+	calldata       string
 }
 
 // GetRawRequests returns the list of all raw data requests in the given log.
 func GetRawRequests(log sdk.ABCIMessageLog) ([]rawRequest, error) {
 	dataSourceIDs := GetEventValues(log, otypes.EventTypeRawRequest, otypes.AttributeKeyDataSourceID)
+	dataSourceHashList := GetEventValues(log, otypes.EventTypeRawRequest, otypes.AttributeKeyDataSourceHash)
 	externalIDs := GetEventValues(log, otypes.EventTypeRawRequest, otypes.AttributeKeyExternalID)
 	calldataList := GetEventValues(log, otypes.EventTypeRawRequest, otypes.AttributeKeyCalldata)
 
@@ -40,9 +42,10 @@ func GetRawRequests(log sdk.ABCIMessageLog) ([]rawRequest, error) {
 		}
 
 		reqs = append(reqs, rawRequest{
-			dataSourceID: otypes.DataSourceID(dataSourceID),
-			externalID:   otypes.ExternalID(externalID),
-			calldata:     calldataList[idx],
+			dataSourceID:   otypes.DataSourceID(dataSourceID),
+			dataSourceHash: dataSourceHashList[idx],
+			externalID:     otypes.ExternalID(externalID),
+			calldata:       calldataList[idx],
 		})
 	}
 	return reqs, nil
