@@ -3,6 +3,7 @@ package proof
 import (
 	"testing"
 
+	"github.com/bandprotocol/bandchain/chain/pkg/obi"
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	"github.com/stretchr/testify/require"
@@ -49,18 +50,18 @@ func TestEmptyClientID(t *testing.T) {
 	// RawByte is 79b5957c1004180120f3caf9f50528f7caf9f50530013a080aae0e0000000000
 	resPacket := oracle.OracleResponsePacketData{
 		ClientID:      "",
-		RequestID:     4,
+		RequestID:     1,
 		AnsCount:      1,
-		RequestTime:   1589536115,
-		ResolveTime:   1589536119,
+		RequestTime:   1590490752,
+		ResolveTime:   1590490756,
 		ResolveStatus: otypes.ResolveStatus(1),
-		Result:        mustDecodeString("0aae0e0000000000"),
+		Result:        mustDecodeString("568c0d0000000000"),
 	}
-	expectedResultHash := hexToBytes("37ca0d67535481e7575785dc828b730279f5620ba373c667c22a512cc48ae6dc")
+	expectedResultHash := hexToBytes("d25c9364f80885c52f4ccfbd82132f0e32bffd9dabfcfabd369511794e8c9d96")
 
 	require.Equal(t, expectedResultHash, tmhash.Sum(
 		append(
-			tmhash.Sum(oracle.ModuleCdc.MustMarshalBinaryBare(reqPacket)),
-			tmhash.Sum(oracle.ModuleCdc.MustMarshalBinaryBare(resPacket))...,
+			tmhash.Sum(obi.MustEncode(reqPacket)),
+			tmhash.Sum(obi.MustEncode(resPacket))...,
 		)))
 }

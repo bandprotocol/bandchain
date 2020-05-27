@@ -13,19 +13,13 @@ library Packets {
     {
         return
             abi.encodePacked(
-                hex"d9c58927", // Amino codec info for RequestPacket type
-                uint8(10), // (1 << 3) | 2
-                getEncodeLength(_self.clientId),
+                bytes4(uint32(bytes(_self.clientId).length)),
                 _self.clientId,
-                uint8(16), // (2 << 3) | 0
-                Utils.encodeVarintUnsigned(_self.oracleScriptId),
-                uint8(26), // (3 << 3) | 2
-                Utils.encodeVarintUnsigned(_self.params.length),
+                bytes8(_self.oracleScriptId),
+                bytes4(uint32(_self.params.length)),
                 _self.params,
-                uint8(32), // (4 << 3) | 0
-                Utils.encodeVarintUnsigned(_self.askCount),
-                uint8(40), // (5 << 3) | 0
-                Utils.encodeVarintUnsigned(_self.minCount)
+                bytes8(_self.askCount),
+                bytes8(_self.minCount)
             );
     }
 
