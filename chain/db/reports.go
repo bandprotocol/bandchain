@@ -20,7 +20,7 @@ func (b *BandDB) handleMsgReportData(
 		return err
 	}
 
-	for _, data := range msg.DataSet {
+	for _, data := range msg.RawReports {
 		var rawDataRequest RawDataRequests
 		err := b.tx.Where(&RawDataRequests{
 			RequestID:  int64(msg.RequestID),

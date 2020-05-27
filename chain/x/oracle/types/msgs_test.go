@@ -92,7 +92,7 @@ func TestMsgGetSignBytes(t *testing.T) {
 		string(NewMsgRequestData(1, []byte("calldata"), 10, 5, "client-id", GoodTestAddr).GetSignBytes()),
 	)
 	require.Equal(t,
-		`{"type":"oracle/Report","value":{"data_set":[{"data":"ZGF0YTE=","exit_code":1,"external_id":"1"},{"data":"ZGF0YTI=","exit_code":2,"external_id":"2"}],"reporter":"band1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq2vqal4","request_id":"1","validator":"cosmosvaloper1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqkh52tw"}}`,
+		`{"type":"oracle/Report","value":{"raw_reports":[{"data":"ZGF0YTE=","exit_code":1,"external_id":"1"},{"data":"ZGF0YTI=","exit_code":2,"external_id":"2"}],"reporter":"band1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq2vqal4","request_id":"1","validator":"cosmosvaloper1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqkh52tw"}}`,
 		string(NewMsgReportData(1, []RawReport{{1, 1, []byte("data1")}, {2, 2, []byte("data2")}}, GoodTestValAddr, GoodTestAddr).GetSignBytes()),
 	)
 	require.Equal(t,
