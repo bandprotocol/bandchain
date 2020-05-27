@@ -5,6 +5,20 @@ DIR=`dirname "$0"`
 # remove old genesis
 rm -rf ~/.band*
 
+mkdir -p pkg/owasm/res
+
+# Build genesis oracle scripts
+cd ../owasm/chaintests
+
+for f in *; do
+    if [ -d "$f" ]; then
+        RUSTFLAGS='-C link-arg=-s' cargo build --target wasm32-unknown-unknown --release --package $f
+        cp ../target/wasm32-unknown-unknown/release/$f.wasm ../../chain/pkg/owasm/res
+    fi
+done
+
+cd ../../chain
+
 # initial new node
 bandd init node-validator --chain-id bandchain --oracle band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs
 
@@ -101,3 +115,8 @@ bandd collect-gentxs
 
 # copy genesis to the proper location!
 cp ~/.bandd/config/genesis.json $DIR/genesis.json
+cp -r ~/.bandd/files $DIR
+
+cd ..
+
+docker-compose up -d --build
