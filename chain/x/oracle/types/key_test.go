@@ -49,3 +49,11 @@ func TestValidatorReportInfoStoreKey(t *testing.T) {
 
 	require.Equal(t, expectKeyByte, ValidatorReportInfoStoreKey(v))
 }
+
+func TestReporterStoreKey(t *testing.T) {
+	validatorAddress, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
+	reporterAddress, _ := sdk.AccAddressFromHex("b12jcqk37n9zltzrd2rkx7x8mhdkqaanazdq9d6t")
+	expectKeyByte, _ := hex.DecodeString("05b80f2a5df7d5710b15622d1a9f1e3830ded5bda8b12jcqk37n9zltzrd2rkx7x8mhdkqaanazdq9d6t")
+
+	require.Equal(t, expectKeyByte, ReporterStoreKey(validatorAddress, reporterAddress))
+}
