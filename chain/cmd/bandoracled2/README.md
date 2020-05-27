@@ -25,7 +25,7 @@
 ```
 cd ../owasm/chaintests/bitcoin_block_count/
 wasm-pack build .
-cd cd ../../../chain
+cd ../../../chain
 ```
 
 ### How to run Band Oracle 2
