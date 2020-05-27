@@ -3,6 +3,7 @@ package oracle_test
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -12,8 +13,10 @@ import (
 	"github.com/tendermint/tendermint/libs/cli"
 
 	bandapp "github.com/bandprotocol/bandchain/chain/app"
+	"github.com/bandprotocol/bandchain/chain/pkg/filecache"
 	"github.com/bandprotocol/bandchain/chain/simapp"
 	me "github.com/bandprotocol/bandchain/chain/x/oracle/keeper"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 var (
@@ -39,4 +42,51 @@ func deleteFile(data []byte) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func getTestDataSource() (ds types.DataSource, clear func()) {
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
+	f := filecache.New(dir)
+	filename := f.AddFile([]byte("executable"))
+	return types.NewDataSource(Owner.Address, "Test data source", "For test only", filename),
+		func() { deleteFile([]byte("executable")) }
+}
+
+func getTestOracleScript() (os types.OracleScript, clear func()) {
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
+	f := filecache.New(dir)
+	filename := f.AddFile([]byte("code"))
+	return types.NewOracleScript(Owner.Address, "Test oracle script",
+		"For test only", filename, "", "test URL",
+	), func() { deleteFile([]byte("code")) }
+}
+
+func loadDataSourceFromExecutable(path string) (os types.DataSource, clear func()) {
+	executable, err := ioutil.ReadFile(path)
+	if err != nil {
+		panic(err)
+	}
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
+	f := filecache.New(dir)
+	filename := f.AddFile(executable)
+	return types.NewDataSource(
+		Owner.Address, "imported data source", "description",
+		filename,
+	), func() { deleteFile(executable) }
+}
+
+func loadOracleScriptFromWasm(path string) (os types.OracleScript, clear func()) {
+	absPath, _ := filepath.Abs(path)
+	code, err := ioutil.ReadFile(absPath)
+	if err != nil {
+		panic(err)
+	}
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
+	f := filecache.New(dir)
+	filename := f.AddFile(code)
+	return types.NewOracleScript(
+		Owner.Address, "imported script", "description",
+		filename,
+		"schema", "sourceCodeURL",
+	), func() { deleteFile(code) }
 }
