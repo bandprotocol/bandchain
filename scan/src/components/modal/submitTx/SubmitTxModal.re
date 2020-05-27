@@ -5,7 +5,8 @@ module Styles = {
     style([
       flexDirection(`column),
       width(`px(640)),
-      height(`px(480)),
+      minHeight(`px(300)),
+      height(`auto),
       padding2(~v=`px(50), ~h=`px(50)),
       backgroundColor(rgb(249, 249, 251)),
       borderRadius(`px(5)),
@@ -66,8 +67,7 @@ module Styles = {
 
   let nextBtn =
     style([
-      position(`absolute),
-      bottom(`percent(8.)),
+      marginTop(`px(30)),
       width(`px(100)),
       height(`px(30)),
       display(`flex),
@@ -122,15 +122,21 @@ module SubmitTxStep = {
       <VSpacing size=Spacing.xl />
       <div className=Styles.rowContainer>
         <Text value="Message Type" size=Text.Lg spacing={Text.Em(0.03)} />
-        <Text value={SubmitMsg.toString(msg)} size=Text.Lg spacing={Text.Em(0.03)} />
+        <Text
+          value={SubmitMsg.toString(msg)}
+          size=Text.Md
+          spacing={Text.Em(0.03)}
+          weight=Text.Bold
+        />
       </div>
       <VSpacing size=Spacing.md />
       {switch (msg) {
-       | SubmitMsg.Send(receiver) => <SendMsg receiver setMsgsOpt />
-       | Delegate(validator) => <DelegateMsg validator setMsgsOpt />
-       | Undelegate(validator) => <UndelegateMsg validator setMsgsOpt />
+       | SubmitMsg.Send(receiver) => <SendMsg address={account.address} receiver setMsgsOpt />
+       | Delegate(validator) => <DelegateMsg address={account.address} validator setMsgsOpt />
+       | Undelegate(validator) => <UndelegateMsg address={account.address} validator setMsgsOpt />
        | Redelegate(validator) => <RedelegateMsg validator setMsgsOpt />
-       | WithdrawReward(validator) => <WithdrawRewardMsg validator setMsgsOpt />
+       | WithdrawReward(validator) =>
+         <WithdrawRewardMsg validator setMsgsOpt address={account.address} />
        }}
       <VSpacing size=Spacing.md />
       <EnhanceTxInput

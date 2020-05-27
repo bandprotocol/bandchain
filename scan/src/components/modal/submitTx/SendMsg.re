@@ -1,5 +1,11 @@
+module Styles = {
+  open Css;
+
+  let info = style([display(`flex), justifyContent(`spaceBetween)]);
+};
 [@react.component]
-let make = (~receiver, ~setMsgsOpt) => {
+let make = (~address, ~receiver, ~setMsgsOpt) => {
+  let accountSub = AccountSub.get(address);
   let (toAddress, setToAddress) =
     React.useState(_ => {
       switch (receiver) {
@@ -29,24 +35,53 @@ let make = (~receiver, ~setMsgsOpt) => {
   );
 
   <>
+    <VSpacing size=Spacing.lg />
+    <div className=Styles.info>
+      <Text
+        value="Available Balance"
+        size=Text.Lg
+        spacing={Text.Em(0.03)}
+        nowrap=true
+        block=true
+      />
+      <VSpacing size=Spacing.lg />
+      <VSpacing size=Spacing.md />
+      {switch (accountSub) {
+       | Data({balance}) =>
+         <div>
+           <Text
+             value={balance |> Coin.getBandAmountFromCoins |> Format.fPretty(~digits=6)}
+             code=true
+           />
+           <Text value=" BAND" code=true />
+         </div>
+       | _ => <LoadingCensorBar width=300 height=18 />
+       }}
+    </div>
+    <VSpacing size=Spacing.lg />
+    <VSpacing size=Spacing.md />
     <EnhanceTxInput
-      width=360
+      width=302
       inputData=toAddress
       setInputData=setToAddress
       parse=Address.fromBech32Opt
-      msg="To"
+      msg="Recipient Address"
       errMsg="Invalid Address"
       code=true
+      placeholder="Insert recipient address"
     />
+    <VSpacing size=Spacing.lg />
     <VSpacing size=Spacing.md />
     <EnhanceTxInput
-      width=115
+      width=236
       inputData=amount
       setInputData=setAmount
       parse=Parse.getBandAmount
-      msg="Amount (BAND)"
+      msg="Send Amount (BAND)"
       errMsg="Invalid amount"
       code=true
+      placeholder="Insert send amount"
     />
+    <VSpacing size=Spacing.lg />
   </>;
 };
