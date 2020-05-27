@@ -8,6 +8,7 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	channeltypes "github.com/cosmos/cosmos-sdk/x/ibc/04-channel/types"
+	ibctypes "github.com/cosmos/cosmos-sdk/x/ibc/types"
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmkv "github.com/tendermint/tendermint/libs/kv"
@@ -32,7 +33,7 @@ func (t *TestErrLogger) With(keyvals ...interface{}) log.Logger {
 
 func TestSendOracleResponse(t *testing.T) {
 
-	// capName := ibctypes.ChannelCapabilityPath(TestPortA, TestChannelA)
+	capName := ibctypes.ChannelCapabilityPath(TestPortA, TestChannelA)
 
 	testCases := []struct {
 		description      string
@@ -47,11 +48,10 @@ func TestSendOracleResponse(t *testing.T) {
 				chainA, chainB := createTestChains(logger)
 				ctx := getContext(chainA)
 
-				// Error: failed to get channel capability for id: testchannela, port: testporta
-				// cap, err := chainA.OracleKeeper.ScopedKeeper.NewCapability(ctx, capName)
-				// require.NoError(t, err)
-				// err = chainA.OracleKeeper.ScopedKeeper.ClaimCapability(ctx, cap, capName)
-				// require.NoError(t, err)
+				cap, err := chainA.ScopedIBCKeeper.NewCapability(ctx, capName)
+				require.NoError(t, err)
+				err = chainA.OracleKeeper.ScopedKeeper.ClaimCapability(ctx, cap, capName)
+				require.NoError(t, err)
 
 				createTestChainConnection(chainA, chainB)
 				createTestChannel(chainA, chainB)
@@ -122,6 +122,7 @@ func TestSendOracleResponse(t *testing.T) {
 		if !testcase.expectedPass {
 			require.Equal(t, testcase.expectedErrorLog, logger.errLog)
 		} else {
+			require.Equal(t, "", logger.errLog)
 			events := ctx.EventManager().ABCIEvents()
 
 			expectedEvent := sdk.Event{
