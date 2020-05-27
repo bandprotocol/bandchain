@@ -15,7 +15,7 @@ module Styles = {
       height(`px(30)),
       paddingLeft(`px(9)),
       paddingRight(`px(9)),
-      borderRadius(`px(8)),
+      borderRadius(`px(4)),
       fontSize(`px(12)),
       textAlign(`right),
       fontSize(`px(11)),
@@ -28,7 +28,11 @@ module Styles = {
           Css.rgba(11, 29, 142, 0.1),
         ),
       ),
-      focus([outlineColor(Colors.white)]),
+      boxShadow(
+        Shadow.box(~inset=true, ~x=`zero, ~y=`px(1), ~blur=`px(4), Css.rgba(11, 29, 142, 0.1)),
+      ),
+      placeholder([color(Colors.gray5)]),
+      focus([outline(`zero, `none, Colors.white)]),
     ]);
 
   let code =
@@ -61,7 +65,8 @@ type status =
 let empty = {text: "", value: None};
 
 [@react.component]
-let make = (~inputData, ~setInputData, ~msg, ~errMsg, ~parse, ~width, ~code=false) => {
+let make =
+    (~inputData, ~setInputData, ~msg, ~errMsg, ~parse, ~width, ~code=false, ~placeholder="") => {
   let (status, setStatus) = React.useState(_ => Ok);
 
   <div className=Styles.rowContainer>
@@ -69,6 +74,7 @@ let make = (~inputData, ~setInputData, ~msg, ~errMsg, ~parse, ~width, ~code=fals
     <input
       value={inputData.text}
       className={Css.merge([Styles.input(width), code ? Styles.code : ""])}
+      placeholder
       onChange={event => {
         let newText = ReactEvent.Form.target(event)##value;
         let newVal = parse(newText);

@@ -18,7 +18,7 @@ module Styles = {
       boxShadow(
         Shadow.box(~inset=true, ~x=`zero, ~y=`px(3), ~blur=`px(4), Css.rgba(11, 29, 142, 0.1)),
       ),
-      focus([outlineColor(Colors.white)]),
+      focus([outline(`zero, `none, Colors.white)]),
     ]);
 
   let mnemonicHelper =

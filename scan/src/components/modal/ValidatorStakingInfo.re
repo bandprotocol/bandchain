@@ -43,6 +43,15 @@ module Styles = {
       cursor(`pointer),
       boxShadow(Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(4), rgba(17, 85, 78, 0.1))),
     ]);
+
+  let warning =
+    style([
+      padding(`px(10)),
+      color(Colors.blue5),
+      backgroundColor(Colors.blue1),
+      border(`px(1), `solid, Colors.blue6),
+      borderRadius(`px(4)),
+    ]);
 };
 
 let stakingBalanceDetail = (title, amount, usdPrice) => {
@@ -128,6 +137,16 @@ module StakingInfo = {
 
       <div>
         <VSpacing size=Spacing.md />
+        {rewardAmount |> Coin.getBandAmountFromCoin > 0.
+           ? <div>
+               <div className=Styles.warning>
+                 <Text
+                   value="Note: You have non-zero pending reward on this validator. Any additional staking actions will automatically withdraw that reward your balance."
+                 />
+               </div>
+               <VSpacing size=Spacing.lg />
+             </div>
+           : React.null}
         <Row>
           <Col size=1.2>
             <Text
