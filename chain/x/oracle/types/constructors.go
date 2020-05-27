@@ -23,15 +23,15 @@ func NewMsgRequestData(
 
 func NewMsgReportData(
 	RequestID RequestID,
-	DataSet []RawReport,
+	RawReports []RawReport,
 	Validator github_com_cosmos_cosmos_sdk_types.ValAddress,
 	Reporter github_com_cosmos_cosmos_sdk_types.AccAddress,
 ) MsgReportData {
 	return MsgReportData{
-		RequestID: RequestID,
-		DataSet:   DataSet,
-		Validator: Validator,
-		Reporter:  Reporter,
+		RequestID:  RequestID,
+		RawReports: RawReports,
+		Validator:  Validator,
+		Reporter:   Reporter,
 	}
 }
 
