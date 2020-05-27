@@ -120,3 +120,30 @@ cp -r ~/.bandd/files $DIR
 cd ..
 
 docker-compose up -d --build
+
+for v in {1..4}
+do
+    rm -rf ~/.oracled
+    bandoracled2 config chain-id bandchain
+    bandoracled2 config validator $(bandcli keys show validator$v -a --bech val --keyring-backend test)
+    for i in $(eval echo {1..5})
+    do
+    # add reporter key
+    bandoracled2 keys add reporter$i
+
+    # send band tokens to reporter
+    echo "y" | bandcli tx send validator$v $(bandoracled2 keys show reporter$i) 1000000uband --keyring-backend test
+
+    # wait for sending band tokens transaction success
+    sleep 2
+
+    # add reporter to bandchain
+    echo "y" | bandcli tx oracle add-reporter $(bandoracled2 keys show reporter$i) --from validator$v --keyring-backend test
+
+    # wait for addding reporter transaction success
+    sleep 2
+    done
+
+    docker cp ~/.oracled bandchain_oracle${v}_1:/root/.oracled
+    docker restart bandchain_oracle${v}_1 -t 5
+done
