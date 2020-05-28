@@ -891,3 +891,29 @@ func TestRemoveReporterFail(t *testing.T) {
 	require.EqualError(t, err, fmt.Sprintf("val: %s, addr: %s: reporter not found", validatorAddress.String(), reporterAddress.String()))
 	require.Nil(t, result)
 }
+
+func TestRequestDataFail(t *testing.T) {
+	_, ctx, k := createTestInput()
+
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+
+	wrongOracleScript := 1
+
+	calldata, _ := hex.DecodeString("030000004254436400000000000000")
+	msg := types.NewMsgRequestData(types.OracleScriptID(wrongOracleScript), calldata, 1, 1, "alice", Alice.Address)
+
+	result, err := oracle.NewHandler(k)(ctx, msg)
+	require.EqualError(t, err, `id: 1: oracle script not found`)
+	require.Nil(t, result)
+
+	// Add Oracle Script
+	os, clear := loadOracleScriptFromWasmCryptoCompareBorsh()
+	defer clear()
+
+	oracleScriptID := k.AddOracleScript(ctx, os)
+	msg = types.NewMsgRequestData(types.OracleScriptID(oracleScriptID), calldata, 1, 1, "alice", Alice.Address)
+
+	result, err = oracle.NewHandler(k)(ctx, msg)
+	require.EqualError(t, err, `id: 1: data source not found`)
+	require.Nil(t, result)
+}
