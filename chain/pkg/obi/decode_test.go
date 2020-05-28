@@ -22,6 +22,12 @@ func TestDecodeAliasUint8(t *testing.T) {
 	require.Equal(t, ID(123), actual)
 }
 
+func TestDecodeUint8Fail(t *testing.T) {
+	var actual uint8
+	byteArray := []byte{}
+	require.PanicsWithError(t, "obi: out of range", func() { MustDecode(byteArray, &actual) })
+}
+
 // Uint16
 func TestDecodeUint16(t *testing.T) {
 	var actual uint16
@@ -36,6 +42,12 @@ func TestDecodeAliasUint16(t *testing.T) {
 	byteArray := []byte{0x7b, 0x0}
 	MustDecode(byteArray, &actual)
 	require.Equal(t, ID(123), actual)
+}
+
+func TestDecodeUint16Fail(t *testing.T) {
+	var actual uint16
+	byteArray := []byte{}
+	require.PanicsWithError(t, "obi: out of range", func() { MustDecode(byteArray, &actual) })
 }
 
 // Uint32
@@ -54,6 +66,12 @@ func TestDecodeAliasUint32(t *testing.T) {
 	require.Equal(t, ID(123), actual)
 }
 
+func TestDecodeUint32Fail(t *testing.T) {
+	var actual uint32
+	byteArray := []byte{}
+	require.PanicsWithError(t, "obi: out of range", func() { MustDecode(byteArray, &actual) })
+}
+
 // Uint64
 func TestDecodeUint64(t *testing.T) {
 	var actual uint64
@@ -68,6 +86,12 @@ func TestDecodeAliasUint64(t *testing.T) {
 	byteArray := []byte{0x7b, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}
 	MustDecode(byteArray, &actual)
 	require.Equal(t, ID(123), actual)
+}
+
+func TestDecodeUint64Fail(t *testing.T) {
+	var actual uint64
+	byteArray := []byte{}
+	require.PanicsWithError(t, "obi: out of range", func() { MustDecode(byteArray, &actual) })
 }
 
 // Int8
@@ -86,6 +110,12 @@ func TestDecodeAliasInt8(t *testing.T) {
 	require.Equal(t, ID(-123), actual)
 }
 
+func TestDecodeInt8Fail(t *testing.T) {
+	var actual int8
+	byteArray := []byte{}
+	require.PanicsWithError(t, "obi: out of range", func() { MustDecode(byteArray, &actual) })
+}
+
 // Int16
 func TestDecodeInt16(t *testing.T) {
 	var actual int16
@@ -100,6 +130,12 @@ func TestDecodeAliasInt16(t *testing.T) {
 	byteArray := []byte{0x85, 0xff}
 	MustDecode(byteArray, &actual)
 	require.Equal(t, ID(-123), actual)
+}
+
+func TestDecodeInt16Fail(t *testing.T) {
+	var actual int16
+	byteArray := []byte{}
+	require.PanicsWithError(t, "obi: out of range", func() { MustDecode(byteArray, &actual) })
 }
 
 // Int32
@@ -118,6 +154,12 @@ func TestDecodeAliasInt32(t *testing.T) {
 	require.Equal(t, ID(-123), actual)
 }
 
+func TestDecodeInt32Fail(t *testing.T) {
+	var actual int32
+	byteArray := []byte{}
+	require.PanicsWithError(t, "obi: out of range", func() { MustDecode(byteArray, &actual) })
+}
+
 // Int64
 func TestDecodeInt64(t *testing.T) {
 	var actual int64
@@ -134,11 +176,29 @@ func TestDecodeAliasInt64(t *testing.T) {
 	require.Equal(t, ID(-123), actual)
 }
 
+func TestDecodeInt64Fail(t *testing.T) {
+	var actual int64
+	byteArray := []byte{}
+	require.PanicsWithError(t, "obi: out of range", func() { MustDecode(byteArray, &actual) })
+}
+
 func TestDecodeString(t *testing.T) {
 	var actual string
 	byteArray := []byte{0x13, 0x00, 0x00, 0x00, 0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 0x61, 0x6c, 0x69, 0x63, 0x65, 0x20, 0x61, 0x6e, 0x64, 0x20, 0x62, 0x6f, 0x62}
 	MustDecode(byteArray, &actual)
 	require.Equal(t, "hello alice and bob", actual)
+}
+
+func TestDecodeEmptyStringFail(t *testing.T) {
+	var actual string
+	byteArray := []byte{}
+	require.PanicsWithError(t, "obi: out of range", func() { MustDecode(byteArray, &actual) })
+}
+
+func TestDecodeStringOutOfRangeFail(t *testing.T) {
+	var actual string
+	byteArray := []byte{0x13, 0x00, 0x00, 0x00}
+	require.PanicsWithError(t, "obi: out of range", func() { MustDecode(byteArray, &actual) })
 }
 
 func TestDecodeSlice(t *testing.T) {
@@ -171,4 +231,22 @@ func TestDecodeByteArray(t *testing.T) {
 	byteArray := []byte{0x6, 0x0, 0x0, 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6}
 	MustDecode(byteArray, &actual)
 	require.Equal(t, []byte{0x1, 0x2, 0x3, 0x4, 0x5, 0x6}, actual)
+}
+
+func TestDecodeByteArrayOutOfRangeFail(t *testing.T) {
+	var actual []byte
+	byteArray := []byte{0x6, 0x0, 0x0, 0x0}
+	require.PanicsWithError(t, "obi: out of range", func() { MustDecode(byteArray, &actual) })
+}
+
+func TestDecodeIntoNonPointer(t *testing.T) {
+	var actual []byte
+	byteArray := []byte{0x6, 0x0, 0x0, 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6}
+	require.PanicsWithError(t, "obi: decode into non-ptr type", func() { MustDecode(byteArray, actual) })
+}
+
+func TestUnsupportedType(t *testing.T) {
+	var actual bool
+	byteArray := []byte{0x6, 0x0, 0x0, 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6}
+	require.PanicsWithError(t, "obi: unsupported value type: bool", func() { MustDecode(byteArray, &actual) })
 }
