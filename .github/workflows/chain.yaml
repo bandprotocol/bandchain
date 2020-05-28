@@ -22,7 +22,7 @@ jobs:
     - name: Install Rust and rust toolchain
       uses: actions-rs/toolchain@v1
       with:
-        toolchain: stable
+        toolchain: 1.42.0
         target: wasm32-unknown-unknown
     
     - name: Run chain tests

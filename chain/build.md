@@ -1,4 +1,4 @@
-# Building and running the application 
+# Building and running the application  
 
 ## Building the `band` application
 
