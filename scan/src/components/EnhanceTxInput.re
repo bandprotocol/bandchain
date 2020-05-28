@@ -58,16 +58,25 @@ type input_t('a) = {
   value: option('a),
 };
 
-type status =
-  | Ok
-  | Error;
+type status('a) =
+  | Untouched
+  | Touched(Result.t('a));
 
 let empty = {text: "", value: None};
 
 [@react.component]
 let make =
-    (~inputData, ~setInputData, ~msg, ~errMsg, ~parse, ~width, ~code=false, ~placeholder="") => {
-  let (status, setStatus) = React.useState(_ => Ok);
+    (
+      ~inputData,
+      ~setInputData,
+      ~msg,
+      ~parse,
+      ~width,
+      ~code=false,
+      ~placeholder="",
+      ~inputType="text",
+    ) => {
+  let (status, setStatus) = React.useState(_ => Untouched);
 
   <div className=Styles.rowContainer>
     <Text value=msg size=Text.Lg spacing={Text.Em(0.03)} nowrap=true block=true />
@@ -75,21 +84,22 @@ let make =
       value={inputData.text}
       className={Css.merge([Styles.input(width), code ? Styles.code : ""])}
       placeholder
+      type_=inputType
+      spellCheck=false
       onChange={event => {
         let newText = ReactEvent.Form.target(event)##value;
         let newVal = parse(newText);
+        setStatus(_ => Touched(newVal));
         switch (newVal) {
-        | Some(newVal') =>
-          setStatus(_ => Ok);
-          setInputData(_ => {text: newText, value: Some(newVal')});
-        | None =>
-          setStatus(_ => Error);
-          setInputData(_ => {text: newText, value: None});
+        | Ok(newVal') => setInputData(_ => {text: newText, value: Some(newVal')})
+        | Err(_) => setInputData(_ => {text: newText, value: None})
         };
       }}
     />
-    {status == Error
-       ? <div className=Styles.errMsg> <Text value=errMsg color=Colors.red3 size=Text.Sm /> </div>
-       : React.null}
+    {switch (status) {
+     | Touched(Err(errMsg)) =>
+       <div className=Styles.errMsg> <Text value=errMsg color=Colors.red3 size=Text.Sm /> </div>
+     | _ => React.null
+     }}
   </div>;
 };

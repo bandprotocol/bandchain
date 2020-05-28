@@ -69,10 +69,10 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
     <div className=Styles.info>
       <Text value="Current Stake" size=Text.Lg spacing={Text.Em(0.03)} nowrap=true block=true />
       {switch (allSub) {
-       | Data((_, {amount})) =>
+       | Data((_, {amount: stakedAmount})) =>
          <div>
            <Text
-             value={amount |> Coin.getBandAmountFromCoin |> Format.fPretty(~digits=6)}
+             value={stakedAmount |> Coin.getBandAmountFromCoin |> Format.fPretty(~digits=6)}
              code=true
              size=Text.Lg
              weight=Text.Semibold
@@ -84,16 +84,20 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
     </div>
     <VSpacing size=Spacing.lg />
     <VSpacing size=Spacing.md />
-    <EnhanceTxInput
-      width=226
-      inputData=amount
-      setInputData=setAmount
-      parse=Parse.getBandAmount
-      msg="Undelegate Amount (BAND)"
-      errMsg="Invalid amount"
-      placeholder="Insert delegation amount"
-      code=true
-    />
+    {switch (allSub) {
+     | Data((_, {amount: stakedAmount})) =>
+       <EnhanceTxInput
+         width=226
+         inputData=amount
+         setInputData=setAmount
+         parse={Parse.getBandAmount(stakedAmount |> Coin.getUBandAmountFromCoin)}
+         msg="Undelegate Amount (BAND)"
+         placeholder="Insert unbonding amount"
+         inputType="number"
+         code=true
+       />
+     | _ => <LoadingCensorBar width=300 height=18 isRight=true />
+     }}
     <VSpacing size=Spacing.lg />
   </>;
 };

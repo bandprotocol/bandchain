@@ -66,24 +66,28 @@ let make = (~address, ~receiver, ~setMsgsOpt) => {
       width=302
       inputData=toAddress
       setInputData=setToAddress
-      parse=Address.fromBech32Opt
+      parse=Parse.address
       msg="Recipient Address"
-      errMsg="Invalid Address"
       code=true
       placeholder="Insert recipient address"
     />
     <VSpacing size=Spacing.lg />
     <VSpacing size=Spacing.md />
-    <EnhanceTxInput
-      width=236
-      inputData=amount
-      setInputData=setAmount
-      parse=Parse.getBandAmount
-      msg="Send Amount (BAND)"
-      errMsg="Invalid amount"
-      code=true
-      placeholder="Insert send amount"
-    />
+    {switch (accountSub) {
+     | Data({balance}) =>
+       <EnhanceTxInput
+         width=236
+         inputData=amount
+         setInputData=setAmount
+         //  TODO: hard-coded tx fee
+         parse={Parse.getBandAmount((balance |> Coin.getUBandAmountFromCoins) -. 5000.)}
+         msg="Send Amount (BAND)"
+         inputType="number"
+         code=true
+         placeholder="Insert send amount"
+       />
+     | _ => <LoadingCensorBar width=300 height=18 isRight=true />
+     }}
     <VSpacing size=Spacing.lg />
   </>;
 };

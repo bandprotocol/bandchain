@@ -79,16 +79,21 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
        }}
     </div>
     <VSpacing size=Spacing.lg />
-    <EnhanceTxInput
-      width=226
-      inputData=amount
-      setInputData=setAmount
-      parse=Parse.getBandAmount
-      msg="Delegate Amount (BAND)"
-      errMsg="Invalid amount"
-      placeholder="Insert delegation amount"
-      code=true
-    />
+    {switch (allSub) {
+     | Data(({balance}, _)) =>
+       <EnhanceTxInput
+         width=226
+         inputData=amount
+         setInputData=setAmount
+         //  TODO: hard-coded tx fee
+         parse={Parse.getBandAmount((balance |> Coin.getUBandAmountFromCoins) -. 5000.)}
+         msg="Delegate Amount (BAND)"
+         placeholder="Insert delegation amount"
+         inputType="number"
+         code=true
+       />
+     | _ => <LoadingCensorBar width=300 height=26 isRight=true />
+     }}
     <VSpacing size=Spacing.lg />
   </>;
 };

@@ -29,9 +29,8 @@ let make = (~validator, ~setMsgsOpt) => {
       width=360
       inputData=srcValidator
       setInputData=setSrcValidator
-      parse=Address.fromBech32Opt
+      parse=Parse.address
       msg="From"
-      errMsg="Invalid Address"
       code=true
     />
     <VSpacing size=Spacing.md />
@@ -39,20 +38,19 @@ let make = (~validator, ~setMsgsOpt) => {
       width=360
       inputData=dstValidator
       setInputData=setDstValidator
-      parse=Address.fromBech32Opt
+      parse=Parse.address
       msg="To"
-      errMsg="Invalid Address"
       code=true
     />
     <VSpacing size=Spacing.md />
-    <EnhanceTxInput
-      width=115
-      inputData=amount
-      setInputData=setAmount
-      parse=Parse.getBandAmount
-      msg="Amount (BAND)"
-      errMsg="Invalid amount"
-      code=true
-    />
+    // TODO: convert later
+    // <EnhanceTxInput
+    //   width=115
+    //   inputData=amount
+    //   setInputData=setAmount
+    //   parse=Parse.getBandAmount
+    //   msg="Amount (BAND)"
+    //   code=true
+    // />
   </>;
 };
