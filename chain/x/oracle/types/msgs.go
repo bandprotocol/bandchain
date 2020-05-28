@@ -60,11 +60,11 @@ func (msg MsgReportData) ValidateBasic() error {
 	if err := sdk.VerifyAddressFormat(msg.Reporter); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "reporter: %s", msg.Reporter)
 	}
-	if len(msg.DataSet) == 0 {
+	if len(msg.RawReports) == 0 {
 		return ErrEmptyReport
 	}
 	uniqueMap := make(map[ExternalID]bool)
-	for _, r := range msg.DataSet {
+	for _, r := range msg.RawReports {
 		if _, found := uniqueMap[r.ExternalID]; found {
 			return sdkerrors.Wrapf(ErrDuplicateExternalID, "external id: %d", r.ExternalID)
 		}

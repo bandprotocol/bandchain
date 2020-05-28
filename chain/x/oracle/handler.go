@@ -137,7 +137,7 @@ func handleMsgReportData(ctx sdk.Context, k Keeper, m MsgReportData) (*sdk.Resul
 	if !k.IsReporter(ctx, m.Validator, m.Reporter) {
 		return nil, types.ErrReporterNotAuthorized
 	}
-	err := k.AddReport(ctx, m.RequestID, types.NewReport(m.Validator, m.DataSet))
+	err := k.AddReport(ctx, m.RequestID, types.NewReport(m.Validator, m.RawReports))
 	if err != nil {
 		return nil, err
 	}

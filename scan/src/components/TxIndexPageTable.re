@@ -140,7 +140,7 @@ let renderReport = (report: TxSub.Msg.Report.t) => {
       tableWidth=480
       headers=["EXTERNAL ID", "VALUE"]
       rows={
-        report.dataSet
+        report.rawReports
         |> Belt_List.map(_, rawReport =>
              [
                KVTable.Value(rawReport.externalDataID |> string_of_int),

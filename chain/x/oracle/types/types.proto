@@ -30,7 +30,7 @@ message MsgReportData {
     (gogoproto.customname) = "RequestID",
     (gogoproto.casttype) = "RequestID"
   ];
-  repeated RawReport data_set = 2 [(gogoproto.nullable) = false];
+  repeated RawReport raw_reports = 2 [(gogoproto.nullable) = false];
   ;
   bytes validator = 3
       [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
