@@ -20,6 +20,10 @@ type ExampleData struct {
 	Arr    []int16 `obi:"arr"`
 }
 
+type InvalidStruct struct {
+	IsBool bool
+}
+
 func TestEncodeBytes(t *testing.T) {
 	require.Equal(t, MustEncode(ExampleData{
 		Symbol: "BTC",
@@ -30,6 +34,13 @@ func TestEncodeBytes(t *testing.T) {
 		},
 		Arr: []int16{10, 11},
 	}), []byte{0x0, 0x0, 0x0, 0x3, 0x42, 0x54, 0x43, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x23, 0x28, 0x1, 0x2, 0x0, 0x0, 0x0, 0x2, 0x0, 0xa, 0x0, 0xb})
+}
+
+func TestEncodeStructFail(t *testing.T) {
+	invalid := InvalidStruct{
+		IsBool: true,
+	}
+	require.PanicsWithError(t, "obi: unsupported value type: bool", func() { MustEncode(invalid) })
 }
 
 func TestDecode1(t *testing.T) {
@@ -163,8 +174,25 @@ func TestEncodeSlice(t *testing.T) {
 	require.Equal(t, expectedEncodeBytes, MustEncode(testSlice))
 }
 
+func TestEncodeSliceFail(t *testing.T) {
+	testSlice := []bool{true, false, true, true}
+	require.PanicsWithError(t, "obi: unsupported value type: bool", func() { MustEncode(testSlice) })
+}
+
 func TestEncodeByteArray(t *testing.T) {
 	testByteArray := []byte{0x1, 0x2, 0x3, 0x4, 0x5, 0x6}
 	expectedEncodeByte := []byte{0x6, 0x0, 0x0, 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6}
 	require.Equal(t, expectedEncodeByte, MustEncode(testByteArray))
+}
+
+func TestEncodeNotSupported(t *testing.T) {
+	notSupportBool := true
+	byteArray, err := Encode(notSupportBool)
+	require.EqualError(t, err, "obi: unsupported value type: bool")
+	require.Nil(t, byteArray)
+}
+
+func TestEncodeNotSupport(t *testing.T) {
+	notSupportBool := true
+	require.PanicsWithError(t, "obi: unsupported value type: bool", func() { MustEncode(notSupportBool) })
 }
