@@ -117,7 +117,6 @@ module Msg = {
       id: ID.DataSource.t,
       owner: Address.t,
       name: string,
-      fee: list(Coin.t),
       executable: JsBuffer.t,
       sender: Address.t,
     };
@@ -127,7 +126,6 @@ module Msg = {
         id: json |> field("data_source_id", ID.DataSource.fromJson),
         owner: json |> field("owner", string) |> Address.fromBech32,
         name: json |> field("name", string),
-        fee: json |> field("fee", list(Coin.decodeCoin)),
         executable: json |> field("executable", string) |> JsBuffer.fromBase64,
         sender: json |> field("sender", string) |> Address.fromBech32,
       };
@@ -138,7 +136,6 @@ module Msg = {
       id: ID.DataSource.t,
       owner: Address.t,
       name: string,
-      fee: list(Coin.t),
       executable: JsBuffer.t,
       sender: Address.t,
     };
@@ -148,7 +145,6 @@ module Msg = {
         id: json |> field("data_source_id", ID.DataSource.fromJson),
         owner: json |> field("owner", string) |> Address.fromBech32,
         name: json |> field("name", string),
-        fee: json |> field("fee", list(Coin.decodeCoin)),
         executable: json |> field("executable", string) |> JsBuffer.fromBase64,
         sender: json |> field("sender", string) |> Address.fromBech32,
       };
