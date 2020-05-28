@@ -150,17 +150,40 @@ module LanguageIcon = {
   };
 };
 
-let getFileNameFromLanguage = (~language) => {
+let getFileNameFromLanguage = (~language, ~dataType) => {
+  let dataTypeString = dataType |> Borsh.dataTypeToString;
   switch (language) {
-  | Solidity => "ResultDecoder.sol"
-  | Go => "ResultDecoder.go"
+  | Solidity => {j|$(dataTypeString)Decoder.sol|j}
+  | Go => {j|$(dataTypeString)Decoder.go|j}
   };
 };
 
-let getCodeFromSchema = (~schema, ~language) => {
+let getCodeFromSchema = (~schema, ~language, ~dataType) => {
   switch (language) {
-  | Solidity => Borsh.generateSolidity(schema, "Output")
-  | Go => Borsh.generateGo("main", schema, "Output")
+  | Solidity => Borsh.generateDecoderSolidity(schema, dataType)
+  | Go => Borsh.generateDecoderGo("main", schema, dataType)
+  };
+};
+
+module GenerateDecodeCode = {
+  [@react.component]
+  let make = (~language, ~schema, ~dataType) => {
+    <div className=Styles.tableLowerContainer>
+      <div className=Styles.vFlex>
+        <img src=Images.code className=Styles.codeImage />
+        <Text
+          value={getFileNameFromLanguage(~language, ~dataType)}
+          size=Text.Lg
+          color=Colors.gray7
+        />
+      </div>
+      <VSpacing size=Spacing.lg />
+      {let codeOpt = getCodeFromSchema(~schema, ~language, ~dataType);
+       switch (codeOpt) {
+       | Some(code) => code->renderCode
+       | None => {j|"Code is not available."|j}->renderCode
+       }}
+    </div>;
   };
 };
 
@@ -234,17 +257,8 @@ let make = (~schema) => {
              <Text value=description size=Text.Lg weight=Text.Thin spacing={Text.Em(0.03)} />
            </div>
            <VSpacing size={`px(35)} /> */
-    <div className=Styles.tableLowerContainer>
-      <div className=Styles.vFlex>
-        <img src=Images.code className=Styles.codeImage />
-        <Text value={getFileNameFromLanguage(~language)} size=Text.Lg color=Colors.gray7 />
-      </div>
-      <VSpacing size=Spacing.lg />
-      {let codeOpt = getCodeFromSchema(~schema, ~language);
-       switch (codeOpt) {
-       | Some(code) => code->renderCode
-       | None => {j|"Code is not available."|j}->renderCode
-       }}
-    </div>
+    <GenerateDecodeCode language schema dataType=Borsh.Params />
+    <VSpacing size=Spacing.md />
+    <GenerateDecodeCode language schema dataType=Borsh.Result />
   </div>;
 };
