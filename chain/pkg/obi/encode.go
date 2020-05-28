@@ -29,7 +29,7 @@ func Encode(v interface{}) ([]byte, error) {
 	case reflect.String:
 		return EncodeString(rv.String()), nil
 	case reflect.Slice:
-		if rv.Type().Elem().String() == reflect.Uint8.String() {
+		if rv.Type().Elem().Kind() == reflect.Uint8 {
 			return EncodeBytes(rv.Bytes()), nil
 		}
 
