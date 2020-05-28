@@ -44,13 +44,10 @@ module ToggleButton = {
   open Css;
 
   [@react.component]
-  let make = (~isActive, ~setIsActive, ~resetPage) => {
+  let make = (~isActive, ~setIsActive) => {
     <div className={style([display(`flex), alignItems(`center)])}>
       <div
-        onClick={_ => {
-          setIsActive(_ => true);
-          resetPage();
-        }}
+        onClick={_ => setIsActive(_ => true)}
         className={style([display(`flex), cursor(`pointer)])}>
         <Text value="Active" color=Colors.purple8 />
       </div>
@@ -74,10 +71,7 @@ module ToggleButton = {
             ),
           ),
         ])}
-        onClick={_ => {
-          setIsActive(oldVal => !oldVal);
-          resetPage();
-        }}>
+        onClick={_ => setIsActive(oldVal => !oldVal)}>
         <img
           src={isActive ? Images.activeValidatorLogo : Images.inactiveValidatorLogo}
           className={style([width(`px(15))])}
@@ -85,10 +79,7 @@ module ToggleButton = {
       </div>
       <HSpacing size=Spacing.sm />
       <div
-        onClick={_ => {
-          setIsActive(_ => false);
-          resetPage();
-        }}
+        onClick={_ => setIsActive(_ => false)}
         className={style([display(`flex), cursor(`pointer)])}>
         <Text value="Inactive" />
       </div>
@@ -270,8 +261,6 @@ let addUptimeOnValidators =
 
 [@react.component]
 let make = () => {
-  let (page, setPage) = React.useState(_ => 1);
-
   let (prevDayTime, setPrevDayTime) = React.useState(getPrevDay);
   let (currentTime, setCurrentTime) = React.useState(getCurrentDay);
 
@@ -287,11 +276,9 @@ let make = () => {
     Some(() => {Js.Global.clearInterval(timeOutID)});
   });
 
-  let pageSize = 10;
-
   let (isActive, setIsActive) = React.useState(_ => true);
 
-  let validatorsSub = ValidatorSub.getList(~page, ~pageSize, ~isActive, ());
+  let validatorsSub = ValidatorSub.getList(~isActive, ());
   let validatorsCountSub = ValidatorSub.count();
   let isActiveValidatorCountSub = ValidatorSub.countByActive(isActive);
   let bondedTokenCountSub = ValidatorSub.getTotalBondedAmount();
@@ -333,7 +320,7 @@ let make = () => {
       </div>
       <Col>
         {switch (topPartAllSub) {
-         | Data(_) => <ToggleButton isActive setIsActive resetPage={_ => setPage(_ => 1)} />
+         | Data(_) => <ToggleButton isActive setIsActive />
          | _ => React.null
          }}
       </Col>
@@ -438,25 +425,19 @@ let make = () => {
       </div>
     </THead>
     {switch (allSub) {
-     | Data(((_, isActiveValidatorCount, bondedTokenCount, _, _), rawValidators, votesBlock)) =>
+     | Data(((_, _, bondedTokenCount, _, _), rawValidators, votesBlock)) =>
        let validators = addUptimeOnValidators(rawValidators, votesBlock);
-       let pageCount = Page.getPageCount(isActiveValidatorCount, pageSize);
        <>
          {validators->Belt_Array.size > 0
             ? validators
               ->Belt_Array.mapWithIndex((i, e) =>
-                  renderBody(
-                    i + 1 + (page - 1) * pageSize,
-                    Sub.resolve(e),
-                    bondedTokenCount.amount,
-                  )
+                  renderBody(i + 1, Sub.resolve(e), bondedTokenCount.amount)
                 )
               ->React.array
             : <div className=Styles.emptyContainer>
                 <Text value="No Validators" size=Text.Xxl />
               </div>}
          <VSpacing size=Spacing.lg />
-         <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
        </>;
      | _ =>
        Belt_Array.make(10, ApolloHooks.Subscription.NoData)
