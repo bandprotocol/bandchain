@@ -221,7 +221,7 @@ module Msg = {
   module Report = {
     type t = {
       requestID: ID.Request.t,
-      dataSet: list(RawDataReport.t),
+      rawReports: list(RawDataReport.t),
       validator: Address.t,
       reporter: Address.t,
     };
@@ -229,7 +229,7 @@ module Msg = {
     let decode = json =>
       JsonUtils.Decode.{
         requestID: json |> field("request_id", ID.Request.fromJson),
-        dataSet: json |> field("data_set", list(RawDataReport.decode)),
+        rawReports: json |> field("raw_reports", list(RawDataReport.decode)),
         validator: json |> field("validator", string) |> Address.fromBech32,
         reporter: json |> field("reporter", string) |> Address.fromBech32,
       };
