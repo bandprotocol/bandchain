@@ -24,7 +24,6 @@ jobs:
       with:
         toolchain: '1.42.0'
         default: true
-        override: true
         target: wasm32-unknown-unknown
     
     - name: Run chain tests
