@@ -208,6 +208,18 @@ func TestDecodeSlice(t *testing.T) {
 	require.Equal(t, []int32{1, 2, 3, 4, 5, 6}, actual)
 }
 
+func TestDecodeSliceFail(t *testing.T) {
+	var actual []int32
+	byteArray := []byte{0x6, 0x0, 0x0, 0x0, 0x1, 0x0, 0x0, 0x0}
+	require.PanicsWithError(t, "obi: out of range", func() { MustDecode(byteArray, &actual) })
+}
+
+func TestDecodeSliceOutOfRangeFail(t *testing.T) {
+	var actual []int32
+	byteArray := []byte{0x6, 0x0, 0x0}
+	require.PanicsWithError(t, "obi: out of range", func() { MustDecode(byteArray, &actual) })
+}
+
 func TestDecodeStruct(t *testing.T) {
 	var actual ExampleData
 	byteArray := []byte{0x3, 0x0, 0x0, 0x0, 0x42, 0x54, 0x43, 0x28, 0x23, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1, 0x2, 0x2, 0x0, 0x0, 0x0, 0xa, 0x0, 0xb, 0x0}
@@ -226,11 +238,29 @@ func TestDecodeStruct(t *testing.T) {
 	)
 }
 
+func TestDecodeStructFail(t *testing.T) {
+	var actual ExampleData
+	byteArray := []byte{0x6, 0x0, 0x0, 0x0, 0x1, 0x0, 0x0, 0x0}
+	require.PanicsWithError(t, "obi: out of range", func() { MustDecode(byteArray, &actual) })
+}
+
+func TestDecodeStructOutOfRangeFail(t *testing.T) {
+	var actual []ExampleData
+	byteArray := []byte{0x6, 0x0, 0x0}
+	require.PanicsWithError(t, "obi: out of range", func() { MustDecode(byteArray, &actual) })
+}
+
 func TestDecodeByteArray(t *testing.T) {
 	var actual []byte
 	byteArray := []byte{0x6, 0x0, 0x0, 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6}
 	MustDecode(byteArray, &actual)
 	require.Equal(t, []byte{0x1, 0x2, 0x3, 0x4, 0x5, 0x6}, actual)
+}
+
+func TestDecodeByteFail(t *testing.T) {
+	var actual []byte
+	byteArray := []byte{0x6, 0x0}
+	require.PanicsWithError(t, "obi: out of range", func() { MustDecode(byteArray, &actual) })
 }
 
 func TestDecodeByteArrayOutOfRangeFail(t *testing.T) {
@@ -249,4 +279,10 @@ func TestUnsupportedType(t *testing.T) {
 	var actual bool
 	byteArray := []byte{0x6, 0x0, 0x0, 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6}
 	require.PanicsWithError(t, "obi: unsupported value type: bool", func() { MustDecode(byteArray, &actual) })
+}
+
+func TestNotAllDataConsumed(t *testing.T) {
+	var actual []byte
+	byteArray := []byte{0x6, 0x0, 0x0, 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0x10}
+	require.PanicsWithError(t, "obi: not all data was consumed while decoding", func() { MustDecode(byteArray, &actual) })
 }
