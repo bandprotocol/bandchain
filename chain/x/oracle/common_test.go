@@ -95,3 +95,20 @@ func loadOracleScriptFromWasm(path string) (os types.OracleScript, clear func())
 		"schema", "sourceCodeURL",
 	), func() { deleteFile(code) }
 }
+
+func loadOracleScriptFromWasmCryptoCompareBorsh() (os types.OracleScript, clear func()) {
+	absPath, _ := filepath.Abs("../../pkg/owasm/res/crypto_price_borsh.wasm")
+	code, err := ioutil.ReadFile(absPath)
+	if err != nil {
+		panic(err)
+	}
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
+	f := filecache.New(dir)
+	filename := f.AddFile(code)
+	return types.NewOracleScript(
+		Owner.Address, "imported script", "description",
+		filename,
+		`{"Input": "{\"kind\": \"struct\", \"fields\": [ [\"symbol\", \"string\"], [\"multiplier\", \"u64\"] ] }","Output": "{ \"kind\": \"struct\", \"fields\": [ [\"px\", \"u64\"] ]}"}`,
+		"sourceCodeURL",
+	), func() { deleteFile(code) }
+}
