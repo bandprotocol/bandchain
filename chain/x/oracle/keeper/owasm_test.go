@@ -15,19 +15,19 @@ func TestPrepareRequestSuccess(t *testing.T) {
 	_, ctx, k := createTestInput()
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
 
-	ds1, clear1 := loadDataSourceFromExecutable("../../../datasources/coingecko_price.py")
+	ds1, clear1 := getTestDataSource("code1")
 	defer clear1()
 	k.AddDataSource(ctx, ds1)
 
-	ds2, clear2 := loadDataSourceFromExecutable("../../../datasources/crypto_compare_price.sh")
+	ds2, clear2 := getTestDataSource("code2")
 	defer clear2()
 	k.AddDataSource(ctx, ds2)
 
-	ds3, clear3 := loadDataSourceFromExecutable("../../../datasources/binance_price.sh")
+	ds3, clear3 := getTestDataSource("code3")
 	defer clear3()
 	k.AddDataSource(ctx, ds3)
 
-	os, clear4 := loadOracleScriptFromWasmCryptoCompareBorsh()
+	os, clear4 := getTestOracleScript()
 	defer clear4()
 
 	oracleScriptID := k.AddOracleScript(ctx, os)
@@ -46,19 +46,19 @@ func TestPrepareRequestGetRandomValidatorFail(t *testing.T) {
 	_, ctx, k := createTestInput()
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
 
-	ds1, clear1 := loadDataSourceFromExecutable("../../../datasources/coingecko_price.py")
+	ds1, clear1 := getTestDataSource("code1")
 	defer clear1()
 	k.AddDataSource(ctx, ds1)
 
-	ds2, clear2 := loadDataSourceFromExecutable("../../../datasources/crypto_compare_price.sh")
+	ds2, clear2 := getTestDataSource("code2")
 	defer clear2()
 	k.AddDataSource(ctx, ds2)
 
-	ds3, clear3 := loadDataSourceFromExecutable("../../../datasources/binance_price.sh")
+	ds3, clear3 := getTestDataSource("code3")
 	defer clear3()
 	k.AddDataSource(ctx, ds3)
 
-	os, clear4 := loadOracleScriptFromWasmCryptoCompareBorsh()
+	os, clear4 := getTestOracleScript()
 	defer clear4()
 
 	oracleScriptID := k.AddOracleScript(ctx, os)
@@ -77,19 +77,19 @@ func TestPrepareRequestGetOracleScriptFail(t *testing.T) {
 	_, ctx, k := createTestInput()
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
 
-	ds1, clear1 := loadDataSourceFromExecutable("../../../datasources/coingecko_price.py")
+	ds1, clear1 := getTestDataSource("code1")
 	defer clear1()
 	k.AddDataSource(ctx, ds1)
 
-	ds2, clear2 := loadDataSourceFromExecutable("../../../datasources/crypto_compare_price.sh")
+	ds2, clear2 := getTestDataSource("code2")
 	defer clear2()
 	k.AddDataSource(ctx, ds2)
 
-	ds3, clear3 := loadDataSourceFromExecutable("../../../datasources/binance_price.sh")
+	ds3, clear3 := getTestDataSource("code3")
 	defer clear3()
 	k.AddDataSource(ctx, ds3)
 
-	os, clear4 := loadOracleScriptFromWasmCryptoCompareBorsh()
+	os, clear4 := getTestOracleScript()
 	defer clear4()
 
 	k.AddOracleScript(ctx, os)
@@ -107,18 +107,6 @@ func TestPrepareRequestGetOracleScriptFail(t *testing.T) {
 func TestPrepareRequestBadWasmExecutionFail(t *testing.T) {
 	_, ctx, k := createTestInput()
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
-
-	ds1, clear1 := loadDataSourceFromExecutable("../../../datasources/coingecko_price.py")
-	defer clear1()
-	k.AddDataSource(ctx, ds1)
-
-	ds2, clear2 := loadDataSourceFromExecutable("../../../datasources/crypto_compare_price.sh")
-	defer clear2()
-	k.AddDataSource(ctx, ds2)
-
-	ds3, clear3 := loadDataSourceFromExecutable("../../../datasources/binance_price.sh")
-	defer clear3()
-	k.AddDataSource(ctx, ds3)
 
 	os, clear4 := getTestOracleScript()
 	defer clear4()
@@ -139,7 +127,7 @@ func TestPrepareRequestGetDataSourceFail(t *testing.T) {
 	_, ctx, k := createTestInput()
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
 
-	os, clear4 := loadOracleScriptFromWasmCryptoCompareBorsh()
+	os, clear4 := getBadOracleScript()
 	defer clear4()
 
 	oracleScriptID := k.AddOracleScript(ctx, os)
@@ -158,15 +146,15 @@ func TestResolveRequestSuccess(t *testing.T) {
 	_, ctx, k := createTestInput()
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
 
-	ds1, clear1 := loadDataSourceFromExecutable("../../../datasources/coingecko_price.py")
+	ds1, clear1 := getTestDataSource("code1")
 	defer clear1()
 	k.AddDataSource(ctx, ds1)
 
-	ds2, clear2 := loadDataSourceFromExecutable("../../../datasources/crypto_compare_price.sh")
+	ds2, clear2 := getTestDataSource("code2")
 	defer clear2()
 	k.AddDataSource(ctx, ds2)
 
-	os, clear3 := loadOracleScriptFromWasm("../../../pkg/owasm/res/get_env.wasm")
+	os, clear3 := getTestOracleScript()
 	defer clear3()
 
 	oracleScriptID := k.AddOracleScript(ctx, os)
@@ -191,7 +179,7 @@ func TestResolveRequestSuccess(t *testing.T) {
 	r := k.MustGetRequest(ctx, reqID)
 	resPacket := types.NewOracleResponsePacketData(
 		r.ClientID, reqID, int64(k.GetReportCount(ctx, reqID)), r.RequestTime,
-		ctx.BlockTime().Unix(), types.ResolveStatus_Success, make([]byte, 8),
+		ctx.BlockTime().Unix(), types.ResolveStatus_Success, []byte("beeb"),
 	)
 	reqPacket := types.NewOracleRequestPacketData(
 		r.ClientID, r.OracleScriptID, r.Calldata, r.MinCount, int64(len(r.RequestedValidators)),
@@ -205,19 +193,19 @@ func TestResolveRequestFail(t *testing.T) {
 	_, ctx, k := createTestInput()
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
 
-	ds1, clear1 := loadDataSourceFromExecutable("../../../datasources/coingecko_price.py")
+	ds1, clear1 := getTestDataSource("code1")
 	defer clear1()
 	k.AddDataSource(ctx, ds1)
 
-	ds2, clear2 := loadDataSourceFromExecutable("../../../datasources/crypto_compare_price.sh")
+	ds2, clear2 := getTestDataSource("code2")
 	defer clear2()
 	k.AddDataSource(ctx, ds2)
 
-	ds3, clear3 := loadDataSourceFromExecutable("../../../datasources/binance_price.sh")
+	ds3, clear3 := getTestDataSource("code3")
 	defer clear3()
 	k.AddDataSource(ctx, ds3)
 
-	os, clear4 := loadBadOracleScript()
+	os, clear4 := getBadOracleScript()
 	defer clear4()
 
 	oracleScriptID := k.AddOracleScript(ctx, os)
