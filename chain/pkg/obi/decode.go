@@ -51,6 +51,11 @@ func decodeImpl(data []byte, v interface{}) ([]byte, error) {
 		ev.SetString(val)
 		return rem, err
 	case reflect.Slice:
+		if ev.Type().Elem().Kind() == reflect.Uint8 {
+			val, rem, err := DecodeBytes(data)
+			ev.SetBytes(val)
+			return rem, err
+		}
 		length, rem, err := DecodeUnsigned32(data)
 		if err != nil {
 			return nil, err
