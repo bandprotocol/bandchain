@@ -662,3 +662,28 @@ func TestReportFailed(t *testing.T) {
 // 	_, err = handleMsgReportData(ctx, keeper, msg)
 // 	require.NotNil(t, err)
 // }
+
+func TestAddReporterSuccess(t *testing.T) {
+	_, ctx, k := createTestInput()
+
+	validatorAddress := Alice.ValAddress
+	reporterAddress := Bob.Address
+	msg := types.NewMsgAddReporter(validatorAddress, reporterAddress)
+
+	result, err := oracle.NewHandler(k)(ctx, msg)
+	require.NoError(t, err)
+	require.NotNil(t, result)
+
+	events := result.GetEvents()
+
+	// Add reporter events
+	require.Equal(t, 1, len(events))
+	require.Equal(t, types.EventTypeAddReporter, events[0].Type)
+	require.Equal(t, types.AttributeKeyValidator, string(events[0].Attributes[0].Key))
+	require.Equal(t, validatorAddress.String(), string(events[0].Attributes[0].Value))
+	require.Equal(t, types.AttributeKeyReporter, string(events[0].Attributes[1].Key))
+	require.Equal(t, reporterAddress.String(), string(events[0].Attributes[1].Value))
+
+}
+
+
