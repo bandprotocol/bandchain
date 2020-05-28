@@ -669,6 +669,7 @@ func TestAddReporterSuccess(t *testing.T) {
 
 	validatorAddress := Alice.ValAddress
 	reporterAddress := Bob.Address
+	// Add bob reporter to alice validator
 	msg := types.NewMsgAddReporter(validatorAddress, reporterAddress)
 
 	result, err := oracle.NewHandler(k)(ctx, msg)
