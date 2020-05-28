@@ -6,7 +6,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// IsReporter returns true iff the address is an authorized reporter for the given validator.
+// IsReporter returns true if the address is an authorized reporter for the given validator.
 func (k Keeper) IsReporter(ctx sdk.Context, val sdk.ValAddress, addr sdk.AccAddress) bool {
 	if val.Equals(sdk.ValAddress(addr)) { // A validator is always a reporter of himself.
 		return true
