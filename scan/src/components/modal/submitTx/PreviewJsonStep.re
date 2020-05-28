@@ -134,6 +134,8 @@ let make = (~rawTx, ~onBack, ~account: AccountContext.t) => {
                                  setState(_ => Success(txResponse.txHash));
                                }
                                : {
+                                //  Log for debug
+                                 Js.Console.error(txResponse);
                                  setState(_ => Error(txResponse.rawLog));
                                };
                              dispatchModal(EnableExit);
