@@ -117,6 +117,13 @@ bandd collect-gentxs
 cp ~/.bandd/config/genesis.json $DIR/genesis.json
 cp -r ~/.bandd/files $DIR
 
+# Recreate files volume
+docker volume rm query-files
+docker volume create --driver local \
+    --opt type=none \
+    --opt device=$HOME/.bandd/files \
+    --opt o=bind query-files
+
 cd ..
 
 docker-compose up -d --build

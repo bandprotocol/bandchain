@@ -70,8 +70,8 @@ services:
     image: band-validator:latest
     ports:
       - 26657:26657
-    # volumes:
-    #   - chain_config:/root/.bandd/config/
+    volumes:
+      - query-files:/root/.bandd/files/
     networks:
       bandchain:
         ipv4_address: 172.18.0.15
@@ -82,10 +82,12 @@ services:
     networks:
       bandchain:
         ipv4_address: 172.18.0.20
+    volumes:
+      - query-files:/root/.bandd/files/
     restart: always
     ports:
       - 1317:1317
-    command: sh -c "mkdir -p /root/.bandd && cp -r /oracle/docker-config/files /root/.bandd && bandcli rest-server --laddr tcp://0.0.0.0:1317 --node tcp://172.18.0.15:26657 --chain-id bandchain --trust-node"
+    command: bandcli rest-server --laddr tcp://0.0.0.0:1317 --node tcp://172.18.0.15:26657 --chain-id bandchain --trust-node
 
   proxy-server:
     build:
@@ -137,6 +139,10 @@ services:
       bandchain:
         ipv4_address: 172.18.0.17
     command: sh -c "go run ./cmd/requestband/main.go"
+
+volumes:
+  query-files:
+    external: true
 
 networks:
   bandchain:
