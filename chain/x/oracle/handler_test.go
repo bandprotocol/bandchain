@@ -700,3 +700,37 @@ func TestAddReporterFail(t *testing.T) {
 	require.EqualError(t, err, fmt.Sprintf("val: %s, addr: %s: reporter already exists", validatorAddress.String(), reporterAddress.String()))
 	require.Nil(t, result)
 }
+
+func TestRemoveReporterSuccess(t *testing.T) {
+	_, ctx, k := createTestInput()
+
+	validatorAddress := Alice.ValAddress
+	reporterAddress := Alice.Address
+
+	msg := types.NewMsgRemoveReporter(validatorAddress, reporterAddress)
+	result, err := oracle.NewHandler(k)(ctx, msg)
+	require.NoError(t, err)
+
+	events := result.GetEvents()
+	// Remove reporter events
+	require.Equal(t, 1, len(events))
+	require.Equal(t, types.EventTypeRemoveReporter, events[0].Type)
+	require.Equal(t, types.AttributeKeyValidator, string(events[0].Attributes[0].Key))
+	require.Equal(t, validatorAddress.String(), string(events[0].Attributes[0].Value))
+	require.Equal(t, types.AttributeKeyReporter, string(events[0].Attributes[1].Key))
+	require.Equal(t, reporterAddress.String(), string(events[0].Attributes[1].Value))
+
+}
+
+func TestRemoveReporterFail(t *testing.T) {
+	_, ctx, k := createTestInput()
+
+	validatorAddress := Alice.ValAddress
+	reporterAddress := Bob.Address
+
+	// Should fail, bob isn't alice validator's reporter
+	msg := types.NewMsgRemoveReporter(validatorAddress, reporterAddress)
+	result, err := oracle.NewHandler(k)(ctx, msg)
+	require.EqualError(t, err, fmt.Sprintf("val: %s, addr: %s: reporter not found", validatorAddress.String(), reporterAddress.String()))
+	require.Nil(t, result)
+}
