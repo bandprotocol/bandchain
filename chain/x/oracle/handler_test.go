@@ -5,6 +5,7 @@ import (
 	gz "compress/gzip"
 	"crypto/sha256"
 	"encoding/hex"
+	"fmt"
 	"testing"
 	"time"
 
@@ -686,4 +687,15 @@ func TestAddReporterSuccess(t *testing.T) {
 
 }
 
+func TestAddReporterFail(t *testing.T) {
+	_, ctx, k := createTestInput()
 
+	validatorAddress := Alice.ValAddress
+	reporterAddress := Alice.Address
+	msg := types.NewMsgAddReporter(validatorAddress, reporterAddress)
+
+	// Should fail, validator is always a reporter of himself so we can't add alice reporter to alice validator
+	result, err := oracle.NewHandler(k)(ctx, msg)
+	require.EqualError(t, err, fmt.Sprintf("val: %s, addr: %s: reporter already exists", validatorAddress.String(), reporterAddress.String()))
+	require.Nil(t, result)
+}
