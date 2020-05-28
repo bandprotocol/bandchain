@@ -1,0 +1,30 @@
+name: Chain Workflow
+on:
+  push:
+    paths:
+    - 'chain/**'
+
+jobs:
+  chain-test:
+    runs-on: ubuntu-latest
+    env:
+      working-directory: ./chain
+    
+    steps:
+    - name: Code checkout
+      uses: actions/checkout@v2
+
+    - name: Install Go
+      uses: actions/setup-go@v2-beta
+      with:
+        go-version: '^1.13.8' # The Go version to download (if necessary) and use.
+
+    - name: Install Rust and rust toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        target: wasm32-unknown-unknown
+    
+    - name: Run chain tests
+      run : ./run_tests.sh
+      working-directory: ${{env.working-directory}}
