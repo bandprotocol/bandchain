@@ -184,18 +184,18 @@ module ExecutionPart = {
       <VSpacing size=Spacing.md />
       {isUnused
          ? React.null
-         : <div className={Styles.hFlex(`auto)}>
-             <Text value="This oracle script requires the following" color=Colors.gray7 />
-             <HSpacing size=Spacing.sm />
-             <Text value={numParams > 1 ? "parameters:" : "parameter:"} color=Colors.gray7 />
-           </div>}
-      <VSpacing size=Spacing.lg />
-      {isUnused
-         ? React.null
-         : <div className=Styles.paramsContainer>
-             {paramsInput
-              ->Belt_Array.mapWithIndex((i, param) => parameterInput(param, i, setCallDataArr))
-              ->React.array}
+         : <div>
+             <div className={Styles.hFlex(`auto)}>
+               <Text value="This oracle script requires the following" color=Colors.gray7 />
+               <HSpacing size=Spacing.sm />
+               <Text value={numParams > 1 ? "parameters:" : "parameter:"} color=Colors.gray7 />
+             </div>
+             <VSpacing size=Spacing.lg />
+             <div className=Styles.paramsContainer>
+               {paramsInput
+                ->Belt_Array.mapWithIndex((i, param) => parameterInput(param, i, setCallDataArr))
+                ->React.array}
+             </div>
            </div>}
       <VSpacing size=Spacing.md />
       <div className=Styles.buttonContainer>
