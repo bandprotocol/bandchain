@@ -29,6 +29,10 @@ func Encode(v interface{}) ([]byte, error) {
 	case reflect.String:
 		return EncodeString(rv.String()), nil
 	case reflect.Slice:
+		if rv.Type().Elem().String() == reflect.Uint8.String() {
+			return EncodeBytes(rv.Bytes()), nil
+		}
+
 		res := EncodeUnsigned32(uint32(rv.Len()))
 		for idx := 0; idx < rv.Len(); idx++ {
 			each, err := Encode(rv.Index(idx).Interface())
