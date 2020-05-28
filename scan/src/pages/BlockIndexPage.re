@@ -19,7 +19,7 @@ module Styles = {
       backgroundColor(Colors.gray7),
     ]);
 
-      let proposerContainer = style([width(`px(300))]);
+  let proposerContainer = style([width(`px(300))]);
 };
 
 [@react.component]
@@ -85,8 +85,11 @@ let make = (~height) => {
       <Col size=3.2>
         {switch (blockSub) {
          | Data({validator}) =>
-            <div className=Styles.proposerContainer>
-           <InfoHL info={InfoHL.Text(validator.moniker)} header="PROPOSED BY" />
+           <div className=Styles.proposerContainer>
+             <InfoHL
+               info={InfoHL.Validator(validator.operatorAddress, validator.moniker)}
+               header="PROPOSED BY"
+             />
            </div>
          | _ => <InfoHL info={InfoHL.Loading(80)} header="PROPOSED BY" />
          }}
