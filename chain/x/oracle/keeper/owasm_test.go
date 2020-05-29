@@ -64,12 +64,12 @@ func TestPrepareRequestSuccess(t *testing.T) {
 	require.Equal(t, []byte(types.AttributeKeyValidator), events[0].Attributes[1].Key)
 	require.Equal(t, []byte(Validator1.ValAddress.String()), events[0].Attributes[1].Value)
 
-	require.Equal(t, types.EventTypeRawRequest, events[1].Type)
 	dsIDs := []string{"", "1", "2", "3"}
 	filenames := []string{"", ds1.Filename, ds2.Filename, ds3.Filename}
 	exIDs := []string{"", "1", "2", "3"}
 
 	for idx := 1; idx < len(events); idx++ {
+		require.Equal(t, types.EventTypeRawRequest, events[idx].Type)
 		require.Equal(t, []byte(types.AttributeKeyDataSourceID), events[idx].Attributes[0].Key)
 		require.Equal(t, []byte(dsIDs[idx]), events[idx].Attributes[0].Value)
 		require.Equal(t, []byte(types.AttributeKeyDataSourceHash), events[idx].Attributes[1].Key)
@@ -105,10 +105,9 @@ func TestPrepareRequestGetRandomValidatorsFail(t *testing.T) {
 	askCount := int64(10000)
 	minCount := int64(2)
 	clientID := "beeb"
-	ibcInfo := types.NewIBCInfo("source_port", "source_channel")
 
 	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
-	err := k.PrepareRequest(ctx, &m, &ibcInfo)
+	err := k.PrepareRequest(ctx, &m, nil)
 	require.Error(t, err)
 }
 
@@ -136,10 +135,9 @@ func TestPrepareRequestGetOracleScriptFail(t *testing.T) {
 	askCount := int64(1)
 	minCount := int64(2)
 	clientID := "beeb"
-	ibcInfo := types.NewIBCInfo("source_port", "source_channel")
 
 	m := types.NewMsgRequestData(9999, calldata, askCount, minCount, clientID, Alice.Address)
-	err := k.PrepareRequest(ctx, &m, &ibcInfo)
+	err := k.PrepareRequest(ctx, &m, nil)
 	require.Error(t, err)
 }
 
@@ -155,10 +153,9 @@ func TestPrepareRequestBadWasmExecutionFail(t *testing.T) {
 	askCount := int64(1)
 	minCount := int64(2)
 	clientID := "beeb"
-	ibcInfo := types.NewIBCInfo("source_port", "source_channel")
 
 	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
-	err := k.PrepareRequest(ctx, &m, &ibcInfo)
+	err := k.PrepareRequest(ctx, &m, nil)
 	require.Error(t, err)
 }
 
@@ -174,10 +171,9 @@ func TestPrepareRequestGetDataSourceFail(t *testing.T) {
 	askCount := int64(1)
 	minCount := int64(2)
 	clientID := "beeb"
-	ibcInfo := types.NewIBCInfo("source_port", "source_channel")
 
 	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
-	err := k.PrepareRequest(ctx, &m, &ibcInfo)
+	err := k.PrepareRequest(ctx, &m, nil)
 	require.Error(t, err)
 }
 
