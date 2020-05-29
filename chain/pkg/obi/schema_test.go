@@ -52,3 +52,8 @@ func TestSchemaInvalidSliceFail(t *testing.T) {
 	invalidSlice := []bool{false, false, true, true}
 	require.PanicsWithError(t, "obi: unsupported value type: bool", func() { MustGetSchema(invalidSlice) })
 }
+
+func TestSchemaByteArraySuccess(t *testing.T) {
+	byteArray := []byte{0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6}
+	require.Equal(t, "bytes", MustGetSchema(byteArray))
+}
