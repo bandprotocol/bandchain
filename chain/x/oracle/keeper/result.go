@@ -3,13 +3,11 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/tendermint/tendermint/crypto/tmhash"
 
-	"github.com/bandprotocol/bandchain/chain/pkg/obi"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
-// HasReport checks if the result of this request ID exists in the storage.
+// HasResult checks if the result of this request ID exists in the storage.
 func (k Keeper) HasResult(ctx sdk.Context, id types.RequestID) bool {
 	return ctx.KVStore(k.storeKey).Has(types.ResultStoreKey(id))
 }
@@ -20,25 +18,13 @@ func (k Keeper) SetResult(ctx sdk.Context, reqID types.RequestID, result []byte)
 	store.Set(types.ResultStoreKey(reqID), result)
 }
 
-// GetDataSource returns the result bytes for the given request ID or error if not exists.
+// GetResult returns the result bytes for the given request ID or error if not exists.
 func (k Keeper) GetResult(ctx sdk.Context, id types.RequestID) ([]byte, error) {
 	bz := ctx.KVStore(k.storeKey).Get(types.ResultStoreKey(id))
 	if bz == nil {
 		return nil, sdkerrors.Wrapf(types.ErrResultNotFound, "id: %d", id)
 	}
 	return bz, nil
-}
-
-// AddResult validates the result's size and saves it to the store.
-func (k Keeper) AddResult(
-	ctx sdk.Context, id types.RequestID,
-	req types.OracleRequestPacketData, res types.OracleResponsePacketData,
-) []byte {
-	reqPacketHash := tmhash.Sum(obi.MustEncode(req))
-	resPacketHash := tmhash.Sum(obi.MustEncode(res))
-	resultHash := tmhash.Sum(append(reqPacketHash, resPacketHash...))
-	k.SetResult(ctx, id, resultHash)
-	return resultHash
 }
 
 // GetAllResults returns the list of all results in the store. Nil will be added for skipped results.

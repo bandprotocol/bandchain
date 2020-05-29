@@ -80,40 +80,36 @@ import (
 func TestGetAllResults(t *testing.T) {
 	_, ctx, k := createTestInput()
 
-	reqPacket1 := types.NewOracleRequestPacketData("alice", 1, BasicCalldata, 1, 1)
-	resPacket1 := types.NewOracleResponsePacketData("alice", 1, 1, 1589535020, 1589535022, 1, BasicCalldata)
-	resultHashReqID1 := k.AddResult(ctx, types.RequestID(1), reqPacket1, resPacket1)
-	reqPacket4 := types.NewOracleRequestPacketData("bob", 1, BasicCalldata, 1, 1)
-	resPacket4 := types.NewOracleResponsePacketData("bob", 4, 1, 1589535020, 1589535022, 1, BasicCalldata)
-	resultHashReqID4 := k.AddResult(ctx, types.RequestID(4), reqPacket4, resPacket4)
+	req1 := types.NewOracleRequestPacketData("alice", 1, BasicCalldata, 1, 1)
+	res1 := types.NewOracleResponsePacketData("alice", 1, 1, 1589535020, 1589535022, 1, BasicCalldata)
+	resultHash1 := types.CalculateResultHash(req1, res1)
+	k.SetResult(ctx, types.RequestID(1), resultHash1)
+	req4 := types.NewOracleRequestPacketData("bob", 1, BasicCalldata, 1, 1)
+	res4 := types.NewOracleResponsePacketData("bob", 4, 1, 1589535020, 1589535022, 1, BasicCalldata)
+	resultHash4 := types.CalculateResultHash(req4, res4)
+	k.SetResult(ctx, types.RequestID(4), resultHash4)
 
 	results := k.GetAllResults(ctx)
 
 	require.Equal(t, 4, len(results))
-	require.Equal(t, resultHashReqID1, results[0])
+	require.Equal(t, resultHash1, results[0])
 
 	// result of reqID 2 and 3 should be nil
 	require.Empty(t, results[1])
 	require.Empty(t, results[2])
 
-	require.Equal(t, resultHashReqID4, results[3])
+	require.Equal(t, resultHash4, results[3])
 }
 
 func TestSetResult(t *testing.T) {
 	_, ctx, k := createTestInput()
 
-	reqPacket := types.NewOracleRequestPacketData("alice", 1, BasicCalldata, 1, 1)
-	resPacket := types.NewOracleResponsePacketData("alice", 1, 1, 1589535020, 1589535022, 1, BasicCalldata)
-
-	resultHash := k.AddResult(ctx, types.RequestID(1), reqPacket, resPacket)
+	req := types.NewOracleRequestPacketData("alice", 1, BasicCalldata, 1, 1)
+	res := types.NewOracleResponsePacketData("alice", 1, 1, 1589535020, 1589535022, 1, BasicCalldata)
+	resultHash := types.CalculateResultHash(req, res)
+	k.SetResult(ctx, types.RequestID(1), resultHash)
 
 	resultHashReqID1, err := k.GetResult(ctx, types.RequestID(1))
-	require.Equal(t, resultHash, resultHashReqID1)
-
-	// Set result for request ID 2
-	k.SetResult(ctx, types.RequestID(2), resultHash)
-	resultHashReqID2, err := k.GetResult(ctx, types.RequestID(2))
 	require.NoError(t, err)
-
-	require.Equal(t, resultHash, resultHashReqID2)
+	require.Equal(t, resultHash, resultHashReqID1)
 }
