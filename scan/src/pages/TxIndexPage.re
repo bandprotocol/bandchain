@@ -52,13 +52,13 @@ module TxNotFound = {
         <Col> <img src=Images.notFoundBg className=Styles.notfoundLogo /> </Col>
         <VSpacing size=Spacing.md />
         <Text
-          value="Sorry, We are unable to locate this TxnHash"
+          value="Sorry, we are unable to retrieve information on this transaction hash."
           size=Text.Lg
           color=Colors.blueGray6
         />
         <VSpacing size=Spacing.lg />
         <Text
-          value="Note that: If you have just submitted a transaction please wait for at least 5-10 seconds."
+          value="Note: Transactions usually take 5-10 seconds to appear."
           size=Text.Lg
           color=Colors.blueGray6
         />
