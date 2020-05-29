@@ -35,6 +35,8 @@ func TestPrepareRequestSuccess(t *testing.T) {
 	askCount := uint64(1)
 	minCount := uint64(2)
 	clientID := "beeb"
+	requestHeight := int64(0)
+	rawRequestID := []types.ExternalID{1, 2, 3}
 
 	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
 	err := k.PrepareRequest(ctx, &m, nil)
@@ -46,7 +48,7 @@ func TestPrepareRequestSuccess(t *testing.T) {
 	require.NoError(t, err)
 
 	expectReq := types.NewRequest(oracleScriptID, calldata, []sdk.ValAddress{Validator1.ValAddress}, minCount,
-		int64(0), int64(1581589790), clientID, nil, []types.ExternalID{1, 2, 3})
+		requestHeight, int64(1581589790), clientID, nil, rawRequestID)
 	require.Equal(t, expectReq, req)
 
 	require.Equal(t, 4, len(events))
@@ -113,9 +115,86 @@ func TestPrepareRequestInvalidAskCountFail(t *testing.T) {
 	require.Error(t, err)
 }
 
+func TestPrepareRequestBaseRequestFeePanic(t *testing.T) {
+	_, ctx, k := createTestInput()
+	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
+	ctx = ctx.WithGasMeter(sdk.NewGasMeter(100000))
+
+	baseRequestGas := uint64(100000)
+	k.SetParam(ctx, types.KeyBaseRequestGas, baseRequestGas)
+
+	ds1, clear1 := getTestDataSource("code1")
+	defer clear1()
+	k.AddDataSource(ctx, ds1)
+
+	ds2, clear2 := getTestDataSource("code2")
+	defer clear2()
+	k.AddDataSource(ctx, ds2)
+
+	ds3, clear3 := getTestDataSource("code3")
+	defer clear3()
+	k.AddDataSource(ctx, ds3)
+
+	os, clear4 := getTestOracleScript()
+	defer clear4()
+
+	oracleScriptID := k.AddOracleScript(ctx, os)
+	calldata, _ := hex.DecodeString("030000004254436400000000000000")
+	askCount := uint64(1)
+	minCount := uint64(2)
+	clientID := "beeb"
+
+	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
+
+	require.Panics(t, func() { k.PrepareRequest(ctx, &m, nil) })
+}
+
+func TestPrepareRequestPerValidatorRequestFeePanic(t *testing.T) {
+	_, ctx, k := createTestInput()
+	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
+	ctx = ctx.WithGasMeter(sdk.NewGasMeter(150000))
+
+	baseRequestGas := uint64(100000)
+	k.SetParam(ctx, types.KeyBaseRequestGas, baseRequestGas)
+	perValidatorRequestGas := uint64(100000)
+	k.SetParam(ctx, types.KeyPerValidatorRequestGas, perValidatorRequestGas)
+
+	ds1, clear1 := getTestDataSource("code1")
+	defer clear1()
+	k.AddDataSource(ctx, ds1)
+
+	ds2, clear2 := getTestDataSource("code2")
+	defer clear2()
+	k.AddDataSource(ctx, ds2)
+
+	ds3, clear3 := getTestDataSource("code3")
+	defer clear3()
+	k.AddDataSource(ctx, ds3)
+
+	os, clear4 := getTestOracleScript()
+	defer clear4()
+
+	oracleScriptID := k.AddOracleScript(ctx, os)
+	calldata, _ := hex.DecodeString("030000004254436400000000000000")
+	askCount := uint64(1)
+	minCount := uint64(2)
+	clientID := "beeb"
+
+	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
+
+	require.Panics(t, func() { k.PrepareRequest(ctx, &m, nil) })
+}
+
 func TestPrepareRequestGetRandomValidatorsFail(t *testing.T) {
 	_, ctx, k := createTestInput()
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
+	ctx = ctx.WithGasMeter(sdk.NewGasMeter(200000000))
+
+	k.SetParam(ctx, types.KeyMaxAskCount, 16)
+	baseRequestGas := uint64(100000)
+	k.SetParam(ctx, types.KeyBaseRequestGas, baseRequestGas)
+	perValidatorRequestGas := uint64(100000)
+	k.SetParam(ctx, types.KeyPerValidatorRequestGas, perValidatorRequestGas)
 
 	ds1, clear1 := getTestDataSource("code1")
 	defer clear1()
@@ -139,7 +218,14 @@ func TestPrepareRequestGetRandomValidatorsFail(t *testing.T) {
 	clientID := "beeb"
 
 	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
+
+	// test consume gas for data requests
+	expectGasNotLessThan := baseRequestGas + askCount*perValidatorRequestGas
+	beforeGas := ctx.GasMeter().GasConsumed()
 	err := k.PrepareRequest(ctx, &m, nil)
+	afterGas := ctx.GasMeter().GasConsumed()
+	require.Greater(t, afterGas-beforeGas, expectGasNotLessThan)
+
 	require.Error(t, err)
 }
 
