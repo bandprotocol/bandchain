@@ -40,7 +40,6 @@ func TestPrepareRequestSuccess(t *testing.T) {
 	rawRequestID := []types.ExternalID{1, 2, 3}
 
 	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
-	expectEventManger := ctx.EventManager()
 	err := k.PrepareRequest(ctx, &m, nil)
 	require.NoError(t, err)
 
@@ -49,8 +48,8 @@ func TestPrepareRequestSuccess(t *testing.T) {
 	expectReq := types.NewRequest(oracleScriptID, calldata, []sdk.ValAddress{Validator1.ValAddress}, minCount,
 		requestHeight, int64(1581589790), clientID, nil, rawRequestID)
 	require.Equal(t, expectReq, req)
-
-	expectEventManger.EmitEvent(sdk.NewEvent(
+	expectEvents := sdk.NewEventManager().Events()
+	expectEvents = append(expectEvents, sdk.NewEvent(
 		types.EventTypeRequest,
 		sdk.NewAttribute(types.AttributeKeyID, "1"),
 		sdk.NewAttribute(types.AttributeKeyValidator, Validator1.ValAddress.String()),
@@ -66,7 +65,7 @@ func TestPrepareRequestSuccess(t *testing.T) {
 		{3, ds3.Filename, 3, []byte("beeb")},
 	}
 	for _, ev := range events {
-		expectEventManger.EmitEvent(sdk.NewEvent(
+		expectEvents = append(expectEvents, sdk.NewEvent(
 			types.EventTypeRawRequest,
 			sdk.NewAttribute(types.AttributeKeyDataSourceID, fmt.Sprintf("%d", ev.dsID)),
 			sdk.NewAttribute(types.AttributeKeyDataSourceHash, ev.filname),
@@ -74,7 +73,7 @@ func TestPrepareRequestSuccess(t *testing.T) {
 			sdk.NewAttribute(types.AttributeKeyCalldata, string(ev.calldata)),
 		))
 	}
-	require.Equal(t, expectEventManger.Events(), ctx.EventManager().Events())
+	require.Equal(t, expectEvents, ctx.EventManager().Events())
 }
 
 func TestPrepareRequestInvalidAskCountFail(t *testing.T) {
