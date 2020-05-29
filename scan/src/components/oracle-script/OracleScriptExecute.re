@@ -134,14 +134,15 @@ module ExecutionPart = {
 
     let (callDataArr, setCallDataArr) = React.useState(_ => Belt_Array.make(numParams, ""));
     let (result, setResult) = React.useState(_ => Nothing);
-    let (isUnused, setIsUnused) = React.useState(_ => false);
 
     // TODO: Change when input can be empty
-    React.useEffect0(() => {
+    let isUnused = {
       let field = paramsInput->Belt_Array.getExn(0);
-      if (field.fieldName |> Js.String.startsWith("_")) {
+      field.fieldName |> Js.String.startsWith("_");
+    };
+    React.useEffect0(() => {
+      if (isUnused) {
         setCallDataArr(_ => [|"0"|]);
-        setIsUnused(_ => true);
       };
       None;
     });
