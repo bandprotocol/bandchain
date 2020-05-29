@@ -22,26 +22,34 @@ var (
 	validatorAddress3 = sdk.ValAddress(addr3)
 )
 
-func MockExecEnv() *types.ExecEnv {
+func mockExecutionEnv() *types.ExecEnv {
 	oracleScriptID := types.OracleScriptID(1)
 	calldata := []byte("CALLDATA")
 	valAddresses := []sdk.ValAddress{validatorAddress1, validatorAddress2, validatorAddress3}
-	minCount := int64(1)
+	minCount := uint64(1)
 	requestHeight := int64(999)
 	requestTime := int64(1581589700)
 	clientID := "beeb"
 	ibcInfo := types.NewIBCInfo("source_port", "source_channel")
 	rawRequestID := []types.ExternalID{1, 2, 3}
 	request := types.NewRequest(oracleScriptID, calldata, valAddresses, minCount, requestHeight, requestTime, clientID, &ibcInfo, rawRequestID)
-	env := types.NewExecEnv(request, int64(1581589770), int64(0))
+	env := types.NewExecEnv(request, int64(1581589770), 0)
+	rawReport1 := types.NewRawReport(1, 0, []byte("DATA1"))
+	rawReport2 := types.NewRawReport(2, 1, []byte("DATA2"))
+	rawReport3 := types.NewRawReport(3, 0, []byte("DATA3"))
+
+	report1 := types.NewReport(validatorAddress1, []types.RawReport{rawReport1, rawReport2})
+	report2 := types.NewReport(validatorAddress2, []types.RawReport{rawReport3})
+
+	env.SetReports([]types.Report{report1, report2})
 	return env
 }
 
-func MockPreparedExecEnv() *types.ExecEnv {
+func mockPreparedExecEnv() *types.ExecEnv {
 	oracleScriptID := types.OracleScriptID(1)
 	calldata := []byte("CALLDATA")
 	valAddresses := []sdk.ValAddress{validatorAddress1, validatorAddress2, validatorAddress3}
-	minCount := int64(1)
+	minCount := uint64(1)
 	requestHeight := int64(999)
 	requestTime := int64(1581589700)
 	clientID := "beeb"
@@ -52,64 +60,64 @@ func MockPreparedExecEnv() *types.ExecEnv {
 	env.RequestExternalData(1, 0, []byte("CALLDATA1"))
 	env.RequestExternalData(2, 1, []byte("CALLDATA2"))
 	env.RequestExternalData(3, 0, []byte("CALLDATA3"))
+	return env
+}
 
+func mockFreshEnv() *types.ExecEnv {
+	oracleScriptID := types.OracleScriptID(1)
+	calldata := []byte("CALLDATA")
+	valAddresses := []sdk.ValAddress{validatorAddress1, validatorAddress2, validatorAddress3}
+	minCount := uint64(1)
+	requestHeight := int64(999)
+	requestTime := int64(1581589700)
+	clientID := "beeb"
+	ibcInfo := types.NewIBCInfo("source_port", "source_channel")
+	rawRequestID := []types.ExternalID{1, 2, 3}
+	request := types.NewRequest(oracleScriptID, calldata, valAddresses, minCount, requestHeight, requestTime, clientID, &ibcInfo, rawRequestID)
+	env := types.NewExecEnv(request, int64(1581589770), 0)
 	return env
 }
 func TestGetMaxRawRequestDataSize(t *testing.T) {
-	env := MockExecEnv()
+	env := mockExecutionEnv()
 	require.Equal(t, int64(types.MaxCalldataSize), env.GetMaxRawRequestDataSize())
 }
 
 func TestGetMaxResultSize(t *testing.T) {
-	env := MockExecEnv()
+	env := mockExecutionEnv()
 	require.Equal(t, int64(types.MaxResultSize), env.GetMaxResultSize())
 }
 
 func TestGetAskCount(t *testing.T) {
-	env := MockExecEnv()
+	env := mockExecutionEnv()
 	require.Equal(t, int64(3), env.GetAskCount())
 }
 
 func TestGetMinCount(t *testing.T) {
-	env := MockExecEnv()
+	env := mockExecutionEnv()
 	require.Equal(t, int64(1), env.GetMinCount())
 }
 
 func TestGetAnsCount(t *testing.T) {
-	env := MockExecEnv()
-
-	rawReport1 := types.NewRawReport(1, 0, []byte("DATA"))
-	rawReport2 := types.NewRawReport(2, 0, []byte("DATA"))
-	rawReport3 := types.NewRawReport(3, 0, []byte("DATA"))
-
-	report1 := types.NewReport(validatorAddress1, []types.RawReport{rawReport1, rawReport2})
-	report2 := types.NewReport(validatorAddress2, []types.RawReport{rawReport3})
-
-	env.SetReports([]types.Report{report1, report2})
+	env := mockExecutionEnv()
 	require.Equal(t, int64(2), env.GetAnsCount())
-
-	env = MockPreparedExecEnv()
-	require.Panics(t, func() {
-		env.SetReports([]types.Report{report1, report2})
-	})
 }
 
 func TestGetPrepareBlockTime(t *testing.T) {
-	env := MockExecEnv()
+	env := mockExecutionEnv()
 	require.Equal(t, int64(1581589700), env.GetPrepareBlockTime())
 }
 
 func TestGetAggregateBlockTime(t *testing.T) {
-	env := MockExecEnv()
+	env := mockExecutionEnv()
 	require.Equal(t, int64(1581589770), env.GetAggregateBlockTime())
 
-	env = MockPreparedExecEnv()
+	env = mockPreparedExecEnv()
 	require.Equal(t, int64(0), env.GetAggregateBlockTime())
 
 }
 
 func TestGetValidatorAddress(t *testing.T) {
-	env := MockExecEnv()
+	env := mockExecutionEnv()
 
 	valAddrs, err := env.GetValidatorAddress(0)
 	require.NoError(t, err)
@@ -126,16 +134,21 @@ func TestGetValidatorAddress(t *testing.T) {
 	require.Error(t, err)
 }
 
-func TestGetExternalData(t *testing.T) {
-	env := MockExecEnv()
+func TestSetReportFail(t *testing.T) {
+	env := mockPreparedExecEnv()
+
 	rawReport1 := types.NewRawReport(1, 0, []byte("DATA1"))
 	rawReport2 := types.NewRawReport(2, 1, []byte("DATA2"))
 	rawReport3 := types.NewRawReport(3, 0, []byte("DATA3"))
 
 	report1 := types.NewReport(validatorAddress1, []types.RawReport{rawReport1, rawReport2})
 	report2 := types.NewReport(validatorAddress2, []types.RawReport{rawReport3})
-	env.SetReports([]types.Report{report1, report2})
 
+	require.Panics(t, func() { env.SetReports([]types.Report{report1, report2}) })
+}
+
+func TestGetExternalData(t *testing.T) {
+	env := mockExecutionEnv()
 	data, exitCode, err := env.GetExternalData(1, 0)
 	require.NoError(t, err)
 	require.Equal(t, uint32(0), exitCode)
@@ -168,7 +181,7 @@ func TestGetExternalData(t *testing.T) {
 }
 
 func TestRequestExternalData(t *testing.T) {
-	env := MockExecEnv()
+	env := mockExecutionEnv()
 	calldata := []byte("CALLDATA")
 
 	err := env.RequestExternalData(2, 2, calldata)
@@ -180,7 +193,7 @@ func TestRequestExternalData(t *testing.T) {
 }
 
 func TestGetRawRequests(t *testing.T) {
-	env := MockPreparedExecEnv()
+	env := mockPreparedExecEnv()
 	expect := []types.RawRequest{
 		types.NewRawRequest(0, 1, []byte("CALLDATA1")),
 		types.NewRawRequest(1, 2, []byte("CALLDATA2")),
@@ -188,7 +201,7 @@ func TestGetRawRequests(t *testing.T) {
 	}
 	require.Equal(t, expect, env.GetRawRequests())
 
-	env = MockExecEnv()
+	env = mockExecutionEnv()
 	require.Panics(t, func() {
 		env.GetRawRequests()
 	})
