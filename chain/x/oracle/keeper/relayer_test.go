@@ -53,6 +53,7 @@ func TestSendOracleResponse(t *testing.T) {
 				err = chainA.OracleKeeper.ScopedKeeper.ClaimCapability(ctx, cap, capName)
 				require.NoError(t, err)
 
+				createTestClient(chainA, chainB)
 				createTestChainConnection(chainA, chainB)
 				createTestChannel(chainA, chainB)
 

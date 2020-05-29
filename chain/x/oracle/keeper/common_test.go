@@ -19,22 +19,27 @@ import (
 	channeltypes "github.com/cosmos/cosmos-sdk/x/ibc/04-channel/types"
 	ibctmtypes "github.com/cosmos/cosmos-sdk/x/ibc/07-tendermint/types"
 	commitmenttypes "github.com/cosmos/cosmos-sdk/x/ibc/23-commitment/types"
+	"github.com/cosmos/cosmos-sdk/x/staking"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/tendermint/tendermint/libs/log"
 	tmtypes "github.com/tendermint/tendermint/types"
 )
 
 const (
-	ChainID         = "bandchain"
-	ChainIDA        = "chainA"
-	ChainIDB        = "chainB"
-	TestClientIDA   = "clientA"
-	TestClientIDB   = "clientB"
-	TestPortA       = "testporta"
-	TestPortB       = "testportb"
-	TestChannelA    = "testchannela"
-	TestChannelB    = "testchannelb"
-	TestConnectionA = "connectionAtoB"
-	TestConnectionB = "connectionBtoA"
+	ChainID                       = "bandchain"
+	ChainIDA                      = "chainA"
+	ChainIDB                      = "chainB"
+	TestClientIDA                 = "clientA"
+	TestClientIDB                 = "clientB"
+	TestPortA                     = "testporta"
+	TestPortB                     = "testportb"
+	TestChannelA                  = "testchannela"
+	TestChannelB                  = "testchannelb"
+	TestConnectionA               = "connectionAtoB"
+	TestConnectionB               = "connectionBtoA"
+	TrustingPeriod  time.Duration = time.Hour * 24 * 7 * 2
+	UbdPeriod       time.Duration = time.Hour * 24 * 7 * 3
+	MaxClockDrift   time.Duration = time.Second * 10
 )
 
 var (
@@ -87,7 +92,72 @@ func getContext(chain *bandapp.BandApp) sdk.Context {
 	return chain.NewContext(false, abci.Header{
 		ChainID: header.ChainID,
 		Height:  header.Height,
+		Time:    now,
 	})
+}
+
+func createTestClient(chainA *bandapp.BandApp, chainB *bandapp.BandApp) error {
+	oldCtx := getContext(chainB)
+
+	// Commit and create a new block on client to get a fresh CommitID
+	chainB.Commit()
+	commitID := chainB.LastCommitID()
+
+	chainB.BeginBlock(abci.RequestBeginBlock{Header: abci.Header{Height: oldCtx.BlockHeight() + 1, Time: oldCtx.BlockTime().Add(time.Minute)}})
+
+	// Set HistoricalInfo on client chain after Commit
+	newCtxClient := getContext(chainB)
+
+	// validators := chainB.StakingKeeper.GetValidators(newCtxClient, 3)
+	// for _, validator := range validators {
+	// 	validator.Status = sdk.Bonded
+	// 	validator.Tokens = sdk.NewInt(1000000)
+	// }
+	// vals := chainB.StakingKeeper.GetValidatorSet()
+	// signer := chainB.StakingKeeper.Si
+
+	// Prepare validator and signers for client chain
+	privVal := tmtypes.NewMockPV()
+
+	pubKey, err := privVal.GetPubKey()
+	if err != nil {
+		panic(err)
+	}
+
+	validator := tmtypes.NewValidator(pubKey, 1)
+	valSet := tmtypes.NewValidatorSet([]*tmtypes.Validator{validator})
+	signers := []tmtypes.PrivValidator{privVal}
+
+	stakingValidator := staking.NewValidator(
+		sdk.ValAddress(valSet.Validators[0].Address), valSet.Validators[0].PubKey, staking.Description{},
+	)
+	stakingValidator.Status = sdk.Bonded
+	stakingValidator.Tokens = sdk.NewInt(1000000)
+	stakingValidators := []staking.Validator{stakingValidator}
+
+	histInfo := stakingtypes.HistoricalInfo{
+		Header: abci.Header{
+			AppHash: commitID.Hash,
+		},
+		Valset: stakingValidators,
+	}
+	chainB.StakingKeeper.SetHistoricalInfo(newCtxClient, newCtxClient.BlockHeader().Height, histInfo)
+
+	// Create target context
+	ctxTarget := getContext(chainA)
+
+	// Create client
+	header := ibctmtypes.CreateTestHeader(ChainIDB, newCtxClient.BlockHeader().Height+1, newCtxClient.BlockTime().Add(time.Minute), valSet, signers)
+	clientState, err := ibctmtypes.Initialize(TestClientIDB, TrustingPeriod, UbdPeriod, MaxClockDrift, header)
+	if err != nil {
+		return err
+	}
+
+	_, err = chainA.IBCKeeper.ClientKeeper.CreateClient(ctxTarget, clientState, header.ConsensusState())
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func createTestChainConnection(chainA *bandapp.BandApp, chainB *bandapp.BandApp) {
