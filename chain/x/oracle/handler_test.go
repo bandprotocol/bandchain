@@ -678,14 +678,15 @@ func TestAddReporterSuccess(t *testing.T) {
 
 	events := result.GetEvents()
 
-	// Add reporter events
-	require.Equal(t, 1, len(events))
-	require.Equal(t, types.EventTypeAddReporter, events[0].Type)
-	require.Equal(t, types.AttributeKeyValidator, string(events[0].Attributes[0].Key))
-	require.Equal(t, validatorAddress.String(), string(events[0].Attributes[0].Value))
-	require.Equal(t, types.AttributeKeyReporter, string(events[0].Attributes[1].Key))
-	require.Equal(t, reporterAddress.String(), string(events[0].Attributes[1].Value))
+	expectedEvent := sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeAddReporter,
+			sdk.NewAttribute(types.AttributeKeyValidator, validatorAddress.String()),
+			sdk.NewAttribute(types.AttributeKeyReporter, reporterAddress.String()),
+		),
+	}
 
+	require.Equal(t, expectedEvent, events)
 }
 
 func TestAddReporterFail(t *testing.T) {
@@ -705,21 +706,27 @@ func TestRemoveReporterSuccess(t *testing.T) {
 	_, ctx, k := createTestInput()
 
 	validatorAddress := Alice.ValAddress
-	reporterAddress := Alice.Address
+	reporterAddress := Bob.Address
+
+	// Add Bob reporter to Alice validator
+	err := k.AddReporter(ctx, validatorAddress, reporterAddress)
+	require.NoError(t, err)
 
 	msg := types.NewMsgRemoveReporter(validatorAddress, reporterAddress)
 	result, err := oracle.NewHandler(k)(ctx, msg)
 	require.NoError(t, err)
 
 	events := result.GetEvents()
-	// Remove reporter events
-	require.Equal(t, 1, len(events))
-	require.Equal(t, types.EventTypeRemoveReporter, events[0].Type)
-	require.Equal(t, types.AttributeKeyValidator, string(events[0].Attributes[0].Key))
-	require.Equal(t, validatorAddress.String(), string(events[0].Attributes[0].Value))
-	require.Equal(t, types.AttributeKeyReporter, string(events[0].Attributes[1].Key))
-	require.Equal(t, reporterAddress.String(), string(events[0].Attributes[1].Value))
 
+	expectedEvent := sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeRemoveReporter,
+			sdk.NewAttribute(types.AttributeKeyValidator, validatorAddress.String()),
+			sdk.NewAttribute(types.AttributeKeyReporter, reporterAddress.String()),
+		),
+	}
+
+	require.Equal(t, expectedEvent, events)
 }
 
 func TestRemoveReporterFail(t *testing.T) {
