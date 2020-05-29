@@ -1,0 +1,14 @@
+[package]
+name = "crypto_price_borsh"
+version = "0.1.0"
+authors = ["Band Protocol <dev@bandprotocol.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+owasm = { path = "../.." }
+borsh = "0.3.0"
