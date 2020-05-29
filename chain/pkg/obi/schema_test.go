@@ -9,7 +9,7 @@ import (
 type EmptySchema struct{}
 
 type Color struct {
-	code string `code` //missing obi
+	Code string `code` //missing obi
 }
 
 type Validation struct {
@@ -57,7 +57,7 @@ func TestEmptySchemaFail(t *testing.T) {
 }
 
 func TestMissingOBISchemaFail(t *testing.T) {
-	require.PanicsWithError(t, "obi: no obi tag found for field code of Color", func() { MustGetSchema(Color{}) })
+	require.PanicsWithError(t, "obi: no obi tag found for field Code of Color", func() { MustGetSchema(Color{}) })
 }
 
 func TestUnsupportedTypeFail(t *testing.T) {
