@@ -8,8 +8,8 @@ import (
 
 type EmptySchema struct{}
 
-type Color struct {
-	Code string `code` //missing obi
+type NoOBITagStruct struct {
+	NoOBITag string `"noOBItag"` //missing obi
 }
 
 type Validation struct {
@@ -57,7 +57,7 @@ func TestEmptySchemaFail(t *testing.T) {
 }
 
 func TestMissingOBISchemaFail(t *testing.T) {
-	require.PanicsWithError(t, "obi: no obi tag found for field Code of Color", func() { MustGetSchema(Color{}) })
+	require.PanicsWithError(t, "obi: no obi tag found for field NoOBITag of NoOBITagStruct", func() { MustGetSchema(NoOBITagStruct{}) })
 }
 
 func TestUnsupportedTypeFail(t *testing.T) {
