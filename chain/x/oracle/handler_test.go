@@ -695,7 +695,7 @@ func TestAddReporterFail(t *testing.T) {
 	reporterAddress := Alice.Address
 	msg := types.NewMsgAddReporter(validatorAddress, reporterAddress)
 
-	// Should fail, validator is always a reporter of himself so we can't add alice reporter to alice validator
+	// Should fail, validator is always a reporter of himself so we can't add Alice reporter to Alice validator
 	result, err := oracle.NewHandler(k)(ctx, msg)
 	require.EqualError(t, err, fmt.Sprintf("val: %s, addr: %s: reporter already exists", validatorAddress.String(), reporterAddress.String()))
 	require.Nil(t, result)
@@ -728,7 +728,7 @@ func TestRemoveReporterFail(t *testing.T) {
 	validatorAddress := Alice.ValAddress
 	reporterAddress := Bob.Address
 
-	// Should fail, bob isn't alice validator's reporter
+	// Should fail, Bob isn't Alice validator's reporter
 	msg := types.NewMsgRemoveReporter(validatorAddress, reporterAddress)
 	result, err := oracle.NewHandler(k)(ctx, msg)
 	require.EqualError(t, err, fmt.Sprintf("val: %s, addr: %s: reporter not found", validatorAddress.String(), reporterAddress.String()))
