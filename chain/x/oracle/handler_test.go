@@ -15,18 +15,6 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
-// func mockOracleScript(ctx sdk.Context, keeper Keeper) (*sdk.Result, error) {
-// 	owner := sdk.AccAddress([]byte("owner"))
-// 	name := "oracle_script_1"
-// 	description := "description"
-// 	code := []byte("code")
-// 	sender := sdk.AccAddress([]byte("sender"))
-// 	schema := "schema"
-// 	sourceCodeURL := "sourceCodeURL"
-// 	msg := types.NewMsgCreateOracleScript(owner, name, description, code, schema, sourceCodeURL, sender)
-// 	return handleMsgCreateOracleScript(ctx, keeper, msg)
-// }
-
 func TestCreateDataSourceSuccess(t *testing.T) {
 	_, ctx, keeper := createTestInput()
 
@@ -167,58 +155,220 @@ func TestEditDataSourceFail(t *testing.T) {
 	require.Nil(t, res)
 }
 
-// func TestEditOracleScriptSuccess(t *testing.T) {
-// 	ctx, keeper := keep.CreateTestInput(t, false)
-// 	_, err := mockOracleScript(ctx, keeper)
-// 	require.Nil(t, err)
+func TestCreateOracleScriptSuccess(t *testing.T) {
+	_, ctx, keeper := createTestInput()
+	name := "os_1"
+	description := "beeb"
+	code := []byte("code")
+	schema := "schema"
+	url := "url"
+	msg := types.NewMsgCreateOracleScript(Owner.Address, name, description, code, schema, url, Alice.Address)
+	_, err := oracle.NewHandler(keeper)(ctx, msg)
+	defer deleteFile(code)
 
-// 	newOwner := sdk.AccAddress([]byte("anotherowner"))
-// 	newName := "oracle_script_2"
-// 	newDescription := "description_2"
-// 	newCode := []byte("code_2")
-// 	sender := sdk.AccAddress([]byte("owner"))
-// 	schema := "schema"
-// 	sourceCodeURL := "sourceCodeURL"
+	require.Nil(t, err)
 
-// 	msg := types.NewMsgEditOracleScript(1, newOwner, newName, newDescription, newCode, schema, sourceCodeURL, sender)
-// 	_, err = handleMsgEditOracleScript(ctx, keeper, msg)
-// 	require.Nil(t, err)
+	oracleScript, err := keeper.GetOracleScript(ctx, 1)
+	require.NoError(t, err)
+	codeHash := sha256.Sum256(code)
+	expectFilename := hex.EncodeToString(codeHash[:])
+	expectOracleScript := types.NewOracleScript(Owner.Address, name, description, expectFilename, schema, url)
 
-// 	oracleScript, err := keeper.GetOracleScript(ctx, 1)
-// 	require.Nil(t, err)
-// 	require.Equal(t, newOwner, oracleScript.Owner)
-// 	require.Equal(t, newName, oracleScript.Name)
-// 	require.Equal(t, newCode, oracleScript.Code)
+	require.Equal(t, expectOracleScript, oracleScript)
+}
+func TestCreateGzippedOracleScriptSuccess(t *testing.T) {
+	_, ctx, keeper := createTestInput()
+	name := "os_1"
+	description := "beeb"
+	code := []byte("OWASMCODE")
+	schema := "schema"
+	url := "url"
 
-// 	events := ctx.EventManager().Events()
-// 	require.Equal(t, 2, len(events))
-// 	require.Equal(t, sdk.Event{
-// 		Type:       EventTypeCreateOracleScript,
-// 		Attributes: []tmkv.Pair{{Key: []byte(AttributeKeyID), Value: []byte("1")}},
-// 	}, events[0])
-// 	require.Equal(t, sdk.Event{
-// 		Type:       EventTypeEditOracleScript,
-// 		Attributes: []tmkv.Pair{{Key: []byte(AttributeKeyID), Value: []byte("1")}},
-// 	}, events[1])
-// }
+	// Gzipped executable file
+	var buf bytes.Buffer
+	zw := gz.NewWriter(&buf)
+	zw.Write(code)
+	zw.Close()
+	gzippedCode := buf.Bytes()
 
-// func TestEditOracleScriptByNotOwner(t *testing.T) {
-// 	ctx, keeper := keep.CreateTestInput(t, false)
-// 	_, err := mockOracleScript(ctx, keeper)
-// 	require.Nil(t, err)
+	msg := types.NewMsgCreateOracleScript(Owner.Address, name, description, gzippedCode, schema, url, Alice.Address)
+	_, err := oracle.NewHandler(keeper)(ctx, msg)
+	defer deleteFile(code)
 
-// 	newOwner := sdk.AccAddress([]byte("anotherowner"))
-// 	newName := "data_source_2"
-// 	newDescription := "description_2"
-// 	newCode := []byte("code_2")
-// 	sender := sdk.AccAddress([]byte("not_owner"))
-// 	schema := "schema"
-// 	soureCodeURL := "sourceCodeURL"
+	require.Nil(t, err)
 
-// 	msg := types.NewMsgEditOracleScript(1, newOwner, newName, newDescription, newCode, schema, soureCodeURL, sender)
-// 	_, err = handleMsgEditOracleScript(ctx, keeper, msg)
-// 	require.NotNil(t, err)
-// }
+	oracleScript, err := keeper.GetOracleScript(ctx, 1)
+	require.NoError(t, err)
+	codeHash := sha256.Sum256(code)
+	expectFilename := hex.EncodeToString(codeHash[:])
+	expectOracleScript := types.NewOracleScript(Owner.Address, name, description, expectFilename, schema, url)
+
+	require.Equal(t, expectOracleScript, oracleScript)
+}
+
+func TestCreateGzippedOracleScriptFail(t *testing.T) {
+	_, ctx, keeper := createTestInput()
+	name := "os_1"
+	description := "beeb"
+	code := []byte("OWASMCODE")
+	schema := "schema"
+	url := "url"
+
+	// Gzipped executable file
+	var buf bytes.Buffer
+	zw := gz.NewWriter(&buf)
+	zw.Write(code)
+	zw.Close()
+	gzippedCode := buf.Bytes()[:5]
+
+	msg := types.NewMsgCreateOracleScript(Owner.Address, name, description, gzippedCode, schema, url, Alice.Address)
+	_, err := oracle.NewHandler(keeper)(ctx, msg)
+	require.Error(t, err)
+}
+
+func TestEditOracleScriptSuccess(t *testing.T) {
+	_, ctx, keeper := createTestInput()
+	name := "os_1"
+	description := "beeb"
+	code := []byte("code")
+	schema := "schema"
+	url := "url"
+	msg := types.NewMsgCreateOracleScript(Owner.Address, name, description, code, schema, url, Alice.Address)
+	_, err := oracle.NewHandler(keeper)(ctx, msg)
+	defer deleteFile(code)
+
+	require.Nil(t, err)
+	oracleScriptID := types.OracleScriptID(1)
+	newName := "os_2"
+	newDescription := "beebbeeb"
+	newCode := []byte("codecode")
+	newSchema := "new_schema"
+	newUrl := "new_url"
+
+	msgEdit := types.NewMsgEditOracleScript(oracleScriptID, Owner.Address, newName, newDescription, newCode, newSchema, newUrl, Owner.Address)
+	res, err := oracle.NewHandler(keeper)(ctx, msgEdit)
+	defer deleteFile(newCode)
+	require.NoError(t, err)
+	expectEvents := sdk.Events{
+		sdk.NewEvent(types.EventTypeEditOracleScript, sdk.NewAttribute(types.AttributeKeyID, "1")),
+	}
+	require.Equal(t, expectEvents, res.GetEvents())
+
+	oracleScript, err := keeper.GetOracleScript(ctx, 1)
+	require.NoError(t, err)
+	codeHash := sha256.Sum256(newCode)
+	expectFilename := hex.EncodeToString(codeHash[:])
+	expectOracleScript := types.NewOracleScript(Owner.Address, newName, newDescription, expectFilename, newSchema, newUrl)
+
+	require.Equal(t, expectOracleScript, oracleScript)
+}
+
+func TestEditOracleScriptFail(t *testing.T) {
+	_, ctx, keeper := createTestInput()
+	name := "os_1"
+	description := "beeb"
+	code := []byte("code")
+	schema := "schema"
+	url := "url"
+	msg := types.NewMsgCreateOracleScript(Owner.Address, name, description, code, schema, url, Alice.Address)
+	_, err := oracle.NewHandler(keeper)(ctx, msg)
+	defer deleteFile(code)
+
+	require.Nil(t, err)
+	oracleScriptID := types.OracleScriptID(1)
+	newName := "os_2"
+	newDescription := "beebbeeb"
+	newCode := []byte("codecode")
+	newSchema := "new_schema"
+	newUrl := "new_url"
+
+	// No oracle script id 99
+	msgEdit := types.NewMsgEditOracleScript(types.OracleScriptID(99), Owner.Address, newName, newDescription, newCode, newSchema, newUrl, Alice.Address)
+	_, err = oracle.NewHandler(keeper)(ctx, msgEdit)
+	require.Error(t, err)
+
+	// Alice can't edit oracle script
+	msgEdit = types.NewMsgEditOracleScript(oracleScriptID, Owner.Address, newName, newDescription, newCode, newSchema, newUrl, Alice.Address)
+	_, err = oracle.NewHandler(keeper)(ctx, msgEdit)
+	require.Error(t, err)
+
+}
+
+func TestEditGzippedOracleScriptSuccess(t *testing.T) {
+	_, ctx, keeper := createTestInput()
+	name := "os_1"
+	description := "beeb"
+	code := []byte("code")
+	schema := "schema"
+	url := "url"
+	msg := types.NewMsgCreateOracleScript(Owner.Address, name, description, code, schema, url, Alice.Address)
+	_, err := oracle.NewHandler(keeper)(ctx, msg)
+	defer deleteFile(code)
+
+	require.Nil(t, err)
+	oracleScriptID := types.OracleScriptID(1)
+	newName := "os_2"
+	newDescription := "beebbeeb"
+	newCode := []byte("codecode")
+	newSchema := "new_schema"
+	newUrl := "new_url"
+
+	// Gzipped executable file
+	var buf bytes.Buffer
+	zw := gz.NewWriter(&buf)
+	zw.Write(newCode)
+	zw.Close()
+	gzippedCode := buf.Bytes()
+
+	msgEdit := types.NewMsgEditOracleScript(oracleScriptID, Owner.Address, newName, newDescription, gzippedCode, newSchema, newUrl, Owner.Address)
+	res, err := oracle.NewHandler(keeper)(ctx, msgEdit)
+	require.NoError(t, err)
+	expectEvents := sdk.Events{
+		sdk.NewEvent(types.EventTypeEditOracleScript, sdk.NewAttribute(types.AttributeKeyID, "1")),
+	}
+	require.Equal(t, expectEvents, res.GetEvents())
+
+	defer deleteFile(newCode)
+
+	oracleScript, err := keeper.GetOracleScript(ctx, 1)
+	require.NoError(t, err)
+	codeHash := sha256.Sum256(newCode)
+	expectFilename := hex.EncodeToString(codeHash[:])
+	expectOracleScript := types.NewOracleScript(Owner.Address, newName, newDescription, expectFilename, newSchema, newUrl)
+
+	require.Equal(t, expectOracleScript, oracleScript)
+}
+
+func TestEditGzippedOracleScriptFail(t *testing.T) {
+	_, ctx, keeper := createTestInput()
+	name := "os_1"
+	description := "beeb"
+	code := []byte("code")
+	schema := "schema"
+	url := "url"
+	msg := types.NewMsgCreateOracleScript(Owner.Address, name, description, code, schema, url, Alice.Address)
+	_, err := oracle.NewHandler(keeper)(ctx, msg)
+	defer deleteFile(code)
+
+	require.Nil(t, err)
+	oracleScriptID := types.OracleScriptID(1)
+	newName := "os_2"
+	newDescription := "beebbeeb"
+	newCode := []byte("codecode")
+	newSchema := "new_schema"
+	newUrl := "new_url"
+
+	// Gzipped executable file
+	var buf bytes.Buffer
+	zw := gz.NewWriter(&buf)
+	zw.Write(newCode)
+	zw.Close()
+	gzippedCode := buf.Bytes()[:5]
+
+	msgEdit := types.NewMsgEditOracleScript(oracleScriptID, Owner.Address, newName, newDescription, gzippedCode, newSchema, newUrl, Owner.Address)
+	_, err = oracle.NewHandler(keeper)(ctx, msgEdit)
+	require.Error(t, err)
+}
 
 // func TestRequestSuccess(t *testing.T) {
 // 	// Setup test environment

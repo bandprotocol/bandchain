@@ -60,6 +60,21 @@ func (k Keeper) EditOracleScript(ctx sdk.Context, id types.OracleScriptID, new t
 	return nil
 }
 
+// EditOracleScript edits the given oracle script by id and flushes it to the storage. Panic if not exists.
+func (k Keeper) MustEditOracleScript(ctx sdk.Context, id types.OracleScriptID, new types.OracleScript) {
+	oracleScript, err := k.GetOracleScript(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	oracleScript.Owner = new.Owner
+	oracleScript.Name = modify(oracleScript.Name, new.Name)
+	oracleScript.Description = modify(oracleScript.Description, new.Description)
+	oracleScript.Filename = modify(oracleScript.Filename, new.Filename)
+	oracleScript.Schema = modify(oracleScript.Schema, new.Schema)
+	oracleScript.SourceCodeURL = modify(oracleScript.SourceCodeURL, new.SourceCodeURL)
+	k.SetOracleScript(ctx, id, oracleScript)
+}
+
 // GetAllOracleScripts returns the list of all oracle scripts in the store, or nil if there is none.
 func (k Keeper) GetAllOracleScripts(ctx sdk.Context) (oracleScripts []types.OracleScript) {
 	store := ctx.KVStore(k.storeKey)
