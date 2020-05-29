@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"encoding/hex"
+	"fmt"
 	"testing"
 	"time"
 
@@ -39,49 +40,41 @@ func TestPrepareRequestSuccess(t *testing.T) {
 	rawRequestID := []types.ExternalID{1, 2, 3}
 
 	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
+	expectEventManger := ctx.EventManager()
 	err := k.PrepareRequest(ctx, &m, nil)
 	require.NoError(t, err)
 
-	events := ctx.EventManager().Events()
-
 	req, err := k.GetRequest(ctx, 1)
 	require.NoError(t, err)
-
 	expectReq := types.NewRequest(oracleScriptID, calldata, []sdk.ValAddress{Validator1.ValAddress}, minCount,
 		requestHeight, int64(1581589790), clientID, nil, rawRequestID)
 	require.Equal(t, expectReq, req)
 
-	require.Equal(t, 4, len(events))
-	require.Equal(t, types.EventTypeRequest, events[0].Type)
-	require.Equal(t, []byte(types.AttributeKeyID), events[0].Attributes[0].Key)
-	require.Equal(t, []byte("1"), events[0].Attributes[0].Value)
-
-	require.Equal(t, []byte(types.AttributeKeyValidator), events[0].Attributes[1].Key)
-	require.Equal(t, []byte(Validator1.ValAddress.String()), events[0].Attributes[1].Value)
-
-	expectEvents := []struct {
-		eventType string
-		dsID      []byte
-		filname   []byte
-		exID      []byte
-		calldata  []byte
+	expectEventManger.EmitEvent(sdk.NewEvent(
+		types.EventTypeRequest,
+		sdk.NewAttribute(types.AttributeKeyID, "1"),
+		sdk.NewAttribute(types.AttributeKeyValidator, Validator1.ValAddress.String()),
+	))
+	events := []struct {
+		dsID     int64
+		filname  string
+		exID     int64
+		calldata []byte
 	}{
-		{types.EventTypeRawRequest, []byte("1"), []byte(ds1.Filename), []byte("1"), []byte("beeb")},
-		{types.EventTypeRawRequest, []byte("2"), []byte(ds2.Filename), []byte("2"), []byte("beeb")},
-		{types.EventTypeRawRequest, []byte("3"), []byte(ds3.Filename), []byte("3"), []byte("beeb")},
+		{1, ds1.Filename, 1, []byte("beeb")},
+		{2, ds2.Filename, 2, []byte("beeb")},
+		{3, ds3.Filename, 3, []byte("beeb")},
 	}
-
-	for idx, expectEvent := range expectEvents {
-		require.Equal(t, expectEvent.eventType, events[idx+1].Type)
-		require.Equal(t, []byte(types.AttributeKeyDataSourceID), events[idx+1].Attributes[0].Key)
-		require.Equal(t, expectEvent.dsID, events[idx+1].Attributes[0].Value)
-		require.Equal(t, []byte(types.AttributeKeyDataSourceHash), events[idx+1].Attributes[1].Key)
-		require.Equal(t, expectEvent.filname, events[idx+1].Attributes[1].Value)
-		require.Equal(t, []byte(types.AttributeKeyExternalID), events[idx+1].Attributes[2].Key)
-		require.Equal(t, expectEvent.exID, events[idx+1].Attributes[2].Value)
-		require.Equal(t, []byte(types.AttributeKeyCalldata), events[idx+1].Attributes[3].Key)
-		require.Equal(t, expectEvent.calldata, events[idx+1].Attributes[3].Value)
+	for _, ev := range events {
+		expectEventManger.EmitEvent(sdk.NewEvent(
+			types.EventTypeRawRequest,
+			sdk.NewAttribute(types.AttributeKeyDataSourceID, fmt.Sprintf("%d", ev.dsID)),
+			sdk.NewAttribute(types.AttributeKeyDataSourceHash, ev.filname),
+			sdk.NewAttribute(types.AttributeKeyExternalID, fmt.Sprintf("%d", ev.exID)),
+			sdk.NewAttribute(types.AttributeKeyCalldata, string(ev.calldata)),
+		))
 	}
+	require.Equal(t, expectEventManger.Events(), ctx.EventManager().Events())
 }
 
 func TestPrepareRequestInvalidAskCountFail(t *testing.T) {
@@ -145,8 +138,12 @@ func TestPrepareRequestBaseRequestFeePanic(t *testing.T) {
 	clientID := "beeb"
 
 	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
-
 	require.Panics(t, func() { k.PrepareRequest(ctx, &m, nil) })
+
+	ctx = ctx.WithGasMeter(sdk.NewGasMeter(200000))
+	err := k.PrepareRequest(ctx, &m, nil)
+	require.NoError(t, err)
+
 }
 
 func TestPrepareRequestPerValidatorRequestFeePanic(t *testing.T) {
@@ -181,20 +178,12 @@ func TestPrepareRequestPerValidatorRequestFeePanic(t *testing.T) {
 	clientID := "beeb"
 
 	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
-
 	require.Panics(t, func() { k.PrepareRequest(ctx, &m, nil) })
 }
 
 func TestPrepareRequestGetRandomValidatorsFail(t *testing.T) {
 	_, ctx, k := createTestInput()
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
-	ctx = ctx.WithGasMeter(sdk.NewGasMeter(200000000))
-
-	k.SetParam(ctx, types.KeyMaxAskCount, 16)
-	baseRequestGas := uint64(100000)
-	k.SetParam(ctx, types.KeyBaseRequestGas, baseRequestGas)
-	perValidatorRequestGas := uint64(100000)
-	k.SetParam(ctx, types.KeyPerValidatorRequestGas, perValidatorRequestGas)
 
 	ds1, clear1 := getTestDataSource("code1")
 	defer clear1()
@@ -219,13 +208,7 @@ func TestPrepareRequestGetRandomValidatorsFail(t *testing.T) {
 
 	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
 
-	// test consume gas for data requests
-	expectGasNotLessThan := baseRequestGas + askCount*perValidatorRequestGas
-	beforeGas := ctx.GasMeter().GasConsumed()
 	err := k.PrepareRequest(ctx, &m, nil)
-	afterGas := ctx.GasMeter().GasConsumed()
-	require.Greater(t, afterGas-beforeGas, expectGasNotLessThan)
-
 	require.Error(t, err)
 }
 
