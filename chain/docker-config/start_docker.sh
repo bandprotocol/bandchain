@@ -5,6 +5,20 @@ DIR=`dirname "$0"`
 # remove old genesis
 rm -rf ~/.band*
 
+mkdir -p pkg/owasm/res
+
+# Build genesis oracle scripts
+cd ../owasm/chaintests
+
+for f in *; do
+    if [ -d "$f" ]; then
+        RUSTFLAGS='-C link-arg=-s' cargo build --target wasm32-unknown-unknown --release --package $f
+        cp ../target/wasm32-unknown-unknown/release/$f.wasm ../../chain/pkg/owasm/res
+    fi
+done
+
+cd ../../chain
+
 # initial new node
 bandd init node-validator --chain-id bandchain --oracle band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs
 
@@ -101,3 +115,48 @@ bandd collect-gentxs
 
 # copy genesis to the proper location!
 cp ~/.bandd/config/genesis.json $DIR/genesis.json
+cp -r ~/.bandd/files $DIR
+
+# Recreate files volume
+docker volume rm query-files
+docker volume create --driver local \
+    --opt type=none \
+    --opt device=$HOME/.bandd/files \
+    --opt o=bind query-files
+
+cd ..
+
+docker-compose up -d --build
+
+sleep 30
+
+for v in {1..4}
+do
+    rm -rf ~/.oracled
+    bandoracled2 config chain-id bandchain
+    bandoracled2 config node tcp://172.18.0.1$v:26657
+    bandoracled2 config chain-rest-server http://172.18.0.20:1317
+    bandoracled2 config validator $(bandcli keys show validator$v -a --bech val --keyring-backend test)
+
+    for i in $(eval echo {1..5})
+    do
+    # add reporter key
+    bandoracled2 keys add reporter$i
+
+    # send band tokens to reporter
+    echo "y" | bandcli tx send validator$v $(bandoracled2 keys show reporter$i) 1000000uband --keyring-backend test
+
+    # wait for sending band tokens transaction success
+    sleep 2
+
+    # add reporter to bandchain
+    echo "y" | bandcli tx oracle add-reporter $(bandoracled2 keys show reporter$i) --from validator$v --keyring-backend test
+
+    # wait for addding reporter transaction success
+    sleep 2
+    done
+
+    docker create --network bandchain_bandchain --name bandchain_oracle${v} band-validator:latest bandoracled2 r
+    docker cp ~/.oracled bandchain_oracle${v}:/root/.oracled
+    docker start bandchain_oracle${v}
+done
