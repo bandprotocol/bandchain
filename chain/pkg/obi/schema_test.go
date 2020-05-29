@@ -12,7 +12,7 @@ type NoOBITagStruct struct {
 	NoOBITag string `"noOBItag"` //missing obi
 }
 
-type Validation struct {
+type NotSupportedStruct struct {
 	IsValid bool   `obi:"isValid"`
 	Test    string `obi:"test"`
 }
@@ -65,7 +65,7 @@ func TestMissingOBISchemaFail(t *testing.T) {
 }
 
 func TestUnsupportedTypeFail(t *testing.T) {
-	require.PanicsWithError(t, "obi: unsupported value type: bool", func() { MustGetSchema(Validation{}) })
+	require.PanicsWithError(t, "obi: unsupported value type: bool", func() { MustGetSchema(NotSupportedStruct{}) })
 }
 
 func TestSchemaSupportedNumberTypeSuccess(t *testing.T) {
