@@ -43,6 +43,19 @@ func TestPrepareRequestSuccess(t *testing.T) {
 
 	events := ctx.EventManager().Events()
 
+	req, err := k.GetRequest(ctx, 1)
+	require.NoError(t, err)
+
+	require.Equal(t, oracleScriptID, req.OracleScriptID)
+	require.Equal(t, calldata, req.Calldata)
+	require.Equal(t, []sdk.ValAddress{Validator1.ValAddress}, req.RequestedValidators)
+	require.Equal(t, minCount, req.MinCount)
+	require.Equal(t, int64(0), req.RequestHeight)
+	require.Equal(t, int64(1581589790), req.RequestTime)
+	require.Equal(t, clientID, req.ClientID)
+	require.Equal(t, ibcInfo, *req.IBCInfo)
+	require.Equal(t, []types.ExternalID{1, 2, 3}, req.RawRequestIDs)
+
 	require.Equal(t, 4, len(events))
 	require.Equal(t, types.EventTypeRequest, events[0].Type)
 	require.Equal(t, []byte(types.AttributeKeyID), events[0].Attributes[0].Key)
