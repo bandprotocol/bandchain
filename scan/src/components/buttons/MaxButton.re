@@ -6,6 +6,7 @@ module Styles = {
       display(`flex),
       height(`px(30)),
       justifyContent(`center),
+      background(Colors.white),
       alignItems(`center),
       border(`px(1), `solid, Colors.blueGray3),
       borderRadius(`px(4)),
