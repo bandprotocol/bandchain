@@ -98,7 +98,7 @@ func getContext(chain *bandapp.BandApp) sdk.Context {
 	})
 }
 
-func createTestClient(chainA *bandapp.BandApp, chainB *bandapp.BandApp) error {
+func createTestClient(chainA *bandapp.BandApp, chainB *bandapp.BandApp) {
 	oldCtx := getContext(chainB)
 
 	// Commit and create a new block on client to get a fresh CommitID
@@ -144,14 +144,13 @@ func createTestClient(chainA *bandapp.BandApp, chainB *bandapp.BandApp) error {
 	header := ibctmtypes.CreateTestHeader(ChainIDB, newCtxClient.BlockHeader().Height+1, newCtxClient.BlockTime().Add(time.Minute), valSet, signers)
 	clientState, err := ibctmtypes.Initialize(TestClientIDB, TrustingPeriod, UbdPeriod, MaxClockDrift, header)
 	if err != nil {
-		return err
+		panic(err)
 	}
 
 	_, err = chainA.IBCKeeper.ClientKeeper.CreateClient(ctxTarget, clientState, header.ConsensusState())
 	if err != nil {
-		return err
+		panic(err)
 	}
-	return nil
 }
 
 func createTestChainConnection(chainA *bandapp.BandApp, chainB *bandapp.BandApp) {
