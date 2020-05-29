@@ -2,7 +2,6 @@ package keeper_test
 
 import (
 	"encoding/hex"
-	"fmt"
 	"testing"
 	"time"
 
@@ -32,7 +31,7 @@ func TestPrepareRequestSuccess(t *testing.T) {
 	defer clear4()
 
 	oracleScriptID := k.AddOracleScript(ctx, os)
-	calldata, _ := hex.DecodeString("030000004254436400000000000000")
+	calldata := []byte("beeb")
 	askCount := uint64(1)
 	minCount := uint64(2)
 	clientID := "beeb"
@@ -48,30 +47,33 @@ func TestPrepareRequestSuccess(t *testing.T) {
 	expectReq := types.NewRequest(oracleScriptID, calldata, []sdk.ValAddress{Validator1.ValAddress}, minCount,
 		requestHeight, int64(1581589790), clientID, nil, rawRequestID)
 	require.Equal(t, expectReq, req)
-	expectEvents := sdk.NewEventManager().Events()
-	expectEvents = append(expectEvents, sdk.NewEvent(
-		types.EventTypeRequest,
-		sdk.NewAttribute(types.AttributeKeyID, "1"),
-		sdk.NewAttribute(types.AttributeKeyValidator, Validator1.ValAddress.String()),
-	))
-	events := []struct {
-		dsID     int64
-		filname  string
-		exID     int64
-		calldata []byte
-	}{
-		{1, ds1.Filename, 1, []byte("beeb")},
-		{2, ds2.Filename, 2, []byte("beeb")},
-		{3, ds3.Filename, 3, []byte("beeb")},
-	}
-	for _, ev := range events {
-		expectEvents = append(expectEvents, sdk.NewEvent(
+	expectEvents := sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeRequest,
+			sdk.NewAttribute(types.AttributeKeyID, "1"),
+			sdk.NewAttribute(types.AttributeKeyValidator, Validator1.ValAddress.String()),
+		),
+		sdk.NewEvent(
 			types.EventTypeRawRequest,
-			sdk.NewAttribute(types.AttributeKeyDataSourceID, fmt.Sprintf("%d", ev.dsID)),
-			sdk.NewAttribute(types.AttributeKeyDataSourceHash, ev.filname),
-			sdk.NewAttribute(types.AttributeKeyExternalID, fmt.Sprintf("%d", ev.exID)),
-			sdk.NewAttribute(types.AttributeKeyCalldata, string(ev.calldata)),
-		))
+			sdk.NewAttribute(types.AttributeKeyDataSourceID, "1"),
+			sdk.NewAttribute(types.AttributeKeyDataSourceHash, ds1.Filename),
+			sdk.NewAttribute(types.AttributeKeyExternalID, "1"),
+			sdk.NewAttribute(types.AttributeKeyCalldata, string(calldata)),
+		),
+		sdk.NewEvent(
+			types.EventTypeRawRequest,
+			sdk.NewAttribute(types.AttributeKeyDataSourceID, "2"),
+			sdk.NewAttribute(types.AttributeKeyDataSourceHash, ds2.Filename),
+			sdk.NewAttribute(types.AttributeKeyExternalID, "2"),
+			sdk.NewAttribute(types.AttributeKeyCalldata, string(calldata)),
+		),
+		sdk.NewEvent(
+			types.EventTypeRawRequest,
+			sdk.NewAttribute(types.AttributeKeyDataSourceID, "3"),
+			sdk.NewAttribute(types.AttributeKeyDataSourceHash, ds3.Filename),
+			sdk.NewAttribute(types.AttributeKeyExternalID, "3"),
+			sdk.NewAttribute(types.AttributeKeyCalldata, string(calldata)),
+		),
 	}
 	require.Equal(t, expectEvents, ctx.EventManager().Events())
 }
