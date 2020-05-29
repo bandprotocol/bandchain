@@ -40,9 +40,35 @@ func TestPrepareRequestSuccess(t *testing.T) {
 	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
 	err := k.PrepareRequest(ctx, &m, &ibcInfo)
 	require.NoError(t, err)
+
+	events := ctx.EventManager().Events()
+
+	require.Equal(t, 4, len(events))
+	require.Equal(t, types.EventTypeRequest, events[0].Type)
+	require.Equal(t, []byte(types.AttributeKeyID), events[0].Attributes[0].Key)
+	require.Equal(t, []byte("1"), events[0].Attributes[0].Value)
+
+	require.Equal(t, []byte(types.AttributeKeyValidator), events[0].Attributes[1].Key)
+	require.Equal(t, []byte(Validator1.ValAddress.String()), events[0].Attributes[1].Value)
+
+	require.Equal(t, types.EventTypeRawRequest, events[1].Type)
+	dsIDs := []string{"", "1", "2", "3"}
+	filenames := []string{"", ds1.Filename, ds2.Filename, ds3.Filename}
+	exIDs := []string{"", "1", "2", "3"}
+
+	for idx := 1; idx < len(events); idx++ {
+		require.Equal(t, []byte(types.AttributeKeyDataSourceID), events[idx].Attributes[0].Key)
+		require.Equal(t, []byte(dsIDs[idx]), events[idx].Attributes[0].Value)
+		require.Equal(t, []byte(types.AttributeKeyDataSourceHash), events[idx].Attributes[1].Key)
+		require.Equal(t, []byte(filenames[idx]), events[idx].Attributes[1].Value)
+		require.Equal(t, []byte(types.AttributeKeyExternalID), events[idx].Attributes[2].Key)
+		require.Equal(t, []byte(exIDs[idx]), events[idx].Attributes[2].Value)
+		require.Equal(t, []byte(types.AttributeKeyCalldata), events[idx].Attributes[3].Key)
+		require.Equal(t, []byte("beeb"), events[idx].Attributes[3].Value)
+	}
 }
 
-func TestPrepareRequestGetRandomValidatorFail(t *testing.T) {
+func TestPrepareRequestGetRandomValidatorsFail(t *testing.T) {
 	_, ctx, k := createTestInput()
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
 

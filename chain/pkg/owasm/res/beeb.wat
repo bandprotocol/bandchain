@@ -1,31 +1,33 @@
 (module
   (import "env" "requestExternalData" (func (param i64 i64 i32 i64) (result i64)))
   (import "env" "saveReturnData" (func (param i32 i64) (result i64)))
-  (func
-    i64.const 1
-    i64.const 1
-    i32.const 1048576
-    i64.const 4
-    call 0
-    drop
-    i64.const 2
-    i64.const 2
-    i32.const 1048576
-    i64.const 4
-    call 0
-    drop
-    i64.const 3
-    i64.const 3
-    i32.const 1048576
-    i64.const 4
-    call 0
-    drop)
-  (func
-    i32.const 1048576
-    i64.const 4
-    call 1
-    drop)
+  (func (;"prepare": Requests external data from sources 1, 2, 3 with call data "beeb";)
+    i64.const 1 (;data source id;)
+    i64.const 1 (;external id;)
+    i32.const 1048576 (;a raw pointer of string;)
+    i64.const 4 (;string length;)
+    call 0 (;call function requestExternalData;)
+    drop (;clear stack;)
+    i64.const 2 (;data source id;)
+    i64.const 2 (;external id;)
+    i32.const 1048576 (;a raw pointer of string;)
+    i64.const 4 (;string length;)
+    call 0 (;call function requestExternalData;)
+    drop (;clear stack;)
+    i64.const 3 (;data source id;)
+    i64.const 3 (;external id;)
+    i32.const 1048576 (;a raw pointer of string;)
+    i64.const 4  (;string length;)
+    call 0 (;call function requestExternalData;)
+    drop (;clear stack;)
+  )
+  (func (;"execute": Resolves with result "beeb";)
+    i32.const 1048576 (;a raw pointer of string;)
+    i64.const 4 (;string length;)
+    call 1 (;call function saveReturnData;)
+    drop (;clear stack;)
+  )
   (memory 17)
-  (data (i32.const 1048576) "beeb")
+  (data (i32.const 1048576) "beeb") (;str = "beeb";)
   (export "prepare" (func 2))
   (export "execute" (func 3)))
