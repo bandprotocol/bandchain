@@ -180,7 +180,7 @@ func TestSendOracleResponse(t *testing.T) {
 		expectedErrorLog string
 	}{
 		{
-			"success send IBC packet",
+			"successfully send IBC packet",
 			func(logger log.Logger) (*app.BandApp, sdk.Context) {
 
 				chainA, chainB := createTestChains(logger)
