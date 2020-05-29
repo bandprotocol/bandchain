@@ -48,6 +48,10 @@ type AllDataAlias struct {
 	NumInt64  Int64ID  `obi:"numInt64"`
 }
 
+type ByteArrayStruct struct {
+	ByteArray []byte `obi:"byteArray"`
+}
+
 func TestSchema(t *testing.T) {
 	require.Equal(t, "{symbol:string,px:u64,in:{a:u8,b:u8},arr:[i16]}", MustGetSchema(ExampleData{}))
 }
@@ -80,4 +84,8 @@ func TestSchemaInvalidSliceFail(t *testing.T) {
 func TestSchemaByteArraySuccess(t *testing.T) {
 	byteArray := []byte{0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6}
 	require.Equal(t, "bytes", MustGetSchema(byteArray))
+}
+
+func TestSchemaByteArrayInStructSuccess(t *testing.T) {
+	require.Equal(t, "{byteArray:bytes}", MustGetSchema(ByteArrayStruct{}))
 }
