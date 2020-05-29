@@ -44,12 +44,21 @@ module Styles = {
       boxShadow(Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(4), rgba(17, 85, 78, 0.1))),
     ]);
 
-  let warning =
+  let reminder =
     style([
       padding(`px(10)),
       color(Colors.blue5),
       backgroundColor(Colors.blue1),
       border(`px(1), `solid, Colors.blue6),
+      borderRadius(`px(4)),
+    ]);
+
+  let warning =
+    style([
+      padding(`px(10)),
+      color(Colors.yellow5),
+      backgroundColor(Colors.yellow1),
+      border(`px(1), `solid, Colors.yellow6),
       borderRadius(`px(4)),
     ]);
 };
@@ -134,14 +143,24 @@ module StakingInfo = {
         dispatchModal(OpenModal(SubmitTx(SubmitMsg.Undelegate(validatorAddress))));
       let withdrawReward = () =>
         dispatchModal(OpenModal(SubmitTx(SubmitMsg.WithdrawReward(validatorAddress))));
+      let isReachUnbondingLimit = unbondingList |> Belt_Array.length == 7;
+
       <div>
         <VSpacing size=Spacing.md />
         {rewardAmount.amount > 1.
            ? <div>
-               <div className=Styles.warning>
+               <div className=Styles.reminder>
                  <Text
                    value="Note: You have non-zero pending reward on this validator. Any additional staking actions will automatically withdraw that reward your balance."
                  />
+               </div>
+               <VSpacing size=Spacing.lg />
+             </div>
+           : React.null}
+        {isReachUnbondingLimit
+           ? <div>
+               <div className=Styles.warning>
+                 <Text value="Warning: You have reached the unbonding count. (7 times)" />
                </div>
                <VSpacing size=Spacing.lg />
              </div>
@@ -164,7 +183,7 @@ module StakingInfo = {
           <button
             className={Styles.button(100)}
             onClick={_ => {undelegate()}}
-            disabled={balanceAtStakeAmount.amount == 0.}>
+            disabled={balanceAtStakeAmount.amount == 0. || isReachUnbondingLimit}>
             <Text value="Undelegate" />
           </button>
           <HSpacing size=Spacing.md />
