@@ -28,7 +28,7 @@ func (msg MsgRequestData) ValidateBasic() error {
 		return sdkerrors.Wrapf(ErrInvalidMinCount, "got: %d", msg.MinCount)
 	}
 	if msg.AskCount < msg.MinCount {
-		return sdkerrors.Wrapf(ErrAskCountLessThanMinCount, "%d < %d", msg.AskCount, msg.MinCount)
+		return sdkerrors.Wrapf(ErrInvalidAskCount, "got: %d, min count: %d", msg.AskCount, msg.MinCount)
 	}
 	if len(msg.ClientID) > MaxClientIDLength {
 		return WrapMaxError(ErrTooLongClientID, len(msg.ClientID), MaxClientIDLength)

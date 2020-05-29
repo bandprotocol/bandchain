@@ -6,8 +6,8 @@ import github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 func NewMsgRequestData(
 	OracleScriptID OracleScriptID,
 	Calldata []byte,
-	AskCount int64,
-	MinCount int64,
+	AskCount uint64,
+	MinCount uint64,
 	ClientID string,
 	Sender github_com_cosmos_cosmos_sdk_types.AccAddress,
 ) MsgRequestData {
@@ -191,8 +191,8 @@ func NewOracleRequestPacketData(
 	ClientID string,
 	OracleScriptID OracleScriptID,
 	Calldata []byte,
-	AskCount int64,
-	MinCount int64,
+	AskCount uint64,
+	MinCount uint64,
 ) OracleRequestPacketData {
 	return OracleRequestPacketData{
 		ClientID:       ClientID,
@@ -206,7 +206,7 @@ func NewOracleRequestPacketData(
 func NewOracleResponsePacketData(
 	ClientID string,
 	RequestID RequestID,
-	AnsCount int64,
+	AnsCount uint64,
 	RequestTime int64,
 	ResolveTime int64,
 	ResolveStatus ResolveStatus,
@@ -227,7 +227,7 @@ func NewRequest(
 	OracleScriptID OracleScriptID,
 	Calldata []byte,
 	RequestedValidators []github_com_cosmos_cosmos_sdk_types.ValAddress,
-	MinCount int64,
+	MinCount uint64,
 	RequestHeight int64,
 	RequestTime int64,
 	ClientID string,
@@ -279,14 +279,18 @@ func NewValidatorReportInfo(
 
 func NewParams(
 	MaxRawRequestCount uint64,
-	GasPerRawDataRequestPerValidator uint64,
+	MaxAskCount uint64,
 	ExpirationBlockCount uint64,
 	MaxConsecutiveMisses uint64,
+	BaseRequestGas uint64,
+	PerValidatorRequestGas uint64,
 ) Params {
 	return Params{
-		MaxRawRequestCount:               MaxRawRequestCount,
-		GasPerRawDataRequestPerValidator: GasPerRawDataRequestPerValidator,
-		ExpirationBlockCount:             ExpirationBlockCount,
-		MaxConsecutiveMisses:             MaxConsecutiveMisses,
+		MaxRawRequestCount:     MaxRawRequestCount,
+		MaxAskCount:            MaxAskCount,
+		ExpirationBlockCount:   ExpirationBlockCount,
+		MaxConsecutiveMisses:   MaxConsecutiveMisses,
+		BaseRequestGas:         BaseRequestGas,
+		PerValidatorRequestGas: PerValidatorRequestGas,
 	}
 }
