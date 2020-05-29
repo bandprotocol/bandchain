@@ -7,75 +7,26 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// import (
-// 	"testing"
-// 	"time"
+func TestResultBasicFunctions(t *testing.T) {
+	_, ctx, k := createTestInput()
 
-// 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
-// 	sdk "github.com/cosmos/cosmos-sdk/types"
-// 	"github.com/stretchr/testify/require"
-// )
+	req := types.NewOracleRequestPacketData("alice", 1, BasicCalldata, 1, 1)
+	res := types.NewOracleResponsePacketData("alice", 1, 1, 1589535020, 1589535022, 1, BasicCalldata)
+	resultHash := types.CalculateResultHash(req, res)
+	k.SetResult(ctx, types.RequestID(1), resultHash)
 
-// func TestGetterSetterResult(t *testing.T) {
-// 	ctx, keeper := CreateTestInput(t, false)
+	// Test GetResult func
+	resultHashReqID1, err := k.GetResult(ctx, types.RequestID(1))
+	require.NoError(t, err)
+	require.Equal(t, resultHash, resultHashReqID1)
 
-// 	_, err := keeper.GetResult(ctx, 1, 1, []byte("calldata"))
-// 	require.NotNil(t, err)
+	_, err = k.GetResult(ctx, types.RequestID(2))
+	require.Error(t, err)
 
-// 	keeper.SetResult(ctx, 1, 1, []byte("calldata"), types.NewResult(1, 2, 3, 2, 2, []byte("result")))
-// 	actualResult, err := keeper.GetResult(ctx, 1, 1, []byte("calldata"))
-// 	require.Nil(t, err)
-// 	require.Equal(t, types.Result{
-// 		RequestTime:              1,
-// 		AggregationTime:          2,
-// 		RequestedValidatorsCount: 3,
-// 		MinCount: 2,
-// 		ReportedValidatorsCount:  2,
-// 		Data:                     []byte("result"),
-// 	}, actualResult)
-// }
-
-// func TestAddResultSuccess(t *testing.T) {
-// 	ctx, keeper := CreateTestInput(t, false)
-
-// 	_, err := keeper.GetResult(ctx, 1, 1, []byte("calldata"))
-// 	require.NotNil(t, err)
-
-// 	keeper.SetRequest(ctx, 1, types.NewRequest(
-// 		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))}, 1, 0, 0, "clientID",
-// 	))
-
-// 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589999), 0))
-
-// 	err = keeper.AddResult(ctx, 1, 1, []byte("calldata"), []byte("result"))
-// 	require.Nil(t, err)
-
-// 	actualResult, err := keeper.GetResult(ctx, 1, 1, []byte("calldata"))
-// 	require.Nil(t, err)
-// 	require.Equal(
-// 		t,
-// 		types.Result{
-// 			RequestTime:              0,
-// 			AggregationTime:          1581589999,
-// 			RequestedValidatorsCount: 1,
-// 			MinCount: 1,
-// 			ReportedValidatorsCount:  0,
-// 			Data:                     []byte("result"),
-// 		},
-// 		actualResult,
-// 	)
-// }
-
-// func TestAddResultFailWithExceedResultSize(t *testing.T) {
-// 	ctx, keeper := CreateTestInput(t, false)
-
-// 	_, err := keeper.GetResult(ctx, 1, 1, []byte("calldata"))
-// 	require.NotNil(t, err)
-
-// 	keeper.SetParam(ctx, types.KeyMaxResultSize, 1)
-// 	err = keeper.AddResult(ctx, 1, 1, []byte("calldata"), []byte("result"))
-// 	require.NotNil(t, err)
-// }
+	// Test HasResult func
+	require.True(t, k.HasResult(ctx, types.RequestID(1)))
+	require.False(t, k.HasResult(ctx, types.RequestID(2)))
+}
 
 func TestGetAllResults(t *testing.T) {
 	_, ctx, k := createTestInput()
@@ -99,17 +50,4 @@ func TestGetAllResults(t *testing.T) {
 	require.Empty(t, results[2])
 
 	require.Equal(t, resultHash4, results[3])
-}
-
-func TestSetResult(t *testing.T) {
-	_, ctx, k := createTestInput()
-
-	req := types.NewOracleRequestPacketData("alice", 1, BasicCalldata, 1, 1)
-	res := types.NewOracleResponsePacketData("alice", 1, 1, 1589535020, 1589535022, 1, BasicCalldata)
-	resultHash := types.CalculateResultHash(req, res)
-	k.SetResult(ctx, types.RequestID(1), resultHash)
-
-	resultHashReqID1, err := k.GetResult(ctx, types.RequestID(1))
-	require.NoError(t, err)
-	require.Equal(t, resultHash, resultHashReqID1)
 }

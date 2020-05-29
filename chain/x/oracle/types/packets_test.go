@@ -15,6 +15,30 @@ func mustDecodeString(hexstr string) []byte {
 	return b
 }
 
+func TestGetBytesRequestPacket(t *testing.T) {
+	req := OracleRequestPacketData{
+		ClientID:       "test",
+		OracleScriptID: 1,
+		Calldata:       mustDecodeString("030000004254436400000000000000"),
+		AskCount:       1,
+		MinCount:       1,
+	}
+	require.Equal(t, []byte(`{"type":"oracle/OracleRequestPacketData","value":{"ask_count":"1","calldata":"AwAAAEJUQ2QAAAAAAAAA","client_id":"test","min_count":"1","oracle_script_id":"1"}}`), req.GetBytes())
+}
+
+func TestGetBytesResponsePacket(t *testing.T) {
+	res := OracleResponsePacketData{
+		ClientID:      "test",
+		RequestID:     1,
+		AnsCount:      1,
+		RequestTime:   1589535020,
+		ResolveTime:   1589535022,
+		ResolveStatus: ResolveStatus(1),
+		Result:        mustDecodeString("4bb10e0000000000"),
+	}
+	require.Equal(t, []byte(`{"type":"oracle/OracleResponsePacketData","value":{"ans_count":"1","client_id":"test","request_id":"1","request_time":"1589535020","resolve_status":1,"resolve_time":"1589535022","result":"S7EOAAAAAAA="}}`), res.GetBytes())
+}
+
 func TestCalculateResultHash(t *testing.T) {
 	req := OracleRequestPacketData{
 		ClientID:       "beeb",

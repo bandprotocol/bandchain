@@ -17,7 +17,7 @@ func (p OracleResponsePacketData) GetBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(p))
 }
 
-// CalculateResultHash returs hash of append hash of request and response packet.
+// CalculateResultHash returns hash of append hash of request and response packet.
 func CalculateResultHash(req OracleRequestPacketData, res OracleResponsePacketData) []byte {
 	reqPacketHash := tmhash.Sum(obi.MustEncode(req))
 	resPacketHash := tmhash.Sum(obi.MustEncode(res))
