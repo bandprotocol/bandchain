@@ -123,6 +123,8 @@ type BandApp struct {
 	IBCKeeper        *ibc.Keeper
 	OracleKeeper     oracle.Keeper
 
+	// Make scoped keepers public for test purposes
+	ScopedIBCKeeper capability.ScopedKeeper
 	// Decoder for unmarshaling []byte into sdk.Tx
 	TxDecoder sdk.TxDecoder
 	// Deliver Context that is set during BeginBlock and unset during EndBlock; primarily for gas refund
@@ -199,7 +201,7 @@ func NewBandApp(
 
 	// add capability keeper and ScopeToModule for ibc module
 	app.CapabilityKeeper = capability.NewKeeper(appCodec, keys[capability.StoreKey], memKeys[capability.MemStoreKey])
-	scopedIBCKeeper := app.CapabilityKeeper.ScopeToModule(ibc.ModuleName)
+	app.ScopedIBCKeeper = app.CapabilityKeeper.ScopeToModule(ibc.ModuleName)
 	scopedOracleKeeper := app.CapabilityKeeper.ScopeToModule(oracle.ModuleName)
 
 	// add keepers
@@ -247,7 +249,7 @@ func NewBandApp(
 		app.AccountKeeper, app.BankKeeper, &stakingKeeper, govRouter,
 	)
 
-	app.IBCKeeper = ibc.NewKeeper(app.cdc, keys[ibc.StoreKey], stakingKeeper, scopedIBCKeeper)
+	app.IBCKeeper = ibc.NewKeeper(app.cdc, keys[ibc.StoreKey], stakingKeeper, app.ScopedIBCKeeper)
 
 	// create evidence keeper with evidence router
 	evidenceKeeper := evidence.NewKeeper(
