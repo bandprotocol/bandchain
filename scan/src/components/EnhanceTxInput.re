@@ -1,7 +1,7 @@
 module Styles = {
   open Css;
 
-  let rowContainer =
+  let container =
     style([
       display(`flex),
       alignItems(`center),
@@ -9,9 +9,11 @@ module Styles = {
       position(`relative),
     ]);
 
-  let input = wid =>
+  let rightContainer = wid => style([display(`flex), alignItems(`center), width(`px(wid))]);
+
+  let input =
     style([
-      width(`px(wid)),
+      width(`percent(100.)),
       height(`px(30)),
       paddingLeft(`px(9)),
       paddingRight(`px(9)),
@@ -71,6 +73,7 @@ let make =
       ~setInputData,
       ~msg,
       ~parse,
+      ~maxValue=?,
       ~width,
       ~code=false,
       ~placeholder="",
@@ -78,24 +81,41 @@ let make =
     ) => {
   let (status, setStatus) = React.useState(_ => Untouched);
 
-  <div className=Styles.rowContainer>
+  let onNewText = newText => {
+    let newVal = parse(newText);
+    setStatus(_ => Touched(newVal));
+    switch (newVal) {
+    | Ok(newVal') => setInputData(_ => {text: newText, value: Some(newVal')})
+    | Err(_) => setInputData(_ => {text: newText, value: None})
+    };
+  };
+
+  <div className=Styles.container>
     <Text value=msg size=Text.Lg spacing={Text.Em(0.03)} nowrap=true block=true />
-    <input
-      value={inputData.text}
-      className={Css.merge([Styles.input(width), code ? Styles.code : ""])}
-      placeholder
-      type_=inputType
-      spellCheck=false
-      onChange={event => {
-        let newText = ReactEvent.Form.target(event)##value;
-        let newVal = parse(newText);
-        setStatus(_ => Touched(newVal));
-        switch (newVal) {
-        | Ok(newVal') => setInputData(_ => {text: newText, value: Some(newVal')})
-        | Err(_) => setInputData(_ => {text: newText, value: None})
-        };
-      }}
-    />
+    <div className={Styles.rightContainer(width)}>
+      <input
+        value={inputData.text}
+        className={Css.merge([Styles.input, code ? Styles.code : ""])}
+        placeholder
+        type_=inputType
+        spellCheck=false
+        onChange={event => {
+          let newText = ReactEvent.Form.target(event)##value;
+          onNewText(newText);
+        }}
+      />
+      {switch (maxValue) {
+       | Some(maxValue') =>
+         <>
+           <HSpacing size=Spacing.sm />
+           <MaxButton
+             onClick={_ => onNewText(maxValue')}
+             disabled={inputData.text == maxValue'}
+           />
+         </>
+       | None => React.null
+       }}
+    </div>
     {switch (status) {
      | Touched(Err(errMsg)) =>
        <div className=Styles.errMsg> <Text value=errMsg color=Colors.red3 size=Text.Sm /> </div>
@@ -107,7 +127,7 @@ let make =
 module Loading = {
   [@react.component]
   let make = (~msg, ~width) => {
-    <div className=Styles.rowContainer>
+    <div className=Styles.container>
       <Text value=msg size=Text.Lg spacing={Text.Em(0.03)} nowrap=true block=true />
       <LoadingCensorBar width height=30 isRight=true />
     </div>;

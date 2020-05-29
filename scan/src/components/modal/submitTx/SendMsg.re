@@ -57,7 +57,7 @@ let make = (~address, ~receiver, ~setMsgsOpt) => {
            />
            <Text value=" BAND" code=true />
          </div>
-       | _ => <LoadingCensorBar width=300 height=18 />
+       | _ => <LoadingCensorBar width=150 height=18 />
        }}
     </div>
     <VSpacing size=Spacing.lg />
@@ -75,18 +75,20 @@ let make = (~address, ~receiver, ~setMsgsOpt) => {
     <VSpacing size=Spacing.md />
     {switch (accountSub) {
      | Data({balance}) =>
+       //  TODO: hard-coded tx fee
+       let maxValInUband = (balance |> Coin.getUBandAmountFromCoins) -. 5000.;
        <EnhanceTxInput
-         width=236
+         width=300
          inputData=amount
          setInputData=setAmount
-         //  TODO: hard-coded tx fee
-         parse={Parse.getBandAmount((balance |> Coin.getUBandAmountFromCoins) -. 5000.)}
+         parse={Parse.getBandAmount(maxValInUband)}
+         maxValue={maxValInUband /. 1e6 |> Js.Float.toString}
          msg="Send Amount (BAND)"
          inputType="number"
          code=true
          placeholder="Insert send amount"
-       />
-     | _ => <EnhanceTxInput.Loading msg="Send Amount (BAND)" width=236 />
+       />;
+     | _ => <EnhanceTxInput.Loading msg="Send Amount (BAND)" width=300 />
      }}
     <VSpacing size=Spacing.lg />
   </>;

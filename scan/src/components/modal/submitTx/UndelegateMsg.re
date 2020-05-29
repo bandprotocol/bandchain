@@ -79,24 +79,26 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
            />
            <Text value=" BAND" code=true />
          </div>
-       | _ => <LoadingCensorBar width=300 height=18 />
+       | _ => <LoadingCensorBar width=150 height=18 />
        }}
     </div>
     <VSpacing size=Spacing.lg />
     <VSpacing size=Spacing.md />
     {switch (allSub) {
      | Data((_, {amount: stakedAmount})) =>
+       let maxValInUband = stakedAmount |> Coin.getUBandAmountFromCoin;
        <EnhanceTxInput
-         width=226
+         width=300
          inputData=amount
          setInputData=setAmount
-         parse={Parse.getBandAmount(stakedAmount |> Coin.getUBandAmountFromCoin)}
+         parse={Parse.getBandAmount(maxValInUband)}
+         maxValue={maxValInUband /. 1e6 |> Js.Float.toString}
          msg="Undelegate Amount (BAND)"
          placeholder="Insert unbonding amount"
          inputType="number"
          code=true
-       />
-     | _ => <EnhanceTxInput.Loading msg="Undelegate Amount (BAND)" width=226 />
+       />;
+     | _ => <EnhanceTxInput.Loading msg="Undelegate Amount (BAND)" width=300 />
      }}
     <VSpacing size=Spacing.lg />
   </>;

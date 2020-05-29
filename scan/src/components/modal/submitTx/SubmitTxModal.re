@@ -20,26 +20,6 @@ module Styles = {
   let rowContainer =
     style([display(`flex), alignItems(`center), justifyContent(`spaceBetween)]);
 
-  let input = wid =>
-    style([
-      width(`px(wid)),
-      height(`px(30)),
-      paddingRight(`px(9)),
-      borderRadius(`px(8)),
-      fontSize(`px(12)),
-      textAlign(`right),
-      boxShadow(
-        Shadow.box(
-          ~inset=false,
-          ~x=`zero,
-          ~y=`px(3),
-          ~blur=`px(4),
-          Css.rgba(11, 29, 142, 0.1),
-        ),
-      ),
-      focus([outlineColor(Colors.white)]),
-    ]);
-
   let selectWrapper =
     style([
       display(`flex),
