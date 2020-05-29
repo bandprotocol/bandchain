@@ -13,64 +13,13 @@ library Packets {
     {
         return
             abi.encodePacked(
-                hex"d9c58927", // Amino codec info for RequestPacket type
-                uint8(10), // (1 << 3) | 2
-                getEncodeLength(_self.clientId),
+                uint32(bytes(_self.clientId).length),
                 _self.clientId,
-                uint8(16), // (2 << 3) | 0
-                Utils.encodeVarintUnsigned(_self.oracleScriptId),
-                uint8(26), // (3 << 3) | 2
-                Utils.encodeVarintUnsigned(_self.params.length),
+                _self.oracleScriptId,
+                uint32(_self.params.length),
                 _self.params,
-                uint8(32), // (4 << 3) | 0
-                Utils.encodeVarintUnsigned(_self.askCount),
-                uint8(40), // (5 << 3) | 0
-                Utils.encodeVarintUnsigned(_self.minCount)
-            );
-    }
-
-    function getEncodeLength(string memory _s)
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return Utils.encodeVarintUnsigned(bytes(_s).length);
-    }
-
-    function getReponsePart1(
-        string memory _clientId,
-        uint64 _requestId,
-        uint64 _ansCount,
-        uint64 _requestTime
-    ) internal pure returns (bytes memory) {
-        return
-            abi.encodePacked(
-                uint8(10), // (1 << 3) | 2
-                getEncodeLength(_clientId),
-                _clientId,
-                uint8(16), // (2 << 3) | 0
-                Utils.encodeVarintUnsigned(_requestId),
-                uint8(24), // (3 << 3) | 0
-                Utils.encodeVarintUnsigned(_ansCount),
-                uint8(32), // (4 << 3) | 0
-                Utils.encodeVarintUnsigned(_requestTime)
-            );
-    }
-
-    function getReponsePart2(
-        uint64 _resolveTime,
-        uint8 _resolveStatus,
-        bytes memory _result
-    ) internal pure returns (bytes memory) {
-        return
-            abi.encodePacked(
-                uint8(40), // (5 << 3) | 0
-                Utils.encodeVarintUnsigned(_resolveTime),
-                uint8(48), // (6 << 3) | 0
-                Utils.encodeVarintUnsigned(_resolveStatus),
-                uint8(58), // (7 << 3) | 2
-                Utils.encodeVarintUnsigned(_result.length),
-                _result
+                _self.askCount,
+                _self.minCount
             );
     }
 
@@ -81,18 +30,15 @@ library Packets {
     {
         return
             abi.encodePacked(
-                hex"79b5957c", // Amino codec info for ResponsePacket type
-                getReponsePart1(
-                    _self.clientId,
-                    _self.requestId,
-                    _self.ansCount,
-                    _self.requestTime
-                ),
-                getReponsePart2(
-                    _self.resolveTime,
-                    _self.resolveStatus,
-                    _self.result
-                )
+                uint32(bytes(_self.clientId).length),
+                _self.clientId,
+                _self.requestId,
+                _self.ansCount,
+                _self.requestTime,
+                _self.resolveTime,
+                uint32(_self.resolveStatus),
+                uint32(bytes(_self.result).length),
+                _self.result
             );
     }
 
