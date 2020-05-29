@@ -80,7 +80,7 @@ func TestPrepareRequestSuccess(t *testing.T) {
 func TestPrepareRequestInvalidAskCountFail(t *testing.T) {
 	_, ctx, k := createTestInput()
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
-	k.SetParam(ctx, types.KeyMaxAskCount, 1000)
+	k.SetParam(ctx, types.KeyMaxAskCount, 1000) // Set MaxAskCount 1000
 
 	ds1, clear1 := getTestDataSource("code1")
 	defer clear1()
@@ -99,7 +99,7 @@ func TestPrepareRequestInvalidAskCountFail(t *testing.T) {
 
 	oracleScriptID := k.AddOracleScript(ctx, os)
 	calldata, _ := hex.DecodeString("030000004254436400000000000000")
-	askCount := uint64(100000)
+	askCount := uint64(100000) // Set ask count 100000
 	minCount := uint64(2)
 	clientID := "beeb"
 
@@ -111,10 +111,10 @@ func TestPrepareRequestInvalidAskCountFail(t *testing.T) {
 func TestPrepareRequestBaseRequestFeePanic(t *testing.T) {
 	_, ctx, k := createTestInput()
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
-	ctx = ctx.WithGasMeter(sdk.NewGasMeter(100000))
+	ctx = ctx.WithGasMeter(sdk.NewGasMeter(90000)) // Set Gas Meter 90000
 
 	baseRequestGas := uint64(100000)
-	k.SetParam(ctx, types.KeyBaseRequestGas, baseRequestGas)
+	k.SetParam(ctx, types.KeyBaseRequestGas, baseRequestGas) // Set BaseRequestGas 100000
 
 	ds1, clear1 := getTestDataSource("code1")
 	defer clear1()
@@ -149,12 +149,12 @@ func TestPrepareRequestBaseRequestFeePanic(t *testing.T) {
 func TestPrepareRequestPerValidatorRequestFeePanic(t *testing.T) {
 	_, ctx, k := createTestInput()
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
-	ctx = ctx.WithGasMeter(sdk.NewGasMeter(150000))
+	ctx = ctx.WithGasMeter(sdk.NewGasMeter(150000)) //Set Gas Meter 150000
 
 	baseRequestGas := uint64(100000)
-	k.SetParam(ctx, types.KeyBaseRequestGas, baseRequestGas)
+	k.SetParam(ctx, types.KeyBaseRequestGas, baseRequestGas) // Set BaseRequestGas 100000
 	perValidatorRequestGas := uint64(100000)
-	k.SetParam(ctx, types.KeyPerValidatorRequestGas, perValidatorRequestGas)
+	k.SetParam(ctx, types.KeyPerValidatorRequestGas, perValidatorRequestGas) // Set PerValidatorRequestGas 100000
 
 	ds1, clear1 := getTestDataSource("code1")
 	defer clear1()
@@ -178,6 +178,10 @@ func TestPrepareRequestPerValidatorRequestFeePanic(t *testing.T) {
 	clientID := "beeb"
 
 	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
+
+	// PrepareRequest panics because set gas meter at 150000
+	// but PrepareRequest consume gas more than 200000
+	// (baseRequestGas + askCount*perValidatorRequestGas = 200000)
 	require.Panics(t, func() { k.PrepareRequest(ctx, &m, nil) })
 }
 
