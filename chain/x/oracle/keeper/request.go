@@ -85,7 +85,7 @@ func (k Keeper) SaveResult(ctx sdk.Context, id types.RequestID, status types.Res
 		r.ClientID, r.OracleScriptID, r.Calldata, r.MinCount, uint64(len(r.RequestedValidators)),
 	)
 	res := types.NewOracleResponsePacketData(
-		r.ClientID, id, int64(k.GetReportCount(ctx, id)), r.RequestTime,
+		r.ClientID, id, k.GetReportCount(ctx, id), r.RequestTime,
 		ctx.BlockTime().Unix(), status, result,
 	)
 	resultHash := k.AddResult(ctx, id, req, res)

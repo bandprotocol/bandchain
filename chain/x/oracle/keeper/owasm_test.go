@@ -32,8 +32,8 @@ func TestPrepareRequestSuccess(t *testing.T) {
 
 	oracleScriptID := k.AddOracleScript(ctx, os)
 	calldata, _ := hex.DecodeString("030000004254436400000000000000")
-	askCount := int64(1)
-	minCount := int64(2)
+	askCount := uint64(1)
+	minCount := uint64(2)
 	clientID := "beeb"
 	ibcInfo := types.NewIBCInfo("source_port", "source_channel")
 
@@ -46,15 +46,9 @@ func TestPrepareRequestSuccess(t *testing.T) {
 	req, err := k.GetRequest(ctx, 1)
 	require.NoError(t, err)
 
-	require.Equal(t, oracleScriptID, req.OracleScriptID)
-	require.Equal(t, calldata, req.Calldata)
-	require.Equal(t, []sdk.ValAddress{Validator1.ValAddress}, req.RequestedValidators)
-	require.Equal(t, minCount, req.MinCount)
-	require.Equal(t, int64(0), req.RequestHeight)
-	require.Equal(t, int64(1581589790), req.RequestTime)
-	require.Equal(t, clientID, req.ClientID)
-	require.Equal(t, ibcInfo, *req.IBCInfo)
-	require.Equal(t, []types.ExternalID{1, 2, 3}, req.RawRequestIDs)
+	expectReq := types.NewRequest(oracleScriptID, calldata, []sdk.ValAddress{Validator1.ValAddress}, minCount,
+		int64(0), int64(1581589790), clientID, &ibcInfo, []types.ExternalID{1, 2, 3})
+	require.Equal(t, expectReq, req)
 
 	require.Equal(t, 4, len(events))
 	require.Equal(t, types.EventTypeRequest, events[0].Type)
@@ -81,6 +75,36 @@ func TestPrepareRequestSuccess(t *testing.T) {
 	}
 }
 
+func TestPrepareRequestInvalidAskCountFail(t *testing.T) {
+	_, ctx, k := createTestInput()
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+
+	ds1, clear1 := getTestDataSource("code1")
+	defer clear1()
+	k.AddDataSource(ctx, ds1)
+
+	ds2, clear2 := getTestDataSource("code2")
+	defer clear2()
+	k.AddDataSource(ctx, ds2)
+
+	ds3, clear3 := getTestDataSource("code3")
+	defer clear3()
+	k.AddDataSource(ctx, ds3)
+
+	os, clear4 := getTestOracleScript()
+	defer clear4()
+
+	oracleScriptID := k.AddOracleScript(ctx, os)
+	calldata, _ := hex.DecodeString("030000004254436400000000000000")
+	askCount := uint64(100000)
+	minCount := uint64(2)
+	clientID := "beeb"
+
+	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
+	err := k.PrepareRequest(ctx, &m, nil)
+	require.Error(t, err)
+}
+
 func TestPrepareRequestGetRandomValidatorsFail(t *testing.T) {
 	_, ctx, k := createTestInput()
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
@@ -102,8 +126,8 @@ func TestPrepareRequestGetRandomValidatorsFail(t *testing.T) {
 
 	oracleScriptID := k.AddOracleScript(ctx, os)
 	calldata, _ := hex.DecodeString("030000004254436400000000000000")
-	askCount := int64(10000)
-	minCount := int64(2)
+	askCount := uint64(15)
+	minCount := uint64(2)
 	clientID := "beeb"
 
 	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
@@ -132,8 +156,8 @@ func TestPrepareRequestGetOracleScriptFail(t *testing.T) {
 
 	k.AddOracleScript(ctx, os)
 	calldata, _ := hex.DecodeString("030000004254436400000000000000")
-	askCount := int64(1)
-	minCount := int64(2)
+	askCount := uint64(1)
+	minCount := uint64(2)
 	clientID := "beeb"
 
 	m := types.NewMsgRequestData(9999, calldata, askCount, minCount, clientID, Alice.Address)
@@ -150,8 +174,8 @@ func TestPrepareRequestBadWasmExecutionFail(t *testing.T) {
 
 	oracleScriptID := k.AddOracleScript(ctx, os)
 	calldata, _ := hex.DecodeString("030000004254436400000000000000")
-	askCount := int64(1)
-	minCount := int64(2)
+	askCount := uint64(1)
+	minCount := uint64(2)
 	clientID := "beeb"
 
 	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
@@ -168,8 +192,8 @@ func TestPrepareRequestGetDataSourceFail(t *testing.T) {
 
 	oracleScriptID := k.AddOracleScript(ctx, os)
 	calldata, _ := hex.DecodeString("030000004254436400000000000000")
-	askCount := int64(1)
-	minCount := int64(2)
+	askCount := uint64(1)
+	minCount := uint64(2)
 	clientID := "beeb"
 
 	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
@@ -194,7 +218,7 @@ func TestResolveRequestSuccess(t *testing.T) {
 
 	oracleScriptID := k.AddOracleScript(ctx, os)
 	calldata, _ := hex.DecodeString("030000004254436400000000000000")
-	minCount := int64(2)
+	minCount := uint64(2)
 	clientID := "beeb"
 	ibcInfo := types.NewIBCInfo("source_port", "source_channel")
 	rawRequestID := []types.ExternalID{1, 2}
@@ -213,11 +237,11 @@ func TestResolveRequestSuccess(t *testing.T) {
 
 	r := k.MustGetRequest(ctx, reqID)
 	resPacket := types.NewOracleResponsePacketData(
-		r.ClientID, reqID, int64(k.GetReportCount(ctx, reqID)), r.RequestTime,
+		r.ClientID, reqID, k.GetReportCount(ctx, reqID), r.RequestTime,
 		ctx.BlockTime().Unix(), types.ResolveStatus_Success, []byte("beeb"),
 	)
 	reqPacket := types.NewOracleRequestPacketData(
-		r.ClientID, r.OracleScriptID, r.Calldata, r.MinCount, int64(len(r.RequestedValidators)),
+		r.ClientID, r.OracleScriptID, r.Calldata, r.MinCount, uint64(len(r.RequestedValidators)),
 	)
 	expecetRes := k.AddResult(ctx, reqID, reqPacket, resPacket)
 
@@ -245,7 +269,7 @@ func TestResolveRequestFail(t *testing.T) {
 
 	oracleScriptID := k.AddOracleScript(ctx, os)
 	calldata, _ := hex.DecodeString("00")
-	minCount := int64(2)
+	minCount := uint64(2)
 	clientID := "beeb"
 	ibcInfo := types.NewIBCInfo("source_port", "source_channel")
 	rawRequestID := []types.ExternalID{1, 2}
@@ -264,11 +288,11 @@ func TestResolveRequestFail(t *testing.T) {
 
 	r := k.MustGetRequest(ctx, reqID)
 	resPacket := types.NewOracleResponsePacketData(
-		r.ClientID, reqID, int64(k.GetReportCount(ctx, reqID)), r.RequestTime,
+		r.ClientID, reqID, k.GetReportCount(ctx, reqID), r.RequestTime,
 		ctx.BlockTime().Unix(), types.ResolveStatus_Failure, nil,
 	)
 	reqPacket := types.NewOracleRequestPacketData(
-		r.ClientID, r.OracleScriptID, r.Calldata, r.MinCount, int64(len(r.RequestedValidators)),
+		r.ClientID, r.OracleScriptID, r.Calldata, r.MinCount, uint64(len(r.RequestedValidators)),
 	)
 	expecetRes := k.AddResult(ctx, reqID, reqPacket, resPacket)
 
