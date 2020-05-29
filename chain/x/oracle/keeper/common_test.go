@@ -108,14 +108,6 @@ func createTestClient(chainA *bandapp.BandApp, chainB *bandapp.BandApp) error {
 	// Set HistoricalInfo on client chain after Commit
 	newCtxClient := getContext(chainB)
 
-	// validators := chainB.StakingKeeper.GetValidators(newCtxClient, 3)
-	// for _, validator := range validators {
-	// 	validator.Status = sdk.Bonded
-	// 	validator.Tokens = sdk.NewInt(1000000)
-	// }
-	// vals := chainB.StakingKeeper.GetValidatorSet()
-	// signer := chainB.StakingKeeper.Si
-
 	// Prepare validator and signers for client chain
 	privVal := tmtypes.NewMockPV()
 
