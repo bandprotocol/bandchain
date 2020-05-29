@@ -113,7 +113,7 @@ func DecodeUnsigned16(data []byte) (uint16, []byte, error) {
 	if len(data) < 2 {
 		return 0, nil, errors.New("obi: out of range")
 	}
-	return binary.LittleEndian.Uint16(data[:2]), data[2:], nil
+	return binary.BigEndian.Uint16(data[:2]), data[2:], nil
 }
 
 // DecodeUnsigned32 decodes the input bytes into `uint32` and returns the remaining bytes.
@@ -121,7 +121,7 @@ func DecodeUnsigned32(data []byte) (uint32, []byte, error) {
 	if len(data) < 4 {
 		return 0, nil, errors.New("obi: out of range")
 	}
-	return binary.LittleEndian.Uint32(data[:4]), data[4:], nil
+	return binary.BigEndian.Uint32(data[:4]), data[4:], nil
 }
 
 // DecodeUnsigned64 decodes the input bytes into `uint64` and returns the remaining bytes.
@@ -129,7 +129,7 @@ func DecodeUnsigned64(data []byte) (uint64, []byte, error) {
 	if len(data) < 8 {
 		return 0, nil, errors.New("obi: out of range")
 	}
-	return binary.LittleEndian.Uint64(data[:8]), data[8:], nil
+	return binary.BigEndian.Uint64(data[:8]), data[8:], nil
 }
 
 // DecodeSigned8 decodes the input bytes into `uint64` and returns the remaining bytes.

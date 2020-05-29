@@ -209,7 +209,7 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 		},
 		{
 			"Bitcoin block hash",
-			"Oracle script for getting Bitcoin latest block hash",
+			"Oracle script for getting Bitcoin block hash at a given block height",
 			"./pkg/owasm/res/bitcoin_block_hash.wasm",
 			`{"Input":"{ \"kind\": \"struct\", \"fields\": [ [\"block_height\", \"u64\"] ] }","Output":"{ \"kind\": \"struct\", \"fields\": [ [\"block_hash\", \"string\"] ] }"}`,
 			`https://ipfs.io/ipfs/Qmcgv1vHLVNQPKkkAB9ftG33142E8Ufbm9GUpGznbh5NzW`,
