@@ -1,0 +1,54 @@
+package obi
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/require"
+)
+
+type EmptySchema struct{}
+
+type Color struct {
+	code string `code` //missing obi
+}
+
+type Validation struct {
+	IsValid bool   `obi:"isValid"`
+	Test    string `obi:"test"`
+}
+
+type AllData struct {
+	NumUint8  uint8  `obi:"numUint8"`
+	NumUint16 uint16 `obi:"numUint16"`
+	NumUint32 uint32 `obi:"numUint32"`
+	NumUint64 uint64 `obi:"numUint64"`
+	NumInt8   int8   `obi:"numInt8"`
+	NumInt16  int16  `obi:"numInt16"`
+	NumInt32  int32  `obi:"numInt32"`
+	NumInt64  int64  `obi:"numInt64"`
+}
+
+func TestSchema(t *testing.T) {
+	require.Equal(t, "{symbol:string,px:u64,in:{a:u8,b:u8},arr:[i16]}", MustGetSchema(ExampleData{}))
+}
+
+func TestEmptySchemaFail(t *testing.T) {
+	require.PanicsWithError(t, "obi: empty struct is not supported", func() { MustGetSchema(EmptySchema{}) })
+}
+
+func TestMissingOBISchemaFail(t *testing.T) {
+	require.PanicsWithError(t, "obi: no obi tag found for field code of Color", func() { MustGetSchema(Color{}) })
+}
+
+func TestUnsupportedTypeFail(t *testing.T) {
+	require.PanicsWithError(t, "obi: unsupported value type: bool", func() { MustGetSchema(Validation{}) })
+}
+
+func TestSchemaSupportedNumberTypeSuccess(t *testing.T) {
+	require.Equal(t, "{numUint8:u8,numUint16:u16,numUint32:u32,numUint64:u64,numInt8:i8,numInt16:i16,numInt32:i32,numInt64:i64}", MustGetSchema(AllData{}))
+}
+
+func TestSchemaInvalidSliceFail(t *testing.T) {
+	invalidSlice := []bool{false, false, true, true}
+	require.PanicsWithError(t, "obi: unsupported value type: bool", func() { MustGetSchema(invalidSlice) })
+}
