@@ -8,6 +8,7 @@ import (
 	"github.com/bandprotocol/bandchain/chain/app"
 	bandapp "github.com/bandprotocol/bandchain/chain/app"
 	"github.com/bandprotocol/bandchain/chain/simapp"
+	me "github.com/bandprotocol/bandchain/chain/x/oracle/keeper"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	connectiontypes "github.com/cosmos/cosmos-sdk/x/ibc/03-connection/types"
@@ -25,21 +26,19 @@ import (
 )
 
 const (
-	ChainIDA                                            = "chainA"
-	ChainIDB                                            = "chainB"
-	TestClientIDA                                       = "clientA"
-	TestClientIDB                                       = "clientB"
-	TestPortA                                           = "testporta"
-	TestPortB                                           = "testportb"
-	TestChannelA                                        = "testchannela"
-	TestChannelB                                        = "testchannelb"
-	TestConnectionA                                     = "connectionAtoB"
-	TestConnectionB                                     = "connectionBtoA"
-	TrustingPeriod                        time.Duration = time.Hour * 24 * 7 * 2
-	UbdPeriod                             time.Duration = time.Hour * 24 * 7 * 3
-	MaxClockDrift                         time.Duration = time.Second * 10
-	DefaultPacketTimeoutHeight                          = 0
-	DefaultPacketTimeoutTimestampDuration               = uint64(600 * time.Second)
+	ChainIDA                      = "chainA"
+	ChainIDB                      = "chainB"
+	TestClientIDA                 = "clientA"
+	TestClientIDB                 = "clientB"
+	TestPortA                     = "testporta"
+	TestPortB                     = "testportb"
+	TestChannelA                  = "testchannela"
+	TestChannelB                  = "testchannelb"
+	TestConnectionA               = "connectionAtoB"
+	TestConnectionB               = "connectionBtoA"
+	TrustingPeriod  time.Duration = time.Hour * 24 * 7 * 2
+	UbdPeriod       time.Duration = time.Hour * 24 * 7 * 3
+	MaxClockDrift   time.Duration = time.Second * 10
 )
 
 type TestErrLogger struct {
@@ -269,8 +268,8 @@ func TestSendOracleResponse(t *testing.T) {
 				sdk.NewEvent(
 					channeltypes.EventTypeSendPacket,
 					sdk.NewAttribute(channeltypes.AttributeKeyData, fmt.Sprintf("%s", packet.GetBytes())),
-					sdk.NewAttribute(channeltypes.AttributeKeyTimeoutHeight, fmt.Sprintf("%d", DefaultPacketTimeoutHeight)),
-					sdk.NewAttribute(channeltypes.AttributeKeyTimeoutTimestamp, fmt.Sprintf("%d", uint64(ctx.BlockTime().UnixNano())+DefaultPacketTimeoutTimestampDuration)),
+					sdk.NewAttribute(channeltypes.AttributeKeyTimeoutHeight, fmt.Sprintf("%d", me.DefaultPacketTimeoutHeight)),
+					sdk.NewAttribute(channeltypes.AttributeKeyTimeoutTimestamp, fmt.Sprintf("%d", uint64(ctx.BlockTime().UnixNano())+me.DefaultPacketTimeoutTimestampDuration)),
 					sdk.NewAttribute(channeltypes.AttributeKeySequence, fmt.Sprintf("%d", seq)),
 					sdk.NewAttribute(channeltypes.AttributeKeySrcPort, TestPortA),
 					sdk.NewAttribute(channeltypes.AttributeKeySrcChannel, TestChannelA),
