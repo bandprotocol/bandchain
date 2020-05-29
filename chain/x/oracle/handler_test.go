@@ -459,7 +459,7 @@ func TestRequestDataFail(t *testing.T) {
 
 	wrongOracleScript := 1
 
-	calldata, _ := hex.DecodeString("030000004254436400000000000000")
+	calldata := []byte("test")
 	msg := types.NewMsgRequestData(types.OracleScriptID(wrongOracleScript), calldata, 1, 1, "alice", Alice.Address)
 
 	result, err := oracle.NewHandler(k)(ctx, msg)
