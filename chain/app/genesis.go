@@ -263,6 +263,13 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			`{"Input":"{ \"kind\": \"struct\", \"fields\": [ [\"symbol\", \"string\"], [\"multiplier\", \"u64\"] ] }","Output":"{ \"kind\": \"struct\", \"fields\": [ [\"px\", \"u64\"] ] }"}`,
 			`https://ipfs.io/ipfs/QmbgUQq82ra3bnxu8Jg89uonKQFpuiXx1xecXUBun2AcjF`,
 		},
+		{
+			"Fair price from 3 sources",
+			"Oracle script that query prices from many markets and then aggregate them together",
+			"./pkg/owasm/res/fair_crypto_market_price.wasm",
+			`{"Input":"{ \"kind\": \"struct\", \"fields\": [ [\"base_symbol\", \"string\"], [\"quote_symbol\", \"string\"], [\"aggregation_method\", \"string\"], [\"multiplier\", \"u64\"] ] }","Output":"{ \"kind\": \"struct\", \"fields\": [ [\"px\", \"u64\"] ] }"}`,
+			`https://ipfs.io/ipfs/QmeYYRsqr81FA5953YKznfKBMCpTVPY6UXHTQ6ANzGHsMR`,
+		},
 	}
 	state.OracleScripts = make([]otypes.OracleScript, len(oracleScripts))
 	for i, oracleScript := range oracleScripts {
