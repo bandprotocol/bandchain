@@ -275,7 +275,7 @@ func (msg MsgAddReporter) ValidateBasic() error {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "reporter: %s", msg.Reporter)
 	}
 	if sdk.ValAddress(msg.Reporter).Equals(msg.Validator) {
-		return sdkerrors.Wrapf(ErrReporterIsValidatorReporter, "validator: %s, reporter: %s", msg.Validator, msg.Reporter)
+		return ErrSelfReferenceAsReporter
 	}
 	return nil
 }
@@ -305,7 +305,7 @@ func (msg MsgRemoveReporter) ValidateBasic() error {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "reporter: %s", msg.Reporter)
 	}
 	if sdk.ValAddress(msg.Reporter).Equals(msg.Validator) {
-		return sdkerrors.Wrapf(ErrReporterIsValidatorReporter, "validator: %s, reporter: %s", msg.Validator, msg.Reporter)
+		return ErrSelfReferenceAsReporter
 	}
 	return nil
 }
