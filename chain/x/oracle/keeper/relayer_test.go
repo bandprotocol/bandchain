@@ -20,7 +20,6 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
-	tmkv "github.com/tendermint/tendermint/libs/kv"
 	"github.com/tendermint/tendermint/libs/log"
 	tmtypes "github.com/tendermint/tendermint/types"
 )
@@ -246,14 +245,8 @@ func TestSendOracleResponse(t *testing.T) {
 			require.Equal(t, "", logger.errLog)
 			events := ctx.EventManager().ABCIEvents()
 
-			expectedEvent := sdk.Event{
-				Type:       channeltypes.EventTypeSendPacket,
-				Attributes: []tmkv.Pair{},
-			}
-
-			events = ctx.EventManager().ABCIEvents()
 			require.Equal(t, 1, len(events))
-			require.Equal(t, abci.Event(expectedEvent), events[0])
+			require.Equal(t, channeltypes.EventTypeSendPacket, events[0].Type)
 		}
 	}
 }
