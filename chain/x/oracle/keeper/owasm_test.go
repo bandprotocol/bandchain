@@ -13,7 +13,7 @@ import (
 
 func TestPrepareRequestSuccess(t *testing.T) {
 	_, ctx, k := createTestInput()
-	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 
 	ds1, clear1 := getTestDataSource("code1")
 	defer clear1()
@@ -57,26 +57,34 @@ func TestPrepareRequestSuccess(t *testing.T) {
 	require.Equal(t, []byte(types.AttributeKeyValidator), events[0].Attributes[1].Key)
 	require.Equal(t, []byte(Validator1.ValAddress.String()), events[0].Attributes[1].Value)
 
-	dsIDs := []string{"", "1", "2", "3"}
-	filenames := []string{"", ds1.Filename, ds2.Filename, ds3.Filename}
-	exIDs := []string{"", "1", "2", "3"}
+	expectEvents := []struct {
+		eventType string
+		dsID      []byte
+		filname   []byte
+		exID      []byte
+		calldata  []byte
+	}{
+		{types.EventTypeRawRequest, []byte("1"), []byte(ds1.Filename), []byte("1"), []byte("beeb")},
+		{types.EventTypeRawRequest, []byte("2"), []byte(ds2.Filename), []byte("2"), []byte("beeb")},
+		{types.EventTypeRawRequest, []byte("3"), []byte(ds3.Filename), []byte("3"), []byte("beeb")},
+	}
 
-	for idx := 1; idx < len(events); idx++ {
-		require.Equal(t, types.EventTypeRawRequest, events[idx].Type)
-		require.Equal(t, []byte(types.AttributeKeyDataSourceID), events[idx].Attributes[0].Key)
-		require.Equal(t, []byte(dsIDs[idx]), events[idx].Attributes[0].Value)
-		require.Equal(t, []byte(types.AttributeKeyDataSourceHash), events[idx].Attributes[1].Key)
-		require.Equal(t, []byte(filenames[idx]), events[idx].Attributes[1].Value)
-		require.Equal(t, []byte(types.AttributeKeyExternalID), events[idx].Attributes[2].Key)
-		require.Equal(t, []byte(exIDs[idx]), events[idx].Attributes[2].Value)
-		require.Equal(t, []byte(types.AttributeKeyCalldata), events[idx].Attributes[3].Key)
-		require.Equal(t, []byte("beeb"), events[idx].Attributes[3].Value)
+	for idx, expectEvent := range expectEvents {
+		require.Equal(t, expectEvent.eventType, events[idx+1].Type)
+		require.Equal(t, []byte(types.AttributeKeyDataSourceID), events[idx+1].Attributes[0].Key)
+		require.Equal(t, expectEvent.dsID, events[idx+1].Attributes[0].Value)
+		require.Equal(t, []byte(types.AttributeKeyDataSourceHash), events[idx+1].Attributes[1].Key)
+		require.Equal(t, expectEvent.filname, events[idx+1].Attributes[1].Value)
+		require.Equal(t, []byte(types.AttributeKeyExternalID), events[idx+1].Attributes[2].Key)
+		require.Equal(t, expectEvent.exID, events[idx+1].Attributes[2].Value)
+		require.Equal(t, []byte(types.AttributeKeyCalldata), events[idx+1].Attributes[3].Key)
+		require.Equal(t, expectEvent.calldata, events[idx+1].Attributes[3].Value)
 	}
 }
 
 func TestPrepareRequestInvalidAskCountFail(t *testing.T) {
 	_, ctx, k := createTestInput()
-	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 	k.SetParam(ctx, types.KeyMaxAskCount, 1000)
 
 	ds1, clear1 := getTestDataSource("code1")
@@ -107,7 +115,7 @@ func TestPrepareRequestInvalidAskCountFail(t *testing.T) {
 
 func TestPrepareRequestGetRandomValidatorsFail(t *testing.T) {
 	_, ctx, k := createTestInput()
-	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 
 	ds1, clear1 := getTestDataSource("code1")
 	defer clear1()
@@ -137,7 +145,7 @@ func TestPrepareRequestGetRandomValidatorsFail(t *testing.T) {
 
 func TestPrepareRequestGetOracleScriptFail(t *testing.T) {
 	_, ctx, k := createTestInput()
-	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 
 	ds1, clear1 := getTestDataSource("code1")
 	defer clear1()
@@ -167,7 +175,7 @@ func TestPrepareRequestGetOracleScriptFail(t *testing.T) {
 
 func TestPrepareRequestBadWasmExecutionFail(t *testing.T) {
 	_, ctx, k := createTestInput()
-	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 
 	os, clear4 := getBadOracleScript()
 	defer clear4()
@@ -185,7 +193,7 @@ func TestPrepareRequestBadWasmExecutionFail(t *testing.T) {
 
 func TestPrepareRequestGetDataSourceFail(t *testing.T) {
 	_, ctx, k := createTestInput()
-	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 
 	os, clear4 := getTestOracleScript()
 	defer clear4()
@@ -203,7 +211,7 @@ func TestPrepareRequestGetDataSourceFail(t *testing.T) {
 
 func TestResolveRequestSuccess(t *testing.T) {
 	_, ctx, k := createTestInput()
-	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 
 	ds1, clear1 := getTestDataSource("code1")
 	defer clear1()
@@ -250,7 +258,7 @@ func TestResolveRequestSuccess(t *testing.T) {
 
 func TestResolveRequestFail(t *testing.T) {
 	_, ctx, k := createTestInput()
-	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 
 	ds1, clear1 := getTestDataSource("code1")
 	defer clear1()
