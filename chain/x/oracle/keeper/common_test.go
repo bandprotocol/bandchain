@@ -14,15 +14,7 @@ import (
 	"github.com/bandprotocol/bandchain/chain/simapp"
 	me "github.com/bandprotocol/bandchain/chain/x/oracle/keeper"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
-	connectiontypes "github.com/cosmos/cosmos-sdk/x/ibc/03-connection/types"
-	channelexported "github.com/cosmos/cosmos-sdk/x/ibc/04-channel/exported"
-	channeltypes "github.com/cosmos/cosmos-sdk/x/ibc/04-channel/types"
-	ibctmtypes "github.com/cosmos/cosmos-sdk/x/ibc/07-tendermint/types"
-	commitmenttypes "github.com/cosmos/cosmos-sdk/x/ibc/23-commitment/types"
-	"github.com/cosmos/cosmos-sdk/x/staking"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/tendermint/tendermint/libs/log"
-	tmtypes "github.com/tendermint/tendermint/types"
 )
 
 const (
@@ -68,116 +60,6 @@ func createTestInput() (*bandapp.BandApp, sdk.Context, me.Keeper) {
 	app := simapp.NewSimApp(ChainID, log.NewNopLogger())
 	ctx := app.BaseApp.NewContext(false, abci.Header{})
 	return app, ctx, app.OracleKeeper
-}
-
-func createTestChains(logger log.Logger) (*bandapp.BandApp, *bandapp.BandApp) {
-	appA := simapp.NewSimApp(ChainIDA, logger)
-	appB := simapp.NewSimApp(ChainIDB, logger)
-	return appA, appB
-}
-
-func getContext(chain *bandapp.BandApp) sdk.Context {
-	now := time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC)
-
-	privVal := tmtypes.NewMockPV()
-	signers := []tmtypes.PrivValidator{privVal}
-	pubKey, err := privVal.GetPubKey()
-	if err != nil {
-		panic(err)
-	}
-	validator := tmtypes.NewValidator(pubKey, 1)
-	valSet := tmtypes.NewValidatorSet([]*tmtypes.Validator{validator})
-	header := ibctmtypes.CreateTestHeader(chain.Name(), 1, now, valSet, signers)
-
-	return chain.NewContext(false, abci.Header{
-		ChainID: header.ChainID,
-		Height:  header.Height,
-		Time:    now,
-	})
-}
-
-func createTestClient(chainA *bandapp.BandApp, chainB *bandapp.BandApp) error {
-	oldCtx := getContext(chainB)
-
-	// Commit and create a new block on client to get a fresh CommitID
-	chainB.Commit()
-	commitID := chainB.LastCommitID()
-
-	chainB.BeginBlock(abci.RequestBeginBlock{Header: abci.Header{Height: oldCtx.BlockHeight() + 1, Time: oldCtx.BlockTime().Add(time.Minute)}})
-
-	// Set HistoricalInfo on client chain after Commit
-	newCtxClient := getContext(chainB)
-
-	// Prepare validator and signers for client chain
-	privVal := tmtypes.NewMockPV()
-
-	pubKey, err := privVal.GetPubKey()
-	if err != nil {
-		panic(err)
-	}
-
-	validator := tmtypes.NewValidator(pubKey, 1)
-	valSet := tmtypes.NewValidatorSet([]*tmtypes.Validator{validator})
-	signers := []tmtypes.PrivValidator{privVal}
-
-	stakingValidator := staking.NewValidator(
-		sdk.ValAddress(valSet.Validators[0].Address), valSet.Validators[0].PubKey, staking.Description{},
-	)
-	stakingValidator.Status = sdk.Bonded
-	stakingValidator.Tokens = sdk.NewInt(1000000)
-	stakingValidators := []staking.Validator{stakingValidator}
-
-	histInfo := stakingtypes.HistoricalInfo{
-		Header: abci.Header{
-			AppHash: commitID.Hash,
-		},
-		Valset: stakingValidators,
-	}
-	chainB.StakingKeeper.SetHistoricalInfo(newCtxClient, newCtxClient.BlockHeader().Height, histInfo)
-
-	// Create target context
-	ctxTarget := getContext(chainA)
-
-	// Create client
-	header := ibctmtypes.CreateTestHeader(ChainIDB, newCtxClient.BlockHeader().Height+1, newCtxClient.BlockTime().Add(time.Minute), valSet, signers)
-	clientState, err := ibctmtypes.Initialize(TestClientIDB, TrustingPeriod, UbdPeriod, MaxClockDrift, header)
-	if err != nil {
-		return err
-	}
-
-	_, err = chainA.IBCKeeper.ClientKeeper.CreateClient(ctxTarget, clientState, header.ConsensusState())
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func createTestChainConnection(chainA *bandapp.BandApp, chainB *bandapp.BandApp) {
-	counterParty := connectiontypes.NewCounterparty(TestConnectionA, TestConnectionB, commitmenttypes.NewMerklePrefix(chainA.IBCKeeper.ConnectionKeeper.GetCommitmentPrefix().Bytes()))
-	conn := connectiontypes.NewConnectionEnd(3, TestClientIDB, counterParty, connectiontypes.GetCompatibleVersions())
-	ctx := chainA.NewContext(false, abci.Header{})
-	chainA.IBCKeeper.ConnectionKeeper.SetConnection(ctx, TestConnectionA, conn)
-}
-
-func createTestChannel(chainA *bandapp.BandApp, chainB *bandapp.BandApp) {
-	counterpart := channeltypes.NewCounterparty(TestPortB, TestChannelB)
-	channel := channeltypes.NewChannel(channelexported.OPEN, channelexported.ORDERED, counterpart, []string{TestConnectionA}, "1.0")
-	ctx := chainA.NewContext(false, abci.Header{})
-	chainA.IBCKeeper.ChannelKeeper.SetChannel(ctx, TestPortA, TestChannelA, channel)
-}
-
-func newDefaultRequest() types.Request {
-	return types.NewRequest(
-		1,
-		[]byte("calldata"),
-		[]sdk.ValAddress{Validator1.ValAddress, Validator2.ValAddress},
-		2,
-		0,
-		1581503227,
-		"clientID",
-		nil,
-		[]types.ExternalID{42},
-	)
 }
 
 func deleteFile(path string) {
