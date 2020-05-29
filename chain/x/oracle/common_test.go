@@ -1,8 +1,6 @@
 package oracle_test
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -31,6 +29,7 @@ var (
 	Carol      = simapp.Carol
 	Validator1 = simapp.Validator1
 	Validator2 = simapp.Validator2
+	Validator3 = simapp.Validator3
 )
 
 func createTestInput() (*bandapp.BandApp, sdk.Context, me.Keeper) {
@@ -39,49 +38,23 @@ func createTestInput() (*bandapp.BandApp, sdk.Context, me.Keeper) {
 	return app, ctx, app.OracleKeeper
 }
 
-func deleteFile(data []byte) {
-	hash := sha256.Sum256(data)
-	filename := hex.EncodeToString(hash[:])
-	path := filepath.Join(viper.GetString(cli.HomeFlag), "files", filename)
+func deleteFile(path string) {
 	err := os.Remove(path)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func getTestDataSource() (ds types.DataSource, clear func()) {
+func getTestDataSource(executable string) (ds types.DataSource, clear func()) {
 	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
 	f := filecache.New(dir)
-	filename := f.AddFile([]byte("executable"))
+	filename := f.AddFile([]byte(executable))
 	return types.NewDataSource(Owner.Address, "Test data source", "For test only", filename),
-		func() { deleteFile([]byte("executable")) }
+		func() { deleteFile(filepath.Join(dir, filename)) }
 }
 
 func getTestOracleScript() (os types.OracleScript, clear func()) {
-	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
-	f := filecache.New(dir)
-	filename := f.AddFile([]byte("code"))
-	return types.NewOracleScript(Owner.Address, "Test oracle script",
-		"For test only", filename, "", "test URL",
-	), func() { deleteFile([]byte("code")) }
-}
-
-func loadDataSourceFromExecutable(path string) (os types.DataSource, clear func()) {
-	executable, err := ioutil.ReadFile(path)
-	if err != nil {
-		panic(err)
-	}
-	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
-	f := filecache.New(dir)
-	filename := f.AddFile(executable)
-	return types.NewDataSource(
-		Owner.Address, "imported data source", "description",
-		filename,
-	), func() { deleteFile(executable) }
-}
-
-func loadOracleScriptFromWasm(path string) (os types.OracleScript, clear func()) {
-	absPath, _ := filepath.Abs(path)
+	absPath, _ := filepath.Abs("../../pkg/owasm/res/beeb.wasm")
 	code, err := ioutil.ReadFile(absPath)
 	if err != nil {
 		panic(err)
@@ -92,23 +65,7 @@ func loadOracleScriptFromWasm(path string) (os types.OracleScript, clear func())
 	return types.NewOracleScript(
 		Owner.Address, "imported script", "description",
 		filename,
-		"schema", "sourceCodeURL",
-	), func() { deleteFile(code) }
-}
-
-func loadOracleScriptFromWasmCryptoCompareBorsh() (os types.OracleScript, clear func()) {
-	absPath, _ := filepath.Abs("../../pkg/owasm/res/crypto_price_borsh.wasm")
-	code, err := ioutil.ReadFile(absPath)
-	if err != nil {
-		panic(err)
-	}
-	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
-	f := filecache.New(dir)
-	filename := f.AddFile(code)
-	return types.NewOracleScript(
-		Owner.Address, "imported script", "description",
-		filename,
-		`{"Input": "{\"kind\": \"struct\", \"fields\": [ [\"symbol\", \"string\"], [\"multiplier\", \"u64\"] ] }","Output": "{ \"kind\": \"struct\", \"fields\": [ [\"px\", \"u64\"] ]}"}`,
+		"schema",
 		"sourceCodeURL",
-	), func() { deleteFile(code) }
+	), func() { deleteFile(filepath.Join(dir, filename)) }
 }
