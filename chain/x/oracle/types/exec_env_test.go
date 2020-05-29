@@ -74,7 +74,7 @@ func mockFreshEnv() *types.ExecEnv {
 	ibcInfo := types.NewIBCInfo("source_port", "source_channel")
 	rawRequestID := []types.ExternalID{1, 2, 3}
 	request := types.NewRequest(oracleScriptID, calldata, valAddresses, minCount, requestHeight, requestTime, clientID, &ibcInfo, rawRequestID)
-	env := types.NewExecEnv(request, int64(1581589770), 0)
+	env := types.NewExecEnv(request, int64(1581589770), 3)
 	return env
 }
 func TestGetMaxRawRequestDataSize(t *testing.T) {
@@ -181,6 +181,24 @@ func TestGetExternalData(t *testing.T) {
 }
 
 func TestRequestExternalData(t *testing.T) {
+	env := mockFreshEnv()
+	err := env.RequestExternalData(1, 0, []byte("CALLDATA1"))
+	require.NoError(t, err)
+	err = env.RequestExternalData(2, 1, []byte("CALLDATA2"))
+	require.NoError(t, err)
+	err = env.RequestExternalData(3, 0, []byte("CALLDATA3"))
+	require.NoError(t, err)
+
+	rawReq := env.GetRawRequests()
+	expectRawReq := []types.RawRequest{
+		types.NewRawRequest(0, 1, []byte("CALLDATA1")),
+		types.NewRawRequest(1, 2, []byte("CALLDATA2")),
+		types.NewRawRequest(0, 3, []byte("CALLDATA3")),
+	}
+	require.Equal(t, expectRawReq, rawReq)
+}
+
+func TestRequestExternalDataFail(t *testing.T) {
 	env := mockExecutionEnv()
 	calldata := []byte("CALLDATA")
 
