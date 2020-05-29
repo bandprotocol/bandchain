@@ -86,7 +86,7 @@ func (k Keeper) SaveResult(ctx sdk.Context, id types.RequestID, status types.Res
 	)
 	res := types.NewOracleResponsePacketData(
 		r.ClientID, id, k.GetReportCount(ctx, id), r.RequestTime,
-		ctx.BlockTime().Unix(), types.ResolveStatus_Success, result,
+		ctx.BlockTime().Unix(), status, result,
 	)
 	resultHash := k.AddResult(ctx, id, req, res)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
