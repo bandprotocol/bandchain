@@ -71,7 +71,7 @@ func GetCmdCounts(route string, cdc *codec.Codec) *cobra.Command {
 // GetCmdDataSource implements the query data source command.
 func GetCmdDataSource(route string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:  "data-source",
+		Use:  "data-source [id]",
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
@@ -89,7 +89,7 @@ func GetCmdDataSource(route string, cdc *codec.Codec) *cobra.Command {
 // GetCmdOracleScript implements the query oracle script command.
 func GetCmdOracleScript(route string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:  "oracle-script",
+		Use:  "oracle-script [id]",
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
