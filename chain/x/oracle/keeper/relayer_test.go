@@ -24,6 +24,24 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 )
 
+const (
+	ChainIDA                                            = "chainA"
+	ChainIDB                                            = "chainB"
+	TestClientIDA                                       = "clientA"
+	TestClientIDB                                       = "clientB"
+	TestPortA                                           = "testporta"
+	TestPortB                                           = "testportb"
+	TestChannelA                                        = "testchannela"
+	TestChannelB                                        = "testchannelb"
+	TestConnectionA                                     = "connectionAtoB"
+	TestConnectionB                                     = "connectionBtoA"
+	TrustingPeriod                        time.Duration = time.Hour * 24 * 7 * 2
+	UbdPeriod                             time.Duration = time.Hour * 24 * 7 * 3
+	MaxClockDrift                         time.Duration = time.Second * 10
+	DefaultPacketTimeoutHeight                          = 0
+	DefaultPacketTimeoutTimestampDuration               = uint64(600 * time.Second)
+)
+
 type TestErrLogger struct {
 	errLog string
 }
@@ -38,6 +56,20 @@ func (t *TestErrLogger) Error(msg string, keyvals ...interface{}) {
 
 func (t *TestErrLogger) With(keyvals ...interface{}) log.Logger {
 	return t
+}
+
+func newDefaultRequest() types.Request {
+	return types.NewRequest(
+		1,
+		[]byte("calldata"),
+		[]sdk.ValAddress{Validator1.ValAddress, Validator2.ValAddress},
+		2,
+		0,
+		1581503227,
+		"clientID",
+		nil,
+		[]types.ExternalID{42},
+	)
 }
 
 func createTestChains(logger log.Logger) (*bandapp.BandApp, *bandapp.BandApp) {
@@ -136,23 +168,10 @@ func createTestChannel(chainA *bandapp.BandApp, chainB *bandapp.BandApp) {
 	chainA.IBCKeeper.ChannelKeeper.SetChannel(ctx, TestPortA, TestChannelA, channel)
 }
 
-func newDefaultRequest() types.Request {
-	return types.NewRequest(
-		1,
-		[]byte("calldata"),
-		[]sdk.ValAddress{Validator1.ValAddress, Validator2.ValAddress},
-		2,
-		0,
-		1581503227,
-		"clientID",
-		nil,
-		[]types.ExternalID{42},
-	)
-}
-
 func TestSendOracleResponse(t *testing.T) {
 
 	capName := ibctypes.ChannelCapabilityPath(TestPortA, TestChannelA)
+	seq := uint64(1)
 
 	testCases := []struct {
 		description      string
@@ -177,7 +196,7 @@ func TestSendOracleResponse(t *testing.T) {
 				createTestChannel(chainA, chainB)
 
 				ctx = getContext(chainA)
-				chainA.IBCKeeper.ChannelKeeper.SetNextSequenceSend(ctx, TestPortA, TestChannelA, 1)
+				chainA.IBCKeeper.ChannelKeeper.SetNextSequenceSend(ctx, TestPortA, TestChannelA, seq)
 
 				return chainA, ctx
 			},
@@ -190,7 +209,7 @@ func TestSendOracleResponse(t *testing.T) {
 				chainA, chainB := createTestChains(logger)
 				createTestChainConnection(chainA, chainB)
 				ctx := getContext(chainA)
-				chainA.IBCKeeper.ChannelKeeper.SetNextSequenceSend(ctx, TestPortA, TestChannelA, 1)
+				chainA.IBCKeeper.ChannelKeeper.SetNextSequenceSend(ctx, TestPortA, TestChannelA, seq)
 				return chainA, ctx
 			},
 			false,
@@ -216,7 +235,7 @@ func TestSendOracleResponse(t *testing.T) {
 				createTestChannel(chainA, chainB)
 
 				ctx := getContext(chainA)
-				chainA.IBCKeeper.ChannelKeeper.SetNextSequenceSend(ctx, TestPortA, TestChannelA, 1)
+				chainA.IBCKeeper.ChannelKeeper.SetNextSequenceSend(ctx, TestPortA, TestChannelA, seq)
 				return chainA, ctx
 			},
 			false,
@@ -227,8 +246,10 @@ func TestSendOracleResponse(t *testing.T) {
 	for _, testcase := range testCases {
 		logger := &TestErrLogger{}
 		chainA, ctx := testcase.exec(logger)
+		ctx = ctx.WithBlockTime(time.Unix(1581588400, 0))
+		ctx = ctx.WithBlockHeight(2)
 
-		res := types.OracleResponsePacketData{
+		packet := types.OracleResponsePacketData{
 			ClientID:      "alice",
 			RequestID:     3,
 			AnsCount:      1,
@@ -238,15 +259,28 @@ func TestSendOracleResponse(t *testing.T) {
 			Result:        []byte("4bb10e0000000000"),
 		}
 
-		chainA.OracleKeeper.SendOracleResponse(ctx, TestPortA, TestChannelA, res)
+		chainA.OracleKeeper.SendOracleResponse(ctx, TestPortA, TestChannelA, packet)
 		if !testcase.expectedPass {
 			require.Equal(t, testcase.expectedErrorLog, logger.errLog)
 		} else {
 			require.Equal(t, "", logger.errLog)
-			events := ctx.EventManager().ABCIEvents()
+			events := ctx.EventManager().Events()
 
-			require.Equal(t, 1, len(events))
-			require.Equal(t, channeltypes.EventTypeSendPacket, events[0].Type)
+			expectedEvents := sdk.Events{
+				sdk.NewEvent(
+					channeltypes.EventTypeSendPacket,
+					sdk.NewAttribute(channeltypes.AttributeKeyData, fmt.Sprintf("%s", packet.GetBytes())),
+					sdk.NewAttribute(channeltypes.AttributeKeyTimeoutHeight, fmt.Sprintf("%d", DefaultPacketTimeoutHeight)),
+					sdk.NewAttribute(channeltypes.AttributeKeyTimeoutTimestamp, fmt.Sprintf("%d", uint64(ctx.BlockTime().UnixNano())+DefaultPacketTimeoutTimestampDuration)),
+					sdk.NewAttribute(channeltypes.AttributeKeySequence, fmt.Sprintf("%d", seq)),
+					sdk.NewAttribute(channeltypes.AttributeKeySrcPort, TestPortA),
+					sdk.NewAttribute(channeltypes.AttributeKeySrcChannel, TestChannelA),
+					sdk.NewAttribute(channeltypes.AttributeKeyDstPort, TestPortB),
+					sdk.NewAttribute(channeltypes.AttributeKeyDstChannel, TestChannelB),
+				),
+			}
+
+			require.Equal(t, expectedEvents, events)
 		}
 	}
 }

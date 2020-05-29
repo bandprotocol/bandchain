@@ -4,7 +4,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -18,20 +17,7 @@ import (
 )
 
 const (
-	ChainID                       = "bandchain"
-	ChainIDA                      = "chainA"
-	ChainIDB                      = "chainB"
-	TestClientIDA                 = "clientA"
-	TestClientIDB                 = "clientB"
-	TestPortA                     = "testporta"
-	TestPortB                     = "testportb"
-	TestChannelA                  = "testchannela"
-	TestChannelB                  = "testchannelb"
-	TestConnectionA               = "connectionAtoB"
-	TestConnectionB               = "connectionBtoA"
-	TrustingPeriod  time.Duration = time.Hour * 24 * 7 * 2
-	UbdPeriod       time.Duration = time.Hour * 24 * 7 * 3
-	MaxClockDrift   time.Duration = time.Second * 10
+	ChainID = "bandchain"
 )
 
 var (
