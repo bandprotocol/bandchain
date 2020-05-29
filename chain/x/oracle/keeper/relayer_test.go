@@ -256,7 +256,7 @@ func TestSendOracleResponse(t *testing.T) {
 			RequestTime:   1589535020,
 			ResolveTime:   1589535022,
 			ResolveStatus: 1,
-			Result:        []byte("4bb10e0000000000"),
+			Result:        []byte("beeb"),
 		}
 
 		chainA.OracleKeeper.SendOracleResponse(ctx, TestPortA, TestChannelA, packet)
