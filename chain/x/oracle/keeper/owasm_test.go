@@ -35,10 +35,9 @@ func TestPrepareRequestSuccess(t *testing.T) {
 	askCount := uint64(1)
 	minCount := uint64(2)
 	clientID := "beeb"
-	ibcInfo := types.NewIBCInfo("source_port", "source_channel")
 
 	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
-	err := k.PrepareRequest(ctx, &m, &ibcInfo)
+	err := k.PrepareRequest(ctx, &m, nil)
 	require.NoError(t, err)
 
 	events := ctx.EventManager().Events()
@@ -47,7 +46,7 @@ func TestPrepareRequestSuccess(t *testing.T) {
 	require.NoError(t, err)
 
 	expectReq := types.NewRequest(oracleScriptID, calldata, []sdk.ValAddress{Validator1.ValAddress}, minCount,
-		int64(0), int64(1581589790), clientID, &ibcInfo, []types.ExternalID{1, 2, 3})
+		int64(0), int64(1581589790), clientID, nil, []types.ExternalID{1, 2, 3})
 	require.Equal(t, expectReq, req)
 
 	require.Equal(t, 4, len(events))
@@ -78,6 +77,7 @@ func TestPrepareRequestSuccess(t *testing.T) {
 func TestPrepareRequestInvalidAskCountFail(t *testing.T) {
 	_, ctx, k := createTestInput()
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	k.SetParam(ctx, types.KeyMaxAskCount, 1000)
 
 	ds1, clear1 := getTestDataSource("code1")
 	defer clear1()
@@ -169,7 +169,7 @@ func TestPrepareRequestBadWasmExecutionFail(t *testing.T) {
 	_, ctx, k := createTestInput()
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
 
-	os, clear4 := getTestOracleScript()
+	os, clear4 := getBadOracleScript()
 	defer clear4()
 
 	oracleScriptID := k.AddOracleScript(ctx, os)
@@ -187,7 +187,7 @@ func TestPrepareRequestGetDataSourceFail(t *testing.T) {
 	_, ctx, k := createTestInput()
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
 
-	os, clear4 := getBadOracleScript()
+	os, clear4 := getTestOracleScript()
 	defer clear4()
 
 	oracleScriptID := k.AddOracleScript(ctx, os)
@@ -271,7 +271,6 @@ func TestResolveRequestFail(t *testing.T) {
 	calldata, _ := hex.DecodeString("00")
 	minCount := uint64(2)
 	clientID := "beeb"
-	ibcInfo := types.NewIBCInfo("source_port", "source_channel")
 	rawRequestID := []types.ExternalID{1, 2}
 	vals := []sdk.ValAddress{Validator1.ValAddress}
 	requestHeight := int64(4000)
@@ -279,7 +278,7 @@ func TestResolveRequestFail(t *testing.T) {
 
 	req := types.NewRequest(
 		oracleScriptID, calldata, vals, minCount, requestHeight,
-		requestTime, clientID, &ibcInfo, rawRequestID)
+		requestTime, clientID, nil, rawRequestID)
 	reqID := k.AddRequest(ctx, req)
 	k.ResolveRequest(ctx, reqID)
 
