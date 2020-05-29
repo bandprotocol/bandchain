@@ -39,6 +39,7 @@ var (
 	ErrTooLargeRawReportData       = sdkerrors.Register(ModuleName, 32, "too large raw report data")
 	ErrInsufficientValidators      = sdkerrors.Register(ModuleName, 33, "insufficent available validators")
 	ErrCreateWithDoNotModify       = sdkerrors.Register(ModuleName, 34, "create with [do-not-modify] content")
+	ErrReporterIsValidatorReporter = sdkerrors.Register(ModuleName, 35, "reporter is default reporter of validator")
 )
 
 // WrapMaxError wraps an error message with additional info of the current and max values.
