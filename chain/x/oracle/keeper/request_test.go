@@ -168,14 +168,14 @@ func TestSaveResult(t *testing.T) {
 
 func TestProcessExpiredRequests(t *testing.T) {
 	_, ctx, k := createTestInput()
-	ctx = ctx.WithBlockHeight(5000)
+	ctx = ctx.WithBlockHeight(5000) // set block height 5000
 	k.SetValidatorReportInfo(ctx, Validator1.ValAddress, types.NewValidatorReportInfo(Validator1.ValAddress, 1))
 
 	oracleScriptID := types.OracleScriptID(1)
 	calldata := []byte("CALLDATA")
 	vals := []sdk.ValAddress{Validator1.ValAddress}
 	minCount := int64(1)
-	requestHeight := int64(4000)
+	requestHeight := int64(4000) // request at height 4000
 	requestTime := int64(1581589700)
 	clientID := "beeb"
 	ibcInfo := types.NewIBCInfo("source_port", "source_channel")
@@ -184,10 +184,10 @@ func TestProcessExpiredRequests(t *testing.T) {
 	request1 := types.NewRequest(
 		oracleScriptID, calldata, vals, minCount, requestHeight,
 		requestTime, clientID, &ibcInfo, rawRequestID)
-	request2 := types.NewRequest(
+	request2 := types.NewRequest( // request min count 999
 		oracleScriptID, calldata, vals, 999, requestHeight,
 		requestTime, clientID, &ibcInfo, rawRequestID)
-	request3 := types.NewRequest(
+	request3 := types.NewRequest( // request height 1000000
 		oracleScriptID, calldata, vals, minCount, 1000000,
 		requestTime, clientID, &ibcInfo, rawRequestID)
 
@@ -233,26 +233,31 @@ func TestProcessExpiredRequests(t *testing.T) {
 	info := k.GetValidatorReportInfoWithDefault(ctx, Validator1.ValAddress)
 	require.Equal(t, types.NewValidatorReportInfo(Validator1.ValAddress, 0), info)
 
-	require.Equal(t, []types.Report(nil), reports1)
-	require.Equal(t, []types.Report(nil), reports2)
+	require.Equal(t, []types.Report(nil), reports1) // report1 was removed because it already expired
+	require.Equal(t, []types.Report(nil), reports2) // report2 was removed because it already expired
 	require.Equal(t, []types.Report{rep}, reports3)
 
-	_, err = k.GetRequest(ctx, id1)
+	_, err = k.GetRequest(ctx, id1) // this request was removed because it already expired
 	require.Error(t, err)
-	_, err = k.GetRequest(ctx, id2)
+	_, err = k.GetRequest(ctx, id2) // this request was removed because it already expired
 	require.Error(t, err)
 	rq3, err = k.GetRequest(ctx, id3)
 	require.NoError(t, err)
 	require.Equal(t, rq3, request3)
 }
 
-// TODO: revisit this test
 func TestProcessExpiredRequestsNoRequestInStore(t *testing.T) {
 	_, ctx, k := createTestInput()
-
-	before := ctx.MultiStore()
+	before := 0
+	iterator := k.GetIterator(ctx)
+	for ; iterator.Valid(); iterator.Next() {
+		before++
+	}
 	k.ProcessExpiredRequests(ctx)
-	after := ctx.MultiStore()
-
+	after := 0
+	iterator = k.GetIterator(ctx)
+	for ; iterator.Valid(); iterator.Next() {
+		after++
+	}
 	require.Equal(t, before, after)
 }

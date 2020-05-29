@@ -12,6 +12,7 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/tendermint/tendermint/libs/log"
+	db "github.com/tendermint/tm-db"
 
 	"github.com/bandprotocol/bandchain/chain/pkg/filecache"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
@@ -170,4 +171,9 @@ func (k Keeper) AddFile(file []byte) string {
 // GetFile loads the file from the file storage. Panics if the file does not exist.
 func (k Keeper) GetFile(name string) []byte {
 	return k.fileCache.MustGetFile(name)
+}
+
+// GetIterator returns iterator overall oracle key.
+func (k Keeper) GetIterator(ctx sdk.Context) db.Iterator {
+	return sdk.KVStorePrefixIterator(ctx.KVStore(k.storeKey), []byte{})
 }
