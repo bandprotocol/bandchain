@@ -43,21 +43,6 @@ func TestEncodeStructFail(t *testing.T) {
 	require.PanicsWithError(t, "obi: unsupported value type: bool", func() { MustEncode(invalid) })
 }
 
-// func TestDecode1(t *testing.T) {
-// 	var n ExampleData
-// 	err := Decode([]byte{0x3, 0x0, 0x0, 0x0, 0x42, 0x54, 0x43, 0x28, 0x23, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1, 0x2, 0x2, 0x0, 0x0, 0x0, 0xa, 0x0, 0xb, 0x0}, &n)
-// 	require.Nil(t, err)
-// 	require.Equal(t, n, ExampleData{
-// 		Symbol: "BTC",
-// 		Px:     9000,
-// 		In: Inner{
-// 			A: 1,
-// 			B: 2,
-// 		},
-// 		Arr: []int16{10, 11},
-// 	})
-// }
-
 // Uint8
 func TestEncodeBytesUint8(t *testing.T) {
 	num := uint8(123)
