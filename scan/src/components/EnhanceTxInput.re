@@ -103,3 +103,13 @@ let make =
      }}
   </div>;
 };
+
+module Loading = {
+  [@react.component]
+  let make = (~msg, ~width) => {
+    <div className=Styles.rowContainer>
+      <Text value=msg size=Text.Lg spacing={Text.Em(0.03)} nowrap=true block=true />
+      <LoadingCensorBar width height=30 isRight=true />
+    </div>;
+  };
+};

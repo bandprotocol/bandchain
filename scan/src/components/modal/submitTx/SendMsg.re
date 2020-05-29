@@ -86,7 +86,7 @@ let make = (~address, ~receiver, ~setMsgsOpt) => {
          code=true
          placeholder="Insert send amount"
        />
-     | _ => <LoadingCensorBar width=300 height=18 isRight=true />
+     | _ => <EnhanceTxInput.Loading msg="Send Amount (BAND)" width=236 />
      }}
     <VSpacing size=Spacing.lg />
   </>;

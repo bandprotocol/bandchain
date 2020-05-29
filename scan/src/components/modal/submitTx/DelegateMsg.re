@@ -92,7 +92,7 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
          inputType="number"
          code=true
        />
-     | _ => <LoadingCensorBar width=300 height=26 isRight=true />
+     | _ => <EnhanceTxInput.Loading msg="Delegate Amount (BAND)" width=226 />
      }}
     <VSpacing size=Spacing.lg />
   </>;

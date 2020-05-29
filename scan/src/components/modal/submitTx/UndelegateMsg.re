@@ -96,7 +96,7 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
          inputType="number"
          code=true
        />
-     | _ => <LoadingCensorBar width=300 height=18 isRight=true />
+     | _ => <EnhanceTxInput.Loading msg="Undelegate Amount (BAND)" width=226 />
      }}
     <VSpacing size=Spacing.lg />
   </>;
