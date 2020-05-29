@@ -17,6 +17,7 @@ import (
 	"github.com/bandprotocol/bandchain/chain/simapp"
 	me "github.com/bandprotocol/bandchain/chain/x/oracle/keeper"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	"github.com/tendermint/tendermint/libs/log"
 )
 
 const (
@@ -33,7 +34,7 @@ var (
 )
 
 func createTestInput() (*bandapp.BandApp, sdk.Context, me.Keeper) {
-	app := simapp.NewSimApp(ChainID)
+	app := simapp.NewSimApp(ChainID, log.NewNopLogger())
 	ctx := app.BaseApp.NewContext(false, abci.Header{})
 	return app, ctx, app.OracleKeeper
 }
