@@ -1,7 +1,7 @@
 (module
   (import "env" "requestExternalData" (func (param i64 i64 i32 i64) (result i64)))
   (import "env" "saveReturnData" (func (param i32 i64) (result i64)))
-  (func (;"prepare": Requests external data from sources 1, 2, 3 with call data "beeb";)(result i32)
+  (func (;infinite loop;)(result i32)
     (loop $label$0 (result i32)
         (br $label$0)
     )
