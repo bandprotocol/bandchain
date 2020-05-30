@@ -7,5 +7,10 @@
   "license": "MIT",
   "scripts": {
     "test": "node test.js"
+  },
+  "prettier": {
+    "trailingComma": "all",
+    "semi": false,
+    "singleQuote": true
   }
 }

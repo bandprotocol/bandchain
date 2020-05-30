@@ -59,7 +59,7 @@ const check = (desc, fn) => console.log(`${fn() ? '✅' : '⛔️'} ${desc}`)
 
   check('Encode example output', () =>
     Buffer.from(
-      '00abbaf16d0800000200000009000000436f696e4765636b6f3d22ca5e000000000d00000043727970746f436f6d706172655222ca5e00000000',
+      '0000086df1baab000000000200000009436f696e4765636b6f000000005eca223d0000000d43727970746f436f6d70617265000000005eca2252',
       'hex',
     ).equals(
       obi.encodeOutput({
@@ -73,7 +73,7 @@ const check = (desc, fn) => console.log(`${fn() ? '✅' : '⛔️'} ${desc}`)
   )
 
   check('Encode example input', () =>
-    Buffer.from('0300000042544300ca9a3b00000000', 'hex').equals(
+    Buffer.from('00000003425443000000003b9aca00', 'hex').equals(
       obi.encodeInput({ symbol: 'BTC', multiplier: BigInt('1000000000') }),
     ),
   )
