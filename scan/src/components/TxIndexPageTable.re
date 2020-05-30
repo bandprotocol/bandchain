@@ -186,10 +186,7 @@ let renderEditDataSource = (dataSource: TxSub.Msg.EditDataSource.t) => {
     <div className=Styles.topicContainer>
       <Text value="OWNER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
-        {switch (dataSource.owner) {
-         | Some(owner) => <AddressRender address=owner />
-         | None => <Text value="Unchanged" code=true />
-         }}
+        <AddressRender address={dataSource.owner} />
       </div>
     </div>
     <VSpacing size=Spacing.lg />
@@ -238,10 +235,7 @@ let renderEditOracleScript = (oracleScript: TxSub.Msg.EditOracleScript.t) => {
     <div className=Styles.topicContainer>
       <Text value="OWNER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
-        {switch (oracleScript.owner) {
-         | Some(owner) => <AddressRender address=owner />
-         | None => <Text value="Unchanged" code=true />
-         }}
+        <AddressRender address={oracleScript.owner} />
       </div>
     </div>
     <VSpacing size=Spacing.lg />

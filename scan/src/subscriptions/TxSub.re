@@ -134,7 +134,7 @@ module Msg = {
   module EditDataSource = {
     type t = {
       id: ID.DataSource.t,
-      owner: option(Address.t),
+      owner: Address.t,
       name: string,
       executable: JsBuffer.t,
       sender: Address.t,
@@ -143,7 +143,7 @@ module Msg = {
     let decode = json =>
       JsonUtils.Decode.{
         id: json |> field("data_source_id", ID.DataSource.fromJson),
-        owner: json |> field("owner", string) |> Address.fromBech32Opt,
+        owner: json |> field("owner", string) |> Address.fromBech32,
         name: json |> field("name", string),
         executable: json |> field("executable", string) |> JsBuffer.fromBase64,
         sender: json |> field("sender", string) |> Address.fromBech32,
@@ -172,7 +172,7 @@ module Msg = {
   module EditOracleScript = {
     type t = {
       id: ID.OracleScript.t,
-      owner: option(Address.t),
+      owner: Address.t,
       name: string,
       code: JsBuffer.t,
       sender: Address.t,
@@ -181,7 +181,7 @@ module Msg = {
     let decode = json =>
       JsonUtils.Decode.{
         id: json |> field("oracle_script_id", ID.OracleScript.fromJson),
-        owner: json |> field("owner", string) |> Address.fromBech32Opt,
+        owner: json |> field("owner", string) |> Address.fromBech32,
         name: json |> field("name", string),
         code: json |> field("code", string) |> JsBuffer.fromBase64,
         sender: json |> field("sender", string) |> Address.fromBech32,
