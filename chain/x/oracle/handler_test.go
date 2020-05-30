@@ -5,6 +5,7 @@ import (
 	gz "compress/gzip"
 	"crypto/sha256"
 	"encoding/hex"
+	"fmt"
 	"testing"
 	"time"
 
@@ -662,3 +663,81 @@ func TestReportFailed(t *testing.T) {
 // 	_, err = handleMsgReportData(ctx, keeper, msg)
 // 	require.NotNil(t, err)
 // }
+
+func TestAddReporterSuccess(t *testing.T) {
+	_, ctx, k := createTestInput()
+
+	validatorAddress := Alice.ValAddress
+	reporterAddress := Bob.Address
+	// Add Bob reporter to Alice validator
+	msg := types.NewMsgAddReporter(validatorAddress, reporterAddress)
+
+	result, err := oracle.NewHandler(k)(ctx, msg)
+	require.NoError(t, err)
+	require.NotNil(t, result)
+
+	events := result.GetEvents()
+
+	expectedEvent := sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeAddReporter,
+			sdk.NewAttribute(types.AttributeKeyValidator, validatorAddress.String()),
+			sdk.NewAttribute(types.AttributeKeyReporter, reporterAddress.String()),
+		),
+	}
+
+	require.Equal(t, expectedEvent, events)
+}
+
+func TestAddReporterFail(t *testing.T) {
+	_, ctx, k := createTestInput()
+
+	validatorAddress := Alice.ValAddress
+	reporterAddress := Alice.Address
+	msg := types.NewMsgAddReporter(validatorAddress, reporterAddress)
+
+	// Should fail, validator is always a reporter of himself so we can't add Alice reporter to Alice validator
+	result, err := oracle.NewHandler(k)(ctx, msg)
+	require.EqualError(t, err, fmt.Sprintf("val: %s, addr: %s: reporter already exists", validatorAddress.String(), reporterAddress.String()))
+	require.Nil(t, result)
+}
+
+func TestRemoveReporterSuccess(t *testing.T) {
+	_, ctx, k := createTestInput()
+
+	validatorAddress := Alice.ValAddress
+	reporterAddress := Bob.Address
+
+	// Add Bob reporter to Alice validator
+	err := k.AddReporter(ctx, validatorAddress, reporterAddress)
+	require.NoError(t, err)
+
+	msg := types.NewMsgRemoveReporter(validatorAddress, reporterAddress)
+	result, err := oracle.NewHandler(k)(ctx, msg)
+	require.NoError(t, err)
+
+	events := result.GetEvents()
+
+	expectedEvent := sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeRemoveReporter,
+			sdk.NewAttribute(types.AttributeKeyValidator, validatorAddress.String()),
+			sdk.NewAttribute(types.AttributeKeyReporter, reporterAddress.String()),
+		),
+	}
+
+	require.Equal(t, expectedEvent, events)
+}
+
+func TestRemoveReporterFail(t *testing.T) {
+	_, ctx, k := createTestInput()
+
+	validatorAddress := Alice.ValAddress
+	reporterAddress := Bob.Address
+
+	// Should fail, Bob isn't Alice validator's reporter
+	msg := types.NewMsgRemoveReporter(validatorAddress, reporterAddress)
+	result, err := oracle.NewHandler(k)(ctx, msg)
+	require.EqualError(t, err, fmt.Sprintf("val: %s, addr: %s: reporter not found", validatorAddress.String(), reporterAddress.String()))
+	require.Nil(t, result)
+}
