@@ -157,3 +157,44 @@ func TestNotPanicFromWasm(t *testing.T) {
 	_, _, err = Execute(env, code, "prepare", []byte{}, 10000)
 	require.EqualError(t, err, "param count mismatch")
 }
+
+func TestExecuteLoop100000(t *testing.T) {
+	code, err := ioutil.ReadFile("./res/loop_100000.wasm")
+	require.Nil(t, err)
+	env := &mockExecEnv{
+		requestExternalDataResultsCounter: [][]int64{nil, {0}},
+		maximumResultSize:                 1024,
+		maximumCalldataOfDataSourceSize:   1024,
+	}
+
+	_, gasUsed, err := Execute(env, code, "prepare", []byte{}, 2000000)
+	require.NoError(t, err)
+	require.Equal(t, gasUsed, uint64(1200008))
+}
+
+func TestExecuteLoop(t *testing.T) {
+	code, err := ioutil.ReadFile("./res/loop.wasm")
+	require.Nil(t, err)
+	env := &mockExecEnv{
+		requestExternalDataResultsCounter: [][]int64{nil, {0}},
+		maximumResultSize:                 1024,
+		maximumCalldataOfDataSourceSize:   1024,
+	}
+
+	_, gasUsed, err := Execute(env, code, "prepare", []byte{}, 2000000)
+	require.NoError(t, err)
+	require.Equal(t, gasUsed, uint64(72008))
+}
+
+func TestExecuteInfiniteLoop(t *testing.T) {
+	code, err := ioutil.ReadFile("./res/infinite_loop.wasm")
+	require.Nil(t, err)
+	env := &mockExecEnv{
+		requestExternalDataResultsCounter: [][]int64{nil, {0}},
+		maximumResultSize:                 1024,
+		maximumCalldataOfDataSourceSize:   1024,
+	}
+
+	_, _, err = Execute(env, code, "prepare", []byte{}, 2000000)
+	require.Error(t, err)
+}

@@ -109,6 +109,109 @@ func TestPrepareRequestInvalidAskCountFail(t *testing.T) {
 	require.Error(t, err)
 }
 
+func TestPrepareRequestWithInfiniteLoop(t *testing.T) {
+	_, ctx, k := createTestInput()
+	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
+	ctx = ctx.WithGasMeter(sdk.NewGasMeter(1000000)) // Set Gas Meter 1000000
+
+	ds1, clear1 := getTestDataSource("code1")
+	defer clear1()
+	k.AddDataSource(ctx, ds1)
+
+	ds2, clear2 := getTestDataSource("code2")
+	defer clear2()
+	k.AddDataSource(ctx, ds2)
+
+	ds3, clear3 := getTestDataSource("code3")
+	defer clear3()
+	k.AddDataSource(ctx, ds3)
+
+	os, clear4 := getTestInfiniteLoopOracleScript()
+	defer clear4()
+
+	oracleScriptID := k.AddOracleScript(ctx, os)
+	calldata, _ := hex.DecodeString("030000004254436400000000000000")
+	askCount := uint64(1)
+	minCount := uint64(2)
+	clientID := "beeb"
+
+	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
+	err := k.PrepareRequest(ctx, &m, nil)
+	require.Error(t, err)
+}
+
+func TestPrepareRequestWithLoopWasm(t *testing.T) {
+	_, ctx, k := createTestInput()
+	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
+	ctx = ctx.WithGasMeter(sdk.NewGasMeter(70000))
+
+	baseRequestGas := uint64(0)
+	k.SetParam(ctx, types.KeyBaseRequestGas, baseRequestGas)
+	perValidatorRequestGas := uint64(0)
+	k.SetParam(ctx, types.KeyPerValidatorRequestGas, perValidatorRequestGas)
+
+	ds1, clear1 := getTestDataSource("code1")
+	defer clear1()
+	k.AddDataSource(ctx, ds1)
+
+	ds2, clear2 := getTestDataSource("code2")
+	defer clear2()
+	k.AddDataSource(ctx, ds2)
+
+	ds3, clear3 := getTestDataSource("code3")
+	defer clear3()
+	k.AddDataSource(ctx, ds3)
+
+	os, clear4 := getTestLoopOracleScript() // this oracle script use 72008gas
+	defer clear4()
+
+	oracleScriptID := k.AddOracleScript(ctx, os)
+	calldata, _ := hex.DecodeString("030000004254436400000000000000")
+	askCount := uint64(1)
+	minCount := uint64(2)
+	clientID := "beeb"
+	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
+	err := k.PrepareRequest(ctx, &m, nil)
+	require.NoError(t, err)
+}
+
+func TestPrepareRequestWithLoop100000TimesWasm(t *testing.T) {
+	_, ctx, k := createTestInput()
+	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
+	ctx = ctx.WithGasMeter(sdk.NewGasMeter(70000))
+
+	baseRequestGas := uint64(0)
+	k.SetParam(ctx, types.KeyBaseRequestGas, baseRequestGas)
+	perValidatorRequestGas := uint64(0)
+	k.SetParam(ctx, types.KeyPerValidatorRequestGas, perValidatorRequestGas)
+
+	ds1, clear1 := getTestDataSource("code1")
+	defer clear1()
+	k.AddDataSource(ctx, ds1)
+
+	ds2, clear2 := getTestDataSource("code2")
+	defer clear2()
+	k.AddDataSource(ctx, ds2)
+
+	ds3, clear3 := getTestDataSource("code3")
+	defer clear3()
+	k.AddDataSource(ctx, ds3)
+
+	os, clear4 := getTestLoop100000TimesOracleScript() // this oracle script use 1200008gas.
+	defer clear4()
+
+	oracleScriptID := k.AddOracleScript(ctx, os)
+	calldata, _ := hex.DecodeString("030000004254436400000000000000")
+	askCount := uint64(1)
+	minCount := uint64(2)
+	clientID := "beeb"
+	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
+
+	// Must error because WasmPrepareGas is 100000 (this oracle script want 1200008gas for execute)
+	err := k.PrepareRequest(ctx, &m, nil)
+	require.Error(t, err)
+}
+
 func TestPrepareRequestBaseRequestFeePanic(t *testing.T) {
 	_, ctx, k := createTestInput()
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
@@ -144,7 +247,6 @@ func TestPrepareRequestBaseRequestFeePanic(t *testing.T) {
 	ctx = ctx.WithGasMeter(sdk.NewGasMeter(200000))
 	err := k.PrepareRequest(ctx, &m, nil)
 	require.NoError(t, err)
-
 }
 
 func TestPrepareRequestPerValidatorRequestFeePanic(t *testing.T) {

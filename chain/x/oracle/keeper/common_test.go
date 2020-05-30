@@ -82,6 +82,57 @@ func getTestOracleScript() (os types.OracleScript, clear func()) {
 	), func() { deleteFile(filepath.Join(dir, filename)) }
 }
 
+func getTestInfiniteLoopOracleScript() (os types.OracleScript, clear func()) {
+	absPath, _ := filepath.Abs("../../../pkg/owasm/res/infinite_loop.wasm")
+	code, err := ioutil.ReadFile(absPath)
+	if err != nil {
+		panic(err)
+	}
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
+	f := filecache.New(dir)
+	filename := f.AddFile(code)
+	return types.NewOracleScript(
+		Owner.Address, "imported script", "description",
+		filename,
+		"schema",
+		"sourceCodeURL",
+	), func() { deleteFile(filepath.Join(dir, filename)) }
+}
+
+func getTestLoopOracleScript() (os types.OracleScript, clear func()) {
+	absPath, _ := filepath.Abs("../../../pkg/owasm/res/loop.wasm")
+	code, err := ioutil.ReadFile(absPath)
+	if err != nil {
+		panic(err)
+	}
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
+	f := filecache.New(dir)
+	filename := f.AddFile(code)
+	return types.NewOracleScript(
+		Owner.Address, "imported script", "description",
+		filename,
+		"schema",
+		"sourceCodeURL",
+	), func() { deleteFile(filepath.Join(dir, filename)) }
+}
+
+func getTestLoop100000TimesOracleScript() (os types.OracleScript, clear func()) {
+	absPath, _ := filepath.Abs("../../../pkg/owasm/res/loop_100000.wasm")
+	code, err := ioutil.ReadFile(absPath)
+	if err != nil {
+		panic(err)
+	}
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
+	f := filecache.New(dir)
+	filename := f.AddFile(code)
+	return types.NewOracleScript(
+		Owner.Address, "imported script", "description",
+		filename,
+		"schema",
+		"sourceCodeURL",
+	), func() { deleteFile(filepath.Join(dir, filename)) }
+}
+
 func getBadOracleScript() (os types.OracleScript, clear func()) {
 	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
 	f := filecache.New(dir)
