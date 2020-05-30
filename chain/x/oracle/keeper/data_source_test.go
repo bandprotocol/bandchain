@@ -112,17 +112,17 @@ func TestAddDataSourceDataSourceMustReturnCorrectID(t *testing.T) {
 }
 func TestEditDataSourceNonExistentDataSource(t *testing.T) {
 	_, ctx, k := createTestInput()
-	dataSource, clear := getTestDataSource()
+	dataSource, clear := getTestDataSource("code")
 	defer clear()
 	require.Panics(t, func() { k.MustEditDataSource(ctx, 9999, dataSource) })
 }
 func TestGetAllDataSources(t *testing.T) {
 	_, ctx, k := createTestInput()
-	dataSource1, clear1 := getTestDataSource()
+	dataSource1, clear1 := getTestDataSource("code1")
 	defer clear1()
-	dataSource2, clear2 := getTestDataSource()
+	dataSource2, clear2 := getTestDataSource("code2")
 	defer clear2()
-	dataSource3, clear3 := getTestDataSource()
+	dataSource3, clear3 := getTestDataSource("code3")
 	defer clear3()
 	// Sets the data sources to the storage.
 	dataSources := []types.DataSource{dataSource1, dataSource2, dataSource3}
