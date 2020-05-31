@@ -1,10 +1,13 @@
 package keeper_test
 
 import (
+	"path/filepath"
 	"testing"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
+	"github.com/tendermint/tendermint/libs/cli"
 )
 
 func TestGetRequestCount(t *testing.T) {
@@ -38,25 +41,34 @@ func TestGetSetMaxRawRequestCount(t *testing.T) {
 	require.Equal(t, uint64(2), k.GetParam(ctx, types.KeyMaxRawRequestCount))
 }
 
-// func TestGetSetGasPerRawDataRequestPerValidator(t *testing.T) {
-// 	_, ctx, k := createTestInput()
-// 	k.SetParam(ctx, types.KeyGasPerRawDataRequestPerValidator, uint64(3000))
-// 	require.Equal(t, uint64(3000), k.GetParam(ctx, types.KeyGasPerRawDataRequestPerValidator))
-// 	k.SetParam(ctx, types.KeyGasPerRawDataRequestPerValidator, uint64(5000))
-// 	require.Equal(t, uint64(5000), k.GetParam(ctx, types.KeyGasPerRawDataRequestPerValidator))
-// }
+func TestGetSetParams(t *testing.T) {
+	_, ctx, k := createTestInput()
 
-// func TestGetSetParams(t *testing.T) {
-// 	_, ctx, k := createTestInput()
+	k.SetParam(ctx, types.KeyMaxRawRequestCount, 1)
+	k.SetParam(ctx, types.KeyMaxAskCount, 10)
+	k.SetParam(ctx, types.KeyExpirationBlockCount, 30)
+	k.SetParam(ctx, types.KeyMaxConsecutiveMisses, 10)
+	k.SetParam(ctx, types.KeyBaseRequestGas, 50000)
+	k.SetParam(ctx, types.KeyPerValidatorRequestGas, 3000)
+	require.Equal(t, types.NewParams(1, 10, 30, 10, 50000, 3000), k.GetParams(ctx))
 
-// 	k.SetParam(ctx, types.KeyMaxRawRequestCount, 1)
-// 	k.SetParam(ctx, types.KeyExpirationBlockCount, 30)
-// 	k.SetParam(ctx, types.KeyMaxConsecutiveMisses, 10)
-// 	require.Equal(t, types.NewParams(1, 1000, 30, 10), k.GetParams(ctx))
+	k.SetParam(ctx, types.KeyMaxRawRequestCount, 2)
+	k.SetParam(ctx, types.KeyMaxAskCount, 20)
+	k.SetParam(ctx, types.KeyExpirationBlockCount, 40)
+	k.SetParam(ctx, types.KeyMaxConsecutiveMisses, 7)
+	k.SetParam(ctx, types.KeyBaseRequestGas, 150000)
+	k.SetParam(ctx, types.KeyPerValidatorRequestGas, 30000)
+	require.Equal(t, types.NewParams(2, 20, 40, 7, 150000, 30000), k.GetParams(ctx))
+}
 
-// 	k.SetParam(ctx, types.KeyMaxRawRequestCount, 2)
-// 	k.SetParam(ctx, types.KeyGasPerRawDataRequestPerValidator, 2000)
-// 	k.SetParam(ctx, types.KeyExpirationBlockCount, 40)
-// 	k.SetParam(ctx, types.KeyMaxConsecutiveMisses, 20)
-// 	require.Equal(t, types.NewParams(2, 2000, 40, 20), k.GetParams(ctx))
-// }
+func TestAddFile(t *testing.T) {
+	_, _, k := createTestInput()
+
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
+	filename := k.AddFile([]byte("file"))
+	defer deleteFile(filepath.Join(dir, filename))
+
+	require.Equal(t, []byte("file"), k.GetFile(filename))
+
+	require.Equal(t, types.DoNotModify, k.AddFile(types.DoNotModifyBytes))
+}

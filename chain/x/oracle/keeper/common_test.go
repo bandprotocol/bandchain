@@ -9,13 +9,13 @@ import (
 	"github.com/spf13/viper"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/cli"
+	"github.com/tendermint/tendermint/libs/log"
 
 	bandapp "github.com/bandprotocol/bandchain/chain/app"
 	"github.com/bandprotocol/bandchain/chain/pkg/filecache"
 	"github.com/bandprotocol/bandchain/chain/simapp"
 	me "github.com/bandprotocol/bandchain/chain/x/oracle/keeper"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
-	"github.com/tendermint/tendermint/libs/log"
 )
 
 const (
