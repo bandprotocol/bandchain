@@ -4,10 +4,11 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/cli"
+
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 func TestGetRequestCount(t *testing.T) {
