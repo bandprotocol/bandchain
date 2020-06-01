@@ -43,33 +43,33 @@ library Borsh {
     }
 
     function decodeU16(Data memory data) internal pure returns (uint16 value) {
-        value = uint16(decodeU8(data));
-        value |= (uint16(decodeU8(data)) << 8);
+        value = (uint16(decodeU8(data)) << 8);
+        value |= uint16(decodeU8(data));
     }
 
     function decodeI16(Data memory data) internal pure returns (int16 value) {
-        value = int16(decodeI8(data));
-        value |= (int16(decodeI8(data)) << 8);
+        value = (int16(decodeI8(data)) << 8);
+        value |= int16(decodeI8(data));
     }
 
     function decodeU32(Data memory data) internal pure returns (uint32 value) {
-        value = uint32(decodeU16(data));
-        value |= (uint32(decodeU16(data)) << 16);
+        value = (uint32(decodeU16(data)) << 16);
+        value |= uint32(decodeU16(data));
     }
 
     function decodeI32(Data memory data) internal pure returns (int32 value) {
-        value = int32(decodeI16(data));
-        value |= (int32(decodeI16(data)) << 16);
+        value = (int32(decodeI16(data)) << 16);
+        value |= int32(decodeI16(data));
     }
 
     function decodeU64(Data memory data) internal pure returns (uint64 value) {
-        value = uint64(decodeU32(data));
-        value |= (uint64(decodeU32(data)) << 32);
+        value = (uint64(decodeU32(data)) << 32);
+        value |= uint64(decodeU32(data));
     }
 
     function decodeI64(Data memory data) internal pure returns (int64 value) {
-        value = int64(decodeI32(data));
-        value |= (int64(decodeI32(data)) << 32);
+        value = (int64(decodeI32(data)) << 64);
+        value |= int64(decodeI32(data));
     }
 
     function decodeU128(Data memory data)
@@ -77,13 +77,13 @@ library Borsh {
         pure
         returns (uint128 value)
     {
-        value = uint128(decodeU64(data));
-        value |= (uint128(decodeU64(data)) << 64);
+        value = (uint128(decodeU64(data)) << 64);
+        value |= uint128(decodeU64(data));
     }
 
     function decodeI128(Data memory data) internal pure returns (int128 value) {
-        value = int128(decodeI64(data));
-        value |= (int128(decodeI64(data)) << 64);
+        value = (int128(decodeI64(data)) << 64);
+        value |= int128(decodeI64(data));
     }
 
     function decodeU256(Data memory data)
@@ -91,13 +91,13 @@ library Borsh {
         pure
         returns (uint256 value)
     {
-        value = uint256(decodeU128(data));
-        value |= (uint256(decodeU128(data)) << 128);
+        value = (uint256(decodeU128(data)) << 128);
+        value |= uint256(decodeU128(data));
     }
 
     function decodeI256(Data memory data) internal pure returns (int256 value) {
-        value = int256(decodeI128(data));
-        value |= (int256(decodeI128(data)) << 128);
+        value = (int256(decodeI128(data)) << 128);
+        value |= int256(decodeI128(data));
     }
 
     function decodeBool(Data memory data) internal pure returns (bool value) {
