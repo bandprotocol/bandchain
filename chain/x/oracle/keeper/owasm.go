@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	owasm "github.com/bandprotocol/go-owasm/api"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -41,9 +42,9 @@ func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec, ibcInfo *ty
 		return err
 	}
 	code := k.GetFile(script.Filename)
-	_, _, err = k.OwasmExecute(env, code, PrepareFunc, req.Calldata, types.WasmPrepareGas)
-	if err != nil {
-		k.Logger(ctx).Info(fmt.Sprintf("failed to prepare request with error: %s", err.Error()))
+	exitCode := owasm.Prepare(code, env) // TODO: Don't forget about prepare gas!
+	if exitCode != 0 {
+		k.Logger(ctx).Info(fmt.Sprintf("failed to prepare request with code: %d", exitCode))
 		return types.ErrBadWasmExecution
 	}
 	// Preparation complete! It's time to collect raw request ids.
@@ -84,15 +85,15 @@ func (k Keeper) ResolveRequest(ctx sdk.Context, reqID types.RequestID) {
 	env.SetReports(k.GetReports(ctx, reqID))
 	script := k.MustGetOracleScript(ctx, req.OracleScriptID)
 	code := k.GetFile(script.Filename)
-	result, _, err := k.OwasmExecute(env, code, ExecuteFunc, req.Calldata, types.WasmExecuteGas)
+	exitCode := owasm.Execute(code, env) // TODO: Don't forget about gas!
 	var res types.OracleResponsePacketData
-	if err != nil {
+	if exitCode != 0 {
 		k.Logger(ctx).Info(fmt.Sprintf(
-			"failed to execute request id: %d with error: %s", reqID, err.Error(),
+			"failed to execute request id: %d with code: %d", reqID, exitCode,
 		))
 		res = k.SaveResult(ctx, reqID, types.ResolveStatus_Failure, nil)
 	} else {
-		res = k.SaveResult(ctx, reqID, types.ResolveStatus_Success, result)
+		res = k.SaveResult(ctx, reqID, types.ResolveStatus_Success, env.Retdata)
 	}
 	if req.IBCInfo != nil {
 		k.SendOracleResponse(ctx, req.IBCInfo.SourcePort, req.IBCInfo.SourceChannel, res)

@@ -43,7 +43,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 
-	"github.com/bandprotocol/bandchain/chain/pkg/owasm"
 	bandbank "github.com/bandprotocol/bandchain/chain/x/bank"
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 )
@@ -265,7 +264,6 @@ func NewBandApp(
 		cdc,
 		keys[oracle.StoreKey],
 		filepath.Join(viper.GetString(cli.HomeFlag), "files"),
-		owasm.Execute,
 		app.subspaces[oracle.ModuleName],
 		stakingKeeper,
 		app.IBCKeeper.ChannelKeeper,

@@ -1,5 +1,7 @@
 package types
 
+import "fmt"
+
 // ExecEnv encapsulates an execution environment for running an Owasm program,
 // designed to work both during prepare and resolve phases.
 type ExecEnv struct {
@@ -8,6 +10,7 @@ type ExecEnv struct {
 	maxRawRequests int64
 	rawRequests    []RawRequest
 	reports        map[string]map[ExternalID]RawReport
+	Retdata        []byte
 }
 
 // NewExecEnv creates a new execution environment instance. maxRawRequests must be nonzero
@@ -19,7 +22,56 @@ func NewExecEnv(req Request, now, maxRawRequests int64) *ExecEnv {
 		maxRawRequests: maxRawRequests,
 		rawRequests:    []RawRequest{},
 		reports:        make(map[string]map[ExternalID]RawReport),
+		Retdata:        []byte{},
 	}
+}
+
+func (env *ExecEnv) GetCalldata() []byte {
+	fmt.Println("GET CDATA", env.request.Calldata)
+	return env.request.Calldata
+}
+
+func (env *ExecEnv) SetReturnData(data []byte) {
+	env.Retdata = data
+}
+
+func (env *ExecEnv) AskExternalData(eid int64, did int64, data []byte) {
+	fmt.Println("AskExternalData")
+	if int64(len(data)) > MaxRawRequestDataSize {
+		return
+	}
+	if int64(len(env.rawRequests)) >= env.maxRawRequests {
+		return
+	}
+	env.rawRequests = append(env.rawRequests, NewRawRequest(
+		ExternalID(eid), DataSourceID(did), data,
+	))
+}
+
+func (env *ExecEnv) GetExternalDataFull(eid int64, valIdx int64) ([]byte, int64) {
+	if valIdx < 0 || valIdx >= int64(len(env.request.RequestedValidators)) {
+		return nil, -1
+	}
+	valAddr := env.request.RequestedValidators[valIdx].String()
+	valReports, ok := env.reports[valAddr]
+	if !ok {
+		return nil, -1
+	}
+	valReport, ok := valReports[ExternalID(eid)]
+	if !ok {
+		return nil, -1
+	}
+	return valReport.Data, int64(valReport.ExitCode)
+}
+
+func (env *ExecEnv) GetExternalDataStatus(eid int64, vid int64) int64 {
+	_, status := env.GetExternalDataFull(eid, vid)
+	return status
+}
+
+func (env *ExecEnv) GetExternalData(eid int64, vid int64) []byte {
+	data, _ := env.GetExternalDataFull(eid, vid)
+	return data
 }
 
 // GetRawRequests returns the list of raw requests made during Owasm prepare run.
@@ -102,21 +154,4 @@ func (env *ExecEnv) RequestExternalData(did int64, eid int64, calldata []byte) e
 		ExternalID(eid), DataSourceID(did), calldata,
 	))
 	return nil
-}
-
-// GetExternalData implements Owasm ExecEnv interface.
-func (env *ExecEnv) GetExternalData(eid int64, valIdx int64) ([]byte, uint32, error) {
-	if valIdx < 0 || valIdx >= int64(len(env.request.RequestedValidators)) {
-		return nil, 0, ErrItemNotFound
-	}
-	valAddr := env.request.RequestedValidators[valIdx].String()
-	valReports, ok := env.reports[valAddr]
-	if !ok {
-		return nil, 0, ErrItemNotFound
-	}
-	valReport, ok := valReports[ExternalID(eid)]
-	if !ok {
-		return nil, 0, ErrItemNotFound
-	}
-	return valReport.Data, valReport.ExitCode, nil
 }
