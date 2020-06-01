@@ -247,6 +247,7 @@ func TestPrepareRequestGetOracleScriptFail(t *testing.T) {
 	require.Error(t, err)
 }
 
+// TODO: Patch to "Bad" wasm code that is a valid wasm code.
 // func TestPrepareRequestBadWasmExecutionFail(t *testing.T) {
 // 	_, ctx, k := createTestInput()
 // 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
@@ -330,6 +331,7 @@ func TestResolveRequestSuccess(t *testing.T) {
 	require.Equal(t, expecetRes, res)
 }
 
+// TODO: Patch to "Bad" wasm code that is a valid wasm code.
 // func TestResolveRequestFail(t *testing.T) {
 // 	_, ctx, k := createTestInput()
 // 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
