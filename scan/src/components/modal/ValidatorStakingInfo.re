@@ -160,7 +160,7 @@ module StakingInfo = {
         {isReachUnbondingLimit
            ? <div>
                <div className=Styles.warning>
-                 <Text value="Warning: You have reached the unbonding count. (7 times)" />
+                 <Text value="Warning: You have reached the maximum number (7) of pending delegation unbonding entries." />
                </div>
                <VSpacing size=Spacing.lg />
              </div>
