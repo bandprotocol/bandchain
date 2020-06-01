@@ -68,7 +68,7 @@ library Obi {
     }
 
     function decodeI64(Data memory data) internal pure returns (int64 value) {
-        value = int64(decodeI32(data)) << 64;
+        value = int64(decodeI32(data)) << 32;
         value |= int64(decodeI32(data));
     }
 
