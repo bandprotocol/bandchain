@@ -1,13 +1,13 @@
 const { expectRevert } = require("openzeppelin-test-helpers");
-const BorshUser = artifacts.require("BorshUser");
+const ObiUser = artifacts.require("ObiUser");
 
 require("chai").should();
 
-contract("Borsh", () => {
+contract("Obi", () => {
 
-  context("Borsh decoder should work correctly", () => {
+  context("Obi decoder should work correctly", () => {
     beforeEach(async () => {
-      this.forTest = await BorshUser.new();
+      this.forTest = await ObiUser.new();
     });
 
     it("should decode correctly", async () => {
@@ -27,7 +27,7 @@ contract("Borsh", () => {
     it("should revert if invalid bytes", async () => {
       await expectRevert(
         this.forTest.decode("0x000000034254433200000000000064"),
-        "Borsh: Out of range"
+        "Obi: Out of range"
       );
     });
   });

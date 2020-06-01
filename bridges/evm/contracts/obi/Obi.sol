@@ -2,7 +2,7 @@ pragma solidity ^0.5.0;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
-library Borsh {
+library Obi {
     using SafeMath for uint256;
 
     struct Data {
@@ -15,7 +15,7 @@ library Borsh {
     }
 
     modifier shift(Data memory data, uint256 size) {
-        require(data.raw.length >= data.offset + size, "Borsh: Out of range");
+        require(data.raw.length >= data.offset + size, "Obi: Out of range");
         _;
         data.offset += size;
     }
