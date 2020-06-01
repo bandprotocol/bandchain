@@ -4,7 +4,7 @@ version = "0.1.7"
 authors = ["Band Protocol <connect@bandprotocol.com>"]
 edition = "2018"
 license = "Apache-2.0"
-repository = "https://github.com/bandprotocol/d3n/tree/master/owasm"
+repository = "https://github.com/bandprotocol/bandchain/tree/master/owasm"
 description = """
 TODO
 """

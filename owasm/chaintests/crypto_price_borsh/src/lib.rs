@@ -1,17 +1,17 @@
-use borsh::{BorshDeserialize, BorshSchema, BorshSerialize};
-use owasm::{execute_entry_point, oei, prepare_entry_point};
+use obi::{OBIDecode, OBIEncode};
+use owasm::{execute_entry_point, ext, oei, prepare_entry_point};
 
 fn parse_float(data: String) -> Option<f64> {
     data.trim_end().parse::<f64>().ok()
 }
 
-#[derive(BorshDeserialize, BorshSchema)]
+#[derive(OBIDecode)]
 struct Input {
     symbol: String,
     multiplier: u64,
 }
 
-#[derive(BorshSerialize, BorshSchema)]
+#[derive(OBIEncode)]
 struct Output {
     px: u64,
 }
@@ -63,9 +63,10 @@ mod tests {
 
     #[test]
     fn test_get_schema() {
-        let mut schema = HashMap::new();
-        Input::add_rec_type_definitions(&mut schema);
-        Output::add_rec_type_definitions(&mut schema);
-        println!("{:?}", schema);
+        let input = Input { symbol: String::from("BTC"), multiplier: 100 };
+        let encoded_calldata: [u8; 15] = [0, 0, 0, 3, 66, 84, 67, 0, 0, 0, 0, 0, 0, 0, 100];
+        let result: Input = OBIDecode::try_from_slice(&encoded_calldata).unwrap();
+        assert_eq!(input.multiplier, result.multiplier);
+        assert_eq!(input.symbol, result.symbol);
     }
 }
