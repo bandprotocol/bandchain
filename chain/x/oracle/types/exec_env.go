@@ -1,7 +1,5 @@
 package types
 
-import "fmt"
-
 // ExecEnv encapsulates an execution environment for running an Owasm program,
 // designed to work both during prepare and resolve phases.
 type ExecEnv struct {
@@ -27,7 +25,6 @@ func NewExecEnv(req Request, now, maxRawRequests int64) *ExecEnv {
 }
 
 func (env *ExecEnv) GetCalldata() []byte {
-	fmt.Println("GET CDATA", env.request.Calldata)
 	return env.request.Calldata
 }
 
@@ -36,7 +33,6 @@ func (env *ExecEnv) SetReturnData(data []byte) {
 }
 
 func (env *ExecEnv) AskExternalData(eid int64, did int64, data []byte) {
-	fmt.Println("AskExternalData")
 	if int64(len(data)) > MaxRawRequestDataSize {
 		return
 	}
