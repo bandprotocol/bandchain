@@ -8,14 +8,13 @@
 4. run `cd owasm/chaintests/bitcoin_block_count/`
 5. run `wasm-pack build .`
 6. `make install` in chain directory
-7. Open 4 tabs on cmd
+7. Open 3 tabs on cmd
 
 ## How to install and run Band Oracle 2
 
 1. Open first cmd tab for running the BandChain
 2. Open second cmd tab for running the Band Oracle 2
-3. Open third cmd tab for running the Band Chain Rest Server
-4. Open fourth cmd tab for running the BandChian CLI
+3. Open third cmd tab for running the BandChian CLI
 
 ### How to run BandChain on development mode
 
@@ -36,10 +35,6 @@ cd ../../../chain
 1. Go to chain directory
 2. run `chmod +x scripts/start_bandoracled2.sh` to change the access permission of start_bandoracled2.script
 3. run `./scripts/start_bandoracled2.sh validator [number of reporter]` to start Band Oracle D2
-
-### How to run BandChain REST Server
-
-1. run `bandcli rest-server`
 
 ### Try to request data BandChain
 
