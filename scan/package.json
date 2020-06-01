@@ -10,6 +10,7 @@
     "@cosmostation/cosmosjs": "^0.5.5",
     "@glennsl/bs-json": "^5.0.2",
     "@ledgerhq/hw-transport-webusb": "^5.15.0",
+    "@sentry/browser": "^5.15.5",
     "axios": "^0.19.2",
     "axios-hook": "^0.0.6",
     "axios-hooks": "^1.10.0",
