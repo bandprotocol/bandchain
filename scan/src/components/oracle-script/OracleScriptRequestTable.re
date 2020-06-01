@@ -2,11 +2,7 @@ module Styles = {
   open Css;
 
   let tableWrapper = style([padding2(~v=`px(20), ~h=`px(15))]);
-
   let withWidth = w => style([width(`px(w))]);
-
-  let txContainer = style([width(`px(230)), cursor(`pointer)]);
-
   let icon = style([width(`px(80)), height(`px(80))]);
   let iconWrapper =
     style([
@@ -117,21 +113,7 @@ let make = (~oracleScriptID: ID.OracleScript.t) =>
                         <Timestamp time=timestamp size=Text.Md weight=Text.Regular code=true />
                       </Col>
                       <Col size=1.26> <TypeID.Block id=blockHeight /> </Col>
-                      <Col size=2.8>
-                        <div
-                          className=Styles.txContainer
-                          onClick={_ => Route.redirect(Route.TxIndexPage(txHash))}>
-                          <Text
-                            block=true
-                            value={txHash |> Hash.toHex(~upper=true)}
-                            weight=Text.Medium
-                            code=true
-                            color=Colors.gray7
-                            ellipsis=true
-                            nowrap=true
-                          />
-                        </div>
-                      </Col>
+                      <Col size=2.8> <TxLink txHash width=230 weight=Text.Medium /> </Col>
                       <Col> <HSpacing size=Spacing.lg /> </Col>
                     </Row>
                   </TBody>

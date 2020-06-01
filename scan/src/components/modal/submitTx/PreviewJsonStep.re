@@ -174,21 +174,19 @@ let make = (~rawTx, ~onBack, ~account: AccountContext.t) => {
            <Text value="Broadcast Transaction Success" weight=Text.Semibold />
          </div>
          <VSpacing size=Spacing.md />
-         <div
-           className=Styles.txhashContainer
-           onClick={_ => {
-             dispatchModal(CloseModal);
-             Route.redirect(Route.TxIndexPage(txHash));
-           }}>
-           <Text
-             block=true
-             code=true
-             spacing={Text.Em(0.02)}
-             value={txHash |> Hash.toHex(~upper=true)}
-             weight=Text.Medium
-             ellipsis=true
-             size=Text.Sm
-           />
+         <div onClick={_ => dispatchModal(CloseModal)}>
+           <Link className=Styles.txhashContainer route={Route.TxIndexPage(txHash)}>
+             <Text
+               block=true
+               code=true
+               spacing={Text.Em(0.02)}
+               value={txHash |> Hash.toHex(~upper=true)}
+               weight=Text.Medium
+               ellipsis=true
+               size=Text.Sm
+               color=Colors.gray7
+             />
+           </Link>
          </div>
        </div>
      | Signing =>

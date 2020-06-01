@@ -51,21 +51,6 @@ let renderHash = hash => {
     />
   </div>;
 };
-
-let renderHashWithLink = hash => {
-  <div className=Styles.hashContainer onClick={_ => hash->Route.TxIndexPage->Route.redirect}>
-    <Text
-      block=true
-      code=true
-      value={hash |> Hash.toHex}
-      size=Text.Lg
-      weight=Text.Bold
-      ellipsis=true
-      color=Colors.purple3
-    />
-  </div>;
-};
-
 let renderAddress = address => {
   <AddressRender address />;
 };
@@ -209,7 +194,6 @@ type t =
   | Count(int)
   | Fee(float)
   | Hash(Hash.t)
-  | HashWithLink(Hash.t)
   | Address(Address.t)
   | Value(Js.Json.t)
   | Proposer(string, string)
@@ -232,7 +216,6 @@ let make = (~elementType) => {
   | Count(count) => renderCount(count)
   | Fee(fee) => renderFee(fee)
   | Hash(hash) => renderHash(hash)
-  | HashWithLink(hash) => renderHashWithLink(hash)
   | Address(address) => renderAddress(address)
   | Value(value) => renderText(value->Js.Json.stringify, Text.Regular)
   | Proposer(moniker, proposer) => renderProposer(moniker, proposer)

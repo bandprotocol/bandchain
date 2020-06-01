@@ -3,8 +3,6 @@ module Styles = {
 
   let tableWrapper = style([padding2(~v=`px(20), ~h=`px(15))]);
 
-  let txContainer = style([width(`px(300)), cursor(`pointer)]);
-
   let nameContainer = style([width(`px(230))]);
 
   let icon = style([width(`px(80)), height(`px(80))]);
@@ -116,29 +114,19 @@ let make = (~id) =>
                          }}
                       </Col>
                       <Col size=3.5>
-                        <div
-                          className=Styles.txContainer
-                          onClick={_ => {
-                            switch (transaction) {
-                            | Some(tx) => Route.redirect(Route.TxIndexPage(tx.txHash))
-                            | None => ()
-                            }
-                          }}>
-                          <Text
-                            block=true
-                            value={
-                              switch (transaction) {
-                              | Some(tx) => tx.txHash |> Hash.toHex(~upper=true)
-                              | None => "Genesis transaction"
-                              }
-                            }
-                            weight=Text.Medium
-                            code=true
-                            color=Colors.gray7
-                            ellipsis=true
-                            nowrap=true
-                          />
-                        </div>
+                        {switch (transaction) {
+                         | Some(tx) => <TxLink txHash={tx.txHash} width=300 weight=Text.Medium />
+                         | None =>
+                           <Text
+                             block=true
+                             value="Genesis transaction"
+                             weight=Text.Medium
+                             code=true
+                             color=Colors.gray7
+                             ellipsis=true
+                             nowrap=true
+                           />
+                         }}
                       </Col>
                       <Col> <HSpacing size=Spacing.lg /> </Col>
                     </Row>
