@@ -11,7 +11,6 @@ import (
 	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
 
 	"github.com/bandprotocol/bandchain/chain/app"
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
@@ -75,7 +74,7 @@ func GetExecutable(c *Context, l *Logger, hash string) ([]byte, error) {
 	l.Debug(":magnifying_glass_tilted_left: Fetching data source hash: %s from bandchain querier", hash)
 
 	cliCtx := sdkCtx.CLIContext{Client: c.client}
-	res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", otypes.StoreKey, types.QueryData, hash), nil)
+	res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", otypes.StoreKey, otypes.QueryData, hash), nil)
 	if err != nil {
 		l.Error(":exploding_head: Failed to get data source with error: %s", err.Error())
 		return nil, err
