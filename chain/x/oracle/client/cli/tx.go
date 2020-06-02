@@ -260,7 +260,7 @@ $ %s tx oracle create-data-source --name coingecko-price --description "The scri
 // GetCmdEditDataSource implements the edit data source command handler.
 func GetCmdEditDataSource(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "edit-data-source [id] (--name [name]) (--description [description])(--script [path-to-script]) (--owner [owner])",
+		Use:   "edit-data-source [id] (--name [name]) (--description [description]) (--script [path-to-script]) (--owner [owner])",
 		Short: "Edit data source",
 		Args:  cobra.ExactArgs(1),
 		Long: strings.TrimSpace(
@@ -295,9 +295,12 @@ $ %s tx oracle edit-data-source 1 --name coingecko-price --description The scrip
 			if err != nil {
 				return err
 			}
-			execBytes, err := ioutil.ReadFile(scriptPath)
-			if err != nil {
-				return err
+			execBytes := types.DoNotModifyBytes
+			if scriptPath != types.DoNotModify {
+				execBytes, err = ioutil.ReadFile(scriptPath)
+				if err != nil {
+					return err
+				}
 			}
 
 			ownerStr, err := cmd.Flags().GetString(flagOwner)
@@ -328,7 +331,7 @@ $ %s tx oracle edit-data-source 1 --name coingecko-price --description The scrip
 	}
 	cmd.Flags().String(flagName, types.DoNotModify, "Name of this data source")
 	cmd.Flags().String(flagDescription, types.DoNotModify, "Description of this data source")
-	cmd.Flags().String(flagScript, "", "Path to this data source script")
+	cmd.Flags().String(flagScript, types.DoNotModify, "Path to this data source script")
 	cmd.Flags().String(flagOwner, "", "Owner of this data source")
 
 	return cmd
@@ -456,9 +459,12 @@ $ %s tx oracle edit-oracle-script 1 --name eth-price --description "Oracle scrip
 			if err != nil {
 				return err
 			}
-			scriptCode, err := ioutil.ReadFile(scriptPath)
-			if err != nil {
-				return err
+			scriptCode := types.DoNotModifyBytes
+			if scriptPath != types.DoNotModify {
+				scriptCode, err = ioutil.ReadFile(scriptPath)
+				if err != nil {
+					return err
+				}
 			}
 
 			ownerStr, err := cmd.Flags().GetString(flagOwner)
@@ -501,7 +507,7 @@ $ %s tx oracle edit-oracle-script 1 --name eth-price --description "Oracle scrip
 	}
 	cmd.Flags().String(flagName, types.DoNotModify, "Name of this oracle script")
 	cmd.Flags().String(flagDescription, types.DoNotModify, "Description of this oracle script")
-	cmd.Flags().String(flagScript, "", "Path to this oracle script")
+	cmd.Flags().String(flagScript, types.DoNotModify, "Path to this oracle script")
 	cmd.Flags().String(flagOwner, "", "Owner of this oracle script")
 	cmd.Flags().String(flagSchema, types.DoNotModify, "Schema of this oracle script")
 	cmd.Flags().String(flagSourceCodeURL, types.DoNotModify, "URL for the source code of this oracle script")
