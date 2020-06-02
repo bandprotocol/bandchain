@@ -7,7 +7,6 @@ on:
 jobs:
   bridges-evm-test:
     runs-on: ubuntu-latest
-    needs: bridges-evm-build
     env:
       working-directory: ./bridges/evm
 
