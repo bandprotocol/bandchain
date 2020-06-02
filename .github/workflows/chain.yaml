@@ -25,11 +25,6 @@ jobs:
       with:
         path:  ~/go/pkg/mod
         key: ${{ runner.os }}-chain-build-${{ hashFiles('**/go.sum') }}
-
-    - name: Install dependency
-      if: steps.go-modules-cache.outputs.cache-hit != 'true'
-      run: go mod tidy
-      working-directory: ${{env.working-directory}}
     
     - name: Run chain tests
       run : ./run_tests.sh
