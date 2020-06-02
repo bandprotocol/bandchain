@@ -97,6 +97,7 @@ type tx_response_t = {
   txHash: Hash.t,
   rawLog: string,
   success: bool,
+  code: int,
 };
 
 type response_t =
@@ -279,8 +280,16 @@ function(data) {return {...data};}
     Tx(
       JsonUtils.Decode.{
         txHash: response |> at(["txhash"], string) |> Hash.fromHex,
-        rawLog: response |> at(["raw_log"], string),
-        success: response |> optional(field("logs", _ => ())) |> Belt_Option.isSome,
+        // TODO: create mapping(error_code => error_message)
+        code: response |> optional(at(["code"], int)) |> Belt.Option.getWithDefault(_, 0),
+        rawLog:
+          response
+          |> optional(at(["raw_log"], string))
+          |> Belt.Option.getWithDefault(_, "Error occurred"),
+        success:
+          response
+          |> optional(field("code", int))
+          |> Belt.Option.mapWithDefault(_, true, code => code == 0),
       },
     ),
   );
