@@ -174,7 +174,7 @@ func TestProcessExpiredRequests(t *testing.T) {
 	oracleScriptID := types.OracleScriptID(1)
 	calldata := []byte("CALLDATA")
 	vals := []sdk.ValAddress{Validator1.ValAddress}
-	minCount := uint64(1)
+	minCount := uint64(2)
 	requestHeight := int64(4000) // request at height 4000
 	requestTime := int64(1581589700)
 	clientID := "beeb"
