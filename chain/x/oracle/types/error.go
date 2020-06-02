@@ -29,7 +29,7 @@ var (
 	ErrTooLargeExecutable          = sdkerrors.Register(ModuleName, 22, "too large executable")
 	ErrTooLargeWasmCode            = sdkerrors.Register(ModuleName, 23, "too large wasm code")
 	ErrInvalidMinCount             = sdkerrors.Register(ModuleName, 24, "invalid min count")
-	ErrAskCountLessThanMinCount    = sdkerrors.Register(ModuleName, 25, "ask count < min count")
+	ErrInvalidAskCount             = sdkerrors.Register(ModuleName, 25, "invalid ask count")
 	ErrTooLargeCalldata            = sdkerrors.Register(ModuleName, 26, "too large calldata")
 	ErrTooLongClientID             = sdkerrors.Register(ModuleName, 27, "too long client id")
 	ErrEmptyReport                 = sdkerrors.Register(ModuleName, 28, "empty report")
@@ -39,6 +39,7 @@ var (
 	ErrTooLargeRawReportData       = sdkerrors.Register(ModuleName, 32, "too large raw report data")
 	ErrInsufficientValidators      = sdkerrors.Register(ModuleName, 33, "insufficent available validators")
 	ErrCreateWithDoNotModify       = sdkerrors.Register(ModuleName, 34, "create with [do-not-modify] content")
+	ErrSelfReferenceAsReporter     = sdkerrors.Register(ModuleName, 35, "cannot reference self as reporter")
 )
 
 // WrapMaxError wraps an error message with additional info of the current and max values.

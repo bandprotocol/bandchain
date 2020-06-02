@@ -191,11 +191,11 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 				case otypes.AttributeKeyCalldata:
 					reqPacket.Calldata = kv.Value
 				case otypes.AttributeKeyAskCount:
-					reqPacket.AskCount = mustParseInt64(kv.Value)
+					reqPacket.AskCount = mustParseUint64(kv.Value)
 				case otypes.AttributeKeyMinCount:
-					reqPacket.MinCount = mustParseInt64(kv.Value)
+					reqPacket.MinCount = mustParseUint64(kv.Value)
 				case otypes.AttributeKeyAnsCount:
-					resPacket.AnsCount = mustParseInt64(kv.Value)
+					resPacket.AnsCount = mustParseUint64(kv.Value)
 				case otypes.AttributeKeyRequestTime:
 					resPacket.RequestTime = mustParseInt64(kv.Value)
 				case otypes.AttributeKeyResolveTime:

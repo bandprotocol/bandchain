@@ -25,6 +25,46 @@ module Styles = {
     ]);
 
   let logo = style([width(`px(50)), marginRight(`px(10))]);
+
+  let notfoundContainer =
+    style([
+      width(`percent(100.)),
+      minHeight(`px(450)),
+      display(`flex),
+      flexDirection(`column),
+      alignItems(`center),
+      paddingLeft(`px(50)),
+      paddingRight(`px(50)),
+      justifyContent(`center),
+      backgroundColor(Colors.white),
+      borderRadius(`px(4)),
+      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), rgba(0, 0, 0, 0.1))),
+    ]);
+  let notfoundLogo = style([width(`px(180)), marginRight(`px(10))]);
+};
+
+module TxNotFound = {
+  [@react.component]
+  let make = () => {
+    <>
+      <VSpacing size=Spacing.lg />
+      <div className=Styles.notfoundContainer>
+        <Col> <img src=Images.notFoundBg className=Styles.notfoundLogo /> </Col>
+        <VSpacing size=Spacing.md />
+        <Text
+          value="Sorry, we are unable to retrieve information on this transaction hash."
+          size=Text.Lg
+          color=Colors.blueGray6
+        />
+        <VSpacing size=Spacing.lg />
+        <Text
+          value="Note: Transactions usually take 5-10 seconds to appear."
+          size=Text.Lg
+          color=Colors.blueGray6
+        />
+      </div>
+    </>;
+  };
 };
 
 [@react.component]
@@ -115,4 +155,4 @@ let make = (~txHash) =>
     </>
     |> Sub.resolve;
   }
-  |> Sub.default(_, React.null);
+  |> Sub.default(_, <TxNotFound />);

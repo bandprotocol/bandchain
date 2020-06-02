@@ -29,6 +29,10 @@ func Encode(v interface{}) ([]byte, error) {
 	case reflect.String:
 		return EncodeString(rv.String()), nil
 	case reflect.Slice:
+		if rv.Type().Elem().Kind() == reflect.Uint8 {
+			return EncodeBytes(rv.Bytes()), nil
+		}
+
 		res := EncodeUnsigned32(uint32(rv.Len()))
 		for idx := 0; idx < rv.Len(); idx++ {
 			each, err := Encode(rv.Index(idx).Interface())
@@ -70,21 +74,21 @@ func EncodeUnsigned8(v uint8) []byte {
 // EncodeUnsigned16 takes an `uint16` variable and encodes it into a byte array
 func EncodeUnsigned16(v uint16) []byte {
 	bytes := make([]byte, 2)
-	binary.LittleEndian.PutUint16(bytes, v)
+	binary.BigEndian.PutUint16(bytes, v)
 	return bytes
 }
 
 // EncodeUnsigned32 takes an `uint32` variable and encodes it into a byte array
 func EncodeUnsigned32(v uint32) []byte {
 	bytes := make([]byte, 4)
-	binary.LittleEndian.PutUint32(bytes, v)
+	binary.BigEndian.PutUint32(bytes, v)
 	return bytes
 }
 
 // EncodeUnsigned64 takes an `uint64` variable and encodes it into a byte array
 func EncodeUnsigned64(v uint64) []byte {
 	bytes := make([]byte, 8)
-	binary.LittleEndian.PutUint64(bytes, v)
+	binary.BigEndian.PutUint64(bytes, v)
 	return bytes
 }
 

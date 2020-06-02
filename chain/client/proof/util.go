@@ -73,6 +73,14 @@ func mustParseInt64(b []byte) int64 {
 	return i64
 }
 
+func mustParseUint64(b []byte) uint64 {
+	u64, err := strconv.ParseUint(string(b), 10, 64)
+	if err != nil {
+		panic(err)
+	}
+	return u64
+}
+
 func mustDecodeString(hexstr string) []byte {
 	b, err := hex.DecodeString(hexstr)
 	if err != nil {

@@ -27,7 +27,7 @@ let reducer = state =>
               ~msgs=[|Request(oracleScriptID, calldata, "4", "4", address, "from_scan")|],
               ~chainID,
               ~gas="700000",
-              ~feeAmount="100",
+              ~feeAmount="0",
               ~memo="send via scan",
               (),
             );

@@ -28,7 +28,7 @@ func (msg MsgRequestData) ValidateBasic() error {
 		return sdkerrors.Wrapf(ErrInvalidMinCount, "got: %d", msg.MinCount)
 	}
 	if msg.AskCount < msg.MinCount {
-		return sdkerrors.Wrapf(ErrAskCountLessThanMinCount, "%d < %d", msg.AskCount, msg.MinCount)
+		return sdkerrors.Wrapf(ErrInvalidAskCount, "got: %d, min count: %d", msg.AskCount, msg.MinCount)
 	}
 	if len(msg.ClientID) > MaxClientIDLength {
 		return WrapMaxError(ErrTooLongClientID, len(msg.ClientID), MaxClientIDLength)
@@ -274,6 +274,9 @@ func (msg MsgAddReporter) ValidateBasic() error {
 	if err := sdk.VerifyAddressFormat(msg.Reporter); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "reporter: %s", msg.Reporter)
 	}
+	if sdk.ValAddress(msg.Reporter).Equals(msg.Validator) {
+		return ErrSelfReferenceAsReporter
+	}
 	return nil
 }
 
@@ -300,6 +303,9 @@ func (msg MsgRemoveReporter) ValidateBasic() error {
 	}
 	if err := sdk.VerifyAddressFormat(msg.Reporter); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "reporter: %s", msg.Reporter)
+	}
+	if sdk.ValAddress(msg.Reporter).Equals(msg.Validator) {
+		return ErrSelfReferenceAsReporter
 	}
 	return nil
 }

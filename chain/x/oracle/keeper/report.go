@@ -53,7 +53,7 @@ func (k Keeper) GetReportIterator(ctx sdk.Context, rid types.RequestID) sdk.Iter
 }
 
 // GetReportCount returns the number of reports for the given request ID.
-func (k Keeper) GetReportCount(ctx sdk.Context, rid types.RequestID) (count int64) {
+func (k Keeper) GetReportCount(ctx sdk.Context, rid types.RequestID) (count uint64) {
 	iterator := k.GetReportIterator(ctx, rid)
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
