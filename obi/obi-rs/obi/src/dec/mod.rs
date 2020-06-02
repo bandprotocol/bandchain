@@ -86,38 +86,6 @@ impl_for_integer!(u32);
 impl_for_integer!(u64);
 impl_for_integer!(u128);
 
-// Note NaNs have a portability issue. Specifically, signalling NaNs on MIPS are quiet NaNs on x86,
-// and vice-versa. We disallow NaNs to avoid this issue.
-macro_rules! impl_for_float {
-    ($type: ident, $int_type: ident) => {
-        impl OBIDecode for $type {
-            #[inline]
-            fn decode(buf: &mut &[u8]) -> io::Result<Self> {
-                if buf.len() < size_of::<$type>() {
-                    return Err(io::Error::new(
-                        io::ErrorKind::InvalidInput,
-                        ERROR_UNEXPECTED_LENGTH_OF_INPUT,
-                    ));
-                }
-                let res = $type::from_bits($int_type::from_be_bytes(
-                    buf[..size_of::<$int_type>()].try_into().unwrap(),
-                ));
-                *buf = &buf[size_of::<$int_type>()..];
-                if res.is_nan() {
-                    return Err(io::Error::new(
-                        io::ErrorKind::InvalidInput,
-                        "For portability reasons we do not allow to decode NaNs.",
-                    ));
-                }
-                Ok(res)
-            }
-        }
-    };
-}
-
-impl_for_float!(f32, u32);
-impl_for_float!(f64, u64);
-
 impl OBIDecode for bool {
     #[inline]
     fn decode(buf: &mut &[u8]) -> io::Result<Self> {

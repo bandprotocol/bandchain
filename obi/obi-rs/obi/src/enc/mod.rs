@@ -58,26 +58,6 @@ impl_for_integer!(u32);
 impl_for_integer!(u64);
 impl_for_integer!(u128);
 
-// Note NaNs have a portability issue. Specifically, signalling NaNs on MIPS are quiet NaNs on x86,
-// and vice-versa. We disallow NaNs to avoid this issue.
-macro_rules! impl_for_float {
-    ($type: ident) => {
-        impl OBIEncode for $type {
-            #[inline]
-            fn encode<W: Write>(&self, writer: &mut W) -> io::Result<()> {
-                assert!(
-                    !self.is_nan(),
-                    "For portability reasons we do not allow to encode NaNs."
-                );
-                writer.write_all(&self.to_bits().to_be_bytes())
-            }
-        }
-    };
-}
-
-impl_for_float!(f32);
-impl_for_float!(f64);
-
 impl OBIEncode for bool {
     #[inline]
     fn encode<W: Write>(&self, writer: &mut W) -> io::Result<()> {
