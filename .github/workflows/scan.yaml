@@ -1,0 +1,28 @@
+name: Scan Workflow
+on: push
+
+jobs:
+  scan-test:
+    runs-on: ubuntu-latest
+    env:
+      working-directory: ./scan
+
+    steps:
+    - name: Code Checkout
+      uses: actions/checkout@v2
+
+    - name: Cache node_modules
+      id: scan-node-modules-cache
+      uses: actions/cache@v1
+      with:
+        path: scan/node_modules
+        key: ${{ runner.OS }}-scan-test-${{ hashFiles('**/yarn.lock') }}
+
+    - name: Run yarn
+      if: steps.scan-node-modules-cache.outputs.cache-hit != 'true'
+      run: yarn
+      working-directory: ${{env.working-directory}}
+
+    - name: Run yarn test
+      run: yarn test
+      working-directory: ${{env.working-directory}}

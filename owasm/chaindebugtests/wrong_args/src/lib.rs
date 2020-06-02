@@ -1,12 +1,12 @@
-use borsh::{BorshDeserialize, BorshSchema, BorshSerialize};
+use obi::{OBIDecode, OBIEncode};
 use owasm::{execute_entry_point, oei};
 
-#[derive(BorshDeserialize, BorshSchema)]
+#[derive(OBIDecode)]
 struct Input {
     _unused: u8,
 }
 
-#[derive(BorshSerialize, BorshSchema)]
+#[derive(OBIEncode)]
 struct Output {
     result: String,
 }
@@ -26,14 +26,15 @@ execute_entry_point!(execute_impl);
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use std::collections::*;
+    // use super::*;
+    // use std::collections::*;
 
-    #[test]
-    fn test_get_schema() {
-        let mut schema = HashMap::new();
-        Input::add_rec_type_definitions(&mut schema);
-        Output::add_rec_type_definitions(&mut schema);
-        println!("{:?}", schema);
-    }
+    // Schema doesn't supported for now
+    // #[test]
+    // fn test_get_schema() {
+    //     let mut schema = HashMap::new();
+    //     Input::add_rec_type_definitions(&mut schema);
+    //     Output::add_rec_type_definitions(&mut schema);
+    //     println!("{:?}", schema);
+    // }
 }
