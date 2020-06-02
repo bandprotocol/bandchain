@@ -296,7 +296,6 @@ $ %s tx oracle edit-data-source 1 --name coingecko-price --description The scrip
 				return err
 			}
 			var execBytes []byte
-
 			if scriptPath == "" {
 				execBytes = types.DoNotModifyBytes
 			} else {
