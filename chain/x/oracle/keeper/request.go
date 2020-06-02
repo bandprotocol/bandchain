@@ -8,6 +8,7 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/x/staking/exported"
 )
 
 // HasRequest checks if the request of this ID exists in the storage.
@@ -48,20 +49,23 @@ func (k Keeper) DeleteRequest(ctx sdk.Context, id types.RequestID) {
 // GetRandomValidators returns a pseudorandom list of active validators. Each validator has
 // chance of getting selected directly proportional to the amount of voting power it has.
 func (k Keeper) GetRandomValidators(ctx sdk.Context, size int, nextReqID int64) ([]sdk.ValAddress, error) {
-	validatorsByPower := k.StakingKeeper.GetBondedValidatorsByPower(ctx)
-	if len(validatorsByPower) < size {
-		return nil, sdkerrors.Wrapf(types.ErrInsufficientValidators, "%d < %d", len(validatorsByPower), size)
+	valOperators := []sdk.ValAddress{}
+	valPowers := []uint64{}
+	k.StakingKeeper.IterateBondedValidatorsByPower(ctx, func(idx int64, val exported.ValidatorI) (stop bool) {
+		valOperators = append(valOperators, val.GetOperator())
+		valPowers = append(valPowers, val.GetTokens().Uint64())
+		return false
+	})
+	if len(valOperators) < size {
+		return nil, sdkerrors.Wrapf(types.ErrInsufficientValidators, "%d < %d", len(valOperators), size)
 	}
-	votingPowers := make([]uint64, len(validatorsByPower))
-	for i, val := range validatorsByPower {
-		votingPowers[i] = val.Tokens.Uint64()
-	}
-	seed := fmt.Sprintf("%x:%d:%d", ctx.BlockHeader().LastBlockId.Hash, ctx.BlockHeader().Time.Nanosecond(), nextReqID)
-	rng := bandrng.NewRng(seed)
-	luckyValidatorIndexes := bandrng.ChooseK(rng, votingPowers, size)
+	seed := fmt.Sprintf("%x:%d:%d",
+		ctx.BlockHeader().LastBlockId.Hash, ctx.BlockHeader().Time.Nanosecond(), nextReqID,
+	)
+	luckyValidatorIndexes := bandrng.ChooseK(bandrng.NewRng(seed), valPowers, size)
 	validators := make([]sdk.ValAddress, size)
 	for i, idx := range luckyValidatorIndexes {
-		validators[i] = validatorsByPower[idx].GetOperator()
+		validators[i] = valOperators[idx]
 	}
 	return validators, nil
 }
@@ -78,13 +82,14 @@ func (k Keeper) AddRequest(ctx sdk.Context, req types.Request) types.RequestID {
 func (k Keeper) SaveResult(ctx sdk.Context, id types.RequestID, status types.ResolveStatus, result []byte) types.OracleResponsePacketData {
 	r := k.MustGetRequest(ctx, id)
 	req := types.NewOracleRequestPacketData(
-		r.ClientID, r.OracleScriptID, r.Calldata, r.MinCount, int64(len(r.RequestedValidators)),
+		r.ClientID, r.OracleScriptID, r.Calldata, r.MinCount, uint64(len(r.RequestedValidators)),
 	)
 	res := types.NewOracleResponsePacketData(
-		r.ClientID, id, int64(k.GetReportCount(ctx, id)), r.RequestTime,
-		ctx.BlockTime().Unix(), types.ResolveStatus_Success, result,
+		r.ClientID, id, k.GetReportCount(ctx, id), r.RequestTime,
+		ctx.BlockTime().Unix(), status, result,
 	)
-	resultHash := k.AddResult(ctx, id, req, res)
+	resultHash := types.CalculateResultHash(req, res)
+	k.SetResult(ctx, id, resultHash)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeRequestExecute,
 		sdk.NewAttribute(types.AttributeKeyClientID, req.ClientID),

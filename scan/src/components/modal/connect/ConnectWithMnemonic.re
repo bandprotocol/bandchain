@@ -18,7 +18,7 @@ module Styles = {
       boxShadow(
         Shadow.box(~inset=true, ~x=`zero, ~y=`px(3), ~blur=`px(4), Css.rgba(11, 29, 142, 0.1)),
       ),
-      focus([outlineColor(Colors.white)]),
+      focus([outline(`zero, `none, Colors.white)]),
     ]);
 
   let mnemonicHelper =
@@ -83,9 +83,18 @@ let make = (~chainID) => {
     <Text value="Enter Your Mnemonic" size=Text.Md weight=Text.Medium />
     <VSpacing size=Spacing.sm />
     <input
+      autoFocus=true
       value=mnemonic
       className=Styles.inputBar
       onChange={event => setMnemonic(ReactEvent.Form.target(event)##value)}
+      onKeyDown={event =>
+        switch (ReactEvent.Keyboard.key(event)) {
+        | "Enter" =>
+          createMnemonic();
+          ReactEvent.Keyboard.preventDefault(event);
+        | _ => ()
+        }
+      }
     />
     <VSpacing size={`px(35)} />
     <div className=Styles.connectBtn onClick={_ => createMnemonic()}>

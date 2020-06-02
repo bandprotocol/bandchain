@@ -130,12 +130,12 @@ module FaucetBtn = {
   };
 };
 
-module SubmitTxBtn = {
+module SendBtn = {
   [@react.component]
-  let make = (~submitTx) => {
-    <div className=Styles.faucetBtn onClick={_ => {submitTx()}}>
+  let make = (~send) => {
+    <div className=Styles.faucetBtn onClick={_ => {send()}}>
       <Text
-        value="Submit Transaction"
+        value="SEND"
         size=Text.Xs
         weight=Text.Medium
         color=Colors.blue7
@@ -185,7 +185,7 @@ let make = () => {
 
   let connect = chainID => dispatchModal(OpenModal(Connect(chainID)));
   let disconnect = () => dispatchAccount(Disconnect);
-  let submitTx = () => dispatchModal(OpenModal(SubmitTx));
+  let send = () => dispatchModal(OpenModal(SubmitTx(SubmitMsg.Send(None))));
 
   switch (accountOpt) {
   | Some({address}) =>
@@ -199,10 +199,9 @@ let make = () => {
       <Row justify=Row.Right>
         <Col> <Balance address /> </Col>
         <Col> <HSpacing size={`px(5)} /> </Col>
+        <Col> <SendBtn send /> </Col>
         <Col> <FaucetBtn address={address->Address.toBech32} /> </Col>
       </Row>
-      <VSpacing size=Spacing.md />
-      <Row justify=Row.Right> <Col> <SubmitTxBtn submitTx /> </Col> </Row>
     </>
   | None =>
     switch (metadataSub) {

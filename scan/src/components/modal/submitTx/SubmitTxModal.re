@@ -5,7 +5,8 @@ module Styles = {
     style([
       flexDirection(`column),
       width(`px(640)),
-      height(`px(480)),
+      minHeight(`px(300)),
+      height(`auto),
       padding2(~v=`px(50), ~h=`px(50)),
       backgroundColor(rgb(249, 249, 251)),
       borderRadius(`px(5)),
@@ -66,8 +67,7 @@ module Styles = {
 
   let nextBtn =
     style([
-      position(`absolute),
-      bottom(`percent(8.)),
+      marginTop(`px(30)),
       width(`px(100)),
       height(`px(30)),
       display(`flex),
@@ -84,70 +84,17 @@ module Styles = {
       cursor(`pointer),
       alignSelf(`center),
     ]);
-};
 
-type selection_t =
-  | Send
-  | Delegate
-  | Undelegate
-  | Redelegate
-  | WithdrawReward;
-
-exception WrongMsgChoice(string);
-
-let toVariant =
-  fun
-  | "Send" => Send
-  | "Delegate" => Delegate
-  | "Undelegate" => Undelegate
-  | "Redelegate" => Redelegate
-  | "Withdraw Reward" => WithdrawReward
-  | _ => raise(WrongMsgChoice("Chosen message does not exist"));
-
-let toString =
-  fun
-  | Send => "Send"
-  | Delegate => "Delegate"
-  | Undelegate => "Undelegate"
-  | Redelegate => "Redelegate"
-  | WithdrawReward => "Withdraw Reward";
-
-let getMsgGasLimit =
-  fun
-  | Send => 70000
-  | Delegate => 160000
-  | Undelegate => 180000
-  | Redelegate => 210000
-  | WithdrawReward => 110000;
-
-let getGasConfig = msgType => {
-  let gasLimit = getMsgGasLimit(msgType);
-  EnhanceTxInput.{
-    text: {
-      gasLimit |> string_of_int;
-    },
-    value: Some(gasLimit),
-  };
-};
-
-let getFeeConfig = msgType => {
-  let gasPrice = 0.1;
-  let fee = (getMsgGasLimit(msgType) |> float_of_int) *. gasPrice /. 1e6;
-  EnhanceTxInput.{
-    text: {
-      fee |> Js.Float.toString;
-    },
-    value: Some(fee *. 1e6),
-  };
+  let info = style([display(`flex), justifyContent(`spaceBetween)]);
 };
 
 module SubmitTxStep = {
   [@react.component]
-  let make = (~account: AccountContext.t, ~setRawTx, ~isActive) => {
-    let (msgType, setMsgType) = React.useState(_ => Send);
+  let make = (~account: AccountContext.t, ~setRawTx, ~isActive, ~msg) => {
     let (msgsOpt, setMsgsOpt) = React.useState(_ => None);
-    let (gas, setGas) = React.useState(_ => getGasConfig(msgType));
-    let (fee, setFee) = React.useState(_ => getFeeConfig(msgType));
+
+    let gas = 200000;
+    let fee = 5000.;
     let (memo, setMemo) = React.useState(_ => EnhanceTxInput.{text: "", value: Some("")});
 
     <div className={Css.merge([Styles.container, Styles.disable(isActive)])}>
@@ -157,71 +104,52 @@ module SubmitTxStep = {
       <VSpacing size=Spacing.xl />
       <div className=Styles.rowContainer>
         <Text value="Message Type" size=Text.Lg spacing={Text.Em(0.03)} />
-        <div className=Styles.selectWrapper>
-          <select
-            className=Styles.selectContent
-            onChange={event => {
-              let newMsg = ReactEvent.Form.target(event)##value |> toVariant;
-              setMsgType(_ => newMsg);
-              setGas(_ => getGasConfig(newMsg));
-              setFee(_ => getFeeConfig(newMsg));
-            }}>
-            // TODO: Add back Redelegate
-
-              {[|Send, Delegate, Undelegate, WithdrawReward|]
-               ->Belt_Array.map(symbol =>
-                   <option value={symbol |> toString}>
-                     {symbol |> toString |> React.string}
-                   </option>
-                 )
-               |> React.array}
-            </select>
-        </div>
+        <Text
+          value={SubmitMsg.toString(msg)}
+          size=Text.Md
+          spacing={Text.Em(0.03)}
+          weight=Text.Semibold
+        />
       </div>
       <VSpacing size=Spacing.md />
-      {switch (msgType) {
-       | Send => <SendMsg setMsgsOpt />
-       | Delegate => <DelegateMsg setMsgsOpt />
-       | Undelegate => <UndelegateMsg setMsgsOpt />
-       | Redelegate => <RedelegateMsg setMsgsOpt />
-       | WithdrawReward => <WithdrawRewardMsg setMsgsOpt />
+      {switch (msg) {
+       | SubmitMsg.Send(receiver) => <SendMsg address={account.address} receiver setMsgsOpt />
+       | Delegate(validator) => <DelegateMsg address={account.address} validator setMsgsOpt />
+       | Undelegate(validator) => <UndelegateMsg address={account.address} validator setMsgsOpt />
+       | Redelegate(validator) => <RedelegateMsg validator setMsgsOpt />
+       | WithdrawReward(validator) =>
+         <WithdrawRewardMsg validator setMsgsOpt address={account.address} />
        }}
-      <VSpacing size=Spacing.md />
-      <EnhanceTxInput
-        width=115
-        inputData=gas
-        setInputData=setGas
-        parse=int_of_string_opt
-        msg="Gas"
-        errMsg="Invalid amount"
-        code=true
-      />
-      <VSpacing size=Spacing.md />
-      <EnhanceTxInput
-        width=115
-        inputData=fee
-        setInputData=setFee
-        parse=Parse.getBandAmount
-        msg="Fee (BAND)"
-        errMsg="Invalid amount"
-        code=true
-      />
-      <VSpacing size=Spacing.md />
+      <VSpacing size=Spacing.sm />
       <EnhanceTxInput
         width=300
         inputData=memo
         setInputData=setMemo
         parse={newVal => {newVal->Js.String.length <= 32 ? Some(newVal) : None}}
-        msg="Memo"
+        msg="Memo (optional)"
         errMsg="Exceed limit length"
+        placeholder="Insert memo"
+        code=true
       />
+      <VSpacing size=Spacing.lg />
+      <VSpacing size=Spacing.md />
+      <div className=Styles.info>
+        <Text
+          value="Transaction Fee"
+          size=Text.Lg
+          spacing={Text.Em(0.03)}
+          nowrap=true
+          block=true
+        />
+        <Text value="0.005 BAND" code=true />
+      </div>
+      <VSpacing size=Spacing.lg />
+      <VSpacing size=Spacing.md />
       <div
         className=Styles.nextBtn
         onClick={_ => {
           let rawTxOpt =
-            {let%Opt fee' = fee.value;
-             let%Opt gas' = gas.value;
-             let%Opt memo' = memo.value;
+            {let%Opt memo' = memo.value;
              let%Opt msgs = msgsOpt;
 
              Some(
@@ -229,8 +157,8 @@ module SubmitTxStep = {
                  ~address=account.address,
                  ~msgs,
                  ~chainID=account.chainID,
-                 ~feeAmount=fee' |> Js.Float.toString,
-                 ~gas=gas' |> string_of_int,
+                 ~feeAmount=fee |> Js.Float.toString,
+                 ~gas=gas |> string_of_int,
                  ~memo=memo',
                  (),
                ),
@@ -255,11 +183,11 @@ module SubmitTxStep = {
 
 module CreateTxFlow = {
   [@react.component]
-  let make = (~account) => {
+  let make = (~account, ~msg) => {
     let (rawTx, setRawTx) = React.useState(_ => None);
 
     <>
-      <SubmitTxStep account setRawTx isActive={rawTx == None} />
+      <SubmitTxStep account setRawTx isActive={rawTx == None} msg />
       {switch (rawTx) {
        | None => React.null
        | Some(rawTx') =>
@@ -270,11 +198,11 @@ module CreateTxFlow = {
 };
 
 [@react.component]
-let make = () => {
+let make = (~msg) => {
   let (account, _) = React.useContext(AccountContext.context);
 
   switch (account) {
-  | Some(account') => <CreateTxFlow account=account' />
+  | Some(account') => <CreateTxFlow account=account' msg />
   | None => <div className=Styles.container> <Text value="Please sign in" size=Text.Lg /> </div>
   };
 };

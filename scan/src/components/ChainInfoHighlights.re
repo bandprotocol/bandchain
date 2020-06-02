@@ -76,10 +76,11 @@ module HighlightCard = {
 [@react.component]
 let make = (~latestBlockSub: Sub.t(BlockSub.t)) => {
   let infoSub = React.useContext(GlobalContext.context);
-  // TODO: Only count active validators
-  let validatorCountSub = ValidatorSub.count();
+  let activeValidatorCountSub = ValidatorSub.countByActive(true);
+  let bondedTokenCountSub = ValidatorSub.getTotalBondedAmount();
 
-  let allSub = Sub.all3(latestBlockSub, infoSub, validatorCountSub);
+  let validatorInfoSub = Sub.all2(activeValidatorCountSub, bondedTokenCountSub);
+  let allSub = Sub.all3(latestBlockSub, infoSub, validatorInfoSub);
 
   <Row justify=Row.Between>
     <HighlightCard
@@ -172,20 +173,27 @@ let make = (~latestBlockSub: Sub.t(BlockSub.t)) => {
     <HighlightCard
       label="ACTIVE VALIDATORS"
       valueAndExtraComponentSub={
-        let%Sub (_, _, validatorCount) = allSub;
+        let%Sub (_, _, (activeValidatorCount, bondedTokenCount)) = allSub;
         (
           {
-            let activeValidators = validatorCount->Format.iPretty ++ " Nodes";
+            let activeValidators = activeValidatorCount->Format.iPretty ++ " Nodes";
             <Text value=activeValidators size=Text.Xxxl weight=Text.Semibold color=Colors.gray8 />;
           },
           <div className={Styles.withWidth(170)}>
             <div className=Styles.vFlex>
-              // TODO: Replace this mock by the real value
-
-                <Text value="A lot of" />
-                <HSpacing size=Spacing.sm />
-                <Text value=" BANDs Bonded" />
-              </div>
+              <Text
+                value={bondedTokenCount |> Coin.getBandAmountFromCoin |> Format.fPretty}
+                code=true
+                weight=Text.Thin
+              />
+              <HSpacing size=Spacing.sm />
+              <Text
+                value=" BAND Bonded"
+                color=Colors.gray7
+                weight=Text.Thin
+                spacing={Text.Em(0.01)}
+              />
+            </div>
           </div>,
         )
         |> Sub.resolve;

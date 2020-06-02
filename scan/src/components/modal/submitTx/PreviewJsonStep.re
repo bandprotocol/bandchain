@@ -95,9 +95,11 @@ let make = (~rawTx, ~onBack, ~account: AccountContext.t) => {
       <Text value="Confirm Transaction" weight=Text.Bold size=Text.Xxxl />
     </div>
     <VSpacing size=Spacing.xl />
-    <textarea className=Styles.jsonDisplay disabled=true>
-      {rawTx |> TxCreator.stringifyWithSpaces |> React.string}
-    </textarea>
+    <textarea
+      className=Styles.jsonDisplay
+      disabled=true
+      defaultValue={rawTx |> TxCreator.stringifyWithSpaces}
+    />
     {switch (state) {
      | Nothing =>
        <div className=Styles.rowContainer>

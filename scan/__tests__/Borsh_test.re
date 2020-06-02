@@ -158,19 +158,19 @@ describe("should be able to generate solidity correctly", () => {
 
 import "./Borsh.sol";
 
-library ResultDecoder {
+library ParamsDecoder {
     using Borsh for Borsh.Data;
 
-    struct Result {
+    struct Params {
         string symbol;
         uint64 multiplier;
         uint8 what;
     }
 
-    function decodeResult(bytes memory _data)
+    function decodeParams(bytes memory _data)
         internal
         pure
-        returns (Result memory result)
+        returns (Params memory result)
     {
         Borsh.Data memory data = Borsh.from(_data);
         result.symbol = string(data.decodeBytes());
@@ -182,9 +182,9 @@ library ResultDecoder {
       ),
     )
     |> toEqual(
-         generateSolidity(
+         generateDecoderSolidity(
            {j|{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"], [\\"what\\", \\"u8\\"] ] }"}|j},
-           "Input",
+           Borsh.Params,
          ),
        )
   });
@@ -216,81 +216,23 @@ library ResultDecoder {
       ),
     )
     |> toEqual(
-         generateSolidity(
+         generateDecoderSolidity(
            {j|{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"], [\\"what\\", \\"u8\\"] ] }","Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }"}|j},
-           "Output",
-         ),
-       )
-  });
-
-  test("should return None if invalid class (solidity)", () => {
-    expect(None)
-    |> toEqual(
-         generateSolidity(
-           {j|{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"], [\\"what\\", \\"u8\\"] ] }"}|j},
-           "Input2",
-         ),
-       )
-  });
-
-  test("should return None if invalid type (solidity)", () => {
-    expect(None)
-    |> toEqual(
-         generateSolidity(
-           {j|{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"bytes\\"], [\\"multiplier\\", \\"u64\\"], [\\"what\\", \\"u8\\"] ] }"}|j},
-           "Input",
+           Borsh.Result,
          ),
        )
   });
 });
 
 describe("should be able to generate go code correctly", () => {
+  // TODO: Change to real generated code once golang ParamsDecode is implemented
   test("should be able to generate go code 1", () => {
-    expect(
-      Some(
-        {j|package main
-
-import "github.com/bandchain/chain/pkg/borsh"
-
-type Result struct {
-	Symbol string
-	Multiplier uint64
-	What uint8
-}
-
-func DecodeResult(data []byte) (Result, error) {
-	decoder := borsh.NewBorshDecoder(data)
-
-	symbol, err := decoder.DecodeString()
-	if err != nil {
-		return Result{}, err
-	}
-	multiplier, err := decoder.DecodeU64()
-	if err != nil {
-		return Result{}, err
-	}
-	what, err := decoder.DecodeU8()
-	if err != nil {
-		return Result{}, err
-	}
-
-	if !decoder.Finished() {
-		return Result{}, errors.New("Borsh: bytes left when decode result")
-	}
-
-	return Result{
-		Symbol: symbol
-		Multiplier: multiplier
-		What: what
-	}, nil
-}|j},
-      ),
-    )
+    expect(Some({j|"Code is not available."|j}))
     |> toEqual(
-         generateGo(
+         generateDecoderGo(
            "main",
            {j|{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"], [\\"what\\", \\"u8\\"] ] }"}|j},
-           "Input",
+           Borsh.Params,
          ),
        )
   });
@@ -324,30 +266,10 @@ func DecodeResult(data []byte) (Result, error) {
       ),
     )
     |> toEqual(
-         generateGo(
+         generateDecoderGo(
            "test",
            {j|{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"], [\\"what\\", \\"u8\\"] ] }","Output": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"px\\", \\"u64\\"] ] }"}|j},
-           "Output",
-         ),
-       )
-  });
-  test("should return None if invalid class (go)", () => {
-    expect(None)
-    |> toEqual(
-         generateGo(
-           "main",
-           {j|{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"string\\"], [\\"multiplier\\", \\"u64\\"], [\\"what\\", \\"u8\\"] ] }"}|j},
-           "Input2",
-         ),
-       )
-  });
-  test("should return None if invalid type (go)", () => {
-    expect(None)
-    |> toEqual(
-         generateGo(
-           "main",
-           {j|{"Input": "{ \\"kind\\": \\"struct\\", \\"fields\\": [ [\\"symbol\\", \\"bytes\\"], [\\"multiplier\\", \\"u64\\"], [\\"what\\", \\"u8\\"] ] }"}|j},
-           "Input",
+           Borsh.Result,
          ),
        )
   });

@@ -71,7 +71,7 @@ func createArbitraryAccount(r *rand.Rand) Account {
 	}
 }
 
-func createValidatorTx(acc Account, moniker string, selfDelegation sdk.Coin) authtypes.StdTx {
+func createValidatorTx(chainID string, acc Account, moniker string, selfDelegation sdk.Coin) authtypes.StdTx {
 	msg := staking.NewMsgCreateValidator(
 		acc.ValAddress, acc.PubKey, selfDelegation,
 		staking.NewDescription(moniker, "", "", "", ""),
@@ -79,7 +79,7 @@ func createValidatorTx(acc Account, moniker string, selfDelegation sdk.Coin) aut
 		sdk.NewInt(1),
 	)
 	txMsg := authtypes.StdSignMsg{
-		ChainID:       "bandchain",
+		ChainID:       chainID,
 		AccountNumber: 0,
 		Sequence:      0,
 		Fee:           auth.NewStdFee(200000, sdk.Coins{}),
@@ -99,9 +99,9 @@ func createValidatorTx(acc Account, moniker string, selfDelegation sdk.Coin) aut
 }
 
 // NewSimApp creates instance of our app using in test.
-func NewSimApp() *bandapp.BandApp {
+func NewSimApp(chainID string, logger log.Logger) *bandapp.BandApp {
 	db := dbm.NewMemDB()
-	app := bandapp.NewBandApp(log.NewNopLogger(), db, nil, true, 0, map[int64]bool{}, "")
+	app := bandapp.NewBandApp(logger, db, nil, true, 0, map[int64]bool{}, "")
 	genesis := bandapp.NewDefaultGenesisState()
 	// Funds seed accounts and validators with 1000000uband, 100000000uband initially.
 	authGenesis := auth.NewGenesisState(auth.DefaultParams(), []authexported.GenesisAccount{
@@ -147,14 +147,14 @@ func NewSimApp() *bandapp.BandApp {
 	}, sdk.NewCoins(sdk.NewInt64Coin("uband", 304000000)))
 	genesis[bank.ModuleName] = app.Codec().MustMarshalJSON(bankGenesis)
 	genutilGenesis := genutil.NewGenesisStateFromStdTx([]authtypes.StdTx{
-		createValidatorTx(Validator1, "validator1", Coins100000000uband[0]),
-		createValidatorTx(Validator2, "validator2", Coins1000000uband[0]),
-		createValidatorTx(Validator3, "validator3", Coins99999999uband[0]),
+		createValidatorTx(chainID, Validator1, "validator1", Coins100000000uband[0]),
+		createValidatorTx(chainID, Validator2, "validator2", Coins1000000uband[0]),
+		createValidatorTx(chainID, Validator3, "validator3", Coins99999999uband[0]),
 	})
 	genesis[genutil.ModuleName] = app.Codec().MustMarshalJSON(genutilGenesis)
 	// Initialize the sim blockchain. We are ready for testing!
 	app.InitChain(abci.RequestInitChain{
-		ChainId:       "bandchain",
+		ChainId:       chainID,
 		Validators:    []abci.ValidatorUpdate{},
 		AppStateBytes: codec.MustMarshalJSONIndent(app.Codec(), genesis),
 	})

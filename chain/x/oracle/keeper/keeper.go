@@ -1,11 +1,11 @@
 package keeper
 
 import (
+	"bytes"
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/capability"
 	porttypes "github.com/cosmos/cosmos-sdk/x/ibc/05-port/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
@@ -14,7 +14,6 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/bandprotocol/bandchain/chain/pkg/filecache"
-	"github.com/bandprotocol/bandchain/chain/pkg/owasm"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
@@ -22,10 +21,8 @@ type Keeper struct {
 	storeKey      sdk.StoreKey
 	cdc           *codec.Codec
 	fileCache     filecache.Cache
-	OwasmExecute  owasm.Executor
 	ParamSpace    params.Subspace
-	CoinKeeper    bank.Keeper
-	StakingKeeper staking.Keeper
+	StakingKeeper types.StakingKeeper
 	ChannelKeeper types.ChannelKeeper
 	ScopedKeeper  capability.ScopedKeeper
 	PortKeeper    types.PortKeeper
@@ -33,9 +30,9 @@ type Keeper struct {
 
 // NewKeeper creates a new oracle Keeper instance.
 func NewKeeper(
-	cdc *codec.Codec, key sdk.StoreKey, fileDir string, owasmExecute owasm.Executor,
-	paramSpace params.Subspace, coinKeeper bank.Keeper, stakingKeeper staking.Keeper,
-	channelKeeper types.ChannelKeeper, scopedKeeper capability.ScopedKeeper, portKeeper types.PortKeeper,
+	cdc *codec.Codec, key sdk.StoreKey, fileDir string,
+	paramSpace params.Subspace, stakingKeeper staking.Keeper, channelKeeper types.ChannelKeeper,
+	scopedKeeper capability.ScopedKeeper, portKeeper types.PortKeeper,
 ) Keeper {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(ParamKeyTable())
@@ -44,9 +41,7 @@ func NewKeeper(
 		storeKey:      key,
 		cdc:           cdc,
 		fileCache:     filecache.New(fileDir),
-		OwasmExecute:  owasmExecute,
 		ParamSpace:    paramSpace,
-		CoinKeeper:    coinKeeper,
 		StakingKeeper: stakingKeeper,
 		ChannelKeeper: channelKeeper,
 		ScopedKeeper:  scopedKeeper,
@@ -81,11 +76,17 @@ func (k Keeper) GetParams(ctx sdk.Context) (params types.Params) {
 	return params
 }
 
+// SetRequestCount sets the number of request count to the given value. Useful for genesis state.
+func (k Keeper) SetRequestCount(ctx sdk.Context, count int64) {
+	store := ctx.KVStore(k.storeKey)
+	store.Set(types.RequestCountStoreKey, k.cdc.MustMarshalBinaryLengthPrefixed(count))
+}
+
 // GetRequestCount returns the current number of all requests ever exist.
 func (k Keeper) GetRequestCount(ctx sdk.Context) int64 {
 	var requestNumber int64
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.RequestsCountStoreKey)
+	bz := store.Get(types.RequestCountStoreKey)
 	if bz == nil {
 		return 0
 	}
@@ -100,7 +101,7 @@ func (k Keeper) GetNextRequestID(ctx sdk.Context) types.RequestID {
 	store := ctx.KVStore(k.storeKey)
 
 	bz := k.cdc.MustMarshalBinaryLengthPrefixed(requestNumber + 1)
-	store.Set(types.RequestsCountStoreKey, bz)
+	store.Set(types.RequestCountStoreKey, bz)
 	return types.RequestID(requestNumber + 1)
 }
 
@@ -158,7 +159,11 @@ func (k Keeper) BindPort(ctx sdk.Context, portID string) error {
 }
 
 // AddFile saves the given data to a file in HOME/files directory using sha256 sum as filename.
+// Returns do-not-modify symbol is the given input file is do-not-modify.
 func (k Keeper) AddFile(file []byte) string {
+	if bytes.Equal(file, types.DoNotModifyBytes) {
+		return types.DoNotModify
+	}
 	return k.fileCache.AddFile(file)
 }
 

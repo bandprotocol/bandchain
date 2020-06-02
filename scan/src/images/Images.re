@@ -8,6 +8,7 @@
 [@bs.module] external textDocument: string = "./text-document.svg";
 [@bs.module] external bg: string = "./bg.png";
 [@bs.module] external checkIcon: string = "./check-icon.svg";
+[@bs.module] external tickIcon: string = "./tick.svg";
 [@bs.module] external pendingIcon: string = "./pending-icon.svg";
 [@bs.module] external source: string = "./source.svg";
 [@bs.module] external sendCoin: string = "./send-coin.png";
@@ -63,3 +64,4 @@
 [@bs.module] external ledgerStep2Cosmos: string = "./ledger-step2-cosmos.svg";
 [@bs.module] external ledgerStep2BandChain: string = "./ledger-step2-bandchain.svg";
 [@bs.module] external triangleDown: string = "./triangle-down.svg";
+[@bs.module] external closeButton: string = "./closeButton.svg";

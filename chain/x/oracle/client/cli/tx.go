@@ -81,12 +81,12 @@ $ %s tx oracle request 1 4 3 --calldata 1234abcdef --client-id cliend-id --from 
 			}
 			oracleScriptID := types.OracleScriptID(int64OracleScriptID)
 
-			askCount, err := strconv.ParseInt(args[1], 10, 64)
+			askCount, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			minCount, err := strconv.ParseInt(args[2], 10, 64)
+			minCount, err := strconv.ParseUint(args[2], 10, 64)
 			if err != nil {
 				return err
 			}

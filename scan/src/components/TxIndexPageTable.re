@@ -140,7 +140,7 @@ let renderReport = (report: TxSub.Msg.Report.t) => {
       tableWidth=480
       headers=["EXTERNAL ID", "VALUE"]
       rows={
-        report.dataSet
+        report.rawReports
         |> Belt_List.map(_, rawReport =>
              [
                KVTable.Value(rawReport.externalDataID |> string_of_int),
@@ -172,10 +172,10 @@ let renderCreateDataSource = (dataSource: TxSub.Msg.CreateDataSource.t) => {
       </div>
     </div>
     <VSpacing size=Spacing.md />
-    <div className=Styles.topicContainer>
-      <Text value="FEE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <AmountRender coins={dataSource.fee} pos=AmountRender.TxIndex />
-    </div>
+    // <div className=Styles.topicContainer>
+    //   <Text value="FEE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+    //   <AmountRender coins={dataSource.fee} pos=AmountRender.TxIndex />
+    // </div>
     <VSpacing size=Spacing.md />
   </Col>;
 };
@@ -199,10 +199,10 @@ let renderEditDataSource = (dataSource: TxSub.Msg.EditDataSource.t) => {
       </div>
     </div>
     <VSpacing size=Spacing.md />
-    <div className=Styles.topicContainer>
-      <Text value="FEE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <AmountRender coins={dataSource.fee} pos=AmountRender.TxIndex />
-    </div>
+    // <div className=Styles.topicContainer>
+    //   <Text value="FEE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+    //   <AmountRender coins={dataSource.fee} pos=AmountRender.TxIndex />
+    // </div>
     <VSpacing size=Spacing.md />
   </Col>;
 };

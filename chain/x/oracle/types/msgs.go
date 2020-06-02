@@ -1,6 +1,8 @@
 package types
 
 import (
+	"bytes"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -26,7 +28,7 @@ func (msg MsgRequestData) ValidateBasic() error {
 		return sdkerrors.Wrapf(ErrInvalidMinCount, "got: %d", msg.MinCount)
 	}
 	if msg.AskCount < msg.MinCount {
-		return sdkerrors.Wrapf(ErrAskCountLessThanMinCount, "%d < %d", msg.AskCount, msg.MinCount)
+		return sdkerrors.Wrapf(ErrInvalidAskCount, "got: %d, min count: %d", msg.AskCount, msg.MinCount)
 	}
 	if len(msg.ClientID) > MaxClientIDLength {
 		return WrapMaxError(ErrTooLongClientID, len(msg.ClientID), MaxClientIDLength)
@@ -58,11 +60,11 @@ func (msg MsgReportData) ValidateBasic() error {
 	if err := sdk.VerifyAddressFormat(msg.Reporter); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "reporter: %s", msg.Reporter)
 	}
-	if len(msg.DataSet) == 0 {
+	if len(msg.RawReports) == 0 {
 		return ErrEmptyReport
 	}
 	uniqueMap := make(map[ExternalID]bool)
-	for _, r := range msg.DataSet {
+	for _, r := range msg.RawReports {
 		if _, found := uniqueMap[r.ExternalID]; found {
 			return sdkerrors.Wrapf(ErrDuplicateExternalID, "external id: %d", r.ExternalID)
 		}
@@ -109,6 +111,9 @@ func (msg MsgCreateDataSource) ValidateBasic() error {
 	}
 	if len(msg.Executable) > MaxExecutableSize {
 		return WrapMaxError(ErrTooLargeExecutable, len(msg.Executable), MaxExecutableSize)
+	}
+	if bytes.Equal(msg.Executable, DoNotModifyBytes) {
+		return ErrCreateWithDoNotModify
 	}
 	return nil
 }
@@ -194,6 +199,9 @@ func (msg MsgCreateOracleScript) ValidateBasic() error {
 	if len(msg.Code) > MaxWasmCodeSize {
 		return WrapMaxError(ErrTooLargeWasmCode, len(msg.Code), MaxWasmCodeSize)
 	}
+	if bytes.Equal(msg.Code, DoNotModifyBytes) {
+		return ErrCreateWithDoNotModify
+	}
 	return nil
 }
 
@@ -266,6 +274,9 @@ func (msg MsgAddReporter) ValidateBasic() error {
 	if err := sdk.VerifyAddressFormat(msg.Reporter); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "reporter: %s", msg.Reporter)
 	}
+	if sdk.ValAddress(msg.Reporter).Equals(msg.Validator) {
+		return ErrSelfReferenceAsReporter
+	}
 	return nil
 }
 
@@ -292,6 +303,9 @@ func (msg MsgRemoveReporter) ValidateBasic() error {
 	}
 	if err := sdk.VerifyAddressFormat(msg.Reporter); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "reporter: %s", msg.Reporter)
+	}
+	if sdk.ValAddress(msg.Reporter).Equals(msg.Validator) {
+		return ErrSelfReferenceAsReporter
 	}
 	return nil
 }

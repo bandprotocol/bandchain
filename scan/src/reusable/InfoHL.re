@@ -13,6 +13,7 @@ type t =
   | Address(Address.t, int)
   | Fraction(int, int, bool)
   | FloatWithSuffix(float, string, int)
+  | Validator(Address.t, string)
   | ValidatorsMini(array(ValidatorSub.Mini.t))
   | Validators(array(ValidatorSub.t))
   | Loading(int);
@@ -184,6 +185,13 @@ let make = (~info, ~header, ~isLeft=true) => {
        <div className={Styles.addressContainer(maxWidth)}>
          <AddressRender address position=AddressRender.Subtitle />
        </div>
+     | Validator(address, moniker) =>
+       <ValidatorMonikerLink
+         validatorAddress=address
+         moniker
+         size=Text.Lg
+         width={`percent(100.)}
+       />
      | ValidatorsMini(validators) =>
        <div className=Styles.validatorsContainer>
          {validators

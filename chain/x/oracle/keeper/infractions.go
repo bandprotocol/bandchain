@@ -10,53 +10,38 @@ import (
 )
 
 // HandleValidatorReport handles a validator report, must be called once per validator per request.
-func (k Keeper) HandleValidatorReport(ctx sdk.Context, requestID types.RequestID, address sdk.ValAddress, reported bool) {
+func (k Keeper) HandleValidatorReport(ctx sdk.Context, val sdk.ValAddress, reported bool) {
 	logger := k.Logger(ctx)
-
-	// If validator not found or has been jailed, we will reset consecutive miss count if report info exists.
-	validator := k.StakingKeeper.Validator(ctx, address)
+	// Fetch the existing report info of this validator.
+	info := k.GetValidatorReportInfoWithDefault(ctx, val)
+	validator := k.StakingKeeper.Validator(ctx, val)
 	if validator == nil || validator.IsJailed() {
-		// Validator was (a) not found or (b) already jailed
-		reportInfo := k.GetValidatorReportInfoWithDefault(ctx, address)
-		reportInfo.ConsecutiveMissed = 0
-		k.SetValidatorReportInfo(ctx, address, reportInfo)
-
-		logger.Info(
-			fmt.Sprintf("Validator %s missed report, but was either not found in store or already jailed", address),
-		)
+		// If validator not found or has been jailed, we reset the consecutive miss counts.
+		info := k.GetValidatorReportInfoWithDefault(ctx, val)
+		info.ConsecutiveMissed = 0
+		k.SetValidatorReportInfo(ctx, val, info)
+		logger.Info(fmt.Sprintf("Validator %s missed report, but was either not found in store or already jailed", val))
 		return
 	}
-	// fetch report info
-	reportInfo := k.GetValidatorReportInfoWithDefault(ctx, address)
-
-	maxMisses := k.GetParam(ctx, types.KeyMaxConsecutiveMisses)
+	// Update the consecutive misses of this validator accordingly.
 	if reported {
-		reportInfo.ConsecutiveMissed = 0
+		info.ConsecutiveMissed = 0
 	} else {
-		reportInfo.ConsecutiveMissed++
+		info.ConsecutiveMissed++
 	}
-
-	// if validator missed report consecutively more than max misses, then jail him.
-	if reportInfo.ConsecutiveMissed > maxMisses {
-		// Downtime confirmed: jail the validator
-		logger.Info(fmt.Sprintf("Validator %s missed report more than %d",
-			address, maxMisses))
-
+	maxMisses := k.GetParam(ctx, types.KeyMaxConsecutiveMisses)
+	// if the validator misses reports consecutively more than max misses, then jail him/her!
+	if info.ConsecutiveMissed > maxMisses {
+		logger.Info(fmt.Sprintf("Validator %s missed report more than %d", val, maxMisses))
 		consAddr := validator.GetConsAddr()
-
-		// Emit slash to notify jailed event
-		ctx.EventManager().EmitEvent(
-			sdk.NewEvent(
-				slashing.EventTypeSlash,
-				sdk.NewAttribute(slashing.AttributeKeyJailed, consAddr.String()),
-			),
-		)
-
+		// Emit slashing event to notify that the jail occurs.
+		ctx.EventManager().EmitEvent(sdk.NewEvent(
+			slashing.EventTypeSlash,
+			sdk.NewAttribute(slashing.AttributeKeyJailed, consAddr.String()),
+		))
 		k.StakingKeeper.Jail(ctx, consAddr)
-
-		// Reset consecutive miss count
-		reportInfo.ConsecutiveMissed = 0
+		info.ConsecutiveMissed = 0
 	}
-	// Set the updated report info
-	k.SetValidatorReportInfo(ctx, address, reportInfo)
+	// Everything is complete. Now let's udpate the validator info accordingly.
+	k.SetValidatorReportInfo(ctx, val, info)
 }

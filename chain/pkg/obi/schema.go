@@ -37,6 +37,10 @@ func getSchemaImpl(s *strings.Builder, t reflect.Type) error {
 		s.WriteString("string")
 		return nil
 	case reflect.Slice:
+		if t.Elem().Kind() == reflect.Uint8 {
+			s.WriteString("bytes")
+			return nil
+		}
 		s.WriteString("[")
 		err := getSchemaImpl(s, t.Elem())
 		if err != nil {

@@ -8,6 +8,20 @@ type field_key_value_t = {
   fieldValue: string,
 };
 
+type data_type_t =
+  | Params
+  | Result;
+
+let dataTypeToString =
+  fun
+  | Params => "Params"
+  | Result => "Result";
+
+let dataTypeToSchemaField =
+  fun
+  | Params => "Input"
+  | Result => "Output";
+
 let extractFields: (string, string) => option(array(field_key_type_t)) = [%bs.raw
   {|
   function(_schema, cls) {
@@ -163,22 +177,24 @@ let optionsAll = options =>
        }
      });
 
-let generateSolidity = (schema, name) => {
+let generateDecoderSolidity = (schema, dataType) => {
+  let dataTypeString = dataType |> dataTypeToString;
+  let name = dataType |> dataTypeToSchemaField;
   let template = (structs, functions) => {j|pragma solidity ^0.5.0;
 
 import "./Borsh.sol";
 
-library ResultDecoder {
+library $(dataTypeString)Decoder {
     using Borsh for Borsh.Data;
 
-    struct Result {
+    struct $dataTypeString {
         $structs
     }
 
-    function decodeResult(bytes memory _data)
+    function decode$dataTypeString(bytes memory _data)
         internal
         pure
-        returns (Result memory result)
+        returns ($dataTypeString memory result)
     {
         Borsh.Data memory data = Borsh.from(_data);
         $functions
@@ -233,8 +249,13 @@ let resultGo = ({name}) => {
   {j|$capitalizedName: $name|j};
 };
 
-let generateGo = (packageName, schema, name) => {
-  let template = (structs, functions, results) => {j|package $packageName
+// TODO: Implement input/params decoding
+let generateDecoderGo = (packageName, schema, dataType) => {
+  switch (dataType) {
+  | Params => Some({j|"Code is not available."|j})
+  | Result =>
+    let name = dataType |> dataTypeToSchemaField;
+    let template = (structs, functions, results) => {j|package $packageName
 
 import "github.com/bandchain/chain/pkg/borsh"
 
@@ -256,15 +277,16 @@ func DecodeResult(data []byte) (Result, error) {
 \t}, nil
 }|j};
 
-  let%Opt fieldsPair = extractFields(schema, name);
-  let%Opt fields = fieldsPair |> Belt_Array.map(_, parse) |> optionsAll;
-  Some(
-    template(
-      fields |> Belt_Array.map(_, declareGo) |> Js.Array.joinWith("\n\t"),
-      fields |> Belt_Array.map(_, assignGo) |> Js.Array.joinWith("\n\t"),
-      fields |> Belt_Array.map(_, resultGo) |> Js.Array.joinWith("\n\t\t"),
-    ),
-  );
+    let%Opt fieldsPair = extractFields(schema, name);
+    let%Opt fields = fieldsPair |> Belt_Array.map(_, parse) |> optionsAll;
+    Some(
+      template(
+        fields |> Belt_Array.map(_, declareGo) |> Js.Array.joinWith("\n\t"),
+        fields |> Belt_Array.map(_, assignGo) |> Js.Array.joinWith("\n\t"),
+        fields |> Belt_Array.map(_, resultGo) |> Js.Array.joinWith("\n\t\t"),
+      ),
+    );
+  };
 };
 
 let encodeStructGo = ({name, varType}) => {

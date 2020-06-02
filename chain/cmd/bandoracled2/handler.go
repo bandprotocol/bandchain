@@ -88,7 +88,7 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 	reportsChan := make(chan otypes.RawReport, len(reqs))
 	for _, req := range reqs {
 		go func(l *Logger, req rawRequest) {
-			exec, err := GetExecutable(c, l, int(req.dataSourceID))
+			exec, err := GetExecutable(c, l, req.dataSourceHash)
 			if err != nil {
 				l.Error(":skull: Failed to load data source with error: %s", err.Error())
 				reportsChan <- otypes.NewRawReport(

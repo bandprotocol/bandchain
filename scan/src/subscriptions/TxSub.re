@@ -62,8 +62,8 @@ module Msg = {
     | "edit_oracle_script" => EditOracleScriptBadge
     | "request" => RequestBadge
     | "report" => ReportBadge
-    | "add_oracle_address" => AddOracleAddressBadge
-    | "remove_oracle_address" => RemoveOracleAddressBadge
+    | "add_reporter" => AddOracleAddressBadge
+    | "remove_reporter" => RemoveOracleAddressBadge
     | "create_validator" => CreateValidatorBadge
     | "edit_validator" => EditValidatorBadge
     | "create_client" => CreateClientBadge
@@ -117,7 +117,6 @@ module Msg = {
       id: ID.DataSource.t,
       owner: Address.t,
       name: string,
-      fee: list(Coin.t),
       executable: JsBuffer.t,
       sender: Address.t,
     };
@@ -127,7 +126,6 @@ module Msg = {
         id: json |> field("data_source_id", ID.DataSource.fromJson),
         owner: json |> field("owner", string) |> Address.fromBech32,
         name: json |> field("name", string),
-        fee: json |> field("fee", list(Coin.decodeCoin)),
         executable: json |> field("executable", string) |> JsBuffer.fromBase64,
         sender: json |> field("sender", string) |> Address.fromBech32,
       };
@@ -138,7 +136,6 @@ module Msg = {
       id: ID.DataSource.t,
       owner: Address.t,
       name: string,
-      fee: list(Coin.t),
       executable: JsBuffer.t,
       sender: Address.t,
     };
@@ -148,7 +145,6 @@ module Msg = {
         id: json |> field("data_source_id", ID.DataSource.fromJson),
         owner: json |> field("owner", string) |> Address.fromBech32,
         name: json |> field("name", string),
-        fee: json |> field("fee", list(Coin.decodeCoin)),
         executable: json |> field("executable", string) |> JsBuffer.fromBase64,
         sender: json |> field("sender", string) |> Address.fromBech32,
       };
@@ -221,7 +217,7 @@ module Msg = {
   module Report = {
     type t = {
       requestID: ID.Request.t,
-      dataSet: list(RawDataReport.t),
+      rawReports: list(RawDataReport.t),
       validator: Address.t,
       reporter: Address.t,
     };
@@ -229,7 +225,7 @@ module Msg = {
     let decode = json =>
       JsonUtils.Decode.{
         requestID: json |> field("request_id", ID.Request.fromJson),
-        dataSet: json |> field("data_set", list(RawDataReport.decode)),
+        rawReports: json |> field("raw_reports", list(RawDataReport.decode)),
         validator: json |> field("validator", string) |> Address.fromBech32,
         reporter: json |> field("reporter", string) |> Address.fromBech32,
       };

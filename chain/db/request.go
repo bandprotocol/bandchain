@@ -1,6 +1,7 @@
 package db
 
 import (
+	"errors"
 	"strconv"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
@@ -34,7 +35,7 @@ func createRequest(
 	id int64,
 	oracleScriptID int64,
 	calldata []byte,
-	minCount int64,
+	minCount uint64,
 	expirationHeight int64,
 	resolveStatus string,
 	requester string,
@@ -60,7 +61,7 @@ func (b *BandDB) AddNewRequest(
 	id int64,
 	oracleScriptID int64,
 	calldata []byte,
-	minCount int64,
+	minCount uint64,
 	expirationHeight int64,
 	resolveStatus string,
 	requester string,
@@ -185,9 +186,13 @@ func (b *BandDB) AddRawDataRequest(
 func (b *BandDB) handleMsgRequestData(
 	txHash []byte,
 	msg oracle.MsgRequestData,
-	events map[string]interface{},
+	events map[string][]string,
 ) error {
-	id, err := strconv.ParseInt(events[otypes.EventTypeRequest+"."+otypes.AttributeKeyID].(string), 10, 64)
+	ids := events[otypes.EventTypeRequest+"."+otypes.AttributeKeyID]
+	if len(ids) != 1 {
+		return errors.New("handleMsgCreateDataSource: cannot find request id")
+	}
+	id, err := strconv.ParseInt(ids[0], 10, 64)
 	if err != nil {
 		return err
 	}
@@ -206,8 +211,8 @@ func (b *BandDB) handleMsgRequestData(
 		msg.ClientID,
 		txHash,
 		nil,
-		events[otypes.EventTypeRawRequest+"."+otypes.AttributeKeyExternalID].([]string),
-		events[otypes.EventTypeRawRequest+"."+otypes.AttributeKeyDataSourceID].([]string),
-		events[otypes.EventTypeRawRequest+"."+otypes.AttributeKeyCalldata].([]string),
+		events[otypes.EventTypeRawRequest+"."+otypes.AttributeKeyExternalID],
+		events[otypes.EventTypeRawRequest+"."+otypes.AttributeKeyDataSourceID],
+		events[otypes.EventTypeRawRequest+"."+otypes.AttributeKeyCalldata],
 	)
 }

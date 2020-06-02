@@ -60,7 +60,7 @@ let kvRow = (k, v: value_row_t) => {
         <div className=Styles.fillLeft />
         {switch (v) {
          | VAddress(address) => <AddressRender address />
-         | VValidatorAddress(address) => <AddressRender address validator=true />
+         | VValidatorAddress(address) => <AddressRender address validator=true clickable=false />
          | VText(value) => <Text value nowrap=true />
          | VDetail(value) => <Text value align=Text.Right />
          | VExtLink(value) =>
@@ -135,6 +135,8 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
         <Text value={validator.moniker} size=Text.Xxl weight=Text.Bold nowrap=true />
       </div>
       <VSpacing size=Spacing.xl />
+      <ValidatorStakingInfo validatorAddress={validator.operatorAddress} />
+      <VSpacing size=Spacing.md />
       <div className=Styles.topPartWrapper>
         <Text value="INFORMATION" size=Text.Lg weight=Text.Semibold />
         <VSpacing size=Spacing.lg />

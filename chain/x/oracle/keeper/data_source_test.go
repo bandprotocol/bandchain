@@ -64,10 +64,9 @@ func TestAddDataSourceEditDataSourceBasic(t *testing.T) {
 	require.Equal(t, dataSource1, k.MustGetDataSource(ctx, id))
 	require.NotEqual(t, dataSource2, k.MustGetDataSource(ctx, id))
 	// Edits the data source. We should get the updated data source.
-	err := k.EditDataSource(ctx, id, types.NewDataSource(
+	k.MustEditDataSource(ctx, id, types.NewDataSource(
 		dataSource2.Owner, dataSource2.Name, dataSource2.Description, dataSource2.Filename,
 	))
-	require.Nil(t, err)
 	require.NotEqual(t, dataSource1, k.MustGetDataSource(ctx, id))
 	require.Equal(t, dataSource2, k.MustGetDataSource(ctx, id))
 }
@@ -86,8 +85,7 @@ func TestEditDataSourceDoNotModify(t *testing.T) {
 	require.Equal(t, dataSource1, k.MustGetDataSource(ctx, id))
 	require.NotEqual(t, dataSource2, k.MustGetDataSource(ctx, id))
 	// Edits the data source. We should get the updated data source.
-	err := k.EditDataSource(ctx, id, dataSource2)
-	require.Nil(t, err)
+	k.MustEditDataSource(ctx, id, dataSource2)
 	dataSourceRes := k.MustGetDataSource(ctx, id)
 	require.NotEqual(t, dataSourceRes, dataSource1)
 	require.NotEqual(t, dataSourceRes, dataSource2)
@@ -112,29 +110,25 @@ func TestAddDataSourceDataSourceMustReturnCorrectID(t *testing.T) {
 	count = k.GetDataSourceCount(ctx)
 	require.Equal(t, count, int64(2))
 }
-
-// func TestEditDataSourceNonExistentDataSource(t *testing.T) {
-// 	_, ctx, k := createTestInput()
-// 	// Editing a non-existent data source should return error.
-// 	err := k.EditDataSource(ctx, 42, types.NewDataSource(
-// 		Owner.Address, BasicName, BasicDesc, BasicExec,
-// 	))
-// 	require.Error(t, err)
-// }
-
-// func TestGetAllDataSources(t *testing.T) {
-// 	_, ctx, k := createTestInput()
-// 	// Sets the data sources to the storage.
-// 	dataSources := []types.DataSource{
-// 		types.NewDataSource(
-// 			Alice.Address, "NAME1", "DESCRIPTION1", []byte("executable1"),
-// 		),
-// 		types.NewDataSource(
-// 			Bob.Address, "NAME2", "DESCRIPTION2", []byte("executable2"),
-// 		),
-// 	}
-// 	k.SetDataSource(ctx, 1, dataSources[0])
-// 	k.SetDataSource(ctx, 2, dataSources[1])
-// 	// We should now be able to get all the existing data sources.
-// 	require.Equal(t, dataSources, k.GetAllDataSources(ctx))
-// }
+func TestEditDataSourceNonExistentDataSource(t *testing.T) {
+	_, ctx, k := createTestInput()
+	dataSource, clear := getTestDataSource("code")
+	defer clear()
+	require.Panics(t, func() { k.MustEditDataSource(ctx, 9999, dataSource) })
+}
+func TestGetAllDataSources(t *testing.T) {
+	_, ctx, k := createTestInput()
+	dataSource1, clear1 := getTestDataSource("code1")
+	defer clear1()
+	dataSource2, clear2 := getTestDataSource("code2")
+	defer clear2()
+	dataSource3, clear3 := getTestDataSource("code3")
+	defer clear3()
+	// Sets the data sources to the storage.
+	dataSources := []types.DataSource{dataSource1, dataSource2, dataSource3}
+	k.SetDataSource(ctx, 1, dataSources[0])
+	k.SetDataSource(ctx, 2, dataSources[1])
+	k.SetDataSource(ctx, 3, dataSources[2])
+	// We should now be able to get all the existing data sources.
+	require.Equal(t, dataSources, k.GetAllDataSources(ctx))
+}

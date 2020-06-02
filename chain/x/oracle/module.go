@@ -47,12 +47,7 @@ func (AppModuleBasic) DefaultGenesis(cdc codec.JSONMarshaler) json.RawMessage {
 // ValidateGenesis performs genesis state validation for the oracle module.
 func (AppModuleBasic) ValidateGenesis(cdc codec.JSONMarshaler, bz json.RawMessage) error {
 	var data GenesisState
-	err := cdc.UnmarshalJSON(bz, &data)
-	if err != nil {
-		return err
-	}
-	// Once json successfully marshalled, passes along to genesis.go
-	return ValidateGenesis(data)
+	return cdc.UnmarshalJSON(bz, &data)
 }
 
 // RegisterRESTRoutes implements AppModuleBasic interface.

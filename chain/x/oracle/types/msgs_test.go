@@ -6,6 +6,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
+	"github.com/tendermint/tendermint/crypto/ed25519"
 )
 
 var (
@@ -13,6 +14,10 @@ var (
 	BadTestAddr     = sdk.AccAddress([]byte("BAD_ADDR"))
 	GoodTestValAddr = sdk.ValAddress(make([]byte, 20))
 	BadTestValAddr  = sdk.ValAddress([]byte("BAD_ADDR"))
+
+	pk1              = ed25519.GenPrivKey().PubKey()
+	GoodTestAddr2    = sdk.AccAddress(pk1.Address())
+	GoodTestValAddr2 = sdk.ValAddress(pk1.Address())
 )
 
 type validateTestCase struct {
@@ -92,7 +97,7 @@ func TestMsgGetSignBytes(t *testing.T) {
 		string(NewMsgRequestData(1, []byte("calldata"), 10, 5, "client-id", GoodTestAddr).GetSignBytes()),
 	)
 	require.Equal(t,
-		`{"type":"oracle/Report","value":{"data_set":[{"data":"ZGF0YTE=","exit_code":1,"external_id":"1"},{"data":"ZGF0YTI=","exit_code":2,"external_id":"2"}],"reporter":"band1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq2vqal4","request_id":"1","validator":"cosmosvaloper1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqkh52tw"}}`,
+		`{"type":"oracle/Report","value":{"raw_reports":[{"data":"ZGF0YTE=","exit_code":1,"external_id":"1"},{"data":"ZGF0YTI=","exit_code":2,"external_id":"2"}],"reporter":"band1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq2vqal4","request_id":"1","validator":"cosmosvaloper1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqkh52tw"}}`,
 		string(NewMsgReportData(1, []RawReport{{1, 1, []byte("data1")}, {2, 2, []byte("data2")}}, GoodTestValAddr, GoodTestAddr).GetSignBytes()),
 	)
 	require.Equal(t,
@@ -113,6 +118,7 @@ func TestMsgCreateDataSourceValidation(t *testing.T) {
 		{false, NewMsgCreateDataSource(GoodTestAddr, "name", strings.Repeat("x", 5000), []byte("exec"), GoodTestAddr)},
 		{false, NewMsgCreateDataSource(GoodTestAddr, "name", "desc", []byte{}, GoodTestAddr)},
 		{false, NewMsgCreateDataSource(GoodTestAddr, "name", "desc", []byte(strings.Repeat("x", 20000)), GoodTestAddr)},
+		{false, NewMsgCreateDataSource(GoodTestAddr, "name", "desc", DoNotModifyBytes, GoodTestAddr)},
 		{false, NewMsgCreateDataSource(GoodTestAddr, "name", "desc", []byte("exec"), BadTestAddr)},
 	})
 }
@@ -139,6 +145,7 @@ func TestMsgCreateOracleScriptValidation(t *testing.T) {
 		{false, NewMsgCreateOracleScript(GoodTestAddr, "name", "desc", []byte("code"), "schema", strings.Repeat("x", 200), GoodTestAddr)},
 		{false, NewMsgCreateOracleScript(GoodTestAddr, "name", "desc", []byte{}, "schema", "url", GoodTestAddr)},
 		{false, NewMsgCreateOracleScript(GoodTestAddr, "name", "desc", []byte(strings.Repeat("x", 600000)), "schema", "url", GoodTestAddr)},
+		{false, NewMsgCreateOracleScript(GoodTestAddr, "name", "desc", DoNotModifyBytes, "schema", "url", GoodTestAddr)},
 		{false, NewMsgCreateOracleScript(GoodTestAddr, "name", "desc", []byte("code"), "schema", "url", BadTestAddr)},
 	})
 }
@@ -181,16 +188,18 @@ func TestMsgReportDataValidation(t *testing.T) {
 
 func TestMsgAddReporterValidation(t *testing.T) {
 	performValidateTests(t, []validateTestCase{
-		{true, NewMsgAddReporter(GoodTestValAddr, GoodTestAddr)},
+		{true, NewMsgAddReporter(GoodTestValAddr, GoodTestAddr2)},
 		{false, NewMsgAddReporter(BadTestValAddr, GoodTestAddr)},
 		{false, NewMsgAddReporter(GoodTestValAddr, BadTestAddr)},
+		{false, NewMsgAddReporter(GoodTestValAddr, GoodTestAddr)},
 	})
 }
 
 func TestMsgRemoveReporterValidation(t *testing.T) {
 	performValidateTests(t, []validateTestCase{
-		{true, NewMsgRemoveReporter(GoodTestValAddr, GoodTestAddr)},
+		{true, NewMsgRemoveReporter(GoodTestValAddr, GoodTestAddr2)},
 		{false, NewMsgRemoveReporter(BadTestValAddr, GoodTestAddr)},
 		{false, NewMsgRemoveReporter(GoodTestValAddr, BadTestAddr)},
+		{false, NewMsgRemoveReporter(GoodTestValAddr, GoodTestAddr)},
 	})
 }

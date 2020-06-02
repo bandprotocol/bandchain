@@ -18,5 +18,10 @@ const (
 	MaxResultSize         = 1 * 1024   // 1kB
 
 	WasmPrepareGas = 100000
-	WasmExecuteGas = 100000
+	WasmExecuteGas = 500000
+)
+
+// nolint
+var (
+	DoNotModifyBytes = []byte(DoNotModify)
 )
