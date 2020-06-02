@@ -1,26 +1,16 @@
 extern "C" {
-    pub fn getCurrentRequestID() -> i64;
-    pub fn getAskCount() -> i64;
-    pub fn getMinCount() -> i64;
-    pub fn getAnsCount() -> i64;
-    pub fn getPrepareBlockTime() -> i64;
-    pub fn getAggregateBlockTime() -> i64;
-    pub fn readValidatorAddress(validatorIndex: i64, resultOffset: *mut u8) -> i64;
-    pub fn getCallDataSize() -> i64;
-    pub fn readCallData(resultOffset: *mut u8, seekOffset: i64, resultSize: i64) -> i64;
-    pub fn saveReturnData(dataOffset: *const u8, dataLength: i64) -> i64;
-    pub fn requestExternalData(
-        dataSourceID: i64,
-        externalDataID: i64,
-        dataOffset: *const u8,
-        dataLength: i64,
-    ) -> i64;
-    pub fn getExternalDataSize(externalDataID: i64, validatorIndex: i64) -> i64;
-    pub fn readExternalData(
-        externalDataID: i64,
-        validatorIndex: i64,
-        resultOffset: *mut u8,
-        seekOffset: i64,
-        resultSize: i64,
-    ) -> i64;
+    // pub fn getCurrentRequestID() -> i64;
+    pub fn get_ask_count() -> i64;
+    pub fn get_min_count() -> i64;
+    pub fn get_ans_count() -> i64;
+    // pub fn getPrepareBlockTime() -> i64;
+    // pub fn getAggregateBlockTime() -> i64;
+    // pub fn readValidatorAddress(validatorIndex: i64, resultOffset: *mut u8) -> i64;
+
+    pub fn get_calldata_size() -> i64;
+    pub fn read_calldata(resOffset: i64, resSize: i64);
+    pub fn set_return_data(dataOffset: i64, dataLength: i64);
+    pub fn ask_external_data(did: i64, eid: i64, dataOffset: i64, dataLength: i64);
+    pub fn get_external_data_size(eid: i64, vid: i64) -> i64;
+    pub fn read_external_data(eid: i64, vid: i64, resOffset: i64, resSize: i64);
 }

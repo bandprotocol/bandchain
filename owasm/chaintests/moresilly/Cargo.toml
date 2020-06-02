@@ -10,6 +10,6 @@ crate-type = ["cdylib"]
 
 [dependencies]
 owasm = { path = "../.." }
-borsh = "*"
+obi = { path = "../../../obi/obi-rs/obi" }
 num = "*"
 wee_alloc = "*"

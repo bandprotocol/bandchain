@@ -14,7 +14,6 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/bandprotocol/bandchain/chain/pkg/filecache"
-	"github.com/bandprotocol/bandchain/chain/pkg/owasm"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
@@ -22,7 +21,6 @@ type Keeper struct {
 	storeKey      sdk.StoreKey
 	cdc           *codec.Codec
 	fileCache     filecache.Cache
-	OwasmExecute  owasm.Executor
 	ParamSpace    params.Subspace
 	StakingKeeper types.StakingKeeper
 	ChannelKeeper types.ChannelKeeper
@@ -32,7 +30,7 @@ type Keeper struct {
 
 // NewKeeper creates a new oracle Keeper instance.
 func NewKeeper(
-	cdc *codec.Codec, key sdk.StoreKey, fileDir string, owasmExecute owasm.Executor,
+	cdc *codec.Codec, key sdk.StoreKey, fileDir string,
 	paramSpace params.Subspace, stakingKeeper staking.Keeper, channelKeeper types.ChannelKeeper,
 	scopedKeeper capability.ScopedKeeper, portKeeper types.PortKeeper,
 ) Keeper {
@@ -43,7 +41,6 @@ func NewKeeper(
 		storeKey:      key,
 		cdc:           cdc,
 		fileCache:     filecache.New(fileDir),
-		OwasmExecute:  owasmExecute,
 		ParamSpace:    paramSpace,
 		StakingKeeper: stakingKeeper,
 		ChannelKeeper: channelKeeper,
