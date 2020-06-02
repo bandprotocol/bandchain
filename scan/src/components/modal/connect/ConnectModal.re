@@ -75,8 +75,8 @@ type login_method_t =
 let toLoginMethodString = method => {
   switch (method) {
   | Mnemonic => "Test Account"
-  | LedgerWithCosmos => "Ledger (Cosmos)"
-  | LedgerWithBandChain => "Ledger (BandChain)"
+  | LedgerWithCosmos => "Ledger - Cosmos"
+  | LedgerWithBandChain => "Ledger - Band (beta)"
   };
 };
 
