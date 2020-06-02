@@ -1,111 +1,17 @@
 package types
 
-import (
-	"fmt"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
-)
-
-// query endpoints
+// Query endpoints supported by the oracle Querier.
 const (
-	QueryDataSourceByID   = "data_source"
-	QueryDataSources      = "data_sources"
-	QueryOracleScriptByID = "oracle_script"
-	QueryOracleScripts    = "oracle_scripts"
-	QueryRequestByID      = "request"
-	QueryRequests         = "requests"
-	QueryPending          = "pending_request"
-	QueryRequestNumber    = "request_number"
+	QueryParams        = "params"
+	QueryCounts        = "counts"
+	QueryData          = "data"
+	QueryDataSources   = "data_sources"
+	QueryOracleScripts = "oracle_scripts"
 )
 
-type RawBytes []byte
-
-func (rb RawBytes) String() string {
-	// TODO: Not actual used (just for compiled)
-	return "NOT_USED"
-}
-
-type U64Array []uint64
-
-func (u64a U64Array) String() string {
-	return fmt.Sprintf("%v", []uint64(u64a))
-}
-
-type DataSourceQuerierInfo struct {
-	ID          DataSourceID   `json:"id"`
-	Owner       sdk.AccAddress `json:"owner"`
-	Name        string         `json:"name"`
-	Description string         `json:"description"`
-	Fee         sdk.Coins      `json:"fee"`
-	Executable  []byte         `json:"executable"`
-}
-
-func NewDataSourceQuerierInfo(
-	id DataSourceID,
-	owner sdk.AccAddress,
-	name string,
-	description string,
-	executable []byte,
-) DataSourceQuerierInfo {
-	return DataSourceQuerierInfo{
-		ID:          id,
-		Owner:       owner,
-		Name:        name,
-		Description: description,
-		Executable:  executable,
-	}
-}
-
-type OracleScriptQuerierInfo struct {
-	ID            OracleScriptID `json:"id"`
-	Owner         sdk.AccAddress `json:"owner"`
-	Name          string         `json:"name"`
-	Description   string         `json:"description"`
-	Code          []byte         `json:"code"`
-	Schema        string         `json:"schema"`
-	SourceCodeURL string         `json:"source_code_url"`
-}
-
-func NewOracleScriptQuerierInfo(
-	id OracleScriptID,
-	owner sdk.AccAddress,
-	name string,
-	description string,
-	code []byte,
-	schema string,
-	sourceCodeURL string,
-) OracleScriptQuerierInfo {
-	return OracleScriptQuerierInfo{
-		ID:            id,
-		Owner:         owner,
-		Description:   description,
-		Name:          name,
-		Code:          code,
-		Schema:        schema,
-		SourceCodeURL: sourceCodeURL,
-	}
-}
-
-type RequestQuerierInfo struct {
-	ID              RequestID    `json:"id"`
-	Request         Request      `json:"request"`
-	RawDataRequests []RawRequest `json:"rawDataRequests"`
-	Reports         []Report     `json:"reports"`
-	Result          []byte       `json:"result"`
-}
-
-func NewRequestQuerierInfo(
-	id RequestID,
-	request Request,
-	rawDataRequests []RawRequest,
-	reports []Report,
-	result []byte,
-) RequestQuerierInfo {
-	return RequestQuerierInfo{
-		ID:              id,
-		Request:         request,
-		RawDataRequests: rawDataRequests,
-		Reports:         reports,
-		Result:          result,
-	}
+// QueryCountsResult is the struct for the result of query counts.
+type QueryCountsResult struct {
+	DataSourceCount   int64 `json:"data_source_count"`
+	OracleScriptCount int64 `json:"oracle_script_count"`
+	RequestCount      int64 `json:"request_count"`
 }

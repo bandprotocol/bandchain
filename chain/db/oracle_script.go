@@ -88,19 +88,30 @@ func (b *BandDB) handleMsgEditOracleScript(
 	txHash []byte,
 	msg oracle.MsgEditOracleScript,
 ) error {
-	oracleScript := createOracleScript(
-		int64(msg.OracleScriptID), msg.Name, msg.Description,
-		msg.Owner, b.ctx.BlockTime(), msg.Schema, msg.SourceCodeURL,
+	var oracleScript OracleScript
+	err := b.tx.First(&oracleScript, int64(msg.OracleScriptID)).Error
+	if err != nil {
+		return err
+	}
+
+	newName := modify(*oracleScript.Name, msg.Name)
+	newDescription := modify(*oracleScript.Description, msg.Description)
+	newSchema := modify(*oracleScript.Schema, msg.Schema)
+	newSourceCodeURL := modify(*oracleScript.SourceCodeURL, msg.SourceCodeURL)
+
+	oracleScript = createOracleScript(
+		int64(msg.OracleScriptID), newName, newDescription, msg.Owner,
+		b.ctx.BlockTime(), newSchema, newSourceCodeURL,
 	)
 
-	err := b.tx.Save(&oracleScript).Error
+	err = b.tx.Save(&oracleScript).Error
 	if err != nil {
 		return err
 	}
 
 	return b.tx.Create(&OracleScriptRevision{
 		OracleScriptID: int64(msg.OracleScriptID),
-		Name:           msg.Name,
+		Name:           newName,
 		Timestamp:      b.ctx.BlockTime().UnixNano() / int64(time.Millisecond),
 		BlockHeight:    b.ctx.BlockHeight(),
 		TxHash:         txHash,
