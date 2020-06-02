@@ -81,19 +81,29 @@ func (b *BandDB) handleMsgEditDataSource(
 	txHash []byte,
 	msg oracle.MsgEditDataSource,
 ) error {
-	dataSource := createDataSource(
-		int64(msg.DataSourceID), msg.Name, msg.Description,
-		msg.Owner, msg.Executable, b.ctx.BlockTime(),
+	var dataSource DataSource
+	err := b.tx.First(&dataSource, int64(msg.DataSourceID)).Error
+	if err != nil {
+		return err
+	}
+
+	newName := modify(*dataSource.Name, msg.Name)
+	newDescription := modify(*dataSource.Description, msg.Description)
+	newExecutable := modifyCode(dataSource.Executable, msg.Executable)
+
+	dataSource = createDataSource(
+		int64(msg.DataSourceID), newName, newDescription,
+		msg.Owner, newExecutable, b.ctx.BlockTime(),
 	)
 
-	err := b.tx.Save(&dataSource).Error
+	err = b.tx.Save(&dataSource).Error
 	if err != nil {
 		return err
 	}
 
 	return b.tx.Create(&DataSourceRevision{
 		DataSourceID: int64(msg.DataSourceID),
-		Name:         msg.Name,
+		Name:         newName,
 		Timestamp:    b.ctx.BlockTime().UnixNano() / int64(time.Millisecond),
 		BlockHeight:  b.ctx.BlockHeight(),
 		TxHash:       txHash,
