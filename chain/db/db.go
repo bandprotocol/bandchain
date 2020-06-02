@@ -1,6 +1,7 @@
 package db
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"strconv"
@@ -602,4 +603,19 @@ func (b *BandDB) GetInvolvedAccountsFromTransferEvents(logs sdk.ABCIMessageLogs)
 		}
 	}
 	return involvedAccounts
+}
+
+// modify returns new value if it is not `DoNotModify`. Returns old value otherwise
+func modify(oldVal string, newVal string) string {
+	if newVal == otypes.DoNotModify {
+		return oldVal
+	}
+	return newVal
+}
+
+func modifyCode(oldVal []byte, newVal []byte) []byte {
+	if bytes.Compare(newVal, []byte(otypes.DoNotModify)) == 0 {
+		return oldVal
+	}
+	return newVal
 }
