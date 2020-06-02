@@ -260,7 +260,7 @@ $ %s tx oracle create-data-source --name coingecko-price --description "The scri
 // GetCmdEditDataSource implements the edit data source command handler.
 func GetCmdEditDataSource(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "edit-data-source [id] (--name [name]) (--description [description])(--script [path-to-script]) (--owner [owner])",
+		Use:   "edit-data-source [id] (--name [name]) (--description [description]) (--script [path-to-script]) (--owner [owner])",
 		Short: "Edit data source",
 		Args:  cobra.ExactArgs(1),
 		Long: strings.TrimSpace(
@@ -295,9 +295,15 @@ $ %s tx oracle edit-data-source 1 --name coingecko-price --description The scrip
 			if err != nil {
 				return err
 			}
-			execBytes, err := ioutil.ReadFile(scriptPath)
-			if err != nil {
-				return err
+			var execBytes []byte
+
+			if scriptPath == "" {
+				execBytes = types.DoNotModifyBytes
+			} else {
+				execBytes, err = ioutil.ReadFile(scriptPath)
+				if err != nil {
+					return err
+				}
 			}
 
 			ownerStr, err := cmd.Flags().GetString(flagOwner)
@@ -456,9 +462,14 @@ $ %s tx oracle edit-oracle-script 1 --name eth-price --description "Oracle scrip
 			if err != nil {
 				return err
 			}
-			scriptCode, err := ioutil.ReadFile(scriptPath)
-			if err != nil {
-				return err
+			var scriptCode []byte
+			if scriptPath == "" {
+				scriptCode = types.DoNotModifyBytes
+			} else {
+				scriptCode, err = ioutil.ReadFile(scriptPath)
+				if err != nil {
+					return err
+				}
 			}
 
 			ownerStr, err := cmd.Flags().GetString(flagOwner)

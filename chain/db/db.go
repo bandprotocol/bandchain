@@ -614,7 +614,7 @@ func modify(oldVal string, newVal string) string {
 }
 
 func modifyCode(oldVal []byte, newVal []byte) []byte {
-	if bytes.Compare(newVal, []byte(otypes.DoNotModify)) == 0 {
+	if bytes.Compare(newVal, otypes.DoNotModifyBytes) == 0 {
 		return oldVal
 	}
 	return newVal
