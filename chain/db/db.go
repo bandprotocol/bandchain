@@ -430,6 +430,20 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string][]s
 		if err != nil {
 			return nil, err
 		}
+		// TODO: remove this after cosmos sdk protobuf migration is complete
+		rawReports := make([]map[string]interface{}, 0)
+		for _, raw := range msg.RawReports {
+			rawReport := make(map[string]interface{})
+			if raw.Data == nil {
+				rawReport["data"] = []byte{}
+			} else {
+				rawReport["data"] = raw.Data
+			}
+			rawReport["exit_code"] = raw.ExitCode
+			rawReport["external_id"] = raw.ExternalID
+			rawReports = append(rawReports, rawReport)
+		}
+		jsonMap["raw_reports"] = rawReports
 	case oracle.MsgAddReporter:
 		val, _ := b.StakingKeeper.GetValidator(b.ctx, msg.Validator)
 		jsonMap["validator_moniker"] = val.Description.Moniker
