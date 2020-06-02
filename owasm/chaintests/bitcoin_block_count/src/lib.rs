@@ -15,7 +15,7 @@ struct Output {
 #[no_mangle]
 fn prepare_impl(_: Input) {
     // Bitcoin block count data source
-    oei::request_external_data(7, 1, "".as_bytes());
+    oei::ask_external_data(1, 7, "".as_bytes());
 }
 
 #[no_mangle]
