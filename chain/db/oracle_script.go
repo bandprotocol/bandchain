@@ -88,7 +88,6 @@ func (b *BandDB) handleMsgEditOracleScript(
 	txHash []byte,
 	msg oracle.MsgEditOracleScript,
 ) error {
-
 	var oracleScript OracleScript
 	err := b.tx.First(&oracleScript, int64(msg.OracleScriptID)).Error
 	if err != nil {
