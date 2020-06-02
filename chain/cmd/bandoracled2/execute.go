@@ -74,7 +74,6 @@ func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawR
 func GetExecutable(c *Context, l *Logger, hash string) ([]byte, error) {
 	l.Debug(":magnifying_glass_tilted_left: Fetching data source hash: %s from bandchain querier", hash)
 
-	// cliCtx := sdkCtx.CLIContext{Client: c.client}
 	res, err := c.client.ABCIQueryWithOptions(fmt.Sprintf("custom/%s/%s/%s", otypes.StoreKey, otypes.QueryData, hash), nil, rpcclient.ABCIQueryOptions{})
 	if err != nil {
 		l.Error(":exploding_head: Failed to get data source with error: %s", err.Error())
