@@ -166,7 +166,7 @@ func TestCreateOracleScriptSuccess(t *testing.T) {
 	_, err := oracle.NewHandler(keeper)(ctx, msg)
 	defer deleteFile(code)
 
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	oracleScript, err := keeper.GetOracleScript(ctx, 1)
 	require.NoError(t, err)
@@ -195,7 +195,7 @@ func TestCreateGzippedOracleScriptSuccess(t *testing.T) {
 	_, err := oracle.NewHandler(keeper)(ctx, msg)
 	defer deleteFile(code)
 
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	oracleScript, err := keeper.GetOracleScript(ctx, 1)
 	require.NoError(t, err)
