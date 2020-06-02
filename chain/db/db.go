@@ -1,6 +1,7 @@
 package db
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"strconv"
@@ -602,4 +603,18 @@ func (b *BandDB) GetInvolvedAccountsFromTransferEvents(logs sdk.ABCIMessageLogs)
 		}
 	}
 	return involvedAccounts
+}
+
+func modify(oldVal string, newVal string) string {
+	if newVal == otypes.DoNotModify {
+		return oldVal
+	}
+	return newVal
+}
+
+func modifyCode(oldVal []byte, newVal []byte) []byte {
+	if bytes.Compare(newVal, otypes.DoNotModifyBytes) == 0 {
+		return oldVal
+	}
+	return newVal
 }
