@@ -17,7 +17,7 @@ contract("Packets", () => {
       )
         .toString()
         .should.eq(
-          "0xd9c589270a046265656210011a0f03000000425443640000000000000020012801",
+          "0x000000046265656200000000000000010000000f03000000425443640000000000000000000000000000010000000000000001",
         );
     });
   });
@@ -26,7 +26,7 @@ contract("Packets", () => {
       (
         await this.contract.marshalResponsePacket([
           "beeb",
-          3,
+          1,
           1,
           1589535020,
           1589535022,
@@ -36,7 +36,7 @@ contract("Packets", () => {
       )
         .toString()
         .should.eq(
-          "0x79b5957c0a04626565621003180120acc2f9f50528aec2f9f50530013a084bb10e0000000000",
+          "0x000000046265656200000000000000010000000000000001000000005ebe612c000000005ebe612e00000001000000084bb10e0000000000",
         );
     });
   });
@@ -46,12 +46,24 @@ contract("Packets", () => {
       (
         await this.contract.getResultHash(
           ["beeb", 1, "0x030000004254436400000000000000", 1, 1],
-          ["beeb", 3, 1, 1589535020, 1589535022, 1, "0x4bb10e0000000000"],
+          ["beeb", 1, 1, 1589535020, 1589535022, 1, "0x4bb10e0000000000"],
         )
       )
         .toString()
         .should.eq(
-          "0xdbbbf5596a975c50c601bdd6ae26a5007e8483344afd7d2ae41e37891cb81b86",
+          "0x29bcc52d59b39c61a9616365dcd39dbff8d1aebc88a6a7e2b53dff67841dbc06",
+        );
+    });
+    it("should calculate result hash with empty client id correctly", async () => {
+      (
+        await this.contract.getResultHash(
+          ["", 1, "0x030000004254436400000000000000", 1, 1],
+          ["", 1, 1, 1590490752, 1590490756, 1, "0x568c0d0000000000"],
+        )
+      )
+        .toString()
+        .should.eq(
+          "0xa506eb6a23931d1130bfced8b10ec41674a6eaefb888063847e3605bffbdd5ba",
         );
     });
   });

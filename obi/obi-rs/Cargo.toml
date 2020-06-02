@@ -1,0 +1,6 @@
+[workspace]
+members = [
+"obi",
+"obi-derive",
+"obi-derive-internal",
+]

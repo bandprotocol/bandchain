@@ -274,6 +274,9 @@ func (msg MsgAddReporter) ValidateBasic() error {
 	if err := sdk.VerifyAddressFormat(msg.Reporter); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "reporter: %s", msg.Reporter)
 	}
+	if sdk.ValAddress(msg.Reporter).Equals(msg.Validator) {
+		return ErrSelfReferenceAsReporter
+	}
 	return nil
 }
 
@@ -300,6 +303,9 @@ func (msg MsgRemoveReporter) ValidateBasic() error {
 	}
 	if err := sdk.VerifyAddressFormat(msg.Reporter); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "reporter: %s", msg.Reporter)
+	}
+	if sdk.ValAddress(msg.Reporter).Equals(msg.Validator) {
+		return ErrSelfReferenceAsReporter
 	}
 	return nil
 }

@@ -1,22 +1,31 @@
-use owasm::oei;
+use obi::{OBIDecode, OBIEncode};
+use owasm::{execute_entry_point, oei, prepare_entry_point};
 
 fn parse_float(data: String) -> Option<f64> {
     data.trim_end().parse::<f64>().ok()
 }
 
-#[no_mangle]
-pub fn prepare() {
-    let calldata = oei::get_calldata();
-    // Coingecko data source
-    oei::request_external_data(1, 1, &calldata);
-    // Crypto compare source
-    oei::request_external_data(2, 2, &calldata);
-    // Binance source
-    oei::request_external_data(3, 3, &calldata);
+#[derive(OBIDecode)]
+struct Input {
+    symbol: String,
+    multiplier: u64,
 }
 
-#[no_mangle]
-pub fn execute() {
+#[derive(OBIEncode)]
+struct Output {
+    px: u64,
+}
+
+fn prepare_impl(input: Input) {
+    // Coingecko data source
+    oei::request_external_data(1, 1, &input.symbol.as_bytes());
+    // Crypto compare source
+    oei::request_external_data(2, 2, &input.symbol.as_bytes());
+    // Binance source
+    oei::request_external_data(3, 3, &input.symbol.as_bytes());
+}
+
+fn execute_impl(input: Input) -> Output {
     let validator_count = oei::get_ask_count();
     let mut sum: f64 = 0.0;
     let mut count: u64 = 0;
@@ -41,6 +50,22 @@ pub fn execute() {
             count += 1;
         }
     }
-    let result = (sum / (count as f64) * 100.0) as u64;
-    oei::save_return_data(&result.to_be_bytes())
+    Output { px: (sum / (count as f64) * (input.multiplier as f64)) as u64 }
+}
+
+prepare_entry_point!(prepare_impl);
+execute_entry_point!(execute_impl);
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_get_schema() {
+        let input = Input { symbol: String::from("BTC"), multiplier: 100 };
+        let encoded_calldata: [u8; 15] = [0, 0, 0, 3, 66, 84, 67, 0, 0, 0, 0, 0, 0, 0, 100];
+        let result: Input = OBIDecode::try_from_slice(&encoded_calldata).unwrap();
+        assert_eq!(input.multiplier, result.multiplier);
+        assert_eq!(input.symbol, result.symbol);
+    }
 }
