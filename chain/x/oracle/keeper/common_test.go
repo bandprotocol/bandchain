@@ -9,12 +9,17 @@ import (
 	"github.com/spf13/viper"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/cli"
+	"github.com/tendermint/tendermint/libs/log"
 
 	bandapp "github.com/bandprotocol/bandchain/chain/app"
 	"github.com/bandprotocol/bandchain/chain/pkg/filecache"
 	"github.com/bandprotocol/bandchain/chain/simapp"
 	me "github.com/bandprotocol/bandchain/chain/x/oracle/keeper"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+)
+
+const (
+	ChainID = "bandchain"
 )
 
 var (
@@ -40,23 +45,9 @@ var (
 )
 
 func createTestInput() (*bandapp.BandApp, sdk.Context, me.Keeper) {
-	app := simapp.NewSimApp()
+	app := simapp.NewSimApp(ChainID, log.NewNopLogger())
 	ctx := app.BaseApp.NewContext(false, abci.Header{})
 	return app, ctx, app.OracleKeeper
-}
-
-func newDefaultRequest() types.Request {
-	return types.NewRequest(
-		1,
-		[]byte("calldata"),
-		[]sdk.ValAddress{Validator1.ValAddress, Validator2.ValAddress},
-		2,
-		0,
-		1581503227,
-		"clientID",
-		nil,
-		[]types.ExternalID{42},
-	)
 }
 
 func deleteFile(path string) {

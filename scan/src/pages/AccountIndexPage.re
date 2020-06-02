@@ -178,7 +178,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
       <VSpacing size=Spacing.lg />
       <VSpacing size=Spacing.sm />
       <div className=Styles.addressContainer>
-        <AddressRender address position=AddressRender.Title copy=true />
+        <AddressRender address position=AddressRender.Title copy=true clickable=false />
         <HSpacing size=Spacing.md />
         <div className=Styles.button onClick={_ => {send()}}>
           <Text

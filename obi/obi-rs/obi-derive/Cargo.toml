@@ -1,0 +1,15 @@
+[package]
+name = "obi-derive"
+version = "0.1.0"
+authors = ["Band Protocol <connect@bandprotocol.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+proc-macro = true
+
+[dependencies]
+obi-derive-internal = { path = "../obi-derive-internal"}
+syn = {version = "1", features = ["full", "fold"] }
+quote = "0.3.15"
