@@ -5,31 +5,6 @@ on:
     - 'scan/**'
 
 jobs:
-  scan-build:
-    runs-on: ubuntu-latest
-    env:
-      working-directory: ./scan
-
-    steps:
-    - name: Code checkout
-      uses: actions/checkout@v2
-
-    - name: Check node_modules cache
-      id: scan-node-modules-cache
-      uses: actions/cache@v1
-      with:
-        path: scan/node_modules
-        key: ${{ runner.OS }}-scan-build-${{ hashFiles('**/package-lock.json') }}
-
-    - name: Run yarn
-      if: steps.scan-node-modules-cache.outputs.cache-hit != 'true'
-      run: yarn
-      working-directory: ${{env.working-directory}}
-
-    - name: Run yarn bsb -make-world
-      run: yarn bsb -make-world -w -ws _
-      working-directory: ${{env.working-directory}}
-
   scan-test:
     runs-on: ubuntu-latest
     needs: scan-build
@@ -45,7 +20,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: scan/node_modules
-        key: ${{ runner.OS }}-scan-build-${{ hashFiles('**/package-lock.json') }}
+        key: ${{ runner.OS }}-scan-test-${{ hashFiles('**/yarn.lock') }}
 
     - name: Run yarn
       if: steps.scan-node-modules-cache.outputs.cache-hit != 'true'
