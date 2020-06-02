@@ -1,0 +1,28 @@
+name: Chain Workflow
+on: push
+
+jobs:
+  chain-test:
+    runs-on: ubuntu-latest
+    env:
+      working-directory: ./chain
+    
+    steps:
+    - name: Code checkout
+      uses: actions/checkout@v2
+
+    - name: Install Go
+      uses: actions/setup-go@v2-beta
+      with:
+        go-version: '^1.13.8' # The Go version to download (if necessary) and use.
+
+    - name: Check go mod cache
+      id: go-modules-cache
+      uses: actions/cache@v1
+      with:
+        path:  ~/go/pkg/mod
+        key: ${{ runner.os }}-chain-build-${{ hashFiles('**/go.sum') }}
+    
+    - name: Run chain tests
+      run : go test ./...
+      working-directory: ${{env.working-directory}}
