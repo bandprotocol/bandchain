@@ -46,10 +46,8 @@ func (k Keeper) AddOracleScript(ctx sdk.Context, oracleScript types.OracleScript
 
 // MustEditOracleScript edits the given oracle script by id and flushes it to the storage. Panic if not exists.
 func (k Keeper) MustEditOracleScript(ctx sdk.Context, id types.OracleScriptID, new types.OracleScript) {
-	oracleScript, err := k.GetOracleScript(ctx, id)
-	if err != nil {
-		panic(err)
-	}
+	oracleScript := k.MustGetOracleScript(ctx, id)
+
 	oracleScript.Owner = new.Owner
 	oracleScript.Name = modify(oracleScript.Name, new.Name)
 	oracleScript.Description = modify(oracleScript.Description, new.Description)
