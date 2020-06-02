@@ -1,8 +1,5 @@
 name: Chain Workflow
-on:
-  push:
-    paths:
-    - 'chain/**'
+on: push
 
 jobs:
   chain-test:

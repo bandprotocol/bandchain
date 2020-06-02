@@ -1,8 +1,5 @@
 name: Owasm Workflow
-on:
-  push:
-    paths:
-    - 'owasm/**'
+on: push
 
 jobs:
   wasm-test:

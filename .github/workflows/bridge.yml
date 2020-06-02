@@ -1,8 +1,5 @@
 name: Bridges Workflow
-on:
-  push:
-    paths:
-    - 'bridges/evm/**'
+on: push
 
 jobs:
   bridges-evm-test:
