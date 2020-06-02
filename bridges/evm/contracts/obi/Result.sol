@@ -1,9 +1,9 @@
 pragma solidity ^0.5.0;
 
-import "./Borsh.sol";
+import "./Obi.sol";
 
 library ResultDecoder {
-    using Borsh for Borsh.Data;
+    using Obi for Obi.Data;
 
     struct Result {
         string symbol;
@@ -16,7 +16,7 @@ library ResultDecoder {
         pure
         returns (Result memory result)
     {
-        Borsh.Data memory data = Borsh.from(_data);
+        Obi.Data memory data = Obi.from(_data);
         result.symbol = string(data.decodeBytes());
         result.multiplier = data.decodeU64();
         result.what = data.decodeU8();

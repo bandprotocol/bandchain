@@ -1,11 +1,11 @@
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 
-import {Borsh} from "./Borsh.sol";
+import {Obi} from "./Obi.sol";
 import {ResultDecoder} from "./Result.sol";
 
 
-contract BorshUser {
+contract ObiUser {
     using ResultDecoder for bytes;
 
     function decode(bytes memory _data)
