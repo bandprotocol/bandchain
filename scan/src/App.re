@@ -1,5 +1,4 @@
 module Styles = {
-    // TEST
   open Css;
 
   let pageWidth = style([maxWidth(`px(970))]);
