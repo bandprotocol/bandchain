@@ -8,7 +8,11 @@ let buffer = json =>
   |> JsBuffer.fromHex;
 
 let time = json => {
-  json |> Js.Json.decodeNumber |> Belt.Option.getExn |> MomentRe.momentWithTimestampMS;
+  json
+  |> Js.Json.decodeNumber
+  |> Belt.Option.getExn
+  |> MomentRe.momentWithTimestampMS
+  |> MomentRe.Moment.defaultUtc;
 };
 
 let bool = json => json |> Js.Json.decodeBoolean |> Belt.Option.getExn;
