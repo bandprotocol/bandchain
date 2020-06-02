@@ -1,4 +1,4 @@
-name: Bridges Workflow
+name: Bridge Workflow
 on: push
 
 jobs:
