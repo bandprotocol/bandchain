@@ -58,18 +58,7 @@ fn median(arr: Vec<f64>) -> f64 {
         pos_arr.sort_by(|a, b| a.partial_cmp(b).unwrap());
         let mid = len_pos_arr / 2f64;
         if len_pos_arr as u64 % 2 == 0 {
-            let mut l = 0f64;
-            let mut x1 = 0f64;
-            let mut x2 = 0f64;
-            for &x in pos_arr.iter() {
-                x1 = x2;
-                x2 = x;
-                l += 1f64;
-                if l > mid {
-                    break;
-                }
-            }
-            (x1 + x2) / 2f64
+            (pos_arr[(mid - 1f64) as usize] + pos_arr[mid as usize]) / 2f64
         } else {
             pos_arr[mid as usize]
         }
