@@ -17,7 +17,7 @@ pub fn struct_enc(input: &ItemStruct) -> syn::Result<TokenStream2> {
                 body.extend(delta);
 
                 let field_type = &field.ty;
-                encode_field_types.extend(quote!{
+                encode_field_types.extend(quote! {
                     #field_type: obi::enc::OBIEncode,
                 });
             }
@@ -46,7 +46,7 @@ pub fn struct_enc(input: &ItemStruct) -> syn::Result<TokenStream2> {
     })
 }
 
-// Rustfmt removes comas.
+// Rustfmt removes commas.
 #[rustfmt::skip]
 #[cfg(test)]
 mod tests {
@@ -70,32 +70,6 @@ mod tests {
             impl obi::enc::OBIEncode for A
             where
                 u64: obi::enc::OBIEncode,
-                String: obi::enc::OBIEncode,
-            {
-                fn encode<W: std::io::Write>(&self, writer: &mut W) -> std::result::Result<(), std::io::Error> {
-                    obi::OBIEncode::encode(&self.x, writer)?;
-                    obi::OBIEncode::encode(&self.y, writer)?;
-                    Ok(())
-                }
-            }
-        };
-        assert_eq(expected, actual);
-    }
-
-    #[test]
-    fn simple_generics() {
-        let item_struct: ItemStruct = syn::parse2(quote!{
-            struct A<K, V> {
-                x: HashMap<K, V>,
-                y: String,
-            }
-        }).unwrap();
-
-        let actual = struct_enc(&item_struct).unwrap();
-        let expected = quote!{
-            impl<K, V> obi::enc::OBIEncode for A<K, V>
-            where
-                HashMap<K, V>: obi::enc::OBIEncode,
                 String: obi::enc::OBIEncode,
             {
                 fn encode<W: std::io::Write>(&self, writer: &mut W) -> std::result::Result<(), std::io::Error> {
