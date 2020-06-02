@@ -1,7 +1,7 @@
-use borsh::{BorshDeserialize, BorshSchema, BorshSerialize};
+use obi::{OBIDecode, OBIEncode};
 use owasm::{execute_entry_point, ext, oei, prepare_entry_point};
 
-#[derive(BorshDeserialize, BorshSchema)]
+#[derive(OBIDecode)]
 struct Input {
     base_symbol: String,
     quote_symbol: String,
@@ -9,7 +9,7 @@ struct Input {
     multiplier: u64,
 }
 
-#[derive(BorshSerialize, BorshSchema, Debug, PartialEq)]
+#[derive(OBIEncode, Debug, PartialEq)]
 struct Output {
     px: u64,
 }
