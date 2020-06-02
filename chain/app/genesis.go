@@ -182,7 +182,7 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 		{
 			"Crypto price script",
 			"Oracle script for getting the current an average cryptocurrency price from various sources.",
-			"./pkg/owasm/res/crypto_price_borsh.wasm",
+			"./pkg/owasm/res/crypto_price.wasm",
 			`{"Input": "{\"kind\": \"struct\", \"fields\": [ [\"symbol\", \"string\"], [\"multiplier\", \"u64\"] ] }","Output": "{ \"kind\": \"struct\", \"fields\": [ [\"px\", \"u64\"] ]}"}`,
 			`https://ipfs.io/ipfs/QmUrYgDKXT8V8DPdCYMEwPM6n82r6zxbvBf6p4gb4m1RA5`,
 		},
