@@ -18,6 +18,17 @@ jobs:
       uses: actions/setup-go@v2-beta
       with:
         go-version: '^1.13.8' # The Go version to download (if necessary) and use.
+
+    - name: Check go mod cache
+      id: go-modules-cache
+      uses: actions/cache@v1
+      with:
+        path:  ~/go/pkg/mod
+        key: ${{ runner.os }}-chain-build-${{ hashFiles('**/go.sum') }}
+
+    - name: Install dependency
+      if: steps.go-modules-cache.outputs.cache-hit != 'true'
+      run: go mod tidy
     
     - name: Run chain tests
       run : ./run_tests.sh
