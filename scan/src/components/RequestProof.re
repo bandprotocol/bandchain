@@ -74,11 +74,11 @@ let make = (~requestID: ID.Request.t, ~resultOpt: option(JsBuffer.t)) => {
               <CopyButton
                 data={
                   switch (resultOpt) {
-                  | Some(result) => result |> Solana.createProofFromResult
+                  | Some(result) => result |> ProofType2.createProofFromResult
                   | None => "" |> JsBuffer.fromHex
                   }
                 }
-                title="Copy Solana proof"
+                title="Copy proof type2"
               />
               <HSpacing size=Spacing.md />
               <ExtLinkButton link="https://docs.bandchain.org/" description="What is proof ?" />
