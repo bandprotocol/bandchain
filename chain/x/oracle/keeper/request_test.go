@@ -155,15 +155,9 @@ func TestSaveResult(t *testing.T) {
 		oracleScriptID, calldata, vals, minCount, requestHeight,
 		requestTime, clientID, &ibcInfo, rawRequestID))
 
-	res := k.SaveResult(ctx, id, resolveStatus, result)
-
-	require.Equal(t, clientID, res.ClientID)
-	require.Equal(t, id, res.RequestID)
-	require.Equal(t, uint64(0), res.AnsCount)
-	require.Equal(t, requestTime, res.RequestTime)
-	require.Equal(t, resolveStatus, res.ResolveStatus)
-	require.Equal(t, int64(1581589090), res.ResolveTime)
-	require.Equal(t, result, res.Result)
+	packet := k.SaveResult(ctx, id, resolveStatus, result)
+	expectPacket := types.NewOracleResponsePacketData(clientID, id, uint64(0), requestTime, int64(1581589090), resolveStatus, result)
+	require.Equal(t, expectPacket, packet)
 }
 
 func TestProcessExpiredRequests(t *testing.T) {
@@ -224,6 +218,13 @@ func TestProcessExpiredRequests(t *testing.T) {
 
 	require.Equal(t, []types.Report(nil), reports1) // report1 was removed because it already expired
 	require.Equal(t, []types.Report{rep}, reports2)
+
+	res, err := k.GetResult(ctx, id1)
+	require.NotNil(t, res)
+	require.Nil(t, err)
+	res, err = k.GetResult(ctx, id2)
+	require.Nil(t, res)
+	require.NotNil(t, err)
 
 	_, err = k.GetRequest(ctx, id1) // this request was removed because it already expired
 	require.Error(t, err)
