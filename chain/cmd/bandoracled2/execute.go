@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 
-	"github.com/levigross/grequests"
-
 	sdkCtx "github.com/cosmos/cosmos-sdk/client/context"
 	ckeys "github.com/cosmos/cosmos-sdk/client/keys"
 	codecstd "github.com/cosmos/cosmos-sdk/codec/std"
@@ -14,6 +12,7 @@ import (
 
 	"github.com/bandprotocol/bandchain/chain/app"
 	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	rpcclient "github.com/tendermint/tendermint/rpc/client"
 )
 
 var (
@@ -73,16 +72,16 @@ func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawR
 
 // GetExecutable fetches data source executable using the provided client.
 func GetExecutable(c *Context, l *Logger, hash string) ([]byte, error) {
-	l.Debug(":magnifying_glass_tilted_left: Fetching data source hash: %s from the endpoint", hash)
+	l.Debug(":magnifying_glass_tilted_left: Fetching data source hash: %s from bandchain querier", hash)
 
-	res, err := grequests.Get(fmt.Sprintf(`%s/bandchain/getfile/%s`, c.chainRestServerURI, hash), nil)
+	res, err := c.client.ABCIQueryWithOptions(fmt.Sprintf("custom/%s/%s/%s", otypes.StoreKey, otypes.QueryData, hash), nil, rpcclient.ABCIQueryOptions{})
 	if err != nil {
 		l.Error(":exploding_head: Failed to get data source with error: %s", err.Error())
 		return nil, err
 	}
 
-	resBytes := res.Bytes()
+	resValue := res.Response.GetValue()
 
-	l.Debug(":balloon: Received data source hash: %s content: %q", hash, resBytes[:32])
-	return resBytes, nil
+	l.Debug(":balloon: Received data source hash: %s content: %q", hash, resValue[:32])
+	return resValue, nil
 }
