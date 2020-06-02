@@ -431,7 +431,7 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string][]s
 			return nil, err
 		}
 		rawReports := make([]otypes.RawReport, 0)
-		for _, raw := range jsonMap["raw_reports"].([]otypes.RawReport) {
+		for _, raw := range msg.RawReports {
 			if raw.Data == nil {
 				raw.Data = []byte{}
 			}
