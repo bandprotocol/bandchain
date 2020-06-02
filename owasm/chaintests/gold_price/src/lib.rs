@@ -1,12 +1,12 @@
-use borsh::{BorshDeserialize, BorshSerialize};
+use obi::{OBIDecode, OBIEncode};
 use owasm::{execute_entry_point, ext, oei};
 
-#[derive(BorshDeserialize)]
+#[derive(OBIDecode)]
 struct Input {
     multiplier: u64,
 }
 
-#[derive(BorshSerialize)]
+#[derive(OBIEncode)]
 struct Output {
     px: u64,
 }
