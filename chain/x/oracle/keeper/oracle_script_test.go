@@ -64,11 +64,12 @@ func TestAddEditOracleScriptBasic(t *testing.T) {
 	require.Equal(t, oracleScript1, k.MustGetOracleScript(ctx, id))
 	require.NotEqual(t, oracleScript2, k.MustGetOracleScript(ctx, id))
 	// Edits the oracle script. We should get the updated oracle script.
-	err := k.EditOracleScript(ctx, id, types.NewOracleScript(
-		oracleScript2.Owner, oracleScript2.Name, oracleScript2.Description, oracleScript2.Filename,
-		oracleScript2.Schema, oracleScript2.SourceCodeURL,
-	))
-	require.Nil(t, err)
+	require.NotPanics(t, func() {
+		k.MustEditOracleScript(ctx, id, types.NewOracleScript(
+			oracleScript2.Owner, oracleScript2.Name, oracleScript2.Description, oracleScript2.Filename,
+			oracleScript2.Schema, oracleScript2.SourceCodeURL,
+		))
+	})
 	require.NotEqual(t, oracleScript1, k.MustGetOracleScript(ctx, id))
 	require.Equal(t, oracleScript2, k.MustGetOracleScript(ctx, id))
 }
@@ -88,8 +89,7 @@ func TestAddEditOracleScriptDoNotModify(t *testing.T) {
 	require.Equal(t, oracleScript1, k.MustGetOracleScript(ctx, id))
 	require.NotEqual(t, oracleScript2, k.MustGetOracleScript(ctx, id))
 	// Edits the oracle script. We should get the updated oracle script.
-	err := k.EditOracleScript(ctx, id, oracleScript2)
-	require.Nil(t, err)
+	require.NotPanics(t, func() { k.MustEditOracleScript(ctx, id, oracleScript2) })
 	oracleScriptRes := k.MustGetOracleScript(ctx, id)
 	require.NotEqual(t, oracleScriptRes, oracleScript1)
 	require.NotEqual(t, oracleScriptRes, oracleScript2)
@@ -124,10 +124,12 @@ func TestAddOracleScriptMustReturnCorrectID(t *testing.T) {
 func TestEditNonExistentOracleScript(t *testing.T) {
 	_, ctx, k := createTestInput()
 	// Editing a non-existent oracle script should return error.
-	err := k.EditOracleScript(ctx, 42, types.NewOracleScript(
-		Owner.Address, BasicName, BasicDesc, BasicFilename, BasicSchema, BasicSourceCodeURL,
-	))
-	require.Error(t, err)
+	require.Panics(t, func() {
+		k.MustEditOracleScript(ctx, 42, types.NewOracleScript(
+			Owner.Address, BasicName, BasicDesc, BasicFilename, BasicSchema, BasicSourceCodeURL,
+		))
+	})
+
 }
 
 func TestGetAllOracleScripts(t *testing.T) {
