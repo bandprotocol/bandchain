@@ -30,7 +30,7 @@ import (
 	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
-// GenesisState defines an alias for the Band genesis application state.
+// GenesisState defines a type alias for the Band genesis application state.
 type GenesisState map[string]json.RawMessage
 
 // NewDefaultGenesisState generates the default state for the application.
