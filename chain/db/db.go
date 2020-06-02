@@ -430,12 +430,18 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string][]s
 		if err != nil {
 			return nil, err
 		}
-		rawReports := make([]otypes.RawReport, 0)
+		// TODO: remove this after cosmos sdk protobuf migration is complete
+		rawReports := make([]map[string]interface{}, 0)
 		for _, raw := range msg.RawReports {
+			rawReport := make(map[string]interface{})
 			if raw.Data == nil {
-				raw.Data = []byte{}
+				rawReport["data"] = []byte{}
+			} else {
+				rawReport["data"] = raw.Data
 			}
-			rawReports = append(rawReports, raw)
+			rawReport["exit_code"] = raw.ExitCode
+			rawReport["external_id"] = raw.ExternalID
+			rawReports = append(rawReports, rawReport)
 		}
 		jsonMap["raw_reports"] = rawReports
 	case oracle.MsgAddReporter:
