@@ -52,7 +52,10 @@ let make = (~id: ID.Request.t, ~result: JsBuffer.t) => {
          <div className={Styles.hFlex(`auto)}>
            <CopyButton data={proof.evmProofBytes} title="Copy EVM proof" />
            <HSpacing size=Spacing.md />
-           <CopyButton data={result |> Solana.createProofFromResult} title="Copy Solana proof" />
+           <CopyButton
+             data={result |> ProofType2.createProofFromResult}
+             title="Copy proof type2"
+           />
            <HSpacing size=Spacing.lg />
            <ExtLinkButton link="https://docs.bandchain.org/" description="What is proof ?" />
          </div>
