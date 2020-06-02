@@ -268,7 +268,7 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			"Oracle script that query prices from many markets and then aggregate them together",
 			"./pkg/owasm/res/fair_crypto_market_price.wasm",
 			`{"Input":"{ \"kind\": \"struct\", \"fields\": [ [\"base_symbol\", \"string\"], [\"quote_symbol\", \"string\"], [\"aggregation_method\", \"string\"], [\"multiplier\", \"u64\"] ] }","Output":"{ \"kind\": \"struct\", \"fields\": [ [\"px\", \"u64\"] ] }"}`,
-			`https://ipfs.io/ipfs/QmeYYRsqr81FA5953YKznfKBMCpTVPY6UXHTQ6ANzGHsMR`,
+			`https://ipfs.io/ipfs/QmVbTDREAaxdpCmetq7XmPDqQTfL5ZQ9YgCJA6R3d7MsDi`,
 		},
 	}
 	state.OracleScripts = make([]otypes.OracleScript, len(oracleScripts))
