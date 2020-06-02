@@ -80,7 +80,7 @@ func GetExecutable(c *Context, l *Logger, hash string) ([]byte, error) {
 		return nil, err
 	}
 
-	resValue := res.Response.Value
+	resValue := res.Response.GetValue()
 
 	l.Debug(":balloon: Received data source hash: %s content: %q", hash, resValue[:32])
 	return resValue, nil
