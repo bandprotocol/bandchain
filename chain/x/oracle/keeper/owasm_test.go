@@ -33,7 +33,7 @@ func TestPrepareRequestSuccess(t *testing.T) {
 	oracleScriptID := k.AddOracleScript(ctx, os)
 	calldata := []byte("beeb")
 	askCount := uint64(1)
-	minCount := uint64(2)
+	minCount := uint64(0)
 	clientID := "beeb"
 	requestHeight := int64(0)
 	rawRequestID := []types.ExternalID{1, 2, 3}
@@ -131,8 +131,8 @@ func TestPrepareRequestWithInfiniteLoop(t *testing.T) {
 
 	oracleScriptID := k.AddOracleScript(ctx, os)
 	calldata, _ := hex.DecodeString("030000004254436400000000000000")
-	askCount := uint64(1)
-	minCount := uint64(2)
+	askCount := uint64(2)
+	minCount := uint64(1)
 	clientID := "beeb"
 
 	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
@@ -167,8 +167,8 @@ func TestPrepareRequestWithLoopWasm(t *testing.T) {
 
 	oracleScriptID := k.AddOracleScript(ctx, os)
 	calldata, _ := hex.DecodeString("030000004254436400000000000000")
-	askCount := uint64(1)
-	minCount := uint64(2)
+	askCount := uint64(2)
+	minCount := uint64(1)
 	clientID := "beeb"
 	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
 	err := k.PrepareRequest(ctx, &m, nil)
@@ -202,8 +202,8 @@ func TestPrepareRequestWithLoop100000TimesWasm(t *testing.T) {
 
 	oracleScriptID := k.AddOracleScript(ctx, os)
 	calldata, _ := hex.DecodeString("030000004254436400000000000000")
-	askCount := uint64(1)
-	minCount := uint64(2)
+	askCount := uint64(2)
+	minCount := uint64(1)
 	clientID := "beeb"
 	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
 
@@ -237,8 +237,8 @@ func TestPrepareRequestBaseRequestFeePanic(t *testing.T) {
 
 	oracleScriptID := k.AddOracleScript(ctx, os)
 	calldata, _ := hex.DecodeString("030000004254436400000000000000")
-	askCount := uint64(1)
-	minCount := uint64(2)
+	askCount := uint64(2)
+	minCount := uint64(1)
 	clientID := "beeb"
 
 	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
@@ -276,8 +276,8 @@ func TestPrepareRequestPerValidatorRequestFeePanic(t *testing.T) {
 
 	oracleScriptID := k.AddOracleScript(ctx, os)
 	calldata, _ := hex.DecodeString("030000004254436400000000000000")
-	askCount := uint64(1)
-	minCount := uint64(2)
+	askCount := uint64(2)
+	minCount := uint64(1)
 	clientID := "beeb"
 
 	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
@@ -340,8 +340,8 @@ func TestPrepareRequestGetOracleScriptFail(t *testing.T) {
 
 	k.AddOracleScript(ctx, os)
 	calldata, _ := hex.DecodeString("030000004254436400000000000000")
-	askCount := uint64(1)
-	minCount := uint64(2)
+	askCount := uint64(2)
+	minCount := uint64(1)
 	clientID := "beeb"
 
 	m := types.NewMsgRequestData(9999, calldata, askCount, minCount, clientID, Alice.Address)
@@ -358,8 +358,8 @@ func TestPrepareRequestBadWasmExecutionFail(t *testing.T) {
 
 	oracleScriptID := k.AddOracleScript(ctx, os)
 	calldata, _ := hex.DecodeString("030000004254436400000000000000")
-	askCount := uint64(1)
-	minCount := uint64(2)
+	askCount := uint64(2)
+	minCount := uint64(1)
 	clientID := "beeb"
 
 	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
@@ -376,8 +376,8 @@ func TestPrepareRequestGetDataSourceFail(t *testing.T) {
 
 	oracleScriptID := k.AddOracleScript(ctx, os)
 	calldata, _ := hex.DecodeString("030000004254436400000000000000")
-	askCount := uint64(1)
-	minCount := uint64(2)
+	askCount := uint64(2)
+	minCount := uint64(1)
 	clientID := "beeb"
 
 	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
