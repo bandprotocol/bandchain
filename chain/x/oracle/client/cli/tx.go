@@ -295,10 +295,8 @@ $ %s tx oracle edit-data-source 1 --name coingecko-price --description The scrip
 			if err != nil {
 				return err
 			}
-			var execBytes []byte
-			if scriptPath == "" {
-				execBytes = types.DoNotModifyBytes
-			} else {
+			execBytes := types.DoNotModifyBytes
+			if scriptPath != types.DoNotModify {
 				execBytes, err = ioutil.ReadFile(scriptPath)
 				if err != nil {
 					return err
@@ -333,7 +331,7 @@ $ %s tx oracle edit-data-source 1 --name coingecko-price --description The scrip
 	}
 	cmd.Flags().String(flagName, types.DoNotModify, "Name of this data source")
 	cmd.Flags().String(flagDescription, types.DoNotModify, "Description of this data source")
-	cmd.Flags().String(flagScript, "", "Path to this data source script")
+	cmd.Flags().String(flagScript, types.DoNotModify, "Path to this data source script")
 	cmd.Flags().String(flagOwner, "", "Owner of this data source")
 
 	return cmd
@@ -461,10 +459,8 @@ $ %s tx oracle edit-oracle-script 1 --name eth-price --description "Oracle scrip
 			if err != nil {
 				return err
 			}
-			var scriptCode []byte
-			if scriptPath == "" {
-				scriptCode = types.DoNotModifyBytes
-			} else {
+			scriptCode := types.DoNotModifyBytes
+			if scriptPath != types.DoNotModify {
 				scriptCode, err = ioutil.ReadFile(scriptPath)
 				if err != nil {
 					return err
@@ -511,7 +507,7 @@ $ %s tx oracle edit-oracle-script 1 --name eth-price --description "Oracle scrip
 	}
 	cmd.Flags().String(flagName, types.DoNotModify, "Name of this oracle script")
 	cmd.Flags().String(flagDescription, types.DoNotModify, "Description of this oracle script")
-	cmd.Flags().String(flagScript, "", "Path to this oracle script")
+	cmd.Flags().String(flagScript, types.DoNotModify, "Path to this oracle script")
 	cmd.Flags().String(flagOwner, "", "Owner of this oracle script")
 	cmd.Flags().String(flagSchema, types.DoNotModify, "Schema of this oracle script")
 	cmd.Flags().String(flagSourceCodeURL, types.DoNotModify, "URL for the source code of this oracle script")
