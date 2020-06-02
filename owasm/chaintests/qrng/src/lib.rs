@@ -1,5 +1,5 @@
-use obi::{OBIDecode, OBIEncode};
 use hex;
+use obi::{OBIDecode, OBIEncode};
 use owasm::{execute_entry_point, ext, oei, prepare_entry_point};
 
 #[derive(OBIDecode)]

@@ -10,4 +10,4 @@ crate-type = ["cdylib"]
 
 [dependencies]
 owasm = { path = "../.." }
-obi = {path = "../../../obi/obi-rs/obi"}
+obi = { path = "../../../obi/obi-rs/obi" }
