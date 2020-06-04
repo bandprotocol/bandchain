@@ -37,6 +37,8 @@
 
 ### Bridges
 
+- (feat) [\#1816] (https://github.com/bandprotocol/bandchain/pull/1816) Implement test for OBI solidity decoder library.
+
 ### Owasm
 
 - (feat) [\#1907](https://github.com/bandprotocol/bandchain/pull/1907) Implement OBISchema derive for generate schema of Input and Output struct
