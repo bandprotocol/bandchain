@@ -141,12 +141,17 @@ def test_error_execution_fail():
   assert data['err'] == "Execution fail"
 
 def test_error_execution_timeout():
+  '''#!/usr/bin/env python3
+      import time
+
+      time.sleep(1)
+  '''
   response = app.test_client().post(
       '/execute',
       data=json.dumps({
         "calldata": "123",
-        "executable": "IyEvdXNyL2Jpbi9lbnYgcHl0aG9uMwpwcmludCgnaGVsbG8nKQ==", #!/usr/bin/env python3\nprint('hello')
-        "timeout": 1
+        "executable": "IyEvdXNyL2Jpbi9lbnYgcHl0aG9uMwppbXBvcnQgdGltZQoKdGltZS5zbGVlcCgxKQ==",
+        "timeout": 100 #100 millisec
       }),
       content_type='application/json',
   )
@@ -157,4 +162,28 @@ def test_error_execution_timeout():
   assert data['stdout'] == ""
   assert data['stderr'] == ""
   assert data['err'] == "Execution time limit exceeded"
+
+def test_success_execution_timeout():
+  '''#!/usr/bin/env python3
+      import time
+
+      time.sleep(1) # 1000 millisec
+  '''
+  response = app.test_client().post(
+      '/execute',
+      data=json.dumps({
+        "calldata": "123",
+        "executable": "IyEvdXNyL2Jpbi9lbnYgcHl0aG9uMwppbXBvcnQgdGltZQoKdGltZS5zbGVlcCgxKQpwcmludCgiaGVsbG8iKQ==",
+        "timeout": 2000  # 2000 millisec
+      }),
+      content_type='application/json',
+  )
+
+  data = json.loads(response.get_data(as_text=True))
+  assert response.status_code == 200
+  assert data['returncode'] == 0
+  assert data['stdout'] == "hello\n"
+  assert data['stderr'] == ""
+  assert data['err'] == ""
+
 
