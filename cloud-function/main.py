@@ -1,4 +1,4 @@
-from flask import Flask, request, abort, jsonify, json
+from flask import Flask, abort, jsonify, json, request
 import os
 import shlex
 import subprocess
@@ -69,7 +69,7 @@ def execute():
         print("PATH", env["PATH"])
 
         result = subprocess.run(
-            [path] + shlex.split(request_json["calldata"]), env=env, timeout=3, capture_output=True
+            [path] + shlex.split(request_json["calldata"]), env=env, timeout=request_json['timeout'], capture_output=True
         )
 
         return jsonify({
