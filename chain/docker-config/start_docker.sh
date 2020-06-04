@@ -115,7 +115,6 @@ bandd collect-gentxs
 
 # copy genesis to the proper location!
 cp ~/.bandd/config/genesis.json $DIR/genesis.json
-cp -r ~/.bandd/files $DIR
 
 # Recreate files volume
 docker volume rm query-files

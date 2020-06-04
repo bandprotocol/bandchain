@@ -1,17 +1,10 @@
-#!/bin/bash
+#!/bin/sh
 
-bandd init $1 --chain-id bandchain
+bandd init $1 --chain-id bandchain --oracle band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs
 
-cp /oracle/docker-config/$1/priv_validator_key.json ~/.bandd/config/priv_validator_key.json
-cp /oracle/docker-config/$1/node_key.json ~/.bandd/config/node_key.json
-cp /oracle/docker-config/genesis.json ~/.bandd/config/genesis.json
-cp -r /oracle/docker-config/files ~/.bandd
-
-# add cors in config.toml
-cd ~/.bandd/config/
-sed 's/cors_allowed_origins = \[\]/cors_allowed_origins = \["\*"\]/g' config.toml > config_tmp.toml
-mv config_tmp.toml config.toml
-cd /oracle/
+cp /chain/docker-config/$1/priv_validator_key.json ~/.bandd/config/priv_validator_key.json
+cp /chain/docker-config/$1/node_key.json ~/.bandd/config/node_key.json
+cp /chain/docker-config/genesis.json ~/.bandd/config/genesis.json
 
 if [ "$1" == "query-node" ];then
     sleep 10
