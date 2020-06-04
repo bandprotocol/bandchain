@@ -184,7 +184,9 @@ func TestCreateOracleScriptSuccess(t *testing.T) {
 	url := "url"
 	msg := types.NewMsgCreateOracleScript(Owner.Address, name, description, code, schema, url, Alice.Address)
 	_, err := oracle.NewHandler(keeper)(ctx, msg)
-	defer deleteFile(code)
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
+	filename := keeper.MustGetOracleScript(ctx, 1).Filename
+	defer deleteFile(filepath.Join(dir, filename))
 
 	require.NoError(t, err)
 
@@ -213,7 +215,9 @@ func TestCreateGzippedOracleScriptSuccess(t *testing.T) {
 
 	msg := types.NewMsgCreateOracleScript(Owner.Address, name, description, gzippedCode, schema, url, Alice.Address)
 	_, err := oracle.NewHandler(keeper)(ctx, msg)
-	defer deleteFile(code)
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
+	filename := keeper.MustGetOracleScript(ctx, 1).Filename
+	defer deleteFile(filepath.Join(dir, filename))
 
 	require.NoError(t, err)
 
@@ -255,7 +259,9 @@ func TestEditOracleScriptSuccess(t *testing.T) {
 	url := "url"
 	msg := types.NewMsgCreateOracleScript(Owner.Address, name, description, code, schema, url, Alice.Address)
 	_, err := oracle.NewHandler(keeper)(ctx, msg)
-	defer deleteFile(code)
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
+	filename := keeper.MustGetOracleScript(ctx, 1).Filename
+	defer deleteFile(filepath.Join(dir, filename))
 
 	require.Nil(t, err)
 	oracleScriptID := types.OracleScriptID(1)
@@ -267,7 +273,8 @@ func TestEditOracleScriptSuccess(t *testing.T) {
 
 	msgEdit := types.NewMsgEditOracleScript(oracleScriptID, Owner.Address, newName, newDescription, newCode, newSchema, newUrl, Owner.Address)
 	res, err := oracle.NewHandler(keeper)(ctx, msgEdit)
-	defer deleteFile(newCode)
+	filename = keeper.MustGetOracleScript(ctx, 1).Filename
+	defer deleteFile(filepath.Join(dir, filename))
 	require.NoError(t, err)
 	expectEvents := sdk.Events{
 		sdk.NewEvent(types.EventTypeEditOracleScript, sdk.NewAttribute(types.AttributeKeyID, "1")),
@@ -292,7 +299,9 @@ func TestEditOracleScriptFail(t *testing.T) {
 	url := "url"
 	msg := types.NewMsgCreateOracleScript(Owner.Address, name, description, code, schema, url, Alice.Address)
 	_, err := oracle.NewHandler(keeper)(ctx, msg)
-	defer deleteFile(code)
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
+	filename := keeper.MustGetOracleScript(ctx, 1).Filename
+	defer deleteFile(filepath.Join(dir, filename))
 
 	require.Nil(t, err)
 	oracleScriptID := types.OracleScriptID(1)
@@ -323,7 +332,9 @@ func TestEditGzippedOracleScriptSuccess(t *testing.T) {
 	url := "url"
 	msg := types.NewMsgCreateOracleScript(Owner.Address, name, description, code, schema, url, Alice.Address)
 	_, err := oracle.NewHandler(keeper)(ctx, msg)
-	defer deleteFile(code)
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
+	filename := keeper.MustGetOracleScript(ctx, 1).Filename
+	defer deleteFile(filepath.Join(dir, filename))
 
 	require.Nil(t, err)
 	oracleScriptID := types.OracleScriptID(1)
@@ -347,8 +358,8 @@ func TestEditGzippedOracleScriptSuccess(t *testing.T) {
 		sdk.NewEvent(types.EventTypeEditOracleScript, sdk.NewAttribute(types.AttributeKeyID, "1")),
 	}
 	require.Equal(t, expectEvents, res.GetEvents())
-
-	defer deleteFile(newCode)
+	filename = keeper.MustGetOracleScript(ctx, 1).Filename
+	defer deleteFile(filepath.Join(dir, filename))
 
 	oracleScript, err := keeper.GetOracleScript(ctx, 1)
 	require.NoError(t, err)
@@ -368,7 +379,9 @@ func TestEditGzippedOracleScriptFail(t *testing.T) {
 	url := "url"
 	msg := types.NewMsgCreateOracleScript(Owner.Address, name, description, code, schema, url, Alice.Address)
 	_, err := oracle.NewHandler(keeper)(ctx, msg)
-	defer deleteFile(code)
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
+	filename := keeper.MustGetOracleScript(ctx, 1).Filename
+	defer deleteFile(filepath.Join(dir, filename))
 
 	require.Nil(t, err)
 	oracleScriptID := types.OracleScriptID(1)
