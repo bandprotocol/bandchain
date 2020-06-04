@@ -1,5 +1,5 @@
 from flask import Flask, request, abort, jsonify
-import constants
+import os
 
 app = Flask(__name__)
 
@@ -13,13 +13,28 @@ def execute():
         Response object using
         `make_response <http://flask.pocoo.org/docs/1.0/api/#flask.Flask.make_response>`.
     """
+
+    MAX_EXECUTABLE = os.getenv('MAX_EXECUTABLE')
+    MAX_CALLDATA = os.getenv('MAX_CALLDATA')
+    MAX_TIMEOUT = os.getenv('MAX_TIMEOUT')
+    if not MAX_EXECUTABLE:
+        exit(101)
+    if not MAX_CALLDATA:
+        exit(102)
+    if not MAX_TIMEOUT:
+        exit(103)
+
+    print ("MAX_EXECUTABLE", MAX_EXECUTABLE)
+    print ("MAX_CALLDATA", MAX_CALLDATA)
+    print ("MAX_TIMEOUT", MAX_TIMEOUT)
+    
     request_json = request.get_json()
     if request_json:
         if not 'executable' in request_json:
             return jsonify({
                 "error": "executable field is missing from JSON request",
             }), 400
-        elif len(request_json['executable']) > constants.MAX_EXECUTABLE:
+        elif len(request_json['executable']) > int(MAX_EXECUTABLE):
             return jsonify({
                 "error": "executable value exceed max size",
             }), 400
@@ -28,7 +43,7 @@ def execute():
             return jsonify({
                 "error": "calldata field is missing from JSON request",
             }), 400
-        elif len(request_json['calldata']) > constants.MAX_CALLDATA:
+        elif len(request_json['calldata']) > int(MAX_CALLDATA):
             return jsonify({
                 "error": "calldata value exceed max size",
             }), 400
@@ -41,7 +56,7 @@ def execute():
             return jsonify({
                 "error": "timeout type is invalid",
             }), 400
-        elif request_json['timeout'] > constants.MAX_TIMEOUT:
+        elif request_json['timeout'] > int(MAX_TIMEOUT):
             return jsonify({
                 "error": "Runtime exceeded max size",
             }), 400
