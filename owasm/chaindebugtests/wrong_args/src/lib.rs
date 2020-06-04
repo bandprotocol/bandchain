@@ -14,7 +14,7 @@ struct Output {
 // Expect fail when prepare
 #[no_mangle]
 fn prepare(_input: Input) {
-    oei::request_external_data(1, 1, "Hello world".as_bytes());
+    oei::ask_external_data(1, 1, "Hello world".as_bytes());
 }
 
 fn execute_impl(_input: Input) -> Output {

@@ -19,9 +19,9 @@ struct Output {
 fn prepare_impl(input: Input) {
     // Open sky api data source
     let Input { flight_op, airport, icao24, begin, end } = input;
-    oei::request_external_data(
-        12,
+    oei::ask_external_data(
         1,
+        12,
         format!("{} {} {} {} {}", flight_op, airport, icao24, begin, end).as_bytes(),
     );
 }

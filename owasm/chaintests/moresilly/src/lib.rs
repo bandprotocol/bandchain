@@ -21,7 +21,7 @@ struct Output {
 }
 
 fn prepare_impl(input: Input) {
-    oei::request_external_data(PRICE_DATA_SOURCE_ID, PRICE_EXTERNAL_ID, input.symbol.as_bytes());
+    oei::ask_external_data(PRICE_EXTERNAL_ID, PRICE_DATA_SOURCE_ID, input.symbol.as_bytes());
 }
 
 fn execute_impl(input: Input) -> Output {

@@ -29,6 +29,7 @@ members = [
     "chaintests/eth_gas_station",
     "chaintests/open_sky_network",
     "chaintests/open_weather_map",
+    "chaintests/fair_crypto_market_price",
     "chaintests/qrng",
     "chaintests/yahoo_price",
     "chaindebugtests/allocate",

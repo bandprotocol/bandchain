@@ -18,11 +18,7 @@ struct Output {
 fn prepare_impl(input: Input) {
     // Open weather data source
     let Input { country, main_field, sub_field, .. } = input;
-    oei::request_external_data(
-        4,
-        1,
-        format!("{} {} {}", country, main_field, sub_field).as_bytes(),
-    );
+    oei::ask_external_data(1, 4, format!("{} {} {}", country, main_field, sub_field).as_bytes());
 }
 
 #[no_mangle]
