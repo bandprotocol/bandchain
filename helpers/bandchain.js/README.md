@@ -37,8 +37,11 @@ const bandchain = new BandChain({ chainID, endpoint })
 <link href="build/index.css" rel="stylesheet" />
 <script src="build/index.js"></script>
 
-let BandChain = window.BandChain.default const bandchain = new BandChain(/*
-chainID & endpoint */) ...
+<script>
+  let BandChain = window.BandChain.default;
+  const bandchain = new BandChain(/*chainID & endpoint */);
+  ...
+</script>
 ```
 
 ## 💎 Example Usages
