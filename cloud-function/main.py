@@ -34,23 +34,21 @@ def execute():
             return jsonify({
                 "error": "executable field is missing from JSON request",
             }), 400
+        elif not 'calldata' in request_json:
+            return jsonify({
+                "error": "calldata field is missing from JSON request",
+            }), 400
+        elif not 'timeout' in request_json:
+            return jsonify({
+                "error": "timeout field is missing from JSON request",
+            }), 400
         elif len(request_json['executable']) > int(MAX_EXECUTABLE):
             return jsonify({
                 "error": "executable value exceed max size",
             }), 400
-    
-        if not 'calldata' in request_json:
-            return jsonify({
-                "error": "calldata field is missing from JSON request",
-            }), 400
         elif len(request_json['calldata']) > int(MAX_CALLDATA):
             return jsonify({
                 "error": "calldata value exceed max size",
-            }), 400
-        
-        if not 'timeout' in request_json:
-            return jsonify({
-                "error": "timeout field is missing from JSON request",
             }), 400
         elif not isinstance(request_json['timeout'], int) or request_json['timeout'] < 0:
             return jsonify({
