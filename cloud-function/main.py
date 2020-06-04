@@ -3,8 +3,8 @@ import constants
 
 app = Flask(__name__)
 
-@app.route('/hello', methods=['POST'])
-def hello_world():
+@app.route('/execute', methods=['POST'])
+def execute():
     """Responds to any HTTP request.
     Args:
         request (flask.Request): HTTP request object.
