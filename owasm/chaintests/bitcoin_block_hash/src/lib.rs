@@ -1,12 +1,12 @@
-use borsh::{BorshDeserialize, BorshSchema, BorshSerialize};
+use obi::{OBIDecode, OBIEncode};
 use owasm::{execute_entry_point, ext, oei, prepare_entry_point};
 
-#[derive(BorshDeserialize, BorshSchema)]
+#[derive(OBIDecode)]
 struct Input {
     block_height: u64,
 }
 
-#[derive(BorshSerialize, BorshSchema)]
+#[derive(OBIEncode)]
 struct Output {
     block_hash: String,
 }
@@ -14,7 +14,7 @@ struct Output {
 #[no_mangle]
 fn prepare_impl(input: Input) {
     // Bitcoin hash data source
-    oei::request_external_data(8, 1, input.block_height.to_string().as_bytes());
+    oei::ask_external_data(1, 8, input.block_height.to_string().as_bytes());
 }
 
 #[no_mangle]

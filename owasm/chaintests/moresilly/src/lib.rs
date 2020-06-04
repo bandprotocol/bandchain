@@ -1,4 +1,4 @@
-use borsh::{BorshDeserialize, BorshSerialize};
+use obi::{OBIDecode, OBIEncode};
 use owasm::ext;
 use owasm::oei;
 use owasm::{execute_entry_point, prepare_entry_point};
@@ -9,19 +9,19 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 const PRICE_DATA_SOURCE_ID: i64 = 1;
 const PRICE_EXTERNAL_ID: i64 = 1;
 
-#[derive(BorshDeserialize)]
+#[derive(OBIDecode)]
 struct Input {
     symbol: String,
     multiplier: u64,
 }
 
-#[derive(BorshSerialize)]
+#[derive(OBIEncode)]
 struct Output {
     px: u64,
 }
 
 fn prepare_impl(input: Input) {
-    oei::request_external_data(PRICE_DATA_SOURCE_ID, PRICE_EXTERNAL_ID, input.symbol.as_bytes());
+    oei::ask_external_data(PRICE_EXTERNAL_ID, PRICE_DATA_SOURCE_ID, input.symbol.as_bytes());
 }
 
 fn execute_impl(input: Input) -> Output {

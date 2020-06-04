@@ -11,5 +11,5 @@ crate-type = ["cdylib"]
 
 [dependencies]
 owasm = { path = "../.." }
-borsh = "0.3.0"
+obi = { path = "../../../obi/obi-rs/obi" }
 hex = "0.4.2"

@@ -3,6 +3,7 @@ module github.com/bandprotocol/bandchain/chain
 go 1.13
 
 require (
+	github.com/bandprotocol/go-owasm v0.0.0-20200602070506-19ab5ef7424a
 	github.com/cosmos/cosmos-sdk v0.34.4-0.20200423152229-f1fdde5d1b18
 	github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d
 	github.com/ethereum/go-ethereum v1.9.14
@@ -15,7 +16,6 @@ require (
 	github.com/mattn/go-shellwords v1.0.10
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
-	github.com/perlin-network/life v0.0.0-20191203030451-05c0e0f7eaea
 	github.com/peterbourgon/diskv v2.0.1+incompatible
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/cobra v1.0.0

@@ -5,7 +5,7 @@ module Styles = {
       display(`flex),
       flexDirection(`column),
       width(`px(640)),
-      height(`px(480)),
+      minHeight(`px(480)),
       padding4(~top=`px(50), ~bottom=`px(34), ~left=`px(50), ~right=`px(50)),
       backgroundColor(rgb(249, 249, 251)),
       borderRadius(`px(5)),
@@ -33,6 +33,17 @@ module Styles = {
       minHeight(`px(70)),
       maxHeight(`px(70)),
     ]);
+
+  let errorContainer =
+    style([
+      display(`flex),
+      flexDirection(`column),
+      alignItems(`center),
+      justifyContent(`center),
+      marginTop(`px(15)),
+    ]);
+
+  let errMsg = style([maxHeight(`px(100)), overflowY(`auto)]);
 
   let rFlex =
     style([
@@ -63,12 +74,7 @@ module Styles = {
     ]);
 
   let jsonDisplay =
-    style([
-      resize(`none),
-      width(`percent(100.)),
-      height(`percent(100.)),
-      overflowY(`scroll),
-    ]);
+    style([resize(`none), width(`percent(100.)), height(`px(300)), overflowY(`scroll)]);
 
   let loading = style([width(`px(100))]);
 
@@ -134,6 +140,7 @@ let make = (~rawTx, ~onBack, ~account: AccountContext.t) => {
                                  setState(_ => Success(txResponse.txHash));
                                }
                                : {
+                                 Js.Console.error(txResponse);
                                  setState(_ => Error(txResponse.rawLog));
                                };
                              dispatchModal(EnableExit);
@@ -210,14 +217,16 @@ let make = (~rawTx, ~onBack, ~account: AccountContext.t) => {
          />
        </div>
      | Error(err) =>
-       <div className=Styles.resultContainer>
+       <div className=Styles.errorContainer>
          <div className=Styles.rFlex>
            <img src=Images.fail2 className=Styles.resultIcon />
            <HSpacing size=Spacing.md />
            <Text value="Broadcast Transaction Failed" weight=Text.Semibold />
          </div>
          <VSpacing size=Spacing.md />
-         <Text value=err color=Colors.red3 align=Text.Center />
+         <div className=Styles.errMsg>
+           <Text value=err color=Colors.red3 align=Text.Center breakAll=true />
+         </div>
        </div>
      }}
   </div>;

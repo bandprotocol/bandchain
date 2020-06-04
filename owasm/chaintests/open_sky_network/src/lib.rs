@@ -1,7 +1,7 @@
-use borsh::{BorshDeserialize, BorshSchema, BorshSerialize};
+use obi::{OBIDecode, OBIEncode};
 use owasm::{execute_entry_point, ext, oei, prepare_entry_point};
 
-#[derive(BorshDeserialize, BorshSchema)]
+#[derive(OBIDecode)]
 struct Input {
     flight_op: String,
     airport: String,
@@ -10,7 +10,7 @@ struct Input {
     end: String,
 }
 
-#[derive(BorshSerialize, BorshSchema)]
+#[derive(OBIEncode)]
 struct Output {
     flight_existence: bool,
 }
@@ -19,9 +19,9 @@ struct Output {
 fn prepare_impl(input: Input) {
     // Open sky api data source
     let Input { flight_op, airport, icao24, begin, end } = input;
-    oei::request_external_data(
-        12,
+    oei::ask_external_data(
         1,
+        12,
         format!("{} {} {} {} {}", flight_op, airport, icao24, begin, end).as_bytes(),
     );
 }

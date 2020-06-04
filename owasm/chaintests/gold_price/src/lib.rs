@@ -1,12 +1,12 @@
-use borsh::{BorshDeserialize, BorshSerialize};
+use obi::{OBIDecode, OBIEncode};
 use owasm::{execute_entry_point, ext, oei};
 
-#[derive(BorshDeserialize)]
+#[derive(OBIDecode)]
 struct Input {
     multiplier: u64,
 }
 
-#[derive(BorshSerialize)]
+#[derive(OBIEncode)]
 struct Output {
     px: u64,
 }
@@ -14,9 +14,9 @@ struct Output {
 #[no_mangle]
 fn prepare() {
     // Gold price data source
-    oei::request_external_data(5, 1, "".as_bytes());
+    oei::ask_external_data(1, 5, "".as_bytes());
     // Binance data source
-    oei::request_external_data(3, 2, "ATOM".as_bytes());
+    oei::ask_external_data(2, 3, "ATOM".as_bytes());
 }
 
 #[no_mangle]

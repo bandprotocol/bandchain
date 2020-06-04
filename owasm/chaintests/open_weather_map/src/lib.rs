@@ -1,7 +1,7 @@
-use borsh::{BorshDeserialize, BorshSchema, BorshSerialize};
+use obi::{OBIDecode, OBIEncode};
 use owasm::{execute_entry_point, ext, oei, prepare_entry_point};
 
-#[derive(BorshDeserialize, BorshSchema)]
+#[derive(OBIDecode)]
 struct Input {
     country: String,
     main_field: String,
@@ -9,7 +9,7 @@ struct Input {
     multiplier: u64,
 }
 
-#[derive(BorshSerialize, BorshSchema)]
+#[derive(OBIEncode)]
 struct Output {
     value: u64,
 }
@@ -18,11 +18,7 @@ struct Output {
 fn prepare_impl(input: Input) {
     // Open weather data source
     let Input { country, main_field, sub_field, .. } = input;
-    oei::request_external_data(
-        4,
-        1,
-        format!("{} {} {}", country, main_field, sub_field).as_bytes(),
-    );
+    oei::ask_external_data(1, 4, format!("{} {} {}", country, main_field, sub_field).as_bytes());
 }
 
 #[no_mangle]

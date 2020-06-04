@@ -1,13 +1,13 @@
-use borsh::{BorshDeserialize, BorshSchema, BorshSerialize};
 use hex;
+use obi::{OBIDecode, OBIEncode};
 use owasm::{execute_entry_point, ext, oei, prepare_entry_point};
 
-#[derive(BorshDeserialize, BorshSchema)]
+#[derive(OBIDecode)]
 struct Input {
     size: u64,
 }
 
-#[derive(BorshSerialize, BorshSchema)]
+#[derive(OBIEncode)]
 struct Output {
     random_bytes: String,
 }
@@ -15,7 +15,7 @@ struct Output {
 #[no_mangle]
 fn prepare_impl(input: Input) {
     // Quantum random data source
-    oei::request_external_data(13, 1, input.size.to_string().as_bytes());
+    oei::ask_external_data(1, 13, input.size.to_string().as_bytes());
 }
 
 fn accumulate_hex_strings(strings: Vec<String>, input_size: usize) -> String {

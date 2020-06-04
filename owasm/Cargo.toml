@@ -4,7 +4,7 @@ version = "0.1.7"
 authors = ["Band Protocol <connect@bandprotocol.com>"]
 edition = "2018"
 license = "Apache-2.0"
-repository = "https://github.com/bandprotocol/d3n/tree/master/owasm"
+repository = "https://github.com/bandprotocol/bandchain/tree/master/owasm"
 description = """
 TODO
 """
@@ -16,7 +16,6 @@ num = "*"
 [workspace]
 members = [
     "chaintests/crypto_price",
-    "chaintests/crypto_price_borsh",
     "chaintests/main",
     "chaintests/moresilly",
     "chaintests/silly",
@@ -30,6 +29,7 @@ members = [
     "chaintests/eth_gas_station",
     "chaintests/open_sky_network",
     "chaintests/open_weather_map",
+    "chaintests/fair_crypto_market_price",
     "chaintests/qrng",
     "chaintests/yahoo_price",
     "chaindebugtests/allocate",

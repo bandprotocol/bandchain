@@ -1,13 +1,13 @@
-use borsh::{BorshDeserialize, BorshSchema, BorshSerialize};
+use obi::{OBIDecode, OBIEncode};
 use owasm::{execute_entry_point, ext, oei, prepare_entry_point};
 
-#[derive(BorshDeserialize, BorshSchema)]
+#[derive(OBIDecode)]
 struct Input {
     symbol: String,
     multiplier: u64,
 }
 
-#[derive(BorshSerialize, BorshSchema)]
+#[derive(OBIEncode)]
 struct Output {
     px: u64,
 }
@@ -15,7 +15,7 @@ struct Output {
 #[no_mangle]
 fn prepare_impl(input: Input) {
     // Yahoo price data source
-    oei::request_external_data(14, 1, &input.symbol.as_bytes());
+    oei::ask_external_data(1, 14, &input.symbol.as_bytes());
 }
 
 #[no_mangle]
