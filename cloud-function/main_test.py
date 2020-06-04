@@ -33,8 +33,11 @@ def test_error_executable_empty():
   )
 
   data = json.loads(response.get_data(as_text=True))
-  assert response.status_code == 400
-  assert data['error'] == "executable field is empty"
+  assert response.status_code == 200
+  assert data['returncode'] == 126
+  assert data['stdout'] == ""
+  assert data['stderr'] == ""
+  assert data['err'] == "Execution fail"
 
 def test_error_missing_calldata():
   response = app.test_client().post(
