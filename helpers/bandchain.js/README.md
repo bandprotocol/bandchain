@@ -24,10 +24,10 @@ npm install
 ```js
 import BandChain from 'bandchain.js'
 
-const chainID = 'band-guanyu-alchemist'
+const chainId = 'band-guanyu-alchemist'
 const endpoint = 'http://devnet.bandchain.org/rest'
 
-const bandchain = new BandChain({ chainID, endpoint })
+const bandchain = new BandChain({ chainId, endpoint })
 ...
 ```
 
@@ -39,7 +39,7 @@ const bandchain = new BandChain({ chainID, endpoint })
 
 <script>
   let BandChain = window.BandChain.default;
-  const bandchain = new BandChain(/*chainID & endpoint */);
+  const bandchain = new BandChain(/*chainId & endpoint */);
   ...
 </script>
 ```
@@ -49,11 +49,11 @@ const bandchain = new BandChain({ chainID, endpoint })
 ```js
 import BandChain from "bandchain.js";
 
-const chainID = "band-guanyu-alchemist";
+const chainId = "band-guanyu-alchemist";
 const endpoint = "http://devnet.bandchain.org/rest";
 
 // Instantiating BandChain with REST endpoint
-const bandchain = new BandChain({ chainID, endpoint });
+const bandchain = new BandChain({ chainId, endpoint });
 
 // Create an instance of OracleScript with the script ID
 const oracleScript = await bandchain.getOracleScript(1);
@@ -63,24 +63,26 @@ const schema = oracleScript.schema;
 const description = oracleScript.description;
 
 // Read latest script result
-const result = await oracleScript.getLatestRequestResult({
+const result = await bandchain.getLatestRequestResult(oracleScript, {
   symbol: "BTC",
   multiplier: 10000,
 });
 
 // Create a new request, which will block into the tx is confirmed
 try {
-  const validatorsRequired = 7;
-  const request = await oracleScript.submitRequestTx(
+  const minCount = 5;
+  const askCount = 7;
+  const mnemonic =
+    "dumb spot lyrics car infant round rate famous inhale tennis text current";
+  const requestId = await bandchain.submitRequestTx(
+    oracleScript,
     { symbol: "BTC", multiplier: 10000 },
-    validatorsRequired
+    { minCount, askCount },
+    mnemonic
   );
 
-  // Check report status
-  const { count } = await request.getReportStatus();
-
   // Get final result (blocking until the reports & aggregations are finished)
-  const finalResult = await request.getFinalRequestResult();
+  const finalResult = await bandchain.getRequestResult(requestId);
 } catch {
   // Something went wrong
   console.error("Data request failed");
