@@ -1,8 +1,9 @@
 package oracle
 
 import (
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 // handleEndBlock cleans up the state during end block. See comment in the implementation!
