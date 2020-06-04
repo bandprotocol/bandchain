@@ -112,12 +112,9 @@ func handleMsgEditOracleScript(ctx sdk.Context, k Keeper, m MsgEditOracleScript)
 			return nil, sdkerrors.Wrapf(types.ErrUncompressionFailed, err.Error())
 		}
 	}
-	err = k.EditOracleScript(ctx, m.OracleScriptID, types.NewOracleScript(
+	k.MustEditOracleScript(ctx, m.OracleScriptID, types.NewOracleScript(
 		m.Owner, m.Name, m.Description, k.AddFile(m.Code), m.Schema, m.SourceCodeURL,
 	))
-	if err != nil {
-		return nil, err
-	}
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeEditOracleScript,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", m.OracleScriptID)),
