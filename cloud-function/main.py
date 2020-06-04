@@ -50,7 +50,7 @@ def execute():
             return jsonify({
                 "error": "calldata value exceed max size",
             }), 400
-        elif not isinstance(request_json['timeout'], int) or request_json['timeout'] < 0:
+        elif not isinstance(request_json['timeout'], int):
             return jsonify({
                 "error": "timeout type is invalid",
             }), 400
