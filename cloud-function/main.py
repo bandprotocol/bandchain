@@ -27,20 +27,38 @@ def execute():
         Response object using
         `make_response <http://flask.pocoo.org/docs/1.0/api/#flask.Flask.make_response>`.
     """
-    
+    try:
+        request_json = request.get_json()
+    except:
+        return jsonify({
+            "error": "invalid JSON request format",
+        }), 400
+
     request_json = request.get_json()
     if request_json:
         if not 'executable' in request_json:
             return jsonify({
                 "error": "executable field is missing from JSON request",
             }), 400
+        elif not request_json['executable']:
+            return jsonify({
+                "error": "executable field is empty",
+            }), 400
         elif not 'calldata' in request_json:
             return jsonify({
                 "error": "calldata field is missing from JSON request",
             }), 400
+        elif not request_json['calldata']:
+            return jsonify({
+                "error": "calldata field is empty",
+            }), 400
         elif not 'timeout' in request_json:
             return jsonify({
                 "error": "timeout field is missing from JSON request",
+            }), 400
+        elif not request_json['timeout']:
+            return jsonify({
+                "error": "timeout field is empty",
             }), 400
         elif len(request_json['executable']) > int(MAX_EXECUTABLE):
             return jsonify({
@@ -91,7 +109,7 @@ def execute():
             "returncode": 126,
             "stdout": "",
             "stderr": "",
-            "err": "Data source could not be invoked"
+            "err": "Execution fail"
         }), 200
 
     except subprocess.TimeoutExpired:
