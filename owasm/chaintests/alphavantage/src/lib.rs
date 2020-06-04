@@ -16,7 +16,7 @@ struct Output {
 #[no_mangle]
 fn prepare_impl(input: Input) {
     // Alphavantage price data source
-    oei::request_external_data(6, 1, format!("{} {}", input.symbol, input.api_key).as_bytes());
+    oei::ask_external_data(1, 6, format!("{} {}", input.symbol, input.api_key).as_bytes());
 }
 
 #[no_mangle]

@@ -45,11 +45,11 @@ pub fn save_return_data(data: &[u8]) {
     unsafe { raw::set_return_data(data.as_ptr() as i64, data.len() as i64) }
 }
 
-pub fn request_external_data(data_source_id: i64, external_id: i64, calldata: &[u8]) {
+pub fn ask_external_data(external_id: i64,data_source_id: i64,  calldata: &[u8]) {
     unsafe {
         raw::ask_external_data(
-            data_source_id,
             external_id,
+            data_source_id,
             calldata.as_ptr() as i64,
             calldata.len() as i64,
         )
