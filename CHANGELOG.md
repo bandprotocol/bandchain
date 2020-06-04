@@ -6,10 +6,12 @@
 -->
 
 # Changelog
+- (impv) [\#1792](https://github.com/bandprotocol/bandchain/pull/1792) Request data message handler test
 
 ## [Unreleased]
 
 ### Chain
+
 
 ### Scan
 
