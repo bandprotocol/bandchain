@@ -36,3 +36,27 @@ def test_error_timeout_empty():
 
   assert response.status_code == 400
   assert data['error'] == "timeout field is missing from JSON request"
+
+def test_error_timeout_less_than_0():
+  response = app.test_client().post(
+      '/execute',
+      data=json.dumps({'executable': '123', 'calldata': 'bitcoin', 'timeout': -5}),
+      content_type='application/json',
+  )
+
+  data = json.loads(response.get_data(as_text=True))
+
+  assert response.status_code == 400
+  assert data['error'] == "Runtime must more than 0"
+
+def test_error_timeout_more_than_max_timeout():
+  response = app.test_client().post(
+      '/execute',
+      data=json.dumps({'executable': '123', 'calldata': 'bitcoin', 'timeout': 1111111111111111111111111111111111111111}),
+      content_type='application/json',
+  )
+
+  data = json.loads(response.get_data(as_text=True))
+
+  assert response.status_code == 400
+  assert data['error'] == "Runtime exceeded max size"
