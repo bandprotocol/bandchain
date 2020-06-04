@@ -58,6 +58,40 @@ def execute():
             return jsonify({
                 "error": "Runtime exceeded max size",
             }), 400
-        
-    else:
-        return f'Hello World2!'
+    
+    path = "/tmp/execute.sh"
+    with open(path, "w") as f:
+        f.write(request_json["executable"])
+    os.chmod(path, 0o775)
+
+    try:
+        env["PATH"] = env["PATH"] + ":" + os.path.join(os.getcwd(), "exec", "usr", "bin")
+        print("PATH", env["PATH"])
+
+        result = subprocess.run(
+            [path] + shlex.split(request_json["calldata"]), env=env, timeout=3, capture_output=True
+        )
+
+        return jsonify({
+            "returncode": result.returncode,
+            "stdout": result.stdout.decode(),
+            "stderr": result.stderr.decode(),
+            "err": ""
+        }), 200
+    
+    except OSError:
+        return jsonify({
+            "returncode": 126,
+            "stdout": "",
+            "stderr": "",
+            "err": "Data source could not be invoked"
+        }), 200
+
+    except subprocess.TimeoutExpired:
+        return jsonify({
+            "returncode": 111,
+            "stdout": "",
+            "stderr": "",
+            "err": "Execution time limit exceeded"
+        }), 200
+
