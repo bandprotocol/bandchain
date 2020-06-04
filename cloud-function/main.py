@@ -58,6 +58,10 @@ def execute():
             return jsonify({
                 "error": "Runtime exceeded max size",
             }), 400
+        elif request_json['timeout'] <= 0:
+            return jsonify({
+                "error": "Runtime must more than 0",
+            }), 400
     
     path = "/tmp/execute.sh"
     with open(path, "w") as f:
@@ -67,9 +71,12 @@ def execute():
     try:
         env["PATH"] = env["PATH"] + ":" + os.path.join(os.getcwd(), "exec", "usr", "bin")
         print("PATH", env["PATH"])
+        
+        timeout_millisec = request_json['timeout']
+        timeout_sec = timeout_millisec/1000
 
         result = subprocess.run(
-            [path] + shlex.split(request_json["calldata"]), env=env, timeout=request_json['timeout'], capture_output=True
+            [path] + shlex.split(request_json["calldata"]), env=env, timeout=timeout_sec, capture_output=True
         )
 
         return jsonify({
