@@ -13,8 +13,11 @@
 ### Chain
 
 - (chore) [\#1864](https://github.com/bandprotocol/bandchain/pull/1864) Remove unused query types.
+- (impv) [\#1792](https://github.com/bandprotocol/bandchain/pull/1792) Request data message handler test
 
 ### Scan
+
+- (bug) [\#1861](https://github.com/bandprotocol/bandchain/pull/1861) Fix name, endpoint of guanyu-devnet on chain-id selection
 
 ### Bridges
 
