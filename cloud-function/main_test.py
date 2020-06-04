@@ -51,13 +51,16 @@ def test_error_missing_calldata():
 def test_error_calldata_empty():
   response = app.test_client().post(
       '/execute',
-      data=json.dumps({'executable': '123', 'calldata': '', 'timeout': 123456}),
+      data=json.dumps({'executable': 'IyEvdXNyL2Jpbi9lbnYgcHl0aG9uMwpwcmludCgnaGVsbG8nKQ==', 'calldata': '', 'timeout': 123456}),
       content_type='application/json',
   )
 
   data = json.loads(response.get_data(as_text=True))
-  assert response.status_code == 400
-  assert data['error'] == "calldata field is empty"
+  assert response.status_code == 200
+  assert data['returncode'] == 0
+  assert data['stdout'] == "hello\n"
+  assert data['stderr'] == ""
+  assert data['err'] == ""
 
 def test_error_missing_timeout():
   response = app.test_client().post(
@@ -115,7 +118,6 @@ def test_success_execution():
   )
 
   data = json.loads(response.get_data(as_text=True))
-  print ("data", data)
   assert response.status_code == 200
   assert data['returncode'] == 0
   assert data['stdout'] == "hello\n"

@@ -49,10 +49,6 @@ def execute():
             return jsonify({
                 "error": "calldata field is missing from JSON request",
             }), 400
-        elif not request_json['calldata']:
-            return jsonify({
-                "error": "calldata field is empty",
-            }), 400
         elif not 'timeout' in request_json:
             return jsonify({
                 "error": "timeout field is missing from JSON request",
