@@ -190,7 +190,7 @@ func GetDefaultDataSourcesAndOracleScripts(owner sdk.AccAddress) json.RawMessage
 			"Gold price script",
 			"Oracle script for getting the current average gold price in ATOMs",
 			"./pkg/owasm/res/gold_price.wasm",
-			`{symbol:string,multiplier:u64}/{px:u64}`,
+			`{multiplier:u64}/{px:u64}`,
 			"https://ipfs.io/ipfs/Qmbcdr3UZXMrJeoRtHzTtHHepnzjyX1gWNhewWe6BXgmPm",
 		},
 		{
