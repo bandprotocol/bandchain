@@ -108,13 +108,14 @@ def test_success_execution():
       '/execute',
       data=json.dumps({
         "calldata": "123",
-        "executable": "#!/usr/bin/env python3\nprint('hello')",
+        "executable": "IyEvdXNyL2Jpbi9lbnYgcHl0aG9uMwpwcmludCgnaGVsbG8nKQ==", #!/usr/bin/env python3\nprint('hello')
         "timeout": 123456
       }),
       content_type='application/json',
   )
 
   data = json.loads(response.get_data(as_text=True))
+  print ("data", data)
   assert response.status_code == 200
   assert data['returncode'] == 0
   assert data['stdout'] == "hello\n"
@@ -126,7 +127,7 @@ def test_error_execution_fail():
       '/execute',
       data=json.dumps({
         "calldata": "123",
-        "executable": "#!/usr/bin/enveeeeeeeee python3\nprint('hello')",
+        "executable": "IyEvdXNyL2Jpbi9lbnZlZWVlZWVlZWUKcHl0aG9uM1xucHJpbnQoJ2hlbGxvJyk=", #!/usr/bin/enveeeeeeeee python3\nprint('hello')
         "timeout": 123456
       }),
       content_type='application/json',
@@ -144,7 +145,7 @@ def test_error_execution_timeout():
       '/execute',
       data=json.dumps({
         "calldata": "123",
-        "executable": "#!/usr/bin/env python3\nprint('hello')",
+        "executable": "IyEvdXNyL2Jpbi9lbnYgcHl0aG9uMwpwcmludCgnaGVsbG8nKQ==", #!/usr/bin/env python3\nprint('hello')
         "timeout": 1
       }),
       content_type='application/json',
