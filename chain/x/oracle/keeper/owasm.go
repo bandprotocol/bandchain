@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
-	owasm "github.com/bandprotocol/go-owasm/api"
+	owasm "github.com/bandprotocol/bandchain/go-owasm/api"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
