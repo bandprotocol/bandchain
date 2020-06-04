@@ -12,9 +12,9 @@
 
 ### Chain
 
+- (chore) [\#1869](https://github.com/bandprotocol/bandchain/pull/1869) Update new schema and source code url for all oracle scripts
 - (chore) [\#1864](https://github.com/bandprotocol/bandchain/pull/1864) Remove unused query types.
 - (impv) [\#1792](https://github.com/bandprotocol/bandchain/pull/1792) Request data message handler test
-- (bugs) [\#1869](https://github.com/bandprotocol/bandchain/pull/1869) Update new schema and source code url for all oracle scripts
 
 ### Scan
 
