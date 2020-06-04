@@ -2,6 +2,7 @@ from flask import Flask, abort, jsonify, json, request
 import os
 import shlex
 import subprocess
+import base64
 
 app = Flask(__name__)
 
@@ -80,15 +81,21 @@ def execute():
             return jsonify({
                 "error": "Runtime must more than 0",
             }), 400
+
+    executable = ""
+    try:
+        executable = base64.b64decode(request_json["executable"])
+    except:
+        return jsonify({
+            "error": "Can't decoded executable",
+        }), 400
     
     path = "/tmp/execute.sh"
     with open(path, "w") as f:
-        f.write(request_json["executable"])
+        f.write(executable.decode())
     os.chmod(path, 0o775)
 
     try:
-        env["PATH"] = env["PATH"] + ":" + os.path.join(os.getcwd(), "exec", "usr", "bin")
-        print("PATH", env["PATH"])
         
         timeout_millisec = request_json['timeout']
         timeout_sec = timeout_millisec/1000
@@ -104,7 +111,7 @@ def execute():
             "err": ""
         }), 200
     
-    except OSError:
+    except OSError as e:
         return jsonify({
             "returncode": 126,
             "stdout": "",
