@@ -15,7 +15,7 @@ struct Output {
 #[no_mangle]
 fn prepare_impl(input: Input) {
     // Quantum random data source
-    oei::request_external_data(13, 1, input.size.to_string().as_bytes());
+    oei::ask_external_data(1, 13, input.size.to_string().as_bytes());
 }
 
 fn accumulate_hex_strings(strings: Vec<String>, input_size: usize) -> String {
