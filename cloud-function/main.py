@@ -1,7 +1,21 @@
-from flask import Flask, request, abort, jsonify
+from flask import Flask, request, abort, jsonify, json
 import os
+import shlex
+import subprocess
 
 app = Flask(__name__)
+
+env = os.environ.copy()
+
+MAX_EXECUTABLE = env['MAX_EXECUTABLE']
+MAX_CALLDATA = env['MAX_CALLDATA']
+MAX_TIMEOUT = env['MAX_TIMEOUT']
+if not MAX_EXECUTABLE:
+    raise Exception("MAX_EXECUTABLE is missing")
+if not MAX_CALLDATA:
+    raise Exception("MAX_CALLDATA is missing")
+if not MAX_TIMEOUT:
+    raise Exception("MAX_TIMEOUT is missing")
 
 @app.route('/execute', methods=['POST'])
 def execute():
@@ -13,20 +27,6 @@ def execute():
         Response object using
         `make_response <http://flask.pocoo.org/docs/1.0/api/#flask.Flask.make_response>`.
     """
-
-    MAX_EXECUTABLE = os.getenv('MAX_EXECUTABLE')
-    MAX_CALLDATA = os.getenv('MAX_CALLDATA')
-    MAX_TIMEOUT = os.getenv('MAX_TIMEOUT')
-    if not MAX_EXECUTABLE:
-        exit(101)
-    if not MAX_CALLDATA:
-        exit(102)
-    if not MAX_TIMEOUT:
-        exit(103)
-
-    print ("MAX_EXECUTABLE", MAX_EXECUTABLE)
-    print ("MAX_CALLDATA", MAX_CALLDATA)
-    print ("MAX_TIMEOUT", MAX_TIMEOUT)
     
     request_json = request.get_json()
     if request_json:
