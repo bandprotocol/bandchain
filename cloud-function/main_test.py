@@ -23,4 +23,16 @@ def test_error_calldata_empty():
   data = json.loads(response.get_data(as_text=True))
 
   assert response.status_code == 400
-  # assert data['error'] == "calldata field is missing from JSON request"
+  assert data['error'] == "calldata field is missing from JSON request"
+
+def test_error_timeout_empty():
+  response = app.test_client().post(
+      '/execute',
+      data=json.dumps({'executable': '123', 'calldata': 'bitcoin'}),
+      content_type='application/json',
+  )
+
+  data = json.loads(response.get_data(as_text=True))
+
+  assert response.status_code == 400
+  assert data['error'] == "timeout field is missing from JSON request"
