@@ -68,7 +68,7 @@ func getDataSourceByIDHandler(cliCtx context.CLIContext, route string) http.Hand
 			return
 		}
 		vars := mux.Vars(r)
-		res, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryDataSources, vars[dataSourceIDTag]), nil)
+		res, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryDataSources, vars[idTag]), nil)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -85,7 +85,24 @@ func getOracleScriptByIDHandler(cliCtx context.CLIContext, route string) http.Ha
 			return
 		}
 		vars := mux.Vars(r)
-		res, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryOracleScripts, vars[oracleScriptIDTag]), nil)
+		res, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryOracleScripts, vars[idTag]), nil)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		cliCtx = cliCtx.WithHeight(height)
+		rest.PostProcessResponse(w, cliCtx, res)
+	}
+}
+
+func getRequestByIDHandler(cliCtx context.CLIContext, route string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
+		if !ok {
+			return
+		}
+		vars := mux.Vars(r)
+		res, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryRequests, vars[idTag]), nil)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
