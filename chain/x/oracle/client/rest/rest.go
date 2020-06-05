@@ -20,5 +20,4 @@ func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router, storeName string) 
 	r.HandleFunc(fmt.Sprintf("/%s/data_sources/{%s}", storeName, idTag), getDataSourceByIDHandler(cliCtx, storeName)).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/%s/oracle_scripts/{%s}", storeName, idTag), getOracleScriptByIDHandler(cliCtx, storeName)).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/%s/requests/{%s}", storeName, idTag), getRequestByIDHandler(cliCtx, storeName)).Methods("GET")
-	r.HandleFunc(fmt.Sprintf("/%s/reports/{%s}", storeName, idTag), getReportsByIDHandler(cliCtx, storeName)).Methods("GET")
 }

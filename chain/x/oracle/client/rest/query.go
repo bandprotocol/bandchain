@@ -111,20 +111,3 @@ func getRequestByIDHandler(cliCtx context.CLIContext, route string) http.Handler
 		rest.PostProcessResponse(w, cliCtx, res)
 	}
 }
-
-func getReportsByIDHandler(cliCtx context.CLIContext, route string) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
-		if !ok {
-			return
-		}
-		vars := mux.Vars(r)
-		res, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryReports, vars[idTag]), nil)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-		cliCtx = cliCtx.WithHeight(height)
-		rest.PostProcessResponse(w, cliCtx, res)
-	}
-}

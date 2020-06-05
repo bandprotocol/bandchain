@@ -28,7 +28,6 @@ func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		GetQueryCmdDataSource(storeKey, cdc),
 		GetQueryCmdOracleScript(storeKey, cdc),
 		GetQueryCmdRequest(storeKey, cdc),
-		GetQueryCmdReports(storeKey, cdc),
 	)...)
 	return oracleCmd
 }
@@ -116,25 +115,7 @@ func GetQueryCmdRequest(route string, cdc *codec.Codec) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			var out types.Request
-			cdc.MustUnmarshalJSON(res, &out)
-			return cliCtx.PrintOutput(out)
-		},
-	}
-}
-
-// GetQueryCmdRequest implements the query reports command.
-func GetQueryCmdReports(route string, cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
-		Use:  "reports [req-id]",
-		Args: cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
-			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryReports, args[0]), nil)
-			if err != nil {
-				return err
-			}
-			var out []types.Report
+			var out types.QueryRequestResult
 			cdc.MustUnmarshalJSON(res, &out)
 			return cliCtx.PrintOutput(out)
 		},
