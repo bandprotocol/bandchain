@@ -1,6 +1,7 @@
 package db
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"strconv"
@@ -429,6 +430,20 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string][]s
 		if err != nil {
 			return nil, err
 		}
+		// TODO: remove this after cosmos sdk protobuf migration is complete
+		rawReports := make([]map[string]interface{}, 0)
+		for _, raw := range msg.RawReports {
+			rawReport := make(map[string]interface{})
+			if raw.Data == nil {
+				rawReport["data"] = []byte{}
+			} else {
+				rawReport["data"] = raw.Data
+			}
+			rawReport["exit_code"] = raw.ExitCode
+			rawReport["external_id"] = raw.ExternalID
+			rawReports = append(rawReports, rawReport)
+		}
+		jsonMap["raw_reports"] = rawReports
 	case oracle.MsgAddReporter:
 		val, _ := b.StakingKeeper.GetValidator(b.ctx, msg.Validator)
 		jsonMap["validator_moniker"] = val.Description.Moniker
@@ -602,4 +617,18 @@ func (b *BandDB) GetInvolvedAccountsFromTransferEvents(logs sdk.ABCIMessageLogs)
 		}
 	}
 	return involvedAccounts
+}
+
+func modify(oldVal string, newVal string) string {
+	if newVal == otypes.DoNotModify {
+		return oldVal
+	}
+	return newVal
+}
+
+func modifyCode(oldVal []byte, newVal []byte) []byte {
+	if bytes.Compare(newVal, otypes.DoNotModifyBytes) == 0 {
+		return oldVal
+	}
+	return newVal
 }

@@ -15,7 +15,7 @@ struct Output {
 #[no_mangle]
 fn prepare_impl(input: Input) {
     // Coingecko volume data source
-    oei::request_external_data(9, 1, &input.symbol.as_bytes());
+    oei::ask_external_data(1, 9, &input.symbol.as_bytes());
 }
 
 #[no_mangle]
