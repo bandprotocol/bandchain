@@ -83,7 +83,7 @@ func GetExecutable(c *Context, l *Logger, hash string) ([]byte, error) {
 		resValue = res.Response.GetValue()
 		c.fileCache.AddFile(resValue)
 	} else {
-		l.Debug(":magnifying_glass_tilted_left: Found data source hash: %s in cache file", hash)
+		l.Debug(":card_file_box: Found data source hash: %s in cache file", hash)
 	}
 
 	l.Debug(":balloon: Received data source hash: %s content: %q", hash, resValue[:32])
