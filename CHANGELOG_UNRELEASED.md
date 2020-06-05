@@ -17,6 +17,7 @@
 - (chore) Improve code quality and conciseness in x/oracle/keeper
 - (chore) [\#1933](https://github.com/bandprotocol/bandchain/pull/1933) Improve code quality and conciseness in x/oracle/keeper
 - (feat) [\#1927](https://github.com/bandprotocol/bandchain/pull/1927) Add reporter list of validator REST endpoint.
+- (feat) [\#1872](https://github.com/bandprotocol/bandchain/pull/1872) Add Owasm executor on Google Cloud function
 - (impv) [\#1891](https://github.com/bandprotocol/bandchain/pull/1891) Add end-to-end request flow test.
 
 ### Scan
