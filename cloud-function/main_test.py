@@ -110,17 +110,17 @@ def test_error_missing_timeout(mock_env):
     assert data["error"] == "timeout field is missing from JSON request"
 
 
-def test_error_timeout_empty(mock_env):
+def test_error_timeout_is_invalid(mock_env):
     app = create_app()
     response = app.test_client().post(
         "/execute",
-        data=json.dumps({"executable": "123", "calldata": "bitcoin", "timeout": ""}),
+        data=json.dumps({"executable": "123", "calldata": "bitcoin", "timeout": "1234"}),
         content_type="application/json",
     )
 
     data = json.loads(response.get_data(as_text=True))
     assert response.status_code == 400
-    assert data["error"] == "timeout field is empty"
+    assert data["error"] == "timeout type is invalid"
 
 
 def test_error_timeout_less_than_0(mock_env):
