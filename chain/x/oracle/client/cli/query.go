@@ -23,17 +23,18 @@ func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 	oracleCmd.AddCommand(flags.GetCommands(
-		GetCmdParams(storeKey, cdc),
-		GetCmdCounts(storeKey, cdc),
-		GetCmdDataSource(storeKey, cdc),
-		GetCmdOracleScript(storeKey, cdc),
+		GetQueryCmdParams(storeKey, cdc),
+		GetQueryCmdCounts(storeKey, cdc),
+		GetQueryCmdDataSource(storeKey, cdc),
+		GetQueryCmdOracleScript(storeKey, cdc),
+		GetQueryCmdRequest(storeKey, cdc),
+		GetQueryCmdReports(storeKey, cdc),
 	)...)
-
 	return oracleCmd
 }
 
-// GetCmdParams implements the query parameters command.
-func GetCmdParams(route string, cdc *codec.Codec) *cobra.Command {
+// GetQueryCmdParams implements the query parameters command.
+func GetQueryCmdParams(route string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:  "params",
 		Args: cobra.NoArgs,
@@ -50,8 +51,8 @@ func GetCmdParams(route string, cdc *codec.Codec) *cobra.Command {
 	}
 }
 
-// GetCmdCounts implements the query counts command.
-func GetCmdCounts(route string, cdc *codec.Codec) *cobra.Command {
+// GetQueryCmdCounts implements the query counts command.
+func GetQueryCmdCounts(route string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:  "counts",
 		Args: cobra.NoArgs,
@@ -68,8 +69,8 @@ func GetCmdCounts(route string, cdc *codec.Codec) *cobra.Command {
 	}
 }
 
-// GetCmdDataSource implements the query data source command.
-func GetCmdDataSource(route string, cdc *codec.Codec) *cobra.Command {
+// GetQueryCmdDataSource implements the query data source command.
+func GetQueryCmdDataSource(route string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:  "data-source [id]",
 		Args: cobra.ExactArgs(1),
@@ -86,8 +87,8 @@ func GetCmdDataSource(route string, cdc *codec.Codec) *cobra.Command {
 	}
 }
 
-// GetCmdOracleScript implements the query oracle script command.
-func GetCmdOracleScript(route string, cdc *codec.Codec) *cobra.Command {
+// GetQueryCmdOracleScript implements the query oracle script command.
+func GetQueryCmdOracleScript(route string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:  "oracle-script [id]",
 		Args: cobra.ExactArgs(1),
@@ -98,6 +99,42 @@ func GetCmdOracleScript(route string, cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 			var out types.OracleScript
+			cdc.MustUnmarshalJSON(res, &out)
+			return cliCtx.PrintOutput(out)
+		},
+	}
+}
+
+// GetQueryCmdRequest implements the query request command.
+func GetQueryCmdRequest(route string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:  "request [id]",
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryRequests, args[0]), nil)
+			if err != nil {
+				return err
+			}
+			var out types.Request
+			cdc.MustUnmarshalJSON(res, &out)
+			return cliCtx.PrintOutput(out)
+		},
+	}
+}
+
+// GetQueryCmdRequest implements the query reports command.
+func GetQueryCmdReports(route string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:  "reports [req-id]",
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryReports, args[0]), nil)
+			if err != nil {
+				return err
+			}
+			var out []types.Report
 			cdc.MustUnmarshalJSON(res, &out)
 			return cliCtx.PrintOutput(out)
 		},

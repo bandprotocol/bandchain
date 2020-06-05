@@ -25,6 +25,10 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 			return queryDataSourceByID(ctx, path[1:], keeper)
 		case types.QueryOracleScripts:
 			return queryOracleScriptByID(ctx, path[1:], keeper)
+		case types.QueryRequests:
+			return queryRequestByID(ctx, path[1:], keeper)
+		case types.QueryReports:
+			return queryReportsByID(ctx, path[1:], keeper)
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unknown oracle query endpoint")
 		}
@@ -78,4 +82,30 @@ func queryOracleScriptByID(ctx sdk.Context, path []string, k Keeper) ([]byte, er
 		return nil, err
 	}
 	return codec.MarshalJSONIndent(types.ModuleCdc, oracleScript)
+}
+
+func queryRequestByID(ctx sdk.Context, path []string, k Keeper) ([]byte, error) {
+	if len(path) != 1 {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "request not specified")
+	}
+	id, err := strconv.ParseInt(path[0], 10, 64)
+	if err != nil {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, err.Error())
+	}
+	request, err := k.GetRequest(ctx, types.RequestID(id))
+	if err != nil {
+		return nil, err
+	}
+	return codec.MarshalJSONIndent(types.ModuleCdc, request)
+}
+
+func queryReportsByID(ctx sdk.Context, path []string, k Keeper) ([]byte, error) {
+	if len(path) != 1 {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "request id not specified")
+	}
+	id, err := strconv.ParseInt(path[0], 10, 64)
+	if err != nil {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, err.Error())
+	}
+	return codec.MarshalJSONIndent(types.ModuleCdc, k.GetReports(ctx, types.RequestID(id)))
 }
