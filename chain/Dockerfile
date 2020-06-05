@@ -11,19 +11,3 @@ COPY chain/docker-config/run.sh .
 RUN make install
 
 CMD bandd start --rpc.laddr tcp://0.0.0.0:26657
-
-# FROM alpine
-
-# COPY chain/docker-config/ .
-
-# RUN addgroup banduser && \
-#     adduser -S -G banduser banduser -h "$BAND"
-
-# USER banduser
-
-# # Copy over binaries from the build-env
-# COPY --from=build-env /go/bin/bandd /usr/bin/bandd
-# COPY --from=build-env /go/bin/bandcli /usr/bin/bandcli
-# COPY --from=build-env /go/bin/bandoracled2 /usr/bin/bandoracled2
-
-# CMD ["bandd"]

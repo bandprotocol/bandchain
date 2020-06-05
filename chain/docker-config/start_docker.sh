@@ -19,6 +19,8 @@ done
 
 cd ../../chain
 
+make install
+
 # initial new node
 bandd init node-validator --chain-id bandchain --oracle band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs
 
