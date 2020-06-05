@@ -8,5 +8,5 @@ This sub-module contains the implementation of BandChain's Oracle Binary Interfa
 | ------------------------------- | -------------- |
 | [`Python 3 🐍`](pyobi)          | ✅ Completed   |
 | [`Golang 🐀`](../chain/pkg/obi) | ✅ Completed   |
+| [`JavaScript 🌐`](obi.js)       | ✅ Completed   |
 | [`Rust 🦀`](../owasm/obi)       | ⚙️ In Progress |
-| [`JavaScript 🌐`](obi.js)       | 🤔 Not Started |
