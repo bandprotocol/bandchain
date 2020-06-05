@@ -11,12 +11,19 @@ env = os.environ.copy()
 MAX_EXECUTABLE = env['MAX_EXECUTABLE']
 MAX_CALLDATA = env['MAX_CALLDATA']
 MAX_TIMEOUT = env['MAX_TIMEOUT']
+MAX_STDOUT = env['MAX_STDOUT']
+MAX_STDERR = env['MAX_STDERR']
+
 if not MAX_EXECUTABLE:
     raise Exception("MAX_EXECUTABLE is missing")
 if not MAX_CALLDATA:
     raise Exception("MAX_CALLDATA is missing")
 if not MAX_TIMEOUT:
     raise Exception("MAX_TIMEOUT is missing")
+if not MAX_STDOUT:
+    raise Exception("MAX_STDOUT is missing")
+if not MAX_STDERR:
+    raise Exception("MAX_STDERR is missing")
 
 @app.route('/execute', methods=['POST'])
 def execute():
@@ -40,10 +47,6 @@ def execute():
         if not 'executable' in request_json:
             return jsonify({
                 "error": "executable field is missing from JSON request",
-            }), 400
-        elif not request_json['executable']:
-            return jsonify({
-                "error": "executable field is empty",
             }), 400
         elif not 'calldata' in request_json:
             return jsonify({
@@ -100,14 +103,38 @@ def execute():
             [path] + shlex.split(request_json["calldata"]), env=env, timeout=timeout_sec, capture_output=True
         )
 
+        returncode = result.returncode
+        stdout = result.stdout.decode()
+        stderr = result.stderr.decode()
+        print ("returncode", returncode)
+        print ("stdout", stdout)
+        print ("stderr", stderr)
+
+        if len(stdout) > int(MAX_STDOUT):
+            return jsonify({
+                "returncode": 112,
+                "stdout": "",
+                "stderr": "",
+                "err": "Stdout exceeded max size"
+            }), 200
+        
+        if len(stderr) > int(MAX_STDERR):
+            return jsonify({
+                "returncode": 113,
+                "stdout": "",
+                "stderr": "",
+                "err": "Stderr exceeded max size"
+            }), 200
+        
+
         return jsonify({
-            "returncode": result.returncode,
-            "stdout": result.stdout.decode(),
-            "stderr": result.stderr.decode(),
+            "returncode": returncode,
+            "stdout": stdout,
+            "stderr": stderr,
             "err": ""
         }), 200
     
-    except OSError as e:
+    except OSError:
         return jsonify({
             "returncode": 126,
             "stdout": "",

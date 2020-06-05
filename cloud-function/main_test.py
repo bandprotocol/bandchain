@@ -54,7 +54,7 @@ def test_error_missing_calldata():
 def test_error_calldata_empty():
   response = app.test_client().post(
       '/execute',
-      data=json.dumps({'executable': 'IyEvdXNyL2Jpbi9lbnYgcHl0aG9uMwpwcmludCgnaGVsbG8nKQ==', 'calldata': '', 'timeout': 123456}),
+      data=json.dumps({'executable': 'IyEvdXNyL2Jpbi9lbnYgcHl0aG9uMwpwcmludCgnaGVsbG8nKQ==', 'calldata': '123', 'timeout': 123456}),
       content_type='application/json',
   )
 
@@ -110,11 +110,14 @@ def test_error_timeout_more_than_max_timeout():
   assert data['error'] == "Runtime exceeded max size"
 
 def test_success_execution():
+  '''#!/usr/bin/env python3
+      print('hello')
+  '''
   response = app.test_client().post(
       '/execute',
       data=json.dumps({
         "calldata": "123",
-        "executable": "IyEvdXNyL2Jpbi9lbnYgcHl0aG9uMwpwcmludCgnaGVsbG8nKQ==", #!/usr/bin/env python3\nprint('hello')
+        "executable": "IyEvdXNyL2Jpbi9lbnYgcHl0aG9uMwpwcmludCgnaGVsbG8nKQ==",
         "timeout": 123456
       }),
       content_type='application/json',
@@ -128,11 +131,14 @@ def test_success_execution():
   assert data['err'] == ""
 
 def test_error_execution_fail():
+  '''#!/usr/bin/enveeeeeeeee python3
+      print('hello')
+  '''
   response = app.test_client().post(
       '/execute',
       data=json.dumps({
-        "calldata": "123",
-        "executable": "IyEvdXNyL2Jpbi9lbnZlZWVlZWVlZWUKcHl0aG9uM1xucHJpbnQoJ2hlbGxvJyk=", #!/usr/bin/enveeeeeeeee python3\nprint('hello')
+        "calldata": "",
+        "executable": "IyEvdXNyL2Jpbi9lbnZlZWVlZWVlZWUKcHl0aG9uM1xucHJpbnQoJ2hlbGxvJyk=",
         "timeout": 123456
       }),
       content_type='application/json',
@@ -154,7 +160,7 @@ def test_error_execution_timeout():
   response = app.test_client().post(
       '/execute',
       data=json.dumps({
-        "calldata": "123",
+        "calldata": "",
         "executable": "IyEvdXNyL2Jpbi9lbnYgcHl0aG9uMwppbXBvcnQgdGltZQoKdGltZS5zbGVlcCgxKQ==",
         "timeout": 100 #100 millisec
       }),
@@ -177,7 +183,7 @@ def test_success_execution_timeout():
   response = app.test_client().post(
       '/execute',
       data=json.dumps({
-        "calldata": "123",
+        "calldata": "",
         "executable": "IyEvdXNyL2Jpbi9lbnYgcHl0aG9uMwppbXBvcnQgdGltZQoKdGltZS5zbGVlcCgxKQpwcmludCgiaGVsbG8iKQ==",
         "timeout": 2000  # 2000 millisec
       }),
@@ -190,5 +196,62 @@ def test_success_execution_timeout():
   assert data['stdout'] == "hello\n"
   assert data['stderr'] == ""
   assert data['err'] == ""
+
+def test_error_infinite_loop_execution():
+  '''#!/usr/bin/env python3
+      import time
+
+      while True:
+          print("hello")
+  '''
+  response = app.test_client().post(
+      '/execute',
+      data=json.dumps({
+        "calldata": "",
+        "executable": "IyEvdXNyL2Jpbi9lbnYgcHl0aG9uMwppbXBvcnQgdGltZQoKd2hpbGUgVHJ1ZToKICAgIHByaW50KCJoZWxsbyIp",
+        "timeout": 1000  # 1000 millisec
+      }),
+      content_type='application/json',
+  )
+
+  data = json.loads(response.get_data(as_text=True))
+  assert response.status_code == 200
+  assert data['returncode'] == 111
+  assert data['stdout'] == ""
+  assert data['stderr'] == ""
+  assert data['err'] == "Execution time limit exceeded"
+
+def test_error_stdout_exceed():
+  '''#!/usr/bin/env python3
+      import time
+
+      while True:
+          print("hello")
+  '''
+  app.config.update(
+    TESTING=True,
+    MAX_STDOUT=400
+  )
+  
+  app.test_client().environ_base
+
+  env = os.environ.copy()
+  print ("MAX_STDOUT", env["MAX_STDOUT"])
+  response = app.test_client().post(
+      '/execute',
+      data=json.dumps({
+        "calldata": "",
+        "executable": "IyEvdXNyL2Jpbi9lbnYgcHl0aG9uMwppbXBvcnQgdGltZQoKd2hpbGUgVHJ1ZToKICAgIHByaW50KCJoZWxsbyIp",
+        "timeout": 1000  # 1000 millisec
+      }),
+      content_type='application/json',
+  )
+
+  data = json.loads(response.get_data(as_text=True))
+  assert response.status_code == 200
+  assert data['returncode'] == 112
+  assert data['stdout'] == ""
+  assert data['stderr'] == ""
+  assert data['err'] == "Stdout exceeded max size"
 
 
