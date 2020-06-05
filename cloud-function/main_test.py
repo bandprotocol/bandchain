@@ -245,8 +245,8 @@ def test_error_stdout_exceed(mock_env):
   '''#!/usr/bin/env python3
       import time
 
-      while True:
-          print("hello")
+      for i in range(10):
+          print (i)
   '''
 
   app = create_app()
