@@ -94,7 +94,6 @@ def create_app():
         with open(path, "w") as f:
             f.write(executable.decode())
         os.chmod(path, 0o775)
-        print("from inside",MAX_STDOUT)
         try:
             
             timeout_millisec = request_json['timeout']
@@ -107,9 +106,6 @@ def create_app():
             returncode = result.returncode
             stdout = result.stdout.decode()
             stderr = result.stderr.decode()
-            print ("returncode", returncode)
-            print ("stdout", stdout)
-            print ("stderr", stderr)
 
             if len(stdout) > int(MAX_STDOUT):
                 return jsonify({
@@ -152,4 +148,3 @@ def create_app():
             }), 200
 
     return app
-    
