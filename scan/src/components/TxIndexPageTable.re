@@ -189,6 +189,7 @@ let renderEditDataSource = (dataSource: TxSub.Msg.EditDataSource.t) => {
         <AddressRender address={dataSource.owner} />
       </div>
     </div>
+    // TODO : Redesign edit messages
     // <VSpacing size=Spacing.lg />
     // <div className=Styles.topicContainer>
     //   <Text value="NAME" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
@@ -199,10 +200,10 @@ let renderEditDataSource = (dataSource: TxSub.Msg.EditDataSource.t) => {
     //   </div>
     // </div>
     // <VSpacing size=Spacing.md />
-    // // <div className=Styles.topicContainer>
-    // //   <Text value="FEE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-    // //   <AmountRender coins={dataSource.fee} pos=AmountRender.TxIndex />
-    // // </div>
+    //  <div className=Styles.topicContainer>
+    //    <Text value="FEE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+    //    <AmountRender coins={dataSource.fee} pos=AmountRender.TxIndex />
+    //  </div>
     <VSpacing size=Spacing.md />
   </Col>;
 };
@@ -238,6 +239,7 @@ let renderEditOracleScript = (oracleScript: TxSub.Msg.EditOracleScript.t) => {
         <AddressRender address={oracleScript.owner} />
       </div>
     </div>
+    // TODO : Redesign edit messages
     // <VSpacing size=Spacing.lg />
     // <div className=Styles.topicContainer>
     //   <Text value="NAME" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
