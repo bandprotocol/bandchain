@@ -78,15 +78,19 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         />
       </div>
       <TypeID.DataSource id />
-      <HSpacing size=Spacing.sm />
-      <Text
-        value=name
-        color=Colors.gray7
-        weight=Text.Medium
-        nowrap=true
-        block=true
-        ellipsis=true
-      />
+      {name == Config.doNotModify
+         ? React.null
+         : <>
+             <HSpacing size=Spacing.sm />
+             <Text
+               value=name
+               color=Colors.gray7
+               weight=Text.Medium
+               nowrap=true
+               block=true
+               ellipsis=true
+             />
+           </>}
     </div>
   | CreateOracleScriptMsg({id, sender, name}) =>
     <div className={Styles.rowWithWidth(width)}>
@@ -127,15 +131,19 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
       </div>
       <div className={Styles.rowWithWidth(210)}>
         <TypeID.OracleScript id />
-        <HSpacing size=Spacing.sm />
-        <Text
-          value=name
-          color=Colors.gray7
-          weight=Text.Medium
-          nowrap=true
-          block=true
-          ellipsis=true
-        />
+        {name == Config.doNotModify
+           ? React.null
+           : <>
+               <HSpacing size=Spacing.sm />
+               <Text
+                 value=name
+                 color=Colors.gray7
+                 weight=Text.Medium
+                 nowrap=true
+                 block=true
+                 ellipsis=true
+               />
+             </>}
       </div>
     </div>
   | RequestMsg({id, oracleScriptID, oracleScriptName, sender}) =>
@@ -250,15 +258,17 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
       </div>
       <HSpacing size=Spacing.sm />
       <div className={Styles.withWidth(width / 2 - 5)}>
-        <Text
-          value=moniker
-          color=Colors.gray7
-          weight=Text.Regular
-          code=true
-          nowrap=true
-          block=true
-          ellipsis=true
-        />
+        {moniker == Config.doNotModify
+           ? <AddressRender address=sender validator=true />
+           : <Text
+               value=moniker
+               color=Colors.gray7
+               weight=Text.Regular
+               code=true
+               nowrap=true
+               block=true
+               ellipsis=true
+             />}
       </div>
     </div>
   | CreateClientMsg({address, clientID, chainID}) =>
@@ -828,7 +838,9 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
           color=Colors.blue7
         />
       </div>
-      <div className={Styles.withWidth(width / 2)}> <AddressRender address validator=true /> </div>
+      <div className={Styles.withWidth(width / 2)}>
+        <AddressRender address validator=true />
+      </div>
     </div>
   | SetWithdrawAddressMsg({delegatorAddress, withdrawAddress}) =>
     <div className={Styles.rowWithWidth(width)}>

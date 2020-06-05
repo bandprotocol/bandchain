@@ -189,20 +189,21 @@ let renderEditDataSource = (dataSource: TxSub.Msg.EditDataSource.t) => {
         <AddressRender address={dataSource.owner} />
       </div>
     </div>
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.topicContainer>
-      <Text value="NAME" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className=Styles.hFlex>
-        <TypeID.DataSource id={dataSource.id} />
-        <HSpacing size=Spacing.sm />
-        <Text value={dataSource.name} />
-      </div>
-    </div>
-    <VSpacing size=Spacing.md />
+    // TODO : Redesign edit messages
+    // <VSpacing size=Spacing.lg />
     // <div className=Styles.topicContainer>
-    //   <Text value="FEE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-    //   <AmountRender coins={dataSource.fee} pos=AmountRender.TxIndex />
+    //   <Text value="NAME" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+    //   <div className=Styles.hFlex>
+    //     <TypeID.DataSource id={dataSource.id} />
+    //     <HSpacing size=Spacing.sm />
+    //     <Text value={dataSource.name} />
+    //   </div>
     // </div>
+    // <VSpacing size=Spacing.md />
+    //  <div className=Styles.topicContainer>
+    //    <Text value="FEE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+    //    <AmountRender coins={dataSource.fee} pos=AmountRender.TxIndex />
+    //  </div>
     <VSpacing size=Spacing.md />
   </Col>;
 };
@@ -238,15 +239,16 @@ let renderEditOracleScript = (oracleScript: TxSub.Msg.EditOracleScript.t) => {
         <AddressRender address={oracleScript.owner} />
       </div>
     </div>
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.topicContainer>
-      <Text value="NAME" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className=Styles.hFlex>
-        <TypeID.OracleScript id={oracleScript.id} />
-        <HSpacing size=Spacing.sm />
-        <Text value={oracleScript.name} />
-      </div>
-    </div>
+    // TODO : Redesign edit messages
+    // <VSpacing size=Spacing.lg />
+    // <div className=Styles.topicContainer>
+    //   <Text value="NAME" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+    //   <div className=Styles.hFlex>
+    //     <TypeID.OracleScript id={oracleScript.id} />
+    //     <HSpacing size=Spacing.sm />
+    //     <Text value={oracleScript.name} />
+    //   </div>
+    // </div>
     <VSpacing size=Spacing.md />
   </Col>;
 };
@@ -362,23 +364,37 @@ let renderEditValidator = (validator: TxSub.Msg.EditValidator.t) => {
     <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
       <Text value="MONIKER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <Text value={validator.moniker} code=true />
+      <Text
+        value={validator.moniker == Config.doNotModify ? "Unchanged" : validator.moniker}
+        code=true
+      />
     </div>
     <VSpacing size=Spacing.md />
     <div className=Styles.topicContainer>
       <Text value="IDENTITY" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <Text value={validator.identity} code=true />
+      <Text
+        value={validator.identity == Config.doNotModify ? "Unchanged" : validator.identity}
+        code=true
+      />
     </div>
     <VSpacing size=Spacing.md />
     <div className=Styles.topicContainer>
       <Text value="WEBSITE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <Text value={validator.website} code=true />
+      <Text
+        value={validator.website == Config.doNotModify ? "Unchanged" : validator.website}
+        code=true
+      />
     </div>
     <VSpacing size=Spacing.md />
     <div className=Styles.topicContainer>
       <Text value="DETAILS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className=Styles.detailContainer>
-        <Text value={validator.details} code=true height={Text.Px(16)} align=Text.Right />
+        <Text
+          value={validator.details == Config.doNotModify ? "Unchanged" : validator.details}
+          code=true
+          height={Text.Px(16)}
+          align=Text.Right
+        />
       </div>
     </div>
     <VSpacing size=Spacing.md />
