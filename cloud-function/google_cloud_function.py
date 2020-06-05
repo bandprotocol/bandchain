@@ -78,48 +78,26 @@ def execute(request):
     path = "/tmp/execute.sh"
     with open(path, "w") as f:
         f.write(executable.decode())
+
     os.chmod(path, 0o775)
+
     try:
 
         timeout_millisec = request_json["timeout"]
         timeout_sec = timeout_millisec / 1000
 
-        result = subprocess.run(
+        proc = subprocess.Popen(
             [path] + shlex.split(request_json["calldata"]),
             env=env,
-            timeout=timeout_sec,
-            capture_output=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
         )
+  
+        proc.wait(timeout=timeout_sec)
 
-        returncode = result.returncode
-        stdout = result.stdout.decode()
-        stderr = result.stderr.decode()
-
-        if len(stdout) > int(MAX_STDOUT):
-            return (
-                jsonify(
-                    {
-                        "returncode": 112,
-                        "stdout": "",
-                        "stderr": "",
-                        "err": "Stdout exceeded max size",
-                    }
-                ),
-                200,
-            )
-
-        if len(stderr) > int(MAX_STDERR):
-            return (
-                jsonify(
-                    {
-                        "returncode": 113,
-                        "stdout": "",
-                        "stderr": "",
-                        "err": "Stderr exceeded max size",
-                    }
-                ),
-                200,
-            )
+        returncode = proc.returncode
+        stdout = proc.stdout.read(int(MAX_STDOUT)).decode()
+        stderr = proc.stderr.read(int(MAX_STDERR)).decode()
 
         return (
             jsonify(
