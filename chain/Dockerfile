@@ -1,4 +1,4 @@
-FROM golang:1.13.5-buster AS build-env
+FROM golang:1.13.5-buster
 
 WORKDIR /go-owasm
 COPY go-owasm/. /go-owasm
