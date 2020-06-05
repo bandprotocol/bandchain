@@ -12,7 +12,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/log"
 	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
 	tmtypes "github.com/tendermint/tendermint/types"
@@ -94,7 +93,7 @@ func runCmd(c *Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			c.fileCache = filecache.New(filepath.Join(viper.GetString(cli.HomeFlag), "files"))
+			c.fileCache = filecache.New(filepath.Join(viper.GetString(flags.FlagHome), "files"))
 			return runImpl(c, l)
 		},
 	}
