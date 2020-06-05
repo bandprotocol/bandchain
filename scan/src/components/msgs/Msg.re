@@ -78,7 +78,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         />
       </div>
       <TypeID.DataSource id />
-      {name == "[do-not-modify]"
+      {name == Config.doNotModify
          ? React.null
          : <>
              <HSpacing size=Spacing.sm />
@@ -131,7 +131,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
       </div>
       <div className={Styles.rowWithWidth(210)}>
         <TypeID.OracleScript id />
-        {name == "[do-not-modify]"
+        {name == Config.doNotModify
            ? React.null
            : <>
                <HSpacing size=Spacing.sm />
@@ -258,7 +258,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
       </div>
       <HSpacing size=Spacing.sm />
       <div className={Styles.withWidth(width / 2 - 5)}>
-        {moniker == "[do-not-modify]"
+        {moniker == Config.doNotModify
            ? <AddressRender address=sender validator=true />
            : <Text
                value=moniker

@@ -363,7 +363,7 @@ let renderEditValidator = (validator: TxSub.Msg.EditValidator.t) => {
     <div className=Styles.topicContainer>
       <Text value="MONIKER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <Text
-        value={validator.moniker == "[do-not-modify]" ? "Unchanged" : validator.moniker}
+        value={validator.moniker == Config.doNotModify ? "Unchanged" : validator.moniker}
         code=true
       />
     </div>
@@ -371,7 +371,7 @@ let renderEditValidator = (validator: TxSub.Msg.EditValidator.t) => {
     <div className=Styles.topicContainer>
       <Text value="IDENTITY" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <Text
-        value={validator.identity == "[do-not-modify]" ? "Unchanged" : validator.identity}
+        value={validator.identity == Config.doNotModify ? "Unchanged" : validator.identity}
         code=true
       />
     </div>
@@ -379,7 +379,7 @@ let renderEditValidator = (validator: TxSub.Msg.EditValidator.t) => {
     <div className=Styles.topicContainer>
       <Text value="WEBSITE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <Text
-        value={validator.website == "[do-not-modify]" ? "Unchanged" : validator.website}
+        value={validator.website == Config.doNotModify ? "Unchanged" : validator.website}
         code=true
       />
     </div>
@@ -388,7 +388,7 @@ let renderEditValidator = (validator: TxSub.Msg.EditValidator.t) => {
       <Text value="DETAILS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className=Styles.detailContainer>
         <Text
-          value={validator.details == "[do-not-modify]" ? "Unchanged" : validator.details}
+          value={validator.details == Config.doNotModify ? "Unchanged" : validator.details}
           code=true
           height={Text.Px(16)}
           align=Text.Right
