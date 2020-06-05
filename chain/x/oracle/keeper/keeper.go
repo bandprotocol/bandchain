@@ -85,8 +85,24 @@ func (k Keeper) SetRequestCount(ctx sdk.Context, count int64) {
 // GetRequestCount returns the current number of all requests ever exist.
 func (k Keeper) GetRequestCount(ctx sdk.Context) int64 {
 	var requestNumber int64
+	bz := ctx.KVStore(k.storeKey).Get(types.RequestCountStoreKey)
+	if bz == nil {
+		return 0
+	}
+	k.cdc.MustUnmarshalBinaryLengthPrefixed(bz, &requestNumber)
+	return requestNumber
+}
+
+// SetRequestCount sets the ID of the last expired request.
+func (k Keeper) SetRequestLastExpired(ctx sdk.Context, id int64) {
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.RequestCountStoreKey)
+	store.Set(types.RequestLastExpiredStoreKey, k.cdc.MustMarshalBinaryLengthPrefixed(id))
+}
+
+// SetRequestLastExpired returns the ID of the last expired request.
+func (k Keeper) GetRequestLastExpired(ctx sdk.Context) int64 {
+	var requestNumber int64
+	bz := ctx.KVStore(k.storeKey).Get(types.RequestLastExpiredStoreKey)
 	if bz == nil {
 		return 0
 	}
@@ -122,7 +138,6 @@ func (k Keeper) GetDataSourceCount(ctx sdk.Context) int64 {
 func (k Keeper) GetNextDataSourceID(ctx sdk.Context) types.DataSourceID {
 	dataSourceCount := k.GetDataSourceCount(ctx)
 	store := ctx.KVStore(k.storeKey)
-
 	bz := k.cdc.MustMarshalBinaryLengthPrefixed(dataSourceCount + 1)
 	store.Set(types.DataSourceCountStoreKey, bz)
 	return types.DataSourceID(dataSourceCount + 1)
@@ -145,7 +160,6 @@ func (k Keeper) GetOracleScriptCount(ctx sdk.Context) int64 {
 func (k Keeper) GetNextOracleScriptID(ctx sdk.Context) types.OracleScriptID {
 	oracleScriptCount := k.GetOracleScriptCount(ctx)
 	store := ctx.KVStore(k.storeKey)
-
 	bz := k.cdc.MustMarshalBinaryLengthPrefixed(oracleScriptCount + 1)
 	store.Set(types.OracleScriptCountStoreKey, bz)
 	return types.OracleScriptID(oracleScriptCount + 1)

@@ -21,4 +21,5 @@ type QueryCountsResult struct {
 type QueryRequestResult struct {
 	Request Request  `json:"request"`
 	Reports []Report `json:"reports"`
+	Result  []byte   `json:"result"` // TODO: Update to richer data type.
 }

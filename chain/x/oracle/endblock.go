@@ -13,6 +13,8 @@ func handleEndBlock(ctx sdk.Context, k Keeper) {
 	}
 	// Once all the requests are resolved, we can clear the list.
 	k.SetPendingResolveList(ctx, []types.RequestID{})
-	// Lastly, we clean up old data requests from the primary storage.
+	// Lastly, we clean up data requests that are supposed to be expired.
 	k.ProcessExpiredRequests(ctx)
+	// TODO: We can remove old requests from storage to optimize state space, using `k.DeleteRequest`
+	// and `k.DeleteReports`. We don't do that for now as it is premature optimization at this state.
 }
