@@ -219,10 +219,10 @@ func TestProcessExpiredRequests(t *testing.T) {
 	require.Equal(t, []types.Report(nil), reports1) // report1 was removed because it already expired
 	require.Equal(t, []types.Report{rep}, reports2)
 
-	res, err := k.GetResult(ctx, id1)
+	res, err := k.GetResult(ctx, id1) // Have result because request-id 1 is already expired
 	require.NotNil(t, res)
 	require.Nil(t, err)
-	res, err = k.GetResult(ctx, id2)
+	res, err = k.GetResult(ctx, id2) // No result because request-id 2 isn't expired yet
 	require.Nil(t, res)
 	require.NotNil(t, err)
 
