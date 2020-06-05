@@ -189,20 +189,20 @@ let renderEditDataSource = (dataSource: TxSub.Msg.EditDataSource.t) => {
         <AddressRender address={dataSource.owner} />
       </div>
     </div>
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.topicContainer>
-      <Text value="NAME" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className=Styles.hFlex>
-        <TypeID.DataSource id={dataSource.id} />
-        <HSpacing size=Spacing.sm />
-        <Text value={dataSource.name} />
-      </div>
-    </div>
-    <VSpacing size=Spacing.md />
+    // <VSpacing size=Spacing.lg />
     // <div className=Styles.topicContainer>
-    //   <Text value="FEE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-    //   <AmountRender coins={dataSource.fee} pos=AmountRender.TxIndex />
+    //   <Text value="NAME" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+    //   <div className=Styles.hFlex>
+    //     <TypeID.DataSource id={dataSource.id} />
+    //     <HSpacing size=Spacing.sm />
+    //     <Text value={dataSource.name} />
+    //   </div>
     // </div>
+    // <VSpacing size=Spacing.md />
+    // // <div className=Styles.topicContainer>
+    // //   <Text value="FEE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+    // //   <AmountRender coins={dataSource.fee} pos=AmountRender.TxIndex />
+    // // </div>
     <VSpacing size=Spacing.md />
   </Col>;
 };
@@ -238,15 +238,15 @@ let renderEditOracleScript = (oracleScript: TxSub.Msg.EditOracleScript.t) => {
         <AddressRender address={oracleScript.owner} />
       </div>
     </div>
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.topicContainer>
-      <Text value="NAME" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className=Styles.hFlex>
-        <TypeID.OracleScript id={oracleScript.id} />
-        <HSpacing size=Spacing.sm />
-        <Text value={oracleScript.name} />
-      </div>
-    </div>
+    // <VSpacing size=Spacing.lg />
+    // <div className=Styles.topicContainer>
+    //   <Text value="NAME" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+    //   <div className=Styles.hFlex>
+    //     <TypeID.OracleScript id={oracleScript.id} />
+    //     <HSpacing size=Spacing.sm />
+    //     <Text value={oracleScript.name} />
+    //   </div>
+    // </div>
     <VSpacing size=Spacing.md />
   </Col>;
 };
