@@ -18,11 +18,11 @@ struct Output {
 
 fn prepare_impl(input: Input) {
     // Coingecko data source
-    oei::request_external_data(1, 1, &input.symbol.as_bytes());
+    oei::ask_external_data(1, 1, &input.symbol.as_bytes());
     // Crypto compare source
-    oei::request_external_data(2, 2, &input.symbol.as_bytes());
+    oei::ask_external_data(2, 2, &input.symbol.as_bytes());
     // Binance source
-    oei::request_external_data(3, 3, &input.symbol.as_bytes());
+    oei::ask_external_data(3, 3, &input.symbol.as_bytes());
 }
 
 fn execute_impl(input: Input) -> Output {

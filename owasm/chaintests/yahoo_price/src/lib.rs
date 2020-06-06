@@ -15,7 +15,7 @@ struct Output {
 #[no_mangle]
 fn prepare_impl(input: Input) {
     // Yahoo price data source
-    oei::request_external_data(14, 1, &input.symbol.as_bytes());
+    oei::ask_external_data(1, 14, &input.symbol.as_bytes());
 }
 
 #[no_mangle]

@@ -259,11 +259,13 @@ func NewIBCInfo(
 
 func NewReport(
 	Validator github_com_cosmos_cosmos_sdk_types.ValAddress,
+	InBeforeResolve bool,
 	RawReports []RawReport,
 ) Report {
 	return Report{
-		Validator:  Validator,
-		RawReports: RawReports,
+		Validator:       Validator,
+		InBeforeResolve: InBeforeResolve,
+		RawReports:      RawReports,
 	}
 }
 

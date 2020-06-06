@@ -17,16 +17,16 @@ struct Output {
 #[no_mangle]
 fn prepare_impl(input: Input) {
     // Coingecko data source
-    oei::request_external_data(1, 10, &input.base_symbol.as_bytes());
-    oei::request_external_data(1, 11, &input.quote_symbol.as_bytes());
+    oei::ask_external_data(10, 1, &input.base_symbol.as_bytes());
+    oei::ask_external_data(11, 1, &input.quote_symbol.as_bytes());
 
     // Crypto compare source
-    oei::request_external_data(2, 20, &input.base_symbol.as_bytes());
-    oei::request_external_data(2, 21, &input.quote_symbol.as_bytes());
+    oei::ask_external_data(20, 2, &input.base_symbol.as_bytes());
+    oei::ask_external_data(21, 2, &input.quote_symbol.as_bytes());
 
     // Binance source
-    oei::request_external_data(3, 30, &input.base_symbol.as_bytes());
-    oei::request_external_data(3, 31, &input.quote_symbol.as_bytes());
+    oei::ask_external_data(30, 3, &input.base_symbol.as_bytes());
+    oei::ask_external_data(31, 3, &input.quote_symbol.as_bytes());
 }
 
 fn len(arr: &Vec<f64>) -> f64 {

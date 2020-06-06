@@ -42,5 +42,5 @@ After we have `BandChain` and `Band Oracle 2` running, now we can request data o
 Example of requesting data on BandChain
 
 ```
-bandcli tx oracle request 1 -c 030000004254436400000000000000 1 1  --from requester --chain-id bandchain --gas 3000000 --keyring-backend test  --from requester
+bandcli tx oracle request 1 -c 0000000342544300000000000003e8 1 1  --from requester --chain-id bandchain --gas 3000000 --keyring-backend test  --from requester
 ```
