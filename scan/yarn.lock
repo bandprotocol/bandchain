@@ -6694,6 +6694,11 @@ oauth-sign@~0.9.0:
   resolved "https://registry.yarnpkg.com/oauth-sign/-/oauth-sign-0.9.0.tgz#47a7b016baa68b5fa0ecf3dee08a85c679ac6455"
   integrity sha512-fexhUFFPTGV8ybAtSIGbV6gOkSv8UtRbDBnAyLQw4QPKkgNlsH2ByPGtMUqdWkos6YCRmAqViwgZrJc/mRDzZQ==
 
+obi.js@1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/obi.js/-/obi.js-1.0.2.tgz#f06ed613bb187b33d2e4fce8cfa6f0d04415ff38"
+  integrity sha512-WZ1HcvWuB6oDn/k2oyApkjfkGUBlkB/vitlA3o6e8/db+S8H5hx8oitzW4YYmKM5ba7y/3uy3KB4OD+oWJucmw==
+
 object-assign@^4.0.1, object-assign@^4.1.0, object-assign@^4.1.1:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
