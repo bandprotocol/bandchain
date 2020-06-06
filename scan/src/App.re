@@ -123,7 +123,23 @@ let make = () => {
   | _ => raise(WrongNetwork("Incorrect or unspecified NETWORK environment variable"))
   };
 
-  if (Mobile.check()) {
+  let url = ReasonReactRouter.useUrl() |> Route.fromUrl;
+  let (doit, setDoit) = React.useState(_ => false);
+  React.useEffect0(() => {
+    let intervalId =
+      Js.Global.setInterval(
+        () => {
+          let value = [%bs.raw {| window.doit !== undefined|}];
+          setDoit(_ => value);
+        },
+        500,
+      );
+    Some(() => Js.Global.clearInterval(intervalId));
+  });
+
+  if (!doit) {
+    React.string("Coming soon!");
+  } else if (Mobile.check()) {
     <MobilePage />;
   } else {
     <div className=Styles.container>
@@ -131,7 +147,7 @@ let make = () => {
       <div className={Css.merge([Styles.innerContainer, Styles.pageWidth])}>
         <NavBar />
         <div className=Styles.routeContainer>
-          {switch (ReasonReactRouter.useUrl() |> Route.fromUrl) {
+          {switch (url) {
            | HomePage => <HomePage />
            //  | DataSourceHomePage => <DataSourceHomePage />
            //  | DataSourceIndexPage(dataSourceID, hashtag) =>
