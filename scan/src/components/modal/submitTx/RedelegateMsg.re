@@ -23,36 +23,34 @@ let make = (~validator, ~setMsgsOpt) => {
     },
     (srcValidator, dstValidator, amount),
   );
-
-  <>
-    <EnhanceTxInput
-      width=360
-      inputData=srcValidator
-      setInputData=setSrcValidator
-      parse=Address.fromBech32Opt
-      msg="From"
-      errMsg="Invalid Address"
-      code=true
-    />
-    <VSpacing size=Spacing.md />
-    <EnhanceTxInput
-      width=360
-      inputData=dstValidator
-      setInputData=setDstValidator
-      parse=Address.fromBech32Opt
-      msg="To"
-      errMsg="Invalid Address"
-      code=true
-    />
-    <VSpacing size=Spacing.md />
-    <EnhanceTxInput
-      width=115
-      inputData=amount
-      setInputData=setAmount
-      parse=Parse.getBandAmount
-      msg="Amount (BAND)"
-      errMsg="Invalid amount"
-      code=true
-    />
-  </>;
+  // TODO: do it later
+  React.null;
+  // <>
+  //   <EnhanceTxInput
+  //     width=360
+  //     inputData=srcValidator
+  //     setInputData=setSrcValidator
+  //     parse=Parse.address
+  //     msg="From"
+  //     code=true
+  //   />
+  //   <VSpacing size=Spacing.md />
+  //   <EnhanceTxInput
+  //     width=360
+  //     inputData=dstValidator
+  //     setInputData=setDstValidator
+  //     parse=Parse.address
+  //     msg="To"
+  //     code=true
+  //   />
+  //   <VSpacing size=Spacing.md />
+  //   <EnhanceTxInput
+  //     width=115
+  //     inputData=amount
+  //     setInputData=setAmount
+  //     parse=Parse.getBandAmount
+  //     msg="Amount (BAND)"
+  //     code=true
+  //   />
+  // </>;
 };

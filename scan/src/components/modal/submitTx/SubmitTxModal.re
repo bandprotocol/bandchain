@@ -20,26 +20,6 @@ module Styles = {
   let rowContainer =
     style([display(`flex), alignItems(`center), justifyContent(`spaceBetween)]);
 
-  let input = wid =>
-    style([
-      width(`px(wid)),
-      height(`px(30)),
-      paddingRight(`px(9)),
-      borderRadius(`px(8)),
-      fontSize(`px(12)),
-      textAlign(`right),
-      boxShadow(
-        Shadow.box(
-          ~inset=false,
-          ~x=`zero,
-          ~y=`px(3),
-          ~blur=`px(4),
-          Css.rgba(11, 29, 142, 0.1),
-        ),
-      ),
-      focus([outlineColor(Colors.white)]),
-    ]);
-
   let selectWrapper =
     style([
       display(`flex),
@@ -81,8 +61,22 @@ module Styles = {
       ),
       boxShadow(Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(8), Css.rgba(82, 105, 255, 0.25))),
       borderRadius(`px(4)),
-      cursor(`pointer),
+      border(`zero, `solid, Colors.white),
       alignSelf(`center),
+      cursor(`pointer),
+      color(Colors.white),
+      transition(~duration=600, "all"),
+      disabled([
+        backgroundImage(
+          `linearGradient((
+            `deg(90.),
+            [(`percent(0.), Colors.gray3), (`percent(100.), Colors.gray3)],
+          )),
+        ),
+        color(Colors.gray6),
+        boxShadow(Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(4), rgba(11, 29, 142, 0.1))),
+        cursor(`default),
+      ]),
     ]);
 
   let info = style([display(`flex), justifyContent(`spaceBetween)]);
@@ -125,9 +119,10 @@ module SubmitTxStep = {
         width=300
         inputData=memo
         setInputData=setMemo
-        parse={newVal => {newVal->Js.String.length <= 32 ? Some(newVal) : None}}
+        parse={newVal => {
+          newVal->Js.String.length <= 32 ? Result.Ok(newVal) : Err("Exceed limit length")
+        }}
         msg="Memo (optional)"
-        errMsg="Exceed limit length"
         placeholder="Insert memo"
         code=true
       />
@@ -145,8 +140,9 @@ module SubmitTxStep = {
       </div>
       <VSpacing size=Spacing.lg />
       <VSpacing size=Spacing.md />
-      <div
+      <button
         className=Styles.nextBtn
+        disabled={msgsOpt->Belt.Option.isNone}
         onClick={_ => {
           let rawTxOpt =
             {let%Opt memo' = memo.value;
@@ -175,8 +171,8 @@ module SubmitTxStep = {
             };
           ();
         }}>
-        <Text value="Next" weight=Text.Bold size=Text.Md color=Colors.white />
-      </div>
+        <Text value="Next" weight=Text.Bold size=Text.Md />
+      </button>
     </div>;
   };
 };
