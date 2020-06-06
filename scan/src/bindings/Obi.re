@@ -78,7 +78,6 @@ function(schema, t, data) {
     let result = []
     for (let x of Object.entries(rawResult)) {
       let value = stringify(x[1])
-      console.log("result", value)
       result = [...result, {fieldName: x[0], fieldValue: value}]
     }
 
