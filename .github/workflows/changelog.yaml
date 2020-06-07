@@ -1,21 +1,20 @@
 name: Append Changelog
-on: pull_request
+on: push
 
 jobs:
   get-pr-name:
     runs-on: ubuntu-latest
 
     steps:
-     - name: Code Checkout
-       uses: actions/checkout@v2
+      - name: Code Checkout
+        uses: actions/checkout@v2
 
-    - name: Get pull request title
-      uses: jwalton/gh-find-current-pr@v1
-      id: findPr
-      with:
+      - name: Get pull request title
+        uses: jwalton/gh-find-current-pr@v1
+        id: findPr
+        with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      run: echo "Your PR Title is ${PR}"
-      if: success() && steps.findPr.outputs.title
-      env:
-      PR: ${{ steps.findPr.outputs.pr }}
-
+        run: echo "Your PR Title is ${PR}"
+        if: success() && steps.findPr.outputs.title
+        env:
+          PR: ${{ steps.findPr.outputs.pr }}
