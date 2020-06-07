@@ -1,9 +1,11 @@
 package oracle
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
@@ -52,4 +54,13 @@ func ExportGenesis(ctx sdk.Context, k Keeper) GenesisState {
 		DataSources:   k.GetAllDataSources(ctx),
 		OracleScripts: k.GetAllOracleScripts(ctx),
 	}
+}
+
+// GetGenesisStateFromAppState returns x/oracle GenesisState given raw application genesis state.
+func GetGenesisStateFromAppState(cdc *codec.Codec, appState map[string]json.RawMessage) GenesisState {
+	var genesisState GenesisState
+	if appState[ModuleName] != nil {
+		cdc.MustUnmarshalJSON(appState[ModuleName], &genesisState)
+	}
+	return genesisState
 }

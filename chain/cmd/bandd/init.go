@@ -22,13 +22,10 @@ import (
 	"github.com/tendermint/tendermint/libs/tempfile"
 	"github.com/tendermint/tendermint/privval"
 	"github.com/tendermint/tendermint/types"
-
-	"github.com/bandprotocol/bandchain/chain/x/oracle"
 )
 
 const (
 	flagOverwrite = "overwrite"
-	flagOracle    = "oracle"
 )
 
 type printInfo struct {
@@ -97,13 +94,7 @@ func GenFilePVIfNotExists(cdc *codec.Codec, keyFilePath, stateFilePath string) {
 
 // InitCmd returns a command that initializes all files needed for Tendermint
 // and the respective application.
-func InitCmd(
-	ctx *server.Context,
-	cdc *codec.Codec,
-	customAppState map[string]json.RawMessage,
-	getDefaultDataSourcesAndOracleScripts func(sdk.AccAddress) json.RawMessage,
-	defaultNodeHome string,
-) *cobra.Command {
+func InitCmd(ctx *server.Context, cdc *codec.Codec, customAppState map[string]json.RawMessage, defaultNodeHome string) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "init [moniker]",
 		Short: "Initialize private validator, p2p, genesis, and application configuration files",
@@ -135,13 +126,6 @@ func InitCmd(
 			genFile := config.GenesisFile()
 			if !viper.GetBool(flagOverwrite) && tmos.FileExists(genFile) {
 				return fmt.Errorf("genesis.json file already exists: %v", genFile)
-			}
-			if viper.IsSet(flagOracle) {
-				owner, err := sdk.AccAddressFromBech32(viper.GetString(flagOracle))
-				if err != nil {
-					return err
-				}
-				customAppState[oracle.ModuleName] = getDefaultDataSourcesAndOracleScripts(owner)
 			}
 			appState, err := codec.MarshalJSONIndent(cdc, customAppState)
 			if err != nil {
@@ -183,7 +167,6 @@ func InitCmd(
 	cmd.Flags().String(cli.HomeFlag, defaultNodeHome, "node's home directory")
 	cmd.Flags().BoolP(flagOverwrite, "o", false, "overwrite the genesis.json file")
 	cmd.Flags().String(flags.FlagChainID, "", "genesis file chain-id, if left blank will be randomly created")
-	cmd.Flags().String(flagOracle, "band15d4apf20449ajvwycq8ruaypt7v6d345n9fpt9", "owner of these data sources and oracle scripts")
 
 	return cmd
 }
