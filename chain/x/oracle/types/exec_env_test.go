@@ -1,243 +1,203 @@
 package types
 
-// func TestNewExecEnv(t *testing.T) {
-// 	ctx, keeper := keep.CreateTestInput(t, false)
+import (
+	"testing"
 
-// 	require.Panics(t, func() {
-// 		NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
-// 	})
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/require"
+	"github.com/tendermint/tendermint/crypto/secp256k1"
+)
 
-// 	keeper.SetRequest(ctx, 1, types.NewRequest(
-// 		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))}, 1, 0, 0, "clientID", nil,
-// 	))
+var (
+	pk1               = secp256k1.GenPrivKey().PubKey()
+	pk2               = secp256k1.GenPrivKey().PubKey()
+	pk3               = secp256k1.GenPrivKey().PubKey()
+	addr1             = pk1.Address()
+	addr2             = pk2.Address()
+	addr3             = pk3.Address()
+	validatorAddress1 = sdk.ValAddress(addr1)
+	validatorAddress2 = sdk.ValAddress(addr2)
+	validatorAddress3 = sdk.ValAddress(addr3)
+)
 
-// 	_ = NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
-// }
+func mockExecEnv() *ExecuteEnv {
+	oracleScriptID := OracleScriptID(1)
+	calldata := []byte("CALLDATA")
+	valAddresses := []sdk.ValAddress{validatorAddress1, validatorAddress2, validatorAddress3}
+	minCount := uint64(1)
+	requestHeight := int64(999)
+	requestTime := int64(1581589700)
+	clientID := "beeb"
+	ibcInfo := NewIBCInfo("source_port", "source_channel")
+	rawRequestID := []ExternalID{1, 2, 3}
+	request := NewRequest(oracleScriptID, calldata, valAddresses, minCount, requestHeight, requestTime, clientID, &ibcInfo, rawRequestID)
+	env := NewExecuteEnv(request)
 
-// func TestGetAskCount(t *testing.T) {
-// 	ctx, keeper := keep.CreateTestInput(t, false)
-// 	keeper.SetRequest(ctx, 1, types.NewRequest(
-// 		1, []byte("calldata"),
-// 		[]sdk.ValAddress{sdk.ValAddress([]byte("val1")), sdk.ValAddress([]byte("val2"))},
-// 		1, 0, 0, "clientID", nil,
-// 	))
+	rawReport1 := NewRawReport(1, 0, []byte("DATA1"))
+	rawReport2 := NewRawReport(2, 1, []byte("DATA2"))
+	rawReport3 := NewRawReport(3, 0, []byte("DATA3"))
 
-// 	env := NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
-// 	require.Equal(t, int64(2), env.GetAskCount())
-// }
+	report1 := NewReport(validatorAddress1, true, []RawReport{rawReport1, rawReport2})
+	report2 := NewReport(validatorAddress2, true, []RawReport{rawReport3})
 
-// func TestGetMinCount(t *testing.T) {
-// 	ctx, keeper := keep.CreateTestInput(t, false)
-// 	keeper.SetRequest(ctx, 1, types.NewRequest(
-// 		1, []byte("calldata"),
-// 		[]sdk.ValAddress{
-// 			sdk.ValAddress([]byte("val1")),
-// 			sdk.ValAddress([]byte("val2")),
-// 			sdk.ValAddress([]byte("val3")),
-// 			sdk.ValAddress([]byte("val4")),
-// 		},
-// 		3, 0, 0, "clientID", nil,
-// 	))
+	env.SetReports([]Report{report1, report2})
+	return env
+}
 
-// 	env := NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
-// 	require.Equal(t, int64(3), env.GetMinCount())
-// }
+func mockFreshPrepareEnv() *PrepareEnv {
+	oracleScriptID := OracleScriptID(1)
+	calldata := []byte("CALLDATA")
+	valAddresses := []sdk.ValAddress{validatorAddress1, validatorAddress2, validatorAddress3}
+	minCount := uint64(1)
+	requestHeight := int64(999)
+	requestTime := int64(1581589700)
+	clientID := "beeb"
+	ibcInfo := NewIBCInfo("source_port", "source_channel")
+	rawRequestID := []ExternalID{1, 2, 3}
+	request := NewRequest(oracleScriptID, calldata, valAddresses, minCount, requestHeight, requestTime, clientID, &ibcInfo, rawRequestID)
+	env := NewPrepareEnv(request, 3)
+	return env
+}
 
-// // func TestGetAnsCount(t *testing.T) {
-// // 	ctx, keeper := keep.CreateTestInput(t, false)
-// // 	keeper.SetRequest(ctx, 1, types.NewRequest(
-// // 		1, []byte("calldata"),
-// // 		[]sdk.ValAddress{sdk.ValAddress([]byte("val1")), sdk.ValAddress([]byte("val2"))},
-// // 		1, 0, 0, 100, "clientID",
-// // 	))
+func mockAlreadyPreparedEnv() *PrepareEnv {
+	env := mockFreshPrepareEnv()
+	env.AskExternalData(1, 1, []byte("CALLDATA1"))
+	env.AskExternalData(2, 2, []byte("CALLDATA2"))
+	env.AskExternalData(3, 3, []byte("CALLDATA3"))
+	return env
+}
 
-// // 	env := NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
-// // 	require.Equal(t, int64(0), env.GetAnsCount())
+func TestGetCalldata(t *testing.T) {
+	calldata := []byte("CALLDATA")
 
-// // 	keeper.AddReport(ctx, 1, types.NewReport(sdk.ValAddress([]byte("val1")), []types.RawReport{}))
+	penv := mockFreshPrepareEnv()
+	require.Equal(t, calldata, penv.GetCalldata())
 
-// // 	env = NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
-// // 	require.Equal(t, int64(1), env.GetAnsCount())
+	eenv := mockExecEnv()
+	require.Equal(t, calldata, eenv.GetCalldata())
+}
 
-// // }
+func TestSetReturnData(t *testing.T) {
+	result := []byte("RESULT")
 
-// func TestGetPrepareBlockTime(t *testing.T) {
-// 	ctx, keeper := keep.CreateTestInput(t, false)
-// 	keeper.SetRequest(ctx, 1, types.NewRequest(
-// 		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))},
-// 		1, 20, 1581589790, "clientID", nil,
-// 	))
+	penv := mockFreshPrepareEnv()
+	require.Panics(t, func() { penv.SetReturnData(result) })
 
-// 	env := NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
-// 	require.Equal(t, int64(1581589790), env.GetPrepareBlockTime())
-// }
+	eenv := mockExecEnv()
+	eenv.SetReturnData(result)
+	require.Equal(t, result, eenv.Retdata)
 
-// func TestGetAggregateBlockTime(t *testing.T) {
-// 	ctx, keeper := keep.CreateTestInput(t, false)
-// 	keeper.SetRequest(ctx, 1, types.NewRequest(
-// 		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))},
-// 		1, 0, 0, "clientID", nil,
-// 	))
+}
+func TestGetAskCount(t *testing.T) {
+	// Can call on both environment
+	penv := mockFreshPrepareEnv()
+	require.Equal(t, int64(3), penv.GetAskCount())
 
-// 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
-// 	env := NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
-// 	require.Equal(t, int64(0), env.GetAggregateBlockTime())
+	eenv := mockExecEnv()
+	require.Equal(t, int64(3), eenv.GetAskCount())
+}
 
-// 	// Add received validator
-// 	err := keeper.AddReport(ctx, 1, types.NewReport(sdk.ValAddress([]byte("val1")), []types.RawReport{}))
-// 	require.Nil(t, err)
+func TestGetMinCount(t *testing.T) {
+	// Can call on both environment
+	penv := mockFreshPrepareEnv()
+	require.Equal(t, int64(1), penv.GetMinCount())
 
-// 	// After report is greater or equal MinCount, it will resolve in current block time.
-// 	env = NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
-// 	env.SetReports(keeper.GetReports(ctx, 1))
+	eenv := mockExecEnv()
+	require.Equal(t, int64(1), eenv.GetMinCount())
+}
 
-// 	require.Equal(t, int64(1581589790), env.GetAggregateBlockTime())
-// }
+func TestGetAnsCount(t *testing.T) {
+	// Should panic if call on prepare environment.
+	penv := mockFreshPrepareEnv()
+	require.Panics(t, func() { penv.GetAnsCount() })
 
-// func TestGetValidatorPubKey(t *testing.T) {
-// 	ctx, keeper := keep.CreateTestInput(t, false)
-// 	pubStr := []string{
-// 		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
-// 		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
-// 	}
-// 	validatorAddress1 := keep.SetupTestValidator(
-// 		ctx,
-// 		keeper,
-// 		pubStr[0],
-// 		10,
-// 	)
-// 	validatorAddress2 := keep.SetupTestValidator(
-// 		ctx,
-// 		keeper,
-// 		pubStr[1],
-// 		10,
-// 	)
-// 	keeper.SetRequest(ctx, 1, types.NewRequest(
-// 		1, []byte("calldata"), []sdk.ValAddress{validatorAddress1, validatorAddress2},
-// 		1, 0, 0, "clientID", nil,
-// 	))
+	eenv := mockExecEnv()
+	require.Equal(t, int64(2), eenv.GetAnsCount())
+}
 
-// 	env := NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
+func TestGetExternalData(t *testing.T) {
+	env := mockExecEnv()
 
-// 	addr1, err := env.GetValidatorAddress(0)
-// 	require.Nil(t, err)
-// 	require.Equal(t, validatorAddress1, sdk.ValAddress(addr1))
+	require.Equal(t, []byte("DATA1"), env.GetExternalData(1, 0))
+	require.Equal(t, int64(0), env.GetExternalDataStatus(1, 0))
 
-// 	addr2, err := env.GetValidatorAddress(1)
-// 	require.Nil(t, err)
-// 	require.Equal(t, validatorAddress2, sdk.ValAddress(addr2))
+	require.Equal(t, []byte("DATA2"), env.GetExternalData(2, 0))
+	require.Equal(t, int64(1), env.GetExternalDataStatus(2, 0))
 
-// 	_, err = env.GetValidatorAddress(2)
-// 	require.NotNil(t, err)
+	require.Nil(t, env.GetExternalData(3, 0))
+	require.Equal(t, int64(-1), env.GetExternalDataStatus(3, 0))
 
-// 	_, err = env.GetValidatorAddress(-1)
-// 	require.NotNil(t, err)
-// }
+	require.Nil(t, env.GetExternalData(1, 1))
+	require.Equal(t, int64(-1), env.GetExternalDataStatus(1, 1))
 
-// func TestRequestExternalData(t *testing.T) {
-// 	ctx, keeper := keep.CreateTestInput(t, false)
-// 	// Set Request
-// 	keeper.SetRequest(ctx, 1, types.NewRequest(
-// 		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))},
-// 		1, 0, 0, "clientID", nil,
-// 	))
+	require.Nil(t, env.GetExternalData(1, 2))
+	require.Equal(t, int64(-1), env.GetExternalDataStatus(1, 2))
 
-// 	// Set Datasource
-// 	dataSource := types.NewDataSource(
-// 		sdk.AccAddress([]byte("owner")),
-// 		"data_source",
-// 		"description",
-// 		[]byte("executable"),
-// 	)
-// 	keeper.SetDataSource(ctx, 1, dataSource)
+	require.Equal(t, []byte("DATA3"), env.GetExternalData(3, 1))
+	require.Equal(t, int64(0), env.GetExternalDataStatus(3, 1))
 
-// 	env := NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
-// 	envErr := env.RequestExternalData(1, 42, []byte("prepare32"))
-// 	require.Nil(t, envErr)
-// 	// err := env.SaveRawDataRequests(ctx, keeper)
-// 	// require.Nil(t, err)
+	require.Nil(t, env.GetExternalData(1, 100))
+	require.Equal(t, int64(-1), env.GetExternalDataStatus(1, 100))
 
-// 	// rawRequest, err := keeper.GetRawRequest(ctx, 1, 42)
-// 	// require.Nil(t, err)
-// 	// require.Equal(t, types.NewRawDataRequest(1, []byte("prepare32")), rawRequest)
-// }
+	require.Nil(t, env.GetExternalData(100, 0))
+	require.Equal(t, int64(-1), env.GetExternalDataStatus(100, 0))
+}
 
-// func TestRequestExternalDataExceedMaxRawRequestCount(t *testing.T) {
-// 	ctx, keeper := keep.CreateTestInput(t, false)
+func TestFailedGetExternalData(t *testing.T) {
+	penv := mockAlreadyPreparedEnv()
 
-// 	// Set Request
-// 	keeper.SetRequest(ctx, 1, types.NewRequest(
-// 		1, []byte("calldata"), []sdk.ValAddress{sdk.ValAddress([]byte("val1"))},
-// 		1, 0, 0, "clientID", nil,
-// 	))
+	require.Panics(t, func() { penv.GetExternalData(1, 1) })
+	require.Panics(t, func() { penv.GetExternalDataStatus(1, 1) })
+}
 
-// 	// Set Datasource
-// 	dataSource := types.NewDataSource(
-// 		sdk.AccAddress([]byte("owner")),
-// 		"data_source",
-// 		"description",
-// 		[]byte("executable"),
-// 	)
-// 	keeper.SetDataSource(ctx, 1, dataSource)
+func TestAskExternalData(t *testing.T) {
+	env := mockFreshPrepareEnv()
+	env.AskExternalData(1, 1, []byte("CALLDATA1"))
+	env.AskExternalData(42, 2, []byte("CALLDATA2"))
+	env.AskExternalData(3, 4, []byte("CALLDATA3"))
 
-// 	// Set MaxRawRequestCount to 5
-// 	keeper.SetParam(ctx, KeyMaxRawRequestCount, 5)
-// 	env := NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
+	rawReq := env.GetRawRequests()
+	expectRawReq := []RawRequest{
+		NewRawRequest(1, 1, []byte("CALLDATA1")),
+		NewRawRequest(42, 2, []byte("CALLDATA2")),
+		NewRawRequest(3, 4, []byte("CALLDATA3")),
+	}
+	require.Equal(t, expectRawReq, rawReq)
+}
 
-// 	reqErr := env.RequestExternalData(1, 41, []byte("prepare32"))
-// 	require.Nil(t, reqErr)
-// 	reqErr = env.RequestExternalData(1, 42, []byte("prepare32"))
-// 	require.Nil(t, reqErr)
-// 	reqErr = env.RequestExternalData(1, 43, []byte("prepare32"))
-// 	require.Nil(t, reqErr)
-// 	reqErr = env.RequestExternalData(1, 44, []byte("prepare32"))
-// 	require.Nil(t, reqErr)
-// 	reqErr = env.RequestExternalData(1, 45, []byte("prepare32"))
-// 	require.Nil(t, reqErr)
-// 	reqErr = env.RequestExternalData(1, 46, []byte("prepare32"))
-// 	require.NotNil(t, reqErr)
+func TestAskExternalDataFailed(t *testing.T) {
+	penv := mockFreshPrepareEnv()
 
-// 	// envErr := env.SaveRawDataRequests(ctx, keeper)
-// 	// require.Nil(t, envErr)
-// }
+	penv.AskExternalData(1, 3, make([]byte, MaxCalldataSize+1))
+	require.Equal(t, []RawRequest(nil), penv.GetRawRequests())
 
-// // func TestGetExternalData(t *testing.T) {
-// // 	ctx, keeper := keep.CreateTestInput(t, false)
-// // 	keeper.SetRequest(ctx, 1, types.NewRequest(
-// // 		1, []byte("calldata"),
-// // 		[]sdk.ValAddress{sdk.ValAddress([]byte("val1")), sdk.ValAddress([]byte("val2"))},
-// // 		1, 0, 0, 100, "clientID",
-// // 	))
+	penv.AskExternalData(1, 1, []byte("CALLDATA1"))
+	penv.AskExternalData(2, 2, []byte("CALLDATA2"))
+	penv.AskExternalData(3, 3, []byte("CALLDATA3"))
 
-// // 	keeper.SetReport(
-// // 		ctx,
-// // 		1,
-// // 		42,
-// // 		sdk.ValAddress([]byte("val1")),
-// // 		types.NewReport(42, []byte("data42")),
-// // 	)
+	expectRawReq := []RawRequest{
+		NewRawRequest(1, 1, []byte("CALLDATA1")),
+		NewRawRequest(2, 2, []byte("CALLDATA2")),
+		NewRawRequest(3, 3, []byte("CALLDATA3")),
+	}
+	require.Equal(t, expectRawReq, penv.GetRawRequests())
 
-// // 	env, err := NewExecEnv(ctx, keeper, keeper.MustGetRequest(ctx, 1))
-// // 	require.Nil(t, err)
+	penv.AskExternalData(4, 4, []byte("CALLDATA4"))
+	require.Equal(t, expectRawReq, penv.GetRawRequests())
+}
 
-// // 	err = env.LoadReports(ctx, keeper)
-// // 	require.Nil(t, err)
-// // 	// Get report from reported validator
-// // 	report, statusCode, envErr := env.GetExternalData(42, 0)
-// // 	require.Nil(t, envErr)
-// // 	require.Equal(t, []byte("data42"), report)
-// // 	require.Equal(t, uint32(42), statusCode)
+func TestAskExternalDataOnExecEnv(t *testing.T) {
+	env := mockExecEnv()
+	calldata := []byte("CALLDATA")
+	require.Panics(t, func() { env.AskExternalData(2, 2, calldata) })
+}
 
-// // 	// Get report from missing validator
-// // 	_, _, envErr = env.GetExternalData(42, 1)
-// // 	require.NotNil(t, envErr)
-// // 	require.EqualError(t, envErr, "Unable to find raw data report with request ID (1) external ID (42) from (bandvaloper1weskcvsfgndm9): ItemNotFound")
-
-// // 	// Get report from invalid validator index
-// // 	_, _, envErr = env.GetExternalData(42, 2)
-// // 	require.NotNil(t, envErr, "validator out of range")
-
-// // 	// Get report from invalid validator index
-// // 	_, _, envErr = env.GetExternalData(42, -2)
-// // 	require.NotNil(t, envErr, "validator out of range")
-// // }
+func TestGetRawRequests(t *testing.T) {
+	env := mockAlreadyPreparedEnv()
+	expect := []RawRequest{
+		NewRawRequest(1, 1, []byte("CALLDATA1")),
+		NewRawRequest(2, 2, []byte("CALLDATA2")),
+		NewRawRequest(3, 3, []byte("CALLDATA3")),
+	}
+	require.Equal(t, expect, env.GetRawRequests())
+}
