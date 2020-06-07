@@ -12,6 +12,7 @@
 
 ### Chain
 
+- (impv/chore) [\#1893](https://github.com/bandprotocol/bandchain/pull/1893) Cleanup and Add genesis command to add data sources / oracle scripts.
 - (feat) [\#1879](https://github.com/bandprotocol/bandchain/pull/1873) Keep `Request` and `Report` around. We avoid premature optimization at the moment.
 - (feat) [\#1873](https://github.com/bandprotocol/bandchain/pull/1873) Add `in-before-resolve` field in `Report` data structure.
 - (feat) [\#1875](https://github.com/bandprotocol/bandchain/pull/1875) Add CLI and REST query interface for request.
