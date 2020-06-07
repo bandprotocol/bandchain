@@ -9,11 +9,13 @@ jobs:
       - name: Code Checkout
         uses: actions/checkout@v2
 
-      - name: Get pull request title
+      - name: Get pull request info
         uses: jwalton/gh-find-current-pr@v1
         id: findPr
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Echo pull request title
         run: echo "Your PR Title is ${PR}"
         if: success() && steps.findPr.outputs.title
         env:
