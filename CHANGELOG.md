@@ -23,6 +23,7 @@
 ### Scan
 
 - (imprv) [\#1900](https://github.com/bandprotocol/bandchain/pull/1900) Shorten marketcap amount on landing page
+- (feat) [\#1894](https://github.com/bandprotocol/bandchain/pull/1894) Add uptime bar on Validator Home Page
 - (bug) [\#1861](https://github.com/bandprotocol/bandchain/pull/1861) Fix name, endpoint of guanyu-devnet on chain-id selection
 
 ### Bridges
