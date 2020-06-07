@@ -121,10 +121,6 @@ func TestSuccessRequestOracleData(t *testing.T) {
 
 	ctx = ctx.WithBlockHeight(32).WithBlockTime(ctx.BlockTime().Add(time.Minute))
 	app.EndBlocker(ctx, abci.RequestEndBlock{Height: 32})
-
-	// Request must be cleared
-	_, err = k.GetRequest(ctx, types.RequestID(1))
-	require.Error(t, err)
 }
 
 func TestExpiredRequestOracleData(t *testing.T) {
@@ -182,8 +178,4 @@ func TestExpiredRequestOracleData(t *testing.T) {
 	}}}
 
 	require.Equal(t, expectEvents, result.GetEvents())
-
-	// Request must be deleted
-	_, err = k.GetRequest(ctx, types.RequestID(1))
-	require.Error(t, err)
 }

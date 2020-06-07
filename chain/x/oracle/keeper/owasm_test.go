@@ -312,6 +312,7 @@ func TestResolveRequestSuccess(t *testing.T) {
 	// Set report validator
 	k.AddReport(ctx, types.RequestID(1), types.NewReport(
 		Validator1.ValAddress,
+		true,
 		[]types.RawReport{
 			types.NewRawReport(1, 0, []byte("answer1")),
 			types.NewRawReport(2, 0, []byte("answer2")),
