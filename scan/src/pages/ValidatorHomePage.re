@@ -9,7 +9,6 @@ module Styles = {
   let validatorsLogo = style([minWidth(`px(50)), marginRight(`px(10))]);
   let highlight = style([margin2(~v=`px(28), ~h=`zero)]);
   let valueContainer = style([display(`flex), justifyContent(`flexStart)]);
-  let monikerContainer = style([maxWidth(`px(250))]);
 
   let emptyContainer =
     style([
@@ -95,124 +94,127 @@ let renderBody =
       | Data({operatorAddress}) => operatorAddress |> Address.toOperatorBech32
       | _ => rank |> string_of_int
       }
-    }>
-
-      <div className=Styles.fullWidth>
-        <Row>
-          <Col size=0.8>
-            {switch (validatorSub) {
-             | Data(_) =>
+    }
+    minHeight=60>
+    <div className=Styles.fullWidth>
+      <Row alignItems=`flexStart>
+        <Col size=0.4>
+          {switch (validatorSub) {
+           | Data(_) =>
+             <Text
+               value={rank |> string_of_int}
+               color=Colors.gray7
+               code=true
+               weight=Text.Regular
+               spacing={Text.Em(0.02)}
+               block=true
+               size=Text.Md
+             />
+           | _ => <LoadingCensorBar width=20 height=15 />
+           }}
+        </Col>
+        <Col size=0.9>
+          {switch (validatorSub) {
+           | Data({operatorAddress, moniker}) =>
+             <ValidatorMonikerLink validatorAddress=operatorAddress moniker width={`px(180)} />
+           | _ => <LoadingCensorBar width=150 height=15 />
+           }}
+        </Col>
+        <Col size=0.7>
+          {switch (validatorSub) {
+           | Data({tokens, votingPower}) =>
+             <div>
                <Text
-                 value={rank |> string_of_int}
+                 value={tokens |> Coin.getBandAmountFromCoin |> Format.fPretty(~digits=0)}
                  color=Colors.gray7
                  code=true
                  weight=Text.Regular
                  spacing={Text.Em(0.02)}
                  block=true
+                 align=Text.Right
                  size=Text.Md
                />
-             | _ => <LoadingCensorBar width=20 height=15 />
-             }}
-          </Col>
-          <Col size=1.9>
-            {switch (validatorSub) {
-             | Data({operatorAddress, moniker}) =>
-               <div className=Styles.monikerContainer>
-                 <ValidatorMonikerLink validatorAddress=operatorAddress moniker />
-               </div>
-             | _ => <LoadingCensorBar width=150 height=15 />
-             }}
-          </Col>
-          <Col size=1.4>
-            {switch (validatorSub) {
-             | Data({tokens, votingPower}) =>
-               <div>
+               <VSpacing size=Spacing.sm />
+               <Text
+                 value={
+                   "("
+                   ++ (votingPower /. bondedTokenCount *. 100. |> Format.fPercent(~digits=2))
+                   ++ ")"
+                 }
+                 color=Colors.gray6
+                 code=true
+                 weight=Text.Thin
+                 spacing={Text.Em(0.02)}
+                 block=true
+                 align=Text.Right
+                 size=Text.Md
+               />
+             </div>
+           | _ =>
+             <>
+               <LoadingCensorBar width=100 height=15 isRight=true />
+               <VSpacing size=Spacing.sm />
+               <LoadingCensorBar width=40 height=15 isRight=true />
+             </>
+           }}
+        </Col>
+        <Col size=0.8>
+          {switch (validatorSub) {
+           | Data({commission}) =>
+             <Text
+               value={commission |> Format.fPercent(~digits=2)}
+               color=Colors.gray7
+               code=true
+               weight=Text.Regular
+               spacing={Text.Em(0.02)}
+               block=true
+               align=Text.Right
+               size=Text.Md
+             />
+           | _ => <LoadingCensorBar width=70 height=15 isRight=true />
+           }}
+        </Col>
+        <Col size=0.3> <HSpacing size=Spacing.sm /> </Col>
+        <Col size=1.1>
+          {switch (validatorSub) {
+           | Data({uptime}) =>
+             switch (uptime) {
+             | Some(uptime') =>
+               <>
                  <Text
-                   value={tokens |> Coin.getBandAmountFromCoin |> Format.fPretty(~digits=0)}
+                   value={uptime' |> Format.fPercent(~digits=2)}
                    color=Colors.gray7
                    code=true
                    weight=Text.Regular
                    spacing={Text.Em(0.02)}
                    block=true
-                   align=Text.Right
                    size=Text.Md
                  />
                  <VSpacing size=Spacing.sm />
-                 <Text
-                   value={
-                     "("
-                     ++ (votingPower /. bondedTokenCount *. 100. |> Format.fPercent(~digits=2))
-                     ++ ")"
-                   }
-                   color=Colors.gray6
-                   code=true
-                   weight=Text.Thin
-                   spacing={Text.Em(0.02)}
-                   block=true
-                   align=Text.Right
-                   size=Text.Md
-                 />
-               </div>
-             | _ =>
-               <>
-                 <LoadingCensorBar width=100 height=15 isRight=true />
-                 <VSpacing size=Spacing.sm />
-                 <LoadingCensorBar width=40 height=15 isRight=true />
+                 <UptimeBar percent=uptime' />
                </>
-             }}
-          </Col>
-          <Col size=1.2>
-            {switch (validatorSub) {
-             | Data({commission}) =>
+             | None =>
                <Text
-                 value={commission->Js.Float.toFixedWithPrecision(~digits=2)}
+                 value="N/A"
                  color=Colors.gray7
                  code=true
                  weight=Text.Regular
                  spacing={Text.Em(0.02)}
                  block=true
-                 align=Text.Right
                  size=Text.Md
                />
-             | _ => <LoadingCensorBar width=70 height=15 isRight=true />
-             }}
-          </Col>
-          <Col size=1.1>
-            {switch (validatorSub) {
-             | Data({uptime}) =>
-               <Text
-                 value={
-                   switch (uptime) {
-                   | Some(uptime') => uptime'->Js.Float.toFixedWithPrecision(~digits=2)
-                   | None => "N/A"
-                   }
-                 }
-                 color=Colors.gray7
-                 code=true
-                 weight=Text.Regular
-                 spacing={Text.Em(0.02)}
-                 block=true
-                 align=Text.Right
-                 size=Text.Md
-               />
-             | _ => <LoadingCensorBar width=70 height=15 isRight=true />
-             }}
-          </Col>
-        </Row>
-      </div>
-    </TBody>;
-    // <Col size=1.2>
-    //   <Text
-    //     value={reportRate->Js.Float.toFixedWithPrecision(~digits=2)}
-    //     color=Colors.gray7
-    //     code=true
-    //     weight=Text.Regular
-    //     spacing={Text.Em(0.02)}
-    //     block=true
-    //     align=Text.Right
-    //     size=Text.Md
-    //   />
-    // </Col>
+             }
+           | _ =>
+             <>
+               <LoadingCensorBar width=70 height=15 />
+               <VSpacing size=Spacing.sm />
+               <LoadingCensorBar width=220 height=15 />
+             </>
+           }}
+        </Col>
+      </Row>
+    </div>
+  </TBody>;
 };
 
 let getPrevDay = _ => {
@@ -399,12 +401,11 @@ let make = () => {
       <div className=Styles.fullWidth>
         <Row>
           {[
-             ("RANK", 0.8),
-             ("VALIDATOR", 1.9),
-             ("VOTING POWER (BAND)", 1.4),
-             ("COMMISSION (%)", 1.2),
-             ("UPTIME (%)", 1.1),
-             //  ("REPORT RATE (%)", 1.2),
+             ("RANK", 0.4),
+             ("VALIDATOR", 0.9),
+             ("VOTING POWER", 0.7),
+             ("COMMISSION", 0.8),
+             ("", 0.3),
            ]
            ->Belt.List.mapWithIndex((idx, (title, size)) => {
                <Col size key=title>
@@ -421,6 +422,16 @@ let make = () => {
              })
            ->Array.of_list
            ->React.array}
+          <Col size=1.1>
+            <Text
+              block=true
+              value="UPTIME (LAST 250 BLOCKS)"
+              size=Text.Sm
+              weight=Text.Semibold
+              color=Colors.gray6
+              spacing={Text.Em(0.1)}
+            />
+          </Col>
         </Row>
       </div>
     </THead>
