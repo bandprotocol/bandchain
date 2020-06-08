@@ -33,7 +33,7 @@ func TestPrepareRequestSuccess(t *testing.T) {
 	oracleScriptID := k.AddOracleScript(ctx, os)
 	calldata := []byte("beeb")
 	askCount := uint64(1)
-	minCount := uint64(2)
+	minCount := uint64(1)
 	clientID := "beeb"
 	requestHeight := int64(0)
 	rawRequestID := []types.ExternalID{1, 2, 3}
@@ -51,6 +51,10 @@ func TestPrepareRequestSuccess(t *testing.T) {
 		sdk.NewEvent(
 			types.EventTypeRequest,
 			sdk.NewAttribute(types.AttributeKeyID, "1"),
+			sdk.NewAttribute(types.AttributeKeyOracleScriptID, "1"),
+			sdk.NewAttribute(types.AttributeKeyCalldata, "62656562"), // "beeb" in hex
+			sdk.NewAttribute(types.AttributeKeyAskCount, "1"),
+			sdk.NewAttribute(types.AttributeKeyMinCount, "1"),
 			sdk.NewAttribute(types.AttributeKeyValidator, Validator1.ValAddress.String()),
 		),
 		sdk.NewEvent(
