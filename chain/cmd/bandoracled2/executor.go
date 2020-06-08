@@ -14,7 +14,7 @@ type executor interface {
 	Execute(l *Logger, exec []byte, timeout time.Duration, arg string) ([]byte, uint32)
 }
 
-type lambdaExecutor struct {
+type restExecutor struct {
 	Name string
 	URL  string
 }
@@ -26,16 +26,15 @@ type externalExecutionResponse struct {
 	Error      string `json:"err"`
 }
 
-func (e *lambdaExecutor) Execute(
+func (e *restExecutor) Execute(
 	l *Logger, exec []byte, timeout time.Duration, arg string,
 ) ([]byte, uint32) {
 	executable := string(exec)
 	if e.Name == "cloud-function" {
 		executable = base64.StdEncoding.EncodeToString([]byte(executable))
+	}
+
 	timeoutStr := strconv.FormatInt(timeout.Milliseconds(), 10)
-	
-	fmt.Println("executable", executable)
-	fmt.Println("timeout", timeoutStr)
 
 	resp, err := grequests.Post(
 		e.URL,
@@ -51,15 +50,13 @@ func (e *lambdaExecutor) Execute(
 		},
 	)
 
-	fmt.Println("resp", resp)
-
 	if err != nil {
-		l.Error(":skull: LambdaExecutor failed with error: %s", err.Error())
+		l.Error(":skull: restExecutor failed with error: %s", err.Error())
 		return []byte("EXECUTION_ERROR"), 255
 	}
 
 	if resp.Ok != true {
-		l.Error(":skull: LambdaExecutor failed with error: %s", resp.Error)
+		l.Error(":skull: restExecutor failed with error: %s", resp.Error)
 		return []byte("EXECUTION_ERROR"), 255
 	}
 
@@ -67,7 +64,7 @@ func (e *lambdaExecutor) Execute(
 	err = resp.JSON(&r)
 
 	if err != nil {
-		l.Error(":skull: LambdaExecutor failed with error: %s", err.Error())
+		l.Error(":skull: restExecutor failed with error: %s", err.Error())
 		return []byte("EXECUTION_ERROR"), 255
 	}
 
@@ -86,9 +83,9 @@ func NewExecutor(executor string) (executor, error) {
 	}
 	switch name {
 	case "lambda":
-		return &lambdaExecutor{Name: "lambda", URL: url}, nil
+		return &restExecutor{Name: "lambda", URL: url}, nil
 	case "cloud-function":
-		return &lambdaExecutor{Name: "cloud-function", URL: url}, nil
+		return &restExecutor{Name: "cloud-function", URL: url}, nil
 	default:
 		return nil, fmt.Errorf("Invalid executor name: %s, url: %s", name, url)
 	}
