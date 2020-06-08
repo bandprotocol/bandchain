@@ -16,7 +16,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Echo pull request title
-        run: python3 .github/workflows/changelog.py $PR
+        run: echo $PR && python3 .github/workflows/changelog.py $PR
         if: success() && steps.findPr.outputs.body
         env:
           PR: ${{ steps.findPr.outputs.body }}
