@@ -15,9 +15,24 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       
-      - name: Echo pull request title
+      - name: Update CHANGELOG.md
         run: python3 .github/workflows/changelog.py
         if: success() && steps.findPr.outputs.body && steps.findPr.outputs.number
         env:
           PR_NUMBER: "${{ steps.findPr.outputs.number }}"
           PR_BODY: "${{ steps.findPr.outputs.body }}"
+      
+      - name: Switching Git remote from HTTPS to SSH
+        run: git remote set-url origin ${{ secrets.ssh }}
+      
+      - name: Stage changed files
+        run: git add .
+      
+      - name: Commit changed files
+        run: git commit -m "Auto-updating CHANGELOG.md"
+
+      - name: Fetch from master
+        run: git fetch origin master
+
+      - name: Push code to master
+        run: git push origin HEAD:master
