@@ -21,9 +21,6 @@ jobs:
         env:
           PR_NUMBER: "${{ steps.findPr.outputs.number }}"
           PR_BODY: "${{ steps.findPr.outputs.body }}"
-      
-      - name: Switching Git remote from HTTPS to SSH
-        run: git remote set-url origin ${{ secrets.ssh }}
 
       - name: Get current Git branch
         run: export BRANCH=$(git rev-parse --abbrev-ref HEAD)
@@ -34,8 +31,8 @@ jobs:
       - name: Commit changed files
         run: git commit -m "Auto-updating CHANGELOG.md"
 
-      - name: Fetch from master
-        run: git fetch origin $BRANCH
-
-      - name: Push code to master
-        run: git push -u origin $BRANCH
+      - name: Push changes # push the output folder to your repo
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: $BRANCH
