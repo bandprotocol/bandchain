@@ -23,7 +23,6 @@ type externalExecutionResponse struct {
 	Returncode uint32 `json:"returncode"`
 	Stdout     string `json:"stdout"`
 	Stderr     string `json:"stderr"`
-	Error      string `json:"err"`
 }
 
 func (e *restExecutor) Execute(
