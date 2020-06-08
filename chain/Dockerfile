@@ -1,8 +1,12 @@
 FROM golang:1.13.5-buster
 
-WORKDIR /oracle
+WORKDIR /go-owasm
+COPY go-owasm/. /go-owasm
 
-COPY . /oracle
+WORKDIR /chain
+COPY chain/ /chain
+
+COPY chain/docker-config/run.sh .
 
 RUN make install
 
