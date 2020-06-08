@@ -1,7 +1,7 @@
-use obi::{OBIDecode, OBIEncode};
+use obi::{get_schema, OBIDecode, OBIEncode, OBISchema};
 use owasm::{execute_entry_point, ext, oei, prepare_entry_point};
 
-#[derive(OBIDecode)]
+#[derive(OBIDecode, OBISchema)]
 struct Input {
     base_symbol: String,
     quote_symbol: String,
@@ -9,7 +9,7 @@ struct Input {
     multiplier: u64,
 }
 
-#[derive(OBIEncode, Debug, PartialEq)]
+#[derive(OBIEncode, OBISchema, Debug, PartialEq)]
 struct Output {
     px: u64,
 }
@@ -121,6 +121,21 @@ execute_entry_point!(execute_impl);
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::collections::*;
+
+    #[test]
+    fn test_get_schema() {
+        let mut schema = HashMap::new();
+        Input::add_definitions_recursively(&mut schema);
+        Output::add_definitions_recursively(&mut schema);
+        let input_schema = get_schema(String::from("Input"), &schema);
+        let output_schema = get_schema(String::from("Output"), &schema);
+        println!("{}/{}", input_schema, output_schema);
+        assert_eq!(
+            "{base_symbol:string,quote_symbol:string,aggregation_method:string,multiplier:u64}/{px:u64}",
+            format!("{}/{}", input_schema, output_schema),
+        );
+    }
 
     #[test]
     fn test_only_positive() {
