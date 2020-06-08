@@ -9,16 +9,22 @@ from marshmallow import Schema, fields, ValidationError, validate
 # Copy and paste this file on Google Cloud function
 # Set environment flag of MAX_EXECUTABLE, MAX_CALLDATA, MAX_TIMEOUT, MAX_STDOUT, MAX_STDERR
 
+
 def get_env(env, flag):
-    if not env[flag]:
+    if flag not in env:
         raise Exception(flag + " is missing")
     return int(env[flag])
 
+
 def success(returncode, stdout, stderr, err):
-    return jsonify(
-                {"returncode": returncode, "stdout": stdout, "stderr": stderr, "err": err}
-            ),200
-        
+    return (
+        jsonify(
+            {"returncode": returncode, "stdout": stdout, "stderr": stderr, "err": err}
+        ),
+        200,
+    )
+
+
 def bad_request(err):
     return jsonify({"error": err}), 400
 
@@ -47,18 +53,28 @@ def execute(request):
             except:
                 raise ValidationError("Can't decoded executable")
 
-
-
     class RequestSchema(Schema):
-        executable =  Executable(required=True, validate=validate.Length(max=MAX_EXECUTABLE), error_messages={"required": "field is missing from JSON request"})
-        calldata = fields.Str(required=True, validate=validate.Length(max=MAX_CALLDATA), error_messages={"required": "field is missing from JSON request"})
-        timeout = fields.Int(required=True, validate=validate.Range(min=0, max=MAX_TIMEOUT), error_messages={"required": "field is missing from JSON request"})
+        executable = Executable(
+            required=True,
+            validate=validate.Length(max=MAX_EXECUTABLE),
+            error_messages={"required": "field is missing from JSON request"},
+        )
+        calldata = fields.Str(
+            required=True,
+            validate=validate.Length(max=MAX_CALLDATA),
+            error_messages={"required": "field is missing from JSON request"},
+        )
+        timeout = fields.Int(
+            required=True,
+            validate=validate.Range(min=0, max=MAX_TIMEOUT),
+            error_messages={"required": "field is missing from JSON request"},
+        )
 
     try:
         request_json = request.get_json(force=True)
     except werkzeug.exceptions.BadRequest:
         return bad_request("invalid JSON request format")
-    
+
     loaded_request = ""
     try:
         loaded_request = RequestSchema().load(request_json)
@@ -88,17 +104,7 @@ def execute(request):
         stdout = proc.stdout.read(MAX_STDOUT).decode()
         stderr = proc.stderr.read(MAX_STDERR).decode()
 
-        return (
-            jsonify(
-                {
-                    "returncode": returncode,
-                    "stdout": stdout,
-                    "stderr": stderr,
-                    "err": "",
-                }
-            ),
-            200,
-        )
+        return success(returncode, stdout, stderr, "")
 
     except OSError:
         return success(126, "", "", "Execution fail")
