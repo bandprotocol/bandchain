@@ -1,10 +1,12 @@
 name: Append Changelog
-on: push
+pull_request:
+  types: [closed]
 
 jobs:
   get-pr-name:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == 'true'
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
+
 
     steps:
       - name: Code Checkout
