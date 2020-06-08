@@ -26,7 +26,8 @@ jobs:
         run: git config --global user.email "changelog@bandprotocol.com" && git config --global user.name "Auto-update Changelog"
 
       - name: Get current Git branch
-        run: export BRANCH=$(git rev-parse --abbrev-ref HEAD)
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
       
       - name: Stage changed files
         run: git add .
@@ -38,4 +39,4 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ BRANCH }}
+          branch: ${{ steps.extract_branch.outputs.branch }}
