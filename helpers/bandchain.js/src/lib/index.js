@@ -1,2 +1,2 @@
-import App from './App';
-export default App;
+import BandChain from './BandChain';
+export default BandChain;
