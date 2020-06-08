@@ -59,7 +59,7 @@ func (e *lambdaExecutor) Execute(
 	if r.Returncode == 0 {
 		return []byte(r.Stdout), r.Returncode
 	} else {
-		return []byte{}, r.Returncode
+		return []byte(r.Stderr), r.Returncode
 	}
 }
 

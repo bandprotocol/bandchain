@@ -102,5 +102,5 @@ func TestExecuteFail(t *testing.T) {
 	executor := &lambdaExecutor{URL: testServer.URL}
 	res, exitcode := executor.Execute(getLog(), []byte("executable"), 1*time.Second, "calldata")
 	require.Equal(t, uint32(1), exitcode)
-	require.Equal(t, []byte{}, res)
+	require.Equal(t, []byte("Stderr"), res)
 }
