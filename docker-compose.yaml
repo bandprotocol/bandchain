@@ -3,13 +3,13 @@ version: "3.7"
 services:
   multi-validator1-node:
     build:
-      context: chain
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: chain/Dockerfile
     image: band-validator:latest
     networks:
       bandchain:
         ipv4_address: 172.18.0.11
-    command: sh -c "chmod +x ./docker-config/run.sh && ./docker-config/run.sh validator1"
+    command: sh -c "chmod +x ./run.sh && ./run.sh validator1"
 
   # oracle1:
   #   image: band-validator:latest
@@ -23,7 +23,7 @@ services:
     networks:
       bandchain:
         ipv4_address: 172.18.0.12
-    command: sh -c "chmod +x ./docker-config/run.sh && ./docker-config/run.sh validator2"
+    command: sh -c "chmod +x ./run.sh && ./run.sh validator2"
 
   # oracle2:
   #   image: band-validator:latest
@@ -39,7 +39,7 @@ services:
     networks:
       bandchain:
         ipv4_address: 172.18.0.13
-    command: sh -c "chmod +x ./docker-config/run.sh && ./docker-config/run.sh validator3"
+    command: sh -c "chmod +x ./run.sh && ./run.sh validator3"
 
   # oracle3:
   # image: band-validator:latest
@@ -55,7 +55,7 @@ services:
     networks:
       bandchain:
         ipv4_address: 172.18.0.14
-    command: sh -c "chmod +x ./docker-config/run.sh && ./docker-config/run.sh validator4"
+    command: sh -c "chmod +x ./run.sh && ./run.sh validator4"
 
   # oracle4:
   #   image: band-validator:latest
@@ -75,7 +75,7 @@ services:
     networks:
       bandchain:
         ipv4_address: 172.18.0.15
-    command: sh -c "chmod +x ./docker-config/run.sh && ./docker-config/run.sh query-node"
+    command: sh -c "chmod +x ./run.sh && ./run.sh query-node"
 
   rest-server:
     image: band-validator:latest
