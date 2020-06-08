@@ -134,9 +134,8 @@ let make = (~latestBlockSub: Sub.t(BlockSub.t)) => {
         let%Sub (_, {financial}, _) = allSub;
         (
           {
-            let marketcap = financial.usdMarketCap |> Format.fCurrency;
             <Text
-              value=marketcap
+              value={financial.usdMarketCap |> Format.fCurrency}
               size=Text.Xxxl
               weight=Text.Semibold
               color=Colors.gray8
