@@ -17,6 +17,7 @@ jobs:
       
       - name: Echo pull request title
         run: python3 .github/workflows/changelog.py
-        if: success() && steps.findPr.outputs.body
+        if: success() && steps.findPr.outputs.body && steps.findPr.outputs.number
         env:
-          PR: "${{ steps.findPr.outputs.body }}"
+          PRNumber: "${{ steps.findPr.outputs.number }}"
+          PRBody: "${{ steps.findPr.outputs.body }}"

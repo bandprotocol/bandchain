@@ -66,5 +66,6 @@ def temp(body):
     print(body.split("\n")[1].split(":"))
 
 if __name__ == "__main__":
-    temp(os.getenv("PR"))
+    print(os.getenv("PRNumber"))
+    temp(os.getenv("PRBody"))
     ## append_changelog(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
