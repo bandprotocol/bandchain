@@ -21,6 +21,7 @@
 
 ### Scan
 
+- (feat) [\#1](https://https://github.com/bandprotocol/bandchain/pull/1)  test getting PR body
 - (fea) [\#1](https://https://github.com/bandprotocol/bandchain/pull/1)  test getting PR body
 - feat
  [\#1](https://https://github.com/bandprotocol/bandchain/pull/1)  test getting PR body
