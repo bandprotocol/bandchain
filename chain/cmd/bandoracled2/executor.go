@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/base64"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -13,18 +15,28 @@ type executor interface {
 }
 
 type lambdaExecutor struct {
-	URL string
+	Name string
+	URL  string
 }
 
 type externalExecutionResponse struct {
 	Returncode uint32 `json:"returncode"`
 	Stdout     string `json:"stdout"`
 	Stderr     string `json:"stderr"`
+	Error      string `json:"err"`
 }
 
 func (e *lambdaExecutor) Execute(
 	l *Logger, exec []byte, timeout time.Duration, arg string,
 ) ([]byte, uint32) {
+	executable := string(exec)
+	if e.Name == "cloud-function" {
+		executable = base64.StdEncoding.EncodeToString([]byte(executable))
+	timeoutStr := strconv.FormatInt(timeout.Milliseconds(), 10)
+	
+	fmt.Println("executable", executable)
+	fmt.Println("timeout", timeoutStr)
+
 	resp, err := grequests.Post(
 		e.URL,
 		&grequests.RequestOptions{
@@ -32,11 +44,14 @@ func (e *lambdaExecutor) Execute(
 				"Content-Type": "application/json",
 			},
 			JSON: map[string]string{
-				"executable": string(exec),
+				"executable": executable,
 				"calldata":   arg,
+				"timeout":    timeoutStr,
 			},
 		},
 	)
+
+	fmt.Println("resp", resp)
 
 	if err != nil {
 		l.Error(":skull: LambdaExecutor failed with error: %s", err.Error())
@@ -71,7 +86,9 @@ func NewExecutor(executor string) (executor, error) {
 	}
 	switch name {
 	case "lambda":
-		return &lambdaExecutor{URL: url}, nil
+		return &lambdaExecutor{Name: "lambda", URL: url}, nil
+	case "cloud-function":
+		return &lambdaExecutor{Name: "cloud-function", URL: url}, nil
 	default:
 		return nil, fmt.Errorf("Invalid executor name: %s, url: %s", name, url)
 	}
