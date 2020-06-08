@@ -3,10 +3,11 @@ import os
 import shlex
 import subprocess
 import base64
+import werkzeug
+from marshmallow import Schema, fields, ValidationError, validate
 
 # Copy and paste this file on Google Cloud function
 # Set environment flag of MAX_EXECUTABLE, MAX_CALLDATA, MAX_TIMEOUT, MAX_STDOUT, MAX_STDERR
-
 
 def get_env(env, flag):
     if not env[flag]:
@@ -46,52 +47,33 @@ def execute(request):
     MAX_STDOUT = get_env(env, "MAX_STDOUT")
     MAX_STDERR = get_env(env, "MAX_STDERR")
 
+    class Executable(fields.Field):
+        def _deserialize(self, value, attr, data, **kwargs):
+            try:
+                return base64.b64decode(value).decode()
+            except:
+                raise ValidationError("Can't decoded executable")
+
+
+
+    class RequestSchema(Schema):
+        executable =  Executable(required=True, validate=validate.Length(max=MAX_EXECUTABLE), error_messages={"required": {"error": "field is missing from JSON request"}})
+        calldata = fields.Str(required=True, validate=validate.Length(max=MAX_CALLDATA), error_messages={"required": {"error": "field is missing from JSON request"}})
+        timeout = fields.Int(required=True, validate=validate.Range(min=0, max=MAX_TIMEOUT))
+
     try:
-        request_json = request.get_json()
-    except:
+        request_json = request.get_json(force=True)
+    except werkzeug.exceptions.BadRequest:
         return jsonify({"error": "invalid JSON request format",}), 400
-
-    request_json = request.get_json()
-    if request_json:
-
-        validate_executable = check_field_in_json(request_json, "executable")
-        if validate_executable:
-            return validate_executable
-
-        validate_calldata = check_field_in_json(request_json, "calldata")
-        if validate_calldata:
-            return validate_calldata
-
-        validate_timeout = check_field_in_json(request_json, "timeout")
-        if validate_timeout:
-            return validate_timeout
-
-        valadate_max_executable = check_max_exceed(
-            request_json, "executable", MAX_EXECUTABLE
-        )
-        if valadate_max_executable:
-            return valadate_max_executable
-
-        valadate_max_calldata = check_max_exceed(request_json, "calldata", MAX_CALLDATA)
-        if valadate_max_calldata:
-            return valadate_max_calldata
-
-        if not isinstance(request_json["timeout"], int):
-            return jsonify({"error": "timeout type is invalid",}), 400
-        elif request_json["timeout"] <= 0:
-            return jsonify({"error": "Runtime must more than 0",}), 400
-        elif request_json["timeout"] > MAX_TIMEOUT:
-            return jsonify({"error": "Runtime exceeded max size",}), 400
-
-    executable = ""
+    
     try:
-        executable = base64.b64decode(request_json["executable"])
-    except:
-        return jsonify({"error": "Can't decoded executable",}), 400
+        request = RequestSchema().load(request_json)
+    except ValidationError as err:
+        return jsonify({"error": err.messages}), 400
 
     path = "/tmp/execute.sh"
     with open(path, "w") as f:
-        f.write(executable.decode())
+        f.write(request["executable"])
 
     os.chmod(path, 0o775)
 
