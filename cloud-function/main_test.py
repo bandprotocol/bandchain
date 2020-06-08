@@ -5,7 +5,6 @@ import os
 import pytest
 import base64
 
-
 def encodeBase64(executable):
     return base64.b64encode(executable).decode()
 
@@ -36,13 +35,13 @@ def test_error_missing_executable(mock_env):
     app = create_app()
     response = app.test_client().post(
         "/execute",
-        data=json.dumps({"calldata": "bitcoin", "timeout": 123456}),
+        data=json.dumps({"calldata": "bitcoin", "timeout": 2000}),
         content_type="application/json",
     )
 
     data = json.loads(response.get_data(as_text=True))
     assert response.status_code == 400
-    assert data["error"] == "executable field is missing from JSON request"
+    assert data["error"]["executable"][0] == "field is missing from JSON request"
 
 
 def test_error_executable_empty(mock_env):
@@ -71,7 +70,7 @@ def test_error_missing_calldata(mock_env):
 
     data = json.loads(response.get_data(as_text=True))
     assert response.status_code == 400
-    assert data["error"] == "calldata field is missing from JSON request"
+    assert data["error"]["calldata"][0] == "field is missing from JSON request"
 
 
 def test_error_calldata_empty(mock_env):
@@ -105,35 +104,61 @@ def test_error_missing_timeout(mock_env):
 
     data = json.loads(response.get_data(as_text=True))
     assert response.status_code == 400
-    assert data["error"] == "timeout field is missing from JSON request"
+    assert data["error"]["timeout"][0] == "field is missing from JSON request"
 
 
 def test_error_timeout_is_invalid(mock_env):
+    executable = b"""#!/usr/bin/env python3
+print('hello')"""
+    executable = encodeBase64(executable)
     app = create_app()
     response = app.test_client().post(
         "/execute",
         data=json.dumps(
-            {"executable": "123", "calldata": "bitcoin", "timeout": "1234"}
+            {"executable": executable, "calldata": "bitcoin", "timeout": "faked timeout"} #timeout shouldn't be string
         ),
         content_type="application/json",
     )
 
     data = json.loads(response.get_data(as_text=True))
     assert response.status_code == 400
-    assert data["error"] == "timeout type is invalid"
+    assert data["error"]["timeout"][0] == "Not a valid integer."
 
-
-def test_error_timeout_less_than_0(mock_env):
+def test_success_timeout_is_string_number(mock_env):
+    executable = b"""#!/usr/bin/env python3
+print('hello')"""
+    executable = encodeBase64(executable)
     app = create_app()
     response = app.test_client().post(
         "/execute",
-        data=json.dumps({"executable": "123", "calldata": "bitcoin", "timeout": -5}),
+        data=json.dumps(
+            {"executable": executable, "calldata": "bitcoin", "timeout": "3000"} #timeout shouldn't be string
+        ),
+        content_type="application/json",
+    )
+
+    data = json.loads(response.get_data(as_text=True))
+    assert response.status_code == 200
+    assert data["returncode"] == 0
+    assert data["stdout"] == "hello\n"
+    assert data["stderr"] == ""
+    assert data["err"] == ""
+
+
+def test_error_timeout_less_than_0(mock_env):
+    executable = b"""#!/usr/bin/env python3
+print('hello')"""
+    executable = encodeBase64(executable)
+    app = create_app()
+    response = app.test_client().post(
+        "/execute",
+        data=json.dumps({"executable": executable, "calldata": "bitcoin", "timeout": -5}),
         content_type="application/json",
     )
 
     data = json.loads(response.get_data(as_text=True))
     assert response.status_code == 400
-    assert data["error"] == "Runtime must more than 0"
+    assert data["error"]["timeout"][0] == "Must be greater than or equal to 0 and less than or equal to " + os.getenv("MAX_TIMEOUT") + "."
 
 
 def test_error_timeout_more_than_max_timeout(mock_env):
@@ -152,7 +177,7 @@ def test_error_timeout_more_than_max_timeout(mock_env):
 
     data = json.loads(response.get_data(as_text=True))
     assert response.status_code == 400
-    assert data["error"] == "Runtime exceeded max size"
+    assert data["error"]["timeout"][0] == "Must be greater than or equal to 0 and less than or equal to " + os.getenv("MAX_TIMEOUT") + "."
 
 
 def test_success_execution(mock_env):
@@ -163,7 +188,7 @@ print('hello')"""
     response = app.test_client().post(
         "/execute",
         data=json.dumps(
-            {"calldata": "123", "executable": executable, "timeout": 1000,}
+            {"calldata": "123", "executable": executable, "timeout": 1000}
         ),
         content_type="application/json",
     )
