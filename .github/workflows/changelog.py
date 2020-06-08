@@ -18,7 +18,7 @@ def append_changelog(number, component, changeType, description):
     read.close()
     with open("../../DEMOCHANGELOG.md", "w") as f:
         content_new = ""
-        component = component.split()[0][:-1].lower()
+        component = component.lower()
         if component == "chain":
             f.write(
                 generate_substitute(
@@ -63,7 +63,7 @@ def append_changelog(number, component, changeType, description):
             )
 
 def temp(body):
-    print(body.split("\n"))
+    print(body.split("\n")[1].split(":"))
 
 if __name__ == "__main__":
     temp(os.getenv("PR"))
