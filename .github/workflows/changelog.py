@@ -62,7 +62,9 @@ def append_changelog(number, component, changeType, description):
                 )
             )
 
+def temp(body):
+    print(body.split("\n"))
 
 if __name__ == "__main__":
-    print(os.getenv("PR"))
+    temp(os.getenv("PR"))
     ## append_changelog(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
