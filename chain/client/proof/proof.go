@@ -171,22 +171,15 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		resValue := resp.Response.GetValue()
 
 		type result struct {
-			oracle.OracleRequestPacketData
-			oracle.OracleResponsePacketData
+			Req oracle.OracleRequestPacketData
+			Res oracle.OracleResponsePacketData
 		}
 		var rs result
 		obi.MustDecode(resValue, &rs)
-		reqPacket := otypes.NewOracleRequestPacketData(
-			rs.OracleRequestPacketData.ClientID, rs.OracleRequestPacketData.OracleScriptID, rs.OracleRequestPacketData.Calldata,
-			rs.OracleRequestPacketData.AskCount, rs.OracleRequestPacketData.MinCount)
-		resPacket := otypes.NewOracleResponsePacketData(
-			rs.OracleResponsePacketData.ClientID, rs.OracleResponsePacketData.RequestID, rs.OracleResponsePacketData.AnsCount,
-			rs.OracleResponsePacketData.RequestTime, rs.OracleResponsePacketData.ResolveTime, rs.OracleResponsePacketData.ResolveStatus,
-			rs.OracleResponsePacketData.Result)
 
 		oracleData := OracleDataProof{
-			RequestPacket:  reqPacket,
-			ResponsePacket: resPacket,
+			RequestPacket:  rs.Req,
+			ResponsePacket: rs.Res,
 			Version:        uint64(eventHeight),
 			MerklePaths:    GetIAVLMerklePaths(&iavlProof),
 		}
