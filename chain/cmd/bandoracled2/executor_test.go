@@ -11,7 +11,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 )
 
-func creatDeafaultServer() *httptest.Server {
+func creatDefaultServer() *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(200)
 		ret := externalExecutionResponse{
@@ -54,7 +54,7 @@ func getLog() *Logger {
 }
 
 func TestExecuteSuccess(t *testing.T) {
-	testServer := creatDeafaultServer()
+	testServer := creatDefaultServer()
 	defer func() { testServer.Close() }()
 
 	executor := &lambdaExecutor{URL: testServer.URL}
@@ -65,7 +65,7 @@ func TestExecuteSuccess(t *testing.T) {
 }
 
 func TestExecuteBadUrlFail(t *testing.T) {
-	testServer := creatDeafaultServer()
+	testServer := creatDefaultServer()
 	defer func() { testServer.Close() }()
 
 	executor := &lambdaExecutor{URL: "www.beeb.com"} // bad url
