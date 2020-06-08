@@ -16,7 +16,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Echo pull request title
-        run: echo "Your PR Title is ${PR}"
+        run: pwd
         if: success() && steps.findPr.outputs.body
         env:
           PR: ${{ steps.findPr.outputs.body }}
