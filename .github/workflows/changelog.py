@@ -1,5 +1,6 @@
 import re
 import sys
+import os
 
 
 def generate_substitute(content, header, number, component, changeType, description):
@@ -61,10 +62,7 @@ def append_changelog(number, component, changeType, description):
                 )
             )
 
-def temp(body):
-    print(body)
-    print(body.splitlines())
 
 if __name__ == "__main__":
-    temp(sys.argv)
+    print(os.getenv("PR"))
     ## append_changelog(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
