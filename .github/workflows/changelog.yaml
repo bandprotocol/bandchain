@@ -1,0 +1,43 @@
+name: Append Changelog
+on: push
+
+jobs:
+  get-pr-name:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == 'true'
+
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v2
+
+      - name: Get pull request info
+        uses: jwalton/gh-find-current-pr@v1
+        id: findPr
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Update CHANGELOG.md
+        run: python3 .github/workflows/changelog.py
+        if: success() && steps.findPr.outputs.body && steps.findPr.outputs.number
+        env:
+          PR_NUMBER: "${{ steps.findPr.outputs.number }}"
+          PR_BODY: "${{ steps.findPr.outputs.body }}"
+
+      - name: Set Git config
+        run: git config --global user.email "changelog@bandprotocol.com" && git config --global user.name "Auto-update Changelog"
+
+      - name: Get current Git branch
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+      
+      - name: Stage changed files
+        run: git add .
+      
+      - name: Commit changed files
+        run: git commit -m "Auto-updating CHANGELOG.md"
+
+      - name: Push changes # push the output folder to your repo
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ steps.extract_branch.outputs.branch }}
