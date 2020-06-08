@@ -6,7 +6,7 @@ import os
 def generate_substitute(content, header, number, component, changeType, description):
     return re.sub(
         f"### {header}\n",
-        f"### {header}\n\n- {changeType} [\#{number}](https://https://github.com/bandprotocol/bandchain/pull/{number}) {description}",
+        f"### {header}\n\n- ({changeType}) [\#{number}](https://https://github.com/bandprotocol/bandchain/pull/{number}) {description}",
         content,
         count=1,
     )
