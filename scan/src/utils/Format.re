@@ -34,6 +34,17 @@ let fPretty = (~digits=?, value) => {
   };
 };
 
+let fCurrency = value =>
+  if (value >= 1e9) {
+    "$" ++ (value /. 1e9 |> fPretty(~digits=2)) ++ "B";
+  } else if (value >= 1e6) {
+    "$" ++ (value /. 1e6 |> fPretty(~digits=2)) ++ "M";
+  } else if (value >= 1e3) {
+    "$" ++ (value /. 1e3 |> fPretty(~digits=2)) ++ "K";
+  } else {
+    "$" ++ (value |> fPretty(~digits=2));
+  };
+
 let fPercentChange = value =>
   (value > 0. ? "+" : "") ++ value->Js.Float.toFixedWithPrecision(~digits=2) ++ "%";
 
