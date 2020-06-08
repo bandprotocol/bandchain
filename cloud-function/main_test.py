@@ -4,6 +4,8 @@ from test.support import EnvironmentVarGuard
 import os
 import pytest
 import base64
+from google_cloud_function import get_env
+
 
 def encodeBase64(executable):
     return base64.b64encode(executable).decode()
@@ -16,6 +18,13 @@ def mock_env(monkeypatch):
     monkeypatch.setenv("MAX_TIMEOUT", "3000")
     monkeypatch.setenv("MAX_STDOUT", "1000000")
     monkeypatch.setenv("MAX_STDERR", "1000000")
+
+
+def test_fail_env_not_found():
+    with pytest.raises(Exception) as exception:
+        app = create_app()
+        env = os.environ.copy()
+        get_env(env, "TEST")
 
 
 def test_error_invalid_json_request(mock_env):
@@ -115,7 +124,11 @@ print('hello')"""
     response = app.test_client().post(
         "/execute",
         data=json.dumps(
-            {"executable": executable, "calldata": "bitcoin", "timeout": "faked timeout"} #timeout shouldn't be string
+            {
+                "executable": executable,
+                "calldata": "bitcoin",
+                "timeout": "faked timeout",
+            }  # timeout shouldn't be string
         ),
         content_type="application/json",
     )
@@ -123,6 +136,7 @@ print('hello')"""
     data = json.loads(response.get_data(as_text=True))
     assert response.status_code == 400
     assert data["error"]["timeout"][0] == "Not a valid integer."
+
 
 def test_success_timeout_is_string_number(mock_env):
     executable = b"""#!/usr/bin/env python3
@@ -132,7 +146,11 @@ print('hello')"""
     response = app.test_client().post(
         "/execute",
         data=json.dumps(
-            {"executable": executable, "calldata": "bitcoin", "timeout": "3000"} #timeout shouldn't be string
+            {
+                "executable": executable,
+                "calldata": "bitcoin",
+                "timeout": "3000",
+            }  # timeout shouldn't be string
         ),
         content_type="application/json",
     )
@@ -152,13 +170,20 @@ print('hello')"""
     app = create_app()
     response = app.test_client().post(
         "/execute",
-        data=json.dumps({"executable": executable, "calldata": "bitcoin", "timeout": -5}),
+        data=json.dumps(
+            {"executable": executable, "calldata": "bitcoin", "timeout": -5}
+        ),
         content_type="application/json",
     )
 
     data = json.loads(response.get_data(as_text=True))
     assert response.status_code == 400
-    assert data["error"]["timeout"][0] == "Must be greater than or equal to 0 and less than or equal to " + os.getenv("MAX_TIMEOUT") + "."
+    assert (
+        data["error"]["timeout"][0]
+        == "Must be greater than or equal to 0 and less than or equal to "
+        + os.getenv("MAX_TIMEOUT")
+        + "."
+    )
 
 
 def test_error_timeout_more_than_max_timeout(mock_env):
@@ -177,7 +202,12 @@ def test_error_timeout_more_than_max_timeout(mock_env):
 
     data = json.loads(response.get_data(as_text=True))
     assert response.status_code == 400
-    assert data["error"]["timeout"][0] == "Must be greater than or equal to 0 and less than or equal to " + os.getenv("MAX_TIMEOUT") + "."
+    assert (
+        data["error"]["timeout"][0]
+        == "Must be greater than or equal to 0 and less than or equal to "
+        + os.getenv("MAX_TIMEOUT")
+        + "."
+    )
 
 
 def test_success_execution(mock_env):
@@ -187,9 +217,7 @@ print('hello')"""
     app = create_app()
     response = app.test_client().post(
         "/execute",
-        data=json.dumps(
-            {"calldata": "123", "executable": executable, "timeout": 1000}
-        ),
+        data=json.dumps({"calldata": "123", "executable": executable, "timeout": 1000}),
         content_type="application/json",
     )
 
