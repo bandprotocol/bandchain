@@ -21,6 +21,7 @@
 
 ### Scan
 
+- feat [\#1](https://https://github.com/bandprotocol/bandchain/pull/1)  (feat) test getting PR body
 - (bug) [\#1861](https://github.com/bandprotocol/bandchain/pull/1861) Fix name, endpoint of guanyu-devnet on chain-id selection
 
 ### Bridges
