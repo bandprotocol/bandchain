@@ -26,6 +26,36 @@ type lineHeight =
   | Px(int)
   | PxFloat(float);
 
+type placement =
+  | AlignBottomEnd
+  | AlignBottomStart
+  | AlignBottom
+  | AlignLeftEnd
+  | AlignLeftStart
+  | AlignLeft
+  | AlignRightEnd
+  | AlignRightStart
+  | AlignRight
+  | AlignTopEnd
+  | AlignTopStart
+  | AlignTop;
+
+let toPlacementString = {
+  fun
+  | AlignBottomEnd => "bottom-end"
+  | AlignBottomStart => "bottom-start"
+  | AlignBottom => "bottom"
+  | AlignLeftEnd => "left-end"
+  | AlignLeftStart => "left-start"
+  | AlignLeft => "left"
+  | AlignRightEnd => "right-end"
+  | AlignRightStart => "right-start"
+  | AlignRight => "right"
+  | AlignTopEnd => "top-end"
+  | AlignTopStart => "top-start"
+  | AlignTop => "top";
+};
+
 module Styles = {
   open Css;
   open Belt.Option;
@@ -127,22 +157,49 @@ let make =
       ~underline=false,
       ~breakAll=false,
       ~value,
+      ~tooltipItem=React.null,
+      ~tooltipPlacement=AlignBottom,
+      ~tooltipLeaveDelay=100,
     ) => {
-  <span
-    className={Css.merge([
-      Styles.fontSize(size),
-      Styles.fontWeight(weight),
-      Styles.textAlign(align),
-      Styles.letterSpacing(spacing),
-      Styles.lineHeight(height),
-      nowrap ? Styles.noWrap : "",
-      block ? Styles.block : "",
-      code ? Styles.code : "",
-      color->Belt.Option.mapWithDefault("", c => Css.style([Css.color(c)])),
-      ellipsis ? Styles.ellipsis : "",
-      underline ? Styles.underline : "",
-      breakAll ? Styles.breakAll : "",
-    ])}>
-    {React.string(value)}
-  </span>;
+  tooltipItem == React.null
+    ? <span
+        className={Css.merge([
+          Styles.fontSize(size),
+          Styles.fontWeight(weight),
+          Styles.textAlign(align),
+          Styles.letterSpacing(spacing),
+          Styles.lineHeight(height),
+          nowrap ? Styles.noWrap : "",
+          block ? Styles.block : "",
+          code ? Styles.code : "",
+          color->Belt.Option.mapWithDefault("", c => Css.style([Css.color(c)])),
+          ellipsis ? Styles.ellipsis : "",
+          underline ? Styles.underline : "",
+          breakAll ? Styles.breakAll : "",
+        ])}>
+        {React.string(value)}
+      </span>
+    : <MaterialUI
+        title=tooltipItem
+        placement={tooltipPlacement |> toPlacementString}
+        arrow=true
+        leaveDelay=tooltipLeaveDelay>
+        <span
+          className={Css.merge([
+            Styles.fontSize(size),
+            Styles.fontWeight(weight),
+            Styles.textAlign(align),
+            Styles.letterSpacing(spacing),
+            Styles.lineHeight(height),
+            nowrap ? Styles.noWrap : "",
+            block ? Styles.block : "",
+            code ? Styles.code : "",
+            color->Belt.Option.mapWithDefault("", c => Css.style([Css.color(c)])),
+            ellipsis ? Styles.ellipsis : "",
+            underline ? Styles.underline : "",
+            breakAll ? Styles.breakAll : "",
+          ])}>
+          {React.string(value)}
+        </span>
+      </MaterialUI>;
 };
