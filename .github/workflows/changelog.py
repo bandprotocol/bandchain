@@ -13,10 +13,10 @@ def generate_substitute(content, header, number, component, changeType, descript
 
 
 def append_changelog(number, component, changeType, description):
-    read = open("../../DEMOCHANGELOG.md", "r+")
+    read = open("DEMOCHANGELOG.md", "r+")
     content = read.read()
     read.close()
-    with open("../../DEMOCHANGELOG.md", "w") as f:
+    with open("DEMOCHANGELOG.md", "w") as f:
         content_new = ""
         component = component.lower()
         if component == "chain":
