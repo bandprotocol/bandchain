@@ -1,0 +1,25 @@
+[package]
+name = "go-owasm"
+version = "0.1.0"
+authors = ["Sorawit Suriyakarn <swit@bandprotocol.com>"]
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+parity-wasm = "0.41"
+pwasm-utils = "0.12"
+wasmer-runtime = "0.17"
+wasmer-runtime-core = "0.17"
+
+[profile.release]
+opt-level = 3
+debug = false
+rpath = true
+lto = false
+debug-assertions = false
+codegen-units = 16
+panic = 'unwind'
+incremental = true
+overflow-checks = true

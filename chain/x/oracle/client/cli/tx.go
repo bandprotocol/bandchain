@@ -24,7 +24,6 @@ const (
 	flagName          = "name"
 	flagDescription   = "description"
 	flagScript        = "script"
-	flagCallFee       = "call-fee"
 	flagOwner         = "owner"
 	flagCalldata      = "calldata"
 	flagClientID      = "client-id"

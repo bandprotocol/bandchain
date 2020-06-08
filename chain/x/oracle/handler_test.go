@@ -6,11 +6,14 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"path/filepath"
 	"testing"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
+	"github.com/tendermint/tendermint/libs/cli"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
@@ -18,6 +21,7 @@ import (
 
 func TestCreateDataSourceSuccess(t *testing.T) {
 	_, ctx, keeper := createTestInput()
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
 
 	owner := Owner.Address
 	name := "data_source_1"
@@ -25,7 +29,10 @@ func TestCreateDataSourceSuccess(t *testing.T) {
 	executable := []byte("executable")
 	msg := types.NewMsgCreateDataSource(owner, name, description, executable, Alice.Address)
 	res, err := oracle.NewHandler(keeper)(ctx, msg)
-	defer deleteFile(executable)
+
+	filename := keeper.MustGetDataSource(ctx, 1).Filename
+	defer deleteFile(filepath.Join(dir, filename))
+
 	require.Nil(t, err)
 	require.NotNil(t, res)
 
@@ -36,10 +43,12 @@ func TestCreateDataSourceSuccess(t *testing.T) {
 	executableHash := sha256.Sum256(executable)
 	expectFilename := hex.EncodeToString(executableHash[:])
 	require.Equal(t, expectFilename, dataSource.Filename)
+
 }
 
 func TestCreateGzippedExecutableDataSourceSuccess(t *testing.T) {
 	_, ctx, keeper := createTestInput()
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
 
 	owner := Owner.Address
 	name := "data_source_1"
@@ -56,7 +65,9 @@ func TestCreateGzippedExecutableDataSourceSuccess(t *testing.T) {
 	sender := Alice.Address
 	msg := types.NewMsgCreateDataSource(owner, name, description, gzippedExecutable, sender)
 	res, err := oracle.NewHandler(keeper)(ctx, msg)
-	defer deleteFile(executable)
+	filename := keeper.MustGetDataSource(ctx, 1).Filename
+	defer deleteFile(filepath.Join(dir, filename))
+
 	require.NoError(t, err)
 	require.NotNil(t, res)
 
@@ -93,20 +104,26 @@ func TestCreateGzippedExecutableDataSourceFail(t *testing.T) {
 
 func TestEditDataSourceSuccess(t *testing.T) {
 	_, ctx, keeper := createTestInput()
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
 
 	name := "data_source_1"
 	description := "description"
 	executable := []byte("executable")
 	msg := types.NewMsgCreateDataSource(Owner.Address, name, description, executable, Alice.Address)
-	defer deleteFile(executable)
 	oracle.NewHandler(keeper)(ctx, msg)
+
+	filename := keeper.MustGetDataSource(ctx, 1).Filename
+	defer deleteFile(filepath.Join(dir, filename))
 
 	newName := "beeb"
 	newDescription := "new_description"
 	newExecutable := []byte("executable2")
 	msgEdit := types.NewMsgEditDataSource(1, Owner.Address, newName, newDescription, newExecutable, Owner.Address)
-	defer deleteFile(newExecutable)
 	res, err := oracle.NewHandler(keeper)(ctx, msgEdit)
+
+	filename = keeper.MustGetDataSource(ctx, 1).Filename
+	defer deleteFile(filepath.Join(dir, filename))
+
 	require.NoError(t, err)
 	require.NotNil(t, res)
 
@@ -121,13 +138,15 @@ func TestEditDataSourceSuccess(t *testing.T) {
 
 func TestEditDataSourceFail(t *testing.T) {
 	_, ctx, keeper := createTestInput()
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
 
 	name := "data_source_1"
 	description := "description"
 	executable := []byte("executable")
 	msg := types.NewMsgCreateDataSource(Owner.Address, name, description, executable, Alice.Address)
 	oracle.NewHandler(keeper)(ctx, msg)
-	defer deleteFile(executable)
+	filename := keeper.MustGetDataSource(ctx, 1).Filename
+	defer deleteFile(filepath.Join(dir, filename))
 
 	newName := "beeb"
 	newDescription := "new_description"
@@ -165,7 +184,9 @@ func TestCreateOracleScriptSuccess(t *testing.T) {
 	url := "url"
 	msg := types.NewMsgCreateOracleScript(Owner.Address, name, description, code, schema, url, Alice.Address)
 	_, err := oracle.NewHandler(keeper)(ctx, msg)
-	defer deleteFile(code)
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
+	filename := keeper.MustGetOracleScript(ctx, 1).Filename
+	defer deleteFile(filepath.Join(dir, filename))
 
 	require.NoError(t, err)
 
@@ -194,7 +215,9 @@ func TestCreateGzippedOracleScriptSuccess(t *testing.T) {
 
 	msg := types.NewMsgCreateOracleScript(Owner.Address, name, description, gzippedCode, schema, url, Alice.Address)
 	_, err := oracle.NewHandler(keeper)(ctx, msg)
-	defer deleteFile(code)
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
+	filename := keeper.MustGetOracleScript(ctx, 1).Filename
+	defer deleteFile(filepath.Join(dir, filename))
 
 	require.NoError(t, err)
 
@@ -236,7 +259,9 @@ func TestEditOracleScriptSuccess(t *testing.T) {
 	url := "url"
 	msg := types.NewMsgCreateOracleScript(Owner.Address, name, description, code, schema, url, Alice.Address)
 	_, err := oracle.NewHandler(keeper)(ctx, msg)
-	defer deleteFile(code)
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
+	filename := keeper.MustGetOracleScript(ctx, 1).Filename
+	defer deleteFile(filepath.Join(dir, filename))
 
 	require.Nil(t, err)
 	oracleScriptID := types.OracleScriptID(1)
@@ -248,7 +273,8 @@ func TestEditOracleScriptSuccess(t *testing.T) {
 
 	msgEdit := types.NewMsgEditOracleScript(oracleScriptID, Owner.Address, newName, newDescription, newCode, newSchema, newUrl, Owner.Address)
 	res, err := oracle.NewHandler(keeper)(ctx, msgEdit)
-	defer deleteFile(newCode)
+	filename = keeper.MustGetOracleScript(ctx, 1).Filename
+	defer deleteFile(filepath.Join(dir, filename))
 	require.NoError(t, err)
 	expectEvents := sdk.Events{
 		sdk.NewEvent(types.EventTypeEditOracleScript, sdk.NewAttribute(types.AttributeKeyID, "1")),
@@ -273,7 +299,9 @@ func TestEditOracleScriptFail(t *testing.T) {
 	url := "url"
 	msg := types.NewMsgCreateOracleScript(Owner.Address, name, description, code, schema, url, Alice.Address)
 	_, err := oracle.NewHandler(keeper)(ctx, msg)
-	defer deleteFile(code)
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
+	filename := keeper.MustGetOracleScript(ctx, 1).Filename
+	defer deleteFile(filepath.Join(dir, filename))
 
 	require.Nil(t, err)
 	oracleScriptID := types.OracleScriptID(1)
@@ -304,7 +332,9 @@ func TestEditGzippedOracleScriptSuccess(t *testing.T) {
 	url := "url"
 	msg := types.NewMsgCreateOracleScript(Owner.Address, name, description, code, schema, url, Alice.Address)
 	_, err := oracle.NewHandler(keeper)(ctx, msg)
-	defer deleteFile(code)
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
+	filename := keeper.MustGetOracleScript(ctx, 1).Filename
+	defer deleteFile(filepath.Join(dir, filename))
 
 	require.Nil(t, err)
 	oracleScriptID := types.OracleScriptID(1)
@@ -328,8 +358,8 @@ func TestEditGzippedOracleScriptSuccess(t *testing.T) {
 		sdk.NewEvent(types.EventTypeEditOracleScript, sdk.NewAttribute(types.AttributeKeyID, "1")),
 	}
 	require.Equal(t, expectEvents, res.GetEvents())
-
-	defer deleteFile(newCode)
+	filename = keeper.MustGetOracleScript(ctx, 1).Filename
+	defer deleteFile(filepath.Join(dir, filename))
 
 	oracleScript, err := keeper.GetOracleScript(ctx, 1)
 	require.NoError(t, err)
@@ -349,7 +379,9 @@ func TestEditGzippedOracleScriptFail(t *testing.T) {
 	url := "url"
 	msg := types.NewMsgCreateOracleScript(Owner.Address, name, description, code, schema, url, Alice.Address)
 	_, err := oracle.NewHandler(keeper)(ctx, msg)
-	defer deleteFile(code)
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
+	filename := keeper.MustGetOracleScript(ctx, 1).Filename
+	defer deleteFile(filepath.Join(dir, filename))
 
 	require.Nil(t, err)
 	oracleScriptID := types.OracleScriptID(1)
@@ -371,251 +403,93 @@ func TestEditGzippedOracleScriptFail(t *testing.T) {
 	require.Error(t, err)
 }
 
-// func TestRequestSuccess(t *testing.T) {
-// 	// Setup test environment
-// 	ctx, keeper := keep.CreateTestInput(t, false)
+func TestRequestDataSuccess(t *testing.T) {
+	_, ctx, k := createTestInput()
 
-// 	ctx = ctx.WithBlockHeight(2)
-// 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
-// 	calldata := []byte("calldata")
-// 	sender := sdk.AccAddress([]byte("sender"))
-// 	_, err := keeper.CoinKeeper.AddCoins(ctx, sender, keep.NewUBandCoins(410))
-// 	require.Nil(t, err)
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
 
-// 	script := keep.GetTestOracleScript("../../pkg/owasm/res/silly.wasm")
-// 	keeper.SetOracleScript(ctx, 1, script)
+	ds1, clear1 := getTestDataSource("code1")
+	defer clear1()
+	k.AddDataSource(ctx, ds1)
 
-// 	pubStr := []string{
-// 		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
-// 		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
-// 	}
+	ds2, clear2 := getTestDataSource("code2")
+	defer clear2()
+	k.AddDataSource(ctx, ds2)
 
-// 	validatorAddress1 := keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
-// 	validatorAddress2 := keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
+	ds3, clear3 := getTestDataSource("code3")
+	defer clear3()
+	k.AddDataSource(ctx, ds3)
 
-// 	dataSource1 := keep.GetTestDataSource()
-// 	keeper.SetDataSource(ctx, 1, dataSource1)
+	os, clear4 := getTestOracleScript()
+	defer clear4()
 
-// 	dataSource2 := types.NewDataSource(
-// 		sdk.AccAddress([]byte("anotherowner")),
-// 		"data_source2",
-// 		"description2",
-// 		[]byte("executable2"),
-// 	)
-// 	keeper.SetDataSource(ctx, 2, dataSource2)
+	oracleScriptID := k.AddOracleScript(ctx, os)
 
-// 	msg := types.NewMsgRequestData(1, calldata, 2, 2, "clientID", sender)
+	calldata := []byte("beeb")
+	msg := types.NewMsgRequestData(oracleScriptID, calldata, 2, 2, "alice", Alice.Address)
 
-// 	// Test here
-// 	beforeGas := ctx.GasMeter().GasConsumed()
-// 	_, err = handleMsgRequestData(ctx, keeper, msg)
-// 	afterGas := ctx.GasMeter().GasConsumed()
-// 	require.Nil(t, err)
+	result, err := oracle.NewHandler(k)(ctx, msg)
+	require.NoError(t, err)
+	require.NotNil(t, result)
 
-// 	// Check global request count
-// 	require.Equal(t, int64(1), keeper.GetRequestCount(ctx))
-// 	actualRequest, err := keeper.GetRequest(ctx, 1)
-// 	require.Nil(t, err)
-// 	expectRequest := types.NewRequest(1, calldata,
-// 		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
-// 		2, 1581589790, "clientID", nil, nil,
-// 	)
-// 	require.Equal(t, expectRequest, actualRequest)
+	expectEvents := sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeRequest,
+			sdk.NewAttribute(types.AttributeKeyID, "1"),
+			sdk.NewAttribute(types.AttributeKeyValidator, Validator1.ValAddress.String()),
+			sdk.NewAttribute(types.AttributeKeyValidator, Validator3.ValAddress.String()),
+		),
+		sdk.NewEvent(
+			types.EventTypeRawRequest,
+			sdk.NewAttribute(types.AttributeKeyDataSourceID, "1"),
+			sdk.NewAttribute(types.AttributeKeyDataSourceHash, ds1.Filename),
+			sdk.NewAttribute(types.AttributeKeyExternalID, "1"),
+			sdk.NewAttribute(types.AttributeKeyCalldata, string(calldata)),
+		),
+		sdk.NewEvent(
+			types.EventTypeRawRequest,
+			sdk.NewAttribute(types.AttributeKeyDataSourceID, "2"),
+			sdk.NewAttribute(types.AttributeKeyDataSourceHash, ds2.Filename),
+			sdk.NewAttribute(types.AttributeKeyExternalID, "2"),
+			sdk.NewAttribute(types.AttributeKeyCalldata, string(calldata)),
+		),
+		sdk.NewEvent(
+			types.EventTypeRawRequest,
+			sdk.NewAttribute(types.AttributeKeyDataSourceID, "3"),
+			sdk.NewAttribute(types.AttributeKeyDataSourceHash, ds3.Filename),
+			sdk.NewAttribute(types.AttributeKeyExternalID, "3"),
+			sdk.NewAttribute(types.AttributeKeyCalldata, string(calldata)),
+		),
+	}
 
-// 	require.Equal(t, int64(2), keeper.GetRawRequestCount(ctx, 1))
+	require.Equal(t, expectEvents, result.GetEvents())
+}
 
-// 	// rawRequests := []types.RawDataRequest{
-// 	// 	types.NewRawRequest(1, []byte("band-protocol")), types.NewRawRequest(2, []byte("band-chain")),
-// 	// }
-// 	// require.Equal(t, rawRequests, keeper.GetRawRequests(ctx, 1))
-// 	// check consumed gas must more than 100000
-// 	// TODO: Write a better test than just checking number comparison
-// 	require.GreaterOrEqual(t, afterGas-beforeGas, uint64(50000))
-// }
+func TestRequestDataFail(t *testing.T) {
+	_, ctx, k := createTestInput()
 
-// // func TestIBCInfoSuccess(t *testing.T) {
-// // 	// Setup test environment
-// // 	ctx, keeper := keep.CreateTestInput(t, false)
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
 
-// // 	ctx = ctx.WithBlockHeight(2)
-// // 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
-// // 	calldata := []byte("calldata")
-// // 	sender := sdk.AccAddress([]byte("sender"))
-// // 	_, err := keeper.CoinKeeper.AddCoins(ctx, sender, keep.NewUBandCoins(410))
-// // 	require.Nil(t, err)
+	wrongOracleScript := 1
 
-// // 	sourcePort := "sourcePort"
-// // 	sourceChannel := "sourceChannel"
+	calldata := []byte("test")
+	msg := types.NewMsgRequestData(types.OracleScriptID(wrongOracleScript), calldata, 1, 1, "alice", Alice.Address)
 
-// // 	script := keep.GetTestOracleScript("../../pkg/owasm/res/silly.wasm")
-// // 	keeper.SetOracleScript(ctx, 1, script)
+	result, err := oracle.NewHandler(k)(ctx, msg)
+	require.EqualError(t, err, `id: 1: oracle script not found`)
+	require.Nil(t, result)
 
-// // 	pubStr := []string{
-// // 		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
-// // 		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
-// // 	}
+	// Add Oracle Script
+	os, clear := getTestOracleScript()
+	defer clear()
 
-// // 	validatorAddress1 := keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
-// // 	validatorAddress2 := keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
+	oracleScriptID := k.AddOracleScript(ctx, os)
+	msg = types.NewMsgRequestData(types.OracleScriptID(oracleScriptID), calldata, 1, 1, "alice", Alice.Address)
 
-// // 	dataSource1 := keep.GetTestDataSource()
-// // 	keeper.SetDataSource(ctx, 1, dataSource1)
-
-// // 	dataSource2 := types.NewDataSource(
-// // 		sdk.AccAddress([]byte("anotherowner")),
-// // 		"data_source2",
-// // 		"description2",
-// // 		[]byte("executable2"),
-// // 	)
-// // 	keeper.SetDataSource(ctx, 2, dataSource2)
-
-// // 	msg := types.NewMsgRequestData(1, calldata, 2, 2, "clientID", sender)
-
-// // 	// Test here
-// // 	beforeGas := ctx.GasMeter().GasConsumed()
-// // 	_, err = handleMsgRequestDataIBC(ctx, keeper, msg, sourcePort, sourceChannel)
-// // 	afterGas := ctx.GasMeter().GasConsumed()
-// // 	require.Nil(t, err)
-
-// // 	// Check global request count
-// // 	require.Equal(t, int64(1), keeper.GetRequestCount(ctx))
-// // 	actualRequest, err := keeper.GetRequest(ctx, 1)
-// // 	require.Nil(t, err)
-// // 	expectRequest := types.NewRequest(1, calldata,
-// // 		[]sdk.ValAddress{validatorAddress2, validatorAddress1}, 2,
-// // 		2, 1581589790, "clientID", &types.IBCInfo{sourcePort, sourceChannel},
-// // 	)
-// // 	require.Equal(t, expectRequest, actualRequest)
-
-// // 	require.Equal(t, int64(2), keeper.GetRawRequestCount(ctx, 1))
-
-// // 	// rawRequests := []types.RawDataRequest{
-// // 	// 	types.NewRawRequest(1, []byte("band-protocol")), types.NewRawRequest(2, []byte("band-chain")),
-// // 	// }
-// // 	// require.Equal(t, rawRequests, keeper.GetRawRequests(ctx, 1))
-// // 	// check consumed gas must more than 100000
-// // 	// TODO: Write a better test than just checking number comparison
-// // 	require.GreaterOrEqual(t, afterGas-beforeGas, uint64(50000))
-// // }
-
-// func TestRequestInvalidDataSource(t *testing.T) {
-// 	// Setup test environment
-// 	ctx, keeper := keep.CreateTestInput(t, false)
-
-// 	ctx = ctx.WithBlockHeight(2)
-// 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
-// 	calldata := []byte("calldata")
-// 	sender := sdk.AccAddress([]byte("sender"))
-
-// 	msg := types.NewMsgRequestData(1, calldata, 2, 2, "clientID", sender)
-
-// 	_, err := handleMsgRequestData(ctx, keeper, msg)
-// 	require.NotNil(t, err)
-
-// 	script := keep.GetTestOracleScript("../../pkg/owasm/res/silly.wasm")
-// 	keeper.SetOracleScript(ctx, 1, script)
-
-// 	pubStr := []string{
-// 		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
-// 		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
-// 	}
-
-// 	keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
-// 	keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
-
-// 	_, err = handleMsgRequestData(ctx, keeper, msg)
-// 	require.NotNil(t, err)
-// }
-
-// // func TestIBCInfoInvalidDataSource(t *testing.T) {
-// // 	// Setup test environment
-// // 	ctx, keeper := keep.CreateTestInput(t, false)
-
-// // 	ctx = ctx.WithBlockHeight(2)
-// // 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
-// // 	calldata := []byte("calldata")
-// // 	sender := sdk.AccAddress([]byte("sender"))
-// // 	sourcePort := "sourcePort"
-// // 	sourceChannel := "sourceChannel"
-
-// // 	msg := types.NewMsgRequestData(1, calldata, 2, 2, "clientID", sender)
-
-// // 	_, err := handleMsgRequestDataIBC(ctx, keeper, msg, sourcePort, sourceChannel)
-// // 	require.NotNil(t, err)
-
-// // 	script := keep.GetTestOracleScript("../../pkg/owasm/res/silly.wasm")
-// // 	keeper.SetOracleScript(ctx, 1, script)
-
-// // 	pubStr := []string{
-// // 		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
-// // 		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
-// // 	}
-
-// // 	keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
-// // 	keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
-
-// // 	_, err = handleMsgRequestDataIBC(ctx, keeper, msg, sourcePort, sourceChannel)
-// // 	require.NotNil(t, err)
-// // }
-
-// func TestRequestWithPrepareGasExceed(t *testing.T) {
-// 	// Setup test environment
-// 	ctx, keeper := keep.CreateTestInput(t, false)
-
-// 	ctx = ctx.WithBlockHeight(2)
-// 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
-// 	calldata := []byte("calldata")
-// 	sender := sdk.AccAddress([]byte("sender"))
-
-// 	script := keep.GetTestOracleScript("../../pkg/owasm/res/silly.wasm")
-// 	keeper.SetOracleScript(ctx, 1, script)
-
-// 	pubStr := []string{
-// 		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
-// 		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
-// 	}
-
-// 	keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
-// 	keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
-
-// 	dataSource := keep.GetTestDataSource()
-// 	keeper.SetDataSource(ctx, 1, dataSource)
-
-// 	msg := types.NewMsgRequestData(1, calldata, 2, 2, "clientID", sender)
-
-// 	_, err := handleMsgRequestData(ctx, keeper, msg)
-// 	require.NotNil(t, err)
-// }
-
-// // func TestIBCInfoWithPrepareGasExceed(t *testing.T) {
-// // 	// Setup test environment
-// // 	ctx, keeper := keep.CreateTestInput(t, false)
-
-// // 	ctx = ctx.WithBlockHeight(2)
-// // 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
-// // 	calldata := []byte("calldata")
-// // 	sender := sdk.AccAddress([]byte("sender"))
-// // 	sourcePort := "sourcePort"
-// // 	sourceChannel := "sourceChannel"
-// // 	script := keep.GetTestOracleScript("../../pkg/owasm/res/silly.wasm")
-// // 	keeper.SetOracleScript(ctx, 1, script)
-
-// // 	pubStr := []string{
-// // 		"03d03708f161d1583f49e4260a42b2b08d3ba186d7803a23cc3acd12f074d9d76f",
-// // 		"03f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909",
-// // 	}
-
-// // 	keep.SetupTestValidator(ctx, keeper, pubStr[0], 10)
-// // 	keep.SetupTestValidator(ctx, keeper, pubStr[1], 100)
-
-// // 	dataSource := keep.GetTestDataSource()
-// // 	keeper.SetDataSource(ctx, 1, dataSource)
-
-// // 	msg := types.NewMsgRequestData(1, calldata, 2, 2, "clientID", sender)
-
-// // 	_, err := handleMsgRequestDataIBC(ctx, keeper, msg, sourcePort, sourceChannel)
-// // 	require.NotNil(t, err)
-// // }
+	result, err = oracle.NewHandler(k)(ctx, msg)
+	require.EqualError(t, err, `id: 1: data source not found`)
+	require.Nil(t, result)
+}
 
 func TestReportSuccess(t *testing.T) {
 	// Setup test environment

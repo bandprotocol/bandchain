@@ -3,7 +3,7 @@ module github.com/bandprotocol/bandchain/chain
 go 1.13
 
 require (
-	github.com/bandprotocol/go-owasm v0.0.0-20200602070506-19ab5ef7424a
+	github.com/bandprotocol/bandchain/go-owasm v0.0.0-00010101000000-000000000000
 	github.com/cosmos/cosmos-sdk v0.34.4-0.20200423152229-f1fdde5d1b18
 	github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d
 	github.com/ethereum/go-ethereum v1.9.14
@@ -28,3 +28,5 @@ require (
 )
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.2-alpha.regen.1
+
+replace github.com/bandprotocol/bandchain/go-owasm => ../go-owasm

@@ -18,6 +18,14 @@ func TestGetRequestCount(t *testing.T) {
 	require.Equal(t, int64(0), k.GetRequestCount(ctx))
 }
 
+func TestGetSetRequestLastExpiredID(t *testing.T) {
+	_, ctx, k := createTestInput()
+	// Initial last expired request must be 0
+	require.Equal(t, int64(0), k.GetRequestLastExpired(ctx))
+	k.SetRequestLastExpired(ctx, 20)
+	require.Equal(t, int64(20), k.GetRequestLastExpired(ctx))
+}
+
 func TestGetNextRequestID(t *testing.T) {
 	_, ctx, k := createTestInput()
 

@@ -62,13 +62,14 @@ let parseChainID =
   fun
   | "band-wenchang-testnet2" => WenchangTestnet
   | "band-guanyu-devnet"
+  | "band-guanyu-batrider"
   | "bandchain" => GuanYuDevnet
   | _ => Unknown;
 
 let getLink =
   fun
   | WenchangTestnet => "https://scan-wenchang-testnet2.bandchain.org/"
-  | GuanYuDevnet => "https://scan-master.bandprotocol.com/"
+  | GuanYuDevnet => "https://guanyu-devnet.cosmoscan.io/"
   | Unknown => "";
 
 let getName =

@@ -5,7 +5,12 @@
   "repository": "https://github.com/bandprotocol/bandchain/tree/master/obi/obi.js",
   "author": "Band Protocol",
   "license": "MIT",
-  "dependencies": {
-    "bn.js": "^5.1.2"
+  "scripts": {
+    "test": "node test.js"
+  },
+  "prettier": {
+    "trailingComma": "all",
+    "semi": false,
+    "singleQuote": true
   }
 }
