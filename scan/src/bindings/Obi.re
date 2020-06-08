@@ -8,6 +8,33 @@ type field_key_value_t = {
   fieldValue: string,
 };
 
+let extractFields: (string, string) => option(array(field_key_type_t)) = [%bs.raw
+  {|
+  function(schema, t) {
+    console.log(schema, t)
+    try {
+      const normalizedSchema = schema.replace(/\s+/g, '')
+      const tokens = normalizedSchema.split('/')
+      let val
+      if (t === 'input') {
+        val = tokens[0]
+      } else if (t === 'output') {
+        val = tokens[1]
+      } else {
+        return undefined
+      }
+      let specs = val.slice(1, val.length - 1).split(',')
+      return specs.map((spec) => {
+        let x = spec.split(':')
+        return {fieldName: x[0], fieldType: x[1]}
+      })
+    } catch {
+      return undefined
+    }
+  }
+|}
+];
+
 let encode: (string, string, array(field_key_value_t)) => option(JsBuffer.t) = [%bs.raw
   {|
 function(schema, t, data) {

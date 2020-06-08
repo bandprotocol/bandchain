@@ -2,6 +2,23 @@ open Jest;
 open Obi;
 open Expect;
 
+describe("Expect Obi to extract fields correctly", () => {
+  test("should be able to extract fields from bytes correctly", () => {
+    expect(
+      Some([|
+        {fieldName: "symbol", fieldType: "string"},
+        {fieldName: "multiplier", fieldType: "u64"},
+      |]),
+    )
+    |> toEqual(extractFields({j|{symbol:string,multiplier:u64}/{volume:u64}|j}, "input"))
+  });
+
+  test("should return None on invalid type", () => {
+    expect(None)
+    |> toEqual(extractFields({j|{symbol:string,multiplier:u64}/{volume:u64}|j}, "Input"))
+  });
+});
+
 describe("Expect Obi encode correctly", () => {
   test("should be able to encode input (string, int) correctly", () => {
     expect(Some("0x00000003425443000000003b9aca00" |> JsBuffer.fromHex))
