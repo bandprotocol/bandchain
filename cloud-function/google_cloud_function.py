@@ -14,6 +14,15 @@ def get_env(env, flag):
         raise Exception(flag + " is missing")
     return int(env[flag])
 
+def success(returncode, stdout, stderr, err):
+    return jsonify(
+                {"returncode": returncode, "stdout": stdout, "stderr": stderr, "err": err}
+            ),200
+        
+def bad_request(err):
+    return jsonify({"error": err}), 400
+
+
 def execute(request):
     """Responds to any HTTP request.
   Args:
@@ -48,14 +57,13 @@ def execute(request):
     try:
         request_json = request.get_json(force=True)
     except werkzeug.exceptions.BadRequest:
-        return jsonify({"error": "invalid JSON request format",}), 400
+        return bad_request("invalid JSON request format")
     
     loaded_request = ""
     try:
         loaded_request = RequestSchema().load(request_json)
-        print ("loaded_request", loaded_request)
     except ValidationError as err:
-        return jsonify({"error": err.messages}), 400
+        return bad_request(err.messages)
 
     path = "/tmp/execute.sh"
     with open(path, "w") as f:
@@ -93,22 +101,7 @@ def execute(request):
         )
 
     except OSError:
-        return (
-            jsonify(
-                {"returncode": 126, "stdout": "", "stderr": "", "err": "Execution fail"}
-            ),
-            200,
-        )
+        return success(126, "", "", "Execution fail")
 
     except subprocess.TimeoutExpired:
-        return (
-            jsonify(
-                {
-                    "returncode": 111,
-                    "stdout": "",
-                    "stderr": "",
-                    "err": "Execution time limit exceeded",
-                }
-            ),
-            200,
-        )
+        return success(111, "", "", "Execution time limit exceeded")
