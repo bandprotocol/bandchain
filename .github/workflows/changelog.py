@@ -66,5 +66,5 @@ def temp(body):
     print(body.splitlines())
 
 if __name__ == "__main__":
-    temp(sys.argv[1])
+    temp(sys.argv)
     ## append_changelog(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
