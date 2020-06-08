@@ -6,7 +6,7 @@ import os
 def generate_substitute(content, header, number, component, changeType, description):
     return re.sub(
         f"### {header}\n",
-        f"### {header}\n\n- ({changeType}) [\#{number}](https://https://github.com/bandprotocol/bandchain/pull/{number}) {description}",
+        f"### {header}\n\n- {changeType} [\#{number}](https://https://github.com/bandprotocol/bandchain/pull/{number}) {description}",
         content,
         count=1,
     )
@@ -62,10 +62,16 @@ def append_changelog(number, component, changeType, description):
                 )
             )
 
-def temp(body):
+
+def split_body(body):
     print(body.split("\n")[1].split(":"))
 
+
 if __name__ == "__main__":
-    print(os.getenv("PRNumber"))
-    temp(os.getenv("PRBody"))
+    append_changelog(
+        os.getenv("PR_NUMBER"),
+        split_body(os.getenv("PR_BODY"))[0],
+        "feat",
+        split_body(os.getenv("PR_BODY"))[1],
+    )
     ## append_changelog(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])

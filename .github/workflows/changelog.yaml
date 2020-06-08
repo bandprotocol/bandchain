@@ -19,5 +19,5 @@ jobs:
         run: python3 .github/workflows/changelog.py
         if: success() && steps.findPr.outputs.body && steps.findPr.outputs.number
         env:
-          PRNumber: "${{ steps.findPr.outputs.number }}"
-          PRBody: "${{ steps.findPr.outputs.body }}"
+          PR_NUMBER: "${{ steps.findPr.outputs.number }}"
+          PR_BODY: "${{ steps.findPr.outputs.body }}"
