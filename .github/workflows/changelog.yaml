@@ -17,6 +17,6 @@ jobs:
       
       - name: Echo pull request title
         run: echo "Your PR Title is ${PR}"
-        if: success() && steps.findPr.outputs.title
+        if: success() && steps.findPr.outputs.body
         env:
-          PR: ${{ steps.findPr.outputs.title }}
+          PR: ${{ steps.findPr.outputs.body }}
