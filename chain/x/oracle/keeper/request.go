@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"encoding/hex"
 	"fmt"
 
 	"github.com/bandprotocol/bandchain/chain/pkg/bandrng"
@@ -88,8 +87,7 @@ func (k Keeper) SaveResult(ctx sdk.Context, id types.RequestID, status types.Res
 		r.ClientID, id, k.GetReportCount(ctx, id), r.RequestTime,
 		ctx.BlockTime().Unix(), status, result,
 	)
-	encodedResult := types.CalculateEncodedResult(req, res)
-	k.SetResult(ctx, id, encodedResult)
+	k.SetResult(ctx, id, types.CalculateEncodedResult(req, res))
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeRequestExecute,
 		sdk.NewAttribute(types.AttributeKeyClientID, req.ClientID),
@@ -103,7 +101,6 @@ func (k Keeper) SaveResult(ctx sdk.Context, id types.RequestID, status types.Res
 		sdk.NewAttribute(types.AttributeKeyRequestTime, fmt.Sprintf("%d", res.RequestTime)),
 		sdk.NewAttribute(types.AttributeKeyResolveTime, fmt.Sprintf("%d", res.ResolveTime)),
 		sdk.NewAttribute(types.AttributeKeyResult, string(res.Result)),
-		sdk.NewAttribute(types.AttributeKeyEncodedResult, hex.EncodeToString(encodedResult)),
 	))
 	return res
 }

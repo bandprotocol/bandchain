@@ -30,5 +30,4 @@ const (
 	AttributeKeyResolveTime    = "resolve_time"
 	AttributeKeyResolveStatus  = "resolve_status"
 	AttributeKeyResult         = "result"
-	AttributeKeyEncodedResult  = "encoded_result"
 )

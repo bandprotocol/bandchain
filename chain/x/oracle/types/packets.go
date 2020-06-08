@@ -16,9 +16,7 @@ func (p OracleResponsePacketData) GetBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(p))
 }
 
-// CalculateEncodedResult returns append obi encode of request and response packet.
+// CalculateEncodedResult returns append obi encode of request and response packets.
 func CalculateEncodedResult(req OracleRequestPacketData, res OracleResponsePacketData) []byte {
-	encodedReq := obi.MustEncode(req)
-	encodedRes := obi.MustEncode(res)
-	return append(encodedReq, encodedRes...)
+	return append(obi.MustEncode(req), obi.MustEncode(res)...)
 }
