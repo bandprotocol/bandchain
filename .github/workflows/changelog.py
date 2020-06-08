@@ -66,7 +66,7 @@ if __name__ == "__main__":
     append_changelog(
         os.getenv("PR_NUMBER"),
         os.getenv("PR_BODY").split("\n")[2].split(":")[0],
-        os.getenv("PR_BODY").split("\n")[1][:-2],
+        os.getenv("PR_BODY").split("\n")[1][:-1],
         os.getenv("PR_BODY").split("\n")[2].split(":")[1],
     )
     ## append_changelog(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
