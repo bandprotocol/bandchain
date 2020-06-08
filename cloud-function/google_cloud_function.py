@@ -57,9 +57,9 @@ def execute(request):
 
 
     class RequestSchema(Schema):
-        executable =  Executable(required=True, validate=validate.Length(max=MAX_EXECUTABLE), error_messages={"required": {"error": "field is missing from JSON request"}})
-        calldata = fields.Str(required=True, validate=validate.Length(max=MAX_CALLDATA), error_messages={"required": {"error": "field is missing from JSON request"}})
-        timeout = fields.Int(required=True, validate=validate.Range(min=0, max=MAX_TIMEOUT))
+        executable =  Executable(required=True, validate=validate.Length(max=MAX_EXECUTABLE), error_messages={"required": "field is missing from JSON request"})
+        calldata = fields.Str(required=True, validate=validate.Length(max=MAX_CALLDATA), error_messages={"required": "field is missing from JSON request"})
+        timeout = fields.Int(required=True, validate=validate.Range(min=0, max=MAX_TIMEOUT), error_messages={"required": "field is missing from JSON request"})
 
     try:
         request_json = request.get_json(force=True)
@@ -80,6 +80,8 @@ def execute(request):
     try:
 
         timeout_millisec = request_json["timeout"]
+        if type(timeout_millisec) == str:
+            timeout_millisec = int(timeout_millisec)
         timeout_sec = timeout_millisec / 1000
 
         proc = subprocess.Popen(
