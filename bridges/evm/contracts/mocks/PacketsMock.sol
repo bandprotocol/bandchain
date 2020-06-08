@@ -6,26 +6,26 @@ import {Packets} from "../Packets.sol";
 
 
 contract PacketsMock {
-    function marshalRequestPacket(IBridge.RequestPacket memory _packet)
+    function encodeRequestPacket(IBridge.RequestPacket memory _packet)
         public
         pure
         returns (bytes memory)
     {
-        return Packets.marshalRequestPacket(_packet);
+        return Packets.encodeRequestPacket(_packet);
     }
 
-    function marshalResponsePacket(IBridge.ResponsePacket memory _packet)
+    function encodeResponsePacket(IBridge.ResponsePacket memory _packet)
         public
         pure
         returns (bytes memory)
     {
-        return Packets.marshalResponsePacket(_packet);
+        return Packets.encodeResponsePacket(_packet);
     }
 
-    function getResultHash(
+    function getEncodedResult(
         IBridge.RequestPacket memory _req,
         IBridge.ResponsePacket memory _res
-    ) public pure returns (bytes32) {
-        return Packets.getResultHash(_req, _res);
+    ) public pure returns (bytes memory) {
+        return Packets.getEncodedResult(_req, _res);
     }
 }

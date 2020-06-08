@@ -130,7 +130,7 @@ contract Bridge is IBridge, Ownable {
         vars.encodedVarint = Utils.encodeVarintSigned(_version);
         vars.dataHash = sha256(
             abi.encodePacked(
-                Packets.getResultHash(_requestPacket, _responsePacket)
+                Packets.getEncodedResult(_requestPacket, _responsePacket)
             )
         );
         bytes32 currentMerkleHash = sha256(
