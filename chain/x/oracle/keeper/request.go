@@ -108,14 +108,9 @@ func (k Keeper) SaveResult(ctx sdk.Context, id types.RequestID, status types.Res
 	return res
 }
 
-// ProcessExpiredRequests removes all expired data requests from the store, and sends oracle
-// response packets for the ones that have never been resolved.
+// ProcessExpiredRequests resolves and sends response packets for all expired-but-unresolved requests.
 func (k Keeper) ProcessExpiredRequests(ctx sdk.Context) {
-	iter := sdk.KVStorePrefixIterator(ctx.KVStore(k.storeKey), types.RequestStoreKeyPrefix)
-	if !iter.Valid() { // No request currently in the store.
-		return
-	}
-	currentReqID := types.RequestID(sdk.BigEndianToUint64(iter.Key()[1:])) // First available request ID
+	currentReqID := types.RequestID(k.GetRequestLastExpired(ctx) + 1)
 	lastReqID := types.RequestID(k.GetRequestCount(ctx))
 	expirationBlockCount := int64(k.GetParam(ctx, types.KeyExpirationBlockCount))
 	// Loop through all data requests in chronological order. If a request reaches its
@@ -138,9 +133,8 @@ func (k Keeper) ProcessExpiredRequests(ctx sdk.Context) {
 		}
 		// Update report info for requested validators.
 		k.UpdateReportInfos(ctx, currentReqID)
-		// We are done with this request. Remove it and its dependencies from the store.
-		k.DeleteRequest(ctx, currentReqID)
-		k.DeleteReports(ctx, currentReqID)
+		// Set last expired request ID to be this current request.
+		k.SetRequestLastExpired(ctx, int64(currentReqID))
 	}
 }
 

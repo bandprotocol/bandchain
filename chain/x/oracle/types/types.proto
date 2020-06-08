@@ -278,7 +278,8 @@ message Report {
 
   bytes validator = 1
       [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
-  repeated RawReport raw_reports = 2 [(gogoproto.nullable) = false];
+  bool in_before_resolve = 2;
+  repeated RawReport raw_reports = 3 [(gogoproto.nullable) = false];
 }
 
 // ValidatorReportInfo defines the report info for a validator

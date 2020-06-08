@@ -18,6 +18,8 @@ var (
 	GlobalStoreKeyPrefix = []byte{0x00}
 	// RequestCountStoreKey is the key that keeps the total request count.
 	RequestCountStoreKey = append(GlobalStoreKeyPrefix, []byte("RequestCount")...)
+	// RequestLastExpiredStoreKey is the key that keeps the ID of the last expired request, or 0 if none.
+	RequestLastExpiredStoreKey = append(GlobalStoreKeyPrefix, []byte("RequestLastExpired")...)
 	// PendingResolveListStoreKey is the key that keeps the list of pending-resolve requests.
 	PendingResolveListStoreKey = append(GlobalStoreKeyPrefix, []byte("PendingList")...)
 	// DataSourceCountStoreKey is the key that keeps the total data source count.

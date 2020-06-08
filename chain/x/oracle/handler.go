@@ -7,7 +7,6 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	_ "github.com/cosmos/cosmos-sdk/x/ibc/04-channel"
 )
 
 // NewHandler creates the msg handler of this module, as required by Cosmos-SDK standard.
@@ -134,7 +133,7 @@ func handleMsgReportData(ctx sdk.Context, k Keeper, m MsgReportData) (*sdk.Resul
 	if !k.IsReporter(ctx, m.Validator, m.Reporter) {
 		return nil, types.ErrReporterNotAuthorized
 	}
-	err := k.AddReport(ctx, m.RequestID, types.NewReport(m.Validator, m.RawReports))
+	err := k.AddReport(ctx, m.RequestID, types.NewReport(m.Validator, !k.HasResult(ctx, m.RequestID), m.RawReports))
 	if err != nil {
 		return nil, err
 	}
