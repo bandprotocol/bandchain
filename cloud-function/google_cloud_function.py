@@ -14,22 +14,6 @@ def get_env(env, flag):
         raise Exception(flag + " is missing")
     return int(env[flag])
 
-
-def check_field_in_json(request_json, field):
-    if not field in request_json:
-        return (
-            jsonify({"error": field + " field is missing from JSON request",}),
-            400,
-        )
-    return ()
-
-
-def check_max_exceed(request_json, field, max):
-    if len(request_json[field]) > max:
-        return jsonify({"error": field + " value exceeded max size",}), 400
-    return ()
-
-
 def execute(request):
     """Responds to any HTTP request.
   Args:
