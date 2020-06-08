@@ -64,7 +64,7 @@ def append_changelog(number, component, changeType, description):
 
 
 def split_body(body):
-    print(body.split("\n")[1].split(":"))
+    return body.split("\n")[1].split(":")
 
 
 if __name__ == "__main__":
