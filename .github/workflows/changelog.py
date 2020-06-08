@@ -12,61 +12,63 @@ def generate_substitute(content, header, number, component, changeType, descript
     )
 
 
-def append_changelog(number, component, changeType, description):
+def append_changelog(prNumber, changedComponent, changeType, prDescription):
     read = open("DEMOCHANGELOG.md", "r+")
     content = read.read()
     read.close()
     with open("DEMOCHANGELOG.md", "w") as f:
         content_new = ""
-        component = component.lower()
-        if component == "chain":
+        changedComponent = changedComponent.lower()
+        if changedComponent == "chain":
             f.write(
                 generate_substitute(
-                    content, "Chain", number, component, changeType, description
+                    content, "Chain", prNumber, changedComponent, changeType, prDescription
                 )
             )
-        elif component == "scan":
+        elif changedComponent == "scan":
             f.write(
                 generate_substitute(
-                    content, "Scan", number, component, changeType, description
+                    content, "Scan", prNumber, changedComponent, changeType, prDescription
                 )
             )
-        elif component == "bridges":
+        elif changedComponent == "bridges":
             f.write(
                 generate_substitute(
-                    content, "Bridges", number, component, changeType, description
+                    content, "Bridges", prNumber, changedComponent, changeType, prDescription
                 )
             )
-        elif component == "owasm":
+        elif changedComponent == "owasm":
             f.write(
                 generate_substitute(
-                    content, "Owasm", number, component, changeType, description
+                    content, "Owasm", prNumber, changedComponent, changeType, prDescription
                 )
             )
-        elif component == "obi":
+        elif changedComponent == "obi":
             print("obi")
             f.write(
                 generate_substitute(
                     content,
                     "Oracle Binary Encoding \(OBI\)",
-                    number,
-                    component,
+                    prNumber,
+                    changedComponent,
                     changeType,
-                    description,
+                    prDescription,
                 )
             )
-        elif component == "misc":
+        elif changedComponent == "misc":
             f.write(
                 generate_substitute(
-                    content, "MISC", number, component, changeType, description
+                    content, "MISC", prNumber, changedComponent, changeType, prDescription
                 )
             )
 
+
 if __name__ == "__main__":
+    prNumber = os.getenv("PR_NUMBER")
+    changedComponent = os.getenv("PR_BODY").split("\n")[2].split(":")[0]
+    prChangeType = (os.getenv("PR_BODY").split("\n")[1][:-1],)
+    prDescription = os.getenv("PR_BODY").split("\n")[2].split(":")[1]
     append_changelog(
-        os.getenv("PR_NUMBER"),
-        os.getenv("PR_BODY").split("\n")[2].split(":")[0],
-        os.getenv("PR_BODY").split("\n")[1][:-1],
-        os.getenv("PR_BODY").split("\n")[2].split(":")[1],
+        prNumber, changedComponent, prChangeType, prDescription,
     )
     ## append_changelog(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
