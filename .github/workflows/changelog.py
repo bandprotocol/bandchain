@@ -62,6 +62,7 @@ def append_changelog(number, component, changeType, description):
             )
 
 def temp(body):
+    print(body)
     print(body.splitlines())
 
 if __name__ == "__main__":
