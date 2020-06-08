@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bandprotocol/bandchain/chain/pkg/byteexec"
+	"github.com/levigross/grequests"
 )
 
 type executor interface {
@@ -16,16 +16,51 @@ type lambdaExecutor struct {
 	URL string
 }
 
+type externalExecutionResponse struct {
+	Returncode uint32 `json:"returncode"`
+	Stdout     string `json:"stdout"`
+	Stderr     string `json:"stderr"`
+}
+
 func (e *lambdaExecutor) Execute(
 	l *Logger, exec []byte, timeout time.Duration, arg string,
 ) ([]byte, uint32) {
-	result, err := byteexec.RunOnAWSLambda(exec, timeout, arg, e.URL)
+	resp, err := grequests.Post(
+		e.URL,
+		&grequests.RequestOptions{
+			Headers: map[string]string{
+				"Content-Type": "application/json",
+			},
+			JSON: map[string]string{
+				"executable": string(exec),
+				"calldata":   arg,
+			},
+		},
+	)
+
 	if err != nil {
 		l.Error(":skull: LambdaExecutor failed with error: %s", err.Error())
 		return []byte("EXECUTION_ERROR"), 255
 	}
 
-	return result, 0
+	if resp.Ok != true {
+		l.Error(":skull: LambdaExecutor failed with error: %s", resp.Error)
+		return []byte("EXECUTION_ERROR"), 255
+	}
+
+	r := externalExecutionResponse{}
+	err = resp.JSON(&r)
+
+	if err != nil {
+		l.Error(":skull: LambdaExecutor failed with error: %s", err.Error())
+		return []byte("EXECUTION_ERROR"), 255
+	}
+
+	if r.Returncode == 0 {
+		return []byte(r.Stdout), r.Returncode
+	} else {
+		return []byte(r.Stderr), r.Returncode
+	}
 }
 
 // NewExecutor returns executor by name and executor URL
