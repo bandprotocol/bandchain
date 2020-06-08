@@ -32,3 +32,5 @@
 ### Oracle Binary Encoding (OBI)
 
 ### MISC
+
+- (chore) [\#1876](https://github.com/bandprotocol/bandchain/pull/1876)Update docker script fix build failed when using go-owasm local package
