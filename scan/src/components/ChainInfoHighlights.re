@@ -134,7 +134,8 @@ let make = (~latestBlockSub: Sub.t(BlockSub.t)) => {
         let%Sub (_, {financial}, _) = allSub;
         (
           {
-            let marketcap = "$" ++ financial.usdMarketCap->Format.fPretty;
+            let marketcap =
+              "$" ++ (financial.usdMarketCap /. 1e6 |> Format.fPretty(~digits=1)) ++ "M";
             <Text
               value=marketcap
               size=Text.Xxxl
@@ -144,12 +145,12 @@ let make = (~latestBlockSub: Sub.t(BlockSub.t)) => {
             />;
           },
           {
-            let marketcap = financial.circulatingSupply;
+            let marketcap = financial.btcMarketCap;
             <div className={Styles.withWidth(170)}>
               <div className=Styles.vFlex>
                 <Text value={marketcap->Format.fPretty} code=true weight=Text.Thin />
                 <HSpacing size=Spacing.xs />
-                <Text value="BAND" color=Colors.gray7 weight=Text.Thin spacing={Text.Em(0.01)} />
+                <Text value="BTC" color=Colors.gray7 weight=Text.Thin spacing={Text.Em(0.01)} />
               </div>
             </div>;
           },
