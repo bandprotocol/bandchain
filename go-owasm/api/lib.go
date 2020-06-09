@@ -24,29 +24,29 @@ import (
 	"unsafe"
 )
 
-func Compile(code []byte) ([]byte, int32) {
+func Compile(code []byte) ([]byte, error) {
 	inputSpan := copySpan(code)
 	defer freeSpan(inputSpan)
 	outputSpan := newSpan(SpanSize)
 	defer freeSpan(outputSpan)
-	res := int32(C.do_compile(inputSpan, &outputSpan))
-	return readSpan(outputSpan), res
+	err := parseError(int32(C.do_compile(inputSpan, &outputSpan)))
+	return readSpan(outputSpan), err
 }
 
-func Prepare(code []byte, env EnvInterface) int32 {
+func Prepare(code []byte, env EnvInterface) error {
 	return run(code, true, env)
 }
 
-func Execute(code []byte, env EnvInterface) int32 {
+func Execute(code []byte, env EnvInterface) error {
 	return run(code, false, env)
 }
 
-func run(code []byte, isPrepare bool, env EnvInterface) int32 {
+func run(code []byte, isPrepare bool, env EnvInterface) error {
 	codeSpan := copySpan(code)
 	defer freeSpan(codeSpan)
 	envIntl := createEnvIntl(env)
 	defer destroyEnvIntl(envIntl)
-	return int32(C.do_run(codeSpan, C.bool(isPrepare), C.Env{
+	return parseError(int32(C.do_run(codeSpan, C.bool(isPrepare), C.Env{
 		env: (*C.env_t)(unsafe.Pointer(envIntl)),
 		dis: C.EnvDispatcher{
 			get_calldata:             C.get_calldata_fn(C.cGetCalldata_cgo),
@@ -58,7 +58,7 @@ func run(code []byte, isPrepare bool, env EnvInterface) int32 {
 			get_external_data_status: C.get_external_data_status_fn(C.cGetExternalDataStatus_cgo),
 			get_external_data:        C.get_external_data_fn(C.cGetExternalData_cgo),
 		},
-	}))
+	})))
 }
 
 func Wat2Wasm(code []byte) ([]byte, error) {
