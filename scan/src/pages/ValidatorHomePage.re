@@ -536,15 +536,9 @@ let make = () => {
         </Col>
         <Col size=1.1>
           {switch (topPartAllSub) {
-           | Data((_, _, bondedTokenCount, _, metadata)) =>
+           | Data((_, _, bondedTokenCount, _, _)) =>
              <InfoHL
-               info={
-                 InfoHL.Fraction(
-                   bondedTokenCount |> Coin.getBandAmountFromCoin |> int_of_float,
-                   metadata.totalSupply->Coin.getBandAmountFromCoins |> int_of_float,
-                   true,
-                 )
-               }
+               info={InfoHL.FloatWithSuffix(bondedTokenCount->Coin.getBandAmountFromCoin, "", 0)}
                header="BONDED TOKENS"
              />
            | _ =>
