@@ -82,7 +82,7 @@ def test_error_missing_calldata(mock_env):
     assert data["error"]["calldata"][0] == "field is missing from JSON request"
 
 
-def test_error_calldata_empty(mock_env):
+def test_success_calldata_empty(mock_env):
     executable = b"""#!/usr/bin/env python3
 print('hello')"""
     executable = encodeBase64(executable)
@@ -116,7 +116,7 @@ def test_error_missing_timeout(mock_env):
     assert data["error"]["timeout"][0] == "field is missing from JSON request"
 
 
-def test_error_timeout_is_invalid(mock_env):
+def test_error_timeout_is_invalid_string(mock_env):
     executable = b"""#!/usr/bin/env python3
 print('hello')"""
     executable = encodeBase64(executable)
@@ -128,7 +128,7 @@ print('hello')"""
                 "executable": executable,
                 "calldata": "bitcoin",
                 "timeout": "faked timeout",
-            }  # timeout shouldn't be string
+            }
         ),
         content_type="application/json",
     )
@@ -150,7 +150,7 @@ print('hello')"""
                 "executable": executable,
                 "calldata": "bitcoin",
                 "timeout": "3000",
-            }  # timeout shouldn't be string
+            }
         ),
         content_type="application/json",
     )
