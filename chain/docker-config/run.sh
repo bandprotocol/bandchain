@@ -1,10 +1,11 @@
 #!/bin/bash
 
-bandd init $1 --chain-id bandchain --oracle band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs
+bandd init $1 --chain-id bandchain
 
 cp /chain/docker-config/$1/priv_validator_key.json ~/.bandd/config/priv_validator_key.json
 cp /chain/docker-config/$1/node_key.json ~/.bandd/config/node_key.json
 cp /chain/docker-config/genesis.json ~/.bandd/config/genesis.json
+cp -r /chain/docker-config/files ~/.bandd
 
 if [ "$1" == "query-node" ];then
     sleep 10
