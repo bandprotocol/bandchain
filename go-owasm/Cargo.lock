@@ -279,7 +279,6 @@ checksum = "8be18de09a56b60ed0edf84bc9df007e30040691af7acd1c41874faac5895bfb"
 name = "go-owasm"
 version = "0.1.0"
 dependencies = [
- "errno",
  "parity-wasm",
  "pwasm-utils",
  "wabt",
