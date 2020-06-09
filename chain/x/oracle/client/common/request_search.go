@@ -52,8 +52,15 @@ func QuerySearchLatestRequest(
 					}
 				}
 				if ok && rid != "" {
-					// TODO: Check if request has resolved.
-					return queryRequest(route, cliCtx, rid)
+					res, h, err := queryRequest(route, cliCtx, rid)
+					if err != nil {
+						continue
+					}
+					var out types.QueryRequestResult
+					cliCtx.Codec.MustUnmarshalJSON(res, &out)
+					if out.Result != nil {
+						return res, h, nil
+					}
 				}
 			}
 		}

@@ -319,20 +319,21 @@ func TestResolveRequestSuccess(t *testing.T) {
 	reqID := k.AddRequest(ctx, req)
 	k.ResolveRequest(ctx, reqID)
 
-	res, err := k.GetResult(ctx, reqID)
+	reqPacket, resPacket, err := k.GetResult(ctx, reqID)
 	require.NoError(t, err)
 
 	r := k.MustGetRequest(ctx, reqID)
-	resPacket := types.NewOracleResponsePacketData(
+	expectedResPacket := types.NewOracleResponsePacketData(
 		r.ClientID, reqID, k.GetReportCount(ctx, reqID), r.RequestTime,
 		ctx.BlockTime().Unix(), types.ResolveStatus_Success, []byte("beeb"),
 	)
-	reqPacket := types.NewOracleRequestPacketData(
+	expectedReqPacket := types.NewOracleRequestPacketData(
 		r.ClientID, r.OracleScriptID, r.Calldata, r.MinCount, uint64(len(r.RequestedValidators)),
 	)
-	expecetRes := types.CalculateEncodedResult(reqPacket, resPacket)
 
-	require.Equal(t, expecetRes, res)
+	require.Equal(t, expectedReqPacket, reqPacket)
+	require.Equal(t, expectedResPacket, resPacket)
+
 }
 
 // TODO: Patch to "Bad" wasm code that is a valid wasm code.

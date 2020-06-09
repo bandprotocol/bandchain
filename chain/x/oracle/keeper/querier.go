@@ -8,7 +8,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/bandprotocol/bandchain/chain/pkg/obi"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
@@ -96,12 +95,11 @@ func queryRequestByID(ctx sdk.Context, path []string, k Keeper) ([]byte, error) 
 		return nil, err
 	}
 	reports := k.GetReports(ctx, types.RequestID(id))
-	resultBytes, _ := k.GetResult(ctx, types.RequestID(id))
-	var result types.Result
-	obi.MustDecode(resultBytes, &result)
+	req, res := k.MustGetResult(ctx, types.RequestID(id))
+	result := types.Result{RequestPacketData: req, ResponsePacketData: res}
 	return codec.MarshalJSONIndent(types.ModuleCdc, types.QueryRequestResult{
 		Request: request,
 		Reports: reports,
-		Result:  result,
+		Result:  &result,
 	})
 }
