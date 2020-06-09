@@ -27,7 +27,7 @@ import (
 func Compile(code []byte) ([]byte, int32) {
 	inputSpan := copySpan(code)
 	defer freeSpan(inputSpan)
-	outputSpan := newSpan(1 * 1024 * 1024)
+	outputSpan := newSpan(SpanSize)
 	defer freeSpan(outputSpan)
 	res := int32(C.do_compile(inputSpan, &outputSpan))
 	return readSpan(outputSpan), res
@@ -64,7 +64,7 @@ func run(code []byte, isPrepare bool, env EnvInterface) int32 {
 func Wat2Wasm(code []byte) ([]byte, error) {
 	inputSpan := copySpan(code)
 	defer freeSpan(inputSpan)
-	outputSpan := newSpan(1 * 1024 * 1024)
+	outputSpan := newSpan(SpanSize)
 	defer freeSpan(outputSpan)
 	err := parseError(int32(C.do_wat2wasm(inputSpan, &outputSpan)))
 	return readSpan(outputSpan), err
