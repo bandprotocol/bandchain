@@ -39,6 +39,7 @@
 
 ### Owasm
 
+- (feat) [\#1907](https://github.com/bandprotocol/bandchain/pull/1907) Implement OBISchema derive for generate schema of Input and Output struct
 - (feat) [\#1858](https://github.com/bandprotocol/bandchain/pull/1858) Add go-owasm to BandChain monorepo.
 
 ### Oracle Binary Encoding (OBI)
