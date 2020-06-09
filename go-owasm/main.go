@@ -42,9 +42,9 @@ func (e *Env) GetExternalData(eid int64, vid int64) []byte {
 	return []byte("switez")
 }
 
-func WatToWasm(fileName string) error {
+func Wat2Wasm(fileName string) error {
 	code, _ := ioutil.ReadFile(fmt.Sprintf("./wasm/%s.wat", fileName))
-	wasm, err := api.WatToWasm(code)
+	wasm, err := api.Wat2Wasm(code)
 	if err != nil {
 		panic(err)
 	}
@@ -65,7 +65,7 @@ func WatToWasm(fileName string) error {
 func main() {
 	fmt.Println("Hello, World!")
 	code, _ := ioutil.ReadFile("./wasm/test.wat")
-	wasm, e := api.WatToWasm(code)
+	wasm, e := api.Wat2Wasm(code)
 	fmt.Println("wasm", wasm)
 	fmt.Println(e)
 }
