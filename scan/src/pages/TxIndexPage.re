@@ -145,6 +145,8 @@ let make = (~txHash) =>
           />
         </Col>
       </Row>
+      <VSpacing size=Spacing.xl />
+      <Row> <Col> <InfoHL info={InfoHL.Description(tx.memo)} header="MEMO" /> </Col> </Row>
       {tx.success
          ? React.null : <> <VSpacing size=Spacing.xl /> <TxError.Full msg={tx.rawLog} /> </>}
       <VSpacing size=Spacing.xxl />
