@@ -107,7 +107,6 @@ func TestSuccessRequestOracleData(t *testing.T) {
 		{Key: []byte(types.AttributeKeyRequestTime), Value: parseEventAttribute(resPacket.RequestTime)},
 		{Key: []byte(types.AttributeKeyResolveTime), Value: parseEventAttribute(resPacket.ResolveTime)},
 		{Key: []byte(types.AttributeKeyResult), Value: resPacket.Result},
-		{Key: []byte(types.AttributeKeyResultHash), Value: []byte(fmt.Sprintf("%x", types.CalculateResultHash(reqPacket, resPacket)))},
 	}}}
 
 	require.Equal(t, expectEvents, result.GetEvents())
@@ -174,7 +173,6 @@ func TestExpiredRequestOracleData(t *testing.T) {
 		{Key: []byte(types.AttributeKeyRequestTime), Value: parseEventAttribute(resPacket.RequestTime)},
 		{Key: []byte(types.AttributeKeyResolveTime), Value: parseEventAttribute(resPacket.ResolveTime)},
 		{Key: []byte(types.AttributeKeyResult), Value: resPacket.Result},
-		{Key: []byte(types.AttributeKeyResultHash), Value: []byte(fmt.Sprintf("%x", types.CalculateResultHash(reqPacket, resPacket)))},
 	}}}
 
 	require.Equal(t, expectEvents, result.GetEvents())
