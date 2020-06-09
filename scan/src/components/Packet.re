@@ -28,7 +28,7 @@ let make = (~packet: IBCSub.packet_t, ~oracleScriptID: ID.OracleScript.t) => {
     // TODO: support loading state, no data later
     let outputKVsOpt =
       switch (oracleScriptSub) {
-      | Data(oracleScript) => Borsh.decode(oracleScript.schema, "Input", request.calldata)
+      | Data(oracleScript) => Obi.decode(oracleScript.schema, "input", request.calldata)
       | _ => None
       };
     <>
@@ -131,7 +131,7 @@ let make = (~packet: IBCSub.packet_t, ~oracleScriptID: ID.OracleScript.t) => {
        | (IBCSub.Response.Success, Some(result)) =>
          let outputKVsOpt =
            switch (oracleScriptSub) {
-           | Data(oracleScript) => Borsh.decode(oracleScript.schema, "Output", result)
+           | Data(oracleScript) => Obi.decode(oracleScript.schema, "output", result)
            | _ => None
            };
          <>

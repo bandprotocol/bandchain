@@ -75,7 +75,7 @@ module Styles = {
   let logo = style([width(`px(15))]);
 };
 
-let parameterInput = (Borsh.{fieldName, fieldType}, index, setCalldataArr) => {
+let parameterInput = (Obi.{fieldName, fieldType}, index, setCalldataArr) => {
   <div className=Styles.listContainer key=fieldName>
     <Text value={j|$fieldName ($fieldType)|j} size=Text.Md color=Colors.gray6 />
     <VSpacing size=Spacing.xs />
@@ -126,8 +126,7 @@ let resultRender = (result, schema) => {
 
 module ExecutionPart = {
   [@react.component]
-  let make =
-      (~id: ID.OracleScript.t, ~schema: string, ~paramsInput: array(Borsh.field_key_type_t)) => {
+  let make = (~id: ID.OracleScript.t, ~schema: string, ~paramsInput: array(Obi.field_key_type_t)) => {
     let (_, dispatch) = React.useContext(AccountContext.context);
 
     let numParams = paramsInput->Belt_Array.size;
@@ -195,13 +194,13 @@ module ExecutionPart = {
           onClick={_ =>
             if (result != Loading) {
               switch (
-                Borsh.encode(
+                Obi.encode(
                   schema,
-                  "Input",
+                  "input",
                   paramsInput
                   ->Belt_Array.map(({fieldName}) => fieldName)
                   ->Belt_Array.zip(callDataArr)
-                  ->Belt_Array.map(((fieldName, fieldValue)) => Borsh.{fieldName, fieldValue}),
+                  ->Belt_Array.map(((fieldName, fieldValue)) => Obi.{fieldName, fieldValue}),
                 )
               ) {
               | Some(encoded) =>
@@ -224,7 +223,7 @@ module ExecutionPart = {
 [@react.component]
 let make = (~id: ID.OracleScript.t, ~schema: string) =>
   {
-    let%Opt paramsInput = schema->Borsh.extractFields("Input");
+    let%Opt paramsInput = schema->Obi.extractFields("input");
     Some(<ExecutionPart id schema paramsInput />);
   }
   |> Belt.Option.getWithDefault(
