@@ -5,7 +5,7 @@ module Styles = {
     style([
       display(`flex),
       width(`percent(100.)),
-      height(`px(15)),
+      height(`px(12)),
       border(`px(1), `solid, Colors.blueGray4),
       borderRadius(`px(6)),
       padding(`px(1)),
