@@ -174,6 +174,7 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 			stdTx.GetSigners()[0],
 			res.IsOK(),
 			app.DeliverContext.BlockHeight(),
+			stdTx.Memo,
 		)
 		if !res.IsOK() {
 			app.dbBand.HandleTransactionFail(stdTx, txHash)
