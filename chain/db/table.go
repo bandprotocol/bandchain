@@ -28,6 +28,7 @@ type Transaction struct {
 	Success     bool            `gorm:"not null"`
 	BlockHeight int64           `gorm:"not null"`
 	Messages    json.RawMessage `sql:"json;not null"`
+	Memo        string          `gorm:"not null"`
 }
 
 type Account struct {
