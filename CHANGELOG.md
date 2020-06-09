@@ -39,6 +39,7 @@
 
 ### Owasm
 
+- (feat) [\#1919](https://github.com/bandprotocol/bandchain/pull/1919) Add Makefile entry to allow compiling dylib and so for go-owasm via docker.
 - (feat) [\#1858](https://github.com/bandprotocol/bandchain/pull/1858) Add go-owasm to BandChain monorepo.
 
 ### Oracle Binary Encoding (OBI)
