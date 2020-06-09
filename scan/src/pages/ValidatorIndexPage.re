@@ -50,10 +50,12 @@ type value_row_t =
   | VExtLink(string)
   | VCode(string);
 
-let kvRow = (k, v: value_row_t) => {
+let kvRow = (k, description, v: value_row_t) => {
   <Row alignItems=`flexStart>
     <Col size=1.>
-      <div className={Styles.fullWidth(`row)}> <Text value=k weight=Text.Thin /> </div>
+      <div className={Styles.fullWidth(`row)}>
+        <Text value=k weight=Text.Thin tooltipItem=description tooltipPlacement=Text.AlignRight />
+      </div>
     </Col>
     <Col size=1. justifyContent=Col.Center alignItems=Col.End>
       <div className={Styles.fullWidth(`row)}>
@@ -81,8 +83,26 @@ module Uptime = {
       let%Sub uptimeOpt = ValidatorSub.getUptime(consensusAddress);
 
       switch (uptimeOpt) {
-      | Some(uptime) => kvRow("UPTIME", VCode(uptime->Format.fPercent)) |> Sub.resolve
-      | None => kvRow("UPTIME", VText("N/A")) |> Sub.resolve
+      | Some(uptime) =>
+        kvRow(
+          "UPTIME (LAST 250 BLOCKS)",
+          {
+            "Percentage of the blocks that the validator is active for out of the last 250"
+            |> React.string;
+          },
+          VCode(uptime->Format.fPercent),
+        )
+        |> Sub.resolve
+      | None =>
+        kvRow(
+          "UPTIME (LAST 250 BLOCKS)",
+          {
+            "Percentage of the blocks that the validator is active for out of the last 250"
+            |> React.string;
+          },
+          VText("N/A"),
+        )
+        |> Sub.resolve
       };
     }
     |> Sub.default(_, React.null);
@@ -140,12 +160,27 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
       <div className=Styles.topPartWrapper>
         <Text value="INFORMATION" size=Text.Lg weight=Text.Semibold />
         <VSpacing size=Spacing.lg />
-        {kvRow("OPERATOR ADDRESS", VValidatorAddress(address))}
+        {kvRow(
+           "OPERATOR ADDRESS",
+           {
+             "The address used to show the entity's validator status" |> React.string;
+           },
+           VValidatorAddress(address),
+         )}
         <VSpacing size=Spacing.lg />
-        {kvRow("ADDRESS", VAddress(address))}
+        {kvRow(
+           "ADDRESS",
+           {
+             "The entity's unique address" |> React.string;
+           },
+           VAddress(address),
+         )}
         <VSpacing size=Spacing.lg />
         {kvRow(
            "VOTING POWER",
+           {
+             "Sum of self-bonded and delegated tokens" |> React.string;
+           },
            VCode(
              (bondedTokenCount > 0. ? validator.votingPower *. 100. /. bondedTokenCount : 0.)
              ->Format.fPretty
@@ -155,15 +190,39 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
            ),
          )}
         <VSpacing size=Spacing.lg />
-        {kvRow("COMMISSION", VCode(validator.commission->Format.fPercent))}
+        {kvRow(
+           "COMMISSION",
+           {
+             "Validator service fees charged to delegators" |> React.string;
+           },
+           VCode(validator.commission->Format.fPercent),
+         )}
         <VSpacing size=Spacing.lg />
-        {kvRow("BONDED HEIGHT", VCode(validator.bondedHeight->Format.iPretty))}
+        {kvRow(
+           "BONDED HEIGHT",
+           {
+             "The block height at which the entity registers as a validator" |> React.string;
+           },
+           VCode(validator.bondedHeight->Format.iPretty),
+         )}
         <VSpacing size=Spacing.lg />
         <Uptime consensusAddress={validator.consensusAddress} />
         <VSpacing size=Spacing.lg />
-        {kvRow("WEBSITE", VExtLink(validator.website))}
+        {kvRow(
+           "WEBSITE",
+           {
+             "The validator's website" |> React.string;
+           },
+           VExtLink(validator.website),
+         )}
         <VSpacing size=Spacing.lg />
-        {kvRow("DETAILS", VDetail(validator.details))}
+        {kvRow(
+           "DETAILS",
+           {
+             "Extra self-added detail about the validator" |> React.string;
+           },
+           VDetail(validator.details),
+         )}
       </div>
       // <div className=Styles.longLine />
       // <div className={Styles.fullWidth(`row)}>

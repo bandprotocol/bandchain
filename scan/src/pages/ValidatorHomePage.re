@@ -318,7 +318,17 @@ let sorting = (validators: array(ValidatorSub.t), sortedBy) => {
 
 module SortableTHead = {
   [@react.component]
-  let make = (~title, ~asc, ~desc, ~toggle, ~sortedBy, ~isRight=true) => {
+  let make =
+      (
+        ~title,
+        ~asc,
+        ~desc,
+        ~toggle,
+        ~sortedBy,
+        ~isRight=true,
+        ~tooltipItem=?,
+        ~tooltipPlacement=Text.AlignBottomStart,
+      ) => {
     <div className={Styles.sortableTHead(isRight)} onClick={_ => toggle(asc, desc)}>
       <Text
         block=true
@@ -327,6 +337,8 @@ module SortableTHead = {
         weight=Text.Semibold
         color=Colors.gray6
         spacing={Text.Em(0.1)}
+        tooltipItem={tooltipItem->Belt_Option.mapWithDefault(React.null, React.string)}
+        tooltipPlacement
       />
       <HSpacing size=Spacing.xs />
       {if (sortedBy == asc) {
@@ -383,6 +395,7 @@ module ValidatorList = {
                 desc=VotingPowerDesc
                 toggle
                 sortedBy
+                tooltipItem="Sum of self-bonded and delegated tokens"
               />
             </Col>
             <Col size=0.8>
@@ -392,6 +405,7 @@ module ValidatorList = {
                 desc=CommissionDesc
                 toggle
                 sortedBy
+                tooltipItem="Validator service fees charged to delegators"
               />
             </Col>
             <Col size=0.3> <HSpacing size=Spacing.sm /> </Col>
@@ -403,6 +417,7 @@ module ValidatorList = {
                 toggle
                 sortedBy
                 isRight=false
+                tooltipItem="Percentage of the blocks that the validator is active for out of the last 250"
               />
             </Col>
           </Row>
