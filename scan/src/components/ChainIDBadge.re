@@ -13,6 +13,7 @@ module Styles = {
       marginLeft(Spacing.xs),
       marginTop(`px(1)),
       position(`relative),
+      cursor(`pointer),
     ]);
 
   let versionLoading =
