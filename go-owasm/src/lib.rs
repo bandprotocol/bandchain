@@ -1,31 +1,55 @@
 mod env;
 mod span;
 mod vm;
+mod error;
 
 use env::Env;
+use error::Error;
 use parity_wasm::elements::{self};
 use pwasm_utils::{self, rules};
 use span::Span;
 use std::ffi::c_void;
 use wasmer_runtime::{instantiate, Ctx};
 use wasmer_runtime_core::{func, imports, wasmparser, Func};
+use wabt::wat2wasm;
+
+
 
 #[no_mangle]
-pub extern "C" fn do_compile(input: Span, output: &mut Span) -> i32 {
+pub extern "C" fn do_compile(input: Span, output: &mut Span) -> Error {
+    // TODO: Define error when compile code.
     match compile(input.read()) {
         Ok(out) => {
             output.write(&out);
-            0
+            Error::Ok
         }
-        Err(code) => code,
+        Err(_) => Error::CompileFail,
     }
 }
 
 #[no_mangle]
-pub extern "C" fn do_run(code: Span, is_prepare: bool, env: Env) -> i32 {
+pub extern "C" fn do_run(code: Span, is_prepare: bool, env: Env) -> Error {
     match run(code.read(), is_prepare, env) {
-        Ok(_) => 0,
-        Err(code) => code,
+        Ok(_) => Error::Ok,
+        Err(_) => Error::RunFail,
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn do_wat2wasm(input: Span, output: &mut Span) -> Error {
+    match wat2wasm(input.read()) {
+        Ok(_wasm) => {
+            output.write(&_wasm);
+            Error::Ok
+        },
+        Err(e) => {
+            match e.kind() {
+                wabt::ErrorKind::Parse(_) => Error::ParseFail,
+                wabt::ErrorKind::Nul => Error::Nul,
+                wabt::ErrorKind::NonUtf8Result => Error::NonUtf8Result,
+                _ => Error::RunFail,
+            }
+        }
     }
 }
 

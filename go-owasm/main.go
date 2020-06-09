@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
 
 	"github.com/bandprotocol/bandchain/go-owasm/api"
 )
@@ -41,11 +42,32 @@ func (e *Env) GetExternalData(eid int64, vid int64) []byte {
 	return []byte("switez")
 }
 
+func WatToWasm(fileName string) error {
+	code, _ := ioutil.ReadFile(fmt.Sprintf("./wasm/%s.wat", fileName))
+	wasm, err := api.WatToWasm(code)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("wasm:", wasm)
+	f, err := os.Create(fmt.Sprintf("./wasm/%s.wasm", fileName))
+	defer f.Close()
+	n, err := f.Write(wasm)
+	fmt.Printf("wrote %d bytes\n", n)
+	if err != nil {
+		return err
+	}
+	f.Sync()
+
+	return nil
+}
+
 func main() {
-	fmt.Println("Hello, World!")
-	code, _ := ioutil.ReadFile("./wasm/fun3.wasm")
-	codex, e := api.Compile(code)
-	fmt.Println(e)
-	fmt.Println(api.Prepare(codex, &Env{}))
-	fmt.Println("Hello, World!")
+	// fmt.Println("Hello, World!")
+	// code, _ := ioutil.ReadFile("./wasm/test.wat")
+	// wasm, e := api.WatToWasm(code)
+	// fmt.Println("wasm", wasm)
+	// fmt.Println(e)
+
+	WatToWasm("test")
 }
