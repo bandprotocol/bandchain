@@ -64,7 +64,7 @@ let make = (~txResponse: TxCreator.tx_response_t, ~schema: string) =>
         <VSpacing size=Spacing.lg />
         {switch (requestOpt) {
          | Some({result: Some(result), id}) =>
-           let outputKVsOpt = Borsh.decode(schema, "Output", result);
+           let outputKVsOpt = Obi.decode(schema, "output", result);
            <>
              <div className={Styles.hFlex(`auto)}>
                <HSpacing size=Spacing.lg />
