@@ -63,11 +63,9 @@ func WatToWasm(fileName string) error {
 }
 
 func main() {
-	// fmt.Println("Hello, World!")
-	// code, _ := ioutil.ReadFile("./wasm/test.wat")
-	// wasm, e := api.WatToWasm(code)
-	// fmt.Println("wasm", wasm)
-	// fmt.Println(e)
-
-	WatToWasm("test")
+	fmt.Println("Hello, World!")
+	code, _ := ioutil.ReadFile("./wasm/test.wat")
+	wasm, e := api.WatToWasm(code)
+	fmt.Println("wasm", wasm)
+	fmt.Println(e)
 }
