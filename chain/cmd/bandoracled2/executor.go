@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/base64"
 	"fmt"
-	"strconv"
 	"strings"
 	"time"
 
@@ -28,12 +27,12 @@ type externalExecutionResponse struct {
 func (e *restExecutor) Execute(
 	l *Logger, exec []byte, timeout time.Duration, arg string,
 ) ([]byte, uint32) {
-	executable := string(exec)
+	var executable string
 	if e.Name == "cloud-function" {
-		executable = base64.StdEncoding.EncodeToString([]byte(executable))
+		executable = base64.StdEncoding.EncodeToString([]byte(exec))
+	} else {
+		executable = string(exec)
 	}
-
-	timeoutStr := strconv.FormatInt(timeout.Milliseconds(), 10)
 
 	resp, err := grequests.Post(
 		e.URL,
@@ -41,21 +40,21 @@ func (e *restExecutor) Execute(
 			Headers: map[string]string{
 				"Content-Type": "application/json",
 			},
-			JSON: map[string]string{
+			JSON: map[string]interface{}{
 				"executable": executable,
 				"calldata":   arg,
-				"timeout":    timeoutStr,
+				"timeout":    timeout.Milliseconds(),
 			},
 		},
 	)
 
 	if err != nil {
-		l.Error(":skull: restExecutor failed with error: %s", err.Error())
+		l.Error(":skull: RestExecutor failed with error: %s", err.Error())
 		return []byte("EXECUTION_ERROR"), 255
 	}
 
 	if resp.Ok != true {
-		l.Error(":skull: restExecutor failed with error: %s", resp.Error)
+		l.Error(":skull: RestExecutor failed with error: %s", resp.Error)
 		return []byte("EXECUTION_ERROR"), 255
 	}
 
@@ -63,7 +62,7 @@ func (e *restExecutor) Execute(
 	err = resp.JSON(&r)
 
 	if err != nil {
-		l.Error(":skull: restExecutor failed with error: %s", err.Error())
+		l.Error(":skull: RestExecutor failed with error: %s", err.Error())
 		return []byte("EXECUTION_ERROR"), 255
 	}
 
@@ -81,10 +80,8 @@ func NewExecutor(executor string) (executor, error) {
 		return nil, err
 	}
 	switch name {
-	case "lambda":
-		return &restExecutor{Name: "lambda", URL: url}, nil
-	case "cloud-function":
-		return &restExecutor{Name: "cloud-function", URL: url}, nil
+	case "lambda", "cloud-function":
+		return &restExecutor{Name: name, URL: url}, nil
 	default:
 		return nil, fmt.Errorf("Invalid executor name: %s, url: %s", name, url)
 	}
