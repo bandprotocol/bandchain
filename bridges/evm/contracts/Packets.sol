@@ -6,7 +6,7 @@ import {IBridge} from "./IBridge.sol";
 
 
 library Packets {
-    function marshalRequestPacket(IBridge.RequestPacket memory _self)
+    function encodeRequestPacket(IBridge.RequestPacket memory _self)
         internal
         pure
         returns (bytes memory)
@@ -23,7 +23,7 @@ library Packets {
             );
     }
 
-    function marshalResponsePacket(IBridge.ResponsePacket memory _self)
+    function encodeResponsePacket(IBridge.ResponsePacket memory _self)
         internal
         pure
         returns (bytes memory)
@@ -42,16 +42,14 @@ library Packets {
             );
     }
 
-    function getResultHash(
+    function getEncodedResult(
         IBridge.RequestPacket memory _req,
         IBridge.ResponsePacket memory _res
-    ) internal pure returns (bytes32) {
+    ) internal pure returns (bytes memory) {
         return
-            sha256(
-                abi.encodePacked(
-                    sha256(marshalRequestPacket(_req)),
-                    sha256(marshalResponsePacket(_res))
-                )
+            abi.encodePacked(
+                encodeRequestPacket(_req),
+                encodeResponsePacket(_res)
             );
     }
 }
