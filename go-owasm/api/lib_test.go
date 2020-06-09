@@ -26,7 +26,7 @@ func readWasmFile(fileName string) []byte {
 
 func TestSuccessWatToOwasm(t *testing.T) {
 	code := readWatFile("test")
-	wasm, err := WatToWasm(code)
+	wasm, err := Wat2Wasm(code)
 	require.NoError(t, err)
 
 	expectedWasm := readWasmFile("test")
@@ -35,14 +35,14 @@ func TestSuccessWatToOwasm(t *testing.T) {
 
 func TestFailEmptyWatContent(t *testing.T) {
 	code := []byte("")
-	wasm, err := WatToWasm(code)
+	wasm, err := Wat2Wasm(code)
 	require.Equal(t, ErrParseFail, err)
 	require.Equal(t, []byte(""), wasm)
 }
 
 func TestFailInvalidWatContent(t *testing.T) {
 	code := []byte("invalid wat content")
-	wasm, err := WatToWasm(code)
+	wasm, err := Wat2Wasm(code)
 	require.Equal(t, ErrParseFail, err)
 	require.Equal(t, []byte(""), wasm)
 }

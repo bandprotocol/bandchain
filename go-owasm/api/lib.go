@@ -61,7 +61,7 @@ func run(code []byte, isPrepare bool, env EnvInterface) int32 {
 	}))
 }
 
-func WatToWasm(code []byte) ([]byte, error) {
+func Wat2Wasm(code []byte) ([]byte, error) {
 	inputSpan := copySpan(code)
 	defer freeSpan(inputSpan)
 	outputSpan := newSpan(1 * 1024 * 1024)
