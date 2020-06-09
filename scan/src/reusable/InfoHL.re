@@ -64,7 +64,7 @@ let make = (~info, ~header, ~isLeft=true) => {
        />
      | FloatWithSuffix(value, suffix, digits) =>
        <Text
-         value={(value |> Js.Float.toFixedWithPrecision(_, ~digits)) ++ suffix}
+         value={(value |> Format.fPretty(~digits)) ++ suffix}
          size=Text.Lg
          weight=Text.Semibold
          spacing={Text.Em(0.02)}

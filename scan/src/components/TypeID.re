@@ -38,9 +38,9 @@ module Styles = {
 module ComponentCreator = (RawID: ID.IDSig) => {
   [@react.component]
   let make = (~id, ~position=Text) =>
-    <div
+    <Link
       className={Css.merge([Styles.link, Styles.pointerEvents(position)])}
-      onClick={_ => Route.redirect(id |> RawID.getRoute)}>
+      route={id |> RawID.getRoute}>
       <Text
         value={id |> RawID.toString}
         size={position |> fontSize}
@@ -52,7 +52,7 @@ module ComponentCreator = (RawID: ID.IDSig) => {
         code=true
         block=true
       />
-    </div>;
+    </Link>;
 };
 
 module DataSource = ComponentCreator(ID.DataSource);

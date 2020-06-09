@@ -27,7 +27,7 @@ module Styles = {
 
   let bandLogo = style([width(`px(40))]);
 
-  let logoContainer = style([display(`flex), alignItems(`center), cursor(`pointer)]);
+  let logoContainer = style([display(`flex), alignItems(`center)]);
 
   let socialLink =
     style([
@@ -43,6 +43,15 @@ module Styles = {
 
   let routeContainer =
     style([minHeight(`calc((`sub, `vh(100.), `px(200)))), paddingBottom(`px(20))]);
+
+  let link = style([cursor(`pointer)]);
+};
+
+module LinkToHome = {
+  [@react.component]
+  let make = (~children) => {
+    <Link className=Styles.link route=Route.HomePage> children </Link>;
+  };
 };
 
 module TopBar = {
@@ -50,30 +59,36 @@ module TopBar = {
   let make = () => {
     <div className=Styles.topBarContainer>
       <div className={Css.merge([Styles.topBarInner, Styles.pageWidth])}>
-        <div className=Styles.logoContainer onClick={_ => Route.redirect(Route.HomePage)}>
+        <div className=Styles.logoContainer>
           <Row>
-            <Col> <img src=Images.bandLogo className=Styles.bandLogo /> </Col>
+            <Col>
+              <LinkToHome> <img src=Images.bandLogo className=Styles.bandLogo /> </LinkToHome>
+            </Col>
             <Col> <HSpacing size=Spacing.sm /> </Col>
             <Col>
-              <Text
-                value="BandChain"
-                size=Text.Xxl
-                weight=Text.Bold
-                nowrap=true
-                color=Colors.gray8
-                spacing={Text.Em(0.05)}
-              />
+              <LinkToHome>
+                <Text
+                  value="BandChain"
+                  size=Text.Xxl
+                  weight=Text.Bold
+                  nowrap=true
+                  color=Colors.gray8
+                  spacing={Text.Em(0.05)}
+                />
+              </LinkToHome>
               <VSpacing size=Spacing.xs />
               <div className=Styles.rFlex>
-                <Text
-                  value="CosmoScan"
-                  nowrap=true
-                  size=Text.Sm
-                  weight=Text.Semibold
-                  color=Colors.gray6
-                  spacing={Text.Em(0.03)}
-                />
-                <HSpacing size=Spacing.xs />
+                <LinkToHome>
+                  <Text
+                    value="CosmoScan"
+                    nowrap=true
+                    size=Text.Sm
+                    weight=Text.Semibold
+                    color=Colors.gray6
+                    spacing={Text.Em(0.03)}
+                  />
+                  <HSpacing size=Spacing.xs />
+                </LinkToHome>
                 <ChainIDBadge />
               </div>
             </Col>
@@ -107,7 +122,7 @@ let make = () => {
   | "WENCHANG" => ()
   | _ => raise(WrongNetwork("Incorrect or unspecified NETWORK environment variable"))
   };
-  
+
   if (Mobile.check()) {
     <MobilePage />;
   } else {

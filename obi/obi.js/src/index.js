@@ -166,7 +166,7 @@ class Obi {
 
   decodeInput(buff) {
     const [value, remaining] = this.inputObi.decode(buff)
-    if (remaining)
+    if (remaining.length != 0)
       throw new Error('Not all data is consumed after decoding output')
     return value
   }
@@ -177,7 +177,7 @@ class Obi {
 
   decodeOutput(buff) {
     const [value, remaining] = this.outputObi.decode(buff)
-    if (remaining)
+    if (remaining.length != 0)
       throw new Error('Not all data is consumed after decoding output')
     return value
   }

@@ -18,6 +18,7 @@ func createTransaction(
 	sender sdk.AccAddress,
 	success bool,
 	blockHeight int64,
+	memo string,
 ) Transaction {
 	rawJson, _ := json.Marshal(nil)
 	return Transaction{
@@ -32,6 +33,7 @@ func createTransaction(
 		Success:     success,
 		BlockHeight: blockHeight,
 		Messages:    rawJson,
+		Memo:        memo,
 	}
 }
 
@@ -46,6 +48,7 @@ func (b *BandDB) AddTransaction(
 	sender sdk.AccAddress,
 	success bool,
 	blockHeight int64,
+	memo string,
 ) error {
 	transaction := createTransaction(
 		index,
@@ -58,6 +61,7 @@ func (b *BandDB) AddTransaction(
 		sender,
 		success,
 		blockHeight,
+		memo,
 	)
 
 	err := b.tx.Create(&transaction).Error

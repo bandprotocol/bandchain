@@ -29,7 +29,7 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
     <VSpacing size=Spacing.lg />
     <div className=Styles.info>
       <Text
-        value="Withdraw Reward From"
+        value="Withdraw Delegation Rewards"
         size=Text.Lg
         spacing={Text.Em(0.03)}
         nowrap=true
