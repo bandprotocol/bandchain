@@ -11,7 +11,6 @@ type field_key_value_t = {
 let extractFields: (string, string) => option(array(field_key_type_t)) = [%bs.raw
   {|
   function(schema, t) {
-    console.log(schema, t)
     try {
       const normalizedSchema = schema.replace(/\s+/g, '')
       const tokens = normalizedSchema.split('/')
