@@ -13,6 +13,7 @@ module Styles = {
       marginLeft(Spacing.xs),
       marginTop(`px(1)),
       position(`relative),
+      cursor(`pointer),
     ]);
 
   let versionLoading =
@@ -55,12 +56,14 @@ module Styles = {
 
 type chainID =
   | WenchangTestnet
+  | WenchangMainnet
   | GuanYuDevnet
   | Unknown;
 
 let parseChainID =
   fun
   | "band-wenchang-testnet2" => WenchangTestnet
+  | "band-wenchang-mainnet" => WenchangMainnet
   | "band-guanyu-devnet"
   | "band-guanyu-batrider"
   | "bandchain" => GuanYuDevnet
@@ -69,12 +72,14 @@ let parseChainID =
 let getLink =
   fun
   | WenchangTestnet => "https://scan-wenchang-testnet2.bandchain.org/"
+  | WenchangMainnet => ""
   | GuanYuDevnet => "https://guanyu-devnet.cosmoscan.io/"
   | Unknown => "";
 
 let getName =
   fun
   | WenchangTestnet => "wenchang-testnet"
+  | WenchangMainnet => "wenchang-mainnet"
   | GuanYuDevnet => "guanyu-devnet"
   | Unknown => "unknown";
 
