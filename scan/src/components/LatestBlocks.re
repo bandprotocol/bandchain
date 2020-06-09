@@ -54,10 +54,10 @@ module Styles = {
 };
 
 let renderMiniBlock = (index: int, blockHeight: ID.Block.t, moniker: string) =>
-  <div
+  <Link
     key={blockHeight |> ID.Block.toString}
     className={Styles.block(index, blockHeight)}
-    onClick={_ => Route.redirect(blockHeight |> ID.Block.getRoute)}>
+    route={blockHeight |> ID.Block.getRoute}>
     <TypeID.Block id=blockHeight />
     <VSpacing size=Spacing.md />
     <Text value="PROPOSED BY" block=true size=Text.Xs color=Colors.gray7 spacing={Text.Em(0.1)} />
@@ -69,14 +69,14 @@ let renderMiniBlock = (index: int, blockHeight: ID.Block.t, moniker: string) =>
       ellipsis=true
       height={Text.Px(16)}
       spacing={Text.Em(0.02)}
+      color=Colors.gray7
     />
-  </div>;
+  </Link>;
 
 let renderMiniBlockLoading = (imaginaryIndex: int, imaginaryBlockHeight: ID.Block.t) =>
   <div
     key={imaginaryBlockHeight |> ID.Block.toString}
-    className={Styles.block(imaginaryIndex, imaginaryBlockHeight)}
-    onClick={_ => Route.redirect(imaginaryBlockHeight |> ID.Block.getRoute)}>
+    className={Styles.block(imaginaryIndex, imaginaryBlockHeight)}>
     <LoadingCensorBar width=90 height=16 />
     <VSpacing size=Spacing.lg />
     <VSpacing size={`px(1)} />
@@ -91,7 +91,7 @@ let make = (~blocksSub: ApolloHooks.Subscription.variant(_)) => {
     </div>
     <VSpacing size=Spacing.lg />
     <VSpacing size=Spacing.sm />
-    <div className=Styles.seeAll onClick={_ => Route.redirect(Route.BlockHomePage)}>
+    <Link className=Styles.seeAll route=Route.BlockHomePage>
       <div className=Styles.cFlex>
         {switch (blocksSub) {
          | Data(blocks) =>
@@ -116,7 +116,7 @@ let make = (~blocksSub: ApolloHooks.Subscription.variant(_)) => {
         />
       </div>
       <img src=Images.rightArrow className=Styles.rightArrow />
-    </div>
+    </Link>
     <VSpacing size=Spacing.lg />
     <Row alignItems=`initial>
       <div className=Styles.blocksWrapper>
