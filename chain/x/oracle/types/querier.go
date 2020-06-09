@@ -17,9 +17,15 @@ type QueryCountsResult struct {
 	RequestCount      int64 `json:"request_count"`
 }
 
+// Result is the struct for meaning result
+type Result struct {
+	RequestPacketData  OracleRequestPacketData
+	ResponsePacketData OracleResponsePacketData
+}
+
 // QueryRequestResult is the struct for the result of request query.
 type QueryRequestResult struct {
 	Request Request  `json:"request"`
 	Reports []Report `json:"reports"`
-	Result  []byte   `json:"result"` // TODO: Update to richer data type.
+	Result  Result   `json:"result"`
 }
