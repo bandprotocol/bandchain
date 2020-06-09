@@ -8,8 +8,10 @@ enum Error {
   CompileFail = 1,
   RunFail = 2,
   ParseFail = 3,
-  Nul = 4,
-  NonUtf8Result = 5,
+  WriteBinaryFail = 4,
+  ResolveNamesFail = 5,
+  ValidateFail = 6,
+  UnknownFail = 7,
 };
 typedef int32_t Error;
 

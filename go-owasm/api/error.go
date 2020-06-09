@@ -5,12 +5,13 @@ import (
 )
 
 var (
-	ErrCompileFail    = errors.New("compile fail")
-	ErrRunFail        = errors.New("run fail")
-	ErrParseFail      = errors.New("parse fail")
-	ErrEmptyFile      = errors.New("empty file")
-	ErrNonUtfResult   = errors.New("non utf-8 result")
-	ErrUndefinedError = errors.New("undefined error")
+	ErrCompileFail       = errors.New("compile fail")
+	ErrRunFail           = errors.New("run fail")
+	ErrParseFail         = errors.New("parse fail")
+	ErrWriteBinaryFail   = errors.New("write binary fail")
+	ErrResolvesNamesFail = errors.New("resolve names fail")
+	ErrValidateFail      = errors.New("validate fail")
+	ErrUnknownError      = errors.New("unknown error")
 )
 
 // parseError - returns parsed error from errors code on bindings.h
@@ -23,11 +24,15 @@ func parseError(code int32) error {
 	case 3:
 		return ErrParseFail
 	case 4:
-		return ErrEmptyFile
+		return ErrWriteBinaryFail
 	case 5:
-		return ErrNonUtfResult
+		return ErrResolvesNamesFail
+	case 6:
+		return ErrValidateFail
+	case 7:
+		return ErrUnknownError
 	default:
-		return ErrUndefinedError
+		return ErrUnknownError
 	}
 
 }
