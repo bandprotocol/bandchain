@@ -6,7 +6,8 @@ const {
   ObiStruct,
   ObiString,
   ObiBytes,
-} = require('./index.js')
+} = require('./lib/index.js')
+const _ = require('lodash')
 
 const check = (desc, fn) => console.log(`${fn() ? '✅' : '⛔️'} ${desc}`)
 
@@ -77,4 +78,32 @@ const check = (desc, fn) => console.log(`${fn() ? '✅' : '⛔️'} ${desc}`)
       obi.encodeInput({ symbol: 'BTC', multiplier: BigInt('1000000000') }),
     ),
   )
+
+  check('Decode example output', () => {
+    let actual = obi.decodeOutput(
+      Buffer.from(
+        '0000086df1baab000000000200000009436f696e4765636b6f000000005eca223d0000000d43727970746f436f6d70617265000000005eca2252',
+        'hex',
+      ),
+    )
+    let expect = {
+      price: BigInt(9268300000000),
+      sources: [
+        { name: 'CoinGecko', time: BigInt(1590305341) },
+        { name: 'CryptoCompare', time: BigInt(1590305362) },
+      ],
+    }
+    return _.isEqual(expect, actual)
+  })
+
+  check('Decode example input', () => {
+    let actual = obi.decodeInput(
+      Buffer.from('00000003425443000000003b9aca00', 'hex'),
+    )
+    let expect = {
+      symbol: 'BTC',
+      multiplier: BigInt('1000000000'),
+    }
+    return _.isEqual(expect, actual)
+  })
 })()

@@ -50,7 +50,7 @@ module TopBar = {
   let make = () => {
     <div className=Styles.topBarContainer>
       <div className={Css.merge([Styles.topBarInner, Styles.pageWidth])}>
-        <div className=Styles.logoContainer onClick={_ => Route.redirect(Route.HomePage)}>
+        <Link className=Styles.logoContainer route=Route.HomePage>
           <Row>
             <Col> <img src=Images.bandLogo className=Styles.bandLogo /> </Col>
             <Col> <HSpacing size=Spacing.sm /> </Col>
@@ -92,7 +92,7 @@ module TopBar = {
               </div>
             </Col>
           </Row>
-        </div>
+        </Link>
         <SearchBar />
       </div>
     </div>;
@@ -107,7 +107,7 @@ let make = () => {
   | "WENCHANG" => ()
   | _ => raise(WrongNetwork("Incorrect or unspecified NETWORK environment variable"))
   };
-  
+
   if (Mobile.check()) {
     <MobilePage />;
   } else {

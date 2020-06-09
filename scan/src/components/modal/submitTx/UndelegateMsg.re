@@ -3,6 +3,8 @@ module Styles = {
 
   let warning =
     style([
+      display(`flex),
+      flexDirection(`column),
       padding(`px(10)),
       color(Colors.yellow6),
       backgroundColor(Colors.yellow1),
@@ -45,7 +47,15 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
   <>
     <VSpacing size=Spacing.sm />
     <div className=Styles.warning>
-      <Text value="Note: Undelegated balance are locked for 21 days" />
+      <Text value="Please read before doing." />
+      <VSpacing size=Spacing.xs />
+      <Text
+        value="1. Undelegated balance are locked for 21 days. After the unbonding period, the balance will automatically be added to your account"
+      />
+      <VSpacing size=Spacing.xs />
+      <Text
+        value="2. You can have a maximum of 7 pending unbonding transactions at any one time."
+      />
     </div>
     <VSpacing size=Spacing.lg />
     <div className=Styles.info>
