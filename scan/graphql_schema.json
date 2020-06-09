@@ -11538,6 +11538,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "moniker",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "reward",
             "type": {
               "kind": "SCALAR",
@@ -12061,6 +12073,16 @@
             "description": null
           },
           {
+            "name": "moniker",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "String_comparison_exp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "reward",
             "defaultValue": null,
             "type": {
@@ -12136,6 +12158,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "moniker",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "reward",
             "type": {
               "kind": "SCALAR",
@@ -12184,6 +12218,16 @@
           },
           {
             "name": "delegator_address",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "moniker",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -12268,6 +12312,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "moniker",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "reward",
             "type": {
               "kind": "SCALAR",
@@ -12316,6 +12372,16 @@
           },
           {
             "name": "delegator_address",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "moniker",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -12386,6 +12452,16 @@
             "description": null
           },
           {
+            "name": "moniker",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "reward",
             "defaultValue": null,
             "type": {
@@ -12441,6 +12517,12 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "delegator_address",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "moniker",
             "description": "column name"
           },
           {
@@ -46603,6 +46685,22 @@
             "description": null
           },
           {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "memo",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "description": null
+          },
+          {
             "args": [
               {
                 "name": "path",
@@ -47890,6 +47988,16 @@
             "description": null
           },
           {
+            "name": "memo",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "String_comparison_exp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "messages",
             "defaultValue": null,
             "type": {
@@ -48216,6 +48324,16 @@
             "description": null
           },
           {
+            "name": "memo",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "messages",
             "defaultValue": null,
             "type": {
@@ -48387,6 +48505,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "memo",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "raw_log",
             "type": {
               "kind": "SCALAR",
@@ -48465,6 +48595,16 @@
           },
           {
             "name": "index",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "memo",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -48585,6 +48725,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "memo",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "raw_log",
             "type": {
               "kind": "SCALAR",
@@ -48663,6 +48815,16 @@
           },
           {
             "name": "index",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "memo",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -48936,6 +49098,16 @@
             "description": null
           },
           {
+            "name": "memo",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "messages",
             "defaultValue": null,
             "type": {
@@ -49095,6 +49267,12 @@
           {
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "memo",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "messages",
             "description": "column name"
           },
@@ -49180,6 +49358,16 @@
             "type": {
               "kind": "SCALAR",
               "name": "bigint",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "memo",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
               "ofType": null
             },
             "description": null
@@ -49816,6 +50004,12 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "index",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "memo",
             "description": "column name"
           },
           {

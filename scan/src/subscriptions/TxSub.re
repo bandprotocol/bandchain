@@ -1149,6 +1149,7 @@ type t = {
   timestamp: MomentRe.Moment.t,
   messages: list(Msg.t),
   rawLog: string,
+  memo: string,
 };
 
 module Mini = {
@@ -1173,6 +1174,7 @@ module SingleConfig = [%graphql
       timestamp  @bsDecoder(fn: "GraphQLParser.time")
       messages @bsDecoder(fn: "Msg.decodeActions")
       rawLog: raw_log
+      memo
     }
   },
 |}
@@ -1192,6 +1194,7 @@ module MultiConfig = [%graphql
       timestamp  @bsDecoder(fn: "GraphQLParser.time")
       messages @bsDecoder(fn: "Msg.decodeActions")
       rawLog: raw_log
+      memo
     }
   }
 |}
@@ -1211,6 +1214,7 @@ module MultiByHeightConfig = [%graphql
       timestamp  @bsDecoder(fn: "GraphQLParser.time")
       messages @bsDecoder(fn: "Msg.decodeActions")
       rawLog: raw_log
+      memo
     }
   }
 |}
@@ -1235,6 +1239,7 @@ module MultiBySenderConfig = [%graphql
       timestamp  @bsDecoder(fn: "GraphQLParser.time")
       messages @bsDecoder(fn: "Msg.decodeActions")
       rawLog: raw_log
+      memo
     }
   }
 |}
