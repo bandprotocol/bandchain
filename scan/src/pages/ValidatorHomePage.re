@@ -9,7 +9,6 @@ module Styles = {
   let validatorsLogo = style([minWidth(`px(50)), marginRight(`px(10))]);
   let highlight = style([margin2(~v=`px(28), ~h=`zero)]);
   let valueContainer = style([display(`flex), justifyContent(`flexStart)]);
-  let monikerContainer = style([maxWidth(`px(250))]);
 
   let emptyContainer =
     style([
@@ -112,10 +111,11 @@ let renderBody =
       | Data({operatorAddress}) => operatorAddress |> Address.toOperatorBech32
       | _ => rank |> string_of_int
       }
-    }>
+    }
+    minHeight=60>
     <div className=Styles.fullWidth>
-      <Row>
-        <Col size=0.8>
+      <Row alignItems=`flexStart>
+        <Col size=0.4>
           {switch (validatorSub) {
            | Data(_) =>
              <Text
@@ -130,16 +130,14 @@ let renderBody =
            | _ => <LoadingCensorBar width=20 height=15 />
            }}
         </Col>
-        <Col size=1.9>
+        <Col size=0.9>
           {switch (validatorSub) {
            | Data({operatorAddress, moniker}) =>
-             <div className=Styles.monikerContainer>
-               <ValidatorMonikerLink validatorAddress=operatorAddress moniker />
-             </div>
+             <ValidatorMonikerLink validatorAddress=operatorAddress moniker width={`px(180)} />
            | _ => <LoadingCensorBar width=150 height=15 />
            }}
         </Col>
-        <Col size=1.4>
+        <Col size=0.7>
           {switch (validatorSub) {
            | Data({tokens, votingPower}) =>
              <div>
@@ -177,11 +175,11 @@ let renderBody =
              </>
            }}
         </Col>
-        <Col size=1.2>
+        <Col size=0.8>
           {switch (validatorSub) {
            | Data({commission}) =>
              <Text
-               value={commission->Js.Float.toFixedWithPrecision(~digits=2)}
+               value={commission |> Format.fPercent(~digits=2)}
                color=Colors.gray7
                code=true
                weight=Text.Regular
@@ -193,25 +191,42 @@ let renderBody =
            | _ => <LoadingCensorBar width=70 height=15 isRight=true />
            }}
         </Col>
+        <Col size=0.3> <HSpacing size=Spacing.sm /> </Col>
         <Col size=1.1>
           {switch (validatorSub) {
            | Data({uptime}) =>
-             <Text
-               value={
-                 switch (uptime) {
-                 | Some(uptime') => uptime'->Js.Float.toFixedWithPrecision(~digits=2)
-                 | None => "N/A"
-                 }
-               }
-               color=Colors.gray7
-               code=true
-               weight=Text.Regular
-               spacing={Text.Em(0.02)}
-               block=true
-               align=Text.Right
-               size=Text.Md
-             />
-           | _ => <LoadingCensorBar width=70 height=15 isRight=true />
+             switch (uptime) {
+             | Some(uptime') =>
+               <>
+                 <Text
+                   value={uptime' |> Format.fPercent(~digits=2)}
+                   color=Colors.gray7
+                   code=true
+                   weight=Text.Regular
+                   spacing={Text.Em(0.02)}
+                   block=true
+                   size=Text.Md
+                 />
+                 <VSpacing size=Spacing.sm />
+                 <UptimeBar percent=uptime' />
+               </>
+             | None =>
+               <Text
+                 value="N/A"
+                 color=Colors.gray7
+                 code=true
+                 weight=Text.Regular
+                 spacing={Text.Em(0.02)}
+                 block=true
+                 size=Text.Md
+               />
+             }
+           | _ =>
+             <>
+               <LoadingCensorBar width=70 height=15 />
+               <VSpacing size=Spacing.sm />
+               <LoadingCensorBar width=220 height=15 />
+             </>
            }}
         </Col>
       </Row>
@@ -341,7 +356,7 @@ module ValidatorList = {
       <THead>
         <div className=Styles.fullWidth>
           <Row>
-            <Col size=0.8 key="RANK">
+            <Col size=0.4 key="RANK">
               <Text
                 block=true
                 value="RANK"
@@ -351,7 +366,7 @@ module ValidatorList = {
                 spacing={Text.Em(0.1)}
               />
             </Col>
-            <Col size=1.9>
+            <Col size=0.9>
               <SortableTHead
                 title="VALIDATOR"
                 asc=NameAsc
@@ -361,26 +376,33 @@ module ValidatorList = {
                 isRight=false
               />
             </Col>
-            <Col size=1.4>
+            <Col size=0.7>
               <SortableTHead
-                title="VOTING POWER (BAND)"
+                title="VOTING POWER"
                 asc=VotingPowerAsc
                 desc=VotingPowerDesc
                 toggle
                 sortedBy
               />
             </Col>
-            <Col size=1.2>
+            <Col size=0.8>
               <SortableTHead
-                title="COMMISSION (%)"
+                title="COMMISSION"
                 asc=CommissionAsc
                 desc=CommissionDesc
                 toggle
                 sortedBy
               />
             </Col>
+            <Col size=0.3> <HSpacing size=Spacing.sm /> </Col>
             <Col size=1.1>
-              <SortableTHead title="UPTIME (%)" asc=UptimeAsc desc=UptimeDesc toggle sortedBy />
+              <SortableTHead
+                title="UPTIME (LAST 250 BLOCKS)"
+                asc=UptimeAsc
+                desc=UptimeDesc
+                toggle
+                sortedBy
+              />
             </Col>
           </Row>
         </div>

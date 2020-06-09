@@ -62,7 +62,7 @@ let fPercent = (~digits=?, value) => {
       )
     }
   )
-  ++ "%";
+  ++ " %";
 };
 
 let iPretty = value => withCommas(value->string_of_int);
