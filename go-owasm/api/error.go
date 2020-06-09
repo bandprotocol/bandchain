@@ -5,12 +5,12 @@ import (
 )
 
 var (
-	ErrCompileFail       = errors.New("compile fail")
-	ErrRunFail           = errors.New("run fail")
-	ErrParseFail         = errors.New("parse fail")
-	ErrWriteBinaryFail   = errors.New("write binary fail")
+	ErrCompliationError  = errors.New("compile fail")
+	ErrRunError          = errors.New("run fail")
+	ErrParseError        = errors.New("parse fail")
+	ErrWriteBinaryError  = errors.New("write binary fail")
 	ErrResolvesNamesFail = errors.New("resolve names fail")
-	ErrValidateFail      = errors.New("validate fail")
+	ErrValidateError     = errors.New("validate fail")
 	ErrUnknownError      = errors.New("unknown error")
 )
 
@@ -18,17 +18,17 @@ var (
 func parseError(code int32) error {
 	switch code {
 	case 1:
-		return ErrCompileFail
+		return ErrCompliationError
 	case 2:
-		return ErrRunFail
+		return ErrRunError
 	case 3:
-		return ErrParseFail
+		return ErrParseError
 	case 4:
-		return ErrWriteBinaryFail
+		return ErrWriteBinaryError
 	case 5:
 		return ErrResolvesNamesFail
 	case 6:
-		return ErrValidateFail
+		return ErrValidateError
 	case 7:
 		return ErrUnknownError
 	default:

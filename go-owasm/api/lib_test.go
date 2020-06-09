@@ -36,13 +36,13 @@ func TestSuccessWatToOwasm(t *testing.T) {
 func TestFailEmptyWatContent(t *testing.T) {
 	code := []byte("")
 	wasm, err := Wat2Wasm(code)
-	require.Equal(t, ErrParseFail, err)
+	require.Equal(t, ErrParseError, err)
 	require.Equal(t, []byte(""), wasm)
 }
 
 func TestFailInvalidWatContent(t *testing.T) {
 	code := []byte("invalid wat content")
 	wasm, err := Wat2Wasm(code)
-	require.Equal(t, ErrParseFail, err)
+	require.Equal(t, ErrParseError, err)
 	require.Equal(t, []byte(""), wasm)
 }

@@ -21,17 +21,17 @@ pub extern "C" fn do_compile(input: Span, output: &mut Span) -> Error {
     match compile(input.read()) {
         Ok(out) => {
             output.write(&out);
-            Error::Ok
+            Error::NoError
         }
-        Err(_) => Error::CompileFail,
+        Err(_) => Error::CompliationError,
     }
 }
 
 #[no_mangle]
 pub extern "C" fn do_run(code: Span, is_prepare: bool, env: Env) -> Error {
     match run(code.read(), is_prepare, env) {
-        Ok(_) => Error::Ok,
-        Err(_) => Error::RunFail,
+        Ok(_) => Error::NoError,
+        Err(_) => Error::RunError,
     }
 }
 
@@ -40,15 +40,15 @@ pub extern "C" fn do_wat2wasm(input: Span, output: &mut Span) -> Error {
     match wat2wasm(input.read()) {
         Ok(_wasm) => {
             output.write(&_wasm);
-            Error::Ok
+            Error::NoError
         },
         Err(e) => {
             match e.kind() {
-                wabt::ErrorKind::Parse(_) => Error::ParseFail,
-                wabt::ErrorKind::WriteBinary => Error::WriteBinaryFail,
-                wabt::ErrorKind::ResolveNames(_) => Error::ResolveNamesFail,
-                wabt::ErrorKind::Validate(_) => Error::ValidateFail,
-                _ => Error::UnknownFail
+                wabt::ErrorKind::Parse(_) => Error::ParseError,
+                wabt::ErrorKind::WriteBinary => Error::WriteBinaryError,
+                wabt::ErrorKind::ResolveNames(_) => Error::ResolveNamesError,
+                wabt::ErrorKind::Validate(_) => Error::ValidateError,
+                _ => Error::UnknownError
             }
         }
     }
