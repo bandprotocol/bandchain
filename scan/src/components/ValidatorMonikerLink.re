@@ -14,9 +14,9 @@ let make =
       ~underline=false,
       ~width=`auto,
     ) => {
-  <div
+  <Link
     className={Styles.container(width)}
-    onClick={_ => Route.redirect(Route.ValidatorIndexPage(validatorAddress, ProposedBlocks))}>
+    route={Route.ValidatorIndexPage(validatorAddress, ProposedBlocks)}>
     <Text
       value=moniker
       color=Colors.gray7
@@ -29,5 +29,5 @@ let make =
       ellipsis=true
       underline
     />
-  </div>;
+  </Link>;
 };

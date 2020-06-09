@@ -16,6 +16,7 @@ import (
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
 
+	"github.com/bandprotocol/bandchain/chain/pkg/obi"
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
@@ -156,11 +157,6 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		eventHeight := iavlProof.Proof.Leaves[0].Version
-		blockResults, err := cliCtx.Client.BlockResults(&eventHeight)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
 		signatures, prefix, err := GetSignaturesAndPrefix(&commit.SignedHeader)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
@@ -172,45 +168,18 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			Signatures:             signatures,
 			SignedDataPrefix:       prefix,
 		}
+		resValue := resp.Response.GetValue()
 
-		var reqPacket oracle.OracleRequestPacketData
-		var resPacket oracle.OracleResponsePacketData
-		for _, ev := range blockResults.EndBlockEvents {
-			if ev.GetType() != otypes.EventTypeRequestExecute {
-				continue
-			}
-			for _, kv := range ev.GetAttributes() {
-				switch string(kv.Key) {
-				case otypes.AttributeKeyRequestID:
-					resPacket.RequestID = otypes.RequestID(mustParseInt64(kv.Value))
-				case otypes.AttributeKeyClientID:
-					reqPacket.ClientID = string(kv.Value)
-					resPacket.ClientID = string(kv.Value)
-				case otypes.AttributeKeyOracleScriptID:
-					reqPacket.OracleScriptID = otypes.OracleScriptID(mustParseInt64(kv.Value))
-				case otypes.AttributeKeyCalldata:
-					reqPacket.Calldata = kv.Value
-				case otypes.AttributeKeyAskCount:
-					reqPacket.AskCount = mustParseUint64(kv.Value)
-				case otypes.AttributeKeyMinCount:
-					reqPacket.MinCount = mustParseUint64(kv.Value)
-				case otypes.AttributeKeyAnsCount:
-					resPacket.AnsCount = mustParseUint64(kv.Value)
-				case otypes.AttributeKeyRequestTime:
-					resPacket.RequestTime = mustParseInt64(kv.Value)
-				case otypes.AttributeKeyResolveTime:
-					resPacket.ResolveTime = mustParseInt64(kv.Value)
-				case otypes.AttributeKeyResolveStatus:
-					resPacket.ResolveStatus = otypes.ResolveStatus(mustParseInt64(kv.Value))
-				case otypes.AttributeKeyResult:
-					resPacket.Result = kv.Value
-				}
-			}
+		type result struct {
+			Req oracle.OracleRequestPacketData
+			Res oracle.OracleResponsePacketData
 		}
+		var rs result
+		obi.MustDecode(resValue, &rs)
 
 		oracleData := OracleDataProof{
-			RequestPacket:  reqPacket,
-			ResponsePacket: resPacket,
+			RequestPacket:  rs.Req,
+			ResponsePacket: rs.Res,
 			Version:        uint64(eventHeight),
 			MerklePaths:    GetIAVLMerklePaths(&iavlProof),
 		}
