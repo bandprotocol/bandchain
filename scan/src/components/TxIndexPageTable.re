@@ -74,7 +74,7 @@ let renderSend = (send: TxSub.Msg.Send.t) => {
 };
 // TODO: move it to file later.
 let renderRequest = (request: TxSub.Msg.Request.t) => {
-  let calldataKVsOpt = Borsh.decode(request.schema, "Input", request.calldata);
+  let calldataKVsOpt = Obi.decode(request.schema, "input", request.calldata);
   <Col size=Styles.thirdCol alignSelf=Col.Start>
     <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>

@@ -57,7 +57,7 @@ let make = (~address, ~receiver, ~setMsgsOpt) => {
            />
            <Text value=" BAND" code=true />
          </div>
-       | _ => <LoadingCensorBar width=300 height=18 />
+       | _ => <LoadingCensorBar width=150 height=18 />
        }}
     </div>
     <VSpacing size=Spacing.lg />
@@ -66,24 +66,30 @@ let make = (~address, ~receiver, ~setMsgsOpt) => {
       width=302
       inputData=toAddress
       setInputData=setToAddress
-      parse=Address.fromBech32Opt
+      parse=Parse.address
       msg="Recipient Address"
-      errMsg="Invalid Address"
       code=true
       placeholder="Insert recipient address"
     />
     <VSpacing size=Spacing.lg />
     <VSpacing size=Spacing.md />
-    <EnhanceTxInput
-      width=236
-      inputData=amount
-      setInputData=setAmount
-      parse=Parse.getBandAmount
-      msg="Send Amount (BAND)"
-      errMsg="Invalid amount"
-      code=true
-      placeholder="Insert send amount"
-    />
+    {switch (accountSub) {
+     | Data({balance}) =>
+       //  TODO: hard-coded tx fee
+       let maxValInUband = (balance |> Coin.getUBandAmountFromCoins) -. 5000.;
+       <EnhanceTxInput
+         width=300
+         inputData=amount
+         setInputData=setAmount
+         parse={Parse.getBandAmount(maxValInUband)}
+         maxValue={maxValInUband /. 1e6 |> Js.Float.toString}
+         msg="Send Amount (BAND)"
+         inputType="number"
+         code=true
+         placeholder="Insert send amount"
+       />;
+     | _ => <EnhanceTxInput.Loading msg="Send Amount (BAND)" width=300 />
+     }}
     <VSpacing size=Spacing.lg />
   </>;
 };

@@ -22,7 +22,15 @@ module Styles = {
     | Nav => style([fontSize(`px(10)), lineHeight(`px(14))]);
 
   let base =
-    style([overflow(`hidden), textOverflow(`ellipsis), whiteSpace(`nowrap), display(`block)]);
+    style([
+      overflow(`hidden),
+      textOverflow(`ellipsis),
+      whiteSpace(`nowrap),
+      display(`block),
+      color(Colors.gray7),
+      hover([color(Colors.gray7)]),
+      active([color(Colors.gray7)]),
+    ]);
 
   let copy = style([width(`px(15)), marginLeft(`px(10)), cursor(`pointer)]);
 };
@@ -37,20 +45,18 @@ let make = (~address, ~position=Text, ~validator=false, ~copy=false, ~clickable=
       : address |> Address.toBech32 |> Js.String.sliceToEnd(~from=4);
 
   <>
-    <div
+    <Link
       className={Css.merge([Styles.container, Styles.clickable(clickable)])}
-      onClick={_ =>
-        Route.redirect(
-          validator
-            ? Route.ValidatorIndexPage(address, Route.ProposedBlocks)
-            : Route.AccountIndexPage(address, Route.AccountTransactions),
-        )
+      route={
+        validator
+          ? Route.ValidatorIndexPage(address, Route.ProposedBlocks)
+          : Route.AccountIndexPage(address, Route.AccountTransactions)
       }>
       <span className={Css.merge([Styles.font(position), Styles.base, Text.Styles.code])}>
         <span className=Styles.prefix> {prefix |> React.string} </span>
         {noPrefixAddress |> React.string}
       </span>
-    </div>
+    </Link>
     {copy
        ? <>
            {switch (position) {

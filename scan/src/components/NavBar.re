@@ -7,6 +7,8 @@ module Styles = {
       cursor(`pointer),
       color(Colors.blueGray4),
       fontSize(`px(11)),
+      hover([color(Colors.blueGray4)]),
+      active([color(Colors.blueGray4)]),
     ]);
 
   let navContainer =
@@ -37,11 +39,7 @@ let make = () => {
              ("IBCs", IBCHomePage),
            ]
            ->Belt.List.map(((v, route)) =>
-               <Col key=v>
-                 <div className=Styles.nav onClick={_ => route |> Route.redirect}>
-                   {v |> React.string}
-                 </div>
-               </Col>
+               <Col key=v> <Link className=Styles.nav route> {v |> React.string} </Link> </Col>
              )
            ->Array.of_list
            ->React.array}

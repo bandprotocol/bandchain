@@ -37,11 +37,11 @@ let make = () => {
         color=Colors.blueGray6
       />
       <VSpacing size=Spacing.lg />
-      <div className=Styles.linkToHome onClick={_ => Route.redirect(Route.HomePage)}>
+      <Link className=Styles.linkToHome route=Route.HomePage>
         <Text value="Back to Homepage" weight=Text.Bold size=Text.Md color=Colors.blueGray6 />
         <HSpacing size=Spacing.md />
         <img src=Images.rightArrow className=Styles.rightArrow />
-      </div>
+      </Link>
       <VSpacing size=Spacing.xxl />
     </div>
   </>;
