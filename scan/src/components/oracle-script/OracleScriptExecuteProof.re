@@ -17,7 +17,7 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~id: ID.Request.t, ~result: JsBuffer.t) => {
+let make = (~id: ID.Request.t, ~requestOpt: option(RequestSub.Mini.t)) => {
   let (proofOpt, reload) = ProofHook.get(id);
 
   React.useEffect1(
@@ -47,19 +47,22 @@ let make = (~id: ID.Request.t, ~result: JsBuffer.t) => {
           height={Text.Px(15)}
         />
       </div>
-      {switch (proofOpt) {
-       | Some(proof) =>
+      {switch (proofOpt, requestOpt) {
+       | (Some(proof), Some({result: Some(_)})) =>
          <div className={Styles.hFlex(`auto)}>
-           <CopyButton data={proof.evmProofBytes} title="Copy EVM proof" />
+           <CopyButton data={proof.evmProofBytes} title="Copy EVM proof" width=115 />
            <HSpacing size=Spacing.md />
            <CopyButton
-             data={result |> ProofType2.createProofFromResult}
-             title="Copy proof type2"
+             data={
+               NonEVMProof.RequestMini(requestOpt->Belt_Option.getExn)->NonEVMProof.createProof
+             }
+             title="Copy non-EVM proof"
+             width=130
            />
            <HSpacing size=Spacing.lg />
            <ExtLinkButton link="https://docs.bandchain.org/" description="What is proof ?" />
          </div>
-       | None =>
+       | _ =>
          <div className={Styles.withWH(`percent(100.), `auto)}>
            <img src=Images.loadingCircles className={Styles.withWH(`px(104), `px(30))} />
          </div>
