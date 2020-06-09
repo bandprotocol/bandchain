@@ -37,7 +37,7 @@ let make = (~address) =>
             <Col size=0.9>
               <Text
                 block=true
-                value="VALIDATOR ADDRESS"
+                value="VALIDATOR MONIKER"
                 size=Text.Sm
                 weight=Text.Bold
                 spacing={Text.Em(0.05)}
@@ -78,7 +78,10 @@ let make = (~address) =>
                  <Col> <HSpacing size=Spacing.lg /> </Col>
                  <Col size=0.9>
                    <div className=Styles.hFlex>
-                     <AddressRender address={delegation.validatorAddress} validator=true />
+                     <ValidatorMonikerLink
+                       validatorAddress={delegation.validatorAddress}
+                       moniker={delegation.moniker}
+                     />
                    </div>
                  </Col>
                  <Col size=0.6>
