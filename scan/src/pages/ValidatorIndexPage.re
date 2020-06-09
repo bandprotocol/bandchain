@@ -54,12 +54,7 @@ let kvRow = (k, description, v: value_row_t) => {
   <Row alignItems=`flexStart>
     <Col size=1.>
       <div className={Styles.fullWidth(`row)}>
-        <Text
-          value=k
-          weight=Text.Thin
-          tooltipItem=description
-          tooltipPlacement=Text.AlignRight
-        />
+        <Text value=k weight=Text.Thin tooltipItem=description tooltipPlacement=Text.AlignRight />
       </div>
     </Col>
     <Col size=1. justifyContent=Col.Center alignItems=Col.End>
@@ -90,7 +85,7 @@ module Uptime = {
       switch (uptimeOpt) {
       | Some(uptime) =>
         kvRow(
-          "UPTIME",
+          "UPTIME (LAST 250 BLOCKS)",
           {
             "Percentage of the blocks that the validator is active for out of the last 250"
             |> React.string;
@@ -100,7 +95,7 @@ module Uptime = {
         |> Sub.resolve
       | None =>
         kvRow(
-          "UPTIME",
+          "UPTIME (LAST 250 BLOCKS)",
           {
             "Percentage of the blocks that the validator is active for out of the last 250"
             |> React.string;
@@ -198,8 +193,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
         {kvRow(
            "COMMISSION",
            {
-             "Percentage of the blocks that the validator is active for out of the last 250"
-             |> React.string;
+             "Validator service fees charged to delegators" |> React.string;
            },
            VCode(validator.commission->Format.fPercent),
          )}
