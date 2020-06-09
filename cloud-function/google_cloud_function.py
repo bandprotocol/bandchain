@@ -88,7 +88,6 @@ def execute(request):
     os.chmod(path, 0o775)
 
     try:
-
         timeout_millisec = loaded_request.get("timeout")
         timeout_sec = timeout_millisec / 1000
 
@@ -99,15 +98,11 @@ def execute(request):
         )
 
         proc.wait(timeout=timeout_sec)
-
         returncode = proc.returncode
         stdout = proc.stdout.read(MAX_STDOUT).decode()
         stderr = proc.stderr.read(MAX_STDERR).decode()
-
         return success(returncode, stdout, stderr, "")
-
     except OSError:
         return success(126, "", "", "Execution fail")
-
     except subprocess.TimeoutExpired:
         return success(111, "", "", "Execution time limit exceeded")
