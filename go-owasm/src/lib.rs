@@ -45,9 +45,10 @@ pub extern "C" fn do_wat2wasm(input: Span, output: &mut Span) -> Error {
         Err(e) => {
             match e.kind() {
                 wabt::ErrorKind::Parse(_) => Error::ParseFail,
-                wabt::ErrorKind::Nul => Error::Nul,
-                wabt::ErrorKind::NonUtf8Result => Error::NonUtf8Result,
-                _ => Error::RunFail,
+                wabt::ErrorKind::WriteBinary => Error::WriteBinaryFail,
+                wabt::ErrorKind::ResolveNames(_) => Error::ResolveNamesFail,
+                wabt::ErrorKind::Validate(_) => Error::ValidateFail,
+                _ => Error::UnknownFail
             }
         }
     }
