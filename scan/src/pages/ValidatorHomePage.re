@@ -402,6 +402,7 @@ module ValidatorList = {
                 desc=UptimeDesc
                 toggle
                 sortedBy
+                isRight=false
               />
             </Col>
           </Row>
