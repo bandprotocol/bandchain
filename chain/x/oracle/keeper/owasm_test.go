@@ -326,7 +326,7 @@ func TestResolveRequestSuccess(t *testing.T) {
 	reqPacket := types.NewOracleRequestPacketData(
 		r.ClientID, r.OracleScriptID, r.Calldata, r.MinCount, uint64(len(r.RequestedValidators)),
 	)
-	expecetRes := types.CalculateResultHash(reqPacket, resPacket)
+	expecetRes := types.CalculateEncodedResult(reqPacket, resPacket)
 
 	require.Equal(t, expecetRes, res)
 }
@@ -377,7 +377,7 @@ func TestResolveRequestSuccess(t *testing.T) {
 // 	reqPacket := types.NewOracleRequestPacketData(
 // 		r.ClientID, r.OracleScriptID, r.Calldata, r.MinCount, uint64(len(r.RequestedValidators)),
 // 	)
-// 	expecetRes := types.CalculateResultHash(reqPacket, resPacket)
+// 	expecetRes := types.CalculateEncodedResult(reqPacket, resPacket)
 
 // 	require.Equal(t, expecetRes, res)
 // }

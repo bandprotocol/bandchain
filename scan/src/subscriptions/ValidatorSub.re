@@ -21,6 +21,7 @@ type internal_t = {
 };
 
 type t = {
+  rank: int,
   avgResponseTime: int,
   isActive: bool,
   operatorAddress: Address.t,
@@ -54,7 +55,9 @@ let toExternal =
         jailed,
         details,
       }: internal_t,
+      rank,
     ) => {
+  rank,
   isActive: !jailed,
   operatorAddress,
   consensusAddress,
@@ -103,7 +106,7 @@ module SingleConfig = [%graphql
 module MultiConfig = [%graphql
   {|
       subscription Validators($jailed: Boolean!) {
-        validators(where: {jailed: {_eq: $jailed}}, order_by: {tokens: desc}) @bsRecord {
+        validators(where: {jailed: {_eq: $jailed}}, order_by: {tokens: desc, moniker: asc}) @bsRecord {
           operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
           consensusAddress: consensus_address @bsDecoder(fn: "Address.fromHex")
           moniker
@@ -193,7 +196,7 @@ let get = operator_address => {
     );
   let%Sub x = result;
   switch (x##validators_by_pk) {
-  | Some(data) => Sub.resolve(data |> toExternal)
+  | Some(data) => Sub.resolve(data->toExternal(0)) // 0 is arbitrary rank.
   | None => NoData
   };
 };
@@ -204,7 +207,10 @@ let getList = (~isActive, ()) => {
       MultiConfig.definition,
       ~variables=MultiConfig.makeVariables(~jailed=!isActive, ()),
     );
-  result |> Sub.map(_, x => x##validators->Belt_Array.map(toExternal));
+  result
+  |> Sub.map(_, x =>
+       x##validators->Belt_Array.mapWithIndex((idx, each) => toExternal(each, idx + 1))
+     );
 };
 
 let count = () => {
