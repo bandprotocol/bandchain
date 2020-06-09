@@ -33,10 +33,10 @@ let make = () => {
              ("Validators", ValidatorHomePage),
              ("Blocks", BlockHomePage),
              ("Transactions", TxHomePage),
-             ("Data Sources", DataSourceHomePage),
-             ("Oracle Scripts", OracleScriptHomePage),
-             ("Requests", RequestHomePage),
-             ("IBCs", IBCHomePage),
+             //  ("Data Sources", DataSourceHomePage),
+             //  ("Oracle Scripts", OracleScriptHomePage),
+             //  ("Requests", RequestHomePage),
+             //  ("IBCs", IBCHomePage),
            ]
            ->Belt.List.map(((v, route)) =>
                <Col key=v> <Link className=Styles.nav route> {v |> React.string} </Link> </Col>
