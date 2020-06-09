@@ -95,8 +95,7 @@ func queryRequestByID(ctx sdk.Context, path []string, k Keeper) ([]byte, error) 
 		return nil, err
 	}
 	reports := k.GetReports(ctx, types.RequestID(id))
-	req, res := k.MustGetResult(ctx, types.RequestID(id))
-	result := types.Result{RequestPacketData: req, ResponsePacketData: res}
+	result := k.MustGetResult(ctx, types.RequestID(id))
 	return codec.MarshalJSONIndent(types.ModuleCdc, types.QueryRequestResult{
 		Request: request,
 		Reports: reports,

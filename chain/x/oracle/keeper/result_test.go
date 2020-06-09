@@ -16,21 +16,19 @@ func TestResultBasicFunctions(t *testing.T) {
 	k.SetResult(ctx, types.RequestID(1), encodedResult)
 
 	// Test GetResult func
-	reqPacket, resPacket, err := k.GetResult(ctx, types.RequestID(1))
+	result, err := k.GetResult(ctx, types.RequestID(1))
 	require.NoError(t, err)
-	require.Equal(t, req, reqPacket)
-	require.Equal(t, res, resPacket)
+	require.Equal(t, result, types.Result{RequestPacketData: req, ResponsePacketData: res})
 
 	// Test MustGetResult func
-	reqPacket, resPacket = k.MustGetResult(ctx, types.RequestID(1))
+	result = k.MustGetResult(ctx, types.RequestID(1))
 	require.NoError(t, err)
-	require.Equal(t, req, reqPacket)
-	require.Equal(t, res, resPacket)
+	require.Equal(t, result, types.Result{RequestPacketData: req, ResponsePacketData: res})
 
-	_, _, err = k.GetResult(ctx, types.RequestID(2))
+	_, err = k.GetResult(ctx, types.RequestID(2))
 	require.Error(t, err)
 
-	require.Panics(t, func() { k.GetResult(ctx, types.RequestID(2)) })
+	require.Panics(t, func() { k.MustGetResult(ctx, types.RequestID(2)) })
 
 	// Test HasResult func
 	require.True(t, k.HasResult(ctx, types.RequestID(1)))

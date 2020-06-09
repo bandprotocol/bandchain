@@ -319,20 +319,19 @@ func TestResolveRequestSuccess(t *testing.T) {
 	reqID := k.AddRequest(ctx, req)
 	k.ResolveRequest(ctx, reqID)
 
-	reqPacket, resPacket, err := k.GetResult(ctx, reqID)
+	res, err := k.GetResult(ctx, reqID)
 	require.NoError(t, err)
 
 	r := k.MustGetRequest(ctx, reqID)
+	expectedReqPacket := types.NewOracleRequestPacketData(
+		r.ClientID, r.OracleScriptID, r.Calldata, r.MinCount, uint64(len(r.RequestedValidators)),
+	)
 	expectedResPacket := types.NewOracleResponsePacketData(
 		r.ClientID, reqID, k.GetReportCount(ctx, reqID), r.RequestTime,
 		ctx.BlockTime().Unix(), types.ResolveStatus_Success, []byte("beeb"),
 	)
-	expectedReqPacket := types.NewOracleRequestPacketData(
-		r.ClientID, r.OracleScriptID, r.Calldata, r.MinCount, uint64(len(r.RequestedValidators)),
-	)
 
-	require.Equal(t, expectedReqPacket, reqPacket)
-	require.Equal(t, expectedResPacket, resPacket)
+	require.Equal(t, res, types.Result{RequestPacketData: expectedReqPacket, ResponsePacketData: expectedResPacket})
 
 }
 

@@ -54,7 +54,7 @@ func QuerySearchLatestRequest(
 				if ok && rid != "" {
 					res, h, err := queryRequest(route, cliCtx, rid)
 					if err != nil {
-						continue
+						return nil, 0, err
 					}
 					var out types.QueryRequestResult
 					cliCtx.Codec.MustUnmarshalJSON(res, &out)

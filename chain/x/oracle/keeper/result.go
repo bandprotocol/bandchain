@@ -20,26 +20,26 @@ func (k Keeper) SetResult(ctx sdk.Context, reqID types.RequestID, result []byte)
 }
 
 // GetResult returns the result bytes for the given request ID or error if not exists.
-func (k Keeper) GetResult(ctx sdk.Context, id types.RequestID) (types.OracleRequestPacketData, types.OracleResponsePacketData, error) {
+func (k Keeper) GetResult(ctx sdk.Context, id types.RequestID) (types.Result, error) {
 	bz := ctx.KVStore(k.storeKey).Get(types.ResultStoreKey(id))
 	if bz == nil {
-		return types.OracleRequestPacketData{}, types.OracleResponsePacketData{}, sdkerrors.Wrapf(types.ErrResultNotFound, "id: %d", id)
+		return types.Result{}, sdkerrors.Wrapf(types.ErrResultNotFound, "id: %d", id)
 	}
 	var result types.Result
 	err := obi.Decode(bz, &result)
 	if err != nil {
-		return types.OracleRequestPacketData{}, types.OracleResponsePacketData{}, types.ErrOBIDecode
+		return types.Result{}, types.ErrOBIDecode
 	}
 
-	return result.RequestPacketData, result.ResponsePacketData, nil
+	return result, nil
 }
 
 // MustGetResult returns the result bytes for the given request ID. Panics on error.
-func (k Keeper) MustGetResult(ctx sdk.Context, id types.RequestID) (types.OracleRequestPacketData, types.OracleResponsePacketData) {
+func (k Keeper) MustGetResult(ctx sdk.Context, id types.RequestID) types.Result {
 	bz := ctx.KVStore(k.storeKey).Get(types.ResultStoreKey(id))
 	var result types.Result
 	obi.MustDecode(bz, &result)
-	return result.RequestPacketData, result.ResponsePacketData
+	return result
 }
 
 // GetAllResults returns the list of all results in the store. Nil will be added for skipped results.
