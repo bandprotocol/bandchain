@@ -30,14 +30,14 @@ module Styles = {
 };
 
 let button = (~name, ~route, ~active) => {
-  <div key=name className={Styles.buttonContainer(active)} onClick={_ => route |> Route.redirect}>
+  <Link key=name className={Styles.buttonContainer(active)} route>
     <Text
       value=name
       weight=Text.Regular
       size=Text.Md
       color={active ? Colors.bandBlue : Colors.gray6}
     />
-  </div>;
+  </Link>;
 };
 
 type t = {

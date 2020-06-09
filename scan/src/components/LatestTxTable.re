@@ -87,7 +87,7 @@ let make = () => {
         block=true
         color=Colors.gray8
       />
-      <div className=Styles.seeAll onClick={_ => Route.redirect(Route.TxHomePage)}>
+      <Link className=Styles.seeAll route=Route.TxHomePage>
         <div className=Styles.cFlex>
           {switch (allSub) {
            | Data((_, totalCount)) =>
@@ -110,7 +110,7 @@ let make = () => {
           />
         </div>
         <img src=Images.rightArrow className=Styles.rightArrow />
-      </div>
+      </Link>
     </div>
     <VSpacing size=Spacing.lg />
     <THead>
