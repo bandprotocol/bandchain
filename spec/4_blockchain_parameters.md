@@ -1,3 +1,0 @@
-# Blockchain Parameters
-
-Coming soon

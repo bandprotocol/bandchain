@@ -1,3 +1,0 @@
-# System Overview
-
-Coming soon

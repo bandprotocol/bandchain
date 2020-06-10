@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"path/filepath"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -13,6 +14,8 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
 	tmtypes "github.com/tendermint/tendermint/types"
+
+	"github.com/bandprotocol/bandchain/chain/pkg/filecache"
 )
 
 const (
@@ -91,6 +94,7 @@ func runCmd(c *Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			c.fileCache = filecache.New(filepath.Join(viper.GetString(flags.FlagHome), "files"))
 			return runImpl(c, l)
 		},
 	}
