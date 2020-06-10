@@ -124,5 +124,7 @@ func queryReportersByValidatorAddress(ctx sdk.Context, path []string, k Keeper) 
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 	reporters := k.GetAllReportersOfValidator(ctx, validatorAddress)
-	return codec.MarshalJSONIndent(types.ModuleCdc, reporters)
+	return codec.MarshalJSONIndent(types.ModuleCdc, types.QueryReportersResult{
+		Reporters: reporters,
+	})
 }
