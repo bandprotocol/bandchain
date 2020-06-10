@@ -29,7 +29,7 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~requestID: ID.Request.t) => {
+let make = (~requestID: ID.Request.t, ~requestOpt: option(RequestSub.t)) => {
   let (proofOpt, reload) = ProofHook.get(requestID);
   let (showProof, setShowProof) = React.useState(_ => false);
 
@@ -62,27 +62,26 @@ let make = (~requestID: ID.Request.t) => {
             color=Colors.gray6
           />
         </Col>
-        <Col size=1.>
-          <div className={Styles.withWidth(700)}>
-            <Text
-              value={proof.evmProofBytes |> JsBuffer.toHex}
-              weight=Text.Medium
-              color=Colors.gray7
-              block=true
-              code=true
-              ellipsis=true
-            />
-          </div>
-        </Col>
       </div>
       <div className={Styles.topicContainer(20)}>
-        <Col size=1.> React.null </Col>
         <Col size=1.>
           <div className={Styles.withWidth(700)}>
             <div className=Styles.hFlex>
               <ShowProofButton showProof setShowProof />
               <HSpacing size=Spacing.md />
-              <CopyButton data={proof.evmProofBytes} />
+              <CopyButton data={proof.evmProofBytes} title="Copy EVM proof" width=115 />
+              <HSpacing size=Spacing.md />
+              <CopyButton
+                data={
+                  switch (requestOpt) {
+                  | Some({result: Some(_)}) =>
+                    NonEVMProof.Request(requestOpt->Belt_Option.getExn)->NonEVMProof.createProof
+                  | _ => "" |> JsBuffer.fromHex
+                  }
+                }
+                title="Copy non-EVM proof"
+                width=130
+              />
               <HSpacing size=Spacing.md />
               <ExtLinkButton link="https://docs.bandchain.org/" description="What is proof ?" />
             </div>

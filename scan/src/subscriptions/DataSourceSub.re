@@ -16,7 +16,7 @@ module MultiConfig = [%graphql
       name
       description
       executable @bsDecoder(fn: "GraphQLParser.buffer")
-      timestamp: last_updated @bsDecoder(fn: "GraphQLParser.time")
+      timestamp: last_updated @bsDecoder(fn: "GraphQLParser.timeMS")
     }
   }
 |}
@@ -31,7 +31,7 @@ module SingleConfig = [%graphql
       name
       description
       executable @bsDecoder(fn: "GraphQLParser.buffer")
-      timestamp: last_updated @bsDecoder(fn: "GraphQLParser.time")
+      timestamp: last_updated @bsDecoder(fn: "GraphQLParser.timeMS")
     }
   },
 |}

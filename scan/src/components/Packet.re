@@ -50,7 +50,7 @@ let make = (~packet: IBCSub.packet_t, ~oracleScriptID: ID.OracleScript.t) => {
          <div className=Styles.hFlex>
            <Text value="CALLDATA" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
            <HSpacing size=Spacing.md />
-           <CopyButton data={request.calldata} />
+           <CopyButton data={request.calldata} title="Copy as bytes" />
          </div>;
        switch (outputKVsOpt) {
        | Some(_) => calldataHeadRender
@@ -140,7 +140,7 @@ let make = (~packet: IBCSub.packet_t, ~oracleScriptID: ID.OracleScript.t) => {
               <div className=Styles.hFlex>
                 <Text value="RESULT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
                 <HSpacing size=Spacing.md />
-                <CopyButton data=result />
+                <CopyButton data=result title="Copy as bytes" />
               </div>;
             switch (outputKVsOpt) {
             | Some(_) => resultHeadRender
