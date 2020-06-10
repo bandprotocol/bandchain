@@ -42,7 +42,7 @@ func (k Keeper) GetAllReportersOfValidator(ctx sdk.Context, val sdk.ValAddress) 
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		key := iterator.Key()
-		reporterBytes := key[21:]
+		reporterBytes := key[1+len(val):]
 		reporterAddress := sdk.AccAddress(reporterBytes)
 		reporters = append(reporters, reporterAddress)
 	}
