@@ -27,6 +27,8 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 			return queryOracleScriptByID(ctx, path[1:], keeper)
 		case types.QueryRequests:
 			return queryRequestByID(ctx, path[1:], keeper)
+		case types.QueryReporters:
+			return queryReportersByValidatorAddress(ctx, path[1:], keeper)
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unknown oracle query endpoint")
 		}
@@ -110,4 +112,17 @@ func queryRequestByID(ctx sdk.Context, path []string, k Keeper) ([]byte, error) 
 		Reports: reports,
 		Result:  &result,
 	})
+}
+
+func queryReportersByValidatorAddress(ctx sdk.Context, path []string, k Keeper) []sdk.AccAddress {
+	if len(path) != 1 {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "validator address not specified")
+	}
+
+	validatorAddress, err := sdk.AccAddressFromBech32(path[0])
+	if err != nil {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, err.Error())
+	}
+	reporters := k.GetAllReportersOfValidator(ctx, validatorAddress)
+	return reporters
 }
