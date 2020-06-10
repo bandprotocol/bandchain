@@ -66,6 +66,7 @@ let parseChainID =
   | "band-wenchang-mainnet" => WenchangMainnet
   | "band-guanyu-devnet"
   | "band-guanyu-batrider"
+  | "band-guanyu-devnet-2"
   | "bandchain" => GuanYuDevnet
   | _ => Unknown;
 
