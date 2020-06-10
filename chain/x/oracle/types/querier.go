@@ -1,5 +1,7 @@
 package types
 
+import sdk "github.com/cosmos/cosmos-sdk/types"
+
 // Query endpoints supported by the oracle Querier.
 const (
 	QueryParams        = "params"
@@ -23,4 +25,9 @@ type QueryRequestResult struct {
 	Request Request  `json:"request"`
 	Reports []Report `json:"reports"`
 	Result  *Result  `json:"result"`
+}
+
+// QueryReportersResult is the struct for the result of reporters query.
+type QueryReportersResult struct {
+	Reporters []sdk.AccAddress `json:"reporters"`
 }
