@@ -132,7 +132,7 @@ func getRequestSearchHandler(cliCtx context.CLIContext, route string) http.Handl
 	}
 }
 
-func getAllReportersByValidatorAddressHandler(cliCtx context.CLIContext, route string) http.HandlerFunc {
+func getReportersHandler(cliCtx context.CLIContext, route string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
