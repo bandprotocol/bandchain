@@ -34,8 +34,8 @@ func (k Keeper) RemoveReporter(ctx sdk.Context, val sdk.ValAddress, addr sdk.Acc
 	return nil
 }
 
-// GetAllReportersOfValidator returns the reporter list of the given validator.
-func (k Keeper) GetAllReportersOfValidator(ctx sdk.Context, val sdk.ValAddress) (reporters []sdk.AccAddress) {
+// GetReporters returns the reporter list of the given validator.
+func (k Keeper) GetReporters(ctx sdk.Context, val sdk.ValAddress) (reporters []sdk.AccAddress) {
 	// Appends self reporter of validator to the list
 	selfReporter := sdk.AccAddress(val)
 	reporters = append(reporters, selfReporter)
