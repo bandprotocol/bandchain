@@ -19,7 +19,7 @@ func (k Keeper) SetResult(ctx sdk.Context, reqID types.RequestID, result []byte)
 	store.Set(types.ResultStoreKey(reqID), result)
 }
 
-// GetResult returns the result bytes for the given request ID or error if not exists.
+// GetResult returns the result for the given request ID or error if not exists.
 func (k Keeper) GetResult(ctx sdk.Context, id types.RequestID) (types.Result, error) {
 	bz := ctx.KVStore(k.storeKey).Get(types.ResultStoreKey(id))
 	if bz == nil {
@@ -34,11 +34,12 @@ func (k Keeper) GetResult(ctx sdk.Context, id types.RequestID) (types.Result, er
 	return result, nil
 }
 
-// MustGetResult returns the result bytes for the given request ID. Panics on error.
+// MustGetResult returns the result for the given request ID. Panics on error.
 func (k Keeper) MustGetResult(ctx sdk.Context, id types.RequestID) types.Result {
-	bz := ctx.KVStore(k.storeKey).Get(types.ResultStoreKey(id))
-	var result types.Result
-	obi.MustDecode(bz, &result)
+	result, err := k.GetResult(ctx, id)
+	if err != nil {
+		panic(err)
+	}
 	return result
 }
 
