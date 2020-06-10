@@ -46,5 +46,9 @@ func (k Keeper) GetAllReportersOfValidator(ctx sdk.Context, val sdk.ValAddress) 
 		reporterAddress := sdk.AccAddress(reporterBytes)
 		reporters = append(reporters, reporterAddress)
 	}
+
+	// Appends self reporter of validator to the list
+	selfReporter := sdk.AccAddress(val)
+	reporters = append(reporters, selfReporter)
 	return reporters
 }
