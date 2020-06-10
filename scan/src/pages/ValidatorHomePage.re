@@ -553,7 +553,7 @@ let make = () => {
           {switch (topPartAllSub) {
            | Data((_, _, bondedTokenCount, _, _)) =>
              <InfoHL
-               info={InfoHL.FloatWithSuffix(bondedTokenCount->Coin.getBandAmountFromCoin, "", 0)}
+               info={InfoHL.Currency(bondedTokenCount->Coin.getBandAmountFromCoin)}
                header="BONDED TOKENS"
              />
            | _ =>

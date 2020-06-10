@@ -135,7 +135,7 @@ let make = (~latestBlockSub: Sub.t(BlockSub.t)) => {
         (
           {
             <Text
-              value={financial.usdMarketCap |> Format.fCurrency}
+              value={"$" ++ (financial.usdMarketCap |> Format.fCurrency)}
               size=Text.Xxxl
               weight=Text.Semibold
               color=Colors.gray8
