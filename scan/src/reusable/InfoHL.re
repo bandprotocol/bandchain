@@ -16,6 +16,7 @@ type t =
   | Validator(Address.t, string)
   | ValidatorsMini(array(ValidatorSub.Mini.t))
   | Validators(array(ValidatorSub.t))
+  | Currency(float)
   | Loading(int);
 
 module Styles = {
@@ -225,6 +226,14 @@ let make = (~info, ~header, ~isLeft=true) => {
             )
           ->React.array}
        </div>
+     | Currency(amount) =>
+       <Text
+         value={amount |> Format.fCurrency}
+         size=Text.Lg
+         weight=Text.Semibold
+         spacing={Text.Em(0.02)}
+         code=true
+       />
      | Loading(width) => <LoadingCensorBar width height=15 />
      }}
   </div>;

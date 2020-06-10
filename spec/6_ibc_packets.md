@@ -1,3 +1,0 @@
-# IBC Packets
-
-Coming soon

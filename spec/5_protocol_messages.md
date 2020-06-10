@@ -1,3 +1,0 @@
-# Protocol Messages
-
-Coming soon
