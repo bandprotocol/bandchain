@@ -34,6 +34,9 @@ contract("Obi", () => {
 
             result = await this.forTest.decodeU8([2, "0x0000ff"]);
             result.toString().should.eq("255");
+
+            await expectRevert(this.forTest.decodeU8([3, "0x0000ff"]), 'Obi: Out of range');
+
         });
 
         it("should decodeI8 correctly", async () => {
@@ -60,6 +63,8 @@ contract("Obi", () => {
 
             result = await this.forTest.decodeI8([2, "0x0000ff"]);
             result.toString().should.eq("-1");
+
+            await expectRevert(this.forTest.decodeI8([3, "0x0000ff"]), 'Obi: Out of range');
         });
 
         it("should decodeU16 correctly", async () => {
@@ -71,6 +76,8 @@ contract("Obi", () => {
 
             result = await this.forTest.decodeU16([1, "0x00abcd"]);
             result.toString().should.eq("43981");
+
+            await expectRevert(this.forTest.decodeU16([2, "0x00abcd"]), 'Obi: Out of range');
         });
 
         it("should decodeI16 correctly", async () => {
@@ -82,6 +89,8 @@ contract("Obi", () => {
 
             result = await this.forTest.decodeI16([1, "0x00011200"]);
             result.toString().should.eq("274");
+
+            await expectRevert(this.forTest.decodeI16([2, "0x011200"]), 'Obi: Out of range');
         });
 
         it("should decodeU32 correctly", async () => {
@@ -93,6 +102,8 @@ contract("Obi", () => {
 
             result = await this.forTest.decodeU32([1, "0x00abcd0000"]);
             result.toString().should.eq("2882338816");
+
+            await expectRevert(this.forTest.decodeU32([2, "0x00abcd0000"]), 'Obi: Out of range');
         });
 
         it("should decodeI32 correctly", async () => {
@@ -104,6 +115,8 @@ contract("Obi", () => {
 
             result = await this.forTest.decodeI32([1, "0x0001120000"]);
             result.toString().should.eq("17956864");
+
+            await expectRevert(this.forTest.decodeI32([2, "0x0001120000"]), 'Obi: Out of range');
         });
 
         it("should decodeU64 correctly", async () => {
@@ -115,6 +128,8 @@ contract("Obi", () => {
 
             result = await this.forTest.decodeU64([1, "0x00abcd000000000000"]);
             result.toString().should.eq("12379550950711361536");
+
+            await expectRevert(this.forTest.decodeU64([2, "0x00abcd000000000000"]), 'Obi: Out of range');
         });
 
         it("should decodeI64 correctly", async () => {
@@ -123,6 +138,8 @@ contract("Obi", () => {
 
             result = await this.forTest.decodeI64([1, "0x000011000000001111"]);
             result.toString().should.eq("4785074604085521");
+
+            await expectRevert(this.forTest.decodeI64([2, "0x000011000000001111"]), 'Obi: Out of range');
         });
 
         it("should decodeU128 correctly", async () => {
@@ -131,6 +148,8 @@ contract("Obi", () => {
 
             result = await this.forTest.decodeU128([1, "0x0001000000000000000000000000000000"]);
             result.toString().should.eq("1329227995784915872903807060280344576");
+
+            await expectRevert(this.forTest.decodeU128([2, "0x0001000000000000000000000000000000"]), 'Obi: Out of range');
         });
 
         it("should decodeI128 correctly", async () => {
@@ -139,6 +158,8 @@ contract("Obi", () => {
 
             result = await this.forTest.decodeI128([1, "0x0000010000000000000000000000000000"]);
             result.toString().should.eq("5192296858534827628530496329220096");
+
+            await expectRevert(this.forTest.decodeI128([2, "0x0000010000000000000000000000000000"]), 'Obi: Out of range');
         });
 
         it("should decodeU256 correctly", async () => {
@@ -147,6 +168,8 @@ contract("Obi", () => {
 
             result = await this.forTest.decodeU256([1, "0x000100000000000000000000000000000000000000000000000000000000000000"]);
             result.toString().should.eq("452312848583266388373324160190187140051835877600158453279131187530910662656");
+
+            await expectRevert(this.forTest.decodeU256([2, "0x000100000000000000000000000000000000000000000000000000000000000000"]), 'Obi: Out of range');
         });
 
         it("should decodeI256 correctly", async () => {
@@ -155,6 +178,8 @@ contract("Obi", () => {
 
             result = await this.forTest.decodeI256([1, "0x000001000000000000000000000000000000000000000000000000000000000000"]);
             result.toString().should.eq("1766847064778384329583297500742918515827483896875618958121606201292619776");
+
+            await expectRevert(this.forTest.decodeI256([2, "0x000100000000000000000000000000000000000000000000000000000000000000"]), 'Obi: Out of range');
         });
 
         it("should decodeBool correctly", async () => {
@@ -169,30 +194,19 @@ contract("Obi", () => {
 
             result = await this.forTest.decodeBool([1, "0x0001"]);
             result.toString().should.eq("true");
+
+            await expectRevert(this.forTest.decodeBool([2, "0x0001"]), 'Obi: Out of range');
+
         });
 
         it("should decodeBytes correctly", async () => {
             result = await this.forTest.decodeBytes([0, "0x00000003425443"]);
             result.toString().should.eq("0x425443");
-        });
 
-        it("should revert", async () => {
-            let offset = 100000;
-            await expectRevert(this.forTest.decodeU8(offset, "0x00"), 'invalid tuple value (coderType="tuple", value=100000)');
-            await expectRevert(this.forTest.decodeI8(offset, "0x00"), 'invalid tuple value (coderType="tuple", value=100000)');
-            await expectRevert(this.forTest.decodeU16(offset, "0x00"), 'invalid tuple value (coderType="tuple", value=100000)');
-            await expectRevert(this.forTest.decodeI16(offset, "0x00"), 'invalid tuple value (coderType="tuple", value=100000)');
-            await expectRevert(this.forTest.decodeU32(offset, "0x00"), 'invalid tuple value (coderType="tuple", value=100000)');
-            await expectRevert(this.forTest.decodeI32(offset, "0x00"), 'invalid tuple value (coderType="tuple", value=100000)');
-            await expectRevert(this.forTest.decodeU64(offset, "0x00"), 'invalid tuple value (coderType="tuple", value=100000)');
-            await expectRevert(this.forTest.decodeI64(offset, "0x00"), 'invalid tuple value (coderType="tuple", value=100000)');
-            await expectRevert(this.forTest.decodeU128(offset, "0x00"), 'invalid tuple value (coderType="tuple", value=100000)');
-            await expectRevert(this.forTest.decodeI128(offset, "0x00"), 'invalid tuple value (coderType="tuple", value=100000)');
-            await expectRevert(this.forTest.decodeU256(offset, "0x00"), 'invalid tuple value (coderType="tuple", value=100000)');
-            await expectRevert(this.forTest.decodeI256(offset, "0x00"), 'invalid tuple value (coderType="tuple", value=100000)');
-            await expectRevert(this.forTest.decodeBool(offset, "0x00"), 'invalid tuple value (coderType="tuple", value=100000)');
-            await expectRevert(this.forTest.decodeBytes(offset, "0x00"), 'invalid tuple value (coderType="tuple", value=100000)');
+            result = await this.forTest.decodeBytes([1, "0x0000000003425443"]);
+            result.toString().should.eq("0x425443");
 
+            await expectRevert(this.forTest.decodeBytes([2, "0x0000000003425443"]), 'Obi: Out of range');
         });
     });
 });
