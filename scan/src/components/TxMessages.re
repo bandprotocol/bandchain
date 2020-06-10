@@ -52,8 +52,7 @@ let make = (~txHash: Hash.t, ~messages, ~width: int, ~success: bool, ~rawLog: st
            </React.Fragment>
          )
        ->React.array}
-      {success
-         ? React.null : <Text value={"Error: " ++ rawLog} code=true size=Text.Sm breakAll=true />}
+      {success ? React.null : <TxError.Mini msg=rawLog />}
     </div>
     {overflowed || expanded
        ? <div>
