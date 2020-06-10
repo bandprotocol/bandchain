@@ -124,12 +124,14 @@ let make = () => {
   };
 
   let url = ReasonReactRouter.useUrl() |> Route.fromUrl;
-  let (doit, setDoit) = React.useState(_ => false);
+  let targetTime = () => Js.Date.now() >= 1591797000000.;
+
+  let (doit, setDoit) = React.useState(_ => targetTime());
   React.useEffect0(() => {
     let intervalId =
       Js.Global.setInterval(
         () => {
-          let value = [%bs.raw {| Date.now() >= 1591797000000|}];
+          let value = targetTime();
           setDoit(_ => value);
         },
         500,
