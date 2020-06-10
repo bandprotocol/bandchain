@@ -32,7 +32,7 @@ module Mini = {
     id: ID.Request.t,
     requester: Address.t,
     clientID: string,
-    requestTime: MomentRe.Moment.t,
+    requestTime: option(MomentRe.Moment.t),
     resolveTime: option(MomentRe.Moment.t),
     calldata: JsBuffer.t,
     oracleScript: oracle_script_internal_t,
@@ -48,12 +48,13 @@ module Mini = {
     id: ID.Request.t,
     requester: Address.t,
     clientID: string,
-    requestTime: MomentRe.Moment.t,
+    requestTime: option(MomentRe.Moment.t),
     resolveTime: option(MomentRe.Moment.t),
     calldata: JsBuffer.t,
     oracleScriptID: ID.OracleScript.t,
     oracleScriptName: string,
     txHash: Hash.t,
+    txTimestamp: MomentRe.Moment.t,
     blockHeight: ID.Block.t,
     reportsCount: int,
     minCount: int,
@@ -74,7 +75,7 @@ module Mini = {
           request @bsRecord {
             id @bsDecoder(fn: "ID.Request.fromJson")
             clientID: client_id
-            requestTime: request_time @bsDecoder(fn: "GraphQLParser.optionTimeSExn")
+            requestTime: request_time @bsDecoder(fn: "GraphQLParser.optionTimeS")
             resolveTime: resolve_time @bsDecoder(fn: "GraphQLParser.optionTimeS")
             requester @bsDecoder(fn: "Address.fromBech32")
             calldata @bsDecoder(fn: "GraphQLParser.buffer")
@@ -118,7 +119,7 @@ module Mini = {
         ) {
           id @bsDecoder(fn: "ID.Request.fromJson")
           clientID: client_id
-          requestTime: request_time @bsDecoder(fn: "GraphQLParser.optionTimeSExn")
+          requestTime: request_time @bsDecoder(fn: "GraphQLParser.optionTimeS")
           resolveTime: resolve_time @bsDecoder(fn: "GraphQLParser.optionTimeS")
           requester @bsDecoder(fn: "Address.fromBech32")
           calldata @bsDecoder(fn: "GraphQLParser.buffer")
@@ -156,7 +157,7 @@ module Mini = {
         requests(where: {tx_hash: {_eq: $tx_hash}}) {
           id @bsDecoder(fn: "ID.Request.fromJson")
           clientID: client_id
-          requestTime: request_time @bsDecoder(fn: "GraphQLParser.optionTimeSExn")
+          requestTime: request_time @bsDecoder(fn: "GraphQLParser.optionTimeS")
           resolveTime: resolve_time @bsDecoder(fn: "GraphQLParser.optionTimeS")
           requester @bsDecoder(fn: "Address.fromBech32")
           calldata @bsDecoder(fn: "GraphQLParser.buffer")
@@ -198,7 +199,7 @@ module Mini = {
           resolveTime,
           calldata,
           oracleScript,
-          transaction: {txHash, blockHeight},
+          transaction: {txHash, blockHeight, timestamp: txTimestamp},
           reportsAggregate,
           minCount,
           resolveStatus,
@@ -215,6 +216,7 @@ module Mini = {
     oracleScriptID: oracleScript.id,
     oracleScriptName: oracleScript.name,
     txHash,
+    txTimestamp,
     blockHeight,
     reportsCount:
       reportsAggregate.aggregate->Belt_Option.map(({count}) => count)->Belt_Option.getExn,
@@ -251,6 +253,7 @@ module Mini = {
                oracleScriptID: y##oracle_script.id,
                oracleScriptName: y##oracle_script.name,
                txHash: y##transaction.txHash,
+               txTimestamp: y##transaction.timestamp,
                blockHeight: y##transaction.blockHeight,
                reportsCount:
                  y##reportsAggregate.aggregate
@@ -311,6 +314,7 @@ module Mini = {
                oracleScriptID: y##oracleScript.id,
                oracleScriptName: y##oracleScript.name,
                txHash: y##transaction.txHash,
+               txTimestamp: y##transaction.timestamp,
                blockHeight: y##transaction.blockHeight,
                reportsCount:
                  y##reportsAggregate.aggregate
@@ -387,7 +391,7 @@ type requested_validator_internal_t = {validator: ValidatorSub.Mini.t};
 type t = {
   id: ID.Request.t,
   clientID: string,
-  requestTime: MomentRe.Moment.t,
+  requestTime: option(MomentRe.Moment.t),
   resolveTime: option(MomentRe.Moment.t),
   oracleScript: oracle_script_internal_t,
   calldata: JsBuffer.t,
@@ -408,7 +412,7 @@ module SingleRequestConfig = [%graphql
       requests_by_pk(id: $id) @bsRecord {
         id @bsDecoder(fn: "ID.Request.fromJson")
         clientID: client_id
-        requestTime: request_time @bsDecoder(fn: "GraphQLParser.optionTimeSExn")
+        requestTime: request_time @bsDecoder(fn: "GraphQLParser.optionTimeS")
         resolveTime: resolve_time @bsDecoder(fn: "GraphQLParser.optionTimeS")
         oracleScript: oracle_script @bsRecord {
           oracleScriptID:id @bsDecoder(fn: "ID.OracleScript.fromJson")
@@ -469,7 +473,7 @@ module MultiRequestConfig = [%graphql
       requests(limit: $limit, offset: $offset, order_by: {id: desc}) @bsRecord {
         id @bsDecoder(fn: "ID.Request.fromJson")
         clientID: client_id
-        requestTime: request_time @bsDecoder(fn: "GraphQLParser.optionTimeSExn")
+        requestTime: request_time @bsDecoder(fn: "GraphQLParser.optionTimeS")
         resolveTime: resolve_time @bsDecoder(fn: "GraphQLParser.optionTimeS")
         oracleScript: oracle_script @bsRecord {
           oracleScriptID:id @bsDecoder(fn: "ID.OracleScript.fromJson")
