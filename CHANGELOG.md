@@ -12,6 +12,20 @@
 
 ### Chain
 
+### Scan
+
+### Bridges
+
+### Owasm
+
+### Oracle Binary Encoding (OBI)
+
+### MISC
+
+## [devnet-release-2]
+
+### Chain
+
 - (impv) [\#1753](https://github.com/bandprotocol/bandchain/pull/1753) Make sure bandoracled cache data source content
 - (impv) [\#1920](https://github.com/bandprotocol/bandchain/pull/1920) Cleaned up default data sources and oracle scripts info
 - (feat) [\#1917](https://github.com/bandprotocol/bandchain/pull/1917) Add memo to tx table in cacher.
