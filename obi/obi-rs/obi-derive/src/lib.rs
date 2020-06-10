@@ -30,3 +30,17 @@ pub fn obi_decode(input: TokenStream) -> TokenStream {
         Err(err) => err.to_compile_error(),
     })
 }
+
+#[proc_macro_derive(OBISchema)]
+pub fn obi_schema(input: TokenStream) -> TokenStream {
+    let res = if let Ok(input) = syn::parse::<ItemStruct>(input.clone()) {
+        process_struct(&input)
+    } else {
+        // Derive macros can only be defined on structs.
+        unreachable!()
+    };
+    TokenStream::from(match res {
+        Ok(res) => res,
+        Err(err) => err.to_compile_error(),
+    })
+}
