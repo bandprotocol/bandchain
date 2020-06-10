@@ -12,6 +12,7 @@ import (
 
 	clientcmn "github.com/bandprotocol/bandchain/chain/x/oracle/client/common"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // GetQueryCmd returns the cli query commands for this module.
@@ -30,7 +31,7 @@ func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		GetQueryCmdOracleScript(storeKey, cdc),
 		GetQueryCmdRequest(storeKey, cdc),
 		GetQueryCmdRequestSearch(storeKey, cdc),
-		GetQueryCmdReportersOfValidator(storeKey, cdc),
+		GetQueryCmdReporters(storeKey, cdc),
 	)...)
 	return oracleCmd
 }
@@ -144,7 +145,7 @@ func GetQueryCmdRequestSearch(route string, cdc *codec.Codec) *cobra.Command {
 }
 
 // GetQueryCmdReportersofValidator implements the query reporter list of validator command.
-func GetQueryCmdReportersOfValidator(route string, cdc *codec.Codec) *cobra.Command {
+func GetQueryCmdReporters(route string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:  "reporters [validator]",
 		Args: cobra.ExactArgs(1),
@@ -154,7 +155,7 @@ func GetQueryCmdReportersOfValidator(route string, cdc *codec.Codec) *cobra.Comm
 			if err != nil {
 				return err
 			}
-			var out types.QueryReportersResult
+			var out []sdk.AccAddress
 			cdc.MustUnmarshalJSON(res, &out)
 			return cliCtx.PrintOutput(out)
 		},

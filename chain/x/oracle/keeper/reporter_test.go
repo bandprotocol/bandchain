@@ -44,7 +44,7 @@ func TestRemoveReporter(t *testing.T) {
 	require.False(t, k.IsReporter(ctx, Alice.ValAddress, Carol.Address))
 }
 
-func TestGetAllReporter(t *testing.T) {
+func TestGetReporters(t *testing.T) {
 	_, ctx, k := createTestInput()
 	aliceReporters := []sdk.AccAddress{
 		Alice.Address, //self reporter of validator
@@ -61,6 +61,6 @@ func TestGetAllReporter(t *testing.T) {
 	err = k.AddReporter(ctx, Bob.ValAddress, Alice.Address)
 	require.NoError(t, err)
 
-	reporters := k.GetAllReportersOfValidator(ctx, Alice.ValAddress)
+	reporters := k.GetReporters(ctx, Alice.ValAddress)
 	require.Equal(t, len(reporters), len(aliceReporters))
 }
