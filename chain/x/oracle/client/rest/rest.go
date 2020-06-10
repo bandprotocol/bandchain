@@ -11,7 +11,7 @@ import (
 const (
 	idTag               = "idTag"
 	dataHashTag         = "dataHashTag"
-	validatorAddressTag = "validatorAddress"
+	validatorAddressTag = "validatorAddressTag"
 )
 
 func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router, storeName string) {
