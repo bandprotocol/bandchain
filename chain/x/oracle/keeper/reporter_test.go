@@ -61,7 +61,7 @@ func TestGetAllReporter(t *testing.T) {
 	err = k.AddReporter(ctx, Bob.ValAddress, Alice.Address)
 	require.NoError(t, err)
 
-	reporters := k.GetReportersOfValidator(ctx, Alice.ValAddress)
+	reporters := k.GetAllReportersOfValidator(ctx, Alice.ValAddress)
 	require.Equal(t, len(reporters), len(aliceReporters))
 	require.True(t, reflect.DeepEqual(reporters, aliceReporters))
 }
