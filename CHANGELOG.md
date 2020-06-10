@@ -22,7 +22,7 @@
 
 ### MISC
 
-## [devnet-release-3]
+## [devnet-release-2]
 
 ### Chain
 
