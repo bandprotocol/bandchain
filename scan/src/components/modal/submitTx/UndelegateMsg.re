@@ -3,6 +3,8 @@ module Styles = {
 
   let warning =
     style([
+      display(`flex),
+      flexDirection(`column),
       padding(`px(10)),
       color(Colors.yellow6),
       backgroundColor(Colors.yellow1),
@@ -45,7 +47,15 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
   <>
     <VSpacing size=Spacing.sm />
     <div className=Styles.warning>
-      <Text value="Note: Undelegated balance are locked for 21 days" />
+      <Text value="Please read before doing." />
+      <VSpacing size=Spacing.xs />
+      <Text
+        value="1. Undelegated balance are locked for 21 days. After the unbonding period, the balance will automatically be added to your account"
+      />
+      <VSpacing size=Spacing.xs />
+      <Text
+        value="2. You can have a maximum of 7 pending unbonding transactions at any one time."
+      />
     </div>
     <VSpacing size=Spacing.lg />
     <div className=Styles.info>
@@ -69,31 +79,37 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
     <div className=Styles.info>
       <Text value="Current Stake" size=Text.Lg spacing={Text.Em(0.03)} nowrap=true block=true />
       {switch (allSub) {
-       | Data((_, {amount})) =>
+       | Data((_, {amount: stakedAmount})) =>
          <div>
            <Text
-             value={amount |> Coin.getBandAmountFromCoin |> Format.fPretty(~digits=6)}
+             value={stakedAmount |> Coin.getBandAmountFromCoin |> Format.fPretty(~digits=6)}
              code=true
              size=Text.Lg
              weight=Text.Semibold
            />
            <Text value=" BAND" code=true />
          </div>
-       | _ => <LoadingCensorBar width=300 height=18 />
+       | _ => <LoadingCensorBar width=150 height=18 />
        }}
     </div>
     <VSpacing size=Spacing.lg />
     <VSpacing size=Spacing.md />
-    <EnhanceTxInput
-      width=226
-      inputData=amount
-      setInputData=setAmount
-      parse=Parse.getBandAmount
-      msg="Undelegate Amount (BAND)"
-      errMsg="Invalid amount"
-      placeholder="Insert delegation amount"
-      code=true
-    />
+    {switch (allSub) {
+     | Data((_, {amount: stakedAmount})) =>
+       let maxValInUband = stakedAmount |> Coin.getUBandAmountFromCoin;
+       <EnhanceTxInput
+         width=300
+         inputData=amount
+         setInputData=setAmount
+         parse={Parse.getBandAmount(maxValInUband)}
+         maxValue={maxValInUband /. 1e6 |> Js.Float.toString}
+         msg="Undelegate Amount (BAND)"
+         placeholder="Insert unbonding amount"
+         inputType="number"
+         code=true
+       />;
+     | _ => <EnhanceTxInput.Loading msg="Undelegate Amount (BAND)" width=300 />
+     }}
     <VSpacing size=Spacing.lg />
   </>;
 };

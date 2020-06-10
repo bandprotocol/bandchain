@@ -5,9 +5,7 @@ module Styles = {
 
 [@react.component]
 let make = (~txHash: Hash.t, ~width: int, ~size=Text.Md, ~weight=Text.Medium) => {
-  <div
-    className={Styles.withWidth(width)}
-    onClick={_ => Route.redirect(Route.TxIndexPage(txHash))}>
+  <Link className={Styles.withWidth(width)} route={Route.TxIndexPage(txHash)}>
     <Text
       block=true
       code=true
@@ -16,6 +14,7 @@ let make = (~txHash: Hash.t, ~width: int, ~size=Text.Md, ~weight=Text.Medium) =>
       weight
       ellipsis=true
       size
+      color=Colors.gray7
     />
-  </div>;
+  </Link>;
 };

@@ -74,6 +74,7 @@ func NewDB(dialect, path string) (*BandDB, error) {
 			CAST(shares AS DECIMAL) /  CAST(delegator_shares AS DECIMAL) * 100 as share_percentage,
 			CAST(shares AS DECIMAL) * CAST(current_reward AS DECIMAL) /  CAST(delegator_shares AS DECIMAL) + (CAST(current_ratio AS DECIMAL) - CAST(last_ratio AS DECIMAL)) * CAST(shares AS DECIMAL) as reward,
 			validator_address,
+			moniker,
 			delegator_address
 			FROM delegations JOIN validators ON validator_address = operator_address;
 	`)

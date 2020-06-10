@@ -63,10 +63,18 @@ module Styles = {
     ]);
 };
 
-let stakingBalanceDetail = (title, amount, usdPrice) => {
+let stakingBalanceDetail = (title, amount, usdPrice, tooltipItem) => {
   <Row alignItems=Css.flexStart>
     <Col size=1.2>
-      <Text value=title size=Text.Sm height={Text.Px(18)} spacing={Text.Em(0.03)} nowrap=true />
+      <Text
+        value=title
+        size=Text.Sm
+        height={Text.Px(18)}
+        spacing={Text.Em(0.03)}
+        nowrap=true
+        tooltipItem={tooltipItem |> React.string}
+        tooltipPlacement=Text.AlignRight
+      />
     </Col>
     <Col size=0.6>
       <div className=Styles.cFlex>
@@ -160,7 +168,9 @@ module StakingInfo = {
         {isReachUnbondingLimit
            ? <div>
                <div className=Styles.warning>
-                 <Text value="Warning: You have reached the maximum number (7) of pending delegation unbonding entries." />
+                 <Text
+                   value="Warning: You have reached the maximum number (7) of pending delegation unbonding entries."
+                 />
                </div>
                <VSpacing size=Spacing.lg />
              </div>
@@ -195,9 +205,19 @@ module StakingInfo = {
           </button>
         </Row>
         <VSpacing size=Spacing.lg />
-        {stakingBalanceDetail("BALANCE AT STAKE", balanceAtStakeAmount, usdPrice)}
+        {stakingBalanceDetail(
+           "BALANCE AT STAKE",
+           balanceAtStakeAmount,
+           usdPrice,
+           "Balance currently delegated to validators",
+         )}
         <VSpacing size=Spacing.lg />
-        {stakingBalanceDetail("UNBONDING AMOUNT", unbondingAmount, usdPrice)}
+        {stakingBalanceDetail(
+           "UNBONDING AMOUNT",
+           unbondingAmount,
+           usdPrice,
+           "Amount undelegated from validators awaiting 21 days lockup period",
+         )}
         {unbondingList |> Belt_Array.length > 0
            ? <>
                <VSpacing size=Spacing.md />
@@ -232,7 +252,12 @@ module StakingInfo = {
              </>
            : React.null}
         <VSpacing size=Spacing.lg />
-        {stakingBalanceDetail("REWARD", rewardAmount, usdPrice)}
+        {stakingBalanceDetail(
+           "REWARD",
+           rewardAmount,
+           usdPrice,
+           "Reward from staking to validators",
+         )}
       </div>
       |> Sub.resolve;
     }

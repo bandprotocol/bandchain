@@ -12,7 +12,14 @@ module Styles = {
       backgroundColor(Colors.gray7),
     ]);
 
-  let hashContainer = style([marginTop(`px(25)), marginBottom(`px(44))]);
+  let hashContainer =
+    style([
+      display(`flex),
+      flexDirection(`row),
+      alignItems(`center),
+      marginTop(`px(25)),
+      marginBottom(`px(44)),
+    ]);
 
   let correctLogo = style([width(`px(20)), marginLeft(`px(10))]);
 
@@ -107,6 +114,8 @@ let make = (~txHash) =>
           code=true
           color=Colors.gray7
         />
+        <HSpacing size=Spacing.sm />
+        <CopyRender width=15 message={txHash |> Hash.toHex(~upper=true)} />
       </div>
       <Row>
         <Col size=0.9> <InfoHL info={InfoHL.Height(tx.blockHeight)} header="BLOCK" /> </Col>

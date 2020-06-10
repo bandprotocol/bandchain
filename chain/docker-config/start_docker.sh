@@ -19,6 +19,8 @@ done
 
 cd ../../chain
 
+make install
+
 # initial new node
 bandd init node-validator --chain-id bandchain --oracle band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs
 
@@ -115,7 +117,6 @@ bandd collect-gentxs
 
 # copy genesis to the proper location!
 cp ~/.bandd/config/genesis.json $DIR/genesis.json
-cp -r ~/.bandd/files $DIR
 
 # Recreate files volume
 docker volume rm query-files

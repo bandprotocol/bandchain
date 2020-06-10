@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"encoding/hex"
 	"fmt"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
@@ -55,7 +56,13 @@ func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec, ibcInfo *ty
 	id := k.AddRequest(ctx, req)
 	// Emit an event describing a data request and asked validators.
 	event := sdk.NewEvent(types.EventTypeRequest)
-	event = event.AppendAttributes(sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)))
+	event = event.AppendAttributes(
+		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
+		sdk.NewAttribute(types.AttributeKeyOracleScriptID, fmt.Sprintf("%d", req.OracleScriptID)),
+		sdk.NewAttribute(types.AttributeKeyCalldata, hex.EncodeToString(req.Calldata)),
+		sdk.NewAttribute(types.AttributeKeyAskCount, fmt.Sprintf("%d", askCount)),
+		sdk.NewAttribute(types.AttributeKeyMinCount, fmt.Sprintf("%d", req.MinCount)),
+	)
 	for _, val := range req.RequestedValidators {
 		event = event.AppendAttributes(sdk.NewAttribute(types.AttributeKeyValidator, val.String()))
 	}
