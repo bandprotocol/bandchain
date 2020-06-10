@@ -144,7 +144,7 @@ func GetQueryCmdRequestSearch(route string, cdc *codec.Codec) *cobra.Command {
 	}
 }
 
-// GetQueryCmdReportersofValidator implements the query reporter list of validator command.
+// GetQueryCmdReporters implements the query reporter list of validator command.
 func GetQueryCmdReporters(route string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:  "reporters [validator]",
