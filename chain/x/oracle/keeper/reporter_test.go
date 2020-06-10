@@ -1,7 +1,6 @@
 package keeper_test
 
 import (
-	"reflect"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -48,14 +47,15 @@ func TestRemoveReporter(t *testing.T) {
 func TestGetAllReporter(t *testing.T) {
 	_, ctx, k := createTestInput()
 	aliceReporters := []sdk.AccAddress{
+		Alice.Address, //self reporter of validator
 		Bob.Address,
 		Carol.Address,
 	}
 
 	// Adds Alice validator
-	err := k.AddReporter(ctx, Alice.ValAddress, aliceReporters[0])
+	err := k.AddReporter(ctx, Alice.ValAddress, aliceReporters[1])
 	require.NoError(t, err)
-	err = k.AddReporter(ctx, Alice.ValAddress, aliceReporters[1])
+	err = k.AddReporter(ctx, Alice.ValAddress, aliceReporters[2])
 	require.NoError(t, err)
 
 	err = k.AddReporter(ctx, Bob.ValAddress, Alice.Address)
@@ -63,5 +63,4 @@ func TestGetAllReporter(t *testing.T) {
 
 	reporters := k.GetAllReportersOfValidator(ctx, Alice.ValAddress)
 	require.Equal(t, len(reporters), len(aliceReporters))
-	require.True(t, reflect.DeepEqual(reporters, aliceReporters))
 }
