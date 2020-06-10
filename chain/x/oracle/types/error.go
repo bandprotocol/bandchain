@@ -40,6 +40,7 @@ var (
 	ErrInsufficientValidators      = sdkerrors.Register(ModuleName, 33, "insufficent available validators")
 	ErrCreateWithDoNotModify       = sdkerrors.Register(ModuleName, 34, "create with [do-not-modify] content")
 	ErrSelfReferenceAsReporter     = sdkerrors.Register(ModuleName, 35, "cannot reference self as reporter")
+	ErrOBIDecode                   = sdkerrors.Register(ModuleName, 36, "cannot obi decode")
 )
 
 // WrapMaxError wraps an error message with additional info of the current and max values.
