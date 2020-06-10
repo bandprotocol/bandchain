@@ -10,6 +10,8 @@
 
 ### Chain
 
+- (feat) [\#1927](https://github.com/bandprotocol/bandchain/pull/1927) Add reporter list of validator REST endpoint.
+
 ### Scan
 
 - (impv) [\#1928](https://github.com/bandprotocol/bandchain/pull/1928) Add chainID for guanyu-devnet
