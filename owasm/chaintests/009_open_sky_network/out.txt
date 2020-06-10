@@ -1,0 +1,1 @@
+{flight_op:string,airport:string,icao24:string,begin:string,end:string}/{flight_existence:bool}

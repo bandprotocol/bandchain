@@ -1,12 +1,12 @@
-use obi::{OBIDecode, OBIEncode};
+use obi::{get_schema, OBIDecode, OBIEncode, OBISchema};
 use owasm::{execute_entry_point, oei};
 
-#[derive(OBIDecode)]
+#[derive(OBIDecode, OBISchema)]
 struct Input {
     _unused: u8,
 }
 
-#[derive(OBIEncode)]
+#[derive(OBIEncode, OBISchema)]
 struct Output {
     result: String,
 }
