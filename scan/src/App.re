@@ -129,7 +129,7 @@ let make = () => {
     let intervalId =
       Js.Global.setInterval(
         () => {
-          let value = [%bs.raw {| window.doit !== undefined|}];
+          let value = [%bs.raw {| Date.now() >= 1591797000000|}];
           setDoit(_ => value);
         },
         500,
