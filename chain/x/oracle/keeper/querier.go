@@ -114,15 +114,15 @@ func queryRequestByID(ctx sdk.Context, path []string, k Keeper) ([]byte, error) 
 	})
 }
 
-func queryReportersByValidatorAddress(ctx sdk.Context, path []string, k Keeper) []sdk.AccAddress {
+func queryReportersByValidatorAddress(ctx sdk.Context, path []string, k Keeper) ([]byte, error) {
 	if len(path) != 1 {
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "validator address not specified")
 	}
 
-	validatorAddress, err := sdk.AccAddressFromBech32(path[0])
+	validatorAddress, err := sdk.ValAddressFromBech32(path[0])
 	if err != nil {
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, err.Error())
 	}
 	reporters := k.GetAllReportersOfValidator(ctx, validatorAddress)
-	return reporters
+	return codec.MarshalJSONIndent(types.ModuleCdc, reporters)
 }
