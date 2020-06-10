@@ -24,7 +24,7 @@ func (k Keeper) AddReporter(ctx sdk.Context, val sdk.ValAddress, addr sdk.AccAdd
 	return nil
 }
 
-// AddReporter removes the reporter address from the list of reporters of the given validator.
+// RemoveReporter removes the reporter address from the list of reporters of the given validator.
 func (k Keeper) RemoveReporter(ctx sdk.Context, val sdk.ValAddress, addr sdk.AccAddress) error {
 	if !k.IsReporter(ctx, val, addr) {
 		return sdkerrors.Wrapf(
@@ -32,4 +32,20 @@ func (k Keeper) RemoveReporter(ctx sdk.Context, val sdk.ValAddress, addr sdk.Acc
 	}
 	ctx.KVStore(k.storeKey).Delete(types.ReporterStoreKey(val, addr))
 	return nil
+}
+
+// GetReportersOfValidator returns the reporter list of the given validator.
+func (k Keeper) GetReportersOfValidator(ctx sdk.Context, val sdk.ValAddress) (reporters []sdk.AccAddress) {
+	store := ctx.KVStore(k.storeKey)
+	storeKeyPrefix := append(types.ReporterStoreKeyPrefix, val.Bytes()...)
+	iterator := sdk.KVStorePrefixIterator(store, storeKeyPrefix)
+	defer iterator.Close()
+	for ; iterator.Valid(); iterator.Next() {
+		key := iterator.Key()
+		reporterBytes := key[21:]
+		reporterAddress := sdk.AccAddress(reporterBytes)
+
+		reporters = append(reporters, reporterAddress)
+	}
+	return reporters
 }
