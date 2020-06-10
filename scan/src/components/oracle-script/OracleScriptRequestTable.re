@@ -99,7 +99,7 @@ let make = (~oracleScriptID: ID.OracleScript.t) =>
                </Row>
              </THead>
              {requests
-              ->Belt_Array.map(({id, requester, requestTime, blockHeight, txHash}) => {
+              ->Belt_Array.map(({id, requester, txTimestamp, blockHeight, txHash}) => {
                   <TBody key={txHash |> Hash.toHex(~upper=true)}>
                     <Row>
                       <Col> <HSpacing size=Spacing.lg /> </Col>
@@ -110,7 +110,7 @@ let make = (~oracleScriptID: ID.OracleScript.t) =>
                         </div>
                       </Col>
                       <Col size=2.2>
-                        <Timestamp time=requestTime size=Text.Md weight=Text.Regular code=true />
+                        <Timestamp time=txTimestamp size=Text.Md weight=Text.Regular code=true />
                       </Col>
                       <Col size=1.26> <TypeID.Block id=blockHeight /> </Col>
                       <Col size=2.8> <TxLink txHash width=230 weight=Text.Medium /> </Col>
