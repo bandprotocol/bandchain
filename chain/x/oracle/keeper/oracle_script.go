@@ -82,9 +82,8 @@ func (k Keeper) AddOracleScriptFile(file []byte) (string, error) {
 	}
 	// TODO: Add safe guard here
 	compiledFile, err := api.Compile(file)
-	// TODO: Compile return err
-	if err != 0 {
-		return "", types.ErrCompileFailed
+	if err != nil {
+		return "", sdkerrors.Wrapf(types.ErrCompileFailed, "with error: %s", err.Error())
 	}
 	return k.fileCache.AddFile(compiledFile), nil
 }

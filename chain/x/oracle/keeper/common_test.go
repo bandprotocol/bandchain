@@ -67,17 +67,20 @@ func getTestDataSource(executable string) (ds types.DataSource, clear func()) {
 }
 
 func getTestOracleScript() (os types.OracleScript, clear func()) {
-	absPath, _ := filepath.Abs("../../../pkg/owasm/res/beeb.wasm")
-	code, err := ioutil.ReadFile(absPath)
+	absPath, _ := filepath.Abs("../../../pkg/owasm/res/beeb.wat")
+	rawWAT, err := ioutil.ReadFile(absPath)
+	if err != nil {
+		panic(err)
+	}
+	code, err := api.Wat2Wasm(rawWAT)
 	if err != nil {
 		panic(err)
 	}
 	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
 	f := filecache.New(dir)
-	// TODO: Error from compile
-	compiledCode, errCode := api.Compile(code)
-	if errCode != 0 {
-		panic("Failed to compile wasm")
+	compiledCode, err := api.Compile(code)
+	if err != nil {
+		panic(err)
 	}
 	filename := f.AddFile(compiledCode)
 	return types.NewOracleScript(

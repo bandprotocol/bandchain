@@ -159,8 +159,12 @@ func TestGetAllOracleScripts(t *testing.T) {
 func TestAddOracleScriptFile(t *testing.T) {
 	_, _, k := createTestInput()
 
-	absPathRaw, _ := filepath.Abs("../../../pkg/owasm/res/beeb.wasm")
-	code, err := ioutil.ReadFile(absPathRaw)
+	absPath, _ := filepath.Abs("../../../pkg/owasm/res/beeb.wat")
+	rawWAT, err := ioutil.ReadFile(absPath)
+	if err != nil {
+		panic(err)
+	}
+	code, err := api.Wat2Wasm(rawWAT)
 	if err != nil {
 		panic(err)
 	}
@@ -170,8 +174,8 @@ func TestAddOracleScriptFile(t *testing.T) {
 	defer deleteFile(filepath.Join(dir, filename))
 
 	require.NoError(t, err)
-	compiledCode, errCode := api.Compile(code)
-	require.Equal(t, int32(0), errCode)
+	compiledCode, err := api.Compile(code)
+	require.NoError(t, err)
 
 	require.Equal(t, compiledCode, k.GetFile(filename))
 

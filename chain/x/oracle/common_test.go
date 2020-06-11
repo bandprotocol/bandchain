@@ -9,13 +9,14 @@ import (
 	"github.com/spf13/viper"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/cli"
+	"github.com/tendermint/tendermint/libs/log"
 
 	bandapp "github.com/bandprotocol/bandchain/chain/app"
 	"github.com/bandprotocol/bandchain/chain/pkg/filecache"
 	"github.com/bandprotocol/bandchain/chain/simapp"
 	me "github.com/bandprotocol/bandchain/chain/x/oracle/keeper"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
-	"github.com/tendermint/tendermint/libs/log"
+	"github.com/bandprotocol/bandchain/go-owasm/api"
 )
 
 const (
@@ -54,8 +55,12 @@ func getTestDataSource(executable string) (ds types.DataSource, clear func()) {
 }
 
 func getTestOracleScript() (os types.OracleScript, clear func()) {
-	absPath, _ := filepath.Abs("../../pkg/owasm/res/beeb.wasm")
-	code, err := ioutil.ReadFile(absPath)
+	absPath, _ := filepath.Abs("../../pkg/owasm/res/beeb.wat")
+	rawWAT, err := ioutil.ReadFile(absPath)
+	if err != nil {
+		panic(err)
+	}
+	code, err := api.Wat2Wasm(rawWAT)
 	if err != nil {
 		panic(err)
 	}

@@ -37,10 +37,9 @@ func AddGenesisOracleScriptCmd(
 			if err != nil {
 				return err
 			}
-			compiledData, errCode := api.Compile(data)
-			// TODO: Compile return error
-			if errCode != 0 {
-				return otypes.ErrCompileFailed
+			compiledData, err := api.Compile(data)
+			if err != nil {
+				return err
 			}
 			filename := f.AddFile(compiledData)
 			owner, err := sdk.AccAddressFromBech32(args[4])
