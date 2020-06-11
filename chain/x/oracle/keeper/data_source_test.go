@@ -1,9 +1,12 @@
 package keeper_test
 
 import (
+	"path/filepath"
 	"testing"
 
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
+	"github.com/tendermint/tendermint/libs/cli"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
@@ -131,4 +134,16 @@ func TestGetAllDataSources(t *testing.T) {
 	k.SetDataSource(ctx, 3, dataSources[2])
 	// We should now be able to get all the existing data sources.
 	require.Equal(t, dataSources, k.GetAllDataSources(ctx))
+}
+
+func TestAddExecutableFile(t *testing.T) {
+	_, _, k := createTestInput()
+
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
+	filename := k.AddExecutableFile([]byte("executable"))
+	defer deleteFile(filepath.Join(dir, filename))
+
+	require.Equal(t, []byte("executable"), k.GetFile(filename))
+
+	require.Equal(t, types.DoNotModify, k.AddExecutableFile(types.DoNotModifyBytes))
 }

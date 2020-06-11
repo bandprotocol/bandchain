@@ -45,7 +45,7 @@ func handleMsgCreateDataSource(ctx sdk.Context, k Keeper, m MsgCreateDataSource)
 		}
 	}
 	id := k.AddDataSource(ctx, types.NewDataSource(
-		m.Owner, m.Name, m.Description, k.AddFile(m.Executable),
+		m.Owner, m.Name, m.Description, k.AddExecutableFile(m.Executable),
 	))
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeCreateDataSource,
@@ -70,7 +70,7 @@ func handleMsgEditDataSource(ctx sdk.Context, k Keeper, m MsgEditDataSource) (*s
 	}
 	// Can safely use MustEdit here, as we already checked that the data source exists above.
 	k.MustEditDataSource(ctx, m.DataSourceID, types.NewDataSource(
-		m.Owner, m.Name, m.Description, k.AddFile(m.Executable),
+		m.Owner, m.Name, m.Description, k.AddExecutableFile(m.Executable),
 	))
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeEditDataSource,
@@ -88,7 +88,7 @@ func handleMsgCreateOracleScript(ctx sdk.Context, k Keeper, m MsgCreateOracleScr
 		}
 	}
 	id := k.AddOracleScript(ctx, types.NewOracleScript(
-		m.Owner, m.Name, m.Description, k.AddFile(m.Code), m.Schema, m.SourceCodeURL,
+		m.Owner, m.Name, m.Description, k.AddExecutableFile(m.Code), m.Schema, m.SourceCodeURL,
 	))
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeCreateOracleScript,
@@ -112,7 +112,7 @@ func handleMsgEditOracleScript(ctx sdk.Context, k Keeper, m MsgEditOracleScript)
 		}
 	}
 	k.MustEditOracleScript(ctx, m.OracleScriptID, types.NewOracleScript(
-		m.Owner, m.Name, m.Description, k.AddFile(m.Code), m.Schema, m.SourceCodeURL,
+		m.Owner, m.Name, m.Description, k.AddExecutableFile(m.Code), m.Schema, m.SourceCodeURL,
 	))
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeEditOracleScript,

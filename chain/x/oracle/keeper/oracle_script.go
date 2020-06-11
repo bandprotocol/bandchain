@@ -1,10 +1,13 @@
 package keeper
 
 import (
+	"bytes"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	"github.com/bandprotocol/bandchain/go-owasm/api"
 )
 
 // HasOracleScript checks if the oracle script of this ID exists in the storage.
@@ -68,4 +71,20 @@ func (k Keeper) GetAllOracleScripts(ctx sdk.Context) (oracleScripts []types.Orac
 		oracleScripts = append(oracleScripts, oracleScript)
 	}
 	return oracleScripts
+}
+
+// AddOracleScriptFile compiles oracle script and saves the compiled file to a file in HOME/files
+// directory using sha256 sum as filename.
+// Returns do-not-modify symbol is the given input file is do-not-modify.
+func (k Keeper) AddOracleScriptFile(file []byte) (string, error) {
+	if bytes.Equal(file, types.DoNotModifyBytes) {
+		return types.DoNotModify, nil
+	}
+	// TODO: Add safe guard here
+	compiledFile, err := api.Compile(file)
+	// TODO: Compile return err
+	if err != 0 {
+		return "", types.ErrCompileFailed
+	}
+	return k.fileCache.AddFile(compiledFile), nil
 }

@@ -41,6 +41,7 @@ var (
 	ErrCreateWithDoNotModify       = sdkerrors.Register(ModuleName, 34, "create with [do-not-modify] content")
 	ErrSelfReferenceAsReporter     = sdkerrors.Register(ModuleName, 35, "cannot reference self as reporter")
 	ErrOBIDecode                   = sdkerrors.Register(ModuleName, 36, "cannot obi decode")
+	ErrCompileFailed               = sdkerrors.Register(ModuleName, 37, "owasm compile failed")
 )
 
 // WrapMaxError wraps an error message with additional info of the current and max values.

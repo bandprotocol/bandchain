@@ -16,6 +16,7 @@ import (
 	"github.com/bandprotocol/bandchain/chain/simapp"
 	me "github.com/bandprotocol/bandchain/chain/x/oracle/keeper"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	"github.com/bandprotocol/bandchain/go-owasm/api"
 )
 
 const (
@@ -73,7 +74,12 @@ func getTestOracleScript() (os types.OracleScript, clear func()) {
 	}
 	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
 	f := filecache.New(dir)
-	filename := f.AddFile(code)
+	// TODO: Error from compile
+	compiledCode, errCode := api.Compile(code)
+	if errCode != 0 {
+		panic("Failed to compile wasm")
+	}
+	filename := f.AddFile(compiledCode)
 	return types.NewOracleScript(
 		Owner.Address, "imported script", "description",
 		filename,

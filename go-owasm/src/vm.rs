@@ -10,7 +10,7 @@ impl VMLogic {
     pub fn new(env: Env) -> VMLogic {
         VMLogic {
             env: env,
-            gas_left: 100,
+            gas_left: 100000,
         }
     }
 

@@ -13,7 +13,6 @@ require (
 	github.com/jinzhu/gorm v1.9.12
 	github.com/kyokomi/emoji v2.2.4+incompatible
 	github.com/levigross/grequests v0.0.0-20190908174114-253788527a1a
-	github.com/mattn/go-shellwords v1.0.10
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
 	github.com/peterbourgon/diskv v2.0.1+incompatible
