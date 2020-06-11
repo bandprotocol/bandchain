@@ -21,6 +21,7 @@
 
 ### Scan
 
+- (feat) [\#1938](https://github.com/bandprotocol/bandchain/pull/1938) Add validator's image from identity
 - (impv) [\#1928](https://github.com/bandprotocol/bandchain/pull/1928) Add chainID for guanyu-devnet
 
 ### Bridges
