@@ -1,5 +1,5 @@
 [package]
-name = "007_crypto_compare_volume"
+name = "os008_eth_gas_station"
 version = "0.1.0"
 authors = ["Band Protocol <dev@bandprotocol.com>"]
 edition = "2018"

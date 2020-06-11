@@ -1,5 +1,5 @@
 [package]
-name = "011_qrng"
+name = "os007_crypto_compare_volume"
 version = "0.1.0"
 authors = ["Band Protocol <dev@bandprotocol.com>"]
 edition = "2018"
@@ -12,4 +12,3 @@ crate-type = ["cdylib"]
 [dependencies]
 owasm = { path = "../.." }
 obi = { path = "../../../obi/obi-rs/obi" }
-hex = "0.4.2"

@@ -1,5 +1,5 @@
 [package]
-name = "010_open_weather_map"
+name = "os001_crypto_price"
 version = "0.1.0"
 authors = ["Band Protocol <dev@bandprotocol.com>"]
 edition = "2018"
