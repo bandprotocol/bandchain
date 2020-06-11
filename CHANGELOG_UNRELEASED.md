@@ -16,6 +16,7 @@
 
 ### Scan
 
+- (impv) [\#1939](https://github.com/bandprotocol/bandchain/pull/1939) Use Format on user balance
 - (impv) [\#1928](https://github.com/bandprotocol/bandchain/pull/1928) Add chainID for guanyu-devnet
 
 ### Bridges
