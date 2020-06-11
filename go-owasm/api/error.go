@@ -17,6 +17,8 @@ var (
 // parseError - returns parsed error from errors code on bindings.h
 func parseError(code int32) error {
 	switch code {
+	case 0:
+		return nil
 	case 1:
 		return ErrCompliationError
 	case 2:
