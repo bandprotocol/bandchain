@@ -86,3 +86,8 @@ func ValidatorReportInfoStoreKey(v sdk.ValAddress) []byte {
 func ResultStoreKey(requestID RequestID) []byte {
 	return append(ResultStoreKeyPrefix, sdk.Uint64ToBigEndian(uint64(requestID))...)
 }
+
+// ValidatorReporterPrefixKey returns the key to a validator's reporters.
+func ValidatorReporterPrefixKey(val sdk.ValAddress) []byte {
+	return append(ReporterStoreKeyPrefix, val.Bytes()...)
+}
