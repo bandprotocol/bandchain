@@ -30,7 +30,7 @@ impl Span {
         }
         unsafe { std::ptr::copy(data.as_ptr(), self.ptr.offset(self.len as isize), data.len()) }
         self.len += data.len();
-        return Error::NoError
+        Error::NoError
     }
 }
 
