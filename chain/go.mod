@@ -20,7 +20,7 @@ require (
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/viper v1.7.0
-	github.com/stretchr/testify v1.6.0
+	github.com/stretchr/testify v1.6.1
 	github.com/tendermint/go-amino v0.15.1
 	github.com/tendermint/iavl v0.13.3
 	github.com/tendermint/tendermint v0.33.4
