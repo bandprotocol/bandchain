@@ -9,10 +9,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
-
-	clientcmn "github.com/bandprotocol/bandchain/chain/x/oracle/client/common"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	clientcmn "github.com/bandprotocol/bandchain/chain/x/oracle/client/common"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
