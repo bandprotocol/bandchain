@@ -192,7 +192,7 @@ module StakingInfo = {
             className={Styles.button(100)}
             onClick={_ => {
               validatorInfo.commission == 100.
-                ? Window.alert("Delegation to foundation validator nodes is not allowed.")
+                ? Window.alert("Delegation to foundation validator nodes is not advised.")
                 : delegate()
             }}>
             <Text value="Delegate" />
