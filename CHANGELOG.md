@@ -57,6 +57,8 @@
 
 ### Bridges
 
+- (feat) [\#1816] (https://github.com/bandprotocol/bandchain/pull/1816) Implement test for OBI solidity decoder library.
+
 ### Owasm
 
 - (feat) [\#1919](https://github.com/bandprotocol/bandchain/pull/1919) Add Makefile entry to allow compiling dylib and so for go-owasm via docker.

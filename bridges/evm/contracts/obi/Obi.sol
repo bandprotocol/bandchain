@@ -2,6 +2,7 @@ pragma solidity ^0.5.0;
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
+
 library Obi {
     using SafeMath for uint256;
 
@@ -113,50 +114,5 @@ library Obi {
         for (uint256 i = 0; i < value.length; i++) {
             value[i] = bytes1(decodeU8(data));
         }
-    }
-
-    function decodeBytes32(Data memory data)
-        internal
-        pure
-        shift(data, 32)
-        returns (bytes1[32] memory value)
-    {
-        bytes memory raw = data.raw;
-        uint256 offset = data.offset;
-        // solium-disable-next-line security/no-inline-assembly
-        assembly {
-            mstore(value, mload(add(add(raw, 32), offset)))
-        }
-    }
-
-    function decodeBytes64(Data memory data)
-        internal
-        pure
-        shift(data, 64)
-        returns (bytes1[64] memory value)
-    {
-        bytes memory raw = data.raw;
-        uint256 offset = data.offset;
-        // solium-disable-next-line security/no-inline-assembly
-        assembly {
-            mstore(value, mload(add(add(raw, 32), offset)))
-            mstore(add(value, 32), mload(add(add(raw, 64), offset)))
-        }
-    }
-
-    function decodeBytes65(Data memory data)
-        internal
-        pure
-        shift(data, 65)
-        returns (bytes1[65] memory value)
-    {
-        bytes memory raw = data.raw;
-        uint256 offset = data.offset;
-        // solium-disable-next-line security/no-inline-assembly
-        assembly {
-            mstore(value, mload(add(add(raw, 32), offset)))
-            mstore(add(value, 32), mload(add(add(raw, 64), offset)))
-        }
-        value[64] = data.raw[data.offset + 64];
     }
 }
