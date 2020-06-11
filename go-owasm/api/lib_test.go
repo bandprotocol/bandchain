@@ -35,9 +35,8 @@ func TestSuccessWatToOwasm(t *testing.T) {
 
 func TestFailEmptyWatContent(t *testing.T) {
 	code := []byte("")
-	wasm, err := Wat2Wasm(code)
+	_, err := Wat2Wasm(code)
 	require.Equal(t, ErrParseError, err)
-	require.Equal(t, []byte(""), wasm)
 }
 
 func TestFailInvalidWatContent(t *testing.T) {
