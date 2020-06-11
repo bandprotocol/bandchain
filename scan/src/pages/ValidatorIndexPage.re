@@ -152,6 +152,8 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
       </Row>
       <VSpacing size=Spacing.xl />
       <div className=Styles.vFlex>
+        <Avatar moniker={validator.moniker} identity={validator.identity} width=40 />
+        <HSpacing size=Spacing.md />
         <Text value={validator.moniker} size=Text.Xxl weight=Text.Bold nowrap=true />
       </div>
       <VSpacing size=Spacing.xl />
