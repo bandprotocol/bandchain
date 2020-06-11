@@ -129,6 +129,7 @@ module StakingInfo = {
       let (_, dispatchModal) = React.useContext(ModalContext.context);
 
       let infoSub = React.useContext(GlobalContext.context);
+      let validatorInfoSub = ValidatorSub.get(validatorAddress);
       let balanceAtStakeSub =
         DelegationSub.getStakeByValiator(delegatorAddress, validatorAddress);
       let unbondingSub =
@@ -139,6 +140,7 @@ module StakingInfo = {
       let%Sub balanceAtStake = balanceAtStakeSub;
       let%Sub unbonding = unbondingSub;
       let%Sub unbondingList = unbondingListSub;
+      let%Sub validatorInfo = validatorInfoSub;
 
       let balanceAtStakeAmount = balanceAtStake.amount;
       let unbondingAmount = unbonding;
@@ -186,7 +188,13 @@ module StakingInfo = {
             />
           </Col>
           <HSpacing size=Spacing.md />
-          <button className={Styles.button(100)} onClick={_ => {delegate()}}>
+          <button
+            className={Styles.button(100)}
+            onClick={_ => {
+              validatorInfo.commission == 100.
+                ? Window.alert("Delegation to foundation validator nodes is not allowed.")
+                : delegate()
+            }}>
             <Text value="Delegate" />
           </button>
           <HSpacing size=Spacing.md />
