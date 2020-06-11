@@ -21,6 +21,8 @@
 
 ### Owasm
 
+- (feat) [\#1922](https://github.com/bandprotocol/bandchain/pull/1922) Add wat to wasm function.
+
 ### Oracle Binary Encoding (OBI)
 
 ### MISC
