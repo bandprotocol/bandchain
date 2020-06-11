@@ -9,7 +9,7 @@ pub struct Span {
 }
 
 impl Span {
-    // TODO
+    // Create span.
     pub fn create(data: &[u8]) -> Span {
         Span {
             ptr: data.as_ptr() as *mut u8,
@@ -18,12 +18,12 @@ impl Span {
         }
     }
 
-    /// TODO
+    /// Read data from the span.
     pub fn read(&self) -> &[u8] {
         unsafe { std::slice::from_raw_parts(self.ptr, self.len) }
     }
 
-    /// TODO
+    /// Write data to the span.
     pub fn write(&mut self, data: &[u8]) -> Error {
         if self.len + data.len() > self.cap {
             return Error::SpanExceededCapacityError
@@ -76,7 +76,5 @@ mod test {
         span.write(data.as_slice());
 
         assert_eq!(span.write(data.as_slice()), Error::SpanExceededCapacityError);
-        println!("{:?}", empty_space);
-        // assert_eq!(add(1, 2), 3);
     }
 }
