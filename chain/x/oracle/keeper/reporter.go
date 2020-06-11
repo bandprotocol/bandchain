@@ -41,8 +41,7 @@ func (k Keeper) GetReporters(ctx sdk.Context, val sdk.ValAddress) (reporters []s
 	reporters = append(reporters, selfReporter)
 
 	store := ctx.KVStore(k.storeKey)
-	storeKeyPrefix := append(types.ReporterStoreKeyPrefix, val.Bytes()...)
-	iterator := sdk.KVStorePrefixIterator(store, storeKeyPrefix)
+	iterator := sdk.KVStorePrefixIterator(store, types.ValidatorReporterPrefixKey(val))
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		key := iterator.Key()
