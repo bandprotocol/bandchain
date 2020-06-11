@@ -129,7 +129,7 @@ func queryReporters(ctx sdk.Context, path []string, k Keeper) ([]byte, error) {
 
 func queryReportInfo(ctx sdk.Context, path []string, k Keeper) ([]byte, error) {
 	if len(path) != 1 {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "report info not specified")
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "validator address not specified")
 	}
 	validatorAddress, err := sdk.ValAddressFromBech32(path[0])
 	if err != nil {
