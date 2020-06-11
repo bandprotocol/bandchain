@@ -11,8 +11,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 
 	clientcmn "github.com/bandprotocol/bandchain/chain/x/oracle/client/common"
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 // GetQueryCmd returns the cli query commands for this module.
