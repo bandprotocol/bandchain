@@ -11,6 +11,7 @@ use span::Span;
 use std::ffi::c_void;
 use wabt::wat2wasm;
 use wasmer_runtime::{instantiate, Ctx};
+use wasmer_runtime_core::error::RuntimeError;
 use wasmer_runtime_core::{func, imports, wasmparser, Func};
 
 
@@ -26,10 +27,17 @@ pub extern "C" fn do_compile(input: Span, output: &mut Span) -> Error {
 }
 
 #[no_mangle]
-pub extern "C" fn do_run(code: Span, is_prepare: bool, env: Env) -> Error {
-    match run(code.read(), is_prepare, env) {
+pub extern "C" fn do_run(code: Span, gas_limit: u32, is_prepare: bool, env: Env) -> Error {
+    match run(code.read(), gas_limit, is_prepare, env) {
         Ok(_) => Error::NoError,
-        Err(_) => Error::RunError,
+        Err(e) => match e {
+            1 => Error::CompliationError,
+            2 => Error::FunctionNotFoundError,
+            3 => Error::GasLimitExceedError,
+            4 => Error::RunError,
+            255 => Error::UnknownError,
+            _ => Error::UnknownError,
+        },
     }
 }
 
@@ -130,5 +138,11 @@ fn run(code: &[u8], gas_limit: u32, is_prepare: bool, env: Env) -> Result<(), i3
     let instance = instantiate(code, &import_object).map_err(|_| 1)?;
     let entry = if is_prepare { "prepare" } else { "execute" };
     let function: Func<(), ()> = instance.exports.get(entry).map_err(|_| 2)?;
-    function.call().map_err(|_| 3)
+    function.call().map_err(|err| match err {
+        RuntimeError::User(uerr) => match uerr.downcast_ref::<vm::VmError>() {
+            None => 255,
+            Some(vm::VmError::GasLimitExceeded) => 3,
+        },
+        _ => 4,
+    })
 }

@@ -12,5 +12,7 @@ pub enum Error {
   DeserializationError = 8,
   GasCounterInjectionError = 9,
   SerializationError = 10,
+  FunctionNotFoundError = 11,
+  GasLimitExceedError = 12,
   UnknownError = 255,
 }

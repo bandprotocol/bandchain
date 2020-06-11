@@ -6,6 +6,10 @@ pub struct VMLogic {
     env: Env,
 }
 
+pub enum VmError {
+    GasLimitExceeded,
+}
+
 impl VMLogic {
     pub fn new(env: Env, gas: u32) -> VMLogic {
         VMLogic {
@@ -14,9 +18,9 @@ impl VMLogic {
         }
     }
 
-    pub fn consume_gas(&mut self, gas: u32) -> Result<(), ()> {
+    pub fn consume_gas(&mut self, gas: u32) -> Result<(), VmError> {
         if self.gas_left <= gas {
-            Err(())
+            Err(VmError::GasLimitExceeded)
         } else {
             self.gas_left -= gas;
             Ok(())

@@ -61,3 +61,33 @@ func TestFailCompileInvalidContent(t *testing.T) {
 	_, err := Compile(code, spanSize)
 	require.Equal(t, ErrValidateFail, err)
 }
+func TestRunError(t *testing.T) {
+	code, _ := Compile(readWasmFile("divide_by_zero"))
+
+	err := Prepare(code, 100000, NewMockEnv([]byte("")))
+	require.Equal(t, ErrRunError, err)
+}
+
+func TestGasLimit(t *testing.T) {
+	code, _ := Compile(readWasmFile("loop_prepare"))
+
+	err := Prepare(code, 100000, NewMockEnv([]byte("")))
+	require.NoError(t, err)
+
+	err = Prepare(code, 70000, NewMockEnv([]byte("")))
+	require.Equal(t, ErrGasLimitExceeded, err)
+}
+
+func TestFunctionNotFound(t *testing.T) {
+	code, _ := Compile(readWasmFile("loop_prepare"))
+
+	err := Execute(code, 100000, NewMockEnv([]byte("")))
+	require.Equal(t, ErrFunctionNotFound, err)
+}
+
+func TestCom(t *testing.T) {
+	code, _ := Compile(readWasmFile("loop_prepare"))
+
+	err := Execute(code, 100000, NewMockEnv([]byte("")))
+	require.Equal(t, ErrFunctionNotFound, err)
+}
