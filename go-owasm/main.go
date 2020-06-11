@@ -64,7 +64,7 @@ func Wat2Wasm(fileName string) error {
 
 func main() {
 	fmt.Println("Hello, World!")
-	code, _ := ioutil.ReadFile("./wasm/test.wat")
+	code, _ := ioutil.ReadFile("./wasm/fun3.wat")
 	wasm, e := api.Wat2Wasm(code)
 	fmt.Println("wasm", wasm)
 	fmt.Println(e)
