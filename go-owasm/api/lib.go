@@ -27,7 +27,7 @@ import (
 func Compile(code []byte, spanSize int) ([]byte, error) {
 	inputSpan := copySpan(code)
 	defer freeSpan(inputSpan)
-	outputSpan := newSpan(SpanSize)
+	outputSpan := newSpan(spanSize)
 	defer freeSpan(outputSpan)
 	err := parseError(int32(C.do_compile(inputSpan, &outputSpan)))
 	return readSpan(outputSpan), err
