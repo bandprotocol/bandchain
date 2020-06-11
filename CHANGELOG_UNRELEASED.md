@@ -10,6 +10,7 @@
 
 ### Chain
 
+- (feat) [\#1908](https://github.com/bandprotocol/bandchain/pull/1908) Support google cloud function REST executor
 - (impv) [\#1891](https://github.com/bandprotocol/bandchain/pull/1891) Add end-to-end request flow test.
 
 ### Scan
