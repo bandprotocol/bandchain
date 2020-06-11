@@ -1,5 +1,5 @@
 [package]
-name = "005_bitcoin_block_hash"
+name = "os005_bitcoin_block_hash"
 version = "0.1.0"
 authors = ["Band Protocol <dev@bandprotocol.com>"]
 edition = "2018"
