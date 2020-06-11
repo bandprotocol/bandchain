@@ -45,8 +45,7 @@ func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec, ibcInfo *ty
 	code := k.GetFile(script.Filename)
 	err = owasm.Prepare(code, env) // TODO: Don't forget about prepare gas!
 	if err != nil {
-		k.Logger(ctx).Info(fmt.Sprintf("failed to prepare request with error: %s", err.Error()))
-		return types.ErrBadWasmExecution
+		return sdkerrors.Wrapf(types.ErrBadWasmExecution, "failed to prepare request with error: %s", err.Error())
 	}
 	// Preparation complete! It's time to collect raw request ids.
 	for _, rawReq := range env.GetRawRequests() {
