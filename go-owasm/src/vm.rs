@@ -7,10 +7,10 @@ pub struct VMLogic {
 }
 
 impl VMLogic {
-    pub fn new(env: Env) -> VMLogic {
+    pub fn new(env: Env, gas: u32) -> VMLogic {
         VMLogic {
             env: env,
-            gas_left: 100,
+            gas_left: gas,
         }
     }
 
