@@ -7,8 +7,6 @@ import sys
 COINS_URL = "https://api.coingecko.com/api/v3/coins/list"
 PRICE_URL = "https://api.coingecko.com/api/v3/simple/price?ids={}&vs_currencies=usd"
 
-''
-
 
 def make_json_request(url):
     return json.loads(urllib.request.urlopen(url).read())
