@@ -13,7 +13,11 @@
 - (feat) [\#1908](https://github.com/bandprotocol/bandchain/pull/1908) Support google cloud function REST executor
 - (bugs) [\#1935](https://github.com/bandprotocol/bandchain/pull/1935) Fix wrong order on call search latest request.
 - (feat) [\#1927](https://github.com/bandprotocol/bandchain/pull/1927) Add reporter list of validator REST endpoint.
+<<<<<<< HEAD
 - (feat) [\#1929](https://github.com/bandprotocol/bandchain/pull/1929) Add report info of validator on CLI and REST endpoint.
+=======
+- (chore) Improve code quality and conciseness in x/oracle/keeper
+>>>>>>> chain: Improve code quality and conciseness in x/oracle/keeper
 - (impv) [\#1891](https://github.com/bandprotocol/bandchain/pull/1891) Add end-to-end request flow test.
 
 ### Scan
