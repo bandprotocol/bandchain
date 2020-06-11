@@ -149,7 +149,7 @@ func getReportersHandler(cliCtx context.CLIContext, route string) http.HandlerFu
 	}
 }
 
-func getReporterInfoHandler(cliCtx context.CLIContext, route string) http.HandlerFunc {
+func getReportInfoHandler(cliCtx context.CLIContext, route string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
