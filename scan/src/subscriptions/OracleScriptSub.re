@@ -45,7 +45,7 @@ module MultiConfig = [%graphql
       description
       schema
       sourceCodeURL: source_code_url
-      timestamp: last_updated @bsDecoder(fn: "GraphQLParser.time")
+      timestamp: last_updated @bsDecoder(fn: "GraphQLParser.timeMS")
       related_data_sources @bsRecord {
         dataSourceID: data_source_id @bsDecoder(fn: "ID.DataSource.fromJson")
       }
@@ -64,7 +64,7 @@ module SingleConfig = [%graphql
       description
       schema
       sourceCodeURL: source_code_url
-      timestamp: last_updated @bsDecoder(fn: "GraphQLParser.time")
+      timestamp: last_updated @bsDecoder(fn: "GraphQLParser.timeMS")
       related_data_sources @bsRecord {
         dataSourceID: data_source_id @bsDecoder(fn: "ID.DataSource.fromJson")
       }

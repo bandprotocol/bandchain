@@ -1170,7 +1170,7 @@ module SingleConfig = [%graphql
       gasLimit: gas_limit @bsDecoder(fn: "GraphQLParser.int64")
       gasUsed : gas_used @bsDecoder(fn: "GraphQLParser.int64")
       sender  @bsDecoder(fn: "Address.fromBech32")
-      timestamp  @bsDecoder(fn: "GraphQLParser.time")
+      timestamp  @bsDecoder(fn: "GraphQLParser.timeMS")
       messages @bsDecoder(fn: "Msg.decodeActions")
       rawLog: raw_log
     }
@@ -1189,7 +1189,7 @@ module MultiConfig = [%graphql
       gasLimit: gas_limit @bsDecoder(fn: "GraphQLParser.int64")
       gasUsed : gas_used @bsDecoder(fn: "GraphQLParser.int64")
       sender  @bsDecoder(fn: "Address.fromBech32")
-      timestamp  @bsDecoder(fn: "GraphQLParser.time")
+      timestamp  @bsDecoder(fn: "GraphQLParser.timeMS")
       messages @bsDecoder(fn: "Msg.decodeActions")
       rawLog: raw_log
     }
@@ -1208,7 +1208,7 @@ module MultiByHeightConfig = [%graphql
       gasLimit: gas_limit @bsDecoder(fn: "GraphQLParser.int64")
       gasUsed : gas_used @bsDecoder(fn: "GraphQLParser.int64")
       sender  @bsDecoder(fn: "Address.fromBech32")
-      timestamp  @bsDecoder(fn: "GraphQLParser.time")
+      timestamp  @bsDecoder(fn: "GraphQLParser.timeMS")
       messages @bsDecoder(fn: "Msg.decodeActions")
       rawLog: raw_log
     }
@@ -1232,7 +1232,7 @@ module MultiBySenderConfig = [%graphql
       gasLimit: gas_limit @bsDecoder(fn: "GraphQLParser.int64")
       gasUsed : gas_used @bsDecoder(fn: "GraphQLParser.int64")
       sender  @bsDecoder(fn: "Address.fromBech32")
-      timestamp  @bsDecoder(fn: "GraphQLParser.time")
+      timestamp  @bsDecoder(fn: "GraphQLParser.timeMS")
       messages @bsDecoder(fn: "Msg.decodeActions")
       rawLog: raw_log
     }

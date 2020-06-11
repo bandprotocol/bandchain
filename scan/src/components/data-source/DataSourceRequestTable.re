@@ -96,7 +96,7 @@ let make = (~dataSourceID: ID.DataSource.t) =>
              </THead>
              {requests
               ->Belt_Array.map(
-                  ({id, oracleScriptID, oracleScriptName, timestamp, blockHeight, txHash}) => {
+                  ({id, oracleScriptID, oracleScriptName, txTimestamp, blockHeight, txHash}) => {
                   <TBody key={txHash |> Hash.toHex(~upper=true)}>
                     <Row>
                       <Col> <HSpacing size=Spacing.lg /> </Col>
@@ -114,7 +114,7 @@ let make = (~dataSourceID: ID.DataSource.t) =>
                         </Row>
                       </Col>
                       <Col size=2.5>
-                        <Timestamp time=timestamp size=Text.Md weight=Text.Regular code=true />
+                        <Timestamp time=txTimestamp size=Text.Md weight=Text.Regular code=true />
                       </Col>
                       <Col size=1.0> <TypeID.Block id=blockHeight /> </Col>
                       <Col size=2.7> <TxLink txHash width=230 weight=Text.Medium /> </Col>

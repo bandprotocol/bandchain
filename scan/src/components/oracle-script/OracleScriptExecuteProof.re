@@ -17,7 +17,7 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~id: ID.Request.t) => {
+let make = (~id: ID.Request.t, ~requestOpt: option(RequestSub.Mini.t)) => {
   let (proofOpt, reload) = ProofHook.get(id);
 
   React.useEffect1(
@@ -47,33 +47,26 @@ let make = (~id: ID.Request.t) => {
           height={Text.Px(15)}
         />
       </div>
-      {switch (proofOpt) {
-       | Some(proof) =>
-         <div className={Styles.vFlex(`px(660), `auto)}>
-           <Text
-             value={proof.evmProofBytes |> JsBuffer.toHex}
-             height={Text.Px(15)}
-             code=true
-             ellipsis=true
+      {switch (proofOpt, requestOpt) {
+       | (Some(proof), Some({result: Some(_)})) =>
+         <div className={Styles.hFlex(`auto)}>
+           <CopyButton data={proof.evmProofBytes} title="Copy EVM proof" width=115 />
+           <HSpacing size=Spacing.md />
+           <CopyButton
+             data={
+               NonEVMProof.RequestMini(requestOpt->Belt_Option.getExn)->NonEVMProof.createProof
+             }
+             title="Copy non-EVM proof"
+             width=130
            />
+           <HSpacing size=Spacing.lg />
+           <ExtLinkButton link="https://docs.bandchain.org/" description="What is proof ?" />
          </div>
-       | None =>
+       | _ =>
          <div className={Styles.withWH(`percent(100.), `auto)}>
            <img src=Images.loadingCircles className={Styles.withWH(`px(104), `px(30))} />
          </div>
        }}
     </div>
-    <VSpacing size=Spacing.md />
-    {switch (proofOpt) {
-     | Some(proof) =>
-       <div className={Styles.hFlex(`auto)}>
-         <HSpacing size=Spacing.lg />
-         <div className={Styles.vFlex(`px(220), `auto)} />
-         <CopyButton data={proof.evmProofBytes} />
-         <HSpacing size=Spacing.lg />
-         <ExtLinkButton link="https://docs.bandchain.org/" description="What is proof ?" />
-       </div>
-     | None => React.null
-     }}
   </>;
 };
