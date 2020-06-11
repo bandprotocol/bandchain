@@ -4,6 +4,10 @@ package api
 import "C"
 import "unsafe"
 
+const (
+	SpanSize = 1 * 1024 * 1024
+)
+
 func newSpan(size int) C.Span {
 	return C.Span{
 		ptr: (*C.uint8_t)(C.malloc(C.uintptr_t(size))),
