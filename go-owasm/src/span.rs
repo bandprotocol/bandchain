@@ -1,3 +1,5 @@
+use crate::error::Error;
+
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct Span {
@@ -22,10 +24,13 @@ impl Span {
     }
 
     /// TODO
-    pub fn write(&mut self, data: &[u8]) {
-        // TODO: Do not allow write if data.len() exceeds cap.
+    pub fn write(&mut self, data: &[u8]) -> Error {
+        if self.len + data.len() > self.cap {
+            return Error::SpanExceededCapacityError
+        }
+        unsafe { std::ptr::copy(data.as_ptr(), self.ptr.offset(self.len as isize), data.len()) }
         self.len += data.len();
-        unsafe { std::ptr::copy(data.as_ptr(), self.ptr, data.len()) }
+        return Error::NoError
     }
 }
 

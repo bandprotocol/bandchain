@@ -24,7 +24,7 @@ import (
 	"unsafe"
 )
 
-func Compile(code []byte) ([]byte, error) {
+func Compile(code []byte, spanSize int) ([]byte, error) {
 	inputSpan := copySpan(code)
 	defer freeSpan(inputSpan)
 	outputSpan := newSpan(SpanSize)
@@ -61,10 +61,10 @@ func run(code []byte, isPrepare bool, env EnvInterface) error {
 	})))
 }
 
-func Wat2Wasm(code []byte) ([]byte, error) {
+func Wat2Wasm(code []byte, spanSize int) ([]byte, error) {
 	inputSpan := copySpan(code)
 	defer freeSpan(inputSpan)
-	outputSpan := newSpan(SpanSize)
+	outputSpan := newSpan(spanSize)
 	defer freeSpan(outputSpan)
 	err := parseError(int32(C.do_wat2wasm(inputSpan, &outputSpan)))
 	return readSpan(outputSpan), err
