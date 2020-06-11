@@ -1,1 +1,0 @@
-{symbol:string,multiplier:u64}/{volume:u64}

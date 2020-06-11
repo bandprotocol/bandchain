@@ -1,1 +1,0 @@
-{block_height:u64}/{block_hash:string}

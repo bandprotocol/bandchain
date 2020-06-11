@@ -1,1 +1,0 @@
-{country:string,main_field:string,sub_field:string,multiplier:u64}/{value:u64}

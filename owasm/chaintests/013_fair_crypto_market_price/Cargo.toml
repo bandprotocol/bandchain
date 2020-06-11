@@ -1,5 +1,5 @@
 [package]
-name = "fair_crypto_market_price"
+name = "013_fair_crypto_market_price"
 version = "0.1.0"
 authors = ["Band Protocol <dev@bandprotocol.com>"]
 edition = "2018"

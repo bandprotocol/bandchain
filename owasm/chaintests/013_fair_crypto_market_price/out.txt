@@ -1,1 +1,0 @@
-{base_symbol:string,quote_symbol:string,aggregation_method:string,multiplier:u64}/{px:u64}
