@@ -46,7 +46,7 @@ func run(code []byte, isPrepare bool, env EnvInterface) error {
 	defer freeSpan(codeSpan)
 	envIntl := createEnvIntl(env)
 	defer destroyEnvIntl(envIntl)
-	return parseError(int32(C.do_run(codeSpan, C.bool(isPrepare), C.Env{
+	return int32(C.do_run(codeSpan, C.uint32_t(uint32(gasLimit)), C.bool(isPrepare), C.Env{
 		env: (*C.env_t)(unsafe.Pointer(envIntl)),
 		dis: C.EnvDispatcher{
 			get_calldata:             C.get_calldata_fn(C.cGetCalldata_cgo),
