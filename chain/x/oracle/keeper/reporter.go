@@ -45,8 +45,7 @@ func (k Keeper) GetReporters(ctx sdk.Context, val sdk.ValAddress) (reporters []s
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
 		key := iterator.Key()
-		reporterBytes := key[1+len(val):]
-		reporterAddress := sdk.AccAddress(reporterBytes)
+		reporterAddress := sdk.AccAddress(key[1+len(val):])
 		reporters = append(reporters, reporterAddress)
 	}
 	return reporters
