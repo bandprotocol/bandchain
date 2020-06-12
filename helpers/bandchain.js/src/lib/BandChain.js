@@ -132,7 +132,9 @@ class BandChain {
             clearInterval(fetchProof);
             resolve(evmProof);
           }
-        } catch (e) {}
+        } catch (e) {
+          throw new Error(`Cannot retrieve proof for specified requestID: ${e}`);
+        }
       }, 100);
     });
   }
@@ -143,12 +145,16 @@ class BandChain {
         try {
           const endpoint = `${this.endpoint}/oracle/requests/${requestID}`;
           let res = await axios.get(endpoint);
-          if (res.status == 200 && res.data.result.result) {
+          if (res.status == 200 && res.data.result.resolve_status == 1) {
             let result = res.data.result.result;
             clearInterval(fetchResults);
             resolve(result);
+          } else if (res.data.result.resolve_status == 2) {
+            throw new Error('Specified request was not successful');
           }
-        } catch (e) {}
+        } catch (e) {
+          throw new Error(`An error occurred: ${e}`);
+        }
       }, 100);
     });
   }
@@ -175,7 +181,9 @@ class BandChain {
             clearInterval(fetchLastRequestResult);
             resolve(result);
           }
-        } catch (e) {}
+        } catch (e) {
+          throw new Error(`An error occured: ${e}`);
+        }
       }, 100);
     });
   }

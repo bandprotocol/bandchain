@@ -24,10 +24,10 @@ npm install
 ```js
 import BandChain from 'bandchain.js'
 
-const chainId = 'band-guanyu-alchemist'
+const chainId = 'band-guanyu-devnet-2'
 const endpoint = 'http://devnet.bandchain.org/rest'
 
-const bandchain = new BandChain({ chainId, endpoint })
+const bandchain = new BandChain(chainId, endpoint)
 ...
 ```
 
@@ -53,7 +53,7 @@ const chainId = "band-guanyu-alchemist";
 const endpoint = "http://devnet.bandchain.org/rest";
 
 // Instantiating BandChain with REST endpoint
-const bandchain = new BandChain({ chainId, endpoint });
+const bandchain = new BandChain(chainId, endpoint);
 
 // Create an instance of OracleScript with the script ID
 const oracleScript = await bandchain.getOracleScript(1);
@@ -86,16 +86,17 @@ try {
   // Get final result (blocking until the reports & aggregations are finished)
   const finalResult = await bandchain.getRequestResult(requestID);
   // Get the result of the most recent request that match the specified parameters
+  const minCount = 2;
+  const askCount = 4;
+  const inputParameters = { symbol: 'BTC', multiplier: BigInt('1000000000') };
   const lastMatchResult = await bandchain.getLastMatchingRequestResult(
     oracleScript,
-    { symbol: 'BTC', multiplier: BigInt('1000000000') },
-    2,
-    4
+    inputParameters,
+    minCount,
+    askCount
   )
 } catch {
   // Something went wrong
   console.error("Data request failed");
 }
 ```
-
-## Functions
