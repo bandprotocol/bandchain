@@ -56,7 +56,7 @@ let make = (~moniker, ~identity, ~width=25) => {
   | Data(url') => <img src=url' className={Styles.avatar(width)} />
   | NoData =>
     <img
-      src={j|https://ui-avatars.com/api/?rounded=true&size=128&name=$moniker&color=fff&background=CA47EB|j}
+      src={j|https://ui-avatars.com/api/?rounded=true&size=128&name=$moniker&color=9714B8&background=F3CEFD|j}
       className={Styles.avatar(width)}
     />
   | Loading => <LoadingCensorBar width height={width - 4} radius=100 />
