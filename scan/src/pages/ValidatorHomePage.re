@@ -114,7 +114,7 @@ let renderBody =
     }
     minHeight=60>
     <div className=Styles.fullWidth>
-      <Row alignItems=`flexStart>
+      <Row alignItems=`center>
         <Col size=0.4>
           {switch (validatorSub) {
            | Data(_) =>
