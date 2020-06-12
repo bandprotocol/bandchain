@@ -17,6 +17,7 @@
 
 ### Scan
 
+- (bugs) [\#1947](https://github.com/bandprotocol/bandchain/pull/1947) Fix fade out on modal
 - (impv) [\#1928](https://github.com/bandprotocol/bandchain/pull/1928) Add chainID for guanyu-devnet
 
 ### Bridges
