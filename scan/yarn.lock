@@ -2557,10 +2557,10 @@ bs-let@^0.1.14:
   resolved "https://registry.yarnpkg.com/bs-let/-/bs-let-0.1.16.tgz#63cd449ed02c75f87eceb248d45963937afdd4ed"
   integrity sha512-pdbSNe/QRpqgqS72dYDlkZ7kqMHc5aJkLgipLS8BFMRx+hQqkOo0JOpxWZQeDj1T677e302xgmV+Mid5gvmnBg==
 
-bs-moment@^0.4.5:
-  version "0.4.5"
-  resolved "https://registry.yarnpkg.com/bs-moment/-/bs-moment-0.4.5.tgz#3f84fed55c2a70d25b0b6025e4e8d821fcdd4dc8"
-  integrity sha512-anPYkFSof+X8EeomnP0fbQBvWFJeganwPqqARVB+fcdKYX2Uog/n3CCiFGEA+66yHbwnWZD5YFhtHCuyLMcQfQ==
+bs-moment@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/bs-moment/-/bs-moment-0.6.0.tgz#b49c5580598ef277696494684fd274ea1f8b1019"
+  integrity sha512-AYtL5j6hXHwA+SZut4uhvlhDrabpqwjuXIa/0qfVpEjR45HGBruSZFxUcXwjtOGy9eoRc1FKjRM0n+X21oJb+w==
 
 bs-platform@^7.0.1:
   version "7.0.1"
