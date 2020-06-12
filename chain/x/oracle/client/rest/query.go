@@ -121,8 +121,25 @@ func getRequestSearchHandler(cliCtx context.CLIContext, route string) http.Handl
 		}
 		res, height, err := clientcmn.QuerySearchLatestRequest(
 			route, cliCtx,
-			r.FormValue("oid"), r.FormValue("calldata"), r.FormValue("min_count"), r.FormValue("ask_count"),
+			r.FormValue("oid"), r.FormValue("calldata"), r.FormValue("ask_count"), r.FormValue("min_count"),
 		)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		cliCtx = cliCtx.WithHeight(height)
+		rest.PostProcessResponse(w, cliCtx, res)
+	}
+}
+
+func getReportersHandler(cliCtx context.CLIContext, route string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
+		if !ok {
+			return
+		}
+		vars := mux.Vars(r)
+		res, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryReporters, vars[validatorAddressTag]), nil)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return

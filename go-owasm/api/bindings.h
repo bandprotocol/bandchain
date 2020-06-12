@@ -3,6 +3,18 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+enum Error {
+  NoError = 0,
+  CompliationError = 1,
+  RunError = 2,
+  ParseError = 3,
+  WriteBinaryError = 4,
+  ResolveNamesError = 5,
+  ValidateError = 6,
+  UnknownError = 7,
+};
+typedef int32_t Error;
+
 typedef struct {
   uint8_t *ptr;
   uintptr_t len;
@@ -29,6 +41,8 @@ typedef struct {
   EnvDispatcher dis;
 } Env;
 
-int32_t do_compile(Span input, Span *output);
+Error do_compile(Span input, Span *output);
 
-int32_t do_run(Span code, bool is_prepare, Env env);
+Error do_run(Span code, bool is_prepare, Env env);
+
+Error do_wat2wasm(Span input, Span *output);
