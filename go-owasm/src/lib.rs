@@ -15,15 +15,15 @@ use wabt::wat2wasm;
 
 
 
+
 #[no_mangle]
 pub extern "C" fn do_compile(input: Span, output: &mut Span) -> Error {
-    // TODO: Define error when compile code.
     match compile(input.read()) {
         Ok(out) => {
             output.write(&out);
             Error::NoError
-        }
-        Err(_) => Error::CompliationError,
+        },
+        Err(e) => e,
     }
 }
 
@@ -54,16 +54,16 @@ pub extern "C" fn do_wat2wasm(input: Span, output: &mut Span) -> Error {
     }
 }
 
-fn compile(code: &[u8]) -> Result<Vec<u8>, i32> {
+fn compile(code: &[u8]) -> Result<Vec<u8>, Error> {
     // Check that the given Wasm code is indeed a valid Wasm.
-    wasmparser::validate(code, None).map_err(|_| 1)?;
+    wasmparser::validate(code, None).map_err(|_| Error::ValidateError)?;
     // Simple gas rule. Every opcode and memory growth costs 1 gas.
     let gas_rules = rules::Set::new(1, Default::default()).with_grow_cost(1);
     // Start the compiling chains. TODO: Add more safeguards.
-    let module = elements::deserialize_buffer(code).map_err(|_| 2)?;
-    let module = pwasm_utils::inject_gas_counter(module, &gas_rules).map_err(|_| 3)?;
+    let module = elements::deserialize_buffer(code).map_err(|_| Error::DeserializationError)?;
+    let module = pwasm_utils::inject_gas_counter(module, &gas_rules).map_err(|_| Error::GasCounterInjectionError)?;
     // Serialize the final Wasm code back to bytes.
-    elements::serialize(module).map_err(|_| 4)
+    elements::serialize(module).map_err(|_| Error::SerializationError)
 }
 
 struct ImportReference(*mut c_void);

@@ -7,5 +7,8 @@ pub enum Error {
   WriteBinaryError = 4,
   ResolveNamesError = 5,
   ValidateError = 6,
-  UnknownError = 7
+  UnknownError = 7,
+  DeserializationError = 9,
+  GasCounterInjectionError = 10,
+  SerializationError = 11,
 }
