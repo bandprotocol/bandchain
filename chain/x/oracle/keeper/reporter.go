@@ -1,9 +1,10 @@
 package keeper
 
 import (
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 // IsReporter returns true iff the address is an authorized reporter for the given validator.
@@ -24,7 +25,7 @@ func (k Keeper) AddReporter(ctx sdk.Context, val sdk.ValAddress, addr sdk.AccAdd
 	return nil
 }
 
-// AddReporter removes the reporter address from the list of reporters of the given validator.
+// RemoveReporter removes the reporter address from the list of reporters of the given validator.
 func (k Keeper) RemoveReporter(ctx sdk.Context, val sdk.ValAddress, addr sdk.AccAddress) error {
 	if !k.IsReporter(ctx, val, addr) {
 		return sdkerrors.Wrapf(
@@ -32,4 +33,21 @@ func (k Keeper) RemoveReporter(ctx sdk.Context, val sdk.ValAddress, addr sdk.Acc
 	}
 	ctx.KVStore(k.storeKey).Delete(types.ReporterStoreKey(val, addr))
 	return nil
+}
+
+// GetReporters returns the reporter list of the given validator.
+func (k Keeper) GetReporters(ctx sdk.Context, val sdk.ValAddress) (reporters []sdk.AccAddress) {
+	// Appends self reporter of validator to the list
+	selfReporter := sdk.AccAddress(val)
+	reporters = append(reporters, selfReporter)
+
+	store := ctx.KVStore(k.storeKey)
+	iterator := sdk.KVStorePrefixIterator(store, types.ValidatorReporterPrefixKey(val))
+	defer iterator.Close()
+	for ; iterator.Valid(); iterator.Next() {
+		key := iterator.Key()
+		reporterAddress := sdk.AccAddress(key[1+len(val):])
+		reporters = append(reporters, reporterAddress)
+	}
+	return reporters
 }

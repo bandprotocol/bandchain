@@ -1,4 +1,4 @@
-<--
+<!--
 (feat): New feature
 (impv): Improvement / Enhancement
 (docs): Documentation
@@ -8,7 +8,7 @@
 
 # Changelog
 
-## [Unreleased]
+## [v1.0.2-alpha](https://github.com/bandprotocol/bandchain/releases/tag/v1.0.2-alpha)
 
 ### Chain
 
@@ -39,15 +39,11 @@
 - (bug) [\#1861](https://github.com/bandprotocol/bandchain/pull/1861) Fix name, endpoint of guanyu-devnet on chain-id selection
 - (feat) [\#1856](https://github.com/bandprotocol/bandchain/pull/1856) Add sorting on Validator Home Page.
 
-### Bridges
-
 ### Owasm
 
 - (feat) [\#1919](https://github.com/bandprotocol/bandchain/pull/1919) Add Makefile entry to allow compiling dylib and so for go-owasm via docker.
 - (feat) [\#1907](https://github.com/bandprotocol/bandchain/pull/1907) Implement OBISchema derive for generate schema of Input and Output struct
 - (feat) [\#1858](https://github.com/bandprotocol/bandchain/pull/1858) Add go-owasm to BandChain monorepo.
-
-### Oracle Binary Encoding (OBI)
 
 ### MISC
 
