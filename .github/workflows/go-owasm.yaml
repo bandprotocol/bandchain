@@ -1,28 +1,38 @@
-name: Chain Workflow
+name: go-owasm Workflow
 on: push
 
 jobs:
-  chain-test:
+  wasm-test:
     runs-on: ubuntu-latest
     env:
-      working-directory: ./chain
+      working-directory: ./go-owasm
 
     steps:
       - name: Code checkout
         uses: actions/checkout@v2
 
+      - name: Install Rust and rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
       - name: Install Go
         uses: actions/setup-go@v2-beta
         with:
-          go-version: "^1.14.4" # The Go version to download (if necessary) and use.
+          go-version: "^1.14.4"
 
       - name: Check go mod cache
-        id: go-modules-cache
         uses: actions/cache@v1
         with:
           path: ~/go/pkg/mod
           key: ${{ runner.os }}-chain-build-${{ hashFiles('**/go.sum') }}
 
-      - name: Run chain tests
+      - name: Run rust tests
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --manifest-path ${{env.working-directory}}/Cargo.toml --all
+
+      - name: Run go tests
         run: go test ./...
         working-directory: ${{env.working-directory}}

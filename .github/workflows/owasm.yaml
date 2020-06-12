@@ -6,18 +6,18 @@ jobs:
     runs-on: ubuntu-latest
     env:
       working-directory: ./owasm
-    
-    steps:
-    - name: Code checkout
-      uses: actions/checkout@v2
 
-    - name: Install Rust and rust toolchain
-      uses: actions-rs/toolchain@v1
-      with:
-        toolchain: stable
-    
-    - name: Run owasm tests
-      uses: actions-rs/cargo@v1
-      with:
-        command: test
-        args: --manifest-path owasm/Cargo.toml --all
+    steps:
+      - name: Code checkout
+        uses: actions/checkout@v2
+
+      - name: Install Rust and rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Run owasm tests
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --manifest-path owasm/Cargo.toml --all
