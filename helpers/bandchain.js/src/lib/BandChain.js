@@ -1,6 +1,7 @@
 const axios = require('axios');
 const obi = require('@bandprotocol/obi.js');
 const cosmosjs = require('@cosmostation/cosmosjs');
+const delay = require('delay');
 
 function convertSignedMsg(signedMsg) {
   for (const sig of signedMsg.tx.signatures) {
@@ -8,26 +9,6 @@ function convertSignedMsg(signedMsg) {
       `eb5ae98721${Buffer.from(sig.pub_key.value, 'base64').toString('hex')}`,
       'hex'
     ).toString('base64');
-  }
-}
-
-function stringify(data) {
-  if (Array.isArray(data)) {
-    return '[' + [...data].map(stringify).join(',') + ']';
-  } else if (typeof data === 'bigint') {
-    return data.toString();
-  } else if (Buffer.isBuffer(data)) {
-    return '0x' + data.toString('hex');
-  } else if (typeof data === 'object') {
-    return (
-      '{' +
-      Object.entries(data)
-        .map(([k, v]) => JSON.stringify(k) + ':' + stringify(v))
-        .join(',') +
-      '}'
-    );
-  } else {
-    return JSON.stringify(data);
   }
 }
 
@@ -66,19 +47,19 @@ async function createRequestMsg(
 }
 
 async function getRequestID(txHash, endpoint) {
-  return new Promise(async (resolve, _) => {
-    let fetchTxInfo = setInterval(async () => {
-      try {
-        const res = await axios.get(`${endpoint}/txs/${txHash}`);
-        if (res.status == 200) {
-          const rawLog = JSON.parse(res.data.raw_log);
-          const requestID = rawLog[0].events[2].attributes[0].value;
-          clearInterval(fetchTxInfo);
-          resolve(requestID);
-        }
-      } catch {}
-    }, 100);
-  });
+  let requestEndpoint = `${endpoint}/txs/${txHash}`;
+  while (true) {
+    try {
+      const res = await axios.get(requestEndpoint);
+      if (res.status == 200) {
+        const rawLog = JSON.parse(res.data.raw_log);
+        const requestID = rawLog[0].events[2].attributes[0].value;
+        return requestID;
+      }
+    } catch {
+      await delay(100);
+    }
+  }
 }
 
 class BandChain {
@@ -122,67 +103,62 @@ class BandChain {
   }
 
   async getRequestProof(requestID) {
-    return new Promise(async (resolve, _) => {
-      let fetchProof = setInterval(async () => {
-        try {
-          const endpoint = `${this.endpoint}/bandchain/proof/${requestID}`;
-          let res = await axios.get(endpoint);
-          if (res.status == 200) {
-            let evmProof = res.data.result.evmProofBytes;
-            clearInterval(fetchProof);
-            resolve(evmProof);
-          }
-        } catch (e) {}
-      }, 100);
-    });
+    while (true) {
+      try {
+        const requestEndpoint = `${this.endpoint}/bandchain/proof/${requestID}`;
+        let res = await axios.get(requestEndpoint);
+        if (res.status == 200 && res.data.result.evmProofBytes) {
+          let evmProof = res.data.result.evmProofBytes;
+          return evmProof;
+        } else if (res.status == 200 && !res.data.result.evmProofBytes) {
+          throw new Error('No proof found for the specified requestID');
+        }
+      } catch {
+        await delay(100);
+      }
+    }
   }
 
   async getRequestResult(requestID) {
-    return new Promise(async (resolve, _) => {
-      let fetchResults = setInterval(async () => {
-        try {
-          const endpoint = `${this.endpoint}/oracle/requests/${requestID}`;
-          let res = await axios.get(endpoint);
-          if (res.status == 200 && res.data.result.result) {
-            let result = res.data.result.result;
-            clearInterval(fetchResults);
-            resolve(result);
-          } else if (res.status == 200 && !res.data.result.result) {
-            throw new Error('No result found for the specified requestID');
-          }
-        } catch (e) {}
-      }, 100);
-    });
+    while (true) {
+      try {
+        const requestEndpoint = `${this.endpoint}/oracle/requests/${requestID}`;
+        let res = await axios.get(requestEndpoint);
+        if (res.status == 200 && res.data.result.result) {
+          let result = res.data.result.result;
+          return result;
+        } else if (res.status == 200 && !res.data.result.result) {
+          throw new Error('No result found for the specified requestID');
+        }
+      } catch {
+        await delay(100);
+      }
+    }
   }
 
   async getLastMatchingRequestResult(oracleScript, parameters, minCount, askCount) {
     const obiObj = new obi.Obi(oracleScript.schema);
     const calldata = Buffer.from(obiObj.encodeInput(parameters)).toString('hex');
-    return new Promise(async (resolve, _) => {
-      let fetchLastRequestResult = setInterval(async () => {
-        try {
-          const endpoint = `${this.endpoint}/oracle/request_search?oid=${oracleScript.id}&calldata=${calldata}&min_count=${minCount}&ask_count=${askCount}`;
-          console.log(endpoint);
-          let res = await axios.get(endpoint);
-          if (res.status == 200 && res.data.result.result) {
-            let result = res.data.result.result;
-            let rawResult = obiObj.decodeOutput(
-              Buffer.from(result.ResponsePacketData.result, 'base64')
-            );
-            let decodedResult = [];
-            for (let x of Object.entries(rawResult)) {
-              let value = stringify(x[1]);
-              decodedResult = [...decodedResult, { fieldName: x[0], fieldValue: value }];
-            }
-            result.ResponsePacketData.result = decodedResult;
-            clearInterval(fetchLastRequestResult);
-            resolve(result);
-          } else if (res.status == 200 && !res.data.result.result) {
-            throw new Error('No matching request found');
+    const requestEndpoint = `${this.endpoint}/oracle/request_search?oid=${oracleScript.id}&calldata=${calldata}&min_count=${minCount}&ask_count=${askCount}`;
+    while (true) {
+      try {
+        let res = await axios.get(requestEndpoint);
+        if (res.status == 200 && res.data.result.result) {
+          let result = res.data.result.result;
+          let rawResult = obiObj.decodeOutput(
+            Buffer.from(result.ResponsePacketData.result, 'base64')
+          );
+          let decodedResult = [];
+          for (let [k, v] of Object.entries(rawResult)) {
+            decodedResult = [...decodedResult, { fieldName: k, fieldValue: v }];
           }
-        } catch (e) {}
-      }, 100);
-    });
+          result.ResponsePacketData.result = decodedResult;
+          return result;
+        }
+      } catch {
+        await delay(100);
+      }
+    }
   }
 }
 
