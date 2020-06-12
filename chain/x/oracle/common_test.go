@@ -1,6 +1,7 @@
 package oracle_test
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -55,15 +56,7 @@ func getTestDataSource(executable string) (ds types.DataSource, clear func()) {
 }
 
 func getTestOracleScript() (os types.OracleScript, clear func()) {
-	absPath, _ := filepath.Abs("../../pkg/owasm/res/beeb.wat")
-	rawWAT, err := ioutil.ReadFile(absPath)
-	if err != nil {
-		panic(err)
-	}
-	code, err := api.Wat2Wasm(rawWAT)
-	if err != nil {
-		panic(err)
-	}
+	code := mustGetOwasmCode("beeb.wat")
 	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
 	f := filecache.New(dir)
 	filename := f.AddFile(code)
@@ -73,4 +66,25 @@ func getTestOracleScript() (os types.OracleScript, clear func()) {
 		"schema",
 		"sourceCodeURL",
 	), func() { deleteFile(filepath.Join(dir, filename)) }
+}
+
+func mustGetOwasmCode(filename string) []byte {
+	absPath, _ := filepath.Abs(fmt.Sprintf("../../pkg/owasm/res/%s", filename))
+	rawWAT, err := ioutil.ReadFile(absPath)
+	if err != nil {
+		panic(err)
+	}
+	wasm, err := api.Wat2Wasm(rawWAT)
+	if err != nil {
+		panic(err)
+	}
+	return wasm
+}
+
+func mustCompileOwasm(code []byte) []byte {
+	compiled, err := api.Compile(code)
+	if err != nil {
+		panic(err)
+	}
+	return compiled
 }

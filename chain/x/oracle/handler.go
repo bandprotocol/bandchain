@@ -80,15 +80,19 @@ func handleMsgEditDataSource(ctx sdk.Context, k Keeper, m MsgEditDataSource) (*s
 }
 
 func handleMsgCreateOracleScript(ctx sdk.Context, k Keeper, m MsgCreateOracleScript) (*sdk.Result, error) {
-	var err error
 	if gzip.IsGzipped(m.Code) {
+		var err error
 		m.Code, err = gzip.Uncompress(m.Code, types.MaxWasmCodeSize)
 		if err != nil {
 			return nil, sdkerrors.Wrapf(types.ErrUncompressionFailed, err.Error())
 		}
 	}
+	filename, err := k.AddOracleScriptFile(m.Code)
+	if err != nil {
+		return nil, sdkerrors.Wrapf(types.ErrCompileFailed, err.Error())
+	}
 	id := k.AddOracleScript(ctx, types.NewOracleScript(
-		m.Owner, m.Name, m.Description, k.AddExecutableFile(m.Code), m.Schema, m.SourceCodeURL,
+		m.Owner, m.Name, m.Description, filename, m.Schema, m.SourceCodeURL,
 	))
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeCreateOracleScript,
@@ -111,8 +115,12 @@ func handleMsgEditOracleScript(ctx sdk.Context, k Keeper, m MsgEditOracleScript)
 			return nil, sdkerrors.Wrapf(types.ErrUncompressionFailed, err.Error())
 		}
 	}
+	filename, err := k.AddOracleScriptFile(m.Code)
+	if err != nil {
+		return nil, sdkerrors.Wrapf(types.ErrCompileFailed, err.Error())
+	}
 	k.MustEditOracleScript(ctx, m.OracleScriptID, types.NewOracleScript(
-		m.Owner, m.Name, m.Description, k.AddExecutableFile(m.Code), m.Schema, m.SourceCodeURL,
+		m.Owner, m.Name, m.Description, filename, m.Schema, m.SourceCodeURL,
 	))
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeEditOracleScript,
