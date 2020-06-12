@@ -43,10 +43,9 @@ func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec, ibcInfo *ty
 		return err
 	}
 	code := k.GetFile(script.Filename)
-	exitCode := owasm.Prepare(code, env) // TODO: Don't forget about prepare gas!
-	if exitCode != 0 {
-		k.Logger(ctx).Info(fmt.Sprintf("failed to prepare request with code: %d", exitCode))
-		return types.ErrBadWasmExecution
+	err = owasm.Prepare(code, env) // TODO: Don't forget about prepare gas!
+	if err != nil {
+		return sdkerrors.Wrapf(types.ErrBadWasmExecution, "failed to prepare request with error: %s", err.Error())
 	}
 	// Preparation complete! It's time to collect raw request ids.
 	for _, rawReq := range env.GetRawRequests() {
@@ -92,11 +91,11 @@ func (k Keeper) ResolveRequest(ctx sdk.Context, reqID types.RequestID) {
 	env.SetReports(k.GetReports(ctx, reqID))
 	script := k.MustGetOracleScript(ctx, req.OracleScriptID)
 	code := k.GetFile(script.Filename)
-	exitCode := owasm.Execute(code, env) // TODO: Don't forget about gas!
+	err := owasm.Execute(code, env) // TODO: Don't forget about gas!
 	var res types.OracleResponsePacketData
-	if exitCode != 0 {
+	if err != nil {
 		k.Logger(ctx).Info(fmt.Sprintf(
-			"failed to execute request id: %d with code: %d", reqID, exitCode,
+			"failed to execute request id: %d with error: %s", reqID, err.Error(),
 		))
 		res = k.SaveResult(ctx, reqID, types.ResolveStatus_Failure, nil)
 	} else {
