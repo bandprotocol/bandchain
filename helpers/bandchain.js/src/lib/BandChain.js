@@ -1,5 +1,5 @@
 const axios = require('axios');
-const obi = require('./obi');
+const obi = require('@bandprotocol/obi.js');
 const cosmosjs = require('@cosmostation/cosmosjs');
 
 function convertSignedMsg(signedMsg) {
@@ -132,9 +132,7 @@ class BandChain {
             clearInterval(fetchProof);
             resolve(evmProof);
           }
-        } catch (e) {
-          throw new Error(`Cannot retrieve proof for specified requestID: ${e}`);
-        }
+        } catch (e) {}
       }, 100);
     });
   }
@@ -145,16 +143,14 @@ class BandChain {
         try {
           const endpoint = `${this.endpoint}/oracle/requests/${requestID}`;
           let res = await axios.get(endpoint);
-          if (res.status == 200 && res.data.result.resolve_status == 1) {
+          if (res.status == 200 && res.data.result.result) {
             let result = res.data.result.result;
             clearInterval(fetchResults);
             resolve(result);
-          } else if (res.data.result.resolve_status == 2) {
-            throw new Error('Specified request was not successful');
+          } else if (res.status == 200 && !res.data.result.result) {
+            throw new Error('No result found for the specified requestID');
           }
-        } catch (e) {
-          throw new Error(`An error occurred: ${e}`);
-        }
+        } catch (e) {}
       }, 100);
     });
   }
@@ -166,6 +162,7 @@ class BandChain {
       let fetchLastRequestResult = setInterval(async () => {
         try {
           const endpoint = `${this.endpoint}/oracle/request_search?oid=${oracleScript.id}&calldata=${calldata}&min_count=${minCount}&ask_count=${askCount}`;
+          console.log(endpoint);
           let res = await axios.get(endpoint);
           if (res.status == 200 && res.data.result.result) {
             let result = res.data.result.result;
@@ -180,10 +177,10 @@ class BandChain {
             result.ResponsePacketData.result = decodedResult;
             clearInterval(fetchLastRequestResult);
             resolve(result);
+          } else if (res.status == 200 && !res.data.result.result) {
+            throw new Error('No matching request found');
           }
-        } catch (e) {
-          throw new Error(`An error occured: ${e}`);
-        }
+        } catch (e) {}
       }, 100);
     });
   }

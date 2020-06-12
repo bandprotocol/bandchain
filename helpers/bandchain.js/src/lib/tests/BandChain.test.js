@@ -1,7 +1,7 @@
 import BandChain from './../Bandchain';
 import { JestEnvironment } from '@jest/environment';
 
-jest.setTimeout(50000);
+jest.setTimeout(30000);
 
 const chainID = 'band-guanyu-devnet-2';
 const endpoint = 'http://guanyu-devnet.bandchain.org/rest';

@@ -173,6 +173,7 @@
   "dependencies": {
     "@babel/plugin-transform-runtime": "^7.10.1",
     "@babel/runtime": "^7.10.2",
+    "@bandprotocol/obi.js": "^1.0.4",
     "@cosmostation/cosmosjs": "^0.5.8",
     "axios": "^0.19.2"
   }
