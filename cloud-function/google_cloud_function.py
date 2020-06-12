@@ -75,7 +75,6 @@ def execute(request):
     except werkzeug.exceptions.BadRequest:
         return bad_request("invalid JSON request format")
 
-    loaded_request = ""
     try:
         loaded_request = RequestSchema().load(request_json)
     except ValidationError as err:
@@ -83,16 +82,16 @@ def execute(request):
 
     path = "/tmp/execute.sh"
     with open(path, "w") as f:
-        f.write(loaded_request.get("executable"))
+        f.write(loaded_request["executable"])
 
     os.chmod(path, 0o775)
 
     try:
-        timeout_millisec = loaded_request.get("timeout")
+        timeout_millisec = loaded_request["timeout"]
         timeout_sec = timeout_millisec / 1000
 
         proc = subprocess.Popen(
-            [path] + shlex.split(loaded_request.get("calldata")),
+            [path] + shlex.split(loaded_request["calldata"]),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
