@@ -13,7 +13,7 @@ var (
 	ErrValidateError        = errors.New("validate fail")
 	ErrDeserializeFail      = errors.New("deserialize fail")
 	ErrGasCounterInjectFail = errors.New("gas counter inject fail")
-	ErrSerializetFail      = errors.New("serialize fail")
+	ErrSerializetFail       = errors.New("serialize fail")
 	ErrUnknownError         = errors.New("unknown error")
 )
 

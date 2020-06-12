@@ -11,10 +11,10 @@ enum Error {
   WriteBinaryError = 4,
   ResolveNamesError = 5,
   ValidateError = 6,
+  UnknownError = 7,
   DeserializationError = 9,
   GasCounterInjectionError = 10,
   SerializationError = 11,
-  UnknownError = 255,
 };
 typedef int32_t Error;
 
