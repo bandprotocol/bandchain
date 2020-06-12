@@ -2,7 +2,7 @@ name: go-owasm Workflow
 on: push
 
 jobs:
-  wasm-test:
+  go-wasm-test:
     runs-on: ubuntu-latest
     env:
       working-directory: ./go-owasm
