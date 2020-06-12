@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"fmt"
 	"strings"
 	"time"
@@ -12,8 +13,9 @@ type executor interface {
 	Execute(l *Logger, exec []byte, timeout time.Duration, arg string) ([]byte, uint32)
 }
 
-type lambdaExecutor struct {
-	URL string
+type restExecutor struct {
+	Name string
+	URL  string
 }
 
 type externalExecutionResponse struct {
@@ -22,29 +24,37 @@ type externalExecutionResponse struct {
 	Stderr     string `json:"stderr"`
 }
 
-func (e *lambdaExecutor) Execute(
+func (e *restExecutor) Execute(
 	l *Logger, exec []byte, timeout time.Duration, arg string,
 ) ([]byte, uint32) {
+	var executable string
+	if e.Name == "cloud-function" {
+		executable = base64.StdEncoding.EncodeToString([]byte(exec))
+	} else {
+		executable = string(exec)
+	}
+
 	resp, err := grequests.Post(
 		e.URL,
 		&grequests.RequestOptions{
 			Headers: map[string]string{
 				"Content-Type": "application/json",
 			},
-			JSON: map[string]string{
-				"executable": string(exec),
+			JSON: map[string]interface{}{
+				"executable": executable,
 				"calldata":   arg,
+				"timeout":    timeout.Milliseconds(),
 			},
 		},
 	)
 
 	if err != nil {
-		l.Error(":skull: LambdaExecutor failed with error: %s", err.Error())
+		l.Error(":skull: RestExecutor failed with error: %s", err.Error())
 		return []byte("EXECUTION_ERROR"), 255
 	}
 
 	if resp.Ok != true {
-		l.Error(":skull: LambdaExecutor failed with error: %s", resp.Error)
+		l.Error(":skull: RestExecutor failed with error: %s", resp.Error)
 		return []byte("EXECUTION_ERROR"), 255
 	}
 
@@ -52,7 +62,7 @@ func (e *lambdaExecutor) Execute(
 	err = resp.JSON(&r)
 
 	if err != nil {
-		l.Error(":skull: LambdaExecutor failed with error: %s", err.Error())
+		l.Error(":skull: RestExecutor failed with error: %s", err.Error())
 		return []byte("EXECUTION_ERROR"), 255
 	}
 
@@ -70,8 +80,8 @@ func NewExecutor(executor string) (executor, error) {
 		return nil, err
 	}
 	switch name {
-	case "lambda":
-		return &lambdaExecutor{URL: url}, nil
+	case "lambda", "cloud-function":
+		return &restExecutor{Name: name, URL: url}, nil
 	default:
 		return nil, fmt.Errorf("Invalid executor name: %s, url: %s", name, url)
 	}
