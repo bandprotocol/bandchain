@@ -1,0 +1,33 @@
+FROM rustlang/rust:nightly
+
+RUN apt-get update
+RUN apt install -y clang gcc g++ zlib1g-dev libmpc-dev libmpfr-dev libgmp-dev
+RUN apt install -y build-essential wget
+
+# INSTALL CMAKE
+RUN wget https://github.com/Kitware/CMake/releases/download/v3.18.0-rc1/cmake-3.18.0-rc1.tar.gz \
+    && tar xvfz cmake-3.18.0-rc1.tar.gz && cd cmake-3.18.0-rc1 && ./bootstrap && make && make install
+
+# PRE-FETCH MANY DEPS
+WORKDIR /scratch
+COPY Cargo.toml /scratch/
+COPY Cargo.lock /scratch/
+COPY src /scratch/src
+RUN cargo fetch
+# allow non-root user to download more deps later
+RUN chmod -R 777 /usr/local/cargo
+
+
+## COPY BUILD SCRIPTS
+
+WORKDIR /code
+RUN rm -rf /scratch
+
+COPY build/build_linux.sh /opt
+RUN chmod +x /opt/build*
+
+RUN mkdir /.cargo
+RUN chmod +rx /.cargo
+COPY build/cargo-config /.cargo/config
+
+CMD ["/opt/build_linux.sh"]
