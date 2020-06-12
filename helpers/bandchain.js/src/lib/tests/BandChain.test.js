@@ -1,17 +1,19 @@
 import BandChain from './../Bandchain';
 import { JestEnvironment } from '@jest/environment';
 
+jest.setTimeout(50000);
+
+const chainIDDevnet = 'band-guanyu-devnet-2';
 const chainIDMaster = 'bandchain';
+const endpointDevnet = 'http://guanyu-devnet.bandchain.org/rest';
 const endpointMaster = 'http://d3n.bandprotocol.com/rest';
 const mnemonic =
-  'nose define hover rain beef renew cruise remain mistake page brain mimic wool sponsor mimic reunion inspire raw marine brain choice later crash clerk';
-
-jest.setTimeout(10000);
+  'spy coral wage crucial phrase despair sphere program candy artwork certain other promote segment cave desk across suspect nest local target play crunch citizen';
 
 it('Test BandChain constructor', () => {
   let bandchain = new BandChain(chainIDMaster, endpointMaster);
-  expect(bandchain.chainID).toBe('bandchain');
-  expect(bandchain.endpoint).toBe('http://d3n.bandprotocol.com/rest');
+  expect(bandchain.chainID).toBe(chainIDMaster);
+  expect(bandchain.endpoint).toBe(endpointMaster);
 });
 
 it('Test BandChain getOracleScript success', async () => {
@@ -63,5 +65,29 @@ it('Test BandChain getRequestProof', async () => {
     mnemonic
   );
   let requestProof = await bandchain.getRequestProof(requestID);
-  console.log(requestProof);
+});
+
+it('Test BandChain getRequestResult', async () => {
+  let oracleScriptID = 1;
+  let bandchain = new BandChain(chainIDMaster, endpointMaster);
+  let oracleScript = await bandchain.getOracleScript(oracleScriptID);
+  let requestID = await bandchain.submitRequestTx(
+    oracleScript,
+    { symbol: 'BTC', multiplier: BigInt('1000000000') },
+    { minCount: 2, askCount: 4 },
+    mnemonic
+  );
+  let requestResult = await bandchain.getRequestResult(requestID);
+});
+
+it('Test BandChain getLastMatchingRequestResult', async () => {
+  let oracleScriptID = 1;
+  let bandchain = new BandChain(chainIDMaster, endpointMaster);
+  let oracleScript = await bandchain.getOracleScript(oracleScriptID);
+  let lastRequestResult = await bandchain.getLastMatchingRequestResult(
+    oracleScript,
+    { symbol: 'BTC', multiplier: BigInt('1000000000') },
+    2,
+    4
+  );
 });

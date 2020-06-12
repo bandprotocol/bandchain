@@ -11,6 +11,26 @@ function convertSignedMsg(signedMsg) {
   }
 }
 
+function stringify(data) {
+  if (Array.isArray(data)) {
+    return '[' + [...data].map(stringify).join(',') + ']';
+  } else if (typeof data === 'bigint') {
+    return data.toString();
+  } else if (Buffer.isBuffer(data)) {
+    return '0x' + data.toString('hex');
+  } else if (typeof data === 'object') {
+    return (
+      '{' +
+      Object.entries(data)
+        .map(([k, v]) => JSON.stringify(k) + ':' + stringify(v))
+        .join(',') +
+      '}'
+    );
+  } else {
+    return JSON.stringify(data);
+  }
+}
+
 async function createRequestMsg(
   cosmos,
   sender,
@@ -49,7 +69,7 @@ async function getRequestID(txHash, endpoint) {
   return new Promise(async (resolve, _) => {
     let fetchTxInfo = setInterval(async () => {
       try {
-        const res = await axios.get(endpoint + '/txs/' + txHash);
+        const res = await axios.get(`${endpoint}/txs/${txHash}`);
         if (res.status == 200) {
           const rawLog = JSON.parse(res.data.raw_log);
           const requestID = rawLog[0].events[2].attributes[0].value;
@@ -68,7 +88,7 @@ class BandChain {
   }
   async getOracleScript(oracleScriptID) {
     try {
-      const res = await axios.get(this.endpoint + '/oracle/oracle_scripts/' + oracleScriptID);
+      const res = await axios.get(`${this.endpoint}/oracle/oracle_scripts/${oracleScriptID}`);
       res.data.result.id = oracleScriptID;
       return res.data.result;
     } catch {
@@ -105,11 +125,55 @@ class BandChain {
     return new Promise(async (resolve, _) => {
       let fetchProof = setInterval(async () => {
         try {
-          let res = await axios.get(this.endpoint + '/bandchain/proof/' + requestID);
+          const endpoint = `${this.endpoint}/bandchain/proof/${requestID}`;
+          let res = await axios.get(endpoint);
           if (res.status == 200) {
             let evmProof = res.data.result.evmProofBytes;
             clearInterval(fetchProof);
             resolve(evmProof);
+          }
+        } catch (e) {}
+      }, 100);
+    });
+  }
+
+  async getRequestResult(requestID) {
+    return new Promise(async (resolve, _) => {
+      let fetchResults = setInterval(async () => {
+        try {
+          const endpoint = `${this.endpoint}/oracle/requests/${requestID}`;
+          let res = await axios.get(endpoint);
+          if (res.status == 200 && res.data.result.result) {
+            let result = res.data.result.result;
+            clearInterval(fetchResults);
+            resolve(result);
+          }
+        } catch (e) {}
+      }, 100);
+    });
+  }
+
+  async getLastMatchingRequestResult(oracleScript, parameters, minCount, askCount) {
+    const obiObj = new obi.Obi(oracleScript.schema);
+    const calldata = Buffer.from(obiObj.encodeInput(parameters)).toString('hex');
+    return new Promise(async (resolve, _) => {
+      let fetchLastRequestResult = setInterval(async () => {
+        try {
+          const endpoint = `${this.endpoint}/oracle/request_search?oid=${oracleScript.id}&calldata=${calldata}&min_count=${minCount}&ask_count=${askCount}`;
+          let res = await axios.get(endpoint);
+          if (res.status == 200 && res.data.result.result) {
+            let result = res.data.result.result;
+            let rawResult = obiObj.decodeOutput(
+              Buffer.from(result.ResponsePacketData.result, 'base64')
+            );
+            let decodedResult = [];
+            for (let x of Object.entries(rawResult)) {
+              let value = stringify(x[1]);
+              decodedResult = [...decodedResult, { fieldName: x[0], fieldValue: value }];
+            }
+            result.ResponsePacketData.result = decodedResult;
+            clearInterval(fetchLastRequestResult);
+            resolve(result);
           }
         } catch (e) {}
       }, 100);

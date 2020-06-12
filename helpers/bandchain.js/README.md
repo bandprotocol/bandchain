@@ -15,7 +15,7 @@
 
 ## 📦 Installation
 
-```
+```bash
 npm install
 ```
 
@@ -81,10 +81,21 @@ try {
     mnemonic
   );
 
+  // Get request proof
+  const requestProof = await bandchain.getRequestProof(requestID);
   // Get final result (blocking until the reports & aggregations are finished)
-  const finalResult = await bandchain.getRequestResult(requestId);
+  const finalResult = await bandchain.getRequestResult(requestID);
+  // Get the result of the most recent request that match the specified parameters
+  const lastMatchResult = await bandchain.getLastMatchingRequestResult(
+    oracleScript,
+    { symbol: 'BTC', multiplier: BigInt('1000000000') },
+    2,
+    4
+  )
 } catch {
   // Something went wrong
   console.error("Data request failed");
 }
 ```
+
+## Functions
