@@ -24,6 +24,10 @@ import (
 	"unsafe"
 )
 
+const (
+	SpanSize = 1 * 1024 * 1024
+)
+
 func Compile(code []byte, spanSize int) ([]byte, error) {
 	inputSpan := copySpan(code)
 	defer freeSpan(inputSpan)
