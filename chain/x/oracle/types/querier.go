@@ -9,7 +9,7 @@ const (
 	QueryOracleScripts = "oracle_scripts"
 	QueryRequests      = "requests"
 	QueryReporters     = "reporters"
-	QueryReportInfo    = "report-info"
+	QueryReportInfo    = "report_info"
 )
 
 // QueryCountsResult is the struct for the result of query counts.

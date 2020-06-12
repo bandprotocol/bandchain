@@ -166,7 +166,7 @@ func GetQueryCmdReporters(route string, cdc *codec.Codec) *cobra.Command {
 // GetQueryCmdReportInfo implements the query report info command.
 func GetQueryCmdReportInfo(route string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:  "report-info [validator]",
+		Use:  "report_info [validator]",
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
