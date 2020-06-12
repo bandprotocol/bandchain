@@ -1,9 +1,10 @@
 package keeper
 
 import (
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 // HasOracleScript checks if the oracle script of this ID exists in the storage.
@@ -47,7 +48,6 @@ func (k Keeper) AddOracleScript(ctx sdk.Context, oracleScript types.OracleScript
 // MustEditOracleScript edits the given oracle script by id and flushes it to the storage. Panic if not exists.
 func (k Keeper) MustEditOracleScript(ctx sdk.Context, id types.OracleScriptID, new types.OracleScript) {
 	oracleScript := k.MustGetOracleScript(ctx, id)
-
 	oracleScript.Owner = new.Owner
 	oracleScript.Name = modify(oracleScript.Name, new.Name)
 	oracleScript.Description = modify(oracleScript.Description, new.Description)
