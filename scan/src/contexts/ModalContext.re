@@ -47,7 +47,7 @@ let make = (~children) => {
   React.useEffect1(
     () => {
       if (isClosing) {
-        let _ = Js.Global.setTimeout(() => {dispatch(KillModal)}, Config.modalClosingDuration);
+        let _ = Js.Global.setTimeout(() => {dispatch(KillModal)}, Config.modalFadingDutation);
         ();
       };
       None;

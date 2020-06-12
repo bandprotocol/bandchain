@@ -1,2 +1,2 @@
 let doNotModify = "[do-not-modify]";
-let modalClosingDuration = 500;
+let modalFadingDutation = 250;

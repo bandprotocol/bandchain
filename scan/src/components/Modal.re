@@ -16,7 +16,7 @@ module Styles = {
       backgroundColor(`rgba((0, 0, 0, 0.5))),
       position(`fixed),
       animation(
-        ~duration=Config.modalClosingDuration,
+        ~duration=Config.modalFadingDutation,
         ~timingFunction=`cubicBezier((0.25, 0.46, 0.45, 0.94)),
         ~fillMode=`forwards,
         keyframes(
@@ -35,7 +35,7 @@ module Styles = {
       borderRadius(`px(5)),
       boxShadow(Shadow.box(~x=`zero, ~y=`px(8), ~blur=`px(32), Css.rgba(0, 0, 0, 0.5))),
       animation(
-        ~duration=Config.modalClosingDuration,
+        ~duration=Config.modalFadingDutation,
         ~timingFunction=`cubicBezier((0.25, 0.46, 0.45, 0.94)),
         ~fillMode=`forwards,
         keyframes(
