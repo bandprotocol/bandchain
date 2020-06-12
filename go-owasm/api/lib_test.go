@@ -8,6 +8,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const (
+	SpanSize = 1 * 1024 * 1024
+)
+
 func readWatFile(fileName string) []byte {
 	code, err := ioutil.ReadFile(fmt.Sprintf("./../wasm/%s.wat", fileName))
 	if err != nil {
@@ -43,4 +47,10 @@ func TestFailInvalidWatContent(t *testing.T) {
 	code := []byte("invalid wat content")
 	_, err := Wat2Wasm(code)
 	require.Equal(t, ErrParseError, err)
+}
+
+func TestFailCompileInvalidContent(t *testing.T) {
+	code := []byte("invalid content")
+	_, err := Compile(code, SpanSize)
+	require.Equal(t, ErrValidateError, err)
 }
