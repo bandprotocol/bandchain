@@ -1,9 +1,10 @@
 package keeper
 
 import (
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 // IsReporter returns true iff the address is an authorized reporter for the given validator.

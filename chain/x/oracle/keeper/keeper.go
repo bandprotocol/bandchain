@@ -10,7 +10,6 @@ import (
 	porttypes "github.com/cosmos/cosmos-sdk/x/ibc/05-port/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/bandprotocol/bandchain/chain/pkg/filecache"
@@ -30,8 +29,8 @@ type Keeper struct {
 
 // NewKeeper creates a new oracle Keeper instance.
 func NewKeeper(
-	cdc *codec.Codec, key sdk.StoreKey, fileDir string,
-	paramSpace params.Subspace, stakingKeeper staking.Keeper, channelKeeper types.ChannelKeeper,
+	cdc *codec.Codec, key sdk.StoreKey, fileDir string, paramSpace params.Subspace,
+	stakingKeeper types.StakingKeeper, channelKeeper types.ChannelKeeper,
 	scopedKeeper capability.ScopedKeeper, portKeeper types.PortKeeper,
 ) Keeper {
 	if !paramSpace.HasKeyTable() {
@@ -114,18 +113,15 @@ func (k Keeper) GetRequestLastExpired(ctx sdk.Context) int64 {
 // If the global request count is not set, it initializes it with value 0.
 func (k Keeper) GetNextRequestID(ctx sdk.Context) types.RequestID {
 	requestNumber := k.GetRequestCount(ctx)
-	store := ctx.KVStore(k.storeKey)
-
 	bz := k.cdc.MustMarshalBinaryLengthPrefixed(requestNumber + 1)
-	store.Set(types.RequestCountStoreKey, bz)
+	ctx.KVStore(k.storeKey).Set(types.RequestCountStoreKey, bz)
 	return types.RequestID(requestNumber + 1)
 }
 
 // GetDataSourceCount returns the current number of all data sources ever exist.
 func (k Keeper) GetDataSourceCount(ctx sdk.Context) int64 {
 	var dataSourceCount int64
-	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.DataSourceCountStoreKey)
+	bz := ctx.KVStore(k.storeKey).Get(types.DataSourceCountStoreKey)
 	if bz == nil {
 		return 0
 	}
@@ -137,17 +133,15 @@ func (k Keeper) GetDataSourceCount(ctx sdk.Context) int64 {
 // If the global data source count is not set, it initializes the value and returns 1.
 func (k Keeper) GetNextDataSourceID(ctx sdk.Context) types.DataSourceID {
 	dataSourceCount := k.GetDataSourceCount(ctx)
-	store := ctx.KVStore(k.storeKey)
 	bz := k.cdc.MustMarshalBinaryLengthPrefixed(dataSourceCount + 1)
-	store.Set(types.DataSourceCountStoreKey, bz)
+	ctx.KVStore(k.storeKey).Set(types.DataSourceCountStoreKey, bz)
 	return types.DataSourceID(dataSourceCount + 1)
 }
 
 // GetOracleScriptCount returns the current number of all oracle scripts ever exist.
 func (k Keeper) GetOracleScriptCount(ctx sdk.Context) int64 {
 	var oracleScriptCount int64
-	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.OracleScriptCountStoreKey)
+	bz := ctx.KVStore(k.storeKey).Get(types.OracleScriptCountStoreKey)
 	if bz == nil {
 		return 0
 	}
@@ -159,9 +153,8 @@ func (k Keeper) GetOracleScriptCount(ctx sdk.Context) int64 {
 // If the global oracle script count is not set, it initializes the value and returns 1.
 func (k Keeper) GetNextOracleScriptID(ctx sdk.Context) types.OracleScriptID {
 	oracleScriptCount := k.GetOracleScriptCount(ctx)
-	store := ctx.KVStore(k.storeKey)
 	bz := k.cdc.MustMarshalBinaryLengthPrefixed(oracleScriptCount + 1)
-	store.Set(types.OracleScriptCountStoreKey, bz)
+	ctx.KVStore(k.storeKey).Set(types.OracleScriptCountStoreKey, bz)
 	return types.OracleScriptID(oracleScriptCount + 1)
 }
 
