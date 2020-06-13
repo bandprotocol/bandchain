@@ -1,14 +1,14 @@
-const axios = require('axios');
-const obi = require('@bandprotocol/obi.js');
-const cosmosjs = require('@cosmostation/cosmosjs');
-const delay = require('delay');
+const axios = require('axios')
+const obi = require('@bandprotocol/obi.js')
+const cosmosjs = require('@cosmostation/cosmosjs')
+const delay = require('delay')
 
 function convertSignedMsg(signedMsg) {
   for (const sig of signedMsg.tx.signatures) {
     sig.pub_key = Buffer.from(
       `eb5ae98721${Buffer.from(sig.pub_key.value, 'base64').toString('hex')}`,
-      'hex'
-    ).toString('base64');
+      'hex',
+    ).toString('base64')
   }
 }
 
@@ -18,9 +18,9 @@ async function createRequestMsg(
   oracleScriptID,
   validatorCounts,
   calldata,
-  chainID
+  chainID,
 ) {
-  const account = await cosmos.getAccounts(sender);
+  const account = await cosmos.getAccounts(sender)
   return cosmos.newStdMsg({
     msgs: [
       {
@@ -43,48 +43,52 @@ async function createRequestMsg(
     memo: '',
     account_number: String(account.result.value.account_number),
     sequence: String(account.result.value.sequence || 0),
-  });
+  })
 }
 
 async function getRequestID(txHash, endpoint) {
-  let requestEndpoint = `${endpoint}/txs/${txHash}`;
+  let requestEndpoint = `${endpoint}/txs/${txHash}`
   while (true) {
     try {
-      const res = await axios.get(requestEndpoint);
+      const res = await axios.get(requestEndpoint)
       if (res.status == 200) {
-        const rawLog = JSON.parse(res.data.raw_log);
-        const requestID = rawLog[0].events[2].attributes[0].value;
-        return requestID;
+        const rawLog = JSON.parse(res.data.raw_log)
+        const requestID = rawLog[0].events[2].attributes[0].value
+        return requestID
       }
     } catch {
-      await delay(100);
+      await delay(100)
     }
   }
 }
 
 class BandChain {
   constructor(chainID, endpoint) {
-    this.chainID = chainID;
-    this.endpoint = endpoint;
+    this.chainID = chainID
+    this.endpoint = endpoint
   }
+
   async getOracleScript(oracleScriptID) {
     try {
-      const res = await axios.get(`${this.endpoint}/oracle/oracle_scripts/${oracleScriptID}`);
-      res.data.result.id = oracleScriptID;
-      return res.data.result;
+      const res = await axios.get(
+        `${this.endpoint}/oracle/oracle_scripts/${oracleScriptID}`,
+      )
+      res.data.result.id = oracleScriptID
+      return res.data.result
     } catch {
-      throw new Error('No oracle script found with the given ID');
+      throw new Error('No oracle script found with the given ID')
     }
   }
-  async submitRequestTx(oracleScript, parameters, validatorCounts, mnemonic) {
-    const obiObj = new obi.Obi(oracleScript.schema);
-    const calldata = obiObj.encodeInput(parameters);
 
-    const cosmos = cosmosjs.network(this.endpoint, this.chainID);
-    cosmos.setPath("m/44'/494'/0'/0/0");
-    cosmos.setBech32MainPrefix('band');
-    const ecpairPriv = cosmos.getECPairPriv(mnemonic);
-    const sender = cosmos.getAddress(mnemonic);
+  async submitRequestTx(oracleScript, parameters, validatorCounts, mnemonic) {
+    const obiObj = new obi.Obi(oracleScript.schema)
+    const calldata = obiObj.encodeInput(parameters)
+
+    const cosmos = cosmosjs.network(this.endpoint, this.chainID)
+    cosmos.setPath("m/44'/494'/0'/0/0")
+    cosmos.setBech32MainPrefix('band')
+    const ecpairPriv = cosmos.getECPairPriv(mnemonic)
+    const sender = cosmos.getAddress(mnemonic)
 
     let requestMsg = await createRequestMsg(
       cosmos,
@@ -92,29 +96,29 @@ class BandChain {
       oracleScript.id,
       validatorCounts,
       calldata,
-      this.chainID
-    );
+      this.chainID,
+    )
 
-    let signedTx = cosmos.sign(requestMsg, ecpairPriv, 'block');
-    convertSignedMsg(signedTx);
+    let signedTx = cosmos.sign(requestMsg, ecpairPriv, 'block')
+    convertSignedMsg(signedTx)
 
-    const broadcastResponse = await cosmos.broadcast(signedTx);
-    return await getRequestID(broadcastResponse.txhash, this.endpoint);
+    const broadcastResponse = await cosmos.broadcast(signedTx)
+    return await getRequestID(broadcastResponse.txhash, this.endpoint)
   }
 
   async getRequestProof(requestID) {
     while (true) {
       try {
-        const requestEndpoint = `${this.endpoint}/bandchain/proof/${requestID}`;
-        let res = await axios.get(requestEndpoint);
+        const requestEndpoint = `${this.endpoint}/bandchain/proof/${requestID}`
+        let res = await axios.get(requestEndpoint)
         if (res.status == 200 && res.data.result.evmProofBytes) {
-          let evmProof = res.data.result.evmProofBytes;
-          return evmProof;
+          let evmProof = res.data.result.evmProofBytes
+          return evmProof
         } else if (res.status == 200 && !res.data.result.evmProofBytes) {
-          throw new Error('No proof found for the specified requestID');
+          throw new Error('No proof found for the specified requestID')
         }
       } catch {
-        await delay(100);
+        await delay(100)
       }
     }
   }
@@ -122,44 +126,49 @@ class BandChain {
   async getRequestResult(requestID) {
     while (true) {
       try {
-        const requestEndpoint = `${this.endpoint}/oracle/requests/${requestID}`;
-        let res = await axios.get(requestEndpoint);
+        const requestEndpoint = `${this.endpoint}/oracle/requests/${requestID}`
+        let res = await axios.get(requestEndpoint)
         if (res.status == 200 && res.data.result.result) {
-          let result = res.data.result.result;
-          return result;
+          let result = res.data.result.result
+          return result
         } else if (res.status == 200 && !res.data.result.result) {
-          throw new Error('No result found for the specified requestID');
+          throw new Error('No result found for the specified requestID')
         }
       } catch {
-        await delay(100);
+        await delay(100)
       }
     }
   }
 
-  async getLastMatchingRequestResult(oracleScript, parameters, minCount, askCount) {
-    const obiObj = new obi.Obi(oracleScript.schema);
-    const calldata = Buffer.from(obiObj.encodeInput(parameters)).toString('hex');
-    const requestEndpoint = `${this.endpoint}/oracle/request_search?oid=${oracleScript.id}&calldata=${calldata}&min_count=${minCount}&ask_count=${askCount}`;
+  async getLastMatchingRequestResult(
+    oracleScript,
+    parameters,
+    minCount,
+    askCount,
+  ) {
+    const obiObj = new obi.Obi(oracleScript.schema)
+    const calldata = Buffer.from(obiObj.encodeInput(parameters)).toString('hex')
+    const requestEndpoint = `${this.endpoint}/oracle/request_search?oid=${oracleScript.id}&calldata=${calldata}&min_count=${minCount}&ask_count=${askCount}`
     while (true) {
       try {
-        let res = await axios.get(requestEndpoint);
+        let res = await axios.get(requestEndpoint)
         if (res.status == 200 && res.data.result.result) {
-          let result = res.data.result.result;
+          let result = res.data.result.result
           let rawResult = obiObj.decodeOutput(
-            Buffer.from(result.ResponsePacketData.result, 'base64')
-          );
-          let decodedResult = [];
+            Buffer.from(result.ResponsePacketData.result, 'base64'),
+          )
+          let decodedResult = []
           for (let [k, v] of Object.entries(rawResult)) {
-            decodedResult = [...decodedResult, { fieldName: k, fieldValue: v }];
+            decodedResult = [...decodedResult, { fieldName: k, fieldValue: v }]
           }
-          result.ResponsePacketData.result = decodedResult;
-          return result;
+          result.ResponsePacketData.result = decodedResult
+          return result
         }
       } catch {
-        await delay(100);
+        await delay(100)
       }
     }
   }
 }
 
-export default BandChain;
+export default BandChain
