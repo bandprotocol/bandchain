@@ -64,6 +64,7 @@ async function getRequestID(txHash, endpoint) {
 
 class BandChain {
   constructor(chainID, endpoint) {
+    /* TODO: Get chainID from REST endpoint in the next release of Guan Yu */
     this.chainID = chainID
     this.endpoint = endpoint
   }
