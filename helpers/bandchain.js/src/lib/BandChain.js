@@ -1,5 +1,5 @@
 const axios = require('axios')
-const obi = require('@bandprotocol/obi.js')
+const { Obi } = require('@bandprotocol/obi.js')
 const cosmosjs = require('@cosmostation/cosmosjs')
 const delay = require('delay')
 
@@ -81,7 +81,7 @@ class BandChain {
   }
 
   async submitRequestTx(oracleScript, parameters, validatorCounts, mnemonic) {
-    const obiObj = new obi.Obi(oracleScript.schema)
+    const obiObj = new Obi(oracleScript.schema)
     const calldata = obiObj.encodeInput(parameters)
 
     const cosmos = cosmosjs.network(this.endpoint, this.chainID)
@@ -146,7 +146,7 @@ class BandChain {
     minCount,
     askCount,
   ) {
-    const obiObj = new obi.Obi(oracleScript.schema)
+    const obiObj = new Obi(oracleScript.schema)
     const calldata = Buffer.from(obiObj.encodeInput(parameters)).toString('hex')
     const requestEndpoint = `${this.endpoint}/oracle/request_search?oid=${oracleScript.id}&calldata=${calldata}&min_count=${minCount}&ask_count=${askCount}`
     while (true) {
