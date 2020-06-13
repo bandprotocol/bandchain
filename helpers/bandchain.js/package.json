@@ -177,5 +177,10 @@
     "@cosmostation/cosmosjs": "^0.5.8",
     "axios": "^0.19.2",
     "delay": "^4.3.0"
+  },
+  "prettier": {
+    "trailingComma": "all",
+    "semi": false,
+    "singleQuote": true
   }
 }
