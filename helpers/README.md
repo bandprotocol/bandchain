@@ -9,4 +9,4 @@ A collection of tools that simplify interactions with BandChain. Note that this 
 | [`Python 3 🐍`](pyobi)          | 🤔 Not Started |
 | [`Golang 🐀`](../chain/pkg/obi) | 🤔 Not Started |
 | [`Rust 🦀`](../owasm/obi)       | 🤔 Not Started |
-| [`JavaScript 🌐`](obi.js)       | ⚙️ In Progress |
+| [`JavaScript 🌐`](obi.js)       | ✅ Completed   |
