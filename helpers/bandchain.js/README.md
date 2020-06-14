@@ -25,7 +25,7 @@ npm install
 import BandChain from 'bandchain.js'
 
 const chainId = 'band-guanyu-devnet-2'
-const endpoint = 'http://devnet.bandchain.org/rest'
+const endpoint = 'http://guanyu-devnet.bandchain.org/rest'
 
 const bandchain = new BandChain(chainId, endpoint)
 ...
@@ -49,8 +49,8 @@ const bandchain = new BandChain(chainId, endpoint)
 ```js
 import BandChain from 'bandchain.js'
 
-const chainId = 'band-guanyu-alchemist'
-const endpoint = 'http://devnet.bandchain.org/rest'
+const chainId = 'band-guanyu-devnet-2'
+const endpoint = 'http://guanyu-devnet.bandchain.org/rest'
 
 // Instantiating BandChain with REST endpoint
 const bandchain = new BandChain(chainId, endpoint)
