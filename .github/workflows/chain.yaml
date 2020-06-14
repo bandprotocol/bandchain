@@ -17,11 +17,12 @@ jobs:
           go-version: "^1.14.4"
 
       - name: Check go mod cache
-        id: go-modules-cache
         uses: actions/cache@v1
         with:
           path: ~/go/pkg/mod
-          key: ${{ runner.os }}-chain-${{ hashFiles('${{env.working-directory}}/go.sum') }}
+          key: ${{ runner.os }}-chain-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-chain-
 
       - name: Run chain tests
         run: go test ./...

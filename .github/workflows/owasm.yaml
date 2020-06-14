@@ -16,6 +16,15 @@ jobs:
         with:
           toolchain: stable
 
+      - name: Check cargo cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-owasm-${{ hashFiles('**/Cargo.lock') }}
+
       - name: Run owasm tests
         uses: actions-rs/cargo@v1
         with:
