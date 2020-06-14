@@ -57,7 +57,6 @@ module Loading = {
              <VSpacing size=Spacing.lg />
            </>
          : React.null}
-      <TableHeader />
       {Belt_Array.make(
          5,
          <Row>

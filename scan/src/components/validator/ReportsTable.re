@@ -213,13 +213,9 @@ module Loading = {
     <div>
       {Belt_Array.make(
          5,
-         <Row>
+         <Row alignItems=`flexStart>
            <Col> <HSpacing size=Spacing.md /> </Col>
-           <Col size=1. alignSelf=Col.Start>
-             <LoadingCensorBar width=50 height=16 />
-             <VSpacing size=Spacing.sm />
-             <VSpacing size=Spacing.xs />
-           </Col>
+           <Col size=1. alignSelf=Col.Start> <LoadingCensorBar width=50 height=16 /> </Col>
            <Col size=2. alignSelf=Col.Start> <LoadingCensorBar width=50 height=16 /> </Col>
            <Col size=2.3 alignSelf=Col.Start>
              <Row>
@@ -232,14 +228,8 @@ module Loading = {
              </Row>
            </Col>
            <Col size=1.> <LoadingCensorBar width=50 height=16 /> </Col>
-           <Col size=1.5>
-             <LoadingCensorBar width=50 height=16 />
-             <VSpacing size=Spacing.md />
-           </Col>
-           <Col size=2.2>
-             <LoadingCensorBar width=50 height=16 />
-             <VSpacing size=Spacing.md />
-           </Col>
+           <Col size=1.5> <LoadingCensorBar width=50 height=16 /> </Col>
+           <Col size=2.2> <LoadingCensorBar width=50 height=16 /> </Col>
            <Col> <HSpacing size=Spacing.lg /> </Col>
          </Row>,
        )
@@ -277,6 +267,7 @@ let make = (~address) =>
       <TableHeader />
       {switch (reportsSub) {
        | Data(reports) =>
+         Js.Console.log("DATA");
          reports->Belt_Array.length > 0
            ? <>
                <Reports reports />
@@ -293,8 +284,10 @@ let make = (~address) =>
                <VSpacing size={`px(40)} />
                <Text block=true value="NO REPORTS" weight=Text.Regular color=Colors.blue4 />
                <VSpacing size={`px(15)} />
-             </div>
-       | _ => <Loading />
+             </div>;
+       | _ =>
+         Js.Console.log("LOADING");
+         <Loading />;
        }}
     </div>
     |> Sub.resolve;
