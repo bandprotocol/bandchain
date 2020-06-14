@@ -54,6 +54,16 @@ module Styles = {
       marginLeft(`pxFloat(1.6)),
       transform(`rotate(`deg(down ? 0. : 180.))),
     ]);
+  let searchContainer = style([display(`flex), justifyContent(`flexEnd), alignItems(`center)]);
+  let searchBar =
+    style([
+      display(`flex),
+      width(`percent(30.)),
+      height(`px(30)),
+      paddingLeft(`px(9)),
+      borderRadius(`px(4)),
+      border(`px(1), `solid, Colors.blueGray3),
+    ]);
 };
 
 module ToggleButton = {
@@ -354,7 +364,7 @@ module SortableTHead = {
 
 module ValidatorList = {
   [@react.component]
-  let make = (~allSub) => {
+  let make = (~allSub, ~searchTerm) => {
     let (sortedBy, setSortedBy) = React.useState(_ => VotingPowerDesc);
 
     let toggle = (sortedByAsc, sortedByDesc) =>
@@ -430,12 +440,17 @@ module ValidatorList = {
            votesBlock,
          )) =>
          let validators = addUptimeOnValidators(rawValidators, votesBlock);
+         let filteredValidator =
+           searchTerm |> Js.String.length == 0
+             ? validators
+             : validators->Belt_Array.keep(validator => {
+                 Js.String.includes(searchTerm, validator.moniker |> Js.String.toLowerCase)
+               });
          <>
-           {validators->Belt_Array.size > 0
-              ? validators
-                ->sorting(sortedBy)
-                ->Belt_Array.map(e =>
-                    renderBody(e.rank, Sub.resolve(e), bondedTokenCount.amount)
+           {filteredValidator->Belt_Array.size > 0
+              ? filteredValidator
+                ->Belt_Array.mapWithIndex((i, e) =>
+                    renderBody(i + 1, Sub.resolve(e), bondedTokenCount.amount)
                   )
                 ->React.array
               : <div className=Styles.emptyContainer>
@@ -470,6 +485,7 @@ let getCurrentDay = _ => {
 let make = () => {
   let (prevDayTime, setPrevDayTime) = React.useState(getPrevDay);
   let (currentTime, setCurrentTime) = React.useState(getCurrentDay);
+  let (searchTerm, setSearchTerm) = React.useState(_ => "");
 
   React.useEffect0(() => {
     let timeOutID =
@@ -525,12 +541,6 @@ let make = () => {
          | _ => React.null
          }}
       </div>
-      <Col>
-        {switch (topPartAllSub) {
-         | Data(_) => <ToggleButton isActive setIsActive />
-         | _ => React.null
-         }}
-      </Col>
     </Row>
     <div className=Styles.highlight>
       <Row>
@@ -596,7 +606,23 @@ let make = () => {
         </Col>
       </Row>
     </div>
-    <ValidatorList allSub />
+    <div className=Styles.searchContainer>
+      <input
+        type_="text"
+        className=Styles.searchBar
+        placeholder="Search Validator"
+        onChange={event => setSearchTerm(ReactEvent.Form.target(event)##value)}
+      />
+      <HSpacing size=Spacing.sm />
+      <Col>
+        {switch (topPartAllSub) {
+         | Data(_) => <ToggleButton isActive setIsActive />
+         | _ => React.null
+         }}
+      </Col>
+    </div>
+    <VSpacing size=Spacing.md />
+    <ValidatorList allSub searchTerm />
     <VSpacing size=Spacing.lg />
   </>;
 };
