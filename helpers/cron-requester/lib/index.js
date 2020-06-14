@@ -31,7 +31,7 @@ async function runJob(bandchain, mnemonic, validatorCounts, requests) {
     }
   }
   console.log(
-    '%s [%d/%d] requests went through',
+    '%s [%d/%d] requests was submitted',
     count === requests.length ? '⛳️' : '👎',
     count,
     requests.length,
@@ -59,7 +59,7 @@ async function start(configFilePath) {
     requests,
   } = config
 
-  // Check format
+  // Check config file content format
   if (typeof mnemonic !== 'string')
     throw new Error('config.mnemonic has to be string')
   if (typeof chainId !== 'string')
@@ -73,7 +73,8 @@ async function start(configFilePath) {
   if (!Array.isArray(requests))
     throw new Error('config.requests has to be an array')
 
-  // Instantiating BandChain with REST endpoint
+  // Instantiate BandChain object with the specified chain ID And REST Endpoint
+  // TODO: Remove dependencies on chainId once #1951 goes live on devnet and bandchain.js supports it
   const bandchain = new BandChain(chainId, endpoint)
 
   // Format requests
@@ -86,7 +87,7 @@ async function start(configFilePath) {
     }),
   )
 
-  // Run cron
+  // Start cronjob
   const cronJob = new CronJob(
     cronPattern,
     () => {
@@ -97,10 +98,10 @@ async function start(configFilePath) {
     true,
   )
 
-  // Log start of the program
+  // Log the start of the program
   console.log('--------------------------------------------------------')
   console.log(
-    '⭐️ Cron is running! Your requests will be executed with cron pattern %s',
+    '⭐️ Cron is running! Your requests will be executed with the cron pattern %s',
     cronPattern,
   )
   console.log('📆 Your first requests will start at %s', cronJob.nextDates())
