@@ -114,7 +114,7 @@ let renderBody =
     }
     minHeight=60>
     <div className=Styles.fullWidth>
-      <Row alignItems=`flexStart>
+      <Row alignItems=`center>
         <Col size=0.4>
           {switch (validatorSub) {
            | Data(_) =>
@@ -132,8 +132,8 @@ let renderBody =
         </Col>
         <Col size=0.9>
           {switch (validatorSub) {
-           | Data({operatorAddress, moniker}) =>
-             <ValidatorMonikerLink validatorAddress=operatorAddress moniker width={`px(180)} />
+           | Data({operatorAddress, moniker, identity}) =>
+             <ValidatorMonikerLink validatorAddress=operatorAddress moniker identity width={`px(180)} />
            | _ => <LoadingCensorBar width=150 height=15 />
            }}
         </Col>
