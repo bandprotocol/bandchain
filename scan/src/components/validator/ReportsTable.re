@@ -153,11 +153,11 @@ module Reports = {
             <Col size=1.>
               {reportDetails
                ->Belt_Array.map(reportDetail => {
-                   <>
+                   <div key={reportDetail.externalID |> string_of_int}>
                      <Row> <TypeID.DataSource id={reportDetail.dataSourceID} /> </Row>
                      <VSpacing size=Spacing.sm />
                      <VSpacing size=Spacing.xs />
-                   </>
+                   </div>
                  })
                ->React.array}
             </Col>
@@ -165,7 +165,7 @@ module Reports = {
               {reportDetails
                ->Belt_Array.map(({externalID}) => externalID)
                ->Belt_Array.map(externalDataID => {
-                   <>
+                   <div key={externalDataID |> string_of_int}>
                      <div className={Styles.vFlex(`flexEnd)}>
                        <Row>
                          <div className=Styles.fillLeft />
@@ -173,19 +173,21 @@ module Reports = {
                        </Row>
                      </div>
                      <VSpacing size=Spacing.md />
-                   </>
+                   </div>
                  })
                ->React.array}
             </Col>
             <Col size=2.2>
               {reportDetails
-               ->Belt_Array.map(({data}) => data)
+               ->Belt_Array.map(({data, externalID}) => (data, externalID))
                ->Belt_Array.map(value => {
-                   <>
+                   let (data, _) = value;
+                   let (_, id) = value;
+                   <div key={id |> string_of_int}>
                      <div className=Styles.valueContainer>
                        <div className=Styles.fillLeft />
                        <Text
-                         value={value |> JsBuffer.toUTF8}
+                         value={data |> JsBuffer.toUTF8}
                          block=true
                          code=true
                          ellipsis=true
@@ -193,7 +195,7 @@ module Reports = {
                        />
                      </div>
                      <VSpacing size=Spacing.md />
-                   </>
+                   </div>;
                  })
                ->React.array}
             </Col>

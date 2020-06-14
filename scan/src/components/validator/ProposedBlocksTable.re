@@ -152,11 +152,11 @@ let make = (~consensusAddress) =>
     <div className=Styles.tableWrapper>
       <ProposedBlockCount consensusAddress />
       <VSpacing size=Spacing.lg />
+      <TableHeader />
       {switch (blocksSub) {
        | Data(blocks) =>
          blocks->Belt.Array.size > 0
            ? <>
-               <TableHeader />
                <BlocksTable blocks />
                <VSpacing size=Spacing.lg />
                <div className=Styles.pagination>

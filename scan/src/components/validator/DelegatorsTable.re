@@ -129,7 +129,7 @@ let make = (~address) =>
                <Header />
                {delegators
                 ->Belt.Array.map(({amount, sharePercentage, delegatorAddress}) => {
-                    <TBody>
+                    <TBody key={delegatorAddress |> Address.toBech32}>
                       <Row>
                         <Col> <HSpacing size=Spacing.lg /> </Col>
                         <Col size=1.4> <AddressRender address=delegatorAddress /> </Col>
