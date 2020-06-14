@@ -47,6 +47,8 @@ See example [`config.json`](./config.json) for an example of requesting data fro
 }
 ```
 
+> **⚠️ Important:** You need to have enough BAND in the requester account for paying transaction fees, otherwise your requests will fail.
+
 ## 💎 Example Usage
 
 ```bash
