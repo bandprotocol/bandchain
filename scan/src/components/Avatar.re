@@ -12,53 +12,43 @@ let decode = json =>
   |> JsonUtils.Decode.field("them", JsonUtils.Decode.array(decodeThem))
   |> Belt.Array.get(_, 0);
 
-type status_t =
-  | Data(string)
-  | NoData
-  | Loading;
-
-[@react.component]
-let make = (~moniker, ~identity, ~width=25) => {
-  let (url, setUrl) = React.useState(_ => Loading);
-
-  React.useEffect1(
-    () => {
-      if (identity != "") {
-        let _ = {
-          Axios.get(
-            {j|https://keybase.io/_/api/1.0/user/lookup.json?key_suffix=$identity&fields=pictures|j},
-          )
-          |> Js.Promise.then_(res => {
-               switch (res##data |> decode) {
-               | Some(url) =>
-                 setUrl(_ => Data(url));
-                 Js.Promise.resolve();
-               | None => Js.Promise.reject(Not_found)
-               | exception err => Js.Promise.reject(err)
-               }
-             })
-          |> Js.Promise.catch(err => {
-               Js.Console.log(err);
-               setUrl(_ => NoData);
-               Js.Promise.resolve();
-             });
-        };
-        ();
-      } else {
-        setUrl(_ => NoData);
-      };
-      None;
-    },
-    [|identity|],
-  );
-
-  switch (url) {
-  | Data(url') => <img src=url' className={Styles.avatar(width)} />
-  | NoData =>
+module Placeholder = {
+  [@react.component]
+  let make = (~moniker, ~width) =>
     <img
       src={j|https://ui-avatars.com/api/?rounded=true&size=128&name=$moniker&color=9714B8&background=F3CEFD|j}
       className={Styles.avatar(width)}
-    />
-  | Loading => <LoadingCensorBar width height={width - 4} radius=100 />
-  };
+    />;
 };
+
+module Keybase = {
+  [@react.component]
+  let make = (~identity, ~moniker, ~width) =>
+    {
+      let resOpt =
+        AxiosHooks.use(
+          {j|https://keybase.io/_/api/1.0/user/lookup.json?key_suffix=$identity&fields=pictures|j},
+        );
+      let%Opt res = resOpt;
+
+      switch (res |> decode) {
+      | Some(url) => Some(<img src=url className={Styles.avatar(width)} />)
+      | None =>
+        // Log for debug
+        Js.Console.log3("none", identity, res);
+        Some(<Placeholder moniker width />);
+      | exception err =>
+        // Log for debug
+        Js.Console.log3(identity, res, err);
+        Some(<Placeholder moniker width />);
+      };
+    }
+    |> Belt.Option.getWithDefault(_, <LoadingCensorBar width height={width - 4} radius=100 />);
+};
+
+[@react.component]
+let make = (~moniker, ~identity, ~width=25) =>
+  React.useMemo1(
+    () => identity != "" ? <Keybase identity moniker width /> : <Placeholder moniker width />,
+    [|identity|],
+  );
