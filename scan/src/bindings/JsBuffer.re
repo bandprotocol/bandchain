@@ -2,8 +2,15 @@ type t;
 
 [@bs.val] external from: array(int) => t = "Buffer.from";
 
+[@bs.val] external byteLength: t => int = "Buffer.byteLength";
+
+[@bs.val] external concat: array(t) => t = "Buffer.concat";
+
 [@bs.val] external _from: (string, string) => t = "Buffer.from";
+
 let fromHex = hexstr => hexstr->HexUtils.normalizeHexString->_from("hex");
+
+let fromUTF8 = utf8 => _from(utf8, "utf-8");
 
 let fromBase64 = hexstr => _from(hexstr, "base64");
 
@@ -22,4 +29,3 @@ let arrayToHex = arr => arr->from->toHex;
 let hexToArray = hexstr => hexstr->fromHex->toArray;
 let arrayToBase64 = arr => arr->from->toBase64;
 let base64ToArray = base64str => base64str->fromBase64->toArray;
-

@@ -687,7 +687,14 @@ module Msg = {
       JsonUtils.Decode.{
         validatorAddress: json |> field("validator_address", string) |> Address.fromBech32,
         delegatorAddress: json |> field("delegator_address", string) |> Address.fromBech32,
-        amount: json |> field("reward_amount", string) |> GraphQLParser.coins,
+        amount: {
+          exception WrongNetwork(string);
+          switch (Env.network) {
+          | "GUANYU" =>  json |> field("reward_amount", array(string)) |> Belt.Array.getExn(_, 0) |> GraphQLParser.coins;
+          | "WENCHANG" => json |> field("reward_amount", string) |> GraphQLParser.coins;
+          | _ => raise(WrongNetwork("Incorrect or unspecified NETWORK environment variable"))
+          };
+        },
       };
     };
   };
@@ -1170,7 +1177,7 @@ module SingleConfig = [%graphql
       gasLimit: gas_limit @bsDecoder(fn: "GraphQLParser.int64")
       gasUsed : gas_used @bsDecoder(fn: "GraphQLParser.int64")
       sender  @bsDecoder(fn: "Address.fromBech32")
-      timestamp  @bsDecoder(fn: "GraphQLParser.time")
+      timestamp  @bsDecoder(fn: "GraphQLParser.timeMS")
       messages @bsDecoder(fn: "Msg.decodeActions")
       rawLog: raw_log
     }
@@ -1189,7 +1196,7 @@ module MultiConfig = [%graphql
       gasLimit: gas_limit @bsDecoder(fn: "GraphQLParser.int64")
       gasUsed : gas_used @bsDecoder(fn: "GraphQLParser.int64")
       sender  @bsDecoder(fn: "Address.fromBech32")
-      timestamp  @bsDecoder(fn: "GraphQLParser.time")
+      timestamp  @bsDecoder(fn: "GraphQLParser.timeMS")
       messages @bsDecoder(fn: "Msg.decodeActions")
       rawLog: raw_log
     }
@@ -1208,7 +1215,7 @@ module MultiByHeightConfig = [%graphql
       gasLimit: gas_limit @bsDecoder(fn: "GraphQLParser.int64")
       gasUsed : gas_used @bsDecoder(fn: "GraphQLParser.int64")
       sender  @bsDecoder(fn: "Address.fromBech32")
-      timestamp  @bsDecoder(fn: "GraphQLParser.time")
+      timestamp  @bsDecoder(fn: "GraphQLParser.timeMS")
       messages @bsDecoder(fn: "Msg.decodeActions")
       rawLog: raw_log
     }
@@ -1232,7 +1239,7 @@ module MultiBySenderConfig = [%graphql
       gasLimit: gas_limit @bsDecoder(fn: "GraphQLParser.int64")
       gasUsed : gas_used @bsDecoder(fn: "GraphQLParser.int64")
       sender  @bsDecoder(fn: "Address.fromBech32")
-      timestamp  @bsDecoder(fn: "GraphQLParser.time")
+      timestamp  @bsDecoder(fn: "GraphQLParser.timeMS")
       messages @bsDecoder(fn: "Msg.decodeActions")
       rawLog: raw_log
     }

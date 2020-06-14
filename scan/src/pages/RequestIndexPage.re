@@ -54,7 +54,7 @@ let make = (~reqID) =>
     let remainingBlock =
       blockCount >= request.expirationHeight ? 0 : request.expirationHeight - blockCount;
     let calldataKVs =
-      Borsh.decode(request.oracleScript.schema, "Input", request.calldata)
+      Obi.decode(request.oracleScript.schema, "input", request.calldata)
       ->Belt_Option.getWithDefault([||]);
 
     <>
@@ -208,7 +208,7 @@ let make = (~reqID) =>
                 color=Colors.gray6
               />
               <HSpacing size=Spacing.md />
-              <CopyButton data={request.calldata} />
+              <CopyButton data={request.calldata} title="Copy as bytes" />
             </div>
           </Col>
         </div>
@@ -257,7 +257,7 @@ let make = (~reqID) =>
         {switch (request.result) {
          | Some(result) =>
            let resultKVs =
-             Borsh.decode(request.oracleScript.schema, "Output", result)
+             Obi.decode(request.oracleScript.schema, "output", result)
              ->Belt_Option.getWithDefault([||]);
            <>
              <VSpacing size=Spacing.lg />
@@ -272,7 +272,7 @@ let make = (~reqID) =>
                      color=Colors.gray6
                    />
                    <HSpacing size=Spacing.md />
-                   <CopyButton data=result />
+                   <CopyButton data=result title="Copy as bytes" />
                  </div>
                </Col>
              </div>
@@ -292,7 +292,7 @@ let make = (~reqID) =>
          }}
         {numReport >= request.minCount
            ? {
-             <RequestProof requestID={request.id} />;
+             <RequestProof requestID={request.id} requestOpt={Some(request)} />;
            }
            : React.null}
         <VSpacing size=Spacing.xl />

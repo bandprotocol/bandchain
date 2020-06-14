@@ -1,20 +1,20 @@
 package oracle
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 // GenesisState is the oracle state that must be provided at genesis.
 type GenesisState struct {
-	Params        types.Params                `json:"params" yaml:"params"`
-	DataSources   []types.DataSource          `json:"data_sources"  yaml:"data_sources"`
-	OracleScripts []types.OracleScript        `json:"oracle_scripts"  yaml:"oracle_scripts"`
-	ReportInfos   []types.ValidatorReportInfo `json:"report_infos" yaml:"report_infos"`
-	Results       [][]byte                    `json:"results" yaml:"results"`
+	Params        types.Params         `json:"params" yaml:"params"`
+	DataSources   []types.DataSource   `json:"data_sources"  yaml:"data_sources"`
+	OracleScripts []types.OracleScript `json:"oracle_scripts"  yaml:"oracle_scripts"`
 }
 
 // DefaultGenesisState returns the default oracle genesis state.
@@ -23,8 +23,6 @@ func DefaultGenesisState() GenesisState {
 		Params:        types.DefaultParams(),
 		DataSources:   []types.DataSource{},
 		OracleScripts: []types.OracleScript{},
-		ReportInfos:   []types.ValidatorReportInfo{},
-		Results:       [][]byte{},
 	}
 }
 
@@ -42,15 +40,6 @@ func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorU
 	for _, oracleScript := range data.OracleScripts {
 		_ = k.AddOracleScript(ctx, oracleScript)
 	}
-	for _, info := range data.ReportInfos {
-		k.SetValidatorReportInfo(ctx, info.Validator, info)
-	}
-	for idx, result := range data.Results {
-		if result != nil {
-			k.SetResult(ctx, types.RequestID(idx+1), result)
-		}
-	}
-	k.SetRequestCount(ctx, int64(len(data.Results)))
 	err := k.BindPort(ctx, PortID)
 	if err != nil {
 		panic(fmt.Sprintf("could not claim port capability: %v", err))
@@ -64,7 +53,14 @@ func ExportGenesis(ctx sdk.Context, k Keeper) GenesisState {
 		Params:        k.GetParams(ctx),
 		DataSources:   k.GetAllDataSources(ctx),
 		OracleScripts: k.GetAllOracleScripts(ctx),
-		ReportInfos:   k.GetAllValidatorReportInfos(ctx),
-		Results:       k.GetAllResults(ctx),
 	}
+}
+
+// GetGenesisStateFromAppState returns x/oracle GenesisState given raw application genesis state.
+func GetGenesisStateFromAppState(cdc *codec.Codec, appState map[string]json.RawMessage) GenesisState {
+	var genesisState GenesisState
+	if appState[ModuleName] != nil {
+		cdc.MustUnmarshalJSON(appState[ModuleName], &genesisState)
+	}
+	return genesisState
 }

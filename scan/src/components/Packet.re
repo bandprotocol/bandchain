@@ -28,7 +28,7 @@ let make = (~packet: IBCSub.packet_t, ~oracleScriptID: ID.OracleScript.t) => {
     // TODO: support loading state, no data later
     let outputKVsOpt =
       switch (oracleScriptSub) {
-      | Data(oracleScript) => Borsh.decode(oracleScript.schema, "Input", request.calldata)
+      | Data(oracleScript) => Obi.decode(oracleScript.schema, "input", request.calldata)
       | _ => None
       };
     <>
@@ -50,7 +50,7 @@ let make = (~packet: IBCSub.packet_t, ~oracleScriptID: ID.OracleScript.t) => {
          <div className=Styles.hFlex>
            <Text value="CALLDATA" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
            <HSpacing size=Spacing.md />
-           <CopyButton data={request.calldata} />
+           <CopyButton data={request.calldata} title="Copy as bytes" />
          </div>;
        switch (outputKVsOpt) {
        | Some(_) => calldataHeadRender
@@ -131,7 +131,7 @@ let make = (~packet: IBCSub.packet_t, ~oracleScriptID: ID.OracleScript.t) => {
        | (IBCSub.Response.Success, Some(result)) =>
          let outputKVsOpt =
            switch (oracleScriptSub) {
-           | Data(oracleScript) => Borsh.decode(oracleScript.schema, "Output", result)
+           | Data(oracleScript) => Obi.decode(oracleScript.schema, "output", result)
            | _ => None
            };
          <>
@@ -140,7 +140,7 @@ let make = (~packet: IBCSub.packet_t, ~oracleScriptID: ID.OracleScript.t) => {
               <div className=Styles.hFlex>
                 <Text value="RESULT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
                 <HSpacing size=Spacing.md />
-                <CopyButton data=result />
+                <CopyButton data=result title="Copy as bytes" />
               </div>;
             switch (outputKVsOpt) {
             | Some(_) => resultHeadRender

@@ -54,11 +54,19 @@ module Styles = {
     ]);
 };
 
-let balanceDetail = (title, amount, usdPrice, color) => {
+let balanceDetail = (title, description, amount, usdPrice, color) => {
   <Row alignItems=Css.flexStart>
     <Col size=0.25> <div className={Styles.ovalIcon(color)} /> </Col>
     <Col size=1.2>
-      <Text value=title size=Text.Sm height={Text.Px(18)} spacing={Text.Em(0.03)} nowrap=true />
+      <Text
+        value=title
+        size=Text.Sm
+        height={Text.Px(18)}
+        spacing={Text.Em(0.03)}
+        nowrap=true
+        tooltipItem={description |> React.string}
+        tooltipPlacement=Text.AlignBottomStart
+      />
     </Col>
     <Col size=0.6>
       <div className=Styles.cFlex>
@@ -204,21 +212,40 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
         </Col>
         <Col size=1.>
           <VSpacing size=Spacing.md />
-          {balanceDetail("AVAILABLE BALANCE", availableBalance, usdPrice, Colors.bandBlue)}
+          {balanceDetail(
+             "AVAILABLE BALANCE",
+             "Balance available to send, delegate, etc",
+             availableBalance,
+             usdPrice,
+             Colors.bandBlue,
+           )}
           <VSpacing size=Spacing.lg />
           <VSpacing size=Spacing.md />
           {balanceDetail(
              "BALANCE AT STAKE",
+             "Balance currently delegated to validators",
              balanceAtStakeAmount,
              usdPrice,
              Colors.chartBalanceAtStake,
            )}
           <VSpacing size=Spacing.lg />
           <VSpacing size=Spacing.md />
-          {balanceDetail("UNBONDING AMOUNT", unbondingAmount, usdPrice, Colors.blue4)}
+          {balanceDetail(
+             "UNBONDING AMOUNT",
+             "Amount undelegated from validators awaiting 21 days lockup period",
+             unbondingAmount,
+             usdPrice,
+             Colors.blue4,
+           )}
           <VSpacing size=Spacing.lg />
           <VSpacing size=Spacing.md />
-          {balanceDetail("REWARD", rewardAmount, usdPrice, Colors.chartReward)}
+          {balanceDetail(
+             "REWARD",
+             "Reward from staking to validators",
+             rewardAmount,
+             usdPrice,
+             Colors.chartReward,
+           )}
         </Col>
         <div className=Styles.separatorLine />
         <Col size=1. alignSelf=Col.Start>

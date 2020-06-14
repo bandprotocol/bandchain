@@ -4,10 +4,10 @@ contract("Packets", () => {
   beforeEach(async () => {
     this.contract = await Packets.new();
   });
-  context("marshalRequestPacket", () => {
+  context("encodeRequestPacket", () => {
     it("should marshal a request packet correctly", async () => {
       (
-        await this.contract.marshalRequestPacket([
+        await this.contract.encodeRequestPacket([
           "beeb",
           1,
           "0x030000004254436400000000000000",
@@ -21,10 +21,10 @@ contract("Packets", () => {
         );
     });
   });
-  context("marshalResponsePacket", () => {
+  context("encodeResponsePacket", () => {
     it("should marshal a response packet correctly", async () => {
       (
-        await this.contract.marshalResponsePacket([
+        await this.contract.encodeResponsePacket([
           "beeb",
           1,
           1,
@@ -41,29 +41,29 @@ contract("Packets", () => {
     });
   });
 
-  context("getResultHash", () => {
+  context("getEncodedResult", () => {
     it("should calculate result hash correctly", async () => {
       (
-        await this.contract.getResultHash(
+        await this.contract.getEncodedResult(
           ["beeb", 1, "0x030000004254436400000000000000", 1, 1],
           ["beeb", 1, 1, 1589535020, 1589535022, 1, "0x4bb10e0000000000"],
         )
       )
         .toString()
         .should.eq(
-          "0x29bcc52d59b39c61a9616365dcd39dbff8d1aebc88a6a7e2b53dff67841dbc06",
+          "0x000000046265656200000000000000010000000f03000000425443640000000000000000000000000000010000000000000001000000046265656200000000000000010000000000000001000000005ebe612c000000005ebe612e00000001000000084bb10e0000000000",
         );
     });
     it("should calculate result hash with empty client id correctly", async () => {
       (
-        await this.contract.getResultHash(
+        await this.contract.getEncodedResult(
           ["", 1, "0x030000004254436400000000000000", 1, 1],
           ["", 1, 1, 1590490752, 1590490756, 1, "0x568c0d0000000000"],
         )
       )
         .toString()
         .should.eq(
-          "0xa506eb6a23931d1130bfced8b10ec41674a6eaefb888063847e3605bffbdd5ba",
+          "0x0000000000000000000000010000000f030000004254436400000000000000000000000000000100000000000000010000000000000000000000010000000000000001000000005eccf680000000005eccf6840000000100000008568c0d0000000000",
         );
     });
   });

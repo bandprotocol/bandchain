@@ -16,7 +16,7 @@ module RevisionsConfig = [%graphql
       transaction @bsRecord {
         txHash: tx_hash @bsDecoder(fn: "GraphQLParser.hash")
         blockHeight: block_height @bsDecoder(fn: "ID.Block.fromJson")
-        timestamp @bsDecoder(fn: "GraphQLParser.time")
+        timestamp @bsDecoder(fn: "GraphQLParser.timeMS")
       }
     }
   }

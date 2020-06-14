@@ -74,7 +74,7 @@ let renderSend = (send: TxSub.Msg.Send.t) => {
 };
 // TODO: move it to file later.
 let renderRequest = (request: TxSub.Msg.Request.t) => {
-  let calldataKVsOpt = Borsh.decode(request.schema, "Input", request.calldata);
+  let calldataKVsOpt = Obi.decode(request.schema, "input", request.calldata);
   <Col size=Styles.thirdCol alignSelf=Col.Start>
     <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
@@ -90,7 +90,7 @@ let renderRequest = (request: TxSub.Msg.Request.t) => {
     <div className=Styles.hFlex>
       <Text value="CALLDATA" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <HSpacing size=Spacing.md />
-      <CopyButton data={request.calldata} />
+      <CopyButton data={request.calldata} title="Copy as bytes" />
     </div>
     <VSpacing size=Spacing.md />
     {switch (calldataKVsOpt) {

@@ -9,7 +9,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	clientcmn "github.com/bandprotocol/bandchain/chain/x/oracle/client/common"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
@@ -28,6 +30,9 @@ func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		GetQueryCmdDataSource(storeKey, cdc),
 		GetQueryCmdOracleScript(storeKey, cdc),
 		GetQueryCmdRequest(storeKey, cdc),
+		GetQueryCmdRequestSearch(storeKey, cdc),
+		GetQueryCmdReporters(storeKey, cdc),
+		GetQueryCmdReportInfo(storeKey, cdc),
 	)...)
 	return oracleCmd
 }
@@ -116,6 +121,60 @@ func GetQueryCmdRequest(route string, cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 			var out types.QueryRequestResult
+			cdc.MustUnmarshalJSON(res, &out)
+			return cliCtx.PrintOutput(out)
+		},
+	}
+}
+
+// GetQueryCmdRequestSearch implements the search request command.
+func GetQueryCmdRequestSearch(route string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:  "request-search [oracle-script-id] [calldata] [ask-count] [min-count]",
+		Args: cobra.ExactArgs(4),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			res, _, err := clientcmn.QuerySearchLatestRequest(route, cliCtx, args[0], args[1], args[2], args[3])
+			if err != nil {
+				return err
+			}
+			var out types.QueryRequestResult
+			cdc.MustUnmarshalJSON(res, &out)
+			return cliCtx.PrintOutput(out)
+		},
+	}
+}
+
+// GetQueryCmdReporters implements the query reporter list of validator command.
+func GetQueryCmdReporters(route string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:  "reporters [validator]",
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryReporters, args[0]), nil)
+			if err != nil {
+				return err
+			}
+			var out []sdk.AccAddress
+			cdc.MustUnmarshalJSON(res, &out)
+			return cliCtx.PrintOutput(out)
+		},
+	}
+}
+
+// GetQueryCmdReportInfo implements the query report info command.
+func GetQueryCmdReportInfo(route string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:  "report_info [validator]",
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryReportInfo, args[0]), nil)
+			if err != nil {
+				return err
+			}
+			var out types.ValidatorReportInfo
 			cdc.MustUnmarshalJSON(res, &out)
 			return cliCtx.PrintOutput(out)
 		},

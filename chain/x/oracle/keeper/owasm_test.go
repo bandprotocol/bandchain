@@ -33,7 +33,7 @@ func TestPrepareRequestSuccess(t *testing.T) {
 	oracleScriptID := k.AddOracleScript(ctx, os)
 	calldata := []byte("beeb")
 	askCount := uint64(1)
-	minCount := uint64(2)
+	minCount := uint64(1)
 	clientID := "beeb"
 	requestHeight := int64(0)
 	rawRequestID := []types.ExternalID{1, 2, 3}
@@ -51,6 +51,10 @@ func TestPrepareRequestSuccess(t *testing.T) {
 		sdk.NewEvent(
 			types.EventTypeRequest,
 			sdk.NewAttribute(types.AttributeKeyID, "1"),
+			sdk.NewAttribute(types.AttributeKeyOracleScriptID, "1"),
+			sdk.NewAttribute(types.AttributeKeyCalldata, "62656562"), // "beeb" in hex
+			sdk.NewAttribute(types.AttributeKeyAskCount, "1"),
+			sdk.NewAttribute(types.AttributeKeyMinCount, "1"),
 			sdk.NewAttribute(types.AttributeKeyValidator, Validator1.ValAddress.String()),
 		),
 		sdk.NewEvent(
@@ -288,47 +292,48 @@ func TestResolveRequestSuccess(t *testing.T) {
 	_, ctx, k := createTestInput()
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 
-	ds1, clear1 := getTestDataSource("code1")
-	defer clear1()
-	k.AddDataSource(ctx, ds1)
-
-	ds2, clear2 := getTestDataSource("code2")
-	defer clear2()
-	k.AddDataSource(ctx, ds2)
-
-	os, clear3 := getTestOracleScript()
-	defer clear3()
-
+	os, clear := getTestOracleScript()
+	defer clear()
 	oracleScriptID := k.AddOracleScript(ctx, os)
-	calldata, _ := hex.DecodeString("030000004254436400000000000000")
-	minCount := uint64(2)
-	clientID := "beeb"
-	ibcInfo := types.NewIBCInfo("source_port", "source_channel")
-	rawRequestID := []types.ExternalID{1, 2}
-	vals := []sdk.ValAddress{Validator1.ValAddress}
+
+	calldata := []byte("calldata")
+	minCount := uint64(1)
+	clientID := "owasm test"
+	rawRequestID := []types.ExternalID{1, 2, 3}
+	vals := []sdk.ValAddress{Validator1.ValAddress, Validator2.ValAddress, Validator3.ValAddress}
 	requestHeight := int64(4000)
 	requestTime := int64(1581589700)
 
 	req := types.NewRequest(
 		oracleScriptID, calldata, vals, minCount, requestHeight,
-		requestTime, clientID, &ibcInfo, rawRequestID)
+		requestTime, clientID, nil, rawRequestID)
 	reqID := k.AddRequest(ctx, req)
-	k.ResolveRequest(ctx, reqID)
 
+	// Set report validator
+	k.AddReport(ctx, types.RequestID(1), types.NewReport(
+		Validator1.ValAddress,
+		true,
+		[]types.RawReport{
+			types.NewRawReport(1, 0, []byte("answer1")),
+			types.NewRawReport(2, 0, []byte("answer2")),
+			types.NewRawReport(3, 0, []byte("answer3")),
+		}),
+	)
+
+	k.ResolveRequest(ctx, reqID)
 	res, err := k.GetResult(ctx, reqID)
 	require.NoError(t, err)
 
-	r := k.MustGetRequest(ctx, reqID)
+	reqPacket := types.NewOracleRequestPacketData(
+		clientID, types.OracleScriptID(1), calldata, uint64(len(vals)), minCount,
+	)
+
 	resPacket := types.NewOracleResponsePacketData(
-		r.ClientID, reqID, k.GetReportCount(ctx, reqID), r.RequestTime,
+		clientID, reqID, 1, requestTime,
 		ctx.BlockTime().Unix(), types.ResolveStatus_Success, []byte("beeb"),
 	)
-	reqPacket := types.NewOracleRequestPacketData(
-		r.ClientID, r.OracleScriptID, r.Calldata, r.MinCount, uint64(len(r.RequestedValidators)),
-	)
-	expecetRes := types.CalculateResultHash(reqPacket, resPacket)
+	require.Equal(t, types.Result{RequestPacketData: reqPacket, ResponsePacketData: resPacket}, res)
 
-	require.Equal(t, expecetRes, res)
 }
 
 // TODO: Patch to "Bad" wasm code that is a valid wasm code.
@@ -377,7 +382,7 @@ func TestResolveRequestSuccess(t *testing.T) {
 // 	reqPacket := types.NewOracleRequestPacketData(
 // 		r.ClientID, r.OracleScriptID, r.Calldata, r.MinCount, uint64(len(r.RequestedValidators)),
 // 	)
-// 	expecetRes := types.CalculateResultHash(reqPacket, resPacket)
+// 	expecetRes := types.CalculateEncodedResult(reqPacket, resPacket)
 
 // 	require.Equal(t, expecetRes, res)
 // }

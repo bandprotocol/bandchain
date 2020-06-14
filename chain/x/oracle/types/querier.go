@@ -8,6 +8,8 @@ const (
 	QueryDataSources   = "data_sources"
 	QueryOracleScripts = "oracle_scripts"
 	QueryRequests      = "requests"
+	QueryReporters     = "reporters"
+	QueryReportInfo    = "report_info"
 )
 
 // QueryCountsResult is the struct for the result of query counts.
@@ -21,5 +23,5 @@ type QueryCountsResult struct {
 type QueryRequestResult struct {
 	Request Request  `json:"request"`
 	Reports []Report `json:"reports"`
-	Result  []byte   `json:"result"` // TODO: Update to richer data type.
+	Result  *Result  `json:"result"`
 }

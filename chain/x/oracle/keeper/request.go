@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"encoding/hex"
 	"fmt"
 
 	"github.com/bandprotocol/bandchain/chain/pkg/bandrng"
@@ -82,14 +81,13 @@ func (k Keeper) AddRequest(ctx sdk.Context, req types.Request) types.RequestID {
 func (k Keeper) SaveResult(ctx sdk.Context, id types.RequestID, status types.ResolveStatus, result []byte) types.OracleResponsePacketData {
 	r := k.MustGetRequest(ctx, id)
 	req := types.NewOracleRequestPacketData(
-		r.ClientID, r.OracleScriptID, r.Calldata, r.MinCount, uint64(len(r.RequestedValidators)),
+		r.ClientID, r.OracleScriptID, r.Calldata, uint64(len(r.RequestedValidators)), r.MinCount,
 	)
 	res := types.NewOracleResponsePacketData(
 		r.ClientID, id, k.GetReportCount(ctx, id), r.RequestTime,
 		ctx.BlockTime().Unix(), status, result,
 	)
-	resultHash := types.CalculateResultHash(req, res)
-	k.SetResult(ctx, id, resultHash)
+	k.SetResult(ctx, id, types.CalculateEncodedResult(req, res))
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeRequestExecute,
 		sdk.NewAttribute(types.AttributeKeyClientID, req.ClientID),
@@ -103,7 +101,6 @@ func (k Keeper) SaveResult(ctx sdk.Context, id types.RequestID, status types.Res
 		sdk.NewAttribute(types.AttributeKeyRequestTime, fmt.Sprintf("%d", res.RequestTime)),
 		sdk.NewAttribute(types.AttributeKeyResolveTime, fmt.Sprintf("%d", res.ResolveTime)),
 		sdk.NewAttribute(types.AttributeKeyResult, string(res.Result)),
-		sdk.NewAttribute(types.AttributeKeyResultHash, hex.EncodeToString(resultHash)),
 	))
 	return res
 }

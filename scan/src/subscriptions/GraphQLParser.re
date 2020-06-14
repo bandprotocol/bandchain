@@ -8,13 +8,30 @@ let buffer = json =>
   |> Js.String.substr(~from=2)
   |> JsBuffer.fromHex;
 
-let time = json => {
+let timeS = json => {
+  json
+  |> Js.Json.decodeNumber
+  |> Belt.Option.getExn
+  |> int_of_float
+  |> MomentRe.momentWithUnix
+  |> MomentRe.Moment.defaultUtc;
+};
+
+let timeMS = json => {
   json
   |> Js.Json.decodeNumber
   |> Belt.Option.getExn
   |> MomentRe.momentWithTimestampMS
   |> MomentRe.Moment.defaultUtc;
 };
+
+let optionBuffer = Belt_Option.map(_, buffer);
+
+let optionTimeMS = Belt_Option.map(_, timeMS);
+
+let optionTimeS = Belt_Option.map(_, timeS);
+
+let optionTimeSExn = timeSOpt => timeSOpt |> Belt_Option.getExn |> timeS;
 
 let bool = json => json |> Js.Json.decodeBoolean |> Belt.Option.getExn;
 

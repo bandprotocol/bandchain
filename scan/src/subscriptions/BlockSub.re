@@ -43,7 +43,7 @@ module MultiConfig = [%graphql
         operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
         moniker
       }
-      timestamp @bsDecoder(fn: "GraphQLParser.time")
+      timestamp @bsDecoder(fn: "GraphQLParser.timeMS")
       transactions_aggregate @bsRecord {
         aggregate @bsRecord {
           count @bsDecoder(fn: "Belt_Option.getExn")
@@ -65,7 +65,7 @@ module MultiConsensusAddressConfig = [%graphql
         operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
         moniker
       }
-      timestamp @bsDecoder(fn: "GraphQLParser.time")
+      timestamp @bsDecoder(fn: "GraphQLParser.timeMS")
       transactions_aggregate @bsRecord {
         aggregate @bsRecord {
           count @bsDecoder(fn: "Belt_Option.getExn")
@@ -87,7 +87,7 @@ module SingleConfig = [%graphql
         operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
         moniker
       }
-      timestamp @bsDecoder(fn: "GraphQLParser.time")
+      timestamp @bsDecoder(fn: "GraphQLParser.timeMS")
       transactions_aggregate @bsRecord {
         aggregate @bsRecord {
           count @bsDecoder(fn: "Belt_Option.getExn")
