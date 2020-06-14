@@ -48,5 +48,6 @@
 ### Helpers
 
 - (feat) [\#1963](https://github.com/bandprotocol/bandchain/pull/1963) Add Bandchain.js
+- (feat) [\#1972](https://github.com/bandprotocol/bandchain/pull/1972) Add cron-requester
 
 ### MISC

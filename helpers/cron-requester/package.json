@@ -1,0 +1,39 @@
+{
+  "name": "@bandprotocol/cron-requester",
+  "version": "1.0.3",
+  "description": "A simple node.js tool that requests data to BandChain periodically",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./bin/cron-requester"
+  },
+  "bin": {
+    "cron-requester": "./bin/cron-requester"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bandprotocol/bandchain"
+  },
+  "author": "Band Protocol <dev@bandprotocol.com> (https://github.com/bandprotocol)",
+  "bugs": {
+    "url": "https://github.com/bandprotocol/bandchain/issues"
+  },
+  "homepage": "https://github.com/bandprotocol/bandchain",
+  "keywords": [
+    "oracle",
+    "blokchain",
+    "cross-chain",
+    "cosmos-sdk",
+    "decentralization"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@bandprotocol/bandchain.js": "0.0.4",
+    "cron": "^1.8.2"
+  },
+  "prettier": {
+    "trailingComma": "all",
+    "semi": false,
+    "singleQuote": true
+  }
+}

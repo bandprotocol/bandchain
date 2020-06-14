@@ -1,0 +1,28 @@
+{
+  "chainId": "band-guanyu-devnet-2",
+  "endpoint": "http://guanyu-devnet.bandchain.org/rest",
+  "mnemonic": "final little loud vicious door hope differ lucky alpha morning clog oval milk repair off course indicate stumble remove nest position journey throw crane",
+  "cronPattern": "*/5 * * * *",
+  "validatorCounts": {
+    "minCount": 3,
+    "askCount": 4
+  },
+  "requests": [
+    {
+      "oracleScriptId": 1,
+      "params": {
+        "symbol": "BTC",
+        "multiplier": 1000000
+      }
+    },
+    {
+      "oracleScriptId": 13,
+      "params": {
+        "base_symbol": "ETH",
+        "quote_symbol": "CNY",
+        "aggregation_method": "median",
+        "multiplier": 1000000
+      }
+    }
+  ]
+}

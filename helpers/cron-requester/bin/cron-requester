@@ -1,0 +1,3 @@
+#!/usr/bin/env node
+const CronRequester = require('..');
+CronRequester(...process.argv.slice(2));
