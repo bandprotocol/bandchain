@@ -267,7 +267,6 @@ let make = (~address) =>
       <TableHeader />
       {switch (reportsSub) {
        | Data(reports) =>
-         Js.Console.log("DATA");
          reports->Belt_Array.length > 0
            ? <>
                <Reports reports />
@@ -284,10 +283,8 @@ let make = (~address) =>
                <VSpacing size={`px(40)} />
                <Text block=true value="NO REPORTS" weight=Text.Regular color=Colors.blue4 />
                <VSpacing size={`px(15)} />
-             </div>;
-       | _ =>
-         Js.Console.log("LOADING");
-         <Loading />;
+             </div>
+       | _ => <Loading />
        }}
     </div>
     |> Sub.resolve;

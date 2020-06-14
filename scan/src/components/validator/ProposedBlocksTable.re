@@ -50,7 +50,7 @@ module TableHeader = {
 module Loading = {
   [@react.component]
   let make = (~withCount=true) => {
-    <div>
+    <div className=Styles.tableWrapper>
       {withCount
          ? <>
              <Row> <LoadingCensorBar width=100 height=15 /> </Row>
@@ -173,6 +173,7 @@ let make = (~consensusAddress) =>
                <Text block=true value="NO BLOCK" weight=Text.Regular color=Colors.blue4 />
                <VSpacing size={`px(15)} />
              </div>
+
        | _ => <Loading withCount=false />
        }}
     </div>
