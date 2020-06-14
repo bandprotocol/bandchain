@@ -21,7 +21,7 @@ See example [`config.json`](./config.js) for requesting data from GuanYu [devnet
   "chainId": "band-guanyu-devnet-2",
   "endpoint": "http://guanyu-devnet.bandchain.org/rest",
   "mnemonic": "final little loud vicious door hope differ lucky alpha morning clog oval milk repair off course indicate stumble remove nest position journey throw crane",
-  "cronPattern": "*/1 * * * *",
+  "cronPattern": "*/5 * * * *",
   "validatorCounts": {
     "minCount": 3,
     "askCount": 4
@@ -45,7 +45,6 @@ See example [`config.json`](./config.js) for requesting data from GuanYu [devnet
     }
   ]
 }
-
 ```
 
 ## 💎 Example Usages
