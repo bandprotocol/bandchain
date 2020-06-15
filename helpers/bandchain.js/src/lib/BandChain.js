@@ -130,8 +130,7 @@ class BandChain {
         const requestEndpoint = `${this.endpoint}/oracle/requests/${requestID}`
         let res = await axios.get(requestEndpoint)
         if (res.status == 200 && res.data.result.result) {
-          let result = res.data.result.result
-          return result
+          return res.data.result.result
         } else if (res.status == 200 && !res.data.result.result) {
           throw new Error('No result found for the specified requestID')
         }
@@ -154,11 +153,11 @@ class BandChain {
         let res = await axios.get(requestEndpoint)
         if (res.status == 200) {
           if (res.data.result.result) {
-            let result = res.data.result.result
-            let rawResult = obiObj.decodeOutput(
-              Buffer.from(result.ResponsePacketData.result, 'base64'),
+            let response = res.data.result.result.ResponsePacketData
+            response.result = obiObj.decodeOutput(
+              Buffer.from(response.result, 'base64'),
             )
-            return rawResult
+            return response
           } else {
             return null
           }

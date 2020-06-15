@@ -83,5 +83,6 @@ it('Test BandChain getLastMatchingRequestResult', async () => {
   )
 
   expect(lastRequestResult).toBeDefined()
-  expect(lastRequestResult.px).toBeGreaterThan(0)
+  expect(lastRequestResult.result).toBeDefined()
+  expect(lastRequestResult.result.px).toBeGreaterThan(0)
 })
