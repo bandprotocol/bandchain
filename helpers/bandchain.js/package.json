@@ -1,6 +1,6 @@
 {
   "name": "@bandprotocol/bandchain.js",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Library for interacting with BandChain in browser and Node.js environments",
   "main": "build/index.js",
   "scripts": {

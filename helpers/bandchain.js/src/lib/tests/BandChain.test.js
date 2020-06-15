@@ -39,7 +39,7 @@ it('Test BandChain getOracleScript success', async () => {
 it('Test BandChain getOracleScript error', () => {
   let oracleScriptID = 30
   let bandchain = new BandChain(chainID, endpoint)
-  return expect(bandchain.getOracleScript(oracleScriptID)).rejects.toThrow(
+  expect(bandchain.getOracleScript(oracleScriptID)).rejects.toThrow(
     'No oracle script found with the given ID',
   )
 })
@@ -55,33 +55,21 @@ it('Test BandChain submitRequestTx', async () => {
     mnemonic,
   )
   testRequestID = requestID
-  return expect(requestID).toBeDefined()
+  expect(requestID).toBeDefined()
 })
 
 it('Test BandChain getRequestProof', async () => {
   let bandchain = new BandChain(chainID, endpoint)
   let requestProof = await bandchain.getRequestProof(testRequestID)
-  return expect(requestProof).toBeDefined()
+  expect(requestProof).toBeDefined()
 })
 
 it('Test BandChain getRequestResult', async () => {
   let bandchain = new BandChain(chainID, endpoint)
   let requestID = 1
   let requestResult = await bandchain.getRequestResult(requestID)
-  return (
-    expect(requestResult).toBeDefined() &&
-    expect(requestResult.RequestPacketData).toEqual({
-      client_id: 'bandchain.js',
-      oracle_script_id: '1',
-      calldata: 'AAAAA0JUQwAAAAA7msoA',
-      ask_count: '4',
-      min_count: '2',
-    }) &&
-    expect(requestResult.ResponsePacketData.client_id).toEqual(
-      'bandchain.js',
-    ) &&
-    expect(requestResult.ResponsePacketData.request_id).toEqual(testRequestID)
-  )
+
+  expect(requestResult).toBeDefined()
 })
 
 it('Test BandChain getLastMatchingRequestResult', async () => {
@@ -93,9 +81,7 @@ it('Test BandChain getLastMatchingRequestResult', async () => {
     { symbol: 'BTC', multiplier: BigInt('1000000000') },
     { minCount: 2, askCount: 4 },
   )
-  return (
-    expect(lastRequestResult).toBeDefined() &&
-    expect(lastRequestResult.client_id).toEqual('bandchain.js') &&
-    expect(lastRequestResult.resolve_status).toEqual(1)
-  )
+
+  expect(lastRequestResult).toBeDefined()
+  expect(lastRequestResult.px).toBeGreaterThan(0)
 })

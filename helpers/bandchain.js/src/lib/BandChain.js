@@ -152,17 +152,16 @@ class BandChain {
     while (true) {
       try {
         let res = await axios.get(requestEndpoint)
-        if (res.status == 200 && res.data.result.result) {
-          let result = res.data.result.result
-          let rawResult = obiObj.decodeOutput(
-            Buffer.from(result.ResponsePacketData.result, 'base64'),
-          )
-          let decodedResult = []
-          for (let [k, v] of Object.entries(rawResult)) {
-            decodedResult = [...decodedResult, { fieldName: k, fieldValue: v }]
+        if (res.status == 200) {
+          if (res.data.result.result) {
+            let result = res.data.result.result
+            let rawResult = obiObj.decodeOutput(
+              Buffer.from(result.ResponsePacketData.result, 'base64'),
+            )
+            return rawResult
+          } else {
+            return null
           }
-          result.ResponsePacketData.result = decodedResult
-          return result
         }
       } catch {
         await delay(100)
