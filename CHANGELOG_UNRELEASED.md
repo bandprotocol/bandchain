@@ -29,6 +29,7 @@
 
 ### Owasm
 
+- (impv) [\#1936](https://github.com/bandprotocol/bandchain/pull/1936) Return error if writing beyond the span capacity.
 - (impv) [#\1941](https://github.com/bandprotocol/bandchain/pull/1941) Fix how to build share object in Linux.
 - (feat) [\#1922](https://github.com/bandprotocol/bandchain/pull/1922) Add wat to wasm function.
 
