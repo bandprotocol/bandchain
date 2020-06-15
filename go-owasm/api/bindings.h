@@ -12,6 +12,7 @@ enum Error {
   ResolveNamesError = 5,
   ValidateError = 6,
   UnknownError = 7,
+  SpanExceededCapacityError = 8,
   DeserializationError = 9,
   GasCounterInjectionError = 10,
   SerializationError = 11,

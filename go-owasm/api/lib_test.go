@@ -30,7 +30,7 @@ func readWasmFile(fileName string) []byte {
 
 func TestSuccessWatToOwasm(t *testing.T) {
 	code := readWatFile("test")
-	wasm, err := Wat2Wasm(code)
+	wasm, err := Wat2Wasm(code, SpanSize)
 	require.NoError(t, err)
 
 	expectedWasm := readWasmFile("test")
@@ -39,14 +39,21 @@ func TestSuccessWatToOwasm(t *testing.T) {
 
 func TestFailEmptyWatContent(t *testing.T) {
 	code := []byte("")
-	_, err := Wat2Wasm(code)
-	require.Equal(t, ErrParseError, err)
+	_, err := Wat2Wasm(code, SpanSize)
+	require.Equal(t, ErrParseFail, err)
 }
 
 func TestFailInvalidWatContent(t *testing.T) {
 	code := []byte("invalid wat content")
-	_, err := Wat2Wasm(code)
-	require.Equal(t, ErrParseError, err)
+	_, err := Wat2Wasm(code, SpanSize)
+	require.Equal(t, ErrParseFail, err)
+}
+
+func TestFailSpanExceededCapacity(t *testing.T) {
+	code := readWatFile("test")
+	smallSpanSize := 10
+	_, err := Wat2Wasm(code, smallSpanSize)
+	require.EqualError(t, err, "span exceeded capacity")
 }
 
 func TestFailCompileInvalidContent(t *testing.T) {
