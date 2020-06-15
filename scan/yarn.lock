@@ -1128,10 +1128,10 @@
   resolved "https://registry.yarnpkg.com/@ledgerhq/errors/-/errors-5.15.0.tgz#e5d5b5ad48fc07f6308b78b065242e158bc044a2"
   integrity sha512-ZlLhR7qaChPgEbvcqOptRepWGm8VhhwOM6kC1gx3WErutbtaOjUX8lLA4ButWFU2f+xTl2rS/5c86wC7qGqGXQ==
 
-"@ledgerhq/hw-transport-webusb@^5.15.0":
-  version "5.15.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-webusb/-/hw-transport-webusb-5.15.0.tgz#32356db7d10bd6a43bdcfa675d14079ed33f5d43"
-  integrity sha512-A5nWd2SJtcZdcBz6SxjyZzGs3ZoUPv+ynkviJXxDSsI9H89ynxziTqrL37Bi+oZ9Q4r1H7VoH11EQH8FAtrRyw==
+"@ledgerhq/hw-transport-webusb@^5.16.0":
+  version "5.16.0"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-webusb/-/hw-transport-webusb-5.16.0.tgz#c41863cc51f4835ec47f9be0f8a76035a8086ada"
+  integrity sha512-JK0VVb/u4eQVKe6SA6t/ddQ+5BcG4FAmXgN8+WCc4YHpHUYpZ4BCBbR0lTo+JacUk8Rz0/UWk/YETuRNLdhPJg==
   dependencies:
     "@ledgerhq/devices" "^5.15.0"
     "@ledgerhq/errors" "^5.15.0"

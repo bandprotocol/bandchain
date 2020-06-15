@@ -141,7 +141,7 @@ let make = (~rawTx, ~onBack, ~account: AccountContext.t) => {
                                }
                                : {
                                  Js.Console.error(txResponse);
-                                 setState(_ => Error(txResponse.rawLog));
+                                 setState(_ => Error(txResponse.code |> TxResError.parse));
                                };
                              dispatchModal(EnableExit);
                              Js.Promise.resolve();
