@@ -1,3 +1,8 @@
+type react_select_option_t = {
+  value: string,
+  label: string,
+};
+
 [@bs.deriving jsConverter]
 type style_t('a, 'b) = {
   control: 'a => 'a,
@@ -6,14 +11,21 @@ type style_t('a, 'b) = {
 
 [@bs.obj]
 external makeProps:
-  (~value: 'a, ~onChange: 'a => unit, ~options: array('a), ~styles: style_t('b, 'c), unit) => _ =
+  (
+    ~value: react_select_option_t,
+    ~onChange: 'a => unit,
+    ~options: array('a),
+    ~styles: style_t('b, 'c),
+    unit
+  ) =>
+  _ =
   "";
 
 [@bs.module "react-select"]
 external make:
   React.component({
     .
-    "value": 'a,
+    "value": react_select_option_t,
     "onChange": 'a => unit,
     "options": array('a),
     "styles": style_t('b, 'c),

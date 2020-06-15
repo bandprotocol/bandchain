@@ -19,11 +19,6 @@ module Styles = {
 };
 
 module DstValidatorSelection = {
-  type react_select_option_t = {
-    value: string,
-    label: string,
-  };
-
   type control_t = {
     display: string,
     height: string,
@@ -46,10 +41,12 @@ module DstValidatorSelection = {
   [@react.component]
   let make = (~filteredValidators: array(BandScan.ValidatorSub.t), ~setDstValidatorOpt) => {
     let (selectedValidator, setSelectedValidator) =
-      React.useState(_ => {value: "None", label: "Enter or select validator to delegate to"});
+      React.useState(_ =>
+        ReactSelect.{value: "None", label: "Enter or select validator to delegate to"}
+      );
     let validatorList =
       filteredValidators->Belt_Array.map(({operatorAddress, moniker}) =>
-        {value: operatorAddress |> Address.toBech32, label: moniker}
+        ReactSelect.{value: operatorAddress |> Address.toBech32, label: moniker}
       );
     <ReactSelect
       options=validatorList
