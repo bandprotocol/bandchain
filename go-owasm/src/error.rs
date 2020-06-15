@@ -1,4 +1,5 @@
 #[repr(i32)]
+#[derive(Debug, PartialEq)]
 pub enum Error {
   NoError = 0,
   CompliationError = 1,
@@ -7,5 +8,6 @@ pub enum Error {
   WriteBinaryError = 4,
   ResolveNamesError = 5,
   ValidateError = 6,
-  UnknownError = 7
+  UnknownError = 7,
+  SpanExceededCapacityError = 8
 }
