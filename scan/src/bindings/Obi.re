@@ -312,7 +312,7 @@ type Result struct {
 }
 
 func(result *Result) EncodeResult() []byte {
-\tencoder := obi.NewOBiEncoder()
+\tencoder := obi.NewObiEncoder()
 
 \t$functions
 
