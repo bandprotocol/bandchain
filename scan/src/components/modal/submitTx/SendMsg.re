@@ -70,6 +70,7 @@ let make = (~address, ~receiver, ~setMsgsOpt) => {
       msg="Recipient Address"
       code=true
       placeholder="Insert recipient address"
+      autoFocus=true
     />
     <VSpacing size=Spacing.lg />
     <VSpacing size=Spacing.md />
