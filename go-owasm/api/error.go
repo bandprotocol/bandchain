@@ -43,6 +43,8 @@ func parseError(code int32) error {
 		return ErrGasCounterInjectFail
 	case 10:
 		return ErrSerializetFail
+	case 255:
+		return ErrUnknownError
 	default:
 		return ErrUnknownError
 	}
