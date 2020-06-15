@@ -8,9 +8,9 @@ pub enum Error {
   WriteBinaryError = 4,
   ResolveNamesError = 5,
   ValidateError = 6,
-  UnknownError = 7,
-  SpanExceededCapacityError = 8
-  DeserializationError = 9,
-  GasCounterInjectionError = 10,
-  SerializationError = 11,
+  SpanExceededCapacityError = 7,
+  DeserializationError = 8,
+  GasCounterInjectionError = 9,
+  SerializationError = 10,
+  UnknownError = 255,
 }

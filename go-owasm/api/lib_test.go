@@ -8,10 +8,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const (
-	SpanSize = 1 * 1024 * 1024
-)
-
 func readWatFile(fileName string) []byte {
 	code, err := ioutil.ReadFile(fmt.Sprintf("./../wasm/%s.wat", fileName))
 	if err != nil {
@@ -30,7 +26,8 @@ func readWasmFile(fileName string) []byte {
 
 func TestSuccessWatToOwasm(t *testing.T) {
 	code := readWatFile("test")
-	wasm, err := Wat2Wasm(code, SpanSize)
+	spanSize := 1 * 1024 * 1024
+	wasm, err := Wat2Wasm(code, spanSize)
 	require.NoError(t, err)
 
 	expectedWasm := readWasmFile("test")
@@ -39,13 +36,15 @@ func TestSuccessWatToOwasm(t *testing.T) {
 
 func TestFailEmptyWatContent(t *testing.T) {
 	code := []byte("")
-	_, err := Wat2Wasm(code, SpanSize)
+	spanSize := 1 * 1024 * 1024
+	_, err := Wat2Wasm(code, spanSize)
 	require.Equal(t, ErrParseFail, err)
 }
 
 func TestFailInvalidWatContent(t *testing.T) {
 	code := []byte("invalid wat content")
-	_, err := Wat2Wasm(code, SpanSize)
+	spanSize := 1 * 1024 * 1024
+	_, err := Wat2Wasm(code, spanSize)
 	require.Equal(t, ErrParseFail, err)
 }
 
@@ -58,6 +57,7 @@ func TestFailSpanExceededCapacity(t *testing.T) {
 
 func TestFailCompileInvalidContent(t *testing.T) {
 	code := []byte("invalid content")
-	_, err := Compile(code, SpanSize)
-	require.Equal(t, ErrValidateError, err)
+	spanSize := 1 * 1024 * 1024
+	_, err := Compile(code, spanSize)
+	require.Equal(t, ErrValidateFail, err)
 }

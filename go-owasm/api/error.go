@@ -11,7 +11,6 @@ var (
 	ErrWriteBinaryFail      = errors.New("write binary fail")
 	ErrResolvesNamesFail    = errors.New("resolve names fail")
 	ErrValidateFail         = errors.New("validate fail")
-	ErrUnknownError         = errors.New("unknown error")
 	ErrSpanExceededCapacity = errors.New("span exceeded capacity")
 	ErrDeserializeFail      = errors.New("deserialize fail")
 	ErrGasCounterInjectFail = errors.New("gas counter inject fail")
@@ -37,14 +36,12 @@ func parseError(code int32) error {
 	case 6:
 		return ErrValidateFail
 	case 7:
-		return ErrUnknownError
-	case 8:
 		return ErrSpanExceededCapacity
-	case 9:
+	case 8:
 		return ErrDeserializeFail
-	case 10:
+	case 9:
 		return ErrGasCounterInjectFail
-	case 11:
+	case 10:
 		return ErrSerializetFail
 	default:
 		return ErrUnknownError
