@@ -14,6 +14,7 @@ def gen_data_source_oracle_script(ds_info, os_info, owner):
         os.path.join(dir, '../../../owasm/chaintests'))
 
     file = open("add_os_ds.sh", "w")
+    file.write('DIR=$(dirname "$0")\n')
     if len(ds_info) != len(os.listdir(data_source_dir)):
         raise Exception(
             "length data source info does not match with amount of data sources in directory")
@@ -30,7 +31,7 @@ def gen_data_source_oracle_script(ds_info, os_info, owner):
 def gen_data_source(file, data_source_dir, ds_info, owner):
     data_sources = []
     for (name, des), filename in zip(ds_info, sorted(os.listdir(data_source_dir))):
-        file_path = os.path.join(data_source_dir, filename)
+        file_path = os.path.join('$DIR/../datasources', filename)
         data_sources.append({'name': name, 'description': des,
                              'path': file_path})
 
@@ -42,7 +43,7 @@ def write_add_data_source(file, data_sources):
         name = value['name']
         description = value['description']
         path = value['path']
-        command_line = f'bandd add-data-source \\ \n\t"{name}" \\ \n\t"{description}" \\ \n\t{owner} \\ \n\t{path}\n\n'
+        command_line = f'bandd add-data-source \\\n\t"{name}" \\\n\t"{description}" \\\n\t{owner} \\\n\t{path}\n\n'
         file.write(command_line)
 
 
@@ -93,7 +94,7 @@ def get_url(file_path, filename):
 
 
 def get_oracle_script_path(filename):
-    return os.path.join(os.path.abspath(os.path.join(os.path.abspath(__file__), '../../')), 'pkg/owasm/res', filename + '.wasm')
+    return os.path.join('$DIR/..', 'pkg/owasm/res', filename + '.wasm')
 
 
 def write_add_oracle_script(file, oracle_scripts):
@@ -103,7 +104,7 @@ def write_add_oracle_script(file, oracle_scripts):
         schema = value['schema']
         url = value['url']
         path = value['path']
-        command_line = f'bandd add-oracle-script \\ \n\t"{name}" \\ \n\t"{description}" \\ \n\t"{schema}" \\ \n\t"{url}" \\ \n\t{owner} \\ \n\t{path}\n\n'
+        command_line = f'bandd add-oracle-script \\\n\t"{name}" \\\n\t"{description}" \\\n\t"{schema}" \\\n\t"{url}" \\\n\t{owner} \\\n\t{path}\n\n'
         file.write(command_line)
 
 
