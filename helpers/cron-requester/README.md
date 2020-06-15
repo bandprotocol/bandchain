@@ -12,7 +12,7 @@
 
 ## 📦 Prerequisite
 
-You need to create a `config.json` file in your machine.
+You need to create a `config.json` file in your machine. Note that all the fields are mandatory, except `cronPattern` and `requestInterval`.
 
 See example [`config.json`](./config.json) for an example of requesting data from Band's GuanYu [devnet](https://guanyu-devnet.cosmoscan.io/) every 5 minutes:
 
@@ -22,6 +22,7 @@ See example [`config.json`](./config.json) for an example of requesting data fro
   "endpoint": "http://guanyu-devnet.bandchain.org/rest",
   "mnemonic": "final little loud vicious door hope differ lucky alpha morning clog oval milk repair off course indicate stumble remove nest position journey throw crane",
   "cronPattern": "*/5 * * * *",
+  "requestInterval": 1000,
   "validatorCounts": {
     "minCount": 3,
     "askCount": 4
@@ -55,7 +56,18 @@ See example [`config.json`](./config.json) for an example of requesting data fro
 npx @bandprotocol/cron-requester config.json
 ```
 
-If `config.json` is correctly formatted, you should see something like this:
+### Request Mode
+If `config.json` does NOT specifies `cronPattern`, the requests will be sent in just one time.
+
+```
+∟ ✅ requestId = 180 | oracleScript #1 {"symbol":"BTC","multiplier":1000000}
+∟ ✅ requestId = 181 | oracleScript #13 {"base_symbol":"ETH","quote_symbol":"CNY","aggregation_method":"median","multiplier":1000000}
+⛳️ [2/2] requests was submitted
+--------------------------------------------------------
+```
+
+### Cron Mode
+If `config.json` has specified `cronPattern`, the requests will be running by the interval specified.
 
 ```
 --------------------------------------------------------

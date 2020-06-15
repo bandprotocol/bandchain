@@ -1,10 +1,11 @@
 const BandChain = require('@bandprotocol/bandchain.js')
 const { CronJob } = require('cron')
+const delay = require('delay')
 const fs = require('fs')
 
 // Due to how bandchain.js is written, we cannot batch all the requests in one tx yet
 // TODO: Fix this
-async function runJob(bandchain, mnemonic, validatorCounts, requests) {
+async function runJob(bandchain, mnemonic, validatorCounts, requests, requestInterval) {
   let count = 0
   for (let request of requests) {
     try {
@@ -29,6 +30,8 @@ async function runJob(bandchain, mnemonic, validatorCounts, requests) {
         JSON.stringify(request.params),
       )
     }
+
+    await delay(requestInterval)
   }
   console.log(
     '%s [%d/%d] requests was submitted',
@@ -57,6 +60,7 @@ async function start(configFilePath) {
     cronPattern,
     validatorCounts,
     requests,
+    requestInterval = 0
   } = config
 
   // Check config file content format
@@ -66,8 +70,6 @@ async function start(configFilePath) {
     throw new Error('config.chainId has to be string')
   if (typeof endpoint !== 'string')
     throw new Error('config.endpoint has to be string')
-  if (typeof cronPattern !== 'string')
-    throw new Error('config.cronPattern has to be string')
   if (typeof validatorCounts !== 'object')
     throw new Error('config.validatorCounts has to be an object')
   if (!Array.isArray(requests))
@@ -87,25 +89,33 @@ async function start(configFilePath) {
     }),
   )
 
-  // Start cronjob
-  const cronJob = new CronJob(
-    cronPattern,
-    () => {
-      console.log('⏰ Requests start at %s', new Date().toLocaleString())
-      runJob(bandchain, mnemonic, validatorCounts, formattedRequests)
-    },
-    null,
-    true,
-  )
+  if (cronPattern) {
+    // Start cronjob
+    const cronJob = new CronJob(
+      cronPattern,
+      () => {
+        console.log('⏰ Requests start at %s', new Date().toLocaleString())
+        runJob(bandchain, mnemonic, validatorCounts, formattedRequests, requestInterval)
+      },
+      null,
+      true,
+    )
 
-  // Log the start of the program
-  console.log('--------------------------------------------------------')
-  console.log(
-    '⭐️ Cron is running! Your requests will be executed with the cron pattern %s',
-    cronPattern,
-  )
-  console.log('📆 Your first requests will start at %s', cronJob.nextDates())
-  console.log('--------------------------------------------------------')
+    // Log the start of the program
+    console.log('--------------------------------------------------------')
+    console.log(
+      '⭐️ Cron is running! Your requests will be executed with the cron pattern %s',
+      cronPattern,
+    )
+    console.log(
+      '😎 Each request will be %dms apart',
+      requestInterval,
+    )
+    console.log('📆 Your first requests will start at %s', cronJob.nextDates())
+    console.log('--------------------------------------------------------')
+  } else {
+    runJob(bandchain, mnemonic, validatorCounts, formattedRequests, requestInterval)
+  }
 }
 
 module.exports = start

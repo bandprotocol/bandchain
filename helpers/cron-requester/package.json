@@ -1,6 +1,6 @@
 {
   "name": "@bandprotocol/cron-requester",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A simple node.js tool that requests data to BandChain periodically",
   "main": "lib/index.js",
   "scripts": {
@@ -29,7 +29,8 @@
   "license": "MIT",
   "dependencies": {
     "@bandprotocol/bandchain.js": "0.0.4",
-    "cron": "^1.8.2"
+    "cron": "^1.8.2",
+    "delay": "^4.3.0"
   },
   "prettier": {
     "trailingComma": "all",
