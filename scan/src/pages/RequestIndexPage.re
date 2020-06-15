@@ -256,6 +256,7 @@ let make = (~reqID) =>
         />
         {switch (request.result) {
          | Some(result) =>
+           Js.Console.log(result |> JsBuffer.toBase64);
            let resultKVs =
              Obi.decode(request.oracleScript.schema, "output", result)
              ->Belt_Option.getWithDefault([||]);
