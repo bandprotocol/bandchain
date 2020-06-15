@@ -19,10 +19,7 @@ use wabt::wat2wasm;
 pub extern "C" fn do_compile(input: Span, output: &mut Span) -> Error {
     // TODO: Define error when compile code.
     match compile(input.read()) {
-        Ok(out) => {
-            output.write(&out);
-            Error::NoError
-        }
+        Ok(out) => output.write(&out),
         Err(_) => Error::CompliationError,
     }
 }
@@ -38,10 +35,7 @@ pub extern "C" fn do_run(code: Span, is_prepare: bool, env: Env) -> Error {
 #[no_mangle]
 pub extern "C" fn do_wat2wasm(input: Span, output: &mut Span) -> Error {
     match wat2wasm(input.read()) {
-        Ok(_wasm) => {
-            output.write(&_wasm);
-            Error::NoError
-        },
+        Ok(_wasm) => output.write(&_wasm),
         Err(e) => {
             match e.kind() {
                 wabt::ErrorKind::Parse(_) => Error::ParseError,
