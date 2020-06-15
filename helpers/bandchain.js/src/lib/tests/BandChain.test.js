@@ -91,8 +91,7 @@ it('Test BandChain getLastMatchingRequestResult', async () => {
   let lastRequestResult = await bandchain.getLastMatchingRequestResult(
     oracleScript,
     { symbol: 'BTC', multiplier: BigInt('1000000000') },
-    2,
-    4,
+    { minCount: 2, askCount: 4 },
   )
   return (
     expect(lastRequestResult).toBeDefined() &&

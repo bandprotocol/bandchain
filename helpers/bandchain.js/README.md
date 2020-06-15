@@ -92,8 +92,7 @@ try {
   const lastMatchResult = await bandchain.getLastMatchingRequestResult(
     oracleScript,
     inputParameters,
-    minCount,
-    askCount,
+    { minCount, askCount },
   )
 } catch {
   // Something went wrong

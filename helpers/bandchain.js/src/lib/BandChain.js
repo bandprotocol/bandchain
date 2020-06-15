@@ -144,12 +144,11 @@ class BandChain {
   async getLastMatchingRequestResult(
     oracleScript,
     parameters,
-    minCount,
-    askCount,
+    validatorCounts,
   ) {
     const obiObj = new Obi(oracleScript.schema)
     const calldata = Buffer.from(obiObj.encodeInput(parameters)).toString('hex')
-    const requestEndpoint = `${this.endpoint}/oracle/request_search?oid=${oracleScript.id}&calldata=${calldata}&min_count=${minCount}&ask_count=${askCount}`
+    const requestEndpoint = `${this.endpoint}/oracle/request_search?oid=${oracleScript.id}&calldata=${calldata}&min_count=${validatorCounts.minCount}&ask_count=${validatorCounts.askCount}`
     while (true) {
       try {
         let res = await axios.get(requestEndpoint)
