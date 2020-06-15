@@ -425,6 +425,7 @@ module SingleRequestConfig = [%graphql
             consensusAddress: consensus_address
             operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
             moniker
+            identity
           }
         }
         minCount: min_count @bsDecoder(fn: "GraphQLParser.int64")
@@ -459,6 +460,7 @@ module SingleRequestConfig = [%graphql
             consensusAddress: consensus_address
             operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
             moniker
+            identity
           }
         }
         result @bsDecoder(fn: "GraphQLParser.optionBuffer")
@@ -486,6 +488,7 @@ module MultiRequestConfig = [%graphql
             consensusAddress: consensus_address
             operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
             moniker
+            identity
           }
         }
         minCount: min_count @bsDecoder(fn: "GraphQLParser.int64")
@@ -520,6 +523,7 @@ module MultiRequestConfig = [%graphql
             consensusAddress: consensus_address
             operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
             moniker
+            identity
           }
         }
         result @bsDecoder(fn: "GraphQLParser.optionBuffer")
