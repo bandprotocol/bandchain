@@ -3,3 +3,5 @@
 *.swp
 *.pyc
 *.log
+
+cloud-function/venv/

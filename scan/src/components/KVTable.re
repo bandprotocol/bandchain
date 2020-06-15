@@ -159,6 +159,7 @@ let renderField = (field, maxWidth, isRight) => {
         validatorAddress={validator.operatorAddress}
         width={`px(maxWidth)}
         moniker={validator.moniker}
+        identity={validator.identity}
       />
     </div>
   };

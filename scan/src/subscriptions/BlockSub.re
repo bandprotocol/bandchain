@@ -42,6 +42,7 @@ module MultiConfig = [%graphql
         consensusAddress: consensus_address
         operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
         moniker
+        identity
       }
       timestamp @bsDecoder(fn: "GraphQLParser.timeMS")
       transactions_aggregate @bsRecord {
@@ -64,6 +65,7 @@ module MultiConsensusAddressConfig = [%graphql
         consensusAddress: consensus_address
         operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
         moniker
+        identity
       }
       timestamp @bsDecoder(fn: "GraphQLParser.timeMS")
       transactions_aggregate @bsRecord {
@@ -86,6 +88,7 @@ module SingleConfig = [%graphql
         consensusAddress: consensus_address
         operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
         moniker
+        identity
       }
       timestamp @bsDecoder(fn: "GraphQLParser.timeMS")
       transactions_aggregate @bsRecord {

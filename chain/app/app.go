@@ -366,42 +366,6 @@ func (app *BandApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) ab
 	return app.mm.BeginBlock(ctx, req)
 }
 
-// DeliverTx application updates every transction
-func (app *BandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliverTx) {
-	response := app.BaseApp.DeliverTx(req)
-
-	if response.IsOK() {
-		// Refund 100% of gas fee for any successful transaction that only contains MsgReportData
-		tx, err := app.TxDecoder(req.Tx)
-		if err != nil { // Should never happen because BaseApp.DeliverTx succeeds
-			panic(err)
-		}
-		isAllReportTxs := true
-		if stdTx, ok := tx.(auth.StdTx); ok {
-			for _, msg := range tx.GetMsgs() {
-				if _, ok := msg.(oracle.MsgReportData); !ok {
-					isAllReportTxs = false
-					break
-				}
-			}
-			if isAllReportTxs && !stdTx.Fee.Amount.IsZero() {
-				err := app.BankKeeper.SendCoinsFromModuleToAccount(
-					app.DeliverContext,
-					auth.FeeCollectorName,
-					stdTx.GetSigners()[0],
-					stdTx.Fee.Amount,
-				)
-				if err != nil { // Should never happen because we just return the collected fee
-					panic(err)
-				}
-
-			}
-		}
-	}
-
-	return response
-}
-
 // EndBlocker application updates every end block
 func (app *BandApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
 	return app.mm.EndBlock(ctx, req)
