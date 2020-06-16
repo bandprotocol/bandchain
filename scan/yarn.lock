@@ -1128,10 +1128,10 @@
   resolved "https://registry.yarnpkg.com/@ledgerhq/errors/-/errors-5.15.0.tgz#e5d5b5ad48fc07f6308b78b065242e158bc044a2"
   integrity sha512-ZlLhR7qaChPgEbvcqOptRepWGm8VhhwOM6kC1gx3WErutbtaOjUX8lLA4ButWFU2f+xTl2rS/5c86wC7qGqGXQ==
 
-"@ledgerhq/hw-transport-webusb@^5.15.0":
-  version "5.15.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-webusb/-/hw-transport-webusb-5.15.0.tgz#32356db7d10bd6a43bdcfa675d14079ed33f5d43"
-  integrity sha512-A5nWd2SJtcZdcBz6SxjyZzGs3ZoUPv+ynkviJXxDSsI9H89ynxziTqrL37Bi+oZ9Q4r1H7VoH11EQH8FAtrRyw==
+"@ledgerhq/hw-transport-webusb@^5.16.0":
+  version "5.16.0"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-webusb/-/hw-transport-webusb-5.16.0.tgz#c41863cc51f4835ec47f9be0f8a76035a8086ada"
+  integrity sha512-JK0VVb/u4eQVKe6SA6t/ddQ+5BcG4FAmXgN8+WCc4YHpHUYpZ4BCBbR0lTo+JacUk8Rz0/UWk/YETuRNLdhPJg==
   dependencies:
     "@ledgerhq/devices" "^5.15.0"
     "@ledgerhq/errors" "^5.15.0"
@@ -7262,10 +7262,10 @@ parcel-bundler@^1.12.4:
     v8-compile-cache "^2.0.0"
     ws "^5.1.1"
 
-parcel-plugin-custom-dist-structure@^1.1.12:
-  version "1.1.12"
-  resolved "https://registry.yarnpkg.com/parcel-plugin-custom-dist-structure/-/parcel-plugin-custom-dist-structure-1.1.12.tgz#9737b1f6574d7ecd3d86b7f1537468e28d3ae3b1"
-  integrity sha512-c3VrGils8+trsueR0xeeQmxxty/lQjcJOZH3ebtzG2+aoGDCZjlPBCUH6YerO0idvhw6XUd4WFv6CT+01uO1eg==
+parcel-plugin-custom-dist-structure@^1.1.13:
+  version "1.1.13"
+  resolved "https://registry.yarnpkg.com/parcel-plugin-custom-dist-structure/-/parcel-plugin-custom-dist-structure-1.1.13.tgz#ccb967b6590fb05d4d183cfe00c4650419f1e670"
+  integrity sha512-qYKY6VA1fTW7FxF1U1gb9JICk/I4s8Z2gSQhg4JDggLRIK6v7kNI4NuJ4mFZxSOW4RIZ1nHxrVvi0q9qTkWKvA==
   dependencies:
     dependency-graph "^0.9.0"
     glob "^7.1.6"
