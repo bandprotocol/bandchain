@@ -143,7 +143,12 @@ let renderBody =
         <Col size=0.9>
           {switch (validatorSub) {
            | Data({operatorAddress, moniker, identity}) =>
-             <ValidatorMonikerLink validatorAddress=operatorAddress moniker identity width={`px(180)} />
+             <ValidatorMonikerLink
+               validatorAddress=operatorAddress
+               moniker
+               identity
+               width={`px(180)}
+             />
            | _ => <LoadingCensorBar width=150 height=15 />
            }}
         </Col>
@@ -449,8 +454,9 @@ module ValidatorList = {
          <>
            {filteredValidator->Belt_Array.size > 0
               ? filteredValidator
+                ->sorting(sortedBy)
                 ->Belt_Array.mapWithIndex((i, e) =>
-                    renderBody(i + 1, Sub.resolve(e), bondedTokenCount.amount)
+                    renderBody(e.rank, Sub.resolve(e), bondedTokenCount.amount)
                   )
                 ->React.array
               : <div className=Styles.emptyContainer>
