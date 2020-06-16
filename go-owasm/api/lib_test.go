@@ -62,16 +62,18 @@ func TestFailCompileInvalidContent(t *testing.T) {
 	require.Equal(t, ErrValidateFail, err)
 }
 func TestRunError(t *testing.T) {
-	wasm, _ := Wat2Wasm(readWatFile("divide_by_zero"), SpanSize)
-	code, _ := Compile(wasm, SpanSize)
+	spanSize := 1 * 1024 * 1024
+	wasm, _ := Wat2Wasm(readWatFile("divide_by_zero"), spanSize)
+	code, _ := Compile(wasm, spanSize)
 
 	err := Prepare(code, 100000, NewMockEnv([]byte("")))
 	require.Equal(t, ErrRunError, err)
 }
 
 func TestGasLimit(t *testing.T) {
-	wasm, _ := Wat2Wasm(readWatFile("loop_prepare"), SpanSize)
-	code, _ := Compile(wasm, SpanSize)
+	spanSize := 1 * 1024 * 1024
+	wasm, _ := Wat2Wasm(readWatFile("loop_prepare"), spanSize)
+	code, _ := Compile(wasm, spanSize)
 
 	err := Prepare(code, 100000, NewMockEnv([]byte("")))
 	require.NoError(t, err)
@@ -81,16 +83,18 @@ func TestGasLimit(t *testing.T) {
 }
 
 func TestFunctionNotFound(t *testing.T) {
-	wasm, _ := Wat2Wasm(readWatFile("loop_prepare"), SpanSize)
-	code, _ := Compile(wasm, SpanSize)
+	spanSize := 1 * 1024 * 1024
+	wasm, _ := Wat2Wasm(readWatFile("loop_prepare"), spanSize)
+	code, _ := Compile(wasm, spanSize)
 
 	err := Execute(code, 100000, NewMockEnv([]byte("")))
 	require.Equal(t, ErrFunctionNotFound, err)
 }
 
 func TestCompileError(t *testing.T) {
-	wasm, _ := Wat2Wasm(readWatFile("loop_prepare"), SpanSize)
-	code, _ := Compile(wasm, SpanSize)
+	spanSize := 1 * 1024 * 1024
+	wasm, _ := Wat2Wasm(readWatFile("loop_prepare"), spanSize)
+	code, _ := Compile(wasm, spanSize)
 
 	err := Execute(code, 100000, NewMockEnv([]byte("")))
 	require.Equal(t, ErrFunctionNotFound, err)
