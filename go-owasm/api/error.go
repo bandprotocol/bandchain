@@ -43,16 +43,18 @@ func parseError(code int32) error {
 	case 6:
 		return ErrValidateFail
 	case 7:
-		return ErrFunctionNotFound
-	case 8:
-		return ErrGasLimitExceeded
-	case 9:
 		return ErrSpanExceededCapacity
+	case 8:
+		return ErrFunctionNotFound
+	case 9:
+		return ErrGasLimitExceeded
 	case 10:
-		return ErrDeserializeFail
+		return ErrSpanExceededCapacity
 	case 11:
-		return ErrGasCounterInjectFail
+		return ErrDeserializeFail
 	case 12:
+		return ErrGasCounterInjectFail
+	case 13:
 		return ErrSerializetFail
 	default:
 		return ErrUnknownError

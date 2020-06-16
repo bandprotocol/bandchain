@@ -30,14 +30,7 @@ pub extern "C" fn do_compile(input: Span, output: &mut Span) -> Error {
 pub extern "C" fn do_run(code: Span, gas_limit: u32, is_prepare: bool, env: Env) -> Error {
     match run(code.read(), gas_limit, is_prepare, env) {
         Ok(_) => Error::NoError,
-        Err(e) => match e {
-            1 => Error::CompliationError,
-            2 => Error::FunctionNotFoundError,
-            3 => Error::GasLimitExceedError,
-            4 => Error::RunError,
-            255 => Error::UnknownError,
-            _ => Error::UnknownError,
-        },
+        Err(e) => e,
     }
 }
 
@@ -45,13 +38,6 @@ pub extern "C" fn do_run(code: Span, gas_limit: u32, is_prepare: bool, env: Env)
 pub extern "C" fn do_wat2wasm(input: Span, output: &mut Span) -> Error {
     match wat2wasm(input.read()) {
         Ok(_wasm) => output.write(&_wasm),
-        Err(e) => match e.kind() {
-            wabt::ErrorKind::Parse(_) => Error::ParseError,
-            wabt::ErrorKind::WriteBinary => Error::WriteBinaryError,
-            wabt::ErrorKind::ResolveNames(_) => Error::ResolveNamesError,
-            wabt::ErrorKind::Validate(_) => Error::ValidateError,
-            _ => Error::UnknownError,
-        },
         Err(e) => match e.kind() {
             wabt::ErrorKind::Parse(_) => Error::ParseError,
             wabt::ErrorKind::WriteBinary => Error::WriteBinaryError,
@@ -78,7 +64,7 @@ struct ImportReference(*mut c_void);
 unsafe impl Send for ImportReference {}
 unsafe impl Sync for ImportReference {}
 
-fn run(code: &[u8], gas_limit: u32, is_prepare: bool, env: Env) -> Result<(), i32> {
+fn run(code: &[u8], gas_limit: u32, is_prepare: bool, env: Env) -> Result<(), Error> {
     let vm = &mut vm::VMLogic::new(env, gas_limit);
     let raw_ptr = vm as *mut _ as *mut c_void;
     let import_reference = ImportReference(raw_ptr);
@@ -135,14 +121,18 @@ fn run(code: &[u8], gas_limit: u32, is_prepare: bool, env: Env) -> Result<(), i3
             }),
         },
     };
-    let instance = instantiate(code, &import_object).map_err(|_| 1)?;
+    let instance = instantiate(code, &import_object).map_err(|_| Error::CompliationError)?;
+    // TODO: remove this when we implement export safeguard
     let entry = if is_prepare { "prepare" } else { "execute" };
-    let function: Func<(), ()> = instance.exports.get(entry).map_err(|_| 2)?;
+    let function: Func<(), ()> = instance
+        .exports
+        .get(entry)
+        .map_err(|_| Error::FunctionNotFoundError)?;
     function.call().map_err(|err| match err {
         RuntimeError::User(uerr) => match uerr.downcast_ref::<vm::VmError>() {
-            None => 255,
-            Some(vm::VmError::GasLimitExceeded) => 3,
+            None => Error::UnknownError,
+            Some(vm::VmError::GasLimitExceeded) => Error::GasLimitExceedError,
         },
-        _ => 4,
+        _ => Error::RunError,
     })
 }

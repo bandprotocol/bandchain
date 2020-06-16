@@ -19,6 +19,8 @@ enum Error
   FunctionNotFoundError = 11,
   SpanExceededCapacityError = 12,
   GasLimitExceedError = 13,
+  FunctionNotFoundError = 14,
+  GasLimitExceedError = 15,
   UnknownError = 255,
 };
 typedef int32_t Error;
