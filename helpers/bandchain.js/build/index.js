@@ -1,6 +1,6 @@
 /*!
  * 
- *   @bandprotocol/bandchain.js v1.0.6
+ *   @bandprotocol/bandchain.js v1.0.8
  *   https://github.com/bandprotocol/bandchain
  * 
  *   Copyright (c) Band Protocol (https://github.com/bandprotocol)
