@@ -24,29 +24,29 @@ import (
 	"unsafe"
 )
 
-func Compile(code []byte) ([]byte, error) {
+func Compile(code []byte, spanSize int) ([]byte, error) {
 	inputSpan := copySpan(code)
 	defer freeSpan(inputSpan)
-	outputSpan := newSpan(SpanSize)
+	outputSpan := newSpan(spanSize)
 	defer freeSpan(outputSpan)
 	err := parseError(int32(C.do_compile(inputSpan, &outputSpan)))
 	return readSpan(outputSpan), err
 }
 
-func Prepare(code []byte, env EnvInterface) error {
-	return run(code, true, env)
+func Prepare(code []byte, gasLimit uint32, env EnvInterface) error {
+	return run(code, gasLimit, true, env)
 }
 
-func Execute(code []byte, env EnvInterface) error {
-	return run(code, false, env)
+func Execute(code []byte, gasLimit uint32, env EnvInterface) error {
+	return run(code, gasLimit, false, env)
 }
 
-func run(code []byte, isPrepare bool, env EnvInterface) error {
+func run(code []byte, gasLimit uint32, isPrepare bool, env EnvInterface) error {
 	codeSpan := copySpan(code)
 	defer freeSpan(codeSpan)
 	envIntl := createEnvIntl(env)
 	defer destroyEnvIntl(envIntl)
-	return parseError(int32(C.do_run(codeSpan, C.bool(isPrepare), C.Env{
+	return parseError(int32(C.do_run(codeSpan, C.uint32_t(gasLimit), C.bool(isPrepare), C.Env{
 		env: (*C.env_t)(unsafe.Pointer(envIntl)),
 		dis: C.EnvDispatcher{
 			get_calldata:             C.get_calldata_fn(C.cGetCalldata_cgo),
@@ -61,10 +61,10 @@ func run(code []byte, isPrepare bool, env EnvInterface) error {
 	})))
 }
 
-func Wat2Wasm(code []byte) ([]byte, error) {
+func Wat2Wasm(code []byte, spanSize int) ([]byte, error) {
 	inputSpan := copySpan(code)
 	defer freeSpan(inputSpan)
-	outputSpan := newSpan(SpanSize)
+	outputSpan := newSpan(spanSize)
 	defer freeSpan(outputSpan)
 	err := parseError(int32(C.do_wat2wasm(inputSpan, &outputSpan)))
 	return readSpan(outputSpan), err
