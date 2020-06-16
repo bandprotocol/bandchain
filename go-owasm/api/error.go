@@ -29,6 +29,15 @@ var (
 	ErrCheckWasmImports           = errors.New("check wasm imports fail")
 	ErrCheckWasmExports           = errors.New("check wasm exports fail")
 	ErrInvalidSignatureFunction   = errors.New("invalid signature function")
+
+	ErrSetReturnDataWrongPeriod         = errors.New("set return data on non-execution period")
+	ErrAnsCountWrongPeriod              = errors.New("get ans count on non-execution period")
+	ErrAskExternalDataWrongPeriod       = errors.New("ask external data on non-prepare period")
+	ErrGetExternalDataStatusWrongPeriod = errors.New("get external data status on non-execution period")
+	ErrGetExternalDataWrongPeriod       = errors.New("get external data on non-execution period")
+	ErrAskExternalDataExceed            = errors.New("ask external data exceed")
+	ErrValidatorOutOfRange              = errors.New("validator index out of range")
+	ErrInvalidExternalID                = errors.New("get data from invalid external id")
 )
 
 // parseError - returns parsed error from errors code on bindings.h

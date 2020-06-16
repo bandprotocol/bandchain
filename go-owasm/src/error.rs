@@ -22,3 +22,34 @@ pub enum Error {
   InvalidSignatureFunctionError = 18,
   UnknownError = 255,
 }
+
+// TODO: Declare more error to cover exec env error
+#[repr(i32)]
+pub enum GoResult {
+  Ok = 0,
+  SetReturnDataWrongPeriod = 1,
+  AnsCountWrongPeriod = 2,
+  AskExternalDataWrongPeriod = 3,
+  GetExternalDataStatusWrongPeriod = 4,
+  GetExternalDataWrongPeriod = 5,
+  GetExternalDataFromUnreportedValidator = 6,
+  SpanExceededCapacity = 7,
+  /// An error happened during normal operation of a Go callback
+  Other = 8,
+}
+
+impl From<GoResult> for Error {
+  fn from(r: GoResult) -> Self {
+    match r {
+      GoResult::Ok => Error::NoError,
+      GoResult::SetReturnDataWrongPeriod => Error::InvalidFunctionCall,
+      GoResult::AnsCountWrongPeriod => Error::InvalidFunctionCall,
+      GoResult::AskExternalDataWrongPeriod => Error::InvalidFunctionCall,
+      GoResult::GetExternalDataStatusWrongPeriod => Error::InvalidFunctionCall,
+      GoResult::GetExternalDataWrongPeriod => Error::InvalidFunctionCall,
+      GoResult::GetExternalDataFromUnreportedValidator => Error::InvalidFunctionCall,
+      GoResult::SpanExceededCapacity => Error::SpanExceededCapacityError,
+      GoResult::Other => Error::UnknownError,
+    }
+  }
+}

@@ -6,6 +6,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
+
+	"github.com/bandprotocol/bandchain/go-owasm/api"
 )
 
 var (
@@ -81,7 +83,8 @@ func TestSetReturnData(t *testing.T) {
 	result := []byte("RESULT")
 
 	penv := mockFreshPrepareEnv()
-	require.Panics(t, func() { penv.SetReturnData(result) })
+	err := penv.SetReturnData(result)
+	require.Equal(t, api.ErrSetReturnDataWrongPeriod, err)
 
 	eenv := mockExecEnv()
 	eenv.SetReturnData(result)
@@ -107,47 +110,57 @@ func TestGetMinCount(t *testing.T) {
 }
 
 func TestGetAnsCount(t *testing.T) {
-	// Should panic if call on prepare environment.
+	// Should return error if call on prepare environment.
 	penv := mockFreshPrepareEnv()
-	require.Panics(t, func() { penv.GetAnsCount() })
+	_, err := penv.GetAnsCount()
+	require.Equal(t, api.ErrAnsCountWrongPeriod, err)
 
 	eenv := mockExecEnv()
-	require.Equal(t, int64(2), eenv.GetAnsCount())
+	v, err := eenv.GetAnsCount()
+	require.NoError(t, err)
+	require.Equal(t, int64(2), v)
 }
 
 func TestGetExternalData(t *testing.T) {
 	env := mockExecEnv()
 
-	require.Equal(t, []byte("DATA1"), env.GetExternalData(1, 0))
-	require.Equal(t, int64(0), env.GetExternalDataStatus(1, 0))
+	data, err := env.GetExternalData(1, 0)
+	require.NoError(t, err)
+	require.Equal(t, []byte("DATA1"), data)
+	status, err := env.GetExternalDataStatus(1, 0)
+	require.NoError(t, err)
+	require.Equal(t, int64(0), status)
 
-	require.Equal(t, []byte("DATA2"), env.GetExternalData(2, 0))
-	require.Equal(t, int64(1), env.GetExternalDataStatus(2, 0))
+	data, err = env.GetExternalData(0, 2)
+	require.NoError(t, err)
+	require.Nil(t, data)
+	status, err = env.GetExternalDataStatus(0, 2)
+	require.NoError(t, err)
+	require.Equal(t, int64(-1), status)
 
-	require.Nil(t, env.GetExternalData(3, 0))
-	require.Equal(t, int64(-1), env.GetExternalDataStatus(3, 0))
+	_, err = env.GetExternalData(1, 100)
+	require.Equal(t, api.ErrValidatorOutOfRange, err)
+	_, err = env.GetExternalDataStatus(1, 100)
+	require.Equal(t, api.ErrValidatorOutOfRange, err)
 
-	require.Nil(t, env.GetExternalData(1, 1))
-	require.Equal(t, int64(-1), env.GetExternalDataStatus(1, 1))
+	_, err = env.GetExternalData(1, -1)
+	require.Error(t, err)
+	_, err = env.GetExternalDataStatus(1, -1)
+	require.Error(t, err)
 
-	require.Nil(t, env.GetExternalData(1, 2))
-	require.Equal(t, int64(-1), env.GetExternalDataStatus(1, 2))
-
-	require.Equal(t, []byte("DATA3"), env.GetExternalData(3, 1))
-	require.Equal(t, int64(0), env.GetExternalDataStatus(3, 1))
-
-	require.Nil(t, env.GetExternalData(1, 100))
-	require.Equal(t, int64(-1), env.GetExternalDataStatus(1, 100))
-
-	require.Nil(t, env.GetExternalData(100, 0))
-	require.Equal(t, int64(-1), env.GetExternalDataStatus(100, 0))
+	_, err = env.GetExternalData(100, 0)
+	require.Error(t, err)
+	_, err = env.GetExternalDataStatus(100, 0)
+	require.Error(t, err)
 }
 
 func TestFailedGetExternalData(t *testing.T) {
 	penv := mockAlreadyPreparedEnv()
 
-	require.Panics(t, func() { penv.GetExternalData(1, 1) })
-	require.Panics(t, func() { penv.GetExternalDataStatus(1, 1) })
+	_, err := penv.GetExternalData(1, 1)
+	require.Equal(t, api.ErrGetExternalDataWrongPeriod, err)
+	_, err = penv.GetExternalDataStatus(1, 1)
+	require.Equal(t, api.ErrGetExternalDataStatusWrongPeriod, err)
 }
 
 func TestAskExternalData(t *testing.T) {
@@ -189,7 +202,8 @@ func TestAskExternalDataFailed(t *testing.T) {
 func TestAskExternalDataOnExecEnv(t *testing.T) {
 	env := mockExecEnv()
 	calldata := []byte("CALLDATA")
-	require.Panics(t, func() { env.AskExternalData(2, 2, calldata) })
+	err := env.AskExternalData(2, 2, calldata)
+	require.Equal(t, api.ErrAskExternalDataWrongPeriod, err)
 }
 
 func TestGetRawRequests(t *testing.T) {

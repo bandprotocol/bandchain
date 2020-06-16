@@ -1,5 +1,9 @@
 package types
 
+import (
+	"github.com/bandprotocol/bandchain/go-owasm/api"
+)
+
 // BaseEnv combines shared functions used in prepare and execution Owasm program,
 type BaseEnv struct {
 	request Request
@@ -11,8 +15,8 @@ func (env *BaseEnv) GetCalldata() []byte {
 }
 
 // SetReturnData implements Owasm ExecEnv interface.
-func (env *BaseEnv) SetReturnData(data []byte) {
-	panic("Cannot set return data on non-execution period")
+func (env *BaseEnv) SetReturnData(data []byte) error {
+	return api.ErrSetReturnDataWrongPeriod
 }
 
 // GetAskCount implements Owasm ExecEnv interface.
@@ -26,23 +30,23 @@ func (env *BaseEnv) GetMinCount() int64 {
 }
 
 // GetAnsCount implements Owasm ExecEnv interface.
-func (env *BaseEnv) GetAnsCount() int64 {
-	panic("Cannot get ans count on non-execution period")
+func (env *BaseEnv) GetAnsCount() (int64, error) {
+	return 0, api.ErrAnsCountWrongPeriod
 }
 
 // AskExternalData implements Owasm ExecEnv interface.
-func (env *BaseEnv) AskExternalData(eid int64, did int64, data []byte) {
-	panic("Cannot ask external data on non-prepare period")
+func (env *BaseEnv) AskExternalData(eid int64, did int64, data []byte) error {
+	return api.ErrAskExternalDataWrongPeriod
 }
 
 // GetExternalDataStatus implements Owasm ExecEnv interface.
-func (env *PrepareEnv) GetExternalDataStatus(eid int64, vid int64) int64 {
-	panic("Cannot get external data status on non-execution period")
+func (env *PrepareEnv) GetExternalDataStatus(eid int64, vid int64) (int64, error) {
+	return 0, api.ErrGetExternalDataStatusWrongPeriod
 }
 
 // GetExternalData implements Owasm ExecEnv interface.
-func (env *PrepareEnv) GetExternalData(eid int64, vid int64) []byte {
-	panic("Cannot get external data on non-execution period")
+func (env *PrepareEnv) GetExternalData(eid int64, vid int64) ([]byte, error) {
+	return nil, api.ErrGetExternalDataWrongPeriod
 }
 
 // PrepareEnv implements ExecEnv interface only expected function and panic on non-prepare functions.
@@ -63,16 +67,17 @@ func NewPrepareEnv(req Request, maxRawRequests int64) *PrepareEnv {
 }
 
 // AskExternalData implements Owasm ExecEnv interface.
-func (env *PrepareEnv) AskExternalData(eid int64, did int64, data []byte) {
+func (env *PrepareEnv) AskExternalData(eid int64, did int64, data []byte) error {
 	if int64(len(data)) > MaxRawRequestDataSize {
-		return
+		return api.ErrSpanExceededCapacity
 	}
 	if int64(len(env.rawRequests)) >= env.maxRawRequests {
-		return
+		return api.ErrAskExternalDataExceed
 	}
 	env.rawRequests = append(env.rawRequests, NewRawRequest(
 		ExternalID(eid), DataSourceID(did), data,
 	))
+	return nil
 }
 
 // GetRawRequests returns the list of raw requests made during Owasm prepare run.
@@ -109,39 +114,40 @@ func (env *ExecuteEnv) SetReports(reports []Report) {
 }
 
 // GetAnsCount implements Owasm ExecEnv interface.
-func (env *ExecuteEnv) GetAnsCount() int64 {
-	return int64(len(env.reports))
+func (env *ExecuteEnv) GetAnsCount() (int64, error) {
+	return int64(len(env.reports)), nil
 }
 
 // SetReturnData implements Owasm ExecEnv interface.
-func (env *ExecuteEnv) SetReturnData(data []byte) {
+func (env *ExecuteEnv) SetReturnData(data []byte) error {
 	env.Retdata = data
+	return nil
 }
 
-func (env *ExecuteEnv) getExternalDataFull(eid int64, valIdx int64) ([]byte, int64) {
+func (env *ExecuteEnv) getExternalDataFull(eid int64, valIdx int64) ([]byte, int64, error) {
 	if valIdx < 0 || valIdx >= int64(len(env.request.RequestedValidators)) {
-		return nil, -1
+		return nil, 0, api.ErrValidatorOutOfRange
 	}
 	valAddr := env.request.RequestedValidators[valIdx].String()
 	valReports, ok := env.reports[valAddr]
 	if !ok {
-		return nil, -1
+		return nil, -1, nil
 	}
 	valReport, ok := valReports[ExternalID(eid)]
 	if !ok {
-		return nil, -1
+		return nil, -1, api.ErrInvalidExternalID
 	}
-	return valReport.Data, int64(valReport.ExitCode)
+	return valReport.Data, int64(valReport.ExitCode), nil
 }
 
 // GetExternalDataStatus implements Owasm ExecEnv interface.
-func (env *ExecuteEnv) GetExternalDataStatus(eid int64, vid int64) int64 {
-	_, status := env.getExternalDataFull(eid, vid)
-	return status
+func (env *ExecuteEnv) GetExternalDataStatus(eid int64, vid int64) (int64, error) {
+	_, status, err := env.getExternalDataFull(eid, vid)
+	return status, err
 }
 
 // GetExternalData implements Owasm ExecEnv interface.
-func (env *ExecuteEnv) GetExternalData(eid int64, vid int64) []byte {
-	data, _ := env.getExternalDataFull(eid, vid)
-	return data
+func (env *ExecuteEnv) GetExternalData(eid int64, vid int64) ([]byte, error) {
+	data, _, err := env.getExternalDataFull(eid, vid)
+	return data, err
 }

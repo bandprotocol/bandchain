@@ -23,9 +23,31 @@ enum Error {
   CheckWasmImportsError = 16,
   CheckWasmExportsError = 17,
   InvalidSignatureFunctionError = 18,
+  FunctionNotFoundError = 11,
+  GasLimitExceedError = 12,
+  NoMemoryWasmError = 13,
+  MinimumMemoryExceedError = 14,
+  SetMaximumMemoryError = 15,
+  StackHeightInstrumentationError = 16,
   UnknownError = 255,
 };
 typedef int32_t Error;
+
+enum GoResult {
+  Ok = 0,
+  SetReturnDataWrongPeriod = 1,
+  AnsCountWrongPeriod = 2,
+  AskExternalDataWrongPeriod = 3,
+  GetExternalDataStatusWrongPeriod = 4,
+  GetExternalDataWrongPeriod = 5,
+  GetExternalDataFromUnreportedValidator = 6,
+  SpanExceededCapacity = 7,
+  /**
+   * An error happened during normal operation of a Go callback
+   */
+  Other = 8,
+};
+typedef int32_t GoResult;
 
 typedef struct {
   uint8_t *ptr;
@@ -38,14 +60,15 @@ typedef struct {
 } env_t;
 
 typedef struct {
-  Span (*get_calldata)(env_t*);
-  void (*set_return_data)(env_t*, Span data);
-  int64_t (*get_ask_count)(env_t*);
-  int64_t (*get_min_count)(env_t*);
-  int64_t (*get_ans_count)(env_t*);
-  void (*ask_external_data)(env_t*, int64_t eid, int64_t did, Span data);
-  int64_t (*get_external_data_status)(env_t*, int64_t eid, int64_t vid);
-  Span (*get_external_data)(env_t*, int64_t eid, int64_t vid);
+  Span (*get_calldata)(env_t *);
+  GoResult (*set_return_data)(env_t *, Span data);
+  int64_t (*get_ask_count)(env_t *);
+  int64_t (*get_min_count)(env_t *);
+  GoResult (*get_ans_count)(env_t *, int64_t *);
+  GoResult (*ask_external_data)(env_t *, int64_t eid, int64_t did, Span data);
+  GoResult (*get_external_data_status)(env_t *, int64_t eid, int64_t vid,
+                                       int64_t *status);
+  GoResult (*get_external_data)(env_t *, int64_t eid, int64_t vid, Span *data);
 } EnvDispatcher;
 
 typedef struct {
