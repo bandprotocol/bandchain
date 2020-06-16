@@ -102,7 +102,7 @@ func TestCompileError(t *testing.T) {
 
 func TestCompileErrorNoMemory(t *testing.T) {
 	spanSize := 1 * 1024 * 1024
-	wasm, _ := Wat2Wasm(readWatFile("no_memory"), spanSize)
+	wasm, _ := Wat2Wasm([]byte("(module)"), spanSize)
 	code, err := Compile(wasm, spanSize)
 
 	require.Equal(t, ErrNoMemoryWasm, err)
@@ -111,16 +111,18 @@ func TestCompileErrorNoMemory(t *testing.T) {
 
 func TestCompileErrorMinimumMemoryExceed(t *testing.T) {
 	spanSize := 1 * 1024 * 1024
-	wasm, _ := Wat2Wasm(readWatFile("minimum_memory_exceed"), spanSize)
-	code, err := Compile(wasm, spanSize)
+	wasm, _ := Wat2Wasm([]byte("(module (memory 512))"), spanSize)
+	_, err := Compile(wasm, spanSize)
+	require.NoError(t, err)
 
+	wasm, _ = Wat2Wasm([]byte("(module (memory 513))"), spanSize)
+	_, err = Compile(wasm, spanSize)
 	require.Equal(t, ErrMinimumMemoryExceed, err)
-	require.Equal(t, []uint8([]byte{}), code)
 }
 
 func TestCompileErrorSetMaximumMemory(t *testing.T) {
 	spanSize := 1 * 1024 * 1024
-	wasm, _ := Wat2Wasm(readWatFile("set_memories_maximum_size"), spanSize)
+	wasm, _ := Wat2Wasm([]byte("(module (memory 1 5))"), spanSize)
 	code, err := Compile(wasm, spanSize)
 
 	require.Equal(t, ErrSetMaximumMemory, err)
