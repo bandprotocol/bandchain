@@ -1,13 +1,10 @@
 use crate::env::Env;
+use crate::error::Error;
 use crate::span::Span;
 
 pub struct VMLogic {
     gas_left: u32,
     env: Env,
-}
-
-pub enum VmError {
-    GasLimitExceeded,
 }
 
 impl VMLogic {
@@ -18,9 +15,9 @@ impl VMLogic {
         }
     }
 
-    pub fn consume_gas(&mut self, gas: u32) -> Result<(), VmError> {
+    pub fn consume_gas(&mut self, gas: u32) -> Result<(), Error> {
         if self.gas_left <= gas {
-            Err(VmError::GasLimitExceeded)
+            Err(Error::GasLimitExceedError)
         } else {
             self.gas_left -= gas;
             Ok(())

@@ -122,17 +122,19 @@ fn run(code: &[u8], gas_limit: u32, is_prepare: bool, env: Env) -> Result<(), Er
         },
     };
     let instance = instantiate(code, &import_object).map_err(|_| Error::CompliationError)?;
-    // TODO: remove this when we implement export safeguard
     let entry = if is_prepare { "prepare" } else { "execute" };
     let function: Func<(), ()> = instance
         .exports
         .get(entry)
         .map_err(|_| Error::FunctionNotFoundError)?;
     function.call().map_err(|err| match err {
-        RuntimeError::User(uerr) => match uerr.downcast_ref::<vm::VmError>() {
-            None => Error::UnknownError,
-            Some(vm::VmError::GasLimitExceeded) => Error::GasLimitExceedError,
-        },
+        RuntimeError::User(uerr) => {
+            if let Some(err) = uerr.downcast_ref::<Error>() {
+                err.clone()
+            } else {
+                Error::UnknownError
+            }
+        }
         _ => Error::RunError,
     })
 }

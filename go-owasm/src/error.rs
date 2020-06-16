@@ -1,5 +1,5 @@
 #[repr(i32)]
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Error {
   NoError = 0,
   CompliationError = 1,
