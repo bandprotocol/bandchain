@@ -19,6 +19,7 @@ async function createRequestMsg(
   validatorCounts,
   calldata,
   chainID,
+  fee
 ) {
   const account = await cosmos.getAccounts(sender)
   return cosmos.newStdMsg({
@@ -36,10 +37,7 @@ async function createRequestMsg(
       },
     ],
     chain_id: chainID,
-    fee: {
-      amount: [{ amount: '100', denom: 'uband' }],
-      gas: '380000',
-    },
+    fee,
     memo: '',
     account_number: String(account.result.value.account_number),
     sequence: String(account.result.value.sequence || 0),
@@ -81,7 +79,7 @@ class BandChain {
     }
   }
 
-  async submitRequestTx(oracleScript, parameters, validatorCounts, mnemonic) {
+  async submitRequestTx(oracleScript, parameters, validatorCounts, mnemonic, gasAmount = 0, gasLimit = 1000000) {
     const obiObj = new Obi(oracleScript.schema)
     const calldata = obiObj.encodeInput(parameters)
 
@@ -98,6 +96,10 @@ class BandChain {
       validatorCounts,
       calldata,
       this.chainID,
+      {
+        amount: [{ amount: `${gasAmount}`, denom: 'uband' }],
+        gas: `${gasLimit}`,
+      },
     )
 
     let signedTx = cosmos.sign(requestMsg, ecpairPriv, 'block')
