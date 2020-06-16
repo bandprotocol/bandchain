@@ -171,4 +171,4 @@ class BandChain {
   }
 }
 
-export default BandChain
+module.exports = BandChain
