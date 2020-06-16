@@ -99,3 +99,29 @@ func TestCompileError(t *testing.T) {
 	err := Execute(code, 100000, NewMockEnv([]byte("")))
 	require.Equal(t, ErrFunctionNotFound, err)
 }
+
+func TestCompileErrorNoMemory(t *testing.T) {
+	spanSize := 1 * 1024 * 1024
+	wasm, _ := Wat2Wasm(readWatFile("no_memory"), spanSize)
+	code, err := Compile(wasm, spanSize)
+
+	require.Equal(t, ErrNoMemoryWasm, err)
+	require.Equal(t, []uint8([]byte{}), code)
+}
+
+func TestCompileErrorMinimumMemoryExceed(t *testing.T) {
+	spanSize := 1 * 1024 * 1024
+	wasm, _ := Wat2Wasm(readWatFile("minimum_memory_exceed"), spanSize)
+	code, err := Compile(wasm, spanSize)
+
+	require.Equal(t, ErrMinimumMemoryExceed, err)
+	require.Equal(t, []uint8([]byte{}), code)
+}
+func TestCompileErrorSetMaximumMemory(t *testing.T) {
+	spanSize := 1 * 1024 * 1024
+	wasm, _ := Wat2Wasm(readWatFile("set_memories_maximum_size"), spanSize)
+	code, err := Compile(wasm, spanSize)
+
+	require.Equal(t, ErrSetMaximumMemory, err)
+	require.Equal(t, []uint8([]byte{}), code)
+}

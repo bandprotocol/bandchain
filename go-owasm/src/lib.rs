@@ -59,7 +59,7 @@ fn check_wasm_memories(module: &Module) -> Result<&Module, Error> {
     let limits = memory.limits();
 
     if limits.initial() > MEMORY_LIMIT {
-        return Err(Error::MinimumMemoryexceedError);
+        return Err(Error::MinimumMemoryExceedError);
     }
 
     if limits.maximum() != None {
@@ -71,9 +71,8 @@ fn check_wasm_memories(module: &Module) -> Result<&Module, Error> {
 fn inject_gas_to_wasm(module: Module) -> Result<Module, Error> {
     // Simple gas rule. Every opcode and memory growth costs 1 gas.
     let gas_rules = rules::Set::new(1, Default::default()).with_grow_cost(1);
-    let module = pwasm_utils::inject_gas_counter(module.clone(), &gas_rules)
-        .map_err(|_| Error::GasCounterInjectionError)?;
-    Ok(module)
+    pwasm_utils::inject_gas_counter(module.clone(), &gas_rules)
+        .map_err(|_| Error::GasCounterInjectionError)
 }
 fn compile(code: &[u8]) -> Result<Vec<u8>, Error> {
     // Check that the given Wasm code is indeed a valid Wasm.
@@ -218,7 +217,7 @@ mod test {
 
         let wasm_too_big = wat2wasm("(module (memory 513))").unwrap();
         let r = compile(&wasm_too_big);
-        assert_eq!(r, Err(Error::MinimumMemoryexceedError));
+        assert_eq!(r, Err(Error::MinimumMemoryExceedError));
     }
 
     #[test]

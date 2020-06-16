@@ -15,7 +15,7 @@ pub enum Error {
   FunctionNotFoundError = 11,
   GasLimitExceedError = 12,
   NoMemoryWasmError = 13,
-  MinimumMemoryexceedError = 14,
+  MinimumMemoryExceedError = 14,
   SetMaximumMemoryError = 15,
   UnknownError = 255,
 }
