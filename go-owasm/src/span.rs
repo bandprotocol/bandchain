@@ -17,7 +17,7 @@ impl Span {
             cap: data.len(),
         }
     }
-    
+
     /// Read data from the span.
     pub fn read(&self) -> &[u8] {
         unsafe { std::slice::from_raw_parts(self.ptr, self.len) }
@@ -26,9 +26,15 @@ impl Span {
     /// Write data to the span.
     pub fn write(&mut self, data: &[u8]) -> Error {
         if self.len + data.len() > self.cap {
-            return Error::SpanExceededCapacityError
+            return Error::SpanExceededCapacityError;
         }
-        unsafe { std::ptr::copy(data.as_ptr(), self.ptr.offset(self.len as isize), data.len()) }
+        unsafe {
+            std::ptr::copy(
+                data.as_ptr(),
+                self.ptr.offset(self.len as isize),
+                data.len(),
+            )
+        }
         self.len += data.len();
         Error::NoError
     }
@@ -55,15 +61,19 @@ mod test {
     #[test]
     fn test_write_span_ok() {
         let mut empty_space = vec![0u8; 32];
-        let mut span = Span{ ptr: empty_space.as_mut_ptr(), len: 0, cap: 32 };
-        
+        let mut span = Span {
+            ptr: empty_space.as_mut_ptr(),
+            len: 0,
+            cap: 32,
+        };
+
         let data: Vec<u8> = vec![1, 2, 3, 4, 5];
         assert_eq!(span.write(data.as_slice()), Error::NoError);
         assert_eq!(span.len, 5);
         assert_eq!(span.cap, 32);
         assert_eq!(empty_space[0], 1);
         assert_eq!(empty_space[5], 0);
-        
+
         assert_eq!(span.write(data.as_slice()), Error::NoError);
         assert_eq!(span.len, 10);
         assert_eq!(span.cap, 32);
@@ -71,13 +81,20 @@ mod test {
         assert_eq!(empty_space[5], 1);
         assert_eq!(empty_space[9], 5);
     }
-    
+
     #[test]
     fn test_write_span_fail() {
         let mut empty_space = vec![0u8; 3];
-        let mut span = Span{ ptr:  empty_space.as_mut_ptr(), len: 0, cap: 3 };
+        let mut span = Span {
+            ptr: empty_space.as_mut_ptr(),
+            len: 0,
+            cap: 3,
+        };
         let data: Vec<u8> = vec![1, 2, 3, 4, 5];
         span.write(data.as_slice());
-        assert_eq!(span.write(data.as_slice()), Error::SpanExceededCapacityError);
+        assert_eq!(
+            span.write(data.as_slice()),
+            Error::SpanExceededCapacityError
+        );
     }
 }
