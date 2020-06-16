@@ -45,10 +45,10 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
-"@bandprotocol/bandchain.js@0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@bandprotocol/bandchain.js/-/bandchain.js-0.0.4.tgz#5ef04cb477e93b454f784b6fdfb925ca0d3a44a8"
-  integrity sha512-QxCSisNpWaEae2iDGOQFXhLFfglrxIhejVDbkR55WkGu3u+rmQ5IAWFdEIkB6wM2ER57vL3VPl4ev3Xg3jhsOQ==
+"@bandprotocol/bandchain.js@^1.0.6":
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@bandprotocol/bandchain.js/-/bandchain.js-1.0.6.tgz#afe0e17e3e589cc447f42635a2fc291077e59f20"
+  integrity sha512-0pUE9BfJ/wleUEAv4tIAzyvFal35Z/g+o9RsbzuDivcpOcOCivCc2ILcO01CYRd1qs/K4LbIcUEJGfmWqG+PWg==
   dependencies:
     "@babel/plugin-transform-runtime" "^7.10.1"
     "@babel/runtime" "^7.10.2"
