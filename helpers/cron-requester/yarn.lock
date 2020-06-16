@@ -19,7 +19,7 @@
   resolved "https://registry.yarnpkg.com/@babel/helper-validator-identifier/-/helper-validator-identifier-7.10.1.tgz#5770b0c1a826c4f53f5ede5e153163e0318e94b5"
   integrity sha512-5vW/JXLALhczRCWP0PnFDMCJAchlBvM7f4uk/jXritBnIa6E1KmqmtrS3yn1LAnxFBypQ3eneLuXjsnfQsgILw==
 
-"@babel/plugin-transform-runtime@^7.10.1":
+"@babel/plugin-transform-runtime@7.10.1":
   version "7.10.1"
   resolved "https://registry.yarnpkg.com/@babel/plugin-transform-runtime/-/plugin-transform-runtime-7.10.1.tgz#fd1887f749637fb2ed86dc278e79eb41df37f4b1"
   integrity sha512-4w2tcglDVEwXJ5qxsY++DgWQdNJcCCsPxfT34wCUwIf2E7dI7pMpH8JczkMBbgBTNzBX62SZlNJ9H+De6Zebaw==
@@ -29,7 +29,7 @@
     resolve "^1.8.1"
     semver "^5.5.1"
 
-"@babel/runtime@^7.10.2":
+"@babel/runtime@7.10.2":
   version "7.10.2"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.10.2.tgz#d103f21f2602497d38348a32e008637d506db839"
   integrity sha512-6sF3uQw2ivImfVIl62RZ7MXhO2tap69WeWK57vAaimT6AZbE4FbqjdEJIN1UqoD6wI6B+1n9UiagafH1sxjOtg==
@@ -45,24 +45,24 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
-"@bandprotocol/bandchain.js@^1.0.6":
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/@bandprotocol/bandchain.js/-/bandchain.js-1.0.6.tgz#afe0e17e3e589cc447f42635a2fc291077e59f20"
-  integrity sha512-0pUE9BfJ/wleUEAv4tIAzyvFal35Z/g+o9RsbzuDivcpOcOCivCc2ILcO01CYRd1qs/K4LbIcUEJGfmWqG+PWg==
+"@bandprotocol/bandchain.js@^1.0.9":
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/@bandprotocol/bandchain.js/-/bandchain.js-1.0.9.tgz#bfc44a9e70c678b868d9f1fa4d38f8adfe8d3f34"
+  integrity sha512-UdDBP+vtGvfP1Yb7B1NyvzC6ZZD4/lPi7a2lKKki1ZYcM9EUY1neWzH/Ck4z8a+qW5z0ypx0/4YSOs8+eWFEgQ==
   dependencies:
-    "@babel/plugin-transform-runtime" "^7.10.1"
-    "@babel/runtime" "^7.10.2"
-    "@bandprotocol/obi.js" "^1.0.4"
-    "@cosmostation/cosmosjs" "^0.5.8"
-    axios "^0.19.2"
-    delay "^4.3.0"
+    "@babel/plugin-transform-runtime" "7.10.1"
+    "@babel/runtime" "7.10.2"
+    "@bandprotocol/obi.js" "1.0.4"
+    "@cosmostation/cosmosjs" "0.5.8"
+    axios "0.19.2"
+    delay "4.3.0"
 
-"@bandprotocol/obi.js@^1.0.4":
+"@bandprotocol/obi.js@1.0.4":
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/@bandprotocol/obi.js/-/obi.js-1.0.4.tgz#c1af2c7688e13aedeacd043e06e5afb5e22e0bf5"
   integrity sha512-pqecnFHkggQzA6UpACt5mXwkYIdiW4zk334cRoyMnRLkud6nCVVaUdSKNvLQGZudI7ciE4Q42dubYenDv9/KhA==
 
-"@cosmostation/cosmosjs@^0.5.8":
+"@cosmostation/cosmosjs@0.5.8":
   version "0.5.8"
   resolved "https://registry.yarnpkg.com/@cosmostation/cosmosjs/-/cosmosjs-0.5.8.tgz#cb6b698a7cdf5b00556ca73d98549434f8bbbc49"
   integrity sha512-aVxgYyvIT78/ebzvgazeM0wGQ1EqEQWBWbVAM4Li/eLi0j6be7kGUuYzhln9Qet7/zGR3Rr5Ej5yZWSJymfb3A==
@@ -74,7 +74,7 @@
     node-fetch "^2.6.0"
     secp256k1 "^3.6.2"
 
-axios@^0.19.2:
+axios@0.19.2:
   version "0.19.2"
   resolved "https://registry.yarnpkg.com/axios/-/axios-0.19.2.tgz#3ea36c5d8818d0d5f8a8a97a6d36b86cdc00cb27"
   integrity sha512-fjgm5MvRHLhx+osE2xoekY70AhARk3a6hkN+3Io1jc00jtquGvxYlKlsFUhmUET0V5te6CcZI7lcv2Ym61mjHA==
@@ -244,7 +244,7 @@ debug@=3.1.0:
   dependencies:
     ms "2.0.0"
 
-delay@^4.3.0:
+delay@4.3.0, delay@^4.3.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/delay/-/delay-4.3.0.tgz#efeebfb8f545579cb396b3a722443ec96d14c50e"
   integrity sha512-Lwaf3zVFDMBop1yDuFZ19F9WyGcZcGacsbdlZtWjQmM50tOcMntm1njF/Nb/Vjij3KaSvCF+sEYGKrrjObu2NA==
