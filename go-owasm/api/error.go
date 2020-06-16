@@ -16,6 +16,13 @@ var (
 	ErrGasCounterInjectFail = errors.New("gas counter inject fail")
 	ErrSerializetFail       = errors.New("serialize fail")
 	ErrUnknownError         = errors.New("unknown error")
+	ErrCompliationError     = errors.New("compile fail")
+	ErrRunError             = errors.New("run fail")
+	ErrParseError           = errors.New("parse fail")
+	ErrWriteBinaryError     = errors.New("write binary fail")
+	ErrValidateError        = errors.New("validate fail")
+	ErrFunctionNotFound     = errors.New("can't find prepare or execute funtion")
+	ErrGasLimitExceeded     = errors.New("gas limit exceeded")
 )
 
 // parseError - returns parsed error from errors code on bindings.h
@@ -43,6 +50,10 @@ func parseError(code int32) error {
 		return ErrGasCounterInjectFail
 	case 10:
 		return ErrSerializetFail
+	case 11:
+		return ErrFunctionNotFound
+	case 12:
+		return ErrGasLimitExceeded
 	default:
 		return ErrUnknownError
 	}

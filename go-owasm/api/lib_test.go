@@ -61,3 +61,41 @@ func TestFailCompileInvalidContent(t *testing.T) {
 	_, err := Compile(code, spanSize)
 	require.Equal(t, ErrValidateFail, err)
 }
+func TestRunError(t *testing.T) {
+	spanSize := 1 * 1024 * 1024
+	wasm, _ := Wat2Wasm(readWatFile("divide_by_zero"), spanSize)
+	code, _ := Compile(wasm, spanSize)
+
+	err := Prepare(code, 100000, NewMockEnv([]byte("")))
+	require.Equal(t, ErrRunError, err)
+}
+
+func TestGasLimit(t *testing.T) {
+	spanSize := 1 * 1024 * 1024
+	wasm, _ := Wat2Wasm(readWatFile("loop_prepare"), spanSize)
+	code, _ := Compile(wasm, spanSize)
+
+	err := Prepare(code, 100000, NewMockEnv([]byte("")))
+	require.NoError(t, err)
+
+	err = Prepare(code, 70000, NewMockEnv([]byte("")))
+	require.Equal(t, ErrGasLimitExceeded, err)
+}
+
+func TestFunctionNotFound(t *testing.T) {
+	spanSize := 1 * 1024 * 1024
+	wasm, _ := Wat2Wasm(readWatFile("loop_prepare"), spanSize)
+	code, _ := Compile(wasm, spanSize)
+
+	err := Execute(code, 100000, NewMockEnv([]byte("")))
+	require.Equal(t, ErrFunctionNotFound, err)
+}
+
+func TestCompileError(t *testing.T) {
+	spanSize := 1 * 1024 * 1024
+	wasm, _ := Wat2Wasm(readWatFile("loop_prepare"), spanSize)
+	code, _ := Compile(wasm, spanSize)
+
+	err := Execute(code, 100000, NewMockEnv([]byte("")))
+	require.Equal(t, ErrFunctionNotFound, err)
+}
