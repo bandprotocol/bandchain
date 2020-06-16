@@ -1,5 +1,5 @@
 (module
-  (func (;this function uses 80005 gas for execute;)
+  (func
    i32.const 0
    i32.const 0
    i32.div_s
