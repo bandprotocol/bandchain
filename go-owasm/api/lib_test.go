@@ -117,6 +117,7 @@ func TestCompileErrorMinimumMemoryExceed(t *testing.T) {
 	require.Equal(t, ErrMinimumMemoryExceed, err)
 	require.Equal(t, []uint8([]byte{}), code)
 }
+
 func TestCompileErrorSetMaximumMemory(t *testing.T) {
 	spanSize := 1 * 1024 * 1024
 	wasm, _ := Wat2Wasm(readWatFile("set_memories_maximum_size"), spanSize)
