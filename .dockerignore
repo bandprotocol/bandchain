@@ -3,6 +3,7 @@
 /assets
 /band-consumer
 /bridges
+/go-owasm/target/
 /lambda
 /obi
 /owasm
