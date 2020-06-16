@@ -1,7 +1,7 @@
 mod env;
+mod error;
 mod span;
 mod vm;
-mod error;
 
 use env::Env;
 use error::Error;
@@ -9,26 +9,28 @@ use parity_wasm::elements::{self};
 use pwasm_utils::{self, rules};
 use span::Span;
 use std::ffi::c_void;
-use wasmer_runtime::{instantiate, Ctx};
-use wasmer_runtime_core::{func, imports, wasmparser, Func};
 use wabt::wat2wasm;
-
+use wasmer_runtime::{instantiate, Ctx};
+use wasmer_runtime_core::error::RuntimeError;
+use wasmer_runtime_core::{func, imports, wasmparser, Func};
 
 
 #[no_mangle]
 pub extern "C" fn do_compile(input: Span, output: &mut Span) -> Error {
-    // TODO: Define error when compile code.
     match compile(input.read()) {
-        Ok(out) => output.write(&out),
-        Err(_) => Error::CompliationError,
+        Ok(out) => {
+            output.write(&out);
+            Error::NoError
+        },
+        Err(e) => e,
     }
 }
 
 #[no_mangle]
-pub extern "C" fn do_run(code: Span, is_prepare: bool, env: Env) -> Error {
-    match run(code.read(), is_prepare, env) {
+pub extern "C" fn do_run(code: Span, gas_limit: u32, is_prepare: bool, env: Env) -> Error {
+    match run(code.read(), gas_limit, is_prepare, env) {
         Ok(_) => Error::NoError,
-        Err(_) => Error::RunError,
+        Err(e) => e,
     }
 }
 
@@ -36,36 +38,34 @@ pub extern "C" fn do_run(code: Span, is_prepare: bool, env: Env) -> Error {
 pub extern "C" fn do_wat2wasm(input: Span, output: &mut Span) -> Error {
     match wat2wasm(input.read()) {
         Ok(_wasm) => output.write(&_wasm),
-        Err(e) => {
-            match e.kind() {
-                wabt::ErrorKind::Parse(_) => Error::ParseError,
-                wabt::ErrorKind::WriteBinary => Error::WriteBinaryError,
-                wabt::ErrorKind::ResolveNames(_) => Error::ResolveNamesError,
-                wabt::ErrorKind::Validate(_) => Error::ValidateError,
-                _ => Error::UnknownError
-            }
-        }
+        Err(e) => match e.kind() {
+            wabt::ErrorKind::Parse(_) => Error::ParseError,
+            wabt::ErrorKind::WriteBinary => Error::WriteBinaryError,
+            wabt::ErrorKind::ResolveNames(_) => Error::ResolveNamesError,
+            wabt::ErrorKind::Validate(_) => Error::ValidateError,
+            _ => Error::UnknownError,
+        },
     }
 }
 
-fn compile(code: &[u8]) -> Result<Vec<u8>, i32> {
+fn compile(code: &[u8]) -> Result<Vec<u8>, Error> {
     // Check that the given Wasm code is indeed a valid Wasm.
-    wasmparser::validate(code, None).map_err(|_| 1)?;
+    wasmparser::validate(code, None).map_err(|_| Error::ValidateError)?;
     // Simple gas rule. Every opcode and memory growth costs 1 gas.
     let gas_rules = rules::Set::new(1, Default::default()).with_grow_cost(1);
     // Start the compiling chains. TODO: Add more safeguards.
-    let module = elements::deserialize_buffer(code).map_err(|_| 2)?;
-    let module = pwasm_utils::inject_gas_counter(module, &gas_rules).map_err(|_| 3)?;
+    let module = elements::deserialize_buffer(code).map_err(|_| Error::DeserializationError)?;
+    let module = pwasm_utils::inject_gas_counter(module, &gas_rules).map_err(|_| Error::GasCounterInjectionError)?;
     // Serialize the final Wasm code back to bytes.
-    elements::serialize(module).map_err(|_| 4)
+    elements::serialize(module).map_err(|_| Error::SerializationError)
 }
 
 struct ImportReference(*mut c_void);
 unsafe impl Send for ImportReference {}
 unsafe impl Sync for ImportReference {}
 
-fn run(code: &[u8], is_prepare: bool, env: Env) -> Result<(), i32> {
-    let vm = &mut vm::VMLogic::new(env);
+fn run(code: &[u8], gas_limit: u32, is_prepare: bool, env: Env) -> Result<(), Error> {
+    let vm = &mut vm::VMLogic::new(env, gas_limit);
     let raw_ptr = vm as *mut _ as *mut c_void;
     let import_reference = ImportReference(raw_ptr);
     let import_object = imports! {
@@ -121,8 +121,20 @@ fn run(code: &[u8], is_prepare: bool, env: Env) -> Result<(), i32> {
             }),
         },
     };
-    let instance = instantiate(code, &import_object).map_err(|_| 1)?;
+    let instance = instantiate(code, &import_object).map_err(|_| Error::CompliationError)?;
     let entry = if is_prepare { "prepare" } else { "execute" };
-    let function: Func<(), ()> = instance.exports.get(entry).map_err(|_| 2)?;
-    function.call().map_err(|_| 3)
+    let function: Func<(), ()> = instance
+        .exports
+        .get(entry)
+        .map_err(|_| Error::FunctionNotFoundError)?;
+    function.call().map_err(|err| match err {
+        RuntimeError::User(uerr) => {
+            if let Some(err) = uerr.downcast_ref::<Error>() {
+                err.clone()
+            } else {
+                Error::UnknownError
+            }
+        }
+        _ => Error::RunError,
+    })
 }
