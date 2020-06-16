@@ -4,9 +4,6 @@
   "description": "Library for interacting with BandChain in browser and Node.js environments",
   "main": "src/lib/index.js",
   "scripts": {
-    "start": "node scripts/start.js",
-    "build": "node scripts/build.js",
-    "demo": "node scripts/demo.js",
     "test": "node scripts/test.js",
     "coverage": "node scripts/test.js --coverage --watchAll=false",
     "postinstall": "node bin/postinstall",
