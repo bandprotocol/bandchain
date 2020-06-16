@@ -14,5 +14,8 @@ pub enum Error {
   SerializationError = 10,
   FunctionNotFoundError = 11,
   GasLimitExceedError = 12,
+  NoMemoryWasmError = 13,
+  MinimumMemoryexceedError = 14,
+  SetMaximumMemoryError = 15,
   UnknownError = 255,
 }
