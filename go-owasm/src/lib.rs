@@ -49,12 +49,14 @@ pub extern "C" fn do_wat2wasm(input: Span, output: &mut Span) -> Error {
     }
 }
 
-fn check_wasm_memories(module: &Module) -> Result<&Module, Error> {
+fn check_wasm_memories(module: &Module) -> Result<(), Error> {
     let section = match module.memory_section() {
         Some(section) => section,
         None => return Err(Error::NoMemoryWasmError),
     };
 
+    // The valid wasm has only the section length of memory.
+    // We check the wasm is valid in the first step of compile fn.
     let memory = section.entries()[0];
     let limits = memory.limits();
 
@@ -65,14 +67,13 @@ fn check_wasm_memories(module: &Module) -> Result<&Module, Error> {
     if limits.maximum() != None {
         return Err(Error::SetMaximumMemoryError);
     }
-    Ok(module)
+    Ok(())
 }
 
 fn inject_gas_to_wasm(module: Module) -> Result<Module, Error> {
     // Simple gas rule. Every opcode and memory growth costs 1 gas.
     let gas_rules = rules::Set::new(1, Default::default()).with_grow_cost(1);
-    pwasm_utils::inject_gas_counter(module.clone(), &gas_rules)
-        .map_err(|_| Error::GasCounterInjectionError)
+    pwasm_utils::inject_gas_counter(module, &gas_rules).map_err(|_| Error::GasCounterInjectionError)
 }
 fn compile(code: &[u8]) -> Result<Vec<u8>, Error> {
     // Check that the given Wasm code is indeed a valid Wasm.
