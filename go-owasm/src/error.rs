@@ -1,4 +1,5 @@
 #[repr(i32)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Error {
   NoError = 0,
   CompliationError = 1,
@@ -7,5 +8,11 @@ pub enum Error {
   WriteBinaryError = 4,
   ResolveNamesError = 5,
   ValidateError = 6,
-  UnknownError = 7
+  SpanExceededCapacityError = 7,
+  DeserializationError = 8,
+  GasCounterInjectionError = 9,
+  SerializationError = 10,
+  FunctionNotFoundError = 11,
+  GasLimitExceedError = 12,
+  UnknownError = 255,
 }
