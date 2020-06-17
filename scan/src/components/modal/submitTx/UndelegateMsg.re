@@ -47,7 +47,7 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
   <>
     <VSpacing size=Spacing.sm />
     <div className=Styles.warning>
-      <Text value="Please read before doing." />
+      <Text value="Please read before proceeding:" />
       <VSpacing size=Spacing.xs />
       <Text
         value="1. Undelegated balance are locked for 21 days. After the unbonding period, the balance will automatically be added to your account"
@@ -107,6 +107,7 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
          placeholder="Insert unbonding amount"
          inputType="number"
          code=true
+         autoFocus=true
        />;
      | _ => <EnhanceTxInput.Loading msg="Undelegate Amount (BAND)" width=300 />
      }}

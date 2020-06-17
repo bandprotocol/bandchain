@@ -93,6 +93,7 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
          placeholder="Insert delegation amount"
          inputType="number"
          code=true
+         autoFocus=true
        />;
      | _ => <EnhanceTxInput.Loading msg="Delegate Amount (BAND)" width=300 />
      }}
