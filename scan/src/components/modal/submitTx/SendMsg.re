@@ -70,6 +70,12 @@ let make = (~address, ~receiver, ~setMsgsOpt) => {
       msg="Recipient Address"
       code=true
       placeholder="Insert recipient address"
+      autoFocus={
+        switch (toAddress.text) {
+        | "" => true
+        | _ => false
+        }
+      }
     />
     <VSpacing size=Spacing.lg />
     <VSpacing size=Spacing.md />
@@ -87,6 +93,12 @@ let make = (~address, ~receiver, ~setMsgsOpt) => {
          inputType="number"
          code=true
          placeholder="Insert send amount"
+         autoFocus={
+           switch (toAddress.text) {
+           | "" => false
+           | _ => true
+           }
+         }
        />;
      | _ => <EnhanceTxInput.Loading msg="Send Amount (BAND)" width=300 />
      }}
