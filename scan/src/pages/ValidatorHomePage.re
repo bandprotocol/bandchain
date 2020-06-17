@@ -613,20 +613,14 @@ let make = () => {
       </Row>
     </div>
     <div className=Styles.searchContainer>
-      {switch (topPartAllSub) {
-       | Data(_) =>
-         <>
-           <input
-             type_="text"
-             className=Styles.searchBar
-             placeholder="Search Validator"
-             onChange={event => setSearchTerm(ReactEvent.Form.target(event)##value)}
-           />
-           <HSpacing size=Spacing.sm />
-           <Col> <ToggleButton isActive setIsActive /> </Col>
-         </>
-       | _ => <LoadingCensorBar width=450 height=30 />
-       }}
+      <input
+        type_="text"
+        className=Styles.searchBar
+        placeholder="Search Validator"
+        onChange={event => setSearchTerm(ReactEvent.Form.target(event)##value)}
+      />
+      <HSpacing size=Spacing.sm />
+      <Col> <ToggleButton isActive setIsActive /> </Col>
     </div>
     <VSpacing size=Spacing.md />
     <ValidatorList allSub searchTerm />
