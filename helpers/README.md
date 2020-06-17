@@ -4,9 +4,7 @@ A collection of tools that simplify interactions with BandChain. Note that this 
 
 ## Supported Programming Languages
 
-| Language                        | Status         |
-| ------------------------------- | -------------- |
-| [`Python 3 🐍`](pyobi)          | 🤔 Not Started |
-| [`Golang 🐀`](../chain/pkg/obi) | 🤔 Not Started |
-| [`Rust 🦀`](../owasm/obi)       | 🤔 Not Started |
-| [`JavaScript 🌐`](obi.js)       | ✅ Completed   |
+| Language                          | Status         |
+| --------------------------------- | -------------- |
+| [`bandchain.js 🌎`](bandchain.js) | ✅ Completed   |
+| [`cron-requester ⏰`](#)          | ⚙️ In Progress |
