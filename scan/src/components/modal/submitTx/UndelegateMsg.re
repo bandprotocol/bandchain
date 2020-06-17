@@ -107,6 +107,7 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
          placeholder="Insert unbonding amount"
          inputType="number"
          code=true
+         autoFocus=true
        />;
      | _ => <EnhanceTxInput.Loading msg="Undelegate Amount (BAND)" width=300 />
      }}
