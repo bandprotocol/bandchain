@@ -149,6 +149,8 @@ module StakingInfo = {
         dispatchModal(OpenModal(SubmitTx(SubmitMsg.Delegate(validatorAddress))));
       let undelegate = () =>
         dispatchModal(OpenModal(SubmitTx(SubmitMsg.Undelegate(validatorAddress))));
+      let redelegate = () =>
+        dispatchModal(OpenModal(SubmitTx(SubmitMsg.Redelegate(validatorAddress))));
       let withdrawReward = () =>
         dispatchModal(OpenModal(SubmitTx(SubmitMsg.WithdrawReward(validatorAddress))));
       let isReachUnbondingLimit = unbondingList |> Belt_Array.length == 7;
@@ -195,6 +197,13 @@ module StakingInfo = {
             onClick={_ => {undelegate()}}
             disabled={balanceAtStakeAmount.amount == 0. || isReachUnbondingLimit}>
             <Text value="Undelegate" />
+          </button>
+          <HSpacing size=Spacing.md />
+          <button
+            className={Styles.button(100)}
+            onClick={_ => {redelegate()}}
+            disabled={balanceAtStakeAmount.amount == 0.}>
+            <Text value="Redelegate" />
           </button>
           <HSpacing size=Spacing.md />
           <button
