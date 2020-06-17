@@ -73,8 +73,8 @@ let parseChainID =
 
 let getLink =
   fun
-  | WenchangTestnet => "https://scan-wenchang-testnet2.bandchain.org/"
-  | WenchangMainnet => ""
+  | WenchangTestnet => "https://wenchang-testnet.cosmoscan.io/"
+  | WenchangMainnet => "https://cosmoscan.io/"
   | GuanYuDevnet => "https://guanyu-devnet.cosmoscan.io/"
   | Unknown => "";
 
@@ -110,7 +110,7 @@ let make = () =>
       <HSpacing size=Spacing.sm />
       <img src=Images.triangleDown className={Styles.downIcon(show)} />
       <div className={Styles.dropdown(show)}>
-        {[|WenchangTestnet, GuanYuDevnet|]
+        {[|WenchangTestnet, WenchangMainnet, GuanYuDevnet|]
          ->Belt.Array.keep(chainID => chainID != currentChainID)
          ->Belt.Array.map(chainID => {
              let name = chainID->getName;
