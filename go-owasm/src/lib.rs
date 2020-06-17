@@ -76,15 +76,10 @@ fn inject_memory(module: Module) -> Result<Module, Error> {
     // set max memory page = MEMORY_LIMIT
     let memory = MemoryType::new(limits.initial(), Some(MEMORY_LIMIT));
 
-    let mut tmp = MemorySection::default();
-    m.memory_section_mut()
-        .unwrap_or_else(|| &mut tmp)
-        .entries_mut()
-        .pop();
-    m.memory_section_mut()
-        .unwrap_or_else(|| &mut tmp)
-        .entries_mut()
-        .push(memory);
+    // Memory existence already checked
+    let entries = m.memory_section_mut().unwrap().entries_mut();
+    entries.pop();
+    entries.push(memory);
     let builder = builder::from_module(m);
 
     Ok(builder.build())
