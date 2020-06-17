@@ -1,7 +1,6 @@
 package api
 
 // #include "bindings.h"
-// #include <string.h>
 import "C"
 import (
 	"unsafe"
@@ -19,26 +18,21 @@ type EnvInterface interface {
 }
 
 type envIntl struct {
-	ext      EnvInterface
-	calldata C.Span
-	extData  map[[2]int64][]byte
+	ext     EnvInterface
+	extData map[[2]int64][]byte
 }
 
 func createEnvIntl(ext EnvInterface) *envIntl {
 	return &envIntl{
-		ext:      ext,
-		calldata: copySpan(ext.GetCalldata()),
-		extData:  make(map[[2]int64][]byte),
+		ext:     ext,
+		extData: make(map[[2]int64][]byte),
 	}
 }
 
-func destroyEnvIntl(e *envIntl) {
-	freeSpan(e.calldata)
-}
-
 //export cGetCalldata
-func cGetCalldata(e *C.env_t) C.Span {
-	return (*(*envIntl)(unsafe.Pointer(e))).calldata
+func cGetCalldata(e *C.env_t, calldata *C.Span) C.GoResult {
+	data := (*(*envIntl)(unsafe.Pointer(e))).ext.GetCalldata()
+	return writeSpan(calldata, data)
 }
 
 //export cSetReturnData
@@ -118,11 +112,5 @@ func cGetExternalData(e *C.env_t, eid C.int64_t, vid C.int64_t, data *C.Span) C.
 		}
 		env.extData[key] = data
 	}
-	d := env.extData[key]
-	if int(data.cap) < len(d) {
-		return C.GoResult_SpanExceededCapacity
-	}
-	C.memcpy(unsafe.Pointer(data.ptr), unsafe.Pointer(&d[0]), C.size_t(len(d)))
-	data.len = C.uintptr_t(len(d))
-	return C.GoResult_Ok
+	return writeSpan(data, env.extData[key])
 }

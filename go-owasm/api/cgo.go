@@ -2,8 +2,8 @@ package api
 
 // #include "bindings.h"
 //
-// Span cGetCalldata(env_t *e);
-// Span cGetCalldata_cgo(env_t *e) { return cGetCalldata(e); }
+// GoResult cGetCalldata(env_t *e, Span *calldata);
+// GoResult cGetCalldata_cgo(env_t *e, Span *calldata) { return cGetCalldata(e, calldata); }
 // GoResult cSetReturnData(env_t *e, Span data);
 // GoResult cSetReturnData_cgo(env_t *e, Span data) { return cSetReturnData(e, data); }
 // int64_t cGetAskCount(env_t *e);
