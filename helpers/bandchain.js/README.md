@@ -1,11 +1,6 @@
- <div align="center">
- <!-- <img align="center" width="180" src="https://i.imgur.com/62VsVXD.png" /> -->
+<div align="center">
   <h2>BandChain.js</h2>
   <blockquote>Library for interacting with BandChain in browser and Node.js environments</blockquote>
-  <!-- <a href="https://github.com/hodgef/js-library-boilerplate/actions"><img alt="Build Status" src="https://github.com/hodgef/js-library-boilerplate/workflows/Build/badge.svg?color=green" /></a> <a href="https://github.com/hodgef/js-library-boilerplate/actions"> <img alt="Publish Status" src="https://github.com/hodgef/js-library-boilerplate/workflows/Publish/badge.svg?color=green" /></a> <img src="https://img.shields.io/david/hodgef/js-library-boilerplate.svg" /> <a href="https://david-dm.org/hodgef/js-library-boilerplate?type=dev"><img src="https://img.shields.io/david/dev/hodgef/js-library-boilerplate.svg" /></a> <img src="https://api.dependabot.com/badges/status?host=github&repo=hodgef/js-library-boilerplate" /> -->
-
-<strong>Lib boilerplate by [js-library-boilerplate](https://github.com/hodgef/js-library-boilerplate).</strong>
-
 </div>
 
 ## ⭐️ Features
@@ -16,13 +11,13 @@
 ## 📦 Installation
 
 ```bash
-npm install
+npm install --save @bandprotocol/bandchain.js
 ```
 
-### npm
+### Use in Node.js
 
 ```js
-import BandChain from 'bandchain.js'
+const BandChain = require('@bandprotocol/bandchain.js')
 
 const chainId = 'band-guanyu-devnet-2'
 const endpoint = 'http://guanyu-devnet.bandchain.org/rest'
@@ -31,23 +26,15 @@ const bandchain = new BandChain(chainId, endpoint)
 ...
 ```
 
-### self-host/cdn
-
-```html
-<link href="build/index.css" rel="stylesheet" />
-<script src="build/index.js"></script>
-
-<script>
-  let BandChain = window.BandChain.default;
-  const bandchain = new BandChain(/*chainId & endpoint */);
-  ...
-</script>
+## 🔍 Test
+```
+npm run test
 ```
 
 ## 💎 Example Usages
 
 ```js
-import BandChain from 'bandchain.js'
+const BandChain = require('@bandprotocol/bandchain.js')
 
 const chainId = 'band-guanyu-devnet-2'
 const endpoint = 'http://guanyu-devnet.bandchain.org/rest'
