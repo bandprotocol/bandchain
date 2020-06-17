@@ -9,4 +9,5 @@
         )
       )
   )
+  (memory $memory 17)
   (export "prepare" (func 0)))

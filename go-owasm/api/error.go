@@ -5,24 +5,28 @@ import (
 )
 
 var (
-	ErrCompliationFail      = errors.New("compile fail")
-	ErrRunFail              = errors.New("run fail")
-	ErrParseFail            = errors.New("parse fail")
-	ErrWriteBinaryFail      = errors.New("write binary fail")
-	ErrResolvesNamesFail    = errors.New("resolve names fail")
-	ErrValidateFail         = errors.New("validate fail")
-	ErrSpanExceededCapacity = errors.New("span exceeded capacity")
-	ErrDeserializeFail      = errors.New("deserialize fail")
-	ErrGasCounterInjectFail = errors.New("gas counter inject fail")
-	ErrSerializetFail       = errors.New("serialize fail")
-	ErrUnknownError         = errors.New("unknown error")
-	ErrCompliationError     = errors.New("compile fail")
-	ErrRunError             = errors.New("run fail")
-	ErrParseError           = errors.New("parse fail")
-	ErrWriteBinaryError     = errors.New("write binary fail")
-	ErrValidateError        = errors.New("validate fail")
-	ErrFunctionNotFound     = errors.New("can't find prepare or execute funtion")
-	ErrGasLimitExceeded     = errors.New("gas limit exceeded")
+	ErrCompliationFail            = errors.New("compile fail")
+	ErrRunFail                    = errors.New("run fail")
+	ErrParseFail                  = errors.New("parse fail")
+	ErrWriteBinaryFail            = errors.New("write binary fail")
+	ErrResolvesNamesFail          = errors.New("resolve names fail")
+	ErrValidateFail               = errors.New("validate fail")
+	ErrSpanExceededCapacity       = errors.New("span exceeded capacity")
+	ErrDeserializeFail            = errors.New("deserialize fail")
+	ErrGasCounterInjectFail       = errors.New("gas counter inject fail")
+	ErrSerializetFail             = errors.New("serialize fail")
+	ErrUnknownError               = errors.New("unknown error")
+	ErrCompliationError           = errors.New("compile fail")
+	ErrRunError                   = errors.New("run fail")
+	ErrParseError                 = errors.New("parse fail")
+	ErrWriteBinaryError           = errors.New("write binary fail")
+	ErrValidateError              = errors.New("validate fail")
+	ErrFunctionNotFound           = errors.New("can't find prepare or execute funtion")
+	ErrGasLimitExceeded           = errors.New("gas limit exceeded")
+	ErrNoMemoryWasm               = errors.New("no memory wasm")
+	ErrMinimumMemoryExceed        = errors.New("minimum memory exceed")
+	ErrSetMaximumMemory           = errors.New("maximum must be unset")
+	ErrStackHeightInstrumentation = errors.New("stack height instrumention fail")
 )
 
 // parseError - returns parsed error from errors code on bindings.h
@@ -54,6 +58,14 @@ func parseError(code int32) error {
 		return ErrFunctionNotFound
 	case 12:
 		return ErrGasLimitExceeded
+	case 13:
+		return ErrNoMemoryWasm
+	case 14:
+		return ErrMinimumMemoryExceed
+	case 15:
+		return ErrSetMaximumMemory
+	case 16:
+		return ErrStackHeightInstrumentation
 	default:
 		return ErrUnknownError
 	}

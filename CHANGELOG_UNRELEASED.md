@@ -24,8 +24,10 @@
 
 - (chore) [\#1987](https://github.com/bandprotocol/bandchain/pull/1987) Remove `request_tab_t` in `Route.re`
 - (impv) [\#1986](https://github.com/bandprotocol/bandchain/pull/1986) Add autofocus input on submittx modal
+- (feat) [\#1985](https://github.com/bandprotocol/bandchain/pull/1985) Add redelegate button and submit transaction modal
 - (chore) [\#1982](https://github.com/bandprotocol/bandchain/pull/1982) Update network on `ChainIDBadge.re`
 - (impv) [\#1958](https://github.com/bandprotocol/bandchain/pull/1958) Add human-readable error when broadcast tx, fix withdraw reward msg on guanyu
+- (impv) [\#1940](https://github.com/bandprotocol/bandchain/pull/1940) Trim Address input, remind user when sending token to themself
 - (impv) [\#1939](https://github.com/bandprotocol/bandchain/pull/1939) Use Format.re on user balance
 - (feat) [\#1938](https://github.com/bandprotocol/bandchain/pull/1938) Add validator's image from identity
 - (impv) [\#1928](https://github.com/bandprotocol/bandchain/pull/1928) Add chainID for guanyu-devnet
@@ -43,5 +45,9 @@
 - (feat) [\#1922](https://github.com/bandprotocol/bandchain/pull/1922) Add wat to wasm function.
 
 ### Oracle Binary Encoding (OBI)
+
+### Helpers
+
+- (feat) [\#1963](https://github.com/bandprotocol/bandchain/pull/1963) Add Bandchain.js
 
 ### MISC
