@@ -102,8 +102,8 @@ fn compile(code: &[u8]) -> Result<Vec<u8>, Error> {
     // Start the compiling chains. TODO: Add more safeguards.
     let module = elements::deserialize_buffer(code).map_err(|_| Error::DeserializationError)?;
     let module = inject_memory(module)?;
-    let module = inject_stack_height(module)?;
     let module = inject_gas(module)?;
+    let module = inject_stack_height(module)?;
     // Serialize the final Wasm code back to bytes.
     elements::serialize(module).map_err(|_| Error::SerializationError)
 }
