@@ -76,13 +76,12 @@ fn inject_memory(module: Module) -> Result<Module, Error> {
     // set max memory page = MEMORY_LIMIT
     let memory = MemoryType::new(limits.initial(), Some(MEMORY_LIMIT));
 
-    // Memory existence already checked
+    // Memory existance already checked
     let entries = m.memory_section_mut().unwrap().entries_mut();
     entries.pop();
     entries.push(memory);
-    let builder = builder::from_module(m);
 
-    Ok(builder.build())
+    Ok(builder::from_module(m).build())
 }
 
 fn inject_gas(module: Module) -> Result<Module, Error> {
