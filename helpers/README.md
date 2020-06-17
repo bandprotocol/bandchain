@@ -2,7 +2,7 @@
 
 A collection of tools that simplify interactions with BandChain. Note that this is not a part of BandChain standard and subject to change more often.
 
-## Supported Programming Languages
+## Available Tools
 
 | Language                          | Status         |
 | --------------------------------- | -------------- |
