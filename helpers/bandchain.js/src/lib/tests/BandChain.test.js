@@ -57,6 +57,15 @@ it('Test BandChain submitRequestTx', async () => {
   expect(requestID).toBeDefined()
 })
 
+it('Test BandChain getRequestID error', async () => {
+  let bandchain = new BandChain(chainID, endpoint)
+  expect(
+    bandchain.getRequestID(
+      '13DEADCF273FCE723B809DDD6F29E5D0B5FD397256FD872D602676094061F20D', // Not a request tx
+    ),
+  ).rejects.toThrow('Not a request tx')
+})
+
 it('Test BandChain getRequestProof', async () => {
   let bandchain = new BandChain(chainID, endpoint)
   let requestProof = await bandchain.getRequestProof(testRequestID)

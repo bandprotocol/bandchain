@@ -19,7 +19,7 @@ async function createRequestMsg(
   validatorCounts,
   calldata,
   chainID,
-  fee
+  fee,
 ) {
   const account = await cosmos.getAccounts(sender)
   return cosmos.newStdMsg({
@@ -44,22 +44,6 @@ async function createRequestMsg(
   })
 }
 
-async function getRequestID(txHash, endpoint) {
-  let requestEndpoint = `${endpoint}/txs/${txHash}`
-  while (true) {
-    try {
-      const res = await axios.get(requestEndpoint)
-      if (res.status == 200) {
-        const rawLog = JSON.parse(res.data.raw_log)
-        const requestID = rawLog[0].events[2].attributes[0].value
-        return requestID
-      }
-    } catch {
-      await delay(100)
-    }
-  }
-}
-
 class BandChain {
   constructor(chainID, endpoint) {
     /* TODO: Get chainID from REST endpoint in the next release of Guan Yu */
@@ -79,7 +63,14 @@ class BandChain {
     }
   }
 
-  async submitRequestTx(oracleScript, parameters, validatorCounts, mnemonic, gasAmount = 0, gasLimit = 1000000) {
+  async submitRequestTx(
+    oracleScript,
+    parameters,
+    validatorCounts,
+    mnemonic,
+    gasAmount = 0,
+    gasLimit = 1000000,
+  ) {
     const obiObj = new Obi(oracleScript.schema)
     const calldata = obiObj.encodeInput(parameters)
 
@@ -106,7 +97,33 @@ class BandChain {
     convertSignedMsg(signedTx)
 
     const broadcastResponse = await cosmos.broadcast(signedTx)
-    return await getRequestID(broadcastResponse.txhash, this.endpoint)
+    return this.getRequestID(broadcastResponse.txhash)
+  }
+
+  async getRequestID(txHash) {
+    let requestEndpoint = `${this.endpoint}/txs/${txHash}`
+
+    // Loop until the txHash is included in the block
+    while (true) {
+      let res
+      try {
+        res = await axios.get(requestEndpoint)
+      } catch (e) {
+        await delay(100)
+        continue
+      }
+
+      if (res.status == 200) {
+        try {
+          const requestID = res.data.logs[0].events
+            .find(({ type }) => type === 'request')
+            .attributes.find(({ key }) => key === 'id').value
+          return requestID
+        } catch {
+          throw new Error('Not a request tx')
+        }
+      }
+    }
   }
 
   async getRequestProof(requestID, retryTimeout = 200) {
