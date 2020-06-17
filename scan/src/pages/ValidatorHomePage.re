@@ -617,7 +617,10 @@ let make = () => {
         type_="text"
         className=Styles.searchBar
         placeholder="Search Validator"
-        onChange={event => setSearchTerm(ReactEvent.Form.target(event)##value)}
+        onChange={event => {
+          let newVal = ReactEvent.Form.target(event)##value;
+          setSearchTerm(_ => newVal);
+        }}
       />
       <HSpacing size=Spacing.sm />
       <Col> <ToggleButton isActive setIsActive /> </Col>
