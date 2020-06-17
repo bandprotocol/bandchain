@@ -100,7 +100,7 @@ class BandChain {
     return this.getRequestID(broadcastResponse.txhash)
   }
 
-  async getRequestID(txHash) {
+  async getRequestID(txHash, retryTimeout = 200) {
     let requestEndpoint = `${this.endpoint}/txs/${txHash}`
 
     // Loop until the txHash is included in the block
@@ -109,7 +109,7 @@ class BandChain {
       try {
         res = await axios.get(requestEndpoint)
       } catch (e) {
-        await delay(100)
+        await delay(retryTimeout)
         continue
       }
 
