@@ -21,7 +21,6 @@ type EnvInterface interface {
 type envIntl struct {
 	ext      EnvInterface
 	calldata C.Span
-	null     C.Span
 	extData  map[[2]int64][]byte
 }
 
@@ -29,17 +28,12 @@ func createEnvIntl(ext EnvInterface) *envIntl {
 	return &envIntl{
 		ext:      ext,
 		calldata: copySpan(ext.GetCalldata()),
-		null:     copySpan([]byte{}),
 		extData:  make(map[[2]int64][]byte),
 	}
 }
 
 func destroyEnvIntl(e *envIntl) {
 	freeSpan(e.calldata)
-	freeSpan(e.null)
-	// for _, span := range e.extData {
-	// 	freeSpan(span)
-	// }
 }
 
 //export cGetCalldata
@@ -52,11 +46,11 @@ func cSetReturnData(e *C.env_t, span C.Span) C.GoResult {
 	err := (*(*envIntl)(unsafe.Pointer(e))).ext.SetReturnData(readSpan(span))
 	if err != nil {
 		if err == ErrSetReturnDataWrongPeriod {
-			return C.SetReturnDataWrongPeriod
+			return C.GoResult_SetReturnDataWrongPeriod
 		}
-		return C.Other
+		return C.GoResult_Other
 	}
-	return C.Ok
+	return C.GoResult_Ok
 }
 
 //export cGetAskCount
@@ -74,12 +68,12 @@ func cGetAnsCount(e *C.env_t, val *C.int64_t) C.GoResult {
 	v, err := (*(*envIntl)(unsafe.Pointer(e))).ext.GetAnsCount()
 	if err != nil {
 		if err == ErrAnsCountWrongPeriod {
-			return C.AnsCountWrongPeriod
+			return C.GoResult_AnsCountWrongPeriod
 		}
-		return C.Other
+		return C.GoResult_Other
 	}
 	*val = C.int64_t(v)
-	return C.Ok
+	return C.GoResult_Ok
 }
 
 //export cAskExternalData
@@ -87,11 +81,11 @@ func cAskExternalData(e *C.env_t, eid C.int64_t, did C.int64_t, span C.Span) C.G
 	err := (*(*envIntl)(unsafe.Pointer(e))).ext.AskExternalData(int64(eid), int64(did), readSpan(span))
 	if err != nil {
 		if err == ErrAskExternalDataWrongPeriod {
-			return C.AskExternalDataWrongPeriod
+			return C.GoResult_AskExternalDataWrongPeriod
 		}
-		return C.Other
+		return C.GoResult_Other
 	}
-	return C.Ok
+	return C.GoResult_Ok
 }
 
 //export cGetExternalDataStatus
@@ -99,12 +93,12 @@ func cGetExternalDataStatus(e *C.env_t, eid C.int64_t, vid C.int64_t, status *C.
 	s, err := (*(*envIntl)(unsafe.Pointer(e))).ext.GetExternalDataStatus(int64(eid), int64(vid))
 	if err != nil {
 		if err == ErrGetExternalDataStatusWrongPeriod {
-			return C.GetExternalDataStatusWrongPeriod
+			return C.GoResult_GetExternalDataStatusWrongPeriod
 		}
-		return C.Other
+		return C.GoResult_Other
 	}
 	*status = C.int64_t(s)
-	return C.Ok
+	return C.GoResult_Ok
 }
 
 //export cGetExternalData
@@ -115,21 +109,20 @@ func cGetExternalData(e *C.env_t, eid C.int64_t, vid C.int64_t, data *C.Span) C.
 		data, err := env.ext.GetExternalData(int64(eid), int64(vid))
 		if err != nil {
 			if err == ErrGetExternalDataWrongPeriod {
-				return C.GetExternalDataWrongPeriod
+				return C.GoResult_GetExternalDataWrongPeriod
 			}
-			return C.Other
+			return C.GoResult_Other
 		}
 		if data == nil {
-			return C.GetExternalDataFromUnreportedValidator
+			return C.GoResult_GetUnreportedData
 		}
 		env.extData[key] = data
 	}
 	d := env.extData[key]
-	dataLength := len(env.extData[key])
-	if int(data.cap) < dataLength {
-		return C.SpanExceededCapacity
+	if int(data.cap) < len(d) {
+		return C.GoResult_SpanExceededCapacity
 	}
-	C.memcpy(unsafe.Pointer(data.ptr), unsafe.Pointer(&d[0]), C.size_t(dataLength))
-	data.len = C.uintptr_t(dataLength)
-	return C.Ok
+	C.memcpy(unsafe.Pointer(data.ptr), unsafe.Pointer(&d[0]), C.size_t(len(d)))
+	data.len = C.uintptr_t(len(d))
+	return C.GoResult_Ok
 }

@@ -20,34 +20,49 @@ pub enum Error {
   CheckWasmImportsError = 16,
   CheckWasmExportsError = 17,
   InvalidSignatureFunctionError = 18,
+
+  SetReturnDataWrongPeriodError = 31,
+  AnsCountWrongPeriodError = 32,
+  AskExternalDataWrongPeriodError = 33,
+  AskExternalDataExceedError = 34,
+  GetExternalDataStatusWrongPeriodError = 35,
+  GetExternalDataWrongPeriodError = 36,
+  ValidatorOutOfRangeError = 37,
+  InvalidExternalIDError = 38,
+  GetUnreportedDataError = 39,
+
   UnknownError = 255,
 }
 
-// TODO: Declare more error to cover exec env error
 #[repr(i32)]
 pub enum GoResult {
   Ok = 0,
-  SetReturnDataWrongPeriod = 1,
-  AnsCountWrongPeriod = 2,
-  AskExternalDataWrongPeriod = 3,
-  GetExternalDataStatusWrongPeriod = 4,
-  GetExternalDataWrongPeriod = 5,
-  GetExternalDataFromUnreportedValidator = 6,
-  SpanExceededCapacity = 7,
-  /// An error happened during normal operation of a Go callback
-  Other = 8,
+  SpanExceededCapacity = 1,
+  SetReturnDataWrongPeriod = 2,
+  AnsCountWrongPeriod = 3,
+  AskExternalDataWrongPeriod = 4,
+  AskExternalDataExceed = 5,
+  GetExternalDataStatusWrongPeriod = 6,
+  GetExternalDataWrongPeriod = 7,
+  ValidatorOutOfRange = 8,
+  InvalidExternalID = 9,
+  GetUnreportedData = 10,
+  Other = 11,
 }
 
 impl From<GoResult> for Error {
   fn from(r: GoResult) -> Self {
     match r {
       GoResult::Ok => Error::NoError,
-      GoResult::SetReturnDataWrongPeriod => Error::InvalidFunctionCall,
-      GoResult::AnsCountWrongPeriod => Error::InvalidFunctionCall,
-      GoResult::AskExternalDataWrongPeriod => Error::InvalidFunctionCall,
-      GoResult::GetExternalDataStatusWrongPeriod => Error::InvalidFunctionCall,
-      GoResult::GetExternalDataWrongPeriod => Error::InvalidFunctionCall,
-      GoResult::GetExternalDataFromUnreportedValidator => Error::InvalidFunctionCall,
+      GoResult::SetReturnDataWrongPeriod => Error::SetReturnDataWrongPeriodError,
+      GoResult::AnsCountWrongPeriod => Error::AnsCountWrongPeriodError,
+      GoResult::AskExternalDataWrongPeriod => Error::AskExternalDataWrongPeriodError,
+      GoResult::AskExternalDataExceed => Error::AskExternalDataExceedError,
+      GoResult::GetExternalDataStatusWrongPeriod => Error::GetExternalDataStatusWrongPeriodError,
+      GoResult::GetExternalDataWrongPeriod => Error::GetExternalDataWrongPeriodError,
+      GoResult::ValidatorOutOfRange => Error::ValidatorOutOfRangeError,
+      GoResult::InvalidExternalID => Error::InvalidExternalIDError,
+      GoResult::GetUnreportedData => Error::GetUnreportedDataError,
       GoResult::SpanExceededCapacity => Error::SpanExceededCapacityError,
       GoResult::Other => Error::UnknownError,
     }
