@@ -455,7 +455,7 @@ module ValidatorList = {
            {filteredValidator->Belt_Array.size > 0
               ? filteredValidator
                 ->sorting(sortedBy)
-                ->Belt_Array.mapWithIndex((i, e) =>
+                ->Belt_Array.map(e =>
                     renderBody(e.rank, Sub.resolve(e), bondedTokenCount.amount)
                   )
                 ->React.array
