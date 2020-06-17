@@ -160,7 +160,15 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
     let totalBalance = availableBalance +. balanceAtStakeAmount +. rewardAmount +. unbondingAmount;
     let send = () => {
       switch (accountOpt) {
-      | Some(_) => dispatchModal(OpenModal(SubmitTx(SubmitMsg.Send(Some(address)))))
+      | Some({address: sender}) =>
+        let openSendModal = () =>
+          dispatchModal(OpenModal(SubmitTx(SubmitMsg.Send(Some(address)))));
+        if (sender == address) {
+          Window.confirm("Are you sure you want to send tokens to yourself?")
+            ? openSendModal() : ();
+        } else {
+          openSendModal();
+        };
       | None => dispatchModal(OpenModal(Connect(metadata.chainID)))
       };
     };

@@ -23,6 +23,9 @@ var (
 	ErrValidateError        = errors.New("validate fail")
 	ErrFunctionNotFound     = errors.New("can't find prepare or execute funtion")
 	ErrGasLimitExceeded     = errors.New("gas limit exceeded")
+	ErrNoMemoryWasm         = errors.New("no memory wasm")
+	ErrMinimumMemoryExceed  = errors.New("minimum memory exceed")
+	ErrSetMaximumMemory     = errors.New("maximum must be unset")
 )
 
 // parseError - returns parsed error from errors code on bindings.h
@@ -54,6 +57,12 @@ func parseError(code int32) error {
 		return ErrFunctionNotFound
 	case 12:
 		return ErrGasLimitExceeded
+	case 13:
+		return ErrNoMemoryWasm
+	case 14:
+		return ErrMinimumMemoryExceed
+	case 15:
+		return ErrSetMaximumMemory
 	default:
 		return ErrUnknownError
 	}
