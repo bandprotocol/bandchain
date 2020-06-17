@@ -11,10 +11,6 @@ type oracle_script_tab_t =
   | OracleScriptRequests
   | OracleScriptRevisions;
 
-type request_tab_t =
-  | RequestReportStatus
-  | RequestProof;
-
 type account_tab_t =
   | AccountTransactions
   | AccountDelegations;
