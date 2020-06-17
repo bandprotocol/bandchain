@@ -45,4 +45,8 @@
 
 ### Oracle Binary Encoding (OBI)
 
+### Helpers
+
+- (feat) [\#1963](https://github.com/bandprotocol/bandchain/pull/1963) Add Bandchain.js
+
 ### MISC
