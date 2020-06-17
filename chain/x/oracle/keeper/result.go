@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"encoding/binary"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -50,7 +52,7 @@ func (k Keeper) GetAllResults(ctx sdk.Context) (results [][]byte) {
 	var previousReqID types.RequestID
 	defer iterator.Close()
 	for ; iterator.Valid(); iterator.Next() {
-		currentReqID := types.RequestID(sdk.BigEndianToUint64(iterator.Key()[1:]))
+		currentReqID := types.RequestID(binary.BigEndian.Uint64(iterator.Key()[1:]))
 		diffReqIDCount := int(currentReqID - previousReqID)
 
 		// Insert nil for each request without result.

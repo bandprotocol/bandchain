@@ -9,7 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
+	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	"github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/spf13/cobra"
 	amino "github.com/tendermint/go-amino"
@@ -32,7 +32,7 @@ func multiDelegateCommand(cdc *amino.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			inBuf := bufio.NewReader(cmd.InOrStdin())
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
-			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(authclient.GetTxEncoder(cdc))
+			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
 
 			type Delegation struct {
 				To     string `json:"to"`
@@ -73,7 +73,7 @@ func multiDelegateCommand(cdc *amino.Codec) *cobra.Command {
 				msgs = append(msgs, msg)
 			}
 
-			return authclient.GenerateOrBroadcastMsgs(cliCtx, txBldr, msgs)
+			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, msgs)
 		},
 	})[0]
 }

@@ -16,12 +16,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	"github.com/cosmos/cosmos-sdk/x/distribution"
 	dist "github.com/cosmos/cosmos-sdk/x/distribution"
-	"github.com/cosmos/cosmos-sdk/x/evidence"
 	"github.com/cosmos/cosmos-sdk/x/gov"
-	"github.com/cosmos/cosmos-sdk/x/ibc"
-	connection "github.com/cosmos/cosmos-sdk/x/ibc/03-connection"
-	channel "github.com/cosmos/cosmos-sdk/x/ibc/04-channel"
-	tclient "github.com/cosmos/cosmos-sdk/x/ibc/07-tendermint/types"
+
+	// "github.com/cosmos/cosmos-sdk/x/ibc"
+	// connection "github.com/cosmos/cosmos-sdk/x/ibc/03-connection"
+	// channel "github.com/cosmos/cosmos-sdk/x/ibc/04-channel"
+	// tclient "github.com/cosmos/cosmos-sdk/x/ibc/07-tendermint/types"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 
@@ -38,7 +38,7 @@ type BandDB struct {
 	DistrKeeper   distribution.Keeper
 	StakingKeeper staking.Keeper
 	OracleKeeper  oracle.Keeper
-	IBCKeeper     *ibc.Keeper
+	// IBCKeeper     *ibc.Keeper
 }
 
 func NewDB(dialect, path string) (*BandDB, error) {
@@ -491,35 +491,35 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string][]s
 	// TODO: MsgSubmitProposal has been changed in new version of cosmos-sdk
 	// case gov.MsgSubmitProposal:
 	// case gov.MsgSubmitProposalBase:
-	case gov.MsgSubmitProposalI:
+	// case gov.MsgSubmitProposalI:
 	case gov.MsgVote:
-	case evidence.MsgSubmitEvidenceBase:
+	// case evidence.MsgSubmitEvidenceBase:
 	case crisis.MsgVerifyInvariant:
 	case slashing.MsgUnjail:
 		err := b.handleMsgUnjail(msg)
 		if err != nil {
 			return nil, err
 		}
-	case connection.MsgConnectionOpenInit:
-	case connection.MsgConnectionOpenTry:
-	case connection.MsgConnectionOpenAck:
-	case connection.MsgConnectionOpenConfirm:
-	case channel.MsgChannelOpenInit:
-	case channel.MsgChannelOpenTry:
-	case channel.MsgChannelOpenAck:
-	case channel.MsgChannelOpenConfirm:
-	case channel.MsgChannelCloseInit:
-	case channel.MsgChannelCloseConfirm:
-	case channel.MsgPacket:
-		err := b.handleMsgPacket(txHash, msg, events)
-		if err != nil {
-			return nil, err
-		}
-	case channel.MsgAcknowledgement:
-	case channel.MsgTimeout:
-	case tclient.MsgCreateClient:
-	case tclient.MsgUpdateClient:
-	case tclient.MsgSubmitClientMisbehaviour:
+	// case connection.MsgConnectionOpenInit:
+	// case connection.MsgConnectionOpenTry:
+	// case connection.MsgConnectionOpenAck:
+	// case connection.MsgConnectionOpenConfirm:
+	// case channel.MsgChannelOpenInit:
+	// case channel.MsgChannelOpenTry:
+	// case channel.MsgChannelOpenAck:
+	// case channel.MsgChannelOpenConfirm:
+	// case channel.MsgChannelCloseInit:
+	// case channel.MsgChannelCloseConfirm:
+	// case channel.MsgPacket:
+	// 	err := b.handleMsgPacket(txHash, msg, events)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+	// case channel.MsgAcknowledgement:
+	// case channel.MsgTimeout:
+	// case tclient.MsgCreateClient:
+	// case tclient.MsgUpdateClient:
+	// case tclient.MsgSubmitClientMisbehaviour:
 	default:
 		panic(fmt.Sprintf("Message %s does not support", msg.Type()))
 	}
@@ -571,28 +571,28 @@ func (b *BandDB) GetInvolvedAccountsFromTx(tx auth.StdTx) []sdk.AccAddress {
 		// TODO: MsgSubmitProposal has been changed in new version of cosmos-sdk
 		// case gov.MsgSubmitProposal:
 		// case gov.MsgSubmitProposalBase:
-		case gov.MsgSubmitProposalI:
-			involvedAccounts = append(involvedAccounts, msg.GetProposer())
+		// case gov.MsgSubmitProposalI:
+		// 	involvedAccounts = append(involvedAccounts, msg.GetProposer())
 		case gov.MsgVote:
-		case evidence.MsgSubmitEvidenceBase:
+		// case evidence.MsgSubmitEvidenceBase:
 		case crisis.MsgVerifyInvariant:
 		case slashing.MsgUnjail:
-		case connection.MsgConnectionOpenInit:
-		case connection.MsgConnectionOpenTry:
-		case connection.MsgConnectionOpenAck:
-		case connection.MsgConnectionOpenConfirm:
-		case channel.MsgChannelOpenInit:
-		case channel.MsgChannelOpenTry:
-		case channel.MsgChannelOpenAck:
-		case channel.MsgChannelOpenConfirm:
-		case channel.MsgChannelCloseInit:
-		case channel.MsgChannelCloseConfirm:
-		case channel.MsgPacket:
-		case channel.MsgAcknowledgement:
-		case channel.MsgTimeout:
-		case tclient.MsgCreateClient:
-		case tclient.MsgUpdateClient:
-		case tclient.MsgSubmitClientMisbehaviour:
+		// case connection.MsgConnectionOpenInit:
+		// case connection.MsgConnectionOpenTry:
+		// case connection.MsgConnectionOpenAck:
+		// case connection.MsgConnectionOpenConfirm:
+		// case channel.MsgChannelOpenInit:
+		// case channel.MsgChannelOpenTry:
+		// case channel.MsgChannelOpenAck:
+		// case channel.MsgChannelOpenConfirm:
+		// case channel.MsgChannelCloseInit:
+		// case channel.MsgChannelCloseConfirm:
+		// case channel.MsgPacket:
+		// case channel.MsgAcknowledgement:
+		// case channel.MsgTimeout:
+		// case tclient.MsgCreateClient:
+		// case tclient.MsgUpdateClient:
+		// case tclient.MsgSubmitClientMisbehaviour:
 		default:
 			panic(fmt.Sprintf("Message %s does not support", msg.Type()))
 		}

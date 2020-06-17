@@ -279,7 +279,7 @@ func TestEditOracleScriptSuccess(t *testing.T) {
 	expectEvents := sdk.Events{
 		sdk.NewEvent(types.EventTypeEditOracleScript, sdk.NewAttribute(types.AttributeKeyID, "1")),
 	}
-	require.Equal(t, expectEvents, res.GetEvents())
+	require.Equal(t, expectEvents, res.Events)
 
 	oracleScript, err := keeper.GetOracleScript(ctx, 1)
 	require.NoError(t, err)
@@ -357,7 +357,7 @@ func TestEditGzippedOracleScriptSuccess(t *testing.T) {
 	expectEvents := sdk.Events{
 		sdk.NewEvent(types.EventTypeEditOracleScript, sdk.NewAttribute(types.AttributeKeyID, "1")),
 	}
-	require.Equal(t, expectEvents, res.GetEvents())
+	require.Equal(t, expectEvents, res.Events)
 	filename = keeper.MustGetOracleScript(ctx, 1).Filename
 	defer deleteFile(filepath.Join(dir, filename))
 
@@ -466,7 +466,7 @@ func TestRequestDataSuccess(t *testing.T) {
 		),
 	}
 
-	require.Equal(t, expectEvents, result.GetEvents())
+	require.Equal(t, expectEvents, result.Events)
 }
 
 func TestRequestDataFail(t *testing.T) {
@@ -480,7 +480,7 @@ func TestRequestDataFail(t *testing.T) {
 	msg := types.NewMsgRequestData(types.OracleScriptID(wrongOracleScript), calldata, 1, 1, "alice", Alice.Address)
 
 	result, err := oracle.NewHandler(k)(ctx, msg)
-	require.EqualError(t, err, `id: 1: oracle script not found`)
+	require.EqualError(t, err, `oracle script not found: id: 1`)
 	require.Nil(t, result)
 
 	// Add Oracle Script
@@ -491,7 +491,7 @@ func TestRequestDataFail(t *testing.T) {
 	msg = types.NewMsgRequestData(types.OracleScriptID(oracleScriptID), calldata, 1, 1, "alice", Alice.Address)
 
 	result, err = oracle.NewHandler(k)(ctx, msg)
-	require.EqualError(t, err, `id: 1: data source not found`)
+	require.EqualError(t, err, `data source not found: id: 1`)
 	require.Nil(t, result)
 }
 
@@ -580,7 +580,7 @@ func TestAddReporterSuccess(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, result)
 
-	events := result.GetEvents()
+	events := result.Events
 
 	expectedEvent := sdk.Events{
 		sdk.NewEvent(
@@ -602,7 +602,7 @@ func TestAddReporterFail(t *testing.T) {
 
 	// Should fail, validator is always a reporter of himself so we can't add Alice reporter to Alice validator
 	result, err := oracle.NewHandler(k)(ctx, msg)
-	require.EqualError(t, err, fmt.Sprintf("val: %s, addr: %s: reporter already exists", validatorAddress.String(), reporterAddress.String()))
+	require.EqualError(t, err, fmt.Sprintf("reporter already exists: val: %s, addr: %s", validatorAddress.String(), reporterAddress.String()))
 	require.Nil(t, result)
 }
 
@@ -620,7 +620,7 @@ func TestRemoveReporterSuccess(t *testing.T) {
 	result, err := oracle.NewHandler(k)(ctx, msg)
 	require.NoError(t, err)
 
-	events := result.GetEvents()
+	events := result.Events
 
 	expectedEvent := sdk.Events{
 		sdk.NewEvent(
@@ -642,6 +642,6 @@ func TestRemoveReporterFail(t *testing.T) {
 	// Should fail, Bob isn't Alice validator's reporter
 	msg := types.NewMsgRemoveReporter(validatorAddress, reporterAddress)
 	result, err := oracle.NewHandler(k)(ctx, msg)
-	require.EqualError(t, err, fmt.Sprintf("val: %s, addr: %s: reporter not found", validatorAddress.String(), reporterAddress.String()))
+	require.EqualError(t, err, fmt.Sprintf("reporter not found: val: %s, addr: %s", validatorAddress.String(), reporterAddress.String()))
 	require.Nil(t, result)
 }

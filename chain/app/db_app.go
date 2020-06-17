@@ -7,7 +7,6 @@ import (
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -38,7 +37,7 @@ func NewDBBandApp(
 	dbBand.DistrKeeper = app.DistrKeeper
 	dbBand.StakingKeeper = app.StakingKeeper
 	dbBand.OracleKeeper = app.OracleKeeper
-	dbBand.IBCKeeper = app.IBCKeeper
+	// dbBand.IBCKeeper = app.IBCKeeper
 	return &dbBandApp{BandApp: app, dbBand: dbBand}
 }
 
@@ -57,11 +56,13 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
 
 	// Bank balance genesis
-	var bankState bank.GenesisState
-	app.cdc.MustUnmarshalJSON(genesisState[bank.ModuleName], &bankState)
-
-	for _, account := range bankState.Balances {
-		err := app.dbBand.SetAccountBalance(account.Address, account.Coins, 0)
+	// var bankState bank.GenesisState
+	// app.cdc.MustUnmarshalJSON(genesisState[bank.ModuleName], &bankState)
+	// Genaccount genesis		// Bank balance genesis
+	var genaccountsState auth.GenesisState
+	auth.ModuleCdc.MustUnmarshalJSON(genesisState[auth.ModuleName], &genaccountsState)
+	for _, account := range genaccountsState.Accounts {
+		err := app.dbBand.SetAccountBalance(account.GetAddress(), account.GetCoins(), 0)
 		if err != nil {
 			panic(err)
 		}
@@ -198,7 +199,7 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 				updatedAccounts[account.String()] = true
 				err := app.dbBand.SetAccountBalance(
 					account,
-					app.BankKeeper.GetAllBalances(app.DeliverContext, account),
+					app.BankKeeper.GetCoins(app.DeliverContext, account),
 					app.DeliverContext.BlockHeight(),
 				)
 				if err != nil {
@@ -267,7 +268,7 @@ func (app *dbBandApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBl
 		panic(err)
 	}
 
-	totalSupply := app.BandApp.BankKeeper.GetSupply(app.DeliverContext).GetTotal()
+	totalSupply := app.BandApp.SupplyKeeper.GetSupply(app.DeliverContext).GetTotal()
 	err = app.dbBand.SetTotalSupply(totalSupply)
 	if err != nil {
 		panic(err)
