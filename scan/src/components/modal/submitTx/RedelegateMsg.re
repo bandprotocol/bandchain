@@ -185,7 +185,7 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
          code=true
          autoFocus=true
        />;
-     | _ => <EnhanceTxInput.Loading msg="Undelegate Amount (BAND)" width=300 />
+     | _ => <EnhanceTxInput.Loading msg="Amount (BAND)" width=300 />
      }}
     <VSpacing size=Spacing.lg />
   </>;
