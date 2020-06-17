@@ -87,7 +87,7 @@ module SubmitTxStep = {
   let make = (~account: AccountContext.t, ~setRawTx, ~isActive, ~msg) => {
     let (msgsOpt, setMsgsOpt) = React.useState(_ => None);
 
-    let gas = 250000;
+    let gas = 500000;
     let fee = 5000.;
     let (memo, setMemo) = React.useState(_ => EnhanceTxInput.{text: "", value: Some("")});
 

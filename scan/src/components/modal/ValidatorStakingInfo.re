@@ -202,7 +202,7 @@ module StakingInfo = {
           <button
             className={Styles.button(100)}
             onClick={_ => {redelegate()}}
-            disabled={balanceAtStakeAmount.amount == 0. || isReachUnbondingLimit}>
+            disabled={balanceAtStakeAmount.amount == 0.}>
             <Text value="Redelegate" />
           </button>
           <HSpacing size=Spacing.md />

@@ -8,10 +8,12 @@ module Styles = {
 
   let warning =
     style([
+      display(`flex),
+      flexDirection(`column),
       padding(`px(10)),
-      color(Colors.blue5),
-      backgroundColor(Colors.blue1),
-      border(`px(1), `solid, Colors.blue6),
+      color(Colors.yellow6),
+      backgroundColor(Colors.yellow1),
+      border(`px(1), `solid, Colors.yellow6),
       borderRadius(`px(4)),
     ]);
 
@@ -48,6 +50,7 @@ module DstValidatorSelection = {
       filteredValidators->Belt_Array.map(({operatorAddress, moniker}) =>
         ReactSelect.{value: operatorAddress |> Address.toBech32, label: moniker}
       );
+    // TODO: Hack styles for react-select
     <ReactSelect
       options=validatorList
       onChange={newOption => {
@@ -110,6 +113,14 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
     (dstValidatorOpt, amount),
   );
   <>
+    <VSpacing size=Spacing.sm />
+    <div className=Styles.warning>
+      <Text value="Please read before proceeding:" />
+      <VSpacing size=Spacing.xs />
+      <Text
+        value="You can only redelegate a maximum of 7 times to/from the same validator pairs during any 21 day period."
+      />
+    </div>
     <VSpacing size=Spacing.lg />
     <div className=Styles.info>
       <Text value="Current Stake" size=Text.Lg spacing={Text.Em(0.03)} nowrap=true block=true />
@@ -168,7 +179,7 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
          setInputData=setAmount
          parse={Parse.getBandAmount(maxValInUband)}
          maxValue={maxValInUband /. 1e6 |> Js.Float.toString}
-         msg="Undelegate Amount (BAND)"
+         msg="Amount (BAND)"
          placeholder="Insert unbonding amount"
          inputType="number"
          code=true
