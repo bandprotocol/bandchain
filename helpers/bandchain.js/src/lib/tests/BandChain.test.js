@@ -1,5 +1,4 @@
-import BandChain from './../Bandchain'
-import { JestEnvironment } from '@jest/environment'
+const BandChain = require('../Bandchain')
 
 jest.setTimeout(30000)
 
@@ -37,7 +36,7 @@ it('Test BandChain getOracleScript success', async () => {
 })
 
 it('Test BandChain getOracleScript error', () => {
-  let oracleScriptID = 30
+  let oracleScriptID = 300000
   let bandchain = new BandChain(chainID, endpoint)
   expect(bandchain.getOracleScript(oracleScriptID)).rejects.toThrow(
     'No oracle script found with the given ID',
