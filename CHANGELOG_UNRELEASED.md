@@ -22,6 +22,7 @@
 
 ### Scan
 
+- (chore) [\#1987](https://github.com/bandprotocol/bandchain/pull/1987) Remove `request_tab_t` in `Route.re`
 - (impv) [\#1958](https://github.com/bandprotocol/bandchain/pull/1958) Add human-readable error when broadcast tx, fix withdraw reward msg on guanyu
 - (feat) [\#1938](https://github.com/bandprotocol/bandchain/pull/1938) Add validator's image from identity
 - (impv) [\#1928](https://github.com/bandprotocol/bandchain/pull/1928) Add chainID for guanyu-devnet
