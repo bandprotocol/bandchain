@@ -17,6 +17,5 @@ pub enum Error {
   NoMemoryWasmError = 13,
   MinimumMemoryExceedError = 14,
   SetMaximumMemoryError = 15,
-  StackHeightInstrumentation = 16,
   UnknownError = 255,
 }
