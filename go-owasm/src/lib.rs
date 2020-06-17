@@ -75,6 +75,7 @@ fn inject_gas_to_wasm(module: Module) -> Result<Module, Error> {
     let gas_rules = rules::Set::new(1, Default::default()).with_grow_cost(1);
     pwasm_utils::inject_gas_counter(module, &gas_rules).map_err(|_| Error::GasCounterInjectionError)
 }
+
 fn compile(code: &[u8]) -> Result<Vec<u8>, Error> {
     // Check that the given Wasm code is indeed a valid Wasm.
     wasmparser::validate(code, None).map_err(|_| Error::ValidateError)?;
@@ -170,27 +171,26 @@ mod test {
     use assert_matches::assert_matches;
     use wabt::wat2wasm;
 
+    fn get_module_from_wasm(code: &[u8]) -> Module {
+        match elements::deserialize_buffer(code) {
+            Ok(deserialized) => deserialized,
+            Err(_) => panic!("Cannot deserialized"),
+        }
+    }
+
     #[test]
     fn test_check_wasm_memories_ok() {
         let wasm = wat2wasm(r#"(module (memory 1))"#).unwrap();
-        let r = compile(&wasm);
-        let expected_wat = r#"
-        (module
-            (type (;0;) (func (param i32)))
-            (import "env" "gas" (func (;0;) (type 0)))
-            (memory (;0;) 1))"#;
+        let module = get_module_from_wasm(&wasm);
 
-        let code = match wat2wasm(expected_wat) {
-            Ok(x) => x,
-            Err(_) => panic!("Got unexpected error"),
-        };
-        assert_eq!(r, Ok(code));
+        assert_matches!(check_wasm_memories(&module), Ok(_));
     }
     #[test]
     fn test_check_wasm_memories_no_memory() {
         let wasm = wat2wasm("(module)").unwrap();
-        let r = compile(&wasm);
-        assert_eq!(r, Err(Error::NoMemoryWasmError));
+        let module = get_module_from_wasm(&wasm);
+
+        assert_eq!(check_wasm_memories(&module), Err(Error::NoMemoryWasmError));
     }
     #[test]
     fn test_check_wasm_memories_two_memories() {
@@ -213,18 +213,25 @@ mod test {
     #[test]
     fn test_check_wasm_memories_initial_size() {
         let wasm_ok = wat2wasm("(module (memory 512))").unwrap();
-        let r = compile(&wasm_ok);
-        assert_matches!(r, Ok(_));
+        let module = get_module_from_wasm(&wasm_ok);
+        assert_matches!(check_wasm_memories(&module), Ok(_));
 
         let wasm_too_big = wat2wasm("(module (memory 513))").unwrap();
-        let r = compile(&wasm_too_big);
-        assert_eq!(r, Err(Error::MinimumMemoryExceedError));
+        let module = get_module_from_wasm(&wasm_too_big);
+        assert_eq!(
+            check_wasm_memories(&module),
+            Err(Error::MinimumMemoryExceedError)
+        );
     }
 
     #[test]
     fn test_check_wasm_memories_maximum_size() {
         let wasm = wat2wasm("(module (memory 1 5))").unwrap();
-        let r = compile(&wasm);
-        assert_eq!(r, Err(Error::SetMaximumMemoryError));
+        let module = get_module_from_wasm(&wasm);
+
+        assert_eq!(
+            check_wasm_memories(&module),
+            Err(Error::SetMaximumMemoryError)
+        );
     }
 }
