@@ -69,7 +69,7 @@ typedef struct env_t {
 } env_t;
 
 typedef struct EnvDispatcher {
-  Span (*get_calldata)(env_t*);
+  GoResult (*get_calldata)(env_t*, Span *calldata);
   GoResult (*set_return_data)(env_t*, Span data);
   int64_t (*get_ask_count)(env_t*);
   int64_t (*get_min_count)(env_t*);

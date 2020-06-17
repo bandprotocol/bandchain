@@ -176,17 +176,28 @@ fn run(code: &[u8], gas_limit: u32, is_prepare: bool, env: Env) -> Result<(), Er
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
                 vm.consume_gas(gas)
             }),
-            "get_calldata_size" => func!(|ctx: &mut Ctx| {
+            "get_calldata_size" => func!(|ctx: &mut Ctx| -> Result<i64, Error> {
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
-                vm.get_calldata().len as i64
+                let span_size = vm.get_span_size() as usize;
+                let mut mem: Vec<u8> = Vec::with_capacity(span_size);
+                let mut calldata = Span::create_writable(mem.as_mut_ptr(), span_size);
+                vm.get_calldata(&mut calldata)?;
+                Ok(calldata.len as i64)
             }),
-            "read_calldata" => func!(|ctx: &mut Ctx, ptr: i64, len: i64| {
+            "read_calldata" => func!(|ctx: &mut Ctx, ptr: i64, len: i64| -> Result<(), Error>{
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
-                let calldata = vm.get_calldata();
+                let span_size = vm.get_span_size() as usize;
+                let mut mem: Vec<u8> = Vec::with_capacity(span_size);
+                let mut calldata = Span::create_writable(mem.as_mut_ptr(), span_size);
+                vm.get_calldata(&mut calldata)?;
                 for (byte, cell) in calldata.read().iter().zip(ctx.memory(0).view()[ptr as usize..(ptr + len) as usize].iter()) { cell.set(*byte); }
+                Ok(())
             }),
             "set_return_data" => func!(|ctx: &mut Ctx, ptr: i64, len: i64| {
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
+                if len as usize > vm.get_span_size() {
+                    return Err(Error::SpanExceededCapacityError);
+                }
                 let data: Vec<u8> = ctx.memory(0).view()[ptr as usize..(ptr + len) as usize].iter().map(|cell| cell.get()).collect();
                 vm.set_return_data(&data)
             }),
@@ -204,6 +215,9 @@ fn run(code: &[u8], gas_limit: u32, is_prepare: bool, env: Env) -> Result<(), Er
             }),
             "ask_external_data" => func!(|ctx: &mut Ctx, eid: i64, did: i64, ptr: i64, len: i64| {
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
+                if len as usize > vm.get_span_size() {
+                    return Err(Error::SpanExceededCapacityError);
+                }
                 let data: Vec<u8> = ctx.memory(0).view()[ptr as usize..(ptr + len) as usize].iter().map(|cell| cell.get()).collect();
                 vm.ask_external_data(eid, did, &data)
             }),
@@ -211,19 +225,19 @@ fn run(code: &[u8], gas_limit: u32, is_prepare: bool, env: Env) -> Result<(), Er
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
                 vm.get_external_data_status(eid, vid)
             }),
-            "get_external_data_size" => func!(|ctx: &mut Ctx, eid: i64, vid: i64| -> Result<i64,Error>{
+            "get_external_data_size" => func!(|ctx: &mut Ctx, eid: i64, vid: i64| -> Result<i64, Error>{
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
-                // TODO: Remove hard code span size
-                let mut data: Vec<u8> = Vec::with_capacity(10000);
-                let mut data = Span::create_writable(data.as_mut_ptr(), 10000);
+                let span_size = vm.get_span_size() as usize;
+                let mut mem: Vec<u8> = Vec::with_capacity(span_size);
+                let mut data = Span::create_writable(mem.as_mut_ptr(), span_size);
                 vm.get_external_data(eid, vid, &mut data)?;
                 Ok(data.len as i64)
             }),
             "read_external_data" => func!(|ctx: &mut Ctx, eid: i64, vid: i64, ptr: i64, len: i64| -> Result<(),Error> {
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
-                // TODO: Remove hard code span size
-                let mut data: Vec<u8> = Vec::with_capacity(10000);
-                let mut data = Span::create_writable(data.as_mut_ptr(), 10000);
+                let span_size = vm.get_span_size() as usize;
+                let mut mem: Vec<u8> = Vec::with_capacity(span_size);
+                let mut data = Span::create_writable(mem.as_mut_ptr(), span_size);
                 vm.get_external_data(eid, vid, &mut data)?;
                 for (byte, cell) in data.read().iter().zip(ctx.memory(0).view()[ptr as usize..(ptr + len) as usize].iter()) { cell.set(*byte); }
                 Ok(())
