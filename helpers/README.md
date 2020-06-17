@@ -4,7 +4,7 @@ A collection of tools that simplify interactions with BandChain. Note that this 
 
 ## Available Tools
 
-| Language                          | Status         |
+| Tool                              | Status         |
 | --------------------------------- | -------------- |
 | [`bandchain.js 🌎`](bandchain.js) | ✅ Completed   |
 | [`cron-requester ⏰`](#)          | ⚙️ In Progress |
