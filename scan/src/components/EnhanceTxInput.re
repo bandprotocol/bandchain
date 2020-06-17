@@ -78,6 +78,7 @@ let make =
       ~code=false,
       ~placeholder="",
       ~inputType="text",
+      ~autoFocus=false,
     ) => {
   let (status, setStatus) = React.useState(_ => Untouched);
 
@@ -99,6 +100,7 @@ let make =
         placeholder
         type_=inputType
         spellCheck=false
+        autoFocus
         onChange={event => {
           let newText = ReactEvent.Form.target(event)##value;
           onNewText(newText);
