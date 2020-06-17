@@ -14,6 +14,7 @@ use wasmer_runtime::{instantiate, Ctx};
 use wasmer_runtime_core::error::RuntimeError;
 use wasmer_runtime_core::{func, imports, wasmparser, Func};
 
+// inspired by https://github.com/CosmWasm/cosmwasm/issues/81
 static MEMORY_LIMIT: u32 = 512; // in pages
 
 #[no_mangle]
