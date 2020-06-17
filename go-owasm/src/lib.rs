@@ -6,7 +6,7 @@ mod vm;
 use env::Env;
 use error::Error;
 use parity_wasm::builder;
-use parity_wasm::elements::{self, MemorySection, MemoryType, Module};
+use parity_wasm::elements::{self, MemoryType, Module};
 
 use pwasm_utils::{self, rules};
 use span::Span;
@@ -19,6 +19,7 @@ use wasmer_runtime_core::{func, imports, wasmparser, Func};
 // inspired by https://github.com/CosmWasm/cosmwasm/issues/81
 // 512 pages = 32mb
 static MEMORY_LIMIT: u32 = 512; // in pages
+static MAX_STACK_HEIGHT: u32 = 16 * 1024; // 16Kib of stack.
 
 #[no_mangle]
 pub extern "C" fn do_compile(input: Span, output: &mut Span) -> Error {
@@ -84,6 +85,11 @@ fn inject_memory(module: Module) -> Result<Module, Error> {
     Ok(builder::from_module(m).build())
 }
 
+fn inject_stack_height(module: Module) -> Result<Module, Error> {
+    pwasm_utils::stack_height::inject_limiter(module, MAX_STACK_HEIGHT)
+        .map_err(|_| Error::StackHeightInstrumentation)
+}
+
 fn inject_gas(module: Module) -> Result<Module, Error> {
     // Simple gas rule. Every opcode and memory growth costs 1 gas.
     let gas_rules = rules::Set::new(1, Default::default()).with_grow_cost(1);
@@ -96,6 +102,7 @@ fn compile(code: &[u8]) -> Result<Vec<u8>, Error> {
     // Start the compiling chains. TODO: Add more safeguards.
     let module = elements::deserialize_buffer(code).map_err(|_| Error::DeserializationError)?;
     let module = inject_memory(module)?;
+    let module = inject_stack_height(module)?;
     let module = inject_gas(module)?;
     // Serialize the final Wasm code back to bytes.
     elements::serialize(module).map_err(|_| Error::SerializationError)
@@ -183,6 +190,7 @@ fn run(code: &[u8], gas_limit: u32, is_prepare: bool, env: Env) -> Result<(), Er
 mod test {
     use super::*;
     use assert_matches::assert_matches;
+    use parity_wasm::elements;
     use wabt::wat2wasm;
 
     fn get_module_from_wasm(code: &[u8]) -> Module {
@@ -241,5 +249,79 @@ mod test {
         let module = get_module_from_wasm(&wasm);
 
         assert_eq!(inject_memory(module), Err(Error::SetMaximumMemoryError));
+    }
+
+    #[test]
+    fn test_inject_stack_height() {
+        let wasm = wat2wasm(
+            r#"(module
+            (func
+              (local $idx i32)
+              (set_local $idx (i32.const 0))
+              (block
+                  (loop
+                    (set_local $idx (get_local $idx) (i32.const 1) (i32.add) )
+                    (br_if 0 (i32.lt_u (get_local $idx) (i32.const 1000000000)))
+                  )
+                )
+            )
+            (func (;"execute": Resolves with result "beeb";)
+            )
+            (memory 17)
+            (data (i32.const 1048576) "beeb") (;str = "beeb";)
+            (export "prepare" (func 0))
+            (export "execute" (func 1)))
+          "#,
+        )
+        .unwrap();
+
+        let module = inject_stack_height(get_module_from_wasm(&wasm)).unwrap();
+        let wasm = elements::serialize(module).unwrap();
+
+        let expected = wat2wasm(
+            r#"(module
+                (type (;0;) (func))
+                (func (;0;) (type 0)
+                  (local i32)
+                  i32.const 0
+                  local.set 0
+                  block  ;; label = @1
+                    loop  ;; label = @2
+                      local.get 0
+                      i32.const 1
+                      i32.add
+                      local.set 0
+                      local.get 0
+                      i32.const 1000000000
+                      i32.lt_u
+                      br_if 0 (;@2;)
+                    end
+                  end)
+                (func (;1;) (type 0))
+                (func (;2;) (type 0)
+                  global.get 0
+                  i32.const 3
+                  i32.add
+                  global.set 0
+                  global.get 0
+                  i32.const 16384
+                  i32.gt_u
+                  if  ;; label = @1
+                    unreachable
+                  end
+                  call 0
+                  global.get 0
+                  i32.const 3
+                  i32.sub
+                  global.set 0)
+                (memory (;0;) 17)
+                (global (;0;) (mut i32) (i32.const 0))
+                (export "prepare" (func 2))
+                (export "execute" (func 1))
+                (data (;0;) (i32.const 1048576) "beeb"))
+          "#,
+        )
+        .unwrap();
+        assert_eq!(wasm, expected);
     }
 }
