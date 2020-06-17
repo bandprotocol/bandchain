@@ -87,7 +87,7 @@ fn inject_memory(module: Module) -> Result<Module, Error> {
 
 fn inject_stack_height(module: Module) -> Result<Module, Error> {
     pwasm_utils::stack_height::inject_limiter(module, MAX_STACK_HEIGHT)
-        .map_err(|_| Error::StackHeightInstrumentation)
+        .map_err(|_| Error::StackHeightInstrumentationError)
 }
 
 fn inject_gas(module: Module) -> Result<Module, Error> {
