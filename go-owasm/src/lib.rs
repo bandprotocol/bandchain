@@ -6,7 +6,7 @@ mod vm;
 use env::Env;
 use error::Error;
 use parity_wasm::builder;
-use parity_wasm::elements::{self, MemoryType, Module};
+use parity_wasm::elements::{self, External, ImportEntry, MemoryType, Module};
 
 use pwasm_utils::{self, rules};
 use span::Span;
@@ -20,6 +20,20 @@ use wasmer_runtime_core::{func, imports, wasmparser, Func};
 // 512 pages = 32mb
 static MEMORY_LIMIT: u32 = 512; // in pages
 static MAX_STACK_HEIGHT: u32 = 16 * 1024; // 16Kib of stack.
+
+static REQUIRED_EXPORTS: &[&str] = &["prepare", "execute"];
+static SUPPORTED_IMPORTS: &[&str] = &[
+    "env.get_calldata_size",
+    "env.read_calldata",
+    "env.set_return_data",
+    "env.get_ask_count",
+    "env.get_min_count",
+    "env.get_ans_count",
+    "env.ask_external_data",
+    "env.get_external_data_status",
+    "env.get_external_data_size",
+    "env.read_external_data",
+];
 
 #[no_mangle]
 pub extern "C" fn do_compile(input: Span, output: &mut Span) -> Error {
@@ -96,11 +110,50 @@ fn inject_gas(module: Module) -> Result<Module, Error> {
     pwasm_utils::inject_gas_counter(module, &gas_rules).map_err(|_| Error::GasCounterInjectionError)
 }
 
+fn check_wasm_exports(module: &Module) -> Result<(), Error> {
+    let available_exports: Vec<String> = module.export_section().map_or(vec![], |export_section| {
+        export_section
+            .entries()
+            .iter()
+            .map(|entry| entry.field().to_string())
+            .collect()
+    });
+
+    for required_export in REQUIRED_EXPORTS {
+        if !available_exports.iter().any(|x| x == required_export) {
+            return Err(Error::CheckWasmExportsError);
+        }
+    }
+
+    Ok(())
+}
+
+fn check_wasm_imports(module: &Module) -> Result<(), Error> {
+    let required_imports: Vec<ImportEntry> = module
+        .import_section()
+        .map_or(vec![], |import_section| import_section.entries().to_vec());
+
+    for required_import in required_imports {
+        let full_name = format!("{}.{}", required_import.module(), required_import.field());
+        if !SUPPORTED_IMPORTS.contains(&full_name.as_str()) {
+            return Err(Error::CheckWasmImportsError);
+        }
+
+        match required_import.external() {
+            External::Function(_) => {} // ok
+            _ => return Err(Error::CheckWasmImportsError),
+        };
+    }
+    Ok(())
+}
+
 fn compile(code: &[u8]) -> Result<Vec<u8>, Error> {
     // Check that the given Wasm code is indeed a valid Wasm.
     wasmparser::validate(code, None).map_err(|_| Error::ValidateError)?;
     // Start the compiling chains. TODO: Add more safeguards.
     let module = elements::deserialize_buffer(code).map_err(|_| Error::DeserializationError)?;
+    check_wasm_exports(&module)?;
+    check_wasm_imports(&module)?;
     let module = inject_memory(module)?;
     let module = inject_gas(module)?;
     let module = inject_stack_height(module)?;
@@ -171,10 +224,7 @@ fn run(code: &[u8], gas_limit: u32, is_prepare: bool, env: Env) -> Result<(), Er
     };
     let instance = instantiate(code, &import_object).map_err(|_| Error::CompliationError)?;
     let entry = if is_prepare { "prepare" } else { "execute" };
-    let function: Func<(), ()> = instance
-        .exports
-        .get(entry)
-        .map_err(|_| Error::FunctionNotFoundError)?;
+    let function: Func<(), ()> = instance.exports.get(entry).unwrap();
     function.call().map_err(|err| match err {
         RuntimeError::User(uerr) => {
             if let Some(err) = uerr.downcast_ref::<Error>() {
@@ -207,6 +257,89 @@ mod test {
 
         assert_matches!(inject_memory(module), Ok(_));
     }
+
+    #[test]
+    fn test_compile() {
+        let wasm = wat2wasm(
+            r#"(module
+            (type (func (param i64 i64 i32 i64) (result i64)))
+            (import "env" "ask_external_data" (func (type 0)))
+            (func
+              (local $idx i32)
+              (set_local $idx (i32.const 0))
+              (block
+                  (loop
+                    (set_local $idx (get_local $idx) (i32.const 1) (i32.add) )
+                    (br_if 0 (i32.lt_u (get_local $idx) (i32.const 1000000000)))
+                  )
+                )
+            )
+            (func (;"execute": Resolves with result "beeb";)
+            )
+            (memory 17)
+            (data (i32.const 1048576) "beeb") (;str = "beeb";)
+            (export "prepare" (func 0))
+            (export "execute" (func 1)))
+          "#,
+        )
+        .unwrap();
+        let code = compile(&wasm).unwrap();
+
+        let expected = wat2wasm(
+            r#"(module
+                (type (;0;) (func (param i64 i64 i32 i64) (result i64)))
+                (type (;1;) (func))
+                (type (;2;) (func (param i32)))
+                (import "env" "ask_external_data" (func (;0;) (type 0)))
+                (import "env" "gas" (func (;1;) (type 2)))
+                (func (;2;) (type 1)
+                  (local i32)
+                  i32.const 4
+                  call 1
+                  i32.const 0
+                  local.set 0
+                  block  ;; label = @1
+                    loop  ;; label = @2
+                      i32.const 8
+                      call 1
+                      local.get 0
+                      i32.const 1
+                      i32.add
+                      local.set 0
+                      local.get 0
+                      i32.const 1000000000
+                      i32.lt_u
+                      br_if 0 (;@2;)
+                    end
+                  end)
+                (func (;3;) (type 1))
+                (func (;4;) (type 1)
+                  global.get 0
+                  i32.const 3
+                  i32.add
+                  global.set 0
+                  global.get 0
+                  i32.const 16384
+                  i32.gt_u
+                  if  ;; label = @1
+                    unreachable
+                  end
+                  call 2
+                  global.get 0
+                  i32.const 3
+                  i32.sub
+                  global.set 0)
+                (memory (;0;) 17 512)
+                (global (;0;) (mut i32) (i32.const 0))
+                (export "prepare" (func 0))
+                (export "execute" (func 4))
+                (data (;0;) (i32.const 1048576) "beeb"))
+          "#,
+        )
+        .unwrap();
+        assert_eq!(code, expected);
+    }
+
     #[test]
     fn test_inject_memory_no_memory() {
         let wasm = wat2wasm("(module)").unwrap();
@@ -323,5 +456,57 @@ mod test {
         )
         .unwrap();
         assert_eq!(wasm, expected);
+    }
+
+    #[test]
+    fn test_check_wasm_imports() {
+        let wasm = wat2wasm(
+            r#"(module
+                (type (func (param i64 i64 i32 i64) (result i64)))
+                (import "env" "beeb" (func (type 0))))"#,
+        )
+        .unwrap();
+        let module = get_module_from_wasm(&wasm);
+
+        assert_eq!(
+            check_wasm_imports(&module),
+            Err(Error::CheckWasmImportsError)
+        );
+
+        let wasm = wat2wasm(
+            r#"(module
+                (type (func (param i64 i64 i32 i64) (result i64)))
+                (import "env" "ask_external_data" (func  (type 0))))"#,
+        )
+        .unwrap();
+        let module = get_module_from_wasm(&wasm);
+
+        assert_eq!(check_wasm_imports(&module), Ok(()));
+    }
+
+    #[test]
+    fn test_check_wasm_exports() {
+        let wasm = wat2wasm(
+            r#"(module
+            (func $execute (export "execute")))"#,
+        )
+        .unwrap();
+        let module = get_module_from_wasm(&wasm);
+
+        assert_eq!(
+            check_wasm_exports(&module),
+            Err(Error::CheckWasmExportsError)
+        );
+
+        let wasm = wat2wasm(
+            r#"(module
+                (func $execute (export "execute"))
+                (func $prepare (export "prepare"))
+              )"#,
+        )
+        .unwrap();
+        let module = get_module_from_wasm(&wasm);
+
+        assert_eq!(check_wasm_exports(&module), Ok(()));
     }
 }

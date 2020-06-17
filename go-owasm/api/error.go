@@ -21,12 +21,13 @@ var (
 	ErrParseError                 = errors.New("parse fail")
 	ErrWriteBinaryError           = errors.New("write binary fail")
 	ErrValidateError              = errors.New("validate fail")
-	ErrFunctionNotFound           = errors.New("can't find prepare or execute funtion")
 	ErrGasLimitExceeded           = errors.New("gas limit exceeded")
 	ErrNoMemoryWasm               = errors.New("no memory wasm")
 	ErrMinimumMemoryExceed        = errors.New("minimum memory exceed")
 	ErrSetMaximumMemory           = errors.New("maximum must be unset")
 	ErrStackHeightInstrumentation = errors.New("stack height instrumention fail")
+	ErrCheckWasmImports           = errors.New("check wasm imports fail")
+	ErrCheckWasmExports           = errors.New("check wasm exports fail")
 )
 
 // parseError - returns parsed error from errors code on bindings.h
@@ -55,17 +56,19 @@ func parseError(code int32) error {
 	case 10:
 		return ErrSerializetFail
 	case 11:
-		return ErrFunctionNotFound
-	case 12:
 		return ErrGasLimitExceeded
-	case 13:
+	case 12:
 		return ErrNoMemoryWasm
-	case 14:
+	case 13:
 		return ErrMinimumMemoryExceed
-	case 15:
+	case 14:
 		return ErrSetMaximumMemory
-	case 16:
+	case 15:
 		return ErrStackHeightInstrumentation
+	case 16:
+		return ErrCheckWasmImports
+	case 17:
+		return ErrCheckWasmExports
 	default:
 		return ErrUnknownError
 	}
