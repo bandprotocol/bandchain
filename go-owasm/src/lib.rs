@@ -5,7 +5,9 @@ mod vm;
 
 use env::Env;
 use error::Error;
-use parity_wasm::elements::{self};
+use parity_wasm::builder;
+use parity_wasm::elements::{self, MemorySection, MemoryType, Module};
+
 use pwasm_utils::{self, rules};
 use span::Span;
 use std::ffi::c_void;
@@ -14,6 +16,9 @@ use wasmer_runtime::{instantiate, Ctx};
 use wasmer_runtime_core::error::RuntimeError;
 use wasmer_runtime_core::{func, imports, wasmparser, Func};
 
+// inspired by https://github.com/CosmWasm/cosmwasm/issues/81
+// 512 pages = 32mb
+static MEMORY_LIMIT: u32 = 512; // in pages
 
 #[no_mangle]
 pub extern "C" fn do_compile(input: Span, output: &mut Span) -> Error {
@@ -21,7 +26,7 @@ pub extern "C" fn do_compile(input: Span, output: &mut Span) -> Error {
         Ok(out) => {
             output.write(&out);
             Error::NoError
-        },
+        }
         Err(e) => e,
     }
 }
@@ -48,14 +53,50 @@ pub extern "C" fn do_wat2wasm(input: Span, output: &mut Span) -> Error {
     }
 }
 
+fn inject_memory(module: Module) -> Result<Module, Error> {
+    let mut m = module;
+    let section = match m.memory_section() {
+        Some(section) => section,
+        None => return Err(Error::NoMemoryWasmError),
+    };
+
+    // The valid wasm has only the section length of memory.
+    // We check the wasm is valid in the first step of compile fn.
+    let memory = section.entries()[0];
+    let limits = memory.limits();
+
+    if limits.initial() > MEMORY_LIMIT {
+        return Err(Error::MinimumMemoryExceedError);
+    }
+
+    if limits.maximum() != None {
+        return Err(Error::SetMaximumMemoryError);
+    }
+
+    // set max memory page = MEMORY_LIMIT
+    let memory = MemoryType::new(limits.initial(), Some(MEMORY_LIMIT));
+
+    // Memory existance already checked
+    let entries = m.memory_section_mut().unwrap().entries_mut();
+    entries.pop();
+    entries.push(memory);
+
+    Ok(builder::from_module(m).build())
+}
+
+fn inject_gas(module: Module) -> Result<Module, Error> {
+    // Simple gas rule. Every opcode and memory growth costs 1 gas.
+    let gas_rules = rules::Set::new(1, Default::default()).with_grow_cost(1);
+    pwasm_utils::inject_gas_counter(module, &gas_rules).map_err(|_| Error::GasCounterInjectionError)
+}
+
 fn compile(code: &[u8]) -> Result<Vec<u8>, Error> {
     // Check that the given Wasm code is indeed a valid Wasm.
     wasmparser::validate(code, None).map_err(|_| Error::ValidateError)?;
-    // Simple gas rule. Every opcode and memory growth costs 1 gas.
-    let gas_rules = rules::Set::new(1, Default::default()).with_grow_cost(1);
     // Start the compiling chains. TODO: Add more safeguards.
     let module = elements::deserialize_buffer(code).map_err(|_| Error::DeserializationError)?;
-    let module = pwasm_utils::inject_gas_counter(module, &gas_rules).map_err(|_| Error::GasCounterInjectionError)?;
+    let module = inject_memory(module)?;
+    let module = inject_gas(module)?;
     // Serialize the final Wasm code back to bytes.
     elements::serialize(module).map_err(|_| Error::SerializationError)
 }
@@ -137,4 +178,68 @@ fn run(code: &[u8], gas_limit: u32, is_prepare: bool, env: Env) -> Result<(), Er
         }
         _ => Error::RunError,
     })
+}
+#[cfg(test)]
+mod test {
+    use super::*;
+    use assert_matches::assert_matches;
+    use wabt::wat2wasm;
+
+    fn get_module_from_wasm(code: &[u8]) -> Module {
+        match elements::deserialize_buffer(code) {
+            Ok(deserialized) => deserialized,
+            Err(_) => panic!("Cannot deserialized"),
+        }
+    }
+
+    #[test]
+    fn test_inject_memory_ok() {
+        let wasm = wat2wasm(r#"(module (memory 1))"#).unwrap();
+        let module = get_module_from_wasm(&wasm);
+
+        assert_matches!(inject_memory(module), Ok(_));
+    }
+    #[test]
+    fn test_inject_memory_no_memory() {
+        let wasm = wat2wasm("(module)").unwrap();
+        let module = get_module_from_wasm(&wasm);
+
+        assert_eq!(inject_memory(module), Err(Error::NoMemoryWasmError));
+    }
+    #[test]
+    fn test_inject_memory_two_memories() {
+        // Generated manually because wat2wasm protects us from creating such Wasm:
+        // "error: only one memory block allowed"
+        let wasm = hex::decode(concat!(
+            "0061736d", // magic bytes
+            "01000000", // binary version (uint32)
+            "05",       // section type (memory)
+            "05",       // section length
+            "02",       // number of memories
+            "0009",     // element of type "resizable_limits", min=9, max=unset
+            "0009",     // element of type "resizable_limits", min=9, max=unset
+        ))
+        .unwrap();
+        let r = compile(&wasm);
+        assert_eq!(r, Err(Error::ValidateError));
+    }
+
+    #[test]
+    fn test_inject_memory_initial_size() {
+        let wasm_ok = wat2wasm("(module (memory 512))").unwrap();
+        let module = get_module_from_wasm(&wasm_ok);
+        assert_matches!(inject_memory(module), Ok(_));
+
+        let wasm_too_big = wat2wasm("(module (memory 513))").unwrap();
+        let module = get_module_from_wasm(&wasm_too_big);
+        assert_eq!(inject_memory(module), Err(Error::MinimumMemoryExceedError));
+    }
+
+    #[test]
+    fn test_inject_memory_maximum_size() {
+        let wasm = wat2wasm("(module (memory 1 5))").unwrap();
+        let module = get_module_from_wasm(&wasm);
+
+        assert_eq!(inject_memory(module), Err(Error::SetMaximumMemoryError));
+    }
 }
