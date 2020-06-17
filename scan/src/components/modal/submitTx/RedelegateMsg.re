@@ -180,7 +180,7 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
          parse={Parse.getBandAmount(maxValInUband)}
          maxValue={maxValInUband /. 1e6 |> Js.Float.toString}
          msg="Amount (BAND)"
-         placeholder="Insert unbonding amount"
+         placeholder="Insert amount"
          inputType="number"
          code=true
          autoFocus=true
