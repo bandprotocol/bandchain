@@ -160,16 +160,14 @@ class BandChain {
 
     try {
       let res = await axios.get(requestEndpoint)
-      if (res.status == 200) {
-        if (res.data.result.result) {
-          let response = res.data.result.result.ResponsePacketData
-          response.result = obiObj.decodeOutput(
-            Buffer.from(response.result, 'base64'),
-          )
-          return response
-        } else {
-          return null
-        }
+      if (res.status == 200 && res.data.result.result) {
+        let response = res.data.result.result.ResponsePacketData
+        response.result = obiObj.decodeOutput(
+          Buffer.from(response.result, 'base64'),
+        )
+        return response
+      } else {
+        return null
       }
     } catch {
       throw new Error('Error querying the latest matching request result')
