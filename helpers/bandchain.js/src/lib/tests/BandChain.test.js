@@ -36,7 +36,7 @@ it('Test BandChain getOracleScript success', async () => {
 })
 
 it('Test BandChain getOracleScript error', () => {
-  let oracleScriptID = 300000
+  let oracleScriptID = 1e18
   let bandchain = new BandChain(chainID, endpoint)
   expect(bandchain.getOracleScript(oracleScriptID)).rejects.toThrow(
     'No oracle script found with the given ID',

@@ -109,7 +109,16 @@ class BandChain {
     return await getRequestID(broadcastResponse.txhash, this.endpoint)
   }
 
-  async getRequestProof(requestID) {
+  async getRequestProof(requestID, retryTimeout = 200) {
+    // Check if request exists
+    try {
+      const requestEndpoint = `${this.endpoint}/oracle/requests/${requestID}`
+      await axios.get(requestEndpoint)
+    } catch {
+      throw new Error('Request not found')
+    }
+
+    // Try and wait for proof
     while (true) {
       try {
         const requestEndpoint = `${this.endpoint}/bandchain/proof/${requestID}`
@@ -120,25 +129,23 @@ class BandChain {
         } else if (res.status == 200 && !res.data.result.evmProofBytes) {
           throw new Error('No proof found for the specified requestID')
         }
-      } catch {
-        await delay(100)
+      } catch (e) {
+        await delay(retryTimeout)
       }
     }
   }
 
   async getRequestResult(requestID) {
-    while (true) {
-      try {
-        const requestEndpoint = `${this.endpoint}/oracle/requests/${requestID}`
-        let res = await axios.get(requestEndpoint)
-        if (res.status == 200 && res.data.result.result) {
-          return res.data.result.result
-        } else if (res.status == 200 && !res.data.result.result) {
-          throw new Error('No result found for the specified requestID')
-        }
-      } catch {
-        await delay(100)
+    try {
+      const requestEndpoint = `${this.endpoint}/oracle/requests/${requestID}`
+      let res = await axios.get(requestEndpoint)
+      if (res.status == 200 && res.data.result.result) {
+        return res.data.result.result
+      } else if (res.status == 200 && !res.data.result.result) {
+        throw new Error('No result found for the specified requestID')
       }
+    } catch {
+      throw new Error('Error querying the request result')
     }
   }
 
@@ -150,23 +157,22 @@ class BandChain {
     const obiObj = new Obi(oracleScript.schema)
     const calldata = Buffer.from(obiObj.encodeInput(parameters)).toString('hex')
     const requestEndpoint = `${this.endpoint}/oracle/request_search?oid=${oracleScript.id}&calldata=${calldata}&min_count=${validatorCounts.minCount}&ask_count=${validatorCounts.askCount}`
-    while (true) {
-      try {
-        let res = await axios.get(requestEndpoint)
-        if (res.status == 200) {
-          if (res.data.result.result) {
-            let response = res.data.result.result.ResponsePacketData
-            response.result = obiObj.decodeOutput(
-              Buffer.from(response.result, 'base64'),
-            )
-            return response
-          } else {
-            return null
-          }
+
+    try {
+      let res = await axios.get(requestEndpoint)
+      if (res.status == 200) {
+        if (res.data.result.result) {
+          let response = res.data.result.result.ResponsePacketData
+          response.result = obiObj.decodeOutput(
+            Buffer.from(response.result, 'base64'),
+          )
+          return response
+        } else {
+          return null
         }
-      } catch {
-        await delay(100)
       }
+    } catch {
+      throw new Error('Error querying the latest matching request result')
     }
   }
 }
