@@ -6,6 +6,8 @@ module Styles = {
   let hFlex = style([display(`flex)]);
 
   let alignRight = style([display(`flex), justifyContent(`flexEnd)]);
+
+  let moniker = style([width(`px(180))]);
 };
 
 [@react.component]
@@ -27,7 +29,7 @@ let make = (~address) =>
         <HSpacing size=Spacing.lg />
         <Text value={delegations |> Belt_Array.length |> string_of_int} weight=Text.Semibold />
         <HSpacing size=Spacing.xs />
-        <Text value="Delegated Validators" />
+        <Text value="Validators Delegated" />
       </div>
       <VSpacing size=Spacing.lg />
       <>
@@ -77,7 +79,7 @@ let make = (~address) =>
                <Row>
                  <Col> <HSpacing size=Spacing.lg /> </Col>
                  <Col size=0.9>
-                   <div className=Styles.hFlex>
+                   <div className={Css.merge([Styles.hFlex, Styles.moniker])}>
                      <ValidatorMonikerLink
                        validatorAddress={delegation.validatorAddress}
                        moniker={delegation.moniker}
