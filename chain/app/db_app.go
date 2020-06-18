@@ -37,7 +37,6 @@ func NewDBBandApp(
 	dbBand.DistrKeeper = app.DistrKeeper
 	dbBand.StakingKeeper = app.StakingKeeper
 	dbBand.OracleKeeper = app.OracleKeeper
-	// dbBand.IBCKeeper = app.IBCKeeper
 	return &dbBandApp{BandApp: app, dbBand: dbBand}
 }
 
@@ -55,10 +54,6 @@ func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChai
 	var genesisState GenesisState
 	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
 
-	// Bank balance genesis
-	// var bankState bank.GenesisState
-	// app.cdc.MustUnmarshalJSON(genesisState[bank.ModuleName], &bankState)
-	// Genaccount genesis		// Bank balance genesis
 	var genaccountsState auth.GenesisState
 	auth.ModuleCdc.MustUnmarshalJSON(genesisState[auth.ModuleName], &genaccountsState)
 	for _, account := range genaccountsState.Accounts {

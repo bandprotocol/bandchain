@@ -26,8 +26,8 @@ type WrappedSupplyKeeper struct {
 
 // WrapSupplyKeeperBurnToCommunityPool creates a new instance of WrappedSupplyKeeper
 // with its distrKeeper member set to nil.
-func WrapSupplyKeeperBurnToCommunityPool(bk supply.Keeper) WrappedSupplyKeeper {
-	return WrappedSupplyKeeper{bk, nil}
+func WrapSupplyKeeperBurnToCommunityPool(sk supply.Keeper) WrappedSupplyKeeper {
+	return WrappedSupplyKeeper{sk, nil}
 }
 
 // SetDistrKeeper sets distr module keeper for this WrappedSupplyKeeper instance.
