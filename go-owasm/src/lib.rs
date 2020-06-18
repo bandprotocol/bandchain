@@ -119,8 +119,12 @@ fn check_wasm_exports(module: &Module) -> Result<(), Error> {
             .collect()
     });
 
-    for required_export in REQUIRED_EXPORTS {
-        if !available_exports.iter().any(|x| x == required_export) {
+    if available_exports.len() != REQUIRED_EXPORTS.len() {
+        return Err(Error::CheckWasmExportsError);
+    }
+
+    for available_export in available_exports {
+        if !REQUIRED_EXPORTS.contains(&available_export.as_str()) {
             return Err(Error::CheckWasmExportsError);
         }
     }
