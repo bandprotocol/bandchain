@@ -5,7 +5,9 @@ mod vm;
 
 use env::Env;
 use error::Error;
-use parity_wasm::elements::{self};
+use parity_wasm::builder;
+use parity_wasm::elements::{self, MemoryType, Module};
+
 use pwasm_utils::{self, rules};
 use span::Span;
 use std::ffi::c_void;
@@ -14,6 +16,10 @@ use wasmer_runtime::{instantiate, Ctx};
 use wasmer_runtime_core::error::RuntimeError;
 use wasmer_runtime_core::{func, imports, wasmparser, Func};
 
+// inspired by https://github.com/CosmWasm/cosmwasm/issues/81
+// 512 pages = 32mb
+static MEMORY_LIMIT: u32 = 512; // in pages
+static MAX_STACK_HEIGHT: u32 = 16 * 1024; // 16Kib of stack.
 
 #[no_mangle]
 pub extern "C" fn do_compile(input: Span, output: &mut Span) -> Error {
@@ -21,7 +27,7 @@ pub extern "C" fn do_compile(input: Span, output: &mut Span) -> Error {
         Ok(out) => {
             output.write(&out);
             Error::NoError
-        },
+        }
         Err(e) => e,
     }
 }
@@ -48,14 +54,56 @@ pub extern "C" fn do_wat2wasm(input: Span, output: &mut Span) -> Error {
     }
 }
 
+fn inject_memory(module: Module) -> Result<Module, Error> {
+    let mut m = module;
+    let section = match m.memory_section() {
+        Some(section) => section,
+        None => return Err(Error::NoMemoryWasmError),
+    };
+
+    // The valid wasm has only the section length of memory.
+    // We check the wasm is valid in the first step of compile fn.
+    let memory = section.entries()[0];
+    let limits = memory.limits();
+
+    if limits.initial() > MEMORY_LIMIT {
+        return Err(Error::MinimumMemoryExceedError);
+    }
+
+    if limits.maximum() != None {
+        return Err(Error::SetMaximumMemoryError);
+    }
+
+    // set max memory page = MEMORY_LIMIT
+    let memory = MemoryType::new(limits.initial(), Some(MEMORY_LIMIT));
+
+    // Memory existance already checked
+    let entries = m.memory_section_mut().unwrap().entries_mut();
+    entries.pop();
+    entries.push(memory);
+
+    Ok(builder::from_module(m).build())
+}
+
+fn inject_stack_height(module: Module) -> Result<Module, Error> {
+    pwasm_utils::stack_height::inject_limiter(module, MAX_STACK_HEIGHT)
+        .map_err(|_| Error::StackHeightInstrumentationError)
+}
+
+fn inject_gas(module: Module) -> Result<Module, Error> {
+    // Simple gas rule. Every opcode and memory growth costs 1 gas.
+    let gas_rules = rules::Set::new(1, Default::default()).with_grow_cost(1);
+    pwasm_utils::inject_gas_counter(module, &gas_rules).map_err(|_| Error::GasCounterInjectionError)
+}
+
 fn compile(code: &[u8]) -> Result<Vec<u8>, Error> {
     // Check that the given Wasm code is indeed a valid Wasm.
     wasmparser::validate(code, None).map_err(|_| Error::ValidateError)?;
-    // Simple gas rule. Every opcode and memory growth costs 1 gas.
-    let gas_rules = rules::Set::new(1, Default::default()).with_grow_cost(1);
     // Start the compiling chains. TODO: Add more safeguards.
     let module = elements::deserialize_buffer(code).map_err(|_| Error::DeserializationError)?;
-    let module = pwasm_utils::inject_gas_counter(module, &gas_rules).map_err(|_| Error::GasCounterInjectionError)?;
+    let module = inject_memory(module)?;
+    let module = inject_gas(module)?;
+    let module = inject_stack_height(module)?;
     // Serialize the final Wasm code back to bytes.
     elements::serialize(module).map_err(|_| Error::SerializationError)
 }
@@ -137,4 +185,143 @@ fn run(code: &[u8], gas_limit: u32, is_prepare: bool, env: Env) -> Result<(), Er
         }
         _ => Error::RunError,
     })
+}
+#[cfg(test)]
+mod test {
+    use super::*;
+    use assert_matches::assert_matches;
+    use parity_wasm::elements;
+    use wabt::wat2wasm;
+
+    fn get_module_from_wasm(code: &[u8]) -> Module {
+        match elements::deserialize_buffer(code) {
+            Ok(deserialized) => deserialized,
+            Err(_) => panic!("Cannot deserialized"),
+        }
+    }
+
+    #[test]
+    fn test_inject_memory_ok() {
+        let wasm = wat2wasm(r#"(module (memory 1))"#).unwrap();
+        let module = get_module_from_wasm(&wasm);
+
+        assert_matches!(inject_memory(module), Ok(_));
+    }
+    #[test]
+    fn test_inject_memory_no_memory() {
+        let wasm = wat2wasm("(module)").unwrap();
+        let module = get_module_from_wasm(&wasm);
+
+        assert_eq!(inject_memory(module), Err(Error::NoMemoryWasmError));
+    }
+    #[test]
+    fn test_inject_memory_two_memories() {
+        // Generated manually because wat2wasm protects us from creating such Wasm:
+        // "error: only one memory block allowed"
+        let wasm = hex::decode(concat!(
+            "0061736d", // magic bytes
+            "01000000", // binary version (uint32)
+            "05",       // section type (memory)
+            "05",       // section length
+            "02",       // number of memories
+            "0009",     // element of type "resizable_limits", min=9, max=unset
+            "0009",     // element of type "resizable_limits", min=9, max=unset
+        ))
+        .unwrap();
+        let r = compile(&wasm);
+        assert_eq!(r, Err(Error::ValidateError));
+    }
+
+    #[test]
+    fn test_inject_memory_initial_size() {
+        let wasm_ok = wat2wasm("(module (memory 512))").unwrap();
+        let module = get_module_from_wasm(&wasm_ok);
+        assert_matches!(inject_memory(module), Ok(_));
+
+        let wasm_too_big = wat2wasm("(module (memory 513))").unwrap();
+        let module = get_module_from_wasm(&wasm_too_big);
+        assert_eq!(inject_memory(module), Err(Error::MinimumMemoryExceedError));
+    }
+
+    #[test]
+    fn test_inject_memory_maximum_size() {
+        let wasm = wat2wasm("(module (memory 1 5))").unwrap();
+        let module = get_module_from_wasm(&wasm);
+
+        assert_eq!(inject_memory(module), Err(Error::SetMaximumMemoryError));
+    }
+
+    #[test]
+    fn test_inject_stack_height() {
+        let wasm = wat2wasm(
+            r#"(module
+            (func
+              (local $idx i32)
+              (set_local $idx (i32.const 0))
+              (block
+                  (loop
+                    (set_local $idx (get_local $idx) (i32.const 1) (i32.add) )
+                    (br_if 0 (i32.lt_u (get_local $idx) (i32.const 1000000000)))
+                  )
+                )
+            )
+            (func (;"execute": Resolves with result "beeb";)
+            )
+            (memory 17)
+            (data (i32.const 1048576) "beeb") (;str = "beeb";)
+            (export "prepare" (func 0))
+            (export "execute" (func 1)))
+          "#,
+        )
+        .unwrap();
+
+        let module = inject_stack_height(get_module_from_wasm(&wasm)).unwrap();
+        let wasm = elements::serialize(module).unwrap();
+
+        let expected = wat2wasm(
+            r#"(module
+                (type (;0;) (func))
+                (func (;0;) (type 0)
+                  (local i32)
+                  i32.const 0
+                  local.set 0
+                  block  ;; label = @1
+                    loop  ;; label = @2
+                      local.get 0
+                      i32.const 1
+                      i32.add
+                      local.set 0
+                      local.get 0
+                      i32.const 1000000000
+                      i32.lt_u
+                      br_if 0 (;@2;)
+                    end
+                  end)
+                (func (;1;) (type 0))
+                (func (;2;) (type 0)
+                  global.get 0
+                  i32.const 3
+                  i32.add
+                  global.set 0
+                  global.get 0
+                  i32.const 16384
+                  i32.gt_u
+                  if  ;; label = @1
+                    unreachable
+                  end
+                  call 0
+                  global.get 0
+                  i32.const 3
+                  i32.sub
+                  global.set 0)
+                (memory (;0;) 17)
+                (global (;0;) (mut i32) (i32.const 0))
+                (export "prepare" (func 2))
+                (export "execute" (func 1))
+                (data (;0;) (i32.const 1048576) "beeb"))
+          "#,
+        )
+        .unwrap();
+        assert_eq!(wasm, expected);
+    }
 }
