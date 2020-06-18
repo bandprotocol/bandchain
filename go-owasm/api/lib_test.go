@@ -248,3 +248,108 @@ func TestCompileErrorCheckWasmExports(t *testing.T) {
 	require.Equal(t, ErrInvalidExports, err)
 	require.Equal(t, []uint8([]byte{}), code)
 }
+
+func TestStackOverflow(t *testing.T) {
+	spanSize := 1 * 1024 * 1024
+	wasm, _ := Wat2Wasm([]byte(`(module
+		(func call 0)
+		(func)
+		(memory 10)
+		(export "prepare" (func 0))
+		(export "execute" (func 1)))
+
+	  `), spanSize)
+	code, _ := Compile(wasm, spanSize)
+
+	err := Prepare(code, 100000, NewMockEnv([]byte("")))
+	require.Equal(t, ErrRunError, err)
+
+}
+
+func TestMemoryGrow(t *testing.T) {
+	spanSize := 1 * 1024 * 1024
+	wasm, _ := Wat2Wasm([]byte(`(module
+		(func
+	i32.const 0
+    (memory.grow (i32.const 1))
+    i32.gt_s
+	if
+    	unreachable
+    end
+     )
+		(func)
+		(memory 10)
+		(export "prepare" (func 0))
+		(export "execute" (func 1)))
+
+	  `), spanSize)
+	code, _ := Compile(wasm, spanSize)
+
+	err := Prepare(code, 100000, NewMockEnv([]byte("")))
+	require.NoError(t, err)
+
+	wasm, _ = Wat2Wasm([]byte(`(module
+		(func
+	i32.const 0
+    (memory.grow (i32.const 1))
+    i32.gt_s
+	if
+    	unreachable
+    end
+     )
+		(func)
+		(memory 512)
+		(export "prepare" (func 0))
+		(export "execute" (func 1)))
+
+	  `), spanSize)
+	code, _ = Compile(wasm, spanSize)
+
+	err = Prepare(code, 100000, NewMockEnv([]byte("")))
+	require.Equal(t, ErrRunError, err)
+}
+
+func TestBadPointer(t *testing.T) {
+	spanSize := 1 * 1024 * 1024
+	wasm, _ := Wat2Wasm([]byte(`(module
+		(type (;0;) (func (param i64 i64)))
+		(type (;1;) (func))
+		(import "env" "set_return_data" (func (;0;) (type 0)))
+		(func (type 1)
+			i64.const 100000000
+			i64.const 10000
+			call 0
+			)
+		(func)
+		(memory 17)
+		(export "prepare" (func 1))
+		(export "execute" (func 2)))
+
+		`), spanSize)
+	code, err := Compile(wasm, spanSize)
+	require.NoError(t, err)
+
+	err = Prepare(code, 100000, NewMockEnv([]byte("")))
+	require.Equal(t, ErrUnknownError, err)
+}
+
+func TestBadImportSignature(t *testing.T) {
+	spanSize := 1 * 1024 * 1024
+	wasm, _ := Wat2Wasm([]byte(`(module
+		(type (;0;) (func))
+		(type (;1;) (func))
+		(import "env" "set_return_data" (func (;0;) (type 0)))
+		(func
+			call 0)
+		(func)
+		(memory 17)
+		(export "prepare" (func 1))
+		(export "execute" (func 2)))
+
+		`), spanSize)
+	code, err := Compile(wasm, spanSize)
+	require.NoError(t, err)
+
+	err = Prepare(code, 100000, NewMockEnv([]byte("")))
+	require.Equal(t, ErrCompliationFail, err)
+}
