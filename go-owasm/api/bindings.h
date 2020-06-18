@@ -1,4 +1,4 @@
-/* (c) 2020 Bandprotocol. Licensed under Apache-2.0 */
+/* (c) 2020 Band protocol. Licensed under Apache-2.0 */
 
 /* Generated with cbindgen:0.14.2 */
 
@@ -29,15 +29,15 @@ enum Error {
   Error_CheckWasmImportsError = 16,
   Error_CheckWasmExportsError = 17,
   Error_InvalidSignatureFunctionError = 18,
-  Error_SetReturnDataWrongPeriodError = 31,
-  Error_AnsCountWrongPeriodError = 32,
-  Error_AskExternalDataWrongPeriodError = 33,
-  Error_AskExternalDataExceedError = 34,
-  Error_GetExternalDataStatusWrongPeriodError = 35,
-  Error_GetExternalDataWrongPeriodError = 36,
-  Error_ValidatorOutOfRangeError = 37,
-  Error_InvalidExternalIDError = 38,
-  Error_GetUnreportedDataError = 39,
+  Error_SetReturnDataWrongPeriodError = 128,
+  Error_AnsCountWrongPeriodError = 129,
+  Error_AskExternalDataWrongPeriodError = 130,
+  Error_AskExternalDataExceedError = 131,
+  Error_GetExternalDataStatusWrongPeriodError = 132,
+  Error_GetExternalDataWrongPeriodError = 133,
+  Error_ValidatorOutOfRangeError = 134,
+  Error_InvalidExternalIDError = 135,
+  Error_GetUnreportedDataError = 136,
   Error_UnknownError = 255,
 };
 typedef int32_t Error;

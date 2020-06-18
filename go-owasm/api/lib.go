@@ -29,7 +29,7 @@ func Compile(code []byte, spanSize int) ([]byte, error) {
 	defer freeSpan(inputSpan)
 	outputSpan := newSpan(spanSize)
 	defer freeSpan(outputSpan)
-	err := parseError(C.do_compile(inputSpan, &outputSpan))
+	err := parseErrorFromC(C.do_compile(inputSpan, &outputSpan))
 	return readSpan(outputSpan), err
 }
 
@@ -45,7 +45,7 @@ func run(code []byte, gasLimit uint32, isPrepare bool, env EnvInterface) error {
 	codeSpan := copySpan(code)
 	defer freeSpan(codeSpan)
 	envIntl := createEnvIntl(env)
-	return parseError(C.do_run(codeSpan, C.uint32_t(gasLimit), C.bool(isPrepare), C.Env{
+	return parseErrorFromC(C.do_run(codeSpan, C.uint32_t(gasLimit), C.bool(isPrepare), C.Env{
 		env: (*C.env_t)(unsafe.Pointer(envIntl)),
 		dis: C.EnvDispatcher{
 			get_calldata:             C.get_calldata_fn(C.cGetCalldata_cgo),
@@ -65,6 +65,6 @@ func Wat2Wasm(code []byte, spanSize int) ([]byte, error) {
 	defer freeSpan(inputSpan)
 	outputSpan := newSpan(spanSize)
 	defer freeSpan(outputSpan)
-	err := parseError(C.do_wat2wasm(inputSpan, &outputSpan))
+	err := parseErrorFromC(C.do_wat2wasm(inputSpan, &outputSpan))
 	return readSpan(outputSpan), err
 }

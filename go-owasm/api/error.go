@@ -44,7 +44,7 @@ var (
 )
 
 // parseError - returns parsed error from errors code on bindings.h
-func parseError(code C.Error) error {
+func parseErrorFromC(code C.Error) error {
 	switch code {
 	case C.Error_NoError:
 		return nil
@@ -80,11 +80,11 @@ func parseError(code C.Error) error {
 		return ErrSetMaximumMemory
 	case C.Error_StackHeightInstrumentationError:
 		return ErrStackHeightInstrumentation
-	case 16:
+	case C.Error_CheckWasmImportsError:
 		return ErrCheckWasmImports
-	case 17:
+	case C.Error_CheckWasmExportsError:
 		return ErrCheckWasmExports
-	case 18:
+	case C.Error_InvalidSignatureFunctionError:
 		return ErrInvalidSignatureFunction
 	case C.Error_SetReturnDataWrongPeriodError:
 		return ErrSetReturnDataWrongPeriod
