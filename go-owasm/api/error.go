@@ -28,6 +28,7 @@ var (
 	ErrStackHeightInstrumentation = errors.New("stack height instrumention fail")
 	ErrCheckWasmImports           = errors.New("check wasm imports fail")
 	ErrCheckWasmExports           = errors.New("check wasm exports fail")
+	ErrInvalidSignatureFunction   = errors.New("invalid signature function")
 )
 
 // parseError - returns parsed error from errors code on bindings.h
@@ -69,6 +70,8 @@ func parseError(code int32) error {
 		return ErrCheckWasmImports
 	case 17:
 		return ErrCheckWasmExports
+	case 18:
+		return ErrInvalidSignatureFunction
 	default:
 		return ErrUnknownError
 	}

@@ -19,5 +19,6 @@ pub enum Error {
   StackHeightInstrumentationError = 15,
   CheckWasmImportsError = 16,
   CheckWasmExportsError = 17,
+  InvalidSignatureFunctionError = 18,
   UnknownError = 255,
 }

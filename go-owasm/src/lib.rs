@@ -224,7 +224,10 @@ fn run(code: &[u8], gas_limit: u32, is_prepare: bool, env: Env) -> Result<(), Er
     };
     let instance = instantiate(code, &import_object).map_err(|_| Error::CompliationError)?;
     let entry = if is_prepare { "prepare" } else { "execute" };
-    let function: Func<(), ()> = instance.exports.get(entry).unwrap();
+    let function: Func<(), ()> = instance
+        .exports
+        .get(entry)
+        .map_err(|_| Error::InvalidSignatureFunctionError)?;
     function.call().map_err(|err| match err {
         RuntimeError::User(uerr) => {
             if let Some(err) = uerr.downcast_ref::<Error>() {

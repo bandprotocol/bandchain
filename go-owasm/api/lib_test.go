@@ -83,6 +83,30 @@ func TestRunError(t *testing.T) {
 	require.Equal(t, ErrRunError, err)
 }
 
+func TestInvaildSignature(t *testing.T) {
+	spanSize := 1 * 1024 * 1024
+	wasm, _ := Wat2Wasm([]byte(`(module
+		(func (param i64 i64 i32 i64)
+		  (local $idx i32)
+		  (set_local $idx (i32.const 0))
+		  (block
+			  (loop
+				(set_local $idx (get_local $idx) (i32.const 1) (i32.add) )
+				(br_if 0 (i32.lt_u (get_local $idx) (i32.const 10000)))
+			  )
+			))
+		(func)
+		(memory 17)
+		(export "prepare" (func 0))
+		(export "execute" (func 1)))
+	  `), spanSize)
+	code, _ := Compile(wasm, spanSize)
+
+	err := Prepare(code, 100000, NewMockEnv([]byte("")))
+
+	require.Equal(t, ErrInvalidSignatureFunction, err)
+}
+
 func TestGasLimit(t *testing.T) {
 	spanSize := 1 * 1024 * 1024
 	wasm, _ := Wat2Wasm([]byte(`(module
@@ -101,9 +125,8 @@ func TestGasLimit(t *testing.T) {
 		(export "prepare" (func 0))
 		(export "execute" (func 1)))
 	  `), spanSize)
-	code, _ := Compile(wasm, spanSize)
-
-	err := Prepare(code, 100000, NewMockEnv([]byte("")))
+	code, err := Compile(wasm, spanSize)
+	err = Prepare(code, 100000, NewMockEnv([]byte("")))
 	require.NoError(t, err)
 
 	err = Prepare(code, 70000, NewMockEnv([]byte("")))
