@@ -129,12 +129,16 @@ let make = (~chainID) => {
       <VSpacing size=Spacing.xxl />
       <div className=Styles.modalTitle>
         <Text value="Connect With Your Wallet" weight=Text.Bold size=Text.Xxxl />
-        <VSpacing size=Spacing.lg />
-        <div className=Styles.warning>
-          <Text value="Please check that you are visiting" />
-          <HSpacing size=Spacing.sm />
-          <Text value="https://www.cosmoscan.io" weight=Text.Bold />
-        </div>
+        {chainID == "band-wenchang-mainnet"
+           ? <>
+               <VSpacing size=Spacing.lg />
+               <div className=Styles.warning>
+                 <Text value="Please check that you are visiting" />
+                 <HSpacing size=Spacing.sm />
+                 <Text value="https://www.cosmoscan.io" weight=Text.Bold />
+               </div>
+             </>
+           : <VSpacing size=Spacing.xxl />}
       </div>
       <VSpacing size=Spacing.xl />
       <Row alignItems=`flexStart>
