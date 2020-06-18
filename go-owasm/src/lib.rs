@@ -111,16 +111,16 @@ fn inject_gas(module: Module) -> Result<Module, Error> {
 }
 
 fn check_wasm_exports(module: &Module) -> Result<(), Error> {
-    let available_exports: Vec<String> = module.export_section().map_or(vec![], |export_section| {
+    let available_exports: Vec<&str> = module.export_section().map_or(vec![], |export_section| {
         export_section
             .entries()
             .iter()
-            .map(|entry| entry.field().to_string())
+            .map(|entry| entry.field())
             .collect()
     });
 
     for required_export in REQUIRED_EXPORTS {
-        if !available_exports.iter().any(|x| x == required_export) {
+        if !available_exports.contains(required_export) {
             return Err(Error::CheckWasmExportsError);
         }
     }
