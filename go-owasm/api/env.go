@@ -42,7 +42,7 @@ func parseErrorToC(err error) C.GoResult {
 	case ErrGetExternalDataWrongPeriod:
 		return C.GoResult_GetExternalDataWrongPeriod
 	default:
-		return C.Other
+		return C.GoResult_Other
 	}
 }
 

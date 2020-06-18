@@ -68,8 +68,6 @@ func parseErrorFromC(code C.Error) error {
 		return ErrGasCounterInjectFail
 	case C.Error_SerializationError:
 		return ErrSerializetFail
-	case C.Error_InvalidSignatureFunctionError:
-		return ErrInvalidSignatureFunction
 	case C.Error_GasLimitExceedError:
 		return ErrGasLimitExceeded
 	case C.Error_NoMemoryWasmError:
