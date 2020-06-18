@@ -201,6 +201,27 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
          )}
         <VSpacing size=Spacing.lg />
         {kvRow(
+           "COMMISSION MAX CHANGE",
+           {
+             "Maximum increment by which the validator can change their commission rate at a time"
+             |> React.string;
+           },
+           {
+             VCode((validator.commissionMaxChange *. 100.)->Format.fPercent);
+           },
+         )}
+        <VSpacing size=Spacing.lg />
+        {kvRow(
+           "COMMISSION MAX RATE",
+           {
+             "The highest possible commission rate the validator can set" |> React.string;
+           },
+           {
+             VCode((validator.commissionMaxRate *. 100.)->Format.fPercent);
+           },
+         )}
+        <VSpacing size=Spacing.lg />
+        {kvRow(
            "BONDED HEIGHT",
            {
              "The block height at which the entity registers as a validator" |> React.string;
