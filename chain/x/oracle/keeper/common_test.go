@@ -103,9 +103,29 @@ func getTestOracleScript() (os types.OracleScript, clear func()) {
 }
 
 func getBadOracleScript() (os types.OracleScript, clear func()) {
+	// cannot get_external_data_size in prepare function
+	wat := []byte(`(module
+	(type (;0;) (func (param i64 i64 ) (result i64)))
+	(type (;1;) (func))
+	(import "env" "get_external_data_size" (func (;0;) (type 0)))
+	(func (type 1)
+		i64.const 0
+		i64.const 0
+		call 0
+		drop
+		)
+	(func (type 1))
+	(memory 17)
+	(export "prepare" (func 1))
+	(export "execute" (func 2)))
+	`)
+	spanSize := 1 * 1024 * 1024
+	code, err := api.Wat2Wasm(wat, spanSize)
+	println(err)
+
 	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
 	f := filecache.New(dir)
-	filename := f.AddFile([]byte("bad_code"))
+	filename := f.AddFile(code)
 	return types.NewOracleScript(
 		Owner.Address, "imported script", "description",
 		filename,

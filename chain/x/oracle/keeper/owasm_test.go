@@ -255,24 +255,23 @@ func TestPrepareRequestGetOracleScriptFail(t *testing.T) {
 	require.Error(t, err)
 }
 
-// TODO: Patch to "Bad" wasm code that is a valid wasm code.
-// func TestPrepareRequestBadWasmExecutionFail(t *testing.T) {
-// 	_, ctx, k := createTestInput()
-// 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
+func TestPrepareRequestBadWasmExecutionFail(t *testing.T) {
+	_, ctx, k := createTestInput()
+	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 
-// 	os, clear4 := getBadOracleScript()
-// 	defer clear4()
+	os, clear4 := getBadOracleScript()
+	defer clear4()
 
-// 	oracleScriptID := k.AddOracleScript(ctx, os)
-// 	calldata, _ := hex.DecodeString("030000004254436400000000000000")
-// 	askCount := uint64(1)
-// 	minCount := uint64(2)
-// 	clientID := "beeb"
+	oracleScriptID := k.AddOracleScript(ctx, os)
+	calldata, _ := hex.DecodeString("030000004254436400000000000000")
+	askCount := uint64(1)
+	minCount := uint64(2)
+	clientID := "beeb"
 
-// 	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
-// 	err := k.PrepareRequest(ctx, &m)
-// 	require.Error(t, err)
-// }
+	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
+	err := k.PrepareRequest(ctx, &m, nil)
+	require.EqualError(t, err, `bad wasm execution: failed to prepare request with error: get external data on non-execution period`)
+}
 
 func TestPrepareRequestGetDataSourceFail(t *testing.T) {
 	_, ctx, k := createTestInput()
