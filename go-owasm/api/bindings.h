@@ -9,7 +9,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-enum Error {
+enum Error
+{
   Error_NoError = 0,
   Error_CompliationError = 1,
   Error_RunError = 2,
@@ -29,6 +30,7 @@ enum Error {
   Error_CheckWasmImportsError = 16,
   Error_CheckWasmExportsError = 17,
   Error_InvalidSignatureFunctionError = 18,
+  Error_OutOfMemoryRangeError = 19,
   Error_SetReturnDataWrongPeriodError = 128,
   Error_AnsCountWrongPeriodError = 129,
   Error_AskExternalDataWrongPeriodError = 130,
@@ -42,7 +44,8 @@ enum Error {
 };
 typedef int32_t Error;
 
-enum GoResult {
+enum GoResult
+{
   GoResult_Ok = 0,
   GoResult_SpanExceededCapacity = 1,
   GoResult_SetReturnDataWrongPeriod = 2,
@@ -58,28 +61,32 @@ enum GoResult {
 };
 typedef int32_t GoResult;
 
-typedef struct Span {
+typedef struct Span
+{
   uint8_t *ptr;
   uintptr_t len;
   uintptr_t cap;
 } Span;
 
-typedef struct env_t {
+typedef struct env_t
+{
   uint8_t _private[0];
 } env_t;
 
-typedef struct EnvDispatcher {
-  GoResult (*get_calldata)(env_t*, Span *calldata);
-  GoResult (*set_return_data)(env_t*, Span data);
-  int64_t (*get_ask_count)(env_t*);
-  int64_t (*get_min_count)(env_t*);
-  GoResult (*get_ans_count)(env_t*, int64_t*);
-  GoResult (*ask_external_data)(env_t*, int64_t eid, int64_t did, Span data);
-  GoResult (*get_external_data_status)(env_t*, int64_t eid, int64_t vid, int64_t *status);
-  GoResult (*get_external_data)(env_t*, int64_t eid, int64_t vid, Span *data);
+typedef struct EnvDispatcher
+{
+  GoResult (*get_calldata)(env_t *, Span *calldata);
+  GoResult (*set_return_data)(env_t *, Span data);
+  int64_t (*get_ask_count)(env_t *);
+  int64_t (*get_min_count)(env_t *);
+  GoResult (*get_ans_count)(env_t *, int64_t *);
+  GoResult (*ask_external_data)(env_t *, int64_t eid, int64_t did, Span data);
+  GoResult (*get_external_data_status)(env_t *, int64_t eid, int64_t vid, int64_t *status);
+  GoResult (*get_external_data)(env_t *, int64_t eid, int64_t vid, Span *data);
 } EnvDispatcher;
 
-typedef struct Env {
+typedef struct Env
+{
   env_t *env;
   EnvDispatcher dis;
 } Env;

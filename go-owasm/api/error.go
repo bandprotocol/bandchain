@@ -7,31 +7,31 @@ import (
 )
 
 var (
-	ErrCompliationFail            = errors.New("compile fail")
-	ErrRunFail                    = errors.New("run fail")
-	ErrParseFail                  = errors.New("parse fail")
-	ErrWriteBinaryFail            = errors.New("write binary fail")
-	ErrResolvesNamesFail          = errors.New("resolve names fail")
-	ErrValidateFail               = errors.New("validate fail")
-	ErrSpanExceededCapacity       = errors.New("span exceeded capacity")
-	ErrDeserializeFail            = errors.New("deserialize fail")
-	ErrGasCounterInjectFail       = errors.New("gas counter inject fail")
-	ErrSerializetFail             = errors.New("serialize fail")
-	ErrUnknownError               = errors.New("unknown error")
-	ErrCompliationError           = errors.New("compile fail")
-	ErrRunError                   = errors.New("run fail")
-	ErrParseError                 = errors.New("parse fail")
-	ErrWriteBinaryError           = errors.New("write binary fail")
-	ErrValidateError              = errors.New("validate fail")
-	ErrGasLimitExceeded           = errors.New("gas limit exceeded")
-	ErrNoMemoryWasm               = errors.New("no memory wasm")
-	ErrMinimumMemoryExceed        = errors.New("minimum memory exceed")
-	ErrSetMaximumMemory           = errors.New("maximum must be unset")
-	ErrStackHeightInstrumentation = errors.New("stack height instrumention fail")
-	ErrCheckWasmImports           = errors.New("check wasm imports fail")
-	ErrCheckWasmExports           = errors.New("check wasm exports fail")
-	ErrInvalidSignatureFunction   = errors.New("invalid signature function")
-
+	ErrInstantiate                      = errors.New("instantiate fail")
+	ErrRunFail                          = errors.New("run fail")
+	ErrParseFail                        = errors.New("parse fail")
+	ErrWriteBinaryFail                  = errors.New("write binary fail")
+	ErrResolvesNamesFail                = errors.New("resolve names fail")
+	ErrValidateFail                     = errors.New("validate fail")
+	ErrSpanExceededCapacity             = errors.New("span exceeded capacity")
+	ErrDeserializeFail                  = errors.New("deserialize fail")
+	ErrGasCounterInjectFail             = errors.New("gas counter inject fail")
+	ErrSerializetFail                   = errors.New("serialize fail")
+	ErrUnknownError                     = errors.New("unknown error")
+	ErrCompliationError                 = errors.New("compile fail")
+	ErrRunError                         = errors.New("run fail")
+	ErrParseError                       = errors.New("parse fail")
+	ErrWriteBinaryError                 = errors.New("write binary fail")
+	ErrValidateError                    = errors.New("validate fail")
+	ErrGasLimitExceeded                 = errors.New("gas limit exceeded")
+	ErrNoMemoryWasm                     = errors.New("no memory wasm")
+	ErrMinimumMemoryExceed              = errors.New("minimum memory exceed")
+	ErrSetMaximumMemory                 = errors.New("maximum must be unset")
+	ErrStackHeightInstrumentation       = errors.New("stack height instrumention fail")
+	ErrCheckWasmImports                 = errors.New("check wasm imports fail")
+	ErrCheckWasmExports                 = errors.New("check wasm exports fail")
+	ErrInvalidSignatureFunction         = errors.New("invalid signature function")
+	ErrOutOfMemoryRangeError            = errors.New("out of range memory")
 	ErrSetReturnDataWrongPeriod         = errors.New("set return data on non-execution period")
 	ErrAnsCountWrongPeriod              = errors.New("get ans count on non-execution period")
 	ErrAskExternalDataWrongPeriod       = errors.New("ask external data on non-prepare period")
@@ -102,6 +102,8 @@ func parseErrorFromC(code C.Error) error {
 		return ErrInvalidExternalID
 	case C.Error_GetUnreportedDataError:
 		return ErrGetUnreportedData
+	case C.Error_OutOfMemoryRangeError:
+		return ErrOutOfMemoryRangeError
 	default:
 		return ErrUnknownError
 	}

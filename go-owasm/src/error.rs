@@ -2,7 +2,7 @@
 #[derive(Debug, PartialEq, Clone)]
 pub enum Error {
   NoError = 0,
-  CompliationError = 1,
+  InstantiateError = 1,
   RunError = 2,
   ParseError = 3,
   WriteBinaryError = 4,
@@ -20,7 +20,7 @@ pub enum Error {
   CheckWasmImportsError = 16,
   CheckWasmExportsError = 17,
   InvalidSignatureFunctionError = 18,
-
+  OutOfMemoryRangeError = 19,
   SetReturnDataWrongPeriodError = 128,
   AnsCountWrongPeriodError = 129,
   AskExternalDataWrongPeriodError = 130,

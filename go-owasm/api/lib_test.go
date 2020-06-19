@@ -330,7 +330,74 @@ func TestBadPointer(t *testing.T) {
 	require.NoError(t, err)
 
 	err = Prepare(code, 100000, NewMockEnv([]byte("")))
-	require.Equal(t, ErrUnknownError, err)
+	require.Equal(t, ErrOutOfMemoryRangeError, err)
+
+	wasm, _ = Wat2Wasm([]byte(`(module
+		(type (;0;) (func (param i64 i64)))
+		(type (;1;) (func))
+		(import "env" "read_calldata" (func (;0;) (type 0)))
+		(func (type 1)
+			i64.const 100000000
+			i64.const 10000
+			call 0
+			)
+		(func)
+		(memory 17)
+		(export "prepare" (func 1))
+		(export "execute" (func 2)))
+
+		`), spanSize)
+	code, err = Compile(wasm, spanSize)
+	require.NoError(t, err)
+
+	err = Prepare(code, 100000, NewMockEnv([]byte("")))
+	require.Equal(t, ErrOutOfMemoryRangeError, err)
+
+	wasm, _ = Wat2Wasm([]byte(`(module
+		(type (;0;) (func (param i64 i64 i64 i64)))
+		(type (;1;) (func))
+		(import "env" "ask_external_data" (func (;0;) (type 0)))
+		(func (type 1)
+			i64.const 1
+			i64.const 1
+			i64.const 100000000
+			i64.const 10000
+			call 0
+			)
+		(func)
+		(memory 17)
+		(export "prepare" (func 1))
+		(export "execute" (func 2)))
+
+		`), spanSize)
+	code, err = Compile(wasm, spanSize)
+	require.NoError(t, err)
+
+	err = Prepare(code, 100000, NewMockEnv([]byte("")))
+	require.Equal(t, ErrOutOfMemoryRangeError, err)
+
+	wasm, _ = Wat2Wasm([]byte(`(module
+		(type (;0;) (func (param i64 i64 i64 i64)))
+		(type (;1;) (func))
+		(import "env" "read_external_data" (func (;0;) (type 0)))
+		(func (type 1)
+			i64.const 1
+			i64.const 1
+			i64.const 100000000
+			i64.const 10000
+			call 0
+			)
+		(func)
+		(memory 17)
+		(export "prepare" (func 1))
+		(export "execute" (func 2)))
+
+		`), spanSize)
+	code, err = Compile(wasm, spanSize)
+	require.NoError(t, err)
+
+	err = Prepare(code, 100000, NewMockEnv([]byte("")))
+	require.Equal(t, ErrOutOfMemoryRangeError, err)
 }
 
 func TestBadImportSignature(t *testing.T) {
@@ -351,5 +418,5 @@ func TestBadImportSignature(t *testing.T) {
 	require.NoError(t, err)
 
 	err = Prepare(code, 100000, NewMockEnv([]byte("")))
-	require.Equal(t, ErrCompliationFail, err)
+	require.Equal(t, ErrInstantiate, err)
 }

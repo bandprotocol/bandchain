@@ -150,6 +150,13 @@ struct ImportReference(*mut c_void);
 unsafe impl Send for ImportReference {}
 unsafe impl Sync for ImportReference {}
 
+fn require_mem_range(max_range: usize, require_range: usize) -> Result<(), Error> {
+    if max_range < require_range {
+        return Err(Error::OutOfMemoryRangeError);
+    }
+    return Ok(());
+}
+
 fn run(code: &[u8], gas_limit: u32, is_prepare: bool, env: Env) -> Result<(), Error> {
     let vm = &mut vm::VMLogic::new(env, gas_limit);
     let raw_ptr = vm as *mut _ as *mut c_void;
@@ -176,16 +183,19 @@ fn run(code: &[u8], gas_limit: u32, is_prepare: bool, env: Env) -> Result<(), Er
                 let mut mem: Vec<u8> = Vec::with_capacity(span_size);
                 let mut calldata = Span::create_writable(mem.as_mut_ptr(), span_size);
                 vm.get_calldata(&mut calldata)?;
+                require_mem_range( ctx.memory(0).size().bytes().0, (ptr +len) as usize )?;
                 for (byte, cell) in calldata.read().iter().zip(ctx.memory(0).view()[ptr as usize..(ptr + len) as usize].iter()) { cell.set(*byte); }
                 Ok(())
             }),
-            "set_return_data" => func!(|ctx: &mut Ctx, ptr: i64, len: i64| {
+            "set_return_data" => func!(|ctx: &mut Ctx, ptr: i64, len: i64|-> Result<(), Error> {
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
                 if len as usize > vm.get_span_size() {
                     return Err(Error::SpanExceededCapacityError);
                 }
+                require_mem_range(  ctx.memory(0).size().bytes().0, (ptr +len) as usize )?;
                 let data: Vec<u8> = ctx.memory(0).view()[ptr as usize..(ptr + len) as usize].iter().map(|cell| cell.get()).collect();
-                vm.set_return_data(&data)
+                vm.set_return_data(&data);
+                Ok(())
             }),
             "get_ask_count" => func!(|ctx: &mut Ctx| {
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
@@ -199,13 +209,15 @@ fn run(code: &[u8], gas_limit: u32, is_prepare: bool, env: Env) -> Result<(), Er
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
                 vm.get_ans_count()
             }),
-            "ask_external_data" => func!(|ctx: &mut Ctx, eid: i64, did: i64, ptr: i64, len: i64| {
+            "ask_external_data" => func!(|ctx: &mut Ctx, eid: i64, did: i64, ptr: i64, len: i64| -> Result<(), Error> {
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
                 if len as usize > vm.get_span_size() {
                     return Err(Error::SpanExceededCapacityError);
                 }
+                require_mem_range( ctx.memory(0).size().bytes().0, (ptr +len) as usize )?;
                 let data: Vec<u8> = ctx.memory(0).view()[ptr as usize..(ptr + len) as usize].iter().map(|cell| cell.get()).collect();
-                vm.ask_external_data(eid, did, &data)
+                vm.ask_external_data(eid, did, &data);
+                Ok(())
             }),
             "get_external_data_status" => func!(|ctx: &mut Ctx, eid: i64, vid: i64| {
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
@@ -225,13 +237,14 @@ fn run(code: &[u8], gas_limit: u32, is_prepare: bool, env: Env) -> Result<(), Er
                 let span_size = vm.get_span_size() as usize;
                 let mut mem: Vec<u8> = Vec::with_capacity(span_size);
                 let mut data = Span::create_writable(mem.as_mut_ptr(), span_size);
+                require_mem_range( ctx.memory(0).size().bytes().0, (ptr +len) as usize )?;
                 vm.get_external_data(eid, vid, &mut data)?;
                 for (byte, cell) in data.read().iter().zip(ctx.memory(0).view()[ptr as usize..(ptr + len) as usize].iter()) { cell.set(*byte); }
                 Ok(())
             }),
         },
     };
-    let instance = instantiate(code, &import_object).map_err(|_| Error::CompliationError)?;
+    let instance = instantiate(code, &import_object).map_err(|_| Error::InstantiateError)?;
     let entry = if is_prepare { "prepare" } else { "execute" };
     let function: Func<(), ()> = instance
         .exports
