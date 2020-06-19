@@ -18,6 +18,10 @@ impl Span {
         }
     }
 
+    pub fn create_writable(ptr: *mut u8, cap: usize) -> Span {
+        Span { ptr, len: 0, cap }
+    }
+
     /// Read data from the span.
     pub fn read(&self) -> &[u8] {
         unsafe { std::slice::from_raw_parts(self.ptr, self.len) }
