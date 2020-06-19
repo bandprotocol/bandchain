@@ -1,51 +1,48 @@
-package bank
+package supply
 
 import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/cosmos/cosmos-sdk/x/auth/types"
-	"github.com/cosmos/cosmos-sdk/x/bank"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
+	"github.com/cosmos/cosmos-sdk/x/supply"
 	"github.com/tendermint/tendermint/libs/log"
 )
 
-// WrappedBankKeeper encapsulates the underlying bank keeper and overrides
+// WrappedSupplyKeeper encapsulates the underlying supply keeper and overrides
 // its BurnCoins function to send the coins to the community pool instead of
 // just destroying them.
 //
 // Note that distrKeeper keeps the reference to the distr module keeper.
-// Due to the circular dependency between bank-distr, distrKeeper
+// Due to the circular dependency between supply-distr, distrKeeper
 // cannot be initialized when the struct is created. Rather, SetDistrKeeper
 // is expected to be called to set `distrKeeper`.
-type WrappedBankKeeper struct {
-	bank.Keeper
+type WrappedSupplyKeeper struct {
+	supply.Keeper
 
-	ak          auth.AccountKeeper
 	distrKeeper *distr.Keeper
 }
 
-// WrapBankKeeperBurnToCommunityPool creates a new instance of WrappedBankKeeper
+// WrapSupplyKeeperBurnToCommunityPool creates a new instance of WrappedSupplyKeeper
 // with its distrKeeper member set to nil.
-func WrapBankKeeperBurnToCommunityPool(bk bank.Keeper, ak auth.AccountKeeper) WrappedBankKeeper {
-	return WrappedBankKeeper{bk, ak, nil}
+func WrapSupplyKeeperBurnToCommunityPool(sk supply.Keeper) WrappedSupplyKeeper {
+	return WrappedSupplyKeeper{sk, nil}
 }
 
-// SetDistrKeeper sets distr module keeper for this WrappedBankKeeper instance.
-func (k *WrappedBankKeeper) SetDistrKeeper(distrKeeper *distr.Keeper) {
+// SetDistrKeeper sets distr module keeper for this WrappedSupplyKeeper instance.
+func (k *WrappedSupplyKeeper) SetDistrKeeper(distrKeeper *distr.Keeper) {
 	k.distrKeeper = distrKeeper
 }
 
 // Logger returns a module-specific logger.
-func (k WrappedBankKeeper) Logger(ctx sdk.Context) log.Logger {
-	return ctx.Logger().With("module", fmt.Sprint("x/wrappedBank"))
+func (k WrappedSupplyKeeper) Logger(ctx sdk.Context) log.Logger {
+	return ctx.Logger().With("module", fmt.Sprint("x/wrappedSupply"))
 }
 
 // BurnCoins moves the specified amount of coins from the given module name to
 // the community pool. The total supply of the coins will not change.
-func (k WrappedBankKeeper) BurnCoins(ctx sdk.Context, moduleName string, amt sdk.Coins) error {
+func (k WrappedSupplyKeeper) BurnCoins(ctx sdk.Context, moduleName string, amt sdk.Coins) error {
 	// If distrKeeper is not set OR we want to burn coins in distr itself, we will
 	// just use the original BurnCoins function.
 	if k.distrKeeper == nil || moduleName == distr.ModuleName {
@@ -53,7 +50,7 @@ func (k WrappedBankKeeper) BurnCoins(ctx sdk.Context, moduleName string, amt sdk
 	}
 
 	// Create the account if it doesn't yet exist.
-	acc := k.ak.GetModuleAccount(ctx, moduleName)
+	acc := k.GetModuleAccount(ctx, moduleName)
 	if acc == nil {
 		panic(sdkerrors.Wrapf(
 			sdkerrors.ErrUnknownAddress,
@@ -61,7 +58,7 @@ func (k WrappedBankKeeper) BurnCoins(ctx sdk.Context, moduleName string, amt sdk
 		))
 	}
 
-	if !acc.HasPermission(types.Burner) {
+	if !acc.HasPermission(supply.Burner) {
 		panic(sdkerrors.Wrapf(
 			sdkerrors.ErrUnauthorized,
 			"module account %s does not have permissions to burn tokens",

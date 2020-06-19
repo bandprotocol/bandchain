@@ -92,16 +92,18 @@ func (k Keeper) ResolveRequest(ctx sdk.Context, reqID types.RequestID) {
 	script := k.MustGetOracleScript(ctx, req.OracleScriptID)
 	code := k.GetFile(script.Filename)
 	err := owasm.Execute(code, types.WasmExecuteGas, env)
-	var res types.OracleResponsePacketData
+	// var res types.OracleResponsePacketData
 	if err != nil {
 		k.Logger(ctx).Info(fmt.Sprintf(
 			"failed to execute request id: %d with error: %s", reqID, err.Error(),
 		))
-		res = k.SaveResult(ctx, reqID, types.ResolveStatus_Failure, nil)
+		k.SaveResult(ctx, reqID, types.ResolveStatus_Failure, nil)
+		// res = k.SaveResult(ctx, reqID, types.ResolveStatus_Failure, nil)
 	} else {
-		res = k.SaveResult(ctx, reqID, types.ResolveStatus_Success, env.Retdata)
+		k.SaveResult(ctx, reqID, types.ResolveStatus_Success, env.Retdata)
+		// res = k.SaveResult(ctx, reqID, types.ResolveStatus_Success, env.Retdata)
 	}
-	if req.IBCInfo != nil {
-		k.SendOracleResponse(ctx, req.IBCInfo.SourcePort, req.IBCInfo.SourceChannel, res)
-	}
+	// if req.IBCInfo != nil {
+	// 	k.SendOracleResponse(ctx, req.IBCInfo.SourcePort, req.IBCInfo.SourceChannel, res)
+	// }
 }

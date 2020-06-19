@@ -8,11 +8,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client/debug"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	codecstd "github.com/cosmos/cosmos-sdk/codec/std"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/cosmos/cosmos-sdk/x/auth"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/spf13/cobra"
@@ -35,9 +34,7 @@ const (
 var invCheckPeriod uint
 
 func main() {
-	cdc := codecstd.MakeCodec(app.ModuleBasics)
-	appCodec := codecstd.NewAppCodec(cdc)
-
+	cdc := app.MakeCodec()
 	config := sdk.GetConfig()
 	app.SetBech32AddressPrefixesAndBip44CoinType(config)
 	config.Seal()
@@ -51,18 +48,13 @@ func main() {
 	}
 
 	rootCmd.AddCommand(InitCmd(ctx, cdc, app.NewDefaultGenesisState(), app.DefaultNodeHome))
-	rootCmd.AddCommand(genutilcli.CollectGenTxsCmd(ctx, cdc, bank.GenesisBalancesIterator{}, app.DefaultNodeHome))
+	rootCmd.AddCommand(genutilcli.CollectGenTxsCmd(ctx, cdc, auth.GenesisAccountIterator{}, app.DefaultNodeHome))
 	rootCmd.AddCommand(genutilcli.MigrateGenesisCmd(ctx, cdc))
-	rootCmd.AddCommand(
-		genutilcli.GenTxCmd(
-			ctx, cdc, app.ModuleBasics, staking.AppModuleBasic{},
-			bank.GenesisBalancesIterator{}, app.DefaultNodeHome, app.DefaultCLIHome,
-		),
-	)
+	rootCmd.AddCommand(genutilcli.GenTxCmd(ctx, cdc, app.ModuleBasics, staking.AppModuleBasic{}, auth.GenesisAccountIterator{}, app.DefaultNodeHome, app.DefaultCLIHome))
 	rootCmd.AddCommand(genutilcli.ValidateGenesisCmd(ctx, cdc, app.ModuleBasics))
-	rootCmd.AddCommand(AddGenesisAccountCmd(ctx, cdc, appCodec, app.DefaultNodeHome, app.DefaultCLIHome))
-	rootCmd.AddCommand(AddGenesisDataSourceCmd(ctx, cdc, appCodec, app.DefaultNodeHome))
-	rootCmd.AddCommand(AddGenesisOracleScriptCmd(ctx, cdc, appCodec, app.DefaultNodeHome))
+	rootCmd.AddCommand(AddGenesisAccountCmd(ctx, cdc, app.DefaultNodeHome, app.DefaultCLIHome))
+	rootCmd.AddCommand(AddGenesisDataSourceCmd(ctx, cdc, app.DefaultNodeHome))
+	rootCmd.AddCommand(AddGenesisOracleScriptCmd(ctx, cdc, app.DefaultNodeHome))
 	rootCmd.AddCommand(flags.NewCompletionCmd(rootCmd, true))
 	// rootCmd.AddCommand(testnetCmd(ctx, cdc, app.ModuleBasics, bank.GenesisBalancesIterator{}))
 	// rootCmd.AddCommand(replayCmd())
@@ -131,13 +123,13 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 
 func exportAppStateAndTMValidators(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, height int64, forZeroHeight bool, jailWhiteList []string,
-) (json.RawMessage, []tmtypes.GenesisValidator, *abci.ConsensusParams, error) {
+) (json.RawMessage, []tmtypes.GenesisValidator, error) {
 
 	if height != -1 {
 		bandApp := app.NewBandApp(logger, db, traceStore, false, uint(1), map[int64]bool{}, "")
 		err := bandApp.LoadHeight(height)
 		if err != nil {
-			return nil, nil, nil, err
+			return nil, nil, err
 		}
 
 		return bandApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
