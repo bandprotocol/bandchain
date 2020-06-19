@@ -81,6 +81,17 @@ module Styles = {
   let resultIcon = style([width(`px(30))]);
 
   let txhashContainer = style([cursor(`pointer)]);
+
+  let warning =
+    style([
+      display(`flex),
+      flexDirection(`row),
+      padding2(~v=`px(5), ~h=`px(8)),
+      color(Colors.yellow6),
+      backgroundColor(Colors.yellow1),
+      border(`px(1), `solid, Colors.yellow6),
+      borderRadius(`px(4)),
+    ]);
 };
 
 type state_t =
@@ -100,7 +111,11 @@ let make = (~rawTx, ~onBack, ~account: AccountContext.t) => {
     <div className=Styles.modalTitle>
       <Text value="Confirm Transaction" weight=Text.Bold size=Text.Xxxl />
     </div>
-    <VSpacing size=Spacing.xl />
+    <VSpacing size=Spacing.lg />
+    <div className=Styles.warning>
+      <Text value="Please verify the transaction details below before proceeding" />
+    </div>
+    <VSpacing size=Spacing.md />
     <textarea
       className=Styles.jsonDisplay
       disabled=true
@@ -141,7 +156,7 @@ let make = (~rawTx, ~onBack, ~account: AccountContext.t) => {
                                }
                                : {
                                  Js.Console.error(txResponse);
-                                 setState(_ => Error(txResponse.rawLog));
+                                 setState(_ => Error(txResponse.code |> TxResError.parse));
                                };
                              dispatchModal(EnableExit);
                              Js.Promise.resolve();

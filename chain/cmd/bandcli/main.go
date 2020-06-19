@@ -10,11 +10,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/lcd"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
-	codecstd "github.com/cosmos/cosmos-sdk/codec/std"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	"github.com/cosmos/cosmos-sdk/x/bank"
@@ -28,19 +26,11 @@ import (
 	bandclient "github.com/bandprotocol/bandchain/chain/client"
 )
 
-var (
-	cdc      = codecstd.MakeCodec(app.ModuleBasics)
-	appCodec = codecstd.NewAppCodec(cdc)
-)
-
-func init() {
-	authclient.Codec = appCodec
-}
-
 func main() {
 	// Configure cobra to sort commands
 	cobra.EnableCommandSorting = false
-
+	// Instantiate the codec for the command line application
+	cdc := app.MakeCodec()
 	// Read in the configuration file for the sdk
 	config := sdk.GetConfig()
 	app.SetBech32AddressPrefixesAndBip44CoinType(config)
@@ -52,7 +42,7 @@ func main() {
 
 	rootCmd := &cobra.Command{
 		Use:   "bandcli",
-		Short: "Command line interface for interacting with bandcli",
+		Short: "Command line interface for interacting with bandd",
 	}
 
 	// Add --chain-id to persistent flags and mark it required

@@ -23,4 +23,5 @@ func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router, storeName string) 
 	r.HandleFunc(fmt.Sprintf("/%s/requests/{%s}", storeName, idTag), getRequestByIDHandler(cliCtx, storeName)).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/%s/request_search", storeName), getRequestSearchHandler(cliCtx, storeName)).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/%s/reporters/{%s}", storeName, validatorAddressTag), getReportersHandler(cliCtx, storeName)).Methods("GET")
+	r.HandleFunc(fmt.Sprintf("/%s/report_info/{%s}", storeName, validatorAddressTag), getReportInfoHandler(cliCtx, storeName)).Methods("GET")
 }

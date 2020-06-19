@@ -32,6 +32,7 @@ func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		GetQueryCmdRequest(storeKey, cdc),
 		GetQueryCmdRequestSearch(storeKey, cdc),
 		GetQueryCmdReporters(storeKey, cdc),
+		GetQueryCmdReportInfo(storeKey, cdc),
 	)...)
 	return oracleCmd
 }
@@ -156,6 +157,24 @@ func GetQueryCmdReporters(route string, cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 			var out []sdk.AccAddress
+			cdc.MustUnmarshalJSON(res, &out)
+			return cliCtx.PrintOutput(out)
+		},
+	}
+}
+
+// GetQueryCmdReportInfo implements the query report info command.
+func GetQueryCmdReportInfo(route string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:  "report_info [validator]",
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryReportInfo, args[0]), nil)
+			if err != nil {
+				return err
+			}
+			var out types.ValidatorReportInfo
 			cdc.MustUnmarshalJSON(res, &out)
 			return cliCtx.PrintOutput(out)
 		},

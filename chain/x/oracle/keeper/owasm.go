@@ -43,7 +43,7 @@ func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec, ibcInfo *ty
 		return err
 	}
 	code := k.GetFile(script.Filename)
-	err = owasm.Prepare(code, env) // TODO: Don't forget about prepare gas!
+	err = owasm.Prepare(code, types.WasmPrepareGas, env)
 	if err != nil {
 		return sdkerrors.Wrapf(types.ErrBadWasmExecution, "failed to prepare request with error: %s", err.Error())
 	}
@@ -91,17 +91,19 @@ func (k Keeper) ResolveRequest(ctx sdk.Context, reqID types.RequestID) {
 	env.SetReports(k.GetReports(ctx, reqID))
 	script := k.MustGetOracleScript(ctx, req.OracleScriptID)
 	code := k.GetFile(script.Filename)
-	err := owasm.Execute(code, env) // TODO: Don't forget about gas!
-	var res types.OracleResponsePacketData
+	err := owasm.Execute(code, types.WasmExecuteGas, env)
+	// var res types.OracleResponsePacketData
 	if err != nil {
 		k.Logger(ctx).Info(fmt.Sprintf(
 			"failed to execute request id: %d with error: %s", reqID, err.Error(),
 		))
-		res = k.SaveResult(ctx, reqID, types.ResolveStatus_Failure, nil)
+		k.SaveResult(ctx, reqID, types.ResolveStatus_Failure, nil)
+		// res = k.SaveResult(ctx, reqID, types.ResolveStatus_Failure, nil)
 	} else {
-		res = k.SaveResult(ctx, reqID, types.ResolveStatus_Success, env.Retdata)
+		k.SaveResult(ctx, reqID, types.ResolveStatus_Success, env.Retdata)
+		// res = k.SaveResult(ctx, reqID, types.ResolveStatus_Success, env.Retdata)
 	}
-	if req.IBCInfo != nil {
-		k.SendOracleResponse(ctx, req.IBCInfo.SourcePort, req.IBCInfo.SourceChannel, res)
-	}
+	// if req.IBCInfo != nil {
+	// 	k.SendOracleResponse(ctx, req.IBCInfo.SourcePort, req.IBCInfo.SourceChannel, res)
+	// }
 }

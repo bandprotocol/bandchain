@@ -11,7 +11,19 @@ enum Error {
   WriteBinaryError = 4,
   ResolveNamesError = 5,
   ValidateError = 6,
-  UnknownError = 7,
+  SpanExceededCapacityError = 7,
+  DeserializationError = 8,
+  GasCounterInjectionError = 9,
+  SerializationError = 10,
+  GasLimitExceedError = 11,
+  NoMemoryWasmError = 12,
+  MinimumMemoryExceedError = 13,
+  SetMaximumMemoryError = 14,
+  StackHeightInstrumentationError = 15,
+  CheckWasmImportsError = 16,
+  CheckWasmExportsError = 17,
+  InvalidSignatureFunctionError = 18,
+  UnknownError = 255,
 };
 typedef int32_t Error;
 
@@ -43,6 +55,6 @@ typedef struct {
 
 Error do_compile(Span input, Span *output);
 
-Error do_run(Span code, bool is_prepare, Env env);
+Error do_run(Span code, uint32_t gas_limit, bool is_prepare, Env env);
 
 Error do_wat2wasm(Span input, Span *output);

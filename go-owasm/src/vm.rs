@@ -1,4 +1,5 @@
 use crate::env::Env;
+use crate::error::Error;
 use crate::span::Span;
 
 pub struct VMLogic {
@@ -7,16 +8,16 @@ pub struct VMLogic {
 }
 
 impl VMLogic {
-    pub fn new(env: Env) -> VMLogic {
+    pub fn new(env: Env, gas: u32) -> VMLogic {
         VMLogic {
             env: env,
-            gas_left: 100,
+            gas_left: gas,
         }
     }
 
-    pub fn consume_gas(&mut self, gas: u32) -> Result<(), ()> {
+    pub fn consume_gas(&mut self, gas: u32) -> Result<(), Error> {
         if self.gas_left <= gas {
-            Err(())
+            Err(Error::GasLimitExceedError)
         } else {
             self.gas_left -= gas;
             Ok(())

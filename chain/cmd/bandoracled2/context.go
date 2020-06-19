@@ -1,18 +1,18 @@
 package main
 
 import (
-	"github.com/cosmos/cosmos-sdk/crypto/keyring"
+	"github.com/cosmos/cosmos-sdk/crypto/keys"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
+	rpcclient "github.com/tendermint/tendermint/rpc/client"
 
 	"github.com/bandprotocol/bandchain/chain/pkg/filecache"
 )
 
 type Context struct {
-	client    *rpchttp.HTTP
+	client    rpcclient.Client
 	validator sdk.ValAddress
 	gasPrices sdk.DecCoins
-	keys      chan keyring.Info
+	keys      chan keys.Info
 	executor  executor
 	fileCache filecache.Cache
 }
