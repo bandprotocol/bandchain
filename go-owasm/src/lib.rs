@@ -176,6 +176,7 @@ fn run(code: &[u8], gas_limit: u32, is_prepare: bool, env: Env) -> Result<(), Er
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
                 vm.consume_gas(gas)
             }),
+            // TODO: Change specification of OEI
             "get_calldata_size" => func!(|ctx: &mut Ctx| -> Result<i64, Error> {
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
                 let span_size = vm.get_span_size() as usize;
@@ -225,6 +226,7 @@ fn run(code: &[u8], gas_limit: u32, is_prepare: bool, env: Env) -> Result<(), Er
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
                 vm.get_external_data_status(eid, vid)
             }),
+            // TODO: Change specification of OEI
             "get_external_data_size" => func!(|ctx: &mut Ctx, eid: i64, vid: i64| -> Result<i64, Error>{
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
                 let span_size = vm.get_span_size() as usize;
