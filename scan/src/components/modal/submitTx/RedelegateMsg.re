@@ -18,6 +18,9 @@ module Styles = {
     ]);
 
   let select = style([width(`px(1000)), height(`px(1))]);
+
+  let distValidatorContainer =
+    style([display(`flex), flexDirection(`column), alignItems(`flexEnd)]);
 };
 
 module DstValidatorSelection = {
@@ -44,41 +47,51 @@ module DstValidatorSelection = {
   let make = (~filteredValidators: array(BandScan.ValidatorSub.t), ~setDstValidatorOpt) => {
     let (selectedValidator, setSelectedValidator) =
       React.useState(_ =>
-        ReactSelect.{value: "None", label: "Enter or select validator to delegate to"}
+        ReactSelect.{value: "N/A", label: "Enter or select validator to delegate to"}
       );
     let validatorList =
       filteredValidators->Belt_Array.map(({operatorAddress, moniker}) =>
-        ReactSelect.{value: operatorAddress |> Address.toBech32, label: moniker}
+        ReactSelect.{value: operatorAddress |> Address.toOperatorBech32, label: moniker}
       );
+
     // TODO: Hack styles for react-select
-    <ReactSelect
-      options=validatorList
-      onChange={newOption => {
-        let newVal = newOption;
-        setSelectedValidator(_ => newVal);
-        setDstValidatorOpt(_ => Some(newVal.value |> Address.fromBech32));
-      }}
-      value=selectedValidator
-      styles={
-        ReactSelect.control: _ => {
-          display: "flex",
-          height: "30px",
-          width: "300px",
-          fontSize: "11px",
-          backgroundColor: "white",
-          borderRadius: "4px",
-          boxShadow: "0 1px 4px 0 rgba(11,29,142,0.1) inset",
-        },
-        ReactSelect.option: _ => {
-          fontSize: "11px",
-          height: "30px",
-          display: "flex",
-          alignItems: "center",
-          paddingLeft: "10px",
-          cursor: "pointer",
-        },
-      }
-    />;
+    <div className=Styles.distValidatorContainer>
+      <ReactSelect
+        options=validatorList
+        onChange={newOption => {
+          let newVal = newOption;
+          setSelectedValidator(_ => newVal);
+          setDstValidatorOpt(_ => Some(newVal.value |> Address.fromBech32));
+        }}
+        value=selectedValidator
+        styles={
+          ReactSelect.control: _ => {
+            display: "flex",
+            height: "30px",
+            width: "300px",
+            fontSize: "11px",
+            backgroundColor: "white",
+            borderRadius: "4px",
+            boxShadow: "0 1px 4px 0 rgba(11,29,142,0.1) inset",
+          },
+          ReactSelect.option: _ => {
+            fontSize: "11px",
+            height: "30px",
+            display: "flex",
+            alignItems: "center",
+            paddingLeft: "10px",
+            cursor: "pointer",
+          },
+        }
+      />
+      <VSpacing size=Spacing.xs />
+      <Text
+        value={"(" ++ selectedValidator.value ++ ")"}
+        size=Text.Sm
+        color=Colors.blueGray5
+        code=true
+      />
+    </div>;
   };
 };
 
@@ -166,7 +179,7 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
              validator.operatorAddress != operatorAddress && validator.commission != 100.
            );
          <DstValidatorSelection filteredValidators setDstValidatorOpt />;
-       | _ => <LoadingCensorBar width=300 height=26 />
+       | _ => <LoadingCensorBar width=300 height=43 />
        }}
     </div>
     <VSpacing size=Spacing.lg />
