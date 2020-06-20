@@ -10,6 +10,7 @@
 
 ### Chain
 
+- (feat) [\#2022](https://github.com/bandprotocol/bandchain/pull/2022) Initial implementation of BandChain emitter/flusher.
 - (chore) [\#2040](https://github.com/bandprotocol/bandchain/pull/2040) Set HomeFlag to /tmp for SimApp.
 - (patch) [\#2037](https://github.com/bandprotocol/bandchain/pull/2037) Patch Multistore proof to new structure tree of 0.38.
 - (impv) [\#1892](https://github.com/bandprotocol/bandchain/pull/1892) Rewrite execution environment for wasmer
