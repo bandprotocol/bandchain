@@ -16,6 +16,7 @@ require (
 	github.com/onsi/gomega v1.5.0 // indirect
 	github.com/peterbourgon/diskv v2.0.1+incompatible
 	github.com/rakyll/statik v0.1.7
+	github.com/segmentio/kafka-go v0.3.7
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/viper v1.7.0
 	github.com/stretchr/testify v1.6.1
