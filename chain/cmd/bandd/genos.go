@@ -6,13 +6,12 @@ import (
 	"path/filepath"
 
 	"github.com/bandprotocol/bandchain/chain/pkg/filecache"
-	codecstd "github.com/cosmos/cosmos-sdk/codec/std"
+	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
@@ -20,10 +19,7 @@ import (
 )
 
 // AddGenesisOracleScriptCmd returns add-oracle-script cobra Command.
-func AddGenesisOracleScriptCmd(
-	ctx *server.Context, depCdc *amino.Codec, cdc *codecstd.Codec, defaultNodeHome string,
-) *cobra.Command {
-
+func AddGenesisOracleScriptCmd(ctx *server.Context, cdc *codec.Codec, defaultNodeHome string) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add-oracle-script [name] [description] [schema] [url] [owner] [filepath]",
 		Short: "Add a data source to genesis.json",
@@ -43,12 +39,12 @@ func AddGenesisOracleScriptCmd(
 			}
 
 			genFile := config.GenesisFile()
-			appState, genDoc, err := genutil.GenesisStateFromGenFile(depCdc, genFile)
+			appState, genDoc, err := genutil.GenesisStateFromGenFile(cdc, genFile)
 			if err != nil {
 				return fmt.Errorf("failed to unmarshal genesis state: %w", err)
 			}
 
-			oracleGenState := oracle.GetGenesisStateFromAppState(depCdc, appState)
+			oracleGenState := oracle.GetGenesisStateFromAppState(cdc, appState)
 			oracleGenState.OracleScripts = append(oracleGenState.OracleScripts, otypes.NewOracleScript(
 				owner, args[0], args[1], filename, args[2], args[3],
 			))

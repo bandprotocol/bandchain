@@ -6,10 +6,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/capability"
-	porttypes "github.com/cosmos/cosmos-sdk/x/ibc/05-port/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/bandprotocol/bandchain/chain/pkg/filecache"
@@ -22,16 +19,12 @@ type Keeper struct {
 	fileCache     filecache.Cache
 	ParamSpace    params.Subspace
 	StakingKeeper types.StakingKeeper
-	ChannelKeeper types.ChannelKeeper
-	ScopedKeeper  capability.ScopedKeeper
-	PortKeeper    types.PortKeeper
 }
 
 // NewKeeper creates a new oracle Keeper instance.
 func NewKeeper(
 	cdc *codec.Codec, key sdk.StoreKey, fileDir string, paramSpace params.Subspace,
-	stakingKeeper types.StakingKeeper, channelKeeper types.ChannelKeeper,
-	scopedKeeper capability.ScopedKeeper, portKeeper types.PortKeeper,
+	stakingKeeper types.StakingKeeper,
 ) Keeper {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(ParamKeyTable())
@@ -42,9 +35,6 @@ func NewKeeper(
 		fileCache:     filecache.New(fileDir),
 		ParamSpace:    paramSpace,
 		StakingKeeper: stakingKeeper,
-		ChannelKeeper: channelKeeper,
-		ScopedKeeper:  scopedKeeper,
-		PortKeeper:    portKeeper,
 	}
 }
 
@@ -55,7 +45,7 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 
 // ParamKeyTable returns the parameter key table for oracle module.
 func ParamKeyTable() params.KeyTable {
-	return paramtypes.NewKeyTable().RegisterParamSet(&types.Params{})
+	return params.NewKeyTable().RegisterParamSet(&types.Params{})
 }
 
 // GetParam returns the parameter as specified by key as an uint64.
@@ -156,13 +146,6 @@ func (k Keeper) GetNextOracleScriptID(ctx sdk.Context) types.OracleScriptID {
 	bz := k.cdc.MustMarshalBinaryLengthPrefixed(oracleScriptCount + 1)
 	ctx.KVStore(k.storeKey).Set(types.OracleScriptCountStoreKey, bz)
 	return types.OracleScriptID(oracleScriptCount + 1)
-}
-
-// BindPort defines a wrapper function for the ort Keeper's function in
-// order to expose it to module's InitGenesis function
-func (k Keeper) BindPort(ctx sdk.Context, portID string) error {
-	cap := k.PortKeeper.BindPort(ctx, portID)
-	return k.ScopedKeeper.ClaimCapability(ctx, cap, porttypes.PortPath(portID))
 }
 
 // AddFile saves the given data to a file in HOME/files directory using sha256 sum as filename.
