@@ -5,7 +5,8 @@ import (
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/client/input"
-	"github.com/cosmos/cosmos-sdk/crypto/hd"
+	ckeys "github.com/cosmos/cosmos-sdk/client/keys"
+	"github.com/cosmos/cosmos-sdk/crypto/keys"
 	"github.com/cosmos/go-bip39"
 	"github.com/spf13/cobra"
 )
@@ -61,7 +62,6 @@ func keysAddCmd(c *Context) *cobra.Command {
 				fmt.Printf("Mnemonic: %s\n", mnemonic)
 			}
 
-			coinType, err := cmd.Flags().GetUint32(flagCoinType)
 			if err != nil {
 				return err
 			}
@@ -73,8 +73,8 @@ func keysAddCmd(c *Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			hdPath := hd.CreateHDPath(coinType, account, index)
-			info, err := keybase.NewAccount(args[0], mnemonic, "", hdPath.String(), hd.Secp256k1)
+			hdPath := keys.CreateHDPath(account, index)
+			info, err := keybase.CreateAccount(args[0], mnemonic, "", ckeys.DefaultKeyPass, hdPath.String(), keys.Secp256k1)
 			if err != nil {
 				return err
 			}
@@ -83,7 +83,6 @@ func keysAddCmd(c *Context) *cobra.Command {
 		},
 	}
 	cmd.Flags().Bool(flagRecover, false, "Provide seed phrase to recover existing key instead of creating")
-	cmd.Flags().Uint32(flagCoinType, 494, "coin type number for HD derivation")
 	cmd.Flags().Uint32(flagAccount, 0, "Account number for HD derivation")
 	cmd.Flags().Uint32(flagIndex, 0, "Address index number for HD derivation")
 	return cmd
@@ -98,7 +97,7 @@ func keysDeleteCmd(c *Context) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			name := args[0]
 
-			_, err := keybase.Key(name)
+			_, err := keybase.Get(name)
 			if err != nil {
 				return err
 			}
@@ -114,7 +113,7 @@ func keysDeleteCmd(c *Context) *cobra.Command {
 				return nil
 			}
 
-			if err := keybase.Delete(name); err != nil {
+			if err := keybase.Delete(name, "", true); err != nil {
 				return err
 			}
 
@@ -154,7 +153,7 @@ func keysShowCmd(c *Context) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			name := args[0]
 
-			key, err := keybase.Key(name)
+			key, err := keybase.Get(name)
 			if err != nil {
 				return err
 			}
