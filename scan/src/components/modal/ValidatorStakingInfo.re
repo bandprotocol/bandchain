@@ -129,6 +129,7 @@ module StakingInfo = {
       let (_, dispatchModal) = React.useContext(ModalContext.context);
 
       let infoSub = React.useContext(GlobalContext.context);
+      let validatorInfoSub = ValidatorSub.get(validatorAddress);
       let balanceAtStakeSub =
         DelegationSub.getStakeByValiator(delegatorAddress, validatorAddress);
       let unbondingSub =
@@ -139,6 +140,7 @@ module StakingInfo = {
       let%Sub balanceAtStake = balanceAtStakeSub;
       let%Sub unbonding = unbondingSub;
       let%Sub unbondingList = unbondingListSub;
+      let%Sub validatorInfo = validatorInfoSub;
 
       let balanceAtStakeAmount = balanceAtStake.amount;
       let unbondingAmount = unbonding;
@@ -149,6 +151,8 @@ module StakingInfo = {
         dispatchModal(OpenModal(SubmitTx(SubmitMsg.Delegate(validatorAddress))));
       let undelegate = () =>
         dispatchModal(OpenModal(SubmitTx(SubmitMsg.Undelegate(validatorAddress))));
+      let redelegate = () =>
+        dispatchModal(OpenModal(SubmitTx(SubmitMsg.Redelegate(validatorAddress))));
       let withdrawReward = () =>
         dispatchModal(OpenModal(SubmitTx(SubmitMsg.WithdrawReward(validatorAddress))));
       let isReachUnbondingLimit = unbondingList |> Belt_Array.length == 7;
@@ -186,7 +190,13 @@ module StakingInfo = {
             />
           </Col>
           <HSpacing size=Spacing.md />
-          <button className={Styles.button(100)} onClick={_ => {delegate()}}>
+          <button
+            className={Styles.button(100)}
+            onClick={_ => {
+              validatorInfo.commission == 100.
+                ? Window.alert("Delegation to foundation validator nodes is not advised.")
+                : delegate()
+            }}>
             <Text value="Delegate" />
           </button>
           <HSpacing size=Spacing.md />
@@ -195,6 +205,13 @@ module StakingInfo = {
             onClick={_ => {undelegate()}}
             disabled={balanceAtStakeAmount.amount == 0. || isReachUnbondingLimit}>
             <Text value="Undelegate" />
+          </button>
+          <HSpacing size=Spacing.md />
+          <button
+            className={Styles.button(100)}
+            onClick={_ => {redelegate()}}
+            disabled={balanceAtStakeAmount.amount == 0.}>
+            <Text value="Redelegate" />
           </button>
           <HSpacing size=Spacing.md />
           <button

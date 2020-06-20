@@ -26,7 +26,24 @@ module Styles = {
 
   let loginSelectionContainer = style([margin2(~v=`zero, ~h=`px(24))]);
 
-  let modalTitle = style([display(`flex), justifyContent(`center)]);
+  let modalTitle =
+    style([
+      display(`flex),
+      justifyContent(`center),
+      flexDirection(`column),
+      alignItems(`center),
+    ]);
+
+  let warning =
+    style([
+      display(`flex),
+      flexDirection(`row),
+      padding2(~v=`px(5), ~h=`px(8)),
+      color(Colors.yellow6),
+      backgroundColor(Colors.yellow1),
+      border(`px(1), `solid, Colors.yellow6),
+      borderRadius(`px(4)),
+    ]);
 
   let header = active =>
     style([
@@ -112,8 +129,17 @@ let make = (~chainID) => {
       <VSpacing size=Spacing.xxl />
       <div className=Styles.modalTitle>
         <Text value="Connect With Your Wallet" weight=Text.Bold size=Text.Xxxl />
+        {chainID == "band-wenchang-mainnet"
+           ? <>
+               <VSpacing size=Spacing.lg />
+               <div className=Styles.warning>
+                 <Text value="Please check that you are visiting" />
+                 <HSpacing size=Spacing.sm />
+                 <Text value="https://www.cosmoscan.io" weight=Text.Bold />
+               </div>
+             </>
+           : <VSpacing size=Spacing.xxl />}
       </div>
-      <VSpacing size=Spacing.xxl />
       <VSpacing size=Spacing.xl />
       <Row alignItems=`flexStart>
         <Col>

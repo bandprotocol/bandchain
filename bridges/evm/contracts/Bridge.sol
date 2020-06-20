@@ -10,7 +10,6 @@ import {Utils} from "./Utils.sol";
 import {Packets} from "./Packets.sol";
 import {IBridge} from "./IBridge.sol";
 
-
 /// @title Bridge <3 BandChain D3N
 /// @author Band Protocol Team
 contract Bridge is IBridge, Ownable {

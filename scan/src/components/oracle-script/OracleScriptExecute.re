@@ -134,6 +134,18 @@ module ExecutionPart = {
     let (callDataArr, setCallDataArr) = React.useState(_ => Belt_Array.make(numParams, ""));
     let (result, setResult) = React.useState(_ => Nothing);
 
+    // TODO: Change when input can be empty
+    let isUnused = {
+      let field = paramsInput->Belt_Array.getExn(0);
+      field.fieldName |> Js.String.startsWith("_");
+    };
+    React.useEffect0(() => {
+      if (isUnused) {
+        setCallDataArr(_ => [|"0"|]);
+      };
+      None;
+    });
+
     let requestCallback =
       React.useCallback0(requestPromise => {
         ignore(
@@ -163,30 +175,28 @@ module ExecutionPart = {
 
     <div className=Styles.container>
       <div className={Styles.hFlex(`auto)}>
-        <Text
-          value={
-            "Request"
-            ++ (numParams == 0 ? "" : " with" ++ (numParams == 1 ? " a " : " ") ++ "following")
-          }
-          color=Colors.gray7
-        />
+        <Text value="Click" />
         <HSpacing size=Spacing.sm />
-        {numParams == 0
-           ? React.null
-           : <Text
-               value={numParams > 1 ? "parameters" : "parameter"}
-               color=Colors.gray7
-               weight=Text.Bold
-             />}
+        <Text value=" Request" weight=Text.Bold />
+        <HSpacing size=Spacing.sm />
+        <Text value=" to execute the oracle script." />
       </div>
-      <VSpacing size=Spacing.lg />
-      {numParams > 0
-         ? <div className=Styles.paramsContainer>
-             {paramsInput
-              ->Belt_Array.mapWithIndex((i, param) => parameterInput(param, i, setCallDataArr))
-              ->React.array}
-           </div>
-         : React.null}
+      <VSpacing size=Spacing.md />
+      {isUnused
+         ? React.null
+         : <div>
+             <div className={Styles.hFlex(`auto)}>
+               <Text value="This oracle script requires the following" color=Colors.gray7 />
+               <HSpacing size=Spacing.sm />
+               <Text value={numParams > 1 ? "parameters:" : "parameter:"} color=Colors.gray7 />
+             </div>
+             <VSpacing size=Spacing.lg />
+             <div className=Styles.paramsContainer>
+               {paramsInput
+                ->Belt_Array.mapWithIndex((i, param) => parameterInput(param, i, setCallDataArr))
+                ->React.array}
+             </div>
+           </div>}
       <VSpacing size=Spacing.md />
       <div className=Styles.buttonContainer>
         <button
