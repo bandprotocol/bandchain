@@ -76,8 +76,8 @@ let toExternal =
   details,
   tokens,
   commission: commissionRate *. 100.,
-  commissionMaxChange,
-  commissionMaxRate,
+  commissionMaxChange: commissionMaxChange *. 100.,
+  commissionMaxRate: commissionMaxRate *. 100.,
   bondedHeight,
   // TODO: remove hardcoded when somewhere use it
   avgResponseTime: 2,

@@ -207,7 +207,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
              |> React.string;
            },
            {
-             VCode((validator.commissionMaxChange *. 100.)->Format.fPercent);
+             VCode(validator.commissionMaxChange->Format.fPercent);
            },
          )}
         <VSpacing size=Spacing.lg />
@@ -217,7 +217,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
              "The highest possible commission rate the validator can set" |> React.string;
            },
            {
-             VCode((validator.commissionMaxRate *. 100.)->Format.fPercent);
+             VCode(validator.commissionMaxRate->Format.fPercent);
            },
          )}
         <VSpacing size=Spacing.lg />
