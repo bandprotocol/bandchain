@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"testing"
 
+	"github.com/bandprotocol/bandchain/chain/pkg/obi"
 	"github.com/stretchr/testify/require"
 )
 
@@ -39,7 +40,7 @@ func TestGetBytesResponsePacket(t *testing.T) {
 	require.Equal(t, []byte(`{"type":"oracle/OracleResponsePacketData","value":{"ans_count":"1","client_id":"test","request_id":"1","request_time":"1589535020","resolve_status":1,"resolve_time":"1589535022","result":"S7EOAAAAAAA="}}`), res.GetBytes())
 }
 
-func TestCalculateEncodedResult(t *testing.T) {
+func TestOBIEncodeResult(t *testing.T) {
 	req := OracleRequestPacketData{
 		ClientID:       "beeb",
 		OracleScriptID: 1,
@@ -58,10 +59,10 @@ func TestCalculateEncodedResult(t *testing.T) {
 		Result:        mustDecodeString("00000000009443ee"),
 	}
 	expectedEncodedResult := mustDecodeString("000000046265656200000000000000010000000f0000000342544300000000000003e800000000000000010000000000000001000000046265656200000000000000020000000000000001000000005ede3bd8000000005ede3bda000000010000000800000000009443ee")
-	require.Equal(t, expectedEncodedResult, CalculateEncodedResult(req, res))
+	require.Equal(t, expectedEncodedResult, obi.MustEncode(req, res))
 }
 
-func TestCalculateEncodedResultOfEmptyClientID(t *testing.T) {
+func TestOBIEncodeResultOfEmptyClientID(t *testing.T) {
 	req := OracleRequestPacketData{
 		ClientID:       "",
 		OracleScriptID: 1,
@@ -80,5 +81,5 @@ func TestCalculateEncodedResultOfEmptyClientID(t *testing.T) {
 		Result:        mustDecodeString("0000000000944387"),
 	}
 	expectedEncodedResult := mustDecodeString("0000000000000000000000010000000f0000000342544300000000000003e8000000000000000100000000000000010000000000000000000000010000000000000001000000005ede3b1a000000005ede3b1d00000001000000080000000000944387")
-	require.Equal(t, expectedEncodedResult, CalculateEncodedResult(req, res))
+	require.Equal(t, expectedEncodedResult, obi.MustEncode(req, res))
 }
