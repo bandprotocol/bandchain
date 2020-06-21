@@ -10,6 +10,7 @@ type stake_t = {
   sharePercentage: float,
   delegatorAddress: Address.t,
   validatorAddress: Address.t,
+  moniker: string,
 };
 
 type stake_aggregate_t = {
@@ -26,6 +27,7 @@ module StakeConfig = [%graphql
       sharePercentage: share_percentage @bsDecoder(fn: "GraphQLParser.floatWithDefault")
       delegatorAddress: delegator_address @bsDecoder(fn: "GraphQLParser.addressExn")
       validatorAddress: validator_address @bsDecoder(fn: "GraphQLParser.addressExn")
+      moniker @bsDecoder(fn: "GraphQLParser.stringExn")
     }
   }
   |}
@@ -78,6 +80,7 @@ module DelegatorsByValidatorConfig = [%graphql
       sharePercentage: share_percentage @bsDecoder(fn: "GraphQLParser.floatWithDefault")
       delegatorAddress: delegator_address @bsDecoder(fn: "GraphQLParser.addressExn")
       validatorAddress: validator_address @bsDecoder(fn: "GraphQLParser.addressExn")
+      moniker @bsDecoder(fn: "GraphQLParser.stringExn")
     }
   }
   |}
