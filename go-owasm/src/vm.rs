@@ -5,7 +5,7 @@ use crate::span::Span;
 pub struct VMLogic {
     env: Env,
     gas_left: u32,
-    span_size: usize,
+    span_size: i64,
 }
 
 impl VMLogic {
@@ -17,7 +17,7 @@ impl VMLogic {
         }
     }
 
-    pub fn get_span_size(&self) -> usize {
+    pub fn get_span_size(&self) -> i64 {
         self.span_size
     }
 
