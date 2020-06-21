@@ -28,8 +28,26 @@ var (
 	ErrUnknown                 = errors.New("unknown error")
 )
 
-// parseError - returns parsed error from errors code on bindings.h
-func parseErrorFromC(code C.Error) error {
+// toCError converts the given Golang error into Rust/C error.
+func toCError(err error) C.Error {
+	switch err {
+	case ErrWrongPeriodAction:
+		return C.Error_WrongPeriodActionError
+	case ErrTooManyExternalData:
+		return C.Error_TooManyExternalDataError
+	case ErrBadValidatorIndex:
+		return C.Error_BadValidatorIndexError
+	case ErrBadExternalID:
+		return C.Error_BadExternalIDError
+	case ErrUnavailableExternalData:
+		return C.Error_UnavailableExternalDataError
+	default:
+		return C.Error_UnknownError
+	}
+}
+
+// toGoError converts the given Rust/C error to Golang error.
+func toGoError(code C.Error) error {
 	switch code {
 	case C.Error_NoError:
 		return nil
@@ -65,7 +83,7 @@ func parseErrorFromC(code C.Error) error {
 	case C.Error_WrongPeriodActionError:
 		return ErrWrongPeriodAction
 	case C.Error_TooManyExternalDataError:
-		return ErrWrongPeriodAction
+		return ErrTooManyExternalData
 	case C.Error_BadValidatorIndexError:
 		return ErrBadValidatorIndex
 	case C.Error_BadExternalIDError:
