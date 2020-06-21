@@ -18,15 +18,11 @@ type EnvInterface interface {
 }
 
 type envIntl struct {
-	ext     EnvInterface
-	extData map[[2]int64][]byte
+	ext EnvInterface
 }
 
 func createEnvIntl(ext EnvInterface) *envIntl {
-	return &envIntl{
-		ext:     ext,
-		extData: make(map[[2]int64][]byte),
-	}
+	return &envIntl{ext: ext}
 }
 
 //export cGetCalldata
@@ -85,17 +81,13 @@ func cGetExternalDataStatus(e *C.env_t, eid C.int64_t, vid C.int64_t, status *C.
 
 //export cGetExternalData
 func cGetExternalData(e *C.env_t, eid C.int64_t, vid C.int64_t, data *C.Span) C.Error {
-	key := [2]int64{int64(eid), int64(vid)}
 	env := (*(*envIntl)(unsafe.Pointer(e)))
-	if _, ok := env.extData[key]; !ok {
-		data, err := env.ext.GetExternalData(int64(eid), int64(vid))
-		if err != nil {
-			return toCError(err)
-		}
-		if data == nil {
-			return C.Error_UnavailableExternalDataError
-		}
-		env.extData[key] = data
+	extData, err := env.ext.GetExternalData(int64(eid), int64(vid))
+	if err != nil {
+		return toCError(err)
 	}
-	return writeSpan(data, env.extData[key])
+	if extData == nil {
+		return C.Error_UnavailableExternalDataError
+	}
+	return writeSpan(data, extData)
 }

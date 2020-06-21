@@ -7,30 +7,32 @@ import (
 )
 
 var (
-	ErrSpanTooSmall            = errors.New("span to write is too small.")
-	ErrValidation              = errors.New("wasm code does not pass basic validation.")
-	ErrDeserialization         = errors.New("fail to deserialize Wasm into Partity-wasm module.")
-	ErrSerialization           = errors.New("fail to serialize Parity-wasm module into Wasm.")
-	ErrInvalidImports          = errors.New("wasm code contains invalid import symbols.")
-	ErrInvalidExports          = errors.New("wasm code contains invalid export symbols.")
-	ErrBadMemorySection        = errors.New("wasm code contains bad memory sections.")
-	ErrGasCounterInjection     = errors.New("fail to inject gas counter into Wasm code.")
-	ErrStackHeightInjection    = errors.New("fail to inject stack height limit into Wasm code.")
-	ErrInstantiation           = errors.New("error while instantiating Wasm with resolvers.")
-	ErrRuntime                 = errors.New("runtime error while executing the Wasm script.")
-	ErrOutOfGas                = errors.New("out-of-gas while executing the Wasm script.")
-	ErrBadEntrySignature       = errors.New("bad execution entry point sigature.")
-	ErrWrongPeriodAction       = errors.New("OEI action to invoke is not available.")
-	ErrTooManyExternalData     = errors.New("too many external data requests.")
-	ErrBadValidatorIndex       = errors.New("bad validator index parameter.")
-	ErrBadExternalID           = errors.New("bad external ID parameter.")
-	ErrUnavailableExternalData = errors.New("external data is not available.")
+	ErrSpanTooSmall            = errors.New("span to write is too small")
+	ErrValidation              = errors.New("wasm code does not pass basic validation")
+	ErrDeserialization         = errors.New("fail to deserialize wasm into Partity-wasm module")
+	ErrSerialization           = errors.New("fail to serialize Parity-wasm module into wasm")
+	ErrInvalidImports          = errors.New("wasm code contains invalid import symbols")
+	ErrInvalidExports          = errors.New("wasm code contains invalid export symbols")
+	ErrBadMemorySection        = errors.New("wasm code contains bad memory sections")
+	ErrGasCounterInjection     = errors.New("fail to inject gas counter into Wasm code")
+	ErrStackHeightInjection    = errors.New("fail to inject stack height limit into Wasm code")
+	ErrInstantiation           = errors.New("error while instantiating Wasm with resolvers")
+	ErrRuntime                 = errors.New("runtime error while executing the Wasm script")
+	ErrOutOfGas                = errors.New("out-of-gas while executing the wasm script")
+	ErrBadEntrySignature       = errors.New("bad execution entry point sigature")
+	ErrWrongPeriodAction       = errors.New("OEI action to invoke is not available")
+	ErrTooManyExternalData     = errors.New("too many external data requests")
+	ErrBadValidatorIndex       = errors.New("bad validator index parameter")
+	ErrBadExternalID           = errors.New("bad external ID parameter")
+	ErrUnavailableExternalData = errors.New("external data is not available")
 	ErrUnknown                 = errors.New("unknown error")
 )
 
 // toCError converts the given Golang error into Rust/C error.
 func toCError(err error) C.Error {
 	switch err {
+	case nil:
+		return C.Error_NoError
 	case ErrWrongPeriodAction:
 		return C.Error_WrongPeriodActionError
 	case ErrTooManyExternalData:
