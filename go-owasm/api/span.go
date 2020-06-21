@@ -29,11 +29,11 @@ func freeSpan(span C.Span) {
 	C.free(unsafe.Pointer(span.ptr))
 }
 
-func writeSpan(span *C.Span, data []byte) C.GoResult {
+func writeSpan(span *C.Span, data []byte) C.Error {
 	if int(span.cap) < len(data) {
-		return C.GoResult_SpanExceededCapacity
+		return C.Error_SpanTooSmallError
 	}
 	C.memcpy(unsafe.Pointer(span.ptr), unsafe.Pointer(&data[0]), C.size_t(len(data)))
 	span.len = C.uintptr_t(len(data))
-	return C.GoResult_Ok
+	return C.Error_NoError
 }

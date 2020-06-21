@@ -18,15 +18,11 @@ var (
 	ErrGasCounterInjectFail       = errors.New("gas counter inject fail")
 	ErrSerializetFail             = errors.New("serialize fail")
 	ErrUnknownError               = errors.New("unknown error")
-	ErrCompliationError           = errors.New("compile fail")
-	ErrRunError                   = errors.New("run fail")
-	ErrParseError                 = errors.New("parse fail")
-	ErrWriteBinaryError           = errors.New("write binary fail")
-	ErrValidateError              = errors.New("validate fail")
+	ErrInstantiationError         = errors.New("compile fail")
+	ErrRuntimeError               = errors.New("run fail")
+	ErrValidationError            = errors.New("validate fail")
 	ErrGasLimitExceeded           = errors.New("gas limit exceeded")
 	ErrNoMemoryWasm               = errors.New("no memory wasm")
-	ErrMinimumMemoryExceed        = errors.New("minimum memory exceed")
-	ErrSetMaximumMemory           = errors.New("maximum must be unset")
 	ErrStackHeightInstrumentation = errors.New("stack height instrumention fail")
 	ErrCheckWasmImports           = errors.New("check wasm imports fail")
 	ErrCheckWasmExports           = errors.New("check wasm exports fail")
@@ -48,19 +44,13 @@ func parseErrorFromC(code C.Error) error {
 	switch code {
 	case C.Error_NoError:
 		return nil
-	case C.Error_CompliationError:
+	case C.Error_InstantiationError:
 		return ErrCompliationFail
-	case C.Error_RunError:
+	case C.Error_RuntimeError:
 		return ErrRunFail
-	case C.Error_ParseError:
-		return ErrParseFail
-	case C.Error_WriteBinaryError:
-		return ErrWriteBinaryFail
-	case C.Error_ResolveNamesError:
-		return ErrResolvesNamesFail
-	case C.Error_ValidateError:
+	case C.Error_ValidationError:
 		return ErrValidateFail
-	case C.Error_SpanExceededCapacityError:
+	case C.Error_SpanTooSmallError:
 		return ErrSpanExceededCapacity
 	case C.Error_DeserializationError:
 		return ErrDeserializeFail
@@ -68,39 +58,27 @@ func parseErrorFromC(code C.Error) error {
 		return ErrGasCounterInjectFail
 	case C.Error_SerializationError:
 		return ErrSerializetFail
-	case C.Error_GasLimitExceedError:
+	case C.Error_OutOfGasError:
 		return ErrGasLimitExceeded
-	case C.Error_NoMemoryWasmError:
+	case C.Error_BadMemorySectionError:
 		return ErrNoMemoryWasm
-	case C.Error_MinimumMemoryExceedError:
-		return ErrMinimumMemoryExceed
-	case C.Error_SetMaximumMemoryError:
-		return ErrSetMaximumMemory
-	case C.Error_StackHeightInstrumentationError:
+	case C.Error_StackHeightInjectionError:
 		return ErrStackHeightInstrumentation
-	case C.Error_CheckWasmImportsError:
+	case C.Error_InvalidImportsError:
 		return ErrCheckWasmImports
-	case C.Error_CheckWasmExportsError:
+	case C.Error_InvalidExportsError:
 		return ErrCheckWasmExports
-	case C.Error_InvalidSignatureFunctionError:
+	case C.Error_BadEntrySignatureError:
 		return ErrInvalidSignatureFunction
-	case C.Error_SetReturnDataWrongPeriodError:
+	case C.Error_WrongPeriodActionError:
 		return ErrSetReturnDataWrongPeriod
-	case C.Error_AnsCountWrongPeriodError:
-		return ErrAnsCountWrongPeriod
-	case C.Error_AskExternalDataWrongPeriodError:
-		return ErrAskExternalDataWrongPeriod
-	case C.Error_AskExternalDataExceedError:
+	case C.Error_TooManyExternalDataError:
 		return ErrAskExternalDataExceed
-	case C.Error_GetExternalDataStatusWrongPeriodError:
-		return ErrGetExternalDataStatusWrongPeriod
-	case C.Error_GetExternalDataWrongPeriodError:
-		return ErrGetExternalDataWrongPeriod
-	case C.Error_ValidatorOutOfRangeError:
+	case C.Error_BadValidatorIndexError:
 		return ErrValidatorOutOfRange
-	case C.Error_InvalidExternalIDError:
+	case C.Error_BadExternalIDError:
 		return ErrInvalidExternalID
-	case C.Error_GetUnreportedDataError:
+	case C.Error_UnavailbleExternalDataError:
 		return ErrGetUnreportedData
 	default:
 		return ErrUnknownError

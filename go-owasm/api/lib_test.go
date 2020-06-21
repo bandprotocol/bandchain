@@ -37,7 +37,7 @@ func TestFailCompileInvalidContent(t *testing.T) {
 	_, err := Compile(code, spanSize)
 	require.Equal(t, ErrValidateFail, err)
 }
-func TestRunError(t *testing.T) {
+func TestRuntimeError(t *testing.T) {
 	spanSize := 1 * 1024 * 1024
 	wasm := wat2wasm([]byte(`(module
 		(type (func (param i64 i64 i32 i64) (result i64)))
@@ -56,7 +56,7 @@ func TestRunError(t *testing.T) {
 	code, _ := Compile(wasm, spanSize)
 
 	err := Prepare(code, 100000, NewMockEnv([]byte("")))
-	require.Equal(t, ErrRunError, err)
+	require.Equal(t, ErrRuntimeError, err)
 }
 
 func TestInvaildSignature(t *testing.T) {
@@ -172,7 +172,7 @@ func TestCompileErrorMinimumMemoryExceed(t *testing.T) {
 
 	  `))
 	_, err = Compile(wasm, spanSize)
-	require.Equal(t, ErrMinimumMemoryExceed, err)
+	require.Equal(t, ErrNoMemoryWasm, err)
 }
 
 func TestCompileErrorSetMaximumMemory(t *testing.T) {
@@ -195,7 +195,7 @@ func TestCompileErrorSetMaximumMemory(t *testing.T) {
 
 	  `))
 	code, err := Compile(wasm, spanSize)
-	require.Equal(t, ErrSetMaximumMemory, err)
+	require.Equal(t, ErrNoMemoryWasm, err)
 	require.Equal(t, []uint8([]byte{}), code)
 }
 
