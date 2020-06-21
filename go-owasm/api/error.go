@@ -7,36 +7,25 @@ import (
 )
 
 var (
-	ErrCompliationFail            = errors.New("compile fail")
-	ErrRunFail                    = errors.New("run fail")
-	ErrParseFail                  = errors.New("parse fail")
-	ErrWriteBinaryFail            = errors.New("write binary fail")
-	ErrResolvesNamesFail          = errors.New("resolve names fail")
-	ErrValidateFail               = errors.New("validate fail")
-	ErrSpanExceededCapacity       = errors.New("span exceeded capacity")
-	ErrDeserializeFail            = errors.New("deserialize fail")
-	ErrGasCounterInjectFail       = errors.New("gas counter inject fail")
-	ErrSerializetFail             = errors.New("serialize fail")
-	ErrUnknownError               = errors.New("unknown error")
-	ErrInstantiationError         = errors.New("compile fail")
-	ErrRuntimeError               = errors.New("run fail")
-	ErrValidationError            = errors.New("validate fail")
-	ErrGasLimitExceeded           = errors.New("gas limit exceeded")
-	ErrNoMemoryWasm               = errors.New("no memory wasm")
-	ErrStackHeightInstrumentation = errors.New("stack height instrumention fail")
-	ErrCheckWasmImports           = errors.New("check wasm imports fail")
-	ErrCheckWasmExports           = errors.New("check wasm exports fail")
-	ErrInvalidSignatureFunction   = errors.New("invalid signature function")
-
-	ErrSetReturnDataWrongPeriod         = errors.New("set return data on non-execution period")
-	ErrAnsCountWrongPeriod              = errors.New("get ans count on non-execution period")
-	ErrAskExternalDataWrongPeriod       = errors.New("ask external data on non-prepare period")
-	ErrAskExternalDataExceed            = errors.New("ask external data exceed")
-	ErrGetExternalDataStatusWrongPeriod = errors.New("get external data status on non-execution period")
-	ErrGetExternalDataWrongPeriod       = errors.New("get external data on non-execution period")
-	ErrValidatorOutOfRange              = errors.New("validator index out of range")
-	ErrInvalidExternalID                = errors.New("get data from invalid external id")
-	ErrGetUnreportedData                = errors.New("get data from unreported validator")
+	ErrSpanTooSmall            = errors.New("span to write is too small.")
+	ErrValidation              = errors.New("wasm code does not pass basic validation.")
+	ErrDeserialization         = errors.New("fail to deserialize Wasm into Partity-wasm module.")
+	ErrSerialization           = errors.New("fail to serialize Parity-wasm module into Wasm.")
+	ErrInvalidImports          = errors.New("wasm code contains invalid import symbols.")
+	ErrInvalidExports          = errors.New("wasm code contains invalid export symbols.")
+	ErrBadMemorySection        = errors.New("wasm code contains bad memory sections.")
+	ErrGasCounterInjection     = errors.New("fail to inject gas counter into Wasm code.")
+	ErrStackHeightInjection    = errors.New("fail to inject stack height limit into Wasm code.")
+	ErrInstantiation           = errors.New("error while instantiating Wasm with resolvers.")
+	ErrRuntime                 = errors.New("runtime error while executing the Wasm script.")
+	ErrOutOfGas                = errors.New("out-of-gas while executing the Wasm script.")
+	ErrBadEntrySignature       = errors.New("bad execution entry point sigature.")
+	ErrWrongPeriodAction       = errors.New("OEI action to invoke is not available.")
+	ErrTooManyExternalData     = errors.New("too many external data requests.")
+	ErrBadValidatorIndex       = errors.New("bad validator index parameter.")
+	ErrBadExternalID           = errors.New("bad external ID parameter.")
+	ErrUnavailableExternalData = errors.New("external data is not available.")
+	ErrUnknown                 = errors.New("unknown error")
 )
 
 // parseError - returns parsed error from errors code on bindings.h
@@ -45,42 +34,42 @@ func parseErrorFromC(code C.Error) error {
 	case C.Error_NoError:
 		return nil
 	case C.Error_InstantiationError:
-		return ErrCompliationFail
+		return ErrInstantiation
 	case C.Error_RuntimeError:
-		return ErrRunFail
+		return ErrRuntime
 	case C.Error_ValidationError:
-		return ErrValidateFail
+		return ErrValidation
 	case C.Error_SpanTooSmallError:
-		return ErrSpanExceededCapacity
+		return ErrSpanTooSmall
 	case C.Error_DeserializationError:
-		return ErrDeserializeFail
+		return ErrDeserialization
 	case C.Error_GasCounterInjectionError:
-		return ErrGasCounterInjectFail
+		return ErrGasCounterInjection
 	case C.Error_SerializationError:
-		return ErrSerializetFail
+		return ErrSerialization
 	case C.Error_OutOfGasError:
-		return ErrGasLimitExceeded
+		return ErrOutOfGas
 	case C.Error_BadMemorySectionError:
-		return ErrNoMemoryWasm
+		return ErrBadMemorySection
 	case C.Error_StackHeightInjectionError:
-		return ErrStackHeightInstrumentation
+		return ErrStackHeightInjection
 	case C.Error_InvalidImportsError:
-		return ErrCheckWasmImports
+		return ErrInvalidImports
 	case C.Error_InvalidExportsError:
-		return ErrCheckWasmExports
+		return ErrInvalidExports
 	case C.Error_BadEntrySignatureError:
-		return ErrInvalidSignatureFunction
+		return ErrBadEntrySignature
 	case C.Error_WrongPeriodActionError:
-		return ErrSetReturnDataWrongPeriod
+		return ErrWrongPeriodAction
 	case C.Error_TooManyExternalDataError:
-		return ErrAskExternalDataExceed
+		return ErrWrongPeriodAction
 	case C.Error_BadValidatorIndexError:
-		return ErrValidatorOutOfRange
+		return ErrBadValidatorIndex
 	case C.Error_BadExternalIDError:
-		return ErrInvalidExternalID
-	case C.Error_UnavailbleExternalDataError:
-		return ErrGetUnreportedData
+		return ErrBadExternalID
+	case C.Error_UnavailableExternalDataError:
+		return ErrUnavailableExternalData
 	default:
-		return ErrUnknownError
+		return ErrUnknown
 	}
 }

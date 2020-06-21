@@ -19,11 +19,11 @@ pub enum Error {
   OutOfGasError = 12,          // Out-of-gas while executing the Wasm script.
   BadEntrySignatureError = 13, // Bad execution entry point sigature.
   // Go-generated errors while interacting with OEI.
-  WrongPeriodActionError = 128,      // OEI action to invoke is not available.
-  TooManyExternalDataError = 129,    // Too many external data requests.
-  BadValidatorIndexError = 130,      // Bad validator index parameter.
-  BadExternalIDError = 131,          // Bad external ID parameter.
-  UnavailbleExternalDataError = 132, // External data is not available.
+  WrongPeriodActionError = 128,       // OEI action to invoke is not available.
+  TooManyExternalDataError = 129,     // Too many external data requests.
+  BadValidatorIndexError = 130,       // Bad validator index parameter.
+  BadExternalIDError = 131,           // Bad external ID parameter.
+  UnavailableExternalDataError = 132, // External data is not available.
   // Unexpected error
   UnknownError = 255,
 }

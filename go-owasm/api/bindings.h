@@ -28,7 +28,7 @@ enum Error {
   Error_TooManyExternalDataError = 129,
   Error_BadValidatorIndexError = 130,
   Error_BadExternalIDError = 131,
-  Error_UnavailbleExternalDataError = 132,
+  Error_UnavailableExternalDataError = 132,
   Error_UnknownError = 255,
 };
 typedef int32_t Error;

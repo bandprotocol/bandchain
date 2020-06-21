@@ -31,15 +31,15 @@ func createEnvIntl(ext EnvInterface) *envIntl {
 
 func parseErrorToC(err error) C.Error {
 	switch err {
-	case ErrSetReturnDataWrongPeriod:
+	case ErrWrongPeriodAction:
 		return C.Error_WrongPeriodActionError
-	case ErrAnsCountWrongPeriod:
+	case ErrWrongPeriodAction:
 		return C.Error_WrongPeriodActionError
-	case ErrAskExternalDataWrongPeriod:
+	case ErrWrongPeriodAction:
 		return C.Error_WrongPeriodActionError
-	case ErrGetExternalDataStatusWrongPeriod:
+	case ErrWrongPeriodAction:
 		return C.Error_WrongPeriodActionError
-	case ErrGetExternalDataWrongPeriod:
+	case ErrWrongPeriodAction:
 		return C.Error_WrongPeriodActionError
 	default:
 		return C.Error_UnknownError
@@ -110,7 +110,7 @@ func cGetExternalData(e *C.env_t, eid C.int64_t, vid C.int64_t, data *C.Span) C.
 			return parseErrorToC(err)
 		}
 		if data == nil {
-			return C.Error_UnavailbleExternalDataError
+			return C.Error_UnavailableExternalDataError
 		}
 		env.extData[key] = data
 	}
