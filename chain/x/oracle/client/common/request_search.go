@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
-	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
+	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
@@ -27,7 +27,7 @@ func QuerySearchLatestRequest(
 		fmt.Sprintf("%s.%s='%s'", types.EventTypeRequest, types.AttributeKeyAskCount, askCount),
 		fmt.Sprintf("%s.%s='%s'", types.EventTypeRequest, types.AttributeKeyMinCount, minCount),
 	}
-	searchResult, err := authclient.QueryTxsByEvents(cliCtx, events, 1, 30, "desc")
+	searchResult, err := utils.QueryTxsByEvents(cliCtx, events, 1, 30) // TODO: FIX THIS! , "desc")
 	if err != nil {
 		return nil, 0, err
 	}

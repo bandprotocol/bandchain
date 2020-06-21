@@ -11,22 +11,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/cosmos/cosmos-sdk/x/capability"
-	channel "github.com/cosmos/cosmos-sdk/x/ibc/04-channel"
-	channelexported "github.com/cosmos/cosmos-sdk/x/ibc/04-channel/exported"
-	channeltypes "github.com/cosmos/cosmos-sdk/x/ibc/04-channel/types"
-	port "github.com/cosmos/cosmos-sdk/x/ibc/05-port"
-	ibctypes "github.com/cosmos/cosmos-sdk/x/ibc/types"
 	abci "github.com/tendermint/tendermint/abci/types"
-
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 var (
 	_ module.AppModule      = AppModule{}
-	_ port.IBCModule        = AppModule{}
 	_ module.AppModuleBasic = AppModuleBasic{}
 )
 
@@ -40,14 +30,14 @@ func (AppModuleBasic) Name() string { return ModuleName }
 func (AppModuleBasic) RegisterCodec(cdc *codec.Codec) { RegisterCodec(cdc) }
 
 // DefaultGenesis returns the default genesis state as raw bytes.
-func (AppModuleBasic) DefaultGenesis(cdc codec.JSONMarshaler) json.RawMessage {
-	return cdc.MustMarshalJSON(DefaultGenesisState())
+func (AppModuleBasic) DefaultGenesis() json.RawMessage {
+	return ModuleCdc.MustMarshalJSON(DefaultGenesisState())
 }
 
 // ValidateGenesis performs genesis state validation for the oracle module.
-func (AppModuleBasic) ValidateGenesis(cdc codec.JSONMarshaler, bz json.RawMessage) error {
+func (AppModuleBasic) ValidateGenesis(bz json.RawMessage) error {
 	var data GenesisState
-	return cdc.UnmarshalJSON(bz, &data)
+	return ModuleCdc.UnmarshalJSON(bz, &data)
 }
 
 // RegisterRESTRoutes implements AppModuleBasic interface.
@@ -104,87 +94,87 @@ func (am AppModule) EndBlock(ctx sdk.Context, _ abci.RequestEndBlock) []abci.Val
 }
 
 // InitGenesis performs genesis initialization for the oracle module.
-func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, data json.RawMessage) []abci.ValidatorUpdate {
+func (am AppModule) InitGenesis(ctx sdk.Context, data json.RawMessage) []abci.ValidatorUpdate {
 	var genesisState GenesisState
-	cdc.MustUnmarshalJSON(data, &genesisState)
+	ModuleCdc.MustUnmarshalJSON(data, &genesisState)
 	return InitGenesis(ctx, am.keeper, genesisState)
 }
 
 // ExportGenesis returns the current state as genesis raw bytes.
-func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONMarshaler) json.RawMessage {
+func (am AppModule) ExportGenesis(ctx sdk.Context) json.RawMessage {
 	gs := ExportGenesis(ctx, am.keeper)
-	return cdc.MustMarshalJSON(gs)
+	return ModuleCdc.MustMarshalJSON(gs)
 }
 
-// OnChanOpenInit implements ics-26 IBCModule interface.
-func (am AppModule) OnChanOpenInit(
-	ctx sdk.Context, order channelexported.Order, connectionHops []string,
-	portID string, channelID string, chanCap *capability.Capability,
-	counterparty channeltypes.Counterparty, version string,
-) error {
-	// Claim channel capability passed back by IBC module.
-	capPath := ibctypes.ChannelCapabilityPath(portID, channelID)
-	if err := am.keeper.ScopedKeeper.ClaimCapability(ctx, chanCap, capPath); err != nil {
-		return sdkerrors.Wrap(channel.ErrChannelCapabilityNotFound, err.Error())
-	}
-	return nil
-}
+// // OnChanOpenInit implements ics-26 IBCModule interface.
+// func (am AppModule) OnChanOpenInit(
+// 	ctx sdk.Context, order channelexported.Order, connectionHops []string,
+// 	portID string, channelID string, chanCap *capability.Capability,
+// 	counterparty channeltypes.Counterparty, version string,
+// ) error {
+// 	// Claim channel capability passed back by IBC module.
+// 	capPath := ibctypes.ChannelCapabilityPath(portID, channelID)
+// 	if err := am.keeper.ScopedKeeper.ClaimCapability(ctx, chanCap, capPath); err != nil {
+// 		return sdkerrors.Wrap(channel.ErrChannelCapabilityNotFound, err.Error())
+// 	}
+// 	return nil
+// }
 
-// OnChanOpenTry implements ics-26 IBCModule interface.
-func (am AppModule) OnChanOpenTry(
-	ctx sdk.Context, order channelexported.Order, connectionHops []string, portID string,
-	channelID string, chanCap *capability.Capability, counterparty channeltypes.Counterparty,
-	version string, counterpartyVersion string,
-) error {
-	// Claim channel capability passed back by IBC module.
-	capPath := ibctypes.ChannelCapabilityPath(portID, channelID)
-	if err := am.keeper.ScopedKeeper.ClaimCapability(ctx, chanCap, capPath); err != nil {
-		return sdkerrors.Wrap(channel.ErrChannelCapabilityNotFound, err.Error())
-	}
-	return nil
-}
+// // OnChanOpenTry implements ics-26 IBCModule interface.
+// func (am AppModule) OnChanOpenTry(
+// 	ctx sdk.Context, order channelexported.Order, connectionHops []string, portID string,
+// 	channelID string, chanCap *capability.Capability, counterparty channeltypes.Counterparty,
+// 	version string, counterpartyVersion string,
+// ) error {
+// 	// Claim channel capability passed back by IBC module.
+// 	capPath := ibctypes.ChannelCapabilityPath(portID, channelID)
+// 	if err := am.keeper.ScopedKeeper.ClaimCapability(ctx, chanCap, capPath); err != nil {
+// 		return sdkerrors.Wrap(channel.ErrChannelCapabilityNotFound, err.Error())
+// 	}
+// 	return nil
+// }
 
-// OnChanOpenAck implements ics-26 IBCModule interface.
-func (am AppModule) OnChanOpenAck(ctx sdk.Context, portID string, channelID string, counterpartyVersion string) error {
-	return nil
-}
+// // OnChanOpenAck implements ics-26 IBCModule interface.
+// func (am AppModule) OnChanOpenAck(ctx sdk.Context, portID string, channelID string, counterpartyVersion string) error {
+// 	return nil
+// }
 
-// OnChanOpenConfirm implements ics-26 IBCModule interface.
-func (am AppModule) OnChanOpenConfirm(ctx sdk.Context, portID string, channelID string) error {
-	return nil
-}
+// // OnChanOpenConfirm implements ics-26 IBCModule interface.
+// func (am AppModule) OnChanOpenConfirm(ctx sdk.Context, portID string, channelID string) error {
+// 	return nil
+// }
 
-// OnChanCloseInit implements ics-26 IBCModule interface.
-func (am AppModule) OnChanCloseInit(ctx sdk.Context, portID string, channelID string) error {
-	// Disallow user-initiated channel closing for transfer channels
-	return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "user cannot close channel")
-}
+// // OnChanCloseInit implements ics-26 IBCModule interface.
+// func (am AppModule) OnChanCloseInit(ctx sdk.Context, portID string, channelID string) error {
+// 	// Disallow user-initiated channel closing for transfer channels
+// 	return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "user cannot close channel")
+// }
 
-// OnChanCloseConfirm implements ics-26 IBCModule interface.
-func (am AppModule) OnChanCloseConfirm(ctx sdk.Context, portID string, channelID string) error {
-	return nil
-}
+// // OnChanCloseConfirm implements ics-26 IBCModule interface.
+// func (am AppModule) OnChanCloseConfirm(ctx sdk.Context, portID string, channelID string) error {
+// 	return nil
+// }
 
-// OnRecvPacket implements ics-26 IBCModule interface.
-func (am AppModule) OnRecvPacket(ctx sdk.Context, packet channeltypes.Packet) (*sdk.Result, error) {
-	var req OracleRequestPacketData
-	if err := types.ModuleCdc.UnmarshalJSON(packet.GetData(), &req); err != nil {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal request packet data: %s", err.Error())
-	}
-	ibcInfo := types.NewIBCInfo(packet.GetDestPort(), packet.GetDestChannel())
-	err := am.keeper.PrepareRequest(ctx, &req, &ibcInfo)
-	if err != nil {
-		return nil, err
-	}
-	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
-}
+// // OnRecvPacket implements ics-26 IBCModule interface.
+// func (am AppModule) OnRecvPacket(ctx sdk.Context, packet channeltypes.Packet) (*sdk.Result, error) {
+// 	var req OracleRequestPacketData
+// 	if err := types.ModuleCdc.UnmarshalJSON(packet.GetData(), &req); err != nil {
+// 		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal request packet data: %s", err.Error())
+// 	}
+// 	ibcInfo := types.NewIBCInfo(packet.GetDestPort(), packet.GetDestChannel())
+// 	err := am.keeper.PrepareRequest(ctx, &req, &ibcInfo)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
+// }
 
-// OnAcknowledgementPacket implements ics-26 IBCModule interface.
-func (am AppModule) OnAcknowledgementPacket(ctx sdk.Context, packet channeltypes.Packet, acknowledgement []byte) (*sdk.Result, error) {
-	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
-}
+// // OnAcknowledgementPacket implements ics-26 IBCModule interface.
+// func (am AppModule) OnAcknowledgementPacket(ctx sdk.Context, packet channeltypes.Packet, acknowledgement []byte) (*sdk.Result, error) {
+// 	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
+// }
 
-// OnTimeoutPacket implements ics-26 IBCModule interface.
-func (am AppModule) OnTimeoutPacket(ctx sdk.Context, packet channeltypes.Packet) (*sdk.Result, error) {
-	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
-}
+// // OnTimeoutPacket implements ics-26 IBCModule interface.
+// func (am AppModule) OnTimeoutPacket(ctx sdk.Context, packet channeltypes.Packet) (*sdk.Result, error) {
+// 	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
+// }

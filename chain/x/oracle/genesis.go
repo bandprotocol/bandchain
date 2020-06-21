@@ -2,7 +2,6 @@ package oracle
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -40,10 +39,10 @@ func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorU
 	for _, oracleScript := range data.OracleScripts {
 		_ = k.AddOracleScript(ctx, oracleScript)
 	}
-	err := k.BindPort(ctx, PortID)
-	if err != nil {
-		panic(fmt.Sprintf("could not claim port capability: %v", err))
-	}
+	// err := k.BindPort(ctx, PortID)
+	// if err != nil {
+	// 	panic(fmt.Sprintf("could not claim port capability: %v", err))
+	// }
 	return []abci.ValidatorUpdate{}
 }
 

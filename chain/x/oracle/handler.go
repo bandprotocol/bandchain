@@ -51,7 +51,7 @@ func handleMsgCreateDataSource(ctx sdk.Context, k Keeper, m MsgCreateDataSource)
 		types.EventTypeCreateDataSource,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
 	))
-	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
 func handleMsgEditDataSource(ctx sdk.Context, k Keeper, m MsgEditDataSource) (*sdk.Result, error) {
@@ -76,7 +76,7 @@ func handleMsgEditDataSource(ctx sdk.Context, k Keeper, m MsgEditDataSource) (*s
 		types.EventTypeEditDataSource,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", m.DataSourceID)),
 	))
-	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
 func handleMsgCreateOracleScript(ctx sdk.Context, k Keeper, m MsgCreateOracleScript) (*sdk.Result, error) {
@@ -94,7 +94,7 @@ func handleMsgCreateOracleScript(ctx sdk.Context, k Keeper, m MsgCreateOracleScr
 		types.EventTypeCreateOracleScript,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
 	))
-	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
 func handleMsgEditOracleScript(ctx sdk.Context, k Keeper, m MsgEditOracleScript) (*sdk.Result, error) {
@@ -118,7 +118,7 @@ func handleMsgEditOracleScript(ctx sdk.Context, k Keeper, m MsgEditOracleScript)
 		types.EventTypeEditOracleScript,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", m.OracleScriptID)),
 	))
-	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
 func handleMsgRequestData(ctx sdk.Context, k Keeper, m MsgRequestData) (*sdk.Result, error) {
@@ -126,7 +126,7 @@ func handleMsgRequestData(ctx sdk.Context, k Keeper, m MsgRequestData) (*sdk.Res
 	if err != nil {
 		return nil, err
 	}
-	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
 func handleMsgReportData(ctx sdk.Context, k Keeper, m MsgReportData) (*sdk.Result, error) {
@@ -148,7 +148,7 @@ func handleMsgReportData(ctx sdk.Context, k Keeper, m MsgReportData) (*sdk.Resul
 		sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", m.RequestID)),
 		sdk.NewAttribute(types.AttributeKeyValidator, m.Validator.String()),
 	))
-	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
 func handleMsgAddReporter(ctx sdk.Context, k Keeper, m MsgAddReporter) (*sdk.Result, error) {
@@ -161,7 +161,7 @@ func handleMsgAddReporter(ctx sdk.Context, k Keeper, m MsgAddReporter) (*sdk.Res
 		sdk.NewAttribute(types.AttributeKeyValidator, m.Validator.String()),
 		sdk.NewAttribute(types.AttributeKeyReporter, m.Reporter.String()),
 	))
-	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
 func handleMsgRemoveReporter(ctx sdk.Context, k Keeper, m MsgRemoveReporter) (*sdk.Result, error) {
@@ -174,5 +174,5 @@ func handleMsgRemoveReporter(ctx sdk.Context, k Keeper, m MsgRemoveReporter) (*s
 		sdk.NewAttribute(types.AttributeKeyValidator, m.Validator.String()),
 		sdk.NewAttribute(types.AttributeKeyReporter, m.Reporter.String()),
 	))
-	return &sdk.Result{Events: ctx.EventManager().Events().ToABCIEvents()}, nil
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
