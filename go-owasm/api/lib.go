@@ -59,12 +59,3 @@ func run(code []byte, gasLimit uint32, isPrepare bool, env EnvInterface) error {
 		},
 	}))
 }
-
-func Wat2Wasm(code []byte, spanSize int) ([]byte, error) {
-	inputSpan := copySpan(code)
-	defer freeSpan(inputSpan)
-	outputSpan := newSpan(spanSize)
-	defer freeSpan(outputSpan)
-	err := parseErrorFromC(C.do_wat2wasm(inputSpan, &outputSpan))
-	return readSpan(outputSpan), err
-}
