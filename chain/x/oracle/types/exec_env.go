@@ -72,7 +72,7 @@ func (env *PrepareEnv) AskExternalData(eid int64, did int64, data []byte) error 
 		return api.ErrSpanTooSmall
 	}
 	if int64(len(env.rawRequests)) >= env.maxRawRequests {
-		return api.ErrWrongPeriodAction
+		return api.ErrTooManyExternalData
 	}
 	env.rawRequests = append(env.rawRequests, NewRawRequest(
 		ExternalID(eid), DataSourceID(did), data,

@@ -33,32 +33,35 @@ func parseErrorFromC(code C.Error) error {
 	switch code {
 	case C.Error_NoError:
 		return nil
-	case C.Error_InstantiationError:
-		return ErrInstantiation
-	case C.Error_RuntimeError:
-		return ErrRuntime
-	case C.Error_ValidationError:
-		return ErrValidation
 	case C.Error_SpanTooSmallError:
 		return ErrSpanTooSmall
+	// Rust-generated errors during compilation.
+	case C.Error_ValidationError:
+		return ErrValidation
 	case C.Error_DeserializationError:
 		return ErrDeserialization
-	case C.Error_GasCounterInjectionError:
-		return ErrGasCounterInjection
 	case C.Error_SerializationError:
 		return ErrSerialization
-	case C.Error_OutOfGasError:
-		return ErrOutOfGas
-	case C.Error_BadMemorySectionError:
-		return ErrBadMemorySection
-	case C.Error_StackHeightInjectionError:
-		return ErrStackHeightInjection
 	case C.Error_InvalidImportsError:
 		return ErrInvalidImports
 	case C.Error_InvalidExportsError:
 		return ErrInvalidExports
+	case C.Error_BadMemorySectionError:
+		return ErrBadMemorySection
+	case C.Error_GasCounterInjectionError:
+		return ErrGasCounterInjection
+	case C.Error_StackHeightInjectionError:
+		return ErrStackHeightInjection
+	// Rust-generated errors during runtime.
+	case C.Error_InstantiationError:
+		return ErrInstantiation
+	case C.Error_RuntimeError:
+		return ErrRuntime
+	case C.Error_OutOfGasError:
+		return ErrOutOfGas
 	case C.Error_BadEntrySignatureError:
 		return ErrBadEntrySignature
+	// Go-generated errors while interacting with OEI.
 	case C.Error_WrongPeriodActionError:
 		return ErrWrongPeriodAction
 	case C.Error_TooManyExternalDataError:
