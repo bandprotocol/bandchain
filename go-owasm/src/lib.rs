@@ -54,20 +54,6 @@ pub extern "C" fn do_run(code: Span, gas_limit: u32, is_prepare: bool, env: Env)
     }
 }
 
-#[no_mangle]
-pub extern "C" fn do_wat2wasm(input: Span, output: &mut Span) -> Error {
-    match wat2wasm(input.read()) {
-        Ok(_wasm) => output.write(&_wasm),
-        Err(e) => match e.kind() {
-            wabt::ErrorKind::Parse(_) => Error::ParseError,
-            wabt::ErrorKind::WriteBinary => Error::WriteBinaryError,
-            wabt::ErrorKind::ResolveNames(_) => Error::ResolveNamesError,
-            wabt::ErrorKind::Validate(_) => Error::ValidateError,
-            _ => Error::UnknownError,
-        },
-    }
-}
-
 fn inject_memory(module: Module) -> Result<Module, Error> {
     let mut m = module;
     let section = match m.memory_section() {
