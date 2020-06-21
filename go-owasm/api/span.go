@@ -1,12 +1,9 @@
 package api
 
 // #include "bindings.h"
+// #include <string.h>
 import "C"
 import "unsafe"
-
-const (
-	SpanSize = 1 * 1024 * 1024
-)
 
 func newSpan(size int) C.Span {
 	return C.Span{
@@ -30,4 +27,13 @@ func readSpan(span C.Span) []byte {
 
 func freeSpan(span C.Span) {
 	C.free(unsafe.Pointer(span.ptr))
+}
+
+func writeSpan(span *C.Span, data []byte) C.GoResult {
+	if int(span.cap) < len(data) {
+		return C.GoResult_SpanExceededCapacity
+	}
+	C.memcpy(unsafe.Pointer(span.ptr), unsafe.Pointer(&data[0]), C.size_t(len(data)))
+	span.len = C.uintptr_t(len(data))
+	return C.GoResult_Ok
 }

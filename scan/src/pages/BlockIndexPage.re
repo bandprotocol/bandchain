@@ -87,7 +87,13 @@ let make = (~height) => {
          | Data({validator}) =>
            <div className=Styles.proposerContainer>
              <InfoHL
-               info={InfoHL.Validator(validator.operatorAddress, validator.moniker)}
+               info={
+                 InfoHL.Validator(
+                   validator.operatorAddress,
+                   validator.moniker,
+                   validator.identity,
+                 )
+               }
                header="PROPOSED BY"
              />
            </div>

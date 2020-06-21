@@ -16,7 +16,7 @@ let getBandAmount = (maxValue, amount) => {
 };
 
 let address = addr => {
-  switch (Address.fromBech32Opt(addr)) {
+  switch (Address.fromBech32Opt(addr->String.trim)) {
   | Some(address) => Result.Ok(address)
   | None => Err("Invalid address")
   };

@@ -9,13 +9,13 @@ import (
 )
 
 func (b *BandDB) handleMsgCreateValidator(msg staking.MsgCreateValidator) error {
-	pubkey, err := sdk.GetPubKeyFromBech32(sdk.Bech32PubKeyTypeConsPub, msg.Pubkey)
-	if err != nil {
-		return err
-	}
-	err = b.CreateValidator(
+	// pubkey, err := sdk.GetPubKeyFromBech32(sdk.Bech32PubKeyTypeConsPub, msg.Pubkey)
+	// if err != nil {
+	// 	return err
+	// }
+	err := b.CreateValidator(
 		msg.ValidatorAddress,
-		pubkey,
+		msg.PubKey,
 		msg.Description.Moniker,
 		msg.Description.Identity,
 		msg.Description.Website,

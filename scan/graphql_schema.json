@@ -11538,6 +11538,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "moniker",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "reward",
             "type": {
               "kind": "SCALAR",
@@ -12061,6 +12073,16 @@
             "description": null
           },
           {
+            "name": "moniker",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "String_comparison_exp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "reward",
             "defaultValue": null,
             "type": {
@@ -12136,6 +12158,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "moniker",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "reward",
             "type": {
               "kind": "SCALAR",
@@ -12184,6 +12218,16 @@
           },
           {
             "name": "delegator_address",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "moniker",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -12268,6 +12312,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "moniker",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "reward",
             "type": {
               "kind": "SCALAR",
@@ -12316,6 +12372,16 @@
           },
           {
             "name": "delegator_address",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "moniker",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -12386,6 +12452,16 @@
             "description": null
           },
           {
+            "name": "moniker",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "reward",
             "defaultValue": null,
             "type": {
@@ -12441,6 +12517,12 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "delegator_address",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "moniker",
             "description": "column name"
           },
           {

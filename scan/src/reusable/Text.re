@@ -179,7 +179,7 @@ let make =
         ])}>
         {React.string(value)}
       </span>
-    : <MaterialUI
+    : <Tooltip
         title=tooltipItem
         placement={tooltipPlacement |> toPlacementString}
         arrow=true
@@ -201,5 +201,5 @@ let make =
           ])}>
           {React.string(value)}
         </span>
-      </MaterialUI>;
+      </Tooltip>;
 };
