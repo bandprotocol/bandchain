@@ -1,5 +1,7 @@
 package api
 
+// #include "bindings.h"
+import "C"
 import (
 	"errors"
 )
@@ -21,53 +23,86 @@ var (
 	ErrParseError                 = errors.New("parse fail")
 	ErrWriteBinaryError           = errors.New("write binary fail")
 	ErrValidateError              = errors.New("validate fail")
-	ErrFunctionNotFound           = errors.New("can't find prepare or execute funtion")
 	ErrGasLimitExceeded           = errors.New("gas limit exceeded")
 	ErrNoMemoryWasm               = errors.New("no memory wasm")
 	ErrMinimumMemoryExceed        = errors.New("minimum memory exceed")
 	ErrSetMaximumMemory           = errors.New("maximum must be unset")
 	ErrStackHeightInstrumentation = errors.New("stack height instrumention fail")
+	ErrCheckWasmImports           = errors.New("check wasm imports fail")
+	ErrCheckWasmExports           = errors.New("check wasm exports fail")
+	ErrInvalidSignatureFunction   = errors.New("invalid signature function")
+
+	ErrSetReturnDataWrongPeriod         = errors.New("set return data on non-execution period")
+	ErrAnsCountWrongPeriod              = errors.New("get ans count on non-execution period")
+	ErrAskExternalDataWrongPeriod       = errors.New("ask external data on non-prepare period")
+	ErrAskExternalDataExceed            = errors.New("ask external data exceed")
+	ErrGetExternalDataStatusWrongPeriod = errors.New("get external data status on non-execution period")
+	ErrGetExternalDataWrongPeriod       = errors.New("get external data on non-execution period")
+	ErrValidatorOutOfRange              = errors.New("validator index out of range")
+	ErrInvalidExternalID                = errors.New("get data from invalid external id")
+	ErrGetUnreportedData                = errors.New("get data from unreported validator")
 )
 
 // parseError - returns parsed error from errors code on bindings.h
-func parseError(code int32) error {
+func parseErrorFromC(code C.Error) error {
 	switch code {
-	case 0:
+	case C.Error_NoError:
 		return nil
-	case 1:
+	case C.Error_CompliationError:
 		return ErrCompliationFail
-	case 2:
+	case C.Error_RunError:
 		return ErrRunFail
-	case 3:
+	case C.Error_ParseError:
 		return ErrParseFail
-	case 4:
+	case C.Error_WriteBinaryError:
 		return ErrWriteBinaryFail
-	case 5:
+	case C.Error_ResolveNamesError:
 		return ErrResolvesNamesFail
-	case 6:
+	case C.Error_ValidateError:
 		return ErrValidateFail
-	case 7:
+	case C.Error_SpanExceededCapacityError:
 		return ErrSpanExceededCapacity
-	case 8:
+	case C.Error_DeserializationError:
 		return ErrDeserializeFail
-	case 9:
+	case C.Error_GasCounterInjectionError:
 		return ErrGasCounterInjectFail
-	case 10:
+	case C.Error_SerializationError:
 		return ErrSerializetFail
-	case 11:
-		return ErrFunctionNotFound
-	case 12:
+	case C.Error_GasLimitExceedError:
 		return ErrGasLimitExceeded
-	case 13:
+	case C.Error_NoMemoryWasmError:
 		return ErrNoMemoryWasm
-	case 14:
+	case C.Error_MinimumMemoryExceedError:
 		return ErrMinimumMemoryExceed
-	case 15:
+	case C.Error_SetMaximumMemoryError:
 		return ErrSetMaximumMemory
-	case 16:
+	case C.Error_StackHeightInstrumentationError:
 		return ErrStackHeightInstrumentation
+	case C.Error_CheckWasmImportsError:
+		return ErrCheckWasmImports
+	case C.Error_CheckWasmExportsError:
+		return ErrCheckWasmExports
+	case C.Error_InvalidSignatureFunctionError:
+		return ErrInvalidSignatureFunction
+	case C.Error_SetReturnDataWrongPeriodError:
+		return ErrSetReturnDataWrongPeriod
+	case C.Error_AnsCountWrongPeriodError:
+		return ErrAnsCountWrongPeriod
+	case C.Error_AskExternalDataWrongPeriodError:
+		return ErrAskExternalDataWrongPeriod
+	case C.Error_AskExternalDataExceedError:
+		return ErrAskExternalDataExceed
+	case C.Error_GetExternalDataStatusWrongPeriodError:
+		return ErrGetExternalDataStatusWrongPeriod
+	case C.Error_GetExternalDataWrongPeriodError:
+		return ErrGetExternalDataWrongPeriod
+	case C.Error_ValidatorOutOfRangeError:
+		return ErrValidatorOutOfRange
+	case C.Error_InvalidExternalIDError:
+		return ErrInvalidExternalID
+	case C.Error_GetUnreportedDataError:
+		return ErrGetUnreportedData
 	default:
 		return ErrUnknownError
 	}
-
 }

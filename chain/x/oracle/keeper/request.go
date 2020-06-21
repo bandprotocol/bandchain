@@ -123,10 +123,11 @@ func (k Keeper) ProcessExpiredRequests(ctx sdk.Context) {
 		// If the number of reports still doesn't reach the minimum, that means this request
 		// is never resolved. Here we process the response as EXPIRED.
 		if k.GetReportCount(ctx, currentReqID) < req.MinCount {
-			res := k.SaveResult(ctx, currentReqID, types.ResolveStatus_Expired, nil)
-			if req.IBCInfo != nil {
-				k.SendOracleResponse(ctx, req.IBCInfo.SourcePort, req.IBCInfo.SourceChannel, res)
-			}
+			// res := k.SaveResult(ctx, currentReqID, types.ResolveStatus_Expired, nil)
+			k.SaveResult(ctx, currentReqID, types.ResolveStatus_Expired, nil)
+			// if req.IBCInfo != nil {
+			// 	k.SendOracleResponse(ctx, req.IBCInfo.SourcePort, req.IBCInfo.SourceChannel, res)
+			// }
 		}
 		// Update report info for requested validators.
 		k.UpdateReportInfos(ctx, currentReqID)

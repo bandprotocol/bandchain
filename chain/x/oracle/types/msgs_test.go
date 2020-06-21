@@ -6,7 +6,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	"github.com/tendermint/tendermint/crypto/ed25519"
+	"github.com/tendermint/tendermint/crypto/secp256k1"
 )
 
 var (
@@ -15,9 +15,9 @@ var (
 	GoodTestValAddr = sdk.ValAddress(make([]byte, 20))
 	BadTestValAddr  = sdk.ValAddress([]byte("BAD_ADDR"))
 
-	pk1              = ed25519.GenPrivKey().PubKey()
-	GoodTestAddr2    = sdk.AccAddress(pk1.Address())
-	GoodTestValAddr2 = sdk.ValAddress(pk1.Address())
+	MsgPk            = secp256k1.GenPrivKey().PubKey()
+	GoodTestAddr2    = sdk.AccAddress(MsgPk.Address())
+	GoodTestValAddr2 = sdk.ValAddress(MsgPk.Address())
 )
 
 type validateTestCase struct {

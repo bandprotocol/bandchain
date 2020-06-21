@@ -7,12 +7,12 @@ import (
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/cosmos/cosmos-sdk/crypto/keyring"
+	keyring "github.com/cosmos/cosmos-sdk/crypto/keys"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/libs/log"
-	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
+	rpcclient "github.com/tendermint/tendermint/rpc/client"
 	tmtypes "github.com/tendermint/tendermint/types"
 
 	"github.com/bandprotocol/bandchain/chain/pkg/filecache"
@@ -90,7 +90,7 @@ func runCmd(c *Context) *cobra.Command {
 				return err
 			}
 			l.Info(":star: Creating HTTP client with node URI: %s", cfg.NodeURI)
-			c.client, err = rpchttp.New(cfg.NodeURI, "/websocket")
+			c.client, err = rpcclient.NewHTTP(cfg.NodeURI, "/websocket")
 			if err != nil {
 				return err
 			}
