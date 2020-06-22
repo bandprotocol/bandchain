@@ -9,8 +9,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-enum Error
-{
+enum Error {
   Error_NoError = 0,
   Error_SpanTooSmallError = 1,
   Error_ValidationError = 2,
@@ -44,20 +43,17 @@ typedef int32_t Error;
  * One side allocates space and creates a `span` for the counterpart to read or write
  * without needing to worry about memory management.
  */
-typedef struct Span
-{
+typedef struct Span {
   uint8_t *ptr;
   uintptr_t len;
   uintptr_t cap;
 } Span;
 
-typedef struct env_t
-{
+typedef struct env_t {
   uint8_t _private[0];
 } env_t;
 
-typedef struct EnvDispatcher
-{
+typedef struct EnvDispatcher {
   Error (*get_calldata)(env_t *, Span *calldata);
   Error (*set_return_data)(env_t *, Span data);
   int64_t (*get_ask_count)(env_t *);
@@ -68,8 +64,7 @@ typedef struct EnvDispatcher
   Error (*get_external_data)(env_t *, int64_t eid, int64_t vid, Span *data);
 } EnvDispatcher;
 
-typedef struct Env
-{
+typedef struct Env {
   env_t *env;
   EnvDispatcher dis;
 } Env;
