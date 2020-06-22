@@ -53,5 +53,5 @@ def sync(commit_interval, db, echo_sqlalchemy):
                         )
                         break
                     continue
-                getattr(handler, "handle_" + key.lower())(json.loads(msg.value))
+                getattr(handler, "handle_" + key.lower())(value)
 
