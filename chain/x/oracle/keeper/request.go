@@ -3,11 +3,11 @@ package keeper
 import (
 	"fmt"
 
-	"github.com/bandprotocol/bandchain/chain/pkg/bandrng"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/staking/exported"
 
+	"github.com/bandprotocol/bandchain/chain/pkg/bandrng"
 	"github.com/bandprotocol/bandchain/chain/pkg/obi"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )

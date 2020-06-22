@@ -4,8 +4,9 @@ import (
 	"encoding/hex"
 	"testing"
 
-	"github.com/bandprotocol/bandchain/chain/pkg/obi"
 	"github.com/stretchr/testify/require"
+
+	"github.com/bandprotocol/bandchain/chain/pkg/obi"
 )
 
 func mustDecodeString(hexstr string) []byte {
