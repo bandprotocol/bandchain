@@ -5,20 +5,20 @@ use crate::span::Span;
 pub struct VMLogic {
     env: Env,
     gas_left: u32,
-    span_size: usize,
+    span_size: i64,
 }
 
 impl VMLogic {
-    pub fn new(env: Env, gas: u32) -> VMLogic {
+    pub fn new(env: Env, gas: u32, span_size: i64) -> VMLogic {
         VMLogic {
             env: env,
             gas_left: gas,
-            span_size: 1000, // TODO: Get span size from env
+            span_size: span_size,
         }
     }
 
     pub fn get_span_size(&self) -> usize {
-        self.span_size
+        self.span_size as usize
     }
 
     pub fn consume_gas(&mut self, gas: u32) -> Result<(), Error> {

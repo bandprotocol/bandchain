@@ -33,19 +33,19 @@ func Compile(code []byte, spanSize int) ([]byte, error) {
 	return readSpan(outputSpan), err
 }
 
-func Prepare(code []byte, gasLimit uint32, env EnvInterface) error {
-	return run(code, gasLimit, true, env)
+func Prepare(code []byte, gasLimit uint32, spanSize int64, env EnvInterface) error {
+	return run(code, gasLimit, spanSize, true, env)
 }
 
-func Execute(code []byte, gasLimit uint32, env EnvInterface) error {
-	return run(code, gasLimit, false, env)
+func Execute(code []byte, gasLimit uint32, spanSize int64, env EnvInterface) error {
+	return run(code, gasLimit, spanSize, false, env)
 }
 
-func run(code []byte, gasLimit uint32, isPrepare bool, env EnvInterface) error {
+func run(code []byte, gasLimit uint32, spanSize int64, isPrepare bool, env EnvInterface) error {
 	codeSpan := copySpan(code)
 	defer freeSpan(codeSpan)
 	envIntl := createEnvIntl(env)
-	return parseErrorFromC(C.do_run(codeSpan, C.uint32_t(gasLimit), C.bool(isPrepare), C.Env{
+	return parseErrorFromC(C.do_run(codeSpan, C.uint32_t(gasLimit), C.int64_t(spanSize), C.bool(isPrepare), C.Env{
 		env: (*C.env_t)(unsafe.Pointer(envIntl)),
 		dis: C.EnvDispatcher{
 			get_calldata:             C.get_calldata_fn(C.cGetCalldata_cgo),

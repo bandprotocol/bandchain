@@ -181,7 +181,7 @@ func TestAskExternalData(t *testing.T) {
 func TestAskExternalDataFailed(t *testing.T) {
 	penv := mockFreshPrepareEnv()
 
-	penv.AskExternalData(1, 3, make([]byte, MaxCalldataSize+1))
+	penv.AskExternalData(1, 3, make([]byte, MaxDataSize+1))
 	require.Equal(t, []RawRequest(nil), penv.GetRawRequests())
 
 	penv.AskExternalData(1, 1, []byte("CALLDATA1"))

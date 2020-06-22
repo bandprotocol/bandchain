@@ -86,4 +86,4 @@ typedef struct Env {
 
 Error do_compile(Span input, Span *output);
 
-Error do_run(Span code, uint32_t gas_limit, bool is_prepare, Env env);
+Error do_run(Span code, uint32_t gas_limit, int64_t span_size, bool is_prepare, Env env);
