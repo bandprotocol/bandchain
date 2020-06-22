@@ -169,7 +169,7 @@ fn run(code: &[u8], gas_limit: u32, span_size: i64, is_prepare: bool, env: Env) 
             "read_calldata" => func!(|ctx: &mut Ctx, ptr: i64| -> Result<i64, Error> {
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
                 let span_size = vm.get_span_size();
-                require_mem_range( ctx.memory(0).size().bytes().0, (ptr +span_size) as usize )?;
+                require_mem_range(ctx.memory(0).size().bytes().0, (ptr + span_size) as usize)?;
                 let mut mem: Vec<u8> = Vec::with_capacity(span_size as usize);
                 let mut calldata = Span::create_writable(mem.as_mut_ptr(), span_size as usize);
                 vm.get_calldata(&mut calldata)?;
@@ -183,7 +183,7 @@ fn run(code: &[u8], gas_limit: u32, span_size: i64, is_prepare: bool, env: Env) 
                 if len > vm.get_span_size() {
                     return Err(Error::SpanTooSmallError);
                 }
-                require_mem_range(  ctx.memory(0).size().bytes().0, (ptr +len) as usize )?;
+                require_mem_range(ctx.memory(0).size().bytes().0, (ptr + len) as usize)?;
                 let data: Vec<u8> = ctx.memory(0).view()[ptr as usize..(ptr + len) as usize].iter().map(|cell| cell.get()).collect();
                 vm.set_return_data(&data)
             }),
@@ -204,7 +204,7 @@ fn run(code: &[u8], gas_limit: u32, span_size: i64, is_prepare: bool, env: Env) 
                 if len > vm.get_span_size() {
                     return Err(Error::SpanTooSmallError);
                 }
-                require_mem_range( ctx.memory(0).size().bytes().0, (ptr +len) as usize )?;
+                require_mem_range(ctx.memory(0).size().bytes().0, (ptr + len) as usize)?;
                 let data: Vec<u8> = ctx.memory(0).view()[ptr as usize..(ptr + len) as usize].iter().map(|cell| cell.get()).collect();
                 vm.ask_external_data(eid, did, &data)
             }),
