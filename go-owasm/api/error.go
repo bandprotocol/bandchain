@@ -20,7 +20,7 @@ var (
 	ErrRuntime                 = errors.New("runtime error while executing the Wasm script")
 	ErrOutOfGas                = errors.New("out-of-gas while executing the wasm script")
 	ErrBadEntrySignature       = errors.New("bad execution entry point sigature")
-	ErrOutOfMemoryRange        = errors.New("out of memory range")
+	ErrMemoryOutOfBound        = errors.New("out-of-bound memory access while executing the wasm script.")
 	ErrWrongPeriodAction       = errors.New("OEI action to invoke is not available")
 	ErrTooManyExternalData     = errors.New("too many external data requests")
 	ErrBadValidatorIndex       = errors.New("bad validator index parameter")
@@ -73,8 +73,6 @@ func toGoError(code C.Error) error {
 		return ErrGasCounterInjection
 	case C.Error_StackHeightInjectionError:
 		return ErrStackHeightInjection
-	case C.Error_OutOfMemoryRangeError:
-		return ErrOutOfMemoryRange
 	// Rust-generated errors during runtime.
 	case C.Error_InstantiationError:
 		return ErrInstantiation
@@ -84,6 +82,8 @@ func toGoError(code C.Error) error {
 		return ErrOutOfGas
 	case C.Error_BadEntrySignatureError:
 		return ErrBadEntrySignature
+	case C.Error_MemoryOutOfBoundError:
+		return ErrMemoryOutOfBound
 	// Go-generated errors while interacting with OEI.
 	case C.Error_WrongPeriodActionError:
 		return ErrWrongPeriodAction

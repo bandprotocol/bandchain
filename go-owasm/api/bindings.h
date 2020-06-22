@@ -24,7 +24,7 @@ enum Error {
   Error_RuntimeError = 11,
   Error_OutOfGasError = 12,
   Error_BadEntrySignatureError = 13,
-  Error_OutOfMemoryRangeError = 14,
+  Error_MemoryOutOfBoundError = 14,
   Error_WrongPeriodActionError = 128,
   Error_TooManyExternalDataError = 129,
   Error_BadValidatorIndexError = 130,
@@ -54,14 +54,14 @@ typedef struct env_t {
 } env_t;
 
 typedef struct EnvDispatcher {
-  Error (*get_calldata)(env_t *, Span *calldata);
-  Error (*set_return_data)(env_t *, Span data);
-  int64_t (*get_ask_count)(env_t *);
-  int64_t (*get_min_count)(env_t *);
-  Error (*get_ans_count)(env_t *, int64_t *);
-  Error (*ask_external_data)(env_t *, int64_t eid, int64_t did, Span data);
-  Error (*get_external_data_status)(env_t *, int64_t eid, int64_t vid, int64_t *status);
-  Error (*get_external_data)(env_t *, int64_t eid, int64_t vid, Span *data);
+  Error (*get_calldata)(env_t*, Span *calldata);
+  Error (*set_return_data)(env_t*, Span data);
+  int64_t (*get_ask_count)(env_t*);
+  int64_t (*get_min_count)(env_t*);
+  Error (*get_ans_count)(env_t*, int64_t*);
+  Error (*ask_external_data)(env_t*, int64_t eid, int64_t did, Span data);
+  Error (*get_external_data_status)(env_t*, int64_t eid, int64_t vid, int64_t *status);
+  Error (*get_external_data)(env_t*, int64_t eid, int64_t vid, Span *data);
 } EnvDispatcher;
 
 typedef struct Env {

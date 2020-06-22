@@ -146,7 +146,7 @@ unsafe impl Sync for ImportReference {}
 
 fn require_mem_range(max_range: usize, require_range: usize) -> Result<(), Error> {
     if max_range < require_range {
-        return Err(Error::OutOfMemoryRangeError);
+        return Err(Error::MemoryOutOfBoundError);
     }
     return Ok(());
 }
@@ -169,10 +169,10 @@ fn run(code: &[u8], gas_limit: u32, span_size: i64, is_prepare: bool, env: Env) 
             "read_calldata" => func!(|ctx: &mut Ctx, ptr: i64| -> Result<i64, Error> {
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
                 let span_size = vm.get_span_size();
+                require_mem_range( ctx.memory(0).size().bytes().0, (ptr +span_size) as usize )?;
                 let mut mem: Vec<u8> = Vec::with_capacity(span_size as usize);
                 let mut calldata = Span::create_writable(mem.as_mut_ptr(), span_size as usize);
                 vm.get_calldata(&mut calldata)?;
-                require_mem_range( ctx.memory(0).size().bytes().0, (ptr +span_size) as usize )?;
                 for (idx, byte) in calldata.read().iter().enumerate() {
                     ctx.memory(0).view()[ptr as usize + idx].set(*byte)
                 }

@@ -330,7 +330,7 @@ func TestBadPointer(t *testing.T) {
 	require.NoError(t, err)
 
 	err = Prepare(code, 100000, 1024, NewMockEnv([]byte("")))
-	require.Equal(t, ErrOutOfMemoryRange, err)
+	require.Equal(t, ErrMemoryOutOfBound, err)
 
 	wasm = wat2wasm([]byte(`(module
 		(type (;0;) (func (param i64 i64 i64 i64)))
@@ -353,7 +353,7 @@ func TestBadPointer(t *testing.T) {
 	require.NoError(t, err)
 
 	err = Prepare(code, 100000, 1024, NewMockEnv([]byte("")))
-	require.Equal(t, ErrOutOfMemoryRange, err)
+	require.Equal(t, ErrMemoryOutOfBound, err)
 }
 
 func TestSpanTooSmall(t *testing.T) {
