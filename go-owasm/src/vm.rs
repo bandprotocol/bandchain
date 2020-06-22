@@ -11,11 +11,11 @@ pub struct VMLogic {
 
 impl VMLogic {
     /// Creates a new `VMLogic` instance.
-    pub fn new(env: Env, gas: u32) -> VMLogic {
+    pub fn new(env: Env, gas: u32, span_size: i64) -> VMLogic {
         VMLogic {
             env: env,
             gas_left: gas,
-            span_size: 1000,
+            span_size: span_size,
         }
     }
 
