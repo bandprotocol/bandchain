@@ -43,6 +43,8 @@
 
 ### Bridges
 
+- (patch) [\#2041](https://github.com/bandprotocol/bandchain/pull/2041) Update Multistore.sol to new structure.
+
 ### Owasm
 
 - (feat) [\#1998](https://github.com/bandprotocol/bandchain/pull/1998) Implement safe guard to check import and export from wasm
