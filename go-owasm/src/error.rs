@@ -1,70 +1,29 @@
 #[repr(i32)]
 #[derive(Debug, PartialEq, Clone)]
+// An enum representing all kinds of errors we have in the system, with 0 for no error.
 pub enum Error {
   NoError = 0,
-  CompliationError = 1,
-  RunError = 2,
-  ParseError = 3,
-  WriteBinaryError = 4,
-  ResolveNamesError = 5,
-  ValidateError = 6,
-  SpanExceededCapacityError = 7,
-  DeserializationError = 8,
-  GasCounterInjectionError = 9,
-  SerializationError = 10,
-  GasLimitExceedError = 11,
-  NoMemoryWasmError = 12,
-  MinimumMemoryExceedError = 13,
-  SetMaximumMemoryError = 14,
-  StackHeightInstrumentationError = 15,
-  CheckWasmImportsError = 16,
-  CheckWasmExportsError = 17,
-  InvalidSignatureFunctionError = 18,
-
-  SetReturnDataWrongPeriodError = 128,
-  AnsCountWrongPeriodError = 129,
-  AskExternalDataWrongPeriodError = 130,
-  AskExternalDataExceedError = 131,
-  GetExternalDataStatusWrongPeriodError = 132,
-  GetExternalDataWrongPeriodError = 133,
-  ValidatorOutOfRangeError = 134,
-  InvalidExternalIDError = 135,
-  GetUnreportedDataError = 136,
-
+  SpanTooSmallError = 1, // Span to write is too small.
+  // Rust-generated errors during compilation.
+  ValidationError = 2,           // Wasm code does not pass basic validation.
+  DeserializationError = 3,      // Fail to deserialize Wasm into Partity-wasm module.
+  SerializationError = 4,        // Fail to serialize Parity-wasm module into Wasm.
+  InvalidImportsError = 5,       // Wasm code contains invalid import symbols.
+  InvalidExportsError = 6,       // Wasm code contains invalid export symbols.
+  BadMemorySectionError = 7,     // Wasm code contains bad memory sections.
+  GasCounterInjectionError = 8,  // Fail to inject gas counter into Wasm code.
+  StackHeightInjectionError = 9, // Fail to inject stack height limit into Wasm code.
+  // Rust-generated errors during runtime.
+  InstantiationError = 10,     // Error while instantiating Wasm with resolvers.
+  RuntimeError = 11,           // Runtime error while executing the Wasm script.
+  OutOfGasError = 12,          // Out-of-gas while executing the Wasm script.
+  BadEntrySignatureError = 13, // Bad execution entry point sigature.
+  // Go-generated errors while interacting with OEI.
+  WrongPeriodActionError = 128,       // OEI action to invoke is not available.
+  TooManyExternalDataError = 129,     // Too many external data requests.
+  BadValidatorIndexError = 130,       // Bad validator index parameter.
+  BadExternalIDError = 131,           // Bad external ID parameter.
+  UnavailableExternalDataError = 132, // External data is not available.
+  // Unexpected error
   UnknownError = 255,
-}
-
-#[repr(i32)]
-pub enum GoResult {
-  Ok = 0,
-  SpanExceededCapacity = 1,
-  SetReturnDataWrongPeriod = 2,
-  AnsCountWrongPeriod = 3,
-  AskExternalDataWrongPeriod = 4,
-  AskExternalDataExceed = 5,
-  GetExternalDataStatusWrongPeriod = 6,
-  GetExternalDataWrongPeriod = 7,
-  ValidatorOutOfRange = 8,
-  InvalidExternalID = 9,
-  GetUnreportedData = 10,
-  Other = 11,
-}
-
-impl From<GoResult> for Error {
-  fn from(r: GoResult) -> Self {
-    match r {
-      GoResult::Ok => Error::NoError,
-      GoResult::SetReturnDataWrongPeriod => Error::SetReturnDataWrongPeriodError,
-      GoResult::AnsCountWrongPeriod => Error::AnsCountWrongPeriodError,
-      GoResult::AskExternalDataWrongPeriod => Error::AskExternalDataWrongPeriodError,
-      GoResult::AskExternalDataExceed => Error::AskExternalDataExceedError,
-      GoResult::GetExternalDataStatusWrongPeriod => Error::GetExternalDataStatusWrongPeriodError,
-      GoResult::GetExternalDataWrongPeriod => Error::GetExternalDataWrongPeriodError,
-      GoResult::ValidatorOutOfRange => Error::ValidatorOutOfRangeError,
-      GoResult::InvalidExternalID => Error::InvalidExternalIDError,
-      GoResult::GetUnreportedData => Error::GetUnreportedDataError,
-      GoResult::SpanExceededCapacity => Error::SpanExceededCapacityError,
-      GoResult::Other => Error::UnknownError,
-    }
-  }
 }
