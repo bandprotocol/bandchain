@@ -55,7 +55,7 @@ func TestRuntimeError(t *testing.T) {
 		`))
 	code, _ := Compile(wasm, spanSize)
 
-	err := Prepare(code, 100000, NewMockEnv([]byte("")))
+	err := Prepare(code, 100000, 1024, NewMockEnv([]byte("")))
 	require.Equal(t, ErrRuntime, err)
 }
 
@@ -78,7 +78,7 @@ func TestInvaildSignature(t *testing.T) {
 	  `))
 	code, _ := Compile(wasm, spanSize)
 
-	err := Prepare(code, 100000, NewMockEnv([]byte("")))
+	err := Prepare(code, 100000, 1024, NewMockEnv([]byte("")))
 
 	require.Equal(t, ErrBadEntrySignature, err)
 }
@@ -102,10 +102,10 @@ func TestGasLimit(t *testing.T) {
 		(export "execute" (func 1)))
 	  `))
 	code, err := Compile(wasm, spanSize)
-	err = Prepare(code, 100000, NewMockEnv([]byte("")))
+	err = Prepare(code, 100000, 1024, NewMockEnv([]byte("")))
 	require.NoError(t, err)
 
-	err = Prepare(code, 70000, NewMockEnv([]byte("")))
+	err = Prepare(code, 70000, 1024, NewMockEnv([]byte("")))
 	require.Equal(t, ErrOutOfGas, err)
 }
 

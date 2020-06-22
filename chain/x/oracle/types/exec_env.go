@@ -68,7 +68,7 @@ func NewPrepareEnv(req Request, maxRawRequests int64) *PrepareEnv {
 
 // AskExternalData implements Owasm ExecEnv interface.
 func (env *PrepareEnv) AskExternalData(eid int64, did int64, data []byte) error {
-	if int64(len(data)) > MaxRawRequestDataSize {
+	if int64(len(data)) > MaxDataSize {
 		return api.ErrSpanTooSmall
 	}
 	if int64(len(env.rawRequests)) >= env.maxRawRequests {
