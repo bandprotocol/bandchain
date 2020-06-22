@@ -22,8 +22,13 @@ type t =
 module Styles = {
   open Css;
 
-  let mainContainer =
-    style([display(`flex), flexDirection(`column), alignItems(`flexStart), minWidth(`zero)]);
+  let mainContainer = isLeft =>
+    style([
+      display(`flex),
+      flexDirection(`column),
+      alignItems(isLeft ? `flexStart : `flexEnd),
+      minWidth(`zero),
+    ]);
   let vFlex = style([display(`flex), alignItems(`center)]);
   let addressContainer = maxwidth_ => style([alignItems(`center), maxWidth(`px(maxwidth_))]);
   let datasourcesContainer = style([display(`flex), alignItems(`center), flexWrap(`wrap)]);
@@ -43,7 +48,7 @@ module Styles = {
 [@react.component]
 let make = (~info, ~header, ~isLeft=true) => {
   let infoSub = React.useContext(GlobalContext.context);
-  <div className=Styles.mainContainer>
+  <div className={Styles.mainContainer(isLeft)}>
     <Text
       value=header
       color=Colors.gray7

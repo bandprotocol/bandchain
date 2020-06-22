@@ -984,9 +984,9 @@ let renderBody = (msg: TxSub.Msg.t) => {
   };
 };
 
-[@react.component]
-let make = (~messages: list(TxSub.Msg.t)) => {
-  <>
+module THead = {
+  [@react.component]
+  let make = () => {
     <THead>
       <Row>
         <Col> <HSpacing size=Spacing.md /> </Col>
@@ -1026,7 +1026,14 @@ let make = (~messages: list(TxSub.Msg.t)) => {
         </Col>
         <Col> <HSpacing size=Spacing.md /> </Col>
       </Row>
-    </THead>
+    </THead>;
+  };
+};
+
+[@react.component]
+let make = (~messages: list(TxSub.Msg.t)) => {
+  <>
+    <THead />
     {messages
      ->Belt.List.mapWithIndex((index, msg) => {
          let theme = msg |> TxSub.Msg.getBadgeTheme;
@@ -1083,4 +1090,43 @@ let make = (~messages: list(TxSub.Msg.t)) => {
      ->Array.of_list
      ->React.array}
   </>;
+};
+
+module Loading = {
+  [@react.component]
+  let make = () => {
+    <>
+      <THead />
+      <TBody>
+        <Row>
+          <Col> <HSpacing size=Spacing.md /> </Col>
+          <Col size=Styles.firstCol alignSelf=Col.Start>
+            <LoadingCensorBar width=95 height=25 />
+          </Col>
+          <Col size=Styles.secondCol alignSelf=Col.Start>
+            <VSpacing size=Spacing.sm />
+            <LoadingCensorBar width=160 height=15 />
+          </Col>
+          <Col size=Styles.thirdCol alignSelf=Col.Start>
+            <VSpacing size=Spacing.sm />
+            <div className=Styles.topicContainer>
+              <LoadingCensorBar width=60 height=15 />
+              <LoadingCensorBar width=310 height=15 />
+            </div>
+            <VSpacing size=Spacing.lg />
+            <div className=Styles.topicContainer>
+              <LoadingCensorBar width=75 height=15 />
+              <LoadingCensorBar width=240 height=15 />
+            </div>
+            <VSpacing size=Spacing.lg />
+            <div className=Styles.topicContainer>
+              <LoadingCensorBar width=95 height=15 />
+              <LoadingCensorBar width=280 height=15 />
+            </div>
+          </Col>
+          <Col> <HSpacing size=Spacing.md /> </Col>
+        </Row>
+      </TBody>
+    </>;
+  };
 };
