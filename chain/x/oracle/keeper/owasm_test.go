@@ -382,7 +382,7 @@ func TestResolveRequestSuccess(t *testing.T) {
 // 	reqPacket := types.NewOracleRequestPacketData(
 // 		r.ClientID, r.OracleScriptID, r.Calldata, r.MinCount, uint64(len(r.RequestedValidators)),
 // 	)
-// 	expecetRes := types.CalculateEncodedResult(reqPacket, resPacket)
+// 	expecetRes := obi.MustEncode(reqPacket, resPacket)
 
 // 	require.Equal(t, expecetRes, res)
 // }

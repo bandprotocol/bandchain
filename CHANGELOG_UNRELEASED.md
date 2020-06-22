@@ -58,6 +58,8 @@
 
 ### Oracle Binary Encoding (OBI)
 
+- (impv) [\#2027](https://github.com/bandprotocol/bandchain/pull/2027) Make Go-OBI natively support encoding or decoding multiple values.
+
 ### Helpers
 
 - (feat) [\#1963](https://github.com/bandprotocol/bandchain/pull/1963) Add Bandchain.js
