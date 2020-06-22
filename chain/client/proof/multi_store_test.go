@@ -13,24 +13,25 @@ func TestGetMultiStoreProof(t *testing.T) {
 	multiStoreProofOp, err := rootmulti.MultiStoreProofOpDecoder(merkle.ProofOp{
 		Type: "multistore",
 		Key:  base64ToBytes("b3JhY2xl"), // oracle
-		Data: base64ToBytes("CpcECi4KBGJhbmsSJgokCE8SIFFp5VJl0pN7IB1zm+c7wc160Ev58w29dDHjWZahsS4NChAKDm1lbV9jYXBhYmlsaXR5CjYKDGRpc3RyaWJ1dGlvbhImCiQITxIgLgd/rDfToCd79w5sMBEd5Cz0Wx9T8tz5P0T7imhrxacKMQoHc3Rha2luZxImCiQITxIgWyzwEPdl+6QjNsYAPuWt5s3ygu2rT6Wf755pFPA3ZLMKCwoDaWJjEgQKAghPChIKCmNhcGFiaWxpdHkSBAoCCE8KLgoEbWludBImCiQITxIgn0Ay9in3n018bViYNvakJPGs5NBNApBDJlanzTkoQV8KMAoGcGFyYW1zEiYKJAhPEiD2mMDOrO1Ai0IdR5wU1o/oe9Z6lAATKJaOgfGPNre8UQoQCghldmlkZW5jZRIECgIITwoyCghzbGFzaGluZxImCiQITxIgL+ePlJmSe0nErlzaVL1/XwR5JA0T2kLjsqb/yDCngXUKLQoDZ292EiYKJAhPEiBgzRN8GWLsrGFjidaANIM/KSFQnC0oWqX1FTmXzpaKdAotCgNhY2MSJgokCE8SIDGAt5a/EEkpGtM+eLElNyck5q0BIu0WYE21u2j6bVReCg8KB3VwZ3JhZGUSBAoCCE8KMAoGb3JhY2xlEiYKJAhPEiCywp9PjsehPrpPthUq4Ef1OiNCgJcaQIGwONL8PDs+2A=="),
+		Data: base64ToBytes("pQQKogQKLgoDZ292EicKJQiWAhIgYM0TfBli7KxhY4nWgDSDPykhUJwtKFql9RU5l86WinQKMwoIc2xhc2hpbmcSJwolCJYCEiBfW/Loa4v0ZtxLkuWPQUbz6SVJuKg/E7X4EiG7Hkj/rwovCgRtYWluEicKJQiWAhIgI5l329mAyqoP1+RHld/OmKTaBPWa9NSaifZ6D3aCybsKNwoMZGlzdHJpYnV0aW9uEicKJQiWAhIgAnl+IKwaWnB6M5DPJxnTu+vh51ghtz16f0p4hpsklVEKMQoGcGFyYW1zEicKJQiWAhIgtxWMDPGF+SS8y9rUgmfiSnGykZ3birnksXSJLVsKgn8KLgoDYWNjEicKJQiWAhIgUYQhvmWNF7BiiczyeWHl2ErSxi7AwryrVx1NwhzagfYKMQoGc3VwcGx5EicKJQiWAhIgySh5gpbubLQHNcPKTpNN/CuKDkESvM+1XcfaGw+fydgKMQoGb3JhY2xlEicKJQiWAhIgFTrjBbDFiOtarT5oX7dAsnD9KH7OCLzIXWaPyxDjwfUKEAoHdXBncmFkZRIFCgMIlgIKMgoHc3Rha2luZxInCiUIlgISIPSPOKwdrwBrRV3dGze5ZM0VjHqf6K/7E1E1gjPQTQvcChEKCGV2aWRlbmNlEgUKAwiWAgovCgRtaW50EicKJQiWAhIgVoD/WGhQAMfwiRBMeyy0n/eg11aKq5Aof00pfjTRqCs="),
 	})
 	require.Nil(t, err)
 	mp := GetMultiStoreProof(multiStoreProofOp.(rootmulti.MultiStoreProofOp))
-	expectAppHash := hexToBytes("396EC5A6D5D66C0EA13BB6D5BDE8A01D80F78F3BB73D62C2F71BC14DD8B18095")
+	// Must get app hash from next block of multi proof.
+	expectAppHash := hexToBytes("0DEF6341481C4370D561D546C268FB6AFED8520689B70ABC615C47CFB2A0EEE8")
 	oraclePrefix := hexToBytes("066f7261636c6520")
 	appHash := branchHash(
-		mp.AccToMemCapStoresMerkleHash,
 		branchHash(
+			mp.AccToGovStoresMerkleHash,
 			branchHash(
+				mp.MainAndMintStoresMerkleHash,
 				branchHash(
-					mp.MintStoresMerkleHash,
 					leafHash(append(oraclePrefix, tmhash.Sum(tmhash.Sum(mp.OracleIAVLStateHash))...)),
+					mp.ParamsStoresMerkleHash,
 				),
-				mp.ParamsAndSlashingStoresMerkleHash,
 			),
-			mp.StakingAndUpgradeStoresMerkleHash,
 		),
+		mp.SlashingToUpgradeStoresMerkleHash,
 	)
 	require.Equal(t, expectAppHash, appHash)
 }

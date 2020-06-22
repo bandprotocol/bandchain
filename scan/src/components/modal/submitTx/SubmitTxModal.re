@@ -87,7 +87,7 @@ module SubmitTxStep = {
   let make = (~account: AccountContext.t, ~setRawTx, ~isActive, ~msg) => {
     let (msgsOpt, setMsgsOpt) = React.useState(_ => None);
 
-    let gas = 200000;
+    let gas = 500000;
     let fee = 5000.;
     let (memo, setMemo) = React.useState(_ => EnhanceTxInput.{text: "", value: Some("")});
 
@@ -110,7 +110,7 @@ module SubmitTxStep = {
        | SubmitMsg.Send(receiver) => <SendMsg address={account.address} receiver setMsgsOpt />
        | Delegate(validator) => <DelegateMsg address={account.address} validator setMsgsOpt />
        | Undelegate(validator) => <UndelegateMsg address={account.address} validator setMsgsOpt />
-       | Redelegate(validator) => <RedelegateMsg validator setMsgsOpt />
+       | Redelegate(validator) => <RedelegateMsg address={account.address} validator setMsgsOpt />
        | WithdrawReward(validator) =>
          <WithdrawRewardMsg validator setMsgsOpt address={account.address} />
        }}

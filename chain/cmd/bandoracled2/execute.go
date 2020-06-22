@@ -5,10 +5,8 @@ import (
 
 	sdkCtx "github.com/cosmos/cosmos-sdk/client/context"
 	ckeys "github.com/cosmos/cosmos-sdk/client/keys"
-	codecstd "github.com/cosmos/cosmos-sdk/codec/std"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
 
 	"github.com/bandprotocol/bandchain/chain/app"
 	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
@@ -16,13 +14,8 @@ import (
 )
 
 var (
-	cdc      = codecstd.MakeCodec(app.ModuleBasics)
-	appCodec = codecstd.NewAppCodec(cdc)
+	cdc = app.MakeCodec()
 )
-
-func init() {
-	authclient.Codec = appCodec
-}
 
 func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawReport) {
 	key := <-c.keys
@@ -37,7 +30,7 @@ func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawR
 	}
 
 	cliCtx := sdkCtx.CLIContext{Client: c.client}
-	acc, err := auth.NewAccountRetriever(appCodec, cliCtx).GetAccount(key.GetAddress())
+	acc, err := auth.NewAccountRetriever(cliCtx).GetAccount(key.GetAddress())
 	if err != nil {
 		l.Error(":exploding_head: Failed to retreive account with error: %s", err.Error())
 		return

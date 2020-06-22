@@ -8,47 +8,36 @@ import (
 
 type EnvInterface interface {
 	GetCalldata() []byte
-	SetReturnData([]byte)
+	SetReturnData([]byte) error
 	GetAskCount() int64
 	GetMinCount() int64
-	GetAnsCount() int64
-	AskExternalData(eid int64, did int64, data []byte)
-	GetExternalDataStatus(eid int64, vid int64) int64
-	GetExternalData(eid int64, vid int64) []byte
+	GetAnsCount() (int64, error)
+	AskExternalData(eid int64, did int64, data []byte) error
+	GetExternalDataStatus(eid int64, vid int64) (int64, error)
+	GetExternalData(eid int64, vid int64) ([]byte, error)
 }
 
 type envIntl struct {
-	ext      EnvInterface
-	calldata C.Span
-	null     C.Span
-	extData  map[[2]int64]C.Span
+	ext EnvInterface
 }
 
 func createEnvIntl(ext EnvInterface) *envIntl {
-	return &envIntl{
-		ext:      ext,
-		calldata: copySpan(ext.GetCalldata()),
-		null:     copySpan([]byte{}),
-		extData:  make(map[[2]int64]C.Span),
-	}
-}
-
-func destroyEnvIntl(e *envIntl) {
-	freeSpan(e.calldata)
-	freeSpan(e.null)
-	for _, span := range e.extData {
-		freeSpan(span)
-	}
+	return &envIntl{ext: ext}
 }
 
 //export cGetCalldata
-func cGetCalldata(e *C.env_t) C.Span {
-	return (*(*envIntl)(unsafe.Pointer(e))).calldata
+func cGetCalldata(e *C.env_t, calldata *C.Span) C.Error {
+	data := (*(*envIntl)(unsafe.Pointer(e))).ext.GetCalldata()
+	return writeSpan(calldata, data)
 }
 
 //export cSetReturnData
-func cSetReturnData(e *C.env_t, span C.Span) {
-	(*(*envIntl)(unsafe.Pointer(e))).ext.SetReturnData(readSpan(span))
+func cSetReturnData(e *C.env_t, span C.Span) C.Error {
+	err := (*(*envIntl)(unsafe.Pointer(e))).ext.SetReturnData(readSpan(span))
+	if err != nil {
+		return toCError(err)
+	}
+	return C.Error_NoError
 }
 
 //export cGetAskCount
@@ -62,30 +51,43 @@ func cGetMinCount(e *C.env_t) C.int64_t {
 }
 
 //export cGetAnsCount
-func cGetAnsCount(e *C.env_t) C.int64_t {
-	return C.int64_t((*(*envIntl)(unsafe.Pointer(e))).ext.GetAnsCount())
+func cGetAnsCount(e *C.env_t, val *C.int64_t) C.Error {
+	v, err := (*(*envIntl)(unsafe.Pointer(e))).ext.GetAnsCount()
+	if err != nil {
+		return toCError(err)
+	}
+	*val = C.int64_t(v)
+	return C.Error_NoError
 }
 
 //export cAskExternalData
-func cAskExternalData(e *C.env_t, eid C.int64_t, did C.int64_t, span C.Span) {
-	(*(*envIntl)(unsafe.Pointer(e))).ext.AskExternalData(int64(eid), int64(did), readSpan(span))
+func cAskExternalData(e *C.env_t, eid C.int64_t, did C.int64_t, span C.Span) C.Error {
+	err := (*(*envIntl)(unsafe.Pointer(e))).ext.AskExternalData(int64(eid), int64(did), readSpan(span))
+	if err != nil {
+		return toCError(err)
+	}
+	return C.Error_NoError
 }
 
 //export cGetExternalDataStatus
-func cGetExternalDataStatus(e *C.env_t, eid C.int64_t, vid C.int64_t) C.int64_t {
-	return C.int64_t((*(*envIntl)(unsafe.Pointer(e))).ext.GetExternalDataStatus(int64(eid), int64(vid)))
+func cGetExternalDataStatus(e *C.env_t, eid C.int64_t, vid C.int64_t, status *C.int64_t) C.Error {
+	s, err := (*(*envIntl)(unsafe.Pointer(e))).ext.GetExternalDataStatus(int64(eid), int64(vid))
+	if err != nil {
+		return toCError(err)
+	}
+	*status = C.int64_t(s)
+	return C.Error_NoError
 }
 
 //export cGetExternalData
-func cGetExternalData(e *C.env_t, eid C.int64_t, vid C.int64_t) C.Span {
-	key := [2]int64{int64(eid), int64(vid)}
+func cGetExternalData(e *C.env_t, eid C.int64_t, vid C.int64_t, data *C.Span) C.Error {
 	env := (*(*envIntl)(unsafe.Pointer(e)))
-	if _, ok := env.extData[key]; !ok {
-		data := env.ext.GetExternalData(int64(eid), int64(vid))
-		if data == nil {
-			return env.null
-		}
-		env.extData[key] = copySpan(env.ext.GetExternalData(int64(eid), int64(vid)))
+	extData, err := env.ext.GetExternalData(int64(eid), int64(vid))
+	if err != nil {
+		return toCError(err)
 	}
-	return env.extData[key]
+	if extData == nil {
+		return C.Error_UnavailableExternalDataError
+	}
+	return writeSpan(data, extData)
 }

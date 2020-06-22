@@ -3,11 +3,13 @@ package keeper
 import (
 	"fmt"
 
-	"github.com/bandprotocol/bandchain/chain/pkg/bandrng"
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/staking/exported"
+
+	"github.com/bandprotocol/bandchain/chain/pkg/bandrng"
+	"github.com/bandprotocol/bandchain/chain/pkg/obi"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 // HasRequest checks if the request of this ID exists in the storage.
@@ -87,7 +89,7 @@ func (k Keeper) SaveResult(ctx sdk.Context, id types.RequestID, status types.Res
 		r.ClientID, id, k.GetReportCount(ctx, id), r.RequestTime,
 		ctx.BlockTime().Unix(), status, result,
 	)
-	k.SetResult(ctx, id, types.CalculateEncodedResult(req, res))
+	k.SetResult(ctx, id, obi.MustEncode(req, res))
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeRequestExecute,
 		sdk.NewAttribute(types.AttributeKeyClientID, req.ClientID),
@@ -123,10 +125,11 @@ func (k Keeper) ProcessExpiredRequests(ctx sdk.Context) {
 		// If the number of reports still doesn't reach the minimum, that means this request
 		// is never resolved. Here we process the response as EXPIRED.
 		if k.GetReportCount(ctx, currentReqID) < req.MinCount {
-			res := k.SaveResult(ctx, currentReqID, types.ResolveStatus_Expired, nil)
-			if req.IBCInfo != nil {
-				k.SendOracleResponse(ctx, req.IBCInfo.SourcePort, req.IBCInfo.SourceChannel, res)
-			}
+			// res := k.SaveResult(ctx, currentReqID, types.ResolveStatus_Expired, nil)
+			k.SaveResult(ctx, currentReqID, types.ResolveStatus_Expired, nil)
+			// if req.IBCInfo != nil {
+			// 	k.SendOracleResponse(ctx, req.IBCInfo.SourcePort, req.IBCInfo.SourceChannel, res)
+			// }
 		}
 		// Update report info for requested validators.
 		k.UpdateReportInfos(ctx, currentReqID)

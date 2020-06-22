@@ -19,7 +19,7 @@ module Mini = {
   open TxSub.Mini;
 
   type oracle_script_internal_t = {
-    id: ID.OracleScript.t,
+    scriptID: ID.OracleScript.t,
     name: string,
     schema: string,
   };
@@ -80,7 +80,7 @@ module Mini = {
             requester @bsDecoder(fn: "Address.fromBech32")
             calldata @bsDecoder(fn: "GraphQLParser.buffer")
             oracleScript: oracle_script @bsRecord {
-              id @bsDecoder(fn: "ID.OracleScript.fromJson")
+              scriptID: id @bsDecoder(fn: "ID.OracleScript.fromJson")
               name
               schema
             }
@@ -124,7 +124,7 @@ module Mini = {
           requester @bsDecoder(fn: "Address.fromBech32")
           calldata @bsDecoder(fn: "GraphQLParser.buffer")
           oracleScript: oracle_script @bsRecord {
-            id @bsDecoder(fn: "ID.OracleScript.fromJson")
+            scriptID: id @bsDecoder(fn: "ID.OracleScript.fromJson")
             name
             schema
           }
@@ -162,7 +162,7 @@ module Mini = {
           requester @bsDecoder(fn: "Address.fromBech32")
           calldata @bsDecoder(fn: "GraphQLParser.buffer")
           oracle_script @bsRecord {
-            id @bsDecoder(fn: "ID.OracleScript.fromJson")
+            scriptID: id @bsDecoder(fn: "ID.OracleScript.fromJson")
             name
             schema
           }
@@ -213,7 +213,7 @@ module Mini = {
     requestTime,
     resolveTime,
     calldata,
-    oracleScriptID: oracleScript.id,
+    oracleScriptID: oracleScript.scriptID,
     oracleScriptName: oracleScript.name,
     txHash,
     txTimestamp,
@@ -250,7 +250,7 @@ module Mini = {
                requestTime: y##requestTime,
                resolveTime: y##resolveTime,
                calldata: y##calldata,
-               oracleScriptID: y##oracle_script.id,
+               oracleScriptID: y##oracle_script.scriptID,
                oracleScriptName: y##oracle_script.name,
                txHash: y##transaction.txHash,
                txTimestamp: y##transaction.timestamp,
@@ -311,7 +311,7 @@ module Mini = {
                requestTime: y##requestTime,
                resolveTime: y##resolveTime,
                calldata: y##calldata,
-               oracleScriptID: y##oracleScript.id,
+               oracleScriptID: y##oracleScript.scriptID,
                oracleScriptName: y##oracleScript.name,
                txHash: y##transaction.txHash,
                txTimestamp: y##transaction.timestamp,
@@ -425,6 +425,7 @@ module SingleRequestConfig = [%graphql
             consensusAddress: consensus_address
             operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
             moniker
+            identity
           }
         }
         minCount: min_count @bsDecoder(fn: "GraphQLParser.int64")
@@ -459,6 +460,7 @@ module SingleRequestConfig = [%graphql
             consensusAddress: consensus_address
             operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
             moniker
+            identity
           }
         }
         result @bsDecoder(fn: "GraphQLParser.optionBuffer")
@@ -486,6 +488,7 @@ module MultiRequestConfig = [%graphql
             consensusAddress: consensus_address
             operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
             moniker
+            identity
           }
         }
         minCount: min_count @bsDecoder(fn: "GraphQLParser.int64")
@@ -520,6 +523,7 @@ module MultiRequestConfig = [%graphql
             consensusAddress: consensus_address
             operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
             moniker
+            identity
           }
         }
         result @bsDecoder(fn: "GraphQLParser.optionBuffer")

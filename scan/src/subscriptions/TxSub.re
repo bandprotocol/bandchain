@@ -687,7 +687,14 @@ module Msg = {
       JsonUtils.Decode.{
         validatorAddress: json |> field("validator_address", string) |> Address.fromBech32,
         delegatorAddress: json |> field("delegator_address", string) |> Address.fromBech32,
-        amount: json |> field("reward_amount", string) |> GraphQLParser.coins,
+        amount: {
+          exception WrongNetwork(string);
+          switch (Env.network) {
+          | "GUANYU" =>  json |> field("reward_amount", array(string)) |> Belt.Array.getExn(_, 0) |> GraphQLParser.coins;
+          | "WENCHANG" => json |> field("reward_amount", string) |> GraphQLParser.coins;
+          | _ => raise(WrongNetwork("Incorrect or unspecified NETWORK environment variable"))
+          };
+        },
       };
     };
   };

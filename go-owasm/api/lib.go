@@ -24,29 +24,28 @@ import (
 	"unsafe"
 )
 
-func Compile(code []byte) ([]byte, error) {
+func Compile(code []byte, spanSize int) ([]byte, error) {
 	inputSpan := copySpan(code)
 	defer freeSpan(inputSpan)
-	outputSpan := newSpan(SpanSize)
+	outputSpan := newSpan(spanSize)
 	defer freeSpan(outputSpan)
-	err := parseError(int32(C.do_compile(inputSpan, &outputSpan)))
+	err := toGoError(C.do_compile(inputSpan, &outputSpan))
 	return readSpan(outputSpan), err
 }
 
-func Prepare(code []byte, env EnvInterface) error {
-	return run(code, true, env)
+func Prepare(code []byte, gasLimit uint32, spanSize int64, env EnvInterface) error {
+	return run(code, gasLimit, spanSize, true, env)
 }
 
-func Execute(code []byte, env EnvInterface) error {
-	return run(code, false, env)
+func Execute(code []byte, gasLimit uint32, spanSize int64, env EnvInterface) error {
+	return run(code, gasLimit, spanSize, false, env)
 }
 
-func run(code []byte, isPrepare bool, env EnvInterface) error {
+func run(code []byte, gasLimit uint32, spanSize int64, isPrepare bool, env EnvInterface) error {
 	codeSpan := copySpan(code)
 	defer freeSpan(codeSpan)
 	envIntl := createEnvIntl(env)
-	defer destroyEnvIntl(envIntl)
-	return parseError(int32(C.do_run(codeSpan, C.bool(isPrepare), C.Env{
+	return toGoError(C.do_run(codeSpan, C.uint32_t(gasLimit), C.int64_t(spanSize), C.bool(isPrepare), C.Env{
 		env: (*C.env_t)(unsafe.Pointer(envIntl)),
 		dis: C.EnvDispatcher{
 			get_calldata:             C.get_calldata_fn(C.cGetCalldata_cgo),
@@ -58,14 +57,5 @@ func run(code []byte, isPrepare bool, env EnvInterface) error {
 			get_external_data_status: C.get_external_data_status_fn(C.cGetExternalDataStatus_cgo),
 			get_external_data:        C.get_external_data_fn(C.cGetExternalData_cgo),
 		},
-	})))
-}
-
-func Wat2Wasm(code []byte) ([]byte, error) {
-	inputSpan := copySpan(code)
-	defer freeSpan(inputSpan)
-	outputSpan := newSpan(SpanSize)
-	defer freeSpan(outputSpan)
-	err := parseError(int32(C.do_wat2wasm(inputSpan, &outputSpan)))
-	return readSpan(outputSpan), err
+	}))
 }

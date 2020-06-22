@@ -170,3 +170,161 @@ describe("Expect Obi decode correctly", () => {
        )
   });
 });
+
+describe("should be able to generate solidity correctly", () => {
+  test("should be able to generate solidity", () => {
+    expect(
+      Some(
+        {j|pragma solidity ^0.5.0;
+
+import "./Obi.sol";
+
+library ParamsDecoder {
+    using Obi for Obi.Data;
+
+    struct Params {
+        string symbol;
+        uint64 multiplier;
+    }
+
+    function decodeParams(bytes memory _data)
+        internal
+        pure
+        returns (Params memory result)
+    {
+        Obi.Data memory data = Obi.from(_data);
+        result.symbol = string(data.decodeBytes());
+        result.multiplier = data.decodeU64();
+    }
+}
+|j},
+      ),
+    )
+    |> toEqual(
+         generateDecoderSolidity({j|{symbol:string,multiplier:u64}/{px:u64}|j}, Obi.Params),
+       )
+  });
+
+  test("should be able to generate solidity 2", () => {
+    expect(
+      Some(
+        {j|pragma solidity ^0.5.0;
+
+import "./Obi.sol";
+
+library ResultDecoder {
+    using Obi for Obi.Data;
+
+    struct Result {
+        uint64 px;
+    }
+
+    function decodeResult(bytes memory _data)
+        internal
+        pure
+        returns (Result memory result)
+    {
+        Obi.Data memory data = Obi.from(_data);
+        result.px = data.decodeU64();
+    }
+}
+|j},
+      ),
+    )
+    |> toEqual(
+         generateDecoderSolidity({j|{symbol:string,multiplier:u64}/{px:u64}|j}, Obi.Result),
+       )
+  });
+});
+
+describe("should be able to generate go code correctly", () => {
+  // TODO: Change to real generated code once golang ParamsDecode is implemented
+  test("should be able to generate go code 1", () => {
+    expect(Some({j|"Code is not available."|j}))
+    |> toEqual(
+         generateDecoderGo("main", {j|{symbol:string,multiplier:u64}/{px:u64}|j}, Obi.Params),
+       )
+  });
+  test("should be able to generate go code 2", () => {
+    expect(
+      Some(
+        {j|package test
+
+import "github.com/bandchain/chain/pkg/obi"
+
+type Result struct {
+	Px uint64
+}
+
+func DecodeResult(data []byte) (Result, error) {
+	decoder := obi.NewObiDecoder(data)
+
+	px, err := decoder.DecodeU64()
+	if err != nil {
+		return Result{}, err
+	}
+
+	if !decoder.Finished() {
+		return Result{}, errors.New("Obi: bytes left when decode result")
+	}
+
+	return Result{
+		Px: px
+	}, nil
+}|j},
+      ),
+    )
+    |> toEqual(
+         generateDecoderGo("test", {j|{symbol:string,multiplier:u64}/{px:u64}|j}, Obi.Result),
+       )
+  });
+});
+
+describe("should be able to generate encode go code correctly", () => {
+  test("should be able to generate encode go code 1", () => {
+    expect(
+      Some(
+        {j|package main
+
+import "github.com/bandchain/chain/pkg/obi"
+
+type Result struct {
+	Symbol string
+	Multiplier uint64
+}
+
+func(result *Result) EncodeResult() []byte {
+	encoder := obi.NewObiEncoder()
+
+	encoder.EncodeString(result.symbol)
+	encoder.EncodeU64(result.multiplier)
+
+	return encoder.GetEncodedData()
+}|j},
+      ),
+    )
+    |> toEqual(generateEncodeGo("main", {j|{symbol:string,multiplier:u64}/{px:u64}|j}, "input"))
+  });
+  test("should be able to generate encode go code 2", () => {
+    expect(
+      Some(
+        {j|package test
+
+import "github.com/bandchain/chain/pkg/obi"
+
+type Result struct {
+	Px uint64
+}
+
+func(result *Result) EncodeResult() []byte {
+	encoder := obi.NewObiEncoder()
+
+	encoder.EncodeU64(result.px)
+
+	return encoder.GetEncodedData()
+}|j},
+      ),
+    )
+    |> toEqual(generateEncodeGo("test", {j|{symbol:string,multiplier:u64}/{px:u64}|j}, "output"))
+  });
+});

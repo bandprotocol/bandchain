@@ -151,7 +151,7 @@ module LanguageIcon = {
 };
 
 let getFileNameFromLanguage = (~language, ~dataType) => {
-  let dataTypeString = dataType |> Borsh.dataTypeToString;
+  let dataTypeString = dataType |> Obi.dataTypeToString;
   switch (language) {
   | Solidity => {j|$(dataTypeString)Decoder.sol|j}
   | Go => {j|$(dataTypeString)Decoder.go|j}
@@ -160,8 +160,8 @@ let getFileNameFromLanguage = (~language, ~dataType) => {
 
 let getCodeFromSchema = (~schema, ~language, ~dataType) => {
   switch (language) {
-  | Solidity => Borsh.generateDecoderSolidity(schema, dataType)
-  | Go => Borsh.generateDecoderGo("main", schema, dataType)
+  | Solidity => Obi.generateDecoderSolidity(schema, dataType)
+  | Go => Obi.generateDecoderGo("main", schema, dataType)
   };
 };
 
@@ -257,8 +257,8 @@ let make = (~schema) => {
              <Text value=description size=Text.Lg weight=Text.Thin spacing={Text.Em(0.03)} />
            </div>
            <VSpacing size={`px(35)} /> */
-    <GenerateDecodeCode language schema dataType=Borsh.Params />
+    <GenerateDecodeCode language schema dataType=Obi.Params />
     <VSpacing size=Spacing.md />
-    <GenerateDecodeCode language schema dataType=Borsh.Result />
+    <GenerateDecodeCode language schema dataType=Obi.Result />
   </div>;
 };

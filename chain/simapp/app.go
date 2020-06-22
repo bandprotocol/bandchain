@@ -9,12 +9,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authexported "github.com/cosmos/cosmos-sdk/x/auth/exported"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/staking"
+	"github.com/spf13/viper"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
+	"github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
 
@@ -92,7 +93,7 @@ func createValidatorTx(chainID string, acc Account, moniker string, selfDelegati
 	}
 
 	sigs := []authtypes.StdSignature{{
-		PubKey:    acc.PubKey.Bytes(),
+		PubKey:    acc.PubKey,
 		Signature: sigBytes,
 	}}
 	return authtypes.NewStdTx([]sdk.Msg{msg}, auth.NewStdFee(200000, sdk.Coins{}), sigs, "")
@@ -100,52 +101,22 @@ func createValidatorTx(chainID string, acc Account, moniker string, selfDelegati
 
 // NewSimApp creates instance of our app using in test.
 func NewSimApp(chainID string, logger log.Logger) *bandapp.BandApp {
+	// Set HomeFlag to /tmp folder for simulation run.
+	viper.Set(cli.HomeFlag, "/tmp")
 	db := dbm.NewMemDB()
 	app := bandapp.NewBandApp(logger, db, nil, true, 0, map[int64]bool{}, "")
 	genesis := bandapp.NewDefaultGenesisState()
-	// Funds seed accounts and validators with 1000000uband, 100000000uband initially.
+	// Funds seed accounts and validators with 1000000uband and 100000000uband initially.
 	authGenesis := auth.NewGenesisState(auth.DefaultParams(), []authexported.GenesisAccount{
-		&auth.BaseAccount{Address: Owner.Address},
-		&auth.BaseAccount{Address: Alice.Address},
-		&auth.BaseAccount{Address: Bob.Address},
-		&auth.BaseAccount{Address: Carol.Address},
-		&auth.BaseAccount{Address: Validator1.Address},
-		&auth.BaseAccount{Address: Validator2.Address},
-		&auth.BaseAccount{Address: Validator3.Address},
+		&auth.BaseAccount{Address: Owner.Address, Coins: Coins1000000uband},
+		&auth.BaseAccount{Address: Alice.Address, Coins: Coins1000000uband},
+		&auth.BaseAccount{Address: Bob.Address, Coins: Coins1000000uband},
+		&auth.BaseAccount{Address: Carol.Address, Coins: Coins1000000uband},
+		&auth.BaseAccount{Address: Validator1.Address, Coins: Coins100000000uband},
+		&auth.BaseAccount{Address: Validator2.Address, Coins: Coins100000000uband},
+		&auth.BaseAccount{Address: Validator3.Address, Coins: Coins100000000uband},
 	})
 	genesis[auth.ModuleName] = app.Codec().MustMarshalJSON(authGenesis)
-	bankGenesis := bank.NewGenesisState(bank.DefaultGenesisState().SendEnabled, []bank.Balance{
-		{
-			Address: Owner.Address,
-			Coins:   Coins1000000uband,
-		},
-		{
-			Address: Alice.Address,
-			Coins:   Coins1000000uband,
-		},
-		{
-			Address: Bob.Address,
-			Coins:   Coins1000000uband,
-		},
-		{
-			Address: Carol.Address,
-			Coins:   Coins1000000uband,
-		},
-		{
-			Address: Validator1.Address,
-			Coins:   Coins100000000uband,
-		},
-		{
-			Address: Validator2.Address,
-			Coins:   Coins100000000uband,
-		},
-
-		{
-			Address: Validator3.Address,
-			Coins:   Coins100000000uband,
-		},
-	}, sdk.NewCoins(sdk.NewInt64Coin("uband", 304000000)))
-	genesis[bank.ModuleName] = app.Codec().MustMarshalJSON(bankGenesis)
 	genutilGenesis := genutil.NewGenesisStateFromStdTx([]authtypes.StdTx{
 		createValidatorTx(chainID, Validator1, "validator1", Coins100000000uband[0]),
 		createValidatorTx(chainID, Validator2, "validator2", Coins1000000uband[0]),

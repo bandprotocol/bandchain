@@ -37,13 +37,13 @@ func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec, ibcInfo *ty
 		ctx.BlockHeight(), ctx.BlockTime().Unix(), r.GetClientID(), ibcInfo, nil,
 	)
 	// Create an execution environment and call Owasm prepare function.
-	env := types.NewExecEnv(req, ctx.BlockTime().Unix(), int64(k.GetParam(ctx, types.KeyMaxRawRequestCount)))
+	env := types.NewPrepareEnv(req, int64(k.GetParam(ctx, types.KeyMaxRawRequestCount)))
 	script, err := k.GetOracleScript(ctx, req.OracleScriptID)
 	if err != nil {
 		return err
 	}
 	code := k.GetFile(script.Filename)
-	err = owasm.Prepare(code, env) // TODO: Don't forget about prepare gas!
+	err = owasm.Prepare(code, types.WasmPrepareGas, types.MaxDataSize, env)
 	if err != nil {
 		return sdkerrors.Wrapf(types.ErrBadWasmExecution, "failed to prepare request with error: %s", err.Error())
 	}
@@ -87,21 +87,23 @@ func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec, ibcInfo *ty
 // and saves result hash to the store. Assumes that the given request is in a resolvable state.
 func (k Keeper) ResolveRequest(ctx sdk.Context, reqID types.RequestID) {
 	req := k.MustGetRequest(ctx, reqID)
-	env := types.NewExecEnv(req, ctx.BlockTime().Unix(), 0)
+	env := types.NewExecuteEnv(req)
 	env.SetReports(k.GetReports(ctx, reqID))
 	script := k.MustGetOracleScript(ctx, req.OracleScriptID)
 	code := k.GetFile(script.Filename)
-	err := owasm.Execute(code, env) // TODO: Don't forget about gas!
-	var res types.OracleResponsePacketData
+	err := owasm.Execute(code, types.WasmExecuteGas, types.MaxDataSize, env)
+	// var res types.OracleResponsePacketData
 	if err != nil {
 		k.Logger(ctx).Info(fmt.Sprintf(
 			"failed to execute request id: %d with error: %s", reqID, err.Error(),
 		))
-		res = k.SaveResult(ctx, reqID, types.ResolveStatus_Failure, nil)
+		k.SaveResult(ctx, reqID, types.ResolveStatus_Failure, nil)
+		// res = k.SaveResult(ctx, reqID, types.ResolveStatus_Failure, nil)
 	} else {
-		res = k.SaveResult(ctx, reqID, types.ResolveStatus_Success, env.Retdata)
+		k.SaveResult(ctx, reqID, types.ResolveStatus_Success, env.Retdata)
+		// res = k.SaveResult(ctx, reqID, types.ResolveStatus_Success, env.Retdata)
 	}
-	if req.IBCInfo != nil {
-		k.SendOracleResponse(ctx, req.IBCInfo.SourcePort, req.IBCInfo.SourceChannel, res)
-	}
+	// if req.IBCInfo != nil {
+	// 	k.SendOracleResponse(ctx, req.IBCInfo.SourcePort, req.IBCInfo.SourceChannel, res)
+	// }
 }

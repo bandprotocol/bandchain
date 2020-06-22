@@ -69,6 +69,7 @@ let renderBody = (reserveIndex, blockSub: ApolloHooks.Subscription.variant(Block
              <ValidatorMonikerLink
                validatorAddress={validator.operatorAddress}
                moniker={validator.moniker}
+               identity={validator.identity}
              />
            </div>
          | _ => <LoadingCensorBar width=150 height=15 />

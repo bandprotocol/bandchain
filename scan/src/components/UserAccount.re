@@ -157,7 +157,7 @@ module Balance = {
 
       <div className=Styles.balanceContainer>
         <Text
-          value={account.balance |> Coin.getBandAmountFromCoins |> Js.Float.toString}
+          value={account.balance |> Coin.getBandAmountFromCoins |> Format.fPretty(~digits=6)}
           code=true
           size=Text.Sm
           height={Text.Px(13)}
