@@ -1,7 +1,6 @@
 package proof
 
 import (
-	"github.com/bandprotocol/bandchain/chain/x/oracle"
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/store/rootmulti"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -17,6 +16,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/tendermint/tendermint/crypto/merkle"
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
+
+	"github.com/bandprotocol/bandchain/chain/x/oracle"
 )
 
 type MultiStoreProof struct {
@@ -24,7 +25,7 @@ type MultiStoreProof struct {
 	MainAndMintStoresMerkleHash       tmbytes.HexBytes `json:"mainAndMintStoresMerkleHash"`
 	OracleIAVLStateHash               tmbytes.HexBytes `json:"oracleIAVLStateHash"`
 	ParamsStoresMerkleHash            tmbytes.HexBytes `json:"paramsStoresMerkleHash"`
-	SlashingToUpgradeStoresMerkleHash tmbytes.HexBytes `json:"stakingAndUpgradeStoresMerkleHash"`
+	SlashingToUpgradeStoresMerkleHash tmbytes.HexBytes `json:"slashingToUpgradeStoresMerkleHash"`
 }
 
 type MultiStoreProofEthereum struct {
