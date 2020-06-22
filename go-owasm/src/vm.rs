@@ -4,9 +4,9 @@ use crate::span::Span;
 
 /// A `VMLogic` encapsulates the runtime logic of Owasm scripts.
 pub struct VMLogic {
-    env: Env,         // The execution environment for callbacks to Golang.
-    gas_left: u32,    // Amount of gas remainted for the rest of the execution.
-    span_size: usize, // Maximum span size for communication between Rust & Go.
+    env: Env,       // The execution environment for callbacks to Golang.
+    gas_left: u32,  // Amount of gas remainted for the rest of the execution.
+    span_size: i64, // Maximum span size for communication between Rust & Go.
 }
 
 impl VMLogic {
@@ -15,12 +15,12 @@ impl VMLogic {
         VMLogic {
             env: env,
             gas_left: gas,
-            span_size: 1000, // TODO: Get span size from env
+            span_size: 1000,
         }
     }
 
     /// Returns the maximum span size value.
-    pub fn get_span_size(&self) -> usize { self.span_size }
+    pub fn get_span_size(&self) -> i64 { self.span_size }
 
     /// Consumes the given amount of gas. Return `OutOfGasError` error if run out of gas.
     pub fn consume_gas(&mut self, gas: u32) -> Result<(), Error> {
