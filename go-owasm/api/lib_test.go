@@ -251,24 +251,24 @@ func TestCompileErrorCheckWasmExports(t *testing.T) {
 
 func TestStackOverflow(t *testing.T) {
 	spanSize := 1 * 1024 * 1024
-	wasm, _ := Wat2Wasm([]byte(`(module
+	wasm := wat2wasm([]byte(`(module
 		(func call 0)
 		(func)
 		(memory 10)
 		(export "prepare" (func 0))
 		(export "execute" (func 1)))
 
-	  `), spanSize)
+	  `))
 	code, _ := Compile(wasm, spanSize)
 
-	err := Prepare(code, 100000, NewMockEnv([]byte("")))
-	require.Equal(t, ErrRunError, err)
+	err := Prepare(code, 100000, 1024, NewMockEnv([]byte("")))
+	require.Equal(t, ErrRuntime, err)
 
 }
 
 func TestMemoryGrow(t *testing.T) {
 	spanSize := 1 * 1024 * 1024
-	wasm, _ := Wat2Wasm([]byte(`(module
+	wasm := wat2wasm([]byte(`(module
 		(func
 	i32.const 0
     (memory.grow (i32.const 1))
@@ -282,13 +282,13 @@ func TestMemoryGrow(t *testing.T) {
 		(export "prepare" (func 0))
 		(export "execute" (func 1)))
 
-	  `), spanSize)
+	  `))
 	code, _ := Compile(wasm, spanSize)
 
-	err := Prepare(code, 100000, NewMockEnv([]byte("")))
+	err := Prepare(code, 100000, 1024, NewMockEnv([]byte("")))
 	require.NoError(t, err)
 
-	wasm, _ = Wat2Wasm([]byte(`(module
+	wasm = wat2wasm([]byte(`(module
 		(func
 	i32.const 0
     (memory.grow (i32.const 1))
@@ -302,22 +302,22 @@ func TestMemoryGrow(t *testing.T) {
 		(export "prepare" (func 0))
 		(export "execute" (func 1)))
 
-	  `), spanSize)
+	  `))
 	code, _ = Compile(wasm, spanSize)
 
-	err = Prepare(code, 100000, NewMockEnv([]byte("")))
-	require.Equal(t, ErrRunError, err)
+	err = Prepare(code, 100000, 1024, NewMockEnv([]byte("")))
+	require.Equal(t, ErrRuntime, err)
 }
 
 func TestBadPointer(t *testing.T) {
 	spanSize := 1 * 1024 * 1024
-	wasm, _ := Wat2Wasm([]byte(`(module
+	wasm := wat2wasm([]byte(`(module
 		(type (;0;) (func (param i64 i64)))
 		(type (;1;) (func))
 		(import "env" "set_return_data" (func (;0;) (type 0)))
 		(func (type 1)
 			i64.const 100000000
-			i64.const 10000
+			i64.const 1
 			call 0
 			)
 		(func)
@@ -325,35 +325,14 @@ func TestBadPointer(t *testing.T) {
 		(export "prepare" (func 1))
 		(export "execute" (func 2)))
 
-		`), spanSize)
+		`))
 	code, err := Compile(wasm, spanSize)
 	require.NoError(t, err)
 
-	err = Prepare(code, 100000, NewMockEnv([]byte("")))
-	require.Equal(t, ErrOutOfMemoryRangeError, err)
+	err = Prepare(code, 100000, 1024, NewMockEnv([]byte("")))
+	require.Equal(t, ErrOutOfMemoryRange, err)
 
-	wasm, _ = Wat2Wasm([]byte(`(module
-		(type (;0;) (func (param i64 i64)))
-		(type (;1;) (func))
-		(import "env" "read_calldata" (func (;0;) (type 0)))
-		(func (type 1)
-			i64.const 100000000
-			i64.const 10000
-			call 0
-			)
-		(func)
-		(memory 17)
-		(export "prepare" (func 1))
-		(export "execute" (func 2)))
-
-		`), spanSize)
-	code, err = Compile(wasm, spanSize)
-	require.NoError(t, err)
-
-	err = Prepare(code, 100000, NewMockEnv([]byte("")))
-	require.Equal(t, ErrOutOfMemoryRangeError, err)
-
-	wasm, _ = Wat2Wasm([]byte(`(module
+	wasm = wat2wasm([]byte(`(module
 		(type (;0;) (func (param i64 i64 i64 i64)))
 		(type (;1;) (func))
 		(import "env" "ask_external_data" (func (;0;) (type 0)))
@@ -361,7 +340,7 @@ func TestBadPointer(t *testing.T) {
 			i64.const 1
 			i64.const 1
 			i64.const 100000000
-			i64.const 10000
+			i64.const 1
 			call 0
 			)
 		(func)
@@ -369,40 +348,64 @@ func TestBadPointer(t *testing.T) {
 		(export "prepare" (func 1))
 		(export "execute" (func 2)))
 
-		`), spanSize)
+		`))
 	code, err = Compile(wasm, spanSize)
 	require.NoError(t, err)
 
-	err = Prepare(code, 100000, NewMockEnv([]byte("")))
-	require.Equal(t, ErrOutOfMemoryRangeError, err)
+	err = Prepare(code, 100000, 1024, NewMockEnv([]byte("")))
+	require.Equal(t, ErrOutOfMemoryRange, err)
+}
 
-	wasm, _ = Wat2Wasm([]byte(`(module
+func TestSpanTooSmall(t *testing.T) {
+	spanSize := 1 * 1024 * 1024
+	wasm := wat2wasm([]byte(`(module
 		(type (;0;) (func (param i64 i64 i64 i64)))
 		(type (;1;) (func))
-		(import "env" "read_external_data" (func (;0;) (type 0)))
+		(import "env" "ask_external_data" (func (;0;) (type 0)))
 		(func (type 1)
 			i64.const 1
 			i64.const 1
-			i64.const 100000000
-			i64.const 10000
+			i64.const 1
+			i64.const 1024
 			call 0
 			)
 		(func)
 		(memory 17)
 		(export "prepare" (func 1))
 		(export "execute" (func 2)))
+		`))
+	code, err := Compile(wasm, spanSize)
+	require.NoError(t, err)
 
-		`), spanSize)
+	err = Prepare(code, 100000, 1024, NewMockEnv([]byte("")))
+	require.NoError(t, err)
+
+	wasm = wat2wasm([]byte(`(module
+		(type (;0;) (func (param i64 i64 i64 i64)))
+		(type (;1;) (func))
+		(import "env" "ask_external_data" (func (;0;) (type 0)))
+		(func (type 1)
+			i64.const 1
+			i64.const 1
+			i64.const 1
+			i64.const 1025
+			call 0
+			)
+		(func)
+		(memory 17)
+		(export "prepare" (func 1))
+		(export "execute" (func 2)))
+		`))
 	code, err = Compile(wasm, spanSize)
 	require.NoError(t, err)
 
-	err = Prepare(code, 100000, NewMockEnv([]byte("")))
-	require.Equal(t, ErrOutOfMemoryRangeError, err)
+	err = Prepare(code, 100000, 1024, NewMockEnv([]byte("")))
+	require.Equal(t, ErrSpanTooSmall, err)
 }
 
 func TestBadImportSignature(t *testing.T) {
 	spanSize := 1 * 1024 * 1024
-	wasm, _ := Wat2Wasm([]byte(`(module
+	wasm := wat2wasm([]byte(`(module
 		(type (;0;) (func))
 		(type (;1;) (func))
 		(import "env" "set_return_data" (func (;0;) (type 0)))
@@ -413,10 +416,10 @@ func TestBadImportSignature(t *testing.T) {
 		(export "prepare" (func 1))
 		(export "execute" (func 2)))
 
-		`), spanSize)
+		`))
 	code, err := Compile(wasm, spanSize)
 	require.NoError(t, err)
 
-	err = Prepare(code, 100000, NewMockEnv([]byte("")))
-	require.Equal(t, ErrInstantiate, err)
+	err = Prepare(code, 100000, 1024, NewMockEnv([]byte("")))
+	require.Equal(t, ErrInstantiation, err)
 }
