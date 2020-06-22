@@ -198,7 +198,7 @@ func TestCreateOracleScriptSuccess(t *testing.T) {
 	expectEvents := sdk.Events{
 		sdk.NewEvent(types.EventTypeCreateOracleScript, sdk.NewAttribute(types.AttributeKeyID, "1")),
 	}
-	require.Equal(t, expectEvents, res.GetEvents())
+	require.Equal(t, expectEvents, res.Events)
 
 	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
 	filename := keeper.MustGetOracleScript(ctx, 1).Filename

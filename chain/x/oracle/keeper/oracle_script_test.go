@@ -164,17 +164,14 @@ func TestAddOracleScriptFile(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	code, err := api.Wat2Wasm(rawWAT)
-	if err != nil {
-		panic(err)
-	}
+	code := wat2wasm(rawWAT)
 
 	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
 	filename, err := k.AddOracleScriptFile(code)
 	defer deleteFile(filepath.Join(dir, filename))
 
 	require.NoError(t, err)
-	compiledCode, err := api.Compile(code)
+	compiledCode, err := api.Compile(code, types.MaxDataSize)
 	require.NoError(t, err)
 
 	require.Equal(t, compiledCode, k.GetFile(filename))

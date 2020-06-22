@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path/filepath"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -68,21 +69,42 @@ func getTestOracleScript() (os types.OracleScript, clear func()) {
 	), func() { deleteFile(filepath.Join(dir, filename)) }
 }
 
+// wat2wasm compiles the given Wat content to Wasm, relying on the host's wat2wasm program.
+func wat2wasm(wat []byte) []byte {
+	inputFile, err := ioutil.TempFile("", "input")
+	if err != nil {
+		panic(err)
+	}
+	defer os.Remove(inputFile.Name())
+	outputFile, err := ioutil.TempFile("", "output")
+	if err != nil {
+		panic(err)
+	}
+	defer os.Remove(outputFile.Name())
+	if _, err := inputFile.Write(wat); err != nil {
+		panic(err)
+	}
+	if err := exec.Command("wat2wasm", inputFile.Name(), "-o", outputFile.Name()).Run(); err != nil {
+		panic(err)
+	}
+	output, err := ioutil.ReadFile(outputFile.Name())
+	if err != nil {
+		panic(err)
+	}
+	return output
+}
+
 func mustGetOwasmCode(filename string) []byte {
 	absPath, _ := filepath.Abs(fmt.Sprintf("../../pkg/owasm/res/%s", filename))
 	rawWAT, err := ioutil.ReadFile(absPath)
 	if err != nil {
 		panic(err)
 	}
-	wasm, err := api.Wat2Wasm(rawWAT)
-	if err != nil {
-		panic(err)
-	}
-	return wasm
+	return wat2wasm(rawWAT)
 }
 
 func mustCompileOwasm(code []byte) []byte {
-	compiled, err := api.Compile(code)
+	compiled, err := api.Compile(code, types.MaxDataSize)
 	if err != nil {
 		panic(err)
 	}

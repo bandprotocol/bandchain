@@ -80,8 +80,7 @@ func (k Keeper) AddOracleScriptFile(file []byte) (string, error) {
 	if bytes.Equal(file, types.DoNotModifyBytes) {
 		return types.DoNotModify, nil
 	}
-	// TODO: Add safe guard here
-	compiledFile, err := api.Compile(file)
+	compiledFile, err := api.Compile(file, types.MaxDataSize)
 	if err != nil {
 		return "", sdkerrors.Wrapf(types.ErrCompileFailed, "with error: %s", err.Error())
 	}
