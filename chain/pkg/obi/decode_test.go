@@ -238,6 +238,14 @@ func TestDecodeStruct(t *testing.T) {
 	)
 }
 
+func TestDecodeMultipleValues(t *testing.T) {
+	var a, b int8
+	byteArray := []byte{0x20, 0x21}
+	MustDecode(byteArray, &a, &b)
+	require.Equal(t, int8(32), a)
+	require.Equal(t, int8(33), b)
+}
+
 func TestDecodeStructFail(t *testing.T) {
 	var actual ExampleData
 	byteArray := []byte{0x0, 0x0, 0x0, 0x6, 0x1, 0x0, 0x0, 0x0}

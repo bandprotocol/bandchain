@@ -36,7 +36,11 @@ func TestPrepareRequestSuccess(t *testing.T) {
 	minCount := uint64(1)
 	clientID := "beeb"
 	requestHeight := int64(0)
-	rawRequestID := []types.ExternalID{1, 2, 3}
+	rawRequests := []types.RawRequest{
+		types.NewRawRequest(1, 1, []byte("beeb")),
+		types.NewRawRequest(2, 2, []byte("beeb")),
+		types.NewRawRequest(3, 3, []byte("beeb")),
+	}
 
 	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
 	err := k.PrepareRequest(ctx, &m, nil)
@@ -45,7 +49,7 @@ func TestPrepareRequestSuccess(t *testing.T) {
 	req, err := k.GetRequest(ctx, 1)
 	require.NoError(t, err)
 	expectReq := types.NewRequest(oracleScriptID, calldata, []sdk.ValAddress{Validator1.ValAddress}, minCount,
-		requestHeight, int64(1581589790), clientID, nil, rawRequestID)
+		requestHeight, int64(1581589790), clientID, nil, rawRequests)
 	require.Equal(t, expectReq, req)
 	expectEvents := sdk.Events{
 		sdk.NewEvent(
@@ -299,14 +303,18 @@ func TestResolveRequestSuccess(t *testing.T) {
 	calldata := []byte("calldata")
 	minCount := uint64(1)
 	clientID := "owasm test"
-	rawRequestID := []types.ExternalID{1, 2, 3}
+	rawRequests := []types.RawRequest{
+		types.NewRawRequest(1, 1, []byte("beeb")),
+		types.NewRawRequest(2, 2, []byte("beeb")),
+		types.NewRawRequest(3, 3, []byte("beeb")),
+	}
 	vals := []sdk.ValAddress{Validator1.ValAddress, Validator2.ValAddress, Validator3.ValAddress}
 	requestHeight := int64(4000)
 	requestTime := int64(1581589700)
 
 	req := types.NewRequest(
 		oracleScriptID, calldata, vals, minCount, requestHeight,
-		requestTime, clientID, nil, rawRequestID)
+		requestTime, clientID, nil, rawRequests)
 	reqID := k.AddRequest(ctx, req)
 
 	// Set report validator
@@ -382,7 +390,7 @@ func TestResolveRequestSuccess(t *testing.T) {
 // 	reqPacket := types.NewOracleRequestPacketData(
 // 		r.ClientID, r.OracleScriptID, r.Calldata, r.MinCount, uint64(len(r.RequestedValidators)),
 // 	)
-// 	expecetRes := types.CalculateEncodedResult(reqPacket, resPacket)
+// 	expecetRes := obi.MustEncode(reqPacket, resPacket)
 
 // 	require.Equal(t, expecetRes, res)
 // }

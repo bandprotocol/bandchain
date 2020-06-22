@@ -63,7 +63,7 @@ module Styles = {
     ]);
 };
 
-let stakingBalanceDetail = (title, amount, usdPrice, tooltipItem) => {
+let stakingBalanceDetail = (~title, ~amount, ~usdPrice, ~tooltipItem, ~isCountup=false, ()) => {
   <Row alignItems=Css.flexStart>
     <Col size=1.2>
       <Text
@@ -79,14 +79,21 @@ let stakingBalanceDetail = (title, amount, usdPrice, tooltipItem) => {
     <Col size=0.6>
       <div className=Styles.cFlex>
         <div className=Styles.rFlex>
-          <Text
-            value={amount->Coin.getBandAmountFromCoin |> Format.fPretty}
-            size=Text.Lg
-            weight=Text.Semibold
-            spacing={Text.Em(0.02)}
-            nowrap=true
-            code=true
-          />
+          {isCountup
+             ? <NumberCountup
+                 value={amount->Coin.getBandAmountFromCoin}
+                 size=Text.Lg
+                 weight=Text.Semibold
+                 spacing={Text.Em(0.02)}
+               />
+             : <Text
+                 value={amount->Coin.getBandAmountFromCoin |> Format.fPretty}
+                 size=Text.Lg
+                 weight=Text.Semibold
+                 spacing={Text.Em(0.02)}
+                 nowrap=true
+                 code=true
+               />}
           <HSpacing size=Spacing.sm />
           <Text
             value="BAND"
@@ -99,14 +106,21 @@ let stakingBalanceDetail = (title, amount, usdPrice, tooltipItem) => {
         </div>
         <VSpacing size=Spacing.xs />
         <div className={Css.merge([Styles.rFlex, Styles.balance])}>
-          <Text
-            value={amount->Coin.getBandAmountFromCoin *. usdPrice |> Format.fPretty}
-            size=Text.Sm
-            spacing={Text.Em(0.02)}
-            weight=Text.Thin
-            nowrap=true
-            code=true
-          />
+          {isCountup
+             ? <NumberCountup
+                 value={amount->Coin.getBandAmountFromCoin *. usdPrice}
+                 size=Text.Sm
+                 weight=Text.Thin
+                 spacing={Text.Em(0.02)}
+               />
+             : <Text
+                 value={amount->Coin.getBandAmountFromCoin *. usdPrice |> Format.fPretty}
+                 size=Text.Sm
+                 spacing={Text.Em(0.02)}
+                 weight=Text.Thin
+                 nowrap=true
+                 code=true
+               />}
           <HSpacing size=Spacing.sm />
           <Text
             value="USD"
@@ -223,17 +237,19 @@ module StakingInfo = {
         </Row>
         <VSpacing size=Spacing.lg />
         {stakingBalanceDetail(
-           "BALANCE AT STAKE",
-           balanceAtStakeAmount,
-           usdPrice,
-           "Balance currently delegated to validators",
+           ~title="BALANCE AT STAKE",
+           ~amount=balanceAtStakeAmount,
+           ~usdPrice,
+           ~tooltipItem="Balance currently delegated to validators",
+           (),
          )}
         <VSpacing size=Spacing.lg />
         {stakingBalanceDetail(
-           "UNBONDING AMOUNT",
-           unbondingAmount,
-           usdPrice,
-           "Amount undelegated from validators awaiting 21 days lockup period",
+           ~title="UNBONDING AMOUNT",
+           ~amount=unbondingAmount,
+           ~usdPrice,
+           ~tooltipItem="Amount undelegated from validators awaiting 21 days lockup period",
+           (),
          )}
         {unbondingList |> Belt_Array.length > 0
            ? <>
@@ -270,10 +286,12 @@ module StakingInfo = {
            : React.null}
         <VSpacing size=Spacing.lg />
         {stakingBalanceDetail(
-           "REWARD",
-           rewardAmount,
-           usdPrice,
-           "Reward from staking to validators",
+           ~title="REWARD",
+           ~amount=rewardAmount,
+           ~usdPrice,
+           ~tooltipItem="Reward from staking to validators",
+           ~isCountup=true,
+           (),
          )}
       </div>
       |> Sub.resolve;
