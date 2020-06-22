@@ -32,7 +32,7 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
         Some([|
           TxCreator.Delegate(
             validator,
-            {amount: amountValue |> Js.Float.toString, denom: "uband"},
+            {amount: amountValue |> Int64.to_string, denom: "uband"},
           ),
         |]);
       };
@@ -82,7 +82,7 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
     {switch (allSub) {
      | Data(({balance}, _)) =>
        //  TODO: hard-coded tx fee
-       let maxValInUband = (balance |> Coin.getUBandAmountFromCoins) -. 5000.;
+       let maxValInUband = (balance |> Coin.getUBandAmountFromCoins |> Int64.to_float) -. 5000.;
        <EnhanceTxInput
          width=300
          inputData=amount

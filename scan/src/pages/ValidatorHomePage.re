@@ -170,7 +170,12 @@ let renderBody =
                <Text
                  value={
                    "("
-                   ++ (votingPower /. bondedTokenCount *. 100. |> Format.fPercent(~digits=2))
+                   ++ (
+                     (votingPower |> Int64.to_float)
+                     /. bondedTokenCount
+                     *. 100.
+                     |> Format.fPercent(~digits=2)
+                   )
                    ++ ")"
                  }
                  color=Colors.gray6
@@ -456,7 +461,7 @@ module ValidatorList = {
               ? filteredValidator
                 ->sorting(sortedBy)
                 ->Belt_Array.map(e =>
-                    renderBody(e.rank, Sub.resolve(e), bondedTokenCount.amount)
+                    renderBody(e.rank, Sub.resolve(e), bondedTokenCount.amount |> Int64.to_float)
                   )
                 ->React.array
               : <div className=Styles.emptyContainer>

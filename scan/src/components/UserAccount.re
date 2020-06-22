@@ -154,7 +154,6 @@ module Balance = {
     {
       let accountSub = AccountSub.get(address);
       let%Sub account = accountSub;
-
       <div className=Styles.balanceContainer>
         <Text
           value={account.balance |> Coin.getBandAmountFromCoins |> Format.fPretty(~digits=6)}

@@ -286,7 +286,10 @@ module Msg = {
         validatorAddress: json |> field("validator_address", string) |> Address.fromBech32,
         publicKey: json |> field("pubkey", string) |> PubKey.fromBech32,
         minSelfDelegation:
-          json |> field("min_self_delegation", floatstr) |> Coin.newUBANDFromAmount,
+          json
+          |> field("min_self_delegation", floatstr)
+          |> Int64.of_float
+          |> Coin.newUBANDFromAmount,
         selfDelegation: json |> field("value", Coin.decodeCoin),
       };
   };
@@ -311,7 +314,7 @@ module Msg = {
         sender: json |> field("address", string) |> Address.fromBech32,
         minSelfDelegation:
           json
-          |> optional(field("min_self_delegation", floatstr))
+          |> optional(field("min_self_delegation", uamount))
           |> Belt.Option.map(_, Coin.newUBANDFromAmount),
       };
   };
@@ -690,8 +693,12 @@ module Msg = {
         amount: {
           exception WrongNetwork(string);
           switch (Env.network) {
-          | "GUANYU" =>  json |> field("reward_amount", array(string)) |> Belt.Array.getExn(_, 0) |> GraphQLParser.coins;
-          | "WENCHANG" => json |> field("reward_amount", string) |> GraphQLParser.coins;
+          | "GUANYU" =>
+            json
+            |> field("reward_amount", array(string))
+            |> Belt.Array.getExn(_, 0)
+            |> GraphQLParser.coins
+          | "WENCHANG" => json |> field("reward_amount", string) |> GraphQLParser.coins
           | _ => raise(WrongNetwork("Incorrect or unspecified NETWORK environment variable"))
           };
         },

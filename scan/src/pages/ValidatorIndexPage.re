@@ -184,10 +184,16 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
              "Sum of self-bonded and delegated tokens" |> React.string;
            },
            VCode(
-             (bondedTokenCount > 0. ? validator.votingPower *. 100. /. bondedTokenCount : 0.)
+             (
+               bondedTokenCount > Int64.zero
+                 ? (validator.votingPower |> Int64.to_float)
+                   *. 100.
+                   /. (bondedTokenCount |> Int64.to_float)
+                 : 0.
+             )
              ->Format.fPretty
              ++ "% ("
-             ++ (validator.votingPower /. 1e6 |> Format.fPretty)
+             ++ ((validator.votingPower |> Int64.to_float) /. 1e6 |> Format.fPretty)
              ++ " BAND)",
            ),
          )}

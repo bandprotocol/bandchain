@@ -34,7 +34,7 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
         Some([|
           TxCreator.Undelegate(
             validator,
-            {amount: amountValue |> Js.Float.toString, denom: "uband"},
+            {amount: amountValue |> Int64.to_string, denom: "uband"},
           ),
         |]);
       };
@@ -101,8 +101,8 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
          width=300
          inputData=amount
          setInputData=setAmount
-         parse={Parse.getBandAmount(maxValInUband)}
-         maxValue={maxValInUband /. 1e6 |> Js.Float.toString}
+         parse={Parse.getBandAmount(maxValInUband |> Int64.to_float)}
+         maxValue={(maxValInUband |> Int64.to_float) /. 1e6 |> Js.Float.toString}
          msg="Undelegate Amount (BAND)"
          placeholder="Insert unbonding amount"
          inputType="number"

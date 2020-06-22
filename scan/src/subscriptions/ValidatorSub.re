@@ -28,7 +28,7 @@ type t = {
   operatorAddress: Address.t,
   consensusAddress: Address.t,
   consensusPubKey: PubKey.t,
-  votingPower: float,
+  votingPower: Int64.t,
   moniker: string,
   identity: string,
   website: string,

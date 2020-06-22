@@ -1,17 +1,19 @@
 let getBandAmount = (maxValue, amount) => {
-  switch (float_of_string_opt(amount)) {
-  | Some(amountFloat) =>
-    let uband = amountFloat *. 1e6;
-    uband == Js.Math.floor_float(uband)
+  let maxValueBigInt = maxValue |> Big.fromFloat;
+  switch (amount |> Big.fromString) {
+  | amount =>
+    let uband = amount |> Big.times(Config.ubandMult);
+    let roundedUband = uband->Big.round(~dp=0, ());
+    Big.eq(uband, roundedUband)
       ? {
-        switch (uband <= maxValue, uband > 0.) {
-        | (true, true) => Result.Ok(uband)
+        switch (Big.lte(uband, maxValueBigInt), Big.gt(uband, Big.fromInt(0))) {
+        | (true, true) => Result.Ok(uband->Big.toFixed(~dp=0, ())->Int64.of_string)
         | (false, _) => Err("Insufficient Amount")
         | (_, false) => Err("Amount must be more than 0")
         };
       }
-      : Err("Maximum precision is 4");
-  | None => Err("Invalid value")
+      : Err("Maximum precision is 6");
+  | exception _ => Err("Invalid value")
   };
 };
 

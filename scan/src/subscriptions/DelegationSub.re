@@ -152,8 +152,8 @@ let getStakeByValiator = (delegatorAddress, validatorAddress) => {
        internal##delegations_view
        ->Belt_Array.get(0)
        ->Belt_Option.getWithDefault({
-           amount: Coin.newUBANDFromAmount(0.),
-           reward: Coin.newUBANDFromAmount(0.),
+           amount: Coin.newUBANDFromAmount(Int64.zero),
+           reward: Coin.newUBANDFromAmount(Int64.zero),
          })
      );
 };

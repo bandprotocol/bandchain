@@ -159,7 +159,7 @@ module StakingInfo = {
 
       <div>
         <VSpacing size=Spacing.md />
-        {rewardAmount.amount > 1.
+        {rewardAmount.amount > Int64.one
            ? <div>
                <div className=Styles.reminder>
                  <Text
@@ -203,21 +203,21 @@ module StakingInfo = {
           <button
             className={Styles.button(100)}
             onClick={_ => {undelegate()}}
-            disabled={balanceAtStakeAmount.amount == 0. || isReachUnbondingLimit}>
+            disabled={balanceAtStakeAmount.amount == Int64.zero || isReachUnbondingLimit}>
             <Text value="Undelegate" />
           </button>
           <HSpacing size=Spacing.md />
           <button
             className={Styles.button(100)}
             onClick={_ => {redelegate()}}
-            disabled={balanceAtStakeAmount.amount == 0.}>
+            disabled={balanceAtStakeAmount.amount == Int64.zero}>
             <Text value="Redelegate" />
           </button>
           <HSpacing size=Spacing.md />
           <button
             className={Styles.button(150)}
             onClick={_ => {withdrawReward()}}
-            disabled={rewardAmount.amount < 1.}>
+            disabled={rewardAmount.amount < Int64.one}>
             <Text value="Withdraw Reward" />
           </button>
         </Row>

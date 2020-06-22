@@ -40,18 +40,20 @@ let hash = json =>
 
 let coinRegEx = "([0-9]+)([a-z][a-z0-9/]{2,31})" |> Js.Re.fromString;
 let coin = json => {
-  json |> Js.Json.decodeNumber |> Belt_Option.getExn |> Coin.newUBANDFromAmount;
+  json |> Js.Json.decodeNumber |> Belt_Option.getExn |> Int64.of_float |> Coin.newUBANDFromAmount;
 };
 let coinExn = jsonOpt => {
   jsonOpt
   |> Belt_Option.flatMap(_, Js.Json.decodeNumber)
   |> Belt.Option.getExn
+  |> Int64.of_float
   |> Coin.newUBANDFromAmount;
 };
 let coinWithDefault = jsonOpt => {
   jsonOpt
   |> Belt_Option.flatMap(_, Js.Json.decodeNumber)
   |> Belt.Option.getWithDefault(_, 0.0)
+  |> Int64.of_float
   |> Coin.newUBANDFromAmount;
 };
 let coins = str =>
@@ -65,7 +67,9 @@ let coins = str =>
          let result = coin |> Js.Re.exec_(coinRegEx) |> Belt_Option.getExn |> Js.Re.captures;
          Some({
            Coin.denom: result[2] |> Js.Nullable.toOption |> Belt_Option.getExn,
-           amount: result[1] |> Js.Nullable.toOption |> Belt_Option.getExn |> float_of_string,
+           amount: {
+             result[1] |> Js.Nullable.toOption |> Belt_Option.getExn |> Int64.of_string;
+           },
          });
        }
      );
