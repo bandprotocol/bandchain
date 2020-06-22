@@ -102,87 +102,89 @@ module Loading = {
 };
 
 [@react.component]
-let make = (~address) =>
-  {
-    let (page, setPage) = React.useState(_ => 1);
-    let pageSize = 10;
+let make = (~address) => {
+  let (page, setPage) = React.useState(_ => 1);
+  let pageSize = 10;
 
-    let delegatorsSub = DelegationSub.getDelegatorsByValidator(address, ~pageSize, ~page, ());
-    let delegatorCountSub = DelegationSub.getDelegatorCountByValidator(address);
+  let delegatorsSub = DelegationSub.getDelegatorsByValidator(address, ~pageSize, ~page, ());
+  let delegatorCountSub = DelegationSub.getDelegatorCountByValidator(address);
 
-    let%Sub delegatorCount = delegatorCountSub;
+  let allSub = Sub.all2(delegatorCountSub, delegatorsSub);
 
-    let pageCount = Page.getPageCount(delegatorCount, pageSize);
-
-    <div className=Styles.tableWrapper>
-      <Row>
-        <HSpacing size={`px(25)} />
-        <Text value={delegatorCount |> string_of_int} weight=Text.Bold />
-        <HSpacing size={`px(5)} />
-        <Text value="Delegators" />
-      </Row>
-      <VSpacing size=Spacing.lg />
-      {switch (delegatorsSub) {
-       | Data(delegators) =>
-         delegators->Belt_Array.length > 0
-           ? <>
-               <Header />
-               {delegators
-                ->Belt.Array.map(({amount, sharePercentage, delegatorAddress}) => {
-                    <TBody key={delegatorAddress |> Address.toBech32}>
-                      <Row>
-                        <Col> <HSpacing size=Spacing.lg /> </Col>
-                        <Col size=1.4> <AddressRender address=delegatorAddress /> </Col>
-                        <Col size=1.30>
-                          <div className={Styles.vFlex(`flexEnd)}>
-                            <div className=Styles.fillLeft />
-                            <Text
-                              block=true
-                              value={sharePercentage |> Format.fPretty}
-                              size=Text.Md
-                              weight=Text.Regular
-                              color=Colors.gray7
-                              spacing={Text.Em(0.05)}
-                              code=true
-                            />
-                          </div>
-                        </Col>
-                        <Col size=1.45>
-                          <div className={Styles.vFlex(`flexEnd)}>
-                            <div className=Styles.fillLeft />
-                            <Text
-                              block=true
-                              value={amount |> Coin.getBandAmountFromCoin |> Format.fPretty}
-                              size=Text.Md
-                              weight=Text.Regular
-                              color=Colors.gray7
-                              spacing={Text.Em(0.05)}
-                              code=true
-                            />
-                          </div>
-                        </Col>
-                        <Col> <HSpacing size=Spacing.lg /> </Col>
-                      </Row>
-                    </TBody>
-                  })
-                ->React.array}
-               <VSpacing size=Spacing.lg />
-               <Pagination
-                 currentPage=page
-                 pageCount
-                 onPageChange={newPage => setPage(_ => newPage)}
-               />
-             </>
-           : <div className=Styles.iconWrapper>
-               <VSpacing size={`px(30)} />
-               <img src=Images.noRequestIcon className=Styles.icon />
-               <VSpacing size={`px(40)} />
-               <Text block=true value="NO DELEGATORS" weight=Text.Regular color=Colors.blue4 />
-               <VSpacing size={`px(15)} />
-             </div>
-       | _ => <Loading />
+  <div className=Styles.tableWrapper>
+    <Row>
+      <HSpacing size={`px(25)} />
+      {switch (allSub) {
+       | Data((delegatorCount, _)) =>
+         <>
+           <Text value={delegatorCount |> string_of_int} weight=Text.Bold />
+           <HSpacing size={`px(5)} />
+           <Text value="Delegators" />
+         </>
+       | _ => <LoadingCensorBar width=100 height=20 />
        }}
-    </div>
-    |> Sub.resolve;
-  }
-  |> Sub.default(_, React.null);
+    </Row>
+    <VSpacing size=Spacing.lg />
+    {switch (allSub) {
+     | Data((delegatorCount, delegators)) =>
+       let pageCount = Page.getPageCount(delegatorCount, pageSize);
+       delegators->Belt_Array.length > 0
+         ? <>
+             <Header />
+             {delegators
+              ->Belt.Array.map(({amount, sharePercentage, delegatorAddress}) => {
+                  <TBody key={delegatorAddress |> Address.toBech32}>
+                    <Row>
+                      <Col> <HSpacing size=Spacing.lg /> </Col>
+                      <Col size=1.4> <AddressRender address=delegatorAddress /> </Col>
+                      <Col size=1.30>
+                        <div className={Styles.vFlex(`flexEnd)}>
+                          <div className=Styles.fillLeft />
+                          <Text
+                            block=true
+                            value={sharePercentage |> Format.fPretty}
+                            size=Text.Md
+                            weight=Text.Regular
+                            color=Colors.gray7
+                            spacing={Text.Em(0.05)}
+                            code=true
+                          />
+                        </div>
+                      </Col>
+                      <Col size=1.45>
+                        <div className={Styles.vFlex(`flexEnd)}>
+                          <div className=Styles.fillLeft />
+                          <Text
+                            block=true
+                            value={amount |> Coin.getBandAmountFromCoin |> Format.fPretty}
+                            size=Text.Md
+                            weight=Text.Regular
+                            color=Colors.gray7
+                            spacing={Text.Em(0.05)}
+                            code=true
+                          />
+                        </div>
+                      </Col>
+                      <Col> <HSpacing size=Spacing.lg /> </Col>
+                    </Row>
+                  </TBody>
+                })
+              ->React.array}
+             <VSpacing size=Spacing.lg />
+             <Pagination
+               currentPage=page
+               pageCount
+               onPageChange={newPage => setPage(_ => newPage)}
+             />
+           </>
+         : <div className=Styles.iconWrapper>
+             <VSpacing size={`px(30)} />
+             <img src=Images.noRequestIcon className=Styles.icon />
+             <VSpacing size={`px(40)} />
+             <Text block=true value="NO DELEGATORS" weight=Text.Regular color=Colors.blue4 />
+             <VSpacing size={`px(15)} />
+           </div>;
+     | _ => <Loading />
+     }}
+  </div>;
+};

@@ -112,9 +112,9 @@ module TableHeader = {
 
 module ReportCount = {
   [@react.component]
-  let make = (~totalReportsSub: ApolloHooks.Subscription.variant(int)) => {
+  let make = (~reportsCountSub: ApolloHooks.Subscription.variant(int)) => {
     <Row>
-      {switch (totalReportsSub) {
+      {switch (reportsCountSub) {
        | Data(totalReports) =>
          <>
            <HSpacing size={`px(25)} />
@@ -242,51 +242,47 @@ module Loading = {
 };
 
 [@react.component]
-let make = (~address) =>
-  {
-    let (page, setPage) = React.useState(_ => 1);
-    let pageSize = 5;
+let make = (~address) => {
+  let (page, setPage) = React.useState(_ => 1);
+  let pageSize = 5;
 
-    let reportsSub =
-      ReportSub.ValidatorReport.getListByValidator(
-        ~page,
-        ~pageSize,
-        ~validator={
-          address |> Address.toOperatorBech32;
-        },
-      );
-    let totalReportsSub = ReportSub.ValidatorReport.count(address |> Address.toOperatorBech32);
+  let reportsSub =
+    ReportSub.ValidatorReport.getListByValidator(
+      ~page,
+      ~pageSize,
+      ~validator={
+        address |> Address.toOperatorBech32;
+      },
+    );
+  let reportsCountSub = ReportSub.ValidatorReport.count(address |> Address.toOperatorBech32);
 
-    let%Sub totalReports = totalReportsSub;
+  let allSub = Sub.all2(reportsCountSub, reportsSub);
 
-    let pageCount = Page.getPageCount(totalReports, pageSize);
-
-    <div className=Styles.tableWrapper>
-      <ReportCount totalReportsSub />
-      <VSpacing size=Spacing.lg />
-      <TableHeader />
-      {switch (reportsSub) {
-       | Data(reports) =>
-         reports->Belt_Array.length > 0
-           ? <>
-               <Reports reports />
-               <VSpacing size=Spacing.lg />
-               <Pagination
-                 currentPage=page
-                 pageCount
-                 onPageChange={newPage => setPage(_ => newPage)}
-               />
-             </>
-           : <div className=Styles.iconWrapper>
-               <VSpacing size={`px(30)} />
-               <img src=Images.noRequestIcon className=Styles.icon />
-               <VSpacing size={`px(40)} />
-               <Text block=true value="NO REPORTS" weight=Text.Regular color=Colors.blue4 />
-               <VSpacing size={`px(15)} />
-             </div>
-       | _ => <Loading />
-       }}
-    </div>
-    |> Sub.resolve;
-  }
-  |> Sub.default(_, React.null);
+  <div className=Styles.tableWrapper>
+    <ReportCount reportsCountSub />
+    <VSpacing size=Spacing.lg />
+    <TableHeader />
+    {switch (allSub) {
+     | Data((reportsCount, reports)) =>
+       let pageCount = Page.getPageCount(reportsCount, pageSize);
+       reports->Belt_Array.length > 0
+         ? <>
+             <Reports reports />
+             <VSpacing size=Spacing.lg />
+             <Pagination
+               currentPage=page
+               pageCount
+               onPageChange={newPage => setPage(_ => newPage)}
+             />
+           </>
+         : <div className=Styles.iconWrapper>
+             <VSpacing size={`px(30)} />
+             <img src=Images.noRequestIcon className=Styles.icon />
+             <VSpacing size={`px(40)} />
+             <Text block=true value="NO REPORTS" weight=Text.Regular color=Colors.blue4 />
+             <VSpacing size={`px(15)} />
+           </div>;
+     | _ => <Loading />
+     }}
+  </div>;
+};
