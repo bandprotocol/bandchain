@@ -50,7 +50,7 @@ module TableHeader = {
 module Loading = {
   [@react.component]
   let make = (~withCount=true) => {
-    <div className=Styles.tableWrapper>
+    <>
       {withCount
          ? <>
              <Row> <LoadingCensorBar width=100 height=15 /> </Row>
@@ -61,15 +61,15 @@ module Loading = {
          5,
          <Row>
            <Col> <HSpacing size=Spacing.lg /> </Col>
-           <Col size=1.5> <LoadingCensorBar width=75 height=15 /> </Col>
-           <Col size=4.0> <LoadingCensorBar width=200 height=15 /> </Col>
+           <Col size=1.5> <LoadingCensorBar width=50 height=20 /> </Col>
+           <Col size=4.0> <LoadingCensorBar width=150 height=20 /> </Col>
            <Col size=3.0>
              <div className={Styles.withWidth(500)}>
-               <LoadingCensorBar width=500 height=15 />
+               <LoadingCensorBar width=460 height=20 />
              </div>
            </Col>
            <Col size=1.5>
-             <Row> <div className=Styles.fillLeft /> <LoadingCensorBar width=50 height=15 /> </Row>
+             <Row> <div className=Styles.fillLeft /> <LoadingCensorBar width=50 height=20 /> </Row>
            </Col>
            <Col> <HSpacing size=Spacing.lg /> </Col>
          </Row>,
@@ -78,7 +78,7 @@ module Loading = {
        ->React.array}
       <VSpacing size=Spacing.lg />
       <div className=Styles.pagination />
-    </div>;
+    </>;
   };
 };
 
@@ -136,47 +136,44 @@ module ProposedBlockCount = {
 };
 
 [@react.component]
-let make = (~consensusAddress) =>
-  {
-    let (page, setPage) = React.useState(_ => 1);
-    let pageSize = 5;
+let make = (~consensusAddress) => {
+  let (page, setPage) = React.useState(_ => 1);
+  let pageSize = 5;
 
-    let blocksCountSub = BlockSub.countByConsensusAddress(~address=consensusAddress, ());
-    let blocksSub =
-      BlockSub.getListByConsensusAddress(~address=consensusAddress, ~pageSize, ~page, ());
+  let blocksCountSub = BlockSub.countByConsensusAddress(~address=consensusAddress, ());
+  let blocksSub =
+    BlockSub.getListByConsensusAddress(~address=consensusAddress, ~pageSize, ~page, ());
 
-    let%Sub blocksCount = blocksCountSub;
-    let pageCount = Page.getPageCount(blocksCount, pageSize);
+  let allSub = Sub.all2(blocksSub, blocksCountSub);
 
-    <div className=Styles.tableWrapper>
-      <ProposedBlockCount consensusAddress />
-      <VSpacing size=Spacing.lg />
-      <TableHeader />
-      {switch (blocksSub) {
-       | Data(blocks) =>
-         blocks->Belt.Array.size > 0
-           ? <>
-               <BlocksTable blocks />
-               <VSpacing size=Spacing.lg />
-               <div className=Styles.pagination>
-                 <Pagination
-                   currentPage=page
-                   pageCount
-                   onPageChange={newPage => setPage(_ => newPage)}
-                 />
-               </div>
-             </>
-           : <div className=Styles.iconWrapper>
-               <VSpacing size={`px(30)} />
-               <img src=Images.noRequestIcon className=Styles.icon />
-               <VSpacing size={`px(40)} />
-               <Text block=true value="NO BLOCK" weight=Text.Regular color=Colors.blue4 />
-               <VSpacing size={`px(15)} />
+  <div className=Styles.tableWrapper>
+    <ProposedBlockCount consensusAddress />
+    <VSpacing size=Spacing.lg />
+    <TableHeader />
+    {switch (allSub) {
+     | Data((blocks, blocksCount)) =>
+       let pageCount = Page.getPageCount(blocksCount, pageSize);
+       blocks->Belt.Array.size > 0
+         ? <>
+             <BlocksTable blocks />
+             <VSpacing size=Spacing.lg />
+             <div className=Styles.pagination>
+               <Pagination
+                 currentPage=page
+                 pageCount
+                 onPageChange={newPage => setPage(_ => newPage)}
+               />
              </div>
+           </>
+         : <div className=Styles.iconWrapper>
+             <VSpacing size={`px(30)} />
+             <img src=Images.noRequestIcon className=Styles.icon />
+             <VSpacing size={`px(40)} />
+             <Text block=true value="NO BLOCK" weight=Text.Regular color=Colors.blue4 />
+             <VSpacing size={`px(15)} />
+           </div>;
 
-       | _ => <Loading withCount=false />
-       }}
-    </div>
-    |> Sub.resolve;
-  }
-  |> Sub.default(_, React.null);
+     | _ => <Loading withCount=false />
+     }}
+  </div>;
+};
