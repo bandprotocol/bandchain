@@ -4,9 +4,9 @@ use crate::span::Span;
 
 /// A `VMLogic` encapsulates the runtime logic of Owasm scripts.
 pub struct VMLogic {
-    env: Env,
-    gas_left: u32,
-    span_size: i64,
+    env: Env,       // The execution environment for callbacks to Golang.
+    gas_left: u32,  // Amount of gas remainted for the rest of the execution.
+    span_size: i64, // Maximum span size for communication between Rust & Go.
 }
 
 impl VMLogic {
@@ -15,7 +15,7 @@ impl VMLogic {
         VMLogic {
             env: env,
             gas_left: gas,
-            span_size: 1000, // TODO: Get span size from env
+            span_size: 1000,
         }
     }
 
