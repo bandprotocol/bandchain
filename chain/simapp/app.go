@@ -1,6 +1,7 @@
 package simapp
 
 import (
+	"io/ioutil"
 	"math/rand"
 	"time"
 
@@ -101,8 +102,12 @@ func createValidatorTx(chainID string, acc Account, moniker string, selfDelegati
 
 // NewSimApp creates instance of our app using in test.
 func NewSimApp(chainID string, logger log.Logger) *bandapp.BandApp {
-	// Set HomeFlag to /tmp folder for simulation run.
-	viper.Set(cli.HomeFlag, "/tmp")
+	// Sets HomeFlag to a temp folder for simulation run.
+	dir, err := ioutil.TempDir("", "bandd")
+	if err != nil {
+		panic(err)
+	}
+	viper.Set(cli.HomeFlag, dir)
 	db := dbm.NewMemDB()
 	app := bandapp.NewBandApp(logger, db, nil, true, 0, map[int64]bool{}, "")
 	genesis := bandapp.NewDefaultGenesisState()
