@@ -1,6 +1,6 @@
 [package]
-name = "owasm"
-version = "0.1.7"
+name = "owasm2"
+version = "0.1.8"
 authors = ["Band Protocol <connect@bandprotocol.com>"]
 edition = "2018"
 license = "Apache-2.0"
@@ -11,7 +11,7 @@ TODO
 
 [dependencies]
 json = "0.12.0"
-num = "*"
+num = "0.3.0"
 
 [workspace]
 members = [

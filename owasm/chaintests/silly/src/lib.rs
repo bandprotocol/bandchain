@@ -1,4 +1,4 @@
-use owasm::oei;
+use owasm2::oei;
 
 #[no_mangle]
 pub fn prepare() {

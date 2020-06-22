@@ -9,7 +9,7 @@ edition = "2018"
 crate-type = ["cdylib"]
 
 [dependencies]
-owasm = { path = "../.." }
+owasm2 = { path = "../.." }
 obi = { path = "../../../obi/obi-rs/obi" }
 num = "*"
 wee_alloc = "*"

@@ -1,5 +1,5 @@
 use obi::{OBIDecode, OBIEncode};
-use owasm::{execute_entry_point, oei, prepare_entry_point};
+use owasm2::{execute_entry_point, oei, prepare_entry_point};
 
 fn parse_float(data: String) -> Option<f64> {
     data.trim_end().parse::<f64>().ok()

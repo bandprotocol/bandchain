@@ -1,7 +1,7 @@
 use obi::{OBIDecode, OBIEncode};
-use owasm::ext;
-use owasm::oei;
-use owasm::{execute_entry_point, prepare_entry_point};
+use owasm2::ext;
+use owasm2::oei;
+use owasm2::{execute_entry_point, prepare_entry_point};
 
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;

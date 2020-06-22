@@ -1,4 +1,4 @@
-use owasm::oei;
+use owasm2::oei;
 use std::convert::TryInto;
 
 #[no_mangle]

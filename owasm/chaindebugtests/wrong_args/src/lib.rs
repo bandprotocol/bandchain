@@ -1,5 +1,5 @@
 use obi::{OBIDecode, OBIEncode};
-use owasm::{execute_entry_point, oei};
+use owasm2::{execute_entry_point, oei};
 
 #[derive(OBIDecode)]
 struct Input {
