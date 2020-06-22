@@ -34,9 +34,9 @@ pub fn get_ans_count() -> i64 {
 
 pub fn get_calldata() -> Vec<u8> {
     unsafe {
-        let data_size = raw::get_calldata_size();
-        let mut data = vec![0u8; data_size as usize];
-        raw::read_calldata(data.as_mut_ptr() as i64, data_size);
+        let mut data = Vec::with_capacity(raw::get_span_size() as usize);
+        let len = raw::read_calldata(data.as_mut_ptr() as i64);
+        data.set_len(len as usize);
         data
     }
 }
@@ -45,7 +45,7 @@ pub fn save_return_data(data: &[u8]) {
     unsafe { raw::set_return_data(data.as_ptr() as i64, data.len() as i64) }
 }
 
-pub fn ask_external_data(external_id: i64,data_source_id: i64,  calldata: &[u8]) {
+pub fn ask_external_data(external_id: i64, data_source_id: i64, calldata: &[u8]) {
     unsafe {
         raw::ask_external_data(
             external_id,
@@ -58,17 +58,15 @@ pub fn ask_external_data(external_id: i64,data_source_id: i64,  calldata: &[u8])
 
 pub fn get_external_data(external_id: i64, validator_index: i64) -> Option<String> {
     unsafe {
-        let data_size = raw::get_external_data_size(external_id, validator_index);
-        if data_size == -1 {
+        let status = raw::get_external_data_status(external_id, validator_index);
+        // TODO: Handle other statuses
+        if status == -1 {
             None
         } else {
-            let mut data = vec![0u8; data_size as usize];
-            raw::read_external_data(
-                external_id,
-                validator_index,
-                data.as_mut_ptr() as i64,
-                data_size,
-            );
+            let mut data = Vec::with_capacity(raw::get_span_size() as usize);
+            let len =
+                raw::read_external_data(external_id, validator_index, data.as_mut_ptr() as i64);
+            data.set_len(len as usize);
             Some(String::from_utf8_unchecked(data))
         }
     }
