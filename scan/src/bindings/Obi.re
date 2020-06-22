@@ -182,14 +182,10 @@ let optionsAll = options =>
        }
      });
 
-let generateDecoderSolidity = (schema, dataType) => {
+let generateDecodeLibSolidity = (schema, dataType) => {
   let dataTypeString = dataType |> dataTypeToString;
   let name = dataType |> dataTypeToSchemaField;
-  let template = (structs, functions) => {j|pragma solidity ^0.5.0;
-
-import "./Obi.sol";
-
-library $(dataTypeString)Decoder {
+  let template = (structs, functions) => {j|library $(dataTypeString)Decoder {
     using Obi for Obi.Data;
 
     struct $dataTypeString {
@@ -205,6 +201,7 @@ library $(dataTypeString)Decoder {
         $functions
     }
 }
+
 |j};
   let%Opt fieldsPairs = extractFields(schema, name);
   let%Opt fields = fieldsPairs |> Belt_Array.map(_, parse) |> optionsAll;
@@ -215,6 +212,20 @@ library $(dataTypeString)Decoder {
       fields |> Belt_Array.map(_, assignSolidity) |> Js.Array.joinWith(indent),
     ),
   );
+};
+
+let generateDecoderSolidity = schema => {
+  let template = {j|pragma solidity ^0.5.0;
+
+import "./Obi.sol";
+
+|j};
+  let paramsCodeOpt = generateDecodeLibSolidity(schema, Params);
+  let resultCodeOpt = generateDecodeLibSolidity(schema, Result);
+  switch (paramsCodeOpt, resultCodeOpt) {
+  | (Some(paramsCode), Some(resultCode)) => Some(template ++ paramsCode ++ resultCode)
+  | _ => None
+  };
 };
 
 let declareGo = ({name, varType}) => {

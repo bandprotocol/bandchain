@@ -197,20 +197,6 @@ library ParamsDecoder {
         result.multiplier = data.decodeU64();
     }
 }
-|j},
-      ),
-    )
-    |> toEqual(
-         generateDecoderSolidity({j|{symbol:string,multiplier:u64}/{px:u64}|j}, Obi.Params),
-       )
-  });
-
-  test("should be able to generate solidity 2", () => {
-    expect(
-      Some(
-        {j|pragma solidity ^0.5.0;
-
-import "./Obi.sol";
 
 library ResultDecoder {
     using Obi for Obi.Data;
@@ -228,12 +214,60 @@ library ResultDecoder {
         result.px = data.decodeU64();
     }
 }
+
 |j},
       ),
     )
-    |> toEqual(
-         generateDecoderSolidity({j|{symbol:string,multiplier:u64}/{px:u64}|j}, Obi.Result),
-       )
+    |> toEqual(generateDecoderSolidity({j|{symbol:string,multiplier:u64}/{px:u64}|j}))
+  });
+
+  test("should be able to generate solidity 2", () => {
+    expect(
+      Some(
+        {j|pragma solidity ^0.5.0;
+
+import "./Obi.sol";
+
+library ParamsDecoder {
+    using Obi for Obi.Data;
+
+    struct Params {
+        string symbol;
+        uint64 multiplier;
+    }
+
+    function decodeParams(bytes memory _data)
+        internal
+        pure
+        returns (Params memory result)
+    {
+        Obi.Data memory data = Obi.from(_data);
+        result.symbol = string(data.decodeBytes());
+        result.multiplier = data.decodeU64();
+    }
+}
+
+library ResultDecoder {
+    using Obi for Obi.Data;
+
+    struct Result {
+        uint64 px;
+    }
+
+    function decodeResult(bytes memory _data)
+        internal
+        pure
+        returns (Result memory result)
+    {
+        Obi.Data memory data = Obi.from(_data);
+        result.px = data.decodeU64();
+    }
+}
+
+|j},
+      ),
+    )
+    |> toEqual(generateDecoderSolidity({j|{symbol:string,multiplier:u64}/{px:u64}|j}))
   });
 });
 
