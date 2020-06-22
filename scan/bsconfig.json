@@ -32,7 +32,9 @@
     "bs-moment",
     "bs-css",
     "bs-css-emotion",
-    "bs-axios"
+    "bs-axios",
+    "re-debouncer",
+    "bs-big.js"
   ],
   "bs-dev-dependencies": ["@glennsl/bs-jest"],
   "refmt": 3
