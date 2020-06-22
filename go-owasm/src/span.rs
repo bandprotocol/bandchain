@@ -27,15 +27,11 @@ impl Span {
     }
 
     /// Creates a writable `span` with the provided `ptr` as the starting memory location,
-    /// and inital capacity `cap`. The created span has zero length.
-    pub fn create_writable(ptr: *mut u8, cap: usize) -> Span {
-        Span { ptr, len: 0, cap }
-    }
+    /// and initial capacity `cap`. The created span has zero length.
+    pub fn create_writable(ptr: *mut u8, cap: usize) -> Span { Span { ptr, len: 0, cap } }
 
     /// Returns a read-only view of the `span`.
-    pub fn read(&self) -> &[u8] {
-        unsafe { std::slice::from_raw_parts(self.ptr, self.len) }
-    }
+    pub fn read(&self) -> &[u8] { unsafe { std::slice::from_raw_parts(self.ptr, self.len) } }
 
     /// Appends data into the `span`. Returns NoError if the write is successful.
     /// The function may fail if the given data exceeeds the capacity of the `span`.
