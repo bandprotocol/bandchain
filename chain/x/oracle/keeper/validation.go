@@ -16,10 +16,10 @@ func ContainsVal(vals []sdk.ValAddress, target sdk.ValAddress) bool {
 	return false
 }
 
-// ContainsEID returns whether the given slice of external ids contains the target id.
-func ContainsEID(ids []types.ExternalID, target types.ExternalID) bool {
-	for _, id := range ids {
-		if id == target {
+// ContainsEID returns whether the given slice of raw requests contains the target id.
+func ContainsEID(rawRequests []types.RawRequest, target types.ExternalID) bool {
+	for _, rawRequest := range rawRequests {
+		if rawRequest.ExternalID == target {
 			return true
 		}
 	}
