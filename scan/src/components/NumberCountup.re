@@ -3,11 +3,11 @@ let make = (~value, ~size, ~weight, ~spacing) => {
   let countup =
     Countup.context(
       Countup.props(
-        ~start=0.,
-        ~end_=0.,
+        ~start=value,
+        ~end_=value,
         ~delay=0,
         ~decimals=6,
-        ~duration=1,
+        ~duration=4,
         ~useEasing=false,
         ~separator=",",
       ),
@@ -22,5 +22,5 @@ let make = (~value, ~size, ~weight, ~spacing) => {
   );
 
   let newVal = Countup.countUpGet(countup);
-  <Text value={newVal |> Js.Float.toString} size weight spacing code=true nowrap=true />;
+  <Text value={newVal} size weight spacing code=true nowrap=true />;
 };
