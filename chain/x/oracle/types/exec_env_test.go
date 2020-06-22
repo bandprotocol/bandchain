@@ -84,7 +84,7 @@ func TestSetReturnData(t *testing.T) {
 
 	penv := mockFreshPrepareEnv()
 	err := penv.SetReturnData(result)
-	require.Equal(t, api.ErrSetReturnDataWrongPeriod, err)
+	require.Equal(t, api.ErrWrongPeriodAction, err)
 
 	eenv := mockExecEnv()
 	eenv.SetReturnData(result)
@@ -113,7 +113,7 @@ func TestGetAnsCount(t *testing.T) {
 	// Should return error if call on prepare environment.
 	penv := mockFreshPrepareEnv()
 	_, err := penv.GetAnsCount()
-	require.Equal(t, api.ErrAnsCountWrongPeriod, err)
+	require.Equal(t, api.ErrWrongPeriodAction, err)
 
 	eenv := mockExecEnv()
 	v, err := eenv.GetAnsCount()
@@ -139,9 +139,9 @@ func TestGetExternalData(t *testing.T) {
 	require.Equal(t, int64(-1), status)
 
 	_, err = env.GetExternalData(1, 100)
-	require.Equal(t, api.ErrValidatorOutOfRange, err)
+	require.Equal(t, api.ErrBadValidatorIndex, err)
 	_, err = env.GetExternalDataStatus(1, 100)
-	require.Equal(t, api.ErrValidatorOutOfRange, err)
+	require.Equal(t, api.ErrBadValidatorIndex, err)
 
 	_, err = env.GetExternalData(1, -1)
 	require.Error(t, err)
@@ -158,9 +158,9 @@ func TestFailedGetExternalData(t *testing.T) {
 	penv := mockAlreadyPreparedEnv()
 
 	_, err := penv.GetExternalData(1, 1)
-	require.Equal(t, api.ErrGetExternalDataWrongPeriod, err)
+	require.Equal(t, api.ErrWrongPeriodAction, err)
 	_, err = penv.GetExternalDataStatus(1, 1)
-	require.Equal(t, api.ErrGetExternalDataStatusWrongPeriod, err)
+	require.Equal(t, api.ErrWrongPeriodAction, err)
 }
 
 func TestAskExternalData(t *testing.T) {
@@ -203,7 +203,7 @@ func TestAskExternalDataOnExecEnv(t *testing.T) {
 	env := mockExecEnv()
 	calldata := []byte("CALLDATA")
 	err := env.AskExternalData(2, 2, calldata)
-	require.Equal(t, api.ErrAskExternalDataWrongPeriod, err)
+	require.Equal(t, api.ErrWrongPeriodAction, err)
 }
 
 func TestGetRawRequests(t *testing.T) {
