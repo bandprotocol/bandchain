@@ -56,7 +56,7 @@ fn inject_memory(module: Module) -> Result<Module, Error> {
     let mut m = module;
     let section = match m.memory_section() {
         Some(section) => section,
-        None => return Err(Error::NoMemoryWasmError),
+        None => return Err(Error::BadMemorySectionError),
     };
 
     // The valid wasm has only the section length of memory.
@@ -65,11 +65,11 @@ fn inject_memory(module: Module) -> Result<Module, Error> {
     let limits = memory.limits();
 
     if limits.initial() > MEMORY_LIMIT {
-        return Err(Error::MinimumMemoryExceedError);
+        return Err(Error::BadMemorySectionError);
     }
 
     if limits.maximum() != None {
-        return Err(Error::SetMaximumMemoryError);
+        return Err(Error::BadMemorySectionError);
     }
 
     // set max memory page = MEMORY_LIMIT
@@ -84,8 +84,7 @@ fn inject_memory(module: Module) -> Result<Module, Error> {
 }
 
 fn inject_stack_height(module: Module) -> Result<Module, Error> {
-    pwasm_utils::stack_height::inject_limiter(module, MAX_STACK_HEIGHT)
-        .map_err(|_| Error::StackHeightInstrumentationError)
+    pwasm_utils::stack_height::inject_limiter(module, MAX_STACK_HEIGHT).map_err(|_| Error::StackHeightInjectionError)
 }
 
 fn inject_gas(module: Module) -> Result<Module, Error> {
@@ -96,16 +95,12 @@ fn inject_gas(module: Module) -> Result<Module, Error> {
 
 fn check_wasm_exports(module: &Module) -> Result<(), Error> {
     let available_exports: Vec<&str> = module.export_section().map_or(vec![], |export_section| {
-        export_section
-            .entries()
-            .iter()
-            .map(|entry| entry.field())
-            .collect()
+        export_section.entries().iter().map(|entry| entry.field()).collect()
     });
 
     for required_export in REQUIRED_EXPORTS {
         if !available_exports.contains(required_export) {
-            return Err(Error::CheckWasmExportsError);
+            return Err(Error::InvalidExportsError);
         }
     }
 
@@ -120,12 +115,12 @@ fn check_wasm_imports(module: &Module) -> Result<(), Error> {
     for required_import in required_imports {
         let full_name = format!("{}.{}", required_import.module(), required_import.field());
         if !SUPPORTED_IMPORTS.contains(&full_name.as_str()) {
-            return Err(Error::CheckWasmImportsError);
+            return Err(Error::InvalidImportsError);
         }
 
         match required_import.external() {
             External::Function(_) => {} // ok
-            _ => return Err(Error::CheckWasmImportsError),
+            _ => return Err(Error::InvalidImportsError),
         };
     }
     Ok(())
@@ -133,7 +128,7 @@ fn check_wasm_imports(module: &Module) -> Result<(), Error> {
 
 fn compile(code: &[u8]) -> Result<Vec<u8>, Error> {
     // Check that the given Wasm code is indeed a valid Wasm.
-    wasmparser::validate(code, None).map_err(|_| Error::ValidateError)?;
+    wasmparser::validate(code, None).map_err(|_| Error::ValidationError)?;
     // Start the compiling chains. TODO: Add more safeguards.
     let module = elements::deserialize_buffer(code).map_err(|_| Error::DeserializationError)?;
     check_wasm_exports(&module)?;
@@ -179,7 +174,7 @@ fn run(code: &[u8], gas_limit: u32, is_prepare: bool, env: Env) -> Result<(), Er
             "set_return_data" => func!(|ctx: &mut Ctx, ptr: i64, len: i64| {
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
                 if len > vm.get_span_size() {
-                    return Err(Error::SpanExceededCapacityError);
+                    return Err(Error::SpanTooSmallError);
                 }
                 let data: Vec<u8> = ctx.memory(0).view()[ptr as usize..(ptr + len) as usize].iter().map(|cell| cell.get()).collect();
                 vm.set_return_data(&data)
@@ -199,7 +194,7 @@ fn run(code: &[u8], gas_limit: u32, is_prepare: bool, env: Env) -> Result<(), Er
             "ask_external_data" => func!(|ctx: &mut Ctx, eid: i64, did: i64, ptr: i64, len: i64| {
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
                 if len > vm.get_span_size() {
-                    return Err(Error::SpanExceededCapacityError);
+                    return Err(Error::SpanTooSmallError);
                 }
                 let data: Vec<u8> = ctx.memory(0).view()[ptr as usize..(ptr + len) as usize].iter().map(|cell| cell.get()).collect();
                 vm.ask_external_data(eid, did, &data)
@@ -222,12 +217,9 @@ fn run(code: &[u8], gas_limit: u32, is_prepare: bool, env: Env) -> Result<(), Er
             }),
         },
     };
-    let instance = instantiate(code, &import_object).map_err(|_| Error::CompliationError)?;
+    let instance = instantiate(code, &import_object).map_err(|_| Error::InstantiationError)?;
     let entry = if is_prepare { "prepare" } else { "execute" };
-    let function: Func<(), ()> = instance
-        .exports
-        .get(entry)
-        .map_err(|_| Error::InvalidSignatureFunctionError)?;
+    let function: Func<(), ()> = instance.exports.get(entry).map_err(|_| Error::BadEntrySignatureError)?;
     function.call().map_err(|err| match err {
         RuntimeError::User(uerr) => {
             if let Some(err) = uerr.downcast_ref::<Error>() {
@@ -236,9 +228,10 @@ fn run(code: &[u8], gas_limit: u32, is_prepare: bool, env: Env) -> Result<(), Er
                 Error::UnknownError
             }
         }
-        _ => Error::RunError,
+        _ => Error::RuntimeError,
     })
 }
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -365,7 +358,7 @@ mod test {
         let wasm = wat2wasm("(module)");
         let module = get_module_from_wasm(&wasm);
 
-        assert_eq!(inject_memory(module), Err(Error::NoMemoryWasmError));
+        assert_eq!(inject_memory(module), Err(Error::BadMemorySectionError));
     }
     #[test]
     fn test_inject_memory_two_memories() {
@@ -382,7 +375,7 @@ mod test {
         ))
         .unwrap();
         let r = compile(&wasm);
-        assert_eq!(r, Err(Error::ValidateError));
+        assert_eq!(r, Err(Error::ValidationError));
     }
 
     #[test]
@@ -393,7 +386,7 @@ mod test {
 
         let wasm_too_big = wat2wasm("(module (memory 513))");
         let module = get_module_from_wasm(&wasm_too_big);
-        assert_eq!(inject_memory(module), Err(Error::MinimumMemoryExceedError));
+        assert_eq!(inject_memory(module), Err(Error::BadMemorySectionError));
     }
 
     #[test]
@@ -401,7 +394,7 @@ mod test {
         let wasm = wat2wasm("(module (memory 1 5))");
         let module = get_module_from_wasm(&wasm);
 
-        assert_eq!(inject_memory(module), Err(Error::SetMaximumMemoryError));
+        assert_eq!(inject_memory(module), Err(Error::BadMemorySectionError));
     }
 
     #[test]
@@ -485,10 +478,7 @@ mod test {
         );
         let module = get_module_from_wasm(&wasm);
 
-        assert_eq!(
-            check_wasm_imports(&module),
-            Err(Error::CheckWasmImportsError)
-        );
+        assert_eq!(check_wasm_imports(&module), Err(Error::InvalidImportsError));
 
         let wasm = wat2wasm(
             r#"(module
@@ -508,10 +498,7 @@ mod test {
         );
         let module = get_module_from_wasm(&wasm);
 
-        assert_eq!(
-            check_wasm_exports(&module),
-            Err(Error::CheckWasmExportsError)
-        );
+        assert_eq!(check_wasm_exports(&module), Err(Error::InvalidExportsError));
 
         let wasm = wat2wasm(
             r#"(module

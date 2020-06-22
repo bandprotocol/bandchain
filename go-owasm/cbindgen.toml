@@ -50,7 +50,6 @@ style = "both"
 
 [export]
 include = [
-    "GoResult",
     "Error",
 ]
 exclude = []
