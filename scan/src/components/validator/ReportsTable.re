@@ -210,34 +210,44 @@ module Reports = {
 module Loading = {
   [@react.component]
   let make = () => {
-    <div>
+    <>
       {Belt_Array.make(
          5,
          <Row alignItems=`flexStart>
            <Col> <HSpacing size=Spacing.md /> </Col>
-           <Col size=1. alignSelf=Col.Start> <LoadingCensorBar width=50 height=16 /> </Col>
-           <Col size=2. alignSelf=Col.Start> <LoadingCensorBar width=50 height=16 /> </Col>
+           <Col size=1. alignSelf=Col.Start> <LoadingCensorBar width=50 height=20 /> </Col>
+           <Col size=2. alignSelf=Col.Start> <LoadingCensorBar width=100 height=20 /> </Col>
            <Col size=2.3 alignSelf=Col.Start>
-             <Row>
-               <LoadingCensorBar width=50 height=16 />
-               <HSpacing size=Spacing.sm />
-               <HSpacing size=Spacing.xs />
-               <div className={Styles.withWidth(140)}>
-                 <LoadingCensorBar width=50 height=16 />
-               </div>
-             </Row>
+             <Row> <LoadingCensorBar width=180 height=20 /> </Row>
            </Col>
-           <Col size=1.> <LoadingCensorBar width=50 height=16 /> </Col>
-           <Col size=1.5> <LoadingCensorBar width=50 height=16 /> </Col>
-           <Col size=2.2> <LoadingCensorBar width=50 height=16 /> </Col>
+           <Col size=1.> <div> <LoadingCensorBar width=50 height=20 /> </div> </Col>
+           <Col size=1.5>
+             <div>
+               <div className={Styles.vFlex(`flexEnd)}>
+                 <Row>
+                   <div className=Styles.fillLeft />
+                   <LoadingCensorBar width=50 height=20 />
+                 </Row>
+               </div>
+               <VSpacing size=Spacing.md />
+             </div>
+           </Col>
+           <Col size=2.2>
+             <div>
+               <div className=Styles.valueContainer>
+                 <div className=Styles.fillLeft />
+                 <LoadingCensorBar width=50 height=20 />
+               </div>
+               <VSpacing size=Spacing.md />
+             </div>
+           </Col>
            <Col> <HSpacing size=Spacing.lg /> </Col>
          </Row>,
        )
        ->Belt.Array.mapWithIndex((i, e) => {<TBody key={i |> string_of_int}> e </TBody>})
        ->React.array}
       <VSpacing size=Spacing.lg />
-      <div className=Styles.pagination />
-    </div>;
+    </>;
   };
 };
 

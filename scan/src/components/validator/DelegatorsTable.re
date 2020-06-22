@@ -77,17 +77,17 @@ module Loading = {
          5,
          <Row>
            <Col> <HSpacing size=Spacing.lg /> </Col>
-           <Col size=1.4> <LoadingCensorBar width=50 height=16 /> </Col>
+           <Col size=1.4> <LoadingCensorBar width=300 height=16 /> </Col>
            <Col size=1.30>
              <div className={Styles.vFlex(`flexEnd)}>
                <div className=Styles.fillLeft />
-               <LoadingCensorBar width=50 height=16 />
+               <LoadingCensorBar width=70 height=16 />
              </div>
            </Col>
            <Col size=1.45>
              <div className={Styles.vFlex(`flexEnd)}>
                <div className=Styles.fillLeft />
-               <LoadingCensorBar width=50 height=16 />
+               <LoadingCensorBar width=70 height=16 />
              </div>
            </Col>
            <Col> <HSpacing size=Spacing.lg /> </Col>
