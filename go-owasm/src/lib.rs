@@ -45,13 +45,7 @@ pub extern "C" fn do_compile(input: Span, output: &mut Span) -> Error {
 }
 
 #[no_mangle]
-pub extern "C" fn do_run(
-    code: Span,
-    gas_limit: u32,
-    span_size: i64,
-    is_prepare: bool,
-    env: Env,
-) -> Error {
+pub extern "C" fn do_run(code: Span, gas_limit: u32, span_size: i64, is_prepare: bool, env: Env) -> Error {
     match run(code.read(), gas_limit, span_size, is_prepare, env) {
         Ok(_) => Error::NoError,
         Err(e) => e,
@@ -150,13 +144,7 @@ struct ImportReference(*mut c_void);
 unsafe impl Send for ImportReference {}
 unsafe impl Sync for ImportReference {}
 
-fn run(
-    code: &[u8],
-    gas_limit: u32,
-    span_size: i64,
-    is_prepare: bool,
-    env: Env,
-) -> Result<(), Error> {
+fn run(code: &[u8], gas_limit: u32, span_size: i64, is_prepare: bool, env: Env) -> Result<(), Error> {
     let vm = &mut vm::VMLogic::new(env, gas_limit, span_size);
     let raw_ptr = vm as *mut _ as *mut c_void;
     let import_reference = ImportReference(raw_ptr);
