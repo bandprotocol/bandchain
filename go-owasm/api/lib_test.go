@@ -35,9 +35,9 @@ func TestFailCompileInvalidContent(t *testing.T) {
 	code := []byte("invalid content")
 	spanSize := 1 * 1024 * 1024
 	_, err := Compile(code, spanSize)
-	require.Equal(t, ErrValidateFail, err)
+	require.Equal(t, ErrValidation, err)
 }
-func TestRunError(t *testing.T) {
+func TestRuntimeError(t *testing.T) {
 	spanSize := 1 * 1024 * 1024
 	wasm := wat2wasm([]byte(`(module
 		(type (func (param i64 i64 i32 i64) (result i64)))
@@ -55,8 +55,8 @@ func TestRunError(t *testing.T) {
 		`))
 	code, _ := Compile(wasm, spanSize)
 
-	err := Prepare(code, 100000, NewMockEnv([]byte("")))
-	require.Equal(t, ErrRunError, err)
+	err := Prepare(code, 100000, 1024, NewMockEnv([]byte("")))
+	require.Equal(t, ErrRuntime, err)
 }
 
 func TestInvaildSignature(t *testing.T) {
@@ -78,9 +78,9 @@ func TestInvaildSignature(t *testing.T) {
 	  `))
 	code, _ := Compile(wasm, spanSize)
 
-	err := Prepare(code, 100000, NewMockEnv([]byte("")))
+	err := Prepare(code, 100000, 1024, NewMockEnv([]byte("")))
 
-	require.Equal(t, ErrInvalidSignatureFunction, err)
+	require.Equal(t, ErrBadEntrySignature, err)
 }
 
 func TestGasLimit(t *testing.T) {
@@ -102,11 +102,11 @@ func TestGasLimit(t *testing.T) {
 		(export "execute" (func 1)))
 	  `))
 	code, err := Compile(wasm, spanSize)
-	err = Prepare(code, 100000, NewMockEnv([]byte("")))
+	err = Prepare(code, 100000, 1024, NewMockEnv([]byte("")))
 	require.NoError(t, err)
 
-	err = Prepare(code, 70000, NewMockEnv([]byte("")))
-	require.Equal(t, ErrGasLimitExceeded, err)
+	err = Prepare(code, 70000, 1024, NewMockEnv([]byte("")))
+	require.Equal(t, ErrOutOfGas, err)
 }
 
 func TestCompileErrorNoMemory(t *testing.T) {
@@ -128,7 +128,7 @@ func TestCompileErrorNoMemory(t *testing.T) {
 
 	  `))
 	code, err := Compile(wasm, spanSize)
-	require.Equal(t, ErrNoMemoryWasm, err)
+	require.Equal(t, ErrBadMemorySection, err)
 	require.Equal(t, []uint8([]byte{}), code)
 }
 
@@ -172,7 +172,7 @@ func TestCompileErrorMinimumMemoryExceed(t *testing.T) {
 
 	  `))
 	_, err = Compile(wasm, spanSize)
-	require.Equal(t, ErrMinimumMemoryExceed, err)
+	require.Equal(t, ErrBadMemorySection, err)
 }
 
 func TestCompileErrorSetMaximumMemory(t *testing.T) {
@@ -195,7 +195,7 @@ func TestCompileErrorSetMaximumMemory(t *testing.T) {
 
 	  `))
 	code, err := Compile(wasm, spanSize)
-	require.Equal(t, ErrSetMaximumMemory, err)
+	require.Equal(t, ErrBadMemorySection, err)
 	require.Equal(t, []uint8([]byte{}), code)
 }
 
@@ -221,7 +221,7 @@ func TestCompileErrorCheckWasmImports(t *testing.T) {
 		(export "execute" (func 1)))
 		`))
 	code, err := Compile(wasm, spanSize)
-	require.Equal(t, ErrCheckWasmImports, err)
+	require.Equal(t, ErrInvalidImports, err)
 	require.Equal(t, []uint8([]byte{}), code)
 }
 
@@ -245,7 +245,7 @@ func TestCompileErrorCheckWasmExports(t *testing.T) {
 		(export "prepare" (func 0)))
 		`))
 	code, err := Compile(wasm, spanSize)
-	require.Equal(t, ErrCheckWasmExports, err)
+	require.Equal(t, ErrInvalidExports, err)
 	require.Equal(t, []uint8([]byte{}), code)
 }
 

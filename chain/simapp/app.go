@@ -11,9 +11,11 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/staking"
+	"github.com/spf13/viper"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
+	"github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
 
@@ -99,6 +101,8 @@ func createValidatorTx(chainID string, acc Account, moniker string, selfDelegati
 
 // NewSimApp creates instance of our app using in test.
 func NewSimApp(chainID string, logger log.Logger) *bandapp.BandApp {
+	// Set HomeFlag to /tmp folder for simulation run.
+	viper.Set(cli.HomeFlag, "/tmp")
 	db := dbm.NewMemDB()
 	app := bandapp.NewBandApp(logger, db, nil, true, 0, map[int64]bool{}, "")
 	genesis := bandapp.NewDefaultGenesisState()

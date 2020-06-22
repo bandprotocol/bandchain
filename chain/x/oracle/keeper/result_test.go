@@ -3,8 +3,10 @@ package keeper_test
 import (
 	"testing"
 
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	"github.com/stretchr/testify/require"
+
+	"github.com/bandprotocol/bandchain/chain/pkg/obi"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 func TestResultBasicFunctions(t *testing.T) {
@@ -12,7 +14,7 @@ func TestResultBasicFunctions(t *testing.T) {
 
 	req := types.NewOracleRequestPacketData("alice", 1, BasicCalldata, 1, 1)
 	res := types.NewOracleResponsePacketData("alice", 1, 1, 1589535020, 1589535022, 1, BasicCalldata)
-	encodedResult := types.CalculateEncodedResult(req, res)
+	encodedResult := obi.MustEncode(req, res)
 	k.SetResult(ctx, types.RequestID(1), encodedResult)
 
 	// Test GetResult func
@@ -40,11 +42,11 @@ func TestGetAllResults(t *testing.T) {
 
 	req1 := types.NewOracleRequestPacketData("alice", 1, BasicCalldata, 1, 1)
 	res1 := types.NewOracleResponsePacketData("alice", 1, 1, 1589535020, 1589535022, 1, BasicCalldata)
-	encodedResult1 := types.CalculateEncodedResult(req1, res1)
+	encodedResult1 := obi.MustEncode(req1, res1)
 	k.SetResult(ctx, types.RequestID(1), encodedResult1)
 	req4 := types.NewOracleRequestPacketData("bob", 1, BasicCalldata, 1, 1)
 	res4 := types.NewOracleResponsePacketData("bob", 4, 1, 1589535020, 1589535022, 1, BasicCalldata)
-	encodedResult4 := types.CalculateEncodedResult(req4, res4)
+	encodedResult4 := obi.MustEncode(req4, res4)
 	k.SetResult(ctx, types.RequestID(4), encodedResult4)
 
 	results := k.GetAllResults(ctx)

@@ -7,7 +7,7 @@ import (
 )
 
 // Encode uses obi encoding scheme to encode the given input into bytes.
-func Encode(v interface{}) ([]byte, error) {
+func encodeImpl(v interface{}) ([]byte, error) {
 	rv := reflect.ValueOf(v)
 	switch rv.Kind() {
 	case reflect.Uint8:
@@ -57,9 +57,22 @@ func Encode(v interface{}) ([]byte, error) {
 	}
 }
 
+// Encode uses obi encoding scheme to encode the given input(s) into bytes.
+func Encode(v ...interface{}) ([]byte, error) {
+	res := []byte{}
+	for _, each := range v {
+		encoded, err := encodeImpl(each)
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, encoded...)
+	}
+	return res, nil
+}
+
 // MustEncode uses obi encoding scheme to encode the given input into bytes. Panics on error.
-func MustEncode(v interface{}) []byte {
-	res, err := Encode(v)
+func MustEncode(v ...interface{}) []byte {
+	res, err := Encode(v...)
 	if err != nil {
 		panic(err)
 	}
