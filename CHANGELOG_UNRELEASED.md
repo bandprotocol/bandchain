@@ -43,7 +43,7 @@
 
 ### Bridges
 
-- (patch) [\#2041](https://github.com/bandprotocol/bandchain/pull/2041) Update Multistore.sol to new structure.
+- (patch) [\#2041](https://github.com/bandprotocol/bandchain/pull/2041) Patch Multistore to new structure tree of 0.38.
 
 ### Owasm
 
