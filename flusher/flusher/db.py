@@ -55,7 +55,7 @@ transactions = sa.Table(
     "transactions",
     metadata,
     Column("hash", CustomBase64, primary_key=True),
-    Column("block_height", sa.Integer),  # Add FK to blocks
+    Column("block_height", sa.Integer, sa.ForeignKey("blocks.height")),
     Column("index", sa.Integer),
     Column("gas_used", sa.Integer),
     Column("gas_limit", sa.Integer),
@@ -65,6 +65,7 @@ transactions = sa.Table(
     Column("memo", sa.String),
     Column("messages", sa.JSON),
 )
+
 
 accounts = sa.Table(
     "accounts",
@@ -99,8 +100,8 @@ requests = sa.Table(
     "requests",
     metadata,
     Column("id", sa.Integer, primary_key=True),
-    Column("tx_hash", CustomBase64),  # Add FK to transactions
-    Column("oracle_script_id", sa.Integer),  # Add FK to oracle_script
+    Column("tx_hash", CustomBase64, sa.ForeignKey("transactions.hash")),
+    Column("oracle_script_id", sa.Integer, sa.ForeignKey("oracle_scripts.id")),
     Column("calldata", CustomBase64),
     Column("ask_count", sa.Integer),
     Column("min_count", sa.Integer),
@@ -111,7 +112,7 @@ requests = sa.Table(
 raw_requests = sa.Table(
     "raw_requests",
     metadata,
-    Column("request_id", sa.Integer, primary_key=True),  # Add FK to requests
+    Column("request_id", sa.Integer, sa.ForeignKey("requests.id"), primary_key=True),
     Column("external_id", sa.Integer, primary_key=True),
     Column("data_source_id", sa.Integer),
     Column("calldata", CustomBase64),
@@ -120,7 +121,7 @@ raw_requests = sa.Table(
 val_requests = sa.Table(
     "val_requests",
     metadata,
-    Column("request_id", sa.Integer, primary_key=True),  # Add FK to requests
+    Column("request_id", sa.Integer, sa.ForeignKey("requests.id"), primary_key=True),
     Column("validator", sa.String, primary_key=True),  # Add FK to validators
 )
 
@@ -129,7 +130,7 @@ reports = sa.Table(
     metadata,
     Column("request_id", sa.Integer, primary_key=True),  # Add FK to requests
     Column("validator", sa.String, primary_key=True),  # Add FK to validators
-    Column("tx_hash", CustomBase64),  # Add FK to transactions
+    Column("tx_hash", CustomBase64, sa.ForeignKey("transactions.hash")),
     Column("reporter", sa.String),
 )
 
@@ -141,6 +142,8 @@ raw_reports = sa.Table(
     Column("external_id", sa.Integer, primary_key=True),
     Column("data", CustomBase64),
     Column("exit_code", sa.Integer),
-    # Add FK pair to reports
+    sa.ForeignKeyConstraint(
+        ["request_id", "validator"], ["reports.request_id", "reports.validator"]
+    ),
 )
 
