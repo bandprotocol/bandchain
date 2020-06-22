@@ -232,7 +232,7 @@ func NewRequest(
 	RequestTime int64,
 	ClientID string,
 	IBCInfo *IBCInfo,
-	RawRequestIDs []ExternalID,
+	RawRequests []RawRequest,
 ) Request {
 	return Request{
 		OracleScriptID:      OracleScriptID,
@@ -243,7 +243,7 @@ func NewRequest(
 		RequestTime:         RequestTime,
 		ClientID:            ClientID,
 		IBCInfo:             IBCInfo,
-		RawRequestIDs:       RawRequestIDs,
+		RawRequests:         RawRequests,
 	}
 }
 
