@@ -222,7 +222,7 @@ func TestCreateOracleScriptFailed(t *testing.T) {
 	_, ctx, keeper := createTestInput()
 	name := "os_1"
 	description := "beeb"
-	code := []byte("non wasm coce")
+	code := []byte("non wasm code")
 	schema := "schema"
 	url := "url"
 	msg := types.NewMsgCreateOracleScript(
