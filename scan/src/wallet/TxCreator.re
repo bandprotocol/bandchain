@@ -109,10 +109,10 @@ let getAccountInfo = address => {
   let data = info##data;
   Promise.ret(
     JsonUtils.Decode.{
-      accountNumber: data |> at(["result", "value", "account_number"], intstr),
+      accountNumber: data |> at(["result", "value", "account_number"], int),
       sequence:
         data
-        |> optional(at(["result", "value", "sequence"], intstr))
+        |> optional(at(["result", "value", "sequence"], int))
         |> Belt_Option.getWithDefault(_, 0),
     },
   );
