@@ -1,4 +1,3 @@
-# collect genesis transactions
 cp ./docker-config/single-validator/priv_validator_key.json ~/.bandd/config/priv_validator_key.json
 cp ./docker-config/single-validator/node_key.json ~/.bandd/config/node_key.json
 

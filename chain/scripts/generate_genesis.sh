@@ -29,6 +29,7 @@ bandd gentx \
     --name validator \
     --keyring-backend test
 
+# collect genesis transactions
 bandd collect-gentxs
 
 
