@@ -76,7 +76,7 @@ func getTestOracleScript() (os types.OracleScript, clear func()) {
 	code := wat2wasm(rawWAT)
 	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
 	f := filecache.New(dir)
-	compiledCode, err := api.Compile(code, types.MaxDataSize)
+	compiledCode, err := api.Compile(code, types.MaxCompiledWasmCodeSize)
 	if err != nil {
 		panic(err)
 	}

@@ -171,7 +171,7 @@ func TestAddOracleScriptFile(t *testing.T) {
 	defer deleteFile(filepath.Join(dir, filename))
 
 	require.NoError(t, err)
-	compiledCode, err := api.Compile(code, types.MaxDataSize)
+	compiledCode, err := api.Compile(code, types.MaxCompiledWasmCodeSize)
 	require.NoError(t, err)
 
 	require.Equal(t, compiledCode, k.GetFile(filename))

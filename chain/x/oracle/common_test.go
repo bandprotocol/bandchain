@@ -104,7 +104,7 @@ func mustGetOwasmCode(filename string) []byte {
 }
 
 func mustCompileOwasm(code []byte) []byte {
-	compiled, err := api.Compile(code, types.MaxDataSize)
+	compiled, err := api.Compile(code, types.MaxCompiledWasmCodeSize)
 	if err != nil {
 		panic(err)
 	}
