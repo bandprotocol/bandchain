@@ -1,15 +1,16 @@
 package cli
 
 import (
+	"encoding/json"
 	"fmt"
-
-	"github.com/spf13/cobra"
+	"net/http"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/spf13/cobra"
 
 	clientcmn "github.com/bandprotocol/bandchain/chain/x/oracle/client/common"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
@@ -37,6 +38,18 @@ func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 	return oracleCmd
 }
 
+func printOutput(cliCtx context.CLIContext, cdc *codec.Codec, bz []byte, out interface{}) error {
+	var result types.QueryResult
+	if err := json.Unmarshal(bz, &result); err != nil {
+		return err
+	}
+	if result.Status != http.StatusOK {
+		return cliCtx.PrintOutput(result.Result)
+	}
+	cdc.MustUnmarshalJSON(result.Result, &out)
+	return cliCtx.PrintOutput(out)
+}
+
 // GetQueryCmdParams implements the query parameters command.
 func GetQueryCmdParams(route string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
@@ -48,8 +61,15 @@ func GetQueryCmdParams(route string, cdc *codec.Codec) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			var result types.QueryResult
+			if err := json.Unmarshal(res, &result); err != nil {
+				return err
+			}
+			if result.Status != http.StatusOK {
+				return cliCtx.PrintOutput(result.Result)
+			}
 			var out types.Params
-			cdc.MustUnmarshalJSON(res, &out)
+			cdc.MustUnmarshalJSON(result.Result, &out)
 			return cliCtx.PrintOutput(out)
 		},
 	}
@@ -66,8 +86,15 @@ func GetQueryCmdCounts(route string, cdc *codec.Codec) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			var result types.QueryResult
+			if err := json.Unmarshal(res, &result); err != nil {
+				return err
+			}
+			if result.Status != http.StatusOK {
+				return cliCtx.PrintOutput(result.Result)
+			}
 			var out types.QueryCountsResult
-			cdc.MustUnmarshalJSON(res, &out)
+			cdc.MustUnmarshalJSON(result.Result, &out)
 			return cliCtx.PrintOutput(out)
 		},
 	}
@@ -84,8 +111,15 @@ func GetQueryCmdDataSource(route string, cdc *codec.Codec) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			var result types.QueryResult
+			if err := json.Unmarshal(res, &result); err != nil {
+				return err
+			}
+			if result.Status != http.StatusOK {
+				return cliCtx.PrintOutput(result.Result)
+			}
 			var out types.DataSource
-			cdc.MustUnmarshalJSON(res, &out)
+			cdc.MustUnmarshalJSON(result.Result, &out)
 			return cliCtx.PrintOutput(out)
 		},
 	}
@@ -101,6 +135,13 @@ func GetQueryCmdOracleScript(route string, cdc *codec.Codec) *cobra.Command {
 			res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryOracleScripts, args[0]), nil)
 			if err != nil {
 				return err
+			}
+			var result types.QueryResult
+			if err := json.Unmarshal(res, &result); err != nil {
+				return err
+			}
+			if result.Status != http.StatusOK {
+				return cliCtx.PrintOutput(result.Result)
 			}
 			var out types.OracleScript
 			cdc.MustUnmarshalJSON(res, &out)
@@ -120,8 +161,15 @@ func GetQueryCmdRequest(route string, cdc *codec.Codec) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			var result types.QueryResult
+			if err := json.Unmarshal(res, &result); err != nil {
+				return err
+			}
+			if result.Status != http.StatusOK {
+				return cliCtx.PrintOutput(result.Result)
+			}
 			var out types.QueryRequestResult
-			cdc.MustUnmarshalJSON(res, &out)
+			cdc.MustUnmarshalJSON(result.Result, &out)
 			return cliCtx.PrintOutput(out)
 		},
 	}
@@ -138,8 +186,15 @@ func GetQueryCmdRequestSearch(route string, cdc *codec.Codec) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			var result types.QueryResult
+			if err := json.Unmarshal(res, &result); err != nil {
+				return err
+			}
+			if result.Status != http.StatusOK {
+				return cliCtx.PrintOutput(result.Result)
+			}
 			var out types.QueryRequestResult
-			cdc.MustUnmarshalJSON(res, &out)
+			cdc.MustUnmarshalJSON(result.Result, &out)
 			return cliCtx.PrintOutput(out)
 		},
 	}
@@ -156,8 +211,15 @@ func GetQueryCmdReporters(route string, cdc *codec.Codec) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			var result types.QueryResult
+			if err := json.Unmarshal(res, &result); err != nil {
+				return err
+			}
+			if result.Status != http.StatusOK {
+				return cliCtx.PrintOutput(result.Result)
+			}
 			var out []sdk.AccAddress
-			cdc.MustUnmarshalJSON(res, &out)
+			cdc.MustUnmarshalJSON(result.Result, &out)
 			return cliCtx.PrintOutput(out)
 		},
 	}
@@ -174,8 +236,15 @@ func GetQueryCmdReportInfo(route string, cdc *codec.Codec) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			var result types.QueryResult
+			if err := json.Unmarshal(res, &result); err != nil {
+				return err
+			}
+			if result.Status != http.StatusOK {
+				return cliCtx.PrintOutput(result.Result)
+			}
 			var out types.ValidatorReportInfo
-			cdc.MustUnmarshalJSON(res, &out)
+			cdc.MustUnmarshalJSON(result.Result, &out)
 			return cliCtx.PrintOutput(out)
 		},
 	}

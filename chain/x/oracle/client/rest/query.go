@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -12,19 +13,27 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
+func postProcessQueryResponse(w http.ResponseWriter, cliCtx context.CLIContext, bz []byte) {
+	var result types.QueryResult
+	if err := json.Unmarshal(bz, &result); err != nil {
+		rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+	}
+	w.WriteHeader(result.Status)
+	rest.PostProcessResponse(w, cliCtx, result.Result)
+}
+
 func getParamsHandler(cliCtx context.CLIContext, route string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
 			return
 		}
-		res, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", route, types.QueryParams), nil)
+		bz, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", route, types.QueryParams), nil)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		cliCtx = cliCtx.WithHeight(height)
-		rest.PostProcessResponse(w, cliCtx, res)
+		postProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
 	}
 }
 
@@ -34,13 +43,12 @@ func getCountsHandler(cliCtx context.CLIContext, route string) http.HandlerFunc 
 		if !ok {
 			return
 		}
-		res, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", route, types.QueryCounts), nil)
+		bz, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", route, types.QueryCounts), nil)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		cliCtx = cliCtx.WithHeight(height)
-		rest.PostProcessResponse(w, cliCtx, res)
+		postProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
 	}
 }
 
@@ -69,13 +77,12 @@ func getDataSourceByIDHandler(cliCtx context.CLIContext, route string) http.Hand
 			return
 		}
 		vars := mux.Vars(r)
-		res, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryDataSources, vars[idTag]), nil)
+		bz, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryDataSources, vars[idTag]), nil)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		cliCtx = cliCtx.WithHeight(height)
-		rest.PostProcessResponse(w, cliCtx, res)
+		postProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
 	}
 }
 
@@ -86,13 +93,12 @@ func getOracleScriptByIDHandler(cliCtx context.CLIContext, route string) http.Ha
 			return
 		}
 		vars := mux.Vars(r)
-		res, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryOracleScripts, vars[idTag]), nil)
+		bz, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryOracleScripts, vars[idTag]), nil)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		cliCtx = cliCtx.WithHeight(height)
-		rest.PostProcessResponse(w, cliCtx, res)
+		postProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
 	}
 }
 
@@ -103,13 +109,12 @@ func getRequestByIDHandler(cliCtx context.CLIContext, route string) http.Handler
 			return
 		}
 		vars := mux.Vars(r)
-		res, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryRequests, vars[idTag]), nil)
+		bz, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryRequests, vars[idTag]), nil)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		cliCtx = cliCtx.WithHeight(height)
-		rest.PostProcessResponse(w, cliCtx, res)
+		postProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
 	}
 }
 
@@ -119,7 +124,7 @@ func getRequestSearchHandler(cliCtx context.CLIContext, route string) http.Handl
 		if !ok {
 			return
 		}
-		res, height, err := clientcmn.QuerySearchLatestRequest(
+		bz, height, err := clientcmn.QuerySearchLatestRequest(
 			route, cliCtx,
 			r.FormValue("oid"), r.FormValue("calldata"), r.FormValue("ask_count"), r.FormValue("min_count"),
 		)
@@ -127,8 +132,7 @@ func getRequestSearchHandler(cliCtx context.CLIContext, route string) http.Handl
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		cliCtx = cliCtx.WithHeight(height)
-		rest.PostProcessResponse(w, cliCtx, res)
+		postProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
 	}
 }
 
@@ -139,13 +143,12 @@ func getReportersHandler(cliCtx context.CLIContext, route string) http.HandlerFu
 			return
 		}
 		vars := mux.Vars(r)
-		res, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryReporters, vars[validatorAddressTag]), nil)
+		bz, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryReporters, vars[validatorAddressTag]), nil)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		cliCtx = cliCtx.WithHeight(height)
-		rest.PostProcessResponse(w, cliCtx, res)
+		postProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
 	}
 }
 
@@ -156,12 +159,11 @@ func getReportInfoHandler(cliCtx context.CLIContext, route string) http.HandlerF
 			return
 		}
 		vars := mux.Vars(r)
-		res, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryReportInfo, vars[validatorAddressTag]), nil)
+		bz, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryReportInfo, vars[validatorAddressTag]), nil)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		cliCtx = cliCtx.WithHeight(height)
-		rest.PostProcessResponse(w, cliCtx, res)
+		postProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
 	}
 }
