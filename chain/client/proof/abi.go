@@ -95,6 +95,11 @@ var relayFormat = []byte(`
       },
       {
         "internalType": "bytes",
+        "name": "signedDataPrefix",
+        "type": "bytes"
+      },
+      {
+        "internalType": "bytes",
         "name": "signedDataSuffix",
         "type": "bytes"
       }
